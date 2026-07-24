@@ -195,7 +195,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
         target = lbl_803E59DC;
     }
     d = rate * (target - animState->aimBlend);
-    animState->aimBlend = d * timeDelta + animState->aimBlend;
+    animState->aimBlend += d * timeDelta;
     if (animState->aimBlend > -0.002f)
     {
         animState->aimBlend = lbl_803E59DC;
