@@ -74,9 +74,9 @@ def same_address_reloc(a: str, b: str) -> bool:
 
 
 def get_objdump() -> Path:
-    p = REPO / "build" / "binutils" / "powerpc-eabi-objdump"
+    p = REPO / "build" / "binutils" / "powerpc-eabi-objdump.exe"
     if not p.is_file():
-        p = REPO / "build" / "binutils" / "powerpc-eabi-objdump.exe"
+        p = REPO / "build" / "binutils" / "powerpc-eabi-objdump"
     return p
 
 
