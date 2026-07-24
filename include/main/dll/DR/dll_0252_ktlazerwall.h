@@ -42,12 +42,6 @@ STATIC_ASSERT(offsetof(KtlazerwallState, reloadTimer) == 0x4);
 STATIC_ASSERT(offsetof(KtlazerwallState, bolt) == 0x10);
 STATIC_ASSERT(sizeof(KtlazerwallState) == 0x14);
 
-union KtlazerwallConstF32 { f32 f; };
-extern const union KtlazerwallConstF32 lbl_803E68B0;
-extern const union KtlazerwallConstF32 lbl_803E68B4;
-extern const union KtlazerwallConstF32 lbl_803E68B8;
-extern const union KtlazerwallConstF32 lbl_803E68BC;
-
 int KT_Lazerwall_getExtraSize(void);
 int KT_Lazerwall_getObjectTypeId(void);
 void KT_Lazerwall_free(GameObject* obj);
