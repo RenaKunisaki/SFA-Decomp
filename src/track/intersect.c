@@ -3078,7 +3078,8 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
     c.r = 0xFF;
     c.g = 0xFF;
     c.b = 0xFF;
-    alpha = (u8)alpha_mod * gHudTintAlpha;
+    alpha = (u8)alpha_mod;
+    alpha *= gHudTintAlpha;
     c.a = (u8)(alpha >> 8);
 
     GXClearVtxDesc();
@@ -3323,11 +3324,14 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     extern const f32 lbl_803DEEE4;
     GXColor c;
     s32 w, h;
+    s32 alpha;
 
     c.r = 0xFF;
     c.g = 0xFF;
     c.b = 0xFF;
-    c.a = (u8)(((s32)(u8)alpha_mod * gHudTintAlpha) >> 8);
+    alpha = (u8)alpha_mod;
+    alpha *= gHudTintAlpha;
+    c.a = (u8)(alpha >> 8);
 
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
