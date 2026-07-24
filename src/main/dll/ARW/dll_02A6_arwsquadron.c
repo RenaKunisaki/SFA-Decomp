@@ -55,6 +55,9 @@
 
 #define ARWSQUADRON_CHILD_OBJ_PROJECTILE 0x6ae
 
+union ArwSquadronConstU32 { u32 u; };
+const union ArwSquadronConstU32 gArwSquadronDefaultCurveMode = { 0x28 };
+
 static inline int arwsquadron_isPlayerWithinRangeZ(GameObject* obj, f32 range)
 {
     GameObject* craft = (GameObject*)getArwing();
@@ -552,7 +555,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
     f32 fxScale;
     f32 pathSpeedScale = 0.25f;
 
-    curveMode = 40;
+    curveMode = gArwSquadronDefaultCurveMode.u;
     state = (ArwSquadronState*)obj->extra;
     setupData = setup;
     flags = &state->flags.init;
