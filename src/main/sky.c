@@ -1170,15 +1170,15 @@ void fn_80089A60(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, in
             lightB = blue * lightScale >> 8;
         }
     }
-    *(f32*)&gSkyState[slot * 0xa4 + 0x90] = dir[0];
-    *(f32*)&gSkyState[slot * 0xa4 + 0x94] = dir[1];
-    *(f32*)&gSkyState[slot * 0xa4 + 0x98] = dir[2];
+    ((SkyLight*)(gSkyState + 0x20))[slot].directionX = dir[0];
+    ((SkyLight*)(gSkyState + 0x20))[slot].directionY = dir[1];
+    ((SkyLight*)(gSkyState + 0x20))[slot].directionZ = dir[2];
     gSkyState[slot * 0xa4 + 0x78] = red;
     gSkyState[slot * 0xa4 + 0x79] = green;
     gSkyState[slot * 0xa4 + 0x7a] = blue;
-    *(f32*)&gSkyState[slot * 0xa4 + 0x9c] = -dir[0];
-    *(f32*)&gSkyState[slot * 0xa4 + 0xa0] = -dir[1];
-    *(f32*)&gSkyState[slot * 0xa4 + 0xa4] = -dir[2];
+    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionX = -dir[0];
+    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionY = -dir[1];
+    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionZ = -dir[2];
     gSkyState[slot * 0xa4 + 0x80] = (u8)(ambientR * (colorScale + 1) >> 8);
     gSkyState[slot * 0xa4 + 0x81] = (u8)(ambientG * (colorScale + 1) >> 8);
     gSkyState[slot * 0xa4 + 0x82] = (u8)(ambientB * (colorScale + 1) >> 8);
