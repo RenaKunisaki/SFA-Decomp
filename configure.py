@@ -1122,7 +1122,7 @@ config.libs = [
             Object(NonMatching, "main/dll/DIM/dll_0256_dimsnowhorn1.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_01D9_dim2prisonmammoth.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/DR/dll_0257_drearthwarrior.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/dll/DR/dll_0258_drcloudrunner.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
+            Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0258_drcloudrunner.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "main/objanim.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "main/objanim_8002f5d4.c", cflags=cflags_dll_noopt),
             Object(

@@ -54,7 +54,7 @@ extern void* gDRCloudRunnerDefaultStateHandler;
 extern s16 gDRCloudRunnerDefaultRotX;
 extern s16 gDRCloudRunnerHeadingAngleOffset;
 extern s16 gDRCloudRunnerSmoothedRotX;
-extern s16 gDRCloudRunnerGameBitIds[4];
+extern const s16 gDRCloudRunnerGameBitIds[4];
 extern const int gDRCloudRunnerCurveIds[4];
 extern u8 gDRCloudRunnerMoveParamTable[];
 extern int gDRCloudRunnerAirMeterBaseline;
