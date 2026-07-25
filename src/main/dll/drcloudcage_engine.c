@@ -54,6 +54,7 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
     f32 fv;
     int vol;
     f32 channelVol;
+    f32 channelVol4;
     DRCloudCagePulseParams pulse;
 
     clamped =
@@ -175,8 +176,8 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
         {
             ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B44;
         }
-        channelVol = ((DRCloudCageState*)state)->channel4Vol;
-        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol, channelVol / lbl_803E5B48);
+        channelVol4 = ((DRCloudCageState*)state)->channel4Vol;
+        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol4, channelVol4 / lbl_803E5B48);
         pulse.unkC = lbl_803E5B4C;
         pulse.unk10 = lbl_803E5B50;
         pulse.unk14 = lbl_803E5B54;
