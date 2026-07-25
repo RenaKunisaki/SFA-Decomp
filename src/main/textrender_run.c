@@ -384,15 +384,15 @@ int gameTextGetState(int i);
 
 void gameTextRun(void)
 {
-    GameTextSlot* cmd;
     GameTextRuntime* gameTextBase;
-    int sourceId;
-    GameTextLoadSlot* freeSlot;
-    TextFont* pending;
-    int dirId;
-    int i;
-    int languageId;
     GameTextLoadSlot* slot;
+    TextFont* pending;
+    int sourceId;
+    GameTextSlot* cmd;
+    int i;
+    GameTextLoadSlot* freeSlot;
+    int dirId;
+    int languageId;
     GameTextBox* textBox;
     GXColor color;
     double fadeLimit;
@@ -416,19 +416,62 @@ void gameTextRun(void)
     pending = gameTextBase->fonts;
     do
     {
-        dirId = pending->dirId;
-        if ((u8)dirId != GAMETEXT_INVALID_DIR)
+        if (pending->dirId != GAMETEXT_INVALID_DIR)
         {
             slot = gameTextBase->loadSlots;
-            freeSlot = (slot->active == 0)       ? slot
-                       : ((++slot)->active == 0) ? slot
-                       : ((++slot)->active == 0) ? slot
-                       : ((++slot)->active == 0) ? slot
-                       : ((++slot)->active == 0) ? slot
-                       : ((++slot)->active == 0) ? slot
-                       : ((++slot)->active == 0) ? slot
-                       : ((++slot)->active == 0) ? slot
-                                                 : NULL;
+            dirId = pending->dirId;
+            do
+            {
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                ++slot;
+                if (slot->active == 0)
+                {
+                    dirId = pending->dirId;
+                    break;
+                }
+                slot = NULL;
+            } while (0);
+            freeSlot = slot;
 
             if (freeSlot != NULL)
             {
@@ -468,9 +511,12 @@ void gameTextRun(void)
 
     i = GAMETEXT_LOAD_SLOT_COUNT;
     {
-        f32* timer = gameTextBase->fadeTimers + 8;
-        f32* alpha = gameTextBase->fadeElapsed + 8;
-        GameTextFadeEntry* entry = gameTextBase->fadeEntries + 8;
+        f32* alpha;
+        GameTextFadeEntry* entry;
+        f32* timer;
+        timer = gameTextBase->fadeTimers + 8;
+        alpha = gameTextBase->fadeElapsed + 8;
+        entry = gameTextBase->fadeEntries + 8;
         zero = lbl_803DE704;
         fadeLimit = gGameTextFadeLimit;
         while (timer--, alpha--, entry--, i-- != 0)
