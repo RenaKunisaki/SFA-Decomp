@@ -211,7 +211,6 @@ main/dll/dll_BA.c
 main/dll/dll_BB.c
 main/dll/dll_BC.c
 main/dll/dll_C0.c
-main/dll/animatedobj.c
 main/dll/tumbleweedbush.c
 main/dll/dll_D3.c
 main/dll/staff.c

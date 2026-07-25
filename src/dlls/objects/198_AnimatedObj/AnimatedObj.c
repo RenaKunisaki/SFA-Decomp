@@ -1,37 +1,27 @@
-/* DLL 0xC6 - animated object [8016984C-801713AC) */
 #include "main/object_render.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/shader_api.h"
 #include "main/objprint_render_api.h"
 #include "main/dll/dll_00C6_animatedobj_api.h"
 #include "main/frame_timing.h"
-#include "main/dll/genpropswgpipe_struct.h"
-
 #include "game/objects/object.h"
 #include "main/obj_list.h"
 #include "main/obj_link.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_looped_object_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
-#include "main/dll_000A_expgfx.h"
 #include "main/camera_interface.h"
 #include "main/maketex_sequence_api.h"
 #include "main/objseq.h"
-#include "main/objhits.h"
 #include "main/dll/dll_0004_dummy04.h"
 
-/* object group this object joins while active */
-#define ANIMATEDOBJ_OBJGROUP 7
-
 #define ANIMATEDOBJ_OBJFLAG_UPDATE_DISABLED 0x8000
-/* DLL-id spawned+child-attached on seq event 0xa (generic child; no cache
-   field / named spawn-fn / kind name -> suffixless per role-gate). */
+/* Child object spawned and attached on sequence event 0xa. */
 #define ANIMATEDOBJ_CHILD_OBJ 0x69
 #define ANIMATEDOBJ_KRYSTAL_OBJ 0x774
 
-typedef struct AnimatedobjPlacement
+typedef struct AnimatedObjPlacement
 {
     u8 pad0[0x8 - 0x0];
     f32 posX;
@@ -46,13 +36,12 @@ typedef struct AnimatedobjPlacement
     u8 pad22[0x2C - 0x22];
     s16 unk2C;
     u8 pad2E[0x30 - 0x2E];
-} AnimatedobjPlacement;
+} AnimatedObjPlacement;
 
-
-
-
-
-int animatedobj_getExtraSize(void) { return 0x140; }
+int animatedobj_getExtraSize(void)
+{
+    return 0x140;
+}
 
 ObjectDescriptor gAnimatedObjDescriptor = {
     0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
@@ -109,9 +98,9 @@ void animatedobj_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
         s16* cam;
         Obj_BuildWorldTransformMatrix((GameObject*)obj, mWorld, 0);
         prm = *(int**)&((GameObject*)obj)->anim.placementData;
-        PSMTXTrans(mTransPlayer, -(((AnimatedobjPlacement*)prm)->posX - playerMapOffsetX),
-                   -((AnimatedobjPlacement*)prm)->posY,
-                   -(((AnimatedobjPlacement*)prm)->posZ - playerMapOffsetZ));
+        PSMTXTrans(mTransPlayer, -(((AnimatedObjPlacement*)prm)->posX - playerMapOffsetX),
+                   -((AnimatedObjPlacement*)prm)->posY,
+                   -(((AnimatedObjPlacement*)prm)->posZ - playerMapOffsetZ));
         PSMTXConcat(mTransPlayer, mWorld, mWorldCombined);
         cam = (s16*)(*gCameraInterface)->getCamera();
         ((GameObject*)cam)->anim.rotY += 0x8000;
@@ -143,7 +132,7 @@ void animatedobj_update(int* obj)
     ObjSeqState* seq = ((GameObject*)obj)->extra;
     int* params = *(int**)&((GameObject*)obj)->anim.placementData;
 
-    if (params != NULL && ((AnimatedobjPlacement*)params)->loadKey != -1)
+    if (params != NULL && ((AnimatedObjPlacement*)params)->loadKey != -1)
     {
         int res;
         int count;
@@ -231,7 +220,7 @@ void animatedobj_init(int* obj, int* params)
     int f4;
     objSetSlot((GameObject*)obj, 0x64);
     seq = ((GameObject*)obj)->extra;
-    seq->gameBit = ((AnimatedobjPlacement*)params)->gameBit;
+    seq->gameBit = ((AnimatedObjPlacement*)params)->gameBit;
     seq->flags = -1;
     {
         f32 d = 1.0f;
@@ -244,21 +233,21 @@ void animatedobj_init(int* obj, int* params)
     seq->baseRotY = 0;
     seq->freeCallback = NULL;
     f4 = ((GameObject*)obj)->userData1;
-    if (f4 == 0 && ((AnimatedobjPlacement*)params)->loadKey != 1)
+    if (f4 == 0 && ((AnimatedObjPlacement*)params)->loadKey != 1)
     {
         (*gObjectTriggerInterface)
             ->loadAnimData((u8*)seq, (u8*)params);
-        ((GameObject*)obj)->userData1 = ((AnimatedobjPlacement*)params)->loadKey + 1;
+        ((GameObject*)obj)->userData1 = ((AnimatedObjPlacement*)params)->loadKey + 1;
     }
-    else if (f4 != 0 && ((AnimatedobjPlacement*)params)->loadKey != f4 - 1)
+    else if (f4 != 0 && ((AnimatedObjPlacement*)params)->loadKey != f4 - 1)
     {
         (*gObjectTriggerInterface)->freeState((u8*)seq);
-        if (((AnimatedobjPlacement*)params)->loadKey != -1)
+        if (((AnimatedObjPlacement*)params)->loadKey != -1)
         {
             (*gObjectTriggerInterface)
                 ->loadAnimData((u8*)seq, (u8*)params);
         }
-        ((GameObject*)obj)->userData1 = ((AnimatedobjPlacement*)params)->loadKey + 1;
+        ((GameObject*)obj)->userData1 = ((AnimatedObjPlacement*)params)->loadKey + 1;
     }
     {
         ObjModelState* modelState = ((GameObject*)obj)->anim.modelState;
@@ -269,29 +258,4 @@ void animatedobj_init(int* obj, int* params)
         }
     }
     Obj_SetModelRenderOpAlpha(obj, 0xff);
-}
-
-
-
-GenPropsWGPipe GXWGFifo : (0xCC008000);
-
-static inline void swipePos3f32(const f32 x, const f32 y, const f32 z)
-{
-    GXWGFifo.f32 = x;
-    GXWGFifo.f32 = y;
-    GXWGFifo.f32 = z;
-}
-
-static inline void swipeColor4u8(const u8 r, const u8 g, const u8 b, const u8 a)
-{
-    GXWGFifo.u8 = r;
-    GXWGFifo.u8 = g;
-    GXWGFifo.u8 = b;
-    GXWGFifo.u8 = a;
-}
-
-static inline void swipeTexCoord2f32(const f32 s, const f32 t)
-{
-    GXWGFifo.f32 = s;
-    GXWGFifo.f32 = t;
 }
