@@ -225,7 +225,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         }
         objModelClearVecFn_8003aa40(obj);
         ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0);
-        ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
+        ObjAnim_SetCurrentMove((u32)obj, 0, 0.0f, 0);
         ObjHits_DisableObject(obj);
         Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
         (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
