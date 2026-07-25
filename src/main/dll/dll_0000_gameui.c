@@ -7374,6 +7374,7 @@ void drawHudBox(s16 x, s16 y, s16 w, s16 h, u8 alpha, u8 flag)
  * map layout with location labels. */
 void mapScreenDrawHud(int unused1, int unused2, int unused3)
 {
+    s16 width;
     u8* hintCandidates;
     if (pauseMenuState != 0)
     {
@@ -7381,9 +7382,10 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
     }
     if (gWorldMapVoiceoverTimer != 0)
     {
-        int height;
+        s16 voiceoverTimer;
         s16 revealedHeight;
-        s16 voiceoverTimer, panelAlpha, panelX, panelY, width;
+        s16 panelAlpha, panelX, panelY;
+        int height;
         voiceoverTimer = gWorldMapVoiceoverTimer;
         panelAlpha = voiceoverTimer;
         panelAlpha *= 0xf;
