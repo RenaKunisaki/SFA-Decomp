@@ -57,6 +57,24 @@ static inline void heapSiftUp(CurveHeapNode* q, int i)
     q[i].value = val;
 }
 
+static inline int voxmaps_findRouteNode(RouteState* state, s16* box, int* flagOut)
+{
+    s16 bz = box[2];
+    s16 bx = box[0];
+    int foundIdx;
+    int nodeCount;
+    for (foundIdx = 0, nodeCount = state->nodeCount; foundIdx < nodeCount; foundIdx++)
+    {
+        RouteNode* nn = &state->nodes[foundIdx];
+        if (nn->x == bx && nn->y == bz)
+        {
+            *flagOut = nn->flag;
+            return foundIdx;
+        }
+    }
+    return -1;
+}
+
 void voxmapsFn_80010ff4(struct RouteState* state, VoxBoxArg* srcBox, int parentNodeIndex, u16 count, s16* box)
 {
     int foundIdx;
@@ -271,26 +289,7 @@ void voxmapsFn_80010ff4(struct RouteState* state, VoxBoxArg* srcBox, int parentN
 
     box[1] = (s16)(box[1] + chosen);
 
-    foundIdx = -1;
-    {
-        s16 bx;
-        s16 bz;
-        bz = box[2];
-        bx = box[0];
-        for (foundIdx = 0, nodeCount = state->nodeCount; foundIdx < nodeCount; foundIdx++)
-        {
-            RouteNode* nn = &state->nodes[foundIdx];
-            if (nn->x == bx && nn->y == bz)
-            {
-                savedFlag = nn->flag;
-                break;
-            }
-        }
-        if (foundIdx >= nodeCount)
-        {
-            foundIdx = -1;
-        }
-    }
+    foundIdx = voxmaps_findRouteNode(state, box, &savedFlag);
     nodeCount = state->nodeCount;
 
     if (foundIdx >= 0 && savedFlag == 0)
