@@ -50,11 +50,9 @@ STATIC_ASSERT(offsetof(ArwingBombSetup, rotY) == 0x19);
 STATIC_ASSERT(offsetof(ArwingBombSetup, rotX) == 0x1A);
 
 extern ObjectDescriptor gARWArwingBoObjDescriptor;
-extern f32 lbl_803E7040;
-extern f32 lbl_803E7044;
-extern f32 lbl_803E7048;
-extern f32 lbl_803E704C;
 
+void arwprojectile_launchForward(GameObject* obj, f32 lifetime);
+void arwprojectile_setParamScalar(GameObject* obj, int scalar);
 int arwarwingbo_getExtraSize(void);
 int arwarwingbo_getObjectTypeId(void);
 void arwarwingbo_free(int obj);

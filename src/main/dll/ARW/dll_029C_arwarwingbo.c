@@ -7,10 +7,16 @@
  * frames, then frees itself. It is registered into object group 0x52 and
  * detaches its expgfx source on free; arwarwing keeps a back-pointer that is
  * cleared via arwarwing_clearActiveBomb when the bomb goes away.
+ *
+ * This unit also owns the bomb-drop projectile entry points
+ * arwprojectile_launchForward + arwprojectile_setParamScalar (called from
+ * arwarwing's bomb release; the projectile object itself is DLL 0x29B).
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/ARW/dll_029C_arwarwingbo.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
+#include "main/dll/dll_029B_arwingandrossstuff.h"
+#include "main/vecmath.h"
 #include "main/audio/sfx.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
@@ -48,6 +54,48 @@ ObjectDescriptor gARWArwingBoObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)arwarwingbo_getExtraSize,
 };
 
+static void arwarwingbo_detonate(int obj)
+{
+    ObjAnimComponent* objAnim = &((GameObject*)obj)->anim;
+    ArwingBombState* state = ((GameObject*)obj)->extra;
+
+    arwarwing_clearActiveBomb(getArwing());
+    Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
+    state->explosionTimer = 100.0f;
+    state->control.fuseTimer = 0.0f;
+    objAnim->alpha = 0;
+    (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
+    spawnExplosion((GameObject*)obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
+    ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x280);
+    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
+    objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
+}
+
+void arwprojectile_launchForward(GameObject* obj, f32 lifetime)
+{
+    ArwProjectileState* state = obj->extra;
+    f32 mtx[16];
+    MatrixTransform src;
+
+    state->lifetime = lifetime;
+    src.x = 0.0f;
+    src.y = 0.0f;
+    src.z = 0.0f;
+    src.rotX = obj->anim.rotX;
+    src.rotY = obj->anim.rotY;
+    src.rotZ = 0;
+    src.scale = 1.0f;
+    setMatrixFromObjectPos(mtx, &src);
+    Matrix_TransformPoint(mtx, 0.0f, 0.0f, state->lifetime, &obj->anim.velocityX,
+                          &obj->anim.velocityY, &obj->anim.velocityZ);
+}
+
+void arwprojectile_setParamScalar(GameObject* obj, int scalar)
+{
+    ArwProjectileState* state = obj->extra;
+    state->param0.scalar = scalar;
+}
+
 int arwarwingbo_getExtraSize(void)
 {
     return 0xc;
@@ -68,7 +116,7 @@ void arwarwingbo_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E704C);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -89,7 +137,7 @@ void arwarwingbo_update(int obj)
         Obj_FreeObject((GameObject*)obj);
         return;
     }
-    if (state->explosionTimer > (zero = lbl_803E7044))
+    if (state->explosionTimer > (zero = 0.0f))
     {
         state->explosionTimer -= timeDelta;
         if (state->explosionTimer <= zero)
@@ -104,14 +152,14 @@ void arwarwingbo_update(int obj)
             state = ((GameObject*)obj)->extra;
             arwarwing_clearActiveBomb(getArwing());
             Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
-            state->explosionTimer = lbl_803E7040;
-            state->control.fuseTimer = lbl_803E7044;
+            state->explosionTimer = 100.0f;
+            state->control.fuseTimer = 0.0f;
             objAnim->alpha = 0;
             (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-            spawnExplosion((GameObject*)obj, lbl_803E7048, 1, 0, 1, 1, 0, 1, 0);
+            spawnExplosion((GameObject*)obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
             ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x280);
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
-            objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = lbl_803E7044;
+            objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
         }
         (*gPartfxInterface)->spawnObject((void*)obj, ARWARWINGBO_PARTFX, NULL, 1, -1, &objAnim->velocityX);
         (*gPartfxInterface)->spawnObject((void*)obj, ARWARWINGBO_PARTFX, NULL, 1, -1, &objAnim->velocityX);
@@ -128,14 +176,14 @@ void arwarwingbo_update(int obj)
         state = ((GameObject*)obj)->extra;
         arwarwing_clearActiveBomb(getArwing());
         Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
-        state->explosionTimer = lbl_803E7040;
-        state->control.fuseTimer = lbl_803E7044;
+        state->explosionTimer = 100.0f;
+        state->control.fuseTimer = 0.0f;
         objAnim->alpha = 0;
         (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-        spawnExplosion((GameObject*)obj, lbl_803E7048, 1, 0, 1, 1, 0, 1, 0);
+        spawnExplosion((GameObject*)obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
         ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x280);
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
-        objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = lbl_803E7044;
+        objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
     }
     objMove((GameObject*)obj, objAnim->velocityX * timeDelta, objAnim->velocityY * timeDelta, objAnim->velocityZ * timeDelta);
 }

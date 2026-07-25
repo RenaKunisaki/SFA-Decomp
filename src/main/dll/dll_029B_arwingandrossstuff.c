@@ -16,9 +16,9 @@
  *
  * arwprojectile_setLifetime + arwprojectile_placeForward configure a new
  * projectile's lifetime and launch velocity (callers: arwarwing, arwsquadron,
- * andross, androsshand, player); arwprojectile_launchForward +
- * arwprojectile_setParamScalar are the bomb-drop variants (called from
- * arwarwing's bomb release).
+ * andross, androsshand, player); the bomb-drop variants
+ * arwprojectile_launchForward + arwprojectile_setParamScalar live in the
+ * arwarwingbo translation unit (dll_029C).
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
@@ -93,11 +93,11 @@ void arwprojectile_createLinkedEffect(GameObject* obj, u8 enable)
     }
     if ((obj)->anim.seqId == ARW_SEQID_RAPIDFIRE_LASER)
     {
-        modelLightStruct_setDistanceAttenuation(state->light, lbl_803E700C, lbl_803E7010);
+        modelLightStruct_setDistanceAttenuation(state->light, 60.0f, 80.0f);
     }
     else
     {
-        modelLightStruct_setDistanceAttenuation(state->light, lbl_803E7014, lbl_803E7018);
+        modelLightStruct_setDistanceAttenuation(state->light, 100.0f, 120.0f);
     }
     modelLightStruct_setAffectsAabbLightSelection(state->light, 1);
 }
@@ -109,13 +109,13 @@ void arwprojectile_placeForward(GameObject* obj, f32 dist)
     MatrixTransform src;
 
     state->deflectSpeedScale = dist;
-    src.x = lbl_803E7008;
-    src.y = lbl_803E7008;
-    src.z = lbl_803E7008;
+    src.x = 0.0f;
+    src.y = 0.0f;
+    src.z = 0.0f;
     src.rotX = obj->anim.rotX;
     src.rotY = obj->anim.rotY;
     src.rotZ = 0;
-    src.scale = lbl_803E701C;
+    src.scale = 1.0f;
     setMatrixFromObjectPos(mtx, &src);
     Matrix_TransformPoint(mtx, 0.0f, 0.0f, state->deflectSpeedScale, &obj->anim.velocityX,
                           &obj->anim.velocityY, &obj->anim.velocityZ);
@@ -155,7 +155,7 @@ void arwingandrossstuff_render(GameObject* obj, int p2, int p3, int p4, int p5, 
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E701C);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -174,10 +174,10 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
 
         if (ObjHits_GetPriorityHit(obj, &hit, 0, &vol) != 0)
         {
-            spawnExplosion((GameObject*)(int)obj, lbl_803E7014, 1, 0, 0, 1, 0, 0, 3);
+            spawnExplosion((GameObject*)(int)obj, 100.0f, 1, 0, 0, 1, 0, 0, 3);
             objAnim->flags |= OBJANIM_FLAG_HIDDEN;
             ObjHits_DisableObject(obj);
-            state->despawnTimer = lbl_803E7028;
+            state->despawnTimer = 40.0f;
         }
     }
     if (((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject != 0 && state->param0.deflected == 0)
@@ -190,14 +190,14 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
         {
             s16 angle =
                 (s16)-getAngle(objAnim->localPosX - arwingAnim->localPosX, objAnim->localPosY - arwingAnim->localPosY);
-            f32 ang = gArwingAndrossPi * angle / gArwingAndrossBinAngScale;
+            f32 ang;
 
-            v.x = lbl_803E702C * mathSinf(ang);
-            v.y = lbl_803E7038 * mathCosf(ang);
-            v.z = lbl_803E7008;
+            v.x = 10.0f * mathSinf(ang = 3.1415927f * angle / 32768.0f);
+            v.y = -10.0f * mathCosf(ang);
+            v.z = 0.0f;
             w = v;
             arwarwing_setVelocity(arwing, (int)&w);
-            doRumble(lbl_803E703C);
+            doRumble(5.0f);
         }
         if (((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject == (u32)arwing)
         {
@@ -215,9 +215,9 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
                 state->param0.deflected = 1;
             }
         }
-        state->despawnTimer = lbl_803E7028;
+        state->despawnTimer = 40.0f;
         objAnim->alpha = 0;
-        projectileParticleFxFn_80099660(obj, lbl_803E701C, state->param0.particleKind);
+        projectileParticleFxFn_80099660(obj, 1.0f, state->param0.particleKind);
         if (state->light != NULL)
         {
             ModelLightStruct_free(state->light);
@@ -239,7 +239,7 @@ void arwingandrossstuff_update(GameObject* obj)
     }
     {
         f32 dt = state->despawnTimer;
-        f32 zero = lbl_803E7008;
+        f32 zero = 0.0f;
         if (dt > zero)
         {
             state->despawnTimer = dt - timeDelta;
@@ -254,7 +254,7 @@ void arwingandrossstuff_update(GameObject* obj)
     object->anim.alpha = 0xff;
     {
         f32 lt = state->lifetime;
-        f32 zero = lbl_803E7008;
+        f32 zero = 0.0f;
         if (lt > zero)
         {
             state->lifetime = lt - timeDelta;
@@ -275,9 +275,9 @@ void arwingandrossstuff_update(GameObject* obj)
             {
                 Sfx_PlayFromObjectLimited((int)object, SFXTRIG_ar_laser116, 4);
             }
-            state->despawnTimer = lbl_803E7028;
+            state->despawnTimer = 40.0f;
             object->anim.alpha = 0;
-            projectileParticleFxFn_80099660(object, lbl_803E701C, state->param0.particleKind);
+            projectileParticleFxFn_80099660(object, 1.0f, state->param0.particleKind);
             if (state->light != NULL)
             {
                 ModelLightStruct_free(state->light);
@@ -359,27 +359,3 @@ void arwingandrossstuff_initialise(void)
 {
 }
 
-void arwprojectile_launchForward(GameObject* obj, f32 lifetime)
-{
-    ArwProjectileState* state = obj->extra;
-    f32 mtx[16];
-    MatrixTransform src;
-
-    state->lifetime = lifetime;
-    src.x = lbl_803E7044;
-    src.y = lbl_803E7044;
-    src.z = lbl_803E7044;
-    src.rotX = obj->anim.rotX;
-    src.rotY = obj->anim.rotY;
-    src.rotZ = 0;
-    src.scale = lbl_803E704C;
-    setMatrixFromObjectPos(mtx, &src);
-    Matrix_TransformPoint(mtx, 0.0f, 0.0f, state->lifetime, &obj->anim.velocityX,
-                          &obj->anim.velocityY, &obj->anim.velocityZ);
-}
-
-void arwprojectile_setParamScalar(GameObject* obj, int scalar)
-{
-    ArwProjectileState* state = obj->extra;
-    state->param0.scalar = scalar;
-}
