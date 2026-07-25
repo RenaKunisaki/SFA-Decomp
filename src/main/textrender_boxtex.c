@@ -12,14 +12,14 @@ void gameTextInitFn_8001c794(void)
     int x3;
     int x2;
     int x1;
-    u16* dst;
     int x;
+    Texture* tex;
+    int i;
     int y;
     u8* rowBase;
-    int i;
-    int j;
-    Texture* tex;
+    u16* dst;
     int count;
+    int j;
 
     count = 1;
     p = &gGameTextBoxTexAssets + 1;
