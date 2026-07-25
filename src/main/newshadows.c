@@ -237,7 +237,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
 
         for (y = 0; y < size; y++)
         {
-            u32* tile = (u32*)(data + ((y & 3) * 8 + (y >> 2) * 4 * size));
+            u32* tile = (u32*)(data + (y & 3) * 8 + (y >> 2) * 4 * size);
             u32* dst = row.words;
             u32* src;
             u32* wp;
@@ -277,7 +277,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
 
             for (x = 0; x < size; x++)
             {
-                u8* col = data + ((x & 7) + (x >> 3) * 32);
+                u8* col = data + (x & 7) + (x >> 3) * 32;
                 u32* dst = row.words;
                 u8* gp;
                 u8* bp;
@@ -289,8 +289,8 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
                     dst[0] = fill;
                     dst++;
                 }
-                gp = col;
                 bp = row.bytes + (window >> 1);
+                gp = col;
                 for (yy = 0; yy < size; yy += 4)
                 {
                     bp[0] = gp[0];
@@ -328,7 +328,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
 
         for (; y < size; y++)
         {
-            u16* tile = (u16*)(data + ((y & 3) * 8 + (y >> 2) * 4 * size));
+            u16* tile = (u16*)(data + (y & 3) * 8 + (y >> 2) * 4 * size);
             u16* dst = row.halfwords;
             u16* src;
             u32 x;
@@ -370,7 +370,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
 
             for (x = 0; x < size; x++)
             {
-                u8* col = data + ((x & 7) + (x >> 3) * 32);
+                u8* col = data + (x & 7) + (x >> 3) * 32;
                 u16* dst = row.halfwords;
                 u8* gp;
                 u8* bp;
@@ -381,8 +381,8 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
                     dst[0] = fillhw;
                     dst++;
                 }
-                gp = col;
                 bp = row.bytes + (window >> 1);
+                gp = col;
                 for (yy = 0; yy < size; yy += 4)
                 {
                     bp[0] = gp[0];
