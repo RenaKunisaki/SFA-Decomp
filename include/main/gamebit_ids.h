@@ -391,7 +391,7 @@ enum GameBitId {
     GAMEBIT_SH_KilledBloop18 = 0x115,                    /* table 1 */
     GAMEBIT_ITEM_FireSpellStone1_Got = 0x123,            /* table 2; hint 297; ref temple/VFP_PodiumP key */
     GAMEBIT_WM_EnteredKrazoaTest1_0129 = 0x129,          /* table 0; set when entering Krazoa test 1, cleared when talking to spirit */
-    GAMEBIT_ITEM_TrickyFood_GrabInProgress = 0x12E,      /* Global latch: set by dll_01A7 EdibleMushroom when a GrubTub Fungus offers itself to the player (grab in range), cleared once the grab-complete reply lands and TrickyFood_Count (or the seqId-0x658 variant's bit) increments; read by mmp_critterspit's Tricky food check as a stand-in for already owning TrickyFood */
+    GAMEBIT_ITEM_TrickyFood_GrabInProgress = 0x12E,      /* Global latch: set by dll_01A7 EdibleMushroom when a GrubTub Fungus offers itself to the player (grab in range), cleared once the grab-complete reply lands and TrickyFood_Count (or the seqId-0x658 variant's bit) increments; read by Tricky's food check as a stand-in for already owning TrickyFood */
     GAMEBIT_HintTexts0 = 0x12F,                          /* table 2; size 32; related to hint texts; flags, set when Krystal boards ship */
     GAMEBIT_HintTexts1 = 0x130,                          /* table 2; size 32 */
     GAMEBIT_HintTexts2 = 0x131,                          /* table 2; size 32 */
@@ -583,7 +583,7 @@ enum GameBitId {
     GAMEBIT_CD_ObjGroups = 0x47C,                        /* table 3; size 32 */
     GAMEBIT_DF_ObjGroups = 0x480,                        /* table 3; size 32 */
     GAMEBIT_IM_FuelCell_CheatCave = 0x484,               /* table 2; ref newicemount/fuelCell Collected */
-    GAMEBIT_NW_MammothTumbleweedCount = 0x48B,           /* SnowHorn Wastes mammoth's tumbleweed-bush capture count (0-3, persists across reload); reaching 3 completes the air-meter rescue sequence for the SnowHorn Gate Keeper, and Tricky (weapone6.c) polls it to sync its tumbleweed-chase substate */
+    GAMEBIT_NW_MammothTumbleweedCount = 0x48B,           /* SnowHorn Wastes mammoth's tumbleweed-bush capture count (0-3, persists across reload); reaching 3 completes the air-meter rescue sequence for the SnowHorn Gate Keeper, and Tricky polls it to sync its tumbleweed-chase substate */
     GAMEBIT_DIM_ActNo = 0x492,                           /* table 1; size 4 */
     GAMEBIT_DIM_ObjGroups = 0x493,                       /* table 3; size 32 */
     GAMEBIT_SpellStoneRelated049A = 0x49A,               /* table 1 */

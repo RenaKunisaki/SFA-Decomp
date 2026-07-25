@@ -14,7 +14,6 @@ const CHUNK_START = 244
 const CHUNK_SIZE = 20
 
 const BATCH = [
-  { name: 'animobjd2.c', baseline: '090345264b7e4a324194e00d6ecd98f0', pct: 92.974 },
   { name: 'balloonbaddie.c', baseline: '3b6ee22d2853e99dd29d3f233793f9c2', pct: 94.498 },
   { name: 'bwalphaanim.c', baseline: 'b5b9cbed6c2642d46b436dfccb7f9bd9', pct: 100.0 },
   { name: 'camshipbattle5c.c', baseline: '848004a9ad22f317fe57b9dcab8a5d33', pct: 96.057 },
@@ -361,7 +360,6 @@ const BATCH = [
   { name: 'landedarwing.c', baseline: '166a28cb5af01b4d9a396985f2ba3d10', pct: 100.0 },
   { name: 'magicplant.c', baseline: '39b94b4aeb99cf3e79f79fb6abcfe3d0', pct: 98.641 },
   { name: 'maybetemplate.c', baseline: '4d8e024054e0711eb4976ea856f40d5a', pct: 93.288 },
-  { name: 'mmp_cratercritter.c', baseline: 'b34c0e6bbff87a170e59ee7f6d0ee3a3', pct: 91.531 },
   { name: 'mmsh_waterspike.c', baseline: 'dfa33bf1fb594eec8688201648836e4d', pct: 100.0 },
   { name: 'n_options.c', baseline: 'c5e4c26653322fcc23625d0a2df20c77', pct: 94.866 },
   { name: 'newseqobj.c', baseline: '3f2d2de1ab70065b6ddcf97e94e1eec1', pct: 95.886 },
@@ -377,10 +375,8 @@ const BATCH = [
   { name: 'texscroll2.c', baseline: 'd011d1c37aab5746bd2d843f88e3a84b', pct: 100.0 },
   { name: 'trex_lazerwall.c', baseline: '219dc6d59a02e7c7b29ed9e67de761fd', pct: 97.183 },
   { name: 'tricky.c', baseline: '47950d8e45a3c225c7206366a403d4c3', pct: 95.312 },
-  { name: 'tumbleweedbush.c', baseline: '67a480b42279c7357a8c992b2aabb9b4', pct: 97.916 },
   { name: 'viewfinder.c', baseline: 'de1f6dd3dd83c464254c7043c60e57d5', pct: 100.0 },
   { name: 'warppad.c', baseline: '72a6ad76ddc089887b896147a6873438', pct: 100.0 },
-  { name: 'weapone6.c', baseline: 'a67691c71bfd8777dab06f54c93cb354', pct: 98.765 },
 ]
 
 const CLEAN_SCHEMA = {

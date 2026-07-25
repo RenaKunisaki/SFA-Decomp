@@ -1434,63 +1434,19 @@ main/dll/dll_02C0_front.c:
 	.sbss       start:0x803DD990 end:0x803DD9D8
 
 main/dll/dll_80136a40.c:
-	.text       start:0x80136A40 end:0x80138B60
+	.text       start:0x80136A40 end:0x80138908
 	.data       start:0x8031CFA0 end:0x8031D2E4
 	.bss        start:0x803AA018 end:0x803AC428
 	.sdata      start:0x803DBC10 end:0x803DBC40
 	.sdata2     start:0x803E2390 end:0x803E23BC
 
-main/dll/dll_80138b60.c:
-	.text       start:0x80138B60 end:0x8013939C
-
-main/dll/skeetla.c:
-	.text       start:0x8013939C end:0x80139A8C
-	.data       start:0x8031D3EC end:0x8031D46C
-
-main/dll/skeetla_80139A8C.c:
-	.text       start:0x80139A8C end:0x8013B1E0
+dlls/objects/196_Tricky/tricky.c:
+	.text       start:0x80138908 end:0x8014A9F0
+	.rodata     start:0x802C21C8 end:0x802C2210
+	.data       start:0x8031D2E8 end:0x8031DBF0
 	.sdata      start:0x803DBC40 end:0x803DBC58
-
-main/dll/skeetla_avoidance.c:
-	.text       start:0x8013B1E0 end:0x8013B368
-
-main/dll/trickyfollow.c:
-	.text       start:0x8013B368 end:0x8013D8F0
-
-main/dll/mmp_cratercritter.c:
-	.text       start:0x8013D8F0 end:0x8013DB3C
-
-main/dll/mmp_critterspit.c:
-	.text       start:0x8013DB3C end:0x8013DC88
-
-main/dll/tumbleweedbush.c:
-	.text       start:0x8013DC88 end:0x8013E0D0
-
-main/dll/animobjd2.c:
-	.text       start:0x8013E0D0 end:0x8013F100
-	.data       start:0x8031D8E0 end:0x8031D90E
-
-main/dll/weapone6.c:
-	.text       start:0x8013F100 end:0x8013FFB8
-	.data       start:0x8031D910 end:0x8031D930
-
-main/dll/tricky_flameguard.c:
-	.text       start:0x8013FFB8 end:0x80141290
-
-main/dll/tricky_rollroute.c:
-	.text       start:0x80141290 end:0x80141880
-
-main/dll/tricky_substates.c:
-	.text       start:0x80141880 end:0x80144E40
-	.rodata     start:0x802C21C8 end:0x802C21F0
-	.data       start:0x8031DB1C end:0x8031DB3C
-
-main/dll/dll_00C4_tricky.c:
-	.text       start:0x80144E40 end:0x8014A9F0
-	.rodata     start:0x802C21F0 end:0x802C2210
-	.data       start:0x8031DB3C end:0x8031DBF0
 	.sbss       start:0x803DDA48 end:0x803DDA58
-	.sdata2     start:0x803E23D8 end:0x803E2468
+	.sdata2     start:0x803E23C0 end:0x803E25CC
 
 main/dll/dll_00C9_enemy.c:
 	.text       start:0x8014A9F0 end:0x8014C678
@@ -1737,8 +1693,11 @@ main/dll/dll_00DD_gcbaddieshield.c:
 
 main/dll/dll_00DE_baddieinterestp.c:
 	.text       start:0x8016BB10 end:0x8016BE70
-	.data       start:0x803206C8 end:0x80320730
+	.data       start:0x803206C8 end:0x80320700
 	.sdata2     start:0x803E3220 end:0x803E3228
+
+dlls/objects/197/197.c:
+	.data       start:0x80320700 end:0x80320730
 
 main/dll/dll_00C6_animatedobj.c:
 	.text       start:0x8016BE70 end:0x8016C4AC
@@ -4984,36 +4943,14 @@ dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c:
 	.data       start:0x80332C78 end:0x80332EC0
 	.sdata2     start:0x803E7E50 end:0x803E7E68
 
-main/dll/player.c:
-	.text       start:0x80295334 end:0x8029DB70
+dlls/objects/195_Player/player.c:
+	.text       start:0x80295334 end:0x802B8A58
 	.rodata     start:0x802C2B30 end:0x802C2CA8
-	.data       start:0x80332EC0 end:0x80334EE8
+	.data       start:0x80332EC0 end:0x80334FF8
 	.bss        start:0x803DAEF0 end:0x803DB0D0
-	.sdata      start:0x803DC660 end:0x803DC66C
-
-main/dll/player_state1d.c:
-	.text       start:0x8029DB70 end:0x8029E3F4
-
-main/dll/player_states.c:
-	.text       start:0x8029E3F4 end:0x802AA8D0
-
-main/dll/player_teleport.c:
-	.text       start:0x802AA8D0 end:0x802AAA80
-
-main/dll/player_die.c:
-	.text       start:0x802AAA80 end:0x802AABE4
-
-main/dll/player_moveheights.c:
-	.text       start:0x802AABE4 end:0x802AAD44
-
-main/dll/player_animate.c:
-	.text       start:0x802AAD44 end:0x802B4ED8
-
-main/dll/player_render.c:
-	.text       start:0x802B4ED8 end:0x802B6104
-
-main/dll/player_update.c:
-	.text       start:0x802B6104 end:0x802B8A58
+	.sdata      start:0x803DC660 end:0x803DC6F0
+	.sbss       start:0x803DE41C end:0x803DE4C0
+	.sdata2     start:0x803E7E68 end:0x803E8214
 
 main/dll/dll_01B5_lightfoot.c:
 	.text       start:0x802B8A58 end:0x802B9780

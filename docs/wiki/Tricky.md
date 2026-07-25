@@ -115,16 +115,15 @@ Everything below was checked against this repo's source, headers, and `config/GS
 
 ### Core Tricky object and files
 
-- The main Tricky companion is DLL `0x00C4` -> `src/main/dll/dll_00C4_tricky.c` /
+- The main Tricky companion is DLL `0x00C4` -> `src/dlls/objects/196_Tricky/tricky.c` /
   `include/main/dll/dll_00C4_tricky.h`, extra-state struct `TrickyState` ->
   `include/main/dll/tricky_state.h` (`Tricky_getExtraSize` returns `0x83C`; struct is `0x840`).
-  Command/substate handlers split across `src/main/dll/tricky_substates.c`,
-  `src/main/dll/tricky_flameguard.c`, `src/main/dll/tricky_rollroute.c`, and
-  `src/main/dll/trickyfollow.c` / `include/main/dll/baddie/trickyfollow.h`.
+  Command, movement, flame/guard, route and substate handlers all live in the same
+  `src/dlls/objects/196_Tricky/tricky.c` translation unit.
 - `src/main/dll/tricky.h`/`.c` and `src/main/dll/dll_8011d918.c` are a **naming collision**, not
   the Tricky character — that TU is pause-menu/HUD drawing code (`pauseMenuTextDrawFn`,
   `hudDrawAirMeter`, etc.) that happens to live in a file called `tricky.c`/`tricky.h`. Don't
-  confuse it with `dll_00C4_tricky.c`.
+  confuse it with `src/dlls/objects/196_Tricky/tricky.c`.
 - Map-specific Tricky variants (cutscene/placement stand-ins, not the main companion): DIM
   (`src/main/dll/DIM/dll_019E_dim_tricky.c`, `dll_01D0_dimtricky.c`), NW
   (`src/main/dll/NW/dll_01A2_nwtricky.c`), SH (`src/main/dll/SH/dll_01A6_shtricky.c`).
@@ -133,15 +132,15 @@ Everything below was checked against this repo's source, headers, and `config/GS
 
 ### Attacking the player
 
-**Not conclusively located.** `Tricky_hitDetect` (`dll_00C4_tricky.c`) is a same-named but
+**Not conclusively located.** `Tricky_hitDetect` (`src/dlls/objects/196_Tricky/tricky.c`) is a same-named but
 unrelated function — it tracks nearby floor heights for foot placement, not player hits.
 `TrickyState` does carry `lastContactObj` / `contactTimer` / `hitCooldown` fields at
-`0x360`/`0x364`/`0x370` (`tricky_state.h`), and `dll_00C4_tricky.c`'s `baddie_updateWhileFrozen`
+`0x360`/`0x364`/`0x370` (`tricky_state.h`), and `tricky.c`'s `baddie_updateWhileFrozen`
 dispatches Tricky's own `seqId`s (`0x11`, `0x13a`, `0x5b7`-`0x5b9`, `0x5e1`, `0x7a6`) to
 `sidekickToy_handleHitMessage` (`src/main/dll/newseqobj.c`) for hit-reaction/anim handling, but
 that function implements a generic curve-toy "hit counter" reaction, not the specific
 180/600/3000-frame escalation or the "hey!"/"get off!" voice lines described by the wiki. The
-`TRICKY_VOICE(obj, st, sfx, vol)` macro in `dll_00C4_tricky.c` (guards playback by
+`TRICKY_VOICE(obj, st, sfx, vol)` macro in `src/dlls/objects/196_Tricky/tricky.c` (guards playback by
 `statusFlags` bit 6 and anim-move range, then calls `objAudioFn_800393f8`) is almost certainly the
 mechanism used for those shouts, but the specific vox ids (raw hex like `0x364`/`0x363` at the
 call sites) aren't mapped to English line text in this repo, so which one is "hey!" vs "get off!"
@@ -151,7 +150,7 @@ is unconfirmed.
 
 - **Guard**: `trickyGuard = .text:0x8013FFB8` in `config/GSAE01/symbols.txt` is an **exact address
   match** to the wiki's Gecko code (`0431D340 8013FFB8`, a 32-bit write of that function pointer).
-  `trickyGuard`'s body lives in `src/main/dll/tricky_flameguard.c` (defines `TrickyRuntime` with a
+  `trickyGuard`'s body lives in `src/dlls/objects/196_Tricky/tricky.c` (defines `TrickyRuntime` with a
   `guardState`, `guardPoint`, `guardTarget`, `guardTimer`, and `guardHelpers[7]` — it makes Tricky
   hold a point and spawn up to 7 flameblast helpers, def id `0x4F0`). Contrary to the wiki calling
   this purely "unused," `trickyGuard` **is** wired up in retail — just via map-placed objects, not
@@ -160,7 +159,7 @@ is unconfirmed.
   (`src/main/dll/dll_0120_trickyguardspot.c`, `TrickyGuardSpot_*`) are placeable "guard volume"
   objects that call the live Tricky object's vtable slot `TRICKY_VTBL_GUARD` (`+0x28` byte offset,
   index `0x0A`) to issue this behavior when the player enters range. The "growl at baddie" handler
-  the wiki says this Gecko code *replaces* is `trickyGrowl` (`src/main/dll/tumbleweedbush.c:61`,
+  the wiki says this Gecko code *replaces* is `trickyGrowl` (`src/dlls/objects/196_Tricky/tricky.c`,
   symbol `trickyGrowl = .text:0x8013DC88`) — a four-step substate machine per that file's header
   comment.
 - **Decoy**: the wiki's Gecko write target `0x8031B57C` falls inside `gCMenuTrickyAbilities`
@@ -169,7 +168,7 @@ is unconfirmed.
   row). This address coincidence is suggestive but **not verified** as the actual "Call Tricky
   command's action" dispatch the wiki describes — the real per-command handler table (indexed by
   `TrickyState.unk08` via `Tricky_update`'s `handlerBase`) is anchored at `lbl_8031D2E8`, a
-  different, only-partially-typed data blob (see `dll_00C4_tricky.c` `Tricky_update`,
+  different, only-partially-typed data blob (see `src/dlls/objects/196_Tricky/tricky.c` `Tricky_update`,
   `TrickyHandlerTable`). No unused "Decoy" symbol/function was found by name.
 - **Baddie Alert**: already covered in `docs/wiki/Shop.md` — shop row `0x18` is literally named
   "Bad Guy Alert (unused)", gated by `aval` GameBit `0x0096` = `GAMEBIT_Always0`
@@ -177,11 +176,11 @@ is unconfirmed.
   i.e. permanently unavailable by construction. No re-derivation needed here.
 - **Increased Food Capacity**: `SaveGame_getTrickyEnergy` (`.text:0x800E9B70`,
   `src/main/dll/dll_0017_savegame.c:1027`) returns `gSaveGameData + 0x18`. `Tricky_init`
-  (`dll_00C4_tricky.c:1583`) stores this pointer as `TrickyState.progressPtr` via
+  (`src/dlls/objects/196_Tricky/tricky.c:9697`) stores this pointer as `TrickyState.progressPtr` via
   `(*gMapEventInterface)->getTrickyEnergy()` (`include/main/mapEventTypes.h:34`, vtable offset
   `0x94`). Byte `[0]` of that record is consumed as an energy counter elsewhere (decremented by
-  Flame/attack use in `src/main/dll/tumbleweedbush.c:144`, `src/main/dll/animobjd2.c:432`, read in
-  `src/main/dll/weapone6.c:318`); byte `[2]` drives `modelVariant` (below). **Not found**: a
+  Flame/attack use in `src/dlls/objects/196_Tricky/tricky.c`); byte `[2]` drives
+  `modelVariant` (below). **Not found**: a
   distinct "maximum energy" field — only one energy-like byte and the ball-progress byte are
   identified in this pass, so the wiki's "current and maximum, max always 20" claim isn't yet
   pinned to two separate save bytes here. `GAMEBIT_ITEM_TrickyFood_Count = 0xC1` (table 2, size 4,
@@ -207,7 +206,7 @@ is unconfirmed.
   player or Tricky is missing/dead, or `GAMEBIT_NoBallsAllowed = 0xD00` ("Disables/despawns
   Tricky's ball", `include/main/gamebits.h`) is set — this is the "if it suddenly becomes disabled
   (e.g. boss awake) it will just disappear" behavior from the wiki.
-- Color-per-10-retrieves: `Tricky_init` (`dll_00C4_tricky.c:1592`) computes
+- Color-per-10-retrieves: `Tricky_init` (`src/dlls/objects/196_Tricky/tricky.c:9706`) computes
   `modelVariant = progressPtr[2] / 10` and stores it in `TrickyState.modelVariant`
   (`tricky_state.h`, already commented `/* progress/10; indexes model bank color */` before this
   pass), then writes it into the active model's color-bank byte. This is an exact structural match
@@ -227,29 +226,30 @@ is unconfirmed.
   SnowHorn" despite its `NW`-prefixed name). The player-side "mounted object" pointer the wiki says isn't
   cleared on unload is **plausibly** `PlayerState.groundObject`
   (`include/main/dll/player_state.h:125`, "object the player stands on/rides; transform parent for
-  relative pos, set from collision hit") — used extensively in `src/main/dll/player.c` — but this
+  relative pos, set from collision hit") — used extensively in
+  `src/dlls/objects/195_Player/player.c` — but this
   mapping is **not independently confirmed** by tracing the specific out-of-bounds freeze check the
   wiki describes.
 - The similar Ice Mountain bike dismount: DLL for the bike is `src/main/dll/dll_0255_snowbike.c`;
   `GAMEBIT_IM_OnBike = 0xC8` (`include/main/gamebits.h`).
-- **Death Crash**: **found, exact match.** `sideCommandEnable` (`dll_00C4_tricky.c:358`) is a
+- **Death Crash**: **found, exact match.** `sideCommandEnable` (`src/dlls/objects/196_Tricky/tricky.c:8293`) is a
   generic command-enqueue function taking a `targetObj` — the shape "Feed to Tricky" needs
   (target = the food item), though the specific caller that wires the Y-button food item to this
   function was not traced in this pass: `if (((TrickyState*)state)->unk798 == 10) {
-  trickyReportError(sSidekickCommandDebugTextBlock); return; }`. The embedded debug string it reports (`dll_00C4_tricky.c:3107`,
+  trickyReportError(sSidekickCommandDebugTextBlock); return; }`. The embedded debug string it reports (`src/dlls/objects/196_Tricky/tricky.c:10684`,
   `sSidekickCommandDebugTextBlock`, decoded from its raw byte initializer) reads literally
   `"sideCommandEnable warning: need to increase MAX_COMM_PRESENT\n"` — i.e. the retail devs' own
   name for the queue-full condition the wiki describes, with a hard cap of `10` queued commands.
   The queue itself is the array at `state+0x748` (`targetObj`, 4B) /`+0x74c` (`commandKind`, 1B) /
   `+0x74d` (`commandType`, 1B) /`+0x74e` (a status byte), stride `8`, counted by `unk798` — this
   whole range is still opaque padding in `tricky_state.h` (`pad744[0x798-0x744]`). One wrinkle:
-  `trickyReportError`/`trickyDebugPrint` (`dll_00C4_tricky.c:~2933`) are both **empty stub
+  `trickyReportError`/`trickyDebugPrint` (`src/dlls/objects/196_Tricky/tricky.c:9722`/`:9726`) are both **empty stub
   functions** in this build (take a format string + varargs, do nothing) — so the specific
   two-object-names null-pointer-dereference crash the wiki describes does not appear to fire from
   *this* call site in the retail NTSC binary this repo targets; either the crash happens via a
   different path this pass didn't find, or the report body was stripped for this release and the
   bug manifests only in a debug/other-region build. Not the same string: `base + 0x8c4` used at
-  the *other* two `trickyReportError` call sites (`dll_00C4_tricky.c:1073`, `1176`, inside the
+  the *other* two `trickyReportError` call sites (`src/dlls/objects/196_Tricky/tricky.c:9157`, `9258`, inside the
   target-object `seqId` switch in the command-target-assignment code) resolves to
   `sSidekickCommandDebugTextBlock + 0x70` = `"find command used on the wrong object\n"` — a related
   but different debug message in the same text block, not the queue-full one.
@@ -273,12 +273,12 @@ is unconfirmed.
 | bit | ability | our function(s) |
 |-----|---------|------------------|
 | `0x01` | Call Tricky | `src/main/dll/dll_0100_trickywarp.c` (`TrickyWarp_*`) — reachability/warp-in logic for the whistle |
-| `0x02` | Find Secret | `trickyDigTunnel` (`src/main/dll/tricky_substates.c:149`) — dig up buried items |
+| `0x02` | Find Secret | `trickyDigTunnel` (`src/dlls/objects/196_Tricky/tricky.c`) — dig up buried items |
 | `0x08` | Tricky Stay! | not separately traced in this pass beyond the ability bit itself |
-| `0x10` | Use Flame | `trickyFlame` (`src/main/dll/tricky_flameguard.c:139`) |
+| `0x10` | Use Flame | `trickyFlame` (`src/dlls/objects/196_Tricky/tricky.c`) |
 | `0x20` | Throw Ball | ball object, see Playing section above |
 
-`Tricky_getAvailableCommands` (`dll_00C4_tricky.c:2920`) computes exactly this bitmask at runtime:
+`Tricky_getAvailableCommands` (`src/dlls/objects/196_Tricky/tricky.c:8581`) computes exactly this bitmask at runtime:
 base `0x02|0x08` once `GAMEBIT_Tricky_Usable (0x4E4)` is set, `|= 0x01` if
 `GAMEBIT_ITEM_TrickyCall_Got (0xDD)`, `|= 0x20` if `GAMEBIT_ITEM_TrickyBall_Bought (0x25)`, `|= 0x10`
 if `GAMEBIT_ITEM_TrickyFlame_Got (0x245)` — all four GameBits already named in
@@ -288,7 +288,7 @@ if `GAMEBIT_ITEM_TrickyFlame_Got (0x245)` — all four GameBits already named in
 ## Ready-to-adopt code
 
 The five ability bits above are currently written as raw hex literals in
-`Tricky_getAvailableCommands` (`dll_00C4_tricky.c`) and only exist as a comment/table in
+`Tricky_getAvailableCommands` (`src/dlls/objects/196_Tricky/tricky.c`) and only exist as a comment/table in
 `cmenu_item_table.h` — no enum backs them yet:
 
 ```c

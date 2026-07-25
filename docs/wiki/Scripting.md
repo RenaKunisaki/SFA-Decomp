@@ -405,7 +405,7 @@ load/unload, level-bucket lock/unlock, NPC dialogue, texture defrag, nearby-time
 Cross-references verified by reading the source at the paths below. This page maps almost
 entirely onto `src/main/objseq.c` (DLL 0x02, "ObjSeq" — see `docs/wiki/DLLs.md`), with the
 Triggers section in `src/main/dll/dll_0126_trigger.c` and the Player Commands section in
-`src/main/dll/player.c`.
+`src/dlls/objects/195_Player/player.c`.
 
 ### Starting a sequence / the sequence-ID lookup chain
 
@@ -553,8 +553,8 @@ is inaccurate/incomplete" disclaimer.
 
 ### Player Commands
 
-`player_SeqFn` (`src/main/dll/player.c:3167`) *is* `0x802b2da4` per symbols.txt
-(`player_SeqFn = .text:0x802B2DA4`); its `switch (seq->eventIds[vb])` at `player.c:3768` onward
+`player_SeqFn` (`src/dlls/objects/195_Player/player.c:16757`) *is* `0x802b2da4` per symbols.txt
+(`player_SeqFn = .text:0x802B2DA4`); its `switch (seq->eventIds[vb])` at `player.c:17220` onward
 carries `case 0xb` through `case 0x32`, spot-checked against several wiki rows (e.g. `0x12`, `0x13`,
 `0x14`-`0x1a`, `0x1c`-`0x22`, `0x25`-`0x2f`, `0x31`, `0x32` are all present as distinct cases in the
 same relative order as the wiki's `0x01`-`0x32` list) — full per-case semantic verification against

@@ -43,7 +43,7 @@ is written (level data load, or a setter) to name it; or read live in-game.
 | `src/main/dll/dll_0132_waterfallspray.c:100` | KeepAliveLoopedObjectSound | `state[0] & 0xffff` |
 | `src/main/dll/dll_0132_waterfallspray.c:101` | KeepAliveLoopedObjectSound | `state[1] & 0xffff` |
 | `src/main/dll/drcloudcage.c:457` | PlayFromObject | `*(u16*)(state + 0x440)` |
-| `src/main/dll/player.c:16084` | PlayFromObject | `*(u16*)((char*)*(int*)((char*)inner + 0x40c) + 0x2a)` |
+| `src/dlls/objects/195_Player/player.c:19128` | PlayFromObject | `*(u16*)((char*)*(int*)((char*)inner + 0x40c) + 0x2a)` |
 | `src/main/objprint.c:1887` | PlayFromObjectChannel | `*(u16*)((char*)p2 + 0x14)` |
 | `src/main/objseq.c:1743` | IsPlayingFromObject | `(u16)((ObjSeqState*)seq)->sfxId[3]` |
 | `src/main/objseq.c:1745` | SetObjectSfxVolume | `(u16)((ObjSeqState*)seq)->sfxId[3]` |

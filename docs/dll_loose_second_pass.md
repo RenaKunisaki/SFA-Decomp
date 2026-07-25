@@ -2,7 +2,7 @@
 
 Files cleaned this session under the **old md5-exact pipeline** (before dead-`FUN_` removal + aggressive unused-symbol pruning were added). They are byte-exact and committed, but may still carry dead `FUN_` bodies, unused `FUN_` declarations, and unused includes/externs. Re-run them through the upgraded `tools/dll_cleanup_wave.js` pipeline (match-%-gated) for a second pass.
 
-Total: **65** files.
+Total: **64** files.
 
 | file | FUN_ total | FUN_ defs | FUN_ decls | #includes | externs |
 |---|---:|---:|---:|---:|---:|
@@ -66,7 +66,6 @@ Total: **65** files.
 | drlaserturret.c | 0 | 0 | 0 | 7 | 33 |
 | expgfxresource.c | 0 | 0 | 0 | 3 | 0 |
 | infopoint.c | 0 | 0 | 0 | 1 | 4 |
-| mmp_critterspit.c | 0 | 0 | 0 | 1 | 6 |
 | mmp_gyservent.c | 0 | 0 | 0 | 1 | 12 |
 | pathcam.c | 0 | 0 | 0 | 5 | 3 |
 | sclantern.c | 0 | 0 | 0 | 3 | 8 |

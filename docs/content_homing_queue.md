@@ -69,7 +69,7 @@ families.)
 | 7 | `main/dll/dll_003C_tumbleweedbush.c` | 1 | 19 | link×16, linkdrawfn×2, titlescreenfn×1 | MISLABELED/FORENSIC |
 | 8 | `main/dll/dll_0001_camcontrol.c` | 1 | 18 | camera×18 | CANONICAL-OK/OK |
 | 9 | `main/dll/grenade.c` | 0 | 18 | trickyfn×12, trickyfoodfn×3, tricky×2, trickyflamefn×1 | HELPER-TU/OK |
-| 10 | `main/dll/player.c` | 0 | 18 | lightfoot×14, objfn×2, emission×1, camera×1 | HELPER-TU/OK |
+| 10 | `dlls/objects/195_Player/player.c` | 1 | 18 | lightfoot×14, objfn×2, emission×1, camera×1 | CANONICAL-OK/OK |
 
 ## Severity-ordered queue
 
@@ -362,4 +362,3 @@ stem is the slot fn prefix (manifest stem-derivation rule). 2 found.
 |---|---|---|---|---|
 | `main/dll/dll_0000_baby_snowworm.c` | 0x000 | `gameui`×11 | `babysnowworm` | `dll_0000_gameui.c` |
 | `main/dll/dll_003C_tumbleweedbush.c` | 0x03C | `link`×13 | `tumbleweedbush` | `dll_003C_link.c` |
-

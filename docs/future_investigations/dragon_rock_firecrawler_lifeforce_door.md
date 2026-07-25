@@ -28,7 +28,7 @@ Confirmed live there:
   ring empties (`orbitCount == 0`) it sets `placement->doneGameBit` -> gate opens.
 - Each skull-spirit watches `placement->gateGameBit`; when that bit is set the
   skull leaves the ring.
-- An enemy's defeat runs **`tricky_handleDefeat`** (dll_00C4_tricky.c), which,
+- An enemy's defeat runs **`tricky_handleDefeat`** (`src/dlls/objects/196_Tricky/tricky.c`), which,
   unless the baddie is sequence-driven (`controlFlags & 0x40000000`), does
   `gameBitIncrement(placement+0x18 = deathGamebit)` and
   `GameBit_Set(placement+0x1a = clearOnDeathGamebit, 0)`.

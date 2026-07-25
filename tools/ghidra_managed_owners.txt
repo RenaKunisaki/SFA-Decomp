@@ -11,7 +11,6 @@ ghidra_homes/main/audio/synth_seq_queue.c
 ghidra_homes/main/audio/synth_sequence.c
 main/dll/alphaanim.c
 main/dll/anim.c
-main/dll/animobjD2.c
 main/dll/ARW/ARWarwingattachment.c
 main/dll/autoTransporter.c
 main/dll/backpack.c
@@ -21,12 +20,8 @@ main/dll/baddie/chukachuck.c
 main/dll/baddie/dll_DA.c
 main/dll/baddie/dll_DB.c
 main/dll/dll_DF.c
-main/dll/MMP_cratercritter.c
-main/dll/MMP_critterspit.c
-main/dll/skeetla.c
 main/dll/swarmBaddie.c
 main/dll/Tumbleweed.c
-main/dll/baddie/TumbleweedBush.c
 main/dll/baddie/wall_crawler.c
 main/dll/wispBaddie.c
 main/dll/baddieControl.c
@@ -216,7 +211,6 @@ main/dll/dll_BA.c
 main/dll/dll_BB.c
 main/dll/dll_BC.c
 main/dll/dll_C0.c
-main/dll/dll_C5.c
 main/dll/animatedobj.c
 main/dll/tumbleweedbush.c
 main/dll/dll_D3.c

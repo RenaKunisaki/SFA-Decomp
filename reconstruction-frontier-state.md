@@ -21,7 +21,7 @@ LIVE fcmpo-operand targets (unit / sym / fuzzy% / reg-perm:regions / note):
    proven dll_07 fcmpo win (Zachary hot but same-author).
 2. main/dll/WC/dll_0298_wcfloortile.c arwarwing_updateBarrelRoll  (rp 9:13) -- `field928 <= lbl_803E6ECC`
    isolated clamp; only minor r3/r5 reg-perm alongside.
-3. main/dll/trickyfollow.c trickyUpdateApproachSpeed  (rp 11:18).
+3. dlls/objects/196_Tricky/tricky.c trickyUpdateApproachSpeed  (rp 11:18).
 4. main/objseq.c ObjSeq_update  98.49% (rp 13:21) -- clamp vs `lbl_803DEFB0`; SHARED with #5.
 5. main/objseq.c ObjSeq_RebuildCurveStateToFrame  97.61% (rp 31:38) -- SAME `lbl_803DEFB0` clamp shape as #4.
    objseq.c:338 `((ObjSeqState*)seq)->posOffsetScale <= lbl_803DEFB0` and the fade clamps at :1590/:1607 are
@@ -911,12 +911,12 @@ decl-order lever. Scratchpad detectors saved for any future re-scan after new ma
 ## SEMANTIC-NAMING sweep (2026-07-04, Opus semantic-recovery agent) — 1 commit, angle largely EXHAUSTED
 
 ### WIN (committed bcec01176f) — byte-neutral param_N naming, 3 files, all .o md5-IDENTICAL
-- dll_00C4_tricky.c: extern-proto param_N -> role names via sibling signatures
+- src/dlls/objects/196_Tricky/tricky.c: extern-proto param_N -> role names via sibling signatures
   (objAudioFn_800393f8 obj/audio/soundId/volume, hitDetectFn_80065e50 pointCount,
   objAudioFn_8006edcc mask/scaleX/scaleY, objBboxFn_800640cc arg7-10). FUN_80147884
   shim body: param_1 (single-use = reg-intrinsic-only) -> unused1; forwarded param_2..8
   (pass-through to FUN_80006a64) -> arg2..8.
-- tricky_substates.c: objAnimFn_8013a3f0 param_1-4 -> obj/animId/blend/flags (sibling).
+- src/dlls/objects/196_Tricky/tricky.c: objAnimFn_8013a3f0 param_1-4 -> obj/animId/blend/flags (sibling).
 - dll_0141_lightning.c: hitDetectFn_80097070 param_3-6 -> arg3-6.
 - Verified: 3 .o rebuilt md5-IDENTICAL, ninja EXIT=0, 0 FAILED, changed lines pure-ASCII.
 
@@ -7257,7 +7257,7 @@ Scope: struct fields (unkNN/field_NN) + manual flag bits in the Jack domain + he
   - SnowBikeState (BWalphaanim.h, 4 consumers): residual unkNN (unk420/422/410/430/3D6/3D9/etc) are accessor-returned or raw-magic-compared with NO derivable role; struct already extensively named where roles clear -> remainder RAW (deliberate).
   - AndrossState.unk44: read-only `!= 0x10` x5, no writer in family -> role unpinned, RAW.
   - dim2roofrub unk6A<-Placement.unk1A: write-only + per-file def (byte-risk) -> RAW.
-- FLAG-BIT VEIN: only two set&check candidates tree-wide. snowhorn A-button = WON (above). TrickyState.stateFlags (0x10/0x10000/0x20000) = LEAVE RAW: densely-packed, per-family-OVERLOADED bit space (0x800 = CHILDREN_ACTIVE in tricky_state.h BUT FLAME_CHILDREN_ACTIVE 0x800 in dll_00C4_tricky.c), set at ~15 scattered sites, TrickyState spans ~10 TUs (huge shared byte-risk + sibling-owned consumers) -> ktrex-phaseFlags-class ambiguous, unnameable.
+- FLAG-BIT VEIN: only two set&check candidates tree-wide. snowhorn A-button = WON (above). TrickyState.stateFlags (0x10/0x10000/0x20000) = LEAVE RAW: densely-packed, per-family-OVERLOADED bit space (0x800 = CHILDREN_ACTIVE in tricky_state.h BUT FLAME_CHILDREN_ACTIVE 0x800 in src/dlls/objects/196_Tricky/tricky.c), set at ~15 scattered sites, TrickyState spans ~10 TUs (huge shared byte-risk + sibling-owned consumers) -> ktrex-phaseFlags-class ambiguous, unnameable.
 - VERDICT: domain struct/flag semantic vein now closed (1 op-B win). Matches Jul05 catch-all (zero raw casts vs mapped structs) + coloring-cap posture. Reopen only on new team commits adding fresh readable fields.
 
 ## SEMANTIC-NAMING PASS Jul08 (scarab/drakor/andross/snowbike domain, generic-local rename, all byte-identical)

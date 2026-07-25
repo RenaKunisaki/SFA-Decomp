@@ -118,7 +118,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Untargeted staff projectile origin",
-        "src/main/dll/player.c",
+        "src/dlls/objects/195_Player/player.c",
         "staffShootFireball / fn_802AA014",
         "Untargeted projectiles allocate at current camera XYZ and derive velocity from camera orientation/FOV. A stored camera can therefore originate a hit remotely.",
         "high_remote_hit",

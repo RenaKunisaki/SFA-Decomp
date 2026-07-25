@@ -13,25 +13,11 @@
  *     twice (measure then draw) and rasterizes glyphs through
  *     debugPrintDrawGlyph (per-glyph texture select + textRenderChar) and
  *     debugPrintDrawRecord (record interpreter: color/tab/newline/position tags).
- *   - Tricky companion helpers: queued-path particle emission
- *     (Tricky_emitQueuedPathParticles), command-target selection,
- *     blend-channel weight animation and impress/GameBit state pokes.
- *   - Misc object teardown (objAnimFreeChildren) and a minimap timer
- *     readout (dll_3F_updateTimerReadout).
  */
-#include "main/dll/partfx_interface.h"
-#include "main/audio/sfx_channel_query_api.h"
 #include "main/texture.h"
 #include "main/frame_timing.h"
 #include "main/lightmap_text_color_api.h"
-#include "main/vecmath.h"
-#include "main/obj_group.h"
-#include "main/obj_link.h"
 #include "main/debug.h"
-#include "main/dll/ppcwgpipe_struct.h"
-#include "main/dll/baddie_control_interface.h"
-#include "main/dll/tricky_state.h"
-#include "game/objects/object.h"
 #include "dolphin/gx/GXMisc.h"
 #include "dolphin/gx/GXFifo.h"
 #include "dolphin/os/OSContext.h"
@@ -40,11 +26,6 @@
 #include "dolphin/os/OSThread.h"
 #include "dolphin/gx/GXStruct.h"
 #include "dolphin/gx/GXTev.h"
-#include "sys/objects.h"
-#include "main/model.h"
-#include "sys/objects/lifecycle.h"
-#include "main/mapEventTypes.h"
-#include "main/objseq.h"
 #include "stdarg.h"
 #include "dolphin/gx/GXCull.h"
 #include "main/dll/dll_80136a40.h"
@@ -52,12 +33,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/vi.h"
-#include "main/gamebit_ids.h"
-#include "main/gamebits_api.h"
-#include "main/objprint_sound_api.h"
-#include "track/intersect_screen_api.h"
-#include "track/intersect_api.h"
-#include "main/dll/dll_0019_dll19func0.h"
 
 extern u8 debugLogBuffer[];
 
@@ -70,71 +45,8 @@ char sErrFmtSP[] = "SP\t%x";
 char lbl_803DBC30[] = "\t%x";
 char lbl_803DBC34[] = "%d - %d";
 
-typedef struct TrickyImpressState
-{
-    u8 pad0[0x14 - 0x0];
-    f32 unk14;
-    u8 pad18[0x24 - 0x18];
-    GameObject* stayPoint;
-    u8 pad28[0x54 - 0x28];
-    u32 flags54;
-    u8 pad58[0x408 - 0x58];
-    f32 renderPosX;
-    f32 renderPosY;
-    f32 renderPosZ;
-    s16 unk414;
-    u8 pad416[0x7A8 - 0x416];
-    s32 childObj0; /* 0x7A8: attached child object handle (slot 0) */
-    u8 pad7AC[0x7B0 - 0x7AC];
-    s32 childObj1; /* 0x7B0: attached child object handle (slot 1) */
-    u8 pad7B4[0x7B8 - 0x7B4];
-    s32 childObj2;   /* 0x7B8: attached child object handle (slot 2) */
-    u8 childSlotMap; /* 0x7BC: packed 2-bit slot index per impress child (childObj0/1/2 via >>6/>>4/>>2 & 3) */
-    u8 pad7BD[0x808 - 0x7BD];
-    f32 unk808;
-    u8 pad80C[0x810 - 0x80C];
-} TrickyImpressState;
-
-struct Bits58
-{
-    u8 _pad[0x58];
-    u8 b7 : 1;
-    u8 b6 : 1;
-    u8 lo : 6;
-};
-
-typedef struct
-{
-    u8 pending : 1;
-    u8 active : 1;
-    u8 rest : 6;
-} TumbleweedBlendFlags;
-
-typedef struct
-{
-    u8 s0 : 2;
-    u8 s1 : 2;
-    u8 s2 : 2;
-    u8 s3 : 2;
-} AnimSlots;
-
 /* debug font glyph-atlas texture asset (gDebugFontTex0) */
 #define DEBUG_FONT_TEXTURE0_ID 0x25D
-
-/* The one partfx effect emitted along Tricky's queued impress path. */
-#define TRICKY_PATH_PARTFX 0x533
-
-#define TRICKY_BADDIE_TARGET_OBJGROUP 49 /* baddie object group scanned by trickyFindNearestUsableBaddie */
-/* creatures excluded from Tricky's baddie targeting (retail OBJECTS.bin names). */
-#define TRICKY_SEQID_WHIRLPOOL    2129 /* "Whirlpool" (DLL 0xC9) */
-#define TRICKY_SEQID_VAMBAT       1022 /* "Vambat" (DLL 0xC9) */
-#define TRICKY_SEQID_WB           1239 /* "WB" (DLL 0xC9) */
-#define TRICKY_SEQID_SC_BABYLIGHT 636  /* "SC_babyligh" (DLL 0x1B5) */
-#define TRICKY_SEQID_PINPON       593  /* "PinPon" (DLL 0xC9) */
-
-#define TUMBLEWEED_BLEND_FLAGS_OFFSET    0x82e
-#define TUMBLEWEED_BLEND_WEIGHT_OFFSET   0x830
-#define TUMBLEWEED_BLEND_VELOCITY_OFFSET 0x834
 
 extern f32 gDebugScaleX;
 extern f32 gDebugScaleY;
@@ -144,7 +56,6 @@ extern void* gDebugFontTex2;
 extern void* gDebugFontTex1;
 extern void* gDebugFontTex0;
 extern int gDebugRecordCount;
-extern f32 lbl_803E2408;
 extern u32 gDebugPrintOriginX;
 extern u32 gDebugPrintOriginY;
 extern u16 debugPrintXpos;
@@ -153,15 +64,6 @@ extern u16 gErrExceptionType;
 extern OSContext* gErrContext;
 extern u32 lbl_803DDA38;
 extern u32 lbl_803DDA34;
-extern f32 lbl_803E23DC;
-extern f32 lbl_803E23E0;
-extern f32 lbl_803E23E4;
-extern f32 lbl_803E23EC;
-extern f32 lbl_803E23F0;
-extern f32 lbl_803E23F4;
-extern f32 lbl_803E23F8;
-extern f32 lbl_803E240C;
-extern const f32 lbl_803E2418;
 extern u8 enableDebugText;
 extern u16* debugDrawFrameBuffer;
 extern u16* externalFrameBuffer1;
@@ -846,12 +748,6 @@ void debugPrintfxy(int x, int y, char* fmt, ...)
     }
 }
 
-/* Drop-anim trigger guard. Returns 1
- * (and dispatches the drop anim via objAudioFn_800393f8) only when:
- *   - bit 0x40 of obj->_b8->_58 is clear,
- *   - the target halfword obj->_a0 is OUTSIDE the [41, 47] window,
- *   - Sfx_IsPlayingFromObjectChannel(obj, 16) returns 0. */
-
 void errDisplayInstallHandlers(void)
 {
     OSSetErrorHandler(OS_ERROR_SYSTEM_RESET, (OSErrorHandler)errDisplayHandler);
@@ -1097,90 +993,4 @@ void errDisplayHandler(OSError error, OSContext* context, u32 dsisr, u32 dar)
     lbl_803DDA38 = dsisr;
     lbl_803DDA34 = dar;
     OSResumeThread(&gErrDisplayThread);
-}
-
-/* Reset debug log/print state: rewind
- * debugLogEnd to the start of the buffer and reload the print x/y
- * coordinates from saved values. */
-
-/* Bit setter at bit 6 (0x40) of obj->_b8->_58. */
-void trickySetSoundSuppressed(GameObject* obj, int v)
-{
-    ((struct Bits58*)((GameObject*)obj)->extra)->b6 = v;
-}
-int trickyTryPlaySound(GameObject* obj, u16 sfxId, int vol)
-{
-    u8* b = ((GameObject*)obj)->extra;
-    s16 v;
-    if ((u32)((b[0x58] >> 6) & 1) != 0u)
-        return 0;
-    v = ((GameObject*)obj)->anim.currentMove;
-    switch (v)
-    {
-    case 41:
-    case 42:
-    case 43:
-    case 44:
-    case 45:
-    case 46:
-    case 47:
-        return 0;
-    }
-    if (Sfx_IsPlayingFromObjectChannel((int)obj, 16) != 0)
-        return 0;
-    objAudioFn_800393f8(obj, &((TrickyState*)b)->soundState, sfxId, vol, -1, 0);
-    return 1;
-}
-
-void objAnimFreeChildren(int a, int b, GameObject** c)
-{
-    char buf[4];
-    void *v0, *v1, *v2;
-
-    if (*c == NULL)
-    {
-        return;
-    }
-    ObjLink_DetachChild((GameObject*)a, *c);
-    Obj_FreeObject(*c);
-    *c = NULL;
-    buf[0] = -1;
-    buf[1] = -1;
-    buf[2] = -1;
-    v0 = (void*)((TrickyImpressState*)b)->childObj0;
-    if (v0 != NULL)
-    {
-        buf[((TrickyImpressState*)b)->childSlotMap >> 6 & 3] = 1;
-    }
-    v1 = (void*)((TrickyImpressState*)b)->childObj1;
-    if (v1 != NULL)
-    {
-        buf[((TrickyImpressState*)b)->childSlotMap >> 4 & 3] = 1;
-    }
-    v2 = (void*)((TrickyImpressState*)b)->childObj2;
-    if (v2 != NULL)
-    {
-        buf[((TrickyImpressState*)b)->childSlotMap >> 2 & 3] = 1;
-    }
-    if (buf[0] == -1)
-    {
-        if (v0 != NULL)
-        {
-            ObjLink_DetachChild((GameObject*)a, v0);
-            ObjLink_AttachChild((GameObject*)a, (GameObject*)((TrickyImpressState*)b)->childObj0, 0);
-            ((AnimSlots*)(b + 0x7bc))->s0 = 0;
-        }
-        else if (v1 != NULL)
-        {
-            ObjLink_DetachChild((GameObject*)a, v1);
-            ObjLink_AttachChild((GameObject*)a, (GameObject*)((TrickyImpressState*)b)->childObj1, 0);
-            ((AnimSlots*)(b + 0x7bc))->s1 = 0;
-        }
-        else if (v2 != NULL)
-        {
-            ObjLink_DetachChild((GameObject*)a, v2);
-            ObjLink_AttachChild((GameObject*)a, (GameObject*)((TrickyImpressState*)b)->childObj2, 0);
-            ((AnimSlots*)(b + 0x7bc))->s2 = 0;
-        }
-    }
 }

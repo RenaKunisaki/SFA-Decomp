@@ -15,7 +15,6 @@
 #include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
-#include "main/resource.h"
 #include "main/vecmath_distance_api.h"
 #include "main/dll/wispbaddieseq_ext.h"
 
@@ -226,9 +225,4 @@ ObjectDescriptor gBaddieInterestPObjDescriptor = {
     (ObjectDescriptorCallback)BaddieInterestP_free,
     (ObjectDescriptorCallback)BaddieInterestP_getObjectTypeId,
     BaddieInterestP_getExtraSize,
-};
-
-ResourceDescriptorCallbacks8 lbl_80320700 = {
-    {-1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
 };

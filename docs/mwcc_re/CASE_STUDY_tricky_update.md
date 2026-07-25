@@ -36,8 +36,8 @@ showing that a shape was possible, but were not authoritative.
 Useful checks were:
 
 ```sh
-python3 tools/ndiff.py main/dll/dll_00C4_tricky.c Tricky_update
-python3 tools/function_objdump.py main/dll/dll_00C4_tricky.c Tricky_update --diff
+python3 tools/ndiff.py dlls/objects/196_Tricky/tricky.c Tricky_update
+python3 tools/function_objdump.py dlls/objects/196_Tricky/tricky.c Tricky_update --diff
 ```
 
 A full-TU permuter search found the exact callback-table expression after local

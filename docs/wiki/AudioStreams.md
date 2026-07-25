@@ -1224,7 +1224,7 @@ the same area abbreviations as this wiki's stream directories (KP, TTH, DIM, CRF
   — this is the code behind the wiki's `COMM/*_pe.adp`/`*_sl.adp`/`*_gp.adp`/`*_rb.adp` hint lines
   (the `_pe`/`_sl`/`_gp`/`_rb` filename suffixes are per-character voice variants).
   `pauseMenuFn_8012b77c` picks between three of these ranges by `pauseMenuState`.
-- **`src/main/dll/player.c:13315`** and **`src/main/dll/dll_010E_deathseq.c:94`** — one-off ids
+- **`src/dlls/objects/195_Player/player.c:12911`** and **`src/main/dll/dll_010E_deathseq.c:94`** — one-off ids
   `0x51e0`/`0x51e1` played on player death/respawn — not covered by any per-area directory in the
   wiki's listing (these ids are well outside every numeric `.adp` filename in the tables above), so
   they likely live under a directory the wiki page doesn't enumerate, or an id not tied to a

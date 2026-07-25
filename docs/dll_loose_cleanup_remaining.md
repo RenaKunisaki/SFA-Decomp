@@ -10,17 +10,15 @@ unused include/extern pruning + readability), via `tools/dll_cleanup_wave.js`.
 - 500/529-affected redo backlog: cleared.
 
 ## Remaining (NOT swept — other-contributor territory)
-24 raw loose files (no header) are **all actively owned by Zachary Canann** (match% work),
+23 raw loose files (no header) are **all actively owned by Zachary Canann** (match% work),
 most touched within hours/minutes. Left untouched to avoid colliding with live edits
 (one owner per `.c`). If picked up later, coordinate with the owner first and run them
 through `tools/dll_cleanup_wave.js` (per-file match-gated).
 
 | file | lines | last touched |
 |---|---:|---|
-| player.c | 18944 | Zachary, mins ago (ACTIVE) |
 | dll_0014_unk.c | 5637 | Zachary, hrs |
 | dll_0000_baby_snowworm.c | 4973 | Zachary, mins ago (ACTIVE) |
-| dll_00C4_tricky.c | 3196 | Zachary, hrs |
 | dll_0242_dbstealerworm.c | 3117 | Zachary |
 | dll_00E2_staff.c | 2878 | Zachary, 2d |
 | dll_00CA_mediumbasket.c | 2531 | Zachary |
