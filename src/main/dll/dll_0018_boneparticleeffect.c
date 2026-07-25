@@ -98,7 +98,6 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     void** grp;
     void** grp2;
     int slot;
-    u8* jb;
     s32 idx;
     f32 k2002;
     f32 one;
@@ -165,9 +164,14 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
                 vtx.sz = 0;
                 vtx.sy = 0;
                 vtx.sx = 0;
-                jb = model->jointMatrices[model->bufferFlags & 1];
-                mtx = (u8*)((BoneFxJRow*)jb
-                            + ((id = (idp + gBoneParticleStageIndex * 5)[j]) << 4));
+                mtx = model->jointMatrices[model->bufferFlags & 1];
+                {
+                    u8* bp;
+                    bp = base + gBoneParticleStageIndex * 5;
+                    bp = bp + j;
+                    id = bp[0x5b4];
+                }
+                mtx = (u8*)((BoneFxJRow*)mtx + (id << 4));
                 dx = *(f32*)(mtx + 0x30) + playerMapOffsetX;
                 dy = *(f32*)(mtx + 0x34);
                 dz = *(f32*)(mtx + 0x38) + playerMapOffsetZ;
