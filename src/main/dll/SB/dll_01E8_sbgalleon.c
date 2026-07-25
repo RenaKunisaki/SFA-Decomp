@@ -317,7 +317,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             Sfx_PlayFromObject((u32)obj, SBGALLEON_SFX_SPLASH);
             break;
         case SBGALLEON_SEQEV_SFX_OFF:
-            ((void (*)(u32, u16))Sfx_StopFromObject)((u32)obj, SBGALLEON_SFX_SPLASH);
+            Sfx_StopFromObject((u32)obj, SBGALLEON_SFX_SPLASH);
             break;
         case SBGALLEON_SEQEV_TOGGLE_DAMAGE_PHASE_8:
             if (state->damagePhase == 8)
