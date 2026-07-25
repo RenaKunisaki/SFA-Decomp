@@ -415,9 +415,9 @@ void doNothing_8005D148(int arg0, int arg1);
 
 
 void objDrawFn_8005da48(GameObject* obj);
-void modelRenderFn_8005d4ec(int* p1, int* obj, float* p3);
-void modelRenderFn_8005d69c(int* p1, int* obj, float* p3);
-void modelRenderFn_8005d894(int* p1, int* obj, float* p3);
+void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void lightmap_sortTransparentDrawQueue(void);
 
 void getVisibleObjects(s8 * opacity);
@@ -447,15 +447,15 @@ typedef union
 
 extern f32 lbl_803DEC20;
 
-asm void fn_8005D3B4(u8* obj, u8* model, s32 b);
+asm void fn_8005D3B4(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
 
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
-void modelRenderFn_8005d4ec(int* p1, int* obj, float* p3);
-void modelRenderFn_8005d69c(int* p1, int* obj, float* p3);
-void modelRenderFn_8005d894(int* p1, int* obj, float* p3);
+void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 
 
 void objDrawFn_8005da48(GameObject* obj);

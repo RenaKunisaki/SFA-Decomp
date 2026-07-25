@@ -11,6 +11,11 @@ typedef struct ModelRenderInstrsState {
     s32 bit;
 } ModelRenderInstrsState;
 
+static inline void modelRenderInstrsState_advance(ModelRenderInstrsState* state, s32 bitCount)
+{
+    state->bit += bitCount;
+}
+
 s32 modelRenderInstrsState_getBit(ModelRenderInstrsState* state);
 void modelRenderInstrsState_setBit(ModelRenderInstrsState* state, s32 bit);
 void modelRenderInstrsState_init(ModelRenderInstrsState* state, void* instrs, int bitCount, int fieldC);

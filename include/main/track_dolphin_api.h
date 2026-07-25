@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "main/game_object.h"
+#include "main/model_render_instrs_api.h"
 #include "main/track_dolphin_map_api.h"
 
 typedef struct TrackGroundHit
@@ -56,7 +57,8 @@ void trackGetGridOrigin(int** outOrigin);
 void trackGetTriangleBuffer(int* outCount, int* outTable);
 void mapInitFn_80069990(void);
 void trackIntersect(void);
-void mapBlockRender_setVtxDcrs(int flag, int* obj, struct MapShader* shader, int* blockState);
+void mapBlockRender_setVtxDcrs(int doSetup, struct MapBlockData* block, struct MapShader* shader,
+                               ModelRenderInstrsState* state);
 void initTextures(void);
 void mapClearBlockEdgeFlags(void);
 void* mapBlockGetPolygon(int* obj, int idx);

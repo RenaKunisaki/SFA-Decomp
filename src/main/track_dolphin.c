@@ -246,22 +246,10 @@ typedef struct IntersectLine
     u8 pad0E[2]; /* 0xe */
 } IntersectLine;
 
-typedef struct IntersectModLineSource
-{
-    s16 x[2];
-    s16 y[2];
-    s16 z[2];
-    u8 endpointData[2];
-    u8 flags;
-    s8 kind;
-    s16 param;
-    u8 pad12[2];
-} IntersectModLineSource;
-
 struct IntersectModLineObject
 {
     u8 pad00[0x30];
-    IntersectModLineSource* sourceLines; /* 0x30 */
+    MapHitLine* sourceLines; /* 0x30 */
     IntersectLine* lines;        /* 0x34 */
     u8 (*groupRanges)[2];        /* 0x38 */
     f32* points;                 /* 0x3c */
@@ -360,11 +348,8 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
 f32 lbl_8038D7DC[0x19];
 f32 gPrevSunDir[3];
 
-void mapBlockRender_setVtxDcrs(flag, obj, sh, bs) u8 flag;
-int* obj;
-MapShader* sh;
-
-int* bs;
+void mapBlockRender_setVtxDcrs(int doSetup, MapBlockData* block, MapShader* shader,
+                               ModelRenderInstrsState* state)
 {
     u32 val;
     int pos;
@@ -383,47 +368,50 @@ int* bs;
     int bit3;
     int i;
 
-    if (flag != 0)
+    if ((u8)doSetup != 0)
     {
         GXClearVtxDesc();
     }
-    pos = bs[4];
+    pos = state->bit;
     off = pos >> 3;
-    val = *(u8*)(bs[0] + off);
-    p = (u8*)bs[0] + off;
+    p = state->instrs;
+    val = p[off];
+    p += off;
     val |= p[1] << 8;
     val |= p[2] << 16;
-    bs[4] = pos + 1;
+    state->bit = pos + 1;
     bit = (val >> (pos & 7)) & 1;
-    if (flag != 0)
+    if ((u8)doSetup != 0)
     {
         GXSetVtxDesc(GX_VA_POS, bit ? GX_INDEX16 : GX_INDEX8);
     }
-    pos2 = bs[4];
+    pos2 = state->bit;
     off2 = pos2 >> 3;
-    val2 = *(u8*)(bs[0] + off2);
-    q = (u8*)bs[0] + off2;
+    q = state->instrs;
+    val2 = q[off2];
+    q += off2;
     val2 |= q[1] << 8;
     val2 |= q[2] << 16;
-    bs[4] = pos2 + 1;
+    state->bit = pos2 + 1;
     bit2 = (val2 >> (pos2 & 7)) & 1;
-    if (flag != 0)
+    if ((u8)doSetup != 0)
     {
         GXSetVtxDesc(GX_VA_CLR0, bit2 ? GX_INDEX16 : GX_INDEX8);
     }
-    pos3 = bs[4];
+    pos3 = state->bit;
     off3 = pos3 >> 3;
-    val3 = *(u8*)(bs[0] + off3);
-    r = (u8*)bs[0] + off3;
+    r = state->instrs;
+    val3 = r[off3];
+    r += off3;
     val3 |= r[1] << 8;
     val3 |= r[2] << 16;
-    bs[4] = pos3 + 1;
+    state->bit = pos3 + 1;
     bit3 = (val3 >> (pos3 & 7)) & 1;
-    if (flag != 0)
+    if ((u8)doSetup != 0)
     {
-        if (sh != NULL && (sh->flags & 0x80000000) == 0)
+        if (shader != NULL && (shader->flags & 0x80000000) == 0)
         {
-            for (i = 0; i < sh->layerCount; i++)
+            for (i = 0; i < shader->layerCount; i++)
             {
                 GXSetVtxDesc(i + GX_VA_TEX0, bit3 ? GX_INDEX16 : GX_INDEX8);
             }
@@ -460,84 +448,84 @@ void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 
 void renderMapBlock(MapBlockData* block, u8 type)
 {
-    int state[5];
+    ModelRenderInstrsState state;
     f32 m[16];
-    int ptr;
-    int count;
+    void* instructions;
+    u16 instructionCount;
     MapShader* shader;
-    int flag;
+    int doSetup;
+    int done;
     void* viewMtx;
 
-    shader = 0;
-    flag = 0;
+    shader = NULL;
+    doSetup = FALSE;
     if (type == 1)
     {
-        ptr = (int)block->renderInstrsTransp;
-        count = block->nRenderInstrsTransp;
+        instructions = block->renderInstrsTransp;
+        instructionCount = block->nRenderInstrsTransp;
     }
     else if (type == 2)
     {
-        ptr = (int)block->renderInstrsWater;
-        count = block->nRenderInstrsWater;
+        instructions = block->renderInstrsWater;
+        instructionCount = block->nRenderInstrsWater;
     }
     else
     {
-        ptr = (int)block->renderInstrsMain;
-        count = block->nRenderInstrsMain;
-        flag = 1;
+        instructions = block->renderInstrsMain;
+        instructionCount = block->nRenderInstrsMain;
+        doSetup = TRUE;
     }
-    if ((u16)count == 0)
+    if (instructionCount == 0)
         return;
     viewMtx = Camera_GetViewMatrix();
     PSMTXConcat(viewMtx, (f32*)block->transform, m);
-    if ((u32)(u8)flag != 0)
+    if (doSetup)
         setupToRenderMapBlock(block, m);
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state, (void*)ptr, (u16)count << 3, (u16)count << 3);
-    ptr = 0;
-    while (!ptr)
+    modelRenderInstrsState_init(&state, instructions, instructionCount << 3, instructionCount << 3);
+    done = FALSE;
+    while (!done)
     {
         u32 word;
         int op;
-        int pos = state[4];
-        int t = pos >> 3;
+        int pos = state.bit;
         u8* bp;
-        t = state[0] + t;
-        bp = (u8*)t;
-        word = bp[0];
+
+        bp = state.instrs;
+        word = bp[pos >> 3];
+        bp += pos >> 3;
         word |= bp[1] << 8;
         word |= bp[2] << 16;
-        state[4] = pos + 4;
+        state.bit = pos + 4;
         op = (word >> (pos & 7)) & 0xf;
         switch (op)
         {
         case 3:
-            mapBlockRender_setVtxDcrs(flag, (int*)block, shader, state);
+            mapBlockRender_setVtxDcrs(doSetup, block, shader, &state);
             break;
         case 1:
-            shader = mapBlockRender_setShader(flag, block, state);
+            shader = mapBlockRender_setShader(doSetup, block, &state);
             break;
         case 2:
-            mapBlockRender_callList(flag, 0, block, shader, state, m);
+            mapBlockRender_callList(doSetup, 0, block, shader, &state, m);
             break;
         case 4:
         {
             u32 word2;
             int cnt;
-            int j;
             u8* bp2;
             int pos2 = pos + 4;
-            bp2 = (u8*)(state[0] + (pos2 >> 3));
-            word2 = bp2[0];
+            bp2 = state.instrs;
+            word2 = bp2[pos2 >> 3];
+            bp2 += pos2 >> 3;
             word2 |= bp2[1] << 8;
             word2 |= bp2[2] << 16;
-            state[4] = pos2 + 4;
+            state.bit = pos2 + 4;
             cnt = (word2 >> (pos2 & 7)) & 0xf;
-            for (j = 0; j < cnt; j++)
-                ((int*)state)[4] = state[4] + 8;
+            modelRenderInstrsState_advance(&state, cnt << 3);
             break;
         }
         case 5:
-            ptr = 1;
+            done = TRUE;
             break;
         }
     }
@@ -987,27 +975,13 @@ void MapBlock_init(MapBlockData* block)
     }
 }
 
-typedef struct MapHitInitEntry
-{
-    s16 x0;
-    s16 z0;
-    u8 pad04[4];
-    s16 x1;
-    s16 z1;
-    u8 pad0C[3];
-    u8 flags;
-    u8 pad10[4];
-} MapHitInitEntry;
-
-STATIC_ASSERT(sizeof(MapHitInitEntry) == 0x14);
-
 void MapBlock_initHits(MapBlockData* block, int index)
 {
     int i;
     int* table = (int*)lbl_803DCE80;
     int fileOff = table[index];
     int size = table[index + 1] - fileOff;
-    MapHitInitEntry* entry;
+    MapHitLine* entry;
     s16 value;
 
     if (size > 0)
@@ -1015,19 +989,21 @@ void MapBlock_initHits(MapBlockData* block, int index)
         block->hits = mmAlloc(size, 5, 0);
         fileLoadToBufferOffset(MLDF_FILEID_HITS_BIN, block->hits, fileOff, size);
     }
-    block->hitCount = (u32)size / sizeof(MapHitInitEntry);
-    for (i = 0; i < block->hitCount; i++)
+    block->hitCount = (u32)size / sizeof(MapHitLine);
+    i = 0;
+    while (i < block->hitCount)
     {
-        entry = (MapHitInitEntry*)(block->hits + i * sizeof(MapHitInitEntry));
-        if (entry->x0 < 0 || (value = entry->z0) < 0 || entry->x0 > 0x280 || value > 0x280)
+        entry = &block->hits[i];
+        if (entry->x[0] < 0 || (value = entry->x[1]) < 0 || entry->x[0] > 0x280 || value > 0x280)
         {
-            entry->flags = 0x40;
+            entry->kind = 0x40;
         }
-        entry = (MapHitInitEntry*)(block->hits + i * sizeof(MapHitInitEntry));
-        if (entry->x1 < 0 || (value = entry->z1) < 0 || entry->x1 > 0x280 || value > 0x280)
+        entry = &block->hits[i];
+        if (entry->z[0] < 0 || (value = entry->z[1]) < 0 || entry->z[0] > 0x280 || value > 0x280)
         {
-            entry->flags = 0x40;
+            entry->kind = 0x40;
         }
+        i++;
     }
     block->auxData = NULL;
     block->unk9E = 0;
@@ -3083,7 +3059,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     IntersectLine* line;
     int seg;
     int segCount;
-    IntersectModLineSource* sourceLine;
+    MapHitLine* sourceLine;
     int off;
     int li;
     s16 prev;
@@ -3298,12 +3274,11 @@ void trackIntersect(void)
                     sourceIndex = 0;
                     sourceOffset = 0;
                     blockX = gTrackGridCellSize * gridX;
-                    for (; sourceIndex < blk->hitCount; sourceOffset += 0x14, sourceIndex++)
+                    for (; sourceIndex < blk->hitCount; sourceOffset += sizeof(MapHitLine), sourceIndex++)
                     {
                         if (gIntersectLineCount < 0x5dc)
                         {
-                            IntersectModLineSource* sourceLine =
-                                (IntersectModLineSource*)((u8*)blk->hits + sourceOffset);
+                            MapHitLine* sourceLine = (MapHitLine*)((u8*)blk->hits + sourceOffset);
                             s16* sourcePoints = sourceLine->x;
                             IntersectLine* rec = (IntersectLine*)(lbl_803DCF34 + gIntersectLineCount * 0x10);
                             f32 mapOriginX, mapOriginZ;

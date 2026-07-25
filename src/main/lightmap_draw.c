@@ -186,6 +186,7 @@ typedef struct LightmapDrawEntry
     {
         u32 value;
         GameObject* object;
+        MapBlockBoundsRec* bounds;
     } arg0;
     union
     {
@@ -436,9 +437,9 @@ void doNothing_8005D148(int arg0, int arg1)
 
 
 void objDrawFn_8005da48(GameObject* obj);
-void modelRenderFn_8005d4ec(int* p1, int* obj, float* p3);
-void modelRenderFn_8005d69c(int* p1, int* obj, float* p3);
-void modelRenderFn_8005d894(int* p1, int* obj, float* p3);
+void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void lightmap_sortTransparentDrawQueue(void);
 
 void getVisibleObjects(s8 * opacity);
@@ -518,7 +519,7 @@ typedef union
 
 extern f32 lbl_803DEC20;
 
-asm void fn_8005D3B4(u8* obj, u8* model, s32 b)
+asm void fn_8005D3B4(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector)
 {
     nofralloc
     stwu r1, -48(r1)
@@ -609,124 +610,106 @@ _store:
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
-void modelRenderFn_8005d4ec(int* p1, int* obj, float* p3)
+void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
-    int state[5];
+    ModelRenderInstrsState state;
     int countShifted;
     int cursor;
     u32 v;
-    int* base;
     struct MapShader* newR;
     int nibble;
-    int i;
     u8* s0;
 
-    countShifted = (int)((MapBlockData*)obj)->nRenderInstrsMain << 3;
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state, ((MapBlockData*)obj)->renderInstrsMain, countShifted,
-                                countShifted);
-    modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, (int)*(u16*)((char*)p1 + 0x14));
-    state[4] += 4;
-    mapBlockRender_drawDimmedAabbLights((u32)p1, (u32)obj, (int)p3);
-    newR = mapBlockRender_setLightmapShader((struct MapBlockData*)obj, state);
-    state[4] += 4;
-    mapBlockRender_setVtxDcrs(1, obj, newR, state);
-    cursor = state[4] + 4;
-    state[4] = cursor;
+    countShifted = block->nRenderInstrsMain << 3;
+    modelRenderInstrsState_init(&state, block->renderInstrsMain, countShifted, countShifted);
+    modelRenderInstrsState_setBit(&state, bounds->renderBitOffset);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_drawDimmedAabbLights(bounds, block, viewMtx);
+    newR = mapBlockRender_setLightmapShader(block, &state);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_setVtxDcrs(1, block, newR, &state);
+    cursor = state.bit + 4;
+    state.bit = cursor;
     countShifted = cursor >> 3;
-    s0 = (u8*)state[0];
+    s0 = state.instrs;
     v = s0[countShifted];
-    base = (int*)(state[0] + countShifted);
-    v = v | ((u32) * (u8*)((char*)base + 1) << 8);
-    v = v | ((u32) * (u8*)((char*)base + 2) << 16);
-    state[4] += 4;
+    s0 += countShifted;
+    v = v | ((u32)s0[1] << 8);
+    v = v | ((u32)s0[2] << 16);
+    modelRenderInstrsState_advance(&state, 4);
     nibble = (v >> (cursor & 7)) & 0xf;
-    for (i = 0; i < nibble; i++)
-    {
-        *(int*)&state[4] = state[4] + 8;
-    }
-    state[4] += 4;
-    mapBlockRender_drawLightmapIndirectPasses((struct MapBlockData*)obj, newR, state, (float (*)[4])p3);
+    modelRenderInstrsState_advance(&state, nibble << 3);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_drawLightmapIndirectPasses(block, newR, &state, (float (*)[4])viewMtx);
 }
-void modelRenderFn_8005d69c(int* p1, int* obj, float* p3)
+void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
-    int state[5];
+    ModelRenderInstrsState state;
     f32 m[12];
     int countShifted;
     struct MapShader* newR;
     int cursor;
     u32 v;
-    int* base;
     int nibble;
-    int i;
     u8* s0;
 
-    PSMTXConcat((f32*)lbl_80396850, p3, m);
+    PSMTXConcat((f32*)lbl_80396850, viewMtx, m);
     GXLoadTexMtxImm((const f32 (*)[4])m, GX_TEXMTX0, GX_MTX3x4);
-    PSMTXConcat((f32*)lbl_80396820, p3, m);
+    PSMTXConcat((f32*)lbl_80396820, viewMtx, m);
     GXLoadTexMtxImm((const f32 (*)[4])m, GX_TEXMTX1, GX_MTX3x4);
     gxTextureSetupFn_8007cf7c();
-    countShifted = (int)((MapBlockData*)obj)->nRenderInstrsWater << 3;
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state,
-                                *(void**)&((GameObject *)obj)->anim.previousLocalPosX, countShifted, countShifted);
-    modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, (int)*(u16*)((char*)p1 + 0x14));
-    state[4] += 4;
-    newR = mapBlockRender_setShader(1, (struct MapBlockData*)obj, state);
-    state[4] += 4;
-    mapBlockRender_setVtxDcrs(1, obj, newR, state);
-    cursor = state[4] + 4;
-    state[4] = cursor;
+    countShifted = block->nRenderInstrsWater << 3;
+    modelRenderInstrsState_init(&state, block->renderInstrsWater, countShifted, countShifted);
+    modelRenderInstrsState_setBit(&state, bounds->renderBitOffset);
+    modelRenderInstrsState_advance(&state, 4);
+    newR = mapBlockRender_setShader(1, block, &state);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_setVtxDcrs(1, block, newR, &state);
+    cursor = state.bit + 4;
+    state.bit = cursor;
     countShifted = cursor >> 3;
-    s0 = (u8*)state[0];
+    s0 = state.instrs;
     v = s0[countShifted];
-    base = (int*)(state[0] + countShifted);
-    v = v | ((u32) * (u8*)((char*)base + 1) << 8);
-    v = v | ((u32) * (u8*)((char*)base + 2) << 16);
-    state[4] += 4;
+    s0 += countShifted;
+    v = v | ((u32)s0[1] << 8);
+    v = v | ((u32)s0[2] << 16);
+    modelRenderInstrsState_advance(&state, 4);
     nibble = (v >> (cursor & 7)) & 0xf;
-    for (i = 0; i < nibble; i++)
-    {
-        *(int*)&state[4] = state[4] + 8;
-    }
-    state[4] += 4;
-    mapBlockRender_callList(1, 1, (struct MapBlockData*)obj, newR, state, p3);
+    modelRenderInstrsState_advance(&state, nibble << 3);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_callList(1, 1, block, newR, &state, viewMtx);
 }
-void modelRenderFn_8005d894(int* p1, int* obj, float* p3)
+void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
-    int state[5];
+    ModelRenderInstrsState state;
     int countShifted;
     struct MapShader* newR;
     int cursor;
     u32 v;
-    int* base;
     int nibble;
-    int i;
     u8* s0;
 
     Camera_ApplyTransparentViewport();
-    countShifted = (int)((MapBlockData*)obj)->nRenderInstrsTransp << 3;
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state, *(void**)&((GameObject *)obj)->anim.banks,
-                                countShifted, countShifted);
-    modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, (int)*(u16*)((char*)p1 + 0x14));
-    state[4] += 4;
-    newR = mapBlockRender_setShader(1, (struct MapBlockData*)obj, state);
-    state[4] += 4;
-    mapBlockRender_setVtxDcrs(1, obj, newR, state);
-    cursor = state[4] + 4;
-    state[4] = cursor;
+    countShifted = block->nRenderInstrsTransp << 3;
+    modelRenderInstrsState_init(&state, block->renderInstrsTransp, countShifted, countShifted);
+    modelRenderInstrsState_setBit(&state, bounds->renderBitOffset);
+    modelRenderInstrsState_advance(&state, 4);
+    newR = mapBlockRender_setShader(1, block, &state);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_setVtxDcrs(1, block, newR, &state);
+    cursor = state.bit + 4;
+    state.bit = cursor;
     countShifted = cursor >> 3;
-    s0 = (u8*)state[0];
+    s0 = state.instrs;
     v = s0[countShifted];
-    base = (int*)(state[0] + countShifted);
-    v = v | ((u32) * (u8*)((char*)base + 1) << 8);
-    v = v | ((u32) * (u8*)((char*)base + 2) << 16);
-    state[4] += 4;
+    s0 += countShifted;
+    v = v | ((u32)s0[1] << 8);
+    v = v | ((u32)s0[2] << 16);
+    modelRenderInstrsState_advance(&state, 4);
     nibble = (v >> (cursor & 7)) & 0xf;
-    for (i = 0; i < nibble; i++)
-    {
-        *(int*)&state[4] = state[4] + 8;
-    }
-    state[4] += 4;
-    mapBlockRender_callList(1, 1, (struct MapBlockData*)obj, newR, state, p3);
+    modelRenderInstrsState_advance(&state, nibble << 3);
+    modelRenderInstrsState_advance(&state, 4);
+    mapBlockRender_callList(1, 1, block, newR, &state, viewMtx);
     Camera_ApplyFullViewport();
 }
 
@@ -816,7 +799,7 @@ void sceneDrawTransparentPolys(void)
             GXSetNumChans(1);
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
-            modelRenderFn_8005d894((int*)entries[i].arg0.value, (int*)entries[i].arg1.block, m);
+            modelRenderFn_8005d894(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
         case 5:
             item.block = entries[i].arg1.block;
@@ -827,7 +810,7 @@ void sceneDrawTransparentPolys(void)
             GXSetNumChans(1);
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
-            modelRenderFn_8005d69c((int*)entries[i].arg0.value, (int*)entries[i].arg1.block, m);
+            modelRenderFn_8005d69c(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
         case 6:
             item.block = entries[i].arg1.block;
@@ -838,7 +821,7 @@ void sceneDrawTransparentPolys(void)
             GXSetNumChans(1);
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
-            modelRenderFn_8005d4ec((int*)entries[i].arg0.value, (int*)entries[i].arg1.block, m);
+            modelRenderFn_8005d4ec(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
         case 7:
             drawGlow(entries[i].arg0.value, entries[i].arg1.value);

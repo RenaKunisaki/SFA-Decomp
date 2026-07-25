@@ -44,8 +44,7 @@ extern int gTexLightmapFogColor;
  * TexShadowRow - 0x10-stride rows of the pending-shadow queue at the head of
  * lbl_8037E0C0 (indexed by lbl_803DCE30, bumped after each fn_8005D3B4 push).
  * mapBlockRender_callList writes type (4/5 = object shadow, 6 = indirect
- * lightmap) through a byte-offset launder off &row->type - the launder is
- * load-bearing (#112: keeps the field offset as a store displacement).
+ * lightmap) into the queued shadow row.
  */
 typedef struct TexShadowRow
 {
@@ -55,9 +54,8 @@ typedef struct TexShadowRow
     int type;
 } TexShadowRow;
 
-u8 mapBlockBounds_HasCornerPastDepthThreshold(int bounds, float* xform)
+u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* xform)
 {
-    MapBlockBoundsRec* b = (MapBlockBoundsRec*)bounds;
     float v[3];
     u32 i;
     f32 fbset;
@@ -72,44 +70,44 @@ u8 mapBlockBounds_HasCornerPastDepthThreshold(int bounds, float* xform)
             switch (i)
             {
             case 0:
-                v[0] = (f32)b->minX;
-                v[1] = (f32)b->minY;
-                v[2] = (f32)b->minZ;
+                v[0] = (f32)bounds->minX;
+                v[1] = (f32)bounds->minY;
+                v[2] = (f32)bounds->minZ;
                 break;
             case 1:
-                v[0] = (f32)b->maxX;
-                v[1] = (f32)b->minY;
-                v[2] = (f32)b->minZ;
+                v[0] = (f32)bounds->maxX;
+                v[1] = (f32)bounds->minY;
+                v[2] = (f32)bounds->minZ;
                 break;
             case 2:
-                v[0] = (f32)b->minX;
-                v[1] = (f32)b->maxY;
-                v[2] = (f32)b->minZ;
+                v[0] = (f32)bounds->minX;
+                v[1] = (f32)bounds->maxY;
+                v[2] = (f32)bounds->minZ;
                 break;
             case 3:
-                v[0] = (f32)b->maxX;
-                v[1] = (f32)b->maxY;
-                v[2] = (f32)b->minZ;
+                v[0] = (f32)bounds->maxX;
+                v[1] = (f32)bounds->maxY;
+                v[2] = (f32)bounds->minZ;
                 break;
             case 4:
-                v[0] = (f32)b->minX;
-                v[1] = (f32)b->minY;
-                v[2] = (f32)b->maxZ;
+                v[0] = (f32)bounds->minX;
+                v[1] = (f32)bounds->minY;
+                v[2] = (f32)bounds->maxZ;
                 break;
             case 5:
-                v[0] = (f32)b->maxX;
-                v[1] = (f32)b->minY;
-                v[2] = (f32)b->maxZ;
+                v[0] = (f32)bounds->maxX;
+                v[1] = (f32)bounds->minY;
+                v[2] = (f32)bounds->maxZ;
                 break;
             case 6:
-                v[0] = (f32)b->minX;
-                v[1] = (f32)b->maxY;
-                v[2] = (f32)b->maxZ;
+                v[0] = (f32)bounds->minX;
+                v[1] = (f32)bounds->maxY;
+                v[2] = (f32)bounds->maxZ;
                 break;
             case 7:
-                v[0] = (f32)b->maxX;
-                v[1] = (f32)b->maxY;
-                v[2] = (f32)b->maxZ;
+                v[0] = (f32)bounds->maxX;
+                v[1] = (f32)bounds->maxY;
+                v[2] = (f32)bounds->maxZ;
                 break;
             }
         }
@@ -137,15 +135,15 @@ typedef struct IndMtxCopy
 
 #define SHADER_FLAGS(s) ((s)->flags)
 
-void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, MapShader* shader, int* bitReader,
-                                               Mtx viewMtx)
+void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, MapShader* shader,
+                                               ModelRenderInstrsState* state, Mtx viewMtx)
 {
     Mtx passMtx;
     float indMtx[2][3];
     int noiseFrameCount;
     Texture** noiseTextures;
+    MapBlockBoundsRec* bounds;
     u8 passCount;
-    int rec[1];
     int byteBase;
     u32 bits;
     int bitPos;
@@ -153,19 +151,19 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
     u8* mtxSrc;
     int i;
 
-    bitPos = bitReader[4];
+    bitPos = state->bit;
     {
         int off = bitPos >> 3;
-        byteBase = *bitReader;
+        byteBase = (int)state->instrs;
         bits = *(u8*)(byteBase + off);
         byteBase += off;
         bits = bits | (u32)(*(u8*)(byteBase + 1) << 8);
         bits = bits | (u32)(*(u8*)(byteBase + 2) << 16);
     }
-    bitReader[4] = bitPos + 8;
+    state->bit = bitPos + 8;
     /* extract this cursor's 8-bit field (LSB-first: shift out the bits already
      * consumed within the byte, then mask the width) -> bounds-record index */
-    rec[0] = (int)((MapBlockBoundsRec*)*(int*)((u8*)blockData + 0x68) + ((bits >> (bitPos & 7)) & 0xff));
+    bounds = &blockData->displayLists[(bits >> (bitPos & 7)) & 0xff];
     flags = SHADER_FLAGS(shader);
     if ((flags & 0x4000) != 0)
     {
@@ -199,30 +197,30 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
         }
         indMtx[1][1] = indMtx[0][0];
         GXSetIndTexMtx(GX_ITM_0, (const float (*)[3])indMtx, gTexIndMtxScaleExp);
-        GXCallDisplayList(((MapBlockBoundsRec*)rec[0])->dlist, (u32)((MapBlockBoundsRec*)rec[0])->dlistSize);
+        GXCallDisplayList(bounds->dlist, bounds->dlistSize);
     }
 }
 
-MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, int* bitReader)
+MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, ModelRenderInstrsState* state)
 {
     MapShader* shader;
     u32 shaderIdx;
-    int fogColor;
     int byteBase;
+    int fogColor;
     u32 bits;
     u32 bitPos;
     u8 ambColor[3];
 
     fogColor = gTexLightmapFogColor;
-    bitPos = bitReader[4];
+    bitPos = state->bit;
     {
         int off = (int)bitPos >> 3;
-        byteBase = *bitReader;
+        byteBase = (int)state->instrs;
         bits = *(u8*)(byteBase + off);
         byteBase += off;
         bits |= (u32) * (u8*)(byteBase + 1) << 8;
         bits |= (u32) * (u8*)(byteBase + 2) << 16;
-        bitReader[4] = bitPos + 6;
+        state->bit = bitPos + 6;
         shaderIdx = (bits >> (bitPos & 7)) & 0x3f;
         shader = &blockData->shaders[shaderIdx];
     }
@@ -258,23 +256,7 @@ MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, int*
     return shader;
 }
 
-/*
- * BitStreamReader - the render-command bit cursor threaded through the
- * mapBlockRender_* family as int*. data points at the packed command bytes;
- * bitPos is the read cursor in bits. Each read grabs a 24-bit little-endian
- * window at byte bitPos>>3 and shifts by bitPos&7. Same mid-file placement
- * constraint as MapBlockData above.
- */
-typedef struct BitStreamReader
-{
-    u8* data; /* 0x00 */
-    int unk4;
-    int unk8;
-    int unkC;
-    int bitPos; /* 0x10 */
-} BitStreamReader;
-
-void mapBlockRender_drawDimmedAabbLights(u32 bounds, u32 blockXform, int i)
+void mapBlockRender_drawDimmedAabbLights(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
     ModelLightStruct** lightPtr;
     f32 posZ;
@@ -285,24 +267,24 @@ void mapBlockRender_drawDimmedAabbLights(u32 bounds, u32 blockXform, int i)
     u8 colorB;
     u8 colorG;
     u8 colorR;
+    int i;
 
     {
-        MapBlockBoundsRec* b = (MapBlockBoundsRec*)bounds;
         f32 fz = *(f32*)&playerMapOffsetZ;
-        f32 fldZ = *(float*)((int)blockXform + 0x38);
-        f32 fldY = *(float*)((int)blockXform + 0x28);
+        f32 fldZ = block->transform[2][3];
+        f32 fldY = block->transform[1][3];
         f32 fx = *(f32*)&playerMapOffsetX;
-        f32 fldX = *(float*)((int)blockXform + 0x18);
-        f32 ax0 = (f32)(b->minX >> 3) + fldX;
-        f32 az0 = (f32)(b->minZ >> 3) + fldZ;
-        f32 ax1 = (f32)(b->maxX >> 3) + fldX;
-        f32 az1 = (f32)(b->maxZ >> 3) + fldZ;
-        modelLightStruct_selectBrightestAabbLights(ax0 + fx, (f32)(b->minY >> 3) + fldY, az0 + fz, ax1 + fx,
-                                                   (f32)(b->maxY >> 3) + fldY, az1 + fz, gTexDimmedLightList, 2,
-                                                   &lightCount);
+        f32 fldX = block->transform[0][3];
+        f32 ax0 = (f32)(bounds->minX >> 3) + fldX;
+        f32 az0 = (f32)(bounds->minZ >> 3) + fldZ;
+        f32 ax1 = (f32)(bounds->maxX >> 3) + fldX;
+        f32 az1 = (f32)(bounds->maxZ >> 3) + fldZ;
+        modelLightStruct_selectBrightestAabbLights(ax0 + fx, (f32)(bounds->minY >> 3) + fldY, az0 + fz, ax1 + fx,
+                                                   (f32)(bounds->maxY >> 3) + fldY, az1 + fz,
+                                                   gTexDimmedLightList, 2, &lightCount);
     }
     Rcp_ResetTextureStageState();
-    fn_8004CE0C((void*)i);
+    fn_8004CE0C(viewMtx);
     i = 0;
     lightPtr = gTexDimmedLightList;
     {
@@ -388,8 +370,9 @@ u32 frustumTestAabbWithPlaneOffsets(f32 minX, f32 maxX, f32 minY, f32 maxY, f32 
     return 1;
 }
 
-u8 mapBlockBounds_ComputeAndTestPlanes(int bounds, struct MapBlockData* block, FrustumPlane* planes, int planeCount,
-                                       f32* minX, f32* minY, f32* minZ, f32* maxX, f32* maxY, f32* maxZ)
+u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBlockData* block,
+                                       FrustumPlane* planes, int planeCount, f32* minX, f32* minY, f32* minZ,
+                                       f32* maxX, f32* maxY, f32* maxZ)
 {
     u8 cornerIndex;
     float nearX;
@@ -399,14 +382,12 @@ u8 mapBlockBounds_ComputeAndTestPlanes(int bounds, struct MapBlockData* block, F
     float farY;
     float farZ;
     int i;
-    MapBlockBoundsRec* b = (MapBlockBoundsRec*)bounds;
-
-    *maxX = (f32)(b->maxX >> 3) + *(float*)((u8*)block + 0x18);
-    *minX = (f32)(b->minX >> 3) + *(float*)((u8*)block + 0x18);
-    *maxY = (f32)(b->maxY >> 3) + *(float*)((u8*)block + 0x28);
-    *minY = (f32)(b->minY >> 3) + *(float*)((u8*)block + 0x28);
-    *maxZ = (f32)(b->maxZ >> 3) + *(float*)((u8*)block + 0x38);
-    *minZ = (f32)(b->minZ >> 3) + *(float*)((u8*)block + 0x38);
+    *maxX = (f32)(bounds->maxX >> 3) + block->transform[0][3];
+    *minX = (f32)(bounds->minX >> 3) + block->transform[0][3];
+    *maxY = (f32)(bounds->maxY >> 3) + block->transform[1][3];
+    *minY = (f32)(bounds->minY >> 3) + block->transform[1][3];
+    *maxZ = (f32)(bounds->maxZ >> 3) + block->transform[2][3];
+    *minZ = (f32)(bounds->minZ >> 3) + block->transform[2][3];
     for (i = 0; i < planeCount; i = i + 1)
     {
         cornerIndex = planes->aabbCornerIndex;
@@ -452,8 +433,8 @@ u8 mapBlockBounds_ComputeAndTestPlanes(int bounds, struct MapBlockData* block, F
     return 1;
 }
 
-void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, MapShader* shader, int* stream,
-                             float* mtx)
+void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, MapShader* shader,
+                             ModelRenderInstrsState* state, float* mtx)
 {
     int lightPos[3];
     int count;
@@ -474,25 +455,25 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
 
     {
         u8* texGlobals;
-        int rec[1];
+        MapBlockBoundsRec* bounds;
 
         texGlobals = lbl_8037E0C0;
-        bitPos = ((BitStreamReader*)stream)->bitPos;
+        bitPos = state->bit;
         {
             int off = bitPos >> 3;
-            byteBase = (int)((BitStreamReader*)stream)->data;
+            byteBase = (int)state->instrs;
             bits = *(u8*)(byteBase + off);
             byteBase += off;
             bits = bits | (u32)(*(u8*)(byteBase + 1) << 8);
             bits = bits | (u32)(*(u8*)(byteBase + 2) << 16);
         }
-        ((BitStreamReader*)stream)->bitPos = bitPos + 8;
-        rec[0] = (int)&block->displayLists[(bits >> (bitPos & 7)) & 0xff];
+        state->bit = bitPos + 8;
+        bounds = &block->displayLists[(bits >> (bitPos & 7)) & 0xff];
         if ((shader != NULL) && ((SHADER_FLAGS(shader) & 2) != 0))
         {
             return;
         }
-        if (mapBlockBounds_ComputeAndTestPlanes(rec[0], block, (FrustumPlane*)(texGlobals + 0x987c),
+        if (mapBlockBounds_ComputeAndTestPlanes(bounds, block, (FrustumPlane*)(texGlobals + 0x987c),
                                                 FRUSTUM_PLANE_COUNT, &minX, &minY, &minZ, &maxX, &maxY, &maxZ) == 0)
         {
             return;
@@ -502,20 +483,14 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
             flags = SHADER_FLAGS(shader);
             if ((flags & 0x80000000) != 0)
             {
-                fn_8005D3B4((u8*)rec[0], (u8*)block, ((MapBlockBoundsRec*)rec[0])->selector);
-                {
-                    int shadowType = 5;
-                    *(int*)((u8*)&((TexShadowRow*)texGlobals)->type + lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
-                }
+                fn_8005D3B4(bounds, block, bounds->selector);
+                ((TexShadowRow*)texGlobals)[lbl_803DCE30].type = 5;
                 lbl_803DCE30 = lbl_803DCE30 + 1;
             }
             else if (((flags & 0x40000000) != 0) || ((flags & 0x2000) != 0))
             {
-                fn_8005D3B4((u8*)rec[0], (u8*)block, ((MapBlockBoundsRec*)rec[0])->selector);
-                {
-                    int shadowType = 4;
-                    *(int*)((u8*)&((TexShadowRow*)texGlobals)->type + lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
-                }
+                fn_8005D3B4(bounds, block, bounds->selector);
+                ((TexShadowRow*)texGlobals)[lbl_803DCE30].type = 4;
                 lbl_803DCE30 = lbl_803DCE30 + 1;
             }
         }
@@ -603,7 +578,7 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
                         else
                         {
                             u8 mirrorVisible = mapBlockBounds_ComputeAndTestPlanes(
-                                rec[0], block, (FrustumPlane*)(texGlobals + 0x9818), FRUSTUM_PLANE_COUNT, &minX, &minY,
+                                bounds, block, (FrustumPlane*)(texGlobals + 0x9818), FRUSTUM_PLANE_COUNT, &minX, &minY,
                                 &minZ, &maxX, &maxY, &maxZ);
                             if ((mirrorVisible != 0 && (u8)visArg != 0) || (mirrorVisible == 0 && (u8)visArg == 0))
                             {
@@ -630,16 +605,13 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
                     Rcp_ApplyTextureStageCounts();
                 }
             }
-            GXCallDisplayList(((MapBlockBoundsRec*)rec[0])->dlist, ((MapBlockBoundsRec*)rec[0])->dlistSize);
+            GXCallDisplayList(bounds->dlist, bounds->dlistSize);
             flags = SHADER_FLAGS(shader);
             if ((((flags & 0x4000) != 0) || ((flags & 0x8000) != 0) || ((flags & 0x10000) != 0)) &&
-                (mapBlockBounds_HasCornerPastDepthThreshold(rec[0], mtx) != 0))
+                (mapBlockBounds_HasCornerPastDepthThreshold(bounds, mtx) != 0))
             {
-                fn_8005D3B4((u8*)rec[0], (u8*)block, 0x17);
-                {
-                    int shadowType = 6;
-                    *(int*)((u8*)&((TexShadowRow*)texGlobals)->type + lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
-                }
+                fn_8005D3B4(bounds, block, 0x17);
+                ((TexShadowRow*)texGlobals)[lbl_803DCE30].type = 6;
                 lbl_803DCE30 = lbl_803DCE30 + 1;
             }
         }
@@ -811,7 +783,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
     }
 }
 
-MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, int* bitReader)
+MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRenderInstrsState* state)
 {
     MapShader* shader;
     u32 shaderIdx;
@@ -825,15 +797,15 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, int* bi
     u32 bitPos;
 
     fogColor = gTexShaderFogColor;
-    bitPos = bitReader[4];
+    bitPos = state->bit;
     {
         int off = (int)bitPos >> 3;
-        byteBase = *bitReader;
+        byteBase = (int)state->instrs;
         bits = *(u8*)(byteBase + off);
         byteBase += off;
         bits |= (u32) * (u8*)(byteBase + 1) << 8;
         bits |= (u32) * (u8*)(byteBase + 2) << 16;
-        bitReader[4] = bitPos + 6;
+        state->bit = bitPos + 6;
         shaderIdx = (bits >> (bitPos & 7)) & 0x3f;
         shader = &blockData->shaders[shaderIdx];
     }

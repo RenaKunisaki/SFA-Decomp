@@ -22,12 +22,28 @@ typedef struct MapBlockBoundsRec
     s16 maxY;
     s16 maxZ;
     u8 flags;
-    u8 pad13[0x18 - 0x13];
+    u8 pad13;
+    u16 renderBitOffset;
+    u8 pad16[2];
     u8 selector;
     u8 pad19[0x1C - 0x19];
 } MapBlockBoundsRec;
 
 STATIC_ASSERT(sizeof(MapBlockBoundsRec) == 0x1C);
+
+typedef struct MapHitLine
+{
+    s16 x[2];
+    s16 y[2];
+    s16 z[2];
+    u8 endpointData[2];
+    u8 flags;
+    s8 kind;
+    s16 param;
+    u8 pad12[2];
+} MapHitLine;
+
+STATIC_ASSERT(sizeof(MapHitLine) == 0x14);
 
 /*
  * MapBlockData - the record returned by mapGetBlock(). Field widths
@@ -91,7 +107,7 @@ typedef struct MapBlockData {
     MapShader* shaders; /* 0x64: count = shaderCount @0xA2 */
     MapBlockBoundsRec* displayLists; /* 0x68: count = edgeCount @0xA1 */
     u8 pad6C[0x70 - 0x6C];
-    u8* hits; /* 0x70: from HITS.bin; 0 in file, populated by MapBlock_initHits */
+    MapHitLine* hits; /* 0x70: from HITS.bin; 0 in file, populated by MapBlock_initHits */
     void* auxData; /* 0x74: optional auxiliary allocation */
     void* renderInstrsMain; /* 0x78: normal geometry bitstream */
     void* renderInstrsTransp; /* 0x7C: transparent+glow bitstream */
