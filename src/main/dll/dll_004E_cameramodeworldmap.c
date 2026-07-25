@@ -87,13 +87,13 @@ void CameraModeWorldMap_update(u8* obj)
     GameObject* focus;
     GameObject *objA, *objB;
     u16 buttons;
-    f32 spd = 0.0f;
+    s16 pitchDelta;
     f32 mdx, mdz;
     f32 a;
     f32 b;
     f32 sn;
     f32 dx, dz;
-    s16 pitchDelta;
+    f32 spd = 0.0f;
 
     focus = (GameObject*)camera->anim.targetObj;
     objA = ObjList_FindObjectById(0x42fff);
