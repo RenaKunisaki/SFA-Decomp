@@ -245,9 +245,18 @@ void PressureSwitchFB_update(GameObject* obj)
                     {
                         tmp = *(int*)&obj->extra;
                         j = 0;
-                        if ((state->flags.update.playerOnly == 0) ||
-                            (other == (u32)Obj_GetPlayerObject()))
+                        do
                         {
+                            if (((PressureSwitchFbState*)tmp)->flags.update.playerOnly != 0)
+                            {
+                                if (other == (u32)Obj_GetPlayerObject())
+                                {
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
                             while ((*(u32*)(tmp + j * 4 + 4) != 0) && (j != 9))
                             {
                                 j++;
@@ -255,7 +264,7 @@ void PressureSwitchFB_update(GameObject* obj)
                             *(u32*)(tmp + j * 4 + 4) = other;
                             *(f32*)((base = tmp + j * 8) + 0x2c) = ((GameObject*)other)->anim.localPosX;
                             *(f32*)(base + 0x30) = ((GameObject*)other)->anim.localPosZ;
-                        }
+                        } while (0);
                     }
                 }
             }
