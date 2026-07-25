@@ -57,6 +57,7 @@
 #include "main/obj_group.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
+#define OBJ_YAW_DELTA_RETURNS_S16
 #include "main/obj_query.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
@@ -811,7 +812,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
     int q;
     int* objs;
     GameObject* player;
-    int d;
+    s16 d;
     int flag;
     int zero;
     int* ptr;
@@ -1054,7 +1055,6 @@ int dbstealerworm_stateHandlerA0A(GameObject* obj, BaddieState* state)
     int currentMsgMode;
     int messageArg;
     GameObject* targetObject;
-    s16 rotationX;
     f32 zero;
     f32 horizontalDistance;
     f32 launchVelocity[3];
@@ -1126,8 +1126,7 @@ int dbstealerworm_stateHandlerA0A(GameObject* obj, BaddieState* state)
             control->linkedObject = NULL;
             control->msgSlotIndex = -1;
         }
-        rotationX = obj->anim.rotX + Obj_GetYawDeltaToObject(obj, state->targetObj, NULL);
-        obj->anim.rotX = rotationX;
+        obj->anim.rotX += Obj_GetYawDeltaToObject(obj, state->targetObj, NULL);
         state->stateTag = 0x11;
         if ((s8)state->moveJustStartedA != 0)
         {
@@ -1227,7 +1226,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
     int tmp2A;
     GameObject* player;
     int flag;
-    int d;
+    s16 d;
     int zero;
     s16* vec;
     s16 sa;
@@ -1355,28 +1354,28 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
     }
     else if (*(void**)&sub->linkedObj == NULL)
     {
-        d = -(2535.0f * ((BaddieState*)baddie)->animSpeedA);
-        flag = -(2535.0f * ((BaddieState*)baddie)->animSpeedB);
-        d = (s16)d;
-        if (d < -0x500)
+        int dv = -(2535.0f * ((BaddieState*)baddie)->animSpeedA);
+        int fv = -(2535.0f * ((BaddieState*)baddie)->animSpeedB);
+        dv = (s16)dv;
+        if (dv < -0x500)
         {
-            d = -0x500;
+            dv = -0x500;
         }
-        else if (d > 0x500)
+        else if (dv > 0x500)
         {
-            d = 0x500;
+            dv = 0x500;
         }
-        sa = d;
-        flag = (s16)flag;
-        if (flag < -0x500)
+        sa = dv;
+        fv = (s16)fv;
+        if (fv < -0x500)
         {
-            flag = -0x500;
+            fv = -0x500;
         }
-        else if (flag > 0x500)
+        else if (fv > 0x500)
         {
-            flag = 0x500;
+            fv = 0x500;
         }
-        sb = flag;
+        sb = fv;
         p3 = seqFn_800394a0();
         i3 = 1;
         p3 = p3 + 1;
@@ -1412,7 +1411,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     int tmp2A;
     GameObject* player;
     int flag;
-    int d;
+    s16 d;
     int zero;
     s16* vec;
     s16 sa;
@@ -1554,28 +1553,28 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     }
     else if (*(void**)&sub->linkedObj == NULL)
     {
-        d = -(2535.0f * ((BaddieState*)baddie)->animSpeedA);
-        flag = -(2535.0f * ((BaddieState*)baddie)->animSpeedB);
-        d = (s16)d;
-        if (d < -0x500)
+        int dv = -(2535.0f * ((BaddieState*)baddie)->animSpeedA);
+        int fv = -(2535.0f * ((BaddieState*)baddie)->animSpeedB);
+        dv = (s16)dv;
+        if (dv < -0x500)
         {
-            d = -0x500;
+            dv = -0x500;
         }
-        else if (d > 0x500)
+        else if (dv > 0x500)
         {
-            d = 0x500;
+            dv = 0x500;
         }
-        sa = d;
-        flag = (s16)flag;
-        if (flag < -0x500)
+        sa = dv;
+        fv = (s16)fv;
+        if (fv < -0x500)
         {
-            flag = -0x500;
+            fv = -0x500;
         }
-        else if (flag > 0x500)
+        else if (fv > 0x500)
         {
-            flag = 0x500;
+            fv = 0x500;
         }
-        sb = flag;
+        sb = fv;
         p3 = seqFn_800394a0();
         i3 = 1;
         p3 = p3 + 1;
@@ -1987,7 +1986,7 @@ int dbstealerworm_turnToFaceObject(GameObject* obj, GameObject* otherObj, f32 ya
 {
     BaddieState* state = (obj)->extra;
     f32 yawF;
-    int yaw;
+    s16 yaw;
     f32 zero;
     f32 a;
     f32 ratio;
@@ -2032,7 +2031,7 @@ int dbstealerworm_turnToFaceObjectVertical(GameObject* obj, GameObject* otherObj
 {
     BaddieState* state = obj->extra;
     f32 yawF;
-    int yaw;
+    s16 yaw;
     f32 dy;
     f32 zero;
     f32 k;
