@@ -118,7 +118,7 @@ void TexFrameAnimator_update(int* obj)
     u8* params;
     MapBlockData* block;
     s16* textureHit;
-    int* textureEntry;
+    MapTextureOverride* textureEntry;
 
     state = ((GameObject*)obj)->extra;
     params = *(u8**)&((GameObject*)obj)->anim.placementData;
@@ -162,7 +162,7 @@ void TexFrameAnimator_update(int* obj)
                     state->frame = state->wrapFrame;
                 }
             }
-            textureEntry[1] = state->frame;
+            textureEntry->frame = state->frame;
         }
     }
 }

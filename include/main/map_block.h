@@ -5,6 +5,30 @@
 
 typedef struct Texture Texture;
 
+typedef union MapTextureRef
+{
+    s32 fileId;
+    Texture* texture;
+} MapTextureRef;
+
+typedef struct MapBlockBoundsRec
+{
+    void* dlist;
+    u16 dlistSize;
+    s16 minX;
+    s16 minY;
+    s16 minZ;
+    s16 maxX;
+    s16 maxY;
+    s16 maxZ;
+    u8 flags;
+    u8 pad13[0x18 - 0x13];
+    u8 selector;
+    u8 pad19[0x1C - 0x19];
+} MapBlockBoundsRec;
+
+STATIC_ASSERT(sizeof(MapBlockBoundsRec) == 0x1C);
+
 /*
  * MapBlockData - the record returned by mapGetBlock(). Field widths
  * mirror the deref widths observed in mmp_barrel.c / mmp_moonrock.c /
@@ -13,10 +37,20 @@ typedef struct Texture Texture;
  */
 typedef struct MapShaderLayer
 {
-    s32 texture;
-    u8 unk4;
-    u8 overrideType;
-    u8 scrollMtx;
+    union {
+        s32 textureIndex;
+        s32 texId;
+        Texture* texture;
+    };
+    u8 typeBits;
+    union {
+        u8 overrideType;
+        u8 overrideByte;
+    };
+    union {
+        u8 scrollMtx;
+        u8 mtxIndex;
+    };
     u8 unk7;
 } MapShaderLayer;
 
@@ -24,7 +58,10 @@ typedef struct MapShader
 {
     u8 pad0[0x24];
     MapShaderLayer layers[2];
-    s32 auxTexture;
+    union {
+        s32 auxTextureIndex;
+        Texture* auxTexture;
+    };
     u8 pad38[0x3C - 0x38];
     u32 flags;
     u8 pad40;
@@ -47,14 +84,14 @@ typedef struct MapBlockData {
     u8 pad3C[0x4C - 0x3C];
     void* gcPolygons; /* 0x4C: MapTriIndex[] collision mesh (stride 8), count = nPolygons @0x98 */
     void* polygonGroups; /* 0x50: MapTriGroup[] (stride 0x14), count = polyGroupCount @0x9A */
-    Texture** textures; /* 0x54: texture pointers, stored as indices before MapBlock_initShaders */
+    MapTextureRef* textures; /* 0x54: file IDs converted to texture pointers after loading */
     u8* vertices; /* 0x58: base of the packed VertexS16 array (stride 6) */
     void* vertexColors; /* 0x5C: RGBA4444 (stride 2) */
     void* vertexTexCoords; /* 0x60: vec2s (stride 4) */
-    MapShader* shaders; /* 0x64: count = layerCount @0xA2 */
-    void* displayLists; /* 0x68: MapBlockBoundsRec[] (stride 0x1C), count = edgeCount @0xA1 */
+    MapShader* shaders; /* 0x64: count = shaderCount @0xA2 */
+    MapBlockBoundsRec* displayLists; /* 0x68: count = edgeCount @0xA1 */
     u8 pad6C[0x70 - 0x6C];
-    void* hits; /* 0x70: from HITS.bin; 0 in file, populated by MapBlock_initHits */
+    u8* hits; /* 0x70: from HITS.bin; 0 in file, populated by MapBlock_initHits */
     void* auxData; /* 0x74: optional auxiliary allocation */
     void* renderInstrsMain; /* 0x78: normal geometry bitstream */
     void* renderInstrsTransp; /* 0x7C: transparent+glow bitstream */
@@ -70,7 +107,7 @@ typedef struct MapBlockData {
     u16 nPolygons; /* 0x98: entries in gcPolygons (cacheAllocAndCopy size = count<<3) */
     u16 polyGroupCount; /* 0x9A: render/poly groups (mapBlockGetPolygonGroup index bound) */
     u16 hitCount; /* 0x9C: entries in the HITS.bin segment table */
-    u8 pad9E[0xA0 - 0x9E];
+    u16 unk9E;
     u8 textureCount; /* 0xA0: entries in textures */
     u8 edgeCount; /* 0xA1: edges (mapBlockGetEdge index bound) */
     u8 shaderCount; /* 0xA2: entries in shaders */

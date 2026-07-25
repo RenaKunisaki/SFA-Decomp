@@ -59,7 +59,7 @@ extern char sTrackLoadBlockOverrunError[];
 extern char sShaderDebugStrings[];
 #define MAP_BLOCK_LAYER_COUNT 5
 #define FRUSTUM_PLANE_COUNT   5
-void trackLoadBlockEnd(void* blk, int blockId, int slotIdx, int layer);
+void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer);
 /* One 0x20-byte MAPINFO.bin (fileId 0x1f) record, fetched by mapId via getTabEntry. */
 typedef struct MapInfoRecord
 {
@@ -99,15 +99,6 @@ int mapCoordsToId(int x, int z, int layer);
 extern s16* gMapBlockIds;
 extern u8 lbl_803DCE98;
 extern u8* gMapBlockRefCounts;
-typedef struct TexOverrideEntry
-{
-    u32 key;   /* 0x00 */
-    int data0; /* 0x04 */
-    int data1; /* 0x08 */
-    s16 refs;  /* 0x0c */
-    u8 type;   /* 0x0e */
-    u8 pad;    /* 0x0f */
-} TexOverrideEntry;
 extern char lbl_8037E0C0[];
 typedef struct ShaderRomListSlot
 {
@@ -624,9 +615,7 @@ void playerUpdateFn_8005649c(void)
     }
 }
 
-extern TexOverrideEntry* lbl_803DCE6C;
-
-void* mapTextureOverrideGetEntry(int idx)
+MapTextureOverride* mapTextureOverrideGetEntry(int idx)
 {
     return &lbl_803DCE6C[idx];
 }
@@ -640,37 +629,34 @@ int return0_8005669C(int unused)
     return 0x0;
 }
 
-void mapTextureOverrideRelease(int key, int type)
+void mapTextureOverrideRelease(Texture* texture, int type)
 {
     int i;
-    int off;
-    u32 entryKey;
+    Texture* entryTexture;
 
     for (i = 0; i < 80; i++)
     {
-        off = i * 0x10;
-        entryKey = lbl_803DCE6C[i].key;
-        if (entryKey == key && lbl_803DCE6C[i].type == type &&
-            lbl_803DCE6C[i].refs > 0)
+        entryTexture = lbl_803DCE6C[i].texture;
+        if (entryTexture == texture && lbl_803DCE6C[i].type == type &&
+            lbl_803DCE6C[i].refCount > 0)
         {
-            lbl_803DCE6C[i].refs -= 1;
-            if (lbl_803DCE6C[i].refs == 0)
+            lbl_803DCE6C[i].refCount -= 1;
+            if (lbl_803DCE6C[i].refCount == 0)
             {
-                lbl_803DCE6C[i].data0 = 0;
+                lbl_803DCE6C[i].frame = 0;
                 lbl_803DCE6C[i].type = 0;
-                lbl_803DCE6C[i].key = 0;
-                lbl_803DCE6C[i].data1 = 0;
+                lbl_803DCE6C[i].texture = NULL;
+                lbl_803DCE6C[i].flags = 0;
             }
         }
     }
 }
-void mapTextureOverrideRelease(int key, int type);
 
 extern char sTrackGlobalTexanimOverflowError[];
 
-int mapTextureOverrideAcquire(int key, int value, int type)
+int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
 {
-    TexOverrideEntry* base;
+    MapTextureOverride* base;
     int idx;
     int found;
     int idx2;
@@ -680,10 +666,10 @@ int mapTextureOverrideAcquire(int key, int value, int type)
     base = lbl_803DCE6C;
     for (; idx < 80; idx++)
     {
-        if (base[idx].refs != 0)
+        if (base[idx].refCount != 0)
         {
-            u32 entryKey = base[idx].key;
-            if (entryKey == key && type == base[idx].type)
+            Texture* entryTexture = base[idx].texture;
+            if (entryTexture == texture && type == base[idx].type)
             {
                 found = idx;
                 break;
@@ -692,7 +678,7 @@ int mapTextureOverrideAcquire(int key, int value, int type)
     }
     if (found != -1)
     {
-        base[found].refs += 1;
+        base[found].refCount += 1;
         return found;
     }
     found = -1;
@@ -700,7 +686,7 @@ int mapTextureOverrideAcquire(int key, int value, int type)
     base = lbl_803DCE6C;
     for (; idx2 < 80; idx2++)
     {
-        if (base[idx2].refs == 0)
+        if (base[idx2].refCount == 0)
         {
             found = idx2;
             break;
@@ -708,10 +694,10 @@ int mapTextureOverrideAcquire(int key, int value, int type)
     }
     if (found != -1)
     {
-        base[found].refs = 1;
-        lbl_803DCE6C[found].data0 = 0;
-        lbl_803DCE6C[found].data1 = value;
-        lbl_803DCE6C[found].key = key;
+        base[found].refCount = 1;
+        lbl_803DCE6C[found].frame = 0;
+        lbl_803DCE6C[found].flags = flags;
+        lbl_803DCE6C[found].texture = texture;
         lbl_803DCE6C[found].type = type;
         return found;
     }
@@ -719,32 +705,19 @@ int mapTextureOverrideAcquire(int key, int value, int type)
     return 0;
 }
 
-extern int lbl_803DCE68;
 extern f32 lbl_803DEBC8;
 
-/* 16-byte texture-scroll table entry (array at lbl_803DCE68, 0x3a slots). */
-typedef struct TexScrollEntry
-{
-    f32 offsetX; /* 0x00 */
-    f32 offsetY; /* 0x04 */
-    s16 xStep;   /* 0x08 */
-    s16 yStep;   /* 0x0a */
-    u8 refCount; /* 0x0c */
-} TexScrollEntry;
-
-void mapTextureOverrideSetValue(int type, u32 key, int value)
+void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 {
     int i;
-    int off;
 
     for (i = 0; i < 80; i++)
     {
-        off = i * 0x10;
-        if (lbl_803DCE6C[i].refs > 0 &&
-            (void*)lbl_803DCE6C[i].key == (void*)key &&
+        if (lbl_803DCE6C[i].refCount > 0 &&
+            lbl_803DCE6C[i].texture == texture &&
             type == lbl_803DCE6C[i].type)
         {
-            lbl_803DCE6C[i].data0 = value;
+            lbl_803DCE6C[i].frame = frame;
         }
     }
 }
@@ -752,17 +725,14 @@ void mapTextureOverrideSetValue(int type, u32 key, int value)
 void mapTextureScrollGetOffset(int idx, float* outX, float* outY)
 {
     f32 divisor;
-    char* base;
-    idx <<= 4;
-    *outX = *(f32*)(lbl_803DCE68 + idx) / (divisor = lbl_803DEBC8);
-    base = (char*)(lbl_803DCE68 + 4);
-    *outY = *(f32*)(base + idx) / divisor;
+    *outX = lbl_803DCE68[idx].offsetX / (divisor = lbl_803DEBC8);
+    *outY = lbl_803DCE68[idx].offsetY / divisor;
 }
 
 void mapTextureScrollSetStep(int idx, int xStep, int yStep, int texWidthFixed, int texHeightFixed,
                              int secondaryXStep, int secondaryYStep, int texWidthFixed2, int texHeightFixed2)
 {
-    TexScrollEntry* e = (TexScrollEntry*)lbl_803DCE68 + idx;
+    MapTextureScroll* e = &lbl_803DCE68[idx];
     e->xStep = (s16)((xStep << 16) / (texWidthFixed >> 6));
     e->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
 }
@@ -856,29 +826,29 @@ static inline int mapFindRomListSlotById(int id)
 int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeightFixed,
                             int secondaryXStep, int secondaryYStep, int texWidthFixed2, int texHeightFixed2)
 {
-    char* base;
-    char* e;
+    MapTextureScroll* base;
+    MapTextureScroll* entry;
     int idx;
     int idx2;
     int slot;
     f32 init;
 
     idx = 0;
-    base = (char*)lbl_803DCE68;
-    e = base;
+    base = lbl_803DCE68;
+    entry = base;
     for (; idx < 0x3a; idx++)
     {
-        if (((TexScrollEntry*)e)->xStep == xStep && ((TexScrollEntry*)e)->yStep == yStep)
+        if (entry->xStep == xStep && entry->yStep == yStep)
         {
-            ((TexScrollEntry*)e)->refCount += 1;
+            entry->refCount += 1;
             return idx;
         }
-        e += 0x10;
+        entry++;
     }
     slot = -1;
-    for (idx2 = 0, e = base; idx2 < 0x3a; e += 0x10, idx2++)
+    for (idx2 = 0, entry = base; idx2 < 0x3a; entry++, idx2++)
     {
-        if (((TexScrollEntry*)e)->refCount == 0)
+        if (entry->refCount == 0)
         {
             slot = idx2;
             break;
@@ -886,17 +856,17 @@ int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeig
     }
     if (slot == -1)
         return -1;
-    e = base + slot * 0x10;
-    ((TexScrollEntry*)e)->xStep = (s16)((xStep << 16) / (texWidthFixed >> 6));
-    ((TexScrollEntry*)e)->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
+    entry = &base[slot];
+    entry->xStep = (s16)((xStep << 16) / (texWidthFixed >> 6));
+    entry->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
     init = lbl_803DEBCC;
-    ((TexScrollEntry*)e)->offsetX = init;
-    ((TexScrollEntry*)e)->offsetY = init;
-    ((TexScrollEntry*)e)->refCount += 1;
+    entry->offsetX = init;
+    entry->offsetY = init;
+    entry->refCount += 1;
     return slot;
 }
 
-void trackLoadBlockEnd(void* blk, int blockId, int slotIdx, int layer)
+void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
 {
     int i;
     s16* arr;
@@ -922,7 +892,7 @@ void trackLoadBlockEnd(void* blk, int blockId, int slotIdx, int layer)
     }
     statusArr = gMapBlockLayerTables[layer];
     statusArr[slotIdx] = i;
-    gMapBlocks[i] = (MapBlockData*)blk;
+    gMapBlocks[i] = block;
     gMapBlockIds[i] = blockId;
     gMapBlockRefCounts[i] = 1;
     setMapBlockFlag();
@@ -940,22 +910,22 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 {
     int j;
     s16* arr;
-    void* blk[1];
-    int z[2];
+    MapBlockData* block;
+    int textureIndex;
     int slotIdx;
     int blockId;
     s8* statusArr;
-    char* entry;
+    MapCellEntry* entry;
 
-    entry = (char*)lbl_803822A0[layer];
+    entry = (MapCellEntry*)lbl_803822A0[layer];
     statusArr = gMapBlockLayerTables[layer];
     slotIdx = cellX + (cellZ << 4);
-    entry += slotIdx * 12;
+    entry += slotIdx;
 
-    mapBlockFn_80059354(worldX, worldZ, (MapCellEntry*)entry, layer);
+    mapBlockFn_80059354(worldX, worldZ, entry, layer);
 
-    blockId = *(s16*)(entry + 6);
-    if (mapCheckCurBlocks(*(s8*)(entry + 9)) == -1)
+    blockId = entry->blockId;
+    if (mapCheckCurBlocks(entry->romListIndex) == -1)
     {
         statusArr[slotIdx] = -1;
         return 0;
@@ -984,41 +954,37 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
         arr++;
     }
 
-    blk[0] = MapBlock_loadFromFile(blockId);
-    if (blk[0] != NULL)
+    block = MapBlock_loadFromFile(blockId);
+    if (block != NULL)
     {
-        MapBlock_init(blk[0]);
-        z[0] = 0;
-        z[1] = z[0];
-        while (z[0] < *(u8*)((char*)blk[0] + 0xa0))
+        MapBlock_init(block);
+        for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
         {
-            int v = *(int*)(*(int*)((char*)blk[0] + 0x54) + z[1]);
-            v = -(int)((u32)v | 0x8000);
-            *(void**)(*(int*)((char*)blk[0] + 0x54) + z[1]) = textureLoad(v, 0);
-            z[1] += 4;
-            z[0]++;
+            int fileId = -(int)((u32)block->textures[textureIndex].fileId | 0x8000);
+            block->textures[textureIndex].texture = textureLoad(fileId, 0);
         }
-        MapBlock_initHits(blk[0], blockId);
-        MapBlock_initShaders(blk[0]);
-        trackLoadBlockEnd(blk[0], blockId, slotIdx, layer);
-        *(int*)blk[0] = return0_80060B90(blk[0]);
-        DCStoreRange(blk[0], *(int*)((char*)blk[0] + 0x8));
+        MapBlock_initHits(block, blockId);
+        MapBlock_initShaders(block);
+        trackLoadBlockEnd(block, blockId, slotIdx, layer);
+        block->unk0 = (void*)return0_80060B90(block);
+        DCStoreRange(block, block->size);
     }
     return 1;
 }
 
 void unloadMap(void)
 {
-    int blk;
+    MapBlockData* block;
+    MapShader* shader;
+    MapShaderLayer* shaderLayer;
     int i;
     int layer;
     s8* cur;
     s8 mapType;
-    int z[2];
-    int rb;
-    char* p;
-    int n;
-    int k;
+    int shaderIndex;
+    int layerIndex;
+    int textureIndex;
+    u32 scrollSlot;
 
     audioStopByMask(4);
     Sfx_ClearLoopedObjectSounds();
@@ -1034,53 +1000,45 @@ void unloadMap(void)
                 gMapBlockRefCounts[mapType]--;
                 if (gMapBlockRefCounts[mapType] == 0)
                 {
-                    blk = (int)gMapBlocks[mapType];
+                    block = gMapBlocks[mapType];
                     gMapBlockIds[mapType] = -1;
-                    z[0] = 0;
                     gMapBlocks[mapType] = NULL;
-                    z[1] = z[0];
-                    for (; z[0] < *(u8*)(blk + 0xa2); z[1] += 68, z[0]++)
+                    for (shaderIndex = 0; shaderIndex < block->shaderCount; shaderIndex++)
                     {
-                        rb = *(int*)(blk + 0x64) + z[1];
-                        k = 0;
-                        p = (char*)rb;
-                        for (; k < *(u8*)(rb + 0x41); k++)
+                        shader = &block->shaders[shaderIndex];
+                        for (layerIndex = 0; layerIndex < shader->layerCount; layerIndex++)
                         {
-                            u32 cell = *(u8*)(p + 0x2a);
-                            if (cell != 0xff)
+                            shaderLayer = &shader->layers[layerIndex];
+                            scrollSlot = shaderLayer->scrollMtx;
+                            if (scrollSlot != 0xff)
                             {
-                                if (*(u8*)(lbl_803DCE68 + cell * 16 + 12) != 0)
-                                    *(u8*)(lbl_803DCE68 + cell * 16 + 12) -= 1;
+                                if (lbl_803DCE68[scrollSlot].refCount != 0)
+                                    lbl_803DCE68[scrollSlot].refCount -= 1;
                             }
-                            if (*(u8*)(p + 0x29) != 0)
-                                mapTextureOverrideRelease(*(int*)(p + 0x24), *(u8*)(p + 0x29));
-                            p += 8;
+                            if (shaderLayer->overrideType != 0)
+                                mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->overrideType);
                         }
                     }
-                    z[0] = 0;
-                    z[1] = z[0];
-                    for (; z[0] < *(u8*)(blk + 0xa0); z[1] += 4, z[0]++)
-                        textureFree((Texture*)(*(int*)(*(int*)(blk + 0x54) + z[1])));
-                    if (*(void**)(blk + 0x74) != 0)
-                        mm_free(*(void**)(blk + 0x74));
-                    if (*(void**)(blk + 0x70) != 0)
-                        mm_free(*(void**)(blk + 0x70));
+                    for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
+                        textureFree(block->textures[textureIndex].texture);
+                    if (block->auxData != NULL)
+                        mm_free(block->auxData);
+                    if (block->hits != NULL)
+                        mm_free(block->hits);
                     setMapBlockFlag();
-                    mm_free((void*)blk);
+                    mm_free(block);
                 }
             }
         }
     }
     lbl_803DCE98 = 0;
     Obj_ResetObjectSystem();
-    z[0] = 0;
-    z[1] = z[0];
-    for (; z[0] < ROM_LIST_PAGE_COUNT; z[0]++)
+    for (i = 0; i < ROM_LIST_PAGE_COUNT; i++)
     {
-        if (gLoadedRomListPages[z[0]] != 0)
+        if (gLoadedRomListPages[i] != NULL)
         {
-            mm_free(gLoadedRomListPages[z[0]]);
-            gLoadedRomListPages[z[0]] = (MapRomListPage*)z[1];
+            mm_free(gLoadedRomListPages[i]);
+            gLoadedRomListPages[i] = NULL;
         }
     }
     (*gCheckpointInterface)->reset();
@@ -2001,8 +1959,8 @@ void doPendingMapLoads(void)
                                         scrollSlot = shaderLayer->scrollMtx;
                                         if (scrollSlot != 0xff)
                                         {
-                                            if (((TexScrollEntry*)lbl_803DCE68)[scrollSlot].refCount != 0)
-                                                ((TexScrollEntry*)lbl_803DCE68)[scrollSlot].refCount -= 1;
+                                            if (lbl_803DCE68[scrollSlot].refCount != 0)
+                                                lbl_803DCE68[scrollSlot].refCount -= 1;
                                         }
                                         if (shaderLayer->overrideType != 0)
                                             mapTextureOverrideRelease(shaderLayer->texture,
@@ -2010,7 +1968,7 @@ void doPendingMapLoads(void)
                                     }
                                 }
                                 for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
-                                    textureFree(block->textures[textureIndex]);
+                                    textureFree(block->textures[textureIndex].texture);
                                 if (block->auxData != NULL)
                                     mm_free(block->auxData);
                                 if (block->hits != NULL)

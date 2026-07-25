@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "main/map_romlist_page.h"
+#include "main/map_texture_state.h"
 
 struct GameObject;
 struct MapBlockData;
@@ -42,7 +43,7 @@ MapCellEntry* mapGetCellEntry(int x, int z);
 MapRomList* mapBlockFn_800592e4(void);
 void mapBlockFn_80059c2c(u8* outFlags);
 s32 getCurMapType(void);
-void mapTextureOverrideSetValue(int type, u32 key, int value);
+void mapTextureOverrideSetValue(int type, Texture* texture, int frame);
 int objUpdateOpacity(struct GameObject* obj);
 void playerUpdateFn_8005649c(void);
 void doPendingMapLoads(void);
@@ -57,7 +58,8 @@ void playerVecFn_8005a9b0(void);
 s32 getCurMapLayer(void);
 void mapUnloadRomListPage(int pageIndex);
 void mapFn_80057d24(int a, int b, int* o0, int* o1, int* o2, int* o3, int f1, int f2, int idx);
-int mapTextureOverrideAcquire(int key, int value, int type);
+int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type);
+void mapTextureOverrideRelease(Texture* texture, int type);
 s16* return0_80056694(struct MapBlockData* block, int textureSlot);
 int return0_8005669C(int unused);
 

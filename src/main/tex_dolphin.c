@@ -2,6 +2,7 @@
 #include "main/tex_dolphin.h"
 #include "main/texture.h"
 #include "main/shader_api.h"
+#include "main/map_block.h"
 #include "main/sky_api.h"
 #include "main/game_object.h"
 #include "main/rcp_dolphin_api.h"
@@ -31,8 +32,6 @@ extern ModelLightStruct* gTexDimmedLightList[2];
 extern ModelLightStruct* gTexBlockLightList[2];
 extern int lbl_803DCE30;
 extern int* lbl_803DCE34;
-extern int lbl_803DCE68;
-extern int lbl_803DCE6C;
 extern int gTexIndMtxTable[];
 extern u8 lbl_8037E0C0[];
 extern int lbl_80382008[5];
@@ -40,37 +39,6 @@ extern int lbl_80382008[5];
 extern FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
 extern int gTexShaderFogColor;
 extern int gTexLightmapFogColor;
-
-typedef struct TexOverride
-{
-    int id;
-    int ptr;
-    int unk8;
-    s16 count;
-    u8 layerByte;
-    u8 padF;
-} TexOverride;
-
-/*
- * MapBlockBoundsRec - a 0x1c per-block render record (block->unk68 array,
- * stride 0x1c). Offset 0 is the GX display-list pointer, offset 4 its u16
- * byte-size; offsets 6..0x10 are the s16 AABB (min/max X,Y,Z in 1/8 units);
- * offset 0x18 is an u8 selector. Pad covers unobserved ranges.
- */
-typedef struct MapBlockBoundsRec
-{
-    void* dlist;
-    u16 dlistSize;
-    s16 minX;
-    s16 minY;
-    s16 minZ;
-    s16 maxX;
-    s16 maxY;
-    s16 maxZ;
-    u8 pad12[0x18 - 0x12];
-    u8 selector;
-    u8 pad19[0x1C - 0x19];
-} MapBlockBoundsRec;
 
 /*
  * TexShadowRow - 0x10-stride rows of the pending-shadow queue at the head of
@@ -167,36 +135,7 @@ typedef struct IndMtxCopy
     int w[6];
 } IndMtxCopy;
 
-/*
- * MapShader - a 0x44-stride shader record (block->unk64 array). Only the
- * fields this file touches are named: a u32 render-flag word at 0x3c and a
- * u8 layer count at 0x41. The record is otherwise opaque (queried via
- * Shader_getLayer); pad covers unobserved bytes.
- */
-typedef struct MapShader
-{
-    u8 pad0[0x3C - 0x0];
-    u32 flags;
-    u8 pad40[0x41 - 0x40];
-    u8 layerCount;
-    u8 pad42[0x44 - 0x42];
-} MapShader;
-#define SHADER_FLAGS(s) (((MapShader*)(s))->flags)
-
-/*
- * TexLayer - a shader texture layer (returned by Shader_getLayer). Offset 0
- * is the texture id, 4 a u8 type/blend byte (low 7 bits select the blend
- * mode), 5 a u8 texture-override-table selector, 6 a u8 texture-matrix index
- * (0xff = none).
- */
-typedef struct TexLayer
-{
-    int texId;
-    u8 typeBits;
-    u8 overrideByte;
-    u8 mtxIndex;
-    u8 pad7;
-} TexLayer;
+#define SHADER_FLAGS(s) ((s)->flags)
 
 void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, MapShader* shader, int* bitReader,
                                                Mtx viewMtx)
@@ -285,10 +224,10 @@ MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, int*
         bits |= (u32) * (u8*)(byteBase + 2) << 16;
         bitReader[4] = bitPos + 6;
         shaderIdx = (bits >> (bitPos & 7)) & 0x3f;
-        shader = (MapShader*)*(int*)((u8*)blockData + 0x64) + shaderIdx;
+        shader = &blockData->shaders[shaderIdx];
     }
     GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
-    selectTexture((Texture*)((TexLayer*)Shader_getLayer(shader, 0))->texId, 0);
+    selectTexture(((MapShaderLayer*)Shader_getLayer(shader, 0))->texture, 0);
     if ((SHADER_FLAGS(shader) & 4) != 0)
     {
         _gxSetFogParams();
@@ -318,21 +257,6 @@ MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, int*
     }
     return shader;
 }
-
-/*
- * MapBlockData - the per-map-block record handed to the mapBlockRender_*
- * family. Only the two array bases this file reads are named:
- * the 0x44-stride MapShader table at 0x64 and the 0x1c-stride
- * MapBlockBoundsRec table at 0x68. Declared HERE (not at top of file)
- * because any typedef parsed before mapBlockRender_setLightmapShader
- * renumbers MWCC's internal @NNN constant-pool symbol (strtab byte diff).
- */
-typedef struct MapBlockData
-{
-    u8 pad0[0x64];
-    MapShader* shaders;        /* 0x64 */
-    MapBlockBoundsRec* bounds; /* 0x68 */
-} MapBlockData;
 
 /*
  * BitStreamReader - the render-command bit cursor threaded through the
@@ -563,7 +487,7 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
             bits = bits | (u32)(*(u8*)(byteBase + 2) << 16);
         }
         ((BitStreamReader*)stream)->bitPos = bitPos + 8;
-        rec[0] = (int)&block->bounds[(bits >> (bitPos & 7)) & 0xff];
+        rec[0] = (int)&block->displayLists[(bits >> (bitPos & 7)) & 0xff];
         if ((shader != NULL) && ((SHADER_FLAGS(shader) & 2) != 0))
         {
             return;
@@ -725,52 +649,52 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
 void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
 {
     int layerIdx;
-    TexLayer* layer;
-    int texId;
+    MapShaderLayer* layer;
+    Texture* texture;
     MtxPtr texMtx;
     int overrideIdx;
     int remain;
-    TexOverride* ovr;
+    MapTextureOverride* overrideEntry;
     u8 layerByte;
     u32 kColor;
     f32 tx;
     Mtx texMatrix;
 
     kColor = lbl_803DEBB0;
-    if ((shader->layerCount == 2) &&
-        (texId = (int)Shader_getLayer((void*)shader, 1), (((TexLayer*)texId)->typeBits & 0x7f) == 9u))
+    if (shader->layerCount == 2 &&
+        (((layer = Shader_getLayer(shader, 1))->typeBits & 0x7f) == 9))
     {
-        layer = (TexLayer*)Shader_getLayer((void*)shader, 0);
+        layer = Shader_getLayer(shader, 0);
         {
-            u8 ovrByte;
-            if ((ovrByte = layer->overrideByte) != '\0')
+            u8 overrideType;
+            if ((overrideType = layer->overrideType) != 0)
             {
-                int layerTexId = layer->texId;
-                TexOverride* base;
+                Texture* layerTexture = layer->texture;
+                MapTextureOverride* overrides;
                 overrideIdx = 0;
-                base = (TexOverride*)lbl_803DCE6C;
-                ovr = base;
-                for (remain = 0x50; remain != 0 || (texId = layerTexId, 0); remain--)
+                overrides = lbl_803DCE6C;
+                overrideEntry = overrides;
+                for (remain = 80; remain != 0 || (texture = layerTexture, 0); remain--)
                 {
-                    if (((0 < ovr->count) && ((u32)ovr->id == layerTexId)) && ((int)ovrByte == ovr->layerByte))
+                    if (overrideEntry->refCount > 0 && overrideEntry->texture == layerTexture &&
+                        overrideEntry->type == overrideType)
                     {
-                        texId = (int)textureGetAnimationFrame((Texture*)layerTexId, base[overrideIdx].ptr);
+                        texture = textureGetAnimationFrame(layerTexture, overrides[overrideIdx].frame);
                         break;
                     }
-                    ovr = ovr + 1;
-                    overrideIdx = overrideIdx + 1;
+                    overrideEntry++;
+                    overrideIdx++;
                 }
             }
             else
             {
-                texId = layer->texId;
+                texture = layer->texture;
             }
         }
-        if (layer->mtxIndex != 0xff)
+        if (layer->scrollMtx != 0xff)
         {
-            tx = *(float*)(lbl_803DCE68 + ((u32)layer->mtxIndex << 4)) / 1048576.0f;
-            PSMTXTrans(texMatrix, tx,
-                       *(float*)((lbl_803DCE68 + 4) + ((u32)layer->mtxIndex << 4)) / 1048576.0f,
+            tx = lbl_803DCE68[layer->scrollMtx].offsetX / 1048576.0f;
+            PSMTXTrans(texMatrix, tx, lbl_803DCE68[layer->scrollMtx].offsetY / 1048576.0f,
                        lbl_803DEBCC);
             texMtx = texMatrix;
         }
@@ -778,42 +702,42 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         {
             texMtx = NULL;
         }
-        fn_80051B00((Texture*)texId, texMtx, 0, (GXColor*)&kColor);
-        if ((SHADER_FLAGS(shader) & 0x100) != 0)
+        fn_80051B00(texture, texMtx, 0, (GXColor*)&kColor);
+        if (shader->flags & 0x100)
         {
             fn_8004D928();
         }
-        layer = (TexLayer*)Shader_getLayer((void*)shader, 1);
+        layer = Shader_getLayer(shader, 1);
         {
-            u8 ovrByte;
-            if ((ovrByte = layer->overrideByte) != '\0')
+            u8 overrideType;
+            if ((overrideType = layer->overrideType) != 0)
             {
-                int layerTexId = layer->texId;
-                TexOverride* base;
+                Texture* layerTexture = layer->texture;
+                MapTextureOverride* overrides;
                 overrideIdx = 0;
-                base = (TexOverride*)lbl_803DCE6C;
-                ovr = base;
-                for (remain = 0x50; remain != 0 || (texId = layerTexId, 0); remain--)
+                overrides = lbl_803DCE6C;
+                overrideEntry = overrides;
+                for (remain = 80; remain != 0 || (texture = layerTexture, 0); remain--)
                 {
-                    if (((0 < ovr->count) && ((u32)ovr->id == layerTexId)) && ((int)ovrByte == ovr->layerByte))
+                    if (overrideEntry->refCount > 0 && overrideEntry->texture == layerTexture &&
+                        overrideEntry->type == overrideType)
                     {
-                        texId = (int)textureGetAnimationFrame((Texture*)layerTexId, base[overrideIdx].ptr);
+                        texture = textureGetAnimationFrame(layerTexture, overrides[overrideIdx].frame);
                         break;
                     }
-                    ovr = ovr + 1;
-                    overrideIdx = overrideIdx + 1;
+                    overrideEntry++;
+                    overrideIdx++;
                 }
             }
             else
             {
-                texId = layer->texId;
+                texture = layer->texture;
             }
         }
-        if (layer->mtxIndex != 0xff)
+        if (layer->scrollMtx != 0xff)
         {
-            tx = *(float*)(lbl_803DCE68 + ((u32)layer->mtxIndex << 4)) / 1048576.0f;
-            PSMTXTrans(texMatrix, tx,
-                       *(float*)((lbl_803DCE68 + 4) + ((u32)layer->mtxIndex << 4)) / 1048576.0f,
+            tx = lbl_803DCE68[layer->scrollMtx].offsetX / 1048576.0f;
+            PSMTXTrans(texMatrix, tx, lbl_803DCE68[layer->scrollMtx].offsetY / 1048576.0f,
                        lbl_803DEBCC);
             texMtx = texMatrix;
         }
@@ -821,47 +745,42 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         {
             texMtx = NULL;
         }
-        fn_80051868((Texture*)texId, texMtx, 9);
+        fn_80051868(texture, texMtx, 9);
         textureFn_800524ec((GXColor*)&kColor);
     }
     else
     {
         for (layerIdx = 0; layerIdx < (int)(u32)shader->layerCount; layerIdx = layerIdx + 1)
         {
-            int layerTexId;
-            layer = (TexLayer*)Shader_getLayer((void*)shader, layerIdx);
-            layerTexId = layer->texId;
-            if ((u32)layerTexId != 0)
+            layer = Shader_getLayer(shader, layerIdx);
+            texture = layer->texture;
+            if (texture != NULL)
             {
-                u8 ovrLayerByte;
                 {
-                    if ((ovrLayerByte = layer->overrideByte) != '\0')
+                    u8 overrideType;
+                    if ((overrideType = layer->overrideType) != 0)
                     {
-                        TexOverride* base;
+                        Texture* layerTexture = layer->texture;
+                        MapTextureOverride* overrides;
                         overrideIdx = 0;
-                        base = (TexOverride*)lbl_803DCE6C;
-                        ovr = base;
-                        for (remain = 0x50; remain != 0 || (texId = layerTexId, 0); remain--)
+                        overrides = lbl_803DCE6C;
+                        overrideEntry = overrides;
+                        for (remain = 80; remain != 0 || (texture = layerTexture, 0); remain--)
                         {
-                            if (((0 < ovr->count) && ((u32)ovr->id == layerTexId)) &&
-                                ((int)ovrLayerByte == ovr->layerByte))
+                            if (overrideEntry->refCount > 0 && overrideEntry->texture == layerTexture &&
+                                overrideEntry->type == overrideType)
                             {
-                                texId = (int)textureGetAnimationFrame((Texture*)layerTexId, base[overrideIdx].ptr);
+                                texture = textureGetAnimationFrame(layerTexture, overrides[overrideIdx].frame);
                                 break;
                             }
-                            ovr = ovr + 1;
-                            overrideIdx = overrideIdx + 1;
+                            overrideEntry++;
+                            overrideIdx++;
                         }
                     }
-                    else
+                    if (layer->scrollMtx != 0xff)
                     {
-                        texId = layerTexId;
-                    }
-                    if (layer->mtxIndex != 0xff)
-                    {
-                        int mtxOff = (u32)layer->mtxIndex * 0x10;
-                        tx = *(float*)(lbl_803DCE68 + mtxOff) / 1048576.0f;
-                        PSMTXTrans(texMatrix, tx, *(float*)((lbl_803DCE68 + mtxOff) + 4) / 1048576.0f,
+                        tx = lbl_803DCE68[layer->scrollMtx].offsetX / 1048576.0f;
+                        PSMTXTrans(texMatrix, tx, lbl_803DCE68[layer->scrollMtx].offsetY / 1048576.0f,
                                    lbl_803DEBCC);
                         texMtx = texMatrix;
                     }
@@ -870,13 +789,13 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                         texMtx = NULL;
                     }
                     layerByte = layer->typeBits & 0x7f;
-                    if ((SHADER_FLAGS(shader) & 0x40000) != 0)
+                    if (shader->flags & 0x40000)
                     {
-                        fn_80051528((void*)texId, texMtx);
+                        fn_80051528(texture, texMtx);
                     }
                     else
                     {
-                        fn_80051868((Texture*)texId, texMtx, layerByte);
+                        fn_80051868(texture, texMtx, layerByte);
                     }
                 }
             }
@@ -885,12 +804,11 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                 gxColorFn_800523d0();
             }
         }
-        if ((SHADER_FLAGS(shader) & 0x100) != 0)
+        if (shader->flags & 0x100)
         {
             fn_8004D928();
         }
     }
-    return;
 }
 
 MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, int* bitReader)

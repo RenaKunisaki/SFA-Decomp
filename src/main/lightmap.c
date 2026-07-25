@@ -66,26 +66,6 @@ typedef struct
     f32 hi;
 } F32Pair;
 
-typedef struct MapTextureOverride
-{
-    Texture* texture;
-    s32 frame;
-    u32 flags;
-    s16 refCount;
-    u8 type;
-    u8 pad;
-} MapTextureOverride;
-
-typedef struct MapTextureScroll
-{
-    f32 offsetX;
-    f32 offsetY;
-    s16 xStep;
-    s16 yStep;
-    u8 refCount;
-    u8 pad[3];
-} MapTextureScroll;
-
 typedef struct EnvironmentUpdateInterface
 {
     void (*create)(void);
@@ -146,8 +126,6 @@ extern void* lbl_803DCE84;
 extern s16 lbl_803DCE90;
 extern s16 lbl_803DCEBA;
 extern s16 lbl_803DCEB8;
-extern u8* lbl_803DCE6C;
-extern u8* lbl_803DCE68;
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
 extern s32 gHeatEffectFadeDirection;
 
@@ -1003,7 +981,6 @@ void updateEnvironment(int mode)
         MapTextureScroll* textureScroll;
         Texture* tex;
         int i;
-        int off;
         f32 x;
         f32 deltaY;
         f32 deltaX;
@@ -1015,23 +992,19 @@ void updateEnvironment(int mode)
         (*gSkyInterface)->updateTimeOfDay();
         (*gNewCloudsInterface)->run();
 
-        off = i = 0;
-        for (; i < 80; i++)
+        for (i = 0; i < 80; i++)
         {
-            textureOverride = (MapTextureOverride*)(lbl_803DCE6C + off);
+            textureOverride = &lbl_803DCE6C[i];
             if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
                 tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
             {
                 textureUpdateAnimationFrame(tex, &textureOverride->flags, &textureOverride->frame);
             }
-            off += 0x10;
         }
 
-        i = 0;
-        off = 0;
-        for (; i < 58; i++)
+        for (i = 0; i < 58; i++)
         {
-            textureScroll = (MapTextureScroll*)(lbl_803DCE68 + off);
+            textureScroll = &lbl_803DCE68[i];
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);
@@ -1040,7 +1013,6 @@ void updateEnvironment(int mode)
                 textureScroll->offsetX = x + deltaX;
                 textureScroll->offsetY = textureScroll->offsetY + deltaY;
             }
-            off += 0x10;
         }
 
         loadNextMap();

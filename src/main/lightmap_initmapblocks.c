@@ -66,26 +66,6 @@ typedef struct
     f32 hi;
 } F32Pair;
 
-typedef struct MapTextureOverride
-{
-    Texture* texture;
-    s32 frame;
-    u32 flags;
-    s16 refCount;
-    u8 type;
-    u8 pad;
-} MapTextureOverride;
-
-typedef struct MapTextureScroll
-{
-    f32 offsetX;
-    f32 offsetY;
-    s16 xStep;
-    s16 yStep;
-    u8 refCount;
-    u8 pad[3];
-} MapTextureScroll;
-
 typedef struct EnvironmentUpdateInterface
 {
     void (*create)(void);
@@ -146,8 +126,6 @@ extern void* lbl_803DCE84;
 extern s16 lbl_803DCE90;
 extern s16 lbl_803DCEBA;
 extern s16 lbl_803DCEB8;
-extern u8* lbl_803DCE6C;
-extern u8* lbl_803DCE68;
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
 extern s32 gHeatEffectFadeDirection;
 

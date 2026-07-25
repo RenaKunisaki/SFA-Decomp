@@ -3,11 +3,12 @@
 
 #include "main/game_object.h"
 #include "main/map_block.h"
+#include "main/map_texture_state.h"
 
 void mapLoadForObject(int mapId, GameObject* obj);
 void mapDebugRender(int* state);
 int mapRectFn_8005a728(int bx, int bz, struct MapBlockData* block);
 void loadMapForCameraPos(float x, float y, float z);
-void* mapTextureOverrideGetEntry(int idx);
+MapTextureOverride* mapTextureOverrideGetEntry(int idx);
 
 #endif /* MAIN_SHADER_MAP_API_H_ */

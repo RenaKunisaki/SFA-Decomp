@@ -875,10 +875,10 @@ int mapBlockGetPolygonGroupType(void* obj)
 int mapBlockCountTrianglesByType(MapBlockData* block, int type)
 {
     int entry;
-    int offset;
     int total;
     int i;
     int count;
+    int offset;
     total = 0;
     offset = 0;
     count = block->polyGroupCount;
@@ -925,10 +925,10 @@ void MapBlock_initShaders(MapBlockData* block)
         sh = &block->shaders[i];
         for (j = 0; j < sh->layerCount; j++)
         {
-            ref = sh->layers[j].texture;
+            ref = sh->layers[j].textureIndex;
             if (ref != -1)
             {
-                sh->layers[j].texture = ((s32*)block->textures)[ref];
+                sh->layers[j].texture = block->textures[ref].texture;
                 ref = sh->layers[j].overrideType;
                 if ((u32)ref != 0u)
                 {
@@ -937,86 +937,104 @@ void MapBlock_initShaders(MapBlockData* block)
             }
             else
             {
-                sh->layers[j].texture = 0;
+                sh->layers[j].texture = NULL;
             }
             sh->layers[j].scrollMtx = 0xff;
         }
-        ref = sh->auxTexture;
+        ref = sh->auxTextureIndex;
         if (ref != -1)
         {
-            sh->auxTexture = ((s32*)block->textures)[ref];
+            sh->auxTexture = block->textures[ref].texture;
         }
         else
         {
-            sh->auxTexture = 0;
+            sh->auxTexture = NULL;
         }
     }
 }
 
-void MapBlock_init(GameObject* obj)
+static inline void* mapBlockRelocatePointer(MapBlockData* block, void* offset)
 {
-    int off;
+    return (u8*)block + (u32)offset;
+}
+
+void MapBlock_init(MapBlockData* block)
+{
     int i;
-    if (*(u32*)&obj->anim.hitReactState != 0)
-        *(int*)&obj->anim.hitReactState = (int)obj + *(int*)&obj->anim.hitReactState;
-    if (*(u32*)&obj->anim.placementData != 0)
-        *(int*)&obj->anim.placementData = (int)obj + *(int*)&obj->anim.placementData;
-    if (*(u32*)&obj->anim.modelInstance != 0)
-        *(int*)&obj->anim.modelInstance = (int)obj + *(int*)&obj->anim.modelInstance;
-    *(int*)((char*)obj + 0x58) = (int)obj + *(int*)((char*)obj + 0x58);
-    *(int*)&obj->anim.weaponDaTable = (int)obj + *(int*)&obj->anim.weaponDaTable;
-    *(int*)&obj->anim.eventTable = (int)obj + *(int*)&obj->anim.eventTable;
-    if (*(u32*)&obj->anim.hitVolumeBounds != 0)
-        *(int*)&obj->anim.hitVolumeBounds = (int)obj + *(int*)&obj->anim.hitVolumeBounds;
-    if (*(u32*)&obj->anim.banks != 0)
-        *(int*)&obj->anim.banks = (int)obj + *(int*)&obj->anim.banks;
-    if (*(u32*)&obj->anim.previousLocalPosX != 0)
-        *(int*)&obj->anim.previousLocalPosX = (int)obj + *(int*)&obj->anim.previousLocalPosX;
-    *(int*)&obj->anim.dll = (int)obj + *(int*)&obj->anim.dll;
-    if (*(u32*)&obj->anim.modelState != 0)
-        *(int*)&obj->anim.modelState = (int)obj + *(int*)&obj->anim.modelState;
-    for (i = 0, off = 0; i < ((MapBlockData*)obj)->edgeCount; i++)
+
+    if (block->textures != NULL)
+        block->textures = mapBlockRelocatePointer(block, block->textures);
+    if (block->gcPolygons != NULL)
+        block->gcPolygons = mapBlockRelocatePointer(block, block->gcPolygons);
+    if (block->polygonGroups != NULL)
+        block->polygonGroups = mapBlockRelocatePointer(block, block->polygonGroups);
+    block->vertices = mapBlockRelocatePointer(block, block->vertices);
+    block->vertexColors = mapBlockRelocatePointer(block, block->vertexColors);
+    block->vertexTexCoords = mapBlockRelocatePointer(block, block->vertexTexCoords);
+    if (block->renderInstrsMain != NULL)
+        block->renderInstrsMain = mapBlockRelocatePointer(block, block->renderInstrsMain);
+    if (block->renderInstrsTransp != NULL)
+        block->renderInstrsTransp = mapBlockRelocatePointer(block, block->renderInstrsTransp);
+    if (block->renderInstrsWater != NULL)
+        block->renderInstrsWater = mapBlockRelocatePointer(block, block->renderInstrsWater);
+    block->displayLists = mapBlockRelocatePointer(block, block->displayLists);
+    if (block->shaders != NULL)
+        block->shaders = mapBlockRelocatePointer(block, block->shaders);
+
+    for (i = 0; i < block->edgeCount; i++)
     {
-        *(int*)(*(int*)&obj->anim.dll + off) = (int)obj + *(int*)(*(int*)&obj->anim.dll + off);
-        off += 0x1c;
+        block->displayLists[i].dlist = mapBlockRelocatePointer(block, block->displayLists[i].dlist);
     }
 }
 
-void MapBlock_initHits(GameObject* obj, int index)
+typedef struct MapHitInitEntry
+{
+    s16 x0;
+    s16 z0;
+    u8 pad04[4];
+    s16 x1;
+    s16 z1;
+    u8 pad0C[3];
+    u8 flags;
+    u8 pad10[4];
+} MapHitInitEntry;
+
+STATIC_ASSERT(sizeof(MapHitInitEntry) == 0x14);
+
+void MapBlock_initHits(MapBlockData* block, int index)
 {
     int i;
     int* table = (int*)lbl_803DCE80;
     int fileOff = table[index];
     int size = table[index + 1] - fileOff;
-    int entry;
-    s16 v;
+    MapHitInitEntry* entry;
+    s16 value;
+
     if (size > 0)
     {
-        ((MapBlockData*)obj)->hits = mmAlloc(size, 5, 0);
-        fileLoadToBufferOffset(MLDF_FILEID_HITS_BIN, ((MapBlockData*)obj)->hits, fileOff, size);
+        block->hits = mmAlloc(size, 5, 0);
+        fileLoadToBufferOffset(MLDF_FILEID_HITS_BIN, block->hits, fileOff, size);
     }
-    ((MapBlockData*)obj)->hitCount = (u32)size / 20;
-    for (i = 0; i < ((MapBlockData*)obj)->hitCount; i++)
+    block->hitCount = (u32)size / sizeof(MapHitInitEntry);
+    for (i = 0; i < block->hitCount; i++)
     {
-        entry = *(int*)&obj->anim.textureSlots + i * 20;
-        if (*(s16*)(entry + 0) < 0 || (v = *(s16*)(entry + 2)) < 0 || *(s16*)(entry + 0) > 0x280 ||
-            v > 0x280)
+        entry = (MapHitInitEntry*)(block->hits + i * sizeof(MapHitInitEntry));
+        if (entry->x0 < 0 || (value = entry->z0) < 0 || entry->x0 > 0x280 || value > 0x280)
         {
-            *(u8*)(entry + 0xf) = 0x40;
+            entry->flags = 0x40;
         }
-        entry = *(int*)&obj->anim.textureSlots + i * 20;
-        if (*(s16*)(entry + 8) < 0 || (v = *(s16*)(entry + 0xa)) < 0 || *(s16*)(entry + 8) > 0x280 ||
-            v > 0x280)
+        entry = (MapHitInitEntry*)(block->hits + i * sizeof(MapHitInitEntry));
+        if (entry->x1 < 0 || (value = entry->z1) < 0 || entry->x1 > 0x280 || value > 0x280)
         {
-            *(u8*)(entry + 0xf) = 0x40;
+            entry->flags = 0x40;
         }
     }
-    *(int*)&obj->anim.hitVolumeTransforms = 0;
-    *(u16*)((char*)obj + 0x9e) = 0;
-    *(u16*)&obj->anim.rotZ = *(u16*)&obj->anim.rotZ & ~0x40;
+    block->auxData = NULL;
+    block->unk9E = 0;
+    block->flags4 &= ~0x40;
 }
 
-void* MapBlock_loadFromFile(int blockId)
+MapBlockData* MapBlock_loadFromFile(int blockId)
 {
     int compressedLen;
     int decompressedSize;
@@ -1090,7 +1108,6 @@ void mapGetBlocks(void** outLayerTables, u32* outBlocks)
 
 void mapClearBlockEdgeFlags(void)
 {
-    char* arr;
     int i;
     int j;
     MapBlockData* block;
@@ -1102,8 +1119,7 @@ void mapClearBlockEdgeFlags(void)
         {
             for (j = 0; j < block->edgeCount; j++)
             {
-                arr = block->displayLists;
-                arr[j * 0x1c + 0x12] = 0;
+                block->displayLists[j].flags = 0;
             }
         }
     }
