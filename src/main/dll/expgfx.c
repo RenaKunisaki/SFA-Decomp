@@ -313,6 +313,30 @@ static inline void expgfxSetSlotResult(s16* poolIndexOut, s16* slotIndexOut,
     *poolIndexOut = poolIndex;
 }
 
+static inline void expgfxFindSourcePool(u32* sourceIdWalk, s16* poolSlotTypeIds,
+                                        s8* activeCountWalk, int searchIndex, short slotType,
+                                        u32 sourceId, short* foundPoolIndexOut, short* foundOut)
+{
+    int batchGroup;
+    int batchSlot;
+    for (batchGroup = 0; batchGroup < EXPGFX_POOL_SEARCH_BATCH_COUNT;
+         sourceIdWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE,
+             activeCountWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, batchGroup++)
+    {
+        for (batchSlot = 0; batchSlot < EXPGFX_POOL_SEARCH_BATCH_SIZE;
+             batchSlot++, poolSlotTypeIds++, searchIndex++)
+        {
+            if ((sourceIdWalk[batchSlot] == sourceId) && (slotType == *poolSlotTypeIds) &&
+                (activeCountWalk[batchSlot] < EXPGFX_SLOTS_PER_POOL))
+            {
+                *foundPoolIndexOut = searchIndex;
+                *foundOut = 1;
+                return;
+            }
+        }
+    }
+}
+
 int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int preferredPoolIndex, u32 sourceId)
 {
     u32 currentMask;
@@ -579,6 +603,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     ExpgfxBounds* bounds;
     ExpgfxRuntimeDataLayout* runtime;
     int nextActivePool;
+    int scanIdx;
     f32* maxXPtr;
     f32* minYPtr;
     f32* maxYPtr;
@@ -655,10 +680,11 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     ambientScaled[0] = (f32)ambB8 * ambientScale;
 
     activeCountScan = runtime->poolActiveCounts;
-    for (nextActivePool = 0; nextActivePool < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); nextActivePool++)
+    for (scanIdx = 0; scanIdx < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); scanIdx++)
     {
-        if (activeCountScan[nextActivePool] != 0)
+        if (activeCountScan[scanIdx] != 0)
         {
+            nextActivePool = scanIdx;
             break;
         }
     }
@@ -699,13 +725,14 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
             maxZPtr = &bounds->maxZ;
             *maxZPtr = boundsMax;
             curPool = pool;
-            nextActivePool = pool + 1;
-            curPoolBuf = (u8*)runtime + nextActivePool;
+            scanIdx = pool + 1;
+            curPoolBuf = (u8*)runtime + scanIdx;
             activeCountScan = (s8*)(curPoolBuf + EXPGFX_POOL_ACTIVE_COUNTS_OFFSET);
-            for (; nextActivePool < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); nextActivePool++)
+            for (; scanIdx < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); scanIdx++)
             {
                 if (*activeCountScan != 0)
                 {
+                    nextActivePool = scanIdx;
                     break;
                 }
                 activeCountScan++;
