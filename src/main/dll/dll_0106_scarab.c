@@ -354,10 +354,10 @@ void Scarab_update(GameObject* obj)
     ScarabMoney money1;
     ScarabMoney money2;
     ScarabMoney money3;
-    GameObject* player;
-    ScarabState* state;
     int best[1];
     int flag;
+    GameObject* player;
+    ScarabState* state;
     s8 phaseState;
     s16 mode;
     f32 bestDist;
