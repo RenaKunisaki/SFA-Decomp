@@ -1,5 +1,5 @@
 /*
- * dim2roofrub (DLL 0xC7) - DIM2 roof-rub object and shared DLL glue.
+ * dim2roofrub (DLL 0xC7) - DIM2 roof-rub object.
  * The dim2roofrub object is a GC-map interactive surface that triggers
  * animation sequences and particle effects when the player walks over it.
  */
@@ -10,7 +10,6 @@
 #include "main/objfx.h"
 #include "main/objprint_render_api.h"
 #include "main/dll/DIM/dll_00C7_dim2roofrub_api.h"
-#include "main/dll/genpropswgpipe_struct.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 
@@ -24,7 +23,7 @@
 
 #define DIM2ROOFRUB_OBJFLAG_RENDERED 0x800
 
-typedef struct Dim2roofrubPlacement
+typedef struct DIM2RoofRubPlacement
 {
     u8 pad0[0x8 - 0x0];
     f32 posX;
@@ -41,7 +40,7 @@ typedef struct Dim2roofrubPlacement
     u8 pad25[0x2C - 0x25];
     s16 unk2C;
     u8 pad2E[0x30 - 0x2E];
-} Dim2roofrubPlacement;
+} DIM2RoofRubPlacement;
 
 typedef struct Dim2FxRow
 {
@@ -69,13 +68,13 @@ typedef struct Dim2PartVec
     f32 z;
 } Dim2PartVec;
 
-GenPropsWGPipe GXWGFifo : (0xCC008000);
 #define DIM2ROOFRUB_SEQID_SLIDE 0xa8
 #define DIM2ROOFRUB_SEQID_TREAD 0x451
 #define DIM2ROOFRUB_EVENT_TOGGLE_LIGHT 1
 #define DIM2ROOFRUB_EVENT_TOGGLE_HEAVY 2
 #define DIM2ROOFRUB_EVENT_TOGGLE_FX    3
 #define DIM2ROOFRUB_EVENT_SPAWN_DUST   4
+/* dust particle spawned 3x on the SPAWN_DUST anim event */
 #define DIM2ROOFRUB_PARTFX 2046
 extern u32 lbl_80320768[];
 
@@ -180,16 +179,6 @@ void dim2roofrub_free(int* obj)
     Sfx_StopObjectChannel((int)obj, 0x7f);
 }
 
-#define DIM2ROOFRUB_SEQID_SLIDE 0xa8
-#define DIM2ROOFRUB_SEQID_TREAD 0x451
-
-#define DIM2ROOFRUB_EVENT_TOGGLE_LIGHT 1
-#define DIM2ROOFRUB_EVENT_TOGGLE_HEAVY 2
-#define DIM2ROOFRUB_EVENT_TOGGLE_FX    3
-#define DIM2ROOFRUB_EVENT_SPAWN_DUST   4
-/* dust particle spawned 3x on the SPAWN_DUST anim event */
-#define DIM2ROOFRUB_PARTFX 2046
-
 void dim2roofrub_render(int* obj, int p2, int p3, int p4, int p5)
 {
     f32 mWorld[12];
@@ -213,8 +202,8 @@ void dim2roofrub_render(int* obj, int p2, int p3, int p4, int p5)
         s16* cam;
         Obj_BuildWorldTransformMatrix((GameObject*)obj, mWorld, 0);
         prm = *(int**)&((GameObject*)obj)->anim.placementData;
-        PSMTXTrans(mTransPlayer, -(((Dim2roofrubPlacement*)prm)->posX - playerMapOffsetX),
-                   -((Dim2roofrubPlacement*)prm)->posY, -(((Dim2roofrubPlacement*)prm)->posZ - playerMapOffsetZ));
+        PSMTXTrans(mTransPlayer, -(((DIM2RoofRubPlacement*)prm)->posX - playerMapOffsetX),
+                   -((DIM2RoofRubPlacement*)prm)->posY, -(((DIM2RoofRubPlacement*)prm)->posZ - playerMapOffsetZ));
         PSMTXConcat(mTransPlayer, mWorld, mWorldCombined);
         cam = (s16*)(*gCameraInterface)->getCamera();
         ((GameObject*)cam)->anim.rotY += 0x8000;
@@ -245,7 +234,7 @@ void dim2roofrub_update(int* obj)
     ObjSeqState* seq = ((GameObject*)obj)->extra;
     int* params = *(int**)&((GameObject*)obj)->anim.placementData;
 
-    if (params != NULL && ((Dim2roofrubPlacement*)params)->animDataIndex != -1)
+    if (params != NULL && ((DIM2RoofRubPlacement*)params)->animDataIndex != -1)
     {
         Dim2PartVec v;
         int count;
@@ -322,12 +311,12 @@ void dim2roofrub_init(int* obj, int* params)
     int f4;
     objSetSlot((GameObject*)obj, 0x64);
     seq = ((GameObject*)obj)->extra;
-    seq->gameBit = ((Dim2roofrubPlacement*)params)->gameBit;
+    seq->gameBit = ((DIM2RoofRubPlacement*)params)->gameBit;
     seq->flags = -1;
     {
         f32 d = (1.0f);
         seq->posOffsetDecay =
-            d / (d + (f32)(u32)((Dim2roofrubPlacement*)params)->dampingParam);
+            d / (d + (f32)(u32)((DIM2RoofRubPlacement*)params)->dampingParam);
     }
     seq->curveId = -1;
     seq->animEntries = NULL;
@@ -336,19 +325,19 @@ void dim2roofrub_init(int* obj, int* params)
     seq->baseRotY = 0;
     ((GameObject*)obj)->userData2 = 0;
     f4 = ((GameObject*)obj)->userData1;
-    if (f4 == 0 && ((Dim2roofrubPlacement*)params)->animDataIndex != 1)
+    if (f4 == 0 && ((DIM2RoofRubPlacement*)params)->animDataIndex != 1)
     {
         (*gObjectTriggerInterface)->loadAnimData((u8*)seq, (u8*)params);
-        ((GameObject*)obj)->userData1 = ((Dim2roofrubPlacement*)params)->animDataIndex + 1;
+        ((GameObject*)obj)->userData1 = ((DIM2RoofRubPlacement*)params)->animDataIndex + 1;
     }
-    else if (f4 != 0 && ((Dim2roofrubPlacement*)params)->animDataIndex != f4 - 1)
+    else if (f4 != 0 && ((DIM2RoofRubPlacement*)params)->animDataIndex != f4 - 1)
     {
         (*gObjectTriggerInterface)->freeState((u8*)seq);
-        if (((Dim2roofrubPlacement*)params)->animDataIndex != -1)
+        if (((DIM2RoofRubPlacement*)params)->animDataIndex != -1)
         {
             (*gObjectTriggerInterface)->loadAnimData((u8*)seq, (u8*)params);
         }
-        ((GameObject*)obj)->userData1 = ((Dim2roofrubPlacement*)params)->animDataIndex + 1;
+        ((GameObject*)obj)->userData1 = ((DIM2RoofRubPlacement*)params)->animDataIndex + 1;
     }
     {
         ObjModelState* modelState = ((GameObject*)obj)->anim.modelState;
@@ -358,25 +347,4 @@ void dim2roofrub_init(int* obj, int* params)
             ((GameObject*)obj)->anim.modelState->shadowTintB = 0x96;
         }
     }
-}
-
-static inline void swipePos3f32(const f32 x, const f32 y, const f32 z)
-{
-    GXWGFifo.f32 = x;
-    GXWGFifo.f32 = y;
-    GXWGFifo.f32 = z;
-}
-
-static inline void swipeColor4u8(const u8 r, const u8 g, const u8 b, const u8 a)
-{
-    GXWGFifo.u8 = r;
-    GXWGFifo.u8 = g;
-    GXWGFifo.u8 = b;
-    GXWGFifo.u8 = a;
-}
-
-static inline void swipeTexCoord2f32(const f32 s, const f32 t)
-{
-    GXWGFifo.f32 = s;
-    GXWGFifo.f32 = t;
 }

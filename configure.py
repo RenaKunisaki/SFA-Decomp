@@ -1040,6 +1040,40 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            # dlls/engine
+
+            # dlls/modgfx
+
+            # dlls/projgfx
+
+            # dlls/objects
+            Object(
+                NonMatching,
+                "dlls/objects/195_Player/player.c",
+                mw_version="GC/1.3",
+                cflags=[*cflags_dll_noopt, "-inline", "noauto"],
+            ),
+            Object(
+                NonMatching,
+                "dlls/objects/196_Tricky/tricky.c",
+                mw_version="GC/2.0",
+                cflags=[
+                    *cflags_base,
+                    "-opt",
+                    "nopeephole,noschedule,nopropagation,nodead",
+                    "-inline",
+                    "noauto",
+                ],
+            ),
+            Object(MatchingFor("GSAE01"), "dlls/objects/197/197.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/198_AnimatedObj/AnimatedObj.c", cflags=cflags_dll_noopt),
+            Object(
+                MatchingFor("GSAE01"),
+                "dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c",
+                cflags=cflags_dll_noopt_noprop,
+            ),
+
+            # main
             Object(MatchingFor("GSAE01"), "main/audio/synth_constants.c"),
             Object(MatchingFor("GSAE01"), "main/audio/synth_callback.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/synth_channel.c", mw_version="GC/1.2.5n"),
@@ -1131,12 +1165,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/audio/hw_input.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_aram.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_samplemem.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
-            Object(
-                NonMatching,
-                "dlls/objects/195_Player/player.c",
-                mw_version="GC/1.3",
-                cflags=[*cflags_dll_noopt, "-inline", "noauto"],
-            ),
             Object(NonMatching, "main/dll/dll_01B5_lightfoot.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/DIM/dll_0256_dimsnowhorn1.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_01D9_dim2prisonmammoth.c", cflags=cflags_dll_noopt),
@@ -1473,18 +1501,6 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_0041_warpstoneui.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_02C0_front.c", cflags=cflags_dll_noopt_noloopinv),
             Object(NonMatching, "main/dll/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
-            Object(
-                NonMatching,
-                "dlls/objects/196_Tricky/tricky.c",
-                mw_version="GC/2.0",
-                cflags=[
-                    *cflags_base,
-                    "-opt",
-                    "nopeephole,noschedule,nopropagation,nodead",
-                    "-inline",
-                    "noauto",
-                ],
-            ),
             Object(NonMatching, "main/dll/dll_00C9_enemy.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_00C9_enemy_8014c678.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "main/dll/dll_00C9_enemy_8014c920.c", cflags=cflags_dll_noopt),
@@ -1535,9 +1551,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_025A_staticcamera.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00DD_gcbaddieshield.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00DE_baddieinterestp.c", cflags=cflags_dll_noopt_noloopinv),
-            Object(MatchingFor("GSAE01"), "dlls/objects/197/197.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "dlls/objects/198_AnimatedObj/AnimatedObj.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_00C7_dim2roofrub.c", cflags=cflags_dll_noopt_noprop),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00C8_depthoffieldpoint.c", cflags=cflags_dll_noopt),
             Object(
                 NonMatching, "main/dll/dll_00E2_staff.c", cflags=cflags_dll_noopt,

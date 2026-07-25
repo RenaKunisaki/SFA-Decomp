@@ -330,7 +330,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_013C_xyzanimator | 99.9580 | 99.6603 | -0.2977 |
 | main/main/dll/dll_00DF_hagabon | 100.0000 | 99.7291 | -0.2709 |
 | main/main/dll/DIM/dll_01E5_dimbossspit | 100.0000 | 99.7363 | -0.2637 |
-| main/main/dll/DIM/dll_00C7_dim2roofrub | 100.0000 | 99.7550 | -0.2450 |
+| main/dlls/objects/199_DIM2RoofRub/DIM2RoofRub | 100.0000 | 99.7550 | -0.2450 |
 | main/main/dll/dll_00C9_enemy | 100.0000 | 99.7737 | -0.2263 |
 | main/main/pad | 99.6415 | 99.4263 | -0.2151 |
 | main/main/dll/dll_0104_smallbasket | 100.0000 | 99.8238 | -0.1762 |

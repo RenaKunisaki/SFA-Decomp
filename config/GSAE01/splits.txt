@@ -1704,7 +1704,7 @@ dlls/objects/198_AnimatedObj/AnimatedObj.c:
 	.data       start:0x80320730 end:0x80320768
 	.sdata2     start:0x803E3228 end:0x803E3240
 
-main/dll/DIM/dll_00C7_dim2roofrub.c:
+dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c:
 	.text       start:0x8016C4AC end:0x8016CD48
 	.data       start:0x80320768 end:0x80320868
 	.sdata2     start:0x803E3240 end:0x803E3288
