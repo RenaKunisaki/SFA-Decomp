@@ -1610,7 +1610,8 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
     s31 = obj->anim.rotX;
     s30 = obj->anim.rotZ;
     s29 = obj->anim.rotY;
-    if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
+    if (modelState->shadowRenderResource == NULL ||
+        modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
         obj->anim.rootMotionScale = lbl_803DEC78;
     else
         obj->anim.rootMotionScale = lbl_803DEC68;
@@ -1665,8 +1666,6 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
     obj->anim.rotZ = s30;
     if (modelState->shadowRenderResource == NULL)
     {
-        Vec3f* source;
-        int vertexOffset;
         u32 i;
         modelState->shadowRenderResource = mmAlloc(triangleCount * 0x12 + sizeof(ObjectShadowMesh), 0x18, 0);
         if (modelState->shadowRenderResource == NULL)
@@ -1675,51 +1674,39 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
             (Vec3s*)((u8*)modelState->shadowRenderResource + sizeof(ObjectShadowMesh));
         modelState->shadowRenderResource->vertexCount = triangleCount * 3;
         i = 0;
-        source = vertices;
-        vertexOffset = 0;
         kf = lbl_803DEC80;
         for (; i < modelState->shadowRenderResource->vertexCount; i++)
         {
-            Vec3s* dest = (Vec3s*)((u8*)modelState->shadowRenderResource->vertices + vertexOffset);
-            dest->x = kf * source->x;
-            dest->y = kf * source->y;
-            dest->z = kf * source->z;
-            source++;
-            vertexOffset += sizeof(Vec3s);
+            modelState->shadowRenderResource->vertices[i].x = kf * vertices[i].x;
+            modelState->shadowRenderResource->vertices[i].y = kf * vertices[i].y;
+            modelState->shadowRenderResource->vertices[i].z = kf * vertices[i].z;
         }
     }
     if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
     {
-        int vertexOffset;
         u32 i;
         GXBegin(GX_TRIANGLES, GX_VTXFMT0, modelState->shadowRenderResource->vertexCount & 0xffff);
-        i = 0;
-        vertexOffset = 0;
-        for (; i < modelState->shadowRenderResource->vertexCount; i++)
+        for (i = 0; i < modelState->shadowRenderResource->vertexCount; i++)
         {
-            Vec3s* vertex = (Vec3s*)((u8*)modelState->shadowRenderResource->vertices + vertexOffset);
+            Vec3s* vertex = &modelState->shadowRenderResource->vertices[i];
             s16 z = vertex->z;
             s16 y = vertex->y;
             s16 x = vertex->x;
             GXWGFifo.s16 = x;
             GXWGFifo.s16 = y;
             GXWGFifo.s16 = z;
-            vertexOffset += sizeof(Vec3s);
         }
     }
     else
     {
         int i;
         int w0;
-        int byteOffset;
         GXBegin(GX_TRIANGLES, GX_VTXFMT2, (triangleCount * 3) & 0xffff);
         w0 = 0;
-        byteOffset = 0;
         for (i = 0; i < triangleCount; i++)
         {
             int k;
-            Vec3f* v0 = (Vec3f*)((u8*)vertices + byteOffset);
-            GXPosition3f32(v0->x, v0->y, v0->z);
+            GXPosition3f32(vertices[w0].x, vertices[w0].y, vertices[w0].z);
             for (k = 1; k < 3; k++)
             {
                 Vec3f* v1 = &vertices[w0 + k];
@@ -1731,7 +1718,6 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
                 GXWGFifo.f32 = b2;
             }
             w0 += 3;
-            byteOffset += 3 * sizeof(Vec3f);
         }
     }
     if (modelState->flags & 0x20)
@@ -3612,13 +3598,15 @@ int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, 
     n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, flag);
     if (n != 0)
     {
-        cur = y - arr[0]->height;
+        cur = arr[0]->height;
+        cur = y - cur;
         cur = cur >= lbl_803DECB4 ? cur : -cur;
         best = cur;
         bestIdx = 0;
         for (i = 1; i < n; i++)
         {
-            cur = y - arr[i]->height;
+            cur = arr[i]->height;
+            cur = y - cur;
             cur = cur >= lbl_803DECB4 ? cur : -cur;
             if (cur < best)
             {
