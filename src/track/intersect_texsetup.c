@@ -47,71 +47,71 @@
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-int lbl_803DD03C;
-f32 gFogNearZ;
-f32 gFogFarZ;
-u32 gTevStageCursor;
-u32 gTevTexCoordCursor;
-u32 gTevTexMapCursor;
-f32 gFogStartZ;
-f32 gFogEndZ;
-GXColor gFogColor;
-u8 gGxZModeValid;
-u8 gGxZCompLocValid;
-u8 gGxZModeCompareEnable;
-int gGxZModeCompareFunc;
-u8 gGxZModeUpdateEnable;
-u8 gGxZCompLocCached;
-u8 lbl_803DD010;
-f32 lbl_803DD00C;
-u8 gTevStageCount;
-u8 gTevTexGenCount;
-u8 gTevChanCount;
-u8 gTevIndStageCount;
-u32 screenWidth;
-u16 gDepthReadResultCount;
-u16 gDepthReadPendingCount;
-static u32 sIntersectUnused0;
-u8 gWaterFxDisabled;
-u8 gWaterQuadWriteIdx;
-u8 gWaterRippleWriteIdx;
-u32 lbl_803DCFF4;
-u8 gWaterFxBank;
+extern int lbl_803DD03C;
+extern f32 gFogNearZ;
+extern f32 gFogFarZ;
+extern u32 gTevStageCursor;
+extern u32 gTevTexCoordCursor;
+extern u32 gTevTexMapCursor;
+extern f32 gFogStartZ;
+extern f32 gFogEndZ;
+extern GXColor gFogColor;
+extern u8 gGxZModeValid;
+extern u8 gGxZCompLocValid;
+extern u8 gGxZModeCompareEnable;
+extern int gGxZModeCompareFunc;
+extern u8 gGxZModeUpdateEnable;
+extern u8 gGxZCompLocCached;
+extern u8 lbl_803DD010;
+extern f32 lbl_803DD00C;
+extern u8 gTevStageCount;
+extern u8 gTevTexGenCount;
+extern u8 gTevChanCount;
+extern u8 gTevIndStageCount;
+extern u32 screenWidth;
+extern u16 gDepthReadResultCount;
+extern u16 gDepthReadPendingCount;
 
-u8 lbl_803DB678 = 0x60;
-u8 gHudTintAlpha = 0xFF;
-u32 lbl_803DB67C = 0xFFFFFF60;
-GXColor lbl_803DB680 = {0xFF, 0xFF, 0xFF, 0x60};
-GXColor lbl_803DB684 = {0xA0, 0xA0, 0xA0, 0x80};
-GXColor lbl_803DB688 = {0xFF, 0xFF, 0xFF, 0x60};
-GXColor lbl_803DB68C = {0xA0, 0xA0, 0xA0, 0x80};
-u32 lbl_803DB690 = 0xC0000000;
-u32 lbl_803DB694 = 0x00C00000;
-u32 lbl_803DB698 = 0x0000C000;
-u32 lbl_803DB69C = 0x666666FF;
-GXColor lbl_803DB6A0 = {0, 0, 0, 0x7F};
-GXColor lbl_803DB6A4 = {0xFF, 0xFF, 0xFF, 0xFC};
-u32 lbl_803DB6A8 = 0xFFFFFFFF;
-f32 lbl_803DB6AC = 0.55f;
-f32 lbl_803DB6B0 = 2.0f;
-f32 lbl_803DB6B4 = 0.25f;
-f32 lbl_803DB6B8 = 0.4f;
-GXColor lbl_803DB6BC = {0x80, 0x80, 0x80, 0xFF};
-f32 lbl_803DB6C0 = 2.0f;
-f32 lbl_803DB6C4 = 0.3878f;
-f32 lbl_803DB6C8 = 15.0f;
-f32 lbl_803DB6CC = 100.0f;
-GXColor lbl_803DB6D0 = {0x42, 0x42, 0x42, 0};
-GXColor lbl_803DB6D4 = {0x81, 0x81, 0x81, 0};
-GXColor lbl_803DB6D8 = {0x19, 0x19, 0x19, 0};
-GXColor lbl_803DB6DC = {0x10, 0x10, 0x10, 0xFF};
-GXColor lbl_803DB6E0 = {0, 0, 0, 0xFF};
-GXColor lbl_803DB6E4 = {0, 0, 0x80, 0};
-GXColor lbl_803DB6E8 = {0x80, 0x80, 0, 0};
-GXColor lbl_803DB6EC = {0, 0x80, 0, 0};
-GXColor lbl_803DB6F0 = {0x80, 0, 0x80, 0};
-u32 lbl_803DB6F4 = 0xFFFFFF60;
-u32 lbl_803DB6F8 = 0xA0A0A080;
+extern u8 gWaterFxDisabled;
+extern u8 gWaterQuadWriteIdx;
+extern u8 gWaterRippleWriteIdx;
+extern u32 lbl_803DCFF4;
+extern u8 gWaterFxBank;
+
+extern u8 lbl_803DB678;
+extern u8 gHudTintAlpha;
+extern u32 lbl_803DB67C;
+extern GXColor lbl_803DB680;
+extern GXColor lbl_803DB684;
+extern GXColor lbl_803DB688;
+extern GXColor lbl_803DB68C;
+extern u32 lbl_803DB690;
+extern u32 lbl_803DB694;
+extern u32 lbl_803DB698;
+extern u32 lbl_803DB69C;
+extern GXColor lbl_803DB6A0;
+extern GXColor lbl_803DB6A4;
+extern u32 lbl_803DB6A8;
+extern f32 lbl_803DB6AC;
+extern f32 lbl_803DB6B0;
+extern f32 lbl_803DB6B4;
+extern f32 lbl_803DB6B8;
+extern GXColor lbl_803DB6BC;
+extern f32 lbl_803DB6C0;
+extern f32 lbl_803DB6C4;
+extern f32 lbl_803DB6C8;
+extern f32 lbl_803DB6CC;
+extern GXColor lbl_803DB6D0;
+extern GXColor lbl_803DB6D4;
+extern GXColor lbl_803DB6D8;
+extern GXColor lbl_803DB6DC;
+extern GXColor lbl_803DB6E0;
+extern GXColor lbl_803DB6E4;
+extern GXColor lbl_803DB6E8;
+extern GXColor lbl_803DB6EC;
+extern GXColor lbl_803DB6F0;
+extern u32 lbl_803DB6F4;
+extern u32 lbl_803DB6F8;
 
 typedef struct
 {
@@ -146,38 +146,17 @@ extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80, lbl_803DEF84, lbl_803DEF88;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 extern GXColor lbl_803DEEB4, lbl_803E8454;
 
-f32 lbl_8030EA10[3][2][3] = {
-    {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
-    {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
-    {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
-f32 lbl_8030EA58[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-char sMemoryCardFileNameString[20] = "Star Fox Adventures";
+extern f32 lbl_8030EA10[3][2][3];
+extern f32 lbl_8030EA58[2][3];
+extern f32 lbl_8030EA70[2][3];
+extern f32 lbl_8030EA88[2][3];
+extern f32 lbl_8030EAA0[2][3];
+extern char sMemoryCardFileNameString[20];
 
 int cardDeleteFn_8007d99c(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
 
-void* jumptable_8030EACC[14] = {
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x130), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x13C), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x118), (void*)((u8*)cardDeleteFn_8007d99c + 0x10C),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x148)};
-void* jumptable_8030EB04[14] = {
-    (void*)((u8*)cardGetMessage + 0x50),  (void*)((u8*)cardGetMessage + 0x64),  (void*)((u8*)cardGetMessage + 0x94),
-    (void*)((u8*)cardGetMessage + 0xC4),  (void*)((u8*)cardGetMessage + 0xF4),  (void*)((u8*)cardGetMessage + 0x124),
-    (void*)((u8*)cardGetMessage + 0x168), (void*)((u8*)cardGetMessage + 0x1AC), (void*)((u8*)cardGetMessage + 0x1DC),
-    (void*)((u8*)cardGetMessage + 0x1E8), (void*)((u8*)cardGetMessage + 0x228), (void*)((u8*)cardGetMessage + 0x258),
-    (void*)((u8*)cardGetMessage + 0x258), (void*)((u8*)cardGetMessage + 0x288)};
-void* jumptable_8030EB3C[7] = {(void*)((u8*)showMemCardError + 0x2C8), (void*)((u8*)showMemCardError + 0x2D4),
-                               (void*)((u8*)showMemCardError + 0x2E8), (void*)((u8*)showMemCardError + 0x2FC),
-                               (void*)((u8*)showMemCardError + 0x318), (void*)((u8*)showMemCardError + 0x33C),
-                               (void*)((u8*)showMemCardError + 0x36C)};
 typedef struct StageCountTable
 {
     u8 count[7];
@@ -255,165 +234,9 @@ int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
 int saveCb_8007e748(int saveId, int size, void* dst);
 
 /* Per-frame alpha decrement of the two water-effect pools. */
-void timeFn_8006f400(f32 step)
-{
-    int i;
-    SplashQuad* quads;
-    RippleEntry* ripples;
+void timeFn_8006f400(f32 step);
 
-    quads = gWaterSplashQuads;
-    ripples = gWaterRipples;
-
-    for (i = 0; i < 256; i++)
-    {
-        if (quads[i].alpha != 0)
-        {
-            if (quads[i].alpha - step <= lbl_803DEE20)
-                quads[i].alpha = 0;
-            else
-                quads[i].alpha -= step;
-        }
-        if (ripples[i].alpha != 0)
-        {
-            if (ripples[i].alpha - step <= lbl_803DEE20)
-                ripples[i].alpha = 0;
-            else
-                ripples[i].alpha -= step;
-        }
-    }
-}
-
-void drawFn_8006f500(void)
-{
-    GXColor color;
-    Mtx camTrans;
-    Mtx posMtx;
-    Mtx rot;
-    Mtx trans;
-    SplashQuad* quad;
-    f32* view;
-    int i;
-    f32 tTop;
-    f32 tBot;
-    u8 alpha;
-
-    if (Obj_GetPlayerObject() == NULL)
-    {
-        return;
-    }
-    Camera_ApplyDecalViewport();
-    GXSetCurrentMtx(GX_PNMTX0);
-    GXClearVtxDesc();
-    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-    GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    GXSetNumTexGens(1);
-    GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
-    GXSetNumTevStages(1);
-    GXSetNumIndStages(0);
-    GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetNumChans(0);
-    GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
-    GXSetTevDirect(GX_TEVSTAGE0);
-    GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
-    GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-    GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
-    GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetCullMode(GX_CULL_NONE);
-    GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-    selectTexture(gWaterFxTextures[gWaterFxBank], 0);
-    view = Camera_GetViewMatrix();
-    PSMTXTrans(camTrans, -playerMapOffsetX, lbl_803DEE20, -playerMapOffsetZ);
-    PSMTXConcat((MtxP)view, camTrans, posMtx);
-    GXLoadPosMtxImm(posMtx, GX_PNMTX0);
-    gxSetZMode_(1, 3, 0);
-    gxSetPeControl_ZCompLoc_(1);
-    GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
-    i = 0;
-    for (; i < 0x100; i++)
-    {
-        quad = &gWaterSplashQuads[i];
-        alpha = quad->alpha;
-        if (alpha != 0)
-        {
-            if (quad->type == 1)
-            {
-                color.a = alpha >> 2;
-            }
-            else
-            {
-                color.a = alpha >> 1;
-            }
-            GXSetTevKColor(GX_KCOLOR0, color);
-            if (quad->flip != 0)
-            {
-                tTop = lbl_803DEE38;
-                tBot = lbl_803DEE20;
-                PSMTXRotRad(rot, 0x7a,
-                            lbl_803DEE3C * (lbl_803DEE40 * (f32)(int)(0x8000 - quad->angle)) / lbl_803DEE44);
-            }
-            else
-            {
-                tTop = lbl_803DEE20;
-                tBot = lbl_803DEE38;
-                PSMTXRotRad(rot, 0x7a, lbl_803DEE3C * (lbl_803DEE40 * (f32)(u32)quad->angle) / lbl_803DEE44);
-            }
-            PSMTXTrans(trans, lbl_803DEE48, *(f32*)&lbl_803DEE48, lbl_803DEE20);
-            PSMTXConcat(rot, trans, rot);
-            PSMTXTrans(trans, lbl_803DEE24, *(f32*)&lbl_803DEE24, lbl_803DEE20);
-            PSMTXConcat(trans, rot, rot);
-            GXLoadTexMtxImm(rot, GX_TEXMTX0, GX_MTX2x4);
-            GXBegin(GX_QUADS, GX_VTXFMT2, 4);
-            {
-                f32 px, py, pz;
-                pz = quad->v[2];
-                py = quad->v[1];
-                px = quad->v[0];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE20;
-            GXWGFifo.f32 = tTop;
-            {
-                f32 px, py, pz;
-                pz = quad->v[5];
-                py = quad->v[4];
-                px = quad->v[3];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE38;
-            GXWGFifo.f32 = tTop;
-            {
-                f32 px, py, pz;
-                pz = quad->v[8];
-                py = quad->v[7];
-                px = quad->v[6];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE38;
-            GXWGFifo.f32 = tBot;
-            {
-                f32 px, py, pz;
-                pz = quad->v[11];
-                py = quad->v[10];
-                px = quad->v[9];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE20;
-            GXWGFifo.f32 = tBot;
-        }
-    }
-    Camera_ApplyFullViewport();
-}
+void drawFn_8006f500(void);
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 
@@ -626,7 +449,156 @@ void fn_8007C664(int texHandle);
 
 void fn_8007CAF4(void* texture);
 
-void gxTextureSetupFn_8007cf7c(void);
+void gxTextureSetupFn_8007cf7c(void)
+{
+    extern f32 lbl_803DEEDC;
+
+    Mtx mtx_cc;
+    Mtx mtx_9c;
+    Mtx mtx_6c;
+    f32 indMtx_54[6];
+    f32 indMtx_3c[6];
+    f32 indMtx_24[6];
+    int handle1;
+    f32 fA, fB;
+    GXColor temp;
+
+    newshadows_getReflectionScrollOffsets(&fA, &fB);
+    selectReflectionTexture(0);
+    GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
+    getNewShadowCausticTexture((u32*)&handle1);
+    selectTexture((Texture*)handle1, 1);
+
+    PSMTXScale(mtx_cc, 1.0f, 1.0f, 1.0f);
+    mtx_cc[1][3] = fA;
+    GXLoadTexMtxImm(mtx_cc, GX_TEXMTX3, GX_MTX2x4);
+    GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX3, GX_FALSE, GX_PTIDENTITY);
+
+    indMtx_54[0] = gSynthDelayedActionWord0;
+    indMtx_54[1] = lbl_803DEEDC;
+    indMtx_54[2] = lbl_803DEEDC;
+    indMtx_54[3] = lbl_803DEEDC;
+    indMtx_54[4] = gSynthDelayedActionWord0;
+    indMtx_54[5] = lbl_803DEEDC;
+    GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
+    GXSetIndTexCoordScale(0, 0, 0);
+    GXSetIndTexMtx(1, (f32(*)[3])indMtx_54, -2);
+    GXSetTevIndirect(0, 0, 0, 7, 1, 6, 6, 0, 0, 0);
+
+    PSMTXScale(mtx_9c, 0.83f, 0.83f, 0.83f);
+    PSMTXRotRad(mtx_6c, 'z', 0.7853982f);
+    PSMTXConcat(mtx_6c, mtx_9c, mtx_9c);
+    mtx_9c[0][3] = fB;
+    mtx_9c[1][3] = fB;
+    GXLoadTexMtxImm(mtx_9c, GX_TEXMTX4, GX_MTX2x4);
+    GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX4, GX_FALSE, GX_PTIDENTITY);
+
+    indMtx_3c[0] = lbl_803DEF84;
+    indMtx_3c[1] = lbl_803DEF84;
+    indMtx_3c[2] = lbl_803DEEDC;
+    indMtx_3c[3] = lbl_803DEF88;
+    indMtx_3c[4] = lbl_803DEF84;
+    indMtx_3c[5] = lbl_803DEEDC;
+    GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
+    GXSetIndTexCoordScale(1, 0, 0);
+    GXSetIndTexMtx(2, (f32(*)[3])indMtx_3c, -4);
+    GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
+
+    if (isHeavyFogEnabled() != 0)
+    {
+        ((u8*)&lbl_803DB67C)[0] = ((u8*)&gFogColor)[0];
+        ((u8*)&lbl_803DB67C)[1] = ((u8*)&gFogColor)[1];
+        ((u8*)&lbl_803DB67C)[2] = ((u8*)&gFogColor)[2];
+        ((u8*)&lbl_803DB67C)[3] = 0x80;
+    }
+    else
+    {
+        u8 ignoredLightColor;
+        u8* p1;
+        u8* p2;
+        (*gSkyInterface)
+            ->getCurrentAmbientAndLightColors((u8*)&lbl_803DB67C, p1 = (u8*)&lbl_803DB67C + 1,
+                                              p2 = (u8*)&lbl_803DB67C + 2, &ignoredLightColor, &ignoredLightColor,
+                                              &ignoredLightColor);
+        ((u8*)&lbl_803DB67C)[0] = (u8)(((u8*)&lbl_803DB67C)[0] >> 3);
+        *p1 = (u8)(*p1 >> 3);
+        *p2 = (u8)(*p2 >> 3);
+        ((u8*)&lbl_803DB67C)[3] = lbl_803DB678;
+    }
+    temp = *(GXColor*)&lbl_803DB67C;
+    GXSetTevKColor(GX_KCOLOR0, temp);
+    GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
+    GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
+
+    GXSetNumIndStages(2);
+    GXSetNumChans(1);
+    GXSetNumTexGens(4);
+    GXSetNumTevStages(4);
+
+    GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
+    GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+
+    GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
+    GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_KONST, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
+    GXSetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
+    GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    if (isHeavyFogEnabled() != 0)
+    {
+        GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_DIVIDE_2, GX_TRUE, GX_TEVREG0);
+    }
+    else
+    {
+        GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+    }
+    GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+
+    indMtx_24[0] = lbl_803DEEDC;
+    indMtx_24[1] = gSynthDelayedActionWord0;
+    indMtx_24[2] = lbl_803DEEDC;
+    indMtx_24[3] = lbl_803DEEF4;
+    indMtx_24[4] = lbl_803DEEDC;
+    indMtx_24[5] = lbl_803DEEDC;
+    GXSetIndTexMtx(3, (f32(*)[3])indMtx_24, -5);
+    GXSetTevIndirect(2, 0, 0, 7, 2, 6, 6, 0, 0, 0);
+    GXSetTevIndirect(3, 1, 0, 7, 3, 0, 0, 1, 0, 0);
+    GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
+
+    GXSetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevColorIn(GX_TEVSTAGE2, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
+    GXSetTevAlphaIn(GX_TEVSTAGE2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevSwapMode(GX_TEVSTAGE2, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+
+    GXSetTevOrder(GX_TEVSTAGE3, GX_TEXCOORD3, GX_TEXMAP0, GX_COLOR0A0);
+    GXSetTevColorIn(GX_TEVSTAGE3, GX_CC_TEXC, GX_CC_C0, GX_CC_A0, GX_CC_ZERO);
+    GXSetTevAlphaIn(GX_TEVSTAGE3, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
+    GXSetTevSwapMode(GX_TEVSTAGE3, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(GX_TEVSTAGE3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(GX_TEVSTAGE3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+
+    GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
+    GXSetCullMode(GX_CULL_NONE);
+    if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
+    {
+        GXSetZMode(GX_TRUE, GX_LEQUAL, GX_FALSE);
+        gGxZModeCompareEnable = 1;
+        gGxZModeCompareFunc = 3;
+        gGxZModeUpdateEnable = 0;
+        gGxZModeValid = 1;
+    }
+    if ((u32)gGxZCompLocCached != 1 || gGxZCompLocValid == 0)
+    {
+        GXSetZCompLoc(GX_TRUE);
+        gGxZCompLocCached = 1;
+        gGxZCompLocValid = 1;
+    }
+    GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+}
 
 void fn_8007D670(void);
 
@@ -699,17 +671,17 @@ int saveCb_8007e748(int saveId, int size, void* dst);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-f32 gWaterFxState[4];
-Texture* gWaterFxTextures[4];
-RippleEntry gWaterRipples[0x100];
-SplashQuad gWaterSplashQuads[0x100];
-DepthReadRequest gDepthReadResults[0x14];
-DepthReadRequest gDepthReadPendingQueue[0x14];
+extern f32 gWaterFxState[4];
+extern Texture* gWaterFxTextures[4];
+extern RippleEntry gWaterRipples[0x100];
+extern SplashQuad gWaterSplashQuads[0x100];
+extern DepthReadRequest gDepthReadResults[0x14];
+extern DepthReadRequest gDepthReadPendingQueue[0x14];
 
-f32 lbl_803967C0[3][4];
-f32 lbl_803967F0[3][4];
-f32 lbl_80396820[3][4];
-f32 lbl_80396850[3][4];
-f32 hudMatrix[4][4];
-int lbl_803968C0[0x10];
-SaveCardFileInfo lbl_80396900;
+extern f32 lbl_803967C0[3][4];
+extern f32 lbl_803967F0[3][4];
+extern f32 lbl_80396820[3][4];
+extern f32 lbl_80396850[3][4];
+extern f32 hudMatrix[4][4];
+extern int lbl_803968C0[0x10];
+extern SaveCardFileInfo lbl_80396900;

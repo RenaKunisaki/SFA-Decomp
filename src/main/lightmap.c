@@ -1071,249 +1071,47 @@ void updateEnvironment(int mode)
         }
     }
 }
-void initMapBlocks(void)
-{
-    u8* mb = (u8*)lbl_8037E0C0;
-    MapLayerBuffers* buffers = (MapLayerBuffers*)lbl_8037E0C0;
-    u32 zero;
-    u32* q;
-    u16* p;
-    void* tmp;
-    int i;
+void initMapBlocks(void);
 
-    renderFlags = 0;
-    gMapBlocks = mmAlloc(0x100, 5, 0);
-    gMapBlockIds = mmAlloc(0x80, 5, 0);
-    gMapBlockRefCounts = mmAlloc(0x40, 5, 0);
-    lbl_803DCE78 = mmAlloc(0xd48, 5, 0);
-    buffers->blockIndices[0] = mmAlloc(0x500, 5, 0);
-    buffers->blockDescriptors[0] = mmAlloc(0x3c00, 5, 0);
-    buffers->cellStates[0] = mmAlloc(0x500, 5, 0);
-
-    for (i = 0; i < 16; i += 4)
-    {
-        *(u32*)(mb + 0x41f8 + i) = *(u32*)(mb + 0x41f4 + i) + 0x100;
-        *(u32*)(mb + 0x41e4 + i) = *(u32*)(mb + 0x41e0 + i) + 0xc00;
-        *(u32*)(mb + 0x41d0 + i) = *(u32*)(mb + 0x41cc + i) + 0x100;
-    }
-
-    loadAssetFileById(&lbl_803DCE7C, MLDF_FILEID_MAPS_TAB);
-    loadAssetFileById(&lbl_803DCE80, MLDF_FILEID_HITS_TAB);
-
-    q = (u32*)((u8*)(mb + 0x10000) - 0x7c58);
-    zero = 0;
-    for (i = 0; i < 3; i++)
-    {
-        q[0] = zero;
-        q[1] = zero;
-        q[2] = zero;
-        q[3] = zero;
-        q[4] = zero;
-        q[5] = zero;
-        q[6] = zero;
-        q[7] = zero;
-        q[8] = zero;
-        q[9] = zero;
-        q[10] = zero;
-        q[11] = zero;
-        q[12] = zero;
-        q[13] = zero;
-        q[14] = zero;
-        q[15] = zero;
-        q[16] = zero;
-        q[17] = zero;
-        q[18] = zero;
-        q[19] = zero;
-        q[20] = zero;
-        q[21] = zero;
-        q[22] = zero;
-        q[23] = zero;
-        q[24] = zero;
-        q[25] = zero;
-        q[26] = zero;
-        q[27] = zero;
-        q[28] = zero;
-        q[29] = zero;
-        q[30] = zero;
-        q[31] = zero;
-        q[32] = zero;
-        q[33] = zero;
-        q[34] = zero;
-        q[35] = zero;
-        q[36] = zero;
-        q[37] = zero;
-        q[38] = zero;
-        q[39] = zero;
-        q += 40;
-    }
-
-    loadAssetFileById(&lbl_803DCE84, MLDF_FILEID_TRKBLK_TAB);
-
-    lbl_803DCE90 = 0;
-    p = lbl_803DCE84;
-    while (*p != 0xffff)
-    {
-        p++;
-        lbl_803DCE90++;
-    }
-    lbl_803DCE90--;
-    lbl_803DCEBA = -1;
-    lbl_803DCEB8 = -2;
-
-    tmp = mmAlloc(0x500, 5, 0);
-    lbl_803DCE6C = tmp;
-    memset(tmp, 0, 0x500);
-
-    tmp = mmAlloc(0x3a0, 5, 0);
-    lbl_803DCE68 = tmp;
-    memset(tmp, 0, 0x3a0);
-
-    memset(mb + 0x8818, 0, 0xfa0);
-    *(u32*)(mb + 0x8818) = -1;
-}
-
-void gameFlagFn_8005cd24(int v)
-{
-    renderFlags = (v != 0) ? (renderFlags | 0x20000) : (renderFlags & ~0x20000);
-}
+void gameFlagFn_8005cd24(int v);
 
 int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 extern f32 widescreenAspect_803DEC1C;
 extern f32 lbl_803DB670;
 
-int setWidescreen(u8 v)
-{
-    if (v != 0)
-    {
-        renderFlags |= RENDERFLAG_WIDESCREEN;
-        Camera_SetAspectRatio(widescreenAspect_803DEC1C);
-    }
-    else
-    {
-        renderFlags &= ~(u64)RENDERFLAG_WIDESCREEN;
-        Camera_SetAspectRatio(lbl_803DB670);
-    }
-    return 0;
-}
+int setWidescreen(u8 v);
 int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
 u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
 int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
-void titleScreenFn_8005cdd4(int v)
-{
-    if (v != 0) renderFlags &= ~0x2000;
-    else renderFlags |= 0x2000;
-}
+void titleScreenFn_8005cdd4(int v);
 
-void setDrawLights(int v)
-{
-    void* env = saveGameGetEnvState();
-    if (v != 0)
-    {
-        renderFlags |= 0x40;
-        *(u8*)((char*)env + 0x40) |= 0x8;
-    }
-    else
-    {
-        renderFlags &= ~0x40LL;
-        *(u8*)((char*)env + 0x40) &= ~0x8;
-    }
-}
+void setDrawLights(int v);
 
-void gameFlagFn_8005ce6c(int v)
-{
-    renderFlags = (v != 0) ? (renderFlags | 0x20) : (renderFlags & ~0x20);
-}
+void gameFlagFn_8005ce6c(int v);
 
-u8 isOvercast(void)
-{
-    u32 v = renderFlags & RENDERFLAG_OVERCAST;
-    u32 t = ((u32) - (s32)v | v) >> 31;
-    return t;
-}
+u8 isOvercast(void);
 
-void setIsOvercast(int v)
-{
-    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_OVERCAST) : (renderFlags & ~RENDERFLAG_OVERCAST);
-}
+void setIsOvercast(int v);
 
-void setStarsHidden(int v)
-{
-    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_HIDE_STARS) : (renderFlags & ~RENDERFLAG_HIDE_STARS);
-}
+void setStarsHidden(int v);
 
-void setDrawCloudsAndLights(int v)
-{
-    void* env = saveGameGetEnvState();
-    if (v != 0)
-    {
-        renderFlags |= 0x50;
-        *(u8*)((char*)env + 0x40) |= 0x9;
-    }
-    else
-    {
-        renderFlags &= ~0x50;
-        *(u8*)((char*)env + 0x40) &= ~0x9;
-    }
-}
+void setDrawCloudsAndLights(int v);
 
-void setPendingMapLoad(int v)
-{
-    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_PENDING_MAP_LOAD) : (renderFlags & ~RENDERFLAG_PENDING_MAP_LOAD);
-}
+void setPendingMapLoad(int v);
 
-void drawFn_8005cf8c(const void* vertexBase, u8* triList, int triCount)
-{
-    const LightmapVertex* vertices = vertexBase;
-    const LightmapVertex* vertex;
-    int tri, vtx;
-
-    /* Emit triCount triangles as GX_TRIANGLES; each vertex is 16 bytes:
-       s16 pos[3] @0x0, u8 color[4] @0xc, s16 texcoord[2] @0x8. */
-    GXClearVtxDesc();
-    GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
-    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-    GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
-    GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    GXBegin(GX_TRIANGLES, GX_VTXFMT0, triCount * 3 & 0xffff);
-    for (tri = 0; tri < triCount; tri++)
-    {
-        u8* list = triList;
-        for (vtx = 0; vtx < 3; vtx++)
-        {
-            GXPosition1x8(0);
-            vertex = &vertices[list[vtx + 1]];
-            GXPosition3s16(vertex->x, vertex->y, vertex->z);
-            vertex = &vertices[list[vtx + 1]];
-            GXColor4u8(vertex->r, vertex->g, vertex->b, vertex->a);
-            vertex = &vertices[list[vtx + 1]];
-            GXTexCoord2s16(vertex->s, vertex->t);
-        }
-        triList = triList + 0x10;
-    }
-}
+void drawFn_8005cf8c(const void* vertexBase, u8* triList, int triCount);
 
 
-void setFogColorCallback(int unused, u8 red, u8 green, u8 blue, int wpad0)
-{
-    setFogColorRgb(red, green, blue);
-}
+void setFogColorCallback(int unused, u8 red, u8 green, u8 blue, int wpad0);
 
 
-void _textSetColor(void* context, int red, int green, int blue, int alpha)
-{
-    _gxSetTevColor1(red, green, blue, alpha);
-}
+void _textSetColor(void* context, int red, int green, int blue, int alpha);
 
-void setTextColor(void* context, int a, int b, int c, int d)
-{
-    _gxSetTevColor2(a, b, c, d);
-}
+void setTextColor(void* context, int a, int b, int c, int d);
 
-void doNothing_8005D148(int arg0, int arg1)
-{
-}
+void doNothing_8005D148(int arg0, int arg1);
 
 
 void objDrawFn_8005da48(GameObject* obj);
@@ -1327,60 +1125,10 @@ void getVisibleObjects(s8 * opacity);
 
 void renderSceneGeometry(u8 renderType, s8* order);
 
-void doNothing_8005D14C(int arg0, int arg1)
-{
-}
-void renderShadowType3(u8* obj, u32 b, s32 offset)
-{
-    f32 stk[3];
-    s32 t;
-    if (lbl_803DCE30 == 1000)
-    {
-        sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
-    }
-    if (((GameObject*)obj)->anim.parent != NULL)
-    {
-        stk[0] = ((GameObject*)obj)->anim.worldPosX;
-        stk[1] = ((GameObject*)obj)->anim.worldPosY;
-        stk[2] = ((GameObject*)obj)->anim.worldPosZ;
-    }
-    else
-    {
-        stk[0] = ((GameObject*)obj)->anim.worldPosX - playerMapOffsetX;
-        stk[1] = ((GameObject*)obj)->anim.worldPosY;
-        stk[2] = ((GameObject*)obj)->anim.worldPosZ - playerMapOffsetZ;
-    }
-    PSMTXMultVec((f32*)Camera_GetViewMatrix(), stk, stk);
-    t = (s32) - stk[2] + offset;
-    t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    lbl_8037E0C0[lbl_803DCE30 * 4] = (u32)obj;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 2] = t | ((b & 0xff) << 27);
-}
+void doNothing_8005D14C(int arg0, int arg1);
+void renderShadowType3(u8* obj, u32 b, s32 offset);
 
-void lightmap_sortTransparentDrawQueue(void)
-{
-    int i, j;
-    int gap = 1;
-    LightSortEntry tmp;
-    while (gap <= (lbl_803DCE30 - 1) / 9)
-        gap = gap * 3 + 1;
-    while (gap > 0)
-    {
-        for (i = gap + 1; i <= lbl_803DCE30; i++)
-        {
-            tmp = ((LightSortEntry*)lbl_8037E0C0)[i - 1];
-            j = i;
-            while (j > gap && ((LightSortEntry*)lbl_8037E0C0)[j - gap - 1].key < tmp.key)
-            {
-                ((LightSortEntry*)lbl_8037E0C0)[j - 1] = ((LightSortEntry*)lbl_8037E0C0)[j - gap - 1];
-                j -= gap;
-            }
-            ((LightSortEntry*)lbl_8037E0C0)[j - 1] = tmp;
-        }
-        gap /= 3;
-    }
-}
+void lightmap_sortTransparentDrawQueue(void);
 
 
 typedef union
@@ -1399,354 +1147,20 @@ typedef union
 
 extern f32 lbl_803DEC20;
 
-asm void fn_8005D3B4(u8* obj, u8* model, s32 b)
-{
-    nofralloc
-    stwu r1, -48(r1)
-    mflr r0
-    stw r0, 52(r1)
-    stw r31, 44(r1)
-    stw r30, 40(r1)
-    stw r29, 36(r1)
-    mr r29, r3
-    mr r30, r4
-    mr r31, r5
-    lwz r0, lbl_803DCE30
-    cmpwi r0, 1000
-    bne _psq
-    bl sceneDrawTransparentPolys
-    li r0, 0
-    stw r0, lbl_803DCE30
-_psq:
-    psq_l f0, 12(r29), 1, 5
-    psq_l f1, 6(r29), 1, 5
-    psq_l f2, 14(r29), 1, 5
-    lfs f3, lbl_803DEC20
-    lfs f6, 40(r30)
-    fmadds f9, f2, f3, f6
-    psq_l f4, 8(r29), 1, 5
-    psq_l f2, 16(r29), 1, 5
-    lfs f7, 56(r30)
-    fmadds f10, f2, f3, f7
-    psq_l f5, 10(r29), 1, 5
-    lfs f2, lbl_803DEBFC
-    lfs f8, 24(r30)
-    fmadds f1, f1, f3, f8
-    fmadds f0, f0, f3, f8
-    fadds f0, f1, f0
-    fmuls f0, f2, f0
-    stfs f0, 8(r1)
-    fmadds f0, f4, f3, f6
-    fadds f0, f0, f9
-    fmuls f0, f2, f0
-    stfs f0, 12(r1)
-    fmadds f0, f5, f3, f7
-    fadds f0, f0, f10
-    fmuls f0, f2, f0
-    stfs f0, 16(r1)
-    bl Camera_GetViewMatrix
-    addi r4, r1, 8
-    mr r5, r4
-    bl PSMTXMultVec
-    lfs f0, 16(r1)
-    fneg f0, f0
-    fctiwz f0, f0
-    stfd f0, 24(r1)
-    lwz r0, 28(r1)
-    cmpwi r0, 0
-    bge _pos
-    li r4, 0
-    b _store
-_pos:
-    lis r3, 2048
-    addi r4, r3, -1
-    cmpw r0, r4
-    ble _clamp
-    b _store
-_clamp:
-    mr r4, r0
-_store:
-    lwz r0, lbl_803DCE30
-    slwi r0, r0, 4
-    lis r3, lbl_8037E0C0@ha
-    addi r3, r3, lbl_8037E0C0@l
-    stwx r29, r3, r0
-    add r3, r3, r0
-    stw r30, 4(r3)
-    clrlwi r0, r31, 24
-    slwi r0, r0, 27
-    or r0, r4, r0
-    stw r0, 8(r3)
-    lwz r31, 44(r1)
-    lwz r30, 40(r1)
-    lwz r29, 36(r1)
-    lwz r0, 52(r1)
-    mtlr r0
-    addi r1, r1, 48
-    blr
-}
+asm void fn_8005D3B4(u8* obj, u8* model, s32 b);
 
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
-void modelRenderFn_8005d4ec(int* p1, int* obj, float* p3)
-{
-    int state[5];
-    int countShifted;
-    int cursor;
-    u32 v;
-    int* base;
-    struct MapShader* newR;
-    int nibble;
-    int i;
-    u8* s0;
-
-    countShifted = (int)((MapBlockData*)obj)->nRenderInstrsMain << 3;
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state, ((MapBlockData*)obj)->renderInstrsMain, countShifted,
-                                countShifted);
-    modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, (int)*(u16*)((char*)p1 + 0x14));
-    state[4] += 4;
-    mapBlockRender_drawDimmedAabbLights((u32)p1, (u32)obj, (int)p3);
-    newR = mapBlockRender_setLightmapShader((struct MapBlockData*)obj, state);
-    state[4] += 4;
-    mapBlockRender_setVtxDcrs(1, obj, newR, state);
-    cursor = state[4] + 4;
-    state[4] = cursor;
-    countShifted = cursor >> 3;
-    s0 = (u8*)state[0];
-    v = s0[countShifted];
-    base = (int*)(state[0] + countShifted);
-    v = v | ((u32) * (u8*)((char*)base + 1) << 8);
-    v = v | ((u32) * (u8*)((char*)base + 2) << 16);
-    state[4] += 4;
-    nibble = (v >> (cursor & 7)) & 0xf;
-    for (i = 0; i < nibble; i++)
-    {
-        *(int*)&state[4] = state[4] + 8;
-    }
-    state[4] += 4;
-    mapBlockRender_drawLightmapIndirectPasses((struct MapBlockData*)obj, newR, state, (float (*)[4])p3);
-}
-void modelRenderFn_8005d69c(int* p1, int* obj, float* p3)
-{
-    int state[5];
-    f32 m[12];
-    int countShifted;
-    struct MapShader* newR;
-    int cursor;
-    u32 v;
-    int* base;
-    int nibble;
-    int i;
-    u8* s0;
-
-    PSMTXConcat((f32*)lbl_80396850, p3, m);
-    GXLoadTexMtxImm((const f32 (*)[4])m, GX_TEXMTX0, GX_MTX3x4);
-    PSMTXConcat((f32*)lbl_80396820, p3, m);
-    GXLoadTexMtxImm((const f32 (*)[4])m, GX_TEXMTX1, GX_MTX3x4);
-    gxTextureSetupFn_8007cf7c();
-    countShifted = (int)((MapBlockData*)obj)->nRenderInstrsWater << 3;
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state,
-                                *(void**)&((GameObject *)obj)->anim.previousLocalPosX, countShifted, countShifted);
-    modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, (int)*(u16*)((char*)p1 + 0x14));
-    state[4] += 4;
-    newR = mapBlockRender_setShader(1, (struct MapBlockData*)obj, state);
-    state[4] += 4;
-    mapBlockRender_setVtxDcrs(1, obj, newR, state);
-    cursor = state[4] + 4;
-    state[4] = cursor;
-    countShifted = cursor >> 3;
-    s0 = (u8*)state[0];
-    v = s0[countShifted];
-    base = (int*)(state[0] + countShifted);
-    v = v | ((u32) * (u8*)((char*)base + 1) << 8);
-    v = v | ((u32) * (u8*)((char*)base + 2) << 16);
-    state[4] += 4;
-    nibble = (v >> (cursor & 7)) & 0xf;
-    for (i = 0; i < nibble; i++)
-    {
-        *(int*)&state[4] = state[4] + 8;
-    }
-    state[4] += 4;
-    mapBlockRender_callList(1, 1, (struct MapBlockData*)obj, newR, state, p3);
-}
-void modelRenderFn_8005d894(int* p1, int* obj, float* p3)
-{
-    int state[5];
-    int countShifted;
-    struct MapShader* newR;
-    int cursor;
-    u32 v;
-    int* base;
-    int nibble;
-    int i;
-    u8* s0;
-
-    Camera_ApplyTransparentViewport();
-    countShifted = (int)((MapBlockData*)obj)->nRenderInstrsTransp << 3;
-    modelRenderInstrsState_init((ModelRenderInstrsState*)state, *(void**)&((GameObject *)obj)->anim.banks,
-                                countShifted, countShifted);
-    modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, (int)*(u16*)((char*)p1 + 0x14));
-    state[4] += 4;
-    newR = mapBlockRender_setShader(1, (struct MapBlockData*)obj, state);
-    state[4] += 4;
-    mapBlockRender_setVtxDcrs(1, obj, newR, state);
-    cursor = state[4] + 4;
-    state[4] = cursor;
-    countShifted = cursor >> 3;
-    s0 = (u8*)state[0];
-    v = s0[countShifted];
-    base = (int*)(state[0] + countShifted);
-    v = v | ((u32) * (u8*)((char*)base + 1) << 8);
-    v = v | ((u32) * (u8*)((char*)base + 2) << 16);
-    state[4] += 4;
-    nibble = (v >> (cursor & 7)) & 0xf;
-    for (i = 0; i < nibble; i++)
-    {
-        *(int*)&state[4] = state[4] + 8;
-    }
-    state[4] += 4;
-    mapBlockRender_callList(1, 1, (struct MapBlockData*)obj, newR, state, p3);
-    Camera_ApplyFullViewport();
-}
+void modelRenderFn_8005d4ec(int* p1, int* obj, float* p3);
+void modelRenderFn_8005d69c(int* p1, int* obj, float* p3);
+void modelRenderFn_8005d894(int* p1, int* obj, float* p3);
 
 
-void objDrawFn_8005da48(GameObject* obj)
-{
-    int* model = (int*)Obj_GetActiveModel(obj);
-    if (*(void**)((char*)model + 0x58) != NULL)
-    {
-        objRenderFn_8003d980((u8*)obj, model);
-    }
-    else
-    {
-        void* shadow;
-        (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, obj);
-        renderResetFn_8003fc60();
-        objRender(0, 0, 0, 0, obj, 1);
-        Camera_ApplyDecalViewport();
-        shadow = obj->anim.modelState;
-        if (shadow != NULL && ((ObjModelState*)shadow)->shadowCastSlot != NULL)
-        {
-            objShadowFn_80062498(obj, 0, 0, framesThisStep);
-        }
-        else if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
-        {
-            objDrawFn_80061654(obj, (ObjModel*)model);
-        }
-        Camera_ApplyFullViewport();
-    }
-}
+void objDrawFn_8005da48(GameObject* obj);
 
-void sceneDrawTransparentPolys(void)
-{
-    GXColor c5;
-    int i;
-    int* block;
-    GameObject* player;
-    GXColor c4;
-    int (*e)[4];
-    GXColor c6;
-    f32 m[16];
-
-    lightmap_sortTransparentDrawQueue();
-    i = 0;
-    e = (int(*)[4])&lbl_8037E0C0;
-    for (; i < lbl_803DCE30; i++)
-    {
-        switch (e[i][3])
-        {
-        case 0:
-            expgfx_renderSourcePools(e[i][0], 0);
-            objDrawFn_8005da48((GameObject*)e[i][0]);
-            expgfx_renderSourcePools(e[i][0], 1);
-            break;
-        case 1:
-            block = (int*)e[i][0];
-            Obj_GetActiveModel((GameObject*)block);
-            player = Obj_GetPlayerObject();
-            if ((GameObject*)block == player)
-            {
-                if (playerIsDisguised((GameObject*)block) == 0)
-                {
-                    fn_802B4ED8((GameObject*)block, 1, 1);
-                }
-            }
-            else
-            {
-                objRenderFuzz(block);
-            }
-            break;
-        case 2:
-            Camera_ApplyDecalViewport();
-            objShadowFn_80062498((GameObject*)e[i][0], 0, 0, framesThisStep);
-            Camera_ApplyFullViewport();
-            break;
-        case 3:
-            Camera_ApplyDecalViewport();
-            objDrawFn_80061654((GameObject*)e[i][0], Obj_GetActiveModel((GameObject*)e[i][0]));
-            Camera_ApplyFullViewport();
-            break;
-        case 4:
-            block = (int*)e[i][1];
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            objGetColor(0, (u8*)&c4, (u8*)&c4 + 1, (u8*)&c4 + 2);
-            GXSetChanAmbColor(GX_COLOR0, c4);
-            GXSetNumChans(1);
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)(block + 3), m);
-            setupToRenderMapBlock(block, m);
-            modelRenderFn_8005d894((int*)e[i][0], (int*)e[i][1], m);
-            break;
-        case 5:
-            block = (int*)e[i][1];
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            objGetColor(0, (u8*)&c5, (u8*)&c5 + 1, (u8*)&c5 + 2);
-            GXSetChanAmbColor(GX_COLOR0, c5);
-            GXSetNumChans(1);
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)(block + 3), m);
-            setupToRenderMapBlock(block, m);
-            modelRenderFn_8005d69c((int*)e[i][0], (int*)e[i][1], m);
-            break;
-        case 6:
-            block = (int*)e[i][1];
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            objGetColor(0, (u8*)&c6, (u8*)&c6 + 1, (u8*)&c6 + 2);
-            GXSetChanAmbColor(GX_COLOR0, c6);
-            GXSetNumChans(1);
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)(block + 3), m);
-            setupToRenderMapBlock(block, m);
-            modelRenderFn_8005d4ec((int*)e[i][0], (int*)e[i][1], m);
-            break;
-        case 7:
-            drawGlow((u32)e[i][0], e[i][1]);
-            break;
-        case 8:
-            drawFn_8006f500();
-            break;
-        case 9:
-            (*gWaterfxInterface)->render(0, 0);
-        }
-    }
-}
+void sceneDrawTransparentPolys(void);
 
 
-void lightmap_queueExternalRenderEntry(u32 a, u32 b, f32* p)
-{
-    s32 t;
-    if (lbl_803DCE30 == 1000)
-    {
-        sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
-    }
-    t = (s32) - p[2];
-    t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    lbl_8037E0C0[lbl_803DCE30 * 4] = a;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 1] = b;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 2] = t | 0x38000000;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 7;
-    lbl_803DCE30++;
-}
+void lightmap_queueExternalRenderEntry(u32 a, u32 b, f32* p);

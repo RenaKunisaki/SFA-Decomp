@@ -47,71 +47,71 @@
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-int lbl_803DD03C;
-f32 gFogNearZ;
-f32 gFogFarZ;
-u32 gTevStageCursor;
-u32 gTevTexCoordCursor;
-u32 gTevTexMapCursor;
-f32 gFogStartZ;
-f32 gFogEndZ;
-GXColor gFogColor;
-u8 gGxZModeValid;
-u8 gGxZCompLocValid;
-u8 gGxZModeCompareEnable;
-int gGxZModeCompareFunc;
-u8 gGxZModeUpdateEnable;
-u8 gGxZCompLocCached;
-u8 lbl_803DD010;
-f32 lbl_803DD00C;
-u8 gTevStageCount;
-u8 gTevTexGenCount;
-u8 gTevChanCount;
-u8 gTevIndStageCount;
-u32 screenWidth;
-u16 gDepthReadResultCount;
-u16 gDepthReadPendingCount;
-static u32 sIntersectUnused0;
-u8 gWaterFxDisabled;
-u8 gWaterQuadWriteIdx;
-u8 gWaterRippleWriteIdx;
-u32 lbl_803DCFF4;
-u8 gWaterFxBank;
+extern int lbl_803DD03C;
+extern f32 gFogNearZ;
+extern f32 gFogFarZ;
+extern u32 gTevStageCursor;
+extern u32 gTevTexCoordCursor;
+extern u32 gTevTexMapCursor;
+extern f32 gFogStartZ;
+extern f32 gFogEndZ;
+extern GXColor gFogColor;
+extern u8 gGxZModeValid;
+extern u8 gGxZCompLocValid;
+extern u8 gGxZModeCompareEnable;
+extern int gGxZModeCompareFunc;
+extern u8 gGxZModeUpdateEnable;
+extern u8 gGxZCompLocCached;
+extern u8 lbl_803DD010;
+extern f32 lbl_803DD00C;
+extern u8 gTevStageCount;
+extern u8 gTevTexGenCount;
+extern u8 gTevChanCount;
+extern u8 gTevIndStageCount;
+extern u32 screenWidth;
+extern u16 gDepthReadResultCount;
+extern u16 gDepthReadPendingCount;
 
-u8 lbl_803DB678 = 0x60;
-u8 gHudTintAlpha = 0xFF;
-u32 lbl_803DB67C = 0xFFFFFF60;
-GXColor lbl_803DB680 = {0xFF, 0xFF, 0xFF, 0x60};
-GXColor lbl_803DB684 = {0xA0, 0xA0, 0xA0, 0x80};
-GXColor lbl_803DB688 = {0xFF, 0xFF, 0xFF, 0x60};
-GXColor lbl_803DB68C = {0xA0, 0xA0, 0xA0, 0x80};
-u32 lbl_803DB690 = 0xC0000000;
-u32 lbl_803DB694 = 0x00C00000;
-u32 lbl_803DB698 = 0x0000C000;
-u32 lbl_803DB69C = 0x666666FF;
-GXColor lbl_803DB6A0 = {0, 0, 0, 0x7F};
-GXColor lbl_803DB6A4 = {0xFF, 0xFF, 0xFF, 0xFC};
-u32 lbl_803DB6A8 = 0xFFFFFFFF;
-f32 lbl_803DB6AC = 0.55f;
-f32 lbl_803DB6B0 = 2.0f;
-f32 lbl_803DB6B4 = 0.25f;
-f32 lbl_803DB6B8 = 0.4f;
-GXColor lbl_803DB6BC = {0x80, 0x80, 0x80, 0xFF};
-f32 lbl_803DB6C0 = 2.0f;
-f32 lbl_803DB6C4 = 0.3878f;
-f32 lbl_803DB6C8 = 15.0f;
-f32 lbl_803DB6CC = 100.0f;
-GXColor lbl_803DB6D0 = {0x42, 0x42, 0x42, 0};
-GXColor lbl_803DB6D4 = {0x81, 0x81, 0x81, 0};
-GXColor lbl_803DB6D8 = {0x19, 0x19, 0x19, 0};
-GXColor lbl_803DB6DC = {0x10, 0x10, 0x10, 0xFF};
-GXColor lbl_803DB6E0 = {0, 0, 0, 0xFF};
-GXColor lbl_803DB6E4 = {0, 0, 0x80, 0};
-GXColor lbl_803DB6E8 = {0x80, 0x80, 0, 0};
-GXColor lbl_803DB6EC = {0, 0x80, 0, 0};
-GXColor lbl_803DB6F0 = {0x80, 0, 0x80, 0};
-u32 lbl_803DB6F4 = 0xFFFFFF60;
-u32 lbl_803DB6F8 = 0xA0A0A080;
+extern u8 gWaterFxDisabled;
+extern u8 gWaterQuadWriteIdx;
+extern u8 gWaterRippleWriteIdx;
+extern u32 lbl_803DCFF4;
+extern u8 gWaterFxBank;
+
+extern u8 lbl_803DB678;
+extern u8 gHudTintAlpha;
+extern u32 lbl_803DB67C;
+extern GXColor lbl_803DB680;
+extern GXColor lbl_803DB684;
+extern GXColor lbl_803DB688;
+extern GXColor lbl_803DB68C;
+extern u32 lbl_803DB690;
+extern u32 lbl_803DB694;
+extern u32 lbl_803DB698;
+extern u32 lbl_803DB69C;
+extern GXColor lbl_803DB6A0;
+extern GXColor lbl_803DB6A4;
+extern u32 lbl_803DB6A8;
+extern f32 lbl_803DB6AC;
+extern f32 lbl_803DB6B0;
+extern f32 lbl_803DB6B4;
+extern f32 lbl_803DB6B8;
+extern GXColor lbl_803DB6BC;
+extern f32 lbl_803DB6C0;
+extern f32 lbl_803DB6C4;
+extern f32 lbl_803DB6C8;
+extern f32 lbl_803DB6CC;
+extern GXColor lbl_803DB6D0;
+extern GXColor lbl_803DB6D4;
+extern GXColor lbl_803DB6D8;
+extern GXColor lbl_803DB6DC;
+extern GXColor lbl_803DB6E0;
+extern GXColor lbl_803DB6E4;
+extern GXColor lbl_803DB6E8;
+extern GXColor lbl_803DB6EC;
+extern GXColor lbl_803DB6F0;
+extern u32 lbl_803DB6F4;
+extern u32 lbl_803DB6F8;
 
 typedef struct
 {
@@ -146,38 +146,17 @@ extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80, lbl_803DEF84, lbl_803DEF88;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 extern GXColor lbl_803DEEB4, lbl_803E8454;
 
-f32 lbl_8030EA10[3][2][3] = {
-    {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
-    {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
-    {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
-f32 lbl_8030EA58[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-char sMemoryCardFileNameString[20] = "Star Fox Adventures";
+extern f32 lbl_8030EA10[3][2][3];
+extern f32 lbl_8030EA58[2][3];
+extern f32 lbl_8030EA70[2][3];
+extern f32 lbl_8030EA88[2][3];
+extern f32 lbl_8030EAA0[2][3];
+extern char sMemoryCardFileNameString[20];
 
 int cardDeleteFn_8007d99c(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
 
-void* jumptable_8030EACC[14] = {
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x130), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x13C), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x118), (void*)((u8*)cardDeleteFn_8007d99c + 0x10C),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x148)};
-void* jumptable_8030EB04[14] = {
-    (void*)((u8*)cardGetMessage + 0x50),  (void*)((u8*)cardGetMessage + 0x64),  (void*)((u8*)cardGetMessage + 0x94),
-    (void*)((u8*)cardGetMessage + 0xC4),  (void*)((u8*)cardGetMessage + 0xF4),  (void*)((u8*)cardGetMessage + 0x124),
-    (void*)((u8*)cardGetMessage + 0x168), (void*)((u8*)cardGetMessage + 0x1AC), (void*)((u8*)cardGetMessage + 0x1DC),
-    (void*)((u8*)cardGetMessage + 0x1E8), (void*)((u8*)cardGetMessage + 0x228), (void*)((u8*)cardGetMessage + 0x258),
-    (void*)((u8*)cardGetMessage + 0x258), (void*)((u8*)cardGetMessage + 0x288)};
-void* jumptable_8030EB3C[7] = {(void*)((u8*)showMemCardError + 0x2C8), (void*)((u8*)showMemCardError + 0x2D4),
-                               (void*)((u8*)showMemCardError + 0x2E8), (void*)((u8*)showMemCardError + 0x2FC),
-                               (void*)((u8*)showMemCardError + 0x318), (void*)((u8*)showMemCardError + 0x33C),
-                               (void*)((u8*)showMemCardError + 0x36C)};
 typedef struct StageCountTable
 {
     u8 count[7];
@@ -255,167 +234,104 @@ int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
 int saveCb_8007e748(int saveId, int size, void* dst);
 
 /* Per-frame alpha decrement of the two water-effect pools. */
-void timeFn_8006f400(f32 step)
+void timeFn_8006f400(f32 step);
+
+void drawFn_8006f500(void);
+
+void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
 {
-    int i;
-    SplashQuad* quads;
-    RippleEntry* ripples;
+    WaterFxState* base;
+    f32 x, y, z;
+    f32 ax, px;
+    f32 ay, py, az, pz;
+    f32 xm, ym, zm;
+    f32 groundY;
+    Vec axis;
+    Vec perp;
+    Vec norm;
+    f32 fscale;
 
-    quads = gWaterSplashQuads;
-    ripples = gWaterRipples;
-
-    for (i = 0; i < 256; i++)
+    base = (WaterFxState*)gWaterFxState;
+    if (((GameObject*)obj)->anim.classId == 1)
     {
-        if (quads[i].alpha != 0)
+        gWaterFxBank = *(u8*)&((GameObject*)obj)->anim.bankIndex;
+    }
+    else if (((GameObject*)obj)->anim.seqId == 0x416)
+    {
+        gWaterFxBank = 3;
+    }
+    if (trackGetNearestGroundOffsetAndNormal((GameObject*)obj, ((GameObject*)obj)->anim.localPosX,
+                                             ((GameObject*)obj)->anim.localPosY,
+                                             ((GameObject*)obj)->anim.localPosZ, &groundY, (f32*)&norm, 0) == 0)
+    {
+        if (type == 1)
         {
-            if (quads[i].alpha - step <= lbl_803DEE20)
-                quads[i].alpha = 0;
-            else
-                quads[i].alpha -= step;
+            base->ripples[gWaterRippleWriteIdx].x = pos[0];
+            base->ripples[gWaterRippleWriteIdx].y = lbl_803DEE3C + pos[1];
+            base->ripples[gWaterRippleWriteIdx].z = pos[2];
+            base->ripples[gWaterRippleWriteIdx].id = *(s16*)obj;
+            base->ripples[gWaterRippleWriteIdx].alpha = 0xff;
+            base->ripples[gWaterRippleWriteIdx].flip = flip;
+            gWaterRippleWriteIdx++;
+            if (gWaterRippleWriteIdx >= 0x100)
+            {
+                gWaterRippleWriteIdx = 0;
+            }
         }
-        if (ripples[i].alpha != 0)
+        PSVECNormalize(&norm, &norm);
+        axis.x = lbl_803DEE38;
+        axis.y = lbl_803DEE20;
+        axis.z = lbl_803DEE20;
+        if (__fabs(PSVECDotProduct(&norm, &axis)) >= lbl_803DEE58)
         {
-            if (ripples[i].alpha - step <= lbl_803DEE20)
-                ripples[i].alpha = 0;
-            else
-                ripples[i].alpha -= step;
+            axis.x = lbl_803DEE20;
+            axis.z = lbl_803DEE38;
+        }
+        PSVECCrossProduct(&norm, &axis, &perp);
+        PSVECCrossProduct(&perp, &norm, &axis);
+        PSVECNormalize(&axis, &axis);
+        PSVECNormalize(&perp, &perp);
+        fscale = base->scales[gWaterFxBank];
+        PSVECScale(&axis, &axis, fscale);
+        PSVECScale(&perp, &perp, fscale);
+        x = pos[0];
+        y = pos[1];
+        z = pos[2];
+        ax = axis.x;
+        xm = x - ax;
+        px = perp.x;
+        base->quads[gWaterQuadWriteIdx].v[0] = xm - px;
+        ay = axis.y;
+        ym = y - ay;
+        py = perp.y;
+        base->quads[gWaterQuadWriteIdx].v[1] = ym - py;
+        az = axis.z;
+        zm = z - az;
+        pz = perp.z;
+        base->quads[gWaterQuadWriteIdx].v[2] = zm - pz;
+        x += ax;
+        base->quads[gWaterQuadWriteIdx].v[3] = x - px;
+        y += ay;
+        base->quads[gWaterQuadWriteIdx].v[4] = y - py;
+        z += az;
+        base->quads[gWaterQuadWriteIdx].v[5] = z - pz;
+        base->quads[gWaterQuadWriteIdx].v[6] = px + x;
+        base->quads[gWaterQuadWriteIdx].v[7] = py + y;
+        base->quads[gWaterQuadWriteIdx].v[8] = pz + z;
+        base->quads[gWaterQuadWriteIdx].v[9] = px + xm;
+        base->quads[gWaterQuadWriteIdx].v[10] = py + ym;
+        base->quads[gWaterQuadWriteIdx].v[11] = pz + zm;
+        base->quads[gWaterQuadWriteIdx].angle = 0x10000 - *(s16*)obj;
+        base->quads[gWaterQuadWriteIdx].type = type;
+        base->quads[gWaterQuadWriteIdx].alpha = 0xff;
+        base->quads[gWaterQuadWriteIdx].flip = flip;
+        gWaterQuadWriteIdx++;
+        if (gWaterQuadWriteIdx >= 0x100)
+        {
+            gWaterQuadWriteIdx = 0;
         }
     }
 }
-
-void drawFn_8006f500(void)
-{
-    GXColor color;
-    Mtx camTrans;
-    Mtx posMtx;
-    Mtx rot;
-    Mtx trans;
-    SplashQuad* quad;
-    f32* view;
-    int i;
-    f32 tTop;
-    f32 tBot;
-    u8 alpha;
-
-    if (Obj_GetPlayerObject() == NULL)
-    {
-        return;
-    }
-    Camera_ApplyDecalViewport();
-    GXSetCurrentMtx(GX_PNMTX0);
-    GXClearVtxDesc();
-    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-    GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    GXSetNumTexGens(1);
-    GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
-    GXSetNumTevStages(1);
-    GXSetNumIndStages(0);
-    GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetNumChans(0);
-    GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
-    GXSetTevDirect(GX_TEVSTAGE0);
-    GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
-    GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-    GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
-    GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetCullMode(GX_CULL_NONE);
-    GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-    selectTexture(gWaterFxTextures[gWaterFxBank], 0);
-    view = Camera_GetViewMatrix();
-    PSMTXTrans(camTrans, -playerMapOffsetX, lbl_803DEE20, -playerMapOffsetZ);
-    PSMTXConcat((MtxP)view, camTrans, posMtx);
-    GXLoadPosMtxImm(posMtx, GX_PNMTX0);
-    gxSetZMode_(1, 3, 0);
-    gxSetPeControl_ZCompLoc_(1);
-    GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
-    i = 0;
-    for (; i < 0x100; i++)
-    {
-        quad = &gWaterSplashQuads[i];
-        alpha = quad->alpha;
-        if (alpha != 0)
-        {
-            if (quad->type == 1)
-            {
-                color.a = alpha >> 2;
-            }
-            else
-            {
-                color.a = alpha >> 1;
-            }
-            GXSetTevKColor(GX_KCOLOR0, color);
-            if (quad->flip != 0)
-            {
-                tTop = lbl_803DEE38;
-                tBot = lbl_803DEE20;
-                PSMTXRotRad(rot, 0x7a,
-                            lbl_803DEE3C * (lbl_803DEE40 * (f32)(int)(0x8000 - quad->angle)) / lbl_803DEE44);
-            }
-            else
-            {
-                tTop = lbl_803DEE20;
-                tBot = lbl_803DEE38;
-                PSMTXRotRad(rot, 0x7a, lbl_803DEE3C * (lbl_803DEE40 * (f32)(u32)quad->angle) / lbl_803DEE44);
-            }
-            PSMTXTrans(trans, lbl_803DEE48, *(f32*)&lbl_803DEE48, lbl_803DEE20);
-            PSMTXConcat(rot, trans, rot);
-            PSMTXTrans(trans, lbl_803DEE24, *(f32*)&lbl_803DEE24, lbl_803DEE20);
-            PSMTXConcat(trans, rot, rot);
-            GXLoadTexMtxImm(rot, GX_TEXMTX0, GX_MTX2x4);
-            GXBegin(GX_QUADS, GX_VTXFMT2, 4);
-            {
-                f32 px, py, pz;
-                pz = quad->v[2];
-                py = quad->v[1];
-                px = quad->v[0];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE20;
-            GXWGFifo.f32 = tTop;
-            {
-                f32 px, py, pz;
-                pz = quad->v[5];
-                py = quad->v[4];
-                px = quad->v[3];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE38;
-            GXWGFifo.f32 = tTop;
-            {
-                f32 px, py, pz;
-                pz = quad->v[8];
-                py = quad->v[7];
-                px = quad->v[6];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE38;
-            GXWGFifo.f32 = tBot;
-            {
-                f32 px, py, pz;
-                pz = quad->v[11];
-                py = quad->v[10];
-                px = quad->v[9];
-                GXWGFifo.f32 = px;
-                GXWGFifo.f32 = py;
-                GXWGFifo.f32 = pz;
-            }
-            GXWGFifo.f32 = lbl_803DEE20;
-            GXWGFifo.f32 = tBot;
-        }
-    }
-    Camera_ApplyFullViewport();
-}
-
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 
 void waterFxSetDisabled(int disabled);
 
@@ -699,17 +615,17 @@ int saveCb_8007e748(int saveId, int size, void* dst);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-f32 gWaterFxState[4];
-Texture* gWaterFxTextures[4];
-RippleEntry gWaterRipples[0x100];
-SplashQuad gWaterSplashQuads[0x100];
-DepthReadRequest gDepthReadResults[0x14];
-DepthReadRequest gDepthReadPendingQueue[0x14];
+extern f32 gWaterFxState[4];
+extern Texture* gWaterFxTextures[4];
+extern RippleEntry gWaterRipples[0x100];
+extern SplashQuad gWaterSplashQuads[0x100];
+extern DepthReadRequest gDepthReadResults[0x14];
+extern DepthReadRequest gDepthReadPendingQueue[0x14];
 
-f32 lbl_803967C0[3][4];
-f32 lbl_803967F0[3][4];
-f32 lbl_80396820[3][4];
-f32 lbl_80396850[3][4];
-f32 hudMatrix[4][4];
-int lbl_803968C0[0x10];
-SaveCardFileInfo lbl_80396900;
+extern f32 lbl_803967C0[3][4];
+extern f32 lbl_803967F0[3][4];
+extern f32 lbl_80396820[3][4];
+extern f32 lbl_80396850[3][4];
+extern f32 hudMatrix[4][4];
+extern int lbl_803968C0[0x10];
+extern SaveCardFileInfo lbl_80396900;
