@@ -90,6 +90,11 @@ int bombplant_SeqFn(int* obj)
     return 0;
 }
 
+static int bombplant_isPlayerBeyondGrowRange(f32 dist)
+{
+    return dist > 6400.0f;
+}
+
 static inline void bombplant_tryBeginGrow(GameObject* obj, void* state)
 {
     void* plr = Obj_GetPlayerObject();
