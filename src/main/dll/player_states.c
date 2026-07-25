@@ -1434,7 +1434,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    *(int*)&inner->flags360 &= ~0x2LL;
+    inner->flags360 &= ~2;
     inner->flags360 |= 0x2000;
     *(int*)((char*)state + 0x4) |= 0x100000;
     {

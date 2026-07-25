@@ -17,6 +17,20 @@ STATIC_ASSERT(offsetof(GfxCmd, tex) == 0x10);
 STATIC_ASSERT(offsetof(GfxCmd, flags) == 0x14);
 STATIC_ASSERT(offsetof(GfxCmd, layer) == 0x16);
 
+typedef struct ModgfxEffectResource
+{
+    u8 pad00[0x3C];
+    u8 spawnData[0x18];
+    u8 sharedTexture[0x0C];
+    u8 primaryTexture[0x0C];
+    s16 sequenceParams[7];
+} ModgfxEffectResource;
+
+STATIC_ASSERT(offsetof(ModgfxEffectResource, spawnData) == 0x3C);
+STATIC_ASSERT(offsetof(ModgfxEffectResource, sharedTexture) == 0x54);
+STATIC_ASSERT(offsetof(ModgfxEffectResource, primaryTexture) == 0x60);
+STATIC_ASSERT(offsetof(ModgfxEffectResource, sequenceParams) == 0x6C);
+
 typedef struct ModgfxSpawnPacket
 {
     GfxCmd* cmds;
@@ -50,7 +64,11 @@ STATIC_ASSERT(sizeof(ModgfxSpawnPacket) == 0x360);
 typedef struct ModgfxPointerSpawnPacket
 {
     GfxCmd* cmds;
-    u8* ctx;
+    union
+    {
+        void* ctx;
+        GameObject* sourceObj;
+    };
     u8 pad08[0x18];
     f32 col[3];
     f32 pos[3];

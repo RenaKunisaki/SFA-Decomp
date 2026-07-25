@@ -3741,15 +3741,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
     PlayerState* inner = ((GameObject*)obj)->extra;
     int r;
     f32 spin;
-    struct
-    {
-        u8 pad[6];
-        u16 mode;
-        f32 scale;
-        f32 x;
-        f32 y;
-        f32 z;
-    } pfx;
+    PartFxSpawnParams pfx;
 
     r = fn_802AC7DC(obj, state, (int)inner, fv);
     if (r != 0)
@@ -3854,11 +3846,11 @@ int playerStateAimStaff(int obj, int state, f32 fv)
                 *(s16*)((char*)sub + 0x4) = v;
                 inner->stateTimer = lbl_803E7F58;
             }
-            ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
+            ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.posX, &pfx.posY, &pfx.posZ, 0);
             pfx.scale = lbl_803E7F9C;
-            pfx.mode = 0;
+            pfx.arg3 = 0;
             (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
-            pfx.mode = 1;
+            pfx.arg3 = 1;
             (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
             if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
                 *(s16*)((char*)*(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c) + 0x4) == 0 ||
