@@ -254,7 +254,9 @@ void TumbleWeedBush_update(int* obj)
         {
         }
     }
-    for (nullVal = i = 0; (u8)i < state->pieceCount; i++)
+    i = 0;
+    nullVal = i;
+    for (; (u8)i < state->pieceCount; i++)
     {
         slot = (int**)&state->pieceObjects[(u8)i];
         if (*slot != NULL)
