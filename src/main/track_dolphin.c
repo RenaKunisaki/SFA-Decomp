@@ -1,4 +1,5 @@
 #define OBJHITS_STATE_INDEX_S8
+#define TEX_SETSHADER_U8
 #include "main/map_block.h"
 #include "main/texture.h"
 #include "track/intersect_depth_state_api.h"
@@ -449,10 +450,10 @@ void renderMapBlock(MapBlockData* block, u8 type)
 {
     ModelRenderInstrsState state;
     f32 m[16];
-    void* instructions;
     u16 instructionCount;
+    void* instructions;
     MapShader* shader;
-    int doSetup;
+    u8 doSetup;
     int done;
     void* viewMtx;
 
@@ -490,8 +491,8 @@ void renderMapBlock(MapBlockData* block, u8 type)
         u8* bp;
 
         bp = state.instrs;
-        word = bp[pos >> 3];
         bp += pos >> 3;
+        word = bp[0];
         word |= bp[1] << 8;
         word |= bp[2] << 16;
         state.bit = pos + 4;
@@ -511,16 +512,18 @@ void renderMapBlock(MapBlockData* block, u8 type)
         {
             u32 word2;
             int cnt;
+            int i;
             u8* bp2;
             int pos2 = pos + 4;
             bp2 = state.instrs;
-            word2 = bp2[pos2 >> 3];
             bp2 += pos2 >> 3;
+            word2 = bp2[0];
             word2 |= bp2[1] << 8;
             word2 |= bp2[2] << 16;
             state.bit = pos2 + 4;
             cnt = (word2 >> (pos2 & 7)) & 0xf;
-            modelRenderInstrsState_advance(&state, cnt << 3);
+            for (i = 0; i < cnt; i++)
+                modelRenderInstrsState_advance(&state, 8);
             break;
         }
         case 5:
