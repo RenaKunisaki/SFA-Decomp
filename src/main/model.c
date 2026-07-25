@@ -116,7 +116,6 @@ static inline void* modelGetBoneMtx(ObjModel* model, int idx);
 asm void ObjModel_TransformVerticesWithTranslation(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count);
 asm void ObjModel_TransformVerticesLinear(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count);
 asm void ObjModel_TransformQuadVerticesLinear(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count);
-static inline int boneBlendSlotLimit(u8* model);
 
 asm void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16 pos)
 {
@@ -1070,19 +1069,34 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     ((ObjModel*)out2)->vtxBufDirty = 0;
     return out2;
 }
-static inline int boneBlendSlotLimit(u8* model)
+
+static inline int modelGetJointMatrixCount(const ObjModel* model)
 {
-    u8* p = (u8*)((ObjModel*)model)->file;
-    if (p[0xf3] != 0)
+    const ModelFileHeader* file = model->file;
+
+    if (file->jointCount != 0)
     {
-        return p[0xf3] + p[0xf4];
+        return file->jointCount + file->extraJointCount;
     }
     return 1;
 }
 
-void modelChainUpdateNodesPassive(int* a, int b, u8* blend, u8* chain)
+static inline void* modelGetBoneMtx(ObjModel* model, int idx)
 {
-    u8* model = (u8*)a;
+    int joint = idx;
+    u8* base;
+
+    if (joint >= modelGetJointMatrixCount(model))
+    {
+        joint = 0;
+    }
+    base = model->jointMatrices[model->bufferFlags & 1];
+    return base + joint * sizeof(ObjModelJointMatrix);
+}
+
+void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
+                                  ObjModelChainEntry* entry)
+{
     f32 tmp[12];
     f32 mt[12];
     f32 target[3];
@@ -1094,38 +1108,32 @@ void modelChainUpdateNodesPassive(int* a, int b, u8* blend, u8* chain)
     int nextIdx;
     int i;
     int idx;
+    int matrixCount;
     f32* m;
-    int prevOff;
     f32 dot;
-    u8* bankSel;
 
-    idx = *(s8*)(*(u8**)(b + 0x3c) + (*(int***)(chain + 4))[0][0] * 0x1c);
-    if (idx >= boneBlendSlotLimit(model))
+    idx = ((ModelBone*)file->jointData)[entry->desc->jointIndices[0]].parent;
+    PSMTXCopy(modelGetBoneMtx(model, idx), tmp);
+    idx = entry->desc->jointIndices[0];
+    matrixCount = modelGetJointMatrixCount(model);
+    if (idx >= matrixCount)
     {
         idx = 0;
     }
-    bankSel = model + 0xc;
-    PSMTXCopy(*(f32**)(bankSel + ((((ObjModel*)model)->bufferFlags & 1) << 2)) + idx * 0x10, tmp);
-    idx = (*(int***)(chain + 4))[0][0];
-    if (idx >= boneBlendSlotLimit(model))
+    m = (f32*)(model->jointMatrices[model->bufferFlags & 1] + idx * sizeof(ObjModelJointMatrix));
+    for (i = 1; i < entry->nodeCount + 1; i++)
     {
-        idx = 0;
-    }
-    bankSel = model + 0xc;
-    m = *(f32**)(bankSel + ((((ObjModel*)model)->bufferFlags & 1) << 2)) + idx * 0x10;
-    for (i = 1; i < *(int*)(chain + 8) + 1; i++)
-    {
-        nextIdx = (*(int***)(chain + 4))[0][i];
-        PSMTXMultVec(tmp, (f32*)(*(u8**)chain + (i - 1) * 0x54 + 0x18), out);
-        target[0] = gMapSavedPlayerOffsetX + (*(f32*)(*(u8**)chain + i * 0x54) + *(f32*)(*(u8**)chain + i * 0x54 + 0xc)) -
-            playerMapOffsetX;
-        target[1] = *(f32*)(*(u8**)chain + i * 0x54 + 4) + *(f32*)(*(u8**)chain + i * 0x54 + 0x10);
-        target[2] = gMapSavedPlayerOffsetZ + (*(f32*)(*(u8**)chain + i * 0x54 + 8) + *(f32*)(*(u8**)chain + i * 0x54 + 0x14)) -
-            playerMapOffsetZ;
-        work[0] = *(f32*)(*(u8**)chain + i * 0x54 - 0x3c);
-        work[1] = *(f32*)(*(u8**)chain + i * 0x54 - 0x38);
-        work[2] = *(f32*)(*(u8**)chain + i * 0x54 - 0x34);
-        PSVECAdd(work, (f32*)(*(u8**)chain + i * 0x54 + 0x18), work);
+        nextIdx = entry->desc->jointIndices[i];
+        PSMTXMultVec(tmp, entry->nodes[i - 1].localOffset, out);
+        target[0] = entry->nodes[i].pos[0] + entry->nodes[i].posDelta[0] + gMapSavedPlayerOffsetX -
+                    playerMapOffsetX;
+        target[1] = entry->nodes[i].pos[1] + entry->nodes[i].posDelta[1];
+        target[2] = entry->nodes[i].pos[2] + entry->nodes[i].posDelta[2] + gMapSavedPlayerOffsetZ -
+                    playerMapOffsetZ;
+        work[0] = entry->nodes[i - 1].localOffset[0];
+        work[1] = entry->nodes[i - 1].localOffset[1];
+        work[2] = entry->nodes[i - 1].localOffset[2];
+        PSVECAdd(work, entry->nodes[i].localOffset, work);
         PSMTXMultVec(tmp, work, work);
         PSVECSubtract(target, out, dir1);
         PSVECNormalize(dir1, dir1);
@@ -1144,7 +1152,7 @@ void modelChainUpdateNodesPassive(int* a, int b, u8* blend, u8* chain)
                 else
                 {
                     f32 sub = lbl_803DE818 - dot;
-                    dot = sub * *(f32*)(blend + 8) + dot;
+                    dot = sub * chain->stiffness + dot;
                 }
                 PSMTXTranspose(tmp, mt);
                 PSMTXMultVecSR(mt, axis, axis);
@@ -1160,26 +1168,21 @@ void modelChainUpdateNodesPassive(int* a, int b, u8* blend, u8* chain)
         m[7] = out[1];
         m[11] = out[2];
         PSMTXCopy(m, tmp);
-        work[0] = *(f32*)(*(u8**)chain + i * 0x54 + 0x18);
-        work[1] = *(f32*)(*(u8**)chain + i * 0x54 + 0x1c);
-        work[2] = *(f32*)(*(u8**)chain + i * 0x54 + 0x20);
+        work[0] = entry->nodes[i].localOffset[0];
+        work[1] = entry->nodes[i].localOffset[1];
+        work[2] = entry->nodes[i].localOffset[2];
         PSMTXMultVec(m, work, work);
-        PSMTXCopy(m, (f32*)(*(u8**)chain + (i - 1) * 0x54 + 0x24));
-        if (i < *(int*)(chain + 8))
+        PSMTXCopy(m, entry->nodes[i - 1].mtx[0]);
+        if (i < entry->nodeCount)
         {
-            idx = nextIdx;
-            if (nextIdx >= boneBlendSlotLimit(model))
-            {
-                idx = 0;
-            }
-            m = *(f32**)((u8*)model + ((((ObjModel*)model)->bufferFlags & 1) << 2) + 0xc) + idx * 0x10;
+            m = modelGetBoneMtx(model, nextIdx);
         }
     }
 }
 
-void modelChainUpdateNodes(int* a, int b, u8* blend, u8* chain, ObjModelChainUpdateCallback callback, int callbackArg)
+void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain, ObjModelChainEntry* entry,
+                           ObjModelChainUpdateCallback callback, int callbackArg)
 {
-    u8* model = (u8*)a;
     f32 tmp[12];
     f32 mt[12];
     f32 target[3];
@@ -1191,39 +1194,36 @@ void modelChainUpdateNodes(int* a, int b, u8* blend, u8* chain, ObjModelChainUpd
     int nextIdx;
     int i;
     int idx;
+    int matrixCount;
     f32* m;
-    int prevOff;
     f32 dot;
 
-    idx = *(s8*)(*(u8**)(b + 0x3c) + (*(int***)(chain + 4))[0][0] * 0x1c);
-    if (idx >= boneBlendSlotLimit(model))
+    idx = ((ModelBone*)file->jointData)[entry->desc->jointIndices[0]].parent;
+    PSMTXCopy(modelGetBoneMtx(model, idx), tmp);
+    idx = entry->desc->jointIndices[0];
+    matrixCount = modelGetJointMatrixCount(model);
+    if (idx >= matrixCount)
     {
         idx = 0;
     }
-    PSMTXCopy(*(f32**)((u8*)(model + 0xc) + ((((ObjModel*)model)->bufferFlags & 1) << 2)) + idx * 0x10, tmp);
-    idx = (*(int***)(chain + 4))[0][0];
-    if (idx >= boneBlendSlotLimit(model))
+    m = (f32*)(model->jointMatrices[model->bufferFlags & 1] + idx * sizeof(ObjModelJointMatrix));
+    for (i = 1; i < entry->nodeCount + 1; i++)
     {
-        idx = 0;
-    }
-    m = *(f32**)((u8*)(model + 0xc) + ((((ObjModel*)model)->bufferFlags & 1) << 2)) + idx * 0x10;
-    for (i = 1; i < *(int*)(chain + 8) + 1; i++)
-    {
-        nextIdx = (*(int***)(chain + 4))[0][i];
-        PSMTXMultVec(tmp, (f32*)(*(u8**)chain + (i - 1) * 0x54 + 0x18), out);
-        target[0] = gMapSavedPlayerOffsetX + (*(f32*)(*(u8**)chain + i * 0x54) + *(f32*)(*(u8**)chain + i * 0x54 + 0xc)) -
-            playerMapOffsetX;
-        target[1] = *(f32*)(*(u8**)chain + i * 0x54 + 4) + *(f32*)(*(u8**)chain + i * 0x54 + 0x10);
-        target[2] = gMapSavedPlayerOffsetZ + (*(f32*)(*(u8**)chain + i * 0x54 + 8) + *(f32*)(*(u8**)chain + i * 0x54 + 0x14)) -
-            playerMapOffsetZ;
-        work[0] = *(f32*)(*(u8**)chain + i * 0x54 - 0x3c);
-        work[1] = *(f32*)(*(u8**)chain + i * 0x54 - 0x38);
-        work[2] = *(f32*)(*(u8**)chain + i * 0x54 - 0x34);
-        if ((u32)callback != 0)
+        nextIdx = entry->desc->jointIndices[i];
+        PSMTXMultVec(tmp, entry->nodes[i - 1].localOffset, out);
+        target[0] = entry->nodes[i].pos[0] + entry->nodes[i].posDelta[0] + gMapSavedPlayerOffsetX -
+                    playerMapOffsetX;
+        target[1] = entry->nodes[i].pos[1] + entry->nodes[i].posDelta[1];
+        target[2] = entry->nodes[i].pos[2] + entry->nodes[i].posDelta[2] + gMapSavedPlayerOffsetZ -
+                    playerMapOffsetZ;
+        work[0] = entry->nodes[i - 1].localOffset[0];
+        work[1] = entry->nodes[i - 1].localOffset[1];
+        work[2] = entry->nodes[i - 1].localOffset[2];
+        if (callback != NULL)
         {
-            callback(b, a, work, callbackArg, i, *(f32*)(blend + 0x14));
+            callback((int)file, (int*)model, work, callbackArg, i, chain->phase);
         }
-        PSVECAdd(work, (f32*)(*(u8**)chain + i * 0x54 + 0x18), work);
+        PSVECAdd(work, entry->nodes[i].localOffset, work);
         PSMTXMultVec(tmp, work, work);
         PSVECSubtract(target, out, dir1);
         PSVECNormalize(dir1, dir1);
@@ -1240,7 +1240,7 @@ void modelChainUpdateNodes(int* a, int b, u8* blend, u8* chain, ObjModelChainUpd
             else
             {
                 f32 sub = lbl_803DE818 - dot;
-                dot = sub * *(f32*)(blend + 8) + dot;
+                dot = sub * chain->stiffness + dot;
             }
             PSMTXTranspose(tmp, mt);
             PSMTXMultVecSR(mt, axis, axis);
@@ -1255,28 +1255,23 @@ void modelChainUpdateNodes(int* a, int b, u8* blend, u8* chain, ObjModelChainUpd
         m[7] = out[1];
         m[11] = out[2];
         PSMTXCopy(m, tmp);
-        work[0] = *(f32*)(*(u8**)chain + i * 0x54 + 0x18);
-        work[1] = *(f32*)(*(u8**)chain + i * 0x54 + 0x1c);
-        work[2] = *(f32*)(*(u8**)chain + i * 0x54 + 0x20);
+        work[0] = entry->nodes[i].localOffset[0];
+        work[1] = entry->nodes[i].localOffset[1];
+        work[2] = entry->nodes[i].localOffset[2];
         PSMTXMultVec(m, work, work);
-        PSMTXCopy(m, (f32*)(*(u8**)chain + (i - 1) * 0x54 + 0x24));
-        if (i < *(int*)(chain + 8))
+        PSMTXCopy(m, entry->nodes[i - 1].mtx[0]);
+        if (i < entry->nodeCount)
         {
-            idx = nextIdx;
-            if (nextIdx >= boneBlendSlotLimit(model))
-            {
-                idx = 0;
-            }
-            m = *(f32**)((u8*)model + ((((ObjModel*)model)->bufferFlags & 1) << 2) + 0xc) + idx * 0x10;
+            m = modelGetBoneMtx(model, nextIdx);
         }
-        *(f32*)(*(u8**)chain + i * 0x54 + 0xc) = work[0] - (gMapSavedPlayerOffsetX + *(f32*)(*(u8**)chain + i * 0x54) -
-            playerMapOffsetX);
-        *(f32*)(*(u8**)chain + i * 0x54 + 0x10) = work[1] - *(f32*)(*(u8**)chain + i * 0x54 + 4);
-        *(f32*)(*(u8**)chain + i * 0x54 + 0x14) = work[2] - (gMapSavedPlayerOffsetZ + *(f32*)(*(u8**)chain + i * 0x54 + 8) -
-            playerMapOffsetZ);
-        *(f32*)(*(u8**)chain + i * 0x54) = work[0];
-        *(f32*)(*(u8**)chain + i * 0x54 + 4) = work[1];
-        *(f32*)(*(u8**)chain + i * 0x54 + 8) = work[2];
+        entry->nodes[i].posDelta[0] =
+            work[0] - (gMapSavedPlayerOffsetX + entry->nodes[i].pos[0] - playerMapOffsetX);
+        entry->nodes[i].posDelta[1] = work[1] - entry->nodes[i].pos[1];
+        entry->nodes[i].posDelta[2] =
+            work[2] - (gMapSavedPlayerOffsetZ + entry->nodes[i].pos[2] - playerMapOffsetZ);
+        entry->nodes[i].pos[0] = work[0];
+        entry->nodes[i].pos[1] = work[1];
+        entry->nodes[i].pos[2] = work[2];
     }
 }
 void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain, ObjModelChainEntry* entry);
@@ -1401,11 +1396,13 @@ void ObjModelChain_Update(int* model, int animState, ObjModelChain* chain, ObjMo
             {
                 modelChainApplyDampingAndJitter((ObjModel*)model, animState, chain,
                                                 (ObjModelChainEntry*)((u8*)chain->entries + off));
-                modelChainUpdateNodes(model, animState, (u8*)chain, (u8*)chain->entries + off, callback, i);
+                modelChainUpdateNodes((ObjModel*)model, (ModelFileHeader*)animState, chain,
+                                      (ObjModelChainEntry*)((u8*)chain->entries + off), callback, i);
             }
             else
             {
-                modelChainUpdateNodesPassive(model, animState, (u8*)chain, (u8*)chain->entries + off);
+                modelChainUpdateNodesPassive((ObjModel*)model, (ModelFileHeader*)animState, chain,
+                                             (ObjModelChainEntry*)((u8*)chain->entries + off));
             }
             off += 0xc;
         }
@@ -1671,24 +1668,6 @@ void model_multMtxs(u8* model, f32* out)
         base = *(f32**)(model + 0xc + (((ObjModel*)model)->bufferFlags & 1) * 4);
         PSMTXConcat(out, base + j * 0x10, base + j * 0x10);
     }
-}
-
-static inline void* modelGetBoneMtx(ObjModel* model, int idx)
-{
-    int lim;
-    u32 cnt;
-    int joint = idx;
-    ModelFileHeader* file = model->file;
-    u8* base;
-
-    cnt = file->jointCount;
-    lim = cnt != 0 ? cnt + file->extraJointCount : 1;
-    if (joint >= lim)
-    {
-        joint = 0;
-    }
-    base = model->jointMatrices[model->bufferFlags & 1];
-    return base + joint * 0x40;
 }
 
 void modelInitBoneMtxs(ObjModel* model, f32* outReordered)
