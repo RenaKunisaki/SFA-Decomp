@@ -110,35 +110,81 @@ typedef struct ObjAnimDef {
 
 typedef struct ObjAnimState {
   u8 pad00[4];
-  f32 framePhase;
-  f32 prevFramePhase;
+  union {
+    struct {
+      f32 framePhase;
+      f32 prevFramePhase;
+    };
+    f32 framePhases[2];
+  };
   f32 frameStep;
   f32 savedFrameStep;
-  f32 frameLength;
-  f32 prevFrameLength;
-  u8 *moveCache[OBJANIM_MOVE_CACHE_SLOT_COUNT];
-  u8 *blendMoveCache[OBJANIM_MOVE_CACHE_SLOT_COUNT];
+  union {
+    struct {
+      f32 frameLength;
+      f32 prevFrameLength;
+    };
+    f32 frameLengths[2];
+  };
+  union {
+    struct {
+      u8 *moveCache[OBJANIM_MOVE_CACHE_SLOT_COUNT];
+      u8 *blendMoveCache[OBJANIM_MOVE_CACHE_SLOT_COUNT];
+    };
+    u8 *cachedMoves[OBJANIM_MOVE_CACHE_SLOT_COUNT * 2];
+  };
   /* 0x2c: cursor into the current frame's packed bitstream, written by
      ObjModel_SampleJointTransform and consumed by modelRenderInterpolateRootTransform. */
-  u8 *frameStreamCursor;
-  u8 pad30[4];
-  ObjAnimFrameCommand *moveFrameData;
-  ObjAnimFrameCommand *prevMoveFrameData;
-  ObjAnimFrameCommand *blendFrameData;
-  ObjAnimFrameCommand *prevBlendFrameData;
-  u16 moveCacheSlot;
-  u16 prevMoveCacheSlot;
-  u16 blendCacheSlot;
-  u16 prevBlendCacheSlot;
+  union {
+    struct {
+      u8 *frameStreamCursor;
+      u8 *prevFrameStreamCursor;
+    };
+    u8 *frameStreamCursors[2];
+  };
+  union {
+    struct {
+      ObjAnimFrameCommand *moveFrameData;
+      ObjAnimFrameCommand *prevMoveFrameData;
+      ObjAnimFrameCommand *blendFrameData;
+      ObjAnimFrameCommand *prevBlendFrameData;
+    };
+    ObjAnimFrameCommand *frameData[4];
+  };
+  union {
+    struct {
+      u16 moveCacheSlot;
+      u16 prevMoveCacheSlot;
+      u16 blendCacheSlot;
+      u16 prevBlendCacheSlot;
+    };
+    u16 cacheSlots[4];
+  };
   /* Byte distance between adjacent packed frame streams while sampling. */
-  u16 frameStreamStride;
-  u8 pad4e[0x58 - 0x4E];
+  union {
+    struct {
+      s16 frameStreamStride;
+      s16 prevFrameStreamStride;
+    };
+    s16 frameStreamStrides[2];
+  };
+  u8 pad50[0x58 - 0x50];
   u16 eventCountdown;
-  u16 eventState;
-  u16 prevEventState;
+  union {
+    struct {
+      u16 eventState;
+      u16 prevEventState;
+    };
+    u16 eventStates[2];
+  };
   u16 eventStep;
-  s8 frameType;
-  s8 prevFrameType;
+  union {
+    struct {
+      s8 frameType;
+      s8 prevFrameType;
+    };
+    s8 frameTypes[2];
+  };
   s8 blendToggle;
   s8 moveControlFlags;
   s16 lastBlendMoveIndex;

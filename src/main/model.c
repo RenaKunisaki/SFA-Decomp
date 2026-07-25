@@ -270,10 +270,8 @@ lbl_BTN_z:
     blr
 }
 
-void modelAnimUpdateChannels(u8* hdr, u8* work, int chanCount)
+void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int channelCount)
 {
-    u8* slotCur;
-    u8* chanCur;
     int i;
     u8* mtxSlotRow;
     u8* frameStream;
@@ -285,127 +283,107 @@ void modelAnimUpdateChannels(u8* hdr, u8* work, int chanCount)
     int streamOff;
     f32 frameIdxF;
 
-    i = 0;
-    slotCur = work;
-    chanCur = work;
-    for (; i < chanCount; i++)
+    for (i = 0; i < channelCount; i++)
     {
-        if (((ModelFileHeader*)hdr)->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
+        if (file->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
         {
-            frameStream = *(u8**)(work + *(u16*)(slotCur + 0x44) * 4 + 0x1c);
+            frameStream = work->cachedMoves[work->cacheSlots[i]];
             mtxSlotRow = frameStream;
             frameStream += 0x80;
         }
         else
         {
-            /* hdr + 0x68 / 0x64 are ModelFileHeader animationDataSection /
-               animationModelPtrs */
-            mtxSlotRow = *(u8**)(hdr + 0x68) + *(u16*)(slotCur + 0x44) * (((((ModelFileHeader*)hdr)->jointCount - 1) & ~7) + 8);
-            frameStream = *(u8**)(*(u8**)(hdr + 0x64) + *(u16*)(slotCur + 0x44) * 4);
+            mtxSlotRow = file->animationDataSection +
+                         work->cacheSlots[i] * (((file->jointCount - 1) & ~7) + 8);
+            frameStream = ((u8**)file->animationModelPtrs)[work->cacheSlots[i]];
         }
-        frameStride = *(u8*)(*(u8**)(chanCur + 0x34) + 2);
+        frameStride = ((u8*)work->frameData[i])[2];
         boneIdx = 0;
         boneByteOff = 0;
         slotByte = mtxSlotRow;
-        while (boneIdx < ((ModelFileHeader*)hdr)->jointCount)
+        while (boneIdx < file->jointCount)
         {
-            *(u8*)(i + *(int*)&((ModelFileHeader*)hdr)->jointData + boneByteOff + 2) = *slotByte;
-            boneByteOff += 0x1c;
+            ((ModelBone*)(file->jointData + boneByteOff))->idx[i + 1] = *slotByte;
+            boneByteOff += sizeof(ModelBone);
             boneIdx++;
             slotByte++;
         }
-        frameIdx = (int)*(f32*)(chanCur + 4);
+        frameIdx = (int)work->framePhases[i];
         frameIdxF = frameIdx;
-        if (frameIdxF != *(f32*)(chanCur + 4))
+        if (frameIdxF != work->framePhases[i])
         {
-            *(s16*)(slotCur + 0x4c) = frameStride;
+            work->frameStreamStrides[i] = frameStride;
         }
         else
         {
-            *(s16*)(slotCur + 0x4c) = 0;
+            work->frameStreamStrides[i] = 0;
         }
-        if (*(s8*)(work + i + 0x60) != 0 && frameIdxF == *(f32*)(chanCur + 0x14) - lbl_803DE818)
+        if (work->frameTypes[i] != 0 && frameIdxF == work->frameLengths[i] - lbl_803DE818)
         {
-            *(s16*)(slotCur + 0x4c) = (s16)(-frameStride * frameIdx);
+            work->frameStreamStrides[i] = (s16)(-frameStride * frameIdx);
         }
         streamOff = *(s16*)(frameStream + 2) + frameStride * frameIdx;
-        *(u8**)(chanCur + 0x2c) = frameStream + streamOff;
-        slotCur += 2;
-        chanCur += 4;
+        work->frameStreamCursors[i] = frameStream + streamOff;
     }
 }
 
-void modelAnimEvalSlotPair(u8* dst, u8* model, u8* channel, f32 t, int flags, int slotA, int slotB, int blendSel, int mode, s16 eventVal)
+void modelAnimEvalSlotPair(u8* dst, ObjModel* model, ObjAnimState* channel, f32 t, int flags, int slotA,
+                           int slotB, int blendSel, int mode, s16 eventVal)
 {
-    u8 stk[0x64];
+    ObjAnimState work;
     int mtxBuf;
-    u8* hdr;
+    ModelFileHeader* file;
     u32 idxA;
     u8 idxB;
-    int fl;
-    int cacheOff;
-    u8* p;
 
-    hdr = (u8*)((ObjModel*)model)->file;
-    {
-        u32 sel = ((ObjModel*)model)->bufferFlags & 1;
-        u8* pb = model + 12;
-        mtxBuf = *(int*)(pb + sel * 4);
-    }
+    file = model->file;
+    mtxBuf = (int)model->jointMatrices[model->bufferFlags & 1];
     if ((u8)mode & 0x10)
     {
-        ((ObjAnimState*)channel)->framePhase = t * ((ObjAnimState*)channel)->frameLength;
+        channel->framePhase = t * channel->frameLength;
     }
     idxA = (u8)slotA;
-    p = channel + idxA;
-    *(u8*)(stk + 0x60) = *(u8*)(p + 0x60);
-    p = channel + idxA * 4;
-    *(f32*)(stk + 0x14) = *(f32*)(p + 0x14);
-    *(f32*)(stk + 4) = *(f32*)(p + 4);
-    *(int*)(stk + 0x34) = *(int*)&((ModelFileHeader*)p)->texCoords;
+    work.frameTypes[0] = channel->frameTypes[idxA];
+    work.frameLengths[0] = channel->frameLengths[idxA];
+    work.framePhases[0] = channel->framePhases[idxA];
+    work.frameData[0] = channel->frameData[idxA];
     idxB = (u8)slotB;
-    p = channel + idxB;
-    *(u8*)(stk + 0x61) = *(u8*)(p + 0x60);
-    p = channel + idxB * 4;
-    *(f32*)(stk + 0x18) = *(f32*)(p + 0x14);
-    *(f32*)(stk + 8) = *(f32*)(p + 4);
+    work.frameTypes[1] = channel->frameTypes[idxB];
+    work.frameLengths[1] = channel->frameLengths[idxB];
+    work.framePhases[1] = channel->framePhases[idxB];
     idxB = (u8)blendSel;
-    p = channel + 0x34;
-    *(int*)(stk + 0x38) = *(int*)(p + idxB * 4);
-    if (((ModelFileHeader*)hdr)->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
+    work.frameData[1] = channel->frameData[idxB];
+    if (file->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
     {
-        *(u16*)(stk + 0x44) = 0;
-        *(u16*)(stk + 0x46) = 1;
-        cacheOff = *(u16*)((u8*)(channel + 0x44) + idxA * 2) * 4;
-        *(int*)(stk + 0x1c) = *(int*)((u8*)(channel + 0x1c) + cacheOff);
+        work.cacheSlots[0] = 0;
+        work.cacheSlots[1] = 1;
+        work.cachedMoves[0] = channel->cachedMoves[channel->cacheSlots[idxA]];
         if (idxB < 2)
         {
-            cacheOff = *(u16*)((u8*)(channel + 0x44) + idxB * 2) * 4;
-            *(int*)(stk + 0x20) = *(int*)((u8*)(channel + 0x1c) + cacheOff);
+            work.cachedMoves[1] = channel->cachedMoves[channel->cacheSlots[idxB]];
         }
         else
         {
-            cacheOff = *(u16*)((u8*)(channel + 0x44) + idxB * 2) * 4;
-            *(int*)(stk + 0x20) = *(int*)((u8*)(channel + 0x24) + cacheOff);
+            work.cachedMoves[1] = channel->cachedMoves[2 + channel->cacheSlots[idxB]];
         }
     }
     else
     {
-        *(u16*)(stk + 0x44) = *(u16*)((u8*)(channel + 0x44) + idxA * 2);
-        *(u16*)(stk + 0x46) = *(u16*)((u8*)(channel + 0x44) + idxB * 2);
+        work.cacheSlots[0] = channel->cacheSlots[idxA];
+        work.cacheSlots[1] = channel->cacheSlots[idxB];
     }
     if (eventVal == 0)
     {
         eventVal = 1;
     }
-    *(u16*)(stk + 0x58) = eventVal;
-    modelAnimUpdateChannels(hdr, stk, 2);
+    work.eventCountdown = eventVal;
+    modelAnimUpdateChannels(file, &work, 2);
     {
         int modeLow = mode & 0xF;
         mode = modeLow;
         if ((modeLow & 0xC) == 0)
         {
-            int sv = ((ObjAnimState*)channel)->moveControlFlags;
+            int sv = channel->moveControlFlags;
             if (sv & 1)
             {
                 mode = (modeLow | 0x10) & 0xFF;
@@ -416,16 +394,15 @@ void modelAnimEvalSlotPair(u8* dst, u8* model, u8* channel, f32 t, int flags, in
             }
         }
     }
-    lbl_80006C6C(&mtxBuf, dst, stk, ((ModelFileHeader*)hdr)->jointData, ((ModelFileHeader*)hdr)->jointCount,
-                 (u8*)gModelJointScratchBuffer, flags, (u8)mode);
+    lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount, (u8*)gModelJointScratchBuffer,
+                 flags, (u8)mode);
 }
-void modelAnimEvalChannels(u8* dst, u8* model, u8* channel, f32 blend, int flags)
+void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 blend, int flags)
 {
-    /* channel points at an ObjAnimState; stk is an on-stack working copy of one */
-    u8 stk[0x64];
+    ObjAnimState work;
     int mtxBuf;
     int slotEvent;
-    u8* hdr;
+    ModelFileHeader* file;
     int outFlags;
     int ctrlFlags;
     int slotCount;
@@ -435,22 +412,19 @@ void modelAnimEvalChannels(u8* dst, u8* model, u8* channel, f32 blend, int flags
     f32 slotPhase;
     f32 slotLength;
 
-    hdr = (u8*)((ObjModel*)model)->file;
-    {
-        u8* mtxBufs = model + 12;
-        mtxBuf = *(int*)(mtxBufs + (((ObjModel*)model)->bufferFlags & 1) * 4);
-    }
-    ((ObjAnimState*)channel)->framePhase = blend * ((ObjAnimState*)channel)->frameLength;
+    file = model->file;
+    mtxBuf = (int)model->jointMatrices[model->bufferFlags & 1];
+    channel->framePhase = blend * channel->frameLength;
     outFlags = 0;
-    if (((ModelFileHeader*)hdr)->flags & 8)
+    if (file->flags & 8)
     {
-        *(u32*)(stk + 0x1c) = *(u32*)&((ObjAnimState*)channel)->moveCache[0];
-        *(u32*)(stk + 0x20) = *(u32*)&((ObjAnimState*)channel)->moveCache[1];
-        *(u32*)(stk + 0x24) = *(u32*)&((ObjAnimState*)channel)->blendMoveCache[0];
-        *(u32*)(stk + 0x28) = *(u32*)&((ObjAnimState*)channel)->blendMoveCache[1];
+        work.cachedMoves[0] = channel->cachedMoves[0];
+        work.cachedMoves[1] = channel->cachedMoves[1];
+        work.cachedMoves[2] = channel->cachedMoves[2];
+        work.cachedMoves[3] = channel->cachedMoves[3];
         for (j = 0; j < 2; j++)
         {
-            if (((ObjAnimState*)channel)->eventCountdown)
+            if (channel->eventCountdown != 0)
             {
                 srcSlot = j;
             }
@@ -458,15 +432,15 @@ void modelAnimEvalChannels(u8* dst, u8* model, u8* channel, f32 blend, int flags
             {
                 srcSlot = 0;
             }
-            *(u16*)(stk + j * 2 + 0x44) = *(u16*)(channel + srcSlot * 2 + 0x44);
-            *(u8*)(stk + j + 0x60) = *(u8*)(channel + srcSlot + 0x60);
-            *(f32*)(stk + j * 4 + 0x14) = *(f32*)(channel + srcSlot * 4 + 0x14);
-            *(f32*)(stk + j * 4 + 4) = *(f32*)(channel + srcSlot * 4 + 4);
-            *(u32*)(stk + j * 4 + 0x34) = *(u32*)(channel + srcSlot * 4 + 0x34);
+            work.cacheSlots[j] = channel->cacheSlots[srcSlot];
+            work.frameTypes[j] = channel->frameTypes[srcSlot];
+            work.frameLengths[j] = channel->frameLengths[srcSlot];
+            work.framePhases[j] = channel->framePhases[srcSlot];
+            work.frameData[j] = channel->frameData[srcSlot];
         }
-        *(u16*)(stk + 0x58) = ((ObjAnimState*)channel)->eventCountdown;
-        modelAnimUpdateChannels(hdr, stk, 2);
-        ctrlFlags = ((ObjAnimState*)channel)->moveControlFlags;
+        work.eventCountdown = channel->eventCountdown;
+        modelAnimUpdateChannels(file, &work, 2);
+        ctrlFlags = channel->moveControlFlags;
         if (ctrlFlags & 1)
         {
             outFlags |= 0x10;
@@ -475,29 +449,27 @@ void modelAnimEvalChannels(u8* dst, u8* model, u8* channel, f32 blend, int flags
         {
             outFlags |= 0x20;
         }
-        lbl_80006C6C(&mtxBuf, dst, stk, ((ModelFileHeader*)hdr)->jointData, ((ModelFileHeader*)hdr)->jointCount,
-                     (u8*)gModelJointScratchBuffer, flags, outFlags | 0x40);
+        lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount, (u8*)gModelJointScratchBuffer,
+                     flags, outFlags | 0x40);
     }
     else
     {
-        u8* blendChan;
-        u8* animChan;
         int i;
         int blendMask;
 
-        for (i = 0, blendChan = channel, animChan = channel; i < 2; blendChan += 4, animChan += 2, i++)
+        for (i = 0; i < 2; i++)
         {
             if (i != 0)
             {
-                slotEvent = ((ObjAnimState*)channel)->prevEventState;
+                slotEvent = channel->prevEventState;
             }
             else
             {
-                slotEvent = ((ObjAnimState*)channel)->eventState;
+                slotEvent = channel->eventState;
             }
             if (slotEvent != 0)
             {
-                if (((ObjAnimState*)channel)->eventCountdown)
+                if (channel->eventCountdown != 0)
                 {
                     blendMask = 4 << i;
                 }
@@ -505,62 +477,69 @@ void modelAnimEvalChannels(u8* dst, u8* model, u8* channel, f32 blend, int flags
                 {
                     blendMask = 0;
                 }
-                slotFrameType = *(u8*)(channel + i + 0x60);
-                *(u8*)(stk + 0x60) = slotFrameType;
-                slotLength = *(f32*)(blendChan + 0x14);
-                *(f32*)(stk + 0x14) = slotLength;
-                slotPhase = *(f32*)(blendChan + 4);
-                *(f32*)(stk + 4) = slotPhase;
-                *(u32*)(stk + 0x34) = *(u32*)(blendChan + 0x34);
-                *(u8*)(stk + 0x61) = slotFrameType;
-                *(f32*)(stk + 0x18) = slotLength;
-                *(f32*)(stk + 8) = slotPhase;
-                *(u32*)(stk + 0x38) = *(u32*)(blendChan + 0x3c);
-                if (((ModelFileHeader*)hdr)->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
+                slotFrameType = channel->frameTypes[i];
+                work.frameTypes[0] = slotFrameType;
+                slotLength = channel->frameLengths[i];
+                work.frameLengths[0] = slotLength;
+                slotPhase = channel->framePhases[i];
+                work.framePhases[0] = slotPhase;
+                work.frameData[0] = channel->frameData[i];
+                work.frameTypes[1] = slotFrameType;
+                work.frameLengths[1] = slotLength;
+                work.framePhases[1] = slotPhase;
+                work.frameData[1] = channel->frameData[i + 2];
+                if (file->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
                 {
-                    *(u16*)(stk + 0x44) = 0;
-                    *(u16*)(stk + 0x46) = 1;
-                    *(u32*)(stk + 0x1c) = *(u32*)(channel + *(u16*)(animChan + 0x44) * 4 + 0x1c);
-                    *(u32*)(stk + 0x20) = *(u32*)(channel + *(u16*)(animChan + 0x48) * 4 + 0x24);
+                    work.cacheSlots[0] = 0;
+                    work.cacheSlots[1] = 1;
+                    work.cachedMoves[0] = channel->cachedMoves[channel->cacheSlots[i]];
+                    work.cachedMoves[1] = channel->cachedMoves[2 + channel->cacheSlots[i + 2]];
                 }
                 else
                 {
-                    *(u16*)(stk + 0x44) = *(u16*)(animChan + 0x44);
-                    *(u16*)(stk + 0x46) = *(u16*)(animChan + 0x48);
+                    work.cacheSlots[0] = channel->cacheSlots[i];
+                    work.cacheSlots[1] = channel->cacheSlots[i + 2];
                 }
-                *(u16*)(stk + 0x58) = slotEvent;
-                modelAnimUpdateChannels(hdr, stk, 2);
-                lbl_80006C6C(&mtxBuf, dst, stk, ((ModelFileHeader*)hdr)->jointData,
-                             ((ModelFileHeader*)hdr)->jointCount, (u8*)gModelJointScratchBuffer, flags, blendMask);
+                work.eventCountdown = slotEvent;
+                modelAnimUpdateChannels(file, &work, 2);
+                lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                             (u8*)gModelJointScratchBuffer, flags, blendMask);
                 if (blendMask != 0)
                 {
                     outFlags |= 1 << i;
                 }
             }
         }
-        if ((((ObjAnimState*)channel)->eventState == 0 && ((ObjAnimState*)channel)->prevEventState == 0) || outFlags != 0)
+        if ((channel->eventStates[0] == 0 && channel->eventStates[1] == 0) || outFlags != 0)
         {
             slotCount = 1;
-            if (((ObjAnimState*)channel)->eventCountdown != 0)
+            if (channel->eventCountdown != 0)
             {
                 slotCount = 2;
             }
-            *(u32*)(stk + 0x1c) = *(u32*)&((ObjAnimState*)channel)->moveCache[0];
-            *(u32*)(stk + 0x20) = *(u32*)&((ObjAnimState*)channel)->moveCache[1];
-            *(u32*)(stk + 0x24) = *(u32*)&((ObjAnimState*)channel)->blendMoveCache[0];
-            *(u32*)(stk + 0x28) = *(u32*)&((ObjAnimState*)channel)->blendMoveCache[1];
-            for (j = 0, animChan = channel, blendChan = channel; j < slotCount;
-                 animChan += 2, blendChan += 4, j++)
+            work.cachedMoves[0] = channel->cachedMoves[0];
+            work.cachedMoves[1] = channel->cachedMoves[1];
+            work.cachedMoves[2] = channel->cachedMoves[2];
+            work.cachedMoves[3] = channel->cachedMoves[3];
             {
-                *(u16*)(stk + j * 2 + 0x44) = *(u16*)(animChan + 0x44);
-                stk[j + 0x60] = channel[j + 0x60];
-                *(f32*)(stk + j * 4 + 0x14) = *(f32*)(blendChan + 0x14);
-                *(f32*)(stk + j * 4 + 4) = *(f32*)(blendChan + 4);
-                *(u32*)(stk + j * 4 + 0x34) = *(u32*)(blendChan + 0x34);
+                u16* cacheSlot = channel->cacheSlots;
+                s8* frameType = channel->frameTypes;
+                f32* frameLength = channel->frameLengths;
+                f32* framePhase = channel->framePhases;
+                ObjAnimFrameCommand** frameData = channel->frameData;
+
+                for (j = 0; j < slotCount; j++)
+                {
+                    work.cacheSlots[j] = *cacheSlot++;
+                    work.frameTypes[j] = *frameType++;
+                    work.frameLengths[j] = *frameLength++;
+                    work.framePhases[j] = *framePhase++;
+                    work.frameData[j] = *frameData++;
+                }
             }
-            *(u16*)(stk + 0x58) = ((ObjAnimState*)channel)->eventCountdown;
-            modelAnimUpdateChannels(hdr, stk, slotCount);
-            ctrlFlags = ((ObjAnimState*)channel)->moveControlFlags;
+            work.eventCountdown = channel->eventCountdown;
+            modelAnimUpdateChannels(file, &work, slotCount);
+            ctrlFlags = channel->moveControlFlags;
             if (ctrlFlags & 1)
             {
                 outFlags |= 0x10;
@@ -569,7 +548,7 @@ void modelAnimEvalChannels(u8* dst, u8* model, u8* channel, f32 blend, int flags
             {
                 outFlags |= 0x20;
             }
-            lbl_80006C6C(&mtxBuf, dst, stk, ((ModelFileHeader*)hdr)->jointData, ((ModelFileHeader*)hdr)->jointCount,
+            lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount,
                          (u8*)gModelJointScratchBuffer, flags, outFlags);
         }
     }
@@ -2565,31 +2544,31 @@ void ObjModel_UpdateAnimMatrices(ObjModel* model, ModelFileHeader* blend, GameOb
     }
     if (*(u16*)((u8*)((ObjModel*)model)->file + 2) & 8)
     {
-        modelAnimEvalChannels((u8*)dst, (u8*)model, *(u8**)((u8*)model + 0x2c),
-                                 ((GameObject*)obj)->anim.currentMoveProgress, 0x7f);
+        modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x2c),
+                              ((GameObject*)obj)->anim.currentMoveProgress, 0x7f);
     }
     else if (((ObjAnimState*)((ObjModel*)model)->animStateA)->moveControlFlags & OBJANIM_MOVE_CONTROL_REFRESH_SAVED_STEP)
     {
         ch2 = ((ObjModel*)model)->animStateB;
-        modelAnimEvalSlotPair((u8*)dst, (u8*)model, (u8*)ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 0, 2, 0x14,
+        modelAnimEvalSlotPair((u8*)dst, model, ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 0, 2, 0x14,
                              (s16)ch->eventState);
-        modelAnimEvalSlotPair((u8*)dst, (u8*)model, (u8*)ch2, ((GameObject*)obj)->anim.activeMoveProgress, 0x7f, 0, 0, 2, 0x18,
+        modelAnimEvalSlotPair((u8*)dst, model, ch2, ((GameObject*)obj)->anim.activeMoveProgress, 0x7f, 0, 0, 2, 0x18,
                              (s16)ch2->eventState);
-        modelAnimEvalSlotPair((u8*)dst, (u8*)model, (u8*)ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 0, 0, 7,
+        modelAnimEvalSlotPair((u8*)dst, model, ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 0, 0, 7,
                              (s16)ch2->eventCountdown);
-        modelAnimEvalSlotPair((u8*)dst, (u8*)model, (u8*)ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 1, 1, 1,
+        modelAnimEvalSlotPair((u8*)dst, model, ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 1, 1, 1,
                              (s16)ch->eventCountdown);
     }
     else
     {
-        modelAnimEvalChannels((u8*)dst, (u8*)model, *(u8**)((u8*)model + 0x2c),
-                                 ((GameObject*)obj)->anim.currentMoveProgress, 0x7f);
+        modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x2c),
+                              ((GameObject*)obj)->anim.currentMoveProgress, 0x7f);
         ch2 = ((ObjModel*)model)->animStateB;
         if (ch2 != NULL && ((GameObject*)obj)->anim.activeMove > -1)
         {
             ObjModel_BuildAnimBlendTable((u8*)obj, *(u8**)((u8*)model + 0x30), (u8*)blend);
-            modelAnimEvalChannels((u8*)dst, (u8*)model, *(u8**)((u8*)model + 0x30),
-                                     ((GameObject*)obj)->anim.activeMoveProgress, -1);
+            modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x30),
+                                  ((GameObject*)obj)->anim.activeMoveProgress, -1);
         }
     }
 }
