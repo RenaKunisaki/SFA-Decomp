@@ -1746,7 +1746,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
 
 int playerStateClimbWall(GameObject* obj, int stateArg)
 {
-    PlayerState* inner = obj->extra;
+    int mask;
     int movingUp;
     int movingDown;
     int movingRight;
@@ -1754,7 +1754,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
     int dir;
     PlayerState* state = (PlayerState*)stateArg;
     ObjModel* model;
-    int mask;
+    PlayerState* inner = obj->extra;
     s16 i;
     f32 oldSpd;
     f32 dx;
