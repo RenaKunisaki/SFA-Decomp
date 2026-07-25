@@ -1094,7 +1094,7 @@ config.libs = [
             Object(NonMatching, "main/sky_state.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newclouds.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/skystars.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/cloudaction.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "main/dll/cloudaction.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(
                 NonMatching, "main/dll/dll_0013_waterfx.c", cflags=cflags_dll_noopt_noautoinline,
                 section_alignments={".data": 4},
