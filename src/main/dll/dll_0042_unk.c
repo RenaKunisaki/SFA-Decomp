@@ -292,13 +292,13 @@ void camslide_update(CameraObject* camera, GameObject* target, f32 upperBound, f
     lowerY += slideOffset;
     upperY += slideOffset;
     minDistSpan = gCamcontrolModeSettings->minDistance - lbl_803E16D8;
-    if (minDistSpan < lbl_803E16DC)
+    if (minDistSpan < 30.0f)
     {
-        minDistSpan = lbl_803E16DC;
+        minDistSpan = 30.0f;
     }
     if (target->anim.classId == 1)
     {
-        if (fn_802966F4((GameObject*)(target)) <= lbl_803E16DC)
+        if (fn_802966F4((GameObject*)(target)) <= 30.0f)
         {
             step = lbl_803E16E0 * gCamcontrolModeSettings->maxDistance - gCamcontrolModeSettings->lowerHeightOffset;
             step *= lbl_803E16E4;
@@ -355,16 +355,16 @@ void camslide_update(CameraObject* camera, GameObject* target, f32 upperBound, f
             {
                 gCamcontrolModeSettings->upperHeightOffset = gCamcontrolModeSettings->baseUpperHeightOffset;
             }
-            if (dist > lbl_803E16DC)
+            if (dist > 30.0f)
             {
                 if (dist <= minDistSpan)
                 {
-                    f32 d = minDistSpan - lbl_803E16DC;
-                    if (d > lbl_803E16AC)
+                    f32 d = minDistSpan - 30.0f;
+                    if (d > 0.0f)
                     {
-                        dist = (dist - lbl_803E16DC) / d;
+                        dist = (dist - 30.0f) / d;
                     }
-                    if (dist < *(f32*)&lbl_803E16AC)
+                    if (dist < lbl_803E16AC)
                     {
                         dist = lbl_803E16AC;
                     }
@@ -384,7 +384,7 @@ void camslide_update(CameraObject* camera, GameObject* target, f32 upperBound, f
             }
             else
             {
-                upperY = lbl_803E16E0 * (lbl_803E16DC - dist) + (lbl_803E16F0 + target->anim.worldPosY);
+                upperY = lbl_803E16E0 * (30.0f - dist) + (lbl_803E16F0 + target->anim.worldPosY);
                 lowerY = upperY;
             }
         }
