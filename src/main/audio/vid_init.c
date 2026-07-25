@@ -18,5 +18,3 @@ void vidInit(void)
     }
     prev->next = NULL;
 }
-
-McmdVidListNode vidListNodes[128];
