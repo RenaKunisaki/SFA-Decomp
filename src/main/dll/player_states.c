@@ -7179,15 +7179,16 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
         {
             ObjHitVolumeRuntimeTransform* pt;
             GameObject* target;
+            GameObject* ppo;
             f32 dx;
             f32 dz;
             f32 dy;
             target = *(GameObject**)&((PlayerState*)state)->baddie.targetObj;
             spawned = (int)target;
             pt = &target->anim.hitVolumeTransforms[target->hitVolumeIndex];
-            dx = pt->jointX - ((GameObject*)gPlayerPathObject)->anim.localPosX;
-            dy = pt->jointY - ((GameObject*)gPlayerPathObject)->anim.localPosY;
-            dz = pt->jointZ - ((GameObject*)gPlayerPathObject)->anim.localPosZ;
+            dx = pt->jointX - (ppo = (GameObject*)gPlayerPathObject)->anim.localPosX;
+            dy = pt->jointY - ppo->anim.localPosY;
+            dz = pt->jointZ - ppo->anim.localPosZ;
             v.x = 0.0f;
             v.y = 0.0f;
             v.z = 0.0f;
