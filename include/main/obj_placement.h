@@ -39,10 +39,18 @@ typedef struct ObjPlacement {
         s16 unk02;
         struct {
             u8 size; /* object setup allocation size */
-            u8 unk03;
+            u8 mapActFlagsLo; /* map acts 1..8 in streamed placement records */
         };
     };
-    u8 color[4];
+    union {
+        u8 color[4];
+        struct {
+            u8 loadFlags;
+            u8 mapActFlagsHi; /* map acts 9..16 in streamed placement records */
+            u8 loadRange;
+            u8 unk07;
+        };
+    };
     f32 posX;
     f32 posY;
     f32 posZ;

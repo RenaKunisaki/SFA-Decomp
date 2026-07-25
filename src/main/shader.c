@@ -72,6 +72,7 @@ extern u8 lbl_80386648[];
 extern const f32 gMapBlockWorldSize;
 
 #include "main/object.h"
+#include "main/obj_placement.h"
 #include "track/intersect_api.h"
 #include "main/model.h"
 #include "main/pi_dolphin.h"
@@ -147,7 +148,7 @@ typedef struct MapLoadRec
 
 int mapProcessRomList(int slot);
 
-static inline int objVisibleForAct(int obj, int t)
+static inline int objVisibleForAct(ObjPlacement* placement, int t)
 {
     if (t == -1)
     {
@@ -157,14 +158,14 @@ static inline int objVisibleForAct(int obj, int t)
     {
         if (t < 9)
         {
-            if ((*(u8*)(obj + 3) >> (t - 1)) & 1)
+            if ((placement->mapActFlagsLo >> (t - 1)) & 1)
             {
                 return 0;
             }
         }
         else
         {
-            if ((*(u8*)(obj + 5) >> (16 - t)) & 1)
+            if ((placement->mapActFlagsHi >> (16 - t)) & 1)
             {
                 return 0;
             }
@@ -173,7 +174,7 @@ static inline int objVisibleForAct(int obj, int t)
     return 1;
 }
 
-int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
+int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
 {
     char* strs;
     int verbose;
@@ -196,7 +197,7 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
     f32 range;
 
     strs = sShaderDebugStrings;
-    if (*(u32*)&((GameObject*)obj)->anim.localPosZ == 0x49054)
+    if (placement->mapId == 0x49054)
     {
         verbose = 1;
     }
@@ -205,11 +206,11 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
         verbose = 0;
     }
     t = (*gMapEventInterface)->getMapAct(mapEventGroup);
-    if (objVisibleForAct(obj, t) == 0)
+    if (objVisibleForAct(placement, t) == 0)
     {
         return 0;
     }
-    if (*(u8*)(obj + 4) & 1)
+    if (placement->loadFlags & 1)
     {
         if (verbose)
         {
@@ -217,7 +218,7 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
         }
         return 1;
     }
-    if (*(u8*)(obj + 4) & 2)
+    if (placement->loadFlags & 2)
     {
         if (verbose)
         {
@@ -227,13 +228,13 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
     }
     if (viewSlot == 0)
     {
-        bx = fastFloorf((((GameObject*)obj)->anim.rootMotionScale - playerMapOffsetX) / gMapBlockWorldSize);
-        bz = fastFloorf((((GameObject*)obj)->anim.localPosY - playerMapOffsetZ) / gMapBlockWorldSize);
+        bx = fastFloorf((placement->posX - playerMapOffsetX) / gMapBlockWorldSize);
+        bz = fastFloorf((placement->posZ - playerMapOffsetZ) / gMapBlockWorldSize);
         if (bx < 0 || bz < 0 || bx >= 16 || bz >= 16)
         {
             if (verbose)
             {
-                OSReport(strs + 0x200, obj + 8, obj + 0xc, obj + 0x10);
+                OSReport(strs + 0x200, &placement->posX, &placement->posY, &placement->posZ);
             }
             return 0;
         }
@@ -255,7 +256,7 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
             return 0;
         }
     }
-    if (*(u8*)(obj + 4) & 0x20)
+    if (placement->loadFlags & 0x20)
     {
         if (verbose)
         {
@@ -264,7 +265,7 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
         return 1;
     }
     useObj = 0;
-    if ((*(u8*)(obj + 4) & 4) && viewSlot == 0)
+    if ((placement->loadFlags & 4) && viewSlot == 0)
     {
         player = Obj_GetPlayerObject();
         if (player != NULL)
@@ -290,10 +291,10 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
         y = p[1];
         z = p[2];
     }
-    range = (f32)(*(u8*)(obj + 6) << 3);
-    d = x - ((GameObject*)obj)->anim.rootMotionScale;
-    dy = y - ((GameObject*)obj)->anim.localPosX;
-    dz = z - ((GameObject*)obj)->anim.localPosY;
+    range = (f32)(placement->loadRange << 3);
+    d = x - placement->posX;
+    dy = y - placement->posY;
+    dz = z - placement->posZ;
     d = d * d + dy * dy + dz * dz;
     if (d < range * range)
     {
@@ -470,7 +471,7 @@ void mapLoadUnloadObjects(int flag)
                     while (cur < end)
                     {
                         objStart = cur;
-                        if ((*bp & mask) == 0 && objShouldLoad(cur, 0, list[i]) != 0)
+                        if ((*bp & mask) == 0 && objShouldLoad((ObjPlacement*)cur, 0, list[i]) != 0)
                         {
                             s16 lid = list[i];
                             if (bit >= 0)
@@ -561,7 +562,7 @@ void mapLoadUnloadObjects(int flag)
                                 }
                             }
                         }
-                        if (vis == 0 && objShouldLoad(cur, lp, mid2) != 0)
+                        if (vis == 0 && objShouldLoad((ObjPlacement*)cur, lp, mid2) != 0)
                         {
                             if (bit >= 0)
                             {
