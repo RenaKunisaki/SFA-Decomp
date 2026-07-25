@@ -1023,8 +1023,11 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     u32* refs;
     u32 idx;
     u8 shad;
-    int nlay;
+    ModelLightStruct** lp;
     int envtex;
+    int nlay;
+    u8* sp;
+    int i;
     ObjModelRenderCb cb;
     f32 m2[12];
     f32 t2[12];
@@ -1145,9 +1148,6 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         }
         else if (b4 == 0)
         {
-            ModelLightStruct** lp;
-            u8* sp;
-            int i;
             i = 0;
             lp = &lbl_803DCC64;
             sp = &lbl_803DCC60;
