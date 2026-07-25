@@ -1,0 +1,160 @@
+#ifndef MAIN_DLL_DLL_0271_DRAKORHOVERPAD_INTERNAL_H_
+#define MAIN_DLL_DLL_0271_DRAKORHOVERPAD_INTERNAL_H_
+
+#include "main/game_object.h"
+#include "main/dll/rom_curve_interface.h"
+
+extern const f32 gDrakorHoverpadSpeedStep;
+extern f32 lbl_803DC2F8;
+extern s16 lbl_803DC2FC;
+extern f32 lbl_803DC300;
+extern f32 lbl_803DC304;
+
+/*
+ * A ROM curve network node (the record returned by gRomCurveInterface->getById
+ * and walked through anim.currentMove / anim.activeMoveProgress / anim.targetObj
+ * in drakorhoverpad_update). The leading layout matches ObjfsaRomCurveDef
+ * (pos at 0x8/0xc/0x10, blockedLinkMask at 0x1b, linkIds[4] at 0x1c); this view
+ * extends it with the per-node tangent record at 0x2c-0x2e that the hover-pad
+ * uses to derive its bob / banking velocity.
+ */
+typedef struct DrakorCurveNode
+{
+    u8 pad0[0x8 - 0x0];
+    f32 x; /* 0x08 */
+    f32 y; /* 0x0c */
+    f32 z; /* 0x10 */
+    u8 pad14[0x2C - 0x14];
+    s8 tangentYaw;   /* 0x2c << 8 -> yaw angle */
+    s8 tangentPitch; /* 0x2d << 8 -> pitch angle */
+    u8 tangentMag;   /* 0x2e magnitude scalar */
+} DrakorCurveNode;
+
+typedef struct DrakorHoverpadUpdateMainPlacement
+{
+    s16 subtype;
+    u8 pad02[0x18 - 0x02];
+    s8 rotXByte;
+    u8 pad19[0x1a - 0x19];
+    s16 unk1a;
+    u8 pad1c[0x20 - 0x1c];
+    s16 activateGameBit;
+    u8 pad22[0x28 - 0x22];
+} DrakorHoverpadUpdateMainPlacement;
+
+typedef struct DrakorHoverpadUpdateMainState
+{
+    u8 pad0[0xD8 - 0x0];
+    f32 unkD8;
+    u8 padDC[0xE0 - 0xDC];
+    f32 unkE0;
+    f32 unkE4;
+    u8 padE8[0x110 - 0xE8];
+    f32 verticalVel;
+    f32 targetSpeed;
+    u8 pad118[0x174 - 0x118];
+    s16 anglePhase;
+    u8 pad176[0x178 - 0x176];
+} DrakorHoverpadUpdateMainState;
+
+typedef struct DrakorHoverpadRenderState
+{
+    u8 pad0[0xD8 - 0x0];
+    f32 unkD8;
+    u8 padDC[0xE0 - 0xDC];
+    f32 unkE0;
+    f32 unkE4;
+    u8 padE8[0x110 - 0xE8];
+    f32 verticalVel;
+    f32 targetSpeed;
+    u8 pad118[0x154 - 0x118];
+    f32 particleEmitAX; /* 0x154: emit point A, X (jittered) */
+    f32 particleEmitAY; /* 0x158 */
+    f32 particleEmitAZ; /* 0x15c: emit point A, Z (jittered) */
+    f32 particleEmitBX; /* 0x160: emit point B, X (jittered) */
+    f32 particleEmitBY; /* 0x164 */
+    f32 particleEmitBZ; /* 0x168: emit point B, Z (jittered) */
+    u8 pad16C[0x174 - 0x16C];
+    s16 anglePhase;
+    s16 frameCounter;
+    u8 pad178[0x17C - 0x178];
+} DrakorHoverpadRenderState;
+
+typedef struct DrakorHoverpadHandlePathPointEventState
+{
+    u8 pad0[0xD8 - 0x0];
+    f32 unkD8;
+    u8 padDC[0xE0 - 0xDC];
+    f32 unkE0;
+    f32 unkE4;
+    u8 padE8[0x110 - 0xE8];
+    f32 verticalVel;
+    f32 targetSpeed;
+    u8 pad118[0x154 - 0x118];
+    f32 particleEmitAX; /* 0x154 */
+    f32 particleEmitAY; /* 0x158 */
+    f32 particleEmitAZ; /* 0x15c */
+    f32 particleEmitBX; /* 0x160 */
+    f32 particleEmitBY; /* 0x164 */
+    f32 particleEmitBZ; /* 0x168 */
+    u8 pad16C[0x174 - 0x16C];
+    s16 anglePhase;   /* 0x174 */
+    s16 frameCounter; /* 0x176 */
+} DrakorHoverpadHandlePathPointEventState;
+
+typedef struct DrakorHoverpadState
+{
+    f32 commandSpeed;
+    RomCurveWalker curve; /* 0x004 */
+    u8 pad10C[4];
+    f32 speed;       /* 0x110 */
+    f32 targetSpeed; /* 0x114 */
+    f32 unk118;
+    f32 unk11C;
+    f32 unk120;
+    u8 pad124[0x30];
+    f32 particleEmitAX; /* 0x154 */
+    f32 particleEmitAY; /* 0x158 */
+    f32 particleEmitAZ; /* 0x15c */
+    f32 particleEmitBX; /* 0x160 */
+    f32 particleEmitBY; /* 0x164 */
+    f32 particleEmitBZ; /* 0x168 */
+    u8 pad16C[4];
+    int unk170;
+    s16 anglePhase;
+    s16 frameCounter;
+    u8 pad178[4];
+} DrakorHoverpadState;
+
+STATIC_ASSERT(sizeof(DrakorHoverpadState) == 0x17c);
+
+/* placement subtype id (desc[0]) selecting the pad behaviour mode */
+#define DRAKORHOVERPAD_SUBTYPE_TRACKING   1812 /* tracks/yaws toward a nearby object */
+#define DRAKORHOVERPAD_SUBTYPE_FREE       1048 /* free curve-follow, no tracking */
+#define DRAKORHOVERPAD_OBJGROUP           0x46
+#define DRAKORHOVERPAD_OBJGROUP_SECONDARY 0xa
+#define DRAKORHOVERPAD_HIT_VOLUME_SLOT    8
+/* group owned by another DLL, queried here */
+#define BOSSDRAKOR_OBJGROUP 0x45 /* DLL 0x24D bossdrakor */
+
+int drakorhoverpad_setScale(GameObject* obj);
+int drakorhoverpad_render2(GameObject* obj);
+void drakorhoverpad_func12(int obj, f32* outFloat, int* outFlag);
+void drakorhoverpad_modelMtxFn(GameObject* obj, f32* ox, f32* oy, f32* oz);
+f32 drakorhoverpad_func13(int obj, f32* out);
+void drakorhoverpad_free(int obj);
+void drakorhoverpad_func17(GameObject* obj, int sel, int* out);
+void drakorhoverpad_func0F(int obj, f32* ox, f32* oy, f32* oz);
+void drakorhoverpad_renderGroundMarker(GameObject* obj, f32 scale);
+int drakorhoverpad_getExtraSize(void);
+int drakorhoverpad_getObjectTypeId(void);
+void drakorhoverpad_free(int obj);
+void drakorhoverpad_render(GameObject* obj, int p2, int p3, int p4, int p5, char visible);
+void drakorhoverpad_hitDetect(void);
+void drakorhoverpad_updateMain(GameObject* obj);
+void drakorhoverpad_initMain(GameObject* obj, void* desc);
+void drakorhoverpad_release(void);
+void drakorhoverpad_initialise(void);
+int drakorhoverpad_init(GameObject* obj);
+
+#endif /* MAIN_DLL_DLL_0271_DRAKORHOVERPAD_INTERNAL_H_ */

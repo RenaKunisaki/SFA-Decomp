@@ -411,6 +411,13 @@ cflags_dll_noopt_nodead_noloopinv_noautoinline = [
     "-inline", "noauto",
 ]
 
+cflags_dll_noopt_nocse_nodead_nofpcontract_noautoinline = [
+    *cflags_base,
+    "-opt", "nopeephole,noschedule,nocse,nodead",
+    "-inline", "noauto",
+    "-fp_contract", "off",
+]
+
 cflags_dll_noopt_nocse_noinline = [
     *cflags_base,
     "-opt", "nopeephole,noschedule,nocse",
@@ -1953,6 +1960,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_026C_drcagewith.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_026E_drshackle.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_0271_drakorhoverpad.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/dll/dll_0271_drakorhoverpad_updatemain.c", cflags=cflags_dll_noopt_nocse_nodead_nofpcontract_noautoinline),
             Object(NonMatching, "main/dll/dll_0272_hightop.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_026F_drgenerator.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/dll_0273_firepipe.c", cflags=cflags_dll_noopt_noautoinline),
