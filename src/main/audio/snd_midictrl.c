@@ -478,23 +478,18 @@ u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 midiSlot
     u8 ctrl;
     s32 tmp;
     s32 vtmp;
-    int other;
 
     for (value = 0, i = 0; i < slotPtr->entryCount; ++i)
     {
-        other = 0;
         if (slotPtr->entries[i].combineModeFlags & MCMD_INPUT_ENTRY_USE_VAR_FLAG)
         {
             tmp = (statePtr != NULL ? varGet(statePtr, 0, slotPtr->entries[i].controller) : 0);
+            goto combine_signed;
         }
-        else if (slotPtr->entries[i].controller == MCMD_CTRL_PITCH_BEND ||
-                 slotPtr->entries[i].controller == MCMD_CTRL_MODULATION ||
-                 slotPtr->entries[i].controller == MCMD_CTRL_PANNING ||
-                 slotPtr->entries[i].controller == MCMD_CTRL_EX_A0 ||
-                 slotPtr->entries[i].controller == MCMD_CTRL_EX_A1 ||
-                 slotPtr->entries[i].controller == MCMD_CTRL_SUR_PANNING)
+        ctrl = slotPtr->entries[i].controller;
+        if (ctrl == MCMD_CTRL_PITCH_BEND || ctrl == MCMD_CTRL_MODULATION || ctrl == MCMD_CTRL_PANNING ||
+            ctrl == MCMD_CTRL_EX_A0 || ctrl == MCMD_CTRL_EX_A1 || ctrl == MCMD_CTRL_SUR_PANNING)
         {
-            ctrl = slotPtr->entries[i].controller;
             switch (ctrl)
             {
             case MCMD_CTRL_EX_A0:
@@ -513,13 +508,7 @@ u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 midiSlot
                 tmp = (inpGetMidiCtrl(ctrl, midiSlot, midiKey) & 0xffff) - 0x2000;
                 break;
             }
-        }
-        else
-        {
-            other = 1;
-        }
-        if (!other)
-        {
+        combine_signed:
             tmp = (tmp * (slotPtr->entries[i].scale >> 1)) >> 15;
             if (tmp < -0x2000)
             {
