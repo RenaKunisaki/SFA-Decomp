@@ -17,8 +17,7 @@
 # delicately hand-laid block (an aligned #define table, an offset-annotated
 # struct), wrap it in:  // clang-format off  ...  // clang-format on
 #
-# The project follows the same compact brace style as the Dinosaur Planet
-# decomp: opening braces stay on the declaration/control-statement line.
+# Opening braces stay on the declaration/control-statement line.
 # Review headers per file; don't blanket-run over include/.
 
 Language: Cpp
