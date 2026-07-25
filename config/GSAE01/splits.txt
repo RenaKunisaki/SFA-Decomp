@@ -1897,8 +1897,15 @@ main/dll/WM/dll_0116_wmcolumn.c:
 	.sdata2     start:0x803E37B8 end:0x803E37C8
 
 main/dll/dll_0117_appleontree.c:
-	.text       start:0x8017D818 end:0x8017EC10
-	.data       start:0x80321498 end:0x80321530
+	.text       start:0x8017D818 end:0x8017D854
+	.data       start:0x80321498 end:0x803214DC
+
+main/dll/dll_0117_appleontree_knockloose.c:
+	.text       start:0x8017D854 end:0x8017DAF0
+
+main/dll/dll_0117_appleontree_update.c:
+	.text       start:0x8017DAF0 end:0x8017EC10
+	.data       start:0x803214DC end:0x80321530
 
 main/dll/dll_00FC_babycloudrunner.c:
 	.text       start:0x8017EC10 end:0x8017EF6C
