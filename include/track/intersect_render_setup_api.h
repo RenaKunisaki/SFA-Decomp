@@ -2,8 +2,7 @@
 #define TRACK_INTERSECT_RENDER_SETUP_API_H_
 
 #include "types.h"
-
-typedef struct ProjectedShadowTexture ProjectedShadowTexture;
+#include "main/projected_shadow.h"
 
 void fn_80073AAC(void* texture, u32* colorA, u32* colorB);
 void gxDebugTextureFn_80078c1c(void);

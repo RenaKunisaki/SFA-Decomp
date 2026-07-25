@@ -9,6 +9,7 @@
 
 typedef struct ObjHitReactState ObjHitReactState;
 typedef struct ObjHitReactMoveEntry ObjHitReactMoveEntry;
+typedef struct ProjectedShadowTexture ProjectedShadowTexture;
 typedef struct Texture Texture;
 
 extern const f32 gObjAnimProgressOne;
@@ -349,18 +350,30 @@ typedef struct ObjAnimBank {
   ObjAnimState *activeState;
 } ObjAnimBank;
 
+typedef struct ObjectShadowMesh {
+  Vec3s *vertices;
+  u32 vertexCount;
+} ObjectShadowMesh;
+
+#define OBJECT_SHADOW_MESH_UNCACHED ((ObjectShadowMesh*)-1)
+
 typedef struct ObjModelState {
   f32 shadowScale;
   Texture *shadowTexture;
   void *shadowWorkBuffer;
-  void *shadowCastSlot;
-  void *shadowRenderResource;
+  ProjectedShadowTexture *shadowCastSlot;
+  ObjectShadowMesh *shadowRenderResource;
   f32 shadowOffsetX;
   f32 shadowOffsetY;
   f32 shadowOffsetZ;
-  f32 overrideWorldPosX;
-  f32 overrideWorldPosY;
-  f32 overrideWorldPosZ;
+  union {
+    struct {
+      f32 overrideWorldPosX;
+      f32 overrideWorldPosY;
+      f32 overrideWorldPosZ;
+    };
+    Vec3f overrideWorldPos;
+  };
   f32 shadowModelScale;
   u32 flags;
   u8 pad34[0x36 - 0x34];

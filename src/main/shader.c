@@ -38,7 +38,6 @@
 #include "main/sky_interface.h"
 #include "main/sky_api.h"
 
-extern int* gMapBlocks;
 extern char sTrackLoadBlockOverrunError[];
 #include "main/camera.h"
 #include "main/object_transform.h"
@@ -60,7 +59,6 @@ extern char sTrackLoadBlockOverrunError[];
 extern char sShaderDebugStrings[];
 #define MAP_BLOCK_LAYER_COUNT 5
 #define FRUSTUM_PLANE_COUNT   5
-extern int gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 void trackLoadBlockEnd(void* blk, int blockId, int slotIdx, int layer);
 /* One 0x20-byte MAPINFO.bin (fileId 0x1f) record, fetched by mapId via getTabEntry. */
 typedef struct MapInfoRecord
@@ -243,7 +241,7 @@ int objShouldLoad(int obj, s8 viewSlot, int mapEventGroup)
         bx += bz << 4;
         for (i = 0; i < MAP_BLOCK_LAYER_COUNT; i++)
         {
-            if (*(s8*)(bx + gMapBlockLayerTables[i]) >= 0)
+            if (gMapBlockLayerTables[i][bx] >= 0)
             {
                 found = 1;
             }
@@ -921,9 +919,9 @@ void trackLoadBlockEnd(void* blk, int blockId, int slotIdx, int layer)
             OSReport(sTrackLoadBlockOverrunError);
         }
     }
-    statusArr = (s8*)gMapBlockLayerTables[layer];
+    statusArr = gMapBlockLayerTables[layer];
     statusArr[slotIdx] = i;
-    gMapBlocks[i] = (int)blk;
+    gMapBlocks[i] = (MapBlockData*)blk;
     gMapBlockIds[i] = blockId;
     gMapBlockRefCounts[i] = 1;
     setMapBlockFlag();
@@ -949,7 +947,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
     char* entry;
 
     entry = (char*)lbl_803822A0[layer];
-    statusArr = (s8*)gMapBlockLayerTables[layer];
+    statusArr = gMapBlockLayerTables[layer];
     slotIdx = cellX + (cellZ << 4);
     entry += slotIdx * 12;
 
@@ -1026,7 +1024,7 @@ void unloadMap(void)
     doNothing_8001F678(1, 0);
     for (layer = 0; layer < MAP_BLOCK_LAYER_COUNT; layer++)
     {
-        cur = (s8*)gMapBlockLayerTables[layer];
+        cur = gMapBlockLayerTables[layer];
         for (i = 0; i < 256; i++)
         {
             mapType = cur[i];
@@ -1035,9 +1033,10 @@ void unloadMap(void)
                 gMapBlockRefCounts[mapType]--;
                 if (gMapBlockRefCounts[mapType] == 0)
                 {
-                    blk = gMapBlocks[mapType];
+                    blk = (int)gMapBlocks[mapType];
                     gMapBlockIds[mapType] = -1;
-                    gMapBlocks[mapType] = z[0] = 0;
+                    z[0] = 0;
+                    gMapBlocks[mapType] = NULL;
                     z[1] = z[0];
                     for (; z[0] < *(u8*)(blk + 0xa2); z[1] += 68, z[0]++)
                     {
@@ -1269,7 +1268,7 @@ void beginLoadingMap(void)
     for (j = 0; j < 64; j++)
     {
         *(s16*)((char*)gMapBlockIds + j * 2) = -1;
-        *(int*)((char*)gMapBlocks + j * 4) = 0;
+        gMapBlocks[j] = NULL;
     }
     lbl_803DCE98 = 0;
     gShaderRomListSlotCount = 0;
@@ -2022,7 +2021,8 @@ void doPendingMapLoads(void)
                                 MapShaderLayerCleanup* shaderLayer;
                                 int layerIndex;
                                 gMapBlockIds[blockId] = -1;
-                                gMapBlocks[blockId] = z[0] = 0;
+                                z[0] = 0;
+                                gMapBlocks[blockId] = NULL;
                                 z[1] = z[0];
                                 for (; z[0] < block->shaderCount; z[1] += sizeof(MapShaderCleanup), z[0]++)
                                 {
@@ -2805,7 +2805,7 @@ void mapDebugRender(int* state)
     int y1;
     int y0;
     int sz;
-    char* blk;
+    MapBlockData* blk;
     int dy;
     int sx;
     int y0a;
@@ -2830,7 +2830,7 @@ void mapDebugRender(int* state)
     {
         bx = fastFloorf((*(f32*)((char*)lbl_803DCEA8 + 0xc) - playerMapOffsetX) / gMapBlockWorldSize);
         bz = fastFloorf((*(f32*)((char*)lbl_803DCEA8 + 0x14) - playerMapOffsetZ) / gMapBlockWorldSize);
-        tbl = (s8*)gMapBlockLayerTables[0];
+        tbl = gMapBlockLayerTables[0];
         if (bx < 0 || bz < 0 || bx >= 16 || bz >= 16)
         {
             blk = 0;
@@ -2844,7 +2844,7 @@ void mapDebugRender(int* state)
             }
             else
             {
-                blk = *(char**)((char*)gMapBlocks + ci * 4);
+                blk = gMapBlocks[ci];
             }
         }
         sx = (int)(gMapBlockWorldSize * fastFloorf(*(f32*)((char*)lbl_803DCEA8 + 0xc) / gMapBlockWorldSize));
@@ -2853,12 +2853,12 @@ void mapDebugRender(int* state)
         wz = (int)(*(f32*)((char*)lbl_803DCEA8 + 0x14) - sz);
         if (blk != 0)
         {
-            y0 = *(s16*)(blk + 0x8a);
+            y0 = blk->minY;
             y0a = y0;
             if (y0 & 1)
                 y0a = y0 - 1;
             cy = *(f32*)((char*)lbl_803DCEA8 + 0x10);
-            y1 = *(s16*)(blk + 0x8c);
+            y1 = blk->maxY;
             if (cy > y1)
                 cy = (f32)(y1 - 1);
             yy = cy;
@@ -2884,7 +2884,7 @@ void mapDebugRender(int* state)
     }
 }
 
-int mapRectFn_8005a728(int bx, int bz, u8* obj)
+int mapRectFn_8005a728(int bx, int bz, MapBlockData* block)
 {
     f32 a1, a2, b1, b2, c1, c2;
     f32 p3;
@@ -2899,10 +2899,10 @@ int mapRectFn_8005a728(int bx, int bz, u8* obj)
     fz = gMapBlockWorldSize * bz;
     x2 = gMapBlockWorldSize + fx;
     z2 = gMapBlockWorldSize + fz;
-    if (obj)
+    if (block)
     {
-        y0 = (f32) * (s16*)(obj + 0x8a);
-        y1 = (f32) * (s16*)(obj + 0x8c);
+        y0 = block->minY;
+        y1 = block->maxY;
     }
     else
     {
@@ -3058,7 +3058,7 @@ int gShaderMapRomBuffers[0x5];
 BlockEntry gShaderRomListSlots[8];
 u8 lbl_8038228C[0x14];
 int lbl_803822A0[5];
-int gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
+s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 
 MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
 u8 lbl_80386648[0x290];

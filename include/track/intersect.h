@@ -9,9 +9,8 @@
 #include "track/intersect_geom_api.h"
 #include "track/intersect_screen_api.h"
 #include "track/intersect_whirlpool_api.h"
+#include "main/projected_shadow.h"
 #include "ghidra_import.h"
-
-typedef struct ProjectedShadowTexture ProjectedShadowTexture;
 
 void* fn_8006F388(u32 i);
 void timeFn_8006f400(f32 step);

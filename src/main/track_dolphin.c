@@ -313,8 +313,6 @@ extern u32 gSunFlareScissorX;
 extern u32 gSunFlareScissorY;
 extern u32 gSunFlareScissorWidth;
 extern u32 gSunFlareScissorHeight;
-extern void* gMapBlockLayerTables[];
-extern void** gMapBlocks;
 extern u8 lbl_803DCE06;
 extern ModelLightStruct* gGlowLightList[];
 extern FrustumPlane gViewFrustumPlanes[];
@@ -437,9 +435,9 @@ int* bs;
     }
 }
 
-void setupToRenderMapBlock(int* block, void* posMtx);
+void setupToRenderMapBlock(MapBlockData* block, void* posMtx);
 
-void setupToRenderMapBlock(int* block, void* posMtx)
+void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 {
     f32 out[12];
     f32 tmp[12];
@@ -454,13 +452,13 @@ void setupToRenderMapBlock(int* block, void* posMtx)
     GXLoadNrmMtxImm((const f32 (*)[4])tmp, GX_PNMTX0);
     PSMTXConcat((f32*)lbl_803967F0, (f32*)posMtx, out);
     GXLoadTexMtxImm((const f32 (*)[4])out, GX_TEXMTX2, GX_MTX3x4);
-    GXSetArray(GX_VA_POS, ((MapBlockData*)block)->vertices, 6);
-    GXSetArray(GX_VA_CLR0, *(void**)((char*)block + 0x5C), 2);
-    GXSetArray(GX_VA_TEX0, ((MapBlockData*)block)->vertexTexCoords, 4);
-    GXSetArray(GX_VA_TEX1, ((MapBlockData*)block)->vertexTexCoords, 4);
+    GXSetArray(GX_VA_POS, block->vertices, 6);
+    GXSetArray(GX_VA_CLR0, block->vertexColors, 2);
+    GXSetArray(GX_VA_TEX0, block->vertexTexCoords, 4);
+    GXSetArray(GX_VA_TEX1, block->vertexTexCoords, 4);
 }
 
-void renderMapBlock(int* o, u8 type)
+void renderMapBlock(MapBlockData* block, u8 type)
 {
     int state[5];
     f32 m[16];
@@ -474,26 +472,26 @@ void renderMapBlock(int* o, u8 type)
     flag = 0;
     if (type == 1)
     {
-        ptr = *(int*)&((GameObject*)o)->anim.banks;
-        count = ((MapBlockData*)o)->nRenderInstrsTransp;
+        ptr = (int)block->renderInstrsTransp;
+        count = block->nRenderInstrsTransp;
     }
     else if (type == 2)
     {
-        ptr = *(int*)&((GameObject*)o)->anim.previousLocalPosX;
-        count = ((MapBlockData*)o)->nRenderInstrsWater;
+        ptr = (int)block->renderInstrsWater;
+        count = block->nRenderInstrsWater;
     }
     else
     {
-        ptr = *(int*)&((GameObject*)o)->anim.hitVolumeBounds;
-        count = ((MapBlockData*)o)->nRenderInstrsMain;
+        ptr = (int)block->renderInstrsMain;
+        count = block->nRenderInstrsMain;
         flag = 1;
     }
     if ((u16)count == 0)
         return;
     viewMtx = Camera_GetViewMatrix();
-    PSMTXConcat(viewMtx, (f32*)((char*)o + 0xc), m);
+    PSMTXConcat(viewMtx, (f32*)block->transform, m);
     if ((u32)(u8)flag != 0)
-        setupToRenderMapBlock(o, m);
+        setupToRenderMapBlock(block, m);
     modelRenderInstrsState_init((ModelRenderInstrsState*)state, (void*)ptr, (u16)count << 3, (u16)count << 3);
     ptr = 0;
     while (!ptr)
@@ -513,13 +511,13 @@ void renderMapBlock(int* o, u8 type)
         switch (op)
         {
         case 3:
-            mapBlockRender_setVtxDcrs(flag, o, shader, state);
+            mapBlockRender_setVtxDcrs(flag, (int*)block, shader, state);
             break;
         case 1:
-            shader = mapBlockRender_setShader(flag, (MapBlockData*)o, state);
+            shader = mapBlockRender_setShader(flag, block, state);
             break;
         case 2:
-            mapBlockRender_callList(flag, 0, (MapBlockData*)o, shader, state, m);
+            mapBlockRender_callList(flag, 0, block, shader, state, m);
             break;
         case 4:
         {
@@ -1095,16 +1093,16 @@ void mapClearBlockEdgeFlags(void)
     char* arr;
     int i;
     int j;
-    int* blk;
+    MapBlockData* block;
 
     for (i = 0; i < lbl_803DCE98; i++)
     {
-        blk = (int*)gMapBlocks[i];
-        if (blk != NULL)
+        block = gMapBlocks[i];
+        if (block != NULL)
         {
-            for (j = 0; j < (int)((MapBlockData*)blk)->edgeCount; j++)
+            for (j = 0; j < block->edgeCount; j++)
             {
-                arr = (char*)((MapBlockData*)blk)->displayLists;
+                arr = block->displayLists;
                 arr[j * 0x1c + 0x12] = 0;
             }
         }
@@ -1594,19 +1592,18 @@ int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, V
     return gShadowVisibleCount > 0;
 }
 
-void objDrawFn_80061f0c(void* cache, void* blockData, int* obj, int slot, void* p7, void* buf48, f32 f)
+void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount, void* p7,
+                       void* buf48, f32 f)
 {
     u8 col[4];
-    u8 save_18[12];
-    u8 save_c[12];
+    Vec3f savedWorldPos;
+    Vec3f savedLocalPos;
     f32 mtx[4][4];
     f32 outMtx[4][4];
     f32 f31, f30;
     f32 kf;
     s16 s31, s30, s29;
-    u32 handle;
     u32 h2;
-    ProjectedShadowTexture* hdr;
     void* viewMtx;
 
     GXClearVtxDesc();
@@ -1614,142 +1611,139 @@ void objDrawFn_80061f0c(void* cache, void* blockData, int* obj, int slot, void* 
     col[0] = 0;
     col[1] = 0;
     col[2] = 0;
-    col[3] = ((MapBlockData*)blockData)->shadowTexHeader->alpha;
-    f31 = ((GameObject*)obj)->anim.rootMotionScale;
-    s31 = ((GameObject*)obj)->anim.rotX;
-    s30 = ((GameObject*)obj)->anim.rotZ;
-    s29 = ((GameObject*)obj)->anim.rotY;
-    handle = *(u32*)&((MapBlockData*)blockData)->allocHandle;
-    if (handle == 0 || handle != 0xFFFFFFFF)
-        ((GameObject*)obj)->anim.rootMotionScale = lbl_803DEC78;
+    col[3] = modelState->shadowCastSlot->alpha;
+    f31 = obj->anim.rootMotionScale;
+    s31 = obj->anim.rotX;
+    s30 = obj->anim.rotZ;
+    s29 = obj->anim.rotY;
+    if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
+        obj->anim.rootMotionScale = lbl_803DEC78;
     else
-        ((GameObject*)obj)->anim.rootMotionScale = lbl_803DEC68;
-    ((GameObject*)obj)->anim.rotX = 0;
-    ((GameObject*)obj)->anim.rotY = 0;
-    if ((*(u32*)&((MapBlockData*)blockData)->flags & 0x2000) == 0)
-        ((GameObject*)obj)->anim.rotZ = 0;
-    if (*(u32*)&((MapBlockData*)blockData)->flags & 0x20)
+        obj->anim.rootMotionScale = lbl_803DEC68;
+    obj->anim.rotX = 0;
+    obj->anim.rotY = 0;
+    if ((modelState->flags & 0x2000) == 0)
+        obj->anim.rotZ = 0;
+    if (modelState->flags & 0x20)
     {
-        memcpy(save_c, (char*)obj + 0xc, 0xc);
-        memcpy(save_18, (char*)obj + 0x18, 0xc);
-        memcpy((char*)((int)obj + 0x18), (char*)blockData + 0x20, 0xc);
-        memcpy((char*)((int)obj + 0xc), (char*)((int)blockData + 0x20), 0xc);
+        memcpy(&savedLocalPos, &obj->anim.localPos, sizeof(Vec3f));
+        memcpy(&savedWorldPos, &obj->anim.worldPos, sizeof(Vec3f));
+        memcpy(&obj->anim.worldPos, &modelState->overrideWorldPos, sizeof(Vec3f));
+        memcpy(&obj->anim.localPos, &modelState->overrideWorldPos, sizeof(Vec3f));
     }
-    Obj_BuildWorldTransformMatrix((GameObject*)obj, (f32*)mtx, 0);
+    Obj_BuildWorldTransformMatrix(obj, (f32*)mtx, 0);
     viewMtx = Camera_GetViewMatrix();
     PSMTXConcat(viewMtx, (f32*)mtx, (f32*)outMtx);
     GXLoadPosMtxImm((const f32 (*)[4])outMtx, GX_PNMTX0);
-    if (((ObjAnimComponent*)obj)->modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
+    if (obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
         u32 c = *(u32*)col;
-        objectShadow_setupSwappedProjectedTexture(((MapBlockData*)blockData)->shadowTexHeader, &c, mtx);
+        objectShadow_setupSwappedProjectedTexture(modelState->shadowCastSlot, &c, mtx);
     }
     else
     {
-        if ((GameObject*)obj == Obj_GetPlayerObject())
+        if (obj == Obj_GetPlayerObject())
             f30 = 10.0f;
         else
-            f30 = ((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale;
-        handle = *(u32*)&((MapBlockData*)blockData)->allocHandle;
-        if (handle != 0xFFFFFFFF ||
-            (h2 = getNewShadowSmallDiskTexture(), hdr = ((MapBlockData*)blockData)->shadowTexHeader,
-             (u32)hdr->texture == h2))
+            f30 = obj->anim.hitboxScale * obj->anim.rootMotionScale;
+        if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED ||
+            (h2 = getNewShadowSmallDiskTexture(), (u32)modelState->shadowCastSlot->texture == h2))
         {
             u32 c = *(u32*)col;
-            objectShadow_setupProjectedTexture(((MapBlockData*)blockData)->shadowTexHeader, &c, mtx);
+            objectShadow_setupProjectedTexture(modelState->shadowCastSlot, &c, mtx);
         }
-        else if (hdr->mode == 0xff)
+        else if (modelState->shadowCastSlot->mode == 0xff)
         {
             u32 c = *(u32*)col;
-            fn_80077AD8(((MapBlockData*)blockData)->shadowTexHeader, &c, mtx, f30);
+            fn_80077AD8(modelState->shadowCastSlot, &c, mtx, f30);
         }
         else
         {
             u32 c = *(u32*)col;
-            fn_80077EF8(((MapBlockData*)blockData)->shadowTexHeader, &c, mtx, f30);
+            fn_80077EF8(modelState->shadowCastSlot, &c, mtx, f30);
         }
     }
     GXSetCullMode(GX_CULL_FRONT);
     GXSetCurrentMtx(GX_PNMTX0);
-    ((GameObject*)obj)->anim.rootMotionScale = f31;
-    ((GameObject*)obj)->anim.rotX = s31;
-    ((GameObject*)obj)->anim.rotY = s29;
-    ((GameObject*)obj)->anim.rotZ = s30;
-    if (*(u32*)&((MapBlockData*)blockData)->allocHandle == 0)
+    obj->anim.rootMotionScale = f31;
+    obj->anim.rotX = s31;
+    obj->anim.rotY = s29;
+    obj->anim.rotZ = s30;
+    if (modelState->shadowRenderResource == NULL)
     {
-        f32* cv;
-        int off;
-        int i;
-        int* vbuf;
-        ((MapBlockData*)blockData)->allocHandle = (int)mmAlloc(slot * 0x12 + 8, 0x18, 0);
-        vbuf = *(int**)&((MapBlockData*)blockData)->allocHandle;
-        if (vbuf == NULL)
+        Vec3f* source;
+        int vertexOffset;
+        u32 i;
+        modelState->shadowRenderResource = mmAlloc(triangleCount * 0x12 + sizeof(ObjectShadowMesh), 0x18, 0);
+        if (modelState->shadowRenderResource == NULL)
             return;
-        vbuf[0] = (int)vbuf + 8;
-        *(int*)(((MapBlockData*)blockData)->allocHandle + 4) = slot * 3;
+        modelState->shadowRenderResource->vertices =
+            (Vec3s*)((u8*)modelState->shadowRenderResource + sizeof(ObjectShadowMesh));
+        modelState->shadowRenderResource->vertexCount = triangleCount * 3;
         i = 0;
-        cv = cache;
-        off = 0;
+        source = vertices;
+        vertexOffset = 0;
         kf = lbl_803DEC80;
-        for (; i < *(u32*)(((MapBlockData*)blockData)->allocHandle + 4); off += 6)
+        for (; i < modelState->shadowRenderResource->vertexCount; i++)
         {
-            *(s16*)(*(int*)(((MapBlockData*)blockData)->allocHandle) + off + 0) = kf * cv[0];
-            *(s16*)(*(int*)(((MapBlockData*)blockData)->allocHandle) + off + 2) = kf * cv[1];
-            *(s16*)(*(int*)(((MapBlockData*)blockData)->allocHandle) + off + 4) = kf * cv[2];
-            cv += 3;
-            i++;
+            Vec3s* dest = (Vec3s*)((u8*)modelState->shadowRenderResource->vertices + vertexOffset);
+            dest->x = kf * source->x;
+            dest->y = kf * source->y;
+            dest->z = kf * source->z;
+            source++;
+            vertexOffset += sizeof(Vec3s);
         }
     }
-    handle = *(u32*)&((MapBlockData*)blockData)->allocHandle;
-    if (handle != 0xFFFFFFFF)
+    if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
     {
-        int z[2];
-        GXBegin(GX_TRIANGLES, GX_VTXFMT0, *(int*)(((MapBlockData*)blockData)->allocHandle + 4) & 0xffff);
-        z[0] = 0;
-        z[1] = z[0];
-        for (; z[0] < *(u32*)(((MapBlockData*)blockData)->allocHandle + 4); z[1] += 6)
+        int vertexOffset;
+        u32 i;
+        GXBegin(GX_TRIANGLES, GX_VTXFMT0, modelState->shadowRenderResource->vertexCount & 0xffff);
+        i = 0;
+        vertexOffset = 0;
+        for (; i < modelState->shadowRenderResource->vertexCount; i++)
         {
-            s16* ep = (s16*)(*(int*)(((MapBlockData*)blockData)->allocHandle) + z[1]);
-            s16 e2 = ep[2];
-            s16 e1 = ep[1];
-            s16 e0 = ep[0];
-            GXWGFifo.s16 = e0;
-            GXWGFifo.s16 = e1;
-            GXWGFifo.s16 = e2;
-            z[0]++;
+            Vec3s* vertex = (Vec3s*)((u8*)modelState->shadowRenderResource->vertices + vertexOffset);
+            s16 z = vertex->z;
+            s16 y = vertex->y;
+            s16 x = vertex->x;
+            GXWGFifo.s16 = x;
+            GXWGFifo.s16 = y;
+            GXWGFifo.s16 = z;
+            vertexOffset += sizeof(Vec3s);
         }
     }
     else
     {
         int i;
         int w0;
-        int w1;
-        GXBegin(GX_TRIANGLES, GX_VTXFMT2, (slot * 3) & 0xffff);
+        int byteOffset;
+        GXBegin(GX_TRIANGLES, GX_VTXFMT2, (triangleCount * 3) & 0xffff);
         w0 = 0;
-        w1 = w0;
-        for (i = 0; i < slot; i++)
+        byteOffset = 0;
+        for (i = 0; i < triangleCount; i++)
         {
             int k;
-            f32* v0 = (f32*)((char*)cache + w1);
-            GXPosition3f32(v0[0], v0[1], v0[2]);
+            Vec3f* v0 = (Vec3f*)((u8*)vertices + byteOffset);
+            GXPosition3f32(v0->x, v0->y, v0->z);
             for (k = 1; k < 3; k++)
             {
-                f32* v1 = (f32*)((char*)cache + (w0 + k) * 0xc);
-                f32 b2 = v1[2];
-                f32 b1 = v1[1];
-                f32 b0 = v1[0];
+                Vec3f* v1 = &vertices[w0 + k];
+                f32 b2 = v1->z;
+                f32 b1 = v1->y;
+                f32 b0 = v1->x;
                 GXWGFifo.f32 = b0;
                 GXWGFifo.f32 = b1;
                 GXWGFifo.f32 = b2;
             }
             w0 += 3;
-            w1 += 0x24;
+            byteOffset += 3 * sizeof(Vec3f);
         }
     }
-    if (*(u32*)&((MapBlockData*)blockData)->flags & 0x20)
+    if (modelState->flags & 0x20)
     {
-        memcpy((char*)((int)obj + 0xc), save_c, 0xc);
-        memcpy((char*)((int)obj + 0x18), save_18, 0xc);
+        memcpy(&obj->anim.localPos, &savedLocalPos, sizeof(Vec3f));
+        memcpy(&obj->anim.worldPos, &savedWorldPos, sizeof(Vec3f));
     }
 }
 
@@ -1799,7 +1793,7 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
     u32* vtx;
     int alphaOut = 0;
     int alpha;
-    u32 handle;
+    ObjectShadowMesh* shadowMesh;
     f32 vec[3];
     f32 base[3];
     TrackQueryBounds ranges;
@@ -1814,8 +1808,8 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         return 0;
     }
 
-    handle = (u32)modelState->shadowRenderResource;
-    if (handle == 0 || handle == 0xFFFFFFFF)
+    shadowMesh = modelState->shadowRenderResource;
+    if (shadowMesh == NULL || shadowMesh == OBJECT_SHADOW_MESH_UNCACHED)
     {
         vec[0] = modelState->shadowOffsetX;
         vec[1] = modelState->shadowOffsetY;
@@ -1853,7 +1847,7 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, (Vec3f*)cache,
                     (TrackShadowTriangle*)gShadowDrawScratch, 0x555);
     }
-    objDrawFn_80061f0c(cache, modelState, (int*)obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
+    objDrawFn_80061f0c((Vec3f*)cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
     return 0;
 }
 
@@ -1982,7 +1976,7 @@ void* shadowInit(int* obj, int size, int wpad0)
     }
     else
     {
-        modelState->shadowRenderResource = (void*)-1;
+        modelState->shadowRenderResource = OBJECT_SHADOW_MESH_UNCACHED;
     }
     modelState->shadowScale = *(f32*)((ObjAnimComponent*)obj)->modelInstance;
     modelState->shadowModelScale = *(f32*)((char*)((ObjAnimComponent*)obj)->modelInstance + 0x88);
@@ -3272,7 +3266,7 @@ void trackIntersect(void)
 
     for (layer = 0; layer < 5; layer++)
     {
-        u8* idx = mapGetBlockIdx(layer);
+        s8* idx = mapGetBlockIdx(layer);
         for (gridZ = 0, rowOffset = 0; gridZ < 0x10; rowOffset += 0x10, gridZ++)
         {
             f32 blockZ;
@@ -3281,9 +3275,9 @@ void trackIntersect(void)
             blockZ = gTrackGridCellSize * gridZ;
             for (; gridX < 0x10; blockIndex++, gridX++)
             {
-                if ((s8)idx[blockIndex] >= 0)
+                if (idx[blockIndex] >= 0)
                 {
-                    MapBlockData* blk = mapGetBlock((s8)idx[blockIndex]);
+                    MapBlockData* blk = mapGetBlock(idx[blockIndex]);
                     f32 blockX;
                     sourceIndex = 0;
                     sourceOffset = 0;

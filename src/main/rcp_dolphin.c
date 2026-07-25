@@ -18,6 +18,7 @@
 #include "main/model_light.h"
 #include "main/model.h"
 #include "main/map_romlist_page.h"
+#include "main/map_block.h"
 #include "main/shader_init_api.h"
 #include "main/newclouds.h"
 #include "main/rcp_dolphin.h"
@@ -2332,8 +2333,6 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
 
 extern f32 gMapBlockWorldSize;
 #define MAP_BLOCK_LAYER_COUNT 5
-extern u8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
-
 extern WarpVec lbl_80386648[];
 
 int objShouldUnload(GameObject* obj)
@@ -2341,7 +2340,7 @@ int objShouldUnload(GameObject* obj)
     u8* def;
     u8* p;
     u8* src;
-    u8** tp;
+    s8** tp;
     int m;
     int keep;
     int bx;
@@ -2400,7 +2399,7 @@ int objShouldUnload(GameObject* obj)
         tp = gMapBlockLayerTables;
         for (k = 0; k < MAP_BLOCK_LAYER_COUNT; k++)
         {
-            if (*(s8*)((u8*)bx + (int)*tp) >= 0)
+            if ((*tp)[bx] >= 0)
             {
                 found = 1;
             }

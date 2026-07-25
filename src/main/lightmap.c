@@ -115,8 +115,6 @@ extern F32Pair lbl_803DEC08;
 extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
-extern void* gMapBlockLayerTables[];
-extern void** gMapBlocks;
 extern u8 lbl_803DCE98; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
 extern u32 lbl_803DCE34;
@@ -273,12 +271,12 @@ MapBlockData* mapGetBlock(int i)
 extern u32 lbl_8037E0C0[];
 extern s32 lbl_803DCE30;
 
-void* mapGetBlockIdx(int layer)
+s8* mapGetBlockIdx(int layer)
 {
     return gMapBlockLayerTables[layer];
 }
 
-void* mapGetBlockAtPos(int x, int y, int layer)
+MapBlockData* mapGetBlockAtPos(int x, int y, int layer)
 {
     s8* table = gMapBlockLayerTables[layer];
     s32 idx;
@@ -348,7 +346,7 @@ int isInBounds(f32 x, f32 z)
     int ix = (int)(fastFloorf(x / gMapBlockWorldSize) - (f32)gMapBlockOriginX);
     int iz = (int)(fastFloorf(z / gMapBlockWorldSize) - (f32)gMapBlockOriginZ);
     int linear;
-    void** p;
+    s8** p;
     if (ix < 0 || ix >= 16) return -1;
     if (iz < 0 || iz >= 16) return -1;
     linear = ix + (iz << 4);
@@ -357,7 +355,7 @@ int isInBounds(f32 x, f32 z)
         p = gMapBlockLayerTables;
         for (i = 0; i < MAP_BLOCK_LAYER_COUNT; i++)
         {
-            if (((s8*)*p)[linear] > -1) return 1;
+            if ((*p)[linear] > -1) return 1;
             p++;
         }
     }
@@ -374,15 +372,15 @@ int objPosToMapBlockIdx(f32 x, f32 y, f32 z)
     if (ix < 0 || ix >= 16) return -1;
     if (iz < 0 || iz >= 16) return -1;
     ix = ix + (iz << 4);
-    for (tp = (s8**)gMapBlockLayerTables, i = 0; i < MAP_BLOCK_LAYER_COUNT; tp++, i++)
+    for (tp = gMapBlockLayerTables, i = 0; i < MAP_BLOCK_LAYER_COUNT; tp++, i++)
     {
         s8* table = *tp;
         int idx = table[ix];
         if (idx > -1)
         {
-            int* block = gMapBlocks[idx];
-            if (y > (f32)(*(s16*)((char*)block + 138) - 50) &&
-                y < (f32)(*(s16*)((char*)block + 140) + 50))
+            MapBlockData* block = gMapBlocks[idx];
+            if (y > (f32)(block->minY - 50) &&
+                y < (f32)(block->maxY + 50))
             {
                 return table[ix];
             }
@@ -703,19 +701,18 @@ void renderSceneGeometry(u8 renderType, s8* order)
     int box1[4];
     int box2[4];
     int box3[4];
-    void** layerTablePtr;
+    s8** layerTablePtr;
     int* layerFlagPtr;
     int idx;
-    int k[1];
+    int k;
     int row, col;
     int oi, ii;
     int layer;
-    u8* blk;
+    MapBlockData* block;
     s8* table;
     f32 worldSize;
     f32 rowF, colF;
     int cell;
-    u8* p;
 
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
@@ -723,15 +720,13 @@ void renderSceneGeometry(u8 renderType, s8* order)
     worldSize = gMapBlockWorldSize;
     do
     {
-        table = (s8*)*layerTablePtr;
+        table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
-        p = map;
-        for (k[0] = 0; k[0] < 256; k[0]++)
+        for (k = 0; k < ARRAY_COUNT(map); k++)
         {
-            *p = 0;
-            p++;
+            map[k] = 0;
         }
         fillBoxRows(map, box0);
         fillBoxRows(map, box1);
@@ -749,24 +744,24 @@ void renderSceneGeometry(u8 renderType, s8* order)
                 idx = table[cell];
                 if (idx < 0)
                 {
-                    blk = NULL;
+                    block = NULL;
                 }
                 else
                 {
-                    blk = gMapBlocks[idx];
-                    ((MapBlockData*)blk)->flags4 ^= 1;
+                    block = gMapBlocks[idx];
+                    block->flags4 ^= 1;
                     if (map[cell] == 0)
                     {
                         continue;
                     }
                 }
-                if (idx > -1 && mapRectFn_8005a728(row, col, blk) != 0)
+                if (idx > -1 && mapRectFn_8005a728(row, col, block) != 0)
                 {
                     lbl_803DCE58 = rowF;
                     colF = gMapBlockWorldSize * (f32)col;
                     lbl_803DCE54 = colF;
-                    PSMTXTrans((f32*)(blk + 0xc), rowF, (f32)(int)((MapBlockData*)blk)->collisionYOffset, colF);
-                    renderMapBlock((int*)blk, renderType);
+                    PSMTXTrans((f32*)block->transform, rowF, (f32)block->collisionYOffset, colF);
+                    renderMapBlock(block, renderType);
                 }
             }
         }

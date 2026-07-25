@@ -2,6 +2,7 @@
 #define MAIN_TRACK_DOLPHIN_H_
 
 #include "ghidra_import.h"
+#include "main/game_object.h"
 
 struct TrackBlockDescriptor;
 struct TrackTriangle;
@@ -62,7 +63,8 @@ void trackDolphin_buildSweptBounds(u32 *boundsOut,float *startPoints,float *endP
 
 /* extern-cleanup: defining-file public prototypes */
 int fn_80060C14(int* obj, int triBuf, void* planesOut, int vertsOut, int p7, f32 offX, f32 offZ, int p8, int kindMask);
-void objDrawFn_80061f0c(void* cache, void* blockData, int* obj, int slot, void* p7, void* buf48, f32 f);
+void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount, void* p7,
+                       void* buf48, f32 f);
 void fn_800659A8(struct TrackTriangle* triStart, struct TrackTriangle* triEnd, struct TrackBlockDescriptor* desc,
                  f32 qx, f32 qz, int allowDown);
 #endif /* MAIN_TRACK_DOLPHIN_H_ */

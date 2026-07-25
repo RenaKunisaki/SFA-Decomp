@@ -680,26 +680,27 @@ void renderShadows(int unused0, int unused1, int unused2)
             C_MTXOrtho(mOrtho, vAx, vAz, vAx, vAz, lbl_803DED2C, lbl_803DED6C);
             GXSetProjection(mOrtho, GX_ORTHOGRAPHIC);
             Camera_UpdateViewMatrices();
-            C_MTXLightOrtho(castSlot->modelMtx, vAz, vAx, vAx, vAz, orthoHalf, orthoHalf, orthoHalf, orthoHalf);
+            C_MTXLightOrtho((f32*)castSlot->textureMtx, vAz, vAx, vAx, vAz, orthoHalf, orthoHalf, orthoHalf,
+                            orthoHalf);
             {
                 viewMtx = Camera_GetViewMatrix();
-                PSMTXCopy(viewMtx, castSlot->texMtx);
-                PSMTXConcat(castSlot->modelMtx, viewMtx, castSlot->modelMtx);
+                PSMTXCopy(viewMtx, (f32*)castSlot->depthMtx);
+                PSMTXConcat((f32*)castSlot->textureMtx, viewMtx, (f32*)castSlot->textureMtx);
                 obj->anim.modelState->shadowCastSlot = castSlot;
                 {
                     Texture** texturePool = shadowData->castTextures;
                     texture = texturePool + (u8)texIdx;
                     castSlot->texture = *texture;
-                    castSlot->dirIndex = lbl_803DB668[(u8)texIdx];
+                    castSlot->mode = lbl_803DB668[(u8)texIdx];
                     objRenderShadowIfVisible(obj, 0, 0, 0, 0, 0);
                     if (casterPtr->flags == 2)
                     {
                         gxSetZMode_(1, GX_LEQUAL, 1);
-                        PSMTXScale(castSlot->texMtx, 0.0f, 0.0f, 0.0f);
-                        castSlot->texMtx[2] = lbl_803DED70;
-                        castSlot->texMtx[3] = lbl_803DED74;
-                        castSlot->texMtx[11] = lbl_803DED2C;
-                        PSMTXConcat(castSlot->texMtx, viewMtx, castSlot->texMtx);
+                        PSMTXScale((f32*)castSlot->depthMtx, 0.0f, 0.0f, 0.0f);
+                        castSlot->depthMtx[0][2] = lbl_803DED70;
+                        castSlot->depthMtx[0][3] = lbl_803DED74;
+                        castSlot->depthMtx[2][3] = lbl_803DED2C;
+                        PSMTXConcat((f32*)castSlot->depthMtx, viewMtx, (f32*)castSlot->depthMtx);
                         GXSetTexCopySrc(0, 0, screenW, screenW);
                         GXSetTexCopyDst(screenW, screenW, GX_TF_Z8, GX_FALSE);
                         {
@@ -752,7 +753,7 @@ void renderShadows(int unused0, int unused1, int unused2)
                 mScale[10] = lbl_803DED28;
                 mScale[11] = lbl_803DED2C;
             }
-            PSMTXConcat(mScale, mTrans, castSlot->modelMtx);
+            PSMTXConcat(mScale, mTrans, (f32*)castSlot->textureMtx);
             modelState->shadowOffsetX = v30[0];
             modelState->shadowOffsetY = v30[1];
             modelState->shadowOffsetZ = v30[2];

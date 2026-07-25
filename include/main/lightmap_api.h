@@ -24,7 +24,7 @@ STATIC_ASSERT(sizeof(LightmapVertex) == 0x10);
 STATIC_ASSERT(offsetof(LightmapVertex, s) == 0x08);
 STATIC_ASSERT(offsetof(LightmapVertex, r) == 0x0c);
 
-void* mapGetBlockAtPos(int x, int y, int layer);
+MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
 void* RomList_GetLoadedPages(void);
 MapBlockData* mapGetBlock(int index);
 int coordsToMapCell(f32 x, f32 z);
@@ -46,6 +46,6 @@ void setIsOvercast(int value);
 
 void setStarsHidden(int v);
 
-void* mapGetBlockIdx(int layer);
+s8* mapGetBlockIdx(int layer);
 
 #endif /* MAIN_LIGHTMAP_API_H_ */

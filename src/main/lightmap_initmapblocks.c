@@ -115,8 +115,6 @@ extern F32Pair lbl_803DEC08;
 extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
-extern void* gMapBlockLayerTables[];
-extern void** gMapBlocks;
 extern u8 lbl_803DCE98; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
 extern u32 lbl_803DCE34;
@@ -194,9 +192,9 @@ MapBlockData* mapGetBlock(int i);
 extern u32 lbl_8037E0C0[];
 extern s32 lbl_803DCE30;
 
-void* mapGetBlockIdx(int layer);
+s8* mapGetBlockIdx(int layer);
 
-void* mapGetBlockAtPos(int x, int y, int layer);
+MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
 
 void* RomList_GetLoadedPages(void);
 

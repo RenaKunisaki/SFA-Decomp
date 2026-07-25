@@ -115,8 +115,6 @@ extern F32Pair lbl_803DEC08;
 extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
-extern void* gMapBlockLayerTables[];
-extern void** gMapBlocks;
 extern u8 lbl_803DCE98; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
 extern u32 lbl_803DCE34;
@@ -194,9 +192,9 @@ MapBlockData* mapGetBlock(int i);
 extern u32 lbl_8037E0C0[];
 extern s32 lbl_803DCE30;
 
-void* mapGetBlockIdx(int layer);
+s8* mapGetBlockIdx(int layer);
 
-void* mapGetBlockAtPos(int x, int y, int layer);
+MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
 
 void* RomList_GetLoadedPages(void);
 
@@ -204,10 +202,27 @@ extern u32 gVisibleObjectSortKeys[0x400];
 extern int gLightmapDeferredObjectCount;
 extern s16 gVisibleObjectSortKeyCount;
 
-typedef struct
+typedef struct LightmapDrawEntry
 {
-    u32 a, b, c, d;
-} LightmapQEnt;
+    union
+    {
+        u32 value;
+        GameObject* object;
+    } arg0;
+    union
+    {
+        u32 value;
+        MapBlockData* block;
+    } arg1;
+    u32 sortKey;
+    s32 type;
+} LightmapDrawEntry;
+
+typedef union LightmapDrawItem
+{
+    GameObject* object;
+    MapBlockData* block;
+} LightmapDrawItem;
 
 typedef struct MapLayerBuffers
 {
@@ -769,86 +784,86 @@ void sceneDrawTransparentPolys(void)
 {
     GXColor c5;
     int i;
-    int* block;
+    LightmapDrawItem item;
     GameObject* player;
     GXColor c4;
-    int (*e)[4];
+    LightmapDrawEntry* entries;
     GXColor c6;
     f32 m[16];
 
     lightmap_sortTransparentDrawQueue();
     i = 0;
-    e = (int(*)[4])&lbl_8037E0C0;
+    entries = (LightmapDrawEntry*)lbl_8037E0C0;
     for (; i < lbl_803DCE30; i++)
     {
-        switch (e[i][3])
+        switch (entries[i].type)
         {
         case 0:
-            expgfx_renderSourcePools(e[i][0], 0);
-            objDrawFn_8005da48((GameObject*)e[i][0]);
-            expgfx_renderSourcePools(e[i][0], 1);
+            expgfx_renderSourcePools(entries[i].arg0.value, 0);
+            objDrawFn_8005da48(entries[i].arg0.object);
+            expgfx_renderSourcePools(entries[i].arg0.value, 1);
             break;
         case 1:
-            block = (int*)e[i][0];
-            Obj_GetActiveModel((GameObject*)block);
+            item.object = entries[i].arg0.object;
+            Obj_GetActiveModel(item.object);
             player = Obj_GetPlayerObject();
-            if ((GameObject*)block == player)
+            if (item.object == player)
             {
-                if (playerIsDisguised((GameObject*)block) == 0)
+                if (playerIsDisguised(item.object) == 0)
                 {
-                    fn_802B4ED8((GameObject*)block, 1, 1);
+                    fn_802B4ED8(item.object, 1, 1);
                 }
             }
             else
             {
-                objRenderFuzz(block);
+                objRenderFuzz((int*)item.object);
             }
             break;
         case 2:
             Camera_ApplyDecalViewport();
-            objShadowFn_80062498((GameObject*)e[i][0], 0, 0, framesThisStep);
+            objShadowFn_80062498(entries[i].arg0.object, 0, 0, framesThisStep);
             Camera_ApplyFullViewport();
             break;
         case 3:
             Camera_ApplyDecalViewport();
-            objDrawFn_80061654((GameObject*)e[i][0], Obj_GetActiveModel((GameObject*)e[i][0]));
+            objDrawFn_80061654(entries[i].arg0.object, Obj_GetActiveModel(entries[i].arg0.object));
             Camera_ApplyFullViewport();
             break;
         case 4:
-            block = (int*)e[i][1];
+            item.block = entries[i].arg1.block;
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             objGetColor(0, (u8*)&c4, (u8*)&c4 + 1, (u8*)&c4 + 2);
             GXSetChanAmbColor(GX_COLOR0, c4);
             GXSetNumChans(1);
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)(block + 3), m);
-            setupToRenderMapBlock(block, m);
-            modelRenderFn_8005d894((int*)e[i][0], (int*)e[i][1], m);
+            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
+            setupToRenderMapBlock(item.block, m);
+            modelRenderFn_8005d894((int*)entries[i].arg0.value, (int*)entries[i].arg1.block, m);
             break;
         case 5:
-            block = (int*)e[i][1];
+            item.block = entries[i].arg1.block;
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             objGetColor(0, (u8*)&c5, (u8*)&c5 + 1, (u8*)&c5 + 2);
             GXSetChanAmbColor(GX_COLOR0, c5);
             GXSetNumChans(1);
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)(block + 3), m);
-            setupToRenderMapBlock(block, m);
-            modelRenderFn_8005d69c((int*)e[i][0], (int*)e[i][1], m);
+            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
+            setupToRenderMapBlock(item.block, m);
+            modelRenderFn_8005d69c((int*)entries[i].arg0.value, (int*)entries[i].arg1.block, m);
             break;
         case 6:
-            block = (int*)e[i][1];
+            item.block = entries[i].arg1.block;
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             objGetColor(0, (u8*)&c6, (u8*)&c6 + 1, (u8*)&c6 + 2);
             GXSetChanAmbColor(GX_COLOR0, c6);
             GXSetNumChans(1);
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)(block + 3), m);
-            setupToRenderMapBlock(block, m);
-            modelRenderFn_8005d4ec((int*)e[i][0], (int*)e[i][1], m);
+            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
+            setupToRenderMapBlock(item.block, m);
+            modelRenderFn_8005d4ec((int*)entries[i].arg0.value, (int*)entries[i].arg1.block, m);
             break;
         case 7:
-            drawGlow((u32)e[i][0], e[i][1]);
+            drawGlow(entries[i].arg0.value, entries[i].arg1.value);
             break;
         case 8:
             drawFn_8006f500();

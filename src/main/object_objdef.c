@@ -55,7 +55,7 @@ void objFreeObjDef(u8* obj, int flag)
     int* bp;
     void* curTex;
     void* tex;
-    void* shadowRenderResource;
+    ObjectShadowMesh* shadowMesh;
     int modelCount;
     int group;
 
@@ -162,10 +162,10 @@ void objFreeObjDef(u8* obj, int flag)
         {
             mm_free(((ObjAnimComponent*)obj)->modelState->shadowWorkBuffer);
         }
-        shadowRenderResource = ((ObjAnimComponent*)obj)->modelState->shadowRenderResource;
-        if (shadowRenderResource != NULL && shadowRenderResource != (void*)-1)
+        shadowMesh = ((ObjAnimComponent*)obj)->modelState->shadowRenderResource;
+        if (shadowMesh != NULL && shadowMesh != OBJECT_SHADOW_MESH_UNCACHED)
         {
-            mm_free(shadowRenderResource);
+            mm_free(shadowMesh);
         }
     }
     if (*(void**)&((GameObject*)obj)->unkDC != NULL)

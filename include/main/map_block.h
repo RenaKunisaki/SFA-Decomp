@@ -36,33 +36,13 @@ STATIC_ASSERT(offsetof(MapShader, auxTexture) == 0x34);
 STATIC_ASSERT(offsetof(MapShader, flags) == 0x3C);
 STATIC_ASSERT(offsetof(MapShader, layerCount) == 0x41);
 
-typedef struct Texture Texture;
-
-typedef struct ProjectedShadowTexture
-{
-    f32 textureMtx[3][4];
-    f32 depthMtx[3][4];
-    Texture* texture;
-    u8 alpha;
-    u8 mode;
-    u8 pad66[2];
-} ProjectedShadowTexture;
-
-STATIC_ASSERT(sizeof(ProjectedShadowTexture) == 0x68);
-STATIC_ASSERT(offsetof(ProjectedShadowTexture, texture) == 0x60);
-STATIC_ASSERT(offsetof(ProjectedShadowTexture, alpha) == 0x64);
-STATIC_ASSERT(offsetof(ProjectedShadowTexture, mode) == 0x65);
-
 typedef struct MapBlockData {
-    u8 pad0[0x4 - 0x0];
+    void* unk0;
     u16 flags4; /* 0x04: block-state bits; bit 8 = block loaded, bit 1 toggled per tick */
-    u8 pad6[0xC - 0x6];
-    ProjectedShadowTexture* shadowTexHeader;
-    s32 allocHandle;
-    u16 unk14;
-    u8 pad16[0x30 - 0x16];
-    s32 flags;
-    u8 pad34[0x4C - 0x34];
+    u16 unk6;
+    u32 size;
+    f32 transform[3][4];
+    u8 pad3C[0x4C - 0x3C];
     void* gcPolygons; /* 0x4C: MapTriIndex[] collision mesh (stride 8), count = nPolygons @0x98 */
     void* polygonGroups; /* 0x50: MapTriGroup[] (stride 0x14), count = polyGroupCount @0x9A */
     void* textures; /* 0x54: texture IDs */
@@ -80,7 +60,8 @@ typedef struct MapBlockData {
     u16 nRenderInstrsMain; /* 0x84: stream size in bytes */
     u16 nRenderInstrsTransp; /* 0x86 */
     u16 nRenderInstrsWater; /* 0x88 */
-    u8 pad8A[0x8E - 0x8A];
+    s16 minY; /* 0x8A: lower vertical bound */
+    s16 maxY; /* 0x8C: upper vertical bound */
     s16 collisionYOffset; /* 0x8E: added to collision-group and vertex Y coordinates */
     u16 vertexCount; /* 0x90: entries in the vertices array (DCStoreRange size = count*6) */
     u8 pad92[0x98 - 0x92];
@@ -94,6 +75,12 @@ typedef struct MapBlockData {
 } MapBlockData;
 
 STATIC_ASSERT(offsetof(MapBlockData, hitCount) == 0x9C);
+STATIC_ASSERT(offsetof(MapBlockData, transform) == 0x0C);
+STATIC_ASSERT(offsetof(MapBlockData, minY) == 0x8A);
+STATIC_ASSERT(offsetof(MapBlockData, maxY) == 0x8C);
+
+extern MapBlockData** gMapBlocks;
+extern s8* gMapBlockLayerTables[];
 
 MapShader* mapBlockGetShader(MapBlockData* block, int index);
 

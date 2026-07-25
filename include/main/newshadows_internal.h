@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "main/game_object.h"
+#include "main/projected_shadow.h"
 #include "main/texture.h"
 
 typedef struct NewShadowEntry
@@ -43,15 +44,7 @@ typedef struct
 #define NEW_SHADOW_MAX_CAST_TEXTURES 8
 #define NEW_SHADOW_FRAME_COUNT 3
 
-typedef struct
-{
-    f32 modelMtx[12];
-    f32 texMtx[12];
-    Texture* texture;
-    u8 alpha;
-    u8 dirIndex;
-    u8 pad66[2];
-} NewShadowCastSlot;
+typedef ProjectedShadowTexture NewShadowCastSlot;
 
 typedef struct
 {
