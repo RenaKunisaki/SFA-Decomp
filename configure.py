@@ -1452,7 +1452,7 @@ config.libs = [
                 NonMatching, "main/dll/dll_0035_saveselectscreen.c", cflags=cflags_dll_noopt_noinline,
                 section_alignments={".data": 4},
             ),
-            Object(NonMatching, "main/dll/dll_0036_entersavenamescreen.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "main/dll/dll_0036_entersavenamescreen.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(Matching, "main/dll/dll_48.c"),
             Object(Matching, "main/dll/dll_49.c"),
             Object(Matching, "main/dll/dll_4b.c"),
