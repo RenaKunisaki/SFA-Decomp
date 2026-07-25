@@ -61,6 +61,32 @@ enum MikaladonVerticalPhase
 #define MIKALADON_AMBIENT_SFX_MIN_DELAY 60
 #define MIKALADON_AMBIENT_SFX_MAX_DELAY 120
 
+static f32 mikaladon_randomAmbientSfxDelay(void)
+{
+    return (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
+}
+
+static void mikaladon_spawnDrop(GameObject* obj)
+{
+    MikaladonDropSetup* setup;
+    GameObject* spawned;
+
+    setup = (MikaladonDropSetup*)Obj_AllocObjectSetup(sizeof(MikaladonDropSetup), SEQOBJ11E_GCROBOT_DROP_OBJ);
+    setup->base.posX = obj->anim.localPosX;
+    setup->base.posY = MIKALADON_DROP_HEIGHT_OFFSET + obj->anim.localPosY;
+    setup->base.posZ = obj->anim.localPosZ;
+    setup->base.color[0] = 1;
+    setup->base.color[1] = 1;
+    setup->base.color[2] = 0xff;
+    setup->base.color[3] = 0xff;
+    spawned = loadObjectAtObject(obj, &setup->base);
+    if (spawned != NULL)
+    {
+        spawned->ownerObj = obj;
+        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_249);
+    }
+}
+
 /* mikaladon_update: firefly hover update: circle drift, bob between heights,
  * periodically drop a spawned object, ambient sfx timers. */
 void mikaladon_update(GameObject* obj, MikaladonState* state)
