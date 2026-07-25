@@ -366,7 +366,7 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 {
     f32 bestPriorityDist;
     f32 bestFallbackDist;
-    TrickyCommand* entry;
+    int ref;
     int i;
     GameObject* bestPriorityTarget;
     GameObject* bestFallbackTarget;
@@ -376,25 +376,25 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
     bestFallbackDist = bestPriorityDist;
     bestFallbackTarget = NULL;
 
-    for (i = 0, entry = state->commands; i < state->commandCount; i++, entry++)
+    for (i = 0, ref = (int)state; i < state->commandCount; i++, ref += 8)
     {
-        if (entry->type == commandType)
+        if (*(s8*)(ref + 0x74d) == commandType)
         {
             f32 dist = getXZDistance(&state->playerObj->anim.worldPosX,
-                                     &entry->targetObj->anim.worldPosX);
+                                     &((GameObject*)*(int*)(ref + 0x748))->anim.worldPosX);
 
-            if (entry->kind == 1)
+            if (*(s8*)(ref + 0x74c) == 1)
             {
                 if (dist < bestPriorityDist)
                 {
                     bestPriorityDist = dist;
-                    bestPriorityTarget = entry->targetObj;
+                    bestPriorityTarget = (GameObject*)*(int*)(ref + 0x748);
                 }
             }
             else if (dist < bestFallbackDist)
             {
                 bestFallbackDist = dist;
-                bestFallbackTarget = entry->targetObj;
+                bestFallbackTarget = (GameObject*)*(int*)(ref + 0x748);
             }
         }
     }
@@ -422,6 +422,6 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
         }
     }
 
-    state->commandPhase = 0;
+    state->substate = 0;
     return 1;
 }
