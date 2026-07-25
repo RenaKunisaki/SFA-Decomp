@@ -3307,7 +3307,7 @@ void ObjHits_RefreshObjectState(GameObject* object)
             if (((activeBank->animDef->flags & OBJANIM_DEF_FLAG_SKELETON_HITBOXES) == 0) ||
                 (*(void**)(((int*)activeBank) + 5) == 0))
             {
-                hitState->shapeFlags = *(u8*)((int)hitState + 0x62) & ~OBJHITS_SHAPE_SKELETON;
+                hitState->shapeFlags &= ~OBJHITS_SHAPE_SKELETON;
             }
         }
         hitState->lateralResponseWeight = obj->modelInstance->lateralResponseWeight;
