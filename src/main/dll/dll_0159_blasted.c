@@ -38,7 +38,7 @@ int fn_801A27B8(GameObject* obj, int id)
                 *(int*)(e + 0x10) |= 3;
             }
         }
-        for (j = 0; j < block->layerCount; j++)
+        for (j = 0; j < block->shaderCount; j++)
         {
             u8* g = (u8*)mapBlockGetShader(block, j);
             u8* p;

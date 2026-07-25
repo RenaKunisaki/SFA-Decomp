@@ -920,7 +920,7 @@ void MapBlock_initShaders(MapBlockData* block)
     int j;
     int ref;
     MapShader* sh;
-    for (i = 0; i < block->layerCount; i++)
+    for (i = 0; i < block->shaderCount; i++)
     {
         sh = &block->shaders[i];
         for (j = 0; j < sh->layerCount; j++)

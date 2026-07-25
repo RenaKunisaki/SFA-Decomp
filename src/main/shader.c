@@ -1606,39 +1606,6 @@ static inline void mapMarkRectRows(char* g3, int* rect)
 
 extern char sTrackPiLockedFormat[];
 
-typedef struct MapShaderLayerCleanup
-{
-    u8 unk00[0x24];
-    int textureOverride;
-    u8 unk28;
-    u8 textureOverrideType;
-    u8 textureScrollSlot;
-    u8 pad2b;
-} MapShaderLayerCleanup;
-
-typedef struct MapShaderCleanup
-{
-    u8 unk00[0x41];
-    u8 layerCount;
-    u8 unk42[2];
-} MapShaderCleanup;
-
-typedef struct MapBlockCleanup
-{
-    u8 unk00[0x54];
-    Texture** textures;
-    u8 unk58[0xc];
-    MapShaderCleanup* shaders;
-    u8 unk68[8];
-    void* hits;
-    void* auxData;
-    u8 unk78[0x28];
-    u8 textureCount;
-    u8 unkA1;
-    u8 shaderCount;
-    u8 unkA3;
-} MapBlockCleanup;
-
 void doPendingMapLoads(void)
 {
     MapLoadRec* cellCursor;
@@ -2015,38 +1982,34 @@ void doPendingMapLoads(void)
                             gMapBlockRefCounts[blockId] -= 1;
                             if (gMapBlockRefCounts[blockId] == 0)
                             {
-                                MapBlockCleanup* block = (MapBlockCleanup*)gMapBlocks[blockId];
-                                int z[2];
-                                MapShaderCleanup* shader;
-                                MapShaderLayerCleanup* shaderLayer;
+                                MapBlockData* block = gMapBlocks[blockId];
+                                MapShader* shader;
+                                MapShaderLayer* shaderLayer;
+                                int shaderIndex;
                                 int layerIndex;
+                                int textureIndex;
+                                u32 scrollSlot;
                                 gMapBlockIds[blockId] = -1;
-                                z[0] = 0;
                                 gMapBlocks[blockId] = NULL;
-                                z[1] = z[0];
-                                for (; z[0] < block->shaderCount; z[1] += sizeof(MapShaderCleanup), z[0]++)
+                                for (shaderIndex = 0; shaderIndex < block->shaderCount; shaderIndex++)
                                 {
-                                    shader = (MapShaderCleanup*)((char*)block->shaders + z[1]);
-                                    layerIndex = 0;
-                                    shaderLayer = (MapShaderLayerCleanup*)shader;
-                                    for (; layerIndex < shader->layerCount; layerIndex++)
+                                    shader = &block->shaders[shaderIndex];
+                                    for (layerIndex = 0; layerIndex < shader->layerCount; layerIndex++)
                                     {
-                                        u32 scrollSlot = shaderLayer->textureScrollSlot;
+                                        shaderLayer = &shader->layers[layerIndex];
+                                        scrollSlot = shaderLayer->scrollMtx;
                                         if (scrollSlot != 0xff)
                                         {
                                             if (((TexScrollEntry*)lbl_803DCE68)[scrollSlot].refCount != 0)
                                                 ((TexScrollEntry*)lbl_803DCE68)[scrollSlot].refCount -= 1;
                                         }
-                                        if (shaderLayer->textureOverrideType != 0)
-                                            mapTextureOverrideRelease(shaderLayer->textureOverride,
-                                                                      shaderLayer->textureOverrideType);
-                                        shaderLayer = (MapShaderLayerCleanup*)((char*)shaderLayer + 8);
+                                        if (shaderLayer->overrideType != 0)
+                                            mapTextureOverrideRelease(shaderLayer->texture,
+                                                                      shaderLayer->overrideType);
                                     }
                                 }
-                                z[0] = 0;
-                                z[1] = z[0];
-                                for (; z[0] < block->textureCount; z[1] += 4, z[0]++)
-                                    textureFree(*(Texture**)((char*)block->textures + z[1]));
+                                for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
+                                    textureFree(block->textures[textureIndex]);
                                 if (block->auxData != NULL)
                                     mm_free(block->auxData);
                                 if (block->hits != NULL)

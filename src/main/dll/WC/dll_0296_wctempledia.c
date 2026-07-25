@@ -39,7 +39,7 @@ void wctempledia_syncPartVisibility(GameObject* obj, u8 mask)
     {
         for (part = 1; part < WCTEMPLE_DIA_STAGE_COUNT + 1; part++)
         {
-            for (slot = 0, bit = mask & (1 << (part - 1)); slot < block->layerCount; slot++)
+            for (slot = 0, bit = mask & (1 << (part - 1)); slot < block->shaderCount; slot++)
             {
                 MapShader* entry = mapBlockGetShader(block, slot);
                 if (entry->layers[0].overrideType == part)

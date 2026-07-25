@@ -49,7 +49,7 @@ void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfa
             }
         }
     }
-    for (i = 0, clearMask = ~2; i < (int)((MapBlockData*)map)->layerCount; i++)
+    for (i = 0, clearMask = ~2; i < (int)((MapBlockData*)map)->shaderCount; i++)
     {
         block = (int*)mapBlockGetShader(map, i);
         if (surfaceType == (int)*((u8*)Shader_getLayer(block, 0) + 5))

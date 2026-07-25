@@ -87,7 +87,7 @@ void hitAnimatorFn_80193dbc(MapBlockData* block, HitAnimatorObject* obj, HitAnim
     }
     if ((desc->flags & HITANIMATOR_SETUP_FLAG_AFFECT_SHADERS) != 0)
     {
-        for (i = 0; i < block->layerCount; i++)
+        for (i = 0; i < block->shaderCount; i++)
         {
             HitAnimatorShader* shader = (HitAnimatorShader*)mapBlockGetShader(block, i);
             u8* layer = Shader_getLayer(shader, 0);
