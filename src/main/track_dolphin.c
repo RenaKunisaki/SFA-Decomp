@@ -792,8 +792,8 @@ static inline int isGlowInFrustum(ModelLightStruct* light)
 {
     FrustumPlane* plane;
     u8 i;
-    f32 offsetZ;
     f32 offsetX;
+    f32 offsetZ;
     f32 bias;
 
     i = 0;
