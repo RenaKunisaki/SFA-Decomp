@@ -180,7 +180,6 @@ void mcmdPortamento(McmdVoiceState* state, McmdCommandArgs* args)
         {
             inpSetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent, 0x7f);
         }
-    enable_portamento:
         if (!(MAC_CFLAGS(state) & MAC_FLAG64(0, 0x400)))
         {
             synthInitPortamento(state);
@@ -191,7 +190,11 @@ void mcmdPortamento(McmdVoiceState* state, McmdCommandArgs* args)
         if (state->midiSlot != 0xff &&
             (u16)inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent) > 0x1f80)
         {
-            goto enable_portamento;
+            if (!(MAC_CFLAGS(state) & MAC_FLAG64(0, 0x400)))
+            {
+                synthInitPortamento(state);
+            }
+            state->outputFlags |= 0x400;
         }
         break;
     }
