@@ -317,7 +317,7 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
     }
     p1z = pts[1]->z;
     p1x = pts[1]->x;
-    negdot = nz * p1z + nx * p1x;
+    negdot = nx * p1x + nz * p1z;
     negdot = -negdot;
     t1 = nx * dx1 + nz * dz1;
     if (0.0f != t1)
