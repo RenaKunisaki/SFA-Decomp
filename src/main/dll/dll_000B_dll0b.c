@@ -568,6 +568,8 @@ void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, i
 {
     int scaleIndex = channelIndex * 2;
     int i;
+    ModgfxVertexData* vertices;
+    ModgfxVertexData* baseVertices;
 
     if (reinit == 1)
     {
@@ -586,8 +588,8 @@ void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, i
         }
         else
         {
-            ModgfxVertexData* baseVertices = state->baseVertexData;
-            ModgfxVertexData* vertices = state->vertexBuffers[state->activeVertexBufferIndex];
+            baseVertices = state->baseVertexData;
+            vertices = state->vertexBuffers[state->activeVertexBufferIndex];
 
             for (i = 0; i < command->indexCount; i++)
             {
@@ -607,8 +609,8 @@ void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, i
     state->scaleVectors[scaleIndex].z += state->scaleVectors[scaleIndex + 1].z * gModgfxMotionStep;
 
     {
-        ModgfxVertexData* baseVertices = state->baseVertexData;
-        ModgfxVertexData* vertices = state->vertexBuffers[state->activeVertexBufferIndex];
+        baseVertices = state->baseVertexData;
+        vertices = state->vertexBuffers[state->activeVertexBufferIndex];
 
         for (i = 0; i < command->indexCount; i++)
         {
