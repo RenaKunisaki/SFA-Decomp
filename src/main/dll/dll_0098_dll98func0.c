@@ -45,7 +45,7 @@ void dll_98_func03(int sourceObj, int variant, int posSource, u32 flags, int arg
     GfxCmd* entry;
     int anim;
     effectTable->frameValues[1] = randomGetRange(0, 0x1e) + 0x1e;
-    effectTable->frameValues[2] = effectTable->frameValues[1];
+    effectTable->frameValues[2] = (s32)effectTable->frameValues[1];
     entry = buf.entries;
     entry[0].layer = 0;
     entry[0].flags = 0x12;
