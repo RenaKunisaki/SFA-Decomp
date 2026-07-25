@@ -287,7 +287,7 @@ void objfx_spawnHitEmitterAtPos(f32* pos, u8 a, u8 b, u8 c, u8 d)
     (*partfxIface)->spawn(NULL, 1, (PartFxSpawnParams*)&emitter, 0x401, -1, &emitterArgs);
 }
 
-void objfx_spawnHitEffectBurst(void* obj, f32 scale, int idSel, int paramSel, int count, GameObject* origin)
+void objfx_spawnHitEffectBurst(void* obj, f32 scale, u8 idSel, u8 paramSel, u8 count, GameObject* origin)
 {
     ObjFxParticleParams params;
     ObjFxU16Table11 table = gObjFxHitEffectParamTbl2;
@@ -295,12 +295,12 @@ void objfx_spawnHitEffectBurst(void* obj, f32 scale, int idSel, int paramSel, in
     int i;
     *(int*)effectIds = lbl_803DF340;
     effectIds[2] = lbl_803DF344;
-    if ((u8)idSel == 0 || (u8)paramSel == 0)
+    if (idSel == 0 || paramSel == 0)
     {
         return;
     }
     params.scale = scale;
-    params.effectParam = table.values[(u8)paramSel];
+    params.effectParam = table.values[paramSel];
     if (origin != NULL)
     {
         params.position[0] = origin->anim.localPosX;
@@ -313,9 +313,9 @@ void objfx_spawnHitEffectBurst(void* obj, f32 scale, int idSel, int paramSel, in
         params.position[1] = lbl_803DF35C;
         params.position[2] = lbl_803DF35C;
     }
-    for (i = 0; i < (u8)count; i++)
+    for (i = 0; i < count; i++)
     {
-        (*gPartfxInterface)->spawnObject(obj, effectIds[(u8)idSel], &params, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject(obj, effectIds[idSel], &params, 2, -1, NULL);
     }
 }
 
