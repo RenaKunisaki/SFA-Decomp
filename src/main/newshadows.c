@@ -1135,7 +1135,7 @@ void createNewShadowDistortionTexture(void)
     int yhi;
     int ylo;
     int y, x;
-    NewShadowVector2 direction;
+    f32 dirX, dirY;
     f32 dist;
     f32 s;
     f32 t;
@@ -1145,7 +1145,7 @@ void createNewShadowDistortionTexture(void)
         x = 0;
         yhi = (y >> 2) * 0x20;
         ylo = (y & 3) * 2;
-        direction.y = y - lbl_803DEDAC;
+        dirY = y - lbl_803DEDAC;
         for (; x < 0x100; x++)
         {
             u8* rowBase;
@@ -1156,10 +1156,10 @@ void createNewShadowDistortionTexture(void)
             tileRow = rowBase + yhi;
             tileRow += (x & 3) * 8;
             texel = tileRow + (x >> 2) * 0x800;
-            direction.x = x - lbl_803DEDAC;
-            dist = sqrtf(direction.y * direction.y + direction.x * direction.x);
-            direction.y /= dist;
-            direction.x /= dist;
+            dirX = x - lbl_803DEDAC;
+            dist = sqrtf(dirY * dirY + dirX * dirX);
+            dirY /= dist;
+            dirX /= dist;
             if (dist <= lbl_803DEDB8)
             {
                 t = lbl_803DED34 * (lbl_803DEDB0 - lbl_803DED48 * dist);
@@ -1169,12 +1169,12 @@ void createNewShadowDistortionTexture(void)
             {
                 s = lbl_803DED28;
             }
-            direction.y *= s;
-            direction.x *= s;
-            direction.y = lbl_803DEDC0 * direction.y + lbl_803DEDBC;
-            direction.x = lbl_803DEDC0 * direction.x + lbl_803DEDBC;
+            dirY *= s;
+            dirX *= s;
+            dirY = lbl_803DEDC0 * dirY + lbl_803DEDBC;
+            dirX = lbl_803DEDC0 * dirX + lbl_803DEDBC;
             ((NewShadowVectorTexel*)(texel + 0x60))->packedXY =
-                (u16)((int)direction.x | (((int)direction.y & 0xffff) << 8));
+                (u16)((int)dirX | (((int)dirY & 0xffff) << 8));
         }
     }
     DCFlushRange(gNewShadowDistortionTexture + 1, gNewShadowDistortionTexture->dataSize);
