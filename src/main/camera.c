@@ -1,7 +1,7 @@
 #include "main/camera.h"
 #include "main/pi_dolphin.h"
 #include "main/frame_timing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/pause_menu_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/shader_api.h"

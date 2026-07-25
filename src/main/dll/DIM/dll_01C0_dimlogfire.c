@@ -7,7 +7,7 @@
 #include "main/model.h"
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/linklevcontrolstate_struct.h"
@@ -17,7 +17,7 @@
 #include "main/dll/imanimspacecraftstate_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/model_light.h"
 #include "main/objfx.h"
@@ -25,7 +25,7 @@
 #include "main/gamebits.h"
 #include "main/objhits.h"
 #include "main/obj_group.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(ImAnimSpacecraftState) == 0x4);
 

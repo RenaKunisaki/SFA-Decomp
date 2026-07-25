@@ -3,11 +3,11 @@
  * trigger a Tricky companion-pickup sequence: clears bits 0x4E4/0x4E5, then
  * dispatches a vtable call (slot 14 of Tricky's object type at offset
  * 0x68+0x38) to link the companion. */
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebit_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 
 enum

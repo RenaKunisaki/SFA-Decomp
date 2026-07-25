@@ -13,7 +13,7 @@
  */
 #include "main/expgfx_internal.h"
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/texture.h"
 
 void expgfx_updateResourceEntries(int unused)

@@ -4,12 +4,12 @@
 #include "main/gamebits.h"
 #include "main/objtexture.h"
 #include "main/vecmath.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/model.h"
 #include "main/dll/dll_02B3_vortex.h"
 #include "main/gameloop_api.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 s16 gVortexAngleSpeed83D[4] = {8, 0x10, 0x20, 0};
 s16 gVortexAngleSpeedDefault[4] = {0x10, 0x20, 0x40, 0};

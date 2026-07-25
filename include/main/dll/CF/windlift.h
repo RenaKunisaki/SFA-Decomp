@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_CF_WINDLIFT_H_
 #define MAIN_DLL_CF_WINDLIFT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 void FUN_80184a54(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8);

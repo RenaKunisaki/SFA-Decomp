@@ -2,7 +2,7 @@
 #define MAIN_TRACK_BBOX_API_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct TrackBBoxHit
 {

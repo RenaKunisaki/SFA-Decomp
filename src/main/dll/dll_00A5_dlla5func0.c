@@ -13,7 +13,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_00A5_dlla5func0.h"
 
 u8 lbl_803DB970[8] = {0, 0, 0, 1, 0, 2, 0, 3};

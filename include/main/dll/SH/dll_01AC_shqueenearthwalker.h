@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_SH_DLL_01AC_SHQUEENEARTHWALKER_H_
 #define MAIN_DLL_SH_DLL_01AC_SHQUEENEARTHWALKER_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct QueenEarthWalkerMapData
 {

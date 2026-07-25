@@ -2,8 +2,8 @@
 #define MAIN_DLL_VF_DLL_0218_VFPMINIFIRE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "global.h"
 
 typedef struct VfpMinifireState

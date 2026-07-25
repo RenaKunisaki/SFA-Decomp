@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_0235_DFPTARGETBLOCK_H_
 
 #include "main/dll/door.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 typedef struct DfpTargetBlockPoint {
   f32 x;

@@ -2,9 +2,9 @@
 #define MAIN_DLL_CMBSRC_H_
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_internal.h"
 
 #define CMBSRC_DLL_ID 0x02B1

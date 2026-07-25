@@ -18,7 +18,7 @@
 #include "main/resource.h"
 #include "main/dll/CAM/camcloudrunner_state.h"
 #include "main/frame_timing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/object_transform.h"
 #include "dolphin/mtx/mtx_legacy.h"

@@ -2,9 +2,9 @@
 #define MAIN_DLL_VF_DLL_021D_VFPLIFT_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct VfpLiftState
 {

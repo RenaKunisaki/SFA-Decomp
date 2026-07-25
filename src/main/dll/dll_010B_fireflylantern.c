@@ -1,8 +1,8 @@
 /* FireFlyLantern (DLL 0x10B) - container and release point for lantern fireflies. */
 #include "main/dll/dll_010B_fireflylantern.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/gamebits.h"
 #include "main/gameloop_gamebit_api.h"

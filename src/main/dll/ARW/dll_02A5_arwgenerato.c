@@ -12,15 +12,15 @@
  * TUs.
  */
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/dll/ARW/dll_02A2_arwspeedstr.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/ARW/dll_02A3.h"
 #include "main/dll/ARW/dll_02A4.h"
 #include "main/dll/ARW/dll_02A5_arwgenerato.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 
 /* Spawn-setup buffer for a squadron ship: ObjPlacement head (pos/color) plus

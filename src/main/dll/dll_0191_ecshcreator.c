@@ -13,12 +13,12 @@
  * "sharpclawGr") via Obj_SetupObject, sets configFlags 0x20 on its
  * GroundBaddieState, then re-arms the countdown.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/resource.h"
 #include "main/gamebits.h"
 #include "main/mm.h"

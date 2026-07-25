@@ -20,7 +20,7 @@
 #include "main/gamebits.h"
 #include "main/gameloop_api.h"
 #include "main/mm.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objseq_api.h"
 #include "main/pad.h"
 #include "main/pi_dolphin_api.h"
@@ -28,7 +28,7 @@
 #include "main/vecmath.h"
 #define SYNTH_INTERNAL_USE_PROJECT_TYPES
 #include "src/main/audio/synth_internal.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"

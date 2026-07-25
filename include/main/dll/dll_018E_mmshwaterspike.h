@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_018E_MMSHWATERSPIKE_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /* placement block read via anim.placementData */
 typedef struct MmshWaterspikePlacement

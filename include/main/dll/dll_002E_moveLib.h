@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "dolphin/mtx/vec_types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objseq.h"
 #include "main/dll/curve_walker.h"
 

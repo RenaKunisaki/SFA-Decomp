@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIMWOODDOOR2PLACEMENT_STRUCT_H_
 #define MAIN_DLL_DIMWOODDOOR2PLACEMENT_STRUCT_H_
 
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 /* Retail DIMWoodDoor placements are fixed at nine words: the common
  * 0x18-byte head followed by this class's 0x0c-byte parameter tail. */

@@ -9,12 +9,12 @@
  * visibility in sync with the game bit. The torch has no extra state of
  * its own (getExtraSize == 0); all parameters come from the placement.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/DR/dll_0128_kttorch.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int KT_Torch_getExtraSize(void)
 {

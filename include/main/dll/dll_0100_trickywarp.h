@@ -2,9 +2,9 @@
 #define MAIN_DLL_DLL_0100_TRICKYWARP_H_
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 #define TRICKYWARP_CURVE_NODE_CAPACITY 0x18
 

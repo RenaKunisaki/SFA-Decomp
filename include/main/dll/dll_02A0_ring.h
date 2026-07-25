@@ -2,9 +2,9 @@
 #define MAIN_DLL_DLL_02A0_RING_H
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct RingFlags
 {

@@ -20,12 +20,12 @@
 #include "main/objanim_update.h"
 #include "main/dll/WC/dll_0295_wcapertures.h"
 #include "main/dll/player_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/modellight_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/model.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 
 #define WCAPERTURES_EXTRA_SIZE        8

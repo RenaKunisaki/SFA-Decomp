@@ -6,8 +6,8 @@
  * the engine's collision layer.  The render function delegates to
  * objRenderModelAndHitVolumes only when userData1 == 0 (default/inactive shape).
  */
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_00D4_skeetlawall.h"
 #include "main/object_render.h"
 

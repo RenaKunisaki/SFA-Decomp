@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SC_DLL_01B9_SCCLOUDRUNNERA_H_
 #define MAIN_DLL_SC_DLL_01B9_SCCLOUDRUNNERA_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int sc_cloudrunnera_getExtraSize(void);
 int sc_cloudrunnera_getObjectTypeId(void);

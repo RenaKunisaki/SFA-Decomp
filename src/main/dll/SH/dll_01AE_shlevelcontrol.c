@@ -11,7 +11,7 @@
  * weather sets. SH_LevelControl_SeqFn handles the totem-log-puzzle map
  * teardown. init seeds the music latches and clears the bloop bits.
  */
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/game_ui_interface.h"
 #include "main/dll/savegame_load_api.h"
 #include "main/gametext_show_api.h"
@@ -19,7 +19,7 @@
 #include "main/audio/music_api.h"
 #include "main/map_load.h"
 #include "main/debug.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/player_api.h"
 #include "main/render_envfx_api.h"
 #include "main/dll/SC/SClantern.h"
@@ -27,7 +27,7 @@
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/sky_api.h"
 #include "main/sky.h"

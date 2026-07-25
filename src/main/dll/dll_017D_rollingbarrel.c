@@ -4,10 +4,10 @@
 #include "main/vecmath.h"
 #include "main/dll/objfsa.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/obj_group.h"
 #include "main/dll/IM/IMspacecraft.h"
 #include "main/objhits.h"
@@ -15,7 +15,7 @@
 #include "main/camera.h"
 #include "main/pad.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 typedef struct
 {
     int a, b;

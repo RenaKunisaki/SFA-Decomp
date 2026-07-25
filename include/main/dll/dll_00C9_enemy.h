@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00C9_ENEMY_H_
 #define MAIN_DLL_DLL_00C9_ENEMY_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/objanim_update.h"

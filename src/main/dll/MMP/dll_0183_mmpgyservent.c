@@ -10,13 +10,13 @@
  */
 
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/MMP/dll_0183_mmpgyservent.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define MMPGYSERVENT_PARTFX_GEYSER              0x724
 #define MMPGYSERVENT_INITIAL_IDLE_MIN            10

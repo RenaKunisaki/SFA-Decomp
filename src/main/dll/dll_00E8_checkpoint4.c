@@ -8,10 +8,10 @@
  * plain model render. The rest of the callbacks are stubs.
  *
  */
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/checkpoint4.h"
 #include "main/object_render.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_00E9_setuppoint.h"
 #include "main/dll/dll_00EA_sideload.h"
 #include "main/dll/dll_00EB_siderepel.h"

@@ -11,7 +11,7 @@
 #include "main/gametext_show_str_api.h"
 #include "main/textrender_api.h"
 #include "main/model_engine.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/pad.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"

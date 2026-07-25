@@ -12,9 +12,9 @@
  * else 1). The extra block is an IceblastState (just the countdown timer).
  */
 #include "main/dll/dll_00F2_iceblast.h"
-#include "main/object_api.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/objhits.h"
 #include "main/obj_path.h"
 #include "main/frame_timing.h"

@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_00E5_SHIELD_API_H_
 #define MAIN_DLL_DLL_00E5_SHIELD_API_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor gShieldObjDescriptor;
 

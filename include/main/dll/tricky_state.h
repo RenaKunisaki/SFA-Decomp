@@ -4,7 +4,7 @@
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/dll/curve_walker.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objprint_sound_api.h"
 #include "main/pi_dolphin_path_api.h"
 

@@ -23,16 +23,16 @@
 #include "main/vecmath.h"
 #include "main/render_envfx_api.h"
 #include "main/objseq.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/audio/sfx.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define DBSHSHRINE_OBJGROUP   0xb
 #define DBSHSHRINE_MAP_SHRINE 0xb

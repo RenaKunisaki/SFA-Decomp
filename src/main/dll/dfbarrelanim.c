@@ -14,7 +14,7 @@
  * linked object). DFRope_projectPointOntoSegment projects a point onto the start->end segment
  * (clamped to the endpoints) and returns the projection parameter t.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/DF/dfropenode.h"
 #include "main/mm.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "global.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 /* anim.seqId values identifying the two health-refill collectibles (Tier 3
  * loot). Same ids spawned by largecrate dropType 5/6 (LARGECRATE_DROP_GAS). */

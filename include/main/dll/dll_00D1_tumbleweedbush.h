@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_00D1_TUMBLEWEEDBUSH_H_
 
 #include "ghidra_import.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 struct GameObject;
 struct BackpackState;

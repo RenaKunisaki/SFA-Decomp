@@ -19,11 +19,11 @@ f32 gSoftBodySlowPhase;
 f32 gSoftBodyFastPhase;
 GameObject* gSoftBodyPhaseDriver;
 #include "main/frame_timing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define SOFTBODY_OBJECT_FLAGS_INIT 0x2000
 #define SOFTBODY_SLOW_PHASE_RATE   0.001f

@@ -2,7 +2,7 @@
 #define MAIN_DLL_ARW_DLL_02A6_ARWSQUADRON_H
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/curve_walker.h"
 
 typedef struct SquadFlags

@@ -1,4 +1,4 @@
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/VF/dll_021E_vfpblock1.h"
 
 ObjectDescriptor gVFP_Block1ObjDescriptor = {

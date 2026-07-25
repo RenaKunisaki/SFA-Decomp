@@ -2,10 +2,10 @@
 #define MAIN_DLL_WC_DLL_0295_WCAPERTURES_H
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
 typedef struct WCAperturesSetup

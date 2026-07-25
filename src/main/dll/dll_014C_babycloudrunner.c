@@ -5,21 +5,21 @@
  * definitions here are collapsed to forward prototypes.
  */
 #include "main/object_render.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/vecmath.h"
 #include "main/dll/wormspitbyte_struct.h"
 #include "main/dll/babycloudrunnerflags_struct.h"
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/object_update_list.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
 #include "main/obj_query.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_014C_babycloudrunner.h"
@@ -35,7 +35,7 @@
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u8 gBabyCloudRunnerMutterSfxTable[8] = {0, 0xD4, 0, 0xD4, 3, 0x1C, 3, 0x1C};
 u8 gBabyCloudRunnerMutterSfxTableSpecial[8] = {2, 0x92, 2, 0x92, 2, 0x92, 2, 0x92};

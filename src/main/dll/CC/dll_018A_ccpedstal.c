@@ -6,14 +6,14 @@
  * ObjTrigger, latching a one-shot "mark" that ccpedstal_update commits back
  * to the gameBit on the following frame.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/CC/dll_018A_ccpedstal.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CCPEDSTAL_GAMEBIT_ALT_GATE         0xDC5
 #define CCPEDSTAL_GAMEBIT_ALT_PEDESTAL     0xAA

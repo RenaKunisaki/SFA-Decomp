@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DF_DLL_0230_DFPWALLBAR_H_
 #define MAIN_DLL_DF_DLL_0230_DFPWALLBAR_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 typedef struct ChukaPlacement

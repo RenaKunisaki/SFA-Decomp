@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DLL_0117_APPLEONTREE_INTERNAL_H_
 #define MAIN_DLL_DLL_0117_APPLEONTREE_INTERNAL_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "sys/objects/lifecycle.h"
 #include "main/objhits.h"
 #include "main/dll/dll_0117_appleontree.h"
 

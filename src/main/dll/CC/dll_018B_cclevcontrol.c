@@ -13,10 +13,10 @@
 #include "main/sky_interface.h"
 #include "main/audio/music_api.h"
 #include "main/object_render.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/render_envfx_api.h"
 #include "main/camera_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
 #include "main/objanim_update.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
@@ -31,7 +31,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/CC/dll_018B_cclevcontrol.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CCLEVCONTROL_OBJFLAG_PARENT_SLACK 0x1000
 #define CCLEVCONTROL_ENVFX_A              0x242

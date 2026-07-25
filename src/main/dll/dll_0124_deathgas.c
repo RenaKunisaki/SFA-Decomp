@@ -1,15 +1,15 @@
 /* DLL 0x0124 - death-gas objects [8018BC48-8018BC50) */
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"
 #include "main/pi_dolphin_api.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/dll_0124_deathgas.h"
 
 #define DEATHGAS_AIRMETER_BGTEXTURE 0x603

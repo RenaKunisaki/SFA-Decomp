@@ -12,8 +12,8 @@
  */
 #include "main/dll/ARW/dll_029D_arwarwinggu.h"
 #include "main/frame_timing.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/model.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/objtexture.h"

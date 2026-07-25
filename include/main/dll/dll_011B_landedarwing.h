@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_011B_LANDEDARWING_H_
 #define MAIN_DLL_DLL_011B_LANDEDARWING_H_
 
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
 #include "main/objhits.h"

@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DRCRADLE_H_
 
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor24 gSnowBikeObjDescriptor;
 

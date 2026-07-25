@@ -9,8 +9,8 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 #define DIMBOSSCRACKPAR_BASE_PARTICLE_ID  1222 /* crack-site particle, offset by particleIndex */
 #define DIMBOSSCRACKPAR_GLOW_PARTICLE_ID  1224 /* fixed glow burst particle */

@@ -4,19 +4,19 @@
  * (object id 0x11) from its placement template and periodically spawns it
  * while loading is locked, playing the gem-run sfx.
  */
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/DF/dll_0179_dfshobjcreator.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/resource.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/foodbag.h"
 
 /* Object id of the SpiritPrize object this creator spawns (docblock:

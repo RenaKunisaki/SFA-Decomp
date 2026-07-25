@@ -27,9 +27,9 @@
 #include "main/render_envfx_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/cloudaction_interface.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "sys/objects.h"
 #include "main/obj_list.h"
 
 #include "main/frame_timing.h"

@@ -11,10 +11,10 @@
  */
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/WM/dll_020F_wmspiritset.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* romlist object-def variant driving this DLL (see docblock): def 921
    'WM_SpiritSet' (romlist type 0x264). */

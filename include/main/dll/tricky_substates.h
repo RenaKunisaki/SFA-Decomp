@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_TRICKY_SUBSTATES_H_
 #define MAIN_DLL_TRICKY_SUBSTATES_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 void trickyDigTunnel(u8* obj, u8* state);

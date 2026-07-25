@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DLL_02B6_CNTHITOBJEC_H
 #define MAIN_DLL_DLL_02B6_CNTHITOBJEC_H
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 #define CNTHIT_MODE_VISIBLE_OBJECT 2
 #define CNTHIT_PROFILE_COUNT 3

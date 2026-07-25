@@ -20,9 +20,9 @@
  * is WarpPadPlacement (both in CF/warp_pad.h).
  */
 #include "main/dll/partfx_interface.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/tricky_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
 #include "main/dll/CF/warp_pad.h"
 #include "main/gamebits.h"

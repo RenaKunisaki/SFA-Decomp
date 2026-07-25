@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_01CE_DLL1CE_H_
 #define MAIN_DLL_DLL_01CE_DLL1CE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dll1ceplacement_struct.h"
 
 int dll_1CE_getExtraSize(void);

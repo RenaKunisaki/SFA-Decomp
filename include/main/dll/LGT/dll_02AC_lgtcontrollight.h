@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_LGT_DLL_02AC_LGTCONTROLLIGHT_H_
 #define MAIN_DLL_LGT_DLL_02AC_LGTCONTROLLIGHT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/LGT/lgt_types.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 typedef struct ControlLightSetup
 {

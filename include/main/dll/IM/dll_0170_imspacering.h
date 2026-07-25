@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_IM_DLL_0170_IMSPACERING_H_
 #define MAIN_DLL_IM_DLL_0170_IMSPACERING_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct IMSpaceRingPlacement
 {

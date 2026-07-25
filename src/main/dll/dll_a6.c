@@ -13,7 +13,7 @@
  * and the target state / alpha are saved and restored around the draw.
  */
 #include "main/dll/dll_A6.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/object_transform.h"
 

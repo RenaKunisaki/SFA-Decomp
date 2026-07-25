@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_XYZANIMATOR_API_H_
 #define MAIN_DLL_XYZANIMATOR_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 struct XyzAnimatorPlacement;
 struct XyzAnimatorState;

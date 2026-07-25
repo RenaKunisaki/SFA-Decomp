@@ -21,7 +21,7 @@
 #include "main/gameloop_api.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"

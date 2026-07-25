@@ -17,7 +17,7 @@
  */
 #include "main/camera_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/dll/CAM/camcontrol_path_state.h"
 #include "main/dll/CAM/pathcam.h"

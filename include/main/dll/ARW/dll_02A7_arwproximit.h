@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_ARW_DLL_02A7_ARWPROXIMIT_H_
 #define MAIN_DLL_ARW_DLL_02A7_ARWPROXIMIT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/modellight_api.h"
 #include "global.h"
 

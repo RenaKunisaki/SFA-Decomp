@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_DLL_0120_TRICKYGUARDSPOT_H_
 #define MAIN_DLL_DLL_0120_TRICKYGUARDSPOT_H_
 
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_internal.h"
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 
 #define TRICKY_GUARD_SPOT_DLL_ID             0x0120
 #define TRICKY_GUARD_SPOT_CLASS_ID           0x0030

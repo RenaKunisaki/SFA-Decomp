@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00F6_AREA_H_
 #define MAIN_DLL_DLL_00F6_AREA_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int area_getExtraSize(void);
 int area_getObjectTypeId(void);

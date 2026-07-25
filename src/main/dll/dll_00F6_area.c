@@ -7,8 +7,8 @@
  * map-event system can reference an addressable region. Exported through
  * gAreaObjDescriptor with 10 callback slots.
  */
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_00F6_area.h"
 
 #define AREA_OBJFLAG_UPDATE_DISABLED    0x8000

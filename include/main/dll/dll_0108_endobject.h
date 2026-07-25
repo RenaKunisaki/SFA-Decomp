@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0108_ENDOBJECT_H_
 #define MAIN_DLL_DLL_0108_ENDOBJECT_H_
 
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int EndObject_getExtraSize(void);
 int EndObject_getObjectTypeId(void);

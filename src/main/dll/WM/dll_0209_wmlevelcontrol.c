@@ -21,9 +21,9 @@
 #include "main/pi_dolphin_api.h"
 #include "main/map_load.h"
 #include "main/objseq_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/sky_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/mapEventTypes.h"

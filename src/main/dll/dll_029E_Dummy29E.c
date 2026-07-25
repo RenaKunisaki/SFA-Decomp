@@ -6,7 +6,7 @@
  * table.
  */
 #include "main/dll/dll_029E_dummy.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 ObjectDescriptor lbl_8032B6B0 = {
     0,

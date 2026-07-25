@@ -8,9 +8,9 @@
  * Foreign ObjectDescriptor tables are not present in this translation unit;
  * each descriptor is defined by its own DLL.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/dll_00EB_siderepel.h"
 
 /* object group: side-repel object */

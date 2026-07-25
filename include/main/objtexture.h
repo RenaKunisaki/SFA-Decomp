@@ -2,7 +2,7 @@
 #define MAIN_OBJTEXTURE_H_
 
 #include "main/objanim_internal.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMaterialIndex);
 

@@ -1,7 +1,7 @@
 /* DLL 0xE1 - battle droid baddie behaviour [8014FEF8-8014FFB4) */
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void battleDroidUpdateWhileFrozen(int obj, int* state, int arg, int code, int wpad0, int wpad1, void* wpad2, int wpad3)
 {

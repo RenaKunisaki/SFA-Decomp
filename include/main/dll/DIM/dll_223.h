@@ -2,7 +2,7 @@
 #define MAIN_DLL_DIM_DLL_223_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/DIM/DIMbosstonsil.h"
 
 typedef int (*DIMbosstonsilHitReactionCallback)(void* obj, DIMbosstonsilState* state);

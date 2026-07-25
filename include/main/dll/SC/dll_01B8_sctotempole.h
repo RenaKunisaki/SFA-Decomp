@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_SC_DLL_01B8_SCTOTEMPOLE_H_
 #define MAIN_DLL_SC_DLL_01B8_SCTOTEMPOLE_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "types.h"
 
 typedef struct SCTotemPolePlacement

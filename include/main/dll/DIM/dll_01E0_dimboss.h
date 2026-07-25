@@ -3,9 +3,9 @@
 
 #include "global.h"
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_internal.h"
 #include "main/objanim_update.h"
 #include "main/dll/dll_002E_moveLib.h"

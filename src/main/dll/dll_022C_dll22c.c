@@ -24,7 +24,7 @@
  * this family of DLLs shares.
  */
 #include "main/dll/dll22cstate_struct.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/render_lactions_api.h"
 #include "main/dll/dfpobjcreatorstate_struct.h"
 #include "main/dll/dbholecontrol1state_struct.h"
@@ -34,8 +34,8 @@
 #include "main/dll/dbstealerwormcontrol_struct.h"
 #include "main/dll/blastflags4_types.h"
 #include "main/dll/dfp_types.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"

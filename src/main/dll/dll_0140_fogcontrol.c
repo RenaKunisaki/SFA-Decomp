@@ -15,7 +15,7 @@
  * height fields (fogTop/fogBottom/fogBase), with fog colors at
  * fogGreen/fogRed and the enableHeavyFog mode taken from FOG_FLAG_MODE.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/pi_dolphin_api.h"

@@ -5,9 +5,9 @@
 #include "main/objfx.h"
 #include "main/obj_group.h"
 #include "main/dll/dll_02BA_mclightning.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/mclightning_state.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define MCLIGHTNING_OBJGROUP 0x48
 

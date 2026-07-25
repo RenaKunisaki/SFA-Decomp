@@ -24,7 +24,7 @@
 #include "main/dll/headdisplay.h"
 #include "main/render_envfx_api.h"
 #include "main/shader_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"

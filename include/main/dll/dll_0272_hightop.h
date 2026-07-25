@@ -4,8 +4,8 @@
 #include "global.h"
 #include "main/dll/DR/dr_types.h"
 #include "main/dll/baddie_state.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objprint_sound_api.h"
 
 typedef struct HtInitData

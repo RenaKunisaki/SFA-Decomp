@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_00CF_CANNONCLAW_H_
 
 #include "types.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct CannonClawPlacement
 {

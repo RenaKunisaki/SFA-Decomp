@@ -78,7 +78,7 @@ def check(header):
     if not probes:
         return "SKIP", 0, ""
     inc = header.split("include/", 1)[-1]
-    lines = ['#include "global.h"', '#include "main/game_object.h"', f'#include "{inc}"']
+    lines = ['#include "global.h"', '#include "game/objects/object.h"', f'#include "{inc}"']
     for i, (tag, name, off) in enumerate(probes):
         lines.append(
             f"char probe_{i}[(offsetof({tag},{name})==0x{off:X})?1:-1]; "

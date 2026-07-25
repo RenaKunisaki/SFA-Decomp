@@ -16,17 +16,17 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/maketex_timer_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/objseq_api.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
 #include "main/objfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 f32 lbl_803DBD48 = 1024.0f;
 f32 lbl_803DBD4C = 512.0f;

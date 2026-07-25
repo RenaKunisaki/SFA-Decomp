@@ -11,7 +11,7 @@
  * particles. Lamp_free stops the SFX channel and releases the exp-gfx source.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
@@ -21,11 +21,11 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/obj_path.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_01F4_lamp.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* partfx ids emitted framesThisStep-times while rendered (index-style; roles opaque).
    A spawned from Lamp_SeqFn anchored at the object body; B from Lamp_update at path point 0. */

@@ -15,7 +15,7 @@
 #include "main/camera.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
 #include "main/obj_path.h"
@@ -24,14 +24,14 @@
 #include "main/dll/path_control_interface.h"
 #include "main/dll/WC/dll_0298_wcfloortile.h"
 #include "main/debug.h"
-#include "main/object.h"
-#include "main/game_object.h"
+#include "sys/objects/lifecycle.h"
+#include "game/objects/object.h"
 #include "main/dll/ARW/arwing_state.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/ARW/dll_029C_arwarwingbo.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 
 int wcfloortile_getExtraSize(void)

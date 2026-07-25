@@ -2,7 +2,7 @@
 #define MAIN_DLL_CC_DLL_0188_CCLIGHTFOOT_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 int cclightfoot_getExtraSize(void);

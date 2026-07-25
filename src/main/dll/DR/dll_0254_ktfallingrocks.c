@@ -10,8 +10,8 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 
 #include "main/audio/sfx_ids.h"

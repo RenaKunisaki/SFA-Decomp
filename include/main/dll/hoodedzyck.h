@@ -1,7 +1,7 @@
 #ifndef H_MAIN_DLL_HOODEDZYCK_H
 #define H_MAIN_DLL_HOODEDZYCK_H
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void hoodedZyck_updateIdle(GameObject* obj, int state);
 void hoodedZyck_updateB(s16* obj, u8* state);

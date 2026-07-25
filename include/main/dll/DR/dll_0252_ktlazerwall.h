@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DR_DLL_0252_KTLAZERWALL_H_
 #define MAIN_DLL_DR_DLL_0252_KTLAZERWALL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/lightningeffect.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "global.h"
 
 #define KT_LAZERWALL_FLAG_TRIGGERED   0x1

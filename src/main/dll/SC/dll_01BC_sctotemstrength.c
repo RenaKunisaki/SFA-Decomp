@@ -9,7 +9,7 @@
 #include "main/camera_interface.h"
 #include "main/game_timer_control_api.h"
 #include "main/object_render.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/dll/VF/platform1.h"
 #include "main/dll/tricky_api.h"
@@ -25,7 +25,7 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u16 lbl_803DC070[4] = {0x2B6, 0x2D7, 0x2D8, 0};
 

@@ -3,7 +3,7 @@
 
 #include "main/dll/genpropswgpipe_struct.h"
 #include "main/dll/player_objects.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_00E5_shield_api.h"
 

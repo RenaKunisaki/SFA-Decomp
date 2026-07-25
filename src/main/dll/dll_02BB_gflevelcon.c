@@ -27,14 +27,14 @@
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/dll_02C0_front.h"
 #include "main/render_envfx_api.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_02BB_gflevelcon.h"
 #include "main/gametext_show_api.h"
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* sequence event opcodes consumed by gf_levelcon_SeqFn */
 #define GFLEVELCON_SEQEV_NONE          0

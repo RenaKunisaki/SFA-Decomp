@@ -14,7 +14,7 @@
 #include "main/gamebits.h"
 #include "main/objseq.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_021C_vfpladders.h"

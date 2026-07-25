@@ -15,7 +15,7 @@
  */
 #include "main/dll/CAM/camnpcspeak_state.h"
 #include "main/resource.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/mm.h"
 #include "main/maketex_api.h"

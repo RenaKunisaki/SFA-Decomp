@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DF_DLL_022E_DFPDOORSWITCH_H_
 #define MAIN_DLL_DF_DLL_022E_DFPDOORSWITCH_H_
 
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern char sDoorswitchInitNoLongerSupported[];
 extern ObjectDescriptor gDoorswitchObjDescriptor;

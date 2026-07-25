@@ -17,12 +17,12 @@
  * matching the retail object.
  */
 #include "main/dll/linklevcontrolstate_struct.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/audio/music_api.h"
 #include "main/render_envfx_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/sky_interface.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"

@@ -2,7 +2,7 @@
 #define MAIN_DLL_CC_DLL_018B_CCLEVCONTROL_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 int cclevcontrol_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate);

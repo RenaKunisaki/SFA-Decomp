@@ -37,7 +37,7 @@
 #include "track/intersect_render_setup_api.h"
 #include "track/intersect_api.h"
 #include "main/hud_visibility_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objprint_render_api.h"
 #include "main/objprint_api.h"
 #include "main/track_dolphin_api.h"

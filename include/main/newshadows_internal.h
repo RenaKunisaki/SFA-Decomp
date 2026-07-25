@@ -2,7 +2,7 @@
 #define MAIN_NEWSHADOWS_INTERNAL_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/projected_shadow.h"
 #include "main/texture.h"
 

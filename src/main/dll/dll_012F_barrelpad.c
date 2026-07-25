@@ -5,12 +5,12 @@
  * rotation and rootMotionScale from the placement record and enables the
  * object in the engine with hit detection disabled.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 #include "main/dll/dll_012F_barrelpad.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* anim.seqId variants driving the launch particle burst */
 #define BARRELPAD_SEQ_LAUNCH_ACTIVE    0x79  /* active launch burst */

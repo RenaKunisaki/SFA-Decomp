@@ -1,7 +1,7 @@
 #ifndef H_MAIN_DLL_WEEVIL_H
 #define H_MAIN_DLL_WEEVIL_H
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void weevil_updateIdle(GameObject* obj, int state);
 void weevil_updateEngaged(int obj, int state);

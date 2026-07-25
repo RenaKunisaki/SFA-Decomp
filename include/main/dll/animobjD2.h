@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_ANIMOBJD2_H_
 #define MAIN_DLL_ANIMOBJD2_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 void* trickyFindCirclingTarget(GameObject* obj, void* arg2);

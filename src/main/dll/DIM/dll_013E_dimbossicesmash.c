@@ -4,17 +4,17 @@
  * per-setup lifetime window, and emits two trail particles per frame while
  * fully opaque. */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/MMP/MMP_asteroid.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/path_control_interface.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DBDF8[8] = {0x40, 0x80, 0, 0, 0, 0, 0, 0};
 

@@ -10,12 +10,12 @@
  * CloudRunner sends you off to do. TU = 0x8019C784..0x8019D578.
  */
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/music_api.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/object_api.h"
-#include "main/object_descriptor.h"
+#include "sys/objects.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/player_motion.h"
 #include "main/gamebits.h"
 #include "main/audio/music_trigger_ids.h"

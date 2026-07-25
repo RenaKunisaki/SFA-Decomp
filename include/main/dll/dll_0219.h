@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_0219_H_
 
 #include "global.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 typedef struct Dll219State
 {

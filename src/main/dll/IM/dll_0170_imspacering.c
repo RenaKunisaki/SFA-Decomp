@@ -8,13 +8,13 @@
  * every ring copies the leader's alpha and chases its world position so
  * the whole swarm tracks the spacecraft.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/dll/IM/dll_0170_imspacering.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define IMSPACERING_SPIN_AXIS(obj) ((obj)->userData1)
 

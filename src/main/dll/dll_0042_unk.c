@@ -24,7 +24,7 @@
 #include "main/dll/CAM/camcontrol_mode_settings.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/track_bbox_api.h"
 #include "main/dll/CAM/cutCam.h"

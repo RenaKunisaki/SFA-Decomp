@@ -1,17 +1,17 @@
 /* DLL 0x0192 - GPS-H shrine objects [801C70F0-801C7724) */
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/objfx_api.h"
 #include "main/vecmath_distance_api.h"
 #include "main/audio/music_api.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/render_envfx_api.h"
 #include "main/dll/gpshshrineflags_struct.h"
 #include "main/dll/player_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/obj_group.h"
 #include "main/frame_timing.h"
 #include "main/mapEventTypes.h"
@@ -31,7 +31,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* env-effect ids fired when the shrine intro countdown expires (index-style; roles opaque) */
 #define GPSH_SHRINE_ENVFX_A 0xcc

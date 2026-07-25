@@ -7,7 +7,7 @@
  * an attack on one of its model parts.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/camera_shake_api.h"
 #include "main/audio/sfx.h"
 #include "main/dll/DIM/dll_223.h"
@@ -16,7 +16,7 @@
 #include "main/player_control_interface.h"
 #include "main/gamebits.h"
 #include "main/obj_message.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/shader_api.h"
 #include "main/dll/baddie_control_interface.h"
 

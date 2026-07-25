@@ -17,7 +17,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_009F_dll9ffunc0.h"
 #include "main/dll/dll_00A0_dlla0func0.h"
 #include "main/dll/dll_00A1_dlla1func0.h"

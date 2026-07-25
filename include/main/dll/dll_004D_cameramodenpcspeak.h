@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_004D_CAMERAMODENPCSPEAK_H_
 
 #include "main/camera_object.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CameraModeNpcSpeakInitParams
 {

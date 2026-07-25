@@ -14,7 +14,7 @@
  *   explosion_init         - seed flames/debris/light from placement flags
  *   explosion_initialise   - precompute the expf falloff scales
  */
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/model.h"
 #include "main/dll/partfx_interface.h"
 #include "main/track_dolphin_api.h"
@@ -27,11 +27,11 @@
 #include "main/dll/fbwgpipe_struct.h"
 #include "main/dll/explosionpartfxsource_struct.h"
 #include "main/dll/explosion_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objprint_render_api.h"
 #include "main/model_light.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/camera.h"
 #include "string.h"

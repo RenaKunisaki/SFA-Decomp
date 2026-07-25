@@ -10,14 +10,14 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/map_load.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/DF/dll_022D_dfpseqpoint.h"
 #include "main/objseq.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define DFPSEQPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
 

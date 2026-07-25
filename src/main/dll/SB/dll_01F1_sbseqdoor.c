@@ -10,13 +10,13 @@
  * is set, runs trigger sequence 0 a single time (latched through obj->userData1)
  * to play the open animation. Each tick it also forces hitbox-reset bit 0x10.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/dll/SB/dll_01F1_sbseqdoor.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* The sequence-door seqId and the GameBit that arms it. */
 #define SB_SEQDOOR_SEQ_ID      0x173

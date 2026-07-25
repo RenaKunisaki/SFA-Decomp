@@ -2,8 +2,8 @@
 #define MAIN_DLL_WC_DLL_0291_WCTILE_H_
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct WCTileState
 {

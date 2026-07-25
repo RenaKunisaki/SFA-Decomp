@@ -16,9 +16,9 @@
  *
  * The descriptor follows the implementation below.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objprint_render_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_80136a40.h"

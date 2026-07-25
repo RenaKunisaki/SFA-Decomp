@@ -5,8 +5,8 @@
  * volume scaled by the model's root-motion scale; update just polls the
  * shared priority hit-effect handler each frame.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objhits.h"
 #include "main/dll/SH/dll_01B4_shemptytumblew.h"
 

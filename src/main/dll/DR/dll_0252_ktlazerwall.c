@@ -20,7 +20,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/newclouds.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/vecmath.h"
 
 #include "main/audio/sfx_ids.h"

@@ -19,13 +19,13 @@
  * family (pushable, invhit, iceblast, flameblast) live in the dll_00EF
  * pushable TU in the same binary; they are not called from this object.
  */
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"

@@ -32,7 +32,7 @@
  * from use, not confirmed.
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/audio/sfx.h"
 #include "main/curve.h"
 #include "main/frame_timing.h"
@@ -51,11 +51,11 @@
 #include "main/dll/WC/dll_028A_wcearthwalker.h"
 #include "main/dll/dll_028B.h"
 #include "main/render_envfx_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/player_control_interface.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define PAD_BUTTON_A 0x100
 

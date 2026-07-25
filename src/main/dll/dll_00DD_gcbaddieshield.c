@@ -8,8 +8,8 @@
  * obj->userData1 == 0.
  */
 #include "main/dll/dll_00DD_gcbaddieshield_api.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/frame_timing.h"
 

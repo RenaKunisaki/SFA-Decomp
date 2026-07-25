@@ -2,7 +2,7 @@
 #define TRACK_INTERSECT_H_
 
 #include "dolphin/gx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "track/intersect_depth_read_api.h"
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_hud_api.h"

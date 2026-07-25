@@ -2,9 +2,9 @@
 #define MAIN_DLL_DLL_02AF_TREE_H
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 #define TREE_AMBIENT_EFFECT_COUNT      3
 #define TREE_AMBIENT_EFFECT_SETUP_SIZE 0x28

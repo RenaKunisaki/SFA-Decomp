@@ -24,12 +24,12 @@ f32 gWaterFlowIdlePhase;
 f32 gWaterFlowFlowPhase;
 GameObject* gWaterFlowPhaseDriver;
 #include "main/frame_timing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim.h"
 #include "main/obj_group.h"
 #include "main/vecmath.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define WATERFLOWWE_FOLIAGE_GROUP               0x14
 #define WATERFLOWWE_OBJECT_CURRENT_GROUP        0x50

@@ -7,7 +7,7 @@
  *
  */
 #include "main/dll/DB/DBrockfall.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 
 extern f32 lbl_803E56B8;

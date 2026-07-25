@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_000F_UNK_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
 
 typedef int (*PlayerSubstateFn)(GameObject* obj, BaddieState* state, f32 dt);

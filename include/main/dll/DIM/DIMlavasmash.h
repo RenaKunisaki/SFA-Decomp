@@ -2,7 +2,7 @@
 #define MAIN_DLL_DIM_DIMLAVASMASH_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 void FUN_801b0ae8(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,

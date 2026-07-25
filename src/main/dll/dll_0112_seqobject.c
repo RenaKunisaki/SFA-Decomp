@@ -12,13 +12,13 @@
  * to invoke an object's vtable slot 1 on its placement data.
  */
 #include "main/dll/dll_0112_seqobject.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/objseq.h"
 #include "main/obj_group.h"
 #include "main/rcp_dolphin.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 
 #define SEQOBJECT_STATE_OPEN             0x01

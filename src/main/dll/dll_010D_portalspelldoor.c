@@ -2,13 +2,13 @@
  * PortalSpellStone (DLL 0x10D, descriptor gPortalSpellDoorObjDescriptor).
  * TU = 0x80186498..0x80186704.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/dll/player_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dll_80136a40.h"
-#include "main/object_api.h"
-#include "main/object_descriptor.h"
+#include "sys/objects.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/windlift107state_struct.h"
 #include "main/dll/portalspelldoorstate_struct.h"
 #include "main/dll/scarabstate_struct.h"

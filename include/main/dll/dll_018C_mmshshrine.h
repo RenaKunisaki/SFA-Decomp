@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_018C_MMSHSHRINE_H_
 #define MAIN_DLL_DLL_018C_MMSHSHRINE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 typedef struct MMSHShrineSequenceState

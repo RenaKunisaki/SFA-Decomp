@@ -4,8 +4,8 @@
 #include "global.h"
 #include "ghidra_import.h"
 #include "main/dll/curve_walker.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct GameObject GameObject;
 

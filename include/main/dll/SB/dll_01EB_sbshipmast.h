@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_SB_DLL_01EB_SBSHIPMAST_H_
 #define MAIN_DLL_SB_DLL_01EB_SBSHIPMAST_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 int SB_ShipMast_getExtraSize(void);
 int SB_ShipMast_getObjectTypeId(void);

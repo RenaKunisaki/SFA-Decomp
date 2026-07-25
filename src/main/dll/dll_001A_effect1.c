@@ -3,7 +3,7 @@
 #include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/modgfx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"

@@ -3,12 +3,12 @@
  * lit state is one GameBit: FRONT 0x81 / LEFT 0x82 / RIGHT 0x83 / REAR 0x84
  * (reset by sclevelcontrol on entry). Lighting all four plays the success
  * fanfare; the test is timed (beat MuscleFoot's record). */
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/SC/sc_shared.h"
 #include "main/dll/SC/dll_01B8_sctotempole.h"
 #include "main/dll/SC/dll_01B9_sccloudrunnera.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/obj_list.h"
 #include "main/frame_timing.h"

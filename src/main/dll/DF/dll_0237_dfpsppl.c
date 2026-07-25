@@ -5,7 +5,7 @@
  * activation bit, and disables itself. Sibling of vfpspellplace (VFP).
  */
 #include "main/dll/CF/laser.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objprint_render_api.h"
 
 int DFPSpPl_getExtraSize(void)

@@ -3,11 +3,11 @@
 
 #include "global.h"
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objHitReact.h"
 #include "main/objanim_internal.h"
 #include "main/objseq.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/rom_curve_interface.h"
 
 #define NW_MAMMOTH_OBJECT_DEF_ID_WHITE 0x0280

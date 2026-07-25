@@ -9,7 +9,7 @@
  * InfoPoint_SeqFn handles the trigger sequence: events 1/2 toggle the s16
  * sequence state; events 3/4 are no-ops.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/pad_api.h"
 #include "main/objseq.h"
 #include "main/objanim_update.h"

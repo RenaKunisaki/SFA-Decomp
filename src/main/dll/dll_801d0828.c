@@ -5,7 +5,7 @@
  * invoked when its trigger sequence fires; it flags the per-object
  * EdibleMushroomState so the main update can run its sequence reset.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/ediblemushroom.h"
 
 int EdibleMushroom_SeqFn(int* obj)

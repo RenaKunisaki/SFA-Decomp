@@ -2,7 +2,7 @@
 #define MAIN_DLL_DIM_DIMBOSSGUT_H_
 
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 extern ObjectDescriptor gDIM_BossGutObjDescriptor;

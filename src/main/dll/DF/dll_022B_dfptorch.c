@@ -8,7 +8,7 @@
 #include "main/dll/DF/dll_022B_dfptorch.h"
 #include "main/dll/dll_0069_dll69func0.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/resource.h"
@@ -22,7 +22,7 @@
 #include "main/shader_api.h"
 #include "main/voxmaps.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* DfpTorchState.mode: torch behaviour selected from placement->mode */
 #define DFPTORCH_MODE_ALWAYS_LIT 0 /* permanently burning, ignited at init */

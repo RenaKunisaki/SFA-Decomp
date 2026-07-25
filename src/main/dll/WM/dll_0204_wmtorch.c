@@ -14,14 +14,14 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_api.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
+#include "game/objects/object_setup.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
 #include "main/dll/WM/dll_0204_wmtorch.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define WMTORCH_OBJFLAG_HITDETECT_DISABLED 0x2000
 

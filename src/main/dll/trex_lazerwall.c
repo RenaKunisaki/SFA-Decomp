@@ -18,8 +18,8 @@
  * Game bits owned/used here: 0x617 start, 0x624 win, 0x625 lose, 0x626 running.
  */
 #include "main/mapEvent.h"
-#include "main/object_api.h"
-#include "main/game_object.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
 #include "main/dll/rom_curve_interface.h"

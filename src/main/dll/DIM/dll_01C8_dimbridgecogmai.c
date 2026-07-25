@@ -5,9 +5,9 @@
  * value; also fires sequence events from the SeqFn callback.
  */
 #include "main/dll/DIM/dll_01C8_dimbridgecogmai.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "main/obj_group.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"

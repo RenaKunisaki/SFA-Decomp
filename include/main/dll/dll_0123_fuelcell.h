@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0123_FUELCELL_H_
 #define MAIN_DLL_DLL_0123_FUELCELL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "types.h"
 
 int FuelCell_SeqFn(GameObject* obj);

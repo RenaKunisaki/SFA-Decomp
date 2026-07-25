@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0113_SEQOBJ2_H_
 #define MAIN_DLL_DLL_0113_SEQOBJ2_H_
 
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 struct SeqObjectPlacement;

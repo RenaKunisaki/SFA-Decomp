@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIM_DIM2LIFT_H_
 #define MAIN_DLL_DIM_DIM2LIFT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "main/dll/DIM/dll_01E0_dimboss.h"
 

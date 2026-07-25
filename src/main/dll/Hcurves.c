@@ -30,7 +30,7 @@
 #include "main/dll/objfsa.h"
 #include "main/dll/Hcurves_api.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/curve.h"
 #include "main/track_bbox_api.h"
 #include "main/curve_eval.h"

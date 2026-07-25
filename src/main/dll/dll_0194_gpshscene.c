@@ -2,9 +2,9 @@
 #include "main/screen_transition.h"
 #include "main/dll/dll_0194_gpshscene.h"
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct GpshScenePlacement
 {

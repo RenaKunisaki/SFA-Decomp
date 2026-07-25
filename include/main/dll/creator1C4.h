@@ -2,7 +2,7 @@
 #define MAIN_DLL_CREATOR1C4_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 void gpsh_shrine_update(GameObject* obj);

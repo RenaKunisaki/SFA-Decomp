@@ -2,8 +2,8 @@
 #define MAIN_WORLDASTEROIDS_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 #define WORLD_ASTEROIDS_CENTER_OBJECT_ID 0x42fe7
 #define WORLD_ASTEROIDS_ORBIT_TILT_ANGLE 3000

@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_0049_CAMERAMODECOMBAT_H_
 
 #include "main/camera_object.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "types.h"
 
 void CameraModeCombat_copyToCurrent(void);

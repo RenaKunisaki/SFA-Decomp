@@ -17,11 +17,11 @@
  * the camera view-Y offset for the impact shake.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objhits.h"

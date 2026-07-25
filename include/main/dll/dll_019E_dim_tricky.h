@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_019E_DIM_TRICKY_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct Dll19ESetup Dll19ESetup;
 

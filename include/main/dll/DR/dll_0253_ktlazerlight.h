@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DLL_0253_KTLAZERLIGHT_H_
 #define MAIN_DLL_DR_DLL_0253_KTLAZERLIGHT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
 #include "global.h"
 

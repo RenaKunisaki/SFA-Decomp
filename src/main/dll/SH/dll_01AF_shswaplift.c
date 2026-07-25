@@ -8,8 +8,8 @@
  * the progress bits and locks into the "swapped" state. Out of range it
  * disables its hit volume.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/obj_trigger.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits.h"

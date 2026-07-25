@@ -11,8 +11,8 @@
  */
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_0219.h"
 
 #define DLL_219_MOVING_OBJECT_ID   0x3a6

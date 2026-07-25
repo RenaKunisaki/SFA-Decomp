@@ -15,7 +15,7 @@
  */
 #include "main/dll/DR/DRshackle.h"
 #include "main/track_dolphin_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/path_control_interface.h"
 #include "main/checkpoint_interface.h"
 #include "main/dll/DR/DRcloudcage.h"

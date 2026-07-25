@@ -1,10 +1,10 @@
 /* DLL 0x0138 (groundanimator) - Ground animator object [0x80193100-0x80193DBC). */
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/lightmap_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/audio/sfx.h"
 #include "main/dll/waveanimatorobjectdef_struct.h"
@@ -20,7 +20,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/frame_timing.h"
 #include "main/shader_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u16 lbl_803DBDF0[4] = {0x109, 0x7E, 0, 0};
 

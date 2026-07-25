@@ -14,11 +14,11 @@
  * (update/hitDetect are empty) and renders through objRenderModelAndHitVolumes
  * at a fixed scale (lbl_803E43D0).
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/obj_group.h"
-#include "main/object_api.h"
-#include "main/object_descriptor.h"
+#include "sys/objects.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 #include "main/dll/dll_015F_attractor.h"
 #include "main/vecmath.h"

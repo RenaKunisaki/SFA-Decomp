@@ -20,8 +20,8 @@
 #include "main/objtexture.h"
 #include "main/debug.h"
 #include "main/dll/WC/dll_028F_wcpressures.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"

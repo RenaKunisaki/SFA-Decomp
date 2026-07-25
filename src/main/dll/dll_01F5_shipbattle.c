@@ -16,15 +16,15 @@
 #include "main/dll/sbkytecagestate_struct.h"
 #include "main/dll/sbfireballstate_struct.h"
 #include "main/dll/sbcloudballstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/objfx.h"
 #include "main/objseq.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
 #include "main/model_light.h"
 #include "main/dll/dll_01F5_shipbattle.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_0004_dummy04.h"
 STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
 STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);

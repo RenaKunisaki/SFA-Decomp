@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "main/dll/objfx_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
 
 typedef struct ObjFxParticleEmitter

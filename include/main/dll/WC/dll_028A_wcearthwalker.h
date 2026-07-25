@@ -2,7 +2,7 @@
 #define MAIN_DLL_WC_DLL_028A_WCEARTHWALKER_H
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objHitReact.h"
 #include "main/objanim_update.h"
 #include "main/dll/curve_walker.h"

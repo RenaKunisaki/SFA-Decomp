@@ -1,12 +1,12 @@
 /* Waterfall spray particle and sound emitter. */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/MMP/MMP_asteroid.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/audio/sfx_keep_alive_api.h"
 
 #include "main/dll/dll_0132_waterfallspray.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

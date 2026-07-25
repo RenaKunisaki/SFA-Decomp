@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_02B7_MCUPGRADE_H
 #define MAIN_DLL_DLL_02B7_MCUPGRADE_H
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor gMCUpgradeObjDescriptor;
 

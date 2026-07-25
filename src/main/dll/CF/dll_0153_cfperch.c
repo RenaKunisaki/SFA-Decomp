@@ -4,13 +4,13 @@
  * CloudRunner prisoner is freed, and notifies the flock when removed.
  * Carved from the sandwormBoss 10-DLL container.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/CF/dll_0153_cfperch.h"
 #include "main/objseq.h"
 #include "main/obj_message.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CFPERCH_FLOCK_GROUP     62
 #define CFPERCH_REMOVAL_MESSAGE 0x40001

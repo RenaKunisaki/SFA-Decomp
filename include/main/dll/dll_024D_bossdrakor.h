@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_024D_BOSSDRAKOR_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 #include "global.h"

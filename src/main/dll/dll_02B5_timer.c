@@ -12,7 +12,7 @@
  * running timer.
  */
 #include "main/audio/sfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/game_timer.h"
 #include "main/gamebits.h"
@@ -24,7 +24,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 f32 lbl_803DC418 = 7.0f;
 f32 lbl_803DC41C = 5.0f;

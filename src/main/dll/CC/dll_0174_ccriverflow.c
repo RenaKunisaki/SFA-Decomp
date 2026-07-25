@@ -6,8 +6,8 @@
  * the surface height from the model base height plus a placement offset.
  */
 #include "main/obj_group.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/DF/DFcradle.h"
 #include "main/gamebits.h"
 

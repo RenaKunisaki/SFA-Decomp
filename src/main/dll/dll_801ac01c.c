@@ -10,12 +10,12 @@
  *   fn_801AC108: leave - only acts when request bit 0x3a3 is set; clears the
  *     request bits, sets 0x4e5, enables object group 1, sets 0x379 or 0xcb.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/pi_dolphin_api.h"
 #include "main/map_load.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/mapEventTypes.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/player_api.h"

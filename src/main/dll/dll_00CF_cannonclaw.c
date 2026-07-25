@@ -7,9 +7,9 @@
  * two state-handler dispatch tables in .bss). The Grimble/TumbleWeedBush
  * bodies and object descriptors live in their own TUs (dll_00D0/dll_00D1).
  */
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/dll/dll_00D0_grimble.h"
 #include "main/dll/dll_00CF_cannonclaw.h"
 #include "main/dll/dll_80161130.h"

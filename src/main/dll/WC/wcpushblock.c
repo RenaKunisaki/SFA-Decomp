@@ -18,10 +18,10 @@
  * own declarations for the distinct cloud-action ABI.
  */
 #include "main/audio/sfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_path.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/dll/cloudaction_interface.h"
 #include "main/dll/WC/WCpushblock.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

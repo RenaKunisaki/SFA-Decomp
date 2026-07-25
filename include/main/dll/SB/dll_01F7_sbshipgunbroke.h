@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SB_DLL_01F7_SBSHIPGUNBROKE_H_
 #define MAIN_DLL_SB_DLL_01F7_SBSHIPGUNBROKE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /* Placement record for the broken ship-gun: only the destroyed-flag
    GameBit index (0x1E) is read by this DLL. */

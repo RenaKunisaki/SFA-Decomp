@@ -6,12 +6,12 @@
  * visibilityBit, and each later transition toggles it again while the map
  * block containing the object remains loaded.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/lightmap_api.h"
 #include "main/gamebits.h"
 #include "main/voxmaps.h"
 #include "main/dll/dll_013A_visanimator.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int VisAnimator_getExtraSize(void)
 {

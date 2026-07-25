@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_019C_DLL19C_H_
 #define MAIN_DLL_DLL_019C_DLL19C_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct Dll19CState
 {

@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_engine.h"
 #include "main/model_light.h"
 #include "main/objanim_update.h"

@@ -13,8 +13,8 @@
  * that source position or the model's world position (model+0x18..0x20)
  * to the spawn position.
  */
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/effectsrcparams_struct.h"
 #include "main/dll/effectspawnparams_struct.h"
 #include "main/dll_000A_expgfx.h"

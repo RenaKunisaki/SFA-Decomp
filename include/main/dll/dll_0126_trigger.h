@@ -3,8 +3,8 @@
 
 #include "global.h"
 #include "main/dll/dll_0126_trigger_api.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct TriggerPlacement
 {

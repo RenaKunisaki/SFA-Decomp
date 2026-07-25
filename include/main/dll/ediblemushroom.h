@@ -2,7 +2,7 @@
 #define MAIN_DLL_EDIBLEMUSHROOM_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "main/dll/curve_walker.h"
 #include "main/objanim_internal.h"

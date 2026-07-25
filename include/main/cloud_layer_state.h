@@ -2,7 +2,7 @@
 #define MAIN_CLOUD_LAYER_STATE_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 extern f32 gCloudOverridePositionZ;
 extern f32 gCloudOverridePositionY;

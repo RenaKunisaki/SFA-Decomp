@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_02BF_ANDROSSLIGH_H
 #define MAIN_DLL_DLL_02BF_ANDROSSLIGH_H
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/lightningeffect.h"
 
 typedef enum AndrossLighMode

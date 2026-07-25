@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_MMP_DLL_017E_MMPLEVELCONTROL_H_
 #define MAIN_DLL_MMP_DLL_017E_MMPLEVELCONTROL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 int MMP_LevelControl_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);

@@ -2,10 +2,10 @@
 #define MAIN_DLL_CF_CFTREASSHARPY_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_internal.h"
 #include "main/objanim_update.h"
 

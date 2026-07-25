@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0271_DRAKORHOVERPAD_H_
 #define MAIN_DLL_DLL_0271_DRAKORHOVERPAD_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/curve_walker.h"
 
 typedef struct DrakorHoverpadFlags

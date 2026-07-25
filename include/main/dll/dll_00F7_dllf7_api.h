@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_00F7_DLLF7_API_H_
 
 #include "types.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct DllF7Placement DllF7Placement;
 

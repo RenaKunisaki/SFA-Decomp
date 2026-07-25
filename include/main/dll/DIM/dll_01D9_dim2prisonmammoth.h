@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIM_DLL_01D9_DIM2PRISONMAMMOTH_H_
 #define MAIN_DLL_DIM_DLL_01D9_DIM2PRISONMAMMOTH_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "types.h"
 #include "main/objanim_update.h"
 

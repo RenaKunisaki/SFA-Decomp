@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_011D_TREASURECHEST_H_
 #define MAIN_DLL_DLL_011D_TREASURECHEST_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 #include "types.h"
 

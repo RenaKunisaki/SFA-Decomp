@@ -13,7 +13,7 @@
  * the seqFn latch (state[1] bit 0) and rewinds while earlier set bits
  * (placement+0x18) go false.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/objanim_update.h"
 #include "main/obj_group.h"

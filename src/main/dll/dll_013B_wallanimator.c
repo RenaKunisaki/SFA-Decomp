@@ -18,17 +18,17 @@
 #include "main/dll/groundanimator_state.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/waveanimatorstate_struct.h"
 #include "main/dll/alphaanimatorstate_struct.h"
 #include "main/dll/visanimatorstate_struct.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/MMP/dll_013B_wallanimator.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/audio/sfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* placement record: only the +0x1C short (debris spawn roll) is read here */
 typedef struct WallanimatorPlacement

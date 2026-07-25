@@ -7,17 +7,17 @@
  * anims. The large extra block (0x654 bytes) is the shared character state
  * driven by the dll_2E_func* helpers.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/objprint_character_api.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/CC/dll_0187_ccqueen.h"
 #include "main/vecmath_distance_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CCQUEEN_OBJFLAG_UPDATE_DISABLED 0x8000
 

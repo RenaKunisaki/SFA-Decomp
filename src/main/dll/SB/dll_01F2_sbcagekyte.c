@@ -11,18 +11,18 @@
  * random 400-600 frame delay.
  */
 #include "main/dll/shipbattlestate_struct.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/sbkytecagestate_struct.h"
 #include "main/dll/sbfireballstate_struct.h"
 #include "main/dll/sbcloudballstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* anim.resetHitboxMode bit forced on each SeqFn / update tick. */
 #define SB_CAGEKYTE_HITBOX_RESET_BIT 0x8

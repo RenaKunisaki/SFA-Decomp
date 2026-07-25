@@ -10,12 +10,12 @@
  * starts at CONTROLLIGHT_LAST_BIT_INVALID to force the first update.
  */
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/vecmath.h"
 #include "main/dll/LGT/dll_02AC_lgtcontrollight.h"
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CONTROLLIGHT_MODE_DIRECT      0
 #define CONTROLLIGHT_MODE_INVERTED    1

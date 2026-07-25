@@ -20,9 +20,9 @@
  * the floor.
  */
 #include "main/dll_000A_expgfx.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"

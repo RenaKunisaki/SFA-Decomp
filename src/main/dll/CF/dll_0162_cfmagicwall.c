@@ -9,7 +9,7 @@
 #include "main/object_render.h"
 #include "main/obj_query.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/camera.h"
 #include "main/vecmath.h"
 

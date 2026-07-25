@@ -1,7 +1,7 @@
 #ifndef MAIN_OBJ_MESSAGE_H_
 #define MAIN_OBJ_MESSAGE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 extern char sObjMsgOverflowInObjectWarning[];
 

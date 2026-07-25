@@ -16,9 +16,9 @@
 #include "main/dll/dll1d6state_struct.h"
 #include "main/dll/explosion_state.h"
 #include "main/dll/dll_01CF_dll1cf.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 
 STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);

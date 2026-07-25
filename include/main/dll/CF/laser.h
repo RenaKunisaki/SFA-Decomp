@@ -4,8 +4,8 @@
 #include "global.h"
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
 #define LASER_UNSUPPORTED_DLL_ID 0x0236

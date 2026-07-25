@@ -10,7 +10,7 @@
  * volume against the saved-file music-volume setting.
  *
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objseq.h"
 #include "main/dll/cameramodetitlepose_struct.h"
 #include "main/resource.h"

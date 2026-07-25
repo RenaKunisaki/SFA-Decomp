@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_SH_DLL_01B0_SHSWAPSTON_H_
 #define MAIN_DLL_SH_DLL_01B0_SHSWAPSTON_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 int warpstone_testEvent(u32 obj, u32 unused, int option);
 void warpstone_loadBaseUi(void);

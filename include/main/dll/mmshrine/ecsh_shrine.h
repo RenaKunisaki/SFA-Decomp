@@ -2,7 +2,7 @@
 #define MAIN_DLL_MMSHRINE_ECSH_SHRINE_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/mmshrineanimobj_struct.h"
 
 /* Floating shrine model behaviour (DLL 0x18F). */

@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_0157_SPIRITDOORSPIRIT_H_
 #define MAIN_DLL_DLL_0157_SPIRITDOORSPIRIT_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 /* spiritdoorspirit_getExtraSize == 0x1. */
 typedef struct SpiritDoorSpiritState

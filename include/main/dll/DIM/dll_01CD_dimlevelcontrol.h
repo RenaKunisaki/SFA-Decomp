@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIM_DLL_01CD_DIMLEVELCONTROL_H_
 #define MAIN_DLL_DIM_DLL_01CD_DIMLEVELCONTROL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int dim_levelcontrol_getExtraSize(void);
 void dim_levelcontrol_free(GameObject* obj);

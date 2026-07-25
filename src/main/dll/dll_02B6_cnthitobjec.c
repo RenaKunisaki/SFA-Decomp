@@ -21,14 +21,14 @@
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
 #include "main/maketex_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/dll/dll_02B6_cnthitobjec.h"
 #include "main/objhits.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int lbl_803DC428 = 5;
 u8 lbl_803DC42C[4] = {2, 1, 0, 0};

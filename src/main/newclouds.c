@@ -1,7 +1,7 @@
 #include "main/newclouds_state.h"
 #include "main/newshadows.h"
 #include "main/audio/music_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/model.h"
 #include "main/model_light.h"

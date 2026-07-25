@@ -12,7 +12,7 @@
 #include "main/dll/dll200state_struct.h"
 #include "main/debug.h"
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEvent.h"
 #include "main/objHitReact.h"
 #include "main/objanim_update.h"
@@ -21,14 +21,14 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/pad.h"
 #include "main/vecmath.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/dll_0200_dll200.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct Dll200Placement
 {
@@ -364,7 +364,7 @@ ArwAttachTarget gArwingAttachmentTargets[] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.02f},       {79.0f, 152.0f, 20.0f, 20.0f, 0.01f}, {138.0f, -6.0f, 20.0f, 20.0f, 0.02f},
     {-73.0f, -48.0f, 20.0f, 20.0f, 0.02f}, {-248.0f, -7.0f, 0.0f, 0.0f, 0.02f},  {0.0f, 0.0f, 0.0f, 0.0f, 0.02f},
 };
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 ObjectDescriptor dll_200 = {
     0,

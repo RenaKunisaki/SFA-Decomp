@@ -2,7 +2,7 @@
 #define MAIN_DLL_LGT_LGTCONTROLLIGHT_H_
 
 #include "main/dll/LGT/lgtcontrollightrec_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 
 int firefly_animEventCallback(GameObject* obj);

@@ -9,7 +9,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/SB/dll_01EB_sbshipmast.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* parent galleon anim.seqId selecting the rigging-animation behavior */
 #define SB_GALLEON_SEQID 0x139

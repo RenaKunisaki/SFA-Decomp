@@ -50,8 +50,8 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/map_load.h"
 #include "main/map_texscroll.h"
 #include "main/fileio.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/obj_group.h"
 #include "main/obj_list.h"
 #include "main/track_dolphin_api.h"
@@ -71,8 +71,8 @@ typedef struct MapInfoRecord
 extern WarpVec lbl_80386648[];
 extern const f32 gMapBlockWorldSize;
 
-#include "main/object.h"
-#include "main/obj_placement.h"
+#include "sys/objects/lifecycle.h"
+#include "game/objects/object_setup.h"
 #include "track/intersect_api.h"
 #include "main/model.h"
 #include "main/pi_dolphin.h"

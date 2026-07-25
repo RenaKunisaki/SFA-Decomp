@@ -9,11 +9,11 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
 #include "main/object_transform.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/baddie_frozen.h"
 
 #define GROUND_BADDIE_PI 3.14159274f

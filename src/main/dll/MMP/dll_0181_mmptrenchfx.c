@@ -14,12 +14,12 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/mmptrenchfxstate_struct.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/dll/MMP/dll_0181_mmptrenchfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* Partfx effect ids (see docblock): the emit-timer burst vs the per-tick puff. */
 #define MMPTRENCHFX_PARTFX_EMIT 0x71F

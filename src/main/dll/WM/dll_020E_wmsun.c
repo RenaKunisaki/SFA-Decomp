@@ -36,8 +36,8 @@
 #include "main/dll/WM/dll_020E_wmsun.h"
 #include "main/object_render.h"
 #include "main/lightmap_api.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/objtexture.h"
 #include "main/mm.h"
 #include "main/gamebits.h"
@@ -45,7 +45,7 @@
 #include "main/vecmath.h"
 #include "main/camera.h"
 #include "main/camera_shake_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* romlist object-def variants driving this DLL's seqId branches (see
    docblock): def 922 'WM_Crystal' (0x262) and def 907 'WM_sun' (0x2BD). */

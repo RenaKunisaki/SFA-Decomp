@@ -15,20 +15,20 @@
  * drive a linked Tricky object via its vtable when not pressed.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/objtexture.h"
 #include "main/obj_group.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_00FB_pressureswitchfb.h"
 #include "main/dll/player_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define PRESSURESWITCHFB_PARTFX                  0x7c3
 #define PRESSURESWITCHFB_STATE_IDLE              0

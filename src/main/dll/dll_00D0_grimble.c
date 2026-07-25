@@ -15,7 +15,7 @@
  * particle effects from the unk400 fx-flag bits. When the object is asleep
  * (userData1 != 0) update wakes it from the saved map-event time slot.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/objfx_api.h"
 #include "main/obj_group.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -27,7 +27,7 @@
 #include "main/dll/dll_00CF_cannonclaw.h"
 #include "main/dll/dll_00D0_grimble.h"
 #include "main/mapEventTypes.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/object_render.h"
 #include "main/audio/sfx.h"

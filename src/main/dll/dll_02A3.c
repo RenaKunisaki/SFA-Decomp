@@ -12,16 +12,16 @@
  * cleared by hitDetect and set by the first update.
  */
 #include "main/frame_timing.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/dll/ARW/dll_02A2_arwspeedstr.h"
 #include "main/dll/ARW/dll_02A3.h"
 
 int lbl_803DDD94;
 int lbl_803DDD90;
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 
 void dll_2A3_setSpeed(GameObject* obj, int speed)

@@ -6,9 +6,9 @@
  * effect through fn_80098B18; update() frees the object once its
  * animation has been hidden.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/dll/SH/dll_01B2_shstaffhaze.h"
 

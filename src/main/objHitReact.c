@@ -1,6 +1,6 @@
 #include "dolphin/os.h"
 #include "main/shader_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/asset_load.h"
 #include "main/audio/sfx.h"
 #include "main/mm.h"

@@ -5,9 +5,9 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/texture.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/obj_path.h"
 #include "main/obj_group.h"
 #include "main/camera.h"
@@ -31,7 +31,7 @@
 #include "main/dll/dll_801e991c.h"
 #include "string.h"
 #include "main/lightmap.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 
 f32 lbl_803DC0B8 = 15.0f;
 int lbl_803DC0BC = -1;

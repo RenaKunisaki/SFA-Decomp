@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DLL_0261_DRLASERCANNON_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct DrLaserCannonBeamSetup
 {

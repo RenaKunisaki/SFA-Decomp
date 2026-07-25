@@ -17,8 +17,8 @@
  * AlphaAnimator_render draws via objRenderModelAndHitVolumes; AlphaAnimator_free
  * releases the mode-3 buffer.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/audio/sfx.h"
@@ -30,7 +30,7 @@
 #include "main/dll/groundanimator_state.h"
 #include "main/mm.h"
 #include "main/lightmap_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct AlphaanimatorPlacement
 {

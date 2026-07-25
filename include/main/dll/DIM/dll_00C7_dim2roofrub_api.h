@@ -2,7 +2,7 @@
 #define MAIN_DLL_DIM_DLL_00C7_DIM2ROOFRUB_API_H_
 
 #include "types.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor gDIM2RoofRubObjDescriptor;
 

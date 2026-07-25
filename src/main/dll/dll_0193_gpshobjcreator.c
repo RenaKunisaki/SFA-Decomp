@@ -2,17 +2,17 @@
 #include "main/dll/gpshshrineflags_struct.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
 #include "main/dll/creator1C4.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct GpshObjcreatorState
 {

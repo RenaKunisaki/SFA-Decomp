@@ -4,11 +4,11 @@
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"
 #include "main/objprint_render_api.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int TrickyGuardSpot_getExtraSize(void) { return sizeof(TrickyGuardSpotState); }
 

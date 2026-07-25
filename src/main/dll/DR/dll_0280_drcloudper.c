@@ -14,7 +14,7 @@
 #include "main/mapEventTypes.h"
 #include "main/obj_group.h"
 #include "main/objseq.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #include "main/dll/DR/dll_0280_drcloudper.h"
 

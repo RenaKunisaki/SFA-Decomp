@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PLAYER_STATE_API_H_
 #define MAIN_DLL_PLAYER_STATE_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void fn_802961FC(GameObject* obj, u8 type);
 

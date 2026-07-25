@@ -16,8 +16,8 @@
 #include "main/vecmath.h"
 #include "main/camera_interface.h"
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
 #include "main/obj_group.h"
@@ -27,7 +27,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/pi_dolphin_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* Release camera back to the default gameplay mode (cameramode DLL 0x42). */
 #define CCGASVENTCONTROL_CAMMODE_DEFAULT 0x42

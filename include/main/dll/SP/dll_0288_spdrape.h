@@ -2,8 +2,8 @@
 #define MAIN_DLL_SP_DLL_0288_SPDRAPE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "global.h"
 
 typedef struct SpdrapeObjectDef

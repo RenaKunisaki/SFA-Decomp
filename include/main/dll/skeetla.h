@@ -5,7 +5,7 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/skeetla_anim_api.h"
 #include "main/dll/skeetla_route_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct SkeetlaParticleSpawnArgs
 {

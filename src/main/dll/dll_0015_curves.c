@@ -28,13 +28,13 @@
 #include "main/camera_interface.h"
 #include "main/dll/dll_0015_curves.h"
 #include "main/dll/dll_0017_savegame_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/game_ui_interface.h"
 #include "main/lightmap_api.h"
 #include "main/textrender_api.h"
 #include "main/objhits.h"
 #include <string.h>
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #define TRACK_BBOX_ARG10_TYPE int
 #include "main/track_bbox_api.h"
 #include "main/gamebits.h"

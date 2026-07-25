@@ -1,7 +1,7 @@
 #ifndef MAIN_MAP_ROMLIST_PAGE_H_
 #define MAIN_MAP_ROMLIST_PAGE_H_
 
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct MapRomListPage
 {

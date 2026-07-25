@@ -13,12 +13,12 @@
  * everything except the tied (0x803) variant. render draws the model when
  * visible.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/dll_01F6_flag.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 enum
 {

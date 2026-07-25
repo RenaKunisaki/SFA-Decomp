@@ -17,7 +17,7 @@
  * speed byte from placement 0x3b; objSeqFn_801992ec gates on pure squared
  * distance against nearRadiusSq.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_0126_trigger_api.h"
 #include "main/dll/mmp_gyservent.h"

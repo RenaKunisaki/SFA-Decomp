@@ -10,7 +10,7 @@
 #include "main/camera_object.h"
 #include "main/resource.h"
 #include "main/dll/CAM/camcloudrunner_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_motion.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/frame_timing.h"

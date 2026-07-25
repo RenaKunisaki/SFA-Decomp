@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_LGT_DLL_02AB_LGTPROJECTEDLIGHT_H_
 #define MAIN_DLL_LGT_DLL_02AB_LGTPROJECTEDLIGHT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/LGT/lgt_types.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/texture.h"
 
 extern const f32 lbl_802C2618[4];

@@ -14,11 +14,11 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DB/DBrockfall.h"
 #include "main/dll/feseqobjecteffectparams_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* anim-event opcodes consumed by FEseqobject_SeqFn */
 enum

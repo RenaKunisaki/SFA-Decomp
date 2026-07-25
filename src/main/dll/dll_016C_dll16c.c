@@ -15,16 +15,16 @@
 #include "main/vecmath_distance_api.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
 #include "main/shader_api.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/dll/dll_016C_dll16c.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /*
  * Per-object extra state for the dll_16C map-event boulder proxy

@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_00F7_DLLF7_H_
 
 #include "main/dll/genpropswgpipe_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEvent.h"
 #include "main/objhits.h"
 #include "main/resource.h"

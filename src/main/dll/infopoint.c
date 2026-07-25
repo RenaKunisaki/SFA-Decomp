@@ -8,7 +8,7 @@
  */
 #include "main/dll/infopoint.h"
 #include "main/dll/trickycurve_object.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/player_api.h"
 
 typedef struct TrickyCurveState

@@ -11,11 +11,11 @@
  * tracking (characterDoEyeAnims) depending on flag 0x8. Flag 0x20 is
  * a one-shot init guard that stops the looping SFX on channel 0x7f.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/objprint_anim_api.h"
 #include "main/objprint_character_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objanim_update.h"
 #include "main/dll/SH/dll_01AC_shqueenearthwalker.h"
 #include "main/dll/dll_801d4198.h"

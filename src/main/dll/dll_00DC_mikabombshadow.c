@@ -8,7 +8,7 @@
  * shared shadow renderer while a shadow-cast slot is bound.
  */
 #include "main/dll/dll_00DC_mikabombshadow_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"

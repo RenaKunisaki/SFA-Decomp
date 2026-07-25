@@ -14,12 +14,12 @@
  * placement's preemptEvent if the door is already moving and runs the
  * placement's startup sequence (-1 = none).
  */
-#include "main/object.h"
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
+#include "sys/objects/lifecycle.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/objseq.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath_distance_api.h"
 #include "main/object_render.h"
 #include "main/dll/dll_015D_slidingdoor.h"

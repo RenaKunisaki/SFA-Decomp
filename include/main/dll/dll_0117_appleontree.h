@@ -2,7 +2,7 @@
 #define MAIN_DLL_CRACKANIM_H_
 
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct AppleOnTreeState
 {

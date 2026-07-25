@@ -35,13 +35,13 @@
 #include "main/maketex_timer_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/barrelgener_state.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int lbl_803DC398 = 0x14;
 

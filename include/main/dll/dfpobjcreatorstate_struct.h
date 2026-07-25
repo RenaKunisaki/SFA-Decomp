@@ -2,7 +2,7 @@
 #define MAIN_DLL_DFPOBJCREATORSTATE_STRUCT_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct DfpObjCreatorState
 {

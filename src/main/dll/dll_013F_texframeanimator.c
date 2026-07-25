@@ -1,6 +1,6 @@
 /* DLL 0x13F - TexFrameAnimator [801948C0-80195008) */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/debug.h"
 #include "main/lightmap_api.h"
 #include "main/map_block.h"
@@ -11,7 +11,7 @@
 #include "main/dll/dll_0133_sfxplayer.h"
 #include "main/dll/dll_0140_fogcontrol.h"
 #include "main/dll/dll_0141_lightning.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/shader_api.h"
 #include "main/shader_map_api.h"
 

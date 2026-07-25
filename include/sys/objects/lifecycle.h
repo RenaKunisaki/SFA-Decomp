@@ -1,8 +1,8 @@
-#ifndef MAIN_OBJECT_H_
-#define MAIN_OBJECT_H_
+#ifndef SYS_OBJECTS_LIFECYCLE_H_
+#define SYS_OBJECTS_LIFECYCLE_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 void* getTablesBinEntry(int i);
 u8* loadObjectFile(int id);
@@ -25,4 +25,4 @@ void mapSetupPlayer(void);
 
 int objGetFlagsE5_2(u8* obj);
 
-#endif
+#endif /* SYS_OBJECTS_LIFECYCLE_H_ */

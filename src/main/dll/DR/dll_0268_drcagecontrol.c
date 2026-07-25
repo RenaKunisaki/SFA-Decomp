@@ -8,13 +8,13 @@
  * the watched bit, sequence startup, and the initially-armed path.
  */
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0268_drcagecontrol.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 
 int DR_CageControl_SeqFn(GameObject* obj)

@@ -2,7 +2,7 @@
 #define MAIN_DLL_ARW_DLL_02A3_H
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct Dll2A3State
 {

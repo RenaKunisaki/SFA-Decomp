@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SC_DLL_01B6_SCLEVELCONTROL_H_
 #define MAIN_DLL_SC_DLL_01B6_SCLEVELCONTROL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "types.h"
 

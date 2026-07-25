@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_OBJFX_API_H_
 #define MAIN_DLL_OBJFX_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct ModelLightStruct ModelLightStruct;
 

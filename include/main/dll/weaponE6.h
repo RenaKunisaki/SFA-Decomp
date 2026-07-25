@@ -2,7 +2,7 @@
 #define MAIN_DLL_WEAPONE6_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void tricky_fetchBall(GameObject* obj, int state);
 void tricky_idleAndEat(GameObject* obj, int state);

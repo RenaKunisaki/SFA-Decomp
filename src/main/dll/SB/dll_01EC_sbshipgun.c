@@ -22,7 +22,7 @@
 #include "main/dll/sbshipheadstate_struct.h"
 #include "main/camera_shake_api.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/obj_path.h"
 #include "main/obj_list.h"
 #include "main/dll/sbpropellerstate_struct.h"
@@ -34,11 +34,11 @@
 #include "main/audio/sfx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_transform.h"
 #include "main/camera.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define SB_SHIPGUN_CLOUDRUNNER_ALIAS_OBJECT_TYPE 0x008C
 #define SB_SHIPGUN_GALLEON_ALIAS_OBJECT_TYPE     0x008E

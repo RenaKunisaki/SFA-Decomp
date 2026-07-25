@@ -18,14 +18,14 @@
  * Render/hitDetect/free/release/initialise are empty; behaviour is driven
  * entirely by update() and the sequence callback.
  */
-#include "main/object_api.h"
-#include "main/game_object.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/textrender_api.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_00F8_levelname.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 
 #define LEVELNAME_PHASE_WAIT      0

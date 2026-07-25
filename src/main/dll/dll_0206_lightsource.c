@@ -16,9 +16,9 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objfx.h"
 #include "main/dll/LGT/dll_0206_lightsource.h"
 #include "main/objhits.h"

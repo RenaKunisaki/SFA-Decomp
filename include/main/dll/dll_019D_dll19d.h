@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_019D_DLL19D_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int dll_19D_getExtraSize(void);
 int dll_19D_getObjectTypeId(void);

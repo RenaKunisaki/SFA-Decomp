@@ -2,8 +2,8 @@
 #define MAIN_DLL_WM_DLL_020E_WMSUN_H_
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
 #define WM_SUN_GLARE_COUNT 20

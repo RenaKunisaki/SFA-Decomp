@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL1CEPLACEMENT_STRUCT_H_
 #define MAIN_DLL_DLL1CEPLACEMENT_STRUCT_H_
 
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct Dll1CEPlacement
 {

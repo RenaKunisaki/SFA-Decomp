@@ -4,11 +4,11 @@
  * path plane, clamped by a per-frame turn rate and a max step distance.
  * (callers: dll_00C9_enemy, duster.)
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
 #include "main/dll/baddie_state.h"

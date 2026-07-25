@@ -12,7 +12,7 @@
  */
 #include "main/dll/sbkytecagestate_struct.h"
 #include "main/render_lactions_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_list.h"
 #include "main/obj_link.h"
 #include "main/objprint_api.h"
@@ -25,7 +25,7 @@
 #include "main/pad.h"
 #include "main/frame_timing.h"
 #include "main/dll/SB/dll_01F0_sbkytecage.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
 

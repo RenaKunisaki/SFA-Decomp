@@ -2,10 +2,10 @@
 #define MAIN_DLL_DLL_029B_ARWINGANDROSSSTUFF_H
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 /* defNos handled by this DLL; names read from retail OBJECTS.bin at def+0x91,
    all gating to DLL 0x29B. LASER_BASIC and INVINCIBLE share the one truncated

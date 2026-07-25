@@ -12,10 +12,10 @@
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim.h"
 #include "main/objtexture.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"

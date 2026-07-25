@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL1FBSETUP_STRUCT_H_
 
 #include "types.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct Dll1FBSetup
 {

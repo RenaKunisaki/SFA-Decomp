@@ -10,7 +10,7 @@
 #include "types.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/model_engine.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/texture.h"
 #include "main/dll/dll_0039_dummy39.h"

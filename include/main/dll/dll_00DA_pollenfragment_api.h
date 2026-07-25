@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_00DA_POLLENFRAGMENT_API_H_
 #define MAIN_DLL_DLL_00DA_POLLENFRAGMENT_API_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 #define POLLEN_FRAGMENT_OBJECT_ID 0x482
 

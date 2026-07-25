@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00CE_DLLCE_H_
 #define MAIN_DLL_DLL_00CE_DLLCE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void chukChuk_updateTargeting(int obj, int state, int target);
 void chukChuk_acquireTarget(GameObject* obj, int state, int target);

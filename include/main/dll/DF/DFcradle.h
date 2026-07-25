@@ -2,7 +2,7 @@
 #define MAIN_DLL_DF_DFCRADLE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CCriverflowState
 {

@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/checkpoint_route.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int Checkpoint_func07(GameObject *obj, CheckpointRouteState *state);
 void FUN_800d7c90(double param_1,double param_2,double param_3,double param_4,double param_5,

@@ -17,8 +17,8 @@
  * flag byte (state[7]) bits: 0x01 just-grabbed, 0x02 (inverted accessor),
  * 0x04 drop-disabled, 0x08 suppress position save.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/dll/player_api.h"
 #include "main/dll/dll_002F_carryable.h"
 #include "main/dll/savegame_object_api.h"

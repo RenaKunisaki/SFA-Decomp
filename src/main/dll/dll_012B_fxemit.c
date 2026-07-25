@@ -21,9 +21,9 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/CF/dll_012B_fxemit.h"
-#include "main/object_api.h"
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
+#include "sys/objects.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "main/debug.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx_interface.h"

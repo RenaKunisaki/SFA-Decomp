@@ -5,9 +5,9 @@
 #include "main/dll/truthhornicestate_struct.h"
 #include "main/dll/dim2conveyorstate_struct.h"
 #include "main/dll/dll1d6state_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
 

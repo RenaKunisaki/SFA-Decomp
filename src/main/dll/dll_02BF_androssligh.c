@@ -15,12 +15,12 @@
 #include "main/camera.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/shader_api.h"
 #include "main/dll/dll_02BF_androssligh.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 enum
 {

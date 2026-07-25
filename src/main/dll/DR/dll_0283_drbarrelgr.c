@@ -17,7 +17,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/maketex_timer_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objanim.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
@@ -29,7 +29,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 f32 lbl_803DC3B0 = 2.0f;
 f32 gDrBarrelGenGrabYOffset = -50.0f;

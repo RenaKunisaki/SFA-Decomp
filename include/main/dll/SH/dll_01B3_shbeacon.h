@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SH_DLL_01B3_SHBEACON_H_
 #define MAIN_DLL_SH_DLL_01B3_SHBEACON_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int shbeacon_resetFadeTimerCallback(GameObject* obj);
 int sh_beacon_getExtraSize(void);

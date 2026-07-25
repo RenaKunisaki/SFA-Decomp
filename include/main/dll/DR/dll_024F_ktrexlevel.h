@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DLL_024F_KTREXLEVEL_H_
 #define MAIN_DLL_DR_DLL_024F_KTREXLEVEL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "ghidra_import.h"
 

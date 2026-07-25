@@ -2,7 +2,7 @@
 #define MAIN_DLL_WM_DLL_020A_WMGENERALSCALES_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 /* per-object extra state (getExtraSize == 0x8). unk00 is written here

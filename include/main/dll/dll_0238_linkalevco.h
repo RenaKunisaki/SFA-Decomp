@@ -2,9 +2,9 @@
 #define MAIN_DLL_FIRE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 #define LINKA_LEVCONTROL_OBJECT_DEF_ID 0x0342

@@ -10,13 +10,13 @@
 #include "main/audio/sfx_ids.h"
 #include "main/pi_dolphin_api.h"
 #include "main/map_load.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/render_envfx_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0112_seqobject.h"
 #include "main/mapEvent.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/dll/player_api.h"
 #include "main/object_render.h"
@@ -27,7 +27,7 @@
 #include "main/audio/sfx.h"
 #include "main/maketex_timer_api.h"
 #include "main/dll/player_staff_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct CflevelcontrolState
 {

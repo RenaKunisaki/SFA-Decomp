@@ -16,17 +16,17 @@
  * leaves object group 14.
  */
 #include "main/dll/dll_00F4_doorf4.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/audio/sfx_object_query_api.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_stop_object_api.h"
 #include "main/render_envfx_api.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/obj_list.h"
 #include "main/obj_message.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 

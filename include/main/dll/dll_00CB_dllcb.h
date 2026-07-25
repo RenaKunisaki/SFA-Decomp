@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00CB_DLLCB_H_
 #define MAIN_DLL_DLL_00CB_DLLCB_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
 
 int dll_CB_stateHandler5(GameObject* obj, GroundBaddieState* p);

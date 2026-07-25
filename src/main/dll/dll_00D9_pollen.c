@@ -13,7 +13,7 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/MMP/MMP_asteroid.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/dll/dll_00D9_pollen_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
@@ -21,13 +21,13 @@
 #include "main/audio/sfx.h"
 #include "main/camera.h"
 #include "main/frame_timing.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/objhits.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct PollenExtra
 {

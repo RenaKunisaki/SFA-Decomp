@@ -11,11 +11,11 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/dll/dll_013D_explodeanimator.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define EXPLODEANIMATOR_OBJGROUP 0x1a
 #define EXPLODEANIMATOR_FLAG_FIRED 0x1

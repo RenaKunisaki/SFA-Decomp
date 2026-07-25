@@ -2,7 +2,7 @@
 #define MAIN_DLL_TRANSPORTER_H_
 
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 #include "main/dll/dll_00F2_iceblast.h"
 

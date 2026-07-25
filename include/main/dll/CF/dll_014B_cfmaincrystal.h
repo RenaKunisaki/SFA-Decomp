@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
 #include "main/gamebits.h"
 

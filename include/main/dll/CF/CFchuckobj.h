@@ -2,10 +2,10 @@
 #define MAIN_DLL_CF_CFCHUCKOBJ_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/curve_walker.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
 extern ObjectDescriptor gAreaFXEmitObjDescriptor;

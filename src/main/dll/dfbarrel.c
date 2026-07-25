@@ -8,7 +8,7 @@
  */
 #include "main/dll/DF/DFbarrel.h"
 #include "main/dll/dfpulley.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/mtx.h"
 
 #define DFBARREL_ROPE_PART_SIZE 0x34

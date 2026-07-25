@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "main/camera_object.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/CAM/camcontrol_mode_settings.h"
 
 typedef struct CamSlideRot

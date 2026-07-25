@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SB_DLL_01ED_SBFIREBALL_H_
 #define MAIN_DLL_SB_DLL_01ED_SBFIREBALL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int SB_FireBall_getExtraSize(void);
 int SB_FireBall_getObjectTypeId(void);

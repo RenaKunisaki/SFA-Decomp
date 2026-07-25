@@ -1,9 +1,9 @@
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/CF/laser.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/audio/sfx.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx_interface.h"
@@ -19,7 +19,7 @@
 #include "main/frame_timing.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct
 {

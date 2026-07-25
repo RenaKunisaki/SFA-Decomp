@@ -1,7 +1,7 @@
 #ifndef MAIN_TEXTBLOCK_H_
 #define MAIN_TEXTBLOCK_H_
 
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define TEXTBLOCK_DLL_ID 0x0239
 #define TEXTBLOCK_OBJECT_CLASS_ID 0x0030

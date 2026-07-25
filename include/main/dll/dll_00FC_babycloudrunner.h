@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00FC_BABYCLOUDRUNNER_H_
 #define MAIN_DLL_DLL_00FC_BABYCLOUDRUNNER_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 void dll_FC_update(GameObject* obj);

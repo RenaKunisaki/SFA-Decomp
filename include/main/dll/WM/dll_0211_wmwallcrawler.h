@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_WM_DLL_0211_WMWALLCRAWLER_H_
 #define MAIN_DLL_WM_DLL_0211_WMWALLCRAWLER_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/path_control_interface.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/vecmath.h"
 
 typedef struct WmwallcrawlerState

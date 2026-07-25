@@ -20,12 +20,12 @@
 #include "main/dll/mcupgrade_state.h"
 #include "main/dll/player_api.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/game_ui_interface.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/obj_trigger.h"
 #include "main/objseq.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 void mcupgrade_update(GameObject* obj)
 {

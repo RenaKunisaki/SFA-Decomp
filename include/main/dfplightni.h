@@ -4,9 +4,9 @@
 #include "global.h"
 #include "ghidra_import.h"
 #include "main/dfppowersl.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "main/lightningeffect.h"
 
 #define DFPLIGHTNI_OBJECT_DEF_ID 0x0345

@@ -18,8 +18,8 @@
 #include "main/dll/dll1d6state_struct.h"
 #include "main/dll/explosion_state.h"
 #include "main/objseq.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
 
@@ -39,10 +39,10 @@ STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
 FbWGPipe GXWGFifo : (0xCC008000);
 
 #include "main/dll/rom_curve_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/obj_group.h"
 

@@ -29,20 +29,20 @@
  * (gChukChukObjDescriptor) and its IceBall projectile (gIceBallObjDescriptor).
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/objprint_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/objanim.h"
 #include "main/dll/chukchukstate_struct.h"
 #include "main/dll/baddie_control_interface.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/mapEventTypes.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
@@ -55,7 +55,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_00CD_iceball.h"
 #include "main/voxmaps.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /*
  * The per-object "control" sub-block (at GroundBaddieState + 0x40c). Only the

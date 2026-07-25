@@ -11,11 +11,11 @@
  * events.
  */
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/audio/music_api.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/render_envfx_api.h"
 #include "main/objanim_update.h"
 #include "main/gamebits.h"
@@ -28,7 +28,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/MMP/dll_017E_mmplevelcontrol.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define MMPLEVELCONTROL_OBJFLAG_HIDDEN             0x4000
 #define MMPLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000

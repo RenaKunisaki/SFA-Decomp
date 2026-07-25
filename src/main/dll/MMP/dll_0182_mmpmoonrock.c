@@ -20,10 +20,10 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/object_render.h"
 #include "main/dll/savegame_object_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/track_dolphin_api.h"
 #include "main/carryable_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/track_bbox_api.h"
 #include "main/obj_list.h"
@@ -38,7 +38,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern PartFxSpawnParams gMoonRockSpawnParams;
 #define MMPMOONROCK_OBJGROUP        4

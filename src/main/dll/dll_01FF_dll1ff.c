@@ -11,8 +11,8 @@
  * gates model-state shadow fade-out on the active trigger sequence.
  */
 #include "main/dll/dll_01FF_dll1ff.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/track_dolphin_api.h"
 #include "main/obj_message.h"
 #include "main/objhits.h"

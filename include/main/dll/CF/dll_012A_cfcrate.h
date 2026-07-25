@@ -2,7 +2,7 @@
 #define MAIN_DLL_CF_DLL_012A_CFCRATE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 /*

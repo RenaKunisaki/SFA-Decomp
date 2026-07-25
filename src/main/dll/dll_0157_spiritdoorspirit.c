@@ -9,13 +9,13 @@
  * fades alpha up to 0xFF; once the bit is set it leaves the group and
  * fades alpha back to 0. It only renders while active.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/dll/dll_0157_spiritdoorspirit.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 f32 lbl_803DBE78 = 0.7f;
 

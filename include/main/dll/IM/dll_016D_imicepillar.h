@@ -2,7 +2,7 @@
 #define MAIN_DLL_IM_DLL_016D_IMICEPILLAR_H_
 
 #include "types.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor gIMIcePillarObjDescriptor;
 

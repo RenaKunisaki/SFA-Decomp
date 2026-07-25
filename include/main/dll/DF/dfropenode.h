@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/dll/DF/DFbarrel.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct DFropenodeObject DFropenodeObject;
 

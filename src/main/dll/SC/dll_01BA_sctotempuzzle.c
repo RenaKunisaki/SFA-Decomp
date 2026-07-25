@@ -15,9 +15,9 @@
  * poles of the tracking test).
  */
 #include "main/obj_list.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/shader_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"

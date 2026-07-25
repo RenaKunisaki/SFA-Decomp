@@ -13,11 +13,11 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/dll/WM/dll_0201_wmcolrise.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern f32 lbl_803E5DC8; /* 1.0: render scale */
 extern const f32 lbl_803E5DCC; /* 3.0: rider height to trigger the rise */

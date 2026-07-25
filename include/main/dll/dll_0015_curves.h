@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_CURVES_H_
 #define MAIN_DLL_CURVES_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/track_dolphin_api.h"
 #include "global.h"
 #include "ghidra_import.h"

@@ -14,17 +14,17 @@
 #include "main/object_render.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/dll/dll_00D7_kaldachompspit_api.h"
 #include "main/objhits.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 0x1f
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT   0xa

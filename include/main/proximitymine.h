@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/model_light.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define PROXIMITYMINE_HIT_VOLUME_SLOT 13
 

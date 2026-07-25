@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_02B9_MCSTAFFEFFE_H
 
 #include "main/dll/mcstaffeffe_state.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 extern ObjectDescriptor gMCStaffEffeObjDescriptor;

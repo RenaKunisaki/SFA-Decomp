@@ -2,7 +2,7 @@
 #define MAIN_DLL_DUSTER_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/duster_api.h"
 
 void rachnopUpdateApproach(int* obj, int state);

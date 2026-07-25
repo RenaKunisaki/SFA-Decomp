@@ -1,8 +1,8 @@
 /* DLL 0x10E - DeathSeq [8018BC48-8018BC50) */
 #include "main/objseq.h"
-#include "main/object_api.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/objtexture.h"
 #include "main/screen_transition.h"
 #include "main/camera.h"
@@ -17,7 +17,7 @@
 #include "main/dll/dll_010E_deathseq.h"
 #include "main/dll/player_status.h"
 #include "main/dll/tricky_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 static const f32 gDeathSeqCameraYawAngle = -0.7853982f;
 static const f32 gDeathSeqCameraPitchAngle = 0.3926991f;

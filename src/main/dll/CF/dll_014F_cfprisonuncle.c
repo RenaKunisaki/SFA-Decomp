@@ -8,7 +8,7 @@
  * the sequence script). Once he is gone (0x50) only his companion
  * object still renders. Carved from the sandwormBoss 10-DLL container.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "main/objprint_anim_api.h"
@@ -19,7 +19,7 @@
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/obj_trigger.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/shader_api.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"

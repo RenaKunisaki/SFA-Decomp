@@ -14,15 +14,15 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll/staffflags_struct.h"
 #include "main/dll/player_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/CF/staffactivated_helpers.h"
 #include "main/objseq.h"
 #include "main/objhits.h"
 #include "main/obj_group.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_011B_landedarwing.h"
 
 STATIC_ASSERT(sizeof(StaffActivatedState) == 0x24);

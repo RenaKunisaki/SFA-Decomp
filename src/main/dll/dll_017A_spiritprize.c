@@ -10,12 +10,12 @@
  * scans the object list to hand its sequence off to a matching live object
  * and frees itself.
  */
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/objfx_api.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objseq.h"
 #include "main/obj_list.h"
 #include "main/lightmap_api.h"
@@ -23,7 +23,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern u8 lbl_803DB411;
 

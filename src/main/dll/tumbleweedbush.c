@@ -19,10 +19,10 @@
  */
 #include "main/dll/tricky_state.h"
 #include "main/audio/sfx.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/baddie/trickyfollow.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objprint_sound_api.h"

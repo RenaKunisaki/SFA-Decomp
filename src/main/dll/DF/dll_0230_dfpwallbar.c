@@ -3,8 +3,8 @@
  * The DLL's real object is the chuka_* family - a moving wall/floor bar
  * driven by the shared baddie state machine.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/baddie/chuka.h"
 #include "main/gamebits.h"

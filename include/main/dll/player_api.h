@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PLAYER_API_H_
 #define MAIN_DLL_PLAYER_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/dll/player_staff_api.h"
 

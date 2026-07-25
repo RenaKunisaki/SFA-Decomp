@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_02B8_MCUPGRADEMA_H
 
 #include "main/dll/mcupgrade_state.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 extern ObjectDescriptor gMCUpgradeMaObjDescriptor;

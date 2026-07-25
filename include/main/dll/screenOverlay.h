@@ -2,7 +2,7 @@
 #define MAIN_DLL_SCREENOVERLAY_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void ProjectileSwitch_render(GameObject* obj, int p2, int p3, int p4, int p5, char flag);
 void ProjectileSwitch_hitDetect(GameObject* obj);

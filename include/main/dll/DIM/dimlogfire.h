@@ -2,11 +2,11 @@
 #define MAIN_DLL_DIM_DIMLOGFIRE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/modellight_api.h"
 #include "global.h"
 #include "main/objanim_update.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct DimlogfirePlacement
 {

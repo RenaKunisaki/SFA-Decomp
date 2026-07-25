@@ -20,7 +20,7 @@
 #include "main/object_render.h"
 #include "main/render_envfx_api.h"
 #include "main/render_lactions_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/mapEvent.h"
 #include "main/objanim_update.h"
@@ -32,7 +32,7 @@
 #include "main/map_load.h"
 #include "main/rcp_dolphin.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/im_world_map_api.h"
 #include "main/dll/dll_0011_screens.h"
 

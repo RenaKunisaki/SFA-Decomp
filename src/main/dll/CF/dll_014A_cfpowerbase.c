@@ -9,16 +9,16 @@
  * it done and notifies via its type-index sequence.
  */
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_message.h"
-#include "main/object_api.h"
-#include "main/obj_placement.h"
+#include "sys/objects.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/dll/CF/dll_014A_cfpowerbase.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(CfPowerBaseState) == 0x6);
 

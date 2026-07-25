@@ -24,7 +24,7 @@
  *   if (p6) objRenderModelAndHitVolumes(lbl_803E6408).
  *   if (b->_8 && (b->_8->_6 & 0x40)) clear.
  */
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/objfx_api.h"
 #include "main/objanim.h"
@@ -39,10 +39,10 @@
 #include "main/dll/drakorenergystate_struct.h"
 #include "main/dll/dbstealerwormcontrol_struct.h"
 #include "main/dll/dfp_types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/audio/sfx_ids.h"
 #include "main/dll/baddie_state.h"
 #include "main/objseq.h"

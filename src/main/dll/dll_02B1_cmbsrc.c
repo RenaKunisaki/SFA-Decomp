@@ -24,7 +24,7 @@
 #include "main/model_light.h"
 #include "main/sky_interface.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/objfx.h"
 #include "main/dll/dll_02B1_cmbsrc.h"

@@ -6,7 +6,7 @@
  * objects, state, or behaviour live here.
  */
 #include "main/dll/dll_006C_dummy6c.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 ObjectDescriptor4 lbl_80313AD0 = {
     0,

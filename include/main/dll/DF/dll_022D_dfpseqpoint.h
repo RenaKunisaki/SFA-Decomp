@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DF_DLL_022D_DFPSEQPOINT_H_
 #define MAIN_DLL_DF_DLL_022D_DFPSEQPOINT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 int DFP_seqpoint_getExtraSize(void);

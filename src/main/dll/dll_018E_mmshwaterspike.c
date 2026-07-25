@@ -7,9 +7,9 @@
  */
 #include "main/dll/waterfx_interface.h"
 #include "main/debug.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/track_dolphin_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_list.h"
 #include "main/dll/xyzanimator_api.h"
 #include "main/frame_timing.h"

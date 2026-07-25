@@ -1,6 +1,6 @@
 /* DLL 0x01FB - WCLaser render object (WarpZone cannon laser). TU: 0x801F0900-0x801F0AE4. */
 #include "main/dll/dll_01FB_dll1fb.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/pad_api.h"
 #include "main/resource.h"
 #include "main/frame_timing.h"
@@ -22,7 +22,7 @@ STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
 
 STATIC_ASSERT(sizeof(WmGalleonState) == 0x10);
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"

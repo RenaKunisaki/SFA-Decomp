@@ -1,6 +1,6 @@
 /* DLL 0x00F9 (projectileswitch) - Projectile switch object [0x8017A350-0x8017A8EC). */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objhits.h"
 #include "main/objprint_api.h"
 #include "main/audio/sfx_ids.h"
@@ -10,7 +10,7 @@
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/maketex_sequence_api.h"
 #include "main/dll/dll_00F9_projectileswitch.h"
 

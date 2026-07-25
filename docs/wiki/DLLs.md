@@ -520,7 +520,7 @@ The wiki's "loading/unloading a DLL just changes a reference counter" claim is e
 ### The per-object vtable (why "Dummy04"/"Dummy3A" are "all functions stubbed")
 
 Each object-handling DLL slot's descriptor is one of the `ObjectDescriptor*` variable-length structs
-in `include/main/object_descriptor.h` — a fixed prefix (`reserved0..2`, `slotCountAndFlags`) followed
+in `include/dlls/object_descriptor.h` — a fixed prefix (`reserved0..2`, `slotCountAndFlags`) followed
 by up to 20 callback slots (`initialise`, `release`, `init`, `update`, `hitDetect`, `render`, `free`,
 `getObjectTypeId`, `getExtraSize`, then object-specific `slotNN` extras). This is the concrete
 on-disk form of the wiki's "all functions stubbed" DLLs:

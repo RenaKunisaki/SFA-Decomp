@@ -12,18 +12,18 @@
 #include "main/vecmath.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/objfx.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/ARW/dll_02A6_arwsquadron.h"
 #include "main/dll/headdisplay.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define ARW_SQUADRON_PARTFX_SMOKE 0x7d0 /* damage smoke effect (pfx.f8 = damageSmokeScale) */
 #define ARW_SQUADRON_PARTFX_FIRE  0x7d1 /* fire effect (pfx.f8 = fireFxScale) */

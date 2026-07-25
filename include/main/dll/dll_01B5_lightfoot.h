@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_01B5_LIGHTFOOT_H_
 #define MAIN_DLL_DLL_01B5_LIGHTFOOT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 extern int lbl_80334EE8[];
 extern int lbl_803DB0D0[];

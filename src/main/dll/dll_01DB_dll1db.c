@@ -25,7 +25,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/dll_01DB_dll1db.h"
 
 enum

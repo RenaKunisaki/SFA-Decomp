@@ -1,6 +1,6 @@
 #include "main/asset_load.h"
-#include "main/object_api.h"
-#include "main/game_object.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
 #include "main/dll/CF/CFchuckobj.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
@@ -9,9 +9,9 @@
 #include "main/pi_dolphin.h"
 #include "main/dll/objfsa.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 LfxEmitterConfig gLfxEmitterConfigCache;
 
 

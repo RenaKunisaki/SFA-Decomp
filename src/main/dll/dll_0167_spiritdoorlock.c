@@ -29,9 +29,9 @@
 #include "main/object_render.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/objtexture.h"
 #include "main/objseq.h"
@@ -41,7 +41,7 @@
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_transform.h"
 
 s16 gSpiritDoorLockSpinSpeed = -256;

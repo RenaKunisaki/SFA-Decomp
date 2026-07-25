@@ -5,7 +5,7 @@
 #include "main/dll/projgfx_interface.h"
 #include "main/vecmath.h"
 #include "main/expgfx_internal.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/rcp_dolphin.h"
 
 extern ObjectDescriptor11 projgfx_funcs;

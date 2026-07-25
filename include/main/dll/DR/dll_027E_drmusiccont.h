@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DLL_027E_DRMUSICCONT_H_
 #define MAIN_DLL_DR_DLL_027E_DRMUSICCONT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "global.h"
 

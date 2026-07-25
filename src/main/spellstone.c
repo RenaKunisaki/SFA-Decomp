@@ -2,11 +2,11 @@
 #include "main/mapEvent.h"
 #include "main/spellstone.h"
 #include "main/spellstone_idle.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/object_update_list.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/vecmath.h"
 
 s16 lbl_803DC228[2] = {0x49A, 0x49A};

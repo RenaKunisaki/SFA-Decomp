@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_NW_DLL_01A4_NWICE_H_
 #define MAIN_DLL_NW_DLL_01A4_NWICE_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct NwIcePlacement
 {

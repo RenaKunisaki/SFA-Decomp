@@ -18,7 +18,7 @@
 #include "main/dll/MMP/mmp_asteroid_re_state.h"
 #include "main/object_render.h"
 #include "main/gamebit_ids.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
 #include "main/objanim_update.h"
 #include "main/gamebits.h"
@@ -26,11 +26,11 @@
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/camera_shake_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/MMP/dll_0180_mmpasteroidre.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(MmpAsteroidReState) == 0x1C);
 

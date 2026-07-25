@@ -12,7 +12,7 @@
  * animator states it shares headers with.
  */
 #include "main/dll/waveanimatorstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/alphaanimatorstate_struct.h"
 #include "main/dll/visanimatorstate_struct.h"
 #include "main/map_block.h"
@@ -22,7 +22,7 @@
 #include "main/lightmap_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* Map-block poly-group record (blk+0x50 table, 0x14 stride, returned by
  * mapBlockGetPolygonGroup) - layout matches MapTriGroup in track_dolphin.c.

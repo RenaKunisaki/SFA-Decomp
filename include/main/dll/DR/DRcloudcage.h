@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DRCLOUDCAGE_H_
 #define MAIN_DLL_DR_DRCLOUDCAGE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 void fn_801E9C00(GameObject* obj, int state);

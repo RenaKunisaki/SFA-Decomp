@@ -7,12 +7,12 @@
  * parks the frame at maxFrame. init re-checks the done bit so a
  * revisited map keeps an already-finished light lit.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objtexture.h"
 #include "main/gamebits.h"
 #include "main/dll/CF/dll_0131_cfdoorlight.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CFDOORLIGHT_OBJFLAG_HIDDEN             0x4000
 #define CFDOORLIGHT_OBJFLAG_HITDETECT_DISABLED 0x2000

@@ -2,7 +2,7 @@
 #define MAIN_DLL_SEQOBJ11D_EXT_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void fn_80151C68(int obj, u8* state);
 

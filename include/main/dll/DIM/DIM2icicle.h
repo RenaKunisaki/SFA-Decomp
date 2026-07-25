@@ -4,7 +4,7 @@
 #include "main/dll/DIM/dll_01E0_dimboss.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 extern PartFxSpawnParams gDim2IcicleDustFxSource;

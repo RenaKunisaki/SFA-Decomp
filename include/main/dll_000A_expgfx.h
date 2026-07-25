@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/expgfx_resource_api.h"
 
 extern ObjectDescriptor14 expgfx_funcs;

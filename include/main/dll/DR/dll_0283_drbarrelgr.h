@@ -3,8 +3,8 @@
 
 #include "global.h"
 #include "main/dll/curve_walker.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 extern f32 lbl_803E6CA0;
 extern f32 lbl_803E6CA4;

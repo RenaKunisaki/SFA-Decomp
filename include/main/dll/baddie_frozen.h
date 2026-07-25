@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_BADDIE_FROZEN_H_
 #define MAIN_DLL_BADDIE_FROZEN_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/mtx/vec_types.h"
 
 u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, int hit, int p5, int p6,

@@ -33,7 +33,7 @@
 #include "main/pi_dolphin_api.h"
 #include "main/map_load.h"
 #include "main/sky_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/model.h"
 #include "main/render_lactions_api.h"
 #include "main/dll/sbpropellerstate_struct.h"

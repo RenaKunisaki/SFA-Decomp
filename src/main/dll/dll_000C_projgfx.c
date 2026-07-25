@@ -5,7 +5,7 @@
  * "No Longer supported" OSReport stubs (release/rayhit/setzscale).
  */
 #include "main/dll/modgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/os/OSReport.h"
 
 #define PROJGFX_UNSUPPORTED_FALSE_RETURN 0

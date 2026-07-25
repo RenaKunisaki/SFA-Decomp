@@ -13,7 +13,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/screenfx_types.h"
 #include "main/dll/screens.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 
 u8 lbl_803DB958[8] = {0, 0, 0, 1, 0, 2, 0, 0};

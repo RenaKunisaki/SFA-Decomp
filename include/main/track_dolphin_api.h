@@ -2,7 +2,7 @@
 #define MAIN_TRACK_DOLPHIN_API_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_render_instrs_api.h"
 #include "main/track_dolphin_map_api.h"
 

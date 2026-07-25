@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_CF_STAFFACTIVATED_HELPERS_H_
 #define MAIN_DLL_CF_STAFFACTIVATED_HELPERS_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "main/dll/CF/dll_163.h"
 

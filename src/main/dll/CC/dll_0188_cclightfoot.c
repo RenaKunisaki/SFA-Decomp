@@ -10,7 +10,7 @@
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define GAMEBIT_LIGHTFOOT_TRIGGERED         9
 #define GAMEBIT_CC_COMPLETE                 0x24
@@ -51,10 +51,10 @@ typedef struct CcLightfootState
 
 STATIC_ASSERT(sizeof(CcLightfootState) == 0x18);
 #include "main/dll/waterfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/objfx_hit_emitter_api.h"
 #include "main/obj_link.h"

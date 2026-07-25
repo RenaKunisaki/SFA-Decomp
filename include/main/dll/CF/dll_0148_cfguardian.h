@@ -1,11 +1,11 @@
 #ifndef MAIN_DLL_CF_DLL_0148_CFGUARDIAN_H_
 #define MAIN_DLL_CF_DLL_0148_CFGUARDIAN_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_0015_curves.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/camera_interface.h"
 #include "main/game_ui_interface.h"
 #include "main/dll/player_status.h"

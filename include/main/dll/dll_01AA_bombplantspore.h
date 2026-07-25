@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_01AA_BOMBPLANTSPORE_H_
 #define MAIN_DLL_DLL_01AA_BOMBPLANTSPORE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/modellight_api.h"
 
 typedef struct BombPlantSporeState

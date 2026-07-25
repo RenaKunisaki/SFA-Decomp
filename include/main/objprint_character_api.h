@@ -2,7 +2,7 @@
 #define MAIN_OBJPRINT_CHARACTER_API_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CharacterEyeAnimState
 {

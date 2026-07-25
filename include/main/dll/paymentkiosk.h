@@ -2,7 +2,7 @@
 #define MAIN_DLL_PAYMENTKIOSK_H_
 
 #include "global.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 /*
  * Per-object extra state for the PaymentKiosk family

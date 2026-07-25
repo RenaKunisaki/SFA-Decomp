@@ -12,9 +12,9 @@
  * Foreign ObjectDescriptor tables are not present in this translation unit;
  * each descriptor is defined by its own DLL.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
 #include "main/dll/dll_00EA_sideload.h"
 

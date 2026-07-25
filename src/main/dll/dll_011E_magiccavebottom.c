@@ -6,11 +6,11 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/obj_trigger.h"
 #include "main/render_envfx_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/dll/tricky_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 
 #define MAGICCAVEBOTTOM_GAMEBIT_ACTIVE 0xefb /* bottom-area loaded/active latch */

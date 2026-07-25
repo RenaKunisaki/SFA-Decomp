@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DLL_0258_DRCLOUDRUNNER_H_
 #define MAIN_DLL_DR_DLL_0258_DRCLOUDRUNNER_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "main/objanim_update.h"
 #include "main/dll/DR/cloudrunner_state.h"

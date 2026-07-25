@@ -1,7 +1,7 @@
 #ifndef MAIN_NEWSHADOWS_SHADOW_API_H_
 #define MAIN_NEWSHADOWS_SHADOW_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/texture.h"
 
 void newshadows_getShadowTextureTable4x8(Texture*** tableOut, int* columnsOut, int* rowsOut);

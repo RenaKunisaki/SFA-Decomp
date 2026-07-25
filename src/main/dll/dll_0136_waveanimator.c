@@ -12,12 +12,12 @@
 #include "main/dll/waveanimatorobjectdef_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll/waveanimatorstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/mm.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct WaveAnimatorColor
 {

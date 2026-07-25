@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_IM_DLL_0114_IMMULTISEQ_H_
 #define MAIN_DLL_IM_DLL_0114_IMMULTISEQ_H_
 
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
 typedef struct IMMultiSeqPlacement

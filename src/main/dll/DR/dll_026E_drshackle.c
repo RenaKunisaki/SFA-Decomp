@@ -10,13 +10,13 @@
  * drshackle.c build unit (DRshackle.h).
  */
 #include "dolphin/mtx/mtx_legacy.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model.h"
 #include "main/obj_group.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
 #include "main/objseq.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"

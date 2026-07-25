@@ -1,5 +1,5 @@
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/checkpoint_interface.h"
 #include "main/vecmath.h"
 #include "main/dll/DR/DRcloudcage.h"

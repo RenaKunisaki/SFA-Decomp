@@ -10,8 +10,8 @@
  * filter back down. State lives in a 3-byte extra (DofState).
  */
 #include "main/dll/dll_00C8_depthoffieldpoint.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/rcp_dolphin_api.h"
 

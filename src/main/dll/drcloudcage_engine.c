@@ -2,7 +2,7 @@
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_channel_volume_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"

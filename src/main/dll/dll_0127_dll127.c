@@ -9,12 +9,12 @@
  *    and is re-armed whenever the hit-react flags carry bit 8.
  * TU: 0x8018CD64-0x8018CEE4.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_0127_dll127.h"
 
 int dll_127_getExtraSize_ret_0(void)

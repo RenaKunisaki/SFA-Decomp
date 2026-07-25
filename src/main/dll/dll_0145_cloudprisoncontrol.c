@@ -15,7 +15,7 @@
  *   0xF0005..0xF0007 ignored, 0xF0008 unregister a target (compacts the
  *   list), any other id is appended to the deferred-message queue.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_message.h"
 #include "main/dll/cloudprisoncontrol.h"
 #include "main/dll/rom_curve_interface.h"

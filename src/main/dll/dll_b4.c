@@ -7,12 +7,12 @@
  * (lbl_803DD4C4) aimed by the camcontrol normalized vector for lighting the icon.
  */
 #include "main/dll/dll_B4.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/dll_B3.h"
 #include "main/dll/dll_B2.h"
 #include "main/model.h"
 #include "main/model_light.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 
 /* Lock-on / A-button reticle object (retail OBJECTS.bin name "LockIcon"),
    cached into gCamcontrolTargetReticle. */

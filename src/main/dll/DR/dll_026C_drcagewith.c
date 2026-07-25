@@ -11,17 +11,17 @@
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/objhits.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objprint_api.h"
 #include "main/dll/objfx_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define DRCAGEWITH_CHILD_OBJ 1143
 #define DRCAGEWITH_CAGE_NOROPE_OBJ 2154

@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DIM_DLL_01BE_DIMLAVA_H_
 #define MAIN_DLL_DIM_DLL_01BE_DIMLAVA_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct DimLavaPlacement
 {

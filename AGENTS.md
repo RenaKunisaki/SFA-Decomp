@@ -40,6 +40,7 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 - Do not get trapped in local optima. If a path stops yielding structure, switch level: inspect related code, assets, rodata, strings, object layouts, SDK analogs, or write tooling.
 - Prefer recovering coherent source over narrowly chasing one assembly diff while the surrounding code remains obviously wrong.
 - Please try to keep the build in a functional state (ninja should compile successfully on work complete and a fresh run).
+- Follow `docs/code_conventions.md` for header ownership, naming, and formatting. In particular, use semantic `sys/`, `game/`, and `dlls/` owners instead of adding new flat `include/main/*_api.h` fragments.
 
 ## Expected Work
 - Infer function names where none exist yet.

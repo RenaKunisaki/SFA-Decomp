@@ -20,7 +20,7 @@
 #include "main/pad.h"
 #include "main/debug.h"
 #include "main/sky.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/pad.h"
 #include "main/dll/LGT/dll_02AA_lgtdirectionallight.h"
 #include "main/object_render.h"

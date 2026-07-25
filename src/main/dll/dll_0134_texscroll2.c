@@ -16,11 +16,11 @@
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/map_block.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/rcp_dolphin.h"
 #include "main/dll/dll_0134_texscroll2.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/map_texscroll.h"
 
 

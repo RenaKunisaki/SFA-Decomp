@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_WC_DLL_028C_WCBOUNCYCRA_H
 #define MAIN_DLL_WC_DLL_028C_WCBOUNCYCRA_H
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct WCBlockGridInterface
 {

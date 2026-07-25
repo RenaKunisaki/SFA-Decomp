@@ -14,7 +14,7 @@
 #include "main/dll/DIM/DIMbossspit.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/player_control_interface.h"
 #include "main/dll/DIM/dll_223.h"
 #include "main/frame_timing.h"

@@ -1,7 +1,7 @@
 #ifndef MAIN_OBJPRINT_INTERNAL_H_
 #define MAIN_OBJPRINT_INTERNAL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objtexture.h"
 
 #define OBJPRINT_OBJECT(obj)            ((ObjAnimComponent*)(obj))

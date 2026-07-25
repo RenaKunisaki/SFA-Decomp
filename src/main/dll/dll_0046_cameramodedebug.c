@@ -6,7 +6,7 @@
  */
 #include "main/camera_interface.h"
 #include "main/camera_object.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/CAM/camdebug_state.h"
 #include "main/dll/CAM/camstatic_state.h"
 #include "main/mm.h"

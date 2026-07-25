@@ -10,11 +10,11 @@
  * (gQueenEarthWalkerMoveTable/E24 tables); the flags byte tracks the per-frame mode.
  */
 #include "main/dll/dll_801d4198.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebit_ids.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objprint_anim_api.h"
 #include "main/objprint_character_api.h"
 #include "main/audio/sfx.h"
@@ -29,7 +29,7 @@
 #include "main/frame_timing.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/tricky_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u8 gQueenEarthWalkerEventTableAct1[4] = {1, 0, 0, 0};
 u8 gQueenEarthWalkerEventTableAct2[4] = {1, 0x14, 0, 0};

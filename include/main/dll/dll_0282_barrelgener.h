@@ -3,8 +3,8 @@
 
 #include "main/dll/barrelgener_state.h"
 #include "main/dll/curve_walker.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/vec_types.h"
 #include "main/lightningeffect.h"
 

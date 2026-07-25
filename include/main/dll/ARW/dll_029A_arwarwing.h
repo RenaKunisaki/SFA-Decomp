@@ -2,8 +2,8 @@
 #define MAIN_DLL_ARW_DLL_029A_ARWARWING_H
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 #include "main/vec_types.h"
 #include "main/dll/ARW/arwing_state.h"

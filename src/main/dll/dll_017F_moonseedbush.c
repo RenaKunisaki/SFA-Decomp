@@ -14,13 +14,13 @@
  * SeqFn returns non-zero until the seed is fully grown.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_017F_moonseedbush.h"
 
 STATIC_ASSERT(sizeof(MoonSeedBushState) == 0x2);

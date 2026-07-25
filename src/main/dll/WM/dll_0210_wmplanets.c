@@ -15,12 +15,12 @@
  */
 #include "main/object_render.h"
 #include "main/frame_timing.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
+#include "game/objects/object_setup.h"
 #include "main/vecmath.h"
 #include "main/dll/WM/dll_0210_wmplanets.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 const u32 lbl_802C2500[4] = {0, 0, 0, 0};
 

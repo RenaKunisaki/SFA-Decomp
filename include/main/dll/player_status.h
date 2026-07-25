@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PLAYER_STATUS_H_
 #define MAIN_DLL_PLAYER_STATUS_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 int playerGetCurMagic(GameObject* playerObj);
 int playerGetMaxMagic(GameObject* playerObj);
 int playerGetMaxHealth(GameObject* playerObj);

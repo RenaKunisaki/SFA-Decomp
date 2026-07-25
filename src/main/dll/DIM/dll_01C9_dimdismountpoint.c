@@ -4,15 +4,15 @@
  * plane test so the conveyor can determine which side of the dismount point
  * the player is on.
  */
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/DIM/dll_01C9_dimdismountpoint.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/objprint_render_api.h"
 #include "main/obj_group.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 
 #define DIMDISMOUNT_GAMEBIT_DONE  0x3e3

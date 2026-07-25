@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DREARTHWALK_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 void sh_staff_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);

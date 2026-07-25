@@ -2,7 +2,7 @@
 #define MAIN_DLL_DIM_DIMWOODDOOR_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/DIM/dimwooddoor_aim_api.h"
 
 void DIMwooddoor_spawnShard(GameObject* obj, u8 variant);

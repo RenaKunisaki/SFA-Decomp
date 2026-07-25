@@ -8,10 +8,10 @@
  * freeing itself. TU: 0x801E341C-0x801E34C0.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/objfx.h"
 #include "main/model_light.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/sbshipheadstate_struct.h"
 #include "main/dll/sbpropellerstate_struct.h"
 #include "main/dll_000A_expgfx.h"
@@ -19,7 +19,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define SB_CANNONBALL_EXTRA_SIZE 0x24
 

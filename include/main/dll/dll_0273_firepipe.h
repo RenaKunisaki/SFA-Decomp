@@ -2,9 +2,9 @@
 #define MAIN_DLL_FIREPIPE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_internal.h"
 #include "main/modellight_api.h"
 #include "main/dll/firepipe_effect_api.h"

@@ -9,14 +9,14 @@
  * vtable (slots 0x20/0x28/0x2c) and through DBprotection_getCameraState.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/object_transform.h"
 #include "main/object_render.h"
 #include "main/dll/sbshipheadstate_struct.h"
@@ -32,7 +32,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/SB/dll_01EA_sbshiphead.h"
 #include "main/dll/SB/dll_01E8_sbgalleon.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u8 gSbShipHeadHasFiredFireball = 1;
 

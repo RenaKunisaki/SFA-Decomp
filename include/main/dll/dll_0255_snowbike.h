@@ -4,7 +4,7 @@
 #include "ghidra_import.h"
 #include "global.h"
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/checkpoint_interface.h"
 #include "main/objseq.h"
 

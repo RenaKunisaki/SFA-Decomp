@@ -14,7 +14,7 @@
  */
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/boneparticleeffect_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_engine.h"
 #include "main/dll/dll_801e66dc.h"
 

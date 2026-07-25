@@ -15,7 +15,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/fb_cmd.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/foodbag.h" /* family cross-sibling header (7C..90 convention); also supplies undefined4 + this DLL's own func03 decl */
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */

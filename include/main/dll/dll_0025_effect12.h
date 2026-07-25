@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_0025_EFFECT12_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/effectsrcparams_struct.h"
 
 int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByte, f32* auxParam);

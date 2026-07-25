@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DLL_0280_DRCLOUDPER_H_
 
 #include "global.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct DrCloudPerState
 {

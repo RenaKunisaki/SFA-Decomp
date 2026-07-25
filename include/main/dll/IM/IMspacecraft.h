@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_IM_IMSPACECRAFT_H_
 #define MAIN_DLL_IM_IMSPACECRAFT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "main/modellight_api.h"
 #include "main/dll/curve_walker.h"

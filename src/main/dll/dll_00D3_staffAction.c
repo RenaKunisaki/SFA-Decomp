@@ -24,11 +24,11 @@
  */
 #include "main/dll/baddie_state.h"
 #include "main/dll/baddie_control_interface.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/path_control_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/track_bbox_api.h"
 #include "main/objprint_api.h"
 #include "main/dll/landedArwing.h"
@@ -838,7 +838,7 @@ void dll_D3_hitDetect_nop(void)
 #include "main/dll/treasurechest_state.h"
 #include "main/objseq.h"
 #include "main/objfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "string.h"
 #include "main/dll/dll_00D2_tumbleweed.h"
 

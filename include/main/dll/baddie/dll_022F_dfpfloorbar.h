@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_BADDIE_DLL_022F_DFPFLOORBAR_H_
 #define MAIN_DLL_BADDIE_DLL_022F_DFPFLOORBAR_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define DFPFLOORBAR_MODE_ROW_COUNT     3
 #define DFPFLOORBAR_MODE_ROW_SIZE      3

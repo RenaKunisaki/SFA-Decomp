@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_CF_DLL_0153_CFPERCH_H_
 #define MAIN_DLL_CF_DLL_0153_CFPERCH_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 int CFPerch_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);

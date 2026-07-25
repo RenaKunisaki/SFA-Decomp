@@ -9,13 +9,13 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/sbfireballstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/objfx.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/SB/dll_01ED_sbfireball.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define SB_FIREBALL_EXTRA_SIZE          0x18
 #define SB_FIREBALL_SPIN_STEP           -800

@@ -12,11 +12,11 @@
  * speeds.
  */
 #include "main/frame_timing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
 #include "main/texture.h"
 #include "main/dll/LGT/dll_02AB_lgtprojectedlight.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 const f32 lbl_802C2618[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 

@@ -14,9 +14,9 @@
  * is already set at init the vine spawns already-consumed (hidden,
  * hits off).
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_update_list.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/objfx.h"
 #include "main/audio/sfx_ids.h"
 #include "main/gamebits.h"

@@ -16,18 +16,18 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_00D8_pinponspike_api.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define PINPONSPIKE_HIT_VOLUME_SLOT 10
 

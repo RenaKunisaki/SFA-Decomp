@@ -5,7 +5,7 @@
 #include "main/dll/objfsa_romcurve.h"
 #include "main/dll/objfsa.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_0015_curves.h"
 #include "main/gamebits.h"
 #include "main/dll/modgfx.h"

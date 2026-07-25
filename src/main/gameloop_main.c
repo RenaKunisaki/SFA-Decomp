@@ -39,7 +39,7 @@
 #include "main/model_engine.h"
 #include "main/model.h"
 #include "main/mm.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/objseq.h"
 #include "main/player_control_interface.h"

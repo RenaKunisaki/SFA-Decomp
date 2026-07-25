@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_DLL_0111_DOORLOCK_H_
 #define MAIN_DLL_DLL_0111_DOORLOCK_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct DoorLockPlacement
 {

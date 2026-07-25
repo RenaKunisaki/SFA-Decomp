@@ -1,10 +1,10 @@
 #include "main/dll/skeetla.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_list.h"
 #include "main/obj_group.h"
 #include "main/objhits.h"
 #include "main/objHitReact.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 
 extern const f32 lbl_803E2484;
 

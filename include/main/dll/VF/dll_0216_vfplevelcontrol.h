@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_VF_DLL_0216_VFPLEVELCONTROL_H_
 #define MAIN_DLL_VF_DLL_0216_VFPLEVELCONTROL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "global.h"
 

@@ -17,13 +17,13 @@
  * explodable_computeFragmentLaunch computes a fragment's launch offset/velocity/spin from the
  * placement def and random spread; explodable_spawnFragmentObject spawns the fragment object.
  */
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_015A_explodable.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/model.h"
 #include "track/intersect_api.h"
 #include "main/dll/dll_0166_exploded.h"

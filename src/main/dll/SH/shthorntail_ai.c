@@ -20,8 +20,8 @@
 #include "main/frustum.h"
 #include "main/frame_timing.h"
 #include "main/audio/sfx.h"
-#include "main/object_descriptor.h"
-#include "main/object_api.h"
+#include "dlls/object_descriptor.h"
+#include "sys/objects.h"
 #include "main/obj_group.h"
 #include "main/dll/dll_00C9_enemy.h"
 

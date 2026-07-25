@@ -11,7 +11,7 @@
  * sizeof(GCRobotBlastState).
  */
 #include "main/dll/blastflags4_types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
 #include "main/objanim_update.h"
 #include "main/dll/dll_0240_gcrobotblast.h"

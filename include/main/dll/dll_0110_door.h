@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_DLL_0110_DOOR_H_
 #define MAIN_DLL_DLL_0110_DOOR_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* Retail DLL 0x110 door placements are uniformly 9 words: the common head
    followed by this exact 0x0C-byte parameter tail. */

@@ -1,7 +1,7 @@
 #include "main/dll/tricky_state.h"
 #include "main/dll/baddie/trickyfollow.h"
 #include "main/dll/baddie/MMP_critterspit.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/vecmath.h"
 #include "main/dll/mmp_cratercritter.h"

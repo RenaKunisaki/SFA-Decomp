@@ -4,7 +4,7 @@
 #include "main/shader_api.h"
 #include "main/map_block.h"
 #include "main/sky_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/rcp_dolphin_api.h"
 #include "dolphin/gx.h"
 #include "dolphin/mtx.h"

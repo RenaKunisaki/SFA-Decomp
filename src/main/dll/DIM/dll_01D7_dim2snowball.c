@@ -10,7 +10,7 @@
 #include "main/dll/dimmagicbridge_state.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/dimwooddoor2state_struct.h"
 #include "main/dll/fbwgpipe_struct.h"
 #include "main/dll/dll1cestate_struct.h"
@@ -24,7 +24,7 @@
 #include "main/objseq.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
 
@@ -45,9 +45,9 @@ STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
 FbWGPipe GXWGFifo : (0xCC008000);
 
 #include "main/audio/sfx_ids.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/track_bbox_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "main/obj_list.h"

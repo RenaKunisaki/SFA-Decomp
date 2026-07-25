@@ -2,10 +2,10 @@
 #define MAIN_DLL_DLL_00E0_SWARMBADDIE_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/swarmbaddiestate_struct.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct SwarmBaddiePlacement
 {

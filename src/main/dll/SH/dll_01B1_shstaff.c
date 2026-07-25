@@ -14,10 +14,10 @@
  * 3/4/5 carry -> 6 done). sh_staff_deactivate hides the staff, releases the
  * flames, and ends the player's carry.
  */
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "main/obj_group.h"
 #include "main/obj_trigger.h"
@@ -66,7 +66,7 @@ void sh_staff_free(int* obj, int flag)
 }
 
 #include "main/dll/DR/DRearthwalk.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/game_ui_interface.h"
 #include "main/objhits.h"
 #include "main/objseq.h"

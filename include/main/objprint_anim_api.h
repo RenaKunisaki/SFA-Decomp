@@ -2,7 +2,7 @@
 #define MAIN_OBJPRINT_ANIM_API_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void objAnimFn_80038f38(GameObject* obj, char* state);
 void fn_8003B500(GameObject* obj, s16* state, f32 value);

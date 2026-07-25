@@ -4,7 +4,7 @@
 #include "main/dll/DIM/dimcannon_state.h"
 #include "main/camera_interface.h"
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/dll/DIM/DIMlevcontrol.h"

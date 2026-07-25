@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_DLL_00FE_MAGICPLANT_H_
 #define MAIN_DLL_DLL_00FE_MAGICPLANT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "global.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_internal.h"
 
 #define MAGICPLANT_DLL_ID                     0x00FE

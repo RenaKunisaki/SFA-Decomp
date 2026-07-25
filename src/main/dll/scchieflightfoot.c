@@ -16,7 +16,7 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/SC/SCchieflightfoot.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 
 typedef struct SHthorntailDustEffectParams

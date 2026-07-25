@@ -14,7 +14,7 @@
 #include "main/dll/screenfx_types.h"
 #include "main/dll/screens.h"
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL9C_EFFECT_ID 0x154

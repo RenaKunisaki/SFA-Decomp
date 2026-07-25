@@ -13,7 +13,7 @@
  */
 #include "main/dll/dimwooddoor2placement_struct.h"
 #include "main/dll/dimwooddoor2state_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"

@@ -18,10 +18,10 @@
 #include "main/vecmath.h"
 #include "main/render_envfx_api.h"
 #include "main/gamebit_ids.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/DF/DFlantern.h"
 #include "main/dll/player_api.h"
 #include "main/objseq.h"
@@ -34,7 +34,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u8 gDfShShrinePendingReward = 1;
 

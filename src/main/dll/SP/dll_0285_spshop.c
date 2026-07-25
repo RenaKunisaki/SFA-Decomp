@@ -10,9 +10,9 @@
 #include "main/dll/player_objects.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_staff_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/mapEvent.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
@@ -21,7 +21,7 @@
 #include "main/vecmath.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/SP/dll_0285_spshop.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /*
  * Per-object extra state for the ShipBattle cloud-ball projectile

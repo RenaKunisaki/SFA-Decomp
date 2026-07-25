@@ -2,8 +2,8 @@
 #define H_MAIN_DLL_MIKALADON_H
 
 #include "main/dll/baddie_state.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct MikaladonFields
 {

@@ -25,7 +25,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/loaded_file_flags.h"
 #include "main/map_load.h"
@@ -34,7 +34,7 @@
 #include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin.h"
 #include "main/sky_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* Env-effect ids activated by Transporter_SeqFn case 8 (env-fx / sky restore
    on arrival), grouped by the destinationId that fires them. Opaque distinct

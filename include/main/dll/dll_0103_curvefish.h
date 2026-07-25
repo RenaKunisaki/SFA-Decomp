@@ -2,9 +2,9 @@
 #define MAIN_DLL_DLL_0103_CURVEFISH_H_
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/curve_walker.h"
 
 /* Retail CurveFish placements have a fixed 0x0C-byte parameter tail. */

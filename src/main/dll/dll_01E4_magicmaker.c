@@ -9,15 +9,15 @@
  * Three hitDetect registrations are applied to the new creature
  * immediately after spawn.
  */
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
-#include "main/object.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "sys/objects/lifecycle.h"
 #include "main/obj_group.h"
 #include "main/objfx.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/gamebits_api.h"
 #include "main/dll/dll_01E4_magicmaker.h"
 

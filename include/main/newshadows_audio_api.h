@@ -2,7 +2,7 @@
 #define MAIN_NEWSHADOWS_AUDIO_API_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim.h"
 
 int audioPickSoundEffect_8006ed24(u8 surfaceType, u8 soundId);

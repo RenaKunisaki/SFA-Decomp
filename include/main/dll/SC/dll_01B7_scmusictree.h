@@ -2,7 +2,7 @@
 #define MAIN_DLL_SC_DLL_01B7_SCMUSICTREE_H_
 
 #include "main/dll/scmusictreesetup_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "types.h"
 
 void sc_musictree_spawnAmbientEffect(GameObject* obj, int extra, int unused, s8 idx);

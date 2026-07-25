@@ -15,9 +15,9 @@
  * free() releases the trigger state, notifies the title-menu control
  * interface (vtable slot 2), and frees the spawned child.
  */
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/obj_list.h"
 #include "main/objseq.h"
 #include "main/dll/dll_018D_mmshscales.h"

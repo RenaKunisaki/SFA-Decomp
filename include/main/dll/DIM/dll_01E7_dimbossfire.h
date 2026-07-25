@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_DIM_DLL_01E7_DIMBOSSFIRE_H_
 #define MAIN_DLL_DIM_DLL_01E7_DIMBOSSFIRE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "types.h"
 
 #define DIMBOSSFIRE_FLAME_COUNT 10

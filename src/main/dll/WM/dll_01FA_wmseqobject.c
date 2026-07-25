@@ -1,6 +1,6 @@
 /* DLL 0x01FA - wmseqobject / WM_ObjCreator group. TU: 0x801EFF7C-0x801F02F0. */
 #include "main/dll/WC/dll_01F9_wmobjcreator.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
 
@@ -13,7 +13,7 @@ STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
 
 STATIC_ASSERT(sizeof(WmGalleonState) == 0x10);
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/objseq.h"
 #include "main/screen_transition.h"

@@ -444,7 +444,7 @@ The flip side of §10: a finished unit *exports* a header
 `include/main/dll/<unit>.h` declaring its structs and **all** its public functions, so
 other files import it rather than re-declaring. Follow the precedent
 (`dll_00F2_iceblast.h`): guard `MAIN_DLL_<NAME>_H_`, include what the declarations need
-(`main/game_object.h` for `GameObject` params), move the unit's `typedef struct`s into it,
+(`game/objects/object.h` for `GameObject` params), move the unit's `typedef struct`s into it,
 declare every callback. Then:
 
 - the **definer** includes its own header (so the compiler checks each declaration against

@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_019B_DLL19B_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 enum Dll19BPhase

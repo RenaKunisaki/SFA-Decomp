@@ -1,4 +1,4 @@
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objprint_character_api.h"
 #include "main/objprint_internal.h"
 #include "main/vecmath.h"

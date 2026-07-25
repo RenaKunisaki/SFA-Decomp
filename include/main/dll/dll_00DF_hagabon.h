@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_00DF_HAGABON_H_
 
 #include "main/dll/hagabonstate_struct.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor gHagabonObjDescriptor;
 

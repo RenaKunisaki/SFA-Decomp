@@ -4,10 +4,10 @@
  * stub apart from render, which draws the model through the shared
  * object render helper. A 4-byte extra block is reserved but unused.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/dll/IM/dll_016D_imicepillar.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int imicepillar_getExtraSize(void)
 {

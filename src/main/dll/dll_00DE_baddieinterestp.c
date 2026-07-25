@@ -12,7 +12,7 @@
 #include "main/dll/dll_00DE_baddieinterestp_api.h"
 #include "main/object_render.h"
 #include "main/sky_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/resource.h"

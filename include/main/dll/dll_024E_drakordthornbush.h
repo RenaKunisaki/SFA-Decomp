@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_024E_DRAKORDTHORNBUSH_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "main/lightningeffect.h"
 #include "main/model_light.h"

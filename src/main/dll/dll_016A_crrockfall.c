@@ -20,8 +20,8 @@
 #include "main/object_render.h"
 #include "main/dll/crrockfallplacement_struct.h"
 #include "main/dll/crrockfall_types.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/track_dolphin_api.h"
 #include "main/objfx.h"
 #include "main/resource.h"
@@ -29,7 +29,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/objhits.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(CrRockfallState) == 0x14);
 

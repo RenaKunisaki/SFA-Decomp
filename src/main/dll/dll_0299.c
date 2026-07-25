@@ -15,10 +15,10 @@
 void* lbl_803DDD80;
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define DLL0299_OBJFLAG_HITDETECT_DISABLED 0x2000
 

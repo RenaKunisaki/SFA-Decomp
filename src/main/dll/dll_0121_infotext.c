@@ -1,11 +1,11 @@
 /* DLL 0x0121 - infotext. TU: 0x8018B9F0-0x8018BB00. */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objprint_render_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/minimap_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_0121_infotext.h"
 
 int infotext_getExtraSize(void) { return sizeof(InfoTextState); }

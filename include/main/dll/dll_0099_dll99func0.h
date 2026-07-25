@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_0099_DLL99FUNC0_H_
 
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSource, u32 flags,
                    int unused, f32* extraArgs);

@@ -7,14 +7,14 @@
  * up to a fully-extended offset, animating the bridge into place.
  */
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/debug.h"
 #include "main/objtexture.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/objhits.h"
 #include "main/dll/MMP/dll_010F_mmpbridge.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 char lbl_803DBD90[] = "S %d\n";
 

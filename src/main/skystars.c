@@ -1,5 +1,5 @@
 #include "main/newclouds_state.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/newclouds.h"
 #include "track/intersect_api.h"
 #include "track/intersect_render_setup_api.h"

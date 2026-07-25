@@ -18,10 +18,10 @@
 #include "main/model.h"
 #include "main/dll/WC/dll_028D_wclevelcont.h"
 #include "main/dll/WC/dll_0291_wctile.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define WCTILE_RENDER_TYPE_BASE    0x400
 #define WCTILE_RENDER_TYPE_SHIFT   0xb

@@ -7,7 +7,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
 #include "main/dll/dimmagicbridge_state.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dimwooddoor2state_struct.h"
 #include "main/dll/fbwgpipe_struct.h"
 #include "main/dll/dll1cestate_struct.h"
@@ -19,7 +19,7 @@
 #include "main/dll/dll1d6state_struct.h"
 #include "main/dll/explosion_state.h"
 #include "main/objseq.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
 STATIC_ASSERT(sizeof(Dll1CEState) == 0xC);
@@ -38,7 +38,7 @@ STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
 FbWGPipe GXWGFifo : (0xCC008000);
 
 #include "main/audio/sfx_ids.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"

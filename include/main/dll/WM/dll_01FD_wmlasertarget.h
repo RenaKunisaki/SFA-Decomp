@@ -2,8 +2,8 @@
 #define MAIN_DLL_WM_DLL_01FD_WMLASERTARGET_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct WmLaserTargetPlacement
 {

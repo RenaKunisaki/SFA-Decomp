@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0271_DRAKORHOVERPAD_INTERNAL_H_
 #define MAIN_DLL_DLL_0271_DRAKORHOVERPAD_INTERNAL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/rom_curve_interface.h"
 
 extern const f32 gDrakorHoverpadSpeedStep;

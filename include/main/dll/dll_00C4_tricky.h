@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00C4_TRICKY_H_
 #define MAIN_DLL_DLL_00C4_TRICKY_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 #define TRICKY_ITEM_ID_COUNT 5
 
@@ -18,7 +18,7 @@ extern u16 gSkeetlaFootstepSfxId2;
 #include "ghidra_import.h"
 #include "main/dll/tricky_state.h"
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor20WithPadding gTrickyObjDescriptor;
 

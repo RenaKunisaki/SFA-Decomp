@@ -1,11 +1,11 @@
 #ifndef MAIN_DLL_MMP_MMP_BARREL_H_
 #define MAIN_DLL_MMP_MMP_BARREL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_internal.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 extern ObjectDescriptor14 gWaveAnimatorObjDescriptor;
 extern ObjectDescriptor gAlphaAnimatorObjDescriptor;

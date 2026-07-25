@@ -15,8 +15,8 @@
  * command 2 yields the queued sequence. GameBit 0x930 gates a one-shot global
  * unlock sequence.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objprint_render_api.h"
 #include "main/obj_group.h"
 #include "main/obj_trigger.h"
@@ -24,7 +24,7 @@
 #include "main/dll/dll_0111_doorlock.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/pad.h"
 
 

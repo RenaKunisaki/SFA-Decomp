@@ -394,7 +394,7 @@ its own file. Again, a model ID can be negative to prevent remapping.
 
 This repo doesn't carry one monolithic `ObjInstance` struct — the same memory record is split
 across `ObjAnimComponent` (`include/main/objanim_internal.h`, the object's head, `0x00`-`0xB0`,
-`STATIC_ASSERT`-pinned) and `GameObject` (`include/main/game_object.h`, the tail from `0xB0` on,
+`STATIC_ASSERT`-pinned) and `GameObject` (`include/game/objects/object.h`, the tail from `0xB0` on,
 wrapping `ObjAnimComponent anim` at offset 0). Mappings below were verified by reading the source,
 not just offset arithmetic; anything I couldn't confirm live in code is marked "not found".
 
@@ -412,14 +412,14 @@ Wiki offset/name | This codebase | Verified how
 `0x46` `ObjDefEnum defNo` | `s16 seqId` | offset matches (`seqId == 0x46`). **Strong evidence the repo name is wrong / should be `defNo`**: `src/main/objlib.c`'s own debug format string is `"objmsg (%x): overflow in object %d defno=%d FROM: defno %d\n"`, printed from `((GameObject*)dstObj)->anim.classId` then `anim.seqId` — the retail string itself calls this field `defno`. Also, `ObjList_FindNearestObjectByDefNo(int obj, int defNo, ...)` (`objlib.c:1854`) compares its `defNo` parameter directly against `otherObj->anim.seqId`. See Ready-to-adopt below.
 `0x48` `ObjDefEnum defNo48` | `s16 defId` | offset matches (`defId == 0x48`). `object.c:1649`: `type = obj->anim.defId;` used to index `gObjFileRefCount[type]` / `gObjFileBufferTable[type]` (the loaded-object-file ref-count/buffer tables) — consistent with wiki's "def"-flavored guess, though not literally "returned from some seq funcs"
 `0x4A` (s16, unnamed) | `pad4A[2]` | matches, unnamed on both sides
-`0x4C` `ObjDef* objDef` ("the romlist entry that created this object") | `union { s16 *placementData; struct ObjPlacement *placement; }` | **name collision warning**: wiki's `ObjDef` here means the per-*instance* romlist/placement record — this codebase's own `ObjPlacement` (`include/main/obj_placement.h`, `posX@0x8`, `mapId@0x14`, `STATIC_ASSERT`-pinned). This codebase *also* has a type literally named `ObjDef` (objanim_internal.h) but it means something else — see next row
+`0x4C` `ObjDef* objDef` ("the romlist entry that created this object") | `union { s16 *placementData; struct ObjPlacement *placement; }` | **name collision warning**: wiki's `ObjDef` here means the per-*instance* romlist/placement record — this codebase's own `ObjPlacement` (`include/game/objects/object_setup.h`, `posX@0x8`, `mapId@0x14`, `STATIC_ASSERT`-pinned). This codebase *also* has a type literally named `ObjDef` (objanim_internal.h) but it means something else — see next row
 `0x50` `ObjectFileStruct* file` ("the object definition") | `ObjDef *modelInstance` | offset matches (`modelInstance == 0x50`). **This is the collision**: this codebase's `ObjDef` struct (textureSlotDefs, jointData, hitVolumes, modelCount, jointCount, sequenceCount, helpTextIds, renderFlags...) is the wiki's `ObjectFileStruct`/`file` (the shared per-object-type definition), *not* the wiki's `ObjDef` (which is the per-instance placement, i.e. this codebase's `ObjPlacement`). Anyone cross-referencing the wiki against this codebase's `ObjDef` type needs to read it as "`file`", not as wiki's "`objDef`"
 `0x54` `HitState* hitstate` | `ObjHitReactState *hitReactState` | offset + name family match (`hitReactState == 0x54`)
 `0x58` `HitboxMatrix* hitboxMtx` | `pad58[0x5C-0x58]` (unnamed, 4 bytes) | offset matches, not broken out yet
 `0x5C` `int*` (unnamed) | `struct ObjWeaponDaTable *weaponDaTable` | offset matches (`weaponDaTable == 0x5C`); this codebase has a name, wiki doesn't
 `0x60` `int* pEventName` ("unused?") | `struct ObjAnimEventTable *eventTable` | offset matches (`eventTable == 0x60`); `ObjAnimEventTable{ s32 byteCount; ObjAnimPackedEvent *entries; }` looks like a real per-object *event table*, not a "name" — likely resolves wiki's uncertainty here
 `0x64` `Shadow* shadow` | `ObjModelState *modelState` | offset matches (`modelState == 0x64`); `ObjModelState` is mostly shadow fields (`shadowScale/shadowTexture/shadowWorkBuffer/shadowCastSlot/shadowRenderResource/shadowOffsetX-Z/shadowTintB/shadowAlpha`) plus a couple of world-pos overrides, so wiki's "Shadow*" guess is close but incomplete
-`0x68` `ObjDll* dll` | `int **dll` | **exact offset + name match**. The pointed-to vtable shape (`ObjectDescriptor` in `include/main/object_descriptor.h`: `initialise/release/init/update/hitDetect/render/free/getObjectTypeId/getExtraSize` slots) is this codebase's equivalent of wiki's `ObjDll`
+`0x68` `ObjDll* dll` | `int **dll` | **exact offset + name match**. The pointed-to vtable shape (`ObjectDescriptor` in `include/dlls/object_descriptor.h`: `initialise/release/init/update/hitDetect/render/free/getObjectTypeId/getExtraSize` slots) is this codebase's equivalent of wiki's `ObjDll`
 `0x6C` `S16Vec* pVecs` | `u8 *jointPoseData` | offset matches (`jointPoseData == 0x6C`); plausible same data (packed joint rotations as s16 vectors) under a different name/type
 `0x70` `astruct_53** pTextures` (count = file->nTextures) | `ObjTextureRuntimeSlot *textureSlots` | offset matches (`textureSlots == 0x70`)
 `0x74` `Vec[2]* focusPoints` ("points for camera to look at") | `ObjHitVolumeRuntimeTransform *hitVolumeTransforms` | offset matches (`hitVolumeTransforms == 0x74`); `sizeof(ObjHitVolumeRuntimeTransform) == 0x18` = `sizeof(Vec[2])`, so the two guesses agree on element size but disagree on purpose (hit-volume transform vs camera focus point) — open discrepancy, not resolved here
@@ -516,7 +516,7 @@ file names inside matching the wiki's per-object patterns (eg `dll_014F_cfprison
 
 ### `ObjectDescriptor` = wiki's `ObjDll`
 
-`include/main/object_descriptor.h`'s `ObjectDescriptor` family (`initialise`, `release`, `init`,
+`include/dlls/object_descriptor.h`'s `ObjectDescriptor` family (`initialise`, `release`, `init`,
 `update`, `hitDetect`, `render`, `free`, `getObjectTypeId`, `getExtraSize` callback slots, plus
 size-variant siblings `ObjectDescriptor11`..`ObjectDescriptor24` for classes with extra tail
 callbacks) is this codebase's realization of the wiki's `ObjDll` — the vtable pointed to by

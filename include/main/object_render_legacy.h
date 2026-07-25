@@ -4,7 +4,7 @@
 /* Preserve the full render-callback ABI used by legacy object DLL render hooks.
  * A few exact stubs require a direct declared call instead of the cast call view. */
 #ifdef OBJECT_RENDER_LEGACY_DIRECT_CALL
-#include "main/game_object.h"
+#include "game/objects/object.h"
 void objRenderModelAndHitVolumes(int obj, int p2, int p3, int p4, int p5, f32 scale);
 #else
 #include "main/object_render.h"

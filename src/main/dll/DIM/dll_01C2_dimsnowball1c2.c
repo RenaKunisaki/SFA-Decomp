@@ -7,12 +7,12 @@
 #include "main/frame_timing.h"
 #include "main/dll/player_api.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/object.h"
-#include "main/object_api.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 /* child object id periodically spawned in dimsnowball1c2_update (role un-pinnable per gate) */
 #define DIMSNOWBALL1C2_CHILD_OBJ 406
 

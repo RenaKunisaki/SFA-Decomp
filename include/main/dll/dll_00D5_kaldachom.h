@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_CAMPFIRE_H_
 #define MAIN_DLL_CAMPFIRE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "main/dll/campfire_state.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 void kaldaChomFn_8016821c(GameObject* obj, KaldaChomControl* control);
 void kaldaChomFn_80168374(GameObject* obj, int state, u8 useUpperMouthPoint);

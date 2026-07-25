@@ -11,8 +11,8 @@
  * world position at +0x18/0x1c/0x20 is used); behaviour-flag bit 0 enables that
  * positional offset. Ids that take no source default it to gEffect11DefaultSrcParams.
  */
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/effectsrcparams_struct.h"
 #include "main/dll/effectspawnparams_struct.h"
 #include "main/dll_000A_expgfx.h"

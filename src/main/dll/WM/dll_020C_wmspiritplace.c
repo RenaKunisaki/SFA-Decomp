@@ -22,12 +22,12 @@
 #include "main/dll/tricky_api.h"
 #include "main/render_envfx_api.h"
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/WM/dll_020C_wmspiritplace.h"
 
 /* placement mapId tags of the six spirit-place instances; place N

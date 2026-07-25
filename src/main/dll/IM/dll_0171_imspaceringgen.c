@@ -12,15 +12,15 @@
  * the individual imspacering objects can track it; free() clears that
  * pointer.
  */
-#include "main/obj_placement.h"
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/obj_list.h"
 #include "main/frame_timing.h"
 #include "main/dll/IM/dll_0171_imspaceringgen.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* anim.seqId of the two reference ring objects the generator tracks */
 #define SEQID_RING_A 0x164

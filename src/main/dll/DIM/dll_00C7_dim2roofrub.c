@@ -14,8 +14,8 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/camera_interface.h"
 #include "main/objseq.h"

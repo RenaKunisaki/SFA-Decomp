@@ -7,7 +7,7 @@
  */
 #include "main/dll/mmsh_waterspike.h"
 #include "main/dll/DIM/dll_01E3_dimbossgut2.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 

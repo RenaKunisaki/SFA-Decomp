@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_ARW_DLL_029F_ARWBOMBCOLL_H
 #define MAIN_DLL_ARW_DLL_029F_ARWBOMBCOLL_H
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct RingState RingState;
 

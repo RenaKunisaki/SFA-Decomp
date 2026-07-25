@@ -2,7 +2,7 @@
 #define MAIN_DLL_PAUSEMENU_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void pauseMenuDraw(int arg1, int arg2, int arg3);
 void pauseMenuDrawStatus(void);

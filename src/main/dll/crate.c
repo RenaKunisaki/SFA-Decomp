@@ -11,7 +11,7 @@
  * Each event is consumed (zeroed) as it is processed.
  */
 #include "main/gamebits.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/crate.h"
 
 #define SFXPLAYER_EVENT_ACTIVATE       1

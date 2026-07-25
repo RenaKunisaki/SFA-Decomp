@@ -16,7 +16,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/checkpoint_interface.h"
 #include "main/game_ui_interface.h"

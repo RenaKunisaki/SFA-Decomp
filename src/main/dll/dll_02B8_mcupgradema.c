@@ -18,13 +18,13 @@
 #include "main/dll/dll_02B9_mcstaffeffe.h"
 #include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/player_objects.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 /* mcupgrade_state.h: only McUpgradeMaSetup + MCUPGRADE_OBJ_FLAG_COLLECTED used here. */
 #include "main/dll/mcupgrade_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/mcstaffeffe_state.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/obj_trigger.h"
 #include "main/objseq.h"
 

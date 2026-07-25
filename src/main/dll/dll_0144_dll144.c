@@ -9,8 +9,8 @@
  * shared objRenderModelAndHitVolumes when visible.
  *
  */
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/object_render.h"
 #include "main/dll/dll_0144_dll144.h"

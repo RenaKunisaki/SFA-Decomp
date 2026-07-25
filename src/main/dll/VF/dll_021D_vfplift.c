@@ -14,7 +14,7 @@
  * toggle game bit. hitDetect enables/disables the object's hit volume
  * from the hit-disable game bit.
  */
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
@@ -22,8 +22,8 @@
 #include "main/object_render.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/pad_api.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/VF/dll_021D_vfplift.h"
 
 #define VFPLIFT1_OBJTYPE             0x3b7

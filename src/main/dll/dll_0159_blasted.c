@@ -2,15 +2,15 @@
  * Blasted (DLL 0x159) - CFBlastedRock/Wall/Tunnel + DRBlastedWall targets.
  * TU = 0x801A27B8..0x801A2BDC (helper fn_801A27B8 + blasted_*).
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/lightmap_api.h"
 #include "main/gamebits.h"
 #include "main/map_block.h"
 #include "main/track_dolphin_map_api.h"
 #include "main/dll/dll_0159_blasted.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define BLASTED_GAMEBIT_DAMAGE_BASE 0x2de /* base of per-damage-step progress GameBit array */
 

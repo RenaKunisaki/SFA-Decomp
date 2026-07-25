@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "main/modellight_api.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct WorldObjEffectParams {
     u8 pad00[6];

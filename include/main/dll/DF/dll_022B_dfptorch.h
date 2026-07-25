@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DF_DLL_022B_DFPTORCH_H_
 #define MAIN_DLL_DF_DLL_022B_DFPTORCH_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dfptorchstate_struct.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int DFP_Torch_getExtraSize(void);
 int DFP_Torch_getObjectTypeId(void);

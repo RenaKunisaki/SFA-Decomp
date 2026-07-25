@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_80161130_H_
 
 #include "main/dll/baddie_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int grimble_stateHandlerB05(int* obj, GroundBaddieState* state);
 int grimble_stateHandlerB04(int* obj, GroundBaddieState* state);

@@ -11,11 +11,11 @@
  * lbl_803109B8 object descriptor complete the TU.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/mtxbuildarg_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll/partfxspawn_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx.h"

@@ -20,7 +20,7 @@
  *   - the high-score files (saveData, insertHighScore) and unlockable
  *     cheat/debug option bits.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/audio/audio_control_api.h"
 #include "main/dll/dll_0017_savegame_api.h"
@@ -28,7 +28,7 @@
 #include "main/dll/player_api.h"
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/map_load.h"
 #include "main/mm.h"
 #include "main/dll/savegame.h"

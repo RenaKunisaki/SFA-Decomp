@@ -12,7 +12,7 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/dll_019F_nwtreebrid.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"

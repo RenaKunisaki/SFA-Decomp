@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_19E_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void DFSH_ObjCreator_update(GameObject* obj);
 void DFSH_LaserBeam_free(GameObject* obj);

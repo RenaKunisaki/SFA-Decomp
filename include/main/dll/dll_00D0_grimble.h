@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_00D0_GRIMBLE_H_
 #define MAIN_DLL_DLL_00D0_GRIMBLE_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 int grimble_stateHandlerA00(GameObject* obj, char* state, f32 arg);
 int grimble_stateHandlerA01(GameObject* obj, char* state, f32 arg);

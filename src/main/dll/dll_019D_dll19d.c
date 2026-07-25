@@ -3,11 +3,11 @@
 #include "main/dll/dll_019D_dll19d.h"
 #include "main/render_lactions_api.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objhits.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/audio/sfx.h"
 #define DLL19D_HIT_VOLUME_SLOT 0xe

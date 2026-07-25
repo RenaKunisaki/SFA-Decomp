@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int lockIconTexCb(GameObject *obj, int *modelPtr, int renderOpIdx);
 

@@ -5,9 +5,9 @@
  * target flips its model bank and its two game bits together, then
  * rearms the cooldown from the placement.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
+#include "game/objects/object_setup.h"
 #include "main/objhits.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"

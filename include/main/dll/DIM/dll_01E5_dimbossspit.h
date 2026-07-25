@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIM_DLL_01E5_DIMBOSSSPIT_H_
 #define MAIN_DLL_DIM_DLL_01E5_DIMBOSSSPIT_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "types.h"
 
 void DIMbossspit_updateBurst(GameObject* obj);

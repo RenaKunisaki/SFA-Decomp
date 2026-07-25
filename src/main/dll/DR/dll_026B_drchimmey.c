@@ -7,9 +7,9 @@
  */
 #include "main/objprint_render_api.h"
 #include "main/gamebits.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/maketex_timer_api.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/object_render.h"
 #include "main/dll/DR/dll_026B_drchimmey.h"
 

@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIM_DLL_0256_DIMSNOWHORN1_H_
 #define MAIN_DLL_DIM_DLL_0256_DIMSNOWHORN1_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "ghidra_import.h"
 #include "main/dll/baddie_state.h"

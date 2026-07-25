@@ -36,8 +36,8 @@
  * "found your way into a KRAZOA SHRINE" dialogue (0x285), latching
  * introTextLatch (live-verified; it is NOT a torch signal).
  */
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/dll/objfx_api.h"
 #include "main/sky_api.h"
@@ -48,12 +48,12 @@
 #include "main/audio/music_api.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/model_light.h"
 #include "main/render_envfx_api.h"
 #include "main/dll/mmshrineanimobj_struct.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/objseq.h"
 #include "main/dll/mmshrine/ecsh_shrine_state.h"
 #include "main/dll/mmshrine/ecsh_shrine.h"

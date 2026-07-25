@@ -20,8 +20,8 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "main/dll/dbshsymbol_types.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/dll/cup1C3.h"
 #include "main/gamebits.h"
 #include "main/obj_list.h"
@@ -29,7 +29,7 @@
 #include "main/pad.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 u8 gDbShSymbolScuffPlayed = 1;
 

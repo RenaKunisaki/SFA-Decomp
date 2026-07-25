@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void SnowBike_hitDetect(GameObject* obj);
 

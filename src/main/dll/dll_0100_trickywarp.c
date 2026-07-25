@@ -15,9 +15,9 @@
  * object DLLs each own their corresponding descriptor.
  */
 #include "main/frustum.h"
-#include "main/object_api.h"
-#include "main/game_object.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dll_0100_trickywarp.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/objfsa.h"

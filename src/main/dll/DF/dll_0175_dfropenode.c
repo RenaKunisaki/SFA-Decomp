@@ -3,8 +3,8 @@
  * rope/cradle: it syncs the rope geometry between its endpoints, renders the
  * rope/cradle model and plays creak sfx.
  */
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/DF/dfropenode.h"
 #include "main/dll/dfbarrelanim.h"

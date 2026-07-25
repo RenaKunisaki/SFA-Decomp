@@ -7,9 +7,9 @@
  * vtable method until Tricky reports the task done, and finally watches
  * for the completion bit to flip the result bits back.
  */
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "dlls/object_descriptor.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/SH/dll_01A6_shtricky.h"

@@ -458,7 +458,7 @@ the wiki's "`scrollingTexMtx` field... tells which scrolling texture matrix slot
 present in this codebase, not introduced by this doc; the extra args are simply unread by the callee
 on this ABI.)
 
-`getTablesBinEntry` (`object.c:437`, prototyped in `include/main/object.h`) reads
+`getTablesBinEntry` (`object.c:437`, prototyped in `include/sys/objects/lifecycle.h`) reads
 `gObjTablesBinData`/`gObjTablesBinIndex`, loaded via
 `loadAssetFileById(..., 0x16)` / `loadAssetFileById(..., 0x17)` (`object.c:2403-2404`) — indices
 `0x16`/`0x17` in `sResourceFileNameTable` are **`TABLES.bin`**/**`TABLES.tab`** — confirming the wiki's

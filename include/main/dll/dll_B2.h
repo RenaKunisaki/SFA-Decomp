@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_B2_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int aButtonIconTexCb(GameObject *obj, void **objPtr, u32 arg3);
 

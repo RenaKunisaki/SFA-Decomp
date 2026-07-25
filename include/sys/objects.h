@@ -1,7 +1,7 @@
-#ifndef MAIN_OBJECT_API_H_
-#define MAIN_OBJECT_API_H_
+#ifndef SYS_OBJECTS_H_
+#define SYS_OBJECTS_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct ObjModel ObjModel;
 
@@ -31,4 +31,4 @@ void objSetHintTextIdx(GameObject* obj, u16 idx);
 void objSetSlot(GameObject* obj, s8 slot);
 void doNothing_afterRenderObject(void);
 
-#endif /* MAIN_OBJECT_API_H_ */
+#endif /* SYS_OBJECTS_H_ */

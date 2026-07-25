@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_01D6_DLL1D6_H_
 #define MAIN_DLL_DLL_01D6_DLL1D6_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct Dll1D6Placement
 {

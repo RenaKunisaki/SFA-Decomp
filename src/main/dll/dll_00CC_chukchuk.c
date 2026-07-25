@@ -10,13 +10,13 @@
  *
  * This TU also defines chukChuk_spawnAimedIceBall and the ChukChuk ObjectDescriptor.
  */
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/objfx_api.h"
 #include "main/object_render.h"
-#include "main/object.h"
-#include "main/object_api.h"
+#include "sys/objects/lifecycle.h"
+#include "sys/objects.h"
 #include "main/dll/chukchukstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"

@@ -22,6 +22,9 @@ Refer to the sections on building and diffing. Once you have this set up, all yo
 ## Advanced Contribution Guide
 Splits and symbols are largely incomplete at this point. Until these are in a better place, contributing code is quite difficult.
 
+See [`docs/code_conventions.md`](docs/code_conventions.md) for the project
+organization, header ownership, naming, and formatting conventions.
+
 # Dependencies
 
 ## Windows

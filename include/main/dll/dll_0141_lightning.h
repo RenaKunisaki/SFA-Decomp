@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_0141_LIGHTNING_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 #define MMP_LIGHTNING_OBJGROUP 0x48
 

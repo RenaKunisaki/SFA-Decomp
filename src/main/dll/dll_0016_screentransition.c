@@ -1,4 +1,4 @@
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/screen_transition.h"
 #include "main/gx_scissor_api.h"
 #include "main/dll/dll_0016_screentransition.h"

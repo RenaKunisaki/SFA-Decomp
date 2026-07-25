@@ -3,9 +3,9 @@
  * While a live type-470 object is in the trigger list, counts down an arm
  * timer; on expiry fades the barrier out and latches its gamebit.
  */
-#include "main/game_object.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"

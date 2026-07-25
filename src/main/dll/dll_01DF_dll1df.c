@@ -13,14 +13,14 @@
  * intentional and must not be collapsed to a single assignment.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objtexture.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/vecmath_distance_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define DLL1DF_OBJFLAG_HITDETECT_DISABLED 0x2000
 /* particle effect seeded on the proximity-countdown tick while the player is near */

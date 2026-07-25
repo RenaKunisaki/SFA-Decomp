@@ -27,7 +27,7 @@
 #include "main/gamebits.h"
 #include "main/mm.h"
 #include "main/object_transform.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objhits.h"
 #include "main/pad.h"
 #include "main/dll/player_motion.h"

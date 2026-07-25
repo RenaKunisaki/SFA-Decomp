@@ -8,10 +8,10 @@
 #include "main/mapEventTypes.h"
 #include "main/gamebits.h"
 #include "main/render_envfx_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/maketex_timer_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/dll/SC/sc_shared.h"
 

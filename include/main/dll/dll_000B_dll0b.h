@@ -5,7 +5,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/modgfx.h"
 #include "main/resource.h"
 #include "main/texture.h"

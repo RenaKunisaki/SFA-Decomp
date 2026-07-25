@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_014C_BABYCLOUDRUNNER_H_
 #define MAIN_DLL_DLL_014C_BABYCLOUDRUNNER_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/objprint_sound_api.h"
 

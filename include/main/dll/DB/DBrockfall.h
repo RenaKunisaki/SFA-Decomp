@@ -1,10 +1,10 @@
 #ifndef MAIN_DLL_DB_DBROCKFALL_H_
 #define MAIN_DLL_DB_DBROCKFALL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "main/dll/paymentkiosk.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_update.h"
 
 typedef struct FEseqobjectState

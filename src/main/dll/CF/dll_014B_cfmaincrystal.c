@@ -10,7 +10,7 @@
 #include "main/render_envfx_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/obj_message.h"
 #include "main/camera.h"
@@ -21,7 +21,7 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CFMAINCRYSTAL_PYLON_FRAMES 0x78 /* beam hold time once reported */
 #define CFMAINCRYSTAL_CHARGE_START 0x5A /* charge frames granted by 0x57 */

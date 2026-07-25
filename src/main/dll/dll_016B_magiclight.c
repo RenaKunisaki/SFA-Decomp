@@ -14,12 +14,12 @@
 #include "main/vecmath.h"
 #include "main/render_lactions_api.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/objseq.h"
 #include "main/dll/dll_016B_magiclight.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 /* seqId of the render-only glow variant (no MagicLightState, no proximity logic) */
 #define MAGICLIGHT_SEQ_GLOW 0x172

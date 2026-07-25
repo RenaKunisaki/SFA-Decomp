@@ -12,7 +12,7 @@
 #include "main/dll/path_control_interface.h"
 #include "main/dll/objfsa_query_api.h"
 #include "main/dll/tricky_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/track_dolphin_api.h"
 #include "main/pi_dolphin_api.h"

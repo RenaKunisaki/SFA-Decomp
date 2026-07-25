@@ -1,8 +1,8 @@
 /* DIM wood door falling debris updater [801B13E8-801B13F0) */
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"

@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_PLAYER_H_
 #define MAIN_DLL_PLAYER_H_
 
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
 #include "main/objfx.h"
 #include "main/screen_transition.h"

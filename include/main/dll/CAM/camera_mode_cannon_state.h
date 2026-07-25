@@ -2,7 +2,7 @@
 #define MAIN_DLL_CAM_CAMERA_MODE_CANNON_STATE_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CameraModeCannonState {
     GameObject *target;

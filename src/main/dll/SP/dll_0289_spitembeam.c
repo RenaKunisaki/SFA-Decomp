@@ -11,7 +11,7 @@
  */
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/objtexture.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/dll/SP/dll_0289_spitembeam.h"
 

@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/dll/baddie_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state);
 void pinPon_updateIdle(GameObject* obj, int state);

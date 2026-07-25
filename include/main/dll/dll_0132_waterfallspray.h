@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_0132_WATERFALLSPRAY_H_
 #define MAIN_DLL_DLL_0132_WATERFALLSPRAY_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 #define WATERFALLSPRAY_ALT_SFX_DEF_MIN 0x4BE5C
 #define WATERFALLSPRAY_ALT_SFX_DEF_END 0x4BE5E

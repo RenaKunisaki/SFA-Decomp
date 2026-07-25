@@ -16,7 +16,7 @@
  * lbl_803E24C4 squared units of Tricky.
  */
 #include "main/dll/baddie/MMP_critterspit.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"

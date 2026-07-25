@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_MMP_MMP_LEVELCONTROL_H_
 #define MAIN_DLL_MMP_MMP_LEVELCONTROL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 #define WALLANIMATOR_DONE_TIMER          3000

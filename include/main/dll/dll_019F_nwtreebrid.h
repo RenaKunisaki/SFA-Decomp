@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DLL_019F_NWTREEBRID_H_
 #define MAIN_DLL_DLL_019F_NWTREEBRID_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 typedef struct NwTreeBirdPlacement
 {

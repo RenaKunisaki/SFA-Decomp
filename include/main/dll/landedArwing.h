@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /*
  * Per-object extra block for the landed-arwing baddie (dll_D3) -- the 0x94-byte

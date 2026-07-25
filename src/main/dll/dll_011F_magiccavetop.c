@@ -1,11 +1,11 @@
 /* DLL 0x011F (magiccavetop) - Magic Cave top area objects [0x8018AFC8-0x8018B7B0). */
 #include "main/objseq.h"
 #include "main/camera_interface.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objfx.h"
 #include "main/audio/sfx.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/model.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/player_objects.h"
@@ -18,7 +18,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_011F_magiccavetop.h"
 
 /* Release camera back to the default gameplay mode (cameramode DLL 0x42). */

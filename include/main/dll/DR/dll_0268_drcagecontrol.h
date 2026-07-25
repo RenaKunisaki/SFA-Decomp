@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DR_DLL_0268_DRCAGECONTROL_H_
 #define MAIN_DLL_DR_DLL_0268_DRCAGECONTROL_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 typedef struct DRCageControlFlags
 {

@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_SH_DLL_01B4_SHEMPTYTUMBLEW_H_
 #define MAIN_DLL_SH_DLL_01B4_SHEMPTYTUMBLEW_H_
 
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 
 typedef struct ShEmptyTumblewPlacement
 {

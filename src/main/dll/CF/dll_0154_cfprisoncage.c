@@ -12,16 +12,16 @@
  */
 
 #include "main/game_ui_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/obj_message.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/CF/dll_0154_cfprisoncage.h"
 #include "main/objseq.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* placement type ids this DLL serves (anim.seqId carries the romlist
    type; retail names CFPrisonCage / CFCageSwitch): the cage runs

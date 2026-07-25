@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DLL_0257_DREARTHWARRIOR_H_
 #define MAIN_DLL_DR_DLL_0257_DREARTHWARRIOR_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 extern void* gEarthWarriorResource;
 extern void* gDREarthWarriorStateHandlers[];

@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PLAYER_OBJECTS_H_
 #define MAIN_DLL_PLAYER_OBJECTS_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 GameObject* objGetFirstChild(GameObject* playerObj);
 int playerGetHeldObject(GameObject* playerObj, GameObject** outHeldObj);
 int playerSetHeldObject(GameObject* playerObj, GameObject* heldObj);

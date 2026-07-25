@@ -16,12 +16,12 @@
  * DLLs, not in this object's symbol set.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/dll/modgfx.h"

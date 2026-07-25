@@ -1,6 +1,6 @@
 /* DLL 0x1D6 - DIM2 crusher platform [801B63F4-801B6464) */
 #include "main/dll/dimmagicbridge_state.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/dimwooddoor2state_struct.h"
 #include "main/dll/fbwgpipe_struct.h"
 #include "main/dll/dll1cestate_struct.h"
@@ -19,14 +19,14 @@
 #include "main/audio/sfx.h"
 #include "main/asset_load.h"
 #include "main/pi_dolphin.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model.h"
 #include "main/objhits.h"
 #include "main/gamebits.h"
 #include "main/mm.h"
 #include "main/vecmath.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 s16 gDll1D6SlotTabIndex[4] = {0x10A, 0x14F, 0x151, 0x153};
 u8 gDll1D6SlotInUse[8] = {0};

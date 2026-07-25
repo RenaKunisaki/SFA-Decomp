@@ -22,9 +22,9 @@
 #include "main/obj_path.h"
 #include "main/dll/SB/dll_01E9_sbpropeller.h"
 #include "main/object_render.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objfx.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
 STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);

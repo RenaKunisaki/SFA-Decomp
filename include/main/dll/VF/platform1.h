@@ -1,11 +1,11 @@
 #ifndef MAIN_DLL_VF_PLATFORM1_H_
 #define MAIN_DLL_VF_PLATFORM1_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "global.h"
 #include "ghidra_import.h"
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct Platform1State
 {

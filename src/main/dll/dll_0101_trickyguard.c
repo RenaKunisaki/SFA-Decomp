@@ -18,9 +18,9 @@
  */
 #include "main/dll/dll_0101_trickyguard.h"
 #include "main/dll/dll_0120_trickyguardspot.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objprint_render_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
 
 #define TRICKY_GUARD_VTABLE(tricky) \

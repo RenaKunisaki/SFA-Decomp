@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_0150_GCROBOTLIGHTBEA_H_
 
 #include "types.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/modellight_api.h"
 
 typedef struct GcRobotLightBeaState

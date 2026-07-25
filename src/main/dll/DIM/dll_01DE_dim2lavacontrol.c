@@ -11,14 +11,14 @@
 #include "main/dll/truthhornicestate_struct.h"
 #include "main/dll/dim2conveyorstate_struct.h"
 #include "main/dll/dll1d6state_struct.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/dll/player_objects.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
 

@@ -17,9 +17,9 @@
 # delicately hand-laid block (an aligned #define table, an offset-annotated
 # struct), wrap it in:  // clang-format off  ...  // clang-format on
 #
-# NOTE: headers were authored in a legacy 2-space / K&R-brace style, so
-# formatting one is a large, deliberate diff (it converts to 4-space Allman).
-# Review those per file; don't blanket-run over include/.
+# The project follows the same compact brace style as the Dinosaur Planet
+# decomp: opening braces stay on the declaration/control-statement line.
+# Review headers per file; don't blanket-run over include/.
 
 Language: Cpp
 
@@ -36,8 +36,8 @@ NamespaceIndentation: None
 ColumnLimit: 120                 # ~p99.5 of the codebase; keeps the long
                                  # accessor/wrapper lines intact
 
-# --- braces: full Allman (function AND control-statement braces own a line) -
-BreakBeforeBraces: Allman
+# --- braces: K&R / attach ---------------------------------------------------
+BreakBeforeBraces: Attach
 
 # --- no one-liners ---------------------------------------------------------
 AllowShortFunctionsOnASingleLine: None

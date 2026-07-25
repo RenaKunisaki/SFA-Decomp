@@ -13,8 +13,8 @@
  *   0x00 f32  immersion timer
  *   0x04 ptr  cached player object (Obj_GetPlayerObject)
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"

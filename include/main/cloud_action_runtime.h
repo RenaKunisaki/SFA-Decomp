@@ -2,7 +2,7 @@
 #define MAIN_CLOUD_ACTION_RUNTIME_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CloudActionRuntime {
     GameObject *mainCloudObj;

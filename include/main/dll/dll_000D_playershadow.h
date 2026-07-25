@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_000D_PLAYERSHADOW_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /* One terrain-triangle hit record produced by the hit-detect pipeline
  * (hitDetectFn_800691c0 / trackGetTriangleBuffer). Stride 0x4c; the three struck-triangle

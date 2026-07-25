@@ -5,7 +5,7 @@
 #include "main/dll/CAM/dll_0047_cameramodeteststrength.h"
 #include "main/camera_object.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/pad.h"

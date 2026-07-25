@@ -11,17 +11,17 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/CF/CFchuckobj.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/obj_group.h"
 #include "main/dll/WM/dll_0211_wmwallcrawler.h"
 #include "main/dll/WC/dll_01F9_wmobjcreator.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
 

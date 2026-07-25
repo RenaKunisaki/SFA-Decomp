@@ -6,7 +6,7 @@
 #include "main/dll/ppcwgpipe_struct.h"
 #include "main/camera_interface.h"
 #include "main/dll/tricky_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "main/objseq.h"
 #include "main/dll/FRONT/dll_0034_n_filemenu.h"

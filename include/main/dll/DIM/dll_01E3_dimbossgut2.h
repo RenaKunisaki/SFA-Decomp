@@ -2,7 +2,7 @@
 #define MAIN_DLL_DIM_DLL_01E3_DIMBOSSGUT2_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/curve_walker.h"
 #include "main/modellight_api.h"
 #include "ghidra_import.h"

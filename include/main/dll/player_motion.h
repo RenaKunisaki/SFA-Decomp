@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PLAYER_MOTION_H_
 #define MAIN_DLL_PLAYER_MOTION_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 void objSetXRot(GameObject* playerObj, int heading);
 f32 fn_80296214(GameObject* playerObj);
 void fn_80296220(GameObject* playerObj, f32 liftVelocityY);

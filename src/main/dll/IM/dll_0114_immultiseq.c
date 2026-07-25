@@ -11,7 +11,7 @@
  * completion bit clears).
  */
 #include "main/dll/IM/dll_0114_immultiseq.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"

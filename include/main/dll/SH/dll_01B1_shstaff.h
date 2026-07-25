@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SH_DLL_01B1_SHSTAFF_H_
 #define MAIN_DLL_SH_DLL_01B1_SHSTAFF_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int sh_staff_getExtraSize(void);
 void sh_staff_free(int* obj, int flag);

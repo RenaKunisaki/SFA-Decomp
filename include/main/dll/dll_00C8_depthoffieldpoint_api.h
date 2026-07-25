@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_00C8_DEPTHOFFIELDPOINT_API_H_
 
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
-#include "main/game_object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 
 extern ObjectDescriptor gDepthOfFieldPointObjDescriptor;
 extern u16 lbl_803208A0[];

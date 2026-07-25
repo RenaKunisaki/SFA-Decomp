@@ -544,7 +544,7 @@ void Checkpoint_func0D(u32 v)
     ((u32*)lbl_803DD41C)[lbl_803DD416++] = v;
 }
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 extern f32 lbl_803E050C; /* used by Checkpoint_func07 */
 extern f32 lbl_803E0514; /* used by Checkpoint_func07 */
 extern f32 lbl_803E0518; /* used by Checkpoint_func06 */

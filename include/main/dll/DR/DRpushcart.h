@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DRPUSHCART_H_
 #define MAIN_DLL_DR_DRPUSHCART_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 
 void FUN_801e7be4(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,

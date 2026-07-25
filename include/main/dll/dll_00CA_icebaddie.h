@@ -2,7 +2,7 @@
 #define MAIN_DLL_ICEBADDIE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
 
 /*

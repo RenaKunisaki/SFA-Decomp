@@ -17,12 +17,12 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/object_api.h"
-#include "main/game_object.h"
+#include "sys/objects.h"
+#include "game/objects/object.h"
 #include "main/vecmath_distance_api.h"
 #include "main/dll/WM/dll_0207_wmworm.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 
 int WM_Worm_getExtraSize(void)

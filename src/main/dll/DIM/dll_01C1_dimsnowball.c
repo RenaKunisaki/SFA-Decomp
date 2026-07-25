@@ -5,7 +5,7 @@
  */
 #include "main/dll/linklevcontrolstate_struct.h"
 #include "main/frame_timing.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/lavaball1bfstate_struct.h"
 #include "main/dll/imspacethrusterstate_struct.h"
 #include "main/dll/lavaball1bestate_struct.h"
@@ -54,9 +54,9 @@ STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
 
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/game_object.h"
-#include "main/object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 #include "main/audio/sfx.h"
 

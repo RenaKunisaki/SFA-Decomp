@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SC_SC_SHARED_H_
 #define MAIN_DLL_SC_SC_SHARED_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /* Constants shared across the LightFoot Village (map "swapcircle") SC DLLs.
    The totem-pole tracking test, the totem-bond ceremony and the tug-of-war

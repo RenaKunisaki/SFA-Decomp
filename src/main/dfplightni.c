@@ -1,8 +1,8 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dfplightni.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/newclouds.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"
 

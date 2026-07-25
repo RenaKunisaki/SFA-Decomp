@@ -2,7 +2,7 @@
 #define MAIN_DLL_FIRECRAWLER_H_
 
 #include "main/camera_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model.h"
 #include "main/modellight_api.h"
 #include "main/gamebits.h"

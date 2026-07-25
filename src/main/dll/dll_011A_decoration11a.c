@@ -14,7 +14,7 @@
  *
  * The extra block is the 0x1c-byte Decoration11AState.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/model.h"
 #include "main/vecmath.h"

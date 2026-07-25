@@ -5,8 +5,8 @@
  * hit-volume pair and suppress sequence events.
  */
 #include "main/dll/DIM/dll_01E1_dimbossgut.h"
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/frame_timing.h"
 

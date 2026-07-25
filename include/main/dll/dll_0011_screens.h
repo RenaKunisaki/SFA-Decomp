@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_0011_SCREENS_H_
 
 #include "main/asset_load.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx.h"
 #include "main/gamebits.h"

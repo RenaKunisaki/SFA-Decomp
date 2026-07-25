@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_00FF_MAGICGEM_H_
 #define MAIN_DLL_DLL_00FF_MAGICGEM_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct MagicgemObjectDef MagicgemObjectDef;
 

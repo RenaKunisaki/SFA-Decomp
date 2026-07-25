@@ -1,5 +1,5 @@
-#ifndef MAIN_OBJ_PLACEMENT_H_
-#define MAIN_OBJ_PLACEMENT_H_
+#ifndef GAME_OBJECTS_OBJECT_SETUP_H_
+#define GAME_OBJECTS_OBJECT_SETUP_H_
 
 #include "global.h"
 
@@ -38,7 +38,7 @@ typedef struct ObjPlacement {
     union {
         s16 unk02;
         struct {
-            u8 size; /* object setup allocation size */
+            u8 size;          /* object setup allocation size */
             u8 mapActFlagsLo; /* map acts 1..8 in streamed placement records */
         };
     };
@@ -61,4 +61,4 @@ STATIC_ASSERT(offsetof(ObjPlacement, posX) == 0x8);
 STATIC_ASSERT(offsetof(ObjPlacement, mapId) == 0x14);
 STATIC_ASSERT(sizeof(ObjPlacement) == 0x18);
 
-#endif
+#endif /* GAME_OBJECTS_OBJECT_SETUP_H_ */

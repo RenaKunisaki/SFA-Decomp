@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0262_DRAKORMISSILE_H_
 #define MAIN_DLL_DLL_0262_DRAKORMISSILE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/modellight_api.h"
 
 #define DRAKORMISSILE_RENDER_TRAIL_COUNT 5

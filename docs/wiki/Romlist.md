@@ -129,7 +129,7 @@ unique ID" usage described in the wiki:
 Three independently-named structs in this codebase all describe the same 0x18-byte header, and they
 agree on every field:
 
-- `include/main/obj_placement.h` — `ObjPlacement` (the struct carried at `anim.placementData`,
+- `include/game/objects/object_setup.h` — `ObjPlacement` (the struct carried at `anim.placementData`,
   confirmed above to be the raw entry). Its fields line up byte-for-byte with the wiki table:
   `unk00`/`unk02` (2+2 bytes, offset 0) = `type`+`size`+`acts0` merged as a 2+2 read; `color[4]`
   (offset 4) = `loadFlags`+`acts1`+`bound`+`cullDist` merged as a 4-byte read; `posX/Y/Z` (offset 8) =

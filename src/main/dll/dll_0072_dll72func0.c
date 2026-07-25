@@ -12,7 +12,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/fb_cmd.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_0072_dll72func0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */

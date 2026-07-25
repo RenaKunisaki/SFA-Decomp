@@ -23,16 +23,16 @@
 #include "main/pad.h"
 #include "main/vecmath.h"
 #include "main/dll/objfx_api.h"
-#include "main/object_api.h"
-#include "main/object.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dll_02BC_andross.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_02BD_androsshand.h"
 #include "main/object_render.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 /* Andross body object id, located once and cached in androssObj. */
 #define ANDROSS_OBJ_ID              0x47b77

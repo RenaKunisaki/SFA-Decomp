@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_GROUNDANIMATOR_H_
 #define MAIN_DLL_GROUNDANIMATOR_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 struct WmColumnPlacement;
 

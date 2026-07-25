@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DRSHACKLE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/checkpoint_route.h"
 
 /* Bitfield: PowerPC big-endian: bit 0 = 0x80, bit 7 = 0x01 */

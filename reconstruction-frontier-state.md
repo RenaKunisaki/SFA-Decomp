@@ -3489,7 +3489,7 @@ BaddieState/ObjPlacement/GameObject-core prefixes + per-family union, and (c) in
     also left raw. newclouds.c now exhausted for byte-neutral respells.
 
 ## struct-recovery pass 2 (expanded offset map) — seqId/seqIndex cluster
-GameObject offset map built from include/main/game_object.h + objanim_internal.h.
+GameObject offset map built from include/game/objects/object.h + objanim_internal.h.
 Expanded beyond first-pass (rot/rootMotionScale/localPos/worldPos/velocity).
 Landed 6 byte-neutral (.o md5-identical) respells, all anim.seqId (0x46, s16) /
 GameObject.seqIndex (0xb4, s16) field reads, one commit per file:

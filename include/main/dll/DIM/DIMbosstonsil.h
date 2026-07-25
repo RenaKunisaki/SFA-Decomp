@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DIM_DIMBOSSTONSIL_H_
 #define MAIN_DLL_DIM_DIMBOSSTONSIL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model_light.h"
 #include "global.h"
 #include "ghidra_import.h"

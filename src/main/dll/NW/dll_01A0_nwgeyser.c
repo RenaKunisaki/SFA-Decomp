@@ -13,7 +13,7 @@
  * look-at target into the character eye-animation update.
  */
 #include "main/mapEvent.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objprint_character_api.h"
 #include "main/objhits.h"
 #include "main/objtexture.h"

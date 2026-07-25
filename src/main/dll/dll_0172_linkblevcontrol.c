@@ -10,18 +10,18 @@
  * init seeds stage from the highest set progress bit (0x543/0x387/0x386/
  * 0x385/0x384) and primes the ambient env fx by save-load status.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/dll/savegame_load_api.h"
 #include "main/audio/music_api.h"
 #include "main/sky_api.h"
 #include "main/sky.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/render_envfx_api.h"
 #include "main/mapEvent.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objseq.h"
 #include "main/sky_interface.h"
 #include "main/gamebits.h"

@@ -1,7 +1,7 @@
 #ifndef MAIN_SHADER_MAP_API_H_
 #define MAIN_SHADER_MAP_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/map_block.h"
 #include "main/map_texture_state.h"
 

@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_010C_LANTERNFIREFLY_H_
 #define MAIN_DLL_DLL_010C_LANTERNFIREFLY_H_
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/CF/lanternfirefly_state.h"
 
 /* FireFlyLantern allocates this exact 0x24-byte setup for its children. */

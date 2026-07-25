@@ -2,8 +2,8 @@
 #define MAIN_DLL_DLL_025A_STATICCAMERA_H_
 
 #include "global.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor gStaticCameraObjDescriptor;
 

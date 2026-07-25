@@ -2,7 +2,7 @@
 #define MAIN_DLL_MAGICPLANT_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 extern u8 gMagicPlantSeqEntryTable[8];
 

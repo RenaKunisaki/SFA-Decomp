@@ -1,6 +1,6 @@
 #ifndef MAIN_DLL_DLL_134_H_
 #define MAIN_DLL_DLL_134_H_
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int kaldachom_stateHandlerA06(GameObject* obj, int state);
 int kaldachom_stateHandlerA05(GameObject* obj, int state);

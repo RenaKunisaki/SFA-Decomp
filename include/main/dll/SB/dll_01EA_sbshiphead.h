@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SB_DLL_01EA_SBSHIPHEAD_H_
 #define MAIN_DLL_SB_DLL_01EA_SBSHIPHEAD_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 int SB_ShipHead_getExtraSize(void);
 int SB_ShipHead_getObjectTypeId(void);

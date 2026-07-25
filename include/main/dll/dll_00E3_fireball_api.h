@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_00E3_FIREBALL_API_H_
 
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor10WithPadding gFireballObjDescriptor;
 

@@ -2,7 +2,7 @@
 #define MAIN_DLL_PLAYER_MOTION_API_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 void fn_802B0EA4(GameObject* obj, int motionState, int baddieState);
 void fn_802B1B28(GameObject* obj, f32 timeDelta);

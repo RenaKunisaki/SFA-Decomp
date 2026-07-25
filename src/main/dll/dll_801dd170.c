@@ -1,5 +1,5 @@
 /* DLL - SC level-control tail objects [801DBFA0-801DC310) */
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/SC/sctotembond.h"
 #include "main/dll/scmusictreesetup_struct.h"
 #include "main/gamebit_ids.h"

@@ -17,7 +17,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_object.h"
 #include "main/dll/CAM/camperv_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0055_cameramodeperv.h"
 

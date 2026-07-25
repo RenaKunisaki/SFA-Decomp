@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_19C_H_
 #define MAIN_DLL_DLL_19C_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "main/objanim_update.h"
 

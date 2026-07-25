@@ -2,8 +2,8 @@
 #define MAIN_DLL_DFPTORCHSTATE_STRUCT_H_
 
 #include "types.h"
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 /*
  * Placement/def record the map loader hands to DFP_Torch_init. Embeds the

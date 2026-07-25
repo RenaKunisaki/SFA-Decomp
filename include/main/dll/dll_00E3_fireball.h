@@ -3,7 +3,7 @@
 
 #include "main/dll/dll_00E3_fireball_api.h"
 #include "main/model_light.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 #define FIREBALL_ROT_COUNT 5
 

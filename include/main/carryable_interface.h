@@ -2,7 +2,7 @@
 #define MAIN_CARRYABLE_INTERFACE_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef void (*CarryableInitFn)(GameObject* obj, void* state, int arg2);
 typedef int (*CarryableUpdateHeldFn)(GameObject* obj, void* state);

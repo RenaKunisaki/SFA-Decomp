@@ -5,7 +5,7 @@
 #include "main/dll/MMP/mmp_moonrock_state.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_0126_trigger_api.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_80198a00.h"
 

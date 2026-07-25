@@ -2,7 +2,7 @@
 #define MAIN_OBJFX_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objfx_hit_emitter_api.h"
 
 void objLightFn_8009a1dc(void *obj, f32 scale, void *origin, u8 type, void *light);

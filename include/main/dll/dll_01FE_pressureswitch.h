@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_01FE_PRESSURESWITCH_H_
 #define MAIN_DLL_DLL_01FE_PRESSURESWITCH_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 int PressureSwitch_getExtraSize(void);

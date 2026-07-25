@@ -4,10 +4,10 @@
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"
@@ -19,8 +19,8 @@
 #include "main/newclouds.h"
 #include "main/model.h"
 #include "dolphin/gx/GXLegacyDecls.h"
-#include "main/object_descriptor.h"
-#include "main/obj_placement.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 #define FUELCELL_OBJGROUP 0x4f
 

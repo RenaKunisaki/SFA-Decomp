@@ -1,7 +1,7 @@
 /* DLL 0x0110 - door objects [0x8017B5C8-0x8017BB80). */
 
-#include "main/game_object.h"
-#include "main/obj_placement.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/object_render.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
@@ -12,7 +12,7 @@
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_stop_object_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_0110_door.h"
 
 /* DoorState.phase values, verified against the first Magic Cave iron gate. */

@@ -2,7 +2,7 @@
 #define MAIN_TRACK_DOLPHIN_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 struct TrackBlockDescriptor;
 struct TrackTriangle;

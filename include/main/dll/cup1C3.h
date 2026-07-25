@@ -2,7 +2,7 @@
 #define MAIN_DLL_CUP1C3_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 int DBSH_Symbol_SeqFn(int obj, int anim, ObjAnimUpdateState* animUpdate);

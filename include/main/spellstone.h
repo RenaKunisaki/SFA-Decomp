@@ -2,8 +2,8 @@
 #define MAIN_SPELLSTONE_H_
 
 #include "ghidra_import.h"
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 /* SpellStoneState.state */
 typedef enum SpellStoneStateId {

@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_DLL_00ED_COLLECTIBLE_API_H_
 #define MAIN_DLL_DLL_00ED_COLLECTIBLE_API_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor17 gCollectibleObjDescriptor;
 

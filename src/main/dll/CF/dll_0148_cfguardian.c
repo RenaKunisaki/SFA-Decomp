@@ -13,7 +13,7 @@
  * docs/boundary_audit.md).
  */
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/track_dolphin_api.h"
 #include "main/objhits.h"
 #include "main/object_update_list.h"
@@ -21,12 +21,12 @@
 #include "main/pad_api.h"
 #include "main/curve.h"
 #include "main/dll/savegame_object_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_0015_curves.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/camera_interface.h"
 #include "main/game_ui_interface.h"
 #include "main/dll/player_status.h"
@@ -35,7 +35,7 @@
 #include "main/obj_group.h"
 #include "main/obj_message.h"
 #include "main/obj_trigger.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/cloudprisoncontrol.h"
 #include "main/dll/CF/dll_0148_cfguardian.h"
 #include "main/gamebit_ids.h"

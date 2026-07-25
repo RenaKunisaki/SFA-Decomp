@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "main/dll/partfx_interface.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 /*
  * MmpTrenchfxPlacement - the placement/setup record passed to

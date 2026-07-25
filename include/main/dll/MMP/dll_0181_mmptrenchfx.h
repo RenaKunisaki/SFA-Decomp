@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_MMP_DLL_0181_MMPTRENCHFX_H_
 #define MAIN_DLL_MMP_DLL_0181_MMPTRENCHFX_H_
 
-#include "main/game_object.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/mmptrenchfxstate_struct.h"
 #include "types.h"
 

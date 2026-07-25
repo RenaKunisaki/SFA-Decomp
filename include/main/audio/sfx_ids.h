@@ -1,7 +1,7 @@
 #ifndef MAIN_AUDIO_SFX_IDS_H_
 #define MAIN_AUDIO_SFX_IDS_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 /* Generated MusyX IDs recovered from orig/GSAE01/files/audio/starfox.h.bak.
    Complete set: all 828 SFX defines (global index 0..827). */

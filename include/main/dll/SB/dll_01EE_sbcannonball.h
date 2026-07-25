@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SB_DLL_01EE_SBCANNONBALL_H_
 #define MAIN_DLL_SB_DLL_01EE_SBCANNONBALL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 #define SB_CANNONBALL_ALIAS_OBJECT_TYPE 0x0113
 

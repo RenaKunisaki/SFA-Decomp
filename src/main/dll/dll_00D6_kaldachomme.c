@@ -9,12 +9,12 @@
  * via objRenderModelAndHitVolumes when the visible flag is set; init seeds the
  * rotation from the placement bytes and starts move 0.
  */
-#include "main/game_object.h"
-#include "main/object_api.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
 #include "main/dll/dll_00D6_kaldachomme_api.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/frame_timing.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 
 #define KALDACHOMME_OBJFLAG_HITDETECT_DISABLED 0x2000

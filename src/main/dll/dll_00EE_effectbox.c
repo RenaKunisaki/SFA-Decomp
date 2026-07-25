@@ -10,15 +10,15 @@
  * their action callback). A non-negative placement game bit gates the
  * box: it only runs while the bit's value differs from gameBitValue.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/object.h"
+#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
-#include "main/obj_placement.h"
-#include "main/object_descriptor.h"
+#include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "main/obj_group.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/dll/dll_00EE_effectbox.h"
 

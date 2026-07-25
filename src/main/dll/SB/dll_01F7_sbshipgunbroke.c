@@ -13,13 +13,13 @@
 #include "main/dll/sbkytecagestate_struct.h"
 #include "main/dll/sbfireballstate_struct.h"
 #include "main/dll/sbcloudballstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"
 #include "main/dll/SB/dll_01F7_sbshipgunbroke.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
 STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);

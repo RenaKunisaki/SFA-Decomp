@@ -16,8 +16,8 @@
  */
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/obj_placement.h"
-#include "main/game_object.h"
+#include "game/objects/object_setup.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_021B.h"
 
 #define DLL_21B_ENABLE_BIT_A   0x503

@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_EXPLODABLE_H_
 #define MAIN_DLL_EXPLODABLE_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/drexplodable_types.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 /*
  * Placement/def record for an explodable prop. Embeds the common ObjPlacement

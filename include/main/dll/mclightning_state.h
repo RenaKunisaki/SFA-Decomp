@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "global.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/lightningeffect.h"
 
 enum McLightningPhase {

@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_00DC_MIKABOMBSHADOW_API_H_
 
 #include "types.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct GameObject GameObject;
 

@@ -20,11 +20,11 @@
 #include "main/dll/dll_0111_doorlock.h"
 #include "main/dll/dll_0112_seqobject.h"
 #include "main/dll/dll_0113_seqobj2.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objseq.h"
 #include "main/obj_group.h"
 #include "main/gamebits.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "dolphin/os.h"
 
 STATIC_ASSERT(sizeof(DoorLockPlacement) == 0x28);

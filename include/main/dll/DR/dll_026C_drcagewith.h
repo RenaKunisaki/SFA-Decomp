@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DLL_026C_DRCAGEWITH_H_
 
 #include "global.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/dll/DR/dr_types.h"
 

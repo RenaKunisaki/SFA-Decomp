@@ -7,9 +7,9 @@
  * and watches for a disguised player to step close - that plays a stomp sfx,
  * sets the gameBit and lights the pad.
  */
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/player_api.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/obj_trigger.h"
 #include "main/gamebits.h"
@@ -20,7 +20,7 @@
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/minimap_api.h"
 #include "main/vecmath_distance_api.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 int CCSharpclawPad_getExtraSize(void)
 {

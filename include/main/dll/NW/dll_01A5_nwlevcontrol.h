@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_NW_DLL_01A5_NWLEVCONTROL_H_
 #define MAIN_DLL_NW_DLL_01A5_NWLEVCONTROL_H_
 
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "types.h"
 
 void nw_levcontrol_update(int obj);

@@ -9,17 +9,17 @@
  * a thrust weight back to the parent, and scrolls the exhaust textures.
  */
 #include "main/dll/imspacethrusterstate_struct.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/model.h"
 #include "main/asset_load.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 #include "main/objtexture.h"
 #include "main/mm.h"
 #include "main/pi_dolphin.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/IM/dll_016F_imspacethruster.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define IM_SPACE_THRUSTER_ROOT_MOTION_SCALE_KIND01 0.49f
 #define IM_SPACE_THRUSTER_ROOT_MOTION_SCALE_KIND23 0.42f

@@ -19,10 +19,10 @@
  */
 #include "main/mm.h"
 #include "main/resource.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/CAM/camworldmap_state.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/lightmap_api.h"
 #include "main/screen_transition.h"
 #include "main/pad.h"

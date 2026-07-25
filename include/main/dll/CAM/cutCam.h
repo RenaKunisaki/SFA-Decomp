@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/camera_object.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CamcontrolAction43Payload {
   s16 action;

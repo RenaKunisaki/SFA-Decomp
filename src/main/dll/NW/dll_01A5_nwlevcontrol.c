@@ -9,7 +9,7 @@
  * bits 0x19d/0x19f), and a state machine that walks a table of target
  * objects (fn_801CFD68) firing their trigger sequences in turn.
  */
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/music_api.h"
 #include "main/dll/savegame_load_api.h"
@@ -17,10 +17,10 @@
 #include "main/gametext_show_api.h"
 #include "main/sky_api.h"
 #include "main/sky.h"
-#include "main/object_api.h"
+#include "sys/objects.h"
 #include "main/render_envfx_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/obj_list.h"
 #include "main/obj_trigger.h"

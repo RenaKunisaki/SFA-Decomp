@@ -6,11 +6,11 @@
  * away (>= 10.0) it starts spawning the gas particle effect each tick.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/dll/CC/dll_0185_ccgasvent.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 
 #define CCGASVENT_GROUP           0x3f
 #define CCGASVENT_TARGET_OBJGROUP 5

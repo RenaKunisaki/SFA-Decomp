@@ -8,7 +8,7 @@
  * rebased by 0x4000 (quarter-turn) to recover the rider yaw.
  */
 #include "main/dll/dll_0255_snowbike.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 #include "main/dll/bwalphaanim.h"
 
 void SB_CloudRunner_onSeqFree(int* obj)

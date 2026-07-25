@@ -2,9 +2,9 @@
 #define MAIN_DLL_DUSTMOTESOU_H_
 
 #include "global.h"
-#include "main/object_descriptor.h"
+#include "dlls/object_descriptor.h"
 #include "main/objanim_internal.h"
-#include "main/obj_placement.h"
+#include "game/objects/object_setup.h"
 
 #define DUSTMOTESOU_DLL_ID 0x02B2
 #define DUSTMOTESOU_CLASS_ID 0x007E

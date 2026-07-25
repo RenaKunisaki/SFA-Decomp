@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "main/checkpoint_route.h"
-#include "main/game_object.h"
+#include "game/objects/object.h"
 
 typedef struct CheckpointRankItem {
     u8 pad00[0x0C];
