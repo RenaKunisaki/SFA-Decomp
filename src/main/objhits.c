@@ -978,10 +978,10 @@ void ObjHitbox_UpdateRotatedBounds(ObjHitbox* hitbox, int advanceMatrix)
 int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char checkB, u32 mask, u32 volMask)
 {
     ObjHitsContactScratchEntry* contact;
+    int countA;
     int countB;
     ObjHitsPriorityState* stateA;
     ObjHitsPriorityState* stateB;
-    ObjHitsPriorityState* stateSrc;
     ObjHitsContactScratchEntry* cw;
     char modeB;
     float* sphB;
@@ -992,7 +992,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
     float* defA;
     ObjHitsModelHitVolume* volA;
     ObjHitsModelHitVolume* volB;
-    int countA;
+    ObjHitsPriorityState* stateSrc;
     s64 volBits;
     ObjHitsContactScratchEntry* contactBase;
     int count;
