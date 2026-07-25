@@ -1131,7 +1131,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/audio/hw_input.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_aram.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_samplemem.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
-            Object(NonMatching, "main/dll/player.c", cflags=[*cflags_dll_noopt, "-inline", "noauto"]),
+            Object(NonMatching, "main/dll/player.c", mw_version="GC/1.3", cflags=[*cflags_dll_noopt, "-inline", "noauto"]),
             Object(NonMatching, "main/dll/player_state1d.c", cflags=[*cflags_dll_noopt_nocse, "-inline", "noauto"]),
             Object(NonMatching, "main/dll/player_states.c", cflags=[*cflags_dll_noopt, "-inline", "noauto"]),
             Object(NonMatching, "main/dll/player_teleport.c", cflags=[*cflags_dll_noopt_noprop, "-inline", "noauto"]),
