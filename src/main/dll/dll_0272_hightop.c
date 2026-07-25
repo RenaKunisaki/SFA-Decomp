@@ -496,7 +496,9 @@ int hightop_stateHandler04(int obj, HighTopRuntime* stateArg)
         (((dy = ((GameObject*)player)->anim.localPosY - ((GameObject*)obj)->anim.localPosY) >= 0.0f
               ? dy
               : -dy) < 30.0f ||
-         (dy >= 0.0f ? dy : -dy) > 300.0f))
+         ((dy = ((GameObject*)player)->anim.localPosY - ((GameObject*)obj)->anim.localPosY) >= 0.0f
+              ? dy
+              : -dy) > 300.0f))
     {
         state->flags |= 1;
         if ((int)randomGetRange(0, 0x64) == 0 && ((GameObject*)obj)->anim.currentMove != 9)
