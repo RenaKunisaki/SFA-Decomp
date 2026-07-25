@@ -342,9 +342,9 @@ static inline void fillInverseRampTexture(void)
 
 void allocLotsOfTextures(void)
 {
-    f32 rc2;
-    int i;
     int j;
+    int i;
+    f32 rc2;
     Texture* frameTexture;
     f32 rc;
     NewShadowData* shadowData = (NewShadowData*)gNewShadowEntries;
