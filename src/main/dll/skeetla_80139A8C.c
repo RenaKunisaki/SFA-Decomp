@@ -119,8 +119,8 @@ static inline f32 skeetla_pathSpeedDelta(u8* obj)
     f32 previousSpeed;
     f32 currentSpeed;
 
-    currentPathPoint = (f32*)state->targetPosPtr;
-    if ((f32*)state->targetPosPtr == state->previousPathPoint)
+    currentPathPoint = state->targetPosPtr;
+    if (state->targetPosPtr == state->previousPathPoint)
     {
         dx = state->previousPathX - ((GameObject*)obj)->anim.worldPosX;
         dz = state->previousPathZ - ((GameObject*)obj)->anim.worldPosZ;
@@ -494,11 +494,13 @@ void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelec
 
     if (count != 0)
     {
-        bestDistance = getXZDistance((f32*)(((TrickyState*)context)->playerObj + 0x18), (f32*)((u8*)candidates[0] + 8));
+        bestDistance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
+                                     (f32*)((u8*)candidates[0] + 8));
         bestIndex = 0;
         for (i = 1; i < count; i++)
         {
-            distance = getXZDistance((f32*)(((TrickyState*)context)->playerObj + 0x18), (f32*)((u8*)candidates[i] + 8));
+            distance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
+                                     (f32*)((u8*)candidates[i] + 8));
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -534,7 +536,7 @@ void* trickyFindPathRouteEntry(u8* state, u32 route, int pathId)
     }
 
     pathSearchBegin((PathSearch*)(state + 0x6b8), (PathPoint*)route,
-                (f32*)*(int*)&((TrickyState*)state)->targetPosPtr, pathId,
+                ((TrickyState*)state)->targetPosPtr, pathId,
                 ((TrickyState*)state)->route.reverse);
     if (pathSearchStep((PathSearch*)(state + 0x6b8), 0x1f4) != 1)
     {
@@ -559,7 +561,7 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
         if (routes[i] != 0)
         {
             pathSearchBegin((PathSearch*)(state + 0x538 + i * 0x30), (PathPoint*)routes[i],
-                        (f32*)*(int*)&((TrickyState*)state)->targetPosPtr, pathId, routeFlags[i]);
+                        ((TrickyState*)state)->targetPosPtr, pathId, routeFlags[i]);
         }
     }
 
@@ -713,7 +715,7 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
         }
 
         cz = ((ObjfsaRomCurveDef*)curve)->z;
-        p = *(f32**)&state->targetPosPtr;
+        p = state->targetPosPtr;
         {
             f32 sq0 = (p[2] - cz) * (p[2] - cz);
             f32 sq1 = (p[0] - ((ObjfsaRomCurveDef*)curve)->x) * (p[0] - ((ObjfsaRomCurveDef*)curve)->x);
@@ -772,23 +774,25 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
 void skeetla_spawnLinkedSparks(u8* obj)
 {
     u8* state;
-    u8* linkedObj;
+    GameObject* linkedObj;
     SkeetlaParticleSpawnArgs args;
 
     state = ((GameObject*)obj)->extra;
-    linkedObj = *(u8**)&((TrickyState*)state)->followObj;
+    linkedObj = ((TrickyState*)state)->followObj;
 
     args.x = ((TrickyState*)state)->sparkPos0X;
     args.y = ((TrickyState*)state)->sparkPos0Y;
     args.z = ((TrickyState*)state)->sparkPos0Z;
     args.objectId = ((GameObject*)obj)->anim.rotX;
-    if (((GameObject*)linkedObj)->anim.seqId == SKEETLA_LINKED_SOURCE_ID_OBJ_A)
+    if (linkedObj->anim.seqId == SKEETLA_LINKED_SOURCE_ID_OBJ_A)
     {
-        args.sourceId = (u8)(*(u32(**)(u8*))(*(int*)(*(int*)&((GameObject*)linkedObj)->anim.dll) + 0x28))(linkedObj);
+        args.sourceId =
+            (u8)(*(u32(**)(u8*))(*(int*)(*(int*)&linkedObj->anim.dll) + 0x28))((u8*)linkedObj);
     }
-    else if (((GameObject*)linkedObj)->anim.seqId == SKEETLA_LINKED_SOURCE_ID_OBJ_B)
+    else if (linkedObj->anim.seqId == SKEETLA_LINKED_SOURCE_ID_OBJ_B)
     {
-        args.sourceId = (u8)(*(u32(**)(u8*))(*(int*)(*(int*)&((GameObject*)linkedObj)->anim.dll) + 0x28))(linkedObj);
+        args.sourceId =
+            (u8)(*(u32(**)(u8*))(*(int*)(*(int*)&linkedObj->anim.dll) + 0x28))((u8*)linkedObj);
     }
     else
     {

@@ -180,7 +180,7 @@ void trickyDigTunnel(u8* obj, u8* state)
     switch (state[0xa])
     {
     case 0:
-        pc = Objfsa_FindNearestCurveType24((f32*)((TrickyState*)state)->targetPosPtr, -1, 2);
+        pc = Objfsa_FindNearestCurveType24(((TrickyState*)state)->targetPosPtr, -1, 2);
         ((TrickyState*)state)->scratch708.ptr = (u8*)(*gRomCurveInterface)->getById(((TrickyCurveNode*)pc)->links[0]);
         ((TrickyState*)state)->scratch700.ptr = pc;
         ((TrickyState*)state)->scratch704.ptr = (u8*)(*gRomCurveInterface)->getById(((TrickyCurveNode*)pc)->links[1]);
@@ -194,9 +194,9 @@ void trickyDigTunnel(u8* obj, u8* state)
                 ((TrickyState*)state)->scratch704.u ^ ((TrickyState*)state)->scratch708.u;
         }
         ptr = (u8*)&((TrickyCurveNode*)((TrickyState*)state)->scratch708.ptr)->x;
-        if (((TrickyState*)state)->targetPosPtr != ptr)
+        if (((TrickyState*)state)->targetPosPtr != (f32*)ptr)
         {
-            ((TrickyState*)state)->targetPosPtr = ptr;
+            ((TrickyState*)state)->targetPosPtr = (f32*)ptr;
             {
                 u32 m;
                 u32 f2 = ((TrickyState*)state)->stateFlags;
@@ -257,8 +257,8 @@ void trickyDigTunnel(u8* obj, u8* state)
                 objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)ptr)->soundState, 0x360, 0x500, -1, 0);
             }
         }
-        spd = ((f32(**)(u8*, u8*))(**(u8***)(((TrickyState*)state)->followObj + 0x68)))[8](
-            ((TrickyState*)state)->followObj, obj);
+        spd = ((f32(**)(u8*, u8*))(**(u8***)((u8*)((TrickyState*)state)->followObj + 0x68)))[8](
+            (u8*)((TrickyState*)state)->followObj, obj);
         ((GameObject*)obj)->anim.localPosX =
             ((TrickyState*)state)->dirX * spd + ((TrickyCurveNode*)((TrickyState*)state)->scratch700.ptr)->x;
         ((GameObject*)obj)->anim.localPosZ =
@@ -271,7 +271,8 @@ void trickyDigTunnel(u8* obj, u8* state)
         {
             trickyTurnTowardYaw(obj, getAngle(-vx, -vz));
         }
-        if (((u8(**)(u8*))(**(u8***)(((TrickyState*)state)->followObj + 0x68)))[9](((TrickyState*)state)->followObj) !=
+        if (((u8(**)(u8*))(**(u8***)((u8*)((TrickyState*)state)->followObj + 0x68)))[9](
+                (u8*)((TrickyState*)state)->followObj) !=
             0)
         {
             trickyAdvanceNode(state);
@@ -340,7 +341,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         break;
     case 7:
         trickyDebugPrint((char*)(base + 0x824));
-        gidx = Objfsa_GetWalkGroupIndexAtPoint((f32*)(*(u8**)&((TrickyState*)state)->playerObj + 0x18), NULL);
+        gidx = Objfsa_GetWalkGroupIndexAtPoint(&((TrickyState*)state)->playerObj->anim.worldPosX, NULL);
         if (Objfsa_GetWalkGroupIndexAtPoint((f32*)(obj + 0x18), NULL) == gidx)
         {
             state[0x8] = 1;
@@ -373,14 +374,14 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
     f32 z;
 
     sfxTable = gTrickySubstateSfxIdPairA;
-    pc = ((TrickyState*)state)->followObj;
+    pc = (u8*)((TrickyState*)state)->followObj;
     switch (state[0xa])
     {
     case 0:
         ((TrickyState*)state)->scratch70C.ptr =
-            Objfsa_FindNearestEnabledCurveType24((f32*)(((TrickyState*)state)->followObj + 0x18), -1, 2);
+            Objfsa_FindNearestEnabledCurveType24(&((TrickyState*)state)->followObj->anim.worldPosX, -1, 2);
         if (((TrickyState*)state)->scratch70C.ptr != NULL &&
-            getXZDistance((float*)(((TrickyState*)state)->followObj + 0x18),
+            getXZDistance(&((TrickyState*)state)->followObj->anim.worldPosX,
                           &((TrickyCurveNode*)((TrickyState*)state)->scratch70C.ptr)->x) > lbl_803E2514)
         {
             ((TrickyState*)state)->scratch70C.ptr = NULL;
@@ -394,9 +395,9 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             {
                 state[0xa] = 2;
                 ptr = (u8*)&((TrickyCurveNode*)((TrickyState*)state)->scratch70C.ptr)->x;
-                if (((TrickyState*)state)->targetPosPtr != ptr)
+                if (((TrickyState*)state)->targetPosPtr != (f32*)ptr)
                 {
-                    ((TrickyState*)state)->targetPosPtr = ptr;
+                    ((TrickyState*)state)->targetPosPtr = (f32*)ptr;
                     {
                         u32 m;
                         u32 f2 = ((TrickyState*)state)->stateFlags;
@@ -455,7 +456,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             ptr = ((TrickyState*)state)->scratch70C.ptr;
             if (ptr != NULL)
             {
-                pc = ((TrickyState*)state)->followObj;
+                pc = (u8*)((TrickyState*)state)->followObj;
                 ((TrickyState*)state)->dirX = ((TrickyCurveNode*)ptr)->x - ((GameObject*)pc)->anim.worldPosX;
                 ((TrickyState*)state)->dirZ = ((TrickyCurveNode*)ptr)->z - ((GameObject*)pc)->anim.worldPosZ;
                 dist = sqrtf(((TrickyState*)state)->dirX * ((TrickyState*)state)->dirX +
@@ -522,7 +523,7 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
     u8* base;
     u8* found;
     u8* other;
-    u8* target;
+    GameObject* target;
     u8* ptr;
     int inWater;
     f32 z;
@@ -544,9 +545,9 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                     if ((((TrickyState*)other)->stateFlags & 0x10) == 0)
                     {
                         ((TrickyState*)other)->followObj = target;
-                        if (((TrickyState*)other)->targetPosPtr != target + 0x18)
+                        if (((TrickyState*)other)->targetPosPtr != &target->anim.worldPosX)
                         {
-                            ((TrickyState*)other)->targetPosPtr = target + 0x18;
+                            ((TrickyState*)other)->targetPosPtr = &target->anim.worldPosX;
                             {
                                 u32 m;
                                 u32 f2 = ((TrickyState*)other)->stateFlags;
@@ -718,7 +719,7 @@ int tricky_substateApproachThorntail(int obj, int state)
     u16 sfxId;
     float pos[3];
 
-    objPosFn_80039510((GameObject*)(*(int*)&((TrickyState*)state)->followObj), 0, pos);
+    objPosFn_80039510(((TrickyState*)state)->followObj, 0, pos);
     if (getXZDistance(pos, (float*)(state + 0x72c)) > lbl_803E2424)
     {
         ((TrickyState*)state)->wanderTargetX = pos[0];
@@ -1353,7 +1354,7 @@ int tricky_substateFollowIdle(GameObject* obj, int state)
     int inWater;
     float threshold;
 
-    *(int*)&((TrickyState*)state)->followObj = ((TrickyState*)state)->playerObj;
+    *(int*)&((TrickyState*)state)->followObj = (int)((TrickyState*)state)->playerObj;
     followBase = *(u32*)&((TrickyState*)state)->followObj + 0x18;
     if (*(u32*)&((TrickyState*)state)->targetPosPtr != followBase)
     {
@@ -1575,11 +1576,11 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     switch (randomGetRange(lo, hi))
     {
     case 0:
-        ((TrickyState*)state)->followObj = found;
+        ((TrickyState*)state)->followObj = (GameObject*)found;
         objPosFn_80039510((GameObject*)found, 0, (float*)(state + 0x72c));
-        if (((TrickyState*)state)->targetPosPtr != state + 0x72c)
+        if ((u8*)((TrickyState*)state)->targetPosPtr != state + 0x72c)
         {
-            ((TrickyState*)state)->targetPosPtr = state + 0x72c;
+            ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);
             {
                 u32 m;
                 u32 f2 = ((TrickyState*)state)->stateFlags;
@@ -1600,9 +1601,9 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
         ((TrickyState*)state)->wanderTargetY = ((GameObject*)obj)->anim.localPosY;
         ((TrickyState*)state)->wanderTargetZ =
             (f32)(lbl_803E2484 * -mathCosf(ang) + ((GameObject*)obj)->anim.localPosZ);
-        if (((TrickyState*)state)->targetPosPtr != state + 0x72c)
+        if ((u8*)((TrickyState*)state)->targetPosPtr != state + 0x72c)
         {
-            ((TrickyState*)state)->targetPosPtr = state + 0x72c;
+            ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);
             {
                 u32 m;
                 u32 f2 = ((TrickyState*)state)->stateFlags;

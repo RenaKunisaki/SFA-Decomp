@@ -96,7 +96,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
     s16 move;
     f32 bob;
     f32 resetTimer;
-    u8* targetPos;
+    f32* targetPos;
 
     switch (((TrickyState*)state)->substate)
     {
@@ -310,14 +310,13 @@ void tricky_fetchBall(GameObject* obj, register int state)
         if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
             *(float*)(state + 0x828) = lbl_803E2408;
-            status = ((TrickyState*)state)->progressPtr;
-            if (*(u8*)(status + 2) >= 0xef)
+            if (((TrickyState*)state)->progressPtr[2] >= 0xef)
             {
-                *(u8*)(status + 2) = 0;
+                ((TrickyState*)state)->progressPtr[2] = 0;
             }
             else
             {
-                *(u8*)(status + 2) += 1;
+                ((TrickyState*)state)->progressPtr[2]++;
             }
             {
                 u32 m;
@@ -326,7 +325,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 ((TrickyState*)state)->stateFlags = f2 & m;
             }
             ((TrickyState*)state)->substate = 7;
-            targetPos = ((TrickyState*)state)->followObj + 24;
+            targetPos = &((TrickyState*)state)->followObj->anim.worldPosX;
             if (((TrickyState*)state)->targetPosPtr != targetPos)
             {
                 ((TrickyState*)state)->targetPosPtr = targetPos;
@@ -374,7 +373,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
             }
             return;
         }
-        if (sidekickBall_isIdle((GameObject*)*(int*)&((TrickyState*)state)->followObj) != 0)
+        if (sidekickBall_isIdle(((TrickyState*)state)->followObj) != 0)
         {
             ((TrickyState*)state)->scratch704.f = lbl_803E24EC;
             ((TrickyState*)state)->substate = 1;
@@ -389,7 +388,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
     case 4:
         if ((obj)->anim.currentMoveProgress >= lbl_803E24D0)
         {
-            targetPos = *(u8**)&((TrickyState*)state)->playerObj + 24;
+            targetPos = &((TrickyState*)state)->playerObj->anim.worldPosX;
             if (((TrickyState*)state)->targetPosPtr != targetPos)
             {
                 ((TrickyState*)state)->targetPosPtr = targetPos;
@@ -437,7 +436,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
     if (((((TrickyState*)state)->stateFlags & TRICKY_STATE_RESET_FLAG_10000) != 0) &&
         ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)
     {
-        Obj_FreeObject((GameObject*)((TrickyState*)state)->followObj);
+        Obj_FreeObject(((TrickyState*)state)->followObj);
     }
     else
     {
@@ -545,14 +544,14 @@ void tricky_trackTumbleweed(GameObject* obj, register int state)
             ((TrickyNibblePair*)&((TrickyState*)state)->scratch700)->hi++;
             **(u8**)state -= 2;
         }
-        targetPos = NW_mammoth_getSpawnPosition((GameObject*)((TrickyState*)state)->followObj);
+        targetPos = NW_mammoth_getSpawnPosition(((TrickyState*)state)->followObj);
         trackedObj = tumbleweedbush_findNearestActive(targetPos);
         if (trackedObj != 0 && **(u8**)state != 0)
         {
             if (trackedObj != ((TrickyState*)state)->scratch710.obj &&
-                ((TrickyState*)state)->targetPosPtr != (u8*)(state + 0x704))
+                (u8*)((TrickyState*)state)->targetPosPtr != (u8*)(state + 0x704))
             {
-                ((TrickyState*)state)->targetPosPtr = (u8*)(state + 0x704);
+                ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x704);
                 {
                     u32 m;
                     u32 f2 = ((TrickyState*)state)->stateFlags;

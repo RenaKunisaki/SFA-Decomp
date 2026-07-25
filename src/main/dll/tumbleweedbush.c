@@ -94,13 +94,13 @@ void trickyGrowl(void* obj, void* trickyState)
         break;
     case TRICKYGROWL_FACE_TARGET:
         trickyDebugPrint(strBase + 0x568);
-        if (*(u8*)((TrickyState*)trickyState)->progressPtr != 0 && *(int*)((char*)trickyState + 0x728) != 0)
+        if (*((TrickyState*)trickyState)->progressPtr != 0 && *(int*)((char*)trickyState + 0x728) != 0)
         {
             ((TrickyState*)trickyState)->substate = TRICKYGROWL_DIG_START;
         }
         else
         {
-            void* target = ((TrickyState*)((GameObject*)obj)->extra)->targetPosPtr;
+            f32* target = ((TrickyState*)((GameObject*)obj)->extra)->targetPosPtr;
             trickyTurnTowardYaw(obj,
                                 getAngle(-(*(f32*)target - ((GameObject*)obj)->anim.worldPosX),
                                          -(((TrickyGrowlState*)target)->unk8 - ((GameObject*)obj)->anim.worldPosZ)));
@@ -142,7 +142,7 @@ void trickyGrowl(void* obj, void* trickyState)
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_en_cvdrip1c_3db);
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trpopn_c);
             }
-            (*(u8*)((TrickyState*)trickyState)->progressPtr)--;
+            (*((TrickyState*)trickyState)->progressPtr)--;
             objAnimFn_8013a3f0((int)obj, 0x34, lbl_803E2444, 0x4000000);
             ((TrickyState*)trickyState)->stateFlags = ((TrickyState*)trickyState)->stateFlags | 0x10;
             ((TrickyState*)trickyState)->substate = TRICKYGROWL_DIG_END;
@@ -191,7 +191,7 @@ void trickyGrowl(void* obj, void* trickyState)
         }
         else
         {
-            void* target = ((TrickyState*)((GameObject*)obj)->extra)->targetPosPtr;
+            f32* target = ((TrickyState*)((GameObject*)obj)->extra)->targetPosPtr;
             trickyTurnTowardYaw(obj,
                                 getAngle(-(*(f32*)target - ((GameObject*)obj)->anim.worldPosX),
                                          -(((TrickyGrowlState*)target)->unk8 - ((GameObject*)obj)->anim.worldPosZ)));

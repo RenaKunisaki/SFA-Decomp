@@ -120,7 +120,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         obj->anim.worldPosZ = state->homePosZ;
         ObjHits_SyncObjectPosition(obj);
     }
-    target = (f32*)state->targetPosPtr;
+    target = state->targetPosPtr;
     wg = Objfsa_GetWalkGroupIndexAtPoint(&obj->anim.worldPosX, 0);
     if ((wg != 0) && (state->activeWalkGroup != wg))
     {
@@ -687,7 +687,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         node = state->route.nodeA0;
         if ((((ObjfsaRomCurveDef*)state->route.node9C)->unk1A != 9) && (node->unk1A != 9))
         {
-            f32* tpos = (f32*)state->targetPosPtr;
+            f32* tpos = state->targetPosPtr;
             delta[0] = tpos[0] - obj->anim.worldPosX;
             delta[1] = tpos[1] - obj->anim.worldPosY;
             delta[2] = tpos[2] - obj->anim.worldPosZ;
@@ -708,10 +708,10 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 if (step == 4)
                 {
                     pathSearchBegin(&state->pathSearches[0], (PathPoint*)state->route.nodeA4,
-                                (f32*)state->targetPosPtr, state->walkGroup,
+                                state->targetPosPtr, state->walkGroup,
                                 state->route.reverse);
                     pathSearchBegin(&state->pathSearches[1], (PathPoint*)state->route.node9C,
-                                (f32*)state->targetPosPtr, state->walkGroup,
+                                state->targetPosPtr, state->walkGroup,
                                 state->route.reverse ^ 1);
                     found = 0;
                     for (i = 0; (u8)(i = i + 1) < 100 && (found != 1);)
@@ -1364,7 +1364,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
         f32 deltaSpeed = lbl_803E2488 + thresh;
         f32 deltaSpeedSq = deltaSpeed * deltaSpeed;
         ctx = obj->extra;
-        otherTarget = (f32*)ctx->targetPosPtr;
+        otherTarget = ctx->targetPosPtr;
         if (otherTarget == ctx->previousPathPoint)
         {
             dx = ctx->previousPathX - obj->anim.worldPosX;

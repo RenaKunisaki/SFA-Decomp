@@ -76,10 +76,10 @@ void trickyFn_8013d8f0(u8* self, u8* state)
     nearest = best;
     if (nearest != NULL)
     {
-        ((TrickyState*)state)->followObj = nearest;
-        if (((TrickyState*)state)->targetPosPtr != nearest + 0x18)
+        ((TrickyState*)state)->followObj = (GameObject*)nearest;
+        if ((u8*)((TrickyState*)state)->targetPosPtr != nearest + 0x18)
         {
-            ((TrickyState*)state)->targetPosPtr = nearest + 0x18;
+            ((TrickyState*)state)->targetPosPtr = (f32*)(nearest + 0x18);
             *(s32*)&((TrickyState*)state)->stateFlags &= ~0x400LL;
             ((TrickyState*)state)->linkedWalkGroup = 0;
         }

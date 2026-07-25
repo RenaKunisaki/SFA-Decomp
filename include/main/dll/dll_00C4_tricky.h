@@ -37,7 +37,7 @@ void tricky_attachToWalkGroup(GameObject* obj, int state);
 void tricky_stateIdleWander(GameObject* obj, int state);
 int Tricky_requestMoveToObject(int* obj, int targetObj);
 void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj);
-void sideCommandEnable(GameObject* obj, int targetObj, int commandKind, int commandType);
+void sideCommandEnable(GameObject* obj, GameObject* targetObj, int commandKind, int commandType);
 int Tricky_updateSideCommandPrompts(int obj);
 void Tricky_free(int obj, int shouldKeepFlameChildren);
 void Tricky_init(GameObject* obj);

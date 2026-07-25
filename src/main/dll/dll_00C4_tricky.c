@@ -302,7 +302,7 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
 
     result = 0;
     objs = (int*)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, count);
-    d = getXZDistance(&((GameObject*)state->playerObj)->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
+    d = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
     if ((d >= lbl_803E2538) || (state->cooldownA > lbl_803E23DC))
     {
         if (ViewFrustum_IsSphereVisible(&((GameObject*)obj)->anim.localPosX, lbl_803E2500) == 0)
@@ -310,7 +310,7 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
             bestD = lbl_803E2418;
             for (i = 0; i < count[0]; i++)
             {
-                f32 cd = getXZDistance((f32*)((char*)state->playerObj + 0x18), (f32*)((char*)*objs + 0x18));
+                f32 cd = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
                 if (cd < d && cd < bestD)
                 {
                     bestD = cd;
@@ -623,10 +623,10 @@ int Tricky_requestMoveToObject(int* obj, int targetObj)
     }
     if ((state->stateFlags & 0x10) == 0)
     {
-        state->followObj = target;
-        if (state->targetPosPtr != target + 0x18)
+        state->followObj = (GameObject*)target;
+        if ((u8*)state->targetPosPtr != target + 0x18)
         {
-            state->targetPosPtr = target + 0x18;
+            state->targetPosPtr = (f32*)(target + 0x18);
             *(s32*)&state->stateFlags &= ~(u64)0x400;
             state->linkedWalkGroup = 0;
         }
@@ -636,7 +636,7 @@ int Tricky_requestMoveToObject(int* obj, int targetObj)
     else
     {
         state->pendingFollowRequest = 1;
-        state->pendingFollowObj = target;
+        state->pendingFollowObj = (GameObject*)target;
         state->stateFlags |= 0x10000LL;
     }
     return 1;
@@ -652,7 +652,7 @@ void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj)
         {
             if (state->substate != 0)
             {
-                state->followObj = (u8*)targetObj;
+                state->followObj = (GameObject*)targetObj;
             }
         }
         else
@@ -666,11 +666,11 @@ void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj)
             state->scratch700.i = (int)Objfsa_FindNearestEnabledCurveType24((void*)(targetObj + 0x18), -1, 3);
             state->scratch710.f = (f32)(int)randomGetRange(0x168, 0x28);
             state->stateIndex = 5;
-            state->followObj = (u8*)targetObj;
+            state->followObj = (GameObject*)targetObj;
             nextTarget = (void*)(state->scratch700.i + 8);
             if ((void*)state->targetPosPtr != nextTarget)
             {
-                state->targetPosPtr = (u8*)nextTarget;
+                state->targetPosPtr = (f32*)nextTarget;
                 *(s32*)&state->stateFlags &= ~(u64)0x400;
                 state->linkedWalkGroup = 0;
             }
@@ -685,47 +685,46 @@ void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj)
 
 u8 Tricky_getEnergyMax(int* obj)
 {
-    return *((u8*)((TrickyState*)((GameObject*)obj)->extra)->progressPtr + 0x1);
+    return ((TrickyState*)((GameObject*)obj)->extra)->progressPtr[1];
 }
 u8 Tricky_getEnergy(int* obj)
 {
-    return *((u8*)((TrickyState*)((GameObject*)obj)->extra)->progressPtr + 0x0);
+    return ((TrickyState*)((GameObject*)obj)->extra)->progressPtr[0];
 }
 
-void sideCommandEnable(GameObject* obj, int targetObj, int commandKind, int commandType)
+void sideCommandEnable(GameObject* obj, GameObject* targetObj, int commandKind, int commandType)
 {
-    int commandCount;
-    int commandEntry;
+    int remaining;
+    u8* commandEntry;
     u32 count;
     int commandIndex;
-    int state;
+    TrickyState* state;
 
-    state = *(int*)&obj->extra;
-    if (((TrickyState*)state)->commandCount == 10)
+    state = obj->extra;
+    if (state->commandCount == ARRAY_COUNT(state->commands))
     {
         trickyReportError(sSidekickCommandDebugTextBlock);
         return;
     }
-    ((TrickyState*)state)->commandRequestBits = (u8)(((TrickyState*)state)->commandRequestBits | (1 << commandType));
+    state->commandRequestBits = (u8)(state->commandRequestBits | (1 << commandType));
     commandIndex = 0;
-    commandEntry = state;
-    count = (u32)((TrickyState*)state)->commandCount;
-    for (commandCount = count; 0 < commandCount; commandCount = commandCount - 1)
+    commandEntry = (u8*)state;
+    count = state->commandCount;
+    for (remaining = count; remaining > 0; remaining--)
     {
-        if (*(u32*)(commandEntry + 0x748) == targetObj)
+        if (*(GameObject**)(commandEntry + offsetof(TrickyState, commands)) == targetObj)
         {
-            *(u8*)((state + 0x74e) + commandIndex * 8) = 3;
+            state->commands[commandIndex].ttl = 3;
             return;
         }
-        commandEntry = commandEntry + 8;
-        commandIndex = commandIndex + 1;
+        commandEntry += sizeof(TrickyCommand);
+        commandIndex++;
     }
-    *(int*)((state + 0x748) + count * 8) = targetObj;
-    *(char*)((state + 0x74c) + (u32)((TrickyState*)state)->commandCount * 8) = commandKind;
-    *(char*)((state + 0x74d) + (u32)((TrickyState*)state)->commandCount * 8) = commandType;
-    *(u8*)((state + 0x74e) + (u32)((TrickyState*)state)->commandCount * 8) = 3;
-    ((TrickyState*)state)->commandCount++;
-    return;
+    state->commands[count].targetObj = targetObj;
+    state->commands[state->commandCount].kind = commandKind;
+    state->commands[state->commandCount].type = commandType;
+    state->commands[state->commandCount].ttl = 3;
+    state->commandCount++;
 }
 
 int Tricky_getCurrentCommandType(int* obj, int* out)
@@ -779,7 +778,7 @@ int Tricky_updateSideCommandPrompts(int obj)
         }
         else
         {
-            if (trickyFindNearestUsableBaddie((GameObject*)((TrickyState*)state)->playerObj, lbl_803E2524, 1) !=
+            if (trickyFindNearestUsableBaddie(((TrickyState*)state)->playerObj, lbl_803E2524, 1) !=
                 NULL)
             {
                 promptA = true;
@@ -813,7 +812,7 @@ int Tricky_updateSideCommandPrompts(int obj)
             ref = fn_80296240((GameObject*)(ref));
             if ((ref != 0) && (bitVal = mainGetBit(GAMEBIT_NoBallsAllowed), bitVal == 0))
             {
-                if (playerGetFlags3F0Bit5((GameObject*)(((TrickyState*)state)->playerObj)) == 0)
+                if (playerGetFlags3F0Bit5(((TrickyState*)state)->playerObj) == 0)
                 {
                     commandMask |= 0x20;
                 }
@@ -1288,9 +1287,9 @@ void Tricky_update(int obj)
     char* base;
     int state;
     TrickyState* trickyState;
+    TrickyCommand* command;
     int found;
     int sfxId;
-    u8* cursor;
     TrickyState* st;
     struct
     {
@@ -1303,7 +1302,7 @@ void Tricky_update(int obj)
     GameObject* step;
     int played;
     int talking;
-    u8* target;
+    f32* target;
     f32 z;
     u8 blockFlags[120];
     TrickyItemIdList cmdQuery;
@@ -1389,8 +1388,8 @@ void Tricky_update(int obj)
             ((TrickyByteFlags*)&trickyState->flags82E)->bit7 = 1;
         }
     }
-    if (*(void**)&trickyState->followObj != NULL &&
-        (((GameObject*)trickyState->followObj)->objectFlags & OBJECT_OBJFLAG_FREED) != 0)
+    if (trickyState->followObj != NULL &&
+        (trickyState->followObj->objectFlags & OBJECT_OBJFLAG_FREED) != 0)
     {
         if ((trickyState->stateFlags & 0x10) != 0)
         {
@@ -1430,7 +1429,7 @@ void Tricky_update(int obj)
             Sfx_RemoveLoopedObjectSound(obj, SFXTRIG_trwhin1);
         }
         TRICKY_RESET_COMMAND(state);
-        *(int*)&trickyState->followObj = 0;
+        trickyState->followObj = NULL;
     }
     {
         int cmd;
@@ -1443,16 +1442,15 @@ void Tricky_update(int obj)
         {
             cmd = (*gGameUIInterface)->isOneOfItemsBeingUsed(cmdQuery.ids, TRICKY_ITEM_ID_COUNT);
         }
-        cursor = (u8*)state;
+        command = trickyState->commands;
         count = trickyState->commandCount;
-        for (i = 0; i < count; i++)
+        for (i = 0; i < count; i++, command++)
         {
-            if (*(s8*)(cursor + 0x74d) == cmd)
+            if (command->type == cmd)
             {
                 found = 1;
                 break;
             }
-            cursor += 8;
         }
         if ((trickyState->stateFlags & 0x10) == 0 && trickyFoodFn_8013db3c((u8*)obj, (u8*)state) == 2)
         {
@@ -1483,9 +1481,9 @@ void Tricky_update(int obj)
                 {
                 case 1:
                     trickyState->commandPhase = 1;
-                    trickySelectQueuedCommandTarget((u8*)state, 1);
+                    trickySelectQueuedCommandTarget(trickyState, 1);
                     TRICKY_VOICE(obj, 0x13c, 0);
-                    switch (((GameObject*)trickyState->followObj)->anim.seqId)
+                    switch (trickyState->followObj->anim.seqId)
                     {
                     case 0x1ca:
                         if (**(u8**)state < 4)
@@ -1566,15 +1564,14 @@ void Tricky_update(int obj)
                     played = 0;
                     if (trickyState->commandPhase == 3)
                     {
-                        cursor = (u8*)state;
+                        command = trickyState->commands;
                         count = trickyState->commandCount;
-                        for (i = 0; i < count; i++)
+                        for (i = 0; i < count; i++, command++)
                         {
-                            if (*(s8*)(cursor + 0x74d) == 3)
+                            if (command->type == 3)
                             {
                                 played = 1;
                             }
-                            cursor += 8;
                         }
                     }
                     else
@@ -1584,9 +1581,9 @@ void Tricky_update(int obj)
                     if (played != 0)
                     {
                         trickyState->commandPhase = 3;
-                        if (trickySelectQueuedCommandTarget((u8*)state, 3) != 0)
+                        if (trickySelectQueuedCommandTarget(trickyState, 3) != 0)
                         {
-                            switch (((GameObject*)trickyState->followObj)->anim.seqId)
+                            switch (trickyState->followObj->anim.seqId)
                             {
                             case 0x36:
                             case 0x104:
@@ -1626,9 +1623,9 @@ void Tricky_update(int obj)
                     else
                     {
                         trickyState->commandPhase = 4;
-                        trickySelectQueuedCommandTarget((u8*)state, 4);
+                        trickySelectQueuedCommandTarget(trickyState, 4);
                         trickyState->stateIndex = 7;
-                        switch (((GameObject*)trickyState->followObj)->anim.seqId)
+                        switch (trickyState->followObj->anim.seqId)
                         {
                         case 0x1c9:
                             *(void**)&trickyState->unk724 = dimicewall_countdownCallback;
@@ -1675,9 +1672,9 @@ void Tricky_update(int obj)
                         ((ObjPlacement*)setup)->posX = ((GameObject*)obj)->anim.worldPosX;
                         ((ObjPlacement*)setup)->posY = ((GameObject*)obj)->anim.worldPosY;
                         ((ObjPlacement*)setup)->posZ = ((GameObject*)obj)->anim.worldPosZ;
-                        *(int*)&trickyState->followObj =
-                            (int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, ((GameObject*)obj)->anim.parent);
-                        target = (u8*)&((GameObject*)trickyState->followObj)->anim.worldPosX;
+                        trickyState->followObj =
+                            Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, ((GameObject*)obj)->anim.parent);
+                        target = &trickyState->followObj->anim.worldPosX;
                         if (trickyState->targetPosPtr != target)
                         {
                             trickyState->targetPosPtr = target;
@@ -1692,13 +1689,13 @@ void Tricky_update(int obj)
                     if (trickyState->stateIndex == 1 && trickyState->commandPhase != 0 &&
                         (flags & 0x20000) == 0)
                     {
-                        step = trickyFindNearestUsableBaddie((GameObject*)trickyState->playerObj, lbl_803E24D8, 0);
+                        step = trickyFindNearestUsableBaddie(trickyState->playerObj, lbl_803E24D8, 0);
                         if (step != NULL)
                         {
-                            trickyState->followObj = (u8*)step;
-                            if (trickyState->targetPosPtr != (u8*)&step->anim.worldPosX)
+                            trickyState->followObj = step;
+                            if (trickyState->targetPosPtr != &step->anim.worldPosX)
                             {
-                                trickyState->targetPosPtr = (u8*)&step->anim.worldPosX;
+                                trickyState->targetPosPtr = &step->anim.worldPosX;
                                 *(s32*)&trickyState->stateFlags &= ~(u64)0x400;
                                 trickyState->linkedWalkGroup = 0;
                             }
@@ -1734,14 +1731,14 @@ void Tricky_update(int obj)
         }
         else if ((flags & 0x40000) != 0)
         {
-            *(int*)&trickyState->followObj = obj;
+            trickyState->followObj = (GameObject*)obj;
             trickyState->stateIndex = 0xf;
             trickyState->idleSfxTimer = (f32)(int)randomGetRange(0x1f4, 0x2ee);
             trickyState->stateFlags &= (u64)~0x40000u;
             trickyState->commandPhase = 3;
-            if (trickyState->targetPosPtr != (u8*)&trickyState->wanderTargetX)
+            if (trickyState->targetPosPtr != &trickyState->wanderTargetX)
             {
-                trickyState->targetPosPtr = (u8*)&trickyState->wanderTargetX;
+                trickyState->targetPosPtr = &trickyState->wanderTargetX;
                 trickyState->stateFlags &= (u64)~0x400u;
                 trickyState->linkedWalkGroup = 0;
             }
@@ -1850,12 +1847,12 @@ void Tricky_update(int obj)
         ((GameObject*)obj)->anim.localPosZ += trickyState->sidestepDelta *
                                               (trickyState->dirX * -trickyState->sidestepScale);
     }
-    if (*(void**)&trickyState->followObj != NULL)
+    if (trickyState->followObj != NULL)
     {
         trickyState->followPosValid = 1;
-        trickyState->followPosX = ((GameObject*)trickyState->followObj)->anim.worldPosX;
-        trickyState->followPosY = ((GameObject*)trickyState->followObj)->anim.worldPosY;
-        trickyState->followPosZ = ((GameObject*)trickyState->followObj)->anim.worldPosZ;
+        trickyState->followPosX = trickyState->followObj->anim.worldPosX;
+        trickyState->followPosY = trickyState->followObj->anim.worldPosY;
+        trickyState->followPosZ = trickyState->followObj->anim.worldPosZ;
     }
     else
     {
@@ -1873,37 +1870,37 @@ void Tricky_update(int obj)
     }
     objAnimFn_80038f38((GameObject*)obj, (char*)state + 0x3a8);
     {
-        u8* pathCursor;
+        f32* pathCursor;
         TrickyState* pathState;
 
         pathState = ((GameObject*)obj)->extra;
-        pathCursor = (u8*)pathState->targetPosPtr;
-        pathState->previousPathPoint = (f32*)pathCursor;
+        pathCursor = pathState->targetPosPtr;
+        pathState->previousPathPoint = pathCursor;
         if (pathState->previousPathPoint != NULL)
         {
-            pathState->previousPathX = *(f32*)pathCursor;
-            pathState->previousPathY = *(f32*)(pathCursor + 4);
-            pathState->previousPathZ = *(f32*)(pathCursor + 8);
+            pathState->previousPathX = pathCursor[0];
+            pathState->previousPathY = pathCursor[1];
+            pathState->previousPathZ = pathCursor[2];
         }
     }
     trickyState->prevSpeed = trickyState->speed;
     i = trickyState->commandCount - 1;
     {
-        u8* commandCursor = (u8*)state + i * 8;
+        TrickyCommand* command = &trickyState->commands[i];
 
-        for (; i >= 0; commandCursor -= 8, i--)
+        for (; i >= 0; command--, i--)
         {
-            *(u8*)(commandCursor + 0x74e) -= 1;
-            if (*(s8*)(commandCursor + 0x74e) == 0)
+            command->ttl--;
+            if (command->ttl == 0)
             {
-                memmove((void*)(commandCursor + 0x748), (void*)(state + (i + 1) * 8 + 0x748),
-                        (trickyState->commandCount - i - 1) * 8);
+                memmove(command, command + 1,
+                        (trickyState->commandCount - i - 1) * sizeof(*command));
                 trickyState->commandCount -= 1;
             }
         }
     }
     if (getXZDistance(&((GameObject*)obj)->anim.worldPosX,
-                      &((GameObject*)trickyState->playerObj)->anim.worldPosX) >= lbl_803E2538 &&
+                      &trickyState->playerObj->anim.worldPosX) >= lbl_803E2538 &&
         mainGetBit(GAMEBIT_Tricky_Usable) != 0)
     {
         trickyState->stateFlags |= 0x10000LL;
@@ -2099,8 +2096,8 @@ void Tricky_init(GameObject* obj)
     trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[6]);
     trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[7]);
     trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[8]);
-    ((TrickyState*)state)->progressPtr = (int)(*gMapEventInterface)->getTrickyEnergy();
-    ((TrickyState*)state)->playerObj = (int)Obj_GetPlayerObject();
+    ((TrickyState*)state)->progressPtr = (*gMapEventInterface)->getTrickyEnergy();
+    ((TrickyState*)state)->playerObj = Obj_GetPlayerObject();
     ((TrickyState*)state)->stateIndex = 0;
     ((TrickyState*)state)->commandRequestBits = 0;
     ((TrickyState*)state)->previousPathPoint = NULL;

@@ -16,6 +16,7 @@
 #define TRICKY_STATE_FLAG_CHILDREN_ACTIVE 0x800    /* spawned child objects are active */
 #define TRICKY_STATE_FLAG_CHILDREN_CLEANUP 0x1000  /* child objects torn down this cycle */
 #define TRICKY_STATE_FLAG_MOVE_ADVANCING 0x8000000 /* ObjAnim_AdvanceCurrentMove reported the current move still advancing */
+#define TRICKY_STATE_FLAG_PATH_PATCHES_VALID 0x400 /* patch[] and patchTargets[] describe targetPosPtr */
 
 typedef union TrickyScratch
 {
@@ -72,8 +73,8 @@ struct ObjfsaRomCurveDef;
  * Tricky_getExtraSize returns 0x83C; sizeof kept at the 0x840 alloc rounding.
  */
 typedef struct TrickyState {
-    int progressPtr; /* MapEventInterface getProgressPtr() result (init) */
-    int playerObj; /* owning player/sidekick object */
+    u8* progressPtr; /* MapEventInterface getTrickyEnergy() result */
+    GameObject* playerObj; /* owning player/sidekick object */
     u8 stateIndex; /* primary Tricky state selector (0..0x11); indexes the handlerBase[] per-state handler dispatch table and gates the state machine */
     u8 followPhase; /* follow-handler phase selector (discrete 0..5; gates the pathing/seed branches) */
     u8 substate; /* anim-sequence substate 0..7 */
@@ -86,8 +87,8 @@ typedef struct TrickyState {
     f32 animTransitionTimer;
     u8 pad1C[0x20 - 0x1C];
     int moveId; /* compared to anim.currentMove, passed to ObjAnim_SetCurrentMove */
-    u8 *followObj; /* the followed object (playerObj/target/found stores; dll vtable dispatched) */
-    u8 *targetPosPtr; /* pointer to the current target/path position (compared to previousPathPoint; fed to pathSearchBegin as the position arg) */
+    GameObject* followObj; /* the followed object (playerObj/target/found stores; dll vtable dispatched) */
+    f32* targetPosPtr; /* current target/path position (compared to previousPathPoint; fed to pathSearchBegin) */
     f32 dirX; /* normalized planar direction (pos delta / length) */
     f32 dirZ;
     f32 moveProgress; /* passed to ObjAnim_SetMoveProgress */
@@ -259,7 +260,7 @@ typedef struct TrickyState {
     GameObject* spawnedChild;
     u8 pendingFollowRequest;
     u8 pad7D1[0x7D4 - 0x7D1];
-    u8 *pendingFollowObj; /* target object handed off to a sibling Tricky: read into `target`, then assigned to other->followObj and other->targetPosPtr = target+0x18 (tricky_substates) */
+    GameObject* pendingFollowObj; /* target object handed off to a sibling Tricky */
     f32 footPoints[4][3];
     f32 impressTimer; /* impress-move countdown: primed to lbl_803E2408 by trickyImpress (which sets stateFlags 0x80000000); while that flag is set, -= timeDelta each cycle, and on reaching floor lbl_803E23DC the flag is cleared and a TRICKY_VOICE line fires (tricky) */
     f32 sidestepScale; /* per-axis scale applied to sidestepDelta under TRICKY_STATE_FLAG_SIDESTEP: localPos += sidestepDelta * (dir * sidestepScale) */

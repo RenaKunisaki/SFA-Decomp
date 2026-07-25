@@ -362,47 +362,46 @@ void Tricky_emitQueuedPathParticles(u8* a, u8* b)
         ((TrickyImpressState*)b)->flags54 = ((TrickyImpressState*)b)->flags54 & ~0x1000LL;
     }
 }
-int trickySelectQueuedCommandTarget(u8* state, int commandType)
+int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 {
     f32 bestPriorityDist;
     f32 bestFallbackDist;
-    u8* entry;
+    TrickyCommand* entry;
     int i;
-    u8* bestPriorityTarget;
-    u8* bestFallbackTarget;
+    GameObject* bestPriorityTarget;
+    GameObject* bestFallbackTarget;
 
     bestPriorityDist = lbl_803E2418;
     bestPriorityTarget = NULL;
     bestFallbackDist = bestPriorityDist;
     bestFallbackTarget = NULL;
 
-    for (i = 0, entry = state; i < ((TrickyState*)state)->commandCount; i++)
+    for (i = 0, entry = state->commands; i < state->commandCount; i++, entry++)
     {
-        if (*(s8*)(entry + 0x74d) == commandType)
+        if (entry->type == commandType)
         {
-            f32 dist = getXZDistance(&((GameObject*)((TrickyState*)state)->playerObj)->anim.worldPosX,
-                                     &((GameObject*)*(u8**)(entry + 0x748))->anim.worldPosX);
+            f32 dist = getXZDistance(&state->playerObj->anim.worldPosX,
+                                     &entry->targetObj->anim.worldPosX);
 
-            if (*(s8*)(entry + 0x74c) == 1)
+            if (entry->kind == 1)
             {
                 if (dist < bestPriorityDist)
                 {
                     bestPriorityDist = dist;
-                    bestPriorityTarget = *(u8**)(entry + 0x748);
+                    bestPriorityTarget = entry->targetObj;
                 }
             }
             else if (dist < bestFallbackDist)
             {
                 bestFallbackDist = dist;
-                bestFallbackTarget = *(u8**)(entry + 0x748);
+                bestFallbackTarget = entry->targetObj;
             }
         }
-        entry += 8;
     }
 
     if (bestPriorityTarget != NULL)
     {
-        ((TrickyState*)state)->followObj = bestPriorityTarget;
+        state->followObj = bestPriorityTarget;
     }
     else
     {
@@ -410,19 +409,19 @@ int trickySelectQueuedCommandTarget(u8* state, int commandType)
         {
             return 0;
         }
-        ((TrickyState*)state)->followObj = bestFallbackTarget;
+        state->followObj = bestFallbackTarget;
     }
 
     {
-        u8* targetPos = (u8*)&((GameObject*)((TrickyState*)state)->followObj)->anim.worldPosX;
-        if (((TrickyState*)state)->targetPosPtr != targetPos)
+        f32* targetPos = &state->followObj->anim.worldPosX;
+        if (state->targetPosPtr != targetPos)
         {
-            ((TrickyState*)state)->targetPosPtr = targetPos;
-            *(s32*)&((TrickyState*)state)->stateFlags &= ~(u64)0x400;
-            ((TrickyState*)state)->linkedWalkGroup = 0;
+            state->targetPosPtr = targetPos;
+            state->stateFlags &= ~TRICKY_STATE_FLAG_PATH_PATCHES_VALID;
+            state->linkedWalkGroup = 0;
         }
     }
 
-    state[0xa] = 0;
+    state->commandPhase = 0;
     return 1;
 }

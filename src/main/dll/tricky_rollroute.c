@@ -194,8 +194,8 @@ void tricky_updateBallRoll(int obj, int ball)
             nextNode = (*gRomCurveInterface)->getRandomBlockedLink((RomCurveDef*)curve, 0);
             toNode = (int)(*gRomCurveInterface)->getById(nextNode);
 
-            bestDistance = getXZDistance((float*)(ts->playerObj + 0x18), (float*)(fromNode + 8));
-            distance = getXZDistance((float*)(ts->playerObj + 0x18), (float*)(toNode + 8));
+            bestDistance = getXZDistance((float*)((u8*)ts->playerObj + 0x18), (float*)(fromNode + 8));
+            distance = getXZDistance((float*)((u8*)ts->playerObj + 0x18), (float*)(toNode + 8));
 
             curveArg = (void*)curve;
             if (bestDistance > distance)
