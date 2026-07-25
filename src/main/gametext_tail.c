@@ -590,8 +590,11 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
         *dst++ = 0;
     }
 
-    buffer[0] = (char*)buffer + lineOff;
-    dst = buffer[0];
+    {
+        char* p = (char*)buffer + lineOff;
+        buffer[0] = p;
+        dst = p;
+    }
     lineIdx = 0;
     charPos = 0;
     src = str;
