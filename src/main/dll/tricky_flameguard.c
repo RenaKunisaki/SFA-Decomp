@@ -149,6 +149,8 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
     char* strBase = lbl_8031D2E8;
     int i;
     int temp;
+    int temp2;
+    int temp3;
     void** slot;
     void** slot2;
     int i2;
@@ -330,15 +332,15 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         {
             objAnimFn_8013a3f0((int)obj, 0x33, lbl_803E2444, 0x4000000);
             trickyState->guardTimer = lbl_803E23DC;
-            temp = (int)((GameObject*)obj)->extra;
-            if ((((u32)((TrickyState*)temp)->statusFlags >> 6) & 1) == 0)
+            temp2 = (int)((GameObject*)obj)->extra;
+            if ((((u32)((TrickyState*)temp2)->statusFlags >> 6) & 1) == 0)
             {
                 s16 a0 = obj->currentMove;
                 if (a0 >= 0x30 || a0 < 0x29)
                 {
                     if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
                     {
-                        objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)temp)->soundState, 0x299, 0x100, -1, 0);
+                        objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)temp2)->soundState, 0x299, 0x100, -1, 0);
                     }
                 }
             }
@@ -355,15 +357,15 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         trickyDebugPrint(strBase + 0x6b8);
         if (randomGetRange(0, 10) == 0)
         {
-            temp = (int)((GameObject*)obj)->extra;
-            if ((((u32)((TrickyState*)temp)->statusFlags >> 6) & 1) == 0)
+            temp3 = (int)((GameObject*)obj)->extra;
+            if ((((u32)((TrickyState*)temp3)->statusFlags >> 6) & 1) == 0)
             {
                 s16 a0 = obj->currentMove;
                 if (a0 >= 0x30 || a0 < 0x29)
                 {
                     if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
                     {
-                        objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)temp)->soundState, 0x299, 0x100, -1, 0);
+                        objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)temp3)->soundState, 0x299, 0x100, -1, 0);
                     }
                 }
             }
