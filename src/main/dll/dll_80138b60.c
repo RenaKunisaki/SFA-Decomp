@@ -376,7 +376,7 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
     bestFallbackDist = bestPriorityDist;
     bestFallbackTarget = NULL;
 
-    for (i = 0, ref = (int)state; i < state->commandCount; i++, ref += 8)
+    for (i = 0, ref = (int)state; i < state->commandCount; ref += 8, i++)
     {
         if (*(s8*)(ref + 0x74d) == commandType)
         {
