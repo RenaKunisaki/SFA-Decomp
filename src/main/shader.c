@@ -555,8 +555,7 @@ void mapLoadUnloadObjects(int flag)
                             }
                             else
                             {
-                                vis = 1;
-                                switch ((vis << (bit & 7)) & *(s8*)(*(int*)(pg2 + 0x10) + idx))
+                                switch (((vis = 1) << (bit & 7)) & *(s8*)(*(int*)(pg2 + 0x10) + idx))
                                 {
                                 case 0:
                                     vis = 0;
