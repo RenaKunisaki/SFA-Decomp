@@ -276,10 +276,10 @@ void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int chan
     u8* mtxSlotRow;
     u8* frameStream;
     u8* slotByte;
-    int frameStride;
+    int frameIdx;
     int boneByteOff;
     int boneIdx;
-    int frameIdx;
+    int frameStride;
     int streamOff;
     f32 frameIdxF;
 
@@ -408,9 +408,6 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
     int slotCount;
     int j;
     int srcSlot;
-    u8 slotFrameType;
-    f32 slotPhase;
-    f32 slotLength;
 
     file = model->file;
     mtxBuf = (int)model->jointMatrices[model->bufferFlags & 1];
@@ -477,16 +474,13 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
                 {
                     blendMask = 0;
                 }
-                slotFrameType = channel->frameTypes[i];
-                work.frameTypes[0] = slotFrameType;
-                slotLength = channel->frameLengths[i];
-                work.frameLengths[0] = slotLength;
-                slotPhase = channel->framePhases[i];
-                work.framePhases[0] = slotPhase;
+                work.frameTypes[0] = channel->frameTypes[i];
+                work.frameLengths[0] = channel->frameLengths[i];
+                work.framePhases[0] = channel->framePhases[i];
                 work.frameData[0] = channel->frameData[i];
-                work.frameTypes[1] = slotFrameType;
-                work.frameLengths[1] = slotLength;
-                work.framePhases[1] = slotPhase;
+                work.frameTypes[1] = channel->frameTypes[i];
+                work.frameLengths[1] = channel->frameLengths[i];
+                work.framePhases[1] = channel->framePhases[i];
                 work.frameData[1] = channel->frameData[i + 2];
                 if (file->flags & MODEL_FLAG_VERTEX_ANIM_AREA)
                 {
@@ -522,19 +516,15 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
             work.cachedMoves[2] = channel->cachedMoves[2];
             work.cachedMoves[3] = channel->cachedMoves[3];
             {
-                u16* cacheSlot = channel->cacheSlots;
                 s8* frameType = channel->frameTypes;
-                f32* frameLength = channel->frameLengths;
-                f32* framePhase = channel->framePhases;
-                ObjAnimFrameCommand** frameData = channel->frameData;
 
                 for (j = 0; j < slotCount; j++)
                 {
-                    work.cacheSlots[j] = *cacheSlot++;
+                    work.cacheSlots[j] = channel->cacheSlots[j];
                     work.frameTypes[j] = *frameType++;
-                    work.frameLengths[j] = *frameLength++;
-                    work.framePhases[j] = *framePhase++;
-                    work.frameData[j] = *frameData++;
+                    work.frameLengths[j] = channel->frameLengths[j];
+                    work.framePhases[j] = channel->framePhases[j];
+                    work.frameData[j] = channel->frameData[j];
                 }
             }
             work.eventCountdown = channel->eventCountdown;
