@@ -1150,7 +1150,7 @@ config.libs = [
             Object(NonMatching, "main/lightmap.c", cflags=[*cflags_dll_noopt_noprop, "-inline", "noauto"]),
             Object(NonMatching, "main/lightmap_initmapblocks.c", cflags=[*cflags_dll_noopt_nocse_noprop, "-inline", "noauto"]),
             Object(
-                NonMatching, "main/lightmap_draw.c", cflags=[*cflags_dll_noopt_noprop, "-inline", "noauto"],
+                NonMatching, "main/lightmap_draw.c", cflags=[*cflags_dll_noopt, "-inline", "noauto"],
                 section_alignments={".data": 4},
             ),
             Object(MatchingFor("GSAE01"), "main/textblock.c", cflags=cflags_dll_noopt),
