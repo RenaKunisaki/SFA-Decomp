@@ -566,9 +566,8 @@ int cfguardian_updateMain(GameObject* obj)
             }
             else
             {
-                f32 w = obj->anim.velocityY;
+                f32 w = 400.0f * obj->anim.velocityY;
                 f32 r;
-                w = 400.0f * w;
                 w = (w >= 0.0f) ? w : -w;
                 r = (f32)obj->anim.rotX;
                 r = r + w;
