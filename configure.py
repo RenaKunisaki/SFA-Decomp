@@ -355,6 +355,11 @@ cflags_dll_noopt_level1 = [
     "-opt", "nopeephole,noschedule,level=1",
 ]
 
+cflags_dll_noopt_level2 = [
+    *cflags_base,
+    "-opt", "nopeephole,noschedule,level=2",
+]
+
 cflags_dll_noopt_noautoinline_deferred = [
     *cflags_base,
     "-opt", "nopeephole,noschedule",
@@ -1941,6 +1946,9 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0281_drearthcal.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0282_barrelgener.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/obj_movelib.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "main/dll/obj_movelib_steer.c", cflags=cflags_dll_noopt_level2),
+            Object(NonMatching, "main/dll/obj_movelib_followcurve.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "main/dll/obj_movelib_smoothturn.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0283_drbarrelgr.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/WC/dll_028A_wcearthwalker.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_028B.c", cflags=cflags_dll_noopt_nocse_noprop),

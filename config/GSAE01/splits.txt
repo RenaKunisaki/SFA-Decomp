@@ -3684,9 +3684,18 @@ main/dll/dll_0282_barrelgener.c:
 	.sdata      start:0x803DC398 end:0x803DC39C
 
 main/dll/obj_movelib.c:
-	.text       start:0x80221978 end:0x802227EC
+	.text       start:0x80221978 end:0x80221F14
 	.sdata      start:0x803DC3A0 end:0x803DC3B0
 	.sdata2     start:0x803E6C48 end:0x803E6C58
+
+main/dll/obj_movelib_steer.c:
+	.text       start:0x80221F14 end:0x80222160
+
+main/dll/obj_movelib_followcurve.c:
+	.text       start:0x80222160 end:0x80222550
+
+main/dll/obj_movelib_smoothturn.c:
+	.text       start:0x80222550 end:0x802227EC
 
 main/dll/DR/dll_0283_drbarrelgr.c:
 	.text       start:0x802227EC end:0x80223004
