@@ -1061,7 +1061,7 @@ config.libs = [
             Object(NonMatching, "main/curves.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/voxmaps.c", cflags=cflags_dll_noopt_noautoinline, mw_version="GC/1.3"),
             Object(Matching, "main/modelEngine.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/pad.c", cflags=cflags_dll_noopt_nocse),
+            Object(NonMatching, "main/pad.c", cflags=cflags_dll_noopt_nocse, mw_version="GC/1.3"),
             Object(Matching, "main/fileio.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "main/gametext.c", cflags=cflags_dll_noopt_nolifetimes_noinline),
             Object(MatchingFor("GSAE01"), "main/gametext_measurebyid.c", cflags=cflags_dll_noopt_nocse_noinline),
@@ -1476,7 +1476,7 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_0041_warpstoneui.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_02C0_front.c", cflags=cflags_dll_noopt_noloopinv),
             Object(NonMatching, "main/dll/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
-            Object(NonMatching, "main/dll/dll_80138b60.c", cflags=cflags_dll_noopt_nostrength),
+            Object(NonMatching, "main/dll/dll_80138b60.c", cflags=cflags_dll_noopt_nostrength, mw_version="GC/1.3"),
             Object(
                 MatchingFor("GSAE01"),
                 "main/dll/skeetla.c",
