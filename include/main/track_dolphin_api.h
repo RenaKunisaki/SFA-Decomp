@@ -57,7 +57,7 @@ void trackGetGridOrigin(int** outOrigin);
 void trackGetTriangleBuffer(int* outCount, int* outTable);
 void mapInitFn_80069990(void);
 void trackIntersect(void);
-void mapBlockRender_setVtxDcrs(int doSetup, struct MapBlockData* block, struct MapShader* shader,
+void mapBlockRender_setVtxDcrs(u8 doSetup, struct MapBlockData* block, struct MapShader* shader,
                                ModelRenderInstrsState* state);
 void initTextures(void);
 void mapClearBlockEdgeFlags(void);

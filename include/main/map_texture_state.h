@@ -6,7 +6,10 @@
 
 typedef struct MapTextureOverride
 {
-    Texture* texture;
+    union {
+        Texture* texture;
+        s32 textureId;
+    };
     s32 frame;
     u32 flags;
     s16 refCount;

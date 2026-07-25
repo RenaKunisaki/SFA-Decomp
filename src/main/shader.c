@@ -834,8 +834,7 @@ int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeig
     f32 init;
 
     idx = 0;
-    base = lbl_803DCE68;
-    entry = base;
+    entry = base = lbl_803DCE68;
     for (; idx < 0x3a; idx++)
     {
         if (entry->xStep == xStep && entry->yStep == yStep)
@@ -910,8 +909,8 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 {
     int j;
     s16* arr;
-    MapBlockData* block;
-    int textureIndex;
+    void* block[1];
+    int textureCursor[2];
     int slotIdx;
     int blockId;
     s8* statusArr;
@@ -954,20 +953,28 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
         arr++;
     }
 
-    block = MapBlock_loadFromFile(blockId);
-    if (block != NULL)
+    block[0] = MapBlock_loadFromFile(blockId);
+    if (block[0] != NULL)
     {
-        MapBlock_init(block);
-        for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
+        MapBlock_init(block[0]);
+        textureCursor[0] = 0;
+        textureCursor[1] = textureCursor[0];
+        while (textureCursor[0] < ((MapBlockData*)block[0])->textureCount)
         {
-            int fileId = -(int)((u32)block->textures[textureIndex].fileId | 0x8000);
-            block->textures[textureIndex].texture = textureLoad(fileId, 0);
+            int fileId =
+                -(int)((u32)((MapTextureRef*)((u8*)((MapBlockData*)block[0])->textures +
+                                               textureCursor[1]))->fileId |
+                       0x8000);
+            ((MapTextureRef*)((u8*)((MapBlockData*)block[0])->textures + textureCursor[1]))->texture =
+                textureLoad(fileId, 0);
+            textureCursor[1] += sizeof(MapTextureRef);
+            textureCursor[0]++;
         }
-        MapBlock_initHits(block, blockId);
-        MapBlock_initShaders(block);
-        trackLoadBlockEnd(block, blockId, slotIdx, layer);
-        block->unk0 = (void*)return0_80060B90(block);
-        DCStoreRange(block, block->size);
+        MapBlock_initHits(block[0], blockId);
+        MapBlock_initShaders(block[0]);
+        trackLoadBlockEnd(block[0], blockId, slotIdx, layer);
+        ((MapBlockData*)block[0])->unk0 = (void*)return0_80060B90(block[0]);
+        DCStoreRange(block[0], ((MapBlockData*)block[0])->size);
     }
     return 1;
 }

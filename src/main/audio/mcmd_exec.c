@@ -180,21 +180,21 @@ void mcmdPortamento(McmdVoiceState* state, McmdCommandArgs* args)
         {
             inpSetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent, 0x7f);
         }
-        if (!(MAC_CFLAGS(state) & MAC_FLAG64(0, 0x400)))
-        {
-            synthInitPortamento(state);
-        }
-        state->outputFlags |= 0x400;
-        break;
-    case 2:
-        if (state->midiSlot != 0xff &&
-            (u16)inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent) > 0x1f80)
+        while (TRUE)
         {
             if (!(MAC_CFLAGS(state) & MAC_FLAG64(0, 0x400)))
             {
                 synthInitPortamento(state);
             }
             state->outputFlags |= 0x400;
+            break;
+        case 2:
+            if (state->midiSlot != 0xff &&
+                (u16)inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent) > 0x1f80)
+            {
+                continue;
+            }
+            break;
         }
         break;
     }

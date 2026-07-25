@@ -348,9 +348,10 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
 f32 lbl_8038D7DC[0x19];
 f32 gPrevSunDir[3];
 
-void mapBlockRender_setVtxDcrs(int doSetup, MapBlockData* block, MapShader* shader,
+void mapBlockRender_setVtxDcrs(u8 doSetup, MapBlockData* block, MapShader* shader,
                                ModelRenderInstrsState* state)
 {
+    int* stateWords;
     u32 val;
     int pos;
     int off;
@@ -368,46 +369,44 @@ void mapBlockRender_setVtxDcrs(int doSetup, MapBlockData* block, MapShader* shad
     int bit3;
     int i;
 
-    if ((u8)doSetup != 0)
+    stateWords = (int*)state;
+    if (doSetup != 0)
     {
         GXClearVtxDesc();
     }
-    pos = state->bit;
+    pos = stateWords[4];
     off = pos >> 3;
-    p = state->instrs;
-    val = p[off];
-    p += off;
+    val = *(u8*)(stateWords[0] + off);
+    p = (u8*)stateWords[0] + off;
     val |= p[1] << 8;
     val |= p[2] << 16;
-    state->bit = pos + 1;
+    stateWords[4] = pos + 1;
     bit = (val >> (pos & 7)) & 1;
-    if ((u8)doSetup != 0)
+    if (doSetup != 0)
     {
         GXSetVtxDesc(GX_VA_POS, bit ? GX_INDEX16 : GX_INDEX8);
     }
-    pos2 = state->bit;
+    pos2 = stateWords[4];
     off2 = pos2 >> 3;
-    q = state->instrs;
-    val2 = q[off2];
-    q += off2;
+    val2 = *(u8*)(stateWords[0] + off2);
+    q = (u8*)stateWords[0] + off2;
     val2 |= q[1] << 8;
     val2 |= q[2] << 16;
-    state->bit = pos2 + 1;
+    stateWords[4] = pos2 + 1;
     bit2 = (val2 >> (pos2 & 7)) & 1;
-    if ((u8)doSetup != 0)
+    if (doSetup != 0)
     {
         GXSetVtxDesc(GX_VA_CLR0, bit2 ? GX_INDEX16 : GX_INDEX8);
     }
-    pos3 = state->bit;
+    pos3 = stateWords[4];
     off3 = pos3 >> 3;
-    r = state->instrs;
-    val3 = r[off3];
-    r += off3;
+    val3 = *(u8*)(stateWords[0] + off3);
+    r = (u8*)stateWords[0] + off3;
     val3 |= r[1] << 8;
     val3 |= r[2] << 16;
-    state->bit = pos3 + 1;
+    stateWords[4] = pos3 + 1;
     bit3 = (val3 >> (pos3 & 7)) & 1;
-    if ((u8)doSetup != 0)
+    if (doSetup != 0)
     {
         if (shader != NULL && (shader->flags & 0x80000000) == 0)
         {
@@ -863,10 +862,10 @@ int mapBlockGetPolygonGroupType(void* obj)
 int mapBlockCountTrianglesByType(MapBlockData* block, int type)
 {
     int entry;
+    int offset;
     int total;
     int i;
     int count;
-    int offset;
     total = 0;
     offset = 0;
     count = block->polyGroupCount;
