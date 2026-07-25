@@ -982,13 +982,13 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 void unloadMap(void)
 {
     MapBlockData* block;
-    MapShader* shader;
+    int shaderIndex;
     MapShaderLayer* shaderLayer;
     int i;
     int layer;
     s8* cur;
     s8 mapType;
-    int shaderIndex;
+    MapShader* shader;
     int layerIndex;
     int textureIndex;
     u32 scrollSlot;
