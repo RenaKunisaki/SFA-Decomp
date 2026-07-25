@@ -1255,10 +1255,10 @@ void fn_8006CD20(f32 px, f32 pz, f32 frame, f32* placements, int count, f32* out
 void initFn_8006d020(void)
 {
     u8 savedHeap;
-    int column;
+    f32* placementRadius;
     int row;
     f32* placementZ;
-    f32* placementRadius;
+    int column;
     f32* placement;
     f32* otherPlacement;
     int placementAttempts;
