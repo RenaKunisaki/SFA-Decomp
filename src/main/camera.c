@@ -679,15 +679,15 @@ void Camera_UpdateProjection(void* viewportArg, int unused)
     u32 resolution = getScreenResolution();
     u32 screenWidth = resolution >> 16;
     u32 screenHeight = resolution & 0xffff;
-    u8* base = gCameraViewportEntries;
-    CameraViewportEntry* viewport = (CameraViewportEntry*)(base + viewIndex * sizeof(CameraViewportEntry));
+    CameraViewportEntry* base = (CameraViewportEntry*)gCameraViewportEntries;
+    CameraViewportEntry* viewport;
 
-    if ((viewport->flags & 1) != 0)
+    if ((base[viewIndex].flags & 1) != 0)
     {
         u8 savedViewIndex = gCameraCurrentViewIndex;
 
         gCameraCurrentViewIndex = viewIndex;
-        viewport = (CameraViewportEntry*)(base + (viewIndex & 0xff) * sizeof(CameraViewportEntry));
+        viewport = &base[viewIndex & 0xff];
         gxSetScissorRect(0, 0, viewport->scissorX, viewport->scissorY, viewport->scissorX2, viewport->scissorY2);
 
         viewport = (CameraViewportEntry*)gCameraViewportEntries;
