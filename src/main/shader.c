@@ -68,7 +68,7 @@ typedef struct MapInfoRecord
     u8 unk1d;
     s16 unk1e; /* +0x1e */
 } MapInfoRecord;
-extern u8 lbl_80386648[];
+extern WarpVec lbl_80386648[];
 extern const f32 gMapBlockWorldSize;
 
 #include "main/object.h"
@@ -286,8 +286,8 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
     if (useObj != 0)
     {
         off = viewSlot << 4;
-        x = ((WarpVec*)lbl_80386648)[viewSlot].x;
-        p = (f32*)(lbl_80386648 + off);
+        x = lbl_80386648[viewSlot].x;
+        p = (f32*)((u8*)lbl_80386648 + off);
         y = p[1];
         z = p[2];
     }
@@ -376,7 +376,7 @@ void mapLoadUnloadObjects(int flag)
             unload = 0;
             if (obj->anim.mapEventSlot > -1)
             {
-                u8 fl = fp->color[0];
+                u8 fl = fp->loadFlags;
                 if (!(fl & 2))
                 {
                     if (fl & 0x10)
@@ -587,40 +587,40 @@ void playerUpdateFn_8005649c(void)
 {
     int count;
     int slot;
-    int** objs;
+    GameObject** objs;
     CameraViewSlot* cam;
     int k;
-    int** e;
+    GameObject** e;
     int i;
     f32 lx, ly, lz;
 
-    objs = (int**)ObjGroup_GetObjects(6, &count);
+    objs = (GameObject**)ObjGroup_GetObjects(6, &count);
     cam = Camera_GetCurrentViewSlot();
     Obj_UpdateWorldTransform(cam);
     for (k = 0; k < 31; k++)
-        *(int*)(lbl_80386648 + k * 0x10 + 0xc) = 0;
-    *(f32*)(lbl_80386648 + 0) = cam->worldX;
-    *(f32*)(lbl_80386648 + 4) = cam->worldY;
-    *(f32*)(lbl_80386648 + 8) = cam->worldZ;
-    *(int*)(lbl_80386648 + 0xc) = 1;
+        lbl_80386648[k].valid = 0;
+    lbl_80386648[0].x = cam->worldX;
+    lbl_80386648[0].y = cam->worldY;
+    lbl_80386648[0].z = cam->worldZ;
+    lbl_80386648[0].valid = 1;
     for (i = 0, e = objs; i < count; e++, i++)
     {
-        int* obj = *e;
-        slot = *(s8*)((char*)obj + 0x35) + 1;
-        if (cam->parentObject == (GameObject*)obj)
+        GameObject* obj = *e;
+        slot = obj->anim.transformMatrixIndex + 1;
+        if (cam->parentObject == obj)
         {
-            *(f32*)(lbl_80386648 + slot * 0x10 + 0) = cam->x;
-            *(f32*)(lbl_80386648 + slot * 0x10 + 4) = cam->y;
-            *(f32*)(lbl_80386648 + slot * 0x10 + 8) = cam->z;
+            lbl_80386648[slot].x = cam->x;
+            lbl_80386648[slot].y = cam->y;
+            lbl_80386648[slot].z = cam->z;
         }
         else
         {
             Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, (u32)obj);
-            *(f32*)(lbl_80386648 + slot * 0x10 + 0) = lx;
-            *(f32*)(lbl_80386648 + slot * 0x10 + 4) = ly;
-            *(f32*)(lbl_80386648 + slot * 0x10 + 8) = lz;
+            lbl_80386648[slot].x = lx;
+            lbl_80386648[slot].y = ly;
+            lbl_80386648[slot].z = lz;
         }
-        *(int*)(lbl_80386648 + slot * 0x10 + 0xc) = 1;
+        lbl_80386648[slot].valid = 1;
     }
 }
 
@@ -3025,4 +3025,4 @@ int lbl_803822A0[5];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 
 MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
-u8 lbl_80386648[0x290];
+WarpVec lbl_80386648[0x29];
