@@ -224,9 +224,10 @@ void worldplanet_update(GameObject* obj)
                 }
                 gWorldPlanetPathProgress = 0.0f;
                 {
-                    GameObject* planetObj =
-                        ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[prevPlanet]]);
-                    ((WorldObjState*)planetObj->extra)->effectState = 0;
+                    WorldObjState* planetState =
+                        ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[prevPlanet]])->extra;
+                    GameObject* planetObj;
+                    planetState->effectState = 0;
                     planetObj =
                         ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[state->selectedPlanet]]);
                     ((WorldObjState*)planetObj->extra)->effectState = 1;
@@ -271,16 +272,11 @@ void worldplanet_update(GameObject* obj)
                     s16 dyaw;
                     pstate->effectState = 2;
                     yaw = getAngle(x1 - x0, z1 - z0);
-                    if (ni >= 0x16)
-                    {
-                        dyaw = yaw;
-                    }
-                    else
-                    {
-                        WorldObjPathSegmentWork* nextSegment = WorldObj_GetPathSegmentWork(pstate, ni);
-                        dyaw = getAngle(nextSegment->start.x - x1, nextSegment->start.z - z1);
-                    }
-                    dyaw = dyaw - (u16)yaw;
+                    dyaw = ((ni >= 0x16)
+                                ? yaw
+                                : (s16)getAngle(WorldObj_GetPathSegmentWork(pstate, ni)->start.x - x1,
+                                                WorldObj_GetPathSegmentWork(pstate, ni)->start.z - z1)) -
+                           (u16)yaw;
                     if (dyaw > 0x8000)
                     {
                         dyaw = (s16)(dyaw - 0xffff);
