@@ -313,30 +313,6 @@ static inline void expgfxSetSlotResult(s16* poolIndexOut, s16* slotIndexOut,
     *poolIndexOut = poolIndex;
 }
 
-static inline void expgfxFindSourcePool(u32* sourceIdWalk, s16* poolSlotTypeIds,
-                                        s8* activeCountWalk, int searchIndex, short slotType,
-                                        u32 sourceId, short* foundPoolIndexOut, short* foundOut)
-{
-    int batchGroup;
-    int batchSlot;
-    for (batchGroup = 0; batchGroup < EXPGFX_POOL_SEARCH_BATCH_COUNT;
-         sourceIdWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE,
-             activeCountWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, batchGroup++)
-    {
-        for (batchSlot = 0; batchSlot < EXPGFX_POOL_SEARCH_BATCH_SIZE;
-             batchSlot++, poolSlotTypeIds++, searchIndex++)
-        {
-            if ((sourceIdWalk[batchSlot] == sourceId) && (slotType == *poolSlotTypeIds) &&
-                (activeCountWalk[batchSlot] < EXPGFX_SLOTS_PER_POOL))
-            {
-                *foundPoolIndexOut = searchIndex;
-                *foundOut = 1;
-                return;
-            }
-        }
-    }
-}
-
 int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int preferredPoolIndex, u32 sourceId)
 {
     u32 currentMask;
