@@ -1652,12 +1652,16 @@ main/dll/grimblegroup.c:
 main/dll/dll_00CF_cannonclaw.c:
 	.text       start:0x80162FC0 end:0x801631C8
 
+main/dll/tumbleweedgroup_spawnsibling.c:
+	.text       start:0x801631C8 end:0x801634BC
+	.sdata2     start:0x803E2F40 end:0x803E2F44
+
 main/dll/tumbleweedgroup.c:
-	.text       start:0x801631C8 end:0x801650D0
+	.text       start:0x801634BC end:0x801650D0
 	.data       start:0x803201E8 end:0x80320380
 	.sdata      start:0x803DBD40 end:0x803DBD48
 	.sbss       start:0x803DDA80 end:0x803DDA88
-	.sdata2     start:0x803E2F40 end:0x803E2FD4
+	.sdata2     start:0x803E2F44 end:0x803E2FD4
 
 main/dll/backpack.c:
 	.text       start:0x801650D0 end:0x8016558C
