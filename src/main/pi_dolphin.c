@@ -2916,7 +2916,8 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         offsetFlags = offsetFlags & 0xfffffff;
         if (((u8)flagBits & 1) != 0)
         {
-            fileBuf = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]) + offsetFlags;
+            qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
+            fileBuf = qptr + offsetFlags;
             tmp = return0_8002A5B8(fileBuf);
             if (tmp != 0)
             {
@@ -2937,7 +2938,8 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         offsetFlags = offsetFlags & 0xfffffff;
         if (((u8)flagBits & 1) != 0)
         {
-            fileBuf = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]) + offsetFlags;
+            qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
+            fileBuf = qptr + offsetFlags;
             tmp = return0_8002A5B8(fileBuf);
             if (tmp != 0)
             {
