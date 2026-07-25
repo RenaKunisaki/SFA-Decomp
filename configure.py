@@ -400,6 +400,12 @@ cflags_dll_noopt_nodead_noautoinline = [
     "-inline", "noauto",
 ]
 
+cflags_dll_noopt_nodead_noloopinv_noautoinline = [
+    *cflags_base,
+    "-opt", "nopeephole,noschedule,nodead,noloopinvariants",
+    "-inline", "noauto",
+]
+
 cflags_dll_noopt_nocse_noinline = [
     *cflags_base,
     "-opt", "nopeephole,noschedule,nocse",
@@ -1160,7 +1166,7 @@ config.libs = [
             ),
             Object(NonMatching, "main/track_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/newshadows_alloc.c", cflags=cflags_dll_noopt_nodead_noautoinline),
+            Object(NonMatching, "main/newshadows_alloc.c", cflags=cflags_dll_noopt_nodead_noloopinv_noautoinline),
             Object(
                 NonMatching, "track/intersect_surfacesfx.c", cflags=cflags_dll_noopt_nocse_noautoinline,
                 section_alignments={".data": 4},
