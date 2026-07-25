@@ -241,6 +241,21 @@ void gameTextShow(int a)
     }
 }
 
+static inline int gameTextCtrlCharLen(u32 c)
+{
+    SpecialGlyph* p = lbl_802C86F0;
+    int i = 46;
+    while (i--)
+    {
+        if (p->key == c)
+        {
+            return p->val;
+        }
+        p++;
+    }
+    return 0;
+}
+
 void textDisplayFn_800168dc(int textId, TextDisplayState* state)
 {
     GameTextDef* def;
@@ -250,9 +265,6 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
     int special;
     u32 ch;
     int charLen;
-    int glyphsRemaining;
-    int glyphParamCount;
-    SpecialGlyph* glyph;
     u8* defAddress;
 
     if (gameTextFonts->mode == 1)
@@ -272,31 +284,15 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
         return;
     }
     lineStr = def->strings[state->charIndex];
-    charCount = 0;
-    byteOffset = charCount;
-    if (lineStr == NULL)
-    {
-        charCount = 0;
-    }
-    else
+    byteOffset = charCount = 0;
+    if (lineStr != NULL)
     {
         while ((ch = utf8GetNextChar((u8*)(lineStr + byteOffset), &charLen)) != 0)
         {
             byteOffset += charLen;
             if (ch >= 0xe000 && ch <= 0xf8ff)
             {
-                glyph = lbl_802C86F0;
-                for (glyphsRemaining = 46;
-                     glyphsRemaining-- != 0 || (glyphParamCount = 0, 0);)
-                {
-                    if (glyph->key == ch)
-                    {
-                        glyphParamCount = glyph->val;
-                        break;
-                    }
-                    glyph++;
-                }
-                byteOffset += glyphParamCount * 2;
+                byteOffset += gameTextCtrlCharLen(ch) * 2;
             }
             else
             {
@@ -385,21 +381,6 @@ void gameTextFn_80016c18(int a, int b)
     e->opcode = 1;
     e->arg0 = a;
     e->arg1 = b;
-}
-
-static inline int gameTextCtrlCharLen(u32 c)
-{
-    SpecialGlyph* p = lbl_802C86F0;
-    int i = 46;
-    while (i--)
-    {
-        if (p->key == c)
-        {
-            return p->val;
-        }
-        p++;
-    }
-    return 0;
 }
 
 static inline MeasGlyph* gameTextFindGlyph(u32 ch, int langIdx)
