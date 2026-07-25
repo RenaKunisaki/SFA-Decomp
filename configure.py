@@ -1059,7 +1059,7 @@ config.libs = [
             Object(NonMatching, "main/audio.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/camera.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/curves.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/voxmaps.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/voxmaps.c", cflags=cflags_dll_noopt_noautoinline, mw_version="GC/1.3"),
             Object(Matching, "main/modelEngine.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/pad.c", cflags=cflags_dll_noopt_nocse),
             Object(Matching, "main/fileio.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
