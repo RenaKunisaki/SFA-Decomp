@@ -38,7 +38,7 @@ STATIC_ASSERT(offsetof(PartfxEffectState, textureResource) == 0x98);
 STATIC_ASSERT(offsetof(PartfxEffectState, flags) == 0xA4);
 STATIC_ASSERT(offsetof(PartfxEffectState, drawPosX) == 0x60);
 STATIC_ASSERT(offsetof(PartfxEffectState, velocityX) == 0x6C);
-STATIC_ASSERT(offsetof(PartfxEffectState, alphaChannels) == 0xAC);
+STATIC_ASSERT(offsetof(PartfxEffectState, alphaValues) == 0xAC);
 STATIC_ASSERT(offsetof(PartfxEffectState, blendColorR) == 0xBC);
 STATIC_ASSERT(offsetof(PartfxEffectState, renderScale) == 0xD4);
 STATIC_ASSERT(offsetof(PartfxEffectState, vertexCount) == 0xEA);

@@ -88,17 +88,14 @@ typedef struct ModgfxVertexData
     u8 alpha;
 } ModgfxVertexData;
 
-typedef struct ModgfxScaleChannel
+typedef struct ModgfxScaleVector
 {
-    f32 cur[3];
-    f32 step[3];
-} ModgfxScaleChannel;
+    f32 x;
+    f32 y;
+    f32 z;
+} ModgfxScaleVector;
 
-typedef struct ModgfxAlphaChannel
-{
-    f32 step;
-    f32 cur;
-} ModgfxAlphaChannel;
+STATIC_ASSERT(sizeof(ModgfxScaleVector) == 0xC);
 
 typedef struct ModgfxState
 {
@@ -108,7 +105,11 @@ typedef struct ModgfxState
     f32 posStepX; /* 0x24: per-step vertex-position delta */
     f32 posStepY;
     f32 posStepZ;
-    ModgfxScaleChannel scaleChannels[2];
+    /*
+     * Each vertex-scale channel occupies two consecutive vectors: its
+     * current XYZ scale followed by the per-frame XYZ step.
+     */
+    ModgfxScaleVector scaleVectors[4];
     f32 posCurX; /* 0x60: accumulated vertex-position offset */
     f32 posCurY;
     f32 posCurZ;
@@ -118,7 +119,11 @@ typedef struct ModgfxState
     u8 pad84[0xA4 - 0x84];
     u32 flags;
     u8 padA8[4];
-    ModgfxAlphaChannel alphaChannels[2];
+    /*
+     * As with scaleVectors, each alpha channel is a consecutive step/current
+     * pair selected by channel * 2.
+     */
+    f32 alphaValues[4];
     f32 blendColorR; /* 0xBC: current blended vertex color */
     f32 blendColorG;
     f32 blendColorB;
@@ -222,7 +227,7 @@ typedef struct PartfxEffectState
     f32 posStepX;
     f32 posStepY;
     f32 posStepZ;
-    ModgfxScaleChannel scaleChannels[2];
+    ModgfxScaleVector scaleVectors[4];
     f32 drawPosX;
     f32 drawPosY;
     f32 drawPosZ;
@@ -238,7 +243,7 @@ typedef struct PartfxEffectState
     void* auxAllocation;
     u32 flags;
     s32 initialDelayFrames;
-    ModgfxAlphaChannel alphaChannels[2];
+    f32 alphaValues[4];
     f32 blendColorR;
     f32 blendColorG;
     f32 blendColorB;

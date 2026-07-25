@@ -102,7 +102,7 @@ typedef struct ModgfxEffectSlot
 } ModgfxEffectSlot;
 
 STATIC_ASSERT(offsetof(ModgfxState, vertexBuffers) == 0x78);
-STATIC_ASSERT(offsetof(ModgfxState, alphaChannels) == 0xAC);
+STATIC_ASSERT(offsetof(ModgfxState, alphaValues) == 0xAC);
 STATIC_ASSERT(offsetof(ModgfxState, blendColorR) == 0xBC);
 STATIC_ASSERT(offsetof(ModgfxState, vertexCount) == 0xEA);
 STATIC_ASSERT(offsetof(ModgfxState, posCurX) == 0x60);
@@ -125,7 +125,7 @@ STATIC_ASSERT(offsetof(PartfxEffectState, textureResource) == 0x98);
 STATIC_ASSERT(offsetof(PartfxEffectState, flags) == 0xA4);
 STATIC_ASSERT(offsetof(PartfxEffectState, drawPosX) == 0x60);
 STATIC_ASSERT(offsetof(PartfxEffectState, velocityX) == 0x6C);
-STATIC_ASSERT(offsetof(PartfxEffectState, alphaChannels) == 0xAC);
+STATIC_ASSERT(offsetof(PartfxEffectState, alphaValues) == 0xAC);
 STATIC_ASSERT(offsetof(PartfxEffectState, blendColorR) == 0xBC);
 STATIC_ASSERT(offsetof(PartfxEffectState, renderScale) == 0xD4);
 STATIC_ASSERT(offsetof(PartfxEffectState, vertexCount) == 0xEA);
@@ -348,19 +348,19 @@ void modgfx_captureFrameBaseVertices(ModgfxState* state)
         src++;
     }
     f1 = *(f32*)&lbl_803DF434;
-    state->scaleChannels[0].cur[0] = f1;
-    state->scaleChannels[0].cur[1] = f1;
-    state->scaleChannels[0].cur[2] = f1;
+    state->scaleVectors[0].x = f1;
+    state->scaleVectors[0].y = f1;
+    state->scaleVectors[0].z = f1;
     f0 = lbl_803DF430;
-    state->scaleChannels[0].step[0] = f0;
-    state->scaleChannels[0].step[1] = f0;
-    state->scaleChannels[0].step[2] = f0;
-    state->scaleChannels[1].cur[0] = f1;
-    state->scaleChannels[1].cur[1] = f1;
-    state->scaleChannels[1].cur[2] = f1;
-    state->scaleChannels[1].step[0] = f0;
-    state->scaleChannels[1].step[1] = f0;
-    state->scaleChannels[1].step[2] = f0;
+    state->scaleVectors[1].x = f0;
+    state->scaleVectors[1].y = f0;
+    state->scaleVectors[1].z = f0;
+    state->scaleVectors[2].x = f1;
+    state->scaleVectors[2].y = f1;
+    state->scaleVectors[2].z = f1;
+    state->scaleVectors[3].x = f0;
+    state->scaleVectors[3].y = f0;
+    state->scaleVectors[3].z = f0;
 }
 
 void modgfx_stepVertexColor(void* state, void* p, int reinit)
@@ -518,133 +518,117 @@ void modgfx_stepS16VectorLerp(int* obj, f32* params, int reinit)
     ((ModgfxState*)obj)->rotOffsetY += ((ModgfxState*)obj)->rotStepY;
     ((ModgfxState*)obj)->rotOffsetX += ((ModgfxState*)obj)->rotStepX;
 }
-void modgfx_stepVertexAlpha(void* state, void* p, int reinit, u8 idx)
+void modgfx_stepVertexAlpha(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
 {
-    int k = idx * 2;
-    char* slots = (char*)state + 0x78;
-    u8* bufB = *(u8**)(slots + ((ModgfxState*)state)->activeVertexBufferIndex * 4);
-    u8* bufA = (u8*)((ModgfxState*)state)->baseVertexData;
-    int j;
+    int alphaIndex = channelIndex * 2;
+    ModgfxVertexData* vertices = state->vertexBuffers[state->activeVertexBufferIndex];
+    ModgfxVertexData* baseVertices = state->baseVertexData;
+    int i;
 
     if (reinit == 1)
     {
-        f32 target = ((ModgfxVertexGroupCmd*)p)->valueX;
-        s16 frames = ((ModgfxState*)state)->blendFrameCount;
+        f32 target = command->valueX;
+        s16 frames = state->blendFrameCount;
+
         if (frames != 0)
         {
-            ((f32*)((char*)state + 0xac))[k] =
-                (target - (f32)(u32)bufA[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xf]) / frames;
-            ((f32*)((char*)state + 0xb0))[k] = (f32)(u32)bufA[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xf];
+            state->alphaValues[alphaIndex] =
+                (target - (f32)baseVertices[command->indices[0]].alpha) / frames;
+            state->alphaValues[alphaIndex + 1] = (f32)baseVertices[command->indices[0]].alpha;
         }
         else
         {
-            for (j = 0; j < ((ModgfxVertexGroupCmd*)p)->indexCount; j++)
+            for (i = 0; i < command->indexCount; i++)
             {
-                bufA[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xf] = target;
-                bufB[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xf] = bufA[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xf];
+                baseVertices[command->indices[i]].alpha = target;
+                vertices[command->indices[i]].alpha = baseVertices[command->indices[i]].alpha;
             }
             return;
         }
     }
-{
-    char* kb;
-    int off;
-    int k4 = k * 4;
-    kb = (char*)state + k4;
-    off = k4 + 0xb0;
-    *(f32*)(kb + 0xb0) = *(f32*)(kb + 0xb0) + *(f32*)(kb + 0xac) * gModgfxMotionStep;
-    if (*(f32*)(kb + 0xb0) < lbl_803DF430)
+
+    state->alphaValues[alphaIndex + 1] += state->alphaValues[alphaIndex] * gModgfxMotionStep;
+    if (state->alphaValues[alphaIndex + 1] < 0.0f)
     {
-        *(f32*)(kb + 0xb0) = lbl_803DF430;
+        state->alphaValues[alphaIndex + 1] = 0.0f;
     }
-    else if (*(f32*)(kb + 0xb0) > 255.0f)
+    else if (state->alphaValues[alphaIndex + 1] > 255.0f)
     {
-        *(f32*)(kb + 0xb0) = 255.0f;
+        state->alphaValues[alphaIndex + 1] = 255.0f;
     }
+
+    for (i = 0; i < command->indexCount; i++)
     {
-        for (j = 0; j < ((ModgfxVertexGroupCmd*)p)->indexCount; j++)
-        {
-            bufB[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xf] = *(f32*)((char*)state + off);
-            bufA[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xf] = bufB[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xf];
-        }
+        vertices[command->indices[i]].alpha = state->alphaValues[alphaIndex + 1];
+        baseVertices[command->indices[i]].alpha = vertices[command->indices[i]].alpha;
     }
-}
 }
 
-void modgfx_stepVertexScale(void* state, void* p, int reinit, u8 idx)
+void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
 {
-    int idx2 = idx * 2;
-#define base ((char*)state + idx2 * 0xc)
-    int j;
+    int scaleIndex = channelIndex * 2;
+    int i;
 
     if (reinit == 1)
     {
-        f32 tx = ((ModgfxVertexGroupCmd*)p)->valueX;
-        f32 ty = ((ModgfxVertexGroupCmd*)p)->valueY;
-        f32 tz = ((ModgfxVertexGroupCmd*)p)->valueZ;
-        if (((ModgfxState*)state)->blendFrameCount != 0)
+        f32 targetX = command->valueX;
+        f32 targetY = command->valueY;
+        f32 targetZ = command->valueZ;
+
+        if (state->blendFrameCount != 0)
         {
-            *(f32*)(base + 0x3c) = (tx - *(f32*)(base + 0x30)) / (f32)((ModgfxState*)state)->blendFrameCount;
-            *(f32*)(base + 0x40) = (ty - *(f32*)(base + 0x34)) / (f32)((ModgfxState*)state)->blendFrameCount;
-            *(f32*)(base + 0x44) = (tz - *(f32*)(base + 0x38)) / (f32)((ModgfxState*)state)->blendFrameCount;
+            state->scaleVectors[scaleIndex + 1].x =
+                (targetX - state->scaleVectors[scaleIndex].x) / (f32)state->blendFrameCount;
+            state->scaleVectors[scaleIndex + 1].y =
+                (targetY - state->scaleVectors[scaleIndex].y) / (f32)state->blendFrameCount;
+            state->scaleVectors[scaleIndex + 1].z =
+                (targetZ - state->scaleVectors[scaleIndex].z) / (f32)state->blendFrameCount;
         }
         else
         {
-            u8* buf2;
-            u8* buf = (u8*)((ModgfxState*)state)->baseVertexData;
-            f32 cv;
-            state = (char*)state + ((ModgfxState*)state)->activeVertexBufferIndex * 4;
-            buf2 = *(u8**)((char*)state + 0x78);
-            for (j = 0; j < ((ModgfxVertexGroupCmd*)p)->indexCount; j++)
+            ModgfxVertexData* baseVertices = state->baseVertexData;
+            ModgfxVertexData* vertices = state->vertexBuffers[state->activeVertexBufferIndex];
+
+            for (i = 0; i < command->indexCount; i++)
             {
-                cv = *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 0);
-                *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 0) = cv * tx;
-                cv = *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 2);
-                *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 2) = cv * ty;
-                cv = *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 4);
-                *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 4) = cv * tz;
-                *(s16*)(buf2 + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 0) =
-                    *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 0);
-                *(s16*)(buf2 + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 2) =
-                    *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 2);
-                *(s16*)(buf2 + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 4) =
-                    *(s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 4);
+                baseVertices[command->indices[i]].posX *= targetX;
+                baseVertices[command->indices[i]].posY *= targetY;
+                baseVertices[command->indices[i]].posZ *= targetZ;
+                vertices[command->indices[i]].posX = baseVertices[command->indices[i]].posX;
+                vertices[command->indices[i]].posY = baseVertices[command->indices[i]].posY;
+                vertices[command->indices[i]].posZ = baseVertices[command->indices[i]].posZ;
             }
             return;
         }
     }
+
+    state->scaleVectors[scaleIndex].x += state->scaleVectors[scaleIndex + 1].x * gModgfxMotionStep;
+    state->scaleVectors[scaleIndex].y += state->scaleVectors[scaleIndex + 1].y * gModgfxMotionStep;
+    state->scaleVectors[scaleIndex].z += state->scaleVectors[scaleIndex + 1].z * gModgfxMotionStep;
+
     {
-        char* bp = base;
-        *(f32*)(bp + 0x30) = *(f32*)(bp + 0x30) + *(f32*)(bp + 0x3c) * gModgfxMotionStep;
-        *(f32*)(bp + 0x34) = *(f32*)(bp + 0x34) + *(f32*)(bp + 0x40) * gModgfxMotionStep;
-        *(f32*)(bp + 0x38) = *(f32*)(bp + 0x38) + *(f32*)(bp + 0x44) * gModgfxMotionStep;
+        ModgfxVertexData* baseVertices = state->baseVertexData;
+        ModgfxVertexData* vertices = state->vertexBuffers[state->activeVertexBufferIndex];
+
+        for (i = 0; i < command->indexCount; i++)
         {
-            u8* buf = (u8*)((ModgfxState*)state)->baseVertexData;
-            u8* buf2;
-            f32 noChange = 1.0f;
-            state = (char*)state + ((ModgfxState*)state)->activeVertexBufferIndex * 4;
-            buf2 = *(u8**)((char*)state + 0x78);
-            for (j = 0; j < ((ModgfxVertexGroupCmd*)p)->indexCount; j++)
+            if (state->scaleVectors[scaleIndex].x != 1.0f)
             {
-                if (noChange != *(f32*)(bp + 0x30))
-                {
-                    *(s16*)(buf2 + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 0) =
-                        *(f32*)(bp + 0x30) * (f32) * (s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 0);
-                }
-                if (noChange != *(f32*)(bp + 0x34))
-                {
-                    *(s16*)(buf2 + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 2) =
-                        *(f32*)(bp + 0x34) * (f32) * (s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 2);
-                }
-                if (noChange != *(f32*)(bp + 0x38))
-                {
-                    *(s16*)(buf2 + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 4) =
-                        *(f32*)(bp + 0x38) * (f32) * (s16*)(buf + ((ModgfxVertexGroupCmd*)p)->indices[j] * 16 + 4);
-                }
+                vertices[command->indices[i]].posX =
+                    state->scaleVectors[scaleIndex].x * baseVertices[command->indices[i]].posX;
+            }
+            if (state->scaleVectors[scaleIndex].y != 1.0f)
+            {
+                vertices[command->indices[i]].posY =
+                    state->scaleVectors[scaleIndex].y * baseVertices[command->indices[i]].posY;
+            }
+            if (state->scaleVectors[scaleIndex].z != 1.0f)
+            {
+                vertices[command->indices[i]].posZ =
+                    state->scaleVectors[scaleIndex].z * baseVertices[command->indices[i]].posZ;
             }
         }
     }
-#undef base
 }
 
 void modgfx_restoreBaseVertices(ModgfxState* state)
@@ -1398,12 +1382,14 @@ void dll_0B_func05(void)
                 ObjList_GetObjects(&objIdx, &objCount);
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x2)
                 {
-                    modgfx_stepVertexScale(eff, PENDING_SPAWNS + emOff, active, cntC);
+                    modgfx_stepVertexScale((ModgfxState*)eff,
+                                           (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, cntC);
                     cntC++;
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x4)
                 {
-                    modgfx_stepVertexAlpha(eff, PENDING_SPAWNS + emOff, active, cntA);
+                    modgfx_stepVertexAlpha((ModgfxState*)eff,
+                                           (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, cntA);
                     cntA++;
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x8)
@@ -1863,28 +1849,28 @@ s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16*
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->posStepY = fz430;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->posStepZ = fz430;
     fz434 = lbl_803DF434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[0].cur[0] = fz434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[0].cur[1] = fz434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[0].cur[2] = fz434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[0].step[1] = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[0].step[2] = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[0].step[0] = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[1].cur[2] = fz434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[1].cur[0] = fz434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[1].cur[1] = fz434;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[1].step[2] = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[1].step[0] = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleChannels[1].step[1] = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[0].x = fz434;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[0].y = fz434;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[0].z = fz434;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[1].x = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[1].y = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[1].z = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[2].x = fz434;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[2].y = fz434;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[2].z = fz434;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[3].x = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[3].y = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->scaleVectors[3].z = fz430;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->rotOffsetZ = 0;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->rotOffsetY = 0;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->rotOffsetX = 0;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->vec120 = 0;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->vec122 = 0;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->vec124 = 0;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaChannels[0].step = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaChannels[0].cur = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaChannels[1].step = fz430;
-    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaChannels[1].cur = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaValues[0] = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaValues[1] = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaValues[2] = fz430;
+    ((PartfxEffectState**)gPartfxActiveEffects)[slot]->alphaValues[3] = fz430;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->blendColorR = fz430;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->blendColorG = fz430;
     ((PartfxEffectState**)gPartfxActiveEffects)[slot]->blendColorB = fz430;
