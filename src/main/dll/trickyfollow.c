@@ -720,29 +720,26 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         if (found != 1)
                         {
                             found = pathSearchStep(&state->pathSearches[1], 1);
-                            if (found != 0)
+                            switch (found)
                             {
-                                if (found < 0)
+                            case 0:
+                                break;
+                            case 1:
+                                prod = (state->route.reverse ^ 1) & 0xff;
+                                if (prod == 0)
                                 {
-                                    if (found >= -1)
-                                    {
-                                        found = 1;
-                                    }
+                                    RomCurve_stepClamped(&state->route, lbl_803E23F8);
                                 }
-                                else if (found < 2)
+                                else
                                 {
-                                    prod = (state->route.reverse ^ 1) & 0xff;
-                                    if (prod == 0)
-                                    {
-                                        RomCurve_stepClamped(&state->route, lbl_803E23F8);
-                                    }
-                                    else
-                                    {
-                                        RomCurve_stepClamped(&state->route, lbl_803E2448);
-                                    }
-                                    state->route.reverse = prod;
-                                    RomCurve_swapEndpointNodes(&state->route);
+                                    RomCurve_stepClamped(&state->route, lbl_803E2448);
                                 }
+                                state->route.reverse = prod;
+                                RomCurve_swapEndpointNodes(&state->route);
+                                break;
+                            case -1:
+                                found = 1;
+                                break;
                             }
                         }
                     }
