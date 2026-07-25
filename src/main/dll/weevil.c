@@ -63,14 +63,35 @@ void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
                               int wpad3)
 {
     u8 cond = 0;
-    if ((obj)->anim.currentMove == 5 || (obj)->anim.currentMove == 4 ||
-        ((obj)->anim.currentMove == 6 && (double)(obj)->anim.currentMoveProgress < gWeevilFrozenProgressThreshold))
+    int kind = (obj)->anim.currentMove;
+    do
     {
+        if (kind == 5)
+        {
+        }
+        else if (kind == 4)
+        {
+        }
+        else if (kind == 6)
+        {
+            if ((double)(obj)->anim.currentMoveProgress < gWeevilFrozenProgressThreshold)
+            {
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            break;
+        }
+
         if (msgFlag != 0xe)
         {
             cond = 1;
         }
-    }
+    } while (0);
 
 {
     u32 condV = cond;
