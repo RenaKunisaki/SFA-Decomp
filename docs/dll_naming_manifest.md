@@ -736,7 +736,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B2 | DustMoteSou (+TailLightSo, FireWorkSou) | CONFIRMED | main/dll/dll_02B2_dustmotesou.c | = (canonical) | — |
 | 0x2B3 | vortex (+SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | GUESSED | main/dll/dll_02B3_vortex.c | = (canonical) | — |
 | 0x2B4 | CNTcounter | COMPLETE | main/dll/dll_02B4_cntcounter.c | = (canonical) | — |
-| 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | main/dll/dll_02B5_timer.c | = (canonical) | — |
+| 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | dlls/objects/693_Timer/Timer.c | = (canonical) | — |
 | 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | dlls/objects/694_CNThitObjec/CNThitObjec.c | = (canonical) | — |
 | 0x2B7 | MCUpgrade | COMPLETE | dlls/objects/695_MCUpgrade/MCUpgrade.c | = (canonical) | — |
 | 0x2B8 | MCUpgradeMa | CONFIRMED | dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c | = (canonical) | — |
