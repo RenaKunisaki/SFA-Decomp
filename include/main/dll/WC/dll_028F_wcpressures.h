@@ -74,7 +74,7 @@ int wcpressures_getObjectTypeId(GameObject* obj);
 void wcpressures_free(GameObject* obj);
 void wcpressures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void wcpressures_hitDetect(void);
-void wcpressures_update(int obj);
+void wcpressures_update(GameObject* obj);
 void wcpressures_init(GameObject* obj, WCPressuresSetup* setup);
 void wcpressures_release(void);
 void wcpressures_initialise(void);
