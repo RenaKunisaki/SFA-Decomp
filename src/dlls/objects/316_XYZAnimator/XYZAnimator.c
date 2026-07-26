@@ -1,5 +1,5 @@
 /*
- * xyzanimator (DLL 0x13C) - drives a smooth offset animation of a map
+ * XYZAnimator (DLL 0x13C) - drives a smooth offset animation of a map
  * block's vertices/edges along the X/Y/Z axes.
  *
  * On first update the object copies the source map block's vertex and
