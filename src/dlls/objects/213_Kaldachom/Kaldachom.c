@@ -70,8 +70,8 @@ extern f32 lbl_803E3084;
 extern f32 lbl_803E3088;
 extern f32 lbl_803E308C;
 extern f32 lbl_803E3090;
-extern s16 lbl_803203F8[];
-extern f32 lbl_80320404[];
+extern s16 gKaldachomMoves[6];
+extern f32 gKaldachomMoveSpeeds[5];
 extern f32 lbl_803E3094;
 extern f32 lbl_803E3098;
 extern f32 lbl_803E309C;
@@ -301,8 +301,8 @@ int kaldachom_stateHandlerA07(GameObject* obj, int baddieState)
  * first frame of a move (moveJustStartedA) selects the anim move via
  * ObjAnim_SetCurrentMove and may play an attack sfx / toggle the hit volume, and
  * (b) every frame writes the per-mode movement speed and the stateTag mode tag back
- * into the GroundBaddieState. A05/A02 index the move/speed tables (lbl_803203F8
- * move ids, lbl_80320404 speeds) by the control record's climbFxIndex. A00/A01
+ * into the GroundBaddieState. A05/A02 index gKaldachomMoves and
+ * gKaldachomMoveSpeeds by the control record's climbFxIndex. A00/A01
  * raise/clear gameBitB and drive the linked-mouth mode.
  */
 #define KALDACHOM_EVENT_MOUTH_LINK 0x1000
@@ -333,12 +333,12 @@ int kaldachom_stateHandlerA05(GameObject* obj, int statePtr)
     {
         if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
         {
-            ObjAnim_SetCurrentMove((int)obj, lbl_803203F8[4], 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, gKaldachomMoves[4], 0.0f, 0);
             ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
         }
         control->climbFxIndex = 4;
     }
-    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_80320404[control->climbFxIndex];
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = gKaldachomMoveSpeeds[control->climbFxIndex];
     ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
     return 0;
 }
@@ -384,13 +384,13 @@ int kaldachom_stateHandlerA02(GameObject* obj, int statePtr)
     {
         if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
         {
-            ObjAnim_SetCurrentMove((int)obj, lbl_803203F8[randomGetRange(0, 4)], 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, gKaldachomMoves[randomGetRange(0, 4)], 0.0f, 0);
             ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
         }
         ObjHits_EnableObject(obj);
         control->climbFxIndex = 4;
     }
-    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_80320404[control->climbFxIndex];
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = gKaldachomMoveSpeeds[control->climbFxIndex];
     ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
     return 0;
 }

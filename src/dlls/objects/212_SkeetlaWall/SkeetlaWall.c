@@ -1,80 +1,71 @@
 /*
- * SkeetlaWall (DLL 0x00D4) - an axis-aligned bounding-box wall/trigger
- * object used in the Skeetla arena level.  Each instance stores six
- * per-axis extents (in unsigned world units) and an optional shape flag;
- * SkeetlaWall_setScale unpacks these into a float[6] min/max array for
- * the engine's collision layer.  The render function delegates to
- * objRenderModelAndHitVolumes only when userData1 == 0 (default/inactive shape).
+ * SkeetlaWall object (DLL slot 212).
+ *
+ * Expands six placement extents into world-space bounds for the collision
+ * layer and renders the inactive wall shape.
  */
+#include "dlls/objects/212_SkeetlaWall.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/dll_00D4_skeetlawall.h"
 #include "main/object_render.h"
 
-void SkeetlaWall_setScale(GameObject* obj, f32* outVec, u8* outByte)
-{
+void SkeetlaWall_setScale(GameObject* obj, f32* outBounds, u8* outShapeFlag) {
     SkeetlaWallState* state = obj->extra;
-    outVec[0] = obj->anim.worldPosX - (f32)(u32)state->negXExtent;
-    outVec[1] = obj->anim.worldPosX + (f32)(u32)state->posXExtent;
-    outVec[2] = obj->anim.worldPosZ + (f32)(u32)state->posZExtent;
-    outVec[3] = obj->anim.worldPosZ - (f32)(u32)state->negZExtent;
-    outVec[4] = obj->anim.worldPosY + (f32)(u32)state->posYExtent;
-    outVec[5] = obj->anim.worldPosY - (f32)(u32)state->negYExtent;
-    outByte[0] = state->shapeFlag;
+
+    outBounds[0] = obj->anim.worldPosX - (f32)(u32)state->negXExtent;
+    outBounds[1] = obj->anim.worldPosX + (f32)(u32)state->posXExtent;
+    outBounds[2] = obj->anim.worldPosZ + (f32)(u32)state->posZExtent;
+    outBounds[3] = obj->anim.worldPosZ - (f32)(u32)state->negZExtent;
+    outBounds[4] = obj->anim.worldPosY + (f32)(u32)state->posYExtent;
+    outBounds[5] = obj->anim.worldPosY - (f32)(u32)state->negYExtent;
+    *outShapeFlag = state->shapeFlag;
 }
 
-int SkeetlaWall_getExtraSize(void)
-{
-    return 0x7;
-}
-int SkeetlaWall_getObjectTypeId(void)
-{
-    return 0x0;
+int SkeetlaWall_getExtraSize(void) {
+    return sizeof(SkeetlaWallState);
 }
 
-void SkeetlaWall_free(void)
-{
+int SkeetlaWall_getObjectTypeId(void) {
+    return 0;
 }
 
-void SkeetlaWall_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible != 0)
-    {
-        switch (obj->userData1)
-        {
+void SkeetlaWall_free(GameObject* obj) {
+    (void)obj;
+}
+
+void SkeetlaWall_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    if (visible != 0) {
+        switch (obj->userData1) {
         case 0:
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+            objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
             break;
         }
     }
 }
 
-void SkeetlaWall_hitDetect(void)
-{
+void SkeetlaWall_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void SkeetlaWall_update(void)
-{
+void SkeetlaWall_update(GameObject* obj) {
+    (void)obj;
 }
 
-void SkeetlaWall_init(GameObject* obj, SkeetlaWallPlacement* def)
-{
+void SkeetlaWall_init(GameObject* obj, SkeetlaWallPlacement* placement) {
     SkeetlaWallState* state = obj->extra;
-    state->negXExtent = def->negXExtent;
-    state->posXExtent = def->posXExtent;
-    state->posZExtent = def->posZExtent;
-    state->negZExtent = def->negZExtent;
-    state->posYExtent = def->posYExtent;
-    state->negYExtent = def->negYExtent;
-    state->shapeFlag = def->shapeFlag;
+
+    state->negXExtent = placement->negXExtent;
+    state->posXExtent = placement->posXExtent;
+    state->posZExtent = placement->posZExtent;
+    state->negZExtent = placement->negZExtent;
+    state->posYExtent = placement->posYExtent;
+    state->negYExtent = placement->negYExtent;
+    state->shapeFlag = placement->shapeFlag;
 }
 
-void SkeetlaWall_release(void)
-{
+void SkeetlaWall_release(void) {
 }
 
-void SkeetlaWall_initialise(void)
-{
+void SkeetlaWall_initialise(void) {
 }
 
 ObjectDescriptor11WithPadding gSkeetlaWallObjDescriptor = {
@@ -98,8 +89,8 @@ ObjectDescriptor11WithPadding gSkeetlaWallObjDescriptor = {
     0,
 };
 
-/* ground-baddie move/speed tables referenced via extern by texscroll2; owned here by link order */
+/* Kaldachom move/speed tables physically owned by this TU's .data tail. */
 
-s16 lbl_803203F8[6] = {0, 0, 1, 1, 2, 0};
+s16 gKaldachomMoves[6] = {0, 0, 1, 1, 2, 0};
 
-f32 lbl_80320404[5] = {0.004f, 0.006f, 0.01f, 0.01f, 0.01f};
+f32 gKaldachomMoveSpeeds[5] = {0.004f, 0.006f, 0.01f, 0.01f, 0.01f};
