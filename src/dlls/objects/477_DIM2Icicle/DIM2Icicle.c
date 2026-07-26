@@ -1,37 +1,16 @@
-/* DLL 0x1DD - DIM2 Icicle: a swaying ceiling icicle that detects a hit,
- * waits, then drops to its target Y floor position and triggers a game-bit. */
-#include "main/dll/dim2pathgeneratorstate_struct.h"
-#include "main/dll/dim2snowballstate_struct.h"
-#include "main/dll/truthhornicestate_struct.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/dll1d6state_struct.h"
-#include "game/objects/object.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
-
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
-
-STATIC_ASSERT(sizeof(Dll1D6State) == 0x20);
-
-STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
-
-STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
-
-/* DIM2PathGenerator_getExtraSize == 0x9a8 (incl. three 200-entry curve
- * tables filled by the RomCurve interface). */
-
-STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9a8);
-
-#include "main/dll/waterfx_interface.h"
+#include "main/dll/DIM/dll_01DD_dim2icicle.h"
+#include "main/audio/sfx.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/DIM/dll_01DD_dim2icicle.h"
+#include "main/dll/waterfx_interface.h"
+#include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
-#include "main/frame_timing.h"
-#include "main/vecmath.h"
-#include "main/audio/sfx.h"
+#include "main/object_render.h"
 #include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 #define DIM2ICICLE_OBJFLAG_HITDETECT_DISABLED 0x2000
 
