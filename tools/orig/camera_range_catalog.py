@@ -167,7 +167,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Combat-source visuals",
-        "src/main/dll/dll_02B1_cmbsrc.c",
+        "src/dlls/objects/689_CmbSrc/CmbSrc.c",
         "cmbsrc_updateVisuals",
         "Camera distance gates glow/effect rendering, not encounter completion or spawning.",
         "presentation",

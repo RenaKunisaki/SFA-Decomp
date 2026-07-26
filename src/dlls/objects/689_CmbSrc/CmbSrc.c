@@ -1,5 +1,5 @@
 /*
- * cmbsrc (DLL 0x02B1) - a "combustible source": a placed light/effect
+ * CmbSrc (DLL 689) - a "combustible source": a placed light/effect
  * emitter (campfire, thruster vent, T-wall/T-pole flame) that glows,
  * pulses, cycles colour and spawns particles while active.
  *
@@ -29,7 +29,6 @@
 #include "main/objfx.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
 #include "main/object_render.h"
-
 
 u8 gCmbsrcColorCycleIndexTable[8] = {5, 6, 4, 0, 0, 0, 0, 0};
 

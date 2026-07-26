@@ -211,7 +211,7 @@ The companion CSV contains every individual placement. This table is the complet
 | Camera-target trigger mode | `src/dlls/objects/294/294.c` | `Trigger_hitDetect target kind 2` | The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2. | `inactive_retail` |
 | Proximity mine cull branch | `src/main/proximitymine_update.c` | `ProximityMine_update` | Camera-derived opacity selects a path point versus target-root attack anchor; object is runtime-spawned and situational. | `investigate` |
 | DIM Tricky LOS | `src/main/dll/DIM/dll_019E_dim_tricky.c` | `DIMTricky_render` | Uses camera distance and voxel LOS to keep/free a visibility effect source. | `presentation` |
-| Combat-source visuals | `src/main/dll/dll_02B1_cmbsrc.c` | `cmbsrc_updateVisuals` | Camera distance gates glow/effect rendering, not encounter completion or spawning. | `presentation` |
+| Combat-source visuals | `src/dlls/objects/689_CmbSrc/CmbSrc.c` | `cmbsrc_updateVisuals` | Camera distance gates glow/effect rendering, not encounter completion or spawning. | `presentation` |
 | Object render fade | `src/main/shader.c` | `object visibility path` | Camera distance fades/culls rendered models; object logic remains separate. | `presentation` |
 | Explosion feedback | `src/main/dll/objfx.c` | `camera-distance feedback paths` | Attenuates camera shake, rumble, and effects by camera distance. | `presentation` |
 
@@ -249,7 +249,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/dlls/objects/270/270.c` | 54 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/270/270.c` | 180 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_0197_dll197.c` | 274 | `camera = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/dll_02B1_cmbsrc.c` | 283 | `viewSlot = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/689_CmbSrc/CmbSrc.c` | 283 | `viewSlot = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_b8.c` | 21 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_b8.c` | 27 | `vs = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 47 | `view = Camera_GetCurrentViewSlot();` |
