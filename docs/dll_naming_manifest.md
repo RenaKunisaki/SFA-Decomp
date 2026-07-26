@@ -622,7 +622,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x240 | GCRobotBlast | CONFIRMED | main/dll/dll_0240_gcrobotblast.c | = (canonical) | — |
 | 0x241 | DrakorEnergy | CONFIRMED | main/dll/dll_0241_drakorenergy.c | = (canonical) | — |
 | 0x242 | DBstealerworm | CONFIRMED | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | — |
-| 0x243 | DBHoleControl1 | CONFIRMED | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | — |
+| 0x243 | DBHoleControl1 | CONFIRMED | dlls/objects/579_DBHoleContr/DBHoleContr.c | = (canonical) | — |
 | 0x244 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x245 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x246 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
@@ -904,7 +904,7 @@ name was a deliberate choice by a previous carve:
 | 0x237 | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | COMPLETE |
 | 0x23F | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | COMPLETE |
 | 0x242 | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | CONFIRMED |
-| 0x243 | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | CONFIRMED |
+| 0x243 | main/dll/dll_0243_dbholecontrol1.c | dlls/objects/579_DBHoleContr/DBHoleContr.c | CONFIRMED |
 | 0x24F | main/dll/dll_024F_ktrexlevel.c | dlls/objects/591_KT_RexLevel/KT_RexLevel.c | CONFIRMED |
 | 0x250 | main/dll/dll_0250_ktrex.c | dlls/objects/592_KT_Rex/KT_Rex.c | COMPLETE |
 | 0x251 | main/dll/dll_0251_ktrexfloorswitch.c | dlls/objects/593_KT_RexFloor/KT_RexFloor.c | CONFIRMED |

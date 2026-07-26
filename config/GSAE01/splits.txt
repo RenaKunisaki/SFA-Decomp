@@ -3351,7 +3351,7 @@ main/dll/dll_0242_dbstealerworm.c:
 	.data       start:0x803293B8 end:0x80329940
 	.sdata2     start:0x803E62A8 end:0x803E6390
 
-main/dll/dll_0243_dbholecontrol1.c:
+dlls/objects/579_DBHoleContr/DBHoleContr.c:
 	.text       start:0x80203C78 end:0x80204098
 	.sbss       start:0x803DDCE0 end:0x803DDCE8
 	.sdata2     start:0x803E6390 end:0x803E6398

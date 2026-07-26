@@ -118,7 +118,7 @@ each page's entries by `size` (byte `+2`, `<<2` = words→bytes, exactly the wik
 in 4-byte words") and comparing the **unique ID at `+0x14`** against a needle — this is precisely
 "this ID is also used to look up the object in scripting."  Two call sites confirm the "look up by
 unique ID" usage described in the wiki:
-- `src/main/dll/dll_0243_dbholecontrol1.c:161`: `mapRomListFindItem(0x4658A, 0, 0, 0, 0)` — a DLL
+- `src/dlls/objects/579_DBHoleContr/DBHoleContr.c:161`: `mapRomListFindItem(0x4658A, 0, 0, 0, 0)` — a DLL
   looking up one specific, hard-coded map object by its unique romlist ID to spawn a copy of it.
 - `src/dlls/objects/597/597.c:231`: looks up an ID from `gSnowBikeMountRomListTable` and, on
   success, reads the found entry's `+0x8/+0xc/+0x10` as `x/y/z` (`snowbike.c:236-238`) — the position
@@ -172,7 +172,7 @@ entry (not yet `anim.placementData` — this runs before the object exists):
 - `*(u8*)(obj+4) & 0x01` (`isLevelObject`) → load.
 - `*(u8*)(obj+4) & 0x02` (`isManualLoad`) → **don't** auto-load here (consistent with the wiki: these
   are "used for dynamically created objects," i.e. spawned explicitly elsewhere — e.g. exactly the
-  `mapRomListFindItem` + manual-alloc pattern in `dll_0243_dbholecontrol1.c` above — rather than by
+  `mapRomListFindItem` + manual-alloc pattern in `dlls/objects/579_DBHoleContr/DBHoleContr.c` above — rather than by
   this per-frame act scan).
 - `*(u8*)(obj+4) & 0x20` (`isBlockObject`) → load unconditionally, before the position check (wiki:
   "load regardless of position").
