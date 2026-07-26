@@ -150,5 +150,3 @@ ObjectDescriptor gWM_TorchObjDescriptor = {
     (ObjectDescriptorCallback)wmtorch_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)wmtorch_getExtraSize,
 };
-
-u32 lbl_80328AD8[12] = {0};
