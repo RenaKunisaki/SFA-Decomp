@@ -3534,7 +3534,7 @@ dlls/objects/568_LINKA_levco/LINKA_levco.c:
 	.data       start:0x80329C80 end:0x80329CB8
 	.sdata2     start:0x803E64D8 end:0x803E64DC
 
-main/textblock.c:
+dlls/objects/569/569.c:
 	.text       start:0x80209810 end:0x802098B4
 	.data       start:0x80329CB8 end:0x80329D18
 

@@ -369,7 +369,6 @@ main/pi_dolphin.c
 main/rcp_dolphin.c
 main/shader.c
 main/tex_dolphin.c
-main/textblock.c
 main/timer.c
 main/track_dolphin.c
 main/unknown/autos/placeholder_800066E0.c
