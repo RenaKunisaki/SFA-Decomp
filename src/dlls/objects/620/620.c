@@ -1,5 +1,5 @@
 /*
- * drcagewith (DLL 0x26C) - a hanging cage with a winch rope. On first
+ * DLL 0x26C - a hanging cage with a winch rope. On first
  * hit it spawns its linked rope/winch object and, while unlocked,
  * integrates a damped angular velocity (angularVel) from the object's
  * horizontal motion, driving the rope segments' rotZ and the linked
