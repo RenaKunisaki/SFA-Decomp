@@ -231,7 +231,7 @@ is unconfirmed.
   `src/dlls/objects/195_Player/player.c` — but this
   mapping is **not independently confirmed** by tracing the specific out-of-bounds freeze check the
   wiki describes.
-- The similar Ice Mountain bike dismount: DLL for the bike is `src/main/dll/dll_0255_snowbike.c`;
+- The similar Ice Mountain bike dismount: DLL for the bike is `src/dlls/objects/597/597.c`;
   `GAMEBIT_IM_OnBike = 0xC8` (`include/main/gamebits.h`).
 - **Death Crash**: **found, exact match.** `sideCommandEnable` (`src/dlls/objects/196_Tricky/tricky.c:8293`) is a
   generic command-enqueue function taking a `targetObj` — the shape "Feed to Tricky" needs

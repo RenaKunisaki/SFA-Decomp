@@ -120,7 +120,7 @@ in 4-byte words") and comparing the **unique ID at `+0x14`** against a needle �
 unique ID" usage described in the wiki:
 - `src/main/dll/dll_0243_dbholecontrol1.c:161`: `mapRomListFindItem(0x4658A, 0, 0, 0, 0)` — a DLL
   looking up one specific, hard-coded map object by its unique romlist ID to spawn a copy of it.
-- `src/main/dll/dll_0255_snowbike.c:231`: looks up an ID from `gSnowBikeMountRomListTable` and, on
+- `src/dlls/objects/597/597.c`: looks up an ID from `gSnowBikeMountRomListTable` and, on
   success, reads the found entry's `+0x8/+0xc/+0x10` as `x/y/z` (`snowbike.c:236-238`) — the position
   vec3f at offset 8, exactly as the wiki's table says.
 

@@ -1226,6 +1226,10 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/596_KT_Fallingr/KT_Fallingr.c", cflags=cflags_dll_noopt),
+            Object(
+                NonMatching, "dlls/objects/597/597.c", cflags=cflags_dll_noopt_noautoinline,
+                section_alignments={".data": 4},
+            ),
             Object(MatchingFor("GSAE01"), "main/audio/snd_midictrl.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/snd_service.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_init.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
@@ -1916,10 +1920,6 @@ config.libs = [
                 section_alignments={".data": 4},
             ),
             Object(NonMatching, "main/dll/drpickup.c", cflags=cflags_dll_noopt),
-            Object(
-                NonMatching, "main/dll/dll_0255_snowbike.c", cflags=cflags_dll_noopt_noautoinline,
-                section_alignments={".data": 4},
-            ),
             Object(MatchingFor("GSAE01"), "main/dll/bwalphaanim.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/sbcloudrunnergroup.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c", cflags=cflags_dll_noopt),
