@@ -3900,7 +3900,7 @@ dlls/objects/663_WCTempleBri/WCTempleBri.c:
 	.data       start:0x8032B398 end:0x8032B3D0
 	.sdata2     start:0x803E6E70 end:0x803E6E98
 
-main/dll/WC/dll_0298_wcfloortile.c:
+dlls/objects/664_WCFloorTile/WCFloorTile.c:
 	.text       start:0x8022A298 end:0x8022A670
 	.data       start:0x8032B3D0 end:0x8032B408
 	.sdata2     start:0x803E6E98 end:0x803E6EC8

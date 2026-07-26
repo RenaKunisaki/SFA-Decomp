@@ -1,5 +1,5 @@
 /*
- * wcfloortile (DLL 0x298) - a collapsing floor tile in the Walled City
+ * WCFloorTile (DLL 664) - a collapsing floor tile in the Walled City
  * (WC). The tile sits flush until armed: once its arm game bit is set it
  * watches its map block's hit entries for a triggering entry, then enters a
  * shake-and-fall phase (jittering rotY/rotZ, accelerating down velocityY)
