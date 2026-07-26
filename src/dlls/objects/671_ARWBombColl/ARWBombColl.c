@@ -1,5 +1,5 @@
 /*
- * arwbombcoll (DLL 0x29F) - the in-flight pickups and rings collected by
+ * ARWBombColl (DLL 0x29F) - the in-flight pickups and rings collected by
  * the Arwing in the on-rails sections. A pickup fades in once the Arwing is
  * close ahead, can oscillate along the X or Y axis (route modes 1/3 and
  * 4/5), spins, and watches for the Arwing passing through it. The reward on

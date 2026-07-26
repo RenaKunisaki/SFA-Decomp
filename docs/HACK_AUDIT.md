@@ -255,7 +255,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_80136a40 | 99.1092 | 96.5304 | -2.5788 |
 | main/main/dll/dll_0032_titlescreeninit | 100.0000 | 97.5015 | -2.4985 |
 | main/main/dll/dll_00F5_sidekickball | 100.0000 | 97.5680 | -2.4320 |
-| main/main/dll/ARW/dll_029F_arwbombcoll | 100.0000 | 97.6175 | -2.3825 |
+| main/dlls/objects/671_ARWBombColl/ARWBombColl | 100.0000 | 97.6175 | -2.3825 |
 | main/main/dll/dll_0017_savegame | 99.7631 | 97.4521 | -2.3110 |
 | main/main/tex_dolphin | 99.9727 | 97.6931 | -2.2796 |
 | main/main/dll/laserturretgroup | 100.0000 | 97.7680 | -2.2320 |
