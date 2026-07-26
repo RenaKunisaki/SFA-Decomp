@@ -9,8 +9,8 @@
 #include "main/dll/player_motion.h"
 #include "main/vecmath.h"
 
-void gunpowderbarrel_setPlayerHeldState(int* obj, u8 heldByPlayer);
-void gunpowderbarrel_homeOnTarget(int* obj, s16 a, s16 b);
+void gunpowderbarrel_setPlayerHeldState(GameObject* obj, u8 heldByPlayer);
+void gunpowderbarrel_homeOnTarget(GameObject* obj, s16 a, s16 b);
 void gunpowderbarrel_launchAtTarget(GameObject* obj, u8 flag);
 int gunpowderbarrel_isHeld(GameObject* obj);
 void gunpowderbarrel_setHeldState(GameObject* obj);
