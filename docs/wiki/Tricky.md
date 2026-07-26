@@ -191,7 +191,7 @@ is unconfirmed.
   - `src/main/dll/dll_0266_kytesmum.c` — DLL `0x266`, object type `0x43`, "Kyte's mum" NPC (per the
     file's own header comment), supporting the wiki's inference of a Kyte backstory beyond just
     the caged bird.
-  - `CagedKyte` on Scales' galleon: `src/main/dll/SB/dll_01F2_sbcagekyte.c` (`SB_CageKyte`, DLL
+  - `CagedKyte` on Scales' galleon: `src/dlls/objects/498_SB_CageKyte/SB_CageKyte.c` (`SB_CageKyte`, DLL
     `0x1F2`, "Kyte, the captive baby Cloudrunner held in the deck cage... during the ShipBattle
     prologue") and `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c` (`SB_KyteCage`, DLL `0x1F0`, the cage
     object itself, `include/main/dll/sbkytecagestate_struct.h` -> `SBKyteCageState`). Matches the

@@ -2,7 +2,7 @@
  * SB_CageKyte (DLL 0x01F2) - Kyte, the captive baby Cloudrunner held in the
  * deck cage (SB_KyteCage) during the ShipBattle prologue (SB = the retail
  * "ShipBattle" map). This is the objType-0x121 child Krystal walks up to and
- * talks to after landing on the galleon. TU: 0x801E4288-0x801E42F8.
+ * talks to after landing on the galleon.
  *
  * Its extra state is a single s16 chirp timer. Each update tick it counts
  * the timer down by framesThisStep, forces hitbox-reset bit 0x8, and
@@ -10,14 +10,9 @@
  * "beep"/chirp sfx (unless suppressed by a GameBit) and re-arms with a
  * random 400-600 frame delay.
  */
-#include "main/dll/shipbattlestate_struct.h"
 #include "sys/objects.h"
-#include "main/dll/sbkytecagestate_struct.h"
-#include "main/dll/sbfireballstate_struct.h"
-#include "main/dll/sbcloudballstate_struct.h"
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"
@@ -36,11 +31,6 @@
 
 #define SB_CAGEKYTE_OBJFLAG_HIDDEN             0x4000
 #define SB_CAGEKYTE_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
-STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);
-STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
-STATIC_ASSERT(sizeof(ShipBattleState) == 0x140);
 
 int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -101,7 +91,7 @@ void SB_CageKyte_update(GameObject* obj)
         randomGetRange(0, 10);
         if ((u32)mainGetBit(SB_CAGEKYTE_SILENCE_GAMEBIT) == 0u)
         {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_ice_freeze_316);
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_ice_freeze_316);
         }
         *timer = randomGetRange(SB_CAGEKYTE_CHIRP_MIN, SB_CAGEKYTE_CHIRP_MAX);
     }

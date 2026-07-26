@@ -541,7 +541,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1EF | SB_CloudBal | COMPLETE | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | = (canonical) | Retail basename is truncated |
 | 0x1F0 | SB_KyteCage | COMPLETE | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | = (canonical) | — |
 | 0x1F1 | SB_SeqDoor | COMPLETE | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | = (canonical) | — |
-| 0x1F2 | SB_CageKyte | CONFIRMED | main/dll/dll_01F2_sbcagekyte.c | main/dll/SB/dll_01F2_sbcagekyte.c | — |
+| 0x1F2 | SB_CageKyte | COMPLETE | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | = (canonical) | — |
 | 0x1F3 | SB_MiniFire | CONFIRMED | main/dll/dll_01F3_sbminifire.c | main/dll/SB/dll_01F3_sbminifire.c | — |
 | 0x1F4 | Lamp (+CF_Lamp, SB_Lamp) | CONFIRMED | main/dll/dll_01F4_lamp.c | = (canonical) | — |
 | 0x1F5 | ShipBattle (+generalscal, CF_generals, NW_GeneralS, SB_FireBall) | GUESSED | main/dll/dll_01F5_shipbattle.c | = (canonical) | — |
@@ -867,7 +867,7 @@ name was a deliberate choice by a previous carve:
 | 0x1EF | main/dll/dll_01EF_sbcloudball.c | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | COMPLETE |
 | 0x1F0 | main/dll/dll_01F0_sbkytecage.c | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | COMPLETE |
 | 0x1F1 | main/dll/dll_01F1_sbseqdoor.c | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | COMPLETE |
-| 0x1F2 | main/dll/dll_01F2_sbcagekyte.c | main/dll/SB/dll_01F2_sbcagekyte.c | CONFIRMED |
+| 0x1F2 | main/dll/dll_01F2_sbcagekyte.c | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | COMPLETE |
 | 0x1F3 | main/dll/dll_01F3_sbminifire.c | main/dll/SB/dll_01F3_sbminifire.c | CONFIRMED |
 | 0x1F7 | main/dll/dll_01F7_sbshipgunbroke.c | main/dll/SB/dll_01F7_sbshipgunbroke.c | CONFIRMED |
 | 0x1F8 | main/dll/dll_01F8_wmgalleon.c | main/dll/WM/dll_01F8_wmgalleon.c | COMPLETE |

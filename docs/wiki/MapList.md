@@ -416,7 +416,7 @@ tree — it doesn't, in every case checked:
   `0x16E`), off by 6 from the wiki's `ObjType`.
 - Confirmed directly in-tree: `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c:34` defines
   `#define SB_KYTE_OBJECT_TYPE 0x121` for a child object it looks up — that object's own DLL is
-  `dll_01F2_sbcagekyte.c` (`0x1F2`). Object-type ID and DLL ID are tracked as separate fields in our
+  `src/dlls/objects/498_SB_CageKyte/SB_CageKyte.c` (`0x1F2`). Object-type ID and DLL ID are tracked as separate fields in our
   own code, exactly as this mismatch would predict.
 
 `ObjType` is almost certainly an index into the separate object-class table (`OBJECTS.bin`/
