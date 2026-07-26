@@ -527,7 +527,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1E1 | DIM_BossGut | COMPLETE | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | = (canonical) | — |
 | 0x1E2 | DIM_BossTon | COMPLETE | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | = (canonical) | Retail basename is truncated |
 | 0x1E3 | DIM_BossGut | COMPLETE | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | = (canonical) | Retail basename is truncated |
-| 0x1E4 | MAGICMaker | COMPLETE | main/dll/dll_01E4_magicmaker.c | = (canonical) | — |
+| 0x1E4 | MAGICMaker | COMPLETE | dlls/objects/484_MAGICMaker/MAGICMaker.c | = (canonical) | — |
 | 0x1E5 | DIM_BossSpit | CONFIRMED | main/dll/dll_01E5_dimbossspit.c | main/dll/DIM/dll_01E5_dimbossspit.c | — |
 | 0x1E6 | DIMbosscrackpar | CONFIRMED | main/dll/dll_01E6_dimbosscrackpar.c | main/dll/DIM/dll_01E6_dimbosscrackpar.c | — |
 | 0x1E7 | DIMbossfire (+MMP_CraterF, CraterFlame) | CONFIRMED | main/dll/dll_01E7_dimbossfire.c | main/dll/DIM/dll_01E7_dimbossfire.c | — |
