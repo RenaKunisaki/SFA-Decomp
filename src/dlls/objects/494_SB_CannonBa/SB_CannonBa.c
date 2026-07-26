@@ -5,7 +5,7 @@
  * burst, then each frame integrates its own ballistic trajectory (stored in
  * state), trails smoke particles, and carries a point light. On impact it
  * plays a hit sfx, spawns smoke/spark bursts, and arms a cooldown before
- * freeing itself. TU: 0x801E341C-0x801E34C0.
+ * freeing itself.
  */
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
