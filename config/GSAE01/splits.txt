@@ -2168,7 +2168,7 @@ dlls/objects/317_ExplodeAnim/ExplodeAnim.c:
 	.data       start:0x80322330 end:0x80322368
 	.sdata2     start:0x803E4020 end:0x803E4030
 
-main/dll/DIM/dll_013E_dimbossicesmash.c:
+dlls/objects/318/318.c:
 	.text       start:0x80196520 end:0x8019718C
 	.data       start:0x80322368 end:0x803223B0
 	.sdata      start:0x803DBDF8 end:0x803DBE00

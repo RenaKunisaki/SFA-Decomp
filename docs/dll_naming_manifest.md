@@ -363,7 +363,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x13B | WallAnimato | CONFIRMED | dlls/objects/315_WallAnimato/WallAnimato.c | = (canonical) | — |
 | 0x13C | XYZAnimator | CONFIRMED | dlls/objects/316_XYZAnimator/XYZAnimator.c | = (canonical) | — |
 | 0x13D | ExplodeAnim | CONFIRMED | dlls/objects/317_ExplodeAnim/ExplodeAnim.c | = (canonical) | — |
-| 0x13E | DIMBossIceSmash (+DIM2Explode) | CONFIRMED | main/dll/dll_013E_dimbossicesmash.c | main/dll/DIM/dll_013E_dimbossicesmash.c | — |
+| 0x13E | — (+DIMBossIceSmash, DIM2Explode) | NO-RETAIL-NAME | dlls/objects/318/318.c | = (canonical) | — |
 | 0x13F | TexFrameAnimator | CONFIRMED | main/dll/dll_013F_texframeanimator.c | = (canonical) | — |
 | 0x140 | fogControl | COMPLETE | main/dll/dll_0140_fogcontrol.c | = (canonical) | — |
 | 0x141 | Lightning | COMPLETE | main/dll/dll_0141_lightning.c | = (canonical) | — |
@@ -800,7 +800,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x13E | main/dll/dll_013E_dimbossicesmash.c | main/dll/DIM/dll_013E_dimbossicesmash.c | CONFIRMED |
 | 0x148 | main/dll/dll_0148_cfguardian.c | main/dll/CF/dll_0148_cfguardian.c | COMPLETE |
 | 0x149 | main/dll/dll_0149_cfwindlift.c | main/dll/CF/dll_0149_cfwindlift.c | CONFIRMED |
 | 0x14A | main/dll/dll_014A_cfpowerbase.c | main/dll/CF/dll_014A_cfpowerbase.c | CONFIRMED |
