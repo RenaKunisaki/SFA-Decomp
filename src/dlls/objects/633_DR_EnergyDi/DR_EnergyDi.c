@@ -1,5 +1,5 @@
 /*
- * drenergydisc (DLL 0x279) - an energy-disc dressing object whose
+ * DR_EnergyDi (DLL 633) - an energy-disc dressing object whose
  * activation is driven by two placement game bits.
  *
  * While the "active" game bit (placement 0x20) is set the disc plays a
