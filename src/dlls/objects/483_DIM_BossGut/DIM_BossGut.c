@@ -20,6 +20,45 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
+#define DIMBOSSGUT2_OBJGROUP 3
+#define DIMBOSSGUT2_PARTFX   0x32b
+
+static void dimbossgut2_spawnBreathSplash(GameObject* obj, Dimbossgut2Curve* posData)
+{
+    u32 randomThreshold;
+    f32 heightDiff;
+    f32 xyScale;
+    struct
+    {
+        u8 pad[8];
+        f32 f54;
+        f32 f50;
+        f32 f4c;
+        f32 f48;
+    } stk;
+
+    if ((posData->verticalVelocity < -0.025f) && (posData->pathSpeed < 0.25f))
+    {
+        heightDiff = posData->surfaceY - (obj)->anim.localPosY;
+        if (heightDiff < 0.0f)
+        {
+            heightDiff = -heightDiff;
+        }
+        if ((heightDiff < 14.0f) && (stk.f4c = posData->surfaceY, randomThreshold = randomGetRange(0x1e, 0x3c),
+                                            (int)(u32)posData->breathFxTimer > (int)randomThreshold))
+        {
+            xyScale = 20.0f * posData->pathSpeed;
+            stk.f50 = (obj)->anim.localPosX -
+                      xyScale * mathSinf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
+            stk.f48 = (obj)->anim.localPosZ -
+                      xyScale * mathCosf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
+            stk.f54 = 0.65f * (1.0f - heightDiff / 14.0f);
+            (*gPartfxInterface)->spawnObject((void*)obj, DIMBOSSGUT2_PARTFX, &stk, 1, -1, NULL);
+            posData->breathFxTimer = 0;
+        }
+    }
+}
+
 void dimbossgut2_updateBobAndSway(GameObject* obj, Dimbossgut2State* state)
 {
     Dimbossgut2Curve* motion;
@@ -55,9 +94,6 @@ void dimbossgut2_updateBobAndSway(GameObject* obj, Dimbossgut2State* state)
     motion->verticalVelocity = motion->verticalVelocity / 1.07f;
     motion->swayVelocity = motion->swayVelocity / 1.04f;
 }
-
-#define DIMBOSSGUT2_OBJGROUP 3
-#define DIMBOSSGUT2_PARTFX   0x32b
 
 void dimbossgut2_updateTracking(GameObject* obj, Dimbossgut2State* state)
 {
