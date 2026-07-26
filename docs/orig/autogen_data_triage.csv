@@ -196,7 +196,7 @@ address,section,size_bytes,byte_class,subtype_reason,adjacent_owner,adjacency_co
 0x803E79C0,.sdata2,528,float-pool,read-only const/float pool (.sdata2),math_float_helpers.c,high,15,dolphin/MSL_C/PPCEABI/bare/H/k_sin.o,512,12,0,0
 0x803E7BD8,.sdata2,56,float-pool,read-only const/float pool (.sdata2),e_sqrt.c,high,6,auto_03_802929CC_text.o,52,4,0,0
 0x803E7C18,.sdata2,408,float-pool,read-only const/float pool (.sdata2),s_tan.c,high,17,dolphin/MSL_C/PPCEABI/bare/H/e_rem_pio2.o,400,8,0,0
-0x803E8214,.sdata2,28,float-pool,read-only const/float pool (.sdata2),player.c,high,3,main/dll/dll_01B5_lightfoot.o,24,4,0,0
+0x803E8214,.sdata2,28,float-pool,read-only const/float pool (.sdata2),player.c,high,3,dlls/objects/437/437.o,24,4,0,0
 0x803E82D4,.sdata2,12,float-pool,read-only const/float pool (.sdata2),dll_01D9_dim2prisonmammoth.c,high,3,main/dll/DR/dll_0257_drearthwarrior.o,4,8,0,0
 0x803E82E0,.sdata2,136,float-pool,read-only const/float pool (.sdata2),dll_01D9_dim2prisonmammoth.c,med,3,main/dll/DR/dll_0257_drearthwarrior.o,108,28,0,0
 0x803E8390,.sdata2,8,float-pool,read-only const/float pool (.sdata2),synth_constants.c,high,3,main/dll/DR/dll_0257_drearthwarrior.o,8,0,0,0

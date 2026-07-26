@@ -22,7 +22,7 @@ typedef void (*BaddieStateExitFn)(struct GameObject* obj, struct BaddieState* st
  *   mediumbasket.c (dll_CA family straddles both TUs) - converted.
  * - player.c's "inner" is the SAME record (0x274 mode compares, 0x27A
  *   just-started flag, 0x346 latch, ...) - adoption left to Zac/future.
- * - treasurechest.c / dll_01B5_lightfoot.c reference the same offsets -
+ * - treasurechest.c / dlls/objects/437/437.c reference the same offsets -
  *   future passes.
  * - DR_CloudRunner's 0xBC8 extra block EMBEDS this record as its prefix
  *   (0x25F/0x28C/0x314/0x354 head + private tail from ~0x410) - layout

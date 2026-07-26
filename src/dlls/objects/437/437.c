@@ -64,24 +64,6 @@ typedef struct LightfootSub
 int lbl_803DB0DC[5];
 int lbl_803DB0D0[3];
 
-ObjectDescriptor gLightFootObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)lightfoot_initialise,
-    (ObjectDescriptorCallback)lightfoot_release,
-    0,
-    (ObjectDescriptorCallback)lightfoot_init,
-    (ObjectDescriptorCallback)lightfoot_update,
-    (ObjectDescriptorCallback)lightfoot_hitDetect,
-    (ObjectDescriptorCallback)lightfoot_render,
-    (ObjectDescriptorCallback)lightfoot_free,
-    (ObjectDescriptorCallback)lightfoot_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)lightfoot_getExtraSize,
-};
-
-
 int lightfoot_getExtraSize(void)
 {
     return 0x440;
@@ -458,3 +440,20 @@ void lightfoot_initialise(void)
     lbl_803DB0D0[1] = (int)Lightfoot_UpdateCompletionInteraction;
     lbl_803DB0D0[2] = (int)Lightfoot_UpdateProximityInteractionState;
 }
+
+ObjectDescriptor gLightFootObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)lightfoot_initialise,
+    (ObjectDescriptorCallback)lightfoot_release,
+    0,
+    (ObjectDescriptorCallback)lightfoot_init,
+    (ObjectDescriptorCallback)lightfoot_update,
+    (ObjectDescriptorCallback)lightfoot_hitDetect,
+    (ObjectDescriptorCallback)lightfoot_render,
+    (ObjectDescriptorCallback)lightfoot_free,
+    (ObjectDescriptorCallback)lightfoot_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)lightfoot_getExtraSize,
+};

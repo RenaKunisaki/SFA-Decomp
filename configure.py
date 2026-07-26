@@ -1174,7 +1174,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/audio/hw_input.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_aram.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_samplemem.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
-            Object(NonMatching, "main/dll/dll_01B5_lightfoot.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/437/437.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/DIM/dll_0256_dimsnowhorn1.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_01D9_dim2prisonmammoth.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/599_DR_EarthWar/DR_EarthWar.c", cflags=cflags_dll_noopt_noautoinline),
