@@ -326,7 +326,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x116 | WM_Column (+WM_Column_T, GPSHpickobj) | COMPLETE | dlls/objects/278_WM_Column/WM_Column.c | = (canonical) | — |
 | 0x117 | AppleOnTree | CONFIRMED | dlls/objects/279_AppleOnTree/AppleOnTree.c | = (canonical) | — |
 | 0x118 | Duster | COMPLETE | dlls/objects/280_Duster/Duster.c | = (canonical) | — |
-| 0x119 | coldWaterControl | CONFIRMED | main/dll/dll_0119_coldwatercontrol.c | = (canonical) | — |
+| 0x119 | coldWaterCo | CONFIRMED | dlls/objects/281_coldWaterCo/coldWaterCo.c | = (canonical) | — |
 | 0x11A | decoration11a (+DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF) | GUESSED | main/dll/dll_011A_decoration11a.c | = (canonical) | — |
 | 0x11B | Landed_Arwing | CONFIRMED | main/dll/dll_011B_landedarwing.c | = (canonical) | — |
 | 0x11C | staffactivated (+LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT) | GUESSED | main/dll/dll_011C_staffactivated.c | = (canonical) | — |

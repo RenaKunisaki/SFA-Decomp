@@ -1,5 +1,5 @@
 /*
- * coldwatercontrol (DLL 0x119) - a cold-water damage trigger object.
+ * coldWaterCo (DLL 0x119) - a cold-water damage trigger object.
  *
  * Once game bit 0x1bf is set (and 0x1bd not yet), it fires trigger
  * sequence 0 and latches 0x1bd so the sequence runs only once. After
