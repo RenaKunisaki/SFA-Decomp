@@ -1,5 +1,5 @@
 /*
- * cfpowerbase (DLL 0x14A) - the three CloudRunner Fortress power bases
+ * CFPowerBase (DLL 0x14A) - the three CloudRunner Fortress power bases
  * (powered game bits 0x54/0x55/0x56, power-gem bits 0x51/0x52/0x53). Each
  * base tracks whether Fox holds its gem into the interaction flags, relays
  * 0x11000x object messages to the requesting object once its trigger
