@@ -2123,7 +2123,7 @@ dlls/objects/308_texscroll2/texscroll2.c:
 	.data       start:0x80322100 end:0x80322140
 	.sdata2     start:0x803E3F30 end:0x803E3F34
 
-main/dll/dll_0135_texscroll.c:
+dlls/objects/309_texscroll/texscroll.c:
 	.text       start:0x801922E4 end:0x80192394
 	.data       start:0x80322140 end:0x80322178
 	.sdata2     start:0x803E3F38 end:0x803E3F3C

@@ -470,7 +470,7 @@ on this ABI.)
 | Wiki concept | DLL id | Source |
 |---|---|---|
 | `texscroll2` objects | `0x134` | `src/dlls/objects/308_texscroll2/texscroll2.c`, `TEXSCROLL2_DLL_ID` (`include/main/dll/mmp_moonrock.h:11`) |
-| (sibling, not separately named by the wiki) `texscroll` | `0x135` | `src/main/dll/dll_0135_texscroll.c`, `TEXSCROLL_DLL_ID` (`mmp_moonrock.h:12`) |
+| (sibling, not separately named by the wiki) `texscroll` | `0x135` | `src/dlls/objects/309_texscroll/texscroll.c`, `TEXSCROLL_DLL_ID` (`mmp_moonrock.h:12`) |
 
 ### Not found / out of scope here
 
