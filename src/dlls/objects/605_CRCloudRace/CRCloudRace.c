@@ -1,3 +1,5 @@
+/* CRCloudRace (DLL 605): CloudRunner race controller. */
+
 #include "main/crcloudrace.h"
 #include "main/pi_dolphin_api.h"
 #include "main/audio/music_api.h"
