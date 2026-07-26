@@ -674,7 +674,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x274 | DR_pulley | COMPLETE | dlls/objects/628_DR_pulley/DR_pulley.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC360` |
 | 0x275 | DR_cradle | COMPLETE | dlls/objects/629_DR_cradle/DR_cradle.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC358` |
 | 0x276 | — | NO-RETAIL-NAME | dlls/objects/630/630.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC368` |
-| 0x277 | CFWindLiftL | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x277 | CFWindLiftL | RAW | dlls/objects/631_CFWindLiftL/CFWindLiftL.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC370` |
 | 0x278 | DRCollapseP (+DRPlatformC) | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x279 | DR_EnergyDisc | CONFIRMED | main/dll/dll_0279_drenergydisc.c | main/dll/DR/dll_0279_drenergydisc.c | — |
 | 0x27A | DR_Collapse | RAW | *(none)* | — | no .text fns (descriptor data only) |
