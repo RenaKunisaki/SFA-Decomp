@@ -39,16 +39,6 @@ STATIC_ASSERT(offsetof(DimbossfirePlacement, triggerGameBit) == 0x20);
 
 extern f32 gDimbossfireActiveDurations[DIMBOSSFIRE_FLAME_COUNT];
 extern ObjectDescriptor gDIMbossfireObjDescriptor;
-extern f32 gDimbossfireZero;
-extern f32 gDimbossfireShakeRadius;
-extern f32 gDimbossfireFullIntensity;
-extern f32 gDimbossfireShakeMagnitudeDuration;
-extern f32 gDimbossfireShakeFalloff;
-extern f32 gDimbossfireRumbleMagnitude;
-extern f32 gDimbossfireLightNearDistance;
-extern f32 gDimbossfireLightFarDistance;
-extern f32 gDimbossfireLightFadeFrames;
-
 int dimbossfire_getExtraSize(void);
 int dimbossfire_getObjectTypeId(void);
 void dimbossfire_free(GameObject* obj);

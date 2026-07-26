@@ -2700,10 +2700,10 @@ dlls/objects/486_DIMbosscrac/DIMbosscrac.c:
 	.data       start:0x80325D30 end:0x80325D68
 	.sdata2     start:0x803E4D98 end:0x803E4D9C
 
-main/dll/DIM/dll_01E7_dimbossfire.c:
+dlls/objects/487_DIMbossfire/DIMbossfire.c:
 	.text       start:0x801C04B8 end:0x801C0A60
 	.data       start:0x80325D68 end:0x80325DC8
-	.sdata2     start:0x803E4DC8 end:0x803E4DD0
+	.sdata2     start:0x803E4DA0 end:0x803E4DD0
 
 dlls/objects/372_CCriverflow/CCriverflow.c:
 	.text       start:0x801C0A60 end:0x801C0BF8
