@@ -73,7 +73,7 @@ enum NwMammothRuntimeFlag
     NW_MAMMOTH_RUNTIME_UI_MESSAGE = 0x40,
 };
 
-int NW_mammoth_updateSleepCycle(int* obj, u8* state);
+int NW_mammoth_updateSleepCycle(GameObject* obj, u8* state);
 void NW_mammoth_updateArtifactQuest(int obj, int baddie, NwMammothMapData* mapData);
 
 int NW_mammoth_getExtraSize(void);
@@ -201,7 +201,7 @@ void NW_mammoth_updateEyeTracking(GameObject* obj, int state, int flag)
     }
 }
 
-int NW_mammoth_updateSleepCycle(int* obj, u8* st)
+int NW_mammoth_updateSleepCycle(GameObject* obj, u8* st)
 {
     u8 night;
     int animCue;
@@ -239,7 +239,7 @@ int NW_mammoth_updateSleepCycle(int* obj, u8* st)
     case 0x14:
         if (animCue != 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_14b);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_id_14b);
         }
         if (state->runtimeFlags & NW_MAMMOTH_RUNTIME_ANIM_ENDED)
         {
@@ -250,7 +250,7 @@ int NW_mammoth_updateSleepCycle(int* obj, u8* st)
     case 0x15:
         if (animCue != 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_sa_off);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_sa_off);
         }
         state->stateTimer -= timeDelta;
         if (night == 0 && state->stateTimer <= 0.0f)
@@ -262,7 +262,7 @@ int NW_mammoth_updateSleepCycle(int* obj, u8* st)
             state->partfxTimer = t;
             if (t <= 0.0f)
             {
-                if (((GameObject*)obj)->objectFlags & NWMAMMOTH_OBJFLAG_RENDERED)
+                if (obj->objectFlags & NWMAMMOTH_OBJFLAG_RENDERED)
                 {
                     blk.pos[0] = state->spawnPosX;
                     blk.pos[1] = state->spawnPosY;
@@ -276,7 +276,7 @@ int NW_mammoth_updateSleepCycle(int* obj, u8* st)
     case 0x16:
         if (animCue != 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_14d);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_id_14d);
         }
         if (state->runtimeFlags & NW_MAMMOTH_RUNTIME_ANIM_ENDED)
         {
@@ -287,7 +287,7 @@ int NW_mammoth_updateSleepCycle(int* obj, u8* st)
     return 1;
 }
 
-void NW_mammoth_updateGatekeeper(int* obj, u8* st, short* objDef)
+void NW_mammoth_updateGatekeeper(GameObject* obj, u8* st, short* objDef)
 {
     NwMammothState* state = (NwMammothState*)st;
     GameObject* tw2;
@@ -368,7 +368,7 @@ void NW_mammoth_updateGatekeeper(int* obj, u8* st, short* objDef)
                             if (vec3f_distanceSquared(&((GameObject*)state->playerObject)->anim.worldPosX,
                                                       (f32*)&o2[6]) >= 250000.0f)
                             {
-                                enemy_setTrackedObj((GameObject*)o2, (GameObject*)obj);
+                                enemy_setTrackedObj((GameObject*)o2, obj);
                             }
                             else
                             {
@@ -389,20 +389,20 @@ void NW_mammoth_updateGatekeeper(int* obj, u8* st, short* objDef)
             {
                 int* tk = (int*)getTrickyObject();
                 /* Tricky DLL interface +0x28: bark at the bush */
-                (*(void (**)(int*, int*, int, int))((char*)*((GameObject*)tk)->anim.dll + 0x28))(tk, obj, 1, 1);
+                (*(void (**)(int*, int*, int, int))((char*)*((GameObject*)tk)->anim.dll + 0x28))(tk, (int*)obj, 1, 1);
             }
             state->triggerList = lbl_803DBFA8;
             if (state->trackedObject == NULL)
             {
-                short* cfg = ((GameObject*)obj)->anim.placementData;
+                short* cfg = obj->anim.placementData;
                 if (tw2 != NULL && tw2->anim.seqId == 0x3fb)
                 {
-                    if (getXZDistance(&((GameObject*)obj)->anim.worldPosX, &tw2->anim.worldPosX) <
+                    if (getXZDistance(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
                         (f32)(s32)(cfg[0xc] * cfg[0xc]))
                     {
-                        if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0)
+                        if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
                         {
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_mammoth_snowstep);
+                            Sfx_PlayFromObject((int)obj, SFXTRIG_mammoth_snowstep);
                         }
                         /* Tumbleweed bush DLL interface +0x30: is the bush busy? +0x2C: send it rolling to a target position */
                         if ((*(int (**)(int*))((char*)*tw2->anim.dll + 0x30))((int*)tw2) == 0)
@@ -519,10 +519,10 @@ void NW_mammoth_updateGatekeeper(int* obj, u8* st, short* objDef)
     }
 }
 
-void NW_mammoth_updatePatrol(short* obj, u8* st, u8* mapData)
+void NW_mammoth_updatePatrol(NwMammothObject* obj, u8* st, u8* mapData)
 {
     NwMammothState* state = (NwMammothState*)st;
-    switch (NW_mammoth_updateSleepCycle((int*)obj, st))
+    switch (NW_mammoth_updateSleepCycle((GameObject*)obj, st))
     {
     case -1:
         state->pathSpeed -= 0.01f * timeDelta;
@@ -532,7 +532,7 @@ void NW_mammoth_updatePatrol(short* obj, u8* st, u8* mapData)
         }
         break;
     case 0:
-        if ((((NwMammothObject*)obj)->hitboxFlags & 4) || state->playerDistanceSq < 6400.0f)
+        if ((obj->hitboxFlags & 4) || state->playerDistanceSq < 6400.0f)
         {
             state->pathSpeed -= 0.02f * timeDelta;
             if (state->pathSpeed < 0.05f)
@@ -562,15 +562,15 @@ void NW_mammoth_updatePatrol(short* obj, u8* st, u8* mapData)
             (*gRomCurveInterface)->goNextPoint(cv);
         }
         {
-            f32 dx = cv->sample[0] - ((GameObject*)obj)->anim.localPosX;
-            f32 dz = cv->sample[2] - ((GameObject*)obj)->anim.localPosZ;
+            f32 dx = cv->sample[0] - obj->anim.localPosX;
+            f32 dz = cv->sample[2] - obj->anim.localPosZ;
             ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj,
                                          oneOverTimeDelta * sqrtf(dx * dx + dz * dz),
                                          &state->animStepScale);
         }
-        ((GameObject*)obj)->anim.rotX = (s16)(getAngle(cv->tangent[0], cv->tangent[2]) + 0x8000);
-        ((GameObject*)obj)->anim.localPosX = cv->sample[0];
-        ((GameObject*)obj)->anim.localPosZ = cv->sample[2];
+        obj->anim.rotX = (s16)(getAngle(cv->tangent[0], cv->tangent[2]) + 0x8000);
+        obj->anim.localPosX = cv->sample[0];
+        obj->anim.localPosZ = cv->sample[2];
         if (state->pathSpeed <= 0.0f)
         {
             state->stateIndex = 7;
@@ -669,7 +669,7 @@ void NW_mammoth_updateFeedQuest(int obj, int baddie, NwMammothMapData* mapData)
     NwMammothState* state = (NwMammothState*)baddie;
 
     (void)mapData;
-    if (NW_mammoth_updateSleepCycle((int*)obj, (u8*)baddie) != 0)
+    if (NW_mammoth_updateSleepCycle((GameObject*)obj, (u8*)baddie) != 0)
         return;
 
     switch (state->stateIndex)
@@ -833,10 +833,10 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
         break;
     case 1:
     case 3:
-        NW_mammoth_updatePatrol((short*)obj, (u8*)state, (u8*)mapData);
+        NW_mammoth_updatePatrol(obj, (u8*)state, (u8*)mapData);
         break;
     case 4:
-        NW_mammoth_updateGatekeeper((int*)obj, (u8*)state, (short*)mapData);
+        NW_mammoth_updateGatekeeper((GameObject*)obj, (u8*)state, (short*)mapData);
         break;
     }
     if ((table[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_PATH_CONTROL) != 0)
