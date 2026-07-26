@@ -338,7 +338,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x122 | CCTestInfot | CONFIRMED | dlls/objects/290_CCTestInfot/CCTestInfot.c | = (canonical) | — |
 | 0x123 | fuelCell | COMPLETE | dlls/objects/291_fuelCell/fuelCell.c | = (canonical) | — |
 | 0x124 | — (+deathGas, deathGasNoF) | NO-RETAIL-NAME | dlls/objects/292/292.c | = (canonical) | — |
-| 0x125 | curve | COMPLETE | main/dll/dll_0125_curve.c | = (canonical) | — |
+| 0x125 | curve | COMPLETE | dlls/objects/293_curve/curve.c | = (canonical) | — |
 | 0x126 | Trigger (+TrigPnt, TrigCyl, TrigPln, TrigArea, TrigTime, TrigButt, TriggSetp, TrigBits, TrigCrve) | CONFIRMED | main/dll/dll_0126_trigger.c | = (canonical) | — |
 | 0x127 | — | NO-RETAIL-NAME | main/dll/dll_0127_dll127.c | = (canonical) | — |
 | 0x128 | KT_Torch (+Trex1, WCApertures, WCAperturem, DIMBridgeCo, DIMHutDoor, DIMDoorBrid, DIM2Mammoth, DIM2TrapDoo, DIM2CellDoo) | COMPLETE | main/dll/dll_0128_kttorch.c | main/dll/DR/dll_0128_kttorch.c | — |

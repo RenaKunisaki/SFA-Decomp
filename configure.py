@@ -1564,7 +1564,7 @@ config.libs = [
             ),
             Object(MatchingFor("GSAE01"), "dlls/objects/228/228.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "dlls/objects/229/229.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0125_curve.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/293_curve/curve.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/230_ReStartMark/ReStartMark.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/247/247.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/232_Checkpoint4/Checkpoint4.c", cflags=cflags_dll_noopt),

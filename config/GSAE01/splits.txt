@@ -1734,7 +1734,7 @@ dlls/objects/229/229.c:
 	.data       start:0x80320A28 end:0x80320AC0
 	.sdata      start:0x803DBD70 end:0x803DBD90
 
-main/dll/dll_0125_curve.c:
+dlls/objects/293_curve/curve.c:
 	.text       start:0x80171300 end:0x801713D8
 	.data       start:0x80320AC0 end:0x80320B00
 	.sdata2     start:0x803E33F0 end:0x803E33FC

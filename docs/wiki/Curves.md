@@ -103,7 +103,7 @@ Cross-references verified by reading the source at the paths below.
 
 ### The RomCurve object (DLL 0x125) and its objdef
 
-- `src/main/dll/dll_0125_curve.c` — DLL 0x125's `"curve"` object. Header comment records its TU
+- `src/dlls/objects/293_curve/curve.c` — DLL 0x125's `"curve"` object. Header comment records its TU
   range (`0x80171300`-`0x801713D8`); `config/GSAE01/symbols.txt` confirms `curve_func0B` at
   `0x80171300` through `curve_render` at `0x80171320`, and `gCurveObjDescriptor` at
   `0x80320AC0`. `curve_init` reads the placement's rotation bytes into `obj->rotX/rotY/rotZ`
@@ -145,7 +145,7 @@ Cross-references verified by reading the source at the paths below.
 | Type | Wiki says | Found here |
 |------|-----------|------------|
 | 0x03 | HagabonMK2 | Confirmed exactly: `hagabonMK2_update`/`hagabonMK2_updateB` (`src/main/dll/firecrawler.c`, dispatched from `src/dlls/objects/201_Baddie/Baddie.c`) implement HagabonMK2 (`anim.seqId 0x7c8`, per that file's header comment table cross-referenced against retail `OBJECTS.bin` names). It follows ROM curve paths via `RomCurveWalker`/`gRomCurveInterface`/`Curve_AdvanceAlongPath`, same as the rest of the `crawler_*` family in that TU. A separate, unrelated plain "Hagabon" enemy also exists as DLL 0xDF/0xE0 (`src/dlls/objects/223_Hagabon/Hagabon.c` / `src/dlls/objects/224_SwarmBaddie/SwarmBaddie.c`). |
-| 0x15 | DIM2PathGenerator | `ROMCURVE_TYPE_ACTION` (`= 0x15`, `include/main/dll/dll_0015_curves.h`) is checked in `curves_findByAction` (`src/main/dll/dll_0014_unk.c`). Numerically the same value is separately named `ROMCURVE_TYPE_SCALE_OVERRIDE_15` for an unrelated per-object root-motion-scale branch in `curve_init` (`dll_0125_curve.c`) — two different DLLs independently overloading the same Type id. |
+| 0x15 | DIM2PathGenerator | `ROMCURVE_TYPE_ACTION` (`= 0x15`, `include/main/dll/dll_0015_curves.h`) is checked in `curves_findByAction` (`src/main/dll/dll_0014_unk.c`). Numerically the same value is separately named `ROMCURVE_TYPE_SCALE_OVERRIDE_15` for an unrelated per-object root-motion-scale branch in `curve_init` (`src/dlls/objects/293_curve/curve.c`) — two different DLLs independently overloading the same Type id. |
 | 0x16 | "Something important... the DLL has a method that looks specifically for this type" | Confirmed exactly: `curves_findNearestOfType16` (`src/main/dll/dll_0014_unk.c`) hardcodes `curve->type == 0x16`. |
 | 0x23 | CurveFish | Confirmed exactly: `gCurveFishCurveQueryKey = 0x23` in `src/dlls/objects/259_CurveFish/CurveFish.c` (DLL 0x103, `curvefish` object). |
 | 0x24 | Used by Tricky | Confirmed exactly: `Objfsa_FindNearestCurveType24` / `Objfsa_FindNearestEnabledCurveType24` (`src/main/dll/dll_0014_unk.c`) hardcode `type == 0x24`; called from `src/dlls/objects/196_Tricky/tricky.c`. |
