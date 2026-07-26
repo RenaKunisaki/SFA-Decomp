@@ -1,5 +1,5 @@
 /*
- * decoration11a (DLL 0x11A) - a static decoration object with an
+ * DLL 0x11A implements static decoration objects with an
  * optional axis-aligned collision volume.
  *
  * init() seeds the object's rotation from the placement bytes and an
@@ -31,7 +31,6 @@ enum
     DECOR11A_MODEL_B = 0x7a2,
     DECOR11A_MODEL_C = 0x7a3
 };
-
 
 int decoration11a_getExtraSize(void)
 {
@@ -151,7 +150,6 @@ void decoration11a_hitDetect(GameObject* obj)
 void decoration11a_update(void)
 {
 }
-
 
 void decoration11a_expandBoundsWithVertex(f32* vertex, f32* maxOut, f32* minOut)
 {
