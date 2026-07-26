@@ -3788,7 +3788,7 @@ dlls/objects/665/665.c:
 	.data       start:0x8032B2D8 end:0x8032B310
 	.sbss       start:0x803DDD80 end:0x803DDD88
 
-main/dll/WC/dll_0295_wcapertures.c:
+dlls/objects/661_WCApertureS/WCApertureS.c:
 	.text       start:0x80228EDC end:0x802293F8
 	.data       start:0x8032B310 end:0x8032B348
 	.sdata2     start:0x803E6E28 end:0x803E6E44
