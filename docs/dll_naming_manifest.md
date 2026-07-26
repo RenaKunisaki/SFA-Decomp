@@ -627,7 +627,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x245 | — | NO-RETAIL-NAME | dlls/objects/581/581.c | = (canonical) | Descriptor data only; Dummy245 retained as the internal symbol |
 | 0x246 | — | NO-RETAIL-NAME | dlls/objects/582/582.c | = (canonical) | Descriptor data only; Dummy246 retained as the internal symbol |
 | 0x247 | — | NO-RETAIL-NAME | dlls/objects/583/583.c | = (canonical) | Descriptor data only; Dummy247 retained as the internal symbol |
-| 0x248 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x248 | — | NO-RETAIL-NAME | dlls/objects/584/584.c | = (canonical) | Descriptor data only; Dummy248 retained as the internal symbol |
 | 0x249 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24A | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24B | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
