@@ -1,5 +1,5 @@
 /*
- * shbeacon (DLL 0x1B3) - the SnowHorn beacon / brazier the player lights.
+ * SH_Beacon (DLL 0x1B3) - the SnowHorn beacon / brazier the player lights.
  *
  * mode (ShBeaconState.mode): 0 = unlit, 1 = lit, 2 = igniting. While
  * unlit it waits for the light event (0x194); igniting spawns the flame
