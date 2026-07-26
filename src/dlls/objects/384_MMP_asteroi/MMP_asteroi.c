@@ -104,11 +104,11 @@ void mmp_asteroid_re_free(void)
 {
 }
 
-void mmp_asteroid_re_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void mmp_asteroid_re_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void mmp_asteroid_re_hitDetect(void)
