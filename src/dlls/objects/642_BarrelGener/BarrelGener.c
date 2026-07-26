@@ -1,5 +1,5 @@
 /*
- * barrelgener (DLL 0x282) - the barrel generator/dispenser object.
+ * BarrelGener (DLL 0x282) - the barrel generator/dispenser object.
  *
  * Object-group member 0x3a. On init it joins that group and clears its
  * release state. When the player approaches within range it fires
