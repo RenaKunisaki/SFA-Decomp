@@ -79,8 +79,7 @@ ObjectDescriptor gEdibleMushroomObjDescriptor = {
 
 int EdibleMushroom_SeqFn(GameObject* obj)
 {
-    EdibleMushroomState* state = obj->extra;
-    state->seqResetPending = 1;
+    ((EdibleMushroomState*)obj->extra)->seqResetPending = 1;
     return 0;
 }
 
