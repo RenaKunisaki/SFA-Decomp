@@ -63,9 +63,9 @@ void DrakorEnergy_func0B_nop(void)
 {
 }
 
-int drakorenergy_setScale(int* obj)
+int drakorenergy_setScale(GameObject* obj)
 {
-    return ((DrakorEnergyState*)(int*)((GameObject*)obj)->extra)->mode == DRAKORENERGY_MODE_IDLE;
+    return ((DrakorEnergyState*)obj->extra)->mode == DRAKORENERGY_MODE_IDLE;
 }
 
 int drakorenergy_getExtraSize(void)
@@ -148,7 +148,7 @@ void drakorenergy_update(int obj)
             mathSinf(gDrakorEnergyPi * (f32)s->phase / gDrakorEnergyPhaseDivisor);
         objMove((GameObject*)obj, o->anim.velocityX, o->anim.velocityY,
                 o->anim.velocityZ);
-        if (Vec_distance(&o->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
+        if (Vec_distance(&o->anim.worldPosX, &player->anim.worldPosX) <
             gDrakorEnergySeekRange)
         {
             s->mode = DRAKORENERGY_MODE_CHASING;
@@ -166,7 +166,7 @@ void drakorenergy_update(int obj)
         else
         {
             spd = gDrakorEnergyChaseSpeed;
-            Obj_PredictInterceptPoint((GameObject*)player, spd / lbl_803E6294,
+            Obj_PredictInterceptPoint(player, spd / lbl_803E6294,
                                       (const Vec3f*)&o->anim.localPosX, (Vec3f*)interceptPt);
             PSVECSubtract(interceptPt, (f32*)(obj + 0xc), seekDir);
             PSVECNormalize(seekDir, seekDir);
@@ -191,21 +191,19 @@ void drakorenergy_update(int obj)
     s->phase += framesThisStep * 0x500;
 }
 
-void drakorenergy_init(int* obj, u8* init)
+void drakorenergy_init(GameObject* obj, DrakorenergyPlacement* placement)
 {
     DrakorEnergyState* state;
-    DrakorenergyPlacement* placement = (DrakorenergyPlacement*)init;
     f32 fz;
-    GameObject* o = (GameObject*)obj;
-    state = o->extra;
+    state = obj->extra;
     state->mode = DRAKORENERGY_MODE_RESET;
-    o->anim.localPosX = placement->posX;
-    o->anim.localPosY = placement->posY;
-    o->anim.localPosZ = placement->posZ;
+    obj->anim.localPosX = placement->posX;
+    obj->anim.localPosY = placement->posY;
+    obj->anim.localPosZ = placement->posZ;
     fz = lbl_803E627C;
-    o->anim.velocityZ = fz;
-    o->anim.velocityX = fz;
-    o->anim.velocityY = -4.0f;
+    obj->anim.velocityZ = fz;
+    obj->anim.velocityX = fz;
+    obj->anim.velocityY = -4.0f;
     state->phase = randomGetRange(0, 0xffff);
     if (mainGetBit(placement->gameBitId) != 0)
     {
