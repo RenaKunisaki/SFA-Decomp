@@ -1944,7 +1944,7 @@ dlls/objects/261_LargeCrate/LargeCrate.c:
 	.sbss       start:0x803DDAC8 end:0x803DDAD0
 	.sdata2     start:0x803E39A8 end:0x803E39EC
 
-main/dll/dll_0106_scarab.c:
+dlls/objects/262/262.c:
 	.text       start:0x801843C0 end:0x80185868
 	.rodata     start:0x802C2298 end:0x802C22B0
 	.data       start:0x80321750 end:0x80321788

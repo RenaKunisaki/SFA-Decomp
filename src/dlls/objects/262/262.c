@@ -7,8 +7,6 @@
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
-#include "main/dll/windlift107state_struct.h"
-#include "main/dll/portalspelldoorstate_struct.h"
 #include "main/dll/scarabstate_struct.h"
 #include "game/objects/object_setup.h"
 #include "main/frustum.h"
@@ -62,10 +60,6 @@ STATIC_ASSERT(sizeof(ScarabVec3) == 0xC);
 #define SCARAB_MSG_PLAYER_BURST 0x60004 /* knock the player back with a burst hit */
 
 STATIC_ASSERT(sizeof(ScarabState) == 0x34);
-
-STATIC_ASSERT(sizeof(WindLift107State) == 0x2c);
-
-STATIC_ASSERT(sizeof(PortalSpellDoorState) == 0x10);
 
 extern u32 gScarabMoneyValues;
 extern f32 gScarabZero;
