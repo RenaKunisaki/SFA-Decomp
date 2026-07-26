@@ -29,15 +29,17 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define DLL_CE_OBJGROUP         3
-#define DLL_CE_CHILD_OBJ        778
-#define DLL_CE_CHILD_SETUP_SIZE 0x24
-#define DLL_CE_PARTFX_DUST      0x345
-#define DLL_CE_PARTFX_SPRAY     0x343
-#define DLL_CE_HIT_VOLUME_SLOT  10
-#define DLL_CE_SIBLING_SEQ_ID   0x306
-#define DLL_CE_MESSAGE_HIDE     0x80
-#define DLL_CE_MESSAGE_RELEASE  0x81
+#define DLL_CE_OBJGROUP                    3
+#define DLL_CE_CHILD_OBJ                   778
+#define DLL_CE_CHILD_SETUP_SIZE            0x24
+#define DLL_CE_PARTFX_DUST                 0x345
+#define DLL_CE_PARTFX_SPRAY                0x343
+#define DLL_CE_HIT_VOLUME_SLOT             10
+#define DLL_CE_SIBLING_SEQ_ID              0x306
+#define DLL_CE_MESSAGE_HIDE                0x80
+#define DLL_CE_MESSAGE_RELEASE             0x81
+#define DLL_CE_QUERY_STATE_CALLBACK_OFFSET 0x20
+#define DLL_CE_MESSAGE_CALLBACK_OFFSET     0x24
 
 #define DLL_CE_EFFECT_PROJECTILE 0x1
 #define DLL_CE_EFFECT_DUST       0x2
@@ -127,8 +129,8 @@ int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
             if (sibling != (void*)obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                int siblingState =
-                    (*(int (**)(void*, int))(**(int**)&((GameObject*)sibling)->anim.dll + 0x20))(sibling, 0);
+                int siblingState = (*(int (**)(void*, int))(**(int**)&((GameObject*)sibling)->anim.dll +
+                                                            DLL_CE_QUERY_STATE_CALLBACK_OFFSET))(sibling, 0);
                 if (siblingState > maxSiblingState) {
                     maxSiblingState = siblingState;
                 }
@@ -297,8 +299,8 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
             void* sibling = (void*)objects[objectIndex];
 
             if (sibling != obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                (*(void (**)(void*, int, int))(**(int**)&((GameObject*)sibling)->anim.dll + 0x24))(
-                    sibling, DLL_CE_MESSAGE_RELEASE, 0);
+                (*(void (**)(void*, int, int))(**(int**)&((GameObject*)sibling)->anim.dll +
+                                               DLL_CE_MESSAGE_CALLBACK_OFFSET))(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
         playerChild = (int*)((GameObject*)Obj_GetPlayerObject())->childObjs[0];
@@ -346,8 +348,8 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
 
             if ((void*)siblingAddress != (void*)obj &&
                 ((GameObject*)siblingAddress)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                (*(int (**)(int, int, int))(**(int**)&((GameObject*)siblingAddress)->anim.dll + 0x24))(
-                    siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
+                (*(int (**)(int, int, int))(**(int**)&((GameObject*)siblingAddress)->anim.dll +
+                                            DLL_CE_MESSAGE_CALLBACK_OFFSET))(siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
             }
             objectIndex++;
         }
@@ -408,8 +410,8 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
             void* sibling = (void*)objects[objectIndex];
 
             if (sibling != obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                (*(void (**)(void*, int, int))(**(int**)&((GameObject*)sibling)->anim.dll + 0x24))(
-                    sibling, DLL_CE_MESSAGE_RELEASE, 0);
+                (*(void (**)(void*, int, int))(**(int**)&((GameObject*)sibling)->anim.dll +
+                                               DLL_CE_MESSAGE_CALLBACK_OFFSET))(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
         if (randomGetRange(0, 1) != 0) {

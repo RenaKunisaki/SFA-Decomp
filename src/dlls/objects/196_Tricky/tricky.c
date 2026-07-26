@@ -67,7 +67,7 @@
 #include "main/dll/dll_00F5_sidekickball.h"
 #include "main/dll/NW/dll_01A1_nwmammoth.h"
 #include "main/dll/tricky_substates.h"
-#include "main/dll/dll_00D1_tumbleweedbush.h"
+#include "dlls/objects/209_TumbleWeedB.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/dll/skeetla_route_api.h"
 #include "main/dll/tricky_rollroute.h"

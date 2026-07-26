@@ -1,6 +1,6 @@
 /* DLL 0x00D2 (tumbleweed) - Tumbleweed and tumbleweed bush objects [0x80163BBC-0x801650D0). */
 #include "main/dll/partfx_interface.h"
-#include "main/dll/dll_00D1_tumbleweedbush.h"
+#include "dlls/objects/209_TumbleWeedB.h"
 #include "main/dll/dll_00D2_tumbleweed.h"
 #include "main/audio/sfx_ids.h"
 #include "main/vecmath.h"

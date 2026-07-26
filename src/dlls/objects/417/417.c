@@ -26,7 +26,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/object_render.h"
 #include "main/dll/path_control_interface.h"
-#include "main/dll/dll_00D1_tumbleweedbush.h"
+#include "dlls/objects/209_TumbleWeedB.h"
 #include "main/newshadows_audio_api.h"
 
 u8 lbl_803DBF70[4] = {1, 0, 0, 0};

@@ -59,7 +59,8 @@ typedef struct BackpackState {
     };
     s16 recoilVelX;
     s16 recoilVelZ;
-    u8 unk280[0x284 - 0x280];
+    s16 unk280;
+    u8 pad282[2];
     int* targetObj;
     f32 anchorPosX;
     f32 anchorPosZ;
@@ -85,6 +86,8 @@ STATIC_ASSERT(offsetof(BackpackState, variant) == 0x279);
 STATIC_ASSERT(offsetof(BackpackState, flags) == 0x27A);
 STATIC_ASSERT(offsetof(BackpackState, hitPulseCounter) == 0x27B);
 STATIC_ASSERT(offsetof(BackpackState, recoilVelX) == 0x27C);
+STATIC_ASSERT(offsetof(BackpackState, recoilVelZ) == 0x27E);
+STATIC_ASSERT(offsetof(BackpackState, unk280) == 0x280);
 STATIC_ASSERT(offsetof(BackpackState, targetObj) == 0x284);
 STATIC_ASSERT(offsetof(BackpackState, anchorPosX) == 0x288);
 STATIC_ASSERT(offsetof(BackpackState, anchorPosZ) == 0x28C);
