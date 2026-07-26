@@ -1,4 +1,4 @@
-/* DLL 0x019B - torch / fire-effect objects [801CBA98-801CBD88) */
+/* DLL 0x19B */
 #include "main/dll/dll_019B_dll19b.h"
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"

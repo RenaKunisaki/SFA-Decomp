@@ -2828,7 +2828,7 @@ dlls/objects/410/410.c:
 	.data       start:0x803265E0 end:0x80326618
 	.sdata2     start:0x803E5180 end:0x803E5188
 
-main/dll/dll_019B_dll19b.c:
+dlls/objects/411/411.c:
 	.text       start:0x801CBA98 end:0x801CC72C
 	.data       start:0x80326618 end:0x803266A8
 	.sbss       start:0x803DDBE0 end:0x803DDBE8

@@ -1794,7 +1794,7 @@ config.libs = [
             Object(Matching, "main/dll/symbol.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/409/409.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/410/410.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_019B_dll19b.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/411/411.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_019C_dll19c.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_019D_dll19d.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_019E_dim_tricky.c", cflags=cflags_dll_noopt),
