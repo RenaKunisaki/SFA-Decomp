@@ -2660,25 +2660,14 @@ dlls/objects/479/479.c:
 	.data       start:0x80325928 end:0x80325960
 	.sdata2     start:0x803E4B98 end:0x803E4BB8
 
-main/dll/dll_801b9ecc.c:
-	.text       start:0x801B9ECC end:0x801BA224
-	.data       start:0x80325960 end:0x803259A0
-
-main/dll/DIM/dim2lift.c:
-	.text       start:0x801BA224 end:0x801BB598
-	.data       start:0x803259A0 end:0x803259E0
-	.sdata      start:0x803DBF30 end:0x803DBF40
-	.sdata2     start:0x803E4BBC end:0x803E4C34
-
-main/dll/DIM/dim2icicle.c:
-	.text       start:0x801BB598 end:0x801BCB34
+dlls/objects/480_DIM_Boss/DIM_Boss.c:
+	.text       start:0x801B9ECC end:0x801BDBE0
 	.rodata     start:0x802C2338 end:0x802C2358
-	.data       start:0x803259E0 end:0x80325B04
-
-main/dll/DIM/DIMboss.c:
-	.text       start:0x801BCB34 end:0x801BDBE0
-	.data       start:0x80325B04 end:0x80325BF8
+	.data       start:0x80325960 end:0x80325BF8
 	.bss        start:0x803AC970 end:0x803AD048
+	.sdata      start:0x803DBF30 end:0x803DBF40
+	.sbss       start:0x803DDB80 end:0x803DDB90
+	.sdata2     start:0x803E4BB8 end:0x803E4C7C
 
 main/dll/DIM/dll_01E1_dimbossgut.c:
 	.text       start:0x801BDBE0 end:0x801BDCF8
