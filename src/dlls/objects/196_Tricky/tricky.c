@@ -4698,7 +4698,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
         }
         break;
     }
-    if (((((TrickyState*)state)->stateFlags & TRICKY_STATE_RESET_FLAG_10000) != 0) &&
+    if (((((TrickyState*)state)->stateFlags & 0x10000) != 0) &&
         ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)
     {
         Obj_FreeObject(((TrickyState*)state)->followObj);
@@ -5176,7 +5176,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
                 s16 a0 = obj->currentMove;
                 if (a0 >= 0x30 || a0 < 0x29)
                 {
-                    if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
+                    if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0)
                     {
                         objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)temp)->soundState, 0x29d, 0, -1, 0);
                     }
@@ -5214,7 +5214,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
                 s16 a0 = obj->currentMove;
                 if (a0 >= 0x30 || a0 < 0x29)
                 {
-                    if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
+                    if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0)
                     {
                         objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)temp2)->soundState, 0x299, 0x100, -1, 0);
                     }
@@ -5477,7 +5477,7 @@ void trickyFlame(GameObject* obj, int trickyState)
                             s16 a0 = (obj)->anim.currentMove;
                             if (a0 >= 0x30 || a0 < 0x29)
                             {
-                                if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
+                                if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0)
                                 {
                                     objAudioFn_800393f8(obj, &((TrickyState*)i)->soundState, 0x29d, 0, -1, 0);
                                 }
@@ -5575,7 +5575,7 @@ void trickyFlame(GameObject* obj, int trickyState)
                             s16 a0 = (obj)->anim.currentMove;
                             if (a0 >= 0x30 || a0 < 0x29)
                             {
-                                if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
+                                if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0)
                                 {
                                     objAudioFn_800393f8(obj, &((TrickyState*)slot)->soundState, 0x29d, 0, -1, 0);
                                 }
