@@ -288,7 +288,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0F0 | WarpPoint (+MMP_WarpPoi, SC_warppoin, WM_WarpPoin, RestartPoin) | COMPLETE | dlls/objects/240_WarpPoint/WarpPoint.c | = (canonical) | — |
 | 0x0F1 | InvHit | COMPLETE | dlls/objects/241_InvHit/InvHit.c | = (canonical) | — |
 | 0x0F2 | iceblast | COMPLETE | dlls/objects/242_iceblast/iceblast.c | = (canonical) | — |
-| 0x0F3 | flameblast | COMPLETE | main/dll/dll_00F3_flameblast.c | = (canonical) | — |
+| 0x0F3 | flameblast | COMPLETE | dlls/objects/243_flameblast/flameblast.c | = (canonical) | — |
 | 0x0F4 | doorf4 (+CFPowerDoor, VFP_SmallRo, VFP_RoundDo, VFP_Door2, DFP_SmallBr, DFP_ToLinkD, DFP_PerchBa, DFP_BigDoor, DFP_SmallDo, DFP_SmallTu, WM_PlanDoor, WM_WarpDoor, DFSH_Door1, ECSH_Door1) | GUESSED | main/dll/dll_00F4_doorf4.c | = (canonical) | — |
 | 0x0F5 | SidekickBall | CONFIRMED | main/dll/dll_00F5_sidekickball.c | = (canonical) | — |
 | 0x0F6 | Area | COMPLETE | main/dll/dll_00F6_area.c | = (canonical) | — |

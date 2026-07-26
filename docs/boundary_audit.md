@@ -578,7 +578,6 @@ main/dll/debug/dimenu.c                                 4 dlls: 0x037:lbl_8031AC
 main/dll/df_partfx.c                                    3 dlls: 0x004:lbl_80311378, 0x00F:lbl_80311438, 0x016:lbl_80311340
 main/dll/dim_partfx.c                                   8 dlls: 0x003:lbl_803112E8, 0x026:lbl_80310FB8, 0x028:lbl_80310F38, 0x029:lbl_80310E88, 0x02A:lbl_80310FE0, 0x02B:lbl_80311038, 0x02C:lbl_803110D8, 0x02D:lbl_80311100
 main/dll/dimmagicbridge.c                               2 dlls: 0x199:dll_199, 0x19A:dll_19A
-main/dll/dll_00F3_flameblast.c                          4 dlls: 0x0F0:MMP_WarpPoi, 0x0F1:InvHit, 0x0F2:iceblast, 0x0F3:flameblast
 main/dll/dll_017A_spiritprize.c                         2 dlls: 0x178:DFSH_Shrine, 0x17A:SpiritPrize
 main/dll/dll_66.c                                       11 dlls: 0x0AB:lbl_80319378, 0x0AC:lbl_803193C0, 0x0AD:lbl_80319410, 0x0AE:lbl_80319460, 0x0AF:lbl_803194A8, 0x0B0:lbl_803194F8, 0x0B1:lbl_80319548, 0x0B3:lbl_80319598, 0x0B8:lbl_803195E8, 0x0B9:lbl_80319638, 0x0BA:lbl_80319688
 main/dll/foodbag.c                                      21 dlls: 0x07C:lbl_80315010, 0x07D:lbl_80315238, 0x07E:lbl_80315304, 0x07F:lbl_80315444, 0x080:lbl_80315528, 0x081:lbl_80315750, 0x082:lbl_80315978, 0x083:lbl_80315C84, 0x084:lbl_80315F84, 0x085:lbl_80316000, 0x086:lbl_80316030, 0x087:lbl_80316220, 0x088:lbl_80316440, 0x089:lbl_80316630, 0x08A:lbl_80316708, 0x08B:lbl_80316930, 0x08C:lbl_80316B3C, 0x08D:lbl_80316C20, 0x08E:lbl_80316C70, 0x08F:lbl_80316E0C, 0x090:lbl_80316FD4

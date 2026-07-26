@@ -1806,7 +1806,7 @@ dlls/objects/242_iceblast/iceblast.c:
 	.data       start:0x80320E68 end:0x80320EA0
 	.sdata2     start:0x803E3600 end:0x803E3618
 
-main/dll/dll_00F3_flameblast.c:
+dlls/objects/243_flameblast/flameblast.c:
 	.text       start:0x8017804C end:0x80178338
 	.data       start:0x80320EA0 end:0x80320ED8
 	.sdata2     start:0x803E3618 end:0x803E3648
