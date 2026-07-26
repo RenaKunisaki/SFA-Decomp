@@ -1,5 +1,5 @@
 /*
- * drakorenergy (DLL 0x241) - the floating Krazoa-energy orb spawned during
+ * DrakorEnerg (DLL 0x241) - the floating Krazoa-energy orb spawned during
  * the Drakor boss fight. Its extra block (DrakorEnergyState, 0xC bytes) runs
  * a small mode machine: it idles until its placement game bit is set, falls
  * and bounces to a resting height, bobs on a sine wave while drifting, then
