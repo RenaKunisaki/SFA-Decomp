@@ -1269,35 +1269,35 @@ void endObjSequence(int seq)
     int objCount;
     int objIdx;
     GameObject* frees[32];
-    int* objs;
+    GameObject** objs;
     int i;
     int nFree;
-    int* ret;
+    GameObject** ret;
 
-    ret = (int*)ObjList_GetObjects(&objIdx, &objCount);
+    ret = (GameObject**)ObjList_GetObjects(&objIdx, &objCount);
     nFree = 0;
     i = 0;
     objs = ret;
     for (; i < objCount; i++)
     {
-        int obj = *objs;
-        if (((GameObject*)obj)->seqIndex == seq)
+        GameObject* obj = *objs;
+        if (obj->seqIndex == seq)
         {
-            ((GameObject*)obj)->seqIndex = -1;
+            obj->seqIndex = -1;
         }
-        if (((GameObject*)obj)->anim.classId == 0x10)
+        if (obj->anim.classId == 0x10)
         {
-            ObjSeqTurnState* st = (ObjSeqTurnState*)((GameObject*)obj)->extra;
+            ObjSeqTurnState* st = (ObjSeqTurnState*)obj->extra;
             if ((s8)st->seqId == seq)
             {
-                if ((void*)obj == lbl_803DD0B8)
+                if (obj == lbl_803DD0B8)
                 {
                     lbl_803DD0B8 = 0;
                 }
-                frees[nFree++] = (GameObject*)obj;
+                frees[nFree++] = obj;
                 if (st->resetVecCb != NULL)
                 {
-                    (*(void (**)(int, int, int))&st->resetVecCb)(st->cbArg, obj, (int)st);
+                    (*(void (**)(int, GameObject*, int))&st->resetVecCb)(st->cbArg, obj, (int)st);
                     st->resetVecCb = NULL;
                 }
                 if (nFree == 0x10)
