@@ -229,6 +229,7 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
     f32 knockX;
     f32 knockY;
     f32 knockBlend;
+    f32 trim;
     int btn;
 
     debugPrintSetColor(0xff, 0xff, 0xff, 0xff);
@@ -253,9 +254,11 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
         }
     }
     aw->rTriggerTrim = (f32)(u8)padGetRTrigger(0) / 150.0f;
-    aw->rTriggerTrim = clampPos(aw->rTriggerTrim, 0.0f, 1.0f);
+    trim = aw->rTriggerTrim;
+    aw->rTriggerTrim = clampPos(trim, 0.0f, 1.0f);
     aw->lTriggerTrim = -(f32)(u8)padGetLTrigger(0) / 150.0f;
-    aw->lTriggerTrim = clampNeg(aw->lTriggerTrim, -1.0f, 0.0f);
+    trim = aw->lTriggerTrim;
+    aw->lTriggerTrim = clampNeg(trim, -1.0f, 0.0f);
     aw->inputFlags = getButtonsJustPressed(0);
     aw->inputFlagsPrev = getButtonsJustPressedIfNotBusy(0);
     aw->inputFlags2 = getButtonsHeld(0);
@@ -357,7 +360,7 @@ void arwarwing_updateBarrelRoll(GameObject* obj, ArwingState* state)
                     state->accelX / state->barrelRollAccelScale;
                 arwarwingbo_setActiveVisible((GameObject*)(state->bombObj), 0, 0);
             }
-            else if (rollAngle <= fullTurnEnd && rollAngle > halfTurn)
+            else if (rollAngle > halfTurn)
             {
                 int trimOffset = rollAngle - (u16)trimAngle;
                 if (trimOffset > 0x8000)
@@ -393,7 +396,7 @@ void arwarwing_updateBarrelRoll(GameObject* obj, ArwingState* state)
                     state->accelX / state->barrelRollAccelScale;
                 arwarwingbo_setActiveVisible((GameObject*)(state->bombObj), 0, 0);
             }
-            else if (rollAngle >= fullTurnEnd && rollAngle > halfTurn)
+            else if (rollAngle > halfTurn)
             {
                 int trimOffset = rollAngle - (u16)trimAngle;
                 if (trimOffset > 0x8000)
@@ -619,8 +622,9 @@ void arwarwing_updateBombFire(GameObject* obj, ArwingState* state)
     if (arwing->activeBombObj != NULL)
         return;
     {
+        f32 zero;
         f32 bombCooldown = arwing->bombCooldown;
-        f32 zero = 0.0f;
+        zero = 0.0f;
         if (bombCooldown > zero)
         {
             arwing->bombCooldown = bombCooldown - timeDelta;
@@ -705,8 +709,9 @@ void arwarwing_updateWeaponFire(GameObject* obj, ArwingState* state)
     int fire;
     arwarwing_updateThrusters(obj, state);
     {
+        f32 zero;
         f32 fireCooldown = state->fireCooldown;
-        f32 zero = 0.0f;
+        zero = 0.0f;
         if (fireCooldown > zero)
         {
             state->fireCooldown = fireCooldown - timeDelta;

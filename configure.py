@@ -437,6 +437,12 @@ cflags_dll_noopt_noprop_noinline = [
     "-inline", "noauto",
 ]
 
+cflags_dll_noopt_noprop_noautoinline = [
+    *cflags_base,
+    "-opt", "nopeephole,noschedule,nopropagation",
+    "-inline", "noauto",
+]
+
 cflags_dll_noopt_noprop_nostrength = [
     *cflags_base,
     "-opt", "nopeephole,noschedule,nopropagation,nostrength",
@@ -1968,7 +1974,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/WC/dll_0296_wctempledia.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/WC/dll_0297_wctemplebri.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/WC/dll_0298_wcfloortile.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/ARW/dll_029A_arwarwing.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/dll/ARW/dll_029A_arwarwing.c", cflags=cflags_dll_noopt_noprop_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_029B_arwingandrossstuff.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/ARW/dll_029C_arwarwingbo.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/ARW/dll_029D_arwarwinggu.c", cflags=cflags_dll_noopt),
