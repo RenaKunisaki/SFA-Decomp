@@ -577,7 +577,7 @@ spell several of these out explicitly where the wiki page doesn't:
 |--------|-------|-------------|
 | `CC` | Cape Claw | `src/dlls/objects/290_CCTestInfot/CCTestInfot.c` |
 | `CF` | CloudRunner Fortress | `src/dlls/objects/298_CFCrate/CFCrate.c` |
-| `DF` | DragonRock (rope/cradle machinery) | `src/main/dll/DF/dll_0175_dfropenode.c` |
+| `DF` | DragonRock (rope/cradle machinery) | `src/dlls/objects/373_DFropenode/DFropenode.c` |
 | `DFP` | DragonRock Palace (spell-puzzle level) | `src/main/dll/DF/dll_0229_dfplevelcontrol.c` |
 | `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/main/dll/DF/dll_0178_dfshshrine.c` |
 | `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/main/dll/DIM/dll_01BE_dimlava.c` |

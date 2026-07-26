@@ -144,7 +144,6 @@ address. `[lo-hi)` is the splits.txt `.text` range (the partition unit).
 | 63 | `main/dll/dll_80174438.c` | 80174438-80174A80 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 66 | `main/dll/dll_80198a00.c` | 80198A00-80198FA4 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 68 | `main/dll/dll_801b9ecc.c` | 801B9ECC-801BA224 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| 69 | `main/dll/dll_801c0bf8.c` | 801C0BF8-801C0E60 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 70 | `main/dll/dll_1dc.c` | 801D1BFC-801D1BFC | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 71 | `main/dll/dll_1e8.c` | 801D5174-801D5174 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 72 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
@@ -305,7 +304,6 @@ Batches: 12. Region-disjoint: NO OVERLAP — verified (each batch owns a contigu
 | `main/dll/dll_801b1d84.c` | 801B1D84-801B1FF4 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801b9ecc.c` | 801B9ECC-801BA224 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_223.c` | 801BDCF8-801BE19C | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| `main/dll/dll_801c0bf8.c` | 801C0BF8-801C0E60 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801d0828.c` | 801D0828-801D083C | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_1dc.c` | 801D1BFC-801D1BFC | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 

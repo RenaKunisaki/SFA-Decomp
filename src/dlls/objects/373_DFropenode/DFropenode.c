@@ -1,40 +1,61 @@
 /*
- * DragonRock rope node (DLL 0x175; "DFropenode") - a node in the DragonRock
- * rope/cradle: it syncs the rope geometry between its endpoints, renders the
- * rope/cradle model and plays creak sfx.
+ * DFropenode (DLL 0x175) implements the Dragon Rock rope/cradle system.
+ * It owns the rope mesh builder, spring simulation, construction helpers,
+ * object callbacks, and rendering code.
  */
-#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/DF/dfropenode.h"
-#include "main/dll/dfbarrelanim.h"
-#include "main/obj_group.h"
-#include "main/obj_list.h"
-#include "main/dll/dll_801c0bf8.h"
-#include "main/gamebits.h"
-#include "main/sky.h"
-#include "main/texture.h"
+#include "dolphin/mtx.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/camera.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/dll/DF/DFbarrel.h"
+#include "main/dll/DF/dfropenode.h"
+#include "main/dll/dfbarrelanim.h"
+#include "main/dll/dfpulley.h"
+#include "main/dll/dll_801c0bf8.h"
 #include "main/frame_timing.h"
+#include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/lightmap_text_color_api.h"
-#include "main/camera.h"
+#include "main/mm.h"
+#include "main/obj_group.h"
+#include "main/obj_list.h"
+#include "main/sky.h"
+#include "main/texture.h"
+#include "string.h"
 #include "track/intersect_api.h"
+
+#define DFBARREL_SWAY_LIMIT          0x32
+#define DFBARREL_SWAY_DIR_INCREASING 1
+#define DFBARREL_SWAY_DIR_DECREASING 2
+
+#define DFBARREL_NODE_LINKS_OFFSET 0x28
+#define DFROPENODE_OBJGROUP        0x17
+
+extern f32 gRopeNodeDamping;
+extern const f32 gRopeNodeBoundsMargin;
+extern f32 gRopeNodeLiftHeight;
+extern f32 gRopeNodeMaxDistance;
+extern f32 lbl_803E4DE0;
+extern f32 lbl_803E4DE4;
+extern f32 lbl_803E4DE8;
+extern f32 lbl_803E4DF8;
+extern const f32 lbl_803E4DFC;
+extern const f32 lbl_803E4E00;
+extern f32 lbl_803E4E04;
+extern const f32 lbl_803E4E08;
+extern const f32 lbl_803E4E0C;
+extern const f32 lbl_803E4E10;
+extern const f32 lbl_803E4E14;
+extern f32 lbl_803E4E18;
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
 void* gRopeNodeTextures[2] = {0};
 f32 lbl_803DBF50[2] = {0.1f, 0.13f};
 u8 gRopeNodeVariantVisibleFlags[8] = {0, 1, 0, 0, 0, 0, 0, 0};
-
-#define DFROPENODE_OBJGROUP 0x17
-
-extern f64 gRopeNodeS32ToDoubleBias;
-extern f32 lbl_803E4DFC;
-extern f32 lbl_803E4E18;
-extern f32 gRopeNodeMaxDistance;
-extern f32 gRopeNodeDamping;
-extern const f32 gRopeNodeBoundsMargin;
 
 u32 gRopeNodeSegmentDataA[24] = {
     0x00000064, 0x00000000, 0x01000000, 0xffffffff, 0xff38ff9c, 0x00000000,
@@ -53,8 +74,6 @@ const u8 gRopeNodeDisplayList[96] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 2, 3, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 4, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-extern f32 lbl_803E4DF8;
-extern f32 gRopeNodeLiftHeight;
 
 typedef struct DfropenodePlacement
 {
@@ -66,16 +85,427 @@ typedef struct DfropenodePlacement
     u8 pad1E[0x20 - 0x1E];
 } DfropenodePlacement;
 
-static inline f32 DFRope_S32AsFloat(s32 value)
+/*
+ * Build the six-vertex mesh for one rope segment. The template is rotated
+ * around the Y axis and its two end caps are translated onto the link nodes.
+ */
+void fn_801C0BF8(void* templateData, int angle, float* startNode, float* endNode, LightmapVertex* out)
 {
-    u64 bits = ((u64)(((u64)(u32)(0x43300000) << 32) | (u32)((u32)value ^ 0x80000000)));
-    return (f32)(*(f64*)&bits - gRopeNodeS32ToDoubleBias);
+    s16 startX;
+    s16 startY;
+    s16 startZ;
+    s16 endX;
+    s16 endY;
+    s16 endZ;
+    LightmapVertex* vertex;
+    int i;
+    float angleRadians;
+    f32 vertexX;
+
+    startX = lbl_803E4DE0 * startNode[0];
+    startY = lbl_803E4DE0 * startNode[1];
+    startZ = lbl_803E4DE0 * startNode[2];
+    endX = lbl_803E4DE0 * endNode[0];
+    endY = lbl_803E4DE0 * endNode[1];
+    endZ = lbl_803E4DE0 * endNode[2];
+    memcpy(out, templateData, 0x60);
+
+    i = 0;
+    vertex = out;
+    angleRadians = (lbl_803E4DE4 * (float)(short)angle) / lbl_803E4DE8;
+    for (; i < 6; i++)
+    {
+        vertexX = (float)(int)vertex->x;
+        vertex->x = vertexX * mathCosf(angleRadians);
+        vertex->z = -vertexX * mathSinf(angleRadians);
+        vertex++;
+    }
+
+    out[0].x += startX;
+    out[0].y += startY;
+    out[0].z += startZ;
+    out[3].x += endX;
+    out[3].y += endY;
+    out[3].z += endZ;
+    out[1].x += startX;
+    out[1].y += startY;
+    out[1].z += startZ;
+    out[4].x += endX;
+    out[4].y += endY;
+    out[4].z += endZ;
+    out[2].x += startX;
+    out[2].y += startY;
+    out[2].z += startZ;
+    out[5].x += endX;
+    out[5].y += endY;
+    out[5].z += endZ;
+    return;
 }
 
-static inline f32 DFRope_S32AsFloat_SubAsFloat(s32 value)
+/*
+ * Integrate the spring forces attached to every unlocked rope node.
+ */
+void DFPulley_integrateLinks(DFRope* self)
 {
-    u64 bits = ((u64)(((u64)(u32)(0x43300000) << 32) | (u32)((u32)value ^ 0x80000000)));
-    return (f32) * (f64*)&bits - (f32)gRopeNodeS32ToDoubleBias;
+    DFRopeNode* part;
+    int j;
+    int i;
+    Vec accel;
+    Vec velscaled;
+    Vec scaled;
+    f32 mag;
+    f32 zero;
+
+    part = self->nodes;
+    i = 0;
+    zero = lbl_803E4DFC;
+    for (; i < self->count; i++, part++)
+    {
+        accel.z = zero;
+        accel.y = zero;
+        accel.x = zero;
+
+        if (part->locked == 0)
+        {
+            for (j = 0; j < part->linkCount; j++)
+            {
+                DFRopeLink* link = part->links[j];
+                if (part == link->a)
+                {
+                    PSVECAdd(&accel, (Vec*)link->force, &accel);
+                }
+                else
+                {
+                    PSVECSubtract(&accel, (Vec*)link->force, &accel);
+                }
+            }
+            mag = PSVECMag(&accel);
+            if (mag > self->maxSlack)
+            {
+                PSVECScale(&accel, &accel, self->maxSlack / mag);
+            }
+            PSVECScale(&accel, &accel, self->stepPerTick);
+            PSVECAdd(&accel, (Vec*)part->force, &accel);
+            PSVECAdd((Vec*)part->velocity, &accel, (Vec*)part->velocity);
+            PSVECScale((Vec*)part->velocity, &velscaled, self->damping);
+            PSVECSubtract((Vec*)part->velocity, &velscaled, (Vec*)part->velocity);
+            part->velocity[1] = self->step * self->inverseTicks + part->velocity[1];
+            PSVECScale((Vec*)part->velocity, &scaled, self->step);
+            PSVECAdd((Vec*)part->pos, &scaled, (Vec*)part->pos);
+        }
+    }
+}
+
+/*
+ * Apply rope sway, solve each spring link, integrate the nodes, and clear
+ * accumulated forces for the next tick.
+ */
+void DFRope_UpdateSimulation(DFRope* self)
+{
+    int j;
+    DFRopeLink* link;
+    int k;
+    DFRopeNode* parts;
+    int i;
+    DFRopeNode* partIter;
+    Vec tmp;
+    f32 zero;
+    DFRopeNode* partsInit;
+
+    partsInit = self->nodes;
+    parts = partsInit;
+
+    if ((s8)self->sway < -DFBARREL_SWAY_LIMIT)
+    {
+        self->direction = DFBARREL_SWAY_DIR_INCREASING;
+    }
+    if ((s8)self->sway > DFBARREL_SWAY_LIMIT)
+    {
+        self->direction = DFBARREL_SWAY_DIR_DECREASING;
+    }
+    if ((s8)self->direction == DFBARREL_SWAY_DIR_DECREASING)
+    {
+        self->sway--;
+    }
+    else
+    {
+        self->sway++;
+    }
+
+    i = 1;
+    partIter = partsInit + 1;
+    {
+        f32 rate = lbl_803E4DF8;
+        for (; i < self->count - 1; i++)
+        {
+            partIter->force[0] = partIter->force[0] + rate * (f32)(int)(s8)self->sway;
+            partIter++;
+        }
+    }
+
+    k = 0;
+    zero = lbl_803E4DFC;
+    for (; k < self->enabled; k++)
+    {
+        link = self->links;
+        for (j = 0; j < self->count - 1; j++, link++)
+        {
+            PSVECSubtract((Vec*)link->a, (Vec*)link->b, &tmp);
+            link->length = PSVECMag(&tmp);
+            if (link->length > link->maxLength)
+            {
+                link->restLength = lbl_803E4DFC;
+            }
+            if (zero == link->restLength)
+            {
+                link->force[2] = zero;
+                link->force[1] = zero;
+                link->force[0] = zero;
+            }
+            else
+            {
+                PSVECScale(&tmp, (Vec*)link->force, -link->stiffness * (link->length - link->restLength));
+            }
+        }
+        DFPulley_integrateLinks(self);
+    }
+
+    i = 0;
+    {
+        f32 cleanZero = lbl_803E4DFC;
+        for (; i < self->count; i++, parts++)
+        {
+            parts->force[0] = cleanZero;
+            parts->force[1] = cleanZero;
+            parts->force[2] = cleanZero;
+        }
+    }
+}
+
+void DFRopeLink_AttachNodes(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRopeNode* secondNode)
+{
+    u8* nodeLinkIter;
+    int firstLinkIndex;
+    int secondLinkIndex;
+
+    firstLinkIndex = 0;
+    secondLinkIndex = 0;
+    nodeLinkIter = (u8*)firstNode;
+    while (*(u32*)(nodeLinkIter + DFBARREL_NODE_LINKS_OFFSET) != 0)
+    {
+        nodeLinkIter += 4;
+        firstLinkIndex++;
+    }
+    nodeLinkIter = (u8*)secondNode;
+    while (*(u32*)(nodeLinkIter + DFBARREL_NODE_LINKS_OFFSET) != 0)
+    {
+        nodeLinkIter += 4;
+        secondLinkIndex++;
+    }
+    if (firstLinkIndex > firstNode->linkCount || secondLinkIndex > secondNode->linkCount)
+        return;
+    firstNode->links[firstLinkIndex] = linkSelf;
+    secondNode->links[secondLinkIndex] = linkSelf;
+    linkSelf->a = firstNode;
+    linkSelf->b = secondNode;
+}
+
+/*
+ * Allocate a rope, seed evenly-spaced nodes between its endpoints, pin the
+ * ends, and attach each spring link to its node pair.
+ */
+DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 unused, s32 count,
+                      f32 tickScale)
+{
+    DFRope* rope;
+    DFRopeNode* nodes;
+    DFRopeNode* node;
+    s32 linkCount;
+    DFRopeLink* link;
+    DFRopeNode* nextNode;
+    DFRopeNode* linkNode;
+    s32 nodesSize;
+    s32 allocSize;
+    u8* base;
+    s32 i;
+    s32 linkIndex;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 length;
+
+    dx = endX - startX;
+    dy = endY - startY;
+    dz = endZ - startZ;
+    length = sqrtf(dz * dz + (dx * dx + dy * dy));
+
+    dx = dx / (f32)(count - 1);
+    dy = dy / (f32)(count - 1);
+    dz = dz / (f32)(count - 1);
+
+    nodesSize = count * sizeof(DFRopeNode);
+    allocSize = sizeof(DFRope) + nodesSize + (count - 1) * sizeof(DFRopeLink);
+    base = (u8*)mmAlloc(allocSize, 0xFF, 0);
+    rope = (DFRope*)base;
+    rope->nodes = (DFRopeNode*)(base + sizeof(DFRope));
+    rope->links = (DFRopeLink*)(base + nodesSize + sizeof(DFRope));
+    rope->count = count;
+    rope->totalLength = length;
+    rope->start[0] = startX;
+    rope->start[1] = startY;
+    rope->start[2] = startZ;
+    rope->end[0] = endX;
+    rope->end[1] = endY;
+    rope->end[2] = endZ;
+    rope->sway = 0;
+    rope->direction = 1;
+    rope->damping = lbl_803E4E00;
+    rope->enabled = 1;
+    rope->step = lbl_803E4DF8;
+    if (rope->step * length > lbl_803E4E04)
+    {
+        rope->step = *(f32*)&lbl_803E4E04 / length;
+    }
+    rope->maxSlack = lbl_803E4E08;
+    rope->stepPerTick = rope->step / tickScale;
+    rope->inverseTicks = lbl_803E4E0C / tickScale;
+
+    nodes = rope->nodes;
+    for (i = 0, node = nodes; i < count; node++, i++)
+    {
+        node->pos[0] = i * dx + rope->start[0];
+        node->pos[1] = i * dy + rope->start[1];
+        node->pos[2] = i * dz + rope->start[2];
+        node->velocity[2] = lbl_803E4DFC;
+        node->velocity[1] = lbl_803E4DFC;
+        node->velocity[0] = lbl_803E4DFC;
+        node->force[2] = lbl_803E4DFC;
+        node->force[1] = lbl_803E4DFC;
+        node->force[0] = lbl_803E4DFC;
+        node->locked = 0;
+        if ((i == 0) || (i == count - 1))
+        {
+            node->linkCount = 1;
+        }
+        else if ((i == 1) || (i == count - 2))
+        {
+            node->linkCount = 2;
+        }
+        else
+        {
+            node->linkCount = 2;
+        }
+        {
+            s32 j;
+            for (j = 0; j < node->linkCount; j++)
+            {
+                node->links[j] = NULL;
+            }
+        }
+    }
+
+    nodes[count - 1].locked = 1;
+    nodes[0].locked = 1;
+
+    linkIndex = 0;
+    link = rope->links;
+    linkNode = nodes;
+    linkCount = count - 1;
+    for (; linkIndex < linkCount; linkIndex++)
+    {
+        link->restLength = rope->totalLength / linkCount;
+        link->stiffness = lbl_803E4E10;
+        link->force[2] = lbl_803E4DFC;
+        link->force[1] = lbl_803E4DFC;
+        link->force[0] = lbl_803E4DFC;
+        link->maxLength = lbl_803E4E14 * link->restLength;
+        nextNode = (DFRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFRopeNode));
+        DFRopeLink_AttachNodes(link, linkNode, nextNode);
+        link++;
+        linkNode++;
+    }
+    return rope;
+}
+
+void dfropenode_setMinY(int obj, float value)
+{
+    ((DFropenodeObject*)obj)->extra->minY = value;
+}
+
+int dfropenode_isVisible(int obj)
+{
+    DFropenodeExtra* extra = ((DFropenodeObject*)obj)->extra;
+
+    return (s16)(extra->hidden == 0);
+}
+
+void dfropenode_setVisible(int obj, int value)
+{
+    u32 bit;
+    u8 bitByte;
+    DFropenodeExtra* extra;
+    void* linkedObj;
+
+    extra = ((DFropenodeObject*)obj)->extra;
+    bit = (value == 0);
+    bitByte = bit;
+    extra->hidden = bitByte;
+    linkedObj = extra->linkedObj;
+    if (linkedObj != NULL)
+    {
+        extra = ((DFropenodeObject*)linkedObj)->extra;
+        extra->hidden = bitByte;
+    }
+}
+
+int dfropenode_getAngle(int obj)
+{
+    return ((DFropenodeObject*)obj)->extra->angle;
+}
+
+void dfropenode_clearLinkedObj(int obj)
+{
+    ((DFropenodeObject*)obj)->extra->linkedObj = 0;
+}
+
+f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX,
+                                    f32 endY, f32 endZ)
+{
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 t;
+
+    dx = endX - startX;
+    dy = endY - startY;
+    dz = endZ - startZ;
+    if ((lbl_803E4DFC == dx) && (lbl_803E4DFC == dz))
+    {
+        t = lbl_803E4DFC;
+    }
+    else
+    {
+        t = (dx * (*x - startX) + dz * (*z - startZ)) / (dx * dx + dz * dz);
+    }
+    if (t < *(f32*)&lbl_803E4DFC)
+    {
+        *x = startX;
+        *y = startY;
+        *z = startZ;
+    }
+    else if (t >= lbl_803E4E18)
+    {
+        *x = endX;
+        *y = endY;
+        *z = endZ;
+    }
+    else
+    {
+        *x = t * dx + startX;
+        *y = t * dy + startY;
+        *z = t * dz + startZ;
+    }
+    return t;
 }
 
 int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, float* distanceOut,
