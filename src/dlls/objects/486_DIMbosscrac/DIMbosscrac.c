@@ -23,7 +23,7 @@ typedef struct DimbosscrackparPlacement
     s16 triggerGameBit; /* 0x1E: game bit that gates particle emission */
 } DimbosscrackparPlacement;
 
-extern f32 lbl_803E4D98;
+const f32 gDIMbosscrackparRootMotionScale[1] = {0.1f};
 
 int DIMbosscrackpar_SeqFn(int* obj)
 {
@@ -66,7 +66,7 @@ void DIMbosscrackpar_update(int* obj)
 void DIMbosscrackpar_init(s16* obj, s8* def)
 {
     ((GameObject*)obj)->anim.rotX = 0;
-    ((GameObject*)obj)->anim.rootMotionScale = lbl_803E4D98;
+    ((GameObject*)obj)->anim.rootMotionScale = gDIMbosscrackparRootMotionScale[0];
     ((GameObject*)obj)->animEventCallback = DIMbosscrackpar_SeqFn;
     ((GameObject*)obj)->anim.rotX = (s16)((s32)def[0x24] << 8);
     ((GameObject*)obj)->anim.rotY = (s16)((s32)def[0x23] << 8);

@@ -529,7 +529,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1E3 | DIM_BossGut | COMPLETE | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | = (canonical) | Retail basename is truncated |
 | 0x1E4 | MAGICMaker | COMPLETE | dlls/objects/484_MAGICMaker/MAGICMaker.c | = (canonical) | — |
 | 0x1E5 | DIM_BossSpi | COMPLETE | dlls/objects/485_DIM_BossSpi/DIM_BossSpi.c | = (canonical) | Retail basename is truncated |
-| 0x1E6 | DIMbosscrackpar | CONFIRMED | main/dll/dll_01E6_dimbosscrackpar.c | main/dll/DIM/dll_01E6_dimbosscrackpar.c | — |
+| 0x1E6 | DIMbosscrac | COMPLETE | dlls/objects/486_DIMbosscrac/DIMbosscrac.c | = (canonical) | Retail basename is truncated |
 | 0x1E7 | DIMbossfire (+MMP_CraterF, CraterFlame) | CONFIRMED | main/dll/dll_01E7_dimbossfire.c | main/dll/DIM/dll_01E7_dimbossfire.c | — |
 | 0x1E8 | SB_Galleon | COMPLETE | main/dll/dll_01E8_sbgalleon.c | main/dll/SB/dll_01E8_sbgalleon.c | — |
 | 0x1E9 | SB_Propeller | CONFIRMED | main/dll/dll_01E9_sbpropeller.c | main/dll/SB/dll_01E9_sbpropeller.c | — |
@@ -855,7 +855,7 @@ name was a deliberate choice by a previous carve:
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | COMPLETE |
 | 0x1E3 | main/dll/dll_01E3_dimbossgut2.c | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | COMPLETE |
 | 0x1E5 | main/dll/dll_01E5_dimbossspit.c | dlls/objects/485_DIM_BossSpi/DIM_BossSpi.c | COMPLETE |
-| 0x1E6 | main/dll/dll_01E6_dimbosscrackpar.c | main/dll/DIM/dll_01E6_dimbosscrackpar.c | CONFIRMED |
+| 0x1E6 | main/dll/dll_01E6_dimbosscrackpar.c | dlls/objects/486_DIMbosscrac/DIMbosscrac.c | COMPLETE |
 | 0x1E7 | main/dll/dll_01E7_dimbossfire.c | main/dll/DIM/dll_01E7_dimbossfire.c | CONFIRMED |
 | 0x1E8 | main/dll/dll_01E8_sbgalleon.c | main/dll/SB/dll_01E8_sbgalleon.c | COMPLETE |
 | 0x1E9 | main/dll/dll_01E9_sbpropeller.c | main/dll/SB/dll_01E9_sbpropeller.c | CONFIRMED |

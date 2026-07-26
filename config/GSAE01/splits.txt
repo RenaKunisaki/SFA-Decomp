@@ -2695,9 +2695,10 @@ dlls/objects/484_MAGICMaker/MAGICMaker.c:
 	.data       start:0x80325CE8 end:0x80325D30
 	.sdata2     start:0x803E4D88 end:0x803E4D98
 
-main/dll/DIM/dll_01E6_dimbosscrackpar.c:
+dlls/objects/486_DIMbosscrac/DIMbosscrac.c:
 	.text       start:0x801C02B8 end:0x801C04B8
 	.data       start:0x80325D30 end:0x80325D68
+	.sdata2     start:0x803E4D98 end:0x803E4D9C
 
 main/dll/DIM/dll_01E7_dimbossfire.c:
 	.text       start:0x801C04B8 end:0x801C0A60
