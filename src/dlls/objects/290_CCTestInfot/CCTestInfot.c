@@ -1,5 +1,5 @@
 /*
- * cctestinfot - Cape Claw (mapId 47) "test info" help-prompt object (DLL 0x0122).
+ * CCTestInfot - Cape Claw (mapId 47) "test info" help-prompt object (DLL 0x122).
  * The object only reacts while the player is disguised: it caches the disguise
  * state, drives the model's hint-text index / active model from it, and -
  * once its ObjTrigger fires - shows help text from the model's helpTextIds
@@ -87,4 +87,3 @@ ObjectDescriptor gCCTestInfotObjDescriptor = {
     0,
     CCTestInfot_getExtraSize,
 };
-

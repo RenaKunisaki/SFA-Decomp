@@ -535,7 +535,7 @@ on-disk form of the wiki's "all functions stubbed" DLLs:
 
 411 files under `src/main/dll/` (658 counting shared/state-struct headers pulled in) follow
 `dll_<4-hex-ID>_<name>.c` / `include/main/dll/dll_<4-hex-ID>_<name>.h`, e.g.
-`src/main/dll/dll_0122_cctestinfot.c` = DLL 0x122. Matching this literal ID against the wiki table:
+`src/dlls/objects/290_CCTestInfot/CCTestInfot.c` = DLL 0x122. Matching this slot against the wiki table:
 
 - **419 of the wiki's 469 named DLL IDs** have a directly corresponding `dll_<ID>_*.c` file.
 - A further **~24 IDs** are implemented as flat `src/main/<name>.c` files that don't carry the
@@ -575,7 +575,7 @@ spell several of these out explicitly where the wiki page doesn't:
 
 | Prefix | Level | Verified in |
 |--------|-------|-------------|
-| `CC` | Crystal Caves | `src/main/dll/CC/dll_0122_cctestinfot.c` |
+| `CC` | Cape Claw | `src/dlls/objects/290_CCTestInfot/CCTestInfot.c` |
 | `CF` | CloudRunner Fortress | `src/main/dll/CF/dll_012A_cfcrate.c` |
 | `DF` | DragonRock (rope/cradle machinery) | `src/main/dll/DF/dll_0175_dfropenode.c` |
 | `DFP` | DragonRock Palace (spell-puzzle level) | `src/main/dll/DF/dll_0229_dfplevelcontrol.c` |

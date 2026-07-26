@@ -49,7 +49,6 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 
 ### AudioStreams
 - Name StreamEntry.fadeBits/volBits bit layout as macros (STREAM_FADEBITS_FLAGA_SHIFT/FLAGB_SHIFT/STOPSFX_SHIFT, STREAM_VOLBITS_CHANMASK_BIT/VOLUME_MASK) in include/main/engine_shared.h next to StreamEntry, derived directly from AudioStream_Play's shift/mask expressions.
-- Revisit the header comment in src/main/dll/CC/dll_0122_cctestinfot.c which guesses the map is 'Crystal Caves' - our own map-name tables (sMapFileNameCapeclaw/Ccshrine/Ccbridge, mapId 47) confirm it is Cape Claw, matching the wiki's CC directory.
 - Revisit src/main/dll/dll_0195_dbshshrine.c's header comment guess ('Discovered/Bone-shop' for 'dbsh') - the literal map-table name "dbshrine" (a Krazoa spirit shrine, mapId 43) is a more direct fit for its 'dbsh' abbreviation.
 
 ### BaddieLootDrops

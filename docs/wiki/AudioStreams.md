@@ -1248,7 +1248,7 @@ the wiki's own "?" guesses:
 | Wiki dir | Wiki guess | Resolved against our map tables |
 |---|---|---|
 | `ARW` | Arwing | Confirmed: `"arwing"` (mapId 3) + course sub-maps `"arwingcloud"`, `"arwingdarkice"`, `"arwingdragon"`, `"arwingtoplanet"`, `"arwingcity"` — a 1:1 name match to the wiki's `2cloud`/`2darkice`/`2dragrock`/`2planet`/`2walledcity` files. |
-| `CC` | Cape Claw | Confirmed: `"capeclaw"` (mapId 47) + `"ccshrine"`, `"ccbridge"`. **Contradicts** this repo's own comment in `src/main/dll/CC/dll_0122_cctestinfot.c` ("Crystal Caves `test info`") — worth revisiting, see Code opportunities. |
+| `CC` | Cape Claw | Confirmed: `"capeclaw"` (mapId 47) + `"ccshrine"`, `"ccbridge"`. |
 | `COMM` | Communicator (pause menu) | Confirmed: `sMapDirectoryNameCommunicator = "Communicator"`. |
 | `CRF` | CloudRunner Fortress | Confirmed, two aliases: `"fortress"` (sub-map table) and `"crfort"` (by-id table, mapId 18). |
 | `DB` | Diamond Bay? | Confirmed: `"dbay"` (mapId 48) / `"diamondbay"` (sub-map table). Distinct from `"dbshrine"` (mapId 43, one of the Krazoa spirit shrines) — both start with "Db" but are different maps. |

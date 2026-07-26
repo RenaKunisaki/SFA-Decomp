@@ -335,7 +335,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x11F | MagicCaveTo | CONFIRMED | dlls/objects/287_MagicCaveTo/MagicCaveTo.c | = (canonical) | — |
 | 0x120 | TrickyGuard | CONFIRMED | dlls/objects/288_TrickyGuard/TrickyGuard.c | = (canonical) | — |
 | 0x121 | — (+InfoText, LINKF_InfoT, LinkG_InfoT, MMPass_Info, DIM_InfoTex, NW_InfoText, SH_InfoPoin, SH_FireWeed, VFP_InfoTex) | NO-RETAIL-NAME | dlls/objects/289/289.c | = (canonical) | — |
-| 0x122 | CCTestInfot | CONFIRMED | main/dll/dll_0122_cctestinfot.c | main/dll/CC/dll_0122_cctestinfot.c | — |
+| 0x122 | CCTestInfot | CONFIRMED | dlls/objects/290_CCTestInfot/CCTestInfot.c | = (canonical) | — |
 | 0x123 | fuelCell | COMPLETE | main/dll/dll_0123_fuelcell.c | = (canonical) | — |
 | 0x124 | deathGas (+deathGasNoF) | COMPLETE | main/dll/dll_0124_deathgas.c | = (canonical) | — |
 | 0x125 | curve | COMPLETE | main/dll/dll_0125_curve.c | = (canonical) | — |
@@ -800,7 +800,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x122 | main/dll/dll_0122_cctestinfot.c | main/dll/CC/dll_0122_cctestinfot.c | CONFIRMED |
 | 0x128 | main/dll/dll_0128_kttorch.c | main/dll/DR/dll_0128_kttorch.c | COMPLETE |
 | 0x12A | main/dll/dll_012A_cfcrate.c | main/dll/CF/dll_012A_cfcrate.c | COMPLETE |
 | 0x12E | main/dll/dll_012E_cflightwall.c | main/dll/CF/dll_012E_cflightwall.c | CONFIRMED |
