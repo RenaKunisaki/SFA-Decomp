@@ -511,7 +511,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1D1 | DIMTruthHor | COMPLETE | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | = (canonical) | — |
 | 0x1D2 | WORLDplanet | COMPLETE | dlls/objects/466_WORLDplanet/WORLDplanet.c | = (canonical) | — |
 | 0x1D3 | worldobj (+WORLDcloudr, WORLDdragro, WORLDwalled, WORLDdarkic, WORLDcloudl, WORLDpath1, WORLDpath2, WORLDpath3, WORLDpath4, WORLDpath5, WORLDpath6, WORLDpath7, WORLDpath8, WORLDarwing, WORLDgreatf, WORLDsun, WORLDsunray, WORLDpepper, WORLDsunfla, WORLDComet, WORLDastGen, WORLDhalo, WORLDhalobr, WORLDarrow) | COMPLETE | dlls/objects/467/467.c | = (canonical) | No single recovered TU basename |
-| 0x1D4 | WORLDAsteroids | CONFIRMED | main/worldasteroids.c | main/dll/dll_01D4_worldasteroids.c | engine/SDK host: main/worldasteroids.c |
+| 0x1D4 | WORLDAstero | COMPLETE | dlls/objects/468_WORLDAstero/WORLDAstero.c | = (canonical) | — |
 | 0x1D5 | DIM2Conveyor | CONFIRMED | main/dll/dll_01D5_dim2conveyor.c | main/dll/DIM/dll_01D5_dim2conveyor.c | — |
 | 0x1D6 | — | NO-RETAIL-NAME | main/dll/dll_01D6_dll1d6.c | = (canonical) | — |
 | 0x1D7 | DIM2SnowBall | CONFIRMED | main/dll/dll_01D7_dim2snowball.c | main/dll/DIM/dll_01D7_dim2snowball.c | — |

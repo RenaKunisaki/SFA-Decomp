@@ -546,7 +546,7 @@ on-disk form of the wiki's "all functions stubbed" DLLs:
     0x23B (`DFP_Lightni`) → `src/main/dfplightni.c`; 0x23C (`DFP_PowerSl`) → `src/main/dfppowersl.c`.
   - DLL 0x1D2 (`WORLDplanet`) → `src/dlls/objects/466_WORLDplanet/WORLDplanet.c`;
     DLL 0x1D3 (`WorldMapObj`) → `src/dlls/objects/467/467.c`; DLL 0x1D4 (`WORLDAstero`) →
-    `src/main/worldasteroids.c` (`gWorldPlanetObjDescriptor` etc.,
+    `src/dlls/objects/468_WORLDAstero/WORLDAstero.c` (`gWorldPlanetObjDescriptor` etc.,
     `gResourceDescriptors[0x1D2..0x1D4]`).
   - DLL 0x25C/0x25D/0x25E (`SnowClaw`/`CRCloudRace`/`FireSpellStone`) →
     `src/main/snowclaw.c` / `crcloudrace.c` / `spellstone.c`.

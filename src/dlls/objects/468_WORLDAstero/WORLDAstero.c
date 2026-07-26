@@ -1,3 +1,4 @@
+/* WORLDAstero (DLL 0x1D4) */
 #include "main/worldasteroids.h"
 #include "main/fcos16_approx_api.h"
 #include "main/fsin16_approx_api.h"
