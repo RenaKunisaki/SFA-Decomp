@@ -109,6 +109,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
   source; keep private helper types and constants in the TU.
+- Size placement/setup structs from active-target evidence such as a direct `Obj_AllocObjectSetup`
+  allocation or retail romlist width, not from the last field accessed by the TU or donor-project
+  padding. Assert the proven total size as well as every recovered field offset.
 - Include an object's canonical header at direct consumers instead of repeating hand-written
   declarations. Where a generic registry intentionally stores differently shaped descriptor
   types, use an explicit cast at that boundary rather than lying about the descriptor's type in an
