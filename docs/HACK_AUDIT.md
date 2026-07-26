@@ -271,7 +271,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0046_cameramodedebug | 100.0000 | 98.1799 | -1.8201 |
 | main/main/dll/cloudaction | 100.0000 | 98.2189 | -1.7811 |
 | main/main/dll/dll_00DE_baddieinterestp | 100.0000 | 98.2407 | -1.7593 |
-| main/main/dll/dll_024E_drakordthornbush | 100.0000 | 98.3441 | -1.6559 |
+| main/dlls/objects/590/590 | 100.0000 | 98.3441 | -1.6559 |
 | main/dlls/objects/683_LGTProjecte/LGTProjecte | 100.0000 | 98.3660 | -1.6340 |
 | main/main/audio/voice_manage | 100.0000 | 98.4296 | -1.5704 |
 | main/main/camera | 99.7639 | 98.2861 | -1.4778 |

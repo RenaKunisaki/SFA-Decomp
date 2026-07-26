@@ -1,5 +1,5 @@
 /*
- * drakordthornbush (DLL 0x24E) - the thorn/bramble hazard objects from the
+ * DLL 0x24E - the thorn/bramble hazard objects from the
  * Drakor boss arena. The object's anim seqId selects one of two variants:
  *   - THORNBUSH_SEQ_THORN (0x727): a thorn cluster that grows in, can be hit
  *     to spawn an explosion, and (when the placement carries no respawn data)
