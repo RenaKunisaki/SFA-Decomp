@@ -1,5 +1,5 @@
 /*
- * wctrexstatu (DLL 0x292) - a T-Rex statue prop in the Walled City (WC).
+ * WCTrexStatu (DLL 0x292) - a T-Rex statue prop in the Walled City (WC).
  *
  * The statue starts lowered and is "raised" by a map event: at init, if
  * the object's map-event act is already RAISED (and we are not restoring
