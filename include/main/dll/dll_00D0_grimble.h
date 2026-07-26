@@ -1,8 +1,8 @@
 #ifndef MAIN_DLL_DLL_00D0_GRIMBLE_H_
 #define MAIN_DLL_DLL_00D0_GRIMBLE_H_
 
-#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 
 int grimble_stateHandlerA00(GameObject* obj, char* state, f32 arg);
 int grimble_stateHandlerA01(GameObject* obj, char* state, f32 arg);
@@ -20,5 +20,7 @@ void grimble_initialise(void);
 void grimble_initialiseStateHandlerTables(void);
 
 extern ObjectDescriptor gGrimbleObjDescriptor;
+extern int gGrimbleHitReactionMoves[30];
+extern u8 gGrimbleHitReactionDamage[32];
 
 #endif /* MAIN_DLL_DLL_00D0_GRIMBLE_H_ */

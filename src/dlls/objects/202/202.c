@@ -1044,6 +1044,9 @@ void iceBaddie_update(GameObject* obj, int unusedA, int unusedB) {
     GroundBaddieState* objectState;
     IceBaddiePlacement* placement;
 
+    (void)unusedA;
+    (void)unusedB;
+
     objectState = obj->extra;
     placement = (IceBaddiePlacement*)obj->anim.placementData;
     if (obj->userData1 != 0) {

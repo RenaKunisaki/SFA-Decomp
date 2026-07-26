@@ -7,6 +7,8 @@
 typedef struct GameObject GameObject;
 typedef int (*IceBaddieStateHandler)(GameObject* obj, GroundBaddieState* state);
 
+void iceBaddie_installStateHandlers(void);
+
 int iceBaddie_updateOpenHitState(GameObject* obj, GroundBaddieState* state);
 int iceBaddie_updateOpenState(GameObject* obj, GroundBaddieState* state);
 int iceBaddie_updateHideResetState(GameObject* obj, GroundBaddieState* state);
