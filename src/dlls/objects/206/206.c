@@ -34,7 +34,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_state.h"
-#include "main/dll/dll_00CA_icebaddie.h"
+#include "dlls/objects/202.h"
 #include "main/dll/dll_00CE_dllce.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
@@ -66,9 +66,6 @@ STATIC_ASSERT(offsetof(ChukChukState, flags) == 0x12);
 
 extern void* gChukChukMoveHandlers[];
 extern void* gChukChukCheckHandlers[];
-extern void* gIceBaddieStateHandlersB[];
-extern void* gIceBaddieStateHandlersA[];
-
 u8 lbl_8031FEA8[] = {
     0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0,
     0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 2,

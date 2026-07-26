@@ -1,6 +1,7 @@
 #include "dlls/objects/198_AnimatedObj.h"
 #include "dlls/objects/199_DIM2RoofRub.h"
 #include "dlls/objects/200_DepthOfFieldPoint.h"
+#include "dlls/objects/202.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -172,7 +173,7 @@ extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGCbaddieShieldObjDescr
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
     gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor,
-    gIceBaddieObjDescriptor, gIceblastObjDescriptor, gInfoPointObjDescriptor;
+    gIceblastObjDescriptor, gInfoPointObjDescriptor;
 extern ResourceDescriptor gInfoTextObjDescriptor, gInvHitObjDescriptor, gInvisibleHitSwitchObjDescriptor,
     gKT_TorchObjDescriptor, gKaldaChomObjDescriptor, gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
@@ -1119,7 +1120,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIM2RoofRubObjDescriptor,
     (ResourceDescriptor*)&gDepthOfFieldPointObjDescriptor,
     &gBaddieObjDescriptor,
-    &gIceBaddieObjDescriptor,
+    (ResourceDescriptor*)&gIceBaddieObjDescriptor,
     &dll_CB,
     (ResourceDescriptor*)&gChukChukObjDescriptor,
     (ResourceDescriptor*)&gIceBallObjDescriptor,

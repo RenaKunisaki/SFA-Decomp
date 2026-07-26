@@ -26,7 +26,6 @@
 #include "main/player_control_interface.h"
 #include "string.h"
 #include "main/gamebits.h"
-#include "main/dll/dll_00CA_icebaddie.h"
 #include "main/camera.h"
 #include "main/obj_path.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

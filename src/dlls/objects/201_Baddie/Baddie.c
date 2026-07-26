@@ -29,7 +29,6 @@
 #include "main/objseq.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/dll/dll_00CA_icebaddie.h"
 #include "main/dll/tricky_state.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_keep_alive_api.h"
