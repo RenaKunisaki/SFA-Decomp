@@ -1,5 +1,5 @@
 /*
- * drbarrelgr (DLL 0x283) - a barrel-grabber: a magnet/tractor device
+ * DR_BarrelGr (DLL 643) - a barrel-grabber: a magnet/tractor device
  * that pulls a nearby gunpowder barrel to itself and carries it along a
  * rom-curve path.
  *
