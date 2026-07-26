@@ -18,8 +18,6 @@ STATIC_ASSERT(offsetof(Dll2A4State, spinRateX) == 0x04);
 STATIC_ASSERT(offsetof(Dll2A4State, spinRateY) == 0x06);
 STATIC_ASSERT(offsetof(Dll2A4State, spinRateZ) == 0x08);
 
-extern f32 lbl_803E7140;
-
 int dll_2A4_getExtraSize_ret_12(void);
 int dll_2A4_getObjectTypeId(void);
 void dll_2A4_free_nop(void);

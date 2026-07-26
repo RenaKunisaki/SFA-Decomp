@@ -1,5 +1,5 @@
 /*
- * arwgenerato (DLL 0x2A5) - spawner used in the on-rails Arwing flight
+ * ARWGenerato (DLL 677) - spawner used in the on-rails Arwing flight
  * sections. It holds a single countdown timer (state->spawnTimer, seeded
  * from the placement's spawnInterval) and, when the timer elapses, calls
  * one of two spawn helpers selected by the placement's spawnMode before
@@ -32,7 +32,6 @@
  * only the fields the generator seeds (base.color/pos + rotX..rotZ) */
 #define SPAWN_EXTRA_SIZE 0x20
 
-
 void arwgenerato_spawnSquadronShipA(GameObject* obj, ARWGeneratorState* state, ARWGeneratorSetup* setup)
 {
     ArwSquadronSetup* newObj;
@@ -56,9 +55,9 @@ void arwgenerato_spawnSquadronShipA(GameObject* obj, ARWGeneratorState* state, A
         newObj->base.color[0] = 1;
         newObj->base.color[1] = 1;
         newObj = (ArwSquadronSetup*)loadObjectAtObject(obj, &newObj->base);
-        dir.x = setup->velocityX / *(f32*)&lbl_803E7140;
-        dir.y = setup->velocityY / *(f32*)&lbl_803E7140;
-        dir.z = setup->velocityZ / *(f32*)&lbl_803E7140;
+        dir.x = setup->velocityX / 10.0f;
+        dir.y = setup->velocityY / 10.0f;
+        dir.z = setup->velocityZ / 10.0f;
         dll_2A4_setVelocity((GameObject*)(newObj), &dir);
         dll_2A4_setLifetime((GameObject*)(newObj), setup->projectileSpeed);
     }
@@ -87,9 +86,9 @@ void arwgenerato_spawnSquadronShipB(GameObject* obj, ARWGeneratorState* state, A
         newObj->base.color[0] = 1;
         newObj->base.color[1] = 1;
         newObj = (ArwSquadronSetup*)loadObjectAtObject(obj, &newObj->base);
-        dir.x = setup->velocityX / *(f32*)&lbl_803E7140;
-        dir.y = setup->velocityY / *(f32*)&lbl_803E7140;
-        dir.z = setup->velocityZ / *(f32*)&lbl_803E7140;
+        dir.x = setup->velocityX / 10.0f;
+        dir.y = setup->velocityY / 10.0f;
+        dir.z = setup->velocityZ / 10.0f;
         dll_2A3_setVelocity((GameObject*)(newObj), &dir);
         dll_2A3_setSpeed((GameObject*)(newObj), setup->projectileSpeed);
     }
