@@ -608,7 +608,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x232 | DFP_RotateP | RAW | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | — |
 | 0x233 | DFP_Statue1 | CONFIRMED | main/dll/dll_0233_dfpstatue1.c | main/dll/DF/dll_0233_dfpstatue1.c | — |
 | 0x234 | DFP_PerchSw | RAW | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | — |
-| 0x235 | DFP_TargetBlock | CONFIRMED | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | — |
+| 0x235 | DFP_TargetBlock | CONFIRMED | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | = (canonical) | — |
 | 0x236 | DFP_LaserBe | CONFIRMED | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | — |
 | 0x237 | DFPSpPl | COMPLETE | dlls/objects/567_DFPSpPl/DFPSpPl.c | = (canonical) | — |
 | 0x238 | LINKA_levco | RAW | dlls/objects/568_LINKA_levco/LINKA_levco.c | = (canonical) | — |
@@ -899,7 +899,7 @@ name was a deliberate choice by a previous carve:
 | 0x232 | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | RAW |
 | 0x233 | main/dll/dll_0233_dfpstatue1.c | main/dll/DF/dll_0233_dfpstatue1.c | CONFIRMED |
 | 0x234 | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | RAW |
-| 0x235 | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | CONFIRMED |
+| 0x235 | main/dll/dll_0235_dfptargetblock.c | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | CONFIRMED |
 | 0x236 | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | CONFIRMED |
 | 0x237 | main/dll/dll_0237_dfpsppl.c | dlls/objects/567_DFPSpPl/DFPSpPl.c | COMPLETE |
 | 0x23F | main/dll/dll_023F_dbegg.c | dlls/objects/575_DB_egg/DB_egg.c | COMPLETE |
@@ -993,6 +993,6 @@ blocked units will surface more when carved.
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x207 | main/dll/dll_0207_wmworm.c | include/main/dll/LGT/dll_0207_wmworm.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
-| 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
+| 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
 | 0x287 | main/dll/dll_0287_spscarab.c | include/main/dll/DR/dll_0287_spscarab.h |
