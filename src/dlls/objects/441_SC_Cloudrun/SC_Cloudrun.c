@@ -132,7 +132,7 @@ void sc_cloudrunnera_update(int obj)
             {
                 ScCloudrunneraSetup* setup;
                 GameObject* newObj;
-                if (*(void**)&((GameObject*)obj)->childObjs[0] != NULL)
+                if (((GameObject*)obj)->childObjs[0] != NULL)
                 {
                     break;
                 }
@@ -164,31 +164,31 @@ void sc_cloudrunnera_update(int obj)
             }
         case 1:
             {
-                if (*(void**)&((GameObject*)obj)->childObjs[0] != NULL)
+                if (((GameObject*)obj)->childObjs[0] != NULL)
                 {
-                    cmbsrc_setExternalActive(*(CmbSrcObject**)&((GameObject*)obj)->childObjs[0], 0);
+                    cmbsrc_setExternalActive(((GameObject*)obj)->childObjs[0], 0);
                 }
                 break;
             }
         case 2:
             {
-                int innerSlot = *(int*)&((GameObject*)obj)->childObjs[0];
-                if ((u32)innerSlot != 0)
+                GameObject* innerSlot = ((GameObject*)obj)->childObjs[0];
+                if (innerSlot != NULL)
                 {
-                    ObjLink_DetachChild((GameObject*)obj, (GameObject*)innerSlot);
-                    Obj_FreeObject((GameObject*)innerSlot);
+                    ObjLink_DetachChild((GameObject*)obj, innerSlot);
+                    Obj_FreeObject(innerSlot);
                 }
                 break;
             }
         }
     }
     {
-        int t = *(int*)&((GameObject*)obj)->childObjs[0];
-        if ((u32)t != 0)
+        GameObject* t = ((GameObject*)obj)->childObjs[0];
+        if (t != NULL)
         {
-            ((GameObject*)t)->anim.rotZ = ((GameObject*)obj)->anim.rotZ;
-            ((GameObject*)*(int*)&((GameObject*)obj)->childObjs[0])->anim.rotY = (s16)(((GameObject*)obj)->anim.rotY + 0xe38);
-            ((GameObject*)*(int*)&((GameObject*)obj)->childObjs[0])->anim.rotX = (s16)(((GameObject*)obj)->anim.rotX + -0x8000);
+            t->anim.rotZ = ((GameObject*)obj)->anim.rotZ;
+            ((GameObject*)((GameObject*)obj)->childObjs[0])->anim.rotY = (s16)(((GameObject*)obj)->anim.rotY + 0xe38);
+            ((GameObject*)((GameObject*)obj)->childObjs[0])->anim.rotX = (s16)(((GameObject*)obj)->anim.rotX + -0x8000);
         }
     }
 }
