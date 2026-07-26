@@ -1,10 +1,7 @@
 /*
- * DragonRock Palace statue (DLL 0x233; "DFP_Statue1") - a sound-emitting
- * statue. While its loop game bit and 0xedf are set it runs trigger
- * sequence 0 and keeps a looped object sound alive; once stateFlags is
- * raised it runs sequence 1 and stops. A stop timer clears one of a set
- * of related game bits per loopSfxId. The DLL's descriptors (and the
- * perchwitch stub sibling) live in dll_0234_dfpperchsw.
+ * DragonRock Palace statue. Its animation callback drives the effect
+ * GameBits from sequence events, while the object update keeps the statue's
+ * looped sound alive and stops it once the sequence has completed.
  */
 #include "main/dll/crate2.h"
 #include "main/dll/crate.h"
@@ -13,7 +10,70 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 
+#define SFXPLAYER_EVENT_ACTIVATE       1
+#define SFXPLAYER_EVENT_DEACTIVATE     2
+#define SFXPLAYER_EVENT_VARIANT        3
+#define SFXPLAYER_VARIANT_TIMER_FRAMES 0x96
+
+#define SFXPLAYER_BASE_VARIANT_A 0x672
+#define SFXPLAYER_BASE_VARIANT_B 0x673
+#define SFXPLAYER_BASE_VARIANT_C 0x674
+#define SFXPLAYER_BASE_VARIANT_D 0x675
+
+#define GAMEBIT_SFXPLAYER_VARIANT_A 0x66e
+#define GAMEBIT_SFXPLAYER_VARIANT_B 0x66f
+#define GAMEBIT_SFXPLAYER_VARIANT_C 0x670
+#define GAMEBIT_SFXPLAYER_VARIANT_D 0x9f5
+
 #define DFPSTATUE1_OBJFLAG_HIDDEN 0x4000
+
+u32 sfxplayer_updateState(int obj, u32 unused, ObjAnimUpdateState* animUpdate)
+{
+    int event;
+    SfxplayerState* state;
+    int i;
+
+    state = ((GameObject*)obj)->extra;
+    animUpdate->hitVolumePair = -1;
+    animUpdate->sequenceEventActive = 0;
+    for (i = 0; i < animUpdate->eventCount; i++)
+    {
+        event = animUpdate->eventIds[i];
+        switch (event)
+        {
+        case SFXPLAYER_EVENT_ACTIVATE:
+            mainSetBits(state->effectSfxBaseId + 5, 1);
+            break;
+        case SFXPLAYER_EVENT_DEACTIVATE:
+            mainSetBits(state->effectSfxBaseId + 5, 0);
+            state->effectFlags = 1;
+            break;
+        case SFXPLAYER_EVENT_VARIANT:
+            switch (state->effectSfxBaseId)
+            {
+            case SFXPLAYER_BASE_VARIANT_A:
+                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_A, 1);
+                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+                break;
+            case SFXPLAYER_BASE_VARIANT_B:
+                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_B, 1);
+                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+                break;
+            case SFXPLAYER_BASE_VARIANT_C:
+                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_C, 1);
+                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+                break;
+            case SFXPLAYER_BASE_VARIANT_D:
+                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_D, 1);
+                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+                break;
+            }
+            break;
+        }
+        animUpdate->eventIds[i] = 0;
+    }
+    return 0;
+}
 
 void dfpstatue1_updateState(DfpStatue1Object* obj)
 {

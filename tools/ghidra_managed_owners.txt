@@ -74,7 +74,6 @@ main/dll/CR/CRfueltank.c
 main/dll/CRsnowbike.c
 main/dll/CR/CRsnowClaw.c
 main/dll/crackanim.c
-main/dll/crate.c
 main/dll/crate2.c
 main/dll/creator19D.c
 main/dll/creator1C4.c
