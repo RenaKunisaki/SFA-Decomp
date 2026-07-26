@@ -434,7 +434,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x184 | — (+DIMAnimShar, MMPAnimShar) | NO-RETAIL-NAME | dlls/objects/388/388.c | = (canonical) | — |
 | 0x185 | CCgasvent | COMPLETE | dlls/objects/389_CCgasvent/CCgasvent.c | = (canonical) | — |
 | 0x186 | CCgasventCo | COMPLETE | dlls/objects/390_CCgasventCo/CCgasventCo.c | = (canonical) | — |
-| 0x187 | CCqueen | COMPLETE | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | — |
+| 0x187 | CCqueen | COMPLETE | dlls/objects/391_CCqueen/CCqueen.c | = (canonical) | — |
 | 0x188 | CClightfoot | CONFIRMED | main/dll/dll_0188_cclightfoot.c | main/dll/CC/dll_0188_cclightfoot.c | — |
 | 0x189 | CCSharpclawpad | CONFIRMED | main/dll/dll_0189_ccsharpclawpad.c | main/dll/CC/dll_0189_ccsharpclawpad.c | — |
 | 0x18A | CCpedstal | COMPLETE | main/dll/dll_018A_ccpedstal.c | main/dll/CC/dll_018A_ccpedstal.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x187 | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | COMPLETE |
 | 0x188 | main/dll/dll_0188_cclightfoot.c | main/dll/CC/dll_0188_cclightfoot.c | CONFIRMED |
 | 0x189 | main/dll/dll_0189_ccsharpclawpad.c | main/dll/CC/dll_0189_ccsharpclawpad.c | CONFIRMED |
 | 0x18A | main/dll/dll_018A_ccpedstal.c | main/dll/CC/dll_018A_ccpedstal.c | COMPLETE |
