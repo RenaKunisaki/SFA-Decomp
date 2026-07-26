@@ -176,9 +176,9 @@ int kaldachom_stateHandlerB02(GameObject* obj, GroundBaddieState* state)
     return 0;
 }
 
-int kaldachom_stateHandlerB01(int* obj, GroundBaddieState* state)
+int kaldachom_stateHandlerB01(GameObject* obj, GroundBaddieState* state)
 {
-    KaldaChomControl* control = ((CfDoorlightState*)((GameObject*)obj)->extra)->control;
+    KaldaChomControl* control = ((CfDoorlightState*)obj->extra)->control;
     if (state->baddie.controlMode == BADDIE_CONTROL_MODE_RETURN)
     {
         f32 zero;
@@ -766,9 +766,9 @@ void kaldachom_func0B(void)
 {
 }
 
-s16 kaldachom_setScale(int* obj)
+s16 kaldachom_setScale(GameObject* obj)
 {
-    return ((CampfireState*)((GameObject*)obj)->extra)->controlMode;
+    return ((CampfireState*)obj->extra)->controlMode;
 }
 int kaldachom_getExtraSize(void)
 {
