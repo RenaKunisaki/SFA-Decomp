@@ -139,7 +139,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Door side routing",
-        "src/main/dll/dll_00F4_doorf4.c",
+        "src/dlls/objects/244/244.c",
         "DoorF4 update events",
         "Code chooses a side GameBit from the camera side of a door plane, but observed retail placements have zero masks or disabled side bits.",
         "inactive_retail",

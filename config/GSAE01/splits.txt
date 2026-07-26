@@ -1811,7 +1811,7 @@ dlls/objects/243_flameblast/flameblast.c:
 	.data       start:0x80320EA0 end:0x80320ED8
 	.sdata2     start:0x803E3618 end:0x803E3648
 
-main/dll/dll_00F4_doorf4.c:
+dlls/objects/244/244.c:
 	.text       start:0x80178338 end:0x801793A4
 	.data       start:0x80320ED8 end:0x80320F30
 	.sdata2     start:0x803E3648 end:0x803E3680

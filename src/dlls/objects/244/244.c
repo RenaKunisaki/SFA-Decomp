@@ -35,6 +35,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/gamebit_ids.h"
 
+extern f32 lbl_803E3680;
+extern f32 lbl_803E3684;
+
 /* Per-object extra state for the doorf4 door (DoorF4_getExtraSize == 0x24). */
 typedef struct DoorF4State
 {
@@ -94,9 +97,6 @@ STATIC_ASSERT(offsetof(DoorF4Placement, gameBitC) == 0x20);
 #define DOORF4_ENVFX_A   0x7f
 #define DOORF4_ENVFX_B   0x7c
 #define DOORF4_ENVFX_OFF 0xe
-
-extern f32 lbl_803E3680;
-extern f32 lbl_803E3684;
 
 ObjectDescriptor gDoorF4ObjDescriptor = {
     0,

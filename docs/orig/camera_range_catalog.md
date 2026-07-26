@@ -207,7 +207,7 @@ The companion CSV contains every individual placement. This table is the complet
 | Untargeted staff projectile origin | `src/dlls/objects/195_Player/player.c` | `staffShootFireball / fn_802AA014` | Untargeted projectiles allocate at current camera XYZ and derive velocity from camera orientation/FOV. A stored camera can therefore originate a hit remotely. | `high_remote_hit` |
 | Arwing trace origin | `src/main/dll/ARW/dll_029A_arwarwing.c` | `arwarwing_SeqFn / arwarwing_hitDetect` | A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it. | `high_hit_detection` |
 | Tricky warp visibility | `src/main/dll/dll_0100_trickywarp.c` | `TrickyWarp_update` | Permits companion relocation only when the warp host is outside the view frustum. | `investigate` |
-| Door side routing | `src/main/dll/dll_00F4_doorf4.c` | `DoorF4 update events` | Code chooses a side GameBit from the camera side of a door plane, but observed retail placements have zero masks or disabled side bits. | `inactive_retail` |
+| Door side routing | `src/dlls/objects/244/244.c` | `DoorF4 update events` | Code chooses a side GameBit from the camera side of a door plane, but observed retail placements have zero masks or disabled side bits. | `inactive_retail` |
 | Camera-target trigger mode | `src/main/dll/dll_0126_trigger.c` | `Trigger_hitDetect target kind 2` | The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2. | `inactive_retail` |
 | Proximity mine cull branch | `src/main/proximitymine_update.c` | `ProximityMine_update` | Camera-derived opacity selects a path point versus target-root attack anchor; object is runtime-spawned and situational. | `investigate` |
 | DIM Tricky LOS | `src/main/dll/DIM/dll_019E_dim_tricky.c` | `DIMTricky_render` | Uses camera distance and voxel LOS to keep/free a visibility effect source. | `presentation` |
@@ -240,8 +240,8 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/dll_0031_minimap.c` | 1015 | `slot = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_0049_cameramodecombat.c` | 156 | `CameraViewSlot* view = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/196_Tricky/tricky.c` | 7906 | `if (ViewFrustum_IsSphereVisible(&((GameObject*)obj)->anim.localPosX, lbl_803E2500) == 0)` |
-| `src/main/dll/dll_00F4_doorf4.c` | 492 | `vs = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/dll_00F4_doorf4.c` | 557 | `vs = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/244/244.c` | 492 | `vs = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/244/244.c` | 557 | `vs = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_0100_trickywarp.c` | 12 | `* (ViewFrustum_IsSphereVisible) so the warp can't trigger in view.` |
 | `src/main/dll/dll_0100_trickywarp.c` | 143 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX, lbl_803E38A0) != 0)` |
 | `src/main/dll/dll_0106_scarab.c` | 378 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX,` |
