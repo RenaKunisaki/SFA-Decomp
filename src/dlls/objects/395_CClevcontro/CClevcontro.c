@@ -1,5 +1,5 @@
 /*
- * cclevcontrol - Crystal Caves level-control object (DLL 0x018B). The
+ * CClevcontro - Crystal Caves level-control object (DLL 0x018B). The
  * per-level director object: it drives the day/night music transition off
  * the sky sun position, fans a set of SCGameBitLatch updates that gate
  * puzzle/door object groups on gameBits, toggles a triggered camera action
