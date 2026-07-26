@@ -1,8 +1,8 @@
 /*
- * wmcolumn (DLL 0x0116) - the carryable puzzle column at Krazoa Palace
+ * WM_Column (DLL 0x116) - the carryable puzzle column at Krazoa Palace
  * (retail type 500 'GPSHpickobj'; its drop spots are type 499
- * 'GPSH_Scene' objects). TU: 0x8017D37C-0x8017D818, .text only - the
- * descriptor lives in the auto data unit.
+ * 'GPSH_Scene' objects). The DOL-confirmed TU owns text at
+ * 0x8017D37C-0x8017D818 and its descriptor at 0x80321460-0x80321498.
  *
  * The column is a groundAnimator carryable. While held it clears the
  * game bit of any scene spot it is taken from; while down it snaps to

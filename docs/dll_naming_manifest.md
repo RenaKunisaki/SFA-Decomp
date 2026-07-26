@@ -323,7 +323,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x113 | — (+CAMERAnewse, LINKJseqobj, LINKB_seqob, LINKC_seqob, CCBridge, CCseqobj, NWSteppingS, NW_seqobjec, SH_newseqob, SH_BottomSe) | NO-RETAIL-NAME | dlls/objects/275/275.c | = (canonical) | — |
 | 0x114 | IMMultiSeq | COMPLETE | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | = (canonical) | — |
 | 0x115 | — | NO-RETAIL-NAME | dlls/objects/277/277.c | = (canonical) | — |
-| 0x116 | WM_Column (+WM_Column_T, GPSHpickobj) | COMPLETE | main/dll/dll_0116_wmcolumn.c | main/dll/WM/dll_0116_wmcolumn.c | — |
+| 0x116 | WM_Column (+WM_Column_T, GPSHpickobj) | COMPLETE | dlls/objects/278_WM_Column/WM_Column.c | = (canonical) | — |
 | 0x117 | AppleOnTree | CONFIRMED | main/dll/dll_0117_appleontree.c | = (canonical) | — |
 | 0x118 | Duster | COMPLETE | main/dll/dll_0118_duster.c | = (canonical) | — |
 | 0x119 | coldWaterControl | CONFIRMED | main/dll/dll_0119_coldwatercontrol.c | = (canonical) | — |
@@ -799,7 +799,7 @@ name was a deliberate choice by a previous carve:
 | 0x0C7 | main/dll/dll_00C7_dim2roofrub.c | dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c | COMPLETE |
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
-| 0x116 | main/dll/dll_0116_wmcolumn.c | main/dll/WM/dll_0116_wmcolumn.c | COMPLETE |
+| 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
 | 0x122 | main/dll/dll_0122_cctestinfot.c | main/dll/CC/dll_0122_cctestinfot.c | CONFIRMED |
 | 0x128 | main/dll/dll_0128_kttorch.c | main/dll/DR/dll_0128_kttorch.c | COMPLETE |
 | 0x12A | main/dll/dll_012A_cfcrate.c | main/dll/CF/dll_012A_cfcrate.c | COMPLETE |
