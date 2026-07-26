@@ -5046,9 +5046,12 @@ dlls/objects/195_Player/player.c:
 	.rodata     start:0x802C2B30 end:0x802C2CA8
 	.data       start:0x80332EC0 end:0x80334FF8
 	.bss        start:0x803DAEF0 end:0x803DB0D0
-	.sdata      start:0x803DC660 end:0x803DC6F0
+	.sdata      start:0x803DC660 end:0x803DC6E8
 	.sbss       start:0x803DE41C end:0x803DE4C0
 	.sdata2     start:0x803E7E68 end:0x803E8214
+
+dlls/objects/585/585.c:
+	.sdata      start:0x803DC6E8 end:0x803DC6F0
 
 dlls/objects/437/437.c:
 	.text       start:0x802B8A58 end:0x802B9780

@@ -628,7 +628,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x246 | — | NO-RETAIL-NAME | dlls/objects/582/582.c | = (canonical) | Descriptor data only; Dummy246 retained as the internal symbol |
 | 0x247 | — | NO-RETAIL-NAME | dlls/objects/583/583.c | = (canonical) | Descriptor data only; Dummy247 retained as the internal symbol |
 | 0x248 | — | NO-RETAIL-NAME | dlls/objects/584/584.c | = (canonical) | Descriptor data only; Dummy248 retained as the internal symbol |
-| 0x249 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x249 | — | NO-RETAIL-NAME | dlls/objects/585/585.c | = (canonical) | Descriptor data only; carved from the trailing eight bytes of Player's former .sdata split |
 | 0x24A | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24B | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24C | BossDrakor__free | CONFIRMED | *(none)* | — | no .text fns (descriptor data only) |

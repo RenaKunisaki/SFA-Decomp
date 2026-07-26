@@ -1214,6 +1214,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/582/582.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/583/583.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/584/584.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/585/585.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_024D_bossdrakor.c", cflags=cflags_dll_noopt_nocse_noprop_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_024E_drakordthornbush.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "main/audio/snd_midictrl.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
