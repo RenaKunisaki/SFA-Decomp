@@ -10,6 +10,7 @@
 #include "main/render_lactions_api.h"
 #include "main/dll/CF/dll_014E_cfprisonguard.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/object_update_list.h"
 #include "main/dll/player_api.h"
 #include "main/obj_message.h"
@@ -30,11 +31,7 @@
 
 typedef struct CfPrisonGuardMapData
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x08 */
-    f32 posY; /* 0x0C */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base;
     s16 unk18;
     s16 watchRadius; /* 0x1A: distance the guard reacts within */
     s16 unk1C;
