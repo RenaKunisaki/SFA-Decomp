@@ -290,11 +290,11 @@ s32 shop_getItemIndex(GameObject* obj)
 
 void shop_setItemIndex(GameObject* obj, int v)
 {
-    s8* state = obj->extra;
-    state[1] = v;
+    ShopBuyItemState* state = obj->extra;
+    state->itemIndex = v;
 }
 
-s16 shop_getItemTextId(int obj, int idx)
+s16 shop_getItemTextId(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
@@ -304,7 +304,7 @@ s16 shop_getItemTextId(int obj, int idx)
     return 0;
 }
 
-int shop_getItemPrice(int obj, int idx)
+int shop_getItemPrice(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
@@ -313,7 +313,7 @@ int shop_getItemPrice(int obj, int idx)
     return 0;
 }
 
-u8 shop_getItemField4(int obj, int idx)
+u8 shop_getItemField4(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
@@ -322,7 +322,7 @@ u8 shop_getItemField4(int obj, int idx)
     return 0;
 }
 
-u8 shop_getItemMinPrice(int obj, int idx)
+u8 shop_getItemMinPrice(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
@@ -333,7 +333,7 @@ u8 shop_getItemMinPrice(int obj, int idx)
 
 /* Returns 1 when shop item's "bought"
  * GameBit (slot at lbl_80327FD0[idx*12 + 8]) is set; else 0. */
-int shop_isItemBought(int obj, int idx)
+int shop_isItemBought(GameObject* obj, int idx)
 {
 
     s16 slot;
@@ -351,7 +351,7 @@ int shop_isItemBought(int obj, int idx)
 /* Returns 1 unless the item's
  * "available" GameBit gate (lbl_80327FD0[idx*12 + 6]) is present and
  * unset.  (i.e. open by default, gated when slot != -1.) */
-int shop_isItemAvailable(int obj, int idx)
+int shop_isItemAvailable(GameObject* obj, int idx)
 {
 
     s16 slot;
@@ -368,8 +368,8 @@ int shop_isItemAvailable(int obj, int idx)
 
 void shop_func0B(GameObject* obj, int v, int seqId)
 {
-    s8* state = obj->extra;
-    state[0] = v;
+    ShopBuyItemState* state = obj->extra;
+    state->unk0 = v;
     if (v != 0)
     {
         (*gObjectTriggerInterface)->runSequence(seqId, obj, -1);
