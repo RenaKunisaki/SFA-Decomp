@@ -656,7 +656,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x262 | — | NO-RETAIL-NAME | dlls/objects/610/610.c | = (canonical) | Complete exact DrakorMissile callback TU; descriptor remains in DOL-confirmed DLL 592 pooled data |
 | 0x263 | GM_MazeWell | CONFIRMED | dlls/objects/611_GM_MazeWell/GM_MazeWell.c | = (canonical) | Exact callback TU; descriptor and adjacent quest-bit table remain in DOL-confirmed DLL 592 pooled data |
 | 0x264 | — | NO-RETAIL-NAME | dlls/objects/612/612.c | = (canonical) | Exact data-only DLL: two zero descriptor words in `.sdata` |
-| 0x265 | DR_Creator | COMPLETE | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | — |
+| 0x265 | DR_Creator | COMPLETE | dlls/objects/613_DR_Creator/DR_Creator.c | = (canonical) | Exact callback/data TU; descriptor remains in DOL-confirmed DLL 614 pooled data |
 | 0x266 | KytesMum | COMPLETE | main/dll/dll_0266_kytesmum.c | = (canonical) | — |
 | 0x267 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
