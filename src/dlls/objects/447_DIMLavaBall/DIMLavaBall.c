@@ -53,9 +53,9 @@ STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
 extern f32 lbl_803E4810;
 extern f32 lbl_803E4814;
 
-void lavaball1bf_clearPending(int* obj)
+void lavaball1bf_clearPending(GameObject* obj)
 {
-    Lavaball1bfState* p = (Lavaball1bfState*)(int*)((GameObject*)obj)->extra;
+    Lavaball1bfState* p = (Lavaball1bfState*)(int*)obj->extra;
     if (p->gateA == 0)
         return;
     if (p->pending == 0)
@@ -96,26 +96,26 @@ void lavaball1bf_free(GameObject* obj, int mode)
     }
 }
 
-void lavaball1bf_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void lavaball1bf_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E4810);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4810);
 }
 
 void lavaball1bf_hitDetect(void)
 {
 }
 
-void lavaball1bf_update(int* obj)
+void lavaball1bf_update(GameObject* obj)
 {
     u8* setup;
     Lavaball1bfState* state;
     int* spawned;
     f32 timer;
 
-    state = ((GameObject*)obj)->extra;
-    setup = *(u8**)&((GameObject*)obj)->anim.placementData;
+    state = obj->extra;
+    setup = *(u8**)&obj->anim.placementData;
     state->gbState = mainGetBit(((Lavaball1bfPlacement*)setup)->stateGameBit);
     if (state->soloLatch != 0)
     {
@@ -139,15 +139,15 @@ void lavaball1bf_update(int* obj)
         sp->head.color[2] = 0xff;
         sp->head.color[1] = 4;
         sp->head.color[3] = 0x50;
-        sp->head.posX = ((GameObject*)obj)->anim.localPosX;
-        sp->head.posY = ((GameObject*)obj)->anim.localPosY;
-        sp->head.posZ = ((GameObject*)obj)->anim.localPosZ;
+        sp->head.posX = obj->anim.localPosX;
+        sp->head.posY = obj->anim.localPosY;
+        sp->head.posZ = obj->anim.localPosZ;
         sp->unk18 = setup[0x1c];
         sp->childRot = setup[0x1a];
         sp->unk1C = setup[0x1b];
         sp->head.mapId = ((ObjPlacement*)setup)->mapId;
         *(int*)&state->spawnedObj =
-            (int)Obj_SetupObject((ObjPlacement*)s, 5, ((GameObject*)obj)->anim.mapEventSlot, -1, 0);
+            (int)Obj_SetupObject((ObjPlacement*)s, 5, obj->anim.mapEventSlot, -1, 0);
     }
     spawned = state->spawnedObj;
     timer = state->fireTimer - timeDelta;
@@ -174,11 +174,11 @@ void lavaball1bf_update(int* obj)
     }
 }
 
-void lavaball1bf_init(s16* obj, u8* p)
+void lavaball1bf_init(GameObject* obj, u8* p)
 {
     Lavaball1bfState* inner;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)p[0x1c] << 8);
-    inner = ((GameObject*)obj)->extra;
+    obj->anim.rotX = (s16)((s32)p[0x1c] << 8);
+    inner = obj->extra;
     inner->firePeriod = (f32) * (s16*)(p + 0x18);
     inner->fireTimer = lbl_803E4814;
     inner->gateA = p[0x1d];
@@ -187,7 +187,7 @@ void lavaball1bf_init(s16* obj, u8* p)
     {
         inner->soloLatch = 1;
     }
-    ((GameObject*)obj)->objectFlags |= (DIMLAVABALL_OBJFLAG_HIDDEN | DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (DIMLAVABALL_OBJFLAG_HIDDEN | DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void lavaball1bf_release(void)
