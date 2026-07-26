@@ -1,5 +1,5 @@
 /*
- * mcupgradema (DLL 0x2B8) - the "ma" variant of the mcupgrade one-shot
+ * MCUpgradeMa (DLL 0x2B8) - the "ma" variant of the mcupgrade one-shot
  * upgrade pickup, sharing mcupgrade's state/setup layout.
  *
  * mcupgradema_update gates the object on its placement's collectedGameBit:
@@ -19,7 +19,6 @@
 #include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/player_objects.h"
 #include "dlls/object_descriptor.h"
-/* mcupgrade_state.h: only McUpgradeMaSetup + MCUPGRADE_OBJ_FLAG_COLLECTED used here. */
 #include "main/dll/mcupgrade_state.h"
 #include "game/objects/object.h"
 #include "main/dll/mcstaffeffe_state.h"
@@ -28,9 +27,6 @@
 #include "main/obj_trigger.h"
 #include "main/objseq.h"
 
-/* obj is a word, not a pointer: the shared-header prototype fixes the
-   original signature as int, and the integral param pools low in the saved
-   regs to match retail coloring (CLAUDE.md recipe #126). */
 void mcupgradema_update(GameObject* obj)
 {
     GameObject* gameObj = obj;
