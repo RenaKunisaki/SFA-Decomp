@@ -1,5 +1,5 @@
 /*
- * ktlazerwall (DLL 0x252) - a SharpClaw laser fence/wall whose intensity
+ * KT_Lazerwall (DLL 0x252) - a SharpClaw laser fence/wall whose intensity
  * is driven by a placement game bit (see ktlazerlight, DLL 0x253, for the
  * point light it pairs with).
  *

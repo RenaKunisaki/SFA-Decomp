@@ -3551,7 +3551,7 @@ main/dll/DR/dll_0251_ktrexfloorswitch.c:
 	.sbss       start:0x803DDD60 end:0x803DDD68
 	.sdata2     start:0x803E6858 end:0x803E6898
 
-main/dll/DR/dll_0252_ktlazerwall.c:
+dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c:
 	.text       start:0x802164D0 end:0x80216B48
 	.sdata2     start:0x803E6898 end:0x803E68C0
 
