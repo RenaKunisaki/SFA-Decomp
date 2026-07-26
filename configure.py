@@ -1228,7 +1228,6 @@ config.libs = [
             ),
             Object(NonMatching, "main/shadow_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/track_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/texblend_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows_alloc.c", cflags=cflags_dll_noopt_nodead_noloopinv_noautoinline),
             Object(
