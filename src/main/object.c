@@ -587,24 +587,24 @@ void Obj_BuildInverseWorldTransformMatrix(GameObject* obj, f32* out)
     ObjPathTransform transform;
     f32 rotMtx[16];
 
-    if (((GameObject*)obj)->anim.parent == NULL)
+    if (obj->anim.parent == NULL)
     {
-        ((GameObject*)obj)->anim.localPosX -= playerMapOffsetX;
-        ((GameObject*)obj)->anim.localPosZ -= playerMapOffsetZ;
+        obj->anim.localPosX -= playerMapOffsetX;
+        obj->anim.localPosZ -= playerMapOffsetZ;
     }
-    transform.x = -((GameObject*)obj)->anim.localPosX;
-    transform.y = -((GameObject*)obj)->anim.localPosY;
-    transform.z = -((GameObject*)obj)->anim.localPosZ;
-    transform.rotX = -((GameObject*)obj)->anim.rotX;
-    transform.rotY = -((GameObject*)obj)->anim.rotY;
-    transform.rotZ = -((GameObject*)obj)->anim.rotZ;
+    transform.x = -obj->anim.localPosX;
+    transform.y = -obj->anim.localPosY;
+    transform.z = -obj->anim.localPosZ;
+    transform.rotX = -obj->anim.rotX;
+    transform.rotY = -obj->anim.rotY;
+    transform.rotZ = -obj->anim.rotZ;
     transform.scale = lbl_803DE890;
     mtxRotateByVec3s(rotMtx, &transform);
     mtx44Transpose(rotMtx, out);
-    if (((GameObject*)obj)->anim.parent == NULL)
+    if (obj->anim.parent == NULL)
     {
-        ((GameObject*)obj)->anim.localPosX += playerMapOffsetX;
-        ((GameObject*)obj)->anim.localPosZ += playerMapOffsetZ;
+        obj->anim.localPosX += playerMapOffsetX;
+        obj->anim.localPosZ += playerMapOffsetZ;
     }
 }
 
@@ -2306,17 +2306,15 @@ void Obj_ApplyPendingParentLinks(void)
     int i;
     for (i = 0; i < gObjCount; i++)
     {
-        u8* obj = (u8*)gObjList[i];
-        ((GameObject*)obj)->anim.resetHitboxFlags &= ~7;
-        if (((GameObject*)obj)->pendingParentObj != NULL)
+        GameObject* obj = gObjList[i];
+        obj->anim.resetHitboxFlags &= ~7;
+        if (obj->pendingParentObj != NULL)
         {
-            if (((GameObject*)obj)->anim.parent == NULL &&
-                ((GameObject*)((GameObject*)obj)->pendingParentObj)->anim.parent != NULL)
+            if (obj->anim.parent == NULL && ((GameObject*)obj->pendingParentObj)->anim.parent != NULL)
             {
-                ((GameObject*)obj)->anim.parent =
-                    ((GameObject*)((GameObject*)obj)->pendingParentObj)->anim.parent;
+                obj->anim.parent = ((GameObject*)obj->pendingParentObj)->anim.parent;
             }
-            ((GameObject*)obj)->pendingParentObj = NULL;
+            obj->pendingParentObj = NULL;
         }
     }
 }
