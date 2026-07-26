@@ -1723,7 +1723,7 @@ dlls/objects/227/227.c:
 	.sdata      start:0x803DBD58 end:0x803DBD60
 	.sdata2     start:0x803E3330 end:0x803E3384
 
-main/dll/dll_00E4_flamethrowerspe.c:
+dlls/objects/228/228.c:
 	.text       start:0x80170004 end:0x801702D4
 	.data       start:0x803209C0 end:0x80320A28
 	.sdata      start:0x803DBD60 end:0x803DBD70

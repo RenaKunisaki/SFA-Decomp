@@ -1,4 +1,4 @@
-/* DLL 0x00E4 (flamethrowerspe) - Flame thrower special effect [0x80170004-0x801702D4). */
+/* DLL 0xE4 - FlameThrowerspe, FlameBall, and BossDarkorF objects. */
 #include "main/dll/dll_00E4_flamethrowerspe.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
@@ -10,6 +10,8 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "main/dll/firepipe_effect_api.h"
+
+extern f32 lbl_803E33A0;
 
 f32 lbl_803DBD60 = 2.0f;
 int lbl_803DBD64 = 0x23;
@@ -23,8 +25,6 @@ f32 lbl_803DBD6C = 8.0f;
 /* FlamethrowerSpeState.phase values */
 #define FLAMETHROWERSPE_PHASE_LAUNCH 1 /* compute launch velocity, then -> ACTIVE */
 #define FLAMETHROWERSPE_PHASE_ACTIVE 2 /* fly + shrink until the lifetime timer expires */
-
-extern f32 lbl_803E33A0;
 
 u32 lbl_803209C0[] = {
     0x0000004F,
