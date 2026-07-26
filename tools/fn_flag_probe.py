@@ -39,7 +39,7 @@ worklist. A split requires independent DOL evidence. The units, with the number
 of flag-fixable functions: player 11, lightmap 6, track_dolphin 3,
 objprint_dolphin 2, dll_000F_unk 2, obj_movelib 2, and one each in textrender,
 Hcurves, model, objprint, gametext, dll_0015_curves, objanim, skeetla_80139A8C,
-object, dll_0272_hightop, shader_dolphin, sal_dsp, worldobj,
+object, dlls/objects/626/626, shader_dolphin, sal_dsp, worldobj,
 dll_0049_cameramodecombat, dlls/objects/201_Baddie/Baddie, fallladdersgroup.
 
 METHOD WARNING: do not edit the tree or run ninja while a sweep is in flight.
