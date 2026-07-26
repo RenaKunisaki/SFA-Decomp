@@ -12,7 +12,7 @@
  * attractor_setScale exposes the placement scale halfword when the
  * mode byte is set. The object has no per-frame think/hit work
  * (update/hitDetect are empty) and renders through objRenderModelAndHitVolumes
- * at a fixed scale (lbl_803E43D0).
+ * at a fixed scale.
  */
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
