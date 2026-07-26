@@ -1810,7 +1810,7 @@ config.libs = [
             Object(Matching, "dlls/objects/428_SH_queenear/SH_queenear.c", cflags=cflags_dll_noopt_noinline),
             Object(Matching, "main/dll/lily.c"),
             Object(Matching, "main/dll/dll_1e8.c"),
-            Object(NonMatching, "main/dll/SH/SHthorntail.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "dlls/objects/429_SH_thorntai/SH_thorntai.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/scshgroup.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/SH/dll_01AE_shlevelcontrol.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/SH/dll_01AF_shswaplift.c", cflags=cflags_dll_noopt),
