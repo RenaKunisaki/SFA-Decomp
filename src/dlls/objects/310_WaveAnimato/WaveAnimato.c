@@ -1,5 +1,5 @@
 /*
- * waveanimator (DLL 0x136) - drives a procedurally rippling water/wave
+ * WaveAnimato (DLL 0x136) - drives a procedurally rippling water/wave
  * surface for a map object. On init it folds the object's placement def
  * (origin/span/amplitude/period/grid) into a shared WaveAnimatorState and,
  * for the first instance only, builds three globally shared tables via

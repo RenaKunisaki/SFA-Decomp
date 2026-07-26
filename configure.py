@@ -1647,7 +1647,7 @@ config.libs = [
             Object(Matching, "main/dll/holopoint.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/308_texscroll2/texscroll2.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/309_texscroll/texscroll.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0136_waveanimator.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/310_WaveAnimato/WaveAnimato.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0137_alphaanimator.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_0138_groundanimator.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/dll_0139_hitanimator.c", cflags=cflags_dll_noopt_noautoinline),
