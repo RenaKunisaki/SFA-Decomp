@@ -1,33 +1,23 @@
 /*
- * sbcloudball (DLL 0x1EF) - the cloud-ball projectile fired during the
+ * SB_CloudBal (DLL 0x1EF) - the cloud-ball projectile fired during the
  * ShipBattle (SB) set. On launch it captures its initial velocity, then
  * drifts on that velocity each tick (scaled), faces its travel direction,
  * and arms a contact hitbox. On a hit against the target type, or once it
  * outlives its lifetime / the player clears the wave, it plays a burst
  * effect, fades out (fadeTimer) and frees itself. A trailing particle
  * burst is spawned every frame while alive.
- *
- * This unit also carries the shared SB ObjectDescriptor function set
- * (FireBall / KyteCage / SeqDoor / ShipBattle stubs) so every v1.0 asm
- * symbol has a source definition.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/dll/shipbattlestate_struct.h"
 #include "main/object_render.h"
-#include "main/dll/sbkytecagestate_struct.h"
-#include "main/dll/sbfireballstate_struct.h"
 #include "main/dll/sbcloudballstate_struct.h"
-
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "main/model_light.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
-#include "main/objfx.h"
 #include "main/vecmath.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/objfx.h"
@@ -41,29 +31,6 @@
  */
 
 STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
-
-/*
- * Per-object extra state for the ShipBattle fireball projectile
- * (SB_FireBall_getExtraSize == SB_FIREBALL_EXTRA_SIZE == 0x18).
- */
-
-STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);
-
-/*
- * Per-object extra state for the ShipBattle kyte cage
- * (SB_KyteCage_getExtraSize == 0x8).
- */
-
-STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
-
-/*
- * Per-object extra state for the ShipBattle chain segment
- * (ShipBattle_getExtraSize == 0x140). The head is handed to
- * gObjectTriggerInterface (+0x1C/+0x24) - interface-owned record;
- * only the locally-evidenced fields are named.
- */
-
-STATIC_ASSERT(sizeof(ShipBattleState) == 0x140);
 
 /* romlist type id the cloud ball reacts to on contact (plays the shatter sfx) */
 #define CLOUDBALL_TARGET_TYPE_ID 142

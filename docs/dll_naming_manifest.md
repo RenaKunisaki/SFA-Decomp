@@ -538,7 +538,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1EC | SB_ShipGun | COMPLETE | dlls/objects/492_SB_ShipGun/SB_ShipGun.c | = (canonical) | — |
 | 0x1ED | SB_FireBall | COMPLETE | dlls/objects/493_SB_FireBall/SB_FireBall.c | = (canonical) | — |
 | 0x1EE | SB_CannonBa | COMPLETE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | = (canonical) | Retail basename is truncated |
-| 0x1EF | SB_CloudBall | CONFIRMED | main/dll/dll_01EF_sbcloudball.c | main/dll/SB/dll_01EF_sbcloudball.c | — |
+| 0x1EF | SB_CloudBal | COMPLETE | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | = (canonical) | Retail basename is truncated |
 | 0x1F0 | SB_KyteCage | CONFIRMED | main/dll/dll_01F0_sbkytecage.c | main/dll/SB/dll_01F0_sbkytecage.c | — |
 | 0x1F1 | SB_SeqDoor (+SB_SeqDoor2, SB_DeckDoor) | COMPLETE | main/dll/dll_01F1_sbseqdoor.c | main/dll/SB/dll_01F1_sbseqdoor.c | — |
 | 0x1F2 | SB_CageKyte | CONFIRMED | main/dll/dll_01F2_sbcagekyte.c | main/dll/SB/dll_01F2_sbcagekyte.c | — |
@@ -864,7 +864,7 @@ name was a deliberate choice by a previous carve:
 | 0x1EC | main/dll/dll_01EC_sbshipgun.c | dlls/objects/492_SB_ShipGun/SB_ShipGun.c | COMPLETE |
 | 0x1ED | main/dll/dll_01ED_sbfireball.c | dlls/objects/493_SB_FireBall/SB_FireBall.c | COMPLETE |
 | 0x1EE | main/dll/dll_01EE_sbcannonball.c | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | COMPLETE |
-| 0x1EF | main/dll/dll_01EF_sbcloudball.c | main/dll/SB/dll_01EF_sbcloudball.c | CONFIRMED |
+| 0x1EF | main/dll/dll_01EF_sbcloudball.c | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | COMPLETE |
 | 0x1F0 | main/dll/dll_01F0_sbkytecage.c | main/dll/SB/dll_01F0_sbkytecage.c | CONFIRMED |
 | 0x1F1 | main/dll/dll_01F1_sbseqdoor.c | main/dll/SB/dll_01F1_sbseqdoor.c | COMPLETE |
 | 0x1F2 | main/dll/dll_01F2_sbcagekyte.c | main/dll/SB/dll_01F2_sbcagekyte.c | CONFIRMED |

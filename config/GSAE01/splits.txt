@@ -3062,7 +3062,7 @@ dlls/objects/493_SB_FireBall/SB_FireBall.c:
 	.data       start:0x80327DA0 end:0x80327DD8
 	.sdata2     start:0x803E58D8 end:0x803E58E4
 
-main/dll/SB/dll_01EF_sbcloudball.c:
+dlls/objects/495_SB_CloudBal/SB_CloudBal.c:
 	.text       start:0x801E45AC end:0x801E4AC0
 	.data       start:0x80327DD8 end:0x80327E10
 	.sdata2     start:0x803E58E8 end:0x803E5918
