@@ -2797,7 +2797,7 @@ dlls/objects/401_ECSH_Creato/ECSH_Creato.c:
 	.text       start:0x801C6E0C end:0x801C70F0
 	.data       start:0x80326328 end:0x80326360
 
-main/dll/dll_0192_gpshshrine.c:
+dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c:
 	.text       start:0x801C70F0 end:0x801C8084
 	.data       start:0x80326360 end:0x803263B8
 	.sdata2     start:0x803E5000 end:0x803E5044
