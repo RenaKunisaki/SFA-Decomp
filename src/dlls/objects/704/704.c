@@ -1,5 +1,5 @@
 /*
- * front (DLL 0x2C0) - the title/attract-mode front-end object and its
+ * DLL 0x2C0 - the title/attract-mode front-end object and its
  * UI. gTitleScreenObjDescriptor drives the title-screen actor: init
  * seeds anim moves per seqId (0x77d..0x780 = the four pilots on the Great
  * Fox bridge - retail OBJECTS.bin names FrontFox/FrontPeppy/FrontSlippy/
