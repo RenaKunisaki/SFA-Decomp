@@ -77,6 +77,13 @@ ObjectDescriptor gEdibleMushroomObjDescriptor = {
     EdibleMushroom_getExtraSize,
 };
 
+int EdibleMushroom_SeqFn(int* obj)
+{
+    EdibleMushroomState* state = ((GameObject*)obj)->extra;
+    state->seqResetPending = 1;
+    return 0;
+}
+
 void edibleMushroomFn_801d083c(u8* obj, u8* state, u8* other)
 {
     GameObject* player;

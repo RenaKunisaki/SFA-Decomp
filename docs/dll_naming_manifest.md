@@ -466,7 +466,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A4 | — | NO-RETAIL-NAME | dlls/objects/420/420.c | = (canonical) | — |
 | 0x1A5 | NW_levcontr | COMPLETE | dlls/objects/421_NW_levcontr/NW_levcontr.c | = (canonical) | — |
 | 0x1A6 | SH_tricky | COMPLETE | dlls/objects/422_SH_tricky/SH_tricky.c | = (canonical) | — |
-| 0x1A7 | ediblemushroom (+LINK_BlueMu, SH_whitemus, BlueMushroo) | GUESSED | main/dll/dll_01A7_ediblemushroom.c | = (canonical) | — |
+| 0x1A7 | — | NO-RETAIL-NAME | dlls/objects/423/423.c | = (canonical) | — |
 | 0x1A8 | SH_killermushroom | GUESSED | main/dll/dll_01A8_shkillermushroom.c | main/dll/SH/dll_01A8_shkillermushroom.c | — |
 | 0x1A9 | BombPlant | COMPLETE | main/dll/dll_01A9_bombplant.c | = (canonical) | — |
 | 0x1AA | BombPlantSpore | CONFIRMED | main/dll/dll_01AA_bombplantspore.c | = (canonical) | — |
