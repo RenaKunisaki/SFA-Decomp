@@ -618,7 +618,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x23C | DFP_PowerSl | CONFIRMED | main/dfppowersl.c | main/dll/DF/dll_023C_dfppowersl.c | engine/SDK host: main/dfppowersl.c |
 | 0x23D | DBPointMum | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x23E | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x23F | DB_egg | COMPLETE | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | — |
+| 0x23F | DB_egg | COMPLETE | dlls/objects/575_DB_egg/DB_egg.c | = (canonical) | — |
 | 0x240 | GCRobotBlast | CONFIRMED | dlls/objects/576_GCRobotBlas/GCRobotBlas.c | = (canonical) | — |
 | 0x241 | DrakorEnergy | CONFIRMED | dlls/objects/577_DrakorEnerg/DrakorEnerg.c | = (canonical) | — |
 | 0x242 | DBstealerworm | CONFIRMED | dlls/objects/578_DBstealerwo/DBstealerwo.c | = (canonical) | — |
@@ -902,7 +902,7 @@ name was a deliberate choice by a previous carve:
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | CONFIRMED |
 | 0x236 | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | CONFIRMED |
 | 0x237 | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | COMPLETE |
-| 0x23F | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | COMPLETE |
+| 0x23F | main/dll/dll_023F_dbegg.c | dlls/objects/575_DB_egg/DB_egg.c | COMPLETE |
 | 0x242 | main/dll/dll_0242_dbstealerworm.c | dlls/objects/578_DBstealerwo/DBstealerwo.c | CONFIRMED |
 | 0x243 | main/dll/dll_0243_dbholecontrol1.c | dlls/objects/579_DBHoleContr/DBHoleContr.c | CONFIRMED |
 | 0x24F | main/dll/dll_024F_ktrexlevel.c | dlls/objects/591_KT_RexLevel/KT_RexLevel.c | CONFIRMED |

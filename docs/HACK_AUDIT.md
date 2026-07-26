@@ -277,7 +277,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/camera | 99.7639 | 98.2861 | -1.4778 |
 | main/dlls/objects/651/651 | 100.0000 | 98.5294 | -1.4706 |
 | main/main/dll/dll_0138_groundanimator | 99.4356 | 97.9693 | -1.4663 |
-| main/main/dll/dll_023F_dbegg | 100.0000 | 98.5857 | -1.4143 |
+| main/dlls/objects/575_DB_egg/DB_egg | 100.0000 | 98.5857 | -1.4143 |
 | main/main/maketex | 99.9532 | 98.5706 | -1.3827 |
 | main/dlls/objects/291_fuelCell/fuelCell | 100.0000 | 98.6375 | -1.3625 |
 | main/main/dll/WM/dll_0209_wmlevelcontrol | 100.0000 | 98.6942 | -1.3058 |
