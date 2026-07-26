@@ -81,7 +81,7 @@ static inline void sidekickBallThrow(GameObject* obj, f32 velocityX, f32 velocit
     int objId;
     state->ballMode = SIDEKICK_BALL_THROWN;
     state->fadeTimer = 0.0f;
-    *(f32*)((char*)obj + 36) = velocityX;
+    obj->anim.velocityX = velocityX;
     obj->anim.velocityY = velocityY;
     obj->anim.velocityZ = velocityZ;
     ObjHits_EnableObject((GameObject*)(objId = (int)obj));
@@ -102,7 +102,7 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
     f32 lcl[6];
 
     player = Obj_GetPlayerObject();
-    playerState = ((GameObject*)player)->extra;
+    playerState = player->extra;
 
     if (state->triggerArmed == 1)
         return;
@@ -117,7 +117,7 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
     }
 
     ObjHits_DisableObject(obj);
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
 
     getYButtonItem(&yItem);
     btns = getButtonsJustPressed(0);
@@ -133,11 +133,11 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
         }
     }
 
-    if (((GameObject*)obj)->userData2 == 1)
+    if (obj->userData2 == 1)
     {
         state->triggerHit = 2;
     }
-    if (state->triggerHit == 2 && ((GameObject*)obj)->userData2 == 0)
+    if (state->triggerHit == 2 && obj->userData2 == 0)
     {
         if (fn_8029669C(player) != 0)
         {
@@ -146,32 +146,32 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
 
             {
                 f32 k = 0.75f;
-                ((GameObject*)obj)->anim.velocityY = k * (0.25f * *(f32*)((char*)playerState + 0x298) + 2.2f);
-                ((GameObject*)obj)->anim.velocityZ = k * (-0.25f * *(f32*)((char*)playerState + 0x298) + -2.2f);
+                obj->anim.velocityY = k * (0.25f * *(f32*)((char*)playerState + 0x298) + 2.2f);
+                obj->anim.velocityZ = k * (-0.25f * *(f32*)((char*)playerState + 0x298) + -2.2f);
             }
 
-            ((GameObject*)lcl)->anim.localPosX = 0.0f;
-            ((GameObject*)lcl)->anim.localPosY = 0.0f;
-            ((GameObject*)lcl)->anim.localPosZ = 0.0f;
-            ((GameObject*)lcl)->anim.rootMotionScale = 1.0f;
-            ((GameObject*)lcl)->anim.rotZ = 0;
-            ((GameObject*)lcl)->anim.rotY = 0;
+            ((ObjAnimComponent*)lcl)->localPosX = 0.0f;
+            ((ObjAnimComponent*)lcl)->localPosY = 0.0f;
+            ((ObjAnimComponent*)lcl)->localPosZ = 0.0f;
+            ((ObjAnimComponent*)lcl)->rootMotionScale = 1.0f;
+            ((ObjAnimComponent*)lcl)->rotZ = 0;
+            ((ObjAnimComponent*)lcl)->rotY = 0;
             {
                 s16 rotVal;
-                if (((GameObject*)player)->anim.parent != NULL)
+                if (player->anim.parent != NULL)
                 {
-                    rotVal = (s16)(*(s16*)*(int**)&((GameObject*)player)->anim.parent + ((GameObject*)player)->anim.rotX);
+                    rotVal = (s16)(*(s16*)*(int**)&player->anim.parent + player->anim.rotX);
                 }
                 else
                 {
-                    rotVal = ((GameObject*)player)->anim.rotX;
+                    rotVal = player->anim.rotX;
                 }
                 *(s16*)lcl = rotVal;
             }
-            vecRotateZXY(lcl, &((GameObject*)obj)->anim.velocityX);
+            vecRotateZXY(lcl, &obj->anim.velocityX);
 
-            sidekickBallThrow((GameObject*)obj, *(f32*)((char*)obj + 36), obj->anim.velocityY,
-                        ((GameObject*)obj)->anim.velocityZ);
+            sidekickBallThrow(obj, obj->anim.velocityX, obj->anim.velocityY,
+                        obj->anim.velocityZ);
         }
         else
         {
@@ -209,7 +209,7 @@ int sidekickBall_isHeldOrMoving(GameObject* obj)
 
 void sidekickBall_setIdle(GameObject* obj, GameObject* source)
 {
-    SidekickBallState* state = ((GameObject*)obj)->extra;
+    SidekickBallState* state = obj->extra;
     state->fadeTimer = 0.0f;
     state->ballMode = SIDEKICK_BALL_IDLE;
     ObjHits_DisableObject(obj);
@@ -222,7 +222,7 @@ void sidekickBall_launch(GameObject* obj, GameObject* source, f32 velocityX, f32
     int objId;
     state->ballMode = SIDEKICK_BALL_THROWN;
     state->fadeTimer = 0.0f;
-    *(f32*)((char*)obj + 36) = velocityX;
+    obj->anim.velocityX = velocityX;
     obj->anim.velocityY = velocityY;
     obj->anim.velocityZ = velocityZ;
     ObjHits_EnableObject((GameObject*)(objId = (int)obj));
@@ -245,7 +245,7 @@ void SidekickBall_free(int obj)
 
 void SidekickBall_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    if (((GameObject*)obj)->userData2 == 0 || visible == -1)
+    if (obj->userData2 == 0 || visible == -1)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
@@ -254,26 +254,26 @@ void SidekickBall_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
 void SidekickBall_update(GameObject* self)
 {
     SidekickBallState* state;
-    u8* player;
-    u8* other;
+    GameObject* player;
+    GameObject* other;
     u32 otherStatusZeroWord;
     int otherStatusMask;
     int gotHit;
 
-    state = (SidekickBallState*)*(int*)&((GameObject*)self)->extra;
-    *(u8*)&((GameObject*)self)->anim.resetHitboxMode =
-        (u8)(*(u8*)&((GameObject*)self)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    state = (SidekickBallState*)*(int*)&self->extra;
+    *(u8*)&self->anim.resetHitboxMode =
+        (u8)(*(u8*)&self->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
     state->onPathPoint = 0;
 
-    player = (u8*)Obj_GetPlayerObject();
-    other = (u8*)getTrickyObject();
-    if (player == NULL || (((GameObject*)player)->objectFlags & SIDEKICKBALL_OBJFLAG_PARENT_SLACK) != 0 ||
+    player = Obj_GetPlayerObject();
+    other = getTrickyObject();
+    if (player == NULL || (player->objectFlags & SIDEKICKBALL_OBJFLAG_PARENT_SLACK) != 0 ||
         other == NULL ||
-        (otherStatusZeroWord = __cntlzw((u32)((GameObject*)other)->objectFlags),
+        (otherStatusZeroWord = __cntlzw((u32)other->objectFlags),
          otherStatusMask = otherStatusZeroWord >> 5, (otherStatusMask & 0x1000) != 0) ||
         mainGetBit(GAMEBIT_NoBallsAllowed) != 0)
     {
-        Obj_FreeObject((GameObject*)self);
+        Obj_FreeObject(self);
         return;
     }
 
@@ -296,10 +296,10 @@ void SidekickBall_update(GameObject* self)
     case SIDEKICK_BALL_MOVING:
         trickyBallMove(self);
     case SIDEKICK_BALL_HELD:
-        *(u8*)&((GameObject*)self)->anim.resetHitboxMode =
-            (u8)(*(u8*)&((GameObject*)self)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
+        *(u8*)&self->anim.resetHitboxMode =
+            (u8)(*(u8*)&self->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
         gotHit = 0;
-        if ((buttonGetDisabled(0) & 0x100) == 0u && ((GameObject*)self)->userData2 == 0 &&
+        if ((buttonGetDisabled(0) & 0x100) == 0u && self->userData2 == 0 &&
             ObjTrigger_IsSet((int)self) != 0)
         {
             ObjHits_DisableObject(self);
@@ -317,16 +317,16 @@ void SidekickBall_update(GameObject* self)
         state->fadeTimer = state->fadeTimer + timeDelta;
         if (state->fadeTimer >= 60.0f)
         {
-            Obj_FreeObject((GameObject*)self);
+            Obj_FreeObject(self);
             return;
         }
         {
             f32 v = 255.0f * state->fadeTimer / 60.0f;
-            ((GameObject*)self)->anim.alpha = (u8)(0xFF - (int)v);
+            self->anim.alpha = (u8)(0xFF - (int)v);
         }
         break;
     case SIDEKICK_BALL_IDLE:
-        sidekickBall_handlePlayerInteraction((GameObject*)self, state);
+        sidekickBall_handlePlayerInteraction(self, state);
         break;
     default:
         break;

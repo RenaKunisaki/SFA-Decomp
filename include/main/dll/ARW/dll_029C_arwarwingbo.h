@@ -62,6 +62,6 @@ void arwarwingbo_init(GameObject* obj, ArwingBombSetup* setup);
 void arwarwingbo_setActiveVisible(GameObject* obj, u8 active, u8 visible);
 void arwarwingbo_release(void);
 void arwarwingbo_initialise(void);
-void arwarwingbo_update(int obj);
+void arwarwingbo_update(GameObject* obj);
 
 #endif /* MAIN_DLL_ARW_DLL_029C_ARWARWINGBO_H */

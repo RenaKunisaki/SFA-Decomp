@@ -23,6 +23,7 @@
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/newshadows_audio_api.h"
+#include "dlls/object_descriptor.h"
 
 /* GameBit that erupts/retires the geyser (hides it, drops its sounds). */
 #define GAMEBIT_GEYSER_OFF 0xa
@@ -40,6 +41,23 @@ typedef struct NwGeyserTextureScrollParams
     f32 unitsPerSecond;
     f32 initialOffset;
 } NwGeyserTextureScrollParams;
+
+ObjectDescriptor gNW_geyserObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)nw_geyser_init,
+    (ObjectDescriptorCallback)nw_geyser_update,
+    0,
+    0,
+    (ObjectDescriptorCallback)nw_geyser_free,
+    0,
+    0,
+};
 
 const NwGeyserTextureScrollParams gNwGeyserTextureScrollParams = {512.0f, 0.0f};
 

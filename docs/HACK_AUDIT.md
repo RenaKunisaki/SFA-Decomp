@@ -92,7 +92,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/pi_dolphin | 98.6446 | 68.4667 | -30.1779 |
 | main/main/dll/dll_011A_decoration11a | 100.0000 | 70.3114 | -29.6886 |
 | main/main/dll/dll_0040_credits | 100.0000 | 70.4585 | -29.5415 |
-| main/main/dll/DR/dll_0281_drearthcal | 100.0000 | 70.8681 | -29.1319 |
+| main/dlls/objects/641_DR_EarthCal/DR_EarthCal | 100.0000 | 70.8681 | -29.1319 |
 | main/main/dll/dll_0041_warpstoneui | 99.6296 | 70.8788 | -28.7508 |
 | main/main/dll/dll_025B_msplantings | 100.0000 | 71.4044 | -28.5956 |
 | main/main/object | 99.9370 | 71.5331 | -28.4040 |
@@ -144,7 +144,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/SC/dll_01BB_sctotembond | 100.0000 | 82.1324 | -17.8676 |
 | main/main/mm | 99.5834 | 81.7241 | -17.8593 |
 | main/main/dll/dll_801ac01c | 100.0000 | 82.1583 | -17.8417 |
-| main/main/dll/WC/dll_0290_wcpushblock | 100.0000 | 82.1670 | -17.8330 |
+| main/dlls/objects/656_WCPushBlock/WCPushBlock | 100.0000 | 82.1670 | -17.8330 |
 | main/main/dll/DIM/dll_01CB_dimwooddoor2 | 100.0000 | 82.4581 | -17.5419 |
 | main/main/dll/dll_0173_linklevcontrol | 100.0000 | 82.5784 | -17.4216 |
 | main/main/dll/dll_02B1_cmbsrc | 100.0000 | 82.9992 | -17.0008 |
@@ -196,7 +196,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0130_areafxemit | 100.0000 | 90.3232 | -9.6768 |
 | main/main/dll/dll_018C_mmshshrine | 100.0000 | 90.4640 | -9.5360 |
 | main/main/dll/seqobj11e | 100.0000 | 90.5995 | -9.4005 |
-| main/main/dll/dll_0273_firepipe | 100.0000 | 90.9327 | -9.0673 |
+| main/dlls/objects/627_FirePipe/FirePipe | 100.0000 | 90.9327 | -9.0673 |
 | main/main/worldplanet_lighting | 100.0000 | 91.2387 | -8.7613 |
 | main/main/dll/skeetla | 99.7052 | 91.0786 | -8.6265 |
 | main/main/audio/snd3dgroup | 100.0000 | 91.4300 | -8.5700 |
@@ -231,7 +231,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/newshadows | 97.9941 | 93.2277 | -4.7664 |
 | main/main/audio/mcmd_exec | 99.6306 | 94.9170 | -4.7136 |
 | main/main/dll/dll_004A_cameramodeshipbattle | 99.7038 | 95.1916 | -4.5122 |
-| main/main/dll/WC/dll_028D_wclevelcont | 100.0000 | 95.7487 | -4.2513 |
+| main/dlls/objects/653_WCLevelCont/WCLevelCont | 100.0000 | 95.7487 | -4.2513 |
 | main/main/dll/player | 99.8379 | 95.6264 | -4.2115 |
 | main/main/dll/Hcurves | 99.6559 | 95.5111 | -4.1448 |
 | main/main/dll/dll_00EF_pushable | 100.0000 | 96.3079 | -3.6921 |
@@ -275,7 +275,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/dlls/objects/683_LGTProjecte/LGTProjecte | 100.0000 | 98.3660 | -1.6340 |
 | main/main/audio/voice_manage | 100.0000 | 98.4296 | -1.5704 |
 | main/main/camera | 99.7639 | 98.2861 | -1.4778 |
-| main/main/dll/dll_028B | 100.0000 | 98.5294 | -1.4706 |
+| main/dlls/objects/651/651 | 100.0000 | 98.5294 | -1.4706 |
 | main/main/dll/dll_0138_groundanimator | 99.4356 | 97.9693 | -1.4663 |
 | main/main/dll/dll_023F_dbegg | 100.0000 | 98.5857 | -1.4143 |
 | main/main/maketex | 99.9532 | 98.5706 | -1.3827 |

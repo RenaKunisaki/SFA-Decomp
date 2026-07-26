@@ -76,25 +76,25 @@ STATIC_ASSERT(offsetof(HitAnimatorObject, state) == 0xB8);
 #define WALLANIMATOR_DONE_TIMER 3000
 
 void waveanimator_modelMtxFn(GameObject* obj, int a, int b, int c);
-void waveanimator_func0B(int* obj);
-void waveanimator_setScale(int* obj, f32 fval);
+void waveanimator_func0B(GameObject* obj);
+void waveanimator_setScale(GameObject* obj, f32 fval);
 int waveanimator_getExtraSize(void);
 int waveanimator_getObjectTypeId(void);
 void waveanimator_free(int* obj);
 void waveanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void waveanimator_hitDetect(int* obj);
+void waveanimator_hitDetect(GameObject* obj);
 void waveanimator_update(void);
-void waveanimator_init(int* obj, int* desc);
+void waveanimator_init(GameObject* obj, struct WaveanimatorObjectDef* desc);
 void waveanimator_release(void);
 void waveanimator_initialise(void);
 
 int AlphaAnimator_getExtraSize(void);
 int AlphaAnimator_getObjectTypeId(void);
-void AlphaAnimator_free(int* obj);
+void AlphaAnimator_free(GameObject* obj);
 void AlphaAnimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void AlphaAnimator_hitDetect(void);
-void AlphaAnimator_update(int* obj);
-void AlphaAnimator_init(int* obj);
+void AlphaAnimator_update(GameObject* obj);
+void AlphaAnimator_init(GameObject* obj);
 void AlphaAnimator_release(void);
 void AlphaAnimator_initialise(void);
 

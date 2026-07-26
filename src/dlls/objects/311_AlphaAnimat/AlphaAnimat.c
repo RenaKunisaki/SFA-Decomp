@@ -72,9 +72,9 @@ int AlphaAnimator_getObjectTypeId(void)
     return 0x0;
 }
 
-void AlphaAnimator_free(int* obj)
+void AlphaAnimator_free(GameObject* obj)
 {
-    AlphaAnimatorState* state = (AlphaAnimatorState*)((GameObject*)obj)->extra;
+    AlphaAnimatorState* state = (AlphaAnimatorState*)obj->extra;
     void* buf = state->buf;
     if (buf != NULL)
         mm_free(buf);
@@ -90,7 +90,7 @@ void AlphaAnimator_hitDetect(void)
 {
 }
 
-void AlphaAnimator_update(int* obj)
+void AlphaAnimator_update(GameObject* obj)
 {
     AlphaanimatorPlacement* placement;
     AlphaAnimatorState* state;
@@ -98,12 +98,12 @@ void AlphaAnimator_update(int* obj)
     MapBlockData* block;
     f32 absRate;
     int lvl;
-    placement = (AlphaanimatorPlacement*)((GameObject*)obj)->anim.placementData;
-    state = (AlphaAnimatorState*)((GameObject*)obj)->extra;
+    placement = (AlphaanimatorPlacement*)obj->anim.placementData;
+    state = (AlphaAnimatorState*)obj->extra;
     mode = placement->modeFlags & 3;
-    block = mapGetBlock(objPosToMapBlockIdx((double)((GameObject*)obj)->anim.localPosX,
-                                            (double)((GameObject*)obj)->anim.localPosY,
-                                            (double)((GameObject*)obj)->anim.localPosZ));
+    block = mapGetBlock(objPosToMapBlockIdx((double)obj->anim.localPosX,
+                                            (double)obj->anim.localPosY,
+                                            (double)obj->anim.localPosZ));
     if (block == NULL)
     {
         state->doneCount = 0;
@@ -324,9 +324,9 @@ void AlphaAnimator_update(int* obj)
     }
 }
 
-void AlphaAnimator_init(int* obj)
+void AlphaAnimator_init(GameObject* obj)
 {
-    *(s8*)&((AlphaAnimatorState*)((GameObject*)obj)->extra)->prevGate = -1;
+    *(s8*)&((AlphaAnimatorState*)obj->extra)->prevGate = -1;
 }
 
 void AlphaAnimator_release(void)

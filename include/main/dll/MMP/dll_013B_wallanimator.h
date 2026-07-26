@@ -13,8 +13,8 @@
 
 struct WallanimatorPlacement;
 f32 wallanimator_setScale(GameObject* obj, int desc);
-u8 wallanimator_modelMtxFn(int* obj);
-u8 wallanimator_func0B(int* obj);
+u8 wallanimator_modelMtxFn(GameObject* obj);
+u8 wallanimator_func0B(GameObject* obj);
 int wallanimator_getExtraSize(void);
 void wallanimator_free(int obj);
 void wallanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);

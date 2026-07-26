@@ -448,13 +448,13 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x192 | GPSH_Shrine | COMPLETE | dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c | = (canonical) | — |
 | 0x193 | GPSH_ObjCre | COMPLETE | dlls/objects/403_GPSH_ObjCre/GPSH_ObjCre.c | = (canonical) | — |
 | 0x194 | GPSH_Scene | COMPLETE | dlls/objects/404_GPSH_Scene/GPSH_Scene.c | = (canonical) | — |
-| 0x195 | DBSH_Shrine | CONFIRMED | main/dll/dll_0195_dbshshrine.c | = (canonical) | — |
-| 0x196 | DBSH_Symbol | CONFIRMED | main/dll/dll_0196_dbshsymbol.c | = (canonical) | — |
-| 0x197 | — | NO-RETAIL-NAME | main/dll/dll_0197_dll197.c | = (canonical) | — |
-| 0x198 | NWSH_levcon | CONFIRMED | main/dll/dll_0198_nwshlevcon.c | main/dll/NW/dll_0198_nwshlevcon.c | — |
-| 0x199 | — | NO-RETAIL-NAME | main/dll/dll_0199_dll199.c | = (canonical) | — |
-| 0x19A | — | NO-RETAIL-NAME | main/dll/dll_019A_dll19a.c | = (canonical) | — |
-| 0x19B | — | NO-RETAIL-NAME | main/dll/dll_019B_dll19b.c | = (canonical) | — |
+| 0x195 | DBSH_Shrine | COMPLETE | dlls/objects/405_DBSH_Shrine/DBSH_Shrine.c | = (canonical) | — |
+| 0x196 | DBSH_Symbol | COMPLETE | dlls/objects/406_DBSH_Symbol/DBSH_Symbol.c | = (canonical) | — |
+| 0x197 | — | NO-RETAIL-NAME | dlls/objects/407/407.c | = (canonical) | — |
+| 0x198 | NWSH_levcon | COMPLETE | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | = (canonical) | — |
+| 0x199 | — | NO-RETAIL-NAME | dlls/objects/409/409.c | = (canonical) | — |
+| 0x19A | — | NO-RETAIL-NAME | dlls/objects/410/410.c | = (canonical) | — |
+| 0x19B | — | NO-RETAIL-NAME | dlls/objects/411/411.c | = (canonical) | — |
 | 0x19C | — | NO-RETAIL-NAME | main/dll/dll_019C_dll19c.c | = (canonical) | — |
 | 0x19D | — | NO-RETAIL-NAME | main/dll/dll_019D_dll19d.c | = (canonical) | — |
 | 0x19E | — | NO-RETAIL-NAME | main/dll/dll_019E_dim_tricky.c | = (canonical) | — |
@@ -670,36 +670,36 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x270 | DR_Rock | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x271 | DrakorHoverpad (+DR_PushCart) | CONFIRMED | main/dll/dll_0271_drakorhoverpad.c | = (canonical) | — |
 | 0x272 | HighTop (+CC_HighTop, DR_HighTop) | CONFIRMED | main/dll/dll_0272_hightop.c | = (canonical) | — |
-| 0x273 | FirePipe (+BossDrakorF, FireHole, FlameMuzzle, IceHole, SteamHoleNo, SteamHoleFi, SteamHoleDe) | COMPLETE | main/dll/dll_0273_firepipe.c | = (canonical) | — |
+| 0x273 | FirePipe (+BossDrakorF, FireHole, FlameMuzzle, IceHole, SteamHoleNo, SteamHoleFi, SteamHoleDe) | COMPLETE | dlls/objects/627_FirePipe/FirePipe.c | = (canonical) | — |
 | 0x274 | DR_pulley | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x275 | DR_cradle | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x276 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x277 | CFWindLiftL | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x278 | DRCollapseP (+DRPlatformC) | RAW | *(none)* | — | no .text fns (descriptor data only) |
-| 0x279 | DR_EnergyDisc | CONFIRMED | main/dll/dll_0279_drenergydisc.c | main/dll/DR/dll_0279_drenergydisc.c | — |
+| 0x279 | DR_EnergyDisc | CONFIRMED | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | = (canonical) | — |
 | 0x27A | DR_Collapse | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x27B | DR_CaveIn (+DR_CaveInFl) | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x27C | DR_LightBea | CONFIRMED | main/dll/dll_027C_drlightbea.c | main/dll/DR/dll_027C_drlightbea.c | — |
+| 0x27C | DR_LightBea | CONFIRMED | dlls/objects/636_DR_LightBea/DR_LightBea.c | = (canonical) | — |
 | 0x27D | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x27E | DRMusicCont | CONFIRMED | main/dll/dll_027E_drmusiccont.c | main/dll/DR/dll_027E_drmusiccont.c | — |
+| 0x27E | DRMusicCont | CONFIRMED | dlls/objects/638_DrMusicCont/DRMusicCont.c | = (canonical) | — |
 | 0x27F | DR_LightHal (+DR_LightPol, DR_LightLam) | RAW | *(none)* | — | no .text fns (descriptor data only) |
-| 0x280 | DR_CloudPer | CONFIRMED | main/dll/dll_0280_drcloudper.c | main/dll/DR/dll_0280_drcloudper.c | — |
-| 0x281 | DR_EarthCal | CONFIRMED | main/dll/dll_0281_drearthcal.c | main/dll/DR/dll_0281_drearthcal.c | — |
-| 0x282 | BarrelGener | CONFIRMED | main/dll/dll_0282_barrelgener.c | = (canonical) | — |
-| 0x283 | DR_BarrelGr | CONFIRMED | main/dll/dll_0283_drbarrelgr.c | main/dll/DR/dll_0283_drbarrelgr.c | — |
-| 0x284 | shopitem (+SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis) | GUESSED | main/dll/dll_0284_shopitem.c | = (canonical) | — |
-| 0x285 | SPShop | CONFIRMED | main/dll/dll_0285_spshop.c | main/dll/SP/dll_0285_spshop.c | — |
+| 0x280 | DR_CloudPer | CONFIRMED | dlls/objects/640_DR_CloudPer/DR_CloudPer.c | = (canonical) | — |
+| 0x281 | DR_EarthCal | CONFIRMED | dlls/objects/641_DR_EarthCal/DR_EarthCal.c | = (canonical) | — |
+| 0x282 | BarrelGener | CONFIRMED | dlls/objects/642_BarrelGener/BarrelGener.c | = (canonical) | — |
+| 0x283 | DR_BarrelGr | CONFIRMED | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | = (canonical) | — |
+| 0x284 | — (+shopitem, SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis) | NO-RETAIL-NAME | dlls/objects/644/644.c | = (canonical) | — |
+| 0x285 | SPShop | CONFIRMED | dlls/objects/645_SPShop/SPShop.c | = (canonical) | — |
 | 0x286 | SPShopKeeper | CONFIRMED | main/dll/dll_0286_spshopkeeper.c | main/dll/SP/dll_0286_spshopkeeper.c | — |
-| 0x287 | SPScarab | COMPLETE | main/dll/dll_0287_spscarab.c | main/dll/SP/dll_0287_spscarab.c | — |
-| 0x288 | SPDrape | COMPLETE | main/dll/dll_0288_spdrape.c | main/dll/SP/dll_0288_spdrape.c | — |
-| 0x289 | SPitembeam | COMPLETE | main/dll/dll_0289_spitembeam.c | main/dll/SP/dll_0289_spitembeam.c | — |
-| 0x28A | WCEarthWalker (+WCKingEarth, WM_deaddino) | CONFIRMED | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | — |
-| 0x28B | — | NO-RETAIL-NAME | main/dll/dll_028B.c | = (canonical) | — |
-| 0x28C | WCBouncyCra | CONFIRMED | main/dll/dll_028C_wcbouncycra.c | main/dll/WC/dll_028C_wcbouncycra.c | — |
-| 0x28D | WCLevelCont | CONFIRMED | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | — |
-| 0x28E | WCBeacon | COMPLETE | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | — |
-| 0x28F | WCPressureS | CONFIRMED | main/dll/dll_028F_wcpressures.c | main/dll/WC/dll_028F_wcpressures.c | — |
-| 0x290 | WCPushBlock | CONFIRMED | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | — |
+| 0x287 | SPScarab | COMPLETE | dlls/objects/647_SPScarab/SPScarab.c | = (canonical) | — |
+| 0x288 | SPDrape | COMPLETE | dlls/objects/648_SPDrape/SPDrape.c | = (canonical) | — |
+| 0x289 | SPitembeam | COMPLETE | dlls/objects/649_SPitembeam/SPitembeam.c | = (canonical) | — |
+| 0x28A | — (+WCEarthWalker, WCKingEarth, WM_deaddino) | NO-RETAIL-NAME | dlls/objects/650/650.c | = (canonical) | — |
+| 0x28B | — | NO-RETAIL-NAME | dlls/objects/651/651.c | = (canonical) | — |
+| 0x28C | WCBouncyCra | CONFIRMED | dlls/objects/652_WCBouncyCra/WCBouncyCra.c | = (canonical) | — |
+| 0x28D | WCLevelCont | CONFIRMED | dlls/objects/653_WCLevelCont/WCLevelCont.c | = (canonical) | — |
+| 0x28E | WCBeacon | COMPLETE | dlls/objects/654_WCBeacon/WCBeacon.c | = (canonical) | — |
+| 0x28F | WCPressureS | CONFIRMED | dlls/objects/655_WCPressureS/WCPressureS.c | = (canonical) | — |
+| 0x290 | WCPushBlock | CONFIRMED | dlls/objects/656_WCPushBlock/WCPushBlock.c | = (canonical) | — |
 | 0x291 | WCTile | COMPLETE | dlls/objects/657_WCTile/WCTile.c | = (canonical) | — |
 | 0x292 | WCTrexStatu | CONFIRMED | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | = (canonical) | — |
 | 0x293 | — (+SunTemple, CFSunTemple, WCInvUseObj, WCSunTemple) | NO-RETAIL-NAME | dlls/objects/659/659.c | = (canonical) | — |
@@ -781,7 +781,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x1F5 | generalscal, CF_generals, NW_GeneralS, SB_FireBall | `ShipBattle_*` | unrelated | main/dll/dll_01F5_shipbattle.c |
 | 0x237 | DFPSpPl | `laserObj_*` | unrelated | main/dll/dll_0237_dfpsppl.c |
 | 0x238 | LINKA_levco | `fireObj_*` | unrelated | main/dll/dll_0238_linkalevco.c |
-| 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | main/dll/dll_0284_shopitem.c |
+| 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | dlls/objects/644/644.c |
 | 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
 | 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
 
@@ -798,7 +798,7 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x198 | main/dll/dll_0198_nwshlevcon.c | main/dll/NW/dll_0198_nwshlevcon.c | CONFIRMED |
+| 0x198 | main/dll/dll_0198_nwshlevcon.c | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | COMPLETE |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | main/dll/NW/dll_019F_nwtreebrid.c | RAW |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | main/dll/NW/dll_01A0_nwgeyser.c | COMPLETE |
 | 0x1A1 | main/dll/dll_01A1_nwmammoth.c | main/dll/NW/dll_01A1_nwmammoth.c | CONFIRMED |
@@ -925,23 +925,23 @@ name was a deliberate choice by a previous carve:
 | 0x26C | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | CONFIRMED |
 | 0x26E | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | COMPLETE |
 | 0x26F | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | CONFIRMED |
-| 0x279 | main/dll/dll_0279_drenergydisc.c | main/dll/DR/dll_0279_drenergydisc.c | CONFIRMED |
-| 0x27C | main/dll/dll_027C_drlightbea.c | main/dll/DR/dll_027C_drlightbea.c | CONFIRMED |
-| 0x27E | main/dll/dll_027E_drmusiccont.c | main/dll/DR/dll_027E_drmusiccont.c | CONFIRMED |
-| 0x280 | main/dll/dll_0280_drcloudper.c | main/dll/DR/dll_0280_drcloudper.c | CONFIRMED |
-| 0x281 | main/dll/dll_0281_drearthcal.c | main/dll/DR/dll_0281_drearthcal.c | CONFIRMED |
-| 0x283 | main/dll/dll_0283_drbarrelgr.c | main/dll/DR/dll_0283_drbarrelgr.c | CONFIRMED |
-| 0x285 | main/dll/dll_0285_spshop.c | main/dll/SP/dll_0285_spshop.c | CONFIRMED |
+| 0x279 | main/dll/dll_0279_drenergydisc.c | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | CONFIRMED |
+| 0x27C | main/dll/dll_027C_drlightbea.c | dlls/objects/636_DR_LightBea/DR_LightBea.c | CONFIRMED |
+| 0x27E | main/dll/dll_027E_drmusiccont.c | dlls/objects/638_DrMusicCont/DRMusicCont.c | CONFIRMED |
+| 0x280 | main/dll/dll_0280_drcloudper.c | dlls/objects/640_DR_CloudPer/DR_CloudPer.c | CONFIRMED |
+| 0x281 | main/dll/dll_0281_drearthcal.c | dlls/objects/641_DR_EarthCal/DR_EarthCal.c | CONFIRMED |
+| 0x283 | main/dll/dll_0283_drbarrelgr.c | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | CONFIRMED |
+| 0x285 | main/dll/dll_0285_spshop.c | dlls/objects/645_SPShop/SPShop.c | CONFIRMED |
 | 0x286 | main/dll/dll_0286_spshopkeeper.c | main/dll/SP/dll_0286_spshopkeeper.c | CONFIRMED |
-| 0x287 | main/dll/dll_0287_spscarab.c | main/dll/SP/dll_0287_spscarab.c | COMPLETE |
-| 0x288 | main/dll/dll_0288_spdrape.c | main/dll/SP/dll_0288_spdrape.c | COMPLETE |
-| 0x289 | main/dll/dll_0289_spitembeam.c | main/dll/SP/dll_0289_spitembeam.c | COMPLETE |
-| 0x28A | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | CONFIRMED |
-| 0x28C | main/dll/dll_028C_wcbouncycra.c | main/dll/WC/dll_028C_wcbouncycra.c | CONFIRMED |
-| 0x28D | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | CONFIRMED |
-| 0x28E | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | COMPLETE |
-| 0x28F | main/dll/dll_028F_wcpressures.c | main/dll/WC/dll_028F_wcpressures.c | CONFIRMED |
-| 0x290 | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | CONFIRMED |
+| 0x287 | main/dll/dll_0287_spscarab.c | dlls/objects/647_SPScarab/SPScarab.c | COMPLETE |
+| 0x288 | main/dll/dll_0288_spdrape.c | dlls/objects/648_SPDrape/SPDrape.c | COMPLETE |
+| 0x289 | main/dll/dll_0289_spitembeam.c | dlls/objects/649_SPitembeam/SPitembeam.c | COMPLETE |
+| 0x28A | main/dll/dll_028A_wcearthwalker.c | dlls/objects/650/650.c | CONFIRMED |
+| 0x28C | main/dll/dll_028C_wcbouncycra.c | dlls/objects/652_WCBouncyCra/WCBouncyCra.c | CONFIRMED |
+| 0x28D | main/dll/dll_028D_wclevelcont.c | dlls/objects/653_WCLevelCont/WCLevelCont.c | CONFIRMED |
+| 0x28E | main/dll/dll_028E_wcbeacon.c | dlls/objects/654_WCBeacon/WCBeacon.c | COMPLETE |
+| 0x28F | main/dll/dll_028F_wcpressures.c | dlls/objects/655_WCPressureS/WCPressureS.c | CONFIRMED |
+| 0x290 | main/dll/dll_0290_wcpushblock.c | dlls/objects/656_WCPushBlock/WCPushBlock.c | CONFIRMED |
 | 0x291 | main/dll/dll_0291_wctile.c | dlls/objects/657_WCTile/WCTile.c | COMPLETE |
 | 0x292 | main/dll/dll_0292_wctrexstatu.c | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | CONFIRMED |
 | 0x295 | main/dll/dll_0295_wcapertures.c | dlls/objects/661_WCApertureS/WCApertureS.c | CONFIRMED |
@@ -982,7 +982,7 @@ blocked units will surface more when carved.
 |---|---|---|
 | 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/main/dll/dll_017B_dfshlaserbeam.h |
 | 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
-| 0x198 | main/dll/dll_0198_nwshlevcon.c | include/main/dll/dll_0198_nwshlevcon.h |
+| 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | include/main/dll/dll_01A0_nwgeyser.h |
 | 0x1A1 | main/dll/dll_01A1_nwmammoth.c | include/main/dll/dll_01A1_nwmammoth.h |

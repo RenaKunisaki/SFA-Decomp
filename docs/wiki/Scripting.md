@@ -426,7 +426,7 @@ Triggers section in `src/dlls/objects/294/294.c` and the Player Commands section
   3-parameter `ObjSeq_start` signature — sits at byte offset `0x48`
   (`STATIC_ASSERT(offsetof(ObjectTriggerInterface, runSequence) == 0x48)`), which is **word index
   `0x48/4 = 0x12`** in the struct. `gObjectTriggerInterface` is called from dozens of other DLLs
-  (e.g. `src/main/dll/dll_00EC_infopoint.c:93`, `dll_0284_shopitem.c:393/397`,
+  (e.g. `src/main/dll/dll_00EC_infopoint.c:93`, `dlls/objects/644/644.c:393/397`,
   `dll_0238_linkalevco.c:180`, `dll_0293_suntemple.c` multiple sites) as `(*gObjectTriggerInterface)
   ->runSequence(...)`, matching the wiki's "usually an object's DLL" framing exactly. Note:
   `objseq.c` also defines a second, differently-ordered function-pointer array,

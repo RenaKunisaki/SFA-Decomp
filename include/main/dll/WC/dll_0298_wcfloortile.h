@@ -49,6 +49,6 @@ void wcfloortile_hitDetect(void);
 void wcfloortile_init(GameObject* obj);
 void wcfloortile_release(void);
 void wcfloortile_initialise(void);
-void wcfloortile_update(int obj);
+void wcfloortile_update(GameObject* obj);
 
 #endif /* MAIN_DLL_WC_DLL_0298_WCFLOORTILE_H */

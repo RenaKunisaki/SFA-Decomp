@@ -9,7 +9,7 @@ int kaldachom_stateHandlerB05(int obj, int state);
 int kaldachom_stateHandlerB04(int obj, GroundBaddieState* state);
 int kaldachom_stateHandlerB03(GameObject* obj, GroundBaddieState* state);
 int kaldachom_stateHandlerB02(GameObject* obj, GroundBaddieState* state);
-int kaldachom_stateHandlerB01(int* obj, GroundBaddieState* state);
+int kaldachom_stateHandlerB01(GameObject* obj, GroundBaddieState* state);
 int kaldachom_stateHandlerB00(int* obj, GroundBaddieState* state);
 int kaldachom_stateHandlerA07(GameObject* obj, int state);
 

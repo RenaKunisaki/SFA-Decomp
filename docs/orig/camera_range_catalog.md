@@ -265,8 +265,8 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/dlls/objects/195_Player/player.c` | 18381 | `int cam = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/SH/dll_01AD_shthorntail.c` | 538 | `(ref = ViewFrustum_IsSphereVisible(&obj->modelPos.x, obj->cullRadius * obj->modelScale), ref == 0))` |
 | `src/main/dll/SH/shthorntail_ai.c` | 193 | `value = ViewFrustum_IsSphereVisible((float*)&object->modelPos, object->cullRadius * object->modelScale);` |
-| `src/main/dll/SP/dll_0288_spdrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
-| `src/main/dll/SP/dll_0288_spdrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/648_SPDrape/SPDrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/648_SPDrape/SPDrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/tricky.c` | 1509 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/WC/dll_0298_wcfloortile.c` | 459 | `slot = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/196_Tricky/tricky.c` | 4691 | `ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)` |

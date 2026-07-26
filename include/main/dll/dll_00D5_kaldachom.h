@@ -11,7 +11,7 @@ void kaldaChomFn_80168374(GameObject* obj, int state, u8 useUpperMouthPoint);
 void kaldachom_handleAnimEvents(GameObject* obj, int p2, int p3);
 void kaldachom_updateCombat(GameObject* obj, int stateWithBaddieData, int state);
 void kaldachom_func0B(void);
-s16 kaldachom_setScale(int* obj);
+s16 kaldachom_setScale(GameObject* obj);
 int kaldachom_getExtraSize(void);
 int kaldachom_getObjectTypeId(void);
 void kaldachom_free(GameObject* param_1);

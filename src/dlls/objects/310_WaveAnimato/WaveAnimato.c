@@ -53,15 +53,15 @@ void waveanimator_modelMtxFn(GameObject* obj, int a, int b, int c)
     state->modelMtxArg2 = c;
 }
 
-void waveanimator_func0B(int* obj)
+void waveanimator_func0B(GameObject* obj)
 {
-    WaveAnimatorState* state = (WaveAnimatorState*)((GameObject*)obj)->extra;
+    WaveAnimatorState* state = (WaveAnimatorState*)obj->extra;
     state->flags |= 2;
 }
 
-void waveanimator_setScale(int* obj, f32 fval)
+void waveanimator_setScale(GameObject* obj, f32 fval)
 {
-    WaveAnimatorState* state = (WaveAnimatorState*)((GameObject*)obj)->extra;
+    WaveAnimatorState* state = (WaveAnimatorState*)obj->extra;
     state->flags |= 1;
     state->scaleB = fval;
 }
@@ -199,7 +199,7 @@ void waveanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (1.0f));
 }
 
-void waveanimator_hitDetect(int* obj)
+void waveanimator_hitDetect(GameObject* obj)
 {
     int i;
     int j;
@@ -209,7 +209,7 @@ void waveanimator_hitDetect(int* obj)
     {
         return;
     }
-    state = (WaveAnimatorState*)((GameObject*)obj)->extra;
+    state = (WaveAnimatorState*)obj->extra;
     phaseIdx = 0;
     for (i = 0; i < state->gridN; i++)
     {
@@ -235,19 +235,19 @@ void waveanimator_update(void)
 {
 }
 
-void waveanimator_init(int* obj, int* desc)
+void waveanimator_init(GameObject* obj, WaveanimatorObjectDef* desc)
 {
-    WaveAnimatorState* state = (WaveAnimatorState*)((GameObject*)obj)->extra;
+    WaveAnimatorState* state = (WaveAnimatorState*)obj->extra;
     f32 scale;
-    state->sinkDepthScale = ((WaveanimatorObjectDef*)desc)->sinkDepthScale;
-    state->originX = ((WaveanimatorObjectDef*)desc)->originX;
-    state->originY = ((WaveanimatorObjectDef*)desc)->originY;
-    state->spanX = ((WaveanimatorObjectDef*)desc)->spanX;
-    state->spanY = ((WaveanimatorObjectDef*)desc)->spanY;
-    state->ampX = (f32)((WaveanimatorObjectDef*)desc)->ampX;
-    state->ampY = (f32)((WaveanimatorObjectDef*)desc)->ampY;
-    state->period = ((WaveanimatorObjectDef*)desc)->period;
-    state->gridN = ((WaveanimatorObjectDef*)desc)->gridN;
+    state->sinkDepthScale = desc->sinkDepthScale;
+    state->originX = desc->originX;
+    state->originY = desc->originY;
+    state->spanX = desc->spanX;
+    state->spanY = desc->spanY;
+    state->ampX = (f32)desc->ampX;
+    state->ampY = (f32)desc->ampY;
+    state->period = desc->period;
+    state->gridN = desc->gridN;
     scale = (1.0f);
     state->scaleA = scale;
     state->scaleB = scale;

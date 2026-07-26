@@ -7,7 +7,7 @@ typedef struct MagicgemObjectDef MagicgemObjectDef;
 
 int MagicDust_getExtraSize(void);
 void MagicDust_free(GameObject* obj);
-void MagicDust_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void MagicDust_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void MagicDust_update(GameObject* obj);
 void MagicDust_init(GameObject* obj, MagicgemObjectDef* placement);
 

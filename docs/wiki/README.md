@@ -26,7 +26,7 @@ The GameBits table from this wiki has already been imported as code: 687 named b
 | [Objects](Objects.md) | Wiki's ObjInstance layout, message-queue system, object-name prefixes, and object-category IDs mapped field-by-field to this repo's ObjAnimComponent (objanim_internal.h) + GameObje... |
 | [Romlist](Romlist.md) | Wiki's disc romlist entry format (type/size/acts/loadFlags/bound/cullDist/position/id, act-bit tables, OBJINDEX.bin) is matched almost verbatim: ObjPlacement, SaveGameRomListPositi... |
 | [Scripting](Scripting.md) | Rena's Scripting wiki page (ANIMCURV/OBJSEQ sequence VM, condition scripts, triggers) maps almost entirely onto src/main/objseq.c (DLL 0x02 ObjSeq), src/dlls/objects/294/294.c... |
-| [Shop](Shop.md) | ThornTail shop item price/discount/gamebit/text table, cross-mapped to DLLs 0x284/0x285/0x286 (shopitem/spshop/spshopkeeper), the ShopItemRow struct in dll_0285_spshop.c, and ~20 a... |
+| [Shop](Shop.md) | ThornTail shop item price/discount/gamebit/text table, cross-mapped to DLLs 0x284/0x285/0x286 (shopitem/spshop/spshopkeeper), the ShopItemRow struct in SPShop.c, and ~20 a... |
 | [Textures](Textures.md) | Covers TEXn.bin/tab layout, the 0x60-byte Texture header, GXTexFmt/GXTexObj, texture-ID translation (TEXTABLE/TEX0/TEX1/TEXPRE), the model Shader/ShaderLayer/ShaderFlags/AttrFlags ... |
 | [Tricky](Tricky.md) | Covers Tricky's attack-timer mechanic, unused Decoy/Guard/Baddie-Alert/Kyte content, ball-play color progression, and the Mammoth Dismount/Death Crash/Weird Head Movement bugs, cro... |
 | [UnusedThings](UnusedThings.md) | Cross-referenced the wiki's unused-content page against this repo; strongest confirmed matches are getLActions() in src/main/render.c (LACTIONS.bin, byte-for-byte), DLL 0x11 = src/... |
@@ -146,7 +146,7 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 - naming TriggerPlacement's pad3A[0x44-0x3A] gap fields (localId-adjacent size[3]/rot[2]/target) in src/dlls/objects/294/294.c using the wiki's offsets 0x3A/0x3D/0x43
 
 ### Shop
-- Adopt `enum ShopItemIndex` (SHOP_ITEM_DUMBLEDANG_POD=0x00 ... SHOP_ITEM_MAP_VOLCANO_FORCE_PT=0x33, SHOP_ITEM_LAST=0x3B) into src/main/dll/SP/dll_0285_spshop.c so shop_buyItem's switch (currently raw cases 0,1,2,3,4,5,6,7,8,0x17) and the ShopItemRow accessors read by name instead of magic hex.
+- Adopt `enum ShopItemIndex` (SHOP_ITEM_DUMBLEDANG_POD=0x00 ... SHOP_ITEM_MAP_VOLCANO_FORCE_PT=0x33, SHOP_ITEM_LAST=0x3B) into src/dlls/objects/645_SPShop/SPShop.c so shop_buyItem's switch (currently raw cases 0,1,2,3,4,5,6,7,8,0x17) and the ShopItemRow accessors read by name instead of magic hex.
 - Split ShopItemRow's anonymous `u8 pad1[0x4 - 0x1]` into named `discount1/discount2/discount3` (u8 each) - verified via shop_initBody's `item[5] = item[randomGetRange(0,2)+1]` discount-pick logic to be exactly the wiki's D1/D2/D3 columns.
 - Once shop_buyItem's gameBitIncrement targets (0x66c, 0x86a, 0xc1, 0x13d, 0x5d6, 0x3f5) are traced to a real consumer, add them to include/main/gamebits.h as GAMEBIT_ITEM_{BombSpore,MoonSeed,GrubTubFungus,Firefly x2,FuelCell}_Count (or similar) alongside the already-present *_Got/_Bought entries - table above gives the candidate names/rows for free.
 

@@ -1,0 +1,303 @@
+/*
+ * DBSH_Symbol (DLL 0x196) - the spin-the-symbol minigame object in the
+ * DarkIce Mines SnowHorn shrine (shares the shrine's RISE_DONE/CLOSE
+ * game bits with dbshshrine, DLL 0x195).
+ *
+ * DBSH_Symbol_update walks a small state machine on phase: hide the
+ * model, play a stone-scuff cue, arm trigger sequence 0, then resolve -
+ * granting CLOSE_A when the spin finished or CLOSE_B otherwise. While
+ * the trigger sequence runs, DBSH_Symbol_SeqFn accumulates spin from the
+ * A-button, drives this symbol and its mirror partner (the nearby
+ * objType-0x20F symbol) through ObjAnim moves, plays the loop/grunt/creak
+ * sfx, and reports completion once spinProgress reaches DBSH_SPIN_DONE.
+ */
+#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_object_volume_api.h"
+#include "main/game_timer_control_api.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/object_render.h"
+#include "main/vecmath.h"
+#include "main/dll/dbshsymbol_types.h"
+#include "game/objects/object.h"
+#include "sys/objects.h"
+#include "main/dll/cup1C3.h"
+#include "main/gamebits.h"
+#include "main/obj_list.h"
+#include "main/objseq.h"
+#include "main/pad.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/frame_timing.h"
+#include "dlls/object_descriptor.h"
+
+u8 gDbShSymbolScuffPlayed = 1;
+
+STATIC_ASSERT(sizeof(DbshSymbolState) == 0x24);
+STATIC_ASSERT(offsetof(DbshSymbolState, phase) == 0x1E);
+STATIC_ASSERT(offsetof(DbshSymbolState, flags) == 0x20);
+
+#define DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG OBJ_MODEL_STATE_SHADOW_VISIBLE
+
+/* shared with the shrine object (DLL 0x195) */
+#define DBSH_GB_RISE_DONE 0x16a
+#define DBSH_GB_CLOSE_A   0x16b
+#define DBSH_GB_CLOSE_B   0x16c
+
+#define DBSH_PARTNER_OBJTYPE 0x20f  /* mirror symbol spun alongside this one */
+#define DBSH_SPIN_DONE       0x7ef4 /* spinProgress at a full turn */
+
+#define PAD_BUTTON_A 0x100
+
+int DBSH_Symbol_SeqFn(int obj, int anim, ObjAnimUpdateState* animUpdate)
+{
+    int volume;
+    int* list;
+    int idx;
+    int count;
+    int i;
+    int buttons;
+    DbshSymbolState* state;
+    int player;
+
+    state = ((GameObject*)obj)->extra;
+    player = (int)Obj_GetPlayerObject();
+    Sfx_SetObjectSfxVolume(obj, SFXTRIG_blockscrape_lp, 10, 127.0f);
+    Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_blockscrape_lp);
+    animUpdate->sequenceEventActive = 0;
+    for (i = 0; i < animUpdate->eventCount; i++)
+    {
+        if (animUpdate->eventIds[i] == 1)
+        {
+            gameTimerInit(0x1d, 0x3c);
+            timerSetToCountUp();
+            state->flags.active = 0;
+            ((GameObject*)obj)->anim.modelState->flags |= DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG;
+        }
+    }
+    if (state->flags.active != 0)
+    {
+        return 0;
+    }
+    if (state->partnerObj == NULL)
+    {
+        list = ObjList_GetObjects(&idx, &count);
+        while (idx < count)
+        {
+            *(int*)&state->partnerObj = list[idx];
+            if (((GameObject*)state->partnerObj)->anim.seqId == DBSH_PARTNER_OBJTYPE)
+            {
+                break;
+            }
+            idx++;
+        }
+    }
+    if (state->partnerObj == NULL)
+    {
+        return 0;
+    }
+    for (i = 0; i < framesThisStep; i++)
+    {
+        if (isGameTimerDisabled() != 0)
+        {
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16);
+            state->flags.finished = 0;
+            state->flags.active = 1;
+            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, 0xbd);
+        }
+        buttons = getButtonsJustPressedIfNotBusy(0);
+        if ((buttons & PAD_BUTTON_A) != 0)
+        {
+            state->spinSpeed += 14.8f;
+        }
+        if (state->spinSpeed > 80.0f)
+        {
+            state->spinSpeed = 80.0f;
+        }
+        state->spinProgress = (int)((f32)state->spinProgress + state->spinSpeed);
+        if (state->spinProgress >= DBSH_SPIN_DONE)
+        {
+            gameTimerStop();
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16);
+            ObjAnim_SetCurrentMove(player, 0, 0.0f, 0);
+            state->flags.finished = 1;
+            state->flags.active = 1;
+            state->spinProgress = DBSH_SPIN_DONE;
+            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, 0xbd);
+            return 0;
+        }
+        (*gObjectTriggerInterface)->setXrot(state->triggerHandle, state->spinProgress);
+        if (state->spinProgress < 0)
+        {
+            state->spinProgress = 0;
+            if (state->spinSpeed < 0.0f)
+            {
+                state->spinSpeed = 0.0f;
+            }
+            state->prevSpinProgress = state->spinProgress;
+            if (state->spinSpeed > -300.0f)
+            {
+                state->spinSpeed = state->spinSpeed - 10.1f;
+            }
+            return 0;
+        }
+        if (state->spinSpeed > -80.0f)
+        {
+            state->spinSpeed = state->spinSpeed - 1.6f;
+        }
+        if (ObjAnim_AdvanceCurrentMove(
+                player, ((f32)state->spinProgress - state->prevSpinProgress) / 7500.0f, timeDelta, NULL) != 0)
+        {
+            if (((GameObject*)player)->anim.currentMoveProgress < 0.0f)
+            {
+                ((GameObject*)player)->anim.currentMoveProgress =
+                    1.0f + ((GameObject*)player)->anim.currentMoveProgress;
+            }
+        }
+        if (state->partnerObj != NULL)
+        {
+            if (ObjAnim_AdvanceCurrentMove(
+                    *(int*)&state->partnerObj, -((f32)state->spinProgress - state->prevSpinProgress) / 7500.0f,
+                    timeDelta, NULL) != 0)
+            {
+                f32 h = ((GameObject*)state->partnerObj)->anim.currentMoveProgress;
+                if (h < 0.0f)
+                {
+                    ((GameObject*)state->partnerObj)->anim.currentMoveProgress = 1.0f + h;
+                }
+            }
+        }
+        state->prevSpinProgress = state->spinProgress;
+    }
+    state->sfxTimerA = state->sfxTimerA - timeDelta;
+    if (state->sfxTimerA < 0.0f)
+    {
+        if (state->spinSpeed < 0.0f)
+        {
+            state->sfxTimerA = (f32)(int)randomGetRange(0x28, 0x64);
+        }
+        else
+        {
+            state->sfxTimerA = (f32)(int)randomGetRange(0x78, 0xf0);
+        }
+        Sfx_PlayFromObject(player, SFXTRIG_literun116_var);
+    }
+    state->sfxTimerB = state->sfxTimerB - timeDelta;
+    if (state->sfxTimerB < 0.0f)
+    {
+        if (state->spinSpeed > 0.0f)
+        {
+            state->sfxTimerB = (f32)(int)randomGetRange(0x28, 0x64);
+        }
+        else
+        {
+            state->sfxTimerB = (f32)(int)randomGetRange(0x78, 0xf0);
+        }
+        Sfx_PlayFromObject(obj, SFXTRIG_spotfox03);
+    }
+    {
+        f32 vol = (4.0f * state->spinSpeed >= 0.0f) ? 4.0f * state->spinSpeed
+                                                                    : -(4.0f * state->spinSpeed);
+        volume = (int)vol;
+        if (volume > 100)
+        {
+            volume = 100;
+        }
+        Sfx_SetObjectSfxVolume(obj, SFXTRIG_blockscrape_lp, (u8)volume, 127.0f);
+    }
+    return 0;
+}
+
+int DBSH_Symbol_getExtraSize(void)
+{
+    return 0x24;
+}
+
+void DBSH_Symbol_free(void)
+{
+    gameTimerStop();
+}
+
+void DBSH_Symbol_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
+{
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+}
+
+void DBSH_Symbol_update(GameObject* obj)
+{
+    s16 phase;
+    u32 puzzleStarted;
+    DbshSymbolState* state;
+
+    state = (obj)->extra;
+    puzzleStarted = mainGetBit(DBSH_GB_RISE_DONE);
+    if (puzzleStarted == 0)
+    {
+        state->phase = 0;
+        state->partnerObj = NULL;
+        mainSetBits(DBSH_GB_CLOSE_B, 0);
+    }
+    else
+    {
+        phase = state->phase;
+        if (phase == 0)
+        {
+            (obj)->anim.modelState->flags &= ~(u64)DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG;
+            state->phase = 1;
+        }
+        else if (phase == 2)
+        {
+            state->phase = 3;
+            state->triggerHandle = (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
+        }
+        else if (phase == 1)
+        {
+            if (gDbShSymbolScuffPlayed != 0)
+            {
+                gDbShSymbolScuffPlayed = 0;
+                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_iceywindlp16);
+            }
+            state->phase = 2;
+            gDbShSymbolScuffPlayed = 1;
+        }
+        else if (phase == 3)
+        {
+            (obj)->anim.modelState->flags &= ~(u64)DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG;
+            if (state->flags.finished != 0)
+            {
+                mainSetBits(DBSH_GB_CLOSE_A, 1);
+            }
+            else
+            {
+                mainSetBits(DBSH_GB_CLOSE_B, 1);
+            }
+            Sfx_StopObjectChannel((int)obj, 0x7f);
+            state->flags.active = 1;
+        }
+    }
+}
+
+void DBSH_Symbol_init(int* obj)
+{
+    DbshSymbolState* state = ((GameObject*)obj)->extra;
+
+    state->spinSpeed = 0.0f;
+    state->spinProgress = 0;
+    state->prevSpinProgress = 0;
+    state->phase = 0;
+    *(int*)&state->partnerObj = 0;
+    state->flags.finished = 0;
+    state->flags.active = 1;
+
+    ((GameObject*)obj)->anim.localPosY -= 50.0f;
+    ((GameObject*)obj)->animEventCallback = DBSH_Symbol_SeqFn;
+
+    ((GameObject*)obj)->anim.modelState->flags &= ~(u64)DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG;
+}
+
+ObjectDescriptor gDBSH_SymbolObjDescriptor = {
+    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS, 0, 0, 0,
+    (ObjectDescriptorCallback)DBSH_Symbol_init, (ObjectDescriptorCallback)DBSH_Symbol_update, 0,
+    (ObjectDescriptorCallback)DBSH_Symbol_render, (ObjectDescriptorCallback)DBSH_Symbol_free, 0,
+    DBSH_Symbol_getExtraSize,
+};

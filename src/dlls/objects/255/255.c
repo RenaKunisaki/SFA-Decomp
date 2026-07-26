@@ -86,9 +86,9 @@ void MagicDust_free(GameObject* obj)
     return;
 }
 
-void MagicDust_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void MagicDust_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, MAGICGEM_RENDER_SCALE);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, MAGICGEM_RENDER_SCALE);
 }
 
 typedef struct MagicgemObjectDef

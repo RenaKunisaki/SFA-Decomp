@@ -13,6 +13,7 @@
 #include "main/audio/sfx.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/foodbag.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct Dll19CPlacement
 {
@@ -120,3 +121,20 @@ void dll_19C_release(void)
 void dll_19C_initialise(void)
 {
 }
+
+ObjectDescriptor dll_19C = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_19C_initialise,
+    (ObjectDescriptorCallback)dll_19C_release,
+    0,
+    (ObjectDescriptorCallback)dll_19C_init,
+    (ObjectDescriptorCallback)dll_19C_update,
+    (ObjectDescriptorCallback)dll_19C_hitDetect,
+    (ObjectDescriptorCallback)dll_19C_render,
+    (ObjectDescriptorCallback)dll_19C_free,
+    (ObjectDescriptorCallback)dll_19C_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)dll_19C_getExtraSize,
+};

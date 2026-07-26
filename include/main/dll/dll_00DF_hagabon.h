@@ -16,6 +16,6 @@ void Hagabon_init(GameObject* obj, int data, int skip_alloc);
 void Hagabon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 int Hagabon_getExtraSize(void);
 int Hagabon_getObjectTypeId(void);
-void Hagabon_update(int obj);
+void Hagabon_update(GameObject* obj);
 
 #endif /* MAIN_DLL_DLL_00DF_HAGABON_H_ */
