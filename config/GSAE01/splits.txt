@@ -2469,7 +2469,7 @@ dlls/objects/363/363.c:
 	.data       start:0x80323708 end:0x80323740
 	.sdata2     start:0x803E4738 end:0x803E4748
 
-main/dll/dll_016C_dll16c.c:
+dlls/objects/364/364.c:
 	.text       start:0x801AD7E4 end:0x801AE0EC
 	.rodata     start:0x802C2308 end:0x802C2318
 	.data       start:0x80323740 end:0x80323778
