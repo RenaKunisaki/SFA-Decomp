@@ -1,5 +1,5 @@
 /*
- * pollenfragment (DLL 0x00DA) - the homing pollen-cloud projectile/fragment
+ * DLL 0x00DA - the homing pollen-cloud projectile/fragment
  * spawned by the pollen object. Each fragment picks one of five
  * PollenFragmentConfig presets by its pollen type (0..5), spawns a burst of
  * particle fx and a loop sfx on init, then per-frame steers toward the
@@ -92,8 +92,6 @@ typedef struct PollenFragmentExtra
 } PollenFragmentExtra;
 
 #define POLLENFRAGMENT_HIT_VOLUME_SLOT 0x16
-
-
 
 int pollenfragment_getExtraSize(void)
 {
@@ -363,7 +361,6 @@ void pollenfragment_release(void)
 void pollenfragment_initialise(void)
 {
 }
-
 
 ObjectDescriptor gPollenFragmentObjDescriptor = {
     0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
