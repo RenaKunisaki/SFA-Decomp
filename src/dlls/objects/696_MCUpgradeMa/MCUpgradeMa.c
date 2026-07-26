@@ -47,7 +47,7 @@ void mcupgradema_update(GameObject* obj)
     }
     else
     {
-        objRenderFn_80041018((GameObject*)obj);
+        objRenderFn_80041018(obj);
     }
 }
 
