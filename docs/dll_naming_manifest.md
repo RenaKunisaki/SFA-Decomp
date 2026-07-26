@@ -665,7 +665,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x26B | DR_Chimmey | COMPLETE | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | — |
 | 0x26C | DR_CageWith (+DR_CageNoRo, DR_CageRope) | CONFIRMED | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | — |
 | 0x26D | DR_Vines | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x26E | DR_Shackle (+DR_BigShack) | COMPLETE | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | — |
+| 0x26E | — (+DR_Shackle, DR_BigShack) | NO-RETAIL-NAME | dlls/objects/622/622.c | = (canonical) | — |
 | 0x26F | — (+DR_Generator, DR_WallGene) | NO-RETAIL-NAME | dlls/objects/623/623.c | = (canonical) | — |
 | 0x270 | DR_Rock | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x271 | — (+DrakorHoverpad, DR_PushCart) | NO-RETAIL-NAME | dlls/objects/625/625.c | = (canonical) | second TU: dlls/objects/625/625_updatemain.c |
@@ -923,7 +923,7 @@ name was a deliberate choice by a previous carve:
 | 0x268 | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | CONFIRMED |
 | 0x26B | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | COMPLETE |
 | 0x26C | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | CONFIRMED |
-| 0x26E | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | COMPLETE |
+| 0x26E | main/dll/dll_026E_drshackle.c | dlls/objects/622/622.c | COMPLETE |
 | 0x26F | main/dll/dll_026F_drgenerator.c | dlls/objects/623/623.c | CONFIRMED |
 | 0x279 | main/dll/dll_0279_drenergydisc.c | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | CONFIRMED |
 | 0x27C | main/dll/dll_027C_drlightbea.c | dlls/objects/636_DR_LightBea/DR_LightBea.c | CONFIRMED |
