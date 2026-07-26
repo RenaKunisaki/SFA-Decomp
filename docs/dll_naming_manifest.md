@@ -712,7 +712,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x29A | ARWArwing | RAW | dlls/objects/666_ARWArwing/ARWArwing.c | = (canonical) | DOL-confirmed exact 54-function TU; its early descriptor and complete data block remain with the function body |
 | 0x29B | — | NO-RETAIL-NAME | dlls/objects/667/667.c | = (canonical) | Exact complete twelve-function TU; `arwingandrossstuff` is an internal projectile-family alias, not a recovered DLL basename |
 | 0x29C | ARWArwingBo | RAW | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | = (canonical) | Exact complete twelve-function TU; its source-only detonation helper and early descriptor remain with the body |
-| 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | main/dll/dll_029D_arwarwinggu.c | main/dll/ARW/dll_029D_arwarwinggu.c | — |
+| 0x29D | ARWArwingGu | RAW | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | = (canonical) | DOL-confirmed twelve-function TU; now owns its previously unassigned `0x803E7058..0x803E7068` constants and alignment padding, with code still exact |
 | 0x29E | — | NO-RETAIL-NAME | main/dll/dll_029E_Dummy29E.c | = (canonical) | — |
 | 0x29F | ARWBombColl (+ARWLaserCol, ARWContaine, ARWSporeCol, ARWDinoEggC, ARWMoonSeed) | CONFIRMED | main/dll/dll_029F_arwbombcoll.c | main/dll/ARW/dll_029F_arwbombcoll.c | — |
 | 0x2A0 | Ring (+WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | CONFIRMED | main/dll/dll_02A0_ring.c | = (canonical) | — |
