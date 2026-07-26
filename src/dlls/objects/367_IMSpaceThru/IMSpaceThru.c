@@ -1,5 +1,5 @@
 /*
- * imspacethruster (DLL 0x16F) - an engine exhaust attached to the
+ * IMSpaceThru (DLL 0x16F) - an engine exhaust attached to the
  * SpaceCraft cinematic object on the Ice Mountain map.
  *
  * init picks a thruster "kind" (0..6) from the placement, selecting a

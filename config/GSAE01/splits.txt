@@ -2482,7 +2482,7 @@ dlls/objects/366_IMAnimSpace/IMAnimSpace.c:
 	.bss        start:0x803AC948 end:0x803AC960
 	.sdata2     start:0x803E4770 end:0x803E4788
 
-main/dll/IM/dll_016F_imspacethruster.c:
+dlls/objects/367_IMSpaceThru/IMSpaceThru.c:
 	.text       start:0x801AE508 end:0x801AE984
 	.data       start:0x80323818 end:0x80323868
 	.sdata2     start:0x803E4788 end:0x803E47B8
