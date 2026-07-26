@@ -95,41 +95,41 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     f32 sinOut;
     f32 cosOut;
 
-    ((MikaladonState*)state)->actor.orbitAngle =
-        MIKALADON_ORBIT_ANGLE_SPEED * timeDelta + (f32)(u32)((MikaladonState*)state)->actor.orbitAngle;
-    fn_80293018(((MikaladonState*)state)->actor.orbitAngle, &sinOut, &cosOut);
-    sinOut = sinOut * ((BaddieState*)state)->unk2A8 + ((MikaladonState*)state)->actor.orbitCenterX;
-    cosOut = cosOut * ((BaddieState*)state)->unk2A8 + ((MikaladonState*)state)->actor.orbitCenterZ;
-    if (((MikaladonState*)state)->actor.verticalPhase == MIKALADON_PHASE_ORBIT)
+    state->actor.orbitAngle =
+        MIKALADON_ORBIT_ANGLE_SPEED * timeDelta + (f32)(u32)state->actor.orbitAngle;
+    fn_80293018(state->actor.orbitAngle, &sinOut, &cosOut);
+    sinOut = sinOut * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterX;
+    cosOut = cosOut * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterZ;
+    if (state->actor.verticalPhase == MIKALADON_PHASE_ORBIT)
     {
         f32 dx;
         f32 dz;
 
-        y = ((GameObject*)obj)->anim.localPosY;
-        dx = ((MikaladonState*)state)->actor.orbitCenterX -
+        y = obj->anim.localPosY;
+        dx = state->actor.orbitCenterX -
              ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX;
-        dz = ((MikaladonState*)state)->actor.orbitCenterZ -
+        dz = state->actor.orbitCenterZ -
              ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ;
         if (sqrtf(dx * dx + dz * dz) <= MIKALADON_TRIGGER_RADIUS_SCALE * ((BaddieState*)state)->unk2A8)
         {
-            ((MikaladonState*)state)->actor.verticalPhase = MIKALADON_PHASE_DESCEND;
-            ((MikaladonState*)state)->actor.dropTimer = 0;
+            state->actor.verticalPhase = MIKALADON_PHASE_DESCEND;
+            state->actor.dropTimer = 0;
         }
     }
-    else if (((MikaladonState*)state)->actor.verticalPhase == MIKALADON_PHASE_DESCEND)
+    else if (state->actor.verticalPhase == MIKALADON_PHASE_DESCEND)
     {
-        y = ((GameObject*)obj)->anim.localPosY - MIKALADON_DESCENT_SPEED * timeDelta;
-        if (y <= ((MikaladonState*)state)->actor.homeY - MIKALADON_DESCENT_DISTANCE)
+        y = obj->anim.localPosY - MIKALADON_DESCENT_SPEED * timeDelta;
+        if (y <= state->actor.homeY - MIKALADON_DESCENT_DISTANCE)
         {
-            ((MikaladonState*)state)->actor.verticalPhase = MIKALADON_PHASE_ASCEND;
+            state->actor.verticalPhase = MIKALADON_PHASE_ASCEND;
         }
         else
         {
-            ((MikaladonState*)state)->actor.dropTimer =
-                (f32)(u32)((MikaladonState*)state)->actor.dropTimer + timeDelta;
-            if (((MikaladonState*)state)->actor.dropTimer > MIKALADON_DROP_INTERVAL)
+            state->actor.dropTimer =
+                (f32)(u32)state->actor.dropTimer + timeDelta;
+            if (state->actor.dropTimer > MIKALADON_DROP_INTERVAL)
             {
-                ((MikaladonState*)state)->actor.dropTimer = 0;
+                state->actor.dropTimer = 0;
                 if (Obj_IsLoadingLocked() != 0)
                 {
                     MikaladonDropSetup* setup;
@@ -137,14 +137,14 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
 
                     setup = (MikaladonDropSetup*)Obj_AllocObjectSetup(sizeof(MikaladonDropSetup),
                                                                      SEQOBJ11E_GCROBOT_DROP_OBJ);
-                    setup->base.posX = ((GameObject*)obj)->anim.localPosX;
-                    setup->base.posY = MIKALADON_DROP_HEIGHT_OFFSET + ((GameObject*)obj)->anim.localPosY;
-                    setup->base.posZ = ((GameObject*)obj)->anim.localPosZ;
+                    setup->base.posX = obj->anim.localPosX;
+                    setup->base.posY = MIKALADON_DROP_HEIGHT_OFFSET + obj->anim.localPosY;
+                    setup->base.posZ = obj->anim.localPosZ;
                     setup->base.color[0] = 1;
                     setup->base.color[1] = 1;
                     setup->base.color[2] = 0xff;
                     setup->base.color[3] = 0xff;
-                    spawned = loadObjectAtObject((GameObject*)obj, &setup->base);
+                    spawned = loadObjectAtObject(obj, &setup->base);
                     if (spawned != NULL)
                     {
                         spawned->ownerObj = obj;
@@ -156,27 +156,27 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     }
     else
     {
-        y = MIKALADON_ASCENT_SPEED * timeDelta + ((GameObject*)obj)->anim.localPosY;
-        if (y >= ((MikaladonState*)state)->actor.homeY)
+        y = MIKALADON_ASCENT_SPEED * timeDelta + obj->anim.localPosY;
+        if (y >= state->actor.homeY)
         {
-            ((MikaladonState*)state)->actor.verticalPhase = MIKALADON_PHASE_ORBIT;
+            state->actor.verticalPhase = MIKALADON_PHASE_ORBIT;
         }
     }
-    ((GameObject*)obj)->anim.velocityX = oneOverTimeDelta * (sinOut - ((GameObject*)obj)->anim.localPosX);
-    ((GameObject*)obj)->anim.velocityY = oneOverTimeDelta * (y - ((GameObject*)obj)->anim.localPosY);
-    ((GameObject*)obj)->anim.velocityZ = oneOverTimeDelta * (cosOut - ((GameObject*)obj)->anim.localPosZ);
-    fn_8014CD1C((GameObject*)obj, state, 0xf, 7.5f, 1.0f, 0);
-    ((MikaladonState*)state)->actor.ambientSfxTimer -= timeDelta;
-    if (((MikaladonState*)state)->actor.ambientSfxTimer <= gMikaladonZero)
+    obj->anim.velocityX = oneOverTimeDelta * (sinOut - obj->anim.localPosX);
+    obj->anim.velocityY = oneOverTimeDelta * (y - obj->anim.localPosY);
+    obj->anim.velocityZ = oneOverTimeDelta * (cosOut - obj->anim.localPosZ);
+    fn_8014CD1C(obj, state, 0xf, 7.5f, 1.0f, 0);
+    state->actor.ambientSfxTimer -= timeDelta;
+    if (state->actor.ambientSfxTimer <= gMikaladonZero)
     {
-        ((MikaladonState*)state)->actor.ambientSfxTimer =
+        state->actor.ambientSfxTimer =
             (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
         Sfx_PlayFromObject((u32)obj, SFXTRIG_id_31);
     }
-    ((MikaladonState*)state)->actor.loopSfxTimer -= timeDelta;
-    if (((MikaladonState*)state)->actor.loopSfxTimer <= gMikaladonZero)
+    state->actor.loopSfxTimer -= timeDelta;
+    if (state->actor.loopSfxTimer <= gMikaladonZero)
     {
-        ((MikaladonState*)state)->actor.loopSfxTimer = gMikaladonDefaultPeriod;
+        state->actor.loopSfxTimer = gMikaladonDefaultPeriod;
         Sfx_PlayFromObject((u32)obj, SFXTRIG_id_24a);
     }
 }
@@ -200,19 +200,19 @@ void mikaladon_init(GameObject* obj, MikaladonState* state)
     ((BaddieState*)state)->unk318 = lblA;
     ((BaddieState*)state)->unk322 = 1;
     ((BaddieState*)state)->unk31C = lblA;
-    ((MikaladonState*)state)->actor.orbitCenterX = obj->anim.localPosX;
-    ((MikaladonState*)state)->actor.homeY = obj->anim.localPosY;
-    ((MikaladonState*)state)->actor.orbitCenterZ = obj->anim.localPosZ;
-    ((MikaladonState*)state)->actor.verticalPhase = MIKALADON_PHASE_ORBIT;
-    ((MikaladonState*)state)->actor.dropTimer = 0;
-    ((MikaladonState*)state)->actor.orbitAngle = 0;
-    ((MikaladonState*)state)->actor.loopSfxTimer = zero;
-    ((MikaladonState*)state)->actor.ambientSfxTimer = zero;
+    state->actor.orbitCenterX = obj->anim.localPosX;
+    state->actor.homeY = obj->anim.localPosY;
+    state->actor.orbitCenterZ = obj->anim.localPosZ;
+    state->actor.verticalPhase = MIKALADON_PHASE_ORBIT;
+    state->actor.dropTimer = 0;
+    state->actor.orbitAngle = 0;
+    state->actor.loopSfxTimer = zero;
+    state->actor.ambientSfxTimer = zero;
     ((BaddieState*)state)->pathStep = 8.0f;
 
-    fn_80293018(((MikaladonState*)state)->actor.orbitAngle, &a, &b);
+    fn_80293018(state->actor.orbitAngle, &a, &b);
     obj->anim.localPosX =
-        a * ((BaddieState*)state)->unk2A8 + ((MikaladonState*)state)->actor.orbitCenterX;
+        a * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterX;
     obj->anim.localPosZ =
-        b * ((BaddieState*)state)->unk2A8 + ((MikaladonState*)state)->actor.orbitCenterZ;
+        b * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterZ;
 }
