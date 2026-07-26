@@ -593,9 +593,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x223 | VFP_corepla | COMPLETE | dlls/objects/547_VFP_corepla/VFP_corepla.c | = (canonical) | Exact recovered retail basename |
 | 0x224 | — | COMPLETE | dlls/objects/548/548.c | = (canonical) | No recovered retail basename |
 | 0x225 | VFP_flamepo | COMPLETE | dlls/objects/549_VFP_flamepo/VFP_flamepo.c | = (canonical) | Exact recovered retail basename |
-| 0x226 | VFP_lavapool | CONFIRMED | main/main.c | main/dll/VF/dll_0226_vfplavapool.c | engine/SDK host: main/main.c |
-| 0x227 | VFP_lavastar | CONFIRMED | main/main.c | main/dll/VF/dll_0227_vfplavastar.c | engine/SDK host: main/main.c |
-| 0x228 | VFP_SpellPlace (+VFPSpPl) | CONFIRMED | main/main.c | main/dll/VF/dll_0228_vfpspellplace.c | engine/SDK host: main/main.c |
+| 0x226 | VFP_lavapoo | COMPLETE | dlls/objects/550_VFP_lavapoo/VFP_lavapoo.c | = (canonical) | Exact recovered retail basename |
+| 0x227 | VFP_lavastar | CONFIRMED | main/main_lavastar.c | main/dll/VF/dll_0227_vfplavastar.c | engine/SDK host: main/main_lavastar.c |
+| 0x228 | VFP_SpellPlace (+VFPSpPl) | CONFIRMED | main/main_lavastar.c | main/dll/VF/dll_0228_vfpspellplace.c | engine/SDK host: main/main_lavastar.c |
 | 0x229 | DFP_LevelControl | CONFIRMED | main/dll/dll_0229_dfplevelcontrol.c | main/dll/DF/dll_0229_dfplevelcontrol.c | — |
 | 0x22A | DFP_ObjCreator | CONFIRMED | main/dll/dll_022A_dfpobjcreator.c | main/dll/DF/dll_022A_dfpobjcreator.c | — |
 | 0x22B | DFP_Torch | COMPLETE | main/dll/dll_022B_dfptorch.c | main/dll/DF/dll_022B_dfptorch.c | — |

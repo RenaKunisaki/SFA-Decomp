@@ -18,9 +18,9 @@ catch for the spellstone-in-prisonuncle content-drift class.
 
 | metric | count |
 |---|---|
-| dll-hosting units audited | 806 |
+| dll-hosting units audited | 807 |
 | actionable (non-OK) | 91 |
-| verdict CANONICAL-OK | 625 |
+| verdict CANONICAL-OK | 626 |
 | verdict CONTAINER | 0 |
 | verdict MISLABELED | 2 |
 | verdict HELPER-TU | 162 |
@@ -149,7 +149,7 @@ address. `[lo-hi)` is the splits.txt `.text` range (the partition unit).
 | 72 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 73 | `main/dll/dll_801e66dc.c` | 801E66DC-801E67BC | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 74 | `main/dll/dll_801e991c.c` | 801E991C-801E9C00 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| 76 | `main/main.c` | 801FD6B4-801FDBBC | ENGINE-HOST | FORENSIC | 0x226 | engine/SDK host of DLL 0x226 |
+| 76 | `main/main_lavastar.c` | 801FDBBC-801FE118 | ENGINE-HOST | FORENSIC | 0x227,0x228 | engine/SDK host of DLLs 0x227,0x228 |
 | 77 | `main/sky.c` | 80088758-8008EE18 | ENGINE-HOST | FORENSIC | 0x005,0x006 anom:envfxfn,getskycolorfn,envfxactfn,playerenvfxfn | engine/SDK host of DLL(s) 0x005,0x006 |
 | 78 | `main/newclouds.c` | 8008EE18-80094494 | ENGINE-HOST | FORENSIC | 0x007 anom:snow,lightning,cloud,mm | engine/SDK host of DLL(s) 0x007 |
 | 79 | `main/objseq.c` | 80080DE8-80088758 | ENGINE-HOST | FORENSIC | 0x002 anom:rom,animated,seq | engine/SDK host of DLL(s) 0x002 |
@@ -316,7 +316,7 @@ Batches: 12. Region-disjoint: NO OVERLAP — verified (each batch owns a contigu
 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801e66dc.c` | 801E66DC-801E67BC | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801e991c.c` | 801E991C-801E9C00 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| `main/main.c` | 801FD6B4-801FDBBC | ENGINE-HOST | FORENSIC | engine/SDK host of DLL 0x226 |
+| `main/main_lavastar.c` | 801FDBBC-801FE118 | ENGINE-HOST | FORENSIC | engine/SDK host of DLLs 0x227,0x228 |
 
 ### Batch B11 — `80209810-802106C0` (8 items)
 

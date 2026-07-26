@@ -1,22 +1,37 @@
-#include "main/dll/partfx_interface.h"
+/* VFP_lavapoo (DLL 0x0226) */
+#include "dlls/object_descriptor.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
-#include "main/dll/CF/laser.h"
-#include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
 #include "main/audio/sfx.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/dll/modgfx_interface.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/object_render.h"
 #include "main/objprint_api.h"
 #include "main/objtexture.h"
-#include "main/resource.h"
 #include "main/vecmath.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/texture.h"
-#include "main/frame_timing.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "dlls/object_descriptor.h"
+
+#define VFP_LAVAPOOL_OBJFLAG_RENDERED 0x800
+#define VFP_LAVAPOOL_PARTFX          0x3a2
+
+static const f32 lbl_803E6160 = 100.0f;
+static const f32 lbl_803E6164 = 32767.0f;
+static const f32 lbl_803E6168 = 1.0f;
+static const f32 lbl_803E616C = 0.0f;
+static const f32 lbl_803E6170 = 255.0f;
+static const f32 gVfpLavaPoolPi = 3.1415927f;
+static const f32 lbl_803E6178 = 32768.0f;
+static const f32 lbl_803E617C = 0.2f;
+static const f32 lbl_803E6180 = 0.8f;
+static const f32 lbl_803E6184 = 4767.0f;
+static const f32 lbl_803E6188 = 20767.0f;
+static const f32 lbl_803E618C = 16767.0f;
+static const f32 lbl_803E6190 = 2000.0f;
+static const f32 lbl_803E6194 = 10000.0f;
+static const f32 lbl_803E6198 = 50.0f;
+
+f32 gVfpLavaPoolWaveSin;
 
 typedef struct VfpLavaPoolMapData
 {
@@ -43,23 +58,6 @@ STATIC_ASSERT(offsetof(VfpLavaPoolState, timerB) == 0x06);
 STATIC_ASSERT(offsetof(VfpLavaPoolState, amplitude) == 0x08);
 STATIC_ASSERT(offsetof(VfpLavaPoolState, phase) == 0x0C);
 STATIC_ASSERT(offsetof(VfpLavaPoolState, speedFactor) == 0x10);
-#define MAIN_OBJFLAG_RENDERED           0x800
-#define MAIN_LAVAPOOL_PARTFX 0x3a2
-extern f32 lbl_803E6168;
-extern f32 gVfpLavaPoolWaveSin;
-extern f32 lbl_803E6160;
-extern f32 lbl_803E6164;
-extern f32 lbl_803E616C;
-extern f32 gVfpLavaPoolPi;
-extern f32 lbl_803E6178;
-extern f32 lbl_803E617C;
-extern f32 lbl_803E6180;
-extern f32 lbl_803E6184;
-extern f32 lbl_803E6188;
-extern f32 lbl_803E618C;
-extern f32 lbl_803E6190;
-extern f32 lbl_803E6194;
-extern f32 lbl_803E6198;
 
 void VFP_lavapool_updateWave(GameObject* obj)
 {
@@ -95,9 +93,9 @@ void VFP_lavapool_updateWave(GameObject* obj)
     if (phase > lbl_803E6184 && phase < lbl_803E6188)
     {
         parm.value = state->amplitude;
-        if (obj->objectFlags & MAIN_OBJFLAG_RENDERED)
+        if (obj->objectFlags & VFP_LAVAPOOL_OBJFLAG_RENDERED)
         {
-            (*gPartfxInterface)->spawnObject((void*)obj, MAIN_LAVAPOOL_PARTFX, &parm, 2, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, VFP_LAVAPOOL_PARTFX, &parm, 2, -1, NULL);
         }
     }
     phase = state->phase;
@@ -131,21 +129,26 @@ void VFP_lavapool_updateWave(GameObject* obj)
         tex->offsetT = (s16)scrollT;
     }
 }
+
 int VFP_lavapool_animEventCallback(void)
 {
     return 0x1;
 }
+
 int VFP_lavapool_getExtraSize_ret_24(void)
 {
     return 0x18;
 }
+
 int VFP_lavapool_getObjectTypeId(void)
 {
     return 0x0;
 }
+
 void VFP_lavapool_free_nop(void)
 {
 }
+
 void VFP_lavapool_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 {
     if (visible != 0)
@@ -177,7 +180,8 @@ void VFP_lavapool_init(GameObject* obj, VfpLavaPoolMapData* mapData)
         mapData->amplitudeDivisor = 500;
     }
     obj->anim.rootMotionScale =
-        lbl_803E6168 / ((f32)(int)mapData->amplitudeDivisor / (f32)(int)randomGetRange(600, 1000));
+        lbl_803E6168 /
+        ((f32)(int)mapData->amplitudeDivisor / (f32)(int)randomGetRange(600, 1000));
     state->amplitude = obj->anim.rootMotionScale;
     state->speedFactor = (f32)(int)randomGetRange(0x32, 100);
 }

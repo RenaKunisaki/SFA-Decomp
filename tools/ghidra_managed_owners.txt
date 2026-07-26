@@ -360,7 +360,6 @@ main/dll/zBomb.c
 main/dll/expgfx.c
 main/expr.c
 main/lightmap.c
-main/main.c
 main/maketex.c
 main/newshadows.c
 main/objanim.c
