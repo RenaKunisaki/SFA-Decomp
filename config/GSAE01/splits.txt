@@ -3405,7 +3405,7 @@ main/dll/DF/dll_0232_dfprotatep.c:
 main/dll/crate.c:
 	.text       start:0x80208098 end:0x802081F4
 
-main/dll/DF/dll_0233_dfpstatue1.c:
+dlls/objects/563_DFP_Statue1/DFP_Statue1.c:
 	.text       start:0x802081F4 end:0x8020848C
 	.data       start:0x80329AD8 end:0x80329B10
 	.sdata2     start:0x803E6480 end:0x803E6488
