@@ -378,7 +378,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x14C | — (+babycloudrunner, CFCloudBaby, CFAmbientCl, SHCloudBaby) | NO-RETAIL-NAME | dlls/objects/332/332.c | = (canonical) | — |
 | 0x14D | LaserBeam | COMPLETE | dlls/objects/333_LaserBeam/LaserBeam.c | = (canonical) | data-only DLL |
 | 0x14E | CFPrisonGua | CONFIRMED | dlls/objects/334_CFPrisonGua/CFPrisonGua.c | = (canonical) | — |
-| 0x14F | CFPrisonUncle | CONFIRMED | main/dll/dll_014F_cfprisonuncle.c | main/dll/CF/dll_014F_cfprisonuncle.c | — |
+| 0x14F | CFPrisonUnc | CONFIRMED | dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c | = (canonical) | — |
 | 0x150 | GCRobotLightbea | CONFIRMED | main/dll/dll_0150_gcrobotlightbea.c | = (canonical) | — |
 | 0x151 | CFScalesGal | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x152 | CF_ObjCreat | RAW | *(none)* | — | no .text fns (descriptor data only) |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x14F | main/dll/dll_014F_cfprisonuncle.c | main/dll/CF/dll_014F_cfprisonuncle.c | CONFIRMED |
 | 0x153 | main/dll/dll_0153_cfperch.c | main/dll/CF/dll_0153_cfperch.c | COMPLETE |
 | 0x154 | main/dll/dll_0154_cfprisoncage.c | main/dll/CF/dll_0154_cfprisoncage.c | CONFIRMED |
 | 0x15B | main/dll/dll_015B_cfforcefield.c | main/dll/CF/dll_015B_cfforcefield.c | CONFIRMED |
