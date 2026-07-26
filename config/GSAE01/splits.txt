@@ -3346,7 +3346,7 @@ main/dll/dll_0241_drakorenergy.c:
 	.sdata      start:0x803DC160 end:0x803DC180
 	.sdata2     start:0x803E6298 end:0x803E62A4
 
-main/dll/dll_0242_dbstealerworm.c:
+dlls/objects/578_DBstealerwo/DBstealerwo.c:
 	.text       start:0x801FFE18 end:0x80203C78
 	.data       start:0x803293B8 end:0x80329940
 	.sdata2     start:0x803E62A8 end:0x803E6390

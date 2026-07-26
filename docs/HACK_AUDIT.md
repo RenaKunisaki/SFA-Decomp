@@ -222,7 +222,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/WM/dll_0211_wmwallcrawler | 100.0000 | 94.7003 | -5.2997 |
 | main/main/dll/dll_8011d918 | 100.0000 | 94.7368 | -5.2632 |
 | main/dlls/objects/609_DR_LaserCan/DR_LaserCan | 99.4782 | 94.3216 | -5.1565 |
-| main/main/dll/dll_0242_dbstealerworm | 99.9161 | 94.8762 | -5.0398 |
+| main/dlls/objects/578_DBstealerwo/DBstealerwo | 99.9161 | 94.8762 | -5.0398 |
 | main/main/objseq | 99.7434 | 94.7181 | -5.0253 |
 | main/dlls/objects/599_DR_EarthWar/DR_EarthWar | 99.8439 | 94.9341 | -4.9098 |
 | main/dlls/objects/626/626 | 100.0000 | 95.0953 | -4.9047 |
