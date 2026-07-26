@@ -484,7 +484,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1B6 | SC_levelcon | COMPLETE | dlls/objects/438_SC_levelcon/SC_levelcon.c | = (canonical) | — |
 | 0x1B7 | SC_MusicTree (+SC_BirchTre) | COMPLETE | dlls/objects/439/439.c | = (canonical) | No single recovered TU basename |
 | 0x1B8 | SC_totempol | COMPLETE | dlls/objects/440_SC_totempol/SC_totempol.c | = (canonical) | — |
-| 0x1B9 | SC_Cloudrunnera | CONFIRMED | main/dll/dll_01B9_sccloudrunnera.c | main/dll/SC/dll_01B9_sccloudrunnera.c | — |
+| 0x1B9 | SC_Cloudrun | COMPLETE | dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c | = (canonical) | — |
 | 0x1BA | SC_totempuzzle | CONFIRMED | main/dll/dll_01BA_sctotempuzzle.c | main/dll/SC/dll_01BA_sctotempuzzle.c | — |
 | 0x1BB | SC_totembond | CONFIRMED | main/dll/dll_01BB_sctotembond.c | main/dll/SC/dll_01BB_sctotembond.c | — |
 | 0x1BC | SC_totemstrength | CONFIRMED | main/dll/dll_01BC_sctotemstrength.c | main/dll/SC/dll_01BC_sctotemstrength.c | — |
@@ -818,7 +818,7 @@ name was a deliberate choice by a previous carve:
 | 0x1B6 | main/dll/dll_01B6_sclevelcontrol.c | dlls/objects/438_SC_levelcon/SC_levelcon.c | COMPLETE |
 | 0x1B7 | main/dll/dll_01B7_scmusictree.c | dlls/objects/439/439.c | COMPLETE |
 | 0x1B8 | main/dll/dll_01B8_sctotempole.c | dlls/objects/440_SC_totempol/SC_totempol.c | COMPLETE |
-| 0x1B9 | main/dll/dll_01B9_sccloudrunnera.c | main/dll/SC/dll_01B9_sccloudrunnera.c | CONFIRMED |
+| 0x1B9 | main/dll/dll_01B9_sccloudrunnera.c | dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c | COMPLETE |
 | 0x1BA | main/dll/dll_01BA_sctotempuzzle.c | main/dll/SC/dll_01BA_sctotempuzzle.c | CONFIRMED |
 | 0x1BB | main/dll/dll_01BB_sctotembond.c | main/dll/SC/dll_01BB_sctotembond.c | CONFIRMED |
 | 0x1BC | main/dll/dll_01BC_sctotemstrength.c | main/dll/SC/dll_01BC_sctotemstrength.c | CONFIRMED |
