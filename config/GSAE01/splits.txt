@@ -3561,7 +3561,7 @@ dlls/objects/572_DFP_PowerSl/DFP_PowerSl.c:
 dlls/objects/581/581.c:
 	.data       start:0x80329E40 end:0x80329E70
 
-main/dll/dll_0246_dummy246.c:
+dlls/objects/582/582.c:
 	.data       start:0x80329E70 end:0x80329EA0
 
 dlls/objects/580/580.c:
