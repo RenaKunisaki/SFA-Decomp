@@ -1972,6 +1972,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/631_CFWindLiftL/CFWindLiftL.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/632/632.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/634_DR_Collapse/DR_Collapse.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_027C_drlightbea.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_027E_drmusiccont.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0280_drcloudper.c", cflags=cflags_dll_noopt),

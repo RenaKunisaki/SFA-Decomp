@@ -677,7 +677,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x277 | CFWindLiftL | RAW | dlls/objects/631_CFWindLiftL/CFWindLiftL.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC370` |
 | 0x278 | — | NO-RETAIL-NAME | dlls/objects/632/632.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC378` |
 | 0x279 | DR_EnergyDi | RAW | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | = (canonical) | Exact complete TU; descriptor is followed by the TU's final 48-byte data table |
-| 0x27A | DR_Collapse | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x27A | DR_Collapse | RAW | dlls/objects/634_DR_Collapse/DR_Collapse.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC388` |
 | 0x27B | DR_CaveIn (+DR_CaveInFl) | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x27C | DR_LightBea | CONFIRMED | main/dll/dll_027C_drlightbea.c | main/dll/DR/dll_027C_drlightbea.c | — |
 | 0x27D | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |

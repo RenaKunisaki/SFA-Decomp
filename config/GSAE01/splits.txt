@@ -3779,6 +3779,9 @@ dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c:
 	.sdata      start:0x803DC380 end:0x803DC388
 	.sdata2     start:0x803E6BB0 end:0x803E6BB4
 
+dlls/objects/634_DR_Collapse/DR_Collapse.c:
+	.sdata      start:0x803DC388 end:0x803DC390
+
 main/dll/DR/dll_027C_drlightbea.c:
 	.text       start:0x80220808 end:0x80220AD0
 	.data       start:0x8032AD30 end:0x8032AD98
