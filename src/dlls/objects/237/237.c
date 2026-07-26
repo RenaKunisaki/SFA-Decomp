@@ -90,68 +90,68 @@ static u8 sCollectiblePathData[12] = {0};
 /* idle sparkle spawned randomly for the 0x27f seqId variant in collectible_updateIdleMotion */
 #define COLLECTIBLE_PARTFX_IDLE 0x423
 
-void collectible_setPosition(int* obj, f32 f1, f32 f2, f32 f3)
+void collectible_setPosition(GameObject* obj, f32 f1, f32 f2, f32 f3)
 {
-    CollectibleState* inner = (CollectibleState*)((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.localPosX = f1;
+    CollectibleState* inner = (CollectibleState*)obj->extra;
+    obj->anim.localPosX = f1;
     inner->basePosX = f1;
-    ((GameObject*)obj)->anim.localPosY = f2;
+    obj->anim.localPosY = f2;
     inner->basePosY = f2;
-    ((GameObject*)obj)->anim.localPosZ = f3;
+    obj->anim.localPosZ = f3;
     inner->basePosZ = f3;
     if (mainGetBit(inner->hideGameBit) == 0)
     {
-        saveGame_saveObjectPos((GameObject*)obj);
+        saveGame_saveObjectPos(obj);
     }
 }
 
-void collectible_startBounceMotion(int* obj, f32 f1, f32 f2, f32 f3)
+void collectible_startBounceMotion(GameObject* obj, f32 f1, f32 f2, f32 f3)
 {
     s32 v = 0x8;
-    ((CollectibleState*)((GameObject*)obj)->extra)->bounceTimer = v;
-    ((GameObject*)obj)->anim.velocityX = f1;
-    ((GameObject*)obj)->anim.velocityY = f2;
-    ((GameObject*)obj)->anim.velocityZ = f3;
+    ((CollectibleState*)obj->extra)->bounceTimer = v;
+    obj->anim.velocityX = f1;
+    obj->anim.velocityY = f2;
+    obj->anim.velocityZ = f3;
 }
 
-u8 collectible_getVisibilityBitClear(int* obj) { return ((CollectibleState*)((GameObject*)obj)->extra)->visibilityBitClear; }
+u8 collectible_getVisibilityBitClear(GameObject* obj) { return ((CollectibleState*)obj->extra)->visibilityBitClear; }
 
-void collectible_setVisibilityBitClear(int* obj, u32 v)
+void collectible_setVisibilityBitClear(GameObject* obj, u32 v)
 {
-    ((CollectibleState*)((GameObject*)obj)->extra)->visibilityBitClear = v;
+    ((CollectibleState*)obj->extra)->visibilityBitClear = v;
 }
 
-int collectible_getHitRegionId(int* obj)
+int collectible_getHitRegionId(GameObject* obj)
 {
-    CollectibleState* inner = (CollectibleState*)*(int*)&((GameObject*)obj)->extra;
+    CollectibleState* inner = (CollectibleState*)*(int*)&obj->extra;
     if (inner->hitRegionId == -2)
     {
-        f32 f1 = ((GameObject*)obj)->anim.worldPosX;
-        f32 f2 = ((GameObject*)obj)->anim.worldPosY;
-        f32 f3 = ((GameObject*)obj)->anim.worldPosZ;
+        f32 f1 = obj->anim.worldPosX;
+        f32 f2 = obj->anim.worldPosY;
+        f32 f3 = obj->anim.worldPosZ;
         *(u32*)&inner->hitRegionId = (u16)ObjHitRegion_FindContainingId(f1, f2, f3);
     }
     return inner->hitRegionId;
 }
 
-void collectible_setDisabled(int* obj, int flag)
+void collectible_setDisabled(GameObject* obj, int flag)
 {
-    CollectibleState* inner = (CollectibleState*)((GameObject*)obj)->extra;
+    CollectibleState* inner = (CollectibleState*)obj->extra;
     inner->disabled = flag;
     if (flag != 0)
     {
-        ObjHits_DisableObject((GameObject*)obj);
+        ObjHits_DisableObject(obj);
     }
     else
     {
         if (mainGetBit(inner->hideGameBit) == 0)
         {
-            ObjHits_EnableObject((GameObject*)obj);
+            ObjHits_EnableObject(obj);
         }
     }
 }
 
-int collectible_getIsHidden(int* obj) { return ((GameObject*)obj)->userData1; }
+int collectible_getIsHidden(GameObject* obj) { return obj->userData1; }
 
 static inline f32 collectible_getRotX(GameObject* obj)
 {
@@ -160,28 +160,28 @@ static inline f32 collectible_getRotX(GameObject* obj)
 
 GenPropsWGPipe GXWGFifo : (0xCC008000);
 
-void collectible_applyPickup(int* obj)
+void collectible_applyPickup(GameObject* obj)
 {
-    u8* state = ((GameObject*)obj)->extra;
-    u8* params = *(u8**)&((GameObject*)obj)->anim.placementData;
-    u8* setup2 = ((GameObject*)obj)->anim.modelInstance->extraSetupData;
+    u8* state = obj->extra;
+    u8* params = *(u8**)&obj->anim.placementData;
+    u8* setup2 = obj->anim.modelInstance->extraSetupData;
     Obj_GetPlayerObject();
     getTrickyObject();
     Obj_GetPlayerObject();
     getTrickyObject();
-    ObjHits_DisableObject((GameObject*)obj);
-    if (((GameObject*)obj)->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA)
+    ObjHits_DisableObject(obj);
+    if (obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA)
     {
         ((CollectibleState*)state)->despawnTimer = 180.0f;
-        if (((GameObject*)obj)->anim.modelState != NULL)
+        if (obj->anim.modelState != NULL)
         {
-            ((GameObject*)obj)->anim.modelState->flags = OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+            obj->anim.modelState->flags = OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
     }
     if (((CollectibleState*)state)->hideGameBit != -1)
     {
         mainSetBits(((CollectibleState*)state)->hideGameBit, 1);
-        saveGame_unsaveObjectPos((GameObject*)obj);
+        saveGame_unsaveObjectPos(obj);
     }
     if (((CollectibleSetup*)params)->collectGameBit != -1)
     {
@@ -194,7 +194,7 @@ void collectible_applyPickup(int* obj)
     switch (*(s16*)(setup2 + 2))
     {
     case 1:
-        switch (((GameObject*)obj)->anim.seqId)
+        switch (obj->anim.seqId)
         {
         case 90:
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_lockoff22);
@@ -229,7 +229,7 @@ void collectible_applyPickup(int* obj)
         }
         break;
     case 4:
-        switch (((GameObject*)obj)->anim.seqId)
+        switch (obj->anim.seqId)
         {
         case COLLECTIBLE_ITEM_ENERGY_EGG:
                     Sfx_PlayFromObject((u32)Obj_GetPlayerObject(), SFXTRIG_lockoff22);
@@ -252,8 +252,8 @@ void collectible_applyPickup(int* obj)
         itemPickupDoParticleFx(obj, 1.0f, 255, 40);
         break;
     }
-    ((GameObject*)obj)->anim.rootMotionScale = ((GameObject*)obj)->anim.modelInstance->rootMotionScaleBase;
-    ((GameObject*)obj)->userData1 = 1;
+    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
+    obj->userData1 = 1;
 }
 
 static inline void collectible_updateSeqEffects(GameObject* obj)
@@ -266,29 +266,29 @@ static inline void collectible_updateSeqEffects(GameObject* obj)
     }
 }
 
-void collectible_updateLooseMotion(int* obj)
+void collectible_updateLooseMotion(GameObject* obj)
 {
-    u8* state = ((GameObject*)obj)->extra;
-    if (((GameObject*)obj)->anim.seqId == COLLECTIBLE_MOONSEED_OBJ)
+    u8* state = obj->extra;
+    if (obj->anim.seqId == COLLECTIBLE_MOONSEED_OBJ)
     {
-        objMove((GameObject*)obj, 0.0f,
-                ((GameObject*)obj)->anim.velocityY * framesThisStep, 0.0f);
+        objMove(obj, 0.0f,
+                obj->anim.velocityY * framesThisStep, 0.0f);
     }
     else
     {
         u32 frameCount = framesThisStep;
-        objMove((GameObject*)obj, ((GameObject*)obj)->anim.velocityX * frameCount,
-                ((GameObject*)obj)->anim.velocityY * frameCount,
-                ((GameObject*)obj)->anim.velocityZ * frameCount);
+        objMove(obj, obj->anim.velocityX * frameCount,
+                obj->anim.velocityY * frameCount,
+                obj->anim.velocityZ * frameCount);
     }
     (*gPathControlInterface)->update(obj, state + 0x50, timeDelta);
     (*gPathControlInterface)->apply(obj, state + 0x50);
     (*gPathControlInterface)->advance(obj, state + 0x50, timeDelta);
     if (*(s8*)&((CollectibleState*)state)->bounceHitFlag != 0)
     {
-        f32 nx = -((GameObject*)obj)->anim.velocityX;
-        f32 ny = -((GameObject*)obj)->anim.velocityY;
-        f32 nz = -((GameObject*)obj)->anim.velocityZ;
+        f32 nx = -obj->anim.velocityX;
+        f32 ny = -obj->anim.velocityY;
+        f32 nz = -obj->anim.velocityZ;
         f32 len = sqrtf(nx * nx + ny * ny + nz * nz);
         if (0.0f != len)
         {
@@ -302,33 +302,33 @@ void collectible_updateLooseMotion(int* obj)
             f32 py = *(f32*)(state + 0xbc);
             f32 pz = *(f32*)(state + 0xc0);
             f32 d = 2.0f * (nx * px + ny * py + nz * pz);
-            ((GameObject*)obj)->anim.velocityX = px * d;
-            ((GameObject*)obj)->anim.velocityY = py * d;
-            ((GameObject*)obj)->anim.velocityZ = pz * d;
+            obj->anim.velocityX = px * d;
+            obj->anim.velocityY = py * d;
+            obj->anim.velocityZ = pz * d;
         }
-        ((GameObject*)obj)->anim.velocityX -= nx;
-        ((GameObject*)obj)->anim.velocityY -= ny;
-        ((GameObject*)obj)->anim.velocityZ -= nz;
-        ((GameObject*)obj)->anim.velocityY *= len;
-        ((GameObject*)obj)->anim.velocityY *= 0.85f;
-        ((GameObject*)obj)->anim.velocityX *= len;
-        ((GameObject*)obj)->anim.velocityZ *= len;
+        obj->anim.velocityX -= nx;
+        obj->anim.velocityY -= ny;
+        obj->anim.velocityZ -= nz;
+        obj->anim.velocityY *= len;
+        obj->anim.velocityY *= 0.85f;
+        obj->anim.velocityX *= len;
+        obj->anim.velocityZ *= len;
         ((CollectibleState*)state)->bounceTimer -= 1;
         if (((CollectibleState*)state)->bounceTimer == 0)
         {
             f32 z;
             ((CollectibleState*)state)->bounceTimer = 0;
             z = 0.0f;
-            ((GameObject*)obj)->anim.velocityX = z;
-            ((GameObject*)obj)->anim.velocityY = z;
-            ((GameObject*)obj)->anim.velocityZ = z;
+            obj->anim.velocityX = z;
+            obj->anim.velocityY = z;
+            obj->anim.velocityZ = z;
         }
     }
     else
     {
         f32 airFriction = 0.99f;
-        ((GameObject*)obj)->anim.velocityY = ((GameObject*)obj)->anim.velocityY * airFriction;
-        ((GameObject*)obj)->anim.velocityY = -(0.07f * timeDelta - ((GameObject*)obj)->anim.velocityY);
+        obj->anim.velocityY = obj->anim.velocityY * airFriction;
+        obj->anim.velocityY = -(0.07f * timeDelta - obj->anim.velocityY);
     }
 }
 
@@ -384,7 +384,7 @@ void collectible_updateIdleMotion(GameObject *obj)
 
 int collectible_SeqFn(GameObject *obj, int unused, ObjAnimUpdateState* animUpdate)
 {
-    int* state = (obj)->extra;
+    CollectibleState* state = obj->extra;
     PartFxSpawnParams buf;
     int j;
     int i;
@@ -444,7 +444,7 @@ void collectible_checkProximityPickup(GameObject *obj, u8* state)
 {
     GameObject* player;
     s16* attach;
-    u8* focus;
+    GameObject* focus;
     f32 dist;
     f32 dy;
 
@@ -458,19 +458,19 @@ void collectible_checkProximityPickup(GameObject *obj, u8* state)
     {
         return;
     }
-    focus = (u8*)playerGetFocusObject((GameObject*)player);
+    focus = playerGetFocusObject(player);
     if (focus == NULL)
     {
-        focus = (u8*)player;
+        focus = player;
     }
-    dist = Vec_xzDistance(&(obj)->anim.worldPosX, &((GameObject*)focus)->anim.worldPosX);
-    dy = ((GameObject*)focus)->anim.worldPosY - (obj)->anim.worldPosY;
+    dist = Vec_xzDistance(&(obj)->anim.worldPosX, &focus->anim.worldPosX);
+    dy = focus->anim.worldPosY - (obj)->anim.worldPosY;
     if (dy < 0.0f)
     {
         dy = -dy;
     }
     if (dy < 100.0f && dist < ((CollectibleState*)state)->scale &&
-        Obj_IsParentSlackClear((GameObject*)player) != 0)
+        Obj_IsParentSlackClear(player) != 0)
     {
         ((CollectibleState*)state)->pickupMsgValue = -1;
         switch ((obj)->anim.seqId)
@@ -483,12 +483,12 @@ void collectible_checkProximityPickup(GameObject *obj, u8* state)
             }
             else
             {
-                collectible_applyPickup((int*)obj);
+                collectible_applyPickup(obj);
             }
             state[0x37] |= 1;
             break;
         case 0x319:
-            collectible_applyPickup((int*)obj);
+            collectible_applyPickup(obj);
             state[0x37] |= 1;
             break;
         case 0x49:
@@ -501,7 +501,7 @@ void collectible_checkProximityPickup(GameObject *obj, u8* state)
             }
             else
             {
-                collectible_applyPickup((int*)obj);
+                collectible_applyPickup(obj);
             }
             state[0x37] |= 1;
             break;
@@ -513,7 +513,7 @@ void collectible_checkProximityPickup(GameObject *obj, u8* state)
             }
             else
             {
-                collectible_applyPickup((int*)obj);
+                collectible_applyPickup(obj);
             }
             state[0x37] |= 1;
             break;
@@ -554,7 +554,7 @@ void collectible_free(GameObject *obj)
 
 void collectible_render(GameObject *obj, int a, int b, int c, int d, s8 visible)
 {
-    int state = *(int*)&(obj)->extra;
+    CollectibleState* state = *(CollectibleState**)&(obj)->extra;
     f32 zero = 0.0f;
     if (visible != 0 && ((CollectibleState*)state)->despawnTimer == zero && (obj)->userData1 == 0
         && ((obj)->anim.seqId == COLLECTIBLE_TRUTHHORN_OBJ || ((CollectibleState*)state)->visibilityBitClear == 0))
@@ -576,9 +576,9 @@ void collectible_hitDetect(void)
 }
 
 
-void collectible_update(int obj)
+void collectible_update(GameObject* obj)
 {
-    u8* state = ((GameObject*)obj)->extra;
+    u8* state = obj->extra;
     ObjHitsPriorityState* hitState;
     int msgParam;
     int msg;
@@ -586,7 +586,7 @@ void collectible_update(int obj)
     f32 timer;
     f32 zero;
 
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     timer = ((CollectibleState*)state)->despawnTimer;
     zero = 0.0f;
     if (timer != zero)
@@ -595,10 +595,10 @@ void collectible_update(int obj)
         if (((CollectibleState*)state)->despawnTimer <= zero)
         {
             ((CollectibleState*)state)->despawnTimer = zero;
-            ObjHits_DisableObject((GameObject*)obj);
-            if ((((GameObject*)obj)->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
+            ObjHits_DisableObject(obj);
+            if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
             {
-                Obj_FreeObject((GameObject*)obj);
+                Obj_FreeObject(obj);
             }
         }
         return;
@@ -611,10 +611,10 @@ void collectible_update(int obj)
     {
         return;
     }
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (obj->anim.seqId)
     {
     case 0x6a6:
-        objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
+        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
         break;
     }
     timer = ((CollectibleState*)state)->lifetimeTimer;
@@ -624,14 +624,14 @@ void collectible_update(int obj)
         ((CollectibleState*)state)->lifetimeTimer = timer - timeDelta;
         if (((CollectibleState*)state)->lifetimeTimer <= zero)
         {
-            if ((((GameObject*)obj)->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
+            if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
             {
                 ((CollectibleState*)state)->despawnTimer = 180.0f;
-                if (((GameObject*)obj)->anim.modelState != NULL)
+                if (obj->anim.modelState != NULL)
                 {
-                    ((GameObject*)obj)->anim.modelState->flags = OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+                    obj->anim.modelState->flags = OBJ_MODEL_STATE_SHADOW_FADE_OUT;
                 }
-                itemPickupDoParticleFx((void*)obj, 1.0f, 255, 40);
+                itemPickupDoParticleFx(obj, 1.0f, 255, 40);
             }
             ((CollectibleState*)state)->lifetimeTimer = 0.0f;
             return;
@@ -642,11 +642,11 @@ void collectible_update(int obj)
         switch (msg)
         {
         case COLLECTIBLE_MSG_PICKUP:
-            collectible_applyPickup((int*)obj);
+            collectible_applyPickup(obj);
             break;
         }
     }
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (obj->anim.seqId)
     {
     case 0x319:
         hideFrames = ((CollectibleState*)state)->hideFrames;
@@ -657,32 +657,32 @@ void collectible_update(int obj)
             {
                 ((CollectibleState*)state)->hideFrames = 0;
                 state[0x37] &= ~1;
-                ((GameObject*)obj)->anim.alpha = 255;
-                ((GameObject*)obj)->userData1 = 0;
+                obj->anim.alpha = 255;
+                obj->userData1 = 0;
             }
         }
         break;
     }
-    if (((GameObject*)obj)->userData1 != 0)
+    if (obj->userData1 != 0)
     {
-        if (((GameObject*)obj)->anim.hitReactState != NULL)
+        if (obj->anim.hitReactState != NULL)
         {
-            hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
+            hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
             hitState->flags |= OBJHITS_PRIORITY_STATE_HIT_EXCLUDED;
         }
-        ObjHits_DisableObject((GameObject*)obj);
+        ObjHits_DisableObject(obj);
         if (((CollectibleState*)state)->hideGameBit != -1 && mainGetBit((s32)((CollectibleState*)state)->hideGameBit) == 0)
         {
-            ((GameObject*)obj)->userData1 = 0;
+            obj->userData1 = 0;
         }
     }
     else
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-        collectible_updateIdleMotion((GameObject*)(obj));
+        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        collectible_updateIdleMotion(obj);
         if (((CollectibleState*)state)->bounceTimer != 0)
         {
-            collectible_updateLooseMotion((int*)obj);
+            collectible_updateLooseMotion(obj);
         }
         if (state[0x3e] != 0)
         {
@@ -696,13 +696,13 @@ void collectible_update(int obj)
         }
         else
         {
-            collectible_checkProximityPickup((GameObject*)(obj), state);
+            collectible_checkProximityPickup(obj, state);
         }
     }
 }
 
 
-void collectible_init(GameObject *obj, int setup)
+void collectible_init(GameObject *obj, CollectibleSetup* setup)
 {
     ObjAnimComponent* objAnim;
     u8* state = (obj)->extra;
@@ -716,37 +716,37 @@ void collectible_init(GameObject *obj, int setup)
     pathByte = sCollectiblePathByte[0];
     ObjGroup_AddObject((int)obj, COLLECTIBLE_OBJGROUP);
     ObjMsg_AllocQueue(obj, 2);
-    (obj)->anim.rotX = (s16)((u8)((CollectibleSetup*)setup)->rotXByte << 8);
-    (obj)->anim.rotY = (s16)((u8)((CollectibleSetup*)setup)->rotYByte << 8);
-    (obj)->anim.rotZ = (s16)((u8)((CollectibleSetup*)setup)->rotZByte << 8);
+    (obj)->anim.rotX = (s16)((u8)setup->rotXByte << 8);
+    (obj)->anim.rotY = (s16)((u8)setup->rotYByte << 8);
+    (obj)->anim.rotZ = (s16)((u8)setup->rotZByte << 8);
     setupObj = (int)objAnim->modelInstance;
     (obj)->anim.rootMotionScale = *(f32*)(setupObj + 4);
     (obj)->animEventCallback = collectible_SeqFn;
-    setupModelIndex = ((CollectibleSetup*)setup)->modelIndex;
+    setupModelIndex = setup->modelIndex;
     objAnim->bankIndex = setupModelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
     {
         objAnim->bankIndex = 0;
     }
     (obj)->objectFlags = (obj)->objectFlags | COLLECTIBLE_OBJFLAG_HITDETECT_DISABLED;
-    ((CollectibleState*)state)->unkC = ((CollectibleSetup*)setup)->unkC;
-    ((CollectibleState*)state)->unkD = ((CollectibleSetup*)setup)->unkD;
+    ((CollectibleState*)state)->unkC = setup->unkC;
+    ((CollectibleState*)state)->unkD = setup->unkD;
     ((CollectibleState*)state)->disabled = 0;
     ((CollectibleState*)state)->hitRegionId = -2;
     ((CollectibleState*)state)->bounceTimer = 0;
-    ((CollectibleState*)state)->visibilityGameBit = ((CollectibleSetup*)setup)->visibilityGameBit;
+    ((CollectibleState*)state)->visibilityGameBit = setup->visibilityGameBit;
     ((CollectibleState*)state)->mapId = ((ObjPlacement*)setup)->mapId;
     ((CollectibleState*)state)->basePosX = (obj)->anim.localPosX;
     ((CollectibleState*)state)->basePosY = (obj)->anim.localPosY;
     ((CollectibleState*)state)->basePosZ = (obj)->anim.localPosZ;
-    ((CollectibleState*)state)->useColor = ((CollectibleSetup*)setup)->useColor;
+    ((CollectibleState*)state)->useColor = setup->useColor;
     ((CollectibleState*)state)->delayedMsgTimer = 0;
     if (((CollectibleState*)state)->visibilityGameBit != -1)
     {
         ((CollectibleState*)state)->visibilityBitClear = (u8)(
             (u32)__cntlzw(mainGetBit(((CollectibleState*)state)->visibilityGameBit)) >> 5);
     }
-    ((CollectibleState*)state)->hideGameBit = ((CollectibleSetup*)setup)->hideGameBit;
+    ((CollectibleState*)state)->hideGameBit = setup->hideGameBit;
     if (((CollectibleState*)state)->hideGameBit != -1)
     {
         *(u32*)&(obj)->userData1 = mainGetBit(((CollectibleState*)state)->hideGameBit);
@@ -774,9 +774,9 @@ void collectible_init(GameObject *obj, int setup)
         if (((((ObjAnimComponent*)obj)->modelInstance->flags & 0x10000) != 0) &&
             (((CollectibleState*)state)->useColor != 0))
         {
-            ((CollectibleState*)state)->colorR = ((CollectibleSetup*)setup)->colorR;
-            ((CollectibleState*)state)->colorG = ((CollectibleSetup*)setup)->colorG;
-            ((CollectibleState*)state)->colorB = ((CollectibleSetup*)setup)->colorB;
+            ((CollectibleState*)state)->colorR = setup->colorR;
+            ((CollectibleState*)state)->colorG = setup->colorG;
+            ((CollectibleState*)state)->colorB = setup->colorB;
         }
         switch ((obj)->anim.seqId)
         {
