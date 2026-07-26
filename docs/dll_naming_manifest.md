@@ -740,7 +740,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | main/dll/dll_02B6_cnthitobjec.c | = (canonical) | — |
 | 0x2B7 | MCUpgrade | COMPLETE | main/dll/dll_02B7_mcupgrade.c | = (canonical) | — |
 | 0x2B8 | MCUpgradeMa | CONFIRMED | main/dll/dll_02B8_mcupgradema.c | = (canonical) | — |
-| 0x2B9 | MCStaffEffe | CONFIRMED | main/dll/dll_02B9_mcstaffeffe.c | = (canonical) | — |
+| 0x2B9 | MCStaffEffe | CONFIRMED | dlls/objects/697_MCStaffEffe/MCStaffEffe.c | = (canonical) | — |
 | 0x2BA | MCLightning | CONFIRMED | dlls/objects/698_MCLightning/MCLightning.c | = (canonical) | — |
 | 0x2BB | GF_LevelCon | CONFIRMED | dlls/objects/699_GF_LevelCon/GF_LevelCon.c | = (canonical) | — |
 | 0x2BC | Andross | COMPLETE | dlls/objects/700_Andross/Andross.c | = (canonical) | — |
