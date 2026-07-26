@@ -1,4 +1,4 @@
-/* DLL 0x1D9 - DIM2 Prison Mammoth: mammoth baddie state machine for the
+/* DIM2PrisonM (DLL 0x1D9): mammoth baddie state machine for the
  * DIM2 prison area.  Handles idle/stomp/charge state transitions, eye
  * animations, hit-react, and the tail-whip player interaction. */
 #include "main/dll/baddie_state.h"
@@ -24,7 +24,7 @@
 #define PAD_BUTTON_A                                 0x100
 
 int gDim2PrisonMammothStateHandlers[4];
-extern void* gDim2PrisonMammothDefaultStateHandler;
+void* gDim2PrisonMammothDefaultStateHandler[2];
 extern f32 gPrisonMammothMoveSpeedTable[2];
 extern s16 gPrisonMammothMoveIdTable[2];
 extern u8 gPrisonMammothStateFlagsTable[4];
@@ -32,7 +32,7 @@ extern ObjHitReactEntry gPrisonMammothHitReactEntry[];
 
 int dim2prisonmammoth_defaultStateHandler(void)
 {
-    return 0x0;
+    return 0;
 }
 
 int dim2prisonmammoth_stateHandler03(GameObject* obj, int state)
@@ -162,7 +162,7 @@ int dim2prisonmammoth_SeqFn(GameObject* obj, int state, ObjAnimUpdateState* anim
 
 int dim2prisonmammoth_getExtraSize(void)
 {
-    return 0x604;
+    return sizeof(Dim2prisonmammothState);
 }
 
 int dim2prisonmammoth_getObjectTypeId(void)
@@ -228,7 +228,7 @@ void dim2prisonmammoth_update(GameObject* obj)
     ((Dim2prisonmammothState*)inner)->unk330 = 0;
     ((Dim2prisonmammothState*)inner)->flags |= 0x400000;
     (*gPlayerInterface)->update((void*)obj, (void*)inner, timeDelta, timeDelta, gDim2PrisonMammothStateHandlers,
-                                &gDim2PrisonMammothDefaultStateHandler);
+                                gDim2PrisonMammothDefaultStateHandler);
     saveGame_saveObjectPos(obj);
 }
 
@@ -258,7 +258,7 @@ void dim2prisonmammoth_initialise(void)
     ((void**)gDim2PrisonMammothStateHandlers)[1] = dim2prisonmammoth_stateHandler01;
     ((void**)gDim2PrisonMammothStateHandlers)[2] = dim2prisonmammoth_stateHandler02;
     ((void**)gDim2PrisonMammothStateHandlers)[3] = dim2prisonmammoth_stateHandler03;
-    gDim2PrisonMammothDefaultStateHandler = dim2prisonmammoth_defaultStateHandler;
+    gDim2PrisonMammothDefaultStateHandler[0] = dim2prisonmammoth_defaultStateHandler;
 }
 
 void fn_802BC788(GameObject* obj, int b)
