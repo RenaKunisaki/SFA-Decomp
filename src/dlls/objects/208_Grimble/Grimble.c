@@ -26,7 +26,6 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/boneparticleeffect_interface.h"
-#include "main/dll/dll_00CF_cannonclaw.h"
 #include "main/dll/dll_00D0_grimble.h"
 #include "main/dll/dll_80161130.h"
 #include "main/mapEventTypes.h"
@@ -908,6 +907,26 @@ void grimble_initialise(void)
     grimble_initialiseStateHandlerTables();
 }
 
+void grimble_initialiseStateHandlerTables(void)
+{
+    gGrimbleStateHandlersA[0] = grimble_stateHandlerA00;
+    gGrimbleStateHandlersA[1] = grimble_stateHandlerA01;
+    gGrimbleStateHandlersA[2] = grimble_stateHandlerA02;
+    gGrimbleStateHandlersA[3] = grimble_stateHandlerA03;
+    gGrimbleStateHandlersA[4] = grimble_stateHandlerA04;
+    gGrimbleStateHandlersA[5] = grimble_stateHandlerA05;
+    gGrimbleStateHandlersA[6] = grimble_stateHandlerA06;
+    gGrimbleStateHandlersA[7] = grimble_stateHandlerA07;
+    gGrimbleStateHandlersA[8] = grimble_stateHandlerA08;
+    gGrimbleStateHandlersA[9] = grimble_stateHandlerA09;
+    gGrimbleStateHandlersB[0] = grimble_stateHandlerB00;
+    gGrimbleStateHandlersB[1] = grimble_stateHandlerB01;
+    gGrimbleStateHandlersB[2] = scarab_updateProximityGate;
+    gGrimbleStateHandlersB[3] = grimble_stateHandlerB03;
+    gGrimbleStateHandlersB[4] = grimble_stateHandlerB04;
+    gGrimbleStateHandlersB[5] = grimble_stateHandlerB05;
+}
+
 ObjectDescriptor gGrimbleObjDescriptor = {
     0,
     0,
@@ -923,21 +942,4 @@ ObjectDescriptor gGrimbleObjDescriptor = {
     (ObjectDescriptorCallback)grimble_free,
     (ObjectDescriptorCallback)grimble_getObjectTypeId,
     grimble_getExtraSize,
-};
-
-ObjectDescriptor gCannonClawObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)cannonclaw_initialise,
-    (ObjectDescriptorCallback)cannonclaw_release,
-    0,
-    (ObjectDescriptorCallback)cannonclaw_init,
-    (ObjectDescriptorCallback)cannonclaw_update,
-    (ObjectDescriptorCallback)cannonclaw_hitDetect,
-    (ObjectDescriptorCallback)cannonclaw_render,
-    (ObjectDescriptorCallback)cannonclaw_free,
-    (ObjectDescriptorCallback)cannonclaw_getObjectTypeId,
-    cannonclaw_getExtraSize,
 };

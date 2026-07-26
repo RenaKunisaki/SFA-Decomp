@@ -17,8 +17,8 @@ void grimble_update(GameObject* obj);
 void grimble_init(int obj, int p2, int p3);
 void grimble_release(void);
 void grimble_initialise(void);
+void grimble_initialiseStateHandlerTables(void);
 
 extern ObjectDescriptor gGrimbleObjDescriptor;
-extern ObjectDescriptor gCannonClawObjDescriptor;
 
 #endif /* MAIN_DLL_DLL_00D0_GRIMBLE_H_ */

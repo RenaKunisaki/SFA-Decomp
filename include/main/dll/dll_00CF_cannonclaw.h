@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_00CF_CANNONCLAW_H_
 
 #include "types.h"
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
@@ -15,7 +16,6 @@ typedef struct CannonClawPlacement
 STATIC_ASSERT(offsetof(CannonClawPlacement, base) == 0x0);
 STATIC_ASSERT(offsetof(CannonClawPlacement, rotXByte) == 0x28);
 
-void grimble_initialiseStateHandlerTables(void);
 int cannonclaw_getExtraSize(void);
 int cannonclaw_getObjectTypeId(void);
 void cannonclaw_free(void);
@@ -25,5 +25,7 @@ void cannonclaw_update(GameObject* obj);
 void cannonclaw_init(GameObject* obj, CannonClawPlacement* placement);
 void cannonclaw_release(void);
 void cannonclaw_initialise(void);
+
+extern ObjectDescriptor gCannonClawObjDescriptor;
 
 #endif /* MAIN_DLL_DLL_00CF_CANNONCLAW_H_ */

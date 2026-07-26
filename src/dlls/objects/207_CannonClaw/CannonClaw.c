@@ -3,16 +3,12 @@
  * until the Tricky object's gate game bit fires, then disables its own hits
  * and stops animating (userData1 latch).
  *
- * This TU also owns grimble_initialiseStateHandlerTables (builds Grimble's
- * two state-handler dispatch tables in .bss). The Grimble/TumbleWeedBush
- * bodies and object descriptors live in their own TUs (dll_00D0/dll_00D1).
+ * The object descriptor and all CannonClaw callbacks live in this TU.
  */
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "main/dll/dll_00D0_grimble.h"
 #include "main/dll/dll_00CF_cannonclaw.h"
-#include "main/dll/dll_80161130.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
 #include "main/frame_timing.h"
@@ -20,32 +16,6 @@
 
 #define CANNONCLAW_OBJID_TRICKY 0x1723
 #define CANNONCLAW_MOVE_ARM     0x208
-
-extern void* gGrimbleStateHandlersA[10];
-extern void* gGrimbleStateHandlersB[6];
-extern f32 lbl_803E2F30;
-extern f32 lbl_803E2F34;
-extern f32 lbl_803E2F38;
-
-void grimble_initialiseStateHandlerTables(void)
-{
-    gGrimbleStateHandlersA[0] = grimble_stateHandlerA00;
-    gGrimbleStateHandlersA[1] = grimble_stateHandlerA01;
-    gGrimbleStateHandlersA[2] = grimble_stateHandlerA02;
-    gGrimbleStateHandlersA[3] = grimble_stateHandlerA03;
-    gGrimbleStateHandlersA[4] = grimble_stateHandlerA04;
-    gGrimbleStateHandlersA[5] = grimble_stateHandlerA05;
-    gGrimbleStateHandlersA[6] = grimble_stateHandlerA06;
-    gGrimbleStateHandlersA[7] = grimble_stateHandlerA07;
-    gGrimbleStateHandlersA[8] = grimble_stateHandlerA08;
-    gGrimbleStateHandlersA[9] = grimble_stateHandlerA09;
-    gGrimbleStateHandlersB[0] = grimble_stateHandlerB00;
-    gGrimbleStateHandlersB[1] = grimble_stateHandlerB01;
-    gGrimbleStateHandlersB[2] = scarab_updateProximityGate;
-    gGrimbleStateHandlersB[3] = grimble_stateHandlerB03;
-    gGrimbleStateHandlersB[4] = grimble_stateHandlerB04;
-    gGrimbleStateHandlersB[5] = grimble_stateHandlerB05;
-}
 
 int cannonclaw_getExtraSize(void)
 {
@@ -68,7 +38,7 @@ void cannonclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
         switch (obj->userData1)
         {
         case 0:
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E2F30);
+            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             break;
         default:
             break;
@@ -89,9 +59,9 @@ void cannonclaw_update(GameObject* obj)
         return;
     if (obj->anim.currentMove != CANNONCLAW_MOVE_ARM)
     {
-        ObjAnim_SetCurrentMove((int)obj, CANNONCLAW_MOVE_ARM, lbl_803E2F34, 0);
+        ObjAnim_SetCurrentMove((int)obj, CANNONCLAW_MOVE_ARM, 0.0f, 0);
     }
-    ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E2F38, timeDelta, NULL);
+    ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
     if (trickyObj == NULL)
         return;
     if (mainGetBit(trickyObj->anim.placementData[13]) == 0)
@@ -115,3 +85,20 @@ void cannonclaw_release(void)
 void cannonclaw_initialise(void)
 {
 }
+
+ObjectDescriptor gCannonClawObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)cannonclaw_initialise,
+    (ObjectDescriptorCallback)cannonclaw_release,
+    0,
+    (ObjectDescriptorCallback)cannonclaw_init,
+    (ObjectDescriptorCallback)cannonclaw_update,
+    (ObjectDescriptorCallback)cannonclaw_hitDetect,
+    (ObjectDescriptorCallback)cannonclaw_render,
+    (ObjectDescriptorCallback)cannonclaw_free,
+    (ObjectDescriptorCallback)cannonclaw_getObjectTypeId,
+    cannonclaw_getExtraSize,
+};

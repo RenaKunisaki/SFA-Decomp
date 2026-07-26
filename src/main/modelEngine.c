@@ -9,6 +9,7 @@
 #include "main/dll/dll_00D4_skeetlawall.h"
 #include "main/dll/dll_00CC_chukchuk.h"
 #include "main/dll/dll_00CD_iceball.h"
+#include "main/dll/dll_00CF_cannonclaw.h"
 #include "main/dll/dll_00D0_grimble.h"
 #include "main/dll/dll_00D1_tumbleweedbush.h"
 #include "main/dll/dll_00D2_tumbleweed.h"
