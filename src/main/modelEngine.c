@@ -46,6 +46,7 @@
 #include "dlls/objects/247.h"
 #include "dlls/objects/248_LevelName.h"
 #include "dlls/objects/249.h"
+#include "dlls/objects/250_InvisibleHi.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -200,8 +201,7 @@ extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDesc
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
     gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
-extern ResourceDescriptor gInfoTextObjDescriptor, gInvisibleHitSwitchObjDescriptor, gKT_TorchObjDescriptor,
-    gKtFallingrocksObjDescriptor;
+extern ResourceDescriptor gInfoTextObjDescriptor, gKT_TorchObjDescriptor, gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
@@ -1189,7 +1189,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&dll_F7,
     (ResourceDescriptor*)&gLevelNameObjDescriptor,
     (ResourceDescriptor*)&gProjectileSwitchObjDescriptor,
-    &gInvisibleHitSwitchObjDescriptor,
+    (ResourceDescriptor*)&gInvisibleHitSwitchObjDescriptor,
     &gPressureSwitchFBObjDescriptor,
     &gDllFCObjDescriptor,
     &gDll14DObjDescriptor,

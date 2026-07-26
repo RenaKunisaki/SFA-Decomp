@@ -1,159 +1,152 @@
-/* DLL 0x00FA (invisiblehitswitch) - Invisible hit switch object [0x8017A8EC-0x8017AC2C). */
+/*
+ * InvisibleHi (DLL 0xFA) - invisible hit-triggered switches.
+ *
+ * The switch mirrors a game bit, accepts one placement-selected hit priority,
+ * and supports latched, toggle, timed-reset, and delayed modes.
+ */
+#include "dlls/objects/250_InvisibleHi.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
-#include "main/dll/dll_00FA_invisiblehitswitch.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
 
 extern f32 lbl_803E3750;
 
-#define INVISIBLEHITSWITCH_OBJFLAG_HIDDEN 0x4000
-#define INVISIBLEHITSWITCH_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define INVISIBLE_HIT_SWITCH_SCALE_UNITS 64
 
-/*
- * Low 2 bits of InvisibleHitSwitchPlacement.triggerMode select the switch
- * behaviour when hit. (Same mode field as dll_00F9 projectileswitch.)
- */
-#define SWITCH_MODE_MASK 3
-#define SWITCH_MODE_LATCH 0     /* activates and stays on; cannot be toggled off */
-#define SWITCH_MODE_TOGGLE 1    /* a second hit while active turns it back off */
-#define SWITCH_MODE_MOMENTARY 2 /* activates, then auto-clears after cooldownFrames */
-#define SWITCH_MODE_DELAYED 3   /* hit arms an activation wind-up before turning on */
+#define INVISIBLE_HIT_SWITCH_FRAMES_PER_SECOND 60.0f
+#define INVISIBLE_HIT_SWITCH_TENTHS_PER_SECOND 0.1f
 
-int InvisibleHitSwitch_getExtraSize(void) { return 0xc; }
+#define INVISIBLE_HIT_SWITCH_DELAY_START  120.0f
+#define INVISIBLE_HIT_SWITCH_DELAY_WINDOW 60.0f
 
-void InvisibleHitSwitch_update(GameObject *obj)
-{
+#define INVISIBLE_HIT_SWITCH_HIT_TYPE_MASK  0xE
+#define INVISIBLE_HIT_SWITCH_HIT_TYPE_SHIFT 1
 
+enum {
+    INVISIBLE_HIT_SWITCH_HIT_TYPE_DEFAULT = 0,
+    INVISIBLE_HIT_SWITCH_HIT_TYPE_1 = 1,
+    INVISIBLE_HIT_SWITCH_HIT_TYPE_2 = 2
+};
+
+#define INVISIBLE_HIT_SWITCH_PRIORITY_DEFAULT 5
+#define INVISIBLE_HIT_SWITCH_PRIORITY_TYPE_1  0x10
+#define INVISIBLE_HIT_SWITCH_PRIORITY_TYPE_2  0x15
+
+int InvisibleHitSwitch_getExtraSize(void) {
+    return sizeof(InvisibleHitSwitchState);
+}
+
+void InvisibleHitSwitch_update(GameObject* obj) {
     InvisibleHitSwitchPlacement* placement;
     InvisibleHitSwitchState* state;
-    int hitId;
-    f32 zero = 0.0f;
+    int hitPriority;
+    f32 zeroTimer = 0.0f;
 
     placement = (InvisibleHitSwitchPlacement*)obj->anim.placementData;
     state = obj->extra;
-    if (state->active != 0)
-    {
-        if (mainGetBit((int)placement->gameBitId) == 0)
-        {
-            state->active = 0;
+    if (state->isOn != 0) {
+        if (mainGetBit((int)placement->gameBitId) == 0) {
+            state->isOn = 0;
         }
-    }
-    else
-    {
-        if (mainGetBit((int)placement->gameBitId) != 0)
-        {
-            state->active = 1;
+    } else {
+        if (mainGetBit((int)placement->gameBitId) != 0) {
+            state->isOn = 1;
         }
     }
 
-    if (state->cooldownTimer > 0.0f)
-    {
-        state->cooldownTimer = state->cooldownTimer - (f32)(u32)framesThisStep;
-        if (state->cooldownTimer <= 0.0f)
-        {
-            state->cooldownTimer = 0.0f;
+    if (state->autoResetTimerFrames > 0.0f) {
+        state->autoResetTimerFrames = state->autoResetTimerFrames - (f32)(u32)framesThisStep;
+        if (state->autoResetTimerFrames <= 0.0f) {
+            state->autoResetTimerFrames = 0.0f;
             mainSetBits((int)placement->gameBitId, 0);
-        }
-        else
-        {
+        } else {
             return;
         }
     }
 
-    if (state->activationTimer != zero)
-    {
-        state->activationTimer = state->activationTimer - timeDelta;
-        if (state->activationTimer < 60.0f)
-        {
-            hitId = ObjHits_GetPriorityHit(obj, 0, 0, 0);
-            if ((int)state->hitId == hitId)
-            {
-                state->activationTimer = 0.0f;
-                state->active = 1;
+    /* Keep the local so MWCC emits the target's unordered float comparison. */
+    if (state->delayedTriggerTimer != zeroTimer) {
+        state->delayedTriggerTimer = state->delayedTriggerTimer - timeDelta;
+        if (state->delayedTriggerTimer < INVISIBLE_HIT_SWITCH_DELAY_WINDOW) {
+            hitPriority = ObjHits_GetPriorityHit(obj, NULL, NULL, NULL);
+            if ((int)state->hitPriority == hitPriority) {
+                state->delayedTriggerTimer = 0.0f;
+                state->isOn = 1;
                 mainSetBits((int)placement->gameBitId, 1);
-            }
-            else if (state->activationTimer <= 0.0f)
-            {
-                state->activationTimer = 0.0f;
+            } else if (state->delayedTriggerTimer <= 0.0f) {
+                state->delayedTriggerTimer = 0.0f;
             }
         }
-    }
-    else
-    {
-        hitId = ObjHits_GetPriorityHit(obj, 0, 0, 0);
-        if ((int)state->hitId != hitId) return;
-        if (state->active != 0)
-        {
-            if ((placement->triggerMode & SWITCH_MODE_MASK) != SWITCH_MODE_TOGGLE) return;
-            state->active = 0;
-            mainSetBits((int)placement->gameBitId, 0);
+    } else {
+        hitPriority = ObjHits_GetPriorityHit(obj, NULL, NULL, NULL);
+        if ((int)state->hitPriority != hitPriority) {
+            return;
         }
-        else
-        {
-            if ((placement->triggerMode & SWITCH_MODE_MASK) == SWITCH_MODE_DELAYED)
-            {
-                state->activationTimer = 120.0f;
+        if (state->isOn != 0) {
+            if ((placement->mode & INVISIBLE_HIT_SWITCH_MODE_MASK) != INVISIBLE_HIT_SWITCH_MODE_TOGGLE) {
                 return;
             }
-            state->active = 1;
+            state->isOn = 0;
+            mainSetBits((int)placement->gameBitId, 0);
+        } else {
+            if ((placement->mode & INVISIBLE_HIT_SWITCH_MODE_MASK) == INVISIBLE_HIT_SWITCH_MODE_DELAYED) {
+                state->delayedTriggerTimer = INVISIBLE_HIT_SWITCH_DELAY_START;
+                return;
+            }
+            state->isOn = 1;
             mainSetBits((int)placement->gameBitId, 1);
-            if ((placement->triggerMode & SWITCH_MODE_MASK) == SWITCH_MODE_MOMENTARY)
-            {
-                state->cooldownTimer = 60.0f * (0.1f * (f32)placement->cooldownFrames);
+            if ((placement->mode & INVISIBLE_HIT_SWITCH_MODE_MASK) == INVISIBLE_HIT_SWITCH_MODE_TIMED_RESET) {
+                state->autoResetTimerFrames =
+                    INVISIBLE_HIT_SWITCH_FRAMES_PER_SECOND *
+                    (INVISIBLE_HIT_SWITCH_TENTHS_PER_SECOND * (f32)placement->autoResetDelayTenths);
             }
         }
     }
 }
 
-void InvisibleHitSwitch_init(GameObject* obj, InvisibleHitSwitchPlacement* placement)
-{
+void InvisibleHitSwitch_init(GameObject* obj, InvisibleHitSwitchPlacement* placement) {
+    InvisibleHitSwitchState* state;
 
-    InvisibleHitSwitchState* info;
-
-    info = obj->extra;
-    (obj)->objectFlags = (u16)((obj)->objectFlags | (INVISIBLEHITSWITCH_OBJFLAG_HIDDEN | INVISIBLEHITSWITCH_OBJFLAG_HITDETECT_DISABLED));
-    if (placement->radiusScale == 0)
-    {
-        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase;
+    state = obj->extra;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    if (placement->radiusScale64 == 0) {
+        obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
+    } else {
+        f32 scaledScale = (f32)(u32)placement->radiusScale64 * obj->anim.modelInstance->rootMotionScaleBase;
+        obj->anim.rootMotionScale = scaledScale * lbl_803E3750;
     }
-    else
-    {
-        {
-            f32 v = (f32)(u32)placement->radiusScale * (obj)->anim.modelInstance->rootMotionScaleBase;
-            (obj)->anim.rootMotionScale = v * lbl_803E3750;
-        }
-    }
-    ObjHitbox_SetSphereRadius(
-        (ObjAnimComponent*)obj,
-        (s16)((placement->radiusScale * (int)(obj)->anim.modelInstance->primaryHitboxRadius) / 64));
-    info->active = mainGetBit(placement->gameBitId);
-    switch ((placement->hitType & 0xe) >> 1)
-    {
-    case 0:
+    ObjHitbox_SetSphereRadius(&obj->anim,
+                              (s16)((placement->radiusScale64 * (int)obj->anim.modelInstance->primaryHitboxRadius) /
+                                    INVISIBLE_HIT_SWITCH_SCALE_UNITS));
+    state->isOn = mainGetBit(placement->gameBitId);
+    switch ((placement->hitPriorityType & INVISIBLE_HIT_SWITCH_HIT_TYPE_MASK) >> INVISIBLE_HIT_SWITCH_HIT_TYPE_SHIFT) {
+    case INVISIBLE_HIT_SWITCH_HIT_TYPE_DEFAULT:
     default:
-        info->hitId = 5;
+        state->hitPriority = INVISIBLE_HIT_SWITCH_PRIORITY_DEFAULT;
         break;
-    case 1:
-        info->hitId = 0x10;
+    case INVISIBLE_HIT_SWITCH_HIT_TYPE_1:
+        state->hitPriority = INVISIBLE_HIT_SWITCH_PRIORITY_TYPE_1;
         break;
-    case 2:
-        info->hitId = 0x15;
+    case INVISIBLE_HIT_SWITCH_HIT_TYPE_2:
+        state->hitPriority = INVISIBLE_HIT_SWITCH_PRIORITY_TYPE_2;
         break;
     }
 }
 
 ObjectDescriptor gInvisibleHitSwitchObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)InvisibleHitSwitch_init,
-    (ObjectDescriptorCallback)InvisibleHitSwitch_update,
-    0,
-    0,
-    0,
-    0,
-    InvisibleHitSwitch_getExtraSize,
+    0,                                                   /* reserved0 */
+    0,                                                   /* reserved1 */
+    0,                                                   /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,                    /* slotCountAndFlags */
+    0,                                                   /* initialise */
+    0,                                                   /* release */
+    0,                                                   /* slot02 */
+    (ObjectDescriptorCallback)InvisibleHitSwitch_init,   /* init */
+    (ObjectDescriptorCallback)InvisibleHitSwitch_update, /* update */
+    0,                                                   /* hitDetect */
+    0,                                                   /* render */
+    0,                                                   /* free */
+    0,                                                   /* getObjectTypeId */
+    InvisibleHitSwitch_getExtraSize,                     /* getExtraSize */
 };
