@@ -62,3 +62,20 @@ void BombPlantingSpot_init(GameObject* obj, BombPlantingSpotPlacement* placement
     obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     obj->anim.rotX = (s16)(placement->rotX << 8);
 }
+
+ObjectDescriptor gBombPlantingSpotObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)BombPlantingSpot_init,
+    (ObjectDescriptorCallback)BombPlantingSpot_update,
+    0,
+    0,
+    0,
+    0,
+    0,
+};

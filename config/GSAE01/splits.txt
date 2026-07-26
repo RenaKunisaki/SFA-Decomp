@@ -2869,43 +2869,39 @@ dlls/objects/420/420.c:
 	.data       start:0x803269C0 end:0x803269F8
 	.sdata2     start:0x803E5270 end:0x803E5278
 
-main/dll/NW/dll_01A5_nwlevcontrol.c:
+dlls/objects/421_NW_levcontr/NW_levcontr.c:
 	.text       start:0x801CFD68 end:0x801D069C
 	.data       start:0x803269F8 end:0x80326B98
 	.sdata2     start:0x803E5278 end:0x803E5284
 
-main/dll/SH/dll_01A6_shtricky.c:
+dlls/objects/422_SH_tricky/SH_tricky.c:
 	.text       start:0x801D069C end:0x801D0828
 	.data       start:0x80326B98 end:0x80326BD0
 
-main/dll/dll_801d0828.c:
-	.text       start:0x801D0828 end:0x801D083C
-
-main/dll/dll_01A7_ediblemushroom.c:
-	.text       start:0x801D083C end:0x801D1BFC
+dlls/objects/423/423.c:
+	.text       start:0x801D0828 end:0x801D1BFC
 	.data       start:0x80326BD0 end:0x80326C78
 	.sdata2     start:0x803E5288 end:0x803E52F8
 
-main/dll/DIM/dim_boss.c:
-	.text       start:0x801D1BFC end:0x801D1BFC
-
-main/dll/SH/dll_01A8_shkillermushroom.c:
+dlls/objects/424_SH_killermu/SH_killermu.c:
 	.text       start:0x801D1BFC end:0x801D286C
 	.data       start:0x80326C78 end:0x80326D20
 	.sdata2     start:0x803E52F8 end:0x803E5354
 
-main/dll/dll_01A9_bombplant.c:
+dlls/objects/425_BombPlant/BombPlant.c:
 	.text       start:0x801D286C end:0x801D3378
-	.data       start:0x80326D20 end:0x80326E18
+	.data       start:0x80326D20 end:0x80326D98
 	.sdata2     start:0x803E5358 end:0x803E5384
 
 main/dll/dll_01AA_bombplantspore.c:
 	.text       start:0x801D3378 end:0x801D3FF4
+	.data       start:0x80326D98 end:0x80326DE0
 	.sdata      start:0x803DBFC0 end:0x803DBFC8
 	.sdata2     start:0x803E53A0 end:0x803E53A8
 
 main/dll/dll_01AB_bombplantingspot.c:
 	.text       start:0x801D3FF4 end:0x801D4198
+	.data       start:0x80326DE0 end:0x80326E18
 
 main/dll/dll_801d4198.c:
 	.text       start:0x801D4198 end:0x801D4364

@@ -1,5 +1,5 @@
 /*
- * nwlevcontrol (DLL 0x1A5) - the SnowHorn Wastes level controller (map
+ * NW_levcontr (DLL 0x1A5) - the SnowHorn Wastes level controller (map
  * 'nwastes', 0x0A).
  *
  * Runs the area's overall progression: a countdown that gates a hint

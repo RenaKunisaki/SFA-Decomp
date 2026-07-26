@@ -1,5 +1,5 @@
 /*
- * shtricky (DLL 0x1A6) - SnowHorn-area scripted-state object that
+ * SH_tricky (DLL 0x1A6) - SnowHorn-area scripted-state object that
  * watches Tricky's progress and toggles the related game bits.
  *
  * The single state byte (obj->extra[0]) drives a small sequence: it
