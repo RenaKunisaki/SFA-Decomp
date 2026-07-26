@@ -54,22 +54,22 @@ STATIC_ASSERT(sizeof(VisAnimatorState) == 0x5);
 #define GROUNDANIMATOR_OBJGROUP        0x31
 #define GROUNDANIMATOR_TARGET_OBJGROUP 0x4
 
-u8 groundanimator_modelMtxFn(int* obj)
+u8 groundanimator_modelMtxFn(GameObject* obj)
 {
-    return ((GroundAnimatorState*)((GameObject*)obj)->extra)->modelVariant;
+    return ((GroundAnimatorState*)obj->extra)->modelVariant;
 }
 
-u8 groundanimator_isFullySunk(int* obj)
+u8 groundanimator_isFullySunk(GameObject* obj)
 {
-    GroundAnimatorState* state = (GroundAnimatorState*)*(int*)&((GameObject*)obj)->extra;
+    GroundAnimatorState* state = (GroundAnimatorState*)*(int*)&obj->extra;
     f32 depth = state->sinkDepth;
-    GroundanimatorPlacement* placement = (GroundanimatorPlacement*)*(int*)&((GameObject*)obj)->anim.placementData;
+    GroundanimatorPlacement* placement = (GroundanimatorPlacement*)*(int*)&obj->anim.placementData;
     u8 maxDepth = placement->maxSinkDepth;
     return depth > (100.0f) * maxDepth;
 }
 
 
-f32 groundanimator_setScale(int* obj, int* target)
+f32 groundanimator_setScale(GameObject* obj, GameObject* target)
 {
     GroundanimatorPlacement* r31;
     GroundAnimatorState* g;
@@ -77,15 +77,15 @@ f32 groundanimator_setScale(int* obj, int* target)
     f32 dx;
     f32 dz;
     f32 rangeSq;
-    g = (GroundAnimatorState*)*(int*)&((GameObject*)obj)->extra;
-    r31 = (GroundanimatorPlacement*)*(int*)&((GameObject*)obj)->anim.placementData;
-    dy = ((GameObject*)target)->anim.localPosY - ((GameObject*)obj)->anim.localPosY;
+    g = (GroundAnimatorState*)*(int*)&obj->extra;
+    r31 = (GroundanimatorPlacement*)*(int*)&obj->anim.placementData;
+    dy = target->anim.localPosY - obj->anim.localPosY;
     if (dy < (-20.0f) || dy > (20.0f))
     {
         return (0.0f);
     }
-    dx = ((GameObject*)target)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
-    dz = ((GameObject*)target)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
+    dx = target->anim.localPosX - obj->anim.localPosX;
+    dz = target->anim.localPosZ - obj->anim.localPosZ;
     rangeSq = (10.0f) + g->radius;
     rangeSq = rangeSq * rangeSq;
     if (dx * dx + dz * dz > rangeSq)
@@ -96,13 +96,13 @@ f32 groundanimator_setScale(int* obj, int* target)
     {
         if (*(void**)&g->linkedObj != NULL)
         {
-            int* e;
+            GameObject* e;
             g->sinkDepth = (100.0f) * (f32)(u32)r31->maxSinkDepth;
-            e = (int*)g->linkedObj;
-            switch (((GameObject*)e)->anim.seqId)
+            e = (GameObject*)g->linkedObj;
+            switch (e->anim.seqId)
             {
             case 0x519:
-                mmp_moonrock_setFrozen((GameObject*)(e), 0);
+                mmp_moonrock_setFrozen(e, 0);
                 break;
             default:
                 (*(void (**)(void*, int))(*(int*)(*(int*)((char*)e + 0x68)) + 0x24))(e, 0);
@@ -115,7 +115,7 @@ f32 groundanimator_setScale(int* obj, int* target)
     return g->radius * (g->sinkDepth / ((100.0f) * (f32)(u32)r31->maxSinkDepth));
 }
 
-void groundanimator_gatherVertices(int* obj, GroundAnimatorState* state, GroundanimatorPlacement* placement)
+void groundanimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, GroundanimatorPlacement* placement)
 {
     void* entry;
     void* vtx;
@@ -136,17 +136,17 @@ void groundanimator_gatherVertices(int* obj, GroundAnimatorState* state, Grounda
     f32 fracZ;
     f32 radsq;
     f32 fracX;
-    block = mapGetBlock(objPosToMapBlockIdx((double)((GameObject*)obj)->anim.localPosX,
-                                            (double)((GameObject*)obj)->anim.localPosY,
-                                            (double)((GameObject*)obj)->anim.localPosZ));
+    block = mapGetBlock(objPosToMapBlockIdx((double)obj->anim.localPosX,
+                                            (double)obj->anim.localPosY,
+                                            (double)obj->anim.localPosZ));
     if (block == NULL || (((MapBlockData*)block)->flags4 & 8) == 0)
     {
         return;
     }
-    ix = fastFloorf((((GameObject*)obj)->anim.localPosX - playerMapOffsetX) / (640.0f));
-    iz = fastFloorf((((GameObject*)obj)->anim.localPosZ - playerMapOffsetZ) / (640.0f));
-    fracX = ((GameObject*)obj)->anim.localPosX - ((640.0f) * ix + playerMapOffsetX);
-    fracZ = ((GameObject*)obj)->anim.localPosZ - ((640.0f) * iz + playerMapOffsetZ);
+    ix = fastFloorf((obj->anim.localPosX - playerMapOffsetX) / (640.0f));
+    iz = fastFloorf((obj->anim.localPosZ - playerMapOffsetZ) / (640.0f));
+    fracX = obj->anim.localPosX - ((640.0f) * ix + playerMapOffsetX);
+    fracZ = obj->anim.localPosZ - ((640.0f) * iz + playerMapOffsetZ);
     off[0] = 0;
     state->entryCount = off[0];
     radsq = state->radius * state->radius;
@@ -198,7 +198,7 @@ int groundanimator_getExtraSize(void)
     return 0x30;
 }
 
-void groundanimator_free(int* obj, int flag)
+void groundanimator_free(GameObject* obj, int flag)
 {
     void* entry;
     void* vtx;
@@ -214,13 +214,13 @@ void groundanimator_free(int* obj, int flag)
     void* nv;
     s16* cell;
     f32 local[4];
-    w = (GroundAnimatorState*)*(int*)&((GameObject*)obj)->extra;
-    r21 = (GroundanimatorPlacement*)*(int*)&((GameObject*)obj)->anim.placementData;
+    w = (GroundAnimatorState*)*(int*)&obj->extra;
+    r21 = (GroundanimatorPlacement*)*(int*)&obj->anim.placementData;
     if (flag == 0)
     {
-        block = mapGetBlock(objPosToMapBlockIdx((double)((GameObject*)obj)->anim.localPosX,
-                                                (double)((GameObject*)obj)->anim.localPosY,
-                                                (double)((GameObject*)obj)->anim.localPosZ));
+        block = mapGetBlock(objPosToMapBlockIdx((double)obj->anim.localPosX,
+                                                (double)obj->anim.localPosY,
+                                                (double)obj->anim.localPosZ));
         if (block != NULL)
         {
             for (blkIdx = 0, off = 0; blkIdx < ((MapBlockData*)block)->polyGroupCount; blkIdx++)
@@ -264,7 +264,7 @@ void groundanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (1.0f));
 }
 
-void groundanimator_update(int* obj)
+void groundanimator_update(GameObject* obj)
 {
     int off2[2];
     int hoffVtx;
@@ -288,14 +288,14 @@ void groundanimator_update(int* obj)
     s8 bi;
     f32 vbuf[3];
     Obj_GetPlayerObject();
-    g = (GroundAnimatorState*)*(int*)&((GameObject*)obj)->extra;
-    r20 = (GroundanimatorPlacement*)*(int*)&((GameObject*)obj)->anim.placementData;
+    g = (GroundAnimatorState*)*(int*)&obj->extra;
+    r20 = (GroundanimatorPlacement*)*(int*)&obj->anim.placementData;
     if (r20->blockId == 0)
     {
         return;
     }
-    bi = objPosToMapBlockIdx((double)((GameObject*)obj)->anim.localPosX, (double)((GameObject*)obj)->anim.localPosY,
-                             (double)((GameObject*)obj)->anim.localPosZ);
+    bi = objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY,
+                             (double)obj->anim.localPosZ);
     oldbit = g->flags & 1;
     if (bi > -1)
     {
@@ -335,7 +335,7 @@ void groundanimator_update(int* obj)
         if (*(void**)&g->linkedObj == NULL)
         {
             nd = (100.0f);
-            g->linkedObj = ObjGroup_FindNearestObject(GROUNDANIMATOR_TARGET_OBJGROUP, (GameObject*)obj, &nd);
+            g->linkedObj = ObjGroup_FindNearestObject(GROUNDANIMATOR_TARGET_OBJGROUP, obj, &nd);
             near = (void*)g->linkedObj;
             if (near != NULL)
             {
@@ -346,8 +346,8 @@ void groundanimator_update(int* obj)
                     {
                         mmp_moonrock_setFrozen((GameObject*)(near), 1);
                     }
-                    mmp_moonrock_setPosition((GameObject*)(near), ((GameObject*)obj)->anim.localPosX,
-                                ((GameObject*)obj)->anim.localPosY - g->yOffset, ((GameObject*)obj)->anim.localPosZ);
+                    mmp_moonrock_setPosition((GameObject*)(near), obj->anim.localPosX,
+                                obj->anim.localPosY - g->yOffset, obj->anim.localPosZ);
                     break;
                 default:
                     if ((g->flags & 2) == 0)
@@ -355,8 +355,8 @@ void groundanimator_update(int* obj)
                         (*(void (**)(void*, int))(*(int*)(*(int*)((char*)near + 0x68)) + 0x24))(near, 1);
                     }
                     (*(void (**)(void*, f32, f32, f32))(*(int*)(*(int*)((char*)near + 0x68)) + 0x38))(
-                        near, ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY - g->yOffset,
-                        ((GameObject*)obj)->anim.localPosZ);
+                        near, obj->anim.localPosX, obj->anim.localPosY - g->yOffset,
+                        obj->anim.localPosZ);
                     break;
                 }
             }
@@ -465,32 +465,32 @@ void groundanimator_update(int* obj)
         tricky = getTrickyObject();
         if (tricky != NULL && mainGetBit(GAMEBIT_Tricky_Usable) != 0)
         {
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            *(u8*)&obj->anim.resetHitboxMode =
+                *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
         else
         {
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+            *(u8*)&obj->anim.resetHitboxMode =
+                *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
-        if (tricky != NULL && (*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
+        *(u8*)&obj->anim.resetHitboxMode =
+            *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
+        if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
         {
-            (*(void (**)(void*, int*, int, int))(*(int*)(*(int*)((char*)tricky + 0x68)) + 0x28))(tricky, obj, 1, 1);
+            (*(void (**)(void*, GameObject*, int, int))(*(int*)(*(int*)((char*)tricky + 0x68)) + 0x28))(tricky, obj, 1, 1);
         }
     }
     else
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+        *(u8*)&obj->anim.resetHitboxMode =
+            *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
     }
-    objRenderFn_80041018((GameObject*)obj);
+    objRenderFn_80041018(obj);
 }
 
-void groundanimator_init(int* obj, WaveanimatorObjectDef* desc)
+void groundanimator_init(GameObject* obj, WaveanimatorObjectDef* desc)
 {
-    GroundAnimatorState* vstate = (GroundAnimatorState*)*(int*)&((GameObject*)obj)->extra;
+    GroundAnimatorState* vstate = (GroundAnimatorState*)*(int*)&obj->extra;
     vstate->modelVariant = (u8)desc->modelVariant;
     vstate->yOffset = (f32)desc->yOffset;
     vstate->lastDepth = (-1.0f);
