@@ -1,5 +1,5 @@
 /*
- * dustmotesou (DLL 0x02B2) - an ambient particle-effect emitter object.
+ * DustMoteSou (DLL 0x02B2) - an ambient particle-effect emitter object.
  *
  * A placement-only object: it carries no per-instance extra state
  * (getExtraSize == 0) and does no rendering or hit detection. Its init
