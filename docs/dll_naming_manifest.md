@@ -743,7 +743,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B9 | MCStaffEffe | RAW | dlls/objects/697_MCStaffEffe/MCStaffEffe.c | = (canonical) | Exact DOL-confirmed three-function TU with its terminal descriptor; it consumes `mcstaffeffe_SeqFn` from DLL 696 and has no small-data sections |
 | 0x2BA | MCLightning | RAW | dlls/objects/698_MCLightning/MCLightning.c | = (canonical) | Exact complete six-function TU with its terminal descriptor and full 32-byte constant pool |
 | 0x2BB | GF_LevelCon | RAW | dlls/objects/699_GF_LevelCon/GF_LevelCon.c | = (canonical) | Exact complete eleven-function TU with its proven early descriptor, trailing compiler switch table, and full 48-byte constant pool |
-| 0x2BC | Andross | COMPLETE | main/dll/dll_02BC_andross.c | = (canonical) | — |
+| 0x2BC | Andross | RAW | dlls/objects/700_Andross/Andross.c | = (canonical) | Complete DOL-confirmed seventeen-function TU with its spawn/animation tables, proven early descriptor, four trailing compiler switch tables, and full small-data sections; existing clean source is 99.868% fuzzy with 16/17 functions exact |
 | 0x2BD | androsshand (+Androssleft, Androssrigh) | CONFIRMED | main/dll/dll_02BD_androsshand.c | = (canonical) | — |
 | 0x2BE | AndrossBrain | CONFIRMED | main/dll/dll_02BE_androssbrain.c | = (canonical) | — |
 | 0x2BF | AndrossLigh | CONFIRMED | main/dll/dll_02BF_androssligh.c | = (canonical) | — |

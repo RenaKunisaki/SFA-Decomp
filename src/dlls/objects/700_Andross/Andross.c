@@ -1,5 +1,5 @@
 /*
- * andross (DLL 0x2BC) - the final Andross boss, fought from the Arwing.
+ * Andross (DLL 0x2BC) - the final Andross boss, fought from the Arwing.
  *
  * andross_update is the whole fight: it caches the player's Arwing
  * (getArwing) plus the two hand objects (0x47b78 / 0x47b6a) and the brain
@@ -39,14 +39,6 @@
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/dll/dll_02BC_andross.h"
-
-s16 gAndrossSwayPhaseX;
-s16 gAndrossSwayPhaseY;
-s16 gGfLevelConRingProjectilePitchSource;
-s16 gGfLevelConProjectileYaw;
-int gGfLevelConRingProjectilePitch;
-int gGfLevelConProjectilePitch;
-f32 gAndrossDistortPhase;
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/dll_02BE_androssbrain.h"
@@ -60,6 +52,14 @@ f32 gAndrossDistortPhase;
 #include "main/gamebit_ids.h"
 #include "main/object_render.h"
 #include "main/maketex_sequence_api.h"
+
+s16 gAndrossSwayPhaseX;
+s16 gAndrossSwayPhaseY;
+s16 gGfLevelConRingProjectilePitchSource;
+s16 gGfLevelConProjectileYaw;
+int gGfLevelConRingProjectilePitch;
+int gGfLevelConProjectilePitch;
+f32 gAndrossDistortPhase;
 
 #define ARW_ARWING_BOMB_OBJ 0x605 /* retail OBJECTS.bin "ARWArwingBo", DLL 0x29C */
 

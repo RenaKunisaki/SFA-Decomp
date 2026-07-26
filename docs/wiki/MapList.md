@@ -456,7 +456,7 @@ local `#define` for the map IDs they care about, e.g.:
 ```
 
 (`include/main/crcloudrace.h:9` and `include/main/worldplanet.h:9` follow the same one-off pattern.)
-Most call sites (`src/dlls/objects/300_Transporter/Transporter.c`, `dll_02BC_andross.c`, `WM/dll_020C_wmspiritplace.c`,
+Most call sites (`src/dlls/objects/300_Transporter/Transporter.c`, `src/dlls/objects/700_Andross/Andross.c`, `WM/dll_020C_wmspiritplace.c`,
 `src/dlls/objects/666_ARWArwing/ARWArwing.c`, etc.) just pass a bare hex literal to `mapGetDirIdx`/`lockLevel`/
 `unlockLevel`/`mapUnload` with no name at all.
 

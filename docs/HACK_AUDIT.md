@@ -283,7 +283,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/WM/dll_0209_wmlevelcontrol | 100.0000 | 98.6942 | -1.3058 |
 | main/dlls/objects/433_SH_staff/SH_staff | 100.0000 | 98.7117 | -1.2883 |
 | main/main/dll/dll_0098_dll98func0 | 100.0000 | 98.7595 | -1.2405 |
-| main/main/dll/dll_02BC_andross | 99.8201 | 98.6141 | -1.2060 |
+| main/dlls/objects/700_Andross/Andross | 99.8201 | 98.6141 | -1.2060 |
 | main/main/dll/dll_0049_cameramodecombat | 100.0000 | 98.7962 | -1.2038 |
 | main/main/dll/tricky_substates | 99.9608 | 98.7689 | -1.1919 |
 | main/main/dll/dll_3e | 100.0000 | 98.8420 | -1.1580 |
