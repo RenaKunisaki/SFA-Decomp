@@ -260,7 +260,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/tex_dolphin | 99.9727 | 97.6931 | -2.2796 |
 | main/main/dll/laserturretgroup | 100.0000 | 97.7680 | -2.2320 |
 | main/main/dll/dll_0045_camTalk | 99.9591 | 97.7451 | -2.2141 |
-| main/main/dll/DR/dll_0250_ktrex | 100.0000 | 97.8409 | -2.1591 |
+| main/dlls/objects/592_KT_Rex/KT_Rex | 100.0000 | 97.8409 | -2.1591 |
 | main/main/dll/frontend_control | 100.0000 | 97.8855 | -2.1145 |
 | main/main/dll/dll_02AD_softbody | 100.0000 | 97.9618 | -2.0382 |
 | main/main/audio/synth_queue | 99.7566 | 97.7389 | -2.0177 |

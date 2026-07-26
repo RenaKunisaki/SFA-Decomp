@@ -635,7 +635,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x24D | BossDrakor | COMPLETE | main/dll/dll_024D_bossdrakor.c | = (canonical) | — |
 | 0x24E | drakord_thornbush (+BossDrakorD, ThornBush) | GUESSED | main/dll/dll_024E_drakordthornbush.c | = (canonical) | — |
 | 0x24F | KT_RexLevel | CONFIRMED | main/dll/dll_024F_ktrexlevel.c | main/dll/DR/dll_024F_ktrexlevel.c | — |
-| 0x250 | KT_Rex | COMPLETE | main/dll/dll_0250_ktrex.c | main/dll/DR/dll_0250_ktrex.c | — |
+| 0x250 | KT_Rex | COMPLETE | dlls/objects/592_KT_Rex/KT_Rex.c | = (canonical) | — |
 | 0x251 | KT_RexFloorswitch | CONFIRMED | dlls/objects/593_KT_RexFloor/KT_RexFloor.c | = (canonical) | — |
 | 0x252 | KT_Lazerwall | CONFIRMED | dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c | = (canonical) | — |
 | 0x253 | KT_Lazerlight | CONFIRMED | dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c | = (canonical) | — |
@@ -906,7 +906,7 @@ name was a deliberate choice by a previous carve:
 | 0x242 | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | CONFIRMED |
 | 0x243 | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | CONFIRMED |
 | 0x24F | main/dll/dll_024F_ktrexlevel.c | main/dll/DR/dll_024F_ktrexlevel.c | CONFIRMED |
-| 0x250 | main/dll/dll_0250_ktrex.c | main/dll/DR/dll_0250_ktrex.c | COMPLETE |
+| 0x250 | main/dll/dll_0250_ktrex.c | dlls/objects/592_KT_Rex/KT_Rex.c | COMPLETE |
 | 0x251 | main/dll/dll_0251_ktrexfloorswitch.c | dlls/objects/593_KT_RexFloor/KT_RexFloor.c | CONFIRMED |
 | 0x252 | main/dll/dll_0252_ktlazerwall.c | dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c | CONFIRMED |
 | 0x253 | main/dll/dll_0253_ktlazerlight.c | dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c | CONFIRMED |
