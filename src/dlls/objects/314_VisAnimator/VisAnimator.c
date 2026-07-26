@@ -1,5 +1,5 @@
 /*
- * visanimator (DLL 0x013A) - per-map-block visibility animator object.
+ * VisAnimator (DLL 0x013A) - per-map-block visibility animator object.
  *
  * Its placement selects a game-bit value, one bit within that value, and the
  * initial map-block visibility state. The selected bit's current state XORs

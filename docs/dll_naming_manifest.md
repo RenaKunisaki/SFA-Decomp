@@ -359,7 +359,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x137 | AlphaAnimat | CONFIRMED | dlls/objects/311_AlphaAnimat/AlphaAnimat.c | = (canonical) | — |
 | 0x138 | GroundAnima | CONFIRMED | dlls/objects/312_GroundAnima/GroundAnima.c | = (canonical) | — |
 | 0x139 | HitAnimator | CONFIRMED | dlls/objects/313_HitAnimator/HitAnimator.c | = (canonical) | — |
-| 0x13A | VisAnimator | CONFIRMED | main/dll/dll_013A_visanimator.c | = (canonical) | — |
+| 0x13A | VisAnimator | CONFIRMED | dlls/objects/314_VisAnimator/VisAnimator.c | = (canonical) | — |
 | 0x13B | WallAnimator | CONFIRMED | main/dll/dll_013B_wallanimator.c | = (canonical) | — |
 | 0x13C | XYZAnimator | CONFIRMED | main/dll/dll_013C_xyzanimator.c | = (canonical) | — |
 | 0x13D | ExplodeAnimator | CONFIRMED | main/dll/dll_013D_explodeanimator.c | = (canonical) | — |
