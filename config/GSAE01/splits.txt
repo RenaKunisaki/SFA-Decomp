@@ -3959,10 +3959,10 @@ dlls/objects/675/675.c:
 	.sbss       start:0x803DDD90 end:0x803DDD98
 	.sdata2     start:0x803E7110 end:0x803E7130
 
-main/dll/dll_02A4.c:
+dlls/objects/676/676.c:
 	.text       start:0x8023134C end:0x802315EC
 	.data       start:0x8032B878 end:0x8032B8B0
-	.sdata2     start:0x803E7130 end:0x803E7138
+	.sdata2     start:0x803E7130 end:0x803E7140
 
 main/dll/ARW/dll_02A5_arwgenerato.c:
 	.text       start:0x802315EC end:0x80231A90
