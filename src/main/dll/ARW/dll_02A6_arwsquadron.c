@@ -57,6 +57,7 @@
 
 union ArwSquadronConstU32 { u32 u; };
 const union ArwSquadronConstU32 gArwSquadronDefaultCurveMode = { 0x28 };
+const f32 gArwSquadronMinRangeZ[1] = { -100.0f };
 
 static inline int arwsquadron_isPlayerWithinRangeZ(GameObject* obj, f32 range)
 {
@@ -65,7 +66,7 @@ static inline int arwsquadron_isPlayerWithinRangeZ(GameObject* obj, f32 range)
     if (craft == NULL)
         craft = Obj_GetPlayerObject();
     distZ = obj->anim.localPosZ - craft->anim.localPosZ;
-    return distZ < range && distZ > -100.0f;
+    return distZ < range && distZ > gArwSquadronMinRangeZ[0];
 }
 
 void arwsquadron_emitEffects(GameObject* obj, ArwSquadronState* state)
