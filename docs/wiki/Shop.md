@@ -224,11 +224,9 @@ range once the `0x2710` offset is added (e.g. row `00`'s `text = 0x003f` -> Game
   - "Firefly Lantern" (row `15`): `FireFlyLantern_spawnFireFly` symbol exists
     (`.text:0x801871C8`) and is implemented at `src/dlls/objects/267_FireFlyLant/FireFlyLant.c` (DLL
     `0x10B`) — a different object from the shop stall's `ShopItem`/`0x284`.
-  - "Fuel Cell": `gFuelCellObjDescriptor` (`.data:0x80321DE8`) is defined in
-    `src/main/dll/CC/dll_0122_cctestinfot.c` as a raw `u32[14]` descriptor array (not yet given a
-    typed `ObjectDescriptor*` cast) referencing `FuelCell_init/_update/_render/_free/_getExtraSize`
-    — those four/five function bodies were not located as decompiled source in this pass (symbol
-    table only, per `config/GSAE01/symbols.txt`).
+  - "Fuel Cell": DLL `0x123` owns `gFuelCellObjDescriptor` (`.data:0x80321DE8`) and all seven
+    FuelCell functions in `src/dlls/objects/291_fuelCell/fuelCell.c`; the descriptor is a typed
+    `ObjectDescriptor`.
   - "DumbleDang"/"PukPuk"/"GrubTub"/"Bomb Spore"/"Moon Seed"/"Bafomdad"/"Rock Candy" as *named
     objects*: not found as such; the closest is `MoonSeedBush`/`MoonSeedPlantingSpot`
     (`config/GSAE01/symbols.txt`, `.text:0x801A6C28` on) which look like the growable-plant system

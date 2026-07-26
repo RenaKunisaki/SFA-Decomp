@@ -336,7 +336,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x120 | TrickyGuard | CONFIRMED | dlls/objects/288_TrickyGuard/TrickyGuard.c | = (canonical) | — |
 | 0x121 | — (+InfoText, LINKF_InfoT, LinkG_InfoT, MMPass_Info, DIM_InfoTex, NW_InfoText, SH_InfoPoin, SH_FireWeed, VFP_InfoTex) | NO-RETAIL-NAME | dlls/objects/289/289.c | = (canonical) | — |
 | 0x122 | CCTestInfot | CONFIRMED | dlls/objects/290_CCTestInfot/CCTestInfot.c | = (canonical) | — |
-| 0x123 | fuelCell | COMPLETE | main/dll/dll_0123_fuelcell.c | = (canonical) | — |
+| 0x123 | fuelCell | COMPLETE | dlls/objects/291_fuelCell/fuelCell.c | = (canonical) | — |
 | 0x124 | deathGas (+deathGasNoF) | COMPLETE | main/dll/dll_0124_deathgas.c | = (canonical) | — |
 | 0x125 | curve | COMPLETE | main/dll/dll_0125_curve.c | = (canonical) | — |
 | 0x126 | Trigger (+TrigPnt, TrigCyl, TrigPln, TrigArea, TrigTime, TrigButt, TriggSetp, TrigBits, TrigCrve) | CONFIRMED | main/dll/dll_0126_trigger.c | = (canonical) | — |

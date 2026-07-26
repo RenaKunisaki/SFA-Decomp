@@ -165,7 +165,7 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 
 ### UnusedThings
 - enum SaveSelectPanelId in dll_0035_saveselectscreen.c replacing the 5 SAVE_SELECT_PANEL_* #defines (CHOOSE_SLOT/OPEN_FILE/SLOT_ACTION/CONFIRM_ERASE/CHAPTER_SELECT) - single-file scope, low risk
-- FuelcellSetup.offBit/onBit (dll_0123_fuelcell.c) are already named fields - no change needed, but worth noting as the concrete field pair responsible for the wiki's reported fuel-cell GameBit-collision bugs if that object is revisited
+- FuelcellSetup.offBit/onBit (src/dlls/objects/291_fuelCell/fuelCell.c) are already named fields - no change needed, but worth noting as the concrete field pair responsible for the wiki's reported fuel-cell GameBit-collision bugs if that object is revisited
 - No new enum/struct is warranted for LACTIONS/SCREENS/DLLS/VOXOBJ - Files.md's existing enum MldfFileId and DLLs.md's SFA_DLL_UNUSED_IDS already cover those id spaces
 
 ### Warptab

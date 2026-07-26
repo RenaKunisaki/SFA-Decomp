@@ -2049,7 +2049,7 @@ main/dll/dll_0124_deathgas.c:
 	.data       start:0x80321DB0 end:0x80321DE8
 	.sdata2     start:0x803E3C90 end:0x803E3CC4
 
-main/dll/dll_0123_fuelcell.c:
+dlls/objects/291_fuelCell/fuelCell.c:
 	.text       start:0x8018C000 end:0x8018C7D8
 	.data       start:0x80321DE8 end:0x80321E20
 	.sdata2     start:0x803E3CC8 end:0x803E3D14

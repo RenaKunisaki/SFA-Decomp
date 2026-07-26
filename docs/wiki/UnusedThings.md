@@ -272,7 +272,7 @@ string and dispatch are confirmed, the per-slot behavioral quirk is not.
 extensively-documented persistent-flag engine — the exact mechanism the wiki's "assigned the same
 GameBit" fuel-cell bugs exploit. The fuel cell object itself is decompiled:
 
-- `src/main/dll/dll_0123_fuelcell.c` (DLL 0x123, `fuelCell` in [DLLs](DLLs)) defines
+- `src/dlls/objects/291_fuelCell/fuelCell.c` (DLL 0x123, `fuelCell` in [DLLs](DLLs)) defines
   `FuelcellSetup { ...; s16 offBit /* 0x1e */; s16 onBit /* 0x20 */; }` — per-placement GameBit ids,
   i.e. exactly the "assigned the same GameBit" collision surface the wiki describes: two placements
   in `OBJECTS.bin`/level data sharing an `offBit`/`onBit` value would exhibit precisely the bugs
@@ -285,7 +285,7 @@ GameBit" fuel-cell bugs exploit. The fuel cell object itself is decompiled:
   (`src/main/dll/dll_0017_savegame.c`) — each map has one `GameBit` bank holding a 0-N "act" counter,
   and `include/main/gamebits.h` separately documents several per-area `*_ActNo` ids (e.g.
   `GAMEBIT_SH_ActNo`, 17 areas total, size-4/4-bit counters). No per-object "which acts is this
-  placement visible in" gating code was found in `dll_0123_fuelcell.c` itself — that check likely
+  placement visible in" gating code was found in `src/dlls/objects/291_fuelCell/fuelCell.c` itself — that check likely
   happens generically at object-spawn time (placement data, not fuelcell-specific code), and wasn't
   traced further here.
 - The specific object ids from the wiki (`0004BE3B`, `0004BE3E`) are raw `OBJECTS.bin`/level

@@ -279,7 +279,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0138_groundanimator | 99.4356 | 97.9693 | -1.4663 |
 | main/main/dll/dll_023F_dbegg | 100.0000 | 98.5857 | -1.4143 |
 | main/main/maketex | 99.9532 | 98.5706 | -1.3827 |
-| main/main/dll/dll_0123_fuelcell | 100.0000 | 98.6375 | -1.3625 |
+| main/dlls/objects/291_fuelCell/fuelCell | 100.0000 | 98.6375 | -1.3625 |
 | main/main/dll/WM/dll_0209_wmlevelcontrol | 100.0000 | 98.6942 | -1.3058 |
 | main/main/dll/SH/dll_01B1_shstaff | 100.0000 | 98.7117 | -1.2883 |
 | main/main/dll/dll_0098_dll98func0 | 100.0000 | 98.7595 | -1.2405 |
