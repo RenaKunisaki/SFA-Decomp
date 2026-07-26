@@ -18,7 +18,6 @@
  */
 #include "main/dll/dll_0272_hightop.h"
 
-void* gHighTopDefaultStateHandler;
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/maketex_random_api.h"
 #include "main/maketex_timer_api.h"
@@ -55,6 +54,18 @@ void* gHighTopDefaultStateHandler;
 #include "main/gamebit_ids.h"
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
+
+void* gHighTopDefaultStateHandler;
+
+u8 lbl_803DC308[8] = {0x04, 0x5D, 0x10, 0x00, 0x03, 0x00, 0x00, 0x00};
+s16 gHighTopMovementSfxIds[2] = {0x1A2, 0x1A3};
+s16 lbl_803DC314[2] = {0x62F, 0};
+f32 lbl_803DC318[2] = {25.0f, 25.0f};
+int gHighTopAirMeterInitValue = 100;
+f32 lbl_803DC324 = 0.9f;
+s16 gHighTopLookYawOffset = -0x8000;
+s16 gHighTopBandMoveIds[2] = {0xB, 0x1};
+s16 gHighTopProgressGameBitIds[4] = {0xCA3, 0xCA4, 0xCA5, 0xCA6};
 
 const HtInitData gHighTopLookInitData1 = {{5, 5, 0, 0, 0, 0, 0, 0, 0}};
 const HtInitData gHighTopLookInitData2 = {{8, 0xF, 0xF, 0xF, 0xF, 0xF, 0xF, 0xF, 0xF}};
@@ -178,7 +189,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         if (randomChanceOneIn(0x64) != 0)
         {
             objSoundFn_800392f0(obj, &state->modelSoundState,
-                                (ObjSoundDef*)(&lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
+                                (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
         }
         if ((s8)stateArg->baddie.moveDone != 0)
         {
@@ -1037,7 +1048,7 @@ void HighTop_hitDetect(GameObject* obj)
     }
     Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&l8, 20.0f);
     objSoundFn_800392f0(obj, &runtime->modelSoundState,
-                        (ObjSoundDef*)(&lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
+                        (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
     st = runtime->baddie.controlMode;
     if (st != 3)
     {
@@ -1189,7 +1200,7 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     pathState = (u8*)&runtime->baddie + 4;
     pathState[0x25b] = 1;
     (*gPathControlInterface)->init(pathState, 3, 1024, 0);
-    (*gPathControlInterface)->setLocalPointCollision(pathState, 2, &base[0xe8], &lbl_803DC318, 8);
+    (*gPathControlInterface)->setLocalPointCollision(pathState, 2, &base[0xe8], lbl_803DC318, 8);
     (*gPathControlInterface)->setup(pathState, 4, &base[0xa8], &base[0xd8], pathParam.values);
     (*gPathControlInterface)->attachObject(obj, pathState);
     dll_2E_func05(obj, (MoveLibState*)runtime->lookController, -4551, 23665, 6);

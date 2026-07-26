@@ -3745,6 +3745,7 @@ main/dll/dll_0272_hightop.c:
 	.text       start:0x8021CF60 end:0x8021F34C
 	.rodata     start:0x802C2590 end:0x802C25B8
 	.data       start:0x8032AB30 end:0x8032AC58
+	.sdata      start:0x803DC308 end:0x803DC338
 	.sbss       start:0x803DDD78 end:0x803DDD80
 	.sdata2     start:0x803E6AA0 end:0x803E6B58
 

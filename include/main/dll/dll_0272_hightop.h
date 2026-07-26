@@ -176,11 +176,11 @@ STATIC_ASSERT(sizeof(HighTopTuning) == 0x68);
 STATIC_ASSERT(offsetof(HighTopTuning, unk10) == 0x10);
 
 extern HighTopTuning lbl_8032AB48;
-extern int lbl_803DC318;
+extern f32 lbl_803DC318[2];
 extern s16 gHighTopLookYawOffset;
-extern u8 lbl_803DC308;
+extern u8 lbl_803DC308[8];
 extern f32 lbl_803DC324;
-extern s16 lbl_803DC314;
+extern s16 lbl_803DC314[2];
 extern u8 lbl_8032AAB0[];
 
 #endif /* MAIN_DLL_DLL_0272_HIGHTOP_H_ */
