@@ -369,15 +369,15 @@ extern int gDbStealerwormSfxIds[];
 extern u8 gDbWormEffectSpawnWork[];
 extern u32 lbl_803293B8[];
 
-int dbstealerworm_stateHandlerB04(int obj, int baddie)
+int dbstealerworm_stateHandlerB04(GameObject* obj, int baddie)
 {
     float fz;
     int b8;
 
-    b8 = *(int*)&((GameObject*)obj)->extra;
+    b8 = *(int*)&obj->extra;
     if (*(char*)&((BaddieState*)baddie)->moveJustStartedB != '\0')
     {
-        (*gPlayerInterface)->setState((void*)obj, (void*)baddie, 1);
+        (*gPlayerInterface)->setState(obj, (void*)baddie, 1);
         b8 = *(int*)&((GroundBaddieState*)b8)->control;
         fz = 0.0f;
         ((DbStealerwormControl*)b8)->countdown = 0.0f;
@@ -387,24 +387,24 @@ int dbstealerworm_stateHandlerB04(int obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerB03(int obj, int baddie)
+int dbstealerworm_stateHandlerB03(GameObject* obj, int baddie)
 {
-    GroundBaddieState* state = ((GameObject*)obj)->extra;
+    GroundBaddieState* state = obj->extra;
     if ((s8)((BaddieState*)baddie)->moveJustStartedB != 0)
     {
         (*gBaddieControlInterface)
-            ->spawnChild((GameObject*)obj, state->triggerId, -1, 0);
+            ->spawnChild(obj, state->triggerId, -1, 0);
     }
     return 0;
 }
 
-int dbstealerworm_stateHandlerB02(int obj, int baddie)
+int dbstealerworm_stateHandlerB02(GameObject* obj, int baddie)
 {
     int b8;
     float fz;
     s8 flag2;
 
-    b8 = *(int*)&((GameObject*)obj)->extra;
+    b8 = *(int*)&obj->extra;
     if (*(char*)&((BaddieState*)baddie)->moveJustStartedB != '\0')
     {
         b8 = *(int*)&((GroundBaddieState*)b8)->control;
@@ -412,14 +412,14 @@ int dbstealerworm_stateHandlerB02(int obj, int baddie)
         ((DbStealerwormControl*)b8)->countdown = 0.0f;
         ((DbStealerwormControl*)b8)->nextSfxTime = fz;
         ((DbStealerwormControl*)b8)->unk04 = fz;
-        (*gPlayerInterface)->setState((void*)obj, (void*)baddie, 6);
+        (*gPlayerInterface)->setState(obj, (void*)baddie, 6);
     }
     else
     {
         flag2 = *(char*)&((BaddieState*)baddie)->moveDone;
         if (flag2 != 0)
         {
-            if (((GameObject*)obj)->anim.alpha == 0)
+            if (obj->anim.alpha == 0)
             {
                 if (flag2 != 0)
                 {
@@ -444,7 +444,7 @@ int dbstealerworm_stateHandlerB01(GameObject* obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerB00(int obj, int baddie)
+int dbstealerworm_stateHandlerB00(GameObject* obj, int baddie)
 {
     BaddieState* p = (BaddieState*)baddie;
     f32 fz;
@@ -1739,13 +1739,13 @@ int dbstealerworm_stateHandlerA04(GameObject* obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA03(int obj, int baddie)
+int dbstealerworm_stateHandlerA03(GameObject* obj, int baddie)
 {
 
 
     if (*(char*)&((BaddieState*)baddie)->moveJustStartedA != '\0')
     {
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DBSTEALERWORM_HIT_VOLUME_SLOT, 1, -1);
     ((BaddieState*)baddie)->moveSpeed = 0.01f;
