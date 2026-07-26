@@ -621,7 +621,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x23F | DB_egg | COMPLETE | dlls/objects/575_DB_egg/DB_egg.c | = (canonical) | Exact recovered retail basename; descriptor precedes diagnostic string and compiler-generated jump table in retail data order |
 | 0x240 | GCRobotBlas | COMPLETE | dlls/objects/576_GCRobotBlas/GCRobotBlas.c | = (canonical) | Exact truncated retail basename; internal GCRobotBlast symbols retained |
 | 0x241 | DrakorEnerg | COMPLETE | dlls/objects/577_DrakorEnerg/DrakorEnerg.c | = (canonical) | Exact truncated retail basename; internal DrakorEnergy symbols retained |
-| 0x242 | DBstealerworm | CONFIRMED | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | — |
+| 0x242 | DBstealerwo | COMPLETE | dlls/objects/578_DBstealerwo/DBstealerwo.c | = (canonical) | Exact truncated retail basename; terminal handler-table setup restored and DBHoleControl1 descriptor separated |
 | 0x243 | DBHoleControl1 | CONFIRMED | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | — |
 | 0x244 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x245 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |

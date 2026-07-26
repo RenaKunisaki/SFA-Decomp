@@ -87,7 +87,6 @@ main/dll/DB/DBbonedust.c
 main/dll/DBdustgeezer.c
 main/dll/DBprotection.c
 main/dll/DBrockfall.c
-main/dll/DBstealerworm.c
 main/dll/DBwaterflow.c
 main/dll/dimenu.c
 main/dll/prof.c

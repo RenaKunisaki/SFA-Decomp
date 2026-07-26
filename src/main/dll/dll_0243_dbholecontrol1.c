@@ -1,4 +1,4 @@
-/* DLL 0x243 - DBHoleControl1 [801FE118-801FEB30) */
+/* DLL 0x243 - DBHoleControl1 [0x80203DA0-0x80204098) */
 #include "game/objects/object.h"
 #include "main/object_update_list.h"
 #include "main/obj_group.h"
@@ -20,7 +20,6 @@
 #include "main/objhits.h"
 #include "main/obj_message.h"
 #include "sys/objects.h"
-#include "main/dll/dll_0242_dbstealerworm.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
 #include "string.h"
 #include "main/lightmap.h"
@@ -59,33 +58,6 @@ STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
 int lbl_803DDCE0;
 
-
-void DBstealerwo_setFuncPtrs_80203c78(void)
-{
-    gDBStealerWormStateHandlersA[0] = (int)dbstealerworm_stateHandlerA00;
-    gDBStealerWormStateHandlersA[1] = (int)dbstealerworm_stateHandlerA01;
-    gDBStealerWormStateHandlersA[2] = (int)dbstealerworm_stateHandlerA02;
-    gDBStealerWormStateHandlersA[3] = (int)dbstealerworm_stateHandlerA03;
-    gDBStealerWormStateHandlersA[4] = (int)dbstealerworm_stateHandlerA04;
-    gDBStealerWormStateHandlersA[5] = (int)dbstealerworm_stateHandlerA05;
-    gDBStealerWormStateHandlersA[6] = (int)dbstealerworm_stateHandlerA06;
-    gDBStealerWormStateHandlersA[7] = (int)dbstealerworm_stateHandlerA07;
-    gDBStealerWormStateHandlersA[8] = (int)dbstealerworm_stateHandlerA08;
-    gDBStealerWormStateHandlersA[9] = (int)dbstealerworm_stateHandlerA09;
-    gDBStealerWormStateHandlersA[10] = (int)dbstealerworm_stateHandlerA0A;
-    gDBStealerWormStateHandlersA[11] = (int)dbstealerworm_stateHandlerA0B;
-    gDBStealerWormStateHandlersA[12] = (int)dbstealerworm_stateHandlerA0C;
-    gDBStealerWormStateHandlersA[13] = (int)dbstealerworm_stateHandlerA0D;
-    gDBStealerWormStateHandlersA[14] = (int)dbstealerworm_stateHandlerA0E;
-    gDBStealerWormStateHandlersA[15] = (int)dbstealerworm_stateHandlerA0F;
-    gDBStealerWormStateHandlersB[0] = (int)dbstealerworm_stateHandlerB00;
-    gDBStealerWormStateHandlersB[1] = (int)dbstealerworm_stateHandlerB01;
-    gDBStealerWormStateHandlersB[2] = (int)dbstealerworm_stateHandlerB02;
-    gDBStealerWormStateHandlersB[3] = (int)dbstealerworm_stateHandlerB03;
-    gDBStealerWormStateHandlersB[4] = (int)dbstealerworm_stateHandlerB04;
-    gDBStealerWormStateHandlersB[5] = (int)dbstealerworm_stateHandlerB05;
-    gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
-}
 
 int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -191,3 +163,20 @@ void dbholecontrol1_release(void)
 void dbholecontrol1_initialise(void)
 {
 }
+
+ObjectDescriptor gDBHoleControl1ObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dbholecontrol1_initialise,
+    (ObjectDescriptorCallback)dbholecontrol1_release,
+    0,
+    (ObjectDescriptorCallback)dbholecontrol1_init,
+    (ObjectDescriptorCallback)dbholecontrol1_update,
+    (ObjectDescriptorCallback)dbholecontrol1_hitDetect,
+    (ObjectDescriptorCallback)dbholecontrol1_render,
+    (ObjectDescriptorCallback)dbholecontrol1_free,
+    (ObjectDescriptorCallback)dbholecontrol1_getObjectTypeId,
+    dbholecontrol1_getExtraSize,
+};

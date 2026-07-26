@@ -1,5 +1,5 @@
 /*
- * dbstealerworm (DLL 0x242, object type id 0x49) - a burrowing "stealer
+ * DBstealerwo (DLL 0x242, object type id 0x49) - a burrowing "stealer
  * worm" ground baddie.
  *
  * It is a GroundBaddieState/BaddieState baddie driven through the shared
@@ -17,12 +17,6 @@
  * (dbstealerworm_processEffectFlags), and on a successful steal increments a placement game bit
  * and adds map time (dbstealerworm_stateHandlerA06). chuka is the linked
  * thrown sub-object.
- *
- * Unimplemented trailing functions (not in scope here):
- *   Trivial 0-returner.
- *   Trivial 0-returner.
- *   if (p6) objRenderModelAndHitVolumes(lbl_803E6408).
- *   if (b->_8 && (b->_8->_6 & 0x40)) clear.
  */
 #include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
@@ -60,7 +54,6 @@
 #define OBJ_YAW_DELTA_RETURNS_S16
 #include "main/obj_query.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_0243_dbholecontrol1.h"
 #include "main/dll/dll_0242_dbstealerworm.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "string.h"
@@ -2474,13 +2467,32 @@ void dbstealerworm_initialise(void)
     DBstealerwo_setFuncPtrs_80203c78();
 }
 
-/* Trivial 0-returner. */
-
-/* Trivial 0-returner. */
-
-/* if (p6) objRenderModelAndHitVolumes(lbl_803E6408). */
-
-/* if (b->_8 && (b->_8->_6 & 0x40)) clear. */
+void DBstealerwo_setFuncPtrs_80203c78(void)
+{
+    gDBStealerWormStateHandlersA[0] = (int)dbstealerworm_stateHandlerA00;
+    gDBStealerWormStateHandlersA[1] = (int)dbstealerworm_stateHandlerA01;
+    gDBStealerWormStateHandlersA[2] = (int)dbstealerworm_stateHandlerA02;
+    gDBStealerWormStateHandlersA[3] = (int)dbstealerworm_stateHandlerA03;
+    gDBStealerWormStateHandlersA[4] = (int)dbstealerworm_stateHandlerA04;
+    gDBStealerWormStateHandlersA[5] = (int)dbstealerworm_stateHandlerA05;
+    gDBStealerWormStateHandlersA[6] = (int)dbstealerworm_stateHandlerA06;
+    gDBStealerWormStateHandlersA[7] = (int)dbstealerworm_stateHandlerA07;
+    gDBStealerWormStateHandlersA[8] = (int)dbstealerworm_stateHandlerA08;
+    gDBStealerWormStateHandlersA[9] = (int)dbstealerworm_stateHandlerA09;
+    gDBStealerWormStateHandlersA[10] = (int)dbstealerworm_stateHandlerA0A;
+    gDBStealerWormStateHandlersA[11] = (int)dbstealerworm_stateHandlerA0B;
+    gDBStealerWormStateHandlersA[12] = (int)dbstealerworm_stateHandlerA0C;
+    gDBStealerWormStateHandlersA[13] = (int)dbstealerworm_stateHandlerA0D;
+    gDBStealerWormStateHandlersA[14] = (int)dbstealerworm_stateHandlerA0E;
+    gDBStealerWormStateHandlersA[15] = (int)dbstealerworm_stateHandlerA0F;
+    gDBStealerWormStateHandlersB[0] = (int)dbstealerworm_stateHandlerB00;
+    gDBStealerWormStateHandlersB[1] = (int)dbstealerworm_stateHandlerB01;
+    gDBStealerWormStateHandlersB[2] = (int)dbstealerworm_stateHandlerB02;
+    gDBStealerWormStateHandlersB[3] = (int)dbstealerworm_stateHandlerB03;
+    gDBStealerWormStateHandlersB[4] = (int)dbstealerworm_stateHandlerB04;
+    gDBStealerWormStateHandlersB[5] = (int)dbstealerworm_stateHandlerB05;
+    gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
+}
 
 u32 lbl_803293B8[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
                         0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x00000003,
@@ -2569,19 +2581,3 @@ u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        0x48414e43,
                                        0x45202569,
                                        0x200a0000};
-ObjectDescriptor gDBHoleControl1ObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dbholecontrol1_initialise,
-    (ObjectDescriptorCallback)dbholecontrol1_release,
-    0,
-    (ObjectDescriptorCallback)dbholecontrol1_init,
-    (ObjectDescriptorCallback)dbholecontrol1_update,
-    (ObjectDescriptorCallback)dbholecontrol1_hitDetect,
-    (ObjectDescriptorCallback)dbholecontrol1_render,
-    (ObjectDescriptorCallback)dbholecontrol1_free,
-    (ObjectDescriptorCallback)dbholecontrol1_getObjectTypeId,
-    dbholecontrol1_getExtraSize,
-};
