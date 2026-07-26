@@ -603,7 +603,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x22D | DFP_seqpoin | COMPLETE | dlls/objects/557_DFP_seqpoin/DFP_seqpoin.c | = (canonical) | Exact recovered retail basename |
 | 0x22E | — | COMPLETE | dlls/objects/558/558.c | = (canonical) | No recovered retail basename |
 | 0x22F | DFP_floorba | COMPLETE | dlls/objects/559_DFP_floorba/DFP_floorba.c | = (canonical) | Exact recovered retail basename |
-| 0x230 | DFP_wallbar | RAW | main/dll/dll_0230_dfpwallbar.c | main/dll/DF/dll_0230_dfpwallbar.c | — |
+| 0x230 | DFP_wallbar | COMPLETE | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | = (canonical) | Exact recovered retail basename; internal chuka_* symbols retained |
 | 0x231 | DFP_ForceAw | RAW | main/dll/dll_0231_dfpforceaw.c | main/dll/DF/dll_0231_dfpforceaw.c | — |
 | 0x232 | DFP_RotateP | RAW | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | — |
 | 0x233 | DFP_Statue1 | CONFIRMED | main/dll/dll_0233_dfpstatue1.c | main/dll/DF/dll_0233_dfpstatue1.c | — |
