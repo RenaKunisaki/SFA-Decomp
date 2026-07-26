@@ -2655,7 +2655,7 @@ dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c:
 	.sdata      start:0x803DBF28 end:0x803DBF30
 	.sdata2     start:0x803E4B90 end:0x803E4B94
 
-main/dll/dll_01DF_dll1df.c:
+dlls/objects/479/479.c:
 	.text       start:0x801B9CB4 end:0x801B9ECC
 	.data       start:0x80325928 end:0x80325960
 	.sdata2     start:0x803E4B98 end:0x803E4BB8

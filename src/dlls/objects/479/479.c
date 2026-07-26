@@ -1,17 +1,3 @@
-/*
- * DLL 0x01DF - a small placed scenery/effect object (TU 0x801B9CB4..0x801B9ECC).
- *
- * init seeds rotation from three placement bytes, optionally scales the model's
- * root motion by a placement flag, primes 0.01f into state->unk10 (0x10),
- * and OR-merges model-state flags (0x810) and object flags (0x2000). render draws
- * the model when visible. update recolours the object's first texture each frame
- * and, when the player comes within range, runs a countdown that spawns particle
- * effect 525 and rearms. The other entry points
- * (free/hitDetect/release/initialise/typeId) are stubs.
- *
- * The seqId==209 if/else in update assigns the same value in both arms but is
- * intentional and must not be collapsed to a single assignment.
- */
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
@@ -23,8 +9,8 @@
 #include "dlls/object_descriptor.h"
 
 #define DLL1DF_OBJFLAG_HITDETECT_DISABLED 0x2000
-/* particle effect seeded on the proximity-countdown tick while the player is near */
 #define DLL1DF_PARTFX 525
+
 typedef struct Dll1DFPlaceData
 {
     ObjPlacement base;
@@ -154,4 +140,3 @@ ObjectDescriptor lbl_80325928 = {
     (ObjectDescriptorCallback)dll_1DF_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)dll_1DF_getExtraSize,
 };
-

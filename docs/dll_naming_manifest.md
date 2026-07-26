@@ -522,7 +522,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1DC | DIM2IceFloe | COMPLETE | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | = (canonical) | — |
 | 0x1DD | DIM2Icicle | COMPLETE | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | = (canonical) | — |
 | 0x1DE | DIM2LavaCon | COMPLETE | dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c | = (canonical) | — |
-| 0x1DF | — | NO-RETAIL-NAME | main/dll/dll_01DF_dll1df.c | = (canonical) | — |
+| 0x1DF | — | COMPLETE | dlls/objects/479/479.c | = (canonical) | No recovered retail basename |
 | 0x1E0 | DIM_Boss | COMPLETE | main/dll/dll_01E0_dimboss.c | main/dll/DIM/DIMboss.c | — |
 | 0x1E1 | DIM_BossGut | CONFIRMED | main/dll/dll_01E1_dimbossgut.c | main/dll/DIM/dll_01E1_dimbossgut.c | — |
 | 0x1E2 | DIM_BossTonsil | CONFIRMED | main/dll/dll_01E2_dimbosstonsil.c | main/dll/DIM/dll_01E2_dimbosstonsil.c | — |
