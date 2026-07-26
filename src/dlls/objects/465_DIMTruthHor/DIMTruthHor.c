@@ -38,9 +38,9 @@ typedef enum TruthHornIcePhase
 
 STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
 
-int dimtruthhornice_countdownCallback(int* obj, int damage)
+int dimtruthhornice_countdownCallback(GameObject* obj, int damage)
 {
-    u8* state = ((GameObject*)obj)->extra;
+    u8* state = obj->extra;
     *(s8*)(state + 2) = (s8)(state[2] - damage);
     return *(s8*)(state + 2) <= 0;
 }
@@ -50,10 +50,10 @@ int dimtruthhornice_getExtraSize(void)
     return 0x8;
 }
 
-void dimtruthhornice_update(int* obj)
+void dimtruthhornice_update(GameObject* obj)
 {
-    TruthHornIceState* extra = ((GameObject*)obj)->extra;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    TruthHornIceState* extra = obj->extra;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     switch (extra->phase)
     {
     case TRUTHHORNICE_PHASE_INTACT:
@@ -62,7 +62,7 @@ void dimtruthhornice_update(int* obj)
             if (extra->gameBit != -1)
             {
                 mainSetBits(extra->gameBit, 1);
-                ObjHits_DisableObject((GameObject*)obj);
+                ObjHits_DisableObject(obj);
                 extra->phase = TRUTHHORNICE_PHASE_SHATTERING;
                 extra->timer = 0.0f;
             }
@@ -72,11 +72,11 @@ void dimtruthhornice_update(int* obj)
             int* tricky = (int*)getTrickyObject();
             if (tricky != NULL)
             {
-                if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
+                if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
                 {
-                    (*(void (**)(int*, int*, int, int))(**(int**)((char*)tricky + 0x68) + 0x28))(tricky, obj, 1, 4);
+                    (*(void (**)(int*, GameObject*, int, int))(**(int**)((char*)tricky + 0x68) + 0x28))(tricky, obj, 1, 4);
                 }
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+                *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
             }
         }
         break;
@@ -108,24 +108,24 @@ void dimtruthhornice_update(int* obj)
             break;
         }
     case TRUTHHORNICE_PHASE_SHATTERED:
-        ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         break;
     }
 }
 
-void dimtruthhornice_init(int* obj, int* def)
+void dimtruthhornice_init(GameObject* obj, DimtruthhorniceObjectDef* def)
 {
-    TruthHornIceState* state = ((GameObject*)obj)->extra;
-    state->hitsLeft = (s8)((DimtruthhorniceObjectDef*)def)->hitsLeft;
-    state->gameBit = ((DimtruthhorniceObjectDef*)def)->gameBit;
-    ((GameObject*)obj)->objectFlags = (u16)(((GameObject*)obj)->objectFlags | DIMTRUTHHORNICE_OBJFLAG_HIDDEN);
+    TruthHornIceState* state = obj->extra;
+    state->hitsLeft = (s8)def->hitsLeft;
+    state->gameBit = def->gameBit;
+    obj->objectFlags = (u16)(obj->objectFlags | DIMTRUTHHORNICE_OBJFLAG_HIDDEN);
     {
         s16 slot = state->gameBit;
         if (slot != -1 && mainGetBit(slot) != 0u)
         {
-            ObjHits_DisableObject((GameObject*)obj);
+            ObjHits_DisableObject(obj);
             state->phase = TRUTHHORNICE_PHASE_SHATTERED;
-            ((GameObject*)obj)->anim.flags = (s16)(((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
+            obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
     }
 }
