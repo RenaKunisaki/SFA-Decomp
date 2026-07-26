@@ -1,4 +1,4 @@
-/* DLL 0x01A9 - bombplant / enemymushroom group. TU: 0x801D286C-0x801D2C54. */
+/* DLL 0x01A9 - BombPlant. TU: 0x801D286C-0x801D3378. */
 #include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
@@ -14,8 +14,6 @@
 #include "main/dll/ediblemushroom.h"
 #include "main/dll/bombplant_placement.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/dll/dll_01AA_bombplantspore.h"
-#include "main/dll/dll_01AB_bombplantingspot.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
@@ -496,41 +494,5 @@ ObjectDescriptor10WithPadding gBombPlantObjDescriptor = {
         (ObjectDescriptorCallback)bombplant_getObjectTypeId,
         bombplant_getExtraSize,
     },
-    0,
-};
-u8 lbl_80326D98[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-ObjectDescriptor10WithPadding gBombPlantSporeObjDescriptor = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-        0,
-        0,
-        0,
-        (ObjectDescriptorCallback)BombPlantSpore_init,
-        (ObjectDescriptorCallback)BombPlantSpore_update,
-        0,
-        0,
-        (ObjectDescriptorCallback)BombPlantSpore_free,
-        0,
-        BombPlantSpore_getExtraSize,
-    },
-    0,
-};
-ObjectDescriptor gBombPlantingSpotObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)BombPlantingSpot_init,
-    (ObjectDescriptorCallback)BombPlantingSpot_update,
-    0,
-    0,
-    0,
-    0,
     0,
 };

@@ -468,7 +468,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A6 | SH_tricky | COMPLETE | dlls/objects/422_SH_tricky/SH_tricky.c | = (canonical) | — |
 | 0x1A7 | — | NO-RETAIL-NAME | dlls/objects/423/423.c | = (canonical) | — |
 | 0x1A8 | SH_killermu | COMPLETE | dlls/objects/424_SH_killermu/SH_killermu.c | = (canonical) | — |
-| 0x1A9 | BombPlant | COMPLETE | main/dll/dll_01A9_bombplant.c | = (canonical) | — |
+| 0x1A9 | BombPlant | COMPLETE | dlls/objects/425_BombPlant/BombPlant.c | = (canonical) | — |
 | 0x1AA | BombPlantSpore | CONFIRMED | main/dll/dll_01AA_bombplantspore.c | = (canonical) | — |
 | 0x1AB | BombPlantingspot | CONFIRMED | main/dll/dll_01AB_bombplantingspot.c | = (canonical) | — |
 | 0x1AC | SH_queenearthwalker | CONFIRMED | main/dll/dll_01AC_shqueenearthwalker.c | main/dll/SH/dll_01AC_shqueenearthwalker.c | — |

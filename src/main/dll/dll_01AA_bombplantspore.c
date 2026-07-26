@@ -17,8 +17,10 @@
 #include "main/dll/dll_01AA_bombplantspore.h"
 #include "main/gameloop_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DBFC0[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
+u8 lbl_80326D98[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 typedef struct BombplantsporePlacement
 {
@@ -59,7 +61,6 @@ extern const f32 lbl_803E53A8;
 extern const f32 lbl_803E53AC;
 extern f32 lbl_803E53B0;
 extern const f32 lbl_803E53B4;
-extern u8 lbl_80326D98[];
 extern f32 lbl_803E5388;
 extern const f32 lbl_803E538C;
 extern const f32 lbl_803E53B8;
@@ -420,3 +421,23 @@ void BombPlantSpore_init(GameObject* obj, void* param2)
     ObjMsg_AllocQueue(obj, 2);
     state->yawStep = randomGetRange(-0x200, 0x200);
 }
+
+ObjectDescriptor10WithPadding gBombPlantSporeObjDescriptor = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+        0,
+        0,
+        0,
+        (ObjectDescriptorCallback)BombPlantSpore_init,
+        (ObjectDescriptorCallback)BombPlantSpore_update,
+        0,
+        0,
+        (ObjectDescriptorCallback)BombPlantSpore_free,
+        0,
+        BombPlantSpore_getExtraSize,
+    },
+    0,
+};
