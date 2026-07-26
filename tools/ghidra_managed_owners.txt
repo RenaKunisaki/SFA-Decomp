@@ -85,7 +85,6 @@ main/dll/cup1C3.c
 main/dll/curves.c
 main/dll/DB/DBbonedust.c
 main/dll/DBdustgeezer.c
-main/dll/DBpointmum.c
 main/dll/DBprotection.c
 main/dll/DBrockfall.c
 main/dll/DBstealerworm.c
