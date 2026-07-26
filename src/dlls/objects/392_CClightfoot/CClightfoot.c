@@ -1,4 +1,4 @@
-/* DLL 0x0188 (cclightfoot) - CloudRunner Lightfoot object.
+/* DLL 0x0188 (CClightfoot) - CloudRunner Lightfoot object.
  * The LightFoot enemies in the CloudRunner capture/escape encounter (they
  * chase the player; target actors CCLIGHTFOOT_TARGET_ACTOR_A/B).
  * GAMEBIT_LIGHTFOOT_TRIGGERED is the per-encounter latch: the first creature
