@@ -1,4 +1,4 @@
-/* DLL 0x00E6 (restartmarker) - restart-position marker object.
+/* DLL 0xE6 (ReStartMark) - restart-position marker object.
  * Its placement rotation seeds the marker heading; the marker itself stays
  * hidden because it exists only as a gameplay respawn anchor.
  */

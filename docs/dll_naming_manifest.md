@@ -275,7 +275,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0E3 | fireball (+projball, AnimProjBal) | GUESSED | dlls/objects/227/227.c | = (canonical) | — |
 | 0x0E4 | FlameThrowerspe (+FlameBall, BossDarkorF) | CONFIRMED | dlls/objects/228/228.c | = (canonical) | — |
 | 0x0E5 | shield (+fox_shield, omni_shield) | CONFIRMED | dlls/objects/229/229.c | = (canonical) | — |
-| 0x0E6 | ReStartMarker | CONFIRMED | main/dll/dll_00E6_restartmarker.c | = (canonical) | — |
+| 0x0E6 | ReStartMark | CONFIRMED | dlls/objects/230_ReStartMark/ReStartMark.c | = (canonical) | — |
 | 0x0E7 | flammablevine (+CCeyeVines, BurnableVin) | GUESSED | main/dll/dll_00E7_flammablevine.c | = (canonical) | — |
 | 0x0E8 | checkpoint4 | CONFIRMED | main/dll/dll_00E8_checkpoint4.c | = (canonical) | — |
 | 0x0E9 | setuppoint | COMPLETE | main/dll/dll_00E9_setuppoint.c | = (canonical) | — |

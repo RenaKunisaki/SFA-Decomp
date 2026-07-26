@@ -1739,7 +1739,7 @@ main/dll/dll_0125_curve.c:
 	.data       start:0x80320AC0 end:0x80320B00
 	.sdata2     start:0x803E33F0 end:0x803E33FC
 
-main/dll/dll_00E6_restartmarker.c:
+dlls/objects/230_ReStartMark/ReStartMark.c:
 	.text       start:0x801713D8 end:0x801713FC
 	.data       start:0x80320B00 end:0x80320B38
 
