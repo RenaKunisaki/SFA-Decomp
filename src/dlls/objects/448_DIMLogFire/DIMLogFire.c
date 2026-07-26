@@ -1,5 +1,5 @@
 /*
- * dimlogfire (DLL 0x1C0) - DIM log-fire hazard; the burning log drives a
+ * DIMLogFire (DLL 0x1C0) - DIM log-fire hazard; the burning log drives a
  * flicker/douse state machine, spawns particles and a point light, handles
  * a sequence callback for animation events, and tracks a hit-strength counter
  * that douses the flame when depleted.
@@ -10,11 +10,6 @@
 #include "sys/objects/lifecycle.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/linklevcontrolstate_struct.h"
-#include "main/dll/lavaball1bfstate_struct.h"
-#include "main/dll/imspacethrusterstate_struct.h"
-#include "main/dll/lavaball1bestate_struct.h"
-#include "main/dll/imanimspacecraftstate_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
@@ -27,16 +22,6 @@
 #include "main/obj_group.h"
 #include "dlls/object_descriptor.h"
 
-STATIC_ASSERT(sizeof(ImAnimSpacecraftState) == 0x4);
-
-STATIC_ASSERT(sizeof(ImSpaceThrusterState) == 0xC);
-
-STATIC_ASSERT(sizeof(LinkLevControlState) == 0x10);
-
-STATIC_ASSERT(sizeof(Lavaball1beState) == 0x14);
-
-STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
-
 #define DIMLOGFIRE_HIT_VOLUME_SLOT            0x1f
 /* smoke particle emitted while the smoke-toggle phase is active */
 #define DIMLOGFIRE_PARTFX_SMOKE 215
@@ -47,7 +32,6 @@ STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
 #define DIMLOGFIRE_MODE_ANIM_HELD 4 /* frozen by anim event 3 (SeqFn triggerCommand) */
 
 #define DIMLOGFIRE_GROUP 0x31
-
 
 int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {

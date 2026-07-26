@@ -2503,7 +2503,7 @@ dlls/objects/447_DIMLavaBall/DIMLavaBall.c:
 	.data       start:0x80323B48 end:0x80323B88
 	.sdata2     start:0x803E4818 end:0x803E4820
 
-main/dll/DIM/dll_01C0_dimlogfire.c:
+dlls/objects/448_DIMLogFire/DIMLogFire.c:
 	.text       start:0x801B0670 end:0x801B0DD4
 	.data       start:0x80323B88 end:0x80323BC0
 	.sdata2     start:0x803E4820 end:0x803E4848

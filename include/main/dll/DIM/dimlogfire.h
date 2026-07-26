@@ -25,9 +25,8 @@ typedef struct DimlogfireObjectDef
 } DimlogfireObjectDef;
 
 /*
- * Per-object extra state for the dimlogfire burning log
- * (DIMLogFire_getExtraSize == 0x24). init/update in DIMlavasmash.c,
- * free/SeqFn/render in DIMcannon.c.
+ * Per-object extra state for DLL 448's DIMLogFire burning log
+ * (DIMLogFire_getExtraSize == 0x24).
  */
 typedef struct DimLogFireState
 {
