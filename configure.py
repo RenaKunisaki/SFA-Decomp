@@ -959,7 +959,7 @@ config.libs = [
             ),
             Object(MatchingFor("GSAE01"), "dolphin/TRK_MINNOW_DOLPHIN/MWCriticalSection_gc.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/450_DIMSnowBall/DIMSnowBall.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_01C3_dimgate.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/451_DIMGate/DIMGate.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_01C4_dimicewall.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DIM/dll_01C5_dimbarrier.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_801b1d84.c", cflags=cflags_dll_noopt),

@@ -1,5 +1,5 @@
 /*
- * dimgate (DLL 0x1C3) - mission gate object for Dinosaur Island.
+ * DIMGate (DLL 0x1C3) - mission gate object for Dinosaur Island.
  * Opens (hitbox state 0->2) once sequence object 399 appears in the trigger
  * list, latching a gamebit so the gate stays open on reload.
  */
@@ -10,24 +10,37 @@
 
 #define DIMGATE_TRIGGER_SEQ_ID 399
 
-int dimgate_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) { return 0x0; }
-int dimgate_getExtraSize(void) { return 0x1; }
-int dimgate_getObjectTypeId(void) { return 0x0; }
+int dimgate_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    return 0x0;
+}
+
+int dimgate_getExtraSize(void)
+{
+    return 0x1;
+}
+
+int dimgate_getObjectTypeId(void)
+{
+    return 0x0;
+}
 
 void dimgate_free(void)
 {
 }
 
-void dimgate_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dimgate_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dimgate_hitDetect(void)
 {
 }
-
 
 void dimgate_update(GameObject* obj)
 {
@@ -77,7 +90,7 @@ void dimgate_update(GameObject* obj)
     }
 }
 
-void dimgate_init(GameObject *obj, DimgateSetup* unusedSetup)
+void dimgate_init(GameObject* obj, DimgateSetup* unusedSetup)
 {
     DimgateState* state;
     DimgateSetup* setup;
@@ -96,7 +109,6 @@ void dimgate_init(GameObject *obj, DimgateSetup* unusedSetup)
     obj->anim.rotX = (s16)(setup->rotX << 8);
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
-
 
 void dimgate_release(void)
 {
