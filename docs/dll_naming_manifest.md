@@ -718,7 +718,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A0 | — | NO-RETAIL-NAME | dlls/objects/672/672.c | = (canonical) | Exact complete twelve-function TU with its mode table, sole descriptor, and full constant pool; `Ring` remains an internal alias |
 | 0x2A1 | ARWLevelCon | RAW | dlls/objects/673_ARWLevelCon/ARWLevelCon.c | = (canonical) | Exact complete eleven-function TU with its sole descriptor and full constant pool |
 | 0x2A2 | ARWSpeedStr | RAW | dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and source-only inlined random-spread helper |
-| 0x2A3 | — | NO-RETAIL-NAME | main/dll/dll_02A3.c | = (canonical) | — |
+| 0x2A3 | — | NO-RETAIL-NAME | dlls/objects/675/675.c | = (canonical) | Exact complete eleven-function TU with its two mutable globals and terminal descriptor |
 | 0x2A4 | — | NO-RETAIL-NAME | main/dll/dll_02A4.c | = (canonical) | — |
 | 0x2A5 | ARWGenerato | CONFIRMED | main/dll/dll_02A5_arwgenerato.c | main/dll/ARW/dll_02A5_arwgenerato.c | — |
 | 0x2A6 | ARWSquadron (+ARWBigAster, ARWSmallAst, ARWMobileGu, ARWGroundGu, ARWShipFly, ARWShipTwin, ARWShipAnge) | CONFIRMED | main/dll/dll_02A6_arwsquadron.c | main/dll/ARW/dll_02A6_arwsquadron.c | — |

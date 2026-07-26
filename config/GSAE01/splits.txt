@@ -3953,7 +3953,7 @@ dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c:
 	.data       start:0x8032B808 end:0x8032B840
 	.sdata2     start:0x803E70F8 end:0x803E7110
 
-main/dll/dll_02A3.c:
+dlls/objects/675/675.c:
 	.text       start:0x80231028 end:0x8023134C
 	.data       start:0x8032B840 end:0x8032B878
 	.sbss       start:0x803DDD90 end:0x803DDD98
