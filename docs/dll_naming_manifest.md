@@ -700,7 +700,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x28E | WCBeacon | RAW | dlls/objects/654_WCBeacon/WCBeacon.c | = (canonical) | Exact complete six-function TU with descriptor at the physical end |
 | 0x28F | WCPressureS | RAW | dlls/objects/655_WCPressureS/WCPressureS.c | = (canonical) | DOL-confirmed ten-function TU; descriptor is followed by its trailing activation-format string |
 | 0x290 | WCPushBlock | RAW | dlls/objects/656_WCPushBlock/WCPushBlock.c | = (canonical) | Exact complete TU; descriptor placement precedes the function bodies and four trailing tile-grid tables remain in the same DOL object |
-| 0x291 | WCTile | COMPLETE | main/dll/dll_0291_wctile.c | main/dll/WC/dll_0291_wctile.c | — |
+| 0x291 | WCTile | RAW | dlls/objects/657_WCTile/WCTile.c | = (canonical) | Exact complete nine-function TU with its sole descriptor at the physical end |
 | 0x292 | WCTrexStatu | CONFIRMED | main/dll/dll_0292_wctrexstatu.c | main/dll/WC/dll_0292_wctrexstatu.c | — |
 | 0x293 | SunTemple (+CFSunTemple, WCInvUseObj, WCSunTemple) | CONFIRMED | main/dll/dll_0293_suntemple.c | = (canonical) | — |
 | 0x294 | wctemple (+WCMoonTempl, WCSunTemple) | GUESSED | main/dll/dll_0294_wctemple.c | = (canonical) | — |
