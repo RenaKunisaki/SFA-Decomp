@@ -62,7 +62,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0018_boneparticleeffect | 99.8472 | 52.4367 | -47.4105 |
 | main/main/dll/dll_0016_screentransition | 99.5761 | 53.7629 | -45.8132 |
 | main/main/dll/MMP/dll_0180_mmpasteroidre | 100.0000 | 55.8748 | -44.1252 |
-| main/main/dll/dll_02BD_androsshand | 100.0000 | 56.1128 | -43.8872 |
+| main/dlls/objects/701/701 | 100.0000 | 56.1128 | -43.8872 |
 | main/main/dll/dll_000D_playershadow | 100.0000 | 56.4132 | -43.5868 |
 | main/main/track_dolphin | 99.0354 | 57.2364 | -41.7990 |
 | main/main/dll/dll_0031_minimap | 99.3734 | 58.3480 | -41.0255 |

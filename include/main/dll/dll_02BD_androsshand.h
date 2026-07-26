@@ -72,12 +72,12 @@ extern f32 lbl_803DC4F0;
 extern f32 lbl_803DC4F4;
 extern f32 lbl_803DC4F8;
 extern int lbl_803DC4FC;
-extern int lbl_803DC500;
-extern int lbl_803DC504;
-extern int lbl_803DC508;
 extern int gAndrossHandShotPitch;
-extern int lbl_803DC50C;
-extern int lbl_803DC510;
+extern int gAndrossHandSpringDivisor;
+extern int gAndrossHandShotInterval;
+extern int gAndrossHandHitImpulse;
+extern int gAndrossHandProjectileForwardStep;
+extern int gAndrossHandProjectileLifetime;
 
 int AndrossHand_getExtraSize(void);
 int AndrossHand_getObjectTypeId(void);

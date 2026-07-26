@@ -1,5 +1,5 @@
 /*
- * androsshand (DLL 0x2BD) - one of Andross's two hands in the Arwing
+ * DLL 701 (0x2BD) - one of Andross's two hands in the Arwing
  * boss fight. Tracks the Andross body object (id 0x47b77) and the
  * player's Arwing, mirrors the body's facing, and applies a damped
  * spring to its Z position so the hand bobs relative to the body.
@@ -75,8 +75,8 @@ void androsshand_spawnShot(GameObject* obj, AndrossHandState* state, int p3)
         obj = loadObjectAtObject(obj, &setup->head);
         if (obj != NULL)
         {
-            arwprojectile_setLifetime(obj, lbl_803DC510);
-            arwprojectile_placeForward(obj, lbl_803DC50C);
+            arwprojectile_setLifetime(obj, gAndrossHandProjectileLifetime);
+            arwprojectile_placeForward(obj, gAndrossHandProjectileForwardStep);
         }
     }
 }
@@ -104,7 +104,7 @@ void androsshand_handleDamage(GameObject* obj, AndrossHandState* state)
         case 0:
             state->health -= 1;
             state->hitCooldown = 6;
-            state->zSpringVelocity = lbl_803DC508;
+            state->zSpringVelocity = gAndrossHandHitImpulse;
             Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_nameoff);
             if (state->health == 0)
             {
@@ -256,7 +256,8 @@ void AndrossHand_update(int obj)
             fScale *= -1.0f;
         }
         prevVel = state->zSpringVelocity;
-        state->zSpringVelocity = prevVel + ((-state->zSpringOffset / lbl_803DC4FC - prevVel) / lbl_803DC500);
+        state->zSpringVelocity =
+            prevVel + ((-state->zSpringOffset / lbl_803DC4FC - prevVel) / gAndrossHandSpringDivisor);
         state->zSpringOffset = state->zSpringOffset + state->zSpringVelocity;
 
         angle = 3.1415927f * (f32)(s16)(int)((f32)state->androssObj->anim.rotX + fScale) /
@@ -431,7 +432,7 @@ void AndrossHand_update(int obj)
             if (state->shotTimer < 0)
             {
                 androsshand_spawnShot((GameObject*)obj, state, 0);
-                state->shotTimer = lbl_803DC504;
+                state->shotTimer = gAndrossHandShotInterval;
             }
         }
         if (o->anim.currentMoveProgress >= 1.0f)
@@ -483,7 +484,14 @@ void AndrossHand_init(int obj, AndrossHandSetup* setup)
     ObjHits_SetTargetMask((GameObject*)obj, 4);
 }
 
+int gAndrossHandShotPitch;
+
 f32 lbl_803DC4F0 = 400.0f;
 f32 lbl_803DC4F4 = -100.0f;
 f32 lbl_803DC4F8 = -20000.0f;
 int lbl_803DC4FC = 20;
+int gAndrossHandSpringDivisor = 10;
+int gAndrossHandShotInterval = 2;
+int gAndrossHandHitImpulse = 20;
+int gAndrossHandProjectileForwardStep = 10;
+int gAndrossHandProjectileLifetime = 150;
