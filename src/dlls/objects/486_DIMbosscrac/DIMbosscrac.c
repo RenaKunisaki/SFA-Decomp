@@ -25,9 +25,9 @@ typedef struct DimbosscrackparPlacement
 
 const f32 gDIMbosscrackparRootMotionScale[1] = {0.1f};
 
-int DIMbosscrackpar_SeqFn(int* obj)
+int DIMbosscrackpar_SeqFn(GameObject* obj)
 {
-    int* side = *(int**)&((GameObject*)obj)->anim.placementData;
+    int* side = *(int**)&(obj)->anim.placementData;
     if ((u32)mainGetBit(((DimbosscrackparPlacement*)side)->triggerGameBit) == 0u)
     {
         return 0;
@@ -52,9 +52,9 @@ void DIMbosscrackpar_hitDetect(void)
 {
 }
 
-void DIMbosscrackpar_update(int* obj)
+void DIMbosscrackpar_update(GameObject* obj)
 {
-    int* side = *(int**)&((GameObject*)obj)->anim.placementData;
+    int* side = *(int**)&(obj)->anim.placementData;
     if ((u32)mainGetBit(((DimbosscrackparPlacement*)side)->triggerGameBit) != 0u)
     {
         (*gPartfxInterface)->spawnObject(
@@ -63,14 +63,14 @@ void DIMbosscrackpar_update(int* obj)
     }
 }
 
-void DIMbosscrackpar_init(s16* obj, s8* def)
+void DIMbosscrackpar_init(GameObject* obj, s8* def)
 {
-    ((GameObject*)obj)->anim.rotX = 0;
-    ((GameObject*)obj)->anim.rootMotionScale = gDIMbosscrackparRootMotionScale[0];
-    ((GameObject*)obj)->animEventCallback = DIMbosscrackpar_SeqFn;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)def[0x24] << 8);
-    ((GameObject*)obj)->anim.rotY = (s16)((s32)def[0x23] << 8);
-    ((GameObject*)obj)->anim.rotZ = (s16)((s32)def[0x22] << 8);
+    (obj)->anim.rotX = 0;
+    (obj)->anim.rootMotionScale = gDIMbosscrackparRootMotionScale[0];
+    (obj)->animEventCallback = DIMbosscrackpar_SeqFn;
+    (obj)->anim.rotX = (s16)((s32)def[0x24] << 8);
+    (obj)->anim.rotY = (s16)((s32)def[0x23] << 8);
+    (obj)->anim.rotZ = (s16)((s32)def[0x22] << 8);
 }
 
 void DIMbosscrackpar_release(void)
