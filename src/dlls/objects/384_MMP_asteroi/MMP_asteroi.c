@@ -1,5 +1,5 @@
 /*
- * mmpasteroidre (DLL 0x180) - Moon Mountain Pass asteroid re-entry object.
+ * MMP_asteroi (DLL 0x180) - Moon Mountain Pass asteroid re-entry object.
  *
  * A scripted falling asteroid. The sequence callback (mmp_asteroid_re_SeqFn)
  * consumes anim events to toggle lighting and drive phase transitions

@@ -2385,7 +2385,7 @@ dlls/objects/383/383.c:
 	.data       start:0x80323198 end:0x803231D0
 	.sdata2     start:0x803E44D0 end:0x803E44E8
 
-main/dll/MMP/dll_0180_mmpasteroidre.c:
+dlls/objects/384_MMP_asteroi/MMP_asteroi.c:
 	.text       start:0x801A6F4C end:0x801A78C8
 	.data       start:0x803231D0 end:0x80323218
 	.bss        start:0x803AC900 end:0x803AC918
