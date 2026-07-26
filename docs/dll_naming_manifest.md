@@ -709,7 +709,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x297 | WCTempleBri | CONFIRMED | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | — |
 | 0x298 | WCFloorTile | CONFIRMED | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | — |
 | 0x299 | — | NO-RETAIL-NAME | main/dll/dll_0299.c | = (canonical) | — |
-| 0x29A | ARWArwing | COMPLETE | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | — |
+| 0x29A | ARWArwing | COMPLETE | dlls/objects/666_ARWArwing/ARWArwing.c | = (canonical) | — |
 | 0x29B | — (+arwingandrossstuff, rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | NO-RETAIL-NAME | dlls/objects/667/667.c | = (canonical) | — |
 | 0x29C | ARWArwingBo | CONFIRMED | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | = (canonical) | — |
 | 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | = (canonical) | — |
@@ -958,7 +958,7 @@ name was a deliberate choice by a previous carve:
 | 0x296 | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | CONFIRMED |
 | 0x297 | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | CONFIRMED |
 | 0x298 | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | CONFIRMED |
-| 0x29A | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | COMPLETE |
+| 0x29A | main/dll/dll_029A_arwarwing.c | dlls/objects/666_ARWArwing/ARWArwing.c | COMPLETE |
 | 0x29C | main/dll/dll_029C_arwarwingbo.c | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | CONFIRMED |
 | 0x29D | main/dll/dll_029D_arwarwinggu.c | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | CONFIRMED |
 | 0x29F | main/dll/dll_029F_arwbombcoll.c | dlls/objects/671_ARWBombColl/ARWBombColl.c | CONFIRMED |

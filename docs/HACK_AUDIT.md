@@ -166,7 +166,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_01AA_bombplantspore | 100.0000 | 86.1777 | -13.8223 |
 | main/main/dll/duster_wb | 100.0000 | 86.2121 | -13.7879 |
 | main/main/dll/dll_0271_drakorhoverpad | 100.0000 | 86.2241 | -13.7759 |
-| main/main/dll/ARW/dll_029A_arwarwing | 100.0000 | 86.2676 | -13.7324 |
+| main/dlls/objects/666_ARWArwing/ARWArwing | 100.0000 | 86.2676 | -13.7324 |
 | main/main/modelEngine | 100.0000 | 86.3317 | -13.6683 |
 | main/main/dll/dll_801c0bf8 | 98.6299 | 85.2597 | -13.3701 |
 | main/main/objprint | 99.9558 | 86.7247 | -13.2311 |

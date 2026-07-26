@@ -1,5 +1,5 @@
 /*
- * arwarwing (DLL 0x29A) - the player's Arwing in the on-rails flight
+ * ARWArwing (DLL 0x29A) - the player's Arwing in the on-rails flight
  * sections. This is the core object of the section; the singleton instance
  * is published through the gArwing global (getArwing) so the pickups,
  * squadron and level-controller TUs can find it.
