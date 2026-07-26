@@ -2423,7 +2423,7 @@ dlls/objects/389_CCgasvent/CCgasvent.c:
 	.data       start:0x80323340 end:0x80323378
 	.sdata2     start:0x803E4610 end:0x803E4618
 
-main/dll/CC/dll_0186_ccgasventcontrol.c:
+dlls/objects/390_CCgasventCo/CCgasventCo.c:
 	.text       start:0x801A9FA8 end:0x801AA558
 	.data       start:0x80323378 end:0x803233CC
 	.sdata2     start:0x803E4618 end:0x803E4650

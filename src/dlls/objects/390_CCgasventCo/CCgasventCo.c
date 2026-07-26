@@ -1,5 +1,5 @@
 /*
- * ccgasventcontrol - Crystal Caves gas-vent controller (DLL 0x0186). One
+ * CCgasventCo - Crystal Caves gas-vent controller (DLL 0x0186). One
  * controller per gas room; the individual vents (ccgasvent, DLL 0x0185)
  * register in CCGASVENT_GROUP and this object supervises the whole group.
  *
