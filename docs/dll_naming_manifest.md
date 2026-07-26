@@ -486,7 +486,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1B8 | SC_totempol | COMPLETE | dlls/objects/440_SC_totempol/SC_totempol.c | = (canonical) | — |
 | 0x1B9 | SC_Cloudrun | COMPLETE | dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c | = (canonical) | — |
 | 0x1BA | SC_totempuz | COMPLETE | dlls/objects/442_SC_totempuz/SC_totempuz.c | = (canonical) | — |
-| 0x1BB | SC_totembond | CONFIRMED | main/dll/dll_01BB_sctotembond.c | main/dll/SC/dll_01BB_sctotembond.c | — |
+| 0x1BB | SC_totembon | COMPLETE | dlls/objects/443_SC_totembon/SC_totembon.c | = (canonical) | — |
 | 0x1BC | SC_totemstrength | CONFIRMED | main/dll/dll_01BC_sctotemstrength.c | main/dll/SC/dll_01BC_sctotemstrength.c | — |
 | 0x1BD | paymentkiosk (+SC_paypoint, SPWell) | GUESSED | main/dll/dll_01BD_paymentkiosk.c | = (canonical) | — |
 | 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | GUESSED | main/dll/dll_01BE_dimlava.c | main/dll/DIM/dll_01BE_dimlava.c | — |
@@ -820,7 +820,7 @@ name was a deliberate choice by a previous carve:
 | 0x1B8 | main/dll/dll_01B8_sctotempole.c | dlls/objects/440_SC_totempol/SC_totempol.c | COMPLETE |
 | 0x1B9 | main/dll/dll_01B9_sccloudrunnera.c | dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c | COMPLETE |
 | 0x1BA | main/dll/dll_01BA_sctotempuzzle.c | dlls/objects/442_SC_totempuz/SC_totempuz.c | COMPLETE |
-| 0x1BB | main/dll/dll_01BB_sctotembond.c | main/dll/SC/dll_01BB_sctotembond.c | CONFIRMED |
+| 0x1BB | main/dll/dll_01BB_sctotembond.c | dlls/objects/443_SC_totembon/SC_totembon.c | COMPLETE |
 | 0x1BC | main/dll/dll_01BC_sctotemstrength.c | main/dll/SC/dll_01BC_sctotemstrength.c | CONFIRMED |
 | 0x1BE | main/dll/dll_01BE_dimlava.c | main/dll/DIM/dll_01BE_dimlava.c | GUESSED |
 | 0x1BF | main/dll/dll_01BF_dimlavaball.c | main/dll/DIM/dll_01BF_dimlavaball.c | RAW |

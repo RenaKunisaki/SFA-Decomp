@@ -135,11 +135,11 @@ inside LGTprojectedlight.c. This is part of a one-DLL-shift chain:
 0x1F8 cut at 801F02F0, 0x1FC cut at 801F0B50, 0x206 cut at 801F37CC,
 0x207 cut at 801F3C7C, 0x209 cut at 801F44B4.
 
-### 4 (clean new). dll_01BA_sctotempuzzle | dll_01BB_sctotembond
+### 4 (clean new). SC_totempuz | SC_totembon
 
 Boundary 801DD46C cuts 0x1BA mid-block (between hitDetect and update);
 ranges do not interleave; real edge = 801DDA28 (0x1BA initialise
-801DDA24 + 4). The 01BA file header already notes "boundary fix pending".
+801DDA24 + 4).
 
 ## Surgery status (this campaign)
 
@@ -493,7 +493,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x1B1 | gSH_staffObjDescriptor | 801D9B1C-801DA608 | 801D9B1C-801DA8C4 | 801D9BDC (main/dll/IM/IMsnowbike.c \| main/dll/DR/DRearthwalk.c) | Y | SH_staff |
 | 0x1B4 | gSH_EmptyTumbleWObjDescriptor | 801DAFA4-801DAFDC | 801DAFA4-801DB098 | 801DAFDC (main/dll/DR/DRearthwalk.c \| main/dll/CR/CRsnowbike.c) | Y | SH_EmptyTum |
 | 0x1B7 | gSC_MusicTreeObjDescriptor | 801DC230-801DC8D0 | 801DBFA0-801DC8D4 | 801DC310 (main/dll/CR/CRsnowbike.c \| main/dll/DR/DRcloudrunner.c) | Y | SC_MusicTre,SC_BirchTre |
-| 0x1BA | gSC_totempuzzleObjDescriptor | 801DD424-801DDA24 | 801DD170-801DDA28 | 801DD46C (dlls/objects/442_SC_totempuz/SC_totempuz.c \| main/dll/SC/dll_01BB_sctotembond.c) | Y | SC_totempuz |
+| 0x1BA | gSC_totempuzzleObjDescriptor | 801DD424-801DDA24 | 801DD170-801DDA28 | 801DD46C (dlls/objects/442_SC_totempuz/SC_totempuz.c \| dlls/objects/443_SC_totembon/SC_totembon.c) | Y | SC_totempuz |
 | 0x1BD | gPaymentKioskObjDescriptor | 801DF304-801DF4A8 | 801DF110-801DF4AC | 801DF43C (main/dll/VF/platform1.c \| main/dll/VF/draghead.c); 801DF43C (main/dll/VF/platform1.c \| main/dll/VF/lavaflow.c); 801DF43C (main/dll/VF/platform1.c \| main/dll/DB/DBrockfall.c) | Y | SC_paypoint,SPWell |
 | 0x1EC | gSB_ShipGunObjDescriptor | 801E341C-801E3D14 | 801E341C-801E3D30 | 801E34C0 (main/dll/DB/DBstealerworm.c \| main/dll/TREX/TREX_levelcontrol.c) | Y | SB_ShipGun |
 | 0x1ED | gSB_FireBallObjDescriptor | 801E4288-801E45A8 | 801E4288-801E45AC | 801E42F8 (main/dll/TREX/TREX_levelcontrol.c \| main/dll/TREX/TREX_trex.c) | Y | SB_FireBall |

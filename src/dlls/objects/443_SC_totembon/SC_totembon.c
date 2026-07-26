@@ -1,7 +1,5 @@
 /*
- * sctotembond (DLL 0x1BB) + the tail of sctotempuzzle (DLL 0x1BA).
- * The sc_totempuzzle and sc_totembond fns interleave across this range
- * (one original TU).
+ * SC_totembon (DLL 0x1BB).
  *
  * Behaviour: the CloudRunner fire-breathing capture minigame. Eight LightFoot
  * villagers surround the player with spears; you command the CloudRunner to
