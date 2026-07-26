@@ -33,7 +33,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/voxmaps.h"
-#include "main/dll/dll_0198_nwshlevcon.h"
 #include "main/dll/dll_0069_dll69func0.h"
 
 typedef struct Cup197State
@@ -391,22 +390,4 @@ ObjectDescriptor dll_197 = {
     (ObjectDescriptorCallback)dll_197_free,
     (ObjectDescriptorCallback)dll_197_getObjectTypeId,
     dll_197_getExtraSize,
-};
-
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-ObjectDescriptor gNWSH_levconObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)nwsh_levcon_initialise,
-    (ObjectDescriptorCallback)nwsh_levcon_release,
-    0,
-    (ObjectDescriptorCallback)nwsh_levcon_init,
-    (ObjectDescriptorCallback)nwsh_levcon_update,
-    (ObjectDescriptorCallback)nwsh_levcon_hitDetect,
-    (ObjectDescriptorCallback)nwsh_levcon_render,
-    (ObjectDescriptorCallback)nwsh_levcon_free,
-    (ObjectDescriptorCallback)nwsh_levcon_getObjectTypeId,
-    nwsh_levcon_getExtraSize,
 };

@@ -23,6 +23,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/player_api.h"
+#include "dlls/object_descriptor.h"
 
 #define NWSH_LEVCON_MAP_SHRINE 0xb /* Krazoa shrine map triggered on activation */
 
@@ -30,8 +31,6 @@
 #define NWSH_LEVCON_ENVFX_B 0xd6
 #define NWSH_LEVCON_ENVFX_C 0x222
 #define NWSH_LEVCON_INTRO_DELAY(obj) ((obj)->userData1)
-
-extern f32 lbl_803E5150;
 
 int NWSH_levcon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -81,7 +80,7 @@ void nwsh_levcon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E5150);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void nwsh_levcon_hitDetect(void)
@@ -120,3 +119,20 @@ void nwsh_levcon_release(void)
 void nwsh_levcon_initialise(void)
 {
 }
+
+ObjectDescriptor gNWSH_levconObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)nwsh_levcon_initialise,
+    (ObjectDescriptorCallback)nwsh_levcon_release,
+    0,
+    (ObjectDescriptorCallback)nwsh_levcon_init,
+    (ObjectDescriptorCallback)nwsh_levcon_update,
+    (ObjectDescriptorCallback)nwsh_levcon_hitDetect,
+    (ObjectDescriptorCallback)nwsh_levcon_render,
+    (ObjectDescriptorCallback)nwsh_levcon_free,
+    (ObjectDescriptorCallback)nwsh_levcon_getObjectTypeId,
+    nwsh_levcon_getExtraSize,
+};
