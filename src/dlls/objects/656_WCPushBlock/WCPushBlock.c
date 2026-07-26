@@ -1,5 +1,5 @@
 /*
- * wcpushblock (DLL 0x290) - the sliding push-block puzzle object in the
+ * WCPushBlock (DLL 656) - the sliding push-block puzzle object in the
  * Walled City (WC). Two block variants (anim.bankIndex: VARIANT_A vs B)
  * ride a shared tile grid owned by a separate level-controller object,
  * found via ObjGroup_FindNearestObject on controller group
@@ -16,7 +16,7 @@
  * WCPUSHBLOCK_REQUIRED_LOCK_COUNT latches the solved bit.
  *
  * The WC level controller's own act-1/act-2 mode machines (timers, save
- * points, map gating, music) live in dll_028D_wclevelcont.c
+ * points, map gating, music) live in WCLevelCont (DLL 653)
  * (wclevelcont_updateAct1State / wclevelcont_updateAct2State), not here.
  * Offsets/bit values inferred from code.
  */
