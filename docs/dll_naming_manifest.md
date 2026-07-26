@@ -679,7 +679,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x279 | DR_EnergyDi | RAW | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | = (canonical) | Exact complete TU; descriptor is followed by the TU's final 48-byte data table |
 | 0x27A | DR_Collapse | RAW | dlls/objects/634_DR_Collapse/DR_Collapse.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC388` |
 | 0x27B | — | NO-RETAIL-NAME | *(none; pooled in DLL 633)* | — | No independent TU: runtime table points to `lbl_8032AD00`, the trailing 48-byte record in `dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c` |
-| 0x27C | DR_LightBea | CONFIRMED | main/dll/dll_027C_drlightbea.c | main/dll/DR/dll_027C_drlightbea.c | — |
+| 0x27C | DR_LightBea | RAW | dlls/objects/636_DR_LightBea/DR_LightBea.c | = (canonical) | Exact complete TU; trailing 48-byte record is the pooled runtime-table entry for DLL 637 |
 | 0x27D | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x27E | DRMusicCont | CONFIRMED | main/dll/dll_027E_drmusiccont.c | main/dll/DR/dll_027E_drmusiccont.c | — |
 | 0x27F | DR_LightHal (+DR_LightPol, DR_LightLam) | RAW | *(none)* | — | no .text fns (descriptor data only) |
