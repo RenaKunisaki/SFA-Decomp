@@ -4098,7 +4098,7 @@ dlls/objects/701/701.c:
 	.sbss       start:0x803DDDD0 end:0x803DDDD8
 	.sdata2     start:0x803E75A0 end:0x803E75FC
 
-main/dll/dll_02BE_androssbrain.c:
+dlls/objects/702_AndrossBrai/AndrossBrai.c:
 	.text       start:0x8023FC8C end:0x80240010
 	.data       start:0x8032C2F0 end:0x8032C328
 	.sdata2     start:0x803E7600 end:0x803E7608

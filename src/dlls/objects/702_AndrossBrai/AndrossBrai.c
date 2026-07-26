@@ -1,5 +1,5 @@
 /*
- * androssbrain (DLL 0x2BE) - the destructible brain core of the final
+ * AndrossBrai (DLL 702 / 0x2BE) - the destructible brain core of the final
  * Andross boss. It tracks the parent andross object (0x47B77) and the
  * lightning object (0x4C611), mirroring andross's position and rotation
  * each frame. While shielded it stays hidden; once made vulnerable it
