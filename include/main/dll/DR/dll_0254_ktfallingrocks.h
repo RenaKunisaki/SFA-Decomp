@@ -3,10 +3,12 @@
 
 #include "game/objects/object.h"
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct KtfallingrocksPlacement
 {
-    u8 pad0[0x20 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x20 - 0x18];
     u16 effectId; /* 0x20: particle effect id spawned per rock */
     u8 pad22[0x24 - 0x22];
     s16 triggerBit; /* 0x24: game bit; fires the burst then is cleared */

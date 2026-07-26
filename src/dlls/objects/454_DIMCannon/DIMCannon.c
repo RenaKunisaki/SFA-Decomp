@@ -30,6 +30,7 @@
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/dll/DIM/DIMwooddoor.h"
+#include "game/objects/object_setup.h"
 
 f32 lbl_803DBEF0 = 6.0f;
 f32 gDimCannonAnimAdvanceSpeedCur = 0.025f;
@@ -65,7 +66,8 @@ extern f32 lbl_803E48EC;
 extern f32 gDimCannonAnimAdvanceSpeed;
 typedef struct DimcannonPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 resetGameBit;
     s16 armGameBit;
     s16 holdGameBit;

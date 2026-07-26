@@ -6,6 +6,7 @@
 #include "global.h"
 #include "main/lightningeffect.h"
 #include "main/model_light.h"
+#include "game/objects/object_setup.h"
 
 typedef struct
 {
@@ -21,7 +22,8 @@ typedef struct
 
 typedef struct DrakordThornbushPlacement
 {
-    u8 pad0[0x19 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 spawnHealth;  /* 0x19: initial hit points */
     s16 regrowDelay; /* 0x1A: frames before regrow (0 = no respawn) */
     s16 baseRadius;  /* 0x1C: base hit-sphere radius */

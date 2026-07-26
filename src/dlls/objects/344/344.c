@@ -48,6 +48,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/carryable_interface.h"
 #include "string.h"
+#include "game/objects/object_setup.h"
 
 f32 lbl_803DBE80 = 10.0f;
 f32 lbl_803DBE84 = 0.4f;
@@ -73,7 +74,8 @@ f32 lbl_803DBE88 = 170.0f;
  * word other call sites reference raw. */
 typedef struct GunpowderbarrelPlacement
 {
-    u8 pad0[0x19 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     s8 respawnByte;
     s16 generatorLinkId;
     s16 returnHome;

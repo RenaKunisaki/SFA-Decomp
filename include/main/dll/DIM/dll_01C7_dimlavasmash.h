@@ -10,7 +10,8 @@ struct GameObject;
 
 typedef struct DimlavasmashPlacement
 {
-    u8 pad0[0x1E - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1E - 0x18];
     s16 triggerGameBit;
     s16 gateGameBit;
     u8 pad22[0x28 - 0x22];

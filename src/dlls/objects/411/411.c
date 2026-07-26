@@ -21,6 +21,7 @@
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_006A_dll6afunc0.h"
 #include "main/dll/foodbag.h"
+#include "game/objects/object_setup.h"
 
 #define DLL19B_TARGET_OBJGROUP 0xe
 
@@ -36,7 +37,8 @@ u32 lbl_803DDBE0;
  * value at 0x1A (the high byte >> 8 seeds Dll19BState.activationDist). */
 typedef struct Dll19BPlacement
 {
-    u8 pad0[0x1A - 0x00];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 activationDistPacked; /* 0x1A */
 } Dll19BPlacement;
 

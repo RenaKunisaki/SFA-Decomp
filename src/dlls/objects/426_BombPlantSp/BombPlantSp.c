@@ -18,13 +18,15 @@
 #include "main/gameloop_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 u8 lbl_803DBFC0[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
 u8 lbl_80326D98[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 typedef struct BombplantsporePlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 angleSpread;
     s16 baseAngle;
     u8 pad1E[0x20 - 0x1E];

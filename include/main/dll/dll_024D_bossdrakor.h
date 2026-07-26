@@ -6,6 +6,7 @@
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct
 {
@@ -21,7 +22,8 @@ typedef struct
 
 typedef struct BossdrakorPlacement
 {
-    u8 pad0[0x19 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 curveStartIndex;
     s16 airMeterMax;
     s16 unk1C;

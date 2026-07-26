@@ -22,6 +22,7 @@
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_006A_dll6afunc0.h"
 #include "main/dll/foodbag.h"
+#include "game/objects/object_setup.h"
 
 #define PAD_BUTTON_A 0x100
 #define PAD_BUTTON_B 0x200
@@ -41,7 +42,8 @@ extern int lbl_803DB610;
 u32 lbl_803DDBD8;
 typedef struct Dll199ObjectDef
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 initStateOverride; /* 0x1A: if >0, high byte (>>8) overrides the object's initial state (default 10) */
     u8 pad1C[0x20 - 0x1C];
 } Dll199ObjectDef;

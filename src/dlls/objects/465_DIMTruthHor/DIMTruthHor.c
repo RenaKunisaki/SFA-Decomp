@@ -18,12 +18,14 @@
 #include "main/objhits.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "game/objects/object_setup.h"
 
 #define DIMTRUTHHORNICE_OBJFLAG_HIDDEN 0x4000
 
 typedef struct DimtruthhorniceObjectDef
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 hitsLeft;
     s16 unk1C;
     s16 gameBit;

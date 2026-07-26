@@ -42,12 +42,14 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/DIM/dll_01CA_dimexplosion.h"
+#include "game/objects/object_setup.h"
 
 typedef void (*ExplosionSpawnFlameSpdFirst)(int obj, f32 spd, int gen, f32 x, f32 y, f32 z);
 
 typedef struct ExplosionPlacement
 {
-    u8 pad00[0x19];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     s8 sfxKind;
     s16 scaleParam;
     s16 configFlags;

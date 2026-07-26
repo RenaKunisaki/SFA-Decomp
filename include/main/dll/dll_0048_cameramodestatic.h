@@ -2,10 +2,12 @@
 #define MAIN_DLL_DLL_0048_CAMERAMODESTATIC_H_
 
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct CameraModeStaticPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     u8 fovByte;
     u8 flags;
     s16 yaw;

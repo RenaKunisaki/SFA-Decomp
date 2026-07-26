@@ -11,13 +11,15 @@
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 #define DIMBOSSCRACKPAR_BASE_PARTICLE_ID  1222 /* crack-site particle, offset by particleIndex */
 #define DIMBOSSCRACKPAR_GLOW_PARTICLE_ID  1224 /* fixed glow burst particle */
 
 typedef struct DimbosscrackparPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 particleIndex; /* 0x1A: added to DIMBOSSCRACKPAR_BASE_PARTICLE_ID to select crack effect */
     u8 pad1C[0x1E - 0x1C];
     s16 triggerGameBit; /* 0x1E: game bit that gates particle emission */

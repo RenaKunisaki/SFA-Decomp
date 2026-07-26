@@ -35,7 +35,8 @@
 
 typedef struct ShBeaconPlacement
 {
-    u8 pad0[0x1E - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1E - 0x18];
     s16 litGameBit;    /* 0x1E: set once the beacon is fully lit */
     s16 igniteGameBit; /* 0x20: set when ignition is triggered */
     u8 pad22[0x28 - 0x22];

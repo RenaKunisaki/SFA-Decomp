@@ -4,10 +4,12 @@
 #include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct SpitembeamPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 itemIndex; /* 0x1A: shop item slot this beam marks */
     u8 pad1C[0x20 - 0x1C];
 } SpitembeamPlacement;

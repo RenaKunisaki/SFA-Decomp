@@ -2,12 +2,14 @@
 #define MAIN_DLL_SB_DLL_01F7_SBSHIPGUNBROKE_H_
 
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 /* Placement record for the broken ship-gun: only the destroyed-flag
    GameBit index (0x1E) is read by this DLL. */
 typedef struct SBShipGunBrokePlacement
 {
-    u8 pad0[0x1E];
+    ObjPlacement base;
+    u8 pad18[0x1E - 0x18];
     s16 destroyedGameBit; /* 0x1E */
 } SBShipGunBrokePlacement;
 

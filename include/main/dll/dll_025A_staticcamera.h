@@ -4,6 +4,7 @@
 #include "global.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 extern ObjectDescriptor gStaticCameraObjDescriptor;
 
@@ -17,7 +18,8 @@ typedef struct StaticCameraState
 
 typedef struct StaticCameraPlacement
 {
-    u8 pad00[0x19];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 setupParam; /* 0x19 */
     u8 unkByte1A;  /* 0x1A: stored into extra as float */
     u8 pad1B;
