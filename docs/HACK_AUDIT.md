@@ -315,7 +315,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/audio/synth_channel_scale | 99.4686 | 98.9112 | -0.5575 |
 | main/main/dll/warppad | 100.0000 | 99.4592 | -0.5408 |
 | main/dlls/objects/617_ExplodePlan/ExplodePlan | 100.0000 | 99.4805 | -0.5195 |
-| main/main/dll/dll_0262_drakormissile | 100.0000 | 99.4922 | -0.5078 |
+| main/dlls/objects/610/610 | 100.0000 | 99.4922 | -0.5078 |
 | main/main/render | 97.7715 | 97.3112 | -0.4602 |
 | main/main/dll/n_options | 100.0000 | 99.5541 | -0.4459 |
 | main/main/dll/obj_movelib | 100.0000 | 99.5935 | -0.4065 |
