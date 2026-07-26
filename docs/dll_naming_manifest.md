@@ -589,7 +589,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x21F | — | COMPLETE | dlls/objects/543/543.c | = (canonical) | No recovered retail basename |
 | 0x220 | — | COMPLETE | dlls/objects/544/544.c | = (canonical) | No recovered retail basename |
 | 0x221 | — | COMPLETE | dlls/objects/545/545.c | = (canonical) | No recovered retail basename |
-| 0x222 | VFPDragHead | CONFIRMED | main/light.c | main/dll/VF/dll_0222_vfpdraghead.c | engine/SDK host: main/light.c |
+| 0x222 | VFPDragHead | COMPLETE | dlls/objects/546_VFPDragHead/VFPDragHead.c | = (canonical) | — |
 | 0x223 | VFP_coreplat | CONFIRMED | main/light.c | main/dll/VF/dll_0223_vfpcoreplat.c | engine/SDK host: main/light.c |
 | 0x224 | — | NO-RETAIL-NAME | main/light.c | main/dll/dll_0224_light.c | engine/SDK host: main/light.c; container stem, tentative |
 | 0x225 | VFP_flamepoint | CONFIRMED | main/main.c | main/dll/VF/dll_0225_vfpflamepoint.c | engine/SDK host: main/main.c |

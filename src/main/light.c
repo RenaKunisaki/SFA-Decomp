@@ -1,45 +1,26 @@
 /* Volcano Force Point object DLLs. */
-#include "main/dll/partfx_interface.h"
-#include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render_legacy.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/dll/modgfx_interface.h"
-#include "main/objhits.h"
 #include "main/objprint_render_api.h"
 #include "main/vecmath.h"
 #include "main/gamebit_ids.h"
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_ids.h"
 #include "main/game_ui_interface.h"
 #include "main/light_internal.h"
-#include "main/resource.h"
 
-#define LIGHT_OBJFLAG_HIDDEN             0x4000
 #define LIGHT_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-#define LIGHT_DRAGHEAD_RESOURCE_ID 0xA5
-#define LIGHT_HIT_VOLUME_SLOT      0xE
-
-/* Partfx spawned by VFPDragHead_update: BREATH is the hit-driven breath fx
- * (state 1, gameBitA toggled); IDLE is the ambient periodic fx (states 0/2). */
-#define VFPDRAGHEAD_PARTFX_BREATH 0x390
-#define VFPDRAGHEAD_PARTFX_IDLE   0x391
 
 extern u32 gSpellStoneEventId;
 extern f32 lbl_803E6144;
 extern f32 lbl_803E6148;
 extern f32 lbl_803E6150;
-extern void* gVfpDragHeadResource;
-extern f32 lbl_803E6138;
 extern f32 lbl_803E6140;
-extern s16 gVfpDragHeadSpawnTimer;
-extern u8 gVfpDragHeadActiveIndex;
 /* Per-object extra state for the VFP platform family (vfpplatform/vfpblock1/
  * vfpcoreplat). VFP_Platform_getExtraSize == 0x6. */
 typedef struct VfpPlatformState
@@ -49,22 +30,14 @@ typedef struct VfpPlatformState
     u8 axisMode;   /* 0/3 = move axis, 10 = trigger-on-bit, 99/0x63 = inert */
     s16 timer;     /* dwell countdown */
 } VfpPlatformState;
+STATIC_ASSERT(sizeof(VfpPlatformState) == 0x6);
+
 typedef struct SpellStoneUseState
 {
     s16 completeGameBit;
     s16 requiredGameBit;
     u8 used;
 } SpellStoneUseState;
-/* Per-object extra state for VFPDragHead (VFPDragHead_getExtraSize == 0xC). */
-typedef struct VfpDragHeadState
-{
-    s16 gameBitA;     /* toggled by hits; drives the 0x390 breath fx */
-    s16 gameBitB;     /* suppresses idle fx when set (variant 2) */
-    s16 unk_04;       /* init: 100 */
-    s16 despawnTimer; /* variant 0x3C5: init 0x78, counts down to free */
-    u8 pad08[3];
-    u8 headIndex; /* from def+0x1A; matched against gVfpDragHeadActiveIndex */
-} VfpDragHeadState;
 typedef struct VfpPlatformPlacement
 {
     u8 pad00[0x18];
@@ -73,16 +46,6 @@ typedef struct VfpPlatformPlacement
     u8 pad1A[6];
     s16 gameBitId; /* 0x20 */
 } VfpPlatformPlacement;
-typedef struct VfpDragHeadPlacement
-{
-    u8 pad00[0x18];
-    s8 rotXByte;  /* 0x18 */
-    s8 variant;   /* 0x19: selects ambient/breath behavior; variant 1 also scales the model */
-    s16 headIndex; /* 0x1a */
-    u8 pad1C[2];
-    s16 gameBitA;  /* 0x1e */
-    s16 gameBitB;  /* 0x20 */
-} VfpDragHeadPlacement;
 typedef struct SpellStonePlacement
 {
     u8 pad00[0x18];
@@ -92,137 +55,6 @@ typedef struct SpellStonePlacement
     s16 requiredGameBit; /* 0x20 */
 } SpellStonePlacement;
 
-int VFPDragHead_getExtraSize(void)
-{
-    return 0xc;
-}
-
-int VFPDragHead_getObjectTypeId(void)
-{
-    return 0x0;
-}
-
-void VFPDragHead_free(int obj)
-{
-    (*gExpgfxInterface)->freeSource2(obj);
-    (*gModgfxInterface)->freeSourceEffects((void*)obj);
-    if (gVfpDragHeadResource != NULL)
-    {
-        Resource_Release(gVfpDragHeadResource);
-    }
-    gVfpDragHeadResource = NULL;
-}
-
-void VFPDragHead_render(void)
-{
-}
-
-STATIC_ASSERT(sizeof(VfpPlatformState) == 0x6);
-void VFPDragHead_hitDetect(void)
-{
-}
-
-void VFPDragHead_update(GameObject* obj)
-{
-    int state = (s8)(*(s8**)&obj->anim.placementData)[0x19];
-    VfpDragHeadState* self2;
-
-    if (state == 2)
-    {
-        self2 = obj->extra;
-        gVfpDragHeadSpawnTimer -= (s16)timeDelta;
-        if (mainGetBit(self2->gameBitB) != 0)
-            return;
-        if (gVfpDragHeadSpawnTimer > 0xc8)
-            return;
-        if (self2->headIndex != gVfpDragHeadActiveIndex)
-            return;
-        if (randomGetRange(0, 2) != 0)
-            return;
-        (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_IDLE, NULL, 4, -1, NULL);
-    }
-    else if (obj->anim.seqId == 0x3c5)
-    {
-        self2 = obj->extra;
-        self2->despawnTimer -= (s16)timeDelta;
-        obj->anim.localPosX =
-            obj->anim.velocityX * timeDelta + obj->anim.localPosX;
-        obj->anim.localPosY =
-            obj->anim.velocityY * timeDelta + obj->anim.localPosY;
-        obj->anim.localPosZ =
-            obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
-        if (self2->despawnTimer > 0)
-            return;
-        Obj_FreeObject(obj);
-    }
-    else if (state == 0)
-    {
-        self2 = obj->extra;
-        gVfpDragHeadSpawnTimer -= (s16)timeDelta;
-        if (mainGetBit(0x522) != 0)
-            return;
-        if (gVfpDragHeadSpawnTimer > 0xc8)
-            return;
-        if (self2->headIndex != gVfpDragHeadActiveIndex)
-            return;
-        if (randomGetRange(0, 2) != 0)
-            return;
-        (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_IDLE, NULL, 4, -1, NULL);
-    }
-    else if (state == 1)
-    {
-        self2 = obj->extra;
-        if (mainGetBit(self2->gameBitA) != 0)
-        {
-            (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_BREATH, NULL, 4, -1, NULL);
-            (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_BREATH, NULL, 4, -1, NULL);
-            if (randomGetRange(0, 1) != 0)
-            {
-                (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_IDLE, NULL, 4, -1, NULL);
-            }
-        }
-        if ((s16)ObjHits_GetPriorityHit(obj, 0, 0, 0) != 0)
-        {
-            mainSetBits(self2->gameBitA, 1 - mainGetBit(self2->gameBitA));
-        }
-    }
-}
-
-void VFPDragHead_init(GameObject* obj, int data)
-{
-    VfpDragHeadPlacement* def = (VfpDragHeadPlacement*)data;
-    VfpDragHeadState* state = (obj)->extra;
-    if ((obj)->anim.seqId == 0x3c5)
-    {
-        state->despawnTimer = 0x78;
-        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase * lbl_803E6138;
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, LIGHT_HIT_VOLUME_SLOT, 1, 0);
-    }
-    else
-    {
-        (obj)->anim.rotX = (((s32)def->rotXByte) << 8);
-    }
-    state->gameBitA = def->gameBitA;
-    state->gameBitB = def->gameBitB;
-    state->unk_04 = 0x64;
-    state->headIndex = def->headIndex;
-    if (def->variant == 1)
-    {
-        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase * lbl_803E6138;
-    }
-    (obj)->objectFlags |= (LIGHT_OBJFLAG_HIDDEN | LIGHT_OBJFLAG_HITDETECT_DISABLED);
-    gVfpDragHeadResource = Resource_Acquire(LIGHT_DRAGHEAD_RESOURCE_ID, 1);
-}
-
-void VFPDragHead_release(void)
-{
-}
-
-void VFPDragHead_initialise(void)
-{
-}
-
-STATIC_ASSERT(sizeof(VfpDragHeadState) == 0xC);
 int return0_801FD13C(void)
 {
     return 0x0;
@@ -382,23 +214,6 @@ void dll_224_release_nop(void)
 void dll_224_initialise_nop(void)
 {
 }
-
-ObjectDescriptor gVFPDragHeadObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)VFPDragHead_initialise,
-    (ObjectDescriptorCallback)VFPDragHead_release,
-    0,
-    (ObjectDescriptorCallback)VFPDragHead_init,
-    (ObjectDescriptorCallback)VFPDragHead_update,
-    (ObjectDescriptorCallback)VFPDragHead_hitDetect,
-    (ObjectDescriptorCallback)VFPDragHead_render,
-    (ObjectDescriptorCallback)VFPDragHead_free,
-    (ObjectDescriptorCallback)VFPDragHead_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)VFPDragHead_getExtraSize,
-};
 
 ObjectDescriptor gVFP_coreplatObjDescriptor = {
     0,
