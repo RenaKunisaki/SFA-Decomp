@@ -2968,7 +2968,7 @@ dlls/objects/435_SH_Beacon/SH_Beacon.c:
 	.sbss       start:0x803DDBF8 end:0x803DDC00
 	.sdata2     start:0x803E5528 end:0x803E5540
 
-main/dll/SH/dll_01B4_shemptytumblew.c:
+dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c:
 	.text       start:0x801DAFA4 end:0x801DB098
 	.data       start:0x803278C0 end:0x803278F8
 	.sbss       start:0x803DDC00 end:0x803DDC08

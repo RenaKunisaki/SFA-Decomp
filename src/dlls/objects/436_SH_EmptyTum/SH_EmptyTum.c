@@ -1,5 +1,5 @@
 /*
- * shemptytumblew (DLL 0x1B4) - the empty (non-rolling) tumbleweed bush.
+ * SH_EmptyTum (DLL 0x1B4) - the empty (non-rolling) tumbleweed bush.
  *
  * init orients the bush from its placement bytes and sizes a capsule hit
  * volume scaled by the model's root-motion scale; update just polls the
@@ -14,7 +14,6 @@
 #define SHEMPTYTUMBLEW_OBJFLAG_HIDDEN 0x4000
 
 f32 lbl_803DDC00;
-
 
 void SH_EmptyTumbleW_update(GameObject* obj)
 {
