@@ -1676,6 +1676,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/334_CFPrisonGua/CFPrisonGua.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/336_GCRobotLigh/GCRobotLigh.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/337_CFScalesGal/CFScalesGal.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_0153_cfperch.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_0154_cfprisoncage.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0157_spiritdoorspirit.c", cflags=cflags_dll_noopt_nocse),
