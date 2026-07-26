@@ -1345,7 +1345,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     ObjMsgQueueCursor* slot;
     int objectIndex;
     int objectCount;
-    void* obj;
+    GameObject* obj;
     int includeSender;
     int matchAny;
     GameObject* s;
@@ -1357,10 +1357,10 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     s = (GameObject*)sender;
     for (; objectIndex < objectCount; objectIndex = objectIndex + 1)
     {
-        obj = (void*)objects[objectIndex];
+        obj = (GameObject*)objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) &&
-            ((((GameObject*)obj)->anim.seqId == (s16)targetId || (matchAny != 0))) &&
-            ((Vec_distance(&s->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX) < radius &&
+            ((obj->anim.seqId == (s16)targetId || (matchAny != 0))) &&
+            ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius &&
               (obj != 0x0)) &&
              (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))
         {
@@ -1375,8 +1375,8 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
             }
             else
             {
-                debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)((GameObject*)obj)->anim.classId,
-                            (int)((GameObject*)obj)->anim.seqId, (int)s->anim.seqId);
+                debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
+                            (int)obj->anim.seqId, (int)s->anim.seqId);
             }
         }
     }
@@ -1392,7 +1392,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
     ObjMsgQueueCursor* slot;
     int objectIndex;
     int objectCount;
-    void* obj;
+    GameObject* obj;
 
     objects = ObjList_GetObjects(&objectIndex, &objectCount);
     maskedFlags = flags & 0xffff;
@@ -1400,9 +1400,9 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
     {
         for (; objectIndex < objectCount; objectIndex = objectIndex + 1)
         {
-            obj = (void*)objects[objectIndex];
+            obj = (GameObject*)objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
-                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == ((GameObject*)obj)->anim.seqId))) &&
+                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.seqId))) &&
                 ((obj != 0x0 &&
                   (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0))))
             {
@@ -1417,8 +1417,8 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
                 }
                 else
                 {
-                    debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)((GameObject*)obj)->anim.classId,
-                                (int)((GameObject*)obj)->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
+                    debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
+                                (int)obj->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
                 }
             }
         }
@@ -1427,9 +1427,9 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
     {
         for (; objectIndex < objectCount; objectIndex = objectIndex + 1)
         {
-            obj = (void*)objects[objectIndex];
+            obj = (GameObject*)objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
-                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == ((GameObject*)obj)->anim.classId))) &&
+                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.classId))) &&
                 ((obj != 0x0 &&
                   (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0))))
             {
@@ -1444,8 +1444,8 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
                 }
                 else
                 {
-                    debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)((GameObject*)obj)->anim.classId,
-                                (int)((GameObject*)obj)->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
+                    debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
+                                (int)obj->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
                 }
             }
         }
