@@ -3,13 +3,14 @@
 
 #include "global.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
 #include "main/dll/curve_walker.h"
 #include "main/objanim_internal.h"
 
 typedef struct EdibleMushroomPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     u8 objectTypeParam; /* 0x18: variant selector (switch 4/5) */
     u8 pad19[0x1A - 0x19];
     s16 gameBitId; /* 0x1a: pickup/spawn GameBit id */

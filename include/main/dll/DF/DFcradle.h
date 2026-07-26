@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct CCriverflowState
 {
@@ -17,7 +18,7 @@ typedef struct CCriverflowModel
 
 typedef struct CCriverflowMapData
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     u8 angleByte;
     u8 heightOffset;
     u8 speedByte;
