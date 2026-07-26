@@ -708,7 +708,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x296 | WCTempleDia | RAW | dlls/objects/662_WCTempleDia/WCTempleDia.c | = (canonical) | Exact complete eleven-function TU; game-bit and target-speed tables remain with its terminal descriptor |
 | 0x297 | WCTempleBri | RAW | dlls/objects/663_WCTempleBri/WCTempleBri.c | = (canonical) | Exact complete eleven-function TU with deformation helpers and its sole descriptor at the physical end |
 | 0x298 | WCFloorTile | RAW | dlls/objects/664_WCFloorTile/WCFloorTile.c | = (canonical) | Exact complete nine-function TU with its sole descriptor at the physical end |
-| 0x299 | — | NO-RETAIL-NAME | main/dll/dll_0299.c | = (canonical) | — |
+| 0x299 | — | NO-RETAIL-NAME | dlls/objects/665/665.c | = (canonical) | Exact complete nine-function TU with its resource slot and sole descriptor |
 | 0x29A | ARWArwing | COMPLETE | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | — |
 | 0x29B | arwingandrossstuff (+rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | GUESSED | main/dll/dll_029B_arwingandrossstuff.c | = (canonical) | — |
 | 0x29C | ARWArwingBo | CONFIRMED | main/dll/dll_029C_arwarwingbo.c | main/dll/ARW/dll_029C_arwarwingbo.c | — |

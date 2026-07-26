@@ -3879,7 +3879,7 @@ dlls/objects/660/660.c:
 	.text       start:0x80228B38 end:0x80228C68
 	.data       start:0x8032B2A0 end:0x8032B2D8
 
-main/dll/dll_0299.c:
+dlls/objects/665/665.c:
 	.text       start:0x80228C68 end:0x80228EDC
 	.data       start:0x8032B2D8 end:0x8032B310
 	.sbss       start:0x803DDD80 end:0x803DDD88
