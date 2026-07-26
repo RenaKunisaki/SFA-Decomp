@@ -3,22 +3,17 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/objseq.h"
 #include "main/object_render_legacy.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/objhits.h"
-#include "main/pi_dolphin_api.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/map_load.h"
 #include "main/objprint_render_api.h"
 #include "main/vecmath.h"
 #include "main/gamebit_ids.h"
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "main/objanim_update.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_ids.h"
 #include "main/game_ui_interface.h"
@@ -42,32 +37,9 @@ extern f32 lbl_803E6148;
 extern f32 lbl_803E6150;
 extern void* gVfpDragHeadResource;
 extern f32 lbl_803E6138;
-extern f32 lbl_803E6128;
 extern f32 lbl_803E6140;
 extern s16 gVfpDragHeadSpawnTimer;
 extern u8 gVfpDragHeadActiveIndex;
-/* Per-object extra state for SeqPoint (SeqPoint_getExtraSize == 0x10). */
-/* SeqPointState.mode: which predicate must hold for the seq point to fire. */
-typedef enum SeqPointMode
-{
-    SEQPOINT_MODE_RADIUS = 0,          /* fire when player is within triggerRadius */
-    SEQPOINT_MODE_BIT = 1,             /* fire when conditionBit is set */
-    SEQPOINT_MODE_RADIUS_AND_BIT = 2,  /* fire when in radius AND conditionBit set */
-    SEQPOINT_MODE_RADIUS_BIT_ONCE = 3, /* fire in radius with conditionBit clear, then set it */
-    SEQPOINT_MODE_BIT_ONCE = 4,        /* fire with conditionBit clear, then set it */
-    SEQPOINT_MODE_BIT_REPEAT = 5       /* fire whenever conditionBit is set (no done latch) */
-} SeqPointMode;
-typedef struct SeqPointState
-{
-    f32 triggerRadius;
-    s16 conditionBit; /* gamebit gating modes 1-5 */
-    s16 disableBit;   /* gamebit that permanently disables the point */
-    s16 sequenceId;   /* trigger id fired at the player; switched in the SeqFn */
-    u8 pad0A[3];
-    u8 done;
-    u8 mode; /* 0 radius, 1 bit, 2 radius+bit, 3/4 bit-once (sets it), 5 bit repeat */
-    u8 pad0F;
-} SeqPointState;
 /* Per-object extra state for the VFP platform family (vfpplatform/vfpblock1/
  * vfpcoreplat). VFP_Platform_getExtraSize == 0x6. */
 typedef struct VfpPlatformState
@@ -101,16 +73,6 @@ typedef struct VfpPlatformPlacement
     u8 pad1A[6];
     s16 gameBitId; /* 0x20 */
 } VfpPlatformPlacement;
-typedef struct SeqPointPlacement
-{
-    u8 pad00[0x18];
-    s8 rotXByte;       /* 0x18 */
-    u8 mode;           /* 0x19 */
-    s16 triggerRadius; /* 0x1a */
-    s16 sequenceId;    /* 0x1c */
-    s16 conditionBit;  /* 0x1e */
-    s16 disableBit;    /* 0x20 */
-} SeqPointPlacement;
 typedef struct VfpDragHeadPlacement
 {
     u8 pad00[0x18];
@@ -129,189 +91,6 @@ typedef struct SpellStonePlacement
     s16 completeGameBit; /* 0x1e */
     s16 requiredGameBit; /* 0x20 */
 } SpellStonePlacement;
-
-STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
-
-int SeqPoint_SeqFn(int obj, int param2, ObjAnimUpdateState* ctx)
-{
-    SeqPointState* state = ((GameObject*)obj)->extra;
-    int i;
-
-    ctx->activeHitVolumePair = -1;
-    ctx->sequenceEventActive = 0;
-    for (i = 0; i < ctx->eventCount; i++)
-    {
-        switch (state->sequenceId)
-        {
-        case 0:
-            break;
-        case 13:
-            switch (ctx->eventIds[i])
-            {
-            case 20:
-                mainSetBits(GAMEBIT_VFP_ObjGroups, 0);
-                mainSetBits(GAMEBIT_VFPRelated0D72, 1);
-                mainSetBits(GAMEBIT_VFPLightRelated0D44, 1);
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 1, 1);
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 2, 1);
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 22, 1);
-                if ((*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot) == 1)
-                {
-                    unlockLevel(0, 0, 1);
-                    lockLevel(mapGetDirIdx(70), 1);
-                    lockLevel(mapGetDirIdx(4), 0);
-                    loadMapAndParent(70);
-                    (*gMapEventInterface)->setMapAct(18, 2);
-                    warpToMap(124, 0);
-                }
-                else if ((*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot) == 2)
-                {
-                    unlockLevel(0, 0, 1);
-                    lockLevel(mapGetDirIdx(70), 1);
-                    lockLevel(mapGetDirIdx(4), 0);
-                    loadMapAndParent(70);
-                    (*gMapEventInterface)->setMapAct(11, 4);
-                    (*gMapEventInterface)->setMapAct(8, 6);
-                    warpToMap(124, 0);
-                }
-                break;
-            }
-            break;
-        }
-        ctx->eventIds[i] = 0;
-    }
-    return 0;
-}
-
-int SeqPoint_getExtraSize(void)
-{
-    return 0x10;
-}
-
-int SeqPoint_getObjectTypeId(void)
-{
-    return 0x0;
-}
-
-void SeqPoint_free(void)
-{
-}
-
-void SeqPoint_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 isVisible = visible;
-    if (isVisible != 0)
-        objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, lbl_803E6128);
-}
-
-void SeqPoint_hitDetect(void)
-{
-}
-
-void SeqPoint_update(int* obj)
-{
-    void* player = Obj_GetPlayerObject();
-    SeqPointState* self = ((GameObject*)obj)->extra;
-    int key = self->disableBit;
-
-    if (key != -1)
-    {
-        if (self->done != 0)
-        {
-            if (mainGetBit(key) != 0)
-                return;
-            mainSetBits(self->disableBit, 1);
-            self->done = 1;
-            return;
-        }
-        if (mainGetBit(key) != 0)
-        {
-            self->done = 1;
-            return;
-        }
-    }
-    if (self->done != 0)
-        return;
-    switch (self->mode)
-    {
-    case SEQPOINT_MODE_RADIUS:
-        if (!(Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
-              self->triggerRadius))
-            return;
-        (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        self->done = 1;
-        break;
-    case SEQPOINT_MODE_BIT:
-        if (self->conditionBit == -1)
-            return;
-        if (mainGetBit(self->conditionBit) == 0)
-            return;
-        (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        self->done = 1;
-        break;
-    case SEQPOINT_MODE_RADIUS_AND_BIT:
-        if (!(Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
-              self->triggerRadius))
-            return;
-        if (self->conditionBit == -1)
-            return;
-        if (mainGetBit(self->conditionBit) == 0)
-            return;
-        (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        self->done = 1;
-        break;
-    case SEQPOINT_MODE_RADIUS_BIT_ONCE:
-        if (!(Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
-              self->triggerRadius))
-            return;
-        if (self->conditionBit == -1)
-            return;
-        if (mainGetBit(self->conditionBit) != 0)
-            return;
-        (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        mainSetBits(self->conditionBit, 1);
-        self->done = 1;
-        break;
-    case SEQPOINT_MODE_BIT_ONCE:
-        if (self->conditionBit == -1)
-            return;
-        if (mainGetBit(self->conditionBit) != 0)
-            return;
-        (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        mainSetBits(self->conditionBit, 1);
-        self->done = 1;
-        break;
-    case SEQPOINT_MODE_BIT_REPEAT:
-        if (self->conditionBit == -1)
-            return;
-        if (mainGetBit(self->conditionBit) == 0)
-            return;
-        (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        break;
-    }
-}
-
-void SeqPoint_init(GameObject* obj, int data)
-{
-    SeqPointPlacement* def = (SeqPointPlacement*)data;
-    SeqPointState* state = obj->extra;
-    obj->animEventCallback = SeqPoint_SeqFn;
-    obj->anim.rotX = (((s32)def->rotXByte) << 8);
-    state->triggerRadius = def->triggerRadius;
-    state->sequenceId = def->sequenceId;
-    state->mode = def->mode;
-    state->conditionBit = def->conditionBit;
-    state->disableBit = def->disableBit;
-    obj->objectFlags |= LIGHT_OBJFLAG_HITDETECT_DISABLED;
-}
-
-void SeqPoint_release(void)
-{
-}
-
-void SeqPoint_initialise(void)
-{
-}
 
 int VFPDragHead_getExtraSize(void)
 {
@@ -603,23 +382,6 @@ void dll_224_release_nop(void)
 void dll_224_initialise_nop(void)
 {
 }
-
-ObjectDescriptor gSeqPointObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)SeqPoint_initialise,
-    (ObjectDescriptorCallback)SeqPoint_release,
-    0,
-    (ObjectDescriptorCallback)SeqPoint_init,
-    (ObjectDescriptorCallback)SeqPoint_update,
-    (ObjectDescriptorCallback)SeqPoint_hitDetect,
-    (ObjectDescriptorCallback)SeqPoint_render,
-    (ObjectDescriptorCallback)SeqPoint_free,
-    (ObjectDescriptorCallback)SeqPoint_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)SeqPoint_getExtraSize,
-};
 
 ObjectDescriptor gVFPDragHeadObjDescriptor = {
     0,

@@ -149,7 +149,7 @@ address. `[lo-hi)` is the splits.txt `.text` range (the partition unit).
 | 72 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 73 | `main/dll/dll_801e66dc.c` | 801E66DC-801E67BC | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 74 | `main/dll/dll_801e991c.c` | 801E991C-801E9C00 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| 75 | `main/light.c` | 801FC6F4-801FD4A8 | ENGINE-HOST | FORENSIC | 0x221,0x222,0x223,0x224 anom:spellstoneusefn | engine/SDK host of DLL(s) 0x221,0x222,0x223,0x224 |
+| 75 | `main/light.c` | 801FCCE8-801FD4A8 | ENGINE-HOST | FORENSIC | 0x222,0x223,0x224 anom:spellstoneusefn | engine/SDK host of DLL(s) 0x222,0x223,0x224 |
 | 76 | `main/main.c` | 801FD4A8-801FE118 | ENGINE-HOST | FORENSIC | 0x225,0x226,0x227,0x228 anom:return1 | engine/SDK host of DLL(s) 0x225,0x226,0x227,0x228 |
 | 77 | `main/sky.c` | 80088758-8008EE18 | ENGINE-HOST | FORENSIC | 0x005,0x006 anom:envfxfn,getskycolorfn,envfxactfn,playerenvfxfn | engine/SDK host of DLL(s) 0x005,0x006 |
 | 78 | `main/newclouds.c` | 8008EE18-80094494 | ENGINE-HOST | FORENSIC | 0x007 anom:snow,lightning,cloud,mm | engine/SDK host of DLL(s) 0x007 |
@@ -317,7 +317,7 @@ Batches: 12. Region-disjoint: NO OVERLAP — verified (each batch owns a contigu
 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801e66dc.c` | 801E66DC-801E67BC | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801e991c.c` | 801E991C-801E9C00 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| `main/light.c` | 801FC6F4-801FD4A8 | ENGINE-HOST | FORENSIC | engine/SDK host of DLL(s) 0x221,0x222,0x223,0x224 |
+| `main/light.c` | 801FCCE8-801FD4A8 | ENGINE-HOST | FORENSIC | engine/SDK host of DLL(s) 0x222,0x223,0x224 |
 | `main/main.c` | 801FD4A8-801FE118 | ENGINE-HOST | FORENSIC | engine/SDK host of DLL(s) 0x225,0x226,0x227,0x228 |
 
 ### Batch B11 — `80209810-802106C0` (8 items)
