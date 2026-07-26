@@ -187,18 +187,18 @@ strong independent confirmation that the wiki's table is accurate:
 | `0x12` | Title Screen | `dll_0032_titlescreeninit.c`, `dll_0000_gameui.c`, `dll_02BB_gflevelcon.c` |
 | `0x1A` | Ice Mountain after re-race | `dlls/objects/361_IMIceMounta/IMIceMounta.c` (a shared `warpCountdown` field/comment is also templated, unreached, in `dlls/objects/364/364.c`, `dlls/objects/446/446.c`, and `dlls/objects/447_DIMLavaBall/DIMLavaBall.c`) |
 | `0x20` | Krazoa Palace, WarpStone entrance | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_A` |
-| `0x22` | Krazoa Palace, interior warp | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_B`; `ARW/dll_029A_arwarwing.c` |
-| `0x32` | Andross | `dll_02BC_andross.c`, `dll_011B_landedarwing.c`, `ARW/dll_029A_arwarwing.c` |
+| `0x22` | Krazoa Palace, interior warp | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_B`; `src/dlls/objects/666_ARWArwing/ARWArwing.c` |
+| `0x32` | Andross | `dll_02BC_andross.c`, `dll_011B_landedarwing.c`, `src/dlls/objects/666_ARWArwing/ARWArwing.c` |
 | `0x33` | MazeCave | `dlls/objects/432_SH_swapston/SH_swapston.c` |
 | `0x4E` | Krazoa Palace Arwing landing spot | `dll_02BC_andross.c`, `dll_011B_landedarwing.c` |
 | `0x50` | Lightfoot Village plateau | `dlls/objects/438_SC_levelcon/SC_levelcon.c` |
-| `0x60` | World Map | `dll_0039_dummy39.c`: `DUMMY39_WARP_MAP`; `ARW/dll_029A_arwarwing.c` (×2) |
-| `0x63` | CloudRunner Fortress, fall through ground | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |
-| `0x6C` | ThornTail Hollow under the Arwing | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |
+| `0x60` | World Map | `dll_0039_dummy39.c`: `DUMMY39_WARP_MAP`; `src/dlls/objects/666_ARWArwing/ARWArwing.c` (×2) |
+| `0x63` | CloudRunner Fortress, fall through ground | `src/dlls/objects/666_ARWArwing/ARWArwing.c`: `arwarwing_warpByCourse` |
+| `0x6C` | ThornTail Hollow under the Arwing | `src/dlls/objects/666_ARWArwing/ARWArwing.c`: `arwarwing_warpByCourse` |
 | `0x73` | Ocean Force Point | `DF/dll_022D_dfpseqpoint.c` |
-| `0x77` | DarkIce Mines Arwing landing scene | `ARW/dll_029A_arwarwing.c`; `DIM/dim2icicle.c` |
-| `0x78` | Walled City Arwing landing spot | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |
-| `0x79` | Dragon Rock Arwing landing spot | `ARW/dll_029A_arwarwing.c`; `dll_024D_bossdrakor.c` |
+| `0x77` | DarkIce Mines Arwing landing scene | `src/dlls/objects/666_ARWArwing/ARWArwing.c`; `DIM/dim2icicle.c` |
+| `0x78` | Walled City Arwing landing spot | `src/dlls/objects/666_ARWArwing/ARWArwing.c`: `arwarwing_warpByCourse` |
+| `0x79` | Dragon Rock Arwing landing spot | `src/dlls/objects/666_ARWArwing/ARWArwing.c`; `dll_024D_bossdrakor.c` |
 | `0x7C` (124) | VolcanoForcePoint | `light.c`: `warpToMap(124, 0)` (×2) |
 | `0x7E` | LinkA (crashes) | `WM/dll_020C_wmspiritplace.c`; `dlls/objects/432_SH_swapston/SH_swapston.c` |
 | `0x7F` | GreatFox | `dll_011B_landedarwing.c` |

@@ -1,5 +1,5 @@
 /*
- * arwarwing (DLL 0x29A) - the player's Arwing in the on-rails flight
+ * ARWArwing (DLL 666) - the player's Arwing in the on-rails flight
  * sections. This is the core object of the section; the singleton instance
  * is published through the gArwing global (getArwing) so the pickups,
  * squadron and level-controller TUs can find it.
@@ -61,8 +61,6 @@
 
 #include "main/dll/ARW/arwing_state.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
-
-GameObject* gArwing;
 #include "main/dll/ARW/dll_029C_arwarwingbo.h"
 #include "main/dll/ARW/dll_029D_arwarwinggu.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
@@ -70,6 +68,8 @@ GameObject* gArwing;
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
+
+GameObject* gArwing;
 
 u8 gArwingCourseMapIds[8] = {7, 0x13, 0x0D, 0x0C, 2, 0, 0, 0};
 
@@ -183,20 +183,6 @@ static inline f32 arwarwing_readTriggerL(void)
 {
     return -(f32)(u32)(u8)padGetLTrigger(0) / 150.0f;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void arwarwing_readControls(GameObject* obj, ArwingState* state)
 {

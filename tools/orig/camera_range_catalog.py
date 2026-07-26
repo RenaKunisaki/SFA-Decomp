@@ -125,7 +125,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Arwing trace origin",
-        "src/main/dll/ARW/dll_029A_arwarwing.c",
+        "src/dlls/objects/666_ARWArwing/ARWArwing.c",
         "arwarwing_SeqFn / arwarwing_hitDetect",
         "A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it.",
         "high_hit_detection",

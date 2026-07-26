@@ -205,7 +205,7 @@ The companion CSV contains every individual placement. This table is the complet
 | Plane crossing | `src/main/dll/dll_80198a00.c` | `fn_80198DE8` | Tests the previous-to-current target segment against a finite plane; missed movement is not replayed. | `critical` |
 | Trigger cleanup | `src/dlls/objects/294/294.c` | `Trigger_free` | Stops owned SFX but does not synthesize an exit leg or replay a missed command. | `critical` |
 | Untargeted staff projectile origin | `src/dlls/objects/195_Player/player.c` | `staffShootFireball / fn_802AA014` | Untargeted projectiles allocate at current camera XYZ and derive velocity from camera orientation/FOV. A stored camera can therefore originate a hit remotely. | `high_remote_hit` |
-| Arwing trace origin | `src/main/dll/ARW/dll_029A_arwarwing.c` | `arwarwing_SeqFn / arwarwing_hitDetect` | A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it. | `high_hit_detection` |
+| Arwing trace origin | `src/dlls/objects/666_ARWArwing/ARWArwing.c` | `arwarwing_SeqFn / arwarwing_hitDetect` | A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it. | `high_hit_detection` |
 | Tricky warp visibility | `src/main/dll/dll_0100_trickywarp.c` | `TrickyWarp_update` | Permits companion relocation only when the warp host is outside the view frustum. | `investigate` |
 | Door side routing | `src/dlls/objects/244/244.c` | `DoorF4 update events` | Code chooses a side GameBit from the camera side of a door plane, but observed retail placements have zero masks or disabled side bits. | `inactive_retail` |
 | Camera-target trigger mode | `src/dlls/objects/294/294.c` | `Trigger_hitDetect target kind 2` | The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2. | `inactive_retail` |
@@ -223,8 +223,8 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 |---|---:|---|
 | `src/main/audio.c` | 389 | `void* slot = Camera_GetCurrentViewSlot();` |
 | `src/main/audio.c` | 1233 | `slot = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/ARW/dll_029A_arwarwing.c` | 1294 | `Camera_GetCurrentViewSlot();` |
-| `src/main/dll/ARW/dll_029A_arwarwing.c` | 1317 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/666_ARWArwing/ARWArwing.c` | 1294 | `Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/666_ARWArwing/ARWArwing.c` | 1317 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/298_CFCrate/CFCrate.c` | 148 | `cam = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/CF/dll_0162_cfmagicwall.c` | 84 | `fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,` |
 | `src/main/dll/CF/dll_0162_cfmagicwall.c` | 89 | `fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,` |
