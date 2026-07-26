@@ -1,5 +1,5 @@
 /*
- * crrockfall (DLL 0x16A) - a scripted falling-rock / boulder object.
+ * CRrockfall (DLL 0x16A) - a scripted falling-rock / boulder object.
  *
  * On init the per-rock scale is derived from the placement params, the
  * capsule hitbox is sized from the sub-object bounds, and a config-table
