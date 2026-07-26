@@ -740,7 +740,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B6 | CNThitObjec | RAW | dlls/objects/694_CNThitObjec/CNThitObjec.c | = (canonical) | Exact DOL-confirmed eleven-function TU with its hit-source profile tables, terminal descriptor, and full small-data/constant sections; the first profile was recovered from an adjacent auto object, while `CNTColideOb` and `DR_TowerSwi` remain object aliases |
 | 0x2B7 | MCUpgrade | RAW | dlls/objects/695_MCUpgrade/MCUpgrade.c | = (canonical) | Exact DOL-confirmed three-function TU with its terminal descriptor; it consumes `mcupgrade_SeqFn` from DLL 694 and provides `mcupgradema_SeqFn` to DLL 696 |
 | 0x2B8 | MCUpgradeMa | RAW | dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c | = (canonical) | Exact DOL-confirmed three-function TU with its terminal descriptor; it consumes `mcupgradema_SeqFn` from DLL 695 and provides `mcstaffeffe_SeqFn` to DLL 697 |
-| 0x2B9 | MCStaffEffe | CONFIRMED | main/dll/dll_02B9_mcstaffeffe.c | = (canonical) | — |
+| 0x2B9 | MCStaffEffe | RAW | dlls/objects/697_MCStaffEffe/MCStaffEffe.c | = (canonical) | Exact DOL-confirmed three-function TU with its terminal descriptor; it consumes `mcstaffeffe_SeqFn` from DLL 696 and has no small-data sections |
 | 0x2BA | MCLightning | CONFIRMED | main/dll/dll_02BA_mclightning.c | = (canonical) | — |
 | 0x2BB | GF_LevelCon | CONFIRMED | main/dll/dll_02BB_gflevelcon.c | = (canonical) | — |
 | 0x2BC | Andross | COMPLETE | main/dll/dll_02BC_andross.c | = (canonical) | — |

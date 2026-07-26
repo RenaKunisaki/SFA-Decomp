@@ -4070,7 +4070,7 @@ dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c:
 	.text       start:0x80239114 end:0x802392B8
 	.data       start:0x8032BF78 end:0x8032BFB0
 
-main/dll/dll_02B9_mcstaffeffe.c:
+dlls/objects/697_MCStaffEffe/MCStaffEffe.c:
 	.text       start:0x802392B8 end:0x8023938C
 	.data       start:0x8032BFB0 end:0x8032BFE8
 
