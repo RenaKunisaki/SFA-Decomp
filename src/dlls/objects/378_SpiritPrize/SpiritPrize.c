@@ -1,5 +1,5 @@
 /*
- * spiritprize (DLL 0x17A) - the collectible Krazoa-spirit prize object.
+ * SpiritPrize (DLL 0x17A) - the collectible Krazoa-spirit prize object.
  *
  * Spawns and animates a coloured point light around the prize, runs its
  * trigger/animation sequence each update tick, and periodically plays an

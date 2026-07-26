@@ -421,7 +421,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x177 | — (+DFSH_Door2S, DFSH_Door3S, DFSH_Door4S) | NO-RETAIL-NAME | dlls/objects/375/375.c | = (canonical) | — |
 | 0x178 | DFSH_Shrine | CONFIRMED | dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c | = (canonical) | — |
 | 0x179 | DFSH_ObjCre | COMPLETE | dlls/objects/377_DFSH_ObjCre/DFSH_ObjCre.c | = (canonical) | — |
-| 0x17A | SpiritPrize (+ECSH_Spirit) | CONFIRMED | main/dll/dll_017A_spiritprize.c | = (canonical) | — |
+| 0x17A | SpiritPrize (+ECSH_Spirit) | COMPLETE | dlls/objects/378_SpiritPrize/SpiritPrize.c | = (canonical) | — |
 | 0x17B | DFSH_LaserBeam | CONFIRMED | main/dll/dll_017B_dfshlaserbeam.c | main/dll/DF/dll_017B_dfshlaserbeam.c | — |
 | 0x17C | GCRobotPatr | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x17D | RollingBarrel (+DIM2_barrel, MMP_barrel) | GUESSED | main/dll/dll_017D_rollingbarrel.c | = (canonical) | — |
