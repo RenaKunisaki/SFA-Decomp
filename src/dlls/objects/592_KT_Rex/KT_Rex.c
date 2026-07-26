@@ -1,3 +1,4 @@
+/* DLL 0x0250 */
 #include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/objfsa_romcurve.h"
@@ -26,12 +27,6 @@
 #include "main/objprint_api.h"
 #include "main/objprint_character_api.h"
 #include "main/dll/DR/dll_0250_ktrex.h"
-
-KTRexRuntime* gKTRexRuntime;
-KTRexArenaState* gKTRexState;
-MapRomList* gKTRexMapBlock;
-int gKTRexContactEffectCooldown;
-StaffCollisionInterface** gKTRexResource;
 #include "main/dll/baddie_control_interface.h"
 #include "main/dll/dll_0262_drakormissile.h"
 #include "main/dll/rom_curve_interface.h"
@@ -52,6 +47,12 @@ StaffCollisionInterface** gKTRexResource;
 #include "main/dll/DR/dll_0261_drlasercannon.h"
 #include "main/dll/dll_0263_gmmazewell.h"
 #include "main/player_control_interface.h"
+
+KTRexRuntime* gKTRexRuntime;
+KTRexArenaState* gKTRexState;
+MapRomList* gKTRexMapBlock;
+int gKTRexContactEffectCooldown;
+StaffCollisionInterface** gKTRexResource;
 
 s16 lbl_803DC250[4] = {9, 0x12, 0x12, 0};
 s16 lbl_803DC258[4] = {1, 2, 3, 0};
@@ -1797,7 +1798,6 @@ KTRexLaneTuning gKTRexLaneTuning = {
     },
 };
 
-/* descriptor/ptr table auto 0x8032a58c-0x8032a7c0 */
 ObjectDescriptor12WithPadding gKtRexObjDescriptor = {
     {
         0,
