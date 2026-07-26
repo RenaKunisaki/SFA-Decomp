@@ -1,5 +1,5 @@
 /*
- * kytesmum (DLL 0x266, object type 0x43) - the "Kyte's mum" NPC.
+ * KytesMum (DLL 614, object type 0x43) - the "Kyte's mum" NPC.
  *
  * The placement's mode byte selects one of three behaviours, wired up in
  * kytesmum_init:
@@ -439,7 +439,7 @@ void kytesmum_initialise(void)
 
 char sKytesMumYawDiffMessage[] = " YAW DIFF ";
 
-/* descriptor/ptr table auto 0x8032a878-0x8032a8b0 */
+/* DLL 613's descriptor is pooled in DLL 614's data. */
 ObjectDescriptor gDrCreatorObjDescriptor = {
     0,
     0,
