@@ -19,7 +19,7 @@ through `tools/dll_cleanup_wave.js` (per-file match-gated).
 |---|---:|---|
 | dll_0014_unk.c | 5637 | Zachary, hrs |
 | dll_0000_baby_snowworm.c | 4973 | Zachary, mins ago (ACTIVE) |
-| dlls/objects/578_DBstealerwo/DBstealerwo.c | 3117 | Zachary |
+| dll_0242_dbstealerworm.c | 3117 | Zachary |
 | dll_00E2_staff.c | 2878 | Zachary, 2d |
 | dll_00CA_mediumbasket.c | 2531 | Zachary |
 | smallbasket.c | 2337 | Zachary, 2d |

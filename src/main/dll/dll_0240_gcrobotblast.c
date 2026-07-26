@@ -1,0 +1,105 @@
+/*
+ * DLL 0x0240 - GC robot-blast object [0x801FF884-0x801FF9B0).
+ *
+ * A passive blast-effect object. Its sequence callback (GCRobotBlast_SeqFn)
+ * latches the latest anim event id into the blast-fired flag (flags04 bit
+ * 0x80); when that flag is set and mode is 0 or 1 it spawns a pair of
+ * directional energy bursts each tick. init seeds mode from the placement
+ * def byte (def+0x19), clears the fired flag and installs the sequence
+ * callback. The remaining descriptor leaves (render/hitDetect/update/
+ * free/release/initialise) are no-ops; getExtraSize reports
+ * sizeof(GCRobotBlastState).
+ */
+#include "main/dll/blastflags4_types.h"
+#include "game/objects/object.h"
+#include "main/objfx.h"
+#include "main/objanim_update.h"
+#include "main/dll/dll_0240_gcrobotblast.h"
+
+STATIC_ASSERT(sizeof(GCRobotBlastState) == 0x8);
+STATIC_ASSERT(offsetof(GCRobotBlastState, mode) == 0x0);
+STATIC_ASSERT(offsetof(GCRobotBlastState, flags04) == 0x4);
+STATIC_ASSERT(offsetof(GCRobotBlastPlacement, mode) == 0x19);
+
+extern f32 lbl_803E6270;
+extern f32 lbl_803E6274;
+
+
+int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    GCRobotBlastState* state = obj->extra;
+    int i;
+
+    for (i = 0; i < animUpdate->eventCount; i++)
+    {
+        ((BlastFlags4*)&state->flags04)->b80 = animUpdate->eventIds[i];
+    }
+    if (((BlastFlags4*)&state->flags04)->b80 != 0)
+    {
+        switch (state->mode)
+        {
+        case 0:
+        case 1:
+            objfx_spawnDirectionalBurst(obj, 7, lbl_803E6270, 5, 6, 0x64, lbl_803E6274, NULL, 0x200000);
+            objfx_spawnDirectionalBurst(obj, 6, lbl_803E6270, 1, 6, 0x64, lbl_803E6274, NULL, 0x200000);
+            break;
+        }
+    }
+    return 0;
+}
+
+int GCRobotBlast_getExtraSize(void)
+{
+    return sizeof(GCRobotBlastState);
+}
+int GCRobotBlast_getObjectTypeId(void)
+{
+    return 0x0;
+}
+
+void GCRobotBlast_free(void)
+{
+}
+
+void GCRobotBlast_render(void)
+{
+}
+
+void GCRobotBlast_hitDetect(void)
+{
+}
+
+void GCRobotBlast_update(void)
+{
+}
+
+void GCRobotBlast_init(GameObject* obj, GCRobotBlastPlacement* placement)
+{
+    GCRobotBlastState* state = obj->extra;
+    state->mode = placement->mode;
+    ((BlastFlags4*)&state->flags04)->b80 = 0;
+    obj->animEventCallback = GCRobotBlast_SeqFn;
+}
+
+void GCRobotBlast_release(void)
+{
+}
+
+void GCRobotBlast_initialise(void)
+{
+}
+
+u32 lbl_80329340[14] = {0x00000000,
+                        0x00000000,
+                        0x00000000,
+                        0x000d0000,
+                        (u32)GCRobotBlast_initialise,
+                        (u32)GCRobotBlast_release,
+                        0x00000000,
+                        (u32)GCRobotBlast_init,
+                        (u32)GCRobotBlast_update,
+                        (u32)GCRobotBlast_hitDetect,
+                        (u32)GCRobotBlast_render,
+                        (u32)GCRobotBlast_free,
+                        (u32)GCRobotBlast_getObjectTypeId,
+                        (u32)GCRobotBlast_getExtraSize};

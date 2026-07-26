@@ -466,7 +466,7 @@ Wiki offset/name | This codebase | Verified how
 `0xF0` `u8` (unnamed) | `u8 fadeCounter` | offset matches; this codebase has a name, wiki doesn't
 `0xF1` `u8 brightness`, `0xF2` `u8 colorIdx`, `0xF3` unknown | `u8 unkF1[3]` | offset span matches (3 bytes); wiki's names are plausible fill-ins for this codebase's `unkF1[3]` — see Ready-to-adopt below
 `0xF3` unknown | also matches `objlib.c`'s `#define OBJ_MODEL_JOINT_COUNT_OFFSET 0xf3` | `objlib.c` independently names this byte "joint count" — resolves the wiki's `0xF3 ??`
-`0xF4` `ObjInstanceFieldF4` (union; "SPitembeam stores LevelControl here") | `s32 unkF4` | offset matches (`unkF4 == 0xF4`); own comment calls this an "anim.c/campfire.c flag word" — consistent with wiki's "union, meaning varies by object" framing. `src/dlls/objects/649_SPitembeam/SPitembeam.c` exists in this codebase (SPitembeam) but its use of this field wasn't traced in this pass
+`0xF4` `ObjInstanceFieldF4` (union; "SPitembeam stores LevelControl here") | `s32 unkF4` | offset matches (`unkF4 == 0xF4`); own comment calls this an "anim.c/campfire.c flag word" — consistent with wiki's "union, meaning varies by object" framing. `src/main/dll/SP/dll_0289_spitembeam.c` exists in this codebase (SPitembeam) but its use of this field wasn't traced in this pass
 `0xF8` `ObjInstanceFieldF8` (union) | `s32 unkF8` | offset matches (`unkF8 == 0xF8`)
 `0xFC` `Vec oldVel` | `f32 externalVelX/Y/Z` | offset matches (`externalVelX..externalVelZ == 0xFC-0x104`); own comment: "velocity imparted externally (carrier object's velocity / move-data velocity), added to `anim.velocity` in the localPos integration" — plausibly the same "old/other velocity" concept under a more specific name
 `0x108` `cbAfterUpdateBones` callback | not modeled — `GameObject`'s own comment says "the record extends past 0x108; total size unverified; do not take `sizeof(GameObject)`" | not found; consistent with the wiki that there's more struct beyond this codebase's current `GameObject` tail
@@ -497,7 +497,7 @@ Beyond the ones already in the offset table above: `dll_020A_wmgeneralscales.c` 
 "Krazoa Palace / internally Warlock") is General Scales, plausibly related to the wiki's "0x2D
 player weapon (and ScalesSword)" note, though not confirmed as the same object. `dll_0116_wmcolumn.c`
 matches category `0x59 WM_Column` by name exactly. `dll_00EF_pushable.c`, `dll_0145_cloudprisoncontrol.c`,
-`dll_0158_gunpowderbarrel.c`, `dlls/objects/575_DB_egg/DB_egg.c`, `dll_0143_feseqobject.c`, `dll_0019_dll19func0.c`,
+`dll_0158_gunpowderbarrel.c`, `dll_023F_dbegg.c`, `dll_0143_feseqobject.c`, `dll_0019_dll19func0.c`,
 `dll_0199_dll199.c`, and `dll_019B_dll19b.c` are the concrete DLLs behind the wiki's message-category
 notes for "pushable object", "CloudPrisonControl", "GunPowderBarrel", "DB_egg", "FEseqobject", and
 "DLL 0x19/0x199/0x19B" respectively (see Message Queue section above).
@@ -512,7 +512,7 @@ file names inside matching the wiki's per-object patterns (eg `dll_014F_cfprison
 `SP/`, `VF/` (wiki's VFP), `WC/`, `WM/`. Not found as directories: `AND`, `BGS`, `CFGC`, `CR`,
 `DB`/`DBSH`, `ECSH`, `FE`, `GC`, `GF`/`GFRONT`, `GM`, `GPSH`, `KP`, `KT`, `LF`, `MC`, `MMSH`,
 `OFP`, `SKY`, `WORLD` — those objects exist as loose files directly under `src/main/dll/` (eg
-`dlls/objects/575_DB_egg/DB_egg.c` for DB) rather than in a subdirectory.
+`dll_023F_dbegg.c` for DB) rather than in a subdirectory.
 
 ### `ObjectDescriptor` = wiki's `ObjDll`
 

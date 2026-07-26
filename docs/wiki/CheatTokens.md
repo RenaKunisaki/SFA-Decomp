@@ -131,7 +131,7 @@ This page maps almost completely onto one already-decompiled object and a set of
 
 ### The Well object and its quest-bit table
 
-- The Well itself is **DLL 0x263**, `src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c` (`GM_MazeWell_init` /
+- The Well itself is **DLL 0x263**, `src/main/dll/dll_0263_gmmazewell.c` (`GM_MazeWell_init` /
   `_update` / `_render` / `_free` / `_getExtraSize` / `_SeqFn`, and
   `gGmMazeWellObjDescriptor` at `.data:0x8032A788`). Its header comment already describes exactly
   this mechanic: "the well watches a fixed set of nine quest/event game bits... when one fires it
@@ -141,11 +141,11 @@ This page maps almost completely onto one already-decompiled object and a set of
   - Per `docs/wiki/Objects.md`'s own two-letter-DLL-prefix table, `GM` = "Game Maze (cheat
     tokens)" — this repo's own prior wiki import already names this DLL family after exactly this
     feature.
-  - `GM_MazeWell.c` includes the K. Triceratops owner header for the quest-bit table below.
+  - `dll_0263_gmmazewell.c` includes the K. Triceratops owner header for the quest-bit table below.
     The table's Dragon Rock ownership is consistent with (but not proof of) the Well physically
     being sited there. Not independently confirmed against placement/map data in this pass.
 - The wiki's "table" (9 watched bits × {reward bit, follow-up bit, dialogue id}) is the flat
-  `s16 lbl_8032A730[44]` array, defined at `src/dlls/objects/592_KT_Rex/KT_Rex.c:1961` (`.data:0x8032A730`,
+  `s16 lbl_8032A730[44]` array, defined at `src/main/dll/DR/dll_0250_ktrex.c:1961` (`.data:0x8032A730`,
   size `0x58` per `config/GSAE01/symbols.txt`) and declared `extern` in
   `include/main/dll/DR/dll_0250_ktrex.h`. Its 44 raw values are **byte-identical** to the wiki's
   table read column-major:
@@ -156,7 +156,7 @@ This page maps almost completely onto one already-decompiled object and a set of
     0x0524, 0x0000, 0x0524, 0x0000, 0x0524, 0x0000, 0x0571, 0x0000, 0x056e, 0x0000,
     0x056f, 0x0000, 0x0570, 0x0000, 0x0572 };                                        // Text IDs, viewed as s32
   ```
-  `GM_MazeWell_update` (`src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c:77`) reads it as `s16* questBits`
+  `GM_MazeWell_update` (`src/main/dll/dll_0263_gmmazewell.c:77`) reads it as `s16* questBits`
   (watched/reward/follow-up columns) and simultaneously as `s32* questBits32` (the dialogue-id
   column, since text IDs there are stored as full words) — the same array, two views, exactly the
   wiki's implied dual bit-width layout.
@@ -190,7 +190,7 @@ this cross-reference pass.
 The music/active gamebit for the Well room itself (`GAMEBIT_MAZEWELL_ACTIVE = 0xEFC`, set in
 `GM_MazeWell_init`/cleared in `GM_MazeWell_free`, gating `Music_Trigger(0x36, ...)`) is **not** yet
 in the `GameBitId` enum — it's currently a private `#define` local to
-`GM_MazeWell.c`. See "Ready-to-adopt code" below.
+`dll_0263_gmmazewell.c`. See "Ready-to-adopt code" below.
 
 ### The global cheat-unlock byte (save offset 0x10)
 
@@ -248,7 +248,7 @@ through from a Japanese-only branch) uses the loop index `i` directly as `cheatI
 
 ### The language-dependent Moon Mountain Pass token, confirmed
 
-`GM_MazeWell_update` branches on `lbl_803DC968` (`src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c:129`), which
+`GM_MazeWell_update` branches on `lbl_803DC968` (`src/main/dll/dll_0263_gmmazewell.c:129`), which
 `src/main/textrender.c:2955-2970` sets to `1` exactly when `OSGetFontEncode() == 1` (the
 Shift-JIS/Japanese font) and to `0` for encoding `0` (`curLanguage` is likewise set to `4` vs. `0`
 in the same branch) — i.e. it is an "is Japanese" flag, matching the wiki's language-conditional
@@ -293,8 +293,8 @@ enum CheatId
 
 ```c
 /* GM_MazeWell (DLL 0x263) quest-bit table row indices, into lbl_8032A730[] /
- * gQuestBitTable (src/dlls/objects/592_KT_Rex/KT_Rex.c, consumed by
- * src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c). Matches CheatId above for rows 0-3; rows 4-7 grant
+ * gQuestBitTable (src/main/dll/DR/dll_0250_ktrex.c, consumed by
+ * src/main/dll/dll_0263_gmmazewell.c). Matches CheatId above for rows 0-3; rows 4-7 grant
  * no cheat ("nothing" in the wiki's Unlocks column); row 8 is the unused/dead 9th token. */
 enum QuestWellRow
 {
@@ -314,7 +314,7 @@ enum QuestWellRow
 ```c
 /* Add to include/main/gamebits.h's enum GameBitId (between GAMEBIT_WarpRelated0EFB = 0xEFB and
  * GAMEBIT_PlayerInShop = 0xEFE - slot 0xEFD stays a gap). Currently a private
- * #define GAMEBIT_MAZEWELL_ACTIVE 0xefc in GM_MazeWell.c; gates Music_Trigger(0x36, ..)
+ * #define GAMEBIT_MAZEWELL_ACTIVE 0xefc in dll_0263_gmmazewell.c; gates Music_Trigger(0x36, ..)
  * and the Well's hitbox-disable state. Set in GM_MazeWell_init, cleared in GM_MazeWell_free. */
 GAMEBIT_MAZEWELL_ACTIVE = 0xEFC, /* table 0; Music_Trigger(0x36) + Well active/hitbox state */
 ```

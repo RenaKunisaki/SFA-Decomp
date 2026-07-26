@@ -11,7 +11,7 @@
  * exhaust/contrail particle drivers blended toward per-state targets
  * (fn_801EBD60). State lives in SnowBikeState (dll_0255_snowbike.h); flags428 is
  * a bitfield overlay byte read via the Hightop* flag structs below.
- * Entry points are dispatched from dlls/objects/597/597.c.
+ * Entry points are dispatched from dll_0255_snowbike.c.
  */
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"

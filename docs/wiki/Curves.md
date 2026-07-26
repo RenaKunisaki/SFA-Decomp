@@ -149,7 +149,7 @@ Cross-references verified by reading the source at the paths below.
 | 0x16 | "Something important... the DLL has a method that looks specifically for this type" | Confirmed exactly: `curves_findNearestOfType16` (`src/main/dll/dll_0014_unk.c`) hardcodes `curve->type == 0x16`. |
 | 0x23 | CurveFish | Confirmed exactly: `gCurveFishCurveQueryKey = 0x23` in `src/dlls/objects/259_CurveFish/CurveFish.c` (DLL 0x103, `curvefish` object). |
 | 0x24 | Used by Tricky | Confirmed exactly: `Objfsa_FindNearestCurveType24` / `Objfsa_FindNearestEnabledCurveType24` (`src/main/dll/dll_0014_unk.c`) hardcode `type == 0x24`; called from `src/dlls/objects/196_Tricky/tricky.c`. |
-| 0x2A | DrakorHoverPad | `src/dlls/objects/625/625.c` (DLL 0x271) follows a "ROM spline/curve network"; its local `DrakorCurveNode` overlay reuses the placement's rotZ/rotY/rotX bytes (0x2C/0x2D/0x2E) as `tangentYaw`/`tangentPitch`/`tangentMag` to derive bob/banking velocity — direct confirmation of the wiki's "rot: ... can influence how some objects follow the path." No literal `== 0x2A` type check found (likely passed in via a caller-side type filter, not visible in this TU). |
+| 0x2A | DrakorHoverPad | `src/main/dll/dll_0271_drakorhoverpad.c` (DLL 0x271) follows a "ROM spline/curve network"; its local `DrakorCurveNode` overlay reuses the placement's rotZ/rotY/rotX bytes (0x2C/0x2D/0x2E) as `tangentYaw`/`tangentPitch`/`tangentMag` to derive bob/banking velocity — direct confirmation of the wiki's "rot: ... can influence how some objects follow the path." No literal `== 0x2A` type check found (likely passed in via a caller-side type filter, not visible in this TU). |
 | 0x01, 0x02, 0x19, 0x1F | Dragon Rock Bottom / WB / DIM barrel grabbers / crawl tunnels | Not found. These types are presumably passed as filter arguments from each object's own DLL when it calls the curve-find interface, rather than hardcoded in the shared curve DLL; the specific DLLs for "WB" and Dragon Rock Bottom's objects were not identified by name in this pass. |
 | 0x17 | *(not on the wiki)* | `RomCurve_func16` (`src/main/dll/dll_0014_unk.c`) hardcodes `type == 0x17` — a special-cased type the wiki's "Known types" list doesn't mention. Worth flagging upstream. |
 
@@ -204,7 +204,7 @@ Two write-ups the wiki backs with concrete values that this codebase doesn't yet
    ```
    at offsets 0x2C-0x2F. Both the wiki's objdef table and this codebase's own
    `RomCurvePlacementDef` (`dll_0015_curves.h`, offsets 0x2C/0x2D/0x2E/0x2F) and
-   `DrakorCurveNode` (`src/dlls/objects/625/625.c`, same offsets named
+   `DrakorCurveNode` (`dll_0271_drakorhoverpad.c`, same offsets named
    `tangentYaw`/`tangentPitch`/`tangentMag`) show this is really three separate one-byte fields,
    not one byte of "angle" plus 3 bytes of padding. A maintainer touching this header could
    tighten it to match the sibling structs:

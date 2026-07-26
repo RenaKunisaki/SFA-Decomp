@@ -88,6 +88,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   attributed to the wrong file; preserve both slots and re-audit the misplaced contents against
   the DOL. A multi-descriptor TU needs independent DOL evidence and is not implied by one source
   file currently defining multiple descriptors.
+- Rehome DLL source one numbered slot at a time. Before moving a source into its canonical folder,
+  audit the complete TU, neighbouring text/data boundaries, descriptor ownership, artificial
+  fragments, and section-alignment overrides, then build it. Do not bulk-rehome DLL sources with
+  path-only mechanical moves.
 - Address-suffixed fragments such as `foo_80123456.c` are not acceptable once DOL evidence shows
   they belong to one TU. Merge them in retail function order, keep one TU-level compiler profile,
   and accept match regressions rather than preserving an artificial split. Only redraw a boundary

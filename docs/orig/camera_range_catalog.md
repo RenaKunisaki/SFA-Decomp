@@ -232,7 +232,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/maybetemplate.c` | 2086 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DF/dll_022B_dfptorch.c` | 87 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DIM/dll_019E_dim_tricky.c` | 102 | `camera = Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
+| `src/main/dll/DIM/dll_0256_dimsnowhorn1.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 832 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 2007 | `cameraSlot = (ExpgfxCameraViewSlot*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000B_dll0b.c` | 1086 | `view = Camera_GetCurrentViewSlot();` |
@@ -255,7 +255,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/dll_bb.c` | 47 | `view = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 204 | `view = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c` | 591 | `slot = (int)Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/600_DR_CloudRun/DR_CloudRun.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
+| `src/main/dll/DR/dll_0258_drcloudrunner.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/objfx.c` | 1227 | `f32 d = Camera_DistanceToCurrentViewPosition(` |
 | `src/main/dll/objfx.c` | 1274 | `f32 d = Camera_DistanceToCurrentViewPosition(((ObjAnimComponent*)src)->worldPosX,` |
 | `src/main/dll/objfx.c` | 1325 | `f32 d = Camera_DistanceToCurrentViewPosition(src->anim.worldPosX, src->anim.worldPosY,` |
@@ -265,8 +265,8 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/dlls/objects/195_Player/player.c` | 18381 | `int cam = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/SH/dll_01AD_shthorntail.c` | 538 | `(ref = ViewFrustum_IsSphereVisible(&obj->modelPos.x, obj->cullRadius * obj->modelScale), ref == 0))` |
 | `src/main/dll/SH/shthorntail_ai.c` | 193 | `value = ViewFrustum_IsSphereVisible((float*)&object->modelPos, object->cullRadius * object->modelScale);` |
-| `src/dlls/objects/648_SPDrape/SPDrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/648_SPDrape/SPDrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
+| `src/main/dll/SP/dll_0288_spdrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
+| `src/main/dll/SP/dll_0288_spdrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/tricky.c` | 1509 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/WC/dll_0298_wcfloortile.c` | 459 | `slot = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/196_Tricky/tricky.c` | 4691 | `ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)` |

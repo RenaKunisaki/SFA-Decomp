@@ -82,6 +82,10 @@ literals), that is a TU-boundary artifact — leave the unit `NonMatching`, do n
   functions, descriptor, or data are currently attributed to the wrong source file. Preserve both
   slots and re-audit the misplaced contents against the DOL. One source file defining multiple
   descriptors is not evidence of a multi-descriptor TU without independent DOL support.
+- Rehome DLL source one numbered slot at a time. Before moving a source into its canonical folder,
+  audit the complete TU, neighbouring text/data boundaries, descriptor ownership, artificial
+  fragments, and section-alignment overrides, then build it. NEVER bulk-rehome DLL sources with
+  path-only mechanical moves.
 - `include/main/gamebit_ids.h`: a NEW `GAMEBIT_*` id ALWAYS goes in the unordered (Rena-imported)
   section, inserted in ascending-id order — NEVER interleave it into the chronological/story-ordered
   section at the top, and NEVER split a comment from the entry it describes. An id may be promoted into
