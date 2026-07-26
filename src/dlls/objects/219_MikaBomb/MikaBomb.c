@@ -1,5 +1,5 @@
 /*
- * mikabomb (DLL 0x00DB) - the Mika bomb projectile.
+ * MikaBomb (DLL 0x00DB) - the Mika bomb projectile.
  *
  * mikabomb: a thrown bomb that arcs under gravity (velocity * timeDelta
  * each tick, vertical speed clamped), fades its alpha out over its
@@ -28,6 +28,7 @@
 #include "main/camera_shake_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/dll_00DC_mikabombshadow_api.h"
+
 #define MIKABOMB_HIT_VOLUME_SLOT 5
 
 /* Shadow-bomb object spawned at init, cached into MikaBombState.shadowObj. */

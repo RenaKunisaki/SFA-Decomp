@@ -264,7 +264,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0D8 | PinPonSpike | CONFIRMED | dlls/objects/216_PinPonSpike/PinPonSpike.c | = (canonical) | — |
 | 0x0D9 | Pollen | COMPLETE | dlls/objects/217_Pollen/Pollen.c | = (canonical) | — |
 | 0x0DA | PollenFragment (+DRHomingMis) | CONFIRMED | dlls/objects/218/218.c | = (canonical) | — |
-| 0x0DB | MikaBomb | COMPLETE | main/dll/dll_00DB_mikabomb.c | = (canonical) | — |
+| 0x0DB | MikaBomb | COMPLETE | dlls/objects/219_MikaBomb/MikaBomb.c | = (canonical) | — |
 | 0x0DC | MikaBombShadow | CONFIRMED | main/dll/dll_00DC_mikabombshadow.c | = (canonical) | — |
 | 0x0DD | GCbaddieShield | CONFIRMED | main/dll/dll_00DD_gcbaddieshield.c | = (canonical) | — |
 | 0x0DE | baddieInterestp | CONFIRMED | main/dll/dll_00DE_baddieinterestp.c | = (canonical) | — |

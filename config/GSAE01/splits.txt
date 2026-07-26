@@ -1665,10 +1665,10 @@ dlls/objects/218/218.c:
 	.sdata      start:0x803DBD48 end:0x803DBD50
 	.sdata2     start:0x803E3158 end:0x803E31A0
 
-main/dll/dll_00DB_mikabomb.c:
+dlls/objects/219_MikaBomb/MikaBomb.c:
 	.text       start:0x8016B230 end:0x8016B710
 	.data       start:0x803205E8 end:0x80320620
-	.sdata2     start:0x803E31B8 end:0x803E31C0
+	.sdata2     start:0x803E31A0 end:0x803E31C0
 
 main/dll/dll_00DC_mikabombshadow.c:
 	.text       start:0x8016B710 end:0x8016B898
