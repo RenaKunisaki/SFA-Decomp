@@ -2764,7 +2764,7 @@ dlls/objects/377_DFSH_ObjCre/DFSH_ObjCre.c:
 	.text       start:0x801C3B68 end:0x801C3E3C
 	.data       start:0x80326080 end:0x803260B8
 
-main/dll/DF/dll_017B_dfshlaserbeam.c:
+dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c:
 	.text       start:0x801C3E3C end:0x801C4664
 	.data       start:0x803260B8 end:0x803260F0
 	.sbss       start:0x803DDBB8 end:0x803DDBC0

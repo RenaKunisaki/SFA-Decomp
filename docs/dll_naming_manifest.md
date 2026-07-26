@@ -422,7 +422,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x178 | DFSH_Shrine | CONFIRMED | dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c | = (canonical) | — |
 | 0x179 | DFSH_ObjCre | COMPLETE | dlls/objects/377_DFSH_ObjCre/DFSH_ObjCre.c | = (canonical) | — |
 | 0x17A | SpiritPrize (+ECSH_Spirit) | COMPLETE | dlls/objects/378_SpiritPrize/SpiritPrize.c | = (canonical) | — |
-| 0x17B | DFSH_LaserBeam | CONFIRMED | main/dll/dll_017B_dfshlaserbeam.c | main/dll/DF/dll_017B_dfshlaserbeam.c | — |
+| 0x17B | DFSH_LaserB | COMPLETE | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | = (canonical) | — |
 | 0x17C | GCRobotPatr | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x17D | RollingBarrel (+DIM2_barrel, MMP_barrel) | GUESSED | main/dll/dll_017D_rollingbarrel.c | = (canonical) | — |
 | 0x17E | MMP_levelcontrol | CONFIRMED | main/dll/dll_017E_mmplevelcontrol.c | main/dll/MMP/dll_017E_mmplevelcontrol.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x17B | main/dll/dll_017B_dfshlaserbeam.c | main/dll/DF/dll_017B_dfshlaserbeam.c | CONFIRMED |
 | 0x17E | main/dll/dll_017E_mmplevelcontrol.c | main/dll/MMP/dll_017E_mmplevelcontrol.c | CONFIRMED |
 | 0x180 | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | CONFIRMED |
 | 0x181 | main/dll/dll_0181_mmptrenchfx.c | main/dll/MMP/dll_0181_mmptrenchfx.c | CONFIRMED |
@@ -996,7 +995,7 @@ blocked units will surface more when carved.
 
 | dll | current unit | header |
 |---|---|---|
-| 0x17B | main/dll/dll_017B_dfshlaserbeam.c | include/main/dll/dll_017B_dfshlaserbeam.h |
+| 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/main/dll/dll_017B_dfshlaserbeam.h |
 | 0x18C | main/dll/dll_018C_mmshshrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | main/dll/dll_0198_nwshlevcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | include/main/dll/dll_019F_nwtreebrid.h |

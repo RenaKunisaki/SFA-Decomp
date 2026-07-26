@@ -1,6 +1,6 @@
 /*
- * DragonRock Shrine laser beam (DLL 0x17B; "DFSH_LaserBeam") - the shrine's
- * sweeping/pulsing laser-beam hazard: it tracks the player, animates beam
+ * DFSH_LaserB (DLL 0x17B) - the Dragon Rock shrine's sweeping/pulsing
+ * laser-beam hazard: it tracks the player, animates beam
  * geometry and texture, drives sfx channels and proximity damage.
  */
 #include "main/dll/modgfx_interface.h"
