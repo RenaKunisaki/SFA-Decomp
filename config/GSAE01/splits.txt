@@ -2773,7 +2773,7 @@ dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c:
 	.sbss       start:0x803DDBB8 end:0x803DDBC0
 	.sdata2     start:0x803E4EC0 end:0x803E4F08
 
-main/dll/dll_018C_mmshshrine.c:
+dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c:
 	.text       start:0x801C4664 end:0x801C53A0
 	.data       start:0x803260F0 end:0x80326168
 	.sdata2     start:0x803E4F08 end:0x803E4F64

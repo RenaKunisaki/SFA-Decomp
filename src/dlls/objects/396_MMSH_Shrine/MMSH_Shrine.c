@@ -1,5 +1,5 @@
 /*
- * mmshshrine (DLL 0x18C) - the Krazoa shrine object in the MMSH map
+ * MMSH_Shrine (DLL 0x18C) - the Krazoa shrine object in the MMSH map
  * (the shrine whose sway/test sequence rewards a Krazoa spirit).
  *
  * The shrine drives a small phase machine (runtime->phase 0..5): idle
