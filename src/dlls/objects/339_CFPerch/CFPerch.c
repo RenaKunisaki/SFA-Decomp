@@ -1,8 +1,7 @@
 /*
- * cfperch (DLL 0x153) - the CloudRunner perch bird at CF. Squawks its
+ * CFPerch (DLL 0x153) - the CloudRunner perch bird at CF. Squawks its
  * trigger sequence at the player once per spawn until the old
  * CloudRunner prisoner is freed, and notifies the flock when removed.
- * Carved from the sandwormBoss 10-DLL container.
  */
 #include "game/objects/object.h"
 #include "main/dll/CF/dll_0153_cfperch.h"
