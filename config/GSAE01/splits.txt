@@ -2408,7 +2408,7 @@ dlls/objects/387_MMP_gyserve/MMP_gyserve.c:
 	.text       start:0x801A8E24 end:0x801A8F88
 	.data       start:0x80323288 end:0x803232C0
 
-main/dll/dll_0184_animsharpclaw.c:
+dlls/objects/388/388.c:
 	.text       start:0x801A8F88 end:0x801A9468
 	.data       start:0x803232C0 end:0x803232F8
 	.sdata2     start:0x803E45C8 end:0x803E45D8

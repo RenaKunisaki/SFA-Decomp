@@ -1,5 +1,5 @@
 /*
- * animsharpclaw (DLL 0x184) - an anim/sequence object (object type id 0xb).
+ * DLL 0x184 handles the DIMAnimShar and MMPAnimShar anim/sequence objects.
  *
  * init wires the object's anim/trigger state (slot 0x64), records the
  * sequence id from placement, and either loads or reloads its anim data

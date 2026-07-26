@@ -431,7 +431,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x181 | MMP_trenchF | COMPLETE | dlls/objects/385_MMP_trenchF/MMP_trenchF.c | = (canonical) | — |
 | 0x182 | MMP_moonroc | COMPLETE | dlls/objects/386_MMP_moonroc/MMP_moonroc.c | = (canonical) | — |
 | 0x183 | MMP_gyserve | COMPLETE | dlls/objects/387_MMP_gyserve/MMP_gyserve.c | = (canonical) | — |
-| 0x184 | AnimSharpclaw (+DIMAnimShar, MMPAnimShar) | CONFIRMED | main/dll/dll_0184_animsharpclaw.c | = (canonical) | — |
+| 0x184 | — (+DIMAnimShar, MMPAnimShar) | NO-RETAIL-NAME | dlls/objects/388/388.c | = (canonical) | — |
 | 0x185 | CCgasvent | COMPLETE | main/dll/dll_0185_ccgasvent.c | main/dll/CC/dll_0185_ccgasvent.c | — |
 | 0x186 | CCgasventControl | CONFIRMED | main/dll/dll_0186_ccgasventcontrol.c | main/dll/CC/dll_0186_ccgasventcontrol.c | — |
 | 0x187 | CCqueen | COMPLETE | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | — |
