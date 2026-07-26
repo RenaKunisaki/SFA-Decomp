@@ -693,7 +693,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x287 | SPScarab | COMPLETE | main/dll/dll_0287_spscarab.c | main/dll/SP/dll_0287_spscarab.c | — |
 | 0x288 | SPDrape | COMPLETE | main/dll/dll_0288_spdrape.c | main/dll/SP/dll_0288_spdrape.c | — |
 | 0x289 | SPitembeam | COMPLETE | main/dll/dll_0289_spitembeam.c | main/dll/SP/dll_0289_spitembeam.c | — |
-| 0x28A | WCEarthWalker (+WCKingEarth, WM_deaddino) | CONFIRMED | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | — |
+| 0x28A | — (+WCEarthWalker, WCKingEarth, WM_deaddino) | NO-RETAIL-NAME | dlls/objects/650/650.c | = (canonical) | — |
 | 0x28B | — | NO-RETAIL-NAME | dlls/objects/651/651.c | = (canonical) | — |
 | 0x28C | WCBouncyCra | CONFIRMED | dlls/objects/652_WCBouncyCra/WCBouncyCra.c | = (canonical) | — |
 | 0x28D | WCLevelCont | CONFIRMED | dlls/objects/653_WCLevelCont/WCLevelCont.c | = (canonical) | — |
@@ -936,7 +936,7 @@ name was a deliberate choice by a previous carve:
 | 0x287 | main/dll/dll_0287_spscarab.c | main/dll/SP/dll_0287_spscarab.c | COMPLETE |
 | 0x288 | main/dll/dll_0288_spdrape.c | main/dll/SP/dll_0288_spdrape.c | COMPLETE |
 | 0x289 | main/dll/dll_0289_spitembeam.c | main/dll/SP/dll_0289_spitembeam.c | COMPLETE |
-| 0x28A | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | CONFIRMED |
+| 0x28A | main/dll/dll_028A_wcearthwalker.c | dlls/objects/650/650.c | CONFIRMED |
 | 0x28C | main/dll/dll_028C_wcbouncycra.c | dlls/objects/652_WCBouncyCra/WCBouncyCra.c | CONFIRMED |
 | 0x28D | main/dll/dll_028D_wclevelcont.c | dlls/objects/653_WCLevelCont/WCLevelCont.c | CONFIRMED |
 | 0x28E | main/dll/dll_028E_wcbeacon.c | dlls/objects/654_WCBeacon/WCBeacon.c | COMPLETE |

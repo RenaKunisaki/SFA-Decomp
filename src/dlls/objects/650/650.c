@@ -1,5 +1,5 @@
 /*
- * earthwalker (DLL 0x28A) - the large EarthWalker dinosaur NPC as it
+ * DLL 0x28A - the large EarthWalker dinosaur NPC as it
  * appears in the Walled City (WC). Its per-instance record lives at
  * ewObj->state (obj+0xB8; getExtraSize 0x660) and is viewed through
  * EarthWalkerState (dll_028A_wcearthwalker.h). render/update/hitDetect

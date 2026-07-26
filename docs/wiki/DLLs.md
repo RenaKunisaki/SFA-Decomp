@@ -590,7 +590,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `SB` | ShipBattle (the prologue) | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
 | `SC` | LightFoot Village (map `swapcircle`) | `src/main/dll/SC/dll_01B6_sclevelcontrol.c` |
 | `VF`/`VFP` | Volcano Force Point Temple | `src/main/dll/VF/dll_0216_vfplevelcontrol.c` |
-| `WC` | Walled City | `src/main/dll/WC/dll_028A_wcearthwalker.c` |
+| `WC` | Walled City | `src/dlls/objects/650/650.c` |
 | `WM` | Krazoa Palace | `src/main/dll/WM/dll_0209_wmlevelcontrol.c` (comment states this explicitly) |
 | `KT` | (torches shared across) KrazoaPalace / ThornTail | `src/dlls/objects/296_KT_Torch/KT_Torch.c` |
 | `ARW` | Arwing space-combat sections | `src/main/dll/ARW/dll_029A_arwarwing.c` |
