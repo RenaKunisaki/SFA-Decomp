@@ -4,7 +4,7 @@
  * sequence 0 and keeps a looped object sound alive; once stateFlags is
  * raised it runs sequence 1 and stops. A stop timer clears one of a set
  * of related game bits per loopSfxId. The DLL's descriptors (and the
- * perchwitch stub sibling) live in dll_0234_dfpperchsw.
+ * perchwitch stub sibling) live in dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c.
  */
 #include "main/dll/crate2.h"
 #include "main/dll/crate.h"
