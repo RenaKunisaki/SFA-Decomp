@@ -950,10 +950,11 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     int i;
     u8* alloc;
     u32 pathParam;
-    char* base = lbl_803284E0;
+    char* base[1];
     u8* state;
     SnowBikeState* s;
 
+    base[0] = lbl_803284E0;
     pathParam = lbl_803E5AE0;
     state = obj->extra;
     s = (SnowBikeState*)state;
@@ -1091,7 +1092,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     fv = s->velLimitZ;
     s->distanceScaleLimit = fv;
     s->baseVelLimitZ = fv;
-    s->gameBitPtr = (s16*)((int)base + 0xa4 + s->bikeType * 6);
+    s->gameBitPtr = (s16*)((int)base[0] + 0xa4 + s->bikeType * 6);
     if (s->bikeType == 0)
     {
         if (!((SnowBikeFlags*)(state + 0x428))->b02)
@@ -1108,15 +1109,15 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     path = state + 0x178;
     path[0x25b] = 1;
     (*gPathControlInterface)->init(path, 0, 0x48607, 1);
-    (*gPathControlInterface)->setup(path, 4, base, base + 0x30, &pathParam);
+    (*gPathControlInterface)->setup(path, 4, base[0], base[0] + 0x30, &pathParam);
     if (((SnowBikeFlags*)(state + 0x428))->b02 && s->collisionHitType != -1)
     {
-        curves_setLocalPointCollisionEx((CurvesCollisionState*)path, 1, (f32*)(base + 0x40), &lbl_803DC0B8, 8,
+        curves_setLocalPointCollisionEx((CurvesCollisionState*)path, 1, (f32*)(base[0] + 0x40), &lbl_803DC0B8, 8,
                                         s->collisionHitType);
     }
     else
     {
-        (*gPathControlInterface)->setLocalPointCollision(path, 1, base + 0x40, &lbl_803DC0B8, 8);
+        (*gPathControlInterface)->setLocalPointCollision(path, 1, base[0] + 0x40, &lbl_803DC0B8, 8);
     }
     path[0x264] = lbl_803E5C68 + lbl_803DC0B8;
     (*gPathControlInterface)->attachObject((void*)obj, path);
