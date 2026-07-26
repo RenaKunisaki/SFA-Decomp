@@ -251,7 +251,10 @@ void ProjectileSwitch_initialise(void)
 }
 
 ObjectDescriptor gProjectileSwitchObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     ProjectileSwitch_initialise,
     ProjectileSwitch_release,
     0,

@@ -1830,7 +1830,7 @@ dlls/objects/248_LevelName/LevelName.c:
 	.data       start:0x80320FD0 end:0x80321008
 	.sdata2     start:0x803E36E0 end:0x803E3700
 
-main/dll/dll_00F9_projectileswitch.c:
+dlls/objects/249/249.c:
 	.text       start:0x8017A350 end:0x8017A8EC
 	.data       start:0x80321008 end:0x80321050
 	.sdata2     start:0x803E3700 end:0x803E3730

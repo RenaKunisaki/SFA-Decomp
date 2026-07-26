@@ -294,7 +294,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0F6 | Area | COMPLETE | dlls/objects/246_Area/Area.c | = (canonical) | — |
 | 0x0F7 | — | NO-RETAIL-NAME | dlls/objects/247/247.c | = (canonical) | — |
 | 0x0F8 | LevelName | COMPLETE | dlls/objects/248_LevelName/LevelName.c | = (canonical) | — |
-| 0x0F9 | ProjectileSwitch (+DRProjectil) | CONFIRMED | main/dll/dll_00F9_projectileswitch.c | = (canonical) | — |
+| 0x0F9 | ProjectileSwitch (+DRProjectil) | CONFIRMED | dlls/objects/249/249.c | = (canonical) | — |
 | 0x0FA | InvisibleHitSwitch | CONFIRMED | main/dll/dll_00FA_invisiblehitswitch.c | = (canonical) | — |
 | 0x0FB | Pressureswitchfb (+WCTemplePre, LINK_SnowPr, LINK_UnderW, CC_Pressure, SH_Pressure, SC_Pressure, VFP_PuzzleP, GroundQuake) | CONFIRMED | main/dll/dll_00FB_pressureswitchfb.c | = (canonical) | — |
 | 0x0FC | — | NO-RETAIL-NAME | main/dll/dll_00FC_babycloudrunner.c | = (canonical) | — |
