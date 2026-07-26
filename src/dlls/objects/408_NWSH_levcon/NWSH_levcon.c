@@ -1,5 +1,5 @@
 /*
- * nwshlevcon (DLL 0x198) - the SnowHorn level controller for SnowHorn
+ * NWSH_levcon (DLL 0x198) - the SnowHorn level controller for SnowHorn
  * Wastes (map 'nwastes', 0x0A; "sh" = SnowHorn).
  *
  * Drives the area's intro: on init it unlocks the connecting level

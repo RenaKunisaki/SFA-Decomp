@@ -1790,7 +1790,7 @@ config.libs = [
             Object(Matching, "main/dll/colrise.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/406_DBSH_Symbol/DBSH_Symbol.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/407/407.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/NW/dll_0198_nwshlevcon.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/408_NWSH_levcon/NWSH_levcon.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/symbol.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0199_dll199.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_019A_dll19a.c", cflags=cflags_dll_noopt),

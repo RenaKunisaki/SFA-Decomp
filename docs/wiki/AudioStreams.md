@@ -1265,7 +1265,7 @@ the wiki's own "?" guesses:
 | `MMP` | Moon Mountain Pass | Confirmed: `"moonpass"` (sub-map table) / `"mmpass"` (by-id table, 25). |
 | `SK` | ShopKeeper | Confirmed: `"shop"`(16). |
 | `SSH` | WarpStone ("SwapStone Hollow"?) | Confirmed: `"swaphol"`(12) / `"swapholbot"`(19) — directly spells out "SwapHol[low]". |
-| `SW` | SnowHorn Wastes | Confirmed as a location, but our internal 2-letter code is `Nw`, not `Sw`: `"nwastes"`(14); `src/main/dll/NW/dll_0198_nwshlevcon.c`: "the SnowHorn level controller for SnowHorn Wastes (map `nwastes`...)". |
+| `SW` | SnowHorn Wastes | Confirmed as a location, but our internal 2-letter code is `Nw`, not `Sw`: `"nwastes"`(14); `src/dlls/objects/408_NWSH_levcon/NWSH_levcon.c`: "the SnowHorn level controller for SnowHorn Wastes (map `nwastes`...)". |
 | `TREX` | T-Rex Boss | Confirmed: `"bosstrex"`(53) / `"trexboss"` (sub-map table). |
 | `VFP` | Volcano Force Point | Confirmed: `"volcano"`(7); `src/main/dll/VF/dll_0216_vfplevelcontrol.c`: "the Volcano Force Point Temple". |
 | `WC` | Walled City | Confirmed: `"wallcity"`(20); `src/dlls/objects/650/650.c`: "the Walled City (WC)". |

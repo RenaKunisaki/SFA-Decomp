@@ -398,7 +398,7 @@ Other concrete matches:
 - **DLL-directory prefixes that resolve to a map in this list** (verified via in-file comment text,
   not just directory-name guessing): `SB` → `shipbattle` (map `00`/`frontend`), `WM` → `warlock` (map
   `0b`), `NW` → `nwastes` (map `0a`, comments literally gloss `"sh" = SnowHorn`,
-  `src/main/dll/NW/dll_0198_nwshlevcon.c:3`), `MMP` → `mmpass` (map `12`), `IM` → `icemountain` (map
+  `src/dlls/objects/408_NWSH_levcon/NWSH_levcon.c:3`), `MMP` → `mmpass` (map `12`), `IM` → `icemountain` (map
   `17`), `VF` → `volcano`/`temple` (map `04`, "Volcano Force Point Temple" in every `VF/*.c` banner),
   `CF` → `crfort` (map `0c`), `WC` → `wallcity` (map `0d`), `ARW` → `arwing` (map `26`).
 

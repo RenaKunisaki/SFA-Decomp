@@ -451,7 +451,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x195 | DBSH_Shrine | COMPLETE | dlls/objects/405_DBSH_Shrine/DBSH_Shrine.c | = (canonical) | — |
 | 0x196 | DBSH_Symbol | COMPLETE | dlls/objects/406_DBSH_Symbol/DBSH_Symbol.c | = (canonical) | — |
 | 0x197 | — | NO-RETAIL-NAME | dlls/objects/407/407.c | = (canonical) | — |
-| 0x198 | NWSH_levcon | CONFIRMED | main/dll/dll_0198_nwshlevcon.c | main/dll/NW/dll_0198_nwshlevcon.c | — |
+| 0x198 | NWSH_levcon | COMPLETE | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | = (canonical) | — |
 | 0x199 | — | NO-RETAIL-NAME | main/dll/dll_0199_dll199.c | = (canonical) | — |
 | 0x19A | — | NO-RETAIL-NAME | main/dll/dll_019A_dll19a.c | = (canonical) | — |
 | 0x19B | — | NO-RETAIL-NAME | main/dll/dll_019B_dll19b.c | = (canonical) | — |
@@ -798,7 +798,7 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x198 | main/dll/dll_0198_nwshlevcon.c | main/dll/NW/dll_0198_nwshlevcon.c | CONFIRMED |
+| 0x198 | main/dll/dll_0198_nwshlevcon.c | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | COMPLETE |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | main/dll/NW/dll_019F_nwtreebrid.c | RAW |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | main/dll/NW/dll_01A0_nwgeyser.c | COMPLETE |
 | 0x1A1 | main/dll/dll_01A1_nwmammoth.c | main/dll/NW/dll_01A1_nwmammoth.c | CONFIRMED |
@@ -982,7 +982,7 @@ blocked units will surface more when carved.
 |---|---|---|
 | 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/main/dll/dll_017B_dfshlaserbeam.h |
 | 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
-| 0x198 | main/dll/dll_0198_nwshlevcon.c | include/main/dll/dll_0198_nwshlevcon.h |
+| 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | include/main/dll/dll_01A0_nwgeyser.h |
 | 0x1A1 | main/dll/dll_01A1_nwmammoth.c | include/main/dll/dll_01A1_nwmammoth.h |
