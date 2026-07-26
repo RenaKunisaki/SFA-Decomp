@@ -115,7 +115,7 @@ typedef struct FirePipeEffectSetup
     s16 scale;         /* 0x1a */
 } FirePipeEffectSetup;
 
-int firepipe_spawnEffectObject(FirePipeExtra* extra, FirePipeObject* obj, void* spawnDef)
+int firepipe_spawnEffectObject(FirePipeExtra* extra, FirePipeObject* obj, ObjPlacement* spawnDef)
 {
     int i;
     GameObject* effectObj;
@@ -131,11 +131,11 @@ int firepipe_spawnEffectObject(FirePipeExtra* extra, FirePipeObject* obj, void* 
         if ((effectObj->objectFlags & FIREPIPE_OBJFLAG_ACTIVE) == 0)
         {
             effectObj->objectFlags |= FIREPIPE_OBJFLAG_ACTIVE;
-            memcpy(effectObj->anim.placement, spawnDef, *(u8*)((int)spawnDef + 2));
+            memcpy(effectObj->anim.placement, spawnDef, spawnDef->size);
             effectObj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            effectObj->anim.localPosX = *(float*)((int)spawnDef + 8);
-            effectObj->anim.localPosY = *(float*)((int)spawnDef + 0xc);
-            effectObj->anim.localPosZ = *(float*)((int)spawnDef + 0x10);
+            effectObj->anim.localPosX = spawnDef->posX;
+            effectObj->anim.localPosY = spawnDef->posY;
+            effectObj->anim.localPosZ = spawnDef->posZ;
             (*(FirePipeEffectInitFn*)(**(int**)((char*)effectObj + 0x68) + 4))((int)effectObj, spawnDef, 0);
             freeDelay = mmSetFreeDelay(0);
             mm_free(spawnDef);
@@ -145,7 +145,7 @@ int firepipe_spawnEffectObject(FirePipeExtra* extra, FirePipeObject* obj, void* 
             return (int)effectObj;
         }
     }
-    effectObj = loadObjectAtObject((GameObject*)obj, (ObjPlacement*)spawnDef);
+    effectObj = loadObjectAtObject((GameObject*)obj, spawnDef);
     if (extra->effectCount != 8)
     {
         effectObj->objectFlags |= FIREPIPE_OBJFLAG_ACTIVE;
@@ -189,8 +189,8 @@ void firepipe_updateState(FirePipeObject* obj)
     FirePipeMapData* mapData;
     FirePipeBitFlags* flags;
     int priorityHit;
-    u8* spawnDef;
-    u8* effectObj;
+    FirePipeEffectSetup* spawnDef;
+    GameObject* effectObj;
     f32 radius;
     f32 nearAtten;
     f32 farAtten;
@@ -368,29 +368,29 @@ void firepipe_updateState(FirePipeObject* obj)
         FirePipeMapData* md3;
         md3 = (FirePipeMapData*)obj->objectDef;
         ex3 = obj->extra;
-        spawnDef = (u8*)Obj_AllocObjectSetup(0x24, FIREPIPE_CHILD_OBJ_FLAMETHROWER);
-        ((FirePipeEffectSetup*)spawnDef)->head.color[0] = 2;
-        ((FirePipeEffectSetup*)spawnDef)->effectMode = ex3->effectMode;
-        ((FirePipeEffectSetup*)spawnDef)->scale = md3->scale;
-        ((FirePipeEffectSetup*)spawnDef)->head.posX = ((GameObject*)obj)->anim.localPosX;
-        ((FirePipeEffectSetup*)spawnDef)->head.posY = ((GameObject*)obj)->anim.localPosY;
-        ((FirePipeEffectSetup*)spawnDef)->head.posZ = ((GameObject*)obj)->anim.localPosZ;
+        spawnDef = (FirePipeEffectSetup*)Obj_AllocObjectSetup(0x24, FIREPIPE_CHILD_OBJ_FLAMETHROWER);
+        spawnDef->head.color[0] = 2;
+        spawnDef->effectMode = ex3->effectMode;
+        spawnDef->scale = md3->scale;
+        spawnDef->head.posX = ((GameObject*)obj)->anim.localPosX;
+        spawnDef->head.posY = ((GameObject*)obj)->anim.localPosY;
+        spawnDef->head.posZ = ((GameObject*)obj)->anim.localPosZ;
         if (spawnDef == 0)
         {
             effectObj = 0;
         }
         else
         {
-            effectObj = (u8*)firepipe_spawnEffectObject(extra, obj, spawnDef);
+            effectObj = (GameObject*)firepipe_spawnEffectObject(extra, obj, &spawnDef->head);
         }
         if (effectObj != 0)
         {
-            ((GameObject*)effectObj)->anim.localPosX = ((GameObject*)obj)->anim.localPosX;
-            ((GameObject*)effectObj)->anim.localPosY = ((GameObject*)obj)->anim.localPosY;
-            ((GameObject*)effectObj)->anim.localPosZ = ((GameObject*)obj)->anim.localPosZ;
-            ((GameObject*)effectObj)->anim.rotX = ((GameObject*)obj)->anim.rotX;
-            ((GameObject*)effectObj)->anim.rotY = ((GameObject*)obj)->anim.rotY;
-            ((GameObject*)effectObj)->anim.velocityY = lbl_803DC344;
+            effectObj->anim.localPosX = ((GameObject*)obj)->anim.localPosX;
+            effectObj->anim.localPosY = ((GameObject*)obj)->anim.localPosY;
+            effectObj->anim.localPosZ = ((GameObject*)obj)->anim.localPosZ;
+            effectObj->anim.rotX = ((GameObject*)obj)->anim.rotX;
+            effectObj->anim.rotY = ((GameObject*)obj)->anim.rotY;
+            effectObj->anim.velocityY = lbl_803DC344;
         }
         storeZeroToFloatParam(&extra->emitTimer);
         s16toFloat(&extra->emitTimer, lbl_803DC350);
