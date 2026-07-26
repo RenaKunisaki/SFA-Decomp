@@ -1,5 +1,5 @@
 /*
- * infopoint (DLL 0x00EC) - a non-colliding "information point" decoration
+ * InfoPoint (DLL 0xEC) - a non-colliding "information point" decoration
  * object. It loads a body of game text (gameTextGet) plus a shared font/
  * texture asset (asset 616) at init, parks the text + a scroll/fade timer
  * in its extra-state block, and renders the prompt billboard each frame
