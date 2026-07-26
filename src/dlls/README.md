@@ -22,11 +22,12 @@ the matching `gResourceDescriptors` array:
 Slot 705 is the resource descriptor table's trailing sentinel, so it does not
 have a source directory.
 
-Names are included only where current SFA source, recovered DOL identifiers,
-or retail `OBJECTS.bin` evidence supports them. Their capitalization and
-underscores are retained exactly; they are not normalized for directory names.
-A number-only directory means the name is not yet known well enough to put in
-the path.
+Names are included only when their exact spelling comes from the retail DOL or
+the slot's retail `OBJECTS.bin` definitions. Truncated retail names remain
+truncated; source-invented names, inferred expansions, and descriptive family
+names are not used. Capitalization and underscores are retained exactly. A
+number-only directory means retail evidence does not establish one name.
 
-`dlls.txt` records the scaffold in a compact `slot = path` form. It is a
-planning manifest for now and is not consumed by the build.
+`dlls.txt` records the scaffold in a compact `slot = path` form. Regenerate the
+empty folders with `python3 tools/regenerate_dll_scaffold.py`; populated folders
+are preserved. The manifest is not consumed by the build.

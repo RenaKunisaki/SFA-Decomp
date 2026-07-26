@@ -130,6 +130,12 @@ extern s16 gIceBaddieAttackMovesAlt[];
 extern u8 gIceBaddieParticleArgsTable[];
 extern u8 gIceBaddiePaletteIndexTable[];
 
+void iceBaddie_spawnIceBall(int* obj, int* state);
+void iceBaddie_updateControlEffects(GameObject* obj, int state);
+void iceBaddie_tryAcquireTarget(int obj, int sub, int state);
+void iceBaddie_updateTargetMotion(GameObject* obj, int sub, int state);
+void iceBaddie_updateTargetCollision(int obj, int sub, int state);
+
 int iceBaddie_stateHandlerB07(int obj, int state)
 {
     GroundBaddieState* sub = ((GameObject*)obj)->extra;
@@ -953,12 +959,6 @@ int iceBaddie_updateOpenHitState(GameObject* obj, int state)
     (*gPlayerInterface)->rotateTowardTarget(obj, (void*)state, timeDelta, 4);
     return 0;
 }
-
-void iceBaddie_spawnIceBall(int* obj, int* state);
-void iceBaddie_updateControlEffects(GameObject* obj, int state);
-void iceBaddie_tryAcquireTarget(int obj, int sub, int state);
-void iceBaddie_updateTargetMotion(GameObject* obj, int sub, int state);
-void iceBaddie_updateTargetCollision(int obj, int sub, int state);
 
 void iceBaddie_spawnIceBall(int* obj, int* state)
 {

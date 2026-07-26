@@ -1078,6 +1078,7 @@ config.libs = [
                 cflags=cflags_dll_noopt,
             ),
             Object(NonMatching, "dlls/objects/201_Baddie/Baddie.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/202/202.c", cflags=cflags_dll_noopt_noautoinline),
 
             # main
             Object(MatchingFor("GSAE01"), "main/audio/synth_constants.c"),
@@ -1530,7 +1531,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/hagabon_mk2.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/snowworm.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/baddiewhirlpool.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00CA_icebaddie.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00CE_dllce.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00CC_chukchuk.c", cflags=cflags_dll_noopt_noprop_noinline),
             Object(Matching, "main/dll/dll_00CD_iceball.c", cflags=cflags_dll_noopt_noautoinline),

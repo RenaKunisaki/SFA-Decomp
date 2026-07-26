@@ -1,6 +1,7 @@
 # `dll_00CA_mediumbasket` → `dll_00CA_icebaddie` (cut content) — APPLIED
 
-**Status:** APPLIED. The file was renamed to `dll_00CA_icebaddie.c/.h` and all
+**Status:** APPLIED. The internal symbol namespace and header use `iceBaddie`;
+the unnamed source TU lives at `src/dlls/objects/202/202.c`. All
 `mediumbasket_*` / `dll_CA_*` symbols, the `gMediumBasketStateHandlersA/B`
 tables, the `dll_CA` descriptor object (→ `gIceBaddieObjDescriptor`) and the
 `MediumbasketControl` struct were renamed to the `iceBaddie`/`IceBaddie`
@@ -50,8 +51,8 @@ There is no canonical retail name, so this is a descriptive choice. Suggested
 prefix **`iceBaddie`** / file **`dll_00CA_icebaddie.c`** (alternatives:
 `icechukbaddie`, `frostbaddie`). To apply:
 
-1. `src/main/dll/dll_00CA_mediumbasket.c` → `dll_00CA_icebaddie.c`
-   (+ `include/main/dll/dll_00CA_mediumbasket.h`).
+1. The source TU is `src/dlls/objects/202/202.c`; the internal interface is
+   `include/main/dll/dll_00CA_icebaddie.h`.
 2. Update `configure.py` and `config/GSAE01/splits.txt` for the new path.
 3. Symbol-prefix renames in source **and** `config/GSAE01/symbols.txt`:
    - `mediumbasket_*` → `iceBaddie_*`
