@@ -1390,7 +1390,8 @@ void pauseMenuSetHoloTransform(f32 f1, f32 f2, f32 f3, f32 f4, u16 a, u16 b, u16
     f32 mA[12];
     f32 mB[12];
     f32 pi;
-    GameUiMatrixWorkspace* matrices = (GameUiMatrixWorkspace*)lbl_803A87F0;
+    GameUiMatrixWorkspace* matrices[1];
+    matrices[0] = (GameUiMatrixWorkspace*)lbl_803A87F0;
     gTrickyHudIconPosX = f1;
     gTrickyHudIconPosY = f2;
     gTrickyHudIconPosZ = f3;
@@ -1407,12 +1408,12 @@ void pauseMenuSetHoloTransform(f32 f1, f32 f2, f32 f3, f32 f4, u16 a, u16 b, u16
     PSMTXScale(mB, gTrickyHudIconScale, gTrickyHudIconScale, gTrickyHudIconScale);
     PSMTXConcat(mB, mA, mA);
     PSMTXTrans(mB, gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ);
-    PSMTXConcat(mB, mA, matrices->object[0]);
+    PSMTXConcat(mB, mA, matrices[0]->object[0]);
     PSMTXScale(mA, gTrickyHudTexScaleX, -gTrickyHudTexScaleY, gTrickyHudTexScaleZ);
     PSMTXTrans(mB, lbl_803E1E98, lbl_803E1E68, lbl_803E1E3C);
     PSMTXConcat(mB, mA, mB);
-    PSMTXConcat(matrices->object[0], mB, matrices->view[0]);
-    C_MTXPerspective(matrices->projection[0], gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane,
+    PSMTXConcat(matrices[0]->object[0], mB, matrices[0]->view[0]);
+    C_MTXPerspective(matrices[0]->projection[0], gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane,
                      gTrickyHudIconFarPlane);
     lbl_803DD7FC = Camera_GetFovY();
     Camera_SetFovY(gTrickyHudIconFovY);
