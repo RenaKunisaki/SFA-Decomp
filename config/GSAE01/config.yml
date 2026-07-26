@@ -19,6 +19,14 @@ force_active:
   # aram_data.c: the retail link retained this unreferenced .bss block;
   # dropping it would shorten the section and shift every later .bss address.
   - lbl_803D4868
+  # picmenu.c: the retail link retained the thread message buffers and the
+  # video-decode stack even though live code reaches them only through the
+  # surrounding thread-area base pointers; dropping them would shorten .bss
+  # and shift every later .bss/.sdata address.
+  - gPicMenuReadedBuffer2Messages
+  - gPicMenuReadedBufferMessages
+  - gPicMenuFreeReadBufferMessages
+  - gPicMenuVideoDecodeThreadStack
 
 # Path to the main.dol file.
 object: sys/main.dol

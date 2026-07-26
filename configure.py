@@ -1474,7 +1474,7 @@ config.libs = [
             ),
             Object(Matching, "main/dll/dll_40.c"),
             Object(MatchingFor("GSAE01"), "main/dll/attractmovie.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/picmenu.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "main/dll/picmenu.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/frontend_control.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_43.c", cflags=cflags_dll_noopt),
             Object(
