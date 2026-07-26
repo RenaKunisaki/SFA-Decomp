@@ -2873,7 +2873,7 @@ dlls/objects/421_NW_levcontr/NW_levcontr.c:
 	.data       start:0x803269F8 end:0x80326B98
 	.sdata2     start:0x803E5278 end:0x803E5284
 
-main/dll/SH/dll_01A6_shtricky.c:
+dlls/objects/422_SH_tricky/SH_tricky.c:
 	.text       start:0x801D069C end:0x801D0828
 	.data       start:0x80326B98 end:0x80326BD0
 

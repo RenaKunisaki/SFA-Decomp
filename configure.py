@@ -1798,7 +1798,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/419/419.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/420/420.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/421_NW_levcontr/NW_levcontr.c", cflags=cflags_dll_noopt_noinline),
-            Object(MatchingFor("GSAE01"), "main/dll/SH/dll_01A6_shtricky.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/422_SH_tricky/SH_tricky.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_801d0828.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_01A7_ediblemushroom.c", cflags=cflags_dll_noopt_noloopinv_nolifetimes_nodead),
             Object(Matching, "main/dll/dll_1dc.c"),

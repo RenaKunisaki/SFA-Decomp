@@ -465,7 +465,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A3 | — | NO-RETAIL-NAME | dlls/objects/419/419.c | = (canonical) | — |
 | 0x1A4 | — | NO-RETAIL-NAME | dlls/objects/420/420.c | = (canonical) | — |
 | 0x1A5 | NW_levcontr | COMPLETE | dlls/objects/421_NW_levcontr/NW_levcontr.c | = (canonical) | — |
-| 0x1A6 | SH_tricky | COMPLETE | main/dll/dll_01A6_shtricky.c | main/dll/SH/dll_01A6_shtricky.c | — |
+| 0x1A6 | SH_tricky | COMPLETE | dlls/objects/422_SH_tricky/SH_tricky.c | = (canonical) | — |
 | 0x1A7 | ediblemushroom (+LINK_BlueMu, SH_whitemus, BlueMushroo) | GUESSED | main/dll/dll_01A7_ediblemushroom.c | = (canonical) | — |
 | 0x1A8 | SH_killermushroom | GUESSED | main/dll/dll_01A8_shkillermushroom.c | main/dll/SH/dll_01A8_shkillermushroom.c | — |
 | 0x1A9 | BombPlant | COMPLETE | main/dll/dll_01A9_bombplant.c | = (canonical) | — |
@@ -803,7 +803,7 @@ name was a deliberate choice by a previous carve:
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | dlls/objects/416_NW_geyser/NW_geyser.c | COMPLETE |
 | 0x1A2 | main/dll/dll_01A2_nwtricky.c | dlls/objects/418_NW_tricky/NW_tricky.c | COMPLETE |
 | 0x1A5 | main/dll/dll_01A5_nwlevcontrol.c | dlls/objects/421_NW_levcontr/NW_levcontr.c | COMPLETE |
-| 0x1A6 | main/dll/dll_01A6_shtricky.c | main/dll/SH/dll_01A6_shtricky.c | COMPLETE |
+| 0x1A6 | main/dll/dll_01A6_shtricky.c | dlls/objects/422_SH_tricky/SH_tricky.c | COMPLETE |
 | 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | main/dll/SH/dll_01A8_shkillermushroom.c | GUESSED |
 | 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | main/dll/SH/dll_01AC_shqueenearthwalker.c | CONFIRMED |
 | 0x1AD | main/dll/dll_01AD_shthorntail.c | main/dll/SH/dll_01AD_shthorntail.c | CONFIRMED |
