@@ -1,4 +1,4 @@
-/* DLL 0x166 - Exploded [801A39B4-801A39D0) */
+/* DLL 0x166 */
 #include "main/dll/drexplodable_types.h"
 #include "main/object_render.h"
 #include "game/objects/object_setup.h"
