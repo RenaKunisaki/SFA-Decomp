@@ -18,7 +18,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve.h"
-#include "main/dll/hagabonstate_struct.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/curve_walker.h"
 #include "game/objects/object.h"
@@ -31,10 +30,6 @@
 #include "main/dll/dll_00E0_swarmbaddie.h"
 
 int gSwarmBaddieCurveInitData[2] = {2, 3};
-
-STATIC_ASSERT(sizeof(HagabonState) == 0x28);
-STATIC_ASSERT(offsetof(HagabonState, wavePhaseA) == 0x20);
-STATIC_ASSERT(offsetof(HagabonState, flags) == 0x26);
 
 #define SWARMBADDIE_HIT_VOLUME_SLOT 10
 

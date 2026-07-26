@@ -11,7 +11,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
 #include "main/dll/swarmbaddiestate_struct.h"
-#include "main/dll/hagabonstate_struct.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/dll_00C9_enemy.h"
@@ -46,10 +45,6 @@ int gWispBaddieCurveInitData[2] = {2, 3};
 #define WISPBADDIE_FLAG_CHASE_LOCKOUT   0x04 /* strayed too far; block re-chase until back near path */
 #define WISPBADDIE_FLAG_CHASE_MASK      0x06
 int gWispBaddieLastSegmentEnd;
-
-STATIC_ASSERT(sizeof(HagabonState) == 0x28);
-STATIC_ASSERT(offsetof(HagabonState, wavePhaseA) == 0x20);
-STATIC_ASSERT(offsetof(HagabonState, flags) == 0x26);
 
 typedef struct WispEventRow
 {
