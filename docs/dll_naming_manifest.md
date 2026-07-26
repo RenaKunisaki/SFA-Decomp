@@ -654,7 +654,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x260 | — | NO-RETAIL-NAME | dlls/objects/608/608.c | = (canonical) | Complete ProximityMine-family TU including the formerly split leading expire helper |
 | 0x261 | DR_LaserCannon | CONFIRMED | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | = (canonical) | Callback TU only; descriptor remains in DOL-confirmed DLL 592 pooled data |
 | 0x262 | — | NO-RETAIL-NAME | dlls/objects/610/610.c | = (canonical) | Complete exact DrakorMissile callback TU; descriptor remains in DOL-confirmed DLL 592 pooled data |
-| 0x263 | GM_MazeWell | CONFIRMED | main/dll/dll_0263_gmmazewell.c | = (canonical) | — |
+| 0x263 | GM_MazeWell | CONFIRMED | dlls/objects/611_GM_MazeWell/GM_MazeWell.c | = (canonical) | Exact callback TU; descriptor and adjacent quest-bit table remain in DOL-confirmed DLL 592 pooled data |
 | 0x264 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x265 | DR_Creator | COMPLETE | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | — |
 | 0x266 | KytesMum | COMPLETE | main/dll/dll_0266_kytesmum.c | = (canonical) | — |
