@@ -1,5 +1,5 @@
 /*
- * nwtreebrid (DLL 0x19F) - a path-bound bird object in SnowHorn Wastes
+ * NW_treebrid (DLL 0x19F) - a path-bound bird object in SnowHorn Wastes
  * (map 'nwastes', 0x0A).
  *
  * On its animation events it emits bursts of particle fx (the burst id
