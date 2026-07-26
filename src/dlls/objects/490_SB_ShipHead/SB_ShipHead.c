@@ -129,7 +129,7 @@ void SB_ShipHead_update(GameObject* obj)
     f32 ddy;
     f32 ddz;
     f32 speedScale;
-    int player;
+    GameObject* player;
     u8 fireCue;
     u8* galleon;
     SBShipHeadState* hs;
@@ -138,7 +138,7 @@ void SB_ShipHead_update(GameObject* obj)
     int i;
     int proj;
     u8* setup;
-    int hit;
+    GameObject* hit;
     int tmp3;
     f32 px;
     f32 py;
@@ -151,7 +151,7 @@ void SB_ShipHead_update(GameObject* obj)
 
     object = obj;
     fireCue = 0;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     galleon = *(u8**)&object->anim.parent;
     if (galleon == 0)
     {
@@ -160,7 +160,7 @@ void SB_ShipHead_update(GameObject* obj)
     camState = DBprotection_getCameraState(getSbGalleon());
     if (camState == 2)
     {
-        if (Vec_distance((void*)(player + 0x18), &object->anim.worldPosX) < gSbShipHeadHissSfxDistance)
+        if (Vec_distance(&player->anim.worldPosX, &object->anim.worldPosX) < gSbShipHeadHissSfxDistance)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_en_trpopn_c_312);
         }
@@ -198,8 +198,8 @@ void SB_ShipHead_update(GameObject* obj)
         }
     }
     if ((SB_GALLEON_VTBL(galleon)->getPhase((int)galleon) >= 2) && (object->userData2 <= 0) &&
-        (((u32)(galleonPhase - 3) <= 1 || (galleonPhase == 5))) && (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) &&
-        (((GameObject*)hit)->anim.seqId != SB_FIREBALL_OBJID))
+        (((u32)(galleonPhase - 3) <= 1 || (galleonPhase == 5))) && (ObjHits_GetPriorityHit(obj, (int*)&hit, 0, 0) != 0) &&
+        (hit->anim.seqId != SB_FIREBALL_OBJID))
     {
         Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcfir1_c_37);
@@ -249,9 +249,9 @@ void SB_ShipHead_update(GameObject* obj)
         ((ObjPlacement*)setup)->posY = py;
         ((ObjPlacement*)setup)->posZ = pz;
         proj = (int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
-        ddx = ((GameObject*)player)->anim.worldPosX - ((GameObject*)proj)->anim.localPosX;
-        ddy = (((GameObject*)player)->anim.worldPosY - gSbShipHeadFireballSpeed) - ((GameObject*)proj)->anim.localPosY;
-        ddz = ((GameObject*)player)->anim.worldPosZ - ((GameObject*)proj)->anim.localPosZ;
+        ddx = player->anim.worldPosX - ((GameObject*)proj)->anim.localPosX;
+        ddy = (player->anim.worldPosY - gSbShipHeadFireballSpeed) - ((GameObject*)proj)->anim.localPosY;
+        ddz = player->anim.worldPosZ - ((GameObject*)proj)->anim.localPosZ;
         speedScale = gSbShipHeadFireballSpeed / sqrtf(ddz * ddz + (ddx * ddx + ddy * ddy));
         ((GameObject*)proj)->anim.velocityX = ddx * speedScale;
         ((GameObject*)proj)->anim.velocityY = ddy * speedScale;
@@ -262,13 +262,13 @@ void SB_ShipHead_update(GameObject* obj)
     if ((fireCue == 1) && (Obj_IsLoadingLocked() != 0))
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_gcexp1_c);
-        player = (int)Obj_GetPlayerObject();
+        player = Obj_GetPlayerObject();
         setup = (u8*)Obj_AllocObjectSetup(0x18, SB_PROJECTILE_OBJID);
-        ((ObjPlacement*)setup)->posX = 100.0f + ((GameObject*)player)->anim.worldPosX;
+        ((ObjPlacement*)setup)->posX = 100.0f + player->anim.worldPosX;
         ((ObjPlacement*)setup)->posY =
-            50.0f + (((GameObject*)player)->anim.worldPosY + (f32)(int)randomGetRange(-6, 6));
+            50.0f + (player->anim.worldPosY + (f32)(int)randomGetRange(-6, 6));
         ((ObjPlacement*)setup)->posZ =
-            45.0f + (((GameObject*)player)->anim.worldPosZ + (f32)(int)randomGetRange(-6, 6));
+            45.0f + (player->anim.worldPosZ + (f32)(int)randomGetRange(-6, 6));
         setup[4] = 2;
         setup[5] = 1;
         setup[6] = 0xff;
