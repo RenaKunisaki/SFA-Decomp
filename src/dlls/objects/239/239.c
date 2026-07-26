@@ -191,38 +191,38 @@ static void pushableClampToZero(f32* value)
     }
 }
 
-int pushable_updateCurtain(GameObject* obj, PushableState* state)
+int pushable_updateCurtain(int obj, PushableState* state)
 {
     int def;
     GameObject* player;
 
-    def = *(int*)&obj->anim.placementData;
+    def = *(int*)&((GameObject*)obj)->anim.placementData;
     player = Obj_GetPlayerObject();
     if (((state->flags & 0x80) != 0) || (fn_80295A04(player, 10) != 0))
     {
-        Sfx_StopObjectChannel((int)obj, 8);
+        Sfx_StopObjectChannel(obj, 8);
         return 0;
     }
-    Sfx_PlayFromObject((int)obj, SFXTRIG_treedrum16);
+    Sfx_PlayFromObject(obj, SFXTRIG_treedrum16);
     state->flags |= 2;
     if ((state->flags & 4) == 0)
     {
-        pushable_resolveCollisions(obj, state);
+        pushable_resolveCollisions((GameObject*)obj, state);
     }
-    if (obj->anim.localPosX <= CURTAIN_TRIGGER_X_OFFSET + ((ObjPlacement*)def)->posX)
+    if (((GameObject*)obj)->anim.localPosX <= CURTAIN_TRIGGER_X_OFFSET + ((ObjPlacement*)def)->posX)
     {
         mainSetBits(state->gameBit, 1);
         state->flags |= 0x80;
-        obj->anim.localPosX = (f32)(((ObjPlacement*)def)->posX - CURTAIN_POSITION_X_OFFSET);
-        obj->anim.localPosY = ((ObjPlacement*)def)->posY;
-        obj->anim.localPosZ = (f32)(CURTAIN_POSITION_Z_OFFSET + ((ObjPlacement*)def)->posZ);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_curtainopen16);
+        ((GameObject*)obj)->anim.localPosX = (f32)(((ObjPlacement*)def)->posX - CURTAIN_POSITION_X_OFFSET);
+        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)def)->posY;
+        ((GameObject*)obj)->anim.localPosZ = (f32)(CURTAIN_POSITION_Z_OFFSET + ((ObjPlacement*)def)->posZ);
+        Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
     }
     if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0)
     {
-        obj->anim.localPosX = ((ObjPlacement*)def)->posX;
-        obj->anim.localPosY = ((ObjPlacement*)def)->posY;
-        obj->anim.localPosZ = ((ObjPlacement*)def)->posZ;
+        ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)def)->posX;
+        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)def)->posY;
+        ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)def)->posZ;
     }
     return 0;
 }
@@ -1372,7 +1372,7 @@ void pushable_update(GameObject* obj)
             obj->anim.localPosY = def->posY;
             obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_Z_OFFSET + (f64)def->posZ);
         }
-        pushable_updateCurtain(obj, state);
+        pushable_updateCurtain((int)obj, state);
         break;
     case PUSHABLE_SEQID_DIM2_ICE_BLOCK:
         if (PUSHABLE_ZERO == state->prevWaterDepth && state->waterDepth > PUSHABLE_ZERO)
