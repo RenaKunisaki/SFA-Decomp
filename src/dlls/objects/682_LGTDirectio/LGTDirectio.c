@@ -1,5 +1,5 @@
 /*
- * lgtdirectionallight (DLL 0x2AA) - a placeable directional light.
+ * LGTDirectionallight (DLL 0x2AA) - a placeable directional light.
  *
  * init creates a ModelLight of kind DIRECTIONAL and configures its direction,
  * diffuse colour (or the live ambient colour when the
