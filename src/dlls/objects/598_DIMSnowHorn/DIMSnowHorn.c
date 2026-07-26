@@ -1,5 +1,5 @@
 /*
- * dll_0256_dimsnowhorn1 (DLL 0x256) - the rideable SnowHorn mammoth found in
+ * DIMSnowHorn (DLL 0x256) - the rideable SnowHorn mammoth found in
  * DIM (Dinosaur InfernoMountain).  Fox can mount the mammoth and use it to
  * clear puzzle obstacles.  The object runs a 12-state BaddieState machine
  * (stateHandler00-0B); the riding sub-loop (DIMSnowHorn1_ridingUpdate) handles stick/button
