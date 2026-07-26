@@ -1,5 +1,5 @@
 /*
- * swarmbaddie (DLL 0x00E0) - the swarming flying baddie (a "wisp"-class
+ * SwarmBaddie (DLL 0x00E0) - the swarming flying baddie (a "wisp"-class
  * pest).
  *
  * A swarmbaddie follows a ROM curve path (allocated per-instance via the
@@ -9,8 +9,7 @@
  * when the player gets too far (the PATH_NEEDS_LINK/CHASE flag pair in
  * state->flags). Per-tick it scans for priority hits, drives a looping sfx
  * whose channel volume tracks an attack envelope + sine wobble, and emits
- * particle fx (0x336). The shared pressure-switch resource (DAT_803de6d0)
- * is acquired/freed through the pi_dolphin helpers.
+ * particle fx (0x336).
  */
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_channel_volume_api.h"
@@ -133,6 +132,7 @@ int SwarmBaddie_getExtraSize(void)
 {
     return sizeof(SwarmBaddieState);
 }
+
 int SwarmBaddie_getObjectTypeId(void)
 {
     return 0x9;
@@ -158,7 +158,6 @@ void SwarmBaddie_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 void SwarmBaddie_hitDetect(void)
 {
 }
-
 
 void SwarmBaddie_update(GameObject* obj)
 {
