@@ -1,7 +1,8 @@
-#ifndef MAIN_DLL_DLL_00F6_AREA_H_
-#define MAIN_DLL_DLL_00F6_AREA_H_
+#ifndef DLLS_OBJECTS_246_AREA_H_
+#define DLLS_OBJECTS_246_AREA_H_
 
-#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 
 int area_getExtraSize(void);
 int area_getObjectTypeId(void);
@@ -13,4 +14,6 @@ void area_init(GameObject* obj);
 void area_release(void);
 void area_initialise(void);
 
-#endif /* MAIN_DLL_DLL_00F6_AREA_H_ */
+extern ObjectDescriptor gAreaObjDescriptor;
+
+#endif /* DLLS_OBJECTS_246_AREA_H_ */

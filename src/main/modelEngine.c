@@ -42,6 +42,7 @@
 #include "dlls/objects/243_flameblast.h"
 #include "dlls/objects/244.h"
 #include "dlls/objects/245_SidekickBal.h"
+#include "dlls/objects/246_Area.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -139,8 +140,8 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
     gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAppleOnTreeObjDescriptor, gAreaFXEmitObjDescriptor, gAreaObjDescriptor,
-    gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
+extern ResourceDescriptor gAppleOnTreeObjDescriptor, gAreaFXEmitObjDescriptor, gAttractorObjDescriptor,
+    gBabyCloudRunnerObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBarrelPadObjDescriptor,
     gBlastedObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor,
     gBossDrakorObjDescriptor;
@@ -1181,7 +1182,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFlameblastObjDescriptor,
     (ResourceDescriptor*)&gDoorF4ObjDescriptor,
     (ResourceDescriptor*)&gSidekickBallObjDescriptor,
-    &gAreaObjDescriptor,
+    (ResourceDescriptor*)&gAreaObjDescriptor,
     &dll_F7,
     &gLevelNameObjDescriptor,
     &gProjectileSwitchObjDescriptor,
