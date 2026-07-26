@@ -5083,7 +5083,7 @@ dlls/objects/599_DR_EarthWar/DR_EarthWar.c:
 	.data       start:0x803351F8 end:0x803356F0
 	.sdata      start:0x803DC760 end:0x803DC76C
 
-main/dll/DR/dll_0258_drcloudrunner.c:
+dlls/objects/600_DR_CloudRun/DR_CloudRun.c:
 	.text       start:0x802BF0C8 end:0x802C187C
 	.rodata     start:0x802C2D00 end:0x802C2D4C
 	.data       start:0x803356F0 end:0x8033583D
