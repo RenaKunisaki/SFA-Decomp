@@ -92,8 +92,8 @@ void dimicewall_update(GameObject* obj)
             {
                 if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
                 {
-                    (*(TrickyGuardSpotInterfaceVTable**)tricky->anim.dll)->setGuardSpotAction(
-                        &tricky->anim, obj, 1, 4);
+                    (*(TrickyGuardSpotInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
+                        tricky, obj, 1, 4);
                 }
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
                 objRenderFn_80041018(obj);

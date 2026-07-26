@@ -21,15 +21,15 @@ typedef GameObject TrickyGuardSpotObject;
 typedef struct TrickyGuardSpotInterfaceVTable
 {
     void* pad00[10];
-    void (*setGuardSpotAction)(ObjAnimComponent* tricky, TrickyGuardSpotObject* obj, int action, int param);
+    void (*sideCommandEnable)(GameObject* tricky, TrickyGuardSpotObject* obj, int commandKind, int commandType);
     void* pad2C[4];
-    void (*resetGuardSpotAction)(ObjAnimComponent* tricky);
+    void (*requestRecall)(GameObject* tricky);
     void* pad40;
-    int (*isBusy)(ObjAnimComponent* tricky);
+    int (*isBusy)(GameObject* tricky);
 } TrickyGuardSpotInterfaceVTable;
 
-STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, setGuardSpotAction) == 0x28);
-STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, resetGuardSpotAction) == 0x3C);
+STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, sideCommandEnable) == 0x28);
+STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, requestRecall) == 0x3C);
 STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, isBusy) == 0x44);
 
 typedef struct TrickyGuardSpotPlacement

@@ -28,12 +28,12 @@ void TrickyGuard_update(GameObject* obj) {
     if (tricky == NULL) {
         return;
     }
-    if ((u8)TRICKYGUARD_VTABLE(tricky)->isBusy(&tricky->anim) != 0) {
+    if ((u8)TRICKYGUARD_VTABLE(tricky)->isBusy(tricky) != 0) {
         return;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-        TRICKYGUARD_VTABLE(tricky)->setGuardSpotAction(&tricky->anim, (TrickyGuardSpotObject*)obj,
-                                                       TRICKY_GUARD_SPOT_ACTION, TRICKY_GUARD_SPOT_ACTION_PARAM);
+        TRICKYGUARD_VTABLE(tricky)->sideCommandEnable(tricky, (TrickyGuardSpotObject*)obj, TRICKY_GUARD_SPOT_ACTION,
+                                                      TRICKY_GUARD_SPOT_ACTION_PARAM);
     }
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
     objRenderFn_80041018(obj);

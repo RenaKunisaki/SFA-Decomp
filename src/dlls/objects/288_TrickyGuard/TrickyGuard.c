@@ -38,7 +38,7 @@ void TrickyGuardSpot_update(TrickyGuardSpotObject* obj)
     flags->trickyInRange = 0;
     if (tricky != NULL)
     {
-        if ((u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isBusy(&tricky->anim) != 0)
+        if ((u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isBusy(tricky) != 0)
         {
             if (Vec_xzDistance(&obj->anim.worldPosX, &tricky->anim.worldPosX) <
                 (f32)(s32)placement->triggerRadius)
@@ -51,12 +51,12 @@ void TrickyGuardSpot_update(TrickyGuardSpotObject* obj)
     if (state->resetTimer != 0)
     {
         if (tricky != NULL &&
-            (u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isBusy(&tricky->anim) == 0)
+            (u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isBusy(tricky) == 0)
         {
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
             {
-                TRICKY_GUARD_SPOT_VTABLE(tricky)->setGuardSpotAction(
-                    &tricky->anim, obj, TRICKY_GUARD_SPOT_ACTION, TRICKY_GUARD_SPOT_ACTION_PARAM);
+                TRICKY_GUARD_SPOT_VTABLE(tricky)->sideCommandEnable(
+                    tricky, obj, TRICKY_GUARD_SPOT_ACTION, TRICKY_GUARD_SPOT_ACTION_PARAM);
             }
             obj->anim.resetHitboxFlags =
                 (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
@@ -65,7 +65,7 @@ void TrickyGuardSpot_update(TrickyGuardSpotObject* obj)
     }
     else if (tricky != NULL)
     {
-        TRICKY_GUARD_SPOT_VTABLE(tricky)->resetGuardSpotAction(&tricky->anim);
+        TRICKY_GUARD_SPOT_VTABLE(tricky)->requestRecall(tricky);
         state->resetTimer = placement->resetSeconds * 0x3c;
     }
     mainSetBits(placement->rangeGameBit, flags->trickyInRange);
