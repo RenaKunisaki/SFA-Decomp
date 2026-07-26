@@ -1,5 +1,5 @@
 /*
- * immultiseq (DLL 0x114) - a multi-sequence controller on the Ice
+ * IMMultiSeq (DLL 0x114) - a multi-sequence controller on the Ice
  * Mountain map. It walks a small step counter (0..4) through up to four
  * scripted sequences, each gated by a pair of game bits in the
  * placement: activeGameBits[] decides whether the step's trigger

@@ -321,7 +321,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x111 | — (+CFPowerLock, CFDoubleSwi, WCTeethBowl, DIMLever, DIMSnowHorn, DIMUseObjec, DIM2UseObje, DIM2CellKey, MMP_padlock, SC_blockpla, VFP_PitSwit, VFP_PodiumP, VFP_LiftSwi, DFP_PitSwit, DFP_ForceSw, WM_padlock, DRearthwalk) | NO-RETAIL-NAME | dlls/objects/273/273.c | = (canonical) | — |
 | 0x112 | — (+BossDrakor_, KT_RexSeque, CFGoldenPer, LINKIseqobj, CFseqobject, CFRaceSeqob, CAMERAseqob, WCSeqObject, WCTempleBlo, DIMBridge, DIMSeqObjec, DIM2SeqObje, DIM2Mammoth, DIM2CellLoc, DIM2StonePi, IMSeqObject, LINKE_stone, linkB_Stone, ANDSeqObjec, GF_sequence, MMP_seqobje, SH_seqobjec, KP_sequence, SC_sequence, VFPSeqObj, VFP_Bobbing, SPSeqObj, FrontSeq, NWSH_Seqobj, DR_Seqobj, FireHoleCon, DR_SeqobjBo, DR_TrackDoo, KPLandingPa, CF_BobbingC, CFLandingPa, LandingPad_, WC_LandingP, SH_NT_Landi, MSSeqObject, ARWSeqObjec, DFsequences) | NO-RETAIL-NAME | dlls/objects/274/274.c | = (canonical) | — |
 | 0x113 | — (+CAMERAnewse, LINKJseqobj, LINKB_seqob, LINKC_seqob, CCBridge, CCseqobj, NWSteppingS, NW_seqobjec, SH_newseqob, SH_BottomSe) | NO-RETAIL-NAME | dlls/objects/275/275.c | = (canonical) | — |
-| 0x114 | IMMultiSeq | COMPLETE | main/dll/dll_0114_immultiseq.c | main/dll/IM/dll_0114_immultiseq.c | — |
+| 0x114 | IMMultiSeq | COMPLETE | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | = (canonical) | — |
 | 0x115 | — | NO-RETAIL-NAME | main/dll/dll_0115_dll115.c | = (canonical) | — |
 | 0x116 | WM_Column (+WM_Column_T, GPSHpickobj) | COMPLETE | main/dll/dll_0116_wmcolumn.c | main/dll/WM/dll_0116_wmcolumn.c | — |
 | 0x117 | AppleOnTree | CONFIRMED | main/dll/dll_0117_appleontree.c | = (canonical) | — |
@@ -798,7 +798,7 @@ name was a deliberate choice by a previous carve:
 |---|---|---|---|
 | 0x0C7 | main/dll/dll_00C7_dim2roofrub.c | dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c | COMPLETE |
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
-| 0x114 | main/dll/dll_0114_immultiseq.c | main/dll/IM/dll_0114_immultiseq.c | COMPLETE |
+| 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | main/dll/WM/dll_0116_wmcolumn.c | COMPLETE |
 | 0x122 | main/dll/dll_0122_cctestinfot.c | main/dll/CC/dll_0122_cctestinfot.c | CONFIRMED |
 | 0x128 | main/dll/dll_0128_kttorch.c | main/dll/DR/dll_0128_kttorch.c | COMPLETE |
