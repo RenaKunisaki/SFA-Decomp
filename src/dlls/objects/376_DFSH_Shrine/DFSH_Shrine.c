@@ -146,11 +146,12 @@ void DFSH_Shrine_init(GameObject* obj, DfshShrinePlacement* init);
 void DFSH_Shrine_release(void);
 void DFSH_Shrine_initialise(void);
 
-void dfshshrine_updateHoverMotion(int obj)
+void dfshshrine_updateHoverMotion(int objArg)
 {
     ObjPlacement* def;
     DFlanternShrineState* state;
-    u8* player;
+    GameObject* player;
+    GameObject* obj = (GameObject*)objArg;
     f32 trigA;
     f32 trigB;
     f32 distance;
@@ -158,13 +159,13 @@ void dfshshrine_updateHoverMotion(int obj)
     int turnStep;
     u8 animEvents[32];
 
-    def = (ObjPlacement*)((GameObject*)obj)->anim.placementData;
-    state = ((GameObject*)obj)->extra;
-    player = (u8*)Obj_GetPlayerObject();
-    if ((((GameObject*)obj)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
+    def = (ObjPlacement*)obj->anim.placementData;
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
     {
-        ((GameObject*)obj)->anim.rotX = 0;
-        ((GameObject*)obj)->anim.localPosY = def->posY;
+        obj->anim.rotX = 0;
+        obj->anim.localPosY = def->posY;
         return;
     }
 
@@ -172,26 +173,26 @@ void dfshshrine_updateHoverMotion(int obj)
     state->orbitB += (s32)(128.0f * timeDelta);
     state->orbitC += (s32)(192.0f * timeDelta);
 
-    ((GameObject*)obj)->anim.localPosY =
+    obj->anim.localPosY =
         20.0f + (def->posY + mathSinf((3.1415927f * state->orbitA) / 32768.0f));
 
     trigA = mathSinf((3.1415927f * state->orbitB) / 32768.0f);
     trigB = mathSinf((3.1415927f * state->orbitA) / 32768.0f);
     trigB = trigB + trigA;
-    ((GameObject*)obj)->anim.rotZ = 600.0f * trigB;
+    obj->anim.rotZ = 600.0f * trigB;
 
     trigA = mathSinf((3.1415927f * state->orbitC) / 32768.0f);
     trigB = mathSinf((3.1415927f * state->orbitA) / 32768.0f);
     trigB = trigB + trigA;
-    ((GameObject*)obj)->anim.rotY = 600.0f * trigB;
+    obj->anim.rotY = 600.0f * trigB;
 
     ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta,
                                                                  (ObjAnimEventList*)animEvents);
     if (player != NULL)
     {
-        angleDelta = ((u16)getAngle(((GameObject*)obj)->anim.worldPosX - ((GameObject*)player)->anim.worldPosX,
-                                    ((GameObject*)obj)->anim.worldPosZ - ((GameObject*)player)->anim.worldPosZ) -
-                      ((u16)((GameObject*)obj)->anim.rotX));
+        angleDelta = ((u16)getAngle(obj->anim.worldPosX - player->anim.worldPosX,
+                                    obj->anim.worldPosZ - player->anim.worldPosZ) -
+                      ((u16)obj->anim.rotX));
         if (angleDelta > 0x8000)
         {
             angleDelta -= 0xffff;
@@ -201,16 +202,16 @@ void dfshshrine_updateHoverMotion(int obj)
             angleDelta += 0xffff;
         }
         turnStep = (s32)(((f32)angleDelta * timeDelta) / 12.0f);
-        ((GameObject*)obj)->anim.rotX += turnStep;
+        obj->anim.rotX += turnStep;
 
-        distance = Vec_xzDistance((f32*)(obj + 0x18), (f32*)(player + 0x18));
+        distance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
         if (distance <= 30.0f)
         {
-            ((GameObject*)obj)->anim.alpha = (u8)(s32)(255.0f * (distance / 30.0f));
+            obj->anim.alpha = (u8)(s32)(255.0f * (distance / 30.0f));
         }
         else
         {
-            ((GameObject*)obj)->anim.alpha = 0xff;
+            obj->anim.alpha = 0xff;
         }
     }
 }
