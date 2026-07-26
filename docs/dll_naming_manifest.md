@@ -471,7 +471,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A9 | BombPlant | COMPLETE | dlls/objects/425_BombPlant/BombPlant.c | = (canonical) | — |
 | 0x1AA | BombPlantSp | COMPLETE | dlls/objects/426_BombPlantSp/BombPlantSp.c | = (canonical) | — |
 | 0x1AB | BombPlantin | COMPLETE | dlls/objects/427_BombPlantin/BombPlantin.c | = (canonical) | — |
-| 0x1AC | SH_queenearthwalker | CONFIRMED | main/dll/dll_01AC_shqueenearthwalker.c | main/dll/SH/dll_01AC_shqueenearthwalker.c | — |
+| 0x1AC | SH_queenear | COMPLETE | dlls/objects/428_SH_queenear/SH_queenear.c | = (canonical) | — |
 | 0x1AD | SH_thorntail | CONFIRMED | main/dll/dll_01AD_shthorntail.c | main/dll/SH/dll_01AD_shthorntail.c | — |
 | 0x1AE | SH_LevelControl | CONFIRMED | main/dll/dll_01AE_shlevelcontrol.c | main/dll/SH/dll_01AE_shlevelcontrol.c | — |
 | 0x1AF | SH_swaplift | RAW | main/dll/dll_01AF_shswaplift.c | main/dll/SH/dll_01AF_shswaplift.c | — |
@@ -805,7 +805,7 @@ name was a deliberate choice by a previous carve:
 | 0x1A5 | main/dll/dll_01A5_nwlevcontrol.c | dlls/objects/421_NW_levcontr/NW_levcontr.c | COMPLETE |
 | 0x1A6 | main/dll/dll_01A6_shtricky.c | dlls/objects/422_SH_tricky/SH_tricky.c | COMPLETE |
 | 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | dlls/objects/424_SH_killermu/SH_killermu.c | COMPLETE |
-| 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | main/dll/SH/dll_01AC_shqueenearthwalker.c | CONFIRMED |
+| 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | dlls/objects/428_SH_queenear/SH_queenear.c | COMPLETE |
 | 0x1AD | main/dll/dll_01AD_shthorntail.c | main/dll/SH/dll_01AD_shthorntail.c | CONFIRMED |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | main/dll/SH/dll_01AE_shlevelcontrol.c | CONFIRMED |
 | 0x1AF | main/dll/dll_01AF_shswaplift.c | main/dll/SH/dll_01AF_shswaplift.c | RAW |
@@ -984,7 +984,7 @@ blocked units will surface more when carved.
 | 0x1A0 | dlls/objects/416_NW_geyser/NW_geyser.c | include/main/dll/dll_01A0_nwgeyser.h |
 | 0x1A1 | dlls/objects/417/417.c | include/main/dll/dll_01A1_nwmammoth.h |
 | 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/main/dll/dll_01A8_shkillermushroom.h |
-| 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
+| 0x1AC | dlls/objects/428_SH_queenear/SH_queenear.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |
 | 0x1B0 | main/dll/dll_01B0_shswapston.c | include/main/dll/SH/dll_01B0_shswapston.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |

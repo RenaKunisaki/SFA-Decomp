@@ -2903,11 +2903,8 @@ dlls/objects/427_BombPlantin/BombPlantin.c:
 	.text       start:0x801D3FF4 end:0x801D4198
 	.data       start:0x80326DE0 end:0x80326E18
 
-main/dll/dll_801d4198.c:
-	.text       start:0x801D4198 end:0x801D4364
-
-main/dll/SH/dll_01AC_shqueenearthwalker.c:
-	.text       start:0x801D4364 end:0x801D4CD0
+dlls/objects/428_SH_queenear/SH_queenear.c:
+	.text       start:0x801D4198 end:0x801D4CD0
 	.data       start:0x80326E18 end:0x80326E98
 	.sdata      start:0x803DBFC8 end:0x803DBFF8
 
