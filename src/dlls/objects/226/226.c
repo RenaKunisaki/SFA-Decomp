@@ -214,20 +214,20 @@ void staff_render(void);
 void staff_hitDetect(void);
 int staff_getExtraSize(void);
 int staff_getObjectTypeId(void);
-s16 staff_getHitReactValue(int* obj);
-s32 staff_getSwipeTextureIndex(int* obj);
-void staff_func10(int* obj, s32 v);
-void staff_setHitReactValue(int* obj, s32 v);
-void staff_modelMtxFn(int* obj, int p4, int p5);
-void staff_addHitReactValue(int* obj, s32 delta);
-void staff_startSwipe(int* obj, s16 idx, f32 f1, f32 f2);
-void staff_free(int* obj);
+s16 staff_getHitReactValue(GameObject* obj);
+s32 staff_getSwipeTextureIndex(GameObject* obj);
+void staff_func10(GameObject* obj, s32 v);
+void staff_setHitReactValue(GameObject* obj, s32 v);
+void staff_modelMtxFn(GameObject* obj, int p4, int p5);
+void staff_addHitReactValue(GameObject* obj, s32 delta);
+void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2);
+void staff_free(GameObject* obj);
 void staff_release(void);
-void staff_init(int* obj);
+void staff_init(GameObject* obj);
 void staff_initialise(void);
 #define GXWGFifo (*(volatile GenPropsWGPipe*)0xCC008000)
 
-void staff_hitDetectGeometry(int* obj);
+void staff_hitDetectGeometry(GameObject* obj);
 static inline void swipePos3f32(const f32 x, const f32 y, const f32 z)
 {
     GXWGFifo.f32 = x;
@@ -246,10 +246,10 @@ static inline void swipeTexCoord2f32(const f32 s, const f32 t)
     GXWGFifo.f32 = s;
     GXWGFifo.f32 = t;
 }
-void staff_update(int* obj);
+void staff_update(GameObject* obj);
 
 
-void quakeSpellFn_8016cee8(int* obj, GameObject* player)
+void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player)
 {
     QuakeFxParams fxB;
     QuakeFxParams fxA;
@@ -257,7 +257,7 @@ void quakeSpellFn_8016cee8(int* obj, GameObject* player)
     f32 power;
     f32 dv;
     f32* pos2;
-    u8* state = ((GameObject*)obj)->extra;
+    u8* state = obj->extra;
     if (obj == NULL || player == NULL)
     {
         return;
@@ -400,18 +400,18 @@ void quakeSpellFn_8016cee8(int* obj, GameObject* player)
             {
                 fxA.count = 21 - (int)(15.0f * (power / 60.0f));
                 fxA.id = 0xc95;
-                fn_802960F4((GameObject*)(*(int*)&((GameObject*)obj)->ownerObj), &pos2);
+                fn_802960F4((GameObject*)(*(int*)&obj->ownerObj), &pos2);
                 fxB.f1 = pos2[3];
                 fxB.f2 = pos2[4];
                 fxB.f3 = pos2[5];
                 (*gPartfxInterface)
-                    ->spawnObject((void*)*(int*)&((GameObject*)obj)->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                    ->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 (*gPartfxInterface)
-                    ->spawnObject((void*)*(int*)&((GameObject*)obj)->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                    ->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 (*gPartfxInterface)
-                    ->spawnObject((void*)*(int*)&((GameObject*)obj)->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                    ->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 (*gPartfxInterface)
-                    ->spawnObject((void*)*(int*)&((GameObject*)obj)->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                    ->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 fxA.count = 9;
                 fxA.id = 0xc95;
                 fxA.f0 = 0.8f * (power / 60.0f) + 0.1f;
@@ -419,7 +419,7 @@ void quakeSpellFn_8016cee8(int* obj, GameObject* player)
                 fxB.f2 = pos2[4];
                 fxB.f3 = pos2[5];
                 (*gPartfxInterface)
-                    ->spawnObject((void*)*(int*)&((GameObject*)obj)->ownerObj, 0x7ba, &fxB, 0x200001, -1, &fxA);
+                    ->spawnObject((void*)*(int*)&obj->ownerObj, 0x7ba, &fxB, 0x200001, -1, &fxA);
             }
             break;
         case 134:
@@ -555,12 +555,12 @@ void quakeSpellTextureFn_8016dbf4(void)
         GXDrawTorus(((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius, 10, 20);
     }
 }
-void staffDrawSwipe(int* obj, int* swipe)
+void staffDrawSwipe(GameObject* obj, StaffState* swipe)
 {
     SwipeRecord* swp;
     int i;
 
-    selectTexture((Texture*)gStaffSwipeTextures[((StaffState*)swipe)->swipeTextureIndex], 0);
+    selectTexture((Texture*)gStaffSwipeTextures[swipe->swipeTextureIndex], 0);
     textureSetupFn_800799c0();
     geomDrawFn_800796f0();
     textRenderSetupFn_80079804();
@@ -615,7 +615,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
 {
     ObjWeaponDaTable* weaponDaTable;
     u8* slot;
-    u8* obj;
+    GameObject* obj;
     u8* model2;
     s16* tbl;
     int count;
@@ -633,22 +633,22 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
     f32 sinv, cosv, vidx, flb, tmax, step, fla, angle, frac, acc, prog, m4;
     int ang;
 
-    obj = (u8*)objArg;
+    obj = (GameObject*)objArg;
     if (((StaffState*)swipe)->activeSlot == NULL || ((StaffState*)swipe)->hudSuppressed != 0)
     {
         return;
     }
     {
-        ang = ((GameObject*)obj)->anim.rotX;
-        if (*(s16**)&((GameObject*)obj)->anim.parent != NULL)
+        ang = obj->anim.rotX;
+        if (*(s16**)&obj->anim.parent != NULL)
         {
-            ang += **(s16**)&((GameObject*)obj)->anim.parent;
+            ang += **(s16**)&obj->anim.parent;
         }
         angle = (*(f32*)&gStaffPi * (f32)(int)-ang) / *(f32*)&gStaffAngleUnitScale;
         sinv = mathSinf(angle);
         cosv = mathCosf(angle);
-        model2 = *(u8**)((char*)Obj_GetActiveModel((GameObject*)obj) + 0x2c);
-        weaponDaTable = ((GameObject*)obj)->anim.weaponDaTable;
+        model2 = *(u8**)((char*)Obj_GetActiveModel(obj) + 0x2c);
+        weaponDaTable = obj->anim.weaponDaTable;
         if (weaponDaTable != NULL && weaponDaTable->byteCount > 0)
         {
             f32 sw;
@@ -657,9 +657,9 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
             prog = ((StaffSwipeSlot*)slot)->lengthScale * *(f32*)(model2 + 0x14);
             if (slot[0x14] & 1)
             {
-                ((StaffState*)swipe)->anchorX = ((GameObject*)obj)->anim.worldPosX;
-                ((StaffState*)swipe)->anchorY = ((GameObject*)obj)->anim.worldPosY;
-                ((StaffState*)swipe)->anchorZ = ((GameObject*)obj)->anim.worldPosZ;
+                ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
+                ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
+                ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
                 ((StaffState*)swipe)->progress = 0.0f;
                 slot[0x14] &= ~1;
             }
@@ -675,7 +675,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
             {
                 tmax = prog;
             }
-            tbl = ((GameObject*)obj)->anim.weaponDaTable->entries;
+            tbl = obj->anim.weaponDaTable->entries;
             if (sw >= 0.0f)
             {
                 fla = fastFloorf(sw * *(f32*)&lbl_803E32A4) / *(f32*)&lbl_803E32A4;
@@ -776,9 +776,9 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
                         ((SwipeVertex*)vp)[0].x = Curve_EvalBSpline(ptBx, frac, NULL);
                         ((SwipeVertex*)vp)[0].y = Curve_EvalBSpline(ptBy, frac, NULL);
                         ((SwipeVertex*)vp)[0].z = Curve_EvalBSpline(ptBz, frac, NULL);
-                        ((SwipeVertex*)vp)[0].x += ((StaffState*)swipe)->anchorX + acc * (((GameObject*)obj)->anim.worldPosX - ((StaffState*)swipe)->anchorX);
-                        ((SwipeVertex*)vp)[0].y += ((StaffState*)swipe)->anchorY + acc * (((GameObject*)obj)->anim.worldPosY - ((StaffState*)swipe)->anchorY);
-                        ((SwipeVertex*)vp)[0].z += ((StaffState*)swipe)->anchorZ + acc * (((GameObject*)obj)->anim.worldPosZ - ((StaffState*)swipe)->anchorZ);
+                        ((SwipeVertex*)vp)[0].x += ((StaffState*)swipe)->anchorX + acc * (obj->anim.worldPosX - ((StaffState*)swipe)->anchorX);
+                        ((SwipeVertex*)vp)[0].y += ((StaffState*)swipe)->anchorY + acc * (obj->anim.worldPosY - ((StaffState*)swipe)->anchorY);
+                        ((SwipeVertex*)vp)[0].z += ((StaffState*)swipe)->anchorZ + acc * (obj->anim.worldPosZ - ((StaffState*)swipe)->anchorZ);
                         vidx = ibase + frac;
                         ((SwipeVertex*)vp)[0].life = vidx;
                         {
@@ -789,9 +789,9 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
                         ((SwipeVertex*)vp)[1].x = Curve_EvalBSpline(ptAx, frac, NULL);
                         ((SwipeVertex*)vp)[1].y = Curve_EvalBSpline(ptAy, frac, NULL);
                         ((SwipeVertex*)vp)[1].z = Curve_EvalBSpline(ptAz, frac, NULL);
-                        ((SwipeVertex*)vp)[1].x += ((StaffState*)swipe)->anchorX + acc * (((GameObject*)obj)->anim.worldPosX - ((StaffState*)swipe)->anchorX);
-                        ((SwipeVertex*)vp)[1].y += ((StaffState*)swipe)->anchorY + acc * (((GameObject*)obj)->anim.worldPosY - ((StaffState*)swipe)->anchorY);
-                        ((SwipeVertex*)vp)[1].z += ((StaffState*)swipe)->anchorZ + acc * (((GameObject*)obj)->anim.worldPosZ - ((StaffState*)swipe)->anchorZ);
+                        ((SwipeVertex*)vp)[1].x += ((StaffState*)swipe)->anchorX + acc * (obj->anim.worldPosX - ((StaffState*)swipe)->anchorX);
+                        ((SwipeVertex*)vp)[1].y += ((StaffState*)swipe)->anchorY + acc * (obj->anim.worldPosY - ((StaffState*)swipe)->anchorY);
+                        ((SwipeVertex*)vp)[1].z += ((StaffState*)swipe)->anchorZ + acc * (obj->anim.worldPosZ - ((StaffState*)swipe)->anchorZ);
                         ((SwipeVertex*)vp)[1].life = vidx;
                         {
                             f32 t = 255.0f * ((flb - ((SwipeVertex*)vp)[1].life) / 8.0f);
@@ -805,9 +805,9 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
                 }
             }
         }
-        ((StaffState*)swipe)->anchorX = ((GameObject*)obj)->anim.worldPosX;
-        ((StaffState*)swipe)->anchorY = ((GameObject*)obj)->anim.worldPosY;
-        ((StaffState*)swipe)->anchorZ = ((GameObject*)obj)->anim.worldPosZ;
+        ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
+        ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
+        ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
         ((StaffState*)swipe)->progress = *(f32*)(model2 + 4);
     }
 }
@@ -848,9 +848,9 @@ void staffDoGrowShrinkAnim(GameObject* obj, u8 grow, u8 flag2, int unused)
     }
 }
 
-void staff_getHitGeometryPoints(int* obj, f32* outA, f32* outB)
+void staff_getHitGeometryPoints(GameObject* obj, f32* outA, f32* outB)
 {
-    StaffState* state = ((StaffState**)(obj))[0xb8 / 4];
+    StaffState* state = *(StaffState**)&obj->extra;
     outA[0] = state->geometryPointAX;
     outA[1] = state->geometryPointAY;
     outA[2] = state->geometryPointAZ;
@@ -895,19 +895,19 @@ u32 lbl_80320978[] = {
 };
 
 
-s32 staff_getSwipeTextureIndex(int* obj)
+s32 staff_getSwipeTextureIndex(GameObject* obj)
 {
-    return ((StaffState*)(int*)((GameObject*)obj)->extra)->swipeTextureIndex;
+    return ((StaffState*)obj->extra)->swipeTextureIndex;
 }
 
-s16 staff_getHitReactValue(int* obj)
+s16 staff_getHitReactValue(GameObject* obj)
 {
-    return ((StaffState*)(int*)((GameObject*)obj)->extra)->hitReactValue;
+    return ((StaffState*)obj->extra)->hitReactValue;
 }
 
-void staff_addHitReactValue(int* obj, s32 delta)
+void staff_addHitReactValue(GameObject* obj, s32 delta)
 {
-    s16* p = &((StaffState*)(int*)((GameObject*)obj)->extra)->hitReactValue;
+    s16* p = &((StaffState*)obj->extra)->hitReactValue;
     s32 clamped;
     *p = (s16)(*p + delta);
     clamped = *p;
@@ -929,11 +929,11 @@ void objSetAnimField48to0(GameObject* obj)
 }
 
 
-void staff_startSwipe(int* obj, s16 idx, f32 f1, f32 f2)
+void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2)
 {
     StaffSwipeSlot* slot;
     int n;
-    StaffSwipeSlot* slots = (StaffSwipeSlot*)(int*)((GameObject*)obj)->extra;
+    StaffSwipeSlot* slots = (StaffSwipeSlot*)obj->extra;
     for (n = 0; n < 3; n++)
     {
         slot = &slots[n];
@@ -952,17 +952,17 @@ void staff_startSwipe(int* obj, s16 idx, f32 f1, f32 f2)
     *(void**)((char*)slots + 0x48) = slot;
 }
 
-void staff_setHitReactValue(int* obj, s32 v)
+void staff_setHitReactValue(GameObject* obj, s32 v)
 {
-    s16* p = &((StaffState*)(int*)((GameObject*)obj)->extra)->hitReactValue;
+    s16* p = &((StaffState*)obj->extra)->hitReactValue;
     if (v > 0xff)
         v = 0xff;
     *p = v;
 }
 
-void staff_func10(int* obj, s32 v)
+void staff_func10(GameObject* obj, s32 v)
 {
-    ((StaffState*)(int*)((GameObject*)obj)->extra)->fieldB2 = v;
+    ((StaffState*)obj->extra)->fieldB2 = v;
 }
 
 void staff_func0F(void)
@@ -981,10 +981,10 @@ const SwipeColorTable gStaffSwipeColorTable = {{
     {0x08, 0xAA, 0xFF, 0xAA},
 }};
 
-void staff_hitDetectGeometry(int* obj)
+void staff_hitDetectGeometry(GameObject* obj)
 {
-    ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
-    int* swipe = ((GameObject*)obj)->extra;
+    ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+    StaffState* swipe = obj->extra;
     SwipeColorTable tbl = gStaffSwipeColorTable;
 
     staffDrawSwipe(obj, swipe);
@@ -1035,9 +1035,9 @@ void staff_hitDetectGeometry(int* obj)
 }
 
 
-void staff_modelMtxFn(int* obj, int p4, int p5)
+void staff_modelMtxFn(GameObject* obj, int p4, int p5)
 {
-    StaffState* inner = (StaffState*)*(int*)&((GameObject*)obj)->extra;
+    StaffState* inner = (StaffState*)*(int*)&obj->extra;
     staff_setupSwipe((int)obj, (u8*)inner, p5, p4);
     if (getHudHiddenFrameCount() != 0)
     {
@@ -1066,7 +1066,7 @@ u8 gStaffQuakeSpellState[0x28];
 
 void playerRenderQuakeSpell(GameObject* obj)
 {
-    quakeSpellFn_8016cee8((int*)obj, (GameObject*)obj->ownerObj);
+    quakeSpellFn_8016cee8(obj, (GameObject*)obj->ownerObj);
 }
 
 int staff_getExtraSize(void)
@@ -1106,12 +1106,12 @@ int staff_getObjectTypeId(void)
 }
 
 
-void staff_free(int* obj)
+void staff_free(GameObject* obj)
 {
     StaffSwipeSlot* p;
     int i;
     i = 0;
-    p = (StaffSwipeSlot*)((GameObject*)obj)->extra;
+    p = (StaffSwipeSlot*)obj->extra;
     for (; i < 3; i++)
     {
         mm_free(p->buffer);
@@ -1132,7 +1132,7 @@ STATIC_ASSERT(sizeof(SwipeColorTable) == 0x40);
 /* per-swipe trail record (stride 0x18, 3 records) */
 
 
-void staffDrawSwipe(int* obj, int* swipe);
+void staffDrawSwipe(GameObject* obj, StaffState* swipe);
 
 void staff_hitDetect(void)
 {
@@ -1147,13 +1147,13 @@ void staff_hitDetect(void)
 
 
 
-void staff_update(int* obj)
+void staff_update(GameObject* obj)
 {
-    u8* state = ((GameObject*)obj)->extra;
+    u8* state = obj->extra;
     SwipeRecord* swp;
     int n;
-    int* model = (int*)Obj_GetActiveModel((GameObject*)obj);
-    ((ObjModel*)model)->bufferFlags &= ~0x8;
+    ObjModel* model = Obj_GetActiveModel(obj);
+    model->bufferFlags &= ~0x8;
     ObjAnim_AdvanceCurrentMove((int)obj, ((StaffState*)state)->moveSpeed, timeDelta,
                                                                  NULL);
 
@@ -1217,8 +1217,8 @@ void staff_update(int* obj)
         swp++;
     }
 
-    quakeSpellFn_8016cee8(obj, (GameObject*)((GameObject*)obj)->ownerObj);
-    objGetAnimState80A((GameObject*)(*(int*)&((GameObject*)obj)->ownerObj));
+    quakeSpellFn_8016cee8(obj, (GameObject*)obj->ownerObj);
+    objGetAnimState80A((GameObject*)(*(int*)&obj->ownerObj));
     ((StaffState*)state)->swipeTextureIndex = 0;
     {
         StaffQuakeSpellState* q = (StaffQuakeSpellState*)gStaffQuakeSpellState;
@@ -1244,16 +1244,16 @@ void staff_update(int* obj)
     }
 }
 
-void staff_init(int* obj)
+void staff_init(GameObject* obj)
 {
-    StaffDoGrowShrinkAnimState* state = ((GameObject*)obj)->extra;
+    StaffDoGrowShrinkAnimState* state = obj->extra;
     ObjHitsPriorityState* hitState;
     StaffSwipeSlot* p;
     int i;
     state->unkAA = 1;
     state->unkB0 = 2;
     state->growShrinkAnimRate = -1.0f;
-    hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (hitState != NULL)
     {
         hitState->trackContactMask = 0x109;
