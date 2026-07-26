@@ -6,12 +6,12 @@
 
 typedef union ModgfxSpawnCountRange
 {
+    u32 packed;
     struct
     {
         s16 min;
         s16 max;
     };
-    u32 packed;
 } ModgfxSpawnCountRange;
 
 typedef s16 (*ModgfxFunc03SpawnFn)(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags,

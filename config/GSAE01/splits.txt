@@ -1852,7 +1852,7 @@ dlls/objects/250_InvisibleHi/InvisibleHi.c:
 dlls/objects/251/251.c:
 	.text       start:0x8017AC2C end:0x8017B5C8
 	.data       start:0x80321088 end:0x803210C0
-	.sdata2     start:0x803E3758 end:0x803E3780
+	.sdata2     start:0x803E3758 end:0x803E377C
 
 dlls/objects/272/272.c:
 	.text       start:0x8017B5C8 end:0x8017BB80
@@ -2328,17 +2328,29 @@ dlls/objects/347_CFForceFiel/CFForceFiel.c:
 	.sdata      start:0x803DBE90 end:0x803DBEA0
 	.sdata2     start:0x803E4390 end:0x803E43B8
 
-main/dll/dll_015D_slidingdoor.c:
+dlls/objects/348_CFForceFiel/CFForceFiel.c:
+	.sdata      start:0x803DBEA0 end:0x803DBEA8
+
+dlls/objects/350/350.c:
+	.sdata      start:0x803DBEA8 end:0x803DBEB0
+
+dlls/objects/353_CFTreasRobo/CFTreasRobo.c:
+	.sdata      start:0x803DBEB0 end:0x803DBEB8
+
+dlls/objects/352/352.c:
+	.sdata      start:0x803DBEB8 end:0x803DBEC0
+
+dlls/objects/349/349.c:
 	.text       start:0x801A3E9C end:0x801A41D8
 	.data       start:0x80322F58 end:0x80322F90
 	.sdata2     start:0x803E43B8 end:0x803E43D0
 
-main/dll/dll_015F_attractor.c:
+dlls/objects/351/351.c:
 	.text       start:0x801A41D8 end:0x801A4380
 	.data       start:0x80322F90 end:0x80322FD0
 	.sdata2     start:0x803E43D0 end:0x803E43D4
 
-main/dll/CF/dll_0162_cfmagicwall.c:
+dlls/objects/354_CFMagicWall/CFMagicWall.c:
 	.text       start:0x801A4380 end:0x801A4524
 	.data       start:0x80322FD0 end:0x80323008
 	.sdata2     start:0x803E43D8 end:0x803E43E8
