@@ -2,14 +2,11 @@
 #define MAIN_DLL_BOMBPLANT_PLACEMENT_H_
 
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct BombplantPlacement
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x08 */
-    f32 posY; /* 0x0c */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base;
     s16 growTimer;
     s16 timerBase; /* 0x1a: base value for grow/regrow timer (+ random spread) */
     s16 gameBit; /* 0x1c: gated mainGetBit */

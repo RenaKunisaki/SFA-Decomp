@@ -53,9 +53,9 @@ int bombplant_SeqFn(GameObject* obj)
         src = *(int**)&obj->anim.placementData;
         obj->anim.alpha = 0xff;
         obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
-        obj->anim.localPosX = ((BombplantPlacement*)src)->posX;
-        obj->anim.localPosY = ((BombplantPlacement*)src)->posY;
-        obj->anim.localPosZ = ((BombplantPlacement*)src)->posZ;
+        obj->anim.localPosX = ((BombplantPlacement*)src)->base.posX;
+        obj->anim.localPosY = ((BombplantPlacement*)src)->base.posY;
+        obj->anim.localPosZ = ((BombplantPlacement*)src)->base.posZ;
         obj->anim.rootMotionScale = 1e-05f;
         state->riseDuration = 135.0f;
         state->heightTarget = state->baseScale;
@@ -108,13 +108,7 @@ static inline void bombplant_tryBeginGrow(GameObject* obj, void* state)
  * extended with the spore's seeded yaw / parent-rotX slots. */
 typedef struct
 {
-    u8 unk00[2];
-    s16 unk02;
-    u8 color[4];   /* 0x04 */
-    f32 posX;      /* 0x08 */
-    f32 posY;      /* 0x0c */
-    f32 posZ;      /* 0x10 */
-    s32 mapId;     /* 0x14 */
+    ObjPlacement base;
     u8 pad18[0x1a - 0x18];
     s16 spawnYaw;  /* 0x1a */
     s16 rotXSeed;  /* 0x1c */
@@ -148,14 +142,14 @@ void bombplant_throwSpore(GameObject* obj, int* p2)
         bd.x = 26.0f * tx;
         bd.y = 26.0f * ty;
         bd.z = 26.0f * tz;
-        spore->posX = obj->anim.localPosX + bd.x;
-        spore->posY = obj->anim.localPosY + bd.y;
-        spore->posZ = obj->anim.localPosZ + bd.z;
-        spore->color[1] = 1;
-        spore->color[0] = 2;
+        spore->base.posX = obj->anim.localPosX + bd.x;
+        spore->base.posY = obj->anim.localPosY + bd.y;
+        spore->base.posZ = obj->anim.localPosZ + bd.z;
+        spore->base.color[1] = 1;
+        spore->base.color[0] = 2;
         spore->spawnYaw = (s16)((s32)base->spawnYawByte << 8);
         spore->rotXSeed = obj->anim.rotX;
-        Obj_SetupObject((ObjPlacement*)spore, 5, -1, -1, NULL);
+        Obj_SetupObject(&spore->base, 5, -1, -1, NULL);
     }
 }
 
@@ -275,9 +269,9 @@ void bombplant_update(GameObject* obj)
             p4c = obj->anim.placementData;
             obj->anim.alpha = 0xff;
             obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            obj->anim.localPosX = ((BombplantPlacement*)p4c)->posX;
-            obj->anim.localPosY = ((BombplantPlacement*)p4c)->posY;
-            obj->anim.localPosZ = ((BombplantPlacement*)p4c)->posZ;
+            obj->anim.localPosX = ((BombplantPlacement*)p4c)->base.posX;
+            obj->anim.localPosY = ((BombplantPlacement*)p4c)->base.posY;
+            obj->anim.localPosZ = ((BombplantPlacement*)p4c)->base.posZ;
             obj->anim.rootMotionScale = 1e-05f;
             ((BombPlantState*)state)->growDuration = 135.0f;
             ((BombPlantState*)state)->growStartScale = ((BombPlantState*)state)->growTargetScale;
@@ -442,9 +436,9 @@ void bombplant_init(GameObject *obj, void* param, int flag)
         p4c = (obj)->anim.placementData;
         (obj)->anim.alpha = 0xff;
         (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-        (obj)->anim.localPosX = ((BombplantPlacement*)p4c)->posX;
-        (obj)->anim.localPosY = ((BombplantPlacement*)p4c)->posY;
-        (obj)->anim.localPosZ = ((BombplantPlacement*)p4c)->posZ;
+        (obj)->anim.localPosX = ((BombplantPlacement*)p4c)->base.posX;
+        (obj)->anim.localPosY = ((BombplantPlacement*)p4c)->base.posY;
+        (obj)->anim.localPosZ = ((BombplantPlacement*)p4c)->base.posZ;
         (obj)->anim.rootMotionScale = 1e-05f;
         ((BombPlantState*)state)->growDuration = 135.0f;
         ((BombPlantState*)state)->growStartScale = ((BombPlantState*)state)->growTargetScale;
@@ -459,9 +453,9 @@ void bombplant_init(GameObject *obj, void* param, int flag)
         p4c = (obj)->anim.placementData;
         (obj)->anim.alpha = 0xff;
         (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-        (obj)->anim.localPosX = ((BombplantPlacement*)p4c)->posX;
-        (obj)->anim.localPosY = ((BombplantPlacement*)p4c)->posY;
-        (obj)->anim.localPosZ = ((BombplantPlacement*)p4c)->posZ;
+        (obj)->anim.localPosX = ((BombplantPlacement*)p4c)->base.posX;
+        (obj)->anim.localPosY = ((BombplantPlacement*)p4c)->base.posY;
+        (obj)->anim.localPosZ = ((BombplantPlacement*)p4c)->base.posZ;
         ObjHits_RefreshObjectState(obj);
     }
 }

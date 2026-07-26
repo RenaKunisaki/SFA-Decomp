@@ -292,11 +292,8 @@ extern f32 lbl_803E5BA0;
 extern f32 gSnowBikeBamToDeg;
 typedef struct SnowBikeRomListItem
 {
-    u8 pad00[0x8];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x29 - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x29 - 0x18];
     u8 yawByte;
 } SnowBikeRomListItem;
 typedef struct
@@ -374,9 +371,9 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
     {
         if (((SnowBikeMountState*)state)->romListGroupIndex != 0)
         {
-            obj->anim.localPosX = found->posX;
-            obj->anim.localPosY = found->posY;
-            obj->anim.localPosZ = found->posZ;
+            obj->anim.localPosX = found->base.posX;
+            obj->anim.localPosY = found->base.posY;
+            obj->anim.localPosZ = found->base.posZ;
             obj->anim.rotX = (s16)((found->yawByte) << 8);
         }
         (*gCheckpointInterface)->findRouteForObject(obj, (CheckpointRouteState*)(state + 0x28), 0);

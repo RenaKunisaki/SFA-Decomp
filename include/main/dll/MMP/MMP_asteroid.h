@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 void XyzAnimator_update(GameObject* obj);
 void FUN_80195b9c(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
@@ -46,7 +47,7 @@ STATIC_ASSERT(sizeof(XyzAnimatorState) == 0x50);
  * 0x18.. matches the common animator-def header position. */
 typedef struct XyzAnimatorPlacement
 {
-    u8 unk0[0x18 - 0x0];
+    ObjPlacement base;
     s16 triggerGameBit;
     s16 doneGameBit;
     s16 startX;

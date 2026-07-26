@@ -19,11 +19,8 @@ typedef struct EdibleMushroomPlacement
 
 typedef struct EnemyMushroomMapData
 {
-    u8 pad00[0x08];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x1A - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     u16 respawnFrameLimit;
     s16 gameBitId;
     s8 yawParam;
@@ -112,9 +109,9 @@ typedef struct EdibleMushroomState
     f32 pickupMsgDelay;
 } EdibleMushroomState;
 
-STATIC_ASSERT(offsetof(EnemyMushroomMapData, posX) == 0x08);
-STATIC_ASSERT(offsetof(EnemyMushroomMapData, posY) == 0x0C);
-STATIC_ASSERT(offsetof(EnemyMushroomMapData, posZ) == 0x10);
+STATIC_ASSERT(offsetof(EnemyMushroomMapData, base.posX) == 0x08);
+STATIC_ASSERT(offsetof(EnemyMushroomMapData, base.posY) == 0x0C);
+STATIC_ASSERT(offsetof(EnemyMushroomMapData, base.posZ) == 0x10);
 STATIC_ASSERT(offsetof(EnemyMushroomMapData, respawnFrameLimit) == 0x1A);
 STATIC_ASSERT(offsetof(EnemyMushroomMapData, gameBitId) == 0x1C);
 STATIC_ASSERT(offsetof(EnemyMushroomMapData, yawParam) == 0x1E);

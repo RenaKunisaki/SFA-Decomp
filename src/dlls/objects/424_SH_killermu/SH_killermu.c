@@ -92,9 +92,9 @@ void enemymushroom_resetToSpawn(EnemyMushroomObject* obj, EnemyMushroomState* st
     obj->rotX = randomGetRange(-0x5dc, 0x5dc);
     obj->alpha = 0xff;
     obj->flags = (s16)(obj->flags & ~OBJANIM_FLAG_HIDDEN);
-    obj->posX = mapData->posX;
-    obj->posY = mapData->posY;
-    obj->posZ = mapData->posZ;
+    obj->posX = mapData->base.posX;
+    obj->posY = mapData->base.posY;
+    obj->posZ = mapData->base.posZ;
     if (enableTimer != 0)
     {
         obj->scale = 0.00001f;
@@ -487,7 +487,7 @@ void enemymushroom_init(EnemyMushroomObject* obj, EnemyMushroomMapData* arg, int
     {
         state->respawnFrameLimit = 0x708;
     }
-    obj->posY = arg->posY - 2.0f;
+    obj->posY = arg->base.posY - 2.0f;
     if (obj->modelState != NULL)
     {
         obj->modelState->flags |= 0x810;

@@ -49,6 +49,7 @@
 #include "sys/objects/lifecycle.h"
 #include "main/obj_message.h"
 #include "main/gamebits.h"
+#include "game/objects/object_setup.h"
 
 extern const f32 lbl_803E2FD8;
 extern const f32 lbl_803E2FDC;
@@ -1200,11 +1201,8 @@ void dll_D3_hitDetect_nop(void)
 
 typedef struct DllD3Placement
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x2E - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x2E - 0x18];
     s8 seqIndex;
     u8 pad2F[0x30 - 0x2F];
 } DllD3Placement;
@@ -1255,9 +1253,9 @@ void dll_D3_update(GameObject* obj)
 
     if (obj->userData2 == 0)
     {
-        obj->anim.localPosX = ((DllD3Placement*)trans)->posX;
-        obj->anim.localPosY = ((DllD3Placement*)trans)->posY;
-        obj->anim.localPosZ = ((DllD3Placement*)trans)->posZ;
+        obj->anim.localPosX = ((DllD3Placement*)trans)->base.posX;
+        obj->anim.localPosY = ((DllD3Placement*)trans)->base.posY;
+        obj->anim.localPosZ = ((DllD3Placement*)trans)->base.posZ;
         (*gObjectTriggerInterface)->runSequence(((DllD3Placement*)trans)->seqIndex, obj, -1);
         obj->userData2 = 1;
         return;

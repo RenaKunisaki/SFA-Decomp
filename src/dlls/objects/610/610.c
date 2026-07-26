@@ -409,9 +409,9 @@ void drakormissile_init(GameObject* obj, DrakorMissileSetup* setup)
     ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->hitVolumePriority = 0x13;
     ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->hitVolumeId = 1;
     ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->flags &= ~1;
-    (obj)->anim.localPosX = setup->posX;
-    (obj)->anim.localPosY = setup->posY;
-    (obj)->anim.localPosZ = setup->posZ;
+    (obj)->anim.localPosX = setup->base.posX;
+    (obj)->anim.localPosY = setup->base.posY;
+    (obj)->anim.localPosZ = setup->base.posZ;
     (obj)->anim.velocityX = (f32)(u32)setup->velocityX;
     (obj)->anim.velocityY = (f32)(u32)setup->velocityY;
     (obj)->anim.velocityZ = (f32)(u32)setup->velocityZ;

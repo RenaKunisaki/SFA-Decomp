@@ -3,16 +3,13 @@
 
 #include "game/objects/object.h"
 #include "main/modellight_api.h"
+#include "game/objects/object_setup.h"
 
 #define DRAKORMISSILE_RENDER_TRAIL_COUNT 5
 
 typedef struct DrakorMissileSetup
 {
-    u8 pad00[0x08];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base;
     u8 velocityX;
     u8 velocityY;
     u8 velocityZ;
@@ -32,7 +29,7 @@ typedef struct DrakorMissileState
     u16 trailPitchStep[DRAKORMISSILE_RENDER_TRAIL_COUNT];
 } DrakorMissileState;
 
-STATIC_ASSERT(offsetof(DrakorMissileSetup, posX) == 0x08);
+STATIC_ASSERT(offsetof(DrakorMissileSetup, base.posX) == 0x08);
 STATIC_ASSERT(offsetof(DrakorMissileSetup, velocityX) == 0x18);
 STATIC_ASSERT(sizeof(DrakorMissileState) == 0x38);
 

@@ -2,14 +2,11 @@
 #define MAIN_DLL_CF_DLL_0149_CFWINDLIFT_H_
 
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct WindliftPlacement
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x08 */
-    f32 posY; /* 0x0C */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base;
     s16 unk18;
     s16 pullStrength; /* 0x1A: wind pull strength passed to WindLift_updateRider */
     u8 pad1C[0x22 - 0x1C];
@@ -19,11 +16,7 @@ typedef struct WindliftPlacement
 
 typedef struct WindliftObjectDef
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x08 */
-    f32 posY; /* 0x0C */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base;
     s8 unk18;
     s8 heightByte;    /* 0x19: lift height in 4-unit increments (0 = default) */
     s16 pullStrength; /* 0x1A */

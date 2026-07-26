@@ -197,9 +197,9 @@ void drakorenergy_init(GameObject* obj, DrakorenergyPlacement* placement)
     f32 fz;
     state = obj->extra;
     state->mode = DRAKORENERGY_MODE_RESET;
-    obj->anim.localPosX = placement->posX;
-    obj->anim.localPosY = placement->posY;
-    obj->anim.localPosZ = placement->posZ;
+    obj->anim.localPosX = placement->base.posX;
+    obj->anim.localPosY = placement->base.posY;
+    obj->anim.localPosZ = placement->base.posZ;
     fz = lbl_803E627C;
     obj->anim.velocityZ = fz;
     obj->anim.velocityX = fz;

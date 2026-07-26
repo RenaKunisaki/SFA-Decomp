@@ -632,9 +632,9 @@ void EdibleMushroom_update(GameObject* self)
 
     if (state->seqResetPending != 0)
     {
-        self->anim.localPosX = ((EnemyMushroomMapData*)other)->posX;
-        self->anim.localPosY = ((EnemyMushroomMapData*)other)->posY;
-        self->anim.localPosZ = ((EnemyMushroomMapData*)other)->posZ;
+        self->anim.localPosX = ((EnemyMushroomMapData*)other)->base.posX;
+        self->anim.localPosY = ((EnemyMushroomMapData*)other)->base.posY;
+        self->anim.localPosZ = ((EnemyMushroomMapData*)other)->base.posZ;
         self->anim.alpha = 0xFF;
         state->seqResetPending = 0;
     }

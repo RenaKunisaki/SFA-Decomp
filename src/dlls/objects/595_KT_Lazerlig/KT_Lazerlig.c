@@ -77,7 +77,7 @@ void ktlazerlight_init(GameObject* obj, KtlazerlightPlacement* placement)
     if (state->light != NULL)
     {
         modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setPosition(state->light, placement->posX, placement->posY, placement->posZ);
+        modelLightStruct_setPosition(state->light, placement->base.posX, placement->base.posY, placement->base.posZ);
         modelLightStruct_setAffectsAabbLightSelection(state->light, 1);
     }
 }
