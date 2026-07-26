@@ -58,6 +58,23 @@ ArwAttachTarget gArwingAttachmentTargets[] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.02f},       {79.0f, 152.0f, 20.0f, 20.0f, 0.01f}, {138.0f, -6.0f, 20.0f, 20.0f, 0.02f},
     {-73.0f, -48.0f, 20.0f, 20.0f, 0.02f}, {-248.0f, -7.0f, 0.0f, 0.0f, 0.02f},  {0.0f, 0.0f, 0.0f, 0.0f, 0.02f},
 };
+ObjectDescriptor dll_200 = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_200_initialise_nop,
+    (ObjectDescriptorCallback)dll_200_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_200_init,
+    (ObjectDescriptorCallback)dll_200_update,
+    (ObjectDescriptorCallback)dll_200_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_200_render,
+    (ObjectDescriptorCallback)dll_200_free_nop,
+    (ObjectDescriptorCallback)dll_200_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)dll_200_getExtraSize_ret_40,
+};
+
 char sArwingAttachmentDiffFormat[9] = "diff %d\n";
 
 void fn_801F20D4(GameObject* obj)
@@ -510,20 +527,4 @@ void dll_200_initialise_nop(void)
 {
 }
 
-ObjectDescriptor dll_200 = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_200_initialise_nop,
-    (ObjectDescriptorCallback)dll_200_release_nop,
-    0,
-    (ObjectDescriptorCallback)dll_200_init,
-    (ObjectDescriptorCallback)dll_200_update,
-    (ObjectDescriptorCallback)dll_200_hitDetect_nop,
-    (ObjectDescriptorCallback)dll_200_render,
-    (ObjectDescriptorCallback)dll_200_free_nop,
-    (ObjectDescriptorCallback)dll_200_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll_200_getExtraSize_ret_40,
-};
 

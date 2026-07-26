@@ -92,6 +92,33 @@ extern f32 lbl_803E5CD0;       /* -30.0: westward drift base velocity */
 extern f32 lbl_803E5CD4;       /* 0.1: burst velocity scale */
 extern const f32 lbl_803E5CD8; /* 0.0 */
 extern const f32 lbl_803E5CDC; /* 200.0 */
+int WM_ObjCreator_getExtraSize(void);
+int WM_ObjCreator_getObjectTypeId(void);
+void WM_ObjCreator_free(void);
+void WM_ObjCreator_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
+void WM_ObjCreator_hitDetect(void);
+void WM_ObjCreator_update(GameObject* obj);
+void WM_ObjCreator_init(int* obj, s8* def);
+void WM_ObjCreator_release(void);
+void WM_ObjCreator_initialise(void);
+
+ObjectDescriptor gWM_ObjCreatorObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_ObjCreator_initialise,
+    (ObjectDescriptorCallback)WM_ObjCreator_release,
+    0,
+    (ObjectDescriptorCallback)WM_ObjCreator_init,
+    (ObjectDescriptorCallback)WM_ObjCreator_update,
+    (ObjectDescriptorCallback)WM_ObjCreator_hitDetect,
+    (ObjectDescriptorCallback)WM_ObjCreator_render,
+    (ObjectDescriptorCallback)WM_ObjCreator_free,
+    (ObjectDescriptorCallback)WM_ObjCreator_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_ObjCreator_getExtraSize,
+};
+
 int WM_ObjCreator_getExtraSize(void)
 {
     return 0x8;
@@ -390,19 +417,3 @@ void WM_ObjCreator_initialise(void)
 {
 }
 
-ObjectDescriptor gWM_ObjCreatorObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_ObjCreator_initialise,
-    (ObjectDescriptorCallback)WM_ObjCreator_release,
-    0,
-    (ObjectDescriptorCallback)WM_ObjCreator_init,
-    (ObjectDescriptorCallback)WM_ObjCreator_update,
-    (ObjectDescriptorCallback)WM_ObjCreator_hitDetect,
-    (ObjectDescriptorCallback)WM_ObjCreator_render,
-    (ObjectDescriptorCallback)WM_ObjCreator_free,
-    (ObjectDescriptorCallback)WM_ObjCreator_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_ObjCreator_getExtraSize,
-};

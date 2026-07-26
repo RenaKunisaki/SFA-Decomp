@@ -48,6 +48,33 @@ void* lbl_803DDC74;
 extern u32* lbl_803DCA94;
 s8 lbl_803DDC70;
 
+int WM_Galleon_getExtraSize(void);
+int WM_Galleon_getObjectTypeId(void);
+void WM_Galleon_free(GameObject* obj, int leavingMap);
+void WM_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
+void WM_Galleon_hitDetect(void);
+void WM_Galleon_update(GameObject* obj);
+void WM_Galleon_init(GameObject* obj, WMGalleonSetup* setup);
+void WM_Galleon_release(void);
+void WM_Galleon_initialise(void);
+
+ObjectDescriptor gWM_GalleonObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_Galleon_initialise,
+    (ObjectDescriptorCallback)WM_Galleon_release,
+    0,
+    (ObjectDescriptorCallback)WM_Galleon_init,
+    (ObjectDescriptorCallback)WM_Galleon_update,
+    (ObjectDescriptorCallback)WM_Galleon_hitDetect,
+    (ObjectDescriptorCallback)WM_Galleon_render,
+    (ObjectDescriptorCallback)WM_Galleon_free,
+    (ObjectDescriptorCallback)WM_Galleon_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_Galleon_getExtraSize,
+};
+
 int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     int i;
@@ -277,19 +304,3 @@ void WM_Galleon_initialise(void)
 {
 }
 
-ObjectDescriptor gWM_GalleonObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_Galleon_initialise,
-    (ObjectDescriptorCallback)WM_Galleon_release,
-    0,
-    (ObjectDescriptorCallback)WM_Galleon_init,
-    (ObjectDescriptorCallback)WM_Galleon_update,
-    (ObjectDescriptorCallback)WM_Galleon_hitDetect,
-    (ObjectDescriptorCallback)WM_Galleon_render,
-    (ObjectDescriptorCallback)WM_Galleon_free,
-    (ObjectDescriptorCallback)WM_Galleon_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_Galleon_getExtraSize,
-};

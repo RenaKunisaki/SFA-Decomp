@@ -32,6 +32,23 @@
 /* romlist object type of the sword child (retail 'scalessword') */
 #define WMGENERALSCALES_SWORD_OBJECT_TYPE 0x1B8
 
+ObjectDescriptor gWM_GeneralScalesObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_GeneralScales_initialise,
+    (ObjectDescriptorCallback)WM_GeneralScales_release,
+    0,
+    (ObjectDescriptorCallback)WM_GeneralScales_init,
+    (ObjectDescriptorCallback)WM_GeneralScales_update,
+    (ObjectDescriptorCallback)WM_GeneralScales_hitDetect,
+    (ObjectDescriptorCallback)WM_GeneralScales_render,
+    (ObjectDescriptorCallback)WM_GeneralScales_free,
+    (ObjectDescriptorCallback)WM_GeneralScales_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_GeneralScales_getExtraSize,
+};
+
 int WM_GeneralScales_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     WmGeneralScalesState* state;
@@ -176,19 +193,3 @@ void WM_GeneralScales_initialise(void)
 {
 }
 
-ObjectDescriptor gWM_GeneralScalesObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_GeneralScales_initialise,
-    (ObjectDescriptorCallback)WM_GeneralScales_release,
-    0,
-    (ObjectDescriptorCallback)WM_GeneralScales_init,
-    (ObjectDescriptorCallback)WM_GeneralScales_update,
-    (ObjectDescriptorCallback)WM_GeneralScales_hitDetect,
-    (ObjectDescriptorCallback)WM_GeneralScales_render,
-    (ObjectDescriptorCallback)WM_GeneralScales_free,
-    (ObjectDescriptorCallback)WM_GeneralScales_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_GeneralScales_getExtraSize,
-};

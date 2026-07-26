@@ -88,6 +88,23 @@ typedef struct SHthorntailDustEffectParams
 #define DUST_SPAWN_CHANCE_RANGE 0x1e0
 #define DUST_BURST_PUFF_COUNT   0xf
 
+ObjectDescriptor gWarpStoneObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)warpstone_initialise,
+    (ObjectDescriptorCallback)warpstone_release,
+    0,
+    (ObjectDescriptorCallback)warpstone_init,
+    (ObjectDescriptorCallback)warpstone_update,
+    (ObjectDescriptorCallback)warpstone_hitDetect,
+    (ObjectDescriptorCallback)warpstone_render,
+    (ObjectDescriptorCallback)warpstone_free,
+    (ObjectDescriptorCallback)warpstone_getObjectTypeId,
+    warpstone_getExtraSize,
+};
+
 void SHthorntail_updateDustEffects(SHthorntailObject* obj)
 {
     void* playerObj;
@@ -811,19 +828,3 @@ void warpstone_initialise(void)
 {
 }
 
-ObjectDescriptor gWarpStoneObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)warpstone_initialise,
-    (ObjectDescriptorCallback)warpstone_release,
-    0,
-    (ObjectDescriptorCallback)warpstone_init,
-    (ObjectDescriptorCallback)warpstone_update,
-    (ObjectDescriptorCallback)warpstone_hitDetect,
-    (ObjectDescriptorCallback)warpstone_render,
-    (ObjectDescriptorCallback)warpstone_free,
-    (ObjectDescriptorCallback)warpstone_getObjectTypeId,
-    warpstone_getExtraSize,
-};
