@@ -29,6 +29,13 @@
 #include "dlls/objects/209_TumbleWeedB.h"
 #include "main/newshadows_audio_api.h"
 
+typedef struct NwMammothPathParams
+{
+    u8 values[4];
+} NwMammothPathParams;
+
+static const NwMammothPathParams sNwMammothPathParams = {{1, 1, 1, 1}};
+
 u8 lbl_803DBF70[4] = {1, 0, 0, 0};
 u8 lbl_803DBF74[4] = {1, 1, 0, 0};
 u8 lbl_803DBF78[4] = {1, 3, 0, 0};
@@ -765,11 +772,12 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
     ObjHitReactEntry* hitReactEntries;
     u8 stateFlags;
     u8 stateIndex;
-    NwMammothTables* table = (NwMammothTables*)gNwMammothTables;
+    NwMammothTables* table[1];
     NwMammothState* state;
     NwMammothMapData* mapData;
 
     (void)unused;
+    table[0] = (NwMammothTables*)gNwMammothTables;
     state = obj->state;
     mapData = obj->mapData;
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_RESET_PATH) != 0)
@@ -782,7 +790,7 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
         return;
     }
     stateIndex = state->stateIndex;
-    stateFlags = table->stateFlags[stateIndex];
+    stateFlags = table[0]->stateFlags[stateIndex];
     if ((stateFlags & NW_MAMMOTH_STATE_FLAG_SOLID) != 0)
     {
         obj->objectFlags = (u16)(obj->objectFlags | NW_MAMMOTH_SOLID_OBJECT_FLAG);
@@ -793,16 +801,16 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
         obj->objectFlags = (u16)(obj->objectFlags & ~NW_MAMMOTH_SOLID_OBJECT_FLAG);
         obj->modelState->flags = obj->modelState->flags | NW_MAMMOTH_MODEL_COLLISION_FLAG;
     }
-    stateFlags = table->stateFlags[state->stateIndex];
+    stateFlags = table[0]->stateFlags[state->stateIndex];
     if ((stateFlags & NW_MAMMOTH_STATE_FLAG_SKIP_HIT_REACT) == 0)
     {
         if ((stateFlags & NW_MAMMOTH_STATE_FLAG_HEAVY_HIT_REACT) != 0)
         {
-            hitReactEntries = &table->heavyHitReactEntry;
+            hitReactEntries = &table[0]->heavyHitReactEntry;
         }
         else
         {
-            hitReactEntries = &table->normalHitReactEntry;
+            hitReactEntries = &table[0]->normalHitReactEntry;
         }
         state->hitReactState =
             ObjHitReact_Update((int)obj, hitReactEntries, 1, state->hitReactState, &state->hitReactStepScale);
@@ -831,14 +839,14 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
         NW_mammoth_updateGatekeeper((int*)obj, (u8*)state, (short*)mapData);
         break;
     }
-    if ((table->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_PATH_CONTROL) != 0)
+    if ((table[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_PATH_CONTROL) != 0)
     {
         obj->hitboxFlags = (u8)(obj->hitboxFlags | NW_MAMMOTH_PATH_CONTROL_FLAG);
     }
     else
     {
         obj->hitboxFlags = (u8)(obj->hitboxFlags & ~NW_MAMMOTH_PATH_CONTROL_FLAG);
-        if (((table->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_MENU_ACTION) != 0) &&
+        if (((table[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_MENU_ACTION) != 0) &&
             (cMenuGetSelectedItem() != -1))
         {
             Obj_SetActiveHitVolumeBounds((GameObject*)obj, 0, 0, 0, 0, 4);
@@ -849,9 +857,9 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
         }
     }
     stateIndex = state->stateIndex;
-    if (obj->currentMove != (currentMove = table->stateMoveIds[stateIndex]))
+    if (obj->currentMove != (currentMove = table[0]->stateMoveIds[stateIndex]))
     {
-        stepScale = table->stateMoveStepScales[stateIndex];
+        stepScale = table[0]->stateMoveStepScales[stateIndex];
         if (stepScale > 0.0f)
         {
             ObjAnim_SetCurrentMove((int)obj, currentMove, 0.0f, 0);
@@ -860,7 +868,7 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
         {
             ObjAnim_SetCurrentMove((int)obj, currentMove, 1.0f, 0);
         }
-        state->animStepScale = table->stateMoveStepScales[state->stateIndex];
+        state->animStepScale = table[0]->stateMoveStepScales[state->stateIndex];
     }
     if (ObjAnim_AdvanceCurrentMove((int)obj, state->animStepScale, timeDelta,
                                                                     &state->animEvents) != 0)
@@ -873,7 +881,7 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
     }
     objAudioFn_8006ef38((GameObject*)obj, &state->animEvents, 8, state->pathPoints, state->pathState, 1.0f,
                         1.0f);
-    NW_mammoth_updateEyeTracking((GameObject*)obj, (int)state, table->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);
+    NW_mammoth_updateEyeTracking((GameObject*)obj, (int)state, table[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);
     state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH);
     if (((state->runtimeFlags & NW_MAMMOTH_RUNTIME_MENU_LOCK) == 0) && (ObjTrigger_IsSet((int)obj) != 0))
     {
@@ -892,7 +900,7 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
 void NW_mammoth_init(NwMammothObject* obj, NwMammothMapData* mapData, int isReload)
 {
     NwMammothState* state = obj->state;
-    u8 pathParam[4] = {1, 1, 1, 1};
+    NwMammothPathParams pathParam = sNwMammothPathParams;
     int curveParam;
 
     obj->rotX = (s16)(mapData->modelIndex << 8);
@@ -963,7 +971,7 @@ void NW_mammoth_init(NwMammothObject* obj, NwMammothMapData* mapData, int isRelo
         (*gPathControlInterface)->init(path, 3, 2, 1);
         (*gPathControlInterface)
             ->setup(path, NW_MAMMOTH_PATH_SETUP_POINT_COUNT, gNwMammothPathSetupDataA, gNwMammothPathSetupDataB,
-                    pathParam);
+                    pathParam.values);
         (*gPathControlInterface)->attachObject(obj, path);
     }
     ObjGroup_AddObject((int)obj, NW_MAMMOTH_GROUP_ID);
