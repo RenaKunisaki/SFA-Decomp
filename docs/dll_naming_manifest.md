@@ -342,7 +342,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x126 | Trigger (+TrigPnt, TrigCyl, TrigPln, TrigArea, TrigTime, TrigButt, TriggSetp, TrigBits, TrigCrve) | CONFIRMED | dlls/objects/294/294.c | = (canonical) | — |
 | 0x127 | — | NO-RETAIL-NAME | dlls/objects/295/295.c | = (canonical) | — |
 | 0x128 | KT_Torch (+Trex1, WCApertures, WCAperturem, DIMBridgeCo, DIMHutDoor, DIMDoorBrid, DIM2Mammoth, DIM2TrapDoo, DIM2CellDoo) | COMPLETE | dlls/objects/296_KT_Torch/KT_Torch.c | = (canonical) | — |
-| 0x129 | CampFire | COMPLETE | main/dll/dll_0129_campfire.c | = (canonical) | — |
+| 0x129 | CampFire | COMPLETE | dlls/objects/297_CampFire/CampFire.c | = (canonical) | — |
 | 0x12A | CFCrate (+LinkF_liftg, LinkF_cog, MMP_Organic, VFP_newball, VFP_liftgra, VFP_PowerBo, VFP_Spellst, VFP_locksym, DFPSpSG, DFP_WaterHi, DFP_FireHit, DFP_InnerRi, DFP_OuterRi, DFP_PlacePl, DFP_Water, DFP_PowerBo, DFP_blockwa, DFP_dish, DFPSpDB, WM_dummyfox, WM_krazoast, WM_rock, WM_fallenco, WM_largeroc, WM_Walkway1, WM_Walkway2, WM_NoPassVi, WM_NoPassHo, WM_MoonSeed, WM_Column_l, WM_Planet, WM_PlanetMo, DFSHcol, scalessword, ECSHcol, EnergyGem1) | COMPLETE | main/dll/dll_012A_cfcrate.c | main/dll/CF/dll_012A_cfcrate.c | — |
 | 0x12B | FXEmit | COMPLETE | main/dll/dll_012B_fxemit.c | = (canonical) | — |
 | 0x12C | Transporter (+KP_Transpor) | CONFIRMED | main/dll/dll_012C_transporter.c | = (canonical) | — |

@@ -1,4 +1,4 @@
-/* Campfire area object. */
+/* CampFire area object. */
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "sys/objects.h"
