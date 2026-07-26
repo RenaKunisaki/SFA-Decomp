@@ -3121,7 +3121,7 @@ main/dll/dll_0284_shopitem.c:
 	.data       start:0x803283E0 end:0x80328418
 	.sdata2     start:0x803E5A30 end:0x803E5A6C
 
-main/dll/SP/dll_0287_spscarab.c:
+dlls/objects/647_SPScarab/SPScarab.c:
 	.text       start:0x801E8EA4 end:0x801E9328
 	.data       start:0x80328418 end:0x80328450
 	.sdata2     start:0x803E5A70 end:0x803E5AA0

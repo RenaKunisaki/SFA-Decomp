@@ -1,5 +1,5 @@
 /*
- * spscarab (DLL 0x287) - the scarab coin / pickup that the shopkeeper
+ * SPScarab (DLL 0x287) - the scarab coin / pickup that the shopkeeper
  * scatters when paid (see spshopkeeper ShopKeeper_spawnScarabs, which spawns object
  * type 1151 = this object).
  *
