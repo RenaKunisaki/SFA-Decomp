@@ -16,18 +16,16 @@
  *   7  self-free once the owner's hit list no longer references it.
  * InvHit_free releases the expgfx source for mode 4.
  */
+#include "dlls/objects/241_InvHit.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "sys/objects/lifecycle.h"
-#include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
-#include "main/dll/pushable.h"
-#include "main/dll/dll_00EF_pushable.h"
 #include "main/dll/player_target.h"
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -93,8 +91,6 @@ void InvHit_hitDetect(void)
 {
 }
 
-
-void InvHit_init(GameObject* obj, InvhitObjectDef* def);
 
 ObjectDescriptor gInvHitObjDescriptor = {
     0,

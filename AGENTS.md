@@ -102,7 +102,17 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   when DOL section, pool, function-order, or source-tag evidence establishes a different real TU.
 - End an object DLL TU with its `ObjectDescriptor` definition. Do not move the descriptor earlier
   merely to reproduce post-link section order; keep the source structure plausible and leave the
-  unit `NonMatching` when the reconstructed declaration order exposes a data mismatch.
+  unit `NonMatching` when the reconstructed declaration order exposes a data mismatch. Conversely,
+  retain a descriptor's proven earlier position when an already-exact TU and retail symbol order
+  show that other TU-owned data follows it; do not reduce a 100% unit for cosmetic uniformity.
+- Give each cleaned object DLL one canonical unit-owned header under `include/dlls/<bank>/`. Keep
+  that header self-contained, put the unit's state/setup types and public API there, and do not use
+  one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
+  source; keep private helper types and constants in the TU.
+- Include an object's canonical header at direct consumers instead of repeating hand-written
+  declarations. Where a generic registry intentionally stores differently shaped descriptor
+  types, use an explicit cast at that boundary rather than lying about the descriptor's type in an
+  `extern`.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.

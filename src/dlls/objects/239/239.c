@@ -1,545 +1,518 @@
-/* DLL 0xEF - pushable object family */
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_play_legacy_api.h"
-#include "sys/objects.h"
-#include "main/camera.h"
-#include "main/camera_interface.h"
+/*
+ * Pushable object family (DLL slot 239 / 0xEF).
+ *
+ * Shared collision and movement code drives push/pull blocks, two magic-gem
+ * variants, the Wall City hit-ID puzzle, a floating ice block, a metal block,
+ * and the Volcano Force Point curtain block.
+ */
+#include "dlls/objects/239.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
-#include "main/dll/player_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/camera_interface.h"
+#include "main/debug.h"
 #include "main/dll/dll_005B_modgfxfunc03.h"
-#include "main/track_bbox_api.h"
-#include "sys/objects/lifecycle.h"
-#include "main/object_render.h"
-#include "main/object_update_list.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_object_api.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits.h"
+#include "main/maketex.h"
+#include "main/maketex_api.h"
+#include "main/model.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/objprint_api.h"
-#include "main/dll/pushable.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/dll_00EF_pushable.h"
-#include "main/dll/savegame_object_api.h"
-#include "main/objhits.h"
-#include "main/objtexture.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "main/model.h"
-#include "main/maketex_api.h"
-#include "main/vecmath.h"
-#include "ghidra_import.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/debug.h"
-#include "main/texture.h"
-#include "main/frame_timing.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/sfx_stop_channel_api.h"
-#include "main/track_dolphin_api.h"
-#include "main/resource.h"
-#include "main/maketex.h"
+#include "main/objanim_update.h"
+#include "main/object_render.h"
 #include "main/object_transform.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
+#include "main/objprint_api.h"
+#include "main/objseq.h"
+#include "main/objtexture.h"
+#include "main/resource.h"
+#include "main/track_bbox_api.h"
+#include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "string.h"
 
-typedef struct PushablePlacement
-{
-    u8 pad0[0x18 - 0x0];
-    s16 gameBit;
-    s16 gameBit2; /* 0x1A second gamebit id; copied to PushableState.gameBit2 */
-    s8 unk1C;
-    s8 unk1D;
-    s8 unk1E;
-    u8 unk1F;
-    u8 pad20[0x23 - 0x20];
-    s8 requiredHitId; /* 0x23 hit-region id that triggers this pushable (-1 = none) */
-    u8 pad24[0x28 - 0x24];
-} PushablePlacement;
-
-typedef struct PushableObjectDef
-{
-    u8 pad0[0x18 - 0x0];
-    s16 gameBit;
-    s16 gameBit2; /* 0x1A second gamebit id (sibling of PushablePlacement.gameBit2) */
-    void* unk1C;
-    u16 scaleRaw;
-    u8 rotXByte;
-    u8 requiredHitId; /* 0x23 hit-region id that triggers this pushable (-1 = none) */
-    u8 pad24[0x28 - 0x24];
-} PushableObjectDef;
-
-typedef struct
-{
-    f32 values[4];
-} PushableRadii;
-
-STATIC_ASSERT(sizeof(PushableRadii) == 0x10);
-
-typedef struct
-{
-    u8 pad[0x24];
-    f32 vx;
-    u8 pad2[4];
-    f32 vz;
-} PushableObjPos;
-
-typedef struct
-{
-    f32 r[4];
-    s8 b10;
-    u8 pad1[3];
-    u8 b14;
-    u8 pad2[0x17];
-    s16 h2c;
-    s16 pad3;
-} SetScaleParams;
+typedef struct PushableCollisionProbe {
+    f32 radii[4];   /* 0x00 */
+    s8 unk10;       /* 0x10 */
+    u8 pad11[3];    /* 0x11 */
+    u8 unk14;       /* 0x14 */
+    u8 pad15[0x17]; /* 0x15 */
+    s16 unk2C;      /* 0x2C */
+    s16 pad2E;      /* 0x2E */
+} PushableCollisionProbe;
 
 /* object group this object joins while active */
-#define PUSHABLE_OBJGROUP 5
+#define PUSHABLE_OBJECT_GROUP   5
+#define PUSHABLE_OBJECT_TYPE_ID 0x48
+#define PUSHABLE_MAX_POINTS     4
+#define PUSHABLE_POINT_MASK     0xF
+#define PUSHABLE_NO_GAME_BIT    -1
+#define PUSHABLE_NO_HIT_ID      -1
+#define PUSHABLE_OBJECT_SLOT    0x5A
+#define PUSHABLE_MSG_QUEUE_SIZE 4
+
+/* PushableState.flags */
+#define PUSHABLE_FLAG_RESTORED          0x01
+#define PUSHABLE_FLAG_MOVED             0x02
+#define PUSHABLE_FLAG_AIRBORNE          0x04
+#define PUSHABLE_FLAG_NO_GROUND_CONTACT 0x08
+#define PUSHABLE_FLAG_PUSH_SFX_DUE      0x20
+#define PUSHABLE_FLAG_INITIALIZED       0x40
+#define PUSHABLE_FLAG_PUSH_LOCKED       0x80
+#define PUSHABLE_FLAG_PUSH_NEG_X        0x100
+#define PUSHABLE_FLAG_PUSH_POS_X        0x200
+#define PUSHABLE_FLAG_PUSH_NEG_Z        0x400
+#define PUSHABLE_FLAG_PUSH_POS_Z        0x800
+#define PUSHABLE_FLAG_AIR_STATE_MASK    (PUSHABLE_FLAG_AIRBORNE | PUSHABLE_FLAG_NO_GROUND_CONTACT)
+#define PUSHABLE_FLAG_PUSH_DIR_MASK     0xF00
 
 /* pushable-block variant seqIds (retail OBJECTS.bin names, all DLL 0xEF) */
-#define PUSHABLE_SEQID_WC_PUSH_BLOCK    0x7df /* "WCPushBlock" */
-#define PUSHABLE_SEQID_DIM_PUSH_BLOCK   0x1cb /* "DIMPushBloc..." */
-#define PUSHABLE_SEQID_DIM2_ICE_BLOCK   0x108 /* "DIM2IceBloc..." */
-#define PUSHABLE_SEQID_METAL_PUSH_BLOCK 0x85a /* "MetalPushBl..." */
-#define PUSHABLE_SEQID_VFP_BLOCK2       0x54a /* "VFP_Block2" */
+#define PUSHABLE_SEQ_ID_WC_PUSH_BLOCK    0x7DF /* "WCPushBlock" */
+#define PUSHABLE_SEQ_ID_DIM_PUSH_BLOCK   0x1CB /* "DIMPushBloc..." */
+#define PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK   0x108 /* "DIM2IceBloc..." */
+#define PUSHABLE_SEQ_ID_MAGIC_GEM_21E    0x21E
+#define PUSHABLE_SEQ_ID_MAGIC_GEM_411    0x411
+#define PUSHABLE_SEQ_ID_VFP_BLOCK2       0x54A /* "VFP_Block2" */
+#define PUSHABLE_SEQ_ID_5AE              0x5AE
+#define PUSHABLE_SEQ_ID_METAL_PUSH_BLOCK 0x85A /* "MetalPushBl..." */
 
-
-#define PUSHABLE_ZERO 0.0f
-#define PUSHABLE_CURTAIN_X_OFFSET 188.0
-#define PUSHABLE_CURTAIN_Z_OFFSET 186.0
-#define PUSHABLE_INITIAL_CULL_DISTANCE 10000.0f
-#define PUSHABLE_MIN_GROUND_CLEARANCE 10.0f
-#define PUSHABLE_BLINK_INTERVAL_SCALE 0.01f
-#define PUSHABLE_EYE_POSITION_MAX 255.0f
-#define PUSHABLE_EYE_OPEN_SPEED 1.2f
-#define PUSHABLE_EYE_DRIFT_SPEED 0.6f
-#define PUSHABLE_UNIT_SCALE 1.0f
-#define PUSHABLE_COLLISION_RADIUS 0.5f
-#define PUSHABLE_PI 3.1415927410125732f
-#define PUSHABLE_HALF_TURN 32768.0f
-#define PUSHABLE_KNOCKBACK_SPEED 4.0f
-#define PUSHABLE_PROBE_HEIGHT 15.0f
+#define PUSHABLE_ZERO                   0.0f
+#define PUSHABLE_CURTAIN_TRIGGER_X      -175.0f
+#define PUSHABLE_CURTAIN_POSITION_X     188.0
+#define PUSHABLE_CURTAIN_POSITION_Z     186.0
+#define PUSHABLE_INITIAL_CULL_DISTANCE  10000.0f
+#define PUSHABLE_MIN_GROUND_CLEARANCE   10.0f
+#define PUSHABLE_UNIT_SCALE             1.0f
+#define PUSHABLE_COLLISION_RADIUS       0.5f
+#define PUSHABLE_PI                     3.1415927410125732f
+#define PUSHABLE_HALF_TURN              32768.0f
+#define PUSHABLE_KNOCKBACK_SPEED        4.0f
+#define PUSHABLE_PROBE_HEIGHT           15.0f
 #define PUSHABLE_FORWARD_PROBE_DISTANCE 8.0f
-#define PUSHABLE_SIDE_PROBE_DISTANCE 9.5f
-#define PUSHABLE_GROUND_DAMPING 0.985f
-#define PUSHABLE_AIR_DAMPING 0.94f
-#define PUSHABLE_STOP_THRESHOLD 0.05f
-#define PUSHABLE_NEG_STOP_THRESHOLD -0.05f
-#define PUSHABLE_GRAVITY 0.1f
-#define PUSHABLE_SWEEP_Y_PADDING 200.0f
-#define PUSHABLE_MAX_GROUND_STEP 50.0f
-#define PUSHABLE_MIN_GROUND_NORMAL_Y 0.707f
-#define PUSHABLE_AIRBORNE_TIMER 20.0f
-#define PUSHABLE_SCALE_DENOM 65535.0f
+#define PUSHABLE_SIDE_PROBE_DISTANCE    9.5f
+#define PUSHABLE_GROUND_DAMPING         0.985f
+#define PUSHABLE_AIR_DAMPING            0.94f
+#define PUSHABLE_STOP_THRESHOLD         0.05f
+#define PUSHABLE_NEG_STOP_THRESHOLD     -0.05f
+#define PUSHABLE_GRAVITY                0.1f
+#define PUSHABLE_SWEEP_Y_PADDING        200.0f
+#define PUSHABLE_MAX_GROUND_STEP        50.0f
+#define PUSHABLE_MIN_GROUND_NORMAL_Y    0.707f
+#define PUSHABLE_AIRBORNE_TIMER         20.0f
+#define PUSHABLE_SCALE_DENOM            65535.0f
 
-#define MAGICGEM_TARGET_OBJGROUP 0x11
-#define CURTAIN_TRIGGER_X_OFFSET -175.0f
-#define CURTAIN_POSITION_X_OFFSET 188.0
-#define CURTAIN_POSITION_Z_OFFSET 186.0
-#define MAGIC_GEM_INITIAL_DISTANCE 10000.0f
-#define MAGIC_GEM_ROOT_MOTION_CUTOFF 0.001f
-#define MAGIC_GEM_ROOT_MOTION_DECAY 0.02f
-#define MAGIC_GEM_HIDE_Y_OFFSET 300.0f
-#define MAGIC_GEM_EYE_OPEN_MIN 150.0f
-#define MAGIC_GEM_NEGATE -1.0f
-#define MAGIC_GEM_NEAR_Z_MIN 10.0f
-#define MAGIC_GEM_NEAR_X_MAX 30.0f
-#define MAGIC_GEM_NEAR_Z_MAX 40.0f
-#define MAGIC_GEM_BLINK_INTERVAL_SCALE 0.01f
-#define MAGIC_GEM_EYE_OPEN_MAX 225.0f
-#define MAGIC_GEM_EYE_POSITION_MAX 255.0f
-#define MAGIC_GEM_BLINK_SCALE_BASE 0.25f
+#define PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP  0x11
+#define PUSHABLE_MAGIC_GEM_INITIAL_DISTANCE     10000.0f
+#define PUSHABLE_MAGIC_GEM_ROOT_MOTION_CUTOFF   0.001f
+#define PUSHABLE_MAGIC_GEM_ROOT_MOTION_DECAY    0.02f
+#define PUSHABLE_MAGIC_GEM_HIDE_Y_OFFSET        300.0f
+#define PUSHABLE_MAGIC_GEM_EYE_OPEN_MIN         150.0f
+#define PUSHABLE_MAGIC_GEM_NEGATE               -1.0f
+#define PUSHABLE_MAGIC_GEM_NEAR_Z_MIN           10.0f
+#define PUSHABLE_MAGIC_GEM_NEAR_X_MAX           30.0f
+#define PUSHABLE_MAGIC_GEM_NEAR_Z_MAX           40.0f
+#define PUSHABLE_MAGIC_GEM_BLINK_INTERVAL_SCALE 0.01f
+#define PUSHABLE_MAGIC_GEM_EYE_OPEN_MAX         225.0f
+#define PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX     255.0f
+#define PUSHABLE_MAGIC_GEM_BLINK_SCALE_BASE     0.25f
+#define PUSHABLE_MAGIC_GEM_EYE_OPEN_SPEED       1.2f
+#define PUSHABLE_MAGIC_GEM_EYE_DRIFT_SPEED      0.6f
+#define PUSHABLE_MAGIC_GEM_EFFECT_DLL_ID        0x5B
+#define PUSHABLE_MAGIC_GEM_EFFECT_ID            0x14
+#define PUSHABLE_MAGIC_GEM_INITIAL_COLOR        10
+#define PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN       0x19
+#define PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX       0x4B
+#define PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN       0x28
+#define PUSHABLE_MAGIC_GEM_BLINK_TIME_MAX       0x46
+
+#define PUSHABLE_MSG_SET_SENDER          0xF0003
+#define PUSHABLE_MSG_FREE                0xE
+#define PUSHABLE_MSG_MAGIC_GEM_DISTANCE  0x40001
+#define PUSHABLE_MAGIC_GEM_NEAR_GAME_BIT 0x1C9
+#define PUSHABLE_SEQUENCE_GAME_BIT       0x103
+
+#define PUSHABLE_SEQUENCE_SAVE_DELAY       0x3C
+#define PUSHABLE_ACTIVE_SAVE_DELAY         0x78
+#define PUSHABLE_SEQUENCE_MOVEMENT_NONE    0
+#define PUSHABLE_SEQUENCE_MOVEMENT_OFFSET  2
+#define PUSHABLE_SEQUENCE_DEFAULT_USERDATA 2
+#define PUSHABLE_SEQUENCE_KNOCKBACK_RESULT 4
+#define PUSHABLE_SEQUENCE_TARGET_SEQ_ID    0x24
+
+#define PUSHABLE_DIRECTION_NONE  0
+#define PUSHABLE_DIRECTION_NEG_X 1
+#define PUSHABLE_DIRECTION_POS_X 2
+#define PUSHABLE_DIRECTION_NEG_Z 3
+#define PUSHABLE_DIRECTION_POS_Z 4
+#define PUSHABLE_DIRECTION_DOWN  5
+
+#define PUSHABLE_WC_MAP_ID_HIT_10 0x49B2C
+#define PUSHABLE_WC_MAP_ID_HIT_11 0x49B5D
+#define PUSHABLE_WC_MAP_ID_HIT_12 0x49B5E
+#define PUSHABLE_FORCE_HIT_ID_MAP 0x30398
+
+#define PUSHABLE_WATER_SURFACE_TYPE      0xE
+#define PUSHABLE_WC_ACTIVATED_TEXTURE_ID 0x100
+
+#define PUSHABLE_ANGLE_HALF_TURN        0x8000
+#define PUSHABLE_ANGLE_FULL_TURN        0xFFFF
+#define PUSHABLE_ANGLE_UNITS_PER_DEGREE 0xB6
+#define PUSHABLE_ANGLE_30_DEGREES       0x1E
+#define PUSHABLE_ANGLE_60_DEGREES       0x3C
+#define PUSHABLE_ANGLE_120_DEGREES      0x78
+#define PUSHABLE_ANGLE_150_DEGREES      0x96
+
+STATIC_ASSERT(offsetof(PushableCollisionProbe, radii) == 0x0);
+STATIC_ASSERT(offsetof(PushableCollisionProbe, unk10) == 0x10);
+STATIC_ASSERT(offsetof(PushableCollisionProbe, pad11) == 0x11);
+STATIC_ASSERT(offsetof(PushableCollisionProbe, unk14) == 0x14);
+STATIC_ASSERT(offsetof(PushableCollisionProbe, pad15) == 0x15);
+STATIC_ASSERT(offsetof(PushableCollisionProbe, unk2C) == 0x2C);
+STATIC_ASSERT(offsetof(PushableCollisionProbe, pad2E) == 0x2E);
+STATIC_ASSERT(sizeof(PushableCollisionProbe) == 0x30);
 
 int gPushableSavedMapIdCount;
 int gPushableSavedMapIds[0x28];
 
-int pushable_render2(GameObject* obj);
-void pushable_modelMtxFn(GameObject* obj, int modelNo);
-int pushable_func0B(GameObject* obj, int other);
-void pushable_free(GameObject* obj);
-void pushable_update(GameObject* obj);
-void pushable_init(GameObject* obj, PushableObjectDef* def);
-void pushable_handleMsgs();
-
 ObjectDescriptor14 gPushableObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_14_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)pushable_init,
-    (ObjectDescriptorCallback)pushable_update,
-    (ObjectDescriptorCallback)pushable_hitDetect,
-    (ObjectDescriptorCallback)pushable_render,
-    (ObjectDescriptorCallback)pushable_free,
-    (ObjectDescriptorCallback)pushable_getObjectTypeId,
-    (ObjectDescriptorCallback)pushable_getExtraSize,
-    (ObjectDescriptorCallback)pushable_setScale,
-    (ObjectDescriptorCallback)pushable_func0B,
-    (ObjectDescriptorCallback)pushable_modelMtxFn,
-    (ObjectDescriptorCallback)pushable_render2,
+    0,                                                  /* reserved0 */
+    0,                                                  /* reserved1 */
+    0,                                                  /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_14_SLOTS,                   /* slotCountAndFlags */
+    0,                                                  /* initialise */
+    0,                                                  /* release */
+    0,                                                  /* slot02 */
+    (ObjectDescriptorCallback)pushable_init,            /* init */
+    (ObjectDescriptorCallback)pushable_update,          /* update */
+    (ObjectDescriptorCallback)pushable_hitDetect,       /* hitDetect */
+    (ObjectDescriptorCallback)pushable_render,          /* render */
+    (ObjectDescriptorCallback)pushable_free,            /* free */
+    (ObjectDescriptorCallback)pushable_getObjectTypeId, /* getObjectTypeId */
+    (ObjectDescriptorCallback)pushable_getExtraSize,    /* slot09 */
+    (ObjectDescriptorCallback)pushable_setScale,        /* slot0A */
+    (ObjectDescriptorCallback)pushable_func0B,          /* slot0B */
+    (ObjectDescriptorCallback)pushable_modelMtxFn,      /* slot0C */
+    (ObjectDescriptorCallback)pushable_render2,         /* slot0D */
 };
 
 char sPushPullObjectHitpointOverflow[] = "PUSHPULL OBJECT: hitpoint overflow\n";
 const PushableRadii gPushableDefaultBox = {{0.0f, 0.0f, 0.0f, 0.0f}};
 
-static void pushableClampToZero(f32* value)
-{
-    if (*value <= PUSHABLE_ZERO)
-    {
+static void pushableClampToZero(f32* value) {
+    if (*value <= PUSHABLE_ZERO) {
         *value = PUSHABLE_ZERO;
     }
 }
 
-int pushable_updateCurtain(int obj, PushableState* state)
-{
-    int def;
+int pushable_updateCurtain(int obj, PushableState* state) {
+    int placement;
     GameObject* player;
 
-    def = *(int*)&((GameObject*)obj)->anim.placementData;
+    placement = *(int*)&((GameObject*)obj)->anim.placementData;
     player = Obj_GetPlayerObject();
-    if (((state->flags & 0x80) != 0) || (fn_80295A04(player, 10) != 0))
-    {
+    if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (fn_80295A04(player, 10) != 0)) {
         Sfx_StopObjectChannel(obj, 8);
         return 0;
     }
     Sfx_PlayFromObject(obj, SFXTRIG_treedrum16);
-    state->flags |= 2;
-    if ((state->flags & 4) == 0)
-    {
+    state->flags |= PUSHABLE_FLAG_MOVED;
+    if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
         pushable_resolveCollisions((GameObject*)obj, state);
     }
-    if (((GameObject*)obj)->anim.localPosX <= CURTAIN_TRIGGER_X_OFFSET + ((ObjPlacement*)def)->posX)
-    {
+    if (((GameObject*)obj)->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
         mainSetBits(state->gameBit, 1);
-        state->flags |= 0x80;
-        ((GameObject*)obj)->anim.localPosX = (f32)(((ObjPlacement*)def)->posX - CURTAIN_POSITION_X_OFFSET);
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)def)->posY;
-        ((GameObject*)obj)->anim.localPosZ = (f32)(CURTAIN_POSITION_Z_OFFSET + ((ObjPlacement*)def)->posZ);
+        state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
+        ((GameObject*)obj)->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
+        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
+        ((GameObject*)obj)->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
         Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
     }
-    if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0)
-    {
-        ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)def)->posX;
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)def)->posY;
-        ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)def)->posZ;
+    if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0) {
+        ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)placement)->posX;
+        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
+        ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
     }
     return 0;
 }
 
-void pushable_initWcPushBlock(GameObject* obj, PushableState* state)
-{
-    int data = *(int*)&obj->anim.placementData;
+void pushable_initWcPushBlock(GameObject* obj, PushableState* state) {
+    PushablePlacement* placement = (PushablePlacement*)obj->anim.placementData;
 
-    switch (((ObjPlacement*)data)->mapId)
-    {
-    case 0x49B2C:
+    switch (placement->base.mapId) {
+    case PUSHABLE_WC_MAP_ID_HIT_10:
         state->requiredHitId = 10;
         break;
-    case 0x49B5D:
+    case PUSHABLE_WC_MAP_ID_HIT_11:
         state->requiredHitId = 11;
         obj->anim.bankIndex = 1;
         break;
-    case 0x49B5E:
+    case PUSHABLE_WC_MAP_ID_HIT_12:
         state->requiredHitId = 12;
         obj->anim.bankIndex = 1;
         break;
     }
 
-    if (mainGetBit(((PushablePlacement*)data)->gameBit) != 0)
-    {
-        ObjTextureRuntimeSlot* tex;
-        state->flags = (u16)(state->flags | 0x80);
-        tex = objFindTexture(obj, 0, 0);
-        if (tex != NULL)
-        {
-            tex->textureId = 256;
+    if (mainGetBit(placement->gameBit) != 0) {
+        ObjTextureRuntimeSlot* texture;
+        state->flags = (u16)(state->flags | PUSHABLE_FLAG_PUSH_LOCKED);
+        texture = objFindTexture(obj, 0, 0);
+        if (texture != NULL) {
+            texture->textureId = 256;
         }
     }
 }
 
-int pushable_updateMagicGem(GameObject* obj, PushableState* state)
-{
-    ModgfxFunc03Interface** effectResource;
-    u8 flag;
-    ObjTextureRuntimeSlot* tex;
-    f32 cur;
-    f32 dx;
-    f32 dy;
-    f32 bound;
+int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
+    ModgfxFunc03Interface** effectInterface;
+    u8 nearTarget;
+    ObjTextureRuntimeSlot* texture;
+    f32 value;
+    f32 absoluteDeltaX;
+    f32 absoluteDeltaZ;
+    f32 cutoff;
     f32 eyeScaledX;
     f32 eyeScaledY;
-    f32 dist[2];
+    f32 nearestDistance[2];
 
-    flag = 0;
-    dist[0] = MAGIC_GEM_INITIAL_DISTANCE;
-    pushable_handleMsgs((u32)obj, 0);
-    if (mainGetBit(state->gameBit) != 0)
-    {
-        cur = obj->anim.rootMotionScale;
-        bound = MAGIC_GEM_ROOT_MOTION_CUTOFF;
-        if (cur > bound)
-        {
-            obj->anim.rootMotionScale -= MAGIC_GEM_ROOT_MOTION_DECAY * timeDelta;
-            if (obj->anim.rootMotionScale <= bound)
-            {
+    nearTarget = 0;
+    nearestDistance[0] = PUSHABLE_MAGIC_GEM_INITIAL_DISTANCE;
+    pushable_handleMsgs(obj, 0);
+    if (mainGetBit(state->gameBit) != 0) {
+        value = obj->anim.rootMotionScale;
+        cutoff = PUSHABLE_MAGIC_GEM_ROOT_MOTION_CUTOFF;
+        if (value > cutoff) {
+            obj->anim.rootMotionScale -= PUSHABLE_MAGIC_GEM_ROOT_MOTION_DECAY * timeDelta;
+            if (obj->anim.rootMotionScale <= cutoff) {
                 obj->anim.rootMotionScale = PUSHABLE_ZERO;
-                obj->anim.localPosY -= MAGIC_GEM_HIDE_Y_OFFSET;
-                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                obj->anim.localPosY -= PUSHABLE_MAGIC_GEM_HIDE_Y_OFFSET;
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
         return 1;
     }
-    if (state->nearestObj == NULL)
-    {
-        state->nearestObj = (void*)ObjGroup_FindNearestObject(MAGICGEM_TARGET_OBJGROUP, obj, dist);
+    if (state->nearestObj == NULL) {
+        state->nearestObj =
+            (GameObject*)ObjGroup_FindNearestObject(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
     }
-    if (state->nearestObj == NULL)
-    {
+    if (state->nearestObj == NULL) {
         return 0;
     }
-    if (state->eyeOpenAmount < MAGIC_GEM_EYE_OPEN_MIN)
-    {
-        state->eyeOpenAmount = MAGIC_GEM_EYE_OPEN_MIN;
+    if (state->eyeOpenAmount < PUSHABLE_MAGIC_GEM_EYE_OPEN_MIN) {
+        state->eyeOpenAmount = PUSHABLE_MAGIC_GEM_EYE_OPEN_MIN;
     }
-    dy = ((GameObject*)state->nearestObj)->anim.localPosZ - obj->anim.localPosZ;
-    if (dy < PUSHABLE_ZERO)
-    {
-        dy *= MAGIC_GEM_NEGATE;
+    absoluteDeltaZ = state->nearestObj->anim.localPosZ - obj->anim.localPosZ;
+    if (absoluteDeltaZ < PUSHABLE_ZERO) {
+        absoluteDeltaZ *= PUSHABLE_MAGIC_GEM_NEGATE;
     }
-    cur = state->unk_F0;
-    if (cur < MAGIC_GEM_NEAR_Z_MIN + dy)
-    {
+    value = state->magicGemDistanceThreshold;
+    if (value < PUSHABLE_MAGIC_GEM_NEAR_Z_MIN + absoluteDeltaZ) {
         return 0;
     }
-    dx = ((GameObject*)state->nearestObj)->anim.localPosX - obj->anim.localPosX;
-    if (dx < PUSHABLE_ZERO)
-    {
-        dx *= MAGIC_GEM_NEGATE;
+    absoluteDeltaX = state->nearestObj->anim.localPosX - obj->anim.localPosX;
+    if (absoluteDeltaX < PUSHABLE_ZERO) {
+        absoluteDeltaX *= PUSHABLE_MAGIC_GEM_NEGATE;
     }
-    if (dx > MAGIC_GEM_NEAR_X_MAX)
-    {
+    if (absoluteDeltaX > PUSHABLE_MAGIC_GEM_NEAR_X_MAX) {
         return 0;
     }
-    if ((cur >= MAGIC_GEM_NEAR_Z_MIN + dy) && (cur <= MAGIC_GEM_NEAR_Z_MAX + dy))
-    {
-        flag = 1;
-        mainSetBits(0x1c9, 1);
+    if ((value >= PUSHABLE_MAGIC_GEM_NEAR_Z_MIN + absoluteDeltaZ) &&
+        (value <= PUSHABLE_MAGIC_GEM_NEAR_Z_MAX + absoluteDeltaZ)) {
+        nearTarget = 1;
+        mainSetBits(PUSHABLE_MAGIC_GEM_NEAR_GAME_BIT, 1);
     }
-    tex = objFindTexture(obj, 0, 0);
+    texture = objFindTexture(obj, 0, 0);
     state->blinkPhase += state->blinkStep * timeDelta;
-    if (state->blinkPhase >= state->blinkInterval)
-    {
-        state->blinkStep *= MAGIC_GEM_NEGATE;
-    }
-    else if (state->blinkPhase < PUSHABLE_ZERO)
-    {
+    if (state->blinkPhase >= state->blinkInterval) {
+        state->blinkStep *= PUSHABLE_MAGIC_GEM_NEGATE;
+    } else if (state->blinkPhase < PUSHABLE_ZERO) {
         state->blinkInterval =
-            MAGIC_GEM_BLINK_INTERVAL_SCALE * (f32)(int)randomGetRange(0x19, 0x4b);
-        state->blinkStep = state->blinkInterval / (f32)(int)randomGetRange(0x28, 0x46);
+            PUSHABLE_MAGIC_GEM_BLINK_INTERVAL_SCALE *
+            (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN, PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX);
+        state->blinkStep = state->blinkInterval / (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN,
+                                                                           PUSHABLE_MAGIC_GEM_BLINK_TIME_MAX);
         state->blinkPhase = PUSHABLE_ZERO;
     }
-    if (tex != NULL)
-    {
+    if (texture != NULL) {
         state->eyeOpenAmount += state->eyeOpenSpeed;
-        if (state->eyeOpenAmount >= MAGIC_GEM_EYE_OPEN_MAX)
-        {
+        if (state->eyeOpenAmount >= PUSHABLE_MAGIC_GEM_EYE_OPEN_MAX) {
             mainSetBits(state->gameBit, 1);
-            if (flag)
-            {
-                mainSetBits(0x1c9, 0);
+            if (nearTarget) {
+                mainSetBits(PUSHABLE_MAGIC_GEM_NEAR_GAME_BIT, 0);
             }
-            effectResource = Resource_Acquire(0x5b, 1);
-            (*effectResource)->spawn(obj, 0x14, NULL, 2, -1, NULL);
-            (*effectResource)->spawn(obj, 0x14, NULL, 2, -1, NULL);
-            Resource_Release(effectResource);
+            effectInterface = Resource_Acquire(PUSHABLE_MAGIC_GEM_EFFECT_DLL_ID, 1);
+            (*effectInterface)->spawn(obj, PUSHABLE_MAGIC_GEM_EFFECT_ID, NULL, 2, -1, NULL);
+            (*effectInterface)->spawn(obj, PUSHABLE_MAGIC_GEM_EFFECT_ID, NULL, 2, -1, NULL);
+            Resource_Release(effectInterface);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_espar5_c);
-        }
-        else
-        {
+        } else {
             state->eyePosX += state->eyeDriftSpeedX;
-            if (state->eyePosX > MAGIC_GEM_EYE_POSITION_MAX)
-            {
-                state->eyePosX = MAGIC_GEM_EYE_POSITION_MAX;
-            }
-            else if (state->eyePosX < PUSHABLE_ZERO)
-            {
-                state->eyePosX = MAGIC_GEM_EYE_POSITION_MAX;
+            if (state->eyePosX > PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX) {
+                state->eyePosX = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
+            } else if (state->eyePosX < PUSHABLE_ZERO) {
+                state->eyePosX = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
             }
             state->eyePosY += state->eyeDriftSpeedY;
-            if (state->eyePosY > MAGIC_GEM_EYE_POSITION_MAX)
-            {
-                state->eyePosY = MAGIC_GEM_EYE_POSITION_MAX;
+            if (state->eyePosY > PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX) {
+                state->eyePosY = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
+            } else if (state->eyePosY < PUSHABLE_ZERO) {
+                state->eyePosY = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
             }
-            else if (state->eyePosY < PUSHABLE_ZERO)
-            {
-                state->eyePosY = MAGIC_GEM_EYE_POSITION_MAX;
-            }
-            eyeScaledX = state->eyePosX * (MAGIC_GEM_BLINK_SCALE_BASE + state->blinkPhase);
-            eyeScaledY = state->eyePosY * (MAGIC_GEM_BLINK_SCALE_BASE + state->blinkPhase);
-            tex->colorR = (u8)(int)state->eyeOpenAmount;
-            tex->colorG = (u8)(int)eyeScaledX;
-            tex->colorB = (u8)(int)eyeScaledY;
+            eyeScaledX = state->eyePosX * (PUSHABLE_MAGIC_GEM_BLINK_SCALE_BASE + state->blinkPhase);
+            eyeScaledY = state->eyePosY * (PUSHABLE_MAGIC_GEM_BLINK_SCALE_BASE + state->blinkPhase);
+            texture->colorR = (u8)(int)state->eyeOpenAmount;
+            texture->colorG = (u8)(int)eyeScaledX;
+            texture->colorB = (u8)(int)eyeScaledY;
         }
     }
     return 0;
 }
 
-void pushable_initMagicGem(GameObject* obj, PushableState* ext)
-{
-    int def;
-    ObjTextureRuntimeSlot* tex;
-    f32 fval;
-    f32 eyePos;
-    f32 lim;
+void pushable_initMagicGem(GameObject* obj, PushableState* state) {
+    PushablePlacement* placement;
+    ObjTextureRuntimeSlot* texture;
+    f32 sharedValue;
+    f32 eyePosition;
+    f32 limit;
 
-    def = *(int*)&obj->anim.placementData;
-    ext->eyeOpenSpeed = PUSHABLE_EYE_OPEN_SPEED;
-    fval = PUSHABLE_EYE_DRIFT_SPEED;
-    ext->eyeDriftSpeedX = fval;
-    ext->eyeDriftSpeedY = fval;
-    ext->blinkInterval = PUSHABLE_BLINK_INTERVAL_SCALE * (f32)(int)randomGetRange(0x19, 0x4b);
-    ext->blinkStep = ext->blinkInterval / (f32)(int)randomGetRange(0x28, 0x46);
-    fval = PUSHABLE_ZERO;
-    ext->blinkPhase = fval;
-    ext->gameBit = ((PushablePlacement*)def)->gameBit;
-    ext->gameBit2 = ((PushablePlacement*)def)->gameBit2;
-    ext->unk_F0 = fval;
-    ext->nearestObj = NULL;
-    mainSetBits(ext->gameBit, 0);
-    tex = objFindTexture(obj, 0, 0);
+    placement = (PushablePlacement*)obj->anim.placementData;
+    state->eyeOpenSpeed = PUSHABLE_MAGIC_GEM_EYE_OPEN_SPEED;
+    sharedValue = PUSHABLE_MAGIC_GEM_EYE_DRIFT_SPEED;
+    state->eyeDriftSpeedX = sharedValue;
+    state->eyeDriftSpeedY = sharedValue;
+    state->blinkInterval =
+        PUSHABLE_MAGIC_GEM_BLINK_INTERVAL_SCALE *
+        (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN, PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX);
+    state->blinkStep = state->blinkInterval /
+                       (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN, PUSHABLE_MAGIC_GEM_BLINK_TIME_MAX);
+    sharedValue = PUSHABLE_ZERO;
+    state->blinkPhase = sharedValue;
+    state->gameBit = placement->gameBit;
+    state->gameBit2 = placement->gameBit2;
+    state->magicGemDistanceThreshold = sharedValue;
+    state->nearestObj = NULL;
+    mainSetBits(state->gameBit, 0);
+    texture = objFindTexture(obj, 0, 0);
 
-    ext->eyePosX = ext->eyePosX + ext->eyeDriftSpeedX;
-    eyePos = ext->eyePosX;
-    lim = PUSHABLE_EYE_POSITION_MAX;
-    if (eyePos > lim)
-    {
-        ext->eyePosX = lim;
-    }
-    else if (eyePos < PUSHABLE_ZERO)
-    {
-        ext->eyePosX = lim;
-    }
-
-    ext->eyePosY = ext->eyePosY + ext->eyeDriftSpeedY;
-    eyePos = ext->eyePosY;
-    lim = PUSHABLE_EYE_POSITION_MAX;
-    if (eyePos > lim)
-    {
-        ext->eyePosY = lim;
-    }
-    else if (eyePos < PUSHABLE_ZERO)
-    {
-        ext->eyePosY = lim;
+    state->eyePosX = state->eyePosX + state->eyeDriftSpeedX;
+    eyePosition = state->eyePosX;
+    limit = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
+    if (eyePosition > limit) {
+        state->eyePosX = limit;
+    } else if (eyePosition < PUSHABLE_ZERO) {
+        state->eyePosX = limit;
     }
 
-    tex->colorR = 10;
-    tex->colorG = 10;
-    tex->colorB = 10;
+    state->eyePosY = state->eyePosY + state->eyeDriftSpeedY;
+    eyePosition = state->eyePosY;
+    limit = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
+    if (eyePosition > limit) {
+        state->eyePosY = limit;
+    } else if (eyePosition < PUSHABLE_ZERO) {
+        state->eyePosY = limit;
+    }
+
+    texture->colorR = PUSHABLE_MAGIC_GEM_INITIAL_COLOR;
+    texture->colorG = PUSHABLE_MAGIC_GEM_INITIAL_COLOR;
+    texture->colorB = PUSHABLE_MAGIC_GEM_INITIAL_COLOR;
 }
 
-void pushable_resolveCollisions(GameObject* obj, PushableState* ext)
-{
-    int def;
-    int i;
-    s8 bits;
-    f32* velBase;
-    int iter;
+void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
+    PushablePlacement* placement;
+    int pointIndex;
+    s8 unresolvedMask;
+    f32* probeCoordinates;
+    int iteration;
     f32 scale;
     f32 savedX;
     f32 savedY;
     f32 savedZ;
-    MatrixTransform pose;
-    f32 mtx[16];
-    f32 points[21];
-    TrackBBoxHit hit;
+    MatrixTransform transform;
+    f32 transformMtx[16];
+    f32 worldPoints[21];
+    TrackBBoxHit collision;
 
-    def = *(int*)&obj->anim.placementData;
-    velBase = (f32*)ext->probeLocal;
+    placement = (PushablePlacement*)obj->anim.placementData;
+    probeCoordinates = (f32*)state->probeLocal;
     Obj_GetPlayerObject();
     savedX = obj->anim.localPosX;
     savedY = obj->anim.localPosY;
     savedZ = obj->anim.localPosZ;
-    bits = 0xf;
-    iter = 0;
+    unresolvedMask = PUSHABLE_POINT_MASK;
+    iteration = 0;
     scale = PUSHABLE_UNIT_SCALE;
-    while (bits != 0)
-    {
-        bits = 0xf;
-        iter = iter + 1;
-        if (iter > 4)
-        {
+    while (unresolvedMask != 0) {
+        unresolvedMask = PUSHABLE_POINT_MASK;
+        iteration = iteration + 1;
+        if (iteration > PUSHABLE_MAX_POINTS) {
             obj->anim.localPosX = savedX;
             obj->anim.localPosY = savedY;
             obj->anim.localPosZ = savedZ;
             break;
         }
-        i = 0;
-        for (; i < ext->pointCount; i++)
-        {
-            pose.rotX = obj->anim.rotX;
-            pose.rotY = obj->anim.rotY;
-            pose.rotZ = obj->anim.rotZ;
-            pose.scale = scale;
-            pose.x = obj->anim.localPosX;
-            pose.y = obj->anim.localPosY;
-            pose.z = obj->anim.localPosZ;
-            setMatrixFromObjectPos(mtx, &pose);
-            Matrix_TransformPoint(mtx, velBase[i * 3], velBase[i * 3 + 1], velBase[i * 3 + 2], &points[i * 3],
-                                  &points[i * 3 + 1], &points[i * 3 + 2]);
-            if ((1 << i & 0xf) != 0)
-            {
-                if (objBboxFn_800640cc((f32*)&ext->cornerWorld[i], &points[i * 3], PUSHABLE_COLLISION_RADIUS, 1, &hit, obj, 8, 0xd,
-                                       (u8)(i + 3), 10) == 0)
-                {
-                    bits = (s8)(bits & ~(1 << i));
-                }
-                else
-                {
+        pointIndex = 0;
+        for (; pointIndex < state->pointCount; pointIndex++) {
+            transform.rotX = obj->anim.rotX;
+            transform.rotY = obj->anim.rotY;
+            transform.rotZ = obj->anim.rotZ;
+            transform.scale = scale;
+            transform.x = obj->anim.localPosX;
+            transform.y = obj->anim.localPosY;
+            transform.z = obj->anim.localPosZ;
+            setMatrixFromObjectPos(transformMtx, &transform);
+            Matrix_TransformPoint(transformMtx, probeCoordinates[pointIndex * 3], probeCoordinates[pointIndex * 3 + 1],
+                                  probeCoordinates[pointIndex * 3 + 2], &worldPoints[pointIndex * 3],
+                                  &worldPoints[pointIndex * 3 + 1], &worldPoints[pointIndex * 3 + 2]);
+            if ((1 << pointIndex & PUSHABLE_POINT_MASK) != 0) {
+                if (objBboxFn_800640cc((f32*)&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3],
+                                       PUSHABLE_COLLISION_RADIUS, 1, &collision, obj, 8, 0xd, (u8)(pointIndex + 3),
+                                       10) == 0) {
+                    unresolvedMask = (s8)(unresolvedMask & ~(1 << pointIndex));
+                } else {
                     int angle;
-                    int delta;
-                    if (hit.kind != -1 && (ext->flags & 1) == 0)
-                    {
-                        int gamebit;
-                        ext->flags |= 1;
-                        gamebit = ((PushablePlacement*)def)->gameBit;
-                        if (gamebit > -1)
-                        {
-                            switch (obj->anim.seqId)
-                            {
-                            case 0x411:
-                            case 0x21e:
+                    int angleDelta;
+                    if (collision.kind != PUSHABLE_NO_HIT_ID && (state->flags & PUSHABLE_FLAG_RESTORED) == 0) {
+                        int gameBit;
+                        state->flags |= PUSHABLE_FLAG_RESTORED;
+                        gameBit = placement->gameBit;
+                        if (gameBit > PUSHABLE_NO_GAME_BIT) {
+                            switch (obj->anim.seqId) {
+                            case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
+                            case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
                                 break;
-                            case PUSHABLE_SEQID_WC_PUSH_BLOCK:
-                                ext->flags &= ~1;
-                                if (hit.kind == ext->requiredHitId)
-                                {
-                                    ObjTextureRuntimeSlot* tex = objFindTexture(obj, 0, 0);
-                                    if (tex != NULL)
-                                    {
-                                        tex->textureId = 0x100;
+                            case PUSHABLE_SEQ_ID_WC_PUSH_BLOCK:
+                                state->flags &= ~PUSHABLE_FLAG_RESTORED;
+                                if (collision.kind == state->requiredHitId) {
+                                    ObjTextureRuntimeSlot* texture = objFindTexture(obj, 0, 0);
+                                    if (texture != NULL) {
+                                        texture->textureId = PUSHABLE_WC_ACTIVATED_TEXTURE_ID;
                                     }
-                                    mainSetBits(((PushablePlacement*)def)->gameBit, 1);
-                                    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-                                    ext->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
+                                    mainSetBits(placement->gameBit, 1);
+                                    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+                                    state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
                                 }
                                 break;
-                            case PUSHABLE_SEQID_DIM_PUSH_BLOCK:
-                                if (hit.kind == 1)
-                                {
-                                    mainSetBits(gamebit, 1);
+                            case PUSHABLE_SEQ_ID_DIM_PUSH_BLOCK:
+                                if (collision.kind == 1) {
+                                    mainSetBits(gameBit, 1);
                                     Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-                                    ext->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
-                                    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                                    state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
+                                    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                                     saveGame_saveObjectPos(obj);
                                 }
                                 break;
-                            default:
-                            {
-                                s8 t = ((PushablePlacement*)def)->requiredHitId;
-                                if (t > -1 && t == hit.kind)
-                                {
-                                    mainSetBits(gamebit, 1);
+                            default: {
+                                s8 requiredHitId = placement->requiredHitId;
+                                if (requiredHitId > PUSHABLE_NO_HIT_ID && requiredHitId == collision.kind) {
+                                    mainSetBits(gameBit, 1);
                                     Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
                                 }
                                 break;
@@ -547,306 +520,274 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* ext)
                             }
                         }
                     }
-                    mathSinf(PUSHABLE_PI * (f32)ext->yaw / PUSHABLE_HALF_TURN);
-                    mathCosf(PUSHABLE_PI * (f32)ext->yaw / PUSHABLE_HALF_TURN);
-                    angle = getAngle(hit.normalX, hit.normalZ);
-                    delta = ext->yaw - (angle & 0xffff);
-                    if (delta > 0x8000)
-                    {
-                        delta -= 0xffff;
+                    mathSinf(PUSHABLE_PI * (f32)state->yaw / PUSHABLE_HALF_TURN);
+                    mathCosf(PUSHABLE_PI * (f32)state->yaw / PUSHABLE_HALF_TURN);
+                    angle = getAngle(collision.normalX, collision.normalZ);
+                    angleDelta = state->yaw - (angle & PUSHABLE_ANGLE_FULL_TURN);
+                    if (angleDelta > PUSHABLE_ANGLE_HALF_TURN) {
+                        angleDelta -= PUSHABLE_ANGLE_FULL_TURN;
                     }
-                    if (delta < -0x8000)
-                    {
-                        delta += 0xffff;
+                    if (angleDelta < -PUSHABLE_ANGLE_HALF_TURN) {
+                        angleDelta += PUSHABLE_ANGLE_FULL_TURN;
                     }
-                    delta = delta / 0xb6;
-                    if (delta > -0x1e && delta < 0x1e)
-                    {
-                        ext->flags |= PUSHABLE_FLAG_PUSH_NEG_X;
-                        ext->pushAmountX = PUSHABLE_ZERO;
+                    angleDelta = angleDelta / PUSHABLE_ANGLE_UNITS_PER_DEGREE;
+                    if (angleDelta > -PUSHABLE_ANGLE_30_DEGREES && angleDelta < PUSHABLE_ANGLE_30_DEGREES) {
+                        state->flags |= PUSHABLE_FLAG_PUSH_NEG_X;
+                        state->pushAmountX = PUSHABLE_ZERO;
+                    } else if (angleDelta > PUSHABLE_ANGLE_150_DEGREES || angleDelta < -PUSHABLE_ANGLE_150_DEGREES) {
+                        state->flags |= PUSHABLE_FLAG_PUSH_POS_X;
+                        state->pushAmountX = PUSHABLE_ZERO;
+                    } else if (angleDelta > PUSHABLE_ANGLE_60_DEGREES && angleDelta < PUSHABLE_ANGLE_120_DEGREES) {
+                        state->flags |= PUSHABLE_FLAG_PUSH_POS_Z;
+                        state->pushAmountZ = PUSHABLE_ZERO;
+                    } else if (angleDelta < -PUSHABLE_ANGLE_60_DEGREES && angleDelta > -PUSHABLE_ANGLE_120_DEGREES) {
+                        state->flags |= PUSHABLE_FLAG_PUSH_NEG_Z;
+                        state->pushAmountZ = PUSHABLE_ZERO;
                     }
-                    else if (delta > 0x96 || delta < -0x96)
-                    {
-                        ext->flags |= PUSHABLE_FLAG_PUSH_POS_X;
-                        ext->pushAmountX = PUSHABLE_ZERO;
-                    }
-                    else if (delta > 0x3c && delta < 0x78)
-                    {
-                        ext->flags |= PUSHABLE_FLAG_PUSH_POS_Z;
-                        ext->pushAmountZ = PUSHABLE_ZERO;
-                    }
-                    else if (delta < -0x3c && delta > -0x78)
-                    {
-                        ext->flags |= PUSHABLE_FLAG_PUSH_NEG_Z;
-                        ext->pushAmountZ = PUSHABLE_ZERO;
-                    }
-                    memcpy(&ext->cornerWorld[i], &points[i * 3], 0xc);
-                    mtx[12] = points[i * 3];
-                    mtx[13] = points[i * 3 + 1];
-                    mtx[14] = points[i * 3 + 2];
-                    Matrix_TransformPoint(mtx, -velBase[i * 3], -velBase[i * 3 + 1], -velBase[i * 3 + 2],
+                    memcpy(&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3], sizeof(PushablePoint));
+                    transformMtx[12] = worldPoints[pointIndex * 3];
+                    transformMtx[13] = worldPoints[pointIndex * 3 + 1];
+                    transformMtx[14] = worldPoints[pointIndex * 3 + 2];
+                    Matrix_TransformPoint(transformMtx, -probeCoordinates[pointIndex * 3],
+                                          -probeCoordinates[pointIndex * 3 + 1], -probeCoordinates[pointIndex * 3 + 2],
                                           &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ);
                 }
             }
         }
     }
-    memcpy(ext->cornerWorld, points, ext->pointCount * 0xc);
+    memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(PushablePoint));
 }
 
-u32 pushable_SeqFn(GameObject* obj, short* refObj, ObjAnimUpdateState* animUpdate)
-{
-    u32 bitVal;
+u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState* animUpdate) {
+    u32 gameBitValue;
     GameObject* player;
     PushableState* state;
-    f32 dx;
-    f32 dz;
-    f32 len;
-    f32 k;
+    f32 deltaX;
+    f32 deltaZ;
+    f32 distance;
+    f32 knockbackSpeed;
 
     state = obj->extra;
-    state->savePosDelay = 0x3c;
-    if (obj->seqIndex != -1)
-    {
+    state->savePosDelay = PUSHABLE_SEQUENCE_SAVE_DELAY;
+    if (obj->seqIndex != -1) {
         (*gCameraInterface)->setTargetReticleOverride((int)obj);
     }
     animUpdate->activeHitVolumePair = -1;
-    if ((s8)animUpdate->movementState != 0)
-    {
-        if ((s8)animUpdate->movementState != 2)
-        {
+    if ((s8)animUpdate->movementState != 0) {
+        if ((s8)animUpdate->movementState != 2) {
             animUpdate->posOffsetScale = PUSHABLE_UNIT_SCALE;
-            animUpdate->posOffsetX = obj->anim.localPosX - *(float*)(refObj + 6);
-            animUpdate->posOffsetY = obj->anim.localPosY - *(float*)(refObj + 8);
-            animUpdate->posOffsetZ = obj->anim.localPosZ - *(float*)(refObj + 10);
-            animUpdate->rotOffsetX = obj->anim.rotX - (u16)*refObj;
-            if (0x8000 < animUpdate->rotOffsetX)
-            {
+            animUpdate->posOffsetX = obj->anim.localPosX - *(f32*)(referenceTransform + 6);
+            animUpdate->posOffsetY = obj->anim.localPosY - *(f32*)(referenceTransform + 8);
+            animUpdate->posOffsetZ = obj->anim.localPosZ - *(f32*)(referenceTransform + 10);
+            animUpdate->rotOffsetX = obj->anim.rotX - (u16)*referenceTransform;
+            if (0x8000 < animUpdate->rotOffsetX) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX - 0xffff;
             }
-            if (animUpdate->rotOffsetX < -0x8000)
-            {
+            if (animUpdate->rotOffsetX < -0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX + 0xffff;
             }
-            animUpdate->rotOffsetY = obj->anim.rotY - (u16)refObj[1];
-            if (0x8000 < animUpdate->rotOffsetY)
-            {
+            animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform[1];
+            if (0x8000 < animUpdate->rotOffsetY) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY - 0xffff;
             }
-            if (animUpdate->rotOffsetY < -0x8000)
-            {
+            if (animUpdate->rotOffsetY < -0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY + 0xffff;
             }
-            animUpdate->rotOffsetZ = (u16)refObj[2] - (u16)obj->anim.rotZ;
-            if (0x8000 < animUpdate->rotOffsetZ)
-            {
+            animUpdate->rotOffsetZ = (u16)referenceTransform[2] - (u16)obj->anim.rotZ;
+            if (0x8000 < animUpdate->rotOffsetZ) {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ - 0xffff;
             }
-            if (animUpdate->rotOffsetZ < -0x8000)
-            {
+            if (animUpdate->rotOffsetZ < -0x8000) {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ + 0xffff;
             }
-            animUpdate->movementState = 2;
+            animUpdate->movementState = PUSHABLE_SEQUENCE_MOVEMENT_OFFSET;
         }
         animUpdate->posOffsetScale = -(animUpdate->posOffsetDecay * timeDelta - animUpdate->posOffsetScale);
-        if (animUpdate->posOffsetScale <= PUSHABLE_ZERO)
-        {
-            animUpdate->movementState = 0;
+        if (animUpdate->posOffsetScale <= PUSHABLE_ZERO) {
+            animUpdate->movementState = PUSHABLE_SEQUENCE_MOVEMENT_NONE;
         }
     }
-    if (obj->userData2 == 0)
-    {
-        obj->userData2 = 2;
+    if (obj->userData2 == 0) {
+        obj->userData2 = PUSHABLE_SEQUENCE_DEFAULT_USERDATA;
     }
-    if ((obj->anim.seqId == 0x21e) || (obj->anim.seqId == 0x411))
-    {
-        *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode | 8;
+    if ((obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) || (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (('\0' < *(char*)(*(int*)((char*)obj + 0x58) + 0x10f)) &&
-            ((*(short*)(*(int*)(*(int*)((char*)obj + 0x58) + 0x100) + 0x44) == 0x24 &&
-              (bitVal = mainGetBit(0x103), bitVal == 0))))
-        {
-            mainSetBits(0x103, 1);
-            *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode & ~8;
+            ((*(short*)(*(int*)(*(int*)((char*)obj + 0x58) + 0x100) + 0x44) == PUSHABLE_SEQUENCE_TARGET_SEQ_ID &&
+              (gameBitValue = mainGetBit(PUSHABLE_SEQUENCE_GAME_BIT), gameBitValue == 0)))) {
+            mainSetBits(PUSHABLE_SEQUENCE_GAME_BIT, 1);
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             player = Obj_GetPlayerObject();
-            dx = obj->anim.localPosX - player->anim.localPosX;
-            dz = obj->anim.localPosZ - player->anim.localPosZ;
-            len = sqrtf(dx * dx + dz * dz);
-            if (len)
-            {
-                dx = dx / len;
-                dz = dz / len;
+            deltaX = obj->anim.localPosX - player->anim.localPosX;
+            deltaZ = obj->anim.localPosZ - player->anim.localPosZ;
+            distance = sqrtf(deltaX * deltaX + deltaZ * deltaZ);
+            if (distance) {
+                deltaX = deltaX / distance;
+                deltaZ = deltaZ / distance;
             }
-            k = PUSHABLE_KNOCKBACK_SPEED;
-            state->knockbackVelX = k * dx;
+            knockbackSpeed = PUSHABLE_KNOCKBACK_SPEED;
+            state->knockbackVelX = knockbackSpeed * deltaX;
             state->knockbackVelY = PUSHABLE_ZERO;
-            state->knockbackVelZ = k * dz;
-            return 4;
+            state->knockbackVelZ = knockbackSpeed * deltaZ;
+            return PUSHABLE_SEQUENCE_KNOCKBACK_RESULT;
         }
     }
     return 0;
 }
 
-void pushable_handleMsgs(GameObject* obj)
-{
+void pushable_handleMsgs(GameObject* obj, int unused) {
     PushableState* state;
-    int msgSender;
-    int msg;
-    int msgParam;
+    GameObject* messageSender;
+    u32 messageId;
+    u32 messageParam;
+
+    (void)unused;
 
     state = obj->extra;
-    msgParam = 0;
-    while (ObjMsg_Pop(obj, (u32*)&msg, (u32*)&msgSender, (u32*)&msgParam) != 0)
-    {
-        switch (msg)
-        {
-        case 0xf0003:
-            state->msgSenderObj = msgSender;
+    messageParam = 0;
+    while (ObjMsg_Pop(obj, &messageId, (u32*)&messageSender, &messageParam) != 0) {
+        switch (messageId) {
+        case PUSHABLE_MSG_SET_SENDER:
+            state->msgSenderObj = messageSender;
             break;
-        case 0xe:
-            if ((obj->anim.seqId != 0x21e) && (obj->anim.seqId != 0x411))
-            {
+        case PUSHABLE_MSG_FREE:
+            if ((obj->anim.seqId != PUSHABLE_SEQ_ID_MAGIC_GEM_21E) &&
+                (obj->anim.seqId != PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
                 Obj_FreeObject(obj);
             }
             break;
-        case 0x40001:
-            if (obj->anim.seqId == 0x21e)
-            {
-                state->unk_F0 = *(float*)msgParam;
+        case PUSHABLE_MSG_MAGIC_GEM_DISTANCE:
+            if (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) {
+                state->magicGemDistanceThreshold = *(f32*)messageParam;
             }
-            if (obj->anim.seqId == 0x411)
-            {
-                state->unk_F0 = *(float*)msgParam;
+            if (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_411) {
+                state->magicGemDistanceThreshold = *(f32*)messageParam;
             }
             break;
         }
     }
 }
 
-int pushable_render2(GameObject* obj)
-{
-    return ((PushableState*)obj->extra)->flags & 1;
+int pushable_render2(GameObject* obj) {
+    return ((PushableState*)obj->extra)->flags & PUSHABLE_FLAG_RESTORED;
 }
 
-void pushable_modelMtxFn(GameObject* obj, int modelNo)
-{
-    int extra = *(int*)&obj->extra;
-    u32 flags = *(u32*)(extra + 0xa8);
+void pushable_modelMtxFn(GameObject* obj, int modelNo) {
+    PushableState* state = obj->extra;
+    u32 flags = state->modelFlags;
 
-    *(u32*)(extra + 0xa8) = flags | (1 << modelNo);
+    state->modelFlags = flags | (1 << modelNo);
 }
 
-int pushable_func0B(GameObject* obj, int other)
-{
-    int state;
-    f32 delta[3];
-    f32* d;
-
-    state = *(int*)&obj->extra;
-    d = delta;
-    d[0] = ((GameObject*)other)->anim.localPosX - obj->anim.localPosX;
-    d[1] = ((GameObject*)other)->anim.localPosY - obj->anim.localPosY;
-    d[2] = ((GameObject*)other)->anim.localPosZ - obj->anim.localPosZ;
-    return sqrtf(d[2] * d[2] + (d[0] * d[0] + d[1] * d[1])) < ((PushableState*)state)->cullDistance;
-}
-
-int pushable_setScale(GameObject* obj, GameObject* tgt, int flag, f32 dx, f32 dz)
-{
-    SetScaleParams* pp;
+int pushable_func0B(GameObject* obj, GameObject* other) {
     PushableState* state;
-    char ret;
+    f32 deltaToOther[3];
+    f32* delta;
+
+    state = obj->extra;
+    delta = deltaToOther;
+    delta[0] = other->anim.localPosX - obj->anim.localPosX;
+    delta[1] = other->anim.localPosY - obj->anim.localPosY;
+    delta[2] = other->anim.localPosZ - obj->anim.localPosZ;
+    return sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1])) < state->cullDistance;
+}
+
+int pushable_setScale(GameObject* obj, GameObject* target, int active, f32 pushX, f32 pushZ) {
+    PushableCollisionProbe* collisionProbe;
+    PushableState* state;
+    char pushDirection;
     GameObject* player;
-    int hit;
-    char* p;
-    f32* w;
-    f32* e2;
-    f32* d;
-    int i;
-    SetScaleParams params;
-    char hitbuf[64];
-    f32 mtx[16];
-    f32 wpos[12];
+    int blocked;
+    char* historyCursor;
+    f32* worldPoint;
+    f32* localPoint;
+    f32* delta;
+    int historyEntryCount;
+    PushableCollisionProbe collisionProbeStorage;
+    char hitBuffer[64];
+    f32 transformMtx[16];
+    f32 worldPoints[12];
     f32 deltas[12];
-    MatrixTransform vec;
+    MatrixTransform transform;
     TrackQueryBounds sweep;
-    f32 start[3];
-    f32 end[3];
-    f32 tmpY;
+    f32 probeStart[3];
+    f32 probeEnd[3];
+    f32 transformedY;
 
     player = Obj_GetPlayerObject();
     state = obj->extra;
-    ret = 0;
-    i = 5;
-    p = (char*)state + 0x14;
-    while (p -= 4, i--)
-    {
-        *(f32*)(p + 0x118) = *(f32*)(p + 0x114);
-        *(f32*)(p + 0x12c) = *(f32*)(p + 0x128);
+    pushDirection = PUSHABLE_DIRECTION_NONE;
+    historyEntryCount = 5;
+    historyCursor = (char*)state + 0x14;
+    while (historyCursor -= 4, historyEntryCount--) {
+        *(f32*)(historyCursor + 0x118) = *(f32*)(historyCursor + 0x114);
+        *(f32*)(historyCursor + 0x12c) = *(f32*)(historyCursor + 0x128);
     }
     state->posHistX[0] = obj->anim.localPosX;
     state->posHistZ[0] = obj->anim.localPosZ;
-    start[0] = tgt->anim.localPosX;
-    start[1] = PUSHABLE_PROBE_HEIGHT + tgt->anim.localPosY;
-    start[2] = tgt->anim.localPosZ;
-    (pp = &params)->r[0] = PUSHABLE_FORWARD_PROBE_DISTANCE;
-    pp->b10 = -1;
-    pp->b14 = 3;
-    pp->h2c = 0;
-    hit = 0;
-    if (dx > PUSHABLE_ZERO)
-    {
-        end[0] = PUSHABLE_FORWARD_PROBE_DISTANCE * mathSinf(PUSHABLE_PI * state->yaw / PUSHABLE_HALF_TURN) + start[0];
-        end[1] = start[1];
-        end[2] = PUSHABLE_FORWARD_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * state->yaw / PUSHABLE_HALF_TURN) + start[2];
-        hitDetect_calcSweptSphereBounds(&sweep, start, end, pp->r, 1);
+    probeStart[0] = target->anim.localPosX;
+    probeStart[1] = PUSHABLE_PROBE_HEIGHT + target->anim.localPosY;
+    probeStart[2] = target->anim.localPosZ;
+    (collisionProbe = &collisionProbeStorage)->radii[0] = PUSHABLE_FORWARD_PROBE_DISTANCE;
+    collisionProbe->unk10 = -1;
+    collisionProbe->unk14 = 3;
+    collisionProbe->unk2C = 0;
+    blocked = 0;
+    if (pushX > PUSHABLE_ZERO) {
+        probeEnd[0] =
+            PUSHABLE_FORWARD_PROBE_DISTANCE * mathSinf(PUSHABLE_PI * state->yaw / PUSHABLE_HALF_TURN) + probeStart[0];
+        probeEnd[1] = probeStart[1];
+        probeEnd[2] =
+            PUSHABLE_FORWARD_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * state->yaw / PUSHABLE_HALF_TURN) + probeStart[2];
+        hitDetect_calcSweptSphereBounds(&sweep, probeStart, probeEnd, collisionProbe->radii, 1);
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
-        hit = hitDetectFn_80067958(NULL, start, end, 1, hitbuf, 8);
-        if (hit == 0)
-        {
-            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, obj, 1, -1, 0xff, 0);
+        blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
+        if (blocked == 0) {
+            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
-        if (hit != 0)
-        {
+        if (blocked != 0) {
             f32 pushAmount;
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_POS_X;
             pushAmount = PUSHABLE_ZERO;
             state->pushAmountX = pushAmount;
             state->pushAmountZ = pushAmount;
         }
-    }
-    else if (dz > PUSHABLE_ZERO)
-    {
-        end[0] = PUSHABLE_SIDE_PROBE_DISTANCE * mathSinf(PUSHABLE_PI * (f32)(state->yaw + 0x4000) / PUSHABLE_HALF_TURN) + start[0];
-        end[1] = start[1];
-        end[2] = PUSHABLE_SIDE_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * (f32)(state->yaw + 0x4000) / PUSHABLE_HALF_TURN) + start[2];
-        hitDetect_calcSweptSphereBounds(&sweep, start, end, pp->r, 1);
+    } else if (pushZ > PUSHABLE_ZERO) {
+        probeEnd[0] =
+            PUSHABLE_SIDE_PROBE_DISTANCE * mathSinf(PUSHABLE_PI * (f32)(state->yaw + 0x4000) / PUSHABLE_HALF_TURN) +
+            probeStart[0];
+        probeEnd[1] = probeStart[1];
+        probeEnd[2] =
+            PUSHABLE_SIDE_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * (f32)(state->yaw + 0x4000) / PUSHABLE_HALF_TURN) +
+            probeStart[2];
+        hitDetect_calcSweptSphereBounds(&sweep, probeStart, probeEnd, collisionProbe->radii, 1);
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
-        hit = hitDetectFn_80067958(NULL, start, end, 1, hitbuf, 8);
-        if (hit == 0)
-        {
-            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, obj, 1, -1, 0xff, 0);
+        blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
+        if (blocked == 0) {
+            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
-        if (hit != 0)
-        {
+        if (blocked != 0) {
             f32 pushAmount;
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_POS_Z;
             pushAmount = PUSHABLE_ZERO;
             state->pushAmountX = pushAmount;
             state->pushAmountZ = pushAmount;
         }
-    }
-    else if (dz < PUSHABLE_ZERO)
-    {
-        end[0] = PUSHABLE_SIDE_PROBE_DISTANCE * mathSinf(PUSHABLE_PI * (f32)(state->yaw - 0x4000) / PUSHABLE_HALF_TURN) + start[0];
-        end[1] = start[1];
-        end[2] = PUSHABLE_SIDE_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * (f32)(state->yaw - 0x4000) / PUSHABLE_HALF_TURN) + start[2];
-        hitDetect_calcSweptSphereBounds(&sweep, start, end, pp->r, 1);
+    } else if (pushZ < PUSHABLE_ZERO) {
+        probeEnd[0] =
+            PUSHABLE_SIDE_PROBE_DISTANCE * mathSinf(PUSHABLE_PI * (f32)(state->yaw - 0x4000) / PUSHABLE_HALF_TURN) +
+            probeStart[0];
+        probeEnd[1] = probeStart[1];
+        probeEnd[2] =
+            PUSHABLE_SIDE_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * (f32)(state->yaw - 0x4000) / PUSHABLE_HALF_TURN) +
+            probeStart[2];
+        hitDetect_calcSweptSphereBounds(&sweep, probeStart, probeEnd, collisionProbe->radii, 1);
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
-        hit = hitDetectFn_80067958(NULL, start, end, 1, hitbuf, 8);
-        if (hit == 0)
-        {
-            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, obj, 1, -1, 0xff, 0);
+        blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
+        if (blocked == 0) {
+            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
-        if (hit != 0)
-        {
+        if (blocked != 0) {
             f32 pushAmount;
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_NEG_Z;
             pushAmount = PUSHABLE_ZERO;
@@ -854,114 +795,95 @@ int pushable_setScale(GameObject* obj, GameObject* tgt, int flag, f32 dx, f32 dz
             state->pushAmountZ = pushAmount;
         }
     }
-    if (playerIsDisguised(player) == 0 && state->moveFlags.b6 == 0)
-    {
-        hit = 1;
-        if (dx > PUSHABLE_ZERO)
-        {
+    if (playerIsDisguised(player) == 0 && state->moveFlags.pushPromptEnabled == 0) {
+        blocked = 1;
+        if (pushX > PUSHABLE_ZERO) {
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_POS_X;
-        }
-        else if (dx < PUSHABLE_ZERO)
-        {
+        } else if (pushX < PUSHABLE_ZERO) {
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_NEG_X;
-        }
-        else if (dz > PUSHABLE_ZERO)
-        {
+        } else if (pushZ > PUSHABLE_ZERO) {
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_POS_Z;
-        }
-        else
-        {
+        } else {
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_NEG_Z;
         }
         {
-            f32 t = PUSHABLE_ZERO;
-            state->pushAmountX = t;
-            state->pushAmountZ = t;
+            f32 zero = PUSHABLE_ZERO;
+            state->pushAmountX = zero;
+            state->pushAmountZ = zero;
         }
     }
-    if (flag != 0 && (state->flags & 8) == 0)
-    {
-        state->flags = state->flags | PUSHABLE_FLAG_MOVING_Y;
+    if (active != 0 && (state->flags & PUSHABLE_FLAG_NO_GROUND_CONTACT) == 0) {
+        state->flags = state->flags | PUSHABLE_FLAG_MOVED;
         state->pushSfxTimer -= 1;
-        if (state->pushSfxTimer <= 0)
-        {
+        if (state->pushSfxTimer <= 0) {
             state->pushSfxTimer = randomGetRange(0x28, 0x3c);
             state->flags = state->flags | PUSHABLE_FLAG_PUSH_SFX_DUE;
         }
-        if ((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0)
-        {
-            f32 t = PUSHABLE_ZERO;
-            state->pushAmountX = t;
-            state->pushAmountZ = t;
+        if ((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) {
+            f32 zero = PUSHABLE_ZERO;
+            state->pushAmountX = zero;
+            state->pushAmountZ = zero;
+        } else if (blocked == 0) {
+            state->pushAmountX = pushX;
+            state->pushAmountZ = pushZ;
         }
-        else if (hit == 0)
-        {
-            state->pushAmountX = dx;
-            state->pushAmountZ = dz;
-        }
-        state->yaw = tgt->anim.rotX;
-        vec.rotX = tgt->anim.rotX;
-        vec.rotY = 0;
-        vec.rotZ = 0;
-        vec.scale = PUSHABLE_UNIT_SCALE;
-        vec.x = PUSHABLE_ZERO;
-        vec.y = PUSHABLE_ZERO;
-        vec.z = PUSHABLE_ZERO;
-        setMatrixFromObjectPos(mtx, &vec);
-        Matrix_TransformPoint(mtx, state->pushAmountZ, PUSHABLE_ZERO, state->pushAmountX, (f32*)((char*)obj + 0x24),
-                              &tmpY, (f32*)((char*)obj + 0x2c));
-        state->moveFlags.b7 = 1;
-        objMove(obj, ((PushableObjPos*)obj)->vx, PUSHABLE_ZERO, ((PushableObjPos*)obj)->vz);
+        state->yaw = target->anim.rotX;
+        transform.rotX = target->anim.rotX;
+        transform.rotY = 0;
+        transform.rotZ = 0;
+        transform.scale = PUSHABLE_UNIT_SCALE;
+        transform.x = PUSHABLE_ZERO;
+        transform.y = PUSHABLE_ZERO;
+        transform.z = PUSHABLE_ZERO;
+        setMatrixFromObjectPos(transformMtx, &transform);
+        Matrix_TransformPoint(transformMtx, state->pushAmountZ, PUSHABLE_ZERO, state->pushAmountX, &obj->anim.velocityX,
+                              &transformedY, &obj->anim.velocityZ);
+        state->moveFlags.activelyPushed = 1;
+        objMove(obj, obj->anim.velocityX, PUSHABLE_ZERO, obj->anim.velocityZ);
         Obj_BuildTransformMatrices(obj);
         {
-            int j;
-            j = 0;
-            w = wpos;
-            e2 = (f32*)state;
-            d = deltas;
-            for (; j < state->pointCount; j++)
-            {
-                Obj_TransformLocalPointToWorld(*(f32*)((char*)e2 + 0x18), *(f32*)((char*)e2 + 0x1c),
-                                               *(f32*)((char*)e2 + 0x20), w, w + 1, w + 2, (u32)obj);
-                d[0] = obj->anim.localPosX - w[0];
-                d[1] = obj->anim.localPosY - w[1];
-                d[2] = obj->anim.localPosZ - w[2];
-                w += 3;
-                e2 = (f32*)((char*)e2 + 0xc);
-                d += 3;
+            int pointIndex;
+            pointIndex = 0;
+            worldPoint = worldPoints;
+            localPoint = (f32*)state;
+            delta = deltas;
+            for (; pointIndex < state->pointCount; pointIndex++) {
+                Obj_TransformLocalPointToWorld(*(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
+                                               *(f32*)((char*)localPoint + 0x20), worldPoint, worldPoint + 1,
+                                               worldPoint + 2, (u32)obj);
+                delta[0] = obj->anim.localPosX - worldPoint[0];
+                delta[1] = obj->anim.localPosY - worldPoint[1];
+                delta[2] = obj->anim.localPosZ - worldPoint[2];
+                worldPoint += 3;
+                localPoint = (f32*)((char*)localPoint + 0xc);
+                delta += 3;
             }
         }
-        if ((state->flags & 4) == 0)
-        {
+        if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
             pushable_resolveCollisions(obj, state);
         }
         Obj_BuildTransformMatrices(obj);
-        if (PUSHABLE_ZERO != state->pushAmountX || PUSHABLE_ZERO != state->pushAmountZ)
-        {
-            PushableState* st2;
-            char* def2;
-            u16 fl2;
-            def2 = *(char**)&obj->anim.placementData;
-            st2 = obj->extra;
-            fl2 = st2->flags;
-            if ((fl2 & 1) != 0)
-            {
+        if (PUSHABLE_ZERO != state->pushAmountX || PUSHABLE_ZERO != state->pushAmountZ) {
+            PushableState* movedState;
+            PushablePlacement* placement;
+            u16 flags;
+            placement = (PushablePlacement*)obj->anim.placementData;
+            movedState = obj->extra;
+            flags = movedState->flags;
+            if ((flags & PUSHABLE_FLAG_RESTORED) != 0) {
                 s16 gameBit;
-                st2->flags = fl2 & ~1;
-                gameBit = ((PushablePlacement*)def2)->gameBit;
-                if (gameBit > -1)
-                {
-                    switch (obj->anim.seqId)
-                    {
-                    case 0x21e:
+                movedState->flags = flags & ~PUSHABLE_FLAG_RESTORED;
+                gameBit = placement->gameBit;
+                if (gameBit > -1) {
+                    switch (obj->anim.seqId) {
+                    case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
                         break;
-                    case 0x411:
+                    case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
                         break;
-                    case PUSHABLE_SEQID_WC_PUSH_BLOCK:
+                    case PUSHABLE_SEQ_ID_WC_PUSH_BLOCK:
                         break;
                     default:
-                        if (((PushablePlacement*)def2)->requiredHitId > -1)
-                        {
+                        if (placement->requiredHitId > PUSHABLE_NO_HIT_ID) {
                             mainSetBits(gameBit, 0);
                         }
                         break;
@@ -970,136 +892,105 @@ int pushable_setScale(GameObject* obj, GameObject* tgt, int flag, f32 dx, f32 dz
             }
         }
         {
-            f32 f5 = obj->anim.localPosX - state->posHistX[4];
-            f32 f6 = obj->anim.localPosZ - state->posHistZ[4];
-            if (f5 * f5 + f6 * f6 > PUSHABLE_UNIT_SCALE && (state->flags & PUSHABLE_FLAG_PUSH_SFX_DUE) != 0)
-            {
+            f32 travelX = obj->anim.localPosX - state->posHistX[4];
+            f32 travelZ = obj->anim.localPosZ - state->posHistZ[4];
+            if (travelX * travelX + travelZ * travelZ > PUSHABLE_UNIT_SCALE &&
+                (state->flags & PUSHABLE_FLAG_PUSH_SFX_DUE) != 0) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_birdymornin11);
                 state->flags = state->flags & ~PUSHABLE_FLAG_PUSH_SFX_DUE;
             }
         }
-    }
-    else
-    {
-        int j;
-        char* mi = *(char**)((char*)obj + 0x58);
-        f32* mtx2 = (f32*)(mi + ((*(u8*)(mi + 0x10c) + 2) << 4) * 4);
-        j = 0;
-        e2 = (f32*)state;
-        for (; j < state->pointCount; j++)
-        {
-            Matrix_TransformPoint(mtx2, *(f32*)((char*)e2 + 0x18), *(f32*)((char*)e2 + 0x1c), *(f32*)((char*)e2 + 0x20),
-                                  (f32*)((char*)e2 + 0x78), (f32*)((char*)e2 + 0x7c), (f32*)((char*)e2 + 0x80));
-            e2 = (f32*)((char*)e2 + 0xc);
+    } else {
+        int pointIndex;
+        char* transformState = *(char**)((char*)obj + 0x58);
+        f32* modelMtx = (f32*)(transformState + ((*(u8*)(transformState + 0x10c) + 2) << 4) * 4);
+        pointIndex = 0;
+        localPoint = (f32*)state;
+        for (; pointIndex < state->pointCount; pointIndex++) {
+            Matrix_TransformPoint(modelMtx, *(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
+                                  *(f32*)((char*)localPoint + 0x20), (f32*)((char*)localPoint + 0x78),
+                                  (f32*)((char*)localPoint + 0x7c), (f32*)((char*)localPoint + 0x80));
+            localPoint = (f32*)((char*)localPoint + 0xc);
         }
     }
     {
-        u16 fl = state->flags;
-        if ((fl & PUSHABLE_FLAG_PUSH_NEG_X) != 0)
-        {
-            ret = 1;
+        u16 flags = state->flags;
+        if ((flags & PUSHABLE_FLAG_PUSH_NEG_X) != 0) {
+            pushDirection = PUSHABLE_DIRECTION_NEG_X;
+        } else if ((flags & PUSHABLE_FLAG_PUSH_POS_X) != 0) {
+            pushDirection = PUSHABLE_DIRECTION_POS_X;
+        } else if ((flags & PUSHABLE_FLAG_PUSH_NEG_Z) != 0) {
+            pushDirection = PUSHABLE_DIRECTION_NEG_Z;
+        } else if ((flags & PUSHABLE_FLAG_PUSH_POS_Z) != 0) {
+            pushDirection = PUSHABLE_DIRECTION_POS_Z;
+        } else if ((flags & PUSHABLE_FLAG_NO_GROUND_CONTACT) != 0) {
+            pushDirection = PUSHABLE_DIRECTION_DOWN;
         }
-        else if ((fl & PUSHABLE_FLAG_PUSH_POS_X) != 0)
-        {
-            ret = 2;
-        }
-        else if ((fl & PUSHABLE_FLAG_PUSH_NEG_Z) != 0)
-        {
-            ret = 3;
-        }
-        else if ((fl & PUSHABLE_FLAG_PUSH_POS_Z) != 0)
-        {
-            ret = 4;
-        }
-        else if ((fl & 8) != 0)
-        {
-            ret = 5;
-        }
-        state->flags = *(u16*)((u8*)state + 0x100) & ~PUSHABLE_FLAG_PUSH_DIR_MASK;
+        state->flags &= ~PUSHABLE_FLAG_PUSH_DIR_MASK;
     }
-    return ret;
+    return pushDirection;
 }
 
-int pushable_getExtraSize(void)
-{
-    return 0x148;
-}
-int pushable_getObjectTypeId(void)
-{
-    return 0x48;
+int pushable_getExtraSize(void) {
+    return sizeof(PushableState);
 }
 
-static inline int* Transporter_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
+int pushable_getObjectTypeId(void) {
+    return PUSHABLE_OBJECT_TYPE_ID;
 }
 
-void pushable_free(GameObject* obj)
-{
-    u8* def = *(u8**)&obj->anim.placementData;
-    PushableState* sub = obj->extra;
-    s16 type = obj->anim.seqId;
-    int savedIdx;
+void pushable_free(GameObject* obj) {
+    PushablePlacement* placement = (PushablePlacement*)obj->anim.placementData;
+    PushableState* state = obj->extra;
+    s16 sequenceId = obj->anim.seqId;
+    int savedMapIndex;
 
-    switch (type)
-    {
-    case 0x21e:
-        mainSetBits(sub->gameBit, 0);
+    switch (sequenceId) {
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
+        mainSetBits(state->gameBit, 0);
         break;
-    case 0x411:
-        mainSetBits(sub->gameBit, 0);
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
+        mainSetBits(state->gameBit, 0);
         break;
     default:
-        if (((PushablePlacement*)def)->gameBit > -1 && type != 0x54a && type != 0x5ae && type != 0x108 &&
-            sub->savePosEnabled != 0)
-        {
+        if (placement->gameBit > PUSHABLE_NO_GAME_BIT && sequenceId != PUSHABLE_SEQ_ID_VFP_BLOCK2 &&
+            sequenceId != PUSHABLE_SEQ_ID_5AE && sequenceId != PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK &&
+            state->savePosEnabled != 0) {
             saveGame_saveObjectPos(obj);
         }
         break;
     }
-    if ((sub->flags & 1) != 0)
-    {
-        int val = ((ObjPlacement*)def)->mapId;
-        savedIdx = gPushableSavedMapIdCount;
-        gPushableSavedMapIdCount = savedIdx + 1;
-        gPushableSavedMapIds[savedIdx] = val;
+    if ((state->flags & PUSHABLE_FLAG_RESTORED) != 0) {
+        int mapId = placement->base.mapId;
+        savedMapIndex = gPushableSavedMapIdCount;
+        gPushableSavedMapIdCount = savedMapIndex + 1;
+        gPushableSavedMapIds[savedMapIndex] = mapId;
     }
-    ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJECT_GROUP);
 }
 
-void pushable_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
-{
-    if (visible != 0)
-    {
+void pushable_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    if (visible != 0) {
         PushableState* state = obj->extra;
-        switch (obj->anim.seqId)
-        {
-        case 0x21e:
-            if (mainGetBit(state->gameBit) == 0)
-            {
+        switch (obj->anim.seqId) {
+        case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
+            if (mainGetBit(state->gameBit) == 0) {
                 break;
             }
             return;
-        case 0x411:
-            if (mainGetBit(state->gameBit) == 0)
-            {
+        case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
+            if (mainGetBit(state->gameBit) == 0) {
                 break;
             }
             return;
-        case PUSHABLE_SEQID_VFP_BLOCK2:
-        {
-            f32 timer = state->timer_0x14;
+        case PUSHABLE_SEQ_ID_VFP_BLOCK2: {
+            f32 timer = state->renderTimer;
             f32 zero = PUSHABLE_ZERO;
-            if (timer > zero)
-            {
-                state->timer_0x14 = timer - timeDelta;
-                if (state->timer_0x14 <= zero)
-                {
-                    state->timer_0x14 = zero;
-                }
-                else
-                {
+            if (timer > zero) {
+                state->renderTimer = timer - timeDelta;
+                if (state->renderTimer <= zero) {
+                    state->renderTimer = zero;
+                } else {
                     fn_8003B5E0(0xc8, 0, 0, 0xff);
                 }
             }
@@ -1107,14 +998,14 @@ void pushable_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible
         }
         }
         {
-            char* hdr = (char*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
-            *(u16*)(*(char**)hdr + 2) = *(u16*)(*(char**)hdr + 2) | 2;
+            char* activeModelSlot = (char*)obj->anim.banks[obj->anim.bankIndex];
+            *(u16*)(*(char**)activeModelSlot + 2) = *(u16*)(*(char**)activeModelSlot + 2) | 2;
         }
-        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, PUSHABLE_UNIT_SCALE);
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, PUSHABLE_UNIT_SCALE);
     }
 }
-void pushable_hitDetect(GameObject* obj)
-{
+
+void pushable_hitDetect(GameObject* obj) {
     TrackGroundHit* groundHit;
     s8 hitCount;
     GameObject* player;
@@ -1124,11 +1015,11 @@ void pushable_hitDetect(GameObject* obj)
     int waterHitCount;
     int i;
     f32 waterDepthSum;
-    PushablePoint worldPoints[4];
+    PushablePoint worldPoints[PUSHABLE_MAX_POINTS];
     f32 transformMtx[16];
     TrackQueryBounds sweep;
     MatrixTransform transform;
-    f32 groundHeights[4];
+    f32 groundHeights[PUSHABLE_MAX_POINTS];
     PushableRadii radii;
     TrackGroundHit** groundHits;
     f32 groundHeightSum;
@@ -1136,34 +1027,26 @@ void pushable_hitDetect(GameObject* obj)
     radii = gPushableDefaultBox;
     player = Obj_GetPlayerObject();
     state = obj->extra;
-    state->timer_0x110 -= timeDelta;
-    if (state->timer_0x110 <= PUSHABLE_ZERO)
-    {
-        state->timer_0x110 = PUSHABLE_ZERO;
+    state->airborneTimer -= timeDelta;
+    if (state->airborneTimer <= PUSHABLE_ZERO) {
+        state->airborneTimer = PUSHABLE_ZERO;
     }
-    if (state->moveFlags.b7 == 0)
-    {
-        f32 k;
-        if (fn_802969F0(player) == 0xd)
-        {
-            k = PUSHABLE_GROUND_DAMPING;
+    if (state->moveFlags.activelyPushed == 0) {
+        f32 damping;
+        if (fn_802969F0(player) == 0xd) {
+            damping = PUSHABLE_GROUND_DAMPING;
+        } else {
+            damping = PUSHABLE_AIR_DAMPING;
         }
-        else
-        {
-            k = PUSHABLE_AIR_DAMPING;
-        }
-        state->pushAmountX *= k;
-        if (state->pushAmountX < PUSHABLE_STOP_THRESHOLD && state->pushAmountX > PUSHABLE_NEG_STOP_THRESHOLD)
-        {
+        state->pushAmountX *= damping;
+        if (state->pushAmountX < PUSHABLE_STOP_THRESHOLD && state->pushAmountX > PUSHABLE_NEG_STOP_THRESHOLD) {
             state->pushAmountX = PUSHABLE_ZERO;
         }
-        state->pushAmountZ *= k;
-        if (state->pushAmountZ < PUSHABLE_STOP_THRESHOLD && state->pushAmountZ > PUSHABLE_NEG_STOP_THRESHOLD)
-        {
+        state->pushAmountZ *= damping;
+        if (state->pushAmountZ < PUSHABLE_STOP_THRESHOLD && state->pushAmountZ > PUSHABLE_NEG_STOP_THRESHOLD) {
             state->pushAmountZ = PUSHABLE_ZERO;
         }
-        if (PUSHABLE_ZERO != state->pushAmountX || PUSHABLE_ZERO != state->pushAmountZ)
-        {
+        if (PUSHABLE_ZERO != state->pushAmountX || PUSHABLE_ZERO != state->pushAmountZ) {
             transform.rotX = state->yaw;
             transform.rotY = 0;
             transform.rotZ = 0;
@@ -1175,62 +1058,54 @@ void pushable_hitDetect(GameObject* obj)
             Matrix_TransformPoint(transformMtx, state->pushAmountZ, PUSHABLE_ZERO, state->pushAmountX,
                                   &obj->anim.velocityX, &groundHeightSum, &obj->anim.velocityZ);
             objMove(obj, obj->anim.velocityX, PUSHABLE_ZERO, obj->anim.velocityZ);
-            if ((state->flags & 4) == 0)
-            {
+            if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
                 pushable_resolveCollisions(obj, state);
             }
-            state->flags |= PUSHABLE_FLAG_MOVING_Y;
+            state->flags |= PUSHABLE_FLAG_MOVED;
         }
     }
-    state->moveFlags.b6 = 1;
-    switch (obj->anim.seqId)
-    {
-    case PUSHABLE_SEQID_DIM2_ICE_BLOCK:
-        if (mainGetBit(GAMEBIT_PushableRelated0272) != 0)
-        {
+    state->moveFlags.pushPromptEnabled = 1;
+    switch (obj->anim.seqId) {
+    case PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK:
+        if (mainGetBit(GAMEBIT_PushableRelated0272) != 0) {
             return;
         }
         break;
-    case 0x21e:
-        if (mainGetBit(state->gameBit) != 0)
-        {
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
+        if (mainGetBit(state->gameBit) != 0) {
             return;
         }
         break;
-    case 0x411:
-        if (mainGetBit(state->gameBit) != 0)
-        {
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
+        if (mainGetBit(state->gameBit) != 0) {
             return;
         }
         break;
-    case PUSHABLE_SEQID_METAL_PUSH_BLOCK:
-        state->moveFlags.b6 = 0;
+    case PUSHABLE_SEQ_ID_METAL_PUSH_BLOCK:
+        state->moveFlags.pushPromptEnabled = 0;
         break;
-    case PUSHABLE_SEQID_VFP_BLOCK2:
+    case PUSHABLE_SEQ_ID_VFP_BLOCK2:
         break;
     }
-    if ((state->flags & 4) != 0)
-    {
+    if ((state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
         obj->anim.velocityY -= PUSHABLE_GRAVITY * timeDelta;
         obj->anim.localPosY += obj->anim.velocityY * timeDelta;
     }
-    if ((state->flags & PUSHABLE_FLAG_MOVING_Y) != 0 || (state->flags & 4) != 0)
-    {
+    if ((state->flags & PUSHABLE_FLAG_MOVED) != 0 || (state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
         Obj_BuildTransformMatrices(obj);
-        for (i = 0; i < state->pointCount; i++)
-        {
+        for (i = 0; i < state->pointCount; i++) {
             Obj_TransformLocalPointToWorld(state->cornerLocal[i].x, state->cornerLocal[i].y, state->cornerLocal[i].z,
                                            &worldPoints[i].x, &worldPoints[i].y, &worldPoints[i].z, (u32)obj);
         }
-        hitDetect_calcSweptSphereBounds(&sweep, (f32*)state->cornerWorld, (f32*)worldPoints, radii.values, 4);
+        hitDetect_calcSweptSphereBounds(&sweep, (f32*)state->cornerWorld, (f32*)worldPoints, radii.values,
+                                        PUSHABLE_MAX_POINTS);
         sweep.minY -= PUSHABLE_SWEEP_Y_PADDING;
         sweep.maxY += PUSHABLE_SWEEP_Y_PADDING;
         hitDetectFn_800691c0(obj, &sweep, 1, 1);
         groundHeightSum = PUSHABLE_ZERO;
         groundPointCount = 0;
         waterHitCount = 0;
-        for (i = 0; i < state->pointCount; i++)
-        {
+        for (i = 0; i < state->pointCount; i++) {
             PushablePoint* point = &worldPoints[i];
             f32* groundHeight = &groundHeights[i];
             f32 y = point->y;
@@ -1240,32 +1115,25 @@ void pushable_hitDetect(GameObject* obj)
             waterDepthSum = PUSHABLE_ZERO;
             hitCount = hitDetectFn_80065e50(obj, point->x, y, point->z, &groundHits, -1, 0);
             foundGround = 0;
-            if (hitCount != 0)
-            {
-                for (j = 0; j < hitCount; j++)
-                {
+            if (hitCount != 0) {
+                for (j = 0; j < hitCount; j++) {
                     groundHit = groundHits[j];
-                    if ((s8)groundHit->surfaceType == 0xe)
-                    {
+                    if ((s8)groundHit->surfaceType == PUSHABLE_WATER_SURFACE_TYPE) {
                         f32 waterDepth = groundHit->height - obj->anim.localPosY;
-                        if (waterDepth > PUSHABLE_ZERO)
-                        {
+                        if (waterDepth > PUSHABLE_ZERO) {
                             waterDepthSum += waterDepth;
                             waterHitCount++;
                         }
-                    }
-                    else if (foundGround == 0)
-                    {
+                    } else if (foundGround == 0) {
                         f32 probeY = groundHit->height;
-                        if (probeY < PUSHABLE_MIN_GROUND_CLEARANCE + point->y && probeY > point->y - PUSHABLE_MAX_GROUND_STEP &&
-                            groundHit->normalY > PUSHABLE_MIN_GROUND_NORMAL_Y)
-                        {
+                        if (probeY < PUSHABLE_MIN_GROUND_CLEARANCE + point->y &&
+                            probeY > point->y - PUSHABLE_MAX_GROUND_STEP &&
+                            groundHit->normalY > PUSHABLE_MIN_GROUND_NORMAL_Y) {
                             GameObject* contactObj;
                             *groundHeight = probeY;
                             groundHeightSum += probeY;
                             contactObj = groundHits[j]->object;
-                            if (contactObj != NULL)
-                            {
+                            if (contactObj != NULL) {
                                 ObjHits_AddContactObject(contactObj, obj);
                             }
                             groundPointCount++;
@@ -1276,112 +1144,88 @@ void pushable_hitDetect(GameObject* obj)
             }
         }
         state->prevWaterDepth = state->waterDepth;
-        if (waterHitCount != 0)
-        {
+        if (waterHitCount != 0) {
             state->waterDepth = waterDepthSum / waterHitCount;
-        }
-        else
-        {
+        } else {
             state->waterDepth = PUSHABLE_ZERO;
         }
-        if (groundPointCount != 0 && state->timer_0x110 <= PUSHABLE_ZERO)
-        {
+        if (groundPointCount != 0 && state->airborneTimer <= PUSHABLE_ZERO) {
             obj->anim.velocityY = PUSHABLE_ZERO;
             obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + groundHeightSum / groundPointCount;
-            state->flags &= ~0xc;
-        }
-        else
-        {
-            if ((state->flags & 4) == 0)
-            {
-                state->timer_0x110 = PUSHABLE_AIRBORNE_TIMER;
+            state->flags &= ~PUSHABLE_FLAG_AIR_STATE_MASK;
+        } else {
+            if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
+                state->airborneTimer = PUSHABLE_AIRBORNE_TIMER;
             }
-            state->flags |= 0xc;
+            state->flags |= PUSHABLE_FLAG_AIR_STATE_MASK;
         }
     }
     Obj_BuildTransformMatrices(obj);
-    for (i = 0; i < state->pointCount; i++)
-    {
+    for (i = 0; i < state->pointCount; i++) {
         Obj_TransformLocalPointToWorld(state->probeLocal[i].x, state->probeLocal[i].y, state->probeLocal[i].z,
                                        &state->cornerWorld[i].x, &state->cornerWorld[i].y, &state->cornerWorld[i].z,
                                        (u32)obj);
     }
 }
 
-void pushable_update(GameObject* obj)
-{
+void pushable_update(GameObject* obj) {
     PushableState* state;
-    ObjPlacement* def;
+    ObjPlacement* placement;
     GameObject* player;
 
-    def = *(ObjPlacement**)&obj->anim.placementData;
+    placement = obj->anim.placement;
     state = obj->extra;
-    state->flags = state->flags & ~PUSHABLE_FLAG_MOVING_Y;
-    state->moveFlags.b7 = 0;
-    if (PUSHABLE_ZERO != obj->anim.velocityY)
-    {
-        state->flags = state->flags | PUSHABLE_FLAG_MOVING_Y;
+    state->flags = state->flags & ~PUSHABLE_FLAG_MOVED;
+    state->moveFlags.activelyPushed = 0;
+    if (PUSHABLE_ZERO != obj->anim.velocityY) {
+        state->flags = state->flags | PUSHABLE_FLAG_MOVED;
     }
-    if (state->moveFlags.b6 == 0 && playerIsDisguised(Obj_GetPlayerObject()) == 0)
-    {
-        *(u8*)&obj->anim.resetHitboxMode =
-            *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+    if (state->moveFlags.pushPromptEnabled == 0 && playerIsDisguised(Obj_GetPlayerObject()) == 0) {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+    } else {
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
-    else
-    {
-        *(u8*)&obj->anim.resetHitboxMode =
-            *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-    }
-    if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0 &&
-        mainGetBit(GAMEBIT_PushableRelated0913) == 0)
-    {
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0 && mainGetBit(GAMEBIT_PushableRelated0913) == 0) {
         (*gObjectTriggerInterface)->runSequence(0, obj, -1);
         mainSetBits(GAMEBIT_PushableRelated0913, 1);
         return;
     }
     player = Obj_GetPlayerObject();
-    if ((player != NULL && fn_80295A04(player, 10) != 0) || (state->flags & 4) != 0)
-    {
-        state->savePosDelay = 0x78;
+    if ((player != NULL && fn_80295A04(player, 10) != 0) || (state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
+        state->savePosDelay = PUSHABLE_ACTIVE_SAVE_DELAY;
     }
-    if (state->savePosDelay != 0)
-    {
+    if (state->savePosDelay != 0) {
         state->savePosDelay -= 1;
-    }
-    else
-    {
-        if (state->savePosEnabled != 0)
-        {
+    } else {
+        if (state->savePosEnabled != 0) {
             pushable_savePos(obj);
         }
     }
-    switch (obj->anim.seqId)
-    {
-    case 0x21e:
-        if (pushable_updateMagicGem(obj, state) == 0)
+    switch (obj->anim.seqId) {
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
+        if (pushable_updateMagicGem(obj, state) == 0) {
             break;
+        }
         return;
-    case 0x411:
-        if (pushable_updateMagicGem(obj, state) == 0)
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
+        if (pushable_updateMagicGem(obj, state) == 0) {
             break;
+        }
         return;
-    case PUSHABLE_SEQID_VFP_BLOCK2:
-        if (mainGetBit(state->gameBit) != 0)
-        {
-            obj->anim.localPosX = (f32)((f64)def->posX - PUSHABLE_CURTAIN_X_OFFSET);
-            obj->anim.localPosY = def->posY;
-            obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_Z_OFFSET + (f64)def->posZ);
+    case PUSHABLE_SEQ_ID_VFP_BLOCK2:
+        if (mainGetBit(state->gameBit) != 0) {
+            obj->anim.localPosX = (f32)((f64)placement->posX - PUSHABLE_CURTAIN_POSITION_X);
+            obj->anim.localPosY = placement->posY;
+            obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + (f64)placement->posZ);
         }
         pushable_updateCurtain((int)obj, state);
         break;
-    case PUSHABLE_SEQID_DIM2_ICE_BLOCK:
-        if (PUSHABLE_ZERO == state->prevWaterDepth && state->waterDepth > PUSHABLE_ZERO)
-        {
+    case PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK:
+        if (PUSHABLE_ZERO == state->prevWaterDepth && state->waterDepth > PUSHABLE_ZERO) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_curtainopen16);
             mainSetBits(GAMEBIT_PushableRelated0272, 1);
         }
-        if (mainGetBit(GAMEBIT_PushableRelated0272) != 0)
-        {
+        if (mainGetBit(GAMEBIT_PushableRelated0272) != 0) {
             Obj_RemoveFromUpdateList(obj);
             ObjHits_DisableObject(obj);
             obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
@@ -1389,69 +1233,61 @@ void pushable_update(GameObject* obj)
         break;
     }
     {
-        s16 t = obj->anim.seqId;
-        if (t != 0x54a && t != 0x5ae && t != 0x108 && state->savePosEnabled != 0 && (state->flags & 8) == 0)
-        {
+        s16 sequenceId = obj->anim.seqId;
+        if (sequenceId != PUSHABLE_SEQ_ID_VFP_BLOCK2 && sequenceId != PUSHABLE_SEQ_ID_5AE &&
+            sequenceId != PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK && state->savePosEnabled != 0 &&
+            (state->flags & PUSHABLE_FLAG_NO_GROUND_CONTACT) == 0) {
             saveGame_saveObjectPos(obj);
         }
     }
 }
 
-void pushable_init(GameObject* obj, PushableObjectDef* def)
-{
+void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     PushableState* state;
     ModelFileHeader* model;
-    int* entry;
+    int* activeModelSlot;
     int i;
-    f32* mtx;
-    f32 vtx[3];
+    f32* modelMtx;
+    f32 vertex[3];
 
-    if (((ObjPlacement*)def)->mapId == 0x30398)
-    {
-        def->requiredHitId = 1;
+    if (setup->base.mapId == PUSHABLE_FORCE_HIT_ID_MAP) {
+        setup->requiredHitId = 1;
+    } else {
+        *(s8*)&setup->requiredHitId = PUSHABLE_NO_HIT_ID;
     }
-    else
-    {
-        *(s8*)&def->requiredHitId = -1;
-    }
-    obj->anim.rotX = def->rotXByte << 8;
-    obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + ((ObjPlacement*)def)->posY;
-    ObjGroup_AddObject((int)obj, PUSHABLE_OBJGROUP);
-    objSetSlot(obj, 0x5a);
+    obj->anim.rotX = setup->rotXByte << 8;
+    obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + setup->base.posY;
+    ObjGroup_AddObject((int)obj, PUSHABLE_OBJECT_GROUP);
+    objSetSlot(obj, PUSHABLE_OBJECT_SLOT);
     obj->animEventCallback = pushable_SeqFn;
     state = obj->extra;
     state->pointCount = 0;
-    entry = (int*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
-    model = (ModelFileHeader*)*entry;
-    state->unk_B0 = *(int*)&def->unk1C;
-    state->scale = (f32) * &def->scaleRaw / PUSHABLE_SCALE_DENOM;
+    activeModelSlot = (int*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
+    model = (ModelFileHeader*)*activeModelSlot;
+    state->unkB0 = *(int*)&setup->unk1C;
+    state->scale = (f32) * &setup->scaleRaw / PUSHABLE_SCALE_DENOM;
     state->scale = state->scale * obj->anim.modelInstance->rootMotionScaleBase;
-    state->cullDistance =
-        state->scale * (f32)(u16)modelFileHeaderGetCullDistance((ModelFileHeader*)*entry) +
-        PUSHABLE_MIN_GROUND_CLEARANCE;
+    state->cullDistance = state->scale * (f32)(u16)modelFileHeaderGetCullDistance((ModelFileHeader*)*activeModelSlot) +
+                          PUSHABLE_MIN_GROUND_CLEARANCE;
     {
         f32 z0 = PUSHABLE_ZERO;
-        state->timer_0x14 = z0;
-        state->gameBit = def->gameBit;
+        state->renderTimer = z0;
+        state->gameBit = setup->gameBit;
         ObjAnim_SetCurrentMove((int)obj, 0, z0, 0);
     }
-    ObjMsg_AllocQueue(obj, 4);
+    ObjMsg_AllocQueue(obj, PUSHABLE_MSG_QUEUE_SIZE);
     ObjHits_EnableObject(obj);
     {
         f32 minY = PUSHABLE_INITIAL_CULL_DISTANCE;
-        for (i = 0; i < model->vertexCount; i++)
-        {
-            Model_GetVertexPosition(model, i, vtx);
-            if (vtx[1] < minY)
-            {
-                minY = vtx[1];
+        for (i = 0; i < model->vertexCount; i++) {
+            Model_GetVertexPosition(model, i, vertex);
+            if (vertex[1] < minY) {
+                minY = vertex[1];
             }
         }
-        for (i = 0; i < model->vertexCount; i++)
-        {
-            Model_GetVertexPosition(model, i, vtx);
-            if (vtx[1] == minY)
-            {
+        for (i = 0; i < model->vertexCount; i++) {
+            Model_GetVertexPosition(model, i, vertex);
+            if (vertex[1] == minY) {
                 int j;
                 int found;
                 f32 vx;
@@ -1459,139 +1295,111 @@ void pushable_init(GameObject* obj, PushableObjectDef* def)
 
                 found = 0;
                 j = 0;
-                vx = vtx[0];
-                vz = vtx[2];
+                vx = vertex[0];
+                vz = vertex[2];
 
-                for (; j < state->pointCount; j++)
-                {
-                    if (vx == state->cornerLocal[j].x && vz == state->cornerLocal[j].z)
-                    {
+                for (; j < state->pointCount; j++) {
+                    if (vx == state->cornerLocal[j].x && vz == state->cornerLocal[j].z) {
                         found = 1;
                         j = state->pointCount;
                     }
                 }
-                if (found == 0)
-                {
-                    state->cornerLocal[state->pointCount].x = *(f32*)vtx;
-                    state->cornerLocal[state->pointCount].y = vtx[1];
-                    state->cornerLocal[state->pointCount].z = vtx[2];
+                if (found == 0) {
+                    state->cornerLocal[state->pointCount].x = *(f32*)vertex;
+                    state->cornerLocal[state->pointCount].y = vertex[1];
+                    state->cornerLocal[state->pointCount].z = vertex[2];
                     state->pointCount += 1;
                 }
             }
         }
     }
-    if (state->pointCount > 4)
-    {
-        state->pointCount = 4;
+    if (state->pointCount > PUSHABLE_MAX_POINTS) {
+        state->pointCount = PUSHABLE_MAX_POINTS;
         debugPrintf(sPushPullObjectHitpointOverflow);
     }
     {
-        char* mi = *(char**)((char*)obj + 0x58);
-        mtx = (f32*)(mi + ((*(u8*)(mi + 0x10c) + 2) << 4) * 4);
+        char* transformState = *(char**)((char*)obj + 0x58);
+        modelMtx = (f32*)(transformState + ((*(u8*)(transformState + 0x10c) + 2) << 4) * 4);
     }
     {
-        for (i = 0; i < state->pointCount; i++)
-        {
+        for (i = 0; i < state->pointCount; i++) {
             state->probeLocal[i].x = state->cornerLocal[i].x;
             state->probeLocal[i].y = state->cornerLocal[i].y;
             state->probeLocal[i].z = state->cornerLocal[i].z;
-            if (state->probeLocal[i].x < PUSHABLE_ZERO)
-            {
+            if (state->probeLocal[i].x < PUSHABLE_ZERO) {
                 state->probeLocal[i].x += PUSHABLE_COLLISION_RADIUS;
-            }
-            else
-            {
+            } else {
                 state->probeLocal[i].x -= PUSHABLE_COLLISION_RADIUS;
             }
-            if (state->probeLocal[i].z < PUSHABLE_ZERO)
-            {
+            if (state->probeLocal[i].z < PUSHABLE_ZERO) {
                 state->probeLocal[i].z += PUSHABLE_COLLISION_RADIUS;
-            }
-            else
-            {
+            } else {
                 state->probeLocal[i].z -= PUSHABLE_COLLISION_RADIUS;
             }
-            if (state->cornerLocal[i].x < PUSHABLE_ZERO)
-            {
+            if (state->cornerLocal[i].x < PUSHABLE_ZERO) {
                 state->cornerLocal[i].x += PUSHABLE_UNIT_SCALE;
-            }
-            else
-            {
+            } else {
                 state->cornerLocal[i].x -= PUSHABLE_UNIT_SCALE;
                 state->cornerIdxPosX = i;
             }
-            if (state->cornerLocal[i].z < PUSHABLE_ZERO)
-            {
+            if (state->cornerLocal[i].z < PUSHABLE_ZERO) {
                 state->cornerLocal[i].z += PUSHABLE_UNIT_SCALE;
-            }
-            else
-            {
+            } else {
                 state->cornerLocal[i].z -= PUSHABLE_UNIT_SCALE;
                 state->cornerIdxPosZ = i;
             }
-            Matrix_TransformPoint(mtx, state->probeLocal[i].x, state->probeLocal[i].y, state->probeLocal[i].z,
+            Matrix_TransformPoint(modelMtx, state->probeLocal[i].x, state->probeLocal[i].y, state->probeLocal[i].z,
                                   &state->cornerWorld[i].x, &state->cornerWorld[i].y, &state->cornerWorld[i].z);
         }
     }
-    for (i = 0; i < state->pointCount; i++)
-    {
-        if (i != state->cornerIdxPosX && state->cornerLocal[i].x < PUSHABLE_ZERO)
-        {
-            if ((int)state->cornerLocal[i].z == (int)state->cornerLocal[state->cornerIdxPosX].z)
-            {
+    for (i = 0; i < state->pointCount; i++) {
+        if (i != state->cornerIdxPosX && state->cornerLocal[i].x < PUSHABLE_ZERO) {
+            if ((int)state->cornerLocal[i].z == (int)state->cornerLocal[state->cornerIdxPosX].z) {
                 state->cornerIdxNegX = i;
             }
         }
-        if (i != state->cornerIdxPosZ && state->cornerLocal[i].z < PUSHABLE_ZERO)
-        {
-            if ((int)state->cornerLocal[i].x == (int)state->cornerLocal[state->cornerIdxPosZ].x)
-            {
+        if (i != state->cornerIdxPosZ && state->cornerLocal[i].z < PUSHABLE_ZERO) {
+            if ((int)state->cornerLocal[i].x == (int)state->cornerLocal[state->cornerIdxPosZ].x) {
                 state->cornerIdxNegZ = i;
             }
         }
     }
     state->savePosEnabled = 1;
-    switch (obj->anim.seqId)
-    {
-    case 0x21e:
+    switch (obj->anim.seqId) {
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
         pushable_initMagicGem(obj, state);
         break;
-    case 0x411:
+    case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
         pushable_initMagicGem(obj, state);
         break;
-    case PUSHABLE_SEQID_WC_PUSH_BLOCK:
+    case PUSHABLE_SEQ_ID_WC_PUSH_BLOCK:
         pushable_initWcPushBlock(obj, state);
         break;
-    case PUSHABLE_SEQID_DIM_PUSH_BLOCK:
-        if (def->gameBit > -1 && mainGetBit(def->gameBit) != 0)
-        {
-            state->flags = state->flags | 0x81;
-            *(u8*)&obj->anim.resetHitboxMode =
-                *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+    case PUSHABLE_SEQ_ID_DIM_PUSH_BLOCK:
+        if (setup->gameBit > PUSHABLE_NO_GAME_BIT && mainGetBit(setup->gameBit) != 0) {
+            state->flags = state->flags | (PUSHABLE_FLAG_RESTORED | PUSHABLE_FLAG_PUSH_LOCKED);
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             pushable_savePos(obj);
         }
         state->savePosEnabled = 0;
         break;
     default:
-        if (def->gameBit > -1 && mainGetBit(def->gameBit) != 0)
-        {
+        if (setup->gameBit > PUSHABLE_NO_GAME_BIT && mainGetBit(setup->gameBit) != 0) {
             state->flags = state->flags | PUSHABLE_FLAG_RESTORED;
         }
         break;
     }
     {
-        char* r = *(char**)&obj->anim.modelState;
-        if (r != NULL)
-        {
-            *(u32*)(r + 0x30) = *(u32*)(r + 0x30) | 0xa10;
+        char* modelState = *(char**)&obj->anim.modelState;
+        if (modelState != NULL) {
+            *(u32*)(modelState + 0x30) = *(u32*)(modelState + 0x30) | 0xA10;
             (*(char**)&obj->anim.modelState)[0x3a] = 0x60;
             (*(char**)&obj->anim.modelState)[0x3b] = 0x40;
         }
     }
     state->flags = state->flags | PUSHABLE_FLAG_INITIALIZED;
-    if (arrayIndexOf(gPushableSavedMapIds, gPushableSavedMapIdCount, ((ObjPlacement*)def)->mapId) != -1)
-    {
+    if (arrayIndexOf(gPushableSavedMapIds, gPushableSavedMapIdCount, setup->base.mapId) != -1) {
         state->flags = state->flags | PUSHABLE_FLAG_RESTORED;
-        arrayRemoveUnordered(gPushableSavedMapIds, &gPushableSavedMapIdCount, ((ObjPlacement*)def)->mapId);
+        arrayRemoveUnordered(gPushableSavedMapIds, &gPushableSavedMapIdCount, setup->base.mapId);
     }
 }
