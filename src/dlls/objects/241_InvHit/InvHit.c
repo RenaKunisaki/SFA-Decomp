@@ -1,5 +1,5 @@
 /*
- * invhit (DLL 0xF1) - "invisible hit" volume objects of the pushable
+ * InvHit (DLL 0xF1) - "invisible hit" volume objects of the pushable
  * effect family. One placement type drives several distinct hit-volume
  * behaviours selected by InvHitState.mode (def[0x1a], 0..7):
  *   0  proximity damage: scan the player (and Tricky) and bump the
