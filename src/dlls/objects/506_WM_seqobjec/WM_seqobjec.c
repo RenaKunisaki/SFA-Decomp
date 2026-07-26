@@ -1,47 +1,14 @@
-/* DLL 0x01FA - wmseqobject / WM_ObjCreator group. TU: 0x801EFF7C-0x801F02F0. */
-#include "main/dll/WC/dll_01F9_wmobjcreator.h"
-#include "game/objects/object_setup.h"
+/* WM_seqobjec (DLL 0x01FA) */
 #include "dlls/object_descriptor.h"
-
-STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
-
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnMode) == 0x1A);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnPeriod) == 0x1C);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, yaw) == 0x1E);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnJitter) == 0x1F);
-STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
-
-STATIC_ASSERT(sizeof(WmGalleonState) == 0x10);
-
 #include "game/objects/object.h"
+#include "main/dll/WM/dll_01FA_wmseqobject.h"
+#include "main/dll/wmseqobjectsetup_struct.h"
+#include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/objseq.h"
-#include "main/screen_transition.h"
-#include "main/gamebits.h"
-#include "main/dll/dll1fbsetup_struct.h"
-#include "main/dll/wmgalleonsetup_struct.h"
-#include "main/dll/wmseqobjectsetup_struct.h"
-#include "main/dll/wmgalleonstate_struct.h"
-#include "main/dll/dll1fbstate_struct.h"
-#include "main/dll/WM/dll_01FA_wmseqobject.h"
 #include "main/object_render.h"
+#include "main/screen_transition.h"
 
-STATIC_ASSERT(sizeof(Dll1FBState) == 0xc);
-STATIC_ASSERT(offsetof(Dll1FBState, baseMove) == 0x04);
-STATIC_ASSERT(offsetof(Dll1FBState, triggerMode) == 0x06);
-STATIC_ASSERT(offsetof(Dll1FBState, hideModel) == 0x09);
-STATIC_ASSERT(sizeof(WMGalleonState) == 0x10);
-STATIC_ASSERT(offsetof(WMGalleonState, savedX) == 0x00);
-STATIC_ASSERT(offsetof(WMGalleonState, savedY) == 0x04);
-STATIC_ASSERT(offsetof(WMGalleonState, savedZ) == 0x08);
-STATIC_ASSERT(offsetof(WMGalleonState, mapEventsLatched) == 0x0C);
-STATIC_ASSERT(offsetof(WMGalleonState, savedYaw) == 0x0E);
-STATIC_ASSERT(offsetof(Dll1FBSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(Dll1FBSetup, baseMove) == 0x19);
-STATIC_ASSERT(offsetof(Dll1FBSetup, triggerMode) == 0x1a);
-STATIC_ASSERT(offsetof(Dll1FBSetup, objectParam) == 0x1c);
-STATIC_ASSERT(offsetof(WMGalleonSetup, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(WMSeqObjectSetup, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(WMSeqObjectSetup, setupType) == 0x19);
 

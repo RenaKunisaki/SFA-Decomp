@@ -1876,7 +1876,7 @@ config.libs = [
             Object(NonMatching, "dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/wcdial.c"),
             Object(NonMatching, "dlls/objects/504_WM_Galleon/WM_Galleon.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/WM/dll_01FA_wmseqobject.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/506_WM_seqobjec/WM_seqobjec.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_01FB_dll1fb.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_01FC_laserbeam.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_01FE_pressureswitch.c", cflags=cflags_dll_noopt),
