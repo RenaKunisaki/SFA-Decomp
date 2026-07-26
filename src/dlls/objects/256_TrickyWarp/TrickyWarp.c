@@ -25,6 +25,8 @@
 #include "main/gamebits.h"
 #include "main/obj_group.h"
 
+extern f32 lbl_803E38A0;
+
 typedef struct TrickyWarpCurveEntry
 {
     u8 pad00[3];
@@ -48,8 +50,6 @@ typedef struct TrickyWarpCurveNode
 #define GAMEBIT_TRICKY_AVAILABLE 0x4e5
 #define TRICKYWARP_OBJ_GROUP     0x4b
 #define ROMCURVE_TYPE_TRICKYWARP '$'
-
-extern f32 lbl_803E38A0;
 
 void TrickyWarp_free(GameObject* obj)
 {

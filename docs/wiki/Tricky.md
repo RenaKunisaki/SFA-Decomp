@@ -272,7 +272,7 @@ is unconfirmed.
 
 | bit | ability | our function(s) |
 |-----|---------|------------------|
-| `0x01` | Call Tricky | `src/main/dll/dll_0100_trickywarp.c` (`TrickyWarp_*`) — reachability/warp-in logic for the whistle |
+| `0x01` | Call Tricky | `src/dlls/objects/256_TrickyWarp/TrickyWarp.c` (`TrickyWarp_*`) — reachability/warp-in logic for the whistle |
 | `0x02` | Find Secret | `trickyDigTunnel` (`src/dlls/objects/196_Tricky/tricky.c`) — dig up buried items |
 | `0x08` | Tricky Stay! | not separately traced in this pass beyond the ability bit itself |
 | `0x10` | Use Flame | `trickyFlame` (`src/dlls/objects/196_Tricky/tricky.c`) |
