@@ -12,9 +12,6 @@
  * placement's regrow value, frees itself, or hides + drops off the update
  * list. Lightning state holds an objCreateLight model light freed on object
  * free.
- *
- * This TU has no .data section; the ObjectDescriptor wiring these handlers is
- * defined in another DR DLL translation unit.
  */
 #include "sys/objects.h"
 #include "main/frame_timing.h"
@@ -301,5 +298,3 @@ ObjectDescriptor gDrakorDThornBushObjDescriptor = {
     (ObjectDescriptorCallback)drakord_thornbush_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drakord_thornbush_getExtraSize,
 };
-
-u32 lbl_8032A110[12] = {0xFFFFFFFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
