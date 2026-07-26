@@ -8,7 +8,6 @@
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
-
 #include "main/objtexture.h"
 #include "main/screen_transition.h"
 #include "main/worldobj.h"
@@ -22,22 +21,40 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0000_gameui_api.h"
 
-u8 gWorldObjVariantAlphaTable[8] = {0xFF, 0x99, 0x1A, 0, 0, 0, 0, 0};
+#define GREAT_FOX_EFFECT_COUNT 10
 
+/* World-map object defNos (WorldObjSetup.base.objectId), names read from retail
+ * OBJECTS.bin at def+0x91; the WORLD* set all belongs to DLL 0x1D3. The
+ * WORLDOBJ_SUN_OBJ case spawns 11 scattered WORLDOBJ_SUNRAY_OBJ children, each
+ * with random rotation on all axes and random per-axis spin.
+ * 0x5dc (retail "WORLDcloudl") is left raw: the 11-char name is truncated and
+ * its case body is empty, so nothing disambiguates the expansion. */
+#define WORLDOBJ_CLOUDRUNNER_OBJ   0x5d5
+#define WORLDOBJ_DRAGONROCK_OBJ    0x5d6
+#define WORLDOBJ_WALLEDCITY_OBJ    0x5d7
+#define WORLDOBJ_DARKICE_OBJ       0x5d8
+#define WORLDOBJ_SUNRAY_OBJ        0x5da
+#define WORLDOBJ_SUNFLARE_OBJ      0x5db
+#define WORLDOBJ_PATH1_OBJ         0x5dd
+#define WORLDOBJ_ARWING_OBJ        0x5de
+#define WORLDOBJ_GREATFOX_OBJ      0x5df
+#define WORLDOBJ_SUN_OBJ           0x5e2
+#define WORLDOBJ_PEPPER_OBJ        0x5e3
+#define WORLDOBJ_PATH2_OBJ         0x5ed
+#define WORLDOBJ_PATH3_OBJ         0x5ee
+#define WORLDOBJ_PATH4_OBJ         0x5ef
+#define WORLDOBJ_PATH5_OBJ         0x5f0
+#define WORLDOBJ_PATH6_OBJ         0x5f1
+#define WORLDOBJ_PATH7_OBJ         0x5f2
+#define WORLDOBJ_PATH8_OBJ         0x5f3
+#define WORLDOBJ_ASTEROID_OBJ      0x5f4
+#define WORLDOBJ_SKYSCAPE_OBJ      0x5f5
+#define WORLDOBJ_COMM_OBJ          0x602
+#define WORLDOBJ_ASTEROIDGEN_OBJ   0x61e
+#define WORLDOBJ_ARROW_OBJ         0x740
+#define WORLDOBJ_COMET_OBJ         0x80f
 
-extern f32 lbl_803E666C;
-extern f32 lbl_803E6668;
-extern f32 lbl_803E6664;
-extern f32 lbl_803E6660;
-extern f32 lbl_803E665C;
-extern f32 lbl_803E6658;
-extern f32 lbl_803E6654;
-extern f32 lbl_803E6650;
-extern f32 lbl_803E664C;
-extern f32 lbl_803E6648;
-extern f32 lbl_803E6644;
-#define GREAT_FOX_EFFECT_COUNT    10
-typedef struct
+typedef struct GreatFoxFxEntry
 {
     f32 offsetX;
     f32 offsetY;
@@ -47,8 +64,48 @@ typedef struct
     u8 mask;
     u8 pad12[2];
 } GreatFoxFxEntry;
+
 extern GreatFoxFxEntry gGreatFoxEffects[GREAT_FOX_EFFECT_COUNT];
+extern f32 gWorldObjAdvanceMoveTable[];
 extern f32 lbl_803E6640;
+extern f32 lbl_803E6644;
+extern f32 lbl_803E6648;
+extern f32 lbl_803E664C;
+extern f32 lbl_803E6650;
+extern f32 lbl_803E6654;
+extern f32 lbl_803E6658;
+extern f32 lbl_803E665C;
+extern f32 lbl_803E6660;
+extern f32 lbl_803E6664;
+extern f32 lbl_803E6668;
+extern f32 lbl_803E666C;
+extern f32 lbl_803E6678;
+extern f32 lbl_803E667C;
+extern f32 gWorldObjPi;
+extern f32 gWorldObjAngleHalfCircle;
+extern f32 lbl_803E6688;
+extern f32 lbl_803E668C;
+extern f32 lbl_803E6690;
+extern f32 lbl_803E6694;
+extern f32 lbl_803E6698;
+extern f32 lbl_803E669C;
+extern f32 lbl_803E66A0;
+extern f32 lbl_803E66A4;
+extern f32 lbl_803E66A8;
+extern f32 lbl_803E66AC;
+extern f32 lbl_803E66B0;
+extern f32 lbl_803E66B4;
+extern f32 lbl_803E66B8;
+extern f32 lbl_803E66C8;
+extern f32 lbl_803E66CC;
+extern f32 lbl_803E66D0;
+extern f32 lbl_803E66D4;
+extern f32 lbl_803E66D8;
+
+u8 gWorldObjVariantAlphaTable[8] = {0xFF, 0x99, 0x1A, 0, 0, 0, 0, 0};
+int gWorldObjEffectRenderDelay;
+int gWorldObjEffectTargetObj;
+
 void worldobj_spawnGreatFoxEffects(GameObject* obj)
 {
     WorldObjEffectParams params;
@@ -105,75 +162,6 @@ void worldobj_spawnAsteroidBatch(GameObject* obj, int xMin, int xMax, int yMin, 
         (*gPartfxInterface)->spawnObject((void*)obj, dispatchId, &params, 2, -1, NULL);
     }
 }
-
-/* World-map object defNos (WorldObjSetup.base.objectId), names read from retail
- * OBJECTS.bin at def+0x91; the WORLD* set all belongs to DLL 0x1D3. The
- * WORLDOBJ_SUN_OBJ case spawns 11 scattered WORLDOBJ_SUNRAY_OBJ children, each
- * with random rotation on all axes and random per-axis spin.
- * 0x5dc (retail "WORLDcloudl") is left raw: the 11-char name is truncated and
- * its case body is empty, so nothing disambiguates the expansion. */
-#define WORLDOBJ_CLOUDRUNNER_OBJ   0x5d5
-#define WORLDOBJ_DRAGONROCK_OBJ    0x5d6
-#define WORLDOBJ_WALLEDCITY_OBJ    0x5d7
-#define WORLDOBJ_DARKICE_OBJ       0x5d8
-#define WORLDOBJ_SUNRAY_OBJ        0x5da
-#define WORLDOBJ_SUNFLARE_OBJ      0x5db
-#define WORLDOBJ_PATH1_OBJ         0x5dd
-#define WORLDOBJ_ARWING_OBJ        0x5de
-#define WORLDOBJ_GREATFOX_OBJ      0x5df
-#define WORLDOBJ_SUN_OBJ           0x5e2
-#define WORLDOBJ_PEPPER_OBJ        0x5e3
-#define WORLDOBJ_PATH2_OBJ         0x5ed
-#define WORLDOBJ_PATH3_OBJ         0x5ee
-#define WORLDOBJ_PATH4_OBJ         0x5ef
-#define WORLDOBJ_PATH5_OBJ         0x5f0
-#define WORLDOBJ_PATH6_OBJ         0x5f1
-#define WORLDOBJ_PATH7_OBJ         0x5f2
-#define WORLDOBJ_PATH8_OBJ         0x5f3
-#define WORLDOBJ_ASTEROID_OBJ      0x5f4
-#define WORLDOBJ_SKYSCAPE_OBJ      0x5f5
-#define WORLDOBJ_COMM_OBJ          0x602
-#define WORLDOBJ_ASTEROIDGEN_OBJ   0x61e
-#define WORLDOBJ_ARROW_OBJ         0x740
-#define WORLDOBJ_COMET_OBJ         0x80f
-
-extern f32 lbl_803E6678;
-int gWorldObjEffectRenderDelay;
-int gWorldObjEffectTargetObj;
-extern f32 lbl_803E66B4;
-extern f32 lbl_803E66C8;
-extern f32 lbl_803E66CC;
-extern f32 lbl_803E66D0;
-extern f32 lbl_803E66D4;
-extern f32 lbl_803E66A0;
-extern f32 lbl_803E66AC;
-extern f32 lbl_803E66D8;
-extern f32 gWorldObjAdvanceMoveTable[];
-extern f32 lbl_803E667C;
-extern f32 gWorldObjPi;
-extern f32 gWorldObjAngleHalfCircle;
-extern f32 lbl_803E6688;
-extern f32 lbl_803E668C;
-extern f32 lbl_803E6690;
-extern f32 lbl_803E6694;
-extern f32 lbl_803E6698;
-extern f32 lbl_803E669C;
-extern f32 lbl_803E66A4;
-extern f32 lbl_803E66A8;
-extern f32 lbl_803E66B0;
-extern f32 lbl_803E66B8;
-
-int worldobj_getExtraSize(void);
-void worldobj_hitDetect(void);
-void worldobj_release(void);
-void worldobj_initialise(void);
-int worldobj_getObjectTypeId(int* obj);
-void worldobj_free(GameObject* obj);
-void worldobj_init(GameObject* obj, int arg);
-void worldobj_spawnGreatFoxEffects(GameObject* obj);
-void worldobj_spawnAsteroidBatch(GameObject* obj, int xMin, int xMax, int yMin, int yMax, int count, int dispatchId);
-void worldobj_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-
 
 int worldobj_getExtraSize(void)
 {
@@ -727,7 +715,6 @@ GreatFoxFxEntry gGreatFoxEffects[] = {
 
 f32 gWorldObjAdvanceMoveTable[4] = {0.02f, 0.01f, 0.01f, 0.02f};
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 ObjectDescriptor gWorldObjObjDescriptor = {
     0,
     0,

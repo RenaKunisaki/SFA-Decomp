@@ -295,7 +295,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/sky.c` | 2810 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/sky.c` | 3171 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/track_dolphin.c` | 1447 | `inv = (Camera_DistanceToCurrentViewPosition((obj)->anim.worldPosX, (obj)->anim.worldPosY, (obj)->anim.worldPosZ) -` |
-| `src/main/worldobj.c` | 473 | `view = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/467/467.c` | 463 | `view = Camera_GetCurrentViewSlot();` |
 
 ## Interpretation rules
 
