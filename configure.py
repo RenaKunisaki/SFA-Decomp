@@ -1641,7 +1641,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/301_LFXEmitter/LFXEmitter.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/warppad.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "dlls/objects/300_Transporter/Transporter.c", cflags=cflags_dll_noopt_noloopinv),
-            Object(MatchingFor("GSAE01"), "main/dll/CF/dll_012E_cflightwall.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/302/302.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_012F_barrelpad.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_0131_cfdoorlight.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/holopoint.c"),

@@ -1,5 +1,5 @@
 /*
- * cflightwall (DLL 0x12E) - static light-wall prop at CF (CloudRunner
+ * CFLightWall (DLL 0x12E) - static light-wall prop at CF (CloudRunner
  * Fortress). init seeds the three rotation bytes and optional uniform
  * scale from the placement; render just draws the model.
  */

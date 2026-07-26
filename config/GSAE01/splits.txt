@@ -2104,7 +2104,7 @@ dlls/objects/300_Transporter/Transporter.c:
 	.text       start:0x80190BD4 end:0x80191A70
 	.data       start:0x80321FF8 end:0x80322058
 
-main/dll/CF/dll_012E_cflightwall.c:
+dlls/objects/302/302.c:
 	.text       start:0x80191A70 end:0x80191B60
 	.data       start:0x80322058 end:0x80322090
 	.sdata2     start:0x803E3EE8 end:0x803E3F00
