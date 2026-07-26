@@ -513,7 +513,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1D3 | worldobj (+WORLDcloudr, WORLDdragro, WORLDwalled, WORLDdarkic, WORLDcloudl, WORLDpath1, WORLDpath2, WORLDpath3, WORLDpath4, WORLDpath5, WORLDpath6, WORLDpath7, WORLDpath8, WORLDarwing, WORLDgreatf, WORLDsun, WORLDsunray, WORLDpepper, WORLDsunfla, WORLDComet, WORLDastGen, WORLDhalo, WORLDhalobr, WORLDarrow) | COMPLETE | dlls/objects/467/467.c | = (canonical) | No single recovered TU basename |
 | 0x1D4 | WORLDAstero | COMPLETE | dlls/objects/468_WORLDAstero/WORLDAstero.c | = (canonical) | — |
 | 0x1D5 | DIM2Conveyo | COMPLETE | dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c | = (canonical) | — |
-| 0x1D6 | — | NO-RETAIL-NAME | main/dll/dll_01D6_dll1d6.c | = (canonical) | — |
+| 0x1D6 | — | COMPLETE | dlls/objects/470/470.c | = (canonical) | No recovered retail basename |
 | 0x1D7 | DIM2SnowBall | CONFIRMED | main/dll/dll_01D7_dim2snowball.c | main/dll/DIM/dll_01D7_dim2snowball.c | — |
 | 0x1D8 | DIM2PathGenerator | CONFIRMED | main/dll/dll_01D8_dim2pathgenerator.c | main/dll/DIM/dll_01D8_dim2pathgenerator.c | — |
 | 0x1D9 | DIM2PrisonMammoth | CONFIRMED | main/dll/dll_01D9_dim2prisonmammoth.c | main/dll/DIM/dll_01D9_dim2prisonmammoth.c | — |
