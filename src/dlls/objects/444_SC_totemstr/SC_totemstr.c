@@ -1,10 +1,9 @@
 /*
- * LightFoot Village "Test of Strength" (DLL 0x1BC): a push-of-war against
+ * SC_totemstr (DLL 0x1BC): LightFoot Village "Test of Strength", a push-of-war against
  * MuscleFoot - both shove opposite sides of a rotating mechanism, and
  * button-mashing hard enough pushes him into the pit to win. platform1_control
  * is the minigame; it runs while the village map-event 0xe is in state 6.
- * Winning sets GameBit 0x784, losing sets 0x786. (This file also carries the
- * FElevControl descriptor tail.)
+ * Winning sets GameBit 0x784, losing sets 0x786.
  */
 #include "main/camera_interface.h"
 #include "main/game_timer_control_api.h"
@@ -34,8 +33,6 @@ u16 lbl_803DC070[4] = {0x2B6, 0x2D7, 0x2D8, 0};
 /* LightFoot Village map-event id (tug-of-war runs while its mode == 6). */
 #define SCTOTEMSTRENGTH_MAP_LIGHTFOOT 0xe
 
-
-
 int gTotemStrengthDeactivateTimer;
 
 /* Camera mode id passed to setMode()/getMode() (== the target camera-mode DLL number). */
@@ -54,8 +51,6 @@ int gTotemStrengthDeactivateTimer;
 
 #define SC_TOTEMSTRENGTH_OBJFLAG_HIDDEN             0x4000
 #define SC_TOTEMSTRENGTH_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-
 
 /* platform1_control: tug-of-war rope
  * minigame. Resolves the anchor object, applies sequence events, then per
@@ -461,7 +456,6 @@ void sc_totemstrength_release(void)
 void sc_totemstrength_initialise(void)
 {
 }
-
 
 ObjectDescriptor gSC_totemstrengthObjDescriptor = {
     0,
