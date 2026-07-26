@@ -1,6 +1,6 @@
 /*
  * DLL 0x262 - the homing energy projectile fired by the
- * Drakor boss (dll_024D_bossdrakor calls drakormissile_startActiveLaunch
+ * Drakor boss (BossDrakor, DLL 0x24D, calls drakormissile_startActiveLaunch
  * to arm a pooled missile). The extra block (0x38 bytes) holds a model
  * light handle, a state machine (IDLE/FADEOUT/EXPLODING/STRAIGHT/HOMING),
  * a countdown timer and five spiralling trail-render yaw/pitch phases.

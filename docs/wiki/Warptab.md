@@ -198,7 +198,7 @@ strong independent confirmation that the wiki's table is accurate:
 | `0x73` | Ocean Force Point | `DF/dll_022D_dfpseqpoint.c` |
 | `0x77` | DarkIce Mines Arwing landing scene | `ARW/dll_029A_arwarwing.c`; `DIM/dim2icicle.c` |
 | `0x78` | Walled City Arwing landing spot | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |
-| `0x79` | Dragon Rock Arwing landing spot | `ARW/dll_029A_arwarwing.c`; `dll_024D_bossdrakor.c` |
+| `0x79` | Dragon Rock Arwing landing spot | `ARW/dll_029A_arwarwing.c`; `dlls/objects/589_BossDrakor/BossDrakor.c` |
 | `0x7C` (124) | VolcanoForcePoint | `light.c`: `warpToMap(124, 0)` (×2) |
 | `0x7E` | LinkA (crashes) | `WM/dll_020C_wmspiritplace.c`; `SH/dll_01B0_shswapston.c` |
 | `0x7F` | GreatFox | `dll_011B_landedarwing.c` |

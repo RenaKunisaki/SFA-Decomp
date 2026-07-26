@@ -1,5 +1,5 @@
 /*
- * bossdrakor (DLL 0x24D) - the boss dragon "Drakor" encounter object.
+ * BossDrakor (DLL 0x24D) - the boss dragon "Drakor" encounter object.
  *
  * Drives the flying boss: it follows ROM curve paths to move, smooth-turns
  * toward its velocity or yaws to face the player, advances animation moves,

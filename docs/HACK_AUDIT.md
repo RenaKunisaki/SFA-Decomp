@@ -162,7 +162,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/fileio | 100.0000 | 85.6233 | -14.3767 |
 | main/main/dll/DIM/dimgut2group | 100.0000 | 85.8364 | -14.1636 |
 | main/dlls/objects/594_KT_Lazerwal/KT_Lazerwal | 100.0000 | 85.8575 | -14.1425 |
-| main/main/dll/dll_024D_bossdrakor | 99.5893 | 85.5837 | -14.0056 |
+| main/dlls/objects/589_BossDrakor/BossDrakor | 99.5893 | 85.5837 | -14.0056 |
 | main/main/dll/dll_01AA_bombplantspore | 100.0000 | 86.1777 | -13.8223 |
 | main/main/dll/duster_wb | 100.0000 | 86.2121 | -13.7879 |
 | main/dlls/objects/625/625 | 100.0000 | 86.2241 | -13.7759 |
