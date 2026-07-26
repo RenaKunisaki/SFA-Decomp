@@ -731,7 +731,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2AD | softbody (+LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL) | GUESSED | main/dll/dll_02AD_softbody.c | = (canonical) | — |
 | 0x2AE | WaterFlowWe | CONFIRMED | main/dll/dll_02AE_waterflowwe.c | = (canonical) | — |
 | 0x2AF | Tree (+SH_FernTree, FernTree, smallfern, tallpalmtre, JungleTree, RootPlant, SnowTree1, SnowTree2, SnowTree3, SnowTree4, SnowFruitTr) | CONFIRMED | main/dll/dll_02AF_tree.c | = (canonical) | — |
-| 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | main/dll/dll_02B0_brokenpipe.c | = (canonical) | — |
+| 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | dlls/objects/688_BrokenPipe/BrokenPipe.c | = (canonical) | — |
 | 0x2B1 | CmbSrc (+CmbSrcTPole, CmbSrcTWall, ThusterSour) | COMPLETE | dlls/objects/689_CmbSrc/CmbSrc.c | = (canonical) | — |
 | 0x2B2 | DustMoteSou (+TailLightSo, FireWorkSou) | CONFIRMED | dlls/objects/690_DustMoteSou/DustMoteSou.c | = (canonical) | — |
 | 0x2B3 | — (+vortex, SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | NO-RETAIL-NAME | dlls/objects/691/691.c | = (canonical) | — |

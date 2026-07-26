@@ -3956,7 +3956,7 @@ main/dll/dll_02AF_tree.c:
 	.data       start:0x8032BBE0 end:0x8032BCC8
 	.sdata2     start:0x803E72F8 end:0x803E7338
 
-main/dll/dll_02B0_brokenpipe.c:
+dlls/objects/688_BrokenPipe/BrokenPipe.c:
 	.text       start:0x80236154 end:0x80236298
 	.data       start:0x8032BCC8 end:0x8032BD00
 	.sdata2     start:0x803E7338 end:0x803E7358
