@@ -2947,7 +2947,7 @@ dlls/objects/430_SH_LevelCon/SH_LevelCon.c:
 	.data       start:0x80327618 end:0x803277A8
 	.sdata2     start:0x803E54B0 end:0x803E54C0
 
-main/dll/SH/dll_01AF_shswaplift.c:
+dlls/objects/431_SH_swaplift/SH_swaplift.c:
 	.text       start:0x801D981C end:0x801D9B1C
 	.data       start:0x803277A8 end:0x803277E0
 	.sdata      start:0x803DC058 end:0x803DC060

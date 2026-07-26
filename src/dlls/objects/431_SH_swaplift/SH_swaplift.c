@@ -1,5 +1,5 @@
 /*
- * shswaplift / warpstonelift (DLL 0x1AF) - the WarpStone lift platform.
+ * SH_swaplift / warpstonelift (DLL 0x1AF) - the WarpStone lift platform.
  *
  * The platform tracks whether a relevant character is standing in range
  * (scanning the per-object proximity list), then runs a small state

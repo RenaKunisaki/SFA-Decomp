@@ -474,7 +474,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1AC | SH_queenear | COMPLETE | dlls/objects/428_SH_queenear/SH_queenear.c | = (canonical) | — |
 | 0x1AD | SH_thorntail | COMPLETE | dlls/objects/429_SH_thorntai/SH_thorntai.c | = (canonical) | — |
 | 0x1AE | SH_LevelControl | COMPLETE | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | = (canonical) | — |
-| 0x1AF | SH_swaplift | RAW | main/dll/dll_01AF_shswaplift.c | main/dll/SH/dll_01AF_shswaplift.c | — |
+| 0x1AF | SH_swaplift | COMPLETE | dlls/objects/431_SH_swaplift/SH_swaplift.c | = (canonical) | — |
 | 0x1B0 | SH_swapston | RAW | main/dll/dll_01B0_shswapston.c | main/dll/SH/dll_01B0_shswapston.c | — |
 | 0x1B1 | SH_staff | COMPLETE | main/dll/dll_01B1_shstaff.c | main/dll/SH/dll_01B1_shstaff.c | — |
 | 0x1B2 | SH_staffHaze | CONFIRMED | main/dll/dll_01B2_shstaffhaze.c | main/dll/SH/dll_01B2_shstaffhaze.c | — |
@@ -808,7 +808,7 @@ name was a deliberate choice by a previous carve:
 | 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | dlls/objects/428_SH_queenear/SH_queenear.c | COMPLETE |
 | 0x1AD | main/dll/dll_01AD_shthorntail.c | dlls/objects/429_SH_thorntai/SH_thorntai.c | COMPLETE |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | COMPLETE |
-| 0x1AF | main/dll/dll_01AF_shswaplift.c | main/dll/SH/dll_01AF_shswaplift.c | RAW |
+| 0x1AF | main/dll/dll_01AF_shswaplift.c | dlls/objects/431_SH_swaplift/SH_swaplift.c | COMPLETE |
 | 0x1B0 | main/dll/dll_01B0_shswapston.c | main/dll/SH/dll_01B0_shswapston.c | RAW |
 | 0x1B1 | main/dll/dll_01B1_shstaff.c | main/dll/SH/dll_01B1_shstaff.c | COMPLETE |
 | 0x1B2 | main/dll/dll_01B2_shstaffhaze.c | main/dll/SH/dll_01B2_shstaffhaze.c | CONFIRMED |
