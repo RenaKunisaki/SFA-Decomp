@@ -3469,9 +3469,9 @@ dlls/objects/556/556.c:
 	.data       start:0x803298D0 end:0x80329908
 	.sdata2     start:0x803E6398 end:0x803E63B8
 
-main/dll/DF/dll_022E_dfpdoorswitch.c:
+dlls/objects/558/558.c:
 	.text       start:0x802050C4 end:0x80205168
-	.data       start:0x80329940 end:0x80329968
+	.data       start:0x80329908 end:0x80329968
 
 dlls/objects/557_DFP_seqpoin/DFP_seqpoin.c:
 	.text       start:0x80205168 end:0x802057CC
