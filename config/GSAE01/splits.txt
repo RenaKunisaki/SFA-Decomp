@@ -2868,7 +2868,7 @@ dlls/objects/420/420.c:
 	.data       start:0x803269C0 end:0x803269F8
 	.sdata2     start:0x803E5270 end:0x803E5278
 
-main/dll/NW/dll_01A5_nwlevcontrol.c:
+dlls/objects/421_NW_levcontr/NW_levcontr.c:
 	.text       start:0x801CFD68 end:0x801D069C
 	.data       start:0x803269F8 end:0x80326B98
 	.sdata2     start:0x803E5278 end:0x803E5284
