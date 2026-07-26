@@ -654,7 +654,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x260 | ProximityMine (+CRDropBomb) | CONFIRMED | main/proximitymine_update.c | main/dll/dll_0260_proximitymine.c | engine/SDK host: main/proximitymine_update.c |
 | 0x261 | DR_LaserCannon | CONFIRMED | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | — |
 | 0x262 | DrakorMissile (+DRbullet) | CONFIRMED | main/dll/dll_0262_drakormissile.c | = (canonical) | — |
-| 0x263 | GM_MazeWell | CONFIRMED | main/dll/dll_0263_gmmazewell.c | = (canonical) | — |
+| 0x263 | GM_MazeWell | CONFIRMED | dlls/objects/611_GM_MazeWell/GM_MazeWell.c | = (canonical) | — |
 | 0x264 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x265 | DR_Creator | COMPLETE | dlls/objects/613_DR_Creator/DR_Creator.c | = (canonical) | — |
 | 0x266 | KytesMum | COMPLETE | dlls/objects/614_KytesMum/KytesMum.c | = (canonical) | — |

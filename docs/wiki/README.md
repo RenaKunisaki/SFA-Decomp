@@ -13,7 +13,7 @@ The GameBits table from this wiki has already been imported as code: 687 named b
 | [AudioStreams](AudioStreams.md) | Documents the /streams/*.adp cutscene-dialogue directory listing and cross-references it to our fully-recovered playback path (StreamEntry in include/main/engine_shared.h, AudioStr... |
 | [BaddieLootDrops](BaddieLootDrops.md) | Wiki's 6-tier/50%-chance baddie loot system maps concretely to two matched pickup DLLs (0x00FF MagicDust dust, 0x00ED collectible Apple/EnergyEgg health) plus a magicplant 'move ex... |
 | [ChapBits](ChapBits.md) | CHAPBITS.bin (disc-root, 0x14000 bytes, mostly zero) is verified byte-for-byte and fully zero-mapped against this repo's own retail ISO, but is not referenced anywhere in our decom... |
-| [CheatTokens](CheatTokens.md) | Documents the 8 Cheat Tokens / Well mechanic and cross-references it to a fully-decompiled implementation: GM_MazeWell (DLL 0x263, src/main/dll/dll_0263_gmmazewell.c) driving lbl_8... |
+| [CheatTokens](CheatTokens.md) | Documents the 8 Cheat Tokens / Well mechanic and cross-references it to a fully-decompiled implementation: GM_MazeWell (DLL 0x263, src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c) driving lbl_8... |
 | [Curves](Curves.md) | Documents the RomCurve object network (DLL 0x125 point object, DLL 0x14 navigation/interpolation) and its known Type-field values, cross-referenced against src/dlls/objects/293_curve/curve.c, dll_00... |
 | [DLLs](DLLs.md) | Full 469-entry DLL ID table preserved verbatim, cross-referenced against gResourceDescriptors[]/Resource_Acquire/Release in src/main/modelEngine.c (confirms the wiki's refcount-onl... |
 | [Files](Files.md) | Wiki's disc file catalogue maps almost entirely onto src/main/pi_dolphin.c's sResourceFileNameTable[90]/mapLoadDataFile dual-slot streaming system, with concrete fileIds and confir... |
@@ -59,8 +59,8 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 
 ### CheatTokens
 - enum CheatId { CHEAT_SHOW_CREDITS=0, CHEAT_SEPIA_MODE=1, CHEAT_MUSIC_TEST=2, CHEAT_DINO_LANGUAGE=3 } to replace the raw cheatId ints scattered across src/main/dll/prof.c, src/main/dll/dll_4d.c (LANGUAGE_MENU_CHEAT_ID), src/main/textrender.c, and src/main/dll/dll_0037_optionsscreen.c
-- enum QuestWellRow (0=Credits/ThornTail .. 8=unused/Nowhere) to name the loop index i in GM_MazeWell_update (src/main/dll/dll_0263_gmmazewell.c) instead of the bare int
-- Add GAMEBIT_MAZEWELL_ACTIVE = 0xEFC to include/main/gamebits.h's enum GameBitId (currently only a private #define in dll_0263_gmmazewell.c) between the existing 0xEFB and 0xEFE entries
+- enum QuestWellRow (0=Credits/ThornTail .. 8=unused/Nowhere) to name the loop index i in GM_MazeWell_update (src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c) instead of the bare int
+- Add GAMEBIT_MAZEWELL_ACTIVE = 0xEFC to include/main/gamebits.h's enum GameBitId (currently only a private #define in GM_MazeWell.c) between the existing 0xEFB and 0xEFE entries
 
 ### Curves
 - ObjfsaRomCurveDef (include/main/dll/objfsa_romcurve.h) tail 's8 angle; u8 pad2D[3];' at 0x2C-0x2F should be split into 'rotZ/rotY/rotX/pad2F' (s8/s8/u8/u8) to match the sibling RomCurvePlacementDef (dll_0015_curves.h) and DrakorCurveNode (src/dlls/objects/625/625.c) overlays of the exact same offsets, which already use three named one-byte fields instead of one byte + padding.

@@ -3586,7 +3586,7 @@ main/dll/dll_0262_drakormissile.c:
 	.sdata      start:0x803DC2B0 end:0x803DC2C0
 	.sdata2     start:0x803E6940 end:0x803E6978
 
-main/dll/dll_0263_gmmazewell.c:
+dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
 	.text       start:0x80218B24 end:0x80218EE8
 
 dlls/objects/614_KytesMum/KytesMum.c:
