@@ -3538,17 +3538,17 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 {
     s16 signedPoolIndex;
     int result;
-    ExpgfxSourceObject** poolSourceIds;
+    ExpgfxSourceObject** poolSourceIds[1];
     int poolIndex;
     result = EXPGFX_SOURCE_FRAME_STATE_NONE;
     lbl_803DD253 = 0;
     poolIndex = 0;
-    poolSourceIds = gExpgfxTrackedPoolSourceIds;
+    poolSourceIds[0] = gExpgfxTrackedPoolSourceIds;
 
-    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds++, poolIndex++)
+    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, poolIndex++)
     {
         if ((((ExpgfxSourceObject*)sourceObject)->objType == EXPGFX_SOURCE_OBJTYPE_MATCH_ALL) ||
-            (*poolSourceIds == sourceObject))
+            (*poolSourceIds[0] == sourceObject))
         {
             s64 frameBit;
 
