@@ -50,6 +50,7 @@
 #include "dlls/objects/251.h"
 #include "dlls/objects/252.h"
 #include "dlls/objects/253.h"
+#include "dlls/objects/254_MagicPlant.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -218,8 +219,8 @@ extern ResourceDescriptor gMMP_BridgeObjDescriptor, gMMP_asteroid_reObjDescripto
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
     gMMSH_WaterSpikeObjDescriptor, gMagicCaveBottomObjDescriptor, gMagicCaveTopObjDescriptor, gMagicGemObjDescriptor,
     gMagicLightObjDescriptor;
-extern ResourceDescriptor gMagicPlantObjDescriptor, gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor,
-    gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
+extern ResourceDescriptor gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor,
+    gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1195,7 +1196,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gPressureSwitchFBObjDescriptor,
     (ResourceDescriptor*)&gDllFCObjDescriptor,
     (ResourceDescriptor*)&gDllFDObjDescriptor,
-    &gMagicPlantObjDescriptor,
+    (ResourceDescriptor*)&gMagicPlantObjDescriptor,
     &gMagicGemObjDescriptor,
     &gTrickyWarpObjDescriptor,
     &gTrickyGuardObjDescriptor,
