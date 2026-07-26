@@ -1664,7 +1664,7 @@ void hudDrawAirMeter(void)
         return;
     alpha = meter->alpha;
     if (meter->shutdown || pauseMenuState != 0 || getHudHiddenFrameCount() != 0 ||
-        (player != NULL && (((GameObject*)player)->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) != 0 &&
+        (player != NULL && (player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) != 0 &&
          meter->textures.bar.backgroundId != 0x5d5))
     {
         s16 clamped;
@@ -2271,14 +2271,14 @@ void hudDrawFn_80121440(int unused1, int unused2, int unused3)
     alpha = lbl_803DD83C;
     if (alpha != 0)
     {
-        int cell = coordsToMapCell(((GameObject*)player)->anim.localPosX, ((GameObject*)player)->anim.localPosZ);
+        int cell = coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
         if (!(base->statusOpacity[HUD_STATUS_HEALTH] > lbl_803E1F9C &&
               base->statusOpacity[HUD_STATUS_HEALTH] < lbl_803E1FA8 &&
               ((int)base->statusOpacity[HUD_STATUS_HEALTH] & 8)) &&
             !(base->statusOpacity[HUD_STATUS_MAX_HEALTH] > *(f32*)&lbl_803E1F9C &&
               base->statusOpacity[HUD_STATUS_MAX_HEALTH] < lbl_803E1FA8 &&
               ((int)base->statusOpacity[HUD_STATUS_MAX_HEALTH] & 8)) &&
-        !(cell == 0 && playerGetFocusObject((GameObject*)player) != NULL))
+        !(cell == 0 && playerGetFocusObject(player) != NULL))
         {
             for (i = 0; (int)(u8)i < (base->statusValue[HUD_STATUS_MAX_HEALTH] >> 2); i++)
             {
@@ -4272,10 +4272,10 @@ void cMenuRotateFn_80124d80(void)
 
 void drawTrickyHudOverlay(int obj, int unused1, int unused2)
 {
-    int player;
+    GameObject* player;
     int tricky;
     int iconIndex;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     tricky = (int)getTrickyObject();
     GXSetScissor(0, 0, 0x280, 0x1e0);
     hudDrawTimedElement(obj, &lbl_803A9398);
@@ -4291,7 +4291,7 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
     }
     drawViewFinderHud();
     if ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER &&
-        (((GameObject*)player)->objectFlags & CMENU_OBJFLAG_PARENT_SLACK) == 0 && pauseMenuState == 0 &&
+        (player->objectFlags & CMENU_OBJFLAG_PARENT_SLACK) == 0 && pauseMenuState == 0 &&
         (void*)tricky != 0 && getHudHiddenFrameCount() == 0)
     {
         (*(int (**)(int, int*))((char*)*((GameObject*)tricky)->anim.dll + 0x48))(tricky, &iconIndex);
@@ -4577,14 +4577,14 @@ void headDisplayFreeModels(void)
     int i;
     for (i = 0; i < 6; i++)
     {
-        int* obj = (int*)gHeadDisplayModelObjs[i];
+        GameObject* obj = gHeadDisplayModelObjs[i];
         if (obj != NULL)
         {
-            if ((u32) * &((GameObject*)obj)->anim.placementData > 0x90000000u)
+            if (obj->anim.placementDataAddress > 0x90000000u)
             {
-                *(int*)&((GameObject*)obj)->anim.placementData = 0;
+                obj->anim.placementDataAddress = 0;
             }
-            Obj_FreeObject((GameObject*)gHeadDisplayModelObjs[i]);
+            Obj_FreeObject(gHeadDisplayModelObjs[i]);
             gHeadDisplayModelObjs[i] = 0;
         }
     }
@@ -7210,7 +7210,7 @@ void pauseMenuAnimateCarousel(void)
     u8 flag;
     u8 k;
     u8 last;
-    u8* player;
+    GameObject* player;
     u8 count;
     s16 step;
     int kk;
@@ -7219,7 +7219,7 @@ void pauseMenuAnimateCarousel(void)
     f32 base;
     ObjAnimEventList animEvents;
 
-    player = (u8*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     count = 5;
     objIsCurModelNotZero(player);
     last = 5;
@@ -7231,8 +7231,8 @@ void pauseMenuAnimateCarousel(void)
     }
     if (player != NULL)
     {
-        flag = (coordsToMapCell(((GameObject*)player)->anim.localPosX, ((GameObject*)player)->anim.localPosZ) != 0 ||
-                playerGetFocusObject((GameObject*)player) == NULL);
+        flag = (coordsToMapCell(player->anim.localPosX, player->anim.localPosZ) != 0 ||
+                playerGetFocusObject(player) == NULL);
     }
     else
     {
@@ -8016,7 +8016,7 @@ void cMenuRun(void)
     }
 
     if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
-        (((GameObject*)player)->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
+        (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
     {
         buttonDisable(0, 0xe0800);
     }
@@ -8033,7 +8033,7 @@ void cMenuRun(void)
     btn16 = btn;
 
     if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
-        (((GameObject*)player)->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0 ||
+        (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0 ||
         shouldCloseCMenu != 0 || lbl_803DD75B != 0)
     {
         gCMenuButtons |= PAD_BUTTON_B;
@@ -8676,8 +8676,8 @@ void showHelpText(s16 val)
 /* Per-frame UI/pause-menu update + dispatch. */
 void GameUI_update(void)
 {
-    u8* player = (u8*)Obj_GetPlayerObject();
-    u8* tricky = (u8*)getTrickyObject();
+    GameObject* player = Obj_GetPlayerObject();
+    GameObject* tricky = getTrickyObject();
     s8 sectionTarget;
     s16 cx;
     s16 angDelta;
@@ -8716,8 +8716,8 @@ void GameUI_update(void)
         if (lbl_803DD75B != 0)
             timeListFn_8012be84();
 
-        if (playerGetFocusObject((GameObject*)player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
-            (((GameObject*)player)->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
+        if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+            (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
         {
             buttonDisable(0, 0xf0000);
             gCMenuButtons &= 0xfff0fff7;
@@ -8733,8 +8733,8 @@ void GameUI_update(void)
             }
         }
 
-        if (playerGetFocusObject((GameObject*)player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
-            (((GameObject*)player)->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || shouldCloseCMenu != 0 ||
+        if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+            (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || shouldCloseCMenu != 0 ||
             pauseMenuState != 0 || getHudHiddenFrameCount() != 0 || lbl_803DD75B != 0)
         {
             allowCStickTarget = 0;
@@ -8797,7 +8797,7 @@ void GameUI_update(void)
                         gCMenuButtons |= 0x40000;
                     }
                     else if (tricky != 0 && lbl_803A9320[1] != 0 && lbl_803A9320[9] <= 3 &&
-                             vec3f_distanceSquared(&((GameObject*)player)->anim.worldPosX, (f32*)(tricky + 0x18)) <
+                             vec3f_distanceSquared(&player->anim.worldPosX, &tricky->anim.worldPosX) <
                                  lbl_803E21D0)
                     {
                         gCMenuButtons |= 0x80000;
