@@ -365,7 +365,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x13D | ExplodeAnim | CONFIRMED | dlls/objects/317_ExplodeAnim/ExplodeAnim.c | = (canonical) | — |
 | 0x13E | — (+DIMBossIceSmash, DIM2Explode) | NO-RETAIL-NAME | dlls/objects/318/318.c | = (canonical) | — |
 | 0x13F | TexFrameAnimator | CONFIRMED | main/dll/dll_013F_texframeanimator.c | = (canonical) | — |
-| 0x140 | fogControl | COMPLETE | main/dll/dll_0140_fogcontrol.c | = (canonical) | — |
+| 0x140 | fogControl | COMPLETE | dlls/objects/320_fogControl/fogControl.c | = (canonical) | — |
 | 0x141 | Lightning | COMPLETE | dlls/objects/321_Lightning/Lightning.c | = (canonical) | — |
 | 0x142 | FElevControl | CONFIRMED | main/dll/dll_0142_felevcontrol.c | = (canonical) | — |
 | 0x143 | FEseqobject | CONFIRMED | main/dll/dll_0143_feseqobject.c | = (canonical) | — |

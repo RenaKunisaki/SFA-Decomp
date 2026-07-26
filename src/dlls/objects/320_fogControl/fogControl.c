@@ -1,5 +1,5 @@
 /*
- * fogcontrol (DLL 0x140) - a placed object that drives the engine's
+ * fogControl (DLL 0x140) - a placed object that drives the engine's
  * heavy-fog volume.
  *
  * The fog is gated by a placement game bit (enableGameBit, -1 = always
@@ -158,3 +158,20 @@ void FogControl_init(GameObject* obj, FogcontrolPlacement* placement)
         }
     }
 }
+
+ObjectDescriptor gFogControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)FogControl_init,
+    (ObjectDescriptorCallback)FogControl_update,
+    (ObjectDescriptorCallback)FogControl_hitDetect,
+    0,
+    (ObjectDescriptorCallback)FogControl_free,
+    (ObjectDescriptorCallback)FogControl_getObjectTypeId,
+    FogControl_getExtraSize,
+};

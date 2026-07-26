@@ -7,7 +7,6 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/dll/dll_0140_fogcontrol.h"
 #include "dlls/object_descriptor.h"
 #include "main/shader_api.h"
 #include "main/shader_map_api.h"
@@ -192,8 +191,3 @@ void TexFrameAnimator_release(void)
 void TexFrameAnimator_initialise(void)
 {
 }
-
-ObjDescriptorTable gFogControlObjDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000, 0x00000000,
-                                                0x00000000, (u32)FogControl_init, (u32)FogControl_update,
-                                                (u32)FogControl_hitDetect, 0x00000000, (u32)FogControl_free,
-                                                (u32)FogControl_getObjectTypeId, (u32)FogControl_getExtraSize}};

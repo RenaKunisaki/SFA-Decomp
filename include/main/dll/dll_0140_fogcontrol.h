@@ -3,6 +3,7 @@
 
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 #include "global.h"
 
 typedef struct FogcontrolPlacement
@@ -49,5 +50,7 @@ void FogControl_free(GameObject* obj);
 void FogControl_hitDetect(void);
 void FogControl_update(GameObject* obj);
 void FogControl_init(GameObject* obj, FogcontrolPlacement* placement);
+
+extern ObjectDescriptor gFogControlObjDescriptor;
 
 #endif /* MAIN_DLL_DLL_0140_FOGCONTROL_H_ */
