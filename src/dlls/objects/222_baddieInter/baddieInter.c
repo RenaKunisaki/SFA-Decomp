@@ -1,5 +1,5 @@
 /*
- * DLL 0xDE - baddieinterestp: an invisible "baddie interest point" trigger
+ * baddieInter (DLL 0xDE) - an invisible "baddie interest point" trigger
  * object. Most callbacks are empty stubs; BaddieInterestP_render draws the
  * model when visible, and BaddieInterestP_update does the real work: when
  * its placement's gate bits permit (enableGameBit set, doneGameBit clear),
