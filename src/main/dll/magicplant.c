@@ -78,6 +78,14 @@ void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int w
     }
 }
 
+static void vambat_resetAmbientSfxTimer(u8* state)
+{
+    if (*(f32*)(state + 0x328) <= 0.0f)
+    {
+        *(f32*)(state + 0x328) = 60.0f;
+    }
+}
+
 void vambat_updateIdle(GameObject* obj, int state)
 {
     ObjHitsPriorityState* hitState;
