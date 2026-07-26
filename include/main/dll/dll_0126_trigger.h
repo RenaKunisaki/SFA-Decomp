@@ -80,7 +80,7 @@ void Trigger_update(void);
 void Trigger_release(void);
 void Trigger_initialise(void);
 void Trigger_free(GameObject* obj);
-void Trigger_init(u8* obj, u8* params);
+void Trigger_init(GameObject* obj, u8* params);
 int Trigger_getExtraSize(void);
 int Trigger_getObjectTypeId(void);
 void Trigger_hitDetect(GameObject* obj);
