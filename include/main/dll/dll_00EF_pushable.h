@@ -30,7 +30,7 @@ void FUN_801769e8(u64 param_1,double param_2,double param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,
                  int param_9,u32 param_10,u32 param_11,int param_12,int param_13,
                  u32 param_14,u32 param_15,u32 param_16);
-void InvHit_update(int *obj);
+void InvHit_update(GameObject *obj);
 u32
 FUN_801778e0(u64 param_1,u64 param_2,u64 param_3,u64 param_4,
             u64 param_5,u64 param_6,u64 param_7,u64 param_8,int param_9,
@@ -41,7 +41,7 @@ int pushable_getObjectTypeId(void);
 
 int InvHit_getExtraSize(void);
 int InvHit_getObjectTypeId(void);
-void InvHit_render(int *obj, int a, int b, int c, int d);
+void InvHit_render(GameObject *obj, int a, int b, int c, int d);
 void InvHit_hitDetect(void);
 void InvHit_release(void);
 void InvHit_initialise(void);
