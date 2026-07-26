@@ -223,12 +223,12 @@ void Hagabon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             if ((state->flags & HAGABON_FLAG_FADE_OUT) != 0)
             {
-                objParticleFn_80099d84((GameObject*)obj, 1.0f, 3,
+                objParticleFn_80099d84(obj, 1.0f, 3,
                                        (f32)(u32)obj->anim.alpha / HAGABON_ALPHA_MAX, 0);
             }
             if ((state->flags & HAGABON_FLAG_FADE_IN) != 0)
             {
-                objParticleFn_80099d84((GameObject*)obj, 1.0f, 4,
+                objParticleFn_80099d84(obj, 1.0f, 4,
                                        (f32)(u32)obj->anim.alpha / HAGABON_ALPHA_MAX, 0);
             }
             break;
