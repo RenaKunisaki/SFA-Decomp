@@ -1,54 +1,47 @@
 /*
- * DLL 0xEB - siderepel and siderepelWi.
+ * Side-repel object family (DLL slot 235 / 0xEB).
  *
- * The DLL's own canonical code is the three siderepel callbacks
- * (getExtraSize/free/init): a repel-volume object that registers into
- * object group 0x40 and sizes its hit sphere from the placement radius.
+ * These invisible, non-updating volumes register with the side-repel object
+ * group used by Tricky. Their hit-sphere radius is one eighth of the
+ * placement radius.
  */
+#include "dlls/objects/235.h"
 #include "game/objects/object.h"
 #include "main/obj_group.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/dll_00EB_siderepel.h"
-#include "dlls/object_descriptor.h"
+#include "main/objhits.h"
 
-/* object group: side-repel object */
-#define SIDEREPEL_OBJGROUP 0x40
+#define SIDEREPEL_OBJECT_GROUP 0x40
+#define SIDEREPEL_RADIUS_SHIFT 3
 
-int siderepel_getExtraSize(void)
-{
+int siderepel_getExtraSize(void) {
     return sizeof(SideRepelState);
 }
 
-void siderepel_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, SIDEREPEL_OBJGROUP);
+void siderepel_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, SIDEREPEL_OBJECT_GROUP);
 }
 
-void siderepel_init(GameObject* obj, SideRepelPlacement* placement)
-{
-    obj->objectFlags =
-        obj->objectFlags |
-        (OBJECT_OBJFLAG_UPDATE_DISABLED | OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    ObjGroup_AddObject((int)obj, SIDEREPEL_OBJGROUP);
-    if (obj->anim.hitReactState != NULL)
-    {
-        ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (s16)(placement->radius >> 3));
+void siderepel_init(GameObject* obj, SideRepelPlacement* placement) {
+    obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED | OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    ObjGroup_AddObject((int)obj, SIDEREPEL_OBJECT_GROUP);
+    if (obj->anim.hitReactState != NULL) {
+        ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (s16)(placement->radius >> SIDEREPEL_RADIUS_SHIFT));
     }
 }
 
 ObjectDescriptor gSiderepelObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)siderepel_init,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)siderepel_free,
-    0,
-    siderepel_getExtraSize,
+    0,                                        /* reserved0 */
+    0,                                        /* reserved1 */
+    0,                                        /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,         /* slotCountAndFlags */
+    0,                                        /* initialise */
+    0,                                        /* release */
+    0,                                        /* slot02 */
+    (ObjectDescriptorCallback)siderepel_init, /* init */
+    0,                                        /* update */
+    0,                                        /* hitDetect */
+    0,                                        /* render */
+    (ObjectDescriptorCallback)siderepel_free, /* free */
+    0,                                        /* getObjectTypeId */
+    siderepel_getExtraSize,                   /* getExtraSize */
 };
