@@ -1456,7 +1456,7 @@ dlls/objects/201_Baddie/Baddie.c:
 	.sbss       start:0x803DDA50 end:0x803DDA58
 	.sdata2     start:0x803E2558 end:0x803E2608
 
-main/dll/dll_00DF_hagabon.c:
+dlls/objects/223_Hagabon/Hagabon.c:
 	.text       start:0x8014E1DC end:0x8014EE8C
 	.data       start:0x8031DC88 end:0x8031DCC0
 	.sdata      start:0x803DBC70 end:0x803DBC78

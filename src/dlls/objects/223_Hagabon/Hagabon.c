@@ -1,9 +1,7 @@
 /*
- * hagabon (DLL 0xDF) - a flying baddie that patrols a rom curve path and,
- * when the player closes in, breaks off to chase. Shares its TU pool and the
- * pressureSwitch shared-resource helpers with swarmbaddie (DLL 0xE0); each TU
- * carries a duplicate of the pressureSwitch helpers and the two object
- * descriptors so the linker can resolve the canonical sibling from either DLL.
+ * Hagabon (DLL 0xDF) - a flying baddie that patrols a rom curve path and,
+ * when the player closes in, breaks off to chase. Its curve walker shares a
+ * last-seen point cache with SwarmBaddie.
  *
  * fn_8014E1DC is the per-frame motion integrator: it advances the curve walker
  * (relinking via gRomCurveInterface when a point is exhausted), drives the
@@ -194,6 +192,7 @@ int Hagabon_getExtraSize(void)
 {
     return 0x28;
 }
+
 int Hagabon_getObjectTypeId(void)
 {
     return 0xb;
