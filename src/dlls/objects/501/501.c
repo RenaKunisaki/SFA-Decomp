@@ -1,5 +1,5 @@
 /*
- * ShipBattle (DLL 0x01F5) - the chain object of the Lylat-cruise
+ * DLL 0x01F5 - the chain object of the Lylat-cruise
  * ship-battle set piece (objectTypeId 0xB). It builds the multi-segment
  * chain from the placement def, optionally spawns a point light on the
  * fire sequence (0x171), and is the segment that drives the shared trigger
@@ -7,15 +7,8 @@
  * reaches its pending state (seqIndex == -2) the chain scans the object
  * list for its sequence-group peers and ends the group once it is the
  * last one standing, then frees itself.
- *
- * The cloud-ball, fireball and kyte-cage projectile state blocks of the
- * wider set piece are owned by sibling DLLs; their layouts are pulled in
- * and size-asserted here only so the shared object def lines up.
  */
 #include "main/dll/shipbattlestate_struct.h"
-#include "main/dll/sbkytecagestate_struct.h"
-#include "main/dll/sbfireballstate_struct.h"
-#include "main/dll/sbcloudballstate_struct.h"
 #include "game/objects/object.h"
 #include "main/dll/objfx.h"
 #include "main/objseq.h"
@@ -26,9 +19,7 @@
 #include "main/dll/dll_01F5_shipbattle.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_0004_dummy04.h"
-STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
-STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);
-STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
+
 STATIC_ASSERT(sizeof(ShipBattleState) == 0x140);
 
 #define SHIPBATTLE_OBJECT_TYPE_ID 0xb
