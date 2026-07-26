@@ -1,5 +1,5 @@
 /*
- * DLL 0x00F5 (sidekickball) - the Tricky "fetch" ball.
+ * DLL 0x00F5 (SidekickBal) - the Tricky "fetch" ball.
  *
  * SidekickBall_init spawns one ball object (extra size 0x2CC), wires it
  * onto the path-control interface and clears game bit 0x3F8; the free
@@ -11,9 +11,6 @@
  * floor-depth physics and surface reflection (trickyBallMove), and
  * FADING ramps alpha to 0 before freeing. The ball self-frees if the
  * player or Tricky is missing/dead or game bit 0xD00 is set.
- *
- * gAreaObjDescriptor is an unrelated "area" object table built from
- * external area_* callbacks.
  */
 #include "dolphin/os/OSReport.h"
 #include "dolphin/mtx/mtx_legacy.h"
@@ -39,15 +36,17 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/dll/tricky_api.h"
+
+extern char sSidekickBallYVelDepthFormat[];
+extern char sSidekickBallDotFormat[];
+extern u8 gSidekickBallPathPointData[];
+
 #define SIDEKICKBALL_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define SIDEKICKBALL_OBJFLAG_PARENT_SLACK       0x1000
 #define SIDEKICKBALL_MSG_PLAYER_GRAB            0x100010 /* tells player to grab/hold the ball */
 /* GameCube controller button masks */
 #define PAD_BUTTON_A 0x100
 #define PAD_BUTTON_Y 0x800
-extern char sSidekickBallYVelDepthFormat[];
-extern char sSidekickBallDotFormat[];
-extern u8 gSidekickBallPathPointData[];
 
 enum SidekickBallMode
 {
@@ -518,21 +517,22 @@ void SidekickBall_init(GameObject* obj)
 
 u8 gSidekickBallPathPointData[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-/* .data fill (reconstructed to match dll_00F5_sidekickball.o) */
-ObjectDescriptor gSidekickBallObjDescriptor = {0,
-                                               0,
-                                               0,
-                                               0x90000,
-                                               0,
-                                               0,
-                                               0,
-                                               (ObjectDescriptorCallback)SidekickBall_init,
-                                               (ObjectDescriptorCallback)SidekickBall_update,
-                                               0,
-                                               (ObjectDescriptorCallback)SidekickBall_render,
-                                               (ObjectDescriptorCallback)SidekickBall_free,
-                                               0,
-                                               SidekickBall_getExtraSize};
+ObjectDescriptor gSidekickBallObjDescriptor = {
+    0,
+    0,
+    0,
+    0x90000,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SidekickBall_init,
+    (ObjectDescriptorCallback)SidekickBall_update,
+    0,
+    (ObjectDescriptorCallback)SidekickBall_render,
+    (ObjectDescriptorCallback)SidekickBall_free,
+    0,
+    SidekickBall_getExtraSize,
+};
 
 char sSidekickBallYVelDepthFormat[] = "yvel %f, depth %f\n";
 

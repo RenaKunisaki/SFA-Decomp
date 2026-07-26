@@ -199,7 +199,7 @@ is unconfirmed.
 
 ### Playing (Tricky's Ball)
 
-- Ball object: DLL `0x00F5` -> `src/main/dll/dll_00F5_sidekickball.c` /
+- Ball object: DLL `0x00F5` -> `src/dlls/objects/245_SidekickBal/SidekickBal.c` /
   `include/main/dll/dll_00F5_sidekickball.h`, `SidekickBall_init`/`_update`, mode machine
   `SidekickBallMode` (`IDLE` -> `trickyBallFn_801793b8`, `THROWN`/`MOVING` ->
   `trickyBallMove`, `FADING`). Per the file's own header comment, the ball self-frees if the
