@@ -3758,6 +3758,9 @@ dlls/objects/627_FirePipe/FirePipe.c:
 	.sdata      start:0x803DC340 end:0x803DC358
 	.sdata2     start:0x803E6BA0 end:0x803E6BAC
 
+dlls/objects/629_DR_cradle/DR_cradle.c:
+	.sdata      start:0x803DC358 end:0x803DC360
+
 dlls/objects/628_DR_pulley/DR_pulley.c:
 	.sdata      start:0x803DC360 end:0x803DC368
 

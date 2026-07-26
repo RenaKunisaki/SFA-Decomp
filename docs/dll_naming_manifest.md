@@ -672,7 +672,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x272 | — | NO-RETAIL-NAME | dlls/objects/626/626.c | = (canonical) | Complete DOL-confirmed HighTop-family TU; data ownership includes the 48-byte HighTop `.sdata` block |
 | 0x273 | FirePipe | COMPLETE | dlls/objects/627_FirePipe/FirePipe.c | = (canonical) | Exact complete TU with descriptor at the physical end; other object-definition aliases are not DLL basenames |
 | 0x274 | DR_pulley | COMPLETE | dlls/objects/628_DR_pulley/DR_pulley.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC360` |
-| 0x275 | DR_cradle | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
+| 0x275 | DR_cradle | COMPLETE | dlls/objects/629_DR_cradle/DR_cradle.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC358` |
 | 0x276 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x277 | CFWindLiftL | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x278 | DRCollapseP (+DRPlatformC) | RAW | *(none)* | — | no .text fns (descriptor data only) |
