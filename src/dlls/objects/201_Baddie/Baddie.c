@@ -1304,7 +1304,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 break;
             case ENEMY_GUARDCLAW_OBJ:
             case 0x281:
-                guardClaw_update((int*)obj, (u8*)state);
+                guardClaw_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_GCROBOTPATROL_OBJ:
                 gcRobotPatrol_update((GameObject*)obj, (u8*)state);
@@ -1381,7 +1381,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 break;
             case ENEMY_GUARDCLAW_OBJ:
             case 0x281:
-                guardClaw_update((int*)obj, (u8*)state);
+                guardClaw_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_GCROBOTPATROL_OBJ:
                 gcRobotPatrol_update((GameObject*)obj, (u8*)state);
@@ -1492,7 +1492,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             break;
         case ENEMY_GUARDCLAW_OBJ:
         case 0x281:
-            guardClaw_update((int*)obj, (u8*)state);
+            guardClaw_update((GameObject*)obj, (u8*)state);
             break;
         case ENEMY_GCROBOTPATROL_OBJ:
             gcRobotPatrol_update((GameObject*)obj, (u8*)state);
@@ -3021,7 +3021,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             break;
         case ENEMY_GUARDCLAW_OBJ:
         case 641:
-            guardClaw_init((int*)obj, state);
+            guardClaw_init((GameObject*)obj, state);
             break;
         case ENEMY_GCROBOTPATROL_OBJ:
             gcRobotPatrol_init(obj, (int)state);
