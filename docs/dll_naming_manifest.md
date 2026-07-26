@@ -291,7 +291,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0F3 | flameblast | COMPLETE | dlls/objects/243_flameblast/flameblast.c | = (canonical) | — |
 | 0x0F4 | doorf4 (+CFPowerDoor, VFP_SmallRo, VFP_RoundDo, VFP_Door2, DFP_SmallBr, DFP_ToLinkD, DFP_PerchBa, DFP_BigDoor, DFP_SmallDo, DFP_SmallTu, WM_PlanDoor, WM_WarpDoor, DFSH_Door1, ECSH_Door1) | GUESSED | dlls/objects/244/244.c | = (canonical) | — |
 | 0x0F5 | SidekickBall | CONFIRMED | dlls/objects/245_SidekickBal/SidekickBal.c | = (canonical) | — |
-| 0x0F6 | Area | COMPLETE | main/dll/dll_00F6_area.c | = (canonical) | — |
+| 0x0F6 | Area | COMPLETE | dlls/objects/246_Area/Area.c | = (canonical) | — |
 | 0x0F7 | — | NO-RETAIL-NAME | main/dll/dll_00F7_dllf7.c | = (canonical) | — |
 | 0x0F8 | LevelName | COMPLETE | main/dll/dll_00F8_levelname.c | = (canonical) | — |
 | 0x0F9 | ProjectileSwitch (+DRProjectil) | CONFIRMED | main/dll/dll_00F9_projectileswitch.c | = (canonical) | — |
