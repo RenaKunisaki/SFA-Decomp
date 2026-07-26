@@ -728,7 +728,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2AA | LGTDirectio | RAW | dlls/objects/682_LGTDirectio/LGTDirectio.c | = (canonical) | Exact complete ten-function TU with its early descriptor/debug-string block, switch table, and full constant pools |
 | 0x2AB | LGTProjecte | RAW | dlls/objects/683_LGTProjecte/LGTProjecte.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full rodata/constant pools |
 | 0x2AC | LGTControlL | RAW | dlls/objects/684_LGTControlL/LGTControlL.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full constant pool |
-| 0x2AD | softbody (+LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL) | GUESSED | main/dll/dll_02AD_softbody.c | = (canonical) | — |
+| 0x2AD | — | NO-RETAIL-NAME | dlls/objects/685/685.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, shared phase globals, and full constant pool; `SoftBody` remains an internal object identity |
 | 0x2AE | WaterFlowWe | CONFIRMED | main/dll/dll_02AE_waterflowwe.c | = (canonical) | — |
 | 0x2AF | Tree (+SH_FernTree, FernTree, smallfern, tallpalmtre, JungleTree, RootPlant, SnowTree1, SnowTree2, SnowTree3, SnowTree4, SnowFruitTr) | CONFIRMED | main/dll/dll_02AF_tree.c | = (canonical) | — |
 | 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | main/dll/dll_02B0_brokenpipe.c | = (canonical) | — |
