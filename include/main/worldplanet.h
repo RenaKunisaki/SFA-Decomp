@@ -167,7 +167,7 @@ int worldplanet_getExtraSize(void);
 int worldplanet_getObjectTypeId(void);
 void worldplanet_readMapInput(GameObject* obj, s8* outX, s8* outY);
 void worldplanet_free(void);
-void worldplanet_render(GameObject* obj, u32 param_2, u32 param_3, u32 param_4, u32 param_5, char visible);
+void worldplanet_render(GameObject* obj, u32 param_2, u32 param_3, u32 param_4, u32 param_5, s8 visible);
 void worldplanet_hitDetect(void);
 void worldplanet_update(GameObject* obj);
 void worldplanet_init(GameObject* obj);
