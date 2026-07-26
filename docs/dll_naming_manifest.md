@@ -730,7 +730,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2AC | LGTControlL | RAW | dlls/objects/684_LGTControlL/LGTControlL.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full constant pool |
 | 0x2AD | — | NO-RETAIL-NAME | dlls/objects/685/685.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, shared phase globals, and full constant pool; `SoftBody` remains an internal object identity |
 | 0x2AE | WaterFlowWe | RAW | dlls/objects/686_WaterFlowWe/WaterFlowWe.c | = (canonical) | DOL-confirmed ten-function TU with its terminal descriptor and full exact `0x803E72B0..0x803E72F8` constant pool, formerly split across two auto objects; clean literals leave a small codegen regression, so the unit is non-matching |
-| 0x2AF | Tree (+SH_FernTree, FernTree, smallfern, tallpalmtre, JungleTree, RootPlant, SnowTree1, SnowTree2, SnowTree3, SnowTree4, SnowFruitTr) | CONFIRMED | main/dll/dll_02AF_tree.c | = (canonical) | — |
+| 0x2AF | — | NO-RETAIL-NAME | dlls/objects/687/687.c | = (canonical) | Exact complete six-function TU with its effect-colour table, terminal descriptor, and full constant pool; `Tree` remains an internal object-family identity |
 | 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | main/dll/dll_02B0_brokenpipe.c | = (canonical) | — |
 | 0x2B1 | CmbSrc (+CmbSrcTPole, CmbSrcTWall, ThusterSour) | COMPLETE | main/dll/dll_02B1_cmbsrc.c | = (canonical) | — |
 | 0x2B2 | DustMoteSou (+TailLightSo, FireWorkSou) | CONFIRMED | main/dll/dll_02B2_dustmotesou.c | = (canonical) | — |

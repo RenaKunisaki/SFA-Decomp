@@ -4019,7 +4019,7 @@ dlls/objects/686_WaterFlowWe/WaterFlowWe.c:
 	.sbss       start:0x803DDDA8 end:0x803DDDB8
 	.sdata2     start:0x803E72B0 end:0x803E72F8
 
-main/dll/dll_02AF_tree.c:
+dlls/objects/687/687.c:
 	.text       start:0x802356CC end:0x80236154
 	.data       start:0x8032BBE0 end:0x8032BCC8
 	.sdata2     start:0x803E72F8 end:0x803E7338

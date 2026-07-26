@@ -106,7 +106,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/audio/snd_core | 100.0000 | 73.8426 | -26.1574 |
 | main/dlls/objects/205_IceBall/IceBall | 100.0000 | 73.9626 | -26.0374 |
 | main/dlls/objects/680_ARWBlocker/ARWBlocker | 100.0000 | 74.4741 | -25.5259 |
-| main/main/dll/dll_02AF_tree | 100.0000 | 74.6157 | -25.3843 |
+| main/dlls/objects/687/687 | 100.0000 | 74.6157 | -25.3843 |
 | main/main/dll/dll_010B_fireflylantern | 100.0000 | 75.1748 | -24.8252 |
 | main/main/dll/dll_0109_unk | 100.0000 | 75.2237 | -24.7763 |
 | main/main/audio/snd_groups | 100.0000 | 75.4011 | -24.5989 |
