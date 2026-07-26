@@ -681,7 +681,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x27B | DR_CaveIn (+DR_CaveInFl) | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x27C | DR_LightBea | CONFIRMED | main/dll/dll_027C_drlightbea.c | main/dll/DR/dll_027C_drlightbea.c | — |
 | 0x27D | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x27E | DRMusicCont | CONFIRMED | main/dll/dll_027E_drmusiccont.c | main/dll/DR/dll_027E_drmusiccont.c | — |
+| 0x27E | DRMusicCont | CONFIRMED | dlls/objects/638_DrMusicCont/DRMusicCont.c | = (canonical) | — |
 | 0x27F | DR_LightHal (+DR_LightPol, DR_LightLam) | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x280 | DR_CloudPer | CONFIRMED | dlls/objects/640_DR_CloudPer/DR_CloudPer.c | = (canonical) | — |
 | 0x281 | DR_EarthCal | CONFIRMED | dlls/objects/641_DR_EarthCal/DR_EarthCal.c | = (canonical) | — |
@@ -927,7 +927,7 @@ name was a deliberate choice by a previous carve:
 | 0x26F | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | CONFIRMED |
 | 0x279 | main/dll/dll_0279_drenergydisc.c | main/dll/DR/dll_0279_drenergydisc.c | CONFIRMED |
 | 0x27C | main/dll/dll_027C_drlightbea.c | main/dll/DR/dll_027C_drlightbea.c | CONFIRMED |
-| 0x27E | main/dll/dll_027E_drmusiccont.c | main/dll/DR/dll_027E_drmusiccont.c | CONFIRMED |
+| 0x27E | main/dll/dll_027E_drmusiccont.c | dlls/objects/638_DrMusicCont/DRMusicCont.c | CONFIRMED |
 | 0x280 | main/dll/dll_0280_drcloudper.c | dlls/objects/640_DR_CloudPer/DR_CloudPer.c | CONFIRMED |
 | 0x281 | main/dll/dll_0281_drearthcal.c | dlls/objects/641_DR_EarthCal/DR_EarthCal.c | CONFIRMED |
 | 0x283 | main/dll/dll_0283_drbarrelgr.c | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | CONFIRMED |

@@ -1,5 +1,5 @@
 /*
- * drmusiccont (DLL 0x27E) - an invisible music/ambience controller for
+ * DRMusicCont (DLL 0x27E) - an invisible music/ambience controller for
  * its map.
  *
  * update overrides the cloud position, runs a one-shot env-fx and sky
