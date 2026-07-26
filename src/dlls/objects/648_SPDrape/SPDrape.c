@@ -1,5 +1,5 @@
 /*
- * spdrape (DLL 0x288) - a hanging cloth drape / door curtain in the
+ * SPDrape (DLL 648) - a hanging cloth drape / door curtain in the
  * SnowHorn shop area that swings aside as the player walks through it.
  *
  * Init builds a vertical plane through the drape (planeNormal / planeD,
@@ -10,7 +10,6 @@
  * machine keyed on the active animation move; it rustles (sfx 0x13f),
  * swings (0x140) and flutters (0x141) and re-opens if the player lingers.
  */
-#include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/vecmath.h"
@@ -21,6 +20,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/SP/dll_0288_spdrape.h"
+#include "dlls/object_descriptor.h"
 
 u8 gSpDrapeSwingLeftMoveTable[4] = {1, 2, 3, 0};
 u8 gSpDrapeSwingRightMoveTable[4] = {4, 5, 6, 0};
@@ -79,6 +79,7 @@ void spdrape_hitDetect(void)
 {
 }
 
+/* Retained: MWCC uses this non-emitted helper's literal in the TU's .sdata2 pool. */
 static void spdrape_close(GameObject* obj)
 {
     SpdrapeState* state = (obj)->extra;
