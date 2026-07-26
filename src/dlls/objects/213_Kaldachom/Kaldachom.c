@@ -5,12 +5,12 @@
  * its pull-up attack, mouth projectiles, hit reactions, and dust effects.
  */
 #include "dlls/objects/213_Kaldachom.h"
+#include "dlls/objects/214_KaldachomMe.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_control_interface.h"
-#include "main/dll/dll_00D6_kaldachomme_api.h"
 #include "main/dll/objfx_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/player_state_api.h"
@@ -250,7 +250,7 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
         int eventFlags = *(int*)&state->baddie.eventFlags;
         if ((eventFlags & KALDACHOM_EVENT_MOUTH_LINK) != 0) {
             *(int*)&state->baddie.eventFlags = eventFlags & ~KALDACHOM_EVENT_MOUTH_LINK;
-            kaldachompme_setLinkedMouthMode((u8*)obj, 2);
+            kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_1);
         }
     }
     control = objectState->control;
@@ -377,7 +377,7 @@ int kaldachom_stateHandlerA01(GameObject* obj, GroundBaddieState* state) {
     }
     if ((s32)(state->baddie.eventFlags & KALDACHOM_EVENT_MOUTH_LINK) != 0) {
         state->baddie.eventFlags &= ~KALDACHOM_EVENT_MOUTH_LINK;
-        kaldachompme_setLinkedMouthMode((u8*)obj, 2);
+        kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_1);
     }
     return 0;
 }
@@ -390,7 +390,7 @@ int kaldachom_stateHandlerA00(GameObject* obj, GroundBaddieState* state) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
-        kaldachompme_setLinkedMouthMode((u8*)obj, 1);
+        kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_0);
         state->baddie.physicsActive = 1;
         mainSetBits(objectState->gameBitB, 1);
         *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
