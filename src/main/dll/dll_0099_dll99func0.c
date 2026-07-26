@@ -30,10 +30,12 @@ extern ModgfxEffectResource lbl_80317AF8;
 void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSource, u32 flags,
                    int unused, f32* extraArgs)
 {
-    ModgfxEffectResource* resource = &lbl_80317AF8;
+    ModgfxEffectResource* resource[1];
     ModgfxPointerSpawnPacket buf;
     GfxCmd* entry;
-    f32 scale = 1.0f;
+    f32 scale;
+    resource[0] = &lbl_80317AF8;
+    scale = 1.0f;
     if (extraArgs != NULL)
     {
         scale = *extraArgs;
@@ -41,7 +43,7 @@ void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     entry = buf.entries;
     entry[0].layer = 0;
     entry[0].flags = 5;
-    entry[0].tex = resource->primaryTexture;
+    entry[0].tex = resource[0]->primaryTexture;
     entry[0].mode = 4;
     entry[0].x = 0.0f;
     entry[0].y = 0.0f;
@@ -62,7 +64,7 @@ void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     entry[1].z = 0.0f;
     entry[2].layer = 0;
     entry[2].flags = 6;
-    entry[2].tex = resource->sharedTexture;
+    entry[2].tex = resource[0]->sharedTexture;
     entry[2].mode = 2;
     if (variant == 1)
     {
@@ -74,35 +76,35 @@ void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     }
     entry[3].layer = 1;
     entry[3].flags = 6;
-    entry[3].tex = resource->sharedTexture;
+    entry[3].tex = resource[0]->sharedTexture;
     entry[3].mode = 0x4000;
     entry[3].x = -0.5f;
     entry[3].y = 1.0f;
     entry[3].z = 0.0f;
     entry[4].layer = 1;
     entry[4].flags = 6;
-    entry[4].tex = resource->sharedTexture;
+    entry[4].tex = resource[0]->sharedTexture;
     entry[4].mode = 2;
     entry[4].x = 4.0f;
     entry[4].y = 4.0f;
     entry[4].z = 25.0f;
     entry[5].layer = 2;
     entry[5].flags = 6;
-    entry[5].tex = resource->sharedTexture;
+    entry[5].tex = resource[0]->sharedTexture;
     entry[5].mode = 0x4000;
     entry[5].x = -0.5f;
     entry[5].y = 1.0f;
     entry[5].z = 0.0f;
     entry[6].layer = 2;
     entry[6].flags = 6;
-    entry[6].tex = resource->sharedTexture;
+    entry[6].tex = resource[0]->sharedTexture;
     entry[6].mode = 2;
     entry[6].x = 8.0f;
     entry[6].y = 8.0f;
     entry[6].z = 1.0f;
     entry[7].layer = 3;
     entry[7].flags = 6;
-    entry[7].tex = resource->sharedTexture;
+    entry[7].tex = resource[0]->sharedTexture;
     entry[7].mode = 0x4000;
     entry[7].x = -0.5f;
     entry[7].y = 1.0f;
@@ -130,13 +132,13 @@ void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     buf.v5a = 0;
     buf.v5b = 0;
     buf.count = (GfxCmd*)((u8*)entry + 0xd8) - entry;
-    buf.hw[0] = resource->sequenceParams[0];
-    buf.hw[1] = resource->sequenceParams[1];
-    buf.hw[2] = resource->sequenceParams[2];
-    buf.hw[3] = resource->sequenceParams[3];
-    buf.hw[4] = resource->sequenceParams[4];
-    buf.hw[5] = resource->sequenceParams[5];
-    buf.hw[6] = resource->sequenceParams[6];
+    buf.hw[0] = resource[0]->sequenceParams[0];
+    buf.hw[1] = resource[0]->sequenceParams[1];
+    buf.hw[2] = resource[0]->sequenceParams[2];
+    buf.hw[3] = resource[0]->sequenceParams[3];
+    buf.hw[4] = resource[0]->sequenceParams[4];
+    buf.hw[5] = resource[0]->sequenceParams[5];
+    buf.hw[6] = resource[0]->sequenceParams[6];
     buf.cmds = (GfxCmd*)((u8*)&buf + 0x60);
     buf.flags = 0x4000410; /* default effect flag set; bit0 enables position offset below */
     buf.flags |= flags;
@@ -161,7 +163,7 @@ void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
             buf.pos[2] += posSource->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&buf, 0, 6, resource, 4, resource->spawnData, DLL99_EFFECT_ID, 0);
+    (*gModgfxInterface)->spawnEffect(&buf, 0, 6, resource[0], 4, resource[0]->spawnData, DLL99_EFFECT_ID, 0);
 }
 
 void dll_99_func01_nop(void)
