@@ -2957,7 +2957,7 @@ dlls/objects/433_SH_staff/SH_staff.c:
 	.data       start:0x803277E0 end:0x8032784C
 	.sdata2     start:0x803E5500 end:0x803E5518
 
-main/dll/SH/dll_01B2_shstaffhaze.c:
+dlls/objects/434_SH_staffHaz/SH_staffHaz.c:
 	.text       start:0x801DA8C4 end:0x801DA954
 	.data       start:0x80327850 end:0x80327888
 	.sdata2     start:0x803E5518 end:0x803E5524

@@ -477,7 +477,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1AF | SH_swaplift | COMPLETE | dlls/objects/431_SH_swaplift/SH_swaplift.c | = (canonical) | — |
 | 0x1B0 | SH_swapston | COMPLETE | dlls/objects/432_SH_swapston/SH_swapston.c | = (canonical) | — |
 | 0x1B1 | SH_staff | COMPLETE | dlls/objects/433_SH_staff/SH_staff.c | = (canonical) | — |
-| 0x1B2 | SH_staffHaze | CONFIRMED | main/dll/dll_01B2_shstaffhaze.c | main/dll/SH/dll_01B2_shstaffhaze.c | — |
+| 0x1B2 | SH_staffHaz | COMPLETE | dlls/objects/434_SH_staffHaz/SH_staffHaz.c | = (canonical) | — |
 | 0x1B3 | SH_Beacon | COMPLETE | main/dll/dll_01B3_shbeacon.c | main/dll/SH/dll_01B3_shbeacon.c | — |
 | 0x1B4 | SH_EmptyTumblew | CONFIRMED | main/dll/dll_01B4_shemptytumblew.c | main/dll/SH/dll_01B4_shemptytumblew.c | — |
 | 0x1B5 | lightfoot (+SC_chieflig, SC_lightfoo, SC_babyligh, SC_blTarget, SC_muscleli) | CONFIRMED | main/dll/dll_01B5_lightfoot.c | = (canonical) | — |
@@ -811,7 +811,7 @@ name was a deliberate choice by a previous carve:
 | 0x1AF | main/dll/dll_01AF_shswaplift.c | dlls/objects/431_SH_swaplift/SH_swaplift.c | COMPLETE |
 | 0x1B0 | main/dll/dll_01B0_shswapston.c | dlls/objects/432_SH_swapston/SH_swapston.c | COMPLETE |
 | 0x1B1 | main/dll/dll_01B1_shstaff.c | dlls/objects/433_SH_staff/SH_staff.c | COMPLETE |
-| 0x1B2 | main/dll/dll_01B2_shstaffhaze.c | main/dll/SH/dll_01B2_shstaffhaze.c | CONFIRMED |
+| 0x1B2 | main/dll/dll_01B2_shstaffhaze.c | dlls/objects/434_SH_staffHaz/SH_staffHaz.c | COMPLETE |
 | 0x1B3 | main/dll/dll_01B3_shbeacon.c | main/dll/SH/dll_01B3_shbeacon.c | COMPLETE |
 | 0x1B4 | main/dll/dll_01B4_shemptytumblew.c | main/dll/SH/dll_01B4_shemptytumblew.c | CONFIRMED |
 | 0x1B6 | main/dll/dll_01B6_sclevelcontrol.c | main/dll/SC/dll_01B6_sclevelcontrol.c | CONFIRMED |

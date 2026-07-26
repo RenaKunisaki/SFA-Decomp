@@ -1,6 +1,5 @@
 /*
- * shstaffhaze (DLL 0x1B2) - the shimmering haze drawn around the staff
- * [801D9B1C-801D9BDC).
+ * SH_staffHaz (DLL 0x1B2) - the shimmering haze drawn around the staff.
  *
  * render() draws the object model at a fixed scale and overlays the haze
  * effect through fn_80098B18; update() frees the object once its
