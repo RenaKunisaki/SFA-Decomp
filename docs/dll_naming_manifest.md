@@ -564,7 +564,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x206 | LightSource | COMPLETE | dlls/objects/518_LightSource/LightSource.c | = (canonical) | — |
 | 0x207 | WM_Worm | COMPLETE | dlls/objects/519_WM_Worm/WM_Worm.c | = (canonical) | — |
 | 0x208 | WM_Wallpowe | COMPLETE | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | = (canonical) | Data-only DLL |
-| 0x209 | WM_LevelControl | CONFIRMED | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | — |
+| 0x209 | WM_LevelCon | COMPLETE | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | = (canonical) | — |
 | 0x20A | WM_GeneralScales | CONFIRMED | main/dll/dll_020A_wmgeneralscales.c | main/dll/WM/dll_020A_wmgeneralscales.c | — |
 | 0x20B | FireFly | COMPLETE | main/dll/dll_020B_firefly.c | = (canonical) | — |
 | 0x20C | WM_spiritplace | CONFIRMED | main/dll/dll_020C_wmspiritplace.c | main/dll/WM/dll_020C_wmspiritplace.c | — |
@@ -880,7 +880,7 @@ name was a deliberate choice by a previous carve:
 | 0x201 | main/dll/dll_0201_wmcolrise.c | dlls/objects/513_WM_colrise/WM_colrise.c | COMPLETE |
 | 0x204 | main/dll/dll_0204_wmtorch.c | dlls/objects/516_WM_Torch/WM_Torch.c | COMPLETE |
 | 0x207 | main/dll/dll_0207_wmworm.c | dlls/objects/519_WM_Worm/WM_Worm.c | COMPLETE |
-| 0x209 | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | CONFIRMED |
+| 0x209 | main/dll/dll_0209_wmlevelcontrol.c | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | COMPLETE |
 | 0x20A | main/dll/dll_020A_wmgeneralscales.c | main/dll/WM/dll_020A_wmgeneralscales.c | CONFIRMED |
 | 0x20C | main/dll/dll_020C_wmspiritplace.c | main/dll/WM/dll_020C_wmspiritplace.c | CONFIRMED |
 | 0x20D | main/dll/dll_020D_wmseqpoint.c | main/dll/WM/dll_020D_wmseqpoint.c | CONFIRMED |

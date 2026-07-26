@@ -42,11 +42,4 @@ void WM_Worm_init(GameObject* obj, WmWormSetup* setup);
 void WM_Worm_release(void);
 void WM_Worm_initialise(void);
 
-void fn_801F3F18(GameObject* obj);
-int WM_LevelControl_getExtraSize(void);
-int WM_LevelControl_getObjectTypeId(void);
-void WM_LevelControl_free(int obj);
-void WM_LevelControl_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
-void WM_LevelControl_hitDetect(void);
-
 #endif /* MAIN_DLL_WM_DLL_0207_WMWORM_H_ */

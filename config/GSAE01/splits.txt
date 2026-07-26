@@ -3265,7 +3265,7 @@ dlls/objects/519_WM_Worm/WM_Worm.c:
 	.data       start:0x80328B40 end:0x80328B78
 	.sdata2     start:0x803E5E58 end:0x803E5E70
 
-main/dll/WM/dll_0209_wmlevelcontrol.c:
+dlls/objects/521_WM_LevelCon/WM_LevelCon.c:
 	.text       start:0x801F3F18 end:0x801F48C0
 	.rodata     start:0x802C24B8 end:0x802C24E8
 	.data       start:0x80328B78 end:0x80328BD0

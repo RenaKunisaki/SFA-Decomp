@@ -1,7 +1,5 @@
 /*
- * WM_LevelControl (DLL 0x209) - Krazoa Palace level control.
- * TU = 0x801F3F18..0x801F48C0 (helper fn_801F3F18 + wmlevelcontrol_*,
- * reverse slot order ascending).
+ * WM_LevelCon (DLL 0x0209) - Krazoa Palace level control.
  *
  * init seeds the palace's game-bit progression from the map-event mode
  * (the 0xD1B..0xD1F spirit chain consumed by wmspiritplace and
@@ -12,50 +10,25 @@
  * gWmLevelControlBlendFactor blend factor (held at 1.0 during restore progress,
  * decaying 0.02/tick after) is up.
  */
-#include "main/dll/WM/dll_0207_wmworm.h"
-#include "main/gametext_show_api.h"
-#include "main/textrender_api.h"
-#include "main/lightmap_render_control_api.h"
-#include "main/audio/music_api.h"
-#include "main/object_render.h"
-#include "main/pi_dolphin_api.h"
-#include "main/map_load.h"
-#include "main/objseq_api.h"
-#include "game/objects/object.h"
-#include "main/sky_api.h"
 #include "dlls/object_descriptor.h"
-
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/mapEventTypes.h"
-#include "main/obj_group.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "main/frame_timing.h"
+#include "game/objects/object.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/dll/WM/dll_020A_wmgeneralscales.h"
-
-void WM_LevelControl_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
-void WM_LevelControl_update(GameObject* obj);
-void WM_LevelControl_init(GameObject* obj);
-void WM_LevelControl_release(void);
-void WM_LevelControl_initialise(void);
-
-ObjectDescriptor gWM_LevelControlObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_LevelControl_initialise,
-    (ObjectDescriptorCallback)WM_LevelControl_release,
-    0,
-    (ObjectDescriptorCallback)WM_LevelControl_init,
-    (ObjectDescriptorCallback)WM_LevelControl_update,
-    (ObjectDescriptorCallback)WM_LevelControl_hitDetect,
-    (ObjectDescriptorCallback)WM_LevelControl_render,
-    (ObjectDescriptorCallback)WM_LevelControl_free,
-    (ObjectDescriptorCallback)WM_LevelControl_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_LevelControl_getExtraSize,
-};
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits.h"
+#include "main/gametext_show_api.h"
+#include "main/lightmap_render_control_api.h"
+#include "main/map_load.h"
+#include "main/mapEventTypes.h"
+#include "main/object_render.h"
+#include "main/obj_group.h"
+#include "main/objseq_api.h"
+#include "main/pi_dolphin_api.h"
+#include "main/sky_api.h"
+#include "main/textrender_api.h"
 
 u8 gWmLevelControlSkyColorFrom[4] = {0x14, 0x20, 0x28, 0};
 u8 gWmLevelControlSkyColorTo[4] = {0x12, 0x1E, 0x23, 0};
@@ -302,9 +275,7 @@ void WM_LevelControl_init(GameObject* obj)
     state->messageTimer = 300.0f;
     state->latch.activeMask = 0;
     lockLevel(0xf, 0);
-    /* the 0xD1B..0xD1F chain marks how many Krazoa spirits the palace
-       has received (wmspiritplace's progression); 0xF43/0xF44 pick the
-       ambience variant. All cross-TU bits without established names. */
+    /* The 0xD1B..0xD1F chain tracks returned Krazoa spirits. */
     mode = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
     switch (mode)
     {
@@ -368,3 +339,20 @@ void WM_LevelControl_release(void)
 void WM_LevelControl_initialise(void)
 {
 }
+
+ObjectDescriptor gWM_LevelControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_LevelControl_initialise,
+    (ObjectDescriptorCallback)WM_LevelControl_release,
+    0,
+    (ObjectDescriptorCallback)WM_LevelControl_init,
+    (ObjectDescriptorCallback)WM_LevelControl_update,
+    (ObjectDescriptorCallback)WM_LevelControl_hitDetect,
+    (ObjectDescriptorCallback)WM_LevelControl_render,
+    (ObjectDescriptorCallback)WM_LevelControl_free,
+    (ObjectDescriptorCallback)WM_LevelControl_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_LevelControl_getExtraSize,
+};
