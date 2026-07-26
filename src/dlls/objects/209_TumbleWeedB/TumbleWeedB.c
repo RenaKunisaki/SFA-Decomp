@@ -54,7 +54,7 @@ extern u8 gTumbleweedBushPieceOffsetTable[];
 
 u8 gTumbleweedBushHitCooldownState;
 
-s8 tumbleweedbush_spawnSibling(int* obj)
+s8 tumbleweedbush_spawnSibling(GameObject* obj)
 {
     u8* state;
     u8* placementData;
@@ -68,9 +68,9 @@ s8 tumbleweedbush_spawnSibling(int* obj)
     int count;
     int* newObj;
 
-    state = ((GameObject*)obj)->extra;
-    placementData = *(u8**)&((GameObject*)obj)->anim.placementData;
-    switch (((GameObject*)obj)->anim.seqId)
+    state = obj->extra;
+    placementData = *(u8**)&obj->anim.placementData;
+    switch (obj->anim.seqId)
     {
     case TUMBLEWEEDBUSH_SEQ_A:
         if ((*gSkyInterface)->getSunPosition(&sunTime) == 0)
@@ -117,11 +117,11 @@ s8 tumbleweedbush_spawnSibling(int* obj)
 
     newObj = (int*)Obj_AllocObjectSetup(0x20, siblingType);
     ((ObjPlacement*)newObj)->posX =
-        ((GameObject*)obj)->anim.localPosX + ((TumbleweedBushState*)state)->pieceOffsets[freeSlot][0];
+        obj->anim.localPosX + ((TumbleweedBushState*)state)->pieceOffsets[freeSlot][0];
     ((ObjPlacement*)newObj)->posY =
-        ((GameObject*)obj)->anim.localPosY + ((TumbleweedBushState*)state)->pieceOffsets[freeSlot][1];
+        obj->anim.localPosY + ((TumbleweedBushState*)state)->pieceOffsets[freeSlot][1];
     ((ObjPlacement*)newObj)->posZ =
-        ((GameObject*)obj)->anim.localPosZ + ((TumbleweedBushState*)state)->pieceOffsets[freeSlot][2];
+        obj->anim.localPosZ + ((TumbleweedBushState*)state)->pieceOffsets[freeSlot][2];
     ((ObjPlacement*)newObj)->color[0] = ((TumbleweedBushPlacement*)placementData)->base.color[0];
     ((ObjPlacement*)newObj)->color[1] = ((TumbleweedBushPlacement*)placementData)->base.color[1];
     ((ObjPlacement*)newObj)->color[2] = ((TumbleweedBushPlacement*)placementData)->base.color[2];
@@ -130,7 +130,7 @@ s8 tumbleweedbush_spawnSibling(int* obj)
 
     if ((((TumbleweedBushState*)state)->variant & 1) != 0)
     {
-        switch (((ObjPlacement*)((GameObject*)obj)->anim.placementData)->mapId)
+        switch (((ObjPlacement*)obj->anim.placementData)->mapId)
         {
         case 0x292c:
             if (((TumbleweedBushState*)state)->spawnedCount == 6)
@@ -155,14 +155,14 @@ s8 tumbleweedbush_spawnSibling(int* obj)
     }
 
     {
-        int* setup = (int*)Obj_SetupObject((ObjPlacement*)newObj, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
-                                           ((GameObject*)obj)->anim.parent);
+        int* setup = (int*)Obj_SetupObject((ObjPlacement*)newObj, 5, obj->anim.mapEventSlot, -1,
+                                           obj->anim.parent);
         u8* slotBase = (u8*)((TumbleweedBushState*)state)->pieceObjects;
         *(int**)(slotBase + freeSlot * 4) = setup;
         {
             int* spawned = *(int**)(slotBase + freeSlot * 4);
             ((void (*)(int*, f64, f64)) * (int*)(*(int*)(*(int*)((char*)spawned + 0x68)) + 0x24))(
-                spawned, (f64)((GameObject*)obj)->anim.localPosX, (f64)((GameObject*)obj)->anim.localPosZ);
+                spawned, (f64)obj->anim.localPosX, (f64)obj->anim.localPosZ);
         }
     }
     ((TumbleweedBushState*)state)->spawnedCount += 1;
@@ -199,21 +199,21 @@ void TumbleWeedBush_free(void)
 {
 }
 
-void TumbleWeedBush_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
+void TumbleWeedBush_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)p1, p2, p3, p4, p5, TUMBLEWEED_BUSH_RENDER_SCALE);
+        objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, TUMBLEWEED_BUSH_RENDER_SCALE);
 }
 
 void TumbleWeedBush_hitDetect(void)
 {
 }
 
-void TumbleWeedBush_update(int* obj)
+void TumbleWeedBush_update(GameObject* obj)
 {
     TumbleweedBushState* state;
-    int* player;
+    GameObject* player;
     f32 hitExtra[3];
     f32 sunTime;
     int hit0;
@@ -222,9 +222,9 @@ void TumbleWeedBush_update(int* obj)
     int** slot;
     int i;
 
-    state = ((GameObject*)obj)->extra;
-    player = (int*)Obj_GetPlayerObject();
-        if (ObjHits_PollPriorityHitWithCooldown((GameObject*)(obj), (float*)&gTumbleweedBushHitCooldownState, &hit0,
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
+        if (ObjHits_PollPriorityHitWithCooldown(obj, (float*)&gTumbleweedBushHitCooldownState, &hit0,
                                                 (float*)hitExtra) != 0)
     {
         if (((GameObject*)hit0)->anim.seqId != TUMBLEWEEDBUSH_SIBLING_C)
@@ -236,7 +236,7 @@ void TumbleWeedBush_update(int* obj)
                 slot = (int**)&state->pieceObjects[(u8)i];
                 if (*slot != NULL)
                 {
-                    if (((GameObject*)obj)->anim.seqId == TUMBLEWEEDBUSH_SEQ_A)
+                    if (obj->anim.seqId == TUMBLEWEEDBUSH_SEQ_A)
                     {
                         if ((*gSkyInterface)->getSunPosition(&sunTime) == 0)
                             continue;
@@ -246,8 +246,8 @@ void TumbleWeedBush_update(int* obj)
             }
         }
     }
-    dx = ((GameObject*)obj)->anim.localPosX - ((GameObject*)player)->anim.localPosX;
-    dy = ((GameObject*)obj)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ;
+    dx = obj->anim.localPosX - player->anim.localPosX;
+    dy = obj->anim.localPosZ - player->anim.localPosZ;
     d = sqrtf(dx * dx + dy * dy);
     if ((u16)(s32)d < state->triggerRadius)
     {
@@ -270,7 +270,7 @@ void TumbleWeedBush_update(int* obj)
     }
 }
 
-void TumbleWeedBush_init(u8* obj, TumbleweedBushPlacement* params, int param3)
+void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* params, int param3)
 {
     u8* sub;
     f32 t;
@@ -280,18 +280,18 @@ void TumbleWeedBush_init(u8* obj, TumbleweedBushPlacement* params, int param3)
     u8* pieceOffset;
     int i;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     ((TumbleweedBushState*)sub)->scale = TUMBLEWEED_BUSH_INIT_SCALE;
     ((TumbleweedBushState*)sub)->triggerRadius = (u16)(params->radiusByte * 2);
     ((TumbleweedBushState*)sub)->variant = params->variant;
-    ((GameObject*)obj)->anim.rotZ = (s16)((params->rotZByte - 0x7f) << 7);
-    ((GameObject*)obj)->anim.rotY = (s16)((params->rotYByte - 0x7f) << 7);
-    ((GameObject*)obj)->anim.rotX = (s16)(params->rotXByte << 8);
-    ((GameObject*)obj)->anim.rootMotionScale = params->scale;
-    t = ((GameObject*)obj)->anim.rootMotionScale;
+    obj->anim.rotZ = (s16)((params->rotZByte - 0x7f) << 7);
+    obj->anim.rotY = (s16)((params->rotYByte - 0x7f) << 7);
+    obj->anim.rotX = (s16)(params->rotXByte << 8);
+    obj->anim.rootMotionScale = params->scale;
+    t = obj->anim.rootMotionScale;
     ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(TUMBLEWEED_BUSH_HIT_RADIUS * t), (s32)(TUMBLEWEED_BUSH_HIT_Y_MIN * t),
                                (s32)(TUMBLEWEED_BUSH_HIT_Y_MAX * t));
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (obj->anim.seqId)
     {
     case TUMBLEWEEDBUSH_SEQ_A:
     case TUMBLEWEEDBUSH_SEQ_C:
@@ -314,9 +314,9 @@ void TumbleWeedBush_init(u8* obj, TumbleweedBushPlacement* params, int param3)
         {
             *(int*)(pieceSlot + 0xc) = 0;
             memcpy(pieceOffset + 0x1c, pe, 0xc);
-            *(f32*)(pieceOffset + 0x1c) = *(f32*)(pieceOffset + 0x1c) * ((GameObject*)obj)->anim.rootMotionScale;
-            *(f32*)(pieceOffset + 0x20) = *(f32*)(pieceOffset + 0x20) * ((GameObject*)obj)->anim.rootMotionScale;
-            *(f32*)(pieceOffset + 0x24) = *(f32*)(pieceOffset + 0x24) * ((GameObject*)obj)->anim.rootMotionScale;
+            *(f32*)(pieceOffset + 0x1c) = *(f32*)(pieceOffset + 0x1c) * obj->anim.rootMotionScale;
+            *(f32*)(pieceOffset + 0x20) = *(f32*)(pieceOffset + 0x20) * obj->anim.rootMotionScale;
+            *(f32*)(pieceOffset + 0x24) = *(f32*)(pieceOffset + 0x24) * obj->anim.rootMotionScale;
             vecRotateZXY((s16*)obj, (f32*)(pieceOffset + 0x1c));
             pieceSlot += 4;
             pe += 0xc;
