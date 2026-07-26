@@ -44,12 +44,6 @@ STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 #define SB_PROPELLER_PARTFX_DEBRIS 0x7aa /* bankIndex==1 debris trail from path point 0 */
 
 
-extern f32 lbl_803E5810;
-extern f32 lbl_803E5814;
-extern f32 lbl_803E5818;
-extern f32 lbl_803E581C;
-extern f32 lbl_803E5820;
-extern f32 lbl_803E5824;
 u32 lbl_803DDC40;
 
 u32 sbGetPropeller(void)
@@ -66,7 +60,7 @@ void SB_Propeller_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E5810);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void SB_Propeller_hitDetect(GameObject* obj)
@@ -103,10 +97,10 @@ void SB_Propeller_update(GameObject* obj)
     if ((camC < 2) && (state->health <= 0))
     {
         state->smokeTimer = state->smokeTimer - timeDelta;
-        if (state->smokeTimer <= lbl_803E5814)
+        if (state->smokeTimer <= 0.0f)
         {
             f32 spd;
-            for (i = randomGetRange(10, 0x19), spd = lbl_803E5810; i != 0; i--)
+            for (i = randomGetRange(10, 0x19), spd = 1.0f; i != 0; i--)
             {
                 effect.posX = objAnim->worldPosX;
                 effect.posY = objAnim->worldPosY;
@@ -118,7 +112,7 @@ void SB_Propeller_update(GameObject* obj)
         }
         if ((2 < camA) && (objAnim->bankIndex == 1))
         {
-            effect.scale = lbl_803E5818;
+            effect.scale = 2.5f;
             effect.arg3 = 0xc0a;
             ObjPath_GetPointWorldPosition(obj, 0, &effect.posX, &effect.posY, &effect.posZ, 0);
             effect.posX = effect.posX - objAnim->worldPosX;
@@ -135,14 +129,14 @@ void SB_Propeller_update(GameObject* obj)
         parentTimer = ((GameObject*)objAnim->parent)->userData1;
         if ((objAnim->seqId != SB_PROPELLER_SEQ_ID) && (parentTimer < 4))
         {
-            state->spinBlend = state->spinRate / lbl_803E581C;
-            if (state->spinBlend < lbl_803E5814)
+            state->spinBlend = state->spinRate / 1600.0f;
+            if (state->spinBlend < 0.0f)
             {
                 state->spinBlend = -state->spinBlend;
             }
-            if (state->spinBlend < *(f32*)&lbl_803E5820)
+            if (state->spinBlend < 0.2f)
             {
-                state->spinBlend = lbl_803E5820;
+                state->spinBlend = 0.2f;
             }
         }
         object->userData1 = object->userData1 - framesThisStep;
@@ -167,7 +161,7 @@ void SB_Propeller_update(GameObject* obj)
                 SB_GALLEON_VTBL(*(int*)&objAnim->parent)->onPartDestroyed(*(int*)&objAnim->parent);
                 ObjHits_DisableObject(obj);
                 objAnim->flags = objAnim->flags | OBJANIM_FLAG_HIDDEN;
-                spawnExplosion(obj, lbl_803E5824, 1, 1, 1, 0, 1, 1, 0);
+                spawnExplosion(obj, 100.0f, 1, 1, 1, 0, 1, 1, 0);
                 Sfx_PlayFromObject((int)obj, SB_PROPELLER_SFX_DESTROYED);
             }
         }
@@ -196,7 +190,7 @@ void SB_Propeller_init(GameObject* obj, SBPropellerPlacement* placement)
     state = obj->extra;
     randVal = randomGetRange(0x5a, 0xf0);
     state->smokeTimer = (f32)(s32)(randVal);
-    state->spinBlend = lbl_803E5810;
+    state->spinBlend = 1.0f;
     state->spinRate = 1200;
     state->health = 4;
     objAnim->bankIndex = (char)placement->modelBankIndex;
