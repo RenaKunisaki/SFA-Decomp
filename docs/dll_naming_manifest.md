@@ -727,7 +727,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A9 | LGTPointLight (+CF_WallTorc) | CONFIRMED | main/dll/dll_02A9_lgtpointlight.c | main/dll/LGT/dll_02A9_lgtpointlight.c | — |
 | 0x2AA | LGTDirectionallight | CONFIRMED | main/dll/dll_02AA_lgtdirectionallight.c | main/dll/LGT/dll_02AA_lgtdirectionallight.c | — |
 | 0x2AB | LGTProjectedlight | CONFIRMED | main/dll/dll_02AB_lgtprojectedlight.c | main/dll/LGT/dll_02AB_lgtprojectedlight.c | — |
-| 0x2AC | LGTControlLight | CONFIRMED | main/dll/dll_02AC_lgtcontrollight.c | main/dll/LGT/dll_02AC_lgtcontrollight.c | — |
+| 0x2AC | LGTControlLight | CONFIRMED | dlls/objects/684_LGTControlL/LGTControlL.c | = (canonical) | — |
 | 0x2AD | — (+softbody, LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL) | NO-RETAIL-NAME | dlls/objects/685/685.c | = (canonical) | — |
 | 0x2AE | WaterFlowWe | CONFIRMED | dlls/objects/686_WaterFlowWe/WaterFlowWe.c | = (canonical) | — |
 | 0x2AF | — (+Tree, SH_FernTree, FernTree, smallfern, tallpalmtre, JungleTree, RootPlant, SnowTree1, SnowTree2, SnowTree3, SnowTree4, SnowFruitTr) | NO-RETAIL-NAME | dlls/objects/687/687.c | = (canonical) | — |
@@ -981,7 +981,7 @@ name was a deliberate choice by a previous carve:
 | 0x2A9 | main/dll/dll_02A9_lgtpointlight.c | main/dll/LGT/dll_02A9_lgtpointlight.c | CONFIRMED |
 | 0x2AA | main/dll/dll_02AA_lgtdirectionallight.c | main/dll/LGT/dll_02AA_lgtdirectionallight.c | CONFIRMED |
 | 0x2AB | main/dll/dll_02AB_lgtprojectedlight.c | main/dll/LGT/dll_02AB_lgtprojectedlight.c | CONFIRMED |
-| 0x2AC | main/dll/dll_02AC_lgtcontrollight.c | main/dll/LGT/dll_02AC_lgtcontrollight.c | CONFIRMED |
+| 0x2AC | main/dll/dll_02AC_lgtcontrollight.c | dlls/objects/684_LGTControlL/LGTControlL.c | CONFIRMED |
 
 ## Appendix: current `dll_XXXX` files whose id != descriptor id
 

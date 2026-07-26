@@ -1,5 +1,5 @@
 /*
- * lgtcontrollight (DLL 0x2AC) - a switch object that drives nearby point
+ * LGTControlLight (DLL 0x2AC) - a switch object that drives nearby point
  * lights from a game bit.
  *
  * It owns no light of its own. Each frame update reads its gameBit; when the
