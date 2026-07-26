@@ -42,3 +42,20 @@ void sideload_update(GameObject* self)
         child->anim.rotX = (s16)((u8)placement->rotX << 8);
     }
 }
+
+ObjectDescriptor gSideloadObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)sideload_update,
+    0,
+    0,
+    0,
+    0,
+    0,
+};

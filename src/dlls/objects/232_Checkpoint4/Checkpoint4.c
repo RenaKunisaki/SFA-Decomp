@@ -1,5 +1,5 @@
 /*
- * DLL 0x00E8 - checkpoint4. TU range 0x801719E0-0x80171BAC.
+ * DLL 0xE8 - Checkpoint4.
  *
  * The TU's own object is the "checkpoint4" trigger volume: checkpoint4_init
  * builds an oriented plane (normal + signed distance via setMatrixFromObjectPos
@@ -12,9 +12,6 @@
 #include "main/dll/checkpoint4.h"
 #include "main/object_render.h"
 #include "game/objects/object.h"
-#include "main/dll/dll_00E9_setuppoint.h"
-#include "main/dll/dll_00EA_sideload.h"
-#include "main/dll/dll_00EB_siderepel.h"
 
 void checkpoint4_setScale(void)
 {
@@ -97,8 +94,6 @@ void checkpoint4_initialise(void)
 {
 }
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-
 ObjectDescriptor11WithPadding gCheckpoint4ObjDescriptor = {
     {
         0,
@@ -117,54 +112,5 @@ ObjectDescriptor11WithPadding gCheckpoint4ObjDescriptor = {
         checkpoint4_getExtraSize,
         (ObjectDescriptorCallback)checkpoint4_setScale,
     },
-    0,
-};
-
-ObjectDescriptor gSideloadObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)sideload_update,
-    0,
-    0,
-    0,
-    0,
-    0,
-};
-ObjectDescriptor gSiderepelObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)siderepel_init,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)siderepel_free,
-    0,
-    siderepel_getExtraSize,
-};
-ObjectDescriptor gSetuppointObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)setuppoint_init,
-    0,
-    0,
-    0,
-    0,
-    0,
     0,
 };

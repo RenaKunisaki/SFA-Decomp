@@ -12,6 +12,7 @@
 #include "main/obj_group.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/dll_00EB_siderepel.h"
+#include "dlls/object_descriptor.h"
 
 /* object group: side-repel object */
 #define SIDEREPEL_OBJGROUP 0x40
@@ -37,3 +38,20 @@ void siderepel_init(GameObject* obj, SideRepelPlacement* placement)
         ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (s16)(placement->radius >> 3));
     }
 }
+
+ObjectDescriptor gSiderepelObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)siderepel_init,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)siderepel_free,
+    0,
+    siderepel_getExtraSize,
+};
