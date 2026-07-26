@@ -1,5 +1,5 @@
 /*
- * cloudprisoncontrol (DLL 0x145) - the per-map controller object for the
+ * CloudPrison (DLL 0x145) - the per-map controller object for the
  * cloud-prison set piece. It owns no per-instance state (getExtraSize
  * returns 0) and acts purely as a message hub: on its first update it
  * caches a rom-curve handle (slot 40, curve id 8) into lbl_803DDB0C, then
