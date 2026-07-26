@@ -1,43 +1,13 @@
 /*
- * dim2pathgenerator (DLL 0x1D8) - snowball path-generator for Snowhorn Wastes 2.
+ * DIM2PathGen (DLL 0x1D8) - snowball path-generator for Snowhorn Wastes 2.
  * Finds and loads a RomCurve spline near its placement position (curve group 21),
  * then periodically spawns dim2snowball objects (DLL type in spawnTypes[]) from a
  * free pool (object group 47) or via Obj_AllocObjectSetup, alternating between two
  * snowball types per spawn. Spawn rate and type are set from the placement data.
  */
-
-#include "main/dll/dimmagicbridge_state.h"
-#include "main/dll/dimwooddoor2state_struct.h"
-#include "main/dll/fbwgpipe_struct.h"
-#include "main/dll/dll1cestate_struct.h"
-#include "main/dll/explosionpartfxsource_struct.h"
 #include "main/dll/dim2pathgeneratorstate_struct.h"
-#include "main/dll/dim2snowballstate_struct.h"
-#include "main/dll/truthhornicestate_struct.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/dll1d6state_struct.h"
-#include "main/dll/explosion_state.h"
-#include "main/objseq.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
-
-STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
-
-STATIC_ASSERT(sizeof(Dll1CEState) == 0xC);
-
-STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
-
-STATIC_ASSERT(sizeof(ExplosionPartfxSource) == 0x38);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, velocityX) == 0x24);
-
-STATIC_ASSERT(sizeof(ExplosionState) == 0xA60);
-STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
-
-FbWGPipe GXWGFifo : (0xCC008000);
-
 #include "main/dll/rom_curve_interface.h"
 #include "game/objects/object.h"
 #include "main/gamebits.h"
@@ -106,26 +76,10 @@ typedef struct Dim2pathgeneratorPlacement
     u8 pad24[0x28 - 0x24];
 } Dim2pathgeneratorPlacement;
 
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
-
-STATIC_ASSERT(sizeof(Dll1D6State) == 0x20);
-
-STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
-
-STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
-
 STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9a8);
 
 #define CURVE_GROUP_SNOWBALL_PATH   21
 #define OBJ_GROUP_SNOWBALL_POOL     47
-
-
-static inline int* DIM2snowball_GetActiveModel(GameObject *obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
-}
-
 
 u8 DIM2PathGenerator_getCurveVals(GameObject* obj, int** p1, int** p2, int** p3, int** p4)
 {
@@ -140,8 +94,15 @@ u8 DIM2PathGenerator_getCurveVals(GameObject* obj, int** p1, int** p2, int** p3,
     return ((Dim2PathGeneratorState*)state)->curveValid;
 }
 
-int DIM2PathGenerator_getExtraSize(void) { return 0x9a8; }
-int DIM2PathGenerator_getObjectTypeId(void) { return 0x0; }
+int DIM2PathGenerator_getExtraSize(void)
+{
+    return sizeof(Dim2PathGeneratorState);
+}
+
+int DIM2PathGenerator_getObjectTypeId(void)
+{
+    return 0;
+}
 
 void DIM2PathGenerator_free(void)
 {
@@ -154,7 +115,6 @@ void DIM2PathGenerator_render(void)
 void DIM2PathGenerator_hitDetect(void)
 {
 }
-
 
 void DIM2PathGenerator_update(GameObject* obj)
 {
@@ -252,7 +212,6 @@ void DIM2PathGenerator_update(GameObject* obj)
         ((Dim2PathGeneratorState*)extra)->flags |= (toggle ^ 1) & 1;
     }
 }
-
 
 void DIM2PathGenerator_init(GameObject* obj, int* def)
 {

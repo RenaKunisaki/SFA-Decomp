@@ -2625,7 +2625,7 @@ dlls/objects/471_DIM2SnowBal/DIM2SnowBal.c:
 	.data       start:0x80325790 end:0x803257C8
 	.sdata2     start:0x803E4AA0 end:0x803E4AD4
 
-main/dll/DIM/dll_01D8_dim2pathgenerator.c:
+dlls/objects/472_DIM2PathGen/DIM2PathGen.c:
 	.text       start:0x801B837C end:0x801B8798
 	.data       start:0x803257C8 end:0x80325808
 
