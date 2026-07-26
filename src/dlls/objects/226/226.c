@@ -1,5 +1,5 @@
 /*
- * dll_00E2 - the player staff weapon DLL plus the spell/weapon objects it
+ * DLL 0xE2 - the player staff weapon DLL plus the spell/weapon objects it
  * ships alongside (object type 0x9 = gStaffObjDescriptor).
  *
  * The staff drives a procedural swipe trail (staff_setupSwipe builds vertex
@@ -54,6 +54,11 @@
 #include "main/frame_timing.h"
 #include "main/rcp_dolphin_api.h"
 #include "dolphin/gx/GXLegacyDecls.h"
+
+extern u8 gStaffQuakeSpellState[0x28];
+extern void* gStaffSwipeTextures[2];
+extern f32 lbl_803E32A4;
+extern StaffCollisionInterface** gStaffSwipeResource;
 
 s16 sStaffSwipeTextureIdTable[4] = {0xC7F, 0x3EC, 0, 0};
 #define STAFF_QUAKE_HIT_VOLUME_SLOT 17
@@ -459,8 +464,6 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable)
     ((StaffState*)state)->glowEnable = enable;
 }
 
-extern u8 gStaffQuakeSpellState[0x28];
-
 const f32 gStaffHalfPi = 1.5707964f;
 const f32 gStaffPi = 3.1415927f;
 const f32 gStaffAngleUnitScale = 32768.0f;
@@ -552,9 +555,6 @@ void quakeSpellTextureFn_8016dbf4(void)
         GXDrawTorus(((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius, 10, 20);
     }
 }
-extern void* gStaffSwipeTextures[2];
-extern f32 lbl_803E32A4;
-
 void staffDrawSwipe(int* obj, int* swipe)
 {
     SwipeRecord* swp;
@@ -980,8 +980,6 @@ const SwipeColorTable gStaffSwipeColorTable = {{
     {0x08, 0xB4, 0xF0, 0xFF},
     {0x08, 0xAA, 0xFF, 0xAA},
 }};
-
-extern StaffCollisionInterface** gStaffSwipeResource;
 
 void staff_hitDetectGeometry(int* obj)
 {

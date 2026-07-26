@@ -27,7 +27,7 @@ values), then define the table with named constants — that names every call th
 |---|---|---|---|
 | `src/main/dll/dll_000F_unk.c:96` | PlayFromObject | `(u16)sfxTable[idx]` | `sfxTable` |
 | `src/main/dll/dll_000F_unk.c:109` | PlayFromObject | `(u16)sfxTable[idx]` | `sfxTable` |
-| `src/main/dll/dll_00E2_staff.c:1212` | PlayAtPositionFromObject | `(u16)((s16*)lbl_803208A0)[idx]` | `lbl_803208A0` |
+| `src/dlls/objects/226/226.c:1032` | PlayAtPositionFromObject | `(u16)((s16*)lbl_803208A0)[idx]` | `lbl_803208A0` |
 | `src/main/dll/dll_0138_groundanimator.c:553` | PlayFromObject | `(&lbl_803DBDF0)[placement->sfxIndex]` | `lbl_803DBDF0` |
 | `src/main/dll/dll_0272_hightop.c:352` | PlayFromObject | `(u16)(&gHighTopMovementSfxIds)[idx]` | `gHighTopMovementSfxIds` |
 | `src/main/dll/dll_0242_dbstealerworm.c:1224` | PlayFromObject | `lbl_80329640[1]` | `lbl_80329640` |
