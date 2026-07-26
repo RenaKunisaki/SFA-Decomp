@@ -2550,7 +2550,7 @@ dlls/objects/454_DIMCannon/DIMCannon.c:
 	.sdata      start:0x803DBEF0 end:0x803DBF18
 	.sbss       start:0x803DDB50 end:0x803DDB58
 
-main/dll/DIM/dll_01C7_dimlavasmash.c:
+dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c:
 	.text       start:0x801B3344 end:0x801B3768
 	.data       start:0x80325478 end:0x803254B0
 	.sdata2     start:0x803E48F8 end:0x803E48FC

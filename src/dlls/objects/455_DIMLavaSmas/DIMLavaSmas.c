@@ -1,10 +1,9 @@
 /*
- * dimlavasmash (DLL 0x1C7) - DIM lava-smash hazard; a surface object that
+ * DIMLavaSmas (DLL 0x1C7) - DIM lava-smash hazard; a surface object that
  * rises and smashes when struck by a certain hit type, sets surface-passable
  * flags on the underlying map block, and triggers a game-bit sequence event
  * on completion.
  */
-#include "main/dll/DIM/dimcannon_state.h"
 #include "main/lightmap_api.h"
 #include "main/pi_dolphin_api.h"
 #include "game/objects/object.h"
@@ -21,7 +20,6 @@
 #include "main/audio/sfx.h"
 #include "main/dll/DIM/dll_01C7_dimlavasmash.h"
 
-STATIC_ASSERT(sizeof(DimCannonState) == 0xb4);
 #define DIMLAVASMASH_HIT_SEQID_CANNONBALL 397 /* dimlavaball cannonball (0x18d) */
 
 void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfaceType)
@@ -120,8 +118,6 @@ int dimlavasmash_getObjectTypeId(void)
 
 #define DIMLAVASMASH_OBJFLAG_HITDETECT_DISABLED 0x2000
 
-
-
 void dimlavasmash_free(void)
 {
 }
@@ -134,7 +130,6 @@ void dimlavasmash_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
         objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
     }
 }
-
 
 void dimlavasmash_hitDetect(void)
 {
