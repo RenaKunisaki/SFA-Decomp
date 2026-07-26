@@ -350,7 +350,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x12E | CFLightWall (+LaserTurret, DIMSpellsto, InfoTablet, CFrunnersta, CFLightPill, CFDungeonLi, CFGCrubble1, CFGCrubble2, CFGCrubble3, CFGCrubble4, CFGCpillbre, CFGCsmallbl, SkyDome, WCSunDoor, WCMoonDoor, DIM2Torch, CCdarkness, WORLDshield, GFRONT_Asse, LINKH_Asset, LINKC_Asset, LINKE_Asset, LINKJ_Asset, LINKF_Asset, AndrossSpir, GF_Pilotsea, GF_JukeBox, MMP_defenDo, NWCellLock, SH_BeaconTw, KP_console_, VFP_Warding, VFP_Maindoo, DFPSplstne, VFPSplstne, WM_Explosiv, DBprotectZo, KillerSpike, DR_Tower, DR_TestWall, DR_IonCanno, DR_TrackDoo, DR_CloudCal, DieSeqObjec, ARWArwingTa, ARWStarFiel, DirectionSi, FirePole, DragonFly) | CONFIRMED | dlls/objects/302/302.c | = (canonical) | — |
 | 0x12F | BarrelPad (+NWCallOFEld) | COMPLETE | dlls/objects/303_BarrelPad/BarrelPad.c | = (canonical) | — |
 | 0x130 | AreaFXEmit (+TAreaFXEmit) | COMPLETE | dlls/objects/304_AreaFXEmit/AreaFXEmit.c | = (canonical) | — |
-| 0x131 | CF_DoorLight (+DR_LightPol) | CONFIRMED | main/dll/dll_0131_cfdoorlight.c | main/dll/CF/dll_0131_cfdoorlight.c | — |
+| 0x131 | CF_DoorLight (+DR_LightPol) | CONFIRMED | dlls/objects/305/305.c | = (canonical) | — |
 | 0x132 | WaterFallSpray | CONFIRMED | main/dll/dll_0132_waterfallspray.c | = (canonical) | — |
 | 0x133 | sfxPlayer | COMPLETE | main/dll/dll_0133_sfxplayer.c | = (canonical) | — |
 | 0x134 | texscroll2 | COMPLETE | main/dll/dll_0134_texscroll2.c | = (canonical) | — |
@@ -800,7 +800,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x131 | main/dll/dll_0131_cfdoorlight.c | main/dll/CF/dll_0131_cfdoorlight.c | CONFIRMED |
 | 0x13E | main/dll/dll_013E_dimbossicesmash.c | main/dll/DIM/dll_013E_dimbossicesmash.c | CONFIRMED |
 | 0x148 | main/dll/dll_0148_cfguardian.c | main/dll/CF/dll_0148_cfguardian.c | COMPLETE |
 | 0x149 | main/dll/dll_0149_cfwindlift.c | main/dll/CF/dll_0149_cfwindlift.c | CONFIRMED |

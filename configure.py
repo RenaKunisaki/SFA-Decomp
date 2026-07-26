@@ -1643,7 +1643,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/300_Transporter/Transporter.c", cflags=cflags_dll_noopt_noloopinv),
             Object(MatchingFor("GSAE01"), "dlls/objects/302/302.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/303_BarrelPad/BarrelPad.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/CF/dll_0131_cfdoorlight.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/305/305.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/holopoint.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0134_texscroll2.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0135_texscroll.c", cflags=cflags_dll_noopt),

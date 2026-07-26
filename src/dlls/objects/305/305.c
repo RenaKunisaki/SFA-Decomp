@@ -1,5 +1,5 @@
 /*
- * cfdoorlight (DLL 0x131) - door-light texture animator at CF
+ * CF_DoorLight (DLL 0x131) - door-light texture animator at CF
  * (CloudRunner Fortress). Once the placement's trigger game bit is set,
  * runs the object's texture animation from frame 0 forward by frameStep
  * per tick (frames in 1/256 units). On passing maxFrame it either loops
