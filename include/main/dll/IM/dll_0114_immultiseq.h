@@ -2,6 +2,7 @@
 #define MAIN_DLL_IM_DLL_0114_IMMULTISEQ_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
