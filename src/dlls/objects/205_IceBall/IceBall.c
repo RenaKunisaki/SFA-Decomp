@@ -7,11 +7,11 @@
  */
 #include "dlls/objects/205_IceBall.h"
 #include "dlls/objects/203.h"
+#include "dlls/objects/208_Grimble.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
-#include "main/dll/dll_00D0_grimble.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
