@@ -32,14 +32,14 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, int baddie);
 int dbstealerworm_stateHandlerB06(GameObject* obj, int baddie);
 void fn_80202EF0(GameObject* obj, int baddie);
 
-s16 dbstealerworm_setScale(int* obj);
+s16 dbstealerworm_setScale(GameObject* obj);
 int dbstealerworm_getExtraSize(void);
 int dbstealerworm_getObjectTypeId(void);
 void dbstealerworm_free(GameObject* obj);
 void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void dbstealerworm_hitDetect(GameObject* obj);
 void dbstealerworm_update(u8* objp);
-void dbstealerworm_init(int* obj, u8* def, int flag);
+void dbstealerworm_init(GameObject* obj, u8* def, int flag);
 void dbstealerworm_release(void);
 void dbstealerworm_initialise(void);
 
