@@ -1,5 +1,5 @@
 /*
- * dbsh_symbol (DLL 0x196) - the spin-the-symbol minigame object in the
+ * DBSH_Symbol (DLL 0x196) - the spin-the-symbol minigame object in the
  * DarkIce Mines SnowHorn shrine (shares the shrine's RISE_DONE/CLOSE
  * game bits with dbshshrine, DLL 0x195).
  *
