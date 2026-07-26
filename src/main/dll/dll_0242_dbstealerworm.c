@@ -2234,18 +2234,18 @@ int dbstealerworm_getObjectTypeId(void)
 }
 
 
-void dbstealerworm_free(int* obj)
+void dbstealerworm_free(GameObject* obj)
 {
-    u8* sub = ((GameObject*)obj)->extra;
+    u8* sub = obj->extra;
     int* p40c = *(int**)&((GroundBaddieState*)sub)->control;
     ObjGroup_RemoveObject((int)obj, DBSTEALERWORM_OBJGROUP);
     Stack_Free(((DbStealerwormControl*)p40c)->msgStack);
-    if (((GameObject*)obj)->childObjs[0] != NULL)
+    if (obj->childObjs[0] != NULL)
     {
-        Obj_FreeObject(((GameObject*)obj)->childObjs[0]);
-        *(int*)&((GameObject*)obj)->childObjs[0] = 0;
+        Obj_FreeObject(obj->childObjs[0]);
+        *(int*)&obj->childObjs[0] = 0;
     }
-    (*gBaddieControlInterface)->releaseState((GameObject*)obj, sub, 3);
+    (*gBaddieControlInterface)->releaseState(obj, sub, 3);
 }
 
 void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
