@@ -1775,6 +1775,7 @@ config.libs = [
             Object(NonMatching, "main/dll/dfbarrel.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dfbarrelanim.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/DF/dll_0175_dfropenode.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DF/dll_0177_dfshdoor2speci.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DF/dll_0178_dfshshrine.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_017A_spiritprize.c", cflags=cflags_dll_noopt),

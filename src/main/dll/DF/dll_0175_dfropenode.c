@@ -691,5 +691,3 @@ ObjectDescriptor20 gDFropenodeObjDescriptor = {
     (ObjectDescriptorCallback)dfropenode_setMinY,
     (ObjectDescriptorCallback)dfropenode_clearLinkedObj,
 };
-
-u32 lbl_80325F20[12] = {-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

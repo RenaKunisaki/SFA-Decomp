@@ -417,7 +417,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x173 | LINK_levcon | CONFIRMED | dlls/objects/371_LINK_levcon/LINK_levcon.c | = (canonical) | — |
 | 0x174 | CCriverflow | CONFIRMED | dlls/objects/372_CCriverflow/CCriverflow.c | = (canonical) | — |
 | 0x175 | DFropenode | COMPLETE | main/dll/dll_0175_dfropenode.c | main/dll/DF/dll_0175_dfropenode.c | — |
-| 0x176 | DFSH_Door1S | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x176 | DFSH_Door1S | RAW | dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c | = (canonical) | data-only DLL |
 | 0x177 | DFSH_Door2Speci (+DFSH_Door3S, DFSH_Door4S) | CONFIRMED | main/dll/dll_0177_dfshdoor2speci.c | main/dll/DF/dll_0177_dfshdoor2speci.c | — |
 | 0x178 | DFSH_Shrine | CONFIRMED | main/dll/dll_0178_dfshshrine.c | main/dll/DF/dll_0178_dfshshrine.c | — |
 | 0x179 | DFSH_ObjCreator | CONFIRMED | main/dll/dll_0179_dfshobjcreator.c | main/dll/DF/dll_0179_dfshobjcreator.c | — |
