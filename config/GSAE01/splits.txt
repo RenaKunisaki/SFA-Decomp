@@ -3456,7 +3456,7 @@ dlls/objects/578_DBstealerwo/DBstealerwo.c:
 	.data       start:0x803293B8 end:0x80329810
 	.sdata2     start:0x803E62A8 end:0x803E6390
 
-main/dll/dll_0243_dbholecontrol1.c:
+dlls/objects/579_DBHoleContr/DBHoleContr.c:
 	.text       start:0x80203DA0 end:0x80204098
 	.data       start:0x80329810 end:0x80329848
 	.sbss       start:0x803DDCE0 end:0x803DDCE8
