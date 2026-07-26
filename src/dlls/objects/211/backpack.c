@@ -1,7 +1,7 @@
 /*
  * landedArwing action callbacks (the file is named backpack.c but holds the
  * dll_D3 landed-arwing baddie's per-state update functions, alongside
- * landedarwing.c). Each callback drives the obj+0xB8 GroundBaddieState /
+ * landedArwing.c). Each callback drives the obj+0xB8 GroundBaddieState /
  * BaddieState record and the LandedArwingState control block at +0x40C:
  *   - TriggerLaunchTarget: fires the launch move + spawn fx and sets a game
  *     bit when the obj's just-collided flag (+0x27A) is set.

@@ -40,6 +40,12 @@
 #include "main/track_dolphin_api.h"
 #include "main/object_render.h"
 #include "main/trig.h"
+#include "main/dll/treasurechest_state.h"
+#include "main/objseq.h"
+#include "main/objfx.h"
+#include "dlls/object_descriptor.h"
+#include "string.h"
+#include "main/dll/dll_00D2_tumbleweed.h"
 
 #define STAFFACTION_HIT_VOLUME_SLOT 9
 
@@ -832,13 +838,6 @@ void landedarwing_buildSurfaceOrientationMatrix(f32* out, f32* forward, f32* up)
 void dll_D3_hitDetect_nop(void)
 {
 }
-
-#include "main/dll/treasurechest_state.h"
-#include "main/objseq.h"
-#include "main/objfx.h"
-#include "dlls/object_descriptor.h"
-#include "string.h"
-#include "main/dll/dll_00D2_tumbleweed.h"
 
 typedef struct DllD3Placement
 {

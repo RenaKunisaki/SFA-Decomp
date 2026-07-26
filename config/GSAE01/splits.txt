@@ -1617,11 +1617,11 @@ dlls/objects/210/210.c:
 	.sdata      start:0x803DBD40 end:0x803DBD48
 	.sdata2     start:0x803E2F78 end:0x803E2FD4
 
-main/dll/backpack.c:
+dlls/objects/211/backpack.c:
 	.text       start:0x801650D0 end:0x8016558C
 	.data       start:0x80320380 end:0x803203B8
 
-main/dll/landedarwing.c:
+dlls/objects/211/landedArwing.c:
 	.text       start:0x8016558C end:0x801659B8
 	.sdata2     start:0x803E3018 end:0x803E3020
 
