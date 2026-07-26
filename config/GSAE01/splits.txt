@@ -4005,7 +4005,7 @@ main/dll/dll_02B9_mcstaffeffe.c:
 	.text       start:0x802392B8 end:0x8023938C
 	.data       start:0x8032BFB0 end:0x8032BFE8
 
-main/dll/dll_02BA_mclightning.c:
+dlls/objects/698_MCLightning/MCLightning.c:
 	.text       start:0x8023938C end:0x80239858
 	.data       start:0x8032BFE8 end:0x8032C020
 	.sdata2     start:0x803E7440 end:0x803E7460
