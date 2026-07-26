@@ -439,9 +439,9 @@ int SB_CloudRunner_render2(void)
 }
 
 
-void SB_CloudRunner_modelMtxFn(int* obj, f32* x, f32* y, f32* z)
+void SB_CloudRunner_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
 {
-    f32* p = ((GameObject*)obj)->extra;
+    f32* p = obj->extra;
     *x = p[0];
     *y = p[1];
     *z = p[2];
