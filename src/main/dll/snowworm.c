@@ -103,20 +103,6 @@ extern u8 lbl_803DBD30[4];
 #define FIRECRAWLER_PARTFX_MOVE_STRAIGHT 0x809
 #define FIRECRAWLER_HIT_VOLUME_SLOT      9
 
-/* Spawn-setup buffer for the FireHole child (obj id 0x710): ObjPlacement head
- * (pos/color) plus the class-specific fields the parent seeds at +0x18. */
-typedef struct FireHoleSetup
-{
-    ObjPlacement head; /* 0x00 */
-    u8 unk18;          /* 0x18 */
-    u8 unk19;          /* 0x19 */
-    s16 unk1A;         /* 0x1a */
-    s16 unk1C;         /* 0x1c */
-    s16 unk1E;         /* 0x1e */
-    s16 unk20;         /* 0x20 */
-    u8 unk22;          /* 0x22 */
-    u8 unk23;          /* 0x23 */
-} FireHoleSetup;
 extern u8* gCrawlerReactionTables[];
 
 extern f32 lbl_803E2C98;

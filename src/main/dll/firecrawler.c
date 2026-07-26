@@ -111,20 +111,6 @@ u8 lbl_803DBD38[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 #define FIRECRAWLER_PARTFX_MOVE_STRAIGHT 0x809
 #define FIRECRAWLER_HIT_VOLUME_SLOT      9
 
-/* Spawn-setup buffer for the FireHole child (obj id 0x710): ObjPlacement head
- * (pos/color) plus the class-specific fields the parent seeds at +0x18. */
-typedef struct FireHoleSetup
-{
-    ObjPlacement head; /* 0x00 */
-    u8 unk18;          /* 0x18 */
-    u8 unk19;          /* 0x19 */
-    s16 unk1A;         /* 0x1a */
-    s16 unk1C;         /* 0x1c */
-    s16 unk1E;         /* 0x1e */
-    s16 unk20;         /* 0x20 */
-    u8 unk22;          /* 0x22 */
-    u8 unk23;          /* 0x23 */
-} FireHoleSetup;
 extern void* gCrawlerDescriptorTable[];
 
 extern f32 gCrawlerS8Norm127;
@@ -346,26 +332,26 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
 
 void firecrawler_spawnFireHole(GameObject* obj, u8* state)
 {
-    FireHoleSetup* setup;
+    FirePipeMapData* setup;
     GameObject* child;
     (void)state;
     if (Obj_IsLoadingLocked() != 0)
     {
-        setup = (FireHoleSetup*)Obj_AllocObjectSetup(0x24, FIREHOLE_OBJ_ID);
-        ObjPath_GetPointWorldPosition(obj, 0, &setup->head.posX, &setup->head.posY, &setup->head.posZ, 0);
-        setup->head.color[0] = 1;
-        setup->head.color[1] = 4;
-        setup->head.color[2] = 0xff;
-        setup->head.color[3] = 0xff;
-        setup->unk18 = 0;
-        setup->unk19 = 0;
-        setup->unk1A = 0;
-        setup->unk1C = 0xa;
-        setup->unk1E = 0;
-        setup->unk20 = 0;
-        setup->unk22 = 3;
-        setup->unk23 = 0;
-        child = Obj_SetupObject(&setup->head, 5, -1, -1, 0);
+        setup = (FirePipeMapData*)Obj_AllocObjectSetup(0x24, FIREHOLE_OBJ_ID);
+        ObjPath_GetPointWorldPosition(obj, 0, &setup->base.posX, &setup->base.posY, &setup->base.posZ, 0);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 4;
+        setup->base.color[2] = 0xff;
+        setup->base.color[3] = 0xff;
+        setup->rotX = 0;
+        setup->rotY = 0;
+        setup->cycleTime = 0;
+        setup->scale = 0xa;
+        setup->gameBit = 0;
+        setup->startOffset = 0;
+        setup->flags = 3;
+        setup->pad23 = 0;
+        child = Obj_SetupObject(&setup->base, 5, -1, -1, 0);
         if (child != NULL)
         {
             ObjLink_AttachChild(obj, child, 0);

@@ -35,6 +35,7 @@ typedef struct FirePipeMapData {
     s16 gameBit;
     s16 startOffset;
     u8 flags;
+    u8 pad23;
 } FirePipeMapData;
 
 typedef struct FirePipeObject {
@@ -70,6 +71,7 @@ STATIC_ASSERT(offsetof(FirePipeMapData, scale) == 0x1C);
 STATIC_ASSERT(offsetof(FirePipeMapData, gameBit) == 0x1E);
 STATIC_ASSERT(offsetof(FirePipeMapData, startOffset) == 0x20);
 STATIC_ASSERT(offsetof(FirePipeMapData, flags) == 0x22);
+STATIC_ASSERT(sizeof(FirePipeMapData) == 0x24);
 STATIC_ASSERT(offsetof(FirePipeObject, anim) == 0x00);
 STATIC_ASSERT(offsetof(FirePipeObject, rotX) == offsetof(ObjAnimComponent, rotX));
 STATIC_ASSERT(offsetof(FirePipeObject, scale) == offsetof(ObjAnimComponent, rootMotionScale));
