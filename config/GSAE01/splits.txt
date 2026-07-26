@@ -3729,7 +3729,7 @@ dlls/objects/656_WCPushBlock/WCPushBlock.c:
 	.data       start:0x8032AFB0 end:0x8032B108
 	.sdata2     start:0x803E6D98 end:0x803E6DA0
 
-main/dll/WC/dll_028D_wclevelcont.c:
+dlls/objects/653_WCLevelCont/WCLevelCont.c:
 	.text       start:0x802251B4 end:0x802272C8
 	.data       start:0x8032B108 end:0x8032B178
 	.sdata2     start:0x803E6DC8 end:0x803E6DD0

@@ -231,7 +231,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/newshadows | 97.9941 | 93.2277 | -4.7664 |
 | main/main/audio/mcmd_exec | 99.6306 | 94.9170 | -4.7136 |
 | main/main/dll/dll_004A_cameramodeshipbattle | 99.7038 | 95.1916 | -4.5122 |
-| main/main/dll/WC/dll_028D_wclevelcont | 100.0000 | 95.7487 | -4.2513 |
+| main/dlls/objects/653_WCLevelCont/WCLevelCont | 100.0000 | 95.7487 | -4.2513 |
 | main/main/dll/player | 99.8379 | 95.6264 | -4.2115 |
 | main/main/dll/Hcurves | 99.6559 | 95.5111 | -4.1448 |
 | main/main/dll/dll_00EF_pushable | 100.0000 | 96.3079 | -3.6921 |
