@@ -122,26 +122,26 @@ void VFP_DoorSwitch_update(GameObject* obj)
     state->activated = 1;
 }
 
-void VFP_DoorSwitch_init(int obj, int data)
+void VFP_DoorSwitch_init(GameObject* obj, int data)
 {
     VfpDoorSwitchPlacement* def = (VfpDoorSwitchPlacement*)data;
-    VfpDoorSwitchState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (((s32)def->rotXByte) << 8);
-    ((GameObject*)obj)->anim.rotZ = (((s32)def->rotZByte) << 8);
-    ((GameObject*)obj)->anim.rotY = def->rotY;
+    VfpDoorSwitchState* state = obj->extra;
+    obj->anim.rotX = (((s32)def->rotXByte) << 8);
+    obj->anim.rotZ = (((s32)def->rotZByte) << 8);
+    obj->anim.rotY = def->rotY;
     state->gameBitId = def->gameBitId;
     if (mainGetBit(state->gameBitId) != 0)
     {
-        ((ObjAnimSetProgressObjectFirstFn)ObjAnim_SetMoveProgress)(obj, lbl_803E611C);
+        ((ObjAnimSetProgressObjectFirstFn)ObjAnim_SetMoveProgress)((int)obj, lbl_803E611C);
         state->activated = 1;
         state->exploded = 1;
-        ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
     }
-    if (((GameObject*)obj)->anim.seqId == VFP_DOORSWITCH_LIFTIND_OBJ && state->activated != 0)
+    if (obj->anim.seqId == VFP_DOORSWITCH_LIFTIND_OBJ && state->activated != 0)
     {
-        *&((GameObject*)obj)->anim.bankIndex = 1;
+        *&obj->anim.bankIndex = 1;
     }
-    ((GameObject*)obj)->objectFlags |= VFPDOORSWITCH_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= VFPDOORSWITCH_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_DoorSwitch_release(void)
