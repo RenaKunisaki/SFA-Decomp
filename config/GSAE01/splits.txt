@@ -2187,6 +2187,9 @@ dlls/objects/318/318.c:
 	.sbss       start:0x803DDB00 end:0x803DDB08
 	.sdata2     start:0x803E4030 end:0x803E4060
 
+dlls/objects/341/341.c:
+	.sdata      start:0x803DBE00 end:0x803DBE08
+
 dlls/objects/319_TexFrameAni/TexFrameAni.c:
 	.text       start:0x8019718C end:0x8019742C
 	.data       start:0x803223B0 end:0x80322400
@@ -2266,32 +2269,41 @@ dlls/objects/332/332.c:
 dlls/objects/333_LaserBeam/LaserBeam.c:
 	.sdata      start:0x803DBE50 end:0x803DBE58
 
-main/dll/CF/dll_014E_cfprisonguard.c:
+dlls/objects/334_CFPrisonGua/CFPrisonGua.c:
 	.text       start:0x8019F540 end:0x8019FC84
 	.data       start:0x80322BA8 end:0x80322C00
 	.sdata2     start:0x803E4270 end:0x803E4288
 
-main/dll/CF/dll_014F_cfprisonuncle.c:
+dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c:
 	.text       start:0x8019FC84 end:0x801A0174
 	.data       start:0x80322C00 end:0x80322C38
 	.sdata2     start:0x803E4288 end:0x803E4298
 
-main/dll/dll_0150_gcrobotlightbea.c:
+dlls/objects/336_GCRobotLigh/GCRobotLigh.c:
 	.text       start:0x801A0174 end:0x801A04F4
 	.data       start:0x80322C38 end:0x80322C80
 	.sdata      start:0x803DBE58 end:0x803DBE60
 	.sdata2     start:0x803E4298 end:0x803E42B0
 
-main/dll/CF/dll_0153_cfperch.c:
+dlls/objects/337_CFScalesGal/CFScalesGal.c:
+	.sdata      start:0x803DBE60 end:0x803DBE68
+
+dlls/objects/338_CF_ObjCreat/CF_ObjCreat.c:
+	.sdata      start:0x803DBE68 end:0x803DBE70
+
+dlls/objects/342/342.c:
+	.sdata      start:0x803DBE70 end:0x803DBE78
+
+dlls/objects/339_CFPerch/CFPerch.c:
 	.text       start:0x801A04F4 end:0x801A0614
 	.data       start:0x80322C80 end:0x80322CB8
 
-main/dll/CF/dll_0154_cfprisoncage.c:
+dlls/objects/340/340.c:
 	.text       start:0x801A0614 end:0x801A0994
 	.data       start:0x80322CB8 end:0x80322CF0
 	.sdata2     start:0x803E42B0 end:0x803E42B8
 
-main/dll/dll_0157_spiritdoorspirit.c:
+dlls/objects/343_SpiritDoorS/SpiritDoorS.c:
 	.text       start:0x801A0994 end:0x801A0B14
 	.data       start:0x80322CF0 end:0x80322D28
 	.sdata      start:0x803DBE78 end:0x803DBE80

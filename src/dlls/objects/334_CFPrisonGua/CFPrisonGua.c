@@ -1,9 +1,8 @@
 /*
- * cfprisonguard (DLL 0x14E) - SharpClaw prison guard at CF. update
+ * CFPrisonGua (DLL 0x14E) - SharpClaw prison guard at CF. update
  * gates the guard on its placement event, walks him between his post
  * and the alarm, and frees the prisoners when the player is caught;
- * render ramps the alarm particle. Carved from the sandwormBoss
- * 10-DLL container.
+ * render ramps the alarm particle.
  */
 
 #include "main/dll/bit80_struct.h"

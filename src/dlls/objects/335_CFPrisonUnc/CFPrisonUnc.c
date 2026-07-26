@@ -6,7 +6,7 @@
  * release sequence, which thanks Fox (+2 magic here, the Power Room
  * key and the "restore the power to run the wind lifts" exposition via
  * the sequence script). Once he is gone (0x50) only his companion
- * object still renders. Carved from the sandwormBoss 10-DLL container.
+ * object still renders.
  */
 #include "game/objects/object.h"
 #include "main/object_render.h"

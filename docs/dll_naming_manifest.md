@@ -377,16 +377,16 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x14B | CFMainCryst | CONFIRMED | dlls/objects/331_CFMainCryst/CFMainCryst.c | = (canonical) | — |
 | 0x14C | — (+babycloudrunner, CFCloudBaby, CFAmbientCl, SHCloudBaby) | NO-RETAIL-NAME | dlls/objects/332/332.c | = (canonical) | — |
 | 0x14D | LaserBeam | COMPLETE | dlls/objects/333_LaserBeam/LaserBeam.c | = (canonical) | data-only DLL |
-| 0x14E | CFPrisonGuard | CONFIRMED | main/dll/dll_014E_cfprisonguard.c | main/dll/CF/dll_014E_cfprisonguard.c | — |
-| 0x14F | CFPrisonUncle | CONFIRMED | main/dll/dll_014F_cfprisonuncle.c | main/dll/CF/dll_014F_cfprisonuncle.c | — |
-| 0x150 | GCRobotLightbea | CONFIRMED | main/dll/dll_0150_gcrobotlightbea.c | = (canonical) | — |
-| 0x151 | CFScalesGal | RAW | *(none)* | — | no .text fns (descriptor data only) |
-| 0x152 | CF_ObjCreat | RAW | *(none)* | — | no .text fns (descriptor data only) |
-| 0x153 | CFPerch | COMPLETE | main/dll/dll_0153_cfperch.c | main/dll/CF/dll_0153_cfperch.c | — |
-| 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | main/dll/dll_0154_cfprisoncage.c | main/dll/CF/dll_0154_cfprisoncage.c | — |
-| 0x155 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x156 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x157 | SpiritDoorSpirit | CONFIRMED | main/dll/dll_0157_spiritdoorspirit.c | = (canonical) | — |
+| 0x14E | CFPrisonGua | CONFIRMED | dlls/objects/334_CFPrisonGua/CFPrisonGua.c | = (canonical) | — |
+| 0x14F | CFPrisonUnc | CONFIRMED | dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c | = (canonical) | — |
+| 0x150 | GCRobotLigh | CONFIRMED | dlls/objects/336_GCRobotLigh/GCRobotLigh.c | = (canonical) | — |
+| 0x151 | CFScalesGal | RAW | dlls/objects/337_CFScalesGal/CFScalesGal.c | = (canonical) | data-only DLL |
+| 0x152 | CF_ObjCreat | RAW | dlls/objects/338_CF_ObjCreat/CF_ObjCreat.c | = (canonical) | data-only DLL |
+| 0x153 | CFPerch | COMPLETE | dlls/objects/339_CFPerch/CFPerch.c | = (canonical) | — |
+| 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | dlls/objects/340/340.c | = (canonical) | — |
+| 0x155 | — | NO-RETAIL-NAME | dlls/objects/341/341.c | = (canonical) | data-only DLL |
+| 0x156 | — | NO-RETAIL-NAME | dlls/objects/342/342.c | = (canonical) | data-only DLL |
+| 0x157 | SpiritDoorS | CONFIRMED | dlls/objects/343_SpiritDoorS/SpiritDoorS.c | = (canonical) | — |
 | 0x158 | GunPowderBarrel (+MetalBarrel) | CONFIRMED | main/dll/dll_0158_gunpowderbarrel.c | = (canonical) | — |
 | 0x159 | Blasted (+CFBlastedRo, CFBlastedWa, CFBlastedTu, DRBlastedWa) | CONFIRMED | main/dll/dll_0159_blasted.c | = (canonical) | — |
 | 0x15A | explodable (+CFbrokenGra, CFbrokenWal, CFExplodeWa, CFExplodeFl, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRSmallExpl, ExplodeWall, ExplodePlan) | GUESSED | main/dll/dll_015A_explodable.c | = (canonical) | — |
@@ -798,10 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x14E | main/dll/dll_014E_cfprisonguard.c | main/dll/CF/dll_014E_cfprisonguard.c | CONFIRMED |
-| 0x14F | main/dll/dll_014F_cfprisonuncle.c | main/dll/CF/dll_014F_cfprisonuncle.c | CONFIRMED |
-| 0x153 | main/dll/dll_0153_cfperch.c | main/dll/CF/dll_0153_cfperch.c | COMPLETE |
-| 0x154 | main/dll/dll_0154_cfprisoncage.c | main/dll/CF/dll_0154_cfprisoncage.c | CONFIRMED |
 | 0x15B | main/dll/dll_015B_cfforcefield.c | main/dll/CF/dll_015B_cfforcefield.c | CONFIRMED |
 | 0x162 | main/dll/dll_0162_cfmagicwall.c | main/dll/CF/dll_0162_cfmagicwall.c | CONFIRMED |
 | 0x164 | main/dll/dll_0164_cflevelcontrol.c | main/dll/CF/dll_0164_cflevelcontrol.c | CONFIRMED |
