@@ -3997,7 +3997,7 @@ main/dll/dll_02B7_mcupgrade.c:
 	.text       start:0x80238FA4 end:0x80239114
 	.data       start:0x8032BF40 end:0x8032BF78
 
-main/dll/dll_02B8_mcupgradema.c:
+dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c:
 	.text       start:0x80239114 end:0x802392B8
 	.data       start:0x8032BF78 end:0x8032BFB0
 
