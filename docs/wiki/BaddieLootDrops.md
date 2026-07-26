@@ -45,7 +45,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 
 ### Tier 1 items — mana dust (MagicDustSm/Mi/La/Hu)
 
-- `src/main/dll/dll_00FF_magicgem.c` is DLL 0x00FF, "magic-gem / collectible objects"
+- `src/dlls/objects/255/255.c` is DLL 0x00FF, "magic-gem / collectible objects"
   (`0x80173224`–`0x801732A4` per its header comment; confirmed against
   `config/GSAE01/symbols.txt`: `MagicDust_getExtraSize`/`_free`/`_render`/`_update`/`_init`).
   Its functions are literally named `MagicDust_init`/`_update`/`_render`/`_free`/`_getExtraSize`

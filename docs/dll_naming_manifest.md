@@ -300,7 +300,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0FC | — | NO-RETAIL-NAME | dlls/objects/252/252.c | = (canonical) | — |
 | 0x0FD | — | NO-RETAIL-NAME | dlls/objects/253/253.c | = (canonical) | — |
 | 0x0FE | MagicPlant | COMPLETE | dlls/objects/254_MagicPlant/MagicPlant.c | = (canonical) | — |
-| 0x0FF | MagicDust (+MagicDustSm, MagicDustMi, MagicDustLa, MagicDustHu) | CONFIRMED | main/dll/dll_00FF_magicdust.c | = (canonical) | — |
+| 0x0FF | MagicDust (+MagicDustSm, MagicDustMi, MagicDustLa, MagicDustHu) | CONFIRMED | dlls/objects/255/255.c | = (canonical) | — |
 | 0x100 | TrickyWarp | COMPLETE | main/dll/dll_0100_trickywarp.c | = (canonical) | — |
 | 0x101 | TrickyGuard | CONFIRMED | main/dll/dll_0101_trickyguard.c | = (canonical) | — |
 | 0x102 | StayPoint | COMPLETE | main/dll/dll_0102_staypoint.c | = (canonical) | — |

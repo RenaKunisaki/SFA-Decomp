@@ -1772,7 +1772,7 @@ dlls/objects/237/237.c:
 	.data       start:0x80320C58 end:0x80320CB8
 	.sdata2     start:0x803E3440 end:0x803E34A4
 
-main/dll/dll_00FF_magicgem.c:
+dlls/objects/255/255.c:
 	.text       start:0x80173224 end:0x80173F80
 	.data       start:0x80320CB8 end:0x80320D10
 	.sdata2     start:0x803E34A8 end:0x803E3508

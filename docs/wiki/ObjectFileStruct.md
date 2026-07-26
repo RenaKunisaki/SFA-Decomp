@@ -257,7 +257,7 @@ Every one of these seven pairs matches exactly, independently confirming both th
 
 - **`0x18` "offset_0x18" / `extraSetupData`**: the wiki guesses `ObjSeq*` (scripting triggers).
   But in this repo, `extraSetupData` is read by non-trigger classes for arbitrary per-class blobs
-  — e.g. `src/main/dll/dll_00FF_magicgem.c:103`: `ref = (int)obj->anim.modelInstance->extraSetupData;`
+  — e.g. `src/dlls/objects/255/255.c`: `ref = (int)obj->anim.modelInstance->extraSetupData;`
   then `*(s8*)(ref + 0xb)` is used as a magic-type amount; `src/dlls/objects/237/237.c:167`
   reads it too. That's consistent with a generic "extra per-class setup data" blob whose *contents*
   vary by class (trigger objects might store an `ObjSeq` there, other classes store something
