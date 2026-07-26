@@ -257,7 +257,7 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 | AMAP.BIN/TAB | 0x32/0x31 | `src/main/model.c` | 0x31 (`AMAP.TAB`) is `gModelAnimOffsetTable`, a per-4-anim-group 0x20-byte offset block (`(id & ~3) << 2` stride); 0x32 (`AMAP.BIN`) backs `ModelFileHeader::animationDataSection`/`animationDataFileOffset` - refines the wiki's guess: the **.TAB is the id->offset index**, the **.BIN is the animation payload** it points into |
 | BITTABLE.BIN | 0x33 | table slot only | `include/main/gamebits.h` defines the runtime `enum GameBitId` (symbolic ids for `mainGetBit`/`mainSetBits`) but does not itself parse this file - not found |
 | CAMACTIO.bin | 0x0b | table slot only | not found |
-| ENVFXACT.bin | 0x57 | table slot only | `src/main/dll/dll_011E_magiccavebottom.c` uses `envFxAct`/`EnvfxAct`-named locals, consistent with "weather effects", but the loader itself wasn't traced |
+| ENVFXACT.bin | 0x57 | table slot only | `src/dlls/objects/286_MagicCaveBo/MagicCaveBo.c` uses `envFxAct`/`EnvfxAct`-named locals, consistent with "weather effects", but the loader itself wasn't traced |
 | globalma.bin | 0x15 | table slot only | not found |
 | HITS.bin/tab | 0x28/0x29 | `src/main/track_dolphin.c` (`fileLoadToBufferOffset(0x28, ...)`) | confirms "related to map hit detection" |
 | MAPINFO.bin | 0x1f | table slot only | no consumer found - consistent with wiki's "mostly unused in final version" |

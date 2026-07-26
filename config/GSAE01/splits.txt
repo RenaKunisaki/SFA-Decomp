@@ -2020,7 +2020,7 @@ dlls/objects/285/285.c:
 	.sbss       start:0x803DDAE0 end:0x803DDAE8
 	.sdata2     start:0x803E3C1C end:0x803E3C30
 
-main/dll/dll_011E_magiccavebottom.c:
+dlls/objects/286_MagicCaveBo/MagicCaveBo.c:
 	.text       start:0x8018ADB4 end:0x8018AFC8
 	.data       start:0x80321C98 end:0x80321CD0
 
