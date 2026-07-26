@@ -4298,13 +4298,18 @@ void mapLoadDataFiles(int mapIdx);
 
 extern int sMapFileNameIndexRemapTable[];
 
-s32 mapCheckCurBlocks(int v)
+static inline s32 mapCheckCurBlocksImpl(int v)
 {
     if (((s16*)((char*)gObjMapBlockInfo + 0x4a))[0] == v)
         return 0;
     if (((s16*)((char*)gObjMapBlockInfo + 0x8e))[0] == v)
         return 1;
     return -1;
+}
+
+s32 mapCheckCurBlocks(int v)
+{
+    return mapCheckCurBlocksImpl(v);
 }
 
 int loadMapAndParent(int mapId)
@@ -4320,7 +4325,7 @@ int loadMapAndParent(int mapId)
         idx = sMapFileNameIndexRemapTable[mapId];
     }
     parent = sMapFileNameAdjacencyTable[idx];
-    if (parent != -1 && mapCheckCurBlocks(parent) == -1)
+    if (parent != -1 && mapCheckCurBlocksImpl(parent) == -1)
     {
         mapLoadDataFiles(parent);
         return parent;
