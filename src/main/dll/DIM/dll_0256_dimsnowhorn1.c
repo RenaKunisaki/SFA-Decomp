@@ -521,7 +521,7 @@ int DIMSnowHorn1_stateHandler06(GameObject* obj, int state)
 
 int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
 {
-    void* player;
+    GameObject* player;
     DIMSnowHorn1State* inner;
     int bit_a, bit_b;
     int id_a, id_b, id_c, id_d;
@@ -540,7 +540,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
     *(int*)state |= 0x200000;
 
     inner = (obj)->extra;
-    player = (void*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     switch (inner->mode)
     {
     case 1:
@@ -571,7 +571,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
     }
 
     if (mainGetBit(bit_a) != 0 && mainGetBit(bit_b) != 0 && player != NULL &&
-        Vec_distance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX) < 150.0f)
+        Vec_distance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 150.0f)
     {
         switch (inner->mode)
         {
@@ -595,7 +595,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
         switch (phase)
         {
         case 1:
-            if (Vec_distance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX) < 200.0f)
+            if (Vec_distance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 200.0f)
             {
                 o1 = (int*)ObjList_FindObjectById(id_a);
                 if (o1 != NULL)
@@ -609,7 +609,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
         case 0:
         case 2:
             if ((u32)phase == 0 ||
-                Vec_distance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX) > 300.0f)
+                Vec_distance(&player->anim.worldPosX, &(obj)->anim.worldPosX) > 300.0f)
             {
                 o1 = (int*)ObjList_FindObjectById(id_a);
                 o2 = (int*)ObjList_FindObjectById(id_c);
@@ -817,7 +817,7 @@ int DIMSnowHorn1_stateHandler00(GameObject* obj)
     }
 }
 
-int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* animUpdate)
+int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     DIMSnowHorn1State* state;
     int animState;
@@ -825,14 +825,14 @@ int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* anim
     f32 fz;
 
     (void)unused;
-    state = ((GameObject*)obj)->extra;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    state = obj->extra;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
 
     switch (state->mode)
     {
     case 0:
         animUpdate->sequenceEventActive = 0;
-        if (((GameObject*)obj)->seqIndex == -1)
+        if (obj->seqIndex == -1)
         {
             for (i = 0; i < (int)(u32)animUpdate->eventCount; i++)
             {
@@ -852,7 +852,7 @@ int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* anim
         break;
     case 1:
         animUpdate->sequenceEventActive = 0;
-        if (((GameObject*)obj)->seqIndex != -1)
+        if (obj->seqIndex != -1)
         {
             switch (state->triggerMode)
             {
@@ -888,9 +888,9 @@ int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* anim
     state->baddie.animSpeedC = fz;
     state->baddie.animSpeedB = fz;
     state->baddie.animSpeedA = fz;
-    ((GameObject*)obj)->anim.velocityX = fz;
-    ((GameObject*)obj)->anim.velocityY = fz;
-    ((GameObject*)obj)->anim.velocityZ = fz;
+    obj->anim.velocityX = fz;
+    obj->anim.velocityY = fz;
+    obj->anim.velocityZ = fz;
     return (u32)(-(s8)animUpdate->sequenceEventActive | (s8)animUpdate->sequenceEventActive) >> 0x1f;
 }
 
@@ -1108,9 +1108,9 @@ int DIMSnowHorn1_getObjectTypeId(void)
     return 0x43;
 }
 
-void DIMSnowHorn1_free(int obj)
+void DIMSnowHorn1_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject(obj, DIMSNOWHORN1_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, DIMSNOWHORN1_OBJGROUP);
 }
 
 void DIMSnowHorn1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -1249,13 +1249,13 @@ void DIMSnowHorn1_update(GameObject* obj)
 {
     f32 nearDist;
     u8* base = (u8*)(int)gDIMSnowHorn1ConfigTable;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     int data;
     s8 modeIndex = -1;
     s16 angleDelta;
     char* found;
     int statePtr;
-    char* playerObj;
+    GameObject* playerObj;
     u32 flip;
     int flags;
 
@@ -1319,9 +1319,9 @@ void DIMSnowHorn1_update(GameObject* obj)
     case 0:
     case 5:
         statePtr = *(int*)&(obj)->extra;
-        playerObj = (char*)Obj_GetPlayerObject();
+        playerObj = Obj_GetPlayerObject();
         if (playerObj != NULL &&
-            Vec_distance(&((GameObject*)playerObj)->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
+            Vec_distance(&playerObj->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
             ((DIMSnowHorn1State*)statePtr)->mountMode == 0)
         {
             ((DIMSnowHorn1State*)statePtr)->playerNearby = 1;
@@ -1344,7 +1344,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         nearDist = 300.0f;
         found = (char*)ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &nearDist);
         if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
-            getXZDistance((f32*)(player + 0x18), &(obj)->anim.worldPosX) < 10000.0f)
+            getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {
             if (found != NULL && (*(u8*)&((GameObject*)found)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE))
             {
@@ -1352,7 +1352,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                 if (*(u8*)&((GameObject*)found)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
                 {
                     int layer = getCurMapLayer();
-                    (*gMapEventInterface)->restartPoint((void*)(player + 0xc), 0x584, layer, 0);
+                    (*gMapEventInterface)->restartPoint(&player->anim.localPosX, 0x584, layer, 0);
                     buttonDisable(0, PAD_BUTTON_A);
                     mainSetBits(GAMEBIT_SNOWHORN_RIDING, 1);
                     angleDelta = DIMSnowHorn1_angleTo(obj, found);
