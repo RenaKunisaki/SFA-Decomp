@@ -1,6 +1,6 @@
 /*
- * Legacy/disabled laser object (DLL 0x236; "DFP_LaserBe"): every callback
- * only logs "No Longer supported" via OSReport.
+ * Legacy laser-beam object. Its active callbacks only report that the
+ * object is no longer supported.
  */
 #include "dolphin/os.h"
 #include "main/dll/CF/laser.h"
@@ -70,7 +70,4 @@ ObjectDescriptor gLaserUnsupportedObjDescriptor = {
 };
 
 char sTextBlockInitNoLongerSupported[] = "<textblock.c Init>No Longer supported \n";
-/* Explicit length 40 (string data is 36 bytes; NUL-fill supplies the 4-byte
- * retail pad gap_07_80329C44_data) so .data ends 8-aligned at +0x88 as in
- * retail. */
 char sLaserInitNoLongerSupported[] = "<laser.c Init>No Longer supported \n";
