@@ -21,8 +21,8 @@ int gpsh_objcreator_getObjectTypeId(void);
 void gpsh_objcreator_free(void);
 void gpsh_objcreator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void gpsh_objcreator_hitDetect(void);
-void gpsh_objcreator_update(int* obj);
-void gpsh_objcreator_init(int* obj, int* def);
+void gpsh_objcreator_update(GameObject* obj);
+void gpsh_objcreator_init(GameObject* obj, int* def);
 void gpsh_objcreator_release(void);
 void gpsh_objcreator_initialise(void);
 
