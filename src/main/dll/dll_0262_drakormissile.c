@@ -269,11 +269,11 @@ void drakormissile_update(int obj)
     int moving;
     f32 toTarget[3];
     f32 dir[3];
-    int hitObj;
+    GameObject* hitObj;
     int hit;
-    int* lastHit;
+    GameObject* lastHit;
     int result;
-    int player;
+    GameObject* player;
     f32 mag;
     int expired;
     int nearHit;
@@ -302,14 +302,14 @@ void drakormissile_update(int obj)
         }
         break;
     case DRAKORMISSILE_STATE_HOMING:
-        player = (int)Obj_GetPlayerObject();
-        if (((GameObject*)player)->anim.velocityX != (mag = 0.0f) ||
-            ((GameObject*)player)->anim.velocityY != mag || ((GameObject*)player)->anim.velocityZ != mag)
+        player = Obj_GetPlayerObject();
+        if (player->anim.velocityX != (mag = 0.0f) ||
+            player->anim.velocityY != mag || player->anim.velocityZ != mag)
         {
-            mag = PSVECMag((f32*)(player + 0x24));
+            mag = PSVECMag((f32*)&player->anim.velocityX);
         }
         mag = lbl_803DC2B8 + mag;
-        Obj_PredictInterceptPoint((GameObject*)player, mag, (const Vec3f*)&o->anim.localPosX,
+        Obj_PredictInterceptPoint(player, mag, (const Vec3f*)&o->anim.localPosX,
                                   (Vec3f*)toTarget);
         PSVECSubtract(toTarget, (f32*)(obj + 0xc), dir);
         PSVECNormalize(dir, dir);
@@ -344,9 +344,9 @@ void drakormissile_update(int obj)
     }
     if (moving)
     {
-        lastHit = (int*)((ObjHitsPriorityState*)o->anim.hitReactState)->lastHitObject;
-        hitObj = 0;
-        hit = ObjHits_GetPriorityHit((GameObject*)(obj), &hitObj, 0, 0);
+        lastHit = (GameObject*)((ObjHitsPriorityState*)o->anim.hitReactState)->lastHitObject;
+        hitObj = NULL;
+        hit = ObjHits_GetPriorityHit((GameObject*)(obj), (int*)&hitObj, 0, 0);
         expired = 0;
         rem = state->timer - framesThisStep;
         state->timer = rem;
@@ -355,7 +355,7 @@ void drakormissile_update(int obj)
             expired = 1;
         }
         nearHit = 0;
-        if (lastHit != NULL && ((GameObject*)lastHit)->anim.seqId != DRAKORMISSILE_IGNORE_OBJECT_TYPE)
+        if (lastHit != NULL && lastHit->anim.seqId != DRAKORMISSILE_IGNORE_OBJECT_TYPE)
         {
             nearHit = 1;
         }
@@ -363,14 +363,14 @@ void drakormissile_update(int obj)
         result |= ((ObjHitsPriorityState*)o->anim.hitReactState)->contactFlags;
         if (state->state == DRAKORMISSILE_STATE_HOMING)
         {
-            player = (int)Obj_GetPlayerObject();
-            if (Vec_distance(&o->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
+            player = Obj_GetPlayerObject();
+            if (Vec_distance(&o->anim.worldPosX, &player->anim.worldPosX) <
                 gDrakorMissileProximityDetonateDist)
             {
                 result |= 1;
             }
         }
-        if ((void*)hitObj != NULL && ((GameObject*)hitObj)->anim.seqId == DRAKORMISSILE_IGNORE_OBJECT_TYPE)
+        if (hitObj != NULL && hitObj->anim.seqId == DRAKORMISSILE_IGNORE_OBJECT_TYPE)
         {
             result = 0;
         }
