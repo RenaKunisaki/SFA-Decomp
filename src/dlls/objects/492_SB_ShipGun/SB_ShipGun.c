@@ -138,23 +138,13 @@ void SB_ShipGun_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
    (targetX/Y/Z). */
 typedef struct SBShipGunPlacement
 {
-    u8 pad0[0x4 - 0x0];
-    u8 modelField; /* 0x04 */
-    u8 flagsField; /* 0x05 */
-    u8 byte6;      /* 0x06 */
-    u8 byte7;      /* 0x07 */
-    f32 spawnX;    /* 0x08: cannonball muzzle world position */
-    f32 spawnY;
-    f32 spawnZ;
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base; /* 0x00: head; posX/Y/Z carry the cannonball muzzle world position */
     f32 targetX; /* 0x18: target (CloudRunner) world position */
     f32 targetY;
     f32 targetZ;
     u8 pad24[0x28 - 0x24];
 } SBShipGunPlacement;
 
-STATIC_ASSERT(offsetof(SBShipGunPlacement, modelField) == 0x4);
-STATIC_ASSERT(offsetof(SBShipGunPlacement, spawnX) == 0x8);
 STATIC_ASSERT(offsetof(SBShipGunPlacement, targetX) == 0x18);
 STATIC_ASSERT(sizeof(SBShipGunPlacement) == 0x28);
 
@@ -339,13 +329,13 @@ void SB_ShipGun_update(GameObject* obj)
                 vecRotateZXY(spawnArgs.rot, &offset.x);
                 placement =
                     (int)Obj_AllocObjectSetup(SB_SHIPGUN_CANNONBALL_ALLOC_SIZE, SB_CANNONBALL_ALIAS_OBJECT_TYPE);
-                ((SBShipGunPlacement*)placement)->spawnX = posX;
-                ((SBShipGunPlacement*)placement)->spawnY = posY;
-                ((SBShipGunPlacement*)placement)->spawnZ = posZ;
-                ((SBShipGunPlacement*)placement)->modelField = SB_SHIPGUN_CANNONBALL_MODEL_FIELD;
-                ((SBShipGunPlacement*)placement)->flagsField = SB_SHIPGUN_CANNONBALL_FLAGS_FIELD;
-                ((SBShipGunPlacement*)placement)->byte6 = SB_SHIPGUN_CANNONBALL_BYTE_FF;
-                ((SBShipGunPlacement*)placement)->byte7 = SB_SHIPGUN_CANNONBALL_BYTE_FF;
+                ((SBShipGunPlacement*)placement)->base.posX = posX;
+                ((SBShipGunPlacement*)placement)->base.posY = posY;
+                ((SBShipGunPlacement*)placement)->base.posZ = posZ;
+                ((SBShipGunPlacement*)placement)->base.color[0] = SB_SHIPGUN_CANNONBALL_MODEL_FIELD;
+                ((SBShipGunPlacement*)placement)->base.color[1] = SB_SHIPGUN_CANNONBALL_FLAGS_FIELD;
+                ((SBShipGunPlacement*)placement)->base.color[2] = SB_SHIPGUN_CANNONBALL_BYTE_FF;
+                ((SBShipGunPlacement*)placement)->base.color[3] = SB_SHIPGUN_CANNONBALL_BYTE_FF;
                 spawned = Obj_SetupObject((void*)placement, 5, 0xffffffff, 0xffffffff, 0);
                 placement = (int)state->cloudRunner;
                 fdx = ((SBShipGunPlacement*)placement)->targetX - (obj)->anim.worldPosX;
