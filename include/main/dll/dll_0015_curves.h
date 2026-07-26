@@ -260,7 +260,7 @@ void curves_resolveAveragedSegments(GameObject* obj, CurvesCollisionState* state
 void curves_updateSurfaceTilt(short* param_1, int param_2);
 void curves_snapToNearestSurface(GameObject* obj, CurvesCollisionState* state);
 void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* state);
-void curves_updateLocalPointCollision(int obj, CurvesCollisionState* state);
+void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* state);
 void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* state);
 void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* state);
 void dll_15_func0A(GameObject* obj, CurvesCollisionState* state);
