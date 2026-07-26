@@ -10092,7 +10092,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         u32 fl = *(u8*)((char*)inner + 0x3f0);
         if ((fl >> 5 & 1) != 0)
         {
-            *(u32*)state |= 0x200000;
+            *(int*)state |= 0x200000;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_NO_POS_VELOCITY;
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
             *(s16*)((char*)state + 0x278) = 2;
@@ -10109,20 +10109,20 @@ int playerStateMoving(int obj, int state, f32 fv)
         else if (((u32) * (u8*)((char*)inner + 0x3f1) >> 5 & 1) != 0)
         {
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
-            *(u32*)state |= 0x800000;
+            *(int*)state |= 0x800000;
             *(s16*)((char*)state + 0x278) = 0;
             ((PlayerState*)inner)->maxSpeed = lbl_803E7ED4;
         }
         else if ((fl >> 3 & 1) != 0 || (fl >> 2 & 1) != 0)
         {
-            *(u32*)state |= 0x200000;
+            *(int*)state |= 0x200000;
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
             ((PlayerState*)inner)->maxSpeed = lbl_803E8068;
         }
         else
         {
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
-            *(u32*)state |= 0x800000;
+            *(int*)state |= 0x800000;
             *(s16*)((char*)state + 0x278) = 0;
             ((PlayerState*)inner)->maxSpeed = lbl_803E806C;
         }
@@ -10796,7 +10796,7 @@ int playerStateIdle(int obj, int state, f32 fv)
     }
     if (((ByteFlags*)((char*)inner + 0x3f0))->b20 != 0)
     {
-        *(u32*)state |= 0x200000;
+        *(int*)state |= 0x200000;
         *(u32*)&((PlayerState*)inner)->flags360 &= ~0x2000000LL;
         *(s16*)((char*)state + 0x278) = 1;
         ((PlayerState*)inner)->stateHandler = (int)fn_802A514C;
