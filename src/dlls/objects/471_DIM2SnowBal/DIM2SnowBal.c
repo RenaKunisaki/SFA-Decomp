@@ -1,5 +1,5 @@
 /*
- * dim2snowball (DLL 0x1D7) - rolling snowball projectile for Snowhorn Wastes 2.
+ * DIM2SnowBal (DLL 0x1D7) - rolling snowball projectile for Snowhorn Wastes 2.
  * Follows a Hermite spline path provided by the dim2pathgenerator (vtable slot 8),
  * then enters ballistic physics after leaving the path's launch node (curve byte == 32
  * + game bit 0x288). Bounces off walls (objBboxFn_800640cc), fades in/out via alpha,
@@ -7,44 +7,14 @@
  * on floor-hit via their hit-callback vtable.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/dll/dimmagicbridge_state.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "sys/objects.h"
-#include "main/dll/dimwooddoor2state_struct.h"
-#include "main/dll/fbwgpipe_struct.h"
-#include "main/dll/dll1cestate_struct.h"
-#include "main/dll/explosionpartfxsource_struct.h"
-#include "main/dll/dim2pathgeneratorstate_struct.h"
 #include "main/dll/dim2snowballstate_struct.h"
-#include "main/dll/truthhornicestate_struct.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/dll1d6state_struct.h"
-#include "main/dll/explosion_state.h"
 #include "main/objseq.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
 #include "dlls/object_descriptor.h"
-
-STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
-
-STATIC_ASSERT(sizeof(Dll1CEState) == 0xC);
-
-STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
-
-STATIC_ASSERT(sizeof(ExplosionPartfxSource) == 0x38);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, velocityX) == 0x24);
-
-STATIC_ASSERT(sizeof(ExplosionState) == 0xA60);
-STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
-
-
-FbWGPipe GXWGFifo : (0xCC008000);
-
-#include "main/audio/sfx_ids.h"
 #include "game/objects/object.h"
 #include "main/track_bbox_api.h"
 #include "sys/objects/lifecycle.h"
@@ -66,48 +36,46 @@ typedef struct Dim2snowballObjectDef
     s16 unk1E;
 } Dim2snowballObjectDef;
 
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
-
-STATIC_ASSERT(sizeof(Dll1D6State) == 0x20);
-
-STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
-
 STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
-
-STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9a8);
 
 #define OBJ_TYPE_SHARPCLAW       214
 #define PARTFX_SNOWBALL_IMPACT   518
 #define GAMEBIT_SNOWBALL_LAUNCH  648
 
-
-
-static inline int* DIM2snowball_GetActiveModel(GameObject *obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
-}
-
 static inline GameObject* dim2snowball_findSharpclawHit(GameObject** list, int* start, int* count)
 {
     GameObject** p = &list[*start];
     for (; *start < *count; p++, (*start)++)
+    {
         if ((*p)->anim.seqId == OBJ_TYPE_SHARPCLAW)
+        {
             return list[*start];
+        }
+    }
     return NULL;
 }
 
-int dim2snowball_getExtraSize(void) { return 0xb0; }
-int dim2snowball_getObjectTypeId(void) { return 0x0; }
+int dim2snowball_getExtraSize(void)
+{
+    return sizeof(Dim2SnowballState);
+}
+
+int dim2snowball_getObjectTypeId(void)
+{
+    return 0;
+}
 
 void dim2snowball_free(void)
 {
 }
 
-void dim2snowball_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dim2snowball_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dim2snowball_hitDetect(void)

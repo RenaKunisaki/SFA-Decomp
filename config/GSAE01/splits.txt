@@ -2620,7 +2620,7 @@ dlls/objects/470/470.c:
 	.sdata      start:0x803DBF18 end:0x803DBF28
 	.sdata2     start:0x803E4A78 end:0x803E4AA0
 
-main/dll/DIM/dll_01D7_dim2snowball.c:
+dlls/objects/471_DIM2SnowBal/DIM2SnowBal.c:
 	.text       start:0x801B7D48 end:0x801B837C
 	.data       start:0x80325790 end:0x803257C8
 	.sdata2     start:0x803E4AA0 end:0x803E4AD4
