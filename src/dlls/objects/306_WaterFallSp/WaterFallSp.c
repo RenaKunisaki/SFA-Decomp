@@ -1,4 +1,4 @@
-/* Waterfall spray particle and sound emitter. */
+/* WaterFallSp (DLL 0x132) - waterfall spray particle and sound emitter. */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/MMP/MMP_asteroid.h"
 #include "sys/objects.h"
@@ -140,3 +140,20 @@ void WaterFallSpray_init(GameObject* obj, WaterFallSpraySetup* setup)
         state->sfxIdB = WATERFALLSPRAY_DEFAULT_SFX_B;
     }
 }
+
+ObjectDescriptor gWaterFallSprayObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)WaterFallSpray_init,
+    (ObjectDescriptorCallback)WaterFallSpray_update,
+    0,
+    (ObjectDescriptorCallback)WaterFallSpray_render,
+    (ObjectDescriptorCallback)WaterFallSpray_free,
+    0,
+    WaterFallSpray_getExtraSize,
+};

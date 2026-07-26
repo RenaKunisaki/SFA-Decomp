@@ -3,6 +3,7 @@
 
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 #define WATERFALLSPRAY_ALT_SFX_DEF_MIN 0x4BE5C
 #define WATERFALLSPRAY_ALT_SFX_DEF_END 0x4BE5E
@@ -53,5 +54,7 @@ void WaterFallSpray_render(void);
 void WaterFallSpray_update(GameObject* obj);
 int WaterFallSpray_getExtraSize(void);
 int WaterFallSpray_SeqFn(GameObject* obj);
+
+extern ObjectDescriptor gWaterFallSprayObjDescriptor;
 
 #endif /* MAIN_DLL_DLL_0132_WATERFALLSPRAY_H_ */

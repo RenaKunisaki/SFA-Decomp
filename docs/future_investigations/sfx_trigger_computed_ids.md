@@ -40,8 +40,8 @@ is written (level data load, or a setter) to name it; or read live in-game.
 |---|---|---|
 | `src/dlls/objects/298_CFCrate/CFCrate.c:315` | PlayFromObject | `*(u16*)(tbl + r)` |
 | `src/dlls/objects/218/218.c:338` | PlayFromObjectLimited | `(int)*(short*)state[7] & 0xffff` |
-| `src/main/dll/dll_0132_waterfallspray.c:100` | KeepAliveLoopedObjectSound | `state[0] & 0xffff` |
-| `src/main/dll/dll_0132_waterfallspray.c:101` | KeepAliveLoopedObjectSound | `state[1] & 0xffff` |
+| `src/dlls/objects/306_WaterFallSp/WaterFallSp.c:66` | KeepAliveLoopedObjectSound | `state->sfxIdA & 0xffff` |
+| `src/dlls/objects/306_WaterFallSp/WaterFallSp.c:67` | KeepAliveLoopedObjectSound | `state->sfxIdB & 0xffff` |
 | `src/main/dll/drcloudcage.c:457` | PlayFromObject | `*(u16*)(state + 0x440)` |
 | `src/dlls/objects/195_Player/player.c:19128` | PlayFromObject | `*(u16*)((char*)*(int*)((char*)inner + 0x40c) + 0x2a)` |
 | `src/main/objprint.c:1887` | PlayFromObjectChannel | `*(u16*)((char*)p2 + 0x14)` |
