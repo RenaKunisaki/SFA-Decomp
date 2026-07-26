@@ -1,5 +1,5 @@
 /*
- * imicemountain (DLL 0x169) - the master event controller for the Ice
+ * IMIceMounta (DLL 0x169) - the master event controller for the Ice
  * Mountain map. A single instance drives the level's scripted progress:
  * it arms the map-event group triggers at init, then runs one of three
  * top-level branches selected by the map-event "act" queried at startup
@@ -15,6 +15,7 @@
  */
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/cloudaction_interface.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/audio/music_api.h"
 #include "main/object_render.h"
@@ -27,14 +28,98 @@
 #include "main/sky_interface.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"
+#include "main/game_ui_interface.h"
 #include "main/gametext_show_api.h"
 #include "main/textrender_api.h"
 #include "main/map_load.h"
+#include "main/mapEventTypes.h"
+#include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin.h"
 #include "main/audio/music_trigger_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/im_world_map_api.h"
 #include "main/dll/dll_0011_screens.h"
+#include "sys/objects.h"
+
+#define PLAYER_VTABLE_GET_MODE 0x48
+
+#define HUD_STATE_WORLDMAP 5
+#define HUD_STATE_HIDDEN 6
+
+/*
+ * Enter and leave the Ice Mountain world-map HUD state. The handlers
+ * select the HUD state from the player's current mode and synchronize
+ * the associated race and map-event game bits.
+ */
+void fn_801AC01C(GameObject* obj)
+{
+    int state = *(int*)&(obj)->extra;
+    int mode;
+    void* player;
+
+    mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
+    mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
+    player = playerGetFocusObject(Obj_GetPlayerObject());
+    if (player != 0)
+    {
+        mode = (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)player)->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
+    }
+    else
+    {
+        mode = 0;
+    }
+    lockLevel(mapGetDirIdx(0x17), 1);
+    if (mode == 1)
+    {
+        (*gGameUIInterface)->setShowWorldMapHud(1);
+        *(u8*)state = HUD_STATE_WORLDMAP;
+        mainSetBits(GAMEBIT_IMRelated037B, 1);
+    }
+    else
+    {
+        *(u8*)state = HUD_STATE_HIDDEN;
+        mainSetBits(GAMEBIT_IMRelated00CE, 1);
+    }
+    mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
+    mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
+}
+
+void fn_801AC108(GameObject* obj, void* extra)
+{
+    int mode;
+    void* player;
+
+    (*gGameUIInterface)->setShowWorldMapHud(0);
+    if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
+    {
+        mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
+        mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
+        mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
+        mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
+        player = playerGetFocusObject(Obj_GetPlayerObject());
+        if (player != 0)
+        {
+            mode = (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)player)->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
+        }
+        else
+        {
+            mode = 0;
+        }
+        mainSetBits(GAMEBIT_IM_DoneRace, 1);
+        (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 1, 1);
+        if (mode == 1)
+        {
+            (*gGameUIInterface)->setShowWorldMapHud(1);
+            *(u8*)extra = HUD_STATE_WORLDMAP;
+            mainSetBits(GAMEBIT_IM_BikeRelated0379, 1);
+        }
+        else
+        {
+            *(u8*)extra = HUD_STATE_HIDDEN;
+            mainSetBits(0xcb, 1);
+        }
+    }
+}
 
 /*
  * Per-object extra state for the IM ice-mountain event controller
