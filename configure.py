@@ -1090,7 +1090,7 @@ config.libs = [
                 "dlls/objects/200_DepthOfFieldPoint/DepthOfFieldPoint.c",
                 cflags=cflags_dll_noopt,
             ),
-            Object(NonMatching, "dlls/objects/201_Baddie/Baddie.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/201_Baddie/Baddie.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/202/202.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "dlls/objects/203/203.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/204_ChukChuk/ChukChuk.c", cflags=cflags_dll_noopt_noprop_noinline),
