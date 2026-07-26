@@ -660,7 +660,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x266 | KytesMum | COMPLETE | main/dll/dll_0266_kytesmum.c | = (canonical) | — |
 | 0x267 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
-| 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | main/dll/dll_0269_explodeplan.c | = (canonical) | — |
+| 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | dlls/objects/617_ExplodePlan/ExplodePlan.c | = (canonical) | — |
 | 0x26A | DR_Geezer | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x26B | DR_Chimmey | COMPLETE | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | = (canonical) | — |
 | 0x26C | — (+DR_CageWith, DR_CageNoRo, DR_CageRope) | NO-RETAIL-NAME | dlls/objects/620/620.c | = (canonical) | — |
