@@ -513,30 +513,30 @@ void DoorF4_free(int obj)
     ObjGroup_RemoveObject(obj, DOORF4_OBJ_GROUP);
 }
 
-void DoorF4_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void DoorF4_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E3680);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E3680);
 }
 
 void DoorF4_hitDetect(void)
 {
 }
 
-void DoorF4_update(int* obj)
+void DoorF4_update(GameObject* obj)
 {
-    DoorF4State* state = ((GameObject*)obj)->extra;
+    DoorF4State* state = obj->extra;
     state->triggerLatch = 0;
-    if (((GameObject*)obj)->userData1 == 0)
+    if (obj->userData1 == 0)
     {
-        int* src = *(int**)&((GameObject*)obj)->anim.placementData;
+        DoorF4Placement* src = *(DoorF4Placement**)&obj->anim.placementData;
         s16 type;
-        ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)src)->posX;
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)src)->posY;
-        ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)src)->posZ;
-        ((GameObject*)obj)->anim.rotX = (s16)((s8) * (s8*)((char*)src + 0x18) << 8);
-        type = ((GameObject*)obj)->anim.seqId;
+        obj->anim.localPosX = src->head.posX;
+        obj->anim.localPosY = src->head.posY;
+        obj->anim.localPosZ = src->head.posZ;
+        obj->anim.rotX = (s16)((s8)src->yawByte << 8);
+        type = obj->anim.seqId;
         if (type == 0x151)
         {
             if (mainGetBit(state->gameBitA) != 0)
@@ -559,27 +559,27 @@ void DoorF4_update(int* obj)
         {
             (*gObjectTriggerInterface)->runSequence(0, obj, -1);
         }
-        ((GameObject*)obj)->userData1 = 1;
+        obj->userData1 = 1;
     }
 }
 
-void DoorF4_init(int* obj, int* params)
+void DoorF4_init(GameObject* obj, DoorF4Placement* params)
 {
-    DoorF4State* state = ((GameObject*)obj)->extra;
+    DoorF4State* state = obj->extra;
     s16 type;
 
-    DoorF4Placement* def = (DoorF4Placement*)params;
+    DoorF4Placement* def = params;
 
     ObjMsg_AllocQueue(obj, 4);
-    ((GameObject*)obj)->anim.rotX = (s16)((s8)def->yawByte << 8);
-    ((GameObject*)obj)->animEventCallback = DoorF4_SeqFn;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-    ((GameObject*)obj)->objectFlags |= (DOORF4_OBJFLAG_HIDDEN | DOORF4_OBJFLAG_HITDETECT_DISABLED);
+    obj->anim.rotX = (s16)((s8)def->yawByte << 8);
+    obj->animEventCallback = DoorF4_SeqFn;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->objectFlags |= (DOORF4_OBJFLAG_HIDDEN | DOORF4_OBJFLAG_HITDETECT_DISABLED);
     state->gameBitA = def->gameBitA;
     state->gameBitC = def->gameBitC;
     state->openRange = 200.0f;
 
-    type = ((GameObject*)obj)->anim.seqId;
+    type = obj->anim.seqId;
     switch (type)
     {
     case 193:
@@ -604,10 +604,10 @@ void DoorF4_init(int* obj, int* params)
 
     ObjGroup_AddObject((int)obj, DOORF4_OBJ_GROUP);
 
-    state->cosYaw = mathSinf(3.1415927f * (f32)(int)*(s16*)obj / 32768.0f);
-    state->sinYaw = mathCosf(3.1415927f * (f32)(int)*(s16*)obj / 32768.0f);
+    state->cosYaw = mathSinf(3.1415927f * (f32)(int)obj->anim.rotX / 32768.0f);
+    state->sinYaw = mathCosf(3.1415927f * (f32)(int)obj->anim.rotX / 32768.0f);
     state->planeD =
-        -(state->cosYaw * ((GameObject*)obj)->anim.localPosX + state->sinYaw * ((GameObject*)obj)->anim.localPosZ);
+        -(state->cosYaw * obj->anim.localPosX + state->sinYaw * obj->anim.localPosZ);
 }
 
 void DoorF4_release(void)

@@ -6,6 +6,8 @@
 #include "main/objanim_update.h"
 #include "dlls/object_descriptor.h"
 
+struct DoorF4Placement;
+
 extern ObjectDescriptor gDoorF4ObjDescriptor;
 
 int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate);
@@ -20,10 +22,10 @@ void FUN_80178560(u64 param_1, u64 param_2, double param_3, u64 param_4, u64 par
 int DoorF4_getExtraSize(void);
 int DoorF4_getObjectTypeId(void);
 void DoorF4_free(int obj);
-void DoorF4_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void DoorF4_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void DoorF4_hitDetect(void);
-void DoorF4_update(int* obj);
-void DoorF4_init(int* obj, int* params);
+void DoorF4_update(GameObject* obj);
+void DoorF4_init(GameObject* obj, struct DoorF4Placement* params);
 void DoorF4_release(void);
 void DoorF4_initialise(void);
 
