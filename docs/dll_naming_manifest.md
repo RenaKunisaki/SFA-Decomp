@@ -724,7 +724,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A6 | ARWSquadron (+ARWBigAster, ARWSmallAst, ARWMobileGu, ARWGroundGu, ARWShipFly, ARWShipTwin, ARWShipAnge) | CONFIRMED | main/dll/dll_02A6_arwsquadron.c | main/dll/ARW/dll_02A6_arwsquadron.c | — |
 | 0x2A7 | ARWProximit (+ARWTimedMin) | CONFIRMED | main/dll/dll_02A7_arwproximit.c | main/dll/ARW/dll_02A7_arwproximit.c | — |
 | 0x2A8 | ARWBlocker (+ARWBlockerS) | COMPLETE | main/dll/dll_02A8_arwblocker.c | main/dll/ARW/dll_02A8_arwblocker.c | — |
-| 0x2A9 | LGTPointLight (+CF_WallTorc) | CONFIRMED | main/dll/dll_02A9_lgtpointlight.c | main/dll/LGT/dll_02A9_lgtpointlight.c | — |
+| 0x2A9 | — (+LGTPointLight, CF_WallTorc) | NO-RETAIL-NAME | dlls/objects/681/681.c | = (canonical) | — |
 | 0x2AA | LGTDirectionallight | CONFIRMED | dlls/objects/682_LGTDirectio/LGTDirectio.c | = (canonical) | — |
 | 0x2AB | LGTProjectedlight | CONFIRMED | dlls/objects/683_LGTProjecte/LGTProjecte.c | = (canonical) | — |
 | 0x2AC | LGTControlLight | CONFIRMED | dlls/objects/684_LGTControlL/LGTControlL.c | = (canonical) | — |
@@ -978,7 +978,7 @@ name was a deliberate choice by a previous carve:
 | 0x2A6 | main/dll/dll_02A6_arwsquadron.c | main/dll/ARW/dll_02A6_arwsquadron.c | CONFIRMED |
 | 0x2A7 | main/dll/dll_02A7_arwproximit.c | main/dll/ARW/dll_02A7_arwproximit.c | CONFIRMED |
 | 0x2A8 | main/dll/dll_02A8_arwblocker.c | main/dll/ARW/dll_02A8_arwblocker.c | COMPLETE |
-| 0x2A9 | main/dll/dll_02A9_lgtpointlight.c | main/dll/LGT/dll_02A9_lgtpointlight.c | CONFIRMED |
+| 0x2A9 | main/dll/dll_02A9_lgtpointlight.c | dlls/objects/681/681.c | CONFIRMED |
 | 0x2AA | main/dll/dll_02AA_lgtdirectionallight.c | dlls/objects/682_LGTDirectio/LGTDirectio.c | CONFIRMED |
 | 0x2AB | main/dll/dll_02AB_lgtprojectedlight.c | dlls/objects/683_LGTProjecte/LGTProjecte.c | CONFIRMED |
 | 0x2AC | main/dll/dll_02AC_lgtcontrollight.c | dlls/objects/684_LGTControlL/LGTControlL.c | CONFIRMED |
