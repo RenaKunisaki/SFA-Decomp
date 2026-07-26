@@ -53,10 +53,10 @@ typedef struct SkyColor
     u8 a;
 } SkyColor;
 
-extern u32 lbl_803DD18C;
-extern u32 lbl_803DD188;
-extern u8* gSky2State;
-extern s8 gSky2DrawMode;
+u32 lbl_803DD18C;
+u32 lbl_803DD188;
+u8* gSky2State;
+s8 gSky2DrawMode;
 extern SkyColor gSkyCurrentTextureColor;
 extern SkyColor gSkyCurrentAmbientColor;
 extern SkyColor gSkyCurrentLightColor;
@@ -80,9 +80,9 @@ extern u8* gSkyState;
 extern u16 gSkyMoonAlpha;
 extern u16 gSkySunAlpha;
 
-extern s8 lbl_803DB750;
-extern int lbl_803DB754;
-extern u8 lbl_803DB758;
+s8 lbl_803DB750 = 1;
+int lbl_803DB754 = 1;
+u8 lbl_803DB758 = 1;
 
 /* gSkyEnvFxFlags: per-group env-FX trigger enables + update state */
 #define SKY_ENVFX_GROUP_C        0x01 /* lbl_803DD138 group (GameBit 0x3ab) */
@@ -174,12 +174,13 @@ extern const f32 lbl_803DF18C;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
-extern const SkyVec3 lbl_802C1F98;
+const SkyVec3 lbl_802C1F98 = {-1000.0f, -1000.0f, -1000.0f};
 extern u8 gSkyColorBlendTable[];
 extern int lbl_803E8458;
 extern const f32 gSkyPi;
 extern f32 lbl_803DF190;
 extern f32 lbl_803DF194;
+
 
 int return0_80088758(void);
 
@@ -307,553 +308,6 @@ void skyFn_8008a500(void);
 void renderSunAndMoon(int a, int b, int c, int d, int visible);
 
 void skyFn_8008aee8(void);
-
-int skyGetVisibility(int slot)
-{
-    u8* sky;
-
-    sky = gSkyState;
-    if (sky != NULL)
-    {
-        return ((SkyBlendStateFlags*)(sky + slot * 0xa4 + 0xc1))->visibility;
-    }
-    return 0;
-}
-
-void skyTimeToDayHourMinute(f32 time, s16* days, s16* hours, s16* minutes)
-{
-    s32 remaining;
-
-    remaining = time;
-    *days = remaining / 0x34bc0;
-    remaining -= *days * 0x34bc0;
-    *hours = remaining / 0xe10;
-    remaining -= *hours * 0xe10;
-    *minutes = remaining / 0x3c;
-}
-
-int return0_8008B7E8(void)
-{
-    return 0x0;
-}
-
-int getSunPos(f32* outTime)
-{
-    f32 time;
-
-    if (gSkyState == NULL)
-    {
-        if (outTime != NULL)
-        {
-            *outTime = lbl_803DF058;
-        }
-        return 0;
-    }
-
-    time = ((SkyState*)gSkyState)->timeOfDay;
-    if (time >= lbl_803DF088 || time < gSkyDayStartTime)
-    {
-        if (outTime != NULL)
-        {
-            if (time >= 75600.0f)
-            {
-                *outTime = gSkyDayStartTime + (time - 75600.0f);
-            }
-            else
-            {
-                *outTime = gSkyDayStartTime - time;
-            }
-        }
-        return 1;
-    }
-
-    if (outTime != NULL)
-    {
-        *outTime = lbl_803DF088 - time;
-    }
-    return 0;
-}
-
-void skyGetTimer(int* outTimer)
-{
-    u8* sky;
-
-    sky = gSkyState;
-    if (sky == NULL)
-    {
-        *outTimer = 0;
-        return;
-    }
-    *outTimer = ((SkyState*)sky)->timer;
-}
-
-void doNothing_8008B8B0(void)
-{
-}
-
-void skyGetClockTime(f32* time)
-{
-    u8* sky;
-
-    sky = gSkyState;
-    if (sky == NULL)
-    {
-        *time = lbl_803DF058;
-    }
-    else
-    {
-        *time = ((SkyState*)sky)->clockTime;
-    }
-}
-
-void pDll_Sky_setTimeOfDay_nop(void)
-{
-}
-
-void getTimeOfDay(f32* time)
-{
-    u8* sky;
-
-    sky = gSkyState;
-    if (sky == NULL)
-    {
-        *time = lbl_803DF058;
-        return;
-    }
-    *time = ((SkyState*)sky)->timeOfDay;
-}
-
-void renderSky(int a, int b, int c, int d, int visible)
-{
-    if (gSkySunObject != NULL && gSkyMoonObject != NULL)
-    {
-        renderSunAndMoon(a, b, c, d, visible);
-    }
-    skyFn_8008a500();
-    skyFn_8008a04c();
-}
-
-void timeOfDayFn_8008b964(void)
-{
-    u8* env;
-    f32 time;
-    int timer;
-    int i;
-    int count;
-    f32 val;
-    u8* p;
-    int idx;
-
-    time = lbl_803DF058;
-    env = saveGameGetEnvState();
-    if (gSkyState == NULL || gSkyObjectsInitialized == 0)
-    {
-        return;
-    }
-    else
-    {
-        {
-            ((SkyState*)gSkyState)->timeOfDay += ((SkyState*)gSkyState)->timeOfDayRate * timeDelta;
-            if (((SkyState*)gSkyState)->timeOfDay >= gSkySecondsPerDay)
-            {
-                ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay - gSkySecondsPerDay;
-            }
-            else if (((SkyState*)gSkyState)->timeOfDay < lbl_803DF058)
-            {
-                ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay + gSkySecondsPerDay;
-            }
-            if (getSunPos(&time) != 0)
-            {
-                if (((SkyState*)gSkyState)->transitionLatch == 0)
-                {
-                    ((SkyState*)gSkyState)->transitionLatch = 1;
-                }
-            }
-            else
-            {
-                if (((SkyState*)gSkyState)->transitionLatch != 0)
-                {
-                    timer = ((SkyState*)gSkyState)->timer + 1;
-                    ((SkyState*)gSkyState)->timer = timer;
-                    if (timer > 0x1e)
-                    {
-                        ((SkyState*)gSkyState)->timer = 0;
-                    }
-                    ((SkyState*)gSkyState)->transitionLatch = 0;
-                }
-            }
-            if (Obj_GetPlayerObject() != NULL)
-            {
-                *(f32*)env = ((SkyState*)gSkyState)->timeOfDay;
-            }
-            i = 0;
-            for (count = 2; count != 0; count--)
-            {
-                p = gSkyState + i;
-                *(f32*)&((GameObject*)p)->extra -= *(f32*)(p + 0xb4) * timeDelta;
-                val = *(f32*)(gSkyState + (idx = i + 0xb8));
-                *(f32*)(gSkyState + idx) =
-                    (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
-                *(f32*)(gSkyState + (idx = i + 0xbc)) -= lbl_803DF0F0 * timeDelta;
-                val = *(f32*)(gSkyState + idx);
-                *(f32*)(gSkyState + idx) =
-                    (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
-                i += 0xa4;
-            }
-            ((SkyState*)gSkyState)->fadeFactor -= ((SkyState*)gSkyState)->fadeRate * timeDelta;
-            val = ((SkyState*)gSkyState)->fadeFactor;
-            ((SkyState*)gSkyState)->fadeFactor =
-                (val < lbl_803DF058) ? lbl_803DF058 : ((val > 1.0f) ? 1.0f : val);
-            ((SkyState*)gSkyState)->lightBlendFactor += ((SkyState*)gSkyState)->lightBlendRate * timeDelta;
-            val = ((SkyState*)gSkyState)->lightBlendFactor;
-            ((SkyState*)gSkyState)->lightBlendFactor =
-                (val < lbl_803DF058) ? lbl_803DF058 : ((val > 1.0f) ? 1.0f : val);
-        }
-    }
-}
-
-void skyLoadLights(void)
-{
-    u8 done = 0;
-
-    while (getLoadedFileFlags(0) != 0)
-    {
-        padUpdate();
-        checkReset();
-        if (done)
-        {
-            waitNextFrame();
-        }
-        loadDataFiles();
-        dvdCheckError();
-        if (done)
-        {
-            mmFreeTick(0);
-            gameTextRun();
-            GXFlush_(1, 0);
-        }
-        if (gDvdErrorPauseActive != 0)
-        {
-            done = 1;
-        }
-    }
-    gSkyOverrideLightDirectionEnabled = 0;
-    gSkyOverrideLightColorEnabled = 0;
-    gSkyOverrideLightColor.r = 0xff;
-    gSkyOverrideLightColor.g = 0xff;
-    gSkyOverrideLightColor.b = 0xff;
-    if (gSkySunLight == NULL)
-    {
-        gSkySunLight = objCreateLight(0, 1);
-        if (gSkySunLight != NULL)
-        {
-            modelLightStruct_setLightKind(gSkySunLight, MODEL_LIGHT_KIND_DIRECTIONAL);
-            modelLightStruct_setDirection(gSkySunLight, 0.0f, -1.0f, 0.0f);
-            modelLightStruct_setDiffuseColor(gSkySunLight, 0xff, 0xff, 0xff, 0xff);
-            modelLightStruct_setSpecularColor(gSkySunLight, 0xff, 0xff, 0xff, 0xff);
-        }
-        gSkyMoonLight = objCreateLight(0, 1);
-        if (gSkyMoonLight != NULL)
-        {
-            modelLightStruct_setLightKind(gSkyMoonLight, MODEL_LIGHT_KIND_DIRECTIONAL);
-            modelLightStruct_setDirection(gSkyMoonLight, 0.0f, 1.0f, 0.0f);
-            modelLightStruct_setDiffuseColor(gSkyMoonLight, 0xff, 0xff, 0xff, 0xff);
-            modelLightStruct_setSpecularColor(gSkyMoonLight, 0xff, 0xff, 0xff, 0xff);
-        }
-    }
-    skyResetState();
-    skyFn_80088c94(7, 0);
-    skyFn_80088e54(0, lbl_803DF058);
-    skyFn_8008a500();
-    skyFn_8008a04c();
-    gSkySunDirection[0] = lbl_803DF058;
-    gSkySunDirection[1] = (-1.0f);
-    gSkySunDirection[2] = lbl_803DF058;
-    gSkyMoonDirection[0] = lbl_803DF058;
-    gSkyMoonDirection[1] = (-1.0f);
-    gSkyMoonDirection[2] = lbl_803DF058;
-    gSkySkyTexture = textureLoadAsset(SKY_TEXTURE_SKY);
-}
-
-void skyResetState(void)
-{
-    u8* tex0;
-    int iofs;
-    int jofs;
-    int i;
-    int j;
-
-    if (gSkyState != NULL)
-    {
-        if (gSkyState != NULL)
-        {
-            if (*(u8**)gSkyState != NULL)
-            {
-                textureFree((Texture*)(*(u8**)gSkyState));
-            }
-            if (((SkyState*)gSkyState)->handle != NULL)
-            {
-                textureFree((Texture*)(((SkyState*)gSkyState)->handle));
-            }
-            mm_free(((SkyState*)gSkyState)->texture0);
-            mm_free(((SkyState*)gSkyState)->texture1);
-            mm_free(gSkyState);
-        }
-        gSkyState = NULL;
-    }
-    gSkyState = mmAlloc(sizeof(SkyState), 0x17, 0);
-    memset(gSkyState, 0, sizeof(SkyState));
-    ((SkyState*)gSkyState)->unk250 = -1;
-    ((SkyState*)gSkyState)->timer = randomGetRange(0, 0x1c);
-    ((SkyState*)gSkyState)->unk252 = 0xc;
-    ((SkyState*)gSkyState)->unk253 = 0;
-    ((SkyState*)gSkyState)->timeOfDay = gSkyInitialTimeOfDay;
-    ((SkyState*)gSkyState)->clockTime = 0xb4;
-    ((SkyState*)gSkyState)->sunYaw = lbl_803DF0F8;
-    ((SkyState*)gSkyState)->timeOfDayRate = (f32)((SkyState*)gSkyState)->clockTime / lbl_803DF060;
-    ((SkyState*)gSkyState)->skyTextureIds[0] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[1] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[2] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[3] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[4] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[5] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[6] = 0xc38;
-    ((SkyState*)gSkyState)->skyTextureIds[7] = 0xc38;
-    *(u8**)gSkyState = textureLoadAsset(((SkyState*)gSkyState)->skyTextureIds[0]);
-    ((SkyState*)gSkyState)->handle = textureLoadAsset(((SkyState*)gSkyState)->skyTextureIds[1]);
-    ((SkyState*)gSkyState)->textureId0 = 0xc38;
-    ((SkyState*)gSkyState)->textureId1 = 0xc38;
-    tex0 = *(u8**)gSkyState;
-    ((SkyState*)gSkyState)->texture0 = textureAlloc(((Texture*)tex0)->width, ((Texture*)tex0)->height, 6, 0, 0, 1, 0, 1, 1);
-    ((SkyState*)gSkyState)->texture1 = textureAlloc(((Texture*)tex0)->width, ((Texture*)tex0)->height, 6, 0, 0, 1, 0, 1, 1);
-    i = 0;
-    iofs = 0;
-    do
-    {
-        jofs = 0;
-        for (j = 0; j < 3; j++)
-        {
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x20) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x24) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x28) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x2c) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x30) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x34) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x38) = lbl_803DF0FC;
-            jofs += 0x1c;
-        }
-        gSkyState[iofs + 0x74] = 0xff;
-        gSkyState[iofs + 0x75] = 0xff;
-        gSkyState[iofs + 0x76] = 0xff;
-        gSkyState[iofs + 0x78] = 0xff;
-        gSkyState[iofs + 0x79] = 0xff;
-        gSkyState[iofs + 0x7a] = 0xff;
-        gSkyState[iofs + 0x80] = 0xff;
-        gSkyState[iofs + 0x81] = 0xff;
-        gSkyState[iofs + 0x82] = 0xff;
-        gSkyState[iofs + 0x88] = 0xff;
-        gSkyState[iofs + 0x89] = 0xff;
-        gSkyState[iofs + 0x8a] = 0xff;
-        *(f32*)(gSkyState + iofs + 0x90) = lbl_803DF058;
-        *(f32*)(gSkyState + iofs + 0x94) = (-1.0f);
-        *(f32*)(gSkyState + iofs + 0x98) = lbl_803DF058;
-        *(f32*)(gSkyState + iofs + 0x9c) = lbl_803DF058;
-        *(f32*)(gSkyState + iofs + 0xa0) = (-1.0f);
-        *(f32*)(gSkyState + iofs + 0xa4) = lbl_803DF058;
-        ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->active = 0;
-        *(f32*)(gSkyState + iofs + 0xa8) = lbl_803DF100;
-        *(f32*)(gSkyState + iofs + 0xac) = 1.0f;
-        *(f32*)(gSkyState + iofs + 0xb0) = lbl_803DF100;
-        gSkyState[iofs + 0x7c] = 0xff;
-        gSkyState[iofs + 0x7d] = 0xff;
-        gSkyState[iofs + 0x7e] = 0xff;
-        gSkyState[iofs + 0x84] = 0xff;
-        gSkyState[iofs + 0x85] = 0xff;
-        gSkyState[iofs + 0x86] = 0xff;
-        gSkyState[iofs + 0x8c] = 0xff;
-        gSkyState[iofs + 0x8d] = 0xff;
-        gSkyState[iofs + 0x8e] = 0xff;
-        gSkyState[iofs + 0xc0] = 0x80;
-        iofs += 0xa4;
-        i++;
-    } while (i < 3);
-}
-
-void Sky_func03(int a, int b, u8* cfg)
-{
-    s16* envp;
-    u8* env2;
-    u8 mask;
-    int iofs;
-    int i;
-    u8* p4;
-    u32 cloudMode;
-    int vis;
-    int tmp;
-
-    envp = (s16*)saveGameGetEnvState();
-    if (cfg != NULL && ((int)((Sky2Config*)cfg)->flags & 2) != 0)
-    {
-        switch (((Sky2Config*)cfg)->cloudMode)
-        {
-        case 0:
-        default:
-            mask = 0xf;
-            break;
-        case 1:
-            mask = 1;
-            break;
-        case 2:
-            mask = 2;
-            break;
-        case 3:
-            mask = 4;
-            break;
-        case 4:
-            mask = 5;
-            break;
-        case 5:
-            mask = 3;
-            break;
-        case 6:
-            mask = 6;
-            break;
-        }
-        for (i = 0, iofs = 0; i < 2; i++)
-        {
-            if ((mask & (1 << i)) != 0)
-            {
-                envp[2] = (s16)((Sky2Config*)cfg)->envfxActId - 1;
-                *(f32*)(gSkyState + iofs + 0x20) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x24) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x28) = (f32)(u32)((Sky2Config*)cfg)->lightColorG;
-                *(f32*)(gSkyState + iofs + 0x2c) = (f32)(u32)((Sky2Config*)cfg)->lightColorB;
-                *(f32*)(gSkyState + iofs + 0x30) = (f32)(u32)((Sky2Config*)cfg)->lightColorA;
-                *(f32*)(gSkyState + iofs + 0x34) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x38) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x3c) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x40) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x44) = (f32)(u32)((Sky2Config*)cfg)->color2G;
-                *(f32*)(gSkyState + iofs + 0x48) = (f32)(u32)((Sky2Config*)cfg)->color2B;
-                *(f32*)(gSkyState + iofs + 0x4c) = (f32)(u32)((Sky2Config*)cfg)->color2A;
-                *(f32*)(gSkyState + iofs + 0x50) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x54) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x58) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0x5c) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0x60) = (f32)(u32)((Sky2Config*)cfg)->color3G;
-                *(f32*)(gSkyState + iofs + 0x64) = (f32)(u32)((Sky2Config*)cfg)->color3B;
-                *(f32*)(gSkyState + iofs + 0x68) = (f32)(u32)((Sky2Config*)cfg)->color3A;
-                *(f32*)(gSkyState + iofs + 0x6c) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0x70) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0xb8) = 1.0f;
-                if (((Sky2Config*)cfg)->fadeDurationA != 0)
-                {
-                    *(f32*)(gSkyState + iofs + 0xb4) =
-                        1.0f / (lbl_803DF104 * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
-                }
-                else
-                {
-                    *(f32*)(gSkyState + iofs + 0xb4) = 1.0f;
-                }
-                p4 = gSkyState + iofs;
-                if (gSkyState == NULL)
-                {
-                    p4[0x76] = 0xff;
-                    p4[0x75] = 0xff;
-                    p4[0x74] = 0xff;
-                }
-                else
-                {
-                    p4[0x74] = p4[0x78];
-                    p4[0x75] = gSkyState[iofs + 0x79];
-                    p4[0x76] = gSkyState[iofs + 0x7a];
-                }
-                if (((Sky2Config*)cfg)->cloudBlendMode != 0)
-                {
-                    ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->cloud =
-                        (((Sky2Config*)cfg)->cloudBlendMode & 1) + 1;
-                }
-                else
-                {
-                    ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->cloud = 0;
-                }
-            }
-            envp++;
-            iofs += 0xa4;
-        }
-        if (((Sky2Config*)cfg)->cloudBlendMode != 0)
-        {
-            skyFn_80088c94(mask, (u8)(((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
-        }
-        vis = ((Sky2Config*)cfg)->visibility;
-        for (i = 0; i < 2; i++)
-        {
-            if ((mask & (1 << i)) != 0)
-            {
-                ((SkyBlendStateFlags*)(gSkyState + i * 0xa4 + 0xc1))->visibility = vis;
-            }
-        }
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->visibility =
-            ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->visibility;
-        if ((((Sky2Config*)cfg)->flags & 1) == 0)
-        {
-            ((SkyState*)gSkyState)->skyTextureIds[0] = ((Sky2Config*)cfg)->skyTexId0 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[1] = ((Sky2Config*)cfg)->skyTexId1 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[2] = ((Sky2Config*)cfg)->skyTexId2 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[3] = ((Sky2Config*)cfg)->skyTexId3 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[4] = ((Sky2Config*)cfg)->skyTexId4 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[5] = ((Sky2Config*)cfg)->skyTexId5 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[6] = ((Sky2Config*)cfg)->skyTexId6 + 0xc38;
-            ((SkyState*)gSkyState)->skyTextureIds[7] = ((Sky2Config*)cfg)->skyTexId7 + 0xc38;
-            tmp = *(int*)&((SkyState*)gSkyState)->texture1;
-            *(int*)&((SkyState*)gSkyState)->texture1 =
-                *(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4);
-            *(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4) = tmp;
-            ((SkyState*)gSkyState)->unk250 = -1;
-            if ((((u32)(u8)((SkyState*)gSkyState)->flags255 >> 7) & 1) != 0)
-            {
-                ((SkyState*)gSkyState)->fadeFactor = 1.0f;
-                if (((Sky2Config*)cfg)->fadeDurationA != 0)
-                {
-                    ((SkyState*)gSkyState)->fadeRate =
-                        1.0f / (lbl_803DF104 * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
-                }
-                else
-                {
-                    ((SkyState*)gSkyState)->fadeRate = 1.0f;
-                }
-            }
-            else
-            {
-                ((SkyState*)gSkyState)->fadeFactor = lbl_803DF058;
-            }
-        }
-        cloudMode = ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->cloud;
-        if (cloudMode != 0)
-        {
-            setDrawCloudsAndLights(cloudMode - 1);
-        }
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->unused80 =
-            ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->unused80;
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->visibility =
-            ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->visibility;
-        env2 = saveGameGetEnvState();
-        if (getSaveGameLoadStatus() == 0)
-        {
-            for (i = 0; i < 2; i++)
-            {
-                if (((SkyBlendStateFlags*)(gSkyState + i * 0xa4 + 0xc1))->unused80 != 0)
-                {
-                    env2[0x40] |= (2 << i);
-                }
-                else
-                {
-                    env2[0x40] &= ~(2 << i);
-                }
-            }
-        }
-    }
-}
 
 void dll_06_func0B(int* x, int* y)
 {
@@ -1837,11 +1291,39 @@ void sky2_initialise(void)
     (&gSky2State)[1] = NULL;
 }
 
-extern u8 gSkyConfigFieldIndices[];
+u8 gSkyConfigFieldIndices[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0};
 
-extern ObjectDescriptor17 lbl_8030F4AC;
+ObjectDescriptor17 lbl_8030F4AC = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_16_SLOTS,
+    (ObjectDescriptorCallback)sky2_initialise,
+    (ObjectDescriptorCallback)sky2_release,
+    0,
+    (ObjectDescriptorCallback)sky2_update,
+    (ObjectDescriptorCallback)sky2_onMapSetup,
+    (ObjectDescriptorCallback)sky2_run,
+    (ObjectDescriptorCallback)dll_06_func06,
+    (ObjectDescriptorCallback)dll_06_func07_ret_0,
+    (ObjectDescriptorCallback)dll_06_func08,
+    (ObjectDescriptorExtraSizeCallback)dll_06_func09,
+    (ObjectDescriptorCallback)dll_06_func0A,
+    (ObjectDescriptorCallback)dll_06_func0B,
+    (ObjectDescriptorCallback)dll_06_func0C_nop,
+    (ObjectDescriptorCallback)dll_06_func0D,
+    (ObjectDescriptorCallback)dll_06_func0E,
+    (ObjectDescriptorCallback)dll_06_func0F,
+};
 
-extern u8 lbl_8030F500[160];
+u8 lbl_8030F500[160] = {255, 206, 0,   0,   255, 206, 255, 206, 0, 100, 255, 206, 0, 50,  0, 100, 255, 206, 0, 50,
+                        0,   0,   255, 206, 255, 206, 0,   0,   0, 50,  255, 206, 0, 100, 0, 50,  0,   50,  0, 100,
+                        0,   50,  0,   50,  0,   0,   0,   50,  0, 0,   0,   0,   0, 0,   0, 6,   0,   0,   0, 2,
+                        0,   0,   0,   8,   0,   0,   0,   2,   0, 0,   0,   16,  0, 0,   0, 8,   0,   0,   0, 32,
+                        0,   0,   0,   40,  0,   0,   0,   48,  0, 0,   0,   1,   0, 0,   0, 2,   0,   0,   0, 2,
+                        0,   0,   0,   4,   0,   0,   0,   3,   0, 0,   0,   6,   0, 0,   0, 6,   0,   0,   0, 12,
+                        0,   0,   0,   12,  0,   0,   0,   24,  0, 0,   0,   24,  0, 0,   0, 32,  0,   0,   0, 32,
+                        0,   0,   0,   40,  0,   0,   0,   40,  0, 0,   0,   48,  0, 0,   0, 48,  0,   0,   0, 56};
 
-extern f32 lbl_8039A7B8[0x18];
-extern f32 gSkyOverrideLightDirection[4];
+f32 lbl_8039A7B8[0x18];
+

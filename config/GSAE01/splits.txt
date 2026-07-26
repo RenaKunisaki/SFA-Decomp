@@ -212,14 +212,14 @@ main/shader_dolphin.c:
 	.sbss       start:0x803DCD28 end:0x803DCD48
 
 main/rcp_dolphin.c:
-	.text       start:0x80051868 end:0x80055980
+	.text       start:0x80051868 end:0x80054F64
 	.data       start:0x8030C858 end:0x8030E4B0
 	.bss        start:0x803779C0 end:0x8037E0C0
 	.sdata      start:0x803DB600 end:0x803DB610
 	.sbss       start:0x803DCD48 end:0x803DCDC8
 
 main/shader.c:
-	.text       start:0x80055980 end:0x8005AB70
+	.text       start:0x80054F64 end:0x8005AB70
 	.rodata     start:0x802C1E58 end:0x802C1EA8
 	.data       start:0x8030E4B0 end:0x8030E81C
 	.bss        start:0x8037E0C0 end:0x803868D8
@@ -295,18 +295,19 @@ main/maketex.c:
 	.sbss       start:0x803DD060 end:0x803DD128
 
 main/sky.c:
-	.text       start:0x80088758 end:0x8008AEE8
-	.rodata     start:0x802C1F80 end:0x802C1FA4
-	.data       start:0x8030F2C8 end:0x8030F5A0
-	.bss        start:0x8039A7A8 end:0x8039A818
+	.text       start:0x80088758 end:0x8008C974
+	.rodata     start:0x802C1F80 end:0x802C1F98
+	.data       start:0x8030F2C8 end:0x8030F4A0
+	.bss        start:0x8039A7A8 end:0x8039A7B8
+	.sbss       start:0x803DD128 end:0x803DD180
+
+main/sky2.c:
+	.text       start:0x8008C974 end:0x8008ED88
+	.rodata     start:0x802C1F98 end:0x802C1FA4
+	.data       start:0x8030F4A0 end:0x8030F5A0
+	.bss        start:0x8039A7B8 end:0x8039A818
 	.sdata      start:0x803DB750 end:0x803DB760
-	.sbss       start:0x803DD128 end:0x803DD190
-
-main/sky_timeblend.c:
-	.text       start:0x8008AEE8 end:0x8008B71C
-
-main/sky_state.c:
-	.text       start:0x8008B71C end:0x8008ED88
+	.sbss       start:0x803DD180 end:0x803DD190
 
 main/newclouds.c:
 	.text       start:0x8008ED88 end:0x80093AE0
