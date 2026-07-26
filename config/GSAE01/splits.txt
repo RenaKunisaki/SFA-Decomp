@@ -3116,7 +3116,7 @@ main/dll/laserturretgroup.c:
 	.sbss       start:0x803DDC58 end:0x803DDC5C
 	.sdata2     start:0x803E59F8 end:0x803E5A2C
 
-main/dll/dll_0284_shopitem.c:
+dlls/objects/644/644.c:
 	.text       start:0x801E832C end:0x801E8EA4
 	.data       start:0x803283E0 end:0x80328418
 	.sdata2     start:0x803E5A30 end:0x803E5A6C
