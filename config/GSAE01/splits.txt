@@ -2118,7 +2118,7 @@ dlls/objects/305/305.c:
 	.text       start:0x80191D00 end:0x80191F2C
 	.data       start:0x803220C8 end:0x80322100
 
-main/dll/dll_0134_texscroll2.c:
+dlls/objects/308_texscroll2/texscroll2.c:
 	.text       start:0x80191F2C end:0x801922E4
 	.data       start:0x80322100 end:0x80322140
 	.sdata2     start:0x803E3F30 end:0x803E3F34

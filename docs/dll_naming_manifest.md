@@ -353,7 +353,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x131 | CF_DoorLight (+DR_LightPol) | CONFIRMED | dlls/objects/305/305.c | = (canonical) | — |
 | 0x132 | WaterFallSp | CONFIRMED | dlls/objects/306_WaterFallSp/WaterFallSp.c | = (canonical) | — |
 | 0x133 | sfxPlayer | COMPLETE | dlls/objects/307_sfxPlayer/sfxPlayer.c | = (canonical) | — |
-| 0x134 | texscroll2 | COMPLETE | main/dll/dll_0134_texscroll2.c | = (canonical) | — |
+| 0x134 | texscroll2 | COMPLETE | dlls/objects/308_texscroll2/texscroll2.c | = (canonical) | — |
 | 0x135 | texscroll | COMPLETE | main/dll/dll_0135_texscroll.c | = (canonical) | — |
 | 0x136 | WaveAnimator | CONFIRMED | main/dll/dll_0136_waveanimator.c | = (canonical) | — |
 | 0x137 | AlphaAnimator | CONFIRMED | main/dll/dll_0137_alphaanimator.c | = (canonical) | — |
