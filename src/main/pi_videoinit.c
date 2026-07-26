@@ -262,3 +262,446 @@ void setDisplayCopyFilter(void)
         GXSetCopyFilter(renderMode->aa, renderMode->sample_pattern, GX_TRUE, lbl_803DB5D4);
     }
 }
+
+extern OSThread* lbl_803DCCDC;
+extern f32 lbl_803DCCC0;
+extern f32 lbl_803DCCB4;
+extern u8 lbl_803DCCB0;
+extern volatile int lbl_803DCCAC;
+extern u8 lbl_803DCCA7;
+extern u8 gVideoBlackScreenFrameCount;
+extern u16 lbl_803DB5CE;
+extern OSStopwatch lbl_8035F680;
+extern f32 physicsTimeScale;
+extern f32 lbl_803DEAA0;
+extern f32 lbl_803DEA74;
+extern f32 lbl_803DEA7C;
+extern u8 lbl_803DB411;
+
+typedef union
+{
+    u8 u8;
+    u16 u16;
+    u32 u32;
+    s16 s16;
+    s32 s32;
+    f32 f32;
+} PiWGPipe;
+extern volatile PiWGPipe GXWGFifo : (0xCC008000);
+
+int GXFlush_(u8 visible, int unused)
+{
+    void* fifo_get;
+    void* fifo_put;
+    void* item[3];
+    int s;
+    void* next;
+    gxSetZMode_(1, GX_LEQUAL, 1);
+    GXSetAlphaUpdate(GX_TRUE);
+    GXFlush();
+    GXGetFifoPtrs(lbl_803DCCD4, &fifo_get, &fifo_put);
+    item[0] = fifo_put;
+    item[1] = 0;
+    item[2] = renderFrameBuffer;
+    s = OSDisableInterrupts();
+    Queue_Push(&lbl_8035F730, item);
+    if (lbl_803DCCA7 == 0)
+    {
+        GXEnableBreakPt(fifo_put);
+        lbl_803DCCA7 = 1;
+    }
+    OSRestoreInterrupts(s);
+    GXSetDrawSync(lbl_803DB5CE);
+    GXCopyDisp(renderFrameBuffer, 1);
+    GXFlush();
+    lbl_803DB5CE = (u16)(lbl_803DB5CE + 1);
+    next = renderFrameBuffer == externalFrameBuffer0 ? externalFrameBuffer1 : externalFrameBuffer0;
+    renderFrameBuffer = next;
+    if (visible != 0 && gVideoBlackScreenFrameCount != 0)
+    {
+        gVideoBlackScreenFrameCount--;
+        if (gVideoBlackScreenFrameCount == 0)
+        {
+            VISetBlack(0);
+            gVideoBlackScreenFrameCount = 0;
+        }
+    }
+    return 0;
+}
+
+
+
+void videoBlackScreenForFrames(int frameCount)
+{
+    int frames = frameCount;
+    VISetBlack(1);
+    VIFlush();
+    gVideoBlackScreenFrameCount = frames;
+}
+void logGpuHang(void)
+{
+    char* strs = (char*)gLoadingScreenTextures;
+    u32 topClks, topPerf0, topClks2, topPerf1;
+    u32 botClks, botPerf0, botClks2, botPerf1;
+    u32 xfStuck;
+    u32 cmdStuck;
+    u32 rdIdle;
+    u32 cmdIdle;
+    u8 cmdRdy;
+    u8 readIdle;
+    u8 fifoErr;
+
+    GXReadXfRasMetric(&topPerf0, &topClks, &topPerf1, &topClks2);
+    GXReadXfRasMetric(&botPerf0, &botClks, &botPerf1, &botClks2);
+    xfStuck = (botClks - topClks) == 0;
+    cmdStuck = (botPerf0 - topPerf0) == 0;
+    rdIdle = (botClks2 - topClks2) != 0;
+    cmdIdle = (botPerf1 - topPerf1) != 0;
+    GXGetGPStatus(&fifoErr, &fifoErr, &cmdRdy, &readIdle, &fifoErr);
+    OSReport(strs + 0x4002c, cmdRdy, readIdle, xfStuck, cmdStuck, rdIdle, cmdIdle);
+    if (cmdStuck == 0 && rdIdle != 0)
+    {
+        OSReport(strs + 0x400fc);
+    }
+    else if (xfStuck == 0 && cmdStuck != 0 && rdIdle != 0)
+    {
+        OSReport(strs + 0x4011c);
+    }
+    else if (readIdle == 0 && xfStuck != 0 && cmdStuck != 0 && rdIdle != 0)
+    {
+        OSReport(strs + 0x40144);
+    }
+    else if (cmdRdy != 0 && readIdle != 0 && xfStuck != 0 && cmdStuck != 0 && rdIdle != 0 && cmdIdle != 0)
+    {
+        OSReport(strs + 0x4016c);
+    }
+    else
+    {
+        OSReport(strs + 0x4019c);
+    }
+}
+
+void gxPerfFn_8004a77c(int enabled)
+{
+    if ((u8)enabled != 0)
+    {
+        GXSetGPMetric(GX_PERF0_NONE, GX_PERF1_NONE);
+        GXWGFifo.u8 = 0x61;
+        GXWGFifo.u32 = 0x2402c004;
+        GXWGFifo.u8 = 0x61;
+        GXWGFifo.u32 = 0x23000020;
+        GXWGFifo.u8 = 0x10;
+        GXWGFifo.u16 = 0;
+        GXWGFifo.u16 = 0x1006;
+        GXWGFifo.u32 = 0x84400;
+    }
+    else
+    {
+        GXWGFifo.u8 = 0x61;
+        GXWGFifo.u32 = 0x24000000;
+        GXWGFifo.u8 = 0x61;
+        GXWGFifo.u32 = 0x23000000;
+        GXWGFifo.u8 = 0x10;
+        GXWGFifo.u16 = 0;
+        GXWGFifo.u16 = 0x1006;
+        GXWGFifo.u32 = 0;
+    }
+}
+void gxTransformFn_8004a83c(void)
+{
+    lbl_803DCCB0 = 0;
+    gxPerfFn_8004a77c(0);
+}
+
+extern char sThreadStateAttrSuspendFormat[];
+
+void waitNextFrame(void)
+{
+    int lvl;
+    u32 frames;
+
+    OSStopStopwatch(&lbl_8035F680);
+    lbl_803DCCC0 =
+        (u64)OSCheckStopwatch(&lbl_8035F680) / (f32)(u32)((*(u32*)0x800000f8 >> 2) / 1000);
+    OSResetStopwatch(&lbl_8035F680);
+    OSStartStopwatch(&lbl_8035F680);
+    timeDelta = physicsTimeScale * (lbl_803DEAA0 * lbl_803DCCC0);
+    if (gDvdErrorPauseActive != 0)
+    {
+        timeDelta = lbl_803DEA70;
+    }
+    if (timeDelta > lbl_803DEA74)
+    {
+        timeDelta = *(f32*)&lbl_803DEA74;
+    }
+    if (timeDelta > lbl_803DEA7C)
+    {
+        oneOverTimeDelta = lbl_803DEA78 / timeDelta;
+    }
+    else
+    {
+        oneOverTimeDelta = lbl_803DEA78;
+    }
+    frames = (int)(timeDelta + lbl_803DCCB4) & 0xff;
+    framesThisStep = frames;
+    lbl_803DCCB4 = (timeDelta + lbl_803DCCB4) - (f32)(u32)framesThisStep;
+    lbl_803DB411 = frames;
+    if (framesThisStep < 1)
+    {
+        framesThisStep = 1;
+    }
+    lvl = OSDisableInterrupts();
+    lbl_803DCCDC = OSGetCurrentThread();
+    if (lbl_803DCCDC->state != OS_THREAD_STATE_RUNNING)
+    {
+        OSReport(sThreadStateAttrSuspendFormat, lbl_803DCCDC->state, lbl_803DCCDC->attr,
+                 lbl_803DCCDC->suspend);
+    }
+    if ((u32)Queue_GetCount(&lbl_8035F730) > 1)
+    {
+        lbl_803DCCAC = 0;
+        OSSleepThread((OSThreadQueue*)&lbl_803DCCC4);
+    }
+    OSRestoreInterrupts(lvl);
+    Camera_ApplyFullViewport();
+    GXInvalidateVtxCache();
+    GXInvalidateTexAll();
+}
+
+int pathSearchNodeMatchesTarget(int* ctx, int* ref)
+{
+    int* node;
+    int target;
+    target = ctx[4];
+    node = (int*)ref[0];
+    switch (((s8*)node)[0x19])
+    {
+    case 0x24:
+    {
+        u8 idx = ((u8*)ref)[0xc];
+        if ((idx & 0x80) == 0)
+        {
+            if (((u8*)node)[3] != 0)
+            {
+                return target == ((u8*)node)[3];
+            }
+            else
+            {
+                int* p;
+                int* arr;
+                int i;
+                arr = (int*)*(int*)((char*)ctx[0] + (idx << 4));
+                for (i = 0, p = arr; i < 4; i++)
+                {
+                    if ((u32)node[5] == *(u32*)((char*)p + 0x1c))
+                    {
+                        return target == ((u8*)arr)[i + 4];
+                    }
+                    p++;
+                }
+            }
+        }
+        return 0;
+    }
+    default:
+        return target == (int)node;
+    }
+}
+
+void pathSearchHeapSiftDown(u8* arr, int size, int idx)
+{
+    u16* h = (u16*)arr;
+    int half;
+    u8* childptr;
+    u32 key = *(u32*)((int)arr + idx * 8);
+    u16 val = h[idx * 4 + 2];
+    int child;
+    u8* cp;
+    half = size >> 1;
+    while (idx <= half)
+    {
+        child = idx + idx;
+        if (child < size)
+        {
+            cp = arr + child * 8;
+            if (*(u32*)cp < *(u32*)(cp + 8))
+            {
+                child++;
+            }
+        }
+        childptr = arr + child * 8;
+        if (key >= *(u32*)childptr)
+            break;
+        *(u32*)(arr + idx * 8) = *(u32*)childptr;
+        *(u16*)(arr + idx * 8 + 4) = *(u16*)(childptr + 4);
+        idx = child;
+    }
+    *(u32*)((int)arr + idx * 8) = key;
+    h[idx * 4 + 2] = val;
+}
+
+
+extern GXTexObj lbl_803779A0;
+
+
+int pathSearchNodeMatchesTarget(int* ctx, int* ref);
+void pathSearchHeapSiftDown(u8* arr, int size, int idx);
+static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)
+{
+    int i;
+    u16 idx16;
+    u32 key;
+    int parent;
+    u32* heap;
+    u16* hh;
+    heap = (u32*)search->heap;
+    hh = (u16*)search->heap;
+    hh[++search->heapSize * 4 + 2] = index;
+    *(u32*)((int)heap + search->heapSize * 8) = pri;
+    i = search->heapSize;
+    key = *(u32*)((int)heap + i * 8);
+    idx16 = hh[i * 4 + 2];
+    *heap = -1;
+    while (parent = i >> 1, *(u32*)(hh + parent * 4) < key)
+    {
+        *(u16*)((int)heap + i * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
+        *(u32*)((int)heap + i * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
+        i = parent;
+    }
+    *(u32*)((int)heap + i * 8) = key;
+    hh[i * 4 + 2] = idx16;
+}
+
+static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, int* countOut, int* visitedOut)
+{
+    int index = 0;
+    int offset = 0;
+    int n;
+
+    *countOut = search->nodeCount;
+    for (n = *countOut; n > 0; n--)
+    {
+        PathSearchNode* scanNode = (PathSearchNode*)((u8*)search->nodes + offset);
+        if (scanNode->point == point)
+        {
+            *visitedOut = scanNode->visited;
+            return index;
+        }
+        offset += 0x10;
+        index++;
+    }
+    return -1;
+}
+
+void pathSearchEnqueuePoint(int* q, int* elem, int idx, u32 d, char* obj)
+{
+    PathSearch* search = (PathSearch*)q;
+    PathPoint* point = (PathPoint*)obj;
+    int pos;
+    u16* hh;
+    int cnt2;
+    PathSearchNode* node;
+    u32* heap;
+    int z[2];
+    PathSearchNode* node4;
+    int visited;
+    int cnt;
+    if (pathSearchNodeMatchesTarget(q, elem) != 0)
+    {
+        cnt = search->nodeCount;
+        if (cnt != 0xfe)
+        {
+            node = &search->nodes[search->nodeCount++];
+            node->point = point;
+            node->routeDistance = d;
+            node->parentIndex = (u16)idx;
+            node->distanceToTarget = (u32)vec3f_distanceSquared(node->point->position, search->targetPosition);
+        }
+        pathSearchHeapInsert(search, cnt, 0xfffffffe);
+    }
+    z[0] = pathSearchFindPointNode(search, point, &cnt2, &visited);
+    if (z[0] >= 0 && visited == 0)
+    {
+        PathSearchNode* node3 = &search->nodes[z[0]];
+        if (d < node3->routeDistance)
+        {
+            u32 newpri;
+            int s2;
+            int j;
+            u16 target;
+            u32* entry;
+            u32 old;
+            node3->parentIndex = idx;
+            node3->routeDistance = d;
+            newpri = node3->distanceToTarget + node3->routeDistance;
+            s2 = search->heapSize;
+            heap = (u32*)search->heap;
+            hh = (u16*)heap;
+            j = 0;
+            target = z[0];
+            for (; j <= s2; j++)
+            {
+                if (target == *(u16*)(heap + j * 2 + 1))
+                {
+                    pos = j;
+                    j = s2 + 1;
+                }
+            }
+            entry = heap + pos * 2;
+            old = *entry;
+            *entry = newpri;
+            if (newpri < old)
+            {
+                pathSearchHeapSiftDown((u8*)heap, s2, pos);
+            }
+            else if (newpri > old)
+            {
+                u32 pri = *entry;
+                u16 idx16 = ((u16*)entry)[2];
+                int parent;
+                *heap = -1;
+                while (parent = pos >> 1, *(u32*)(hh + parent * 4) < pri)
+                {
+                    *(u16*)((int)heap + pos * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
+                    *(u32*)((int)heap + pos * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
+                    pos = parent;
+                }
+                *(u32*)((int)heap + pos * 8) = pri;
+                hh[pos * 4 + 2] = idx16;
+            }
+        }
+    }
+    else if (z[0] < 0)
+    {
+        if (cnt2 == 0xfe)
+        {
+            node4 = NULL;
+        }
+        else
+        {
+            node4 = &search->nodes[search->nodeCount++];
+            node4->point = point;
+            node4->routeDistance = d;
+            node4->parentIndex = (u16)idx;
+            node4->distanceToTarget = (u32)vec3f_distanceSquared(node4->point->position, search->targetPosition);
+        }
+        if (node4 != NULL)
+        {
+            if (node4->distanceToTarget > search->closestDistance)
+            {
+                u32 newpri = node4->distanceToTarget + node4->routeDistance;
+                pathSearchHeapInsert(search, cnt2, -1 - newpri);
+            }
+            else
+            {
+                u32 newpri;
+                if (node4->distanceToTarget < search->closestDistance)
+                {
+                    search->closestDistance = node4->distanceToTarget;
+                }
+                newpri = node4->distanceToTarget + node4->routeDistance;
+                pathSearchHeapInsert(search, cnt2, -1 - newpri);
+            }
+        }
+    }
+}
