@@ -390,7 +390,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x158 | GunPowderBarrel (+MetalBarrel) | CONFIRMED | dlls/objects/344/344.c | = (canonical) | — |
 | 0x159 | Blasted (+CFBlastedRo, CFBlastedWa, CFBlastedTu, DRBlastedWa) | CONFIRMED | dlls/objects/345/345.c | = (canonical) | — |
 | 0x15A | explodable (+CFbrokenGra, CFbrokenWal, CFExplodeWa, CFExplodeFl, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRSmallExpl, ExplodeWall, ExplodePlan) | GUESSED | dlls/objects/346/346.c | = (canonical) | — |
-| 0x15B | CFForceField | CONFIRMED | main/dll/dll_015B_cfforcefield.c | main/dll/CF/dll_015B_cfforcefield.c | — |
+| 0x15B | CFForceFiel | CONFIRMED | dlls/objects/347_CFForceFiel/CFForceFiel.c | = (canonical) | — |
 | 0x15C | CFForceField | CONFIRMED | *(none)* | — | no .text fns (descriptor data only) |
 | 0x15D | slidingdoor (+CFSlideDoor, CFMainSlide) | GUESSED | main/dll/dll_015D_slidingdoor.c | = (canonical) | — |
 | 0x15E | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x15B | main/dll/dll_015B_cfforcefield.c | main/dll/CF/dll_015B_cfforcefield.c | CONFIRMED |
 | 0x162 | main/dll/dll_0162_cfmagicwall.c | main/dll/CF/dll_0162_cfmagicwall.c | CONFIRMED |
 | 0x164 | main/dll/dll_0164_cflevelcontrol.c | main/dll/CF/dll_0164_cflevelcontrol.c | CONFIRMED |
 | 0x169 | main/dll/dll_0169_imicemountain.c | main/dll/IM/dll_0169_imicemountain.c | CONFIRMED |

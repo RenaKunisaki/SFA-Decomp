@@ -1,5 +1,5 @@
 /*
- * cfforcefield (DLL 0x15B) - force-field barrier at CF (CloudRunner
+ * CFForceFiel (DLL 0x15B) - force-field barrier at CF (CloudRunner
  * Fortress). While the placement's active game bit is set, sprays a
  * ring of particle bursts around the barrier each tick (three spawns
  * per ring step, ring radius scaled by the remaining collapse time).
