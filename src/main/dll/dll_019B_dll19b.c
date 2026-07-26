@@ -1,10 +1,5 @@
 /* DLL 0x019B - torch / fire-effect objects [801CBA98-801CBD88) */
 #include "main/dll/dll_019B_dll19b.h"
-#include "main/dll/dll_019C_dll19c.h"
-#include "main/dll/dll_019D_dll19d.h"
-#include "main/dll/dll_019E_dim_tricky.h"
-#include "main/dll/dll_019F_nwtreebrid.h"
-#include "main/dll/dll_01A0_nwgeyser.h"
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"
 #include "main/object_render.h"
@@ -444,48 +439,3 @@ void dll_19B_release(void)
 void dll_19B_initialise(void)
 {
 }
-
-void* dll_19C[14] = {(void*)0x00000000,       (void*)0x00000000,   (void*)0x00000000, (void*)0x00090000,
-                     dll_19C_initialise,      dll_19C_release,     (void*)0x00000000, dll_19C_init,
-                     dll_19C_update,          dll_19C_hitDetect,   dll_19C_render,    dll_19C_free,
-                     dll_19C_getObjectTypeId, dll_19C_getExtraSize};
-void* dll_19D[14] = {(void*)0x00000000,       (void*)0x00000000,   (void*)0x00000000, (void*)0x00090000,
-                     dll_19D_initialise,      dll_19D_release,     (void*)0x00000000, dll_19D_init,
-                     dll_19D_update,          dll_19D_hitDetect,   dll_19D_render,    dll_19D_free,
-                     dll_19D_getObjectTypeId, dll_19D_getExtraSize};
-void* dll_19E[14] = {(void*)0x00000000,       (void*)0x00000000,   (void*)0x00000000, (void*)0x00090000,
-                     dll_19E_initialise,      dll_19E_release,     (void*)0x00000000, dll_19E_init,
-                     dll_19E_update,          dll_19E_hitDetect,   dll_19E_render,    dll_19E_free,
-                     dll_19E_getObjectTypeId, dll_19E_getExtraSize};
-ObjectDescriptor gTreeBirdObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)treebird_init,
-    (ObjectDescriptorCallback)treebird_update,
-    0,
-    (ObjectDescriptorCallback)treebird_render,
-    0,
-    0,
-    treebird_getExtraSize,
-};
-ObjectDescriptor gNW_geyserObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)nw_geyser_init,
-    (ObjectDescriptorCallback)nw_geyser_update,
-    0,
-    0,
-    (ObjectDescriptorCallback)nw_geyser_free,
-    0,
-    0,
-};

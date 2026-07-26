@@ -18,6 +18,7 @@
 #include "main/voxmaps.h"
 #include "main/audio/sfx.h"
 #include "main/objhits.h"
+#include "dlls/object_descriptor.h"
 
 
 
@@ -367,3 +368,20 @@ void dll_19E_release(void)
 void dll_19E_initialise(void)
 {
 }
+
+ObjectDescriptor dll_19E = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_19E_initialise,
+    (ObjectDescriptorCallback)dll_19E_release,
+    0,
+    (ObjectDescriptorCallback)dll_19E_init,
+    (ObjectDescriptorCallback)dll_19E_update,
+    (ObjectDescriptorCallback)dll_19E_hitDetect,
+    (ObjectDescriptorCallback)dll_19E_render,
+    (ObjectDescriptorCallback)dll_19E_free,
+    (ObjectDescriptorCallback)dll_19E_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)dll_19E_getExtraSize,
+};

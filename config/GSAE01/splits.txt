@@ -2830,31 +2830,35 @@ dlls/objects/410/410.c:
 
 main/dll/dll_019B_dll19b.c:
 	.text       start:0x801CBA98 end:0x801CC72C
-	.data       start:0x80326618 end:0x803267C0
+	.data       start:0x80326618 end:0x803266A8
 	.sbss       start:0x803DDBE0 end:0x803DDBE8
 	.sdata2     start:0x803E5188 end:0x803E51B0
 
 main/dll/dll_019C_dll19c.c:
 	.text       start:0x801CC72C end:0x801CC998
+	.data       start:0x803266A8 end:0x803266E0
 	.sdata2     start:0x803E51B0 end:0x803E51B8
 
 main/dll/dll_019D_dll19d.c:
 	.text       start:0x801CC998 end:0x801CCFA4
+	.data       start:0x803266E0 end:0x80326718
 	.sdata2     start:0x803E51B8 end:0x803E51C8
 
 main/dll/DIM/dll_019E_dim_tricky.c:
 	.text       start:0x801CCFA4 end:0x801CD7DC
 	.rodata     start:0x802C23D8 end:0x802C23E8
+	.data       start:0x80326718 end:0x80326750
 	.sbss       start:0x803DDBE8 end:0x803DDBF0
 	.sdata2     start:0x803E51C8 end:0x803E51F8
 
 main/dll/NW/dll_019F_nwtreebrid.c:
 	.text       start:0x801CD7DC end:0x801CDC78
+	.data       start:0x80326750 end:0x80326788
 	.sdata2     start:0x803E51F8 end:0x803E5200
 
 main/dll/NW/nwmammothgroup.c:
 	.text       start:0x801CDC78 end:0x801CF78C
-	.data       start:0x803267C0 end:0x80326B2C
+	.data       start:0x80326788 end:0x80326B2C
 	.sdata      start:0x803DBF70 end:0x803DBFC0
 	.sdata2     start:0x803E5200 end:0x803E525C
 

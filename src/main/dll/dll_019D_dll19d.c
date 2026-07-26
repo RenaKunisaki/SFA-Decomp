@@ -10,6 +10,7 @@
 #include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/audio/sfx.h"
+#include "dlls/object_descriptor.h"
 #define DLL19D_HIT_VOLUME_SLOT 0xe
 
 typedef struct Dll19DPlacement
@@ -218,3 +219,20 @@ void dll_19D_release(void)
 void dll_19D_initialise(void)
 {
 }
+
+ObjectDescriptor dll_19D = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_19D_initialise,
+    (ObjectDescriptorCallback)dll_19D_release,
+    0,
+    (ObjectDescriptorCallback)dll_19D_init,
+    (ObjectDescriptorCallback)dll_19D_update,
+    (ObjectDescriptorCallback)dll_19D_hitDetect,
+    (ObjectDescriptorCallback)dll_19D_render,
+    (ObjectDescriptorCallback)dll_19D_free,
+    (ObjectDescriptorCallback)dll_19D_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)dll_19D_getExtraSize,
+};

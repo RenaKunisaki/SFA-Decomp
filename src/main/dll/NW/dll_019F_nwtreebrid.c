@@ -18,6 +18,7 @@
 #include "main/obj_group.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"
+#include "dlls/object_descriptor.h"
 
 #define NWTREEBRID_TARGET_OBJGROUP 4
 
@@ -178,3 +179,20 @@ void treebird_init(GameObject* obj, NwTreeBirdPlacement* placement)
     }
     state->searchDelay = 4;
 }
+
+ObjectDescriptor gTreeBirdObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)treebird_init,
+    (ObjectDescriptorCallback)treebird_update,
+    0,
+    (ObjectDescriptorCallback)treebird_render,
+    0,
+    0,
+    treebird_getExtraSize,
+};
