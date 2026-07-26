@@ -1,5 +1,5 @@
 /*
- * ccriverflow - Crystal Caves river-flow object (DLL 0x0174). A presence
+ * CCriverflow (DLL 0x174) - Crystal Caves river-flow object. A presence
  * object that joins/leaves render group CCRIVERFLOW_OBJECT_GROUP depending
  * on its placement gameBit: while the bit is clear the flow is shown, once
  * set it is removed. A gameBit of -1 means "always on". init also derives

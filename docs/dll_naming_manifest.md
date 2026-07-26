@@ -415,7 +415,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x171 | IMSpaceRing | CONFIRMED | dlls/objects/369_IMSpaceRing/IMSpaceRing.c | = (canonical) | — |
 | 0x172 | LINKB_levco | CONFIRMED | dlls/objects/370_LINKB_levco/LINKB_levco.c | = (canonical) | — |
 | 0x173 | LINK_levcon | CONFIRMED | dlls/objects/371_LINK_levcon/LINK_levcon.c | = (canonical) | — |
-| 0x174 | CCriverflow | CONFIRMED | main/dll/dll_0174_ccriverflow.c | main/dll/CC/dll_0174_ccriverflow.c | — |
+| 0x174 | CCriverflow | CONFIRMED | dlls/objects/372_CCriverflow/CCriverflow.c | = (canonical) | — |
 | 0x175 | DFropenode | COMPLETE | main/dll/dll_0175_dfropenode.c | main/dll/DF/dll_0175_dfropenode.c | — |
 | 0x176 | DFSH_Door1S | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x177 | DFSH_Door2Speci (+DFSH_Door3S, DFSH_Door4S) | CONFIRMED | main/dll/dll_0177_dfshdoor2speci.c | main/dll/DF/dll_0177_dfshdoor2speci.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x174 | main/dll/dll_0174_ccriverflow.c | main/dll/CC/dll_0174_ccriverflow.c | CONFIRMED |
 | 0x175 | main/dll/dll_0175_dfropenode.c | main/dll/DF/dll_0175_dfropenode.c | COMPLETE |
 | 0x177 | main/dll/dll_0177_dfshdoor2speci.c | main/dll/DF/dll_0177_dfshdoor2speci.c | CONFIRMED |
 | 0x178 | main/dll/dll_0178_dfshshrine.c | main/dll/DF/dll_0178_dfshshrine.c | CONFIRMED |
