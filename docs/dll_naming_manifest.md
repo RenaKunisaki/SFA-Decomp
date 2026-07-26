@@ -563,7 +563,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x205 | WM_Vein | COMPLETE | dlls/objects/517_WM_Vein/WM_Vein.c | = (canonical) | Data-only DLL |
 | 0x206 | LightSource | COMPLETE | dlls/objects/518_LightSource/LightSource.c | = (canonical) | — |
 | 0x207 | WM_Worm | COMPLETE | dlls/objects/519_WM_Worm/WM_Worm.c | = (canonical) | — |
-| 0x208 | WM_Wallpowe | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x208 | WM_Wallpowe | COMPLETE | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | = (canonical) | Data-only DLL |
 | 0x209 | WM_LevelControl | CONFIRMED | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | — |
 | 0x20A | WM_GeneralScales | CONFIRMED | main/dll/dll_020A_wmgeneralscales.c | main/dll/WM/dll_020A_wmgeneralscales.c | — |
 | 0x20B | FireFly | COMPLETE | main/dll/dll_020B_firefly.c | = (canonical) | — |
