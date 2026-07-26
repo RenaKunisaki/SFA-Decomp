@@ -16,6 +16,7 @@
  * the layouts of related objects shipped in the same DLL.
  */
 #include "main/dll/dll_01FC_laserbeam.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/texture.h"
 #include "main/dll/partfx_interface.h"
@@ -471,3 +472,20 @@ void LaserBeam_initialise(void)
 {
     gLaserBeamObjModgfxResource = Resource_Acquire(LASERBEAM_MODGFX_RESOURCE_ID, 1);
 }
+
+ObjectDescriptor gLaserBeamObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)LaserBeam_initialise,
+    (ObjectDescriptorCallback)LaserBeam_release,
+    0,
+    (ObjectDescriptorCallback)LaserBeam_init,
+    (ObjectDescriptorCallback)LaserBeam_update,
+    (ObjectDescriptorCallback)LaserBeam_hitDetect,
+    (ObjectDescriptorCallback)LaserBeam_render,
+    (ObjectDescriptorCallback)LaserBeam_free,
+    (ObjectDescriptorCallback)LaserBeam_getObjectTypeId,
+    LaserBeam_getExtraSize,
+};

@@ -1,6 +1,7 @@
 /* DLL 0x01FA - wmseqobject / WM_ObjCreator group. TU: 0x801EFF7C-0x801F02F0. */
 #include "main/dll/WC/dll_01F9_wmobjcreator.h"
 #include "game/objects/object_setup.h"
+#include "dlls/object_descriptor.h"
 
 STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
 
@@ -183,3 +184,20 @@ void WM_seqobject_release(void)
 void WM_seqobject_initialise(void)
 {
 }
+
+ObjectDescriptor gWM_seqobjectObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_seqobject_initialise,
+    (ObjectDescriptorCallback)WM_seqobject_release,
+    0,
+    (ObjectDescriptorCallback)WM_seqobject_init,
+    (ObjectDescriptorCallback)WM_seqobject_update,
+    (ObjectDescriptorCallback)WM_seqobject_hitDetect,
+    (ObjectDescriptorCallback)WM_seqobject_render,
+    (ObjectDescriptorCallback)WM_seqobject_free,
+    (ObjectDescriptorCallback)WM_seqobject_getObjectTypeId,
+    WM_seqobject_getExtraSize,
+};

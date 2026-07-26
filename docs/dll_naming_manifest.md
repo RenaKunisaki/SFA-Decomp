@@ -547,7 +547,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F5 | — | COMPLETE | dlls/objects/501/501.c | = (canonical) | No recovered retail basename |
 | 0x1F6 | — | COMPLETE | dlls/objects/502/502.c | = (canonical) | No recovered retail basename |
 | 0x1F7 | SB_ShipGunB | COMPLETE | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | = (canonical) | Retail basename is truncated |
-| 0x1F8 | WM_Galleon | COMPLETE | main/dll/dll_01F8_wmgalleon.c | main/dll/WM/dll_01F8_wmgalleon.c | — |
+| 0x1F8 | WM_Galleon | COMPLETE | dlls/objects/504_WM_Galleon/WM_Galleon.c | = (canonical) | — |
 | 0x1F9 | WM_ObjCreator | CONFIRMED | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | — |
 | 0x1FA | WM_seqobject | CONFIRMED | main/dll/dll_01FA_wmseqobject.c | main/dll/WM/dll_01FA_wmseqobject.c | — |
 | 0x1FB | — | NO-RETAIL-NAME | main/dll/dll_01FB_dll1fb.c | = (canonical) | — |
@@ -873,7 +873,7 @@ name was a deliberate choice by a previous carve:
 | 0x1F5 | main/dll/dll_01F5_shipbattle.c | dlls/objects/501/501.c | COMPLETE |
 | 0x1F6 | main/dll/dll_01F6_flag.c | dlls/objects/502/502.c | COMPLETE |
 | 0x1F7 | main/dll/dll_01F7_sbshipgunbroke.c | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | COMPLETE |
-| 0x1F8 | main/dll/dll_01F8_wmgalleon.c | main/dll/WM/dll_01F8_wmgalleon.c | COMPLETE |
+| 0x1F8 | main/dll/dll_01F8_wmgalleon.c | dlls/objects/504_WM_Galleon/WM_Galleon.c | COMPLETE |
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | CONFIRMED |
 | 0x1FA | main/dll/dll_01FA_wmseqobject.c | main/dll/WM/dll_01FA_wmseqobject.c | CONFIRMED |
 | 0x1FD | main/dll/dll_01FD_wmlasertarget.c | main/dll/WM/dll_01FD_wmlasertarget.c | CONFIRMED |

@@ -14,6 +14,7 @@
  * ARWarwingattachment merely references it.
  */
 #include "main/audio/sfx.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
@@ -339,3 +340,20 @@ void PressureSwitch_release(void)
 void PressureSwitch_initialise(void)
 {
 }
+
+ObjectDescriptor gPressureSwitchObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)PressureSwitch_initialise,
+    (ObjectDescriptorCallback)PressureSwitch_release,
+    0,
+    (ObjectDescriptorCallback)PressureSwitch_init,
+    (ObjectDescriptorCallback)PressureSwitch_update,
+    (ObjectDescriptorCallback)PressureSwitch_hitDetect,
+    (ObjectDescriptorCallback)PressureSwitch_render,
+    (ObjectDescriptorCallback)PressureSwitch_free,
+    (ObjectDescriptorCallback)PressureSwitch_getObjectTypeId,
+    PressureSwitch_getExtraSize,
+};

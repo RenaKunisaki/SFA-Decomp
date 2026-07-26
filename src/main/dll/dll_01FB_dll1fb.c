@@ -122,3 +122,18 @@ void dll_1FB_release_nop(void)
 void dll_1FB_initialise_nop(void)
 {
 }
+
+u32 dll_1FB[14] = {0x00000000,
+                   0x00000000,
+                   0x00000000,
+                   0x00090000,
+                   (u32)dll_1FB_initialise_nop,
+                   (u32)dll_1FB_release_nop,
+                   0x00000000,
+                   (u32)dll_1FB_init,
+                   (u32)dll_1FB_update,
+                   (u32)dll_1FB_hitDetect_nop,
+                   (u32)dll_1FB_render,
+                   (u32)dll_1FB_free_nop,
+                   (u32)dll_1FB_getObjectTypeId,
+                   (u32)dll_1FB_getExtraSize_ret_12};

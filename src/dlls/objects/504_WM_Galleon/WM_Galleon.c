@@ -1,8 +1,7 @@
-/* DLL 0x01F8 (wmgalleon) - WM galleon and object creator [0x801EFF7C-0x801F06D8). */
+/* WM_Galleon (DLL 0x01F8) - the World Map galleon. */
 #include "main/dll/WC/dll_01F9_wmobjcreator.h"
 #include "dlls/object_descriptor.h"
 #include "main/render_lactions_api.h"
-#include "game/objects/object_setup.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
@@ -13,55 +12,20 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0011_screens.h"
 #include "main/track_dolphin_api.h"
-#include "main/dll/dll1fbsetup_struct.h"
 #include "main/dll/wmgalleonsetup_struct.h"
-#include "main/dll/wmseqobjectsetup_struct.h"
 #include "main/dll/wmgalleonstate_struct.h"
-#include "main/dll/dll1fbstate_struct.h"
-#include "main/dll/dll_01FB_dll1fb.h"
-#include "main/dll/dll_01FC_laserbeam.h"
-#include "main/dll/dll_01FF_dll1ff.h"
-#include "main/dll/WM/dll_01FA_wmseqobject.h"
-#include "main/dll/WM/dll_01FD_wmlasertarget.h"
 #include "main/dll/player_api.h"
-#include "main/dll/dll_01FE_pressureswitch.h"
 
 u32 lbl_803DC0F0 = 3;
 
-STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
-
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnMode) == 0x1A);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnPeriod) == 0x1C);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, yaw) == 0x1E);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnJitter) == 0x1F);
-STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
-
 STATIC_ASSERT(sizeof(WmGalleonState) == 0x10);
-
-/* neighbor-TU placement layouts (dll_01FB) shared by this unit */
-
-/* NOTE: distinct from the WmGalleonState head-section copy above -
-   this is the galleon TU's own state layout (the lowercase-m one is
-   the WM_ObjCreator-group view of the same 0x10 block). */
-
-STATIC_ASSERT(sizeof(Dll1FBState) == 0xc);
-STATIC_ASSERT(offsetof(Dll1FBState, baseMove) == 0x04);
-STATIC_ASSERT(offsetof(Dll1FBState, triggerMode) == 0x06);
-STATIC_ASSERT(offsetof(Dll1FBState, hideModel) == 0x09);
 STATIC_ASSERT(sizeof(WMGalleonState) == 0x10);
 STATIC_ASSERT(offsetof(WMGalleonState, savedX) == 0x00);
 STATIC_ASSERT(offsetof(WMGalleonState, savedY) == 0x04);
 STATIC_ASSERT(offsetof(WMGalleonState, savedZ) == 0x08);
 STATIC_ASSERT(offsetof(WMGalleonState, mapEventsLatched) == 0x0C);
 STATIC_ASSERT(offsetof(WMGalleonState, savedYaw) == 0x0E);
-STATIC_ASSERT(offsetof(Dll1FBSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(Dll1FBSetup, baseMove) == 0x19);
-STATIC_ASSERT(offsetof(Dll1FBSetup, triggerMode) == 0x1a);
-STATIC_ASSERT(offsetof(Dll1FBSetup, objectParam) == 0x1c);
 STATIC_ASSERT(offsetof(WMGalleonSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WMSeqObjectSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WMSeqObjectSetup, setupType) == 0x19);
 
 #define WM_GALLEON_GAMEBIT_CUTSCENE_DONE    0x429
 #define WM_GALLEON_GAMEBIT_CLEAR_DOOR       0xD1
@@ -88,30 +52,6 @@ STATIC_ASSERT(offsetof(WMSeqObjectSetup, setupType) == 0x19);
 void* lbl_803DDC74;
 extern u32* lbl_803DCA94;
 s8 lbl_803DDC70;
-void WM_Galleon_initialise(void);
-void WM_Galleon_release(void);
-void WM_Galleon_init(int* obj, WMGalleonSetup* setup);
-void WM_Galleon_update(int* obj);
-void WM_Galleon_hitDetect(void);
-int WM_Galleon_getObjectTypeId(void);
-int WM_Galleon_getExtraSize(void);
-
-ObjectDescriptor gWM_GalleonObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_Galleon_initialise,
-    (ObjectDescriptorCallback)WM_Galleon_release,
-    0,
-    (ObjectDescriptorCallback)WM_Galleon_init,
-    (ObjectDescriptorCallback)WM_Galleon_update,
-    (ObjectDescriptorCallback)WM_Galleon_hitDetect,
-    (ObjectDescriptorCallback)WM_Galleon_render,
-    (ObjectDescriptorCallback)WM_Galleon_free,
-    (ObjectDescriptorCallback)WM_Galleon_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_Galleon_getExtraSize,
-};
 
 int WM_Galleon_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -342,96 +282,19 @@ void WM_Galleon_initialise(void)
 {
 }
 
-/* descriptor/ptr table auto 0x80328748-0x80328898 */
-ObjectDescriptor gWM_seqobjectObjDescriptor = {
+ObjectDescriptor gWM_GalleonObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_seqobject_initialise,
-    (ObjectDescriptorCallback)WM_seqobject_release,
+    (ObjectDescriptorCallback)WM_Galleon_initialise,
+    (ObjectDescriptorCallback)WM_Galleon_release,
     0,
-    (ObjectDescriptorCallback)WM_seqobject_init,
-    (ObjectDescriptorCallback)WM_seqobject_update,
-    (ObjectDescriptorCallback)WM_seqobject_hitDetect,
-    (ObjectDescriptorCallback)WM_seqobject_render,
-    (ObjectDescriptorCallback)WM_seqobject_free,
-    (ObjectDescriptorCallback)WM_seqobject_getObjectTypeId,
-    WM_seqobject_getExtraSize,
-};
-u32 dll_1FB[14] = {0x00000000,
-                   0x00000000,
-                   0x00000000,
-                   0x00090000,
-                   (u32)dll_1FB_initialise_nop,
-                   (u32)dll_1FB_release_nop,
-                   0x00000000,
-                   (u32)dll_1FB_init,
-                   (u32)dll_1FB_update,
-                   (u32)dll_1FB_hitDetect_nop,
-                   (u32)dll_1FB_render,
-                   (u32)dll_1FB_free_nop,
-                   (u32)dll_1FB_getObjectTypeId,
-                   (u32)dll_1FB_getExtraSize_ret_12};
-ObjectDescriptor gLaserBeamObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)LaserBeam_initialise,
-    (ObjectDescriptorCallback)LaserBeam_release,
-    0,
-    (ObjectDescriptorCallback)LaserBeam_init,
-    (ObjectDescriptorCallback)LaserBeam_update,
-    (ObjectDescriptorCallback)LaserBeam_hitDetect,
-    (ObjectDescriptorCallback)LaserBeam_render,
-    (ObjectDescriptorCallback)LaserBeam_free,
-    (ObjectDescriptorCallback)LaserBeam_getObjectTypeId,
-    LaserBeam_getExtraSize,
-};
-ObjectDescriptor gPressureSwitchObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)PressureSwitch_initialise,
-    (ObjectDescriptorCallback)PressureSwitch_release,
-    0,
-    (ObjectDescriptorCallback)PressureSwitch_init,
-    (ObjectDescriptorCallback)PressureSwitch_update,
-    (ObjectDescriptorCallback)PressureSwitch_hitDetect,
-    (ObjectDescriptorCallback)PressureSwitch_render,
-    (ObjectDescriptorCallback)PressureSwitch_free,
-    (ObjectDescriptorCallback)PressureSwitch_getObjectTypeId,
-    PressureSwitch_getExtraSize,
-};
-u32 dll_1FF[14] = {0x00000000,
-                   0x00000000,
-                   0x00000000,
-                   0x00090000,
-                   (u32)dll_1FF_initialise_nop,
-                   (u32)dll_1FF_release_nop,
-                   0x00000000,
-                   (u32)dll_1FF_init,
-                   (u32)dll_1FF_update,
-                   (u32)dll_1FF_hitDetect_nop,
-                   (u32)dll_1FF_render,
-                   (u32)dll_1FF_free_nop,
-                   (u32)dll_1FF_getObjectTypeId,
-                   (u32)dll_1FF_getExtraSize_ret_8};
-ObjectDescriptor gWM_LaserTargetObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_LaserTarget_initialise,
-    (ObjectDescriptorCallback)WM_LaserTarget_release,
-    0,
-    (ObjectDescriptorCallback)WM_LaserTarget_init,
-    (ObjectDescriptorCallback)WM_LaserTarget_update,
-    (ObjectDescriptorCallback)WM_LaserTarget_hitDetect,
-    (ObjectDescriptorCallback)WM_LaserTarget_render,
-    (ObjectDescriptorCallback)WM_LaserTarget_free,
-    (ObjectDescriptorCallback)WM_LaserTarget_getObjectTypeId,
-    WM_LaserTarget_getExtraSize,
+    (ObjectDescriptorCallback)WM_Galleon_init,
+    (ObjectDescriptorCallback)WM_Galleon_update,
+    (ObjectDescriptorCallback)WM_Galleon_hitDetect,
+    (ObjectDescriptorCallback)WM_Galleon_render,
+    (ObjectDescriptorCallback)WM_Galleon_free,
+    (ObjectDescriptorCallback)WM_Galleon_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_Galleon_getExtraSize,
 };

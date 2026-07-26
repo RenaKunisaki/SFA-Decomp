@@ -209,3 +209,18 @@ void dll_1FF_release_nop(void)
 void dll_1FF_initialise_nop(void)
 {
 }
+
+u32 dll_1FF[14] = {0x00000000,
+                   0x00000000,
+                   0x00000000,
+                   0x00090000,
+                   (u32)dll_1FF_initialise_nop,
+                   (u32)dll_1FF_release_nop,
+                   0x00000000,
+                   (u32)dll_1FF_init,
+                   (u32)dll_1FF_update,
+                   (u32)dll_1FF_hitDetect_nop,
+                   (u32)dll_1FF_render,
+                   (u32)dll_1FF_free_nop,
+                   (u32)dll_1FF_getObjectTypeId,
+                   (u32)dll_1FF_getExtraSize_ret_8};

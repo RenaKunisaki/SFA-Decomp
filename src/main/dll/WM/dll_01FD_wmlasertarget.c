@@ -6,6 +6,7 @@
  * rearms the cooldown from the placement.
  */
 #include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
 #include "main/objhits.h"
@@ -91,3 +92,20 @@ void WM_LaserTarget_release(void)
 void WM_LaserTarget_initialise(void)
 {
 }
+
+ObjectDescriptor gWM_LaserTargetObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_LaserTarget_initialise,
+    (ObjectDescriptorCallback)WM_LaserTarget_release,
+    0,
+    (ObjectDescriptorCallback)WM_LaserTarget_init,
+    (ObjectDescriptorCallback)WM_LaserTarget_update,
+    (ObjectDescriptorCallback)WM_LaserTarget_hitDetect,
+    (ObjectDescriptorCallback)WM_LaserTarget_render,
+    (ObjectDescriptorCallback)WM_LaserTarget_free,
+    (ObjectDescriptorCallback)WM_LaserTarget_getObjectTypeId,
+    WM_LaserTarget_getExtraSize,
+};

@@ -1875,7 +1875,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/sbcloudrunnergroup.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_01F9_wmobjcreator.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/wcdial.c"),
-            Object(MatchingFor("GSAE01"), "main/dll/WM/dll_01F8_wmgalleon.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/504_WM_Galleon/WM_Galleon.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_01FA_wmseqobject.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_01FB_dll1fb.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_01FC_laserbeam.c", cflags=cflags_dll_noopt),
