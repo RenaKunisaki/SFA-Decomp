@@ -1,4 +1,4 @@
-/* Light functions and VFP block 1 object [0x801FB9AC-0x801FD4A8). */
+/* Volcano Force Point object DLLs. */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/mtx/vec.h"
 #include "main/frame_timing.h"
@@ -43,15 +43,7 @@
 #define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
 #define VFPDRAGHEAD_PARTFX_IDLE   0x391
 
-/*
- * DLL 0x021E (gVFP_Block1ObjDescriptor).
- * getExtraSize/getObjectTypeId/free/render/hitDetect fall in this object's
- * .text range here (0x801FB9AC-0x801FB9F4); update/init/release/initialise for
- * this DLL follow later in this same file (next .text range).
- */
-
 extern u32 gSpellStoneEventId;
-extern f32 lbl_803E6100;
 extern f32 lbl_803E6144;
 extern f32 lbl_803E6148;
 extern f32 lbl_803E6150;
@@ -121,13 +113,6 @@ typedef struct
     u8 exploded : 1;
     u8 _state2_lo : 6;
 } VfpDoorSwitchState;
-typedef struct VfpBlock1Placement
-{
-    u8 pad00[0x18];
-    s8 rotXByte;   /* 0x18 */
-    u8 pad19[5];
-    s16 gameBitId; /* 0x1e */
-} VfpBlock1Placement;
 typedef struct VfpPlatformPlacement
 {
     u8 pad00[0x18];
@@ -174,66 +159,7 @@ typedef struct SpellStonePlacement
     s16 requiredGameBit; /* 0x20 */
 } SpellStonePlacement;
 
-int VFP_Block1_getExtraSize(void)
-{
-    return 0x2;
-}
-
-int VFP_Block1_getObjectTypeId(void)
-{
-    return 0x0;
-}
-
-void VFP_Block1_free(int obj)
-{
-    (*gExpgfxInterface)->freeSource2(obj);
-}
-
-void VFP_Block1_render(void)
-{
-}
-
-void VFP_Block1_hitDetect(void)
-{
-}
-
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
-void VFP_Block1_update(GameObject* obj)
-{
-    int player = (int)Obj_GetPlayerObject();
-    f32 dist = Vec_distance(&((GameObject*)player)->anim.worldPosX, &obj->anim.worldPosX);
-    if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x40) != 0)
-    {
-        if (dist < lbl_803E6100)
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_mushdizzylp12);
-        }
-    }
-    else
-    {
-        if (dist >= lbl_803E6100)
-        {
-            Sfx_StopObjectChannel((int)obj, 0x40);
-        }
-    }
-}
-
-void VFP_Block1_init(int obj, int data)
-{
-    VfpBlock1Placement* def = (VfpBlock1Placement*)data;
-    VfpPlatformState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (((s32)def->rotXByte) << 8);
-    state->gameBitId = def->gameBitId;
-    ((GameObject*)obj)->objectFlags |= (LIGHT_OBJFLAG_HIDDEN | LIGHT_OBJFLAG_HITDETECT_DISABLED);
-}
-
-void VFP_Block1_release(void)
-{
-}
-
-void VFP_Block1_initialise(void)
-{
-}
 
 void VFP_Platform_updateLavaBlock(GameObject* obj)
 {
