@@ -32,7 +32,6 @@ void MikaBomb_release(void);
 void MikaBomb_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void MikaBomb_update(GameObject* obj);
 
-extern u32 gMikaBombExplosionSpawnCountRange;
 extern f32 gMikaBombRenderScale;
 extern f32 gMikaBombFadeRate;
 extern f32 gMikaBombZero;

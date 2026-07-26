@@ -34,10 +34,7 @@
 /* Shadow-bomb object spawned at init, cached into MikaBombState.shadowObj. */
 #define MIKABOMB_CHILD_OBJ_SHADOW 0xc
 
-extern f32 gMikaBombHitSphereRadiusScale;
-extern f32 gMikaBombCameraShakeMagnitude;
-extern f32 gMikaBombCameraShakeDuration;
-extern f32 gMikaBombCameraShakeFalloff;
+const ModgfxSpawnCountRange gMikaBombExplosionSpawnCountRange = {(5 << 16) | 10};
 
 int MikaBomb_getExtraSize(void)
 {
@@ -116,15 +113,14 @@ void MikaBomb_update(GameObject* obj)
             {
                 MikaBombState* st = obj->extra;
                 u32 rnd;
-                localB.packed = gMikaBombExplosionSpawnCountRange;
+                localB = gMikaBombExplosionSpawnCountRange;
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_dsmk2_c);
                 rnd = randomGetRange(0, 2);
                 (*st->resource)->spawn(obj, rnd, NULL, 2, -1, &localB);
                 ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj,
-                                          (s32)(gMikaBombHitSphereRadiusScale *
+                                          (s32)(5.0f *
                                                 (f32)(u32)obj->anim.modelInstance->primaryHitboxRadius));
-                CameraShake_Start(gMikaBombCameraShakeMagnitude, gMikaBombCameraShakeDuration,
-                                  gMikaBombCameraShakeFalloff);
+                CameraShake_Start(3.0f, 10.0f, 6.0f);
                 obj->anim.alpha = 0xfe;
                 Obj_FreeObject(st->shadowObj);
                 st->shadowObj = NULL;
@@ -138,15 +134,14 @@ void MikaBomb_update(GameObject* obj)
             {
                 MikaBombState* st = obj->extra;
                 u32 rnd;
-                localA.packed = gMikaBombExplosionSpawnCountRange;
+                localA = gMikaBombExplosionSpawnCountRange;
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_dsmk2_c);
                 rnd = randomGetRange(0, 2);
                 (*st->resource)->spawn(obj, rnd, NULL, 2, -1, &localA);
                 ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj,
-                                          (s32)(gMikaBombHitSphereRadiusScale *
+                                          (s32)(5.0f *
                                                 (f32)(u32)obj->anim.modelInstance->primaryHitboxRadius));
-                CameraShake_Start(gMikaBombCameraShakeMagnitude, gMikaBombCameraShakeDuration,
-                                  gMikaBombCameraShakeFalloff);
+                CameraShake_Start(3.0f, 10.0f, 6.0f);
                 obj->anim.alpha = 0xfe;
                 Obj_FreeObject(st->shadowObj);
                 st->shadowObj = NULL;
