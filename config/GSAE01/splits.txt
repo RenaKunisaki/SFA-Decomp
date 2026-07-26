@@ -3529,7 +3529,7 @@ dlls/objects/567_DFPSpPl/DFPSpPl.c:
 	.text       start:0x802090A8 end:0x8020930C
 	.data       start:0x80329C48 end:0x80329C80
 
-main/dll/dll_0238_linkalevco.c:
+dlls/objects/568_LINKA_levco/LINKA_levco.c:
 	.text       start:0x8020930C end:0x80209810
 	.data       start:0x80329C80 end:0x80329CB8
 	.sdata2     start:0x803E64D8 end:0x803E64DC
