@@ -694,7 +694,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x288 | SPDrape | COMPLETE | main/dll/dll_0288_spdrape.c | main/dll/SP/dll_0288_spdrape.c | — |
 | 0x289 | SPitembeam | COMPLETE | main/dll/dll_0289_spitembeam.c | main/dll/SP/dll_0289_spitembeam.c | — |
 | 0x28A | WCEarthWalker (+WCKingEarth, WM_deaddino) | CONFIRMED | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | — |
-| 0x28B | — | NO-RETAIL-NAME | main/dll/dll_028B.c | = (canonical) | — |
+| 0x28B | — | NO-RETAIL-NAME | dlls/objects/651/651.c | = (canonical) | — |
 | 0x28C | WCBouncyCra | CONFIRMED | dlls/objects/652_WCBouncyCra/WCBouncyCra.c | = (canonical) | — |
 | 0x28D | WCLevelCont | CONFIRMED | dlls/objects/653_WCLevelCont/WCLevelCont.c | = (canonical) | — |
 | 0x28E | WCBeacon | COMPLETE | dlls/objects/654_WCBeacon/WCBeacon.c | = (canonical) | — |
