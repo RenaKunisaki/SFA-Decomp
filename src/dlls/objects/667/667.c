@@ -1,5 +1,5 @@
 /*
- * arwingandrossstuff (DLL 0x29B) - the Arwing's lasers and the Andross-fight
+ * DLL 667 - the Arwing's lasers and the Andross-fight
  * projectiles (rings, asteroids). The deployed bomb is the separate DLL 0x29C.
  *
  * Each instance is one in-flight projectile whose behaviour is keyed off
@@ -358,4 +358,3 @@ void arwingandrossstuff_release(void)
 void arwingandrossstuff_initialise(void)
 {
 }
-
