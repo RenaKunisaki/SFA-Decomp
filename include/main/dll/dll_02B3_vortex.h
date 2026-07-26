@@ -44,15 +44,6 @@ STATIC_ASSERT(offsetof(VortexSetup, reverseTextureScroll) == 0x1c);
 STATIC_ASSERT(offsetof(VortexSetup, invertGameBit) == 0x1e);
 STATIC_ASSERT(offsetof(VortexSetup, activeGameBit) == 0x20);
 
-extern f32 lbl_803E73E0;
-extern const f32 lbl_803E73D0;
-extern f32 lbl_803E73D4;
-extern f32 lbl_803E73D8;
-extern const f32 gVortexRadiusParamScale;
-extern f32 lbl_803E73E4;
-extern const f32 lbl_803E73E8;
-extern const f32 lbl_803E73EC;
-extern f32 gVortexAlphaFadeSpeed;
 extern s16 gVortexAngleSpeed83D[4];
 extern s16 gVortexAngleSpeedDefault[4];
 extern s16 gVortexAngleSpeed835[2];
@@ -61,7 +52,6 @@ extern f32 gVortexScaleParams[4][3];
 extern f32 gVortexRadiusScaleInit[2];
 extern f32 gVortexAlphaScaleInit835[2];
 extern f32 gVortexAlphaScaleInit838[2];
-extern f32 lbl_803E7404;
 
 int Vortex_getExtraSize(void);
 int Vortex_getObjectTypeId(void);

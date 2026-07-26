@@ -734,7 +734,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B0 | BrokenPipe | RAW | dlls/objects/688_BrokenPipe/BrokenPipe.c | = (canonical) | Exact complete three-function TU with its terminal descriptor and full constant pool |
 | 0x2B1 | CmbSrc | RAW | dlls/objects/689_CmbSrc/CmbSrc.c | = (canonical) | DOL-confirmed sixteen-function TU with its color tables, terminal descriptor, and full data/constant pools; sibling names remain object aliases |
 | 0x2B2 | DustMoteSou | RAW | dlls/objects/690_DustMoteSou/DustMoteSou.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full 8-byte constant pool; `TailLightSo` and `FireWorkSou` remain object aliases, while the following constant pool belongs to DLL 691 |
-| 0x2B3 | vortex (+SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | GUESSED | main/dll/dll_02B3_vortex.c | = (canonical) | — |
+| 0x2B3 | — | NO-RETAIL-NAME | dlls/objects/691/691.c | = (canonical) | DOL-confirmed nine-function TU with its Vortex tables, terminal descriptor, and full exact `0x803E73D0..0x803E7408` constant pool; Vortex-family names remain internal object identities, and clean constant ownership leaves the unit 99.558% fuzzy with 7/9 functions exact |
 | 0x2B4 | CNTcounter | COMPLETE | main/dll/dll_02B4_cntcounter.c | = (canonical) | — |
 | 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | main/dll/dll_02B5_timer.c | = (canonical) | — |
 | 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | main/dll/dll_02B6_cnthitobjec.c | = (canonical) | — |
