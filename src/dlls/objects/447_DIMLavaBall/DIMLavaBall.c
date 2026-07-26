@@ -1,26 +1,24 @@
 /*
- * dimlavaball (DLL 0x1BF) - DIM lava-ball cannon proxy; manages the spawned
+ * DIMLavaBall (DLL 0x1BF) - DIM lava-ball cannon proxy; manages the spawned
  * 0x18D lava-ball sub-object, controls its fire period and game-bit gate,
  * and relaunches it on each fire cycle.
  */
-#include "main/vecmath.h"
 #include "main/dll/lavaball1bfstate_struct.h"
 #include "main/frame_timing.h"
 #include "main/objseq.h"
 #include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
-
-#define DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define DIMLAVABALL_OBJFLAG_HIDDEN             0x4000
-
-/* Lava-ball sub-object id spawned by lavaball1bf_update (docblock: "the 0x18D lava-ball sub-object"). */
-#define DIMLAVABALL_SUBOBJ_ID 0x18d
-
 #include "game/objects/object_setup.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/gamebits.h"
+
+#define DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define DIMLAVABALL_OBJFLAG_HIDDEN             0x4000
+
+/* Lava-ball sub-object spawned by lavaball1bf_update. */
+#define DIMLAVABALL_SUBOBJ_ID 0x18d
 
 typedef struct Lavaball1bfPlacement
 {
@@ -54,12 +52,6 @@ STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
 
 extern f32 lbl_803E4810;
 extern f32 lbl_803E4814;
-
-static inline int* DIMcannon_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
-}
 
 void lavaball1bf_clearPending(int* obj)
 {
