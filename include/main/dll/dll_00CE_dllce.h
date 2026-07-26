@@ -3,14 +3,14 @@
 
 #include "game/objects/object.h"
 
-void chukChuk_updateTargeting(int obj, int state, int target);
+void chukChuk_updateTargeting(GameObject* obj, int state, int target);
 void chukChuk_acquireTarget(GameObject* obj, int state, int target);
 void dll_CE_func0B(GameObject* obj, int v);
-s16 dll_CE_setScale(int* obj);
+s16 dll_CE_setScale(GameObject* obj);
 int dll_CE_getExtraSize_ret_1052(void);
 int dll_CE_getObjectTypeId(void);
-void dll_CE_free(int* obj);
-void dll_CE_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void dll_CE_free(GameObject* obj);
+void dll_CE_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 visible);
 void dll_CE_hitDetect_nop(void);
 void dll_CE_update(GameObject* obj, int unusedA, int unusedB);
 void dll_CE_init(GameObject* obj, u8* def, int flags);

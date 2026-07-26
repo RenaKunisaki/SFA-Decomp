@@ -125,7 +125,7 @@ void iceBaddie_installStateHandlers(void)
     gIceBaddieStateHandlersB[6] = iceBaddie_stateHandlerB06;
     gIceBaddieStateHandlersB[7] = iceBaddie_stateHandlerB07;
 }
-int chukChuk_checkChooseAttackState(int obj, GroundBaddieState* state)
+int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state)
 {
     int count;
     int i;
@@ -137,12 +137,12 @@ int chukChuk_checkChooseAttackState(int obj, GroundBaddieState* state)
     int result;
     int rnd;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     if (*(char*)&state->baddie.moveDone != '\0' || *(char*)&state->baddie.moveJustStartedB != '\0')
     {
         hit = *(u8**)&sub->control;
         result = (*gBaddieControlInterface)
-                     ->shouldDropTarget((GameObject*)obj, state, (f32)(u32)sub->aggroRange, 1);
+                     ->shouldDropTarget(obj, state, (f32)(u32)sub->aggroRange, 1);
         if (result != 0)
         {
             hit[9] &= ~2;
@@ -199,9 +199,9 @@ int chukChuk_checkChooseAttackState(int obj, GroundBaddieState* state)
     return 0;
 }
 
-int chukChuk_checkSubmergeState(int* obj, GroundBaddieState* state)
+int chukChuk_checkSubmergeState(GameObject* obj, GroundBaddieState* state)
 {
-    GroundBaddieState* sub = ((GameObject*)obj)->extra;
+    GroundBaddieState* sub = obj->extra;
     if ((s8)state->baddie.moveJustStartedB != 0)
     {
         f32 fz;
@@ -216,12 +216,12 @@ int chukChuk_checkSubmergeState(int* obj, GroundBaddieState* state)
     return 0;
 }
 
-int chukChuk_checkYieldState(int* obj, GroundBaddieState* state)
+int chukChuk_checkYieldState(GameObject* obj, GroundBaddieState* state)
 {
     GroundBaddieState* sub;
     if ((s8)state->baddie.moveJustStartedB != 0)
     {
-        sub = ((GameObject*)obj)->extra;
+        sub = obj->extra;
         sub->subMode = 0;
         if (sub->gameBitB != -1)
         {
@@ -259,7 +259,7 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state)
         ObjMsg_SendToObjects(0, 3, obj, 0xe0000, (u32)obj);
         if (obj->anim.placementData == NULL)
         {
-            Obj_FreeObject((GameObject*)obj);
+            Obj_FreeObject(obj);
             return 0;
         }
         return 4;
@@ -267,7 +267,7 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state)
     return 0;
 }
 
-int chukChuk_checkHealthState(int obj, u8* state)
+int chukChuk_checkHealthState(GameObject* obj, u8* state)
 {
     if ((s8)((GroundBaddieState*)state)->baddie.hitPoints < 1)
         return 3;
@@ -276,7 +276,7 @@ int chukChuk_checkHealthState(int obj, u8* state)
     return 0;
 }
 
-int chukChuk_checkTargetState(int* obj, GroundBaddieState* state)
+int chukChuk_checkTargetState(GameObject* obj, GroundBaddieState* state)
 {
     if (*(int**)&state->baddie.targetObj != NULL)
     {
@@ -334,7 +334,7 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state)
     return 0;
 }
 
-int chukChuk_updateAlertState(int* obj, GroundBaddieState* state)
+int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state)
 {
     int* objs;
     int count;
@@ -441,16 +441,16 @@ int chukChuk_updateSpitState(GameObject* obj, int state)
     return 0;
 }
 
-int chukChuk_updateState3(int* obj, GroundBaddieState* state)
+int chukChuk_updateState3(GameObject* obj, GroundBaddieState* state)
 {
     if ((s8)state->baddie.moveJustStartedA != 0)
     {
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DLLCE_HIT_VOLUME_SLOT, 1, -1);
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->objectPairPriority = 10;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->objectPairHitVolume = 1;
-    ObjHits_RegisterActiveHitVolumeObject((GameObject*)obj);
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 10;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
+    ObjHits_RegisterActiveHitVolumeObject(obj);
     state->baddie.moveSpeed = 0.01f;
     if ((s8)state->baddie.moveJustStartedA != 0)
     {
@@ -461,22 +461,22 @@ int chukChuk_updateState3(int* obj, GroundBaddieState* state)
     return 0;
 }
 
-int chukChuk_updateAttackState(short* obj, GroundBaddieState* state)
+int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state)
 {
     int count;
     int i;
     GroundBaddieState* sub;
     int* objs;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     if (*(char*)&state->baddie.moveJustStartedA != '\0')
     {
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DLLCE_HIT_VOLUME_SLOT, 1, -1);
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->objectPairPriority = 10;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->objectPairHitVolume = 1;
-    ObjHits_RegisterActiveHitVolumeObject((GameObject*)obj);
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 10;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
+    ObjHits_RegisterActiveHitVolumeObject(obj);
     if (*(char*)&state->baddie.moveJustStartedA != '\0')
     {
         objs = ObjList_GetObjects(&i, &count);
@@ -680,7 +680,7 @@ void chukChuk_acquireTarget(GameObject* obj, int state, int target)
     }
 }
 
-void chukChuk_updateTargeting(int obj, int state, int target)
+void chukChuk_updateTargeting(GameObject* obj, int state, int target)
 {
     void* player;
     char* targetObj;
@@ -695,25 +695,25 @@ void chukChuk_updateTargeting(int obj, int state, int target)
     targetObj = *(char**)&((GroundBaddieState*)target)->baddie.targetObj;
     if (targetObj != NULL)
     {
-        d.x = ((GameObject*)targetObj)->anim.worldPosX - ((GameObject*)obj)->anim.worldPosX;
-        d.y = ((GameObject*)targetObj)->anim.worldPosY - ((GameObject*)obj)->anim.worldPosY;
-        d.z = ((GameObject*)targetObj)->anim.worldPosZ - ((GameObject*)obj)->anim.worldPosZ;
+        d.x = ((GameObject*)targetObj)->anim.worldPosX - obj->anim.worldPosX;
+        d.y = ((GameObject*)targetObj)->anim.worldPosY - obj->anim.worldPosY;
+        d.z = ((GameObject*)targetObj)->anim.worldPosZ - obj->anim.worldPosZ;
         ((GroundBaddieState*)target)->baddie.targetDistance = sqrtf(d.z * d.z + (d.x * d.x + d.y * d.y));
     }
 
     if ((((GroundBaddieState*)state)->configFlags & 0x20) == 0)
     {
         (*gBaddieControlInterface)
-            ->pollCameraTarget((GameObject*)obj, (void*)target, &((GroundBaddieState*)state)->flags400, 2, 3,
+            ->pollCameraTarget(obj, (void*)target, &((GroundBaddieState*)state)->flags400, 2, 3,
                                ((GroundBaddieState*)state)->soundIdA, ((GroundBaddieState*)state)->soundIdB);
     }
 
     (*gBaddieControlInterface)
-        ->processMessages((GameObject*)obj, (void*)target, (void*)(state + 0x35c),
+        ->processMessages(obj, (void*)target, (void*)(state + 0x35c),
                           ((GroundBaddieState*)state)->gameBitB, NULL, 0, 0, 8);
 
     result = (*gBaddieControlInterface)
-                 ->updateHitReaction((GameObject*)obj, (void*)target, (char*)state + 0x35c,
+                 ->updateHitReaction(obj, (void*)target, (char*)state + 0x35c,
                                      ((GroundBaddieState*)state)->gameBitB, (int*)lbl_8031FEA8, lbl_8031FF20, 1,
                                      lbl_803AC580);
 
@@ -744,9 +744,9 @@ void dll_CE_func0B(GameObject* obj, int v)
     }
 }
 
-s16 dll_CE_setScale(int* obj)
+s16 dll_CE_setScale(GameObject* obj)
 {
-    return ((BaddieState*)((GameObject*)obj)->extra)->controlMode;
+    return ((BaddieState*)obj->extra)->controlMode;
 }
 
 int dll_CE_getExtraSize_ret_1052(void)
@@ -759,28 +759,28 @@ int dll_CE_getObjectTypeId(void)
     return 0x49;
 }
 
-void dll_CE_free(int* obj)
+void dll_CE_free(GameObject* obj)
 {
-    GroundBaddieState* state = ((GameObject*)obj)->extra;
+    GroundBaddieState* state = obj->extra;
     ObjGroup_RemoveObject((int)obj, DLLCE_OBJGROUP);
     {
-        int* sub = ((GameObject*)obj)->childObjs[0];
+        int* sub = obj->childObjs[0];
         if (sub != NULL)
         {
             Obj_FreeObject((GameObject*)sub);
-            ((GameObject*)obj)->childObjs[0] = NULL;
+            obj->childObjs[0] = NULL;
         }
     }
-    (*gBaddieControlInterface)->releaseState((GameObject*)obj, state, 32);
+    (*gBaddieControlInterface)->releaseState(obj, state, 32);
 }
 
-void dll_CE_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void dll_CE_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    GroundBaddieState* sub = ((GameObject*)obj)->extra;
+    GroundBaddieState* sub = obj->extra;
     f32 alpha;
     f32 zero = 0.0f;
 
-    if (visible == 0 || ((GameObject*)obj)->userData1 != 0 || sub->targetState == 0)
+    if (visible == 0 || obj->userData1 != 0 || sub->targetState == 0)
     {
         return;
     }
@@ -789,7 +789,7 @@ void dll_CE_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
     {
         fn_8003B5E0(200, 0, 0, alpha);
     }
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void dll_CE_hitDetect_nop(void)
@@ -841,7 +841,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB)
         }
         else
         {
-            chukChuk_updateTargeting((int)obj, (int)sub, (int)sub);
+            chukChuk_updateTargeting(obj, (int)sub, (int)sub);
             if (sub->targetState == 0)
             {
                 chukChuk_acquireTarget(obj, (int)sub, (int)sub);
