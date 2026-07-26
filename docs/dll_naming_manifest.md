@@ -634,7 +634,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x24C | BossDrakor__free | CONFIRMED | dlls/objects/588_BossDrakor_/BossDrakor_.c | = (canonical) | Descriptor data only; carved from the trailing 0x30 bytes of DLL 0x24E's former .data split |
 | 0x24D | BossDrakor | COMPLETE | dlls/objects/589_BossDrakor/BossDrakor.c | = (canonical) | Descriptor precedes handleActionEvent so its compiler-generated jump table follows the descriptor in retail .data order |
 | 0x24E | — | NO-RETAIL-NAME | dlls/objects/590/590.c | = (canonical) | Internal gDrakorDThornBushObjDescriptor symbol retained; no retail basename recovered |
-| 0x24F | KT_RexLevel | CONFIRMED | main/dll/dll_024F_ktrexlevel.c | main/dll/DR/dll_024F_ktrexlevel.c | — |
+| 0x24F | KT_RexLevel | CONFIRMED | dlls/objects/591_KT_RexLevel/KT_RexLevel.c | = (canonical) | — |
 | 0x250 | KT_Rex | COMPLETE | main/dll/dll_0250_ktrex.c | main/dll/DR/dll_0250_ktrex.c | — |
 | 0x251 | KT_RexFloorswitch | CONFIRMED | main/dll/dll_0251_ktrexfloorswitch.c | main/dll/DR/dll_0251_ktrexfloorswitch.c | — |
 | 0x252 | KT_Lazerwall | CONFIRMED | main/dll/dll_0252_ktlazerwall.c | main/dll/DR/dll_0252_ktlazerwall.c | — |
