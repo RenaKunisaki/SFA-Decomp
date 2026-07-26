@@ -2085,7 +2085,7 @@ dlls/objects/299_FXEmit/FXEmit.c:
 	.data       start:0x80321F38 end:0x80321F7C
 	.sdata2     start:0x803E3E48 end:0x803E3E60
 
-main/dll/dll_0130_areafxemit.c:
+dlls/objects/304_AreaFXEmit/AreaFXEmit.c:
 	.text       start:0x8018F148 end:0x8018FF28
 	.data       start:0x80321F80 end:0x80321FB8
 	.sdata2     start:0x803E3E60 end:0x803E3E74

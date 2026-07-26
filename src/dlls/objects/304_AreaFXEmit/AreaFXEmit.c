@@ -1,5 +1,5 @@
 /*
- * areafxemit (DLL 0x130) - a proximity particle-effect emitter object.
+ * AreaFXEmit (DLL 0x130) - a proximity particle-effect emitter object.
  *
  * Each tick AreaFxEmit_update measures the distance from the emitter to
  * the player; once inside state->triggerRadius (a sentinel radius means
