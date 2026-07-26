@@ -79,6 +79,12 @@ void spdrape_hitDetect(void)
 {
 }
 
+static void spdrape_close(GameObject* obj)
+{
+    SpdrapeState* state = (obj)->extra;
+    ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_CLOSE], 0.0f, 0);
+}
+
 void spdrape_update(GameObject* obj)
 {
     SpdrapeState* state;
