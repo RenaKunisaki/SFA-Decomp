@@ -3349,8 +3349,12 @@ main/light.c:
 	.data       start:0x80329088 end:0x803291D8
 
 main/main.c:
-	.text       start:0x801FD4A8 end:0x801FE118
-	.data       start:0x803291D8 end:0x803292B8
+	.text       start:0x801FD4A8 end:0x801FDBBC
+	.data       start:0x803291D8 end:0x80329248
+
+main/main_lavastar.c:
+	.text       start:0x801FDBBC end:0x801FE118
+	.data       start:0x80329248 end:0x803292B8
 
 dlls/objects/575_DB_egg/DB_egg.c:
 	.text       start:0x801FE118 end:0x801FF884

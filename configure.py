@@ -1191,6 +1191,7 @@ config.libs = [
             Object(NonMatching, "main/objhits.c", cflags=cflags_dll_noopt_noautoinline_level3),
             Object(NonMatching, "main/light.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/main.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "main/main_lavastar.c", cflags=cflags_dll_noopt),
             Object(Matching, "dlls/objects/575_DB_egg/DB_egg.c", cflags=cflags_dll_noopt_noloopinv),
             Object(MatchingFor("GSAE01"), "dlls/objects/576_GCRobotBlas/GCRobotBlas.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/577_DrakorEnerg/DrakorEnerg.c", cflags=cflags_dll_noopt),
