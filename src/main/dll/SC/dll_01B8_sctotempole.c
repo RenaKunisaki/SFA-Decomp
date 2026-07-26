@@ -172,20 +172,19 @@ void sc_totempole_initialise(void)
 {
 }
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-ObjectDescriptor gSC_CloudrunnerAObjDescriptor = {
+ObjectDescriptor gSC_totempoleObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)sc_cloudrunnera_initialise,
-    (ObjectDescriptorCallback)sc_cloudrunnera_release,
+    (ObjectDescriptorCallback)sc_totempole_initialise,
+    (ObjectDescriptorCallback)sc_totempole_release,
     0,
-    (ObjectDescriptorCallback)sc_cloudrunnera_init,
-    (ObjectDescriptorCallback)sc_cloudrunnera_update,
-    (ObjectDescriptorCallback)sc_cloudrunnera_hitDetect,
-    (ObjectDescriptorCallback)sc_cloudrunnera_render,
-    (ObjectDescriptorCallback)sc_cloudrunnera_free,
-    (ObjectDescriptorCallback)sc_cloudrunnera_getObjectTypeId,
-    sc_cloudrunnera_getExtraSize,
+    (ObjectDescriptorCallback)sc_totempole_init,
+    (ObjectDescriptorCallback)sc_totempole_update,
+    (ObjectDescriptorCallback)sc_totempole_hitDetect,
+    (ObjectDescriptorCallback)sc_totempole_render,
+    (ObjectDescriptorCallback)sc_totempole_free,
+    (ObjectDescriptorCallback)sc_totempole_getObjectTypeId,
+    sc_totempole_getExtraSize,
 };

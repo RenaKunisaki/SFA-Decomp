@@ -6,6 +6,7 @@
  * effect through fn_80098B18; update() frees the object once its
  * animation has been hidden.
  */
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "main/objfx.h"
 #include "sys/objects/lifecycle.h"
@@ -29,3 +30,20 @@ void SH_StaffHaze_update(GameObject* obj)
         Obj_FreeObject(obj);
     }
 }
+
+ObjectDescriptor gSH_staffHazeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SH_StaffHaze_update,
+    0,
+    (ObjectDescriptorCallback)SH_StaffHaze_render,
+    0,
+    0,
+    0,
+};

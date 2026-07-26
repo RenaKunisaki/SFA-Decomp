@@ -1,4 +1,5 @@
 /* DLL 0x01B9 (sccloudrunnera) - SC CloudRunner A level control [0x801DCC70-0x801DD170). */
+#include "dlls/object_descriptor.h"
 #include "main/dll/SC/dll_01B9_sccloudrunnera.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_legacy_api.h"
@@ -239,3 +240,20 @@ void sc_cloudrunnera_release(void)
 void sc_cloudrunnera_initialise(void)
 {
 }
+
+ObjectDescriptor gSC_CloudrunnerAObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)sc_cloudrunnera_initialise,
+    (ObjectDescriptorCallback)sc_cloudrunnera_release,
+    0,
+    (ObjectDescriptorCallback)sc_cloudrunnera_init,
+    (ObjectDescriptorCallback)sc_cloudrunnera_update,
+    (ObjectDescriptorCallback)sc_cloudrunnera_hitDetect,
+    (ObjectDescriptorCallback)sc_cloudrunnera_render,
+    (ObjectDescriptorCallback)sc_cloudrunnera_free,
+    (ObjectDescriptorCallback)sc_cloudrunnera_getObjectTypeId,
+    sc_cloudrunnera_getExtraSize,
+};

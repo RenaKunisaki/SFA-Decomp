@@ -2952,43 +2952,49 @@ dlls/objects/431_SH_swaplift/SH_swaplift.c:
 	.data       start:0x803277A8 end:0x803277E0
 	.sdata      start:0x803DC058 end:0x803DC060
 
-main/dll/SH/dll_01B1_shstaff.c:
+dlls/objects/433_SH_staff/SH_staff.c:
 	.text       start:0x801D9B1C end:0x801DA8C4
-	.data       start:0x803277E0 end:0x803279A8
+	.data       start:0x803277E0 end:0x8032784C
 	.sdata2     start:0x803E5500 end:0x803E5518
 
 main/dll/SH/dll_01B2_shstaffhaze.c:
 	.text       start:0x801DA8C4 end:0x801DA954
+	.data       start:0x80327850 end:0x80327888
 	.sdata2     start:0x803E5518 end:0x803E5524
 
 main/dll/SH/dll_01B3_shbeacon.c:
 	.text       start:0x801DA954 end:0x801DAFA4
+	.data       start:0x80327888 end:0x803278C0
 	.sbss       start:0x803DDBF8 end:0x803DDC00
 	.sdata2     start:0x803E5528 end:0x803E5540
 
 main/dll/SH/dll_01B4_shemptytumblew.c:
 	.text       start:0x801DAFA4 end:0x801DB098
+	.data       start:0x803278C0 end:0x803278F8
 	.sbss       start:0x803DDC00 end:0x803DDC08
 	.sdata2     start:0x803E5540 end:0x803E554C
 
 main/dll/SC/dll_01B6_sclevelcontrol.c:
 	.text       start:0x801DB098 end:0x801DBFA0
+	.data       start:0x803278F8 end:0x80327938
 	.sdata      start:0x803DC060 end:0x803DC068
 	.sdata2     start:0x803E5550 end:0x803E5584
 
 main/dll/SC/dll_01B7_scmusictree.c:
 	.text       start:0x801DBFA0 end:0x801DC8D4
+	.data       start:0x80327938 end:0x80327970
 	.sdata2     start:0x803E5588 end:0x803E55D0
 
 main/dll/SC/dll_01B8_sctotempole.c:
 	.text       start:0x801DC8D4 end:0x801DCC70
-	.data       start:0x803279A8 end:0x80327A18
+	.data       start:0x80327970 end:0x803279E0
 	.sdata      start:0x803DC068 end:0x803DC070
 	.sbss       start:0x803DDC08 end:0x803DDC10
 	.sdata2     start:0x803E55D0 end:0x803E55E0
 
 main/dll/SC/dll_01B9_sccloudrunnera.c:
 	.text       start:0x801DCC70 end:0x801DD170
+	.data       start:0x803279E0 end:0x80327A18
 	.sdata2     start:0x803E55E0 end:0x803E55F0
 
 main/dll/dll_801dd170.c:

@@ -15,20 +15,31 @@
  * flames, and ends the player's carry.
  */
 #include "dlls/object_descriptor.h"
-#include "main/dll/SH/dll_01B1_shstaff.h"
+#include "dolphin/mtx/mtx_legacy.h"
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
-#include "main/object_render.h"
-#include "main/obj_group.h"
-#include "main/obj_trigger.h"
-#include "main/vecmath.h"
+#include "game/objects/object_setup.h"
+#include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/DR/DRearthwalk.h"
+#include "main/dll/DR/shstaff_state.h"
+#include "main/dll/SH/dll_01B1_shstaff.h"
 #include "main/dll/player_objects.h"
 #include "main/dll/player_staff_api.h"
-#include "main/dll/SC/dll_01B6_sclevelcontrol.h"
-#include "main/dll/SC/dll_01B7_scmusictree.h"
-#include "main/dll/SC/dll_01B8_sctotempole.h"
+#include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebits.h"
+#include "main/map_load.h"
+#include "main/obj_group.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
+#include "main/object_render.h"
+#include "main/objprint_render_api.h"
+#include "main/objseq.h"
+#include "main/obj_trigger.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 /* ShStaffState.phase pickup / carry state machine (see file header) */
 #define SHSTAFF_PHASE_IDLE           0     /* wait for the staff object / acquired game bit */
@@ -40,23 +51,6 @@
 #define SHSTAFF_PHASE_DONE           6     /* deactivated */
 #define SHSTAFF_CHILD_OBJ_HAZE_FLAME 0x659 /* staff-haze child flame (SH_StaffHaze_update), spawned by sh_staff_SeqFn */
 #define SHSTAFF_TARGET_OBJGROUP      0xf   /* player-target group; the nearest object gets the pickup sequence */
-
-ObjectDescriptor gSH_staffObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)sh_staff_update,
-    0,
-    (ObjectDescriptorCallback)sh_staff_render,
-    (ObjectDescriptorCallback)sh_staff_free,
-    0,
-    sh_staff_getExtraSize,
-};
 
 int sh_staff_getExtraSize(void)
 {
@@ -82,24 +76,6 @@ void sh_staff_free(int* obj, int flag)
         }
     }
 }
-
-#include "main/dll/DR/DRearthwalk.h"
-#include "game/objects/object_setup.h"
-#include "main/game_ui_interface.h"
-#include "main/objhits.h"
-#include "main/objseq.h"
-#include "main/dll/DR/shstaff_state.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
-#include "main/dll/tricky_api.h"
-#include "main/obj_path.h"
-#include "main/objprint_render_api.h"
-#include "main/map_load.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/SH/dll_01B2_shstaffhaze.h"
-#include "main/dll/SH/dll_01B4_shemptytumblew.h"
-#include "dolphin/mtx/mtx_legacy.h"
-#include "main/dll/SH/dll_01B3_shbeacon.h"
 
 #define SH_STAFF_FADE_OUT_TIMER_INIT 1500.0f
 #define SH_STAFF_FIZZ_SFX_TIMER_INIT 0.9f
@@ -481,33 +457,33 @@ void sh_staff_update(GameObject* obj)
     {
         if (player != NULL && Player_GetStaffObject(player) != NULL)
         {
-        if (mainGetBit(GAMEBIT_STAFF_ACQUIRED) != 0)
-        {
-            sh_staff_deactivate(obj, (obj)->extra, 0);
-        }
-        else
-        {
-            int loadResult;
-            staffToggle((GameObject*)player, 0);
-            ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, lbl_803E54D0);
-            (obj)->anim.rotY = (s16)(setup->rotYByte << 8);
-            (obj)->anim.rotZ = (s16)(setup->rotZByte << 8);
-            (obj)->animEventCallback = sh_staff_SeqFn;
-            state->phase = SHSTAFF_PHASE_ARMED;
-            if (Obj_IsLoadingLocked() == 0)
+            if (mainGetBit(GAMEBIT_STAFF_ACQUIRED) != 0)
             {
-                loadResult = 0;
+                sh_staff_deactivate(obj, (obj)->extra, 0);
             }
             else
             {
-                ObjPlacement* newSetup = Obj_AllocObjectSetup(0x20, SHSTAFF_CHILD_OBJ_HAZE_FLAME);
-                newSetup->color[0] = 2;
-                newSetup->color[3] = 0xff;
-                loadResult = (int)loadObjectAtObject(obj, newSetup);
+                int loadResult;
+                staffToggle((GameObject*)player, 0);
+                ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, lbl_803E54D0);
+                (obj)->anim.rotY = (s16)(setup->rotYByte << 8);
+                (obj)->anim.rotZ = (s16)(setup->rotZByte << 8);
+                (obj)->animEventCallback = sh_staff_SeqFn;
+                state->phase = SHSTAFF_PHASE_ARMED;
+                if (Obj_IsLoadingLocked() == 0)
+                {
+                    loadResult = 0;
+                }
+                else
+                {
+                    ObjPlacement* newSetup = Obj_AllocObjectSetup(0x20, SHSTAFF_CHILD_OBJ_HAZE_FLAME);
+                    newSetup->color[0] = 2;
+                    newSetup->color[3] = 0xff;
+                    loadResult = (int)loadObjectAtObject(obj, newSetup);
+                }
+                state->slots[0] = loadResult;
+                state->sfxTimer = SH_STAFF_FIZZ_SFX_TIMER_INIT;
             }
-            state->slots[0] = loadResult;
-            state->sfxTimer = SH_STAFF_FIZZ_SFX_TIMER_INIT;
-        }
         }
     }
     else if (mode == SHSTAFF_PHASE_ARMED)
@@ -563,8 +539,7 @@ void sh_staff_update(GameObject* obj)
     }
 }
 
-/* descriptor/ptr table auto 0x8032784c-0x803279a8 */
-ObjectDescriptor gSH_staffHazeObjDescriptor __attribute__((aligned(8))) = {
+ObjectDescriptor gSH_staffObjDescriptor = {
     0,
     0,
     0,
@@ -573,92 +548,10 @@ ObjectDescriptor gSH_staffHazeObjDescriptor __attribute__((aligned(8))) = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)SH_StaffHaze_update,
+    (ObjectDescriptorCallback)sh_staff_update,
     0,
-    (ObjectDescriptorCallback)SH_StaffHaze_render,
+    (ObjectDescriptorCallback)sh_staff_render,
+    (ObjectDescriptorCallback)sh_staff_free,
     0,
-    0,
-    0,
-};
-ObjectDescriptor gSH_BeaconObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)sh_beacon_init,
-    (ObjectDescriptorCallback)sh_beacon_update,
-    0,
-    0,
-    (ObjectDescriptorCallback)sh_beacon_free,
-    0,
-    sh_beacon_getExtraSize,
-};
-ObjectDescriptor gSH_EmptyTumbleWObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)SH_EmptyTumbleW_init,
-    (ObjectDescriptorCallback)SH_EmptyTumbleW_update,
-    0,
-    0,
-    0,
-    0,
-    0,
-};
-ObjectDescriptor12 gSC_levelcontrolObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
-    (ObjectDescriptorCallback)sc_levelcontrol_initialise,
-    (ObjectDescriptorCallback)sc_levelcontrol_release,
-    0,
-    (ObjectDescriptorCallback)sc_levelcontrol_init,
-    (ObjectDescriptorCallback)sc_levelcontrol_update,
-    (ObjectDescriptorCallback)sc_levelcontrol_hitDetect,
-    (ObjectDescriptorCallback)sc_levelcontrol_render,
-    (ObjectDescriptorCallback)sc_levelcontrol_free,
-    (ObjectDescriptorCallback)sc_levelcontrol_getObjectTypeId,
-    sc_levelcontrol_getExtraSize,
-    (ObjectDescriptorCallback)sc_levelcontrol_applyAnimEventState,
-    (ObjectDescriptorCallback)sc_levelcontrol_getAnimEventState,
-};
-ObjectDescriptor gSC_MusicTreeObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)sc_musictree_initialise,
-    (ObjectDescriptorCallback)sc_musictree_release,
-    0,
-    (ObjectDescriptorCallback)sc_musictree_init,
-    (ObjectDescriptorCallback)sc_musictree_update,
-    (ObjectDescriptorCallback)sc_musictree_hitDetect,
-    (ObjectDescriptorCallback)sc_musictree_render,
-    (ObjectDescriptorCallback)sc_musictree_free,
-    (ObjectDescriptorCallback)sc_musictree_getObjectTypeId,
-    sc_musictree_getExtraSize,
-};
-ObjectDescriptor gSC_totempoleObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)sc_totempole_initialise,
-    (ObjectDescriptorCallback)sc_totempole_release,
-    0,
-    (ObjectDescriptorCallback)sc_totempole_init,
-    (ObjectDescriptorCallback)sc_totempole_update,
-    (ObjectDescriptorCallback)sc_totempole_hitDetect,
-    (ObjectDescriptorCallback)sc_totempole_render,
-    (ObjectDescriptorCallback)sc_totempole_free,
-    (ObjectDescriptorCallback)sc_totempole_getObjectTypeId,
-    sc_totempole_getExtraSize,
+    sh_staff_getExtraSize,
 };

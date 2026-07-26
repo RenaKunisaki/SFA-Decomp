@@ -8,6 +8,7 @@
  * and sets its progress game bit. The placement carries the lit/ignite
  * game-bit ids.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/beaconflags_types.h"
 #include "main/dll/SH/dll_01B3_shbeacon.h"
 #include "game/objects/object_setup.h"
@@ -254,3 +255,20 @@ void sh_beacon_init(GameObject* obj, int defData)
 
     (obj)->animEventCallback = sh_beacon_SeqFn;
 }
+
+ObjectDescriptor gSH_BeaconObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)sh_beacon_init,
+    (ObjectDescriptorCallback)sh_beacon_update,
+    0,
+    0,
+    (ObjectDescriptorCallback)sh_beacon_free,
+    0,
+    sh_beacon_getExtraSize,
+};

@@ -5,6 +5,7 @@
  * at the Ocean Force Point), mode 2->6 when 0x2d0 is set (totem-bond ceremony
  * complete). Chief/MuscleFoot/throne require mode >=3. Also resets the four
  * totem-pole bits (0x81-0x84) on entry and runs the area fog/music/timers. */
+#include "dlls/object_descriptor.h"
 #include "main/dll/sclevelcontrolstate_types.h"
 #include "main/dll/savegame_load_api.h"
 #include "main/game_timer_control_api.h"
@@ -561,3 +562,22 @@ void sc_levelcontrol_release(void)
 void sc_levelcontrol_initialise(void)
 {
 }
+
+ObjectDescriptor12 gSC_levelcontrolObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
+    (ObjectDescriptorCallback)sc_levelcontrol_initialise,
+    (ObjectDescriptorCallback)sc_levelcontrol_release,
+    0,
+    (ObjectDescriptorCallback)sc_levelcontrol_init,
+    (ObjectDescriptorCallback)sc_levelcontrol_update,
+    (ObjectDescriptorCallback)sc_levelcontrol_hitDetect,
+    (ObjectDescriptorCallback)sc_levelcontrol_render,
+    (ObjectDescriptorCallback)sc_levelcontrol_free,
+    (ObjectDescriptorCallback)sc_levelcontrol_getObjectTypeId,
+    sc_levelcontrol_getExtraSize,
+    (ObjectDescriptorCallback)sc_levelcontrol_applyAnimEventState,
+    (ObjectDescriptorCallback)sc_levelcontrol_getAnimEventState,
+};

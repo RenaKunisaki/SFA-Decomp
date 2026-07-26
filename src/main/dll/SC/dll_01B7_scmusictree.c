@@ -1,4 +1,5 @@
 /* DLL 0x01B7 - SC music-tree objects [801DBFA0-801DC310) */
+#include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
@@ -425,3 +426,20 @@ void sc_musictree_release(void)
 void sc_musictree_initialise(void)
 {
 }
+
+ObjectDescriptor gSC_MusicTreeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)sc_musictree_initialise,
+    (ObjectDescriptorCallback)sc_musictree_release,
+    0,
+    (ObjectDescriptorCallback)sc_musictree_init,
+    (ObjectDescriptorCallback)sc_musictree_update,
+    (ObjectDescriptorCallback)sc_musictree_hitDetect,
+    (ObjectDescriptorCallback)sc_musictree_render,
+    (ObjectDescriptorCallback)sc_musictree_free,
+    (ObjectDescriptorCallback)sc_musictree_getObjectTypeId,
+    sc_musictree_getExtraSize,
+};

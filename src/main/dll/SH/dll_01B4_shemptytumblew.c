@@ -5,6 +5,7 @@
  * volume scaled by the model's root-motion scale; update just polls the
  * shared priority hit-effect handler each frame.
  */
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/objhits.h"
@@ -34,3 +35,19 @@ void SH_EmptyTumbleW_init(s16* obj, ShEmptyTumblewPlacement* def)
     ((GameObject*)obj)->objectFlags |= SHEMPTYTUMBLEW_OBJFLAG_HIDDEN;
 }
 
+ObjectDescriptor gSH_EmptyTumbleWObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SH_EmptyTumbleW_init,
+    (ObjectDescriptorCallback)SH_EmptyTumbleW_update,
+    0,
+    0,
+    0,
+    0,
+    0,
+};

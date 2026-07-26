@@ -393,7 +393,7 @@ Other concrete matches:
     hence the WM dll ...)"` — matches wiki's Krazoa Palace ⇐ Warlock Mountain.
   - `src/main/dll/SB/dll_01E8_sbgalleon.c:2-4`: `"SB" is the retail map name "ShipBattle"` — matches
     wiki's map `00`/dir `shipbattle`.
-  - `src/dlls/objects/429_SH_thorntai/SH_thorntai.c:2`, `src/main/dll/SH/dll_01B1_shstaff.c:4`: ThornTail Hollow
+  - `src/dlls/objects/429_SH_thorntai/SH_thorntai.c:2`, `src/dlls/objects/433_SH_staff/SH_staff.c:4`: ThornTail Hollow
     naming, matching wiki's ThornTail Hollow ⇐ SwapStone Hollow (dir `swaphol`).
 - **DLL-directory prefixes that resolve to a map in this list** (verified via in-file comment text,
   not just directory-name guessing): `SB` → `shipbattle` (map `00`/`frontend`), `WM` → `warlock` (map
