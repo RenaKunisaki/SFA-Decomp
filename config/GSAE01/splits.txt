@@ -2532,7 +2532,7 @@ dlls/objects/452_DIMIceWall/DIMIceWall.c:
 	.data       start:0x803253D0 end:0x80325408
 	.sdata2     start:0x803E4880 end:0x803E4898
 
-main/dll/DIM/dll_01C5_dimbarrier.c:
+dlls/objects/453_DIMBarrier/DIMBarrier.c:
 	.text       start:0x801B1B40 end:0x801B1D84
 	.data       start:0x80325408 end:0x80325440
 	.sdata2     start:0x803E4898 end:0x803E489C

@@ -1,5 +1,5 @@
 /*
- * dimbarrier (DLL 0x1C5) - barrier object for Dinosaur Island Mission.
+ * DIMBarrier (DLL 0x1C5) - barrier object for Dinosaur Island Mission.
  * While a live type-470 object is in the trigger list, counts down an arm
  * timer; on expiry fades the barrier out and latches its gamebit.
  */
@@ -47,17 +47,27 @@ STATIC_ASSERT(sizeof(DimbarrierState) == 0x4);
 STATIC_ASSERT(offsetof(DimbarrierTriggerState, active) == 0x4);
 
 
-int dimbarrier_getExtraSize(void) { return sizeof(DimbarrierState); }
-int dimbarrier_getObjectTypeId(void) { return 0x0; }
+int dimbarrier_getExtraSize(void)
+{
+    return sizeof(DimbarrierState);
+}
+
+int dimbarrier_getObjectTypeId(void)
+{
+    return 0x0;
+}
 
 void dimbarrier_free(void)
 {
 }
 
-void dimbarrier_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dimbarrier_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dimbarrier_hitDetect(void)
