@@ -3047,7 +3047,7 @@ dlls/objects/491_SB_ShipMast/SB_ShipMast.c:
 	.data       start:0x80327CF8 end:0x80327D30
 	.sdata2     start:0x803E5868 end:0x803E5888
 
-main/dll/SB/dll_01EC_sbshipgun.c:
+dlls/objects/492_SB_ShipGun/SB_ShipGun.c:
 	.text       start:0x801E341C end:0x801E3D30
 	.data       start:0x80327D30 end:0x80327D68
 	.sdata2     start:0x803E5888 end:0x803E58B0

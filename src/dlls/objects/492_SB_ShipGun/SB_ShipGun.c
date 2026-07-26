@@ -478,7 +478,6 @@ void SB_ShipGun_init(GameObject* obj)
     state->volleyCount = 0;
 }
 
-
 ObjectDescriptor gSB_ShipGunObjDescriptor = {
     0,
     0,

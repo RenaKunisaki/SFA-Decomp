@@ -535,7 +535,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1E9 | SB_Propelle | COMPLETE | dlls/objects/489_SB_Propelle/SB_Propelle.c | = (canonical) | Retail basename is truncated |
 | 0x1EA | SB_ShipHead | COMPLETE | dlls/objects/490_SB_ShipHead/SB_ShipHead.c | = (canonical) | — |
 | 0x1EB | SB_ShipMast | COMPLETE | dlls/objects/491_SB_ShipMast/SB_ShipMast.c | = (canonical) | — |
-| 0x1EC | SB_ShipGun | COMPLETE | main/dll/dll_01EC_sbshipgun.c | main/dll/SB/dll_01EC_sbshipgun.c | — |
+| 0x1EC | SB_ShipGun | COMPLETE | dlls/objects/492_SB_ShipGun/SB_ShipGun.c | = (canonical) | — |
 | 0x1ED | SB_FireBall | CONFIRMED | main/dll/dll_01ED_sbfireball.c | main/dll/SB/dll_01ED_sbfireball.c | — |
 | 0x1EE | SB_CannonBall | CONFIRMED | main/dll/dll_01EE_sbcannonball.c | main/dll/SB/dll_01EE_sbcannonball.c | — |
 | 0x1EF | SB_CloudBall | CONFIRMED | main/dll/dll_01EF_sbcloudball.c | main/dll/SB/dll_01EF_sbcloudball.c | — |
@@ -861,7 +861,7 @@ name was a deliberate choice by a previous carve:
 | 0x1E9 | main/dll/dll_01E9_sbpropeller.c | dlls/objects/489_SB_Propelle/SB_Propelle.c | COMPLETE |
 | 0x1EA | main/dll/dll_01EA_sbshiphead.c | dlls/objects/490_SB_ShipHead/SB_ShipHead.c | COMPLETE |
 | 0x1EB | main/dll/dll_01EB_sbshipmast.c | dlls/objects/491_SB_ShipMast/SB_ShipMast.c | COMPLETE |
-| 0x1EC | main/dll/dll_01EC_sbshipgun.c | main/dll/SB/dll_01EC_sbshipgun.c | COMPLETE |
+| 0x1EC | main/dll/dll_01EC_sbshipgun.c | dlls/objects/492_SB_ShipGun/SB_ShipGun.c | COMPLETE |
 | 0x1ED | main/dll/dll_01ED_sbfireball.c | main/dll/SB/dll_01ED_sbfireball.c | CONFIRMED |
 | 0x1EE | main/dll/dll_01EE_sbcannonball.c | main/dll/SB/dll_01EE_sbcannonball.c | CONFIRMED |
 | 0x1EF | main/dll/dll_01EF_sbcloudball.c | main/dll/SB/dll_01EF_sbcloudball.c | CONFIRMED |
