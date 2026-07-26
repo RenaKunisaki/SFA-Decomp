@@ -526,7 +526,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1E0 | DIM_Boss | COMPLETE | dlls/objects/480_DIM_Boss/DIM_Boss.c | = (canonical) | — |
 | 0x1E1 | DIM_BossGut | COMPLETE | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | = (canonical) | — |
 | 0x1E2 | DIM_BossTon | COMPLETE | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | = (canonical) | Retail basename is truncated |
-| 0x1E3 | DIM_BossGut2 | CONFIRMED | main/dll/dll_01E3_dimbossgut2.c | main/dll/DIM/dll_01E3_dimbossgut2.c | — |
+| 0x1E3 | DIM_BossGut | COMPLETE | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | = (canonical) | Retail basename is truncated |
 | 0x1E4 | MAGICMaker | COMPLETE | main/dll/dll_01E4_magicmaker.c | = (canonical) | — |
 | 0x1E5 | DIM_BossSpit | CONFIRMED | main/dll/dll_01E5_dimbossspit.c | main/dll/DIM/dll_01E5_dimbossspit.c | — |
 | 0x1E6 | DIMbosscrackpar | CONFIRMED | main/dll/dll_01E6_dimbosscrackpar.c | main/dll/DIM/dll_01E6_dimbosscrackpar.c | — |
@@ -853,7 +853,7 @@ name was a deliberate choice by a previous carve:
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | dlls/objects/480_DIM_Boss/DIM_Boss.c | COMPLETE |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | COMPLETE |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | COMPLETE |
-| 0x1E3 | main/dll/dll_01E3_dimbossgut2.c | main/dll/DIM/dll_01E3_dimbossgut2.c | CONFIRMED |
+| 0x1E3 | main/dll/dll_01E3_dimbossgut2.c | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | COMPLETE |
 | 0x1E5 | main/dll/dll_01E5_dimbossspit.c | main/dll/DIM/dll_01E5_dimbossspit.c | CONFIRMED |
 | 0x1E6 | main/dll/dll_01E6_dimbosscrackpar.c | main/dll/DIM/dll_01E6_dimbosscrackpar.c | CONFIRMED |
 | 0x1E7 | main/dll/dll_01E7_dimbossfire.c | main/dll/DIM/dll_01E7_dimbossfire.c | CONFIRMED |

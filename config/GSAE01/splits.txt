@@ -2680,7 +2680,7 @@ dlls/objects/482_DIM_BossTon/DIM_BossTon.c:
 	.sbss       start:0x803DDB90 end:0x803DDBB8
 	.sdata2     start:0x803E4C8C end:0x803E4CD0
 
-main/dll/DIM/dimgut2group.c:
+dlls/objects/483_DIM_BossGut/DIM_BossGut.c:
 	.text       start:0x801BEEA0 end:0x801BF8D8
 	.data       start:0x80325C70 end:0x80325CB0
 	.sdata2     start:0x803E4CD0 end:0x803E4D34
