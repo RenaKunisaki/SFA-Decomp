@@ -4,7 +4,7 @@
 #include "ghidra_import.h"
 #include "main/dll/DIM/DIMbosstonsil.h"
 
-void dimBossTonsil_newState_hitFightMain(u8 *obj,ObjAnimUpdateState *animUpdate,
+void dimBossTonsil_newState_hitFightMain(GameObject *obj,ObjAnimUpdateState *animUpdate,
                                          DIMbosstonsilState *state,
                                          DIMbosstonsilState *updateState);
 

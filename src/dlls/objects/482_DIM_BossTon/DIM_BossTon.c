@@ -42,7 +42,7 @@ extern f32 lbl_803DDBA4;
 /* particle-spawn flag word: bit 0x200000 | bit 0x1 */
 #define DIMBOSSTONSIL_HIT_FX_FLAGS 0x200001
 
-int DIMbosstonsil_updateHitReaction(void* obj, DIMbosstonsilState* state, int unused)
+int DIMbosstonsil_updateHitReaction(GameObject* obj, DIMbosstonsilState* state, int unused)
 {
     if (state->active != 0)
     {
@@ -55,7 +55,7 @@ int DIMbosstonsil_updateHitReaction(void* obj, DIMbosstonsilState* state, int un
     return 0;
 }
 
-int DIMbosstonsil_enableHitReaction(void* obj, DIMbosstonsilState* state)
+int DIMbosstonsil_enableHitReaction(GameObject* obj, DIMbosstonsilState* state)
 {
     if (state->stunReady != 0)
     {
@@ -65,7 +65,7 @@ int DIMbosstonsil_enableHitReaction(void* obj, DIMbosstonsilState* state)
     return 0;
 }
 
-int DIMbosstonsil_chooseHitReaction(void* obj, DIMbosstonsilState* state)
+int DIMbosstonsil_chooseHitReaction(GameObject* obj, DIMbosstonsilState* state)
 {
     u16 moveId;
     u16 unused1;
@@ -75,7 +75,7 @@ int DIMbosstonsil_chooseHitReaction(void* obj, DIMbosstonsilState* state)
     {
         lbl_803DDB9C = lbl_803DDBA0;
         (*gBaddieControlInterface)
-            ->getTargetGeometry((GameObject*)obj, Obj_GetPlayerObject(), 4, &moveId, &unused1, &unused2);
+            ->getTargetGeometry(obj, Obj_GetPlayerObject(), 4, &moveId, &unused1, &unused2);
         switch (moveId)
         {
         case 0:
@@ -112,7 +112,7 @@ int DIMbosstonsil_chooseHitReaction(void* obj, DIMbosstonsilState* state)
     return 0;
 }
 
-int DIMbosstonsil_startIdleHitReaction(void* obj, DIMbosstonsilState* state)
+int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* state)
 {
     if (state->active != 0)
     {
@@ -193,22 +193,22 @@ void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state)
 #define DIMBOSSSPIT_ROUTE_SPLIT_THRESHOLD 3
 #define DIMBOSSSPIT_RUMBLE_SFX            0x189
 
-void dimBossTonsil_newState_hitFightMain(u8* obj, ObjAnimUpdateState* animUpdate, DIMbosstonsilState* state,
+void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* animUpdate, DIMbosstonsilState* state,
                                          DIMbosstonsilState* updateState)
 {
     f32 timer;
 
     timer = 0.0f;
 
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->flags |= DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags |= DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
 
     updateState->effectActive = 1;
 
     (*gBaddieControlInterface)
-        ->updateGravity((GameObject*)obj, updateState, timer, 1);
+        ->updateGravity(obj, updateState, timer, 1);
 
     (*gBaddieControlInterface)
-        ->processMessages((GameObject*)obj, updateState, state->animPoints, state->animFrame,
+        ->processMessages(obj, updateState, state->animPoints, state->animFrame,
                           &state->hitReactMode, 0, 0, 0);
 
     if (0.0f != lbl_803DDBA4)
@@ -219,9 +219,9 @@ void dimBossTonsil_newState_hitFightMain(u8* obj, ObjAnimUpdateState* animUpdate
         {
             lbl_803DDBA4 = 0.0f;
             updateState->animFinished = 0;
-            ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->flags &= ~DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-                (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | DIMBOSSSPIT_OBJECT_DISABLED_FLAG);
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
+            *(u8*)&obj->anim.resetHitboxMode =
+                (u8)(*(u8*)&obj->anim.resetHitboxMode | DIMBOSSSPIT_OBJECT_DISABLED_FLAG);
             mainSetBits(DIMBOSSSPIT_GAMEBIT_ACTIVE, 0);
             if (gDIMbosstonsilRoutePhase >= DIMBOSSSPIT_ROUTE_HIGH_THRESHOLD)
             {
@@ -250,7 +250,7 @@ void dimBossTonsil_newState_hitFightMain(u8* obj, ObjAnimUpdateState* animUpdate
     }
 
     lbl_803DDBA0 = lbl_803DDBA0 + timeDelta;
-    DIMbosstonsil_checkHit((GameObject*)(obj), updateState);
+    DIMbosstonsil_checkHit(obj, updateState);
 
     if (0.0f != lbl_803DDB98)
     {
@@ -259,9 +259,9 @@ void dimBossTonsil_newState_hitFightMain(u8* obj, ObjAnimUpdateState* animUpdate
         {
             lbl_803DDB98 = 0.0f;
             updateState->animFinished = 0;
-            ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->flags &= ~DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-                (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | DIMBOSSSPIT_OBJECT_DISABLED_FLAG);
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
+            *(u8*)&obj->anim.resetHitboxMode =
+                (u8)(*(u8*)&obj->anim.resetHitboxMode | DIMBOSSSPIT_OBJECT_DISABLED_FLAG);
             mainSetBits(DIMBOSSSPIT_GAMEBIT_ACTIVE, 0);
             if (gDIMbosstonsilRoutePhase == DIMBOSSSPIT_ROUTE_SPLIT_THRESHOLD)
             {
@@ -274,12 +274,12 @@ void dimBossTonsil_newState_hitFightMain(u8* obj, ObjAnimUpdateState* animUpdate
         }
     }
 
-    state->savedObjFieldC0 = *(u32*)&((GameObject*)obj)->pendingParentObj;
-    *(u32*)&((GameObject*)obj)->pendingParentObj = 0;
+    state->savedObjFieldC0 = *(u32*)&obj->pendingParentObj;
+    *(u32*)&obj->pendingParentObj = 0;
 
     (*gPlayerInterface)->update(obj, updateState, timeDelta, timeDelta, &lbl_803DDBB0, &lbl_803DDBA8);
 
-    *(u32*)&((GameObject*)obj)->pendingParentObj = state->savedObjFieldC0;
+    *(u32*)&obj->pendingParentObj = state->savedObjFieldC0;
 }
 
 #define DIMBOSSTONSIL_OBJGROUP 3
@@ -400,7 +400,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
         {
         case 2:
             animUpdate->hitVolumePair = 0;
-            dimBossTonsil_newState_hitFightMain((u8*)obj, animUpdate, state, state);
+            dimBossTonsil_newState_hitFightMain(obj, animUpdate, state, state);
             if (state->hitReactMode == 1)
             {
                 state->field270 = 0;
@@ -543,7 +543,7 @@ void DIMbosstonsil_update(GameObject* obj)
         return;
 
     state->targetObject = Obj_GetPlayerObject();
-    dimBossTonsil_newState_hitFightMain((u8*)obj, NULL, state, state);
+    dimBossTonsil_newState_hitFightMain(obj, NULL, state, state);
 
     if (gDIMbosstonsilLight == 0)
         return;
@@ -580,21 +580,21 @@ void DIMbosstonsil_update(GameObject* obj)
     }
 }
 
-void DIMbosstonsil_init(int obj, u32 def, int isAltVariant)
+void DIMbosstonsil_init(GameObject* obj, u32 def, int isAltVariant)
 {
     u8 variant;
     int state;
 
-    state = *(int*)&((GameObject*)obj)->extra;
+    state = *(int*)&obj->extra;
     variant = 6;
     if (isAltVariant != 0)
     {
         variant = variant | 1;
     }
     (*gBaddieControlInterface)
-        ->initGroundBaddie((GameObject*)obj, (u8*)def, (u8*)state, 2, 2, 0x102, variant, 20.0f);
-    ((GameObject*)obj)->animEventCallback = DIMbosstonsil_SeqFn;
-    (*gPlayerInterface)->setState((void*)obj, (void*)state, 0);
+        ->initGroundBaddie(obj, (u8*)def, (u8*)state, 2, 2, 0x102, variant, 20.0f);
+    obj->animEventCallback = DIMbosstonsil_SeqFn;
+    (*gPlayerInterface)->setState(obj, (void*)state, 0);
     ((BaddieState*)state)->substate = 0;
     gDIMbosstonsilRoutePhase = mainGetBit(0x20c);
     if (gDIMbosstonsilRoutePhase < 3)
