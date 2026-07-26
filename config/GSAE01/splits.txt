@@ -3473,7 +3473,7 @@ main/dll/DF/dll_022E_dfpdoorswitch.c:
 	.text       start:0x802050C4 end:0x80205168
 	.data       start:0x80329940 end:0x80329968
 
-main/dll/DF/dll_022D_dfpseqpoint.c:
+dlls/objects/557_DFP_seqpoin/DFP_seqpoin.c:
 	.text       start:0x80205168 end:0x802057CC
 	.data       start:0x80329968 end:0x803299A0
 	.sdata2     start:0x803E63B8 end:0x803E63C8

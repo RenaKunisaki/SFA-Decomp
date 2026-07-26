@@ -253,10 +253,18 @@ void DFP_seqpoint_initialise(void)
 }
 
 ObjectDescriptor gDFP_seqpointObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DFP_seqpoint_initialise, (ObjectDescriptorCallback)DFP_seqpoint_release, 0,
-    (ObjectDescriptorCallback)DFP_seqpoint_init, (ObjectDescriptorCallback)DFP_seqpoint_update,
-    (ObjectDescriptorCallback)DFP_seqpoint_hitDetect, (ObjectDescriptorCallback)DFP_seqpoint_render,
-    (ObjectDescriptorCallback)DFP_seqpoint_free, (ObjectDescriptorCallback)DFP_seqpoint_getObjectTypeId,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)DFP_seqpoint_initialise,
+    (ObjectDescriptorCallback)DFP_seqpoint_release,
+    0,
+    (ObjectDescriptorCallback)DFP_seqpoint_init,
+    (ObjectDescriptorCallback)DFP_seqpoint_update,
+    (ObjectDescriptorCallback)DFP_seqpoint_hitDetect,
+    (ObjectDescriptorCallback)DFP_seqpoint_render,
+    (ObjectDescriptorCallback)DFP_seqpoint_free,
+    (ObjectDescriptorCallback)DFP_seqpoint_getObjectTypeId,
     DFP_seqpoint_getExtraSize,
 };
