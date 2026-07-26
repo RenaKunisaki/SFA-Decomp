@@ -362,7 +362,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x13A | VisAnimator | CONFIRMED | dlls/objects/314_VisAnimator/VisAnimator.c | = (canonical) | — |
 | 0x13B | WallAnimato | CONFIRMED | dlls/objects/315_WallAnimato/WallAnimato.c | = (canonical) | — |
 | 0x13C | XYZAnimator | CONFIRMED | dlls/objects/316_XYZAnimator/XYZAnimator.c | = (canonical) | — |
-| 0x13D | ExplodeAnimator | CONFIRMED | main/dll/dll_013D_explodeanimator.c | = (canonical) | — |
+| 0x13D | ExplodeAnim | CONFIRMED | dlls/objects/317_ExplodeAnim/ExplodeAnim.c | = (canonical) | — |
 | 0x13E | DIMBossIceSmash (+DIM2Explode) | CONFIRMED | main/dll/dll_013E_dimbossicesmash.c | main/dll/DIM/dll_013E_dimbossicesmash.c | — |
 | 0x13F | TexFrameAnimator | CONFIRMED | main/dll/dll_013F_texframeanimator.c | = (canonical) | — |
 | 0x140 | fogControl | COMPLETE | main/dll/dll_0140_fogcontrol.c | = (canonical) | — |

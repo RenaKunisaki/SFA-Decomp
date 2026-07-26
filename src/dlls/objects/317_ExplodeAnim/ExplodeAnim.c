@@ -1,5 +1,5 @@
 /*
- * explodeanimator (DLL 0x13D) - one-shot particle burst animator.
+ * ExplodeAnim (DLL 0x13D) - one-shot particle burst animator.
  * When the trigger game bit (placement->triggerGameBit) becomes set, it fires
  * a configurable number of particles with randomised positions and velocities
  * drawn from per-axis min/max ranges in the placement data, then sets a result

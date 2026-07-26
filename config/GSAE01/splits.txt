@@ -2163,7 +2163,7 @@ dlls/objects/316_XYZAnimator/XYZAnimator.c:
 	.data       start:0x803222F8 end:0x80322330
 	.sdata2     start:0x803E4000 end:0x803E401C
 
-main/dll/dll_013D_explodeanimator.c:
+dlls/objects/317_ExplodeAnim/ExplodeAnim.c:
 	.text       start:0x801962C8 end:0x80196520
 	.data       start:0x80322330 end:0x80322368
 	.sdata2     start:0x803E4020 end:0x803E4030
