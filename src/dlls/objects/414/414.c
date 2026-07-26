@@ -1,4 +1,4 @@
-/* DLL 0x19E - DIM Tricky companion object: sparkle effect, hit-detect toggle,
+/* DLL 0x19E - Tricky companion object: sparkle effect, hit-detect toggle,
  * line-of-sight voxmap trace, and Tricky egg-interact sequence trigger. */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/dll_0069_dll69func0.h"
