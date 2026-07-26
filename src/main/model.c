@@ -521,7 +521,7 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
                 for (j = 0; j < slotCount; j++)
                 {
                     work.cacheSlots[j] = channel->cacheSlots[j];
-                    work.frameTypes[j] = *frameType++;
+                    work.frameTypes[j] = frameType[j];
                     work.frameLengths[j] = channel->frameLengths[j];
                     work.framePhases[j] = channel->framePhases[j];
                     work.frameData[j] = channel->frameData[j];
