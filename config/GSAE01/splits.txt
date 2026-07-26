@@ -3742,7 +3742,7 @@ dlls/objects/657_WCTile/WCTile.c:
 	.text       start:0x802276AC end:0x80227BB8
 	.data       start:0x8032B1B0 end:0x8032B1E8
 
-main/dll/WC/dll_028F_wcpressures.c:
+dlls/objects/655_WCPressureS/WCPressureS.c:
 	.text       start:0x80227BB8 end:0x802281CC
 	.data       start:0x8032B1E8 end:0x8032B230
 

@@ -1,5 +1,5 @@
 /*
- * wcpressures (DLL 0x28F) - a weighted pressure plate in the Walled City
+ * WCPressureS (DLL 0x28F) - a weighted pressure plate in the Walled City
  * (WC). The plate lowers while something heavy rests on it and rises again
  * when the weight is removed, latching a "solved" game bit while pressed.
  * Each update scans the object's hit list for entities standing higher than
