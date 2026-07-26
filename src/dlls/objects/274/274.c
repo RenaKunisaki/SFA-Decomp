@@ -1,5 +1,5 @@
 /*
- * seqobject (DLL 0x112): a generic gamebit-driven sequence/latch trigger.
+ * DLL 0x112: a generic gamebit-driven sequence/latch trigger.
  *
  * SeqObjectPlacement carries openGameBit (+0x18) and triggerGameBit (+0x1A).
  * When triggerGameBit transitions to set, the object runs sequence triggerId

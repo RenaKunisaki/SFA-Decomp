@@ -230,7 +230,7 @@ literal — these are the runtime "typed pointer into WARPTAB" equivalent of the
   `gWorldPlanetSelectionToIndex[state->selectedPlanet]` and fed to `warpToMap` when leaving the
   World Map planet-select screen. Declared `extern` only in this repo — its backing byte values
   (six WARPTAB ids, one per unlockable planet) are **not yet defined in any matched source file**.
-- **`dll_0112_seqobject.c`**: `warpToMap(mapId, 0)` where `mapId` comes from a runtime object-sequence
+- **`dlls/objects/274/274.c`**: `warpToMap(mapId, 0)` where `mapId` comes from a runtime object-sequence
   command — the id is data-driven from `OBJSEQ.bin`, not resolvable to a literal here.
 - **`objseq.c`**: two call sites decode a WARPTAB id out of a script opcode's operand
   (`*(s16*)(cmd + 2) & 0xfff`) — likewise data-driven, not a literal.

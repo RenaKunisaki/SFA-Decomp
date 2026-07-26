@@ -1860,7 +1860,7 @@ dlls/objects/273/273.c:
 	.data       start:0x80321130 end:0x80321168
 	.sdata2     start:0x803E3798 end:0x803E379C
 
-main/dll/dll_0112_seqobject.c:
+dlls/objects/274/274.c:
 	.text       start:0x8017C294 end:0x8017C7A4
 	.data       start:0x80321168 end:0x803211A0
 	.sdata2     start:0x803E37A0 end:0x803E37A4

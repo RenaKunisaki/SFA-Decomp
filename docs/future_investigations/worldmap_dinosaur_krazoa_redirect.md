@@ -53,7 +53,7 @@ flight a **sequence command** issues the warp, executed by the generic
 object-sequence code:
 
 - `objseq.c:2443` / `objseq.c:2499` — `warpToMap(*(s16*)(cmd + 2) & 0xfff, 0)`
-- `dll_0112_seqobject.c:144` — `warpToMap(mapId, 0)`
+- `dlls/objects/274/274.c:89` — `warpToMap(mapId, 0)`
 
 The "Hollow vs. Krazoa Palace" choice is therefore a **story-gated conditional
 warp baked into that map's sequence data**, not in any `.c`. Note Krazoa Palace
