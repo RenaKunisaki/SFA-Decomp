@@ -142,7 +142,6 @@ address. `[lo-hi)` is the splits.txt `.text` range (the partition unit).
 | 61 | `main/dll/dll_8011d918.c` | 8011D918-8011D9B0 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 62 | `main/dll/dll_d3.c` | 8013F100-8013F100 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 63 | `main/dll/dll_80174438.c` | 80174438-80174A80 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| 64 | `main/dll/dll_147.c` | 8017AC2C-8017AC2C | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 65 | `main/dll/dll_801814d0.c` | 801814D0-801816F8 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 66 | `main/dll/dll_80198a00.c` | 80198A00-80198FA4 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 67 | `main/dll/dll_801ac01c.c` | 801AC01C-801AC248 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
@@ -299,7 +298,6 @@ Batches: 12. Region-disjoint: NO OVERLAP — verified (each batch owns a contigu
 | `main/dll/dll_d3.c` | 8013F100-8013F100 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_80161130.c` | 80161130-80161F0C | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_80174438.c` | 80174438-80174A80 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| `main/dll/dll_147.c` | 8017AC2C-8017AC2C | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801814d0.c` | 801814D0-801816F8 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 
 ### Batch B09 — `80198A00-801D1BFC` (8 items)

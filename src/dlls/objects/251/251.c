@@ -60,13 +60,6 @@
 #define PRESSURESWITCHFB_OBJ_CC_PRESSURE 0x0545
 #define PRESSURESWITCHFB_OBJ_GROUNDQUAKE 0x077b
 
-extern f32 lbl_803E3758;
-extern f32 lbl_803E375C;
-extern f32 lbl_803E3760;
-extern f32 lbl_803E3764;
-extern f32 lbl_803E3768;
-extern f32 lbl_803E3778;
-
 int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, int animEventState)
 {
     s16 sequenceId;
@@ -217,7 +210,7 @@ void PressureSwitchFB_update(GameObject* obj)
         {
             state->contactTimer = 0;
         }
-        nearDist = lbl_803E3758;
+        nearDist = 40.0f;
         nearest = ObjGroup_FindNearestObject(PRESSURESWITCHFB_TARGET_OBJGROUP, obj, &nearDist);
         if (nearest != 0)
         {
@@ -382,12 +375,12 @@ void PressureSwitchFB_update(GameObject* obj)
             (state->flags.update.latched == 0) && (state->flags.update.active != 0))
         {
             tmp = (int)Obj_GetPlayerObject();
-            if (Vec_distance(&obj->anim.worldPosX, &((GameObject*)tmp)->anim.worldPosX) < lbl_803E375C)
+            if (Vec_distance(&obj->anim.worldPosX, &((GameObject*)tmp)->anim.worldPosX) < 200.0f)
             {
-                fx.x = lbl_803E3760;
-                fx.y = lbl_803E3764;
-                fx.z = lbl_803E3760;
-                fx.w = lbl_803E3768;
+                fx.x = 0.0f;
+                fx.y = 4.5f;
+                fx.z = 0.0f;
+                fx.w = 1.5f;
                 fx.arg = 0x12;
                 fx.type = 10;
                 tmp = 0;
@@ -438,7 +431,7 @@ void PressureSwitchFB_init(GameObject* obj, PressureSwitchFBPlacement* params)
     {
         objAnim->bankIndex = 0;
     }
-    defaultOffset = lbl_803E3778;
+    defaultOffset = 0.125f;
     state->velocityY = defaultOffset;
     if (obj->anim.seqId == PRESSURESWITCHFB_OBJ_GROUNDQUAKE)
     {
@@ -492,11 +485,17 @@ void PressureSwitchFB_init(GameObject* obj, PressureSwitchFBPlacement* params)
 }
 
 ObjectDescriptor gPressureSwitchFBObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0, 0, 0,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
     (ObjectDescriptorCallback)PressureSwitchFB_init,
     (ObjectDescriptorCallback)PressureSwitchFB_update,
-    0, 0,
+    0,
+    0,
     (ObjectDescriptorCallback)PressureSwitchFB_free,
     0,
     PressureSwitchFB_getExtraSize,

@@ -3,6 +3,8 @@
 #include "main/gamebits.h"
 #include "main/dll/dll_00FA_invisiblehitswitch.h"
 
+extern f32 lbl_803E3750;
+
 #define INVISIBLEHITSWITCH_OBJFLAG_HIDDEN 0x4000
 #define INVISIBLEHITSWITCH_OBJFLAG_HITDETECT_DISABLED 0x2000
 
@@ -15,8 +17,6 @@
 #define SWITCH_MODE_TOGGLE 1    /* a second hit while active turns it back off */
 #define SWITCH_MODE_MOMENTARY 2 /* activates, then auto-clears after cooldownFrames */
 #define SWITCH_MODE_DELAYED 3   /* hit arms an activation wind-up before turning on */
-
-extern f32 lbl_803E3750;
 
 int InvisibleHitSwitch_getExtraSize(void) { return 0xc; }
 
