@@ -1,5 +1,5 @@
 /*
- * drshackle (DLL 0x26E) - the swinging chain/shackle that hangs from a
+ * DLL 622 - the swinging chain/shackle that hangs from a
  * path point. drshackle_setScale orients the chain along the segment
  * between two model joints, drshackle_update binds the per-slot path
  * objects (ObjGroup 0x17) the chain rides, and drshackle_hitDetect plays
@@ -22,14 +22,13 @@
 #include "main/audio/sfx_trigger_ids.h"
 
 #include "main/dll/DR/dll_026E_drshackle.h"
-
-int lbl_803DDD70;
 #include "main/dll/DR/dr_types.h"
 
+int lbl_803DDD70;
 int lbl_803DC2F0 = -32768;
 
 #define DRSHACKLE_OBJGROUP  0x37
-#define DFROPENODE_OBJGROUP 0x17 /* DLL 0x175 dfropenode (path nodes) */
+#define DFROPENODE_OBJGROUP 0x17 /* DLL 373 dfropenode (path nodes) */
 
 static inline int* DrShackle_GetActiveModel(void* obj)
 {
