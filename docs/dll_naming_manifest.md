@@ -619,7 +619,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x23D | DBPointMum | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x23E | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x23F | DB_egg | COMPLETE | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | — |
-| 0x240 | GCRobotBlast | CONFIRMED | main/dll/dll_0240_gcrobotblast.c | = (canonical) | — |
+| 0x240 | GCRobotBlast | CONFIRMED | dlls/objects/576_GCRobotBlas/GCRobotBlas.c | = (canonical) | — |
 | 0x241 | DrakorEnergy | CONFIRMED | dlls/objects/577_DrakorEnerg/DrakorEnerg.c | = (canonical) | — |
 | 0x242 | DBstealerworm | CONFIRMED | dlls/objects/578_DBstealerwo/DBstealerwo.c | = (canonical) | — |
 | 0x243 | DBHoleControl1 | CONFIRMED | dlls/objects/579_DBHoleContr/DBHoleContr.c | = (canonical) | — |
