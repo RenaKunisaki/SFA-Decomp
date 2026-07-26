@@ -1,5 +1,5 @@
 /*
- * mmptrenchfx (DLL 0x181) - Moon Mountain Pass trench particle emitter.
+ * MMP_trenchF (DLL 0x181) - Moon Mountain Pass trench particle emitter.
  *
  * A placed effect source that periodically spawns particles within a
  * box-shaped volume. The placement supplies a gamebit gate (-1 = always
