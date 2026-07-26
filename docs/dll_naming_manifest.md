@@ -558,7 +558,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x200 | — | COMPLETE | dlls/objects/512/512.c | = (canonical) | No recovered retail basename |
 | 0x201 | WM_colrise | COMPLETE | dlls/objects/513_WM_colrise/WM_colrise.c | = (canonical) | — |
 | 0x202 | — | COMPLETE | dlls/objects/514/514.c | = (canonical) | No recovered retail basename; data-only DLL |
-| 0x203 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x203 | — | COMPLETE | dlls/objects/515/515.c | = (canonical) | No recovered retail basename; data-only DLL |
 | 0x204 | WM_Torch | COMPLETE | main/dll/dll_0204_wmtorch.c | main/dll/WM/dll_0204_wmtorch.c | — |
 | 0x205 | WM_Vein | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x206 | LightSource (+LINKPoleFla, WM_WallTorc, HangingLigh, PoleLight, PoleFlame) | CONFIRMED | main/dll/dll_0206_lightsource.c | = (canonical) | — |

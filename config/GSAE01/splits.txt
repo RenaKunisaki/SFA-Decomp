@@ -3198,6 +3198,9 @@ dlls/objects/504_WM_Galleon/WM_Galleon.c:
 dlls/objects/514/514.c:
 	.sdata      start:0x803DC0F8 end:0x803DC100
 
+dlls/objects/515/515.c:
+	.sdata      start:0x803DC100 end:0x803DC108
+
 dlls/objects/506_WM_seqobjec/WM_seqobjec.c:
 	.text       start:0x801F06D8 end:0x801F0900
 	.data       start:0x80328748 end:0x80328780

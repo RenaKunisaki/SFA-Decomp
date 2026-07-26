@@ -1885,6 +1885,7 @@ config.libs = [
             Object(NonMatching, "dlls/objects/512/512.c", cflags=cflags_dll_noopt_nostrength_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/513_WM_colrise/WM_colrise.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/514/514.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/515/515.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_0204_wmtorch.c", cflags=cflags_dll_noopt_nostrength),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0206_lightsource.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_0207_wmworm.c", cflags=cflags_dll_noopt_nocse),
