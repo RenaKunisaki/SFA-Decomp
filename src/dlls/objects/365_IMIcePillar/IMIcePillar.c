@@ -1,5 +1,5 @@
 /*
- * imicepillar (DLL 0x16D) - a decorative ice pillar prop on the Ice
+ * IMIcePillar (DLL 0x16D) - a decorative ice pillar prop on the Ice
  * Mountain map. It has no behaviour of its own: every callback is a
  * stub apart from render, which draws the model through the shared
  * object render helper. A 4-byte extra block is reserved but unused.
