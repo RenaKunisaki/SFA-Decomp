@@ -1,5 +1,5 @@
 /*
- * pinponspike (DLL 0x0D8) - a thrown spike projectile.
+ * PinPonSpike (DLL 0x0D8) - a thrown spike projectile.
  *
  * On init the object disables its hits, goes fully opaque, plays the
  * attack02 launch sfx and sets objectFlags 0x6000. Each update it
@@ -35,17 +35,6 @@
 #define PINPONSPIKE_OBJFLAG_HIDDEN             0x4000
 #define PINPONSPIKE_OBJFLAG_HITDETECT_DISABLED 0x2000
 
-extern f32 lbl_803E3110;
-extern f32 lbl_803E3114;
-extern f32 lbl_803E3118;
-extern f32 lbl_803E311C;
-extern f32 lbl_803E3120;
-extern f32 lbl_803E3124;
-extern f32 lbl_803E3128;
-extern f32 lbl_803E312C;
-
-
-
 int pinponspike_calculateLaunchAngle(f32* from, f32* to, f32 speed, u8 highArc, f32 gravity)
 {
     f32 sp2;
@@ -61,21 +50,21 @@ int pinponspike_calculateLaunchAngle(f32* from, f32* to, f32 speed, u8 highArc, 
     dz = from[2] - to[2];
     dist = sqrtf(dx * dx + dz * dz);
     dy = from[1] - to[1];
-    dist = dist * lbl_803E3110;
-    sp2 = lbl_803E3114 * gravity;
+    dist = dist * 1.05f;
+    sp2 = 0.25f * gravity;
     coeff = sp2 * gravity;
     {
         f32 vel = -(gravity * dy) - (sp2 = speed * speed); /* sp2 is speed^2 */
-        disc = vel * vel - (lbl_803E3118 * coeff) * (dy * dy + dist * dist);
-        if (disc >= lbl_803E311C)
+        disc = vel * vel - (4.0f * coeff) * (dy * dy + dist * dist);
+        if (disc >= 0.0f)
         {
             if (highArc)
             {
-                time = (lbl_803E3120 * (-vel + sqrtf(disc))) / coeff;
+                time = (0.5f * (-vel + sqrtf(disc))) / coeff;
             }
             else
             {
-                time = (lbl_803E3120 * (-vel - sqrtf(disc))) / coeff;
+                time = (0.5f * (-vel - sqrtf(disc))) / coeff;
             }
             time = sqrtf(time);
             coeff = dist / time; /* coeff is now the horizontal velocity */
@@ -129,10 +118,10 @@ void pinponspike_update(GameObject* obj)
         vy = obj->anim.velocityY * timeDelta;
         vz = obj->anim.velocityZ * timeDelta;
         objMove(obj, vx, vy, vz);
-        obj->anim.velocityY += lbl_803E3124 * timeDelta;
-        if (obj->anim.velocityY < *(f32*)&lbl_803E3128)
+        obj->anim.velocityY += -0.2f * timeDelta;
+        if (obj->anim.velocityY < -20.0f)
         {
-            obj->anim.velocityY = lbl_803E3128;
+            obj->anim.velocityY = -20.0f;
         }
         obj->anim.rotX = getAngle(vx, vz) - 0x8000;
         obj->anim.rotY = 0x4000 - getAngle(sqrtf(vx * vx + vz * vz), vy);
@@ -165,7 +154,7 @@ void pinponspike_update(GameObject* obj)
             }
             Sfx_PlayFromObject((int)obj, SFXTRIG_lummy311);
         }
-        else if (obj->anim.localPosY < lbl_803E312C)
+        else if (obj->anim.localPosY < -2000.0f)
         {
             Obj_FreeObject(obj);
         }

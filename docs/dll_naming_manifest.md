@@ -261,7 +261,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0D5 | Kaldachom | COMPLETE | dlls/objects/213_Kaldachom/Kaldachom.c | = (canonical) | — |
 | 0x0D6 | KaldachomMe | COMPLETE | dlls/objects/214_KaldachomMe/KaldachomMe.c | = (canonical) | — |
 | 0x0D7 | kaldachompspit (+KaldachomSp, FireCrawler) | GUESSED | dlls/objects/215/215.c | = (canonical) | — |
-| 0x0D8 | PinPonSpike | CONFIRMED | main/dll/dll_00D8_pinponspike.c | = (canonical) | — |
+| 0x0D8 | PinPonSpike | CONFIRMED | dlls/objects/216_PinPonSpike/PinPonSpike.c | = (canonical) | — |
 | 0x0D9 | Pollen | COMPLETE | main/dll/dll_00D9_pollen.c | = (canonical) | — |
 | 0x0DA | PollenFragment (+DRHomingMis) | CONFIRMED | main/dll/dll_00DA_pollenfragment.c | = (canonical) | — |
 | 0x0DB | MikaBomb | COMPLETE | main/dll/dll_00DB_mikabomb.c | = (canonical) | — |
