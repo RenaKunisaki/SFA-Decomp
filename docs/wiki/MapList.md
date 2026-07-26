@@ -411,7 +411,7 @@ tree — it doesn't, in every case checked:
   particle-effect spawner; the real galleon object is `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` (DLL
   `0x1E8`).
 - ObjType `008C SB_Cloudrun` — `src/main/dll/dll_008C_dll8cfunc0.c` is likewise a foodbag effect; the
-  actual Cloudrunner-mount object is `src/main/dll/SB/dll_0259_sbcloudrunner.c` (DLL `0x259`).
+  actual Cloudrunner-mount object is `src/dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c` (DLL `0x259`).
 - ObjType `0168 IMAnimSpace` — the real object is `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` (DLL
   `0x16E`), off by 6 from the wiki's `ObjType`.
 - Confirmed directly in-tree: `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c:34` defines
@@ -427,7 +427,7 @@ manually verified by reading the file, not by name-guessing):
 | Map (wiki 2nd table) | Wiki `ObjType` name | Matched in this tree |
 |---|---|---|
 | `galleonship` (0x50) | `SB_Galleon` | `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` |
-| `cloudrunnermap` (0x55) | `SB_Cloudrun` | `src/main/dll/SB/dll_0259_sbcloudrunner.c` |
+| `cloudrunnermap` (0x55) | `SB_Cloudrun` | `src/dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c` |
 | `cfprisoncage` (0x5a) | `CFPrisonCag` | `src/main/dll/CF/dll_0154_cfprisoncage.c` |
 | `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/dlls/objects/415_NW_treebrid/NW_treebrid.c` |
 | `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c`, `dimwooddoor.c` |
@@ -435,7 +435,7 @@ manually verified by reading the file, not by name-guessing):
 | `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |
 | `dimbossgut` (0x67) | `DIM_BossGut` | `src/dlls/objects/481_DIM_BossGut/DIM_BossGut.c`, `src/dlls/objects/483_DIM_BossGut/DIM_BossGut.c` |
 | `wmcolrise` (0x68) | `WM_colrise` | `src/dlls/objects/513_WM_colrise/WM_colrise.c` |
-| `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/main/dll/WC/dll_0290_wcpushblock.c`, `wcpushblock.c` |
+| `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/main/dll/WC/dll_0290_wcpushblock.c`, `src/dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c` |
 | `wcbouncycrate` (0x6f) | `WCBouncyCra` | `src/main/dll/WC/dll_028C_wcbouncycra.c` |
 
 Not found in this tree (either not yet split out as a distinct file, or bundled inside another

@@ -1921,7 +1921,7 @@ config.libs = [
             ),
             Object(NonMatching, "main/dll/drpickup.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/bwalphaanim.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/sbcloudrunnergroup.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/wcdial.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/504_WM_Galleon/WM_Galleon.c", cflags=cflags_dll_noopt),

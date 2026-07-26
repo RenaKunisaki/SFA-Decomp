@@ -4,7 +4,7 @@
  * SB_CloudRunner_onSeqFree runs when the object's animation sequence is
  * freed: it snapshots the rider's local position and orientation back
  * into the shared SnowBikeState extra block (the same fields the bike's
- * SeqFn seeds on entry, see SB/dll_0259_sbcloudrunner.c). rotX is
+ * SeqFn seeds on entry, see dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c). rotX is
  * rebased by 0x4000 (quarter-turn) to recover the rider yaw.
  */
 #include "main/dll/dll_0255_snowbike.h"

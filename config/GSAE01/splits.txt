@@ -3177,7 +3177,7 @@ dlls/objects/597/597.c:
 main/dll/bwalphaanim.c:
 	.text       start:0x801EE088 end:0x801EE0C0
 
-main/dll/sbcloudrunnergroup.c:
+dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c:
 	.text       start:0x801EE0C0 end:0x801EF360
 	.data       start:0x80328618 end:0x80328688
 	.sdata2     start:0x803E5CA0 end:0x803E5CA8
