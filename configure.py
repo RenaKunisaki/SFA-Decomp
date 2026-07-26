@@ -2035,7 +2035,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_02BA_mclightning.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02BB_gflevelcon.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "main/dll/dll_02BC_andross.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/dll/dll_02BD_androsshand.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "dlls/objects/701/701.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/702_AndrossBrai/AndrossBrai.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "dlls/objects/703_AndrossLigh/AndrossLigh.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/audio/synth_queue.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),

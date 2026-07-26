@@ -744,7 +744,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2BA | MCLightning | CONFIRMED | main/dll/dll_02BA_mclightning.c | = (canonical) | — |
 | 0x2BB | GF_LevelCon | CONFIRMED | main/dll/dll_02BB_gflevelcon.c | = (canonical) | — |
 | 0x2BC | Andross | COMPLETE | main/dll/dll_02BC_andross.c | = (canonical) | — |
-| 0x2BD | androsshand (+Androssleft, Androssrigh) | CONFIRMED | main/dll/dll_02BD_androsshand.c | = (canonical) | — |
+| 0x2BD | — (+androsshand, Androssleft, Androssrigh) | NO-RETAIL-NAME | dlls/objects/701/701.c | = (canonical) | — |
 | 0x2BE | AndrossBrai | CONFIRMED | dlls/objects/702_AndrossBrai/AndrossBrai.c | = (canonical) | — |
 | 0x2BF | AndrossLigh | CONFIRMED | dlls/objects/703_AndrossLigh/AndrossLigh.c | = (canonical) | — |
 | 0x2C0 | — (+Front, FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet) | NO-RETAIL-NAME | dlls/objects/704/704.c | = (canonical) | — |
@@ -771,7 +771,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | main/dll/dll_0231_dfpforceaw.c |
 | 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | main/dll/dll_0232_dfprotatep.c |
 | 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | main/dll/dll_0294_wctemple.c |
-| 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | main/dll/dll_02BD_androsshand.c |
+| 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
 | 0x0ED | CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi | `collectible_*` | unrelated | dlls/objects/237/237.c |
 | 0x108 | EndObject | `Dummy108_*` | unrelated | dlls/objects/264_EndObject/EndObject.c |
