@@ -1667,11 +1667,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/325_CloudPrison/CloudPrison.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/326_CloudShipCo/CloudShipCo.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/327/327.c", cflags=cflags_dll_noopt),
-            Object(
-                NonMatching,
-                "main/dll/CF/dll_0148_cfguardian.c", cflags=cflags_dll_noopt_nocse_noinline,
-                section_alignments={".data": 4},
-            ),
+            Object(NonMatching, "dlls/objects/328_CFGuardian/CFGuardian.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_0149_cfwindlift.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_014A_cfpowerbase.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_014B_cfmaincrystal.c", cflags=cflags_dll_noopt),

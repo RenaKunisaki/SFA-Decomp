@@ -11,11 +11,6 @@
  * "Dinosaur Planet" became the GameCube Star Fox Adventures (the GCRobot
  * family + GCbaddieShip, the GCrubble/GCpillar destructibles, and the
  * reworked GCRF_* CloudRunner Fortress sequences all carry it).
- *
- * This file is part of the sandwormBoss 10-DLL container (0x14A
- * CFPowerBase .. 0x157 SpiritDoorSpirit) covering [8019D578-801A0B14).
- * DLLs 0x148/0x149 are defined in DR/dll_0148_cfguardian.c and
- * DR/dll_0149_cfwindlift.c; their prototypes appear here.
  */
 #include "main/dll/bit80_struct.h"
 #include "game/objects/object.h"

@@ -1,5 +1,5 @@
 /*
- * cfguardian (DLL 0x148) - the Queen CloudRunner of the CloudRunner
+ * CFGuardian (DLL 0x148) - the Queen CloudRunner of the CloudRunner
  * Fortress. cfguardian_updateMain drives her quest arc: she is caged
  * until the player rescues her children, then is released and flies an
  * escape curve to roost. Once the children are all saved (the
@@ -8,9 +8,7 @@
  * makes her final flight out. The endgame cutscene perches run her
  * see-off, where she awards the spell stone. Helpers steer her along rom
  * curves (cfguardianSteerToward) and play per-event sfx
- * (cfguardianPlayEventSfx). Carved from the front of the sandwormBoss
- * container; the 0x148 TU truly starts in DR/hightop.c (documented cut in
- * docs/boundary_audit.md).
+ * (cfguardianPlayEventSfx).
  */
 
 #include "game/objects/object.h"
@@ -134,13 +132,24 @@ enum
 
 const GuardianVec gCfGuardianHitboxTemplateA = {{5, 15, 15, 0, 0}}; /* hitbox template copied at init */
 const GuardianVec gCfGuardianHitboxTemplateB = {{25, 25, 15, 5, 5}}; /* hitbox template copied at init */
-extern int gCfGuardianSeqStreamTable[][2];     /* chatter sequence-stream table, 0xf states */
 const GuardianMsg gCfGuardianHeadingTemplate = {7, 8, 7, 8}; /* active/idle heading-pair template (cfguardian_SeqFn) */
 
-/* cfguardianPlayEventSfx: walk this step's triggered anim events and play the
- * matching per-event sfx. sfxIds is a 3-entry table: [0] the move sfx,
- * [1] the alt (event 7) sfx, [2] the "selection" sfx played once if any
- * 1..4 marker event fired. Returns the last 1..4 marker seen. */
+s32 lbl_80322798[3] = {1, 6, 13};
+s32 lbl_803227A4[3] = {15, 6, -1};
+s32 lbl_803227B0[3] = {5, -1, -1};
+s32 lbl_803227BC[3] = {2, -1, -1};
+s32 lbl_803227C8[3] = {8, 6, -1};
+s32 lbl_803227D4[3] = {12, -1, -1};
+s32 lbl_803227E0[3] = {14, -1, -1};
+s32 lbl_803227EC[3] = {14, 6, -1};
+s32 lbl_803227F8[3] = {14, 6, -1};
+s32 lbl_80322804[3] = {9, 6, -1};
+s32 lbl_80322810[3] = {5, -1, -1};
+s32 lbl_8032281C[3] = {11, -1, -1};
+s32 lbl_80322828[3] = {10, -1, -1};
+s32 lbl_80322834[3] = {14, 6, 16};
+s32 lbl_80322840[3] = {-1, -1, -1};
+
 int gCfGuardianSeqStreamTable[33][2] = {
     {0, (int)&lbl_80322798},
     {1, (int)&lbl_803227A4},
@@ -197,6 +206,10 @@ ObjectDescriptor11 gCFGuardianObjDescriptor = {
     (ObjectDescriptorCallback)cfguardian_setScale,
 };
 
+/* cfguardianPlayEventSfx: walk this step's triggered anim events and play the
+ * matching per-event sfx. sfxIds is a 3-entry table: [0] the move sfx,
+ * [1] the alt (event 7) sfx, [2] the "selection" sfx played once if any
+ * 1..4 marker event fired. Returns the last 1..4 marker seen. */
 int cfguardianPlayEventSfx(u32 obj, ObjAnimEventList* evList, s16* sfxIds)
 {
     int i;

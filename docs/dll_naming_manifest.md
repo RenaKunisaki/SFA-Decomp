@@ -373,7 +373,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x145 | CloudPrison | COMPLETE | dlls/objects/325_CloudPrison/CloudPrison.c | = (canonical) | — |
 | 0x146 | CloudShipCo | COMPLETE | dlls/objects/326_CloudShipCo/CloudShipCo.c | = (canonical) | data-only DLL |
 | 0x147 | — | NO-RETAIL-NAME | dlls/objects/327/327.c | = (canonical) | data-only DLL |
-| 0x148 | CFGuardian | COMPLETE | main/dll/dll_0148_cfguardian.c | main/dll/CF/dll_0148_cfguardian.c | — |
+| 0x148 | CFGuardian | COMPLETE | dlls/objects/328_CFGuardian/CFGuardian.c | = (canonical) | — |
 | 0x149 | CFWindLift (+CFTreasWind) | CONFIRMED | main/dll/dll_0149_cfwindlift.c | main/dll/CF/dll_0149_cfwindlift.c | — |
 | 0x14A | CFPowerBase | CONFIRMED | main/dll/dll_014A_cfpowerbase.c | main/dll/CF/dll_014A_cfpowerbase.c | — |
 | 0x14B | CFMainCrystal | CONFIRMED | main/dll/dll_014B_cfmaincrystal.c | main/dll/CF/dll_014B_cfmaincrystal.c | — |
@@ -800,7 +800,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x148 | main/dll/dll_0148_cfguardian.c | main/dll/CF/dll_0148_cfguardian.c | COMPLETE |
 | 0x149 | main/dll/dll_0149_cfwindlift.c | main/dll/CF/dll_0149_cfwindlift.c | CONFIRMED |
 | 0x14A | main/dll/dll_014A_cfpowerbase.c | main/dll/CF/dll_014A_cfpowerbase.c | CONFIRMED |
 | 0x14B | main/dll/dll_014B_cfmaincrystal.c | main/dll/CF/dll_014B_cfmaincrystal.c | CONFIRMED |

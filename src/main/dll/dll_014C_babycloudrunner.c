@@ -1,8 +1,6 @@
 /*
  * sandwormBoss.c - 10-DLL container (DLL 0x14A CFPowerBase .. 0x157
- * SpiritDoorSpirit), TU [8019D578-801A0B14). DLLs 0x148 and 0x149 are
- * defined in dll_0148_cfguardian.c and dll_0149_cfwindlift.c; their
- * definitions here are collapsed to forward prototypes.
+ * SpiritDoorSpirit), TU [8019D578-801A0B14).
  */
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
