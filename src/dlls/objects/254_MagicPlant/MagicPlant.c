@@ -40,9 +40,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 
-s16 gMagicPlantGemDefIds[4] = {0x2C4, 0x2CD, 0x2CE, 0x2CF};
-
-
 extern f32 lbl_803E385C;
 extern f32 lbl_803E3880;
 extern f32 lbl_803E3858;
@@ -50,6 +47,15 @@ extern f32 lbl_803E387C;
 extern f32 lbl_803E3878;
 extern f32 lbl_803E3874;
 extern f32 lbl_803E3870;
+extern f32 gMagicPlantHitReactAnimStep;
+extern f32 gMagicPlantHitLightScale;
+extern f32 gMagicPlantIdleAnimStep;
+extern f32 lbl_803E3890;
+extern f32 gMagicPlantBuzzStartDist;
+extern f32 gMagicPlantBuzzStopDist;
+
+s16 gMagicPlantGemDefIds[4] = {0x2C4, 0x2CD, 0x2CE, 0x2CF};
+
 void magicPlantDropGem(int obj, void* setup, void* stateArg)
 {
     MagicPlantState* state;
@@ -134,14 +140,6 @@ STATIC_ASSERT(offsetof(DusterState, flags) == 0x1e);
 #define MAGICPLANT_HIT_BURST_COUNT 0x14  /* 20 hit-burst particles */
 #define MAGICPLANT_IDLE_TIMER_MIN  300   /* frames between idle-sway retriggers (lo..hi) */
 #define MAGICPLANT_IDLE_TIMER_MAX  600
-
-extern f32 gMagicPlantHitReactAnimStep;
-extern f32 gMagicPlantHitLightScale;
-extern f32 gMagicPlantIdleAnimStep;
-extern f32 lbl_803E3890;
-extern f32 gMagicPlantBuzzStartDist;
-extern f32 gMagicPlantBuzzStopDist;
-
 
 void MagicPlant_updateActive(GameObject* obj, MagicPlantSetup* setupParam, MagicPlantState* stateParam)
 {

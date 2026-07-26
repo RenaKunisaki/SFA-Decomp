@@ -1901,7 +1901,7 @@ dlls/objects/253/253.c:
 	.text       start:0x8017EF6C end:0x8017F334
 	.data       start:0x80321530 end:0x80321568
 
-main/dll/dll_00FE_magicplant.c:
+dlls/objects/254_MagicPlant/MagicPlant.c:
 	.text       start:0x8017F334 end:0x8017FF0C
 	.data       start:0x80321568 end:0x803215A0
 	.sdata      start:0x803DBD98 end:0x803DBDA0
