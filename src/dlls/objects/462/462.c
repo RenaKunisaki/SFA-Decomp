@@ -6,7 +6,7 @@
  * contents object (object id 0x246) seeded from the door's placement.
  */
 #include "main/dll/dll_01CE_dll1ce.h"
-#include "main/dll/collectible_state.h"
+#include "dlls/objects/237.h"
 #include "main/dll/dll1cestate_struct.h"
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
@@ -151,7 +151,7 @@ void dll_1CE_update(GameObject* obj)
         contentsSetup->hideGameBit = 0x17f;
         contentsSetup->visibilityGameBit = -1;
         contentsSetup->counterGameBit = -1;
-        contentsSetup->unkD = 5;
+        contentsSetup->unk1A = 5;
         contentsSetup->rotXByte = (u8)((s16)obj->anim.rotX >> 8);
         Obj_SetupObject(&contentsSetup->base, 5, obj->anim.mapEventSlot, -1, 0);
     }

@@ -32,7 +32,7 @@
 #include "main/audio/sfx.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
-#include "main/dll/dll_00ED_collectible_api.h"
+#include "dlls/objects/237.h"
 #include "main/dll/dll_0111_doorlock.h"
 #include "main/dll/dll_0112_seqobject.h"
 #include "main/dll/dll_0113_seqobj2.h"

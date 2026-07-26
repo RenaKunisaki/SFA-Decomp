@@ -64,16 +64,15 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 ### Tier 3 items — Apple / EnergyEgg (health refills)
 
 - `src/dlls/objects/237/237.c` is DLL 0x00ED, the generic collectible pickup handler
-  (`0x80171D14`–`0x80173224`). Its header comment already documents: "health
-  items add health, dust items bump counters" — i.e. this one DLL hosts *both* the Tier 1 dust
-  counters and the Tier 3 health pickups, distinguished by `obj->anim.seqId`.
+  (`0x80171D14`–`0x80173224`). This one DLL hosts *both* the Tier 1 dust counters and the
+  Tier 3 health pickups, distinguished by `obj->anim.seqId`.
 - In `collectible_applyPickup`, the health branch (`switch` on a category read from the
   object's model resource, case `4`) has exactly two cases:
   - `seqId 11` (`0xB`) -> `playerAddHealth(player, 4)` — **the large refill, i.e. EnergyEgg**.
   - `seqId 973` (`0x3CD`) -> `playerAddHealth(player, 2)` — **the small refill, i.e. Apple**.
-  This is a live-verified mapping: `include/main/dll/collectible_state.h`'s header comment
-  records a Dolphin session that broke a crate, traced object type `0xB`/seqId `11` through
-  proximity-detect -> pickup-message -> collect, and watched player health rise 4 -> 8.
+  This mapping was live-verified in a Dolphin session that broke a crate, traced object type
+  `0xB`/seqId `11` through proximity-detect -> pickup-message -> collect, and watched player
+  health rise 4 -> 8.
 - These exact two ids are **independently confirmed** by `src/dlls/objects/261_LargeCrate/LargeCrate.c`:
   `largecrate_spawnDropContents`'s `dropType == 5` spawns object id `0xb`, and
   `dropType == 6` spawns object id `0x3cd` — the same two numbers, same two items, from a
@@ -81,7 +80,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   identification is treated as solid here despite `seqId`/"object id" not being formally typed
   anywhere in the codebase yet.
 - State/setup structs: `CollectibleState` / `CollectibleSetup` in
-  `include/main/dll/collectible_state.h` (per-instance despawn timer, hide/visibility/collect
+  `include/dlls/objects/237.h` (per-instance despawn timer, hide/visibility/collect
   gamebits, bounce/path-follow physics).
 - Not the same thing: `src/dlls/objects/279_AppleOnTree/AppleOnTree.c` (`AppleOnTree_*`, DLL 0x117) is a
   *tree-fruit-harvesting* object (an apple you knock down/pick off a tree), a different game
