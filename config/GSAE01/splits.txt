@@ -3464,8 +3464,9 @@ dlls/objects/554_DFP_ObjCrea/DFP_ObjCrea.c:
 	.text       start:0x80204970 end:0x80204B54
 	.data       start:0x80329898 end:0x803298D0
 
-main/dll/dll_022C_dll22c.c:
+dlls/objects/556/556.c:
 	.text       start:0x80204B54 end:0x802050C4
+	.data       start:0x803298D0 end:0x80329908
 	.sdata2     start:0x803E6398 end:0x803E63B8
 
 main/dll/DF/dll_022E_dfpdoorswitch.c:

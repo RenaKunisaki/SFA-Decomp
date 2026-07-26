@@ -45,6 +45,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/dll/dll_022C_dll22c.h"
 #include "main/object_render.h"
+#include "dlls/object_descriptor.h"
 
 /*
  * DbStealerwormControl - the per-family control record hung off
@@ -298,3 +299,20 @@ void dll_22C_release_nop(void)
 void dll_22C_initialise_nop(void)
 {
 }
+
+ObjectDescriptor lbl_803298D0 = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_22C_initialise_nop,
+    (ObjectDescriptorCallback)dll_22C_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_22C_init,
+    (ObjectDescriptorCallback)dll_22C_update,
+    (ObjectDescriptorCallback)dll_22C_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_22C_render,
+    (ObjectDescriptorCallback)dll_22C_free,
+    (ObjectDescriptorCallback)dll_22C_getObjectTypeId,
+    dll_22C_getExtraSize_ret_16,
+};
