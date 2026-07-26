@@ -215,6 +215,6 @@ void andross_hitDetect(void);
 void andross_render(GameObject* obj, int p2, int p3, int p4, int p5);
 void andross_setPartSignal(GameObject* obj, u8 signal);
 void andross_update(int obj);
-void andross_init(int obj, ObjPlacement* setup);
+void andross_init(GameObject* obj, ObjPlacement* setup);
 
 #endif /* MAIN_DLL_ANDROSS_H_ */

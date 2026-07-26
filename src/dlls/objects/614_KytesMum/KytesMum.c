@@ -1,5 +1,5 @@
 /*
- * kytesmum (DLL 0x266, object type 0x43) - the "Kyte's mum" NPC.
+ * KytesMum (DLL 0x266, object type 0x43) - the "Kyte's mum" NPC.
  *
  * The placement's mode byte selects one of three behaviours, wired up in
  * kytesmum_init:

@@ -5,6 +5,7 @@
 #include "ghidra_import.h"
 #include "game/objects/object.h"
 #include "main/objHitReact.h"
+#include "main/objanim_update.h"
 #include "main/objanim_internal.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
@@ -195,6 +196,8 @@ STATIC_ASSERT(offsetof(NwMammothTables, stateFlags) == 0xF4);
 STATIC_ASSERT(offsetof(NwMammothGameUiInterface, showMessage) == 0x58);
 void NW_mammoth_update(NwMammothObject *obj,int param_2);
 void NW_mammoth_init(NwMammothObject *obj,NwMammothMapData *mapData,int isReload);
+f32* NW_mammoth_getSpawnPosition(GameObject* obj);
+int nw_mammoth_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void FUN_801cf1a0(u64 param_1,double param_2,double param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,
                  short *param_9);

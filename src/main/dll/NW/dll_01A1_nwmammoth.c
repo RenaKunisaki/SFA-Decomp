@@ -16,7 +16,6 @@
 #include "main/dll/NW/dll_01A2_nwtricky.h"
 #include "main/dll/NW/dll_01A3_nwanimice.h"
 #include "main/dll/NW/dll_01A4_nwice.h"
-#include "main/dll/dll_01A0_nwgeyser.h"
 #include "main/audio/sfx.h"
 #include "main/vecmath.h"
 #include "main/curve.h"
@@ -126,6 +125,47 @@ typedef struct
     u8 pad[0xc];
     f32 pos[3];
 } WoPartfxBlock;
+
+f32* NW_mammoth_getSpawnPosition(GameObject* obj)
+{
+    return &((NwMammothState*)obj->extra)->spawnPosX;
+}
+
+int nw_mammoth_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    u8* state;
+    NwMammothState* s;
+    void* audioEvents;
+    void* audioPoints;
+    void* audioScratch;
+
+    state = (obj)->extra;
+    s = (NwMammothState*)state;
+    if ((s->runtimeFlags & 0x20) == 0)
+    {
+        Sfx_StopObjectChannel((int)obj, 0x7f);
+        s->pathSpeed = 0.0f;
+        s->runtimeFlags = (u8)(s->runtimeFlags & ~0x10);
+        s->runtimeFlags = (u8)(s->runtimeFlags | 0x20);
+    }
+    if ((s->runtimeFlags & 4) != 0)
+    {
+        s->playerDistanceSq = 0.0f;
+        animUpdate->hitVolumePair = (s16)(animUpdate->hitVolumePair & ~8);
+        animUpdate->hitVolumePair = (s16)(animUpdate->hitVolumePair & ~0x40);
+        NW_mammoth_updateEyeTracking(obj, (int)state, 1);
+    }
+    audioEvents = state + 0x440;
+    audioPoints = state + 0x45c;
+    audioScratch = state + 0x16c;
+    objAudioFn_8006ef38(obj, (ObjAnimEventList*)audioEvents, 8, audioPoints, audioScratch, 1.0f, 1.0f);
+    if (animUpdate->eventCount != 0)
+    {
+        (obj)->objectFlags = (u16)((obj)->objectFlags & ~0x400);
+        (obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
+    }
+    return 0;
+}
 
 void NW_mammoth_updateEyeTracking(GameObject* obj, int state, int flag)
 {

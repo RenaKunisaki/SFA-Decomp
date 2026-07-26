@@ -1,5 +1,5 @@
 /*
- * DLL 0x25A - static camera object.
+ * StaticCamera (DLL 0x25A) - static camera object.
  *
  * A passive scene camera placement. init negates the placement's three
  * orientation shorts into the object's rotX/rotY/rotZ, caches a byte

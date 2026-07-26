@@ -1,5 +1,5 @@
 /*
- * drshackle (DLL 0x26E) - the swinging chain/shackle that hangs from a
+ * DLL 0x26E - the swinging chain/shackle that hangs from a
  * path point. drshackle_setScale orients the chain along the segment
  * between two model joints, drshackle_update binds the per-slot path
  * objects (ObjGroup 0x17) the chain rides, and drshackle_hitDetect plays

@@ -1,5 +1,5 @@
 /*
- * drakorhoverpad (DLL 0x271) - a rideable hover-pad object in the
+ * DLL 0x271 - a rideable hover-pad object in the
  * Drakor (DR) levels that follows a ROM spline/curve network.
  *
  * initMain seeds the pad onto its curve and selects a behaviour mode

@@ -459,7 +459,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x19D | — | NO-RETAIL-NAME | dlls/objects/413/413.c | = (canonical) | — |
 | 0x19E | — | NO-RETAIL-NAME | dlls/objects/414/414.c | = (canonical) | — |
 | 0x19F | NW_treebrid | COMPLETE | dlls/objects/415_NW_treebrid/NW_treebrid.c | = (canonical) | — |
-| 0x1A0 | NW_geyser | COMPLETE | main/dll/dll_01A0_nwgeyser.c | main/dll/NW/dll_01A0_nwgeyser.c | — |
+| 0x1A0 | NW_geyser | COMPLETE | dlls/objects/416_NW_geyser/NW_geyser.c | = (canonical) | — |
 | 0x1A1 | NW_mammoth (+NW_mammothh, NW_mammothb, NW_mammothw, NW_mammothg) | CONFIRMED | main/dll/dll_01A1_nwmammoth.c | main/dll/NW/dll_01A1_nwmammoth.c | — |
 | 0x1A2 | NW_tricky | COMPLETE | main/dll/dll_01A2_nwtricky.c | main/dll/NW/dll_01A2_nwtricky.c | — |
 | 0x1A3 | NW_animice (+NW_animice1, NW_animice2, NW_animice3) | CONFIRMED | main/dll/dll_01A3_nwanimice.c | main/dll/NW/dll_01A3_nwanimice.c | — |
@@ -643,33 +643,33 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x255 | SnowBike (+CRSnowBike, CRSnowClawB, IMSnowBike, IMSnowClawB) | CONFIRMED | main/dll/dll_0255_snowbike.c | = (canonical) | — |
 | 0x256 | DIMSnowHorn1 | CONFIRMED | main/dll/dll_0256_dimsnowhorn1.c | main/dll/DIM/dll_0256_dimsnowhorn1.c | — |
 | 0x257 | DR_EarthWarrior | CONFIRMED | main/dll/dll_0257_drearthwarrior.c | main/dll/DR/dll_0257_drearthwarrior.c | — |
-| 0x258 | DR_CloudRunner | CONFIRMED | main/dll/dll_0258_drcloudrunner.c | main/dll/DR/dll_0258_drcloudrunner.c | — |
+| 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | — |
 | 0x259 | SB_Cloudrunner | CONFIRMED | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | — |
-| 0x25A | StaticCamera | CONFIRMED | main/dll/dll_025A_staticcamera.c | = (canonical) | — |
-| 0x25B | MSPlantingS | RAW | main/dll/dll_025B_msplantings.c | = (canonical) | — |
+| 0x25A | StaticCamera | CONFIRMED | dlls/objects/602_StaticCamer/StaticCamer.c | = (canonical) | — |
+| 0x25B | MSPlantingS | RAW | dlls/objects/603_MSPlantingS/MSPlantingS.c | = (canonical) | — |
 | 0x25C | SnowClaw (+CRSnowClaw, CRSnowClaw2, CRSnowClaw3, IMSnowClaw, IMSnowClaw2) | CONFIRMED | main/snowclaw.c | main/dll/dll_025C_snowclaw.c | engine/SDK host: main/snowclaw.c |
 | 0x25D | CRCloudRace | CONFIRMED | main/crcloudrace.c | main/dll/CR/dll_025D_crcloudrace.c | engine/SDK host: main/crcloudrace.c |
 | 0x25E | CRSpellstone (+DrakorSpell) | CONFIRMED | main/spellstone.c | main/dll/CR/dll_025E_crspellstone.c | engine/SDK host: main/spellstone.c |
 | 0x25F | CRFuelTank | COMPLETE | main/crfueltank.c | main/dll/CR/dll_025F_crfueltank.c | engine/SDK host: main/crfueltank.c |
 | 0x260 | ProximityMine (+CRDropBomb) | CONFIRMED | main/proximitymine_update.c | main/dll/dll_0260_proximitymine.c | engine/SDK host: main/proximitymine_update.c |
-| 0x261 | DR_LaserCannon | CONFIRMED | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | — |
-| 0x262 | DrakorMissile (+DRbullet) | CONFIRMED | main/dll/dll_0262_drakormissile.c | = (canonical) | — |
-| 0x263 | GM_MazeWell | CONFIRMED | main/dll/dll_0263_gmmazewell.c | = (canonical) | — |
+| 0x261 | DR_LaserCannon | CONFIRMED | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | = (canonical) | — |
+| 0x262 | — (+DrakorMissile, DRbullet) | NO-RETAIL-NAME | dlls/objects/610/610.c | = (canonical) | — |
+| 0x263 | GM_MazeWell | CONFIRMED | dlls/objects/611_GM_MazeWell/GM_MazeWell.c | = (canonical) | — |
 | 0x264 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x265 | DR_Creator | COMPLETE | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | — |
-| 0x266 | KytesMum | COMPLETE | main/dll/dll_0266_kytesmum.c | = (canonical) | — |
+| 0x265 | DR_Creator | COMPLETE | dlls/objects/613_DR_Creator/DR_Creator.c | = (canonical) | — |
+| 0x266 | KytesMum | COMPLETE | dlls/objects/614_KytesMum/KytesMum.c | = (canonical) | — |
 | 0x267 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
-| 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | main/dll/dll_0269_explodeplan.c | = (canonical) | — |
+| 0x268 | DR_CageControl | CONFIRMED | dlls/objects/616_DR_CageCont/DR_CageCont.c | = (canonical) | — |
+| 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | dlls/objects/617_ExplodePlan/ExplodePlan.c | = (canonical) | — |
 | 0x26A | DR_Geezer | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x26B | DR_Chimmey | COMPLETE | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | — |
-| 0x26C | DR_CageWith (+DR_CageNoRo, DR_CageRope) | CONFIRMED | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | — |
+| 0x26B | DR_Chimmey | COMPLETE | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | = (canonical) | — |
+| 0x26C | — (+DR_CageWith, DR_CageNoRo, DR_CageRope) | NO-RETAIL-NAME | dlls/objects/620/620.c | = (canonical) | — |
 | 0x26D | DR_Vines | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x26E | DR_Shackle (+DR_BigShack) | COMPLETE | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | — |
-| 0x26F | DR_Generator (+DR_WallGene) | CONFIRMED | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | — |
+| 0x26E | — (+DR_Shackle, DR_BigShack) | NO-RETAIL-NAME | dlls/objects/622/622.c | = (canonical) | — |
+| 0x26F | — (+DR_Generator, DR_WallGene) | NO-RETAIL-NAME | dlls/objects/623/623.c | = (canonical) | — |
 | 0x270 | DR_Rock | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x271 | DrakorHoverpad (+DR_PushCart) | CONFIRMED | main/dll/dll_0271_drakorhoverpad.c | = (canonical) | — |
-| 0x272 | HighTop (+CC_HighTop, DR_HighTop) | CONFIRMED | main/dll/dll_0272_hightop.c | = (canonical) | — |
+| 0x271 | — (+DrakorHoverpad, DR_PushCart) | NO-RETAIL-NAME | dlls/objects/625/625.c | = (canonical) | second TU: dlls/objects/625/625_updatemain.c |
+| 0x272 | — (+HighTop, CC_HighTop, DR_HighTop) | NO-RETAIL-NAME | dlls/objects/626/626.c | = (canonical) | — |
 | 0x273 | FirePipe (+BossDrakorF, FireHole, FlameMuzzle, IceHole, SteamHoleNo, SteamHoleFi, SteamHoleDe) | COMPLETE | dlls/objects/627_FirePipe/FirePipe.c | = (canonical) | — |
 | 0x274 | DR_pulley | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x275 | DR_cradle | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
@@ -800,7 +800,7 @@ name was a deliberate choice by a previous carve:
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
 | 0x198 | main/dll/dll_0198_nwshlevcon.c | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | COMPLETE |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | dlls/objects/415_NW_treebrid/NW_treebrid.c | COMPLETE |
-| 0x1A0 | main/dll/dll_01A0_nwgeyser.c | main/dll/NW/dll_01A0_nwgeyser.c | COMPLETE |
+| 0x1A0 | main/dll/dll_01A0_nwgeyser.c | dlls/objects/416_NW_geyser/NW_geyser.c | COMPLETE |
 | 0x1A1 | main/dll/dll_01A1_nwmammoth.c | main/dll/NW/dll_01A1_nwmammoth.c | CONFIRMED |
 | 0x1A2 | main/dll/dll_01A2_nwtricky.c | main/dll/NW/dll_01A2_nwtricky.c | COMPLETE |
 | 0x1A3 | main/dll/dll_01A3_nwanimice.c | main/dll/NW/dll_01A3_nwanimice.c | CONFIRMED |
@@ -916,15 +916,15 @@ name was a deliberate choice by a previous carve:
 | 0x254 | main/dll/dll_0254_ktfallingrocks.c | main/dll/DR/dll_0254_ktfallingrocks.c | CONFIRMED |
 | 0x256 | main/dll/dll_0256_dimsnowhorn1.c | main/dll/DIM/dll_0256_dimsnowhorn1.c | CONFIRMED |
 | 0x257 | main/dll/dll_0257_drearthwarrior.c | main/dll/DR/dll_0257_drearthwarrior.c | CONFIRMED |
-| 0x258 | main/dll/dll_0258_drcloudrunner.c | main/dll/DR/dll_0258_drcloudrunner.c | CONFIRMED |
+| 0x258 | main/dll/dll_0258_drcloudrunner.c | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | CONFIRMED |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | CONFIRMED |
-| 0x261 | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | CONFIRMED |
-| 0x265 | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | COMPLETE |
-| 0x268 | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | CONFIRMED |
-| 0x26B | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | COMPLETE |
-| 0x26C | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | CONFIRMED |
-| 0x26E | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | COMPLETE |
-| 0x26F | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | CONFIRMED |
+| 0x261 | main/dll/dll_0261_drlasercannon.c | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | CONFIRMED |
+| 0x265 | main/dll/dll_0265_drcreator.c | dlls/objects/613_DR_Creator/DR_Creator.c | COMPLETE |
+| 0x268 | main/dll/dll_0268_drcagecontrol.c | dlls/objects/616_DR_CageCont/DR_CageCont.c | CONFIRMED |
+| 0x26B | main/dll/dll_026B_drchimmey.c | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | COMPLETE |
+| 0x26C | main/dll/dll_026C_drcagewith.c | dlls/objects/620/620.c | CONFIRMED |
+| 0x26E | main/dll/dll_026E_drshackle.c | dlls/objects/622/622.c | COMPLETE |
+| 0x26F | main/dll/dll_026F_drgenerator.c | dlls/objects/623/623.c | CONFIRMED |
 | 0x279 | main/dll/dll_0279_drenergydisc.c | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | CONFIRMED |
 | 0x27C | main/dll/dll_027C_drlightbea.c | dlls/objects/636_DR_LightBea/DR_LightBea.c | CONFIRMED |
 | 0x27E | main/dll/dll_027E_drmusiccont.c | dlls/objects/638_DrMusicCont/DRMusicCont.c | CONFIRMED |
@@ -984,7 +984,7 @@ blocked units will surface more when carved.
 | 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
-| 0x1A0 | main/dll/dll_01A0_nwgeyser.c | include/main/dll/dll_01A0_nwgeyser.h |
+| 0x1A0 | dlls/objects/416_NW_geyser/NW_geyser.c | include/main/dll/dll_01A0_nwgeyser.h |
 | 0x1A1 | main/dll/dll_01A1_nwmammoth.c | include/main/dll/dll_01A1_nwmammoth.h |
 | 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | include/main/dll/dll_01A8_shkillermushroom.h |
 | 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |

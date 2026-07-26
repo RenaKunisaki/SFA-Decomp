@@ -80,7 +80,7 @@ STATIC_ASSERT(offsetof(FirePipeObject, extra) == 0xB8);
 STATIC_ASSERT(offsetof(FirePipeObject, sequenceCallback) == 0xBC);
 STATIC_ASSERT(offsetof(FirePipeObject, callback) == 0xC4);
 
-int firepipe_spawnEffectObject(FirePipeExtra *extra, FirePipeObject *obj, void *spawnDef);
+int firepipe_spawnEffectObject(FirePipeExtra *extra, FirePipeObject *obj, ObjPlacement *spawnDef);
 int firepipe_clearLinkedUpdateFlag(FirePipeObject *obj);
 int firepipe_setLinkedUpdateFlag(FirePipeObject *obj);
 void firepipe_updateState(FirePipeObject *obj);

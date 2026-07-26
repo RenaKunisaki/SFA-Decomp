@@ -1,5 +1,5 @@
 /*
- * drcreator (DLL 0x265) - a spawner that periodically emits projectile
+ * DR_Creator (DLL 0x265) - a spawner that periodically emits projectile
  * objects while the level is loaded and its arming game bit is set.
  * Spawn cadence is driven by spawnTimer/spawnInterval/timerVariance; each
  * projectile is launched with a velocity derived from the creator's

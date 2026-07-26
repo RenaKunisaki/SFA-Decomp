@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
 
-int Transporter_SeqFn(int* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Transporter_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int Transporter_getExtraSize(void);
 void Transporter_update(int obj);
 void Transporter_hitDetect(int obj);

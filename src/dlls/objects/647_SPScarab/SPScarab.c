@@ -37,15 +37,18 @@ STATIC_ASSERT(sizeof(ShopItemState) == 0xEC);
 STATIC_ASSERT(sizeof(ShopkeeperState) == 0x9D8);
 STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
 
-/* init() reads the placement raw off def: rotX byte (0x18), kind (0x19),
-   vendorObj (int, 0x14) and groundY (s16, 0x1a). */
 typedef struct SpscarabPlacement
 {
-    u8 pad0[0x19 - 0x0];
-    s8 kind; /* 0x19: scarab variant (0 / 1) */
-    u8 pad1A[0x20 - 0x1A];
+    u8 pad0[0x14 - 0x0];
+    s32 vendorObj; /* 0x14: owning shop object; consumed (set -1) by init */
+    s8 rotXByte;   /* 0x18: initial facing angle byte */
+    s8 kind;       /* 0x19: scarab variant (0 / 1) */
+    s16 groundY;   /* 0x1A: rest height */
+    u8 pad1C[0x20 - 0x1C];
 } SpscarabPlacement;
 
+STATIC_ASSERT(offsetof(SpscarabPlacement, vendorObj) == 0x14);
+STATIC_ASSERT(offsetof(SpscarabPlacement, kind) == 0x19);
 STATIC_ASSERT(sizeof(SpscarabPlacement) == 0x20);
 
 typedef struct SpscarabState
@@ -88,78 +91,78 @@ void SPScarab_hitDetect(void)
 {
 }
 
-void SPScarab_update(int obj)
+void SPScarab_update(GameObject* obj)
 {
     SpscarabState* state;
-    int placement;
+    SpscarabPlacement* placement;
     s16 angle;
     f32 distance;
     f32 phase;
     f32 outV[3];
     f32 hit_buf[24]; /* objBboxFn_800640cc collision output */
 
-    state = (SpscarabState*)*(int*)&((GameObject*)obj)->extra;
-    placement = *(int*)&((GameObject*)obj)->anim.placementData;
+    state = (SpscarabState*)obj->extra;
+    placement = (SpscarabPlacement*)obj->anim.placementData;
 
-    if (((GameObject*)obj)->anim.localPosY > state->groundY)
+    if (obj->anim.localPosY > state->groundY)
     {
-        ((GameObject*)obj)->anim.velocityY = ((GameObject*)obj)->anim.velocityY - 0.1f * timeDelta;
+        obj->anim.velocityY = obj->anim.velocityY - 0.1f * timeDelta;
     }
 
-    objMove((GameObject*)obj, timeDelta * (((GameObject*)obj)->anim.velocityX * state->speedScale),
-            ((GameObject*)obj)->anim.velocityY * timeDelta,
-            timeDelta * (((GameObject*)obj)->anim.velocityZ * state->speedScale));
+    objMove(obj, timeDelta * (obj->anim.velocityX * state->speedScale),
+            obj->anim.velocityY * timeDelta,
+            timeDelta * (obj->anim.velocityZ * state->speedScale));
 
-    distance = sqrtf(((GameObject*)obj)->anim.velocityX * ((GameObject*)obj)->anim.velocityX +
-                     ((GameObject*)obj)->anim.velocityZ * ((GameObject*)obj)->anim.velocityZ);
+    distance = sqrtf(obj->anim.velocityX * obj->anim.velocityX +
+                     obj->anim.velocityZ * obj->anim.velocityZ);
 
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, distance, &phase);
+    ObjAnim_SampleRootCurvePhase(&obj->anim, distance, &phase);
     ObjAnim_AdvanceCurrentMove((int)obj, phase, timeDelta, 0);
 
-    if (((GameObject*)obj)->anim.localPosY < state->groundY)
+    if (obj->anim.localPosY < state->groundY)
     {
-        ((GameObject*)obj)->anim.localPosY = state->groundY;
-        ((GameObject*)obj)->anim.velocityY = 0.0f;
+        obj->anim.localPosY = state->groundY;
+        obj->anim.velocityY = 0.0f;
     }
 
-    if (objBboxFn_800640cc(&((GameObject*)obj)->anim.previousLocalPosX, (f32*)(obj + 0xc), 3.0f, 0,
-                           (TrackBBoxHit*)&hit_buf[0], (GameObject*)obj, 8, -1, 0xff, 0xa) != 0)
+    if (objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 3.0f, 0,
+                           (TrackBBoxHit*)&hit_buf[0], obj, 8, -1, 0xff, 0xa) != 0)
     {
-        Vec3_ReflectAgainstNormal((f32*)&hit_buf[7], (f32*)(obj + 0x24), outV);
-        ((GameObject*)obj)->anim.velocityX = outV[0];
-        ((GameObject*)obj)->anim.velocityZ = outV[2];
-        angle = (s16)getAngle(-((GameObject*)obj)->anim.velocityX, -((GameObject*)obj)->anim.velocityZ);
-        ((GameObject*)obj)->anim.rotX = angle;
+        Vec3_ReflectAgainstNormal((f32*)&hit_buf[7], &obj->anim.velocityX, outV);
+        obj->anim.velocityX = outV[0];
+        obj->anim.velocityZ = outV[2];
+        angle = (s16)getAngle(-obj->anim.velocityX, -obj->anim.velocityZ);
+        obj->anim.rotX = angle;
     }
 
-    if (getXZDistance(&((GameObject*)Obj_GetPlayerObject())->anim.worldPosX,
-                      &((GameObject*)obj)->anim.worldPosX) <
+    if (getXZDistance(&Obj_GetPlayerObject()->anim.worldPosX,
+                      &obj->anim.worldPosX) <
         100.0f)
     {
-        Sfx_PlayFromObject(obj, (u16)state->sfxId);
-        itemPickupDoParticleFx((void*)obj, 1.0f, state->mode, 0x28);
-        ((GameObject*)obj)->objectFlags = ((GameObject*)obj)->objectFlags | SPSCARAB_OBJFLAG_UPDATE_DISABLED;
-        ((GameObject*)obj)->anim.flags = ((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN;
+        Sfx_PlayFromObject((u32)obj, (u16)state->sfxId);
+        itemPickupDoParticleFx(obj, 1.0f, state->mode, 0x28);
+        obj->objectFlags = obj->objectFlags | SPSCARAB_OBJFLAG_UPDATE_DISABLED;
+        obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
 
         {
-            int notifyArgB = (((SpscarabPlacement*)placement)->kind == 0) ? 1 : 0;
+            int notifyArgB = (placement->kind == 0) ? 1 : 0;
             int vendorObj = state->vendorObj;
-            int notifyArgA = (((SpscarabPlacement*)placement)->kind == 0) ? 0 : 1;
+            int notifyArgA = (placement->kind == 0) ? 0 : 1;
             (*(void (**)(int, int, int))(*(int*)(*(int*)(vendorObj + 0x68)) + 0x50))(vendorObj, notifyArgA, notifyArgB);
         }
     }
 
-    if ((((GameObject*)obj)->objectFlags & SPSCARAB_OBJFLAG_RENDERED) != 0)
+    if ((obj->objectFlags & SPSCARAB_OBJFLAG_RENDERED) != 0)
     {
         if (state->burstCount != 0)
         {
-            objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, state->burstCount, 1, 0x14,
+            objfx_spawnDirectionalBurst(obj, 5, 1.0f, state->burstCount, 1, 0x14,
                                         2.5f, NULL, 0);
         }
     }
 }
 
-void SPScarab_init(GameObject* obj, int def)
+void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
 {
     ObjAnimComponent* objAnim;
     SpscarabState* state;
@@ -167,7 +170,7 @@ void SPScarab_init(GameObject* obj, int def)
     SpscarabPalette paletteBytes;
 
     objAnim = (ObjAnimComponent*)obj;
-    state = (SpscarabState*)*(int*)&(obj)->extra;
+    state = (SpscarabState*)obj->extra;
     {
         const u16* palettePair = &gSpScarabPaletteBytesA;
         const u8* paletteByte = &gSpScarabPaletteByteB;
@@ -176,22 +179,22 @@ void SPScarab_init(GameObject* obj, int def)
     }
 
     (obj)->objectFlags = (obj)->objectFlags | (SPSCARAB_OBJFLAG_HIDDEN | SPSCARAB_OBJFLAG_HITDETECT_DISABLED);
-    (obj)->anim.rotX = (s16)((s32)(s8) * (u8*)(def + 0x18) << 8);
+    (obj)->anim.rotX = (s16)((s32)def->rotXByte << 8);
 
     (obj)->anim.velocityX = -mathSinf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);
     (obj)->anim.velocityZ = -mathCosf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);
 
-    objAnim->bankIndex = (s8)(1 - *(u8*)(def + 0x19));
+    objAnim->bankIndex = (s8)(1 - *(u8*)&def->kind);
 
-    state->groundY = (f32)(s32) * (s16*)(def + 0x1a);
+    state->groundY = (f32)(s32)def->groundY;
     state->speedScale = 0.4f + randomGetRange(0, 0x64) / 100.0f;
-    state->vendorObj = *(int*)(def + 0x14);
-    *(int*)(def + 0x14) = -1;
+    state->vendorObj = def->vendorObj;
+    def->vendorObj = -1;
 
     Sfx_AddLoopedObjectSound((int)obj, SFXTRIG_scarab_runloop);
     model = (int)Obj_GetActiveModel(obj);
 
-    switch ((s8) * (u8*)(def + 0x19))
+    switch (def->kind)
     {
     case 0:
         *(u8*)(*(int*)(model + 0x34) + 8) = *((u8*)&paletteBytes + randomGetRange(0, 2));

@@ -1,28 +1,22 @@
 /*
- * nwgeyser (DLL 0x1A0) - the erupting geyser of SnowHorn Wastes (map
+ * NW_geyser (DLL 0x1A0) - the erupting geyser of SnowHorn Wastes (map
  * 'nwastes', 0x0A).
  *
  * The geyser plays a pair of looped object sounds and continuously runs
  * its trigger sequence; once GAMEBIT_GEYSER_OFF is set it hides, drops
  * its sounds and collision, and reports completion (GameBit 0x398). Its
  * SeqFn scrolls the geyser texture each frame.
- *
- * This TU also hosts two helpers shared with the SnowHorn mammoth (DLL
- * 0x1A1): nw_mammoth_SeqFn (nw_mammoth_SeqFn), which drives the mammoth's
- * looped audio / path state, and NW_mammoth_updateEyeTracking, which feeds the mammoth's
- * look-at target into the character eye-animation update.
  */
 #include "main/mapEvent.h"
 #include "game/objects/object.h"
 #include "main/objprint_character_api.h"
 #include "main/objhits.h"
+#include "main/objseq.h"
 #include "main/objtexture.h"
 #include "main/dll/dll_01A0_nwgeyser.h"
-#include "main/dll/NW/dll_01A1_nwmammoth.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
-#include "main/newshadows_audio_api.h"
 #include "dlls/object_descriptor.h"
 
 /* GameBit that erupts/retires the geyser (hides it, drops its sounds). */
@@ -113,45 +107,4 @@ void nw_geyser_init(GameObject* obj)
 {
     obj->objectFlags = (u16)(obj->objectFlags | (NWGEYSER_OBJFLAG_HIDDEN | NWGEYSER_OBJFLAG_HITDETECT_DISABLED));
     obj->animEventCallback = NW_geyser_SeqFn;
-}
-
-f32* NW_mammoth_getSpawnPosition(GameObject* obj)
-{
-    return &((NwMammothState*)obj->extra)->spawnPosX;
-}
-
-int nw_mammoth_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    u8* state;
-    NwMammothState* s;
-    void* audioEvents;
-    void* audioPoints;
-    void* audioScratch;
-
-    state = (obj)->extra;
-    s = (NwMammothState*)state;
-    if ((s->runtimeFlags & 0x20) == 0)
-    {
-        Sfx_StopObjectChannel((int)obj, 0x7f);
-        s->pathSpeed = 0.0f;
-        s->runtimeFlags = (u8)(s->runtimeFlags & ~0x10);
-        s->runtimeFlags = (u8)(s->runtimeFlags | 0x20);
-    }
-    if ((s->runtimeFlags & 4) != 0)
-    {
-        s->playerDistanceSq = 0.0f;
-        animUpdate->hitVolumePair = (s16)(animUpdate->hitVolumePair & ~8);
-        animUpdate->hitVolumePair = (s16)(animUpdate->hitVolumePair & ~0x40);
-        NW_mammoth_updateEyeTracking(obj, (int)state, 1);
-    }
-    audioEvents = state + 0x440;
-    audioPoints = state + 0x45c;
-    audioScratch = state + 0x16c;
-    objAudioFn_8006ef38(obj, (ObjAnimEventList*)audioEvents, 8, audioPoints, audioScratch, 1.0f, 1.0f);
-    if (animUpdate->eventCount != 0)
-    {
-        (obj)->objectFlags = (u16)((obj)->objectFlags & ~0x400);
-        (obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
-    }
-    return 0;
 }

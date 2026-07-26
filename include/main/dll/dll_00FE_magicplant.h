@@ -117,7 +117,7 @@ void FUN_8017fd40(u64 param_1, double param_2, double param_3, u64 param_4, u64 
                   u64 param_8, u16* param_9, u32 param_10, u32 param_11, u32 param_12, u32 param_13, u32 param_14,
                   u32 param_15, u32 param_16);
 int duster_getExtraSize(void);
-void duster_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
+void duster_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void duster_hitDetect(GameObject* obj);
 void duster_update(GameObject* obj);
 void duster_init(GameObject* obj, u8* params);

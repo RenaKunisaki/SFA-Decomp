@@ -37,7 +37,7 @@ void spdrape_free(void);
 void spdrape_render(void);
 void spdrape_hitDetect(void);
 void spdrape_update(GameObject* obj);
-void spdrape_init(int* obj, u8* def);
+void spdrape_init(GameObject* obj, SpdrapeObjectDef* def);
 void spdrape_release(void);
 void spdrape_initialise(void);
 

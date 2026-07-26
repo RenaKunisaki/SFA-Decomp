@@ -94,7 +94,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0040_credits | 100.0000 | 70.4585 | -29.5415 |
 | main/dlls/objects/641_DR_EarthCal/DR_EarthCal | 100.0000 | 70.8681 | -29.1319 |
 | main/main/dll/dll_0041_warpstoneui | 99.6296 | 70.8788 | -28.7508 |
-| main/main/dll/dll_025B_msplantings | 100.0000 | 71.4044 | -28.5956 |
+| main/dlls/objects/603_MSPlantingS/MSPlantingS | 100.0000 | 71.4044 | -28.5956 |
 | main/main/object | 99.9370 | 71.5331 | -28.4040 |
 | main/main/dll/dll_0038_weirdunusedmenu | 100.0000 | 72.3010 | -27.6990 |
 | main/main/objlib | 99.9354 | 72.3720 | -27.5633 |
@@ -165,7 +165,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_024D_bossdrakor | 99.5893 | 85.5837 | -14.0056 |
 | main/main/dll/dll_01AA_bombplantspore | 100.0000 | 86.1777 | -13.8223 |
 | main/main/dll/duster_wb | 100.0000 | 86.2121 | -13.7879 |
-| main/main/dll/dll_0271_drakorhoverpad | 100.0000 | 86.2241 | -13.7759 |
+| main/dlls/objects/625/625 | 100.0000 | 86.2241 | -13.7759 |
 | main/dlls/objects/666_ARWArwing/ARWArwing | 100.0000 | 86.2676 | -13.7324 |
 | main/main/modelEngine | 100.0000 | 86.3317 | -13.6683 |
 | main/main/dll/dll_801c0bf8 | 98.6299 | 85.2597 | -13.3701 |
@@ -178,7 +178,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/duster | 100.0000 | 87.9461 | -12.0539 |
 | main/main/dll/snowworm | 100.0000 | 87.9695 | -12.0305 |
 | main/main/dll/dll_0039_dummy39 | 100.0000 | 88.0233 | -11.9767 |
-| main/main/dll/DR/dll_0258_drcloudrunner | 99.7540 | 87.7828 | -11.9713 |
+| main/dlls/objects/600_DR_CloudRun/DR_CloudRun | 99.7540 | 87.7828 | -11.9713 |
 | main/main/dll/dll_0157_spiritdoorspirit | 100.0000 | 88.2917 | -11.7083 |
 | main/main/dll/dll_000F_unk | 100.0000 | 88.2923 | -11.7077 |
 | main/main/dll/dll_00ED_collectible | 100.0000 | 88.3457 | -11.6543 |
@@ -200,7 +200,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/worldplanet_lighting | 100.0000 | 91.2387 | -8.7613 |
 | main/main/dll/skeetla | 99.7052 | 91.0786 | -8.6265 |
 | main/main/audio/snd3dgroup | 100.0000 | 91.4300 | -8.5700 |
-| main/main/dll/dll_0266_kytesmum | 100.0000 | 91.7997 | -8.2003 |
+| main/dlls/objects/614_KytesMum/KytesMum | 100.0000 | 91.7997 | -8.2003 |
 | main/main/dll/dll_000B_dll0b | 98.8607 | 90.7162 | -8.1444 |
 | main/main/dll/dll_0119_coldwatercontrol | 100.0000 | 91.8795 | -8.1205 |
 | main/main/dll/dll_01A9_bombplant | 100.0000 | 91.9378 | -8.0622 |
@@ -221,11 +221,11 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/modellight | 99.9833 | 94.5821 | -5.4012 |
 | main/main/dll/WM/dll_0211_wmwallcrawler | 100.0000 | 94.7003 | -5.2997 |
 | main/main/dll/dll_8011d918 | 100.0000 | 94.7368 | -5.2632 |
-| main/main/dll/DR/dll_0261_drlasercannon | 99.4782 | 94.3216 | -5.1565 |
+| main/dlls/objects/609_DR_LaserCan/DR_LaserCan | 99.4782 | 94.3216 | -5.1565 |
 | main/main/dll/dll_0242_dbstealerworm | 99.9161 | 94.8762 | -5.0398 |
 | main/main/objseq | 99.7434 | 94.7181 | -5.0253 |
 | main/main/dll/DR/dll_0257_drearthwarrior | 99.8439 | 94.9341 | -4.9098 |
-| main/main/dll/dll_0272_hightop | 100.0000 | 95.0953 | -4.9047 |
+| main/dlls/objects/626/626 | 100.0000 | 95.0953 | -4.9047 |
 | main/main/dll/DF/dll_0233_dfpstatue1 | 100.0000 | 95.1807 | -4.8193 |
 | main/main/dll/tricky_flameguard | 99.9461 | 95.1526 | -4.7935 |
 | main/main/newshadows | 97.9941 | 93.2277 | -4.7664 |
@@ -314,8 +314,8 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/weevil | 100.0000 | 99.3687 | -0.6313 |
 | main/main/audio/synth_channel_scale | 99.4686 | 98.9112 | -0.5575 |
 | main/main/dll/warppad | 100.0000 | 99.4592 | -0.5408 |
-| main/main/dll/dll_0269_explodeplan | 100.0000 | 99.4805 | -0.5195 |
-| main/main/dll/dll_0262_drakormissile | 100.0000 | 99.4922 | -0.5078 |
+| main/dlls/objects/617_ExplodePlan/ExplodePlan | 100.0000 | 99.4805 | -0.5195 |
+| main/dlls/objects/610/610 | 100.0000 | 99.4922 | -0.5078 |
 | main/main/render | 97.7715 | 97.3112 | -0.4602 |
 | main/main/dll/n_options | 100.0000 | 99.5541 | -0.4459 |
 | main/main/dll/obj_movelib | 100.0000 | 99.5935 | -0.4065 |

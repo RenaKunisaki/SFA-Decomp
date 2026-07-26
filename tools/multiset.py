@@ -8,7 +8,7 @@ screened without a full build.
 
 UNIT NAME GOTCHA: <unit> is resolved by function_objdump.resolve_unit, which
 matches config.json unit names -- these carry the ".c" suffix
-(e.g. "dll_0261_drlasercannon.c" or "main/dll/DR/dll_0261_drlasercannon.c").
+(e.g. "DR_LaserCan.c" or "dlls/objects/609_DR_LaserCan/DR_LaserCan.c").
 report.json's unit name is the DOUBLED-prefix form ("main/main/dll/DR/...") and
 is NOT what this tool wants. To go report -> config: strip the leading "main/",
 append ".c" (basename also works).
