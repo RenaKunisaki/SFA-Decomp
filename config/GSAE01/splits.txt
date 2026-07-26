@@ -3117,7 +3117,7 @@ main/dll/dll_801e66dc.c:
 main/dll/trex_lazerwall.c:
 	.text       start:0x801E67BC end:0x801E6B10
 
-main/dll/laserturretgroup.c:
+dlls/objects/646_SPShopKeepe/SPShopKeepe.c:
 	.text       start:0x801E6B10 end:0x801E832C
 	.data       start:0x80328370 end:0x803283E0
 	.sdata      start:0x803DC0A0 end:0x803DC0B0

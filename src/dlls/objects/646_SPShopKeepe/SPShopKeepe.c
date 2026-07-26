@@ -1,37 +1,38 @@
 /*
- * spshopkeeper (DLL 0x286) - the SnowHorn shopkeeper vendor character.
+ * SPShopKeepe (DLL 646) - the SnowHorn shopkeeper vendor character.
  *
- * He latches onto the nearest shop stall (object group 9, vendorObj), turns
- * to face the player and runs the purchase flow via his animEventCallback
- * (ShopKeeper_SeqFn): reading the shop's current item price through the stall's
- * interface vtable, pushing the three price digits into his number-texture
- * slots, and handling buy/cancel through the screen-transition + UI dll.
- * ShopKeeper_spawnScarabs scatters the paid scarab coins (object type 1151). Per-frame
- * look-at and eye animation run through the shared dll_2E (moveLib) blocks.
+ * The TU begins with the DR laser-turret callbacks used by the shopkeeper's
+ * shared state table, followed by the shopkeeper object implementation.
  */
 #include "main/dll_000A_expgfx.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/DR/DRlaserturret.h"
 #include "main/dll/trex_lazerwall.h"
 #include "main/dll/dll_801e66dc.h"
+#include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/shopkeeperstate_struct.h"
 #include "main/dll/pushcartstate97_types.h"
+#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
 #include "main/gametext_show_api.h"
+#include "main/gamebits.h"
 #include "main/mapEvent.h"
 #include "main/model_engine.h"
 #include "main/objanim.h"
+#include "main/objhits.h"
 #include "main/objprint_character_api.h"
+#include "main/obj_trigger.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
+#include "main/pad.h"
 #include "main/player_control_interface.h"
 #include "main/rcp_dolphin.h"
 #include "main/screen_transition.h"
@@ -42,6 +43,390 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+
+extern const f32 lbl_803E59DC;
+extern const f32 lbl_803E59E0;
+extern f32 gDrLaserTurretDefaultAnimStepScale;
+extern f32 gDrLaserTurretPi;
+extern f32 gDrLaserTurretBobPhaseScale;
+extern f32 lbl_803E59F0;
+extern f32 lbl_803E59D8;
+extern void* lbl_803AD068[8];
+
+void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count);
+int ShopKeeper_getExtraSize(void);
+int ShopKeeper_getObjectTypeId(void);
+void ShopKeeper_free(GameObject* obj);
+void ShopKeeper_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
+void ShopKeeper_hitDetect(void);
+void ShopKeeper_update(GameObject* obj);
+void ShopKeeper_init(GameObject* obj);
+void ShopKeeper_release(void);
+void ShopKeeper_initialise(void);
+
+s16 gDrLaserTurretIdleAnimMoves[2] = {0x13, 0x11};
+f32 gDrLaserTurretIdleAnimStepScales[2] = {0.01f, 0.0125f};
+
+int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* animState)
+{
+    void* playerObj;
+    DRLaserTurretState* state;
+    void* stack;
+    int pushState;
+    int sum;
+    int rng;
+
+    playerObj = Obj_GetPlayerObject();
+    state = obj->state;
+    state->promptState = 0xff;
+    animState->animStepScale = gDrLaserTurretDefaultAnimStepScale;
+    if (obj->currentMove != 0)
+    {
+        ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, lbl_803E59DC, 0);
+    }
+    ObjHits_EnableObject((GameObject*)obj);
+    obj->hitFlags &= ~DR_LASERTURRET_HITFLAG_CLEAR_PROMPT;
+    if (mainGetBit(DR_LASERTURRET_GAMEBIT_SHOP_OPEN) == 0)
+    {
+        pushState = DR_LASERTURRET_STATE_PUSH_IDLE;
+        stack = state->stateStack;
+        if (Stack_IsFull(stack) == 0)
+        {
+            Stack_Push(stack, &pushState);
+        }
+        return DR_LASERTURRET_STATE_CONTINUE;
+    }
+    shopKeeperRotateFn_801e7c4c((s16*)obj, playerObj, 0);
+    obj->y = state->bobAmplitude *
+                 mathSinf((double)(gDrLaserTurretPi * (float)(u32)state->bobPhase / gDrLaserTurretBobPhaseScale)) +
+             state->bobBaseY;
+    sum = state->bobPhase + framesThisStep * 0x100;
+    if (sum > 0xffff)
+    {
+        float rngf;
+        rng = randomGetRange(0xf, 0x23);
+        rngf = (float)rng;
+        rngf = lbl_803E59F0 * rngf;
+        state->bobAmplitude = rngf;
+    }
+    state->bobPhase = sum;
+    if ((obj->hitFlags & DR_LASERTURRET_HITFLAG_CAN_PROMPT) != 0)
+    {
+        if (playerGetMoney(playerObj) >= 1)
+        {
+            mainSetBits(DR_LASERTURRET_GAMEBIT_HAS_MONEY, 1);
+            buttonDisable(0, DR_LASERTURRET_BUTTON_ACCEPT);
+        }
+        else
+        {
+            rng = randomGetRange(0, 2);
+            (*gObjectTriggerInterface)->runSequence(rng, obj, -1);
+            buttonDisable(0, DR_LASERTURRET_BUTTON_ACCEPT);
+        }
+    }
+    return 0;
+}
+
+int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimState* animState)
+{
+    void* playerObj;
+    DRLaserTurretState* state;
+    void* stack;
+    TrackGroundHit** arr;
+    int pushState;
+    int sum;
+    int rng;
+    float dist;
+    float minDist;
+    int count;
+    int idx;
+    f32 t;
+    float rate;
+    float target;
+    float d;
+
+    playerObj = Obj_GetPlayerObject();
+    state = obj->state;
+    if (animState->stateEntered != 0)
+    {
+        rng = randomGetRange(0x1f4, 0x3e8);
+        state->actionTimer = rng;
+        state->flags = state->flags & ~DR_LASERTURRET_FLAG_ACTION_ACTIVE;
+    }
+    if ((state->flags & DR_LASERTURRET_FLAG_ACTION_ACTIVE) != 0)
+    {
+        if (animState->moveComplete != 0)
+        {
+            if (obj->currentMove == DR_LASERTURRET_ANIM_TRACKING && animState->animStepScale > lbl_803E59DC)
+            {
+                ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_ALERT, lbl_803E59DC, 0);
+            }
+            else if (obj->currentMove != 0)
+            {
+                ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, lbl_803E59DC, 0);
+            }
+            animState->animStepScale = gDrLaserTurretDefaultAnimStepScale;
+            state->flags = state->flags & ~DR_LASERTURRET_FLAG_ACTION_ACTIVE;
+            rng = randomGetRange(0x1f4, 0x3e8);
+            state->actionTimer = rng;
+        }
+    }
+    else
+    {
+        if (obj->currentMove != DR_LASERTURRET_ANIM_ALERT && obj->currentMove != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, lbl_803E59DC, 0);
+            animState->animStepScale = gDrLaserTurretDefaultAnimStepScale;
+        }
+    }
+    state->actionTimer = state->actionTimer - timeDelta;
+    if (state->actionTimer <= lbl_803E59DC && (state->flags & DR_LASERTURRET_FLAG_ACTION_ACTIVE) == 0)
+    {
+        Sfx_PlayFromObject((int)obj, DR_LASERTURRET_SFX_ACTION);
+        if (obj->currentMove == DR_LASERTURRET_ANIM_ALERT)
+        {
+            ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_TRACKING, 0.99f, 0);
+            animState->animStepScale = -0.0125f;
+        }
+        else
+        {
+            rng = randomGetRange(0, 1);
+            ObjAnim_SetCurrentMove((int)obj, gDrLaserTurretIdleAnimMoves[rng], lbl_803E59DC, 0);
+            animState->animStepScale = gDrLaserTurretIdleAnimStepScales[rng];
+        }
+        state->flags = state->flags | DR_LASERTURRET_FLAG_ACTION_ACTIVE;
+    }
+    if (mainGetBit(DR_LASERTURRET_GAMEBIT_SHOP_OPEN) == 0)
+    {
+        pushState = DR_LASERTURRET_STATE_PUSH_TRACKING;
+        stack = state->stateStack;
+        if (Stack_IsFull(stack) == 0)
+        {
+            Stack_Push(stack, &pushState);
+        }
+        return DR_LASERTURRET_STATE_CONTINUE;
+    }
+    t = shopKeeperRotateFn_801e7c4c((s16*)obj, playerObj, 0);
+    rate = 0.02f;
+    if (t > 80.0f)
+    {
+        target = -0.9f;
+    }
+    else
+    {
+        target = lbl_803E59DC;
+    }
+    d = rate * (target - animState->aimBlend);
+    animState->aimBlend += d * timeDelta;
+    if (animState->aimBlend > -0.002f)
+    {
+        animState->aimBlend = lbl_803E59DC;
+    }
+    animState->aimBlend = lbl_803E59DC;
+    count = hitDetectFn_80065e50((GameObject*)obj, obj->x, obj->y, obj->z, &arr, 0, 0);
+    minDist = 10000.0f;
+    for (idx = 0; idx < count; idx++)
+    {
+        dist = arr[idx]->height - obj->y;
+        if (dist < lbl_803E59DC)
+        {
+            dist = -dist;
+        }
+        if (dist < minDist)
+        {
+            state->bobBaseY = lbl_803E59E0 + arr[idx]->height;
+            minDist = dist;
+        }
+    }
+    obj->y = state->bobAmplitude *
+                 mathSinf((double)(gDrLaserTurretPi * (float)(u32)state->bobPhase / gDrLaserTurretBobPhaseScale)) +
+             state->bobBaseY;
+    sum = state->bobPhase + framesThisStep * 0x100;
+    if (sum > 0xffff)
+    {
+        float rngf;
+        rng = randomGetRange(0xf, 0x23);
+        rngf = (float)rng;
+        rngf = lbl_803E59F0 * rngf;
+        state->bobAmplitude = rngf;
+    }
+    state->bobPhase = sum;
+    if (ObjTrigger_IsSet((int)obj) != 0)
+    {
+        rng = randomGetRange(0, 2);
+        (*gObjectTriggerInterface)->runSequence(rng, obj, -1);
+    }
+    return 0;
+}
+
+int DRlaserturret_startLinkedTarget(DRLaserTurretObject* obj)
+{
+    DRLaserTurretState* state;
+
+    state = obj->state;
+    if (mainGetBit(DR_LASERTURRET_GAMEBIT_LINK_READY) == 0)
+    {
+        return 0;
+    }
+    if ((int)mainGetBit(DR_LASERTURRET_GAMEBIT_LINK_STARTED) == 0)
+    {
+        int* target;
+        mainSetBits(DR_LASERTURRET_GAMEBIT_LINK_STARTED, 1);
+        target = state->linkedTarget;
+        (**(VtableFn***)((char*)target + 0x68))[0x24 / 4](target, 1, 2);
+    }
+    return DR_LASERTURRET_STATE_LINKED_TARGET;
+}
+
+int DRlaserturret_handlePromptChoice(DRLaserTurretObject* obj, void* param2, int dispatch)
+{
+    DRLaserTurretState* state;
+    s8 stickHi;
+    s8 stickLo;
+    int btn;
+    int cv;
+    char nudge;
+    ObjTextureRuntimeSlot* texture;
+
+    state = obj->state;
+    if (dispatch == DR_LASERTURRET_PROMPT_COUNT)
+    {
+        padGetAnalogInput(0, &stickHi, &stickLo);
+        if (stickLo < 0)
+        {
+            state->countValue--;
+            Sfx_PlayFromObject(0, DR_LASERTURRET_SFX_PROMPT_TICK);
+        }
+        else if (stickLo > 0)
+        {
+            state->countValue++;
+            Sfx_PlayFromObject(0, DR_LASERTURRET_SFX_PROMPT_TICK);
+        }
+        if (state->countValue > state->maxCount)
+        {
+            state->countValue = state->maxCount;
+        }
+        if (state->countValue > state->countScale << 1)
+        {
+            state->countValue = (s16)(state->countScale << 1);
+        }
+        else if (state->countValue < state->countScale >> 1)
+        {
+            state->countValue = (s16)(state->countScale >> 1);
+        }
+        cv = state->countValue;
+        texture = objFindTexture((GameObject*)(obj), DR_LASERTURRET_ONES_TEXTURE_SLOT, 0);
+        texture->textureId = (cv % 10) << DR_LASERTURRET_DIGIT_TEXTURE_SHIFT;
+        texture = objFindTexture((GameObject*)(obj), DR_LASERTURRET_TENS_TEXTURE_SLOT, 0);
+        texture->textureId = ((cv / 10) % 10) << DR_LASERTURRET_DIGIT_TEXTURE_SHIFT;
+        cv = cv / 100;
+        if (cv > DR_LASERTURRET_MAX_DIGIT)
+            cv = DR_LASERTURRET_MAX_DIGIT;
+        texture = objFindTexture((GameObject*)(obj), DR_LASERTURRET_HUNDREDS_TEXTURE_SLOT, 0);
+        texture->textureId = cv << DR_LASERTURRET_DIGIT_TEXTURE_SHIFT;
+    }
+    else if (dispatch == DR_LASERTURRET_PROMPT_DIGIT_COUNT)
+    {
+        padGetAnalogInput(0, &stickHi, &stickLo);
+        if (stickLo < 0)
+        {
+            state->digitCount--;
+            Sfx_PlayFromObject(0, DR_LASERTURRET_SFX_PROMPT_TICK);
+        }
+        else if (stickLo > 0)
+        {
+            state->digitCount++;
+            Sfx_PlayFromObject(0, DR_LASERTURRET_SFX_PROMPT_TICK);
+        }
+        if (state->digitCount > state->maxCount)
+        {
+            state->digitCount = state->maxCount;
+        }
+        if (state->digitCount > DR_LASERTURRET_MAX_DIGIT_COUNT)
+        {
+            state->digitCount = DR_LASERTURRET_MAX_DIGIT_COUNT;
+        }
+        else if (state->digitCount < DR_LASERTURRET_MIN_DIGIT_COUNT)
+        {
+            state->digitCount = DR_LASERTURRET_MIN_DIGIT_COUNT;
+        }
+        {
+            cv = state->digitCount;
+            texture = objFindTexture((GameObject*)(obj), DR_LASERTURRET_ONES_TEXTURE_SLOT, 0);
+            texture->textureId = (cv % 10) << DR_LASERTURRET_DIGIT_TEXTURE_SHIFT;
+            texture = objFindTexture((GameObject*)(obj), DR_LASERTURRET_TENS_TEXTURE_SLOT, 0);
+            texture->textureId = ((cv / 10) % 10) << DR_LASERTURRET_DIGIT_TEXTURE_SHIFT;
+            cv = cv / 100;
+            if (cv > DR_LASERTURRET_MAX_DIGIT)
+                cv = DR_LASERTURRET_MAX_DIGIT;
+            texture = objFindTexture((GameObject*)(obj), DR_LASERTURRET_HUNDREDS_TEXTURE_SLOT, 0);
+            texture->textureId = cv << DR_LASERTURRET_DIGIT_TEXTURE_SHIFT;
+        }
+        btn = getButtonsJustPressed(0);
+        if ((btn & DR_LASERTURRET_BUTTON_CANCEL) != 0u)
+        {
+            state->flags = state->flags | DR_LASERTURRET_FLAG_CONFIRM_PROMPT;
+            (*gScreenTransitionInterface)->start(0x1e, 1);
+            return 1;
+        }
+    }
+    btn = getButtonsJustPressed(0);
+    if ((btn & DR_LASERTURRET_BUTTON_ACCEPT) == 0u)
+    {
+        return 0;
+    }
+    cv = state->countValue;
+    if (cv < state->countTarget)
+    {
+        nudge = (state->nudgeCount < DR_LASERTURRET_MAX_NUDGE_COUNT) ? 0 : 2;
+    }
+    else
+    {
+        nudge = 1;
+    }
+    switch (dispatch)
+    {
+    case DR_LASERTURRET_PROMPT_COUNT:
+        if ((s8)nudge == 0)
+        {
+            state->nudgeCount++;
+        }
+        return nudge == 0;
+    case DR_LASERTURRET_PROMPT_NUDGE:
+        if ((s8)nudge == 1)
+        {
+            int* target = state->linkedTarget;
+            (**(VtableFn***)((char*)target + 0x68))[0x48 / 4](target, cv);
+        }
+        return nudge == 1;
+    case DR_LASERTURRET_PROMPT_MAX_NUDGE:
+        return nudge == 2;
+    }
+    return 0;
+}
+
+void DRlaserturret_startTimedChallenge(DRLaserTurretObject* obj)
+{
+    DRLaserTurretState* state;
+
+    state = obj->state;
+    if ((state->flags & DR_LASERTURRET_FLAG_START_SEQUENCE) != 0)
+    {
+        int* target;
+        gameTimerInit(0x11, 0x1e);
+        timerSetToCountUp();
+        hudFn_8011f6f0(1);
+        mainSetBits(DR_LASERTURRET_GAMEBIT_TIMER_STARTED, 1);
+        target = state->linkedTarget;
+        (**(VtableFn***)((char*)target + 0x68))[0x4c / 4](target, state->digitCount);
+        gTitleMenuControlInterfaceCopy->vtable->func04(NULL, 0xf5, 0, 0, 0);
+    }
+    else
+    {
+        hudFn_8011f38c(0);
+    }
+    state->flags = 0;
+}
 
 #define SPSHOPKEEPER_OBJFLAG_HITDETECT_DISABLED 0x2000
 
@@ -81,23 +466,7 @@ enum
     SHOPKEEPER_FLAG_TICK = 0x20       /* per-frame tick effect this frame */
 };
 
-extern f32 lbl_803E59D8;
-extern void* lbl_803AD068[8];
 void* lbl_803DDC58;
-
-extern f32 lbl_803E59F0;
-
-void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count);
-
-int ShopKeeper_getExtraSize(void);
-int ShopKeeper_getObjectTypeId(void);
-void ShopKeeper_free(GameObject* obj);
-void ShopKeeper_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void ShopKeeper_hitDetect(void);
-void ShopKeeper_update(GameObject* obj);
-void ShopKeeper_init(GameObject* obj);
-void ShopKeeper_release(void);
-void ShopKeeper_initialise(void);
 
 ObjectDescriptor gShopKeeperObjDescriptor = {
     0,
