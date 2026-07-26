@@ -1670,7 +1670,7 @@ dlls/objects/219_MikaBomb/MikaBomb.c:
 	.data       start:0x803205E8 end:0x80320620
 	.sdata2     start:0x803E31A0 end:0x803E31C0
 
-main/dll/dll_00DC_mikabombshadow.c:
+dlls/objects/220_MikaBombSha/MikaBombSha.c:
 	.text       start:0x8016B710 end:0x8016B898
 	.data       start:0x80320620 end:0x80320658
 	.sdata2     start:0x803E31C0 end:0x803E31E8

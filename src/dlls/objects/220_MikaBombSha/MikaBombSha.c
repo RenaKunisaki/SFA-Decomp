@@ -1,5 +1,5 @@
 /*
- * mikabombshadow (DLL 0x00DC) - the Mika bomb's ground-shadow blob.
+ * MikaBombSha (DLL 0x00DC) - the Mika bomb's ground-shadow blob.
  *
  * init snaps the shadow onto the ground plane under the bomb (via
  * fn_80065684), caches the drop height in the extra slot and seeds the
@@ -29,6 +29,7 @@ int MikaBombShadow_getExtraSize(void)
 {
     return 0x4;
 }
+
 int MikaBombShadow_getObjectTypeId(void)
 {
     return 0x0;
