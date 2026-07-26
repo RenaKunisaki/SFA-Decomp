@@ -37,7 +37,7 @@ STATIC_ASSERT(sizeof(DIM2RoofRubState) == 0x140);
 void dim2roofrub_spawnEffects(GameObject* obj);
 int dim2roofrub_getExtraSize(void);
 void dim2roofrub_free(GameObject* obj);
-void dim2roofrub_render(GameObject* obj, int p2, int p3, int p4, int p5);
+void dim2roofrub_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5);
 void dim2roofrub_update(GameObject* obj);
 void dim2roofrub_init(GameObject* obj, DIM2RoofRubPlacement* placement);
 

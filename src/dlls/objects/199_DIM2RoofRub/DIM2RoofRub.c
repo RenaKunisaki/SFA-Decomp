@@ -134,7 +134,7 @@ void dim2roofrub_free(GameObject* obj) {
     Sfx_StopObjectChannel((int)obj, 0x7f);
 }
 
-void dim2roofrub_render(GameObject* obj, int p2, int p3, int p4, int p5) {
+void dim2roofrub_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5) {
     DIM2RoofRubState* state;
     f32 worldMatrix[12];
     f32 playerTranslation[12];
@@ -179,7 +179,7 @@ void dim2roofrub_render(GameObject* obj, int p2, int p3, int p4, int p5) {
         objSetMtxFn_800412d4((u32)renderMatrix);
         objRenderModel(obj);
     } else {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 

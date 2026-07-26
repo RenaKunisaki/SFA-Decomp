@@ -47,7 +47,7 @@ void animatedobj_free(GameObject* obj, int clearSequence) {
     }
 }
 
-void animatedobj_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 unusedVisible) {
+void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 unusedVisible) {
     AnimatedObjState* state;
     f32 worldMatrix[12];
     f32 playerTranslation[12];
@@ -92,7 +92,7 @@ void animatedobj_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 unus
         objSetMtxFn_800412d4((u32)renderMatrix);
         objRenderModel(obj);
     } else {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 

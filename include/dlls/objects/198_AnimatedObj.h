@@ -35,7 +35,7 @@ STATIC_ASSERT(sizeof(AnimatedObjState) == 0x140);
 
 int animatedobj_getExtraSize(void);
 void animatedobj_free(GameObject* obj, int clearSequence);
-void animatedobj_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 unusedVisible);
+void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 unusedVisible);
 void animatedobj_update(GameObject* obj);
 void animatedobj_init(GameObject* obj, AnimatedObjPlacement* placement);
 
