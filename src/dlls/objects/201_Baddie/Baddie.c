@@ -1346,7 +1346,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 snowworm_update((int*)obj, (u8*)state);
                 break;
             case ENEMY_HOODEDZYCK_OBJ:
-                hoodedZyck_update(obj, (u8*)state);
+                hoodedZyck_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_BATTLEDROID_OBJ:
                 battleDroidUpdateAttack((int)obj, state);
@@ -1423,7 +1423,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 snowworm_update((int*)obj, (u8*)state);
                 break;
             case ENEMY_HOODEDZYCK_OBJ:
-                hoodedZyck_updateB(obj, (u8*)state);
+                hoodedZyck_updateB((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_BATTLEDROID_OBJ:
                 battleDroidUpdate((int)obj, state);
@@ -3063,7 +3063,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             snowworm_init((int*)obj, (int*)state);
             break;
         case ENEMY_HOODEDZYCK_OBJ:
-            hoodedZyck_init((int*)obj, (int*)state);
+            hoodedZyck_init(obj, (struct BaddieState*)state);
             break;
         case ENEMY_BATTLEDROID_OBJ:
             battleDroidInit((int)obj, (char*)state);

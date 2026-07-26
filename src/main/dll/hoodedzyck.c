@@ -143,7 +143,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         toPos[1] = 5.0f + (obj)->anim.localPosY;
         toPos[2] = (obj)->anim.localPosZ - 10.0f * cosYaw;
         groundHit = objBboxFn_800640cc(fromPos, toPos, 0.0f, 3, (TrackBBoxHit*)hitOut,
-                                       (GameObject*)obj,
+                                       obj,
                                        (u32) * (u8*)(state + 0x261),
                                        0xffffffff, 0xff, 0);
         noHit = !(groundHit & 0xff);
@@ -172,7 +172,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
     return;
 }
 
-void hoodedZyck_updateB(s16* obj, u8* state)
+void hoodedZyck_updateB(GameObject* obj, u8* state)
 {
     f32 scale;
     int moved;
@@ -192,7 +192,7 @@ void hoodedZyck_updateB(s16* obj, u8* state)
     f32 sinB;
 
     {
-        u8 n = *(u8*)(*(int*)&((GameObject*)obj)->anim.placementData + 0x2f);
+        u8 n = *(u8*)(*(int*)&obj->anim.placementData + 0x2f);
         scale = n;
         if (0.0f == n)
         {
@@ -205,17 +205,17 @@ void hoodedZyck_updateB(s16* obj, u8* state)
 
     if (0.0f != ((FCVars*)state)->emergeTimer)
     {
-        ObjHits_DisableObject((GameObject*)obj);
-        if (((GameObject*)obj)->anim.currentMove != 5)
+        ObjHits_DisableObject(obj);
+        if (obj->anim.currentMove != 5)
         {
-            fn_8014D08C((GameObject*)obj, (int)state, 5, lbl_803DBCEC, 0, 0);
+            fn_8014D08C(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
-            ObjHits_EnableObject((GameObject*)obj);
+            ObjHits_EnableObject(obj);
             ((FCVars*)state)->emergeTimer = 0.0f;
         }
-        ((GameObject*)obj)->anim.alpha = 0xff;
+        obj->anim.alpha = 0xff;
         moved = 1;
     }
     else
@@ -230,21 +230,21 @@ void hoodedZyck_updateB(s16* obj, u8* state)
         GameObject* other;
 
         *(s16*)obj = *(s16*)obj + ((FCVars*)state)->turnDelta;
-        posA[0] = ((GameObject*)obj)->anim.localPosX;
-        posA[1] = ((GameObject*)obj)->anim.localPosY;
-        posA[2] = ((GameObject*)obj)->anim.localPosZ;
-        fn_80292E20((u16)((GameObject*)obj)->anim.rotX, &sinA, &cosA);
-        tgtA[0] = -(10.0f * sinA - ((GameObject*)obj)->anim.localPosX);
-        tgtA[1] = 5.0f + ((GameObject*)obj)->anim.localPosY;
-        tgtA[2] = -(10.0f * cosA - ((GameObject*)obj)->anim.localPosZ);
+        posA[0] = obj->anim.localPosX;
+        posA[1] = obj->anim.localPosY;
+        posA[2] = obj->anim.localPosZ;
+        fn_80292E20((u16)obj->anim.rotX, &sinA, &cosA);
+        tgtA[0] = -(10.0f * sinA - obj->anim.localPosX);
+        tgtA[1] = 5.0f + obj->anim.localPosY;
+        tgtA[2] = -(10.0f * cosA - obj->anim.localPosZ);
         /* 0x261 = BaddieState.contactSfxFlags; kept raw - typed member as a
          * call arg shifts arg emission bytes here. */
-        noHit = !(u8)objBboxFn_800640cc(posA, tgtA, 0.0f, 3, (TrackBBoxHit*)bufA, (GameObject*)obj,
+        noHit = !(u8)objBboxFn_800640cc(posA, tgtA, 0.0f, 3, (TrackBBoxHit*)bufA, obj,
                                         *(u8*)(state + 0x261), -1, 0xff, 0);
         ang =
             getAngle(
-                ((GameObject*)obj)->anim.localPosX - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                ((GameObject*)obj)->anim.localPosZ - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ) &
+                obj->anim.localPosX - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
+                obj->anim.localPosZ - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ) &
             0xffff;
         diff = (f32)(int)(ang - ((int)*(s16*)obj & 0xffffu));
         if (diff > 32768.0f)
@@ -263,10 +263,10 @@ void hoodedZyck_updateB(s16* obj, u8* state)
         if (fn_80295C88(Obj_GetPlayerObject()) != 0)
         {
             range = 100.0f;
-            other = (GameObject*)ObjGroup_FindNearestObject(LANTERNFIREFLY_OBJGROUP, (GameObject*)obj, &range);
+            other = (GameObject*)ObjGroup_FindNearestObject(LANTERNFIREFLY_OBJGROUP, obj, &range);
             if (other != NULL)
             {
-                s16 yaw = Obj_GetYawDeltaToObject((GameObject*)obj, other, &range);
+                s16 yaw = Obj_GetYawDeltaToObject(obj, other, &range);
                 int t;
                 if (yaw < -300)
                 {
@@ -282,22 +282,22 @@ void hoodedZyck_updateB(s16* obj, u8* state)
                 if (t < 0x4000)
                 {
                     *(s16*)obj = -*(s16*)obj;
-                    posB[0] = ((GameObject*)obj)->anim.localPosX;
-                    posB[1] = ((GameObject*)obj)->anim.localPosY;
-                    posB[2] = ((GameObject*)obj)->anim.localPosZ;
-                    fn_80292E20((u16)((GameObject*)obj)->anim.rotX, &sinB, &cosB);
-                    tgtB[0] = -(10.0f * sinB - ((GameObject*)obj)->anim.localPosX);
-                    tgtB[1] = 5.0f + ((GameObject*)obj)->anim.localPosY;
-                    tgtB[2] = -(10.0f * cosB - ((GameObject*)obj)->anim.localPosZ);
-                    if ((u8)objBboxFn_800640cc(posB, tgtB, 0.0f, 3, (TrackBBoxHit*)bufB, (GameObject*)obj,
+                    posB[0] = obj->anim.localPosX;
+                    posB[1] = obj->anim.localPosY;
+                    posB[2] = obj->anim.localPosZ;
+                    fn_80292E20((u16)obj->anim.rotX, &sinB, &cosB);
+                    tgtB[0] = -(10.0f * sinB - obj->anim.localPosX);
+                    tgtB[1] = 5.0f + obj->anim.localPosY;
+                    tgtB[2] = -(10.0f * cosB - obj->anim.localPosZ);
+                    if ((u8)objBboxFn_800640cc(posB, tgtB, 0.0f, 3, (TrackBBoxHit*)bufB, obj,
                                                *(u8*)(state + 0x261), -1, 0xff, 0) == 0)
                     {
                         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
                         {
-                            fn_8014D08C((GameObject*)obj, (int)state, 7, 1.0f / (2.0f * scale), 0, 1);
+                            fn_8014D08C(obj, (int)state, 7, 1.0f / (2.0f * scale), 0, 1);
                         }
-                        ((GameObject*)obj)->anim.rotY = ((BaddieState*)state)->spawnRotY;
-                        ((GameObject*)obj)->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+                        obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
+                        obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
                     }
                     *(s16*)obj = -*(s16*)obj;
                 }
@@ -310,21 +310,21 @@ void hoodedZyck_updateB(s16* obj, u8* state)
             ((BaddieState*)state)->speedScale = lbl_803DBCE8;
         }
         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 || noHit == 0 ||
-            (mag < 3000 && noHit != 0 && ((GameObject*)obj)->anim.currentMove != 0))
+            (mag < 3000 && noHit != 0 && obj->anim.currentMove != 0))
         {
             if (noHit != 0 && mag < 3000)
             {
                 ((FCVars*)state)->turnDelta = 0;
-                fn_8014D08C((GameObject*)obj, (int)state, 0, 1.0f / scale, 0, 1);
+                fn_8014D08C(obj, (int)state, 0, 1.0f / scale, 0, 1);
             }
             else
             {
-                fn_8014D08C((GameObject*)obj, (int)state, 1, 0.75f / scale, 0, 0);
+                fn_8014D08C(obj, (int)state, 1, 0.75f / scale, 0, 0);
                 {
                     f32 z = 0.0f;
-                    ((GameObject*)obj)->anim.velocityX = z;
-                    ((GameObject*)obj)->anim.velocityY = z;
-                    ((GameObject*)obj)->anim.velocityZ = z;
+                    obj->anim.velocityX = z;
+                    obj->anim.velocityY = z;
+                    obj->anim.velocityZ = z;
                 }
                 if (mag < 3000)
                 {
@@ -340,12 +340,12 @@ void hoodedZyck_updateB(s16* obj, u8* state)
                 }
             }
         }
-        ((GameObject*)obj)->anim.rotY = ((BaddieState*)state)->spawnRotY;
-        ((GameObject*)obj)->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+        obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
+        obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
     }
 }
 
-void hoodedZyck_update(s16* obj, u8* state)
+void hoodedZyck_update(GameObject* obj, u8* state)
 {
     int moved;
     int turnRaw;
@@ -356,17 +356,17 @@ void hoodedZyck_update(s16* obj, u8* state)
 
     if (0.0f != ((FCVars*)state)->emergeTimer)
     {
-        ObjHits_DisableObject((GameObject*)obj);
-        if (((GameObject*)obj)->anim.currentMove != 5)
+        ObjHits_DisableObject(obj);
+        if (obj->anim.currentMove != 5)
         {
-            fn_8014D08C((GameObject*)obj, (int)state, 5, lbl_803DBCEC, 0, 0);
+            fn_8014D08C(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
-            ObjHits_EnableObject((GameObject*)obj);
+            ObjHits_EnableObject(obj);
             ((FCVars*)state)->emergeTimer = 0.0f;
         }
-        ((GameObject*)obj)->anim.alpha = 0xff;
+        obj->anim.alpha = 0xff;
         moved = 1;
     }
     else
@@ -377,44 +377,44 @@ void hoodedZyck_update(s16* obj, u8* state)
     if (moved == 0)
     {
         f32 z;
-        *(s16*)obj = (f32)((FCVars*)state)->turnDelta * timeDelta + (f32)(int)*obj;
+        *(s16*)obj = (f32)((FCVars*)state)->turnDelta * timeDelta + (f32)(int)*(s16*)obj;
         z = 0.0f;
-        ((GameObject*)obj)->anim.velocityX = z;
-        ((GameObject*)obj)->anim.velocityY = z;
-        ((GameObject*)obj)->anim.velocityZ = z;
+        obj->anim.velocityX = z;
+        obj->anim.velocityY = z;
+        obj->anim.velocityZ = z;
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, FIRECRAWLER_HIT_VOLUME_SLOT, 1, -1);
-        turnRaw = hoodedZyck_getAngleDelta((GameObject*)obj, (GameObject*)((BaddieState*)state)->trackedObj);
+        turnRaw = hoodedZyck_getAngleDelta(obj, (GameObject*)((BaddieState*)state)->trackedObj);
         {
             int t = (s16)turnRaw;
             mag = (u16)(t >= 0 ? t : -t);
         }
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_EnableObject(obj);
         grabbed = ((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN;
-        if (grabbed != 0 && ((GameObject*)obj)->anim.currentMove == 6)
+        if (grabbed != 0 && obj->anim.currentMove == 6)
         {
-            fn_8014D08C((GameObject*)obj, (int)state, 4, lbl_803DBCE0, 0, 1);
+            fn_8014D08C(obj, (int)state, 4, lbl_803DBCE0, 0, 1);
         }
         else
         {
             if (grabbed != 0 ||
-                (mag < 1000 && ((GameObject*)obj)->anim.currentMove != 2 && ((GameObject*)obj)->anim.currentMove != 4 &&
-                 ((GameObject*)obj)->anim.currentMove != 6))
+                (mag < 1000 && obj->anim.currentMove != 2 && obj->anim.currentMove != 4 &&
+                 obj->anim.currentMove != 6))
             {
                 if (mag < 1000)
                 {
                     if (((BaddieState*)state)->speedScale < 40.0f)
                     {
-                        fn_8014D08C((GameObject*)obj, (int)state, 2, 0.75f, 0, 0);
+                        fn_8014D08C(obj, (int)state, 2, 0.75f, 0, 0);
                     }
                     else
                     {
-                        fn_8014D08C((GameObject*)obj, (int)state, 6, lbl_803DBCE4, 0, 0);
+                        fn_8014D08C(obj, (int)state, 6, lbl_803DBCE4, 0, 0);
                     }
                     ((FCVars*)state)->turnDelta = 0;
                 }
                 else
                 {
-                    fn_8014D08C((GameObject*)obj, (int)state, 1, 0.75f, 0, 0);
+                    fn_8014D08C(obj, (int)state, 1, 0.75f, 0, 0);
                     if ((s16)turnRaw < 0)
                     {
                         ((FCVars*)state)->turnDelta = 0xfed4;
@@ -425,47 +425,47 @@ void hoodedZyck_update(s16* obj, u8* state)
                     }
                 }
             }
-            ((GameObject*)obj)->anim.rotY = ((BaddieState*)state)->spawnRotY;
-            ((GameObject*)obj)->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+            obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
+            obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
         }
     }
 }
 
-void hoodedZyck_init(int* obj, int* st)
+void hoodedZyck_init(GameObject* obj, BaddieState* st)
 {
     f32 ratio;
     f32 base_v;
     u32 flags;
     u32 amt;
-    amt = *((u8*)((int*)*(int*)&((GameObject*)obj)->anim.placementData) + 0x2f);
+    amt = *((u8*)((int*)*(int*)&obj->anim.placementData) + 0x2f);
     ratio = amt;
     if (0.0f == amt)
     {
         ratio = 10.0f;
     }
     ratio = ratio / 10.0f;
-    ((BaddieState*)st)->speedScale = 30.0f;
-    *(u32*)&((BaddieState*)st)->unk2E4 = 0x8b;
-    flags = *(u32*)&((BaddieState*)st)->unk2E4;
-    *(u32*)&((BaddieState*)st)->unk2E4 = flags | 0x20;
-    ((BaddieState*)st)->unk308 = 0.02f * ratio;
+    st->speedScale = 30.0f;
+    *(u32*)&st->unk2E4 = 0x8b;
+    flags = *(u32*)&st->unk2E4;
+    *(u32*)&st->unk2E4 = flags | 0x20;
+    st->unk308 = 0.02f * ratio;
     base_v = 1.0f;
-    ((BaddieState*)st)->animDeltaScale = base_v;
-    ((BaddieState*)st)->unk304 = 0.97f;
+    st->animDeltaScale = base_v;
+    st->unk304 = 0.97f;
     *((u8*)st + 0x320) = 0;
-    *(f32*)&((BaddieState*)st)->eventFlags = 1.5f;
+    *(f32*)&st->eventFlags = 1.5f;
     *((u8*)st + 0x321) = 3;
     {
         f32 d2 = 2.0f;
-        ((BaddieState*)st)->unk318 = d2;
+        st->unk318 = d2;
         *((u8*)st + 0x322) = 5;
-        ((BaddieState*)st)->unk31C = d2;
+        st->unk31C = d2;
     }
     ((FCVars*)st)->turnDelta = 0;
     ((FCVars*)st)->engineTimer = 60.0f;
     ((FCVars*)st)->emergeTimer = base_v;
-    ((GameObject*)obj)->anim.alpha = 0;
-    ((BaddieState*)st)->pathStep = 0.5f * ratio;
-    ((BaddieState*)st)->reactionFlags = 0;
-    ObjHits_EnableObject((GameObject*)obj);
+    obj->anim.alpha = 0;
+    st->pathStep = 0.5f * ratio;
+    st->reactionFlags = 0;
+    ObjHits_EnableObject(obj);
 }
