@@ -1,3 +1,6 @@
+/*
+ * MCLightning (DLL 0x2BA) - a sequence-driven lightning-bolt effect.
+ */
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "main/newclouds.h"
@@ -71,7 +74,7 @@ void mclightning_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 sca
     if (mode == MCLIGHTNING_PHASE_ARMED)
     {
         int count;
-    u32* objs = ObjGroup_GetObjects(MCLIGHTNING_OBJGROUP, &count);
+        u32* objs = ObjGroup_GetObjects(MCLIGHTNING_OBJGROUP, &count);
         int i;
         for (i = 0; i < count; i++)
         {
