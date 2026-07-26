@@ -11,7 +11,7 @@ void Fall_Ladders_free(int obj);
 void Fall_Ladders_render(void);
 void Fall_Ladders_hitDetect(void);
 void Fall_Ladders_update(GameObject* obj);
-void Fall_Ladders_init(int* obj, FallLaddersObjectDef* def);
+void Fall_Ladders_init(GameObject* obj, FallLaddersObjectDef* def);
 void Fall_Ladders_release(void);
 void Fall_Ladders_initialise(void);
 

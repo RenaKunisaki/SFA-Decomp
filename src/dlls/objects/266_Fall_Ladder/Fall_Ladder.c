@@ -149,17 +149,17 @@ void Fall_Ladders_update(GameObject* obj)
     }
 }
 
-void Fall_Ladders_init(int* obj, FallLaddersObjectDef* def)
+void Fall_Ladders_init(GameObject* obj, FallLaddersObjectDef* def)
 {
-    FallLaddersState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)def->rotXByte << 8);
+    FallLaddersState* state = obj->extra;
+    obj->anim.rotX = (s16)((s32)def->rotXByte << 8);
     state->upperGameBit = def->upperGameBit;
     state->lowerGameBit = def->lowerGameBit;
     state->restYOffset = (f32)(s32)def->restYOffset;
-    ((GameObject*)obj)->objectFlags |= (FALLLADDERS_OBJFLAG_HIDDEN | FALLLADDERS_OBJFLAG_HITDETECT_DISABLED);
-    ((GameObject*)obj)->animEventCallback = Fall_Ladders_SeqFn;
-    ((GameObject*)obj)->anim.localPosY = def->base.posY + state->restYOffset;
-    Obj_SetActiveModelIndex((GameObject*)obj, def->modelIndex);
+    obj->objectFlags |= (FALLLADDERS_OBJFLAG_HIDDEN | FALLLADDERS_OBJFLAG_HITDETECT_DISABLED);
+    obj->animEventCallback = Fall_Ladders_SeqFn;
+    obj->anim.localPosY = def->base.posY + state->restYOffset;
+    Obj_SetActiveModelIndex(obj, def->modelIndex);
     state->motionState = 0;
     if (mainGetBit(state->upperGameBit) == 0)
     {
