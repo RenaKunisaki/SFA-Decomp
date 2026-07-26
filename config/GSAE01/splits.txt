@@ -3477,7 +3477,7 @@ main/dll/DF/dll_022D_dfpseqpoint.c:
 	.data       start:0x80329968 end:0x803299A0
 	.sdata2     start:0x803E63B8 end:0x803E63C8
 
-main/dll/DF/dll_022B_dfptorch.c:
+dlls/objects/555_DFP_Torch/DFP_Torch.c:
 	.text       start:0x802057CC end:0x80205F40
 	.rodata     start:0x802C2510 end:0x802C2520
 	.data       start:0x803299A0 end:0x803299D8

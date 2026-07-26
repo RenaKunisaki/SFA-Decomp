@@ -598,7 +598,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x228 | — | COMPLETE | dlls/objects/552/552.c | = (canonical) | No recovered retail basename |
 | 0x229 | DFP_LevelCo | COMPLETE | dlls/objects/553_DFP_LevelCo/DFP_LevelCo.c | = (canonical) | Exact recovered retail basename |
 | 0x22A | DFP_ObjCrea | COMPLETE | dlls/objects/554_DFP_ObjCrea/DFP_ObjCrea.c | = (canonical) | Exact recovered retail basename |
-| 0x22B | DFP_Torch | COMPLETE | main/dll/dll_022B_dfptorch.c | main/dll/DF/dll_022B_dfptorch.c | — |
+| 0x22B | DFP_Torch | COMPLETE | dlls/objects/555_DFP_Torch/DFP_Torch.c | = (canonical) | Exact recovered retail basename |
 | 0x22C | — | NO-RETAIL-NAME | main/dll/dll_022C_dll22c.c | = (canonical) | — |
 | 0x22D | DFP_seqpoint | CONFIRMED | main/dll/dll_022D_dfpseqpoint.c | main/dll/DF/dll_022D_dfpseqpoint.c | — |
 | 0x22E | DFP_DoorSwitch (+DFPSpDA) | CONFIRMED | main/dll/dll_022E_dfpdoorswitch.c | main/dll/DF/dll_022E_dfpdoorswitch.c | — |
