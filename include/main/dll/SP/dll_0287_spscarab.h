@@ -6,8 +6,10 @@
 
 extern ObjectDescriptor gSPScarabObjDescriptor;
 
-void SPScarab_update(int obj);
-void SPScarab_init(GameObject* obj, int def);
+typedef struct SpscarabPlacement SpscarabPlacement;
+
+void SPScarab_update(GameObject* obj);
+void SPScarab_init(GameObject* obj, SpscarabPlacement* def);
 void SPScarab_free(int obj);
 void SPScarab_release(void);
 void SPScarab_initialise(void);
