@@ -1,5 +1,5 @@
 /*
- * androssligh (DLL 0x2BF) - the lightning beam between Andross's hands in
+ * AndrossLigh (DLL 0x2BF) - the lightning beam between Andross's hands in
  * the final boss fight. It locks onto a light-anchor object (0x47dd9),
  * mirroring that object's position each frame, and in its active state
  * (ANDROSSLIGH_ACTIVE) builds a screen-space lightning bolt that arcs
