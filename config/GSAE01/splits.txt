@@ -362,35 +362,14 @@ main/dll/dll_0013_waterfx.c:
 	.bss        start:0x8039AB48 end:0x8039AB58
 	.sbss       start:0x803DD1F8 end:0x803DD250
 
-main/dll/viewfinder.c:
-	.text       start:0x80096994 end:0x800969B0
-	.sdata2     start:0x803DF348 end:0x803DF350
-
-main/dll/objfx.c:
-	.text       start:0x800969B0 end:0x8009AD44
-	.rodata     start:0x802C1FD8 end:0x802C2160
-	.data       start:0x8030F898 end:0x8030FBF0
-	.sdata      start:0x803DB788 end:0x803DB790
-	.sdata2     start:0x803DF350 end:0x803DF3B4
-
-main/dll/expgfxresource.c:
-	.text       start:0x8009AD44 end:0x8009B0E0
-
 main/dll/expgfx.c:
-	.text       start:0x8009B0E0 end:0x8009DDEC
-	.data       start:0x8030FBF0 end:0x8030FD20
+	.text       start:0x80096994 end:0x8009FFF0
+	.rodata     start:0x802C1FD8 end:0x802C2160
+	.data       start:0x8030F898 end:0x8030FD20
 	.bss        start:0x8039AB58 end:0x8039BE98
-	.sdata      start:0x803DB790 end:0x803DB798
+	.sdata      start:0x803DB788 end:0x803DB798
 	.sbss       start:0x803DD250 end:0x803DD280
-
-main/dll/expgfx_addtotable.c:
-	.text       start:0x8009DDEC end:0x8009DF0C
-
-main/dll/expgfx_frameflags.c:
-	.text       start:0x8009DF0C end:0x8009E034
-
-main/dll/expgfx_render.c:
-	.text       start:0x8009E034 end:0x8009FFF0
+	.sdata2     start:0x803DF340 end:0x803DF42C
 
 main/dll/dll_000B_dll0b.c:
 	.text       start:0x8009FFF0 end:0x800A3A40
