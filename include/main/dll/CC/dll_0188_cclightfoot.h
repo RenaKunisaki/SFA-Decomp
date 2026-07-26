@@ -6,8 +6,8 @@
 #include "main/objanim_update.h"
 
 int cclightfoot_getExtraSize(void);
-void cclightfoot_init(int* obj, int* placement);
-void cclightfoot_free(int* obj, int flag);
+void cclightfoot_init(GameObject* obj, int* placement);
+void cclightfoot_free(GameObject* obj, int flag);
 int CClightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void cclightfoot_update(int obj);
 

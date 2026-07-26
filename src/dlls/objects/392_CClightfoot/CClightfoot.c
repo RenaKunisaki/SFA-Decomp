@@ -105,15 +105,15 @@ int cclightfoot_getExtraSize(void)
     return 0x18;
 }
 
-void cclightfoot_free(int* obj, int flag)
+void cclightfoot_free(GameObject* obj, int flag)
 {
-    CcLightfootState* state = ((GameObject*)obj)->extra;
+    CcLightfootState* state = obj->extra;
     GameObject* sub = state->childObj;
     if (sub != NULL)
     {
-        if (((GameObject*)obj)->childObjs[0] != NULL)
+        if (obj->childObjs[0] != NULL)
         {
-            ObjLink_DetachChild((GameObject*)obj, sub);
+            ObjLink_DetachChild(obj, sub);
         }
         if (flag == 0)
         {
@@ -630,9 +630,9 @@ void cclightfoot_update(int obj)
 }
 
 
-void cclightfoot_init(int* obj, int* def)
+void cclightfoot_init(GameObject* obj, int* def)
 {
-    ((GameObject*)obj)->anim.rotX = (s16)((u32) * (u8*)((char*)def + 26) << 8);
-    ((GameObject*)obj)->objectFlags = (u16)(((GameObject*)obj)->objectFlags | CCLIGHTFOOT_OBJFLAG_HIDDEN);
-    ((GameObject*)obj)->animEventCallback = CClightfoot_SeqFn;
+    obj->anim.rotX = (s16)((u32) * (u8*)((char*)def + 26) << 8);
+    obj->objectFlags = (u16)(obj->objectFlags | CCLIGHTFOOT_OBJFLAG_HIDDEN);
+    obj->animEventCallback = CClightfoot_SeqFn;
 }
