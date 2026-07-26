@@ -6,7 +6,7 @@ the unnamed source TU lives at `src/dlls/objects/202/202.c`. All
 tables, the `dll_CA` descriptor object (→ `gIceBaddieObjDescriptor`) and the
 `MediumbasketControl` struct were renamed to the `iceBaddie`/`IceBaddie`
 namespace across `.c` / `.h` / `symbols.txt` / `splits.txt` / `configure.py` /
-`dll_00CE_dllce.c` / `src/dlls/objects/201_Baddie/Baddie.c` / `scarab.h`. The rename plus the
+`src/dlls/objects/206/206.c` / `src/dlls/objects/201_Baddie/Baddie.c` / `scarab.h`. The rename plus the
 earlier behavioral renames are match-%-neutral (`.text` byte-identical to the
 pristine pre-rename build). The optional slot-handler behavioral names below are
 *not* applied — left for a future pass.
@@ -58,7 +58,7 @@ prefix **`iceBaddie`** / file **`dll_00CA_icebaddie.c`** (alternatives:
    - `mediumbasket_*` → `iceBaddie_*`
    - `dll_CA_*` → `iceBaddie_*` (descriptor callbacks)
    - `gMediumBasketStateHandlersA/B` → `gIceBaddieStateHandlersA/B`
-     (also referenced in `dll_00CE_dllce.c`).
+     (also referenced in `src/dlls/objects/206/206.c`).
 4. Update `#include "main/dll/dll_00CA_mediumbasket.h"` in
    `src/dlls/objects/201_Baddie/Baddie.c`.
 

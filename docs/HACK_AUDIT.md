@@ -174,7 +174,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/MMP/dll_0182_mmpmoonrock | 100.0000 | 87.3506 | -12.6494 |
 | main/main/audio/synth_channel | 100.0000 | 87.5556 | -12.4444 |
 | main/main/dll/fallladdersgroup | 100.0000 | 87.5778 | -12.4222 |
-| main/main/dll/dll_00CE_dllce | 100.0000 | 87.6225 | -12.3775 |
+| main/dlls/objects/206/206 | 100.0000 | 87.6225 | -12.3775 |
 | main/main/dll/duster | 100.0000 | 87.9461 | -12.0539 |
 | main/main/dll/snowworm | 100.0000 | 87.9695 | -12.0305 |
 | main/main/dll/dll_0039_dummy39 | 100.0000 | 88.0233 | -11.9767 |

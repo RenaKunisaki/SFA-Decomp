@@ -251,7 +251,7 @@ Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 3
 | 0x0CB | — | NO-RETAIL-NAME | dlls/objects/203/203.c | = (canonical) | — |
 | 0x0CC | ChukChuk | COMPLETE | dlls/objects/204_ChukChuk/ChukChuk.c | = (canonical) | — |
 | 0x0CD | IceBall (+IceBallSmal, ChukaChuck) | COMPLETE | dlls/objects/205_IceBall/IceBall.c | = (canonical) | — |
-| 0x0CE | — | NO-RETAIL-NAME | main/dll/dll_00CE_dllce.c | = (canonical) | — |
+| 0x0CE | — | NO-RETAIL-NAME | dlls/objects/206/206.c | = (canonical) | — |
 | 0x0CF | CannonClaw (+CannonClawO) | COMPLETE | main/dll/dll_00CF_cannonclaw.c | = (canonical) | — |
 | 0x0D0 | Grimble | COMPLETE | main/dll/dll_00D0_grimble.c | = (canonical) | — |
 | 0x0D1 | TumbleWeedBush | CONFIRMED | main/dll/dll_00D1_tumbleweedbush.c | = (canonical) | — |

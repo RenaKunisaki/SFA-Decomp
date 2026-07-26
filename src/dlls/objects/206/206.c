@@ -102,7 +102,6 @@ ObjectDescriptor12 dll_CE = {
 
 void iceBaddie_installStateHandlers(void)
 {
-
     gIceBaddieStateHandlersA[0] = iceBaddie_updateOpenHitState;
     gIceBaddieStateHandlersA[1] = iceBaddie_updateOpenState;
     gIceBaddieStateHandlersA[2] = iceBaddie_updateHideResetState;
@@ -128,7 +127,6 @@ void iceBaddie_installStateHandlers(void)
 }
 int chukChuk_checkChooseAttackState(int obj, GroundBaddieState* state)
 {
-
     int count;
     int i;
     GroundBaddieState* sub;
@@ -299,7 +297,7 @@ int chukChuk_checkTargetState(int* obj, GroundBaddieState* state)
 
 int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state)
 {
-            GroundBaddieState* sub;
+    GroundBaddieState* sub;
     f32 spd;
 
     sub = (obj)->extra;
@@ -338,8 +336,7 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state)
 
 int chukChuk_updateAlertState(int* obj, GroundBaddieState* state)
 {
-
-        int* objs;
+    int* objs;
     int count;
     int i;
     int* playerChild;
@@ -397,8 +394,7 @@ int chukChuk_updateAlertState(int* obj, GroundBaddieState* state)
 
 int chukChuk_updateSpitState(GameObject* obj, int state)
 {
-
-        GroundBaddieState* sub = (obj)->extra;
+    GroundBaddieState* sub = (obj)->extra;
     int count;
     int idx;
 
@@ -467,8 +463,7 @@ int chukChuk_updateState3(int* obj, GroundBaddieState* state)
 
 int chukChuk_updateAttackState(short* obj, GroundBaddieState* state)
 {
-
-            int count;
+    int count;
     int i;
     GroundBaddieState* sub;
     int* objs;
@@ -518,8 +513,7 @@ int chukChuk_updateAttackState(short* obj, GroundBaddieState* state)
 
 int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state)
 {
-
-            GroundBaddieState* sub;
+    GroundBaddieState* sub;
     u8* hit;
 
     sub = (obj)->extra;
@@ -557,8 +551,7 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state)
 
 int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state)
 {
-
-                GroundBaddieState* sub;
+    GroundBaddieState* sub;
     u8* hit;
     int flags;
 
@@ -603,11 +596,9 @@ int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state)
     return 0;
 }
 
-void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state);
-
 void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state)
 {
-                f32 dur;
+    f32 dur;
     f32 distRatio;
     int setup;
     u8* o;
@@ -641,7 +632,7 @@ void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state)
 
 void chukChuk_acquireTarget(GameObject* obj, int state, int target)
 {
-            int sub = *(int*)&((GroundBaddieState*)state)->control;
+    int sub = *(int*)&((GroundBaddieState*)state)->control;
     GameObject* r;
 
     r = (*gBaddieControlInterface)
@@ -785,7 +776,7 @@ void dll_CE_free(int* obj)
 
 void dll_CE_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-        GroundBaddieState* sub = ((GameObject*)obj)->extra;
+    GroundBaddieState* sub = ((GameObject*)obj)->extra;
     f32 alpha;
     f32 zero = 0.0f;
 
@@ -807,7 +798,7 @@ void dll_CE_hitDetect_nop(void)
 
 void dll_CE_update(GameObject* obj, int unusedA, int unusedB)
 {
-            GroundBaddieState* sub;
+    GroundBaddieState* sub;
     int setup;
     u8* hit;
     int spawnCount;
@@ -891,7 +882,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB)
 
 void dll_CE_init(GameObject* obj, u8* def, int flags)
 {
-        GroundBaddieState* sub;
+    GroundBaddieState* sub;
     u8 mode;
     f32* v;
 
