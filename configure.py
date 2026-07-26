@@ -1702,6 +1702,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/356_CFLevelCont/CFLevelCont.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/358/358.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/359_SpiritDoorL/SpiritDoorL.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/360_HoloPoint/HoloPoint.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_017D_rollingbarrel.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/MMP/dll_017E_mmplevelcontrol.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_017F_moonseedbush.c", cflags=cflags_dll_noopt),

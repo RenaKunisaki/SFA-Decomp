@@ -403,7 +403,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x165 | CFRemovalSh | RAW | dlls/objects/357_CFRemovalSh/CFRemovalSh.c | = (canonical) | data-only DLL |
 | 0x166 | — (+CFbrokenGra, CFbrokenWal, CFWallPieac, CFExplodePi, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRExplodePi, ExplodePlan, DRSmallExpl) | NO-RETAIL-NAME | dlls/objects/358/358.c | = (canonical) | — |
 | 0x167 | SpiritDoorL | CONFIRMED | dlls/objects/359_SpiritDoorL/SpiritDoorL.c | = (canonical) | — |
-| 0x168 | HoloPoint | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
+| 0x168 | HoloPoint | RAW | dlls/objects/360_HoloPoint/HoloPoint.c | = (canonical) | data-only DLL |
 | 0x169 | IMIceMountain | CONFIRMED | main/dll/dll_0169_imicemountain.c | main/dll/IM/dll_0169_imicemountain.c | — |
 | 0x16A | CRrockfall (+IMIcicle) | COMPLETE | main/dll/dll_016A_crrockfall.c | main/dll/CR/dll_016A_crrockfall.c | — |
 | 0x16B | MagicLight (+DIMMagicLig, IMMagicLigh) | CONFIRMED | main/dll/dll_016B_magiclight.c | = (canonical) | — |
