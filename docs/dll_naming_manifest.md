@@ -659,7 +659,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x265 | DR_Creator | COMPLETE | dlls/objects/613_DR_Creator/DR_Creator.c | = (canonical) | Exact callback/data TU; descriptor remains in DOL-confirmed DLL 614 pooled data |
 | 0x266 | KytesMum | COMPLETE | dlls/objects/614_KytesMum/KytesMum.c | = (canonical) | Exact TU including both SFX tables; retail data order ends with the diagnostic string and pooled DLL 613 descriptor |
 | 0x267 | — | NO-RETAIL-NAME | dlls/objects/615/615.c | = (canonical) | Exact data-only DLL: two zero descriptor words in `.sdata` |
-| 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
+| 0x268 | DR_CageCont | CONFIRMED | dlls/objects/616_DR_CageCont/DR_CageCont.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | main/dll/dll_0269_explodeplan.c | = (canonical) | — |
 | 0x26A | DR_Geezer | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x26B | DR_Chimmey | COMPLETE | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | — |
