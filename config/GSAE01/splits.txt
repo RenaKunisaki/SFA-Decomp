@@ -2273,6 +2273,9 @@ dlls/objects/336_GCRobotLigh/GCRobotLigh.c:
 dlls/objects/337_CFScalesGal/CFScalesGal.c:
 	.sdata      start:0x803DBE60 end:0x803DBE68
 
+dlls/objects/338_CF_ObjCreat/CF_ObjCreat.c:
+	.sdata      start:0x803DBE68 end:0x803DBE70
+
 main/dll/CF/dll_0153_cfperch.c:
 	.text       start:0x801A04F4 end:0x801A0614
 	.data       start:0x80322C80 end:0x80322CB8

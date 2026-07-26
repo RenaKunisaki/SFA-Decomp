@@ -381,7 +381,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x14F | CFPrisonUnc | CONFIRMED | dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c | = (canonical) | — |
 | 0x150 | GCRobotLigh | CONFIRMED | dlls/objects/336_GCRobotLigh/GCRobotLigh.c | = (canonical) | — |
 | 0x151 | CFScalesGal | RAW | dlls/objects/337_CFScalesGal/CFScalesGal.c | = (canonical) | data-only DLL |
-| 0x152 | CF_ObjCreat | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x152 | CF_ObjCreat | RAW | dlls/objects/338_CF_ObjCreat/CF_ObjCreat.c | = (canonical) | data-only DLL |
 | 0x153 | CFPerch | COMPLETE | main/dll/dll_0153_cfperch.c | main/dll/CF/dll_0153_cfperch.c | — |
 | 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | main/dll/dll_0154_cfprisoncage.c | main/dll/CF/dll_0154_cfprisoncage.c | — |
 | 0x155 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
