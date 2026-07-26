@@ -55,14 +55,14 @@ void fn_801AC01C(GameObject* obj)
 {
     int state = *(int*)&(obj)->extra;
     int mode;
-    void* player;
+    GameObject* player;
 
     mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
     mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
     player = playerGetFocusObject(Obj_GetPlayerObject());
     if (player != 0)
     {
-        mode = (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)player)->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
+        mode = (*(int (**)(int))(*(int*)(*(int*)&player->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
     }
     else
     {
@@ -87,7 +87,7 @@ void fn_801AC01C(GameObject* obj)
 void fn_801AC108(GameObject* obj, void* extra)
 {
     int mode;
-    void* player;
+    GameObject* player;
 
     (*gGameUIInterface)->setShowWorldMapHud(0);
     if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
@@ -99,7 +99,7 @@ void fn_801AC108(GameObject* obj, void* extra)
         player = playerGetFocusObject(Obj_GetPlayerObject());
         if (player != 0)
         {
-            mode = (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)player)->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
+            mode = (*(int (**)(int))(*(int*)(*(int*)&player->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
         }
         else
         {
@@ -151,15 +151,15 @@ extern f32 lbl_803E46E0;
 extern f32 lbl_803E46D8;
 extern f32 lbl_803E46DC;
 
-void IMIceMountain_init(int* obj);
+void IMIceMountain_init(GameObject* obj);
 int IMIceMountain_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int IMIceMountain_getExtraSize(void);
 int IMIceMountain_getObjectTypeId(void);
 void IMIceMountain_free(void);
 void IMIceMountain_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
 void IMIceMountain_hitDetect(void);
-void IMIceMountain_update(int* obj);
-void imicemountain_updateEventState(int* obj);
+void IMIceMountain_update(GameObject* obj);
+void imicemountain_updateEventState(GameObject* obj);
 
 ObjectDescriptor gIMIceMountainObjDescriptor = {
     0,
@@ -181,16 +181,16 @@ ObjectDescriptor gIMIceMountainObjDescriptor = {
 /* imicemountain_updateEventState: the act-1 event machine (states 1..7;
  * state 0 idles), advancing avalanche fx, the boulder spawn, level
  * locks and the final warp as the relevant game bits are set. */
-void imicemountain_updateEventState(int* obj)
+void imicemountain_updateEventState(GameObject* obj)
 {
-    IMIceMountainState* extra = ((GameObject*)obj)->extra;
+    IMIceMountainState* extra = obj->extra;
     switch (extra->eventState)
     {
     case 7:
         if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
         {
             extra->eventState = 1;
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 2, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 0);
         }
         break;
     case 1:
@@ -198,25 +198,25 @@ void imicemountain_updateEventState(int* obj)
         {
             mainSetBits(GAMEBIT_IM_SwitchVisible, 1);
             extra->eventState = 2;
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0xb, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
         }
         else if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0)
         {
             extra->eventState = 2;
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0xb, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
         }
         break;
     case 2:
         if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0)
         {
             extra->eventState = 3;
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 6, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 1);
         }
         break;
     case 3:
         if (mainGetBit(GAMEBIT_IM_RaceStarted) != 0)
         {
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0, 0);
         }
         if (mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0)
         {
@@ -237,7 +237,7 @@ void imicemountain_updateEventState(int* obj)
             mainSetBits(GAMEBIT_IM_BikeRelated0E6A, 1);
             mainSetBits(GAMEBIT_IM_BikeRelated0E6B, 1);
         }
-        if (((GameObject*)obj)->userData1 == 0)
+        if (obj->userData1 == 0)
         {
             getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_A, 0);
             getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_B, 0);
@@ -247,21 +247,21 @@ void imicemountain_updateEventState(int* obj)
             getLActions(obj, obj, 0x17c, 0, 0, 0);
             getLActions(obj, obj, 0x17b, 0, 0, 0);
             (*gCloudActionInterface)->func09Nop(1);
-            ((GameObject*)obj)->userData1 = 1;
+            obj->userData1 = 1;
         }
         break;
     case 4:
-        fn_801AC108((GameObject*)obj, extra);
+        fn_801AC108(obj, extra);
         break;
     case 5:
         if ((extra->latchFlags & 1) != 0)
         {
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 3, 0);
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 4, 0);
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 6, 0);
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 7, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 3, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 4, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 7, 0);
             extra->eventState = 0;
-            (*gMapEventInterface)->setMapAct(((GameObject*)obj)->anim.mapEventSlot, 2);
+            (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 2);
         }
         break;
     case 6:
@@ -322,16 +322,16 @@ void IMIceMountain_hitDetect(void)
 
 /* IMIceMountain_update: lazy-spawn the ambient effects, run the active state,
  * fade the warning timer, drive the music latch, then refresh the gamebit latches. */
-void IMIceMountain_update(int* obj)
+void IMIceMountain_update(GameObject* obj)
 {
-    IMIceMountainState* extra = ((GameObject*)obj)->extra;
-    if (((GameObject*)obj)->userData1 == 0)
+    IMIceMountainState* extra = obj->extra;
+    if (obj->userData1 == 0)
     {
         getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_A, 0);
         getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_B, 0);
         getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_D, 0);
         (*gCloudActionInterface)->func09Nop(1);
-        ((GameObject*)obj)->userData1 = 1;
+        obj->userData1 = 1;
     }
     switch (extra->mapEventState)
     {
@@ -341,7 +341,7 @@ void IMIceMountain_update(int* obj)
     case 2:
         if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
         {
-            fn_801AC01C((GameObject*)(obj));
+            fn_801AC01C(obj);
         }
         break;
     case 3:
@@ -390,24 +390,24 @@ void IMIceMountain_update(int* obj)
 /* IMIceMountain_init: clear the ice-mountain gamebit block, arm the
  * map-event triggers, then branch on the queried level state to set the
  * boulder's start state and fire the appropriate triggers. */
-void IMIceMountain_init(int* obj)
+void IMIceMountain_init(GameObject* obj)
 {
-    IMIceMountainState* sub = ((GameObject*)obj)->extra;
+    IMIceMountainState* sub = obj->extra;
     u8 i;
-    ((GameObject*)obj)->animEventCallback = IMIceMountain_SeqFn;
+    obj->animEventCallback = IMIceMountain_SeqFn;
     for (i = 1; i <= 0xd; i++)
     {
         gameBitFn_800ea2e0(i);
     }
     sub->warningTextTimer = lbl_803E46E0;
-    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 1, 0);
-    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 5, 1);
+    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);
+    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 5, 1);
     unlockLevel(0, 0, 1);
     if (mainGetBit(GAMEBIT_IM_BikeRelated0379) != 0)
     {
-        (*gMapEventInterface)->setMapAct(((GameObject*)obj)->anim.mapEventSlot, 2);
+        (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 2);
     }
-    sub->mapEventState = (*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot);
+    sub->mapEventState = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
     switch (sub->mapEventState)
     {
     case 1:
@@ -428,10 +428,10 @@ void IMIceMountain_init(int* obj)
         }
         else
         {
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0, 1);
             if (mainGetBit(GAMEBIT_IM_CannonGuy1Dead) != 0 && mainGetBit(GAMEBIT_IM_CannonGuy2Dead) != 0)
             {
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0xb, 1);
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
             }
             if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
             {
@@ -439,13 +439,13 @@ void IMIceMountain_init(int* obj)
             }
             else
             {
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 2, 1);
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 1);
                 sub->eventState = 7;
             }
         }
-        (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 3, 1);
-        (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 4, 1);
-        (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 7, 1);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 3, 1);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 4, 1);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 7, 1);
         break;
     case 2:
         mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
@@ -455,7 +455,7 @@ void IMIceMountain_init(int* obj)
         mainSetBits(GAMEBIT_IM_OnBike, 0);
         mainSetBits(0x374, 0);
         mainSetBits(0x37c, 0);
-        (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 2, 0);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 0);
         break;
     case 3:
     case 4:
