@@ -1,5 +1,5 @@
 /*
- * mmpgyservent (DLL 0x183) - Moon Mountain Pass geyser vent.
+ * MMP_gyserve (DLL 0x183) - Moon Mountain Pass geyser vent.
  *
  * An intermittent steam/geyser emitter. While its placement gamebit is
  * clear the vent cycles: an idle countdown (userData1) re-rolls a random idle

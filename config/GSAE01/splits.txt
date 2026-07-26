@@ -2404,7 +2404,7 @@ dlls/objects/385_MMP_trenchF/MMP_trenchF.c:
 	.bss        start:0x803AC930 end:0x803AC948
 	.sdata2     start:0x803E45B0 end:0x803E45C4
 
-main/dll/MMP/dll_0183_mmpgyservent.c:
+dlls/objects/387_MMP_gyserve/MMP_gyserve.c:
 	.text       start:0x801A8E24 end:0x801A8F88
 	.data       start:0x80323288 end:0x803232C0
 
