@@ -658,9 +658,9 @@ void dfropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, float* xOut, floa
     *zOut = dz * fraction + ((obj)->anim.localPosZ + extra->rope->nodes[idx].pos[2]);
 }
 
-void dfropenode_getPlaneEquation(int* obj, f32* out)
+void dfropenode_getPlaneEquation(DFropenodeObject* obj, f32* out)
 {
-    DFropenodeExtra* p = ((GameObject*)obj)->extra;
+    DFropenodeExtra* p = obj->extra;
     out[0] = p->planeNormalX;
     out[1] = p->planeNormalY;
     out[2] = p->planeNormalZ;
@@ -816,7 +816,7 @@ typedef struct DfropenodeRenderState
     u8 blue;
 } DfropenodeRenderState;
 
-void dfropenode_render(int obj, int p2, int p3)
+void dfropenode_render(GameObject* obj, int p2, int p3)
 {
     ObjAnimComponent* objAnim;
     DFropenodeExtra* extra;
@@ -830,8 +830,8 @@ void dfropenode_render(int obj, int p2, int p3)
     LightmapVertex segmentVerts[6];
     f32 originalScale;
 
-    objAnim = &((GameObject*)obj)->anim;
-    extra = ((GameObject*)obj)->extra;
+    objAnim = &(obj)->anim;
+    extra = (obj)->extra;
     objDef = (DfropenodePlacement*)objAnim->placementData;
     eventId = objDef->fadeGameBit;
     if ((eventId != 0) && (mainGetBit(eventId) != 0))
@@ -839,7 +839,7 @@ void dfropenode_render(int obj, int p2, int p3)
         oldAlpha = objAnim->alpha;
         if (oldAlpha == 0x46)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_ocean_beamlp);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_ocean_beamlp);
         }
         fadeAlpha = oldAlpha - framesThisStep;
         if (fadeAlpha <= 0)
@@ -853,7 +853,7 @@ void dfropenode_render(int obj, int p2, int p3)
     {
         if (objAnim->alpha == 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_tile_buzzlp);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_tile_buzzlp);
         }
         if (objAnim->alpha < 0x46)
         {
@@ -867,10 +867,10 @@ void dfropenode_render(int obj, int p2, int p3)
 
     if (((objDef->flags18 & 1) != 0) && (extra->linkedObj != NULL) && (extra->rope != NULL))
     {
-        originalScale = ((GameObject*)obj)->anim.rootMotionScale;
-        ((GameObject*)obj)->anim.rootMotionScale = lbl_803E4DF8;
+        originalScale = (obj)->anim.rootMotionScale;
+        (obj)->anim.rootMotionScale = lbl_803E4DF8;
         Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, lbl_803E4E18, lbl_803E4DFC, NULL);
-        ((GameObject*)obj)->anim.rootMotionScale = originalScale;
+        (obj)->anim.rootMotionScale = originalScale;
         textureSetupFn_800799c0();
         textRenderSetupFn_800795e8();
         textRenderSetupFn_80079804();
@@ -912,7 +912,7 @@ void dfropenode_render(int obj, int p2, int p3)
         }
         if (objDef->textureIndex == 1)
         {
-            Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_waterblock_wave);
+            Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_waterblock_wave);
             gxBlendFn_80078b4c();
             {
                 int alpha;
@@ -1061,7 +1061,7 @@ void dfropenode_update(DFropenodeObject* obj)
     DFRope_UpdateSimulation(extra->rope);
 }
 
-void dfropenode_init(DFropenodeObject* obj, u8* objDef)
+void dfropenode_init(GameObject* obj, u8* objDef)
 {
 
     DFropenodeExtra* extra;
@@ -1069,13 +1069,13 @@ void dfropenode_init(DFropenodeObject* obj, u8* objDef)
     extra = obj->extra;
     if ((gRopeNodeVariantVisibleFlags)[((DfropenodePlacement*)objDef)->textureIndex] == 0)
     {
-        ((GameObject*)obj)->anim.flags = ((GameObject*)obj)->anim.flags & ~0x80;
+        (obj)->anim.flags = (obj)->anim.flags & ~0x80;
     }
     ObjGroup_AddObject((int)obj, DFROPENODE_OBJGROUP);
-    ((GameObject*)obj)->animEventCallback = dfropenode_syncRopeToEndpoints;
+    (obj)->animEventCallback = dfropenode_syncRopeToEndpoints;
     extra->rope = NULL;
     extra->linkedObj = NULL;
-    ((GameObject*)obj)->anim.alpha = 0x46;
+    (obj)->anim.alpha = 0x46;
 }
 
 void dfropenode_release(void)
