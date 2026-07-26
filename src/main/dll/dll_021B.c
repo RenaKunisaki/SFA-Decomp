@@ -145,13 +145,12 @@ void dll_21B_update(GameObject* obj)
     }
 }
 
-void dll_21B_init(int* obj, Dll21BPlacement* init)
+void dll_21B_init(GameObject* obj, Dll21BPlacement* init)
 {
-    GameObject* o = (GameObject*)obj;
-    Dll21BState* state = o->extra;
-    o->anim.rotX = (s16)(init->initRotByte << 8);
+    Dll21BState* state = obj->extra;
+    obj->anim.rotX = (s16)(init->initRotByte << 8);
     state->driveGameBit = init->driveGameBit;
-    o->objectFlags |= (DLL_21B_OBJFLAG_HIDDEN | DLL_21B_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (DLL_21B_OBJFLAG_HIDDEN | DLL_21B_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void dll_21B_release_nop(void)
