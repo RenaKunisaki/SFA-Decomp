@@ -10,6 +10,7 @@
  * it fires a burst of flame particles, fades its alpha out, and frees
  * itself once it falls past the floor.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects/lifecycle.h"
@@ -181,3 +182,20 @@ void VFP_MiniFire_release(void)
 void VFP_MiniFire_initialise(void)
 {
 }
+
+ObjectDescriptor gVFP_MiniFireObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFP_MiniFire_initialise,
+    (ObjectDescriptorCallback)VFP_MiniFire_release,
+    0,
+    (ObjectDescriptorCallback)VFP_MiniFire_init,
+    (ObjectDescriptorCallback)VFP_MiniFire_update,
+    (ObjectDescriptorCallback)VFP_MiniFire_hitDetect,
+    (ObjectDescriptorCallback)VFP_MiniFire_render,
+    (ObjectDescriptorCallback)VFP_MiniFire_free,
+    (ObjectDescriptorCallback)VFP_MiniFire_getObjectTypeId,
+    VFP_MiniFire_getExtraSize,
+};

@@ -9,6 +9,7 @@
  * clamping at each end. init seeds the object's rotX and the state's
  * game bit from the placement record; free releases its expgfx source.
  */
+#include "dlls/object_descriptor.h"
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
 #include "game/objects/object_setup.h"
@@ -101,3 +102,20 @@ void dll_219_release_nop(void)
 void dll_219_initialise_nop(void)
 {
 }
+
+ObjectDescriptor dll_219 = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_219_initialise_nop,
+    (ObjectDescriptorCallback)dll_219_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_219_init,
+    (ObjectDescriptorCallback)dll_219_update,
+    (ObjectDescriptorCallback)dll_219_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_219_render_nop,
+    (ObjectDescriptorCallback)dll_219_free,
+    (ObjectDescriptorCallback)dll_219_getObjectTypeId,
+    dll_219_getExtraSize_ret_4,
+};

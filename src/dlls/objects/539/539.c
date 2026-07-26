@@ -14,6 +14,7 @@
  * Init reads rotX and the drive game bit from the placement; free releases
  * the object's expgfx source.
  */
+#include "dlls/object_descriptor.h"
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
 #include "game/objects/object_setup.h"
@@ -160,3 +161,20 @@ void dll_21B_release_nop(void)
 void dll_21B_initialise_nop(void)
 {
 }
+
+ObjectDescriptor dll_21B = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_21B_initialise_nop,
+    (ObjectDescriptorCallback)dll_21B_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_21B_init,
+    (ObjectDescriptorCallback)dll_21B_update,
+    (ObjectDescriptorCallback)dll_21B_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_21B_render_nop,
+    (ObjectDescriptorCallback)dll_21B_free,
+    (ObjectDescriptorCallback)dll_21B_getObjectTypeId,
+    dll_21B_getExtraSize_ret_4,
+};

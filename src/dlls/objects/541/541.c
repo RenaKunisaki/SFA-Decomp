@@ -14,6 +14,7 @@
  * toggle game bit. hitDetect enables/disables the object's hit volume
  * from the hit-disable game bit.
  */
+#include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
@@ -346,3 +347,20 @@ void VFPLift_release(void)
 void VFPLift_initialise(void)
 {
 }
+
+ObjectDescriptor gVFPLiftObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFPLift_initialise,
+    (ObjectDescriptorCallback)VFPLift_release,
+    0,
+    (ObjectDescriptorCallback)VFPLift_init,
+    (ObjectDescriptorCallback)VFPLift_update,
+    (ObjectDescriptorCallback)VFPLift_hitDetect,
+    (ObjectDescriptorCallback)VFPLift_render,
+    (ObjectDescriptorCallback)VFPLift_free,
+    (ObjectDescriptorCallback)VFPLift_getObjectTypeId,
+    VFPLift_getExtraSize,
+};

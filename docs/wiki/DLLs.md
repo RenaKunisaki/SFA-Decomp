@@ -590,7 +590,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `SH` | SnowHorn / ThornTail Hollow | `src/dlls/objects/430_SH_LevelCon/SH_LevelCon.c` |
 | `SB` | ShipBattle (the prologue) | `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` |
 | `SC` | LightFoot Village (map `swapcircle`) | `src/dlls/objects/438_SC_levelcon/SC_levelcon.c` |
-| `VF`/`VFP` | Volcano Force Point Temple | `src/main/dll/VF/dll_0216_vfplevelcontrol.c` |
+| `VF`/`VFP` | Volcano Force Point Temple | `src/dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c` |
 | `WC` | Walled City | `src/main/dll/WC/dll_028A_wcearthwalker.c` |
 | `WM` | Krazoa Palace | `src/main/dll/WM/dll_0209_wmlevelcontrol.c` (comment states this explicitly) |
 | `KT` | (torches shared across) KrazoaPalace / ThornTail | `src/dlls/objects/296_KT_Torch/KT_Torch.c` |

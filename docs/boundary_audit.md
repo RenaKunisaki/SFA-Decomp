@@ -27,7 +27,7 @@ serve. Therefore a DLL's TU spans
 (previous DLL's initialise end) .. (own initialise end)
 ```
 
-Validated against the descriptor-carved `dll_0215_wmnewcrystal.c`:
+Validated against the descriptor-carved `dlls/objects/533_WM_newcryst/WM_newcryst.c`:
 unit = [801F943C, 801F9804), and dll 0x215's fns are 801F974C..801F9800
 (initialise 801F9800 + 4 = unit end exactly; helpers 801F943C..801F974C
 precede). The same model holds at every clean per-descriptor unit checked.

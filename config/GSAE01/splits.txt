@@ -3327,46 +3327,54 @@ dlls/objects/532_WM_TransTop/WM_TransTop.c:
 dlls/objects/531_WM_VConsole/WM_VConsole.c:
 	.data       start:0x80328E28 end:0x80328E58
 
-main/dll/WM/dll_0215_wmnewcrystal.c:
+dlls/objects/533_WM_newcryst/WM_newcryst.c:
 	.text       start:0x801F943C end:0x801F9804
-	.data       start:0x80328E58 end:0x80329050
+	.data       start:0x80328E58 end:0x80328E90
 	.sdata2     start:0x803E6038 end:0x803E6060
 
-main/dll/VF/dll_021E_vfpblock1.c:
-	.data       start:0x80329050 end:0x80329088
-
-main/dll/VF/dll_0216_vfplevelcontrol.c:
+dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c:
 	.text       start:0x801F9804 end:0x801F9D78
+	.data       start:0x80328E90 end:0x80328EC8
 	.sdata      start:0x803DC148 end:0x803DC150
 	.sdata2     start:0x803E6060 end:0x803E6064
 
-main/dll/VF/dll_0217_vfpobjcreator.c:
+dlls/objects/535_VFP_ObjCrea/VFP_ObjCrea.c:
 	.text       start:0x801F9D78 end:0x801FA228
+	.data       start:0x80328EC8 end:0x80328F00
 	.sdata2     start:0x803E6068 end:0x803E6088
 
-main/dll/VF/dll_0218_vfpminifire.c:
+dlls/objects/536_VFP_MiniFir/VFP_MiniFir.c:
 	.text       start:0x801FA228 end:0x801FA6FC
+	.data       start:0x80328F00 end:0x80328F38
 	.sdata2     start:0x803E6088 end:0x803E60A8
 
-main/dll/dll_0219.c:
+dlls/objects/537/537.c:
 	.text       start:0x801FA6FC end:0x801FA870
+	.data       start:0x80328F38 end:0x80328F70
 	.sdata2     start:0x803E60A8 end:0x803E60B4
 
-main/dll/VF/dll_021A_vfpstatueball.c:
+dlls/objects/538_VFP_statueb/VFP_statueb.c:
 	.text       start:0x801FA870 end:0x801FAC6C
+	.data       start:0x80328F70 end:0x80328FA8
 	.sdata2     start:0x803E60B8 end:0x803E60D0
 
-main/dll/dll_021B.c:
+dlls/objects/539/539.c:
 	.text       start:0x801FAC6C end:0x801FAFEC
+	.data       start:0x80328FA8 end:0x80328FE0
 	.sdata2     start:0x803E60D0 end:0x803E60D8
 
-main/dll/VF/dll_021C_vfpladders.c:
+dlls/objects/540_VFP_Ladders/VFP_Ladders.c:
 	.text       start:0x801FAFEC end:0x801FB220
+	.data       start:0x80328FE0 end:0x80329018
 	.sdata2     start:0x803E60D8 end:0x803E60E0
 
-main/dll/VF/dll_021D_vfplift.c:
+dlls/objects/541/541.c:
 	.text       start:0x801FB220 end:0x801FB9AC
+	.data       start:0x80329018 end:0x80329050
 	.sdata2     start:0x803E60E0 end:0x803E6100
+
+main/dll/VF/dll_021E_vfpblock1.c:
+	.data       start:0x80329050 end:0x80329088
 
 main/light.c:
 	.text       start:0x801FB9AC end:0x801FD4A8

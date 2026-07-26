@@ -14,6 +14,7 @@
  *    "sequence done" bit when all four are set;
  *  - two music latches driven through SCGameBitLatch_Update.
  */
+#include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
@@ -248,3 +249,20 @@ void VFP_LevelControl_initialise(void)
 {
     lbl_803DC148 = VFP_TIMER_INIT;
 }
+
+ObjectDescriptor gVFP_LevelControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFP_LevelControl_initialise,
+    (ObjectDescriptorCallback)VFP_LevelControl_release,
+    0,
+    (ObjectDescriptorCallback)VFP_LevelControl_init,
+    (ObjectDescriptorCallback)VFP_LevelControl_update,
+    (ObjectDescriptorCallback)VFP_LevelControl_hitDetect,
+    (ObjectDescriptorCallback)VFP_LevelControl_render,
+    (ObjectDescriptorCallback)VFP_LevelControl_free,
+    (ObjectDescriptorCallback)VFP_LevelControl_getObjectTypeId,
+    VFP_LevelControl_getExtraSize,
+};

@@ -576,15 +576,15 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x212 | — | COMPLETE | dlls/objects/530/530.c | = (canonical) | No recovered retail basename; data-only DLL |
 | 0x213 | WM_VConsole | COMPLETE | dlls/objects/531_WM_VConsole/WM_VConsole.c | = (canonical) | Data-only DLL |
 | 0x214 | WM_TransTop | COMPLETE | dlls/objects/532_WM_TransTop/WM_TransTop.c | = (canonical) | Data-only DLL |
-| 0x215 | WM_newcrystal | CONFIRMED | main/dll/dll_0215_wmnewcrystal.c | main/dll/WM/dll_0215_wmnewcrystal.c | — |
-| 0x216 | VFP_LevelControl | CONFIRMED | main/dll/dll_0216_vfplevelcontrol.c | main/dll/VF/dll_0216_vfplevelcontrol.c | — |
-| 0x217 | VFP_ObjCreator | CONFIRMED | main/dll/dll_0217_vfpobjcreator.c | main/dll/VF/dll_0217_vfpobjcreator.c | — |
-| 0x218 | VFP_MiniFire | CONFIRMED | main/dll/dll_0218_vfpminifire.c | main/dll/VF/dll_0218_vfpminifire.c | — |
-| 0x219 | — | NO-RETAIL-NAME | main/dll/dll_0219.c | = (canonical) | — |
-| 0x21A | VFP_statueball | CONFIRMED | main/dll/dll_021A_vfpstatueball.c | main/dll/VF/dll_021A_vfpstatueball.c | — |
-| 0x21B | — | NO-RETAIL-NAME | main/dll/dll_021B.c | = (canonical) | — |
-| 0x21C | VFP_Ladders | CONFIRMED | main/dll/dll_021C_vfpladders.c | main/dll/VF/dll_021C_vfpladders.c | — |
-| 0x21D | VFPLift (+VFPLift1, VFPLift2, VFPLift3) | CONFIRMED | main/dll/dll_021D_vfplift.c | main/dll/VF/dll_021D_vfplift.c | — |
+| 0x215 | WM_newcryst | COMPLETE | dlls/objects/533_WM_newcryst/WM_newcryst.c | = (canonical) | — |
+| 0x216 | VFP_LevelCo | COMPLETE | dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c | = (canonical) | — |
+| 0x217 | VFP_ObjCrea | COMPLETE | dlls/objects/535_VFP_ObjCrea/VFP_ObjCrea.c | = (canonical) | — |
+| 0x218 | VFP_MiniFir | COMPLETE | dlls/objects/536_VFP_MiniFir/VFP_MiniFir.c | = (canonical) | — |
+| 0x219 | — | COMPLETE | dlls/objects/537/537.c | = (canonical) | No recovered retail basename |
+| 0x21A | VFP_statueb | COMPLETE | dlls/objects/538_VFP_statueb/VFP_statueb.c | = (canonical) | — |
+| 0x21B | — | COMPLETE | dlls/objects/539/539.c | = (canonical) | No recovered retail basename |
+| 0x21C | VFP_Ladders | COMPLETE | dlls/objects/540_VFP_Ladders/VFP_Ladders.c | = (canonical) | — |
+| 0x21D | — | COMPLETE | dlls/objects/541/541.c | = (canonical) | No recovered retail basename |
 | 0x21E | VFP_Block1 | COMPLETE | main/light.c | main/dll/VF/dll_021E_vfpblock1.c | engine/SDK host: main/light.c |
 | 0x21F | VFP_Platform (+VFPLavaBloc) | CONFIRMED | main/light.c | main/dll/VF/dll_021F_vfpplatform.c | engine/SDK host: main/light.c |
 | 0x220 | VFP_DoorSwitch (+VFP_LiftInd) | CONFIRMED | main/light.c | main/dll/VF/dll_0220_vfpdoorswitch.c | engine/SDK host: main/light.c |
@@ -888,13 +888,13 @@ name was a deliberate choice by a previous carve:
 | 0x20F | main/dll/dll_020F_wmspiritset.c | dlls/objects/527_WM_SpiritSe/WM_SpiritSe.c | COMPLETE |
 | 0x210 | main/dll/dll_0210_wmplanets.c | dlls/objects/528_WM_Planets/WM_Planets.c | COMPLETE |
 | 0x211 | main/dll/dll_0211_wmwallcrawler.c | dlls/objects/529/529.c | COMPLETE |
-| 0x215 | main/dll/dll_0215_wmnewcrystal.c | main/dll/WM/dll_0215_wmnewcrystal.c | CONFIRMED |
-| 0x216 | main/dll/dll_0216_vfplevelcontrol.c | main/dll/VF/dll_0216_vfplevelcontrol.c | CONFIRMED |
-| 0x217 | main/dll/dll_0217_vfpobjcreator.c | main/dll/VF/dll_0217_vfpobjcreator.c | CONFIRMED |
-| 0x218 | main/dll/dll_0218_vfpminifire.c | main/dll/VF/dll_0218_vfpminifire.c | CONFIRMED |
-| 0x21A | main/dll/dll_021A_vfpstatueball.c | main/dll/VF/dll_021A_vfpstatueball.c | CONFIRMED |
-| 0x21C | main/dll/dll_021C_vfpladders.c | main/dll/VF/dll_021C_vfpladders.c | CONFIRMED |
-| 0x21D | main/dll/dll_021D_vfplift.c | main/dll/VF/dll_021D_vfplift.c | CONFIRMED |
+| 0x215 | main/dll/dll_0215_wmnewcrystal.c | dlls/objects/533_WM_newcryst/WM_newcryst.c | COMPLETE |
+| 0x216 | main/dll/dll_0216_vfplevelcontrol.c | dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c | COMPLETE |
+| 0x217 | main/dll/dll_0217_vfpobjcreator.c | dlls/objects/535_VFP_ObjCrea/VFP_ObjCrea.c | COMPLETE |
+| 0x218 | main/dll/dll_0218_vfpminifire.c | dlls/objects/536_VFP_MiniFir/VFP_MiniFir.c | COMPLETE |
+| 0x21A | main/dll/dll_021A_vfpstatueball.c | dlls/objects/538_VFP_statueb/VFP_statueb.c | COMPLETE |
+| 0x21C | main/dll/dll_021C_vfpladders.c | dlls/objects/540_VFP_Ladders/VFP_Ladders.c | COMPLETE |
+| 0x21D | main/dll/dll_021D_vfplift.c | dlls/objects/541/541.c | COMPLETE |
 | 0x229 | main/dll/dll_0229_dfplevelcontrol.c | main/dll/DF/dll_0229_dfplevelcontrol.c | CONFIRMED |
 | 0x22A | main/dll/dll_022A_dfpobjcreator.c | main/dll/DF/dll_022A_dfpobjcreator.c | CONFIRMED |
 | 0x22B | main/dll/dll_022B_dfptorch.c | main/dll/DF/dll_022B_dfptorch.c | COMPLETE |

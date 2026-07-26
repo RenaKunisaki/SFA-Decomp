@@ -12,6 +12,7 @@
  * The placement variant (0..2) selects both the displayed model and the
  * particle-burst model.
  */
+#include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"
 #include "main/audio/sfx.h"
@@ -177,3 +178,20 @@ void VFP_statueball_release(void)
 void VFP_statueball_initialise(void)
 {
 }
+
+ObjectDescriptor gVFP_statueballObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFP_statueball_initialise,
+    (ObjectDescriptorCallback)VFP_statueball_release,
+    0,
+    (ObjectDescriptorCallback)VFP_statueball_init,
+    (ObjectDescriptorCallback)VFP_statueball_update,
+    (ObjectDescriptorCallback)VFP_statueball_hitDetect,
+    (ObjectDescriptorCallback)VFP_statueball_render,
+    (ObjectDescriptorCallback)VFP_statueball_free,
+    (ObjectDescriptorCallback)VFP_statueball_getObjectTypeId,
+    VFP_statueball_getExtraSize,
+};

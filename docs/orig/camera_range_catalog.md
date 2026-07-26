@@ -271,7 +271,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/WC/dll_0298_wcfloortile.c` | 459 | `slot = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/196_Tricky/tricky.c` | 4691 | `ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)` |
 | `src/dlls/objects/526_WM_sun/WM_sun.c` | 72 | `cam = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/WM/dll_0215_wmnewcrystal.c` | 64 | `PSVECSubtract((f32*)((char*)Camera_GetCurrentViewSlot() + 0xc), &obj->anim.localPosX, cameraDelta);` |
+| `src/dlls/objects/533_WM_newcryst/WM_newcryst.c` | 45 | `PSVECSubtract(&Camera_GetCurrentViewSlot()->position.x, &obj->anim.localPosX, cameraDelta);` |
 | `src/main/light.c` | 512 | `CameraViewSlot* camView = Camera_GetCurrentViewSlot();` |
 | `src/main/lightmap.c` | 83 | `cam = (u8*)Camera_GetCurrentViewSlot();` |
 | `src/main/lightmap.c` | 416 | `lbl_803DCEA8 = (int)Camera_GetCurrentViewSlot();` |

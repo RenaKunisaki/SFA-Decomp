@@ -12,6 +12,7 @@
  *    trails.
  * The spawn cadence is driven by spawnTimer counting down spawnInterval.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
@@ -184,3 +185,20 @@ void VFP_ObjCreator_release(void)
 void VFP_ObjCreator_initialise(void)
 {
 }
+
+ObjectDescriptor gVFP_ObjCreatorObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFP_ObjCreator_initialise,
+    (ObjectDescriptorCallback)VFP_ObjCreator_release,
+    0,
+    (ObjectDescriptorCallback)VFP_ObjCreator_init,
+    (ObjectDescriptorCallback)VFP_ObjCreator_update,
+    (ObjectDescriptorCallback)VFP_ObjCreator_hitDetect,
+    (ObjectDescriptorCallback)VFP_ObjCreator_render,
+    (ObjectDescriptorCallback)VFP_ObjCreator_free,
+    (ObjectDescriptorCallback)VFP_ObjCreator_getObjectTypeId,
+    VFP_ObjCreator_getExtraSize,
+};

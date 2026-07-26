@@ -9,6 +9,7 @@
  *    delay drops from its placed height down by a fixed offset (with a
  *    buzzing sfx) and latches at the bottom.
  */
+#include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
@@ -130,3 +131,20 @@ void VFP_Ladders_release(void)
 void VFP_Ladders_initialise(void)
 {
 }
+
+ObjectDescriptor gVFP_LaddersObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFP_Ladders_initialise,
+    (ObjectDescriptorCallback)VFP_Ladders_release,
+    0,
+    (ObjectDescriptorCallback)VFP_Ladders_init,
+    (ObjectDescriptorCallback)VFP_Ladders_update,
+    (ObjectDescriptorCallback)VFP_Ladders_hitDetect,
+    (ObjectDescriptorCallback)VFP_Ladders_render,
+    (ObjectDescriptorCallback)VFP_Ladders_free,
+    (ObjectDescriptorCallback)VFP_Ladders_getObjectTypeId,
+    VFP_Ladders_getExtraSize,
+};
