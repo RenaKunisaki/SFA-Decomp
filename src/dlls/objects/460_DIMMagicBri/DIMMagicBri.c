@@ -40,7 +40,7 @@ void dimmagicbridge_updateVertexWave(GameObject* obj, u8* sub)
     ObjModel* model;
     f32 amp;
     DimMagicBridgeState* state = (DimMagicBridgeState*)sub;
-    model = Obj_GetActiveModel((GameObject*)obj);
+    model = Obj_GetActiveModel(obj);
     mdl = model->file;
     i = 0;
     amp = 65535.0f;
@@ -196,7 +196,7 @@ void dimmagicbridge_update(GameObject* obj)
     }
 }
 
-void dimmagicbridge_init(u8* obj, u8* params)
+void dimmagicbridge_init(GameObject* obj, u8* params)
 {
     DimMagicBridgeState* state;
     int i;
@@ -210,11 +210,11 @@ void dimmagicbridge_init(u8* obj, u8* params)
     s16* vtx;
     s16 vertexY;
 
-    ((GameObject*)obj)->anim.rotX = (s16)(((s16)(s8)params[0x18]) << 8);
-    ((GameObject*)obj)->animEventCallback = dimmagicbridge_SeqFn;
-    state = ((GameObject*)obj)->extra;
+    obj->anim.rotX = (s16)(((s16)(s8)params[0x18]) << 8);
+    obj->animEventCallback = dimmagicbridge_SeqFn;
+    state = obj->extra;
     minY = 0;
-    model = Obj_GetActiveModel((GameObject*)obj);
+    model = Obj_GetActiveModel(obj);
     modelData = model->file;
 
     i = 0;
