@@ -1986,7 +1986,7 @@ dlls/objects/265/265.c:
 	.data       start:0x803218E8 end:0x80321920
 	.sdata2     start:0x803E3B40 end:0x803E3B4C
 
-main/dll/dll_010A_fallladders.c:
+dlls/objects/266_Fall_Ladder/Fall_Ladder.c:
 	.text       start:0x80187F30 end:0x8018824C
 	.data       start:0x80321920 end:0x80321958
 	.sdata2     start:0x803E3B50 end:0x803E3B68

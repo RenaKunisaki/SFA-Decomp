@@ -1,5 +1,5 @@
 /*
- * fallladders (DLL 0x010A) - a placed "falling ladder" prop driven by the
+ * Fall_Ladder (DLL 0x10A) - a placed falling-ladder prop driven by the
  * object sequence/trigger system.
  *
  * Two game bits from the placement record control it:
