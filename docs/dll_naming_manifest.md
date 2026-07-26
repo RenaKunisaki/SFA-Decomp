@@ -413,7 +413,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x16F | IMSpaceThru | CONFIRMED | dlls/objects/367_IMSpaceThru/IMSpaceThru.c | = (canonical) | — |
 | 0x170 | IMSpaceRing | CONFIRMED | dlls/objects/368_IMSpaceRing/IMSpaceRing.c | = (canonical) | — |
 | 0x171 | IMSpaceRing | CONFIRMED | dlls/objects/369_IMSpaceRing/IMSpaceRing.c | = (canonical) | — |
-| 0x172 | LINKB_levcontrol | CONFIRMED | main/dll/dll_0172_linkblevcontrol.c | = (canonical) | — |
+| 0x172 | LINKB_levco | CONFIRMED | dlls/objects/370_LINKB_levco/LINKB_levco.c | = (canonical) | — |
 | 0x173 | LINK_levcontrol | CONFIRMED | main/dll/dll_0173_linklevcontrol.c | = (canonical) | — |
 | 0x174 | CCriverflow | CONFIRMED | main/dll/dll_0174_ccriverflow.c | main/dll/CC/dll_0174_ccriverflow.c | — |
 | 0x175 | DFropenode | COMPLETE | main/dll/dll_0175_dfropenode.c | main/dll/DF/dll_0175_dfropenode.c | — |

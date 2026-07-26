@@ -1,5 +1,5 @@
 /*
- * dll_0172 linkb_levcontrol - level controller for Link's boss arena (the
+ * LINKB_levco (DLL 0x172) - level controller for Link's boss arena (the
  * Tricky/SharpClaw encounter). It drives a 5-stage progression machine
  * (state->stage) gated on game bits, runs the per-stage trigger sequence,
  * pokes the Tricky object (trickySetSoundSuppressed) at each transition, edge-latches the
