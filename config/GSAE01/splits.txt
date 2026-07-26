@@ -1911,7 +1911,7 @@ dlls/objects/256_TrickyWarp/TrickyWarp.c:
 	.text       start:0x8017FF0C end:0x8018023C
 	.data       start:0x803215A0 end:0x803215D8
 
-main/dll/dll_0101_trickyguard.c:
+dlls/objects/257_TrickyGuard/TrickyGuard.c:
 	.text       start:0x8018023C end:0x80180338
 	.data       start:0x803215D8 end:0x80321610
 

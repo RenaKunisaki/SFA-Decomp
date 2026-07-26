@@ -154,7 +154,7 @@ is unconfirmed.
   `guardState`, `guardPoint`, `guardTarget`, `guardTimer`, and `guardHelpers[7]` — it makes Tricky
   hold a point and spawn up to 7 flameblast helpers, def id `0x4F0`). Contrary to the wiki calling
   this purely "unused," `trickyGuard` **is** wired up in retail — just via map-placed objects, not
-  the player-selectable command menu: DLL `0x0101` (`src/main/dll/dll_0101_trickyguard.c`,
+  the player-selectable command menu: DLL `0x0101` (`src/dlls/objects/257_TrickyGuard/TrickyGuard.c`,
   `TrickyGuard_init`/`_update`) and DLL `0x0120`
   (`src/main/dll/dll_0120_trickyguardspot.c`, `TrickyGuardSpot_*`) are placeable "guard volume"
   objects that call the live Tricky object's vtable slot `TRICKY_VTBL_GUARD` (`+0x28` byte offset,
