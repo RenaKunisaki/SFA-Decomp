@@ -1620,7 +1620,7 @@ main/dll/landedarwing.c:
 	.text       start:0x8016558C end:0x801659B8
 	.sdata2     start:0x803E3018 end:0x803E3020
 
-main/dll/dll_00D3_staffAction.c:
+dlls/objects/211/211.c:
 	.text       start:0x801659B8 end:0x801675E0
 	.bss        start:0x803AC638 end:0x803AC668
 	.sbss       start:0x803DDA88 end:0x803DDA90

@@ -256,7 +256,7 @@ Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 3
 | 0x0D0 | Grimble | COMPLETE | dlls/objects/208_Grimble/Grimble.c | = (canonical) | — |
 | 0x0D1 | TumbleWeedB | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | shared retail TU with 0x0D2 |
 | 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | shared retail TU with 0x0D1 |
-| 0x0D3 | — | NO-RETAIL-NAME | main/dll/dll_00D3_staffAction.c | = (canonical) | — |
+| 0x0D3 | — | NO-RETAIL-NAME | dlls/objects/211/211.c | = (canonical) | — |
 | 0x0D4 | SkeetlaWall | CONFIRMED | main/dll/dll_00D4_skeetlawall.c | = (canonical) | — |
 | 0x0D5 | Kaldachom | COMPLETE | main/dll/dll_00D5_kaldachom.c | = (canonical) | — |
 | 0x0D6 | KaldachomMe | RAW | main/dll/dll_00D6_kaldachomme.c | = (canonical) | — |

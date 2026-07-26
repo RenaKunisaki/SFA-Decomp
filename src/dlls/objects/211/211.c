@@ -43,6 +43,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/object_render.h"
 #include "main/trig.h"
+
 #define STAFFACTION_HIT_VOLUME_SLOT 9
 
 /* object group this object belongs to */
