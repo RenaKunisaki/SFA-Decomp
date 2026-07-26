@@ -1,6 +1,5 @@
 /*
  * Blasted (DLL 0x159) - CFBlastedRock/Wall/Tunnel + DRBlastedWall targets.
- * TU = 0x801A27B8..0x801A2BDC (helper fn_801A27B8 + blasted_*).
  */
 #include "game/objects/object.h"
 #include "sys/objects.h"
