@@ -4,7 +4,7 @@
 #include "game/objects/object.h"
 
 void guardClaw_update(int* obj, u8* state);
-void gcRobotPatrol_update(int* obj, u8* state);
+void gcRobotPatrol_update(GameObject* obj, u8* state);
 void guardClaw_init(int* obj, u8* state);
 void gcRobotPatrol_init(GameObject* obj, int state);
 

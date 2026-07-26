@@ -1307,7 +1307,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 guardClaw_update((int*)obj, (u8*)state);
                 break;
             case ENEMY_GCROBOTPATROL_OBJ:
-                gcRobotPatrol_update((int*)obj, (u8*)state);
+                gcRobotPatrol_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_MIKALADON_OBJ:
                 mikaladon_update((GameObject*)obj, (MikaladonState*)state);
@@ -1384,7 +1384,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 guardClaw_update((int*)obj, (u8*)state);
                 break;
             case ENEMY_GCROBOTPATROL_OBJ:
-                gcRobotPatrol_update((int*)obj, (u8*)state);
+                gcRobotPatrol_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_MIKALADON_OBJ:
                 mikaladon_update((GameObject*)obj, (MikaladonState*)state);
@@ -1495,7 +1495,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             guardClaw_update((int*)obj, (u8*)state);
             break;
         case ENEMY_GCROBOTPATROL_OBJ:
-            gcRobotPatrol_update((int*)obj, (u8*)state);
+            gcRobotPatrol_update((GameObject*)obj, (u8*)state);
             break;
         case ENEMY_MIKALADON_OBJ:
             mikaladon_update((GameObject*)obj, (MikaladonState*)state);

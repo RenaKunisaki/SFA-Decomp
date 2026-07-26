@@ -72,7 +72,7 @@ typedef struct
     f32 d;
 } SeqFxParams;
 
-void gcRobotPatrol_update(int* obj, u8* state)
+void gcRobotPatrol_update(GameObject* obj, u8* state)
 {
     int* def;
     RomCurveWalker* path;
@@ -80,16 +80,16 @@ void gcRobotPatrol_update(int* obj, u8* state)
     s16 spd;
     SeqFxParams fx;
 
-    def = *(int**)&((GameObject*)obj)->anim.placementData;
+    def = *(int**)&obj->anim.placementData;
     path = *(RomCurveWalker**)state;
     if (*(f32*)(state + 0x32c) > 0.0f)
     {
-        int* child = ((GameObject*)obj)->childObjs[0];
+        GameObject* child = obj->childObjs[0];
         if (child != 0)
         {
-            Obj_FreeObject((GameObject*)child);
-            ObjLink_DetachChild((GameObject*)obj, (GameObject*)((GameObject*)obj)->childObjs[0]);
-            *(int*)&((GameObject*)obj)->childObjs[0] = 0;
+            Obj_FreeObject(child);
+            ObjLink_DetachChild(obj, obj->childObjs[0]);
+            obj->childObjs[0] = 0;
         }
         *(f32*)(state + 0x32c) = *(f32*)(state + 0x32c) - timeDelta;
         if (*(f32*)(state + 0x32c) <= 0.0f)
@@ -97,7 +97,7 @@ void gcRobotPatrol_update(int* obj, u8* state)
             *(f32*)(state + 0x32c) = 0.0f;
             *(u32*)&((BaddieState*)state)->unk2E4 |= 0x20;
             Sfx_StopObjectChannel((u32)obj, 4);
-            ((SeqObj11ESetMovePointerStateFn)fn_8014D08C)((GameObject*)obj, state, 0, 1.0f, 0, 0);
+            ((SeqObj11ESetMovePointerStateFn)fn_8014D08C)(obj, state, 0, 1.0f, 0, 0);
         }
         else if (!(*(u32*)&((BaddieState*)state)->unk2E4 & 0x20))
         {
@@ -119,12 +119,12 @@ void gcRobotPatrol_update(int* obj, u8* state)
                 }
             }
         }
-        ((GameObject*)obj)->anim.velocityX = (path->posX - ((GameObject*)obj)->anim.localPosX) / timeDelta;
-        ((GameObject*)obj)->anim.velocityZ = (path->posZ - ((GameObject*)obj)->anim.localPosZ) / timeDelta;
+        obj->anim.velocityX = (path->posX - obj->anim.localPosX) / timeDelta;
+        obj->anim.velocityZ = (path->posZ - obj->anim.localPosZ) / timeDelta;
         step = (s8) * ((u8*)def + 0x2a);
         if (step == 0)
         {
-            baddieTurnTowardPoint((GameObject*)obj, (int)state, path->posX, path->posZ, 0xf, 0);
+            baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
         }
         else if (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW)
         {
@@ -137,8 +137,8 @@ void gcRobotPatrol_update(int* obj, u8* state)
             {
                 step = -spd;
             }
-            ((GameObject*)obj)->anim.rotX = ((GameObject*)obj)->anim.rotX - step;
-            baddieTurnTowardPoint((GameObject*)obj, (int)state, path->posX, path->posZ, 0xf, 0);
+            obj->anim.rotX = obj->anim.rotX - step;
+            baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
             if ((int)(10.0f * path->tangentY) >= 0)
             {
                 step = spd;
@@ -147,14 +147,14 @@ void gcRobotPatrol_update(int* obj, u8* state)
             {
                 step = -spd;
             }
-            ((GameObject*)obj)->anim.rotX += step;
+            obj->anim.rotX += step;
         }
         else
         {
             step = ((int)(10.0f * path->tangentY) >= 0) ? step : -step;
-            ((GameObject*)obj)->anim.rotX += step;
+            obj->anim.rotX += step;
         }
-        if (((GameObject*)obj)->anim.localPosY - path->posY < -1.0f)
+        if (obj->anim.localPosY - path->posY < -1.0f)
         {
             if (Sfx_IsPlayingFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d) == 0)
             {
@@ -169,7 +169,7 @@ void gcRobotPatrol_update(int* obj, u8* state)
     }
     else
     {
-        if (((GameObject*)obj)->anim.localPosY - ((ObjPlacement*)def)->posY < -0.4f)
+        if (obj->anim.localPosY - ((ObjPlacement*)def)->posY < -0.4f)
         {
             if (Sfx_IsPlayingFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d) == 0)
             {
@@ -181,20 +181,20 @@ void gcRobotPatrol_update(int* obj, u8* state)
         {
             ((BaddieState*)state)->userData1 = 0;
         }
-        ((GameObject*)obj)->anim.rotX += *(s8*)((char*)def + 0x2a);
+        obj->anim.rotX += *(s8*)((char*)def + 0x2a);
     }
     if (((BaddieState*)state)->userData1 != 0)
     {
-        ((GameObject*)obj)->anim.velocityY += lbl_803DBCB0 * timeDelta;
+        obj->anim.velocityY += lbl_803DBCB0 * timeDelta;
     }
-    if (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_RENDERED)
+    if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)
     {
         f32 z = 0.0f;
         fx.b = z;
         fx.c = z;
         fx.d = z;
         fx.a = 1.0f;
-        objfx_spawnLightPulse((GameObject*)obj, 0.5f, 2, 0, 6, 0.25f, &fx);
+        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 6, 0.25f, &fx);
         fx.c = 12.0f;
         objfx_spawnMaskedHitEffect(obj, 0.4f, 1, 6, 0x20, &fx);
         fx.b = 0.0f;
@@ -202,23 +202,23 @@ void gcRobotPatrol_update(int* obj, u8* state)
         fx.c = z;
         fx.d = z;
     }
-    if (((GameObject*)obj)->anim.velocityY < -0.5f)
+    if (obj->anim.velocityY < -0.5f)
     {
-        ((GameObject*)obj)->anim.velocityY = -0.5f;
+        obj->anim.velocityY = -0.5f;
     }
-    else if (((GameObject*)obj)->anim.velocityY > 0.5f)
+    else if (obj->anim.velocityY > 0.5f)
     {
-        ((GameObject*)obj)->anim.velocityY = 0.5f;
+        obj->anim.velocityY = 0.5f;
     }
     if (0.0f == *(f32*)(state + 0x32c))
     {
         GameObject* child2;
 
-        if (*(s8*)((char*)def + 0x2e) != -1 && (child2 = ((GameObject*)obj)->childObjs[0]) != 0 &&
+        if (*(s8*)((char*)def + 0x2e) != -1 && (child2 = obj->childObjs[0]) != 0 &&
             fn_801A0174(child2) != 0)
         {
-            ObjHits_RecordObjectHit(Obj_GetPlayerObject(), (GameObject*)obj, 0x16, 2, 0);
-            gcRobotLight_init((GameObject*)obj, 0x3b2);
+            ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
+            gcRobotLight_init(obj, 0x3b2);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_rolovr_6);
             *(f32*)(state + 0x32c) = lbl_803DBCB4;
         }
@@ -226,7 +226,7 @@ void gcRobotPatrol_update(int* obj, u8* state)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_sp_literun114);
         }
-        child2 = ((GameObject*)obj)->childObjs[0];
+        child2 = obj->childObjs[0];
         if (child2 != 0)
         {
             ObjTextureRuntimeSlot* tex = objFindTexture(child2, 0, 0);
@@ -254,14 +254,14 @@ void gcRobotPatrol_update(int* obj, u8* state)
             {
                 attached = 0;
             }
-            newObj = gcRobotLight_init((GameObject*)obj, 0x639);
+            newObj = gcRobotLight_init(obj, 0x639);
             flag = 0;
             if (*(s8*)((char*)def + 0x2a) != 0 && !(((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW))
             {
                 flag = 1;
             }
             newObj->userData1 = flag;
-            ObjLink_AttachChild((GameObject*)obj, newObj, attached);
+            ObjLink_AttachChild(obj, newObj, attached);
         }
     }
 }
