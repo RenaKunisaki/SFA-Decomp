@@ -1,5 +1,5 @@
 /*
- * waterflowwe (DLL 0x2AE) - water-flow weed: a foliage object that
+ * WaterFlowWe (DLL 0x2AE) - water-flow weed: a foliage object that
  * sways to a water current.
  *
  * Each tick calcCurrentVector sums the influence of two source groups:
