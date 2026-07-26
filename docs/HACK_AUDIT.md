@@ -92,7 +92,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/pi_dolphin | 98.6446 | 68.4667 | -30.1779 |
 | main/main/dll/dll_011A_decoration11a | 100.0000 | 70.3114 | -29.6886 |
 | main/main/dll/dll_0040_credits | 100.0000 | 70.4585 | -29.5415 |
-| main/main/dll/DR/dll_0281_drearthcal | 100.0000 | 70.8681 | -29.1319 |
+| main/dlls/objects/641_DR_EarthCal/DR_EarthCal | 100.0000 | 70.8681 | -29.1319 |
 | main/main/dll/dll_0041_warpstoneui | 99.6296 | 70.8788 | -28.7508 |
 | main/main/dll/dll_025B_msplantings | 100.0000 | 71.4044 | -28.5956 |
 | main/main/object | 99.9370 | 71.5331 | -28.4040 |
