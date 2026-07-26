@@ -659,7 +659,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x265 | DR_Creator | COMPLETE | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | — |
 | 0x266 | KytesMum | COMPLETE | main/dll/dll_0266_kytesmum.c | = (canonical) | — |
 | 0x267 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
+| 0x268 | DR_CageControl | CONFIRMED | dlls/objects/616_DR_CageCont/DR_CageCont.c | = (canonical) | — |
 | 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | dlls/objects/617_ExplodePlan/ExplodePlan.c | = (canonical) | — |
 | 0x26A | DR_Geezer | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x26B | DR_Chimmey | COMPLETE | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | = (canonical) | — |
@@ -920,7 +920,7 @@ name was a deliberate choice by a previous carve:
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | CONFIRMED |
 | 0x261 | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | CONFIRMED |
 | 0x265 | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | COMPLETE |
-| 0x268 | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | CONFIRMED |
+| 0x268 | main/dll/dll_0268_drcagecontrol.c | dlls/objects/616_DR_CageCont/DR_CageCont.c | CONFIRMED |
 | 0x26B | main/dll/dll_026B_drchimmey.c | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | COMPLETE |
 | 0x26C | main/dll/dll_026C_drcagewith.c | dlls/objects/620/620.c | CONFIRMED |
 | 0x26E | main/dll/dll_026E_drshackle.c | dlls/objects/622/622.c | COMPLETE |
