@@ -64,6 +64,7 @@
 #include "string.h"
 
 typedef struct MapDynamicSlot MapDynamicSlot;
+typedef struct TrackTriangle TrackTriangle;
 
 u32 gTrackTriangleBufferEnd;
 s16 gTrackTriangleCount;
@@ -86,7 +87,7 @@ u32 lbl_803DCF40;
 int gIntersectLineIndexTable;
 f32* lbl_803DCF38;
 int lbl_803DCF34;
-u32 gTrackTriangleBuffer;
+TrackTriangle* gTrackTriangleBuffer;
 
 f32 lbl_803DB660 = 0.01f;
 
@@ -106,7 +107,7 @@ typedef struct TrackBlockDescriptor
  * vertex coordinates are stored as s16 triplets grouped by axis
  * (x0 x1 x2 / y0 y1 y2 / z0 z1 z2), which the hit-detect code reads both
  * by field and as an s16 index off the record base. */
-typedef struct TrackTriangle
+struct TrackTriangle
 {
     f32 planeD;     /* 0x00 plane equation constant */
     f32 planeN[3];  /* 0x04 plane normal xyz */
@@ -121,7 +122,7 @@ typedef struct TrackTriangle
     s8 flags;       /* 0x49 0x10 = disabled, 0x4 = force */
     u8 minMaxY;     /* 0x4a lo/hi nibble: s16 index (base 0xb) of min/max height */
     u8 edgeOutBits; /* 0x4b per-edge outside bits from last query */
-} TrackTriangle;
+};
 
 typedef struct TrackHitResults
 {
@@ -1909,13 +1910,13 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
         if (desc->object != NULL)
         {
             Matrix_TransformPoint(desc->currentMatrix, x, lbl_803DECB4, z, &tx, &ty, &tz);
-            fn_800659A8((TrackTriangle*)(gTrackTriangleBuffer + desc->firstTriangle * 0x4c),
-                        (TrackTriangle*)(gTrackTriangleBuffer + desc[1].firstTriangle * 0x4c), desc, tx, tz, mode);
+            fn_800659A8(gTrackTriangleBuffer + desc->firstTriangle,
+                        gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
         }
         else
         {
-            fn_800659A8((TrackTriangle*)(gTrackTriangleBuffer + desc->firstTriangle * 0x4c),
-                        (TrackTriangle*)(gTrackTriangleBuffer + desc[1].firstTriangle * 0x4c), desc, x, z, mode);
+            fn_800659A8(gTrackTriangleBuffer + desc->firstTriangle,
+                        gTrackTriangleBuffer + desc[1].firstTriangle, desc, x, z, mode);
         }
     }
 
@@ -2290,8 +2291,8 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                 {
                     PSVECNormalize(delta, dir);
                 }
-                for (tri = (TrackTriangle*)(gTrackTriangleBuffer + desc->firstTriangle * 0x4c);
-                     (u32)tri < (u32)(gTrackTriangleBuffer + desc[1].firstTriangle * 0x4c); tri++)
+                for (tri = gTrackTriangleBuffer + desc->firstTriangle;
+                     tri < gTrackTriangleBuffer + desc[1].firstTriangle; tri++)
                 {
                     u8 b;
                     tri->edgeOutBits = 0;
@@ -2391,8 +2392,8 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                 {
                     if (mag == 0.0f)
                         continue;
-                    for (tri = (TrackTriangle*)(gTrackTriangleBuffer + desc->firstTriangle * 0x4c);
-                         (u32)tri < (u32)(gTrackTriangleBuffer + desc[1].firstTriangle * 0x4c); tri++)
+                    for (tri = gTrackTriangleBuffer + desc->firstTriangle;
+                         tri < gTrackTriangleBuffer + desc[1].firstTriangle; tri++)
                     {
                         u8 edgeBit;
                         if (tri->edgeOutBits == 0)
@@ -2424,8 +2425,8 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             break;
                     }
                     if (hit == 0)
-                    for (tri = (TrackTriangle*)(gTrackTriangleBuffer + desc->firstTriangle * 0x4c);
-                         (u32)tri < (u32)(gTrackTriangleBuffer + desc[1].firstTriangle * 0x4c); tri++)
+                    for (tri = gTrackTriangleBuffer + desc->firstTriangle;
+                         tri < gTrackTriangleBuffer + desc[1].firstTriangle; tri++)
                     {
                         if (tri->edgeOutBits == 0)
                             continue;
@@ -2745,8 +2746,8 @@ int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int
         }
     }
 
-    hitCount = hitDetect_800667ec(0, (void*)(gTrackTriangleBuffer + tbl->firstTriangle * 0x4c),
-                                 (void*)(gTrackTriangleBuffer + tbl[1].firstTriangle * 0x4c), startPos, endPos, count,
+    hitCount = hitDetect_800667ec(0, gTrackTriangleBuffer + tbl->firstTriangle,
+                                 gTrackTriangleBuffer + tbl[1].firstTriangle, startPos, endPos, count,
                                  results, 0);
 
     fp = results;
@@ -3455,15 +3456,15 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
         desc->firstTriangle = 0;
         desc++;
         descEnd = &gTrackBlockDescriptors[20];
-        gTrackTriangleBufferEnd = gTrackTriangleBuffer + 0x16440;
+        gTrackTriangleBufferEnd = (u32)(gTrackTriangleBuffer + 1200);
         masked = a & 0xffff;
         if ((masked & 0x10) != 0)
         {
-            cur = gTrackTriangleBuffer;
+            cur = (int)gTrackTriangleBuffer;
         }
         else
         {
-            cur = mapLoadBlocksFn_800685cc(gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, a, b);
+            cur = mapLoadBlocksFn_800685cc((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, a, b);
         }
         if ((u32)cur < gTrackTriangleBufferEnd && (masked & 1) && obj != NULL)
         {
@@ -3599,16 +3600,16 @@ void trackGetTriangleBuffer(int* outCount, int* outTable)
 {
     TrackBlockDescriptor* descriptors = gTrackBlockDescriptors;
     *outCount = descriptors[gActiveTrackBlockCount].firstTriangle;
-    *outTable = gTrackTriangleBuffer;
+    *outTable = (int)gTrackTriangleBuffer;
 }
 
 void mapInitFn_80069990(void)
 {
     int i;
     int off;
-    if (gTrackTriangleBuffer == 0)
+    if (gTrackTriangleBuffer == NULL)
     {
-        gTrackTriangleBuffer = (u32)mmAlloc(0x16440, 0xffff00ff, 0);
+        gTrackTriangleBuffer = mmAlloc(1200 * sizeof(TrackTriangle), 0xffff00ff, 0);
         lbl_803DCF34 = (int)mmAlloc(0x5dc0, 0xffff00ff, 0);
         lbl_803DCF38 = mmAlloc(0x4fb0, 0xffff00ff, 0);
         gIntersectLineIndexTable = (int)mmAlloc(0xbb8, 0xffff00ff, 0);
