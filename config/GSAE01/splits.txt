@@ -1801,7 +1801,7 @@ dlls/objects/241_InvHit/InvHit.c:
 	.bss        start:0x803AC780 end:0x803AC790
 	.sdata2     start:0x803E35E8 end:0x803E3600
 
-main/dll/dll_00F2_iceblast.c:
+dlls/objects/242_iceblast/iceblast.c:
 	.text       start:0x80177E28 end:0x8017804C
 	.data       start:0x80320E68 end:0x80320EA0
 	.sdata2     start:0x803E3600 end:0x803E3618
