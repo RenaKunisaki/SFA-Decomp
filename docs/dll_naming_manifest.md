@@ -706,7 +706,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x294 | — | NO-RETAIL-NAME | dlls/objects/660/660.c | = (canonical) | Exact complete nine-function TU; `wctemple` is an internal object-family alias, not a recovered DLL basename |
 | 0x295 | WCApertureS | RAW | dlls/objects/661_WCApertureS/WCApertureS.c | = (canonical) | Exact complete ten-function TU with its sole descriptor at the physical end |
 | 0x296 | WCTempleDia | RAW | dlls/objects/662_WCTempleDia/WCTempleDia.c | = (canonical) | Exact complete eleven-function TU; game-bit and target-speed tables remain with its terminal descriptor |
-| 0x297 | WCTempleBri | CONFIRMED | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | — |
+| 0x297 | WCTempleBri | RAW | dlls/objects/663_WCTempleBri/WCTempleBri.c | = (canonical) | Exact complete eleven-function TU with deformation helpers and its sole descriptor at the physical end |
 | 0x298 | WCFloorTile | CONFIRMED | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | — |
 | 0x299 | — | NO-RETAIL-NAME | main/dll/dll_0299.c | = (canonical) | — |
 | 0x29A | ARWArwing | COMPLETE | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | — |
