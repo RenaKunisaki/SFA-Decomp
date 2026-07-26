@@ -96,6 +96,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   they belong to one TU. Merge them in retail function order, keep one TU-level compiler profile,
   and accept match regressions rather than preserving an artificial split. Only redraw a boundary
   when DOL section, pool, function-order, or source-tag evidence establishes a different real TU.
+- End an object DLL TU with its `ObjectDescriptor` definition. Do not move the descriptor earlier
+  merely to reproduce post-link section order; keep the source structure plausible and leave the
+  unit `NonMatching` when the reconstructed declaration order exposes a data mismatch.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.

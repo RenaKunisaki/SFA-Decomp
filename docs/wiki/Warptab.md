@@ -189,7 +189,7 @@ strong independent confirmation that the wiki's table is accurate:
 | `0x20` | Krazoa Palace, WarpStone entrance | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_A` |
 | `0x22` | Krazoa Palace, interior warp | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_B`; `ARW/dll_029A_arwarwing.c` |
 | `0x32` | Andross | `dll_02BC_andross.c`, `dll_011B_landedarwing.c`, `ARW/dll_029A_arwarwing.c` |
-| `0x33` | MazeCave | `SH/dll_01B0_shswapston.c` |
+| `0x33` | MazeCave | `dlls/objects/432_SH_swapston/SH_swapston.c` |
 | `0x4E` | Krazoa Palace Arwing landing spot | `dll_02BC_andross.c`, `dll_011B_landedarwing.c` |
 | `0x50` | Lightfoot Village plateau | `SC/dll_01B6_sclevelcontrol.c` |
 | `0x60` | World Map | `dll_0039_dummy39.c`: `DUMMY39_WARP_MAP`; `ARW/dll_029A_arwarwing.c` (×2) |
@@ -200,7 +200,7 @@ strong independent confirmation that the wiki's table is accurate:
 | `0x78` | Walled City Arwing landing spot | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |
 | `0x79` | Dragon Rock Arwing landing spot | `ARW/dll_029A_arwarwing.c`; `dll_024D_bossdrakor.c` |
 | `0x7C` (124) | VolcanoForcePoint | `light.c`: `warpToMap(124, 0)` (×2) |
-| `0x7E` | LinkA (crashes) | `WM/dll_020C_wmspiritplace.c`; `SH/dll_01B0_shswapston.c` |
+| `0x7E` | LinkA (crashes) | `WM/dll_020C_wmspiritplace.c`; `dlls/objects/432_SH_swapston/SH_swapston.c` |
 | `0x7F` | GreatFox | `dll_011B_landedarwing.c` |
 
 `arwarwing_warpByCourse`'s own `switch` reads especially cleanly against the wiki: it warps to

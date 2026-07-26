@@ -294,7 +294,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/WM/dll_0207_wmworm | 100.0000 | 98.9840 | -1.0160 |
 | main/main/dll/dll_0126_trigger | 99.8561 | 98.8547 | -1.0014 |
 | main/main/dll/dll_02BE_androssbrain | 100.0000 | 99.0222 | -0.9778 |
-| main/main/dll/scshgroup | 100.0000 | 99.0412 | -0.9588 |
+| main/dlls/objects/432_SH_swapston/SH_swapston | 100.0000 | 99.0412 | -0.9588 |
 | main/main/dll/dll_018F_ecshshrine | 100.0000 | 99.0542 | -0.9458 |
 | main/main/dll/dll_0069_dll69func0 | 99.8726 | 98.9490 | -0.9236 |
 | main/main/dll/dll_00F4_doorf4 | 100.0000 | 99.0866 | -0.9134 |

@@ -363,7 +363,6 @@ const BATCH = [
   { name: 'objfx.c', baseline: '8e566327d60843a27132dc481e14df77', pct: 98.0 },
   { name: 'picmenu.c', baseline: '155666a71bee9da8e7ec0050fee7b9df', pct: 99.246 },
   { name: 'prof.c', baseline: '3a18b25e245190d00a61f2714fcca226', pct: 98.917 },
-  { name: 'scchieflightfoot.c', baseline: '43636bfcb09cf3f0f6012bd48a344212', pct: 100.0 },
   { name: 'seqobj11d.c', baseline: 'c272b898c61e074ef1f8b50a78634753', pct: 94.112 },
   { name: 'seqobj11e.c', baseline: '53c70cbc96938727c9050403ac199a22', pct: 99.52 },
   { name: 'skeetla.c', baseline: 'bc19786cf8731e0b30574c39dbaaae0a', pct: 96.061 },
