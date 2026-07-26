@@ -321,7 +321,7 @@ void DIMCannon_update(GameObject* obj)
 
     if (obj->anim.seqId == DIMCANNON_BALL_OBJ)
     {
-        DIMwooddoor_updateFallingDebris((int*)obj);
+        DIMwooddoor_updateFallingDebris(obj);
         return;
     }
 

@@ -43,66 +43,66 @@ extern f32 lbl_803DBEF0;
 /* DIMwooddoor_updateFallingDebris: integrate the falling debris under gravity, spin it, and on
  * contact (or scripted trigger) fire the explosion and start the despawn timer. */
 
-void DIMwooddoor_updateFallingDebris(int* obj)
+void DIMwooddoor_updateFallingDebris(GameObject* obj)
 {
-    DIMwooddoorUpdateFallingDebrisState* extra = ((GameObject*)obj)->extra;
+    DIMwooddoorUpdateFallingDebrisState* extra = obj->extra;
     switch (extra->state)
     {
     case DIMWOODDOOR_DEBRIS_STATE_FALLING:
     {
-        f32 oldvy = ((GameObject*)obj)->anim.velocityY;
+        f32 oldvy = obj->anim.velocityY;
         f32 grav = lbl_803E48A4 * -lbl_803DBEF0;
         f32 midVel;
         ObjHitsPriorityState* hitState;
-        ((GameObject*)obj)->anim.velocityY = grav * timeDelta + oldvy;
-        midVel = lbl_803E48A8 * (oldvy + ((GameObject*)obj)->anim.velocityY);
-        objMove((GameObject*)obj, ((GameObject*)obj)->anim.velocityX * timeDelta, midVel * timeDelta,
-                ((GameObject*)obj)->anim.velocityZ * timeDelta);
-        ((GameObject*)obj)->anim.rotZ =
-            ((GameObject*)obj)->anim.rotZ + extra->rotZRate * 10;
-        ((GameObject*)obj)->anim.rotY =
-            ((GameObject*)obj)->anim.rotY + extra->rotYRate * 10;
-        *(s16*)obj = *(s16*)obj + extra->rotXRate * 10;
-        hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
+        obj->anim.velocityY = grav * timeDelta + oldvy;
+        midVel = lbl_803E48A8 * (oldvy + obj->anim.velocityY);
+        objMove(obj, obj->anim.velocityX * timeDelta, midVel * timeDelta,
+                obj->anim.velocityZ * timeDelta);
+        obj->anim.rotZ =
+            obj->anim.rotZ + extra->rotZRate * 10;
+        obj->anim.rotY =
+            obj->anim.rotY + extra->rotYRate * 10;
+        obj->anim.rotX = obj->anim.rotX + extra->rotXRate * 10;
+        hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         if (hitState != NULL)
         {
             int* vol;
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DLL801B1D84_HIT_VOLUME_SLOT,
+            ObjHits_SetHitVolumeSlot(&obj->anim, DLL801B1D84_HIT_VOLUME_SLOT,
                                      extra->hitVolumeSlot, 0);
             vol = (int*)hitState->lastHitObject;
             if (vol != NULL && vol != *(int**)extra)
             {
-                ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj,
+                ObjHitbox_SetSphereRadius(&obj->anim,
                                           extra->hitboxRadius);
-                spawnExplosion((GameObject*)obj, lbl_803E48A0, 2, 1, 0, 1, 1, 1, 0);
-                ((GameObject*)obj)->userData1 = 1180;
+                spawnExplosion(obj, lbl_803E48A0, 2, 1, 0, 1, 1, 1, 0);
+                obj->userData1 = 1180;
                 *(s8*)&extra->state = DIMWOODDOOR_DEBRIS_STATE_EXPLODED;
-                ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
             }
         }
         if ((mainGetBit(GAMEBIT_DIM2_CannonRelated085E) != 0 && mainGetBit(GAMEBIT_CannonRelated0C2D) == 0) ||
             (mainGetBit(GAMEBIT_DIM2_CannonRelated0874) != 0 && mainGetBit(GAMEBIT_CannonRelated0C2E) == 0))
         {
-            ((GameObject*)obj)->userData1 = 1200;
+            obj->userData1 = 1200;
         }
-        if (((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->contactFlags != 0)
+        if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0)
         {
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj,
+            ObjHitbox_SetSphereRadius(&obj->anim,
                                       extra->hitboxRadius);
-            spawnExplosion((GameObject*)obj, lbl_803E48A0, 2, 1, 0, 1, 1, 1, 0);
-            ((GameObject*)obj)->userData1 = 1180;
+            spawnExplosion(obj, lbl_803E48A0, 2, 1, 0, 1, 1, 1, 0);
+            obj->userData1 = 1180;
             *(s8*)&extra->state = DIMWOODDOOR_DEBRIS_STATE_EXPLODED;
-            ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
         break;
     }
     case DIMWOODDOOR_DEBRIS_STATE_EXPLODED:
         break;
     }
-    ((GameObject*)obj)->userData1 = ((GameObject*)obj)->userData1 + framesThisStep;
-    if (((GameObject*)obj)->userData1 > 1200)
+    obj->userData1 = obj->userData1 + framesThisStep;
+    if (obj->userData1 > 1200)
     {
-        Obj_FreeObject((GameObject*)obj);
+        Obj_FreeObject(obj);
     }
     else if (extra->unk7 != 0)
     {
