@@ -2609,7 +2609,7 @@ dlls/objects/465_DIMTruthHor/DIMTruthHor.c:
 	.data       start:0x803256E0 end:0x80325718
 	.sdata2     start:0x803E4A40 end:0x803E4A58
 
-main/dll/DIM/dll_01D5_dim2conveyor.c:
+dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c:
 	.text       start:0x801B7154 end:0x801B75B8
 	.data       start:0x80325718 end:0x80325758
 	.sdata2     start:0x803E4A58 end:0x803E4A78

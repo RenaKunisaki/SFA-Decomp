@@ -1,16 +1,12 @@
-/* DLL 0x1D5 - DIM 2 conveyor belt object. Scrolls two texture channels on a conveyor mesh using
+/*
+ * DIM2Conveyo (DLL 0x1D5) - DIM 2 conveyor belt object.
+ * Scrolls two texture channels on a conveyor mesh using
  * sin/cos of a placement-defined rotation angle. For map id 0x49B23 (the dual-direction belt),
  * manages forward/reverse direction via game bits 3163/3164 with a timed swap (swapTimer). Adds
  * itself to object group 22; music track 0xDF is kept alive while the belt is moving. */
 #include "main/audio/music_api.h"
-#include "main/dll/fbwgpipe_struct.h"
 #include "main/dll/dim2conveyorstate_struct.h"
 #include "main/dll/DIM/dll_01D5_dim2conveyor.h"
-
-
-FbWGPipe GXWGFifo : (0xCC008000);
-
-
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "main/obj_group.h"
@@ -28,8 +24,6 @@ STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
 #define MAP_ID_DUAL_BELT           0x49B23
 #define OBJ_GROUP_CONVEYORS        22
 #define MUSIC_TRACK_CONVEYOR       0xdf
-
-
 
 void dim2conveyor_getScrollVector(GameObject* obj, int unused, f32* outX, f32* outY)
 {
@@ -74,16 +68,28 @@ void dim2conveyor_getScrollVector(GameObject* obj, int unused, f32* outX, f32* o
     }
 }
 
-int dim2conveyor_getExtraSize(void) { return sizeof(Dim2ConveyorState); }
+int dim2conveyor_getExtraSize(void)
+{
+    return sizeof(Dim2ConveyorState);
+}
 
-int dim2conveyor_getObjectTypeId(void) { return 0x0; }
+int dim2conveyor_getObjectTypeId(void)
+{
+    return 0;
+}
 
-void dim2conveyor_free(GameObject* obj) { ObjGroup_RemoveObject((int)obj, OBJ_GROUP_CONVEYORS); }
+void dim2conveyor_free(GameObject* obj)
+{
+    ObjGroup_RemoveObject((int)obj, OBJ_GROUP_CONVEYORS);
+}
 
-void dim2conveyor_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dim2conveyor_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dim2conveyor_hitDetect(void)
