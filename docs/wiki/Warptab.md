@@ -181,13 +181,13 @@ strong independent confirmation that the wiki's table is accurate:
 | id | wiki destination | called from |
 |----|-------------------|-------------|
 | `0x00` | clouddungeon | `dll_0038_weirdunusedmenu.c`: `warpToMap(0, 1)` |
-| `0x02` | Ice Mountain, main entrance | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_SHRINE` |
+| `0x02` | Ice Mountain, main entrance | `dlls/objects/568_LINKA_levco/LINKA_levco.c`: `LINKA_LEVCONTROL_WARP_ID_SHRINE` |
 | `0x0E` | *(unused/all-zero entry)* | `SP/dll_0286_spshopkeeper.c`: `warpToMap(0xE, 0)` |
-| `0x0F` | WarpStone platform | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE3`; `SP/dll_0286_spshopkeeper.c`: `warpToMap(0xF, 0)` |
+| `0x0F` | WarpStone platform | `dlls/objects/568_LINKA_levco/LINKA_levco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE3`; `SP/dll_0286_spshopkeeper.c`: `warpToMap(0xF, 0)` |
 | `0x12` | Title Screen | `dll_0032_titlescreeninit.c`, `dll_0000_gameui.c`, `dll_02BB_gflevelcon.c` |
 | `0x1A` | Ice Mountain after re-race | `dlls/objects/361_IMIceMounta/IMIceMounta.c` (a shared `warpCountdown` field/comment is also templated, unreached, in `dlls/objects/364/364.c` and `DIM/dll_01BE_dimlava.c`/`dll_01BF_dimlavaball.c`) |
-| `0x20` | Krazoa Palace, WarpStone entrance | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_A` |
-| `0x22` | Krazoa Palace, interior warp | `dll_0238_linkalevco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_B`; `ARW/dll_029A_arwarwing.c` |
+| `0x20` | Krazoa Palace, WarpStone entrance | `dlls/objects/568_LINKA_levco/LINKA_levco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_A` |
+| `0x22` | Krazoa Palace, interior warp | `dlls/objects/568_LINKA_levco/LINKA_levco.c`: `LINKA_LEVCONTROL_WARP_ID_MODE2_ROUTE_B`; `ARW/dll_029A_arwarwing.c` |
 | `0x32` | Andross | `dll_02BC_andross.c`, `dll_011B_landedarwing.c`, `ARW/dll_029A_arwarwing.c` |
 | `0x33` | MazeCave | `SH/dll_01B0_shswapston.c` |
 | `0x4E` | Krazoa Palace Arwing landing spot | `dll_02BC_andross.c`, `dll_011B_landedarwing.c` |
@@ -268,12 +268,12 @@ typedef struct WarpDestination {
 enum WarpTabId
 {
     WARPTAB_ID_CLOUDDUNGEON_START        = 0x00, /* dll_0038_weirdunusedmenu.c */
-    WARPTAB_ID_ICE_MOUNTAIN_ENTRANCE     = 0x02, /* dll_0238_linkalevco.c: WARP_ID_SHRINE */
-    WARPTAB_ID_WARPSTONE_PLATFORM        = 0x0F, /* dll_0238_linkalevco.c: WARP_ID_MODE3 */
+    WARPTAB_ID_ICE_MOUNTAIN_ENTRANCE     = 0x02, /* dlls/objects/568_LINKA_levco/LINKA_levco.c: WARP_ID_SHRINE */
+    WARPTAB_ID_WARPSTONE_PLATFORM        = 0x0F, /* dlls/objects/568_LINKA_levco/LINKA_levco.c: WARP_ID_MODE3 */
     WARPTAB_ID_TITLE_SCREEN              = 0x12,
     WARPTAB_ID_ICE_MOUNTAIN_POST_RACE    = 0x1A,
-    WARPTAB_ID_KRAZOA_WARPSTONE_ENTRANCE = 0x20, /* dll_0238_linkalevco.c: WARP_ID_MODE2_ROUTE_A */
-    WARPTAB_ID_KRAZOA_INTERIOR_WARP      = 0x22, /* dll_0238_linkalevco.c: WARP_ID_MODE2_ROUTE_B */
+    WARPTAB_ID_KRAZOA_WARPSTONE_ENTRANCE = 0x20, /* dlls/objects/568_LINKA_levco/LINKA_levco.c: WARP_ID_MODE2_ROUTE_A */
+    WARPTAB_ID_KRAZOA_INTERIOR_WARP      = 0x22, /* dlls/objects/568_LINKA_levco/LINKA_levco.c: WARP_ID_MODE2_ROUTE_B */
     WARPTAB_ID_ANDROSS                   = 0x32,
     WARPTAB_ID_MAZECAVE                  = 0x33,
     WARPTAB_ID_KRAZOA_ARWING_LANDING     = 0x4E,
