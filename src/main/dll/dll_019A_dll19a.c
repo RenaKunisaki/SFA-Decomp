@@ -47,8 +47,6 @@ STATIC_ASSERT(sizeof(Dll19ASpawnSetup) == 0x38);
 /* type id of the child object spawned into a Dll19ASpawnSetup once the gate bit + timer elapse */
 #define DLL19A_CHILD_OBJ 0x2d0
 
-extern f32 lbl_803E5180;
-
 int dll_19A_getExtraSize(void)
 {
     return sizeof(Dll19AState);
@@ -66,7 +64,7 @@ void dll_19A_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E5180);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void dll_19A_hitDetect(void)

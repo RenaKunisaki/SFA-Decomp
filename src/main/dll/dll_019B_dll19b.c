@@ -35,13 +35,6 @@
 
 extern int lbl_803DB610;
 u32 lbl_803DDBE0;
-extern f32 lbl_803E5188;
-extern f32 lbl_803E518C;
-extern f32 lbl_803E5190;
-extern f32 lbl_803E5194;
-extern f32 lbl_803E5198;
-extern f32 lbl_803E519C;
-extern f32 lbl_803E51A0;
 
 /* Romlist placement for the 0x19B torch object. The standard ObjPlacement
  * header occupies 0x00..0x18; this class stores a packed activation-distance
@@ -180,7 +173,7 @@ void dll_19B_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E5188);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void dll_19B_hitDetect(void)
@@ -204,7 +197,7 @@ void dll_19B_update(int obj)
 
     st = ((GameObject*)obj)->extra;
     player = (int)Obj_GetPlayerObject();
-    dist = lbl_803E518C;
+    dist = 1000.0f;
     st2 = ((GameObject*)obj)->extra;
     unk16 = 0;
     while (ObjMsg_Pop((void*)obj, (u32*)&msg, (u32*)&unk8, (u32*)&unk16) != 0)
@@ -266,26 +259,26 @@ void dll_19B_update(int obj)
     else
     {
         near = ObjGroup_FindNearestObject(DLL19B_TARGET_OBJGROUP, (GameObject*)player, &dist);
-        if ((u32)near != 0 && dist < lbl_803E5190 && dist > lbl_803E5194)
+        if ((u32)near != 0 && dist < 300.0f && dist > 100.0f)
         {
             dy = ((GameObject*)near)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ;
-            if (dy <= lbl_803E5198)
+            if (dy <= 0.0f)
             {
-                if (dy < lbl_803E5198)
+                if (dy < 0.0f)
                 {
-                    dy = dy * lbl_803E519C;
+                    dy *= -1.0f;
                 }
                 if (st->brightnessB != 30)
                 {
                     st->brightnessB = 30;
                 }
-                v = (int)((f32)st->brightnessB * ((dy - lbl_803E5194) / lbl_803E51A0));
+                v = (int)((f32)st->brightnessB * ((dy - 100.0f) / 200.0f));
                 if ((s16)v < 1)
                 {
                     v = 1;
                 }
                 gTitleMenuControlInterface->vtable->func11(3, v & 0xff);
-                v = (int)((f32)st->brightnessA * ((lbl_803E51A0 - (dy - lbl_803E5194)) / *(f32*)&lbl_803E51A0));
+                v = (int)((f32)st->brightnessA * ((200.0f - (dy - 100.0f)) / 200.0f));
                 if ((s16)v < 1)
                 {
                     v = 1;
