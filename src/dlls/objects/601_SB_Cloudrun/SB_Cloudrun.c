@@ -18,26 +18,6 @@
  * "(d - 0x10000) + 1" forms below are the shortest-arc angle wrap-clamps.
  */
 
-/*
- * wcpushblock (cloud-ride variant, Walled City) - a path-spawned rideable
- * cloud/push block. WCPushBlock_SpawnFromPath only spawns while object
- * loading is locked: it rotates a base vector by the path's yaw/pitch/roll
- * (vecRotateZXY) to seed the block's velocity, allocates a 0x18-byte object
- * setup (id WCPUSHBLOCK_SPAWN_OBJECT_ID, group 1) at path point 4, and arms
- * a spawn idle timer and spawn sfx. WCPushBlock_UpdateCloudAction drives a
- * rotor/cloud platform through gCloudActionInterface (setRotorAngle +
- * moveRelative), easing a lift amount toward a push-roll-derived target and
- * converting the rotor angle into a sin/cos planar move.
- * WCPushBlock_UpdateRideTilt reads the rider's analog stick, integrates
- * pitch/roll toward scaled targets with wrap-around and per-axis clamps
- * (MAX_PITCH/MAX_ROLL), applies a damped yaw drift and advances the ride
- * animation move.
- *
- * These helpers belong to this DLL and are distinct from the tile-grid
- * wcpushblock (DLL 0x290); they do not use the WCLevelContInterface controller
- * protocol and keep their own declarations for the cloud-action ABI.
- */
-
 #include "main/audio/sfx.h"
 #include "game/objects/object.h"
 #include "main/obj_path.h"
