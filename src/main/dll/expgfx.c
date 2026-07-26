@@ -1596,8 +1596,8 @@ void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale
     if (light != NULL)
     {
         modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setPosition(light, ((GameObject*)obj)->anim.worldPosX,
-                                     ((GameObject*)obj)->anim.worldPosY + lightYOffset, ((GameObject*)obj)->anim.worldPosZ);
+        modelLightStruct_setPosition(light, obj->anim.worldPosX,
+                                     obj->anim.worldPosY + lightYOffset, obj->anim.worldPosZ);
         rPtr = (u8*)&colorTbl;
         gPtr = (u8*)&colorTbl + 1;
         bPtr = (u8*)&colorTbl + 2;
@@ -1747,7 +1747,7 @@ void fn_8009A8C8(GameObject* obj, f32 shakeRange)
     {
         return;
     }
-    if (((GameObject*)player)->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK)
+    if (player->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK)
     {
         return;
     }
@@ -1797,7 +1797,7 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
         if (doShake != 0)
         {
             GameObject* player = Obj_GetPlayerObject();
-            if (player != NULL && (((GameObject*)player)->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
+            if (player != NULL && (player->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
             {
                 f32 d = Camera_DistanceToCurrentViewPosition(((ObjAnimComponent*)src)->worldPosX,
                                                              ((ObjAnimComponent*)src)->worldPosY,
@@ -1848,7 +1848,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
         if (doShake != 0)
         {
             GameObject* player = Obj_GetPlayerObject();
-            if (player != NULL && (((GameObject*)player)->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
+            if (player != NULL && (player->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
             {
                 f32 d = Camera_DistanceToCurrentViewPosition(src->anim.worldPosX, src->anim.worldPosY,
                                                              src->anim.worldPosZ);
@@ -2487,8 +2487,8 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     attractRatio = 1.0f;
     trickyRange = 0.0f;
     playerRange = trickyRange;
-    player = (GameObject*)Obj_GetPlayerObject();
-    tricky = (GameObject*)getTrickyObject();
+    player = Obj_GetPlayerObject();
+    tricky = getTrickyObject();
     cache = getCache();
     gExpgfxPhaseAngleA += (u16)(120.0f * timeDelta);
     gExpgfxPhaseAngleB += (u16)(480.0f * timeDelta);
