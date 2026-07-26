@@ -1146,7 +1146,7 @@ config.libs = [
                 section_alignments={".data": 4},
             ),
             Object(MatchingFor("GSAE01"), "main/audio_decode_thread.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/fireflygroup.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "main/dll/fireflygroup.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_020C_wmspiritplace.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_020D_wmseqpoint.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_020E_wmsun.c", cflags=cflags_dll_noopt),

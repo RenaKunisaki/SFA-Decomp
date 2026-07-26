@@ -28,6 +28,8 @@
 /* minimum inward margin when re-rolling the orbit radius */
 #define FIREFLY_RADIUS_MARGIN 0x14
 
+const f32 gFireflyDespawnFrames[1] = {180.0f};
+
 int firefly_animEventCallback(GameObject* obj)
 {
     firefly_activeTick(obj);

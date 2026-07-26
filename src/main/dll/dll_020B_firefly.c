@@ -204,7 +204,7 @@ void firefly_activeTick(GameObject* obj)
                     {
                         FireFlyState* st = (obj)->extra;
                         (obj)->anim.flags = (s16)((obj)->anim.flags | FIREFLY_OBJFLAG_HIDDEN);
-                        st->despawnTimer = 180.0f;
+                        st->despawnTimer = gFireflyDespawnFrames[0];
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
                         Sfx_PlayFromObject((int)obj, SFXTRIG_lockoff22);
@@ -258,7 +258,7 @@ void firefly_update(GameObject* obj)
         {
             FireFlyState* st = obj->extra;
             obj->anim.flags = (s16)(obj->anim.flags | FIREFLY_OBJFLAG_HIDDEN);
-            st->despawnTimer = 180.0f;
+            st->despawnTimer = gFireflyDespawnFrames[0];
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
             Sfx_PlayFromObject((int)obj, SFXTRIG_lockoff22);
@@ -284,7 +284,7 @@ void firefly_update(GameObject* obj)
     {
         if (timerCountDown(&state->lifeTimer) != 0)
         {
-            state->despawnTimer = 180.0f;
+            state->despawnTimer = gFireflyDespawnFrames[0];
         }
         if (state->despawnTimer > 0.0f)
         {
