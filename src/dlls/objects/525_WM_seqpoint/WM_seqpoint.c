@@ -104,14 +104,14 @@ void wmseqpoint_onSeqFree(GameObject* obj)
     }
 }
 
-int wmseqpoint_SeqFn(int obj, int unused, ObjAnimUpdateState* actor)
+int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
 {
     WmSeqPointState* state;
-    int player;
+    GameObject* player;
     int i;
 
-    state = ((GameObject*)obj)->extra;
-    player = (int)Obj_GetPlayerObject();
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
     actor->sequenceEventActive = 0;
     actor->freeCallback = (ObjAnimSequenceFreeCallback)wmseqpoint_onSeqFree;
 
@@ -136,7 +136,7 @@ int wmseqpoint_SeqFn(int obj, int unused, ObjAnimUpdateState* actor)
                     break;
                 case 4:
                     mainSetBits(GAMEBIT_WM_SpiritHead1Fired, 1);
-                    objSetAnimStateFlags((GameObject*)player, 8, 0);
+                    objSetAnimStateFlags(player, 8, 0);
                     mainSetBits(GAMEBIT_ITEM_Spirit1_Used, 1);
                     break;
                 default:
@@ -154,9 +154,9 @@ int wmseqpoint_SeqFn(int obj, int unused, ObjAnimUpdateState* actor)
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_DAY_B, 0);
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_DAY_C, 0);
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_DAY_D, 0);
-                    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 4, 0);
-                    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 10, 1);
-                    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0xb, 1);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 4, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 10, 1);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
                 }
                 break;
             case 0xa:
@@ -166,9 +166,9 @@ int wmseqpoint_SeqFn(int obj, int unused, ObjAnimUpdateState* actor)
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_NIGHT_B, 0);
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_NIGHT_C, 0);
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_NIGHT_D, 0);
-                    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 4, 1);
-                    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 10, 0);
-                    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0xb, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 4, 1);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 10, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 0);
                 }
                 break;
             default:
