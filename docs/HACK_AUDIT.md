@@ -249,7 +249,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/voxmaps | 99.5590 | 96.7568 | -2.8022 |
 | main/main/dll/picmenu | 100.0000 | 97.2010 | -2.7990 |
 | main/main/dll/attractmovie | 100.0000 | 97.2072 | -2.7928 |
-| main/main/dll/dll_02B5_timer | 100.0000 | 97.2096 | -2.7904 |
+| main/dlls/objects/693_Timer/Timer | 100.0000 | 97.2096 | -2.7904 |
 | main/main/atan2f | 98.7298 | 96.0081 | -2.7218 |
 | main/main/dll/dll_0056_cameramodearwing | 99.8479 | 97.1663 | -2.6815 |
 | main/main/dll/dll_80136a40 | 99.1092 | 96.5304 | -2.5788 |
