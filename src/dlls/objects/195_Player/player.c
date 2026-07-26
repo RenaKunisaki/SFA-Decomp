@@ -17214,7 +17214,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         *(int*)&((PlayerState*)inner)->baddie.unk318 = 0;
         if (seq->flags & 1)
         {
-            *(u32*)((char*)inner + 4) |= 0x100000;
+            *(int*)((char*)inner + 4) |= 0x100000;
             ((PlayerState*)inner)->baddie.physicsActive = 0;
         }
         for (vb = 0; vb < seq->eventCount; vb++)
