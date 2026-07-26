@@ -671,7 +671,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x271 | — | NO-RETAIL-NAME | dlls/objects/625/625.c | = (canonical) | Complete DOL-confirmed DrakorHoverpad-family TU consolidated from the two former source fragments; descriptor is followed by the TU's final 0x80-byte data table |
 | 0x272 | — | NO-RETAIL-NAME | dlls/objects/626/626.c | = (canonical) | Complete DOL-confirmed HighTop-family TU; data ownership includes the 48-byte HighTop `.sdata` block |
 | 0x273 | FirePipe | COMPLETE | dlls/objects/627_FirePipe/FirePipe.c | = (canonical) | Exact complete TU with descriptor at the physical end; other object-definition aliases are not DLL basenames |
-| 0x274 | DR_pulley | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
+| 0x274 | DR_pulley | COMPLETE | dlls/objects/628_DR_pulley/DR_pulley.c | = (canonical) | Exact data-only DLL: table-proven descriptor `lbl_803DC360` |
 | 0x275 | DR_cradle | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x276 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x277 | CFWindLiftL | RAW | *(none)* | — | no .text fns (descriptor data only) |
