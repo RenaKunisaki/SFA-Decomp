@@ -193,7 +193,7 @@ is unconfirmed.
     the caged bird.
   - `CagedKyte` on Scales' galleon: `src/main/dll/SB/dll_01F2_sbcagekyte.c` (`SB_CageKyte`, DLL
     `0x1F2`, "Kyte, the captive baby Cloudrunner held in the deck cage... during the ShipBattle
-    prologue") and `src/main/dll/SB/dll_01F0_sbkytecage.c` (`SB_KyteCage`, DLL `0x1F0`, the cage
+    prologue") and `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c` (`SB_KyteCage`, DLL `0x1F0`, the cage
     object itself, `include/main/dll/sbkytecagestate_struct.h` -> `SBKyteCageState`). Matches the
     wiki's claim almost verbatim, including that "Kyte is never actually freed — talking just
     opens the deck door."

@@ -539,7 +539,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1ED | SB_FireBall | COMPLETE | dlls/objects/493_SB_FireBall/SB_FireBall.c | = (canonical) | — |
 | 0x1EE | SB_CannonBa | COMPLETE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | = (canonical) | Retail basename is truncated |
 | 0x1EF | SB_CloudBal | COMPLETE | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | = (canonical) | Retail basename is truncated |
-| 0x1F0 | SB_KyteCage | CONFIRMED | main/dll/dll_01F0_sbkytecage.c | main/dll/SB/dll_01F0_sbkytecage.c | — |
+| 0x1F0 | SB_KyteCage | COMPLETE | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | = (canonical) | — |
 | 0x1F1 | SB_SeqDoor (+SB_SeqDoor2, SB_DeckDoor) | COMPLETE | main/dll/dll_01F1_sbseqdoor.c | main/dll/SB/dll_01F1_sbseqdoor.c | — |
 | 0x1F2 | SB_CageKyte | CONFIRMED | main/dll/dll_01F2_sbcagekyte.c | main/dll/SB/dll_01F2_sbcagekyte.c | — |
 | 0x1F3 | SB_MiniFire | CONFIRMED | main/dll/dll_01F3_sbminifire.c | main/dll/SB/dll_01F3_sbminifire.c | — |
@@ -865,7 +865,7 @@ name was a deliberate choice by a previous carve:
 | 0x1ED | main/dll/dll_01ED_sbfireball.c | dlls/objects/493_SB_FireBall/SB_FireBall.c | COMPLETE |
 | 0x1EE | main/dll/dll_01EE_sbcannonball.c | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | COMPLETE |
 | 0x1EF | main/dll/dll_01EF_sbcloudball.c | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | COMPLETE |
-| 0x1F0 | main/dll/dll_01F0_sbkytecage.c | main/dll/SB/dll_01F0_sbkytecage.c | CONFIRMED |
+| 0x1F0 | main/dll/dll_01F0_sbkytecage.c | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | COMPLETE |
 | 0x1F1 | main/dll/dll_01F1_sbseqdoor.c | main/dll/SB/dll_01F1_sbseqdoor.c | COMPLETE |
 | 0x1F2 | main/dll/dll_01F2_sbcagekyte.c | main/dll/SB/dll_01F2_sbcagekyte.c | CONFIRMED |
 | 0x1F3 | main/dll/dll_01F3_sbminifire.c | main/dll/SB/dll_01F3_sbminifire.c | CONFIRMED |

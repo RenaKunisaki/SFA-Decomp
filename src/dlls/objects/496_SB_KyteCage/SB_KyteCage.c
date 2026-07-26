@@ -17,7 +17,6 @@
 #include "main/obj_link.h"
 #include "main/objprint_api.h"
 #include "main/audio/sfx.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objseq.h"
 #include "main/objanim_update.h"
@@ -66,7 +65,6 @@ enum
     SB_KYTECAGE_SEQEV_LATCH_1 = 1,
     SB_KYTECAGE_SEQEV_LATCH_2 = 2
 };
-
 
 int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {

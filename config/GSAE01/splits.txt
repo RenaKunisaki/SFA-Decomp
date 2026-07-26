@@ -3067,7 +3067,7 @@ dlls/objects/495_SB_CloudBal/SB_CloudBal.c:
 	.data       start:0x80327DD8 end:0x80327E10
 	.sdata2     start:0x803E58E8 end:0x803E5918
 
-main/dll/SB/dll_01F0_sbkytecage.c:
+dlls/objects/496_SB_KyteCage/SB_KyteCage.c:
 	.text       start:0x801E4AC0 end:0x801E4F14
 	.data       start:0x80327E10 end:0x80327E48
 	.sdata2     start:0x803E5918 end:0x803E5920

@@ -414,7 +414,7 @@ tree — it doesn't, in every case checked:
   actual Cloudrunner-mount object is `src/main/dll/SB/dll_0259_sbcloudrunner.c` (DLL `0x259`).
 - ObjType `0168 IMAnimSpace` — the real object is `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` (DLL
   `0x16E`), off by 6 from the wiki's `ObjType`.
-- Confirmed directly in-tree: `src/main/dll/SB/dll_01F0_sbkytecage.c:32-33` defines
+- Confirmed directly in-tree: `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c:34` defines
   `#define SB_KYTE_OBJECT_TYPE 0x121` for a child object it looks up — that object's own DLL is
   `dll_01F2_sbcagekyte.c` (`0x1F2`). Object-type ID and DLL ID are tracked as separate fields in our
   own code, exactly as this mismatch would predict.
