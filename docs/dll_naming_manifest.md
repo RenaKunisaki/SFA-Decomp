@@ -411,7 +411,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x16D | IMIcePillar | CONFIRMED | dlls/objects/365_IMIcePillar/IMIcePillar.c | = (canonical) | — |
 | 0x16E | IMAnimSpace | CONFIRMED | dlls/objects/366_IMAnimSpace/IMAnimSpace.c | = (canonical) | — |
 | 0x16F | IMSpaceThru | CONFIRMED | dlls/objects/367_IMSpaceThru/IMSpaceThru.c | = (canonical) | — |
-| 0x170 | IMSpaceRing | CONFIRMED | main/dll/dll_0170_imspacering.c | main/dll/IM/dll_0170_imspacering.c | — |
+| 0x170 | IMSpaceRing | CONFIRMED | dlls/objects/368_IMSpaceRing/IMSpaceRing.c | = (canonical) | — |
 | 0x171 | IMSpaceRinggen | CONFIRMED | main/dll/dll_0171_imspaceringgen.c | main/dll/IM/dll_0171_imspaceringgen.c | — |
 | 0x172 | LINKB_levcontrol | CONFIRMED | main/dll/dll_0172_linkblevcontrol.c | = (canonical) | — |
 | 0x173 | LINK_levcontrol | CONFIRMED | main/dll/dll_0173_linklevcontrol.c | = (canonical) | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x170 | main/dll/dll_0170_imspacering.c | main/dll/IM/dll_0170_imspacering.c | CONFIRMED |
 | 0x171 | main/dll/dll_0171_imspaceringgen.c | main/dll/IM/dll_0171_imspaceringgen.c | CONFIRMED |
 | 0x174 | main/dll/dll_0174_ccriverflow.c | main/dll/CC/dll_0174_ccriverflow.c | CONFIRMED |
 | 0x175 | main/dll/dll_0175_dfropenode.c | main/dll/DF/dll_0175_dfropenode.c | COMPLETE |

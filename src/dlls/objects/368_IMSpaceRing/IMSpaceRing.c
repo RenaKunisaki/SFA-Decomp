@@ -1,5 +1,5 @@
 /*
- * imspacering (DLL 0x170) - one of the spinning rings that orbit the
+ * IMSpaceRing (DLL 0x170) - one of the spinning rings that orbit the
  * SpaceCraft cinematic object on the Ice Mountain map.
  *
  * Each ring picks a random spin axis at init (X or Y) and tumbles
