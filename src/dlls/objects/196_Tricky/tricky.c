@@ -725,7 +725,12 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
         if (state->targetPosPtr != targetPos)
         {
             state->targetPosPtr = targetPos;
-            state->stateFlags &= ~TRICKY_STATE_FLAG_PATH_PATCHES_VALID;
+            {
+                u32 m;
+                u32 f2 = state->stateFlags;
+                m = ~TRICKY_STATE_FLAG_PATH_PATCHES_VALID;
+                state->stateFlags = f2 & m;
+            }
             state->linkedWalkGroup = 0;
         }
     }
@@ -1524,55 +1529,64 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
     s8 i;
     s8 j;
     s8 failedCount;
+    void** wp;
+    u8* sp;
+    s8* stp;
 
-    for (i = 0; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
+    for (i = 0, wp = routes, sp = state; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
     {
-        if (routes[i] != 0)
+        if (*wp != 0)
         {
-            pathSearchBegin((PathSearch*)(state + 0x538 + i * 0x30), (PathPoint*)routes[i],
+            pathSearchBegin((PathSearch*)(sp + 0x538), (PathPoint*)*wp,
                         ((TrickyState*)state)->targetPosPtr, pathId, routeFlags[i]);
         }
+        wp++;
+        sp += 0x30;
     }
 
     for (i = 0; i < 100; i++)
     {
         failedCount = 0;
-        for (j = 0; j < TRICKY_ROUTE_CANDIDATE_COUNT; j++)
+        for (j = 0, wp = routes, sp = state, stp = status; j < TRICKY_ROUTE_CANDIDATE_COUNT; j++)
         {
-            if (routes[j] != 0)
+            if (*wp != 0)
             {
-                status[j] = pathSearchStep((PathSearch*)(state + 0x538 + j * 0x30), 1);
+                *stp = pathSearchStep((PathSearch*)(sp + 0x538), 1);
             }
             else
             {
-                status[j] = -1;
+                *stp = -1;
             }
 
-            switch (status[j])
+            switch (*stp)
             {
             case 1:
                 return j;
             case -1:
-                routes[j] = 0;
+                *wp = 0;
                 failedCount++;
                 break;
             }
+            wp++;
+            sp += 0x30;
+            stp++;
         }
 
         switch (failedCount)
         {
         case 7:
-            for (i = 0; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
+            for (i = 0, wp = routes; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
             {
-                if (routes[i] != 0)
+                if (*wp != 0)
                 {
-                    status[(int)i] = pathSearchStep((PathSearch*)(state + 0x538 + i * 0x30), 0x1f4);
+                    status[(int)i] = pathSearchStep((PathSearch*)(state + ((int)i * 0x30 + 0x538)), 0x1f4);
                     if (status[(int)i] == 1)
                     {
                         return i;
                     }
                     return -1;
                 }
+                wp++;
             }
         case 8:
             return -1;
@@ -1652,15 +1666,20 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
     u8 k;
     int linkCurveId;
     TrickyState* state;
+    f32* bd;
+    void** rp;
+    void** cp;
 
     state = obj->extra;
     curves = (void**)(*gRomCurveInterface)->getCurves(&count);
 
     init = lbl_803E2418;
+    bd = bestDistances;
+    rp = outRoutes;
     for (i = 0; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
     {
-        bestDistances[i] = init;
-        outRoutes[i] = NULL;
+        *bd++ = init;
+        *rp++ = NULL;
     }
 
     if (linkSelector == 0)
@@ -1668,9 +1687,9 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
         return;
     }
 
-    for (i = 0; i < count; i++)
+    for (i = 0, cp = curves; i < count; i++)
     {
-        curve = curves[i];
+        curve = *cp++;
         if ((((ObjfsaRomCurveDef*)curve)->type != 0x24) || (*(u8*)((u8*)curve + 3) != 0))
         {
             continue;
@@ -4278,7 +4297,7 @@ void trickyUpdateCirclingTargetPosition(void* objPtr, void* state)
         ((TrickyState*)state)->substate = ANIMOBJD2_SUBSTATE_APPROACH;
     }
 
-    delta = angle - (s32)(u16)((TrickyState*)state)->scratch704.i;
+    delta = angle - (s32)(u16)((TrickyState*)state)->scratch704.u;
     if (delta > 0x8000)
         delta -= 0xFFFF;
     if (delta < -0x8000)
@@ -6831,6 +6850,7 @@ u32 tricky_substateWaitMoveEnd(GameObject* obj, int* trickyState)
 {
     int ref;
     int val;
+    int idx;
 
     if (tricky_handleFeedOrTalk(obj, trickyState) != 0)
     {
@@ -6838,7 +6858,8 @@ u32 tricky_substateWaitMoveEnd(GameObject* obj, int* trickyState)
     }
     for (val = 0; val < *(char*)((int)trickyState + 0x827); val++)
     {
-        if (*(char*)((int)trickyState + val + 0x81f) != '\0')
+        idx = val + 0x81f;
+        if (*(char*)((int)trickyState + idx) != '\0')
             continue;
         ref = *(int*)&(obj)->extra;
         if (((u32)(((TrickyState*)ref)->statusFlags >> 6 & 1)) != 0U)
