@@ -1,5 +1,5 @@
 /*
- * dimmagicbridge (DLL 0x1CC) - the flame bridge across a lava gap.
+ * DIMMagicBri (DLL 0x1CC) - the flame bridge across a lava gap.
  *
  * The bridge mesh is a strip of segments whose vertices are displaced by a
  * travelling sine wave (dimmagicbridge_updateVertexWave) while two material
@@ -88,11 +88,15 @@ void dimmagicbridge_scrollTextureChannels(int obj, u8* extra)
     }
     phase = (s32)state->wavePhase + framesThisStep * 0x100;
     if (phase > 0xffff)
+    {
         phase = phase - 0xffff;
+    }
     state->wavePhase = phase;
     phase = (s32)state->wavePhaseB + framesThisStep * 0x80;
     if (phase > 0xffff)
+    {
         phase = phase - 0xffff;
+    }
     state->wavePhaseB = phase;
 }
 
@@ -128,7 +132,9 @@ int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
                 int sv = state->segmentGlow[i];
                 int v = sv + framesThisStep;
                 if (v > 0xff)
+                {
                     v = 0xff;
+                }
                 state->segmentGlow[i] = v;
             }
         }
@@ -143,6 +149,7 @@ int dimmagicbridge_getExtraSize(void)
 {
     return 0x68;
 }
+
 int dimmagicbridge_getObjectTypeId(void)
 {
     return 0x0;
@@ -156,7 +163,9 @@ void dimmagicbridge_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 isVisible = visible;
     if (isVisible != 0)
+    {
         objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dimmagicbridge_hitDetect(void)
@@ -267,3 +276,19 @@ void dimmagicbridge_initialise(void)
 {
 }
 
+ObjectDescriptor gDIMMagicBridgeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dimmagicbridge_initialise,
+    (ObjectDescriptorCallback)dimmagicbridge_release,
+    0,
+    (ObjectDescriptorCallback)dimmagicbridge_init,
+    (ObjectDescriptorCallback)dimmagicbridge_update,
+    (ObjectDescriptorCallback)dimmagicbridge_hitDetect,
+    (ObjectDescriptorCallback)dimmagicbridge_render,
+    (ObjectDescriptorCallback)dimmagicbridge_free,
+    (ObjectDescriptorCallback)dimmagicbridge_getObjectTypeId,
+    dimmagicbridge_getExtraSize,
+};

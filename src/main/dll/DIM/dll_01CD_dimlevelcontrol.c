@@ -37,6 +37,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
+#include "dlls/object_descriptor.h"
 
 #define DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define DIMLEVELCONTROL_OBJFLAG_HIDDEN 0x4000
@@ -282,3 +283,20 @@ void dim_levelcontrol_init(GameObject *obj)
     (obj)->objectFlags |= (DIMLEVELCONTROL_OBJFLAG_HIDDEN | DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED);
     unlockLevel(0, 0, 1);
 }
+
+ObjectDescriptor gDIM_LevelControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)dim_levelcontrol_init,
+    (ObjectDescriptorCallback)dim_levelcontrol_update,
+    0,
+    (ObjectDescriptorCallback)dim_levelcontrol_render,
+    (ObjectDescriptorCallback)dim_levelcontrol_free,
+    0,
+    dim_levelcontrol_getExtraSize,
+};

@@ -503,7 +503,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C9 | DIMDismount | COMPLETE | dlls/objects/457_DIMDismount/DIMDismount.c | = (canonical) | — |
 | 0x1CA | DIMExplosio | COMPLETE | dlls/objects/458_DIMExplosio/DIMExplosio.c | = (canonical) | — |
 | 0x1CB | DIMWoodDoor | COMPLETE | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | = (canonical) | — |
-| 0x1CC | DIMMagicBridge | CONFIRMED | main/dll/dll_01CC_dimmagicbridge.c | main/dll/DIM/dll_01CC_dimmagicbridge.c | — |
+| 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | — |
 | 0x1CD | DIM_LevelControl | CONFIRMED | main/dll/dll_01CD_dimlevelcontrol.c | main/dll/DIM/dll_01CD_dimlevelcontrol.c | — |
 | 0x1CE | — | NO-RETAIL-NAME | main/dll/dll_01CE_dll1ce.c | = (canonical) | — |
 | 0x1CF | — | NO-RETAIL-NAME | main/dll/dll_01CF_dll1cf.c | = (canonical) | — |
@@ -837,7 +837,7 @@ name was a deliberate choice by a previous carve:
 | 0x1C9 | main/dll/dll_01C9_dimdismountpoint.c | dlls/objects/457_DIMDismount/DIMDismount.c | COMPLETE |
 | 0x1CA | main/dll/dll_01CA_dimexplosion.c | dlls/objects/458_DIMExplosio/DIMExplosio.c | COMPLETE |
 | 0x1CB | main/dll/dll_01CB_dimwooddoor2.c | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | COMPLETE |
-| 0x1CC | main/dll/dll_01CC_dimmagicbridge.c | main/dll/DIM/dll_01CC_dimmagicbridge.c | CONFIRMED |
+| 0x1CC | main/dll/dll_01CC_dimmagicbridge.c | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | COMPLETE |
 | 0x1CD | main/dll/dll_01CD_dimlevelcontrol.c | main/dll/DIM/dll_01CD_dimlevelcontrol.c | CONFIRMED |
 | 0x1D0 | main/dll/dll_01D0_dimtricky.c | main/dll/DIM/dll_01D0_dimtricky.c | COMPLETE |
 | 0x1D1 | main/dll/dll_01D1_dimtruthhornice.c | main/dll/DIM/dll_01D1_dimtruthhornice.c | CONFIRMED |

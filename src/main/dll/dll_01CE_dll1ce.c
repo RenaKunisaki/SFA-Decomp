@@ -4,22 +4,12 @@
  * down, sets its placement gamebit, and - if the load isn't locked and the
  * placement's contents-spawn value matches gamebit 0x46D - spawns its
  * contents object (object id 0x246) seeded from the door's placement.
- *
- * The TU also hosts dimmagicbridge_* and explosion_* sibling exports (in
- * DIM/dll_01CC_dimmagicbridge.c / DIM/dll_01CA_dimexplosion.c); their forward
- * declarations and the descriptor that combines them live in this object's DLL.
  */
-#include "main/dll/dimmagicbridge_state.h"
-#include "main/dll/DIM/dll_01CD_dimlevelcontrol.h"
-#include "main/dll/dimmagicbridge_api.h"
 #include "main/dll/dll1ceplacement_struct.h"
-#include "main/dll/dimwooddoor2state_struct.h"
 #include "main/dll/collectible_state.h"
 #include "main/dll/dll_01CE_dll1ce.h"
 #include "main/dll/fbwgpipe_struct.h"
 #include "main/dll/dll1cestate_struct.h"
-#include "main/dll/explosionpartfxsource_struct.h"
-#include "main/dll/explosion_state.h"
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
@@ -30,42 +20,6 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-
-/*
- * Per-object extra state for the dimwooddoor2 burnable door
- * (dimwooddoor2_getExtraSize == 0xC).
- */
-
-STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
-
-/*
- * Per-object extra state for the dll_1CE hatch door
- * (dll_1CE_getExtraSize == 0xC).
- */
-
-/*
- * Per-object extra state for the dimmagicbridge flame bridge
- * (dimmagicbridge_getExtraSize == 0x68). init/SeqFn here, dll_199/19A
- * variants in dimmagicbridge.c use their own layout.
- */
-
-STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
-
-STATIC_ASSERT(sizeof(ExplosionPartfxSource) == 0x38);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, velocityX) == 0x24);
-
-/*
- * Per-object extra state for the explosion effect
- * (explosion_getExtraSize == 0xA60). The flame pool (50 x 0x30 records)
- * and the debris pool (6 x 0x24 at 0x964) are walked with raw stride
- * pointers in update/render and stay untyped.
- */
-
-STATIC_ASSERT(sizeof(ExplosionState) == 0xA60);
-STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
 
 /* Key objects that unlock the hatch (docblock: "a key object (seqId 0x18F or 0x1D6)"). */
 #define DLL1CE_SEQID_DIM_HUT_DOOR 0x334 /* retail "DIMHutDoor" (DLL 0x128) */
@@ -235,38 +189,4 @@ ObjectDescriptor dll_1CE = {
     (ObjectDescriptorCallback)dll_1CE_free,
     (ObjectDescriptorCallback)dll_1CE_getObjectTypeId,
     dll_1CE_getExtraSize,
-};
-
-/* descriptor/ptr table auto 0x80325600-0x80325670 */
-ObjectDescriptor gDIMMagicBridgeObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dimmagicbridge_initialise,
-    (ObjectDescriptorCallback)dimmagicbridge_release,
-    0,
-    (ObjectDescriptorCallback)dimmagicbridge_init,
-    (ObjectDescriptorCallback)dimmagicbridge_update,
-    (ObjectDescriptorCallback)dimmagicbridge_hitDetect,
-    (ObjectDescriptorCallback)dimmagicbridge_render,
-    (ObjectDescriptorCallback)dimmagicbridge_free,
-    (ObjectDescriptorCallback)dimmagicbridge_getObjectTypeId,
-    dimmagicbridge_getExtraSize,
-};
-ObjectDescriptor gDIM_LevelControlObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)dim_levelcontrol_init,
-    (ObjectDescriptorCallback)dim_levelcontrol_update,
-    0,
-    (ObjectDescriptorCallback)dim_levelcontrol_render,
-    (ObjectDescriptorCallback)dim_levelcontrol_free,
-    0,
-    dim_levelcontrol_getExtraSize,
 };

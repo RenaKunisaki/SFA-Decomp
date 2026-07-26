@@ -2580,16 +2580,18 @@ dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c:
 
 main/dll/dll_01CE_dll1ce.c:
 	.text       start:0x801B5A28 end:0x801B5D48
-	.data       start:0x803255C8 end:0x80325670
+	.data       start:0x803255C8 end:0x80325600
 	.sbss       start:0x803DDB78 end:0x803DDB80
 	.sdata2     start:0x803E49E8 end:0x803E4A00
 
-main/dll/DIM/dll_01CC_dimmagicbridge.c:
+dlls/objects/460_DIMMagicBri/DIMMagicBri.c:
 	.text       start:0x801B5D48 end:0x801B63F4
+	.data       start:0x80325600 end:0x80325638
 	.sdata2     start:0x803E4A00 end:0x803E4A1C
 
 main/dll/DIM/dll_01CD_dimlevelcontrol.c:
 	.text       start:0x801B63F4 end:0x801B6B44
+	.data       start:0x80325638 end:0x80325670
 	.sdata2     start:0x803E4A20 end:0x803E4A2C
 
 main/dll/dll_01CF_dll1cf.c:
