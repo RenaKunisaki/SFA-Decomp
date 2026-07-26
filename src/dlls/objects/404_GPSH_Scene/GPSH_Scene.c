@@ -1,7 +1,6 @@
-/* DLL 0x194 - GP/SH scene controller [801C70F0-801C7724) */
+/* GPSH_Scene (DLL 0x194) */
 #include "main/screen_transition.h"
 #include "main/dll/dll_0194_gpshscene.h"
-
 #include "game/objects/object.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
