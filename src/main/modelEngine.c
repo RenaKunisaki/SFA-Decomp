@@ -18,6 +18,7 @@
 #include "dlls/objects/217_Pollen.h"
 #include "dlls/objects/219_MikaBomb.h"
 #include "dlls/objects/220_MikaBombShadow.h"
+#include "dlls/objects/221_GCbaddieShield.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -173,8 +174,8 @@ extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, g
 extern ResourceDescriptor gFirePipeObjDescriptor, gFireballObjDescriptor, gFlagObjDescriptor,
     gFlameThrowerSpeObjDescriptor, gFlameblastObjDescriptor, gFlammableVineObjDescriptor, gFogControlObjDescriptor,
     gFuelCellObjDescriptor;
-extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGCbaddieShieldObjDescriptor, gGPSH_ObjCreatorObjDescriptor,
-    gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
+extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
+    gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
     gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor,
@@ -1143,7 +1144,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gPollenFragmentObjDescriptor,
     (ResourceDescriptor*)&gMikaBombObjDescriptor,
     (ResourceDescriptor*)&gMikaBombShadowObjDescriptor,
-    &gGCbaddieShieldObjDescriptor,
+    (ResourceDescriptor*)&gGCbaddieShieldObjDescriptor,
     &gBaddieInterestPObjDescriptor,
     (ResourceDescriptor*)&gHagabonObjDescriptor,
     (ResourceDescriptor*)&gSwarmBaddieObjDescriptor,
