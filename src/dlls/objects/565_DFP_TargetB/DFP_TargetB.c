@@ -1,7 +1,7 @@
 /*
- * DragonRock Palace target block (DLL 0x235; "DFP_TargetBlock") - a block
- * the player knocks along a path: it raycasts for hits, snaps to stored
- * path points, plays impact/loop sfx and reports completion.
+ * DragonRock Palace target block. The player knocks it along a path; it
+ * raycasts for hits, snaps to stored path points, plays impact/loop SFX,
+ * and reports completion.
  */
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_keep_alive_api.h"
@@ -42,9 +42,7 @@ typedef struct DfpTargetBlockPartfxArgs
 
 f32 gTargetBlockHomeZ;
 f32 gTargetBlockHomeX;
-extern s32 gTargetBlockHomePos[];
-void dfptargetblock_resolveCollisionPoints(DfpTargetBlockObject* obj, DfpTargetBlockCollisionPoints* collisionPoints);
-
+s32 gTargetBlockHomePos[] = {0, 0, 0};
 
 void dfptargetblock_resolveCollisionPoints(DfpTargetBlockObject* obj, DfpTargetBlockCollisionPoints* collisionPoints)
 {
@@ -449,8 +447,9 @@ void dfptargetblock_release(void)
 {
 }
 
-
-s32 gTargetBlockHomePos[] = {0, 0, 0};
+void dfptargetblock_initialise(void)
+{
+}
 
 ObjectDescriptor10WithPadding gDfptargetblockObjDescriptor = {
     {
@@ -471,6 +470,3 @@ ObjectDescriptor10WithPadding gDfptargetblockObjDescriptor = {
     },
     0,
 };
-void dfptargetblock_initialise(void)
-{
-}

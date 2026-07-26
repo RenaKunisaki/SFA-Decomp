@@ -608,7 +608,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x232 | DFP_RotateP | COMPLETE | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x233 | DFP_Statue1 | COMPLETE | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x234 | DFP_PerchSw | COMPLETE | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | = (canonical) | Exact recovered retail basename; diagnostic string follows descriptor in retail data order |
-| 0x235 | DFP_TargetBlock | CONFIRMED | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | — |
+| 0x235 | DFP_TargetB | COMPLETE | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | = (canonical) | Exact truncated retail basename; confirmed complete TU |
 | 0x236 | DFP_LaserBe | CONFIRMED | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | — |
 | 0x237 | DFPSpPl | COMPLETE | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | — |
 | 0x238 | LINKA_levco | RAW | main/dll/dll_0238_linkalevco.c | = (canonical) | — |
