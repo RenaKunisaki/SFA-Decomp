@@ -3243,10 +3243,10 @@ dlls/objects/513_WM_colrise/WM_colrise.c:
 	.data       start:0x80328A68 end:0x80328AA0
 	.sdata2     start:0x803E5DC8 end:0x803E5DE4
 
-main/dll/WM/dll_0204_wmtorch.c:
+dlls/objects/516_WM_Torch/WM_Torch.c:
 	.text       start:0x801F30DC end:0x801F33B4
 	.data       start:0x80328AA0 end:0x80328AD8
-	.sdata2     start:0x803E5E00 end:0x803E5E08
+	.sdata2     start:0x803E5DE8 end:0x803E5E08
 
 dlls/objects/517_WM_Vein/WM_Vein.c:
 	.data       start:0x80328AD8 end:0x80328B08

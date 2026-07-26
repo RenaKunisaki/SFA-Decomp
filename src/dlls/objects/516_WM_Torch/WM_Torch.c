@@ -1,5 +1,5 @@
 /*
- * wmtorch (DLL 0x0204) - the lightable torch at Krazoa Palace.
+ * WM_Torch (DLL 0x0204) - the lightable torch at Krazoa Palace.
  *
  * init attaches the flame effect for the placement's torch type (two
  * variants from resource 0x69, the third from 0x63) and scales the
@@ -7,29 +7,20 @@
  * around the player; free releases the flame and the optional linked
  * object.
  */
-#include "main/dll/modgfx_interface.h"
+#include "dlls/object_descriptor.h"
+#include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/WM/dll_0204_wmtorch.h"
 #include "main/dll/dll_0063_dll63func0.h"
 #include "main/dll/dll_0069_dll69func0.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/sfx.h"
+#include "main/dll/modgfx_interface.h"
 #include "main/dll_000A_expgfx.h"
-#include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "game/objects/object_setup.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
-#include "main/dll/WM/dll_0204_wmtorch.h"
-#include "dlls/object_descriptor.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define WMTORCH_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-extern f32 lbl_803E5DEC; /* 90.0: motionRate default */
-extern f32 lbl_803E5DF0; /* flame param */
-extern f32 lbl_803E5DF4; /* model scale factor */
-extern f32 lbl_803E5DF8; /* model scale factor */
-extern f32 lbl_803E5DE8; /* sound-loop radius */
 
 int wmtorch_getExtraSize(void)
 {
@@ -68,7 +59,7 @@ void wmtorch_update(GameObject* obj)
     {
         (obj)->anim.rotX += 0x32;
     }
-    if (Vec_distance(&((GameObject*)Obj_GetPlayerObject())->anim.worldPosX, &(obj)->anim.worldPosX) < lbl_803E5DE8)
+    if (Vec_distance(&((GameObject*)Obj_GetPlayerObject())->anim.worldPosX, &(obj)->anim.worldPosX) < 90.0f)
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_mushdizzylp12);
     }
@@ -91,7 +82,7 @@ void wmtorch_init(GameObject* obj, WmTorchPlacement* placement)
     }
     else
     {
-        state->motionRate = lbl_803E5DEC;
+        state->motionRate = 75.0f;
     }
     if (placement->colorIdx != 0)
     {
@@ -102,26 +93,26 @@ void wmtorch_init(GameObject* obj, WmTorchPlacement* placement)
         state->colorIdx = 0x8c;
     }
     state->torchType = placement->torchType;
-    flameParams[4] = lbl_803E5DF0;
+    flameParams[4] = -2.0f;
     if (state->torchType == 0)
     {
         res = Resource_Acquire(0x69, 1);
-        obj->anim.rootMotionScale = obj->anim.rootMotionScale * lbl_803E5DF4;
+        obj->anim.rootMotionScale *= 0.5f;
         (*(Dll69Interface**)res)->spawn(obj, 1, flameParams, 0x10004, -1, NULL);
     }
     else if (state->torchType == 0x7f)
     {
         res = Resource_Acquire(0x69, 1);
-        obj->anim.rootMotionScale = obj->anim.rootMotionScale * lbl_803E5DF4;
+        obj->anim.rootMotionScale *= 0.5f;
         (*(Dll69Interface**)res)->spawn(obj, 2, flameParams, 0x10004, -1, NULL);
     }
     else
     {
         res = Resource_Acquire(0x63, 1);
-        obj->anim.rootMotionScale = obj->anim.rootMotionScale * lbl_803E5DF4;
+        obj->anim.rootMotionScale *= 0.5f;
         (*(Dll63Interface**)res)->spawn(obj, 2, flameParams, 0x10004, -1, NULL);
     }
-    obj->anim.rootMotionScale = obj->anim.rootMotionScale * lbl_803E5DF8;
+    obj->anim.rootMotionScale *= 2.0f;
     Resource_Release(res);
     obj->objectFlags = (u16)(obj->objectFlags | WMTORCH_OBJFLAG_HITDETECT_DISABLED);
 }
