@@ -2074,7 +2074,7 @@ dlls/objects/296_KT_Torch/KT_Torch.c:
 	.data       start:0x80321EC8 end:0x80321F00
 	.sdata2     start:0x803E3DB0 end:0x803E3DD8
 
-main/dll/CF/dll_012A_cfcrate.c:
+dlls/objects/298_CFCrate/CFCrate.c:
 	.text       start:0x8018D6E8 end:0x8018E6C4
 	.data       start:0x80321F00 end:0x80321F38
 	.sdata      start:0x803DBDE8 end:0x803DBDF0

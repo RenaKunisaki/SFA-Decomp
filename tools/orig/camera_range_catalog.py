@@ -356,7 +356,7 @@ def exploit_rank(category: str) -> int:
 
 def source_hits(repo_root: Path) -> list[tuple[str, int, str]]:
     hits: list[tuple[str, int, str]] = []
-    src_root = repo_root / "src/main"
+    src_root = repo_root / "src"
     regex = re.compile("|".join(re.escape(pattern) for pattern in DIRECT_SOURCE_PATTERNS))
     for path in sorted(src_root.rglob("*.c")):
         for line_no, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):

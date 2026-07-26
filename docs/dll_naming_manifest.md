@@ -343,7 +343,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x127 | — | NO-RETAIL-NAME | dlls/objects/295/295.c | = (canonical) | — |
 | 0x128 | KT_Torch (+Trex1, WCApertures, WCAperturem, DIMBridgeCo, DIMHutDoor, DIMDoorBrid, DIM2Mammoth, DIM2TrapDoo, DIM2CellDoo) | COMPLETE | dlls/objects/296_KT_Torch/KT_Torch.c | = (canonical) | — |
 | 0x129 | CampFire | COMPLETE | dlls/objects/297_CampFire/CampFire.c | = (canonical) | — |
-| 0x12A | CFCrate (+LinkF_liftg, LinkF_cog, MMP_Organic, VFP_newball, VFP_liftgra, VFP_PowerBo, VFP_Spellst, VFP_locksym, DFPSpSG, DFP_WaterHi, DFP_FireHit, DFP_InnerRi, DFP_OuterRi, DFP_PlacePl, DFP_Water, DFP_PowerBo, DFP_blockwa, DFP_dish, DFPSpDB, WM_dummyfox, WM_krazoast, WM_rock, WM_fallenco, WM_largeroc, WM_Walkway1, WM_Walkway2, WM_NoPassVi, WM_NoPassHo, WM_MoonSeed, WM_Column_l, WM_Planet, WM_PlanetMo, DFSHcol, scalessword, ECSHcol, EnergyGem1) | COMPLETE | main/dll/dll_012A_cfcrate.c | main/dll/CF/dll_012A_cfcrate.c | — |
+| 0x12A | CFCrate (+LinkF_liftg, LinkF_cog, MMP_Organic, VFP_newball, VFP_liftgra, VFP_PowerBo, VFP_Spellst, VFP_locksym, DFPSpSG, DFP_WaterHi, DFP_FireHit, DFP_InnerRi, DFP_OuterRi, DFP_PlacePl, DFP_Water, DFP_PowerBo, DFP_blockwa, DFP_dish, DFPSpDB, WM_dummyfox, WM_krazoast, WM_rock, WM_fallenco, WM_largeroc, WM_Walkway1, WM_Walkway2, WM_NoPassVi, WM_NoPassHo, WM_MoonSeed, WM_Column_l, WM_Planet, WM_PlanetMo, DFSHcol, scalessword, ECSHcol, EnergyGem1) | COMPLETE | dlls/objects/298_CFCrate/CFCrate.c | = (canonical) | — |
 | 0x12B | FXEmit | COMPLETE | main/dll/dll_012B_fxemit.c | = (canonical) | — |
 | 0x12C | Transporter (+KP_Transpor) | CONFIRMED | main/dll/dll_012C_transporter.c | = (canonical) | — |
 | 0x12D | LFXEmitter | COMPLETE | main/dll/dll_012D_lfxemitter.c | = (canonical) | — |
@@ -800,7 +800,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x12A | main/dll/dll_012A_cfcrate.c | main/dll/CF/dll_012A_cfcrate.c | COMPLETE |
 | 0x12E | main/dll/dll_012E_cflightwall.c | main/dll/CF/dll_012E_cflightwall.c | CONFIRMED |
 | 0x131 | main/dll/dll_0131_cfdoorlight.c | main/dll/CF/dll_0131_cfdoorlight.c | CONFIRMED |
 | 0x13E | main/dll/dll_013E_dimbossicesmash.c | main/dll/DIM/dll_013E_dimbossicesmash.c | CONFIRMED |
@@ -1025,7 +1024,6 @@ blocked units will surface more when carved.
 
 | dll | current unit | header |
 |---|---|---|
-| 0x12A | main/dll/dll_012A_cfcrate.c | include/main/dll/CF/dll_012A_cfcrate.h |
 | 0x17B | main/dll/dll_017B_dfshlaserbeam.c | include/main/dll/dll_017B_dfshlaserbeam.h |
 | 0x18C | main/dll/dll_018C_mmshshrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | main/dll/dll_0198_nwshlevcon.c | include/main/dll/dll_0198_nwshlevcon.h |

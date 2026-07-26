@@ -225,7 +225,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/audio.c` | 1233 | `slot = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/ARW/dll_029A_arwarwing.c` | 1294 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/ARW/dll_029A_arwarwing.c` | 1317 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/CF/dll_012A_cfcrate.c` | 170 | `cam = (int)Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/298_CFCrate/CFCrate.c` | 148 | `cam = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/CF/dll_0162_cfmagicwall.c` | 84 | `fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,` |
 | `src/main/dll/CF/dll_0162_cfmagicwall.c` | 89 | `fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,` |
 | `src/main/dll/cloudaction.c` | 133 | `view = Camera_GetCurrentViewSlot();` |

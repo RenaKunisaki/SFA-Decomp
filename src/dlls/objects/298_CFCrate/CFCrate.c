@@ -1,5 +1,5 @@
 /*
- * cfccrate (DLL 0x12A) - the shared "crate" prop handler: one DLL
+ * CFCrate (DLL 0x12A) - the shared "crate" prop handler: one DLL
  * driving dozens of simple placement types across maps (cogs, warding
  * stones, rising water, spinning rings, lock symbols, galleon masts,
  * ice floes, ...). init seeds per-type state from the placement record,
