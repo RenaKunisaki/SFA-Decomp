@@ -111,8 +111,8 @@ def parse_slots(spec: str | None) -> list[int]:
     return sorted(slots)
 
 
-def current_payloads(bank: str, leaf: str) -> tuple[str, ...]:
-    path = DLLS_ROOT / bank / leaf
+def current_payloads(directory: str) -> tuple[str, ...]:
+    path = DLLS_ROOT / directory
     if not path.is_dir():
         return ("<missing directory>",)
     return tuple(
@@ -124,34 +124,79 @@ def current_payloads(bank: str, leaf: str) -> tuple[str, ...]:
     )
 
 
-def current_slot_dirs(bank: str, slot: int) -> tuple[str, ...]:
-    bank_path = DLLS_ROOT / bank
-    if not bank_path.is_dir():
-        return (f"<missing bank: {bank}>",)
-    leaves: list[str] = []
-    for path in bank_path.iterdir():
-        match = LEAF_RE.fullmatch(path.name)
-        if path.is_dir() and match is not None and int(match.group(1)) == slot:
-            leaves.append(path.name)
-    return tuple(sorted(leaves))
+def current_slot_dirs(slot: int) -> tuple[str, ...]:
+    directories: list[str] = []
+    for bank, _, _ in BANKS:
+        bank_path = DLLS_ROOT / bank
+        if not bank_path.is_dir():
+            continue
+        for path in bank_path.iterdir():
+            match = LEAF_RE.fullmatch(path.name)
+            if path.is_dir() and match is not None and int(match.group(1)) == slot:
+                directories.append(f"{bank}/{path.name}")
+    return tuple(sorted(directories))
 
 
-def load_reference_payloads(
+def load_reference_layout(
     ref: str,
-) -> dict[tuple[str, str], tuple[str, ...]]:
+) -> tuple[
+    dict[int, tuple[str, ...]],
+    dict[str, tuple[str, ...]],
+]:
     paths = git_output(
         "ls-tree", "-r", "--name-only", ref, "--", "src/dlls"
     )
-    payloads: dict[tuple[str, str], list[str]] = defaultdict(list)
+    directories: dict[int, set[str]] = defaultdict(set)
+    payloads: dict[str, list[str]] = defaultdict(list)
     for path in paths.splitlines():
         parts = path.split("/")
-        if len(parts) < 5 or parts[-1] == ".gitkeep":
+        if len(parts) < 5:
             continue
-        payloads[(parts[2], parts[3])].append("/".join(parts[4:]))
-    return {
+        bank, leaf = parts[2], parts[3]
+        directory = f"{bank}/{leaf}"
+        match = LEAF_RE.fullmatch(leaf)
+        if match is not None:
+            directories[int(match.group(1))].add(directory)
+        if parts[-1] != ".gitkeep":
+            payloads[directory].append("/".join(parts[4:]))
+    sorted_directories = {
+        key: tuple(sorted(leaves))
+        for key, leaves in directories.items()
+    }
+    sorted_payloads = {
         key: tuple(sorted(names))
         for key, names in payloads.items()
     }
+    return sorted_directories, sorted_payloads
+
+
+def reference_slot_payloads(
+    directories: tuple[str, ...],
+    payloads: dict[str, tuple[str, ...]],
+) -> tuple[str, ...]:
+    if len(directories) == 1:
+        return payloads.get(directories[0], ())
+    return tuple(
+        sorted(
+            f"{directory}/{name}"
+            for directory in directories
+            for name in payloads.get(directory, ())
+        )
+    )
+
+
+def current_slot_payloads(
+    directories: tuple[str, ...],
+) -> tuple[str, ...]:
+    if len(directories) == 1:
+        return current_payloads(directories[0])
+    return tuple(
+        sorted(
+            f"{directory}/{name}"
+            for directory in directories
+            for name in current_payloads(directory)
+        )
+    )
 
 
 def audit_reference_layout(
@@ -160,24 +205,25 @@ def audit_reference_layout(
     mappings: dict[int, tuple[str, str]],
 ) -> None:
     reference = load_reference_mappings(ref)
-    reference_payloads = load_reference_payloads(ref)
+    reference_dirs, reference_payloads = load_reference_layout(ref)
     differences = 0
 
     for slot in slots:
         expected_bank, expected_leaf = reference[slot]
         current_bank, current_leaf = mappings[slot]
-        expected_payloads = reference_payloads.get(
-            (expected_bank, expected_leaf), ()
+        expected_dirs = reference_dirs.get(slot, ())
+        actual_dirs = current_slot_dirs(slot)
+        expected_payloads = reference_slot_payloads(
+            expected_dirs, reference_payloads
         )
-        actual_payloads = current_payloads(current_bank, current_leaf)
-        actual_dirs = current_slot_dirs(current_bank, slot)
+        actual_payloads = current_slot_payloads(actual_dirs)
 
         mapping_changed = (current_bank, current_leaf) != (
             expected_bank,
             expected_leaf,
         )
         payloads_changed = actual_payloads != expected_payloads
-        dirs_changed = actual_dirs != (current_leaf,)
+        dirs_changed = actual_dirs != expected_dirs
         if not mapping_changed and not payloads_changed and not dirs_changed:
             continue
 
@@ -187,9 +233,10 @@ def audit_reference_layout(
             print(f"  expected mapping: {expected_bank}/{expected_leaf}")
             print(f"  current mapping:  {current_bank}/{current_leaf}")
         if dirs_changed:
+            expected = ", ".join(expected_dirs) or "(none)"
             actual = ", ".join(actual_dirs) or "(none)"
-            print(f"  mapped directory: {current_leaf}")
-            print(f"  live directories: {actual}")
+            print(f"  expected directories: {expected}")
+            print(f"  current directories:  {actual}")
         if payloads_changed:
             expected = ", ".join(expected_payloads) or "(empty)"
             actual = ", ".join(actual_payloads) or "(empty)"
