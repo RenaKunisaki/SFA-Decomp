@@ -3420,9 +3420,15 @@ dlls/objects/550_VFP_lavapoo/VFP_lavapoo.c:
 	.sbss       start:0x803DDCD0 end:0x803DDCD4
 	.sdata2     start:0x803E6160 end:0x803E61B0
 
+dlls/objects/551_VFP_lavasta/VFP_lavasta.c:
+	.text       start:0x801FDBBC end:0x801FDEEC
+	.data       start:0x80329248 end:0x80329280
+	.sbss       start:0x803DDCD8 end:0x803DDCDC
+	.sdata2     start:0x803E61B0 end:0x803E61C0
+
 main/main_lavastar.c:
-	.text       start:0x801FDBBC end:0x801FE118
-	.data       start:0x80329248 end:0x803292B8
+	.text       start:0x801FDEEC end:0x801FE118
+	.data       start:0x80329280 end:0x803292B8
 
 main/dll/dll_023F_dbegg.c:
 	.text       start:0x801FE118 end:0x801FF884
