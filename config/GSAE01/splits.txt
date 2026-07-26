@@ -2320,7 +2320,7 @@ dlls/objects/345/345.c:
 	.data       start:0x80322D68 end:0x80322DA0
 	.sbss       start:0x803DDB18 end:0x803DDB20
 
-main/dll/dll_015A_explodable.c:
+dlls/objects/346/346.c:
 	.text       start:0x801A2BDC end:0x801A39B4
 	.data       start:0x80322DA0 end:0x80322ED8
 	.sdata2     start:0x803E4350 end:0x803E4390

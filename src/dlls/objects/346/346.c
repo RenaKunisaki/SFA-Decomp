@@ -1,5 +1,5 @@
 /*
- * explodable (DLL 0x15A) - a destructible scenery prop that shatters into
+ * DLL 0x15A - destructible scenery props that shatter into
  * up to 15 physics fragments (chunks) when its activate game bit is set.
  *
  * explodable_init seeds the fragment chunk array (DrExplodableChunk[15]) and
