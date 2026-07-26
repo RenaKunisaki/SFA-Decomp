@@ -1,5 +1,5 @@
 /*
- * lgtcontrollight (DLL 0x2AC) - a switch object that drives nearby point
+ * LGTControlL (DLL 684) - a switch object that drives nearby point
  * lights from a game bit.
  *
  * It owns no light of its own. Each frame update reads its gameBit; when the
@@ -20,8 +20,6 @@
 #define CONTROLLIGHT_MODE_DIRECT      0
 #define CONTROLLIGHT_MODE_INVERTED    1
 #define CONTROLLIGHT_LAST_BIT_INVALID 0xff
-
-
 
 int ControlLight_getExtraSize(void)
 {
@@ -123,7 +121,6 @@ void ControlLight_release(void)
 void ControlLight_initialise(void)
 {
 }
-
 
 ObjectDescriptor gControlLightObjDescriptor = {
     0,

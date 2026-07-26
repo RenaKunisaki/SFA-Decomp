@@ -307,7 +307,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_01D6_dll1d6 | 100.0000 | 99.2335 | -0.7665 |
 | main/main/dll/tumbleweedbush | 100.0000 | 99.2518 | -0.7482 |
 | main/main/dll/DF/dll_0175_dfropenode | 99.9100 | 99.1700 | -0.7400 |
-| main/main/dll/LGT/dll_02AC_lgtcontrollight | 100.0000 | 99.2727 | -0.7273 |
+| main/dlls/objects/684_LGTControlL/LGTControlL | 100.0000 | 99.2727 | -0.7273 |
 | main/main/dll/mmp_cratercritter | 100.0000 | 99.3197 | -0.6803 |
 | main/main/dll/dll_0000_gameui | 99.7396 | 99.0757 | -0.6639 |
 | main/main/audio/hw_stream | 100.0000 | 99.3367 | -0.6633 |
