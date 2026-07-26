@@ -168,7 +168,7 @@ void fn_8014E1DC(GameObject* obj, HagabonState* state)
         obj->anim.velocityZ = -0.5f;
     }
 
-    objMove((GameObject*)obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
+    objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
             obj->anim.velocityZ * timeDelta);
     ObjAnim_AdvanceCurrentMove((int)obj, state->animSpeed, timeDelta,
                                                                 (ObjAnimEventList*)animEvents);
@@ -247,12 +247,12 @@ void Hagabon_hitDetect(GameObject* obj)
     }
 }
 
-void Hagabon_update(int obj)
+void Hagabon_update(GameObject* obj)
 {
     GameObject* player;
     HagabonState* state;
     int oldCurve;
-    int data;
+    HagabonPlacement* data;
     f32 lightPos[3];
     f32 effectPos[3];
     f32 d[3];
@@ -262,87 +262,87 @@ void Hagabon_update(int obj)
     u32 hitVolume;
     u8 flags;
 
-    state = *(HagabonState**)&((GameObject*)obj)->extra;
+    state = (HagabonState*)obj->extra;
     oldCurve = state->curve;
-    data = *(int*)&((GameObject*)obj)->anim.placementData;
+    data = (HagabonPlacement*)obj->anim.placementData;
 
-    if (((GameObject*)obj)->userData1 != 0)
+    if (obj->userData1 != 0)
     {
-        if ((((HagabonPlacement*)data)->armGameBit != -1) && (mainGetBit(((HagabonPlacement*)data)->armGameBit) != 0))
+        if ((data->armGameBit != -1) && (mainGetBit(data->armGameBit) != 0))
         {
             return;
         }
-        if ((*gMapEventInterface)->shouldNotSaveTime(((HagabonPlacement*)data)->mapEventId) == 0)
+        if ((*gMapEventInterface)->shouldNotSaveTime(data->mapEventId) == 0)
         {
             return;
         }
-        ((GameObject*)obj)->userData1 = 0;
-        ((GameObject*)obj)->anim.alpha = 1;
+        obj->userData1 = 0;
+        obj->anim.alpha = 1;
         state->flags |= HAGABON_FLAG_FADE_IN;
-        Sfx_PlayFromObject(obj, SFXTRIG_dn_seal4_c);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_seal4_c);
         return;
     }
 
     player = Obj_GetPlayerObject();
-    dist = Vec_distance((f32*)(obj + 0x18), &player->anim.worldPosX);
+    dist = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
     if (dist < 300.0f)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_en_twiggysnap11);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_en_twiggysnap11);
     }
     else if (dist > 350.0f)
     {
-        Sfx_StopFromObject(obj, SFXTRIG_en_twiggysnap11);
+        Sfx_StopFromObject((int)obj, SFXTRIG_en_twiggysnap11);
     }
 
-    if ((((GameObject*)obj)->anim.alpha != 0) &&
+    if ((obj->anim.alpha != 0) &&
         (((flags = state->flags) & (HAGABON_FLAG_FADE_IN | HAGABON_FLAG_FADE_OUT)) != 0))
     {
         if ((flags & HAGABON_FLAG_FADE_OUT) != 0)
         {
-            ((GameObject*)obj)->anim.alpha = (f32)(u32)((GameObject*)obj)->anim.alpha - timeDelta;
-            if (((GameObject*)obj)->anim.alpha <= 6)
+            obj->anim.alpha = (f32)(u32)obj->anim.alpha - timeDelta;
+            if (obj->anim.alpha <= 6)
             {
-                ((GameObject*)obj)->userData1 = 1;
-                ((GameObject*)obj)->anim.alpha = 0;
+                obj->userData1 = 1;
+                obj->anim.alpha = 0;
                 state->flags &= ~HAGABON_FLAG_FADE_OUT;
-                Sfx_StopFromObject(obj, SFXTRIG_en_twiggysnap11);
+                Sfx_StopFromObject((int)obj, SFXTRIG_en_twiggysnap11);
             }
-            ObjHits_DisableObject((GameObject*)obj);
+            ObjHits_DisableObject(obj);
         }
         if ((state->flags & HAGABON_FLAG_FADE_IN) != 0)
         {
-            ((GameObject*)obj)->anim.alpha = (f32)(u32)((GameObject*)obj)->anim.alpha + timeDelta;
-            if (((GameObject*)obj)->anim.alpha >= 0xf9)
+            obj->anim.alpha = (f32)(u32)obj->anim.alpha + timeDelta;
+            if (obj->anim.alpha >= 0xf9)
             {
-                ((GameObject*)obj)->anim.alpha = 0xff;
+                obj->anim.alpha = 0xff;
                 state->flags &= ~HAGABON_FLAG_FADE_IN;
             }
         }
     }
     else
     {
-        if (ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitObject, &hitSphereIndex, &hitVolume,
+        if (ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume,
                                                &lightPos[0], &lightPos[1], &lightPos[2]) != 0)
         {
-            Sfx_StopObjectChannel(obj, 0x7f);
+            Sfx_StopObjectChannel((int)obj, 0x7f);
             state->flags |= HAGABON_FLAG_FADE_OUT;
-            Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
-            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
-            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_238);
-            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_en_rfall5_c);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_iceywindlp16_233);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_238);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_stftest122_1f2);
             lightPos[0] += playerMapOffsetX;
             lightPos[2] += playerMapOffsetZ;
             objLightFn_8009a1dc((void*)obj, 0.014f, effectPos, 3, 0);
             (*gMapEventInterface)
-                ->addTime(((HagabonPlacement*)data)->mapEventId,
-                          (f32)(s32)(((HagabonPlacement*)data)->timeReward * 0x3c));
-            if (((HagabonPlacement*)data)->armGameBit != -1)
+                ->addTime(data->mapEventId,
+                          (f32)(s32)(data->timeReward * 0x3c));
+            if (data->armGameBit != -1)
             {
-                mainSetBits(((HagabonPlacement*)data)->armGameBit, 1);
+                mainSetBits(data->armGameBit, 1);
             }
         }
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, HAGABON_HIT_VOLUME_SLOT, 1, 0);
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_SetHitVolumeSlot(&obj->anim, HAGABON_HIT_VOLUME_SLOT, 1, 0);
+        ObjHits_EnableObject(obj);
     }
 
     state->player = Obj_GetPlayerObject();
@@ -350,17 +350,17 @@ void Hagabon_update(int obj)
     if (player != 0)
     {
         f32* dp = d;
-        dp[0] = player->anim.worldPosX - ((GameObject*)obj)->anim.worldPosX;
-        dp[1] = player->anim.worldPosY - ((GameObject*)obj)->anim.worldPosY;
-        dp[2] = player->anim.worldPosZ - ((GameObject*)obj)->anim.worldPosZ;
+        dp[0] = player->anim.worldPosX - obj->anim.worldPosX;
+        dp[1] = player->anim.worldPosY - obj->anim.worldPosY;
+        dp[2] = player->anim.worldPosZ - obj->anim.worldPosZ;
         state->playerDistance = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
     }
     if ((void*)oldCurve != NULL)
     {
         f32* dp = d;
-        dp[0] = ((RomCurveWalker*)oldCurve)->posX - ((GameObject*)obj)->anim.worldPosX;
-        dp[1] = ((RomCurveWalker*)oldCurve)->posY - ((GameObject*)obj)->anim.worldPosY;
-        dp[2] = ((RomCurveWalker*)oldCurve)->posZ - ((GameObject*)obj)->anim.worldPosZ;
+        dp[0] = ((RomCurveWalker*)oldCurve)->posX - obj->anim.worldPosX;
+        dp[1] = ((RomCurveWalker*)oldCurve)->posY - obj->anim.worldPosY;
+        dp[2] = ((RomCurveWalker*)oldCurve)->posZ - obj->anim.worldPosZ;
         state->pathDistance = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
     }
     if (((state->flags & HAGABON_FLAG_CHASE) != 0) && (state->pathDistance > 250.0f))
@@ -373,12 +373,12 @@ void Hagabon_update(int obj)
         state->flags &= ~HAGABON_FLAG_PATH_RETURN;
     }
     if (((state->flags & (HAGABON_FLAG_CHASE | HAGABON_FLAG_PATH_RETURN)) == 0) &&
-        (((HagabonPlacement*)data)->startInactive == 0) && (state->player != 0) &&
+        (data->startInactive == 0) && (state->player != 0) &&
         (state->playerDistance < state->chaseRadius))
     {
         state->flags |= HAGABON_FLAG_CHASE;
     }
-    fn_8014E1DC((GameObject*)obj, state);
+    fn_8014E1DC(obj, state);
 }
 
 void Hagabon_init(GameObject* obj, int data, int skip_alloc)
