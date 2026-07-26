@@ -50,8 +50,10 @@ STATIC_ASSERT(offsetof(LazerwallCurveNode, rotZ) == 0x2c);
 /* timer object's query slot (vtable+0x54): fills elapsed/now/limit outparams */
 typedef void (*TimerQueryFn)(int timer, int* elapsed, int* now, int* limit);
 
-int TREX_Lazerwall_popQueuedState(int arg1, int arg2);
+struct GameObject;
+
+int TREX_Lazerwall_popQueuedState(struct GameObject* obj, int animState);
 int TREX_Lazerwall_waitForStartBit(void);
-int TREX_Lazerwall_updateTimedChallenge(int arg1);
+int TREX_Lazerwall_updateTimedChallenge(struct GameObject* obj);
 
 #endif /* MAIN_DLL_TREX_LAZERWALL_H_ */

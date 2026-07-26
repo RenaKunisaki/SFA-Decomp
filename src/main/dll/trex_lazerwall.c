@@ -49,10 +49,10 @@ extern u32 lbl_803E59D0;       /* head of the rom-curve search pair (first type 
 
 
 
-int TREX_Lazerwall_popQueuedState(int obj, int animState)
+int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
 {
-    int state;
-    int playerObj;
+    TREXLazerwallUpdateTimedChallengeState* state;
+    GameObject* playerObj;
     RingBufferQueue* stackHandle;
     int node;
     u32 head[2];
@@ -61,34 +61,34 @@ int TREX_Lazerwall_popQueuedState(int obj, int animState)
     int popOut;
 
     *(RomCurveSearchPair*)head = *(RomCurveSearchPair*)&lbl_803E59D0;
-    playerObj = (int)Obj_GetPlayerObject();
-    state = *(int*)&((GameObject*)obj)->extra;
+    playerObj = Obj_GetPlayerObject();
+    state = (obj)->extra;
 
     if (*(s8*)(animState + 0x27a) != 0)
     {
-        if (Stack_IsEmpty(((TREXLazerwallUpdateTimedChallengeState*)state)->stack) != 0)
+        if (Stack_IsEmpty(state->stack) != 0)
         {
             RomCurveFindFn findFn = (*gRomCurveInterface)->find;
-            int found = findFn(((GameObject*)playerObj)->anim.localPosX, ((GameObject*)playerObj)->anim.localPosY,
-                               ((GameObject*)playerObj)->anim.localPosZ, (int*)head, 2, -1);
+            int found = findFn(playerObj->anim.localPosX, playerObj->anim.localPosY,
+                               playerObj->anim.localPosZ, (int*)head, 2, -1);
 
             if (found != -1)
             {
                 node = (int)(*gRomCurveInterface)->getById(found);
-                ((GameObject*)obj)->anim.localPosX = ((LazerwallCurveNode*)node)->x;
-                ((GameObject*)obj)->anim.localPosY = lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
-                ((GameObject*)obj)->anim.localPosZ = ((LazerwallCurveNode*)node)->z;
-                *(s16*)obj = (s16)((s32)((LazerwallCurveNode*)node)->rotZ << 8);
-                ((TREXLazerwallUpdateTimedChallengeState*)state)->nodeTargetY =
+                (obj)->anim.localPosX = ((LazerwallCurveNode*)node)->x;
+                (obj)->anim.localPosY = lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
+                (obj)->anim.localPosZ = ((LazerwallCurveNode*)node)->z;
+                *(s16*)(int)obj = (s16)((s32)((LazerwallCurveNode*)node)->rotZ << 8);
+                state->nodeTargetY =
                     lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
-                ((TREXLazerwallUpdateTimedChallengeState*)state)->unk9CA = 0;
-                ((TREXLazerwallUpdateTimedChallengeState*)state)->curveNodeTag = ((LazerwallCurveNode*)node)->type;
+                state->unk9CA = 0;
+                state->curveNodeTag = ((LazerwallCurveNode*)node)->type;
             }
 
             if ((s8)((LazerwallCurveNode*)node)->type == LAZERWALL_NODE_TAG_A)
             {
                 pushKindA = LAZERWALL_NODE_KIND_A;
-                stackHandle = ((TREXLazerwallUpdateTimedChallengeState*)state)->stack;
+                stackHandle = state->stack;
                 if (Stack_IsFull(stackHandle) == 0)
                 {
                     Stack_Push(stackHandle, &pushKindA);
@@ -97,7 +97,7 @@ int TREX_Lazerwall_popQueuedState(int obj, int animState)
             else
             {
                 pushKindB = LAZERWALL_NODE_KIND_B;
-                stackHandle = ((TREXLazerwallUpdateTimedChallengeState*)state)->stack;
+                stackHandle = state->stack;
                 if (Stack_IsFull(stackHandle) == 0)
                 {
                     Stack_Push(stackHandle, &pushKindB);
@@ -105,15 +105,15 @@ int TREX_Lazerwall_popQueuedState(int obj, int animState)
             }
 
             *(f32*)(animState + 0x280) = lbl_803E59DC;
-            ((TREXLazerwallUpdateTimedChallengeState*)state)->flags =
-                (u8)(((TREXLazerwallUpdateTimedChallengeState*)state)->flags | LAZERWALL_FLAG_ADVANCED);
+            state->flags =
+                (u8)(state->flags | LAZERWALL_FLAG_ADVANCED);
         }
     }
 
-    ((TREXLazerwallUpdateTimedChallengeState*)state)->popStateEnabled = 0xff;
-    if (((TREXLazerwallUpdateTimedChallengeState*)state)->popStateEnabled == 0xff)
+    state->popStateEnabled = 0xff;
+    if (state->popStateEnabled == 0xff)
     {
-        stackHandle = ((TREXLazerwallUpdateTimedChallengeState*)state)->stack;
+        stackHandle = state->stack;
         popOut = 0;
         if (Stack_IsEmpty(stackHandle) == 0)
         {
@@ -133,21 +133,21 @@ int TREX_Lazerwall_waitForStartBit(void)
     return 0;
 }
 
-int TREX_Lazerwall_updateTimedChallenge(int obj)
+int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
 {
-    int state;
+    TREXLazerwallUpdateTimedChallengeState* state;
     int elapsed;
     int now;
     int limit;
 
-    state = *(int*)&((GameObject*)obj)->extra;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-        (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-    ((TREXLazerwallUpdateTimedChallengeState*)state)->popStateEnabled = 0;
-    ObjHits_DisableObject((GameObject*)obj);
+    state = (obj)->extra;
+    *(u8*)&(obj)->anim.resetHitboxMode =
+        (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    state->popStateEnabled = 0;
+    ObjHits_DisableObject(obj);
 
-    (*(TimerQueryFn*)(*(int*)*(int*)(((TREXLazerwallUpdateTimedChallengeState*)state)->timerObj + 0x68) + 0x54))(
-        ((TREXLazerwallUpdateTimedChallengeState*)state)->timerObj, &elapsed, &now, &limit);
+    (*(TimerQueryFn*)(*(int*)*(int*)(state->timerObj + 0x68) + 0x54))(
+        state->timerObj, &elapsed, &now, &limit);
 
     now = now - elapsed;
 
@@ -168,7 +168,7 @@ int TREX_Lazerwall_updateTimedChallenge(int obj)
 
         hudFn_8011f38c(2);
 
-        (*gMapEventInterface)->setObjGroupStatus((s32)((GameObject*)obj)->anim.mapEventSlot, 6, 0);
+        (*gMapEventInterface)->setObjGroupStatus((s32)(obj)->anim.mapEventSlot, 6, 0);
 
         gTitleMenuControlInterfaceCopy->vtable->func04(NULL, 0xf3, 0, 0, 0);
     }
