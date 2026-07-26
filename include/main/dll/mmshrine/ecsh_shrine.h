@@ -23,7 +23,7 @@ int ecsh_shrine_getObjectTypeId(void);
 void ecsh_shrine_free(GameObject* obj);
 void ecsh_shrine_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void ecsh_shrine_hitDetect(void);
-void ecsh_shrine_update(s16* obj);
+void ecsh_shrine_update(GameObject* obj);
 void ecsh_shrine_init(s16* obj, s8* def);
 void ecsh_shrine_release(void);
 void ecsh_shrine_initialise(void);
