@@ -1320,7 +1320,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 kooshy_updateEngaged((GameObject*)(obj), state);
                 break;
             case ENEMY_WEEVIL_OBJ:
-                weevil_updateEngaged((int)obj, state);
+                weevil_updateEngaged((GameObject*)(obj), state);
                 break;
             case ENEMY_PINPON_OBJ:
                 pinPon_updateEngaged((GameObject*)(obj), (int*)state);
@@ -1397,7 +1397,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 kooshy_updateEngaged((GameObject*)(obj), state);
                 break;
             case ENEMY_WEEVIL_OBJ:
-                weevil_updateEngaged((int)obj, state);
+                weevil_updateEngaged((GameObject*)(obj), state);
                 break;
             case ENEMY_PINPON_OBJ:
                 pinPon_updateEngaged((GameObject*)(obj), (int*)state);
