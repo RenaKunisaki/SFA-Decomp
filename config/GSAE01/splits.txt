@@ -2783,7 +2783,7 @@ dlls/objects/397_MMSH_Scales/MMSH_Scales.c:
 	.data       start:0x80326168 end:0x803261A0
 	.sdata2     start:0x803E4F68 end:0x803E4F7C
 
-main/dll/dll_018E_mmshwaterspike.c:
+dlls/objects/398_MMSH_WaterS/MMSH_WaterS.c:
 	.text       start:0x801C578C end:0x801C5990
 	.data       start:0x803261A0 end:0x80326208
 	.sdata2     start:0x803E4F80 end:0x803E4F8C

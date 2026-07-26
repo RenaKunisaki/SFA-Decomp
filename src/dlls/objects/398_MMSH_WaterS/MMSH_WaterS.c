@@ -1,5 +1,5 @@
 /*
- * mmshwaterspike (DLL 0x18E) - rising water-spike hazard in Mushroom Mountain
+ * MMSH_WaterS (DLL 0x18E) - rising water-spike hazard in Mushroom Mountain
  * (mmsh). Each instance tracks an XYZ-animator object by packed ID (stored at
  * userData2) to read its current height; if the animator is missing it falls back to
  * hit-detect against nearby water surfaces. The spike rises toward a placement-
