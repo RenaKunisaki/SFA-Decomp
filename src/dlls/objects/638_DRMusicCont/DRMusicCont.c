@@ -1,5 +1,5 @@
 /*
- * drmusiccont (DLL 0x27E) - an invisible music/ambience controller for
+ * DRMusicCont (DLL 638) - an invisible music/ambience controller for
  * its map.
  *
  * update overrides the cloud position, runs a one-shot env-fx and sky
@@ -193,23 +193,6 @@ void drmusiccont_update(GameObject* obj)
     }
 }
 
-ObjectDescriptor gDrMusicContObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)drmusiccont_initialise,
-    (ObjectDescriptorCallback)drmusiccont_release,
-    0,
-    (ObjectDescriptorCallback)drmusiccont_init,
-    (ObjectDescriptorCallback)drmusiccont_update,
-    (ObjectDescriptorCallback)drmusiccont_hitDetect,
-    (ObjectDescriptorCallback)drmusiccont_render,
-    (ObjectDescriptorCallback)drmusiccont_free,
-    (ObjectDescriptorCallback)drmusiccont_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)drmusiccont_getExtraSize,
-};
-
 void drmusiccont_init(GameObject* obj)
 {
     DrmusiccontState* state = obj->extra;
@@ -238,3 +221,20 @@ void drmusiccont_release(void)
 void drmusiccont_initialise(void)
 {
 }
+
+ObjectDescriptor gDrMusicContObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)drmusiccont_initialise,
+    (ObjectDescriptorCallback)drmusiccont_release,
+    0,
+    (ObjectDescriptorCallback)drmusiccont_init,
+    (ObjectDescriptorCallback)drmusiccont_update,
+    (ObjectDescriptorCallback)drmusiccont_hitDetect,
+    (ObjectDescriptorCallback)drmusiccont_render,
+    (ObjectDescriptorCallback)drmusiccont_free,
+    (ObjectDescriptorCallback)drmusiccont_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)drmusiccont_getExtraSize,
+};
