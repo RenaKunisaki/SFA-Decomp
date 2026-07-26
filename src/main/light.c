@@ -122,14 +122,14 @@ void VFPDragHead_hitDetect(void)
 {
 }
 
-void VFPDragHead_update(int* obj)
+void VFPDragHead_update(GameObject* obj)
 {
-    int state = (s8)(*(s8**)&((GameObject*)obj)->anim.placementData)[0x19];
+    int state = (s8)(*(s8**)&obj->anim.placementData)[0x19];
     VfpDragHeadState* self2;
 
     if (state == 2)
     {
-        self2 = ((GameObject*)obj)->extra;
+        self2 = obj->extra;
         gVfpDragHeadSpawnTimer -= (s16)timeDelta;
         if (mainGetBit(self2->gameBitB) != 0)
             return;
@@ -141,23 +141,23 @@ void VFPDragHead_update(int* obj)
             return;
         (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_IDLE, NULL, 4, -1, NULL);
     }
-    else if (((GameObject*)obj)->anim.seqId == 0x3c5)
+    else if (obj->anim.seqId == 0x3c5)
     {
-        self2 = ((GameObject*)obj)->extra;
+        self2 = obj->extra;
         self2->despawnTimer -= (s16)timeDelta;
-        ((GameObject*)obj)->anim.localPosX =
-            ((GameObject*)obj)->anim.velocityX * timeDelta + ((GameObject*)obj)->anim.localPosX;
-        ((GameObject*)obj)->anim.localPosY =
-            ((GameObject*)obj)->anim.velocityY * timeDelta + ((GameObject*)obj)->anim.localPosY;
-        ((GameObject*)obj)->anim.localPosZ =
-            ((GameObject*)obj)->anim.velocityZ * timeDelta + ((GameObject*)obj)->anim.localPosZ;
+        obj->anim.localPosX =
+            obj->anim.velocityX * timeDelta + obj->anim.localPosX;
+        obj->anim.localPosY =
+            obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+        obj->anim.localPosZ =
+            obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
         if (self2->despawnTimer > 0)
             return;
-        Obj_FreeObject((GameObject*)obj);
+        Obj_FreeObject(obj);
     }
     else if (state == 0)
     {
-        self2 = ((GameObject*)obj)->extra;
+        self2 = obj->extra;
         gVfpDragHeadSpawnTimer -= (s16)timeDelta;
         if (mainGetBit(0x522) != 0)
             return;
@@ -171,7 +171,7 @@ void VFPDragHead_update(int* obj)
     }
     else if (state == 1)
     {
-        self2 = ((GameObject*)obj)->extra;
+        self2 = obj->extra;
         if (mainGetBit(self2->gameBitA) != 0)
         {
             (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_BREATH, NULL, 4, -1, NULL);
@@ -181,7 +181,7 @@ void VFPDragHead_update(int* obj)
                 (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_IDLE, NULL, 4, -1, NULL);
             }
         }
-        if ((s16)ObjHits_GetPriorityHit((GameObject*)obj, 0, 0, 0) != 0)
+        if ((s16)ObjHits_GetPriorityHit(obj, 0, 0, 0) != 0)
         {
             mainSetBits(self2->gameBitA, 1 - mainGetBit(self2->gameBitA));
         }
@@ -289,7 +289,7 @@ void spellStoneUseFn_801fd270(GameObject* obj)
 {
     SpellStoneUseState* state = obj->extra;
     s16 cond = 1;
-    void* player = Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     if (player == NULL)
         return;
     if (state->requiredGameBit != -1)
@@ -303,7 +303,7 @@ void spellStoneUseFn_801fd270(GameObject* obj)
     *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
     if ((*gGameUIInterface)->isEventReady(gSpellStoneEventId) != 0)
     {
-        if (Vec_distance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) < lbl_803E6150)
+        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150)
         {
             mainSetBits(state->completeGameBit, 1);
             state->used = 1;
@@ -362,17 +362,17 @@ void dll_224_update(GameObject* obj)
     ((void (*)(GameObject*))spellStoneUseFn_801fd270)(obj);
 }
 
-void dll_224_init(void* obj, void* other)
+void dll_224_init(GameObject* obj, void* other)
 {
-    SpellStoneUseState* extra = ((GameObject*)obj)->extra;
+    SpellStoneUseState* extra = obj->extra;
     SpellStonePlacement* def = (SpellStonePlacement*)other;
     s16 rotX = ((s8)def->rotXByte << 8);
     u8 hitboxFlags;
-    ((GameObject*)obj)->anim.rotX = rotX;
+    obj->anim.rotX = rotX;
     extra->completeGameBit = def->completeGameBit;
     extra->requiredGameBit = def->requiredGameBit;
-    hitboxFlags = (*&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode = hitboxFlags;
+    hitboxFlags = (*&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    *(u8*)&obj->anim.resetHitboxMode = hitboxFlags;
 }
 
 void dll_224_release_nop(void)

@@ -9,7 +9,7 @@ void VFP_Block1_free(int obj);
 void VFP_Block1_render(void);
 void VFP_Block1_hitDetect(void);
 void VFP_Block1_update(GameObject* obj);
-void VFP_Block1_init(int obj, int data);
+void VFP_Block1_init(GameObject* obj, int data);
 void VFP_Block1_release(void);
 void VFP_Block1_initialise(void);
 
