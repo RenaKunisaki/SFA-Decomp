@@ -446,7 +446,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x190 | ECSH_Cup | COMPLETE | dlls/objects/400_ECSH_Cup/ECSH_Cup.c | = (canonical) | — |
 | 0x191 | ECSH_Creato | COMPLETE | dlls/objects/401_ECSH_Creato/ECSH_Creato.c | = (canonical) | — |
 | 0x192 | GPSH_Shrine | COMPLETE | dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c | = (canonical) | — |
-| 0x193 | GPSH_ObjCreator | CONFIRMED | main/dll/dll_0193_gpshobjcreator.c | = (canonical) | — |
+| 0x193 | GPSH_ObjCre | COMPLETE | dlls/objects/403_GPSH_ObjCre/GPSH_ObjCre.c | = (canonical) | — |
 | 0x194 | GPSH_Scene | COMPLETE | main/dll/dll_0194_gpshscene.c | = (canonical) | — |
 | 0x195 | DBSH_Shrine | CONFIRMED | main/dll/dll_0195_dbshshrine.c | = (canonical) | — |
 | 0x196 | DBSH_Symbol | CONFIRMED | main/dll/dll_0196_dbshsymbol.c | = (canonical) | — |
