@@ -1,11 +1,9 @@
 /*
- * sbseqdoor (DLL 0x01F1) - a galleon door that opens via a trigger sequence
+ * SB_SeqDoor (DLL 0x01F1) - a galleon door that opens via a trigger sequence
  * in the ShipBattle prologue (SB = the retail "ShipBattle" map). This one
  * DLL drives all three retail door objects - SB_SeqDoor, SB_SeqDoor2 and
  * SB_DeckDoor - the last being the deck hatch that opens (once Kyte is
  * talked to) onto the passage where the golden key is found.
- * TU: 0x801E4288-0x801E42F8.
- *
  * The door faces a placement-supplied heading and, once its arming GameBit
  * is set, runs trigger sequence 0 a single time (latched through obj->userData1)
  * to play the open animation. Each tick it also forces hitbox-reset bit 0x10.
@@ -90,7 +88,6 @@ void SB_SeqDoor_release(void)
 void SB_SeqDoor_initialise(void)
 {
 }
-
 
 ObjectDescriptor gSB_SeqDoorObjDescriptor = {
     0,

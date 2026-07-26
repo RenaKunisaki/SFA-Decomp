@@ -3076,7 +3076,7 @@ main/dll/SB/dll_01F2_sbcagekyte.c:
 	.text       start:0x801E4F14 end:0x801E5060
 	.data       start:0x80327E48 end:0x80327E80
 
-main/dll/SB/dll_01F1_sbseqdoor.c:
+dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c:
 	.text       start:0x801E5060 end:0x801E519C
 	.data       start:0x80327E80 end:0x80327EB8
 	.sdata2     start:0x803E5920 end:0x803E5924
