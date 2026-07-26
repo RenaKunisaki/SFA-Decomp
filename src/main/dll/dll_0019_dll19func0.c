@@ -407,7 +407,7 @@ int dll_19_func16(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit,
                   s16 substate, void* hitPosOut)
 {
     u8* state = obj->extra;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     int hit;
     int v28;
     int v24;
@@ -499,9 +499,9 @@ int dll_19_func16(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit,
             {
                 if (((BaddieState*)baddieState)->targetObj == NULL)
                 {
-                    if (fn_80295A04((GameObject*)player, 1) != 0)
+                    if (fn_80295A04(player, 1) != 0)
                     {
-                        ((BaddieState*)baddieState)->targetObj = (void*)player;
+                        ((BaddieState*)baddieState)->targetObj = player;
                         ((BaddieState*)baddieState)->hasTarget = 0;
                     }
                 }
@@ -699,36 +699,36 @@ void dll_19_func0C(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* 
 GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAngle)
 {
     f32 bboxOut[20];
-    int objs[3];
+    GameObject* objs[3];
     f32 diff[3];
     f32 gridIn[3];
     int gridB[2];
     int gridA[2];
     u8 losOut;
     f32* dp;
-    int* list;
+    GameObject** list;
     int negHalfAngle;
-    int obj;
+    GameObject* obj;
     int found = 0;
     int delta;
     u8 traced;
 
-    objs[0] = (int)Obj_GetPlayerObject();
-    objs[1] = 0;
+    objs[0] = Obj_GetPlayerObject();
+    objs[1] = NULL;
     dp = diff;
     list = objs;
     negHalfAngle = -halfAngle;
 
-    while (found == 0 && (void*)(obj = *list) != NULL)
+    while (found == 0 && (obj = *list) != NULL)
     {
-        dp[0] = ((GameObject*)obj)->anim.worldPosX - self->anim.worldPosX;
-        dp[1] = ((GameObject*)obj)->anim.worldPosY - self->anim.worldPosY;
-        dp[2] = ((GameObject*)obj)->anim.worldPosZ - self->anim.worldPosZ;
+        dp[0] = obj->anim.worldPosX - self->anim.worldPosX;
+        dp[1] = obj->anim.worldPosY - self->anim.worldPosY;
+        dp[2] = obj->anim.worldPosZ - self->anim.worldPosZ;
         if (sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1])) < frange)
         {
             if ((s8)((BaddieState*)state)->hitPoints != 0)
             {
-                if (fn_8029610C((GameObject*)obj) > 0.5f)
+                if (fn_8029610C(obj) > 0.5f)
                 {
                     found = 1;
                 }
@@ -761,11 +761,11 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
                 {
                     found = 1;
                 }
-                if (fn_80295A04((GameObject*)obj, 1) == 0)
+                if (fn_80295A04(obj, 1) == 0)
                 {
                     found = 0;
                 }
-                if (Player_GetCurrentHealth(obj) <= 0)
+                if (Player_GetCurrentHealth((int)obj) <= 0)
                 {
                     found = 0;
                 }
@@ -775,9 +775,9 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
                     gridIn[1] = 10.0f + self->anim.localPosY;
                     gridIn[2] = self->anim.localPosZ;
                     voxmaps_worldToGrid(gridIn, (s16*)gridA);
-                    gridIn[0] = ((GameObject*)obj)->anim.localPosX;
-                    gridIn[1] = 10.0f + ((GameObject*)obj)->anim.localPosY;
-                    gridIn[2] = ((GameObject*)obj)->anim.localPosZ;
+                    gridIn[0] = obj->anim.localPosX;
+                    gridIn[1] = 10.0f + obj->anim.localPosY;
+                    gridIn[2] = obj->anim.localPosZ;
                     voxmaps_worldToGrid(gridIn, (s16*)gridB);
                     traced = voxmaps_traceLine((VoxPos*)gridB, (VoxPos*)gridA, NULL, &losOut, 0);
                     if (losOut == 1 || traced != 0)
@@ -797,27 +797,27 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
         }
         list++;
     }
-    return (GameObject*)obj;
+    return obj;
 }
 
 int dll_19_func13(GameObject* obj, void* state, f32 distThreshold, int requireFar)
 {
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     int result = 0;
 
     if ((s8)((BaddieState*)state)->moveDone != 0)
     {
-        if (((BaddieState*)state)->targetObj == (void*)player && (s8)((BaddieState*)state)->hitPoints != 0)
+        if (((BaddieState*)state)->targetObj == player && (s8)((BaddieState*)state)->hitPoints != 0)
         {
             if (((BaddieState*)state)->targetDistance > distThreshold && requireFar != 0)
             {
                 result = 1;
             }
-            else if (fn_80295A04((GameObject*)player, 1) == 0)
+            else if (fn_80295A04(player, 1) == 0)
             {
                 result = 1;
             }
-            else if (Player_GetCurrentHealth(player) <= 0)
+            else if (Player_GetCurrentHealth((int)player) <= 0)
             {
                 result = 1;
             }
@@ -825,11 +825,11 @@ int dll_19_func13(GameObject* obj, void* state, f32 distThreshold, int requireFa
             {
                 f32 pos[3];
                 f32 out[22];
-                pos[0] = ((GameObject*)player)->anim.localPosX;
-                pos[1] = 10.0f + ((GameObject*)player)->anim.localPosY;
-                pos[2] = ((GameObject*)player)->anim.localPosZ;
+                pos[0] = player->anim.localPosX;
+                pos[1] = 10.0f + player->anim.localPosY;
+                pos[2] = player->anim.localPosZ;
                 if (objBboxFn_800640cc(&obj->anim.localPosX, pos, 1.0f, 0, (TrackBBoxHit*)out,
-                                       (GameObject*)obj, 4, -1, 0, 0) != 0)
+                                       obj, 4, -1, 0, 0) != 0)
                 {
                     result = 1;
                 }
