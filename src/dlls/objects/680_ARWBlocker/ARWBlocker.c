@@ -1,5 +1,5 @@
 /*
- * arwblocker (DLL 0x2A8) - an invisible trigger volume in the on-rails
+ * ARWBlocker (DLL 680) - an invisible trigger volume in the on-rails
  * Arwing flight sections. It starts hidden with hit-detection disabled;
  * once the Arwing (or, as a fallback, the player object) closes to within
  * a fixed distance it fades in, enables its hitbox and fires one of two
@@ -70,7 +70,7 @@ void ARWBlocker_update(GameObject* obj)
 
     if (arwing == NULL)
         arwing = Obj_GetPlayerObject();
-        if (Vec_distance(&objAnim->worldPosX, &arwing->anim.worldPosX) < 5120.0f)
+    if (Vec_distance(&objAnim->worldPosX, &arwing->anim.worldPosX) < 5120.0f)
     {
         int alpha = (int)(3.0f * timeDelta + (f32)(u32)objAnim->alpha);
         if (alpha > 0xff)

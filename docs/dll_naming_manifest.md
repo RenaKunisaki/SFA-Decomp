@@ -723,7 +723,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A5 | ARWGenerato | RAW | dlls/objects/677_ARWGenerato/ARWGenerato.c | = (canonical) | Exact complete eleven-function TU with its terminal descriptor and formerly unassigned `10.0f` constant/alignment |
 | 0x2A6 | ARWSquadron | RAW | dlls/objects/678_ARWSquadron/ARWSquadron.c | = (canonical) | Exact complete fourteen-function TU with its source-only inline range helper, early descriptor, and full constant pool |
 | 0x2A7 | ARWProximit | RAW | dlls/objects/679_ARWProximit/ARWProximit.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full constant pool |
-| 0x2A8 | ARWBlocker (+ARWBlockerS) | COMPLETE | main/dll/dll_02A8_arwblocker.c | main/dll/ARW/dll_02A8_arwblocker.c | — |
+| 0x2A8 | ARWBlocker | RAW | dlls/objects/680_ARWBlocker/ARWBlocker.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor and full constant pool |
 | 0x2A9 | LGTPointLight (+CF_WallTorc) | CONFIRMED | main/dll/dll_02A9_lgtpointlight.c | main/dll/LGT/dll_02A9_lgtpointlight.c | — |
 | 0x2AA | LGTDirectionallight | CONFIRMED | main/dll/dll_02AA_lgtdirectionallight.c | main/dll/LGT/dll_02AA_lgtdirectionallight.c | — |
 | 0x2AB | LGTProjectedlight | CONFIRMED | main/dll/dll_02AB_lgtprojectedlight.c | main/dll/LGT/dll_02AB_lgtprojectedlight.c | — |
