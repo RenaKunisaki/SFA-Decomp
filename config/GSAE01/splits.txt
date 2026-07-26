@@ -2777,7 +2777,7 @@ dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c:
 	.data       start:0x80326360 end:0x803263B8
 	.sdata2     start:0x803E5000 end:0x803E5044
 
-main/dll/dll_0193_gpshobjcreator.c:
+dlls/objects/403_GPSH_ObjCre/GPSH_ObjCre.c:
 	.text       start:0x801C8084 end:0x801C82C8
 	.data       start:0x803263B8 end:0x80326400
 	.sdata2     start:0x803E5048 end:0x803E5058
