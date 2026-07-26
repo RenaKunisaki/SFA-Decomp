@@ -77,7 +77,7 @@ void drakormissile_modelMtxFn(GameObject* obj)
     state->flags |= 1;
     if (state->state == DRAKORMISSILE_STATE_FADEOUT)
     {
-        Obj_FreeObject((GameObject*)obj);
+        Obj_FreeObject(obj);
     }
 }
 
