@@ -1,10 +1,5 @@
 /*
- * sctotempuzzle (DLL 0x1BA) - head of the SC totem-pole puzzle pair.
- * Holds dll 0x1BA's descriptor fns (gResourceDescriptors[0x1BA]); the unit
- * ends at 0x801DDA28 (initialise end). sc_totembond_SeqFn
- * (0x801DDC20) lives in the 01BB unit - it sits in dll 0x1BB's helper gap,
- * interleaved with sc_totembond_spawnGameBitOrbs (both DLLs shared one
- * original TU).
+ * SC_totempuz (DLL 0x1BA) - the spinning LightFoot Village totem puzzle.
  *
  * Behaviour: the LightFoot Village totem puzzle - a stack of 4-6 totem
  * sections that spin independently; shoot each section as it comes around to
@@ -14,17 +9,20 @@
  * shrine below the village. Distinct from sctotempole (the 4 standing totem
  * poles of the tracking test).
  */
-#include "main/obj_list.h"
 #include "dlls/object_descriptor.h"
-#include "main/shader_api.h"
 #include "game/objects/object.h"
-#include "main/objhits.h"
-#include "main/objfx.h"
-#include "main/objtexture.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
 #include "main/audio/sfx.h"
+#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/SC/sctotempuzzle.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/obj_list.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/objtexture.h"
+#include "main/object_render.h"
+#include "main/shader_api.h"
 
 typedef struct SCTotemPuzzleParticleBox
 {
@@ -184,13 +182,6 @@ void sc_totempuzzle_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 void sc_totempuzzle_hitDetect(void)
 {
 }
-
-/* Tail of the TU (0x801DD46C..0x801DDA28) - formerly the head of
- * dll_01BB_sctotembond.c (the drift boundary at 0x801DD46C cut dll
- * 0x1BA between hitDetect and update; real edge = initialise end). */
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/gamebits.h"
 
 s16 gTotemPuzzleStepAngles[6] = {-8192, 0, 8192, 16384, 24576, -32768};
 
@@ -381,23 +372,19 @@ void sc_totempuzzle_initialise(void)
 {
 }
 
-/* descriptor/ptr table auto 0x80327a24-0x80327a60 */
-ObjectDescriptor10WithPadding gSC_totempuzzleObjDescriptor = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-        (ObjectDescriptorCallback)sc_totempuzzle_initialise,
-        (ObjectDescriptorCallback)sc_totempuzzle_release,
-        0,
-        (ObjectDescriptorCallback)sc_totempuzzle_init,
-        (ObjectDescriptorCallback)sc_totempuzzle_update,
-        (ObjectDescriptorCallback)sc_totempuzzle_hitDetect,
-        (ObjectDescriptorCallback)sc_totempuzzle_render,
-        (ObjectDescriptorCallback)sc_totempuzzle_free,
-        (ObjectDescriptorCallback)sc_totempuzzle_getObjectTypeId,
-        sc_totempuzzle_getExtraSize,
-    },
+ObjectDescriptor gSC_totempuzzleObjDescriptor = {
     0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)sc_totempuzzle_initialise,
+    (ObjectDescriptorCallback)sc_totempuzzle_release,
+    0,
+    (ObjectDescriptorCallback)sc_totempuzzle_init,
+    (ObjectDescriptorCallback)sc_totempuzzle_update,
+    (ObjectDescriptorCallback)sc_totempuzzle_hitDetect,
+    (ObjectDescriptorCallback)sc_totempuzzle_render,
+    (ObjectDescriptorCallback)sc_totempuzzle_free,
+    (ObjectDescriptorCallback)sc_totempuzzle_getObjectTypeId,
+    sc_totempuzzle_getExtraSize,
 };

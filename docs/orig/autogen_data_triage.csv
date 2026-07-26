@@ -155,7 +155,7 @@ address,section,size_bytes,byte_class,subtype_reason,adjacent_owner,adjacency_co
 0x803E5384,.sdata2,28,float-pool,read-only const/float pool (.sdata2),dll_01A9_bombplant.c,high,3,main/dll/dll_01AA_bombplantspore.o,24,4,0,0
 0x803E53A8,.sdata2,128,float-pool,read-only const/float pool (.sdata2),dll_01AA_bombplantspore.c,high,13,main/dll/dll_01AA_bombplantspore.o,120,4,0,0
 0x803E54C0,.sdata2,64,float-pool,read-only const/float pool (.sdata2),dll_01AE_shlevelcontrol.c,high,5,main/dll/SH/dll_01B1_shstaff.o,52,12,0,0
-0x803E5618,.sdata2,32,float-pool,read-only const/float pool (.sdata2),dll_01BA_sctotempuzzle.c,high,2,main/dll/SC/dll_01BA_sctotempuzzle.o,28,4,0,0
+0x803E5618,.sdata2,32,float-pool,read-only const/float pool (.sdata2),SC_totempuz.c,high,2,dlls/objects/442_SC_totempuz/SC_totempuz.o,28,4,0,0
 0x803E56B0,.sdata2,376,float-pool,read-only const/float pool (.sdata2),dll_01BC_sctotemstrength.c,high,9,main/dll/dbprotection.o,344,32,0,0
 0x803E59C0,.sdata2,56,float-pool,read-only const/float pool (.sdata2),dll_01F6_flag.c,high,11,main/dll/laserturretgroup.o,40,12,0,0
 0x803E5AD8,.sdata2,456,float-pool,read-only const/float pool (.sdata2),dll_0288_spdrape.c,high,21,main/dll/dll_0255_snowbike.o,424,32,0,0
