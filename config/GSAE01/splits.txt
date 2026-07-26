@@ -3555,7 +3555,7 @@ main/dll/DR/dll_0252_ktlazerwall.c:
 	.text       start:0x802164D0 end:0x80216B48
 	.sdata2     start:0x803E6898 end:0x803E68C0
 
-main/dll/DR/dll_0253_ktlazerlight.c:
+dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c:
 	.text       start:0x80216B48 end:0x80216D18
 	.sdata2     start:0x803E68C0 end:0x803E68D0
 
