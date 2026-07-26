@@ -60,17 +60,17 @@ void wcfloortile_hitDetect(void)
 {
 }
 
-void wcfloortile_update(int obj)
+void wcfloortile_update(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = &((GameObject*)obj)->anim;
-    WcFloorTileState* state = ((GameObject*)obj)->extra;
+    ObjAnimComponent* objAnim = &obj->anim;
+    WcFloorTileState* state = obj->extra;
     int off;
     int i;
-    WcFloorTileSetup* setup = (WcFloorTileSetup*)((GameObject*)obj)->anim.placementData;
+    WcFloorTileSetup* setup = (WcFloorTileSetup*)obj->anim.placementData;
 
     if ((u32)mainGetBit(824) != 0)
     {
-        ((GameObject*)obj)->anim.localPosY = setup->base.posY;
+        obj->anim.localPosY = setup->base.posY;
         state->phase = WCFLOORTILE_PHASE_RESTORE;
     }
     switch (state->phase)
@@ -79,18 +79,18 @@ void wcfloortile_update(int obj)
     default:
         if (state->flags & 4)
         {
-            if (0 < *(s8*)(*(int*)(obj + 0x58) + 0x10f))
+            if (0 < obj->anim.proximityList->count)
             {
                 f32 z = 0.0f;
-                for (i = 0, off = 0; i < *(s8*)(*(int*)(obj + 0x58) + 0x10f); off += 4, i++)
+                for (i = 0, off = 0; i < obj->anim.proximityList->count; off += 4, i++)
                 {
-                    GameObject* e = *(GameObject**)(*(int*)(obj + 0x58) + off + 0x100);
+                    GameObject* e = *(GameObject**)((int)obj->anim.proximityList + off + 0x100);
                     if (e->anim.classId == 1)
                     {
-                        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_c6);
+                        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_c6);
                         state->phase = WCFLOORTILE_PHASE_FALLING;
                         state->shakeTime = z;
-                        ((GameObject*)obj)->anim.velocityY = z;
+                        obj->anim.velocityY = z;
                     }
                 }
             }
@@ -106,15 +106,15 @@ void wcfloortile_update(int obj)
         {
             state->flags |= 3;
             state->shakeTime = 120.0f;
-            ((GameObject*)obj)->anim.velocityY = -0.1f * timeDelta + ((GameObject*)obj)->anim.velocityY;
+            obj->anim.velocityY = -0.1f * timeDelta + obj->anim.velocityY;
         }
         state->shakeMag = 256.0f * (state->shakeTime / 120.0f);
-        ((GameObject*)obj)->anim.rotY = randomGetRange(-state->shakeMag, state->shakeMag);
-        ((GameObject*)obj)->anim.rotZ = randomGetRange(-state->shakeMag, state->shakeMag);
-        ((GameObject*)obj)->anim.localPosY =
-            ((GameObject*)obj)->anim.velocityY * timeDelta + ((GameObject*)obj)->anim.localPosY;
+        obj->anim.rotY = randomGetRange(-state->shakeMag, state->shakeMag);
+        obj->anim.rotZ = randomGetRange(-state->shakeMag, state->shakeMag);
+        obj->anim.localPosY =
+            obj->anim.velocityY * timeDelta + obj->anim.localPosY;
         {
-            f32 d = setup->base.posY - ((GameObject*)obj)->anim.localPosY;
+            f32 d = setup->base.posY - obj->anim.localPosY;
             f32 alpha;
             if (d < 50.0f)
             {
@@ -147,7 +147,7 @@ void wcfloortile_update(int obj)
         break;
     case WCFLOORTILE_PHASE_FALLEN:
         objAnim->alpha = 0;
-        ObjHits_DisableObject((GameObject*)obj);
+        ObjHits_DisableObject(obj);
         state->flags |= 3;
         break;
     case WCFLOORTILE_PHASE_RESTORE:
@@ -160,11 +160,11 @@ void wcfloortile_update(int obj)
         }
         objAnim->alpha = a;
     }
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_EnableObject(obj);
         break;
     }
     {
-        setup = (WcFloorTileSetup*)((GameObject*)obj)->anim.placementData;
+        setup = (WcFloorTileSetup*)obj->anim.placementData;
         if (fn_80065640() != 0)
         {
             state->flags |= 2;
@@ -173,7 +173,7 @@ void wcfloortile_update(int obj)
         {
             if (fn_80065640() == 0)
             {
-                fn_80065574(setup->eventId, (GameObject*)(*(int*)&((GameObject*)obj)->anim.parent), state->flags & 1);
+                fn_80065574(setup->eventId, (GameObject*)(*(int*)&obj->anim.parent), state->flags & 1);
                 state->flags &= ~2;
             }
         }
