@@ -1,5 +1,5 @@
 /*
- * arwblocker (DLL 0x2A8) - an invisible trigger volume in the on-rails
+ * ARWBlocker (DLL 0x2A8) - an invisible trigger volume in the on-rails
  * Arwing flight sections. It starts hidden with hit-detection disabled;
  * once the Arwing (or, as a fallback, the player object) closes to within
  * a fixed distance it fades in, enables its hitbox and fires one of two
