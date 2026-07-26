@@ -1802,7 +1802,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/424_SH_killermu/SH_killermu.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/425_BombPlant/BombPlant.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "dlls/objects/426_BombPlantSp/BombPlantSp.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_01AB_bombplantingspot.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/427_BombPlantin/BombPlantin.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_801d4198.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/SH/dll_01AC_shqueenearthwalker.c", cflags=cflags_dll_noopt_noinline),
             Object(Matching, "main/dll/lily.c"),
