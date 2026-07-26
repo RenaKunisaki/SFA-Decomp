@@ -2,10 +2,11 @@
 #define MAIN_DLL_DLL_01FC_LASERBEAM_H_
 
 #include "types.h"
+#include "game/objects/object.h"
 
 int LaserBeam_getExtraSize(void);
 int LaserBeam_getObjectTypeId(void);
-void LaserBeam_free(int* obj);
+void LaserBeam_free(GameObject* obj);
 void LaserBeam_render(void);
 void LaserBeam_hitDetect(void);
 void LaserBeam_update(int obj);
