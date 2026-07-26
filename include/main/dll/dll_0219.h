@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_0219_H_
 
 #include "global.h"
+#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
 
@@ -36,7 +37,7 @@ void dll_219_free(int obj);
 void dll_219_render_nop(void);
 void dll_219_hitDetect_nop(void);
 void dll_219_update(Dll219Object* obj);
-void dll_219_init(int* obj, Dll219Setup* placement);
+void dll_219_init(GameObject* obj, Dll219Setup* placement);
 void dll_219_release_nop(void);
 void dll_219_initialise_nop(void);
 

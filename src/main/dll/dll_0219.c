@@ -86,13 +86,12 @@ void dll_219_update(Dll219Object* obj)
     }
 }
 
-void dll_219_init(int* obj, Dll219Setup* placement)
+void dll_219_init(GameObject* obj, Dll219Setup* placement)
 {
-    GameObject* o = (GameObject*)obj;
-    Dll219State* state = o->extra;
-    o->anim.rotX = (s16)(placement->rotX << 8);
+    Dll219State* state = obj->extra;
+    obj->anim.rotX = (s16)(placement->rotX << 8);
     state->gameBit = placement->gameBit;
-    o->objectFlags |= (DLL_219_OBJFLAG_HIDDEN | DLL_219_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (DLL_219_OBJFLAG_HIDDEN | DLL_219_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void dll_219_release_nop(void)
