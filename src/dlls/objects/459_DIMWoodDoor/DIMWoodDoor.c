@@ -1,15 +1,12 @@
 /*
- * dimwooddoor2 (DLL 0x1CB) - a burnable wooden door object.
+ * DIMWoodDoor (DLL 0x1CB) - a burnable wooden door object.
  *
  * The door advances its current move animation and slowly rises (its Z
  * eased toward rest by riseSpeed). Once burned, object setup 0x338 bleeds
  * off its alpha past a progress threshold; otherwise the door scans its
  * proximity list and, on finding a key sequence object (0x18F or 0x1D6),
- * snaps open - resetting the wobble,
- * ringing the placement's gamebit and playing the open sfx.
- *
- * The dll_1CE hatch-door variant lives in its own TU; only its forward
- * declarations appear here.
+ * snaps open, resets the wobble, sets the placement's gamebit, and plays the
+ * open sfx.
  */
 #include "main/dll/dimwooddoor2placement_struct.h"
 #include "main/dll/dimwooddoor2state_struct.h"
@@ -25,11 +22,11 @@
 #define DIMWOODDOOR2_KEY_SEQ_ID_A   0x18f
 #define DIMWOODDOOR2_KEY_SEQ_ID_B   0x1d6
 
-
 int dimwooddoor2_getExtraSize(void)
 {
     return 0xc;
 }
+
 int dimwooddoor2_getObjectTypeId(void)
 {
     return 0x0;
@@ -43,7 +40,9 @@ void dimwooddoor2_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
 {
     s32 v = visible;
     if (v != 0)
+    {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dimwooddoor2_hitDetect(void)
@@ -71,7 +70,9 @@ void dimwooddoor2_update(GameObject* obj)
     {
         int v = obj->anim.alpha - framesThisStep * 16;
         if (v < 0)
+        {
             v = 0;
+        }
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         obj->anim.alpha = v;
