@@ -1892,7 +1892,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/519_WM_Worm/WM_Worm.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/521_WM_LevelCon/WM_LevelCon.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
-            Object(MatchingFor("GSAE01"), "main/dll/WM/dll_020A_wmgeneralscales.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/522_WM_GeneralS/WM_GeneralS.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DF/dll_022F_dfpfloorbar.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/teslagroup.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DF/dll_0232_dfprotatep.c", cflags=cflags_dll_noopt),

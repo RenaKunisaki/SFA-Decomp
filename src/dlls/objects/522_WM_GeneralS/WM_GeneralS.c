@@ -1,48 +1,27 @@
 /*
- * WM_GeneralScales (DLL 0x20A) - General Scales at Krazoa Palace, the
+ * WM_GeneralS (DLL 0x020A) - General Scales at Krazoa Palace, the
  * cutscene actor driven entirely by sequence events (his appearance in
- * the final spirit ceremony). TU = 0x801F48C0..0x801F4C04
- * (WM_GeneralScales_SeqFn + wmgeneralscales_*).
+ * the final spirit ceremony).
  *
  * The SeqFn fades the model in/out through state->fadeAlpha, spawns
  * impact particles + sfx on the slam events, and attaches/detaches his
  * 'scalessword' child object on demand. He starts hidden (phase 1
  * skips render).
  */
-#include "main/dll/partfx_interface.h"
-#include "main/frame_timing.h"
-#include "main/audio/sfx_play_legacy_api.h"
-#include "main/object_render.h"
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
-#include "main/obj_link.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
 #include "dlls/object_descriptor.h"
-#include "main/audio/sfx_ids.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_020A_wmgeneralscales.h"
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/obj_link.h"
+#include "main/object_render.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-ObjectDescriptor gWM_GeneralScalesObjDescriptor = {
-    0,
-    0,
-    0,
-    0x00090000,
-    (ObjectDescriptorCallback)WM_GeneralScales_initialise,
-    (ObjectDescriptorCallback)WM_GeneralScales_release,
-    0,
-    (ObjectDescriptorCallback)WM_GeneralScales_init,
-    (ObjectDescriptorCallback)WM_GeneralScales_update,
-    (ObjectDescriptorCallback)WM_GeneralScales_hitDetect,
-    (ObjectDescriptorCallback)WM_GeneralScales_render,
-    (ObjectDescriptorCallback)WM_GeneralScales_free,
-    (ObjectDescriptorCallback)WM_GeneralScales_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_GeneralScales_getExtraSize,
-};
-
-/* phase values written by the SeqFn (author comment: 1 = hidden,
-   2/3 = slam variants, 0 = idle). SLAM0/SLAM1 are neutral names - the
-   comment does not distinguish what 2 vs 3 mean. */
+/* Sequence-event phase values. */
 #define WMGENERALSCALES_PARTFX_SLAM 0x556 /* slam impact effect (anim events 2/3) */
 
 #define WMGENERALSCALES_PHASE_IDLE   0
@@ -196,3 +175,20 @@ void WM_GeneralScales_release(void)
 void WM_GeneralScales_initialise(void)
 {
 }
+
+ObjectDescriptor gWM_GeneralScalesObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_GeneralScales_initialise,
+    (ObjectDescriptorCallback)WM_GeneralScales_release,
+    0,
+    (ObjectDescriptorCallback)WM_GeneralScales_init,
+    (ObjectDescriptorCallback)WM_GeneralScales_update,
+    (ObjectDescriptorCallback)WM_GeneralScales_hitDetect,
+    (ObjectDescriptorCallback)WM_GeneralScales_render,
+    (ObjectDescriptorCallback)WM_GeneralScales_free,
+    (ObjectDescriptorCallback)WM_GeneralScales_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_GeneralScales_getExtraSize,
+};
