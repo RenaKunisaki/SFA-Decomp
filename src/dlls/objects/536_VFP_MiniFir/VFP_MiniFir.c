@@ -49,14 +49,14 @@ void VFP_MiniFire_free(int obj)
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void VFP_MiniFire_render(int obj, int p2, int p3, int p4, int p5, s8 vis)
+void VFP_MiniFire_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
 {
-    if (vis == 0 || ((GameObject*)obj)->anim.alpha == 0)
+    if (vis == 0 || obj->anim.alpha == 0)
     {
         return;
     }
     Rcp_SetRenderFlags(8);
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     Rcp_ClearRenderFlags(8);
 }
 
@@ -165,14 +165,14 @@ void VFP_MiniFire_update(GameObject* obj)
     }
 }
 
-void VFP_MiniFire_init(int* obj, u8* init)
+void VFP_MiniFire_init(GameObject* obj, u8* init)
 {
-    ((GameObject*)obj)->anim.velocityY = -15.0f;
-    ((GameObject*)obj)->anim.localPosY = 400.0f + *(f32*)((char*)init + 0xc);
-    ((GameObject*)obj)->anim.rootMotionScale *= 2.0f;
+    obj->anim.velocityY = -15.0f;
+    obj->anim.localPosY = 400.0f + *(f32*)((char*)init + 0xc);
+    obj->anim.rootMotionScale *= 2.0f;
     (*gPartfxInterface)->spawnObject(obj, VFPMINIFIRE_PERSIST_EFFECT, NULL, 2, -1, NULL);
     Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_103);
-    ((GameObject*)obj)->objectFlags |= VFPMINIFIRE_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= VFPMINIFIRE_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_MiniFire_release(void)
