@@ -2309,7 +2309,7 @@ dlls/objects/343_SpiritDoorS/SpiritDoorS.c:
 	.sdata      start:0x803DBE78 end:0x803DBE80
 	.sdata2     start:0x803E42B8 end:0x803E42BC
 
-main/dll/dll_0158_gunpowderbarrel.c:
+dlls/objects/344/344.c:
 	.text       start:0x801A0B14 end:0x801A27B8
 	.data       start:0x80322D28 end:0x80322D68
 	.sdata      start:0x803DBE80 end:0x803DBE8C
