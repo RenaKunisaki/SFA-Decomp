@@ -3004,7 +3004,7 @@ dlls/objects/322_FElevContro/FElevContro.c:
 	.text       start:0x801DF934 end:0x801DF9AC
 	.data       start:0x80327B70 end:0x80327BA8
 
-main/dll/dll_0144_dll144.c:
+dlls/objects/324/324.c:
 	.text       start:0x801DF9AC end:0x801DFA28
 	.data       start:0x80327BA8 end:0x80327BE0
 

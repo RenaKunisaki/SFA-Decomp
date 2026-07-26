@@ -1,5 +1,5 @@
 /*
- * dll144 (DLL 0x144) - a near-empty front-end sequence object stub.
+ * DLL 0x144 - a near-empty front-end sequence object stub.
  *
  * The active object callbacks are all no-ops (free/hitDetect/update/
  * release/initialise do nothing; getExtraSize/getObjectTypeId return 0).
