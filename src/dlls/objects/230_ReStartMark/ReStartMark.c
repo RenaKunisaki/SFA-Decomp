@@ -1,15 +1,30 @@
-/* DLL 0xE6 (ReStartMark) - restart-position marker object.
- * Its placement rotation seeds the marker heading; the marker itself stays
- * hidden because it exists only as a gameplay respawn anchor.
+/*
+ * ReStartMark object (DLL slot 230 / 0xE6).
+ *
+ * The placement rotation seeds the marker heading. The marker stays hidden
+ * because it exists only as a gameplay respawn anchor.
  */
-#include "main/dll/dll_00E6_restartmarker.h"
+#include "dlls/objects/230_ReStartMark.h"
+#include "game/objects/object.h"
 
-void restartmarker_init(GameObject* obj, RestartMarkerPlacement* placement)
-{
+ObjectDescriptor gReStartMarkObjDescriptor = {
+    0,                                          /* reserved0 */
+    0,                                          /* reserved1 */
+    0,                                          /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,           /* slotCountAndFlags */
+    0,                                          /* initialise */
+    0,                                          /* release */
+    0,                                          /* slot02 */
+    (ObjectDescriptorCallback)ReStartMark_init, /* init */
+    0,                                          /* update */
+    0,                                          /* hitDetect */
+    0,                                          /* render */
+    0,                                          /* free */
+    0,                                          /* getObjectTypeId */
+    0,                                          /* getExtraSize */
+};
+
+void ReStartMark_init(GameObject* obj, ReStartMarkPlacement* placement) {
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
 }
-
-ObjectDescriptor gReStartMarkerObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS, 0, 0, 0, (ObjectDescriptorCallback)restartmarker_init, 0, 0, 0, 0, 0, 0,
-};

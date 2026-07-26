@@ -26,6 +26,7 @@
 #include "dlls/objects/227_Fireball.h"
 #include "dlls/objects/228_FlameThrowerspe.h"
 #include "dlls/objects/229_Shield.h"
+#include "dlls/objects/230_ReStartMark.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -205,9 +206,8 @@ extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchFBObjDescriptor, gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor,
     gProjectileSwitchObjDescriptor, gProximityMineObjDescriptor;
-extern ResourceDescriptor gPushableObjDescriptor, gReStartMarkerObjDescriptor, gRingObjDescriptor,
-    gRollingBarrelObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor, gSB_CloudBallObjDescriptor,
-    gSB_CloudRunnerObjDescriptor;
+extern ResourceDescriptor gPushableObjDescriptor, gRingObjDescriptor, gRollingBarrelObjDescriptor,
+    gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor, gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, gSB_KyteCageObjDescriptor,
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
@@ -1155,7 +1155,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFireballObjDescriptor,
     (ResourceDescriptor*)&gFlameThrowerspeObjDescriptor,
     (ResourceDescriptor*)&gShieldObjDescriptor,
-    &gReStartMarkerObjDescriptor,
+    (ResourceDescriptor*)&gReStartMarkObjDescriptor,
     &gFlammableVineObjDescriptor,
     &gCheckpoint4ObjDescriptor,
     &gSetuppointObjDescriptor,
