@@ -1,5 +1,5 @@
 /*
- * spdrape (DLL 0x288) - a hanging cloth drape / door curtain in the
+ * SPDrape (DLL 0x288) - a hanging cloth drape / door curtain in the
  * SnowHorn shop area that swings aside as the player walks through it.
  *
  * Init builds a vertical plane through the drape (planeNormal / planeD,
