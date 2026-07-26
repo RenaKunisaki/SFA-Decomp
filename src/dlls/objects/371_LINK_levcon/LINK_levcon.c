@@ -1,5 +1,5 @@
 /*
- * linklevcontrol (DLL 0x0173) - per-area level-control object for the
+ * LINK_levcon (DLL 0x173) - per-area level-control object for the
  * LinkLevel maps. One instance lives in each map-event area cell; the
  * object's anim.mapEventSlot identifies which cell (0x45..0x49).
  *
@@ -10,11 +10,6 @@
  * looping area music. The cell's music selection branches on sky sun
  * position and a couple of story game bits, edge-latched through the
  * object's musicTrack field and a SCGameBitLatch record.
- *
- * The unit's own object descriptor (gLINKLevControlObjDescriptor,
- * .data:0x80323AD0) and its area-effect table (lbl_803239F0) live in the
- * unowned .data gap (auto_07_803236D0); this TU carries no data sections,
- * matching the retail object.
  */
 #include "main/dll/linklevcontrolstate_struct.h"
 #include "sys/objects.h"

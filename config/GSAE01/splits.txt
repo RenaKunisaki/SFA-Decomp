@@ -2502,7 +2502,7 @@ dlls/objects/370_LINKB_levco/LINKB_levco.c:
 	.data       start:0x803238D8 end:0x803239F0
 	.sdata2     start:0x803E47C8 end:0x803E47CC
 
-main/dll/dll_0173_linklevcontrol.c:
+dlls/objects/371_LINK_levcon/LINK_levcon.c:
 	.text       start:0x801AF568 end:0x801AF9E4
 	.data       start:0x803239F0 end:0x80323B08
 
