@@ -5,6 +5,8 @@
 #include "main/map_block.h"
 #include "main/objanim_update.h"
 
+struct GameObject;
+
 typedef struct DimlavasmashPlacement
 {
     u8 pad0[0x1E - 0x0];
@@ -38,11 +40,11 @@ typedef struct DimlavasmashObjectDef
 
 void dimlavasmash_free(void);
 void dimlavasmash_hitDetect(void);
-void dimlavasmash_update(int* obj);
+void dimlavasmash_update(struct GameObject* obj);
 int dimlavasmash_getExtraSize(void);
 int dimlavasmash_getObjectTypeId(void);
 void dimlavasmash_setBlockSurfaceFlags(MapBlockData* block, int disable, int surfaceType);
-void dimlavasmash_init(s16* obj, s8* def);
+void dimlavasmash_init(struct GameObject* obj, s8* def);
 void dimlavasmash_release(void);
 void dimlavasmash_initialise(void);
 
