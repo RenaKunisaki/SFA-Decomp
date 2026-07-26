@@ -52,6 +52,23 @@
 #define SHSTAFF_CHILD_OBJ_HAZE_FLAME 0x659 /* staff-haze child flame (SH_StaffHaze_update), spawned by sh_staff_SeqFn */
 #define SHSTAFF_TARGET_OBJGROUP      0xf   /* player-target group; the nearest object gets the pickup sequence */
 
+ObjectDescriptor gSH_staffObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)sh_staff_update,
+    0,
+    (ObjectDescriptorCallback)sh_staff_render,
+    (ObjectDescriptorCallback)sh_staff_free,
+    0,
+    sh_staff_getExtraSize,
+};
+
 int sh_staff_getExtraSize(void)
 {
     return 0x74;
@@ -538,20 +555,3 @@ void sh_staff_update(GameObject* obj)
         }
     }
 }
-
-ObjectDescriptor gSH_staffObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)sh_staff_update,
-    0,
-    (ObjectDescriptorCallback)sh_staff_render,
-    (ObjectDescriptorCallback)sh_staff_free,
-    0,
-    sh_staff_getExtraSize,
-};
