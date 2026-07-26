@@ -3000,7 +3000,7 @@ main/dll/dll_0143_feseqobject.c:
 	.text       start:0x801DF4AC end:0x801DF934
 	.data       start:0x80327B38 end:0x80327B70
 
-main/dll/dll_0142_felevcontrol.c:
+dlls/objects/322_FElevContro/FElevContro.c:
 	.text       start:0x801DF934 end:0x801DF9AC
 	.data       start:0x80327B70 end:0x80327BA8
 

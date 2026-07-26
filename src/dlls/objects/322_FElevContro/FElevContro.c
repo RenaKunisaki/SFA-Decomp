@@ -1,5 +1,5 @@
 /*
- * felevcontrol (DLL 0x142) - floating elevator control object for the
+ * FElevContro (DLL 0x142) - floating elevator control object for the
  * CloudRunner Fortress / Dinosaur Planet elevator sequences.
  *
  * The render function passes lbl_803E56B8 (the elevator's render scale /

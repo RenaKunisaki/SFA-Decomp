@@ -367,7 +367,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x13F | TexFrameAni | COMPLETE | dlls/objects/319_TexFrameAni/TexFrameAni.c | = (canonical) | — |
 | 0x140 | fogControl | COMPLETE | dlls/objects/320_fogControl/fogControl.c | = (canonical) | — |
 | 0x141 | Lightning | COMPLETE | dlls/objects/321_Lightning/Lightning.c | = (canonical) | — |
-| 0x142 | FElevControl | CONFIRMED | main/dll/dll_0142_felevcontrol.c | = (canonical) | — |
+| 0x142 | FElevContro | COMPLETE | dlls/objects/322_FElevContro/FElevContro.c | = (canonical) | — |
 | 0x143 | FEseqobject | CONFIRMED | main/dll/dll_0143_feseqobject.c | = (canonical) | — |
 | 0x144 | — | NO-RETAIL-NAME | main/dll/dll_0144_dll144.c | = (canonical) | — |
 | 0x145 | CloudPrisoncontrol | CONFIRMED | main/dll/dll_0145_cloudprisoncontrol.c | = (canonical) | — |
