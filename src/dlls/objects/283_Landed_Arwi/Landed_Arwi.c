@@ -476,11 +476,11 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
 void landed_arwing_update(GameObject* obj)
 {
     LandedArwingObjectState* state;
-    int player;
+    GameObject* player;
     GameObject* child;
 
     state = (obj)->extra;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     if (state->childObject == NULL)
     {
         if (Obj_IsLoadingLocked() != 0)
@@ -501,7 +501,7 @@ void landed_arwing_update(GameObject* obj)
         arwarwinggu_applyTextureFrame(state->childObject);
     }
 
-    if ((u32)player != 0 && playerGetFocusObject((GameObject*)player) != NULL)
+    if (player != NULL && playerGetFocusObject(player) != NULL)
     {
         *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
