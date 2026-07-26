@@ -78,6 +78,10 @@ literals), that is a TU-boundary artifact — leave the unit `NonMatching`, do n
   or convenience. Merge artificial fragments in retail function order, use one TU-level compiler
   profile, and accept match regressions. Only redraw a boundary when DOL section, pool,
   function-order, or source-tag evidence establishes a different real TU.
+- Every confirmed numbered DLL folder is a real slot. NEVER collapse an adjacent slot because its
+  functions, descriptor, or data are currently attributed to the wrong source file. Preserve both
+  slots and re-audit the misplaced contents against the DOL. One source file defining multiple
+  descriptors is not evidence of a multi-descriptor TU without independent DOL support.
 - `include/main/gamebit_ids.h`: a NEW `GAMEBIT_*` id ALWAYS goes in the unordered (Rena-imported)
   section, inserted in ascending-id order — NEVER interleave it into the chronological/story-ordered
   section at the top, and NEVER split a comment from the entry it describes. An id may be promoted into

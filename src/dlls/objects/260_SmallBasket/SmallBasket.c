@@ -28,6 +28,7 @@
 #include "main/dll/dll_0104_smallbasket.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
+#include "main/vecmath_distance_api.h"
 #include "game/objects/object_setup.h"
 #include "game/objects/object.h"
 #include "main/dll/player_api.h"
@@ -36,11 +37,11 @@
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
 #include "main/dll/dll_0105_largecrate.h"
-#include "main/dll/dll_801814d0.h"
 #include "sys/objects.h"
 #include "main/mapEvent.h"
 #include "main/resource.h"
 #include "main/sky_interface.h"
+#include "main/shader_api.h"
 #include "main/dll/player_status.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
@@ -51,11 +52,25 @@
 #include "main/pad.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_object_query_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/tricky_api.h"
-#include "main/pad.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
+
+extern const f32 lbl_803E3930;
+extern const f32 lbl_803E3934;
+extern const f32 lbl_803E3938;
+extern const f32 lbl_803E393C;
+extern const f32 lbl_803E3940;
+extern const f32 lbl_803E3944;
+extern const f32 lbl_803E3948;
+extern const f32 lbl_803E394C;
+extern const f32 lbl_803E3950;
+extern const f32 lbl_803E3954;
+extern const f32 lbl_803E3958;
+
 #define SMALLBASKET_HIT_VOLUME_SLOT 0xe
 
 #define SMALLBASKET_OBJGROUP                   0x10
@@ -73,6 +88,14 @@
 
 typedef void (*ObjThrowInitFn)(void* obj, f32 vx, f32 vy, f32 vz);
 
+typedef struct SmallBasketHitEffectPos
+{
+    u8 pad00[0xc];
+    f32 x;
+    f32 y;
+    f32 z;
+} SmallBasketHitEffectPos;
+
 /* Spawn-setup record smallbasket hands to Obj_SetupObject for its thrown
    debris/pickup children. Embeds the common ObjPlacement head (pos + mapId)
    and carries the class-specific tuning fields from 0x18 on. */
@@ -89,14 +112,6 @@ typedef struct SmallBasketThrowSetup
     s16 field2C; /* 0x2C init -1 */
 } SmallBasketThrowSetup;
 
-/* CfperchState's carryAttached/throwState fields are u8 in the header, but the
-   sign-checked reads in SmallBasket_update treat them as signed (s8). */
-/* engine/runtime symbols (game bits, object spawn/group, hit-detect, sky,
-   player query) and this object's tuning floats (lbl_803Exxxx) - no home
-   header in the import skeleton; declared locally. */
-
-f32 gSmallBasketHitVelocity[4];
-void* gSmallBasketResource;
 typedef struct
 {
     s16 h0;
@@ -108,16 +123,92 @@ typedef struct
     f32 fw;
 } BasketMathArgs;
 
-extern const f32 lbl_803E3930;
-extern const f32 lbl_803E3938;
-extern const f32 lbl_803E393C;
-extern const f32 lbl_803E3940;
-extern const f32 lbl_803E3944;
-extern const f32 lbl_803E3948;
-extern const f32 lbl_803E394C;
-extern const f32 lbl_803E3950;
-extern const f32 lbl_803E3954;
-extern const f32 lbl_803E3958;
+/* CfperchState's carryAttached/throwState fields are u8 in the header, but the
+   sign-checked reads in SmallBasket_update treat them as signed (s8). */
+
+int lbl_803DBDA0 = 1;
+f32 lbl_803DBDA4 = 15.0f;
+f32 lbl_803DBDA8 = 30.0f;
+f32 gSmallBasketHitVelocity[4];
+void* gSmallBasketResource;
+
+/* Handles SmallBasket hit effects, nearby-object damage, and content drops. */
+void fn_801814D0(int obj, int arg, u8* state)
+{
+    int hitWork[4];
+    SmallBasketHitEffectPos effectPos;
+    int hitType;
+    int* objects;
+    int i;
+    int* groupObjects;
+    f32 dusterY;
+    f32 candidateY;
+    f32 launchVel;
+
+    hitType = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitWork[3], &hitWork[2], (u32*)&hitWork[1],
+                                                 &effectPos.x, &effectPos.y, &effectPos.z);
+    if (hitType != 0)
+    {
+        if (hitType == 0x10)
+        {
+            Obj_StartModelFadeIn((GameObject*)obj, 0x12c);
+        }
+        else
+        {
+            effectPos.x += playerMapOffsetX;
+            effectPos.z += playerMapOffsetZ;
+            if (((CfperchState*)state)->disguiseGated != 0)
+            {
+                if (hitType != 5)
+                {
+                    objLightFn_8009a1dc((void*)obj, lbl_803E3934, &effectPos, 4, 0);
+                    if (Sfx_IsPlayingFromObject(0, SFXTRIG_staff_rocket_powerup) == 0)
+                    {
+                        Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_powerup);
+                    }
+                    return;
+                }
+                groupObjects = (int*)ObjGroup_GetObjects(SMALLBASKET_OBJGROUP, &hitWork[0]);
+                i = 0;
+                objects = groupObjects;
+                for (; i < hitWork[0]; i++)
+                {
+                    if (ObjHits_IsObjectEnabled((ObjAnimComponent*)*objects) != 0)
+                    {
+                        candidateY = ((GameObject*)*objects)->anim.localPosY;
+                        dusterY = ((GameObject*)obj)->anim.localPosY;
+                        if (candidateY > dusterY && candidateY < dusterY + lbl_803DBDA8)
+                        {
+                            if (Vec_xzDistance((f32*)(*objects + 0x18), (f32*)(obj + 0x18)) < lbl_803DBDA4)
+                            {
+                                ObjHits_RecordObjectHit((GameObject*)*objects, (GameObject*)hitWork[3], 5, 1, 0);
+                            }
+                        }
+                    }
+                    objects++;
+                }
+            }
+            objLightFn_8009a1dc((void*)obj, lbl_803E3934, &effectPos, 1, 0);
+            Obj_SetModelColorFadeRecursive((GameObject*)obj, 0xf, 0xc8, 0, 0, 1);
+            if (Sfx_IsPlayingFromObject(0, (u16)((CfperchState*)state)->sfxId) == 0)
+            {
+                Sfx_PlayFromObject(obj, (u16)((CfperchState*)state)->sfxId);
+            }
+            ((CfperchState*)state)->disableTimer = 0x32;
+            ((CfperchState*)state)->throwState = 0;
+            smallbasket_spawnContents((GameObject*)obj, (GameObject*)arg, state);
+            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            launchVel = lbl_803E3938;
+            ((GameObject*)obj)->anim.velocityX = lbl_803E3938;
+            ((GameObject*)obj)->anim.velocityZ = launchVel;
+            ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
+            if (lbl_803DBDA0 != 0)
+            {
+                ObjHits_DisableObject((GameObject*)obj);
+            }
+        }
+    }
+}
 
 int smallbasket_spawnContents(GameObject* obj, GameObject* player, void* dataIn)
 {

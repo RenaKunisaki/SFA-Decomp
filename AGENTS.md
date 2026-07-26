@@ -83,6 +83,11 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 - Treat TU boundaries confirmed from the retail DOL as structural ground truth. Do not split a
   confirmed TU into multiple source files for per-function cflags, pragma substitutes, match
   percentage, or convenience.
+- Treat each confirmed numbered DLL folder as a real slot, not a disposable naming hint. Never
+  collapse an adjacent slot merely because its functions, descriptor, or data are currently
+  attributed to the wrong file; preserve both slots and re-audit the misplaced contents against
+  the DOL. A multi-descriptor TU needs independent DOL evidence and is not implied by one source
+  file currently defining multiple descriptors.
 - Address-suffixed fragments such as `foo_80123456.c` are not acceptable once DOL evidence shows
   they belong to one TU. Merge them in retail function order, keep one TU-level compiler profile,
   and accept match regressions rather than preserving an artificial split. Only redraw a boundary
