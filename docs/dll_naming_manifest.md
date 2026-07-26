@@ -716,7 +716,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x29E | — | NO-RETAIL-NAME | dlls/objects/670/670.c | = (canonical) | Exact complete nine-function TU with its sole descriptor; `Dummy29E` remains an internal symbol alias, not a recovered DLL basename |
 | 0x29F | ARWBombColl | RAW | dlls/objects/671_ARWBombColl/ARWBombColl.c | = (canonical) | Exact complete ten-function TU with its descriptor and full constant pool |
 | 0x2A0 | — | NO-RETAIL-NAME | dlls/objects/672/672.c | = (canonical) | Exact complete twelve-function TU with its mode table, sole descriptor, and full constant pool; `Ring` remains an internal alias |
-| 0x2A1 | ARWLevelCon | CONFIRMED | main/dll/dll_02A1_arwlevelcon.c | main/dll/ARW/dll_02A1_arwlevelcon.c | — |
+| 0x2A1 | ARWLevelCon | RAW | dlls/objects/673_ARWLevelCon/ARWLevelCon.c | = (canonical) | Exact complete eleven-function TU with its sole descriptor and full constant pool |
 | 0x2A2 | ARWSpeedStr | CONFIRMED | main/dll/dll_02A2_arwspeedstr.c | main/dll/ARW/dll_02A2_arwspeedstr.c | — |
 | 0x2A3 | — | NO-RETAIL-NAME | main/dll/dll_02A3.c | = (canonical) | — |
 | 0x2A4 | — | NO-RETAIL-NAME | main/dll/dll_02A4.c | = (canonical) | — |

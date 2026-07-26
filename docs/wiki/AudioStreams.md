@@ -1207,7 +1207,7 @@ the same area abbreviations as this wiki's stream directories (KP, TTH, DIM, CRF
 
 ### Callers (what actually plays a stream, and which wiki directory it lines up with)
 
-- **`src/main/dll/ARW/dll_02A1_arwlevelcon.c`** (`arwlevelcon_update`) — one instance per on-rails
+- **`src/dlls/objects/673_ARWLevelCon/ARWLevelCon.c`** (`arwlevelcon_update`) — one instance per on-rails
   Arwing course; `ARWLevelConState.streamId` (set per `mapEventSlot`) is passed straight to
   `AudioStream_Play`. This is the code behind the wiki's five `ARW/2*.adp` course files.
 - **`src/main/objseq.c`** — the cutscene/map-event sequencer. `gObjSeqStreamTableA`/`gObjSeqStreamTableB`
