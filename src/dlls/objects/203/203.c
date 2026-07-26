@@ -10,10 +10,6 @@
  * (routeNav/routeState) and game-bit gating (gameBitC / DllCBPlacement.gameBitId yield).
  * dll_CB_initialise installs the two callback tables gDllCBMoveHandlers /
  * gDllCBStateHandlers used by the player-interface update.
- *
- * This TU also defines the co-located ChukChuk (gChukChukObjDescriptor) and
- * IceBall (gIceBallObjDescriptor) object descriptors, whose bodies live in
- * their own DLL TUs.
  */
 #include "main/dll/chukchukstate_struct.h"
 #include "main/dll/baddie_control_interface.h"
@@ -249,10 +245,6 @@ int dll_CB_moveHandler0(short* out, u8* obj, f32 timeDelta)
 }
 
 const f32 gDllCbDefaultAnimSpeed = 0.1f;
-
-void dll_CB_seekAndUpdate(int obj, void* seq, int sub, GroundBaddieState* state);
-
-void dll_CB_advanceAI(int* obj, GroundBaddieState* sub, GroundBaddieState* state);
 
 void dll_CB_seekAndUpdate(int obj, void* seq, int sub, GroundBaddieState* state)
 {

@@ -51,7 +51,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_001F_effect6 | 100.0000 | 42.3198 | -57.6802 |
 | main/main/dll/dll_0022_effect9 | 100.0000 | 44.3311 | -55.6689 |
 | main/main/worldobj | 99.9645 | 45.0549 | -54.9096 |
-| main/main/dll/dll_00CB_dllcb | 100.0000 | 45.7133 | -54.2867 |
+| main/dlls/objects/203/203 | 100.0000 | 45.7133 | -54.2867 |
 | main/main/dll/DIM/dll_01CA_dimexplosion | 100.0000 | 46.7400 | -53.2600 |
 | main/main/dll/dll_0139_hitanimator | 100.0000 | 46.8056 | -53.1944 |
 | main/main/dll/MMP/dll_0181_mmptrenchfx | 100.0000 | 50.1566 | -49.8434 |
