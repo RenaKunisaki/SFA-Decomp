@@ -328,7 +328,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x118 | Duster | COMPLETE | dlls/objects/280_Duster/Duster.c | = (canonical) | — |
 | 0x119 | coldWaterCo | CONFIRMED | dlls/objects/281_coldWaterCo/coldWaterCo.c | = (canonical) | — |
 | 0x11A | — (+DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF) | NO-RETAIL-NAME | dlls/objects/282/282.c | = (canonical) | — |
-| 0x11B | Landed_Arwing | CONFIRMED | main/dll/dll_011B_landedarwing.c | = (canonical) | — |
+| 0x11B | Landed_Arwi | CONFIRMED | dlls/objects/283_Landed_Arwi/Landed_Arwi.c | = (canonical) | — |
 | 0x11C | staffactivated (+LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT) | GUESSED | main/dll/dll_011C_staffactivated.c | = (canonical) | — |
 | 0x11D | TreasureChest (+MapTreasure) | CONFIRMED | main/dll/dll_011D_treasurechest.c | = (canonical) | — |
 | 0x11E | MagicCaveBottom | CONFIRMED | main/dll/dll_011E_magiccavebottom.c | = (canonical) | — |

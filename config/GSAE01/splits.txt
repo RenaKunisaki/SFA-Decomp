@@ -2002,7 +2002,7 @@ dlls/objects/282/282.c:
 	.data       start:0x803219F0 end:0x80321A28
 	.sdata2     start:0x803E3B78 end:0x803E3B98
 
-main/dll/dll_011B_landedarwing.c:
+dlls/objects/283_Landed_Arwi/Landed_Arwi.c:
 	.text       start:0x801889C8 end:0x801899B4
 	.data       start:0x80321A28 end:0x80321C24
 	.sdata2     start:0x803E3B98 end:0x803E3BB4

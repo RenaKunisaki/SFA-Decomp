@@ -1,5 +1,5 @@
 /*
- * landedarwing (DLL 0x11B) - the grounded Arwing set-piece object.
+ * Landed_Arwi (DLL 0x11B) - the grounded Arwing set-piece object.
  *
  * Its placement->mapId selects which Krazoa map sequence the object
  * drives: each sequence event (Landed_Arwing_SeqFn) loads/unlocks the
@@ -207,7 +207,6 @@ void landed_arwing_free(GameObject* obj)
         ObjLink_DetachChild(obj, state->childObject);
     }
 }
-
 
 static void landed_arwing_runTargetSequence(GameObject* obj)
 {
