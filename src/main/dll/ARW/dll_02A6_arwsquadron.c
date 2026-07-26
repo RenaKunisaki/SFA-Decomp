@@ -573,14 +573,14 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
     state->rotZSpeed = setupData->rotZSpeed << 4;
     ObjHits_SetTargetMask(obj, 4);
 
-    if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ || setupData->objectId == ARW_SQUADRON_SMALLASTEROID_OBJ)
+    if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ || setupData->base.objectId == ARW_SQUADRON_SMALLASTEROID_OBJ)
     {
         state->variant = ARW_SQUADRON_VARIANT_ASTEROID;
-        if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
+        if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
         {
             flags->acceptsDamage = 0;
         }
-        if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
+        if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
         {
             state->activationDistance = 10000.0f;
         }
@@ -590,7 +590,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
         }
         state->deathScore = 5;
         state->hitScore = 0;
-        if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
+        if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
         {
             state->hitVolumeMode = 2;
         }
@@ -603,7 +603,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
         state->rotZSpeed = randomGetRange(-0x12c, 0x12c);
         flags->attackWindowOpen = 1;
     }
-    else if (setupData->objectId == ARW_SQUADRON_OBJ)
+    else if (setupData->base.objectId == ARW_SQUADRON_OBJ)
     {
         state->variant = ARW_SQUADRON_VARIANT_SQUADRON;
         flags->acceptsDamage = 0;
