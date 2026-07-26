@@ -1,8 +1,6 @@
 /* Volcano Force Point object DLLs. */
 #include "main/dll/partfx_interface.h"
-#include "dolphin/mtx/vec.h"
 #include "main/frame_timing.h"
-#include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
@@ -21,14 +19,11 @@
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/objanim_update.h"
-#include "main/objfx.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_ids.h"
 #include "main/game_ui_interface.h"
 #include "main/light_internal.h"
 #include "main/resource.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/camera.h"
 
 #define LIGHT_OBJFLAG_HIDDEN             0x4000
 #define LIGHT_OBJFLAG_HITDETECT_DISABLED 0x2000
@@ -39,7 +34,6 @@
 /* Partfx spawned by VFPDragHead_update: BREATH is the hit-driven breath fx
  * (state 1, gameBitA toggled); IDLE is the ambient periodic fx (states 0/2). */
 #define VFPDRAGHEAD_PARTFX_BREATH 0x390
-#define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
 #define VFPDRAGHEAD_PARTFX_IDLE   0x391
 
 extern u32 gSpellStoneEventId;
@@ -49,11 +43,7 @@ extern f32 lbl_803E6150;
 extern void* gVfpDragHeadResource;
 extern f32 lbl_803E6138;
 extern f32 lbl_803E6128;
-extern f32 lbl_803E611C;
 extern f32 lbl_803E6140;
-extern f32 lbl_803E6118;
-extern f32 lbl_803E6120;
-extern f32 lbl_803E6124;
 extern s16 gVfpDragHeadSpawnTimer;
 extern u8 gVfpDragHeadActiveIndex;
 /* Per-object extra state for SeqPoint (SeqPoint_getExtraSize == 0x10). */
@@ -103,13 +93,6 @@ typedef struct VfpDragHeadState
     u8 pad08[3];
     u8 headIndex; /* from def+0x1A; matched against gVfpDragHeadActiveIndex */
 } VfpDragHeadState;
-typedef struct
-{
-    s16 gameBitId;
-    u8 activated : 1;
-    u8 exploded : 1;
-    u8 _state2_lo : 6;
-} VfpDoorSwitchState;
 typedef struct VfpPlatformPlacement
 {
     u8 pad00[0x18];
@@ -118,15 +101,6 @@ typedef struct VfpPlatformPlacement
     u8 pad1A[6];
     s16 gameBitId; /* 0x20 */
 } VfpPlatformPlacement;
-typedef struct VfpDoorSwitchPlacement
-{
-    u8 pad00[0x18];
-    s8 rotXByte;   /* 0x18 */
-    s8 rotZByte;   /* 0x19 */
-    u8 pad1A[2];
-    s16 rotY;      /* 0x1c */
-    s16 gameBitId; /* 0x1e */
-} VfpDoorSwitchPlacement;
 typedef struct SeqPointPlacement
 {
     u8 pad00[0x18];
@@ -157,118 +131,6 @@ typedef struct SpellStonePlacement
 } SpellStonePlacement;
 
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
-
-void vfpdoorswitch_updateExplodingVariant(GameObject* obj)
-{
-    VfpDoorSwitchState* state = obj->extra;
-    CameraViewSlot* camView = Camera_GetCurrentViewSlot();
-
-    if (state->activated == 0)
-    {
-        if (mainGetBit(state->gameBitId) != 0)
-        {
-            Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_10d);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_gate_stops);
-            state->activated = 1;
-        }
-    }
-    if (state->activated != 0)
-    {
-        ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E6118, timeDelta, NULL);
-        if (state->exploded == 0)
-        {
-            if (obj->anim.currentMoveProgress >= lbl_803E611C)
-            {
-                Vec vec;
-                PSVECSubtract(&camView->position, &obj->anim.localPos, &vec);
-                PSVECNormalize(&vec, &vec);
-                PSVECScale(&vec, &vec, lbl_803E6120);
-                PSVECAdd(&obj->anim.localPos, &vec, &obj->anim.localPos);
-                obj->anim.worldPosX = obj->anim.localPosX;
-                obj->anim.worldPosY = obj->anim.localPosY;
-                obj->anim.worldPosZ = obj->anim.localPosZ;
-                spawnExplosionLegacy((int)obj, lbl_803E6124, 1, 1, 0, 0, 0, 0, 0);
-                state->exploded = 1;
-                obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            }
-        }
-    }
-}
-
-int VFP_DoorSwitch_getExtraSize(void)
-{
-    return 0x4;
-}
-
-int VFP_DoorSwitch_getObjectTypeId(void)
-{
-    return 0x0;
-}
-
-void VFP_DoorSwitch_free(int obj)
-{
-    (*gExpgfxInterface)->freeSource2(obj);
-}
-
-void VFP_DoorSwitch_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
-{
-    objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, lbl_803E611C);
-}
-
-void VFP_DoorSwitch_hitDetect(void)
-{
-}
-
-void VFP_DoorSwitch_update(GameObject* obj)
-{
-    VfpDoorSwitchState* state;
-    if ((obj)->anim.seqId != VFP_DOORSWITCH_LIFTIND_OBJ)
-    {
-        vfpdoorswitch_updateExplodingVariant(obj);
-        return;
-    }
-    state = (obj)->extra;
-    if (state->activated != 0)
-        return;
-    if (mainGetBit(state->gameBitId) == 0)
-        return;
-    Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_10d);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_gate_stops);
-    Obj_SetActiveModelIndex(obj, 1);
-    state->activated = 1;
-}
-
-void VFP_DoorSwitch_init(int obj, int data)
-{
-    VfpDoorSwitchPlacement* def = (VfpDoorSwitchPlacement*)data;
-    VfpDoorSwitchState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (((s32)def->rotXByte) << 8);
-    ((GameObject*)obj)->anim.rotZ = (((s32)def->rotZByte) << 8);
-    ((GameObject*)obj)->anim.rotY = def->rotY;
-    state->gameBitId = def->gameBitId;
-    if (mainGetBit(state->gameBitId) != 0)
-    {
-        ((ObjAnimSetProgressObjectFirstFn)ObjAnim_SetMoveProgress)(obj, lbl_803E611C);
-        state->activated = 1;
-        state->exploded = 1;
-        ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-    }
-    if (((GameObject*)obj)->anim.seqId == VFP_DOORSWITCH_LIFTIND_OBJ && state->activated != 0)
-    {
-        *&((GameObject*)obj)->anim.bankIndex = 1;
-    }
-    ((GameObject*)obj)->objectFlags |= LIGHT_OBJFLAG_HITDETECT_DISABLED;
-}
-
-void VFP_DoorSwitch_release(void)
-{
-}
-
-void VFP_DoorSwitch_initialise(void)
-{
-}
 
 int SeqPoint_SeqFn(int obj, int param2, ObjAnimUpdateState* ctx)
 {
@@ -741,23 +603,6 @@ void dll_224_release_nop(void)
 void dll_224_initialise_nop(void)
 {
 }
-
-ObjectDescriptor gVFP_DoorSwitchObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_initialise,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_release,
-    0,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_init,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_update,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_hitDetect,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_render,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_free,
-    (ObjectDescriptorCallback)VFP_DoorSwitch_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)VFP_DoorSwitch_getExtraSize,
-};
 
 ObjectDescriptor gSeqPointObjDescriptor = {
     0,

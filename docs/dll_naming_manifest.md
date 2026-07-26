@@ -587,7 +587,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x21D | — | COMPLETE | dlls/objects/541/541.c | = (canonical) | No recovered retail basename |
 | 0x21E | VFP_Block1 | COMPLETE | dlls/objects/542_VFP_Block1/VFP_Block1.c | = (canonical) | — |
 | 0x21F | — | COMPLETE | dlls/objects/543/543.c | = (canonical) | No recovered retail basename |
-| 0x220 | VFP_DoorSwitch (+VFP_LiftInd) | CONFIRMED | main/light.c | main/dll/VF/dll_0220_vfpdoorswitch.c | engine/SDK host: main/light.c |
+| 0x220 | — | COMPLETE | dlls/objects/544/544.c | = (canonical) | No recovered retail basename |
 | 0x221 | seqpoint (+VFP_seqpoin, DFSH_seqpoi, MMSH_seqpoi, ECSH_seqpoi, GPSH_seqpoi, DBSH_seqpoi) | CONFIRMED | main/light.c | main/dll/dll_0221_seqpoint.c | engine/SDK host: main/light.c |
 | 0x222 | VFPDragHead | CONFIRMED | main/light.c | main/dll/VF/dll_0222_vfpdraghead.c | engine/SDK host: main/light.c |
 | 0x223 | VFP_coreplat | CONFIRMED | main/light.c | main/dll/VF/dll_0223_vfpcoreplat.c | engine/SDK host: main/light.c |

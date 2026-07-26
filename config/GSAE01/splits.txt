@@ -3382,9 +3382,14 @@ dlls/objects/543/543.c:
 	.data       start:0x80329088 end:0x803290C0
 	.sdata2     start:0x803E6108 end:0x803E6118
 
+dlls/objects/544/544.c:
+	.text       start:0x801FC378 end:0x801FC6F4
+	.data       start:0x803290C0 end:0x803290F8
+	.sdata2     start:0x803E6118 end:0x803E6128
+
 main/light.c:
-	.text       start:0x801FC378 end:0x801FD4A8
-	.data       start:0x803290C0 end:0x803291D8
+	.text       start:0x801FC6F4 end:0x801FD4A8
+	.data       start:0x803290F8 end:0x803291D8
 
 main/main.c:
 	.text       start:0x801FD4A8 end:0x801FDBBC
