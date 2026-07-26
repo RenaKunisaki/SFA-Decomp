@@ -21,7 +21,7 @@ STATIC_ASSERT(sizeof(FireflyLanternState) == 0x368);
 
 void pinPon_updateEngaged(GameObject* obj, int* state);
 void pinPon_init(GameObject* obj, void* state);
-void fireflyLanternGetTargetAngleAndDistance(int obj, int state, u16* outAngle, float* outDistance);
+void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* outAngle, float* outDistance);
 u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 maxDistance);
 
 extern f32 gFireflyLanternTargetHeightOffset;

@@ -177,7 +177,7 @@ void pinPon_init(GameObject* obj, void* state)
     ((BaddieState*)state)->pathStep = fval;
 }
 
-void fireflyLanternGetTargetAngleAndDistance(int obj, int state, u16* outAngle, float* outDistance)
+void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* outAngle, float* outDistance)
 {
     f32 targetPos[3];
     f32 tmpA[3];
@@ -192,18 +192,18 @@ void fireflyLanternGetTargetAngleAndDistance(int obj, int state, u16* outAngle, 
     f32 dxDiff;
     f32 dy;
     f32 d;
-    int targetObj;
+    GameObject* targetObj;
     int delta;
     u32 angle;
 
     vecA[0] = ((FireflyState*)state)->planeAnchorX;
     vecA[1] = ((FireflyState*)state)->planeAnchorY;
     vecA[2] = ((FireflyState*)state)->planeAnchorZ;
-    PSVECSubtract(vecA, (f32*)(obj + 0xc), tmpA);
+    PSVECSubtract(vecA, &obj->anim.localPosX, tmpA);
     d = PSVECDotProduct(tmpA, (f32*)(state + 0x344));
-    vecA[0] = *(f32*)(state + 0x344) * d + ((GameObject*)obj)->anim.localPosX;
-    vecA[1] = *(f32*)(state + 0x348) * d + (objY = ((GameObject*)obj)->anim.localPosY);
-    vecA[2] = *(f32*)(state + 0x34c) * d + ((GameObject*)obj)->anim.localPosZ;
+    vecA[0] = *(f32*)(state + 0x344) * d + obj->anim.localPosX;
+    vecA[1] = *(f32*)(state + 0x348) * d + (objY = obj->anim.localPosY);
+    vecA[2] = *(f32*)(state + 0x34c) * d + obj->anim.localPosZ;
     axisA[0] = gWallPlaneZero;
     axisA[1] = gWallPlaneOne;
     axisA[2] = gWallPlaneZero;
@@ -211,16 +211,16 @@ void fireflyLanternGetTargetAngleAndDistance(int obj, int state, u16* outAngle, 
     PSVECNormalize(crossA, crossA);
     if (gWallPlaneZero != crossA[0])
     {
-        dxDiff = (((GameObject*)obj)->anim.localPosX - ((FireflyState*)state)->planeAnchorX) / crossA[0];
+        dxDiff = (obj->anim.localPosX - ((FireflyState*)state)->planeAnchorX) / crossA[0];
     }
     else
     {
-        dxDiff = (((GameObject*)obj)->anim.localPosZ - ((FireflyState*)state)->planeAnchorZ) / crossA[2];
+        dxDiff = (obj->anim.localPosZ - ((FireflyState*)state)->planeAnchorZ) / crossA[2];
     }
-    targetObj = *(int*)&((BaddieState*)state)->trackedObj;
-    targetPos[0] = ((GameObject*)targetObj)->anim.localPosX;
-    targetPos[1] = gFireflyLanternTargetHeightOffset + ((GameObject*)targetObj)->anim.localPosY;
-    targetPos[2] = ((GameObject*)targetObj)->anim.localPosZ;
+    targetObj = ((BaddieState*)state)->trackedObj;
+    targetPos[0] = targetObj->anim.localPosX;
+    targetPos[1] = gFireflyLanternTargetHeightOffset + targetObj->anim.localPosY;
+    targetPos[2] = targetObj->anim.localPosZ;
     vecB[0] = ((FireflyState*)state)->planeAnchorX;
     vecB[1] = ((FireflyState*)state)->planeAnchorY;
     vecB[2] = ((FireflyState*)state)->planeAnchorZ;
@@ -245,7 +245,7 @@ void fireflyLanternGetTargetAngleAndDistance(int obj, int state, u16* outAngle, 
     dxDiff = dxDiff - d;
     dy = objY - dy;
     angle = getAngle(-dy, dxDiff) & 0xffff;
-    delta = angle - (((GameObject*)obj)->anim.rotY & 0xffff);
+    delta = angle - (obj->anim.rotY & 0xffff);
     if (delta > 0x8000)
     {
         delta = delta - 0xffff;

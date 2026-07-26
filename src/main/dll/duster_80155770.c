@@ -117,7 +117,7 @@ void rachnopUpdateAttack(int* obj, int state)
         {
             fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)0.5f);
         }
-        fireflyLanternGetTargetAngleAndDistance((int)obj, state, outIds, outVec);
+        fireflyLanternGetTargetAngleAndDistance((GameObject*)obj, state, outIds, outVec);
         if (((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0) ||
             ((outIds[0] < 0x5dc && (((GameObject*)obj)->anim.currentMove != 1))))
         {
