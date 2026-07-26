@@ -52,9 +52,9 @@ typedef struct SeqPointPlacement
 
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
 
-int SeqPoint_SeqFn(int obj, int param2, ObjAnimUpdateState* ctx)
+int SeqPoint_SeqFn(GameObject* obj, int param2, ObjAnimUpdateState* ctx)
 {
-    SeqPointState* state = ((GameObject*)obj)->extra;
+    SeqPointState* state = obj->extra;
     int i;
 
     ctx->activeHitVolumePair = -1;
@@ -72,10 +72,10 @@ int SeqPoint_SeqFn(int obj, int param2, ObjAnimUpdateState* ctx)
                 mainSetBits(GAMEBIT_VFP_ObjGroups, 0);
                 mainSetBits(GAMEBIT_VFPRelated0D72, 1);
                 mainSetBits(GAMEBIT_VFPLightRelated0D44, 1);
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 1, 1);
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 2, 1);
-                (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 22, 1);
-                if ((*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot) == 1)
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 1);
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 1);
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 22, 1);
+                if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 1)
                 {
                     unlockLevel(0, 0, 1);
                     lockLevel(mapGetDirIdx(70), 1);
@@ -84,7 +84,7 @@ int SeqPoint_SeqFn(int obj, int param2, ObjAnimUpdateState* ctx)
                     (*gMapEventInterface)->setMapAct(18, 2);
                     warpToMap(124, 0);
                 }
-                else if ((*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot) == 2)
+                else if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)
                 {
                     unlockLevel(0, 0, 1);
                     lockLevel(mapGetDirIdx(70), 1);
@@ -128,10 +128,10 @@ void SeqPoint_hitDetect(void)
 {
 }
 
-void SeqPoint_update(int* obj)
+void SeqPoint_update(GameObject* obj)
 {
-    void* player = Obj_GetPlayerObject();
-    SeqPointState* self = ((GameObject*)obj)->extra;
+    GameObject* player = Obj_GetPlayerObject();
+    SeqPointState* self = obj->extra;
     int key = self->disableBit;
 
     if (key != -1)
@@ -155,7 +155,7 @@ void SeqPoint_update(int* obj)
     switch (self->mode)
     {
     case SEQPOINT_MODE_RADIUS:
-        if (!(Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
+        if (!(Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
               self->triggerRadius))
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
@@ -170,7 +170,7 @@ void SeqPoint_update(int* obj)
         self->done = 1;
         break;
     case SEQPOINT_MODE_RADIUS_AND_BIT:
-        if (!(Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
+        if (!(Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
               self->triggerRadius))
             return;
         if (self->conditionBit == -1)
@@ -181,7 +181,7 @@ void SeqPoint_update(int* obj)
         self->done = 1;
         break;
     case SEQPOINT_MODE_RADIUS_BIT_ONCE:
-        if (!(Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) <
+        if (!(Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
               self->triggerRadius))
             return;
         if (self->conditionBit == -1)
