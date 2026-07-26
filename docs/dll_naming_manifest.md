@@ -661,7 +661,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x267 | — | NO-RETAIL-NAME | dlls/objects/615/615.c | = (canonical) | Exact data-only DLL: two zero descriptor words in `.sdata` |
 | 0x268 | DR_CageCont | CONFIRMED | dlls/objects/616_DR_CageCont/DR_CageCont.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x269 | ExplodePlan | CONFIRMED | dlls/objects/617_ExplodePlan/ExplodePlan.c | = (canonical) | Exact complete TU with one descriptor at the physical end |
-| 0x26A | DR_Geezer | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
+| 0x26A | DR_Geezer | COMPLETE | dlls/objects/618_DR_Geezer/DR_Geezer.c | = (canonical) | Exact data-only DLL: two zero descriptor words in `.sdata` |
 | 0x26B | DR_Chimmey | COMPLETE | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | — |
 | 0x26C | DR_CageWith (+DR_CageNoRo, DR_CageRope) | CONFIRMED | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | — |
 | 0x26D | DR_Vines | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |

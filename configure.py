@@ -1955,6 +1955,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/615/615.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/613_DR_Creator/DR_Creator.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/617_ExplodePlan/ExplodePlan.c", cflags=cflags_dll_noopt_nocse),
+            Object(MatchingFor("GSAE01"), "dlls/objects/618_DR_Geezer/DR_Geezer.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/616_DR_CageCont/DR_CageCont.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_026B_drchimmey.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_026C_drcagewith.c", cflags=cflags_dll_noopt),
