@@ -67,7 +67,7 @@ extern ObjectDescriptor11WithPadding gTumbleWeedBushObjDescriptor;
 
 
 /* extern-cleanup: defining-file public prototypes */
-s8 tumbleweedbush_spawnSibling(GameObject* obj);
+s8 tumbleweedbush_spawnSibling(struct GameObject* obj);
 struct GameObject* tumbleweedbush_findNearestActive(f32* position);
 void tumbleweedbush_activatePiece(struct GameObject* obj);
 void tumbleweedbush_updateDetachedPiece(struct GameObject* piece, struct BackpackState* state);
