@@ -359,7 +359,6 @@ main/dll/WM/WMlevcontrol.c
 main/dll/zBomb.c
 main/dll/expgfx.c
 main/expr.c
-main/light.c
 main/lightmap.c
 main/main.c
 main/maketex.c

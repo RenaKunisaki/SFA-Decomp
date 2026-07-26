@@ -1,18 +1,16 @@
-/* Volcano Force Point object DLLs. */
+/* DLL 0x0224 */
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "main/game_ui_interface.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "dlls/object_descriptor.h"
 #include "main/objprint_render_api.h"
 #include "main/vecmath.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
-#include "game/objects/object_setup.h"
-#include "main/audio/sfx_ids.h"
-#include "main/game_ui_interface.h"
-#include "main/light_internal.h"
 
-extern u32 gSpellStoneEventId;
-extern f32 lbl_803E6150;
+static const f32 lbl_803E6150 = 100.0f;
+
+u32 gSpellStoneEventId;
 
 typedef struct SpellStoneUseState
 {
@@ -20,6 +18,7 @@ typedef struct SpellStoneUseState
     s16 requiredGameBit;
     u8 used;
 } SpellStoneUseState;
+
 typedef struct SpellStonePlacement
 {
     u8 pad00[0x18];
@@ -87,7 +86,8 @@ void dll_224_hitDetect(GameObject* obj)
 void dll_224_update(GameObject* obj)
 {
     int mapAct;
-    mapAct = (*gMapEventInterface)->getMapAct((obj)->anim.mapEventSlot);
+
+    mapAct = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
     switch (mapAct)
     {
     case 1:
@@ -103,7 +103,7 @@ void dll_224_update(GameObject* obj)
         gSpellStoneEventId = 0x123;
         break;
     }
-    ((void (*)(GameObject*))spellStoneUseFn_801fd270)(obj);
+    spellStoneUseFn_801fd270(obj);
 }
 
 void dll_224_init(GameObject* obj, void* other)
@@ -112,6 +112,7 @@ void dll_224_init(GameObject* obj, void* other)
     SpellStonePlacement* def = (SpellStonePlacement*)other;
     s16 rotX = ((s8)def->rotXByte << 8);
     u8 hitboxFlags;
+
     obj->anim.rotX = rotX;
     extra->completeGameBit = def->completeGameBit;
     extra->requiredGameBit = def->requiredGameBit;
