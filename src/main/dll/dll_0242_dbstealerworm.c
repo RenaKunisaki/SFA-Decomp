@@ -2124,7 +2124,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     DbStealerwormControl* sub = (DbStealerwormControl*)st->control;
     GameObject* near;
     int data;
-    char* player;
+    GameObject* player;
     f32 dist;
     struct
     {
@@ -2155,12 +2155,12 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     }
     else
     {
-        player = (char*)Obj_GetPlayerObject();
+        player = Obj_GetPlayerObject();
         if (player != NULL)
         {
-            stk.d[0] = ((GameObject*)player)->anim.worldPosX - obj->anim.worldPosX;
-            stk.d[1] = ((GameObject*)player)->anim.worldPosY - obj->anim.worldPosY;
-            stk.d[2] = ((GameObject*)player)->anim.worldPosZ - obj->anim.worldPosZ;
+            stk.d[0] = player->anim.worldPosX - obj->anim.worldPosX;
+            stk.d[1] = player->anim.worldPosY - obj->anim.worldPosY;
+            stk.d[2] = player->anim.worldPosZ - obj->anim.worldPosZ;
             dist = sqrtf(stk.d[2] * stk.d[2] + (stk.d[0] * stk.d[0] + stk.d[1] * stk.d[1]));
         }
         else
