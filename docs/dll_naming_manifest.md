@@ -426,7 +426,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x17C | GCRobotPatr | RAW | dlls/objects/380_GCRobotPatr/GCRobotPatr.c | = (canonical) | inert data-only DLL |
 | 0x17D | — (+DIM2_barrel, MMP_barrel) | NO-RETAIL-NAME | dlls/objects/381/381.c | = (canonical) | — |
 | 0x17E | MMP_levelco | COMPLETE | dlls/objects/382_MMP_levelco/MMP_levelco.c | = (canonical) | — |
-| 0x17F | MoonSeedBush (+MSBush, MSVine) | GUESSED | main/dll/dll_017F_moonseedbush.c | = (canonical) | — |
+| 0x17F | — (+MSBush, MSVine) | NO-RETAIL-NAME | dlls/objects/383/383.c | = (canonical) | — |
 | 0x180 | MMP_asteroid_re | CONFIRMED | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | — |
 | 0x181 | MMP_trenchFx | CONFIRMED | main/dll/dll_0181_mmptrenchfx.c | main/dll/MMP/dll_0181_mmptrenchfx.c | — |
 | 0x182 | MMP_moonrock | CONFIRMED | main/dll/dll_0182_mmpmoonrock.c | main/dll/MMP/dll_0182_mmpmoonrock.c | — |
