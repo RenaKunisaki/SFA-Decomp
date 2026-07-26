@@ -3132,7 +3132,7 @@ main/dll/SP/dll_0288_spdrape.c:
 	.sdata      start:0x803DC0B0 end:0x803DC0B8
 	.sdata2     start:0x803E5AA0 end:0x803E5AD8
 
-main/dll/SP/dll_0289_spitembeam.c:
+dlls/objects/649_SPitembeam/SPitembeam.c:
 	.text       start:0x801E97DC end:0x801E991C
 	.data       start:0x803284A8 end:0x8032852C
 

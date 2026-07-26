@@ -1873,7 +1873,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0284_shopitem.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/SP/dll_0287_spscarab.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/SP/dll_0288_spdrape.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/SP/dll_0289_spitembeam.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/649_SPitembeam/SPitembeam.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_801e991c.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "main/dll/drcloudcage.c", cflags=cflags_dll_noopt),
             Object(

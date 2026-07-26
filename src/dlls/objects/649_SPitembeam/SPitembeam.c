@@ -1,5 +1,5 @@
 /*
- * spitembeam (DLL 0x289) - the glowing "for sale" beam that marks a
+ * SPitembeam (DLL 0x289) - the glowing "for sale" beam that marks a
  * purchasable item on a SnowHorn shop stall.
  *
  * Each beam latches onto the nearest shop object (object group 9, the
