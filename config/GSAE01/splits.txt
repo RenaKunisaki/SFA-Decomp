@@ -3675,7 +3675,7 @@ main/dll/DR/dll_027E_drmusiccont.c:
 	.data       start:0x8032AD98 end:0x8032ADD0
 	.sdata2     start:0x803E6BC8 end:0x803E6BEC
 
-main/dll/DR/dll_0280_drcloudper.c:
+dlls/objects/640_DR_CloudPer/DR_CloudPer.c:
 	.text       start:0x80221178 end:0x80221430
 	.data       start:0x8032ADD0 end:0x8032AE10
 	.sdata2     start:0x803E6BF0 end:0x803E6C08
