@@ -127,9 +127,9 @@ static inline int* DIM2snowball_GetActiveModel(GameObject *obj)
 }
 
 
-u8 DIM2PathGenerator_getCurveVals(int* obj, int** p1, int** p2, int** p3, int** p4)
+u8 DIM2PathGenerator_getCurveVals(GameObject* obj, int** p1, int** p2, int** p3, int** p4)
 {
-    int* state = ((GameObject*)obj)->extra;
+    int* state = obj->extra;
     *p1 = (int*)((char*)state + 12);
     *p2 = (int*)((char*)state + 812);
     *p3 = (int*)((char*)state + 1612);
@@ -156,17 +156,17 @@ void DIM2PathGenerator_hitDetect(void)
 }
 
 
-void DIM2PathGenerator_update(int* obj)
+void DIM2PathGenerator_update(GameObject* obj)
 {
     int* def;
-    int* extra = ((GameObject*)obj)->extra;
+    int* extra = obj->extra;
     int toggle;
     int** objs;
     int i;
     int curveGroup;
     int count;
 
-    def = *(int**)&((GameObject*)obj)->anim.placementData;
+    def = *(int**)&obj->anim.placementData;
     if (mainGetBit(((Dim2pathgeneratorPlacement*)def)->activeGameBit) == 0)
     {
         return;
@@ -178,8 +178,8 @@ void DIM2PathGenerator_update(int* obj)
             int found;
             curveGroup = CURVE_GROUP_SNOWBALL_PATH;
             found = (*gRomCurveInterface)->find(
-                ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                ((GameObject*)obj)->anim.localPosZ, &curveGroup, 1, 10);
+                obj->anim.localPosX, obj->anim.localPosY,
+                obj->anim.localPosZ, &curveGroup, 1, 10);
             if (found != -1)
             {
                 int* cv = (int*)(*gRomCurveInterface)->getById(found);
@@ -198,9 +198,9 @@ void DIM2PathGenerator_update(int* obj)
     }
     else
     {
-        ((Dim2PathGeneratorState*)extra)->originX = ((GameObject*)obj)->anim.localPosX;
-        ((Dim2PathGeneratorState*)extra)->originY = ((GameObject*)obj)->anim.localPosY;
-        ((Dim2PathGeneratorState*)extra)->originZ = ((GameObject*)obj)->anim.localPosZ;
+        ((Dim2PathGeneratorState*)extra)->originX = obj->anim.localPosX;
+        ((Dim2PathGeneratorState*)extra)->originY = obj->anim.localPosY;
+        ((Dim2PathGeneratorState*)extra)->originZ = obj->anim.localPosZ;
     }
     if ((((Dim2PathGeneratorState*)extra)->spawnTimer -= framesThisStep) > 0)
     {
@@ -248,17 +248,17 @@ void DIM2PathGenerator_update(int* obj)
         np->childRot = *(u8*)((char*)def + 0x1a);
         np->unk1C = *(u8*)((char*)def + 0x1b);
         np->mapId = ((Dim2pathgeneratorPlacement*)def)->mapId;
-        Obj_SetupObject((ObjPlacement*)np, 5, ((GameObject*)obj)->anim.mapEventSlot, -1, NULL);
+        Obj_SetupObject((ObjPlacement*)np, 5, obj->anim.mapEventSlot, -1, NULL);
         ((Dim2PathGeneratorState*)extra)->flags |= (toggle ^ 1) & 1;
     }
 }
 
 
-void DIM2PathGenerator_init(int* obj, int* def)
+void DIM2PathGenerator_init(GameObject* obj, int* def)
 {
     Dim2PathGeneratorState* state;
     *(s16*)obj = (s16)((u32) * (u8*)((char*)def + 28) << 8);
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     state->spawnPeriod = ((Dim2pathgeneratorObjectDef*)def)->spawnPeriod;
     state->spawnTimer = (s16) * (u8*)((char*)def + 29);
     state->spawnTypes[0] = (s16)((Dim2pathgeneratorObjectDef*)def)->spawnType0;
@@ -274,7 +274,7 @@ void DIM2PathGenerator_init(int* obj, int* def)
         }
     }
     state->flags = (u8)(state->flags | 4);
-    ((GameObject*)obj)->objectFlags = (u16)(((GameObject*)obj)->objectFlags | DIM2PATHGENERATOR_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags = (u16)(obj->objectFlags | DIM2PATHGENERATOR_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void DIM2PathGenerator_release(void)
