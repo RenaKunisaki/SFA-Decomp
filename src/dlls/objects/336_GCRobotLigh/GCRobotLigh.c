@@ -40,9 +40,9 @@ STATIC_ASSERT(sizeof(GcRobotLightBeaState) == 0xc);
 #define GCROBOTLIGHTBEA_HIT_VOLUME_SLOT 0x17
 
 
-int fn_801A0174(int* obj)
+int fn_801A0174(GameObject* obj)
 {
-    return (((GcRobotLightBeaState*)(int*)((GameObject*)obj)->extra)->hitFlags >> 7) & 1;
+    return (((GcRobotLightBeaState*)(int*)obj->extra)->hitFlags >> 7) & 1;
 }
 
 f32 lbl_80322C38[3] = {0.0f, -0.757f, -0.2f};
@@ -56,16 +56,16 @@ int gcrobotlightbea_getObjectTypeId(void)
     return 0x0;
 }
 
-void gcrobotlightbea_free(int* obj)
+void gcrobotlightbea_free(GameObject* obj)
 {
-    GcRobotLightBeaState* state = ((GameObject*)obj)->extra;
+    GcRobotLightBeaState* state = obj->extra;
     if (state->light != NULL)
     {
         modelLightStruct_freeSlot(&state->light);
     }
-    if (((GameObject*)obj)->ownerObj != NULL)
+    if (obj->ownerObj != NULL)
     {
-        ObjLink_DetachChild((GameObject*)((GameObject*)obj)->ownerObj, (GameObject*)obj);
+        ObjLink_DetachChild((GameObject*)obj->ownerObj, obj);
     }
 }
 
@@ -106,14 +106,14 @@ void gcrobotlightbea_hitDetect(GameObject* obj)
     }
 }
 
-void gcrobotlightbea_update(int* obj)
+void gcrobotlightbea_update(GameObject* obj)
 {
     GcRobotLightBeaState* sub;
     f32 vec[3];
     f32 vec2[3];
     u8 r_byte, g_byte, b_byte;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     if (sub->light == NULL)
     {
         sub->light = modelLightStruct_createPointLight(obj, 0xfa, 0xfa, 0xfa, 1);
@@ -127,8 +127,8 @@ void gcrobotlightbea_update(int* obj)
     vec[1] = lbl_80322C38[1];
     vec[2] = lbl_80322C38[2];
     Obj_TransformLocalVectorByWorldMatrix(obj, lbl_80322C38, vec);
-    voxmaps_traceScaledVectorEnd(vec2, obj + 3, vec, lbl_803DBE5C);
-    PSVECScale(lbl_80322C38, vec2, PSVECDistance(&((GameObject*)obj)->anim.localPosX, vec2));
+    voxmaps_traceScaledVectorEnd(vec2, &obj->anim.localPosX, vec, lbl_803DBE5C);
+    PSVECScale(lbl_80322C38, vec2, PSVECDistance(&obj->anim.localPosX, vec2));
     getAmbientColor(0, &r_byte, &g_byte, &b_byte);
     if (sub->light != NULL)
     {
@@ -139,13 +139,13 @@ void gcrobotlightbea_update(int* obj)
     }
 }
 
-void gcrobotlightbea_init(int* obj)
+void gcrobotlightbea_init(GameObject* obj)
 {
-    GcRobotLightBeaState* state = ((GameObject*)obj)->extra;
+    GcRobotLightBeaState* state = obj->extra;
     state->light = NULL;
     state->unk4 = 0;
-    ObjHits_EnableObject((GameObject*)obj);
-    ((GameObject*)obj)->anim.alpha = 0x80;
+    ObjHits_EnableObject(obj);
+    obj->anim.alpha = 0x80;
 }
 
 void gcrobotlightbea_release(void)

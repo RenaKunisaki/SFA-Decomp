@@ -212,7 +212,7 @@ void gcRobotPatrol_update(int* obj, u8* state)
     }
     if (0.0f == *(f32*)(state + 0x32c))
     {
-        int* child2;
+        GameObject* child2;
 
         if (*(s8*)((char*)def + 0x2e) != -1 && (child2 = ((GameObject*)obj)->childObjs[0]) != 0 &&
             fn_801A0174(child2) != 0)
@@ -229,7 +229,7 @@ void gcRobotPatrol_update(int* obj, u8* state)
         child2 = ((GameObject*)obj)->childObjs[0];
         if (child2 != 0)
         {
-            ObjTextureRuntimeSlot* tex = objFindTexture((GameObject*)(child2), 0, 0);
+            ObjTextureRuntimeSlot* tex = objFindTexture(child2, 0, 0);
             int v;
             if (tex != 0)
             {
