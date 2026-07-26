@@ -11019,7 +11019,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
 {
     ObjModel* model;
     int controlFlags;
-    u8 moveFlags;
+    int moveFlags;
     int useSecondary;
     int axisOffset;
     f32* sampledPosition;
@@ -11032,31 +11032,31 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
     controlFlags = (u8)flags;
     if (controlFlags & 0x2)
     {
-        moveFlags |= 0x2;
+        moveFlags = (moveFlags | 0x2) & 0xff;
     }
     if (controlFlags & 0x40)
     {
-        moveFlags |= 0x4;
+        moveFlags = (moveFlags | 0x4) & 0xff;
     }
     if (controlFlags & 0x10)
     {
-        moveFlags |= 0x8;
+        moveFlags = (moveFlags | 0x8) & 0xff;
     }
     if (controlFlags & 0x20)
     {
-        moveFlags |= 0x1;
+        moveFlags = (moveFlags | 0x1) & 0xff;
     }
     useSecondary = controlFlags & 0x4;
     if (useSecondary != 0)
     {
-        ((int (*)(int, int, u8, f32))ObjAnim_SetCurrentMove)(obj, baseMoveId, moveFlags, lbl_803E7EA4);
+        ObjAnim_SetCurrentMove(obj, baseMoveId, lbl_803E7EA4, moveFlags);
         ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, lbl_803E7EA4, NULL);
         ObjModel_SampleJointTransform(model, 0, 0, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
                                       jointPosition, jointRotation);
     }
     else
     {
-        ((int (*)(int, int, u8, f32))Object_ObjAnimSetMove)(obj, baseMoveId, moveFlags, lbl_803E7EA4);
+        Object_ObjAnimSetMove(obj, baseMoveId, lbl_803E7EA4, moveFlags);
         Object_ObjAnimAdvanceMove(obj, moveStepScale, lbl_803E7EA4, NULL);
         ObjModel_SampleJointTransform(model, 1, 0, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
                                       jointPosition, jointRotation);
@@ -18450,7 +18450,7 @@ void playerUpdate(GameObject* obj)
                 }
                 *(int*)&((PlayerState*)inner)->baddie.unk304 = (int)fn_802A514C;
             }
-            ((void (*)(GameObject*, int, int))playerItemGetAnimFn)(obj, inner, inner);
+            playerItemGetAnimFn((int)obj, inner, inner);
             fn_802B4A9C(obj, inner, inner);
             playerStaffInit(obj, inner);
             if ((u32)gPlayerEggObject == 0 && Obj_IsLoadingLocked() != 0)
@@ -18508,7 +18508,7 @@ void playerUpdate(GameObject* obj)
             dt = *(f32*)&timeDelta;
             playerDoControls(obj, inner, dt);
             playerAnimate(obj, inner, dt);
-            ((void (*)(GameObject*, int, f32))staffAnimate)(obj, inner, dt);
+            staffAnimate((int)obj, (void*)inner, dt);
             fn_802B1E5C(obj, inner, inner, dt);
             fn_802B1BF8(obj, inner, inner, dt);
             {
@@ -18555,7 +18555,7 @@ void playerUpdate(GameObject* obj)
                     ((PlayerState*)inner)->teleportAnimRate = lbl_803E7F14;
                 }
             }
-            ((void (*)(GameObject*, int, int))fn_802AFB0C)(obj, inner, inner);
+            fn_802AFB0C((int)obj, inner, inner);
             if (((PlayerState*)inner)->heldObj != NULL &&
                 Obj_IsObjectAlive((GameObject*)((PlayerState*)inner)->heldObj) == 0)
             {
