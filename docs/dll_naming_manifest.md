@@ -640,7 +640,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x252 | KT_Lazerwall | CONFIRMED | main/dll/dll_0252_ktlazerwall.c | main/dll/DR/dll_0252_ktlazerwall.c | — |
 | 0x253 | KT_Lazerlight | CONFIRMED | main/dll/dll_0253_ktlazerlight.c | main/dll/DR/dll_0253_ktlazerlight.c | — |
 | 0x254 | KT_Fallingrocks | CONFIRMED | main/dll/dll_0254_ktfallingrocks.c | main/dll/DR/dll_0254_ktfallingrocks.c | — |
-| 0x255 | SnowBike (+CRSnowBike, CRSnowClawB, IMSnowBike, IMSnowClawB) | CONFIRMED | main/dll/dll_0255_snowbike.c | = (canonical) | — |
+| 0x255 | — (+SnowBike, CRSnowBike, CRSnowClawB, IMSnowBike, IMSnowClawB) | NO-RETAIL-NAME | dlls/objects/597/597.c | = (canonical) | — |
 | 0x256 | DIMSnowHorn1 | CONFIRMED | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | = (canonical) | — |
 | 0x257 | DR_EarthWarrior | CONFIRMED | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | = (canonical) | — |
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | — |

@@ -3152,7 +3152,7 @@ main/dll/drhightop.c:
 main/dll/drpickup.c:
 	.text       start:0x801EC1AC end:0x801EC7A0
 
-main/dll/dll_0255_snowbike.c:
+dlls/objects/597/597.c:
 	.text       start:0x801EC7A0 end:0x801EE088
 	.data       start:0x8032855C end:0x80328618
 	.sdata      start:0x803DC0B8 end:0x803DC0F0

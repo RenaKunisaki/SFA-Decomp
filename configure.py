@@ -1871,7 +1871,7 @@ config.libs = [
             ),
             Object(NonMatching, "main/dll/drpickup.c", cflags=cflags_dll_noopt),
             Object(
-                NonMatching, "main/dll/dll_0255_snowbike.c", cflags=cflags_dll_noopt_noautoinline,
+                NonMatching, "dlls/objects/597/597.c", cflags=cflags_dll_noopt_noautoinline,
                 section_alignments={".data": 4},
             ),
             Object(MatchingFor("GSAE01"), "main/dll/bwalphaanim.c", cflags=cflags_dll_noopt),

@@ -88,7 +88,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0035_saveselectscreen | 99.9292 | 68.3547 | -31.5745 |
 | main/main/rcp_dolphin | 99.7276 | 68.2845 | -31.4431 |
 | main/main/audio/sal_volume | 100.0000 | 69.6708 | -30.3292 |
-| main/main/dll/dll_0255_snowbike | 100.0000 | 69.6763 | -30.3237 |
+| main/dlls/objects/597/597 | 100.0000 | 69.6763 | -30.3237 |
 | main/main/pi_dolphin | 98.6446 | 68.4667 | -30.1779 |
 | main/main/dll/dll_011A_decoration11a | 100.0000 | 70.3114 | -29.6886 |
 | main/main/dll/dll_0040_credits | 100.0000 | 70.4585 | -29.5415 |

@@ -1,4 +1,4 @@
-/* DLL 0x255 - SnowBike [801EC7A0-801ECEC4) */
+/* DLL 0x255 [801EC7A0-801ECEC4) */
 #include "dolphin/os/OSReport.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/dll/path_control_interface.h"
