@@ -62,6 +62,13 @@ int gDIMSnowHorn1StateHandlers[12];
 #define SNOWHORN1_FLAG_HITVOL_PRIO   0x8  /* suppress hit-volume priority this frame */
 #define SNOWHORN1_FLAG_SEQ_TRIGGERED 0x20 /* interaction sequence armed */
 
+typedef struct DIMSnowHorn1PieceCounts
+{
+    u8 counts[4];
+} DIMSnowHorn1PieceCounts;
+
+static const DIMSnowHorn1PieceCounts sDIMSnowHorn1DefaultPieceCounts = { { 1, 1, 1, 1 } };
+
 void DIMSnowHorn1_func23(void)
 {
 }
@@ -1228,7 +1235,7 @@ static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, char* found)
     return angleDelta;
 }
 
-static inline void DIMSnowHorn1_updateOverridePos(GameObject* obj)
+static void DIMSnowHorn1_updateOverridePos(GameObject* obj)
 {
     MatrixTransform v;
     f32 matrix[16];
@@ -1430,13 +1437,27 @@ void DIMSnowHorn1_update(GameObject* obj)
         break;
     }
     characterDoEyeAnims(obj, (void*)(data + 0x980));
-    DIMSnowHorn1_updateOverridePos(obj);
+    {
+        MatrixTransform v;
+        f32 matrix[16];
+
+        v.x = (obj)->anim.localPosX;
+        v.y = (obj)->anim.localPosY;
+        v.z = (obj)->anim.localPosZ;
+        v.rotX = (obj)->anim.rotX;
+        v.rotY = (obj)->anim.rotY;
+        v.rotZ = (obj)->anim.rotZ;
+        v.scale = 1.0f;
+        setMatrixFromObjectPos(matrix, &v);
+        Matrix_TransformPoint(matrix, 0.0f, -30.0f, -20.0f, &(obj)->anim.modelState->overrideWorldPosX,
+                              &(obj)->anim.modelState->overrideWorldPosY, &(obj)->anim.modelState->overrideWorldPosZ);
+    }
 }
 
 void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
 {
     u8* base = gDIMSnowHorn1ConfigTable;
-    u8 stk[4] = {1, 1, 1, 1};
+    DIMSnowHorn1PieceCounts stk = sDIMSnowHorn1DefaultPieceCounts;
     DIMSnowHorn1State* inner;
     u8* pathState;
     s8 idx;
@@ -1467,7 +1488,7 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
     case 4:
         (*gPathControlInterface)->init(pathState, 3, 0x200020, 1);
         (*gPathControlInterface)->setLocalPointCollision(pathState, 2, base + 0xe0, &gDIMSnowHorn1PathCollisionData, 8);
-        (*gPathControlInterface)->setup(pathState, 4, base + 0xa0, base + 0xd0, stk);
+        (*gPathControlInterface)->setup(pathState, 4, base + 0xa0, base + 0xd0, stk.counts);
         (*gPathControlInterface)->attachObject((void*)obj, pathState);
         break;
     case 2:
