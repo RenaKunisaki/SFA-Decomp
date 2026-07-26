@@ -258,7 +258,7 @@ The highest valid ID is 0x2C1.
 | 1BA | SC_totempuz |  |
 | 1BB | SC_totembon |  |
 | 1BC | SC_totemstr |  |
-| 1BD | PaymentKiosk | for cheat tokens, Cape Claw entrance |
+| 1BD | SC_paypoint, SPWell | for cheat tokens, Cape Claw entrance |
 | 1BE | LavaBall1BE |  |
 | 1BF | LavaBall1BF |  |
 | 1C0 | DIMLogFire |  |

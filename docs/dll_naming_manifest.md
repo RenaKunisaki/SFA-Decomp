@@ -488,7 +488,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1BA | SC_totempuz | COMPLETE | dlls/objects/442_SC_totempuz/SC_totempuz.c | = (canonical) | — |
 | 0x1BB | SC_totembon | COMPLETE | dlls/objects/443_SC_totembon/SC_totembon.c | = (canonical) | — |
 | 0x1BC | SC_totemstr | COMPLETE | dlls/objects/444_SC_totemstr/SC_totemstr.c | = (canonical) | — |
-| 0x1BD | paymentkiosk (+SC_paypoint, SPWell) | GUESSED | main/dll/dll_01BD_paymentkiosk.c | = (canonical) | — |
+| 0x1BD | SC_paypoint (+SPWell) | COMPLETE | dlls/objects/445/445.c | = (canonical) | No single recovered TU basename |
 | 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | GUESSED | main/dll/dll_01BE_dimlava.c | main/dll/DIM/dll_01BE_dimlava.c | — |
 | 0x1BF | DIMLavaBall | RAW | main/dll/dll_01BF_dimlavaball.c | main/dll/DIM/dll_01BF_dimlavaball.c | — |
 | 0x1C0 | DIMLogFire (+DIMLogFireR) | COMPLETE | main/dll/dll_01C0_dimlogfire.c | main/dll/DIM/dll_01C0_dimlogfire.c | — |
@@ -777,7 +777,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x108 | EndObject | `Dummy108_*` | unrelated | dlls/objects/264_EndObject/EndObject.c |
 | 0x10E | DieDuster, DieFox, DieKrystal | `deathseq_*` | unrelated | dlls/objects/270/270.c |
 | 0x11A | DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF | `decoration11a_*` | unrelated | dlls/objects/282/282.c |
-| 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | main/dll/dll_01BD_paymentkiosk.c |
+| 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | dlls/objects/445/445.c |
 | 0x1F5 | generalscal, CF_generals, NW_GeneralS, SB_FireBall | `ShipBattle_*` | unrelated | main/dll/dll_01F5_shipbattle.c |
 | 0x237 | DFPSpPl | `laserObj_*` | unrelated | main/dll/dll_0237_dfpsppl.c |
 | 0x238 | LINKA_levco | `fireObj_*` | unrelated | main/dll/dll_0238_linkalevco.c |
@@ -822,6 +822,7 @@ name was a deliberate choice by a previous carve:
 | 0x1BA | main/dll/dll_01BA_sctotempuzzle.c | dlls/objects/442_SC_totempuz/SC_totempuz.c | COMPLETE |
 | 0x1BB | main/dll/dll_01BB_sctotembond.c | dlls/objects/443_SC_totembon/SC_totembon.c | COMPLETE |
 | 0x1BC | main/dll/dll_01BC_sctotemstrength.c | dlls/objects/444_SC_totemstr/SC_totemstr.c | COMPLETE |
+| 0x1BD | main/dll/dll_01BD_paymentkiosk.c | dlls/objects/445/445.c | COMPLETE |
 | 0x1BE | main/dll/dll_01BE_dimlava.c | main/dll/DIM/dll_01BE_dimlava.c | GUESSED |
 | 0x1BF | main/dll/dll_01BF_dimlavaball.c | main/dll/DIM/dll_01BF_dimlavaball.c | RAW |
 | 0x1C0 | main/dll/dll_01C0_dimlogfire.c | main/dll/DIM/dll_01C0_dimlogfire.c | COMPLETE |

@@ -280,7 +280,6 @@ const BATCH = [
   { name: 'dll_0197_dll197.c', baseline: 'ce66fce9c4888ece99e46a85f298568d', pct: 100.0 },
   { name: 'dll_019A_dll19a.c', baseline: 'a07768675f78e598e32c06694451cdba', pct: 100.0 },
   { name: 'dll_01A7_ediblemushroom.c', baseline: 'a0107ba01dba634db27e680b97601a0d', pct: 98.991 },
-  { name: 'dll_01BD_paymentkiosk.c', baseline: '67b48fbb7b9b3d07ff0d38a0438695e0', pct: 100.0 },
   { name: 'dll_01CE_dll1ce.c', baseline: '554023ae581f9e5aca6cb25fbacd0868', pct: 99.85 },
   { name: 'dll_01D6_dll1d6.c', baseline: '495ecd95b20292e3a838db4c7b546726', pct: 98.696 },
   { name: 'dll_01DA_dll1da.c', baseline: 'a42a54974d4be50aeff8fc4c92e79373', pct: 98.72 },

@@ -1,5 +1,5 @@
 /*
- * paymentkiosk (DLL 0x1BD) - a "pay to proceed" kiosk object.
+ * DLL 445 (0x1BD) - "pay to proceed" kiosk objects.
  *
  * The kiosk gates a sequence (and its game bit) behind the player having
  * enough money. On interact (A-button / button 0x100) the test-event
@@ -27,8 +27,6 @@
 
 #define PAYMENTKIOSK_OBJFLAG_HIDDEN             0x4000
 #define PAYMENTKIOSK_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-
 
 typedef struct KioskTextPair
 {
