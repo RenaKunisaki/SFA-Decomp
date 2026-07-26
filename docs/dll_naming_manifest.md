@@ -424,7 +424,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x17A | SpiritPrize (+ECSH_Spirit) | COMPLETE | dlls/objects/378_SpiritPrize/SpiritPrize.c | = (canonical) | — |
 | 0x17B | DFSH_LaserB | COMPLETE | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | = (canonical) | — |
 | 0x17C | GCRobotPatr | RAW | dlls/objects/380_GCRobotPatr/GCRobotPatr.c | = (canonical) | inert data-only DLL |
-| 0x17D | RollingBarrel (+DIM2_barrel, MMP_barrel) | GUESSED | main/dll/dll_017D_rollingbarrel.c | = (canonical) | — |
+| 0x17D | — (+DIM2_barrel, MMP_barrel) | NO-RETAIL-NAME | dlls/objects/381/381.c | = (canonical) | — |
 | 0x17E | MMP_levelcontrol | CONFIRMED | main/dll/dll_017E_mmplevelcontrol.c | main/dll/MMP/dll_017E_mmplevelcontrol.c | — |
 | 0x17F | MoonSeedBush (+MSBush, MSVine) | GUESSED | main/dll/dll_017F_moonseedbush.c | = (canonical) | — |
 | 0x180 | MMP_asteroid_re | CONFIRMED | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | — |
