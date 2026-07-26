@@ -2594,7 +2594,7 @@ dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c:
 	.data       start:0x80325638 end:0x80325670
 	.sdata2     start:0x803E4A20 end:0x803E4A2C
 
-main/dll/dll_01CF_dll1cf.c:
+dlls/objects/463/463.c:
 	.text       start:0x801B6B44 end:0x801B6C2C
 	.data       start:0x80325670 end:0x803256A8
 	.sdata2     start:0x803E4A30 end:0x803E4A34
