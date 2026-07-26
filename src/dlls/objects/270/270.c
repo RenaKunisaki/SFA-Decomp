@@ -1,4 +1,4 @@
-/* DLL 0x10E - DeathSeq [8018BC48-8018BC50) */
+/* DLL 0x10E [0x8018C7D8, 0x8018CD64) */
 #include "main/objseq.h"
 #include "sys/objects.h"
 #include "game/objects/object.h"
@@ -8,7 +8,6 @@
 #include "main/camera.h"
 #include "main/rcp_dolphin.h"
 #include "main/audio/stream_api.h"
-#include "main/camera.h"
 #include "main/gameloop_api.h"
 #include "main/lightmap_api.h"
 #include "main/vecmath.h"

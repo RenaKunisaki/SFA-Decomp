@@ -2058,7 +2058,7 @@ main/dll/dll_0123_fuelcell.c:
 	.data       start:0x80321DE8 end:0x80321E20
 	.sdata2     start:0x803E3CC8 end:0x803E3D14
 
-main/dll/dll_010E_deathseq.c:
+dlls/objects/270/270.c:
 	.text       start:0x8018C7D8 end:0x8018CD64
 	.data       start:0x80321E20 end:0x80321E58
 	.sdata2     start:0x803E3D18 end:0x803E3D5C
