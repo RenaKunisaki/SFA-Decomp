@@ -1,4 +1,4 @@
-/* DLL 0x19C - torch / flame controller objects [801CBA98-801CBD88) */
+/* DLL 0x19C */
 #include "main/dll/dll_019C_dll19c.h"
 #include "game/objects/object_setup.h"
 #include "game/objects/object.h"

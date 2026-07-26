@@ -2826,7 +2826,7 @@ dlls/objects/411/411.c:
 	.sbss       start:0x803DDBE0 end:0x803DDBE8
 	.sdata2     start:0x803E5188 end:0x803E51B0
 
-main/dll/dll_019C_dll19c.c:
+dlls/objects/412/412.c:
 	.text       start:0x801CC72C end:0x801CC998
 	.data       start:0x803266A8 end:0x803266E0
 	.sdata2     start:0x803E51B0 end:0x803E51B8
