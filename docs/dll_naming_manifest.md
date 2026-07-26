@@ -602,7 +602,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x22C | — | COMPLETE | dlls/objects/556/556.c | = (canonical) | No recovered retail basename |
 | 0x22D | DFP_seqpoin | COMPLETE | dlls/objects/557_DFP_seqpoin/DFP_seqpoin.c | = (canonical) | Exact recovered retail basename |
 | 0x22E | — | COMPLETE | dlls/objects/558/558.c | = (canonical) | No recovered retail basename |
-| 0x22F | DFP_floorbar | CONFIRMED | main/dll/dll_022F_dfpfloorbar.c | main/dll/DF/dll_022F_dfpfloorbar.c | — |
+| 0x22F | DFP_floorba | COMPLETE | dlls/objects/559_DFP_floorba/DFP_floorba.c | = (canonical) | Exact recovered retail basename |
 | 0x230 | DFP_wallbar | RAW | main/dll/dll_0230_dfpwallbar.c | main/dll/DF/dll_0230_dfpwallbar.c | — |
 | 0x231 | DFP_ForceAw | RAW | main/dll/dll_0231_dfpforceaw.c | main/dll/DF/dll_0231_dfpforceaw.c | — |
 | 0x232 | DFP_RotateP | RAW | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | — |

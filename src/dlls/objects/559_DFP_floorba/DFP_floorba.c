@@ -21,8 +21,6 @@
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
 #include "main/gamebit_ids.h"
-#include "main/dll/sfxplayer.h"
-#include "main/dll/TrickyCurve.h"
 
 typedef struct DfpfloorbarPlacement
 {
@@ -287,38 +285,4 @@ ObjectDescriptor10WithPadding gDfpfloorbarObjDescriptor = {
         DFP_Floorbar_getExtraSize,
     },
     0,
-};
-
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-ObjectDescriptor gTrickyCurveObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)TrickyCurve_initialise,
-    (ObjectDescriptorCallback)TrickyCurve_release,
-    0,
-    (ObjectDescriptorCallback)TrickyCurve_init,
-    (ObjectDescriptorCallback)TrickyCurve_update,
-    (ObjectDescriptorCallback)TrickyCurve_hitDetect,
-    (ObjectDescriptorCallback)TrickyCurve_render,
-    (ObjectDescriptorCallback)TrickyCurve_free,
-    (ObjectDescriptorCallback)TrickyCurve_getObjectTypeId,
-    TrickyCurve_getExtraSize,
-};
-ObjectDescriptor gSfxplayerObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)sfxplayer_initialise,
-    (ObjectDescriptorCallback)sfxplayer_release,
-    0,
-    (ObjectDescriptorCallback)sfxplayer_init,
-    (ObjectDescriptorCallback)sfxplayer_update,
-    (ObjectDescriptorCallback)sfxplayer_hitDetect,
-    (ObjectDescriptorCallback)sfxplayer_render,
-    (ObjectDescriptorCallback)sfxplayer_free,
-    (ObjectDescriptorCallback)sfxplayer_getObjectTypeId,
-    sfxplayer_getExtraSize,
 };
