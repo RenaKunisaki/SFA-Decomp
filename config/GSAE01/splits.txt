@@ -4079,7 +4079,7 @@ dlls/objects/698_MCLightning/MCLightning.c:
 	.data       start:0x8032BFE8 end:0x8032C020
 	.sdata2     start:0x803E7440 end:0x803E7460
 
-main/dll/dll_02BB_gflevelcon.c:
+dlls/objects/699_GF_LevelCon/GF_LevelCon.c:
 	.text       start:0x80239858 end:0x80239DD8
 	.data       start:0x8032C020 end:0x8032C088
 	.sdata2     start:0x803E7460 end:0x803E7490
