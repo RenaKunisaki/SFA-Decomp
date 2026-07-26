@@ -542,7 +542,9 @@ static inline u32 playerLoadPendingHitBits(char* p)
 
 typedef struct
 {
-    u8 pad[0x88];
+    u8 pad[0x5d];
+    s8 hitClass[3];
+    u8 pad1[0x28];
     u8 flags;
     u8 pad2[0x1f];
     u8 valsA[3];
@@ -4519,7 +4521,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 if ((s8)Player_GetObjHitsState(obj)->suppressOutgoingHits == 0)
                 {
                     int bits;
-                    switch (*(s8*)((char*)(inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0 + 0x5d) + i))
+                    switch (((HitDesc*)inner->moveSlots + (u32)inner->moveSlotIndex)->hitClass[i])
                     {
                     case -1:
                         bits = 0;
@@ -8186,15 +8188,15 @@ int playerStateOnLadder(int obj, int state)
         *(u32*)((char*)base + 0x360) &= ~0x2LL;
         *(u32*)((char*)base + 0x360) |= 0x2000LL;
     }
-    *(u32*)((char*)state + 4) |= 0x100000;
+    *(int*)((char*)state + 4) |= 0x100000;
     {
         f32 z = lbl_803E7EA4;
         ((PlayerState*)state)->baddie.animSpeedA = z;
         ((PlayerState*)state)->baddie.animSpeedB = z;
-        *(u32*)state |= 0x200000;
+        *(int*)state |= 0x200000;
         ((GameObject*)obj)->anim.velocityX = z;
         ((GameObject*)obj)->anim.velocityZ = z;
-        *(u32*)((char*)state + 4) |= 0x8000000;
+        *(int*)((char*)state + 4) |= 0x8000000;
         if (((PlayerState*)inner)->waterDepth > lbl_803E7FA0)
         {
             fn_802AB5A4((GameObject*)obj, inner, 5);
@@ -18122,8 +18124,7 @@ void playerDoHitDetection(int obj)
     if (((ByteFlags*)((char*)inner + 0x3f2))->b20 != 0 &&
         (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
     {
-        u8 zero = 0;
-        ((PlayerState*)inner)->baddie.physicsActive = zero;
+        ((PlayerState*)inner)->baddie.physicsActive = 0;
     }
     (*gPathControlInterface)->update((void*)obj, (void*)(inner + 4), timeDelta);
     (*gPathControlInterface)->apply((void*)obj, (void*)(inner + 4));
@@ -18319,7 +18320,7 @@ void playerDoHitDetection(int obj)
                         ((PlayerState*)inner)->baddie.animSpeedC = ((PlayerState*)inner)->baddie.animSpeedA;
                     }
                 }
-                *(u32*)inner &= ~0x800000;
+                *(int*)inner &= ~0x800000;
             }
         }
         if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
