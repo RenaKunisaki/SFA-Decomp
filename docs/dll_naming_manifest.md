@@ -734,7 +734,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | main/dll/dll_02B0_brokenpipe.c | = (canonical) | — |
 | 0x2B1 | CmbSrc (+CmbSrcTPole, CmbSrcTWall, ThusterSour) | COMPLETE | main/dll/dll_02B1_cmbsrc.c | = (canonical) | — |
 | 0x2B2 | DustMoteSou (+TailLightSo, FireWorkSou) | CONFIRMED | main/dll/dll_02B2_dustmotesou.c | = (canonical) | — |
-| 0x2B3 | vortex (+SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | GUESSED | main/dll/dll_02B3_vortex.c | = (canonical) | — |
+| 0x2B3 | — (+vortex, SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | NO-RETAIL-NAME | dlls/objects/691/691.c | = (canonical) | — |
 | 0x2B4 | CNTcounter | COMPLETE | dlls/objects/692_CNTcounter/CNTcounter.c | = (canonical) | — |
 | 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | dlls/objects/693_Timer/Timer.c | = (canonical) | — |
 | 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | dlls/objects/694_CNThitObjec/CNThitObjec.c | = (canonical) | — |
