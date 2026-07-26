@@ -2589,7 +2589,7 @@ dlls/objects/460_DIMMagicBri/DIMMagicBri.c:
 	.data       start:0x80325600 end:0x80325638
 	.sdata2     start:0x803E4A00 end:0x803E4A1C
 
-main/dll/DIM/dll_01CD_dimlevelcontrol.c:
+dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c:
 	.text       start:0x801B63F4 end:0x801B6B44
 	.data       start:0x80325638 end:0x80325670
 	.sdata2     start:0x803E4A20 end:0x803E4A2C

@@ -1,9 +1,10 @@
-/* DLL 0x01CD - DIM level-control object for Snowhorn Wastes 2.
+/*
+ * DIM_LevelCo (DLL 0x1CD) - level-control object for Snowhorn Wastes 2.
  * Manages time-of-day music (day=0xC5, night=0xE2), map-event latching via
  * SCGameBitLatch_Update (8 latch bits controlling music triggers), environment
  * fx for the lava area, an NPC dialogue trigger (game bits 0x3E2/0x3E3), and
- * initial level unlock. */
-#include "main/dll/dimmagicbridge_state.h"
+ * initial level unlock.
+ */
 #include "main/dll/DIM/dll_01CD_dimlevelcontrol.h"
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/savegame_load_api.h"
@@ -12,17 +13,6 @@
 #include "main/audio/music_api.h"
 #include "main/map_load.h"
 #include "main/render_envfx_api.h"
-#include "main/dll/dimwooddoor2state_struct.h"
-#include "main/dll/fbwgpipe_struct.h"
-#include "main/dll/dll1cestate_struct.h"
-#include "main/dll/explosionpartfxsource_struct.h"
-#include "main/dll/dim2pathgeneratorstate_struct.h"
-#include "main/dll/dim2snowballstate_struct.h"
-#include "main/dll/truthhornicestate_struct.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/dll1d6state_struct.h"
-#include "main/dll/explosion_state.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/game_ui_interface.h"
 #include "game/objects/object.h"
@@ -48,50 +38,28 @@
 #define DIMLEVELCONTROL_ENVFX_C 0x15c
 #define DIMLEVELCONTROL_ENVFX_D 0x15f
 
-STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
-STATIC_ASSERT(sizeof(Dll1CEState) == 0xC);
-STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
-
-STATIC_ASSERT(sizeof(ExplosionPartfxSource) == 0x38);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, velocityX) == 0x24);
-
-STATIC_ASSERT(sizeof(ExplosionState) == 0xA60);
-STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
-
-
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
-STATIC_ASSERT(sizeof(Dll1D6State) == 0x20);
-STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
-STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
-STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9a8);
 #define DIMLEVELCONTROL_MUSIC_DAY   0xc5
 #define DIMLEVELCONTROL_MUSIC_NIGHT 0xe2
 
+int dim_levelcontrol_getExtraSize(void)
+{
+    return 0x10;
+}
 
-int dim_levelcontrol_getExtraSize(void) { return 0x10; }
-
-void dim_levelcontrol_free(GameObject *obj)
+void dim_levelcontrol_free(GameObject* obj)
 {
     Music_Trigger(MUSICTRIG_drako_1, 0);
     Music_Trigger(MUSICTRIG_citytombs_ed, 0);
     Rcp_DisableHeatEffect();
 }
 
-void dim_levelcontrol_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dim_levelcontrol_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-}
-
-FbWGPipe GXWGFifo : (0xCC008000);
-
-static inline int* DIM2snowball_GetActiveModel(GameObject *obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 typedef struct DimLevelControlState
@@ -110,9 +78,8 @@ typedef struct DimLevelControlState
     u8 b3 : 1;
 } DimLevelControlState;
 
-void dim_levelcontrol_update(GameObject *obj)
+void dim_levelcontrol_update(GameObject* obj)
 {
-
     u8 a;
     u8 b;
     u8 c;
@@ -125,7 +92,7 @@ void dim_levelcontrol_update(GameObject *obj)
     b = mainGetBit(0xd0c);
     c = mainGetBit(0xd0d);
     d = mainGetBit(0xd0e);
-    st = (obj)->extra;
+    st = obj->extra;
     if ((a && !st->b7) || (b && !st->b6) || (c && !st->b5) || (d && !st->b4))
     {
         Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
@@ -139,12 +106,12 @@ void dim_levelcontrol_update(GameObject *obj)
         Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
         st->b3 = 1;
     }
-    if ((obj)->userData1 != 0)
+    if (obj->userData1 != 0)
     {
         if ((u32)mainGetBit(GAMEBIT_DIM_FlewTo) == 0 ||
             ((u32)mainGetBit(0x17) != 0 && mainGetBit(0xead) == 0))
         {
-            if ((obj)->userData1 == 2)
+            if (obj->userData1 == 2)
             {
                 getEnvfxActImmediately(0, 0, DIMLEVELCONTROL_ENVFX_A, 0);
                 getEnvfxActImmediately(0, 0, DIMLEVELCONTROL_ENVFX_B, 0);
@@ -159,7 +126,7 @@ void dim_levelcontrol_update(GameObject *obj)
                 getEnvfxAct(0, 0, DIMLEVELCONTROL_ENVFX_D, 0);
             }
         }
-        (obj)->userData1 = 0;
+        obj->userData1 = 0;
     }
     if (st->groupStatus != 0)
     {
@@ -247,22 +214,22 @@ void dim_levelcontrol_update(GameObject *obj)
 }
 
 
-void dim_levelcontrol_init(GameObject *obj)
+void dim_levelcontrol_init(GameObject* obj)
 {
     DimLevelControlState* st;
     u8 i;
 
     randomGetRange(0, 11);
-    st = (obj)->extra;
+    st = obj->extra;
     st->saveState = 0;
     st->timer = 300.0f;
     if (getSaveGameLoadStatus() != 0)
     {
-        (obj)->userData1 = 2;
+        obj->userData1 = 2;
     }
     else
     {
-        (obj)->userData1 = 1;
+        obj->userData1 = 1;
     }
     for (i = 1; i <= 38; i++)
     {
@@ -279,8 +246,8 @@ void dim_levelcontrol_init(GameObject *obj)
     st->b5 = mainGetBit(0xd0d);
     st->b4 = mainGetBit(0xd0e);
     st->b3 = mainGetBit(GAMEBIT_DIM_CannonRelated0A21);
-    (*gMapEventInterface)->setMapAct((obj)->anim.mapEventSlot, 1);
-    (obj)->objectFlags |= (DIMLEVELCONTROL_OBJFLAG_HIDDEN | DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED);
+    (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 1);
+    obj->objectFlags |= (DIMLEVELCONTROL_OBJFLAG_HIDDEN | DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED);
     unlockLevel(0, 0, 1);
 }
 
