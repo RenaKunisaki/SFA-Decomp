@@ -10,7 +10,6 @@
 #include "main/dll/objfsa.h"
 #include "main/frame_timing.h"
 #include "dlls/object_descriptor.h"
-
 #include "sys/objects/lifecycle.h"
 LfxEmitterConfig gLfxEmitterConfigCache;
 
