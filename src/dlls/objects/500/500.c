@@ -1,5 +1,5 @@
 /*
- * DLL 0x01F4 - "lamp": a hanging-lamp set-dressing object that swings on a
+ * DLL 0x01F4 - a hanging-lamp set-dressing object that swings on a
  * looped path animation and emits particle/sound effects.
  *
  * Lamp_init seeds the lamp's X rotation from its placement def (a different
@@ -17,7 +17,6 @@
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/object_render.h"
 #include "main/objanim_update.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/obj_path.h"

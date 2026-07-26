@@ -543,7 +543,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F1 | SB_SeqDoor | COMPLETE | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | = (canonical) | — |
 | 0x1F2 | SB_CageKyte | COMPLETE | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | = (canonical) | — |
 | 0x1F3 | SB_MiniFire | COMPLETE | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | = (canonical) | — |
-| 0x1F4 | Lamp (+CF_Lamp, SB_Lamp) | CONFIRMED | main/dll/dll_01F4_lamp.c | = (canonical) | — |
+| 0x1F4 | — | COMPLETE | dlls/objects/500/500.c | = (canonical) | No recovered retail basename |
 | 0x1F5 | ShipBattle (+generalscal, CF_generals, NW_GeneralS, SB_FireBall) | GUESSED | main/dll/dll_01F5_shipbattle.c | = (canonical) | — |
 | 0x1F6 | Flag (+DIMFlag, SB_Wheel, SB_Sail, SB_ShipFlag) | CONFIRMED | main/dll/dll_01F6_flag.c | = (canonical) | — |
 | 0x1F7 | SB_ShipGunBroke | CONFIRMED | main/dll/dll_01F7_sbshipgunbroke.c | main/dll/SB/dll_01F7_sbshipgunbroke.c | — |
@@ -869,6 +869,7 @@ name was a deliberate choice by a previous carve:
 | 0x1F1 | main/dll/dll_01F1_sbseqdoor.c | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | COMPLETE |
 | 0x1F2 | main/dll/dll_01F2_sbcagekyte.c | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | COMPLETE |
 | 0x1F3 | main/dll/dll_01F3_sbminifire.c | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | COMPLETE |
+| 0x1F4 | main/dll/dll_01F4_lamp.c | dlls/objects/500/500.c | COMPLETE |
 | 0x1F7 | main/dll/dll_01F7_sbshipgunbroke.c | main/dll/SB/dll_01F7_sbshipgunbroke.c | CONFIRMED |
 | 0x1F8 | main/dll/dll_01F8_wmgalleon.c | main/dll/WM/dll_01F8_wmgalleon.c | COMPLETE |
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | CONFIRMED |
