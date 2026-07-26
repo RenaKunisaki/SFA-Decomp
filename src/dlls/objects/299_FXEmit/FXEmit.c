@@ -1,5 +1,5 @@
 /*
- * fxemit (DLL 0x12B, class 0x6B) - the CF "FxEmit" particle-emitter
+ * FXEmit (DLL 0x12B, class 0x6B) - the CF "FxEmit" particle-emitter
  * object. Each instance reads an FxEmitPlacement and drifts/spins by a
  * per-axis step (FXEMIT_ROTATION_STEP_AUTO = framesThisStep auto-spin,
  * otherwise step*framesThisStep*100), optionally moving along its
