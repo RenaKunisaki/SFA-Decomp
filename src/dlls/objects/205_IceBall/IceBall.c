@@ -37,9 +37,6 @@
 
 #define ICEBALL_MSG_NOTIFY_OWNER 0x80 /* vtable msg notifying the owning ChukChuk on impact */
 
-
-
-
 static inline u8 iceBall_isOwnerActive(GameObject* owner)
 {
     int i;
@@ -57,7 +54,6 @@ static inline u8 iceBall_isOwnerActive(GameObject* owner)
 
 void iceBall_handleSurfaceImpact(GameObject* obj)
 {
-
     s16 projectileType = obj->anim.seqId;
     int i;
 
@@ -83,7 +79,6 @@ void iceBall_handleSurfaceImpact(GameObject* obj)
 
 void iceBall_handleCharacterImpact(GameObject* obj)
 {
-
     s16 projectileType;
     int particleIdx;
 
@@ -137,7 +132,6 @@ void iceBall_handleCharacterImpact(GameObject* obj)
         }
     }
 }
-
 
 int IceBall_getExtraSize(void)
 {

@@ -1587,7 +1587,7 @@ dlls/objects/204_ChukChuk/ChukChuk.c:
 	.data       start:0x8031FF80 end:0x8031FFD0
 	.sdata2     start:0x803E2E20 end:0x803E2E50
 
-main/dll/dll_00CD_iceball.c:
+dlls/objects/205_IceBall/IceBall.c:
 	.text       start:0x8015FBEC end:0x801601C4
 	.data       start:0x8031FFD0 end:0x80320178
 	.sdata2     start:0x803E2E50 end:0x803E2E68
