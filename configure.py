@@ -1889,7 +1889,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/516_WM_Torch/WM_Torch.c", cflags=cflags_dll_noopt_nostrength),
             Object(MatchingFor("GSAE01"), "dlls/objects/517_WM_Vein/WM_Vein.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/518_LightSource/LightSource.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/WM/dll_0207_wmworm.c", cflags=cflags_dll_noopt_nocse),
+            Object(MatchingFor("GSAE01"), "dlls/objects/519_WM_Worm/WM_Worm.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "main/dll/WM/dll_0209_wmlevelcontrol.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(MatchingFor("GSAE01"), "main/dll/WM/dll_020A_wmgeneralscales.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DF/dll_022F_dfpfloorbar.c", cflags=cflags_dll_noopt),

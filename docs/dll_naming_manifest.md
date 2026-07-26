@@ -562,7 +562,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x204 | WM_Torch | COMPLETE | dlls/objects/516_WM_Torch/WM_Torch.c | = (canonical) | — |
 | 0x205 | WM_Vein | COMPLETE | dlls/objects/517_WM_Vein/WM_Vein.c | = (canonical) | Data-only DLL |
 | 0x206 | LightSource | COMPLETE | dlls/objects/518_LightSource/LightSource.c | = (canonical) | — |
-| 0x207 | WM_Worm | COMPLETE | main/dll/dll_0207_wmworm.c | main/dll/WM/dll_0207_wmworm.c | — |
+| 0x207 | WM_Worm | COMPLETE | dlls/objects/519_WM_Worm/WM_Worm.c | = (canonical) | — |
 | 0x208 | WM_Wallpowe | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x209 | WM_LevelControl | CONFIRMED | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | — |
 | 0x20A | WM_GeneralScales | CONFIRMED | main/dll/dll_020A_wmgeneralscales.c | main/dll/WM/dll_020A_wmgeneralscales.c | — |
@@ -879,7 +879,7 @@ name was a deliberate choice by a previous carve:
 | 0x1FD | main/dll/dll_01FD_wmlasertarget.c | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | COMPLETE |
 | 0x201 | main/dll/dll_0201_wmcolrise.c | dlls/objects/513_WM_colrise/WM_colrise.c | COMPLETE |
 | 0x204 | main/dll/dll_0204_wmtorch.c | dlls/objects/516_WM_Torch/WM_Torch.c | COMPLETE |
-| 0x207 | main/dll/dll_0207_wmworm.c | main/dll/WM/dll_0207_wmworm.c | COMPLETE |
+| 0x207 | main/dll/dll_0207_wmworm.c | dlls/objects/519_WM_Worm/WM_Worm.c | COMPLETE |
 | 0x209 | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | CONFIRMED |
 | 0x20A | main/dll/dll_020A_wmgeneralscales.c | main/dll/WM/dll_020A_wmgeneralscales.c | CONFIRMED |
 | 0x20C | main/dll/dll_020C_wmspiritplace.c | main/dll/WM/dll_020C_wmspiritplace.c | CONFIRMED |
@@ -998,7 +998,6 @@ blocked units will surface more when carved.
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
-| 0x207 | main/dll/dll_0207_wmworm.c | include/main/dll/LGT/dll_0207_wmworm.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |

@@ -1,12 +1,6 @@
 /*
- * wmworm (DLL 0x0207) - 'WM_Worm', a worm enemy for Krazoa Palace
- * (map 'warlock', Dinosaur Planet's Warlock Mountain - hence the WM
- * dll prefix). TU: 0x801F3C2C-0x801F3F18.
- *
- * CUT CONTENT: the object def shipped (OBJECTS.bin def 954, romlist
- * type 0x179) and this handler is fully implemented, but no map
- * romlist places type 0x179 and nothing spawns it dynamically - the
- * worm is unreachable in retail (same status as WM_WallCraw).
+ * WM_Worm (DLL 0x0207) - a worm enemy from Warlock Mountain on
+ * Dinosaur Planet.
  *
  * While the player is within WMWORM_CHASE_RANGE (in the XZ plane of the
  * placement) the worm drifts toward the player at 1% of the offset per
@@ -15,15 +9,13 @@
  * frames in obj->userData1 before it may fire again. Out of range it snaps
  * back to its recorded home position.
  */
+#include "dlls/object_descriptor.h"
+#include "main/dll/WM/dll_0207_wmworm.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
-#include "sys/objects.h"
-#include "game/objects/object.h"
-#include "main/vecmath_distance_api.h"
-#include "main/dll/WM/dll_0207_wmworm.h"
 #include "main/frame_timing.h"
-#include "dlls/object_descriptor.h"
-
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
 int WM_Worm_getExtraSize(void)
 {
@@ -76,9 +68,7 @@ void WM_Worm_update(GameObject* obj)
             dx = player->anim.worldPosX - obj->anim.localPosX;
             dy = player->anim.worldPosY - obj->anim.localPosY;
             dz = player->anim.worldPosZ - obj->anim.localPosZ;
-            /* "axis offset != 0" spelled as two strict compares; the
-               self-reassign split keeps the scale product in the dN
-               register (recipe #85). */
+            /* Move only along axes where the player position differs. */
             if ((dx > 0.0f) || (dx < 0.0f))
             {
                 dx = 0.01f * dx;
@@ -113,8 +103,7 @@ void WM_Worm_update(GameObject* obj)
                 {
                     (*gPartfxInterface)->spawnObject(obj, state->particleEffectId, NULL, 4, -1, NULL);
                 }
-                /* cooldown: burstCount frames before the next burst
-                   (negated; the guard above re-fires at <= 0) */
+                /* Wait burstCount frames before the next burst. */
                 obj->userData1 = -state->burstCount;
             }
             else if (burstCount < 0 && obj->userData1 > 0)
