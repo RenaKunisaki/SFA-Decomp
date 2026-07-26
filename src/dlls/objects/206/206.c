@@ -25,7 +25,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
 #include "game/objects/object_setup.h"
-#include "main/dll/chukchukstate_struct.h"
 #include "main/dll/baddie_control_interface.h"
 #include "game/objects/object.h"
 #include "main/objprint_api.h"
@@ -60,9 +59,6 @@
 #define DLLCE_PARTFX_SPRAY    0x343
 #define DLLCE_HIT_VOLUME_SLOT 10
 u8 lbl_803AC580[0x18];
-
-STATIC_ASSERT(sizeof(ChukChukState) == 0x18);
-STATIC_ASSERT(offsetof(ChukChukState, flags) == 0x12);
 
 extern void* gChukChukMoveHandlers[];
 extern void* gChukChukCheckHandlers[];

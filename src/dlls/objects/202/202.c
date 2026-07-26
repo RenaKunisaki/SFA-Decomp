@@ -55,15 +55,6 @@ typedef struct IceBallSetup {
     u8 pad22[0x24 - 0x22];
 } IceBallSetup;
 
-typedef struct IceBaddiePlacement {
-    ObjPlacement base; /* 0x00 */
-    u8 pad18[0x2B - 0x18];
-    u8 flags; /* 0x2B */
-    u8 pad2C[0x2E - 0x2C];
-    s8 sequenceId; /* 0x2E */
-    u8 pad2F;
-} IceBaddiePlacement;
-
 STATIC_ASSERT(offsetof(IceBaddieControl, attackPatternIndex) == 0x4);
 STATIC_ASSERT(offsetof(IceBaddieControl, particlePositionX) == 0x20);
 STATIC_ASSERT(offsetof(IceBaddieControl, effectPosition) == 0x2C);
@@ -73,9 +64,6 @@ STATIC_ASSERT(sizeof(IceBaddieControl) == 0x48);
 STATIC_ASSERT(offsetof(IceBallSetup, gameBit) == 0x1E);
 STATIC_ASSERT(offsetof(IceBallSetup, secondaryGameBit) == 0x20);
 STATIC_ASSERT(sizeof(IceBallSetup) == 0x24);
-STATIC_ASSERT(offsetof(IceBaddiePlacement, flags) == 0x2B);
-STATIC_ASSERT(offsetof(IceBaddiePlacement, sequenceId) == 0x2E);
-STATIC_ASSERT(sizeof(IceBaddiePlacement) == 0x30);
 
 #define ICEBADDIE_OBJGROUP 3
 

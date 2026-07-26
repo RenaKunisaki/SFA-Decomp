@@ -15,7 +15,6 @@
 #include "sys/objects.h"
 #include "main/vecmath.h"
 #include "main/objanim.h"
-#include "main/dll/chukchukstate_struct.h"
 #include "main/dll/baddie_control_interface.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"

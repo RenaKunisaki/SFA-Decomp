@@ -6,18 +6,19 @@
 #include "main/dll/baddie_state.h"
 
 typedef struct GameObject GameObject;
+struct ObjSeqState;
 
 typedef struct DllCBPlacement {
-    ObjPlacement base;            /* 0x00: standard object placement */
+    ObjPlacement base; /* 0x00: standard object placement */
     u8 pad18[0x24 - 0x18];
-    s16 trackYieldId;             /* 0x24: sequence yield after releasing the tracked target */
+    s16 trackYieldId; /* 0x24: sequence yield after releasing the tracked target */
     u8 pad26;
-    s8 rotZ;                      /* 0x27: initial Z rotation */
-    s8 rotY;                      /* 0x28: initial Y rotation */
+    s8 rotZ; /* 0x27: initial Z rotation */
+    s8 rotY; /* 0x28: initial Y rotation */
     u8 pad29[0x2B - 0x29];
-    u8 flags;                     /* 0x2B: ground-baddie initialization flags */
-    s16 gameBitId;                /* 0x2C: sequence yield when gameBitC is set */
-    s8 trackYieldEnable;          /* 0x2E: -1 disables trackYieldId */
+    u8 flags;            /* 0x2B: ground-baddie initialization flags */
+    s16 gameBitId;       /* 0x2C: sequence yield when gameBitC is set */
+    s8 trackYieldEnable; /* 0x2E: -1 disables trackYieldId */
     u8 pad2F;
 } DllCBPlacement;
 
@@ -32,6 +33,21 @@ STATIC_ASSERT(offsetof(DllCBPlacement, flags) == 0x2B);
 STATIC_ASSERT(offsetof(DllCBPlacement, gameBitId) == 0x2C);
 STATIC_ASSERT(offsetof(DllCBPlacement, trackYieldEnable) == 0x2E);
 STATIC_ASSERT(sizeof(DllCBPlacement) == 0x30);
+
+int dll_CB_stateHandler5(GameObject* obj, GroundBaddieState* state);
+int dll_CB_stateHandler4(GameObject* obj, GroundBaddieState* state);
+int dll_CB_stateHandler3(GameObject* obj, GroundBaddieState* state);
+int dll_CB_stateHandler2(GameObject* obj, GroundBaddieState* state);
+int dll_CB_stateHandler1(GameObject* obj, GroundBaddieState* state);
+int dll_CB_stateHandler0(GameObject* obj, GroundBaddieState* state);
+int dll_CB_moveHandler3(GameObject* obj, GroundBaddieState* state, f32 timeDelta);
+int dll_CB_moveHandler2(GameObject* obj, GroundBaddieState* state, f32 timeDelta);
+int dll_CB_moveHandler1(GameObject* obj, GroundBaddieState* state, f32 timeDelta);
+int dll_CB_moveHandler0(GameObject* obj, GroundBaddieState* state, f32 timeDelta);
+void dll_CB_seekAndUpdate(GameObject* obj, struct ObjSeqState* sequenceState, GroundBaddieState* objectState,
+                          GroundBaddieState* state);
+void dll_CB_advanceAI(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state);
+int dll_CB_seqFn(GameObject* obj, int unused, struct ObjSeqState* sequenceState);
 
 void dll_CB_initialise(void);
 void dll_CB_release_nop(void);

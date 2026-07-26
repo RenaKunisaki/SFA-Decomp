@@ -19,7 +19,6 @@
 #include "main/dll/objfx_api.h"
 #include "main/obj_group.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/chukchukstate_struct.h"
 #include "main/dll/grimble_state.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -43,9 +42,6 @@
 /* object group this object belongs to */
 #define GRIMBLE_OBJGROUP    3
 #define DFROPENODE_OBJGROUP 0x17 /* DLL 0x175 dfropenode (path nodes) */
-
-STATIC_ASSERT(sizeof(ChukChukState) == 0x18);
-STATIC_ASSERT(offsetof(ChukChukState, flags) == 0x12);
 
 extern void* gGrimbleStateHandlersA[10];
 extern void* gGrimbleStateHandlersB[6];
