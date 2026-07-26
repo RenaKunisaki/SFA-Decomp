@@ -5,11 +5,11 @@
  * spawned tumbleweed objects.
  */
 #include "dlls/objects/209_TumbleWeedB.h"
+#include "dlls/objects/210.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_00D2_tumbleweed.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/obj_group.h"
@@ -325,7 +325,7 @@ GameObject* tumbleweedbush_findNearestActive(f32* position) {
     }
     while (objectIndex < objectCount) {
         if ((*objects)->anim.seqId == TUMBLEWEED_BUSH_SIBLING_B) {
-            if (((BackpackState*)(*objects)->extra)->phase > TUMBLEWEED_PHASE_ARMED) {
+            if (((TumbleweedState*)(*objects)->extra)->phase > TUMBLEWEED_PHASE_ARMED) {
                 f32 distance = vec3f_distanceSquared(&(*objects)->anim.worldPosX, position);
 
                 if (distance < nearestDistance) {
@@ -341,12 +341,12 @@ GameObject* tumbleweedbush_findNearestActive(f32* position) {
 }
 
 void tumbleweedbush_activatePiece(GameObject* obj) {
-    BackpackState* state = obj->extra;
+    TumbleweedState* state = obj->extra;
 
     state->phase = TUMBLEWEED_BUSH_ACTIVE_PIECE_PHASE;
 }
 
-void tumbleweedbush_updateDetachedPiece(GameObject* piece, BackpackState* state) {
+void tumbleweedbush_updateDetachedPiece(GameObject* piece, TumbleweedState* state) {
     f32 groundDistance;
 
     piece->anim.velocityX /= TUMBLEWEED_PIECE_HORIZONTAL_DAMPING;
@@ -361,17 +361,17 @@ void tumbleweedbush_updateDetachedPiece(GameObject* piece, BackpackState* state)
     }
     piece->anim.velocityZ /= TUMBLEWEED_PIECE_HORIZONTAL_DAMPING;
 
-    state->recoilVelX /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
-    state->recoilVelZ /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
-    state->unk280 /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
+    state->rotVelocityZ /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
+    state->rotVelocityY /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
+    state->rotVelocityX /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
 
     piece->anim.localPosX += piece->anim.velocityX * timeDelta;
     piece->anim.localPosY += piece->anim.velocityY * timeDelta;
     piece->anim.localPosZ += piece->anim.velocityZ * timeDelta;
 
-    piece->anim.rotZ += (f32)(int)state->recoilVelX * timeDelta;
-    piece->anim.rotY += (f32)(int)state->recoilVelZ * timeDelta;
-    piece->anim.rotX += (f32)(int)state->unk280 * timeDelta;
+    piece->anim.rotZ += (f32)(int)state->rotVelocityZ * timeDelta;
+    piece->anim.rotY += (f32)(int)state->rotVelocityY * timeDelta;
+    piece->anim.rotX += (f32)(int)state->rotVelocityX * timeDelta;
 }
 
 f32 gTumbleweedBushPieceOffsetTable[2][4][3] = {

@@ -2,10 +2,10 @@
 #define DLLS_OBJECTS_209_TUMBLEWEEDB_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-typedef struct GameObject GameObject;
-struct BackpackState;
+struct TumbleweedState;
 
 typedef struct TumbleweedBushState {
     f32 scale;                   /* 0x00 */
@@ -55,7 +55,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj);
 void tumbleweedbush_removePieceReference(GameObject* obj, GameObject* piece);
 GameObject* tumbleweedbush_findNearestActive(f32* position);
 void tumbleweedbush_activatePiece(GameObject* obj);
-void tumbleweedbush_updateDetachedPiece(GameObject* piece, struct BackpackState* state);
+void tumbleweedbush_updateDetachedPiece(GameObject* piece, struct TumbleweedState* state);
 
 int TumbleWeedBush_getExtraSize(void);
 int TumbleWeedBush_getObjectTypeId(void);

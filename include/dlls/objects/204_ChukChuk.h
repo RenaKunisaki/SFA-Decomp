@@ -2,9 +2,8 @@
 #define DLLS_OBJECTS_204_CHUKCHUK_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-
-typedef struct GameObject GameObject;
 
 typedef struct ChukChukPlacement {
     ObjPlacement base;       /* 0x00 */

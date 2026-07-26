@@ -45,7 +45,7 @@
 #include "main/objfx.h"
 #include "dlls/object_descriptor.h"
 #include "string.h"
-#include "main/dll/dll_00D2_tumbleweed.h"
+#include "dlls/objects/210.h"
 #include "sys/objects/lifecycle.h"
 #include "main/obj_message.h"
 #include "main/gamebits.h"

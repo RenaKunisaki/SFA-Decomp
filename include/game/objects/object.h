@@ -1,6 +1,7 @@
 #ifndef GAME_OBJECTS_OBJECT_H_
 #define GAME_OBJECTS_OBJECT_H_
 
+#include "game/objects/object_fwd.h"
 #include "global.h"
 #include "main/objanim_internal.h"
 
@@ -28,7 +29,7 @@
  * Keep those spellings via launders - *(int *)&obj->extra != 0 - rather
  * than retyping the test to a pointer compare.
  */
-typedef struct GameObject {
+struct GameObject {
     ObjAnimComponent anim;
     u16 objectFlags; /* obj+0xB0 flag word; 9 object families STATIC_ASSERT
         this name (Checkpoint4/CmbSrc/EnemyMushroom/Laser/MagicPlant/...) */
@@ -86,7 +87,7 @@ typedef struct GameObject {
         anim.velocity in the localPos integration */
     f32 externalVelY;
     f32 externalVelZ;
-} GameObject;
+};
 
 STATIC_ASSERT(offsetof(GameObject, objectFlags) == 0xB0);
 

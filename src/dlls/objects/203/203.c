@@ -340,7 +340,7 @@ s16 dll_CB_setScale(GameObject* obj) {
 }
 
 int dll_CB_getExtraSize(void) {
-    return 0x410;
+    return sizeof(GroundBaddieState);
 }
 
 int dll_CB_getObjectTypeId(void) {

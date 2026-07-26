@@ -2,10 +2,10 @@
 #define DLLS_OBJECTS_202_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/baddie_state.h"
 
-typedef struct GameObject GameObject;
 typedef int (*IceBaddieStateHandler)(GameObject* obj, GroundBaddieState* state);
 
 typedef struct IceBaddiePlacement {

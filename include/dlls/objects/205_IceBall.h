@@ -2,8 +2,7 @@
 #define DLLS_OBJECTS_205_ICEBALL_H_
 
 #include "dlls/object_descriptor.h"
-
-typedef struct GameObject GameObject;
+#include "game/objects/object_fwd.h"
 
 void iceBall_handleSurfaceImpact(GameObject* obj);
 void iceBall_handleCharacterImpact(GameObject* obj);

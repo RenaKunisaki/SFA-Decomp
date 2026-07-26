@@ -2,9 +2,8 @@
 #define DLLS_OBJECTS_200_DEPTHOFFIELDPOINT_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "main/objanim_update.h"
-
-typedef struct GameObject GameObject;
 
 typedef struct DepthOfFieldPointState {
     u8 enabled : 1; /* 0x00 bit 0: blur filter currently active */

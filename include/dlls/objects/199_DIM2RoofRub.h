@@ -2,10 +2,9 @@
 #define DLLS_OBJECTS_199_DIM2ROOFRUB_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "main/objseq.h"
-
-typedef struct GameObject GameObject;
 
 typedef struct DIM2RoofRubPlacement {
     ObjPlacement base;     /* 0x00 */

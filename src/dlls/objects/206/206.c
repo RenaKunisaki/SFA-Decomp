@@ -644,7 +644,7 @@ s16 dll_CE_setScale(GameObject* obj) {
 }
 
 int dll_CE_getExtraSize(void) {
-    return 0x41c;
+    return sizeof(GroundBaddieState) + sizeof(DllCEControl);
 }
 
 int dll_CE_getObjectTypeId(void) {

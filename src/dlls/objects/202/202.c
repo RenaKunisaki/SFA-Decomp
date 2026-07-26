@@ -987,7 +987,7 @@ s16 iceBaddie_setScale(GameObject* obj) {
 }
 
 int iceBaddie_getExtraSize(void) {
-    return 0x458;
+    return sizeof(GroundBaddieState) + sizeof(IceBaddieControl);
 }
 
 int iceBaddie_getObjectTypeId(void) {

@@ -2,9 +2,8 @@
 #define DLLS_OBJECTS_207_CANNONCLAW_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-
-typedef struct GameObject GameObject;
 
 typedef struct CannonClawPlacement {
     ObjPlacement base;     /* 0x00 */

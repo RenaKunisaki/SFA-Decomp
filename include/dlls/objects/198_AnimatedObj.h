@@ -2,10 +2,9 @@
 #define DLLS_OBJECTS_198_ANIMATEDOBJ_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "main/objseq.h"
-
-typedef struct GameObject GameObject;
 
 typedef struct AnimatedObjPlacement {
     ObjPlacement base;     /* 0x00 */
