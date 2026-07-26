@@ -59,16 +59,6 @@ typedef struct DIMbossspitState
     s32 unk40C;
 } DIMbossspitState;
 
-extern f32 gDimBossSpitGravity;
-extern f32 gDimBossSpitVelocityDamping;
-extern f32 lbl_803E4D68;
-extern const f32 lbl_803E4D6C;
-extern f32 lbl_803E4D70;
-extern f32 lbl_803E4D74;
-extern f32 lbl_803E4D78;
-extern f32 lbl_803E4D7C;
-extern f32 lbl_803E4D80;
-
 void DIMbossspit_updateBurst(GameObject* obj)
 {
     int state;
@@ -137,6 +127,9 @@ void DIMbossspit_updateBurst(GameObject* obj)
     (*gPartfxInterface)->spawnObject((void*)obj, DIMBOSSSPIT_PARTFX_BURST, NULL, 1, -1, &radius);
 }
 
+const f32 gDimBossSpitGravity[1] = {0.07f};
+const f32 gDimBossSpitVelocityDamping[1] = {0.97f};
+
 int DIMbossspit_getExtraSize(void)
 {
     return 0x8;
@@ -202,11 +195,11 @@ void DIMbossspit_update(GameObject* obj)
         }
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIMBOSSSPIT_HIT_VOLUME_SLOT_5, 4, 0);
         ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 10);
-        (obj)->anim.velocityY = (obj)->anim.velocityY - gDimBossSpitGravity * timeDelta;
-        (obj)->anim.velocityY = (obj)->anim.velocityY * gDimBossSpitVelocityDamping;
-        (obj)->anim.rotX = lbl_803E4D68 * timeDelta + (f32)(obj)->anim.rotX;
-        (obj)->anim.rotZ = lbl_803E4D6C * timeDelta + (f32)(obj)->anim.rotZ;
-        (obj)->anim.rotY = lbl_803E4D6C * timeDelta + (f32)(obj)->anim.rotY;
+        (obj)->anim.velocityY = (obj)->anim.velocityY - gDimBossSpitGravity[0] * timeDelta;
+        (obj)->anim.velocityY = (obj)->anim.velocityY * gDimBossSpitVelocityDamping[0];
+        (obj)->anim.rotX = 910.0f * timeDelta + (f32)(obj)->anim.rotX;
+        (obj)->anim.rotZ = 364.0f * timeDelta + (f32)(obj)->anim.rotZ;
+        (obj)->anim.rotY = 364.0f * timeDelta + (f32)(obj)->anim.rotY;
         objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
                 (obj)->anim.velocityZ * timeDelta);
         i = 0;
@@ -260,13 +253,12 @@ void DIMbossspit_init(int obj)
         modelLightStruct_setLightKind(((DIMbossspitState*)state)->light, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(((DIMbossspitState*)state)->light, 0, 255, 0, 0);
         modelLightStruct_setSpecularColor(((DIMbossspitState*)state)->light, 0, 255, 0, 0);
-        modelLightStruct_setDistanceAttenuation(((DIMbossspitState*)state)->light, lbl_803E4D70,
-                                                lbl_803E4D74);
+        modelLightStruct_setDistanceAttenuation(((DIMbossspitState*)state)->light, 180.0f, 200.0f);
         lightSetField4D(((DIMbossspitState*)state)->light, 1);
-        modelLightStruct_setEnabled(((DIMbossspitState*)state)->light, 1, lbl_803E4D78);
+        modelLightStruct_setEnabled(((DIMbossspitState*)state)->light, 1, 0.0f);
         modelLightStruct_setAffectsAabbLightSelection(((DIMbossspitState*)state)->light, 1);
-        modelLightStruct_setupGlow(((DIMbossspitState*)state)->light, 0, 0, 255, 0, 127, lbl_803E4D7C);
-        modelLightStruct_setGlowProjectionRadius(((DIMbossspitState*)state)->light, lbl_803E4D80);
+        modelLightStruct_setupGlow(((DIMbossspitState*)state)->light, 0, 0, 255, 0, 127, 50.0f);
+        modelLightStruct_setGlowProjectionRadius(((DIMbossspitState*)state)->light, 100.0f);
     }
     ((GameObject*)obj)->userData1 = 0xb4;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, 0, 0, 0);
