@@ -37,6 +37,7 @@
 #include "dlls/objects/238_EffectBox.h"
 #include "dlls/objects/239.h"
 #include "dlls/objects/240_WarpPoint.h"
+#include "dlls/objects/241_InvHit.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -192,8 +193,8 @@ extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescr
     gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor,
     gIceblastObjDescriptor;
-extern ResourceDescriptor gInfoTextObjDescriptor, gInvHitObjDescriptor, gInvisibleHitSwitchObjDescriptor,
-    gKT_TorchObjDescriptor, gKtFallingrocksObjDescriptor;
+extern ResourceDescriptor gInfoTextObjDescriptor, gInvisibleHitSwitchObjDescriptor, gKT_TorchObjDescriptor,
+    gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
@@ -1172,7 +1173,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gEffectBoxObjDescriptor,
     (ResourceDescriptor*)&gPushableObjDescriptor,
     (ResourceDescriptor*)&gWarpPointObjDescriptor,
-    &gInvHitObjDescriptor,
+    (ResourceDescriptor*)&gInvHitObjDescriptor,
     &gIceblastObjDescriptor,
     &gFlameblastObjDescriptor,
     &gDoorF4ObjDescriptor,
