@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Brute-force a function's register allocation by permuting its local
-declaration ORDER (the #1 source-controllable coloring lever: decl order sets
-saved-register homes, per CLAUDE.md) and rebuilding + measuring each variant.
+declaration ORDER (decl order sets saved-register homes, per CLAUDE.md) and
+rebuilding + measuring each variant.
 
 For each candidate ordering it:
   1. rewrites the leading declaration block of the target function,

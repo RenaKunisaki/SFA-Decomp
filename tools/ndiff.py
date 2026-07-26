@@ -2,8 +2,8 @@
 
 Masks branch-target addresses and groups divergences into regions, so output
 shows only real codegen differences (not address/label noise). The classifier
-tags each region with a structural label and the compiler pass that owns it,
-to triage with docs/mwcc_re/LEVERS.md -- it does NOT prescribe a fix.
+tags each region with a structural label and the compiler pass that owns it --
+it locates the divergence, it does NOT prescribe a fix.
 
 Usage:
   python3 tools/ndiff.py <unit> <symbol>                normalized region diff
@@ -77,9 +77,9 @@ def regs_only_diff(tt: list[str], cc: list[str]) -> bool:
     return all(strip(a) == strip(b) for a, b in zip(tt, cc))
 
 
-# Structural tag -> the pass that owns this class of divergence. Triage with
-# docs/mwcc_re/LEVERS.md (the code-path-backed levers), then read the target asm.
-# Deliberately NOT a recipe catalogue: derive the fix fresh, per CLAUDE.md.
+# Structural tag -> the pass that owns this class of divergence. Deliberately
+# NOT a recipe catalogue: read the target asm and derive the fix fresh, per
+# CLAUDE.md.
 CLASSIFY_OWNER = {
     "ext-insert": "narrowing/extension (operand width & signedness)",
     "ext-delete": "narrowing/extension (operand width & signedness)",
@@ -205,7 +205,7 @@ def main() -> None:
             kind = classify(tt, cc)
             if kind:
                 owner = CLASSIFY_OWNER.get(kind, "")
-                print(f"  >> [{kind}] {owner} -- triage via docs/mwcc_re/LEVERS.md")
+                print(f"  >> [{kind}] {owner}")
         if args.classify or args.context:
             print()
     print(f"-- {len(regs)} region(s), T={len(t)} C={len(c)} instrs")

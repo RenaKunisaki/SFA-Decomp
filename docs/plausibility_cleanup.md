@@ -76,8 +76,8 @@ Three mantras:
    that's noise, and it discourages the next pass from re-attempting it.
 3. **Load-bearing ≠ ugly-forever, and ≠ permanent.** Sometimes the quirk can be
    re-expressed now (a raw offset → a typed field is byte-neutral); sometimes it can't
-   yet (a store order). A quirk that resists today is a lever not-yet-found — leave it
-   unmarked so a later pass tries again, don't enshrine it.
+   yet (a store order). A quirk that resists today just means the spelling hasn't been
+   found yet — leave it unmarked so a later pass tries again, don't enshrine it.
 
 ---
 
@@ -480,7 +480,7 @@ gone, or is a decompiler artifact, delete it.
 **Do not annotate load-bearing quirks.** When a change regresses and you revert it, do *not*
 leave a "this is load-bearing / don't `&`-collapse this / order matters" comment. It reads
 as noise, and worse, it tells the next agent not to bother — but a quirk that resisted one
-cleanup is a lever not-yet-found, not a law (CLAUDE.md, "fresh eyes"). Let the next pass
+cleanup is a spelling not-yet-found, not a law (CLAUDE.md, "fresh eyes"). Let the next pass
 re-attempt it with the verification loop; that's cheap and sometimes it now falls. Silently
 revert and move on.
 

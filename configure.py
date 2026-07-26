@@ -148,7 +148,7 @@ parser.add_argument(
     choices=["prodg", "mwcc"],
     default="prodg",
     help="compiler for src/main/zlb.c; mwcc is a diagnostic comparison path "
-    "only (retail is GCC-family), see docs/mwcc_re/RESIDUAL_HANDOFFS.md",
+    "only (retail is GCC-family)",
 )
 parser.add_argument(
     "--prodg-version",
@@ -231,7 +231,7 @@ config.scratch_preset_id = None
 # prologues that open stwu-before-mflr on 8-byte-aligned frames, while retail
 # opens mflr-before-stwu on an 84-byte (4-aligned) frame. --prodg-version
 # selects the release, so an acquired older cc1 can be tested by dropping it
-# in build/compilers/ProDG/<ver>. See docs/mwcc_re/RESIDUAL_HANDOFFS.md.
+# in build/compilers/ProDG/<ver>.
 # NOTE: prologue shape alone does NOT discriminate MWCC from GCC - the matched
 # MWCC twin modelApplyBoneTransform opens mflr/stwu/stw/stmw too. Only the
 # mcrxr/addme idiom is decisive.

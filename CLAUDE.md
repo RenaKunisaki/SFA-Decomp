@@ -10,8 +10,8 @@ retail binary. Main lib compiled with MWCC GC/2.0; audio/MSL with 1.2.5n.
 - Match % truth = `report.json` `fuzzy_match_percent`. Diff tools locate divergence; they don't certify it.
 - **Fresh eyes.** This file is deliberately tiny and is **not** a catalogue of techniques or solved
   cases — that omission is on purpose. If a fix isn't here, that means nothing: read the target asm and
-  derive it yourself. Every function is matchable; an unsolved one is a lever not-yet-found, never an
-  impossibility.
+  derive it yourself. Every function is matchable; an unsolved one is a spelling not-yet-found, never
+  an impossibility.
 
 ## The project itself is the playbook
 The real knowledge lives in matched code, not in this file — that's why this file stays short. To

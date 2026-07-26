@@ -6,14 +6,14 @@
  * file is the annotated reference copy carrying the probe rationale that the
  * comment-free unit source cannot. Keep the two in sync.
  * The retail object is a foreign GCC compile (SN ProDG family), NOT MWCC --
- * see docs/mwcc_re/RESIDUAL_HANDOFFS.md for the detection signature and full
- * evidence trail. Our bundled ProDG 3.5-3.9.3 (GCC 2.95.2/3 SN builds)
+ * the mcrxr/addme idiom is the decisive detection signature.
+ * Our bundled ProDG 3.5-3.9.3 (GCC 2.95.2/3 SN builds)
  * reproduce this source's structure against the retail fn (all loop/table/
  * macro shapes aligned; report.json fuzzy 41.87 on .text, all data sections
  * 100); the residual divergence classes are pure compiler vintage (andi.
  * isel for contiguous masks, mcrxr/addme. decrement loops, no lbzux/lhzu
  * fusion, no loop-invariant lis hoisting) and point at a GCC 2.7/2.8-era SN
- * or Cygnus toolchain. Sourcing such a compiler is the remaining lever.
+ * or Cygnus toolchain. Sourcing such a compiler is the remaining step.
  *
  * Probe-verified GCC spellings (do not "clean up"):
  * - The rotate must be spelled (b << m) | (b >> (32 - m)) with m a NAMED

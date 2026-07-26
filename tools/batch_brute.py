@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Batch-run brute_match --apply-best across all sub-100 -O4,p game functions.
-Cheap (asm-free, self-measuring) sweep for the one reliably-yielding lever:
-decl-order register re-homing. Applies any variant that strictly beats baseline;
+Cheap (asm-free, self-measuring) sweep over decl-order register re-homing.
+Applies any variant that strictly beats baseline;
 logs applied wins for review + path-scoped commit. Skips hot/owned files.
 
 Usage: python3 tools/batch_brute.py [min_fuzzy] [--exclude f1,f2] [--budget N]

@@ -14,7 +14,7 @@ Use this only to find byte-IDENTICAL orderings (ndiff==0, which is exact).
 For "which ordering scores best", use tools/brute_match.py --strategy moves,
 which gates on true objdiff fuzzy_match_percent from report.json.
 
-The declaration-order lever permutes saved-register assignment among locals
+Declaration order permutes saved-register assignment among locals
 with disjoint live ranges.  This sweeps orderings of a contiguous decl block
 and scores every one against the retail object.
 

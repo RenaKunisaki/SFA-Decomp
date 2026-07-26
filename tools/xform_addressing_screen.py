@@ -1,4 +1,4 @@
-"""Screen for the indexed-addressing (x-form) deficit lever.
+"""Screen for the indexed-addressing (x-form) deficit.
 
 Retail shape:  addi r0,IV,K ; lfsx/lwzx/stfsx base,r0   (base re-dereferenced per access)
 Our shape:     add  rX,base,off ; lfs K(rX)             (base pinned in a stable local)
