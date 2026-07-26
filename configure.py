@@ -1665,6 +1665,7 @@ config.libs = [
             Object(NonMatching, "main/dll/mmp_gyservent.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/294/294.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/325_CloudPrison/CloudPrison.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/326_CloudShipCo/CloudShipCo.c", cflags=cflags_dll_noopt),
             Object(
                 NonMatching,
                 "main/dll/CF/dll_0148_cfguardian.c", cflags=cflags_dll_noopt_nocse_noinline,

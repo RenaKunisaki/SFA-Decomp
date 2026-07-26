@@ -2217,6 +2217,9 @@ dlls/objects/325_CloudPrison/CloudPrison.c:
 	.sdata      start:0x803DBE08 end:0x803DBE10
 	.sbss       start:0x803DDB08 end:0x803DDB10
 
+dlls/objects/326_CloudShipCo/CloudShipCo.c:
+	.sdata      start:0x803DBE10 end:0x803DBE18
+
 main/dll/CF/dll_0148_cfguardian.c:
 	.text       start:0x8019AE3C end:0x8019C784
 	.rodata     start:0x802C22C0 end:0x802C22E8

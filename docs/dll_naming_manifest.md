@@ -371,7 +371,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x143 | FEseqobject | COMPLETE | dlls/objects/323_FEseqobject/FEseqobject.c | = (canonical) | — |
 | 0x144 | — | NO-RETAIL-NAME | dlls/objects/324/324.c | = (canonical) | — |
 | 0x145 | CloudPrison | COMPLETE | dlls/objects/325_CloudPrison/CloudPrison.c | = (canonical) | — |
-| 0x146 | CloudShipCo | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x146 | CloudShipCo | COMPLETE | dlls/objects/326_CloudShipCo/CloudShipCo.c | = (canonical) | data-only DLL |
 | 0x147 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x148 | CFGuardian | COMPLETE | main/dll/dll_0148_cfguardian.c | main/dll/CF/dll_0148_cfguardian.c | — |
 | 0x149 | CFWindLift (+CFTreasWind) | CONFIRMED | main/dll/dll_0149_cfwindlift.c | main/dll/CF/dll_0149_cfwindlift.c | — |
