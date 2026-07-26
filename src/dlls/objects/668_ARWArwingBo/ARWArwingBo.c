@@ -54,20 +54,20 @@ ObjectDescriptor gARWArwingBoObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)arwarwingbo_getExtraSize,
 };
 
-static void arwarwingbo_detonate(int obj)
+static void arwarwingbo_detonate(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = &((GameObject*)obj)->anim;
-    ArwingBombState* state = ((GameObject*)obj)->extra;
+    ObjAnimComponent* objAnim = &obj->anim;
+    ArwingBombState* state = obj->extra;
 
     arwarwing_clearActiveBomb(getArwing());
-    Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
+    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_awghitobj16_2a5);
     state->explosionTimer = 100.0f;
     state->control.fuseTimer = 0.0f;
     objAnim->alpha = 0;
     (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-    spawnExplosion((GameObject*)obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
-    ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x280);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
+    spawnExplosion(obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
+    ObjHitbox_SetSphereRadius(&obj->anim, 0x280);
+    ObjHits_SetHitVolumeSlot(&obj->anim, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
     objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
 }
 
@@ -124,24 +124,24 @@ void arwarwingbo_hitDetect(void)
 {
 }
 
-void arwarwingbo_update(int obj)
+void arwarwingbo_update(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = &((GameObject*)obj)->anim;
-    ArwingBombState* state = ((GameObject*)obj)->extra;
+    ObjAnimComponent* objAnim = &obj->anim;
+    ArwingBombState* state = obj->extra;
     GameObject* arwing = getArwing();
     f32 zero;
 
     if (arwing->objectFlags & ARWARWINGBO_OBJFLAG_PARENT_SLACK)
     {
         arwarwing_clearActiveBomb(arwing);
-        Obj_FreeObject((GameObject*)obj);
+        Obj_FreeObject(obj);
         return;
     }
     if (state->explosionTimer > (zero = 0.0f))
     {
         state->explosionTimer -= timeDelta;
         if (state->explosionTimer <= zero)
-            Obj_FreeObject((GameObject*)obj);
+            Obj_FreeObject(obj);
         return;
     }
     if (state->control.fuseTimer > zero)
@@ -149,43 +149,43 @@ void arwarwingbo_update(int obj)
         state->control.fuseTimer -= timeDelta;
         if (state->control.fuseTimer <= zero)
         {
-            state = ((GameObject*)obj)->extra;
+            state = obj->extra;
             arwarwing_clearActiveBomb(getArwing());
-            Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_ar_awghitobj16_2a5);
             state->explosionTimer = 100.0f;
             state->control.fuseTimer = 0.0f;
             objAnim->alpha = 0;
             (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-            spawnExplosion((GameObject*)obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x280);
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
+            spawnExplosion(obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
+            ObjHitbox_SetSphereRadius(&obj->anim, 0x280);
+            ObjHits_SetHitVolumeSlot(&obj->anim, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
             objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
         }
-        (*gPartfxInterface)->spawnObject((void*)obj, ARWARWINGBO_PARTFX, NULL, 1, -1, &objAnim->velocityX);
-        (*gPartfxInterface)->spawnObject((void*)obj, ARWARWINGBO_PARTFX, NULL, 1, -1, &objAnim->velocityX);
+        (*gPartfxInterface)->spawnObject(obj, ARWARWINGBO_PARTFX, NULL, 1, -1, &objAnim->velocityX);
+        (*gPartfxInterface)->spawnObject(obj, ARWARWINGBO_PARTFX, NULL, 1, -1, &objAnim->velocityX);
     }
     else
     {
         return;
     }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, 0xf, 0, 0);
+    ObjHits_SetHitVolumeSlot(&obj->anim, 0xf, 0, 0);
     if ((*(ObjHitsPriorityState**)&objAnim->hitReactState)->lastHitObject != 0 ||
         (*(ObjHitsPriorityState**)&objAnim->hitReactState)->contactFlags != 0 ||
         (getButtonsJustPressed(0) & PAD_BUTTON_B))
     {
-        state = ((GameObject*)obj)->extra;
+        state = obj->extra;
         arwarwing_clearActiveBomb(getArwing());
-        Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_ar_awghitobj16_2a5);
         state->explosionTimer = 100.0f;
         state->control.fuseTimer = 0.0f;
         objAnim->alpha = 0;
         (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-        spawnExplosion((GameObject*)obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
-        ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x280);
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
+        spawnExplosion(obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
+        ObjHitbox_SetSphereRadius(&obj->anim, 0x280);
+        ObjHits_SetHitVolumeSlot(&obj->anim, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
         objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
     }
-    objMove((GameObject*)obj, objAnim->velocityX * timeDelta, objAnim->velocityY * timeDelta, objAnim->velocityZ * timeDelta);
+    objMove(obj, objAnim->velocityX * timeDelta, objAnim->velocityY * timeDelta, objAnim->velocityZ * timeDelta);
 }
 
 void arwarwingbo_init(GameObject* obj, ArwingBombSetup* setup)
