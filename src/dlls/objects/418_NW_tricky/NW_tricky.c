@@ -50,7 +50,7 @@ void NW_tricky_free(int obj)
     mainSetBits(GAMEBIT_Tricky_Usable, 1);
 }
 
-void NW_tricky_update(int* obj)
+void NW_tricky_update(GameObject* obj)
 {
 
     int count;
@@ -69,7 +69,7 @@ void NW_tricky_update(int* obj)
     f32 healthMin;
     int i;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     tricky = (int*)getTrickyObject();
     player = (int*)Obj_GetPlayerObject();
     ids = *(NwTrickyIds*)lbl_802C23E8;
@@ -171,11 +171,11 @@ void NW_tricky_update(int* obj)
     }
 }
 
-void NW_tricky_init(int* obj)
+void NW_tricky_init(GameObject* obj)
 {
-    ((GameObject*)obj)->animEventCallback = NW_tricky_SeqFn;
-    ((GameObject*)obj)->objectFlags =
-        (u16)(((GameObject*)obj)->objectFlags | (NWTRICKY_OBJFLAG_HIDDEN | NWTRICKY_OBJFLAG_HITDETECT_DISABLED));
+    obj->animEventCallback = NW_tricky_SeqFn;
+    obj->objectFlags =
+        (u16)(obj->objectFlags | (NWTRICKY_OBJFLAG_HIDDEN | NWTRICKY_OBJFLAG_HITDETECT_DISABLED));
 }
 
 ObjectDescriptor gNW_trickyObjDescriptor = {
