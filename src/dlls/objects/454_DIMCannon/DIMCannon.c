@@ -1,5 +1,5 @@
 /*
- * dimcannon (DLL 0x1C6) - DIM lava cannon; a stationary turret that tracks
+ * DIMCannon (DLL 0x1C6) - DIM lava cannon; a stationary turret that tracks
  * and fires cannonballs at the player, with a manned-control mode (fireState 3)
  * in which the player aims with the stick, charges with A, and fires on release.
  * The 0x1D6 sub-variant is a falling-debris prop shared with DIMwooddoor.
@@ -25,7 +25,6 @@
 #include "main/dll/DIM/dll_01C6_dimcannon.h"
 #include "main/dll/dll_801b1d84.h"
 #include "main/dll/tricky_api.h"
-#include "main/pad.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
@@ -473,9 +472,6 @@ void DIMCannon_update(GameObject* obj)
     ObjAnim_AdvanceCurrentMove((int)obj, gDimCannonAnimAdvanceSpeed, timeDelta, NULL);
 }
 
-
-#define DIMCANNON_MAP_EVENT_SLOT_PLAYER_OPERATED 0x13
-
 void DIMCannon_init(GameObject* obj, DimcannonPlacement* arg)
 {
     ObjMsg_AllocQueue(obj, 4);
@@ -564,7 +560,6 @@ void DIMCannon_release(void)
 void DIMCannon_initialise(void)
 {
 }
-
 
 ObjectDescriptor gDIMCannonObjDescriptor = {
     0,

@@ -497,7 +497,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C3 | DIMGate (+DIM2BossDoo) | COMPLETE | dlls/objects/451_DIMGate/DIMGate.c | = (canonical) | — |
 | 0x1C4 | DIMIceWall | COMPLETE | dlls/objects/452_DIMIceWall/DIMIceWall.c | = (canonical) | — |
 | 0x1C5 | DIMBarrier (+DIM2CannonT) | COMPLETE | dlls/objects/453_DIMBarrier/DIMBarrier.c | = (canonical) | — |
-| 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | main/dll/dll_01C6_dimcannon.c | main/dll/DIM/dll_01C6_dimcannon.c | — |
+| 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | dlls/objects/454_DIMCannon/DIMCannon.c | = (canonical) | — |
 | 0x1C7 | DIMLavaSmash | CONFIRMED | main/dll/dll_01C7_dimlavasmash.c | main/dll/DIM/dll_01C7_dimlavasmash.c | — |
 | 0x1C8 | DIMBridgeCogmai | CONFIRMED | main/dll/dll_01C8_dimbridgecogmai.c | main/dll/DIM/dll_01C8_dimbridgecogmai.c | — |
 | 0x1C9 | DIMDismountpoint | CONFIRMED | main/dll/dll_01C9_dimdismountpoint.c | main/dll/DIM/dll_01C9_dimdismountpoint.c | — |
@@ -831,7 +831,7 @@ name was a deliberate choice by a previous carve:
 | 0x1C3 | main/dll/dll_01C3_dimgate.c | dlls/objects/451_DIMGate/DIMGate.c | COMPLETE |
 | 0x1C4 | main/dll/dll_01C4_dimicewall.c | dlls/objects/452_DIMIceWall/DIMIceWall.c | COMPLETE |
 | 0x1C5 | main/dll/dll_01C5_dimbarrier.c | dlls/objects/453_DIMBarrier/DIMBarrier.c | COMPLETE |
-| 0x1C6 | main/dll/dll_01C6_dimcannon.c | main/dll/DIM/dll_01C6_dimcannon.c | COMPLETE |
+| 0x1C6 | main/dll/dll_01C6_dimcannon.c | dlls/objects/454_DIMCannon/DIMCannon.c | COMPLETE |
 | 0x1C7 | main/dll/dll_01C7_dimlavasmash.c | main/dll/DIM/dll_01C7_dimlavasmash.c | CONFIRMED |
 | 0x1C8 | main/dll/dll_01C8_dimbridgecogmai.c | main/dll/DIM/dll_01C8_dimbridgecogmai.c | CONFIRMED |
 | 0x1C9 | main/dll/dll_01C9_dimdismountpoint.c | main/dll/DIM/dll_01C9_dimdismountpoint.c | CONFIRMED |
