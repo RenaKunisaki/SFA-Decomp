@@ -3057,7 +3057,7 @@ main/dll/SB/dll_01EE_sbcannonball.c:
 	.data       start:0x80327D68 end:0x80327DA0
 	.sdata2     start:0x803E58B0 end:0x803E58D4
 
-main/dll/SB/dll_01ED_sbfireball.c:
+dlls/objects/493_SB_FireBall/SB_FireBall.c:
 	.text       start:0x801E4288 end:0x801E45AC
 	.data       start:0x80327DA0 end:0x80327DD8
 	.sdata2     start:0x803E58D8 end:0x803E58E4

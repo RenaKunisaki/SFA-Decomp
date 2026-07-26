@@ -1,5 +1,5 @@
 /*
- * sbfireball (DLL 0x1ED) - the fire projectile used by the ShipBattle
+ * SB_FireBall (DLL 0x1ED) - the fire projectile used by the ShipBattle
  * (SB) boss set. A fireball is spawned with an owner (taken from the
  * spawning object's slot), drifts along the velocity captured on its
  * first armed frame, spins, trails particles, and arms a solid hitbox
