@@ -708,7 +708,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x296 | WCTempleDia | CONFIRMED | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | — |
 | 0x297 | WCTempleBri | CONFIRMED | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | — |
 | 0x298 | WCFloorTile | CONFIRMED | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | — |
-| 0x299 | — | NO-RETAIL-NAME | main/dll/dll_0299.c | = (canonical) | — |
+| 0x299 | — | NO-RETAIL-NAME | dlls/objects/665/665.c | = (canonical) | — |
 | 0x29A | ARWArwing | COMPLETE | dlls/objects/666_ARWArwing/ARWArwing.c | = (canonical) | — |
 | 0x29B | — (+arwingandrossstuff, rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | NO-RETAIL-NAME | dlls/objects/667/667.c | = (canonical) | — |
 | 0x29C | ARWArwingBo | CONFIRMED | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | = (canonical) | — |
