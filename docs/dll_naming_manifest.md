@@ -443,7 +443,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x18D | MMSH_Scales | COMPLETE | dlls/objects/397_MMSH_Scales/MMSH_Scales.c | = (canonical) | — |
 | 0x18E | MMSH_WaterS | COMPLETE | dlls/objects/398_MMSH_WaterS/MMSH_WaterS.c | = (canonical) | — |
 | 0x18F | ECSH_Shrine | COMPLETE | dlls/objects/399_ECSH_Shrine/ECSH_Shrine.c | = (canonical) | — |
-| 0x190 | ECSH_Cup | COMPLETE | main/dll/dll_0190_ecshcup.c | = (canonical) | — |
+| 0x190 | ECSH_Cup | COMPLETE | dlls/objects/400_ECSH_Cup/ECSH_Cup.c | = (canonical) | — |
 | 0x191 | ECSH_Creator | CONFIRMED | main/dll/dll_0191_ecshcreator.c | = (canonical) | — |
 | 0x192 | GPSH_Shrine | CONFIRMED | main/dll/dll_0192_gpshshrine.c | = (canonical) | — |
 | 0x193 | GPSH_ObjCreator | CONFIRMED | main/dll/dll_0193_gpshobjcreator.c | = (canonical) | — |

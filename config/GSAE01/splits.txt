@@ -2812,7 +2812,7 @@ main/dll/dll_0194_gpshscene.c:
 	.data       start:0x80326400 end:0x80326438
 	.sdata2     start:0x803E5058 end:0x803E505C
 
-main/dll/dll_0190_ecshcup.c:
+dlls/objects/400_ECSH_Cup/ECSH_Cup.c:
 	.text       start:0x801C835C end:0x801C8B68
 	.rodata     start:0x802C23B8 end:0x802C23C4
 	.data       start:0x80326438 end:0x80326470
