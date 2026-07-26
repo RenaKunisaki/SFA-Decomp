@@ -1790,7 +1790,7 @@ dlls/objects/239/239.c:
 	.sbss       start:0x803DDAB8 end:0x803DDAC0
 	.sdata2     start:0x803E3528 end:0x803E35D8
 
-main/dll/dll_00F0_warppoint.c:
+dlls/objects/240_WarpPoint/WarpPoint.c:
 	.text       start:0x80176FC4 end:0x8017779C
 	.data       start:0x80320DB8 end:0x80320DF0
 	.sdata2     start:0x803E35D8 end:0x803E35E8

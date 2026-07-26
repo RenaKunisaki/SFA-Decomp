@@ -1,5 +1,5 @@
 /*
- * warppoint (DLL 0x00F0) - placed map-transition / save-point markers.
+ * WarpPoint (DLL 0x00F0) - placed map-transition / save-point markers.
  *
  * Each instance carries a placement-defined "mode" byte (def+0x1d) that
  * selects how the marker behaves in WarpPoint_update:
