@@ -51,11 +51,7 @@
 
 typedef struct EnemymushroomPlacement
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x08 */
-    f32 posY; /* 0x0C */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x18 - 0x14];
+    ObjPlacement base;
     u16 regrowDelay; /* 0x18: frames before a deflated mushroom regrows */
     u8 pad1A[0x1C - 0x1A];
     s16 popGameBit; /* 0x1C: game bit set when popped (-1 = none) */
