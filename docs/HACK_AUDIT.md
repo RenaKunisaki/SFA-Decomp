@@ -126,7 +126,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/light | 100.0000 | 79.4737 | -20.5263 |
 | main/main/dll/SH/dll_01A8_shkillermushroom | 100.0000 | 79.4975 | -20.5025 |
 | main/main/dll/cutcam | 99.8728 | 79.7070 | -20.1658 |
-| main/main/dll/ARW/dll_02A6_arwsquadron | 100.0000 | 79.9973 | -20.0027 |
+| main/dlls/objects/678_ARWSquadron/ARWSquadron | 100.0000 | 79.9973 | -20.0027 |
 | main/main/snowclaw | 100.0000 | 80.3167 | -19.6833 |
 | main/main/dll/CC/dll_0188_cclightfoot | 100.0000 | 80.3610 | -19.6390 |
 | main/main/dll/dll_00FE_magicplant | 100.0000 | 80.7388 | -19.2612 |
