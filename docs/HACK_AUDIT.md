@@ -178,7 +178,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/duster | 100.0000 | 87.9461 | -12.0539 |
 | main/main/dll/snowworm | 100.0000 | 87.9695 | -12.0305 |
 | main/main/dll/dll_0039_dummy39 | 100.0000 | 88.0233 | -11.9767 |
-| main/main/dll/DR/dll_0258_drcloudrunner | 99.7540 | 87.7828 | -11.9713 |
+| main/dlls/objects/600_DR_CloudRun/DR_CloudRun | 99.7540 | 87.7828 | -11.9713 |
 | main/main/dll/dll_0157_spiritdoorspirit | 100.0000 | 88.2917 | -11.7083 |
 | main/main/dll/dll_000F_unk | 100.0000 | 88.2923 | -11.7077 |
 | main/main/dll/dll_00ED_collectible | 100.0000 | 88.3457 | -11.6543 |

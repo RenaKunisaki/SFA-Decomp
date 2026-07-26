@@ -255,7 +255,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/dll_bb.c` | 47 | `view = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 204 | `view = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DR/dll_0257_drearthwarrior.c` | 591 | `slot = (int)Camera_GetCurrentViewSlot();` |
-| `src/main/dll/DR/dll_0258_drcloudrunner.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/600_DR_CloudRun/DR_CloudRun.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/objfx.c` | 1227 | `f32 d = Camera_DistanceToCurrentViewPosition(` |
 | `src/main/dll/objfx.c` | 1274 | `f32 d = Camera_DistanceToCurrentViewPosition(((ObjAnimComponent*)src)->worldPosX,` |
 | `src/main/dll/objfx.c` | 1325 | `f32 d = Camera_DistanceToCurrentViewPosition(src->anim.worldPosX, src->anim.worldPosY,` |
