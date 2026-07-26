@@ -449,7 +449,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
 {
     int player;
     int hit;
-    u8 result;
+    int result;
     u16 sector;
     int diff;
     f32 hDist;
@@ -1035,6 +1035,9 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
     u8 visible;
     f32 angle;
     s16 setupId;
+    f32 angleScale;
+    f32 angleDiv;
+    f32 sightRange;
 
     visibilityBits = gTrickyVisibilityBitsInit;
     probe.x = obj->anim.localPosX;
@@ -1049,9 +1052,13 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
     {
         baseAngle = obj->anim.rotX;
     }
-    for (i = 0; i < 4; i++)
+    angleScale = lbl_803E25B4;
+    i = 0;
+    angleDiv = lbl_803E25B8;
+    sightRange = enemySightRange;
+    for (; i < 4; i++)
     {
-        angle = (lbl_803E25B4 * (f32)(s32)((s32)baseAngle + ((u32)(u16)i << 0xe))) / lbl_803E25B8;
+        angle = (angleScale * (f32)(s32)((s32)baseAngle + ((u32)(u16)i << 0xe))) / angleDiv;
         probe.x = obj->anim.worldPosX - (radius * mathSinf(angle));
         probe.y = obj->anim.worldPosY;
         probe.z = obj->anim.worldPosZ - (radius * mathCosf(angle));
@@ -1064,7 +1071,7 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
         }
         voxmaps_worldToGrid((f32*)&probe, probeGrid);
         PSVECSubtract(&obj->anim.worldPosX, (f32*)&probe, (f32*)&delta);
-        if (PSVECMag((f32*)&delta) < enemySightRange)
+        if (PSVECMag((f32*)&delta) < sightRange)
         {
             if (*(u32*)&obj->anim.parent != 0)
             {
