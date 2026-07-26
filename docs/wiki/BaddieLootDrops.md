@@ -97,7 +97,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   against the wiki's item list). This isn't the *baddie* system the wiki page is about, but it's
   the same "container takes damage -> on death, look up an item id from a small per-instance
   table -> spawn it" shape, and a good model for whoever finds the baddie-side equivalent.
-- `src/main/snowclaw.c`: `SnowclawState.dropIndex` (an `init[0x27]` placement byte) indexes a
+- `src/dlls/objects/604/604.c`: `SnowclawState.dropIndex` (an `init[0x27]` placement byte) indexes a
   small per-species table, `extern SnowClawAnimTbl gSnowClawDropObjectTable;` (this codebase
   types `SnowClawAnimTbl` as `{ s16 v[5]; }`, i.e. 10 bytes; `config/GSAE01/symbols.txt` records
   the retail symbol itself as `.rodata:0x802C2540 size:0x10` — the 6-byte discrepancy against

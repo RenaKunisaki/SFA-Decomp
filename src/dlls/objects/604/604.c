@@ -1,3 +1,5 @@
+/* DLL 604: SnowClaw-family object callbacks. */
+
 #include "main/audio/sfx.h"
 #include "main/dll/objfx_api.h"
 #include "dlls/object_descriptor.h"
