@@ -610,7 +610,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x234 | DFP_PerchSw | RAW | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | — |
 | 0x235 | DFP_TargetBlock | CONFIRMED | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | — |
 | 0x236 | DFP_LaserBe | CONFIRMED | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | — |
-| 0x237 | DFPSpPl | COMPLETE | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | — |
+| 0x237 | DFPSpPl | COMPLETE | dlls/objects/567_DFPSpPl/DFPSpPl.c | = (canonical) | — |
 | 0x238 | LINKA_levco | RAW | dlls/objects/568_LINKA_levco/LINKA_levco.c | = (canonical) | — |
 | 0x239 | DFP_TextblockObj (+KP_textbloc) | CONFIRMED | main/textblock.c | main/dll/DF/dll_0239_dfptextblockobj.c | engine/SDK host: main/textblock.c |
 | 0x23A | DFP_Platform1 | CONFIRMED | main/platform1.c | main/dll/DF/dll_023A_dfpplatform1.c | engine/SDK host: main/platform1.c |
@@ -779,7 +779,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x11A | DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF | `decoration11a_*` | unrelated | dlls/objects/282/282.c |
 | 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | main/dll/dll_01BD_paymentkiosk.c |
 | 0x1F5 | generalscal, CF_generals, NW_GeneralS, SB_FireBall | `ShipBattle_*` | unrelated | main/dll/dll_01F5_shipbattle.c |
-| 0x237 | DFPSpPl | `laserObj_*` | unrelated | main/dll/dll_0237_dfpsppl.c |
+| 0x237 | DFPSpPl | `laserObj_*` | unrelated | dlls/objects/567_DFPSpPl/DFPSpPl.c |
 | 0x238 | LINKA_levco | `fireObj_*` | unrelated | dlls/objects/568_LINKA_levco/LINKA_levco.c |
 | 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | dlls/objects/644/644.c |
 | 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
@@ -901,7 +901,7 @@ name was a deliberate choice by a previous carve:
 | 0x234 | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | RAW |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | CONFIRMED |
 | 0x236 | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | CONFIRMED |
-| 0x237 | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | COMPLETE |
+| 0x237 | main/dll/dll_0237_dfpsppl.c | dlls/objects/567_DFPSpPl/DFPSpPl.c | COMPLETE |
 | 0x23F | main/dll/dll_023F_dbegg.c | dlls/objects/575_DB_egg/DB_egg.c | COMPLETE |
 | 0x242 | main/dll/dll_0242_dbstealerworm.c | dlls/objects/578_DBstealerwo/DBstealerwo.c | CONFIRMED |
 | 0x243 | main/dll/dll_0243_dbholecontrol1.c | dlls/objects/579_DBHoleContr/DBHoleContr.c | CONFIRMED |

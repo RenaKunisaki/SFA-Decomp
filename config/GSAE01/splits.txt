@@ -3424,7 +3424,7 @@ main/dll/CF/laser.c:
 	.text       start:0x80208FDC end:0x802090A8
 	.data       start:0x80329BC0 end:0x80329C48
 
-main/dll/DF/dll_0237_dfpsppl.c:
+dlls/objects/567_DFPSpPl/DFPSpPl.c:
 	.text       start:0x802090A8 end:0x8020930C
 	.data       start:0x80329C48 end:0x80329C80
 
