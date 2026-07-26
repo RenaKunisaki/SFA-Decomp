@@ -1,5 +1,5 @@
 /*
- * gcbaddieshield (DLL 0xDD) - the spinning shield effect object.
+ * GCbaddieShi (DLL 0xDD) - the spinning shield effect object.
  *
  * A short-lived spinning, fading billboard: init seeds a lifetime counter
  * from the placement data, update spins it on rotX/rotZ each
@@ -17,6 +17,7 @@ int GCbaddieShield_getExtraSize(void)
 {
     return sizeof(GCbaddieShieldState);
 }
+
 int GCbaddieShield_getObjectTypeId(void)
 {
     return 0x0;
