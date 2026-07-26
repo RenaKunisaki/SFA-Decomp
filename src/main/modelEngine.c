@@ -44,6 +44,7 @@
 #include "dlls/objects/245_SidekickBal.h"
 #include "dlls/objects/246_Area.h"
 #include "dlls/objects/247.h"
+#include "dlls/objects/248_LevelName.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -206,8 +207,8 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
 extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLanded_ArwingObjDescriptor,
     gLanternFireFlyObjDescriptor, gLargeCrateObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
     gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLevelNameObjDescriptor,
-    gLightFootObjDescriptor, gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
+    gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMMP_BridgeObjDescriptor, gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
     gMMP_levelcontrolObjDescriptor, gMMP_moonrockObjDescriptor;
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
@@ -1185,7 +1186,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSidekickBallObjDescriptor,
     (ResourceDescriptor*)&gAreaObjDescriptor,
     (ResourceDescriptor*)&dll_F7,
-    &gLevelNameObjDescriptor,
+    (ResourceDescriptor*)&gLevelNameObjDescriptor,
     &gProjectileSwitchObjDescriptor,
     &gInvisibleHitSwitchObjDescriptor,
     &gPressureSwitchFBObjDescriptor,
