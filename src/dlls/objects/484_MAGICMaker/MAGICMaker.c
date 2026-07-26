@@ -46,6 +46,9 @@ u16 gMagicMakerSpawnObjectIds[MAGICMAKER_SPAWN_OBJECT_COUNT] = {
     MAGICMAKER_OBJ_ENERGY_EGG,
 };
 
+const f32 gMagicMakerRenderScale[1] = {1.0f};
+const f32 gMagicMakerSpawnHeightOffset[1] = {10.0f};
+
 int magicmaker_getExtraSize(void)
 {
     return 0x0;
@@ -63,7 +66,7 @@ void magicmaker_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, gMagicMakerRenderScale);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, gMagicMakerRenderScale[0]);
 }
 
 void magicmaker_hitDetect(void)
@@ -115,7 +118,7 @@ void magicmaker_update(GameObject* obj)
                     objSetup->base.posX = obj->anim.localPosX +
                                           (f32)(int)randomGetRange(-MAGICMAKER_SPAWN_RADIUS,
                                                                    MAGICMAKER_SPAWN_RADIUS);
-                    objSetup->base.posY = gMagicMakerSpawnHeightOffset + obj->anim.localPosY;
+                    objSetup->base.posY = gMagicMakerSpawnHeightOffset[0] + obj->anim.localPosY;
                     objSetup->base.posZ = obj->anim.localPosZ +
                                           (f32)(int)randomGetRange(-MAGICMAKER_SPAWN_RADIUS,
                                                                    MAGICMAKER_SPAWN_RADIUS);
@@ -131,7 +134,7 @@ void magicmaker_update(GameObject* obj)
                         i = MAGICMAKER_HIT_BURST_COUNT;
                         do
                         {
-                            objfx_spawnHitEffectBurst((char*)spawnedObj, gMagicMakerRenderScale, 2, 2, 0x64, NULL);
+                            objfx_spawnHitEffectBurst((char*)spawnedObj, gMagicMakerRenderScale[0], 2, 2, 0x64, NULL);
                             i--;
                         } while (i != 0);
                     }
