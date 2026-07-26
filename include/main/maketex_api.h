@@ -25,7 +25,7 @@ int saveCb_8007e77c(u8 index, int unused, void* dst);
 int ObjSeq_StartPreparedStream(int slot);
 void ObjSeq_preempt(int key, int value);
 u8 ObjSeq_getGlobal3(void);
-void ObjSeq_setGlobal3(u8 x);
+void ObjSeq_setGlobal3(s8 x);
 s16 ObjSeq_getGlobal1(void);
 void ObjSeq_setGlobal1(s16 x);
 s16 ObjSeq_getGlobal2(void);

@@ -466,6 +466,7 @@ cflags_dll_noopt_noloopinv_noprop_nospecunroll_noautoinline = [
     '-pragma "ppc_unroll_speculative off"',
 ]
 
+
 cflags_dll_noopt_noloopinv_zerodata = [
     *cflags_dll_noopt_noloopinv,
     '-pragma "explicit_zero_data on"',
@@ -1137,11 +1138,6 @@ config.libs = [
             Object(NonMatching, "main/object.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/object_objdef.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "main/object_system.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/objseq.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
-            Object(
-                NonMatching, "main/objseqinit.c",
-                cflags=cflags_dll_noopt_noloopinv_noprop_nospecunroll_noautoinline,
-            ),
             Object(NonMatching, "main/sky.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/sky_timeblend.c", cflags=[*cflags_dll_noopt_nocse, "-inline", "noauto"]),
             Object(NonMatching, "main/sky_state.c", cflags=cflags_dll_noopt_noautoinline),
@@ -1240,7 +1236,7 @@ config.libs = [
             Object(NonMatching, "track/intersect_render.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "track/intersect_texsetup.c", cflags=cflags_dll_noopt_nocse_noautoinline),
             Object(NonMatching, "track/intersect_memcard.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/maketex.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/maketex.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "main/dll/expgfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/dll_000B_dll0b.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_000C_projgfx.c", cflags=cflags_dll_noopt),
