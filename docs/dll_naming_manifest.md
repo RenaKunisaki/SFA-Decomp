@@ -313,7 +313,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x109 | — | NO-RETAIL-NAME | dlls/objects/265/265.c | = (canonical) | — |
 | 0x10A | Fall_Ladder | CONFIRMED | dlls/objects/266_Fall_Ladder/Fall_Ladder.c | = (canonical) | — |
 | 0x10B | FireFlyLant | CONFIRMED | dlls/objects/267_FireFlyLant/FireFlyLant.c | = (canonical) | — |
-| 0x10C | LanternFireFly | CONFIRMED | main/dll/dll_010C_lanternfirefly.c | = (canonical) | — |
+| 0x10C | LanternFire | CONFIRMED | dlls/objects/268_LanternFire/LanternFire.c | = (canonical) | — |
 | 0x10D | PortalSpelldoor | CONFIRMED | main/dll/dll_010D_portalspelldoor.c | = (canonical) | — |
 | 0x10E | deathseq (+DieDuster, DieFox, DieKrystal) | GUESSED | main/dll/dll_010E_deathseq.c | = (canonical) | — |
 | 0x10F | MMP_Bridge | COMPLETE | main/dll/dll_010F_mmpbridge.c | main/dll/MMP/dll_010F_mmpbridge.c | — |

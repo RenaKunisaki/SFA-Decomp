@@ -1,12 +1,9 @@
 /*
- * LanternFireFly (DLL 0x10C). TU = 0x80186704..0x801871C8.
+ * LanternFire (DLL 0x10C). TU = 0x80186704..0x801871C8.
  */
 #include "main/dll/partfx_interface.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
-#include "main/dll/windlift107state_struct.h"
-#include "main/dll/portalspelldoorstate_struct.h"
-#include "main/dll/scarabstate_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
@@ -31,12 +28,6 @@ typedef struct LanternFireFlyModeBits
     u8 mode : 2;
     u8 rest : 6;
 } LanternFireFlyModeBits;
-
-STATIC_ASSERT(sizeof(ScarabState) == 0x34);
-
-STATIC_ASSERT(sizeof(WindLift107State) == 0x2c);
-
-STATIC_ASSERT(sizeof(PortalSpellDoorState) == 0x10);
 
 /* object group this object joins while active */
 #define LANTERNFIREFLY_OBJGROUP 0x30
@@ -235,8 +226,6 @@ void LanternFireFly_free(GameObject* obj, int flag)
     ObjGroup_RemoveObject((int)obj, LANTERNFIREFLY_OBJGROUP);
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
-
-
 
 void LanternFireFly_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
