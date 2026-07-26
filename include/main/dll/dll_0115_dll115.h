@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_0115_DLL115_H_
 
 #include "types.h"
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "game/objects/object_setup.h"
@@ -25,6 +26,8 @@ typedef struct Dll115State
     u8 step;
     u8 flags;
 } Dll115State;
+
+extern ObjectDescriptor lbl_80321428;
 
 int dll_115_seqFn(GameObject* obj, int p2, ObjAnimUpdateState* animUpdate);
 int dll_115_getExtraSize_ret_2(void);

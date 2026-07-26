@@ -191,3 +191,20 @@ void IMMultiSeq_release(void)
 void IMMultiSeq_initialise(void)
 {
 }
+
+ObjectDescriptor gIMMultiSeqObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)IMMultiSeq_initialise,
+    (ObjectDescriptorCallback)IMMultiSeq_release,
+    0,
+    (ObjectDescriptorCallback)IMMultiSeq_init,
+    (ObjectDescriptorCallback)IMMultiSeq_update,
+    (ObjectDescriptorCallback)IMMultiSeq_hitDetect,
+    (ObjectDescriptorCallback)IMMultiSeq_render,
+    (ObjectDescriptorCallback)IMMultiSeq_free,
+    (ObjectDescriptorCallback)IMMultiSeq_getObjectTypeId,
+    IMMultiSeq_getExtraSize,
+};

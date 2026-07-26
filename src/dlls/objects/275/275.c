@@ -1,69 +1,24 @@
 /*
- * seqobj2 (DLL 0x113) - sequence-triggered placed objects.
- *
- * Hosts three closely-related object behaviours that all drive scripted
- * trigger sequences off game bits:
- *   - seqObject_*  : a generic open/trigger object. Watches openGameBit and
- *     triggerGameBit; on a rising trigger edge it runs the placement's
- *     trigger sequence, then optionally sets/clears bits per the placement
- *     flag byte. State is the SeqObjectState bitfield (SEQOBJECT_STATE_*).
- *   - seqObj2_*    : the SeqObj2 variant (single-byte SeqObj2State), gated on
- *     trigger/open game bits with the same SEQOBJECT_FLAG_* placement flags.
- *   - seqobj2_*    : the SeqObj2 object exported via gSeqObj2ObjDescriptor;
- *     SeqObj2_seqFn handles in-sequence events (op 0 clears the trigger bit,
- *     op 1 sets the open bit) and OSReports the bit usage for debugging.
- *
- * Game bits used here are per-placement (openGameBit/triggerGameBit), not
- * hardcoded; -1 is the "no bit" sentinel.
+ * DLL 0x113 implements sequence-triggered placed objects. SeqObj2_seqFn
+ * handles in-sequence events that clear the trigger bit or set the open bit;
+ * update then preempts or starts the placement's sequence as its game bits
+ * change. The game-bit IDs are placement data, with -1 as the unused sentinel.
  */
-#include "main/dll/IM/dll_0114_immultiseq.h"
-#include "main/dll/dll_0111_doorlock.h"
 #include "main/dll/dll_0112_seqobject.h"
 #include "main/dll/dll_0113_seqobj2.h"
 #include "game/objects/object.h"
-#include "main/objseq.h"
-#include "main/obj_group.h"
 #include "main/gamebits.h"
-#include "dlls/object_descriptor.h"
+#include "main/obj_group.h"
+#include "main/objseq.h"
 #include "dolphin/os.h"
 
-STATIC_ASSERT(sizeof(DoorLockPlacement) == 0x28);
-STATIC_ASSERT(offsetof(DoorLockPlacement, rotXByte) == 0x18);
-STATIC_ASSERT(offsetof(DoorLockPlacement, rotYByte) == 0x19);
-STATIC_ASSERT(offsetof(DoorLockPlacement, rotZByte) == 0x1A);
-STATIC_ASSERT(offsetof(DoorLockPlacement, flags) == 0x1B);
-STATIC_ASSERT(offsetof(DoorLockPlacement, lockGameBit) == 0x1C);
-STATIC_ASSERT(offsetof(DoorLockPlacement, modelBankIndex) == 0x21);
-STATIC_ASSERT(offsetof(DoorLockPlacement, modeFlags) == 0x26);
-STATIC_ASSERT(sizeof(DoorLockState) == 0x1);
-STATIC_ASSERT(sizeof(SeqObjectPlacement) == 0x28);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, openGameBit) == 0x18);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, triggerGameBit) == 0x1A);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, initialYaw) == 0x1C);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, flags) == 0x1D);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, triggerId) == 0x1E);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, modelBankIndex) == 0x1F);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, preemptSequenceId) == 0x20);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, sequenceParam) == 0x22);
-STATIC_ASSERT(offsetof(SeqObjectPlacement, warpMapId) == 0x24);
-STATIC_ASSERT(sizeof(IMMultiSeqPlacement) == 0x34);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, completionGameBits) == 0x18);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, activeGameBits) == 0x20);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, initialYaw) == 0x28);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, modelBankIndex) == 0x2A);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, triggerIds) == 0x2C);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, polarityMask) == 0x30);
-STATIC_ASSERT(sizeof(SeqObjectState) == 0x3);
-STATIC_ASSERT(offsetof(SeqObjectState, triggerBitState) == 0x1);
 STATIC_ASSERT(sizeof(SeqObj2State) == 0x1);
-STATIC_ASSERT(sizeof(IMMultiSeqState) == 0x2);
 
 /* object group this object joins while active */
 #define SEQOBJ2_OBJGROUP 0xf
 
 #define SEQOBJECT_STATE_OPEN             0x01
 #define SEQOBJECT_STATE_TRIGGER_SEQUENCE 0x02
-#define SEQOBJECT_STATE_SEQUENCE_DONE    0x04
 
 #define SEQOBJECT_FLAG_LATCH_SOURCE_CLEAR     0x01
 #define SEQOBJECT_FLAG_SET_SOURCE_ON_SEQUENCE 0x02
@@ -75,11 +30,9 @@ STATIC_ASSERT(sizeof(IMMultiSeqState) == 0x2);
 #define SEQOBJECT_OBJFLAG_HIDDEN             0x4000
 #define SEQOBJECT_OBJFLAG_HITDETECT_DISABLED 0x2000
 
-extern const char sSeqObjNeedBitUsedBitFormat[];
 extern const char sSeqObjNeedBitClearDuringSequenceFormat[];
 extern const char lbl_80321208[];
-
-#include "main/dll/dll_0115_dll115.h"
+extern const char sSeqObjNeedBitUsedBitFormat[];
 
 int SeqObj2_seqFn(int* obj, int* anim, ObjAnimUpdateState* animUpdate)
 {
@@ -249,36 +202,3 @@ const char lbl_80321208[444] =
     "%d: used bit set after sequence\n\000\000newseqobj %d: need bit clear before sequence\n\000\000\000newseqobj %d: "
     "used bit set before sequence\n\000newseqobj %d: about to start the sequence\n\000\000";
 const char sSeqObjNeedBitUsedBitFormat[40] = "newseqobj %d: Need Bit %d, Used Bit %d\n\000";
-
-/* descriptor/ptr table auto 0x803213f0-0x80321460; 8-aligned union places it at
- * 0x803213F0 after the 4-byte retail pad gap_07_803213EC_data (dll_013F idiom) */
-IMMultiSeqDescriptorAlign8 gIMMultiSeqObjDescriptor = {{
-    0x00000000,
-    0x00000000,
-    0x00000000,
-    0x00090000,
-    (ObjectDescriptorCallback)IMMultiSeq_initialise,
-    (ObjectDescriptorCallback)IMMultiSeq_release,
-    0x00000000,
-    (ObjectDescriptorCallback)IMMultiSeq_init,
-    (ObjectDescriptorCallback)IMMultiSeq_update,
-    (ObjectDescriptorCallback)IMMultiSeq_hitDetect,
-    (ObjectDescriptorCallback)IMMultiSeq_render,
-    (ObjectDescriptorCallback)IMMultiSeq_free,
-    (ObjectDescriptorCallback)IMMultiSeq_getObjectTypeId,
-    IMMultiSeq_getExtraSize,
-}};
-u32 lbl_80321428[14] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00090000,
-                        (u32)dll_115_initialise_nop,
-                        (u32)dll_115_release_nop,
-                        0x00000000,
-                        (u32)dll_115_init,
-                        (u32)dll_115_update,
-                        (u32)dll_115_hitDetect_nop,
-                        (u32)dll_115_render,
-                        (u32)dll_115_free,
-                        (u32)dll_115_getObjectTypeId,
-                        (u32)dll_115_getExtraSize_ret_2};

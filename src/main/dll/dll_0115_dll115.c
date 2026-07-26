@@ -212,3 +212,20 @@ void dll_115_release_nop(void)
 void dll_115_initialise_nop(void)
 {
 }
+
+ObjectDescriptor lbl_80321428 = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_115_initialise_nop,
+    (ObjectDescriptorCallback)dll_115_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_115_init,
+    (ObjectDescriptorCallback)dll_115_update,
+    (ObjectDescriptorCallback)dll_115_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_115_render,
+    (ObjectDescriptorCallback)dll_115_free,
+    (ObjectDescriptorCallback)dll_115_getObjectTypeId,
+    dll_115_getExtraSize_ret_2,
+};

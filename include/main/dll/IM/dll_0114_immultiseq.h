@@ -25,14 +25,7 @@ typedef struct IMMultiSeqState
     u8 flags;
 } IMMultiSeqState;
 
-/* 8-aligned so MWCC emits the retail pad before the descriptor table. */
-typedef union IMMultiSeqDescriptorAlign8
-{
-    ObjectDescriptor desc;
-    u64 align8;
-} IMMultiSeqDescriptorAlign8;
-
-extern IMMultiSeqDescriptorAlign8 gIMMultiSeqObjDescriptor;
+extern ObjectDescriptor gIMMultiSeqObjDescriptor;
 
 int IMMultiSeq_getExtraSize(void);
 int IMMultiSeq_getObjectTypeId(void);

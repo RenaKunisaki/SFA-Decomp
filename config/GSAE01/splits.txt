@@ -1865,16 +1865,18 @@ dlls/objects/274/274.c:
 	.data       start:0x80321168 end:0x803211A0
 	.sdata2     start:0x803E37A0 end:0x803E37A4
 
-main/dll/dll_0113_seqobj2.c:
+dlls/objects/275/275.c:
 	.text       start:0x8017C7A4 end:0x8017CBDC
-	.data       start:0x803211A0 end:0x80321460
+	.data       start:0x803211A0 end:0x803213EC
 
 main/dll/IM/dll_0114_immultiseq.c:
 	.text       start:0x8017CBDC end:0x8017CF90
+	.data       start:0x803213F0 end:0x80321428
 	.sdata2     start:0x803E37A8 end:0x803E37AC
 
 main/dll/dll_0115_dll115.c:
 	.text       start:0x8017CF90 end:0x8017D37C
+	.data       start:0x80321428 end:0x80321460
 	.sdata2     start:0x803E37B0 end:0x803E37B4
 
 main/dll/WM/dll_0116_wmcolumn.c:
