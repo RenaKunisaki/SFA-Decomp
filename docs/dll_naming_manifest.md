@@ -270,7 +270,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0DE | baddieInterestp | CONFIRMED | dlls/objects/222_baddieInter/baddieInter.c | = (canonical) | — |
 | 0x0DF | Hagabon | COMPLETE | dlls/objects/223_Hagabon/Hagabon.c | = (canonical) | — |
 | 0x0E0 | SwarmBaddie | CONFIRMED | dlls/objects/224_SwarmBaddie/SwarmBaddie.c | = (canonical) | — |
-| 0x0E1 | WispBaddie | COMPLETE | main/dll/dll_00E1_wispbaddie.c | = (canonical) | — |
+| 0x0E1 | WispBaddie | COMPLETE | dlls/objects/225_WispBaddie/WispBaddie.c | = (canonical) | — |
 | 0x0E2 | staff (+sword) | COMPLETE | main/dll/dll_00E2_staff.c | = (canonical) | — |
 | 0x0E3 | fireball (+projball, AnimProjBal) | GUESSED | main/dll/dll_00E3_fireball.c | = (canonical) | — |
 | 0x0E4 | FlameThrowerspe (+FlameBall, BossDarkorF) | CONFIRMED | main/dll/dll_00E4_flamethrowerspe.c | = (canonical) | — |

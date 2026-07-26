@@ -1,4 +1,8 @@
-/* DLL 0xE1 - wisp baddie / swarmbaddie / hagabon objects [8014F620-8014FEF8) */
+/*
+ * WispBaddie (DLL 0xE1) - a curve-following flying baddie that chases the
+ * player and emits particle effects. This TU also owns the baddie-variant
+ * data blobs and pointer table referenced by the seqobj units.
+ */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/pad_api.h"
@@ -150,6 +154,7 @@ int wispbaddie_getExtraSize(void)
 {
     return sizeof(WispBaddieState);
 }
+
 int wispbaddie_getObjectTypeId(void)
 {
     return 0x9;
