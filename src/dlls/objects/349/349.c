@@ -1,5 +1,5 @@
 /*
- * slidingdoor (DLL 0x15D) - a proximity-triggered sliding door object.
+ * SlidingDoor (DLL 0x15D) - a proximity-triggered sliding door object.
  *
  * The 3-bit door state (top bits of state byte 0) is a 4-state machine:
  *   0 closed, 1 open, 2 opening, 3 closing.
