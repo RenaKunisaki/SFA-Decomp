@@ -409,7 +409,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x16B | — (+DIMMagicLig, IMMagicLigh) | NO-RETAIL-NAME | dlls/objects/363/363.c | = (canonical) | — |
 | 0x16C | — | NO-RETAIL-NAME | dlls/objects/364/364.c | = (canonical) | — |
 | 0x16D | IMIcePillar | CONFIRMED | dlls/objects/365_IMIcePillar/IMIcePillar.c | = (canonical) | — |
-| 0x16E | IMAnimSpacecraft | CONFIRMED | main/dll/dll_016E_imanimspacecraft.c | main/dll/IM/dll_016E_imanimspacecraft.c | — |
+| 0x16E | IMAnimSpace | CONFIRMED | dlls/objects/366_IMAnimSpace/IMAnimSpace.c | = (canonical) | — |
 | 0x16F | IMSpaceThruster | CONFIRMED | main/dll/dll_016F_imspacethruster.c | main/dll/IM/dll_016F_imspacethruster.c | — |
 | 0x170 | IMSpaceRing | CONFIRMED | main/dll/dll_0170_imspacering.c | main/dll/IM/dll_0170_imspacering.c | — |
 | 0x171 | IMSpaceRinggen | CONFIRMED | main/dll/dll_0171_imspaceringgen.c | main/dll/IM/dll_0171_imspaceringgen.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x16E | main/dll/dll_016E_imanimspacecraft.c | main/dll/IM/dll_016E_imanimspacecraft.c | CONFIRMED |
 | 0x16F | main/dll/dll_016F_imspacethruster.c | main/dll/IM/dll_016F_imspacethruster.c | CONFIRMED |
 | 0x170 | main/dll/dll_0170_imspacering.c | main/dll/IM/dll_0170_imspacering.c | CONFIRMED |
 | 0x171 | main/dll/dll_0171_imspaceringgen.c | main/dll/IM/dll_0171_imspaceringgen.c | CONFIRMED |
