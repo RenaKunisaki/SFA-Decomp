@@ -64,48 +64,49 @@ typedef struct GpshShrineState
     u8 pad16[0x18 - 0x16];
 } GpshShrineState;
 
-void gpsh_shrine_updateSpirit(s16* obj)
+void gpsh_shrine_updateSpirit(int objArg)
 {
     u8 buf[32];
-    u8* def;
+    ObjPlacement* def;
     GpshShrineState* sub;
     GameObject* player;
+    GameObject* obj = (GameObject*)objArg;
     int diff;
     f32 c1;
     f32 c2;
     f32 dist;
 
-    def = *(u8**)&((GameObject*)obj)->anim.placementData;
-    sub = ((GameObject*)obj)->extra;
+    def = (ObjPlacement*)obj->anim.placementData;
+    sub = obj->extra;
     player = Obj_GetPlayerObject();
-    if ((((GameObject*)obj)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
     {
-        *obj = 0;
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)def)->posY;
+        obj->anim.rotX = 0;
+        obj->anim.localPosY = def->posY;
     }
     else
     {
         sub->anglePhase[0] = (s16)(sub->anglePhase[0] + (int)(512.0f * timeDelta));
         sub->anglePhase[1] = (s16)(sub->anglePhase[1] + (int)(128.0f * timeDelta));
         sub->anglePhase[2] = (s16)(sub->anglePhase[2] + (int)(192.0f * timeDelta));
-        ((GameObject*)obj)->anim.localPosY =
-            20.0f + (((ObjPlacement*)def)->posY
+        obj->anim.localPosY =
+            20.0f + (def->posY
                 + mathSinf((3.1415927f * (f32)sub->anglePhase[0]) / 32768.0f));
         c1 = mathSinf((3.1415927f * (f32)sub->anglePhase[1]) / 32768.0f);
         c2 = mathSinf((3.1415927f * (f32)sub->anglePhase[0]) / 32768.0f);
         c2 = c2 + c1;
-        ((GameObject*)obj)->anim.rotZ = 600.0f * c2;
+        obj->anim.rotZ = 600.0f * c2;
         c1 = mathSinf((3.1415927f * (f32)sub->anglePhase[2]) / 32768.0f);
         c2 = mathSinf((3.1415927f * (f32)sub->anglePhase[0]) / 32768.0f);
         c2 = c2 + c1;
-        ((GameObject*)obj)->anim.rotY = 600.0f * c2;
+        obj->anim.rotY = 600.0f * c2;
         ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta,
                                                                      (ObjAnimEventList*)buf);
         if (player != NULL)
         {
-            diff = (getAngle(((f32*)obj)[6] - ((f32*)player)[6],
-                             ((f32*)obj)[8] - ((f32*)player)[8]) & 0xffff)
-                - (*obj & 0xffff);
+            diff = (getAngle(obj->anim.worldPosX - player->anim.worldPosX,
+                             obj->anim.worldPosZ - player->anim.worldPosZ) & 0xffff)
+                - (obj->anim.rotX & 0xffff);
             if (diff > 0x8000)
             {
                 diff = diff - 0xffff;
@@ -114,15 +115,15 @@ void gpsh_shrine_updateSpirit(s16* obj)
             {
                 diff = diff + 0xffff;
             }
-            *obj = (s16)(*(s16*)(int)obj + (int)(((f32)diff * timeDelta) / 12.0f));
-            dist = Vec_xzDistance((f32*)((int)obj + 0x18), (f32*)((int)player + 0x18));
+            obj->anim.rotX = (s16)(*(s16*)(int)obj + (int)(((f32)diff * timeDelta) / 12.0f));
+            dist = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
             if (dist <= 30.0f)
             {
-                ((GameObject*)obj)->anim.alpha = (u8)(int)(255.0f * (dist / 30.0f));
+                obj->anim.alpha = (u8)(int)(255.0f * (dist / 30.0f));
             }
             else
             {
-                ((GameObject*)obj)->anim.alpha = 0xff;
+                obj->anim.alpha = 0xff;
             }
         }
     }
@@ -306,7 +307,7 @@ void gpsh_shrine_update(GameObject *obj)
                 getEnvfxAct(obj, player, GPSH_SHRINE_ENVFX_C, 0);
             }
         }
-        gpsh_shrine_updateSpirit((s16*)obj);
+        gpsh_shrine_updateSpirit((int)obj);
         unlockLevel(mapGetDirIdx(0x22), 1, 0);
         SCGameBitLatch_Update((SCGameBitLatchState*)(data + 0x13), 2, -1, -1, 0xdd2, 0xb);
         SCGameBitLatch_UpdateInverted((SCGameBitLatchState*)(data + 0x13), 1, -1, -1, 0xcbb, 8);
