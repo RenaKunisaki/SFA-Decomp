@@ -1,13 +1,15 @@
+/* DLL 0x0228 */
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "main/dll/CF/laser.h"
-#include "main/objprint_render_api.h"
 #include "main/gamebits.h"
-#include "dlls/object_descriptor.h"
+#include "main/objprint_render_api.h"
 
 int VFP_SpellPlace_getExtraSize(void)
 {
     return sizeof(LaserState);
 }
+
 int VFP_SpellPlace_getObjectTypeId(void)
 {
     return 0x0;
@@ -32,7 +34,8 @@ void VFP_SpellPlace_update(int obj)
     u8 mode;
 
     spellPlace = (LaserObject*)obj;
-    if (spellPlace->state->completionLatched == 0 && mainGetBit((int)spellPlace->state->activationGameBit) != 0)
+    if (spellPlace->state->completionLatched == 0 &&
+        mainGetBit((int)spellPlace->state->activationGameBit) != 0)
     {
         spellPlace->statusFlags &= ~LASER_OBJECT_STATUS_DISABLED;
     }
