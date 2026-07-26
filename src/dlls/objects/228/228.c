@@ -1,5 +1,5 @@
 /*
- * FlameThrowerspe object family (DLL slot 228).
+ * FlameThrowerspe object family (DLL slot 228 / 0xE4).
  *
  * Drives the pooled flame projectiles used by FlameThrowerspe, FlameBall,
  * and BossDarkorF object variants.

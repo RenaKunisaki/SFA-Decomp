@@ -88,6 +88,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   attributed to the wrong file; preserve both slots and re-audit the misplaced contents against
   the DOL. A multi-descriptor TU needs independent DOL evidence and is not implied by one source
   file currently defining multiple descriptors.
+- Treat the generated `src/dlls/<bank>/<slot>[_<name>]/<file>.c` path as immutable source-truth.
+  Rename symbols and types freely when evidence supports them, but do not rename an existing DLL
+  source folder or filename. Use `python tools/regenerate_dll_scaffold.py --audit-ref <ref>` with
+  `--slots <range>` when checking a suspected path change.
 - Rehome DLL source one numbered slot at a time. Before moving a source into its canonical folder,
   audit the complete TU, neighbouring text/data boundaries, descriptor ownership, artificial
   fragments, and section-alignment overrides, then build it. Do not bulk-rehome DLL sources with

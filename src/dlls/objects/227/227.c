@@ -1,5 +1,5 @@
 /*
- * Fireball object (DLL slot 227).
+ * Fireball object family (DLL slot 227 / 0xE3).
  *
  * Drives homing magic projectiles, their model lights, contact effects,
  * spiral motion, and fadeout.

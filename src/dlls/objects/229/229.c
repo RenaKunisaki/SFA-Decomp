@@ -1,5 +1,5 @@
 /*
- * Shield object family (DLL slot 229).
+ * Shield object family (DLL slot 229 / 0xE5).
  *
  * The shield (seqId 0x836 uses mode 5, otherwise mode 7) is a four-segment
  * ring driven by Shield_setMode. Each mode sets the per-segment fade/scale

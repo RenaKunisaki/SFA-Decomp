@@ -232,9 +232,9 @@
 224 = objects/224_SwarmBaddie
 225 = objects/225_WispBaddie
 226 = objects/226
-227 = objects/227_Fireball
-228 = objects/228_FlameThrowerspe
-229 = objects/229_Shield
+227 = objects/227
+228 = objects/228
+229 = objects/229
 230 = objects/230_ReStartMark
 231 = objects/231
 232 = objects/232_checkpoint4

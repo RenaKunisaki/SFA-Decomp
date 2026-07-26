@@ -30,4 +30,8 @@ number-only directory means retail evidence does not establish one name.
 
 `dlls.txt` records the scaffold in a compact `slot = path` form. Regenerate the
 empty folders with `python3 tools/regenerate_dll_scaffold.py`; populated folders
-are preserved. The manifest is not consumed by the build.
+are preserved. Once a DLL source is populated, its generated folder and source
+filename are immutable source-truth; semantic cleanup belongs inside the file.
+Use `python3 tools/regenerate_dll_scaffold.py --audit-ref <ref> --slots <range>`
+to report mapping or payload-filename drift against a known-good tree without
+changing files. The manifest is not consumed by the build.
