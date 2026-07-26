@@ -1583,7 +1583,7 @@ config.libs = [
                 "dlls/objects/228_FlameThrowerspe/FlameThrowerspe.c",
                 cflags=cflags_dll_noopt_nocse,
             ),
-            Object(NonMatching, "dlls/objects/229/229.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/229_Shield/Shield.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/293_curve/curve.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/230_ReStartMark/ReStartMark.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/247/247.c", cflags=cflags_dll_noopt),

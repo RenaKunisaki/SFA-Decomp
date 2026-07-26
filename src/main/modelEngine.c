@@ -25,6 +25,7 @@
 #include "dlls/objects/225_WispBaddie.h"
 #include "dlls/objects/227_Fireball.h"
 #include "dlls/objects/228_FlameThrowerspe.h"
+#include "dlls/objects/229_Shield.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -219,8 +220,7 @@ extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescripto
 extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPScarabObjDescriptor,
     gSPitembeamObjDescriptor, gScarabObjDescriptor, gSeqPointObjDescriptor;
 extern ResourceDescriptor gSetuppointObjDescriptor, gSfxPlayerObjDescriptor, gSfxplayerObjDescriptor,
-    gShieldObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor, gShopKeeperObjDescriptor,
-    gShopObjDescriptor;
+    gShipBattleObjDescriptor, gShopItemObjDescriptor, gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSidekickBallObjDescriptor, gSideloadObjDescriptor, gSiderepelObjDescriptor,
     gSlidingDoorObjDescriptor, gSmallBasketObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
@@ -1154,7 +1154,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gStaffObjDescriptor,
     (ResourceDescriptor*)&gFireballObjDescriptor,
     (ResourceDescriptor*)&gFlameThrowerspeObjDescriptor,
-    &gShieldObjDescriptor,
+    (ResourceDescriptor*)&gShieldObjDescriptor,
     &gReStartMarkerObjDescriptor,
     &gFlammableVineObjDescriptor,
     &gCheckpoint4ObjDescriptor,

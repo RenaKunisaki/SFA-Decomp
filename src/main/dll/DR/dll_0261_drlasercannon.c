@@ -10,7 +10,7 @@ f32 lbl_803DDD68;
 #include "sys/objects.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/dll/dll_00E5_shield_api.h"
+#include "dlls/objects/229_Shield.h"
 #include "main/dll/player_objects.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
@@ -333,7 +333,7 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
         if (hit != 0 && ((GameObject*)hitObject)->anim.seqId != state->hitExcludeType &&
             state->warningObject != NULL)
         {
-            staffFn_80170380(state->warningObject, DR_LASERCANNON_WARNING_HIT_MODE);
+            Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_HIT_MODE);
         }
     }
     else if (((u32)(hit - 0xe) <= 1 || hit == 5) && (void*)state->lastHitObject != (void*)hitObject &&
@@ -422,7 +422,7 @@ void DR_LaserCannon_update(GameObject* obj)
             state->flags.b6 = 0;
             if (state->warningObject != NULL)
             {
-                staffFn_80170380(state->warningObject, DR_LASERCANNON_WARNING_HIDE_MODE);
+                Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_HIDE_MODE);
             }
         }
     }
@@ -431,7 +431,7 @@ void DR_LaserCannon_update(GameObject* obj)
         objfx_spawnFrameTimedHitPulse(obj, lbl_803E6900, 1, (u8)(5 - state->health), lbl_803E6904);
         if (state->warningObject != NULL)
         {
-            staffFn_80170380(state->warningObject, DR_LASERCANNON_WARNING_HIDE_MODE);
+            Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_HIDE_MODE);
         }
         state->activeFrames += 1;
         if (state->health == 0)
@@ -611,10 +611,10 @@ void DR_LaserCannon_init(GameObject* obj, DrLaserCannonSetup* setup)
     (obj)->anim.velocityZ = fz;
     if (mainGetBit(setup->destroyedGameBit) == 0)
     {
-        state->warningObject = shield_spawnOmniShield(obj, lbl_803E6938);
+        state->warningObject = Shield_spawnOmniShield(obj, lbl_803E6938);
         if (state->warningObject != NULL)
         {
-            staffFn_80170380(state->warningObject, DR_LASERCANNON_WARNING_ACTIVE_MODE);
+            Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_ACTIVE_MODE);
         }
         state->flags.b6 = 1;
     }

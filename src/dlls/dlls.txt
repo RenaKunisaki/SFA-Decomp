@@ -234,7 +234,7 @@
 226 = objects/226
 227 = objects/227_Fireball
 228 = objects/228_FlameThrowerspe
-229 = objects/229
+229 = objects/229_Shield
 230 = objects/230_ReStartMark
 231 = objects/231
 232 = objects/232_checkpoint4
