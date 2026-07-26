@@ -3653,7 +3653,7 @@ main/dll/DR/dll_026F_drgenerator.c:
 	.text       start:0x8021F34C end:0x8021F8CC
 	.data       start:0x8032AC58 end:0x8032AC90
 
-main/dll/dll_0273_firepipe.c:
+dlls/objects/627_FirePipe/FirePipe.c:
 	.text       start:0x8021F8CC end:0x80220608
 	.data       start:0x8032AC90 end:0x8032ACC8
 	.sdata      start:0x803DC340 end:0x803DC358

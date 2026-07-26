@@ -1,5 +1,5 @@
 /*
- * firepipe (DLL 0x273) - a cyclic flame/jet emitter placed in the world.
+ * FirePipe (DLL 0x273) - a cyclic flame/jet emitter placed in the world.
  *
  * Each tick the object emits a particle effect sub-object (a fresh
  * spawn-def is allocated, positioned at the emitter and handed to a

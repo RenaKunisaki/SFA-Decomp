@@ -196,7 +196,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0130_areafxemit | 100.0000 | 90.3232 | -9.6768 |
 | main/main/dll/dll_018C_mmshshrine | 100.0000 | 90.4640 | -9.5360 |
 | main/main/dll/seqobj11e | 100.0000 | 90.5995 | -9.4005 |
-| main/main/dll/dll_0273_firepipe | 100.0000 | 90.9327 | -9.0673 |
+| main/dlls/objects/627_FirePipe/FirePipe | 100.0000 | 90.9327 | -9.0673 |
 | main/main/worldplanet_lighting | 100.0000 | 91.2387 | -8.7613 |
 | main/main/dll/skeetla | 99.7052 | 91.0786 | -8.6265 |
 | main/main/audio/snd3dgroup | 100.0000 | 91.4300 | -8.5700 |
