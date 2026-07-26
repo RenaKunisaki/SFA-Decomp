@@ -14,6 +14,6 @@ void dll_FD_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void dll_FD_hitDetect(GameObject* obj);
 void dll_FD_update(GameObject* obj);
 void dll_FD_init(GameObject* obj);
-void magicPlantDropGem(int obj, void *setup, void *state);
+void magicPlantDropGem(GameObject* obj, void *setup, void *state);
 
 #endif /* MAIN_DLL_DLL_14D_H_ */
