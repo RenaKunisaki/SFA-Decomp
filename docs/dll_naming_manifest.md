@@ -666,7 +666,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x26C | — | NO-RETAIL-NAME | dlls/objects/620/620.c | = (canonical) | Exact complete DR_CageWith-family TU with descriptor at the physical end |
 | 0x26D | DR_Vines | COMPLETE | dlls/objects/621_DR_Vines/DR_Vines.c | = (canonical) | Exact data-only DLL: two zero descriptor words in `.sdata` |
 | 0x26E | — | NO-RETAIL-NAME | dlls/objects/622/622.c | = (canonical) | Exact complete DR_Shackle-family TU with descriptor at the physical end |
-| 0x26F | DR_Generator (+DR_WallGene) | CONFIRMED | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | — |
+| 0x26F | — | NO-RETAIL-NAME | dlls/objects/623/623.c | = (canonical) | Exact complete DR_Generator-family TU with descriptor at the physical end |
 | 0x270 | DR_Rock | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x271 | DrakorHoverpad (+DR_PushCart) | CONFIRMED | main/dll/dll_0271_drakorhoverpad.c | = (canonical) | — |
 | 0x272 | HighTop (+CC_HighTop, DR_HighTop) | CONFIRMED | main/dll/dll_0272_hightop.c | = (canonical) | — |
