@@ -676,7 +676,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x276 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x277 | CFWindLiftL | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x278 | DRCollapseP (+DRPlatformC) | RAW | *(none)* | — | no .text fns (descriptor data only) |
-| 0x279 | DR_EnergyDisc | CONFIRMED | main/dll/dll_0279_drenergydisc.c | main/dll/DR/dll_0279_drenergydisc.c | — |
+| 0x279 | DR_EnergyDisc | CONFIRMED | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | = (canonical) | — |
 | 0x27A | DR_Collapse | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x27B | DR_CaveIn (+DR_CaveInFl) | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x27C | DR_LightBea | CONFIRMED | dlls/objects/636_DR_LightBea/DR_LightBea.c | = (canonical) | — |
@@ -925,7 +925,7 @@ name was a deliberate choice by a previous carve:
 | 0x26C | main/dll/dll_026C_drcagewith.c | main/dll/DR/dll_026C_drcagewith.c | CONFIRMED |
 | 0x26E | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | COMPLETE |
 | 0x26F | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | CONFIRMED |
-| 0x279 | main/dll/dll_0279_drenergydisc.c | main/dll/DR/dll_0279_drenergydisc.c | CONFIRMED |
+| 0x279 | main/dll/dll_0279_drenergydisc.c | dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c | CONFIRMED |
 | 0x27C | main/dll/dll_027C_drlightbea.c | dlls/objects/636_DR_LightBea/DR_LightBea.c | CONFIRMED |
 | 0x27E | main/dll/dll_027E_drmusiccont.c | dlls/objects/638_DrMusicCont/DRMusicCont.c | CONFIRMED |
 | 0x280 | main/dll/dll_0280_drcloudper.c | dlls/objects/640_DR_CloudPer/DR_CloudPer.c | CONFIRMED |
