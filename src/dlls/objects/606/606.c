@@ -1,3 +1,5 @@
+/* DLL 606: SpellStone-family object callbacks. */
+
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
 #include "main/spellstone.h"
@@ -8,6 +10,11 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
+
+int spellstone_idleCallback(void)
+{
+    return 0x0;
+}
 
 s16 lbl_803DC228[2] = {0x49A, 0x49A};
 
