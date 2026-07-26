@@ -1,11 +1,10 @@
 /*
- * DLL 0xF7 (dll_F7) [8016984C-801713AC)
+ * DLL 0xF7
  *
- * The "dll_F7" object itself is a bouncing breakable prop: dll_F7_init acquires
+ * This object is a bouncing breakable prop: dll_F7_init acquires
  * its two model resources (0x5b/0x5a), dll_F7_update runs the hit/bounce logic
  * (hitsRemaining countdown, bounce offset/velocity damping, spawns a debris/
  * pickup object on break) and grants the placement's game bit on destruction.
- * The trailing GXWGFifo swipe* helpers are inlined display-list writers.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
@@ -15,7 +14,6 @@
 #include "main/audio/sfx_position_api.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
-#include "main/dll/genpropswgpipe_struct.h"
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
@@ -299,26 +297,3 @@ ObjectDescriptor dll_F7 = {
     (ObjectDescriptorCallback)dll_F7_getObjectTypeId,
     dll_F7_getExtraSize,
 };
-
-GenPropsWGPipe GXWGFifo : (0xCC008000);
-
-static inline void swipePos3f32(const f32 x, const f32 y, const f32 z)
-{
-    GXWGFifo.f32 = x;
-    GXWGFifo.f32 = y;
-    GXWGFifo.f32 = z;
-}
-
-static inline void swipeColor4u8(const u8 r, const u8 g, const u8 b, const u8 a)
-{
-    GXWGFifo.u8 = r;
-    GXWGFifo.u8 = g;
-    GXWGFifo.u8 = b;
-    GXWGFifo.u8 = a;
-}
-
-static inline void swipeTexCoord2f32(const f32 s, const f32 t)
-{
-    GXWGFifo.f32 = s;
-    GXWGFifo.f32 = t;
-}

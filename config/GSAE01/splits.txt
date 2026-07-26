@@ -1743,7 +1743,7 @@ dlls/objects/230_ReStartMark/ReStartMark.c:
 	.text       start:0x801713D8 end:0x801713FC
 	.data       start:0x80320B00 end:0x80320B38
 
-main/dll/dll_00F7_dllf7.c:
+dlls/objects/247/247.c:
 	.text       start:0x801713FC end:0x801719E0
 	.rodata     start:0x802C2260 end:0x802C2270
 	.data       start:0x80320B38 end:0x80320B70
