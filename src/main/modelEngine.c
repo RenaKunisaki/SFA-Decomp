@@ -48,6 +48,7 @@
 #include "dlls/objects/249.h"
 #include "dlls/objects/250_InvisibleHi.h"
 #include "dlls/objects/251.h"
+#include "dlls/objects/252.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -182,7 +183,7 @@ extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescript
 extern ResourceDescriptor gDeathGasObjDescriptor, gDeathSeqObjDescriptor, gDecoration11AObjDescriptor,
     gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
 extern ResourceDescriptor gDfpstatue1ObjDescriptor, gDfptargetblockObjDescriptor, gDirectionalLightObjDescriptor,
-    gDll14DObjDescriptor, gDllFCObjDescriptor, gDoorObjDescriptor;
+    gDll14DObjDescriptor, gDoorObjDescriptor;
 extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gDrCageControlObjDescriptor,
     gDrCageWithObjDescriptor, gDrChimmeyObjDescriptor, gDrCloudPerObjDescriptor, gDrCreatorObjDescriptor;
 extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor, gDrLaserCannonObjDescriptor,
@@ -1191,7 +1192,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gProjectileSwitchObjDescriptor,
     (ResourceDescriptor*)&gInvisibleHitSwitchObjDescriptor,
     (ResourceDescriptor*)&gPressureSwitchFBObjDescriptor,
-    &gDllFCObjDescriptor,
+    (ResourceDescriptor*)&gDllFCObjDescriptor,
     &gDll14DObjDescriptor,
     &gMagicPlantObjDescriptor,
     &gMagicGemObjDescriptor,
