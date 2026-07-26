@@ -2145,7 +2145,7 @@ dlls/objects/312_GroundAnima/GroundAnima.c:
 	.sdata      start:0x803DBDF0 end:0x803DBDF8
 	.sdata2     start:0x803E3F98 end:0x803E3FD0
 
-main/dll/dll_0139_hitanimator.c:
+dlls/objects/313_HitAnimator/HitAnimator.c:
 	.text       start:0x80193DBC end:0x8019423C
 	.data       start:0x80322240 end:0x80322278
 

@@ -1,5 +1,5 @@
 /*
- * hitanimator (DLL 0x0139) - hit-reaction animation driver for map-block
+ * HitAnimator (DLL 0x0139) - hit-reaction animation driver for map-block
  * objects (HITANIMATOR_CLASS_ID 0x4B). Each instance watches a game bit
  * (HitAnimatorPlacement.gameBit): when the bit's value flips, it toggles
  * state->activeBit and queues the configured reactions via state->flags -
