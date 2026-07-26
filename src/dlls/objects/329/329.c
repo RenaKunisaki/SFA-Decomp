@@ -1,13 +1,13 @@
 /*
- * cfwindlift (DLL 0x149, defs CFWindLift + CFTreasWind) - wind lifts
- * at CF and elsewhere. update ramps the lift alpha from its game bit,
+ * DLL 0x149 - wind lifts used by the CFWindLift and CFTreasWind object
+ * definitions. update ramps the lift alpha from its game bit,
  * runs the rise sequence with a squared ramp-in, and tracks up to 14
  * rider slots (riders get pulled by WindLift_updateRider's per-slot spring
  * model). The three fortress lifts (placement seqIds 0x58-0x5A in the
  * lookup tables) only run once GameBit 0x57 is set - the city's power
  * restored via the three power bases and the main crystal convergence
  * (see cfpowerbase/cfmaincrystal), which is what the freed old
- * CloudRunner sends you off to do. TU = 0x8019C784..0x8019D578.
+ * CloudRunner sends you off to do.
  */
 
 #include "game/objects/object.h"
