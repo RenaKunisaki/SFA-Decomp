@@ -1,4 +1,4 @@
-import sys, struct, re, bisect
+import sys, os, json, struct, re, bisect
 from collections import defaultdict
 from elftools.elf.elffile import ELFFile
 
@@ -23,14 +23,19 @@ def parse_splits():
 def parse_symbols():
     name2addr = {}
     addr2name = {}
+    addr2meta = {}
     for line in open(SYMBOLS, errors='replace'):
         m = re.match(r'^(\S+)\s*=\s*(\S+):(0x[0-9A-Fa-f]+);(.*)$', line)
         if not m: continue
         name, sect, addr = m.group(1), m.group(2), int(m.group(3),16)
-        sz = re.search(r'size:(0x[0-9A-Fa-f]+)', m.group(4))
+        rest = m.group(4)
+        sz = re.search(r'size:(0x[0-9A-Fa-f]+)', rest)
+        sc = re.search(r'scope:(\w+)', rest)
         name2addr[name] = (sect, addr, int(sz.group(1),16) if sz else None)
         addr2name.setdefault(addr, name)
-    return name2addr, addr2name
+        if addr not in addr2meta:
+            addr2meta[addr] = (name, sc.group(1) if sc else None, sect)
+    return name2addr, addr2name, addr2meta
 
 class Dol:
     def __init__(self, path):
@@ -109,11 +114,193 @@ def fmt_val(b):
     fv = struct.unpack('>f', b)[0]
     return f"{u:08x} ({fv!r})"
 
+def resolve_reloc_addr(sym, r, claims, secnames, name2addr):
+    if sym['st_shndx'] not in ('SHN_UNDEF', 'SHN_ABS'):
+        sect = secnames.get(sym['st_shndx'])
+        if sect not in claims:
+            return None
+        return claims[sect][0] + sym['st_value'] + r['r_addend']
+    info = name2addr.get(sym.name)
+    if info is None:
+        m = re.match(r'lbl_(80[0-9A-Fa-f]{6})$', sym.name)
+        if m:
+            return int(m.group(1), 16) + r['r_addend']
+        return None
+    return info[1] + r['r_addend']
+
+def scan_unit_pool(objpath, claims, name2addr, s2lo, s2hi):
+    with open(objpath, 'rb') as f:
+        elf = ELFFile(f)
+        symtab = elf.get_section_by_name('.symtab')
+        if symtab is None:
+            return None, 0
+        secnames = {i: elf.get_section(i).name for i in range(elf.num_sections())}
+        syms = list(symtab.iter_symbols())
+        pool = set()
+        nrel = 0
+        for i in range(elf.num_sections()):
+            name = elf.get_section(i).name
+            if not name.startswith('.rela.'):
+                continue
+            if name[5:] not in ('.text', '.init'):
+                continue
+            for r in elf.get_section(i).iter_relocations():
+                nrel += 1
+                addr = resolve_reloc_addr(syms[r['r_info_sym']], r, claims, secnames, name2addr)
+                if addr is not None and s2lo <= addr < s2hi:
+                    pool.add(addr)
+        return pool, nrel
+
+def value_key(dol, addr, size=None):
+    n = size if size in (4, 8) else 4
+    b = dol.read(addr, n)
+    if b is None:
+        return None
+    if n == 4 and b == b'\x43\x30\x00\x00':
+        b2 = dol.read(addr, 8)
+        if b2:
+            return (8, b2)
+    return (n, b)
+
+def load_report_measures():
+    path = ROOT + "/build/GSAE01/report.json"
+    out = {}
+    if not os.path.exists(path):
+        return out
+    rep = json.load(open(path))
+    for u in rep.get('units', []):
+        nm = u['name']
+        nm = nm.split('/', 1)[1] if '/' in nm else nm
+        ms = u.get('measures', {})
+        out[nm + '.c'] = {
+            'fuzzy': ms.get('fuzzy_match_percent'),
+            'total_code': int(ms.get('total_code') or 0),
+            'matched_code': int(ms.get('matched_code') or 0),
+            'complete': (u.get('metadata') or {}).get('complete'),
+        }
+    return out
+
+def run_all(json_out=None):
+    units = parse_splits()
+    name2addr, addr2name, addr2meta = parse_symbols()
+    gsr = global_section_ranges(units)
+    dol = Dol(DOL)
+    s2syms = sorted((a for n, (s, a, z) in name2addr.items() if s == '.sdata2'))
+    s2lo = min([gsr.get('.sdata2', (0xffffffff, 0))[0]] + s2syms[:1])
+    s2hi = max(gsr.get('.sdata2', (0, 0))[1], (s2syms[-1] + 8) if s2syms else 0)
+    claims2 = sorted((rng[0], rng[1], u) for u, c in units.items() for s, rng in c.items() if s == '.sdata2')
+    def owner_of(addr):
+        i = bisect.bisect_right(claims2, (addr, 0xffffffff, '\xff')) - 1
+        if i >= 0 and claims2[i][0] <= addr < claims2[i][1]:
+            return claims2[i][2]
+        return None
+    unit_pool = {}
+    pool_silent = []
+    missing = []
+    for u, claims in sorted(units.items()):
+        if '.text' not in claims and '.init' not in claims:
+            continue
+        objpath = ROOT + '/build/GSAE01/obj/' + u[:-2] + '.o'
+        if not os.path.exists(objpath):
+            missing.append(u)
+            continue
+        pool, nrel = scan_unit_pool(objpath, claims, name2addr, s2lo, s2hi)
+        if pool is None:
+            missing.append(u)
+            continue
+        unit_pool[u] = pool
+        if not pool:
+            pool_silent.append(u)
+    addr_units = defaultdict(set)
+    for u, pool in unit_pool.items():
+        for a in pool:
+            addr_units[a].add(u)
+    multi = {a: us for a, us in addr_units.items() if len(us) > 1}
+    parent = {}
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+    for a, us in multi.items():
+        us = sorted(us)
+        for u in us[1:]:
+            union(us[0], u)
+    groups = defaultdict(list)
+    for u in {u for us in multi.values() for u in us}:
+        groups[find(u)].append(u)
+    measures = load_report_measures()
+    addr2size = {a: z for n, (s, a, z) in name2addr.items() if s == '.sdata2'}
+    internal = {}
+    for u, pool in unit_pool.items():
+        own = [a for a in pool if owner_of(a) == u or len(addr_units[a]) == 1]
+        byval = defaultdict(list)
+        for a in own:
+            k = value_key(dol, a, addr2size.get(a))
+            if k is not None:
+                byval[k].append(a)
+        dups = {}
+        for k, v in byval.items():
+            v = sorted(v)
+            if len(v) > 1 and any(b - a > 4 for a, b in zip(v, v[1:])):
+                dups[k] = v
+        if dups:
+            internal[u] = dups
+    result = {
+        'multi': multi, 'groups': groups, 'internal': internal,
+        'pool_silent': pool_silent, 'missing': missing,
+        'unit_pool': unit_pool, 'addr_units': addr_units,
+        'owner_of': owner_of, 'measures': measures,
+        'addr2meta': addr2meta, 'dol': dol,
+    }
+    print(f"units scanned: {len(unit_pool)}  pool-silent: {len(pool_silent)}  missing carve: {len(missing)}")
+    print(f"multi-unit .sdata2 addresses: {len(multi)}  neighborhoods: {len(groups)}")
+    def unmatched(u):
+        m = measures.get(u)
+        return (m['total_code'] - m['matched_code']) if m else 0
+    ranked = sorted(groups.values(), key=lambda g: -sum(unmatched(u) for u in g))
+    for g in ranked:
+        g = sorted(g)
+        shared = sorted(a for a, us in multi.items() if us & set(g))
+        w = sum(unmatched(u) for u in g)
+        print(f"\n== NEIGHBORHOOD ({len(g)} units, unmatched code {w} B, {len(shared)} shared addrs)")
+        for u in g:
+            m = measures.get(u, {})
+            comp = 'C' if m.get('complete') else ' '
+            print(f"  [{comp}] {u:52s} fuzzy {m.get('fuzzy', 0):8.3f}  unmatched {unmatched(u):6d} B")
+        for a in shared:
+            meta = addr2meta.get(a, ('?', '?', '?'))
+            ow = owner_of(a) or 'UNCLAIMED'
+            print(f"    {a:08x} {fmt_val(dol.read(a,4)):26s} owner={ow:40s} sym={meta[0]} scope={meta[1]} refs={','.join(sorted(addr_units[a]))}")
+    if internal:
+        print("\n== INTERNAL DUPLICATE VALUES (same value, distinct addrs, one claim) ==")
+        for u in sorted(internal, key=lambda u: -unmatched(u)):
+            m = measures.get(u, {})
+            print(f"  {u} (fuzzy {m.get('fuzzy', 0):.3f}, unmatched {unmatched(u)} B):")
+            for k, addrs in sorted(internal[u].items(), key=lambda kv: kv[1]):
+                print(f"    [{k[0]}B] {fmt_val(k[1][:4]):26s} at {' '.join(f'{a:08x}' for a in addrs)}")
+    if json_out:
+        payload = {
+            'multi': {f'{a:08x}': sorted(us) for a, us in multi.items()},
+            'pool_silent': pool_silent, 'missing': missing,
+            'internal': {u: {' '.join(f'{a:08x}' for a in v): None for v in d.values()} for u, d in internal.items()},
+        }
+        json.dump(payload, open(json_out, 'w'), indent=1)
+    return result
+
 if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == '--all':
+        run_all(sys.argv[2] if len(sys.argv) > 2 else None)
+        sys.exit(0)
     unit_key = sys.argv[1]
     objpath = sys.argv[2]
     units = parse_splits()
-    name2addr, addr2name = parse_symbols()
+    name2addr, addr2name, addr2meta = parse_symbols()
     gsr = global_section_ranges(units)
     dol = Dol(DOL)
     funcs, perfunc, unknown = audit(unit_key, objpath, units, name2addr, gsr, dol)
