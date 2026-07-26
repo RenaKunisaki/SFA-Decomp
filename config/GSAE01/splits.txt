@@ -3573,7 +3573,7 @@ dlls/objects/583/583.c:
 dlls/objects/584/584.c:
 	.data       start:0x80329F00 end:0x80329F30
 
-main/dll/dll_024A_dummy24a.c:
+dlls/objects/586/586.c:
 	.data       start:0x80329F30 end:0x80329F60
 
 main/dll/dll_024B_dummy24b.c:
