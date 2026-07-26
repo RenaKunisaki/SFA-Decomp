@@ -8,8 +8,9 @@
 void XyzAnimator_update(GameObject* obj);
 void FUN_80195b9c(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8, short* param_9);
-void TexFrameAnimator_update(int* obj);
-void TexFrameAnimator_init(int* obj, u8* params);
+struct TexframeanimatorPlacement;
+void TexFrameAnimator_update(GameObject* obj);
+void TexFrameAnimator_init(GameObject* obj, struct TexframeanimatorPlacement* params);
 
 /* xyzanimator per-object extra state (XyzAnimator_getExtraSize == 0x50):
  * 16 int slots, current-offset vec at 0x40, mode/active bytes, looped SFX id. */
