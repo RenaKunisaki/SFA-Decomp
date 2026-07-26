@@ -495,7 +495,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C1 | DIMSnowBall | COMPLETE | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | = (canonical) | — |
 | 0x1C2 | DIMSnowBall | COMPLETE | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | = (canonical) | — |
 | 0x1C3 | DIMGate (+DIM2BossDoo) | COMPLETE | dlls/objects/451_DIMGate/DIMGate.c | = (canonical) | — |
-| 0x1C4 | DIMIceWall | COMPLETE | main/dll/dll_01C4_dimicewall.c | main/dll/DIM/dll_01C4_dimicewall.c | — |
+| 0x1C4 | DIMIceWall | COMPLETE | dlls/objects/452_DIMIceWall/DIMIceWall.c | = (canonical) | — |
 | 0x1C5 | DIMBarrier (+DIM2CannonT) | COMPLETE | main/dll/dll_01C5_dimbarrier.c | main/dll/DIM/dll_01C5_dimbarrier.c | — |
 | 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | main/dll/dll_01C6_dimcannon.c | main/dll/DIM/dll_01C6_dimcannon.c | — |
 | 0x1C7 | DIMLavaSmash | CONFIRMED | main/dll/dll_01C7_dimlavasmash.c | main/dll/DIM/dll_01C7_dimlavasmash.c | — |
@@ -829,7 +829,7 @@ name was a deliberate choice by a previous carve:
 | 0x1C1 | main/dll/dll_01C1_dimsnowball.c | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | COMPLETE |
 | 0x1C2 | main/dll/dll_01C2_dimsnowball1c2.c | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | COMPLETE |
 | 0x1C3 | main/dll/dll_01C3_dimgate.c | dlls/objects/451_DIMGate/DIMGate.c | COMPLETE |
-| 0x1C4 | main/dll/dll_01C4_dimicewall.c | main/dll/DIM/dll_01C4_dimicewall.c | COMPLETE |
+| 0x1C4 | main/dll/dll_01C4_dimicewall.c | dlls/objects/452_DIMIceWall/DIMIceWall.c | COMPLETE |
 | 0x1C5 | main/dll/dll_01C5_dimbarrier.c | main/dll/DIM/dll_01C5_dimbarrier.c | COMPLETE |
 | 0x1C6 | main/dll/dll_01C6_dimcannon.c | main/dll/DIM/dll_01C6_dimcannon.c | COMPLETE |
 | 0x1C7 | main/dll/dll_01C7_dimlavasmash.c | main/dll/DIM/dll_01C7_dimlavasmash.c | CONFIRMED |

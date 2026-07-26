@@ -1,5 +1,5 @@
 /*
- * dimicewall (DLL 0x1C4) - ice wall object for Dinosaur Island Mission.
+ * DIMIceWall (DLL 0x1C4) - ice wall object for Dinosaur Island Mission.
  * On shatter (hp reaches zero), emits particle bursts and latches a gamebit;
  * while intact, allows Tricky to push through it.
  */
@@ -38,14 +38,17 @@ STATIC_ASSERT(offsetof(DimicewallPlacement, shatterGameBit) == 0x1E);
 STATIC_ASSERT(sizeof(DimicewallState) == 0x2);
 
 
-int dimicewall_countdownCallback(GameObject *obj, int delta)
+int dimicewall_countdownCallback(GameObject* obj, int delta)
 {
     DimicewallState* inner = (obj)->extra;
     inner->hp = (s8)(inner->hp - delta);
     return inner->hp <= 0;
 }
 
-int dimicewall_getExtraSize(void) { return 0x2; }
+int dimicewall_getExtraSize(void)
+{
+    return 0x2;
+}
 
 void dimicewall_update(GameObject* obj)
 {
@@ -62,26 +65,14 @@ void dimicewall_update(GameObject* obj)
             desc.posZ = 0.0f;
             for (i = 45; i != 0; i--)
             {
-                desc.posX = desc.scale * (0.1f * (f32)(int)
-                randomGetRange(-250, 250)
-                )
-                ;
-                desc.posY = desc.scale * (0.1f * (f32)(int)
-                randomGetRange(0, 450)
-                )
-                ;
+                desc.posX = desc.scale * (0.1f * (f32)(int)randomGetRange(-250, 250));
+                desc.posY = desc.scale * (0.1f * (f32)(int)randomGetRange(0, 450));
                 (*gPartfxInterface)->spawnObject((int*)obj, 2041, &desc, 2, -1, NULL);
             }
             for (i = 25; i != 0; i--)
             {
-                desc.posX = desc.scale * (0.1f * (f32)(int)
-                randomGetRange(-250, 250)
-                )
-                ;
-                desc.posY = desc.scale * (0.1f * (f32)(int)
-                randomGetRange(0, 450)
-                )
-                ;
+                desc.posX = desc.scale * (0.1f * (f32)(int)randomGetRange(-250, 250));
+                desc.posY = desc.scale * (0.1f * (f32)(int)randomGetRange(0, 450));
                 (*gPartfxInterface)->spawnObject((int*)obj, 2042, &desc, 2, -1, NULL);
             }
             if ((u32)placement->head.mapId != DIMICEWALL_MAPID_NO_SFX)
@@ -139,4 +130,3 @@ ObjectDescriptor gDIMIceWallObjDescriptor = {
     0,
     dimicewall_getExtraSize,
 };
-
