@@ -17,12 +17,8 @@
 
 typedef struct Dll19CPlacement
 {
-    u8 pad0[0x4 - 0x0];
-    u8 color[4];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x19 - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 unk19;
     u8 pad1A[0x1E - 0x1A];
     s8 rotXByte;
@@ -86,15 +82,15 @@ void dll_19C_update(GameObject* obj)
     if (sub->spawnTimer <= 0 && def->unk1F == 0 && Obj_IsLoadingLocked() != 0)
     {
         setup = Obj_AllocObjectSetup(0x18, DLL19C_CHILD_OBJ);
-        setup->posX = def->posX;
-        setup->posY = 50.0f + def->posY;
-        setup->posZ = def->posZ;
+        setup->posX = def->base.posX;
+        setup->posY = 50.0f + def->base.posY;
+        setup->posZ = def->base.posZ;
         setup->objectId = DLL19C_CHILD_OBJ;
         setup->mapId = -1;
-        setup->color[0] = def->color[0];
-        setup->color[1] = def->color[1];
-        setup->color[2] = def->color[2];
-        setup->color[3] = def->color[3];
+        setup->color[0] = def->base.color[0];
+        setup->color[1] = def->base.color[1];
+        setup->color[2] = def->base.color[2];
+        setup->color[3] = def->base.color[3];
         Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         sub->spawnTimer = 0x64;
         sub->active = 0;
