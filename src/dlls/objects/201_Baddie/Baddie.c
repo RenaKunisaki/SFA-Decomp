@@ -1032,11 +1032,11 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
     s16 baseAngle;
     u16 i;
     u8 visible;
-    f32 angle;
     s16 setupId;
-    f32 angleScale;
     f32 angleDiv;
     f32 sightRange;
+    f32 angleScale;
+    f32 angle;
 
     visibilityBits = gTrickyVisibilityBitsInit;
     probe.x = obj->anim.localPosX;
