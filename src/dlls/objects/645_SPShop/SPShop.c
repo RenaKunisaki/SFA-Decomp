@@ -1,12 +1,8 @@
-/* DLL 0x0285 - SP shop objects [801E4288-801E42F8) */
-#include "main/dll/shipbattlestate_struct.h"
+/* SPShop (DLL 645) */
 #include "main/audio/music_api.h"
 #include "main/object_render.h"
 #include "main/sky_api.h"
 #include "main/render_envfx_api.h"
-#include "main/dll/sbkytecagestate_struct.h"
-#include "main/dll/sbfireballstate_struct.h"
-#include "main/dll/sbcloudballstate_struct.h"
 #include "main/dll/player_objects.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_staff_api.h"
@@ -23,35 +19,7 @@
 #include "main/dll/SP/dll_0285_spshop.h"
 #include "dlls/object_descriptor.h"
 
-/*
- * Per-object extra state for the ShipBattle cloud-ball projectile
- * (SB_CloudBall_getExtraSize == 0x24).
- */
-
-STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
-
-/*
- * Per-object extra state for the ShipBattle fireball projectile
- * (SB_FireBall_getExtraSize == SB_FIREBALL_EXTRA_SIZE == 0x18).
- */
-
-STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);
-
-/*
- * Per-object extra state for the ShipBattle kyte cage
- * (SB_KyteCage_getExtraSize == 0x8).
- */
-
-STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
-
-/*
- * Per-object extra state for the ShipBattle chain segment
- * (ShipBattle_getExtraSize == 0x140). The head is handed to
- * gObjectTriggerInterface (+0x1C/+0x24) - interface-owned record;
- * only the locally-evidenced fields are named.
- */
-
-STATIC_ASSERT(sizeof(ShipBattleState) == 0x140);
+extern f32 lbl_803E59C8;
 
 #define SPSHOP_OBJGROUP 9
 
@@ -194,8 +162,6 @@ ObjectDescriptor24 gShopObjDescriptor = {
     (ObjectDescriptorCallback)shop_func16,
     (ObjectDescriptorCallback)shop_func17,
 };
-
-extern f32 lbl_803E59C8;
 
 /* Triple s8 fan-out: write obj->_b8[2/3/4]
  * (sign-extended) into *out_b3, *out_b2, *out_b4. */
