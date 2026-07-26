@@ -140,13 +140,13 @@ int DIMbossspit_getObjectTypeId(void)
     return 0x0;
 }
 
-void DIMbossspit_free(int objArg)
+void DIMbossspit_free(GameObject* objArg)
 {
-    int obj = objArg;
+    GameObject* obj = objArg;
     DIMbossspitState* state;
     ModelLightStruct* light;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     light = state->light;
     if (light != NULL)
     {
@@ -156,14 +156,14 @@ void DIMbossspit_free(int objArg)
     return;
 }
 
-void DIMbossspit_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void DIMbossspit_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     ModelLightStruct* light;
 
-    light = ((GameObject*)obj)->extra;
+    light = obj->extra;
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         light = ((DIMbossspitState*)light)->light;
         if (((light != 0) && (light->glowType != 0)) && (light->enabled != 0))
         {
@@ -243,9 +243,9 @@ void DIMbossspit_update(GameObject* obj)
     return;
 }
 
-void DIMbossspit_init(int obj)
+void DIMbossspit_init(GameObject* obj)
 {
-    u8* state = ((GameObject*)obj)->extra;
+    u8* state = obj->extra;
 
     ((DIMbossspitState*)state)->light = objCreateLight((void*)obj, 1);
     if (((DIMbossspitState*)state)->light != NULL)
@@ -260,13 +260,13 @@ void DIMbossspit_init(int obj)
         modelLightStruct_setupGlow(((DIMbossspitState*)state)->light, 0, 0, 255, 0, 127, 50.0f);
         modelLightStruct_setGlowProjectionRadius(((DIMbossspitState*)state)->light, 100.0f);
     }
-    ((GameObject*)obj)->userData1 = 0xb4;
+    obj->userData1 = 0xb4;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, 0, 0, 0);
     ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0);
     ((DIMbossspitState*)state)->unk0 = 0;
     ((DIMbossspitState*)state)->unk2 = 0;
-    ObjHits_EnableObject((GameObject*)obj);
-    ObjModel_SetPostRenderCallback(Obj_GetActiveModel((GameObject*)obj), postRenderSetAlphaBlendState);
+    ObjHits_EnableObject(obj);
+    ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), postRenderSetAlphaBlendState);
 }
 
 void DIMbossspit_release(void)
