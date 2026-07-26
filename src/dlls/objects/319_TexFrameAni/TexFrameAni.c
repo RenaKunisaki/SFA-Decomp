@@ -1,4 +1,4 @@
-/* DLL 0x13F - TexFrameAnimator [801948C0-80195008) */
+/* DLL 0x13F - TexFrameAni [8019718C-8019742C) */
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/debug.h"
@@ -41,16 +41,6 @@ typedef struct TexFrameAnimatorState
     u8 active : 1;
     u8 flagLow : 5;
 } TexFrameAnimatorState;
-
-/* Union u64 member forces the retail 8-byte alignment after the 0x12-byte
- * debug string (retail pad gap_07_803223FA_data), placing the descriptors
- * at .data+0x18/0x50/0x88/0xC0 as in the target obj. Same idiom as
- * dll_00B1_projlightning3. */
-typedef union ObjDescriptorTable
-{
-    u32 words[14];
-    u64 align8;
-} ObjDescriptorTable;
 
 #define TEXFRAMEANIMATOR_OBJFLAG_HIDDEN             0x4000
 #define TEXFRAMEANIMATOR_OBJFLAG_HITDETECT_DISABLED 0x2000

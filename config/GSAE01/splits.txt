@@ -2175,7 +2175,7 @@ dlls/objects/318/318.c:
 	.sbss       start:0x803DDB00 end:0x803DDB08
 	.sdata2     start:0x803E4030 end:0x803E4060
 
-main/dll/dll_013F_texframeanimator.c:
+dlls/objects/319_TexFrameAni/TexFrameAni.c:
 	.text       start:0x8019718C end:0x8019742C
 	.data       start:0x803223B0 end:0x80322400
 	.sdata2     start:0x803E4060 end:0x803E4064
