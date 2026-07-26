@@ -2374,7 +2374,7 @@ dlls/objects/381/381.c:
 	.sbss       start:0x803DDB20 end:0x803DDB28
 	.sdata2     start:0x803E4460 end:0x803E44BC
 
-main/dll/MMP/dll_017E_mmplevelcontrol.c:
+dlls/objects/382_MMP_levelco/MMP_levelco.c:
 	.text       start:0x801A6638 end:0x801A6C28
 	.data       start:0x80323160 end:0x80323198
 	.sbss       start:0x803DDB28 end:0x803DDB30
