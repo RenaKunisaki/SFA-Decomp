@@ -83,7 +83,7 @@ The shop is implemented by three DLLs (per this repo's own [DLLs](DLLs.md) /
 | `0x284` | shop item pickup/model | `src/dlls/objects/644/644.c`, `include/main/dll/dll_0284_shopitem.h` — `shopitem_*` symbols |
 | `0x285` | the shop stall / item-table manager | `src/dlls/objects/645_SPShop/SPShop.c` — `shop_*` symbols |
 | `0x286` | the ShopKeeper NPC | `src/dlls/objects/646_SPShopKeepe/SPShopKeepe.c`, `include/main/dll/shopkeeperstate_struct.h` — `ShopKeeper_*` symbols |
-| `0x287` | scarab coins the ShopKeeper scatters on purchase (`OBJTYPE_SPSCARAB` = 1151) | `src/main/dll/SP/dll_0287_spscarab.c` |
+| `0x287` | scarab coins the ShopKeeper scatters on purchase (`OBJTYPE_SPSCARAB` = 1151) | `src/dlls/objects/647_SPScarab/SPScarab.c` |
 
 `docs/wiki/DLLs.md` (`| 284 | ShopItem |`, `| 285 | Shop |`, `| 286 | ShopKeeper |`, `| 287 |
 SPScarab |`) and `docs/wiki/Objects.md`'s DLL-name table (`006E|SPShop`, `006F|SPShopKeeper`,
