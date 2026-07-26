@@ -1,4 +1,5 @@
 #include "dlls/objects/198_AnimatedObj.h"
+#include "dlls/objects/199_DIM2RoofRub.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -134,7 +135,7 @@ extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFSH_Door2SpeciObjDescrip
     gDFSH_ObjCreatorObjDescriptor, gDFSH_ShrineObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
-    gDIM2PrisonMammothObjDescriptor, gDIM2RoofRubObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor,
+    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor,
     gDIMBossIceSmashObjDescriptor;
 extern ResourceDescriptor gDIMBridgeCogMaiObjDescriptor, gDIMCannonObjDescriptor, gDIMDismountPointObjDescriptor,
     gDIMGateObjDescriptor, gDIMIceWallObjDescriptor, gDIMLavaSmashObjDescriptor, gDIMLogFireObjDescriptor,
@@ -1115,7 +1116,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gTrickyObjDescriptor,
     (ResourceDescriptor*)&lbl_80320700,
     (ResourceDescriptor*)&gAnimatedObjDescriptor,
-    &gDIM2RoofRubObjDescriptor,
+    (ResourceDescriptor*)&gDIM2RoofRubObjDescriptor,
     &gDepthOfFieldPointObjDescriptor,
     &gBaddieObjDescriptor,
     &gIceBaddieObjDescriptor,
