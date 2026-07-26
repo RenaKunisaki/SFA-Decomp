@@ -1838,7 +1838,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_01BD_paymentkiosk.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/draghead.c"),
             Object(Matching, "main/dll/lavaflow.c"),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0143_feseqobject.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/323_FEseqobject/FEseqobject.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/322_FElevContro/FElevContro.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0144_dll144.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/dbpointmum.c"),

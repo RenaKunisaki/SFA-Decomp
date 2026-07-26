@@ -1,5 +1,5 @@
 /*
- * feseqobject (DLL 0x143) - the front-end sequence-driven prop object.
+ * FEseqobject (DLL 0x143) - the front-end sequence-driven prop object.
  *
  * FEseqobject_SeqFn runs the object's animation-event track: event 1 sets
  * game bit 0x75 (sequence-complete latch read in update), events 2..6 spawn
