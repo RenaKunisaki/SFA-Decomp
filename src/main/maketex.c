@@ -1062,7 +1062,7 @@ void ObjSeq_ClearModelLookVector(GameObject* obj)
 int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjAnimUpdateState* state, s16 turnDegrees, s16 yawThreshold,
                             s16 maxAngle, s16 animRight, s16 animLeft)
 {
-    int player;
+    GameObject* player;
     s16* modelVec;
     int yawd;
     s16 turn;
@@ -1073,7 +1073,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjAnimUpdateState* state, s16 turn
     f32 rate;
     f32 yaw;
 
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     yawThreshold = (s16)(182.04445f * yawThreshold);
     maxAngle = (s16)(182.04445f * maxAngle);
     turnDegrees = (s16)(182.04445f * turnDegrees);
@@ -1090,7 +1090,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjAnimUpdateState* state, s16 turn
         ((ObjSeqTurnState*)state)->vecX = 0.0f;
         ((ObjSeqTurnState*)state)->vecY = 0.0f;
         ((ObjSeqTurnState*)state)->vecZ = 0.0f;
-        yawd = Obj_GetYawDeltaToObject((GameObject*)obj, (GameObject*)player, (float*)0);
+        yawd = Obj_GetYawDeltaToObject(obj, player, (float*)0);
         if (((s16)yawd >= 0 ? (s16)yawd : -(s16)yawd) < yawThreshold)
         {
             turn = 0;
@@ -1105,15 +1105,15 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjAnimUpdateState* state, s16 turn
             ObjHitVolumeRuntimeTransform* ovr = obj->anim.hitVolumeTransforms;
             if (ovr == NULL)
             {
-                dp[0] = ((GameObject*)player)->anim.localPosX - obj->anim.localPosX;
-                dp[1] = ((GameObject*)player)->anim.localPosY - obj->anim.localPosY;
-                dp[2] = ((GameObject*)player)->anim.localPosZ - obj->anim.localPosZ;
+                dp[0] = player->anim.localPosX - obj->anim.localPosX;
+                dp[1] = player->anim.localPosY - obj->anim.localPosY;
+                dp[2] = player->anim.localPosZ - obj->anim.localPosZ;
             }
             else
             {
-                dp[0] = ((GameObject*)player)->anim.localPosX - ovr->jointX;
-                dp[1] = ((GameObject*)player)->anim.localPosY - ovr->jointY;
-                dp[2] = ((GameObject*)player)->anim.localPosZ - ovr->jointZ;
+                dp[0] = player->anim.localPosX - ovr->jointX;
+                dp[1] = player->anim.localPosY - ovr->jointY;
+                dp[2] = player->anim.localPosZ - ovr->jointZ;
             }
             dp[1] += 30.0f;
             dist = sqrtf(dp[0] * dp[0] + dp[2] * dp[2]);
@@ -1172,7 +1172,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjAnimUpdateState* state, s16 turn
         if (modelVec != NULL)
         {
             ((ObjSeqTurnState*)state)->flags = ((ObjSeqTurnState*)state)->flags & ~8;
-            yawd = Obj_GetYawDeltaToObject((GameObject*)obj, (GameObject*)player, (float*)0);
+            yawd = Obj_GetYawDeltaToObject(obj, player, (float*)0);
             yaw = (f32)(s16)yawd;
             {
                 f32 cur = (f32)modelVec[1];
@@ -2031,7 +2031,7 @@ int ObjSeq_start(int seqIdx, u8* obj, int flags)
             objIdU = *(u16*)(walk + 6);
             if (objIdU == OBJSEQ_KRYSTAL_OBJ || objIdU == OBJSEQ_SABRE_OBJ)
             {
-                if (playerStatusIsPositive((GameObject*)(Obj_GetPlayerObject())) == 0)
+                if (playerStatusIsPositive(Obj_GetPlayerObject()) == 0)
                 {
                     return -1;
                 }
@@ -2109,7 +2109,7 @@ int ObjSeq_start(int seqIdx, u8* obj, int flags)
             }
             if (idx == 0 && (*(u16*)(walk2 + 4) & 0x1000) && player != NULL)
             {
-                playerSetOverrideParentSlack((GameObject*)(player));
+                playerSetOverrideParentSlack(player);
             }
             setup->animDataIndex = packed | (idx & 0xf);
             setup->unk1A = -1;
@@ -2190,7 +2190,7 @@ int ObjSeq_start(int seqIdx, u8* obj, int flags)
             {
                 if (idx == 0 && player != NULL)
                 {
-                    playerSetCutsceneCameraFlag((GameObject*)(player));
+                    playerSetCutsceneCameraFlag(player);
                 }
                 if (lbl_803DD064 == 0 || lbl_803DD064 == ((GameObject*)obj)->seqIndex)
                 {
@@ -2211,7 +2211,7 @@ int ObjSeq_start(int seqIdx, u8* obj, int flags)
             }
             if ((objId == OBJSEQ_KRYSTAL_OBJ || objId == OBJSEQ_SABRE_OBJ) && (((ObjSeqState*)seq)->flags & 1))
             {
-                playerSetInCutscene((GameObject*)(player));
+                playerSetInCutscene(player);
             }
             ((ObjSeqState*)seq)->targetObjId = *(int*)walk2;
             ((ObjSeqState*)seq)->savedFlags = ((ObjSeqState*)seq)->flags;
@@ -3348,7 +3348,7 @@ int objSeqExecCmd06(u8* obj, u8* sourceObj, u8* seq, int cmd, s8 flag)
         (*gMapEventInterface)->savePoint(0, 0, 1, getCurMapLayer());
         break;
     case 38:
-        playerLock((GameObject*)(Obj_GetPlayerObject()), cmdArg);
+        playerLock(Obj_GetPlayerObject(), cmdArg);
         break;
     case 44:
         setMotionBlur(1, cmdArg / 10.0f);
@@ -3399,7 +3399,7 @@ int objSeqExecCmd06(u8* obj, u8* sourceObj, u8* seq, int cmd, s8 flag)
         {
             break;
         }
-        dist = Vec_xzDistance(&((GameObject*)player)->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
+        dist = Vec_xzDistance(&player->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
         strength = 2.0f * (f32)(cmdArg - 7) + lbl_803DEFC8;
         if (dist < 200.0f)
         {
