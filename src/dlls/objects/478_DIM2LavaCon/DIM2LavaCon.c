@@ -27,8 +27,7 @@ typedef struct Dim2lavacontrolPlacement
     s32 unk14;
     s8 unk18;
     u8 unk19;
-    u8 unk1A;
-    u8 unk1B;
+    s16 countdownInit;
     s16 unk1C;
     s16 gameBit;
 } Dim2lavacontrolPlacement;
@@ -40,7 +39,8 @@ typedef struct Dim2lavacontrolState
     s8 flags;
     u8 heatEffectAlpha;
     u8 phase;
-    u8 pad5[0xC - 0x5];
+    u8 pad5[0x8 - 0x5];
+    SCGameBitLatchState latch;
     int musicTrack;
     u8 padC[0x24 - 0x10];
     f32 unk24;
@@ -54,17 +54,17 @@ typedef enum Dim2lavacontrolPhase
 
 void dim2lavacontrol_setScale(GameObject *obj)
 {
-    void* sub = (obj)->extra;
-    if (((s32)((Dim2lavacontrolState*)sub)->flags & 1) == 0)
+    Dim2lavacontrolState* sub = (obj)->extra;
+    if (((s32)sub->flags & 1) == 0)
     {
-        void* p = *(void**)&(obj)->anim.placementData;
-        if ((s32)((Dim2lavacontrolState*)sub)->countdown > 0)
+        Dim2lavacontrolPlacement* p = *(Dim2lavacontrolPlacement**)&(obj)->anim.placementData;
+        if ((s32)sub->countdown > 0)
         {
-            ((Dim2lavacontrolState*)sub)->countdown -= 1;
-            if (((Dim2lavacontrolState*)sub)->countdown == 0)
+            sub->countdown -= 1;
+            if (sub->countdown == 0)
             {
-                ((Dim2lavacontrolState*)sub)->flags = (s8)(*(u8*)&((Dim2lavacontrolState*)sub)->flags | 1);
-                mainSetBits(((Dim2lavacontrolPlacement*)p)->gameBit, 1);
+                sub->flags = (s8)(*(u8*)&sub->flags | 1);
+                mainSetBits(p->gameBit, 1);
             }
         }
     }
@@ -85,13 +85,14 @@ void dim2lavacontrol_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 
     if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
-void dim2lavacontrol_update(int obj)
+void dim2lavacontrol_update(GameObject* obj)
 {
     int alphaDelta;
     GameObject* heldObj;
-    if (((GameObject*)obj)->userData1 != 0)
+    Dim2lavacontrolState* state;
+    if ((obj)->userData1 != 0)
     {
-        if (((GameObject*)obj)->userData1 == 2)
+        if ((obj)->userData1 == 2)
         {
             getEnvfxActImmediately(0, 0, DIM2LAVACONTROL_ENVFX_A, 0);
             getEnvfxActImmediately(0, 0, DIM2LAVACONTROL_ENVFX_B, 0);
@@ -105,66 +106,62 @@ void dim2lavacontrol_update(int obj)
             getEnvfxAct(0, 0, DIM2LAVACONTROL_ENVFX_C, 0);
             getEnvfxAct(0, 0, DIM2LAVACONTROL_ENVFX_D, 0);
         }
-        ((GameObject*)obj)->userData1 = 0;
+        (obj)->userData1 = 0;
     }
-    obj = *(int*)&((GameObject*)obj)->extra;
-    switch (((Dim2lavacontrolState*)obj)->phase)
+    state = (obj)->extra;
+    switch (state->phase)
     {
     case DIM2LAVACONTROL_PHASE_WAIT:
         if (mainGetBit(0xacd) != 0)
         {
             mainSetBits(0xcc3, 1);
-            ((Dim2lavacontrolState*)obj)->phase = DIM2LAVACONTROL_PHASE_TRIGGERED;
+            state->phase = DIM2LAVACONTROL_PHASE_TRIGGERED;
         }
         break;
     case DIM2LAVACONTROL_PHASE_TRIGGERED:
         break;
     }
-    alphaDelta = ((Dim2lavacontrolState*)obj)->heatEffectAlpha -
-                 gDim2LavaHeatAlphaTargets[((Dim2lavacontrolState*)obj)->countdown];
+    alphaDelta = state->heatEffectAlpha - gDim2LavaHeatAlphaTargets[state->countdown];
     if (alphaDelta != 0)
     {
         if (alphaDelta > 0)
         {
-            ((Dim2lavacontrolState*)obj)->heatEffectAlpha -= 1;
+            state->heatEffectAlpha -= 1;
         }
         else
         {
-            ((Dim2lavacontrolState*)obj)->heatEffectAlpha += 1;
+            state->heatEffectAlpha += 1;
         }
-        setHeatEffectParams(((Dim2lavacontrolState*)obj)->heatEffectAlpha, 1.0f);
+        setHeatEffectParams(state->heatEffectAlpha, 1.0f);
     }
     if (Player_GetHeldObject(Obj_GetPlayerObject(), &heldObj) != 0)
     {
-        if ((*(int*)&((GameObject*)obj)->anim.rootMotionScale & 2) && *(int*)&((GameObject*)obj)->anim.localPosX !=
-            0xe0)
+        if ((state->latch.activeMask & 2) && state->musicTrack != 0xe0)
         {
-            Music_Trigger(*(int*)&((GameObject*)obj)->anim.localPosX, 0);
-            *(int*)&((GameObject*)obj)->anim.localPosX = 0xe0;
+            Music_Trigger(state->musicTrack, 0);
+            state->musicTrack = 0xe0;
             Music_Trigger(MUSICTRIG_WLC_Puzzle_e0, 1);
         }
     }
     else
     {
-        if ((*(int*)&((GameObject*)obj)->anim.rootMotionScale & 2) && *(int*)&((GameObject*)obj)->anim.localPosX !=
-            0xd7)
+        if ((state->latch.activeMask & 2) && state->musicTrack != 0xd7)
         {
-            Music_Trigger(*(int*)&((GameObject*)obj)->anim.localPosX, 0);
-            *(int*)&((GameObject*)obj)->anim.localPosX = 0xd7;
+            Music_Trigger(state->musicTrack, 0);
+            state->musicTrack = 0xd7;
             Music_Trigger(MUSICTRIG_WLC_Chambers, 1);
         }
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)((char*)obj + 8), 1, -1, -1, 0xd99, 0xde);
-    SCGameBitLatch_Update((SCGameBitLatchState*)((char*)obj + 8), 2, -1, -1, 0xda5,
-                          *(int*)&((GameObject*)obj)->anim.localPosX);
-    SCGameBitLatch_Update((SCGameBitLatchState*)((char*)obj + 8), 8, -1, -1, 0xf04, 0x96);
-    SCGameBitLatch_UpdateInverted((SCGameBitLatchState*)((char*)obj + 8), 0x10, -1, -1, 0xf04, 0x2c);
-    SCGameBitLatch_Update((SCGameBitLatchState*)((char*)obj + 8), 4, -1, -1, 0xcbb, 0xc4);
+    SCGameBitLatch_Update(&state->latch, 1, -1, -1, 0xd99, 0xde);
+    SCGameBitLatch_Update(&state->latch, 2, -1, -1, 0xda5, state->musicTrack);
+    SCGameBitLatch_Update(&state->latch, 8, -1, -1, 0xf04, 0x96);
+    SCGameBitLatch_UpdateInverted(&state->latch, 0x10, -1, -1, 0xf04, 0x2c);
+    SCGameBitLatch_Update(&state->latch, 4, -1, -1, 0xcbb, 0xc4);
 }
 
-void dim2lavacontrol_init(GameObject *obj, int param2)
+void dim2lavacontrol_init(GameObject *obj, Dim2lavacontrolPlacement* placement)
 {
-    int state;
+    Dim2lavacontrolState* state;
     u8 i;
     int gameBitState;
     if (getSaveGameLoadStatus() != 0)
@@ -179,10 +176,10 @@ void dim2lavacontrol_init(GameObject *obj, int param2)
     {
         gameBitFn_800ea2e0(i);
     }
-    state = *(int*)&(obj)->extra;
-    ((Dim2lavacontrolState*)state)->countdown = (s8) * (s16*)(param2 + 0x1a);
-    ((Dim2lavacontrolState*)state)->countdownSave = *(u8*)&((Dim2lavacontrolState*)state)->countdown;
-    if (mainGetBit(((Dim2lavacontrolPlacement*)param2)->gameBit) != 0)
+    state = (obj)->extra;
+    state->countdown = (s8)placement->countdownInit;
+    state->countdownSave = *(u8*)&state->countdown;
+    if (mainGetBit(placement->gameBit) != 0)
     {
         gameBitState = 1;
     }
@@ -190,19 +187,19 @@ void dim2lavacontrol_init(GameObject *obj, int param2)
     {
         gameBitState = 0;
     }
-    ((Dim2lavacontrolState*)state)->flags = (s8)(*(u8*)&((Dim2lavacontrolState*)state)->flags | gameBitState);
-    ((Dim2lavacontrolState*)state)->musicTrack = 0xd7;
-    ((Dim2lavacontrolState*)state)->phase = DIM2LAVACONTROL_PHASE_WAIT;
-    if ((((Dim2lavacontrolState*)state)->flags & 1) != 0)
+    state->flags = (s8)(*(u8*)&state->flags | gameBitState);
+    state->musicTrack = 0xd7;
+    state->phase = DIM2LAVACONTROL_PHASE_WAIT;
+    if ((state->flags & 1) != 0)
     {
-        *(u8*)&((Dim2lavacontrolState*)state)->countdown = 0;
-        ((Dim2lavacontrolState*)state)->heatEffectAlpha = gDim2LavaHeatAlphaTargets[0];
+        *(u8*)&state->countdown = 0;
+        state->heatEffectAlpha = gDim2LavaHeatAlphaTargets[0];
         setHeatEffectParams(gDim2LavaHeatAlphaTargets[0], 1.0f);
     }
     else
     {
-        *(u8*)&((Dim2lavacontrolState*)state)->countdown = 3;
-        ((Dim2lavacontrolState*)state)->heatEffectAlpha = gDim2LavaHeatAlphaTargets[3];
+        *(u8*)&state->countdown = 3;
+        state->heatEffectAlpha = gDim2LavaHeatAlphaTargets[3];
         setHeatEffectParams(gDim2LavaHeatAlphaTargets[3], 1.0f);
     }
     Music_Trigger(MUSICTRIG_WLC_Corridors, 1);
