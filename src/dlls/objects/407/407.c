@@ -179,7 +179,7 @@ void dll_197_update(int obj)
     Cup197State* state = ((GameObject*)obj)->extra;
     Dll69EffectParams resourceParams;
     u8 callbackData[0x14];
-    int player;
+    GameObject* player;
     f32 distance;
     Dll69Interface** resource;
     int effect;
@@ -187,8 +187,8 @@ void dll_197_update(int obj)
 
     resourceParams = gDll197ResourceParamTemplate;
 
-    player = (int)Obj_GetPlayerObject();
-    distance = Vec_distance((void*)(player + 0x18), &((GameObject*)obj)->anim.worldPosX);
+    player = Obj_GetPlayerObject();
+    distance = Vec_distance(&player->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
     if (Sfx_IsPlayingFromObjectChannel(obj, 0x40) != 0)
     {
         if (distance >= 90.0f && state->active != 0)
@@ -319,7 +319,7 @@ void dll_197_update(int obj)
     }
 }
 
-void dll_197_init(int obj, int dataArg)
+void dll_197_init(GameObject* obj, int dataArg)
 {
     Dll197Placement* data = (Dll197Placement*)dataArg;
     u8* st;
@@ -330,15 +330,15 @@ void dll_197_init(int obj, int dataArg)
         f32 f;
     } stk;
 
-    st = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)(((s8)data->rotXParam & 0x3fu) << 10);
+    st = obj->extra;
+    obj->anim.rotX = (s16)(((s8)data->rotXParam & 0x3fu) << 10);
     if (data->scale > 0)
     {
-        ((GameObject*)obj)->anim.rootMotionScale = (f32)data->scale / 8192.0f;
+        obj->anim.rootMotionScale = (f32)data->scale / 8192.0f;
     }
     else
     {
-        ((GameObject*)obj)->anim.rootMotionScale = 0.1f;
+        obj->anim.rootMotionScale = 0.1f;
     }
     *(u8*)(st + 0xb) = data->kind;
     ((Dll197State*)st)->unkC = 0;
@@ -352,7 +352,7 @@ void dll_197_init(int obj, int dataArg)
         res = Resource_Acquire(0x69, 1);
         if (data->menuState == 0)
         {
-            (*res)->spawn((GameObject*)obj, 0, stk.buf, 0x10004, -1, NULL);
+            (*res)->spawn(obj, 0, stk.buf, 0x10004, -1, NULL);
         }
         break;
     case 1:
