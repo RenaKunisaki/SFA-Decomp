@@ -154,9 +154,9 @@ int gPushableSavedMapIds[0x28];
 int pushable_render2(GameObject* obj);
 void pushable_modelMtxFn(GameObject* obj, int modelNo);
 int pushable_func0B(GameObject* obj, int other);
-void pushable_free(int* obj);
-void pushable_update(int* obj);
-void pushable_init(s16* obj, char* def);
+void pushable_free(GameObject* obj);
+void pushable_update(GameObject* obj);
+void pushable_init(GameObject* obj, PushableObjectDef* def);
 void pushable_handleMsgs();
 
 ObjectDescriptor14 gPushableObjDescriptor = {
@@ -407,7 +407,7 @@ void pushable_initMagicGem(GameObject* obj, PushableState* ext)
     ext->unk_F0 = fval;
     ext->nearestObj = NULL;
     mainSetBits(ext->gameBit, 0);
-    tex = objFindTexture((GameObject*)obj, 0, 0);
+    tex = objFindTexture(obj, 0, 0);
 
     ext->eyePosX = ext->eyePosX + ext->eyeDriftSpeedX;
     eyePos = ext->eyePosX;
@@ -593,19 +593,19 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* ext)
     memcpy(ext->cornerWorld, points, ext->pointCount * 0xc);
 }
 
-u32 pushable_SeqFn(short* obj, short* refObj, ObjAnimUpdateState* animUpdate)
+u32 pushable_SeqFn(GameObject* obj, short* refObj, ObjAnimUpdateState* animUpdate)
 {
     u32 bitVal;
-    int player;
+    GameObject* player;
     PushableState* state;
     f32 dx;
     f32 dz;
     f32 len;
     f32 k;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     state->savePosDelay = 0x3c;
-    if (obj[0x5a] != -1)
+    if (obj->seqIndex != -1)
     {
         (*gCameraInterface)->setTargetReticleOverride((int)obj);
     }
@@ -615,10 +615,10 @@ u32 pushable_SeqFn(short* obj, short* refObj, ObjAnimUpdateState* animUpdate)
         if ((s8)animUpdate->movementState != 2)
         {
             animUpdate->posOffsetScale = PUSHABLE_UNIT_SCALE;
-            animUpdate->posOffsetX = ((GameObject*)obj)->anim.localPosX - *(float*)(refObj + 6);
-            animUpdate->posOffsetY = ((GameObject*)obj)->anim.localPosY - *(float*)(refObj + 8);
-            animUpdate->posOffsetZ = ((GameObject*)obj)->anim.localPosZ - *(float*)(refObj + 10);
-            animUpdate->rotOffsetX = *obj - (u16)*refObj;
+            animUpdate->posOffsetX = obj->anim.localPosX - *(float*)(refObj + 6);
+            animUpdate->posOffsetY = obj->anim.localPosY - *(float*)(refObj + 8);
+            animUpdate->posOffsetZ = obj->anim.localPosZ - *(float*)(refObj + 10);
+            animUpdate->rotOffsetX = obj->anim.rotX - (u16)*refObj;
             if (0x8000 < animUpdate->rotOffsetX)
             {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX - 0xffff;
@@ -627,7 +627,7 @@ u32 pushable_SeqFn(short* obj, short* refObj, ObjAnimUpdateState* animUpdate)
             {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX + 0xffff;
             }
-            animUpdate->rotOffsetY = obj[1] - (u16)refObj[1];
+            animUpdate->rotOffsetY = obj->anim.rotY - (u16)refObj[1];
             if (0x8000 < animUpdate->rotOffsetY)
             {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY - 0xffff;
@@ -636,7 +636,7 @@ u32 pushable_SeqFn(short* obj, short* refObj, ObjAnimUpdateState* animUpdate)
             {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY + 0xffff;
             }
-            animUpdate->rotOffsetZ = (u16)refObj[2] - (u16)obj[2];
+            animUpdate->rotOffsetZ = (u16)refObj[2] - (u16)obj->anim.rotZ;
             if (0x8000 < animUpdate->rotOffsetZ)
             {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ - 0xffff;
@@ -653,22 +653,22 @@ u32 pushable_SeqFn(short* obj, short* refObj, ObjAnimUpdateState* animUpdate)
             animUpdate->movementState = 0;
         }
     }
-    if (((GameObject*)obj)->userData2 == 0)
+    if (obj->userData2 == 0)
     {
-        ((GameObject*)obj)->userData2 = 2;
+        obj->userData2 = 2;
     }
-    if ((obj[0x23] == 0x21e) || (obj[0x23] == 0x411))
+    if ((obj->anim.seqId == 0x21e) || (obj->anim.seqId == 0x411))
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode = *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | 8;
-        if (('\0' < *(char*)(*(int*)(obj + 0x2c) + 0x10f)) &&
-            ((*(short*)(*(int*)(*(int*)(obj + 0x2c) + 0x100) + 0x44) == 0x24 &&
+        *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode | 8;
+        if (('\0' < *(char*)(*(int*)((char*)obj + 0x58) + 0x10f)) &&
+            ((*(short*)(*(int*)(*(int*)((char*)obj + 0x58) + 0x100) + 0x44) == 0x24 &&
               (bitVal = mainGetBit(0x103), bitVal == 0))))
         {
             mainSetBits(0x103, 1);
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode = *(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~8;
-            player = (int)Obj_GetPlayerObject();
-            dx = ((GameObject*)obj)->anim.localPosX - ((GameObject*)player)->anim.localPosX;
-            dz = ((GameObject*)obj)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ;
+            *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode & ~8;
+            player = Obj_GetPlayerObject();
+            dx = obj->anim.localPosX - player->anim.localPosX;
+            dz = obj->anim.localPosZ - player->anim.localPosZ;
             len = sqrtf(dx * dx + dz * dz);
             if (len)
             {
@@ -748,12 +748,12 @@ int pushable_func0B(GameObject* obj, int other)
     return sqrtf(d[2] * d[2] + (d[0] * d[0] + d[1] * d[1])) < ((PushableState*)state)->cullDistance;
 }
 
-int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
+int pushable_setScale(GameObject* obj, GameObject* tgt, int flag, f32 dx, f32 dz)
 {
     SetScaleParams* pp;
     PushableState* state;
     char ret;
-    void* player;
+    GameObject* player;
     int hit;
     char* p;
     f32* w;
@@ -772,7 +772,7 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
     f32 tmpY;
 
     player = Obj_GetPlayerObject();
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     ret = 0;
     i = 5;
     p = (char*)state + 0x14;
@@ -781,11 +781,11 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
         *(f32*)(p + 0x118) = *(f32*)(p + 0x114);
         *(f32*)(p + 0x12c) = *(f32*)(p + 0x128);
     }
-    state->posHistX[0] = ((GameObject*)obj)->anim.localPosX;
-    state->posHistZ[0] = ((GameObject*)obj)->anim.localPosZ;
-    start[0] = ((GameObject*)tgt)->anim.localPosX;
-    start[1] = PUSHABLE_PROBE_HEIGHT + ((GameObject*)tgt)->anim.localPosY;
-    start[2] = ((GameObject*)tgt)->anim.localPosZ;
+    state->posHistX[0] = obj->anim.localPosX;
+    state->posHistZ[0] = obj->anim.localPosZ;
+    start[0] = tgt->anim.localPosX;
+    start[1] = PUSHABLE_PROBE_HEIGHT + tgt->anim.localPosY;
+    start[2] = tgt->anim.localPosZ;
     (pp = &params)->r[0] = PUSHABLE_FORWARD_PROBE_DISTANCE;
     pp->b10 = -1;
     pp->b14 = 3;
@@ -801,7 +801,7 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
         hit = hitDetectFn_80067958(NULL, start, end, 1, hitbuf, 8);
         if (hit == 0)
         {
-            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, (GameObject*)obj, 1, -1, 0xff, 0);
+            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (hit != 0)
         {
@@ -822,7 +822,7 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
         hit = hitDetectFn_80067958(NULL, start, end, 1, hitbuf, 8);
         if (hit == 0)
         {
-            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, (GameObject*)obj, 1, -1, 0xff, 0);
+            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (hit != 0)
         {
@@ -843,7 +843,7 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
         hit = hitDetectFn_80067958(NULL, start, end, 1, hitbuf, 8);
         if (hit == 0)
         {
-            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, (GameObject*)obj, 1, -1, 0xff, 0);
+            hit = objBboxFn_800640cc(start, end, pp->r[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (hit != 0)
         {
@@ -854,7 +854,7 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
             state->pushAmountZ = pushAmount;
         }
     }
-    if (playerIsDisguised((GameObject*)player) == 0 && state->moveFlags.b6 == 0)
+    if (playerIsDisguised(player) == 0 && state->moveFlags.b6 == 0)
     {
         hit = 1;
         if (dx > PUSHABLE_ZERO)
@@ -899,8 +899,8 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
             state->pushAmountX = dx;
             state->pushAmountZ = dz;
         }
-        state->yaw = *tgt;
-        vec.rotX = *tgt;
+        state->yaw = tgt->anim.rotX;
+        vec.rotX = tgt->anim.rotX;
         vec.rotY = 0;
         vec.rotZ = 0;
         vec.scale = PUSHABLE_UNIT_SCALE;
@@ -911,8 +911,8 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
         Matrix_TransformPoint(mtx, state->pushAmountZ, PUSHABLE_ZERO, state->pushAmountX, (f32*)((char*)obj + 0x24),
                               &tmpY, (f32*)((char*)obj + 0x2c));
         state->moveFlags.b7 = 1;
-        objMove((GameObject*)obj, ((PushableObjPos*)obj)->vx, PUSHABLE_ZERO, ((PushableObjPos*)obj)->vz);
-        Obj_BuildTransformMatrices((GameObject*)obj);
+        objMove(obj, ((PushableObjPos*)obj)->vx, PUSHABLE_ZERO, ((PushableObjPos*)obj)->vz);
+        Obj_BuildTransformMatrices(obj);
         {
             int j;
             j = 0;
@@ -923,9 +923,9 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
             {
                 Obj_TransformLocalPointToWorld(*(f32*)((char*)e2 + 0x18), *(f32*)((char*)e2 + 0x1c),
                                                *(f32*)((char*)e2 + 0x20), w, w + 1, w + 2, (u32)obj);
-                d[0] = ((GameObject*)obj)->anim.localPosX - w[0];
-                d[1] = ((GameObject*)obj)->anim.localPosY - w[1];
-                d[2] = ((GameObject*)obj)->anim.localPosZ - w[2];
+                d[0] = obj->anim.localPosX - w[0];
+                d[1] = obj->anim.localPosY - w[1];
+                d[2] = obj->anim.localPosZ - w[2];
                 w += 3;
                 e2 = (f32*)((char*)e2 + 0xc);
                 d += 3;
@@ -933,16 +933,16 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
         }
         if ((state->flags & 4) == 0)
         {
-            pushable_resolveCollisions((GameObject*)obj, state);
+            pushable_resolveCollisions(obj, state);
         }
-        Obj_BuildTransformMatrices((GameObject*)obj);
+        Obj_BuildTransformMatrices(obj);
         if (PUSHABLE_ZERO != state->pushAmountX || PUSHABLE_ZERO != state->pushAmountZ)
         {
             PushableState* st2;
             char* def2;
             u16 fl2;
-            def2 = *(char**)&((GameObject*)obj)->anim.placementData;
-            st2 = ((GameObject*)obj)->extra;
+            def2 = *(char**)&obj->anim.placementData;
+            st2 = obj->extra;
             fl2 = st2->flags;
             if ((fl2 & 1) != 0)
             {
@@ -951,7 +951,7 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
                 gameBit = ((PushablePlacement*)def2)->gameBit;
                 if (gameBit > -1)
                 {
-                    switch (((GameObject*)obj)->anim.seqId)
+                    switch (obj->anim.seqId)
                     {
                     case 0x21e:
                         break;
@@ -970,8 +970,8 @@ int pushable_setScale(int* obj, s16* tgt, int flag, f32 dx, f32 dz)
             }
         }
         {
-            f32 f5 = ((GameObject*)obj)->anim.localPosX - state->posHistX[4];
-            f32 f6 = ((GameObject*)obj)->anim.localPosZ - state->posHistZ[4];
+            f32 f5 = obj->anim.localPosX - state->posHistX[4];
+            f32 f6 = obj->anim.localPosZ - state->posHistZ[4];
             if (f5 * f5 + f6 * f6 > PUSHABLE_UNIT_SCALE && (state->flags & PUSHABLE_FLAG_PUSH_SFX_DUE) != 0)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_birdymornin11);
@@ -1035,11 +1035,11 @@ static inline int* Transporter_GetActiveModel(void* obj)
     return (int*)objAnim->banks[objAnim->bankIndex];
 }
 
-void pushable_free(int* obj)
+void pushable_free(GameObject* obj)
 {
-    u8* def = *(u8**)&((GameObject*)obj)->anim.placementData;
-    PushableState* sub = ((GameObject*)obj)->extra;
-    s16 type = ((GameObject*)obj)->anim.seqId;
+    u8* def = *(u8**)&obj->anim.placementData;
+    PushableState* sub = obj->extra;
+    s16 type = obj->anim.seqId;
     int savedIdx;
 
     switch (type)
@@ -1054,7 +1054,7 @@ void pushable_free(int* obj)
         if (((PushablePlacement*)def)->gameBit > -1 && type != 0x54a && type != 0x5ae && type != 0x108 &&
             sub->savePosEnabled != 0)
         {
-            saveGame_saveObjectPos((GameObject*)obj);
+            saveGame_saveObjectPos(obj);
         }
         break;
     }
@@ -1068,12 +1068,12 @@ void pushable_free(int* obj)
     ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJGROUP);
 }
 
-void pushable_render(int* obj, int p1, int p2, int p3, int p4, s8 visible)
+void pushable_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 {
     if (visible != 0)
     {
-        PushableState* state = ((GameObject*)obj)->extra;
-        switch (((GameObject*)obj)->anim.seqId)
+        PushableState* state = obj->extra;
+        switch (obj->anim.seqId)
         {
         case 0x21e:
             if (mainGetBit(state->gameBit) == 0)
@@ -1110,7 +1110,7 @@ void pushable_render(int* obj, int p1, int p2, int p3, int p4, s8 visible)
             char* hdr = (char*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
             *(u16*)(*(char**)hdr + 2) = *(u16*)(*(char**)hdr + 2) | 2;
         }
-        objRenderModelAndHitVolumes((GameObject*)obj, p1, p2, p3, p4, PUSHABLE_UNIT_SCALE);
+        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, PUSHABLE_UNIT_SCALE);
     }
 }
 void pushable_hitDetect(GameObject* obj)
@@ -1308,31 +1308,31 @@ void pushable_hitDetect(GameObject* obj)
     }
 }
 
-void pushable_update(int* obj)
+void pushable_update(GameObject* obj)
 {
     PushableState* state;
-    u8* def;
+    ObjPlacement* def;
     GameObject* player;
 
-    def = *(u8**)&((GameObject*)obj)->anim.placementData;
-    state = ((GameObject*)obj)->extra;
+    def = *(ObjPlacement**)&obj->anim.placementData;
+    state = obj->extra;
     state->flags = state->flags & ~PUSHABLE_FLAG_MOVING_Y;
     state->moveFlags.b7 = 0;
-    if (PUSHABLE_ZERO != ((GameObject*)obj)->anim.velocityY)
+    if (PUSHABLE_ZERO != obj->anim.velocityY)
     {
         state->flags = state->flags | PUSHABLE_FLAG_MOVING_Y;
     }
     if (state->moveFlags.b6 == 0 && playerIsDisguised(Obj_GetPlayerObject()) == 0)
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+        *(u8*)&obj->anim.resetHitboxMode =
+            *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
     else
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+        *(u8*)&obj->anim.resetHitboxMode =
+            *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
-    if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0 &&
+    if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0 &&
         mainGetBit(GAMEBIT_PushableRelated0913) == 0)
     {
         (*gObjectTriggerInterface)->runSequence(0, obj, -1);
@@ -1352,25 +1352,25 @@ void pushable_update(int* obj)
     {
         if (state->savePosEnabled != 0)
         {
-            pushable_savePos((GameObject*)obj);
+            pushable_savePos(obj);
         }
     }
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (obj->anim.seqId)
     {
     case 0x21e:
-        if (pushable_updateMagicGem((GameObject*)(obj), state) == 0)
+        if (pushable_updateMagicGem(obj, state) == 0)
             break;
         return;
     case 0x411:
-        if (pushable_updateMagicGem((GameObject*)(obj), state) == 0)
+        if (pushable_updateMagicGem(obj, state) == 0)
             break;
         return;
     case PUSHABLE_SEQID_VFP_BLOCK2:
         if (mainGetBit(state->gameBit) != 0)
         {
-            ((GameObject*)obj)->anim.localPosX = (f32)((f64)((ObjPlacement*)def)->posX - PUSHABLE_CURTAIN_X_OFFSET);
-            ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)def)->posY;
-            ((GameObject*)obj)->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_Z_OFFSET + (f64)((ObjPlacement*)def)->posZ);
+            obj->anim.localPosX = (f32)((f64)def->posX - PUSHABLE_CURTAIN_X_OFFSET);
+            obj->anim.localPosY = def->posY;
+            obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_Z_OFFSET + (f64)def->posZ);
         }
         pushable_updateCurtain((int)obj, state);
         break;
@@ -1382,22 +1382,22 @@ void pushable_update(int* obj)
         }
         if (mainGetBit(GAMEBIT_PushableRelated0272) != 0)
         {
-            Obj_RemoveFromUpdateList((GameObject*)obj);
-            ObjHits_DisableObject((GameObject*)obj);
-            ((GameObject*)obj)->anim.flags = ((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN;
+            Obj_RemoveFromUpdateList(obj);
+            ObjHits_DisableObject(obj);
+            obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
         }
         break;
     }
     {
-        s16 t = ((GameObject*)obj)->anim.seqId;
+        s16 t = obj->anim.seqId;
         if (t != 0x54a && t != 0x5ae && t != 0x108 && state->savePosEnabled != 0 && (state->flags & 8) == 0)
         {
-            saveGame_saveObjectPos((GameObject*)obj);
+            saveGame_saveObjectPos(obj);
         }
     }
 }
 
-void pushable_init(s16* obj, char* def)
+void pushable_init(GameObject* obj, PushableObjectDef* def)
 {
     PushableState* state;
     ModelFileHeader* model;
@@ -1408,35 +1408,35 @@ void pushable_init(s16* obj, char* def)
 
     if (((ObjPlacement*)def)->mapId == 0x30398)
     {
-        ((PushableObjectDef*)def)->requiredHitId = 1;
+        def->requiredHitId = 1;
     }
     else
     {
-        *(s8*)&((PushableObjectDef*)def)->requiredHitId = -1;
+        *(s8*)&def->requiredHitId = -1;
     }
-    *obj = ((PushableObjectDef*)def)->rotXByte << 8;
-    ((GameObject*)obj)->anim.localPosY = PUSHABLE_COLLISION_RADIUS + ((ObjPlacement*)def)->posY;
+    obj->anim.rotX = def->rotXByte << 8;
+    obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + ((ObjPlacement*)def)->posY;
     ObjGroup_AddObject((int)obj, PUSHABLE_OBJGROUP);
-    objSetSlot((GameObject*)obj, 0x5a);
-    ((GameObject*)obj)->animEventCallback = pushable_SeqFn;
-    state = ((GameObject*)obj)->extra;
+    objSetSlot(obj, 0x5a);
+    obj->animEventCallback = pushable_SeqFn;
+    state = obj->extra;
     state->pointCount = 0;
     entry = (int*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
     model = (ModelFileHeader*)*entry;
-    state->unk_B0 = *(int*)&((PushableObjectDef*)def)->unk1C;
-    state->scale = (f32) * &((PushableObjectDef*)def)->scaleRaw / PUSHABLE_SCALE_DENOM;
-    state->scale = state->scale * ((GameObject*)obj)->anim.modelInstance->rootMotionScaleBase;
+    state->unk_B0 = *(int*)&def->unk1C;
+    state->scale = (f32) * &def->scaleRaw / PUSHABLE_SCALE_DENOM;
+    state->scale = state->scale * obj->anim.modelInstance->rootMotionScaleBase;
     state->cullDistance =
         state->scale * (f32)(u16)modelFileHeaderGetCullDistance((ModelFileHeader*)*entry) +
         PUSHABLE_MIN_GROUND_CLEARANCE;
     {
         f32 z0 = PUSHABLE_ZERO;
         state->timer_0x14 = z0;
-        state->gameBit = ((PushableObjectDef*)def)->gameBit;
+        state->gameBit = def->gameBit;
         ObjAnim_SetCurrentMove((int)obj, 0, z0, 0);
     }
     ObjMsg_AllocQueue(obj, 4);
-    ObjHits_EnableObject((GameObject*)obj);
+    ObjHits_EnableObject(obj);
     {
         f32 minY = PUSHABLE_INITIAL_CULL_DISTANCE;
         for (i = 0; i < model->vertexCount; i++)
@@ -1551,41 +1551,41 @@ void pushable_init(s16* obj, char* def)
         }
     }
     state->savePosEnabled = 1;
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (obj->anim.seqId)
     {
     case 0x21e:
-        pushable_initMagicGem((GameObject*)(obj), state);
+        pushable_initMagicGem(obj, state);
         break;
     case 0x411:
-        pushable_initMagicGem((GameObject*)(obj), state);
+        pushable_initMagicGem(obj, state);
         break;
     case PUSHABLE_SEQID_WC_PUSH_BLOCK:
-        pushable_initWcPushBlock((GameObject*)(obj), state);
+        pushable_initWcPushBlock(obj, state);
         break;
     case PUSHABLE_SEQID_DIM_PUSH_BLOCK:
-        if (((PushableObjectDef*)def)->gameBit > -1 && mainGetBit(((PushableObjectDef*)def)->gameBit) != 0)
+        if (def->gameBit > -1 && mainGetBit(def->gameBit) != 0)
         {
             state->flags = state->flags | 0x81;
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
-            pushable_savePos((GameObject*)obj);
+            *(u8*)&obj->anim.resetHitboxMode =
+                *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+            pushable_savePos(obj);
         }
         state->savePosEnabled = 0;
         break;
     default:
-        if (((PushableObjectDef*)def)->gameBit > -1 && mainGetBit(((PushableObjectDef*)def)->gameBit) != 0)
+        if (def->gameBit > -1 && mainGetBit(def->gameBit) != 0)
         {
             state->flags = state->flags | PUSHABLE_FLAG_RESTORED;
         }
         break;
     }
     {
-        char* r = *(char**)&((GameObject*)obj)->anim.modelState;
+        char* r = *(char**)&obj->anim.modelState;
         if (r != NULL)
         {
             *(u32*)(r + 0x30) = *(u32*)(r + 0x30) | 0xa10;
-            (*(char**)&((GameObject*)obj)->anim.modelState)[0x3a] = 0x60;
-            (*(char**)&((GameObject*)obj)->anim.modelState)[0x3b] = 0x40;
+            (*(char**)&obj->anim.modelState)[0x3a] = 0x60;
+            (*(char**)&obj->anim.modelState)[0x3b] = 0x40;
         }
     }
     state->flags = state->flags | PUSHABLE_FLAG_INITIALIZED;

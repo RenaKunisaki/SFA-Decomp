@@ -11,10 +11,10 @@ extern ObjectDescriptor gInvHitObjDescriptor;
 extern ObjectDescriptor gIceblastObjDescriptor;
 extern ObjectDescriptor gFlameblastObjDescriptor;
 
-int pushable_setScale(int *obj, s16 *tgt, int flag, f32 dx, f32 dz);
+int pushable_setScale(GameObject *obj, GameObject *tgt, int flag, f32 dx, f32 dz);
 void FUN_801757ac(u64 param_1,double param_2,u32 param_3,u32 param_4,
                  int param_5);
-void pushable_render(int *obj, int p1, int p2, int p3, int p4, s8 visible);
+void pushable_render(GameObject *obj, int p1, int p2, int p3, int p4, s8 visible);
 void pushable_hitDetect(GameObject* obj);
 void FUN_801765c8(u64 param_1,u64 param_2,u64 param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,
