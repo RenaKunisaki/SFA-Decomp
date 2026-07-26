@@ -395,7 +395,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x15D | — (+CFSlideDoor, CFMainSlide) | NO-RETAIL-NAME | dlls/objects/349/349.c | = (canonical) | — |
 | 0x15E | — | NO-RETAIL-NAME | dlls/objects/350/350.c | = (canonical) | data-only DLL |
 | 0x15F | — (+CFAttractor, DBAttractor) | NO-RETAIL-NAME | dlls/objects/351/351.c | = (canonical) | — |
-| 0x160 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x160 | — | NO-RETAIL-NAME | dlls/objects/352/352.c | = (canonical) | data-only DLL |
 | 0x161 | CFTreasRobo | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x162 | CFMagicWall | CONFIRMED | main/dll/dll_0162_cfmagicwall.c | main/dll/CF/dll_0162_cfmagicwall.c | — |
 | 0x163 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |

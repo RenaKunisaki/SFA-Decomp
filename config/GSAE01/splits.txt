@@ -2337,6 +2337,9 @@ dlls/objects/348_CFForceFiel/CFForceFiel.c:
 dlls/objects/350/350.c:
 	.sdata      start:0x803DBEA8 end:0x803DBEB0
 
+dlls/objects/352/352.c:
+	.sdata      start:0x803DBEB8 end:0x803DBEC0
+
 dlls/objects/349/349.c:
 	.text       start:0x801A3E9C end:0x801A41D8
 	.data       start:0x80322F58 end:0x80322F90
