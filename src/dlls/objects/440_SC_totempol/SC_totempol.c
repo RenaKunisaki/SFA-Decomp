@@ -21,6 +21,23 @@ u16 gSCTotemPoleRecordGameBits[4] = {0x2B7, 0x2CB, 0x2CC, 0};
 
 int gSCTotemPoleHitCooldown;
 
+ObjectDescriptor gSC_totempoleObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)sc_totempole_initialise,
+    (ObjectDescriptorCallback)sc_totempole_release,
+    0,
+    (ObjectDescriptorCallback)sc_totempole_init,
+    (ObjectDescriptorCallback)sc_totempole_update,
+    (ObjectDescriptorCallback)sc_totempole_hitDetect,
+    (ObjectDescriptorCallback)sc_totempole_render,
+    (ObjectDescriptorCallback)sc_totempole_free,
+    (ObjectDescriptorCallback)sc_totempole_getObjectTypeId,
+    sc_totempole_getExtraSize,
+};
+
 #define SC_TOTEMPOLE_GAMEBIT_FRONT 0x81
 #define SC_TOTEMPOLE_GAMEBIT_LEFT 0x82
 #define SC_TOTEMPOLE_GAMEBIT_RIGHT 0x83
@@ -171,19 +188,3 @@ void sc_totempole_initialise(void)
 {
 }
 
-ObjectDescriptor gSC_totempoleObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)sc_totempole_initialise,
-    (ObjectDescriptorCallback)sc_totempole_release,
-    0,
-    (ObjectDescriptorCallback)sc_totempole_init,
-    (ObjectDescriptorCallback)sc_totempole_update,
-    (ObjectDescriptorCallback)sc_totempole_hitDetect,
-    (ObjectDescriptorCallback)sc_totempole_render,
-    (ObjectDescriptorCallback)sc_totempole_free,
-    (ObjectDescriptorCallback)sc_totempole_getObjectTypeId,
-    sc_totempole_getExtraSize,
-};
