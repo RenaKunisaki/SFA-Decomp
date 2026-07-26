@@ -90,7 +90,7 @@ DLLs whose fns it hosts:
 
 | unit | actually hosts | evidence |
 |---|---|---|
-| main/light.c (801FD13C-801FD398) | DLLs 0x223-0x224 — VFP-lane DLL code (vfpcoreplat symbols) | not engine light code |
+| main/light.c (801FD270-801FD398) | DLL 0x224 | not engine light code |
 | main/main.c (801FD398-801FEB30) | dll_224 tail, DB_egg 0x23F fns | not engine main() |
 | main/dll/CF/windlift.c | scarab 0x106 body+tail, dll_107, EndObject 0x108 (+its descriptor .data 0x803217C0), PortalSpellStone 0x10D, LanternFireFly 0x10C head | real CFWindLift (0x149) lives in DR/sandwormBoss.c 8019CCF8-8019D574 |
 | main/dll/DR/gasvent.c (801A1230-801A1A60) | the MIDDLE of GunPowderBarrel 0x158 (801A0EF8-801A25E8) — nothing else | |

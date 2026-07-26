@@ -1,0 +1,112 @@
+/* VFP_corepla (DLL 0x0223) */
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "main/dll/expgfx_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits.h"
+#include "main/object_render_legacy.h"
+
+#define VFP_COREPLAT_OBJFLAG_HITDETECT_DISABLED 0x2000
+
+static const f32 lbl_803E6140 = 1.0f;
+static const f32 lbl_803E6144 = 0.7f;
+static const f32 lbl_803E6148 = 0.45f;
+
+typedef struct VfpCorePlatformState
+{
+    s16 gameBitId;
+    u8 pad02[2];
+} VfpCorePlatformState;
+
+typedef struct VfpCorePlatformPlacement
+{
+    u8 pad00[0x18];
+    s8 rotXByte;
+    u8 axisMode;
+    u8 pad1A[6];
+    s16 gameBitId;
+} VfpCorePlatformPlacement;
+
+STATIC_ASSERT(sizeof(VfpCorePlatformState) == 0x4);
+
+int return0_801FD13C(void)
+{
+    return 0x0;
+}
+
+int VFP_coreplat_getExtraSize(void)
+{
+    return 0x4;
+}
+
+int VFP_coreplat_getObjectTypeId(void)
+{
+    return 0x0;
+}
+
+void VFP_coreplat_free(int obj)
+{
+    (*gExpgfxInterface)->freeSource2(obj);
+}
+
+void VFP_coreplat_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
+{
+    objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, lbl_803E6140);
+}
+
+void VFP_coreplat_hitDetect(void)
+{
+}
+
+void VFP_coreplat_update(void)
+{
+}
+
+void VFP_coreplat_init(GameObject* obj, int data)
+{
+    VfpCorePlatformPlacement* def = (VfpCorePlatformPlacement*)data;
+    VfpCorePlatformState* state = obj->extra;
+
+    obj->anim.rotX = (((s32)def->rotXByte) << 8);
+    state->gameBitId = def->gameBitId;
+    obj->animEventCallback = return0_801FD13C;
+    if (obj->anim.seqId == 0x3cb)
+    {
+        if (mainGetBit(GAMEBIT_ITEM_SpellStone1_Used) != 0)
+        {
+            obj->anim.rootMotionScale =
+                lbl_803E6144 * obj->anim.modelInstance->rootMotionScaleBase;
+        }
+        if (mainGetBit(GAMEBIT_ITEM_SpellStone3_Got) != 0)
+        {
+            obj->anim.rootMotionScale =
+                lbl_803E6148 * obj->anim.modelInstance->rootMotionScaleBase;
+        }
+    }
+    obj->objectFlags |= VFP_COREPLAT_OBJFLAG_HITDETECT_DISABLED;
+}
+
+void VFP_coreplat_release(void)
+{
+}
+
+void VFP_coreplat_initialise(void)
+{
+}
+
+ObjectDescriptor gVFP_coreplatObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)VFP_coreplat_initialise,
+    (ObjectDescriptorCallback)VFP_coreplat_release,
+    0,
+    (ObjectDescriptorCallback)VFP_coreplat_init,
+    (ObjectDescriptorCallback)VFP_coreplat_update,
+    (ObjectDescriptorCallback)VFP_coreplat_hitDetect,
+    (ObjectDescriptorCallback)VFP_coreplat_render,
+    (ObjectDescriptorCallback)VFP_coreplat_free,
+    (ObjectDescriptorCallback)VFP_coreplat_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)VFP_coreplat_getExtraSize,
+};

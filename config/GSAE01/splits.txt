@@ -3398,9 +3398,14 @@ dlls/objects/546_VFPDragHead/VFPDragHead.c:
 	.sbss       start:0x803DDCC0 end:0x803DDCC8
 	.sdata2     start:0x803E6138 end:0x803E613C
 
+dlls/objects/547_VFP_corepla/VFP_corepla.c:
+	.text       start:0x801FD13C end:0x801FD270
+	.data       start:0x80329168 end:0x803291A0
+	.sdata2     start:0x803E6140 end:0x803E614C
+
 main/light.c:
-	.text       start:0x801FD13C end:0x801FD4A8
-	.data       start:0x80329168 end:0x803291D8
+	.text       start:0x801FD270 end:0x801FD4A8
+	.data       start:0x803291A0 end:0x803291D8
 
 main/main.c:
 	.text       start:0x801FD4A8 end:0x801FDBBC
