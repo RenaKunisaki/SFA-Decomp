@@ -3567,7 +3567,7 @@ dlls/objects/582/582.c:
 dlls/objects/580/580.c:
 	.data       start:0x80329EA0 end:0x80329ED0
 
-main/dll/dll_0247_dummy247.c:
+dlls/objects/583/583.c:
 	.data       start:0x80329ED0 end:0x80329F00
 
 main/dll/dll_0248_dummy248.c:
