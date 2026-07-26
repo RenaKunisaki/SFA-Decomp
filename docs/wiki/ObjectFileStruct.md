@@ -276,7 +276,7 @@ Every one of these seven pairs matches exactly, independently confirming both th
 - **`0x7c` help texts, 4 vs. 8 entries**: the wiki says `GameTextId[4]` (8 bytes, ending 0x84), and
   our own `tools/orig/object_catalog.py` independently reads exactly 4 `u16`s at this offset too.
   Every DLL call site found in this pass (`dll_a6.c:75`, `dll_0189_ccsharpclawpad.c:81`,
-  `dll_0122_cctestinfot.c:136`, `dll_01B1_shstaff.c:442`, `dll_0121_infotext.c:27`) indexes
+  `dll_0122_cctestinfot.c:136`, `dll_01B1_shstaff.c:442`, `src/dlls/objects/289/289.c:27`) indexes
   `helpTextIds[0..3]`-range values only. But `ObjDef.helpTextIds` in
   `include/main/objanim_internal.h:256` is declared `s16[8]` (16 bytes, 0x7C-0x8B), which would
   overrun into the wiki's separately-named `?`/`?`/`lagVar88` bytes at 0x84-0x8B. This looks like a

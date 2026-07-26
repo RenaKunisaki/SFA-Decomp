@@ -1,4 +1,4 @@
-/* DLL 0x0121 - infotext. TU: 0x8018B9F0-0x8018BB00. */
+/* DLL 0x121 implements reusable information-text trigger objects. */
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"

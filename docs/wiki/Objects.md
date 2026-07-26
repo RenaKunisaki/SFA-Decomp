@@ -563,7 +563,8 @@ found above. Do not apply directly; verify against the target function before to
    ```c
    u8 hintTextIdx; /* obj+0xE8; renamed from paletteIndex - objSetHintTextIdx's own name and
                        body (object.c) confirm this is the sign/info-text hint index, not a
-                       palette slot. Callers: dll_0121_infotext.c, CC/dll_0122_cctestinfot.c */
+                       palette slot. Callers: src/dlls/objects/289/289.c,
+                       CC/dll_0122_cctestinfot.c */
    ```
 
 4. **`GameObject.unkF1[3]` (offsets 0xF1-0xF3) has wiki-sourced fill-in candidates worth checking
