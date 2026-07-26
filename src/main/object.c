@@ -235,7 +235,7 @@ u8 gObjCameraSetupBlock[32] = {
 };
 
 char sObjFreeNonExistentObjectWarning[] = "Tried to free non-existent object\n";
-void Obj_RunInitCallback(u8* obj, int cb, int unused);
+void Obj_RunInitCallback(GameObject* obj, int cb, int unused);
 void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load);
 
 void doNothing_afterRenderObject(void)
@@ -1284,7 +1284,7 @@ extern char sObjFreeObjdefError[];
 extern u8 gObjCameraSetupBlock[32];
 
 extern char sObjFreeNonExistentObjectWarning[];
-void Obj_RunInitCallback(u8* obj, int cb, int unused);
+void Obj_RunInitCallback(GameObject* obj, int cb, int unused);
 void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load);
 
 static inline void Obj_FreeDeferredObjects(void)
@@ -2755,7 +2755,7 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     object->previousLocalPosX = object->localPosX;
     object->previousLocalPosY = object->localPosY;
     object->previousLocalPosZ = object->localPosZ;
-    Obj_RunInitCallback((u8*)obj, (int)object->placementData, 0);
+    Obj_RunInitCallback(obj, (int)object->placementData, 0);
     if (object->hitReactState != NULL)
     {
         ((ObjHitsPriorityState*)object->hitReactState)->localPosX = object->localPosX;
@@ -2812,9 +2812,9 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     }
 }
 
-void Obj_RunInitCallback(u8* obj, int cb, int unused)
+void Obj_RunInitCallback(GameObject* obj, int cb, int unused)
 {
-    s16 mode = ((GameObject*)obj)->anim.seqId;
+    s16 mode = obj->anim.seqId;
     switch (mode)
     {
     case 0x1f:
@@ -2823,20 +2823,20 @@ void Obj_RunInitCallback(u8* obj, int cb, int unused)
         break;
     default:
     {
-        int* p = (int*)((GameObject*)obj)->anim.dll;
+        int* p = (int*)obj->anim.dll;
         if (p != NULL)
         {
             int fn = ((int*)*p)[1];
             if (fn != -1 && (void*)fn != NULL)
             {
-                ((void (*)(u8*))fn)(obj);
+                ((void (*)(GameObject*))fn)(obj);
             }
         }
         break;
     }
     }
     {
-        ObjModelState* modelState = ((GameObject*)obj)->anim.modelState;
+        ObjModelState* modelState = obj->anim.modelState;
         if (modelState != NULL)
         {
             modelState->flags |= OBJ_MODEL_STATE_SHADOW_INIT_CALLBACK_RAN;
@@ -2844,15 +2844,15 @@ void Obj_RunInitCallback(u8* obj, int cb, int unused)
     }
     {
         f32 zero;
-        ((GameObject*)obj)->anim.previousLocalPosX = ((GameObject*)obj)->anim.localPosX;
-        ((GameObject*)obj)->anim.previousLocalPosY = ((GameObject*)obj)->anim.localPosY;
-        ((GameObject*)obj)->anim.previousLocalPosZ = ((GameObject*)obj)->anim.localPosZ;
-        ((GameObject*)obj)->anim.previousWorldPosX = ((GameObject*)obj)->anim.localPosX;
-        ((GameObject*)obj)->anim.previousWorldPosY = ((GameObject*)obj)->anim.localPosY;
-        ((GameObject*)obj)->anim.previousWorldPosZ = ((GameObject*)obj)->anim.localPosZ;
+        obj->anim.previousLocalPosX = obj->anim.localPosX;
+        obj->anim.previousLocalPosY = obj->anim.localPosY;
+        obj->anim.previousLocalPosZ = obj->anim.localPosZ;
+        obj->anim.previousWorldPosX = obj->anim.localPosX;
+        obj->anim.previousWorldPosY = obj->anim.localPosY;
+        obj->anim.previousWorldPosZ = obj->anim.localPosZ;
         zero = lbl_803DE88C;
-        ((GameObject*)obj)->externalVelX = zero;
-        ((GameObject*)obj)->externalVelY = zero;
-        ((GameObject*)obj)->externalVelZ = zero;
+        obj->externalVelX = zero;
+        obj->externalVelY = zero;
+        obj->externalVelZ = zero;
     }
 }
