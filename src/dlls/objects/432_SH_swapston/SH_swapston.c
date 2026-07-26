@@ -536,10 +536,10 @@ void warpstone_free(GameObject* obj, int mode)
     }
 }
 
-void warpstone_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void warpstone_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     GameObject* player;
-    int* state = ((GameObject*)obj)->extra;
+    int* state = obj->extra;
     int* model;
     f32 z;
     f32 y;
@@ -547,13 +547,13 @@ void warpstone_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
     s32 v = visible;
     if (v != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         player = Obj_GetPlayerObject();
         if (player != NULL && fn_80296464(player) != 0)
         {
             model = (int*)Obj_GetActiveModel(player);
             *(u16*)((char*)model + 24) = (u16)(*(u16*)((char*)model + 24) & ~0x8);
-            ObjPath_GetPointWorldPosition((GameObject*)obj, ((WarpstoneUpdateMenuAnimObjState*)state)->pathPointIndex,
+            ObjPath_GetPointWorldPosition(obj, ((WarpstoneUpdateMenuAnimObjState*)state)->pathPointIndex,
                                           &x, &y, &z, 0);
             objSetPos(player, x, y, z);
             playerRender((int)player, p2, p3, p4, p5, -1);
