@@ -93,16 +93,16 @@ int linkb_levcontrol_getExtraSize(void)
     return 0x10;
 }
 
-void linkb_levcontrol_update(int* obj)
+void linkb_levcontrol_update(GameObject* obj)
 {
     LinkbLevState* state;
-    int* tricky;
+    GameObject* tricky;
     GameObject* player;
     u8* cur;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
-    tricky = (int*)getTrickyObject();
+    tricky = getTrickyObject();
     cur = (*gMapEventInterface)->getTrickyEnergy();
     if ((*gSkyInterface)->getSunPosition(0) != 0)
     {
@@ -147,13 +147,13 @@ void linkb_levcontrol_update(int* obj)
     }
     if (tricky != NULL)
     {
-        trickySetSoundSuppressed((GameObject*)tricky, 0);
+        trickySetSoundSuppressed(tricky, 0);
         switch (state->stage)
         {
         case LINKBLEVCONTROL_STAGE_START:
             if (mainGetBit(GAMEBIT_LINKB_STAGE_1) != 0)
             {
-                trickySetSoundSuppressed((GameObject*)tricky, 1);
+                trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
                 state->unk_02_low = 0;
@@ -163,10 +163,10 @@ void linkb_levcontrol_update(int* obj)
         case LINKBLEVCONTROL_STAGE_1:
             if (mainGetBit(GAMEBIT_ITEM_TrickyFood_Count) != 0)
             {
-                if (!(((GameObject*)player)->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
+                if (!(player->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
                 {
                     mainSetBits(GAMEBIT_LINKB_STAGE_2, 1);
-                    trickySetSoundSuppressed((GameObject*)tricky, 1);
+                    trickySetSoundSuppressed(tricky, 1);
                     (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                     state->stage++;
                     state->unk_02_low = 0;
@@ -177,9 +177,9 @@ void linkb_levcontrol_update(int* obj)
         case LINKBLEVCONTROL_STAGE_2:
             if (cur[0] != 0)
             {
-                trickySetSoundSuppressed((GameObject*)tricky, 1);
+                trickySetSoundSuppressed(tricky, 1);
                 if (state->trickyHitCount-- == -1 &&
-                    !(((GameObject*)tricky)->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
+                    !(tricky->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
                 {
                     mainSetBits(GAMEBIT_LINKB_STAGE_3, 1);
                     (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
@@ -204,7 +204,7 @@ void linkb_levcontrol_update(int* obj)
             if (state->altPath != 0)
             {
                 mainSetBits(GAMEBIT_LINKB_STAGE_4, 1);
-                trickySetSoundSuppressed((GameObject*)tricky, 1);
+                trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
                 state->unk_02_low = 0;
@@ -214,7 +214,7 @@ void linkb_levcontrol_update(int* obj)
         case LINKBLEVCONTROL_STAGE_4:
             if (mainGetBit(GAMEBIT_LINKB_STAGE_5) != 0)
             {
-                trickySetSoundSuppressed((GameObject*)tricky, 1);
+                trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
                 state->unk_02_low = 0;
@@ -225,7 +225,7 @@ void linkb_levcontrol_update(int* obj)
     }
     if (tricky != NULL)
     {
-        if (!(((GameObject*)tricky)->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
+        if (!(tricky->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
         {
             state->timer = state->timer + timeDelta;
         }
@@ -244,14 +244,14 @@ void linkb_levcontrol_update(int* obj)
     }
 }
 
-void linkb_levcontrol_init(int* obj)
+void linkb_levcontrol_init(GameObject* obj)
 {
     /* the (u8*)(int) launder is load-bearing: it makes the skySetEnvFxRampTables arg
      * reuse envBase's register instead of re-materializing the address */
     u8* envBase = (u8*)(int)lbl_803238D8;
-    LinkbLevState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->objectFlags =
-        (u16)(((GameObject*)obj)->objectFlags |
+    LinkbLevState* state = obj->extra;
+    obj->objectFlags =
+        (u16)(obj->objectFlags |
               (LINKBLEVCONTROL_OBJFLAG_HIDDEN | LINKBLEVCONTROL_OBJFLAG_HITDETECT_DISABLED));
     if (mainGetBit(0x36e) != 0)
     {
@@ -280,7 +280,7 @@ void linkb_levcontrol_init(int* obj)
     skySetEnvFxRampTables(envBase + 0x38, (u8*)(int)lbl_803238D8, envBase + 0x70, envBase + 0xa8);
     if (getSaveGameLoadStatus() != 0)
     {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0) == 0)
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0)
         {
             envFxActFn_800887f8(0x3f);
         }
@@ -288,7 +288,7 @@ void linkb_levcontrol_init(int* obj)
     }
     else
     {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0) == 0)
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0)
         {
             envFxActFn_800887f8(0x1f);
         }
