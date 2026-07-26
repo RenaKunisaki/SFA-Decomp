@@ -437,11 +437,11 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x187 | CCqueen | COMPLETE | dlls/objects/391_CCqueen/CCqueen.c | = (canonical) | — |
 | 0x188 | CClightfoot | COMPLETE | dlls/objects/392_CClightfoot/CClightfoot.c | = (canonical) | — |
 | 0x189 | CCSharpclaw | COMPLETE | dlls/objects/393_CCSharpclaw/CCSharpclaw.c | = (canonical) | — |
-| 0x18A | CCpedstal | COMPLETE | main/dll/dll_018A_ccpedstal.c | main/dll/CC/dll_018A_ccpedstal.c | — |
-| 0x18B | CClevcontrol | CONFIRMED | main/dll/dll_018B_cclevcontrol.c | main/dll/CC/dll_018B_cclevcontrol.c | — |
-| 0x18C | MMSH_Shrine | CONFIRMED | main/dll/dll_018C_mmshshrine.c | main/dll/mmshrine/dll_018C_mmshshrine.c | — |
-| 0x18D | MMSH_Scales | CONFIRMED | main/dll/dll_018D_mmshscales.c | main/dll/mmshrine/dll_018D_mmshscales.c | — |
-| 0x18E | MMSH_WaterSpike | CONFIRMED | main/dll/dll_018E_mmshwaterspike.c | main/dll/mmshrine/dll_018E_mmshwaterspike.c | — |
+| 0x18A | CCpedstal | COMPLETE | dlls/objects/394_CCpedstal/CCpedstal.c | = (canonical) | — |
+| 0x18B | CClevcontro | COMPLETE | dlls/objects/395_CClevcontro/CClevcontro.c | = (canonical) | — |
+| 0x18C | MMSH_Shrine | COMPLETE | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | = (canonical) | — |
+| 0x18D | MMSH_Scales | COMPLETE | dlls/objects/397_MMSH_Scales/MMSH_Scales.c | = (canonical) | — |
+| 0x18E | MMSH_WaterS | COMPLETE | dlls/objects/398_MMSH_WaterS/MMSH_WaterS.c | = (canonical) | — |
 | 0x18F | ECSH_Shrine | CONFIRMED | main/dll/dll_018F_ecshshrine.c | = (canonical) | — |
 | 0x190 | ECSH_Cup | COMPLETE | main/dll/dll_0190_ecshcup.c | = (canonical) | — |
 | 0x191 | ECSH_Creator | CONFIRMED | main/dll/dll_0191_ecshcreator.c | = (canonical) | — |
@@ -798,11 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x18A | main/dll/dll_018A_ccpedstal.c | main/dll/CC/dll_018A_ccpedstal.c | COMPLETE |
-| 0x18B | main/dll/dll_018B_cclevcontrol.c | main/dll/CC/dll_018B_cclevcontrol.c | CONFIRMED |
-| 0x18C | main/dll/dll_018C_mmshshrine.c | main/dll/mmshrine/dll_018C_mmshshrine.c | CONFIRMED |
-| 0x18D | main/dll/dll_018D_mmshscales.c | main/dll/mmshrine/dll_018D_mmshscales.c | CONFIRMED |
-| 0x18E | main/dll/dll_018E_mmshwaterspike.c | main/dll/mmshrine/dll_018E_mmshwaterspike.c | CONFIRMED |
 | 0x198 | main/dll/dll_0198_nwshlevcon.c | main/dll/NW/dll_0198_nwshlevcon.c | CONFIRMED |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | main/dll/NW/dll_019F_nwtreebrid.c | RAW |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | main/dll/NW/dll_01A0_nwgeyser.c | COMPLETE |
@@ -986,7 +981,7 @@ blocked units will surface more when carved.
 | dll | current unit | header |
 |---|---|---|
 | 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/main/dll/dll_017B_dfshlaserbeam.h |
-| 0x18C | main/dll/dll_018C_mmshshrine.c | include/main/dll/dll_018C_mmshshrine.h |
+| 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | main/dll/dll_0198_nwshlevcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | include/main/dll/dll_01A0_nwgeyser.h |

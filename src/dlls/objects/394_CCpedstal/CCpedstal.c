@@ -1,5 +1,5 @@
 /*
- * ccpedstal - Crystal Caves pedestal gate (DLL 0x018A). A pedestal whose
+ * CCpedstal - Crystal Caves pedestal gate (DLL 0x018A). A pedestal whose
  * placement def-id selects one of two think routines, stored as a function
  * pointer in the extra block and dispatched each update. Both routines drive
  * the object's model index and active-hitbox bit from a gameBit and an

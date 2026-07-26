@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 
 /* placement block read via anim.placementData */
 typedef struct MmshWaterspikePlacement
@@ -30,6 +31,8 @@ STATIC_ASSERT(sizeof(MmshWaterspikePlacement) == 0x18);
 STATIC_ASSERT(offsetof(MmshWaterspikeObjectDef, xyzAnimIdLow) == 0x1A);
 STATIC_ASSERT(offsetof(MmshWaterspikeObjectDef, xyzAnimIdHigh) == 0x1C);
 STATIC_ASSERT(sizeof(MmshWaterspikeObjectDef) == 0x28);
+
+extern ObjectDescriptor gMMSH_WaterSpikeObjDescriptor;
 
 int mmsh_waterspike_getExtraSize(void);
 int mmsh_waterspike_getObjectTypeId(void);

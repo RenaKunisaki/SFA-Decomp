@@ -1,5 +1,5 @@
 /*
- * mmsh_scales (DLL 0x018D) - a trigger-sequence "scales" object in the
+ * MMSH_Scales (DLL 0x018D) - a trigger-sequence "scales" object in the
  * Moon Mountain Shrine (mmsh) family; object type id 0xb.
  *
  * init() loads the object's animation/sequence data from its placement def
@@ -156,3 +156,20 @@ void MMSH_Scales_release(void)
 void MMSH_Scales_initialise(void)
 {
 }
+
+ObjectDescriptor gMMSH_ScalesObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)MMSH_Scales_initialise,
+    (ObjectDescriptorCallback)MMSH_Scales_release,
+    0,
+    (ObjectDescriptorCallback)MMSH_Scales_init,
+    (ObjectDescriptorCallback)MMSH_Scales_update,
+    (ObjectDescriptorCallback)MMSH_Scales_hitDetect,
+    (ObjectDescriptorCallback)MMSH_Scales_render,
+    (ObjectDescriptorCallback)MMSH_Scales_free,
+    (ObjectDescriptorCallback)MMSH_Scales_getObjectTypeId,
+    MMSH_Scales_getExtraSize,
+};
