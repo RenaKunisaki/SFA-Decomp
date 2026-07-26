@@ -430,7 +430,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x115 | lbl_80321428 | 8017D06C-8017D378 | 8017CF90-8017D37C | 8017D0D4 (main/dll/alphaanim.c \| main/dll/groundAnimator.c) | n |  |
 | 0x117 | gAppleOnTreeObjDescriptor | 8017D818-8017E964 | 8017D818-8017EC10 | 8017E1A0 (main/dll/groundAnimator.c \| main/dll/crackanim.c) | Y | AppleOnTree |
 | 0x0FC | gDllFCObjDescriptor | 8017EC10-8017EF68 | 8017EC10-8017EF6C | 8017EC94 (main/dll/crackanim.c \| main/dll/babycloudrunner.c) | n |  |
-| 0x0FD | gDll14DObjDescriptor | 8017EF6C-8017F330 | 8017EF6C-8017F334 | 8017EFF0 (main/dll/babycloudrunner.c \| main/dll/dll_14D.c) | n |  |
+| 0x0FD | gDllFDObjDescriptor | 8017EF6C-8017F330 | 8017EF6C-8017F334 | 8017EFF0 (main/dll/babycloudrunner.c \| main/dll/dll_14D.c) | n |  |
 | 0x104 | gSmallBasketObjDescriptor | 80182594-80183094 | 801814D0-80183204 | 801826E8 (main/dll/gcrobotlightbea.c \| main/dll/cfperch.c) | Y | SmallBasket,ReinforcedC |
 | 0x105 | gLargeCrateObjDescriptor | 80183B44-801843BC | 80183204-801843C0 | 80184180 (main/dll/explodable.c \| main/dll/cfforcefield.c) | Y | DrakorCrate,LargeBasket,LargeCrate,LargeCrateL |
 | 0x106 | gScarabObjDescriptor | 801847E8-801856C4 | 801843C0-80185868 | 80184930 (main/dll/CF/CFguardian.c \| main/dll/CF/windlift.c) | Y | GreenScarab,RedScarab,GoldScarab,RainScarab |

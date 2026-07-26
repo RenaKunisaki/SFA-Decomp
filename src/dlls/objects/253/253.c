@@ -1,215 +1,165 @@
-/* DLL 0x00FD - baby CloudRunner objects [8017EF6C-8017F4F4) */
+/*
+ * DLL 0xFD - target-following sequence controller.
+ *
+ * The object mirrors a placement-selected group member and exposes an
+ * interaction that is gated by game bits and UI-event readiness.
+ */
+#include "dlls/objects/253.h"
 #include "game/objects/object.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebits_api.h"
+#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
-#include "main/audio/sfx.h"
-#include "game/objects/object_setup.h"
-#include "main/obj_link.h"
-#include "main/dll/dll_00FD.h"
-#include "main/game_ui_interface.h"
 #include "main/objseq.h"
-#include "main/gamebits.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "sys/objects.h"
-#include "main/obj_group.h"
-#include "main/vecmath.h"
-#include "main/dll/dll_00FE_magicplant.h"
-#include "main/audio/sfx_trigger_ids.h"
 
 extern f32 lbl_803E3850;
 extern f32 lbl_803E3854;
 
-#define DLL00FD_OBJFLAG_HIDDEN 0x4000
+#define DLL_FD_RENDER_SCALE         lbl_803E3850
+#define DLL_FD_TARGET_SEARCH_RADIUS lbl_803E3854
 
-typedef struct Dll14DState
-{
-    u8 mode;       /* 0x00: state-machine mode (0/1/2/3/4) */
-    u8 gateOpen;   /* 0x01: GameBit-gated flag (0/1) */
-    u8 pad02[2];
-    u32 anchorObj; /* 0x04: nearest object (ObjGroup_FindNearestObject); this object snaps to its pos/rot */
-} Dll14DState;
+#define DLL_FD_TARGET_INTERACT_FLAG  0x20
+#define DLL_FD_MODEL_HIT_DETECT_FLAG 0x1
+#define DLL_FD_NO_GAME_BIT           -1
+#define DLL_FD_NO_EVENT              -1
+#define DLL_FD_NO_SEQUENCE           -1
 
-STATIC_ASSERT(offsetof(Dll14DState, anchorObj) == 0x4);
-STATIC_ASSERT(sizeof(Dll14DState) == 0x8);
-
-/* Class-specific placement record for the dll_14D (baby-CloudRunner trigger)
- * family: ObjPlacement common head (0x00..0x17) + trigger/sequence fields. */
-typedef struct Dll14DPlacement
-{
-    ObjPlacement head;     /* 0x00..0x17 */
-    s16 enableBit;         /* 0x18: GameBit gating activation */
-    s16 stateBit;          /* 0x1a: GameBit persisting open/closed state */
-    s16 eventId;           /* 0x1c: UI event id to wait on */
-    s16 preemptSeq;        /* 0x1e: sequence id passed to preempt() */
-    u8 runSeqArg;          /* 0x20: runSequence 3rd arg */
-    u8 groupId;            /* 0x21: ObjGroup_FindNearestObject group id */
-    u8 runSeqId;           /* 0x22: runSequence sequence id */
-    u8 flags;              /* 0x23: bit0 = no auto-open, bit1 = clear enableBit */
-} Dll14DPlacement;
-
-STATIC_ASSERT(offsetof(Dll14DPlacement, enableBit) == 0x18);
-STATIC_ASSERT(offsetof(Dll14DPlacement, flags) == 0x23);
-STATIC_ASSERT(sizeof(Dll14DPlacement) == 0x24);
-
-int dll_FD_getExtraSize(void) { return 0x8; }
-
-int dll_FD_getObjectTypeId(void) { return 0x0; }
-
-void dll_FD_free(void)
-{
+int dll_FD_getExtraSize(void) {
+    return sizeof(DllFDState);
 }
 
-void dll_FD_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E3850);
+int dll_FD_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_FD_hitDetect(GameObject *obj)
-{
-    if (((obj->anim.modelInstance->flags & 1) != 0) &&
-        (obj->anim.hitVolumeTransforms != NULL))
-    {
+void dll_FD_free(void) {
+}
+
+void dll_FD_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    s32 isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, DLL_FD_RENDER_SCALE);
+    }
+}
+
+void dll_FD_hitDetect(GameObject* obj) {
+    if (((obj->anim.modelInstance->flags & DLL_FD_MODEL_HIT_DETECT_FLAG) != 0) &&
+        (obj->anim.hitVolumeTransforms != NULL)) {
         objRenderFn_80041018(obj);
     }
-    return;
 }
 
-void dll_FD_update(GameObject* obj)
-{
+void dll_FD_update(GameObject* obj) {
     u8 mode;
-    u32 found;
-    u32 bitVal;
+    GameObject* target;
+    u32 gameBitValue;
     int eventReady;
-    Dll14DPlacement* placement;
-    Dll14DState* state;
-    float dist;
+    DllFDPlacement* placement;
+    DllFDState* state;
+    f32 maxDistance;
 
-    dist = lbl_803E3854;
-    placement = (Dll14DPlacement*)obj->anim.placementData;
-    state = (Dll14DState*)obj->extra;
-    if (*(void**)&state->anchorObj == NULL)
-    {
-        found = ObjGroup_FindNearestObject((u32)placement->groupId, obj, &dist);
-        state->anchorObj = found;
-        if (*(void**)&state->anchorObj == NULL)
-        {
+    maxDistance = DLL_FD_TARGET_SEARCH_RADIUS;
+    placement = (DllFDPlacement*)obj->anim.placementData;
+    state = obj->extra;
+    if (state->target == NULL) {
+        target = (GameObject*)ObjGroup_FindNearestObject((u32)placement->targetGroup, obj, &maxDistance);
+        state->target = target;
+        if (state->target == NULL) {
             return;
         }
-        if (placement->stateBit == -1)
-        {
-            state->gateOpen = 0;
+        if (placement->stateGameBit == DLL_FD_NO_GAME_BIT) {
+            state->isActivated = 0;
+        } else {
+            gameBitValue = mainGetBit(placement->stateGameBit);
+            state->isActivated = gameBitValue;
         }
-        else
-        {
-            bitVal = mainGetBit(placement->stateBit);
-            state->gateOpen = bitVal;
-        }
-        if ((state->gateOpen != 0) && (placement->preemptSeq != -1))
-        {
-            state->mode = 1;
-        }
-        else
-        {
-            state->mode = 2;
+        if ((state->isActivated != 0) && (placement->preemptSequenceId != DLL_FD_NO_SEQUENCE)) {
+            state->mode = DLL_FD_MODE_RUN_INITIAL_SEQUENCE;
+        } else {
+            state->mode = DLL_FD_MODE_INTERACTIVE;
         }
     }
-    obj->anim.localPosX = ((GameObject*)state->anchorObj)->anim.localPosX;
-    obj->anim.localPosY = ((GameObject*)state->anchorObj)->anim.localPosY;
-    obj->anim.localPosZ = ((GameObject*)state->anchorObj)->anim.localPosZ;
-    obj->anim.rotX = ((GameObject*)state->anchorObj)->anim.rotX;
-    obj->anim.rotZ = ((GameObject*)state->anchorObj)->anim.rotZ;
-    obj->anim.rotY = ((GameObject*)state->anchorObj)->anim.rotY;
+    obj->anim.localPosX = state->target->anim.localPosX;
+    obj->anim.localPosY = state->target->anim.localPosY;
+    obj->anim.localPosZ = state->target->anim.localPosZ;
+    obj->anim.rotX = state->target->anim.rotX;
+    obj->anim.rotZ = state->target->anim.rotZ;
+    obj->anim.rotY = state->target->anim.rotY;
     mode = state->mode;
-    switch (mode)
-    {
-    case 1:
-        ((GameObject*)state->anchorObj)->anim.resetHitboxFlags &= ~0x20;
-        obj->anim.resetHitboxFlags |= 8;
-        (*gObjectTriggerInterface)->preempt((int)obj, placement->preemptSeq);
-        (*gObjectTriggerInterface)->runSequence(placement->runSeqId, obj,
-                                                placement->runSeqArg);
-        state->mode = 4;
+    switch (mode) {
+    case DLL_FD_MODE_RUN_INITIAL_SEQUENCE:
+        state->target->anim.resetHitboxFlags &= ~DLL_FD_TARGET_INTERACT_FLAG;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+        (*gObjectTriggerInterface)->preempt((int)obj, placement->preemptSequenceId);
+        (*gObjectTriggerInterface)->runSequence(placement->sequenceId, obj, placement->sequenceArg);
+        state->mode = DLL_FD_MODE_FINISHED;
         break;
-    case 2:
-        if ((state->gateOpen != 0) && ((placement->flags & 1) == 0))
-        {
-            ((GameObject*)state->anchorObj)->anim.resetHitboxFlags &= ~0x20;
-            obj->anim.resetHitboxFlags |= 8;
-            state->mode = 4;
-        }
-        else if ((placement->enableBit != -1) &&
-            (bitVal = mainGetBit(placement->enableBit), bitVal == 0))
-        {
-            ((GameObject*)state->anchorObj)->anim.resetHitboxFlags &= ~0x20;
-            obj->anim.resetHitboxFlags |= 8;
-            state->mode = 3;
-        }
-        else if (((obj->anim.resetHitboxFlags & 1) != 0) &&
-            ((placement->eventId == -1) ||
-                (eventReady = (*gGameUIInterface)->isEventReady(placement->eventId),
-                    eventReady != 0)))
-        {
-            if ((placement->flags & 2) != 0)
-            {
-                mainSetBits(placement->enableBit, 0);
+    case DLL_FD_MODE_INTERACTIVE:
+        if ((state->isActivated != 0) && ((placement->flags & DLL_FD_FLAG_KEEP_INTERACTIVE_WHEN_ACTIVATED) == 0)) {
+            state->target->anim.resetHitboxFlags &= ~DLL_FD_TARGET_INTERACT_FLAG;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            state->mode = DLL_FD_MODE_FINISHED;
+        } else if ((placement->enableGameBit != DLL_FD_NO_GAME_BIT) &&
+                   (gameBitValue = mainGetBit(placement->enableGameBit), gameBitValue == 0)) {
+            state->target->anim.resetHitboxFlags &= ~DLL_FD_TARGET_INTERACT_FLAG;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            state->mode = DLL_FD_MODE_WAIT_ENABLE;
+        } else if (((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
+                   ((placement->eventId == DLL_FD_NO_EVENT) ||
+                    (eventReady = (*gGameUIInterface)->isEventReady(placement->eventId), eventReady != 0))) {
+            if ((placement->flags & DLL_FD_FLAG_CLEAR_ENABLE_BIT) != 0) {
+                mainSetBits(placement->enableGameBit, 0);
             }
-            if (placement->stateBit != -1)
-            {
-                mainSetBits(placement->stateBit, 1);
+            if (placement->stateGameBit != DLL_FD_NO_GAME_BIT) {
+                mainSetBits(placement->stateGameBit, 1);
             }
-            obj->anim.resetHitboxFlags |= 8;
-            state->gateOpen = 1;
-            (*gObjectTriggerInterface)->runSequence(placement->runSeqId, obj,
-                                                    0xffffffff);
-        }
-        else
-        {
-            ((GameObject*)state->anchorObj)->anim.resetHitboxFlags |= 0x20;
-            obj->anim.resetHitboxFlags &= ~8;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            state->isActivated = 1;
+            (*gObjectTriggerInterface)->runSequence(placement->sequenceId, obj, -1);
+        } else {
+            state->target->anim.resetHitboxFlags |= DLL_FD_TARGET_INTERACT_FLAG;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         }
         break;
-    case 3:
-        bitVal = mainGetBit(placement->enableBit);
-        if (bitVal != 0)
-        {
-            state->mode = 2;
+    case DLL_FD_MODE_WAIT_ENABLE:
+        gameBitValue = mainGetBit(placement->enableGameBit);
+        if (gameBitValue != 0) {
+            state->mode = DLL_FD_MODE_INTERACTIVE;
         }
         break;
-    case 4:
+    case DLL_FD_MODE_FINISHED:
         break;
     }
 }
 
-void dll_FD_init(GameObject* obj)
-{
-    Dll14DState* p = obj->extra;
-    p->mode = 0;
-    p->anchorObj = 0;
-    obj->objectFlags = (u16)(obj->objectFlags | DLL00FD_OBJFLAG_HIDDEN);
+void dll_FD_init(GameObject* obj) {
+    DllFDState* state = obj->extra;
+
+    state->mode = DLL_FD_MODE_UNINITIALISED;
+    state->target = NULL;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
 }
 
-void dll_FD_release(void)
-{
+void dll_FD_release(void) {
 }
 
-void dll_FD_initialise(void)
-{
+void dll_FD_initialise(void) {
 }
 
-ObjectDescriptor gDll14DObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_FD_initialise,
-    (ObjectDescriptorCallback)dll_FD_release,
-    0,
-    (ObjectDescriptorCallback)dll_FD_init,
-    (ObjectDescriptorCallback)dll_FD_update,
-    (ObjectDescriptorCallback)dll_FD_hitDetect,
-    (ObjectDescriptorCallback)dll_FD_render,
-    (ObjectDescriptorCallback)dll_FD_free,
-    (ObjectDescriptorCallback)dll_FD_getObjectTypeId,
-    dll_FD_getExtraSize,
+ObjectDescriptor gDllFDObjDescriptor = {
+    0,                                                /* reserved0 */
+    0,                                                /* reserved1 */
+    0,                                                /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,                 /* slotCountAndFlags */
+    (ObjectDescriptorCallback)dll_FD_initialise,      /* initialise */
+    (ObjectDescriptorCallback)dll_FD_release,         /* release */
+    0,                                                /* slot02 */
+    (ObjectDescriptorCallback)dll_FD_init,            /* init */
+    (ObjectDescriptorCallback)dll_FD_update,          /* update */
+    (ObjectDescriptorCallback)dll_FD_hitDetect,       /* hitDetect */
+    (ObjectDescriptorCallback)dll_FD_render,          /* render */
+    (ObjectDescriptorCallback)dll_FD_free,            /* free */
+    (ObjectDescriptorCallback)dll_FD_getObjectTypeId, /* getObjectTypeId */
+    dll_FD_getExtraSize,                              /* getExtraSize */
 };

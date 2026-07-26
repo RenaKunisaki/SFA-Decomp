@@ -35,7 +35,6 @@
 #include "main/dll/dll_00FE_magicplant.h"
 #include "main/mapEventTypes.h"
 #include "main/objfx.h"
-#include "main/dll/dll_00FD.h"
 #include "main/mm.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
