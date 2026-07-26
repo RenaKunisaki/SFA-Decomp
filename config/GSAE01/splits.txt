@@ -2847,27 +2847,30 @@ dlls/objects/416_NW_geyser/NW_geyser.c:
 	.data       start:0x80326788 end:0x803267C0
 	.sdata2     start:0x803E5200 end:0x803E5208
 
-main/dll/NW/dll_01A1_nwmammoth.c:
+dlls/objects/417/417.c:
 	.text       start:0x801CDE70 end:0x801CF78C
-	.data       start:0x803267C0 end:0x80326B2C
+	.data       start:0x803267C0 end:0x80326950
 	.sdata      start:0x803DBF70 end:0x803DBFC0
 	.sdata2     start:0x803E5208 end:0x803E525C
 
-main/dll/NW/dll_01A2_nwtricky.c:
+dlls/objects/418_NW_tricky/NW_tricky.c:
 	.text       start:0x801CF78C end:0x801CFB24
 	.rodata     start:0x802C23E8 end:0x802C23F8
+	.data       start:0x80326950 end:0x80326988
 	.sdata2     start:0x803E5260 end:0x803E526C
 
-main/dll/NW/dll_01A3_nwanimice.c:
+dlls/objects/419/419.c:
 	.text       start:0x801CFB24 end:0x801CFBB4
+	.data       start:0x80326988 end:0x803269C0
 
 main/dll/NW/dll_01A4_nwice.c:
 	.text       start:0x801CFBB4 end:0x801CFD68
+	.data       start:0x803269C0 end:0x803269F8
 	.sdata2     start:0x803E5270 end:0x803E5278
 
 main/dll/NW/dll_01A5_nwlevcontrol.c:
 	.text       start:0x801CFD68 end:0x801D069C
-	.data       start:0x80326B2C end:0x80326B98
+	.data       start:0x803269F8 end:0x80326B98
 	.sdata2     start:0x803E5278 end:0x803E5284
 
 main/dll/SH/dll_01A6_shtricky.c:

@@ -460,9 +460,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x19E | — | NO-RETAIL-NAME | dlls/objects/414/414.c | = (canonical) | — |
 | 0x19F | NW_treebrid | COMPLETE | dlls/objects/415_NW_treebrid/NW_treebrid.c | = (canonical) | — |
 | 0x1A0 | NW_geyser | COMPLETE | dlls/objects/416_NW_geyser/NW_geyser.c | = (canonical) | — |
-| 0x1A1 | NW_mammoth (+NW_mammothh, NW_mammothb, NW_mammothw, NW_mammothg) | CONFIRMED | main/dll/dll_01A1_nwmammoth.c | main/dll/NW/dll_01A1_nwmammoth.c | — |
-| 0x1A2 | NW_tricky | COMPLETE | main/dll/dll_01A2_nwtricky.c | main/dll/NW/dll_01A2_nwtricky.c | — |
-| 0x1A3 | NW_animice (+NW_animice1, NW_animice2, NW_animice3) | CONFIRMED | main/dll/dll_01A3_nwanimice.c | main/dll/NW/dll_01A3_nwanimice.c | — |
+| 0x1A1 | — | NO-RETAIL-NAME | dlls/objects/417/417.c | = (canonical) | — |
+| 0x1A2 | NW_tricky | COMPLETE | dlls/objects/418_NW_tricky/NW_tricky.c | = (canonical) | — |
+| 0x1A3 | — | NO-RETAIL-NAME | dlls/objects/419/419.c | = (canonical) | — |
 | 0x1A4 | NW_ice (+NW_ice1, NW_ice2, NW_ice3) | CONFIRMED | main/dll/dll_01A4_nwice.c | main/dll/NW/dll_01A4_nwice.c | — |
 | 0x1A5 | NW_levcontrol | CONFIRMED | main/dll/dll_01A5_nwlevcontrol.c | main/dll/NW/dll_01A5_nwlevcontrol.c | — |
 | 0x1A6 | SH_tricky | COMPLETE | main/dll/dll_01A6_shtricky.c | main/dll/SH/dll_01A6_shtricky.c | — |
@@ -801,9 +801,7 @@ name was a deliberate choice by a previous carve:
 | 0x198 | main/dll/dll_0198_nwshlevcon.c | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | COMPLETE |
 | 0x19F | main/dll/dll_019F_nwtreebrid.c | dlls/objects/415_NW_treebrid/NW_treebrid.c | COMPLETE |
 | 0x1A0 | main/dll/dll_01A0_nwgeyser.c | dlls/objects/416_NW_geyser/NW_geyser.c | COMPLETE |
-| 0x1A1 | main/dll/dll_01A1_nwmammoth.c | main/dll/NW/dll_01A1_nwmammoth.c | CONFIRMED |
-| 0x1A2 | main/dll/dll_01A2_nwtricky.c | main/dll/NW/dll_01A2_nwtricky.c | COMPLETE |
-| 0x1A3 | main/dll/dll_01A3_nwanimice.c | main/dll/NW/dll_01A3_nwanimice.c | CONFIRMED |
+| 0x1A2 | main/dll/dll_01A2_nwtricky.c | dlls/objects/418_NW_tricky/NW_tricky.c | COMPLETE |
 | 0x1A4 | main/dll/dll_01A4_nwice.c | main/dll/NW/dll_01A4_nwice.c | CONFIRMED |
 | 0x1A5 | main/dll/dll_01A5_nwlevcontrol.c | main/dll/NW/dll_01A5_nwlevcontrol.c | CONFIRMED |
 | 0x1A6 | main/dll/dll_01A6_shtricky.c | main/dll/SH/dll_01A6_shtricky.c | COMPLETE |
@@ -985,7 +983,7 @@ blocked units will surface more when carved.
 | 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
 | 0x1A0 | dlls/objects/416_NW_geyser/NW_geyser.c | include/main/dll/dll_01A0_nwgeyser.h |
-| 0x1A1 | main/dll/dll_01A1_nwmammoth.c | include/main/dll/dll_01A1_nwmammoth.h |
+| 0x1A1 | dlls/objects/417/417.c | include/main/dll/dll_01A1_nwmammoth.h |
 | 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | include/main/dll/dll_01A8_shkillermushroom.h |
 | 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |

@@ -126,7 +126,7 @@ Everything below was checked against this repo's source, headers, and `config/GS
   confuse it with `src/dlls/objects/196_Tricky/tricky.c`.
 - Map-specific Tricky variants (cutscene/placement stand-ins, not the main companion): DIM
   (`src/dlls/objects/414/414.c`, `dll_01D0_dimtricky.c`), NW
-  (`src/main/dll/NW/dll_01A2_nwtricky.c`), SH (`src/main/dll/SH/dll_01A6_shtricky.c`).
+  (`src/dlls/objects/418_NW_tricky/NW_tricky.c`), SH (`src/main/dll/SH/dll_01A6_shtricky.c`).
   `TrickyCurve` (`include/main/dll/TrickyCurve.h`, `include/main/dll/trickycurve_state.h`) is a
   related but separate rom-curve-driven object type.
 

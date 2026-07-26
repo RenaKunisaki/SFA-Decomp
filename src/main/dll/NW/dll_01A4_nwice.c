@@ -4,6 +4,7 @@
 #include "sys/objects.h"
 #include "main/dll/NW/dll_01A4_nwice.h"
 #include "main/dll/player_api.h"
+#include "dlls/object_descriptor.h"
 
 #define NWICE_OBJGROUP      0x3c
 #define NWICE_LINK_OBJGROUP 0x3d /* scanned to find the paired ice object by linkId */
@@ -83,3 +84,20 @@ void NW_ice_init(GameObject* obj)
 {
     ObjGroup_AddObject((int)obj, NWICE_OBJGROUP);
 }
+
+ObjectDescriptor gNW_iceObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)NW_ice_init,
+    (ObjectDescriptorCallback)NW_ice_update,
+    0,
+    (ObjectDescriptorCallback)NW_ice_render,
+    (ObjectDescriptorCallback)NW_ice_free,
+    0,
+    (ObjectDescriptorExtraSizeCallback)NW_ice_getExtraSize,
+};

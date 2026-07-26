@@ -1,5 +1,5 @@
 /*
- * nwtricky (DLL 0x1A2) - the SnowHorn Wastes controller for Tricky (the
+ * NW_tricky (DLL 0x1A2) - the SnowHorn Wastes controller for Tricky (the
  * player's companion) during the SnowHorn herding objective (map
  * 'nwastes', 0x0A).
  *
@@ -21,6 +21,7 @@
 #include "main/dll/NW/dll_01A2_nwtricky.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/vecmath_distance_api.h"
+#include "dlls/object_descriptor.h"
 
 #define NWTRICKY_OBJFLAG_PARENT_SLACK       0x1000
 #define NWTRICKY_OBJFLAG_HIDDEN             0x4000
@@ -176,3 +177,20 @@ void NW_tricky_init(int* obj)
     ((GameObject*)obj)->objectFlags =
         (u16)(((GameObject*)obj)->objectFlags | (NWTRICKY_OBJFLAG_HIDDEN | NWTRICKY_OBJFLAG_HITDETECT_DISABLED));
 }
+
+ObjectDescriptor gNW_trickyObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)NW_tricky_init,
+    (ObjectDescriptorCallback)NW_tricky_update,
+    0,
+    0,
+    (ObjectDescriptorCallback)NW_tricky_free,
+    0,
+    (ObjectDescriptorExtraSizeCallback)NW_tricky_getExtraSize,
+};
