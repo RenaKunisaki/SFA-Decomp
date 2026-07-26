@@ -39,7 +39,8 @@
 
 typedef struct ScMusictreePlacement
 {
-    u8 pad0[0x20 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x20 - 0x18];
     u8 colorR; /* 0x20: render tint red   (passed to fn_8003B608) */
     u8 colorG; /* 0x21: render tint green */
     u8 colorB; /* 0x22: render tint blue */
@@ -48,12 +49,8 @@ typedef struct ScMusictreePlacement
 
 typedef struct ScMusictreeSpawnAmbientEffectPlacement
 {
-    u8 pad0[0x4 - 0x0];
-    u8 colorR; /* 0x4: ambient particle tint red   -> setup head.color[0] */
-    u8 colorG; /* 0x5: ambient particle tint green -> setup head.color[1] */
-    u8 colorB; /* 0x6: ambient particle tint blue  -> setup head.color[2] */
-    u8 colorA; /* 0x7: ambient particle tint alpha -> setup head.color[3] */
-    u8 pad8[0x20 - 0x8];
+    ObjPlacement base;
+    u8 pad18[0x20 - 0x18];
     u8 unk20;
     u8 unk21;
     u8 unk22;
@@ -141,10 +138,10 @@ void sc_musictree_spawnAmbientEffect(GameObject *obj, int extra, int unused, s8 
     if (Obj_IsLoadingLocked() != 0)
     {
         setup = (int)Obj_AllocObjectSetup(0x28, SCMUSICTREE_CHILD_OBJ_AMBIENT_EFFECT);
-        ((ScMusictreeSetup*)setup)->head.color[0] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->colorR;
-        ((ScMusictreeSetup*)setup)->head.color[2] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->colorB;
-        ((ScMusictreeSetup*)setup)->head.color[1] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->colorG;
-        ((ScMusictreeSetup*)setup)->head.color[3] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->colorA - 10;
+        ((ScMusictreeSetup*)setup)->head.color[0] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[0];
+        ((ScMusictreeSetup*)setup)->head.color[2] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[2];
+        ((ScMusictreeSetup*)setup)->head.color[1] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[1];
+        ((ScMusictreeSetup*)setup)->head.color[3] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[3] - 10;
         i = idx;
         ((ObjPlacement*)setup)->posX = state->pathPoint[i][0];
         ((ObjPlacement*)setup)->posY = state->pathPoint[i][1];
