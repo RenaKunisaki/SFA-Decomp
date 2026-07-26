@@ -1602,7 +1602,7 @@ main/dll/grimblegroup.c:
 	.data       start:0x80320178 end:0x803201E8
 	.sdata2     start:0x803E2EB0 end:0x803E2F2C
 
-main/dll/dll_00CF_cannonclaw.c:
+dlls/objects/207_CannonClaw/CannonClaw.c:
 	.text       start:0x80162FC0 end:0x801631C8
 
 main/dll/tumbleweedgroup_spawnsibling.c:

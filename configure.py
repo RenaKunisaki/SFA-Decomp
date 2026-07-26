@@ -1083,6 +1083,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/204_ChukChuk/ChukChuk.c", cflags=cflags_dll_noopt_noprop_noinline),
             Object(Matching, "dlls/objects/205_IceBall/IceBall.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/206/206.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/207_CannonClaw/CannonClaw.c", cflags=cflags_dll_noopt),
 
             # main
             Object(MatchingFor("GSAE01"), "main/audio/synth_constants.c"),
@@ -1536,7 +1537,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/snowworm.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/baddiewhirlpool.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/grimblegroup.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00CF_cannonclaw.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/tumbleweedgroup_spawnsibling.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/tumbleweedgroup.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/backpack.c", cflags=cflags_dll_noopt),

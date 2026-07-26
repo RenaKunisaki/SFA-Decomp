@@ -51,6 +51,7 @@ int cannonclaw_getExtraSize(void)
 {
     return 0x0;
 }
+
 int cannonclaw_getObjectTypeId(void)
 {
     return 0x0;

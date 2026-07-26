@@ -55,7 +55,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/DIM/dll_01CA_dimexplosion | 100.0000 | 46.7400 | -53.2600 |
 | main/main/dll/dll_0139_hitanimator | 100.0000 | 46.8056 | -53.1944 |
 | main/main/dll/MMP/dll_0181_mmptrenchfx | 100.0000 | 50.1566 | -49.8434 |
-| main/main/dll/dll_00CF_cannonclaw | 100.0000 | 50.5923 | -49.4077 |
+| main/dlls/objects/207_CannonClaw/CannonClaw | 100.0000 | 50.5923 | -49.4077 |
 | main/main/dll/DIM/dll_01CC_dimmagicbridge | 100.0000 | 50.7026 | -49.2974 |
 | main/main/dll/dll_014C_babycloudrunner | 99.6883 | 51.4056 | -48.2828 |
 | main/main/textrender | 99.4267 | 51.5785 | -47.8483 |
