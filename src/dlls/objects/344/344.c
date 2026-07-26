@@ -11,14 +11,6 @@
  * by placement link id) or removes it. seqId 0x754 selects the indestructible
  * cannon-range variant. gunpowderbarrel_updatePhysics applies gravity, velocity
  * clamps, the ground probe and landing/impact sfx.
- *
- * TU = 0x801A0B14..0x801A27B8 (helper group at the head, then the barrel
- * descriptor fns; physically emitted last so the helpers stay out-of-line bls).
- *
- * Mixed provenance: gunpowderbarrel_free and gunpowderbarrel_render are the
- * v1.1-shaped helper group; everything below the "Drift-recovery: v1.0" marker
- * is the v1.0 body. GunpowderBarrelState (extra) layout lives in
- * main/dll/DR/gunpowderbarrel_state.h.
  */
 #include "main/dll/tricky_api.h"
 #include "dolphin/mtx/mtx_legacy.h"

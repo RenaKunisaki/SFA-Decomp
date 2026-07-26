@@ -387,9 +387,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x155 | — | NO-RETAIL-NAME | dlls/objects/341/341.c | = (canonical) | data-only DLL |
 | 0x156 | — | NO-RETAIL-NAME | dlls/objects/342/342.c | = (canonical) | data-only DLL |
 | 0x157 | SpiritDoorS | CONFIRMED | dlls/objects/343_SpiritDoorS/SpiritDoorS.c | = (canonical) | — |
-| 0x158 | GunPowderBarrel (+MetalBarrel) | CONFIRMED | main/dll/dll_0158_gunpowderbarrel.c | = (canonical) | — |
-| 0x159 | Blasted (+CFBlastedRo, CFBlastedWa, CFBlastedTu, DRBlastedWa) | CONFIRMED | main/dll/dll_0159_blasted.c | = (canonical) | — |
-| 0x15A | explodable (+CFbrokenGra, CFbrokenWal, CFExplodeWa, CFExplodeFl, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRSmallExpl, ExplodeWall, ExplodePlan) | GUESSED | main/dll/dll_015A_explodable.c | = (canonical) | — |
+| 0x158 | GunPowderBarrel (+MetalBarrel) | CONFIRMED | dlls/objects/344/344.c | = (canonical) | — |
+| 0x159 | Blasted (+CFBlastedRo, CFBlastedWa, CFBlastedTu, DRBlastedWa) | CONFIRMED | dlls/objects/345/345.c | = (canonical) | — |
+| 0x15A | explodable (+CFbrokenGra, CFbrokenWal, CFExplodeWa, CFExplodeFl, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRSmallExpl, ExplodeWall, ExplodePlan) | GUESSED | dlls/objects/346/346.c | = (canonical) | — |
 | 0x15B | CFForceField | CONFIRMED | main/dll/dll_015B_cfforcefield.c | main/dll/CF/dll_015B_cfforcefield.c | — |
 | 0x15C | CFForceField | CONFIRMED | *(none)* | — | no .text fns (descriptor data only) |
 | 0x15D | slidingdoor (+CFSlideDoor, CFMainSlide) | GUESSED | main/dll/dll_015D_slidingdoor.c | = (canonical) | — |
