@@ -6,9 +6,9 @@
  * been verified in Dolphin.
  */
 #include "dlls/objects/254_MagicPlant.h"
+#include "dlls/objects/255.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
@@ -52,11 +52,6 @@ extern f32 gMagicPlantBuzzStopDist;
 #define MAGICPLANT_FADE_OUT_ANIM_STEP           lbl_803E3880
 #define MAGICPLANT_RANDOM_PROGRESS_SCALE        lbl_803E3890
 
-#define MAGICPLANT_GEM_DEF_GREEN  0x2C4
-#define MAGICPLANT_GEM_DEF_RED    0x2CD
-#define MAGICPLANT_GEM_DEF_YELLOW 0x2CE
-#define MAGICPLANT_GEM_DEF_BLUE   0x2CF
-
 #define MAGICPLANT_OBJECT_TYPE_BASE        0x400
 #define MAGICPLANT_OBJECT_TYPE_MODEL_SHIFT 11
 
@@ -74,7 +69,8 @@ extern f32 gMagicPlantBuzzStopDist;
 #define MAGICPLANT_MODEL_FADE_FRAMES       300
 #define MAGICPLANT_HIT_FLASH_FRAMES        15
 #define MAGICPLANT_HIT_FLASH_RED           200
-#define MAGICPLANT_PARTICLE_SPAWN_FLAGS    2
+#define MAGICPLANT_PARTFX_MODE             2
+#define MAGICPLANT_PARTFX_MODEL_NONE       -1
 #define MAGICPLANT_HIT_FLASH_START_AT_HALF 1
 #define MAGICPLANT_EVENT_MIN_DURATION      100
 #define MAGICPLANT_GEM_COLOR_MASK          3
@@ -87,36 +83,11 @@ extern f32 gMagicPlantBuzzStopDist;
 #define MAGICPLANT_CHILD_YAW_OFFSET  0xF
 #define MAGICPLANT_CHILD_SENTINEL    -1
 
-typedef struct MagicPlantChildPlacement {
-    ObjPlacement base; /* 0x00 */
-    u8 pad18[2];       /* 0x18 */
-    u8 unk1A;          /* 0x1A */
-    u8 pad1B;          /* 0x1B */
-    s16 unk1C;         /* 0x1C */
-    u8 pad1E[6];       /* 0x1E */
-    s16 unk24;         /* 0x24 */
-    u8 pad26[6];       /* 0x26 */
-    s16 unk2C;         /* 0x2C */
-    u8 pad2E[2];       /* 0x2E */
-} MagicPlantChildPlacement;
-
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, pad18) == 0x18);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, unk1A) == 0x1A);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, pad1B) == 0x1B);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, unk1C) == 0x1C);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, pad1E) == 0x1E);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, unk24) == 0x24);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, pad26) == 0x26);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, unk2C) == 0x2C);
-STATIC_ASSERT(offsetof(MagicPlantChildPlacement, pad2E) == 0x2E);
-STATIC_ASSERT(sizeof(MagicPlantChildPlacement) == 0x30);
-
 s16 gMagicPlantGemDefIds[4] = {
-    MAGICPLANT_GEM_DEF_GREEN,
-    MAGICPLANT_GEM_DEF_RED,
-    MAGICPLANT_GEM_DEF_YELLOW,
-    MAGICPLANT_GEM_DEF_BLUE,
+    MAGICGEM_DEF_GREEN,
+    MAGICGEM_DEF_RED,
+    MAGICGEM_DEF_YELLOW,
+    MAGICGEM_DEF_BLUE,
 };
 
 void magicPlantDropGem(GameObject* obj, MagicPlantPlacement* unusedPlacement, MagicPlantState* state) {
@@ -188,8 +159,8 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
             particleCount = MAGICPLANT_HIT_BURST_COUNT;
             do {
                 (*gPartfxInterface)
-                    ->spawnObject((void*)obj, MAGICPLANT_HIT_BURST_FX, NULL, MAGICPLANT_PARTICLE_SPAWN_FLAGS,
-                                  MAGICPLANT_CHILD_SENTINEL, NULL);
+                    ->spawnObject((void*)obj, MAGICPLANT_HIT_BURST_FX, NULL, MAGICPLANT_PARTFX_MODE,
+                                  MAGICPLANT_PARTFX_MODEL_NONE, NULL);
                 particleCount--;
             } while (particleCount != 0);
 
@@ -232,7 +203,7 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
 }
 
 void MagicPlant_spawnChild(GameObject* obj, int objectId) {
-    MagicPlantChildPlacement* placement;
+    MagicGemPlacement* placement;
     GameObject* childObj;
     u8* placementData;
     MagicPlantState* state;
@@ -240,7 +211,7 @@ void MagicPlant_spawnChild(GameObject* obj, int objectId) {
     placementData = *(u8**)&obj->anim.placementData;
     state = obj->extra;
     if ((u8)Obj_IsLoadingLocked() != 0) {
-        placement = (MagicPlantChildPlacement*)Obj_AllocObjectSetup(sizeof(MagicPlantChildPlacement), objectId);
+        placement = (MagicGemPlacement*)Obj_AllocObjectSetup(sizeof(MagicGemPlacement), objectId);
         placement->unk1A = MAGICPLANT_CHILD_UNK1A;
         placement->unk2C = MAGICPLANT_CHILD_SENTINEL;
         placement->unk1C = MAGICPLANT_CHILD_SENTINEL;

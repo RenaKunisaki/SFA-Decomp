@@ -51,6 +51,7 @@
 #include "dlls/objects/252.h"
 #include "dlls/objects/253.h"
 #include "dlls/objects/254_MagicPlant.h"
+#include "dlls/objects/255.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -217,7 +218,7 @@ extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, 
 extern ResourceDescriptor gMMP_BridgeObjDescriptor, gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
     gMMP_levelcontrolObjDescriptor, gMMP_moonrockObjDescriptor;
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
-    gMMSH_WaterSpikeObjDescriptor, gMagicCaveBottomObjDescriptor, gMagicCaveTopObjDescriptor, gMagicGemObjDescriptor,
+    gMMSH_WaterSpikeObjDescriptor, gMagicCaveBottomObjDescriptor, gMagicCaveTopObjDescriptor,
     gMagicLightObjDescriptor;
 extern ResourceDescriptor gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor,
     gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
@@ -1197,7 +1198,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDllFCObjDescriptor,
     (ResourceDescriptor*)&gDllFDObjDescriptor,
     (ResourceDescriptor*)&gMagicPlantObjDescriptor,
-    &gMagicGemObjDescriptor,
+    (ResourceDescriptor*)&gMagicGemObjDescriptor,
     &gTrickyWarpObjDescriptor,
     &gTrickyGuardObjDescriptor,
     &gStayPointObjDescriptor,

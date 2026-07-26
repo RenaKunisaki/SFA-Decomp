@@ -50,7 +50,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   `config/GSAE01/symbols.txt`: `MagicDust_getExtraSize`/`_free`/`_render`/`_update`/`_init`).
   Its functions are literally named `MagicDust_init`/`_update`/`_render`/`_free`/`_getExtraSize`
   — this is the dust pickup the wiki calls MagicDustSm/Mi/La/Hu.
-- State struct: `MagicGemState` in `include/main/dll/magicgemstate_struct.h`. Its `mode` field
+- State struct: `MagicGemState` in `include/dlls/objects/255.h`. Its `mode` field
   is commented "particle color row" and is set in `MagicDust_init`'s `switch (obj->anim.seqId)`:
   `seqId 0x2c4 -> mode 4`, `0x2cd -> mode 1`, `0x2ce -> mode 2`, default (incl. `0x2cf`) ->
   `mode 6` — each branch also picks its own `ambientEffectId`/`burstEffectId`/`sfxId`. This is

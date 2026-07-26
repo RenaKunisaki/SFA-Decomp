@@ -54,7 +54,7 @@ typedef struct ScarabVec3
 
 STATIC_ASSERT(sizeof(ScarabVec3) == 0xC);
 
-/* shared item-pickup ObjMsg protocol (see dll_00ED_collectible / dll_00FF_magicgem) */
+/* Shared item-pickup ObjMsg protocol (see DLL 0xED collectible / object 255). */
 #define SCARAB_MSG_IN_RANGE     0x7000a /* sent to player when the scarab is in grab range */
 #define SCARAB_MSG_PICKUP       0x7000b /* player collected: award money and despawn */
 #define SCARAB_MSG_PLAYER_BURST 0x60004 /* knock the player back with a burst hit */

@@ -1,58 +1,119 @@
-/* DLL 0x00FF - magic-gem / collectible objects [80173224-801732A4) */
-#include "main/dll/dll_00FF_magicgem.h"
-#include "main/dll/partfx_interface.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/objfx.h"
-#include "main/vecmath.h"
-#include "main/dll/magicgemstate_struct.h"
-#include "main/audio/sfx_ids.h"
-#include "main/dll/path_control_interface.h"
-#include "game/objects/object.h"
-#include "main/objhits.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/obj_link.h"
-#include "main/obj_message.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
-#include "main/gamebits.h"
+/*
+ * DLL 0xFF - MagicDust.
+ *
+ * A collectible gem with four effect variants, free-flight and bounce
+ * behaviour, proximity effects, and a two-phase collection burst.
+ */
+#include "dlls/objects/255.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/os/OSReport.h"
+#include "game/objects/object.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/sfx.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/path_control_interface.h"
 #include "main/dll/player_api.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/model.h"
+#include "main/obj_link.h"
+#include "main/obj_message.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/object_render.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define MAGICGEM_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define MAGICGEM_MSG_IN_RANGE               0x7000a /* sent to player when in pickup range */
-#define MAGICGEM_MSG_PICKUP                 0x7000b /* collect: award magic + burst */
-#define MAGICGEM_GAMEBIT_CLAIMED            0x90d   /* per-frame single-pickup latch */
+#define MAGICGEM_MSG_IN_RANGE    0x7000A /* Sent to the player when a gem enters pickup range. */
+#define MAGICGEM_MSG_PICKUP      0x7000B /* Awards magic and starts the collection burst. */
+#define MAGICGEM_GAMEBIT_CLAIMED 0x90D   /* Per-frame single-pickup latch. */
 
-#define MAGICGEM_RENDER_SCALE              1.0f
-#define MAGICGEM_BURST_TIMER               180.0f
-#define MAGICGEM_ACTIVATE_DIST_SQ          250000.0f
-#define MAGICGEM_VELOCITY_DAMPING          0.99f
-#define MAGICGEM_GRAVITY                   0.1f
-#define MAGICGEM_ZERO                      0.0f
-#define MAGICGEM_LONG_BURST_TIMER          1800.0f
-#define MAGICGEM_BOUNCE_SFX_SPEED          0.5f
-#define MAGICGEM_FLOOR_NORMAL_THRESHOLD    0.707f
-#define MAGICGEM_BOUNCE_RESTITUTION_Y      0.6f
-#define MAGICGEM_BOUNCE_RESTITUTION_XZ     0.7f
-#define MAGICGEM_PICKUP_Y_RANGE            20.0f
-#define MAGICGEM_PICKUP_RADIUS_BASE        8.0f
-#define MAGICGEM_RANDOM_SPEED_SCALE        100.0f
-#define MAGICGEM_PI                        3.1415927f
-#define MAGICGEM_ANGLE_RAND_SCALE          32768.0f
-#define MAGICGEM_RANDOM_Y_SPEED_SCALE      50.0f
-#define MAGICGEM_FOLLOW_TIME               120.0f
-#define MAGICGEM_COLLECT_RADIUS            7.0f
-#define MAGICGEM_INITIAL_BURST_TIMER        60.0f
+#define MAGICGEM_RENDER_SCALE           1.0f
+#define MAGICGEM_BURST_TIMER            180.0f
+#define MAGICGEM_ACTIVATE_DIST_SQ       250000.0f
+#define MAGICGEM_VELOCITY_DAMPING       0.99f
+#define MAGICGEM_GRAVITY                0.1f
+#define MAGICGEM_ZERO                   0.0f
+#define MAGICGEM_LONG_BURST_TIMER       1800.0f
+#define MAGICGEM_BOUNCE_SFX_SPEED       0.5f
+#define MAGICGEM_FLOOR_NORMAL_THRESHOLD 0.707f
+#define MAGICGEM_BOUNCE_RESTITUTION_Y   0.6f
+#define MAGICGEM_BOUNCE_RESTITUTION_XZ  0.7f
+#define MAGICGEM_PICKUP_Y_RANGE         20.0f
+#define MAGICGEM_PICKUP_RADIUS_BASE     8.0f
+#define MAGICGEM_RANDOM_SPEED_SCALE     100.0f
+#define MAGICGEM_PI                     3.1415927f
+#define MAGICGEM_ANGLE_RAND_SCALE       32768.0f
+#define MAGICGEM_RANDOM_Y_SPEED_SCALE   50.0f
+#define MAGICGEM_FOLLOW_TIME            120.0f
+#define MAGICGEM_COLLECT_RADIUS         7.0f
+#define MAGICGEM_INITIAL_BURST_TIMER    60.0f
 
-static const u16 sMagicGemTexPickA[2] = {0xD10, 0};
-static const u16 sMagicGemTexPickB[2] = {0xE11, 0};
-static u8 sMagicGemPathData[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+#define MAGICGEM_MIN_ALPHA             1
+#define MAGICGEM_MAX_ALPHA             0xFF
+#define MAGICGEM_AMBIENT_FX_MODE       0x10002
+#define MAGICGEM_BURST_FX_MODE         1
+#define MAGICGEM_PARTFX_MODEL_NONE     -1
+#define MAGICGEM_BURST_PARTICLE_COUNT  30
+#define MAGICGEM_MAX_BOUNCES           5
+#define MAGICGEM_PICKUP_PARTICLE_COUNT 0x28
+#define MAGICGEM_ROTATION_STEP         0x100
 
+#define MAGICGEM_AMBIENT_TIMER_MIN 0xF0
+#define MAGICGEM_AMBIENT_TIMER_MAX 300
+
+#define MAGICGEM_SPAWN_MODE_BURST  1
+#define MAGICGEM_SPAWN_MODE_FOLLOW 2
+#define MAGICGEM_SPAWN_MODE_DROP   3
+
+#define MAGICGEM_PATH_FLAGS       0x40007
+#define MAGICGEM_PATH_POINT_COUNT 1
+#define MAGICGEM_MESSAGE_SLOTS    1
+
+#define MAGICGEM_SHADOW_TINT_A 100
+#define MAGICGEM_SHADOW_TINT_B 150
+
+#define MAGICGEM_GREEN_TEXTURE_PAIR 0xD10
+#define MAGICGEM_RED_TEXTURE_PAIR   0xE11
+
+#define MAGICGEM_GREEN_AMBIENT_EFFECT_ID  0x54F
+#define MAGICGEM_GREEN_BURST_EFFECT_ID    0x54B
+#define MAGICGEM_GREEN_SFX_ID             0x58
+#define MAGICGEM_GREEN_UNK276             0x5B0
+#define MAGICGEM_GREEN_PARTICLE_MODE      4
+#define MAGICGEM_RED_AMBIENT_EFFECT_ID    0x54E
+#define MAGICGEM_RED_BURST_EFFECT_ID      0x54A
+#define MAGICGEM_RED_SFX_ID               0x59
+#define MAGICGEM_RED_UNK276               0x5B1
+#define MAGICGEM_RED_PARTICLE_MODE        1
+#define MAGICGEM_YELLOW_TEXTURE_INDEX     3
+#define MAGICGEM_YELLOW_AMBIENT_EFFECT_ID 0x54D
+#define MAGICGEM_YELLOW_BURST_EFFECT_ID   0x549
+#define MAGICGEM_YELLOW_SFX_ID            0x5A
+#define MAGICGEM_YELLOW_UNK276            0x5B2
+#define MAGICGEM_YELLOW_PARTICLE_MODE     2
+#define MAGICGEM_BLUE_TEXTURE_INDEX       2
+#define MAGICGEM_BLUE_AMBIENT_EFFECT_ID   0x550
+#define MAGICGEM_BLUE_BURST_EFFECT_ID     0x54C
+#define MAGICGEM_BLUE_SFX_ID              0x5B
+#define MAGICGEM_BLUE_UNK276              0x5B3
+#define MAGICGEM_BLUE_PARTICLE_MODE       6
+
+typedef struct MagicGemObjectDef {
+    u8 pad00[0xB];  /* 0x00 */
+    s8 magicAmount; /* 0x0B */
+} MagicGemObjectDef;
+
+STATIC_ASSERT(offsetof(MagicGemObjectDef, magicAmount) == 0xB);
+
+static const u16 sMagicGemGreenTexturePair[2] = {MAGICGEM_GREEN_TEXTURE_PAIR, 0};
+static const u16 sMagicGemRedTexturePair[2] = {MAGICGEM_RED_TEXTURE_PAIR, 0};
+static u8 sMagicGemPathData[12] = {0};
+
+/* Target data order places the descriptor before the OSReport string. */
 ObjectDescriptor gMagicGemObjDescriptor = {
     0,
     0,
@@ -69,252 +130,199 @@ ObjectDescriptor gMagicGemObjDescriptor = {
     0,
     MagicDust_getExtraSize,
 };
-STATIC_ASSERT(offsetof(MagicGemState, flags27A) == 0x27A);
 
-int MagicDust_getExtraSize(void)
-{
-    return 0x288;
+int MagicDust_getExtraSize(void) {
+    return sizeof(MagicGemState);
 }
 
-void MagicDust_free(GameObject* obj)
-{
-    if (*(u32*)&obj->ownerObj != 0)
-    {
+void MagicDust_free(GameObject* obj) {
+    if (*(u32*)&obj->ownerObj != 0) {
         ObjLink_DetachChild((GameObject*)obj->ownerObj, obj);
     }
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    return;
 }
 
-void MagicDust_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, MAGICGEM_RENDER_SCALE);
+void MagicDust_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 unusedVisible) {
+    objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, MAGICGEM_RENDER_SCALE);
 }
 
-typedef struct MagicgemObjectDef
-{
-    u8 pad0[0xb - 0x0];
-    s8 magicAmount;
-    u8 padC[0x26 - 0xc];
-    u8 bankIndex;
-    u8 pad27[0x2e - 0x27];
-    s16 spawnMode;
-} MagicgemObjectDef;
-
-static inline void magicgem_collect(GameObject* obj, MagicGemState* state, int player)
-{
-    MagicgemObjectDef* ref = (MagicgemObjectDef*)obj->anim.modelInstance->extraSetupData;
+static inline void MagicDust_collect(GameObject* obj, MagicGemState* state, GameObject* player) {
+    MagicGemObjectDef* objectDef = (MagicGemObjectDef*)obj->anim.modelInstance->extraSetupData;
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    itemPickupDoParticleFx(obj, MAGICGEM_RENDER_SCALE, state->mode, 0x28);
+    itemPickupDoParticleFx(obj, MAGICGEM_RENDER_SCALE, state->mode, MAGICGEM_PICKUP_PARTICLE_COUNT);
     ObjHits_DisableObject(obj);
     Sfx_PlayFromObject((int)obj, (u16)state->sfxId);
     Sfx_StopFromObject((int)obj, SFXTRIG_rfall5_c);
-    playerAddRemoveMagic((GameObject*)player, (int)ref->magicAmount);
-    state->flags27A = state->flags27A & ~5;
-    state->flags27A = state->flags27A | MAGICGEM_FLAG_COLLECTED;
-    state->flags27A = state->flags27A | MAGICGEM_FLAG_COLLECT_LATCH;
+    playerAddRemoveMagic(player, (int)objectDef->magicAmount);
+    state->flags &= ~MAGICGEM_FLAG_BURST_MASK;
+    state->flags |= MAGICGEM_FLAG_COLLECTED;
+    state->flags |= MAGICGEM_FLAG_COLLECT_LATCH;
     state->burstTimer = MAGICGEM_BURST_TIMER;
     OSReport("Magic collected");
-    obj->anim.alpha = 1;
+    obj->anim.alpha = MAGICGEM_MIN_ALPHA;
 }
 
-void MagicDust_update(GameObject* obj)
-{
-    float fval;
-    u8 flagsByte;
-    int player;
-    int ref;
-    u32 val;
+void MagicDust_update(GameObject* obj) {
+    f32 scalar;
+    u8 flags;
+    GameObject* player;
+    int result;
+    u32 value;
     MagicGemState* state;
-    u8 burstArg;
-    char fxArg;
-    int msg[1];
-    f32 dist;
+    u8 burstCount;
+    char fxVariant;
+    int message[1];
+    f32 distanceSquared;
 
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     state = obj->extra;
-    while (ref = ObjMsg_Pop(obj, (u32*)msg, 0x0, 0x0), ref != 0)
-    {
-        switch (msg[0])
-        {
+    while ((result = ObjMsg_Pop(obj, (u32*)message, NULL, NULL)) != 0) {
+        switch (message[0]) {
         case MAGICGEM_MSG_PICKUP:
-            magicgem_collect(obj, state, player);
+            MagicDust_collect(obj, state, player);
             break;
         }
     }
-    if ((state->flags27A & MAGICGEM_FLAG_AMBIENT_FX) == 0)
-    {
-        if (((state->flags27A & MAGICGEM_FLAG_COLLECT_LATCH) == 0) &&
-            (getXZDistance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) < MAGICGEM_ACTIVATE_DIST_SQ))
-        {
-            state->flags27A = state->flags27A | MAGICGEM_FLAG_AMBIENT_FX;
-            fxArg = '\0';
-            (*gPartfxInterface)->spawnObject((void*)obj, state->ambientEffectId, NULL, 0x10002, -1, &fxArg);
-            fxArg = '\x01';
-            (*gPartfxInterface)->spawnObject((void*)obj, state->ambientEffectId, NULL, 0x10002, -1, &fxArg);
-            fxArg = '\x02';
-            (*gPartfxInterface)->spawnObject((void*)obj, state->ambientEffectId, NULL, 0x10002, -1, &fxArg);
+    if ((state->flags & MAGICGEM_FLAG_AMBIENT_FX) == 0) {
+        if (((state->flags & MAGICGEM_FLAG_COLLECT_LATCH) == 0) &&
+            (getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX) < MAGICGEM_ACTIVATE_DIST_SQ)) {
+            state->flags |= MAGICGEM_FLAG_AMBIENT_FX;
+            fxVariant = '\0';
+            (*gPartfxInterface)
+                ->spawnObject((void*)obj, state->ambientEffectId, NULL, MAGICGEM_AMBIENT_FX_MODE,
+                              MAGICGEM_PARTFX_MODEL_NONE, &fxVariant);
+            fxVariant = '\x01';
+            (*gPartfxInterface)
+                ->spawnObject((void*)obj, state->ambientEffectId, NULL, MAGICGEM_AMBIENT_FX_MODE,
+                              MAGICGEM_PARTFX_MODEL_NONE, &fxVariant);
+            fxVariant = '\x02';
+            (*gPartfxInterface)
+                ->spawnObject((void*)obj, state->ambientEffectId, NULL, MAGICGEM_AMBIENT_FX_MODE,
+                              MAGICGEM_PARTFX_MODEL_NONE, &fxVariant);
         }
+    } else if (getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX) >= MAGICGEM_ACTIVATE_DIST_SQ) {
+        state->flags &= ~MAGICGEM_FLAG_AMBIENT_FX;
+        (*gExpgfxInterface)->freeSource2((u32)obj);
     }
-    else
-    {
-        if (getXZDistance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) >= MAGICGEM_ACTIVATE_DIST_SQ)
-        {
-            state->flags27A = state->flags27A & ~MAGICGEM_FLAG_AMBIENT_FX;
-            (*gExpgfxInterface)->freeSource2((u32)obj);
-        }
-    }
-    if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
-    {
-        if ((state->flags27A & MAGICGEM_FLAG_SETTLED) != 0)
-        {
-            obj->anim.rotX = obj->anim.rotX + framesThisStep * 0x100;
-            if ((state->ambientTimer -= framesThisStep) < 0)
-            {
+    if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0) {
+        if ((state->flags & MAGICGEM_FLAG_SETTLED) != 0) {
+            obj->anim.rotX += framesThisStep * MAGICGEM_ROTATION_STEP;
+            if ((state->ambientTimer -= framesThisStep) < 0) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_rfall5_c);
-                val = randomGetRange(0xf0, 300);
-                state->ambientTimer = val;
+                value = randomGetRange(MAGICGEM_AMBIENT_TIMER_MIN, MAGICGEM_AMBIENT_TIMER_MAX);
+                state->ambientTimer = value;
             }
         }
-        if (*(u32*)&obj->ownerObj != 0)
-        {
-            player = (int)obj->anim.modelState;
-            if ((u32)player != 0)
-            {
+        if (*(u32*)&obj->ownerObj != 0) {
+            if (obj->anim.modelState != NULL) {
                 obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
             }
             (*gPathControlInterface)->attachObject((void*)obj, (void*)state);
             return;
         }
-        ref = (int)obj->anim.modelState;
-        if ((u32)ref != 0)
-        {
+        if (obj->anim.modelState != NULL) {
             obj->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
         state->unk25B = 1;
-        if ((state->flags27A & 3) == 0)
-        {
+        if ((state->flags & MAGICGEM_FLAG_MOTION_MASK) == 0) {
             obj->anim.velocityX *= MAGICGEM_VELOCITY_DAMPING;
             obj->anim.velocityZ *= MAGICGEM_VELOCITY_DAMPING;
             obj->anim.velocityY = -(MAGICGEM_GRAVITY * timeDelta - obj->anim.velocityY);
         }
-        state->burstTimer = state->burstTimer - timeDelta;
-        flagsByte = state->flags27A;
-        if ((flagsByte & MAGICGEM_FLAG_BURST1) != 0)
-        {
-            if (state->burstTimer <= MAGICGEM_ZERO)
-            {
-                state->flags27A = flagsByte & ~MAGICGEM_FLAG_BURST1;
-                state->flags27A = state->flags27A | MAGICGEM_FLAG_BURST2;
+        state->burstTimer -= timeDelta;
+        flags = state->flags;
+        if ((flags & MAGICGEM_FLAG_BURST1) != 0) {
+            if (state->burstTimer <= MAGICGEM_ZERO) {
+                state->flags = flags & ~MAGICGEM_FLAG_BURST1;
+                state->flags |= MAGICGEM_FLAG_BURST2;
                 state->burstTimer = MAGICGEM_LONG_BURST_TIMER;
-                obj->anim.alpha = 0xff;
+                obj->anim.alpha = MAGICGEM_MAX_ALPHA;
             }
-            if (obj->anim.parent == NULL)
-            {
-                (*gPartfxInterface)->spawnObject((void*)obj, state->burstEffectId, NULL, 1, -1, NULL);
-                (*gPartfxInterface)->spawnObject((void*)obj, state->burstEffectId, NULL, 1, -1, NULL);
+            if (obj->anim.parent == NULL) {
+                (*gPartfxInterface)
+                    ->spawnObject((void*)obj, state->burstEffectId, NULL, MAGICGEM_BURST_FX_MODE,
+                                  MAGICGEM_PARTFX_MODEL_NONE, NULL);
+                (*gPartfxInterface)
+                    ->spawnObject((void*)obj, state->burstEffectId, NULL, MAGICGEM_BURST_FX_MODE,
+                                  MAGICGEM_PARTFX_MODEL_NONE, NULL);
             }
-        }
-        else
-        {
-            if ((flagsByte & MAGICGEM_FLAG_BURST2) != 0)
-            {
-                if (state->burstTimer <= MAGICGEM_ZERO)
-                {
-                    state->flags27A = flagsByte & ~MAGICGEM_FLAG_BURST2;
-                    state->flags27A = state->flags27A | MAGICGEM_FLAG_COLLECTED;
-                    state->burstTimer = MAGICGEM_BURST_TIMER;
-                    (*gExpgfxInterface)->freeSource2((u32)obj);
-                    if (obj->anim.parent == NULL)
-                    {
-                        for (burstArg = '\x1e'; burstArg != '\0'; burstArg--)
-                        {
-                            (*gPartfxInterface)->spawnObject((void*)obj, state->burstEffectId, NULL, 1, -1, &burstArg);
-                        }
+        } else if ((flags & MAGICGEM_FLAG_BURST2) != 0) {
+            if (state->burstTimer <= MAGICGEM_ZERO) {
+                state->flags = flags & ~MAGICGEM_FLAG_BURST2;
+                state->flags |= MAGICGEM_FLAG_COLLECTED;
+                state->burstTimer = MAGICGEM_BURST_TIMER;
+                (*gExpgfxInterface)->freeSource2((u32)obj);
+                if (obj->anim.parent == NULL) {
+                    for (burstCount = MAGICGEM_BURST_PARTICLE_COUNT; burstCount != '\0'; burstCount--) {
+                        (*gPartfxInterface)
+                            ->spawnObject((void*)obj, state->burstEffectId, NULL, MAGICGEM_BURST_FX_MODE,
+                                          MAGICGEM_PARTFX_MODEL_NONE, &burstCount);
                     }
-                    obj->anim.alpha = 1;
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_en_liftstpc);
                 }
-                objMove((GameObject*)obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
-                        obj->anim.velocityZ * timeDelta);
+                obj->anim.alpha = MAGICGEM_MIN_ALPHA;
+                Sfx_PlayFromObject((int)obj, SFXTRIG_en_liftstpc);
             }
-            else
-            {
-                if (state->burstTimer <= MAGICGEM_ZERO)
-                {
-                    Obj_FreeObject(obj);
-                }
-                return;
+            objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
+                    obj->anim.velocityZ * timeDelta);
+        } else {
+            if (state->burstTimer <= MAGICGEM_ZERO) {
+                Obj_FreeObject(obj);
             }
+            return;
         }
-        if ((state->flags27A & 3) == 0)
-        {
+        if ((state->flags & MAGICGEM_FLAG_MOTION_MASK) == 0) {
             (*gPathControlInterface)->update((void*)obj, (void*)state, timeDelta);
             (*gPathControlInterface)->apply((void*)obj, (void*)state);
             (*gPathControlInterface)->advance((void*)obj, (void*)state, timeDelta);
-            if (state->contacted != '\0')
-            {
-                float vx = -obj->anim.velocityX;
-                float vy = -obj->anim.velocityY;
-                float vz = -obj->anim.velocityZ;
-                float mag = sqrtf(vx * vx + vy * vy + vz * vz);
-                if (mag > MAGICGEM_BOUNCE_SFX_SPEED)
-                {
+            if (state->contacted != 0) {
+                f32 velocityX = -obj->anim.velocityX;
+                f32 velocityY = -obj->anim.velocityY;
+                f32 velocityZ = -obj->anim.velocityZ;
+                f32 speed = sqrtf(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+                if (speed > MAGICGEM_BOUNCE_SFX_SPEED) {
                     Sfx_PlayFromObject((int)obj, SFXTRIG_en_lflsh3_c_16b);
                 }
-                if (state->contactNormalY >= MAGICGEM_FLOOR_NORMAL_THRESHOLD)
-                {
+                if (state->contactNormalY >= MAGICGEM_FLOOR_NORMAL_THRESHOLD) {
                     obj->anim.velocityY = -obj->anim.velocityY;
                     obj->anim.velocityY *= MAGICGEM_BOUNCE_RESTITUTION_Y;
-                }
-                else
-                {
+                } else {
                     obj->anim.velocityX = -obj->anim.velocityX;
                     obj->anim.velocityZ = -obj->anim.velocityZ;
                     obj->anim.velocityX *= MAGICGEM_BOUNCE_RESTITUTION_XZ;
                     obj->anim.velocityZ *= MAGICGEM_BOUNCE_RESTITUTION_XZ;
                 }
-                ref = state->bounceCount + 1;
+                result = state->bounceCount + 1;
                 state->bounceCount++;
-                if (5 < (u8)ref)
-                {
-                    state->flags27A = state->flags27A | MAGICGEM_FLAG_SETTLED;
-                    fval = MAGICGEM_ZERO;
+                if (MAGICGEM_MAX_BOUNCES < (u8)result) {
+                    state->flags |= MAGICGEM_FLAG_SETTLED;
+                    scalar = MAGICGEM_ZERO;
                     obj->anim.velocityX = MAGICGEM_ZERO;
-                    obj->anim.velocityY = fval;
-                    obj->anim.velocityZ = fval;
+                    obj->anim.velocityY = scalar;
+                    obj->anim.velocityZ = scalar;
                 }
             }
         }
     }
-    if ((state->flags27A & MAGICGEM_FLAG_CLAIMED) == 0)
-    {
-        switch (state->flags27A & MAGICGEM_FLAG_COLLECT_LATCH)
-        {
+    if ((state->flags & MAGICGEM_FLAG_CLAIMED) == 0) {
+        switch (state->flags & MAGICGEM_FLAG_COLLECT_LATCH) {
         case 0:
-            fval = obj->anim.localPosY - ((GameObject*)player)->anim.localPosY;
-            if (fval < MAGICGEM_ZERO)
-            {
-                fval = -fval;
+            scalar = obj->anim.localPosY - player->anim.localPosY;
+            if (scalar < MAGICGEM_ZERO) {
+                scalar = -scalar;
             }
-            if (fval < MAGICGEM_PICKUP_Y_RANGE)
-            {
-                dist = getXZDistance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX);
-                fval = MAGICGEM_PICKUP_RADIUS_BASE + state->collectRadius;
-                if ((dist < fval * fval) && (Obj_IsParentSlackClear((GameObject*)player) != 0))
-                {
-                    val = mainGetBit(MAGICGEM_GAMEBIT_CLAIMED);
-                    if (val == 0)
-                    {
-                        *(s16*)&state->pickupMsgArg = 0xffff;
-                        ObjMsg_SendToObject((void*)player, MAGICGEM_MSG_IN_RANGE, obj, (int)state + 0x280);
+            if (scalar < MAGICGEM_PICKUP_Y_RANGE) {
+                distanceSquared = getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+                scalar = MAGICGEM_PICKUP_RADIUS_BASE + state->collectRadius;
+                if ((distanceSquared < scalar * scalar) && (Obj_IsParentSlackClear(player) != 0)) {
+                    value = mainGetBit(MAGICGEM_GAMEBIT_CLAIMED);
+                    if (value == 0) {
+                        *(s16*)&state->pickupMsgArg = 0xFFFF;
+                        ObjMsg_SendToObject(player, MAGICGEM_MSG_IN_RANGE, obj, (u32)&state->pickupMsgArg);
                         ObjHits_DisableObject(obj);
                         mainSetBits(MAGICGEM_GAMEBIT_CLAIMED, 1);
-                        state->flags27A = state->flags27A | MAGICGEM_FLAG_CLAIMED;
-                    }
-                    else
-                    {
-                        magicgem_collect(obj, state, player);
+                        state->flags |= MAGICGEM_FLAG_CLAIMED;
+                    } else {
+                        MagicDust_collect(obj, state, player);
                     }
                 }
             }
@@ -322,120 +330,107 @@ void MagicDust_update(GameObject* obj)
     }
 }
 
-void MagicDust_init(GameObject* obj, MagicgemObjectDef* placement)
-{
-    short mode;
-    u32 randVal;
-    int ref;
+void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
+    s16 mode;
+    u32 randomValue;
+    GameObject* player;
+    ObjModel* model;
     MagicGemState* state;
-    f32 ang;
-    f32 spd;
-    u16 texPickA[2];
-    u16 texPickB[2];
-    u8 pathArgs[4];
+    f32 angle;
+    f32 speed;
+    u16 texturePickA[2];
+    u16 texturePickB[2];
+    u8 pathParams[4];
 
     state = obj->extra;
-    pathArgs[0] = 3;
-    texPickA[0] = sMagicGemTexPickA[0];
-    texPickB[0] = sMagicGemTexPickB[0];
-    randVal = randomGetRange(0, 0xffff);
-    spd = (f32)(int)randomGetRange(0x27, 0x2c) / MAGICGEM_RANDOM_SPEED_SCALE;
-    ang = (MAGICGEM_PI * (f32)(int)randVal) / MAGICGEM_ANGLE_RAND_SCALE;
-    obj->anim.velocityX = spd * mathSinf(ang);
-    obj->anim.velocityZ = spd * mathCosf(ang);
+    pathParams[0] = 3;
+    texturePickA[0] = sMagicGemGreenTexturePair[0];
+    texturePickB[0] = sMagicGemRedTexturePair[0];
+    randomValue = randomGetRange(0, 0xFFFF);
+    speed = (f32)(int)randomGetRange(0x27, 0x2C) / MAGICGEM_RANDOM_SPEED_SCALE;
+    angle = (MAGICGEM_PI * (f32)(int)randomValue) / MAGICGEM_ANGLE_RAND_SCALE;
+    obj->anim.velocityX = speed * mathSinf(angle);
+    obj->anim.velocityZ = speed * mathCosf(angle);
     obj->anim.velocityY = (f32)(int)randomGetRange(0x28, 0x32) / MAGICGEM_RANDOM_Y_SPEED_SCALE;
     mode = placement->spawnMode;
-    if (mode == 1)
-    {
-        state->flags27A = state->flags27A | MAGICGEM_FLAG_BURST1;
-        obj->anim.alpha = 1;
-    }
-    else if (mode == 2)
-    {
-        state->flags27A = state->flags27A | MAGICGEM_FLAG_BURST1;
-        obj->anim.alpha = 1;
-        if (*(u32*)&obj->anim.hitReactState != 0)
-        {
+    if (mode == MAGICGEM_SPAWN_MODE_BURST) {
+        state->flags |= MAGICGEM_FLAG_BURST1;
+        obj->anim.alpha = MAGICGEM_MIN_ALPHA;
+    } else if (mode == MAGICGEM_SPAWN_MODE_FOLLOW) {
+        state->flags |= MAGICGEM_FLAG_BURST1;
+        obj->anim.alpha = MAGICGEM_MIN_ALPHA;
+        if (*(u32*)&obj->anim.hitReactState != 0) {
             ObjHits_DisableObject(obj);
         }
-        ref = (int)Obj_GetPlayerObject();
-        obj->anim.velocityX = (((GameObject*)ref)->anim.localPosX - obj->anim.localPosX) / MAGICGEM_FOLLOW_TIME;
-        obj->anim.velocityY = (((GameObject*)ref)->anim.localPosY - obj->anim.localPosY) / MAGICGEM_FOLLOW_TIME;
-        obj->anim.velocityZ = (((GameObject*)ref)->anim.localPosZ - obj->anim.localPosZ) / MAGICGEM_FOLLOW_TIME;
-    }
-    else if (mode == 3)
-    {
-        state->flags27A = state->flags27A | MAGICGEM_FLAG_BURST1;
-        obj->anim.alpha = 1;
-        obj->anim.velocityY = -((f32)(int)randomGetRange(0x8c, 0x96) / MAGICGEM_RANDOM_Y_SPEED_SCALE);
+        player = Obj_GetPlayerObject();
+        obj->anim.velocityX = (player->anim.localPosX - obj->anim.localPosX) / MAGICGEM_FOLLOW_TIME;
+        obj->anim.velocityY = (player->anim.localPosY - obj->anim.localPosY) / MAGICGEM_FOLLOW_TIME;
+        obj->anim.velocityZ = (player->anim.localPosZ - obj->anim.localPosZ) / MAGICGEM_FOLLOW_TIME;
+    } else if (mode == MAGICGEM_SPAWN_MODE_DROP) {
+        state->flags |= MAGICGEM_FLAG_BURST1;
+        obj->anim.alpha = MAGICGEM_MIN_ALPHA;
+        obj->anim.velocityY = -((f32)(int)randomGetRange(0x8C, 0x96) / MAGICGEM_RANDOM_Y_SPEED_SCALE);
     }
     obj->anim.bankIndex = placement->bankIndex;
-    if (obj->anim.bankIndex >= obj->anim.modelInstance->modelCount)
-    {
+    if (obj->anim.bankIndex >= obj->anim.modelInstance->modelCount) {
         obj->anim.bankIndex = 0;
     }
-    if (obj->anim.modelState != NULL)
-    {
-        obj->anim.modelState->shadowTintA = 100;
-        obj->anim.modelState->shadowTintB = 0x96;
+    if (obj->anim.modelState != NULL) {
+        obj->anim.modelState->shadowTintA = MAGICGEM_SHADOW_TINT_A;
+        obj->anim.modelState->shadowTintB = MAGICGEM_SHADOW_TINT_B;
     }
-    ref = (int)Obj_GetActiveModel(obj);
+    model = Obj_GetActiveModel(obj);
     mode = obj->anim.seqId;
-    switch (mode)
-    {
-    case 0x2c4:
-        randVal = randomGetRange(0, 1);
-        *(u8*)(*(int*)(ref + 0x34) + 8) = *(u8*)((int)texPickA + randVal);
-        state->ambientEffectId = 0x54f;
-        state->burstEffectId = 0x54b;
-        state->sfxId = 0x58;
-        state->unk276 = 0x5b0;
-        state->mode = 4;
+    switch (mode) {
+    case MAGICGEM_DEF_GREEN:
+        randomValue = randomGetRange(0, 1);
+        model->textureRefs->unk08 = *((u8*)texturePickA + randomValue);
+        state->ambientEffectId = MAGICGEM_GREEN_AMBIENT_EFFECT_ID;
+        state->burstEffectId = MAGICGEM_GREEN_BURST_EFFECT_ID;
+        state->sfxId = MAGICGEM_GREEN_SFX_ID;
+        state->unk276 = MAGICGEM_GREEN_UNK276;
+        state->mode = MAGICGEM_GREEN_PARTICLE_MODE;
         break;
-    case 0x2cd:
-        randVal = randomGetRange(0, 1);
-        *(u8*)(*(int*)(ref + 0x34) + 8) = *(u8*)((int)texPickB + randVal);
-        state->ambientEffectId = 0x54e;
-        state->burstEffectId = 0x54a;
-        state->sfxId = 0x59;
-        state->unk276 = 0x5b1;
-        state->mode = 1;
+    case MAGICGEM_DEF_RED:
+        randomValue = randomGetRange(0, 1);
+        model->textureRefs->unk08 = *((u8*)texturePickB + randomValue);
+        state->ambientEffectId = MAGICGEM_RED_AMBIENT_EFFECT_ID;
+        state->burstEffectId = MAGICGEM_RED_BURST_EFFECT_ID;
+        state->sfxId = MAGICGEM_RED_SFX_ID;
+        state->unk276 = MAGICGEM_RED_UNK276;
+        state->mode = MAGICGEM_RED_PARTICLE_MODE;
         break;
-    case 0x2ce:
-        *(u8*)(*(int*)(ref + 0x34) + 8) = 3;
-        state->ambientEffectId = 0x54d;
-        state->burstEffectId = 0x549;
-        state->sfxId = 0x5a;
-        state->unk276 = 0x5b2;
-        state->mode = 2;
+    case MAGICGEM_DEF_YELLOW:
+        model->textureRefs->unk08 = MAGICGEM_YELLOW_TEXTURE_INDEX;
+        state->ambientEffectId = MAGICGEM_YELLOW_AMBIENT_EFFECT_ID;
+        state->burstEffectId = MAGICGEM_YELLOW_BURST_EFFECT_ID;
+        state->sfxId = MAGICGEM_YELLOW_SFX_ID;
+        state->unk276 = MAGICGEM_YELLOW_UNK276;
+        state->mode = MAGICGEM_YELLOW_PARTICLE_MODE;
         break;
-    case 0x2cf:
+    case MAGICGEM_DEF_BLUE:
     default:
-        *(u8*)(*(int*)(ref + 0x34) + 8) = 2;
-        state->ambientEffectId = 0x550;
-        state->burstEffectId = 0x54c;
-        state->sfxId = 0x5b;
-        state->unk276 = 0x5b3;
-        state->mode = 6;
+        model->textureRefs->unk08 = MAGICGEM_BLUE_TEXTURE_INDEX;
+        state->ambientEffectId = MAGICGEM_BLUE_AMBIENT_EFFECT_ID;
+        state->burstEffectId = MAGICGEM_BLUE_BURST_EFFECT_ID;
+        state->sfxId = MAGICGEM_BLUE_SFX_ID;
+        state->unk276 = MAGICGEM_BLUE_UNK276;
+        state->mode = MAGICGEM_BLUE_PARTICLE_MODE;
         break;
     }
     state->collectRadius = MAGICGEM_COLLECT_RADIUS;
-    if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
-    {
-        (*gPathControlInterface)->init((void*)state, 0, 0x40007, 0);
-        (*gPathControlInterface)->setup((void*)state, 1, sMagicGemPathData, (void*)((int)state + 0x268), pathArgs);
+    if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0) {
+        (*gPathControlInterface)->init((void*)state, 0, MAGICGEM_PATH_FLAGS, 0);
+        (*gPathControlInterface)
+            ->setup((void*)state, MAGICGEM_PATH_POINT_COUNT, sMagicGemPathData, &state->collectRadius, pathParams);
         (*gPathControlInterface)->attachObject((void*)obj, (void*)state);
     }
-    obj->objectFlags = obj->objectFlags | MAGICGEM_OBJFLAG_HITDETECT_DISABLED;
-    if ((state->flags27A & MAGICGEM_FLAG_BURST1) != 0)
-    {
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    if ((state->flags & MAGICGEM_FLAG_BURST1) != 0) {
         state->burstTimer = MAGICGEM_INITIAL_BURST_TIMER;
-    }
-    else
-    {
+    } else {
         state->burstTimer = MAGICGEM_LONG_BURST_TIMER;
-        state->flags27A = state->flags27A | MAGICGEM_FLAG_BURST2;
+        state->flags |= MAGICGEM_FLAG_BURST2;
     }
-    ObjMsg_AllocQueue(obj, 1);
-    return;
+    ObjMsg_AllocQueue(obj, MAGICGEM_MESSAGE_SLOTS);
 }
