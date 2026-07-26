@@ -267,9 +267,9 @@ void fn_801EB0D4(u32 obj, int stateRaw)
     }
 }
 
-void SnowBike_onSeqFree(int* obj)
+void SnowBike_onSeqFree(GameObject* obj)
 {
-    SnowBikeState* state = ((GameObject*)obj)->extra;
+    SnowBikeState* state = obj->extra;
     if ((u32)((state->flags428 >> 1) & 1) == 0)
     {
         s16 sv;
@@ -279,22 +279,22 @@ void SnowBike_onSeqFree(int* obj)
         state->distanceScale = lbl_803E5B9C;
         ((HightopFlags*)&state->flags428)->resetLatch = 0;
         state->impactShakeTimer = fz;
-        sv = ((GameObject*)obj)->anim.rotX;
+        sv = obj->anim.rotX;
         state->yaw = sv;
         state->yawCurrent = sv;
         state->engineFxLevel = lbl_803E5B74;
     }
-    ObjHits_EnableObject((GameObject*)obj);
-    (*gPathControlInterface)->attachObject((void*)obj, (char*)state + 0x178);
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->localPosX = ((GameObject*)obj)->anim.localPosX;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->localPosY = ((GameObject*)obj)->anim.localPosY;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->localPosZ = ((GameObject*)obj)->anim.localPosZ;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->worldPosX = ((GameObject*)obj)->anim.worldPosX;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->worldPosY = ((GameObject*)obj)->anim.worldPosY;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->worldPosZ = ((GameObject*)obj)->anim.worldPosZ;
+    ObjHits_EnableObject(obj);
+    (*gPathControlInterface)->attachObject(obj, (char*)state + 0x178);
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosX = obj->anim.localPosX;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosY = obj->anim.localPosY;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosZ = obj->anim.localPosZ;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosX = obj->anim.worldPosX;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosY = obj->anim.worldPosY;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosZ = obj->anim.worldPosZ;
 }
 
-int SnowBike_SeqFn(short* obj, int unused, ObjSeqState* seq)
+int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 {
     typedef struct HightopMatrixSeed
     {
@@ -318,10 +318,10 @@ int SnowBike_SeqFn(short* obj, int unused, ObjSeqState* seq)
     f64 ySpeed;
     f64 zSpeed;
 
-    state = *(int*)&((GameObject*)obj)->extra;
+    state = *(int*)&obj->extra;
     st = (SnowBikeState*)state;
     seq->freeCallback = (ObjAnimSequenceFreeCallback)SnowBike_onSeqFree;
-    ObjHits_DisableObject((GameObject*)obj);
+    ObjHits_DisableObject(obj);
 
     for (i = 0; i < (int)(u32)seq->eventCount; i++)
     {
@@ -329,7 +329,7 @@ int SnowBike_SeqFn(short* obj, int unused, ObjSeqState* seq)
         switch (triggerType)
         {
         case 2:
-            if (obj[0x23] != 0x16c && obj[0x23] != 0x16f)
+            if (obj->anim.seqId != 0x16c && obj->anim.seqId != 0x16f)
             {
                 mainSetBits(0x499, 1);
             }
@@ -342,15 +342,15 @@ int SnowBike_SeqFn(short* obj, int unused, ObjSeqState* seq)
 
     if (st->riderMode == 2)
     {
-        xSpeed = (double)(float)(oneOverTimeDelta * (((GameObject*)obj)->anim.localPosX - st->refPosX));
-        ySpeed = (double)(float)(oneOverTimeDelta * (((GameObject*)obj)->anim.localPosY - st->refPosY));
-        zSpeed = (double)(float)(oneOverTimeDelta * (((GameObject*)obj)->anim.localPosZ - st->refPosZ));
+        xSpeed = (double)(float)(oneOverTimeDelta * (obj->anim.localPosX - st->refPosX));
+        ySpeed = (double)(float)(oneOverTimeDelta * (obj->anim.localPosY - st->refPosY));
+        zSpeed = (double)(float)(oneOverTimeDelta * (obj->anim.localPosZ - st->refPosZ));
 
         transform.x = lbl_803E5AE8;
         transform.y = lbl_803E5AE8;
         transform.z = lbl_803E5AE8;
         transform.unused = lbl_803E5AEC;
-        transform.rotX = -*obj;
+        transform.rotX = -obj->anim.rotX;
         transform.rotY = 0;
         transform.rotZ = 0;
         mtxRotateByVec3s(matrix, &transform);
