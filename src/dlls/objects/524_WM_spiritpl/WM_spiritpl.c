@@ -1,7 +1,6 @@
 /*
- * wmspiritplace (DLL 0x20C) - the six Krazoa-spirit places at Krazoa
- * Palace (map 'warlock' = Dinosaur Planet's Warlock Mountain, hence
- * the WM dll prefix).
+ * WM_spiritpl (DLL 0x020C) - the six Krazoa Spirit shrines at Warlock
+ * Mountain on Dinosaur Planet.
  * Each placed instance is tagged by its placement mapId
  * (WMSPIRITPLACE_MAP_N) and becomes interactive once the palace's
  * map-event mode reaches N: it raises the A-button prompt, runs trigger
@@ -13,22 +12,22 @@
  * The interaction prompt is driven through the INTERACT_FLAG_* bits in
  * anim.resetHitboxFlags (objanim_internal.h).
  */
-#include "main/dll/partfx_interface.h"
-#include "main/sky_api.h"
-#include "main/pi_dolphin_api.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/objprint_render_api.h"
-#include "main/map_load.h"
-#include "main/dll/tricky_api.h"
-#include "main/render_envfx_api.h"
-#include "main/gamebits.h"
-#include "game/objects/object.h"
-#include "main/mapEventTypes.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
-#include "main/objseq.h"
+#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/WM/dll_020C_wmspiritplace.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/tricky_api.h"
+#include "main/gamebits.h"
+#include "main/map_load.h"
+#include "main/mapEventTypes.h"
+#include "main/objanim_update.h"
+#include "main/objprint_render_api.h"
+#include "main/objseq.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/render_envfx_api.h"
+#include "main/sky_api.h"
 
 /* placement mapId tags of the six spirit-place instances; place N
    becomes active once the palace's map-event mode reaches N. */
@@ -70,11 +69,7 @@ enum
     WMSPIRITPLACE_SEQEV_SPIRIT_VISION_OFF = 9
 };
 
-/* game bits hardcoded by this DLL. Each place's gate bit lets the
-   follow-up sequence 1 run once the place's sequence bit is also set;
-   no other TU touches these five. The remaining literals at use sites
-   (0x1FC/0xEAF/0xBFD/0xD1F) are cross-TU bits without established
-   names. */
+/* Each gate bit allows its shrine's follow-up sequence to run. */
 enum
 {
     GAMEBIT_SPIRITPLACE_2_READY = 0x29B,
@@ -82,23 +77,6 @@ enum
     GAMEBIT_SPIRITPLACE_4_READY = 0xC71,
     GAMEBIT_SPIRITPLACE_5_READY = 0xCB6,
     GAMEBIT_SPIRITPLACE_6_READY = 0xCB8
-};
-
-ObjectDescriptor gWM_spiritplaceObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    WM_spiritplace_initialise,
-    WM_spiritplace_release,
-    0,
-    (ObjectDescriptorCallback)WM_spiritplace_init,
-    (ObjectDescriptorCallback)WM_spiritplace_update,
-    (ObjectDescriptorCallback)WM_spiritplace_hitDetect,
-    (ObjectDescriptorCallback)WM_spiritplace_render,
-    WM_spiritplace_free,
-    (ObjectDescriptorCallback)WM_spiritplace_getObjectTypeId,
-    WM_spiritplace_getExtraSize,
 };
 
 void wmspiritplace_onSeqFree(void)
@@ -570,3 +548,20 @@ void WM_spiritplace_release(void)
 void WM_spiritplace_initialise(void)
 {
 }
+
+ObjectDescriptor gWM_spiritplaceObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    WM_spiritplace_initialise,
+    WM_spiritplace_release,
+    0,
+    (ObjectDescriptorCallback)WM_spiritplace_init,
+    (ObjectDescriptorCallback)WM_spiritplace_update,
+    (ObjectDescriptorCallback)WM_spiritplace_hitDetect,
+    (ObjectDescriptorCallback)WM_spiritplace_render,
+    WM_spiritplace_free,
+    (ObjectDescriptorCallback)WM_spiritplace_getObjectTypeId,
+    WM_spiritplace_getExtraSize,
+};
