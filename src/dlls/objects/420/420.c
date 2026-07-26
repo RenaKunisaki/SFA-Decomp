@@ -1,4 +1,4 @@
-/* DLL 0x01A4 - paired ice objects in Northern Wastes. */
+/* DLL 0x01A4 - paired ice objects in SnowHorn Wastes. */
 #include "main/obj_group.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
