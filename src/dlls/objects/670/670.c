@@ -1,5 +1,5 @@
 /*
- * Dummy29E (DLL 0x29E) - an empty object-class slot. Every entry point
+ * DLL 0x29E - an empty object-class slot. Every entry point
  * (extra-size, type-id, init/update/render/hitDetect/free, and the
  * (de)initialise pair) is a stub: no per-object state is allocated and no
  * behaviour runs. The DLL exists only to fill the 0x29E id in the object
