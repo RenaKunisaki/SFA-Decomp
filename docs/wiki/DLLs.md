@@ -582,7 +582,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/main/dll/DF/dll_0178_dfshshrine.c` |
 | `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/main/dll/DIM/dll_01BE_dimlava.c` |
 | `GPSH` | a Krazoa-spirit shrine (area code not decoded) | `src/main/dll/dll_0192_gpshshrine.c` |
-| `MMP` | Moon Mountain Pass | `src/main/dll/MMP/dll_010F_mmpbridge.c` |
+| `MMP` | Moon Mountain Pass | `src/dlls/objects/271_MMP_Bridge/MMP_Bridge.c` |
 | `MMSH` | Moon Mountain Pass Shrine (Krazoa spirit) | `src/main/dll/dll_018C_mmshshrine.c` |
 | `ECSH` | a Krazoa-spirit shrine (area code "EC" not decoded — comment notes the MMSH/ECSH/DFSH/DBSH/GPSH family explicitly) | `src/main/dll/dll_018F_ecshshrine.c` |
 | `NW` | SnowHorn Wastes (map `nwastes`) | `src/main/dll/NW/dll_0198_nwshlevcon.c` |

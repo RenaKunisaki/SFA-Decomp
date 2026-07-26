@@ -316,7 +316,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x10C | LanternFire | CONFIRMED | dlls/objects/268_LanternFire/LanternFire.c | = (canonical) | — |
 | 0x10D | PortalSpell | CONFIRMED | dlls/objects/269_PortalSpell/PortalSpell.c | = (canonical) | — |
 | 0x10E | — | NO-RETAIL-NAME | dlls/objects/270/270.c | = (canonical) | DieDuster, DieFox, DieKrystal aliases |
-| 0x10F | MMP_Bridge | COMPLETE | main/dll/dll_010F_mmpbridge.c | main/dll/MMP/dll_010F_mmpbridge.c | — |
+| 0x10F | MMP_Bridge | COMPLETE | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | = (canonical) | — |
 | 0x110 | Door (+KT_RexDoorP, KT_RexDoorT, CFPrisonDoo, CFWinPrison, CF_MovDeckD, CFTreasureD, CFExplosive, CFMainDoorA, CFBrokenPil, WCTempleDoo, WCSunTemple, WCMoonTempl, WCSlabDoor, WCBossDoor, WCGeneralDo, WCSunInside, WCMoonInsid, WCTempleTop, DIM_Portcul, DIMWoodDoor, DIM2IcePlat, DIM2TrapDoo, DIM2CellDoo, DIM2PuzzleD, DIM2IceGrat, IMPrisonGat, IMFence, LINK_Portcu, CCwaterShut, CCOceanDoor, CCskullDoor, CCclawOnlyD, CCprisonDoo, CCclawdoor, GF_DoorLeft, MMP_MagicCa, NW_Portcull, SH_MagicCav, SH_QueensDo, SH_Portcull, KP_SectionD, KP_FinDoor, SC_Shrine_d, SC_mounddoo, SC_settelme, BossTRexPor, SC_capeclaw, SC_stepping, SC_hutdoor, VFP_Doorloc, OFPclawOnly, DFP_Bridge, DFP_RoundDo, WM_Door1, WMFinalDoor, SPDoor, EC_Shrine_d, DR_EarthDoo, DR_Shield, DR_CloudDoo, DR_HighDoor, DR_James1Bo, DR_DrakorDo, MCProjDoor) | CONFIRMED | main/dll/dll_0110_door.c | = (canonical) | — |
 | 0x111 | doorlock (+CFPowerLock, CFDoubleSwi, WCTeethBowl, DIMLever, DIMSnowHorn, DIMUseObjec, DIM2UseObje, DIM2CellKey, MMP_padlock, SC_blockpla, VFP_PitSwit, VFP_PodiumP, VFP_LiftSwi, DFP_PitSwit, DFP_ForceSw, WM_padlock, DRearthwalk) | GUESSED | main/dll/dll_0111_doorlock.c | = (canonical) | — |
 | 0x112 | seqobject (+BossDrakor_, KT_RexSeque, CFGoldenPer, LINKIseqobj, CFseqobject, CFRaceSeqob, CAMERAseqob, WCSeqObject, WCTempleBlo, DIMBridge, DIMSeqObjec, DIM2SeqObje, DIM2Mammoth, DIM2CellLoc, DIM2StonePi, IMSeqObject, LINKE_stone, linkB_Stone, ANDSeqObjec, GF_sequence, MMP_seqobje, SH_seqobjec, KP_sequence, SC_sequence, VFPSeqObj, VFP_Bobbing, SPSeqObj, FrontSeq, NWSH_Seqobj, DR_Seqobj, FireHoleCon, DR_SeqobjBo, DR_TrackDoo, KPLandingPa, CF_BobbingC, CFLandingPa, LandingPad_, WC_LandingP, SH_NT_Landi, MSSeqObject, ARWSeqObjec, DFsequences) | CONFIRMED | main/dll/dll_0112_seqobject.c | = (canonical) | — |
@@ -797,7 +797,7 @@ name was a deliberate choice by a previous carve:
 | dll | current | proposed | expansion |
 |---|---|---|---|
 | 0x0C7 | main/dll/dll_00C7_dim2roofrub.c | dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c | COMPLETE |
-| 0x10F | main/dll/dll_010F_mmpbridge.c | main/dll/MMP/dll_010F_mmpbridge.c | COMPLETE |
+| 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | main/dll/IM/dll_0114_immultiseq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | main/dll/WM/dll_0116_wmcolumn.c | COMPLETE |
 | 0x122 | main/dll/dll_0122_cctestinfot.c | main/dll/CC/dll_0122_cctestinfot.c | CONFIRMED |

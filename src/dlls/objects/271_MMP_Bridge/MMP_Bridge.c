@@ -1,5 +1,5 @@
 /*
- * mmpbridge (DLL 0x10F) - Moon Mountain Pass scrolling-texture bridge.
+ * MMP_Bridge (DLL 0x10F) - Moon Mountain Pass scrolling-texture bridge.
  *
  * The bridge spawns with its hit collision disabled. Once the placement
  * gamebit (MmpBridgePlacement::enableBit) is set, collision is enabled and

@@ -1850,7 +1850,7 @@ main/dll/dll_0110_door.c:
 	.data       start:0x803210C0 end:0x803210F8
 	.sdata2     start:0x803E3780 end:0x803E3798
 
-main/dll/MMP/dll_010F_mmpbridge.c:
+dlls/objects/271_MMP_Bridge/MMP_Bridge.c:
 	.text       start:0x8017BB80 end:0x8017BCF8
 	.data       start:0x803210F8 end:0x80321130
 	.sdata      start:0x803DBD90 end:0x803DBD98
