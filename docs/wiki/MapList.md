@@ -431,7 +431,7 @@ manually verified by reading the file, not by name-guessing):
 | `cfprisoncage` (0x5a) | `CFPrisonCag` | `src/main/dll/CF/dll_0154_cfprisoncage.c` |
 | `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/dlls/objects/415_NW_treebrid/NW_treebrid.c` |
 | `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c`, `dimwooddoor.c` |
-| `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/main/dll/DIM/dll_01DC_dim2icefloe.c` |
+| `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c` |
 | `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |
 | `dimbossgut` (0x67) | `DIM_BossGut` | `src/main/dll/DIM/dll_01E1_dimbossgut.c`, `dll_01E3_dimbossgut2.c` |
 | `wmcolrise` (0x68) | `WM_colrise` | `src/main/dll/WM/dll_0201_wmcolrise.c` |

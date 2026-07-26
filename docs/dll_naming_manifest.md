@@ -519,7 +519,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1D9 | DIM2PrisonM | COMPLETE | dlls/objects/473_DIM2PrisonM/DIM2PrisonM.c | = (canonical) | — |
 | 0x1DA | — | COMPLETE | dlls/objects/474/474.c | = (canonical) | No recovered retail basename |
 | 0x1DB | — | COMPLETE | dlls/objects/475/475.c | = (canonical) | No recovered retail basename |
-| 0x1DC | DIM2IceFloe | CONFIRMED | main/dll/dll_01DC_dim2icefloe.c | main/dll/DIM/dll_01DC_dim2icefloe.c | — |
+| 0x1DC | DIM2IceFloe | COMPLETE | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | = (canonical) | — |
 | 0x1DD | DIM2Icicle | COMPLETE | main/dll/dll_01DD_dim2icicle.c | main/dll/DIM/dll_01DD_dim2icicle.c | — |
 | 0x1DE | DIM2LavaControl | CONFIRMED | main/dll/dll_01DE_dim2lavacontrol.c | main/dll/DIM/dll_01DE_dim2lavacontrol.c | — |
 | 0x1DF | — | NO-RETAIL-NAME | main/dll/dll_01DF_dll1df.c | = (canonical) | — |
@@ -847,7 +847,7 @@ name was a deliberate choice by a previous carve:
 | 0x1D7 | main/dll/dll_01D7_dim2snowball.c | dlls/objects/471_DIM2SnowBal/DIM2SnowBal.c | COMPLETE |
 | 0x1D8 | main/dll/dll_01D8_dim2pathgenerator.c | dlls/objects/472_DIM2PathGen/DIM2PathGen.c | COMPLETE |
 | 0x1D9 | main/dll/dll_01D9_dim2prisonmammoth.c | dlls/objects/473_DIM2PrisonM/DIM2PrisonM.c | COMPLETE |
-| 0x1DC | main/dll/dll_01DC_dim2icefloe.c | main/dll/DIM/dll_01DC_dim2icefloe.c | CONFIRMED |
+| 0x1DC | main/dll/dll_01DC_dim2icefloe.c | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | COMPLETE |
 | 0x1DD | main/dll/dll_01DD_dim2icicle.c | main/dll/DIM/dll_01DD_dim2icicle.c | COMPLETE |
 | 0x1DE | main/dll/dll_01DE_dim2lavacontrol.c | main/dll/DIM/dll_01DE_dim2lavacontrol.c | CONFIRMED |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | main/dll/DIM/DIMboss.c | COMPLETE |
