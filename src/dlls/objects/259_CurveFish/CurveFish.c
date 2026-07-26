@@ -268,7 +268,6 @@ void CurveFish_init(GameObject* obj, CurveFishPlacement* placement)
     state->maxSpeed = (f32)(u32)placement->speedChange / 100.0f;
 }
 
-
 ObjectDescriptor gCurveFishObjDescriptor = {
     0,
     0,

@@ -147,7 +147,7 @@ Cross-references verified by reading the source at the paths below.
 | 0x03 | HagabonMK2 | Confirmed exactly: `hagabonMK2_update`/`hagabonMK2_updateB` (`src/main/dll/firecrawler.c`, dispatched from `src/dlls/objects/201_Baddie/Baddie.c`) implement HagabonMK2 (`anim.seqId 0x7c8`, per that file's header comment table cross-referenced against retail `OBJECTS.bin` names). It follows ROM curve paths via `RomCurveWalker`/`gRomCurveInterface`/`Curve_AdvanceAlongPath`, same as the rest of the `crawler_*` family in that TU. A separate, unrelated plain "Hagabon" enemy also exists as DLL 0xDF/0xE0 (`src/dlls/objects/223_Hagabon/Hagabon.c` / `src/dlls/objects/224_SwarmBaddie/SwarmBaddie.c`). |
 | 0x15 | DIM2PathGenerator | `ROMCURVE_TYPE_ACTION` (`= 0x15`, `include/main/dll/dll_0015_curves.h`) is checked in `curves_findByAction` (`src/main/dll/dll_0014_unk.c`). Numerically the same value is separately named `ROMCURVE_TYPE_SCALE_OVERRIDE_15` for an unrelated per-object root-motion-scale branch in `curve_init` (`dll_0125_curve.c`) — two different DLLs independently overloading the same Type id. |
 | 0x16 | "Something important... the DLL has a method that looks specifically for this type" | Confirmed exactly: `curves_findNearestOfType16` (`src/main/dll/dll_0014_unk.c`) hardcodes `curve->type == 0x16`. |
-| 0x23 | CurveFish | Confirmed exactly: `gCurveFishCurveQueryKey = 0x23` in `src/main/dll/dll_0103_curvefish.c` (DLL 0x103, `curvefish` object). |
+| 0x23 | CurveFish | Confirmed exactly: `gCurveFishCurveQueryKey = 0x23` in `src/dlls/objects/259_CurveFish/CurveFish.c` (DLL 0x103, `curvefish` object). |
 | 0x24 | Used by Tricky | Confirmed exactly: `Objfsa_FindNearestCurveType24` / `Objfsa_FindNearestEnabledCurveType24` (`src/main/dll/dll_0014_unk.c`) hardcode `type == 0x24`; called from `src/dlls/objects/196_Tricky/tricky.c`. |
 | 0x2A | DrakorHoverPad | `src/main/dll/dll_0271_drakorhoverpad.c` (DLL 0x271) follows a "ROM spline/curve network"; its local `DrakorCurveNode` overlay reuses the placement's rotZ/rotY/rotX bytes (0x2C/0x2D/0x2E) as `tangentYaw`/`tangentPitch`/`tangentMag` to derive bob/banking velocity — direct confirmation of the wiki's "rot: ... can influence how some objects follow the path." No literal `== 0x2A` type check found (likely passed in via a caller-side type filter, not visible in this TU). |
 | 0x01, 0x02, 0x19, 0x1F | Dragon Rock Bottom / WB / DIM barrel grabbers / crawl tunnels | Not found. These types are presumably passed as filter arguments from each object's own DLL when it calls the curve-find interface, rather than hardcoded in the shared curve DLL; the specific DLLs for "WB" and Dragon Rock Bottom's objects were not identified by name in this pass. |
@@ -229,7 +229,7 @@ Two write-ups the wiki backs with concrete values that this codebase doesn't yet
    #define ROMCURVE_TYPE_DIM2_PATHGEN  0x15 /* == ROMCURVE_TYPE_ACTION; curves_findByAction */
    #define ROMCURVE_TYPE_16            0x16 /* curves_findNearestOfType16 - purpose still unclear */
    #define ROMCURVE_TYPE_17            0x17 /* RomCurve_func16 - not documented upstream */
-   #define ROMCURVE_TYPE_CURVEFISH     0x23 /* dll_0103_curvefish.c: gCurveFishCurveQueryKey */
+   #define ROMCURVE_TYPE_CURVEFISH     0x23 /* CurveFish.c: gCurveFishCurveQueryKey */
    #define ROMCURVE_TYPE_TRICKY        0x24 /* Objfsa_FindNearest(Enabled)CurveType24 */
    ```
    (Left as `#define`s rather than an `enum` since `ROMCURVE_TYPE_ACTION`/`ROMCURVE_TYPE_SCALE_OVERRIDE_15`

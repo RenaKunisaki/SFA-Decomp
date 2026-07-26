@@ -304,7 +304,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x100 | TrickyWarp | COMPLETE | dlls/objects/256_TrickyWarp/TrickyWarp.c | = (canonical) | — |
 | 0x101 | TrickyGuard | CONFIRMED | dlls/objects/257_TrickyGuard/TrickyGuard.c | = (canonical) | — |
 | 0x102 | StayPoint | COMPLETE | dlls/objects/258_StayPoint/StayPoint.c | = (canonical) | — |
-| 0x103 | CurveFish | COMPLETE | main/dll/dll_0103_curvefish.c | = (canonical) | — |
+| 0x103 | CurveFish | COMPLETE | dlls/objects/259_CurveFish/CurveFish.c | = (canonical) | — |
 | 0x104 | SmallBasket (+ReinforcedC) | CONFIRMED | main/dll/dll_0104_smallbasket.c | = (canonical) | — |
 | 0x105 | LargeCrate (+DrakorCrate, LargeBasket, LargeCrateL) | COMPLETE | main/dll/dll_0105_largecrate.c | = (canonical) | — |
 | 0x106 | Scarab (+GreenScarab, RedScarab, GoldScarab, RainScarab, Blue_bean) | CONFIRMED | main/dll/dll_0106_scarab.c | = (canonical) | — |
