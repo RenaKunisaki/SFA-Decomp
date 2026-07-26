@@ -507,7 +507,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1CD | DIM_LevelCo | COMPLETE | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | = (canonical) | — |
 | 0x1CE | — | COMPLETE | dlls/objects/462/462.c | = (canonical) | No recovered retail basename |
 | 0x1CF | — | COMPLETE | dlls/objects/463/463.c | = (canonical) | No recovered retail basename |
-| 0x1D0 | DIM_tricky | COMPLETE | main/dll/dll_01D0_dimtricky.c | main/dll/DIM/dll_01D0_dimtricky.c | — |
+| 0x1D0 | DIM_tricky | COMPLETE | dlls/objects/464_DIM_tricky/DIM_tricky.c | = (canonical) | — |
 | 0x1D1 | DIMTruthHornice | CONFIRMED | main/dll/dll_01D1_dimtruthhornice.c | main/dll/DIM/dll_01D1_dimtruthhornice.c | — |
 | 0x1D2 | WORLDplanet | CONFIRMED | main/worldplanet.c | main/dll/dll_01D2_worldplanet.c | engine/SDK host: main/worldplanet.c |
 | 0x1D3 | worldobj (+WORLDcloudr, WORLDdragro, WORLDwalled, WORLDdarkic, WORLDcloudl, WORLDpath1, WORLDpath2, WORLDpath3, WORLDpath4, WORLDpath5, WORLDpath6, WORLDpath7, WORLDpath8, WORLDarwing, WORLDgreatf, WORLDsun, WORLDsunray, WORLDpepper, WORLDsunfla, WORLDComet, WORLDastGen, WORLDhalo, WORLDhalobr, WORLDarrow) | CONFIRMED | main/worldobj.c | main/dll/dll_01D3_worldobj.c | engine/SDK host: main/worldobj.c |
@@ -841,7 +841,7 @@ name was a deliberate choice by a previous carve:
 | 0x1CD | main/dll/dll_01CD_dimlevelcontrol.c | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | COMPLETE |
 | 0x1CE | main/dll/dll_01CE_dll1ce.c | dlls/objects/462/462.c | COMPLETE |
 | 0x1CF | main/dll/dll_01CF_dll1cf.c | dlls/objects/463/463.c | COMPLETE |
-| 0x1D0 | main/dll/dll_01D0_dimtricky.c | main/dll/DIM/dll_01D0_dimtricky.c | COMPLETE |
+| 0x1D0 | main/dll/dll_01D0_dimtricky.c | dlls/objects/464_DIM_tricky/DIM_tricky.c | COMPLETE |
 | 0x1D1 | main/dll/dll_01D1_dimtruthhornice.c | main/dll/DIM/dll_01D1_dimtruthhornice.c | CONFIRMED |
 | 0x1D5 | main/dll/dll_01D5_dim2conveyor.c | main/dll/DIM/dll_01D5_dim2conveyor.c | CONFIRMED |
 | 0x1D7 | main/dll/dll_01D7_dim2snowball.c | main/dll/DIM/dll_01D7_dim2snowball.c | CONFIRMED |

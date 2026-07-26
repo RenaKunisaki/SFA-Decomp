@@ -1,8 +1,10 @@
-/* DLL 0x1D0 - DIM Tricky companion object.
+/*
+ * DIM_tricky (DLL 0x1D0) - DIM Tricky companion object.
  * A simple 1-byte state machine (states 0-3) that watches game bit 0xA1B to
  * trigger a Tricky companion-pickup sequence: clears bits 0x4E4/0x4E5, then
  * dispatches a vtable call (slot 14 of Tricky's object type at offset
- * 0x68+0x38) to link the companion. */
+ * 0x68+0x38) to link the companion.
+ */
 #include "sys/objects/lifecycle.h"
 #include "main/gamebit_ids.h"
 #include "dlls/object_descriptor.h"
@@ -34,8 +36,15 @@ typedef struct DimTrickyInterfaceVTable
 STATIC_ASSERT(sizeof(DimTrickyState) == 0x1);
 STATIC_ASSERT(offsetof(DimTrickyInterfaceVTable, linkCompanion) == 0x38);
 
-int dim_tricky_getExtraSize(void) { return sizeof(DimTrickyState); }
-int dim_tricky_getObjectTypeId(void) { return 0x0; }
+int dim_tricky_getExtraSize(void)
+{
+    return sizeof(DimTrickyState);
+}
+
+int dim_tricky_getObjectTypeId(void)
+{
+    return 0x0;
+}
 
 void dim_tricky_free(void)
 {
@@ -54,7 +63,10 @@ void dim_tricky_update(GameObject* obj)
 {
     DimTrickyState* state = obj->extra;
     GameObject* trickyObj = getTrickyObject();
-    if (trickyObj == NULL) return;
+    if (trickyObj == NULL)
+    {
+        return;
+    }
     switch (state->phase)
     {
     case DIMTRICKY_STATE_WAIT_TRIGGER:
