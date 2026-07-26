@@ -1,0 +1,1063 @@
+#include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
+#include "main/audio/stream_api.h"
+#include "main/audio/inp_midi.h"
+#include "main/audio/hw_samplemem.h"
+#include "main/audio/sfx.h"
+#include "main/audio/snd3d.h"
+#include "main/audio/snd_core.h"
+#include "main/audio/snd_groups_api.h"
+#include "main/audio/snd_reverb.h"
+#include "main/audio/snd_synth_api.h"
+#include "main/audio_internal.h"
+#include "main/audio/snd_groups.h"
+#include "main/attract_movie_api.h"
+#include "main/camera.h"
+#include "main/fileio.h"
+#include "main/frame_timing.h"
+#include "main/pi_flush_api.h"
+#include "main/textrender_api.h"
+#include "main/gamebits.h"
+#include "main/gameloop_api.h"
+#include "main/mm.h"
+#include "sys/objects.h"
+#include "main/objseq_api.h"
+#include "main/pad.h"
+#include "main/pi_dolphin_api.h"
+#include "main/resource.h"
+#include "main/vecmath.h"
+#define SYNTH_INTERNAL_USE_PROJECT_TYPES
+#include "src/main/audio/synth_internal.h"
+#include "game/objects/object.h"
+#include "main/audio/music_trigger_ids.h"
+#include "main/gamebit_ids.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
+#include "dolphin/ai.h"
+#include "dolphin/ar.h"
+#include "dolphin/dvd.h"
+#include "dolphin/gx/GXLegacy.h"
+#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/os/OSCache.h"
+#include "dolphin/os/OSReport.h"
+#include "dolphin/os/OSRtc.h"
+
+extern f32 lbl_803DE594;
+
+u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
+
+u64 gSfxObjectChannelAge;
+u32 gSfxObjectChannelMatchCount;
+u8 gSfxGlobalCtrlLevel;
+int gSfxTriggersCount;
+void* gSfxTriggersData;
+
+SfxObjectChannel gSfxObjectChannels[0xC40 / sizeof(SfxObjectChannel)];
+
+
+static inline SfxObjectChannel* Sfx_FindFreeObjectChannel(void)
+{
+    SfxObjectChannel* ch = (SfxObjectChannel*)(int)gSfxObjectChannels;
+    s32 i;
+    for (i = SFX_OBJECT_CHANNEL_COUNT - 1; i >= 0; i--)
+    {
+        if (ch->handle == (u32)-1)
+        {
+            return ch;
+        }
+        ch++;
+    }
+    return NULL;
+}
+
+
+u32 Sfx_PlayFromObjectLimited(u32 obj, u16 sfxId, int limit)
+{
+    SfxObjectChannel* ch = Sfx_FindObjectChannel(0, 0, sfxId, 3);
+    if (ch != NULL && (int)gSfxObjectChannelMatchCount > limit)
+    {
+        sndFXKeyOff(*(s32*)ch);
+        *(s32*)ch = -1;
+    }
+    if ((int)gSfxObjectChannelMatchCount < limit)
+    {
+        Sfx_PlayFromObjectEx(obj, NULL, 0, sfxId);
+    }
+    return gSfxObjectChannelMatchCount;
+}
+
+int Sfx_IsPlayingFromObjectChannel(int obj, int channel)
+{
+    SfxObjectChannel* objectChannel;
+
+    if (((u8)channel == 0) || ((u32)obj == 0))
+    {
+        objectChannel = NULL;
+    }
+    else
+    {
+        objectChannel = Sfx_FindObjectChannel(obj, channel, 0, 0);
+    }
+
+    if (objectChannel != NULL)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+s32 Sfx_IsPlayingFromObject(int obj, u16 sfxId)
+{
+    SfxObjectChannel* objectChannel;
+
+    if (sfxId != 0)
+    {
+        objectChannel = Sfx_FindObjectChannel(obj, 0, sfxId, 0);
+    }
+    else
+    {
+        objectChannel = NULL;
+    }
+
+    if (objectChannel != NULL)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void Sfx_StopAllObjectSounds(void)
+{
+    s32 i;
+    SfxObjectChannel* objectChannel;
+
+    objectChannel = gSfxObjectChannels;
+    i = SFX_OBJECT_CHANNEL_COUNT;
+    while (i-- != 0)
+    {
+        if (objectChannel->handle != (u32)-1)
+        {
+            sndFXKeyOff(objectChannel->handle);
+            objectChannel->handle = (u32)-1;
+        }
+        objectChannel++;
+    }
+}
+
+void audioFn_8000b694(u32 value)
+{
+    s32 i;
+    SfxObjectChannel* objectChannel;
+
+    objectChannel = gSfxObjectChannels;
+    gSfxGlobalCtrlLevel = (u8)(value * 5);
+    i = SFX_OBJECT_CHANNEL_COUNT - 1;
+    do
+    {
+        if ((objectChannel->handle != (u32)-1) && (objectChannel->globalCtrlDisabled == 0))
+        {
+            sndFXCtrl(objectChannel->handle, 0x5B, gSfxGlobalCtrlLevel);
+        }
+        objectChannel++;
+    } while (i-- != 0);
+}
+
+void Sfx_SetObjectSoundsPaused(s32 paused)
+{
+    u8 pausedByte;
+    s32 i;
+    SfxObjectChannel* objectChannel;
+
+    objectChannel = gSfxObjectChannels;
+    i = SFX_OBJECT_CHANNEL_COUNT - 1;
+    pausedByte = paused;
+
+    do
+    {
+        if (objectChannel->handle != (u32)-1)
+        {
+            if (paused != 0)
+            {
+                sndFXCtrl(objectChannel->handle, 7, 0);
+            }
+            else if (objectChannel->paused != 0)
+            {
+                sndFXCtrl(objectChannel->handle, 7, objectChannel->volume);
+            }
+            objectChannel->paused = pausedByte;
+        }
+        objectChannel++;
+    } while (i-- != 0);
+}
+
+void Sfx_StopObjectChannel(int obj, int channel)
+{
+    SfxObjectChannel* objectChannel;
+
+    if (((u8)channel == 0) || ((u32)obj == 0))
+    {
+        objectChannel = NULL;
+    }
+    else
+    {
+        objectChannel = Sfx_FindObjectChannel(obj, channel, 0, 0);
+    }
+
+    if (objectChannel != NULL)
+    {
+        sndFXKeyOff(objectChannel->handle);
+        objectChannel->handle = (u32)-1;
+    }
+}
+
+void Sfx_StopFromObject(int obj, u16 sfxId)
+{
+    SfxObjectChannel* objectChannel;
+
+    if (sfxId != 0)
+    {
+        objectChannel = Sfx_FindObjectChannel(obj, 0, sfxId, 0);
+    }
+    else
+    {
+        objectChannel = NULL;
+    }
+
+    if (objectChannel != NULL)
+    {
+        sndFXKeyOff(objectChannel->handle);
+        objectChannel->handle = (u32)-1;
+    }
+}
+
+
+void Sfx_SetObjectChannelVolume(u32 obj, u32 channel, u8 volume, f32 volumeScale)
+{
+    u8 volumeByte;
+    SfxObjectChannel* objectChannel;
+
+    volumeByte = volume;
+    if (((u8)channel == 0) || (obj == 0))
+    {
+        objectChannel = NULL;
+    }
+    else
+    {
+        objectChannel = Sfx_FindObjectChannel(obj, channel, 0, 2);
+    }
+
+    if (objectChannel != NULL)
+    {
+        if (volumeByte != 0xFE)
+        {
+            u32 ctrlVolume;
+
+            if (volumeByte == 0xFF)
+            {
+                volumeByte = 100;
+            }
+            objectChannel->volume = volumeByte;
+            if (objectChannel->hasPosition != 0)
+            {
+                Sfx_UpdateObjectChannel3D(objectChannel);
+            }
+            else
+            {
+                if (objectChannel->paused != 0)
+                {
+                    ctrlVolume = 0;
+                }
+                else
+                {
+                    ctrlVolume = volumeByte;
+                }
+                sndFXCtrl(objectChannel->handle, 7, (u8)ctrlVolume);
+            }
+        }
+
+        if (volumeScale < lbl_803DE570)
+        {
+            volumeScale = lbl_803DE570;
+        }
+        if (volumeScale > lbl_803DE574)
+        {
+            volumeScale = lbl_803DE574;
+        }
+        sndFXCtrl14(objectChannel->handle, 0x80, lbl_803DE578 * volumeScale);
+    }
+}
+
+void Sfx_SetObjectSfxVolume(int obj, u16 sfxId, u8 volume, f32 volumeScale)
+{
+    u8 volumeByte;
+    SfxObjectChannel* objectChannel;
+
+    volumeByte = volume;
+    if (sfxId != 0)
+    {
+        objectChannel = Sfx_FindObjectChannel(obj, 0, sfxId, 2);
+    }
+    else
+    {
+        objectChannel = NULL;
+    }
+
+    if (objectChannel != NULL)
+    {
+        if (volumeByte != 0xFE)
+        {
+            u32 ctrlVolume;
+
+            if (volumeByte == 0xFF)
+            {
+                volumeByte = 100;
+            }
+            objectChannel->volume = volumeByte;
+            if (objectChannel->hasPosition != 0)
+            {
+                Sfx_UpdateObjectChannel3D(objectChannel);
+            }
+            else
+            {
+                if (objectChannel->paused != 0)
+                {
+                    ctrlVolume = 0;
+                }
+                else
+                {
+                    ctrlVolume = volumeByte;
+                }
+                sndFXCtrl(objectChannel->handle, 7, (u8)ctrlVolume);
+            }
+        }
+
+        if (volumeScale < lbl_803DE570)
+        {
+            volumeScale = lbl_803DE570;
+        }
+        if (volumeScale > lbl_803DE574)
+        {
+            volumeScale = lbl_803DE574;
+        }
+        sndFXCtrl14(objectChannel->handle, 0x80, lbl_803DE578 * volumeScale);
+    }
+}
+
+void Sfx_PlayFromObjectChannel(u32 obj, u32 channel, u16 sfxId)
+{
+    Sfx_PlayFromObjectEx(obj, NULL, channel, sfxId);
+}
+
+void Sfx_PlayAtPositionFromObject(int obj, f32 x, f32 y, f32 z, u16 sfxId)
+{
+    f32 pos[3];
+
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = z;
+    Sfx_PlayFromObjectEx(obj, pos, 0, sfxId);
+}
+
+void Sfx_PlayFromObject(u32 obj, u16 sfxId)
+{
+    Sfx_PlayFromObjectEx(obj, NULL, 0, sfxId);
+}
+
+
+void Sfx_UpdateObjectSounds(void)
+{
+    SfxObjectChannel* objectChannel;
+    SfxObjectChannel* ch;
+    s32 i;
+    u32 globalCtrl;
+
+    objectChannel = gSfxObjectChannels;
+    i = SFX_OBJECT_CHANNEL_COUNT;
+    while (i-- != 0)
+    {
+        if (objectChannel->handle != (u32)-1)
+        {
+            ch = (SfxObjectChannel*)sndFXCheck(objectChannel->handle);
+            if ((u32)ch == (u32)-1)
+            {
+                objectChannel->handle = (u32)-1;
+            }
+        }
+        objectChannel++;
+    }
+
+    if (mainGetBit(GAMEBIT_SHRINE_MUSIC_LOCK) != 0)
+    {
+        globalCtrl = 0xE;
+    }
+    else if (mainGetBit(GAMEBIT_ECSH_InShrine) != 0)
+    {
+        globalCtrl = 0xC;
+    }
+    else if (mainGetBit(GAMEBIT_WarpRelated0EFB) != 0)
+    {
+        globalCtrl = 0xD;
+    }
+    else if (mainGetBit(GAMEBIT_SETPIECE_ACTIVE) != 0)
+    {
+        globalCtrl = 0xC;
+    }
+    else if (mainGetBit(GAMEBIT_WMRelated0A7F) != 0)
+    {
+        globalCtrl = 0xC;
+    }
+    else if (mainGetBit(GAMEBIT_MAZEWELL_ACTIVE) != 0)
+    {
+        globalCtrl = 0xC;
+    }
+    else if (mainGetBit(GAMEBIT_PlayerInShop) != 0)
+    {
+        globalCtrl = 0xC;
+    }
+    else if (mainGetBit(0xDCF) != 0)
+    {
+        globalCtrl = 0xB;
+    }
+    else if (Music_GetActivePriority() <= 0x28)
+    {
+        globalCtrl = 0xC;
+    }
+    else
+    {
+        globalCtrl = 0;
+    }
+
+    if ((u8)globalCtrl != (s32)(gSfxGlobalCtrlLevel / 5))
+    {
+        objectChannel = gSfxObjectChannels;
+        gSfxGlobalCtrlLevel = (u8)((u8)globalCtrl * 5);
+        i = SFX_OBJECT_CHANNEL_COUNT;
+        while (i-- != 0)
+        {
+            if ((objectChannel->handle != (u32)-1) && (objectChannel->globalCtrlDisabled == 0))
+            {
+                sndFXCtrl(objectChannel->handle, 0x5B, gSfxGlobalCtrlLevel);
+            }
+            objectChannel++;
+        }
+    }
+
+    ch = gSfxObjectChannels;
+    i = SFX_OBJECT_CHANNEL_COUNT;
+    while (i-- != 0)
+    {
+        if ((ch->handle != (u32)-1) && (ch->hasPosition != 0))
+        {
+            if (ch->tracksObjectPosition != 0)
+            {
+                if ((((GameObject*)ch->object)->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)
+                {
+                    ch->tracksObjectPosition = 0;
+                }
+                else
+                {
+                    ch->x = ((GameObject*)ch->object)->anim.worldPosX;
+                    ch->y = ((GameObject*)ch->object)->anim.worldPosY;
+                    ch->z = ((GameObject*)ch->object)->anim.worldPosZ;
+                }
+            }
+
+            if ((ch->tracksObjectPosition != 0) || (ch->globalCtrlDisabled != 0))
+            {
+                Sfx_UpdateObjectChannel3D(ch);
+            }
+        }
+        ch++;
+    }
+}
+
+static inline void Sfx_SetGlobalCtrlLevel(u8 level)
+{
+    s32 i;
+    SfxObjectChannel* objectChannel;
+
+    objectChannel = gSfxObjectChannels;
+    gSfxGlobalCtrlLevel = level;
+    i = SFX_OBJECT_CHANNEL_COUNT;
+    while (i-- != 0)
+    {
+        if ((objectChannel->handle != (u32)-1) && (objectChannel->globalCtrlDisabled == 0))
+        {
+            sndFXCtrl(objectChannel->handle, 0x5B, gSfxGlobalCtrlLevel);
+        }
+        objectChannel++;
+    }
+}
+
+void Sfx_InitObjectChannels(void)
+{
+    s32 n;
+
+    n = SFX_OBJECT_CHANNEL_COUNT;
+    while (n-- != 0)
+    {
+        gSfxObjectChannels[n].handle = (u32)-1;
+    }
+
+    gSfxObjectChannelAge = 0;
+    Sfx_SetGlobalCtrlLevel(0);
+}
+
+void Sfx_PlayFromObjectEx(u32 obj, f32* pos, u32 channel, u16 sfxId)
+{
+    u16 outSfxId;
+    u8 vol;
+    f32 pitch;
+    f32 nearDist;
+    f32 farDist;
+    int channelMask;
+    int stealExisting;
+    int globalCtrlDisabled;
+    f32 delta[3];
+    SfxObjectChannel* found;
+    SfxObjectChannel* ch;
+    int tracksObj;
+
+    tracksObj = 0;
+    if (!Sfx_ResolveObjectSfxId((int*)&obj, &sfxId))
+    {
+        return;
+    }
+    if (!Sfx_ReadTriggerParams((SfxTriggerFull*)Sfx_FindTrigger(sfxId), &outSfxId, &vol, &pitch, &nearDist, &farDist,
+                               &channelMask, &stealExisting, &globalCtrlDisabled))
+    {
+        return;
+    }
+    if (obj != 0 && pos == NULL)
+    {
+        pos = &((GameObject*)obj)->anim.worldPosX;
+        tracksObj = 1;
+    }
+    if (pos != NULL)
+    {
+        f32 maxDist = farDist;
+        if (!(Sfx_GetListenerRelativeDistance(pos, delta) <= maxDist))
+        {
+            return;
+        }
+    }
+    if ((u8)channel != 0)
+    {
+        channelMask = (u8)channel;
+    }
+    if (obj != 0 && channelMask != 0)
+    {
+        if ((u8)channelMask == 0 || obj == 0)
+        {
+            found = NULL;
+        }
+        else
+        {
+            found = Sfx_FindObjectChannel(obj, (u8)channelMask, 0, 0);
+        }
+        if (found != NULL)
+        {
+            if (stealExisting == 0)
+            {
+                return;
+            }
+            sndFXKeyOff(found->handle);
+            found->handle = (u32)-1;
+        }
+    }
+    else
+    {
+        if (sfxId != 0)
+        {
+            found = Sfx_FindObjectChannel(obj, 0, sfxId, 1);
+        }
+        else
+        {
+            found = NULL;
+        }
+        if (found != NULL)
+        {
+            if (stealExisting != 0 || (int)gSfxObjectChannelMatchCount == 3)
+            {
+                sndFXKeyOff(found->handle);
+                found->handle = (u32)-1;
+            }
+        }
+    }
+    ch = Sfx_AllocObjectChannel(outSfxId, vol, pitch, 0x40, globalCtrlDisabled);
+    if (ch == NULL)
+    {
+        return;
+    }
+    ch->sfxId = sfxId;
+    ch->channelMask = channelMask;
+    ch->object = obj;
+    if (pos != NULL)
+    {
+        ch->nearDistance = nearDist;
+        ch->farDistance = farDist;
+        ch->hasPosition = 1;
+        {
+            int t = 0;
+            if (tracksObj != 0 && channelMask != 0)
+            {
+                t = 1;
+            }
+            ch->tracksObjectPosition = t;
+        }
+        ch->x = pos[0];
+        ch->y = pos[1];
+        ch->z = pos[2];
+        Sfx_UpdateObjectChannel3D(ch);
+    }
+    else
+    {
+        ch->volume = 0x7f;
+    }
+}
+
+int Sfx_ResolveObjectSfxId(int* outChannel, u16* sfxId)
+{
+    switch (*sfxId)
+    {
+    case 0x170:
+    case 0xca:
+    case 0x109:
+        *sfxId = 0x409;
+    case 0x409:
+        *outChannel = 0;
+        break;
+    case 0x7e:
+    case 0x487:
+        *outChannel = 0;
+        break;
+    case 0x420:
+        Music_Trigger(MUSICTRIG_TTH_Fight, 0);
+        Music_Trigger(MUSICTRIG_TTH_Fight, 1);
+        return 0;
+    case 0x38c:
+        return !(gAudioActiveChannelMask & 4);
+    case 0x0:
+        return 0;
+    }
+    return 1;
+}
+
+int Sfx_ReadTriggerParams(SfxTriggerFull* trigger, u16* outSfxId, u8* outVol, f32* outF6, f32* outF7, f32* outF8,
+                          int* outI9, int* outI10, int* outI11)
+{
+    int idx;
+    int selector;
+
+    if (trigger == NULL || trigger->f_count == 0)
+    {
+        return 0;
+    }
+
+    selector = randomGetRange(1, trigger->selectRange);
+    if (trigger->id == 0xab)
+    {
+        if (trigger->f_curIdx == 0)
+        {
+            trigger->f_curIdx = 1;
+        }
+        else
+        {
+            trigger->f_curIdx = 0;
+        }
+        idx = trigger->f_curIdx;
+    }
+    else
+    {
+        idx = 0;
+        while (selector > trigger->weights[idx])
+        {
+            selector -= trigger->weights[idx];
+            idx++;
+        }
+        if (trigger->f_curIdx == idx)
+        {
+            idx++;
+            if (idx >= trigger->f_count)
+            {
+                idx = 0;
+            }
+        }
+    }
+    trigger->f_curIdx = idx;
+
+    *outSfxId = trigger->sfxIds[idx];
+    if (*outSfxId == 0)
+    {
+        return 0;
+    }
+
+    {
+        int hi;
+        int vr = trigger->volRand;
+        if ((u32)vr != 0)
+        {
+            hi = trigger->volBase + randomGetRange(0, vr);
+            *outVol = hi - randomGetRange(0, vr);
+        }
+        else
+        {
+            *outVol = trigger->volBase;
+        }
+    }
+    {
+        int pr = trigger->pitchRand;
+        if ((u32)pr != 0)
+        {
+            int hi = trigger->pitchBase + randomGetRange(0, pr);
+            *outF6 = (f32)(hi - randomGetRange(0, pr));
+        }
+        else
+        {
+            *outF6 = (f32)(u32)trigger->pitchBase;
+        }
+    }
+    *outF7 = (f32)(u32)trigger->nearDistanceRaw;
+    *outF8 = (f32)(u32)trigger->farDistanceRaw;
+    *outI9 = gSfxTriggerExtraTable[trigger->e_tableIdx];
+    *outI10 = trigger->e_bit0;
+    *outI11 = trigger->e_bit3;
+    return 1;
+}
+
+SfxTrigger* Sfx_FindTrigger(u16 id)
+{
+    SfxTrigger* low = (SfxTrigger*)gSfxTriggersData;
+    SfxTrigger* high = (SfxTrigger*)gSfxTriggersData + gSfxTriggersCount;
+    int key = id;
+    SfxTriggerCacheEntry* c = &gSfxTriggerLookupCache[key & 0xf];
+
+    if (c->key == key)
+    {
+        return (SfxTrigger*)gSfxTriggersData + c->index;
+    }
+    while (low < high)
+    {
+        SfxTrigger* mid = low + (high - low) / 2;
+        if (mid->id > key)
+        {
+            high = mid;
+        }
+        else if (mid->id < key)
+        {
+            low = mid + 1;
+        }
+        else
+        {
+            c->key = id;
+            c->index = mid - (SfxTrigger*)gSfxTriggersData;
+            return mid;
+        }
+    }
+    return NULL;
+}
+
+SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 pan,
+                                         int globalCtrlDisabled)
+{
+    SfxObjectChannel* ch;
+    s32 i;
+    u32 handle;
+
+    if ((int)audioFlagFn_8000a188(4) != 0)
+    {
+        return 0;
+    }
+
+    ch = Sfx_FindFreeObjectChannel();
+    if (ch == NULL)
+    {
+        return 0;
+    }
+
+    handle = sndFXStartEx(fxId, volume, pan, 0);
+    if (handle != (u32)-1)
+    {
+        if (gSfxGlobalCtrlLevel != 0 && globalCtrlDisabled == 0)
+        {
+            sndFXCtrl(handle, 0x5b, gSfxGlobalCtrlLevel);
+        }
+
+        ch->object = 0;
+        ch->channelMask = 0;
+        ch->paused = 0;
+        ch->hasPosition = 0;
+        ch->tracksObjectPosition = 0;
+        ch->handle = handle;
+        {
+            f32 fz = lbl_803DE570;
+            ch->x = fz;
+            ch->y = fz;
+            ch->z = fz;
+        }
+        ch->fxId = fxId;
+        ch->volume = 0x64;
+        ch->nearDistance = lbl_803DE590;
+        ch->farDistance = lbl_803DE594;
+        ch->globalCtrlDisabled = globalCtrlDisabled;
+
+        ch->age = gSfxObjectChannelAge++;
+        return ch;
+    }
+    ch->handle = (u32)-1;
+    return 0;
+}
+
+void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
+{
+    void* slot;
+    int level;
+    f32 dist;
+    f32 near;
+    f32 far;
+    f32 volf;
+    f32 delta[3];
+
+    slot = Camera_GetCurrentViewSlot();
+    if (slot == NULL || objectChannel == NULL)
+    {
+        return;
+    }
+    if (!objectChannel->hasPosition)
+    {
+        return;
+    }
+    volf = (f32)(u32)objectChannel->volume;
+    level = volf;
+    near = objectChannel->nearDistance;
+    far = objectChannel->farDistance;
+    dist = Sfx_GetListenerRelativeDistance(&objectChannel->x, delta);
+    if (dist > lbl_803DE598 * far)
+    {
+        sndFXKeyOff(objectChannel->handle);
+        objectChannel->handle = (u32)-1;
+        return;
+    }
+    Sfx_RotateVectorByAngles(0, 0, -*(s16*)((u8*)slot + 0x54), delta);
+    Sfx_RotateVectorByAngles(*(s16*)slot, 0, 0, delta);
+    Sfx_RotateVectorByAngles(0, -*(s16*)((u8*)slot + 0x52), 0, delta);
+    if (dist > lbl_803DE59C)
+    {
+        f32 scale;
+        int pan;
+        int fx;
+
+        if (dist < near)
+        {
+            level = (int)(f64)volf;
+        }
+        else if (dist > far)
+        {
+            level = 1;
+        }
+        else
+        {
+            level = (int)(volf * (lbl_803DE574 - (dist - near) / (far - near)));
+            if (level < 1)
+            {
+                level = 1;
+            }
+            else if ((f32)level > volf)
+            {
+                level = (int)(f64)volf;
+            }
+        }
+        scale = lbl_803DE5A0 / dist;
+        delta[0] = delta[0] * scale;
+        delta[1] = delta[1] * scale;
+        delta[2] = delta[2] * scale;
+        pan = (int)(gSfxPanScale * delta[0] + gSfxPanCenter);
+        if (pan > 0x7f)
+        {
+            pan = 0x7f;
+        }
+        else if (pan < 0)
+        {
+            pan = 0;
+        }
+        fx = (int)(*(f32*)&gSfxPanScale * delta[2] + *(f32*)&gSfxPanCenter);
+        if (fx > 0x7f)
+        {
+            fx = 0x7f;
+        }
+        else if (fx < 0)
+        {
+            fx = 0;
+        }
+        sndFXCtrl(objectChannel->handle, 0xa, (u8)pan);
+        sndFXCtrl(objectChannel->handle, 0x83, (u8)fx);
+        sndFXCtrl(objectChannel->handle, 7, (u8)(objectChannel->paused ? 0 : level));
+    }
+    else
+    {
+        int v;
+        if (objectChannel->paused)
+        {
+            v = 0;
+        }
+        else
+        {
+            v = level;
+        }
+        sndFXCtrl(objectChannel->handle, 7, (u8)v);
+    }
+}
+
+void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
+{
+    f32 ra;
+    f32 x = v[0];
+    f32 y = v[1];
+    f32 z = v[2];
+    f32 ca;
+    f32 rb;
+    f32 cb;
+    f32 rc;
+    f32 cc;
+    f32 sa;
+    f32 sb;
+    f32 sc;
+    f32 t0, t1, A, B, p;
+
+    ra = gAudioPi * angX / gAudioAngleToRadDivisor;
+    ca = mathSinf(ra);
+    rb = gAudioPi * angY / gAudioAngleToRadDivisor;
+    cb = mathSinf(rb);
+    rc = gAudioPi * angZ / gAudioAngleToRadDivisor;
+    cc = mathSinf(rc);
+    sa = mathCosf(ra);
+    sb = mathCosf(rb);
+    sc = mathCosf(rc);
+
+    t0 = x * ca;
+    t1 = z * ca;
+    A = x * sa;
+    p = z * sa;
+    A = A + t1;
+    p = p - t0;
+    t0 = y * cb;
+    t1 = p * cb;
+    B = y * sb;
+    p = p * sb;
+    B = B - t1;
+    p = p + t0;
+    t0 = A * cc;
+    t1 = B * cc;
+    A = A * sc;
+    B = B * sc;
+    A = A - t1;
+    B = B + t0;
+
+    v[0] = A;
+    v[1] = B;
+    v[2] = p;
+}
+
+f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
+{
+    f32 v[3];
+    f32 t;
+    double t2;
+    f32* listener;
+    GameObject* player = Obj_GetPlayerObject();
+    void* slot = Camera_GetCurrentViewSlot();
+    int seqNo = getCurSeqNo();
+
+    if (player != NULL && seqNo == 0)
+    {
+        listener = &player->anim.worldPosX;
+    }
+    else if (slot != NULL)
+    {
+        if (player != NULL)
+        {
+            PSVECSubtract((f32*)((u8*)slot + 0x44), &player->anim.worldPosX, v);
+            t = (PSVECMag(v) - 150.0f) / 250.0f;
+            if (1.0 < (t > 0.0 ? t : 0.0))
+            {
+                t2 = 1.0;
+            }
+            else
+            {
+                t2 = (t > 0.0 ? t : 0.0);
+            }
+            PSVECScale(v, v, t2);
+            PSVECAdd(&player->anim.worldPosX, v, v);
+            listener = v;
+        }
+        else
+        {
+            listener = (f32*)((u8*)slot + 0x44);
+        }
+    }
+    else
+    {
+        return lbl_803DE570;
+    }
+    PSVECSubtract(listener, soundPos, outDelta);
+    return PSVECMag(outDelta);
+}
+
+SfxObjectChannel* Sfx_FindObjectChannel(u32 obj, u32 channel, u16 sfxId, s32 mode)
+{
+    SfxObjectChannel* objectChannel = gSfxObjectChannels;
+    SfxObjectChannel* bestChannel = NULL;
+    u64 bestAge;
+    int channelMask;
+    s32 i;
+
+    bestAge = (mode == 2) ? 0 : -1;
+    gSfxObjectChannelMatchCount = 0;
+    channelMask = (u8)channel;
+
+    for (i = SFX_OBJECT_CHANNEL_COUNT; i != 0; i--)
+    {
+        if ((objectChannel->handle != (u32)-1) && ((obj == 0) || (objectChannel->object == obj)) &&
+            (((u8)channel == 0) || ((objectChannel->channelMask & channelMask) != 0)) &&
+            ((sfxId == 0) || (objectChannel->sfxId == sfxId)))
+        {
+            gSfxObjectChannelMatchCount++;
+
+            switch (mode)
+            {
+            case 0:
+                return objectChannel;
+            case 2:
+                if (objectChannel->age > bestAge)
+                {
+                    bestAge = objectChannel->age;
+                    bestChannel = objectChannel;
+                }
+                break;
+            case 1:
+            case 3:
+                if (objectChannel->age < bestAge)
+                {
+                    bestAge = objectChannel->age;
+                    bestChannel = objectChannel;
+                }
+                break;
+            }
+
+            if ((mode != 3) && ((int)gSfxObjectChannelMatchCount == 3))
+            {
+                return bestChannel;
+            }
+        }
+        objectChannel++;
+    }
+
+    return bestChannel;
+}
+
+
+SfxTriggerCacheEntry gSfxTriggerLookupCache[16] = {
+    {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0},
+    {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0}, {0xFFFF, 0},
+};

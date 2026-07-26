@@ -19,12 +19,26 @@ main/render.c:
 	.data       start:0x802C2D60 end:0x802C4F08
 
 main/audio.c:
-	.text       start:0x80008DF4 end:0x8000DD74
+	.text       start:0x80008DF4 end:0x8000B4D0
 	.rodata     start:0x802C1A68 end:0x802C1A88
-	.data       start:0x802C4F08 end:0x802C5E00
-	.bss        start:0x80335940 end:0x80337090
-	.sdata      start:0x803DB1E8 end:0x803DB260
-	.sbss       start:0x803DC7B8 end:0x803DC880
+	.data       start:0x802C4F08 end:0x802C5D78
+	.bss        start:0x80335940 end:0x80336000
+	.sdata      start:0x803DB1E8 end:0x803DB248
+	.sbss       start:0x803DC7B8 end:0x803DC830
+
+main/audio_sfx.c:
+	.text       start:0x8000B4D0 end:0x8000CE54
+	.data       start:0x802C5D78 end:0x802C5DB8
+	.bss        start:0x80336000 end:0x80336C40
+	.sdata      start:0x803DB248 end:0x803DB250
+	.sbss       start:0x803DC830 end:0x803DC848
+
+main/audio_stream.c:
+	.text       start:0x8000CE54 end:0x8000DD74
+	.data       start:0x802C5DB8 end:0x802C5E00
+	.bss        start:0x80336C40 end:0x80337090
+	.sdata      start:0x803DB250 end:0x803DB260
+	.sbss       start:0x803DC848 end:0x803DC880
 
 main/camera.c:
 	.text       start:0x8000DD74 end:0x8000FE8C
