@@ -605,7 +605,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x22F | DFP_floorbar | CONFIRMED | main/dll/dll_022F_dfpfloorbar.c | main/dll/DF/dll_022F_dfpfloorbar.c | — |
 | 0x230 | DFP_wallbar | RAW | main/dll/dll_0230_dfpwallbar.c | main/dll/DF/dll_0230_dfpwallbar.c | — |
 | 0x231 | DFP_ForceAw | RAW | main/dll/dll_0231_dfpforceaw.c | main/dll/DF/dll_0231_dfpforceaw.c | — |
-| 0x232 | DFP_RotateP | RAW | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | — |
+| 0x232 | DFP_RotateP | RAW | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | = (canonical) | — |
 | 0x233 | DFP_Statue1 | CONFIRMED | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | = (canonical) | — |
 | 0x234 | DFP_PerchSw | RAW | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | = (canonical) | — |
 | 0x235 | DFP_TargetBlock | CONFIRMED | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | = (canonical) | — |
@@ -769,7 +769,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | dlls/objects/284/284.c |
 | 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | main/dll/dll_0230_dfpwallbar.c |
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | main/dll/dll_0231_dfpforceaw.c |
-| 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | main/dll/dll_0232_dfprotatep.c |
+| 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | dlls/objects/562_DFP_RotateP/DFP_RotateP.c |
 | 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | dlls/objects/660/660.c |
 | 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
@@ -896,7 +896,7 @@ name was a deliberate choice by a previous carve:
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | main/dll/DF/dll_022F_dfpfloorbar.c | CONFIRMED |
 | 0x230 | main/dll/dll_0230_dfpwallbar.c | main/dll/DF/dll_0230_dfpwallbar.c | RAW |
 | 0x231 | main/dll/dll_0231_dfpforceaw.c | main/dll/DF/dll_0231_dfpforceaw.c | RAW |
-| 0x232 | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | RAW |
+| 0x232 | main/dll/dll_0232_dfprotatep.c | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | RAW |
 | 0x233 | main/dll/dll_0233_dfpstatue1.c | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | CONFIRMED |
 | 0x234 | main/dll/dll_0234_dfpperchsw.c | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | RAW |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | CONFIRMED |

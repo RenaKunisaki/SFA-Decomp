@@ -3398,7 +3398,7 @@ main/dll/teslagroup.c:
 	.sbss       start:0x803DDCF0 end:0x803DDCF8
 	.sdata2     start:0x803E6438 end:0x803E6450
 
-main/dll/DF/dll_0232_dfprotatep.c:
+dlls/objects/562_DFP_RotateP/DFP_RotateP.c:
 	.text       start:0x8020768C end:0x80208098
 	.sdata2     start:0x803E6450 end:0x803E647C
 
