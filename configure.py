@@ -1266,6 +1266,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0010_uicontroller.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0012_unk.c"),
             Object(NonMatching, "main/dll/Hcurves.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/dll/Hcurves_romcurve.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/dll_0015_curves.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/dll_0017_savegame.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0011_screens.c", cflags=cflags_dll_noopt),
