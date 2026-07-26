@@ -276,7 +276,7 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     }
     if (doSpawn)
     {
-        WCPushBlock_SpawnFromPath(obj, state);
+        WCPushBlock_SpawnFromPath((GameObject*)obj, state);
     }
 }
 

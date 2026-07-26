@@ -132,7 +132,7 @@ extern f32 lbl_803E5C98;
 extern f32 lbl_803E5CA8;
 extern f32 lbl_803E5CAC;
 
-void WCPushBlock_SpawnFromPath(s16* path, u8* unusedState)
+void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
 {
     WCPushBlockObjectSetup* setup;
     WCPushBlockObject* block;
@@ -150,9 +150,9 @@ void WCPushBlock_SpawnFromPath(s16* path, u8* unusedState)
     rotation.zeroY = lbl_803E5C70;
     rotation.zeroZ = lbl_803E5C70;
     rotation.scale = lbl_803E5C74;
-    rotation.yaw = path[0];
-    rotation.pitch = path[1];
-    rotation.roll = path[2];
+    rotation.yaw = path->anim.rotX;
+    rotation.pitch = path->anim.rotY;
+    rotation.roll = path->anim.rotZ;
     outVec[0] = lbl_803E5C70;
     outVec[1] = lbl_803E5C78;
     outVec[2] = lbl_803E5C7C;
@@ -164,7 +164,7 @@ void WCPushBlock_SpawnFromPath(s16* path, u8* unusedState)
     setup->linkB = 0xff;
     setup->placementMode = 2;
     setup->group = 1;
-    ObjPath_GetPointWorldPosition((GameObject*)path, WCPUSHBLOCK_SPAWN_PATH_POINT, &setup->x, &setup->y, &setup->z, 0);
+    ObjPath_GetPointWorldPosition(path, WCPUSHBLOCK_SPAWN_PATH_POINT, &setup->x, &setup->y, &setup->z, 0);
 
     block = (WCPushBlockObject*)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, NULL);
     if (block == NULL)
@@ -176,8 +176,8 @@ void WCPushBlock_SpawnFromPath(s16* path, u8* unusedState)
     rotation.zeroY = lbl_803E5C70;
     rotation.zeroZ = lbl_803E5C70;
     rotation.scale = lbl_803E5C74;
-    rotation.yaw = path[0];
-    rotation.pitch = path[1];
+    rotation.yaw = path->anim.rotX;
+    rotation.pitch = path->anim.rotY;
     rotation.roll = 0;
     outVec[0] = lbl_803E5C70;
     outVec[1] = lbl_803E5C70;
