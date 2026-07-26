@@ -406,7 +406,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x168 | HoloPoint | RAW | dlls/objects/360_HoloPoint/HoloPoint.c | = (canonical) | data-only DLL |
 | 0x169 | IMIceMounta | CONFIRMED | dlls/objects/361_IMIceMounta/IMIceMounta.c | = (canonical) | — |
 | 0x16A | CRrockfall (+IMIcicle) | COMPLETE | dlls/objects/362_CRrockfall/CRrockfall.c | = (canonical) | — |
-| 0x16B | MagicLight (+DIMMagicLig, IMMagicLigh) | CONFIRMED | main/dll/dll_016B_magiclight.c | = (canonical) | — |
+| 0x16B | — (+DIMMagicLig, IMMagicLigh) | NO-RETAIL-NAME | dlls/objects/363/363.c | = (canonical) | — |
 | 0x16C | — | NO-RETAIL-NAME | main/dll/dll_016C_dll16c.c | = (canonical) | — |
 | 0x16D | IMIcePillar | CONFIRMED | main/dll/dll_016D_imicepillar.c | main/dll/IM/dll_016D_imicepillar.c | — |
 | 0x16E | IMAnimSpacecraft | CONFIRMED | main/dll/dll_016E_imanimspacecraft.c | main/dll/IM/dll_016E_imanimspacecraft.c | — |

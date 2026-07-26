@@ -1,7 +1,7 @@
 /*
- * magiclight (DLL 0x16B) - proximity-triggered "magic light" object.
+ * DLL 0x16B - proximity-triggered "magic light" object behavior.
  *
- * magiclight: seqId 0x172 is a render-only variant (draws a glow each
+ * seqId 0x172 is a render-only variant (draws a glow each
  * visible frame). The other variants carry a MagicLightState: at init a
  * random lifetime is rolled and, for seqId 0x16B, the placement subtype
  * picks an enter/leave L-action pair and a trigger radius preset. Each
