@@ -1,8 +1,8 @@
 /*
- * DragonRock Shrine special door (DLL 0x177; "DFSH_Door2Speci", shared by
- * Door3S/Door4S). A door whose texture fades in and then pulses: state 0
- * waits for its gamebit, state 1 ramps the texture alpha up to 0x100, and
- * state 2 drives a cosine pulse of the texture id.
+ * DLL 0x177 is shared by DFSH_Door2S, DFSH_Door3S, and DFSH_Door4S.
+ * Its texture fades in and then pulses: state 0 waits for its gamebit,
+ * state 1 ramps the texture alpha up to 0x100, and state 2 drives a cosine
+ * pulse of the texture id.
  */
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
