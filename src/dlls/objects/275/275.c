@@ -34,10 +34,10 @@ extern const char sSeqObjNeedBitClearDuringSequenceFormat[];
 extern const char lbl_80321208[];
 extern const char sSeqObjNeedBitUsedBitFormat[];
 
-int SeqObj2_seqFn(int* obj, int* anim, ObjAnimUpdateState* animUpdate)
+int SeqObj2_seqFn(GameObject* obj, int* anim, ObjAnimUpdateState* animUpdate)
 {
-    SeqObjectPlacement* def = (SeqObjectPlacement*)((GameObject*)obj)->anim.placementData;
-    SeqObj2State* state = ((GameObject*)obj)->extra;
+    SeqObjectPlacement* def = (SeqObjectPlacement*)obj->anim.placementData;
+    SeqObj2State* state = obj->extra;
     int i;
     enum
     {
@@ -85,7 +85,7 @@ void SeqObj2_hitDetect(void)
 {
 }
 
-void SeqObj2_update(int* obj)
+void SeqObj2_update(GameObject* obj)
 {
     SeqObj2State* state;
     SeqObjectPlacement* def;
@@ -93,8 +93,8 @@ void SeqObj2_update(int* obj)
     u32 bitValue;
 
     strBase = (char*)&gSeqObj2ObjDescriptor;
-    state = ((GameObject*)obj)->extra;
-    def = (SeqObjectPlacement*)((GameObject*)obj)->anim.placementData;
+    state = obj->extra;
+    def = (SeqObjectPlacement*)obj->anim.placementData;
 
     if ((state->flags & SEQOBJECT_STATE_OPEN) != 0)
     {
@@ -149,12 +149,12 @@ void SeqObj2_update(int* obj)
     }
 }
 
-void SeqObj2_init(int* obj, SeqObjectPlacement* def)
+void SeqObj2_init(GameObject* obj, SeqObjectPlacement* def)
 {
-    SeqObj2State* state = ((GameObject*)obj)->extra;
+    SeqObj2State* state = obj->extra;
     OSReport(sSeqObjNeedBitUsedBitFormat, def->base.mapId, def->triggerGameBit, def->openGameBit);
-    ((GameObject*)obj)->anim.rotX = (s16)((u32)def->initialYaw << 8);
-    ((GameObject*)obj)->animEventCallback = SeqObj2_seqFn;
+    obj->anim.rotX = (s16)((u32)def->initialYaw << 8);
+    obj->animEventCallback = SeqObj2_seqFn;
     if (def->preemptSequenceId > -1)
     {
         s16 slot = def->openGameBit;
@@ -164,8 +164,8 @@ void SeqObj2_init(int* obj, SeqObjectPlacement* def)
         }
     }
     ObjGroup_AddObject((u32)obj, SEQOBJ2_OBJGROUP);
-    ((GameObject*)obj)->objectFlags =
-        (u16)(((GameObject*)obj)->objectFlags | (SEQOBJECT_OBJFLAG_HIDDEN | SEQOBJECT_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags =
+        (u16)(obj->objectFlags | (SEQOBJECT_OBJFLAG_HIDDEN | SEQOBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
 void SeqObj2_release(void)
