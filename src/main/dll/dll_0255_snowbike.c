@@ -398,9 +398,9 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
     }
 }
 
-s32 SnowBike_func14(int* obj)
+s32 SnowBike_func14(GameObject* obj)
 {
-    return ((SnowBikeState*)((GameObject*)obj)->extra)->routeRank;
+    return ((SnowBikeState*)obj->extra)->routeRank;
 }
 
 f32 SnowBike_func13(GameObject* obj, f32* out)
@@ -459,9 +459,9 @@ void SnowBike_setRiderMode(GameObject* obj, int type)
     }
 }
 
-s32 SnowBike_getRiderMode(int* obj)
+s32 SnowBike_getRiderMode(GameObject* obj)
 {
-    return ((SnowBikeState*)((GameObject*)obj)->extra)->riderMode;
+    return ((SnowBikeState*)obj->extra)->riderMode;
 }
 
 void SnowBike_mount(GameObject* obj, f32* x, f32* y, f32* z)
@@ -493,9 +493,9 @@ void SnowBike_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
     *z = ((SnowBikeMountState*)state)->modelMtxPosZ;
 }
 
-u8 SnowBike_func0B(int* obj)
+u8 SnowBike_func0B(GameObject* obj)
 {
-    return ((SnowBikeState*)((GameObject*)obj)->extra)->playerInRange;
+    return ((SnowBikeState*)obj->extra)->playerInRange;
 }
 
 u32 SnowBike_setScale(GameObject* obj)
@@ -551,13 +551,13 @@ void SnowBike_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visib
     if (visible == -1)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E5AEC);
-        ObjPath_GetPointWorldPosition((GameObject*)obj, 0, (f32*)((char*)path + 0x3e8),
+        ObjPath_GetPointWorldPosition(obj, 0, (f32*)((char*)path + 0x3e8),
                                       (f32*)((char*)path + 0x3ec), (f32*)((char*)path + 0x3f0), 0);
     }
     else
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E5AEC);
-        ObjPath_GetPointWorldPosition((GameObject*)obj, 0, (f32*)((char*)path + 0x3e8),
+        ObjPath_GetPointWorldPosition(obj, 0, (f32*)((char*)path + 0x3e8),
                                       (f32*)((char*)path + 0x3ec), (f32*)((char*)path + 0x3f0), 0);
     }
 }
