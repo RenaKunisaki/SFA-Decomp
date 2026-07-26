@@ -1,5 +1,5 @@
 /*
- * arwarwinggu (DLL 0x29D) - the Arwing's attached "gear" models in the
+ * ARWArwingGu (DLL 0x29D) - the Arwing's attached "gear" models in the
  * on-rails flight sections: the twin laser guns (def 0x610 / 0x615), the
  * bomb model (def 0x611) and the engine/escort model (def 0x606). One DLL
  * drives all of them, branching on the object's seqId. getExtraSize and

@@ -3828,7 +3828,7 @@ main/dll/ARW/dll_029C_arwarwingbo.c:
 	.data       start:0x8032B640 end:0x8032B678
 	.sdata2     start:0x803E7040 end:0x803E7058
 
-main/dll/ARW/dll_029D_arwarwinggu.c:
+dlls/objects/669_ARWArwingGu/ARWArwingGu.c:
 	.text       start:0x8022F1D8 end:0x8022F52C
 	.data       start:0x8032B678 end:0x8032B6B0
 	.sdata2     start:0x803E7068 end:0x803E7070

@@ -139,7 +139,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_017D_rollingbarrel | 100.0000 | 81.6367 | -18.3633 |
 | main/main/dll/fireflygroup | 100.0000 | 81.7300 | -18.2700 |
 | main/main/dll/CC/dll_0185_ccgasvent | 100.0000 | 81.8442 | -18.1558 |
-| main/main/dll/ARW/dll_029D_arwarwinggu | 100.0000 | 81.9671 | -18.0329 |
+| main/dlls/objects/669_ARWArwingGu/ARWArwingGu | 100.0000 | 81.9671 | -18.0329 |
 | main/main/dll/dll_0003_checkpoint | 99.3938 | 81.3705 | -18.0233 |
 | main/main/dll/SC/dll_01BB_sctotembond | 100.0000 | 82.1324 | -17.8676 |
 | main/main/mm | 99.5834 | 81.7241 | -17.8593 |

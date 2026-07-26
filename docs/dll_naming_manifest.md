@@ -712,7 +712,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x29A | ARWArwing | COMPLETE | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | — |
 | 0x29B | arwingandrossstuff (+rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | GUESSED | main/dll/dll_029B_arwingandrossstuff.c | = (canonical) | — |
 | 0x29C | ARWArwingBo | CONFIRMED | main/dll/dll_029C_arwarwingbo.c | main/dll/ARW/dll_029C_arwarwingbo.c | — |
-| 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | main/dll/dll_029D_arwarwinggu.c | main/dll/ARW/dll_029D_arwarwinggu.c | — |
+| 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | = (canonical) | — |
 | 0x29E | — | NO-RETAIL-NAME | dlls/objects/670/670.c | = (canonical) | — |
 | 0x29F | ARWBombColl (+ARWLaserCol, ARWContaine, ARWSporeCol, ARWDinoEggC, ARWMoonSeed) | CONFIRMED | dlls/objects/671_ARWBombColl/ARWBombColl.c | = (canonical) | — |
 | 0x2A0 | — (+Ring, WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | NO-RETAIL-NAME | dlls/objects/672/672.c | = (canonical) | — |
@@ -960,7 +960,7 @@ name was a deliberate choice by a previous carve:
 | 0x298 | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | CONFIRMED |
 | 0x29A | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | COMPLETE |
 | 0x29C | main/dll/dll_029C_arwarwingbo.c | main/dll/ARW/dll_029C_arwarwingbo.c | CONFIRMED |
-| 0x29D | main/dll/dll_029D_arwarwinggu.c | main/dll/ARW/dll_029D_arwarwinggu.c | CONFIRMED |
+| 0x29D | main/dll/dll_029D_arwarwinggu.c | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | CONFIRMED |
 | 0x29F | main/dll/dll_029F_arwbombcoll.c | dlls/objects/671_ARWBombColl/ARWBombColl.c | CONFIRMED |
 | 0x2A1 | main/dll/dll_02A1_arwlevelcon.c | dlls/objects/673_ARWLevelCon/ARWLevelCon.c | CONFIRMED |
 | 0x2A2 | main/dll/dll_02A2_arwspeedstr.c | dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c | CONFIRMED |
