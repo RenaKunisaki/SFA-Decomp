@@ -22,6 +22,7 @@
 #include "dlls/objects/222_BaddieInterestP.h"
 #include "dlls/objects/223_Hagabon.h"
 #include "dlls/objects/224_SwarmBaddie.h"
+#include "dlls/objects/225_WispBaddie.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -249,9 +250,8 @@ extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gW
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWallAnimatorObjDescriptor,
     gWarpPointObjDescriptor, gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFallSprayObjDescriptor,
     gWaterFlowWeObjDescriptor;
-extern ResourceDescriptor gWaveAnimatorObjDescriptor, gWindLiftObjDescriptor, gWispBaddieObjDescriptor,
-    gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor, gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor,
-    lbl_8030EE34;
+extern ResourceDescriptor gWaveAnimatorObjDescriptor, gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor,
+    gWorldObjObjDescriptor, gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor, lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
     lbl_8030FCA8, lbl_80310604;
 extern ResourceDescriptor lbl_80310638, lbl_80310670, lbl_80310808, lbl_803108A0, lbl_803109B8, lbl_80310A20,
@@ -1149,7 +1149,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gBaddieInterestPObjDescriptor,
     (ResourceDescriptor*)&gHagabonObjDescriptor,
     (ResourceDescriptor*)&gSwarmBaddieObjDescriptor,
-    &gWispBaddieObjDescriptor,
+    (ResourceDescriptor*)&gWispBaddieObjDescriptor,
     &gStaffObjDescriptor,
     &gFireballObjDescriptor,
     &gFlameThrowerSpeObjDescriptor,

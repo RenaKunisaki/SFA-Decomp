@@ -40,7 +40,7 @@
 #include "main/gamebit_ids.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/wispbaddieseq_ext.h"
-#include "main/dll/dll_00E1_wispbaddie.h"
+#include "dlls/objects/225_WispBaddie.h"
 
 typedef struct GroundBaddieModelChainDescriptor
 {
