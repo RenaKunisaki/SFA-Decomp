@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_025B_MSPLANTINGS_H_
 
 #include "global.h"
+#include "game/objects/object.h"
 
 typedef struct MoonSeedPlantingSpotPlacement
 {
@@ -28,18 +29,18 @@ typedef struct MoonSeedPlantingSpotState
 
 STATIC_ASSERT(sizeof(MoonSeedPlantingSpotState) == 0x18);
 
-int MoonSeedPlantingSpot_SeqFn(int obj);
+int MoonSeedPlantingSpot_SeqFn(GameObject* obj);
 int MoonSeedPlantingSpot_render2(void);
 int MoonSeedPlantingSpot_modelMtxFn(void);
 int MoonSeedPlantingSpot_func0B(void);
-int MoonSeedPlantingSpot_setScale(int* obj, int arg);
+int MoonSeedPlantingSpot_setScale(GameObject* obj, int arg);
 int MoonSeedPlantingSpot_getExtraSize(void);
 int MoonSeedPlantingSpot_getObjectTypeId(void);
 void MoonSeedPlantingSpot_free(int obj);
-void MoonSeedPlantingSpot_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void MoonSeedPlantingSpot_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void MoonSeedPlantingSpot_hitDetect(void);
-void MoonSeedPlantingSpot_update(int obj);
-void MoonSeedPlantingSpot_init(int* obj, MoonSeedPlantingSpotPlacement* init);
+void MoonSeedPlantingSpot_update(GameObject* obj);
+void MoonSeedPlantingSpot_init(GameObject* obj, MoonSeedPlantingSpotPlacement* init);
 void MoonSeedPlantingSpot_release(void);
 void MoonSeedPlantingSpot_initialise(void);
 
