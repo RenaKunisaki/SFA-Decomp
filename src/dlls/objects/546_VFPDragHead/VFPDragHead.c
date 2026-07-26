@@ -10,6 +10,7 @@
 #include "main/pi_dolphin_api.h"
 #include "main/resource.h"
 #include "sys/objects/lifecycle.h"
+#include "game/objects/object_setup.h"
 
 #define VFPDRAGHEAD_OBJFLAG_HIDDEN             0x4000
 #define VFPDRAGHEAD_OBJFLAG_HITDETECT_DISABLED 0x2000
@@ -37,7 +38,7 @@ typedef struct VfpDragHeadState
 
 typedef struct VfpDragHeadPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;
     s8 variant;
     s16 headIndex;

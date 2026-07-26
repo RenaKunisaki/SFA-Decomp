@@ -12,6 +12,7 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "game/objects/object_setup.h"
 
 #define SEQPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
 
@@ -41,7 +42,7 @@ typedef struct SeqPointState
 
 typedef struct SeqPointPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;
     u8 mode;
     s16 triggerRadius;

@@ -7,6 +7,7 @@
 #include "main/dll/VF/dll_021E_vfpblock1.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "game/objects/object_setup.h"
 
 #define VFPBLOCK1_OBJFLAG_HIDDEN             0x4000
 #define VFPBLOCK1_OBJFLAG_HITDETECT_DISABLED 0x2000
@@ -20,7 +21,7 @@ typedef struct VfpBlock1State
 
 typedef struct VfpBlock1Placement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;
     u8 pad19[5];
     s16 gameBitId;

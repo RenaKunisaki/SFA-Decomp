@@ -26,7 +26,7 @@ typedef struct VfpPlatformState
 
 typedef struct VfpPlatformPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;
     u8 axisMode;
     u8 pad1A[6];

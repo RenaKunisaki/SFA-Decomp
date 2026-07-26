@@ -7,6 +7,7 @@
 #include "main/objprint_render_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "game/objects/object_setup.h"
 
 static const f32 lbl_803E6150 = 100.0f;
 
@@ -21,7 +22,7 @@ typedef struct SpellStoneUseState
 
 typedef struct SpellStonePlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;         /* 0x18 */
     u8 pad19[5];
     s16 completeGameBit; /* 0x1e */

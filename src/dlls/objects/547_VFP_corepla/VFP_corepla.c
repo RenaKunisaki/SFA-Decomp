@@ -5,6 +5,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits.h"
 #include "main/object_render_legacy.h"
+#include "game/objects/object_setup.h"
 
 #define VFP_COREPLAT_OBJFLAG_HITDETECT_DISABLED 0x2000
 
@@ -20,7 +21,7 @@ typedef struct VfpCorePlatformState
 
 typedef struct VfpCorePlatformPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;
     u8 axisMode;
     u8 pad1A[6];

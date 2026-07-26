@@ -13,6 +13,7 @@
 #include "main/object_render_legacy.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
+#include "game/objects/object_setup.h"
 
 #define VFPDOORSWITCH_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
@@ -32,7 +33,7 @@ typedef struct VfpDoorSwitchState
 
 typedef struct VfpDoorSwitchPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotXByte;
     s8 rotZByte;
     u8 pad1A[2];
