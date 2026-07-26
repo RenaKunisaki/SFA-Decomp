@@ -79,6 +79,10 @@ extern const f32 gMapBlockWorldSize;
 #include "main/track_dolphin_shadow_api.h"
 #include "main/dll/dll_0017_savegame_api.h"
 #include "main/objprint_dolphin_api.h"
+#include "main/dll/savegame_env_api.h"
+#include "main/dll/tricky_api.h"
+#include "main/screen_transition.h"
+#include "dolphin/gx/GXCull.h"
 #include "string.h"
 
 int lbl_803DB620 = -1;
@@ -138,6 +142,448 @@ typedef struct MapLoadRec
 } MapLoadRec;
 
 int mapProcessRomList(int slot);
+
+extern s32 bEnableColorFilter;
+extern u8 bEnableViewFinderHud;
+extern u8 bEnableSpiritVision;
+extern u8 bEnableMonochromeFilter;
+extern u8 bEnableMotionBlur;
+u32 Rcp_GetColorFilterEnabled(void)
+{
+    return bEnableColorFilter;
+}
+
+void Rcp_SetColorFilterEnabled(u32 x)
+{
+    bEnableColorFilter = x;
+}
+
+void ObjHits_ConvertHitPositionToWorld(GameObject* object, f32* position)
+{
+    if (object->anim.parent != NULL)
+        return;
+    position[0] = position[0] + playerMapOffsetX;
+    position[2] = position[2] + playerMapOffsetZ;
+}
+
+extern u8 bEnableDistortionFilter;
+extern u8 bEnableBlurFilter;
+void Rcp_DisableDistortionFilter(void)
+{
+    bEnableDistortionFilter = 0x0;
+}
+
+extern f32 distortionFilterVector[];
+extern f32 distortionFilterAngle1;
+extern f32 distortionFilterAngle2;
+extern u8 distortionFilterColor[3];
+
+void turnOnDistortionFilter(f32* vec, f32 angle2, u32* color, f32 angle1)
+{
+    u8* colorBytes = (u8*)color;
+
+    distortionFilterVector[0] = vec[0];
+    distortionFilterVector[1] = vec[1];
+    distortionFilterVector[2] = vec[2];
+    distortionFilterAngle2 = angle2;
+    distortionFilterColor[0] = colorBytes[0];
+    distortionFilterColor[1] = colorBytes[1];
+    distortionFilterColor[2] = colorBytes[2];
+    distortionFilterAngle1 = angle1;
+    bEnableDistortionFilter = 1;
+}
+
+extern char lbl_803822C8[];
+extern int gHeatEffectFadeDirection;
+
+void Rcp_DisableHeatEffect(void)
+{
+    u8* p = saveGameGetEnvState();
+    gHeatEffectFadeDirection = -1;
+    p[0x40] = (u8)(p[0x40] & ~0x20);
+}
+
+void Rcp_EnableHeatEffect(void)
+{
+    u8* p = saveGameGetEnvState();
+    gHeatEffectFadeDirection = 1;
+    p[0x40] = (u8)(p[0x40] | 0x20);
+}
+void Rcp_DisableBlurFilter(void)
+{
+    bEnableBlurFilter = 0x0;
+}
+
+extern f32 lbl_803DCE50;
+extern f32 lbl_803DCE4C;
+extern f32 blurFilterArea;
+extern u8 bBlurFilterUseArea;
+extern u8 bBiggerBlurFilter;
+
+void turnOnBlurFilter(f32 x, f32 y, f32 z, u8 useArea, u8 bigger)
+{
+    bEnableBlurFilter = 1;
+    lbl_803DCE50 = x;
+    lbl_803DCE4C = y;
+    blurFilterArea = z;
+    bBlurFilterUseArea = useArea;
+    bBiggerBlurFilter = bigger;
+}
+
+u8 Rcp_GetViewFinderHudEnabled(void)
+{
+    return bEnableViewFinderHud;
+}
+void Rcp_SetViewFinderHudEnabled(u8 x)
+{
+    bEnableViewFinderHud = x;
+}
+
+void Rcp_SetSpiritVisionEnabled(u8 x)
+{
+    bEnableSpiritVision = x;
+}
+
+void Rcp_SetMonochromeFilterEnabled(u8 x)
+{
+    bEnableMonochromeFilter = x;
+}
+
+int Rcp_GetMotionBlurEnabled(void)
+{
+    return bEnableMotionBlur;
+}
+
+void setMotionBlur(u8 enabled, f32 amount)
+{
+    bEnableMotionBlur = enabled;
+    lbl_803DB62C = amount;
+}
+
+void gxSetScissorRect(int p1, int p2, int x, int y, int x2, int y2)
+{
+    if (x < 0)
+        x = 0;
+    if (y < 0)
+        y = 0;
+    if (x2 < 0)
+        x2 = 0;
+    if (y2 < 0)
+        y2 = 0;
+    GXSetScissor(x, y, x2 - x, y2 - y);
+}
+
+/* Pending warp destination saved by warpToMap from the map-warp tab entry and
+ * applied to the player position on map reload (vec3 + a map-layer s16 and a
+ * facing-angle s16, each truncated to s8 into the pos map/angle bytes).
+ * 16-byte record of WARPTAB.bin (fileId 0x1c). */
+typedef struct WarpDestination
+{
+    f32 x;
+    f32 y;
+    f32 z;
+    s16 layer;
+    s16 angle;
+} WarpDestination;
+
+extern u8 gRcpPendingWarpDest[];
+extern u8* lbl_803DCE78;
+extern s16 lbl_803DCEBA;
+extern u8 gRcpWarpTransitionType;
+extern u8 lbl_803DCEBD;
+extern s16 lbl_803DCEB8;
+extern u8 lbl_803DCDE0;
+extern u8 lbl_803DCA40;
+
+void loadNextMap(void)
+{
+    u8* pos;
+    pos = (*gMapEventInterface)->getCurCharPos();
+    if (lbl_803DCEB8 != -1)
+    {
+        lbl_803DCDE0 -= 1;
+        if ((s8)lbl_803DCDE0 < 0)
+        {
+            if (lbl_803DCEB8 > -1 && (s8)gRcpWarpTransitionType != 0)
+            {
+                (*gScreenTransitionInterface)->step(3, 1);
+            }
+            lbl_803DCEB8 = -1;
+            Pause_SetDisabled(0);
+        }
+    }
+    if ((s8)lbl_803DCEBD != 0)
+    {
+        if ((*gScreenTransitionInterface)->isFinished() != 0 || (s8)gRcpWarpTransitionType == 0)
+        {
+            (*gCloudActionInterface)->freeCloudObjects();
+            (*gCloudActionInterface)->onMapSetup();
+            (*gSky2Interface)->onMapSetup();
+            (*gSkyInterface)->loadLights();
+            (*gNewCloudsInterface)->onMapSetup();
+            gameUiResetMenuState();
+            lbl_803DCEBD = 0;
+            *(f32*)(pos + 0) = ((WarpDestination*)gRcpPendingWarpDest)->x;
+            *(f32*)(pos + 4) = ((WarpDestination*)gRcpPendingWarpDest)->y;
+            *(f32*)(pos + 8) = ((WarpDestination*)gRcpPendingWarpDest)->z;
+            *(s8*)(pos + 0xd) = (s8)((WarpDestination*)gRcpPendingWarpDest)->layer;
+            *(s8*)(pos + 0xc) = (s8)((WarpDestination*)gRcpPendingWarpDest)->angle;
+            mapReload();
+            lbl_803DCEB8 = lbl_803DCEBA;
+            lbl_803DCEBA = -1;
+            lbl_803DCDE0 = 8;
+            lbl_803DCA40 = 1;
+            blankScreen(1);
+        }
+    }
+}
+
+void warpToMap(int idx, s8 transType)
+{
+    u8* p = lbl_803DCE78;
+    getTabEntry(p, MLDF_FILEID_WARPTAB_BIN, idx << 4, 16);
+    ((WarpDestination*)gRcpPendingWarpDest)->x = ((WarpDestination*)p)->x;
+    ((WarpDestination*)gRcpPendingWarpDest)->y = ((WarpDestination*)p)->y;
+    ((WarpDestination*)gRcpPendingWarpDest)->z = ((WarpDestination*)p)->z;
+    ((WarpDestination*)gRcpPendingWarpDest)->layer = ((WarpDestination*)p)->layer;
+    ((WarpDestination*)gRcpPendingWarpDest)->angle = ((WarpDestination*)p)->angle;
+    lbl_803DCEBA = (s16)idx;
+    lbl_803DCEBD = 1;
+    *(s8*)&gRcpWarpTransitionType = transType;
+    if (transType != 0)
+    {
+        (*gScreenTransitionInterface)->start(2, 1);
+    }
+    Pause_SetDisabled(1);
+}
+
+static inline int objIsVisibleInAct(u8* def, int act)
+{
+    if (act == -1)
+    {
+        return 0;
+    }
+    if (act != 0)
+    {
+        if (act < 9)
+        {
+            if ((def[3] >> (act - 1)) & 1)
+                return 0;
+        }
+        else
+        {
+            if ((def[5] >> (0x10 - act)) & 1)
+                return 0;
+        }
+    }
+    return 1;
+}
+
+void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObject* parent)
+{
+    int* seg = (int*)(lbl_803822C8 + mapId * 0x8c);
+    int i;
+    char* p;
+    char* end;
+    char* romBase;
+    char* objStart;
+    int objIndex;
+    char* obj;
+    int v;
+    int flag;
+    int byteIdx;
+    int bit;
+    s8* vis;
+
+    if (seg[index] == -1)
+        return;
+    objIndex = 0;
+    romBase = (char*)page->objects;
+    p = romBase;
+    objStart = romBase + seg[index];
+    while (p < objStart)
+    {
+        objIndex++;
+        p += *(u8*)(p + 2) * 4;
+    }
+    for (i = index + 1; i <= 0x20; i++)
+    {
+        if (seg[i] != -1)
+            break;
+    }
+    obj = objStart;
+    end = romBase + seg[i];
+
+    while (obj < end)
+    {
+        /* i reused below as the object-visible flag */
+        if (objIndex < 0)
+        {
+            i = 0;
+        }
+        else
+        {
+            MapRomListPage* bm = gLoadedRomListPages[mapId];
+            byteIdx = objIndex >> 3;
+            if (byteIdx >= 0xc4)
+            {
+                i = 0;
+            }
+            else
+            {
+                i = 1;
+                bit = 1 << (objIndex & 7);
+                vis = (s8*)bm->loadedObjectBits;
+                if ((bit & vis[byteIdx]) != 0)
+                    i = 1;
+                else
+                    i = 0;
+            }
+        }
+        if (i == 0)
+        {
+            v = (*gMapEventInterface)->getMapAct(mapId);
+            flag = objIsVisibleInAct((u8*)obj, v);
+            if (flag != 0)
+            {
+                if (objIndex >= 0)
+                {
+                    MapRomListPage* bm2 = gLoadedRomListPages[mapId];
+                    byteIdx = objIndex >> 3;
+                    bit = 1 << (objIndex & 7);
+                    vis = (s8*)bm2->loadedObjectBits;
+                    vis[byteIdx] &= ~bit;
+                    vis = (s8*)bm2->loadedObjectBits;
+                    vis[byteIdx] |= bit;
+                }
+                Obj_SetupObject((ObjPlacement*)obj, 1, mapId, objIndex, parent);
+            }
+        }
+        objIndex++;
+        obj += *(u8*)(obj + 2) * 4;
+    }
+}
+
+int objShouldUnload(GameObject* obj)
+{
+    u8* def;
+    u8* p;
+    u8* src;
+    s8** tp;
+    int m;
+    int keep;
+    int bx;
+    int bz;
+    int k;
+    int flags;
+    int idx2;
+    s8 found;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 dist;
+
+    def = *(u8**)&((GameObject*)obj)->anim.placementData;
+    if (def == NULL)
+    {
+        return 0;
+    }
+    if (def[4] & 2)
+    {
+        return 0;
+    }
+    m = (*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot);
+    keep = objIsVisibleInAct(def, m);
+    if (keep == 0)
+    {
+        return 1;
+    }
+    flags = def[4];
+    if (flags & 1)
+    {
+        return 0;
+    }
+    if (flags & 0x10)
+    {
+        return !(u8)(*gMapEventInterface)->getObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, def[6]);
+    }
+    if (((GameObject*)obj)->pendingParentObj != NULL && ((GameObject*)obj)->seqIndex < 0)
+    {
+        return 0;
+    }
+    if (((GameObject*)obj)->ownerObj != NULL)
+    {
+        return 0;
+    }
+    if (((GameObject*)obj)->anim.parent == NULL)
+    {
+        bx = (int)fastFloorf((((GameObject*)obj)->anim.localPosX - playerMapOffsetX) / gMapBlockWorldSize);
+        bz = (int)fastFloorf((((GameObject*)obj)->anim.localPosZ - playerMapOffsetZ) / gMapBlockWorldSize);
+        if (bx < 0 || bz < 0 || bx >= 0x10 || bz >= 0x10)
+        {
+            return 1;
+        }
+        found = 0;
+        bx = bx + (bz << 4);
+        tp = gMapBlockLayerTables;
+        for (k = 0; k < MAP_BLOCK_LAYER_COUNT; k++)
+        {
+            if ((*tp)[bx] >= 0)
+            {
+                found = 1;
+            }
+            tp++;
+        }
+        if (found == 0)
+        {
+            return 1;
+        }
+    }
+    flags = def[4];
+    if (flags & 0x20)
+    {
+        return 0;
+    }
+    if ((flags & 4) && (p = (u8*)Obj_GetPlayerObject()) != NULL && ((GameObject*)obj)->anim.parent == NULL)
+    {
+        x = ((GameObject*)p)->anim.worldPosX;
+        y = ((GameObject*)p)->anim.worldPosY;
+        z = ((GameObject*)p)->anim.worldPosZ;
+    }
+    else
+    {
+        src = *(u8**)&((GameObject*)obj)->anim.parent;
+        if (src != NULL)
+        {
+            idx2 = (s8)src[0x35] + 1;
+        }
+        else
+        {
+            idx2 = 0;
+        }
+        x = lbl_80386648[idx2].x;
+        y = lbl_80386648[idx2].y;
+        z = lbl_80386648[idx2].z;
+    }
+    dist = ((GameObject*)obj)->anim.loadDistance;
+    if (((GameObject*)obj)->anim.parent != NULL)
+    {
+        x -= ((GameObject*)obj)->anim.localPosX;
+        y -= ((GameObject*)obj)->anim.localPosY;
+        z -= ((GameObject*)obj)->anim.localPosZ;
+    }
+    else
+    {
+        x -= ((GameObject*)obj)->anim.worldPosX;
+        y -= ((GameObject*)obj)->anim.worldPosY;
+        z -= ((GameObject*)obj)->anim.worldPosZ;
+    }
+    if (x * x + y * y + z * z < (40.0f + dist) * (40.0f + dist))
+    {
+        return 0;
+    }
+    return 1;
+}
 
 static inline int objVisibleForAct(ObjPlacement* placement, int t)
 {
@@ -2982,7 +3428,7 @@ char lbl_8037E0C0[0x2149];
 u8 lbl_80380209[0x1DFF];
 u8 lbl_80382008[0x30];
 u8 gGlowLightList[0x190];
-u8 distortionFilterVector[0x70];
+f32 distortionFilterVector[0x1c];
 int gShaderMapRomBuffers[0x5];
 BlockEntry gShaderRomListSlots[8];
 u8 lbl_8038228C[0x14];
