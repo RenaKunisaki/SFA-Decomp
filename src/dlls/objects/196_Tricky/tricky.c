@@ -404,6 +404,7 @@ void Tricky_updateBlendChannelWeight(int obj, u8* state)
 {
     ObjModel* model;
     f32 target;
+    f32 max;
     Obj_GetActiveModel((GameObject*)obj);
     if ((u32)((state[TUMBLEWEED_BLEND_FLAGS_OFFSET] >> 7) & 1) != 0)
     {
@@ -425,10 +426,10 @@ void Tricky_updateBlendChannelWeight(int obj, u8* state)
             *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) =
                 *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) * timeDelta +
                 *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET);
-            if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) > lbl_803E23E8)
+            if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) > (max = lbl_803E23E8))
             {
                 *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = lbl_803E23DC;
-                *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = lbl_803E23E8;
+                *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = max;
             }
             else if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) > target)
             {
@@ -4219,30 +4220,30 @@ void fn_8013E0D0(GameObject* gobj, TrickyState* t)
 
 void* trickyFindCirclingTarget(GameObject* obj, void* state)
 {
-    void* target;
+    GameObject* target;
     void** list;
     int count;
     int i;
     f32 d1, d2, d3;
 
-    target = ((TrickyState*)state)->followObj;
-    if (((GameObject*)target)->anim.seqId == ANIMOBJD2_CIRCLE_TARGET_SEQID)
+    target = (GameObject*)((TrickyState*)state)->followObj;
+    if (target->anim.seqId == ANIMOBJD2_CIRCLE_TARGET_SEQID)
     {
         return target;
     }
 
-    target = (void*)fn_80296118(((TrickyState*)state)->playerObj);
+    target = (GameObject*)fn_80296118(((TrickyState*)state)->playerObj);
     if (target != NULL)
     {
         list = (void**)ObjGroup_GetObjects(3, &count);
         for (i = 0; i < count; i++)
         {
-            if (*list == target)
+            if ((GameObject*)*list == target)
             {
-                d1 = Vec_xzDistance(&obj->anim.worldPosX, &((GameObject*)target)->anim.worldPosX);
+                d1 = Vec_xzDistance(&obj->anim.worldPosX, &target->anim.worldPosX);
                 d2 = Vec_xzDistance(&obj->anim.worldPosX,
                                     &((TrickyState*)state)->playerObj->anim.worldPosX);
-                d3 = Vec_xzDistance(&((GameObject*)target)->anim.worldPosX,
+                d3 = Vec_xzDistance(&target->anim.worldPosX,
                                     &((TrickyState*)state)->playerObj->anim.worldPosX);
                 if ((d1 + d2) < lbl_803E23F8 * d3)
                 {
@@ -5657,13 +5658,14 @@ void tricky_updateBallRoll(int obj, int ball)
     int toNode;
     u8 nodeCount;
     int node;
-    int nodeSet;
+    ObjfsaRomCurveDef* nodeSet;
+    s32* link;
     u32 mask;
     int bit;
     int i;
     int curve;
     int fromNode;
-    int nodeIds[4];
+    s32 nodeIds[4];
     void* curveArg;
     int nextNode;
     int candidateNode;
@@ -5681,12 +5683,13 @@ void tricky_updateBallRoll(int obj, int ball)
         {
             if (ts->route.atSegmentEnd != 0)
             {
-                nodeSet = (int)ts->route.nodeA4;
+                nodeSet = (ObjfsaRomCurveDef*)ts->route.nodeA4;
                 mask = 1;
+                link = nodeSet->linkIds;
                 for (bit = 0; bit < 4; bit++)
                 {
-                    node = *(int*)(nodeSet + 0x1c + bit * 4);
-                    if (node > -1 && ((*(s8*)(nodeSet + 0x1b) & mask) == 0))
+                    node = *link++;
+                    if (node > -1 && ((nodeSet->blockedLinkMask & mask) == 0))
                     {
                         nodeIds[nodeCount++] = node;
                     }
@@ -5697,14 +5700,16 @@ void tricky_updateBallRoll(int obj, int ball)
         else if (ts->route.atSegmentEnd == 0)
         {
             int node2;
-            int nodeSet2;
+            ObjfsaRomCurveDef* nodeSet2;
+            s32* link2;
             u32 mask2;
-            nodeSet2 = (int)ts->route.nodeA4;
+            nodeSet2 = (ObjfsaRomCurveDef*)ts->route.nodeA4;
             mask2 = 1;
+            link2 = nodeSet2->linkIds;
             for (bit = 0; bit < 4; bit++)
             {
-                node2 = *(int*)(nodeSet2 + 0x1c + bit * 4);
-                if (node2 > -1 && ((*(s8*)(nodeSet2 + 0x1b) & mask2) != 0))
+                node2 = *link2++;
+                if (node2 > -1 && ((nodeSet2->blockedLinkMask & mask2) != 0))
                 {
                     nodeIds[nodeCount++] = node2;
                 }
@@ -5717,15 +5722,16 @@ void tricky_updateBallRoll(int obj, int ball)
             targetNode = (int)(*gRomCurveInterface)->getById(nodeIds[0]);
             bestDistance = getXZDistance((float*)((int)ts->followObj + 0x18), (float*)(targetNode + 8));
 
-            for (i = 1; i < nodeCount; i++)
+            for (i = 1, link = &nodeIds[1]; i < nodeCount; i++)
             {
-                candidateNode = (int)(*gRomCurveInterface)->getById(nodeIds[i]);
+                candidateNode = (int)(*gRomCurveInterface)->getById(*link);
                 distance = getXZDistance((float*)((int)ts->followObj + 0x18), (float*)(candidateNode + 8));
                 if (distance < bestDistance)
                 {
                     targetNode = candidateNode;
                     bestDistance = distance;
                 }
+                link++;
             }
 
             curveFn_800da23c(&ts->route, (void*)targetNode);
