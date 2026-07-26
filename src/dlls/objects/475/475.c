@@ -1,25 +1,3 @@
-/*
- * DLL 0x1DB - DIM2 rising/lowering crusher-platform object.
- *
- * A platform that moves vertically between a bottom rest position and a top
- * position (placement->base.posY). It is driven by a 4-state machine on
- * state->motionState:
- *   TOP    (1): held at the top; drops when no player is standing on it
- *                     and the contact flag is set, or when the trigger game bit
- *                     (placement->triggerGameBit) becomes set.
- *   BOTTOM (2): held at the bottom; rises again when a player boards or
- *                     the trigger bit clears.
- *   RISING (3): integrates upward velocity until localPosY reaches the
- *               placement Y, then latches the top state.
- *   FALLING (4): integrates downward velocity to the bottom stop, then latches
- *                the bottom state.
- * Player contact is detected by scanning the object's ObjProximityList for the
- * player object. Motion constants live in the 0.0f..B24 pool;
- * 1.0f is the render LOD/scale passed to objRenderModelAndHitVolumes.
- *
- * dll_1DB_init reads the romlist placement rotation and boarded game bit, whose
- * value selects the initial up/down rest state, and disables hit detection.
- */
 #include "main/object_render.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -35,8 +13,6 @@ enum
     DIM2_CRUSHER_STATE_RISING = 3,
     DIM2_CRUSHER_STATE_FALLING = 4
 };
-
-
 
 int dll_1DB_getExtraSize(void)
 {

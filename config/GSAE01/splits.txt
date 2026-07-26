@@ -2634,7 +2634,7 @@ dlls/objects/474/474.c:
 	.data       start:0x80325808 end:0x80325840
 	.sdata2     start:0x803E4AD8 end:0x803E4B08
 
-main/dll/dll_01DB_dll1db.c:
+dlls/objects/475/475.c:
 	.text       start:0x801B8B70 end:0x801B8F7C
 	.data       start:0x80325840 end:0x80325878
 	.sdata2     start:0x803E4B08 end:0x803E4B30
