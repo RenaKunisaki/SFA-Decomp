@@ -892,8 +892,8 @@ void GameUI_release(void);
 void GameUI_airMeterShutdown(void);
 void gameUiResetMenuState(void);
 void hudDrawMagicBar(u8 alpha, int elemAlpha, u8 flags);
-int cMenuRingModelRenderFn(int obj, int block, int idx);
-int cMenuRingIconRenderFn(int obj, int block, int idx);
+int cMenuRingModelRenderFn(GameObject* obj, int block, int idx);
+int cMenuRingIconRenderFn(GameObject* obj, int block, int idx);
 void pauseMenuDrawStatus_801274A0(GameObject* arg1);
 void fn_80127F24(s32 alpha);
 void pauseMenuFn_8012b77c(void);
@@ -3989,14 +3989,14 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     }
     return count;
 }
-int cMenuRingModelRenderFn(int obj, int block, int idx)
+int cMenuRingModelRenderFn(GameObject* obj, int block, int idx)
 {
     int renderOp;
     GXColor cfg;
     *(u32*)&cfg = lbl_803E1E14;
     renderOp = (int)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
     Rcp_ResetTextureStageState();
-    cfg.a = ((GameObject*)obj)->anim.renderAlpha;
+    cfg.a = obj->anim.renderAlpha;
     gxFn_80051fb8(textureIdxToPtr(((ModelRenderOp*)renderOp)->textureId), NULL, 0, &cfg, 0, 1);
     Rcp_ApplyTextureStageCounts();
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -4006,7 +4006,7 @@ int cMenuRingModelRenderFn(int obj, int block, int idx)
     return 1;
 }
 
-int cMenuRingIconRenderFn(int obj, int block, int idx)
+int cMenuRingIconRenderFn(GameObject* obj, int block, int idx)
 {
     int slotIdx;
     void* tex;
@@ -4018,11 +4018,11 @@ int cMenuRingIconRenderFn(int obj, int block, int idx)
     {
         if (gCMenuRingIconActiveFlags[slotIdx] != 0)
         {
-            cfg.a = ((GameObject*)obj)->anim.renderAlpha;
+            cfg.a = obj->anim.renderAlpha;
         }
         else
         {
-            cfg.a = lbl_803E2010 * (f32)(u32)((GameObject*)obj)->anim.renderAlpha;
+            cfg.a = lbl_803E2010 * (f32)(u32)obj->anim.renderAlpha;
         }
         gxFn_80051fb8(tex, NULL, 0, &cfg, 0, 1);
     }
