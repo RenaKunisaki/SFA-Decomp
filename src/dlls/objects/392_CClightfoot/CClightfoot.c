@@ -192,11 +192,11 @@ void cclightfoot_selectCombatState(CcLightfootState* state, int* targetObj, f32 
     state->state = CCLIGHTFOOT_STATE_APPROACH;
 }
 
-void cclightfoot_update(int obj)
+void cclightfoot_update(GameObject* obj)
 {
     LightfootAnimTable* tbl = (LightfootAnimTable*)gCcLightfootAnimTable;
     u32 fallback;
-    CcLightfootState* state = ((GameObject*)obj)->extra;
+    CcLightfootState* state = obj->extra;
     u32 targetObj;
     s16 angle;
     u32 o2;
@@ -218,11 +218,11 @@ void cclightfoot_update(int obj)
     fallback = 0;
     if (tbl->stateFlags[state->state] & 1)
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     }
     else
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
     }
     o1 = state->targetA;
     if (o1 != 0)
@@ -261,7 +261,7 @@ void cclightfoot_update(int obj)
                         oNear = state->targetB;
                         oFar = state->targetA;
                     }
-                    if ((getXZDistance((f32*)(obj + 0x18), (f32*)(state->playerObj + 0x18)) < 32400.0f ||
+                    if ((getXZDistance(&obj->anim.worldPosX, (f32*)(state->playerObj + 0x18)) < 32400.0f ||
                          (void*)fn_80296118((GameObject*)state->playerObj) == (void*)state->targetA ||
                          (void*)fn_80296118((GameObject*)state->playerObj) == (void*)state->targetB) &&
                         playerIsDisguised((GameObject*)state->playerObj) == 0)
@@ -273,9 +273,9 @@ void cclightfoot_update(int obj)
                             oFar = tmp ^ oNear;
                         }
                         enemy_setTrackedObj((GameObject*)oNear, (GameObject*)state->playerObj);
-                        enemy_setTrackedObj((GameObject*)oFar, (GameObject*)obj);
+                        enemy_setTrackedObj((GameObject*)oFar, obj);
                         targetObj = oFar;
-                        dist = getXZDistance((f32*)(obj + 0x18), (f32*)(oFar + 0x18));
+                        dist = getXZDistance(&obj->anim.worldPosX, (f32*)(oFar + 0x18));
                     }
                     else
                     {
@@ -283,8 +283,8 @@ void cclightfoot_update(int obj)
                         {
                             off = i * 4;
                             *(f32*)((u8*)dists + off) =
-                                getXZDistance((f32*)(obj + 0x18), (f32*)(*(int*)((u8*)state + off + 8) + 0x18));
-                            enemy_setTrackedObj((GameObject*)*(int*)((u8*)state + off + 8), (GameObject*)obj);
+                                getXZDistance(&obj->anim.worldPosX, (f32*)(*(int*)((u8*)state + off + 8) + 0x18));
+                            enemy_setTrackedObj((GameObject*)*(int*)((u8*)state + off + 8), obj);
                         }
                         if (dists[0] < dists[1])
                         {
@@ -329,18 +329,18 @@ void cclightfoot_update(int obj)
             if (fallback != 0)
             {
                 dist = getXZDistance((f32*)(state->playerObj + 0x18), (f32*)(fallback + 0x18));
-                if ((getXZDistance((f32*)(obj + 0x18), (f32*)(fallback + 0x18)) < dist &&
+                if ((getXZDistance(&obj->anim.worldPosX, (f32*)(fallback + 0x18)) < dist &&
                      (void*)fn_80296118((GameObject*)state->playerObj) != (void*)fallback) ||
                     playerIsDisguised((GameObject*)state->playerObj) != 0)
                 {
-                    enemy_setTrackedObj((GameObject*)fallback, (GameObject*)obj);
+                    enemy_setTrackedObj((GameObject*)fallback, obj);
                 }
                 else
                 {
                     enemy_setTrackedObj((GameObject*)fallback, (GameObject*)state->playerObj);
                 }
                 targetObj = fallback;
-                dist = getXZDistance((f32*)(obj + 0x18), (f32*)(fallback + 0x18));
+                dist = getXZDistance(&obj->anim.worldPosX, (f32*)(fallback + 0x18));
             }
             else
             {
@@ -348,9 +348,9 @@ void cclightfoot_update(int obj)
                 dist = CC_LIGHTFOOT_DIST_SENTINEL;
             }
         } while (0);
-        angle = getAngle(-(((GameObject*)targetObj)->anim.localPosX - ((GameObject*)obj)->anim.localPosX),
-                         -(((GameObject*)targetObj)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ));
-        diff = (s16)(((GameObject*)obj)->anim.rotX - (u16)angle);
+        angle = getAngle(-(((GameObject*)targetObj)->anim.localPosX - obj->anim.localPosX),
+                         -(((GameObject*)targetObj)->anim.localPosZ - obj->anim.localPosZ));
+        diff = (s16)(obj->anim.rotX - (u16)angle);
         if (diff > 0x8000)
         {
             diff = (s16)(diff - 0xffff);
@@ -378,7 +378,7 @@ void cclightfoot_update(int obj)
         if (state->sfxTimer < 0.0f)
         {
             state->sfxTimer = (f32)(int)randomGetRange(0xb4, 0x12c);
-            Sfx_PlayFromObject(obj, SFXTRIG_trwhin4);
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_trwhin4);
         }
     }
     switch (state->state)
@@ -393,8 +393,8 @@ void cclightfoot_update(int obj)
             if (Obj_IsLoadingLocked() != 0)
             {
                 state->childObj = Obj_SetupObject(Obj_AllocObjectSetup(0x20, CCLIGHTFOOT_CHILD_OBJ_MARKER), 5, -1, -1,
-                                                  ((GameObject*)obj)->anim.parent);
-                ObjLink_AttachChild((GameObject*)obj, state->childObj, 0);
+                                                  obj->anim.parent);
+                ObjLink_AttachChild(obj, state->childObj, 0);
             }
             state->playerObj = (int)Obj_GetPlayerObject();
             state->targetA = (int)ObjList_FindObjectById(CCLIGHTFOOT_TARGET_ACTOR_A);
@@ -404,22 +404,22 @@ void cclightfoot_update(int obj)
         }
         break;
     case CCLIGHTFOOT_STATE_INTRO:
-        if (((GameObject*)obj)->anim.currentMoveProgress > 0.2f &&
-            ((GameObject*)obj)->anim.currentMoveProgress < 0.8f)
+        if (obj->anim.currentMoveProgress > 0.2f &&
+            obj->anim.currentMoveProgress < 0.8f)
         {
             if (diff > 0x400)
             {
-                ((GameObject*)obj)->anim.rotX =
-                    (s16)(((GameObject*)obj)->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+                obj->anim.rotX =
+                    (s16)(obj->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
             }
             else if (diff < -0x400)
             {
-                ((GameObject*)obj)->anim.rotX =
-                    (s16)(((GameObject*)obj)->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+                obj->anim.rotX =
+                    (s16)(obj->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
             }
             else
             {
-                ((GameObject*)obj)->anim.rotX = angle;
+                obj->anim.rotX = angle;
             }
         }
         if (state->flags & 1)
@@ -529,7 +529,7 @@ void cclightfoot_update(int obj)
         }
         else
         {
-            if (ObjTrigger_IsSet(obj) != 0)
+            if (ObjTrigger_IsSet((int)obj) != 0)
             {
                 mainSetBits(GAMEBIT_LIGHTFOOT_TRIGGERED, 1);
             }
@@ -540,22 +540,22 @@ void cclightfoot_update(int obj)
         }
         break;
     case CCLIGHTFOOT_STATE_DORMANT_TURN:
-        if (((GameObject*)obj)->anim.currentMoveProgress > 0.2f &&
-            ((GameObject*)obj)->anim.currentMoveProgress < 0.8f)
+        if (obj->anim.currentMoveProgress > 0.2f &&
+            obj->anim.currentMoveProgress < 0.8f)
         {
             if (diff > 0x400)
             {
-                ((GameObject*)obj)->anim.rotX =
-                    (s16)(((GameObject*)obj)->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+                obj->anim.rotX =
+                    (s16)(obj->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
             }
             else if (diff < -0x400)
             {
-                ((GameObject*)obj)->anim.rotX =
-                    (s16)(((GameObject*)obj)->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+                obj->anim.rotX =
+                    (s16)(obj->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
             }
             else
             {
-                ((GameObject*)obj)->anim.rotX = angle;
+                obj->anim.rotX = angle;
             }
         }
         if (state->flags & 1)
@@ -566,39 +566,39 @@ void cclightfoot_update(int obj)
     case CCLIGHTFOOT_STATE_DESPAWN:
         if (state->childObj != NULL)
         {
-            if (((GameObject*)obj)->childObjs[0] != NULL)
+            if (obj->childObjs[0] != NULL)
             {
-                ObjLink_DetachChild((GameObject*)obj, state->childObj);
+                ObjLink_DetachChild(obj, state->childObj);
             }
             Obj_FreeObject(state->childObj);
             state->childObj = 0;
         }
-        ((GameObject*)obj)->anim.flags = (s16)(((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
-        ((GameObject*)obj)->objectFlags = (u16)(((GameObject*)obj)->objectFlags | CCLIGHTFOOT_OBJFLAG_UPDATE_DISABLED);
-        ObjHits_DisableObject((GameObject*)obj);
+        obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
+        obj->objectFlags = (u16)(obj->objectFlags | CCLIGHTFOOT_OBJFLAG_UPDATE_DISABLED);
+        ObjHits_DisableObject(obj);
         return;
     }
     stateId = state->state;
     if (stateId >= CCLIGHTFOOT_STATE_GUARD && stateId <= CCLIGHTFOOT_STATE_RECOVER)
     {
-        if (ObjHits_PollPriorityHitWithCooldown((GameObject*)(obj), (f32*)gCcLightfootHitCooldown, 0, hitPos) != 0)
+        if (ObjHits_PollPriorityHitWithCooldown(obj, (f32*)gCcLightfootHitCooldown, 0, hitPos) != 0)
         {
-            if (getXZDistance((f32*)(obj + 0x18), (f32*)(state->playerObj + 0x18)) < 20000.0f)
+            if (getXZDistance(&obj->anim.worldPosX, (f32*)(state->playerObj + 0x18)) < 20000.0f)
             {
                 objfx_spawnHitEmitterAtPos(hitPos, 8, 0xff, 0xff, 0x78);
                 objLightFn_8009a1dc((void*)obj, 0.014f, hitPos, 4, 0);
             }
-            Sfx_PlayFromObject(obj, SFXTRIG_swdtest222);
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
         }
     }
     else
     {
-        if (ObjHits_GetPriorityHit((GameObject*)(obj), &hitObj, 0, 0) != 0)
+        if (ObjHits_GetPriorityHit(obj, &hitObj, 0, 0) != 0)
         {
             move = ((GameObject*)hitObj)->anim.seqId;
             if (move == 0x11 || move == 0x33)
             {
-                Obj_SetModelColorFadeRecursive((GameObject*)obj, 0xf, 0xc8, 0, 0, 1);
+                Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
             }
         }
     }
@@ -606,15 +606,15 @@ void cclightfoot_update(int obj)
     {
         u8* pa = &tbl->stateFlags[stateId];
         animId = pa[0x10];
-        if (animId != ((GameObject*)obj)->anim.currentMove)
+        if (animId != obj->anim.currentMove)
         {
             if (pa[0] & 2)
             {
-                ObjAnim_SetCurrentMove(obj, animId, 1.0f, 0);
+                ObjAnim_SetCurrentMove((int)obj, animId, 1.0f, 0);
             }
             else
             {
-                ObjAnim_SetCurrentMove(obj, animId, 0.0f, 0);
+                ObjAnim_SetCurrentMove((int)obj, animId, 0.0f, 0);
             }
         }
     }
