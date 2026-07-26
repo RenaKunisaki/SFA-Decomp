@@ -278,7 +278,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0E6 | ReStartMark | CONFIRMED | dlls/objects/230_ReStartMark/ReStartMark.c | = (canonical) | — |
 | 0x0E7 | flammablevine (+CCeyeVines, BurnableVin) | GUESSED | dlls/objects/231/231.c | = (canonical) | — |
 | 0x0E8 | Checkpoint4 | CONFIRMED | dlls/objects/232_Checkpoint4/Checkpoint4.c | = (canonical) | — |
-| 0x0E9 | setuppoint | COMPLETE | main/dll/dll_00E9_setuppoint.c | = (canonical) | — |
+| 0x0E9 | Setuppoint | COMPLETE | dlls/objects/233_Setuppoint/Setuppoint.c | = (canonical) | — |
 | 0x0EA | sideload | COMPLETE | main/dll/dll_00EA_sideload.c | = (canonical) | — |
 | 0x0EB | siderepel (+siderepelWi) | COMPLETE | main/dll/dll_00EB_siderepel.c | = (canonical) | — |
 | 0x0EC | InfoPoint | COMPLETE | main/dll/dll_00EC_infopoint.c | = (canonical) | — |
