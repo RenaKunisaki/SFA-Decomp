@@ -13,9 +13,6 @@
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/screen_transition.h"
 #include "main/dll/NW/dll_01A1_nwmammoth.h"
-#include "main/dll/NW/dll_01A2_nwtricky.h"
-#include "main/dll/NW/dll_01A3_nwanimice.h"
-#include "main/dll/NW/dll_01A4_nwice.h"
 #include "main/audio/sfx.h"
 #include "main/vecmath.h"
 #include "main/curve.h"
@@ -139,7 +136,7 @@ int nw_mammoth_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     void* audioPoints;
     void* audioScratch;
 
-    state = (obj)->extra;
+    state = obj->extra;
     s = (NwMammothState*)state;
     if ((s->runtimeFlags & 0x20) == 0)
     {
@@ -161,8 +158,8 @@ int nw_mammoth_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     objAudioFn_8006ef38(obj, (ObjAnimEventList*)audioEvents, 8, audioPoints, audioScratch, 1.0f, 1.0f);
     if (animUpdate->eventCount != 0)
     {
-        (obj)->objectFlags = (u16)((obj)->objectFlags & ~0x400);
-        (obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
+        obj->objectFlags = (u16)(obj->objectFlags & ~0x400);
+        obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
     }
     return 0;
 }
@@ -971,30 +968,3 @@ void NW_mammoth_init(NwMammothObject* obj, NwMammothMapData* mapData, int isRelo
     }
     ObjGroup_AddObject((int)obj, NW_MAMMOTH_GROUP_ID);
 }
-
-void* gNW_trickyObjDescriptor[14] = {(void*)0x00000000, (void*)0x00000000,     (void*)0x00000000, (void*)0x00090000,
-                                     (void*)0x00000000, (void*)0x00000000,     (void*)0x00000000, NW_tricky_init,
-                                     NW_tricky_update,  (void*)0x00000000,     (void*)0x00000000, NW_tricky_free,
-                                     (void*)0x00000000, NW_tricky_getExtraSize};
-void* gNW_animiceObjDescriptor[14] = {(void*)0x00000000,          (void*)0x00000000,      (void*)0x00000000,
-                                      (void*)0x00090000,          nw_animice_initialise,  nw_animice_release,
-                                      (void*)0x00000000,          nw_animice_init,        nw_animice_update,
-                                      nw_animice_hitDetect,       nw_animice_render,      nw_animice_free,
-                                      nw_animice_getObjectTypeId, nw_animice_getExtraSize};
-void* gNW_iceObjDescriptor[14] = {(void*)0x00000000, (void*)0x00000000,  (void*)0x00000000, (void*)0x00090000,
-                                  (void*)0x00000000, (void*)0x00000000,  (void*)0x00000000, NW_ice_init,
-                                  NW_ice_update,     (void*)0x00000000,  NW_ice_render,     NW_ice_free,
-                                  (void*)0x00000000, NW_ice_getExtraSize};
-u8 lbl_803269F8[308] = {
-    0,  4,   71, 213, 0, 4,   71, 214, 0, 4,   71, 213, 0, 4,   71, 214, 0, 4,   71, 213, 0, 4,   71, 214, 0, 4,
-    71, 213, 0,  0,   0, 2,   0,  0,   0, 3,   0,  0,   0, 4,   0,  0,   0, 5,   0,  0,   0, 6,   0,  0,   0, 7,
-    0,  0,   0,  1,   0, 0,   0,  3,   0, 0,   0,  4,   0, 0,   0,  5,   0, 0,   0,  6,   0, 0,   0,  7,   0, 0,
-    0,  8,   0,  0,   0, 11,  0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180,
-    0,  180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180,
-    0,  180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182,
-    0,  182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182,
-    0,  182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181,
-    0,  181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181,
-    0,  181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  183, 0, 183, 0,  183, 0, 183,
-    0,  183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183,
-    0,  183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183};

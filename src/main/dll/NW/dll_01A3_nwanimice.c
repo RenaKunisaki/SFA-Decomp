@@ -11,6 +11,7 @@
 #include "game/objects/object.h"
 #include "main/dll/NW/nw_shared.h"
 #include "main/dll/NW/dll_01A3_nwanimice.h"
+#include "dlls/object_descriptor.h"
 
 #define NWANIMICE_OBJFLAG_HIDDEN             0x4000
 #define NWANIMICE_OBJFLAG_HITDETECT_DISABLED 0x2000
@@ -60,3 +61,20 @@ void nw_animice_release(void)
 void nw_animice_initialise(void)
 {
 }
+
+ObjectDescriptor gNW_animiceObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)nw_animice_initialise,
+    (ObjectDescriptorCallback)nw_animice_release,
+    0,
+    (ObjectDescriptorCallback)nw_animice_init,
+    (ObjectDescriptorCallback)nw_animice_update,
+    (ObjectDescriptorCallback)nw_animice_hitDetect,
+    (ObjectDescriptorCallback)nw_animice_render,
+    (ObjectDescriptorCallback)nw_animice_free,
+    (ObjectDescriptorCallback)nw_animice_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)nw_animice_getExtraSize,
+};
