@@ -67,7 +67,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/track_dolphin | 99.0354 | 57.2364 | -41.7990 |
 | main/main/dll/dll_0031_minimap | 99.3734 | 58.3480 | -41.0255 |
 | main/main/vecmath | 99.9213 | 59.1037 | -40.8176 |
-| main/main/dll/dll_02C0_front | 99.7227 | 58.9538 | -40.7689 |
+| main/dlls/objects/704/704 | 99.7227 | 58.9538 | -40.7689 |
 | main/main/dll/dll_016C_dll16c | 100.0000 | 59.5588 | -40.4412 |
 | main/main/lightmap | 99.7713 | 60.9359 | -38.8354 |
 | main/dlls/objects/204_ChukChuk/ChukChuk | 100.0000 | 62.2481 | -37.7519 |

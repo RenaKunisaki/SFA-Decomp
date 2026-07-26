@@ -1,7 +1,7 @@
 /*
  * dll3f (DLL 0x3F) - title-screen DLL boilerplate.
  *
- * (gTitleScreenObjDescriptor lives in dll_02C0_front.c, not here.)
+ * (gTitleScreenObjDescriptor lives in DLL 704, not here.)
  * dll_3F_initialise loads texture asset 0x47A into lbl_803DD960 and
  * dll_3F_release frees it. dll_3F_frameStart_ret_0 / dll_3F_frameEnd_nop
  * are the per-frame hook leaves.

@@ -65,7 +65,7 @@ families.)
 | 3 | `main/dll/tricky.c` | 0 | 30 | gameui×10, pause×3, game×2, hudfn×2, fear×2 | HELPER-TU/OK |
 | 4 | `main/dll/dll_000F_unk.c` | 1 | 24 | player×24 | CANONICAL-OK/OK |
 | 5 | `main/dll/dll_0285_spshop.c` | 1 | 23 | shop×23 | CANONICAL-OK/OK |
-| 6 | `main/dll/dll_02C0_front.c` | 1 | 21 | titlescreen×9, title×3, titlescreenfn×3, credits×2, should×1 | CANONICAL-OK/OK |
+| 6 | `dlls/objects/704/704.c` | 1 | 21 | titlescreen×9, title×3, titlescreenfn×3, credits×2, should×1 | CANONICAL-OK/OK |
 | 7 | `main/dll/dll_003C_tumbleweedbush.c` | 1 | 19 | link×16, linkdrawfn×2, titlescreenfn×1 | MISLABELED/FORENSIC |
 | 8 | `main/dll/dll_0001_camcontrol.c` | 1 | 18 | camera×18 | CANONICAL-OK/OK |
 | 9 | `main/dll/grenade.c` | 0 | 18 | trickyfn×12, trickyfoodfn×3, tricky×2, trickyflamefn×1 | HELPER-TU/OK |

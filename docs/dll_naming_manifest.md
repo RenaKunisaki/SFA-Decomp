@@ -747,7 +747,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2BD | — | NO-RETAIL-NAME | dlls/objects/701/701.c | = (canonical) | Exact DOL-confirmed ten-function TU with its proven early descriptor, trailing compiler switch table, full constant pool, and recovered hand-specific small data; `Androssleft` and `Androssrigh` remain object aliases |
 | 0x2BE | AndrossBrai | RAW | dlls/objects/702_AndrossBrai/AndrossBrai.c | = (canonical) | Exact complete eight-function TU with its terminal descriptor and full 8-byte constant pool |
 | 0x2BF | AndrossLigh | RAW | dlls/objects/703_AndrossLigh/AndrossLigh.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full small-data/constant sections; all six beam parameters were recovered from the adjacent auto object |
-| 0x2C0 | Front (+FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet) | GUESSED | main/dll/dll_02C0_front.c | = (canonical) | — |
+| 0x2C0 | — | NO-RETAIL-NAME | dlls/objects/704/704.c | = (canonical) | Complete DOL-confirmed 23-function TU with its terminal descriptor and full data/BSS ownership; `Front`, `FrontFox`, `FrontPeppy`, `FrontSlippy`, `FrontRob`, `FrontFalco`, `FrontPilots`, and `FrontPlanet` remain object aliases |
 
 ## Name-conflict resolutions
 
@@ -783,7 +783,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x238 | LINKA_levco | `fireObj_*` | unrelated | main/dll/dll_0238_linkalevco.c |
 | 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | main/dll/dll_0284_shopitem.c |
 | 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | main/dll/dll_02AD_softbody.c |
-| 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | main/dll/dll_02C0_front.c |
+| 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
 
 ## Appendix: canonical-format files whose proposal differs
 
