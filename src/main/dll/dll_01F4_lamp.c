@@ -90,7 +90,7 @@ int Lamp_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 
 void Lamp_update(int obj)
 {
-    u8 effectArgs[0x18];
+    PartFxSpawnParams effect;
     f32 distance;
     int i;
 
@@ -119,28 +119,28 @@ void Lamp_update(int obj)
 
     if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
-        ((PartFxSpawnParams*)effectArgs)->scale = 0.35f;
-        ((PartFxSpawnParams*)effectArgs)->arg3 = 0xc0d;
-        ((PartFxSpawnParams*)effectArgs)->posX = 0.0f;
-        ((PartFxSpawnParams*)effectArgs)->posY = -12.0f;
-        ((PartFxSpawnParams*)effectArgs)->posZ = 0.0f;
-        ObjPath_GetPointWorldPosition((GameObject*)obj, 0, &((PartFxSpawnParams*)effectArgs)->posX,
-                                      &((PartFxSpawnParams*)effectArgs)->posY, &((PartFxSpawnParams*)effectArgs)->posZ, 1);
+        effect.scale = 0.35f;
+        effect.arg3 = 0xc0d;
+        effect.posX = 0.0f;
+        effect.posY = -12.0f;
+        effect.posZ = 0.0f;
+        ObjPath_GetPointWorldPosition((GameObject*)obj, 0, &effect.posX,
+                                      &effect.posY, &effect.posZ, 1);
         if (((GameObject*)obj)->anim.parent != NULL)
         {
-            ((PartFxSpawnParams*)effectArgs)->posX = ((PartFxSpawnParams*)effectArgs)->posX - ((GameObject*)obj)->anim.worldPosX;
-            ((PartFxSpawnParams*)effectArgs)->posY = ((PartFxSpawnParams*)effectArgs)->posY - ((GameObject*)obj)->anim.worldPosY;
-            ((PartFxSpawnParams*)effectArgs)->posZ = ((PartFxSpawnParams*)effectArgs)->posZ - ((GameObject*)obj)->anim.worldPosZ;
+            effect.posX = effect.posX - ((GameObject*)obj)->anim.worldPosX;
+            effect.posY = effect.posY - ((GameObject*)obj)->anim.worldPosY;
+            effect.posZ = effect.posZ - ((GameObject*)obj)->anim.worldPosZ;
         }
         else
         {
-            ((PartFxSpawnParams*)effectArgs)->posX = ((PartFxSpawnParams*)effectArgs)->posX - ((GameObject*)obj)->anim.localPosX;
-            ((PartFxSpawnParams*)effectArgs)->posY = ((PartFxSpawnParams*)effectArgs)->posY - ((GameObject*)obj)->anim.localPosY;
-            ((PartFxSpawnParams*)effectArgs)->posZ = ((PartFxSpawnParams*)effectArgs)->posZ - ((GameObject*)obj)->anim.localPosZ;
+            effect.posX = effect.posX - ((GameObject*)obj)->anim.localPosX;
+            effect.posY = effect.posY - ((GameObject*)obj)->anim.localPosY;
+            effect.posZ = effect.posZ - ((GameObject*)obj)->anim.localPosZ;
         }
         for (i = 0; i < framesThisStep; i++)
         {
-            (*gPartfxInterface)->spawnObject((void*)obj, LAMP_PARTFX_B, effectArgs, 2, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, LAMP_PARTFX_B, &effect, 2, -1, NULL);
         }
     }
 }

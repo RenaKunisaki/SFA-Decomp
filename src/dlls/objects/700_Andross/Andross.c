@@ -1,5 +1,5 @@
 /*
- * andross (DLL 0x2BC) - the final Andross boss, fought from the Arwing.
+ * Andross (DLL 0x2BC) - the final Andross boss, fought from the Arwing.
  *
  * andross_update is the whole fight: it caches the player's Arwing
  * (getArwing) plus the two hand objects (0x47b78 / 0x47b6a) and the brain

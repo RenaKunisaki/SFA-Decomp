@@ -1,5 +1,5 @@
 /*
- * cntcounter (DLL 0x2B4) - a generic countdown object.
+ * CNTcounter (DLL 0x2B4) - a generic countdown object.
  * Reads an initial count and two game bits from placement data: one bit
  * that, when set, decrements the counter (the bit's value is used as the
  * decrement amount and then cleared), and one bit set when the counter

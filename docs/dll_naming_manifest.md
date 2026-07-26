@@ -401,9 +401,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x163 | — | NO-RETAIL-NAME | dlls/objects/355/355.c | = (canonical) | data-only DLL |
 | 0x164 | CFLevelCont | CONFIRMED | dlls/objects/356_CFLevelCont/CFLevelCont.c | = (canonical) | — |
 | 0x165 | CFRemovalSh | RAW | dlls/objects/357_CFRemovalSh/CFRemovalSh.c | = (canonical) | data-only DLL |
-| 0x166 | exploded (+CFbrokenGra, CFbrokenWal, CFWallPieac, CFExplodePi, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRExplodePi, ExplodePlan, DRSmallExpl) | GUESSED | main/dll/dll_0166_exploded.c | = (canonical) | — |
-| 0x167 | SpiritDoorLock | CONFIRMED | main/dll/dll_0167_spiritdoorlock.c | = (canonical) | — |
-| 0x168 | HoloPoint | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
+| 0x166 | — (+CFbrokenGra, CFbrokenWal, CFWallPieac, CFExplodePi, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRExplodePi, ExplodePlan, DRSmallExpl) | NO-RETAIL-NAME | dlls/objects/358/358.c | = (canonical) | — |
+| 0x167 | SpiritDoorL | CONFIRMED | dlls/objects/359_SpiritDoorL/SpiritDoorL.c | = (canonical) | — |
+| 0x168 | HoloPoint | RAW | dlls/objects/360_HoloPoint/HoloPoint.c | = (canonical) | data-only DLL |
 | 0x169 | IMIceMountain | CONFIRMED | main/dll/dll_0169_imicemountain.c | main/dll/IM/dll_0169_imicemountain.c | — |
 | 0x16A | CRrockfall (+IMIcicle) | COMPLETE | main/dll/dll_016A_crrockfall.c | main/dll/CR/dll_016A_crrockfall.c | — |
 | 0x16B | MagicLight (+DIMMagicLig, IMMagicLigh) | CONFIRMED | main/dll/dll_016B_magiclight.c | = (canonical) | — |
@@ -728,26 +728,26 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2AA | LGTDirectionallight | CONFIRMED | main/dll/dll_02AA_lgtdirectionallight.c | main/dll/LGT/dll_02AA_lgtdirectionallight.c | — |
 | 0x2AB | LGTProjectedlight | CONFIRMED | main/dll/dll_02AB_lgtprojectedlight.c | main/dll/LGT/dll_02AB_lgtprojectedlight.c | — |
 | 0x2AC | LGTControlLight | CONFIRMED | main/dll/dll_02AC_lgtcontrollight.c | main/dll/LGT/dll_02AC_lgtcontrollight.c | — |
-| 0x2AD | softbody (+LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL) | GUESSED | main/dll/dll_02AD_softbody.c | = (canonical) | — |
-| 0x2AE | WaterFlowWe | CONFIRMED | main/dll/dll_02AE_waterflowwe.c | = (canonical) | — |
-| 0x2AF | Tree (+SH_FernTree, FernTree, smallfern, tallpalmtre, JungleTree, RootPlant, SnowTree1, SnowTree2, SnowTree3, SnowTree4, SnowFruitTr) | CONFIRMED | main/dll/dll_02AF_tree.c | = (canonical) | — |
-| 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | main/dll/dll_02B0_brokenpipe.c | = (canonical) | — |
-| 0x2B1 | CmbSrc (+CmbSrcTPole, CmbSrcTWall, ThusterSour) | COMPLETE | main/dll/dll_02B1_cmbsrc.c | = (canonical) | — |
-| 0x2B2 | DustMoteSou (+TailLightSo, FireWorkSou) | CONFIRMED | main/dll/dll_02B2_dustmotesou.c | = (canonical) | — |
-| 0x2B3 | vortex (+SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | GUESSED | main/dll/dll_02B3_vortex.c | = (canonical) | — |
-| 0x2B4 | CNTcounter | COMPLETE | main/dll/dll_02B4_cntcounter.c | = (canonical) | — |
-| 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | main/dll/dll_02B5_timer.c | = (canonical) | — |
-| 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | main/dll/dll_02B6_cnthitobjec.c | = (canonical) | — |
-| 0x2B7 | MCUpgrade | COMPLETE | main/dll/dll_02B7_mcupgrade.c | = (canonical) | — |
-| 0x2B8 | MCUpgradeMa | CONFIRMED | main/dll/dll_02B8_mcupgradema.c | = (canonical) | — |
-| 0x2B9 | MCStaffEffe | CONFIRMED | main/dll/dll_02B9_mcstaffeffe.c | = (canonical) | — |
-| 0x2BA | MCLightning | CONFIRMED | main/dll/dll_02BA_mclightning.c | = (canonical) | — |
-| 0x2BB | GF_LevelCon | CONFIRMED | main/dll/dll_02BB_gflevelcon.c | = (canonical) | — |
-| 0x2BC | Andross | COMPLETE | main/dll/dll_02BC_andross.c | = (canonical) | — |
-| 0x2BD | androsshand (+Androssleft, Androssrigh) | CONFIRMED | main/dll/dll_02BD_androsshand.c | = (canonical) | — |
-| 0x2BE | AndrossBrain | CONFIRMED | main/dll/dll_02BE_androssbrain.c | = (canonical) | — |
-| 0x2BF | AndrossLigh | CONFIRMED | main/dll/dll_02BF_androssligh.c | = (canonical) | — |
-| 0x2C0 | Front (+FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet) | GUESSED | main/dll/dll_02C0_front.c | = (canonical) | — |
+| 0x2AD | — (+softbody, LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL) | NO-RETAIL-NAME | dlls/objects/685/685.c | = (canonical) | — |
+| 0x2AE | WaterFlowWe | CONFIRMED | dlls/objects/686_WaterFlowWe/WaterFlowWe.c | = (canonical) | — |
+| 0x2AF | — (+Tree, SH_FernTree, FernTree, smallfern, tallpalmtre, JungleTree, RootPlant, SnowTree1, SnowTree2, SnowTree3, SnowTree4, SnowFruitTr) | NO-RETAIL-NAME | dlls/objects/687/687.c | = (canonical) | — |
+| 0x2B0 | BrokenPipe (+MetalRafter, BoulderOne, RedBoulder, Cactus, SnowBoulder) | COMPLETE | dlls/objects/688_BrokenPipe/BrokenPipe.c | = (canonical) | — |
+| 0x2B1 | CmbSrc (+CmbSrcTPole, CmbSrcTWall, ThusterSour) | COMPLETE | dlls/objects/689_CmbSrc/CmbSrc.c | = (canonical) | — |
+| 0x2B2 | DustMoteSou (+TailLightSo, FireWorkSou) | CONFIRMED | dlls/objects/690_DustMoteSou/DustMoteSou.c | = (canonical) | — |
+| 0x2B3 | — (+vortex, SkyVortS, SkyVortC, WndLiftS, WndLiftC, DIM_PitVort) | NO-RETAIL-NAME | dlls/objects/691/691.c | = (canonical) | — |
+| 0x2B4 | CNTcounter | COMPLETE | dlls/objects/692_CNTcounter/CNTcounter.c | = (canonical) | — |
+| 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | dlls/objects/693_Timer/Timer.c | = (canonical) | — |
+| 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | dlls/objects/694_CNThitObjec/CNThitObjec.c | = (canonical) | — |
+| 0x2B7 | MCUpgrade | COMPLETE | dlls/objects/695_MCUpgrade/MCUpgrade.c | = (canonical) | — |
+| 0x2B8 | MCUpgradeMa | CONFIRMED | dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c | = (canonical) | — |
+| 0x2B9 | MCStaffEffe | CONFIRMED | dlls/objects/697_MCStaffEffe/MCStaffEffe.c | = (canonical) | — |
+| 0x2BA | MCLightning | CONFIRMED | dlls/objects/698_MCLightning/MCLightning.c | = (canonical) | — |
+| 0x2BB | GF_LevelCon | CONFIRMED | dlls/objects/699_GF_LevelCon/GF_LevelCon.c | = (canonical) | — |
+| 0x2BC | Andross | COMPLETE | dlls/objects/700_Andross/Andross.c | = (canonical) | — |
+| 0x2BD | — (+androsshand, Androssleft, Androssrigh) | NO-RETAIL-NAME | dlls/objects/701/701.c | = (canonical) | — |
+| 0x2BE | AndrossBrai | CONFIRMED | dlls/objects/702_AndrossBrai/AndrossBrai.c | = (canonical) | — |
+| 0x2BF | AndrossLigh | CONFIRMED | dlls/objects/703_AndrossLigh/AndrossLigh.c | = (canonical) | — |
+| 0x2C0 | — (+Front, FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet) | NO-RETAIL-NAME | dlls/objects/704/704.c | = (canonical) | — |
 
 ## Name-conflict resolutions
 
@@ -771,7 +771,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | main/dll/dll_0231_dfpforceaw.c |
 | 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | main/dll/dll_0232_dfprotatep.c |
 | 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | main/dll/dll_0294_wctemple.c |
-| 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | main/dll/dll_02BD_androsshand.c |
+| 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
 | 0x0ED | CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi | `collectible_*` | unrelated | dlls/objects/237/237.c |
 | 0x108 | EndObject | `Dummy108_*` | unrelated | dlls/objects/264_EndObject/EndObject.c |
@@ -782,8 +782,8 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x237 | DFPSpPl | `laserObj_*` | unrelated | main/dll/dll_0237_dfpsppl.c |
 | 0x238 | LINKA_levco | `fireObj_*` | unrelated | main/dll/dll_0238_linkalevco.c |
 | 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | main/dll/dll_0284_shopitem.c |
-| 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | main/dll/dll_02AD_softbody.c |
-| 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | main/dll/dll_02C0_front.c |
+| 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
+| 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
 
 ## Appendix: canonical-format files whose proposal differs
 

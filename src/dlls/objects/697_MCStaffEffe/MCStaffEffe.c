@@ -1,5 +1,5 @@
 /*
- * mcstaffeffe (DLL 0x2B9) - staff visual-effect object.
+ * MCStaffEffe (DLL 0x2B9) - staff visual-effect object.
  *
  * From its placement effectProfile, init selects a particle type and a
  * staff glow level (profiles 0-3, default = profile 0); each render tick

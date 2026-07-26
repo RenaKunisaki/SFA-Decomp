@@ -2,6 +2,7 @@
 #define MAIN_DLL_DR_DRCRADLE_H_
 
 #include "ghidra_import.h"
+#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor24 gSnowBikeObjDescriptor;
@@ -12,8 +13,8 @@ int SnowBike_func0E(void);
 int SnowBike_render2(void);
 int SnowBike_getExtraSize(void);
 int SnowBike_getObjectTypeId(void);
-u8 SnowBike_func0B(int *obj);
-s32 SnowBike_func14(int *obj);
-s32 SnowBike_getRiderMode(int *obj);
+u8 SnowBike_func0B(GameObject *obj);
+s32 SnowBike_func14(GameObject *obj);
+s32 SnowBike_getRiderMode(GameObject *obj);
 
 #endif /* MAIN_DLL_DR_DRCRADLE_H_ */

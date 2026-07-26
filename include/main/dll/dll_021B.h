@@ -39,7 +39,7 @@ void dll_21B_free(int obj);
 void dll_21B_render_nop(void);
 void dll_21B_hitDetect_nop(void);
 void dll_21B_update(GameObject* obj);
-void dll_21B_init(int* obj, Dll21BPlacement* init);
+void dll_21B_init(GameObject* obj, Dll21BPlacement* init);
 void dll_21B_release_nop(void);
 void dll_21B_initialise_nop(void);
 

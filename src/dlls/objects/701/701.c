@@ -1,6 +1,7 @@
 /*
- * androsshand (DLL 0x2BD) - one of Andross's two hands in the Arwing
- * boss fight. Tracks the Andross body object (id 0x47b77) and the
+ * DLL 0x2BD - one of Andross's two hands in the Arwing boss fight,
+ * used by the Androssleft and Androssrigh object definitions.
+ * Tracks the Andross body object (id 0x47b77) and the
  * player's Arwing, mirrors the body's facing, and applies a damped
  * spring to its Z position so the hand bobs relative to the body.
  *

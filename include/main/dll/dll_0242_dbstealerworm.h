@@ -35,7 +35,7 @@ void fn_80202EF0(GameObject* obj, int baddie);
 s16 dbstealerworm_setScale(int* obj);
 int dbstealerworm_getExtraSize(void);
 int dbstealerworm_getObjectTypeId(void);
-void dbstealerworm_free(int* obj);
+void dbstealerworm_free(GameObject* obj);
 void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void dbstealerworm_hitDetect(GameObject* obj);
 void dbstealerworm_update(u8* objp);

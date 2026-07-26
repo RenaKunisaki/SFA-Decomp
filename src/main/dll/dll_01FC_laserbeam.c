@@ -79,16 +79,16 @@ int LaserBeam_getObjectTypeId(void)
     return 0;
 }
 
-void LaserBeam_free(int* obj)
+void LaserBeam_free(GameObject* obj)
 {
-    void** state;
+    LaserBeamState* state;
 
-    state = OBJ_PTR(obj, 0xb8);
+    state = obj->extra;
     (*gModgfxInterface)->detachSource(obj);
-    if (state[0] != 0)
+    if (state->texture != 0)
     {
-        textureFree((Texture*)(state[0]));
-        state[0] = 0;
+        textureFree(state->texture);
+        state->texture = 0;
     }
 }
 
@@ -273,7 +273,7 @@ void LaserBeam_update(int obj2)
     {
         (*gModgfxInterface)->releaseHandle(&state->emitterSlot);
     }
-    if ((dot + (sinv * ((GameObject*)player)->anim.localPosX + cosv * ((GameObject*)player)->anim.localPosZ) >
+    if ((dot + (sinv * player->anim.localPosX + cosv * player->anim.localPosZ) >
              0.0f &&
          state->beamKind != 2) ||
         state->beamKind == 30)
@@ -313,15 +313,15 @@ void LaserBeam_update(int obj2)
     if (player != NULL && state->fireCooldown == 0 && state->beamState == 2)
     {
         range = 5.0f + (f32)(int)*(s8*)&state->rangeOffset;
-        dy = ((GameObject*)player)->anim.localPosY - ((GameObject*)obj2)->anim.localPosY;
+        dy = player->anim.localPosY - ((GameObject*)obj2)->anim.localPosY;
         if (dy < range && dy > -(25.0f + range))
         {
-            dx = ((GameObject*)player)->anim.localPosX - ((GameObject*)obj2)->anim.localPosX;
-            dzp = ((GameObject*)player)->anim.localPosZ - ((GameObject*)obj2)->anim.localPosZ;
+            dx = player->anim.localPosX - ((GameObject*)obj2)->anim.localPosX;
+            dzp = player->anim.localPosZ - ((GameObject*)obj2)->anim.localPosZ;
             if (dx * dx + dzp * dzp < dz2)
             {
                 lat =
-                    dot + (sinv * ((GameObject*)player)->anim.localPosX + cosv * ((GameObject*)player)->anim.localPosZ);
+                    dot + (sinv * player->anim.localPosX + cosv * player->anim.localPosZ);
                 a = lat;
                 if (lat < 0.0f)
                 {
@@ -341,14 +341,14 @@ void LaserBeam_update(int obj2)
                 }
                 if (lat < range && lat > -range)
                 {
-                    if (objGetAnimState80A((GameObject*)(player)) == 0x1d7 && state->beamKind != 1)
+                    if (objGetAnimState80A(player) == 0x1d7 && state->beamKind != 1)
                     {
                         mainSetBits(GAMEBIT_TRICKYCURVE_PLAYER_HIT, 1);
                     }
                     else
                     {
-                        if (dot + (sinv * ((GameObject*)player)->anim.previousLocalPosX +
-                                   cosv * ((GameObject*)player)->anim.previousLocalPosZ) <
+                        if (dot + (sinv * player->anim.previousLocalPosX +
+                                   cosv * player->anim.previousLocalPosZ) <
                             0.0f)
                         {
                             spread = -20.0f;
@@ -358,9 +358,9 @@ void LaserBeam_update(int obj2)
                             spread = 20.0f;
                         }
                         Sfx_PlayAtPositionFromObject(
-                            obj2, ((GameObject*)player)->anim.localPosX, ((GameObject*)obj2)->anim.localPosY,
-                            ((GameObject*)player)->anim.localPosZ, SFXTRIG_wp_fball2_c_1c9);
-                        if (*(s16*)(*(char**)&((GameObject*)player)->extra + 0x81a) == 0)
+                            obj2, player->anim.localPosX, ((GameObject*)obj2)->anim.localPosY,
+                            player->anim.localPosZ, SFXTRIG_wp_fball2_c_1c9);
+                        if (*(s16*)(*(char**)&player->extra + 0x81a) == 0)
                         {
                             sfx = 31;
                         }
@@ -374,8 +374,8 @@ void LaserBeam_update(int obj2)
                             (*gPartfxInterface)
                                 ->spawnObject(Obj_GetPlayerObject(), LASERBEAM_PARTFX_HIT, NULL, 4, -1, NULL);
                         }
-                        state->targetX = sinv * spread + ((GameObject*)player)->anim.localPosX;
-                        state->targetZ = cosv * spread + ((GameObject*)player)->anim.localPosZ;
+                        state->targetX = sinv * spread + player->anim.localPosX;
+                        state->targetZ = cosv * spread + player->anim.localPosZ;
                         beamKind = state->beamKind;
                         if (beamKind == 0 || beamKind == 1)
                         {

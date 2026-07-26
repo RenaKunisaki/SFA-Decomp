@@ -1,5 +1,5 @@
 /*
- * timer (DLL 0x2B5) - a countdown-timer object with two modes.
+ * Timer (DLL 0x2B5) - a countdown-timer object with two modes.
  *
  * mode TIMER_MODE_GLOBAL drives the on-screen game timer (gameTimerInit /
  * timerSetToCountUp / gameTimerStop) for a placement-set duration in minutes;

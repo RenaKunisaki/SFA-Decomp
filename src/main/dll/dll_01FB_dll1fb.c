@@ -47,16 +47,16 @@ STATIC_ASSERT(offsetof(WMGalleonSetup, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(WMSeqObjectSetup, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(WMSeqObjectSetup, setupType) == 0x19);
 
-int dll_1FB_SeqFn(int* obj, int unused, ObjAnimUpdateState* animUpdate)
+int dll_1FB_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
-    Dll1FBState* state = (Dll1FBState*)((GameObject*)obj)->extra;
+    Dll1FBState* state = obj->extra;
     s16 mode = state->triggerMode;
     u8 flags;
 
     if ((mode == 1) || (mode == 2))
     {
-        flags = (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode = flags;
+        flags = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        *(u8*)&obj->anim.resetHitboxMode = flags;
     }
     animUpdate->activeHitVolumePair = -1;
     animUpdate->sequenceEventActive = 0;
@@ -70,26 +70,26 @@ void dll_1FB_free_nop(void)
 {
 }
 
-void dll_1FB_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
+void dll_1FB_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    Dll1FBState* state = (Dll1FBState*)((GameObject*)obj)->extra;
+    Dll1FBState* state = obj->extra;
 
     if (visible == 0 || state->hideModel != 0u)
     {
         return;
     }
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void dll_1FB_hitDetect_nop(void)
 {
 }
 
-void dll_1FB_update(int* obj)
+void dll_1FB_update(GameObject* obj)
 {
-    Dll1FBState* state = (Dll1FBState*)((GameObject*)obj)->extra;
+    Dll1FBState* state = obj->extra;
 
-    if (((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) && (state->triggerMode == 2) &&
+    if (((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) && (state->triggerMode == 2) &&
         (mainGetBit(GAMEBIT_K1_SHRINE_DOOR_DIALOGUE_DONE) == 0))
     {
         (*gObjectTriggerInterface)->runSequence(4, obj, -1);
@@ -99,17 +99,17 @@ void dll_1FB_update(int* obj)
     ObjAnim_AdvanceCurrentMove((int)obj, 0.01f, timeDelta, NULL);
 }
 
-void dll_1FB_init(int* obj, u8* def)
+void dll_1FB_init(GameObject* obj, u8* def)
 {
     Dll1FBState* state;
     Dll1FBSetup* setup;
 
-    state = (Dll1FBState*)((GameObject*)obj)->extra;
+    state = obj->extra;
     setup = (Dll1FBSetup*)def;
     ObjMsg_AllocQueue(obj, 4);
-    ((GameObject*)obj)->animEventCallback = dll_1FB_SeqFn;
-    ((GameObject*)obj)->anim.rotX = (s16)(setup->yawByte << 8);
-    ((GameObject*)obj)->anim.rotY = setup->objectParam;
+    obj->animEventCallback = dll_1FB_SeqFn;
+    obj->anim.rotX = (s16)(setup->yawByte << 8);
+    obj->anim.rotY = setup->objectParam;
     state->baseMove = setup->baseMove;
     state->triggerMode = setup->triggerMode;
     ObjAnim_SetCurrentMove((int)obj, state->baseMove + 0x100, 0.0f, 0);

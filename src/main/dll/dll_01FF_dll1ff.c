@@ -56,9 +56,9 @@ int dll_1FF_getExtraSize_ret_8(void)
     return 0x8;
 }
 
-int dll_1FF_getObjectTypeId(int* obj)
+int dll_1FF_getObjectTypeId(GameObject* obj)
 {
-    if (((GameObject*)obj)->anim.seqId == DLL1FF_SEQID_WM_COLUMN_TOP)
+    if (obj->anim.seqId == DLL1FF_SEQID_WM_COLUMN_TOP)
         return 0x2;
     return 0x0;
 }
@@ -69,10 +69,10 @@ void dll_1FF_free_nop(void)
 
 /* visible is -1 while held (userData2 set), otherwise a 0/non-0 flag; gate
    shadow fade-out on whether a trigger sequence is active. */
-void dll_1FF_render(int* obj, int p1, int p2, int p3, int p4, s8 visible)
+void dll_1FF_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 {
     s32 isVisible;
-    if (((GameObject*)obj)->userData2 != 0)
+    if (obj->userData2 != 0)
     {
         isVisible = visible;
         if (isVisible != -1)
@@ -84,25 +84,25 @@ void dll_1FF_render(int* obj, int p1, int p2, int p3, int p4, s8 visible)
         if (isVisible == 0)
             return;
     }
-    if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
+    if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
     {
-        if (((GameObject*)obj)->seqIndex == -1)
+        if (obj->seqIndex == -1)
         {
-            ((GameObject*)obj)->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+            obj->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
         else
         {
-            ((GameObject*)obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+            obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
     }
-    objRenderModelAndHitVolumes((GameObject*)obj, p1, p2, p3, p4, 1.0f);
+    objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
 }
 
 void dll_1FF_hitDetect_nop(void)
 {
 }
 
-void dll_1FF_update(int obj)
+void dll_1FF_update(GameObject* obj)
 {
 
     void* player;
@@ -115,13 +115,13 @@ void dll_1FF_update(int obj)
     TrackGroundHit* surf;
     TrackGroundHit** hitList[2];
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
     if (state->grabPhase == 0)
     {
         grab[0] = 0;
-        if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 &&
-            ((GameObject*)obj)->userData2 == 0)
+        if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 &&
+            obj->userData2 == 0)
         {
             state->msgLo = grab[0];
             state->msgHi = 0x28;
@@ -133,29 +133,29 @@ void dll_1FF_update(int obj)
         {
             state->sendFlag = 1;
         }
-        if (((GameObject*)obj)->userData2 == 0)
+        if (obj->userData2 == 0)
         {
-            ObjHits_EnableObject((GameObject*)obj);
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-                (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
-            ((GameObject*)obj)->anim.velocityY = -((0.1f) * timeDelta - ((GameObject*)obj)->anim.velocityY);
-            ((GameObject*)obj)->anim.localPosY =
-                ((GameObject*)obj)->anim.velocityY * timeDelta + ((GameObject*)obj)->anim.localPosY;
-            count = hitDetectFn_80065e50((GameObject*)obj, ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                         ((GameObject*)obj)->anim.localPosZ, hitList, 0, 1);
+            ObjHits_EnableObject(obj);
+            *(u8*)&obj->anim.resetHitboxMode =
+                (u8)(*(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
+            obj->anim.velocityY = -((0.1f) * timeDelta - obj->anim.velocityY);
+            obj->anim.localPosY =
+                obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+            count = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY,
+                                         obj->anim.localPosZ, hitList, 0, 1);
             landed = NULL;
             for (i = 0; i < count; i++)
             {
                 surf = hitList[0][i];
                 if ((s8)surf->surfaceType != 14)
                 {
-                    if (((GameObject*)obj)->anim.localPosY < surf->height)
+                    if (obj->anim.localPosY < surf->height)
                     {
-                        if (((GameObject*)obj)->anim.localPosY > surf->height - (40.0f) || i == 0)
+                        if (obj->anim.localPosY > surf->height - (40.0f) || i == 0)
                         {
                             landed = surf->object;
-                            ((GameObject*)obj)->anim.localPosY = surf->height;
-                            ((GameObject*)obj)->anim.velocityY = (0.0f);
+                            obj->anim.localPosY = surf->height;
+                            obj->anim.velocityY = (0.0f);
                         }
                     }
                 }
@@ -165,32 +165,32 @@ void dll_1FF_update(int obj)
                 Dll1FFSlots* ts = *(Dll1FFSlots**)((u8*)landed + 0x58);
                 slot = ts->count;
                 ts->count += 1;
-                ts->slots[(s8)slot].obj = obj;
+                ts->slots[(s8)slot].obj = (int)obj;
             }
         }
     }
     else
     {
-        ObjHits_DisableObject((GameObject*)obj);
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        ObjHits_DisableObject(obj);
+        *(u8*)&obj->anim.resetHitboxMode =
+            (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
         if ((getButtonsJustPressed(0) & DLL1FF_BUTTON_ACTION) != 0)
         {
             state->sendFlag = 0;
             buttonDisable(0, DLL1FF_BUTTON_ACTION);
         }
-        if (((GameObject*)obj)->userData2 == 1)
+        if (obj->userData2 == 1)
         {
             state->grabPhase = 2;
         }
-        if (state->grabPhase == 2 && ((GameObject*)obj)->userData2 == 0)
+        if (state->grabPhase == 2 && obj->userData2 == 0)
         {
             state->grabPhase = 0;
             state->sendFlag = 0;
         }
         if (state->sendFlag != 0)
         {
-            ObjMsg_SendToObject(player, DLL1FF_MSG_GRAB, (void*)obj,
+            ObjMsg_SendToObject(player, DLL1FF_MSG_GRAB, obj,
                                 ((int)state->msgHi << 16) | ((int)state->msgLo & 0xffff));
         }
     }

@@ -1,5 +1,5 @@
 /*
- * tree (DLL 0x2AF) - placeable scenery tree / foliage object.
+ * DLL 0x2AF - placeable scenery tree / foliage object.
  *
  * Drives swaying motion, hit reactions, and particle bursts. The setup
  * record's flag word (flagsHi:flagsLo) selects behaviour: a burst-mode

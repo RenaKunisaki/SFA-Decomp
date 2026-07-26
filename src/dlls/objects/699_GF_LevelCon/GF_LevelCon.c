@@ -1,5 +1,5 @@
 /*
- * gflevelcon (DLL 0x2BB) - "GalleonForce" level controller object.
+ * GF_LevelCon (DLL 0x2BB) - "GalleonForce" level controller object.
  *
  * Its anim-event callback (gf_levelcon_SeqFn) reacts to
  * sequence event opcodes that drive the sky/weather presets (skyFn_*

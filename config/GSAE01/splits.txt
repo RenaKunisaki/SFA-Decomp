@@ -1432,7 +1432,7 @@ main/dll/dll_0041_warpstoneui.c:
 	.sbss       start:0x803DD978 end:0x803DD990
 	.sdata2     start:0x803E22D0 end:0x803E22D8
 
-main/dll/dll_02C0_front.c:
+dlls/objects/704/704.c:
 	.text       start:0x80134870 end:0x80136A40
 	.data       start:0x8031CDE8 end:0x8031CFA0
 	.bss        start:0x803A9F50 end:0x803AA018
@@ -2363,17 +2363,20 @@ dlls/objects/356_CFLevelCont/CFLevelCont.c:
 	.rodata     start:0x802C22E8 end:0x802C22F8
 	.data       start:0x80323008 end:0x80323070
 
-main/dll/dll_0166_exploded.c:
+dlls/objects/358/358.c:
 	.text       start:0x801A4DB8 end:0x801A57E8
 	.data       start:0x80323070 end:0x803230C0
 	.sdata2     start:0x803E43F0 end:0x803E442C
 
-main/dll/dll_0167_spiritdoorlock.c:
+dlls/objects/359_SpiritDoorL/SpiritDoorL.c:
 	.text       start:0x801A57E8 end:0x801A5D88
 	.rodata     start:0x802C22F8 end:0x802C2308
 	.data       start:0x803230C0 end:0x803230F8
 	.sdata      start:0x803DBED0 end:0x803DBEE0
 	.sdata2     start:0x803E4438 end:0x803E4440
+
+dlls/objects/360_HoloPoint/HoloPoint.c:
+	.sdata      start:0x803DBEE0 end:0x803DBEE8
 
 main/dll/dll_017D_rollingbarrel.c:
 	.text       start:0x801A5D88 end:0x801A6638
@@ -3930,101 +3933,101 @@ main/dll/LGT/dll_02AC_lgtcontrollight.c:
 	.data       start:0x8032BB38 end:0x8032BB70
 	.sdata2     start:0x803E7280 end:0x803E7288
 
-main/dll/dll_02AD_softbody.c:
+dlls/objects/685/685.c:
 	.text       start:0x80234DC8 end:0x8023503C
 	.data       start:0x8032BB70 end:0x8032BBA8
 	.sbss       start:0x803DDD98 end:0x803DDDA8
 	.sdata2     start:0x803E7288 end:0x803E72B0
 
-main/dll/dll_02AE_waterflowwe.c:
+dlls/objects/686_WaterFlowWe/WaterFlowWe.c:
 	.text       start:0x8023503C end:0x802356CC
 	.data       start:0x8032BBA8 end:0x8032BBE0
 	.sbss       start:0x803DDDA8 end:0x803DDDB8
 	.sdata2     start:0x803E72D8 end:0x803E72E8
 
-main/dll/dll_02AF_tree.c:
+dlls/objects/687/687.c:
 	.text       start:0x802356CC end:0x80236154
 	.data       start:0x8032BBE0 end:0x8032BCC8
 	.sdata2     start:0x803E72F8 end:0x803E7338
 
-main/dll/dll_02B0_brokenpipe.c:
+dlls/objects/688_BrokenPipe/BrokenPipe.c:
 	.text       start:0x80236154 end:0x80236298
 	.data       start:0x8032BCC8 end:0x8032BD00
 	.sdata2     start:0x803E7338 end:0x803E7358
 
-main/dll/dll_02B1_cmbsrc.c:
+dlls/objects/689_CmbSrc/CmbSrc.c:
 	.text       start:0x80236298 end:0x80237574
 	.data       start:0x8032BD00 end:0x8032BDE8
 	.sdata      start:0x803DC3E0 end:0x803DC3E8
 	.sdata2     start:0x803E7358 end:0x803E73C4
 
-main/dll/dll_02B2_dustmotesou.c:
+dlls/objects/690_DustMoteSou/DustMoteSou.c:
 	.text       start:0x80237574 end:0x80237808
 	.data       start:0x8032BDE8 end:0x8032BE20
 	.sdata2     start:0x803E73C8 end:0x803E73D0
 
-main/dll/dll_02B3_vortex.c:
+dlls/objects/691/691.c:
 	.text       start:0x80237808 end:0x802383E0
 	.data       start:0x8032BE20 end:0x8032BE88
 	.sdata      start:0x803DC3E8 end:0x803DC418
 
-main/dll/dll_02B4_cntcounter.c:
+dlls/objects/692_CNTcounter/CNTcounter.c:
 	.text       start:0x802383E0 end:0x8023852C
 	.data       start:0x8032BE88 end:0x8032BEC0
 
-main/dll/dll_02B5_timer.c:
+dlls/objects/693_Timer/Timer.c:
 	.text       start:0x8023852C end:0x80238AB0
 	.data       start:0x8032BEC0 end:0x8032BEF8
 	.sdata      start:0x803DC418 end:0x803DC420
 	.sdata2     start:0x803E7408 end:0x803E7428
 
-main/dll/dll_02B6_cnthitobjec.c:
+dlls/objects/694_CNThitObjec/CNThitObjec.c:
 	.text       start:0x80238AB0 end:0x80238FA4
 	.data       start:0x8032BEF8 end:0x8032BF40
 	.sdata      start:0x803DC428 end:0x803DC430
 	.sdata2     start:0x803E7428 end:0x803E7440
 
-main/dll/dll_02B7_mcupgrade.c:
+dlls/objects/695_MCUpgrade/MCUpgrade.c:
 	.text       start:0x80238FA4 end:0x80239114
 	.data       start:0x8032BF40 end:0x8032BF78
 
-main/dll/dll_02B8_mcupgradema.c:
+dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c:
 	.text       start:0x80239114 end:0x802392B8
 	.data       start:0x8032BF78 end:0x8032BFB0
 
-main/dll/dll_02B9_mcstaffeffe.c:
+dlls/objects/697_MCStaffEffe/MCStaffEffe.c:
 	.text       start:0x802392B8 end:0x8023938C
 	.data       start:0x8032BFB0 end:0x8032BFE8
 
-main/dll/dll_02BA_mclightning.c:
+dlls/objects/698_MCLightning/MCLightning.c:
 	.text       start:0x8023938C end:0x80239858
 	.data       start:0x8032BFE8 end:0x8032C020
 	.sdata2     start:0x803E7440 end:0x803E7460
 
-main/dll/dll_02BB_gflevelcon.c:
+dlls/objects/699_GF_LevelCon/GF_LevelCon.c:
 	.text       start:0x80239858 end:0x80239DD8
 	.data       start:0x8032C020 end:0x8032C088
 	.sdata2     start:0x803E7460 end:0x803E7490
 
-main/dll/dll_02BC_andross.c:
+dlls/objects/700_Andross/Andross.c:
 	.text       start:0x80239DD8 end:0x8023F05C
 	.data       start:0x8032C088 end:0x8032C270
 	.sdata      start:0x803DC430 end:0x803DC4F0
 	.sbss       start:0x803DDDB8 end:0x803DDDD0
 	.sdata2     start:0x803E7490 end:0x803E759C
 
-main/dll/dll_02BD_androsshand.c:
+dlls/objects/701/701.c:
 	.text       start:0x8023F05C end:0x8023FC8C
 	.data       start:0x8032C270 end:0x8032C2F0
 	.sdata      start:0x803DC4F0 end:0x803DC500
 	.sdata2     start:0x803E75A0 end:0x803E75FC
 
-main/dll/dll_02BE_androssbrain.c:
+dlls/objects/702_AndrossBrai/AndrossBrai.c:
 	.text       start:0x8023FC8C end:0x80240010
 	.data       start:0x8032C2F0 end:0x8032C328
 	.sdata2     start:0x803E7600 end:0x803E7608
 
-main/dll/dll_02BF_androssligh.c:
+dlls/objects/703_AndrossLigh/AndrossLigh.c:
 	.text       start:0x80240010 end:0x8024034C
 	.data       start:0x8032C328 end:0x8032C360
 	.sdata2     start:0x803E7608 end:0x803E7610

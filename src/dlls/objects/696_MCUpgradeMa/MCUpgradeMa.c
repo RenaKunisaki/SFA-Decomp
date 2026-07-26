@@ -1,6 +1,6 @@
 /*
- * mcupgradema (DLL 0x2B8) - the "ma" variant of the mcupgrade one-shot
- * upgrade pickup, sharing mcupgrade's state/setup layout.
+ * MCUpgradeMa (DLL 0x2B8) - the "ma" variant of the MCUpgrade one-shot
+ * upgrade pickup, sharing MCUpgrade's state/setup layout.
  *
  * mcupgradema_update gates the object on its placement's collectedGameBit:
  * once the bit is set the object is flagged collected; until then, an

@@ -2,8 +2,15 @@
 #define MAIN_DLL_DLL_0200_DLL200_H_
 
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "global.h"
 #include "main/objanim_update.h"
+
+typedef struct Dll200Placement
+{
+    ObjPlacement head;
+    s8 rotXByte;
+} Dll200Placement;
 
 /* Set of 3 item ids copied from a placement's item-set table and passed
  * (as an s32[3]) to isOneOfItemsBeingUsed to test the player's held item. */
@@ -37,10 +44,10 @@ void dll_200_initialise_nop(void);
 int dll_200_getExtraSize_ret_40(void);
 int dll_200_getObjectTypeId(void);
 void dll_200_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible);
-void dll_200_init(int* obj, int* arg);
+void dll_200_init(GameObject* obj, Dll200Placement* def);
 int dll_200_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate, int arg3);
-int dll_200_unlockFireBlasterSpell(int* obj, int unused, ObjAnimUpdateState* animUpdate, int arg3);
+int dll_200_unlockFireBlasterSpell(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate, int arg3);
 void dll_200_update(int obj);
-void fn_801F2290(int obj);
+void fn_801F2290(GameObject* obj);
 
 #endif /* MAIN_DLL_DLL_0200_DLL200_H_ */

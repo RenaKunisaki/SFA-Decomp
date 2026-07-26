@@ -65,25 +65,25 @@ void dll_1DA_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 void dll_1DA_hitDetect(GameObject* obj)
 {
 
-    void* hi;
-    void* player;
+    GameObject* hi;
+    GameObject* player;
     f32 k;
     int hit = ObjHits_GetPriorityHit(obj, (int*)&hi, NULL, NULL);
     if (hit == 0xE)
     {
         player = Obj_GetPlayerObject();
-        (void)Vec_distance((float*)&(obj)->anim.worldPosX, (float*)((int)player + 0x18));
-        (obj)->anim.velocityX = ((GameObject*)hi)->anim.velocityX * (k = 0.5f);
-        (obj)->anim.velocityZ = ((GameObject*)hi)->anim.velocityZ * k;
+        (void)Vec_distance((float*)&(obj)->anim.worldPosX, (float*)&player->anim.worldPosX);
+        (obj)->anim.velocityX = hi->anim.velocityX * (k = 0.5f);
+        (obj)->anim.velocityZ = hi->anim.velocityZ * k;
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_birdymornin11_1f9);
     }
 }
 
 /* dll_1DA_update: rolling-rock physics -- damp velocity, bounce off geometry normal,
  * fall, land on contact object, clamp to floor height. */
-void dll_1DA_update(int obj)
+void dll_1DA_update(GameObject* obj)
 {
-    int state;
+    Dll1DAState* state;
     f32 vx;
     f32 vy;
     f32 vz;
@@ -96,33 +96,33 @@ void dll_1DA_update(int obj)
     int i;
     RockHitInfo out;
 
-    state = *(int*)&((GameObject*)obj)->extra;
-    if (((Dll1DAState*)state)->grounded != 0)
+    state = obj->extra;
+    if (state->grounded != 0)
     {
-        ((GameObject*)obj)->anim.velocityX = ((GameObject*)obj)->anim.velocityX * (k = 0.85f);
-        ((GameObject*)obj)->anim.velocityZ = ((GameObject*)obj)->anim.velocityZ * k;
+        obj->anim.velocityX = obj->anim.velocityX * (k = 0.85f);
+        obj->anim.velocityZ = obj->anim.velocityZ * k;
     }
     else
     {
-        ((GameObject*)obj)->anim.velocityX = ((GameObject*)obj)->anim.velocityX * (k = 0.9f);
-        ((GameObject*)obj)->anim.velocityZ = ((GameObject*)obj)->anim.velocityZ * k;
+        obj->anim.velocityX = obj->anim.velocityX * (k = 0.9f);
+        obj->anim.velocityZ = obj->anim.velocityZ * k;
     }
-    if (((GameObject*)obj)->anim.velocityX < 0.1f && ((GameObject*)obj)->anim.velocityX > -0.1f &&
-        ((GameObject*)obj)->anim.velocityZ < 0.1f &&
-        ((GameObject*)obj)->anim.velocityZ > -0.1f)
+    if (obj->anim.velocityX < 0.1f && obj->anim.velocityX > -0.1f &&
+        obj->anim.velocityZ < 0.1f &&
+        obj->anim.velocityZ > -0.1f)
     {
-        ((GameObject*)obj)->anim.velocityX = (k = 0.0f);
-        ((GameObject*)obj)->anim.velocityZ = k;
+        obj->anim.velocityX = (k = 0.0f);
+        obj->anim.velocityZ = k;
     }
-    objMove((GameObject*)obj, ((GameObject*)obj)->anim.velocityX * timeDelta, 0.0f,
-            ((GameObject*)obj)->anim.velocityZ * timeDelta);
-    hitCount = objBboxFn_800640cc(&((GameObject*)obj)->anim.previousLocalPosX, (f32*)(obj + 0xc), 6.5f, 1,
-                                  (TrackBBoxHit*)out.hit, (GameObject*)obj, 8, -1, 0xff, 0);
+    objMove(obj, obj->anim.velocityX * timeDelta, 0.0f,
+            obj->anim.velocityZ * timeDelta);
+    hitCount = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.5f, 1,
+                                  (TrackBBoxHit*)out.hit, obj, 8, -1, 0xff, 0);
     if (hitCount != 0)
     {
-        vx = -((GameObject*)obj)->anim.velocityX;
-        vy = -((GameObject*)obj)->anim.velocityY;
-        vz = -((GameObject*)obj)->anim.velocityZ;
+        vx = -obj->anim.velocityX;
+        vy = -obj->anim.velocityY;
+        vz = -obj->anim.velocityZ;
         len = sqrtf(vz * vz + (vx * vx + vy * vy));
         if (0.0f != len)
         {
@@ -132,42 +132,43 @@ void dll_1DA_update(int obj)
             vz = vz * s;
         }
         reflect = 2.0f * (vz * out.nz + (vx * out.nx + vy * out.ny));
-        ((GameObject*)obj)->anim.velocityX = out.nx * reflect;
-        ((GameObject*)obj)->anim.velocityY = out.ny * reflect;
-        ((GameObject*)obj)->anim.velocityZ = out.nz * reflect;
-        ((GameObject*)obj)->anim.velocityX = ((GameObject*)obj)->anim.velocityX - vx;
-        ((GameObject*)obj)->anim.velocityY = ((GameObject*)obj)->anim.velocityY - vy;
-        ((GameObject*)obj)->anim.velocityZ = ((GameObject*)obj)->anim.velocityZ - vz;
-        ((GameObject*)obj)->anim.velocityX = ((GameObject*)obj)->anim.velocityX * (damping = 0.8f * len);
-        ((GameObject*)obj)->anim.velocityY = ((GameObject*)obj)->anim.velocityY * (0.5f * len);
-        ((GameObject*)obj)->anim.velocityZ = ((GameObject*)obj)->anim.velocityZ * damping;
+        obj->anim.velocityX = out.nx * reflect;
+        obj->anim.velocityY = out.ny * reflect;
+        obj->anim.velocityZ = out.nz * reflect;
+        obj->anim.velocityX = obj->anim.velocityX - vx;
+        obj->anim.velocityY = obj->anim.velocityY - vy;
+        obj->anim.velocityZ = obj->anim.velocityZ - vz;
+        obj->anim.velocityX = obj->anim.velocityX * (damping = 0.8f * len);
+        obj->anim.velocityY = obj->anim.velocityY * (0.5f * len);
+        obj->anim.velocityZ = obj->anim.velocityZ * damping;
     }
-    ((GameObject*)obj)->anim.localPosY = -(0.2f * timeDelta - ((GameObject*)obj)->anim.localPosY);
-    hitCount = hitDetectFn_80065e50((GameObject*)obj, ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                    ((GameObject*)obj)->anim.localPosZ, &floorList, 0, 0x11);
-    ((Dll1DAState*)state)->grounded = 0;
+    obj->anim.localPosY = -(0.2f * timeDelta - obj->anim.localPosY);
+    hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY,
+                                    obj->anim.localPosZ, &floorList, 0, 0x11);
+    state->grounded = 0;
     i = 0;
     for (; hitCount > 0; hitCount--)
     {
-        if (((GameObject*)obj)->anim.localPosY < 5.0f + floorList[i]->height)
+        if (obj->anim.localPosY < 5.0f + floorList[i]->height)
         {
-            ((GameObject*)obj)->anim.localPosY = floorList[i]->height;
-            ObjHits_AddContactObject(floorList[i]->object, (GameObject*)obj);
-            ((Dll1DAState*)state)->grounded = 1;
+            obj->anim.localPosY = floorList[i]->height;
+            ObjHits_AddContactObject(floorList[i]->object, obj);
+            state->grounded = 1;
             break;
         }
         i++;
     }
-    if (((GameObject*)obj)->anim.localPosY < *(f32*)state)
+    if (obj->anim.localPosY < state->floorHeight)
     {
-        ((GameObject*)obj)->anim.localPosY = *(f32*)state;
+        obj->anim.localPosY = state->floorHeight;
     }
-    saveGame_saveObjectPos((GameObject*)obj);
+    saveGame_saveObjectPos(obj);
 }
 
 void dll_1DA_init(GameObject* obj)
 {
-    *(*(f32**)&obj->extra) = obj->anim.localPosY;
+    Dll1DAState* state = obj->extra;
+    state->floorHeight = obj->anim.localPosY;
     obj->anim.localPosY += 1.0f;
 }
 

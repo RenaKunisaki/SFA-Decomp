@@ -87,13 +87,13 @@ void DBstealerwo_setFuncPtrs_80203c78(void)
     gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
 }
 
-int dbholecontrol1_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
+int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     int newObj;
     void* res;
     int* objs;
     int count;
-    int data = *(int*)&((GameObject*)obj)->anim.placementData;
+    int data = *(int*)&obj->anim.placementData;
     int i;
 
     for (i = 0; i < animUpdate->eventCount; i++)
@@ -110,12 +110,12 @@ int dbholecontrol1_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
                 continue;
             newObj = (int)Obj_AllocObjectSetup(56, DBHOLECONTROL1_CHILD_OBJ);
             memcpy((void*)newObj, res, 56);
-            ((GameObject*)newObj)->anim.rootMotionScale = ((GameObject*)obj)->anim.localPosX;
-            ((GameObject*)newObj)->anim.localPosX = ((GameObject*)obj)->anim.localPosY;
-            ((GameObject*)newObj)->anim.localPosY = ((GameObject*)obj)->anim.localPosZ;
+            ((GameObject*)newObj)->anim.rootMotionScale = obj->anim.localPosX;
+            ((GameObject*)newObj)->anim.localPosX = obj->anim.localPosY;
+            ((GameObject*)newObj)->anim.localPosY = obj->anim.localPosZ;
             *(int*)&((GameObject*)newObj)->anim.localPosZ = -1;
             *(s16*)(newObj + 26) = 149;
-            loadObjectAtObject((GameObject*)obj, (ObjPlacement*)newObj);
+            loadObjectAtObject(obj, (ObjPlacement*)newObj);
             break;
         }
     }
@@ -123,7 +123,7 @@ int dbholecontrol1_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
     if (mainGetBit(((Dbholecontrol1Placement*)data)->hideGameBit) != 0 || lbl_803DDCE0 != 0)
     {
         objs = (int*)ObjGroup_GetObjects(DBEGG_OBJGROUP, &count);
-        ObjMsg_SendToObjects(0, 3, (void*)obj, 17, 0);
+        ObjMsg_SendToObjects(0, 3, obj, 17, 0);
         while (count-- != 0)
         {
             ObjGroup_RemoveObject(*objs++, DBEGG_OBJGROUP);
@@ -158,15 +158,15 @@ void dbholecontrol1_hitDetect(void)
 {
 }
 
-void dbholecontrol1_update(int* obj)
+void dbholecontrol1_update(GameObject* obj)
 {
 
     u8* def;
-    def = *(u8**)&((GameObject*)obj)->anim.placementData;
+    def = *(u8**)&obj->anim.placementData;
     if (mainGetBit(((Dbholecontrol1Placement*)def)->hideGameBit) != 0)
     {
-        Obj_RemoveFromUpdateList((GameObject*)obj);
-        ((GameObject*)obj)->anim.flags = (s16)(((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
+        Obj_RemoveFromUpdateList(obj);
+        obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
     }
     else if (mainGetBit(((Dbholecontrol1Placement*)def)->triggerGameBit) != 0)
     {
@@ -174,12 +174,12 @@ void dbholecontrol1_update(int* obj)
     }
 }
 
-void dbholecontrol1_init(int* obj, u8* params)
+void dbholecontrol1_init(GameObject* obj, u8* params)
 {
-    DbHoleControl1State* state = ((GameObject*)obj)->extra;
+    DbHoleControl1State* state = obj->extra;
     ObjGroup_AddObject((int)obj, DBHOLECONTROL1_OBJGROUP);
     *(s16*)obj = (s16)((s8)params[0x18] << 8);
-    ((GameObject*)obj)->animEventCallback = dbholecontrol1_SeqFn;
+    obj->animEventCallback = dbholecontrol1_SeqFn;
     state->gameBitA = ((Dbholecontrol1Placement*)params)->gameBitA;
     state->gameBitB = ((Dbholecontrol1Placement*)params)->gameBitB;
 }
