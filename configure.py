@@ -1184,7 +1184,6 @@ config.libs = [
             Object(NonMatching, "main/dll/DR/dll_0257_drearthwarrior.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0258_drcloudrunner.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "main/objanim.c", cflags=cflags_dll_noopt_nocse),
-            Object(NonMatching, "main/objanim_8002f5d4.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/lightmap.c", cflags=[*cflags_dll_noopt_noprop, "-inline", "noauto"]),
             Object(NonMatching, "main/lightmap_initmapblocks.c", cflags=[*cflags_dll_noopt_nocse_noprop, "-inline", "noauto"]),
             Object(
