@@ -258,13 +258,14 @@ void TumbleWeedBush_update(GameObject* obj) {
 }
 
 void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, int flags) {
+    static const f32 sTumbleweedBushInitScale[1] = { TUMBLEWEED_BUSH_INIT_SCALE };
     TumbleweedBushState* state;
     f32 scale;
     int offsetTableIndex;
     int pieceIndex;
 
     state = obj->extra;
-    state->scale = TUMBLEWEED_BUSH_INIT_SCALE;
+    state->scale = sTumbleweedBushInitScale[0];
     state->triggerRadius = (u16)(placement->radiusByte * 2);
     state->variant = placement->variant;
     obj->anim.rotZ =
@@ -346,20 +347,25 @@ void tumbleweedbush_activatePiece(GameObject* obj) {
     state->phase = TUMBLEWEED_BUSH_ACTIVE_PIECE_PHASE;
 }
 
+const f32 gTumbleweedPieceHorizontalDamping[1] = { 10.0f };
+const f32 gTumbleweedPieceGroundClearance[1] = { 7.0f };
+const f32 gTumbleweedPieceGravity[1] = { -0.17f };
+const f32 gTumbleweedPieceRestVelocity[1] = { 0.0f };
+
 void tumbleweedbush_updateDetachedPiece(GameObject* piece, TumbleweedState* state) {
     f32 groundDistance;
 
-    piece->anim.velocityX /= TUMBLEWEED_PIECE_HORIZONTAL_DAMPING;
+    piece->anim.velocityX /= gTumbleweedPieceHorizontalDamping[0];
     if (fn_80065684(piece, piece->anim.localPosX, piece->anim.localPosY, piece->anim.localPosZ, &groundDistance, 0) !=
         0) {
-        if (groundDistance > TUMBLEWEED_PIECE_GROUND_CLEARANCE) {
-            piece->anim.velocityY += TUMBLEWEED_PIECE_GRAVITY * timeDelta;
+        if (groundDistance > gTumbleweedPieceGroundClearance[0]) {
+            piece->anim.velocityY += gTumbleweedPieceGravity[0] * timeDelta;
         } else {
-            piece->anim.localPosY -= groundDistance - TUMBLEWEED_PIECE_GROUND_CLEARANCE;
-            piece->anim.velocityY = 0.0f;
+            piece->anim.localPosY -= groundDistance - gTumbleweedPieceGroundClearance[0];
+            piece->anim.velocityY = gTumbleweedPieceRestVelocity[0];
         }
     }
-    piece->anim.velocityZ /= TUMBLEWEED_PIECE_HORIZONTAL_DAMPING;
+    piece->anim.velocityZ /= gTumbleweedPieceHorizontalDamping[0];
 
     state->rotVelocityZ /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
     state->rotVelocityY /= TUMBLEWEED_PIECE_ROTATION_DAMPING;
