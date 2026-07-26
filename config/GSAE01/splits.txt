@@ -3206,7 +3206,7 @@ dlls/objects/507/507.c:
 	.data       start:0x80328780 end:0x803287B8
 	.sdata2     start:0x803E5D00 end:0x803E5D0C
 
-main/dll/dll_01FC_laserbeam.c:
+dlls/objects/508/508.c:
 	.text       start:0x801F0AE4 end:0x801F160C
 	.data       start:0x803287B8 end:0x803287F0
 	.sdata2     start:0x803E5D10 end:0x803E5D58

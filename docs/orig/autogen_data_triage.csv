@@ -66,7 +66,7 @@ address,section,size_bytes,byte_class,subtype_reason,adjacent_owner,adjacency_co
 0x803DDB48,.sbss,8,bss,zero-init,,-,2,main/dll/IM/dll_0171_imspaceringgen.o,8,0,0,0
 0x803DDB80,.sbss,16,bss,zero-init,,-,6,main/dll/DIM/DIM2icicle.o,13,0,0,0
 0x803DDBC0,.sbss,8,bss,zero-init,,-,2,main/dll/dll_018F_ecshshrine.o,8,0,0,0
-0x803DDC80,.sbss,8,bss,zero-init,,-,1,main/dll/dll_01FC_laserbeam.o,8,0,0,0
+0x803DDC80,.sbss,8,bss,zero-init,,-,1,dlls/objects/508/508.o,8,0,0,0
 0x803DDCA0,.sbss,24,bss,zero-init,,-,2,main/dll/WM/dll_020E_wmsun.o,24,0,0,0
 0x803DDCC0,.sbss,32,bss,zero-init,,-,2,main/light.o,31,0,0,0
 0x803DDD00,.sbss,48,bss,zero-init,,-,4,main/worldplanet_update.o,39,0,0,0

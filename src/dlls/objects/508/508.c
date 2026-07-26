@@ -1,49 +1,25 @@
-/*
- * DLL 0x01FC (laserbeam) - WarpStone-City sweeping laser-beam hazard object.
- *
- * Object callbacks (LaserBeam_*): init/free set up the beam from its
- * placement (yaw byte, fire period, beamKind, texture asset chosen by
- * beamKind 1/30/other), initialise/release acquire+release the shared modgfx
- * effect resource (Resource_Acquire 0x81) into gLaserBeamObjModgfxResource. update() runs the
- * per-frame state machine: counts down fireTimer, drives the emitter through
- * the modgfx vtable (slot +4) per beamKind, sweeps the beam, projects the
- * player onto the beam axis (mathCosf/mathSinf of rotX), and on a hit plays
- * sfx + spawns partfx 0x198 and messages the player (ObjMsg 0x60003/0x60004).
- *
- * beamKind values seen: 0 (default modgfx emitter), 1 (texture 0x23d),
- * 2, 3, 30 (texture 0x3e9). The sibling setup/state structs (Dll1FBSetup,
- * WMGalleon*, WMSeqObjectSetup, LaserBeamPlacement, LightSourceState) document
- * the layouts of related objects shipped in the same DLL.
- */
-#include "main/dll/dll_01FC_laserbeam.h"
+/* DLL 0x01FC */
 #include "dlls/object_descriptor.h"
-#include "main/dll/modgfx_interface.h"
-#include "main/texture.h"
-#include "main/dll/partfx_interface.h"
-#include "main/dll/dll1fbstate_struct.h"
-#include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/dll/laserbeamstate_struct.h"
-#include "main/dll/dll200state_struct.h"
-#include "main/dll/LGT/dll_0206_lightsource.h"
 #include "game/objects/object.h"
-#include "main/frame_timing.h"
-#include "main/dll/player_api.h"
 #include "game/objects/object_setup.h"
-#include "main/resource.h"
-#include "main/obj_message.h"
-#include "main/gamebits.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_position_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll1fbsetup_struct.h"
-#include "main/dll/wmgalleonsetup_struct.h"
-#include "main/dll/wmseqobjectsetup_struct.h"
-#include "main/dll/wmgalleonstate_struct.h"
-#include "main/gamebit_ids.h"
+#include "main/dll/dll_01FC_laserbeam.h"
 #include "main/dll/foodbag.h"
-
-#define OBJ_PTR(obj, offset) (*(void**)((u8*)(obj) + (offset)))
+#include "main/dll/laserbeamstate_struct.h"
+#include "main/dll/modgfx_interface.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/player_api.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits.h"
+#include "main/obj_message.h"
+#include "main/resource.h"
+#include "main/texture.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 #define LASERBEAM_MSG_PLAYER_HIT     0x60003 /* message the player on a standard beam hit */
 #define LASERBEAM_MSG_PLAYER_BURST   0x60004 /* knock the player back with a burst hit */
@@ -52,24 +28,6 @@
 #define LASERBEAM_TEXTURE_KIND30     0x3e9   /* beam texture for beamKind 30 -> b->texture */
 #define LASERBEAM_TEXTURE_KIND1      0x23d   /* beam texture for beamKind 1 -> b->texture */
 #define LASERBEAM_TEXTURE_DEFAULT    0xd9    /* beam texture for other beamKinds -> b->texture */
-
-STATIC_ASSERT(sizeof(Dll1FBState) == 0xc);
-STATIC_ASSERT(offsetof(Dll1FBState, baseMove) == 0x04);
-STATIC_ASSERT(offsetof(Dll1FBState, triggerMode) == 0x06);
-STATIC_ASSERT(offsetof(Dll1FBState, hideModel) == 0x09);
-STATIC_ASSERT(sizeof(WMGalleonState) == 0x10);
-STATIC_ASSERT(offsetof(WMGalleonState, savedX) == 0x00);
-STATIC_ASSERT(offsetof(WMGalleonState, savedY) == 0x04);
-STATIC_ASSERT(offsetof(WMGalleonState, savedZ) == 0x08);
-STATIC_ASSERT(offsetof(WMGalleonState, mapEventsLatched) == 0x0C);
-STATIC_ASSERT(offsetof(WMGalleonState, savedYaw) == 0x0E);
-STATIC_ASSERT(offsetof(Dll1FBSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(Dll1FBSetup, baseMove) == 0x19);
-STATIC_ASSERT(offsetof(Dll1FBSetup, triggerMode) == 0x1a);
-STATIC_ASSERT(offsetof(Dll1FBSetup, objectParam) == 0x1c);
-STATIC_ASSERT(offsetof(WMGalleonSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WMSeqObjectSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WMSeqObjectSetup, setupType) == 0x19);
 
 int LaserBeam_getExtraSize(void)
 {
@@ -118,8 +76,6 @@ STATIC_ASSERT(offsetof(LaserBeamPlacement, firePeriod) == 0x1c);
 STATIC_ASSERT(offsetof(LaserBeamPlacement, disableGameBit) == 0x1e);
 
 STATIC_ASSERT(offsetof(LaserBeamState, beamKind) == 0x4e);
-
-STATIC_ASSERT(sizeof(Dll200State) == 0x28);
 
 static const f32 gLaserBeamObjPi = 3.1415927f;
 static const f32 gLaserBeamObjAngleToRadScale = 32768.0f;
