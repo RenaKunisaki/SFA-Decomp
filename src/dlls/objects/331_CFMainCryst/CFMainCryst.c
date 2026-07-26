@@ -70,21 +70,21 @@ STATIC_ASSERT(sizeof(CfMainCrystalState) == 0x160);
 
 extern f32 lbl_803E4210;
 
-int* gCfMainCrystalObj;
+GameObject* gCfMainCrystalObj;
 
 /* cfmaincrystal_updateBeams: main crystal beam update -
  * collect the three pylon positions from messages, re-request missing ones,
  * emit the beam particles toward the crystal (and down from each pylon),
  * ramp the convergence charge, hum volume and per-beam chime timers. */
-void cfmaincrystal_updateBeams(int* obj)
+void cfmaincrystal_updateBeams(GameObject* obj)
 {
     int i;
-    CfMainCrystalState* sub = ((GameObject*)obj)->extra;
+    CfMainCrystalState* sub = obj->extra;
     int idx;
     int count;
     PartPayload pay;
     f32 dir[3];
-    int msgSrc;
+    GameObject* msgSrc;
     int msgType;
     int payload = 0;
     Obj_GetPlayerObject();
@@ -94,27 +94,27 @@ void cfmaincrystal_updateBeams(int* obj)
         switch (msgType)
         {
         case CFMAINCRYSTAL_MSG_PYLON_1:
-            sub->pylonX[0] = ((GameObject*)msgSrc)->anim.localPosX;
+            sub->pylonX[0] = msgSrc->anim.localPosX;
             sub->pylonY[0] = 1945.0f;
-            sub->pylonZ[0] = ((GameObject*)msgSrc)->anim.localPosZ;
+            sub->pylonZ[0] = msgSrc->anim.localPosZ;
             sub->pylonTimer[0] = 1;
             break;
         case CFMAINCRYSTAL_MSG_PYLON_2:
-            sub->pylonX[1] = ((GameObject*)msgSrc)->anim.localPosX;
+            sub->pylonX[1] = msgSrc->anim.localPosX;
             sub->pylonY[1] = 1945.0f;
-            sub->pylonZ[1] = ((GameObject*)msgSrc)->anim.localPosZ;
+            sub->pylonZ[1] = msgSrc->anim.localPosZ;
             sub->pylonTimer[1] = 1;
             break;
         case CFMAINCRYSTAL_MSG_PYLON_3:
-            sub->pylonX[2] = ((GameObject*)msgSrc)->anim.localPosX;
+            sub->pylonX[2] = msgSrc->anim.localPosX;
             sub->pylonY[2] = 1945.0f;
-            sub->pylonZ[2] = ((GameObject*)msgSrc)->anim.localPosZ;
+            sub->pylonZ[2] = msgSrc->anim.localPosZ;
             sub->pylonTimer[2] = 1;
             break;
         case CFMAINCRYSTAL_MSG_CRYSTAL:
-            sub->crystalX = ((GameObject*)msgSrc)->anim.localPosX;
-            sub->crystalY = ((GameObject*)msgSrc)->anim.localPosY;
-            sub->crystalZ = ((GameObject*)msgSrc)->anim.localPosZ;
+            sub->crystalX = msgSrc->anim.localPosX;
+            sub->crystalY = msgSrc->anim.localPosY;
+            sub->crystalZ = msgSrc->anim.localPosZ;
             sub->crystalKnown = 1;
             break;
         }
@@ -190,9 +190,9 @@ void cfmaincrystal_updateBeams(int* obj)
                 dir[2] = -dir[2];
                 pay.d = i;
                 (*gPartfxInterface)->spawnObject(obj, CFMAINCRYSTAL_PARTFX_BEAM, &pay, 2, -1, dir);
-                dir[0] = sub->pylonX[i] - ((GameObject*)gCfMainCrystalObj)->anim.localPosX;
+                dir[0] = sub->pylonX[i] - gCfMainCrystalObj->anim.localPosX;
                 dir[1] = -80.0f;
-                dir[2] = sub->pylonZ[i] - ((GameObject*)gCfMainCrystalObj)->anim.localPosZ;
+                dir[2] = sub->pylonZ[i] - gCfMainCrystalObj->anim.localPosZ;
                 PSVECNormalize(dir, dir);
                 pay.x = 0.0f;
                 pay.y = 20.0f;
@@ -265,14 +265,14 @@ void cfmaincrystal_updateBeams(int* obj)
             sl->colorR = 0;
             sl->colorG = 0;
             sl->colorB = 0;
-            sl->startX = ((GameObject*)obj)->anim.localPosX;
-            sl->startY = 15.0f + ((GameObject*)obj)->anim.localPosY;
-            sl->startZ = ((GameObject*)obj)->anim.localPosZ;
+            sl->startX = obj->anim.localPosX;
+            sl->startY = 15.0f + obj->anim.localPosY;
+            sl->startZ = obj->anim.localPosZ;
             sl->endX = sl->startX;
             sl->endY = -(250.0f * fr - sl->startY);
             sl->endZ = sl->startZ;
         }
-        ((GameObject*)obj)->anim.rotX += framesThisStep * (count * 0x7e);
+        obj->anim.rotX += framesThisStep * (count * 0x7e);
     }
     if (count != 0)
     {
@@ -314,7 +314,7 @@ void cfmaincrystal_updateBeams(int* obj)
         }
         i++;
     } while (i < 3);
-    ((GameObject*)obj)->anim.rotX += framesThisStep * 0x2a;
+    obj->anim.rotX += framesThisStep * 0x2a;
 }
 
 int CFMainCrystal_getExtraSize(void)
@@ -327,29 +327,29 @@ int CFMainCrystal_getObjectTypeId(void)
     return 0x1;
 }
 
-void CFMainCrystal_free(int* obj)
+void CFMainCrystal_free(GameObject* obj)
 {
     (*gExpgfxInterface)->freeSource((u32)obj);
 }
 
-void CFMainCrystal_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void CFMainCrystal_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E4210);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4210);
 }
 
 void CFMainCrystal_hitDetect(void)
 {
 }
 
-void CFMainCrystal_update(int* obj)
+void CFMainCrystal_update(GameObject* obj)
 {
     u32 payload;
     u32 msgType;
     u32 srcObjId;
     s8 mode;
-    mode = ((s8*)((GameObject*)obj)->anim.placement)[0x19];
+    mode = ((s8*)obj->anim.placement)[0x19];
     switch (mode)
     {
     case 0:
@@ -367,15 +367,15 @@ void CFMainCrystal_update(int* obj)
             }
         }
         gCfMainCrystalObj = obj;
-        ((GameObject*)obj)->anim.rotX = (s16)(((GameObject*)obj)->anim.rotX + framesThisStep * 0xb6);
+        obj->anim.rotX = (s16)(obj->anim.rotX + framesThisStep * 0xb6);
         break;
     }
 }
 
-void CFMainCrystal_init(int* obj, u8* def)
+void CFMainCrystal_init(GameObject* obj, u8* def)
 {
-    CfMainCrystalState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32) * (s8*)((char*)def + 0x18) << 8);
+    CfMainCrystalState* state = obj->extra;
+    obj->anim.rotX = (s16)((s32) * (s8*)((char*)def + 0x18) << 8);
     if (*(s8*)((char*)def + 0x19) == 0)
     {
         state->chime[0] = 0x28;

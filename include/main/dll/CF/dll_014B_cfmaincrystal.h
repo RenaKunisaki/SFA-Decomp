@@ -30,14 +30,14 @@ typedef struct CfMainCrystalState
     u8 chime[4]; /* 0x15c: per-beam chime timers */
 } CfMainCrystalState;
 
-void cfmaincrystal_updateBeams(int* obj);
+void cfmaincrystal_updateBeams(GameObject* obj);
 int CFMainCrystal_getExtraSize(void);
 int CFMainCrystal_getObjectTypeId(void);
-void CFMainCrystal_free(int* obj);
-void CFMainCrystal_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void CFMainCrystal_free(GameObject* obj);
+void CFMainCrystal_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void CFMainCrystal_hitDetect(void);
-void CFMainCrystal_update(int* obj);
-void CFMainCrystal_init(int* obj, u8* def);
+void CFMainCrystal_update(GameObject* obj);
+void CFMainCrystal_init(GameObject* obj, u8* def);
 void CFMainCrystal_release(void);
 void CFMainCrystal_initialise(void);
 
