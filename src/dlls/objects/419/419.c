@@ -1,5 +1,5 @@
 /*
- * nwanimice (DLL 0x1A3) - the animated ice blocks of SnowHorn Wastes
+ * DLL 0x1A3 - the animated ice blocks of SnowHorn Wastes
  * (map 'nwastes', 0x0A).
  *
  * These are the moving "source" ice objects: each one registers in the

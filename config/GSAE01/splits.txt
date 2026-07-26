@@ -2853,7 +2853,7 @@ dlls/objects/418_NW_tricky/NW_tricky.c:
 	.data       start:0x80326950 end:0x80326988
 	.sdata2     start:0x803E5260 end:0x803E526C
 
-main/dll/NW/dll_01A3_nwanimice.c:
+dlls/objects/419/419.c:
 	.text       start:0x801CFB24 end:0x801CFBB4
 	.data       start:0x80326988 end:0x803269C0
 
