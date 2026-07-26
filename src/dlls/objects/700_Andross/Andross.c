@@ -1037,26 +1037,20 @@ void andross_update(int obj)
             state->durationTimer = 400.0f;
         }
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         gAndrossSwayPhaseX += gAndrossSwayPhaseStepX;
@@ -1265,26 +1259,20 @@ void andross_update(int obj)
         }
         if ((state->fightPhase == 5) && (state->actionState == 0xb))
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         gAndrossSwayPhaseX += gAndrossSwayPhaseStepX;
@@ -1442,26 +1430,20 @@ void andross_update(int obj)
         Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_and_missileloop);
         if (state->fightPhase == 5)
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         gAndrossSwayPhaseX += gAndrossSwayPhaseStepX;
@@ -1683,26 +1665,20 @@ void andross_update(int obj)
         }
         if ((state->fightPhase == 5) && (state->actionToggle == 0))
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         gAndrossSwayPhaseX += gAndrossSwayPhaseStepX;
@@ -1742,26 +1718,20 @@ void andross_update(int obj)
         Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_and_spitout);
         if ((state->fightPhase == 5) && (state->actionToggle == 0))
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         gAndrossSwayPhaseX += gAndrossSwayPhaseStepX;
@@ -1834,26 +1804,20 @@ void andross_update(int obj)
         }
         if ((state->fightPhase == 5) && (state->actionToggle == 0))
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         gAndrossSwayPhaseX += gAndrossSwayPhaseStepX;
@@ -1928,26 +1892,20 @@ void andross_update(int obj)
         fval = (0.8f < state->fadeAlpha) ? 0.8f : state->fadeAlpha;
         state->fadeAlpha = fval;
         {
-            cueIndex = 0;
-            while (1)
+            for (cueIndex = 0;
+                 cueIndex < 6
+                     || (state->timer -= framesThisStep,
+                         (state->timer <= 0
+                          && (mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1),
+                              state->timer = 0x3c, 1)),
+                         0);
+                 cueIndex++)
             {
                 if (mainGetBit(cueIndex + GAMEBIT_ANDROSS_HIT_CUE_BASE) != 0)
                 {
                     state->timer = 0x3c;
                     break;
                 }
-                cueIndex++;
-                if (cueIndex < 6)
-                {
-                    continue;
-                }
-                state->timer -= framesThisStep;
-                if (state->timer <= 0)
-                {
-                    mainSetBits(randomGetRange(0, 5) + GAMEBIT_ANDROSS_HIT_CUE_BASE, 1);
-                    state->timer = 0x3c;
-                }
-                break;
             }
         }
         state->actionTimer -= framesThisStep;
