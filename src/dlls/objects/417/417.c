@@ -899,6 +899,7 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
 
 void NW_mammoth_init(NwMammothObject* obj, NwMammothMapData* mapData, int isReload)
 {
+    extern const f32 gNwMammothDefaultAnimStepScale;
     NwMammothState* state = obj->state;
     NwMammothPathParams pathParam = sNwMammothPathParams;
     int curveParam;
@@ -909,7 +910,7 @@ void NW_mammoth_init(NwMammothObject* obj, NwMammothMapData* mapData, int isRelo
     {
         return;
     }
-    state->animStepScale = 0.005f;
+    state->animStepScale = gNwMammothDefaultAnimStepScale;
     switch (mapData->behaviorMode)
     {
     case 0:
@@ -976,3 +977,5 @@ void NW_mammoth_init(NwMammothObject* obj, NwMammothMapData* mapData, int isRelo
     }
     ObjGroup_AddObject((int)obj, NW_MAMMOTH_GROUP_ID);
 }
+
+const f32 gNwMammothDefaultAnimStepScale = 0.005f;
