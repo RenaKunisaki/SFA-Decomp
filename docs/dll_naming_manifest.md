@@ -405,7 +405,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x167 | SpiritDoorL | CONFIRMED | dlls/objects/359_SpiritDoorL/SpiritDoorL.c | = (canonical) | — |
 | 0x168 | HoloPoint | RAW | dlls/objects/360_HoloPoint/HoloPoint.c | = (canonical) | data-only DLL |
 | 0x169 | IMIceMounta | CONFIRMED | dlls/objects/361_IMIceMounta/IMIceMounta.c | = (canonical) | — |
-| 0x16A | CRrockfall (+IMIcicle) | COMPLETE | main/dll/dll_016A_crrockfall.c | main/dll/CR/dll_016A_crrockfall.c | — |
+| 0x16A | CRrockfall (+IMIcicle) | COMPLETE | dlls/objects/362_CRrockfall/CRrockfall.c | = (canonical) | — |
 | 0x16B | MagicLight (+DIMMagicLig, IMMagicLigh) | CONFIRMED | main/dll/dll_016B_magiclight.c | = (canonical) | — |
 | 0x16C | — | NO-RETAIL-NAME | main/dll/dll_016C_dll16c.c | = (canonical) | — |
 | 0x16D | IMIcePillar | CONFIRMED | main/dll/dll_016D_imicepillar.c | main/dll/IM/dll_016D_imicepillar.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x16A | main/dll/dll_016A_crrockfall.c | main/dll/CR/dll_016A_crrockfall.c | COMPLETE |
 | 0x16D | main/dll/dll_016D_imicepillar.c | main/dll/IM/dll_016D_imicepillar.c | CONFIRMED |
 | 0x16E | main/dll/dll_016E_imanimspacecraft.c | main/dll/IM/dll_016E_imanimspacecraft.c | CONFIRMED |
 | 0x16F | main/dll/dll_016F_imspacethruster.c | main/dll/IM/dll_016F_imspacethruster.c | CONFIRMED |
