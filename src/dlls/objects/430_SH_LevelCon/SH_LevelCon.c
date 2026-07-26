@@ -39,6 +39,8 @@
 #include "main/audio/sfx.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/pad.h"
+#include "main/dll/DR/DRearthwalk.h"
 
 typedef struct ShLevelcontrolState
 {
@@ -89,13 +91,6 @@ STATIC_ASSERT(offsetof(ShLevelcontrolState, musicLatch) == 0x12);
 #define SHLEVELCONTROL_AIRMETER_BGTEXTURE    0x5db /* air-meter background texture id */
 
 extern f32 gShLevelControlHudTextDuration;
-
-#include "main/dll/SH/dll_01AF_shswaplift.h"
-#include "main/pad.h"
-#include "main/dll/DR/DRearthwalk.h"
-#include "main/dll/SH/dll_01B1_shstaff.h"
-
-union ShLevelControlConstF32 { f32 f; };
 
 void SH_LevelControl_setMusic(short* state);
 
@@ -993,37 +988,3 @@ void SH_LevelControl_init(GameObject* obj)
     }
     Rcp_DisableHeatEffect();
 }
-
-/* descriptor/ptr table auto 0x803277a8-0x80327818 */
-ObjectDescriptor gWarpStoneLiftObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)warpstonelift_initialise,
-    (ObjectDescriptorCallback)warpstonelift_release,
-    0,
-    (ObjectDescriptorCallback)warpstonelift_init,
-    (ObjectDescriptorCallback)warpstonelift_update,
-    (ObjectDescriptorCallback)warpstonelift_hitDetect,
-    (ObjectDescriptorCallback)warpstonelift_render,
-    (ObjectDescriptorCallback)warpstonelift_free,
-    (ObjectDescriptorCallback)warpstonelift_getObjectTypeId,
-    warpstonelift_getExtraSize,
-};
-ObjectDescriptor gSH_staffObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)sh_staff_update,
-    0,
-    (ObjectDescriptorCallback)sh_staff_render,
-    (ObjectDescriptorCallback)sh_staff_free,
-    0,
-    sh_staff_getExtraSize,
-};

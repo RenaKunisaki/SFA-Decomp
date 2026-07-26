@@ -15,6 +15,7 @@
  * flames, and ends the player's carry.
  */
 #include "dlls/object_descriptor.h"
+#include "main/dll/SH/dll_01B1_shstaff.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -39,6 +40,23 @@
 #define SHSTAFF_PHASE_DONE           6     /* deactivated */
 #define SHSTAFF_CHILD_OBJ_HAZE_FLAME 0x659 /* staff-haze child flame (SH_StaffHaze_update), spawned by sh_staff_SeqFn */
 #define SHSTAFF_TARGET_OBJGROUP      0xf   /* player-target group; the nearest object gets the pickup sequence */
+
+ObjectDescriptor gSH_staffObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)sh_staff_update,
+    0,
+    (ObjectDescriptorCallback)sh_staff_render,
+    (ObjectDescriptorCallback)sh_staff_free,
+    0,
+    sh_staff_getExtraSize,
+};
 
 int sh_staff_getExtraSize(void)
 {
@@ -644,4 +662,3 @@ ObjectDescriptor gSC_totempoleObjDescriptor = {
     (ObjectDescriptorCallback)sc_totempole_getObjectTypeId,
     sc_totempole_getExtraSize,
 };
-

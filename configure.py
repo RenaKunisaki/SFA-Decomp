@@ -1812,7 +1812,7 @@ config.libs = [
             Object(Matching, "main/dll/dll_1e8.c"),
             Object(NonMatching, "dlls/objects/429_SH_thorntai/SH_thorntai.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/scshgroup.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(MatchingFor("GSAE01"), "main/dll/SH/dll_01AE_shlevelcontrol.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/430_SH_LevelCon/SH_LevelCon.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/SH/dll_01AF_shswaplift.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/SH/dll_01B1_shstaff.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/SH/dll_01B2_shstaffhaze.c", cflags=cflags_dll_noopt),

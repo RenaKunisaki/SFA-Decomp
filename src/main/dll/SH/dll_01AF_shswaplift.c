@@ -9,6 +9,7 @@
  * disables its hit volume.
  */
 #include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "main/obj_trigger.h"
 #include "main/gamebit_ids.h"
@@ -30,6 +31,22 @@ s32 lbl_803DC058[2] = {0xC7C, 0xC7D};
 
 extern f32 lbl_803E54C8;
 
+ObjectDescriptor gWarpStoneLiftObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)warpstonelift_initialise,
+    (ObjectDescriptorCallback)warpstonelift_release,
+    0,
+    (ObjectDescriptorCallback)warpstonelift_init,
+    (ObjectDescriptorCallback)warpstonelift_update,
+    (ObjectDescriptorCallback)warpstonelift_hitDetect,
+    (ObjectDescriptorCallback)warpstonelift_render,
+    (ObjectDescriptorCallback)warpstonelift_free,
+    (ObjectDescriptorCallback)warpstonelift_getObjectTypeId,
+    warpstonelift_getExtraSize,
+};
 
 int warpstonelift_getExtraSize(void)
 {

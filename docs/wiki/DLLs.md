@@ -586,7 +586,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `MMSH` | Moon Mountain Pass Shrine (Krazoa spirit) | `src/dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c` |
 | `ECSH` | a Krazoa-spirit shrine (area code "EC" not decoded — comment notes the MMSH/ECSH/DFSH/DBSH/GPSH family explicitly) | `src/dlls/objects/399_ECSH_Shrine/ECSH_Shrine.c` |
 | `NW` | SnowHorn Wastes (map `nwastes`) | `src/dlls/objects/408_NWSH_levcon/NWSH_levcon.c` |
-| `SH` | SnowHorn / ThornTail Hollow | `src/main/dll/SH/dll_01AE_shlevelcontrol.c` |
+| `SH` | SnowHorn / ThornTail Hollow | `src/dlls/objects/430_SH_LevelCon/SH_LevelCon.c` |
 | `SB` | ShipBattle (the prologue) | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
 | `SC` | LightFoot Village (map `swapcircle`) | `src/main/dll/SC/dll_01B6_sclevelcontrol.c` |
 | `VF`/`VFP` | Volcano Force Point Temple | `src/main/dll/VF/dll_0216_vfplevelcontrol.c` |

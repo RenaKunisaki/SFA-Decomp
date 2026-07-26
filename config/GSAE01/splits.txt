@@ -2942,18 +2942,19 @@ main/dll/scshgroup.c:
 	.sbss       start:0x803DDBF0 end:0x803DDBF8
 	.sdata2     start:0x803E5460 end:0x803E54B0
 
-main/dll/SH/dll_01AE_shlevelcontrol.c:
+dlls/objects/430_SH_LevelCon/SH_LevelCon.c:
 	.text       start:0x801D7BA8 end:0x801D981C
-	.data       start:0x80327618 end:0x80327818
+	.data       start:0x80327618 end:0x803277A8
 	.sdata2     start:0x803E54B0 end:0x803E54C0
 
 main/dll/SH/dll_01AF_shswaplift.c:
 	.text       start:0x801D981C end:0x801D9B1C
+	.data       start:0x803277A8 end:0x803277E0
 	.sdata      start:0x803DC058 end:0x803DC060
 
 main/dll/SH/dll_01B1_shstaff.c:
 	.text       start:0x801D9B1C end:0x801DA8C4
-	.data       start:0x80327818 end:0x803279A8
+	.data       start:0x803277E0 end:0x803279A8
 	.sdata2     start:0x803E5500 end:0x803E5518
 
 main/dll/SH/dll_01B2_shstaffhaze.c:

@@ -206,7 +206,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_01A9_bombplant | 100.0000 | 91.9378 | -8.0622 |
 | main/main/dll/dll_0015_curves | 99.6533 | 91.6076 | -8.0457 |
 | main/main/dll/dll_0158_gunpowderbarrel | 100.0000 | 92.4408 | -7.5592 |
-| main/main/dll/SH/dll_01AE_shlevelcontrol | 100.0000 | 92.5453 | -7.4547 |
+| main/dlls/objects/430_SH_LevelCon/SH_LevelCon | 100.0000 | 92.5453 | -7.4547 |
 | main/main/dll/camshipbattle5c | 99.7560 | 92.5326 | -7.2234 |
 | main/main/shader | 98.9392 | 92.0709 | -6.8682 |
 | main/main/dll/dll_02A0_ring | 100.0000 | 93.4272 | -6.5728 |
