@@ -572,10 +572,10 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x20E | WM_sun | COMPLETE | dlls/objects/526_WM_sun/WM_sun.c | = (canonical) | — |
 | 0x20F | WM_SpiritSe | COMPLETE | dlls/objects/527_WM_SpiritSe/WM_SpiritSe.c | = (canonical) | — |
 | 0x210 | WM_Planets | COMPLETE | dlls/objects/528_WM_Planets/WM_Planets.c | = (canonical) | — |
-| 0x211 | WM_WallCrawler (+DR_BigSkeet, DR_SmallSke) | CONFIRMED | main/dll/dll_0211_wmwallcrawler.c | main/dll/WM/dll_0211_wmwallcrawler.c | — |
-| 0x212 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x213 | WM_VConsole | RAW | *(none)* | — | no .text fns (descriptor data only) |
-| 0x214 | WM_TransTop | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x211 | — | COMPLETE | dlls/objects/529/529.c | = (canonical) | No recovered retail basename |
+| 0x212 | — | COMPLETE | dlls/objects/530/530.c | = (canonical) | No recovered retail basename; data-only DLL |
+| 0x213 | WM_VConsole | COMPLETE | dlls/objects/531_WM_VConsole/WM_VConsole.c | = (canonical) | Data-only DLL |
+| 0x214 | WM_TransTop | COMPLETE | dlls/objects/532_WM_TransTop/WM_TransTop.c | = (canonical) | Data-only DLL |
 | 0x215 | WM_newcrystal | CONFIRMED | main/dll/dll_0215_wmnewcrystal.c | main/dll/WM/dll_0215_wmnewcrystal.c | — |
 | 0x216 | VFP_LevelControl | CONFIRMED | main/dll/dll_0216_vfplevelcontrol.c | main/dll/VF/dll_0216_vfplevelcontrol.c | — |
 | 0x217 | VFP_ObjCreator | CONFIRMED | main/dll/dll_0217_vfpobjcreator.c | main/dll/VF/dll_0217_vfpobjcreator.c | — |
@@ -887,7 +887,7 @@ name was a deliberate choice by a previous carve:
 | 0x20E | main/dll/dll_020E_wmsun.c | dlls/objects/526_WM_sun/WM_sun.c | COMPLETE |
 | 0x20F | main/dll/dll_020F_wmspiritset.c | dlls/objects/527_WM_SpiritSe/WM_SpiritSe.c | COMPLETE |
 | 0x210 | main/dll/dll_0210_wmplanets.c | dlls/objects/528_WM_Planets/WM_Planets.c | COMPLETE |
-| 0x211 | main/dll/dll_0211_wmwallcrawler.c | main/dll/WM/dll_0211_wmwallcrawler.c | CONFIRMED |
+| 0x211 | main/dll/dll_0211_wmwallcrawler.c | dlls/objects/529/529.c | COMPLETE |
 | 0x215 | main/dll/dll_0215_wmnewcrystal.c | main/dll/WM/dll_0215_wmnewcrystal.c | CONFIRMED |
 | 0x216 | main/dll/dll_0216_vfplevelcontrol.c | main/dll/VF/dll_0216_vfplevelcontrol.c | CONFIRMED |
 | 0x217 | main/dll/dll_0217_vfpobjcreator.c | main/dll/VF/dll_0217_vfpobjcreator.c | CONFIRMED |

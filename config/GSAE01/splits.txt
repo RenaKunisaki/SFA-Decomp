@@ -3311,12 +3311,21 @@ dlls/objects/528_WM_Planets/WM_Planets.c:
 	.data       start:0x80328D98 end:0x80328DD0
 	.sdata2     start:0x803E5F98 end:0x803E5FB0
 
-main/dll/WM/dll_0211_wmwallcrawler.c:
+dlls/objects/529/529.c:
 	.text       start:0x801F7FF4 end:0x801F943C
-	.data       start:0x80328DD0 end:0x80328E58
+	.data       start:0x80328DD0 end:0x80328E28
 	.sdata      start:0x803DC130 end:0x803DC138
 	.sbss       start:0x803DDCB8 end:0x803DDCC0
 	.sdata2     start:0x803E5FB0 end:0x803E6038
+
+dlls/objects/530/530.c:
+	.sdata      start:0x803DC138 end:0x803DC140
+
+dlls/objects/532_WM_TransTop/WM_TransTop.c:
+	.sdata      start:0x803DC140 end:0x803DC148
+
+dlls/objects/531_WM_VConsole/WM_VConsole.c:
+	.data       start:0x80328E28 end:0x80328E58
 
 main/dll/WM/dll_0215_wmnewcrystal.c:
 	.text       start:0x801F943C end:0x801F9804

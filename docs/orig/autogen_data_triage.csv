@@ -33,7 +33,6 @@ address,section,size_bytes,byte_class,subtype_reason,adjacent_owner,adjacency_co
 0x803DBEA0,.sdata,48,const-data,small const / rodata,dll_015B_cfforcefield.c,high,1,main/modelEngine.o,48,0,0,0
 0x803DBEE0,.sdata,8,const-data,small const / rodata,dll_0167_spiritdoorlock.c,high,1,main/modelEngine.o,8,0,0,0
 0x803DC0F8,.sdata,24,const-data,small const / rodata,dll_01F8_wmgalleon.c,high,1,main/modelEngine.o,24,0,0,0
-0x803DC138,.sdata,16,const-data,small const / rodata,dll_0211_wmwallcrawler.c,high,1,main/modelEngine.o,16,0,0,0
 0x803DC150,.sdata,16,const-data,small const / rodata,dll_0216_vfplevelcontrol.c,high,1,main/modelEngine.o,16,0,0,0
 0x803DC2C0,.sdata,8,const-data,small const / rodata,dll_0262_drakormissile.c,high,1,main/modelEngine.o,8,0,0,0
 0x803DC2D0,.sdata,32,const-data,small const / rodata,dll_0266_kytesmum.c,high,4,main/modelEngine.o,32,0,0,0

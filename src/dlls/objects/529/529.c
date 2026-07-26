@@ -1,44 +1,29 @@
 /*
- * wmwallcrawler (DLL 0x211) - the crawling baddies authored for Krazoa
- * Palace (map 'warlock'). UNUSED IN RETAIL: the object def exists
- * (OBJECTS.bin 913 'WM_WallCraw', type 0x275) but no romlist on any of
- * the 124 maps places one - the palace's shipped enemies are HagabonMK2
- * and sharpclaw groups. Likely a Dinosaur Planet-era Warlock Mountain
- * enemy (the Tricky-flee variant flag predates the retail rule that the
- * sidekick never enters the palace).
- * Each crawler perches at its spawn point until the player (or, for the
- * WMWALLCRAWLER_FLAG_TARGET_NEAREST variant, the nearest group-10
- * object) comes within triggerRadius, then dives to its home height and
- * chases along the surface, lunging (anim move 2) and striking on
- * contact. When its life timer expires it flees and either re-perches,
- * despawns, or plays its death anim (WMWALLCRAWLER_FLAG_DEATH_ANIM).
- * Per-placement behaviour comes from the variant flag table
- * gWallCrawlerVariantFlags. All crawlers despawn for good once the six progress
- * game bits 0x2AA-0x2AF are set.
+ * DLL 0x0211 - wall crawler enemy logic.
+ *
+ * Each crawler waits at its spawn point, dives toward a nearby target,
+ * and then attacks or retreats according to its variant flags.
  */
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/object_descriptor.h"
-#include "main/dll/partfx_interface.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/WM/dll_0211_wmwallcrawler.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/path_control_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
-#include "main/track_dolphin_api.h"
 #include "main/maketex_random_api.h"
 #include "main/maketex_timer_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
 #include "main/objhits.h"
-#include "sys/objects.h"
-#include "main/object_update_list.h"
-#include "main/dll/path_control_interface.h"
-#include "game/objects/object_setup.h"
+#include "main/object_render.h"
+#include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
-#include "main/dll/WM/dll_0211_wmwallcrawler.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 f32 gWallCrawlerSpeedCap = 0.1f;
 const union WmWallCrawlerConstF32 lbl_803E5FB0 = {0.0f};
@@ -134,10 +119,6 @@ void wmwallcrawler_alignToFloorNormal(GameObject* obj, TrackGroundHit* floorHit)
     obj->anim.rotZ = ang;
 }
 
-/* dont_inline: defined before its update call sites (address order),
-   but the retail unit keeps both bls. No same-TU callees, so the wrap
-   is safe (see the dont_inline CAUTION in the playbook). */
-
 int wmwallcrawler_getExtraSize(void)
 {
     return sizeof(WmwallcrawlerState);
@@ -171,7 +152,7 @@ void wmwallcrawler_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
     }
     if (vis != 0 && state->despawnTimer == 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E5FB4.f); /* lbl_803E5FB4.f */
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E5FB4.f);
     }
 }
 
@@ -784,8 +765,6 @@ void wmwallcrawler_initialise(void)
 u16 gWallCrawlerVariantFlags[8] = {0x0000, 0x0002, 0x0004, 0x0001, 0x000C, 0x03F7, 0x0167, 0x050C};
 u8 gWallCrawlerPointCollision[12] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-/*__DATA_EXTERNS__*/
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 ObjectDescriptor10WithPadding gWM_WallCrawlerObjDescriptor = {
     {
         0,
@@ -805,5 +784,3 @@ ObjectDescriptor10WithPadding gWM_WallCrawlerObjDescriptor = {
     },
     0,
 };
-u8 lbl_80328E28[48] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
