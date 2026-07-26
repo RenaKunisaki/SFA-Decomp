@@ -702,7 +702,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x290 | WCPushBlock | RAW | dlls/objects/656_WCPushBlock/WCPushBlock.c | = (canonical) | Exact complete TU; descriptor placement precedes the function bodies and four trailing tile-grid tables remain in the same DOL object |
 | 0x291 | WCTile | RAW | dlls/objects/657_WCTile/WCTile.c | = (canonical) | Exact complete nine-function TU with its sole descriptor at the physical end |
 | 0x292 | WCTrexStatu | RAW | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | = (canonical) | Exact complete ten-function TU with its sole descriptor at the physical end |
-| 0x293 | SunTemple (+CFSunTemple, WCInvUseObj, WCSunTemple) | CONFIRMED | main/dll/dll_0293_suntemple.c | = (canonical) | — |
+| 0x293 | — | NO-RETAIL-NAME | dlls/objects/659/659.c | = (canonical) | Exact complete ten-function TU; `SunTemple` is an internal object alias, not a recovered DLL basename |
 | 0x294 | wctemple (+WCMoonTempl, WCSunTemple) | GUESSED | main/dll/dll_0294_wctemple.c | = (canonical) | — |
 | 0x295 | WCApertureS | CONFIRMED | main/dll/dll_0295_wcapertures.c | main/dll/WC/dll_0295_wcapertures.c | — |
 | 0x296 | WCTempleDia | CONFIRMED | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | — |
