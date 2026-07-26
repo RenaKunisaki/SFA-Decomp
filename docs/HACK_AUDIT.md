@@ -133,7 +133,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_00F0_warppoint | 100.0000 | 80.8028 | -19.1972 |
 | main/main/dll/VF/dll_0216_vfplevelcontrol | 100.0000 | 80.8854 | -19.1146 |
 | main/main/dll/dll_017F_moonseedbush | 100.0000 | 81.3284 | -18.6716 |
-| main/main/dll/WC/dll_0297_wctemplebri | 100.0000 | 81.4000 | -18.6000 |
+| main/dlls/objects/663_WCTempleBri/WCTempleBri | 100.0000 | 81.4000 | -18.6000 |
 | main/main/dll/dll_01CE_dll1ce | 100.0000 | 81.5400 | -18.4600 |
 | main/main/dll/dll_013A_visanimator | 100.0000 | 81.5478 | -18.4522 |
 | main/main/dll/dll_017D_rollingbarrel | 100.0000 | 81.6367 | -18.3633 |

@@ -1,5 +1,5 @@
 /*
- * wctemplebri (DLL 0x297) - a temple bridge in the Walled City (WC) that
+ * WCTempleBri (DLL 0x297) - a temple bridge in the Walled City (WC) that
  * materializes when triggered. While active it fades alpha up to opaque,
  * latches FLAG_SOLVED, sets its placement solvedBit and enables collision;
  * while inactive it fades out and disables collision. Each frame it scrolls

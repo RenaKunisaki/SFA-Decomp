@@ -3799,7 +3799,7 @@ main/dll/WC/dll_0296_wctempledia.c:
 	.sdata      start:0x803DC3B8 end:0x803DC3C8
 	.sdata2     start:0x803E6E50 end:0x803E6E58
 
-main/dll/WC/dll_0297_wctemplebri.c:
+dlls/objects/663_WCTempleBri/WCTempleBri.c:
 	.text       start:0x8022999C end:0x8022A298
 	.data       start:0x8032B398 end:0x8032B3D0
 	.sdata2     start:0x803E6E70 end:0x803E6E98
