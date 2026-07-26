@@ -285,7 +285,6 @@ const BATCH = [
   { name: 'dll_01DA_dll1da.c', baseline: 'a42a54974d4be50aeff8fc4c92e79373', pct: 98.72 },
   { name: 'dll_01DB_dll1db.c', baseline: '117523f40cada37df93d0d92ce224bd8', pct: 100.0 },
   { name: 'dll_01DF_dll1df.c', baseline: 'cf85072d298b8f171a3f22b89b65b000', pct: 100.0 },
-  { name: 'dll_01F6_flag.c', baseline: 'dd4b365f4b3b3641e522000e9549052d', pct: 100.0 },
   { name: 'dll_01FC_laserbeam.c', baseline: 'f6930ca9417ec61f63922195a8eb87b6', pct: 100.0 },
   { name: 'dll_01FE_pressureswitch.c', baseline: '2a1e2e291fdd8058f292819e4a47fae2', pct: 98.537 },
   { name: 'dll_0206_lightsource.c', baseline: 'c4b6e55d2a2b6831dd43687ae32e39b5', pct: 99.613 },

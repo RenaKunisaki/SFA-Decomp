@@ -1,5 +1,5 @@
 /*
- * DLL 0x01F6 - Flag (decorative flag object). TU: 0x801E5DC4-0x801E5F74.
+ * DLL 0x01F6 - a decorative flag object.
  *
  * A passive cloth/flag prop animated through ObjAnim moves. Behaviour is
  * selected by the object's current animation seqId:

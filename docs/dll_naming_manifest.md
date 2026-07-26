@@ -545,7 +545,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F3 | SB_MiniFire | COMPLETE | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | = (canonical) | — |
 | 0x1F4 | — | COMPLETE | dlls/objects/500/500.c | = (canonical) | No recovered retail basename |
 | 0x1F5 | — | COMPLETE | dlls/objects/501/501.c | = (canonical) | No recovered retail basename |
-| 0x1F6 | Flag (+DIMFlag, SB_Wheel, SB_Sail, SB_ShipFlag) | CONFIRMED | main/dll/dll_01F6_flag.c | = (canonical) | — |
+| 0x1F6 | — | COMPLETE | dlls/objects/502/502.c | = (canonical) | No recovered retail basename |
 | 0x1F7 | SB_ShipGunBroke | CONFIRMED | main/dll/dll_01F7_sbshipgunbroke.c | main/dll/SB/dll_01F7_sbshipgunbroke.c | — |
 | 0x1F8 | WM_Galleon | COMPLETE | main/dll/dll_01F8_wmgalleon.c | main/dll/WM/dll_01F8_wmgalleon.c | — |
 | 0x1F9 | WM_ObjCreator | CONFIRMED | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | — |
@@ -871,6 +871,7 @@ name was a deliberate choice by a previous carve:
 | 0x1F3 | main/dll/dll_01F3_sbminifire.c | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | COMPLETE |
 | 0x1F4 | main/dll/dll_01F4_lamp.c | dlls/objects/500/500.c | COMPLETE |
 | 0x1F5 | main/dll/dll_01F5_shipbattle.c | dlls/objects/501/501.c | COMPLETE |
+| 0x1F6 | main/dll/dll_01F6_flag.c | dlls/objects/502/502.c | COMPLETE |
 | 0x1F7 | main/dll/dll_01F7_sbshipgunbroke.c | main/dll/SB/dll_01F7_sbshipgunbroke.c | CONFIRMED |
 | 0x1F8 | main/dll/dll_01F8_wmgalleon.c | main/dll/WM/dll_01F8_wmgalleon.c | COMPLETE |
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | CONFIRMED |
