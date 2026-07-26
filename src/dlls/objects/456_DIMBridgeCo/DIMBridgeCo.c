@@ -1,5 +1,5 @@
 /*
- * dimbridgecogmai (DLL 0x1C8) - bridge cog main object for Dinosaur Island
+ * DIMBridgeCo (DLL 0x1C8) - bridge cog main object for Dinosaur Island
  * Mission 2.  Watches one or more gamebits and, when they become set, either
  * hides the cog or triggers an animation sequence depending on the gamebit
  * value; also fires sequence events from the SeqFn callback.
@@ -24,7 +24,7 @@
 #define DIMBRIDGECOG_GROUP 0xf
 #define DIMBRIDGECOG_FLAG_WAIT_FOR_SEQUENCE 0x2
 
-int dimbridgecogmai_SeqFn(GameObject *obj, int unused, ObjAnimUpdateState* animUpdate)
+int dimbridgecogmai_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     DimbridgecogmaiPlacement* placement = (DimbridgecogmaiPlacement*)obj->anim.placementData;
     animUpdate->sequenceEventActive = 0;
@@ -36,15 +36,28 @@ int dimbridgecogmai_SeqFn(GameObject *obj, int unused, ObjAnimUpdateState* animU
     return 0;
 }
 
-int dimbridgecogmai_getExtraSize(void) { return sizeof(DimbridgecogmaiState); }
-int dimbridgecogmai_getObjectTypeId(void) { return 0x0; }
+int dimbridgecogmai_getExtraSize(void)
+{
+    return sizeof(DimbridgecogmaiState);
+}
 
-void dimbridgecogmai_free(GameObject* obj) { ObjGroup_RemoveObject((int)obj, DIMBRIDGECOG_GROUP); }
+int dimbridgecogmai_getObjectTypeId(void)
+{
+    return 0x0;
+}
 
-void dimbridgecogmai_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dimbridgecogmai_free(GameObject* obj)
+{
+    ObjGroup_RemoveObject((int)obj, DIMBRIDGECOG_GROUP);
+}
+
+void dimbridgecogmai_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dimbridgecogmai_hitDetect(void)
