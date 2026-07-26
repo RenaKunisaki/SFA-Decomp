@@ -37,9 +37,9 @@ int dbholecontrol1_getObjectTypeId(void);
 void dbholecontrol1_free(int obj);
 void dbholecontrol1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void dbholecontrol1_hitDetect(void);
-void dbholecontrol1_update(int* obj);
-void dbholecontrol1_init(int* obj, u8* params);
-int dbholecontrol1_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate);
+void dbholecontrol1_update(GameObject* obj);
+void dbholecontrol1_init(GameObject* obj, u8* params);
+int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void dbholecontrol1_release(void);
 void dbholecontrol1_initialise(void);
 
