@@ -554,10 +554,9 @@ on-disk form of the wiki's "all functions stubbed" DLLs:
     `gProximityMineObjDescriptor`) are defined together in `src/main/crfueltank.c`.
   - DLL 0x21E-0x223 and 0x225-0x228 (the `VFP_Block1`/`VFP_Platfor`/`VFP_DoorSwi`/`SeqPoint`/
     `VFPDragHead`/`VFP_corepla`/`VFP_flamepo`/`VFP_lavapoo`/`VFP_lavasta`/`VFP_SpellPl` row of the
-    wiki table) are ten separate `ObjectDescriptor`s (`gVFP_Block1ObjDescriptor`,
-    `VFPDragHead_*`, `VFP_coreplat_*`, ...) all defined in the single file `src/main/light.c` —
-    the Volcano Force Point Temple's small placeable-prop objects were apparently one retail
-    translation unit.
+    wiki table) are separate DOL-confirmed translation units. Their callbacks and descriptors
+    were previously concatenated into `src/main/light.c` and `src/main/main.c`; they are being
+    restored one DLL at a time.
 - **26 wiki IDs have no matching file or named descriptor at all** — in `gResourceDescriptors[]`
   they still point at a literal shared placeholder blob (`{0xffffffff, 0, 0, ..., 0}`, a 12-word
   stub with no real `acquire`/callback pointers), the same pattern used for other genuinely-inert
