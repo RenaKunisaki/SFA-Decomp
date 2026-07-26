@@ -88,31 +88,6 @@ typedef struct ArwInitCfgAB
     int b;
 } ArwInitCfgAB;
 
-typedef struct ArwArwingProjectileSetup
-{
-    s16 objectId;
-    u8 pad02[2];
-    u8 field04;
-    u8 field05;
-    u8 pad06[2];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[4];
-    u8 rotZ;
-    u8 rotY;
-    u8 rotX;
-} ArwArwingProjectileSetup;
-
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, field04) == 0x04);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, field05) == 0x05);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, posX) == 0x08);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, posY) == 0x0c);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, posZ) == 0x10);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, rotZ) == 0x18);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, rotY) == 0x19);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, rotX) == 0x1a);
-
 typedef struct ArwArwingVec3
 {
     f32 x;
@@ -671,17 +646,17 @@ void arwarwing_spawnLaserShot(GameObject* obj, ArwingState* state, int side, int
         arwarwinggu_setActiveVisible(state->gunObjR, 1, level == 2);
     }
     {
-        ArwArwingProjectileSetup* setup =
-            (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_LASERSHOT);
-        setup->posX = px;
-        setup->posY = py;
-        setup->posZ = pz;
+        ArwProjectileSetup* setup =
+            (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_LASERSHOT);
+        setup->base.posX = px;
+        setup->base.posY = py;
+        setup->base.posZ = pz;
         setup->rotX = (obj)->anim.rotX >> 8;
         setup->rotY = (obj)->anim.rotY >> 8;
         setup->rotZ = 0;
-        setup->field04 = 1;
-        setup->field05 = 1;
-        proj = (int)loadObjectAtObject(obj, (ObjPlacement*)setup);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 1;
+        proj = (int)loadObjectAtObject(obj, &setup->base);
     }
     if ((void*)proj == NULL)
         return;
@@ -1131,15 +1106,15 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
         case 0xa:
             if (Obj_IsLoadingLocked())
             {
-                ArwArwingProjectileSetup* setup =
-                    (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x24, ARWARWING_CHILD_OBJ_BOMB);
+                ArwProjectileSetup* setup =
+                    (ArwProjectileSetup*)Obj_AllocObjectSetup(0x24, ARWARWING_CHILD_OBJ_BOMB);
                 int bombObjInt;
-                setup->posX = obj->anim.localPosX;
-                setup->posY = obj->anim.localPosY;
-                setup->posZ = obj->anim.localPosZ;
-                setup->field04 = 1;
-                setup->field05 = 1;
-                bombObjInt = (int)loadObjectAtObject(obj, (ObjPlacement*)setup);
+                setup->base.posX = obj->anim.localPosX;
+                setup->base.posY = obj->anim.localPosY;
+                setup->base.posZ = obj->anim.localPosZ;
+                setup->base.color[0] = 1;
+                setup->base.color[1] = 1;
+                bombObjInt = (int)loadObjectAtObject(obj, &setup->base);
                 if ((void*)bombObjInt != 0)
                     arwbombcoll_setLifetime((GameObject*)(bombObjInt), 0x12c);
             }
@@ -1287,15 +1262,15 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
 
     if (state->thrusterL == NULL && state->thrusterR == NULL)
     {
-        ArwArwingProjectileSetup* setup;
-        setup = (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
-        setup->field04 = 1;
-        setup->field05 = 1;
-        state->thrusterL = loadObjectAtObject(obj, (ObjPlacement*)setup);
-        setup = (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
-        setup->field04 = 1;
-        setup->field05 = 1;
-        state->thrusterR = loadObjectAtObject(obj, (ObjPlacement*)setup);
+        ArwProjectileSetup* setup;
+        setup = (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 1;
+        state->thrusterL = loadObjectAtObject(obj, &setup->base);
+        setup = (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 1;
+        state->thrusterR = loadObjectAtObject(obj, &setup->base);
     }
 
     allAttached = 0;
