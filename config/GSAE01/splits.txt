@@ -2029,7 +2029,7 @@ dlls/objects/287_MagicCaveTo/MagicCaveTo.c:
 	.data       start:0x80321CD0 end:0x80321D08
 	.sdata2     start:0x803E3C30 end:0x803E3C78
 
-main/dll/dll_0120_trickyguardspot.c:
+dlls/objects/288_TrickyGuard/TrickyGuard.c:
 	.text       start:0x8018B7B0 end:0x8018B9F0
 	.data       start:0x80321D08 end:0x80321D40
 	.sdata2     start:0x803E3C78 end:0x803E3C80

@@ -156,7 +156,7 @@ is unconfirmed.
   this purely "unused," `trickyGuard` **is** wired up in retail — just via map-placed objects, not
   the player-selectable command menu: DLL `0x0101` (`src/dlls/objects/257_TrickyGuard/TrickyGuard.c`,
   `TrickyGuard_init`/`_update`) and DLL `0x0120`
-  (`src/main/dll/dll_0120_trickyguardspot.c`, `TrickyGuardSpot_*`) are placeable "guard volume"
+  (`src/dlls/objects/288_TrickyGuard/TrickyGuard.c`, `TrickyGuardSpot_*`) are placeable "guard volume"
   objects that call the live Tricky object's vtable slot `TRICKY_VTBL_GUARD` (`+0x28` byte offset,
   index `0x0A`) to issue this behavior when the player enters range. The "growl at baddie" handler
   the wiki says this Gecko code *replaces* is `trickyGrowl` (`src/dlls/objects/196_Tricky/tricky.c`,
