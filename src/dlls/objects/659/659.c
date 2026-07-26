@@ -1,5 +1,5 @@
 /*
- * suntemple (DLL 0x293) - an interactive sun-temple prop driven by the
+ * DLL 0x293 - an interactive sun-temple prop driven by the
  * object trigger/sequence system.
  *
  * Each instance carries a SunTempleSetup placement record: rotation

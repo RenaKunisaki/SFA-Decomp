@@ -702,7 +702,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x290 | WCPushBlock | CONFIRMED | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | — |
 | 0x291 | WCTile | COMPLETE | main/dll/dll_0291_wctile.c | main/dll/WC/dll_0291_wctile.c | — |
 | 0x292 | WCTrexStatu | CONFIRMED | main/dll/dll_0292_wctrexstatu.c | main/dll/WC/dll_0292_wctrexstatu.c | — |
-| 0x293 | SunTemple (+CFSunTemple, WCInvUseObj, WCSunTemple) | CONFIRMED | main/dll/dll_0293_suntemple.c | = (canonical) | — |
+| 0x293 | — (+SunTemple, CFSunTemple, WCInvUseObj, WCSunTemple) | NO-RETAIL-NAME | dlls/objects/659/659.c | = (canonical) | — |
 | 0x294 | — (+wctemple, WCMoonTempl, WCSunTemple) | NO-RETAIL-NAME | dlls/objects/660/660.c | = (canonical) | — |
 | 0x295 | WCApertureS | CONFIRMED | dlls/objects/661_WCApertureS/WCApertureS.c | = (canonical) | — |
 | 0x296 | WCTempleDia | CONFIRMED | dlls/objects/662_WCTempleDia/WCTempleDia.c | = (canonical) | — |

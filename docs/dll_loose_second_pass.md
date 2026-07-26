@@ -49,7 +49,7 @@ Total: **64** files.
 | dll_018E_mmshwaterspike.c | 0 | 0 | 0 | 3 | 10 |
 | dll_01E4_magicmaker.c | 0 | 0 | 0 | 2 | 11 |
 | dll_0263_gmmazewell.c | 0 | 0 | 0 | 2 | 0 |
-| dll_0293_suntemple.c | 0 | 0 | 0 | 2 | 0 |
+| dlls/objects/659/659.c | 0 | 0 | 0 | 2 | 0 |
 | dlls/objects/660/660.c | 0 | 0 | 0 | 2 | 0 |
 | dlls/objects/675/675.c | 0 | 0 | 0 | 2 | 0 |
 | dll_02AF_tree.c | 0 | 0 | 0 | 2 | 0 |
