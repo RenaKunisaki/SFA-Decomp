@@ -1,45 +1,51 @@
 /*
- * InfoPoint (DLL 0xEC) - a non-colliding "information point" decoration
- * object. It loads a body of game text (gameTextGet) plus a shared font/
- * texture asset (asset 616) at init, parks the text + a scroll/fade timer
- * in its extra-state block, and renders the prompt billboard each frame
- * (InfoPoint_render). When the player triggers it (resetHitboxMode bit 0)
- * it disables the A-button and runs trigger sequence 0.
+ * Information-point object (DLL slot 236 / 0xEC).
  *
- * InfoPoint_SeqFn handles the trigger sequence: events 1/2 toggle the s16
- * sequence state; events 3/4 are no-ops.
+ * Initialization loads the placement's game text and a shared font texture.
+ * Activating the object disables the A button and runs object sequence zero.
+ * Sequence events one and two toggle the class-owned sequence state.
  */
+#include "dlls/objects/236_InfoPoint.h"
+#include "dolphin/pad.h"
 #include "game/objects/object.h"
-#include "main/pad_api.h"
-#include "main/objseq.h"
+#include "main/gametext_internal.h"
 #include "main/objanim_update.h"
 #include "main/object_render.h"
-#include "main/dll/dll_00EC_infopoint.h"
-#include "main/gametext_internal.h"
+#include "main/objseq.h"
+#include "main/pad_api.h"
 #include "main/textrender_api.h"
 #include "main/texture.h"
 
-/* shared font/texture asset loaded at init (see file header). */
-#define INFOPOINT_TEXTURE_FONT 616
+#define INFOPOINT_FONT_TEXTURE_ASSET_ID 616
 
-#define PAD_BUTTON_A 0x100
+#define INFOPOINT_OBJECT_TYPE_ID       0
+#define INFOPOINT_TRIGGER_SEQUENCE_ID  0
+#define INFOPOINT_TRIGGER_PORT         0
+#define INFOPOINT_TRIGGER_FLAGS        -1
+#define INFOPOINT_INITIAL_DISPLAY_TIME 100
+#define INFOPOINT_INITIAL_UNK18        2
 
-int InfoPoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    InfoPointState* state = obj->extra;
+#define INFOPOINT_SEQUENCE_EVENT_SET   1
+#define INFOPOINT_SEQUENCE_EVENT_CLEAR 2
+#define INFOPOINT_SEQUENCE_STATE_SET   0xFF
+#define INFOPOINT_SEQUENCE_STATE_CLEAR 0
+
+int InfoPoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    InfoPointState* state;
     int i;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        switch (animUpdate->eventIds[i])
-        {
-        case 1:
-            state->sequenceState = 0xff;
+
+    (void)unused;
+
+    state = obj->extra;
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        switch (animUpdate->eventIds[i]) {
+        case INFOPOINT_SEQUENCE_EVENT_SET:
+            state->sequenceState = INFOPOINT_SEQUENCE_STATE_SET;
             break;
-        case 2:
-            state->sequenceState = 0;
+        case INFOPOINT_SEQUENCE_EVENT_CLEAR:
+            state->sequenceState = INFOPOINT_SEQUENCE_STATE_CLEAR;
             break;
         case 3:
-            break;
         case 4:
             break;
         }
@@ -47,83 +53,80 @@ int InfoPoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
     return 0;
 }
 
-int InfoPoint_getExtraSize(void)
-{
+int InfoPoint_getExtraSize(void) {
     return sizeof(InfoPointState);
 }
-int InfoPoint_getObjectTypeId(void)
-{
-    return 0x0;
+
+int InfoPoint_getObjectTypeId(void) {
+    return INFOPOINT_OBJECT_TYPE_ID;
 }
 
-void InfoPoint_free(void)
-{
+void InfoPoint_free(GameObject* obj) {
+    (void)obj;
 }
 
-void InfoPoint_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-}
+void InfoPoint_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    s32 isVisible = visible;
 
-void InfoPoint_hitDetect(void)
-{
-}
-
-void InfoPoint_update(GameObject* obj)
-{
-    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
-    {
-        buttonDisable(0, PAD_BUTTON_A);
-        (*gObjectTriggerInterface)->runSequence(0, obj, -1);
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 
-void InfoPoint_init(GameObject* obj, InfoPointPlacement* placement)
-{
-    InfoPointState* state = obj->extra;
+void InfoPoint_hitDetect(GameObject* obj) {
+    (void)obj;
+}
+
+void InfoPoint_update(GameObject* obj) {
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+        buttonDisable(INFOPOINT_TRIGGER_PORT, PAD_BUTTON_A);
+        (*gObjectTriggerInterface)->runSequence(INFOPOINT_TRIGGER_SEQUENCE_ID, obj, INFOPOINT_TRIGGER_FLAGS);
+    }
+}
+
+void InfoPoint_init(GameObject* obj, InfoPointPlacement* placement) {
+    InfoPointState* state;
     GameTextDef* text;
+
+    state = obj->extra;
     obj->animEventCallback = InfoPoint_SeqFn;
-    if (lbl_803219A0.fontTexture == NULL)
-    {
-        lbl_803219A0.fontTexture = textureLoadAsset(INFOPOINT_TEXTURE_FONT);
+    if (gInfoPointSharedResources.fontTexture == NULL) {
+        gInfoPointSharedResources.fontTexture = textureLoadAsset(INFOPOINT_FONT_TEXTURE_ASSET_ID);
     }
-    state->renderBounds = &lbl_80321990;
+    state->renderBounds = &gInfoPointRenderBounds;
     text = gameTextGet(placement->textId);
     state->firstString = text->strings[0];
-    state->displayTimer = 100;
+    state->displayTimer = INFOPOINT_INITIAL_DISPLAY_TIME;
     state->text = text;
     obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
-    state->unk18 = 2;
+    state->unk18 = INFOPOINT_INITIAL_UNK18;
     state->unk10 = placement->unk1B;
-    state->sequenceState = 0;
+    state->sequenceState = INFOPOINT_SEQUENCE_STATE_CLEAR;
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
-void InfoPoint_release(void)
-{
+void InfoPoint_release(void) {
 }
 
-void InfoPoint_initialise(void)
-{
+void InfoPoint_initialise(void) {
 }
 
-InfoPointRenderBounds lbl_80321990 = {0x50, 0x230, 0x3c, 0x190};
-InfoPointSharedResources lbl_803219A0 = {NULL, {0, 0, 0, 0, 0}};
+InfoPointRenderBounds gInfoPointRenderBounds = {0x50, 0x230, 0x3C, 0x190};
+InfoPointSharedResources gInfoPointSharedResources = {NULL, {0, 0, 0, 0, 0}};
+
 ObjectDescriptor gInfoPointObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)InfoPoint_initialise,
-    (ObjectDescriptorCallback)InfoPoint_release,
-    0,
-    (ObjectDescriptorCallback)InfoPoint_init,
-    (ObjectDescriptorCallback)InfoPoint_update,
-    (ObjectDescriptorCallback)InfoPoint_hitDetect,
-    (ObjectDescriptorCallback)InfoPoint_render,
-    (ObjectDescriptorCallback)InfoPoint_free,
-    (ObjectDescriptorCallback)InfoPoint_getObjectTypeId,
-    InfoPoint_getExtraSize,
+    0,                                                   /* reserved0 */
+    0,                                                   /* reserved1 */
+    0,                                                   /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,                    /* slotCountAndFlags */
+    (ObjectDescriptorCallback)InfoPoint_initialise,      /* initialise */
+    (ObjectDescriptorCallback)InfoPoint_release,         /* release */
+    0,                                                   /* slot02 */
+    (ObjectDescriptorCallback)InfoPoint_init,            /* init */
+    (ObjectDescriptorCallback)InfoPoint_update,          /* update */
+    (ObjectDescriptorCallback)InfoPoint_hitDetect,       /* hitDetect */
+    (ObjectDescriptorCallback)InfoPoint_render,          /* render */
+    (ObjectDescriptorCallback)InfoPoint_free,            /* free */
+    (ObjectDescriptorCallback)InfoPoint_getObjectTypeId, /* getObjectTypeId */
+    InfoPoint_getExtraSize,                              /* getExtraSize */
 };
