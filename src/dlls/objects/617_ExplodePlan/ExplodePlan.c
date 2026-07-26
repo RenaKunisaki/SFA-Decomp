@@ -1,5 +1,5 @@
 /*
- * explodeplan (DLL 0x269, object type 0x0) - a static placed prop that is
+ * ExplodePlan (DLL 617, object type 0x0) - a static placed prop that is
  * removed from the world by a game bit. The placement stores a removal
  * game bit at +0x1E and a packed rotX byte at +0x18.
  *
@@ -13,7 +13,6 @@
 #include "main/gamebits.h"
 #include "main/dll/dll_0269_explodeplan.h"
 #include "dlls/object_descriptor.h"
-
 
 int explodeplan_getExtraSize(void)
 {
