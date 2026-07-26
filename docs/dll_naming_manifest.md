@@ -668,7 +668,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x26E | DR_Shackle (+DR_BigShack) | COMPLETE | main/dll/dll_026E_drshackle.c | main/dll/DR/dll_026E_drshackle.c | — |
 | 0x26F | DR_Generator (+DR_WallGene) | CONFIRMED | main/dll/dll_026F_drgenerator.c | main/dll/DR/dll_026F_drgenerator.c | — |
 | 0x270 | DR_Rock | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x271 | DrakorHoverpad (+DR_PushCart) | CONFIRMED | main/dll/dll_0271_drakorhoverpad.c | = (canonical) | — |
+| 0x271 | — (+DrakorHoverpad, DR_PushCart) | NO-RETAIL-NAME | dlls/objects/625/625.c | = (canonical) | second TU: dlls/objects/625/625_updatemain.c |
 | 0x272 | — (+HighTop, CC_HighTop, DR_HighTop) | NO-RETAIL-NAME | dlls/objects/626/626.c | = (canonical) | — |
 | 0x273 | FirePipe (+BossDrakorF, FireHole, FlameMuzzle, IceHole, SteamHoleNo, SteamHoleFi, SteamHoleDe) | COMPLETE | dlls/objects/627_FirePipe/FirePipe.c | = (canonical) | — |
 | 0x274 | DR_pulley | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |

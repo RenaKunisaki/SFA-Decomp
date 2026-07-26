@@ -63,7 +63,7 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 - Add GAMEBIT_MAZEWELL_ACTIVE = 0xEFC to include/main/gamebits.h's enum GameBitId (currently only a private #define in dll_0263_gmmazewell.c) between the existing 0xEFB and 0xEFE entries
 
 ### Curves
-- ObjfsaRomCurveDef (include/main/dll/objfsa_romcurve.h) tail 's8 angle; u8 pad2D[3];' at 0x2C-0x2F should be split into 'rotZ/rotY/rotX/pad2F' (s8/s8/u8/u8) to match the sibling RomCurvePlacementDef (dll_0015_curves.h) and DrakorCurveNode (dll_0271_drakorhoverpad.c) overlays of the exact same offsets, which already use three named one-byte fields instead of one byte + padding.
+- ObjfsaRomCurveDef (include/main/dll/objfsa_romcurve.h) tail 's8 angle; u8 pad2D[3];' at 0x2C-0x2F should be split into 'rotZ/rotY/rotX/pad2F' (s8/s8/u8/u8) to match the sibling RomCurvePlacementDef (dll_0015_curves.h) and DrakorCurveNode (src/dlls/objects/625/625.c) overlays of the exact same offsets, which already use three named one-byte fields instead of one byte + padding.
 - Centralize the verified RomCurve Type literals (0x03 HagabonMK2, 0x15 DIM2PathGenerator/ROMCURVE_TYPE_ACTION, 0x16, 0x17, 0x23 CurveFish, 0x24 Tricky) as named #defines next to ROMCURVE_TYPE_ACTION/ROMCURVE_TYPE_SCALE_OVERRIDE_15 in include/main/dll/dll_0015_curves.h instead of bare hex literals scattered across dll_0014_unk.c and `src/dlls/objects/259_CurveFish/CurveFish.c`.
 
 ### DLLs
