@@ -2021,7 +2021,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/LGT/dll_02AC_lgtcontrollight.c", cflags=cflags_dll_noopt_level1),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AD_softbody.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AE_waterflowwe.c", cflags=cflags_dll_noopt, extra_cflags=["-opt", "nodeadstore"]),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_02AF_tree.c", cflags=cflags_dll_noopt_nocse_noinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/687/687.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/688_BrokenPipe/BrokenPipe.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/689_CmbSrc/CmbSrc.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/690_DustMoteSou/DustMoteSou.c", cflags=cflags_dll_noopt),
