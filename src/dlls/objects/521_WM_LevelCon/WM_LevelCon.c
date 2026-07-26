@@ -87,12 +87,49 @@ u8 gWmLevelControlBlendedFogColor[4];      /* blended fog-color out-triplet */
 u8 gWmLevelControlBlendedLightIntensity;   /* blended light-intensity byte */
 f32 gWmLevelControlBlendFactor;            /* current blend factor */
 f32 gWmLevelControlBlendHold;              /* restore-blend hold flag */
-f32 gWmLevelControlBlendDecayPerTick = 0.02f;
-f32 gWmLevelControlLightIntensityBase = 32.0f;
-f32 gWmLevelControlLightIntensityRange = 128.0f;
-f32 gWmLevelControlOverrideLightIntensity = 100.0f;
 
-static inline void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to)
+int WM_LevelControl_getExtraSize(void);
+int WM_LevelControl_getObjectTypeId(void);
+void WM_LevelControl_free(int obj);
+void WM_LevelControl_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
+void WM_LevelControl_hitDetect(void);
+void WM_LevelControl_update(GameObject* obj);
+void WM_LevelControl_init(GameObject* obj);
+void WM_LevelControl_release(void);
+void WM_LevelControl_initialise(void);
+
+ObjectDescriptor gWM_LevelControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WM_LevelControl_initialise,
+    (ObjectDescriptorCallback)WM_LevelControl_release,
+    0,
+    (ObjectDescriptorCallback)WM_LevelControl_init,
+    (ObjectDescriptorCallback)WM_LevelControl_update,
+    (ObjectDescriptorCallback)WM_LevelControl_hitDetect,
+    (ObjectDescriptorCallback)WM_LevelControl_render,
+    (ObjectDescriptorCallback)WM_LevelControl_free,
+    (ObjectDescriptorCallback)WM_LevelControl_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)WM_LevelControl_getExtraSize,
+};
+
+static void WmLevelControl_holdBlendWhileRestoring(void)
+{
+    if (lightningGetRemainingFraction() > 0.0f)
+    {
+        gWmLevelControlBlendHold = 1.0f;
+        gWmLevelControlBlendFactor = 1.0f;
+    }
+}
+
+const f32 gWmLevelControlBlendDecayPerTick[1] = { 0.02f };
+const f32 gWmLevelControlLightIntensityBase[1] = { 32.0f };
+const f32 gWmLevelControlLightIntensityRange[1] = { 128.0f };
+const f32 gWmLevelControlOverrideLightIntensity[1] = { 100.0f };
+
+static void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to)
 {
     {
         int red = from[0];
@@ -151,12 +188,8 @@ void fn_801F3F18(GameObject* obj)
 
     /* hold the blend at full while spirit-restore progress is running,
        then decay it toward 0. */
-    if (lightningGetRemainingFraction() > 0.0f)
-    {
-        gWmLevelControlBlendHold = 1.0f;
-        gWmLevelControlBlendFactor = 1.0f;
-    }
-    newBlend = -(gWmLevelControlBlendDecayPerTick * timeDelta - gWmLevelControlBlendFactor);
+    WmLevelControl_holdBlendWhileRestoring();
+    newBlend = -(gWmLevelControlBlendDecayPerTick[0] * timeDelta - gWmLevelControlBlendFactor);
     gWmLevelControlBlendFactor = newBlend;
     if (newBlend < 0.0f)
     {
@@ -180,15 +213,16 @@ void fn_801F3F18(GameObject* obj)
                        gWmLevelControlBlendedFogColor[2]);
 
     gWmLevelControlBlendedLightIntensity =
-        gWmLevelControlBlendFactor * gWmLevelControlLightIntensityRange +
-        gWmLevelControlLightIntensityBase;
+        gWmLevelControlBlendFactor * gWmLevelControlLightIntensityRange[0] +
+        gWmLevelControlLightIntensityBase[0];
     skySetOverrideLightDirectionEnabled(1);
     skySetOverrideLightDirection(gWmLevelControlBlendFactor * (toDir.x - fromDir.x) + fromDir.x,
                                   gWmLevelControlBlendFactor * (toDir.y - fromDir.y) + fromDir.y,
                                   gWmLevelControlBlendFactor * (toDir.z - fromDir.z) + fromDir.z,
-                                  gWmLevelControlOverrideLightIntensity);
+                                  gWmLevelControlOverrideLightIntensity[0]);
     skySetLightDirection(1, auxDir.x, auxDir.y, auxDir.z);
 }
+
 
 int WM_LevelControl_getExtraSize(void)
 {
@@ -264,6 +298,7 @@ void WM_LevelControl_update(GameObject* obj)
 
 void WM_LevelControl_init(GameObject* obj)
 {
+    extern const f32 gWmLevelControlIntroMessageDuration;
     WmLevelControlState* state;
     u8 mode;
 
@@ -272,7 +307,7 @@ void WM_LevelControl_init(GameObject* obj)
     state = obj->extra;
     state->unk0B = 0;
     state->unk06 = 0x1e;
-    state->messageTimer = 300.0f;
+    state->messageTimer = gWmLevelControlIntroMessageDuration;
     state->latch.activeMask = 0;
     lockLevel(0xf, 0);
     /* The 0xD1B..0xD1F chain tracks returned Krazoa spirits. */
@@ -332,6 +367,8 @@ void WM_LevelControl_init(GameObject* obj)
     }
 }
 
+const f32 gWmLevelControlIntroMessageDuration = 300.0f;
+
 void WM_LevelControl_release(void)
 {
 }
@@ -340,19 +377,3 @@ void WM_LevelControl_initialise(void)
 {
 }
 
-ObjectDescriptor gWM_LevelControlObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_LevelControl_initialise,
-    (ObjectDescriptorCallback)WM_LevelControl_release,
-    0,
-    (ObjectDescriptorCallback)WM_LevelControl_init,
-    (ObjectDescriptorCallback)WM_LevelControl_update,
-    (ObjectDescriptorCallback)WM_LevelControl_hitDetect,
-    (ObjectDescriptorCallback)WM_LevelControl_render,
-    (ObjectDescriptorCallback)WM_LevelControl_free,
-    (ObjectDescriptorCallback)WM_LevelControl_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_LevelControl_getExtraSize,
-};

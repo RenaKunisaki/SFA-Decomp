@@ -1925,7 +1925,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/518_LightSource/LightSource.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/519_WM_Worm/WM_Worm.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "dlls/objects/521_WM_LevelCon/WM_LevelCon.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
+            Object(MatchingFor("GSAE01"), "dlls/objects/521_WM_LevelCon/WM_LevelCon.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(MatchingFor("GSAE01"), "dlls/objects/522_WM_GeneralS/WM_GeneralS.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0245_dummy245.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0246_dummy246.c", cflags=cflags_dll_noopt),
