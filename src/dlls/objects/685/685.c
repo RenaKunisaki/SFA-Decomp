@@ -1,5 +1,5 @@
 /*
- * softbody (DLL 0x2AD) - a decorative wobbling/swaying object whose
+ * DLL 0x2AD - a decorative wobbling/swaying object whose
  * animation move is driven by a pair of shared, free-running phase
  * accumulators. The first non-disabled instance to update becomes the
  * global phase driver

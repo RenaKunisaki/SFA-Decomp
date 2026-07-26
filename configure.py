@@ -2019,7 +2019,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/LGT/dll_02AA_lgtdirectionallight.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/LGT/dll_02AB_lgtprojectedlight.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "main/dll/LGT/dll_02AC_lgtcontrollight.c", cflags=cflags_dll_noopt_level1),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_02AD_softbody.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/685/685.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/686_WaterFlowWe/WaterFlowWe.c", cflags=cflags_dll_noopt, extra_cflags=["-opt", "nodeadstore"]),
             Object(MatchingFor("GSAE01"), "dlls/objects/687/687.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/688_BrokenPipe/BrokenPipe.c", cflags=cflags_dll_noopt),

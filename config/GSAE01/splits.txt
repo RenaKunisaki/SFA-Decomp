@@ -3939,7 +3939,7 @@ main/dll/LGT/dll_02AC_lgtcontrollight.c:
 	.data       start:0x8032BB38 end:0x8032BB70
 	.sdata2     start:0x803E7280 end:0x803E7288
 
-main/dll/dll_02AD_softbody.c:
+dlls/objects/685/685.c:
 	.text       start:0x80234DC8 end:0x8023503C
 	.data       start:0x8032BB70 end:0x8032BBA8
 	.sbss       start:0x803DDD98 end:0x803DDDA8
