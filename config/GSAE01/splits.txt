@@ -2069,7 +2069,7 @@ main/dll/dll_0129_campfire.c:
 	.data       start:0x80321E90 end:0x80321EC8
 	.sdata2     start:0x803E3D78 end:0x803E3DB0
 
-main/dll/DR/dll_0128_kttorch.c:
+dlls/objects/296_KT_Torch/KT_Torch.c:
 	.text       start:0x8018D4AC end:0x8018D6E8
 	.data       start:0x80321EC8 end:0x80321F00
 	.sdata2     start:0x803E3DB0 end:0x803E3DD8

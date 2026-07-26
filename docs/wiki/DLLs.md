@@ -592,7 +592,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `VF`/`VFP` | Volcano Force Point Temple | `src/main/dll/VF/dll_0216_vfplevelcontrol.c` |
 | `WC` | Walled City | `src/main/dll/WC/dll_028A_wcearthwalker.c` |
 | `WM` | Krazoa Palace | `src/main/dll/WM/dll_0209_wmlevelcontrol.c` (comment states this explicitly) |
-| `KT` | (torches shared across) KrazoaPalace / ThornTail | `src/main/dll/DR/dll_0128_kttorch.c` |
+| `KT` | (torches shared across) KrazoaPalace / ThornTail | `src/dlls/objects/296_KT_Torch/KT_Torch.c` |
 | `ARW` | Arwing space-combat sections | `src/main/dll/ARW/dll_029A_arwarwing.c` |
 
 ### The `_DLL_ID` convention

@@ -1,5 +1,5 @@
 /*
- * kttorch (DLL 0x128) - the lit torches / braziers dressing the
+ * KT_Torch (DLL 0x128) - the lit torches / braziers dressing the
  * KrazoaPalace and ThornTail areas.
  *
  * init sizes the flame from the placement's scale byte (clamped to a
