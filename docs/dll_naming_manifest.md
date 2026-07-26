@@ -432,7 +432,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x182 | MMP_moonroc | COMPLETE | dlls/objects/386_MMP_moonroc/MMP_moonroc.c | = (canonical) | — |
 | 0x183 | MMP_gyserve | COMPLETE | dlls/objects/387_MMP_gyserve/MMP_gyserve.c | = (canonical) | — |
 | 0x184 | — (+DIMAnimShar, MMPAnimShar) | NO-RETAIL-NAME | dlls/objects/388/388.c | = (canonical) | — |
-| 0x185 | CCgasvent | COMPLETE | main/dll/dll_0185_ccgasvent.c | main/dll/CC/dll_0185_ccgasvent.c | — |
+| 0x185 | CCgasvent | COMPLETE | dlls/objects/389_CCgasvent/CCgasvent.c | = (canonical) | — |
 | 0x186 | CCgasventControl | CONFIRMED | main/dll/dll_0186_ccgasventcontrol.c | main/dll/CC/dll_0186_ccgasventcontrol.c | — |
 | 0x187 | CCqueen | COMPLETE | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | — |
 | 0x188 | CClightfoot | CONFIRMED | main/dll/dll_0188_cclightfoot.c | main/dll/CC/dll_0188_cclightfoot.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x185 | main/dll/dll_0185_ccgasvent.c | main/dll/CC/dll_0185_ccgasvent.c | COMPLETE |
 | 0x186 | main/dll/dll_0186_ccgasventcontrol.c | main/dll/CC/dll_0186_ccgasventcontrol.c | CONFIRMED |
 | 0x187 | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | COMPLETE |
 | 0x188 | main/dll/dll_0188_cclightfoot.c | main/dll/CC/dll_0188_cclightfoot.c | CONFIRMED |

@@ -2418,7 +2418,7 @@ main/dll/dll_025B_msplantings.c:
 	.data       start:0x803232F8 end:0x80323340
 	.sdata2     start:0x803E45D8 end:0x803E460C
 
-main/dll/CC/dll_0185_ccgasvent.c:
+dlls/objects/389_CCgasvent/CCgasvent.c:
 	.text       start:0x801A9E74 end:0x801A9FA8
 	.data       start:0x80323340 end:0x80323378
 	.sdata2     start:0x803E4610 end:0x803E4618

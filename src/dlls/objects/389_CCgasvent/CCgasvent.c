@@ -1,5 +1,5 @@
 /*
- * ccgasvent - Crystal Caves gas-vent emitter (DLL 0x0185). One vent of the
+ * CCgasvent - Crystal Caves gas-vent emitter (DLL 0x0185). One vent of the
  * gas-vent group (CCGASVENT_GROUP); the controller object (ccgasventcontrol,
  * DLL 0x0186) tracks the whole group. While the room's gas gameBit (0x1C0)
  * is set the vent watches the nearest group-5 object: once it is far enough
