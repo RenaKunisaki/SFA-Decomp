@@ -2760,7 +2760,7 @@ main/dll/dll_017A_spiritprize.c:
 	.data       start:0x80326048 end:0x80326080
 	.sdata2     start:0x803E4E98 end:0x803E4EB8
 
-main/dll/DF/dll_0179_dfshobjcreator.c:
+dlls/objects/377_DFSH_ObjCre/DFSH_ObjCre.c:
 	.text       start:0x801C3B68 end:0x801C3E3C
 	.data       start:0x80326080 end:0x803260B8
 

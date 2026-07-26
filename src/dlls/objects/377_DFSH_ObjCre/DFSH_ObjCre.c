@@ -1,6 +1,6 @@
 /*
- * DragonRock Shrine object creator (DLL 0x179; "DFSH_ObjCreator") - a
- * spawner that, once its gamebit arms, builds a SpiritPrize object setup
+ * DFSH_ObjCre (DLL 0x179) - a Dragon Rock shrine spawner that, once its
+ * gamebit arms, builds a SpiritPrize object setup
  * (object id 0x11) from its placement template and periodically spawns it
  * while loading is locked, playing the gem-run sfx.
  */
