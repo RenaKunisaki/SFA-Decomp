@@ -101,7 +101,7 @@ enum GameBitId {
      * DATA-DRIVEN, so no mainSetBits(0x316) literal exists (which is why a code
      * grep finds no setter; traced live in Dolphin by catching the write, with
      * r28 == 0x316*4 and the wmspiritplace object in r27). Read as a code
-     * literal by dll_012C_transporter.c - one of the three 0xBA8/0x316/0x511
+     * literal by Transporter.c - one of the three 0xBA8/0x316/0x511
      * guard bits that lock out the K1 return pad once you progress.
      */
     GAMEBIT_K1_SPIRIT_DEPOSITED = 0x316,

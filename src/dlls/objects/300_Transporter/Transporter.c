@@ -1,5 +1,5 @@
 /*
- * transporter (DLL 0x12C) - the warp-pad / teleporter object of the CF
+ * Transporter (DLL 0x12C) - the warp-pad / teleporter object of the CF
  * warp-pad family (WarpPadPlacement / WarpPadState, helpers in
  * CFchuckobj). Each pad is tagged by its placement destinationId (a
  * 32-bit area/event id); the big switches in Transporter_SeqFn and
@@ -397,7 +397,7 @@ void Transporter_init(GameObject* obj, u8* params)
         /*
          * NOTE: 0x511 - the last K1 return-pad guard bit - still has no traced
          * setter (set from save/level-event data), left as a raw literal in
-         * dll_012C_transporter.c until traced.
+         * Transporter.c until traced.
          */
         if (mainGetBit(GAMEBIT_K1_SPIRIT_COLLECTED) != 0 || mainGetBit(GAMEBIT_K1_SPIRIT_DEPOSITED) != 0 ||
             mainGetBit(GAMEBIT_TransporterRelated0511) != 0)

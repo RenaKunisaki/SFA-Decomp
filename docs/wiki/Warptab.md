@@ -225,7 +225,7 @@ literal — these are the runtime "typed pointer into WARPTAB" equivalent of the
   (`MAGICCAVE_GAMEBIT_WARP_DEST`, `mainGetBit(...)` passed to `warpToMap`). Both files independently
   define `#define MAGICCAVE_GAMEBIT_WARP_DEST 0x1b8`, matching the gamebit enum exactly.
 - **`CF/warp_pad.h`**: `WarpPadPlacement.warpId` (`s8`, offset `0x1A`) — the generic warp-pad
-  object's placement-authored destination index (used by `dll_012C_transporter.c`'s
+  object's placement-authored destination index (used by `src/dlls/objects/300_Transporter/Transporter.c`'s
   `setup->warpId`).
 - **`worldplanet.c`**: `gWorldPlanetWarpMapIndices[6]` (`extern u8[6]`) is indexed by
   `gWorldPlanetSelectionToIndex[state->selectedPlanet]` and fed to `warpToMap` when leaving the
