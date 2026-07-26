@@ -548,7 +548,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F6 | — | COMPLETE | dlls/objects/502/502.c | = (canonical) | No recovered retail basename |
 | 0x1F7 | SB_ShipGunB | COMPLETE | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | = (canonical) | Retail basename is truncated |
 | 0x1F8 | WM_Galleon | COMPLETE | dlls/objects/504_WM_Galleon/WM_Galleon.c | = (canonical) | — |
-| 0x1F9 | WM_ObjCreator | CONFIRMED | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | — |
+| 0x1F9 | WM_ObjCreat | COMPLETE | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | = (canonical) | Retail basename is truncated |
 | 0x1FA | WM_seqobject | CONFIRMED | main/dll/dll_01FA_wmseqobject.c | main/dll/WM/dll_01FA_wmseqobject.c | — |
 | 0x1FB | — | NO-RETAIL-NAME | main/dll/dll_01FB_dll1fb.c | = (canonical) | — |
 | 0x1FC | LaserBeam (+WM_LaserBea, ECSH_LaserB) | CONFIRMED | main/dll/dll_01FC_laserbeam.c | = (canonical) | — |
@@ -874,7 +874,7 @@ name was a deliberate choice by a previous carve:
 | 0x1F6 | main/dll/dll_01F6_flag.c | dlls/objects/502/502.c | COMPLETE |
 | 0x1F7 | main/dll/dll_01F7_sbshipgunbroke.c | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | COMPLETE |
 | 0x1F8 | main/dll/dll_01F8_wmgalleon.c | dlls/objects/504_WM_Galleon/WM_Galleon.c | COMPLETE |
-| 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | main/dll/WM/dll_01F9_wmobjcreator.c | CONFIRMED |
+| 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | COMPLETE |
 | 0x1FA | main/dll/dll_01FA_wmseqobject.c | main/dll/WM/dll_01FA_wmseqobject.c | CONFIRMED |
 | 0x1FD | main/dll/dll_01FD_wmlasertarget.c | main/dll/WM/dll_01FD_wmlasertarget.c | CONFIRMED |
 | 0x201 | main/dll/dll_0201_wmcolrise.c | main/dll/WM/dll_0201_wmcolrise.c | COMPLETE |
@@ -997,7 +997,7 @@ blocked units will surface more when carved.
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
-| 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
+| 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x207 | main/dll/dll_0207_wmworm.c | include/main/dll/LGT/dll_0207_wmworm.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
