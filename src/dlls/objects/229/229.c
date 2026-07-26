@@ -464,9 +464,9 @@ typedef struct ShieldFxVec
     f32 pos[3];
 } ShieldFxVec;
 
-void Shield_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
+void Shield_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    u8* state = ((GameObject*)obj)->extra;
+    ShieldState* state = obj->extra;
     s32 isVisible = visible;
     if (isVisible != 0)
     {
@@ -477,16 +477,16 @@ void Shield_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
         s16 saved2;
         s16 saved4;
         u8 hud;
-        int* model;
+        ObjModel* model;
         f32 dt;
         ShieldFxVec s;
         u8 savedB36;
-        model = (int*)Obj_GetActiveModel((GameObject*)obj);
-        savedF8 = ((GameObject*)obj)->anim.rootMotionScale;
-        savedB36 = ((GameObject*)obj)->anim.alpha;
-        saved0 = ((GameObject*)obj)->anim.rotX;
-        saved2 = ((GameObject*)obj)->anim.rotY;
-        saved4 = ((GameObject*)obj)->anim.rotZ;
+        model = Obj_GetActiveModel(obj);
+        savedF8 = obj->anim.rootMotionScale;
+        savedB36 = obj->anim.alpha;
+        saved0 = obj->anim.rotX;
+        saved2 = obj->anim.rotY;
+        saved4 = obj->anim.rotZ;
         hud = getHudHiddenFrameCount();
         if (hud != 0)
         {
@@ -496,27 +496,27 @@ void Shield_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
         {
             dt = timeDelta;
         }
-        if (((GameObject*)obj)->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
+        if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
         {
             for (i = 0; i < 4; i++)
             {
-                if ((state[i + 0x5c] & 1) == 0)
+                if ((state->segmentFlags[i] & 1) == 0)
                 {
                     u32 k = i;
-                    ((GameObject*)obj)->anim.rotX = ((ShieldState*)state)->segRotX[k];
-                    ((GameObject*)obj)->anim.rotY = ((ShieldState*)state)->segRotY[k];
-                    ((GameObject*)obj)->anim.rotZ = ((ShieldState*)state)->segRotZ[k];
-                    ((ShieldState*)state)->segRotX[k] = dt * lbl_803DBD78[k] + (f32)((ShieldState*)state)->segRotX[k];
-                    ((ShieldState*)state)->segRotY[k] = dt * lbl_803DBD80[k] + (f32)((ShieldState*)state)->segRotY[k];
-                    ((ShieldState*)state)->segRotZ[k] = dt * lbl_803DBD88[k] + (f32)((ShieldState*)state)->segRotZ[k];
+                    obj->anim.rotX = state->segRotX[k];
+                    obj->anim.rotY = state->segRotY[k];
+                    obj->anim.rotZ = state->segRotZ[k];
+                    state->segRotX[k] = dt * lbl_803DBD78[k] + (f32)state->segRotX[k];
+                    state->segRotY[k] = dt * lbl_803DBD80[k] + (f32)state->segRotY[k];
+                    state->segRotZ[k] = dt * lbl_803DBD88[k] + (f32)state->segRotZ[k];
                     {
-                        ((GameObject*)obj)->anim.rootMotionScale =
-                            ((ShieldState*)state)->segAlpha[k] * savedF8 *
-                            (((ShieldState*)state)->fadeValue / ((ShieldState*)state)->fadeMax);
-                        ((GameObject*)obj)->anim.renderAlpha = ((ShieldState*)state)->segScale[k] * savedB36;
+                        obj->anim.rootMotionScale =
+                            state->segAlpha[k] * savedF8 *
+                            (state->fadeValue / state->fadeMax);
+                        obj->anim.renderAlpha = state->segScale[k] * savedB36;
                     }
-                    ((ObjModel*)model)->bufferFlags &= ~0x8;
-                    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+                    model->bufferFlags &= ~0x8;
+                    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
                 }
             }
         }
@@ -525,17 +525,17 @@ void Shield_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
             i = 0;
             for (; i < 4; i++)
             {
-                if ((state[i + 0x5c] & 1) == 0)
+                if ((state->segmentFlags[i] & 1) == 0)
                 {
                     u32 k = i;
-                    ((GameObject*)obj)->anim.rotX = ((ShieldState*)state)->segRotX[k];
-                    ((ShieldState*)state)->segRotX[k] = dt * lbl_803DBD70[k] + (f32)((ShieldState*)state)->segRotX[k];
+                    obj->anim.rotX = state->segRotX[k];
+                    state->segRotX[k] = dt * lbl_803DBD70[k] + (f32)state->segRotX[k];
                     {
-                        ((GameObject*)obj)->anim.rootMotionScale = ((ShieldState*)state)->segAlpha[k] * savedF8;
-                        ((GameObject*)obj)->anim.renderAlpha = ((ShieldState*)state)->segScale[k] * savedB36;
+                        obj->anim.rootMotionScale = state->segAlpha[k] * savedF8;
+                        obj->anim.renderAlpha = state->segScale[k] * savedB36;
                     }
-                    ((ObjModel*)model)->bufferFlags &= ~0x8;
-                    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+                    model->bufferFlags &= ~0x8;
+                    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
                     if (hud == 0)
                     {
                         f32 cD;
@@ -549,15 +549,15 @@ void Shield_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
                         cD = 1.0f;
                         for (; j < 2; j++)
                         {
-                            f32 f8v = ((GameObject*)obj)->anim.rootMotionScale;
+                            f32 f8v = obj->anim.rootMotionScale;
                             s.pos[0] = cA * f8v;
                             s.pos[1] = cB * f8v;
                             s.pos[2] = cC;
-                            ((GameObject*)obj)->anim.rotX += 32767;
-                            vecRotateZXY(&((GameObject*)obj)->anim.rotX, s.pos);
-                            s.pos[0] += ((GameObject*)obj)->anim.localPosX;
-                            s.pos[1] += ((GameObject*)obj)->anim.localPosY;
-                            s.pos[2] += ((GameObject*)obj)->anim.localPosZ;
+                            obj->anim.rotX += 32767;
+                            vecRotateZXY(&obj->anim.rotX, s.pos);
+                            s.pos[0] += obj->anim.localPosX;
+                            s.pos[1] += obj->anim.localPosY;
+                            s.pos[2] += obj->anim.localPosZ;
                             s.alpha = cD;
                             (*gPartfxInterface)->spawnObject(obj, SHIELD_PARTFX, &s, 0x200001, -1, NULL);
                         }
@@ -565,11 +565,11 @@ void Shield_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
                 }
             }
         }
-        ((GameObject*)obj)->anim.rootMotionScale = savedF8;
-        ((GameObject*)obj)->anim.alpha = savedB36;
-        ((GameObject*)obj)->anim.rotX = saved0;
-        ((GameObject*)obj)->anim.rotY = saved2;
-        ((GameObject*)obj)->anim.rotZ = saved4;
+        obj->anim.rootMotionScale = savedF8;
+        obj->anim.alpha = savedB36;
+        obj->anim.rotX = saved0;
+        obj->anim.rotY = saved2;
+        obj->anim.rotZ = saved4;
     }
 }
 
@@ -577,56 +577,56 @@ void Shield_hitDetect(void)
 {
 }
 
-void Shield_update(int* obj)
+void Shield_update(GameObject* obj)
 {
     f32* tbl[1];
-    f32* state;
+    ShieldState* state;
 
     tbl[0] = lbl_80320A28;
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
 
-    if (state[1] != state[2])
+    if (state->fadeValue != state->fadeTarget)
     {
-        state[1] = state[3] * timeDelta + state[1];
-        if (state[3] > lbl_803E33AC)
+        state->fadeValue = state->fadeRate * timeDelta + state->fadeValue;
+        if (state->fadeRate > lbl_803E33AC)
         {
-            if (state[1] >= state[2])
+            if (state->fadeValue >= state->fadeTarget)
             {
-                state[1] = state[2];
+                state->fadeValue = state->fadeTarget;
             }
-            ((ShieldState*)state)->segmentFlags[0] &= ~1;
-            ((ShieldState*)state)->segmentFlags[1] &= ~1;
-            ((ShieldState*)state)->segmentFlags[2] &= ~1;
-            ((ShieldState*)state)->segmentFlags[3] &= ~1;
+            state->segmentFlags[0] &= ~1;
+            state->segmentFlags[1] &= ~1;
+            state->segmentFlags[2] &= ~1;
+            state->segmentFlags[3] &= ~1;
         }
         else
         {
-            if (state[1] <= state[2])
+            if (state->fadeValue <= state->fadeTarget)
             {
-                state[1] = state[2];
-                ((ShieldState*)state)->segmentFlags[0] |= 1;
-                ((ShieldState*)state)->segmentFlags[1] |= 1;
-                ((ShieldState*)state)->segmentFlags[2] |= 1;
-                ((ShieldState*)state)->segmentFlags[3] |= 1;
+                state->fadeValue = state->fadeTarget;
+                state->segmentFlags[0] |= 1;
+                state->segmentFlags[1] |= 1;
+                state->segmentFlags[2] |= 1;
+                state->segmentFlags[3] |= 1;
             }
         }
     }
-    if (((GameObject*)obj)->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
+    if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
     {
-        ((GameObject*)obj)->anim.alpha = state[1] / state[4] * (f32)(s32)randomGetRange(96, 127);
+        obj->anim.alpha = state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(96, 127);
     }
     else
     {
-        ((GameObject*)obj)->anim.alpha = state[1] / state[4] * (f32)(s32)randomGetRange(192, 255);
+        obj->anim.alpha = state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(192, 255);
     }
-    Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_lockon3_on, lbl_803E33E8 * (state[1] / state[4]), lbl_803E33A8);
-    if (((GameObject*)obj)->anim.alpha != 0)
+    Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_lockon3_on, lbl_803E33E8 * (state->fadeValue / state->fadeMax), lbl_803E33A8);
+    if (obj->anim.alpha != 0)
     {
-        ((GameObject*)obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+        obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
     }
     else
     {
-        ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
     }
     {
         int i;
@@ -638,13 +638,13 @@ void Shield_update(int* obj)
         i = 0;
         ps = (s16*)state;
         t8 = tbl[0] + 8;
-        pf = state;
+        pf = (f32*)state;
         t12 = tbl[0] + 12;
         t4 = tbl[0] + 4;
         for (; i < 4; i++)
         {
             ps[26] = (f32)ps[30] * timeDelta + ps[26];
-            if (((GameObject*)obj)->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
+            if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
             {
                 f32 c = fcos16((u16)ps[26]);
                 c = c * lbl_803E33EC + 1.0f;
@@ -669,17 +669,17 @@ void Shield_update(int* obj)
     }
 }
 
-void Shield_init(int* obj, void* initData)
+void Shield_init(GameObject* obj, void* initData)
 {
-    int* model = (int*)Obj_GetActiveModel((GameObject*)obj);
-    ObjModel_SetPostRenderCallback((ObjModel*)model, postRenderSetAlphaBlendState);
-    if (((GameObject*)obj)->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
+    ObjModel* model = Obj_GetActiveModel(obj);
+    ObjModel_SetPostRenderCallback(model, postRenderSetAlphaBlendState);
+    if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD)
     {
-        staffFn_80170380((GameObject*)obj, 5);
+        staffFn_80170380(obj, 5);
     }
     else
     {
-        staffFn_80170380((GameObject*)obj, 7);
+        staffFn_80170380(obj, 7);
     }
 }
 
