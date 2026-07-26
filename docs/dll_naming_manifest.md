@@ -618,7 +618,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x23C | DFP_PowerSl | COMPLETE | dlls/objects/572_DFP_PowerSl/DFP_PowerSl.c | = (canonical) | Exact retail basename; leading helper restored from DLL 571 |
 | 0x23D | DBPointMum | COMPLETE | dlls/objects/573_DBPointMum/DBPointMum.c | = (canonical) | Descriptor data only; no .text functions |
 | 0x23E | — | NO-RETAIL-NAME | dlls/objects/574/574.c | = (canonical) | Descriptor data only; no .text functions |
-| 0x23F | DB_egg | COMPLETE | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | — |
+| 0x23F | DB_egg | COMPLETE | dlls/objects/575_DB_egg/DB_egg.c | = (canonical) | Exact recovered retail basename; descriptor precedes diagnostic string and compiler-generated jump table in retail data order |
 | 0x240 | GCRobotBlast | CONFIRMED | main/dll/dll_0240_gcrobotblast.c | = (canonical) | — |
 | 0x241 | DrakorEnergy | CONFIRMED | main/dll/dll_0241_drakorenergy.c | = (canonical) | — |
 | 0x242 | DBstealerworm | CONFIRMED | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | — |

@@ -3436,7 +3436,7 @@ dlls/objects/552/552.c:
 	.text       start:0x801FDEEC end:0x801FE118
 	.data       start:0x80329280 end:0x803292B8
 
-main/dll/dll_023F_dbegg.c:
+dlls/objects/575_DB_egg/DB_egg.c:
 	.text       start:0x801FE118 end:0x801FF884
 	.data       start:0x803292B8 end:0x8032933C
 	.sdata2     start:0x803E61C0 end:0x803E626C
