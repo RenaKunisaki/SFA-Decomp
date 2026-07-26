@@ -186,13 +186,9 @@ main/objprint.c:
 	.sdata      start:0x803DB460 end:0x803DB468
 	.sbss       start:0x803DCC08 end:0x803DCC20
 
-main/objprint_model.c:
-	.text       start:0x8003BB84 end:0x8003D6F8
-	.rodata     start:0x802C1B10 end:0x802C1B70
-
 main/objprint_dolphin.c:
-	.text       start:0x8003D6F8 end:0x800443CC
-	.rodata     start:0x802C1B70 end:0x802C1C50
+	.text       start:0x8003BB84 end:0x800443CC
+	.rodata     start:0x802C1B10 end:0x802C1C50
 	.data       start:0x802CAED0 end:0x802CAF48
 	.bss        start:0x80342E10 end:0x8035EF48
 	.sdata      start:0x803DB468 end:0x803DB4A0
