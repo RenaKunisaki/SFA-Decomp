@@ -2023,7 +2023,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AE_waterflowwe.c", cflags=cflags_dll_noopt, extra_cflags=["-opt", "nodeadstore"]),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AF_tree.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02B0_brokenpipe.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_02B1_cmbsrc.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "dlls/objects/689_CmbSrc/CmbSrc.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/690_DustMoteSou/DustMoteSou.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/691/691.c", cflags=cflags_dll_noopt_noprop),
             Object(MatchingFor("GSAE01"), "dlls/objects/692_CNTcounter/CNTcounter.c", cflags=cflags_dll_noopt),
