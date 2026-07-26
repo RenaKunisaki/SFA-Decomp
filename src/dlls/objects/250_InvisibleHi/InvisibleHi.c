@@ -142,10 +142,18 @@ void InvisibleHitSwitch_init(GameObject* obj, InvisibleHitSwitchPlacement* place
 }
 
 ObjectDescriptor gInvisibleHitSwitchObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0, 0, 0,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
     (ObjectDescriptorCallback)InvisibleHitSwitch_init,
     (ObjectDescriptorCallback)InvisibleHitSwitch_update,
-    0, 0, 0, 0,
+    0,
+    0,
+    0,
+    0,
     InvisibleHitSwitch_getExtraSize,
 };
