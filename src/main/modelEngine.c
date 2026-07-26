@@ -47,6 +47,7 @@
 #include "dlls/objects/248_LevelName.h"
 #include "dlls/objects/249.h"
 #include "dlls/objects/250_InvisibleHi.h"
+#include "dlls/objects/251.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -219,8 +220,7 @@ extern ResourceDescriptor gMagicPlantObjDescriptor, gMoonSeedBushObjDescriptor, 
     gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
-extern ResourceDescriptor gPressureSwitchFBObjDescriptor, gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor,
-    gProximityMineObjDescriptor;
+extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gRollingBarrelObjDescriptor, gSB_CageKyteObjDescriptor,
     gSB_CannonBallObjDescriptor, gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, gSB_KyteCageObjDescriptor,
@@ -1190,7 +1190,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLevelNameObjDescriptor,
     (ResourceDescriptor*)&gProjectileSwitchObjDescriptor,
     (ResourceDescriptor*)&gInvisibleHitSwitchObjDescriptor,
-    &gPressureSwitchFBObjDescriptor,
+    (ResourceDescriptor*)&gPressureSwitchFBObjDescriptor,
     &gDllFCObjDescriptor,
     &gDll14DObjDescriptor,
     &gMagicPlantObjDescriptor,
