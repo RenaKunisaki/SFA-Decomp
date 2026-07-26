@@ -78,19 +78,19 @@ typedef struct Dim2PartVec
 #define DIM2ROOFRUB_PARTFX 2046
 extern u32 lbl_80320768[];
 
-void dim2roofrub_spawnEffects(int* obj)
+void dim2roofrub_spawnEffects(GameObject* obj)
 {
     Dim2FxVec v;
     int flags;
 
-    if ((((GameObject*)obj)->userData2 & 4) != 0)
+    if ((obj->userData2 & 4) != 0)
     {
         u8 i = 0;
         f32 scale = (0.64f);
         Dim2FxRow* tbl = (Dim2FxRow*)lbl_80320768;
         for (; i < 10; i++)
         {
-            f32 f = ((GameObject*)obj)->anim.rootMotionScale;
+            f32 f = obj->anim.rootMotionScale;
             Dim2FxRow* row = &tbl[i];
             v.x = scale * (f * row->x);
             v.y = scale * (f * row->y);
@@ -99,7 +99,7 @@ void dim2roofrub_spawnEffects(int* obj)
         }
     }
     v.fade = (-1.0f);
-    flags = ((GameObject*)obj)->userData2;
+    flags = obj->userData2;
     if ((flags & 1) != 0)
     {
         int count;
@@ -111,31 +111,31 @@ void dim2roofrub_spawnEffects(int* obj)
         {
             count = 3;
         }
-        v.x = (0.64f) * ((-0.8230000138282776f) * ((GameObject*)obj)->anim.rootMotionScale);
-        v.y = (0.64f) * ((-0.08399999886751175f) * ((GameObject*)obj)->anim.rootMotionScale);
-        v.z = (0.64f) * ((-2.5999999046325684f) * ((GameObject*)obj)->anim.rootMotionScale);
-        objfx_spawnLightPulse((GameObject*)obj, (0.02500000037252903f) * ((GameObject*)obj)->anim.rootMotionScale,
+        v.x = (0.64f) * ((-0.8230000138282776f) * obj->anim.rootMotionScale);
+        v.y = (0.64f) * ((-0.08399999886751175f) * obj->anim.rootMotionScale);
+        v.z = (0.64f) * ((-2.5999999046325684f) * obj->anim.rootMotionScale);
+        objfx_spawnLightPulse(obj, (0.02500000037252903f) * obj->anim.rootMotionScale,
                               1, 0, count, (0.699999988079071f), &v);
         v.x = (0.0f);
-        v.y = (0.64f) * ((0.20900000631809235f) * ((GameObject*)obj)->anim.rootMotionScale);
-        v.z = (0.64f) * ((-3.5999999046325684f) * ((GameObject*)obj)->anim.rootMotionScale);
-        objfx_spawnLightPulse((GameObject*)obj, (0.02500000037252903f) * ((GameObject*)obj)->anim.rootMotionScale,
+        v.y = (0.64f) * ((0.20900000631809235f) * obj->anim.rootMotionScale);
+        v.z = (0.64f) * ((-3.5999999046325684f) * obj->anim.rootMotionScale);
+        objfx_spawnLightPulse(obj, (0.02500000037252903f) * obj->anim.rootMotionScale,
                               1, 0, count, (0.5f), &v);
-        v.x = (0.64f) * ((0.8230000138282776f) * ((GameObject*)obj)->anim.rootMotionScale);
-        v.y = (0.64f) * ((-0.08399999886751175f) * ((GameObject*)obj)->anim.rootMotionScale);
-        v.z = (0.64f) * ((-2.5999999046325684f) * ((GameObject*)obj)->anim.rootMotionScale);
-        objfx_spawnLightPulse((GameObject*)obj, (0.02500000037252903f) * ((GameObject*)obj)->anim.rootMotionScale,
+        v.x = (0.64f) * ((0.8230000138282776f) * obj->anim.rootMotionScale);
+        v.y = (0.64f) * ((-0.08399999886751175f) * obj->anim.rootMotionScale);
+        v.z = (0.64f) * ((-2.5999999046325684f) * obj->anim.rootMotionScale);
+        objfx_spawnLightPulse(obj, (0.02500000037252903f) * obj->anim.rootMotionScale,
                               1, 0, count, (0.699999988079071f), &v);
     }
-    if (((GameObject*)obj)->anim.seqId == DIM2ROOFRUB_SEQID_SLIDE)
+    if (obj->anim.seqId == DIM2ROOFRUB_SEQID_SLIDE)
     {
         objfx_spawnDirectionalBurst(obj, 7, (1.0f), 5, 1, 10, (6.0f), NULL, 0x20000000);
     }
-    else if (((GameObject*)obj)->anim.seqId == DIM2ROOFRUB_SEQID_TREAD)
+    else if (obj->anim.seqId == DIM2ROOFRUB_SEQID_TREAD)
     {
-        int* model = (int*)Obj_GetActiveModel((GameObject*)obj);
+        ObjModel* model = Obj_GetActiveModel(obj);
         *(u8*)((char*)*(int**)((char*)model + 0x34) + 8) = 2;
-        if ((((GameObject*)obj)->objectFlags & DIM2ROOFRUB_OBJFLAG_RENDERED) != 0)
+        if ((obj->objectFlags & DIM2ROOFRUB_OBJFLAG_RENDERED) != 0)
         {
             objfx_spawnDirectionalBurst(obj, 5, (1.0f), 2, 1, 20, (2.5f), NULL, 0);
         }
@@ -172,14 +172,14 @@ ObjectDescriptor gDIM2RoofRubObjDescriptor = {
     0,
     dim2roofrub_getExtraSize,
 };
-void dim2roofrub_free(int* obj)
+void dim2roofrub_free(GameObject* obj)
 {
-    (*gObjectTriggerInterface)->freeState(((GameObject*)obj)->extra);
+    (*gObjectTriggerInterface)->freeState(obj->extra);
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
     Sfx_StopObjectChannel((int)obj, 0x7f);
 }
 
-void dim2roofrub_render(int* obj, int p2, int p3, int p4, int p5)
+void dim2roofrub_render(GameObject* obj, int p2, int p3, int p4, int p5)
 {
     f32 mWorld[12];
     f32 mTransPlayer[12];
@@ -196,21 +196,21 @@ void dim2roofrub_render(int* obj, int p2, int p3, int p4, int p5)
     f32 mFinal[12];
 
     dim2roofrub_spawnEffects(obj);
-    if ((((ObjSeqState*)((GameObject*)obj)->extra)->stateFlags & 4) != 0)
+    if ((((ObjSeqState*)obj->extra)->stateFlags & 4) != 0)
     {
-        int* prm;
-        s16* cam;
-        Obj_BuildWorldTransformMatrix((GameObject*)obj, mWorld, 0);
-        prm = *(int**)&((GameObject*)obj)->anim.placementData;
-        PSMTXTrans(mTransPlayer, -(((DIM2RoofRubPlacement*)prm)->posX - playerMapOffsetX),
-                   -((DIM2RoofRubPlacement*)prm)->posY, -(((DIM2RoofRubPlacement*)prm)->posZ - playerMapOffsetZ));
+        DIM2RoofRubPlacement* prm;
+        GameObject* cam;
+        Obj_BuildWorldTransformMatrix(obj, mWorld, 0);
+        prm = *(DIM2RoofRubPlacement**)&obj->anim.placementData;
+        PSMTXTrans(mTransPlayer, -(prm->posX - playerMapOffsetX),
+                   -prm->posY, -(prm->posZ - playerMapOffsetZ));
         PSMTXConcat(mTransPlayer, mWorld, mWorldCombined);
-        cam = (s16*)(*gCameraInterface)->getCamera();
-        ((GameObject*)cam)->anim.rotY += 0x8000;
-        ((GameObject*)cam)->anim.rootMotionScale = (1.0f);
-        Obj_BuildWorldTransformMatrix((GameObject*)cam, mCam, 0);
-        ((GameObject*)cam)->anim.rotY += 0x8000;
-        ((GameObject*)cam)->anim.rootMotionScale = (0.0f);
+        cam = (GameObject*)(*gCameraInterface)->getCamera();
+        cam->anim.rotY += 0x8000;
+        cam->anim.rootMotionScale = (1.0f);
+        Obj_BuildWorldTransformMatrix(cam, mCam, 0);
+        cam->anim.rotY += 0x8000;
+        cam->anim.rootMotionScale = (0.0f);
         PSMTXTrans(mTransNeg, -mCam[3], -mCam[7], -mCam[11]);
         PSMTXRotRad(mRotY, 'y', (3.1415927410125732f));
         PSMTXRotRad(mRotZ, 'z', (3.1415927410125732f));
@@ -221,20 +221,20 @@ void dim2roofrub_render(int* obj, int p2, int p3, int p4, int p5)
         PSMTXConcat(mTransPos, mC, mD);
         PSMTXConcat(mD, mWorldCombined, mFinal);
         objSetMtxFn_800412d4((u32)mFinal);
-        objRenderModel((GameObject*)obj);
+        objRenderModel(obj);
     }
     else
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
-void dim2roofrub_update(int* obj)
+void dim2roofrub_update(GameObject* obj)
 {
-    ObjSeqState* seq = ((GameObject*)obj)->extra;
-    int* params = *(int**)&((GameObject*)obj)->anim.placementData;
+    ObjSeqState* seq = obj->extra;
+    DIM2RoofRubPlacement* params = *(DIM2RoofRubPlacement**)&obj->anim.placementData;
 
-    if (params != NULL && ((DIM2RoofRubPlacement*)params)->animDataIndex != -1)
+    if (params != NULL && params->animDataIndex != -1)
     {
         Dim2PartVec v;
         int count;
@@ -245,20 +245,20 @@ void dim2roofrub_update(int* obj)
             switch (b)
             {
             case DIM2ROOFRUB_EVENT_TOGGLE_LIGHT:
-                ((GameObject*)obj)->userData2 ^= 1;
+                obj->userData2 ^= 1;
                 break;
             case DIM2ROOFRUB_EVENT_TOGGLE_HEAVY:
-                ((GameObject*)obj)->userData2 ^= 2;
+                obj->userData2 ^= 2;
                 break;
             case DIM2ROOFRUB_EVENT_TOGGLE_FX:
-                ((GameObject*)obj)->userData2 ^= 4;
+                obj->userData2 ^= 4;
                 break;
             case DIM2ROOFRUB_EVENT_SPAWN_DUST:
             {
                 int k;
-                v.x = ((GameObject*)obj)->anim.localPosX;
-                v.y = ((GameObject*)obj)->anim.localPosY;
-                v.z = ((GameObject*)obj)->anim.localPosZ;
+                v.x = obj->anim.localPosX;
+                v.y = obj->anim.localPosY;
+                v.z = obj->anim.localPosZ;
                 for (k = 3; k != 0; k--)
                 {
                     (*gPartfxInterface)->spawnObject(obj, DIM2ROOFRUB_PARTFX, &v, 0x200001, -1, NULL);
@@ -268,26 +268,26 @@ void dim2roofrub_update(int* obj)
             }
         }
         res = (*gObjectTriggerInterface)->update((u8*)obj, timeDelta);
-        if (res != 0 && ((GameObject*)obj)->seqIndex == -2)
+        if (res != 0 && obj->seqIndex == -2)
         {
             int slot8 = *(s8*)&seq->slot;
             int* list;
             int slot;
             int cnt;
-            int* match = NULL;
+            GameObject* match = NULL;
             list = ObjList_GetObjects(&res, &count);
             res = cnt = 0;
             slot = slot8;
             for (; res < count; res++)
             {
-                int* other = (int*)*list;
-                if (((GameObject*)other)->seqIndex == slot8)
+                GameObject* other = (GameObject*)*list;
+                if (other->seqIndex == slot8)
                 {
-                    match = (int*)*list;
+                    match = (GameObject*)*list;
                 }
-                if (((GameObject*)other)->seqIndex == -2 && ((GameObject*)other)->anim.classId == 0x10)
+                if (other->seqIndex == -2 && other->anim.classId == 0x10)
                 {
-                    ObjSeqState* otherSeq = *(ObjSeqState**)&((GameObject*)other)->extra;
+                    ObjSeqState* otherSeq = *(ObjSeqState**)&other->extra;
                     if (slot == (s8)otherSeq->slot)
                     {
                         cnt++;
@@ -295,56 +295,56 @@ void dim2roofrub_update(int* obj)
                 }
                 list++;
             }
-            if (cnt <= 1 && match != NULL && ((GameObject*)match)->seqIndex != -1)
+            if (cnt <= 1 && match != NULL && match->seqIndex != -1)
             {
-                ((GameObject*)match)->seqIndex = -1;
+                match->seqIndex = -1;
                 (*gObjectTriggerInterface)->endSequence(slot);
             }
-            ((GameObject*)obj)->seqIndex = -1;
+            obj->seqIndex = -1;
         }
     }
 }
 
-void dim2roofrub_init(int* obj, int* params)
+void dim2roofrub_init(GameObject* obj, DIM2RoofRubPlacement* params)
 {
     ObjSeqState* seq;
     int f4;
-    objSetSlot((GameObject*)obj, 0x64);
-    seq = ((GameObject*)obj)->extra;
-    seq->gameBit = ((DIM2RoofRubPlacement*)params)->gameBit;
+    objSetSlot(obj, 0x64);
+    seq = obj->extra;
+    seq->gameBit = params->gameBit;
     seq->flags = -1;
     {
         f32 d = (1.0f);
         seq->posOffsetDecay =
-            d / (d + (f32)(u32)((DIM2RoofRubPlacement*)params)->dampingParam);
+            d / (d + (f32)(u32)params->dampingParam);
     }
     seq->curveId = -1;
     seq->animEntries = NULL;
     seq->cmds = NULL;
     seq->baseRotX = 0;
     seq->baseRotY = 0;
-    ((GameObject*)obj)->userData2 = 0;
-    f4 = ((GameObject*)obj)->userData1;
-    if (f4 == 0 && ((DIM2RoofRubPlacement*)params)->animDataIndex != 1)
+    obj->userData2 = 0;
+    f4 = obj->userData1;
+    if (f4 == 0 && params->animDataIndex != 1)
     {
         (*gObjectTriggerInterface)->loadAnimData((u8*)seq, (u8*)params);
-        ((GameObject*)obj)->userData1 = ((DIM2RoofRubPlacement*)params)->animDataIndex + 1;
+        obj->userData1 = params->animDataIndex + 1;
     }
-    else if (f4 != 0 && ((DIM2RoofRubPlacement*)params)->animDataIndex != f4 - 1)
+    else if (f4 != 0 && params->animDataIndex != f4 - 1)
     {
         (*gObjectTriggerInterface)->freeState((u8*)seq);
-        if (((DIM2RoofRubPlacement*)params)->animDataIndex != -1)
+        if (params->animDataIndex != -1)
         {
             (*gObjectTriggerInterface)->loadAnimData((u8*)seq, (u8*)params);
         }
-        ((GameObject*)obj)->userData1 = ((DIM2RoofRubPlacement*)params)->animDataIndex + 1;
+        obj->userData1 = params->animDataIndex + 1;
     }
     {
-        ObjModelState* modelState = ((GameObject*)obj)->anim.modelState;
+        ObjModelState* modelState = obj->anim.modelState;
         if (modelState != NULL)
         {
             modelState->shadowTintA = 0x64;
-            ((GameObject*)obj)->anim.modelState->shadowTintB = 0x96;
+            obj->anim.modelState->shadowTintB = 0x96;
         }
     }
 }
