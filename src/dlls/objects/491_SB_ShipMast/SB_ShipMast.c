@@ -1,5 +1,5 @@
 /*
- * sbshipmast (DLL 0x1EB) - the mast/rigging attachment of the SB Galleon
+ * SB_ShipMast (DLL 0x1EB) - the mast/rigging attachment of the SB Galleon
  * boss ship. It rides its parent galleon object, pinning its local position
  * to the origin every frame, and picks one of three animation play speeds
  * depending on the galleon's animation type (anim.seqId 0x139) and its
