@@ -1,16 +1,10 @@
-/* DLL 0x1DE - DIM2 Lava Control: manages the DIM2 lava-rise sequence -
- * triggers env-fx transitions, drives music track changes based on player
- * carry state, and maintains the countdown-armed SCGameBitLatch triggers. */
-#include "main/dll/dim2pathgeneratorstate_struct.h"
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/savegame_load_api.h"
 #include "main/audio/music_api.h"
+#include "main/audio/music_trigger_ids.h"
 #include "main/sky_api.h"
 #include "main/render_envfx_api.h"
-#include "main/dll/dim2snowballstate_struct.h"
-#include "main/dll/truthhornicestate_struct.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/dll1d6state_struct.h"
+#include "main/gamebits.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
@@ -20,28 +14,8 @@
 #include "main/dll/player_objects.h"
 #include "dlls/object_descriptor.h"
 
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
-
-STATIC_ASSERT(sizeof(Dll1D6State) == 0x20);
-
-STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
-
-STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
-
-/* DIM2PathGenerator_getExtraSize == 0x9a8 (incl. three 200-entry curve
- * tables filled by the RomCurve interface). */
-
-STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9a8);
-
-
-
-#include "main/gamebits.h"
-#include "main/audio/music_trigger_ids.h"
-
 u8 gDim2LavaHeatAlphaTargets[8] = {0xFF, 0xCD, 0xB9, 0xAA, 0, 0, 0, 0};
 
-/* Env-effect ids co-activated on the userData1 restore tick (immediately when
-   userData1==2, else deferred); opaque distinct roles per index. */
 #define DIM2LAVACONTROL_ENVFX_A 0x163
 #define DIM2LAVACONTROL_ENVFX_B 0x166
 #define DIM2LAVACONTROL_ENVFX_C 0x165
@@ -77,7 +51,6 @@ typedef enum Dim2lavacontrolPhase
     DIM2LAVACONTROL_PHASE_WAIT = 0,      /* waits for its unlock game bit */
     DIM2LAVACONTROL_PHASE_TRIGGERED = 1, /* unlock bit set; control latched */
 } Dim2lavacontrolPhase;
-
 
 void dim2lavacontrol_setScale(GameObject *obj)
 {

@@ -521,7 +521,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1DB | — | COMPLETE | dlls/objects/475/475.c | = (canonical) | No recovered retail basename |
 | 0x1DC | DIM2IceFloe | COMPLETE | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | = (canonical) | — |
 | 0x1DD | DIM2Icicle | COMPLETE | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | = (canonical) | — |
-| 0x1DE | DIM2LavaControl | CONFIRMED | main/dll/dll_01DE_dim2lavacontrol.c | main/dll/DIM/dll_01DE_dim2lavacontrol.c | — |
+| 0x1DE | DIM2LavaCon | COMPLETE | dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c | = (canonical) | — |
 | 0x1DF | — | NO-RETAIL-NAME | main/dll/dll_01DF_dll1df.c | = (canonical) | — |
 | 0x1E0 | DIM_Boss | COMPLETE | main/dll/dll_01E0_dimboss.c | main/dll/DIM/DIMboss.c | — |
 | 0x1E1 | DIM_BossGut | CONFIRMED | main/dll/dll_01E1_dimbossgut.c | main/dll/DIM/dll_01E1_dimbossgut.c | — |
@@ -849,7 +849,7 @@ name was a deliberate choice by a previous carve:
 | 0x1D9 | main/dll/dll_01D9_dim2prisonmammoth.c | dlls/objects/473_DIM2PrisonM/DIM2PrisonM.c | COMPLETE |
 | 0x1DC | main/dll/dll_01DC_dim2icefloe.c | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | COMPLETE |
 | 0x1DD | main/dll/dll_01DD_dim2icicle.c | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | COMPLETE |
-| 0x1DE | main/dll/dll_01DE_dim2lavacontrol.c | main/dll/DIM/dll_01DE_dim2lavacontrol.c | CONFIRMED |
+| 0x1DE | main/dll/dll_01DE_dim2lavacontrol.c | dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c | COMPLETE |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | main/dll/DIM/DIMboss.c | COMPLETE |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | main/dll/DIM/dll_01E1_dimbossgut.c | CONFIRMED |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | main/dll/DIM/dll_01E2_dimbosstonsil.c | CONFIRMED |

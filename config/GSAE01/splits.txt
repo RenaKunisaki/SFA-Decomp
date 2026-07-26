@@ -2649,7 +2649,7 @@ dlls/objects/477_DIM2Icicle/DIM2Icicle.c:
 	.data       start:0x803258B0 end:0x803258E8
 	.sdata2     start:0x803E4B68 end:0x803E4B90
 
-main/dll/DIM/dll_01DE_dim2lavacontrol.c:
+dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c:
 	.text       start:0x801B9810 end:0x801B9CB4
 	.data       start:0x803258E8 end:0x80325928
 	.sdata      start:0x803DBF28 end:0x803DBF30
