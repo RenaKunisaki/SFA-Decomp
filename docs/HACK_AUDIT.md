@@ -112,7 +112,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/audio/snd_groups | 100.0000 | 75.4011 | -24.5989 |
 | main/main/gametext | 99.7635 | 75.1847 | -24.5787 |
 | main/main/dll/dll_00F1_invhit | 99.9045 | 75.3938 | -24.5107 |
-| main/main/dll/SC/dll_01B7_scmusictree | 100.0000 | 75.6706 | -24.3294 |
+| main/dlls/objects/439/439 | 100.0000 | 75.6706 | -24.3294 |
 | main/main/dll/dll_004D_cameramodenpcspeak | 100.0000 | 76.0471 | -23.9529 |
 | main/main/audio/hw_samplemem | 100.0000 | 76.4762 | -23.5238 |
 | main/main/dll/dll_0037_optionsscreen | 100.0000 | 76.8072 | -23.1928 |

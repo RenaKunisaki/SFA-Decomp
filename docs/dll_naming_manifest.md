@@ -482,7 +482,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1B4 | SH_EmptyTum | COMPLETE | dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c | = (canonical) | — |
 | 0x1B5 | lightfoot (+SC_chieflig, SC_lightfoo, SC_babyligh, SC_blTarget, SC_muscleli) | COMPLETE | dlls/objects/437/437.c | = (canonical) | No single recovered TU basename |
 | 0x1B6 | SC_levelcon | COMPLETE | dlls/objects/438_SC_levelcon/SC_levelcon.c | = (canonical) | — |
-| 0x1B7 | SC_MusicTree (+SC_BirchTre) | CONFIRMED | main/dll/dll_01B7_scmusictree.c | main/dll/SC/dll_01B7_scmusictree.c | — |
+| 0x1B7 | SC_MusicTree (+SC_BirchTre) | COMPLETE | dlls/objects/439/439.c | = (canonical) | No single recovered TU basename |
 | 0x1B8 | SC_totempole | CONFIRMED | main/dll/dll_01B8_sctotempole.c | main/dll/SC/dll_01B8_sctotempole.c | — |
 | 0x1B9 | SC_Cloudrunnera | CONFIRMED | main/dll/dll_01B9_sccloudrunnera.c | main/dll/SC/dll_01B9_sccloudrunnera.c | — |
 | 0x1BA | SC_totempuzzle | CONFIRMED | main/dll/dll_01BA_sctotempuzzle.c | main/dll/SC/dll_01BA_sctotempuzzle.c | — |
@@ -816,7 +816,7 @@ name was a deliberate choice by a previous carve:
 | 0x1B4 | main/dll/dll_01B4_shemptytumblew.c | dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c | COMPLETE |
 | 0x1B5 | main/dll/dll_01B5_lightfoot.c | dlls/objects/437/437.c | COMPLETE |
 | 0x1B6 | main/dll/dll_01B6_sclevelcontrol.c | dlls/objects/438_SC_levelcon/SC_levelcon.c | COMPLETE |
-| 0x1B7 | main/dll/dll_01B7_scmusictree.c | main/dll/SC/dll_01B7_scmusictree.c | CONFIRMED |
+| 0x1B7 | main/dll/dll_01B7_scmusictree.c | dlls/objects/439/439.c | COMPLETE |
 | 0x1B8 | main/dll/dll_01B8_sctotempole.c | main/dll/SC/dll_01B8_sctotempole.c | CONFIRMED |
 | 0x1B9 | main/dll/dll_01B9_sccloudrunnera.c | main/dll/SC/dll_01B9_sccloudrunnera.c | CONFIRMED |
 | 0x1BA | main/dll/dll_01BA_sctotempuzzle.c | main/dll/SC/dll_01BA_sctotempuzzle.c | CONFIRMED |
