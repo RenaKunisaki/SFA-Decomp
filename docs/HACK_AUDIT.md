@@ -324,7 +324,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_bb | 100.0000 | 99.6584 | -0.3416 |
 | main/main/dll/dll_01A7_ediblemushroom | 100.0000 | 99.6598 | -0.3402 |
 | main/main/dll/dll_011D_treasurechest | 100.0000 | 99.6698 | -0.3302 |
-| main/main/dll/dll_029B_arwingandrossstuff | 100.0000 | 99.6727 | -0.3273 |
+| main/dlls/objects/667/667 | 100.0000 | 99.6727 | -0.3273 |
 | main/main/dll/dll_012C_transporter | 100.0000 | 99.6791 | -0.3209 |
 | main/main/dll/dll_00C4_tricky | 100.0000 | 99.6979 | -0.3021 |
 | main/main/dll/dll_013C_xyzanimator | 99.9580 | 99.6603 | -0.2977 |

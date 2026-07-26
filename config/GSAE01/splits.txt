@@ -3817,7 +3817,7 @@ main/dll/ARW/dll_029A_arwarwing.c:
 	.sbss       start:0x803DDD88 end:0x803DDD90
 	.sdata2     start:0x803E6EC8 end:0x803E6EF0
 
-main/dll/dll_029B_arwingandrossstuff.c:
+dlls/objects/667/667.c:
 	.text       start:0x8022E418 end:0x8022ECE0
 	.data       start:0x8032B608 end:0x8032B640
 	.sdata      start:0x803DC3D0 end:0x803DC3E0

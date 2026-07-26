@@ -710,7 +710,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x298 | WCFloorTile | CONFIRMED | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | — |
 | 0x299 | — | NO-RETAIL-NAME | main/dll/dll_0299.c | = (canonical) | — |
 | 0x29A | ARWArwing | COMPLETE | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | — |
-| 0x29B | arwingandrossstuff (+rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | GUESSED | main/dll/dll_029B_arwingandrossstuff.c | = (canonical) | — |
+| 0x29B | — (+arwingandrossstuff, rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | NO-RETAIL-NAME | dlls/objects/667/667.c | = (canonical) | — |
 | 0x29C | ARWArwingBo | CONFIRMED | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | = (canonical) | — |
 | 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | = (canonical) | — |
 | 0x29E | — | NO-RETAIL-NAME | dlls/objects/670/670.c | = (canonical) | — |
