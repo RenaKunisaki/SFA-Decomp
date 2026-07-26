@@ -2059,7 +2059,7 @@ dlls/objects/270/270.c:
 	.data       start:0x80321E20 end:0x80321E58
 	.sdata2     start:0x803E3D18 end:0x803E3D5C
 
-main/dll/dll_0127_dll127.c:
+dlls/objects/295/295.c:
 	.text       start:0x8018CD64 end:0x8018CEE4
 	.data       start:0x80321E58 end:0x80321E90
 	.sdata2     start:0x803E3D60 end:0x803E3D78

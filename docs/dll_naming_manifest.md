@@ -340,7 +340,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x124 | — (+deathGas, deathGasNoF) | NO-RETAIL-NAME | dlls/objects/292/292.c | = (canonical) | — |
 | 0x125 | curve | COMPLETE | dlls/objects/293_curve/curve.c | = (canonical) | — |
 | 0x126 | Trigger (+TrigPnt, TrigCyl, TrigPln, TrigArea, TrigTime, TrigButt, TriggSetp, TrigBits, TrigCrve) | CONFIRMED | dlls/objects/294/294.c | = (canonical) | — |
-| 0x127 | — | NO-RETAIL-NAME | main/dll/dll_0127_dll127.c | = (canonical) | — |
+| 0x127 | — | NO-RETAIL-NAME | dlls/objects/295/295.c | = (canonical) | — |
 | 0x128 | KT_Torch (+Trex1, WCApertures, WCAperturem, DIMBridgeCo, DIMHutDoor, DIMDoorBrid, DIM2Mammoth, DIM2TrapDoo, DIM2CellDoo) | COMPLETE | main/dll/dll_0128_kttorch.c | main/dll/DR/dll_0128_kttorch.c | — |
 | 0x129 | CampFire | COMPLETE | main/dll/dll_0129_campfire.c | = (canonical) | — |
 | 0x12A | CFCrate (+LinkF_liftg, LinkF_cog, MMP_Organic, VFP_newball, VFP_liftgra, VFP_PowerBo, VFP_Spellst, VFP_locksym, DFPSpSG, DFP_WaterHi, DFP_FireHit, DFP_InnerRi, DFP_OuterRi, DFP_PlacePl, DFP_Water, DFP_PowerBo, DFP_blockwa, DFP_dish, DFPSpDB, WM_dummyfox, WM_krazoast, WM_rock, WM_fallenco, WM_largeroc, WM_Walkway1, WM_Walkway2, WM_NoPassVi, WM_NoPassHo, WM_MoonSeed, WM_Column_l, WM_Planet, WM_PlanetMo, DFSHcol, scalessword, ECSHcol, EnergyGem1) | COMPLETE | main/dll/dll_012A_cfcrate.c | main/dll/CF/dll_012A_cfcrate.c | — |
