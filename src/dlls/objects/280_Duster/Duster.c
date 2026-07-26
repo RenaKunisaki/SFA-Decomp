@@ -38,7 +38,8 @@
 
 typedef struct DusterSetup
 {
-    u8 pad00[0x24];
+    ObjPlacement base;
+    u8 pad18[0x24 - 0x18];
     s16 activeGameBit;
 } DusterSetup;
 
