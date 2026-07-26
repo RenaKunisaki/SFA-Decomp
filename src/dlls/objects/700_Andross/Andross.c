@@ -2366,34 +2366,34 @@ void andross_update(int obj)
     return;
 }
 
-void andross_init(int obj, ObjPlacement* setup)
+void andross_init(GameObject* obj, ObjPlacement* setup)
 {
-    int state = *(int*)&((GameObject*)obj)->extra;
+    AndrossState* state = (AndrossState*)obj->extra;
     int i;
     int model;
     int val;
 
-    ((AndrossState*)state)->homePosX = setup->posX;
-    ((AndrossState*)state)->homePosY = setup->posY;
-    ((AndrossState*)state)->homePosZ = setup->posZ;
-    ((AndrossState*)state)->actionTimer = 0;
-    ((AndrossState*)state)->actionState = 0;
-    ((AndrossState*)state)->prevActionState = -1;
-    ((AndrossState*)state)->animSpeed = 0.005f;
-    ((AndrossState*)state)->startupDelay = 5;
-    ((AndrossState*)state)->fightPhase = 1;
-    ((AndrossState*)state)->prevFightPhase = -1;
-    ((AndrossState*)state)->targetRotX = -0x8000;
-    ((GameObject*)obj)->anim.rotX = -0x8000;
-    ((AndrossState*)state)->spawnCooldown = -1.0f;
-    ((AndrossState*)state)->camOffsetAccum = gAndrossZero;
-    ((AndrossState*)state)->springStiffness = 0.003f;
-    ((AndrossState*)state)->springDamping = 0.93f;
-    ((AndrossState*)state)->handsInitialized = 1;
-    ObjHits_SetTargetMask((GameObject*)obj, 4);
-    ((GameObject*)obj)->animEventCallback = andross_SeqFn;
+    state->homePosX = setup->posX;
+    state->homePosY = setup->posY;
+    state->homePosZ = setup->posZ;
+    state->actionTimer = 0;
+    state->actionState = 0;
+    state->prevActionState = -1;
+    state->animSpeed = 0.005f;
+    state->startupDelay = 5;
+    state->fightPhase = 1;
+    state->prevFightPhase = -1;
+    state->targetRotX = -0x8000;
+    obj->anim.rotX = -0x8000;
+    state->spawnCooldown = -1.0f;
+    state->camOffsetAccum = gAndrossZero;
+    state->springStiffness = 0.003f;
+    state->springDamping = 0.93f;
+    state->handsInitialized = 1;
+    ObjHits_SetTargetMask(obj, 4);
+    obj->animEventCallback = andross_SeqFn;
     createNewShadowDistortionTexture();
-    i = (int)Obj_GetActiveModel((GameObject*)obj);
+    i = (int)Obj_GetActiveModel(obj);
     model = *(int*)i;
     for (i = 0, val = i; i < *(u8*)(model + 0xf8); i++)
     {
