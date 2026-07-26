@@ -329,7 +329,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x119 | coldWaterCo | CONFIRMED | dlls/objects/281_coldWaterCo/coldWaterCo.c | = (canonical) | — |
 | 0x11A | — (+DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF) | NO-RETAIL-NAME | dlls/objects/282/282.c | = (canonical) | — |
 | 0x11B | Landed_Arwi | CONFIRMED | dlls/objects/283_Landed_Arwi/Landed_Arwi.c | = (canonical) | — |
-| 0x11C | staffactivated (+LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT) | GUESSED | main/dll/dll_011C_staffactivated.c | = (canonical) | — |
+| 0x11C | — (+LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT) | NO-RETAIL-NAME | dlls/objects/284/284.c | = (canonical) | — |
 | 0x11D | TreasureChest (+MapTreasure) | CONFIRMED | main/dll/dll_011D_treasurechest.c | = (canonical) | — |
 | 0x11E | MagicCaveBottom | CONFIRMED | main/dll/dll_011E_magiccavebottom.c | = (canonical) | — |
 | 0x11F | MagicCaveTop | CONFIRMED | main/dll/dll_011F_magiccavetop.c | = (canonical) | — |
@@ -768,7 +768,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 |---|---|---|---|---|
 | 0x0D6 | KaldachomMe | `kaldachompme_*` | cross-dll (names dll 0x0D5) | dlls/objects/214_KaldachomMe/KaldachomMe.c |
 | 0x0D7 | KaldachomSp, FireCrawler | `kaldachompspit_*` | cross-dll (names dll 0x0D5) | dlls/objects/215/215.c |
-| 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | main/dll/dll_011C_staffactivated.c |
+| 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | dlls/objects/284/284.c |
 | 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | main/dll/dll_0230_dfpwallbar.c |
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | main/dll/dll_0231_dfpforceaw.c |
 | 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | main/dll/dll_0232_dfprotatep.c |
