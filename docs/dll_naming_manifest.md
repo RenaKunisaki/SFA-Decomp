@@ -383,7 +383,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x151 | CFScalesGal | RAW | dlls/objects/337_CFScalesGal/CFScalesGal.c | = (canonical) | data-only DLL |
 | 0x152 | CF_ObjCreat | RAW | dlls/objects/338_CF_ObjCreat/CF_ObjCreat.c | = (canonical) | data-only DLL |
 | 0x153 | CFPerch | COMPLETE | dlls/objects/339_CFPerch/CFPerch.c | = (canonical) | — |
-| 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | main/dll/dll_0154_cfprisoncage.c | main/dll/CF/dll_0154_cfprisoncage.c | — |
+| 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | dlls/objects/340/340.c | = (canonical) | — |
 | 0x155 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x156 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x157 | SpiritDoorSpirit | CONFIRMED | main/dll/dll_0157_spiritdoorspirit.c | = (canonical) | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x154 | main/dll/dll_0154_cfprisoncage.c | main/dll/CF/dll_0154_cfprisoncage.c | CONFIRMED |
 | 0x15B | main/dll/dll_015B_cfforcefield.c | main/dll/CF/dll_015B_cfforcefield.c | CONFIRMED |
 | 0x162 | main/dll/dll_0162_cfmagicwall.c | main/dll/CF/dll_0162_cfmagicwall.c | CONFIRMED |
 | 0x164 | main/dll/dll_0164_cflevelcontrol.c | main/dll/CF/dll_0164_cflevelcontrol.c | CONFIRMED |

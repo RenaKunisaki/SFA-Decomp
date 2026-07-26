@@ -1,5 +1,5 @@
 /*
- * cfprisoncage (DLL 0x154) - the CloudRunner dungeon prison cages and
+ * DLL 0x154 - the CloudRunner dungeon prison cages and
  * their release switch. clouddungeon places four cages whose opened
  * bits are 0x4C-0x4F; 0x4D is the old CloudRunner's cage (see
  * cfprisonuncle) and 0x4E the caged guardian's (see cfguardian). The
@@ -7,8 +7,7 @@
  * its logic (granting the bit on the 0xA0005 message, mirroring the
  * 0x44 event into the prompt bits, running the open sequence) belongs
  * to the switch type, which ships no placements in v1.0 - the cage
- * bits are set by sequence scripts instead. Carved from the
- * sandwormBoss 10-DLL container.
+ * bits are set by sequence scripts instead.
  */
 
 #include "main/game_ui_interface.h"
