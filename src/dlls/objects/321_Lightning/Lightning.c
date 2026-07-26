@@ -233,3 +233,20 @@ void lightning_init(GameObject* obj, LightningPlacement* placement)
 
     state->countdown = (f32)(s32)((u32)placement->initialDelay * 0x3c);
 }
+
+ObjectDescriptor gLightningObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)lightning_init,
+    (ObjectDescriptorCallback)lightning_update,
+    0,
+    (ObjectDescriptorCallback)lightning_render,
+    (ObjectDescriptorCallback)lightning_free,
+    0,
+    lightning_getExtraSize,
+};

@@ -15,4 +15,6 @@ void lightning_render(GameObject* obj);
 void lightning_update(GameObject* obj);
 void lightning_init(GameObject* obj, LightningPlacement* placement);
 
+extern ObjectDescriptor gLightningObjDescriptor;
+
 #endif /* MAIN_DLL_DLL_0141_LIGHTNING_H_ */
