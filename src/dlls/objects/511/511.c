@@ -1,5 +1,5 @@
 /*
- * dll1ff (DLL 0x1FF) - a grabbable object the player can hang from.
+ * DLL 0x01FF - a grabbable object the player can hang from.
  *
  * While free (grabPhase 0) the object falls (velocityY integrated by
  * timeDelta) and probes nearby surfaces with hitDetectFn_80065e50; on
@@ -10,16 +10,16 @@
  * releases and forwards the message via ObjMsg_SendToObject. Render
  * gates model-state shadow fade-out on the active trigger sequence.
  */
-#include "main/dll/dll_01FF_dll1ff.h"
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/track_dolphin_api.h"
+#include "main/dll/dll_01FF_dll1ff.h"
+#include "main/frame_timing.h"
 #include "main/obj_message.h"
 #include "main/objhits.h"
-#include "main/pad.h"
-#include "main/frame_timing.h"
 #include "main/object_render.h"
-
+#include "main/pad.h"
+#include "main/track_dolphin_api.h"
+#include "sys/objects.h"
 
 /* dll_1FF_getExtraSize == 0x8 (grabbable hook). */
 typedef struct Dll1FFState
@@ -49,7 +49,6 @@ typedef struct Dll1FFSlots
 #define DLL1FF_SEQID_WM_COLUMN_TOP 0x146 /* retail "WM_Column_T..." (DLL 0x116) */
 #define DLL1FF_BUTTON_ACTION 0x100    /* action-button mask (button-just-pressed / disable) */
 #define DLL1FF_MSG_GRAB      0x100008 /* ObjMsg kind sent on release */
-
 
 int dll_1FF_getExtraSize_ret_8(void)
 {
@@ -210,17 +209,19 @@ void dll_1FF_initialise_nop(void)
 {
 }
 
-u32 dll_1FF[14] = {0x00000000,
-                   0x00000000,
-                   0x00000000,
-                   0x00090000,
-                   (u32)dll_1FF_initialise_nop,
-                   (u32)dll_1FF_release_nop,
-                   0x00000000,
-                   (u32)dll_1FF_init,
-                   (u32)dll_1FF_update,
-                   (u32)dll_1FF_hitDetect_nop,
-                   (u32)dll_1FF_render,
-                   (u32)dll_1FF_free_nop,
-                   (u32)dll_1FF_getObjectTypeId,
-                   (u32)dll_1FF_getExtraSize_ret_8};
+ObjectDescriptor dll_1FF = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_1FF_initialise_nop,
+    (ObjectDescriptorCallback)dll_1FF_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_1FF_init,
+    (ObjectDescriptorCallback)dll_1FF_update,
+    (ObjectDescriptorCallback)dll_1FF_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_1FF_render,
+    (ObjectDescriptorCallback)dll_1FF_free_nop,
+    (ObjectDescriptorCallback)dll_1FF_getObjectTypeId,
+    dll_1FF_getExtraSize_ret_8,
+};

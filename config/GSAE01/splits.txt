@@ -3216,7 +3216,7 @@ dlls/objects/510/510.c:
 	.data       start:0x803287F0 end:0x80328828
 	.sdata2     start:0x803E5D58 end:0x803E5D7C
 
-main/dll/dll_01FF_dll1ff.c:
+dlls/objects/511/511.c:
 	.text       start:0x801F1BC8 end:0x801F1F1C
 	.data       start:0x80328828 end:0x80328860
 	.sdata2     start:0x803E5D80 end:0x803E5D90

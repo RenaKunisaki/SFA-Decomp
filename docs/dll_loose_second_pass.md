@@ -2,7 +2,7 @@
 
 Files cleaned this session under the **old md5-exact pipeline** (before dead-`FUN_` removal + aggressive unused-symbol pruning were added). They are byte-exact and committed, but may still carry dead `FUN_` bodies, unused `FUN_` declarations, and unused includes/externs. Re-run them through the upgraded `tools/dll_cleanup_wave.js` pipeline (match-%-gated) for a second pass.
 
-Total: **63** files.
+Total: **62** files.
 
 | file | FUN_ total | FUN_ defs | FUN_ decls | #includes | externs |
 |---|---:|---:|---:|---:|---:|
@@ -12,7 +12,6 @@ Total: **63** files.
 | dll_0053_cameramodecloudrunner.c | 21 | 3 | 16 | 5 | 32 |
 | dll_0136_waveanimator.c | 21 | 2 | 14 | 6 | 33 |
 | dll_0137_alphaanimator.c | 20 | 2 | 14 | 6 | 23 |
-| dll_01FF_dll1ff.c | 20 | 3 | 12 | 4 | 26 |
 | dll_00F3_flameblast.c | 18 | 1 | 8 | 3 | 26 |
 | dll_0173_linklevcontrol.c | 14 | 1 | 8 | 4 | 17 |
 | dll_0038_weirdunusedmenu.c | 13 | 1 | 6 | 2 | 25 |
@@ -85,5 +84,4 @@ dll_013B_wallanimator.c
 dll_016B_magiclight.c
 dll_0173_linklevcontrol.c
 dll_01CF_dll1cf.c
-dll_01FF_dll1ff.c
 ```
