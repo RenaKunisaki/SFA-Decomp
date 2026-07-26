@@ -1137,6 +1137,7 @@ void fn_8003ADC4(GameObject* obj, void* tgt, void* p3, int a, u8 inv, int b)
             {
                 int v;
                 int w;
+                f64 pd = prodB;
                 *ap -= channel->angle;
                 v = *ap;
                 if (v < minB)
@@ -1145,9 +1146,9 @@ void fn_8003ADC4(GameObject* obj, void* tgt, void* p3, int a, u8 inv, int b)
                 }
                 else
                 {
-                    if (v > (s16)(s32)prodB)
+                    if (v > (s16)(s32)pd)
                     {
-                        v = (s32)prodB;
+                        v = (s32)pd;
                     }
                     w = (s16)v;
                 }
