@@ -1,5 +1,5 @@
 /*
- * drcloudper (DLL 0x280) - a cloud-perimeter trigger plane.
+ * DR_CloudPer (DLL 640) - a cloud-perimeter trigger plane.
  *
  * init derives a vertical clip plane (normal + distance) from the
  * placement yaw byte and the object's position, joins the trigger and
