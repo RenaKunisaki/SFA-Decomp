@@ -535,7 +535,7 @@ int smallbasket_spawnContents(GameObject* obj, GameObject* player, void* dataIn)
     return 1;
 }
 
-int smallbasket_resolveCollision(u8* obj)
+int smallbasket_resolveCollision(GameObject* obj)
 {
     typedef struct
     {
@@ -557,29 +557,29 @@ int smallbasket_resolveCollision(u8* obj)
     f32 startPoints[12];
     TrackQueryBounds sweptBounds;
 
-    st = *(u8**)&((GameObject*)obj)->anim.hitReactState;
-    if (objBboxFn_800640cc((f32*)(obj + 0x80), (f32*)(obj + 0xc), (0.1f), 1, NULL,
-                           (GameObject*)obj, 1, -1, 0xff, 0) != 0)
+    st = *(u8**)&obj->anim.hitReactState;
+    if (objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, (0.1f), 1, NULL,
+                           obj, 1, -1, 0xff, 0) != 0)
     {
         ((ObjHitsPriorityState*)st)->contactFlags |= OBJHITS_CONTACT_FLAG_KIND0;
-        ((ObjHitsPriorityState*)st)->localPosX = ((GameObject*)obj)->anim.previousLocalPosX;
-        ((ObjHitsPriorityState*)st)->localPosY = ((GameObject*)obj)->anim.previousLocalPosY;
-        ((ObjHitsPriorityState*)st)->localPosZ = ((GameObject*)obj)->anim.previousLocalPosZ;
+        ((ObjHitsPriorityState*)st)->localPosX = obj->anim.previousLocalPosX;
+        ((ObjHitsPriorityState*)st)->localPosY = obj->anim.previousLocalPosY;
+        ((ObjHitsPriorityState*)st)->localPosZ = obj->anim.previousLocalPosZ;
         fz = (0.0f);
-        ((GameObject*)obj)->anim.velocityX = fz;
-        ((GameObject*)obj)->anim.velocityY = fz;
-        ((GameObject*)obj)->anim.velocityZ = fz;
+        obj->anim.velocityX = fz;
+        obj->anim.velocityY = fz;
+        obj->anim.velocityZ = fz;
         return 1;
     }
 
     if ((int)(((ObjHitsPriorityState*)st)->objectHitMask >> 4) != 0 && (s8)st[0x70] == 0)
     {
-        endPoints[0] = ((GameObject*)obj)->anim.localPosX;
-        *(endY = &endPoints[1]) = ((GameObject*)obj)->anim.localPosY;
-        *(endZ = &endPoints[2]) = ((GameObject*)obj)->anim.localPosZ;
-        startPoints[0] = ((GameObject*)obj)->anim.previousLocalPosX;
-        startPoints[1] = ((GameObject*)obj)->anim.previousLocalPosY;
-        startPoints[2] = ((GameObject*)obj)->anim.previousLocalPosZ;
+        endPoints[0] = obj->anim.localPosX;
+        *(endY = &endPoints[1]) = obj->anim.localPosY;
+        *(endZ = &endPoints[2]) = obj->anim.localPosZ;
+        startPoints[0] = obj->anim.previousLocalPosX;
+        startPoints[1] = obj->anim.previousLocalPosY;
+        startPoints[2] = obj->anim.previousLocalPosZ;
         hitResults.radii[0] = (f32)((ObjHitsPriorityState*)st)->primaryRadius;
         *(axes = hitResults.axes) = -1;
         axes[4] = 3;
@@ -590,8 +590,8 @@ int smallbasket_resolveCollision(u8* obj)
     }
 
     hitDetect_calcSweptSphereBounds(&sweptBounds, startPoints, endPoints, hitResults.radii, 1);
-    hitDetectFn_800691c0((GameObject*)obj, &sweptBounds, ((ObjHitsPriorityState*)st)->trackContactMask, 1);
-    hit = hitDetectFn_80067958((GameObject*)obj, startPoints, endPoints, 1, &hitResults, 0);
+    hitDetectFn_800691c0(obj, &sweptBounds, ((ObjHitsPriorityState*)st)->trackContactMask, 1);
+    hit = hitDetectFn_80067958(obj, startPoints, endPoints, 1, &hitResults, 0);
     if (hit != 0)
     {
         if (hit & 1)
@@ -621,31 +621,31 @@ int smallbasket_resolveCollision(u8* obj)
         if (hitResults.solidFlags[idx] != 0)
         {
             ((ObjHitsPriorityState*)st)->contactFlags |= OBJHITS_CONTACT_FLAG_KIND_NONZERO;
-            ((GameObject*)obj)->anim.localPosX = ((ObjHitsPriorityState*)st)->contactPosX;
-            ((GameObject*)obj)->anim.localPosY = ((ObjHitsPriorityState*)st)->contactPosY;
-            ((GameObject*)obj)->anim.localPosZ = ((ObjHitsPriorityState*)st)->contactPosZ;
-            ((ObjHitsPriorityState*)st)->localPosX = ((GameObject*)obj)->anim.previousLocalPosX;
-            ((ObjHitsPriorityState*)st)->localPosY = ((GameObject*)obj)->anim.previousLocalPosY;
-            ((ObjHitsPriorityState*)st)->localPosZ = ((GameObject*)obj)->anim.previousLocalPosZ;
+            obj->anim.localPosX = ((ObjHitsPriorityState*)st)->contactPosX;
+            obj->anim.localPosY = ((ObjHitsPriorityState*)st)->contactPosY;
+            obj->anim.localPosZ = ((ObjHitsPriorityState*)st)->contactPosZ;
+            ((ObjHitsPriorityState*)st)->localPosX = obj->anim.previousLocalPosX;
+            ((ObjHitsPriorityState*)st)->localPosY = obj->anim.previousLocalPosY;
+            ((ObjHitsPriorityState*)st)->localPosZ = obj->anim.previousLocalPosZ;
             fz = (0.0f);
-            ((GameObject*)obj)->anim.velocityX = fz;
-            ((GameObject*)obj)->anim.velocityY = fz;
-            ((GameObject*)obj)->anim.velocityZ = fz;
+            obj->anim.velocityX = fz;
+            obj->anim.velocityY = fz;
+            obj->anim.velocityZ = fz;
             return 1;
         }
         else
         {
             ((ObjHitsPriorityState*)st)->contactFlags |= OBJHITS_CONTACT_FLAG_KIND0;
-            ((GameObject*)obj)->anim.localPosX = ((ObjHitsPriorityState*)st)->contactPosX;
-            ((GameObject*)obj)->anim.localPosY = ((ObjHitsPriorityState*)st)->contactPosY;
-            ((GameObject*)obj)->anim.localPosZ = ((ObjHitsPriorityState*)st)->contactPosZ;
-            ((ObjHitsPriorityState*)st)->localPosX = ((GameObject*)obj)->anim.previousLocalPosX;
-            ((ObjHitsPriorityState*)st)->localPosY = ((GameObject*)obj)->anim.previousLocalPosY;
-            ((ObjHitsPriorityState*)st)->localPosZ = ((GameObject*)obj)->anim.previousLocalPosZ;
+            obj->anim.localPosX = ((ObjHitsPriorityState*)st)->contactPosX;
+            obj->anim.localPosY = ((ObjHitsPriorityState*)st)->contactPosY;
+            obj->anim.localPosZ = ((ObjHitsPriorityState*)st)->contactPosZ;
+            ((ObjHitsPriorityState*)st)->localPosX = obj->anim.previousLocalPosX;
+            ((ObjHitsPriorityState*)st)->localPosY = obj->anim.previousLocalPosY;
+            ((ObjHitsPriorityState*)st)->localPosZ = obj->anim.previousLocalPosZ;
             fz = (0.0f);
-            ((GameObject*)obj)->anim.velocityX = fz;
-            ((GameObject*)obj)->anim.velocityY = fz;
-            ((GameObject*)obj)->anim.velocityZ = fz;
+            obj->anim.velocityX = fz;
+            obj->anim.velocityY = fz;
+            obj->anim.velocityZ = fz;
             return 1;
         }
     }
@@ -798,7 +798,7 @@ void SmallBasket_update(GameObject* obj)
                 state->hiddenTimer = 0;
                 state->disableTimer = 0;
                 ObjHits_EnableObject(obj);
-                ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
+                ObjHits_SyncObjectPositionIfDirty(obj);
                 *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
                 (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
             }
@@ -986,7 +986,7 @@ void SmallBasket_update(GameObject* obj)
             (obj)->anim.localPosX = (obj)->anim.velocityX * timeDelta + (obj)->anim.localPosX;
             (obj)->anim.localPosY = (obj)->anim.velocityY * timeDelta + (obj)->anim.localPosY;
             (obj)->anim.localPosZ = (obj)->anim.velocityZ * timeDelta + (obj)->anim.localPosZ;
-            smallbasket_resolveCollision((u8*)obj);
+            smallbasket_resolveCollision(obj);
             contactFlags = (*(ObjHitsPriorityState**)&(obj)->anim.hitReactState)->contactFlags;
             if ((contactFlags != 0) && (*(s8*)&state->throwState == 1))
             {
