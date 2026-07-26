@@ -205,18 +205,18 @@ main/zlb.c:
 	.sbss       start:0x803DCD18 end:0x803DCD28
 
 main/shader_dolphin.c:
-	.text       start:0x8004BF88 end:0x80051868
+	.text       start:0x8004BF88 end:0x80052974
 	.rodata     start:0x802C1D50 end:0x802C1E58
 	.bss        start:0x803779A0 end:0x803779C0
 	.sdata      start:0x803DB5E8 end:0x803DB600
-	.sbss       start:0x803DCD28 end:0x803DCD48
+	.sbss       start:0x803DCD28 end:0x803DCD98
 
 main/rcp_dolphin.c:
-	.text       start:0x80051868 end:0x80054F64
+	.text       start:0x80052974 end:0x80054F64
 	.data       start:0x8030C858 end:0x8030E4B0
 	.bss        start:0x803779C0 end:0x8037E0C0
 	.sdata      start:0x803DB600 end:0x803DB610
-	.sbss       start:0x803DCD48 end:0x803DCDC8
+	.sbss       start:0x803DCD98 end:0x803DCDC8
 
 main/shader.c:
 	.text       start:0x80054F64 end:0x8005AB70
