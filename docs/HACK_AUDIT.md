@@ -224,7 +224,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/dlls/objects/609_DR_LaserCan/DR_LaserCan | 99.4782 | 94.3216 | -5.1565 |
 | main/main/dll/dll_0242_dbstealerworm | 99.9161 | 94.8762 | -5.0398 |
 | main/main/objseq | 99.7434 | 94.7181 | -5.0253 |
-| main/main/dll/DR/dll_0257_drearthwarrior | 99.8439 | 94.9341 | -4.9098 |
+| main/dlls/objects/599_DR_EarthWar/DR_EarthWar | 99.8439 | 94.9341 | -4.9098 |
 | main/dlls/objects/626/626 | 100.0000 | 95.0953 | -4.9047 |
 | main/main/dll/DF/dll_0233_dfpstatue1 | 100.0000 | 95.1807 | -4.8193 |
 | main/main/dll/tricky_flameguard | 99.9461 | 95.1526 | -4.7935 |

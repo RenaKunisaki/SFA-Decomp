@@ -4962,7 +4962,7 @@ main/dll/DIM/dll_01D9_dim2prisonmammoth.c:
 main/audio/synth_constants.c:
 	.sdata2     start:0x803E8368 end:0x803E8390
 
-main/dll/DR/dll_0257_drearthwarrior.c:
+dlls/objects/599_DR_EarthWar/DR_EarthWar.c:
 	.text       start:0x802BC7C0 end:0x802BF0C8
 	.rodata     start:0x802C2CA8 end:0x802C2D00
 	.data       start:0x803351F8 end:0x803356F0
