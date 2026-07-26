@@ -3564,7 +3564,7 @@ main/dll/dll_0245_dummy245.c:
 main/dll/dll_0246_dummy246.c:
 	.data       start:0x80329E70 end:0x80329EA0
 
-main/dll/dll_0244_dummy244.c:
+dlls/objects/580/580.c:
 	.data       start:0x80329EA0 end:0x80329ED0
 
 main/dll/dll_0247_dummy247.c:

@@ -623,7 +623,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x241 | DrakorEnerg | COMPLETE | dlls/objects/577_DrakorEnerg/DrakorEnerg.c | = (canonical) | Exact truncated retail basename; internal DrakorEnergy symbols retained |
 | 0x242 | DBstealerwo | COMPLETE | dlls/objects/578_DBstealerwo/DBstealerwo.c | = (canonical) | Exact truncated retail basename; terminal handler-table setup restored and DBHoleControl1 descriptor separated |
 | 0x243 | DBHoleContr | COMPLETE | dlls/objects/579_DBHoleContr/DBHoleContr.c | = (canonical) | Exact truncated retail basename; foreign DBstealerwo setup removed and descriptor restored to this TU |
-| 0x244 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x244 | — | NO-RETAIL-NAME | dlls/objects/580/580.c | = (canonical) | Descriptor data only; Dummy244 retained as the internal symbol |
 | 0x245 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x246 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x247 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
