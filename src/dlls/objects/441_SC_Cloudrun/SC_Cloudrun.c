@@ -12,6 +12,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "game/objects/object_setup.h"
 
 extern u8 lbl_803DB411;    /* trigger-interface update parameter */
 
@@ -21,7 +22,7 @@ extern u8 lbl_803DB411;    /* trigger-interface update parameter */
 
 typedef struct ScCloudrunneraPlacement
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     s16 animDataIndex; /* anim-data set selector (-1 = none); obj.userData1 = animDataIndex+1 */
     s16 gameBit; /* GameBit id -> seq->gameBit */
     u8 pad1C[0x24 - 0x1C];

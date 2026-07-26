@@ -4,10 +4,11 @@
 #include "game/objects/object.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 typedef struct GpshScenePlacement
 {
-    u8 pad0[0x18];
+    ObjPlacement base;
     s8 rotXByte;
 } GpshScenePlacement;
 

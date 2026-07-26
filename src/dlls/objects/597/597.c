@@ -32,6 +32,7 @@
 #include "string.h"
 #include "main/lightmap.h"
 #include "sys/objects/lifecycle.h"
+#include "game/objects/object_setup.h"
 
 f32 lbl_803DC0B8 = 15.0f;
 int lbl_803DC0BC = -1;
@@ -318,7 +319,7 @@ typedef struct
 } SnowBikeFlags;
 typedef struct SnowBikePlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     u8 yawByte;
     u8 startFlag;
     s16 unk1a;

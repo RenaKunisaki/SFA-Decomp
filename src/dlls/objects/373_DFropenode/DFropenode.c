@@ -27,6 +27,7 @@
 #include "main/texture.h"
 #include "string.h"
 #include "track/intersect_api.h"
+#include "game/objects/object_setup.h"
 
 #define DFBARREL_SWAY_LIMIT          0x32
 #define DFBARREL_SWAY_DIR_INCREASING 1
@@ -77,7 +78,7 @@ const u8 gRopeNodeDisplayList[96] = {
 
 typedef struct DfropenodePlacement
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     u8 flags18; /* bit0 enables rope-render pass */
     u8 pad19[0x1B - 0x19];
     u8 textureIndex; /* gRopeNodeTextures index; 1 = white/active style */

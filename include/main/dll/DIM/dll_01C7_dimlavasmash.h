@@ -4,6 +4,7 @@
 #include "types.h"
 #include "main/map_block.h"
 #include "main/objanim_update.h"
+#include "game/objects/object_setup.h"
 
 struct GameObject;
 
@@ -31,7 +32,7 @@ typedef struct DimlavasmashState
 
 typedef struct DimlavasmashObjectDef
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     s16 rotByte;        /* 0x18 rotation byte (read raw as def[0x18] into anim.rotX) */
     s16 surfaceLayerId; /* 0x1A def source for state.surfaceLayerId */
     s16 unk1C;
