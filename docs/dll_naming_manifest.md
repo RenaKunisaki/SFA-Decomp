@@ -561,7 +561,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x203 | — | COMPLETE | dlls/objects/515/515.c | = (canonical) | No recovered retail basename; data-only DLL |
 | 0x204 | WM_Torch | COMPLETE | dlls/objects/516_WM_Torch/WM_Torch.c | = (canonical) | — |
 | 0x205 | WM_Vein | COMPLETE | dlls/objects/517_WM_Vein/WM_Vein.c | = (canonical) | Data-only DLL |
-| 0x206 | LightSource (+LINKPoleFla, WM_WallTorc, HangingLigh, PoleLight, PoleFlame) | CONFIRMED | main/dll/dll_0206_lightsource.c | = (canonical) | — |
+| 0x206 | LightSource | COMPLETE | dlls/objects/518_LightSource/LightSource.c | = (canonical) | — |
 | 0x207 | WM_Worm | COMPLETE | main/dll/dll_0207_wmworm.c | main/dll/WM/dll_0207_wmworm.c | — |
 | 0x208 | WM_Wallpowe | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x209 | WM_LevelControl | CONFIRMED | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | — |

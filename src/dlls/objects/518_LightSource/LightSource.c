@@ -1,5 +1,5 @@
 /*
- * DLL 0x0206 (lightsource) - a placeable point-light / flame object.
+ * LightSource (DLL 0x0206) - a placeable point-light / flame object.
  *
  * init builds a ModelLightStruct (objCreateLight), sets its kind/colour
  * (from the gLightSourceColorTable colour table indexed by fxType), distance
@@ -14,26 +14,24 @@
  * different light position and glow scale); seqId 0x717 takes the same
  * zero-Y-offset fx path in update.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll_000A_expgfx.h"
-#include "game/objects/object.h"
-#include "main/model_light.h"
 #include "dlls/object_descriptor.h"
-#include "main/objfx.h"
-#include "main/dll/LGT/dll_0206_lightsource.h"
-#include "main/objhits.h"
-#include "main/gamebits.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/LGT/dll_0206_lightsource.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/model_light.h"
 #include "main/object_render.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
 
 #define LIGHTSOURCE_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define LIGHTSOURCE_OBJFLAG_RENDERED           0x800
 
-/* anim.seqIds selecting the Arwing-mounted variant (docblock: "seqId
- * 0x705/0x712 select the Arwing-mounted variant ...; seqId 0x717 takes the
- * same zero-Y-offset fx path in update"). */
+/* Arwing-mounted variants use different light positions and effect offsets. */
 #define LIGHTSOURCE_SEQID_ARWING_A  0x705
 #define LIGHTSOURCE_SEQID_ARWING_B  0x712
 #define LIGHTSOURCE_SEQID_ARWING_FX 0x717

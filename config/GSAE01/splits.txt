@@ -3251,7 +3251,7 @@ dlls/objects/516_WM_Torch/WM_Torch.c:
 dlls/objects/517_WM_Vein/WM_Vein.c:
 	.data       start:0x80328AD8 end:0x80328B08
 
-main/dll/dll_0206_lightsource.c:
+dlls/objects/518_LightSource/LightSource.c:
 	.text       start:0x801F33B4 end:0x801F3C2C
 	.rodata     start:0x802C2488 end:0x802C24B8
 	.data       start:0x80328B08 end:0x80328B40
