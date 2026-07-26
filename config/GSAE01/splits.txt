@@ -2343,6 +2343,9 @@ dlls/objects/353_CFTreasRobo/CFTreasRobo.c:
 dlls/objects/352/352.c:
 	.sdata      start:0x803DBEB8 end:0x803DBEC0
 
+dlls/objects/355/355.c:
+	.sdata      start:0x803DBEC0 end:0x803DBEC8
+
 dlls/objects/349/349.c:
 	.text       start:0x801A3E9C end:0x801A41D8
 	.data       start:0x80322F58 end:0x80322F90

@@ -398,7 +398,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x160 | — | NO-RETAIL-NAME | dlls/objects/352/352.c | = (canonical) | data-only DLL |
 | 0x161 | CFTreasRobo | RAW | dlls/objects/353_CFTreasRobo/CFTreasRobo.c | = (canonical) | data-only DLL |
 | 0x162 | CFMagicWall | CONFIRMED | dlls/objects/354_CFMagicWall/CFMagicWall.c | = (canonical) | — |
-| 0x163 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x163 | — | NO-RETAIL-NAME | dlls/objects/355/355.c | = (canonical) | data-only DLL |
 | 0x164 | CFLevelControl | CONFIRMED | main/dll/dll_0164_cflevelcontrol.c | main/dll/CF/dll_0164_cflevelcontrol.c | — |
 | 0x165 | CFRemovalSh | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x166 | exploded (+CFbrokenGra, CFbrokenWal, CFWallPieac, CFExplodePi, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRExplodePi, ExplodePlan, DRSmallExpl) | GUESSED | main/dll/dll_0166_exploded.c | = (canonical) | — |
