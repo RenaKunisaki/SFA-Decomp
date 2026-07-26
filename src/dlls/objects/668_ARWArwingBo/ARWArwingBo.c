@@ -1,5 +1,5 @@
 /*
- * arwarwingbo (DLL 0x29C) - the Arwing's deployed bomb in the on-rails
+ * ARWArwingBo (DLL 668) - the Arwing's deployed bomb in the on-rails
  * flight sections. While its fuse timer counts down it flies forward along
  * its velocity, trailing particle fx. It detonates when the fuse expires,
  * when it strikes something, or when the player re-presses the bomb button

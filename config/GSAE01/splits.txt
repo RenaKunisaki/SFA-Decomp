@@ -3919,7 +3919,7 @@ dlls/objects/667/667.c:
 	.sdata      start:0x803DC3D0 end:0x803DC3E0
 	.sdata2     start:0x803E7008 end:0x803E7040
 
-main/dll/ARW/dll_029C_arwarwingbo.c:
+dlls/objects/668_ARWArwingBo/ARWArwingBo.c:
 	.text       start:0x8022ECE0 end:0x8022F1D8
 	.data       start:0x8032B640 end:0x8032B678
 	.sdata2     start:0x803E7040 end:0x803E7058
