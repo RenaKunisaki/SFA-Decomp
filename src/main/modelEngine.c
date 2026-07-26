@@ -11,6 +11,7 @@
 #include "dlls/objects/209_TumbleWeedB.h"
 #include "dlls/objects/210.h"
 #include "dlls/objects/212_SkeetlaWall.h"
+#include "dlls/objects/213_Kaldachom.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -177,7 +178,7 @@ extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescr
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor,
     gIceblastObjDescriptor, gInfoPointObjDescriptor;
 extern ResourceDescriptor gInfoTextObjDescriptor, gInvHitObjDescriptor, gInvisibleHitSwitchObjDescriptor,
-    gKT_TorchObjDescriptor, gKaldaChomObjDescriptor, gKtFallingrocksObjDescriptor;
+    gKT_TorchObjDescriptor, gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
@@ -1133,7 +1134,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTumbleweedObjDescriptor,
     &dll_D3,
     (ResourceDescriptor*)&gSkeetlaWallObjDescriptor,
-    &gKaldaChomObjDescriptor,
+    (ResourceDescriptor*)&gKaldachomObjDescriptor,
     (ResourceDescriptor*)&gKaldaChompMeObjDescriptor,
     (ResourceDescriptor*)&gKaldaChompSpitObjDescriptor,
     (ResourceDescriptor*)&gPinPonSpikeObjDescriptor,
