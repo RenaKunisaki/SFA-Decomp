@@ -1,12 +1,12 @@
 /*
- * duster (DLL 0x118) - a drifting collectible "dust" object the player
+ * Duster (DLL 0x118) - a drifting collectible "dust" object the player
  * gathers and deposits.
  *
  * Each duster activates from its placement game bit; once active it settles
  * to the nearest floor hit, drifts (driftDir / random heading), advances its
  * canned move, and reacts to priority hits. When the player is close and
- * facing it (Obj_IsParentSlackClear), it is either picked up (ObjMsg DUSTER_MSG_REQUEST_
- * PICKUP, gated by game bit 0xcc0) or deposited directly if the current
+ * facing it (Obj_IsParentSlackClear), it is either picked up (ObjMsg
+ * DUSTER_MSG_REQUEST_PICKUP, gated by game bit 0xcc0) or deposited directly if the current
  * character's duster collection isn't full. Depositing (DUSTER_MSG_DEPOSIT)
  * sets the object's completeGameBit, bumps the collected count, spawns the
  * place fx and marks the duster complete. Game bits >= 0x6fe are treated as

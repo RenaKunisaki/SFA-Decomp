@@ -1915,7 +1915,7 @@ dlls/objects/258_StayPoint/StayPoint.c:
 	.text       start:0x80180338 end:0x801804C8
 	.data       start:0x80321610 end:0x80321648
 
-main/dll/dll_0118_duster.c:
+dlls/objects/280_Duster/Duster.c:
 	.text       start:0x801804C8 end:0x80180DC8
 	.data       start:0x80321648 end:0x80321680
 	.sdata2     start:0x803E38D8 end:0x803E38E4
