@@ -1,51 +1,27 @@
-/* DLL 0x01FB - WCLaser render object (WarpZone cannon laser). TU: 0x801F0900-0x801F0AE4. */
-#include "main/dll/dll_01FB_dll1fb.h"
-#include "game/objects/object_setup.h"
-#include "main/pad_api.h"
-#include "main/resource.h"
-#include "main/frame_timing.h"
-#include "main/dll/WC/dll_01F9_wmobjcreator.h"
-#include "main/dll/dll1fbsetup_struct.h"
-#include "main/dll/wmgalleonsetup_struct.h"
-#include "main/dll/wmseqobjectsetup_struct.h"
-#include "main/dll/wmgalleonstate_struct.h"
-#include "main/dll/dll1fbstate_struct.h"
-
-STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
-
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnMode) == 0x1A);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnPeriod) == 0x1C);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, yaw) == 0x1E);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnJitter) == 0x1F);
-STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
-
-STATIC_ASSERT(sizeof(WmGalleonState) == 0x10);
-
+/* DLL 0x01FB */
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
+#include "main/dll/dll_01FB_dll1fb.h"
+#include "main/dll/dll1fbsetup_struct.h"
+#include "main/dll/dll1fbstate_struct.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/objanim_update.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
-#include "main/gamebits.h"
 #include "main/object_render.h"
+#include "main/pad_api.h"
+
 #define PAD_BUTTON_A 0x100
 
 STATIC_ASSERT(sizeof(Dll1FBState) == 0xc);
 STATIC_ASSERT(offsetof(Dll1FBState, baseMove) == 0x04);
 STATIC_ASSERT(offsetof(Dll1FBState, triggerMode) == 0x06);
 STATIC_ASSERT(offsetof(Dll1FBState, hideModel) == 0x09);
-STATIC_ASSERT(sizeof(WMGalleonState) == 0x10);
-STATIC_ASSERT(offsetof(WMGalleonState, savedX) == 0x00);
-STATIC_ASSERT(offsetof(WMGalleonState, savedY) == 0x04);
-STATIC_ASSERT(offsetof(WMGalleonState, savedZ) == 0x08);
-STATIC_ASSERT(offsetof(WMGalleonState, mapEventsLatched) == 0x0C);
-STATIC_ASSERT(offsetof(WMGalleonState, savedYaw) == 0x0E);
 STATIC_ASSERT(offsetof(Dll1FBSetup, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(Dll1FBSetup, baseMove) == 0x19);
 STATIC_ASSERT(offsetof(Dll1FBSetup, triggerMode) == 0x1a);
 STATIC_ASSERT(offsetof(Dll1FBSetup, objectParam) == 0x1c);
-STATIC_ASSERT(offsetof(WMGalleonSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WMSeqObjectSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WMSeqObjectSetup, setupType) == 0x19);
 
 int dll_1FB_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -123,17 +99,19 @@ void dll_1FB_initialise_nop(void)
 {
 }
 
-u32 dll_1FB[14] = {0x00000000,
-                   0x00000000,
-                   0x00000000,
-                   0x00090000,
-                   (u32)dll_1FB_initialise_nop,
-                   (u32)dll_1FB_release_nop,
-                   0x00000000,
-                   (u32)dll_1FB_init,
-                   (u32)dll_1FB_update,
-                   (u32)dll_1FB_hitDetect_nop,
-                   (u32)dll_1FB_render,
-                   (u32)dll_1FB_free_nop,
-                   (u32)dll_1FB_getObjectTypeId,
-                   (u32)dll_1FB_getExtraSize_ret_12};
+ObjectDescriptor dll_1FB = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_1FB_initialise_nop,
+    (ObjectDescriptorCallback)dll_1FB_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_1FB_init,
+    (ObjectDescriptorCallback)dll_1FB_update,
+    (ObjectDescriptorCallback)dll_1FB_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_1FB_render,
+    (ObjectDescriptorCallback)dll_1FB_free_nop,
+    (ObjectDescriptorCallback)dll_1FB_getObjectTypeId,
+    dll_1FB_getExtraSize_ret_12,
+};

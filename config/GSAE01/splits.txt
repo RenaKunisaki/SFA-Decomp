@@ -3201,7 +3201,7 @@ dlls/objects/506_WM_seqobjec/WM_seqobjec.c:
 	.sbss       start:0x803DDC78 end:0x803DDC80
 	.sdata2     start:0x803E5CF8 end:0x803E5CFC
 
-main/dll/dll_01FB_dll1fb.c:
+dlls/objects/507/507.c:
 	.text       start:0x801F0900 end:0x801F0AE4
 	.data       start:0x80328780 end:0x803287B8
 	.sdata2     start:0x803E5D00 end:0x803E5D0C

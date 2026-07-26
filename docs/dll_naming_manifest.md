@@ -550,7 +550,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F8 | WM_Galleon | COMPLETE | dlls/objects/504_WM_Galleon/WM_Galleon.c | = (canonical) | — |
 | 0x1F9 | WM_ObjCreat | COMPLETE | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | = (canonical) | Retail basename is truncated |
 | 0x1FA | WM_seqobjec | COMPLETE | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | = (canonical) | Retail basename is truncated |
-| 0x1FB | — | NO-RETAIL-NAME | main/dll/dll_01FB_dll1fb.c | = (canonical) | — |
+| 0x1FB | — | NO-RETAIL-NAME | dlls/objects/507/507.c | = (canonical) | — |
 | 0x1FC | LaserBeam (+WM_LaserBea, ECSH_LaserB) | CONFIRMED | main/dll/dll_01FC_laserbeam.c | = (canonical) | — |
 | 0x1FD | WM_LaserTarget | CONFIRMED | main/dll/dll_01FD_wmlasertarget.c | main/dll/WM/dll_01FD_wmlasertarget.c | — |
 | 0x1FE | PressureSwitch (+CFPressureS, DFP_PuzzleP, WM_Pressure, ECSH_Pressu) | CONFIRMED | main/dll/dll_01FE_pressureswitch.c | = (canonical) | — |
