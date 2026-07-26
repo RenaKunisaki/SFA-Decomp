@@ -469,6 +469,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
     f32 sampleFraction;
     f32 rootScale;
     int segmentCount;
+    int segmentOffset;
     f32 sampleCount;
     f32 blendScale;
     f32 blendWeight;
@@ -564,6 +565,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
         axisFirstSample = *axis;
         if (axisFirstSample != 0)
         {
+            segmentOffset = segmentCount * 2;
             lastSample = axis[segmentCount + 1];
             if (lastSample < 0)
             {
@@ -583,7 +585,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
             if (blendSamples != NULL)
             {
                 s16* axisAt;
-                if (blendSamples[segmentCount] < 0)
+                if (*(s16*)((u8*)blendSamples + segmentOffset) < 0)
                 {
                     blendScale = -blendScale;
                 }
