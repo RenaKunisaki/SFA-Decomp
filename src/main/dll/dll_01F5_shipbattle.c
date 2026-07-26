@@ -54,23 +54,23 @@ int ShipBattle_getObjectTypeId(void)
     return SHIPBATTLE_OBJECT_TYPE_ID;
 }
 
-void ShipBattle_free(int* obj)
+void ShipBattle_free(GameObject* obj)
 {
-    int* state = ((GameObject*)obj)->extra;
-    int light;
+    int* state = obj->extra;
+    ModelLightStruct* light;
     (*gObjectTriggerInterface)->freeState((u8*)state);
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
-    light = ((GameObject*)obj)->userData2;
-    if (light != 0)
+    light = (ModelLightStruct*)obj->userData2;
+    if (light != NULL)
     {
-        ModelLightStruct_free((ModelLightStruct*)light);
+        ModelLightStruct_free(light);
     }
 }
 
-void ShipBattle_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
+void ShipBattle_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
-    if (((GameObject*)obj)->anim.seqId == SHIPBATTLE_FIRE_SEQ_ID)
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (obj->anim.seqId == SHIPBATTLE_FIRE_SEQ_ID)
     {
         objfx_spawnFlaggedTrailBurst(obj, 0.11f, 4, 389, 5, NULL);
     }
@@ -86,8 +86,8 @@ void ShipBattle_update(GameObject* obj)
     int* objects;
     int i;
     int objectCount;
-    int current;
-    int linkedObject;
+    GameObject* current;
+    GameObject* linkedObject;
     int groupId2;
     int sameGroupCount;
 
@@ -111,7 +111,7 @@ void ShipBattle_update(GameObject* obj)
     }
 
     groupId = *(s8*)&((ObjSeqState*)(obj)->extra)->slot;
-    linkedObject = 0;
+    linkedObject = NULL;
     objects = ObjList_GetObjects(&i, &objectCount);
     sameGroupCount = 0;
     i = 0;
@@ -119,23 +119,23 @@ void ShipBattle_update(GameObject* obj)
     groupId2 |= groupId;
     while (i < objectCount)
     {
-        current = objects[i];
-        if (((GameObject*)current)->seqIndex == groupId)
+        current = (GameObject*)objects[i];
+        if (current->seqIndex == groupId)
         {
             linkedObject = current;
         }
-        if (((GameObject*)current)->seqIndex == SEQINDEX_PENDING &&
-            ((GameObject*)current)->anim.classId == CLASSID_SEQUENCE_OBJECT &&
-            groupId2 == *(s8*)&((ObjSeqState*)((GameObject*)current)->extra)->slot)
+        if (current->seqIndex == SEQINDEX_PENDING &&
+            current->anim.classId == CLASSID_SEQUENCE_OBJECT &&
+            groupId2 == *(s8*)&((ObjSeqState*)current->extra)->slot)
         {
             sameGroupCount++;
         }
         i++;
     }
 
-    if (sameGroupCount <= 1 && (void*)linkedObject != NULL && ((GameObject*)linkedObject)->seqIndex != -1)
+    if (sameGroupCount <= 1 && linkedObject != NULL && linkedObject->seqIndex != -1)
     {
-        ((GameObject*)linkedObject)->seqIndex = -1;
+        linkedObject->seqIndex = -1;
         (*gObjectTriggerInterface)->endSequence(groupId2);
     }
     (obj)->seqIndex = -1;
@@ -145,7 +145,7 @@ void ShipBattle_update(GameObject* obj)
 void ShipBattle_init(GameObject* obj, int def)
 {
     ShipBattleState* state;
-    int light;
+    ModelLightStruct* light;
     int chainIndex;
 
     state = obj->extra;
@@ -172,14 +172,14 @@ void ShipBattle_init(GameObject* obj, int def)
 
     if (obj->anim.seqId == SHIPBATTLE_FIRE_SEQ_ID)
     {
-        light = (int)objCreateLight(obj, 1);
-        if ((u32)light != 0)
+        light = objCreateLight(obj, 1);
+        if (light != NULL)
         {
-            modelLightStruct_setLightKind((ModelLightStruct*)light, MODEL_LIGHT_KIND_POINT);
-            modelLightStruct_setDiffuseColor((ModelLightStruct*)light, 200, 60, 0, 0);
-            modelLightStruct_setDistanceAttenuation((ModelLightStruct*)light, 30.0f, 80.0f);
+            modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
+            modelLightStruct_setDiffuseColor(light, 200, 60, 0, 0);
+            modelLightStruct_setDistanceAttenuation(light, 30.0f, 80.0f);
         }
-        obj->userData2 = light;
+        obj->userData2 = (int)light;
     }
 
     ShipBattle_resetTrackedState();
