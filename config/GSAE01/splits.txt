@@ -3626,7 +3626,7 @@ dlls/objects/606/606.c:
 	.data       start:0x8032A428 end:0x8032A468
 	.sdata      start:0x803DC228 end:0x803DC230
 
-main/crfueltank.c:
+dlls/objects/607_CRFuelTank/CRFuelTank.c:
 	.text       start:0x80210E8C end:0x802110F8
 	.data       start:0x8032A468 end:0x8032A4A0
 

@@ -551,8 +551,9 @@ on-disk form of the wiki's "all functions stubbed" DLLs:
   - DLL 0x25C/0x25D/0x25E (`SnowClaw`/`CRCloudRace`/`FireSpellStone`) →
     `src/dlls/objects/604/604.c` / `src/dlls/objects/605_CRCloudRace/CRCloudRace.c` /
     `src/dlls/objects/606/606.c`.
-  - DLL 0x25F/0x260 (`CRFuelTank`/`ProximityMine`) → both descriptors (`gCrFuelTankObjDescriptor`,
-    `gProximityMineObjDescriptor`) are defined together in `src/main/crfueltank.c`.
+  - DLL 0x25F (`CRFuelTank`) → `src/dlls/objects/607_CRFuelTank/CRFuelTank.c`; DLL 0x260
+    (`ProximityMine`) is a separate DOL unit currently split between
+    `src/main/proximitymine_reset.c` and `src/main/proximitymine_update.c`.
   - DLL 0x21E-0x223 and 0x225-0x228 (the `VFP_Block1`/`VFP_Platfor`/`VFP_DoorSwi`/`SeqPoint`/
     `VFPDragHead`/`VFP_corepla`/`VFP_flamepo`/`VFP_lavapoo`/`VFP_lavasta`/`VFP_SpellPl` row of the
     wiki table) are separate DOL-confirmed translation units. Their callbacks and descriptors
