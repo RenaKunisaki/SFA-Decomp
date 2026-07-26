@@ -46,8 +46,15 @@
 #define COLLECTIBLE_TRUTHHORN_OBJ   0x156
 #define COLLECTIBLE_MOONSEED_OBJ    1702
 
-static const u8 sCollectiblePathByte[4] = {5, 0, 0, 0};
 static u8 sCollectiblePathData[12] = {0};
+
+typedef struct CollectiblePathWord
+{
+    u8 bytes[4];
+} CollectiblePathWord;
+
+static const CollectiblePathWord sCollectiblePathWord = { { 0x40, 0x40, 0, 0 } };
+static const u8 sCollectiblePathByte[1] = { 5 };
 
 
 
@@ -153,7 +160,7 @@ void collectible_setDisabled(GameObject* obj, int flag)
 
 int collectible_getIsHidden(GameObject* obj) { return obj->userData1; }
 
-static inline f32 collectible_getRotX(GameObject* obj)
+static f32 collectible_getRotX(GameObject* obj)
 {
     return (f32)(obj)->anim.rotX;
 }
@@ -256,7 +263,7 @@ void collectible_applyPickup(GameObject* obj)
     obj->userData1 = 1;
 }
 
-static inline void collectible_updateSeqEffects(GameObject* obj)
+static void collectible_updateSeqEffects(GameObject* obj)
 {
     switch ((obj)->anim.seqId)
     {
@@ -358,10 +365,10 @@ void collectible_updateIdleMotion(GameObject *obj)
     case 0x137:
     case 0x156:
     case 0x246:
-        (obj)->anim.rotX = 200.0f * timeDelta + collectible_getRotX(obj);
+        (obj)->anim.rotX = 200.0f * timeDelta + (f32)(obj)->anim.rotX;
         break;
     case 0x22:
-        (obj)->anim.rotX = 200.0f * timeDelta + collectible_getRotX(obj);
+        (obj)->anim.rotX = 200.0f * timeDelta + (f32)(obj)->anim.rotX;
         itemPickupDoParticleFx(obj, 1.0f, 10, 1);
         break;
     case 0x27f:
@@ -376,7 +383,7 @@ void collectible_updateIdleMotion(GameObject *obj)
         }
         break;
     case 0x5e8:
-        (obj)->anim.rotX = 200.0f * timeDelta + collectible_getRotX(obj);
+        (obj)->anim.rotX = 200.0f * timeDelta + (f32)(obj)->anim.rotX;
         itemPickupDoParticleFx(obj, 1.0f, 9, 1);
         break;
     }
@@ -398,7 +405,12 @@ int collectible_SeqFn(GameObject *obj, int unused, ObjAnimUpdateState* animUpdat
     }
     if (((CollectibleState*)state)->visibilityBitClear == 0)
     {
-        collectible_updateSeqEffects(obj);
+        switch ((obj)->anim.seqId)
+        {
+        case 0x6a6:
+            objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
+            break;
+        }
     }
 
     animUpdate->sequenceEventActive = 0;
@@ -709,7 +721,7 @@ void collectible_init(GameObject *obj, CollectibleSetup* setup)
     int setupObj;
     int setupModelIndex;
     u8* data;
-    u8 pathWord[4] = {0x40, 0x40, 0, 0};
+    CollectiblePathWord pathWord = sCollectiblePathWord;
     u8 pathByte;
 
     objAnim = (ObjAnimComponent*)obj;
@@ -793,7 +805,7 @@ void collectible_init(GameObject *obj, CollectibleSetup* setup)
             break;
         }
         (*gPathControlInterface)->init(state + 0x50, 0, 0x40006, 1);
-        (*gPathControlInterface)->setup(state + 0x50, 1, sCollectiblePathData, pathWord, &pathByte);
+        (*gPathControlInterface)->setup(state + 0x50, 1, sCollectiblePathData, pathWord.bytes, &pathByte);
         (*gPathControlInterface)->attachObject((void*)obj, state + 0x50);
     }
 }
