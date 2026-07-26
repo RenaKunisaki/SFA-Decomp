@@ -56,12 +56,12 @@ int drakord_thornbush_getObjectTypeId(void)
 }
 
 
-void drakord_thornbush_free(int obj)
+void drakord_thornbush_free(GameObject* obj)
 {
-    DrakordThornbushState* inner = (DrakordThornbushState*)((GameObject*)obj)->extra;
-    if (((GameObject*)obj)->anim.seqId == THORNBUSH_SEQ_LIGHTNING)
+    DrakordThornbushState* inner = obj->extra;
+    if (obj->anim.seqId == THORNBUSH_SEQ_LIGHTNING)
     {
-        Obj_UpdateLightningCluster((GameObject*)obj, inner->lightningEntries, 3,
+        Obj_UpdateLightningCluster(obj, inner->lightningEntries, 3,
                                    0.0f, &inner->light);
     }
     if (inner->light != NULL)
@@ -70,21 +70,21 @@ void drakord_thornbush_free(int obj)
     }
 }
 
-void drakord_thornbush_render(int obj, int p2, int p3, int p4, int p5, s8 vis)
+void drakord_thornbush_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
 {
-    DrakordThornbushState* inner = (DrakordThornbushState*)((GameObject*)obj)->extra;
+    DrakordThornbushState* inner = obj->extra;
     f32 lightScale;
-    if (((GameObject*)obj)->anim.seqId == THORNBUSH_SEQ_LIGHTNING)
+    if (obj->anim.seqId == THORNBUSH_SEQ_LIGHTNING)
     {
         lightScale = inner->lightScale;
         if (lightScale < 10.0f)
         {
             lightScale = 150.0f;
         }
-        Obj_UpdateLightningCluster((GameObject*)obj, inner->lightningEntries, 3, lightScale,
+        Obj_UpdateLightningCluster(obj, inner->lightningEntries, 3, lightScale,
                                    &inner->light);
     }
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void drakord_thornbush_hitDetect(int obj)
@@ -94,22 +94,22 @@ void drakord_thornbush_hitDetect(int obj)
     f32 hitPosY;
     f32 hitPosX;
     int damage;
-    int hitObj;
+    GameObject* hitObj;
     int destroyed;
     int hit;
     int setup;
     if (inner->health != 0)
     {
         destroyed = timerCountDown(&inner->regrowTimer);
-        hit = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitObj, 0, (u32*)&damage, &hitPosX, &hitPosY,
+        hit = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), (int*)&hitObj, 0, (u32*)&damage, &hitPosX, &hitPosY,
                                                  &hitPosZ);
         if (hit != 0)
         {
-            if (((GameObject*)hitObj)->anim.seqId != 0x35f &&
+            if (hitObj->anim.seqId != 0x35f &&
                 *(void**)&inner->lastHitObj != (void*)hitObj &&
                 arrayIndexOf(inner->hitTable, 2, hit) != -1)
             {
-                inner->lastHitObj = hitObj;
+                inner->lastHitObj = (int)hitObj;
                 Obj_SpawnHitLightAndFade((GameObject*)obj, (const Vec3f*)&hitPosX, 50.0f);
                 inner->health -= damage;
                 if (inner->health <= 0)

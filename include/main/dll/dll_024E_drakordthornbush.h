@@ -63,8 +63,8 @@ extern f32 gThornBushLightningTimerInit;
 
 int drakord_thornbush_getExtraSize(void);
 int drakord_thornbush_getObjectTypeId(void);
-void drakord_thornbush_free(int obj);
-void drakord_thornbush_render(int p1, int p2, int p3, int p4, int p5, s8 vis);
+void drakord_thornbush_free(GameObject* obj);
+void drakord_thornbush_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis);
 void drakord_thornbush_hitDetect(int obj);
 void drakord_thornbush_update(GameObject* obj);
 void drakord_thornbush_init(GameObject* obj, u8* init);
