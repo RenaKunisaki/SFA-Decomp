@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 
-void sharpClawUpdateIdle(int* obj, u8* state);
+void sharpClawUpdateIdle(GameObject* obj, u8* state);
 void sharpClawUpdateApproach(GameObject* obj, void* state);
 
 #endif /* H_MAIN_DLL_NEWSEQOBJ_BADDIE_H */

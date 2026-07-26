@@ -252,7 +252,7 @@ f32 gSidekickToyDistToSpeedScale = 0.015625f;
 /* sidekick-toy main update: timer-driven 16-stride anim chain, curve chase
  * with speed/turn shaping, idle anims. */
 
-void sharpClawUpdateIdle(int* obj, u8* state)
+void sharpClawUpdateIdle(GameObject* obj, u8* state)
 {
     RomCurveWalker* path = *(RomCurveWalker**)state;
     u8* tbl4;
@@ -268,7 +268,7 @@ void sharpClawUpdateIdle(int* obj, u8* state)
     {
         mainSetBits(GAMEBIT_BaddieRelated1C8, 1);
     }
-    fn_8015039C((GameObject*)obj, state);
+    fn_8015039C(obj, state);
     {
         f32 t = ((SeqObj11EState*)state)->seqTimer;
         f32 z = lbl_803E2740;
@@ -283,7 +283,7 @@ void sharpClawUpdateIdle(int* obj, u8* state)
             }
         }
     }
-    if ((u8)fn_8014FFB4((GameObject*)obj, state, 0) != 0)
+    if ((u8)fn_8014FFB4(obj, state, 0) != 0)
     {
         return;
     }
@@ -292,9 +292,9 @@ void sharpClawUpdateIdle(int* obj, u8* state)
         if (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN)
         {
             f32 z = lbl_803E2740;
-            ((GameObject*)obj)->anim.velocityZ = z;
-            ((GameObject*)obj)->anim.velocityY = z;
-            ((GameObject*)obj)->anim.velocityX = z;
+            (obj)->anim.velocityZ = z;
+            (obj)->anim.velocityY = z;
+            (obj)->anim.velocityX = z;
             {
                 IdleRow* idleRows = (IdleRow*)tbl4;
                 Baddie_SetMove(obj, state, idleRows[state[0x33d]].anim, *(f32*)(tbl4 + state[0x33d] * 12), 0,
@@ -312,7 +312,7 @@ void sharpClawUpdateIdle(int* obj, u8* state)
     }
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) && state[0x33d] == 0)
     {
-        sidekickToy_updateCurveTargetLatch((GameObject*)(obj));
+        sidekickToy_updateCurveTargetLatch(obj);
     }
     flags = ((BaddieState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_PATH_FOLLOW)
@@ -321,8 +321,8 @@ void sharpClawUpdateIdle(int* obj, u8* state)
         f32 delta;
 
         {
-            f32 dx = path->posX - ((GameObject*)obj)->anim.localPosX;
-            f32 dz = path->posZ - ((GameObject*)obj)->anim.localPosZ;
+            f32 dx = path->posX - (obj)->anim.localPosX;
+            f32 dz = path->posZ - (obj)->anim.localPosZ;
             dist = sqrtf(dx * dx + dz * dz);
         }
         if (dist > 64.0f)
@@ -342,10 +342,10 @@ void sharpClawUpdateIdle(int* obj, u8* state)
         {
             if ((*gRomCurveInterface)->goNextPoint(path) != 0)
             {
-                sidekickToy_updateCurveTargetLatch((GameObject*)(obj));
+                sidekickToy_updateCurveTargetLatch(obj);
             }
         }
-        delta = (f32)(int)((u16)getAngle(path->tangentX, path->tangentZ) + 0x8000 - (u16)((GameObject*)obj)->anim.rotX);
+        delta = (f32)(int)((u16)getAngle(path->tangentX, path->tangentZ) + 0x8000 - (u16)(obj)->anim.rotX);
         if (delta > 32768.0f)
         {
             delta = -65535.0f + delta;
@@ -401,7 +401,7 @@ void sharpClawUpdateIdle(int* obj, u8* state)
                 *(f32*)(state + 0x310) = lbl_803E2740;
             }
         }
-        baddieTurnTowardPoint((GameObject*)obj, (int)state, path->posX, path->posZ, 0xf, 0);
+        baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
     }
     else
     {
@@ -426,7 +426,7 @@ void sharpClawUpdateIdle(int* obj, u8* state)
             {
                 int off;
                 IdleRow* row;
-                if (((GameObject*)obj)->anim.currentMove != (r = (row = (IdleRow*)(tbl4 + (off = r * 12)))->anim) ||
+                if ((obj)->anim.currentMove != (r = (row = (IdleRow*)(tbl4 + (off = r * 12)))->anim) ||
                     r != 0)
                 {
                     state[0x2f2] = 0;
@@ -543,7 +543,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
     if ((((SeqObj11EState*)state)->animFlags & 8) == 0)
     {
         void* tracked = ((BaddieState*)state)->trackedObj;
-        baddieTurnTowardPoint((GameObject*)obj, (int)state, ((GameObject*)tracked)->anim.localPosX,
+        baddieTurnTowardPoint(obj, (int)state, ((GameObject*)tracked)->anim.localPosX,
                     ((GameObject*)tracked)->anim.localPosZ, 0xf, 0);
     }
 }

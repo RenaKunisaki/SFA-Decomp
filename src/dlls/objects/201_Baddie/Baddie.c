@@ -1488,7 +1488,7 @@ void enemyObjAnimUpdate(short* obj, int state)
         case ENEMY_SHARPCLAW_SH_OBJ:
         case ENEMY_SHARPCLAW_SO_OBJ:
         case ENEMY_BOSSGENERAL_OBJ:
-            sharpClawUpdateIdle((int*)obj, (u8*)state);
+            sharpClawUpdateIdle((GameObject*)obj, (u8*)state);
             break;
         case ENEMY_GUARDCLAW_OBJ:
         case 0x281:
