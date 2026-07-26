@@ -92,7 +92,7 @@ void ARWBombColl_hitDetect(void)
 }
 
 
-void ARWBombColl_update(int obj)
+void ARWBombColl_update(GameObject* obj)
 {
     GameObject* arw;
     ObjAnimComponent* objAnim;
@@ -102,8 +102,8 @@ void ARWBombColl_update(int obj)
     f32 minLifetime;
 
     arw = getArwing();
-    objAnim = &((GameObject*)obj)->anim;
-    state = ((GameObject*)obj)->extra;
+    objAnim = &obj->anim;
+    state = obj->extra;
     flags = &state->flags;
 
     {
@@ -113,7 +113,7 @@ void ARWBombColl_update(int obj)
             state->lifetime = lt - timeDelta;
             if (state->lifetime <= minLifetime)
             {
-                Obj_FreeObject((GameObject*)obj);
+                Obj_FreeObject(obj);
                 return;
             }
         }
@@ -122,18 +122,18 @@ void ARWBombColl_update(int obj)
     if (arw != NULL && arwarwing_isExplodingOrWarping(arw) != 0)
     {
         flags->collected = 0;
-        ((GameObject*)obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-        ObjHits_EnableObject((GameObject*)obj);
+        obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+        ObjHits_EnableObject(obj);
         return;
     }
 
     if (flags->collected != 0 ||
         (((arwingCheck = getArwing()) != NULL
-              ? (((GameObject*)obj)->anim.localPosZ - arwingCheck->anim.localPosZ <
+              ? (obj->anim.localPosZ - arwingCheck->anim.localPosZ <
                  sActivateDistanceZ)
               : 0) == 0))
     {
-        ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         objAnim->alpha = 0;
     }
     else
@@ -147,9 +147,9 @@ void ARWBombColl_update(int obj)
                 alpha = 0xff;
             }
             objAnim->alpha = alpha;
-            ((GameObject*)obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            ((GameObject*)obj)->anim.rotX = sSpinRate * timeDelta + (f32) * &((GameObject*)obj)->anim.rotX;
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWBOMBCOLL_HIT_VOLUME_SLOT, 0, 0);
+            obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+            obj->anim.rotX = sSpinRate * timeDelta + (f32) * &obj->anim.rotX;
+            ObjHits_SetHitVolumeSlot(&obj->anim, ARWBOMBCOLL_HIT_VOLUME_SLOT, 0, 0);
             if (flags->shotOpen != 0)
             {
                 if ((u32)((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject != 0 &&
@@ -157,57 +157,57 @@ void ARWBombColl_update(int obj)
                 {
                     arwarwing_addScore(arw, 0x19);
                     flags->collected = 1;
-                    ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    ObjHits_DisableObject((GameObject*)obj);
+                    obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                    ObjHits_DisableObject(obj);
                 }
             }
             else
             {
                 int hit;
-                if (ObjHits_GetPriorityHit((GameObject*)(obj), &hit, 0, 0) != 0 && (u32)hit != 0 &&
+                if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0 && (u32)hit != 0 &&
                     (((GameObject*)hit)->anim.seqId == 0x604 || ((GameObject*)hit)->anim.seqId == ARW_ARWING_BOMB_OBJ))
                 {
                     arwarwing_addScore(arw, 0xf);
                     flags->shotOpen = 1;
-                    Obj_SetActiveModelIndex((GameObject*)obj, 1);
-                    spawnExplosion((GameObject*)obj, sExplosionScale, 1, 0, 0, 0, 0, 0, 2);
+                    Obj_SetActiveModelIndex(obj, 1);
+                    spawnExplosion(obj, sExplosionScale, 1, 0, 0, 0, 0, 0, 2);
                 }
                 if ((u32)((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject != 0 &&
                     (u32)((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject == (u32)getArwing())
                 {
-                    ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    ObjHits_DisableObject((GameObject*)obj);
-                    spawnExplosion((GameObject*)obj, sExplosionScale, 1, 0, 0, 0, 0, 0, 2);
+                    obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                    ObjHits_DisableObject(obj);
+                    spawnExplosion(obj, sExplosionScale, 1, 0, 0, 0, 0, 0, 2);
                 }
             }
             if (arw != NULL && flags->collected != 0)
             {
-                switch (((GameObject*)obj)->anim.seqId)
+                switch (obj->anim.seqId)
                 {
                 case 0x609:
-                    Sfx_PlayFromObject(obj, SFXTRIG_ar_ring_pickup);
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_ring_pickup);
                     arwarwing_upgradeLaserLevel(arw);
                     break;
                 case 0x608:
-                    Sfx_PlayFromObject(obj, SFXTRIG_ar_largeenergy_pickup);
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_largeenergy_pickup);
                     arwarwing_addBomb(arw);
                     break;
                 case 0x60a:
                     break;
                 case 0x6d8:
-                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6D8Count(arw);
                     break;
                 case 0x6d9:
-                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6D9Count(arw);
                     break;
                 case 0x6db:
-                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6DBCount(arw);
                     break;
                 case 0x6da:
-                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6DACount(arw);
                     break;
                 }

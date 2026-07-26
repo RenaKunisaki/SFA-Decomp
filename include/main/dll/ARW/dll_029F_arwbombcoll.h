@@ -46,7 +46,7 @@ void ARWBombColl_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 sca
 void ARWBombColl_init(GameObject* obj, ARWBombCollSetup* setup);
 void ARWBombColl_release(void);
 void ARWBombColl_initialise(void);
-void ARWBombColl_update(int obj);
+void ARWBombColl_update(GameObject* obj);
 void arwbombcoll_setLifetime(GameObject* obj, int lifetime);
 
 void arwbombcoll_updateMovingAxis(GameObject* obj, RingState* state);
