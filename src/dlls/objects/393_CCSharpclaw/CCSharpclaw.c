@@ -1,5 +1,5 @@
 /*
- * ccsharpclawpad - Crystal Caves SharpClaw "pressure pad" object (DLL
+ * CCSharpclaw - Crystal Caves SharpClaw "pressure pad" object (DLL
  * 0x0189). A disguise-gated switch pad. Its placement activationGameBit
  * records whether it has been activated: once set it
  * stays lit (active hitbox bit 8 on) and emits the lit particle burst.
