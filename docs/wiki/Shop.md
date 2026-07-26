@@ -222,7 +222,7 @@ range once the `0x2710` offset is added (e.g. row `00`'s `text = 0x003f` -> Game
   DLL numbers (separate systems from the `0x284/0x285/0x286` shop trio above — noted here only as
   a bonus cross-reference, not as part of the shop item-table system):
   - "Firefly Lantern" (row `15`): `FireFlyLantern_spawnFireFly` symbol exists
-    (`.text:0x801871C8`) and is implemented at `src/main/dll/dll_010B_fireflylantern.c` (DLL
+    (`.text:0x801871C8`) and is implemented at `src/dlls/objects/267_FireFlyLant/FireFlyLant.c` (DLL
     `0x10B`) — a different object from the shop stall's `ShopItem`/`0x284`.
   - "Fuel Cell": `gFuelCellObjDescriptor` (`.data:0x80321DE8`) is defined in
     `src/main/dll/CC/dll_0122_cctestinfot.c` as a raw `u32[14]` descriptor array (not yet given a

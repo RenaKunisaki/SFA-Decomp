@@ -312,7 +312,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x108 | EndObject | COMPLETE | dlls/objects/264_EndObject/EndObject.c | = (canonical) | — |
 | 0x109 | — | NO-RETAIL-NAME | dlls/objects/265/265.c | = (canonical) | — |
 | 0x10A | Fall_Ladder | CONFIRMED | dlls/objects/266_Fall_Ladder/Fall_Ladder.c | = (canonical) | — |
-| 0x10B | FireFlyLantern | CONFIRMED | main/dll/dll_010B_fireflylantern.c | = (canonical) | — |
+| 0x10B | FireFlyLant | CONFIRMED | dlls/objects/267_FireFlyLant/FireFlyLant.c | = (canonical) | — |
 | 0x10C | LanternFireFly | CONFIRMED | main/dll/dll_010C_lanternfirefly.c | = (canonical) | — |
 | 0x10D | PortalSpelldoor | CONFIRMED | main/dll/dll_010D_portalspelldoor.c | = (canonical) | — |
 | 0x10E | deathseq (+DieDuster, DieFox, DieKrystal) | GUESSED | main/dll/dll_010E_deathseq.c | = (canonical) | — |
