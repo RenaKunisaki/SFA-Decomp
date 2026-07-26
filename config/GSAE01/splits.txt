@@ -3977,7 +3977,7 @@ main/dll/dll_02B3_vortex.c:
 	.data       start:0x8032BE20 end:0x8032BE88
 	.sdata      start:0x803DC3E8 end:0x803DC418
 
-main/dll/dll_02B4_cntcounter.c:
+dlls/objects/692_CNTcounter/CNTcounter.c:
 	.text       start:0x802383E0 end:0x8023852C
 	.data       start:0x8032BE88 end:0x8032BEC0
 
