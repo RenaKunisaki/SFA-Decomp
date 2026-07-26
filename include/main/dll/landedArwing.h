@@ -61,12 +61,12 @@ STATIC_ASSERT(offsetof(LandedArwingState, scriptTimer) == 0x8E);
 STATIC_ASSERT(offsetof(LandedArwingState, surfaceMode) == 0x90);
 STATIC_ASSERT(offsetof(LandedArwingState, flags92) == 0x92);
 
-u32 LandedArwing_UpdateFlightChase(int obj, int state);
-u32 landedarwing_updateMovementState(s16* obj, u32* params);
-void landedarwing_updateAirborneMotion(GameObject* obj, int state);
-void landedarwing_moveSurfaceCrawler(short* obj, LandedArwingState* state);
-void landedarwing_moveAlongSurface(int obj, int state);
-void landedarwing_resolveSurfaceCollision(GameObject* obj, int state, f32* hit, f32* end);
+u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state);
+u32 landedarwing_updateMovementState(GameObject* obj, u32* params);
+void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state);
+void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state);
+void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state);
+void landedarwing_resolveSurfaceCollision(GameObject* obj, LandedArwingState* state, f32* hit, f32* end);
 void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f32 targetY, f32 targetZ, f32 blend);
 
 #endif /* MAIN_DLL_LANDEDARWING_H_ */
