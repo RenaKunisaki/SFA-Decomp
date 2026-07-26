@@ -1,5 +1,6 @@
-/* ProximityMine_update - ProximityMine object update/render handlers [8021122C-802113F8) */
+/* DLL 608: ProximityMine-family object callbacks. */
 #include "main/dll/partfx_interface.h"
+#include "main/dll/objfx_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/proximitymine.h"
 #include "main/vecmath_distance_api.h"
@@ -12,6 +13,7 @@
 #include "main/shader_api.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
+#include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/obj_path.h"
 #include "main/objtexture.h"
@@ -37,6 +39,8 @@ f32 lbl_803DC24C = 0.5f;
 #define PROXIMITYMINE_OBJ 0x789
 
 extern f32 lbl_803E6768;
+extern f32 lbl_803E676C;
+extern f32 lbl_803E6770;
 extern f32 lbl_803E6778;
 extern f32 lbl_803E677C;
 extern f32 lbl_803E6780;
@@ -45,6 +49,40 @@ extern f32 gProximityMineGravityAccel;
 extern f32 lbl_803E6774;
 extern f32 gProximityMineHeightScale;
 extern f32 lbl_803E679C;
+
+void ProximityMine_expire(ProximityMineObject* obj)
+{
+    ProximityMineState* state;
+    f32 zeroVelocity;
+
+    state = obj->state;
+    Obj_GetPlayerObject();
+    Sfx_StopFromObject((u32)obj, SFXTRIG_id_2e9);
+    Sfx_StopFromObject((u32)obj, SFXTRIG_id_2e8);
+    Sfx_PlayFromObject((u32)obj, SFXTRIG_crthit6);
+    zeroVelocity = lbl_803E6768;
+    obj->velocityX = zeroVelocity;
+    obj->velocityZ = zeroVelocity;
+    storeZeroToFloatParam(&state->renderTimer);
+    s16toFloat(&state->renderTimer, 10);
+    state->mode = PROXIMITYMINE_MODE_EXPIRED;
+    ObjHits_EnableObject((GameObject*)obj);
+    ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+    storeZeroToFloatParam(&state->resetTimer);
+    fn_8009A8C8((GameObject*)obj, lbl_803E676C);
+    {
+        f32 triggerRadiusDelta = state->triggerDistance - lbl_803E6774;
+        spawnExplosion((GameObject*)obj, triggerRadiusDelta * lbl_803DC24C + lbl_803E6770, 1, 1, 0, 1, 0, 1,
+                       0);
+    }
+    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, state->triggerDistance, -5, 10);
+    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
+    ObjHits_EnableObject((GameObject*)obj);
+    if (state->effectHandle != NULL)
+    {
+        modelLightStruct_freeSlot(&state->effectHandle);
+    }
+}
 
 int ProximityMine_getExtraSize(void)
 {

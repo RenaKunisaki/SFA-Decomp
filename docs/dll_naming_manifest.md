@@ -651,7 +651,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x25D | CRCloudRace | CONFIRMED | dlls/objects/605_CRCloudRace/CRCloudRace.c | = (canonical) | Descriptor precedes the retail-ordered compiler jump table |
 | 0x25E | — | NO-RETAIL-NAME | dlls/objects/606/606.c | = (canonical) | Complete SpellStone-family TU including the formerly split leading idle callback |
 | 0x25F | CRFuelTank | COMPLETE | dlls/objects/607_CRFuelTank/CRFuelTank.c | = (canonical) | — |
-| 0x260 | ProximityMine (+CRDropBomb) | CONFIRMED | main/proximitymine_update.c | main/dll/dll_0260_proximitymine.c | engine/SDK host: main/proximitymine_update.c |
+| 0x260 | — | NO-RETAIL-NAME | dlls/objects/608/608.c | = (canonical) | Complete ProximityMine-family TU including the formerly split leading expire helper |
 | 0x261 | DR_LaserCannon | CONFIRMED | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | — |
 | 0x262 | DrakorMissile (+DRbullet) | CONFIRMED | main/dll/dll_0262_drakormissile.c | = (canonical) | — |
 | 0x263 | GM_MazeWell | CONFIRMED | main/dll/dll_0263_gmmazewell.c | = (canonical) | — |
