@@ -3495,8 +3495,9 @@ dlls/objects/559_DFP_floorba/DFP_floorba.c:
 	.data       start:0x80329A20 end:0x80329A68
 	.sdata2     start:0x803E6408 end:0x803E6438
 
-main/dll/teslagroup.c:
+dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c:
 	.text       start:0x80206968 end:0x8020768C
+	.data       start:0x80329A68 end:0x80329AA0
 	.sbss       start:0x803DDCF0 end:0x803DDCF8
 	.sdata2     start:0x803E6438 end:0x803E6450
 

@@ -212,7 +212,6 @@ main/dll/dll_C0.c
 main/dll/tumbleweedbush.c
 main/dll/dll_D3.c
 main/dll/staff.c
-main/dll/infopoint.c
 main/dll/door.c
 main/dll/DR/cannontargetControl.c
 main/dll/DR/DRbarrelplace.c
@@ -332,7 +331,6 @@ main/dll/SP/SPshop.c
 main/dll/SP/SPshopkeeper.c
 dlls/objects/211/211.c
 main/dll/symbol.c
-main/dll/tesla.c
 main/dll/texScroll.c
 main/dll/tFrameAnimator.c
 main/dll/torch1CD.c
