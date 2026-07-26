@@ -2775,16 +2775,17 @@ dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c:
 
 main/dll/dll_018C_mmshshrine.c:
 	.text       start:0x801C4664 end:0x801C53A0
-	.data       start:0x803260F0 end:0x803261D8
+	.data       start:0x803260F0 end:0x80326168
 	.sdata2     start:0x803E4F08 end:0x803E4F64
 
 main/dll/dll_018D_mmshscales.c:
 	.text       start:0x801C53A0 end:0x801C578C
+	.data       start:0x80326168 end:0x803261A0
 	.sdata2     start:0x803E4F68 end:0x803E4F7C
 
 main/dll/dll_018E_mmshwaterspike.c:
 	.text       start:0x801C578C end:0x801C5990
-	.data       start:0x803261D8 end:0x80326208
+	.data       start:0x803261A0 end:0x80326208
 	.sdata2     start:0x803E4F80 end:0x803E4F8C
 
 main/dll/dll_018F_ecshshrine.c:

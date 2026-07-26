@@ -34,8 +34,6 @@
 #include "main/model_light.h"
 #include "main/pi_dolphin_api.h"
 #include "main/sky_api.h"
-#include "main/dll/dll_018D_mmshscales.h"
-#include "main/dll/dll_018E_mmshwaterspike.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
@@ -638,37 +636,3 @@ void MMSH_Shrine_release(void)
 void MMSH_Shrine_initialise(void)
 {
 }
-
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-ObjectDescriptor gMMSH_ScalesObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)MMSH_Scales_initialise,
-    (ObjectDescriptorCallback)MMSH_Scales_release,
-    0,
-    (ObjectDescriptorCallback)MMSH_Scales_init,
-    (ObjectDescriptorCallback)MMSH_Scales_update,
-    (ObjectDescriptorCallback)MMSH_Scales_hitDetect,
-    (ObjectDescriptorCallback)MMSH_Scales_render,
-    (ObjectDescriptorCallback)MMSH_Scales_free,
-    (ObjectDescriptorCallback)MMSH_Scales_getObjectTypeId,
-    MMSH_Scales_getExtraSize,
-};
-ObjectDescriptor gMMSH_WaterSpikeObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)mmsh_waterspike_initialise,
-    (ObjectDescriptorCallback)mmsh_waterspike_release,
-    0,
-    (ObjectDescriptorCallback)mmsh_waterspike_init,
-    (ObjectDescriptorCallback)mmsh_waterspike_update,
-    (ObjectDescriptorCallback)mmsh_waterspike_hitDetect,
-    (ObjectDescriptorCallback)mmsh_waterspike_render,
-    (ObjectDescriptorCallback)mmsh_waterspike_free,
-    (ObjectDescriptorCallback)mmsh_waterspike_getObjectTypeId,
-    mmsh_waterspike_getExtraSize,
-};

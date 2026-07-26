@@ -14,6 +14,7 @@
 #include "main/dll/xyzanimator_api.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_018E_mmshwaterspike.h"
+#include "dlls/object_descriptor.h"
 
 #define MMSHWATERSPIKE_HIT_VOLUME_SLOT 9
 #define MMSHWATERSPIKE_NO_RISE -9999.0f
@@ -134,5 +135,22 @@ void mmsh_waterspike_release(void)
 void mmsh_waterspike_initialise(void)
 {
 }
+
+ObjectDescriptor gMMSH_WaterSpikeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)mmsh_waterspike_initialise,
+    (ObjectDescriptorCallback)mmsh_waterspike_release,
+    0,
+    (ObjectDescriptorCallback)mmsh_waterspike_init,
+    (ObjectDescriptorCallback)mmsh_waterspike_update,
+    (ObjectDescriptorCallback)mmsh_waterspike_hitDetect,
+    (ObjectDescriptorCallback)mmsh_waterspike_render,
+    (ObjectDescriptorCallback)mmsh_waterspike_free,
+    (ObjectDescriptorCallback)mmsh_waterspike_getObjectTypeId,
+    mmsh_waterspike_getExtraSize,
+};
 
 char sWaterSpikeInvalidXyzAnimIdWarning[] = "WARNING Water Spike [%d] as invalid xyzAnim ID\n";
