@@ -1,5 +1,5 @@
 /*
- * arwbombcoll (DLL 0x29F) - the in-flight pickups and rings collected by
+ * ARWBombColl (DLL 671) - the in-flight pickups and rings collected by
  * the Arwing in the on-rails sections. A pickup fades in once the Arwing is
  * close ahead, can oscillate along the X or Y axis (route modes 1/3 and
  * 4/5), spins, and watches for the Arwing passing through it. The reward on
@@ -24,7 +24,6 @@
 #include "main/gameloop_api.h"
 #include "main/dll/dll_02A0_ring.h"
 #include "dlls/object_descriptor.h"
-
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
@@ -32,6 +31,13 @@
 #define ARW_ARWING_BOMB_OBJ 0x605 /* retail OBJECTS.bin "ARWArwingBo", DLL 0x29C */
 
 #define ARWBOMBCOLL_HIT_VOLUME_SLOT 0x13
+
+static const f32 sRenderScale = 1.0f;
+static const f32 sMinLifetime = 0.0f;
+static const f32 sActivateDistanceZ = 3840.0f;
+static const f32 sAlphaFadeRate = 3.0f;
+static const f32 sSpinRate = 600.0f;
+static const f32 sExplosionScale = 100.0f;
 
 ObjectDescriptor gARWBombCollObjDescriptor = {
     0,
@@ -56,41 +62,28 @@ void arwbombcoll_setLifetime(GameObject* obj, int lifetime)
     state->lifetime = lifetime;
 }
 
-
-static const f32 sRenderScale = 1.0f;
-static const f32 sMinLifetime = 0.0f;
-static const f32 sActivateDistanceZ = 3840.0f;
-static const f32 sAlphaFadeRate = 3.0f;
-static const f32 sSpinRate = 600.0f;
-static const f32 sExplosionScale = 100.0f;
-
 int ARWBombColl_getExtraSize(void)
 {
     return 8;
 }
-
 
 int ARWBombColl_getObjectTypeId(void)
 {
     return 0;
 }
 
-
 void ARWBombColl_free(void)
 {
 }
-
 
 void ARWBombColl_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale)
 {
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, sRenderScale);
 }
 
-
 void ARWBombColl_hitDetect(void)
 {
 }
-
 
 void ARWBombColl_update(GameObject* obj)
 {
@@ -216,7 +209,6 @@ void ARWBombColl_update(GameObject* obj)
     }
 }
 
-
 void ARWBombColl_init(GameObject* obj, ARWBombCollSetup* setup)
 {
     ObjAnimComponent* objAnim = &obj->anim;
@@ -226,11 +218,9 @@ void ARWBombColl_init(GameObject* obj, ARWBombCollSetup* setup)
     objAnim->alpha = 0;
 }
 
-
 void ARWBombColl_release(void)
 {
 }
-
 
 void ARWBombColl_initialise(void)
 {

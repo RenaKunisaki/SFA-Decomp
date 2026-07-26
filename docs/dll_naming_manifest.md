@@ -714,7 +714,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x29C | ARWArwingBo | RAW | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | = (canonical) | Exact complete twelve-function TU; its source-only detonation helper and early descriptor remain with the body |
 | 0x29D | ARWArwingGu | RAW | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | = (canonical) | DOL-confirmed twelve-function TU; now owns its previously unassigned `0x803E7058..0x803E7068` constants and alignment padding, with code still exact |
 | 0x29E | — | NO-RETAIL-NAME | dlls/objects/670/670.c | = (canonical) | Exact complete nine-function TU with its sole descriptor; `Dummy29E` remains an internal symbol alias, not a recovered DLL basename |
-| 0x29F | ARWBombColl (+ARWLaserCol, ARWContaine, ARWSporeCol, ARWDinoEggC, ARWMoonSeed) | CONFIRMED | main/dll/dll_029F_arwbombcoll.c | main/dll/ARW/dll_029F_arwbombcoll.c | — |
+| 0x29F | ARWBombColl | RAW | dlls/objects/671_ARWBombColl/ARWBombColl.c | = (canonical) | Exact complete ten-function TU with its descriptor and full constant pool |
 | 0x2A0 | Ring (+WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | CONFIRMED | main/dll/dll_02A0_ring.c | = (canonical) | — |
 | 0x2A1 | ARWLevelCon | CONFIRMED | main/dll/dll_02A1_arwlevelcon.c | main/dll/ARW/dll_02A1_arwlevelcon.c | — |
 | 0x2A2 | ARWSpeedStr | CONFIRMED | main/dll/dll_02A2_arwspeedstr.c | main/dll/ARW/dll_02A2_arwspeedstr.c | — |
