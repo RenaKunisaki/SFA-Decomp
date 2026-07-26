@@ -184,7 +184,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_00ED_collectible | 100.0000 | 88.3457 | -11.6543 |
 | main/main/dll/dll_0117_appleontree | 100.0000 | 88.3529 | -11.6471 |
 | main/main/dll/MMP/dll_0183_mmpgyservent | 100.0000 | 88.4382 | -11.5618 |
-| main/main/dll/cfdoorlightgroup | 100.0000 | 89.0893 | -10.9107 |
+| main/dlls/objects/213_Kaldachom/Kaldachom | 100.0000 | 89.0893 | -10.9107 |
 | main/main/dll/dll_0107_unused | 100.0000 | 89.1886 | -10.8114 |
 | main/main/dll/DF/dll_0235_dfptargetblock | 100.0000 | 89.2309 | -10.7691 |
 | main/main/dll/SH/dll_01AC_shqueenearthwalker | 100.0000 | 89.3002 | -10.6998 |

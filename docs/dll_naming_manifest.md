@@ -258,7 +258,7 @@ Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 3
 | 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/210/210.c | = (canonical) | — |
 | 0x0D3 | — | NO-RETAIL-NAME | dlls/objects/211/211.c | = (canonical) | — |
 | 0x0D4 | SkeetlaWall | COMPLETE | dlls/objects/212_SkeetlaWall/SkeetlaWall.c | = (canonical) | — |
-| 0x0D5 | Kaldachom | COMPLETE | main/dll/dll_00D5_kaldachom.c | = (canonical) | — |
+| 0x0D5 | Kaldachom | COMPLETE | dlls/objects/213_Kaldachom/Kaldachom.c | = (canonical) | — |
 | 0x0D6 | KaldachomMe | RAW | main/dll/dll_00D6_kaldachomme.c | = (canonical) | — |
 | 0x0D7 | kaldachompspit (+KaldachomSp, FireCrawler) | GUESSED | main/dll/dll_00D7_kaldachompspit.c | = (canonical) | — |
 | 0x0D8 | PinPonSpike | CONFIRMED | main/dll/dll_00D8_pinponspike.c | = (canonical) | — |

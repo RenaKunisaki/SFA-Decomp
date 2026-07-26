@@ -1631,7 +1631,7 @@ dlls/objects/212_SkeetlaWall/SkeetlaWall.c:
 	.data       start:0x803203B8 end:0x80320418
 	.sdata2     start:0x803E3050 end:0x803E305C
 
-main/dll/cfdoorlightgroup.c:
+dlls/objects/213_Kaldachom/Kaldachom.c:
 	.text       start:0x80167764 end:0x80169360
 	.rodata     start:0x802C2210 end:0x802C2220
 	.data       start:0x80320418 end:0x80320458

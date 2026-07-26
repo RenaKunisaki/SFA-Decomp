@@ -1,4 +1,461 @@
 /*
+ * Kaldachom (DLL 0x00D5) - the "Kaldachom" door creature.
+ *
+ * A chompy baddie embedded in a locked door/wall: it pulls itself up,
+ * lunges/bites at the player, and on death frees itself or returns to a
+ * placement slot. Behaviour is driven entirely as gPlayerInterface
+ * actor-control state handlers (kaldachom_stateHandler{A07,B00..B05}),
+ * each returning the next requested control state (0 = stay).
+ *
+ * State record is the obj extra block (CfDoorlightState) whose tail holds
+ * a KaldaChomControl (timers + soundFlags one-shots). The creature reads
+ * its per-instance gate game bits (gameBitA/gameBitB) and an aggro chance
+ * (placement unk2F vs randomGetRange) to pick its reaction.
+ *
+ * soundFlags one-shots: SOUNDFLAG_PULLUP_BURST = climb/attack/unlock burst played,
+ * SOUNDFLAG_DOOR_CREAK = door-creak played once currentMoveProgress passes lbl_803E3088.
+ */
+#include "main/audio/sfx.h"
+#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/gamebits.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "main/dll/cf_doorlight_state.h"
+#include "main/dll/baddie_control_interface.h"
+#include "main/dll/cf_doorlight.h"
+#include "main/dll/dll_00D6_kaldachomme_api.h"
+#include "main/objhits.h"
+#include "main/player_control_interface.h"
+#include "main/frame_timing.h"
+#include "main/dll/baddie_state.h"
+#include "main/dll/kaldachom_state.h"
+#include "main/dll/texscroll2.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/objfx_api.h"
+#include "main/object_render.h"
+#include "main/vecmath.h"
+#include "main/obj_path.h"
+#include "main/obj_group.h"
+#include "main/objprint_api.h"
+#include "sys/objects.h"
+#include "main/dll/dll_00D5_kaldachom.h"
+#include "main/mapEventTypes.h"
+#include "game/objects/object_setup.h"
+#include "main/objanim.h"
+#include "main/objfx.h"
+#include "main/objtexture.h"
+#include "main/resource.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/dll/player_state_api.h"
+
+typedef struct KaldachomPlacement
+{
+    u8 pad0[0x2F - 0x0];
+    u8 aggroChance; /* 0x2F: 0..99 chance to lunge instead of return */
+} KaldachomPlacement;
+
+#define BADDIE_CONTROL_MODE_PULLUP 2
+#define BADDIE_CONTROL_MODE_RETURN 6
+
+#define SOUNDFLAG_PULLUP_BURST 0x1
+#define SOUNDFLAG_DOOR_CREAK   0x2
+
+#define AGGRO_CHANCE_RANGE 0x63
+
+extern f32 lbl_803E3078;
+extern f32 lbl_803E307C;
+extern f32 lbl_803E3080;
+extern f32 lbl_803E3084;
+extern f32 lbl_803E3088;
+extern f32 lbl_803E308C;
+extern f32 lbl_803E3090;
+extern s16 lbl_803203F8[];
+extern f32 lbl_80320404[];
+extern f32 lbl_803E3094;
+extern f32 lbl_803E3098;
+extern f32 lbl_803E309C;
+extern void* gKaldaChomStateHandlersB[];
+extern void* gKaldaChomStateHandlersA[];
+extern f32 lbl_803E30A0;
+extern f32 lbl_803E30A4;
+extern f32 lbl_803E30A8;
+extern f32 lbl_803E30AC;
+extern f32 lbl_803E30B0;
+extern f32 gKaldachomPi;
+extern f32 lbl_803E30B8;
+extern f32 lbl_803E30BC;
+extern f32 lbl_803E30C0;
+extern f32 lbl_803E30C4;
+extern f32 lbl_803E30C8;
+extern f32 lbl_803E30CC;
+
+int kaldachom_stateHandlerB05(int obj, int baddieState)
+{
+    int state;
+    KaldaChomControl* control;
+    int def;
+
+    state = *(int*)&((GameObject*)obj)->extra;
+    control = ((CfDoorlightState*)state)->control;
+    if (((GroundBaddieState*)baddieState)->baddie.controlMode == BADDIE_CONTROL_MODE_PULLUP)
+    {
+        control->pullupSfxTimer = control->pullupSfxTimer - timeDelta;
+        if (control->pullupSfxTimer <= 0.0f)
+        {
+            ((GroundBaddieState*)baddieState)->baddie.moveDone = 1;
+        }
+    }
+    if ((s8)((GroundBaddieState*)baddieState)->baddie.moveDone != 0 ||
+        (s8)((GroundBaddieState*)baddieState)->baddie.moveJustStartedB != 0)
+    {
+        if ((*gBaddieControlInterface)
+                ->shouldDropTarget((GameObject*)obj, (void*)baddieState,
+                                   (f32)(u32)((CfDoorlightState*)state)->aggroRange, 1) != 0)
+        {
+            return 5;
+        }
+        def = *(int*)&((GameObject*)obj)->anim.placementData;
+        if ((int)randomGetRange(0, AGGRO_CHANCE_RANGE) < (int)((KaldachomPlacement*)def)->aggroChance)
+        {
+            (*gPlayerInterface)->setState((void*)obj, (void*)baddieState, 3);
+        }
+        else
+        {
+            control->pullupSfxTimer = (f32)(int)randomGetRange(0x12c, 0x258);
+            (*gPlayerInterface)->setState((void*)obj, (void*)baddieState, 2);
+        }
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerB04(int obj, GroundBaddieState* state)
+{
+    if ((s8)state->baddie.moveJustStartedB != 0)
+    {
+        (*gPlayerInterface)->setState((void*)obj, state, 1);
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerB03(GameObject* obj, GroundBaddieState* state)
+{
+    if ((s8)state->baddie.moveJustStartedB != 0)
+    {
+        GroundBaddieState* extra = obj->extra;
+        extra->subMode = 0;
+        mainSetBits(((CfDoorlightState*)extra)->gameBitB, 0);
+        mainSetBits(((CfDoorlightState*)extra)->gameBitA, 1);
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerB02(GameObject* obj, GroundBaddieState* state)
+{
+    int sub = *(int*)&(obj)->extra;
+
+    if ((s32)(s8)state->baddie.moveJustStartedB != 0)
+    {
+        ((CfDoorlightState*)sub)->control->soundFlags = 0;
+        (*gPlayerInterface)->setState((void*)obj, state, 7);
+        ObjHits_DisableObject(obj);
+        *(u8*)&(obj)->anim.resetHitboxMode = (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        ((CfDoorlightState*)sub)->flags400 = (u16)(((CfDoorlightState*)sub)->flags400 | 0x20);
+        ((CfDoorlightState*)sub)->glowAlpha = lbl_803E3078;
+        ((CfDoorlightState*)sub)->unk3EC = lbl_803E307C;
+    }
+    else if ((s32)(s8)state->baddie.moveDone != 0)
+    {
+        if ((obj)->anim.placementData == NULL)
+        {
+            Obj_FreeObject(obj);
+            return 0;
+        }
+        return 4;
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerB01(int* obj, GroundBaddieState* state)
+{
+    KaldaChomControl* control = ((CfDoorlightState*)((GameObject*)obj)->extra)->control;
+    if (state->baddie.controlMode == BADDIE_CONTROL_MODE_RETURN)
+    {
+        f32 zero;
+        f32 timer;
+        if ((s8)state->baddie.moveJustStartedB != 0)
+        {
+            control->returnStateTimer = lbl_803E3080;
+        }
+        timer = control->returnStateTimer;
+        zero = 0.0f;
+        if (timer != zero)
+        {
+            control->returnStateTimer = timer - timeDelta;
+            if (control->returnStateTimer < zero)
+            {
+                control->returnStateTimer = zero;
+            }
+        }
+        else
+        {
+            return 6;
+        }
+    }
+    else
+    {
+        if ((s8)state->baddie.moveDone != 0)
+            return 6;
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerB00(int* obj, GroundBaddieState* state)
+{
+    if (state->baddie.targetObj != NULL)
+    {
+        if ((s8)state->baddie.moveJustStartedB != 0)
+        {
+            f32 fz = 0.0f;
+            state->baddie.animSpeedB = fz;
+            state->baddie.animSpeedA = fz;
+            (*gPlayerInterface)->setState(obj, state, 0);
+        }
+        else if ((s8)state->baddie.moveDone != 0)
+        {
+            return 6;
+        }
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerA07(GameObject* obj, int baddieState)
+{
+    int state;
+    KaldaChomControl* control;
+
+    state = *(int*)&(obj)->extra;
+    ((GroundBaddieState*)baddieState)->baddie.stateTag = 3;
+    ((GroundBaddieState*)baddieState)->baddie.moveSpeed = lbl_803E3084;
+    {
+        f32 fz = 0.0f;
+        ((GroundBaddieState*)baddieState)->baddie.animSpeedA = fz;
+        ((GroundBaddieState*)baddieState)->baddie.animSpeedB = fz;
+        if (*(char*)&((GroundBaddieState*)baddieState)->baddie.moveJustStartedA != '\0')
+        {
+            ObjAnim_SetCurrentMove((int)obj, 5, fz, 0);
+            ((GroundBaddieState*)baddieState)->baddie.moveDone = 0;
+        }
+    }
+    {
+        int v = *(int*)&((GroundBaddieState*)baddieState)->baddie.eventFlags;
+        if ((v & 0x1000) != 0)
+        {
+            *(int*)&((GroundBaddieState*)baddieState)->baddie.eventFlags = v & ~0x1000;
+            kaldachompme_setLinkedMouthMode((u8*)obj, 2);
+        }
+    }
+    control = ((CfDoorlightState*)state)->control;
+    if ((control->soundFlags & SOUNDFLAG_PULLUP_BURST) == 0)
+    {
+        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_impyflap16);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_277);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_en_rfall5_c);
+        control->soundFlags |= SOUNDFLAG_PULLUP_BURST;
+        {
+            GameObject* linkedObj;
+            if (((CfDoorlightState*)state)->spawnsLinkedObj != 0)
+            {
+                linkedObj = (*gBaddieControlInterface)->spawnChild(obj, 6, -1, 0);
+            }
+            else
+            {
+                linkedObj = NULL;
+            }
+            if (linkedObj != NULL)
+            {
+                f32 fz = 0.0f;
+                (**(void (**)(GameObject*, f32, f32, f32))(
+                    *(int*)(*(int*)((char*)linkedObj + 0x68)) + 0x2c))(linkedObj, fz, lbl_803E3078, fz);
+            }
+        }
+    }
+    if ((control->soundFlags & SOUNDFLAG_DOOR_CREAK) == 0)
+    {
+        if ((obj)->anim.currentMoveProgress > lbl_803E3088)
+        {
+            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_iceywindlp16_233);
+            control->soundFlags |= SOUNDFLAG_DOOR_CREAK;
+        }
+    }
+    (obj)->anim.alpha = (lbl_803E3078 - (obj)->anim.currentMoveProgress) * lbl_803E308C;
+    return 0;
+}
+
+/*
+ * kaldachom (DLL 0x00D5) attack/movement state handlers, table A.
+ *
+ * These seven functions provide gKaldaChomStateHandlersA[0..6]; the table runs
+ * [0..7] (A07 is defined earlier in this file), which also registers them.
+ * Handlers are stepped one per frame while the baddie is active. Each (a) on the
+ * first frame of a move (moveJustStartedA) selects the anim move via
+ * ObjAnim_SetCurrentMove and may play an attack sfx / toggle the hit volume, and
+ * (b) every frame writes the per-mode movement speed and the stateTag mode tag back
+ * into the GroundBaddieState. A05/A02 index the move/speed tables (lbl_803203F8
+ * move ids, lbl_80320404 speeds) by the control record's climbFxIndex. A00/A01
+ * raise/clear gameBitB and drive the linked-mouth mode.
+ */
+#define KALDACHOM_EVENT_MOUTH_LINK 0x1000
+
+int kaldachom_stateHandlerA06(GameObject* obj, int statePtr)
+{
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_277);
+    }
+    (obj)->anim.rotX += 546;
+    ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_803E3090;
+    ((GroundBaddieState*)statePtr)->baddie.animSpeedA = 0.0f;
+    return 0;
+}
+
+int kaldachom_stateHandlerA05(GameObject* obj, int statePtr)
+{
+    KaldaChomControl* control = ((GroundBaddieState*)(obj)->extra)->control;
+
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, lbl_803203F8[4], 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        control->climbFxIndex = 4;
+    }
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_80320404[control->climbFxIndex];
+    ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
+    return 0;
+}
+
+int kaldachom_stateHandlerA04(int obj, int statePtr)
+{
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove(obj, 3, 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_277);
+    }
+    ((GroundBaddieState*)statePtr)->baddie.stateTag = 3;
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_803E3090;
+    ((GroundBaddieState*)statePtr)->baddie.animSpeedA = 0.0f;
+    return 0;
+}
+
+int kaldachom_stateHandlerA03(int obj, int statePtr)
+{
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        ObjHits_EnableObject((GameObject*)obj);
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove(obj, randomGetRange(6, 7), 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+    }
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_803E3094;
+    ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
+    return 0;
+}
+
+int kaldachom_stateHandlerA02(GameObject* obj, int statePtr)
+{
+    KaldaChomControl* control = ((GroundBaddieState*)(obj)->extra)->control;
+
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, lbl_803203F8[randomGetRange(0, 4)], 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        ObjHits_EnableObject(obj);
+        control->climbFxIndex = 4;
+    }
+    ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_80320404[control->climbFxIndex];
+    ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
+    return 0;
+}
+
+int kaldachom_stateHandlerA01(GameObject* obj, int statePtr)
+{
+    GroundBaddieState* state = (obj)->extra;
+
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, 5, 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        ObjHits_DisableObject(obj);
+        ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_803E307C;
+        ((GroundBaddieState*)statePtr)->baddie.animSpeedA = 0.0f;
+    }
+    else if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveDone != 0)
+    {
+        mainSetBits(state->gameBitB, 0);
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        state->targetState = 0;
+    }
+    if ((s32)(((GroundBaddieState*)statePtr)->baddie.eventFlags & KALDACHOM_EVENT_MOUTH_LINK) != 0)
+    {
+        ((GroundBaddieState*)statePtr)->baddie.eventFlags &= ~KALDACHOM_EVENT_MOUTH_LINK;
+        kaldachompme_setLinkedMouthMode((u8*)obj, 2);
+    }
+    return 0;
+}
+
+int kaldachom_stateHandlerA00(GameObject* obj, int statePtr)
+{
+    GroundBaddieState* state = (obj)->extra;
+
+    if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+    {
+        if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveJustStartedA != 0)
+        {
+            ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
+            ((GroundBaddieState*)statePtr)->baddie.moveDone = 0;
+        }
+        kaldachompme_setLinkedMouthMode((u8*)obj, 1);
+        ((GroundBaddieState*)statePtr)->baddie.physicsActive = 1;
+        mainSetBits(state->gameBitB, 1);
+        *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        (obj)->anim.alpha = 0xff;
+        ((GroundBaddieState*)statePtr)->baddie.stateTag = 1;
+        ((GroundBaddieState*)statePtr)->baddie.moveSpeed = lbl_803E3098 + ((f32)(u32)state->aggression / lbl_803E309C);
+        ObjHits_EnableObject(obj);
+    }
+    else if ((s32)(s8)((GroundBaddieState*)statePtr)->baddie.moveDone != 0)
+    {
+        state->targetState = 1;
+    }
+    return 0;
+}
+
+/*
  * kaldachom (DLL 0x00D5, object type 0x49) - the "Kaldachom" / mouth-flytrap
  * ground baddie. Driven through gBaddieControlInterface (movement/combat
  * dispatch) and gPlayerInterface; combat (kaldachom_updateCombat) handles
@@ -10,35 +467,6 @@
  * mouth path points. State-machine handler tables A/B are populated at
  * initialise time and stepped by gPlayerInterface slot 8 each update.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/objfx_api.h"
-#include "main/audio/sfx_ids.h"
-#include "main/object_render.h"
-#include "main/vecmath.h"
-#include "game/objects/object.h"
-#include "main/obj_path.h"
-#include "sys/objects/lifecycle.h"
-#include "main/obj_group.h"
-#include "main/objprint_api.h"
-#include "sys/objects.h"
-#include "main/frame_timing.h"
-#include "main/dll/dll_00D5_kaldachom.h"
-#include "main/dll/cf_doorlight.h"
-#include "main/dll/texscroll2.h"
-#include "main/mapEventTypes.h"
-#include "game/objects/object_setup.h"
-#include "main/objanim.h"
-#include "main/objfx.h"
-#include "main/objtexture.h"
-#include "main/resource.h"
-#include "main/objhits.h"
-#include "main/audio/sfx.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/player_control_interface.h"
-#include "main/dll/baddie_control_interface.h"
-#include "main/dll/player_state_api.h"
-
 /* object group this object belongs to */
 #define KALDACHOM_OBJGROUP 3
 
@@ -71,24 +499,7 @@ STATIC_ASSERT(sizeof(KaldaCombatParams) == 0x10);
 const KaldaCombatParams gKaldachomCombatParams = {8, 255, 255, 120};
 f32 gKaldachomMouthSpawnScratch;
 f32 gKaldachomDustSpawnScratch;
-extern void* gKaldaChomStateHandlersB[];
-extern void* gKaldaChomStateHandlersA[];
 void* gKaldachomEffectResource;
-extern f32 lbl_803E307C;
-extern f32 lbl_803E3078;
-extern f32 lbl_803E308C;
-extern f32 lbl_803E30A0;
-extern f32 lbl_803E30A4;
-extern f32 lbl_803E30A8;
-extern f32 lbl_803E30AC;
-extern f32 lbl_803E30B0;
-extern f32 gKaldachomPi;
-extern f32 lbl_803E30B8;
-extern f32 lbl_803E30BC;
-extern f32 lbl_803E30C0;
-extern f32 lbl_803E30C4;
-extern f32 lbl_803E30C8;
-extern f32 lbl_803E30CC;
 u8 gKaldachomHitLightWork[0x18];
 
 void kaldaChomFn_8016821c(GameObject* obj, KaldaChomControl* control)
@@ -333,9 +744,9 @@ void kaldachom_updateCombat(GameObject* obj, int stateWithBaddieData, int state)
 
     if (control->spawnedDustObj != NULL)
     {
-        if (control->hitFlashTimer <= *(const f32*)&lbl_803E3060)
+        if (control->hitFlashTimer <= 0.0f)
         {
-            f32 zeroConst = *(const f32*)&lbl_803E3060;
+            f32 zeroConst = 0.0f;
             ((GameObject*)control->spawnedDustObj)->anim.alpha = 0;
             control->hitFlashTimer = zeroConst;
         }
@@ -388,7 +799,7 @@ void kaldachom_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
         switch (obj->userData1)
         {
         case 0:
-            if (((GroundBaddieState*)state)->glowAlpha != lbl_803E3060.f)
+            if (((GroundBaddieState*)state)->glowAlpha != 0.0f)
             {
                 fn_8003B5E0(200, 0, 0, (int)((GroundBaddieState*)state)->glowAlpha);
             }
@@ -431,7 +842,7 @@ void kaldachom_update(GameObject* obj)
                 ->initGroundBaddie(obj, (u8*)ref, (u8*)state, 8, 6, 0, 0x26, lbl_803E30C8);
             ((GroundBaddieState*)state)->targetState = 0;
             Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy211);
-            ObjAnim_SetCurrentMove((int)obj, 4, lbl_803E3060.f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
+            ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             ((GroundBaddieState*)state)->baddie.moveDone = 0;
             obj->anim.alpha = 0xff;
             *(u8*)&obj->anim.resetHitboxMode =
@@ -452,7 +863,7 @@ void kaldachom_update(GameObject* obj)
             {
                 texture = (int)((CampfireState*)state)->control;
                 ((KaldaChomControl*)texture)->pullupSfxTimer = ((KaldaChomControl*)texture)->pullupSfxTimer - timeDelta;
-                if (((KaldaChomControl*)texture)->pullupSfxTimer <= lbl_803E3060.f)
+                if (((KaldaChomControl*)texture)->pullupSfxTimer <= 0.0f)
                 {
                     Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy111);
                     ((KaldaChomControl*)texture)->pullupSfxTimer = (f32)(int)randomGetRange(300, 600);
@@ -487,7 +898,7 @@ void kaldachom_update(GameObject* obj)
                 *(u32*)&((GroundBaddieState*)state)->baddie.targetObj = player;
                 kaldachom_handleAnimEvents(obj, state, state);
                 (*gBaddieControlInterface)
-                    ->updateGravity(obj, (void*)state, lbl_803E3060.f, -1);
+                    ->updateGravity(obj, (void*)state, 0.0f, -1);
                 if (((CampfireState*)state)->controlMode != 6)
                 {
                     (*gPlayerInterface)->rotateTowardTarget(obj, (void*)state, timeDelta, 5);
@@ -519,20 +930,20 @@ void kaldachom_init(GameObject* obj, int data, int skip_alloc)
         ->initGroundBaddie(obj, (u8*)data, (u8*)state, 8, 6, 0, initMode, lbl_803E30C8);
     (obj)->animEventCallback = NULL;
     control = ((CampfireState*)state)->control;
-    ObjAnim_SetCurrentMove((int)obj, 4, lbl_803E3060.f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
+    ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
     (obj)->anim.currentMoveProgress = lbl_803E307C;
     *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
     (*gPlayerInterface)->setState(obj, (void*)state, 0);
     *(u16*)&((GroundBaddieState*)state)->baddie.substate = 0;
     ((GroundBaddieState*)state)->baddie.moveSpeed = lbl_803E307C;
-    ((GroundBaddieState*)state)->baddie.animSpeedA = lbl_803E3060.f;
+    ((GroundBaddieState*)state)->baddie.animSpeedA = 0.0f;
     player = (int)Obj_GetPlayerObject();
     ((CampfireState*)state)->targetObj = player;
     ((GroundBaddieState*)state)->baddie.physicsActive = 0;
     ObjHits_DisableObject(obj);
     control->pullupSfxTimer = (f32)(int)randomGetRange(300, 600);
     control->idleAnimTimer = (f32)(int)randomGetRange(0, 499);
-    control->unk3C = lbl_803E3060.f;
+    control->unk3C = 0.0f;
     control->spawnedDustObj = NULL;
     (obj)->objectFlags = (obj)->objectFlags | KALDACHOM_OBJFLAG_HITDETECT_DISABLED;
     (obj)->anim.rootMotionScale = lbl_803E30A0 + (f32)(s32) * (s8*)(data + 0x28) / lbl_803E30A4;
