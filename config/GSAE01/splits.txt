@@ -3022,7 +3022,7 @@ dlls/objects/324/324.c:
 	.text       start:0x801DF9AC end:0x801DFA28
 	.data       start:0x80327BA8 end:0x80327BE0
 
-main/dll/dbprotection.c:
+dlls/objects/488_SB_Galleon/SB_Galleon.c:
 	.text       start:0x801DFA28 end:0x801E2570
 	.rodata     start:0x802C23F8 end:0x802C2428
 	.data       start:0x80327BE0 end:0x80327C88

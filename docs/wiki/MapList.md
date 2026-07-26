@@ -391,8 +391,8 @@ Other concrete matches:
   renames:
   - `src/main/dll/WM/dll_020E_wmsun.c:2-3`: `"(map 'warlock' = Dinosaur Planet's Warlock Mountain,
     hence the WM dll ...)"` — matches wiki's Krazoa Palace ⇐ Warlock Mountain.
-  - `src/main/dll/SB/dll_01E8_sbgalleon.c:2-4`: `"SB" is the retail map name "ShipBattle"` — matches
-    wiki's map `00`/dir `shipbattle`.
+  - `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` implements `SB_Galleon`; its `SB` prefix matches
+    the wiki's map `00`/dir `shipbattle`.
   - `src/dlls/objects/429_SH_thorntai/SH_thorntai.c:2`, `src/dlls/objects/433_SH_staff/SH_staff.c:4`: ThornTail Hollow
     naming, matching wiki's ThornTail Hollow ⇐ SwapStone Hollow (dir `swaphol`).
 - **DLL-directory prefixes that resolve to a map in this list** (verified via in-file comment text,
@@ -408,7 +408,7 @@ Do not assume the second table's `ObjType` hex value equals a `dll_XXXX_*.c` fil
 tree — it doesn't, in every case checked:
 
 - ObjType `008E SB_Galleon` — `src/main/dll/dll_008E_dll8efunc0.c` is an unrelated foodbag
-  particle-effect spawner; the real galleon object is `src/main/dll/SB/dll_01E8_sbgalleon.c` (DLL
+  particle-effect spawner; the real galleon object is `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` (DLL
   `0x1E8`).
 - ObjType `008C SB_Cloudrun` — `src/main/dll/dll_008C_dll8cfunc0.c` is likewise a foodbag effect; the
   actual Cloudrunner-mount object is `src/main/dll/SB/dll_0259_sbcloudrunner.c` (DLL `0x259`).
@@ -426,7 +426,7 @@ manually verified by reading the file, not by name-guessing):
 
 | Map (wiki 2nd table) | Wiki `ObjType` name | Matched in this tree |
 |---|---|---|
-| `galleonship` (0x50) | `SB_Galleon` | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
+| `galleonship` (0x50) | `SB_Galleon` | `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` |
 | `cloudrunnermap` (0x55) | `SB_Cloudrun` | `src/main/dll/SB/dll_0259_sbcloudrunner.c` |
 | `cfprisoncage` (0x5a) | `CFPrisonCag` | `src/main/dll/CF/dll_0154_cfprisoncage.c` |
 | `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/dlls/objects/415_NW_treebrid/NW_treebrid.c` |

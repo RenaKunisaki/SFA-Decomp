@@ -1255,7 +1255,7 @@ the wiki's own "?" guesses:
 | `DFS` | one of the Krazoa Spirit shrines | Confirmed: `"dfshrine"` (mapId 39). |
 | `DIM` | DarkIce Mines | Confirmed: `"darkicemines"`(26) / `"darkicemines2"`(34). |
 | `DR` | Dragon Rock | Confirmed: `"dragrock"`(4) / `"dragrockbot"`(10). |
-| `GB` | Ship Battle | Confirmed: `"shipbattle"`(13); `src/main/dll/SB/dll_01E8_sbgalleon.c` comment: `"SB" is the retail map name "ShipBattle"`. |
+| `GB` | Ship Battle | Confirmed: `"shipbattle"`(13); `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` is the corresponding galleon object. |
 | `GF` | Game Front? or Great Fox? | **Both** exist as separate maps: `"gamefront"`(61) and `"greatfox"`(63) — resolves the wiki's own uncertainty; it isn't one or the other. |
 | `IM` | Ice Mountain | Confirmed: `"icemountain"`(30); plus `"newicemount"`/`"newicemount2"`/`"newicemount3"` sub-maps. |
 | `KP` | Krazoa Palace | Confirmed via two names: `"krazoapalace"` (sub-map table) and the canonical by-id name `"warlock"`(15). `src/main/dll/WM/*` (`wmspiritplace`, `wmsun`, `wmplanets`, `wmwallcrawler`, `wmseqpoint`) are the Krazoa-Palace/spirit-world DLLs. `MUSICTRIG_KP_Text` reuses "KP" directly. |

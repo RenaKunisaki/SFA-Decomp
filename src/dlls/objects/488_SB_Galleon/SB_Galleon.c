@@ -1,7 +1,6 @@
 /*
  * dbprotection - galleon damage-phase + boss handlers for the SB_Galleon boss.
- * Runs on the SB_Galleon object (extra == SBGalleonState) alongside the
- * SB_Galleon handlers in dll_01E8_sbgalleon.c.
+ * Runs on the SB_Galleon object (extra == SBGalleonState).
  *
  * fn_801DFA28 is the per-step movement/flight driver: it locates the
  * "tricky" target object (seqId 0x8C), runs the wander/drift bob in phase
@@ -149,28 +148,14 @@ extern f32 lbl_803E57AC;
 extern f32 lbl_803E57B0;
 extern f32 lbl_803E57B4;
 extern f32 lbl_803E57B8;
-
-ObjectDescriptor15 gSB_GalleonObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_15_SLOTS,
-    (ObjectDescriptorCallback)SB_Galleon_initialise,
-    (ObjectDescriptorCallback)SB_Galleon_release,
-    0,
-    (ObjectDescriptorCallback)SB_Galleon_init,
-    (ObjectDescriptorCallback)SB_Galleon_update,
-    (ObjectDescriptorCallback)SB_Galleon_hitDetect,
-    (ObjectDescriptorCallback)SB_Galleon_render,
-    (ObjectDescriptorCallback)SB_Galleon_free,
-    (ObjectDescriptorCallback)SB_Galleon_getObjectTypeId,
-    SB_Galleon_getExtraSize,
-    (ObjectDescriptorCallback)SB_Galleon_onPartDestroyed,
-    (ObjectDescriptorCallback)SB_Galleon_getStage,
-    (ObjectDescriptorCallback)SB_Galleon_getPhase,
-    (ObjectDescriptorCallback)SB_Galleon_getDamagePhase,
-    (ObjectDescriptorCallback)SB_Galleon_func0E,
-};
+extern f32 lbl_803E57F0;
+extern f32 lbl_803E57F4;
+extern f32 lbl_803E57F8;
+extern f32 lbl_803E57FC;
+extern f32 lbl_803E5800;
+extern f32 lbl_803E5804;
+extern f32 lbl_803E5808;
+extern f32 lbl_803E580C;
 
 void fn_801DFA28(GameObject* obj)
 {
@@ -1023,9 +1008,6 @@ STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
 STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 
 
-extern f32 lbl_803E57F4;
-extern f32 lbl_803E57F8;
-
 typedef struct SkyVec3
 {
     f32 x, y, z;
@@ -1048,13 +1030,6 @@ f32 gSbGalleonSkyBlendHold;
 GameObject* gSbGalleon;
 int gSbGalleonSkyTexB;
 int gSbGalleonSkyTexA;
-extern f32 lbl_803E57F0;
-extern f32 lbl_803E57FC;
-extern f32 lbl_803E5800;
-extern f32 lbl_803E5804;
-extern f32 lbl_803E5808;
-extern f32 lbl_803E580C;
-
 /* Sequence-event opcodes consumed by SB_Galleon_SeqFn. */
 enum SbGalleonSeqEvent
 {
@@ -1592,3 +1567,25 @@ void SB_Galleon_release(void)
 void SB_Galleon_initialise(void)
 {
 }
+
+ObjectDescriptor15 gSB_GalleonObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_15_SLOTS,
+    (ObjectDescriptorCallback)SB_Galleon_initialise,
+    (ObjectDescriptorCallback)SB_Galleon_release,
+    0,
+    (ObjectDescriptorCallback)SB_Galleon_init,
+    (ObjectDescriptorCallback)SB_Galleon_update,
+    (ObjectDescriptorCallback)SB_Galleon_hitDetect,
+    (ObjectDescriptorCallback)SB_Galleon_render,
+    (ObjectDescriptorCallback)SB_Galleon_free,
+    (ObjectDescriptorCallback)SB_Galleon_getObjectTypeId,
+    SB_Galleon_getExtraSize,
+    (ObjectDescriptorCallback)SB_Galleon_onPartDestroyed,
+    (ObjectDescriptorCallback)SB_Galleon_getStage,
+    (ObjectDescriptorCallback)SB_Galleon_getPhase,
+    (ObjectDescriptorCallback)SB_Galleon_getDamagePhase,
+    (ObjectDescriptorCallback)SB_Galleon_func0E,
+};
