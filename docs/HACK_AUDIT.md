@@ -331,7 +331,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_00DF_hagabon | 100.0000 | 99.7291 | -0.2709 |
 | main/main/dll/DIM/dll_01E5_dimbossspit | 100.0000 | 99.7363 | -0.2637 |
 | main/dlls/objects/199_DIM2RoofRub/DIM2RoofRub | 100.0000 | 99.7550 | -0.2450 |
-| main/main/dll/dll_00C9_enemy | 100.0000 | 99.7737 | -0.2263 |
+| main/dlls/objects/201_Baddie/Baddie | 100.0000 | 99.7737 | -0.2263 |
 | main/main/pad | 99.6415 | 99.4263 | -0.2151 |
 | main/main/dll/dll_0104_smallbasket | 100.0000 | 99.8238 | -0.1762 |
 | main/main/dll/dll_0019_dll19func0 | 100.0000 | 99.8318 | -0.1682 |

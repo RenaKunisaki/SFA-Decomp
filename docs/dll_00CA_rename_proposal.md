@@ -5,7 +5,7 @@
 tables, the `dll_CA` descriptor object (→ `gIceBaddieObjDescriptor`) and the
 `MediumbasketControl` struct were renamed to the `iceBaddie`/`IceBaddie`
 namespace across `.c` / `.h` / `symbols.txt` / `splits.txt` / `configure.py` /
-`dll_00CE_dllce.c` / `dll_00C9_enemy.c` / `scarab.h`. The rename plus the
+`dll_00CE_dllce.c` / `src/dlls/objects/201_Baddie/Baddie.c` / `scarab.h`. The rename plus the
 earlier behavioral renames are match-%-neutral (`.text` byte-identical to the
 pristine pre-rename build). The optional slot-handler behavioral names below are
 *not* applied — left for a future pass.
@@ -41,7 +41,7 @@ A fully-implemented **cut ice baddie in the ChukChuk family**:
   impact / contact-hit, height-blend, plus an A/B target-engagement dispatch via
   `gMediumBasketStateHandlersA/B` (filled by `fn_8015DAE8` in dll_CE).
 - The `*WhirlpoolGroup` / `initWhirlpoolState` helpers in this TU are **shared**
-  engine utilities (the generic enemy DLL `dll_00C9` calls them) — not specific
+  engine utilities (the `Baddie` TU calls them) — not specific
   to this creature; keep them general when renaming.
 
 ## Proposed names
@@ -58,7 +58,8 @@ prefix **`iceBaddie`** / file **`dll_00CA_icebaddie.c`** (alternatives:
    - `dll_CA_*` → `iceBaddie_*` (descriptor callbacks)
    - `gMediumBasketStateHandlersA/B` → `gIceBaddieStateHandlersA/B`
      (also referenced in `dll_00CE_dllce.c`).
-4. Update `#include "main/dll/dll_00CA_mediumbasket.h"` in `dll_00C9_enemy.c`.
+4. Update `#include "main/dll/dll_00CA_mediumbasket.h"` in
+   `src/dlls/objects/201_Baddie/Baddie.c`.
 
 ## Optional: behavioral names for the slot-numbered state handlers
 

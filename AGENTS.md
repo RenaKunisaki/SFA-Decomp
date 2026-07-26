@@ -80,6 +80,13 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 
 ## Rules
 - Bias toward EN `GSAE01` for addresses, sizes, and matching decisions.
+- Treat TU boundaries confirmed from the retail DOL as structural ground truth. Do not split a
+  confirmed TU into multiple source files for per-function cflags, pragma substitutes, match
+  percentage, or convenience.
+- Address-suffixed fragments such as `foo_80123456.c` are not acceptable once DOL evidence shows
+  they belong to one TU. Merge them in retail function order, keep one TU-level compiler profile,
+  and accept match regressions rather than preserving an artificial split. Only redraw a boundary
+  when DOL section, pool, function-order, or source-tag evidence establishes a different real TU.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.

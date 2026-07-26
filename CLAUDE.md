@@ -57,8 +57,9 @@ These are match-hacks, not plausible 2002 source. They were purged repo-wide (se
   named-`.sdata2` float that blocks folding to force the pool symbol) — banned; write the plain
   literal `V`. (A `union { f32 f; u32 u; }` used via BOTH `.f` and `.u` for a genuine int↔float
   bit-reinterpretation is a different thing and is not this ban.)
-A unit that cannot match without one of these stays `NonMatching` (or awaits a TU re-split) — that is
-the accepted trade. Historical per-hack shapes and costs are recoverable via `docs/HACK_AUDIT.md`.
+A unit that cannot match without one of these stays `NonMatching` (or awaits correction to a
+DOL-confirmed TU boundary) — that is the accepted trade. Historical per-hack shapes and costs are
+recoverable via `docs/HACK_AUDIT.md`.
 
 **Why this keeps getting re-introduced, and the real fix:** `tools/unit_score.py` (objdiff one-shot)
 UNDERCOUNTS near-matches — it flags anonymous `@N` vs named `lbl_` `.sdata2` pool relocations as a diff
@@ -72,6 +73,11 @@ literals), that is a TU-boundary artifact — leave the unit `NonMatching`, do n
 ## House rules
 - NEVER write comments unless explicitly stated otherwise.
 - When updating comments NEVER track history, stuff like "used to be named x" always keep comments current.
+- DOL-confirmed TU boundaries are structural ground truth. NEVER split a confirmed TU into
+  address-suffixed source fragments for per-function cflags, pragma substitutes, match percentage,
+  or convenience. Merge artificial fragments in retail function order, use one TU-level compiler
+  profile, and accept match regressions. Only redraw a boundary when DOL section, pool,
+  function-order, or source-tag evidence establishes a different real TU.
 - `include/main/gamebit_ids.h`: a NEW `GAMEBIT_*` id ALWAYS goes in the unordered (Rena-imported)
   section, inserted in ascending-id order — NEVER interleave it into the chronological/story-ordered
   section at the top, and NEVER split a comment from the entry it describes. An id may be promoted into
@@ -83,7 +89,7 @@ literals), that is a TU-boundary artifact — leave the unit `NonMatching`, do n
 - Single-bit clear: write `x &= ~0x80` (→ `rlwinm`), not `x &= 0xff7f` (→ `andi`).
 - `u8` not `char` for a byte loaded and stored without arithmetic — drops a spurious `extsb`.
 - **Saved-register homes: two populations, each with its own key** (same law for `r14..r31` and `f14..f31`). **Load class** — a value materialized *into* its home by a load, a computation or a constant — is keyed on **declaration order**, assigned `r31` downward (first-declared → `r31`); its definition order, use order and use count are all inert. **Copy class** — a value copied from a fixed ABI register, i.e. an incoming parameter or a call return — is keyed on **definition (program) order**, assigned from the *bottom* of the band upward; its declaration order is entirely inert. Probes: 24 decl permutations of four load-class locals give 24 distinct outcomes, the same 24 over four call results give **one**. The two populations take disjoint sub-bands and stay independently steerable when mixed. A value with **no named local behind it** (a compiler temp, a spill reload, an array base) is in neither and is unreachable from source — give it a name to move it. Sweep with `tools/permsweep.py` (gates on bytes via `tools/fnbytes.py` — never on tool silence). **Declaration order and assignment order are two INDEPENDENT knobs — split them when a diff is register-numbering *and* emission-order together:** numbering follows declaration, materialization follows assignment, so `f32 b; f32 a = mem; b = K;` gives `a`/`b` the numbering of the declared order and the load order of the assigned order. Neither plain declaration sequence reaches it.
-- **A same-length register permutation in the SCRATCH band (`r3..r12`) is a per-TU FLAG signature, not an allocator wall.** Copy/constant propagation reorders the values the allocator sees, permuting scratch homes with the instruction stream held identical — a 10-line probe flips `r4`/`r5` on nothing but `-opt nopropagation`. Probe it **per function** with `tools/fn_flag_probe.py <unit>`; when functions in one unit want different profiles the unit merges TUs and needs a split (that sweep is done — 42 functions, 22 units, all splits, no flag flip left).
+- **A same-length register permutation in the SCRATCH band (`r3..r12`) is a per-TU FLAG signature, not an allocator wall.** Copy/constant propagation reorders the values the allocator sees, permuting scratch homes with the instruction stream held identical — a 10-line probe flips `r4`/`r5` on nothing but `-opt nopropagation`. Probe it **per function** with `tools/fn_flag_probe.py <unit>`; conflicting profiles may show that the current unit merges multiple real TUs, but only DOL evidence may justify correcting that boundary. Never split a DOL-confirmed TU to isolate a flag profile.
 - `f32 fn(f32)`, not `double fn(double)`, for single-precision helpers — avoids an `fmul`+`frsp`.
 - A single-bit flag written as a C bitfield (`u8 x:1`) compiles to `li; rlwimi`, not a manual `|= mask`.
 - FP compare feeding a branch → write the plain operator (`a >= b` → `fcmpo`+branch). A stored/returned float-bool uses a different form.

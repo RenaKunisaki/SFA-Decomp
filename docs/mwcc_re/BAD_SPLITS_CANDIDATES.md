@@ -44,7 +44,7 @@ Reading key — the three proven "bad split" signatures:
   matching GCC build is sourced, near-byte match is assessed reachable. This is the only candidate
   that opens *new* code rather than relocating matched bytes.
 
-## 2. Tricky family: 13 carves are THREE original TUs (boundaries derived to the instruction)
+## 2. Tricky family: three DOL-confirmed TUs (TU-C reconstructed)
 
 - **Units** (configure.py:1195-1209): `dll_80136a40` (noopt_nostrength), `skeetla` (noopt),
   `trickyfollow` (nocse_noloopinv), `mmp_cratercritter` (**nosched** — the odd one out),
@@ -64,15 +64,17 @@ Reading key — the three proven "bad split" signatures:
   - **TU-A** debug/errdisplay: `.text` 0x80136A40..0x80138908, pool 0x803E2390..23C0. A
     debug-print/error-display module unrelated to tricky.
   - **TU-B** tricky: 0x80138908..0x80148C18 (12-carve merge), pool 0x803E23C0..2558.
-  - **TU-C** enemy: 0x80148C18..0x8014E1DC (= dll_00C4 tail from `Tricky_resumeAfterCommand` + all
-    of dll_00C9_enemy), pool 0x803E2558..2600.
+  - **TU-C** Baddie: 0x80148C18..0x8014E1DC (= the former dll_00C4 tail from
+    `Tricky_resumeAfterCommand` plus the former dll_00C9 fragments), pool
+    0x803E2558..0x803E2608.
 - **Blockers / status**: bare flips of TU-B members are PROVEN impossible (weapone6 at fuzzy 100
   fails mode-B: its own minted bias shifts the pool) — the merge is mandatory. A tricky-alone flip
   is blocked at the bias export (`gTrickyS32ToDoubleBias`@803E2460 is lfd-imported by 6 sibling
   DLLs; no source spelling can export a live mint — POOL_ORDER.md:122-153). The full 3-TU redraw is
   the geometry fix that dissolves that blocker (each TU mints its own biases locally). Remaining
-  fn-level holes gate completion: TU-A 5 debug fns (97.7-99.4), TU-B 9 fns (98.9-99.95), TU-C's
-  single hole `fn_8014C11C` was CRACKED (+956, see `banked-caps-misc`).
+  fn-level holes gate completion: TU-A 5 debug fns (97.7-99.4), TU-B 9 fns
+  (98.9-99.95). TU-C is `src/dlls/objects/201_Baddie/Baddie.c`; its DOL-confirmed
+  boundary is applied as one TU and must not be split to recover the former per-fragment matches.
 - **Unlocks**: TU-C redraw first = the cheapest prize (+2 complete_units / +416 B matched_data
   ceiling per the census). Full family = 13 NonMatching-or-partial carves → 3 correct units.
   Prerequisite already landed: 5 of the 6 bias atoms were mistyped `size:0x3 data:string` in

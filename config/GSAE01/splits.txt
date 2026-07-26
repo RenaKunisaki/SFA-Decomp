@@ -1441,23 +1441,20 @@ main/dll/dll_80136a40.c:
 	.sdata2     start:0x803E2390 end:0x803E23BC
 
 dlls/objects/196_Tricky/tricky.c:
-	.text       start:0x80138908 end:0x8014A9F0
-	.rodata     start:0x802C21C8 end:0x802C2210
-	.data       start:0x8031D2E8 end:0x8031DBF0
+	.text       start:0x80138908 end:0x80148C18
+	.rodata     start:0x802C21C8 end:0x802C21F0
+	.data       start:0x8031D2E8 end:0x8031DBD8
 	.sdata      start:0x803DBC40 end:0x803DBC58
-	.sbss       start:0x803DDA48 end:0x803DDA58
-	.sdata2     start:0x803E23C0 end:0x803E25CC
+	.sbss       start:0x803DDA48 end:0x803DDA50
+	.sdata2     start:0x803E23C0 end:0x803E2558
 
-main/dll/dll_00C9_enemy.c:
-	.text       start:0x8014A9F0 end:0x8014C678
-	.data       start:0x8031DBF0 end:0x8031DC88
+dlls/objects/201_Baddie/Baddie.c:
+	.text       start:0x80148C18 end:0x8014E1DC
+	.rodata     start:0x802C21F0 end:0x802C2210
+	.data       start:0x8031DBD8 end:0x8031DC88
 	.sdata      start:0x803DBC58 end:0x803DBC70
-
-main/dll/dll_00C9_enemy_8014c678.c:
-	.text       start:0x8014C678 end:0x8014C920
-
-main/dll/dll_00C9_enemy_8014c920.c:
-	.text       start:0x8014C920 end:0x8014E1DC
+	.sbss       start:0x803DDA50 end:0x803DDA58
+	.sdata2     start:0x803E2558 end:0x803E2608
 
 main/dll/dll_00DF_hagabon.c:
 	.text       start:0x8014E1DC end:0x8014EE8C

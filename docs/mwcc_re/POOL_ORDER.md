@@ -725,6 +725,6 @@ external bias in clean C.** Stop hunting for a bias-export crack. The tricky/ene
 "bias-external" class are gated **entirely by pool geometry** (mergeability / contiguity), and reduce
 to the existing merged-TU/boundary-redraw work — not to any missing compiler feature.
 Note also (supersedes the census's bias framing of tricky/enemy): per `tricky-family-3tu-map`, tricky
-mints its own bias in its own claimed pool and enemy (TU-C) mints its own; **tricky/enemy is actually
-gated on a param-web CODE cap** (`dll_00C9_enemy fn_8014C11C` 99.44, r28↔r29 / r4↔r5 pair-transposition),
+mints its own bias in its own claimed pool and Baddie (TU-C) mints its own; **Tricky/Baddie is actually
+gated on a param-web CODE cap** (`Baddie fn_8014C11C`, r28↔r29 / r4↔r5 pair-transposition),
 not on any bias mechanism.

@@ -8,8 +8,9 @@ MWCC's copy/constant propagation pass in particular reorders the values the
 register allocator sees, which permutes register homes without changing the
 instruction sequence.
 
-When different functions of one unit want DIFFERENT profiles, that unit merges
-two or more original translation units and needs a SPLIT, not a source edit.
+When different functions of one unit want DIFFERENT profiles, that is evidence
+to audit its boundary against the DOL. It is not permission to split the unit:
+a DOL-confirmed TU keeps one compiler profile even when some functions regress.
 
 Usage:
   python3 tools/fn_flag_probe.py <unit>                  probe all sub-100 functions
@@ -33,12 +34,13 @@ count of byte-identical functions yet LOWER the unit's fuzzy_match_percent
     main/objanim.c    -opt nopeephole,noschedule,nocse
                       10 -> 11 functions at 100, unit 99.405 -> 98.897
 
-So this list is a TU-SPLIT worklist, not a flag worklist.  The units, with the
-number of flag-fixable functions: player 11, lightmap 6, track_dolphin 3,
+So this list is a TU-boundary audit worklist, not a flag or automatic split
+worklist. A split requires independent DOL evidence. The units, with the number
+of flag-fixable functions: player 11, lightmap 6, track_dolphin 3,
 objprint_dolphin 2, dll_000F_unk 2, obj_movelib 2, and one each in textrender,
 Hcurves, model, objprint, gametext, dll_0015_curves, objanim, skeetla_80139A8C,
 object, dll_0272_hightop, shader_dolphin, sal_dsp, worldobj,
-dll_0049_cameramodecombat, dll_00C9_enemy, fallladdersgroup.
+dll_0049_cameramodecombat, dlls/objects/201_Baddie/Baddie, fallladdersgroup.
 
 METHOD WARNING: do not edit the tree or run ninja while a sweep is in flight.
 This tool reads build.ninja and the unit source per unit, so a concurrent

@@ -186,7 +186,6 @@ const BATCH = [
   { name: 'dll_00C0_projcore2.c', baseline: 'd2b681d98cd83f72da392584e799bfdf', pct: 100.0 },
   { name: 'dll_00C1_projcore3.c', baseline: '19882016fd77f6390f7c182ac3b47dd3', pct: 100.0 },
   { name: 'dll_00C2_projdfp1r.c', baseline: '910e04dfade6d7de958b20a9552e3483', pct: 100.0 },
-  { name: 'dll_00C9_enemy.c', baseline: 'c38e6a7befb57571057d0cda8b94bb73', pct: 99.617 },
   { name: 'dll_00CB_dllcb.c', baseline: 'ca92b08b21de6345f55513cd1eb80bc3', pct: 100.0 },
   { name: 'dll_00CC_chukchuk.c', baseline: 'c898b5a5c27ccf24992e3db8c2e4879e', pct: 100.0 },
   { name: 'dll_00CD_iceball.c', baseline: 'b29ffd79c120f4354c0081f273f8c703', pct: 100.0 },
