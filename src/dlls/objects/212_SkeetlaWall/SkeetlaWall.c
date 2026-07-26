@@ -1,5 +1,5 @@
 /*
- * skeetlawall (DLL 0x00D4) - an axis-aligned bounding-box wall/trigger
+ * SkeetlaWall (DLL 0x00D4) - an axis-aligned bounding-box wall/trigger
  * object used in the Skeetla arena level.  Each instance stores six
  * per-axis extents (in unsigned world units) and an optional shape flag;
  * SkeetlaWall_setScale unpacks these into a float[6] min/max array for

@@ -18,9 +18,6 @@
  * slots; the object id is 0x49 and its extra block is 0x4a4 bytes. The
  * state handler table gLandedArwingStateHandlers is populated in
  * dll_D3_initialise (slot 0 = landedarwing_updateMovementState).
- *
- * The TU also defines a second object descriptor, gSkeetlaWallObjDescriptor
- * (skeetlawall), an 11-slot object whose callbacks live in a sibling unit.
  */
 #include "main/dll/baddie_state.h"
 #include "main/dll/baddie_control_interface.h"

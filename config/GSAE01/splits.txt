@@ -1626,7 +1626,7 @@ dlls/objects/211/211.c:
 	.sbss       start:0x803DDA88 end:0x803DDA90
 	.sdata2     start:0x803E3020 end:0x803E3050
 
-main/dll/dll_00D4_skeetlawall.c:
+dlls/objects/212_SkeetlaWall/SkeetlaWall.c:
 	.text       start:0x801675E0 end:0x80167764
 	.data       start:0x803203B8 end:0x80320418
 	.sdata2     start:0x803E3050 end:0x803E305C
