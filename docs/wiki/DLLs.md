@@ -263,7 +263,7 @@ The highest valid ID is 0x2C1.
 | 1BF | LavaBall1BF |  |
 | 1C0 | DIMLogFire |  |
 | 1C1 | DIMSnowBall |  |
-| 1C2 | DIMSnowBall1C2 |  |
+| 1C2 | DIMSnowBall |  |
 | 1C3 | DIMGate |  |
 | 1C4 | DIMIceWall |  |
 | 1C5 | DIMBarrier |  |

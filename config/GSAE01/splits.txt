@@ -2517,7 +2517,7 @@ dlls/objects/449_DIMSnowBall/DIMSnowBall.c:
 dolphin/TRK_MINNOW_DOLPHIN/MWCriticalSection_gc.c:
 	.text       start:0x801B13E8 end:0x801B13E8
 
-main/dll/DIM/dll_01C2_dimsnowball1c2.c:
+dlls/objects/450_DIMSnowBall/DIMSnowBall.c:
 	.text       start:0x801B13E8 end:0x801B15D8
 	.data       start:0x80325360 end:0x80325398
 	.sdata2     start:0x803E4860 end:0x803E4878

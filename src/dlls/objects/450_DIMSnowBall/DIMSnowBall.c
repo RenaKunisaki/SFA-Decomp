@@ -1,5 +1,5 @@
 /*
- * dimsnowball1c2 (DLL 0x1C2) - timed snowball spawner for Dinosaur Island
+ * DIMSnowBall (DLL 0x1C2) - timed snowball spawner for Dinosaur Island
  * Mission.  On each timer expiry, if loading is not locked and the player
  * is clear, allocates a rolling-snowball object (kind 36, id 406) seeded
  * from the placement params and resets the spawn countdown.
@@ -13,7 +13,7 @@
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-/* child object id periodically spawned in dimsnowball1c2_update (role un-pinnable per gate) */
+/* Child object periodically spawned by dimsnowball1c2_update. */
 #define DIMSNOWBALL1C2_CHILD_OBJ 406
 
 typedef struct Dimsnowball1c2State
@@ -64,16 +64,22 @@ int dimsnowball1c2_getExtraSize(void)
     return sizeof(Dimsnowball1c2State);
 }
 
-int dimsnowball1c2_getObjectTypeId(void) { return 0x0; }
+int dimsnowball1c2_getObjectTypeId(void)
+{
+    return 0x0;
+}
 
 void dimsnowball1c2_free(void)
 {
 }
 
-void dimsnowball1c2_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible)
+void dimsnowball1c2_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dimsnowball1c2_hitDetect(void)
