@@ -272,7 +272,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/cloudaction | 100.0000 | 98.2189 | -1.7811 |
 | main/main/dll/dll_00DE_baddieinterestp | 100.0000 | 98.2407 | -1.7593 |
 | main/main/dll/dll_024E_drakordthornbush | 100.0000 | 98.3441 | -1.6559 |
-| main/main/dll/LGT/dll_02AB_lgtprojectedlight | 100.0000 | 98.3660 | -1.6340 |
+| main/dlls/objects/683_LGTProjecte/LGTProjecte | 100.0000 | 98.3660 | -1.6340 |
 | main/main/audio/voice_manage | 100.0000 | 98.4296 | -1.5704 |
 | main/main/camera | 99.7639 | 98.2861 | -1.4778 |
 | main/main/dll/dll_028B | 100.0000 | 98.5294 | -1.4706 |

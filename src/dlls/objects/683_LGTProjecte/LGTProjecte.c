@@ -1,5 +1,5 @@
 /*
- * lgtprojectedlight (DLL 0x2AB) - a placeable projected (gobo/spot) light.
+ * LGTProjecte (DLL 683) - a placeable projected (gobo/spot) light.
  *
  * init creates a ModelLight of kind PROJECTED, points it from the placement
  * record and loads its projection texture (falling back to
@@ -24,6 +24,7 @@ const f32 gProjectedLightMinExtent[1] = {1.0f};
 
 #define PROJECTEDLIGHT_DEFAULT_TEXTURE_ASSET 0x5dc
 #define PROJECTEDLIGHT_PROJECTION_ORTHO      0
+
 int ProjectedLight_getExtraSize(void)
 {
     return sizeof(ProjectedLightState);

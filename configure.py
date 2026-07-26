@@ -2017,7 +2017,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/680_ARWBlocker/ARWBlocker.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/681/681.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/682_LGTDirectio/LGTDirectio.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/LGT/dll_02AB_lgtprojectedlight.c", cflags=cflags_dll_noopt_nocse),
+            Object(MatchingFor("GSAE01"), "dlls/objects/683_LGTProjecte/LGTProjecte.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "main/dll/LGT/dll_02AC_lgtcontrollight.c", cflags=cflags_dll_noopt_level1),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AD_softbody.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AE_waterflowwe.c", cflags=cflags_dll_noopt, extra_cflags=["-opt", "nodeadstore"]),
