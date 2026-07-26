@@ -652,7 +652,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x25E | CRSpellstone (+DrakorSpell) | CONFIRMED | main/spellstone.c | main/dll/CR/dll_025E_crspellstone.c | engine/SDK host: main/spellstone.c |
 | 0x25F | CRFuelTank | COMPLETE | main/crfueltank.c | main/dll/CR/dll_025F_crfueltank.c | engine/SDK host: main/crfueltank.c |
 | 0x260 | ProximityMine (+CRDropBomb) | CONFIRMED | main/proximitymine_update.c | main/dll/dll_0260_proximitymine.c | engine/SDK host: main/proximitymine_update.c |
-| 0x261 | DR_LaserCannon | CONFIRMED | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | — |
+| 0x261 | DR_LaserCannon | CONFIRMED | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | = (canonical) | — |
 | 0x262 | — (+DrakorMissile, DRbullet) | NO-RETAIL-NAME | dlls/objects/610/610.c | = (canonical) | — |
 | 0x263 | GM_MazeWell | CONFIRMED | dlls/objects/611_GM_MazeWell/GM_MazeWell.c | = (canonical) | — |
 | 0x264 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
@@ -918,7 +918,7 @@ name was a deliberate choice by a previous carve:
 | 0x257 | main/dll/dll_0257_drearthwarrior.c | main/dll/DR/dll_0257_drearthwarrior.c | CONFIRMED |
 | 0x258 | main/dll/dll_0258_drcloudrunner.c | main/dll/DR/dll_0258_drcloudrunner.c | CONFIRMED |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | CONFIRMED |
-| 0x261 | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | CONFIRMED |
+| 0x261 | main/dll/dll_0261_drlasercannon.c | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | CONFIRMED |
 | 0x265 | main/dll/dll_0265_drcreator.c | dlls/objects/613_DR_Creator/DR_Creator.c | COMPLETE |
 | 0x268 | main/dll/dll_0268_drcagecontrol.c | dlls/objects/616_DR_CageCont/DR_CageCont.c | CONFIRMED |
 | 0x26B | main/dll/dll_026B_drchimmey.c | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | COMPLETE |
