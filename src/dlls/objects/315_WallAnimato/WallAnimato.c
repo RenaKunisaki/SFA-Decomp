@@ -63,14 +63,14 @@ STATIC_ASSERT(sizeof(WallanimatorState) == 8);
 #define WALLANIMATOR_PARTFX_DUST   0xcb
 
 
-u8 wallanimator_modelMtxFn(int* obj)
+u8 wallanimator_modelMtxFn(GameObject* obj)
 {
-    return (u8)((WallanimatorPlacement*)(((GameObject*)obj)->anim.placementData))->spawnRotZ;
+    return (u8)((WallanimatorPlacement*)(obj->anim.placementData))->spawnRotZ;
 }
 
-u8 wallanimator_func0B(int* obj)
+u8 wallanimator_func0B(GameObject* obj)
 {
-    WallanimatorState* state = ((GameObject*)obj)->extra;
+    WallanimatorState* state = obj->extra;
     return state->timer >= WALLANIMATOR_DONE_TIMER;
 }
 
@@ -194,7 +194,7 @@ void wallanimator_update(GameObject* obj)
                 (*(void (**)(int, int, int, int))(**(int**)(tricky + TRICKY_IFACE_OFFSET) + TRICKY_IFACE_NOTIFY_SLOT))(
                     tricky, (int)obj, 1, 1);
             }
-            objRenderFn_80041018((GameObject*)obj);
+            objRenderFn_80041018(obj);
         }
     }
     else
