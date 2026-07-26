@@ -4103,9 +4103,10 @@ dlls/objects/702_AndrossBrai/AndrossBrai.c:
 	.data       start:0x8032C2F0 end:0x8032C328
 	.sdata2     start:0x803E7600 end:0x803E7608
 
-main/dll/dll_02BF_androssligh.c:
+dlls/objects/703_AndrossLigh/AndrossLigh.c:
 	.text       start:0x80240010 end:0x8024034C
 	.data       start:0x8032C328 end:0x8032C360
+	.sdata      start:0x803DC518 end:0x803DC530
 	.sdata2     start:0x803E7608 end:0x803E7610
 
 dolphin/base/PPCArch.c:

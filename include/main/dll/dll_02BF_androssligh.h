@@ -29,12 +29,6 @@ STATIC_ASSERT(offsetof(AndrossLighState, state) == 0x0C);
 STATIC_ASSERT(offsetof(AndrossLighState, prevState) == 0x0D);
 
 extern ObjectDescriptor gAndrossLighObjDescriptor;
-extern f32 lbl_803DC518;
-extern f32 lbl_803DC51C;
-extern f32 lbl_803DC520;
-extern f32 lbl_803DC524;
-extern f32 lbl_803DC528;
-extern f32 lbl_803DC52C;
 
 void androssligh_updateBeam(GameObject* obj, AndrossLighState* state);
 void androssligh_setState(GameObject* obj, AndrossLighMode newState, u8 force);

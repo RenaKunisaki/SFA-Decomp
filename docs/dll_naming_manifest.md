@@ -746,7 +746,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2BC | Andross | RAW | dlls/objects/700_Andross/Andross.c | = (canonical) | Complete DOL-confirmed seventeen-function TU with its spawn/animation tables, proven early descriptor, four trailing compiler switch tables, and full small-data sections; existing clean source is 99.868% fuzzy with 16/17 functions exact |
 | 0x2BD | — | NO-RETAIL-NAME | dlls/objects/701/701.c | = (canonical) | Exact DOL-confirmed ten-function TU with its proven early descriptor, trailing compiler switch table, full constant pool, and recovered hand-specific small data; `Androssleft` and `Androssrigh` remain object aliases |
 | 0x2BE | AndrossBrai | RAW | dlls/objects/702_AndrossBrai/AndrossBrai.c | = (canonical) | Exact complete eight-function TU with its terminal descriptor and full 8-byte constant pool |
-| 0x2BF | AndrossLigh | CONFIRMED | main/dll/dll_02BF_androssligh.c | = (canonical) | — |
+| 0x2BF | AndrossLigh | RAW | dlls/objects/703_AndrossLigh/AndrossLigh.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full small-data/constant sections; all six beam parameters were recovered from the adjacent auto object |
 | 0x2C0 | Front (+FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet) | GUESSED | main/dll/dll_02C0_front.c | = (canonical) | — |
 
 ## Name-conflict resolutions
