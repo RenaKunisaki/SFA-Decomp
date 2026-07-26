@@ -435,7 +435,7 @@ manually verified by reading the file, not by name-guessing):
 | `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |
 | `dimbossgut` (0x67) | `DIM_BossGut` | `src/main/dll/DIM/dll_01E1_dimbossgut.c`, `dll_01E3_dimbossgut2.c` |
 | `wmcolrise` (0x68) | `WM_colrise` | `src/main/dll/WM/dll_0201_wmcolrise.c` |
-| `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/main/dll/WC/dll_0290_wcpushblock.c`, `wcpushblock.c` |
+| `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/dlls/objects/656_WCPushBlock/WCPushBlock.c`, `wcpushblock.c` |
 | `wcbouncycrate` (0x6f) | `WCBouncyCra` | `src/main/dll/WC/dll_028C_wcbouncycra.c` |
 
 Not found in this tree (either not yet split out as a distinct file, or bundled inside another

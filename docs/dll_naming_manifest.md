@@ -699,7 +699,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x28D | WCLevelCont | CONFIRMED | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | — |
 | 0x28E | WCBeacon | COMPLETE | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | — |
 | 0x28F | WCPressureS | CONFIRMED | main/dll/dll_028F_wcpressures.c | main/dll/WC/dll_028F_wcpressures.c | — |
-| 0x290 | WCPushBlock | CONFIRMED | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | — |
+| 0x290 | WCPushBlock | CONFIRMED | dlls/objects/656_WCPushBlock/WCPushBlock.c | = (canonical) | — |
 | 0x291 | WCTile | COMPLETE | dlls/objects/657_WCTile/WCTile.c | = (canonical) | — |
 | 0x292 | WCTrexStatu | CONFIRMED | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | = (canonical) | — |
 | 0x293 | — (+SunTemple, CFSunTemple, WCInvUseObj, WCSunTemple) | NO-RETAIL-NAME | dlls/objects/659/659.c | = (canonical) | — |
@@ -941,7 +941,7 @@ name was a deliberate choice by a previous carve:
 | 0x28D | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | CONFIRMED |
 | 0x28E | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | COMPLETE |
 | 0x28F | main/dll/dll_028F_wcpressures.c | main/dll/WC/dll_028F_wcpressures.c | CONFIRMED |
-| 0x290 | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | CONFIRMED |
+| 0x290 | main/dll/dll_0290_wcpushblock.c | dlls/objects/656_WCPushBlock/WCPushBlock.c | CONFIRMED |
 | 0x291 | main/dll/dll_0291_wctile.c | dlls/objects/657_WCTile/WCTile.c | COMPLETE |
 | 0x292 | main/dll/dll_0292_wctrexstatu.c | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | CONFIRMED |
 | 0x295 | main/dll/dll_0295_wcapertures.c | dlls/objects/661_WCApertureS/WCApertureS.c | CONFIRMED |

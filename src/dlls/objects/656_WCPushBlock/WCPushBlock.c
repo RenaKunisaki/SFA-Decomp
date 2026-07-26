@@ -1,5 +1,5 @@
 /*
- * wcpushblock (DLL 0x290) - the sliding push-block puzzle object in the
+ * WCPushBlock (DLL 0x290) - the sliding push-block puzzle object in the
  * Walled City (WC). Two block variants (anim.bankIndex: VARIANT_A vs B)
  * ride a shared tile grid owned by a separate level-controller object,
  * found via ObjGroup_FindNearestObject on controller group

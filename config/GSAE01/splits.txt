@@ -3724,7 +3724,7 @@ main/dll/WC/dll_028C_wcbouncycra.c:
 	.data       start:0x8032AF78 end:0x8032AFB0
 	.sdata2     start:0x803E6D48 end:0x803E6D50
 
-main/dll/WC/dll_0290_wcpushblock.c:
+dlls/objects/656_WCPushBlock/WCPushBlock.c:
 	.text       start:0x802243F4 end:0x802251B4
 	.data       start:0x8032AFB0 end:0x8032B108
 	.sdata2     start:0x803E6D98 end:0x803E6DA0
