@@ -657,7 +657,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x263 | GM_MazeWell | CONFIRMED | dlls/objects/611_GM_MazeWell/GM_MazeWell.c | = (canonical) | Exact callback TU; descriptor and adjacent quest-bit table remain in DOL-confirmed DLL 592 pooled data |
 | 0x264 | — | NO-RETAIL-NAME | dlls/objects/612/612.c | = (canonical) | Exact data-only DLL: two zero descriptor words in `.sdata` |
 | 0x265 | DR_Creator | COMPLETE | dlls/objects/613_DR_Creator/DR_Creator.c | = (canonical) | Exact callback/data TU; descriptor remains in DOL-confirmed DLL 614 pooled data |
-| 0x266 | KytesMum | COMPLETE | dlls/objects/614_KytesMum/KytesMum.c | = (canonical) | Exact TU; retail data order ends with the diagnostic string and pooled DLL 613 descriptor |
+| 0x266 | KytesMum | COMPLETE | dlls/objects/614_KytesMum/KytesMum.c | = (canonical) | Exact TU including both SFX tables; retail data order ends with the diagnostic string and pooled DLL 613 descriptor |
 | 0x267 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
 | 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | main/dll/dll_0269_explodeplan.c | = (canonical) | — |
