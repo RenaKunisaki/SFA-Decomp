@@ -1066,7 +1066,7 @@ config.libs = [
                 ],
             ),
             Object(MatchingFor("GSAE01"), "dlls/objects/197/197.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "dlls/objects/198_AnimatedObj/AnimatedObj.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/198_AnimatedObj/AnimatedObj.c", cflags=cflags_dll_noopt),
             Object(
                 MatchingFor("GSAE01"),
                 "dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c",
