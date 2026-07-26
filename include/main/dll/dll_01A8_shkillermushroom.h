@@ -3,7 +3,9 @@
 
 #include "ghidra_import.h"
 
-void enemymushroom_update(int *obj);
+struct GameObject;
+
+void enemymushroom_update(struct GameObject *obj);
 void enemymushroom_release(void);
 void enemymushroom_initialise(void);
 int bombplant_getExtraSize(void);
