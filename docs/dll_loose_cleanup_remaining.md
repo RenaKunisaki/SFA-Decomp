@@ -10,7 +10,7 @@ unused include/extern pruning + readability), via `tools/dll_cleanup_wave.js`.
 - 500/529-affected redo backlog: cleared.
 
 ## Remaining (NOT swept — other-contributor territory)
-23 raw loose files (no header) are **all actively owned by Zachary Canann** (match% work),
+22 raw loose files (no header) are **all actively owned by Zachary Canann** (match% work),
 most touched within hours/minutes. Left untouched to avoid colliding with live edits
 (one owner per `.c`). If picked up later, coordinate with the owner first and run them
 through `tools/dll_cleanup_wave.js` (per-file match-gated).
@@ -33,7 +33,6 @@ through `tools/dll_cleanup_wave.js` (per-file match-gated).
 | dll_0271_drakorhoverpad.c | 997 | Zachary |
 | dll_00D0_grimble.c | 963 | Zachary |
 | drhightop.c | 749 | Zachary |
-| dll_0200_dll200.c | 729 | Zachary, 2d |
 | dll_00CF_cannonclaw.c | 537 | Zachary |
 | dll_0282_barrelgener.c | 505 | Zachary |
 | dll_003D_titlemenuitem.c | 451 | Zachary |

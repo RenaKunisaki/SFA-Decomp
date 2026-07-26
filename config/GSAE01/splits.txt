@@ -3226,7 +3226,7 @@ dlls/objects/509_WM_LaserTar/WM_LaserTar.c:
 	.data       start:0x80328860 end:0x80328898
 	.sdata2     start:0x803E5D90 end:0x803E5D94
 
-main/dll/dll_0200_dll200.c:
+dlls/objects/512/512.c:
 	.text       start:0x801F20D4 end:0x801F2E80
 	.rodata     start:0x802C2470 end:0x802C2488
 	.data       start:0x80328898 end:0x80328A68
