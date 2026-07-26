@@ -3576,7 +3576,7 @@ dlls/objects/584/584.c:
 dlls/objects/586/586.c:
 	.data       start:0x80329F30 end:0x80329F60
 
-main/dll/dll_024B_dummy24b.c:
+dlls/objects/587/587.c:
 	.data       start:0x80329F60 end:0x80329F90
 
 main/dll/dll_024D_bossdrakor.c:

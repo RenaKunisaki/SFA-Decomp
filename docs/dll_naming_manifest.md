@@ -630,7 +630,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x248 | — | NO-RETAIL-NAME | dlls/objects/584/584.c | = (canonical) | Descriptor data only; Dummy248 retained as the internal symbol |
 | 0x249 | — | NO-RETAIL-NAME | dlls/objects/585/585.c | = (canonical) | Descriptor data only; carved from the trailing eight bytes of Player's former .sdata split |
 | 0x24A | — | NO-RETAIL-NAME | dlls/objects/586/586.c | = (canonical) | Descriptor data only; Dummy24A retained as the internal symbol |
-| 0x24B | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x24B | — | NO-RETAIL-NAME | dlls/objects/587/587.c | = (canonical) | Descriptor data only; Dummy24B retained as the internal symbol |
 | 0x24C | BossDrakor__free | CONFIRMED | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24D | BossDrakor | COMPLETE | main/dll/dll_024D_bossdrakor.c | = (canonical) | — |
 | 0x24E | drakord_thornbush (+BossDrakorD, ThornBush) | GUESSED | main/dll/dll_024E_drakordthornbush.c | = (canonical) | — |
