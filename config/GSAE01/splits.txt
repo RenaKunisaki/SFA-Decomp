@@ -3665,7 +3665,7 @@ main/dll/DR/dll_0279_drenergydisc.c:
 	.sdata      start:0x803DC380 end:0x803DC388
 	.sdata2     start:0x803E6BB0 end:0x803E6BB4
 
-main/dll/DR/dll_027C_drlightbea.c:
+dlls/objects/636_DR_LightBea/DR_LightBea.c:
 	.text       start:0x80220808 end:0x80220AD0
 	.data       start:0x8032AD30 end:0x8032AD98
 	.sdata2     start:0x803E6BB8 end:0x803E6BC4

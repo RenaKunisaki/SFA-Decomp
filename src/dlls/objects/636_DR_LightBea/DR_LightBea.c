@@ -1,5 +1,5 @@
 /*
- * drlightbea (DLL 0x27C) - a lightning-beam effect that arcs from this
+ * DR_LightBea (DLL 0x27C) - a lightning-beam effect that arcs from this
  * object to a target while its placement game bit (0x20) is set.
  *
  * The target is either another placed object (resolved by id via
