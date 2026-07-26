@@ -3101,14 +3101,14 @@ void objRenderFn_80041018(GameObject* obj)
     int* model;
     ObjDefHitVolume* base;
     int i;
-    base = ((GameObject*)obj)->anim.modelInstance->hitVolumes;
-    q = ((GameObject*)obj)->anim.hitVolumeTransforms;
-    if (!(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & 0x28))
+    base = obj->anim.modelInstance->hitVolumes;
+    q = obj->anim.hitVolumeTransforms;
+    if (!(*(u8*)&obj->anim.resetHitboxMode & 0x28))
     {
-        model = (int*)Obj_GetActiveModel((GameObject*)obj);
+        model = (int*)Obj_GetActiveModel(obj);
         i = 0;
         p = base;
-        for (; i < ((GameObject*)obj)->anim.modelInstance->hitVolumeCount; i++)
+        for (; i < obj->anim.modelInstance->hitVolumeCount; i++)
         {
             int j = p->jointIndices[OBJPRINT_ACTIVE_BANK_INDEX(obj)];
             ObjModelJointMatrix* mtx;
