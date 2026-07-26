@@ -1,5 +1,5 @@
 /*
- * DLL 0x0111 - door-lock objects [8017AC2C-8017ADB4).
+ * DLL 0x111 - door-lock objects [0x8017BCF8, 0x8017C294).
  *
  * A lockable door/gate placed from a DoorLockPlacement. Its
  * lock state mirrors a per-instance game bit (DoorLockPlacement::lockGameBit):
@@ -27,13 +27,11 @@
 #include "dlls/object_descriptor.h"
 #include "main/pad.h"
 
-
 #define PAD_BUTTON_A 0x100
 
 /* one-shot global "doors unlocked" game bit gating the bulk unlock sequence */
 #define GAMEBIT_DOORLOCK_UNLOCKED 0x930
 #define DOORLOCK_OBJGROUP         0xf
-
 
 int Lock_DoorLock_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
