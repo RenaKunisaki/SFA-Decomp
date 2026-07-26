@@ -3447,7 +3447,7 @@ main/dll/dll_0241_drakorenergy.c:
 
 main/dll/dll_0242_dbstealerworm.c:
 	.text       start:0x801FFE18 end:0x80203C78
-	.data       start:0x803293B8 end:0x80329940
+	.data       start:0x803293B8 end:0x80329848
 	.sdata2     start:0x803E62A8 end:0x803E6390
 
 main/dll/dll_0243_dbholecontrol1.c:
@@ -3455,8 +3455,9 @@ main/dll/dll_0243_dbholecontrol1.c:
 	.sbss       start:0x803DDCE0 end:0x803DDCE8
 	.sdata2     start:0x803E6390 end:0x803E6398
 
-main/dll/DF/dll_0229_dfplevelcontrol.c:
+dlls/objects/553_DFP_LevelCo/DFP_LevelCo.c:
 	.text       start:0x80204098 end:0x80204970
+	.data       start:0x80329848 end:0x80329898
 	.sdata      start:0x803DC180 end:0x803DC188
 
 main/dll/DF/dll_022A_dfpobjcreator.c:

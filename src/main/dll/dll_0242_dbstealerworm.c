@@ -62,10 +62,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
 #include "main/dll/dll_0242_dbstealerworm.h"
-#include "main/dll/dll_022C_dll22c.h"
-#include "main/dll/DF/dll_0229_dfplevelcontrol.h"
-#include "main/dll/DF/dll_022A_dfpobjcreator.h"
-#include "main/dll/DF/dll_022E_dfpdoorswitch.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "string.h"
 #include "main/dll/baddie_control_interface.h"
@@ -2588,68 +2584,4 @@ ObjectDescriptor gDBHoleControl1ObjDescriptor = {
     (ObjectDescriptorCallback)dbholecontrol1_free,
     (ObjectDescriptorCallback)dbholecontrol1_getObjectTypeId,
     dbholecontrol1_getExtraSize,
-};
-s16 gDFPLevelControlPuzzleValues[10] = {1, 2, 3, 0, 0, 0, 0, 0, 0, 0};
-ObjectDescriptor11 gDFP_LevelControlObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,
-    (ObjectDescriptorCallback)DFP_LevelControl_initialise,
-    (ObjectDescriptorCallback)DFP_LevelControl_release,
-    0,
-    (ObjectDescriptorCallback)DFP_LevelControl_init,
-    (ObjectDescriptorCallback)DFP_LevelControl_update,
-    (ObjectDescriptorCallback)DFP_LevelControl_hitDetect,
-    (ObjectDescriptorCallback)DFP_LevelControl_render,
-    (ObjectDescriptorCallback)DFP_LevelControl_free,
-    (ObjectDescriptorCallback)DFP_LevelControl_getObjectTypeId,
-    (ObjectDescriptorCallback)DFP_LevelControl_getExtraSize,
-    (ObjectDescriptorCallback)DFP_LevelControl_copyPuzzleValues,
-};
-ObjectDescriptor gDFP_ObjCreatorObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DFP_ObjCreator_initialise,
-    (ObjectDescriptorCallback)DFP_ObjCreator_release,
-    0,
-    (ObjectDescriptorCallback)DFP_ObjCreator_init,
-    (ObjectDescriptorCallback)DFP_ObjCreator_update,
-    (ObjectDescriptorCallback)DFP_ObjCreator_hitDetect,
-    (ObjectDescriptorCallback)DFP_ObjCreator_render,
-    (ObjectDescriptorCallback)DFP_ObjCreator_free,
-    (ObjectDescriptorCallback)DFP_ObjCreator_getObjectTypeId,
-    DFP_ObjCreator_getExtraSize,
-};
-u32 lbl_803298D0[14] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00090000,
-                        (u32)dll_22C_initialise_nop,
-                        (u32)dll_22C_release_nop,
-                        0x00000000,
-                        (u32)dll_22C_init,
-                        (u32)dll_22C_update,
-                        (u32)dll_22C_hitDetect_nop,
-                        (u32)dll_22C_render,
-                        (u32)dll_22C_free,
-                        (u32)dll_22C_getObjectTypeId,
-                        (u32)dll_22C_getExtraSize_ret_16};
-ObjectDescriptor gDoorswitchObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)doorswitch_initialise,
-    (ObjectDescriptorCallback)doorswitch_release,
-    0,
-    (ObjectDescriptorCallback)doorswitch_init,
-    (ObjectDescriptorCallback)doorswitch_update,
-    (ObjectDescriptorCallback)doorswitch_hitDetect,
-    (ObjectDescriptorCallback)doorswitch_render,
-    (ObjectDescriptorCallback)doorswitch_free,
-    (ObjectDescriptorCallback)doorswitch_getObjectTypeId,
-    doorswitch_getExtraSize,
 };

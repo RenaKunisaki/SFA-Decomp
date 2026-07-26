@@ -303,3 +303,23 @@ void DFP_LevelControl_initialise(void)
     p[7] = 0;
     p[8] = 0;
 }
+
+s16 gDFPLevelControlPuzzleValues[10] = {1, 2, 3, 0, 0, 0, 0, 0, 0, 0};
+
+ObjectDescriptor11 gDFP_LevelControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,
+    (ObjectDescriptorCallback)DFP_LevelControl_initialise,
+    (ObjectDescriptorCallback)DFP_LevelControl_release,
+    0,
+    (ObjectDescriptorCallback)DFP_LevelControl_init,
+    (ObjectDescriptorCallback)DFP_LevelControl_update,
+    (ObjectDescriptorCallback)DFP_LevelControl_hitDetect,
+    (ObjectDescriptorCallback)DFP_LevelControl_render,
+    (ObjectDescriptorCallback)DFP_LevelControl_free,
+    (ObjectDescriptorCallback)DFP_LevelControl_getObjectTypeId,
+    (ObjectDescriptorCallback)DFP_LevelControl_getExtraSize,
+    (ObjectDescriptorCallback)DFP_LevelControl_copyPuzzleValues,
+};
