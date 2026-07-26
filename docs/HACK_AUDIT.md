@@ -81,7 +81,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/NW/dll_01A5_nwlevcontrol | 100.0000 | 64.4007 | -35.5993 |
 | main/main/dll/dll_02BB_gflevelcon | 100.0000 | 65.1733 | -34.8267 |
 | main/main/curves | 100.0000 | 66.1867 | -33.8133 |
-| main/main/dll/WC/dll_0296_wctempledia | 100.0000 | 67.7368 | -32.2632 |
+| main/dlls/objects/662_WCTempleDia/WCTempleDia | 100.0000 | 67.7368 | -32.2632 |
 | main/main/dll/CC/dll_0189_ccsharpclawpad | 100.0000 | 67.8719 | -32.1281 |
 | main/main/dll/dll_3b | 100.0000 | 68.0723 | -31.9277 |
 | main/main/main | 99.8279 | 68.0867 | -31.7412 |

@@ -705,7 +705,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x293 | SunTemple (+CFSunTemple, WCInvUseObj, WCSunTemple) | CONFIRMED | main/dll/dll_0293_suntemple.c | = (canonical) | — |
 | 0x294 | wctemple (+WCMoonTempl, WCSunTemple) | GUESSED | main/dll/dll_0294_wctemple.c | = (canonical) | — |
 | 0x295 | WCApertureS | CONFIRMED | main/dll/dll_0295_wcapertures.c | main/dll/WC/dll_0295_wcapertures.c | — |
-| 0x296 | WCTempleDia | CONFIRMED | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | — |
+| 0x296 | WCTempleDia | CONFIRMED | dlls/objects/662_WCTempleDia/WCTempleDia.c | = (canonical) | — |
 | 0x297 | WCTempleBri | CONFIRMED | dlls/objects/663_WCTempleBri/WCTempleBri.c | = (canonical) | — |
 | 0x298 | WCFloorTile | CONFIRMED | dlls/objects/664_WCFloorTile/WCFloorTile.c | = (canonical) | — |
 | 0x299 | — | NO-RETAIL-NAME | dlls/objects/665/665.c | = (canonical) | — |
@@ -955,7 +955,7 @@ name was a deliberate choice by a previous carve:
 | 0x291 | main/dll/dll_0291_wctile.c | main/dll/WC/dll_0291_wctile.c | COMPLETE |
 | 0x292 | main/dll/dll_0292_wctrexstatu.c | main/dll/WC/dll_0292_wctrexstatu.c | CONFIRMED |
 | 0x295 | main/dll/dll_0295_wcapertures.c | main/dll/WC/dll_0295_wcapertures.c | CONFIRMED |
-| 0x296 | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | CONFIRMED |
+| 0x296 | main/dll/dll_0296_wctempledia.c | dlls/objects/662_WCTempleDia/WCTempleDia.c | CONFIRMED |
 | 0x297 | main/dll/dll_0297_wctemplebri.c | dlls/objects/663_WCTempleBri/WCTempleBri.c | CONFIRMED |
 | 0x298 | main/dll/dll_0298_wcfloortile.c | dlls/objects/664_WCFloorTile/WCFloorTile.c | CONFIRMED |
 | 0x29A | main/dll/dll_029A_arwarwing.c | dlls/objects/666_ARWArwing/ARWArwing.c | COMPLETE |
