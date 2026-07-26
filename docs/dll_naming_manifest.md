@@ -652,7 +652,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x25E | — | NO-RETAIL-NAME | dlls/objects/606/606.c | = (canonical) | Complete SpellStone-family TU including the formerly split leading idle callback |
 | 0x25F | CRFuelTank | COMPLETE | dlls/objects/607_CRFuelTank/CRFuelTank.c | = (canonical) | — |
 | 0x260 | — | NO-RETAIL-NAME | dlls/objects/608/608.c | = (canonical) | Complete ProximityMine-family TU including the formerly split leading expire helper |
-| 0x261 | DR_LaserCannon | CONFIRMED | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | — |
+| 0x261 | DR_LaserCannon | CONFIRMED | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | = (canonical) | Callback TU only; descriptor remains in DOL-confirmed DLL 592 pooled data |
 | 0x262 | DrakorMissile (+DRbullet) | CONFIRMED | main/dll/dll_0262_drakormissile.c | = (canonical) | — |
 | 0x263 | GM_MazeWell | CONFIRMED | main/dll/dll_0263_gmmazewell.c | = (canonical) | — |
 | 0x264 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |

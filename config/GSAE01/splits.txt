@@ -3668,7 +3668,7 @@ dlls/objects/596_KT_Fallingr/KT_Fallingr.c:
 	.text       start:0x80216D18 end:0x80216EAC
 	.sdata2     start:0x803E68D0 end:0x803E68D8
 
-main/dll/DR/dll_0261_drlasercannon.c:
+dlls/objects/609_DR_LaserCan/DR_LaserCan.c:
 	.text       start:0x80216EAC end:0x80217F24
 	.sdata      start:0x803DC2A8 end:0x803DC2B0
 	.sbss       start:0x803DDD68 end:0x803DDD70

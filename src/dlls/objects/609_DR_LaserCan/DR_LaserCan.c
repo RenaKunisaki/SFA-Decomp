@@ -1,6 +1,7 @@
+/* DR_LaserCan (DLL 609): Dragon Rock laser-cannon object callbacks. */
+
 #include "main/dll/DR/dll_0261_drlasercannon.h"
 
-f32 lbl_803DDD68;
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/maketex_timer_api.h"
 #include "main/dll/dll_0273_firepipe.h"
@@ -30,6 +31,7 @@ f32 lbl_803DDD68;
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 
+f32 lbl_803DDD68;
 f32 lbl_803DC2A8 = 5.0f;
 s16 lbl_803DC2AC = 0x80;
 s16 gLaserCannonMaxAimStep = 0x400;
