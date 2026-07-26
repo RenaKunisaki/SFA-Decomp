@@ -24,7 +24,7 @@
 #include "main/objfx.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_00E3_fireball_api.h"
+#include "dlls/objects/227_Fireball.h"
 #include "main/dll/VF/dll_021A_vfpstatueball.h"
 
 #define VFPSTATUEBALL_HIT_SEQID 0x14b /* staff-strike object seq id */
@@ -105,7 +105,7 @@ void VFP_statueball_update(GameObject* obj)
         if ((hitObj != NULL) && (hitType != 0) && (hitObj != NULL) &&
             (hitObj->anim.seqId == VFPSTATUEBALL_HIT_SEQID))
         {
-            if ((u8)fn_8016F16C(hitObj) == placement->variant)
+            if (Fireball_getColorIndex(hitObj) == placement->variant)
             {
                 state->active = (u8)(1 - state->active);
             }
