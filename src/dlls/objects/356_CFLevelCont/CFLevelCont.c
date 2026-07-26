@@ -1,5 +1,5 @@
 /*
- * cflevelcontrol (DLL 0x164) - the CloudRunner Fortress level
+ * CFLevelCont (DLL 0x164) - the CloudRunner Fortress level
  * controller. init clears the fortress bit set on a fresh visit and
  * arms the one-shot object sweep; update advances the fortress map
  * event, stings/fanfares the two alarm bits, runs the first-visit and

@@ -2337,6 +2337,12 @@ dlls/objects/353_CFTreasRobo/CFTreasRobo.c:
 dlls/objects/352/352.c:
 	.sdata      start:0x803DBEB8 end:0x803DBEC0
 
+dlls/objects/355/355.c:
+	.sdata      start:0x803DBEC0 end:0x803DBEC8
+
+dlls/objects/357_CFRemovalSh/CFRemovalSh.c:
+	.sdata      start:0x803DBEC8 end:0x803DBED0
+
 dlls/objects/349/349.c:
 	.text       start:0x801A3E9C end:0x801A41D8
 	.data       start:0x80322F58 end:0x80322F90
@@ -2352,7 +2358,7 @@ dlls/objects/354_CFMagicWall/CFMagicWall.c:
 	.data       start:0x80322FD0 end:0x80323008
 	.sdata2     start:0x803E43D8 end:0x803E43E8
 
-main/dll/CF/dll_0164_cflevelcontrol.c:
+dlls/objects/356_CFLevelCont/CFLevelCont.c:
 	.text       start:0x801A4524 end:0x801A4DB8
 	.rodata     start:0x802C22E8 end:0x802C22F8
 	.data       start:0x80323008 end:0x80323070

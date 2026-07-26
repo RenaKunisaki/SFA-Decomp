@@ -398,9 +398,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x160 | — | NO-RETAIL-NAME | dlls/objects/352/352.c | = (canonical) | data-only DLL |
 | 0x161 | CFTreasRobo | RAW | dlls/objects/353_CFTreasRobo/CFTreasRobo.c | = (canonical) | data-only DLL |
 | 0x162 | CFMagicWall | CONFIRMED | dlls/objects/354_CFMagicWall/CFMagicWall.c | = (canonical) | — |
-| 0x163 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x164 | CFLevelControl | CONFIRMED | main/dll/dll_0164_cflevelcontrol.c | main/dll/CF/dll_0164_cflevelcontrol.c | — |
-| 0x165 | CFRemovalSh | RAW | *(none)* | — | no .text fns (descriptor data only) |
+| 0x163 | — | NO-RETAIL-NAME | dlls/objects/355/355.c | = (canonical) | data-only DLL |
+| 0x164 | CFLevelCont | CONFIRMED | dlls/objects/356_CFLevelCont/CFLevelCont.c | = (canonical) | — |
+| 0x165 | CFRemovalSh | RAW | dlls/objects/357_CFRemovalSh/CFRemovalSh.c | = (canonical) | data-only DLL |
 | 0x166 | exploded (+CFbrokenGra, CFbrokenWal, CFWallPieac, CFExplodePi, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRExplodePi, ExplodePlan, DRSmallExpl) | GUESSED | main/dll/dll_0166_exploded.c | = (canonical) | — |
 | 0x167 | SpiritDoorLock | CONFIRMED | main/dll/dll_0167_spiritdoorlock.c | = (canonical) | — |
 | 0x168 | HoloPoint | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x164 | main/dll/dll_0164_cflevelcontrol.c | main/dll/CF/dll_0164_cflevelcontrol.c | CONFIRMED |
 | 0x169 | main/dll/dll_0169_imicemountain.c | main/dll/IM/dll_0169_imicemountain.c | CONFIRMED |
 | 0x16A | main/dll/dll_016A_crrockfall.c | main/dll/CR/dll_016A_crrockfall.c | COMPLETE |
 | 0x16D | main/dll/dll_016D_imicepillar.c | main/dll/IM/dll_016D_imicepillar.c | CONFIRMED |
