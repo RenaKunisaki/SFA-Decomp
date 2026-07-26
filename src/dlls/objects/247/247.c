@@ -53,11 +53,8 @@ struct DllF7Placement
  * 0xb): position head plus the class-specific fields (see the target stb/sth). */
 typedef struct DllF7GasSetup
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x08 */
-    f32 posY; /* 0x0c */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x1a - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x1a - 0x18];
     u8 field1A;  /* 0x1a */
     u8 pad1B;    /* 0x1b */
     s16 field1C; /* 0x1c */
@@ -205,9 +202,9 @@ void dll_F7_update(GameObject* obj)
         {
             s16* alloc = (s16*)Obj_AllocObjectSetup(0x30, DLLF7_CHILD_OBJ_GAS);
             ((DllF7GasSetup*)alloc)->field1C = -1;
-            ((DllF7GasSetup*)alloc)->posX = obj->anim.localPosX;
-            ((DllF7GasSetup*)alloc)->posY = 10.0f + obj->anim.localPosY;
-            ((DllF7GasSetup*)alloc)->posZ = obj->anim.localPosZ;
+            ((DllF7GasSetup*)alloc)->base.posX = obj->anim.localPosX;
+            ((DllF7GasSetup*)alloc)->base.posY = 10.0f + obj->anim.localPosY;
+            ((DllF7GasSetup*)alloc)->base.posZ = obj->anim.localPosZ;
             ((DllF7GasSetup*)alloc)->field1A = 3;
             ((DllF7GasSetup*)alloc)->field2C = -1;
             ((DllF7GasSetup*)alloc)->field24 = -1;
