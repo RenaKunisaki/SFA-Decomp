@@ -379,15 +379,15 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
         {
             f32 dur = 60.0f * ((f32)((FCVars*)state)->projectileTimer / ((BaddieState*)state)->unk2A8);
             ((GameObject*)child)->anim.velocityX = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX -
-                                                    ((GameObject*)setup)->anim.rootMotionScale) /
+                                                    ((ObjPlacement*)setup)->posX) /
                                                    dur;
             ((GameObject*)child)->anim.velocityY =
                 ((30.0f + ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosY +
                   (f32)(int)randomGetRange(-10, 10)) -
-                 ((GameObject*)setup)->anim.localPosX) /
+                 ((ObjPlacement*)setup)->posY) /
                 dur;
             ((GameObject*)child)->anim.velocityZ = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ -
-                                                    ((GameObject*)setup)->anim.localPosY) /
+                                                    ((ObjPlacement*)setup)->posZ) /
                                                    dur;
         }
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_cvdrip1c_4ae);
