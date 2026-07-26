@@ -1,46 +1,289 @@
-/*
- * dimbosstonsil (DLL 0x1E2) - the DIM boss tonsil/uvula combat object.
- * Handles the tonsil's state machine (idle, hit-react, defeat), steam-effect
- * anim events, a dynamic point light that flickers in sync with the glow alpha,
- * and the hit-count route-phase tracking (gDIMbosstonsilRoutePhase) that controls
- * which health phase the tonsil starts in across attempts.
- */
-#include "main/dll/partfx_interface.h"
-#include "main/mapEvent.h"
-#include "main/audio/music_api.h"
-#include "main/vecmath.h"
-#include "main/render_envfx_api.h"
-#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "main/audio/music_api.h"
 #include "main/audio/sfx.h"
-#include "sys/objects.h"
-#include "main/object_render.h"
-#include "main/objseq.h"
+#include "main/camera_shake_api.h"
 #include "main/dll/DIM/DIMbossspit.h"
 #include "main/dll/DIM/DIMbosstonsil.h"
 #include "main/dll/DIM/dll_223.h"
-#include "main/dll/baddie_state.h"
 #include "main/dll/baddie_control_interface.h"
-#include "main/player_control_interface.h"
-#include "main/gamebits.h"
-#include "main/pad.h"
-#include "main/sky_api.h"
+#include "main/dll/baddie_state.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/mapEvent.h"
+#include "main/object_render.h"
 #include "main/obj_group.h"
+#include "main/obj_message.h"
 #include "main/obj_path.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/objseq.h"
+#include "main/pad.h"
+#include "main/player_control_interface.h"
+#include "main/render_envfx_api.h"
+#include "main/shader_api.h"
+#include "main/sky_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+
+extern f32 lbl_803DDB98;
+extern f32 lbl_803DDB9C;
+extern f32 lbl_803DDBA0;
+extern f32 lbl_803DDBA4;
+
+#define DIMBOSSTONSIL_HIT_EFFECT_ID     0x4b2
+#define DIMBOSSTONSIL_HIT_EFFECT_ALT_ID 0x4b3
+#define DIMBOSSTONSIL_PRIMARY_HIT_SFX   0x18a
+#define DIMBOSSTONSIL_ALT_HIT_SFX       0x18b
+#define DIMBOSSTONSIL_NORMAL_HIT_SFX    0x18c
+#define DIMBOSSTONSIL_HIT_GAMEBIT       0x20c
+#define DIMBOSSTONSIL_ADVANCE_MSG       0xe0001
+/* particle-spawn flag word: bit 0x200000 | bit 0x1 */
+#define DIMBOSSTONSIL_HIT_FX_FLAGS 0x200001
+
+int DIMbosstonsil_updateHitReaction(void* obj, DIMbosstonsilState* state, int unused)
+{
+    if (state->active != 0)
+    {
+        (*gPlayerInterface)->setState(obj, state, 1);
+    }
+    if (state->hitResult != 0)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int DIMbosstonsil_enableHitReaction(void* obj, DIMbosstonsilState* state)
+{
+    if (state->stunReady != 0)
+    {
+        state->active = 1;
+        (*gPlayerInterface)->setState(obj, state, 0);
+    }
+    return 0;
+}
+
+int DIMbosstonsil_chooseHitReaction(void* obj, DIMbosstonsilState* state)
+{
+    u16 moveId;
+    u16 unused1;
+    u16 unused2;
+
+    if (state->active != 0)
+    {
+        lbl_803DDB9C = lbl_803DDBA0;
+        (*gBaddieControlInterface)
+            ->getTargetGeometry((GameObject*)obj, Obj_GetPlayerObject(), 4, &moveId, &unused1, &unused2);
+        switch (moveId)
+        {
+        case 0:
+            if (state->active != 0)
+            {
+                ObjAnim_SetCurrentMove((int)obj, 1, 0.0f, 0);
+                state->hitResult = 0;
+            }
+            break;
+        case 1:
+            if (state->active != 0)
+            {
+                ObjAnim_SetCurrentMove((int)obj, 3, 0.0f, 0);
+                state->hitResult = 0;
+            }
+            break;
+        case 2:
+            if (state->active != 0)
+            {
+                ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
+                state->hitResult = 0;
+            }
+            break;
+        default:
+            if (state->active != 0)
+            {
+                ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
+                state->hitResult = 0;
+            }
+            break;
+        }
+        state->recoveryTimer = 0.005f;
+    }
+    return 0;
+}
+
+int DIMbosstonsil_startIdleHitReaction(void* obj, DIMbosstonsilState* state)
+{
+    if (state->active != 0)
+    {
+        ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
+        state->hitResult = 0;
+    }
+    state->recoveryTimer = 0.01f;
+    return 0;
+}
+
+void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state)
+{
+    int hitObj;
+    int modelPart;
+    u32 hitVolume;
+    u32 spawnArgs[7];
+    f32* spawnPos;
+    int hit;
+
+    hit = ObjHits_GetPriorityHit(obj, &hitObj, &modelPart, &hitVolume);
+    if (hit != 0)
+    {
+        spawnPos = (f32*)((char*)spawnArgs + 0xc);
+        {
+            f32(*modelPos)[4] =
+                (f32(*)[4])(*(int*)(*(int*)(*(int*)&(obj)->anim.banks + ((s8)((u8*)obj)[0xad] << 2)) + 0x50));
+            spawnPos[0] = playerMapOffsetX + modelPos[modelPart][1];
+            spawnPos[1] = modelPos[modelPart][2];
+            spawnPos[2] = playerMapOffsetZ + modelPos[modelPart][3];
+        }
+        (*gPartfxInterface)
+            ->spawnObject(obj, DIMBOSSTONSIL_HIT_EFFECT_ID, spawnArgs, DIMBOSSTONSIL_HIT_FX_FLAGS, -1, NULL);
+        (*gPartfxInterface)
+            ->spawnObject(obj, DIMBOSSTONSIL_HIT_EFFECT_ALT_ID, spawnArgs, DIMBOSSTONSIL_HIT_FX_FLAGS, -1, NULL);
+        objLightFn_8009a1dc(obj, 0.028f, spawnArgs, 3, 0);
+        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_PRIMARY_HIT_SFX);
+        doRumble(16.0f);
+        if (state->hitPointsLeft != 0)
+        {
+            Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_ALT_HIT_SFX);
+        }
+        else
+        {
+            Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
+        }
+        CameraShake_SetAllMagnitudes(3.0f);
+        if (0.0f == lbl_803DDB98)
+        {
+            state->active = 1;
+            state->hitResult = 0;
+            state->hitDamageCount = hit;
+            state->hitPointsLeft--;
+            gDIMbosstonsilRoutePhase++;
+            mainSetBits(DIMBOSSTONSIL_HIT_GAMEBIT, gDIMbosstonsilRoutePhase);
+            if (gDIMbosstonsilRoutePhase == 3 || gDIMbosstonsilRoutePhase == 7)
+            {
+                lbl_803DDB98 = 90.0f;
+            }
+            else
+            {
+                lbl_803DDB98 = 0.0f;
+            }
+            (*gPlayerInterface)->setState(obj, state, 1);
+            state->field270 = 1;
+            ObjMsg_SendToObject((void*)hitObj, DIMBOSSTONSIL_ADVANCE_MSG, obj, 0);
+        }
+    }
+}
+
+#define DIMBOSSSPIT_MODEL_ACTIVE_FLAG    0x1
+#define DIMBOSSSPIT_OBJECT_DISABLED_FLAG 0x8
+
+#define DIMBOSSSPIT_GAMEBIT_ACTIVE     0x20e
+#define DIMBOSSSPIT_GAMEBIT_ROUTE_LOW  0x268
+#define DIMBOSSSPIT_GAMEBIT_ROUTE_HIGH 0x311
+
+#define DIMBOSSSPIT_ROUTE_HIGH_THRESHOLD  7
+#define DIMBOSSSPIT_ROUTE_SPLIT_THRESHOLD 3
+#define DIMBOSSSPIT_RUMBLE_SFX            0x189
+
+void dimBossTonsil_newState_hitFightMain(u8* obj, ObjAnimUpdateState* animUpdate, DIMbosstonsilState* state,
+                                         DIMbosstonsilState* updateState)
+{
+    f32 timer;
+
+    timer = 0.0f;
+
+    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->flags |= DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
+
+    updateState->effectActive = 1;
+
+    (*gBaddieControlInterface)
+        ->updateGravity((GameObject*)obj, updateState, timer, 1);
+
+    (*gBaddieControlInterface)
+        ->processMessages((GameObject*)obj, updateState, state->animPoints, state->animFrame,
+                          &state->hitReactMode, 0, 0, 0);
+
+    if (0.0f != lbl_803DDBA4)
+    {
+        lbl_803DDBA4 = lbl_803DDBA4 - timeDelta;
+        timer = lbl_803DDBA4 * 0.125f;
+        if (lbl_803DDBA4 <= 1.0f)
+        {
+            lbl_803DDBA4 = 0.0f;
+            updateState->animFinished = 0;
+            ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->flags &= ~DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
+            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
+                (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | DIMBOSSSPIT_OBJECT_DISABLED_FLAG);
+            mainSetBits(DIMBOSSSPIT_GAMEBIT_ACTIVE, 0);
+            if (gDIMbosstonsilRoutePhase >= DIMBOSSSPIT_ROUTE_HIGH_THRESHOLD)
+            {
+                mainSetBits(DIMBOSSSPIT_GAMEBIT_ROUTE_HIGH, 1);
+            }
+            else
+            {
+                mainSetBits(DIMBOSSSPIT_GAMEBIT_ROUTE_LOW, 1);
+            }
+        }
+    }
+    else
+    {
+        timer = timer + 100.0f;
+    }
+
+    if (lbl_803DDBA0 >= lbl_803DDB9C)
+    {
+        Sfx_PlayFromObject((u32)obj, DIMBOSSSPIT_RUMBLE_SFX);
+        if (timer > 100.0f)
+            timer = 100.0f;
+        if (timer < 30.0f)
+            timer = 30.0f;
+        lbl_803DDB9C = lbl_803DDB9C + timer;
+        doRumble(8.0f);
+    }
+
+    lbl_803DDBA0 = lbl_803DDBA0 + timeDelta;
+    DIMbosstonsil_checkHit((GameObject*)(obj), updateState);
+
+    if (0.0f != lbl_803DDB98)
+    {
+        lbl_803DDB98 = lbl_803DDB98 - timeDelta;
+        if (lbl_803DDB98 <= 0.0f)
+        {
+            lbl_803DDB98 = 0.0f;
+            updateState->animFinished = 0;
+            ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->flags &= ~DIMBOSSSPIT_MODEL_ACTIVE_FLAG;
+            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
+                (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | DIMBOSSSPIT_OBJECT_DISABLED_FLAG);
+            mainSetBits(DIMBOSSSPIT_GAMEBIT_ACTIVE, 0);
+            if (gDIMbosstonsilRoutePhase == DIMBOSSSPIT_ROUTE_SPLIT_THRESHOLD)
+            {
+                mainSetBits(DIMBOSSSPIT_GAMEBIT_ROUTE_LOW, 1);
+            }
+            else
+            {
+                mainSetBits(DIMBOSSSPIT_GAMEBIT_ROUTE_HIGH, 1);
+            }
+        }
+    }
+
+    state->savedObjFieldC0 = *(u32*)&((GameObject*)obj)->pendingParentObj;
+    *(u32*)&((GameObject*)obj)->pendingParentObj = 0;
+
+    (*gPlayerInterface)->update(obj, updateState, timeDelta, timeDelta, &lbl_803DDBB0, &lbl_803DDBA8);
+
+    *(u32*)&((GameObject*)obj)->pendingParentObj = state->savedObjFieldC0;
+}
 
 #define DIMBOSSTONSIL_OBJGROUP 3
 #define DIMBOSSTONSIL_PARTFX   0x4bd
-
-extern f32 lbl_803E4C90;
-extern f32 lbl_803E4CB8;
-extern f32 lbl_803E4CBC;
-extern f32 lbl_803E4CC0;
-extern f32 lbl_803E4CC4;
-extern f32 lbl_803E4CC8;
-extern f32 lbl_803E4C9C;
-extern f32 lbl_803E4CA0;
-extern f32 lbl_803E4CCC;
 
 DIMbosstonsilStateHandlerTable lbl_803DDBB0;
 DIMbosstonsilSubstateHandlerTable lbl_803DDBA8;
@@ -105,7 +348,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
         {
         case DIMBOSSTONSIL_ANIM_EVENT_START_STEAM:
             skyFn_80089710(7, 1, 0);
-            skySetLightDirection(7, lbl_803E4CC4, *(f32*)&lbl_803E4CC4, lbl_803E4CB8);
+            skySetLightDirection(7, -0.1f, -0.1f, 1.0f);
             skySetBaseColor(7, 0xff, 0xb4, 0xb4, 0x7f, 0x28);
             getEnvfxAct(obj, obj, DIMBOSSTONSIL_STEAM_ENVFX, 0);
             Music_Trigger(DIMBOSSTONSIL_STEAM_MUSIC, 1);
@@ -119,13 +362,13 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
         case DIMBOSSTONSIL_ANIM_EVENT_ENABLE_LIGHT:
             if (gDIMbosstonsilLight != NULL)
             {
-                modelLightStruct_setEnabled(gDIMbosstonsilLight, 1, lbl_803E4CB8);
+                modelLightStruct_setEnabled(gDIMbosstonsilLight, 1, 1.0f);
             }
             break;
         case DIMBOSSTONSIL_ANIM_EVENT_DISABLE_LIGHT:
             if (gDIMbosstonsilLight != NULL)
             {
-                modelLightStruct_setEnabled(gDIMbosstonsilLight, 0, lbl_803E4CB8);
+                modelLightStruct_setEnabled(gDIMbosstonsilLight, 0, 1.0f);
             }
             break;
         }
@@ -134,8 +377,8 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
     if (lbl_803DDBA0 >= lbl_803DDB9C)
     {
         Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_RUMBLE_SFX);
-        lbl_803DDB9C += lbl_803E4CBC;
-        doRumble(lbl_803E4CC0);
+        lbl_803DDB9C += 100.0f;
+        doRumble(8.0f);
     }
     lbl_803DDBA0 += timeDelta;
 
@@ -162,7 +405,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
             {
                 state->field270 = 0;
                 (*gPlayerInterface)
-                    ->update(obj, state, lbl_803E4CB8, *(f32*)&lbl_803E4CB8, &lbl_803DDBB0, &lbl_803DDBA8);
+                    ->update(obj, state, 1.0f, 1.0f, &lbl_803DDBB0, &lbl_803DDBA8);
                 animUpdate->sequenceEventActive = 0;
             }
             break;
@@ -173,7 +416,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
             if (animOk != 0)
             {
                 (*gBaddieControlInterface)
-                    ->updateGravity((GameObject*)obj, state, lbl_803E4C90, 1);
+                    ->updateGravity((GameObject*)obj, state, 0.0f, 1);
             }
             break;
         case 0:
@@ -242,7 +485,7 @@ void DIMbosstonsil_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char 
         {
         case 0:
         {
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E4CB8);
+            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)1.0f);
 
             ObjPath_GetPointWorldPosition(obj, 1, (pp = &pathPoint.x), &pathPoint.y, &pathPoint.z, 0);
             (*gPartfxInterface)->spawnObject(obj, DIMBOSSTONSIL_PARTFX, partfxArgs, 0x200001, -1, NULL);
@@ -290,7 +533,7 @@ void DIMbosstonsil_update(GameObject* obj)
 
     if ((state->stateFlags & DIMBOSSTONSIL_STATE_FLAG_START_MOVE) != 0)
     {
-        lbl_803DDBA4 = lbl_803E4CC8;
+        lbl_803DDBA4 = 780.0f;
         (*gBaddieControlInterface)
             ->startHitReaction(obj, state, state->animPoints, state->animFrame, &state->hitReactMode, 0, 0, 0, 1);
         state->stateFlags &= ~DIMBOSSTONSIL_STATE_FLAG_START_MOVE;
@@ -349,7 +592,7 @@ void DIMbosstonsil_init(int obj, u32 def, int isAltVariant)
         variant = variant | 1;
     }
     (*gBaddieControlInterface)
-        ->initGroundBaddie((GameObject*)obj, (u8*)def, (u8*)state, 2, 2, 0x102, variant, lbl_803E4CCC);
+        ->initGroundBaddie((GameObject*)obj, (u8*)def, (u8*)state, 2, 2, 0x102, variant, 20.0f);
     ((GameObject*)obj)->animEventCallback = DIMbosstonsil_SeqFn;
     (*gPlayerInterface)->setState((void*)obj, (void*)state, 0);
     ((BaddieState*)state)->substate = 0;
@@ -362,25 +605,25 @@ void DIMbosstonsil_init(int obj, u32 def, int isAltVariant)
     {
         *(s8*)(state + DIMBOSSTONSIL_HEALTH_PHASE_OFFSET) = 7 - gDIMbosstonsilRoutePhase;
     }
-    lbl_803DDBA4 = lbl_803E4C90;
-    lbl_803DDBA0 = lbl_803E4C90;
-    lbl_803DDB98 = lbl_803E4C90;
-    lbl_803DDB9C = lbl_803E4C9C;
+    lbl_803DDBA4 = 0.0f;
+    lbl_803DDBA0 = 0.0f;
+    lbl_803DDB98 = 0.0f;
+    lbl_803DDB9C = 30.0f;
     gDIMbosstonsilLight = objCreateLight(0, 1);
     if (gDIMbosstonsilLight != 0)
     {
         modelLightStruct_setLightKind(gDIMbosstonsilLight, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(gDIMbosstonsilLight, 0xff, 0, 0, 0x7f);
         modelLightStruct_setSpecularColor(gDIMbosstonsilLight, 0xff, 0, 0, 0x7f);
-        modelLightStruct_setDistanceAttenuation(gDIMbosstonsilLight, lbl_803E4C9C, lbl_803E4CA0);
+        modelLightStruct_setDistanceAttenuation(gDIMbosstonsilLight, 30.0f, 50.0f);
         lightSetField4D((ModelLightStruct*)gDIMbosstonsilLight, 1);
-        modelLightStruct_setEnabled(gDIMbosstonsilLight, 1, lbl_803E4C90);
-        modelLightStruct_setGlowProjectionRadius((ModelLightStruct*)gDIMbosstonsilLight, lbl_803E4CA0);
+        modelLightStruct_setEnabled(gDIMbosstonsilLight, 1, 0.0f);
+        modelLightStruct_setGlowProjectionRadius((ModelLightStruct*)gDIMbosstonsilLight, 50.0f);
         modelLightStruct_setDiffuseTargetColor(gDIMbosstonsilLight, 0xff, 0x7f, 0, 0x40);
         modelLightStruct_setSpecularTargetColor((ModelLightStruct*)gDIMbosstonsilLight, 0xff, 0x7f, 0, 0x40);
         modelLightStruct_startColorFade(gDIMbosstonsilLight, 2, 0x3c);
         modelLightStruct_setAffectsAabbLightSelection((ModelLightStruct*)gDIMbosstonsilLight, 1);
-        modelLightStruct_setupGlow(gDIMbosstonsilLight, 0, 0xff, 0, 0, 0x7f, lbl_803E4CA0);
+        modelLightStruct_setupGlow(gDIMbosstonsilLight, 0, 0xff, 0, 0, 0x7f, 50.0f);
     }
     return;
 }

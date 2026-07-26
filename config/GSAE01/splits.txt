@@ -2674,16 +2674,11 @@ dlls/objects/481_DIM_BossGut/DIM_BossGut.c:
 	.data       start:0x80325BF8 end:0x80325C30
 	.sdata2     start:0x803E4C80 end:0x803E4C8C
 
-main/dll/dll_223.c:
-	.text       start:0x801BDCF8 end:0x801BE19C
-
-main/dll/DIM/dimbossspit.c:
-	.text       start:0x801BE19C end:0x801BE44C
-
-main/dll/DIM/dll_01E2_dimbosstonsil.c:
-	.text       start:0x801BE44C end:0x801BEEA0
+dlls/objects/482_DIM_BossTon/DIM_BossTon.c:
+	.text       start:0x801BDCF8 end:0x801BEEA0
 	.data       start:0x80325C30 end:0x80325C70
 	.sbss       start:0x803DDB90 end:0x803DDBB8
+	.sdata2     start:0x803E4C8C end:0x803E4CD0
 
 main/dll/DIM/dimgut2group.c:
 	.text       start:0x801BEEA0 end:0x801BF8D8
