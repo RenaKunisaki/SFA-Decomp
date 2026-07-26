@@ -429,7 +429,7 @@ manually verified by reading the file, not by name-guessing):
 | `galleonship` (0x50) | `SB_Galleon` | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
 | `cloudrunnermap` (0x55) | `SB_Cloudrun` | `src/main/dll/SB/dll_0259_sbcloudrunner.c` |
 | `cfprisoncage` (0x5a) | `CFPrisonCag` | `src/main/dll/CF/dll_0154_cfprisoncage.c` |
-| `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/main/dll/NW/dll_019F_nwtreebrid.c` |
+| `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/dlls/objects/415_NW_treebrid/NW_treebrid.c` |
 | `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/main/dll/DIM/dll_01CB_dimwooddoor2.c`, `dimwooddoor.c` |
 | `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/main/dll/DIM/dll_01DC_dim2icefloe.c` |
 | `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |

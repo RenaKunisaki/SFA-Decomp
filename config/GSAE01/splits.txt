@@ -2836,14 +2836,14 @@ dlls/objects/413/413.c:
 	.data       start:0x803266E0 end:0x80326718
 	.sdata2     start:0x803E51B8 end:0x803E51C8
 
-main/dll/DIM/dll_019E_dim_tricky.c:
+dlls/objects/414/414.c:
 	.text       start:0x801CCFA4 end:0x801CD7DC
 	.rodata     start:0x802C23D8 end:0x802C23E8
 	.data       start:0x80326718 end:0x80326750
 	.sbss       start:0x803DDBE8 end:0x803DDBF0
 	.sdata2     start:0x803E51C8 end:0x803E51F8
 
-main/dll/NW/dll_019F_nwtreebrid.c:
+dlls/objects/415_NW_treebrid/NW_treebrid.c:
 	.text       start:0x801CD7DC end:0x801CDC78
 	.data       start:0x80326750 end:0x80326788
 	.sdata2     start:0x803E51F8 end:0x803E5200

@@ -160,7 +160,7 @@ SOURCE_CHECKS = [
     ),
     (
         "DIM Tricky LOS",
-        "src/main/dll/DIM/dll_019E_dim_tricky.c",
+        "src/dlls/objects/414/414.c",
         "DIMTricky_render",
         "Uses camera distance and voxel LOS to keep/free a visibility effect source.",
         "presentation",
