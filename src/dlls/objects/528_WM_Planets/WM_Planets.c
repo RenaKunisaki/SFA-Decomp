@@ -1,26 +1,16 @@
 /*
- * wmplanets (DLL 0x210) - the orbiting planet models above Krazoa
- * Palace (map 'warlock' = Dinosaur Planet's Warlock Mountain, hence
- * the WM dll prefix). Serves two retail object defs: 899 'WM_Planets'
- * (romlist type 0x561) and 898 'WM_PlanetsS' (type 0x569); no romlist
- * on any of the 124 retail maps places either - instances are spawned
- * at runtime. (The related defs 923 'WM_Planet'/924 'WM_PlanetMo' use
- * DLL 0x12A, not this one.)
- * Each planet circles its spawn point: update spins a (0, 0, radius)
- * arm by the orbit yaw (random per-frame step from init), tilts it by
- * a fixed random pitch, re-bases the model on the result, and turns
- * the model's own yaw at its own random rate. init derives the model
- * scale from the placement scale byte, the orbit radius from the
- * placement radius byte (* 16, negated), and selects the model bank.
+ * WM_Planets (DLL 0x0210) - orbiting planet models.
+ *
+ * Each planet circles its spawn point while rotating at independently
+ * randomized rates.
  */
-#include "main/object_render.h"
-#include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "sys/objects.h"
-#include "game/objects/object_setup.h"
-#include "main/vecmath.h"
-#include "main/dll/WM/dll_0210_wmplanets.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "main/dll/WM/dll_0210_wmplanets.h"
+#include "main/frame_timing.h"
+#include "main/object_render.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 const u32 lbl_802C2500[4] = {0, 0, 0, 0};
 
@@ -57,8 +47,7 @@ void WM_Planets_update(GameObject* obj)
     WmPlanetsRotationWork rotate;
 
     state = obj->extra;
-    /* whole-struct copy of the zero vector (#31: paired lwz/stw, not
-       three lfs/stfs) */
+    /* Initialize from the zero-vector template. */
     {
         typedef struct Vec3Words
         {
