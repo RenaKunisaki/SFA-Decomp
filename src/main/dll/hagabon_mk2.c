@@ -239,7 +239,7 @@ void hagabonMK2_updateWhileFrozen(int obj, u8* st, int unused, int cmd, int wpad
     }
 }
 
-void hagabonMK2_updateB(s16* obj, u8* state)
+void hagabonMK2_updateB(GameObject* obj, u8* state)
 {
     RomCurveWalker* base = *(RomCurveWalker**)state;
     f32 spd;
@@ -263,7 +263,7 @@ void hagabonMK2_updateB(s16* obj, u8* state)
     sp.z = lbl_803E2C30;
     sp.vol = lbl_803E2C24;
     sp.sfxId = 0x605;
-    if ((((GameObject*)obj)->objectFlags & FIRECRAWLER_OBJFLAG_RENDERED) != 0)
+    if ((obj->objectFlags & FIRECRAWLER_OBJFLAG_RENDERED) != 0)
     {
         (*gPartfxInterface)->spawnObject(obj, 1999, &sp, 2, -1, NULL);
         if (((FireCrawlerState*)state)->engineLight == NULL)
@@ -276,8 +276,8 @@ void hagabonMK2_updateB(s16* obj, u8* state)
             {
                 modelLightStruct_setLightKind(((FireCrawlerState*)state)->engineLight, MODEL_LIGHT_KIND_POINT);
                 modelLightStruct_setPosition(((FireCrawlerState*)state)->engineLight,
-                                             ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                             ((GameObject*)obj)->anim.localPosZ);
+                                             obj->anim.localPosX, obj->anim.localPosY,
+                                             obj->anim.localPosZ);
                 modelLightStruct_setDiffuseColor(((FireCrawlerState*)state)->engineLight, 0xc0, 0x40, 0xff, 0xff);
                 modelLightStruct_setSpecularColor(((FireCrawlerState*)state)->engineLight, 0xc0, 0x40, 0xff, 0xff);
                 modelLightStruct_setDistanceAttenuation(((FireCrawlerState*)state)->engineLight, lbl_803E2C10,
@@ -290,8 +290,8 @@ void hagabonMK2_updateB(s16* obj, u8* state)
         }
         else
         {
-            modelLightStruct_setPosition(((FireCrawlerState*)state)->engineLight, ((GameObject*)obj)->anim.localPosX,
-                                         ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ);
+            modelLightStruct_setPosition(((FireCrawlerState*)state)->engineLight, obj->anim.localPosX,
+                                         obj->anim.localPosY, obj->anim.localPosZ);
         }
     }
 
@@ -307,9 +307,9 @@ void hagabonMK2_updateB(s16* obj, u8* state)
     {
         f32* dp = dv;
         f32 t;
-        dp[0] = base->posX - ((GameObject*)obj)->anim.worldPosX;
-        dp[1] = base->posY - ((GameObject*)obj)->anim.worldPosY;
-        dp[2] = base->posZ - ((GameObject*)obj)->anim.worldPosZ;
+        dp[0] = base->posX - obj->anim.worldPosX;
+        dp[1] = base->posY - obj->anim.worldPosY;
+        dp[2] = base->posZ - obj->anim.worldPosZ;
         ((FCVars*)state)->distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
         if (((FCVars*)state)->distToCurve < lbl_803E2C10 && ((FCVars*)state)->warpTimer == lbl_803E2C30)
         {
@@ -332,7 +332,7 @@ void hagabonMK2_updateB(s16* obj, u8* state)
             ((BaddieState*)state)->controlFlags =
                 ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
         }
-        sidekickToy_accelerateTowardTarget3D((GameObject*)(obj), base->posX, base->posY, base->posZ, lbl_803E2C48,
+        sidekickToy_accelerateTowardTarget3D(obj, base->posX, base->posY, base->posZ, lbl_803E2C48,
                                              lbl_803E2C4C, lbl_803E2C50, ((BaddieState*)state)->unk304);
     }
 
@@ -340,7 +340,7 @@ void hagabonMK2_updateB(s16* obj, u8* state)
     {
         CrawlerSeq12* sq = (CrawlerSeq12*)gCrawlerSeqTable;
         i = ((BaddieState*)state)->userData1 * 0xc;
-        fn_8014D08C((GameObject*)obj, (int)state, *(u8*)(gCrawlerSeqTable + i + 8),
+        fn_8014D08C(obj, (int)state, *(u8*)(gCrawlerSeqTable + i + 8),
                     *(f32*)((int)gCrawlerSeqTable + i), 0, 0);
         ((BaddieState*)state)->userData1 = sq[((BaddieState*)state)->userData1].next;
     }
@@ -348,7 +348,7 @@ void hagabonMK2_updateB(s16* obj, u8* state)
     if (((FCVars*)state)->engineTimer > lbl_803E2C30)
     {
         ((FCVars*)state)->engineTimer = -(lbl_803E2C54 * timeDelta - ((FCVars*)state)->engineTimer);
-        *(s16*)obj = ((FCVars*)state)->engineTimer * timeDelta + (f32)(int)*obj;
+        *(s16*)obj = ((FCVars*)state)->engineTimer * timeDelta + (f32)(int)*(s16*)obj;
     }
     else
     {
@@ -371,8 +371,8 @@ void hagabonMK2_updateB(s16* obj, u8* state)
         {
             ((FCVars*)state)->emergeTimer = *(f32*)&lbl_803E2C58;
         }
-        ratio = sqrtf(((GameObject*)obj)->anim.velocityX * ((GameObject*)obj)->anim.velocityX +
-                      ((GameObject*)obj)->anim.velocityZ * ((GameObject*)obj)->anim.velocityZ) /
+        ratio = sqrtf(obj->anim.velocityX * obj->anim.velocityX +
+                      obj->anim.velocityZ * obj->anim.velocityZ) /
                 lbl_803E2C48;
         if (ratio < lbl_803E2C30)
         {
@@ -386,16 +386,16 @@ void hagabonMK2_updateB(s16* obj, u8* state)
             f32 t = lbl_803E2C64 * spd;
             ratio *= t * timeDelta;
         }
-        ((GameObject*)obj)->anim.rotY = (f32)(int)((GameObject*)obj)->anim.rotY - ratio;
-        fn_8014CD1C((GameObject*)obj, state, (int)((FCVars*)state)->emergeTimer, lbl_803E2C68 * spd,
+        obj->anim.rotY = (f32)(int)obj->anim.rotY - ratio;
+        fn_8014CD1C(obj, state, (int)((FCVars*)state)->emergeTimer, lbl_803E2C68 * spd,
                     lbl_803E2C30, 1);
     }
 
     {
         f32 pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
-        ((GameObject*)obj)->anim.rotY = (f32)((GameObject*)obj)->anim.rotY * pw;
+        obj->anim.rotY = (f32)obj->anim.rotY * pw;
         pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
-        ((GameObject*)obj)->anim.rotZ = (f32)((GameObject*)obj)->anim.rotZ * pw;
+        obj->anim.rotZ = (f32)obj->anim.rotZ * pw;
     }
 
     if ((int)randomGetRange(0, 0x2ee) == 0)
@@ -428,7 +428,7 @@ void hagabonMK2_updateB(s16* obj, u8* state)
     }
 }
 
-void hagabonMK2_update(s16* obj, u8* state)
+void hagabonMK2_update(GameObject* obj, u8* state)
 {
     RomCurveWalker* base = *(RomCurveWalker**)state;
     f32 d[3];
@@ -447,7 +447,7 @@ void hagabonMK2_update(s16* obj, u8* state)
     sp.z = lbl_803E2C30;
     sp.vol = lbl_803E2C24;
     sp.sfxId = 0x605;
-    if ((((GameObject*)obj)->objectFlags & FIRECRAWLER_OBJFLAG_RENDERED) != 0)
+    if ((obj->objectFlags & FIRECRAWLER_OBJFLAG_RENDERED) != 0)
     {
         (*gPartfxInterface)->spawnObject(obj, 1999, &sp, 2, -1, NULL);
         if (((FireCrawlerState*)state)->engineLight == NULL)
@@ -460,8 +460,8 @@ void hagabonMK2_update(s16* obj, u8* state)
             {
                 modelLightStruct_setLightKind(((FireCrawlerState*)state)->engineLight, MODEL_LIGHT_KIND_POINT);
                 modelLightStruct_setPosition(((FireCrawlerState*)state)->engineLight,
-                                             ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                             ((GameObject*)obj)->anim.localPosZ);
+                                             obj->anim.localPosX, obj->anim.localPosY,
+                                             obj->anim.localPosZ);
                 modelLightStruct_setDiffuseColor(((FireCrawlerState*)state)->engineLight, 0xc0, 0x40, 0xff, 0xff);
                 modelLightStruct_setSpecularColor(((FireCrawlerState*)state)->engineLight, 0xc0, 0x40, 0xff, 0xff);
                 modelLightStruct_setDistanceAttenuation(((FireCrawlerState*)state)->engineLight, lbl_803E2C10,
@@ -474,8 +474,8 @@ void hagabonMK2_update(s16* obj, u8* state)
         }
         else
         {
-            modelLightStruct_setPosition(((FireCrawlerState*)state)->engineLight, ((GameObject*)obj)->anim.localPosX,
-                                         ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ);
+            modelLightStruct_setPosition(((FireCrawlerState*)state)->engineLight, obj->anim.localPosX,
+                                         obj->anim.localPosY, obj->anim.localPosZ);
         }
     }
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
@@ -484,14 +484,14 @@ void hagabonMK2_update(s16* obj, u8* state)
         ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
     }
     sidekickToy_accelerateTowardTarget3D(
-        (GameObject*)(obj), ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosX,
+        obj, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosX,
         lbl_803E2C48 + ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosY,
         ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosZ, *(f32*)&lbl_803E2C48, lbl_803E2C78,
         lbl_803E2C50, ((BaddieState*)state)->unk304);
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         i = ((BaddieState*)state)->userData1 * 0xc;
-        fn_8014D08C((GameObject*)obj, (int)state, *(u8*)(gCrawlerSeqTable + i + 8),
+        fn_8014D08C(obj, (int)state, *(u8*)(gCrawlerSeqTable + i + 8),
                     *(f32*)((int)gCrawlerSeqTable + i), 0, 0);
         {
             CrawlerSeq12* sq = (CrawlerSeq12*)gCrawlerSeqTable;
@@ -499,9 +499,9 @@ void hagabonMK2_update(s16* obj, u8* state)
         }
     }
     pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
-    ((GameObject*)obj)->anim.rotY = (f32)((GameObject*)obj)->anim.rotY * pw;
+    obj->anim.rotY = (f32)obj->anim.rotY * pw;
     pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
-    ((GameObject*)obj)->anim.rotZ = (f32)((GameObject*)obj)->anim.rotZ * pw;
+    obj->anim.rotZ = (f32)obj->anim.rotZ * pw;
     if (((FCVars*)state)->engineTimer < lbl_803E2C70)
     {
         ((FCVars*)state)->engineTimer = lbl_803E2C54 * timeDelta + ((FCVars*)state)->engineTimer;
@@ -510,14 +510,14 @@ void hagabonMK2_update(s16* obj, u8* state)
     {
         ((FCVars*)state)->engineTimer = lbl_803E2C70;
     }
-    *(s16*)obj = ((FCVars*)state)->engineTimer * timeDelta + (f32)(int)*obj;
+    *(s16*)obj = ((FCVars*)state)->engineTimer * timeDelta + (f32)(int)*(s16*)obj;
     ((FCVars*)state)->emergeTimer = lbl_803E2C38;
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
         f32* dp = d;
-        dp[0] = base->posX - ((GameObject*)obj)->anim.worldPosX;
-        dp[1] = base->posY - ((GameObject*)obj)->anim.worldPosY;
-        dp[2] = base->posZ - ((GameObject*)obj)->anim.worldPosZ;
+        dp[0] = base->posX - obj->anim.worldPosX;
+        dp[1] = base->posY - obj->anim.worldPosY;
+        dp[2] = base->posZ - obj->anim.worldPosZ;
         ((FCVars*)state)->distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
         if (((FCVars*)state)->distToCurve > lbl_803E2C40)
         {
@@ -546,33 +546,33 @@ void hagabonMK2_update(s16* obj, u8* state)
     }
 }
 
-void hagabonMK2_init(int* obj, int* st)
+void hagabonMK2_init(GameObject* obj, BaddieState* st)
 {
     u8* tab;
-    ((BaddieState*)st)->speedScale = lbl_803E2C7C;
-    *(u32*)&((BaddieState*)st)->unk2E4 = 0x405009;
-    ((BaddieState*)st)->unk304 = lbl_803E2C80;
+    st->speedScale = lbl_803E2C7C;
+    *(u32*)&st->unk2E4 = 0x405009;
+    st->unk304 = lbl_803E2C80;
     *((u8*)st + 0x320) = 0;
     {
         f32 d1 = lbl_803E2C84;
-        *(f32*)&((BaddieState*)st)->eventFlags = d1;
+        *(f32*)&st->eventFlags = d1;
         *((u8*)st + 0x321) = 0;
-        ((BaddieState*)st)->unk318 = lbl_803E2C3C;
+        st->unk318 = lbl_803E2C3C;
         *((u8*)st + 0x322) = 0;
-        ((BaddieState*)st)->unk31C = d1;
+        st->unk31C = d1;
     }
-    ((BaddieState*)st)->pathStep = ((BaddieState*)st)->pathStep * lbl_803E2C88;
+    st->pathStep = st->pathStep * lbl_803E2C88;
     {
         f32* fbase = (f32*)gCrawlerSeqTable;
         u8* bbase = gCrawlerSeqTable;
-        u32 idx = ((BaddieState*)st)->userData1;
+        u32 idx = st->userData1;
         u32 off = idx * 0xc;
-        fn_8014D08C((GameObject*)obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
+        fn_8014D08C(obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
     }
     ((FCVars*)st)->emergeTimer = lbl_803E2C58;
     ObjHits_SetHitVolumeMasks((ObjAnimComponent*)obj, 0xe, 1, 0xfff);
     ((FireCrawlerState*)st)->tailModelChain = ObjModelChain_Alloc(gCrawlerModelChainIds, 5);
     ObjModelChain_SetOrigin(((FireCrawlerState*)st)->tailModelChain, lbl_803E2C8C, lbl_803E2C90, lbl_803E2C94);
-    ((BaddieState*)st)->reactionFlags = ((BaddieState*)st)->reactionFlags | 0x100;
+    st->reactionFlags = st->reactionFlags | 0x100;
     *(int*)((char*)obj + 0x108) = (int)&baddieAfterUpdateBonesCb;
 }

@@ -1358,7 +1358,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 crawler_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_HAGABONMK2_OBJ:
-                hagabonMK2_updateB(obj, (u8*)state);
+                hagabonMK2_updateB((GameObject*)obj, (u8*)state);
                 break;
             case 0x7c7:
             default:
@@ -1435,7 +1435,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 crawler_updateB((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_HAGABONMK2_OBJ:
-                hagabonMK2_update(obj, (u8*)state);
+                hagabonMK2_update((GameObject*)obj, (u8*)state);
                 break;
             case 0x7c7:
             default:
@@ -1546,7 +1546,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             crawler_updateC((GameObject*)obj, (u8*)state);
             break;
         case ENEMY_HAGABONMK2_OBJ:
-            hagabonMK2_updateB(obj, (u8*)state);
+            hagabonMK2_updateB((GameObject*)obj, (u8*)state);
             break;
         case 0x7c7:
         default:
@@ -3075,7 +3075,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             crawler_initModelVariant(obj, state);
             break;
         case ENEMY_HAGABONMK2_OBJ:
-            hagabonMK2_init((int*)obj, (int*)state);
+            hagabonMK2_init(obj, (struct BaddieState*)state);
             break;
         default:
             battleDroidInit((int)obj, (char*)state);
