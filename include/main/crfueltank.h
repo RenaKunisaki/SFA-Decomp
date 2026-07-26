@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
 
 typedef struct CrFuelTankState {
@@ -11,11 +12,15 @@ typedef struct CrFuelTankState {
 } CrFuelTankState;
 
 typedef struct CrFuelTankDef {
-  u8 unk0[0x1a];
+  ObjPlacement base;
+  u8 unk18[0x1a - 0x18];
   s16 idleFrameCount;
   u8 unk1C[2];
   s16 hitEvent;
 } CrFuelTankDef;
+
+STATIC_ASSERT(offsetof(CrFuelTankDef, idleFrameCount) == 0x1A);
+STATIC_ASSERT(sizeof(CrFuelTankDef) == 0x20);
 
 typedef struct CrFuelTankCollider {
   u8 unk0[0x50];

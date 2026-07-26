@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/model_light.h"
+#include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
 
 #define PROXIMITYMINE_HIT_VOLUME_SLOT 13
@@ -94,11 +95,14 @@ STATIC_ASSERT(offsetof(ProximityMineObject, worldPosX) == 0x18);
 STATIC_ASSERT(offsetof(ProximityMineObject, velocityX) == 0x24);
 
 typedef struct ProximityMineDef {
-  u8 unk0[0x18];
+  ObjPlacement base;
   s8 angleSeed;
   s8 mode;
   s16 parameter;
 } ProximityMineDef;
+
+STATIC_ASSERT(offsetof(ProximityMineDef, angleSeed) == 0x18);
+STATIC_ASSERT(sizeof(ProximityMineDef) == 0x1C);
 
 extern ObjectDescriptor gProximityMineObjDescriptor;
 
