@@ -1,5 +1,5 @@
 /*
- * hightop (DLL 0x272) - the "HighTop" rideable/escortable dinosaur baddie
+ * DLL 626 - the "HighTop" rideable/escortable dinosaur baddie
  * (object type 0x43).
  *
  * Runs as a BaddieState-driven object with an 11-entry state-handler
