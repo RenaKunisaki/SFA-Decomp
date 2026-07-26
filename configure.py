@@ -1558,7 +1558,7 @@ config.libs = [
             ),
             Object(
                 MatchingFor("GSAE01"),
-                "main/dll/dll_00E3_fireball.c",
+                "dlls/objects/227/227.c",
                 cflags=cflags_dll_noopt,
                 section_alignments={".data": 4},
             ),

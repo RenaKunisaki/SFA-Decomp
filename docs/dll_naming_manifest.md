@@ -272,7 +272,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0E0 | SwarmBaddie | CONFIRMED | dlls/objects/224_SwarmBaddie/SwarmBaddie.c | = (canonical) | — |
 | 0x0E1 | WispBaddie | COMPLETE | dlls/objects/225_WispBaddie/WispBaddie.c | = (canonical) | — |
 | 0x0E2 | staff (+sword) | COMPLETE | dlls/objects/226/226.c | = (canonical) | — |
-| 0x0E3 | fireball (+projball, AnimProjBal) | GUESSED | main/dll/dll_00E3_fireball.c | = (canonical) | — |
+| 0x0E3 | fireball (+projball, AnimProjBal) | GUESSED | dlls/objects/227/227.c | = (canonical) | — |
 | 0x0E4 | FlameThrowerspe (+FlameBall, BossDarkorF) | CONFIRMED | main/dll/dll_00E4_flamethrowerspe.c | = (canonical) | — |
 | 0x0E5 | shield (+fox_shield, omni_shield) | CONFIRMED | main/dll/dll_00E5_shield.c | = (canonical) | — |
 | 0x0E6 | ReStartMarker | CONFIRMED | main/dll/dll_00E6_restartmarker.c | = (canonical) | — |

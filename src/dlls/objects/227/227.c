@@ -1,5 +1,6 @@
 /*
- * DLL 0xE3 - fireball object (a homing magic projectile).
+ * DLL 0xE3 - fireball, projball, and AnimProjBal objects (homing magic
+ * projectiles).
  *
  * The fireball spawns a model light (objCreateLight) tinted per colorIndex
  * from lbl_80320978 (owned by the staff TU), flies for flightDuration
