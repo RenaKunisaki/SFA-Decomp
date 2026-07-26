@@ -1,5 +1,5 @@
 /*
- * barrelgener (DLL 0x282) - the barrel generator/dispenser object.
+ * BarrelGener (DLL 642) - the barrel generator/dispenser object.
  *
  * Object-group member 0x3a. On init it joins that group and clears its
  * release state. When the player approaches within range it fires
@@ -9,12 +9,6 @@
  * with a PDA camera-off sfx, a compass beep fires partway through, and at
  * timer end the queued barrel is teleported to this object's position,
  * zeroed in velocity, and added to its own update group (25).
- *
- * The rest of the TU is a shared curve-following / steering / voxel
- * line-trace toolkit consumed by the Drakor-area and ArwingSquadron DLLs
- * (Obj_UpdateRomCurveFollowVelocity[Indexed], Obj_SteerVelocityTowardVector,
- * Obj_SmoothTurnAnglesTowardVelocity, the lightning-spawn helper, and the
- * voxmaps_trace* world-line wrappers).
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
@@ -49,8 +43,6 @@ int lbl_803DC398 = 0x14;
 #define GAMEBIT_BARRELGENER_TRIGGERED 0xadb
 /* update group a dispensed barrel is added to (GunpowderBarrel DLL 0x158) */
 #define BARREL_UPDATE_OBJGROUP 25
-
-
 
 int barrelgener_getLinkId(GameObject* obj)
 {
