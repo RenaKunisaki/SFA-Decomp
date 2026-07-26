@@ -1,4 +1,4 @@
-/* DLL 0x0124 - death-gas objects [8018BC48-8018BC50) */
+/* DLL 0x124 implements death-gas volume objects. */
 #include "main/game_ui_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/player_api.h"

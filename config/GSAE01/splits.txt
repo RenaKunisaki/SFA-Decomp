@@ -2044,7 +2044,7 @@ dlls/objects/290_CCTestInfot/CCTestInfot.c:
 	.data       start:0x80321D78 end:0x80321DB0
 	.sdata2     start:0x803E3C88 end:0x803E3C90
 
-main/dll/dll_0124_deathgas.c:
+dlls/objects/292/292.c:
 	.text       start:0x8018BC48 end:0x8018C000
 	.data       start:0x80321DB0 end:0x80321DE8
 	.sdata2     start:0x803E3C90 end:0x803E3CC4
