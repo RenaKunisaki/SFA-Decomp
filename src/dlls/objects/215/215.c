@@ -1,268 +1,242 @@
 /*
- * DLL 0x00D7 - the projectile spat by the KaldaChomp
- * plant. The object flies ballistically (gravity on velocityY), spins,
- * carries a glow light, and bursts on contact. Two variants keyed on
- * anim.seqId: 0x869 is the explosive variant (orange glow, spawnExplosion
- * on burst, fast spin), the default is the green poison spit (green glow,
- * particle fx 0x714/0x715, sfx 0x278 on init / 0x279 on burst). It bursts
- * early when its hit-react target is the player or Tricky, on any contact,
- * or once its userData1 lifetime runs out, then frees itself.
+ * Projectile object (DLL slot 215).
+ *
+ * Flies ballistically with a glow light and bursts after a hit or contact.
+ * Sequence 0x869 selects the explosive variant; other sequences use poison
+ * particle effects.
  */
-#include "main/dll/partfx_interface.h"
+#include "dlls/objects/215.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_channel_volume_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/object_render.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/vecmath.h"
-#include "game/objects/object.h"
-#include "main/model_light.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/objfx.h"
-#include "main/dll/dll_00D7_kaldachompspit_api.h"
-#include "main/objhits.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
-#include "dlls/object_descriptor.h"
+#include "main/model_light.h"
+#include "main/object_render.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 0x1f
-#define KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT   0xa
+#define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 31
+#define KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT   10
 
-#define KALDACHOMPSPIT_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define KALDACHOMPSPIT_OBJECT_FLAG_HIT_DETECT_DISABLED 0x2000
 
-/* anim.seqId of the explosive variant (docblock: "0x869 is the explosive variant"). */
-#define KALDACHOMPSPIT_SEQID_EXPLOSIVE 0x869
+#define KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE 0x869
 
-/* green poison spit particle fx (docblock: "particle fx 0x714/0x715"). */
 #define KALDACHOMPSPIT_PARTFX_POISON_TRAIL 0x714
 #define KALDACHOMPSPIT_PARTFX_POISON_BURST 0x715
 
+#define KALDACHOMPSPIT_INITIAL_LIFETIME           400
+#define KALDACHOMPSPIT_GENERAL_HIT_BURST_LIFETIME 380
+#define KALDACHOMPSPIT_FADE_START_LIFETIME        283
+#define KALDACHOMPSPIT_BURST_DESPAWN_DELAY        220
+#define KALDACHOMPSPIT_POISON_BURST_COUNT         25
+#define KALDACHOMPSPIT_EXPLOSION_SCALE_MIN        50
+#define KALDACHOMPSPIT_EXPLOSION_SCALE_MAX        60
+#define KALDACHOMPSPIT_GLOW_ALPHA_JITTER          25
+#define KALDACHOMPSPIT_LIGHT_BASE_DISTANCE        50.0f
+#define KALDACHOMPSPIT_LIGHT_ATTENUATION_RANGE    40
+#define KALDACHOMPSPIT_GRAVITY                    0.07f
+#define KALDACHOMPSPIT_ALPHA_FADE_RATE            4.0f
 
-typedef struct KaldaChompSpitState
-{
-    ModelLightStruct* light;
-} KaldaChompSpitState;
+ObjectDescriptor gKaldaChompSpitObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)KaldaChompSpit_initialise,
+    (ObjectDescriptorCallback)KaldaChompSpit_release,
+    0,
+    (ObjectDescriptorCallback)KaldaChompSpit_init,
+    (ObjectDescriptorCallback)KaldaChompSpit_update,
+    (ObjectDescriptorCallback)KaldaChompSpit_hitDetect,
+    (ObjectDescriptorCallback)KaldaChompSpit_render,
+    (ObjectDescriptorCallback)KaldaChompSpit_free,
+    (ObjectDescriptorCallback)KaldaChompSpit_getObjectTypeId,
+    KaldaChompSpit_getExtraSize,
+};
 
-STATIC_ASSERT(sizeof(KaldaChompSpitState) == 0x4);
-
-void kaldachompspit_burst(GameObject* obj)
-{
+void kaldachompspit_burst(GameObject* obj) {
     int i;
     KaldaChompSpitState* state;
     ObjHitsPriorityState* hitState;
-    u8 rnd;
+    u8 randomVariant;
 
-    state = (obj)->extra;
-    (obj)->anim.alpha = 0;
-    (obj)->userData1 = 0xdc;
-    hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
-    hitState->flags &= ~1;
-    if (state->light != NULL)
-    {
+    state = obj->extra;
+    obj->anim.alpha = 0;
+    obj->userData1 = KALDACHOMPSPIT_BURST_DESPAWN_DELAY;
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+    hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
+    if (state->light != NULL) {
         modelLightStruct_setEnabled(state->light, 0, 1.0f);
     }
-    if ((obj)->anim.seqId == KALDACHOMPSPIT_SEQID_EXPLOSIVE)
-    {
-        rnd = randomGetRange(0, 1);
-        spawnExplosion((GameObject*)(int)obj, (f32)(int)randomGetRange(0x32, 0x3c), 1, 1, 0, rnd, 0, 1, 0);
-    }
-    else
-    {
-        for (i = 0; i < 0x19; i++)
-        {
+    if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
+        randomVariant = randomGetRange(0, 1);
+        spawnExplosion(obj,
+                       (f32)(int)randomGetRange(KALDACHOMPSPIT_EXPLOSION_SCALE_MIN, KALDACHOMPSPIT_EXPLOSION_SCALE_MAX),
+                       1, 1, 0, randomVariant, 0, 1, 0);
+    } else {
+        for (i = 0; i < KALDACHOMPSPIT_POISON_BURST_COUNT; i++) {
             (*gPartfxInterface)->spawnObject((void*)obj, KALDACHOMPSPIT_PARTFX_POISON_BURST, NULL, 1, -1, &i);
         }
         Sfx_PlayFromObject((int)obj, SFXTRIG_lummy311);
     }
 }
 
-int KaldaChompSpit_getExtraSize(void)
-{
-    return 0x4;
-}
-int KaldaChompSpit_getObjectTypeId(void)
-{
-    return 0x0;
+int KaldaChompSpit_getExtraSize(void) {
+    return sizeof(KaldaChompSpitState);
 }
 
-void KaldaChompSpit_free(GameObject* obj)
-{
+int KaldaChompSpit_getObjectTypeId(void) {
+    return 0;
+}
+
+void KaldaChompSpit_free(GameObject* obj) {
     KaldaChompSpitState* state = obj->extra;
     ModelLightStruct* light = state->light;
-    if (light != NULL)
-    {
+    if (light != NULL) {
         ModelLightStruct_free(light);
     }
 }
 
-void KaldaChompSpit_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void KaldaChompSpit_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
     KaldaChompSpitState* state = obj->extra;
     ModelLightStruct* light = state->light;
-    if (light != NULL && light->glowType != 0 && light->enabled != 0)
-    {
+    if (light != NULL && light->glowType != 0 && light->enabled != 0) {
         queueGlowRender(light);
     }
-    if (visible != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 
-void KaldaChompSpit_hitDetect(void)
-{
+void KaldaChompSpit_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void KaldaChompSpit_update(GameObject* obj)
-{
+void KaldaChompSpit_update(GameObject* obj) {
     ObjAnimComponent* objAnim;
     KaldaChompSpitState* state;
-    f32 vx;
+    f32 moveX;
     ModelLightStruct* light;
-    int rnd;
-    f32 vy;
-    f32 vz;
-    s16 color;
+    int alphaJitter;
+    f32 moveY;
+    f32 moveZ;
+    s16 glowAlpha;
     f32 alphaDecay;
 
     objAnim = &obj->anim;
     state = obj->extra;
     obj->userData1 = (int)((f32)obj->userData1 - timeDelta);
-    if (obj->userData1 < 0)
-    {
+    if (obj->userData1 < 0) {
         Sfx_StopObjectChannel((int)obj, 0x7f);
         Obj_FreeObject(obj);
-    }
-    else if (objAnim->alpha != 0)
-    {
-        if (obj->userData1 < 0x11b)
-        {
-            obj->anim.velocityY = -(0.07f * timeDelta - obj->anim.velocityY);
-            if ((f32)(u32)objAnim->alpha - (alphaDecay = 4.0f * timeDelta) > 0.0f)
-            {
+    } else if (objAnim->alpha != 0) {
+        if (obj->userData1 < KALDACHOMPSPIT_FADE_START_LIFETIME) {
+            obj->anim.velocityY = -(KALDACHOMPSPIT_GRAVITY * timeDelta - obj->anim.velocityY);
+            if ((f32)(u32)objAnim->alpha - (alphaDecay = KALDACHOMPSPIT_ALPHA_FADE_RATE * timeDelta) > 0.0f) {
                 objAnim->alpha = (f32)(u32)objAnim->alpha - alphaDecay;
-            }
-            else
-            {
+            } else {
                 Sfx_StopObjectChannel((int)obj, 0x7f);
                 objAnim->alpha = 0;
             }
             Sfx_SetObjectChannelVolume((u32)obj, 0x40, (u8)(objAnim->alpha >> 1), 0.5f);
         }
-        vx = obj->anim.velocityX * timeDelta;
-        vy = obj->anim.velocityY * timeDelta;
-        vz = obj->anim.velocityZ * timeDelta;
-        objMove(obj, vx, vy, vz);
-        if (obj->anim.seqId == KALDACHOMPSPIT_SEQID_EXPLOSIVE)
-        {
+        moveX = obj->anim.velocityX * timeDelta;
+        moveY = obj->anim.velocityY * timeDelta;
+        moveZ = obj->anim.velocityZ * timeDelta;
+        objMove(obj, moveX, moveY, moveZ);
+        if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE, 1, 0);
             obj->anim.rotX += 0x100;
             obj->anim.rotY += 0x800;
-        }
-        else
-        {
+        } else {
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT, 1, 0);
-            obj->anim.rotX = getAngle(vx, vz) - 0x8000;
-            obj->anim.rotY = 0x4000 - getAngle(sqrtf(vx * vx + vz * vz), vy);
+            obj->anim.rotX = getAngle(moveX, moveZ) - 0x8000;
+            obj->anim.rotY = 0x4000 - getAngle(sqrtf(moveX * moveX + moveZ * moveZ), moveY);
         }
         ObjHits_EnableObject(obj);
-        if (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject != 0)
-        {
-            if (obj->userData1 < 0x17c)
-            {
+        if (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject != 0) {
+            if (obj->userData1 < KALDACHOMPSPIT_GENERAL_HIT_BURST_LIFETIME) {
                 kaldachompspit_burst(obj);
                 return;
             }
-            if ((((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject ==
-                 (int)Obj_GetPlayerObject()) ||
-                (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject ==
-                 (u32)getTrickyObject()))
-            {
+            if ((((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)Obj_GetPlayerObject()) ||
+                (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)getTrickyObject())) {
                 kaldachompspit_burst(obj);
                 return;
             }
         }
-        if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0)
-        {
+        if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0) {
             kaldachompspit_burst(obj);
-        }
-        else
-        {
-            if (obj->anim.seqId == KALDACHOMPSPIT_SEQID_EXPLOSIVE)
-            {
+        } else {
+            if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
                 fn_80098B18((void*)obj, 1.0f, 1, 0, 0, NULL);
-            }
-            else
-            {
+            } else {
                 (*gPartfxInterface)
                     ->spawnObject((void*)obj, KALDACHOMPSPIT_PARTFX_POISON_TRAIL, NULL, 2, -1, &objAnim->alpha);
                 (*gPartfxInterface)->spawnObject((void*)obj, KALDACHOMPSPIT_PARTFX_POISON_BURST, NULL, 1, -1, NULL);
                 (*gPartfxInterface)->spawnObject((void*)obj, KALDACHOMPSPIT_PARTFX_POISON_BURST, NULL, 1, -1, NULL);
             }
             light = state->light;
-            if ((light != NULL) && (light->glowType != 0) && (light->enabled != 0))
-            {
-                rnd = randomGetRange(-0x19, 0x19);
+            if (light != NULL && light->glowType != 0 && light->enabled != 0) {
+                alphaJitter = randomGetRange(-KALDACHOMPSPIT_GLOW_ALPHA_JITTER, KALDACHOMPSPIT_GLOW_ALPHA_JITTER);
                 light = state->light;
-                color = light->glowAlpha + light->glowAlphaStep + rnd;
-                if (color < 0)
-                {
-                    color = 0;
+                glowAlpha = light->glowAlpha + light->glowAlphaStep + alphaJitter;
+                if (glowAlpha < 0) {
+                    glowAlpha = 0;
+                    light->glowAlphaStep = 0;
+                } else if (glowAlpha > 0xff) {
+                    glowAlpha = 0xff;
                     light->glowAlphaStep = 0;
                 }
-                else if (color > 0xff)
-                {
-                    color = 0xff;
-                    light->glowAlphaStep = 0;
-                }
-                state->light->glowAlpha = color;
+                state->light->glowAlpha = glowAlpha;
             }
         }
     }
 }
 
-void KaldaChompSpit_init(GameObject* obj)
-{
+void KaldaChompSpit_init(GameObject* obj) {
     KaldaChompSpitState* state;
 
     state = obj->extra;
-    (obj)->userData1 = 400;
+    obj->userData1 = KALDACHOMPSPIT_INITIAL_LIFETIME;
     ObjHits_DisableObject(obj);
-    (obj)->anim.alpha = 0xff;
+    obj->anim.alpha = 0xff;
     Sfx_PlayFromObject((int)obj, SFXTRIG_whiz3_c);
-    (obj)->objectFlags |= KALDACHOMPSPIT_OBJFLAG_HITDETECT_DISABLED;
-    if (state->light == NULL)
-    {
+    obj->objectFlags |= KALDACHOMPSPIT_OBJECT_FLAG_HIT_DETECT_DISABLED;
+    if (state->light == NULL) {
         state->light = objCreateLight(obj, 1);
-        if (state->light != NULL)
-        {
+        if (state->light != NULL) {
             modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
         }
     }
-    if (state->light != NULL)
-    {
+    if (state->light != NULL) {
         f32 lightPos = 0.0f;
         modelLightStruct_setPosition(state->light, lightPos, lightPos, lightPos);
-        if ((obj)->anim.seqId == KALDACHOMPSPIT_SEQID_EXPLOSIVE)
-        {
+        if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
             modelLightStruct_setDiffuseColor(state->light, 0xff, 0xc0, 0, 0xff);
             modelLightStruct_setSpecularColor(state->light, 0xff, 0xc0, 0, 0xff);
             modelLightStruct_setupGlow(state->light, 0, 0xff, 0xc0, 0, 0x7f,
-                                       0.6f * (50.0f * (obj)->anim.rootMotionScale));
+                                       0.6f * (KALDACHOMPSPIT_LIGHT_BASE_DISTANCE * obj->anim.rootMotionScale));
             modelLightStruct_setDiffuseTargetColor(state->light, 0xff, 0xd2, 0, 0xff);
-        }
-        else
-        {
+        } else {
             modelLightStruct_setDiffuseColor(state->light, 0, 0xff, 0, 0xff);
             modelLightStruct_setSpecularColor(state->light, 0, 0xff, 0, 0xff);
             modelLightStruct_setupGlow(state->light, 0, 0, 0xff, 0, 0x28,
-                                       50.0f * (obj)->anim.rootMotionScale);
+                                       KALDACHOMPSPIT_LIGHT_BASE_DISTANCE * obj->anim.rootMotionScale);
             modelLightStruct_setDiffuseTargetColor(state->light, 0, 0xff, 0, 0xff);
         }
         {
-            int nearDist = (int)(50.0f * (obj)->anim.rootMotionScale);
-            modelLightStruct_setDistanceAttenuation(state->light, nearDist, (f32)(nearDist + 0x28));
+            int nearDistance = (int)(KALDACHOMPSPIT_LIGHT_BASE_DISTANCE * obj->anim.rootMotionScale);
+            modelLightStruct_setDistanceAttenuation(state->light, nearDistance,
+                                                    (f32)(nearDistance + KALDACHOMPSPIT_LIGHT_ATTENUATION_RANGE));
         }
         lightSetField4D(state->light, 1);
         modelLightStruct_setEnabled(state->light, 1, 1.0f);
@@ -270,19 +244,8 @@ void KaldaChompSpit_init(GameObject* obj)
     }
 }
 
-void KaldaChompSpit_release(void)
-{
+void KaldaChompSpit_release(void) {
 }
 
-void KaldaChompSpit_initialise(void)
-{
+void KaldaChompSpit_initialise(void) {
 }
-
-ObjectDescriptor gKaldaChompSpitObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)KaldaChompSpit_initialise, (ObjectDescriptorCallback)KaldaChompSpit_release, 0,
-    (ObjectDescriptorCallback)KaldaChompSpit_init, (ObjectDescriptorCallback)KaldaChompSpit_update,
-    (ObjectDescriptorCallback)KaldaChompSpit_hitDetect, (ObjectDescriptorCallback)KaldaChompSpit_render,
-    (ObjectDescriptorCallback)KaldaChompSpit_free, (ObjectDescriptorCallback)KaldaChompSpit_getObjectTypeId,
-    KaldaChompSpit_getExtraSize,
-};
