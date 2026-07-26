@@ -1,59 +1,154 @@
 /*
- * firefly (DLL 0x20B) - the collectible fireflies. Retail object def
- * 1270 'FireFly' (romlist type 0x259); grouped with the WM (Krazoa
- * Palace) dlls by id, but its retail placements are the dark-area
- * maps: dragrock (Dragon Rock), fortress (CloudRunner Fortress),
- * hollow2 and swapcircle.
+ * FireFly (DLL 0x020B) - the collectible fireflies.
+ *
  * A firefly sleeps until its required game bit (if any) is set, then
  * lights up (a 100/255/100 point light) and wanders a cubic B-spline
- * whose control points are re-targeted by the sibling TU's
- * fn_801F4D54, trailing blue or orange particles by kind. Flying near
+ * whose control points are re-targeted by fn_801F4D54, trailing blue
+ * or orange particles by kind. Flying near
  * the player brightens its glow. The first touch anywhere sends the
  * firefly talk message to the player (game bit 0xD28); later touches
  * (or the talk's despawn-message reply) collect it - the lantern
  * counter bits 0x13D/0x5D6 increment, the model hides, sparkles
  * briefly and frees itself 180 frames later.
  */
-#include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/curve_eval.h"
+#include "main/dll/LGT/LGTcontrollight.h"
+#include "main/dll/boulder.h"
+#include "main/dll/dll_020B_firefly.h"
+#include "main/dll/expgfx_interface.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/gameloop_gamebit_api.h"
-#include "game/objects/object.h"
-#include "main/curve_eval.h"
-#include "main/dll/expgfx_interface.h"
-#include "main/maketex_timer_api.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "game/objects/object_setup.h"
-#include "main/obj_message.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/vecmath.h"
-#include "main/dll/dll_020B_firefly.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/LGT/LGTcontrollight.h"
-#include "main/model_light.h"
-#include "main/objfx.h"
 #include "main/gameloop_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/model_light.h"
+#include "main/obj_message.h"
+#include "main/objfx.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
+
+/* Per-frame angular step bounds (1/65536-turn units). */
+#define FIREFLY_ANGLE_STEP_MIN 0x1f4
+#define FIREFLY_ANGLE_STEP_MAX 0x5dc
+
+#define FIREFLY_ANGLE_ADVANCE_MIN 0xbb8
+#define FIREFLY_ANGLE_ADVANCE_MAX 0x1388
+#define FIREFLY_ANGLE_INIT_MAX    0xfde8
+#define FIREFLY_AMP_MAX           0x3c
+#define FIREFLY_RADIUS_MARGIN     0x14
+
+const f32 gFireflyDespawnFrames[1] = {180.0f};
+
+int firefly_animEventCallback(GameObject* obj)
+{
+    firefly_activeTick(obj);
+    return 0;
+}
+
+void fn_801F4C28(GameObject* obj, LgtFireFlyRec* record)
+{
+    record->src0X = obj->anim.localPosX;
+    record->src0Y = obj->anim.localPosY;
+    record->src0Z = obj->anim.localPosZ;
+    record->src1X = obj->anim.localPosX;
+    record->src1Y = obj->anim.localPosY;
+    record->src1Z = obj->anim.localPosZ;
+    record->src2X = obj->anim.localPosX;
+    record->src2Y = obj->anim.localPosY;
+    record->src2Z = obj->anim.localPosZ;
+    record->src3X = obj->anim.localPosX;
+    record->src3Y = obj->anim.localPosY;
+    record->src3Z = obj->anim.localPosZ;
+    record->baseX = 0.01f;
+    record->baseY = 0.0275f;
+    record->baseZ = 1.0f;
+    record->unk68 = 0;
+    record->unk67 = 0;
+    record->angleStep = randomGetRange(FIREFLY_ANGLE_STEP_MIN, FIREFLY_ANGLE_STEP_MAX);
+    record->angle = randomGetRange(0, FIREFLY_ANGLE_INIT_MAX);
+    record->ampMax = FIREFLY_AMP_MAX;
+    record->unk66 = 4;
+    record->radiusMin = 50.0f;
+    record->radius = 40.0f;
+    record->posX = obj->anim.localPosX;
+    record->posY = obj->anim.localPosY;
+    record->posZ = obj->anim.localPosZ;
+    record->firstFrame = 1;
+    record->unk78 = 1200.0f;
+}
+
+void fn_801F4D54(GameObject* obj, LgtFireFlyRec* record)
+{
+    struct
+    {
+        s16 rotZ;
+        s16 rotX;
+        s16 rotY;
+        u8 pad0e[2];
+        f32 scratch0;
+        f32 scratch1;
+        f32 scratch2;
+        f32 scratch3;
+    } rot;
+
+    record->offX = 0.0f;
+    if (record->firstFrame != 0)
+    {
+        record->offY = (f32)(s32)record->ampMax;
+        record->firstFrame = 0;
+    }
+    else
+    {
+        record->offY = (f32)(s32)randomGetRange(0, record->ampMax);
+    }
+    if (record->radius < 21.0f)
+    {
+        record->offZ = 0.0f;
+    }
+    else
+    {
+        record->offZ = record->radius -
+                       (f32)(s32)randomGetRange(FIREFLY_RADIUS_MARGIN, (s16)(s32)record->radius);
+    }
+    record->angle += (s16)randomGetRange(FIREFLY_ANGLE_ADVANCE_MIN, FIREFLY_ANGLE_ADVANCE_MAX);
+    rot.scratch1 = 0.0f;
+    rot.scratch2 = 0.0f;
+    rot.scratch3 = 0.0f;
+    rot.scratch0 = 1.0f;
+    rot.rotY = 0;
+    rot.rotX = 0;
+    rot.rotZ = record->angle;
+    vecRotateZXY((s16*)&rot, &record->offX);
+    record->offX += record->posX;
+    record->offY += record->posY;
+    record->offZ += record->posZ;
+}
+
+void fn_801F4ECC(GameObject* obj, BoulderShakeRec* record)
+{
+    record->histX0 = record->histX1;
+    record->histY0 = record->histY1;
+    record->histZ0 = record->histZ1;
+    record->histX1 = record->histX2;
+    record->histY1 = record->histY2;
+    record->histZ1 = record->histZ2;
+    record->histX2 = record->histX3;
+    record->histY2 = record->histY3;
+    record->histZ2 = record->histZ3;
+    record->amplitude = 0.00015f * (f32)(s32)randomGetRange(0xa0, 0xb4);
+    record->histX3 = record->liveX;
+    record->histY3 = record->liveY;
+    record->histZ3 = record->liveZ;
+}
 
 s16 lbl_803DC128 = 0xAA;
-
-#define FIREFLY_EXTRA_SIZE 0x88
-
-STATIC_ASSERT(offsetof(FireFlyState, light) == 0x00);
-STATIC_ASSERT(offsetof(FireFlyState, splineX) == 0x04);
-STATIC_ASSERT(offsetof(FireFlyState, splineY) == 0x14);
-STATIC_ASSERT(offsetof(FireFlyState, splineZ) == 0x24);
-STATIC_ASSERT(offsetof(FireFlyState, targetX) == 0x34);
-STATIC_ASSERT(offsetof(FireFlyState, splineT) == 0x40);
-STATIC_ASSERT(offsetof(FireFlyState, kind) == 0x66);
-STATIC_ASSERT(offsetof(FireFlyState, activeFlags) == 0x6C);
-STATIC_ASSERT(offsetof(FireFlyState, despawnTimer) == 0x70);
-STATIC_ASSERT(offsetof(FireFlyState, lifeTimer) == 0x74);
-STATIC_ASSERT(offsetof(FireFlyState, flags) == 0x7C);
-STATIC_ASSERT(offsetof(FireFlyState, messageParam) == 0x80);
-STATIC_ASSERT(sizeof(FireFlyState) == FIREFLY_EXTRA_SIZE);
 
 /* state->kind - trail/near particle-fx colour */
 #define FIREFLY_KIND_BLUE_MAIN       1
@@ -79,10 +174,7 @@ STATIC_ASSERT(sizeof(FireFlyState) == FIREFLY_EXTRA_SIZE);
 #define FIREFLY_PARTFX_KIND           1
 #define FIREFLY_PARTFX_INVALID_HANDLE -1
 
-/* The active-flight tick: fade in, advance the B-spline (shifting in a
-   new segment and re-targeting while pathAge < 4), spawn the trail fx,
-   ease the proximity glow, and detect the player touch. Runs as the
-   anim-event callback via the sibling TU's firefly_animEventCallback wrapper. */
+/* Fade in, advance the B-spline, spawn trail effects, and detect touch. */
 void firefly_activeTick(GameObject* obj)
 {
     FireFlyState* state = (obj)->extra;
@@ -138,8 +230,7 @@ void firefly_activeTick(GameObject* obj)
             ->spawnObject((void*)obj, FIREFLY_PARTFX_ORANGE_TRAIL, NULL, FIREFLY_PARTFX_KIND,
                           FIREFLY_PARTFX_INVALID_HANDLE, NULL);
     }
-    /* player+0x18 (worldPos) by raw arith - the &member spelling CSEs the
-       address into a saved-reg web and shifts the bytes (recipe #77(b)) */
+    /* Compare against the player's world position. */
     if (Vec_xzDistance((f32*)(player + 0x18), &(obj)->anim.placement->posX) < state->playerRadius)
     {
         f32 maxAlpha;

@@ -566,7 +566,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x208 | WM_Wallpowe | COMPLETE | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | = (canonical) | Data-only DLL |
 | 0x209 | WM_LevelCon | COMPLETE | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | = (canonical) | — |
 | 0x20A | WM_GeneralS | COMPLETE | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | = (canonical) | — |
-| 0x20B | FireFly | COMPLETE | main/dll/dll_020B_firefly.c | = (canonical) | — |
+| 0x20B | FireFly | COMPLETE | dlls/objects/523_FireFly/FireFly.c | = (canonical) | — |
 | 0x20C | WM_spiritplace | CONFIRMED | main/dll/dll_020C_wmspiritplace.c | main/dll/WM/dll_020C_wmspiritplace.c | — |
 | 0x20D | WM_seqpoint | CONFIRMED | main/dll/dll_020D_wmseqpoint.c | main/dll/WM/dll_020D_wmseqpoint.c | — |
 | 0x20E | WM_sun (+WM_Crystal) | COMPLETE | main/dll/dll_020E_wmsun.c | main/dll/WM/dll_020E_wmsun.c | — |
