@@ -5,6 +5,8 @@
 #include "global.h"
 #include "game/objects/object_setup.h"
 
+struct GameObject;
+
 typedef struct VfpObjCreatorState
 {
     s16 gameBit;       /* 0x00: spawn gate bit (-1 = always spawn) */
@@ -60,8 +62,8 @@ int VFP_ObjCreator_getObjectTypeId(void);
 void VFP_ObjCreator_free(void);
 void VFP_ObjCreator_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
 void VFP_ObjCreator_hitDetect(void);
-void VFP_ObjCreator_update(int* obj);
-void VFP_ObjCreator_init(int* obj, u8* init);
+void VFP_ObjCreator_update(struct GameObject* obj);
+void VFP_ObjCreator_init(struct GameObject* obj, u8* init);
 void VFP_ObjCreator_release(void);
 void VFP_ObjCreator_initialise(void);
 
