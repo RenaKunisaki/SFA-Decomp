@@ -692,7 +692,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x286 | SPShopKeepe | RAW | dlls/objects/646_SPShopKeepe/SPShopKeepe.c | = (canonical) | Exact DOL-confirmed TU containing the five preceding DR laser-turret callbacks and the complete ShopKeeper implementation |
 | 0x287 | SPScarab | RAW | dlls/objects/647_SPScarab/SPScarab.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x288 | SPDrape | RAW | dlls/objects/648_SPDrape/SPDrape.c | = (canonical) | Exact complete TU; descriptor placement preserves the following jump table, and the non-emitted helper contributes to `.sdata2` literal order |
-| 0x289 | SPitembeam | COMPLETE | main/dll/dll_0289_spitembeam.c | main/dll/SP/dll_0289_spitembeam.c | — |
+| 0x289 | SPitembeam | RAW | dlls/objects/649_SPitembeam/SPitembeam.c | = (canonical) | Exact complete TU; descriptor is followed by a DOL-proven 76-byte SnowBike table |
 | 0x28A | WCEarthWalker (+WCKingEarth, WM_deaddino) | CONFIRMED | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | — |
 | 0x28B | — | NO-RETAIL-NAME | main/dll/dll_028B.c | = (canonical) | — |
 | 0x28C | WCBouncyCra | CONFIRMED | main/dll/dll_028C_wcbouncycra.c | main/dll/WC/dll_028C_wcbouncycra.c | — |
