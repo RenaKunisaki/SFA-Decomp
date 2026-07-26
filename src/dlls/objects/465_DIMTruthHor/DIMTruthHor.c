@@ -1,43 +1,16 @@
-/* DLL 0x1D1 - DIM Truth Horn Ice: a breakable ice target in Snowhorn Wastes 2.
+/*
+ * DIMTruthHor (DLL 0x1D1) - a breakable ice target in Snowhorn Wastes 2.
  * Hit-count tracked in extra->hitsLeft; when depleted sets gameBit and starts a
  * particle-burst death animation (spawn loop in phase 1, freeze-hide in phase 2).
  * Tricky can deliver fire hits via vtable dispatch (slot 0x28 of Tricky's type at
- * offset 0x68). Also contains dimtruthhornice_countdownCallback (generic byte-damage helper shared by
- * this DLL group). */
+ * offset 0x68). Also contains dimtruthhornice_countdownCallback, a generic
+ * byte-damage helper.
+ */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
-#include "main/dll/dimmagicbridge_state.h"
 #include "sys/objects/lifecycle.h"
-#include "main/dll/dimwooddoor2state_struct.h"
-#include "main/dll/fbwgpipe_struct.h"
-#include "main/dll/dll1cestate_struct.h"
-#include "main/dll/explosionpartfxsource_struct.h"
-#include "main/dll/dim2pathgeneratorstate_struct.h"
-#include "main/dll/dim2snowballstate_struct.h"
 #include "main/dll/truthhornicestate_struct.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/dll1d6state_struct.h"
-#include "main/dll/explosion_state.h"
-#include "main/objseq.h"
 #include "dlls/object_descriptor.h"
-
-STATIC_ASSERT(sizeof(DimWoodDoor2State) == 0xC);
-STATIC_ASSERT(sizeof(Dll1CEState) == 0xC);
-STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
-
-STATIC_ASSERT(sizeof(ExplosionPartfxSource) == 0x38);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ExplosionPartfxSource, velocityX) == 0x24);
-
-STATIC_ASSERT(sizeof(ExplosionState) == 0xA60);
-STATIC_ASSERT(offsetof(ExplosionState, driftYSpeed) == 0xA3C);
-
-
-FbWGPipe GXWGFifo : (0xCC008000);
-
-#include "main/audio/sfx_ids.h"
 #include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
@@ -63,28 +36,7 @@ typedef enum TruthHornIcePhase
     TRUTHHORNICE_PHASE_SHATTERED = 2,  /* hidden */
 } TruthHornIcePhase;
 
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
-
-STATIC_ASSERT(sizeof(Dll1D6State) == 0x20);
-
 STATIC_ASSERT(sizeof(TruthHornIceState) == 0x8);
-
-STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
-
-STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9a8);
-
-
-
-static inline int* DIM2snowball_GetActiveModel(GameObject *obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
-}
-
-
-
-
-
 
 int dimtruthhornice_countdownCallback(int* obj, int damage)
 {
@@ -93,12 +45,13 @@ int dimtruthhornice_countdownCallback(int* obj, int damage)
     return *(s8*)(state + 2) <= 0;
 }
 
-
-int dimtruthhornice_getExtraSize(void) { return 0x8; }
+int dimtruthhornice_getExtraSize(void)
+{
+    return 0x8;
+}
 
 void dimtruthhornice_update(int* obj)
 {
-
     TruthHornIceState* extra = ((GameObject*)obj)->extra;
     *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     switch (extra->phase)
@@ -139,23 +92,17 @@ void dimtruthhornice_update(int* obj)
                 Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_bounce1);
                 for (i = 30; i != 0; i--)
                 {
-                    desc.posX = 0.1f * (f32)(int)
-                    randomGetRange(-100, 100);
-                    desc.posY = 0.1f * (f32)(int)
-                    randomGetRange(0, 350);
-                    desc.posZ = 0.1f * (f32)(int)
-                    randomGetRange(-100, 100);
+                    desc.posX = 0.1f * (f32)(int)randomGetRange(-100, 100);
+                    desc.posY = 0.1f * (f32)(int)randomGetRange(0, 350);
+                    desc.posZ = 0.1f * (f32)(int)randomGetRange(-100, 100);
                     desc.scale = 1.0f;
                     (*gPartfxInterface)->spawnObject(obj, 2043, &desc, 2, -1, NULL);
                     (*gPartfxInterface)->spawnObject(obj, 2044, &desc, 2, -1, NULL);
                 }
             }
-            desc.posX = 0.1f * (f32)(int)
-            randomGetRange(-100, 100);
-            desc.posY = 0.1f * (f32)(int)
-            randomGetRange(0, 350);
-            desc.posZ = 0.1f * (f32)(int)
-            randomGetRange(-100, 100);
+            desc.posX = 0.1f * (f32)(int)randomGetRange(-100, 100);
+            desc.posY = 0.1f * (f32)(int)randomGetRange(0, 350);
+            desc.posZ = 0.1f * (f32)(int)randomGetRange(-100, 100);
             desc.scale = 1.0f;
             (*gPartfxInterface)->spawnObject(obj, 2044, &desc, 2, -1, NULL);
             break;
@@ -165,7 +112,6 @@ void dimtruthhornice_update(int* obj)
         break;
     }
 }
-
 
 void dimtruthhornice_init(int* obj, int* def)
 {

@@ -2604,7 +2604,7 @@ dlls/objects/464_DIM_tricky/DIM_tricky.c:
 	.data       start:0x803256A8 end:0x803256E0
 	.sdata2     start:0x803E4A38 end:0x803E4A3C
 
-main/dll/DIM/dll_01D1_dimtruthhornice.c:
+dlls/objects/465_DIMTruthHor/DIMTruthHor.c:
 	.text       start:0x801B6D40 end:0x801B7154
 	.data       start:0x803256E0 end:0x80325718
 	.sdata2     start:0x803E4A40 end:0x803E4A58
