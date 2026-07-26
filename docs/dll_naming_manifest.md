@@ -715,7 +715,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | main/dll/dll_029D_arwarwinggu.c | main/dll/ARW/dll_029D_arwarwinggu.c | — |
 | 0x29E | — | NO-RETAIL-NAME | main/dll/dll_029E_Dummy29E.c | = (canonical) | — |
 | 0x29F | ARWBombColl (+ARWLaserCol, ARWContaine, ARWSporeCol, ARWDinoEggC, ARWMoonSeed) | CONFIRMED | main/dll/dll_029F_arwbombcoll.c | main/dll/ARW/dll_029F_arwbombcoll.c | — |
-| 0x2A0 | Ring (+WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | CONFIRMED | main/dll/dll_02A0_ring.c | = (canonical) | — |
+| 0x2A0 | — (+Ring, WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | NO-RETAIL-NAME | dlls/objects/672/672.c | = (canonical) | — |
 | 0x2A1 | ARWLevelCon | CONFIRMED | dlls/objects/673_ARWLevelCon/ARWLevelCon.c | = (canonical) | — |
 | 0x2A2 | ARWSpeedStr | CONFIRMED | dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c | = (canonical) | — |
 | 0x2A3 | — | NO-RETAIL-NAME | dlls/objects/675/675.c | = (canonical) | — |

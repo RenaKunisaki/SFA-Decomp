@@ -209,7 +209,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/SH/dll_01AE_shlevelcontrol | 100.0000 | 92.5453 | -7.4547 |
 | main/main/dll/camshipbattle5c | 99.7560 | 92.5326 | -7.2234 |
 | main/main/shader | 98.9392 | 92.0709 | -6.8682 |
-| main/main/dll/dll_02A0_ring | 100.0000 | 93.4272 | -6.5728 |
+| main/dlls/objects/672/672 | 100.0000 | 93.4272 | -6.5728 |
 | main/main/audio | 100.0000 | 93.4540 | -6.5460 |
 | main/dlls/objects/202/202 | 100.0000 | 93.5470 | -6.4530 |
 | main/main/dll/pathcamgroup | 100.0000 | 94.0781 | -5.9219 |

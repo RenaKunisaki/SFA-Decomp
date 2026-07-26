@@ -1,5 +1,5 @@
 /*
- * ring (DLL 0x2A0) - the collectible flight rings for the Arwing
+ * DLL 0x2A0 - the collectible flight rings for the Arwing
  * sequences. One object covers every ring variant, selected at init by
  * the placement's seqId: Arwing gold/silver rings, the silver "and"
  * ring, and the WeatherControl sun/moon rings (RING_OBJ_*, RING_MODE_*).
