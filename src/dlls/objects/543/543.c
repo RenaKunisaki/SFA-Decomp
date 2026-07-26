@@ -160,13 +160,13 @@ void VFP_Platform_free(int obj)
     (*gExpgfxInterface)->freeSource2(obj);
 }
 
-void VFP_Platform_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void VFP_Platform_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    VfpPlatformState* state = ((GameObject*)obj)->extra;
+    VfpPlatformState* state = obj->extra;
     s32 isVisible = visible;
     if (isVisible != 0 && state->axisMode != 0x63)
     {
-        ((void (*)(int, int, int, int, int, f32))objRenderModelAndHitVolumes)(obj, p2, p3, p4, p5, lbl_803E610C);
+        ((void (*)(int, int, int, int, int, f32))objRenderModelAndHitVolumes)((int)obj, p2, p3, p4, p5, lbl_803E610C);
     }
 }
 
@@ -354,15 +354,15 @@ void VFP_Platform_update(GameObject* obj)
     }
 }
 
-void VFP_Platform_init(int obj, int data)
+void VFP_Platform_init(GameObject* obj, int data)
 {
     VfpPlatformPlacement* def = (VfpPlatformPlacement*)data;
-    VfpPlatformState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (((s32)def->rotXByte) << 8);
+    VfpPlatformState* state = obj->extra;
+    obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;
     state->state = 0;
     state->axisMode = def->axisMode;
-    ((GameObject*)obj)->objectFlags |= VFPPLATFORM_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= VFPPLATFORM_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_Platform_release(void)
