@@ -1,12 +1,9 @@
 /*
- * DLL 0xEB - SideRepel [80171C78-80171D10)
+ * DLL 0xEB - siderepel and siderepelWi.
  *
  * The DLL's own canonical code is the three siderepel callbacks
  * (getExtraSize/free/init): a repel-volume object that registers into
  * object group 0x40 and sizes its hit sphere from the placement radius.
- *
- * Foreign ObjectDescriptor tables are not present in this translation unit;
- * each descriptor is defined by its own DLL.
  */
 #include "game/objects/object.h"
 #include "main/obj_group.h"
