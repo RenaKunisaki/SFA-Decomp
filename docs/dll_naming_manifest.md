@@ -662,7 +662,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x268 | DR_CageControl | CONFIRMED | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | — |
 | 0x269 | ExplodePlan (+CCFoundGold, DR_ExplodeD) | CONFIRMED | main/dll/dll_0269_explodeplan.c | = (canonical) | — |
 | 0x26A | DR_Geezer | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
-| 0x26B | DR_Chimmey | COMPLETE | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | — |
+| 0x26B | DR_Chimmey | COMPLETE | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | = (canonical) | — |
 | 0x26C | — (+DR_CageWith, DR_CageNoRo, DR_CageRope) | NO-RETAIL-NAME | dlls/objects/620/620.c | = (canonical) | — |
 | 0x26D | DR_Vines | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x26E | — (+DR_Shackle, DR_BigShack) | NO-RETAIL-NAME | dlls/objects/622/622.c | = (canonical) | — |
@@ -921,7 +921,7 @@ name was a deliberate choice by a previous carve:
 | 0x261 | main/dll/dll_0261_drlasercannon.c | main/dll/DR/dll_0261_drlasercannon.c | CONFIRMED |
 | 0x265 | main/dll/dll_0265_drcreator.c | main/dll/DR/dll_0265_drcreator.c | COMPLETE |
 | 0x268 | main/dll/dll_0268_drcagecontrol.c | main/dll/DR/dll_0268_drcagecontrol.c | CONFIRMED |
-| 0x26B | main/dll/dll_026B_drchimmey.c | main/dll/DR/dll_026B_drchimmey.c | COMPLETE |
+| 0x26B | main/dll/dll_026B_drchimmey.c | dlls/objects/619_DR_Chimmey/DR_Chimmey.c | COMPLETE |
 | 0x26C | main/dll/dll_026C_drcagewith.c | dlls/objects/620/620.c | CONFIRMED |
 | 0x26E | main/dll/dll_026E_drshackle.c | dlls/objects/622/622.c | COMPLETE |
 | 0x26F | main/dll/dll_026F_drgenerator.c | dlls/objects/623/623.c | CONFIRMED |
