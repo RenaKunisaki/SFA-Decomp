@@ -58,6 +58,6 @@ void sfxplayerObj_free(GameObject* obj);
 void sfxplayerObj_update(GameObject* obj);
 int sfxplayerObj_getExtraSize(void);
 
-extern ObjectDescriptor gSfxplayerObjDescriptor;
+extern ObjectDescriptor gSfxPlayerObjDescriptor;
 
 #endif /* MAIN_DLL_DLL_0133_SFXPLAYER_H_ */

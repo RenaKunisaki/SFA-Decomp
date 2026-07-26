@@ -365,7 +365,8 @@ currently-playing positional SFX, holding `handle`, `x`/`y`/`z`, `nearDistance`/
 an `age` counter. Not described in the wiki; it's downstream of the trigger-lookup machinery
 the wiki does describe.
 
-**DLL 0x0133 (`sfxplayer`)** (`include/main/dll/sfxplayer.h`, `src/main/dll/dll_0133_sfxplayer.c`)
+**DLL 0x0133 (`sfxPlayer`)** (`include/main/dll/dll_0133_sfxplayer.h`,
+`src/dlls/objects/307_sfxPlayer/sfxPlayer.c`)
 is a separate, higher-level concept: a placeable game object that drives ambient/triggered SFX
 playback with its own `SfxplayerState`/`SfxplayerStateFlags`. It calls into the same
 `Sfx_PlayFromObject`-family API this page describes, but the wiki doesn't cover it — it's not

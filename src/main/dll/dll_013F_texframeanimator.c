@@ -8,7 +8,6 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/dll/dll_0132_waterfallspray.h"
-#include "main/dll/dll_0133_sfxplayer.h"
 #include "main/dll/dll_0140_fogcontrol.h"
 #include "main/dll/dll_0141_lightning.h"
 #include "dlls/object_descriptor.h"
@@ -208,7 +207,3 @@ ObjDescriptorTable gWaterFallSprayObjDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000, 0x00000000, 0x00000000, (u32)WaterFallSpray_init,
      (u32)WaterFallSpray_update, 0x00000000, (u32)WaterFallSpray_render, (u32)WaterFallSpray_free, 0x00000000,
      (u32)WaterFallSpray_getExtraSize}};
-ObjDescriptorTable gSfxPlayerObjDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000, 0x00000000,
-                                               0x00000000, (u32)sfxplayerObj_init, (u32)sfxplayerObj_update, 0x00000000,
-                                               0x00000000, (u32)sfxplayerObj_free, 0x00000000,
-                                               (u32)sfxplayerObj_getExtraSize}};

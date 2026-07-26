@@ -352,7 +352,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x130 | AreaFXEmit (+TAreaFXEmit) | COMPLETE | dlls/objects/304_AreaFXEmit/AreaFXEmit.c | = (canonical) | — |
 | 0x131 | CF_DoorLight (+DR_LightPol) | CONFIRMED | dlls/objects/305/305.c | = (canonical) | — |
 | 0x132 | WaterFallSpray | CONFIRMED | main/dll/dll_0132_waterfallspray.c | = (canonical) | — |
-| 0x133 | sfxPlayer | COMPLETE | main/dll/dll_0133_sfxplayer.c | = (canonical) | — |
+| 0x133 | sfxPlayer | COMPLETE | dlls/objects/307_sfxPlayer/sfxPlayer.c | = (canonical) | — |
 | 0x134 | texscroll2 | COMPLETE | main/dll/dll_0134_texscroll2.c | = (canonical) | — |
 | 0x135 | texscroll | COMPLETE | main/dll/dll_0135_texscroll.c | = (canonical) | — |
 | 0x136 | WaveAnimator | CONFIRMED | main/dll/dll_0136_waveanimator.c | = (canonical) | — |

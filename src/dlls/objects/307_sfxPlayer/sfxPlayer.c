@@ -1,5 +1,5 @@
 /*
- * sfxplayer (DLL 0x133) - a placement-driven ambient/triggered SFX emitter.
+ * sfxPlayer (DLL 0x133) - a placement-driven ambient/triggered SFX emitter.
  *
  * Each instance reads its behaviour from placement bytes: data->mode selects
  * the mode (SFXPLAYER_MODE_GAMEBIT / _LOOPED / _RANDOM_DELAY), data->flags
@@ -256,3 +256,20 @@ void sfxplayerObj_init(GameObject* obj, SfxplayerPlacement* data)
     }
     }
 }
+
+ObjectDescriptor gSfxPlayerObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)sfxplayerObj_init,
+    (ObjectDescriptorCallback)sfxplayerObj_update,
+    0,
+    0,
+    (ObjectDescriptorCallback)sfxplayerObj_free,
+    0,
+    sfxplayerObj_getExtraSize,
+};
