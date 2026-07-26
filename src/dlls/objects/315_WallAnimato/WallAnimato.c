@@ -1,5 +1,5 @@
 /*
- * wallanimator (DLL 0x13B) - a crumbling/animating wall object that
+ * WallAnimato (DLL 0x13B) - a crumbling/animating wall object that
  * "completes" once its internal timer reaches WALLANIMATOR_DONE_TIMER.
  * On completion it sets the runtime active bit, grants its placement
  * game bit (placement+0x18) and plays the completion sfx. While running
@@ -9,10 +9,8 @@
  * distance to a target object.
  *
  * The object joins ObjGroup WALLANIMATOR_GROUP_PRIMARY/SECONDARY at init
- * and leaves them at free. This TU is a fragment of the MMP wallanimator
- * DLL (shares MMP/dll_013B_wallanimator.h with its sibling TUs, which
- * also house the wave/alpha/ground/vis animator state - hence the
- * layout STATIC_ASSERTs below).
+ * and leaves them at free. The shared animator headers account for the
+ * related wave/alpha/ground/vis state layout checks below.
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/groundanimator_state.h"
