@@ -1,5 +1,5 @@
 /*
- * wmseqpoint (DLL 0x20D) - sequence trigger points at Krazoa Palace
+ * WM_seqpoint (DLL 0x020D) - sequence trigger points at Krazoa Palace
  * (map 'warlock').
  * Each placed instance arms one trigger sequence (state->sequenceId),
  * fired by player proximity and/or a condition game bit per
@@ -11,20 +11,20 @@
  * opcodes (wmseqpoint_SeqFn) drive game bits shared with the shrine
  * DLLs (0x143) and the palace sun (0x21D).
  */
-#include "main/object_render.h"
-#include "main/sky_api.h"
-#include "main/dll/player_api.h"
-#include "sys/objects.h"
-#include "main/render_envfx_api.h"
-#include "main/gamebits.h"
-#include "game/objects/object.h"
-#include "main/mapEventTypes.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
-#include "main/objseq.h"
+#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
-#include "main/vecmath_distance_api.h"
 #include "main/dll/WM/dll_020D_wmseqpoint.h"
+#include "main/dll/player_api.h"
+#include "main/gamebits.h"
+#include "main/mapEventTypes.h"
+#include "main/objanim_update.h"
+#include "main/object_render.h"
+#include "main/objseq.h"
+#include "main/render_envfx_api.h"
+#include "main/sky_api.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
 /* state->triggerMode: how the trigger sequence is armed */
 enum
@@ -63,27 +63,9 @@ enum
 #define WMSEQPOINT_ENVFX_DAY_C   0x84
 #define WMSEQPOINT_ENVFX_DAY_D   0x8a
 
-/* {game bit, placement id} per released-spirit indicator; bits 0xD1B-0xD1F
-   are granted by the spirit places (see dll_020C_wmspiritplace.c) */
+/* {game bit, placement id} per released-spirit indicator. */
 int gWM_seqpointSpiritTargets[10] = {
     0xD1B, 0x4AEB1, 0xD1C, 0x4AEB2, 0xD1D, 0x4AEB3, 0xD1E, 0x4AEB4, 0xD1F, 0x4AEB5,
-};
-
-ObjectDescriptor gWM_seqpointObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    wmseqpoint_initialise,
-    wmseqpoint_release,
-    0,
-    (ObjectDescriptorCallback)wmseqpoint_init,
-    (ObjectDescriptorCallback)wmseqpoint_update,
-    wmseqpoint_hitDetect,
-    (ObjectDescriptorCallback)wmseqpoint_render,
-    wmseqpoint_free,
-    (ObjectDescriptorCallback)wmseqpoint_getObjectTypeId,
-    wmseqpoint_getExtraSize,
 };
 
 void wmseqpoint_onSeqFree(GameObject* obj)
@@ -368,3 +350,20 @@ void wmseqpoint_release(void)
 void wmseqpoint_initialise(void)
 {
 }
+
+ObjectDescriptor gWM_seqpointObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    wmseqpoint_initialise,
+    wmseqpoint_release,
+    0,
+    (ObjectDescriptorCallback)wmseqpoint_init,
+    (ObjectDescriptorCallback)wmseqpoint_update,
+    wmseqpoint_hitDetect,
+    (ObjectDescriptorCallback)wmseqpoint_render,
+    wmseqpoint_free,
+    (ObjectDescriptorCallback)wmseqpoint_getObjectTypeId,
+    wmseqpoint_getExtraSize,
+};

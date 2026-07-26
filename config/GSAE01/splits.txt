@@ -3289,7 +3289,7 @@ dlls/objects/524_WM_spiritpl/WM_spiritpl.c:
 	.data       start:0x80328C68 end:0x80328CC8
 	.sdata2     start:0x803E5EF8 end:0x803E5F10
 
-main/dll/WM/dll_020D_wmseqpoint.c:
+dlls/objects/525_WM_seqpoint/WM_seqpoint.c:
 	.text       start:0x801F654C end:0x801F6E8C
 	.data       start:0x80328CC8 end:0x80328D28
 	.sdata2     start:0x803E5F10 end:0x803E5F20
