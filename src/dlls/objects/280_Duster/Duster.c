@@ -100,9 +100,9 @@ extern f32 gDusterObjDriftSpinRate;
 extern f32 gDusterObjPickupRangeY;
 extern f32 gDusterObjPickupRangeXZ;
 
-int duster_SeqFn(u8* obj)
+int duster_SeqFn(GameObject* obj)
 {
-    DusterState* state = ((GameObject*)obj)->extra;
+    DusterState* state = obj->extra;
     state->flags.floorCached = 0;
     return 0;
 }
@@ -112,14 +112,14 @@ int duster_getExtraSize(void)
     return 0x20;
 }
 
-void duster_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void duster_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    DusterState* state = ((GameObject*)obj)->extra;
+    DusterState* state = obj->extra;
     if (visible == 0 || state->active == 0 || state->complete != 0)
     {
         return;
     }
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E38B0);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E38B0);
 }
 
 void duster_hitDetect(GameObject* obj)
@@ -143,7 +143,7 @@ void duster_update(GameObject* obj)
 {
     DusterState* state;
     DusterSetup* setup;
-    int player;
+    GameObject* player;
     GameObject* playerObj;
     TrackGroundHit** floorHits;
     int msg;
@@ -158,8 +158,8 @@ void duster_update(GameObject* obj)
 
     state = obj->extra;
     setup = *(DusterSetup**)&obj->anim.placementData;
-    player = (int)Obj_GetPlayerObject();
-    playerObj = (GameObject*)player;
+    player = Obj_GetPlayerObject();
+    playerObj = player;
 
     while (ObjMsg_Pop(obj, (u32*)&msg, 0, 0) != 0)
     {
@@ -313,13 +313,13 @@ void duster_update(GameObject* obj)
     }
     if (floorDelta < gDusterObjPickupRangeY &&
         Vec_xzDistance(&playerObj->anim.worldPosX, &obj->anim.worldPosX) < gDusterObjPickupRangeXZ &&
-        Obj_IsParentSlackClear((GameObject*)player) != 0)
+        Obj_IsParentSlackClear(player) != 0)
     {
         if (mainGetBit(GAMEBIT_DUSTER_CARRIED) == 0)
         {
             state->heldObjectId = -1;
             ObjHits_DisableObject(obj);
-            ObjMsg_SendToObject((void*)player, DUSTER_MSG_REQUEST_PICKUP, obj, (u32)&state->heldObjectId);
+            ObjMsg_SendToObject(player, DUSTER_MSG_REQUEST_PICKUP, obj, (u32)&state->heldObjectId);
             mainSetBits(GAMEBIT_DUSTER_CARRIED, 1);
         }
         else

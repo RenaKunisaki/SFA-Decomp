@@ -197,14 +197,14 @@ int babycloudrunner_tryCapture(void* p)
     BabyCloudRunnerPlacement* r;
     BabyCloudRunnerState* sub;
     BabyCloudRunnerPlacement* q;
-    void* player;
+    GameObject* player;
     obj = p;
     sub = obj->extra;
     q = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
     player = Obj_GetPlayerObject();
     r = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
     flag = 0;
-    if (Vec_distance(&((GameObject*)player)->anim.worldPosX, &obj->anim.worldPosX) <
+    if (Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX) <
         (f32)(s16)r->innerRadius)
     {
         if (sub->runnerState == 3)
@@ -278,7 +278,7 @@ ObjectDescriptor12 gBabyCloudRunnerObjDescriptor = {
 
 int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
-    char* player;
+    GameObject* player;
     BabyCloudRunnerPlacement* def = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
     s8 inRange;
     int yaw;
@@ -294,9 +294,9 @@ int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
         return 0;
     }
     animUpdate->sequenceEventActive = 0;
-    player = (char*)Obj_GetPlayerObject();
-    dx = ((GameObject*)player)->anim.localPosX - def->base.posX;
-    dz = ((GameObject*)player)->anim.localPosZ - def->base.posZ;
+    player = Obj_GetPlayerObject();
+    dx = player->anim.localPosX - def->base.posX;
+    dz = player->anim.localPosZ - def->base.posZ;
     distSq = dx * dx + dz * dz;
     if (distSq < (f32)((halfInner = def->innerRadius / 2) * halfInner))
     {
@@ -355,7 +355,7 @@ int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
             *(f32*)((char*)sub->linkedObj + 8) = sub->scale;
         }
         sub->behaviourState = 0xb;
-        if (Vec_distance((f32*)((char*)obj + 0x18), (f32*)(player + 0x18)) < (f32)def->innerRadius &&
+        if (Vec_distance((f32*)((char*)obj + 0x18), &player->anim.worldPosX) < (f32)def->innerRadius &&
             (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
         {
             sub->behaviourState = 7;
@@ -365,7 +365,7 @@ int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     case 0:
     case 8:
         animUpdate->hitVolumePair &= ~0x2;
-        yaw = Obj_GetYawDeltaToObject(obj, (GameObject*)player, 0);
+        yaw = Obj_GetYawDeltaToObject(obj, player, 0);
         fn_8003ADC4(obj, player, sub->lookBlock, 0x28, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
         if (inRange != 0)
@@ -419,7 +419,7 @@ void babycloudrunner_hitDetect(void)
 }
 void babycloudrunner_update(GameObject* obj)
 {
-    char* player;
+    GameObject* player;
     BabyCloudRunnerState* sub;
     BabyCloudRunnerPlacement* def;
     int found;
@@ -432,7 +432,7 @@ void babycloudrunner_update(GameObject* obj)
     f32 radius;
     def = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
     sub = obj->extra;
-    player = (char*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     getTrickyObject();
     if (mainGetBit(def->runnerGameBit) != 0)
     {
@@ -548,7 +548,7 @@ void babycloudrunner_update(GameObject* obj)
                     fn_8019E3F4(obj);
                 }
             }
-            inRange = Vec_distance(&obj->anim.worldPosX, (f32*)(player + 0x18)) <
+            inRange = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
                       (f32)(def->innerRadius / 2);
             if (sub->runnerState == 2)
             {

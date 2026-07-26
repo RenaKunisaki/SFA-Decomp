@@ -303,13 +303,13 @@ void CFCrate_update(GameObject* obj)
     {
         f32 fx, fy, fz;
         f32 dist;
-        int player;
+        GameObject* player;
 
         (obj)->anim.rotZ = (s16)(1.5 * (double)-(s32) * (s16*)(cam + 4));
-        player = (int)Obj_GetPlayerObject();
-        fx = ((GameObject*)player)->anim.worldPosX - (obj)->anim.worldPosX;
-        fz = ((GameObject*)player)->anim.worldPosZ - (obj)->anim.worldPosZ;
-        fy = ((GameObject*)player)->anim.worldPosY - (obj)->anim.worldPosY;
+        player = Obj_GetPlayerObject();
+        fx = player->anim.worldPosX - (obj)->anim.worldPosX;
+        fz = player->anim.worldPosZ - (obj)->anim.worldPosZ;
+        fy = player->anim.worldPosY - (obj)->anim.worldPosY;
         dist = sqrtf(fy * fy + (fx * fx + fz * fz));
         if (dist < 75.0f && state->proximityLatch == 1)
         {

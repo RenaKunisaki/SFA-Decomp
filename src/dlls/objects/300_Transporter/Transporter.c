@@ -76,11 +76,11 @@ ObjectDescriptor gTransporterObjDescriptor = {
     Transporter_getExtraSize,
 };
 
-int Transporter_SeqFn(int* obj, int unused, ObjAnimUpdateState* animUpdate)
+int Transporter_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     int i;
-    WarpPadPlacement* setup = (WarpPadPlacement*)((GameObject*)obj)->anim.placementData;
-    WarpPadState* state = ((GameObject*)obj)->extra;
+    WarpPadPlacement* setup = (WarpPadPlacement*)obj->anim.placementData;
+    WarpPadState* state = obj->extra;
     int id;
 
     for (i = 0; i < animUpdate->eventCount; i++)
@@ -264,7 +264,7 @@ int Transporter_SeqFn(int* obj, int unused, ObjAnimUpdateState* animUpdate)
             break;
         }
     }
-    warpPadFn_8019042c((GameObject*)obj);
+    warpPadFn_8019042c(obj);
     return 0;
 }
 
