@@ -19,6 +19,7 @@
 #include "dlls/objects/219_MikaBomb.h"
 #include "dlls/objects/220_MikaBombShadow.h"
 #include "dlls/objects/221_GCbaddieShield.h"
+#include "dlls/objects/222_BaddieInterestP.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -120,7 +121,7 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
     gAnimSharpclawObjDescriptor;
 extern ResourceDescriptor gAppleOnTreeObjDescriptor, gAreaFXEmitObjDescriptor, gAreaObjDescriptor,
-    gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor, gBaddieInterestPObjDescriptor;
+    gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBarrelPadObjDescriptor,
     gBlastedObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor,
     gBossDrakorObjDescriptor;
@@ -1145,7 +1146,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMikaBombObjDescriptor,
     (ResourceDescriptor*)&gMikaBombShadowObjDescriptor,
     (ResourceDescriptor*)&gGCbaddieShieldObjDescriptor,
-    &gBaddieInterestPObjDescriptor,
+    (ResourceDescriptor*)&gBaddieInterestPObjDescriptor,
     (ResourceDescriptor*)&gHagabonObjDescriptor,
     (ResourceDescriptor*)&gSwarmBaddieObjDescriptor,
     &gWispBaddieObjDescriptor,
