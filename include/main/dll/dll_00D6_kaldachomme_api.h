@@ -50,8 +50,4 @@ void KaldaChompMe_release(void);
 void KaldaChompMe_initialise(void);
 void kaldachompme_setLinkedMouthMode(u8* obj, KaldaChompMeLinkedMode mode);
 
-extern f32 gKaldaChompOne;
-extern f32 gKaldaChompZero;
-extern f32 gKaldaChompLinkedMouthStep;
-
 #endif /* MAIN_DLL_DLL_00D6_KALDACHOMME_API_H_ */

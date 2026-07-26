@@ -39,7 +39,7 @@ with no lane prefix stay at `main/dll/` root.
 | same-stem headers gating ready renames | 20 |
 | same-stem headers across all dll hosts | 76 |
 
-Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 31, RAW 25
+Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 31, RAW 24
 
 ## Manifest
 
@@ -259,7 +259,7 @@ Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 3
 | 0x0D3 | — | NO-RETAIL-NAME | dlls/objects/211/211.c | = (canonical) | — |
 | 0x0D4 | SkeetlaWall | COMPLETE | dlls/objects/212_SkeetlaWall/SkeetlaWall.c | = (canonical) | — |
 | 0x0D5 | Kaldachom | COMPLETE | dlls/objects/213_Kaldachom/Kaldachom.c | = (canonical) | — |
-| 0x0D6 | KaldachomMe | RAW | main/dll/dll_00D6_kaldachomme.c | = (canonical) | — |
+| 0x0D6 | KaldachomMe | COMPLETE | dlls/objects/214_KaldachomMe/KaldachomMe.c | = (canonical) | — |
 | 0x0D7 | kaldachompspit (+KaldachomSp, FireCrawler) | GUESSED | main/dll/dll_00D7_kaldachompspit.c | = (canonical) | — |
 | 0x0D8 | PinPonSpike | CONFIRMED | main/dll/dll_00D8_pinponspike.c | = (canonical) | — |
 | 0x0D9 | Pollen | COMPLETE | main/dll/dll_00D9_pollen.c | = (canonical) | — |
@@ -766,7 +766,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 
 | dll | retail name(s) | dominant fn prefix | class | host |
 |---|---|---|---|---|
-| 0x0D6 | KaldachomMe | `kaldachompme_*` | cross-dll (names dll 0x0D5) | main/dll/dll_00D6_kaldachomme.c |
+| 0x0D6 | KaldachomMe | `kaldachompme_*` | cross-dll (names dll 0x0D5) | dlls/objects/214_KaldachomMe/KaldachomMe.c |
 | 0x0D7 | KaldachomSp, FireCrawler | `kaldachompspit_*` | cross-dll (names dll 0x0D5) | main/dll/dll_00D7_kaldachompspit.c |
 | 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | main/dll/dll_011C_staffactivated.c |
 | 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | main/dll/dll_0230_dfpwallbar.c |

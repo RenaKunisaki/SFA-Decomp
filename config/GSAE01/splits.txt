@@ -1637,11 +1637,12 @@ dlls/objects/213_Kaldachom/Kaldachom.c:
 	.data       start:0x80320418 end:0x80320458
 	.bss        start:0x803AC668 end:0x803AC680
 	.sbss       start:0x803DDA90 end:0x803DDAA0
-	.sdata2     start:0x803E3060 end:0x803E3078
+	.sdata2     start:0x803E3060 end:0x803E30D0
 
-main/dll/dll_00D6_kaldachomme.c:
+dlls/objects/214_KaldachomMe/KaldachomMe.c:
 	.text       start:0x80169360 end:0x801696D4
 	.data       start:0x80320458 end:0x80320490
+	.sdata2     start:0x803E30D0 end:0x803E30DC
 
 main/dll/dll_00D7_kaldachompspit.c:
 	.text       start:0x801696D4 end:0x80169EF4

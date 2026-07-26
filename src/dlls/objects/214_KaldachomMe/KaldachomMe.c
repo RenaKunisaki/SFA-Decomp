@@ -78,15 +78,15 @@ void kaldachompme_setLinkedMouthMode(u8* obj, KaldaChompMeLinkedMode mode)
         switch (mode)
         {
         case KALDACHOMPME_LINKED_MOVE_0:
-            state->targetProgress = gKaldaChompOne;
-            state->progress = gKaldaChompZero;
-            state->step = gKaldaChompLinkedMouthStep;
+            state->targetProgress = 1.0f;
+            state->progress = 0.0f;
+            state->step = 0.025f;
             state->moveId = 0;
             break;
         case KALDACHOMPME_LINKED_MOVE_1:
-            state->targetProgress = gKaldaChompOne;
-            state->progress = gKaldaChompZero;
-            state->step = gKaldaChompLinkedMouthStep;
+            state->targetProgress = 1.0f;
+            state->progress = 0.0f;
+            state->step = 0.025f;
             state->moveId = 1;
             break;
         }
@@ -111,7 +111,7 @@ void KaldaChompMe_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 ren
 {
     if (renderFlag != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, gKaldaChompOne);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -132,7 +132,7 @@ void KaldaChompMe_update(GameObject* obj)
     if (current != target)
     {
         step = extra->step;
-        if (step > gKaldaChompZero)
+        if (step > 0.0f)
         {
             if (current < target)
             {
@@ -164,7 +164,7 @@ void KaldaChompMe_init(GameObject* obj, KaldaChompMePlacement* placement)
     (obj)->anim.rotY = (s16)(placement->rotYByte << 8);
     (obj)->anim.rotX = (s16)(placement->rotXByte << 8);
     (obj)->objectFlags = (u16)((obj)->objectFlags | KALDACHOMME_OBJFLAG_HITDETECT_DISABLED);
-    ObjAnim_SetCurrentMove((int)obj, 0, gKaldaChompZero, 0);
+    ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
 }
 
 void KaldaChompMe_release(void)
