@@ -1,20 +1,17 @@
 /*
- * wmlasertarget (DLL 0x01FD) - the laser target at Krazoa Palace.
+ * WM_LaserTar (DLL 0x01FD) - the laser target at Krazoa Palace.
  *
  * Each priority hit queues a toggle; once the cooldown runs out the
  * target flips its model bank and its two game bits together, then
  * rearms the cooldown from the placement.
  */
-#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "sys/objects.h"
-#include "game/objects/object_setup.h"
-#include "main/objhits.h"
-#include "main/gamebits.h"
-#include "main/frame_timing.h"
 #include "main/dll/WM/dll_01FD_wmlasertarget.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
 #include "main/object_render.h"
-
+#include "main/objhits.h"
+#include "sys/objects.h"
 
 int WM_LaserTarget_getExtraSize(void)
 {

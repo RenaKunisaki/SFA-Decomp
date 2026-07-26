@@ -552,7 +552,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1FA | WM_seqobjec | COMPLETE | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | = (canonical) | Retail basename is truncated |
 | 0x1FB | — | NO-RETAIL-NAME | dlls/objects/507/507.c | = (canonical) | — |
 | 0x1FC | — | COMPLETE | dlls/objects/508/508.c | = (canonical) | No recovered retail basename |
-| 0x1FD | WM_LaserTarget | CONFIRMED | main/dll/dll_01FD_wmlasertarget.c | main/dll/WM/dll_01FD_wmlasertarget.c | — |
+| 0x1FD | WM_LaserTar | COMPLETE | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | = (canonical) | Retail basename is truncated |
 | 0x1FE | PressureSwitch (+CFPressureS, DFP_PuzzleP, WM_Pressure, ECSH_Pressu) | CONFIRMED | main/dll/dll_01FE_pressureswitch.c | = (canonical) | — |
 | 0x1FF | — | NO-RETAIL-NAME | main/dll/dll_01FF_dll1ff.c | = (canonical) | — |
 | 0x200 | — | NO-RETAIL-NAME | main/dll/dll_0200_dll200.c | = (canonical) | — |
@@ -876,7 +876,7 @@ name was a deliberate choice by a previous carve:
 | 0x1F8 | main/dll/dll_01F8_wmgalleon.c | dlls/objects/504_WM_Galleon/WM_Galleon.c | COMPLETE |
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | COMPLETE |
 | 0x1FA | main/dll/dll_01FA_wmseqobject.c | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | COMPLETE |
-| 0x1FD | main/dll/dll_01FD_wmlasertarget.c | main/dll/WM/dll_01FD_wmlasertarget.c | CONFIRMED |
+| 0x1FD | main/dll/dll_01FD_wmlasertarget.c | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | COMPLETE |
 | 0x201 | main/dll/dll_0201_wmcolrise.c | main/dll/WM/dll_0201_wmcolrise.c | COMPLETE |
 | 0x204 | main/dll/dll_0204_wmtorch.c | main/dll/WM/dll_0204_wmtorch.c | COMPLETE |
 | 0x207 | main/dll/dll_0207_wmworm.c | main/dll/WM/dll_0207_wmworm.c | COMPLETE |
