@@ -2974,7 +2974,7 @@ dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c:
 	.sbss       start:0x803DDC00 end:0x803DDC08
 	.sdata2     start:0x803E5540 end:0x803E554C
 
-main/dll/SC/dll_01B6_sclevelcontrol.c:
+dlls/objects/438_SC_levelcon/SC_levelcon.c:
 	.text       start:0x801DB098 end:0x801DBFA0
 	.data       start:0x803278F8 end:0x80327938
 	.sdata      start:0x803DC060 end:0x803DC068

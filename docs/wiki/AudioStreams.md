@@ -1259,7 +1259,7 @@ the wiki's own "?" guesses:
 | `GF` | Game Front? or Great Fox? | **Both** exist as separate maps: `"gamefront"`(61) and `"greatfox"`(63) — resolves the wiki's own uncertainty; it isn't one or the other. |
 | `IM` | Ice Mountain | Confirmed: `"icemountain"`(30); plus `"newicemount"`/`"newicemount2"`/`"newicemount3"` sub-maps. |
 | `KP` | Krazoa Palace | Confirmed via two names: `"krazoapalace"` (sub-map table) and the canonical by-id name `"warlock"`(15). `src/main/dll/WM/*` (`wmspiritplace`, `wmsun`, `wmplanets`, `wmwallcrawler`, `wmseqpoint`) are the Krazoa-Palace/spirit-world DLLs. `MUSICTRIG_KP_Text` reuses "KP" directly. |
-| `LV` | LightFoot Village | Confirmed: `"lightfoot"`(21); internal map name `"swapcircle"`, `src/main/dll/SC/dll_01B6_sclevelcontrol.c`: "Master controller for the LightFoot Village (map `swapcircle`...)". |
+| `LV` | LightFoot Village | Confirmed: `"lightfoot"`(21); internal map name `"swapcircle"`, `src/dlls/objects/438_SC_levelcon/SC_levelcon.c`: "Master controller for the LightFoot Village (map `swapcircle`...)". |
 | `MAP` | World Map | Confirmed: `"worldmap"`(45). |
 | `MC` | Magic Cave? or Maze Cave? | Confirmed: `"magiccave"`(38) is a real map — "Magic Cave" is right. A separate, apparently unrelated `"mazecave"`(9) also exists; the two guesses turn out to both be real but distinct maps, and the 2-file `MC` stream folder (`MCaveIn`/`MCaveOut`) most likely corresponds to `"magiccave"`. |
 | `MMP` | Moon Mountain Pass | Confirmed: `"moonpass"` (sub-map table) / `"mmpass"` (by-id table, 25). |

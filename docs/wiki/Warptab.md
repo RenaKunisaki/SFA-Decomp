@@ -191,7 +191,7 @@ strong independent confirmation that the wiki's table is accurate:
 | `0x32` | Andross | `dll_02BC_andross.c`, `dll_011B_landedarwing.c`, `ARW/dll_029A_arwarwing.c` |
 | `0x33` | MazeCave | `dlls/objects/432_SH_swapston/SH_swapston.c` |
 | `0x4E` | Krazoa Palace Arwing landing spot | `dll_02BC_andross.c`, `dll_011B_landedarwing.c` |
-| `0x50` | Lightfoot Village plateau | `SC/dll_01B6_sclevelcontrol.c` |
+| `0x50` | Lightfoot Village plateau | `dlls/objects/438_SC_levelcon/SC_levelcon.c` |
 | `0x60` | World Map | `dll_0039_dummy39.c`: `DUMMY39_WARP_MAP`; `ARW/dll_029A_arwarwing.c` (×2) |
 | `0x63` | CloudRunner Fortress, fall through ground | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |
 | `0x6C` | ThornTail Hollow under the Arwing | `ARW/dll_029A_arwarwing.c`: `arwarwing_warpByCourse` |

@@ -588,7 +588,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `NW` | SnowHorn Wastes (map `nwastes`) | `src/dlls/objects/408_NWSH_levcon/NWSH_levcon.c` |
 | `SH` | SnowHorn / ThornTail Hollow | `src/dlls/objects/430_SH_LevelCon/SH_LevelCon.c` |
 | `SB` | ShipBattle (the prologue) | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
-| `SC` | LightFoot Village (map `swapcircle`) | `src/main/dll/SC/dll_01B6_sclevelcontrol.c` |
+| `SC` | LightFoot Village (map `swapcircle`) | `src/dlls/objects/438_SC_levelcon/SC_levelcon.c` |
 | `VF`/`VFP` | Volcano Force Point Temple | `src/main/dll/VF/dll_0216_vfplevelcontrol.c` |
 | `WC` | Walled City | `src/main/dll/WC/dll_028A_wcearthwalker.c` |
 | `WM` | Krazoa Palace | `src/main/dll/WM/dll_0209_wmlevelcontrol.c` (comment states this explicitly) |
