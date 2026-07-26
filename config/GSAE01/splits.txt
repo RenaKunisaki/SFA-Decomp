@@ -3383,7 +3383,7 @@ main/dll/DF/dll_022B_dfptorch.c:
 	.sbss       start:0x803DDCE8 end:0x803DDCF0
 	.sdata2     start:0x803E63C8 end:0x803E63F8
 
-main/dll/DF/dll_0230_dfpwallbar.c:
+dlls/objects/560_DFP_wallbar/DFP_wallbar.c:
 	.text       start:0x80205F40 end:0x80206474
 	.data       start:0x803299D8 end:0x80329A20
 	.sdata2     start:0x803E63F8 end:0x803E6408
