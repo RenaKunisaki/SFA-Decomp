@@ -602,7 +602,7 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
 int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     SBCloudRunnerState* state = obj->extra;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     int i;
     animUpdate->freeCallback = (ObjAnimSequenceFreeCallback)SB_CloudRunner_onSeqFree;
     state->spawnPosX = obj->anim.localPosX;
@@ -614,8 +614,8 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
     {
         if (animUpdate->eventIds[i] == 1)
         {
-            objHitDetectFn_80062e84((GameObject*)player, state->targetObj, 0);
-            fn_80295918((GameObject*)player, 5, lbl_803E5C70);
+            objHitDetectFn_80062e84(player, state->targetObj, 0);
+            fn_80295918(player, 5, lbl_803E5C70);
             state->done = 1;
         }
     }
@@ -633,16 +633,16 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
 
 void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state)
 {
-    int hitObj;
+    GameObject* hitObj;
     f32 pos[3];
     struct WCPartfxArgs args;
     int i;
 
-    if (ObjHits_GetPriorityHitWithPosition(obj, &hitObj, 0, 0, &pos[0], &pos[1], &pos[2]) != 0)
+    if (ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObj, 0, 0, &pos[0], &pos[1], &pos[2]) != 0)
     {
         if (objGetFlagsE5_2((u8*)obj) == 0)
         {
-            if (((GameObject*)hitObj)->anim.seqId != HIT_TYPE_INVULNERABLE)
+            if (hitObj->anim.seqId != HIT_TYPE_INVULNERABLE)
             {
                 Obj_SetModelColorFadeRecursive(obj, 175, 200, 0, 0, 1);
                 doRumble(lbl_803E5CB8);
@@ -657,7 +657,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
                 args.v[0] = 0;
                 args.v[1] = 0;
                 args.v[2] = 0;
-                if (((GameObject*)hitObj)->anim.seqId == HIT_TYPE_BURST)
+                if (hitObj->anim.seqId == HIT_TYPE_BURST)
                 {
                     (*gPartfxInterface)->spawnObject((void*)obj, PARTFX_HIT_FLASH, &args, PARTFX_SPAWN_FLAGS, -1, NULL);
                     (*gPartfxInterface)->spawnObject((void*)obj, PARTFX_HIT_FLASH, &args, PARTFX_SPAWN_FLAGS, -1, NULL);
