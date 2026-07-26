@@ -2396,7 +2396,7 @@ dlls/objects/388/388.c:
 	.data       start:0x803232C0 end:0x803232F8
 	.sdata2     start:0x803E45C8 end:0x803E45D8
 
-main/dll/dll_025B_msplantings.c:
+dlls/objects/603_MSPlantingS/MSPlantingS.c:
 	.text       start:0x801A9468 end:0x801A9E74
 	.data       start:0x803232F8 end:0x80323340
 	.sdata2     start:0x803E45D8 end:0x803E460C

@@ -1,5 +1,5 @@
 /*
- * msplantings (DLL 0x25B) - moon-seed planting spots.
+ * MSPlantingS (DLL 0x25B) - moon-seed planting spots.
  *
  * Each spot is a placeable object identified by its placement mapId; init maps
  * that id to a pair of game bits: one tracking whether a seed has been planted

@@ -646,7 +646,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | Descriptor is followed by the retail-ordered `sOnCloudFormat` diagnostic string |
 | 0x259 | SB_Cloudrunner | CONFIRMED | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | = (canonical) | Complete DOL-confirmed TU including its three leading `WCPushBlock_*` helpers |
 | 0x25A | StaticCamera | CONFIRMED | dlls/objects/602_StaticCamer/StaticCamer.c | = (canonical) | — |
-| 0x25B | MSPlantingS | RAW | main/dll/dll_025B_msplantings.c | = (canonical) | — |
+| 0x25B | MSPlantingS | RAW | dlls/objects/603_MSPlantingS/MSPlantingS.c | = (canonical) | Complete DOL-confirmed 14-function TU |
 | 0x25C | SnowClaw (+CRSnowClaw, CRSnowClaw2, CRSnowClaw3, IMSnowClaw, IMSnowClaw2) | CONFIRMED | main/snowclaw.c | main/dll/dll_025C_snowclaw.c | engine/SDK host: main/snowclaw.c |
 | 0x25D | CRCloudRace | CONFIRMED | main/crcloudrace.c | main/dll/CR/dll_025D_crcloudrace.c | engine/SDK host: main/crcloudrace.c |
 | 0x25E | CRSpellstone (+DrakorSpell) | CONFIRMED | main/spellstone.c | main/dll/CR/dll_025E_crspellstone.c | engine/SDK host: main/spellstone.c |
