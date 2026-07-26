@@ -113,7 +113,7 @@ void wallPlaneClampMoveTarget(float* outPos, WallPlaneState* plane, float latera
     outPos[2] = scale * plane->normal[2] + outPos[2];
 }
 
-void rachnopFindWallPlane(int* obj, int state)
+void rachnopFindWallPlane(GameObject* obj, int state)
 {
     u8 didHit;
     float* probeOffsets;
@@ -134,19 +134,19 @@ void rachnopFindWallPlane(int* obj, int state)
     probeOffsets = gDusterWallProbeOffsets;
     for (i = 0; didHit == 0 && i < 4; i++)
     {
-        maxv[0] = ((GameObject*)obj)->anim.localPosX + probeOffsets[i * 2 + 0];
-        maxv[1] = ((GameObject*)obj)->anim.localPosY;
-        maxv[2] = ((GameObject*)obj)->anim.localPosZ + probeOffsets[i * 2 + 1];
-        minv[0] = ((GameObject*)obj)->anim.localPosX - probeOffsets[i * 2 + 0];
-        minv[1] = ((GameObject*)obj)->anim.localPosY;
-        minv[2] = ((GameObject*)obj)->anim.localPosZ - probeOffsets[i * 2 + 1];
+        maxv[0] = obj->anim.localPosX + probeOffsets[i * 2 + 0];
+        maxv[1] = obj->anim.localPosY;
+        maxv[2] = obj->anim.localPosZ + probeOffsets[i * 2 + 1];
+        minv[0] = obj->anim.localPosX - probeOffsets[i * 2 + 0];
+        minv[1] = obj->anim.localPosY;
+        minv[2] = obj->anim.localPosZ - probeOffsets[i * 2 + 1];
         didHit = objBboxFn_800640cc(maxv, minv, gWallPlaneZero, 3, (TrackBBoxHit*)hit,
-                                    (GameObject*)obj, 5, 3, 0xff, 0);
+                                    obj, 5, 3, 0xff, 0);
     }
     if (didHit != 0)
     {
-        ((GameObject*)obj)->anim.localPosX = (hit[17] - (15.0f)) * ((minv[0] - maxv[0]) / (50.0f)) + maxv[0];
-        ((GameObject*)obj)->anim.localPosZ = (hit[17] - (15.0f)) * ((minv[2] - maxv[2]) / (50.0f)) + maxv[2];
+        obj->anim.localPosX = (hit[17] - (15.0f)) * ((minv[0] - maxv[0]) / (50.0f)) + maxv[0];
+        obj->anim.localPosZ = (hit[17] - (15.0f)) * ((minv[2] - maxv[2]) / (50.0f)) + maxv[2];
         *(float*)(state + DUSTER_WALL_NORMAL_X_OFFSET) = hit[7];
         *(float*)(state + DUSTER_WALL_NORMAL_Y_OFFSET) = hit[8];
         *(float*)(state + DUSTER_WALL_NORMAL_Z_OFFSET) = hit[9];
