@@ -1975,6 +1975,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/634_DR_Collapse/DR_Collapse.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/636_DR_LightBea/DR_LightBea.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/638_DRMusicCont/DRMusicCont.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/639/639.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0280_drcloudper.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0281_drearthcal.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0282_barrelgener.c", cflags=cflags_dll_noopt),
