@@ -2565,16 +2565,17 @@ dlls/objects/457_DIMDismount/DIMDismount.c:
 	.data       start:0x803254E8 end:0x80325528
 	.sdata2     start:0x803E4908 end:0x803E4928
 
-main/dll/DIM/dll_01CA_dimexplosion.c:
+dlls/objects/458_DIMExplosio/DIMExplosio.c:
 	.text       start:0x801B3DE4 end:0x801B57BC
 	.rodata     start:0x802C2328 end:0x802C2338
-	.data       start:0x80325528 end:0x803255C8
+	.data       start:0x80325528 end:0x80325590
 	.bss        start:0x803AC960 end:0x803AC970
 	.sbss       start:0x803DDB58 end:0x803DDB78
 	.sdata2     start:0x803E4928 end:0x803E49D0
 
 main/dll/DIM/dll_01CB_dimwooddoor2.c:
 	.text       start:0x801B57BC end:0x801B5A28
+	.data       start:0x80325590 end:0x803255C8
 	.sdata2     start:0x803E49D0 end:0x803E49E8
 
 main/dll/dll_01CE_dll1ce.c:

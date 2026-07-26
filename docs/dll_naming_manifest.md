@@ -501,7 +501,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C7 | DIMLavaSmas | COMPLETE | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | = (canonical) | — |
 | 0x1C8 | DIMBridgeCo | COMPLETE | dlls/objects/456_DIMBridgeCo/DIMBridgeCo.c | = (canonical) | — |
 | 0x1C9 | DIMDismount | COMPLETE | dlls/objects/457_DIMDismount/DIMDismount.c | = (canonical) | — |
-| 0x1CA | DIMExplosion | CONFIRMED | main/dll/dll_01CA_dimexplosion.c | main/dll/DIM/dll_01CA_dimexplosion.c | — |
+| 0x1CA | DIMExplosio | COMPLETE | dlls/objects/458_DIMExplosio/DIMExplosio.c | = (canonical) | — |
 | 0x1CB | DIMWoodDoor2 | CONFIRMED | main/dll/dll_01CB_dimwooddoor2.c | main/dll/DIM/dll_01CB_dimwooddoor2.c | — |
 | 0x1CC | DIMMagicBridge | CONFIRMED | main/dll/dll_01CC_dimmagicbridge.c | main/dll/DIM/dll_01CC_dimmagicbridge.c | — |
 | 0x1CD | DIM_LevelControl | CONFIRMED | main/dll/dll_01CD_dimlevelcontrol.c | main/dll/DIM/dll_01CD_dimlevelcontrol.c | — |
@@ -835,7 +835,7 @@ name was a deliberate choice by a previous carve:
 | 0x1C7 | main/dll/dll_01C7_dimlavasmash.c | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | COMPLETE |
 | 0x1C8 | main/dll/dll_01C8_dimbridgecogmai.c | dlls/objects/456_DIMBridgeCo/DIMBridgeCo.c | COMPLETE |
 | 0x1C9 | main/dll/dll_01C9_dimdismountpoint.c | dlls/objects/457_DIMDismount/DIMDismount.c | COMPLETE |
-| 0x1CA | main/dll/dll_01CA_dimexplosion.c | main/dll/DIM/dll_01CA_dimexplosion.c | CONFIRMED |
+| 0x1CA | main/dll/dll_01CA_dimexplosion.c | dlls/objects/458_DIMExplosio/DIMExplosio.c | COMPLETE |
 | 0x1CB | main/dll/dll_01CB_dimwooddoor2.c | main/dll/DIM/dll_01CB_dimwooddoor2.c | CONFIRMED |
 | 0x1CC | main/dll/dll_01CC_dimmagicbridge.c | main/dll/DIM/dll_01CC_dimmagicbridge.c | CONFIRMED |
 | 0x1CD | main/dll/dll_01CD_dimlevelcontrol.c | main/dll/DIM/dll_01CD_dimlevelcontrol.c | CONFIRMED |

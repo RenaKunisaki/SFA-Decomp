@@ -130,3 +130,20 @@ void dimwooddoor2_release(void)
 void dimwooddoor2_initialise(void)
 {
 }
+
+ObjectDescriptor gDIMWoodDoor2ObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dimwooddoor2_initialise,
+    (ObjectDescriptorCallback)dimwooddoor2_release,
+    0,
+    (ObjectDescriptorCallback)dimwooddoor2_init,
+    (ObjectDescriptorCallback)dimwooddoor2_update,
+    (ObjectDescriptorCallback)dimwooddoor2_hitDetect,
+    (ObjectDescriptorCallback)dimwooddoor2_render,
+    (ObjectDescriptorCallback)dimwooddoor2_free,
+    (ObjectDescriptorCallback)dimwooddoor2_getObjectTypeId,
+    dimwooddoor2_getExtraSize,
+};

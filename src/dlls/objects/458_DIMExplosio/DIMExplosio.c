@@ -1,5 +1,5 @@
 /*
- * explosion (DLL 0x1CA) - the generic explosion/fireball effect object.
+ * DIMExplosio (DLL 0x1CA) - the generic explosion/fireball effect object.
  *
  * The extra block (explosion_getExtraSize == 0xA60, ExplosionState) holds a
  * flame pool (50 x ExplosionDebris, 0x30 each, from offset 0) and a gravity
@@ -39,7 +39,6 @@
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTransform.h"
 #include "track/intersect_render_setup_api.h"
-#include "main/camera.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/DIM/dll_01CA_dimexplosion.h"
@@ -308,7 +307,7 @@ void explosion_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
                            ((ExplosionDebris*)cursor)->posZ - playerMapOffsetZ);
                 PSMTXConcat(mE, m4, mE);
                 PSMTXConcat(Camera_GetViewMatrix(), mE, mE);
-    GXLoadPosMtxImm((const f32(*)[4])mE, GX_PNMTX0);
+                GXLoadPosMtxImm((const f32(*)[4])mE, GX_PNMTX0);
                 ((u8*)&colA)[3] = ((ExplosionDebris*)cursor)->alpha;
                 cv = gExplosionDebrisColorScale *
                      (255.0f *
@@ -807,14 +806,13 @@ void explosion_initialise(void)
     }
 }
 
-
 f32 gExplosionSpreadDirs[] = {
-    1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+    1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    0.0f, -1.0f, 0.0f,
 };
 
-#include "main/dll/DIM/dll_01CB_dimwooddoor2.h"
-
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 ObjectDescriptor gExplosionObjDescriptor = {
     0,
     0,
@@ -830,20 +828,4 @@ ObjectDescriptor gExplosionObjDescriptor = {
     (ObjectDescriptorCallback)explosion_free,
     (ObjectDescriptorCallback)explosion_getObjectTypeId,
     explosion_getExtraSize,
-};
-ObjectDescriptor gDIMWoodDoor2ObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dimwooddoor2_initialise,
-    (ObjectDescriptorCallback)dimwooddoor2_release,
-    0,
-    (ObjectDescriptorCallback)dimwooddoor2_init,
-    (ObjectDescriptorCallback)dimwooddoor2_update,
-    (ObjectDescriptorCallback)dimwooddoor2_hitDetect,
-    (ObjectDescriptorCallback)dimwooddoor2_render,
-    (ObjectDescriptorCallback)dimwooddoor2_free,
-    (ObjectDescriptorCallback)dimwooddoor2_getObjectTypeId,
-    dimwooddoor2_getExtraSize,
 };
