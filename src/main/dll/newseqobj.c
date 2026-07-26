@@ -140,7 +140,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             }
             ret = rowsC[state[0x33c] * 12 + 9];
             ((SeqObj11EState*)state)->unk32C = ((SeqObj11EState*)state)->unk330;
-            z = lbl_803E2740;
+            z = 0.0f;
             ((SeqObj11EState*)state)->unk324 = z;
             ((SeqObj11EState*)state)->unk334 = z;
         }
@@ -162,7 +162,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
                 amount = 0;
             }
         }
-        z = lbl_803E2740;
+        z = 0.0f;
         ((SeqObj11EState*)state)->unk324 = z;
         if (state[0x2f1] & 0x18)
         {
@@ -179,7 +179,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
         {
             ((SeqObj11EState*)state)->unk334 = z;
         }
-        if (((SeqObj11EState*)state)->seqTimer != lbl_803E2740 && ((SeqObj11EState*)state)->seqNode != 0)
+        if (((SeqObj11EState*)state)->seqTimer && ((SeqObj11EState*)state)->seqNode != 0)
         {
             {
                 SeqRow16* rows = (SeqRow16*)rowsB;
@@ -271,7 +271,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     fn_8015039C(obj, state);
     {
         f32 t = ((SeqObj11EState*)state)->seqTimer;
-        f32 z = lbl_803E2740;
+        f32 z = 0.0f;
         if (t != z && ((SeqObj11EState*)state)->seqNode != 0)
         {
             ((SeqObj11EState*)state)->seqTimer = t - timeDelta;
@@ -291,7 +291,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     {
         if (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN)
         {
-            f32 z = lbl_803E2740;
+            f32 z = 0.0f;
             (obj)->anim.velocityZ = z;
             (obj)->anim.velocityY = z;
             (obj)->anim.velocityX = z;
@@ -356,7 +356,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
         }
         ((BaddieState*)state)->unk308 =
             (((BaddieState*)state)->pathStep - *(f32*)(state + 0x310)) / 60.0f *
-            (1.0f - ((delta >= lbl_803E2740) ? delta : -delta) / 65535.0f);
+            (1.0f - ((delta >= 0.0f) ? delta : -delta) / 65535.0f);
         if (*(f32*)(state + 0x308) < 0.005f)
         {
             *(f32*)(state + 0x308) = 0.005f;
@@ -382,12 +382,12 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                 if (*(f32*)(state + 0x310) > 1.2f)
                 {
                     ((SeqObj11EState*)state)->animFlags = 1;
-                    ObjAnim_SetCurrentMove((int)obj, tbl0[0x20], lbl_803E2740, 0);
+                    ObjAnim_SetCurrentMove((int)obj, tbl0[0x20], 0.0f, 0);
                 }
                 else
                 {
                     ((SeqObj11EState*)state)->animFlags = 1;
-                    ObjAnim_SetCurrentMove((int)obj, tbl0[0x14], lbl_803E2740, 0);
+                    ObjAnim_SetCurrentMove((int)obj, tbl0[0x14], 0.0f, 0);
                 }
             }
             else
@@ -397,8 +397,8 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                 state[0x2f4] = 0;
                 ((SeqObj11EState*)state)->animFlags = 1;
                 *(f32*)(state + 0x308) = 0.01f;
-                ObjAnim_SetCurrentMove((int)obj, tbl0[8], lbl_803E2740, 0);
-                *(f32*)(state + 0x310) = lbl_803E2740;
+                ObjAnim_SetCurrentMove((int)obj, tbl0[8], 0.0f, 0);
+                *(f32*)(state + 0x310) = 0.0f;
             }
         }
         baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
@@ -466,9 +466,9 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
     fn_8015039C(obj, state);
 
     {
-        if (((SeqObj11EState*)state)->seqTimer != lbl_803E2740 && ((SeqObj11EState*)state)->seqNode != 0)
+        if (((SeqObj11EState*)state)->seqTimer && ((SeqObj11EState*)state)->seqNode != 0)
         {
-            f32 zero = lbl_803E2740;
+            f32 zero = 0.0f;
             ((SeqObj11EState*)state)->seqTimer = ((SeqObj11EState*)state)->seqTimer - timeDelta;
             if (((SeqObj11EState*)state)->seqTimer <= zero)
             {
@@ -517,7 +517,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
             if (idleAnim == 0)
             {
                 ((SeqObj11EState*)state)->animFlags = 3;
-                ObjAnim_SetCurrentMove((int)obj, *(u8*)((u8*)animCtrl + 0x2c), lbl_803E2740, 0);
+                ObjAnim_SetCurrentMove((int)obj, *(u8*)((u8*)animCtrl + 0x2c), 0.0f, 0);
             }
             else
             {

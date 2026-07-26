@@ -221,7 +221,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
     }
     fn_8015039C(obj, state);
     tv = *(f32*)(state + 0x328);
-    fz = lbl_803E2740;
+    fz = 0.0f;
     if (tv != fz && *(u16*)(state + 0x338) != 0)
     {
         *(f32*)(state + 0x328) = tv - timeDelta;
