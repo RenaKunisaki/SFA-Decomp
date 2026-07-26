@@ -57,7 +57,7 @@
 #include "main/dll/mmp_cratercritter.h"
 #include "main/vecmath_distance_api.h"
 #include "main/audio/sfx.h"
-#include "main/dll/flameblast_api.h"
+#include "dlls/objects/243_flameblast.h"
 #include "main/dll/tumbleweedbush.h"
 #include "main/audio/sfx_looped_object_api.h"
 #include "main/dll/player_target.h"

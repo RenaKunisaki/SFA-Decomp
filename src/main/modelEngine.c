@@ -39,6 +39,7 @@
 #include "dlls/objects/240_WarpPoint.h"
 #include "dlls/objects/241_InvHit.h"
 #include "dlls/objects/242_iceblast.h"
+#include "dlls/objects/243_flameblast.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -186,8 +187,8 @@ extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescripto
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
     gFXEmitObjDescriptor, gFall_LaddersObjDescriptor, gFireFlyLanternObjDescriptor, gFireFlyObjDescriptor,
     gFireObjDescriptor;
-extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFlameblastObjDescriptor,
-    gFogControlObjDescriptor, gFuelCellObjDescriptor;
+extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor,
+    gFuelCellObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
@@ -1175,7 +1176,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWarpPointObjDescriptor,
     (ResourceDescriptor*)&gInvHitObjDescriptor,
     (ResourceDescriptor*)&gIceblastObjDescriptor,
-    &gFlameblastObjDescriptor,
+    (ResourceDescriptor*)&gFlameblastObjDescriptor,
     &gDoorF4ObjDescriptor,
     &gSidekickBallObjDescriptor,
     &gAreaObjDescriptor,

@@ -1,168 +1,132 @@
 /*
- * flameblast (DLL 0xF3) - Tricky's fire-breath projectile, a member of
- * the pushable/transporter object family.
+ * flameblast (DLL 0xF3) - Tricky's fire-breath projectiles.
  *
- * Spawned by Tricky (getTrickyObject), the blast flies along the rotated
- * fire direction: flameblast_seedVelocity seeds the velocity from Tricky's heading and
- * the path/queued-particle origin, and flameblast_update integrates the
- * launch position over a per-frame timer while arming the damage hit
- * volume once the timer passes a threshold. The object frees itself when
- * Tricky is gone or its free flag (state.freeRequested) is set.
+ * Seven staggered blasts fly along Tricky's rotated heading. Each projectile
+ * periodically refreshes its launch origin, arms its hit volume after a short
+ * delay, and retires when Tricky requests cleanup or is no longer present.
  */
+#include "dlls/objects/243_flameblast.h"
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "dlls/object_descriptor.h"
-#include "main/objfx.h"
-#include "sys/objects/lifecycle.h"
-#include "main/objhits.h"
-#include "main/dll/vecrotatezxy.h"
 #include "main/dll/dll_80136a40.h"
-#include "main/dll/flameblast_api.h"
+#include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "sys/objects/lifecycle.h"
 
-typedef struct FlameblastState
-{
-    f32 timer;         /* 0x00: per-frame flight timer */
-    f32 launchPosX;    /* 0x04: launch origin used by the localPos integration */
-    f32 launchPosY;    /* 0x08 */
-    f32 launchPosZ;    /* 0x0C */
-    u8 freeRequested;  /* 0x10: set externally to free the object next tick */
-    u8 hitVolumeDelay; /* 0x11: frames to delay before clearing hit volumes */
-    u8 pad12[0x14 - 0x12];
-} FlameblastState;
+#define FLAMEBLAST_HIT_VOLUME_SLOT 0x1A
+#define FLAMEBLAST_HIT_TYPE        1
 
-STATIC_ASSERT(offsetof(FlameblastState, freeRequested) == 0x10);
-STATIC_ASSERT(offsetof(FlameblastState, hitVolumeDelay) == 0x11);
-STATIC_ASSERT(sizeof(FlameblastState) == 0x14);
+#define FLAMEBLAST_FORWARD_SPEED -1.5f
+#define FLAMEBLAST_REACH_SCALE   0.4f
 
-typedef struct FlameblastPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1A - 0x18];
-    s16 initialTimer; /* 0x1a: seeds the flight timer (scaled at init) */
-} FlameblastPlacement;
+#define FLAMEBLAST_RENDER_BASE_SCALE 0.2f
+#define FLAMEBLAST_RENDER_SCALE_RATE 0.033333335f
+#define FLAMEBLAST_RENDER_EFFECT     2
 
-STATIC_ASSERT(sizeof(FlameblastPlacement) == 0x1C);
-STATIC_ASSERT(offsetof(FlameblastPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(FlameblastPlacement, initialTimer) == 0x1A);
+#define FLAMEBLAST_CYCLE_DURATION      24.0f
+#define FLAMEBLAST_HIT_ARM_TIME        6.0f
+#define FLAMEBLAST_INITIAL_PHASE_SCALE 3.4285715f
+#define FLAMEBLAST_INITIAL_HIT_DELAY   2
 
-#define FLAMEBLAST_HIT_VOLUME_SLOT 0x1a
-
-int flameblast_seedVelocity(GameObject* obj, FlameblastState* state);
-
-void objSetAnimSpeedTo1(GameObject* obj)
-{
+void objSetAnimSpeedTo1(GameObject* obj) {
     ((FlameblastState*)obj->extra)->freeRequested = 1;
 }
 
-int flameblast_seedVelocity(GameObject* obj, FlameblastState* state)
-{
+int flameblast_seedVelocity(GameObject* obj, FlameblastState* state) {
     GameObject* tricky = getTrickyObject();
     f32* origin;
-    f32 reach = 0.4f;
-    VecRotateZXYArg vec;
+    f32 reachScale = FLAMEBLAST_REACH_SCALE;
+    VecRotateZXYArg rotationArg;
 
-    if (state->freeRequested != 0 || tricky == NULL)
-    {
+    if (state->freeRequested != 0 || tricky == NULL) {
         Obj_FreeObject(obj);
         return 0;
     }
     obj->anim.velocityX = 0.0f;
     obj->anim.velocityY = 0.0f;
-    obj->anim.velocityZ = -1.5f;
-    vec.pos[1] = 0.0f;
-    vec.pos[2] = 0.0f;
-    vec.pos[3] = 0.0f;
-    vec.pos[0] = 1.0f;
-    vec.dir[2] = tricky->anim.rotZ;
-    vec.dir[1] = tricky->anim.rotY;
-    vec.dir[0] = tricky->anim.rotX + fn_80138F90(tricky);
-    vecRotateZXY(&vec.rotation.x, &obj->anim.velocity.x);
-    if ((tricky->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
-    {
+    obj->anim.velocityZ = FLAMEBLAST_FORWARD_SPEED;
+    rotationArg.pos[1] = 0.0f;
+    rotationArg.pos[2] = 0.0f;
+    rotationArg.pos[3] = 0.0f;
+    rotationArg.pos[0] = 1.0f;
+    rotationArg.rotation.z = tricky->anim.rotZ;
+    rotationArg.rotation.y = tricky->anim.rotY;
+    rotationArg.rotation.x = tricky->anim.rotX + fn_80138F90(tricky);
+    vecRotateZXY(&rotationArg.rotation.x, &obj->anim.velocity.x);
+    if ((tricky->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
         origin = trickyGetQueuedPathParticlePos(tricky);
-    }
-    else
-    {
+    } else {
         origin = &tricky->anim.localPosX;
     }
-    state->launchPosX = -(reach * obj->anim.velocityX - origin[0]);
-    state->launchPosY = -(reach * obj->anim.velocityY - origin[1]);
-    state->launchPosZ = -(reach * obj->anim.velocityZ - origin[2]);
-    if (state->hitVolumeDelay != 0)
-    {
-        state->hitVolumeDelay -= 1;
-    }
-    else
-    {
+    state->launchOriginX = -(reachScale * obj->anim.velocityX - origin[0]);
+    state->launchOriginY = -(reachScale * obj->anim.velocityY - origin[1]);
+    state->launchOriginZ = -(reachScale * obj->anim.velocityZ - origin[2]);
+    if (state->hitVolumeDelayCycles != 0) {
+        state->hitVolumeDelayCycles -= 1;
+    } else {
         ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
     }
     return 1;
 }
 
-int flameblast_getExtraSize(void)
-{
+int flameblast_getExtraSize(void) {
     return sizeof(FlameblastState);
 }
 
-void flameblast_render(GameObject* obj)
-{
-    f32 color[3];
-    f32 scale = 0.033333335f * ((FlameblastState*)obj->extra)->timer + 0.2f;
-    color[0] = 0.0f;
-    color[1] = 1.0f;
-    color[2] = 0.0f;
-    fn_80098B18(obj, scale, 2, 0, 0, color);
+void flameblast_render(GameObject* obj) {
+    f32 offset[3];
+    f32 scale =
+        FLAMEBLAST_RENDER_SCALE_RATE * ((FlameblastState*)obj->extra)->cycleTimer + FLAMEBLAST_RENDER_BASE_SCALE;
+
+    offset[0] = 0.0f;
+    offset[1] = 1.0f;
+    offset[2] = 0.0f;
+    fn_80098B18(obj, scale, FLAMEBLAST_RENDER_EFFECT, 0, 0, offset);
 }
 
-void flameblast_update(GameObject* obj)
-{
+void flameblast_update(GameObject* obj) {
     FlameblastState* state = obj->extra;
-    state->timer = state->timer + timeDelta;
-    if (state->timer > 24.0f)
-    {
-        state->timer = state->timer - 24.0f;
-        if (flameblast_seedVelocity(obj, state) == 0)
-        {
+
+    state->cycleTimer += timeDelta;
+    if (state->cycleTimer > FLAMEBLAST_CYCLE_DURATION) {
+        state->cycleTimer -= FLAMEBLAST_CYCLE_DURATION;
+        if (flameblast_seedVelocity(obj, state) == 0) {
             return;
         }
-    }
-    else
-    {
-        if (state->timer > 6.0f)
-        {
-            if (state->hitVolumeDelay == 0)
-            {
-                ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, FLAMEBLAST_HIT_VOLUME_SLOT, 1, 0);
+    } else {
+        if (state->cycleTimer > FLAMEBLAST_HIT_ARM_TIME) {
+            if (state->hitVolumeDelayCycles == 0) {
+                ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, FLAMEBLAST_HIT_VOLUME_SLOT, FLAMEBLAST_HIT_TYPE, 0);
             }
         }
     }
-    obj->anim.localPosX = obj->anim.velocityX * state->timer + state->launchPosX;
-    obj->anim.localPosY = obj->anim.velocityY * state->timer + state->launchPosY;
-    obj->anim.localPosZ = obj->anim.velocityZ * state->timer + state->launchPosZ;
+    obj->anim.localPosX = obj->anim.velocityX * state->cycleTimer + state->launchOriginX;
+    obj->anim.localPosY = obj->anim.velocityY * state->cycleTimer + state->launchOriginY;
+    obj->anim.localPosZ = obj->anim.velocityZ * state->cycleTimer + state->launchOriginZ;
 }
 
-void flameblast_init(GameObject* obj, FlameblastPlacement* placement)
-{
+void flameblast_init(GameObject* obj, FlameblastPlacement* placement) {
     FlameblastState* state = obj->extra;
+
     flameblast_seedVelocity(obj, state);
-    state->timer = 3.4285715f * (f32)placement->initialTimer;
-    state->hitVolumeDelay = 2;
+    state->cycleTimer = FLAMEBLAST_INITIAL_PHASE_SCALE * (f32)placement->streamIndex;
+    state->hitVolumeDelayCycles = FLAMEBLAST_INITIAL_HIT_DELAY;
 }
 
 ObjectDescriptor gFlameblastObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)flameblast_init,
-    (ObjectDescriptorCallback)flameblast_update,
-    0,
-    (ObjectDescriptorCallback)flameblast_render,
-    0,
-    0,
-    flameblast_getExtraSize,
+    0,                                              /* reserved0 */
+    0,                                              /* reserved1 */
+    0,                                              /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,               /* slotCountAndFlags */
+    0,                                              /* initialise */
+    0,                                              /* release */
+    0,                                              /* slot02 */
+    (ObjectDescriptorCallback)flameblast_init,      /* init */
+    (ObjectDescriptorCallback)flameblast_update,    /* update */
+    0,                                              /* hitDetect */
+    (ObjectDescriptorCallback)flameblast_render,    /* render */
+    0,                                              /* free */
+    0,                                              /* getObjectTypeId */
+    flameblast_getExtraSize,                        /* getExtraSize */
 };
