@@ -410,7 +410,7 @@ int dbegg_probeSurface(GameObject* obj, f32* out, f32 offsetX, f32 offsetZ, int 
     return 0;
 }
 
-void dbegg_computeFlocking(int obj, f32* vel)
+void dbegg_computeFlocking(GameObject* obj, f32* vel)
 {
     f32 limit;
     f32 force;
@@ -428,11 +428,11 @@ void dbegg_computeFlocking(int obj, f32* vel)
     {
         f32 dy;
         sibling = (u8*)*objCursor;
-        dy = ((GameObject*)sibling)->anim.localPosY - ((GameObject*)obj)->anim.localPosY;
+        dy = ((GameObject*)sibling)->anim.localPosY - obj->anim.localPosY;
         if (dy <= limit && dy >= -7.0f)
         {
-            f32 dx = ((GameObject*)sibling)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
-            f32 dz = ((GameObject*)sibling)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
+            f32 dx = ((GameObject*)sibling)->anim.localPosX - obj->anim.localPosX;
+            f32 dz = ((GameObject*)sibling)->anim.localPosZ - obj->anim.localPosZ;
             f32 dist = sqrtf(dx * dx + dz * dz);
             f32 radius = 1.5f * (f32)(u32) * (u8*)(*(int*)(sibling + 0x4c) + 0x19);
             if (dist < radius)
@@ -482,15 +482,15 @@ void dbegg_free(int obj)
     ObjGroup_RemoveObject(obj, DBEGG_OBJGROUP);
 }
 
-void dbegg_render(int obj, int p1, int p2, int p3, int p4, s8 visible)
+void dbegg_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 {
-    u8* inner = ((GameObject*)obj)->extra;
+    DbEggState* inner = obj->extra;
     if (visible != 0)
     {
-        u32 t = ((DbEggState*)inner)->mode;
+        u32 t = inner->mode;
         if (t != 0xc && t != 4 && t != 0xb)
         {
-            objRenderModelAndHitVolumes((GameObject*)obj, p1, p2, p3, p4, 1.0f);
+            objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
         }
     }
 }
@@ -649,7 +649,7 @@ void dbegg_update(GameObject* obj)
             flockVel[0] = 0.0f;
             flockVel[1] = fz;
             flockVel[2] = fz;
-            dbegg_computeFlocking((int)obj, flockVel);
+            dbegg_computeFlocking(obj, flockVel);
             (obj)->anim.velocityX = (obj)->anim.velocityX + flockVel[0];
             (obj)->anim.velocityY = (obj)->anim.velocityY + flockVel[1];
             (obj)->anim.velocityZ = (obj)->anim.velocityZ + flockVel[2];
