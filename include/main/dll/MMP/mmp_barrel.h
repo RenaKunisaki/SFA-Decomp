@@ -90,11 +90,11 @@ void waveanimator_initialise(void);
 
 int AlphaAnimator_getExtraSize(void);
 int AlphaAnimator_getObjectTypeId(void);
-void AlphaAnimator_free(int* obj);
+void AlphaAnimator_free(GameObject* obj);
 void AlphaAnimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void AlphaAnimator_hitDetect(void);
-void AlphaAnimator_update(int* obj);
-void AlphaAnimator_init(int* obj);
+void AlphaAnimator_update(GameObject* obj);
+void AlphaAnimator_init(GameObject* obj);
 void AlphaAnimator_release(void);
 void AlphaAnimator_initialise(void);
 
