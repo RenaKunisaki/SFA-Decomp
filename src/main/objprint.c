@@ -1455,7 +1455,7 @@ void objRenderModelAndHitVolumes(GameObject* obj, int p2, int p3, int p4, int p5
         objRenderModel(obj);
         if (obj->anim.hitVolumeTransforms != NULL)
         {
-            objRenderFn_80041018((GameObject*)obj);
+            objRenderFn_80041018(obj);
         }
     }
 }
@@ -1474,20 +1474,20 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
     int i;
     void (*vfn)(int, int, int, int, int, int);
 
-    if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_FREED) != 0 || ((GameObject*)obj)->ownerObj != NULL)
+    if ((obj->objectFlags & OBJECT_OBJFLAG_FREED) != 0 || obj->ownerObj != NULL)
         return;
-    if ((((GameObject*)obj)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
         return;
-    sub = *(void**)&((GameObject*)obj)->anim.parent;
+    sub = *(void**)&obj->anim.parent;
     if (sub != NULL && (((GameObject*)sub)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
         return;
 
     doNothing_beforeRenderObject(4);
-    ((GameObject*)obj)->objectFlags |= OBJECT_OBJFLAG_RENDERED;
-    sub = *(void**)&((GameObject*)obj)->anim.dll;
+    obj->objectFlags |= OBJECT_OBJFLAG_RENDERED;
+    sub = *(void**)&obj->anim.dll;
     if (sub != NULL)
     {
-        if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_HIDDEN) == 0)
+        if ((obj->objectFlags & OBJECT_OBJFLAG_HIDDEN) == 0)
         {
             vfn = *(void (**)(int, int, int, int, int, int))(*(int*)sub + 0x10);
             if (vfn != NULL)
@@ -1498,15 +1498,15 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
         else if ((s8)flag != 0 && OBJPRINT_ACTIVE_BANK(obj) != NULL)
         {
             objRenderModel(obj);
-            if (((GameObject*)obj)->anim.hitVolumeTransforms != NULL)
+            if (obj->anim.hitVolumeTransforms != NULL)
             {
-                objRenderFn_80041018((GameObject*)obj);
+                objRenderFn_80041018(obj);
             }
         }
     }
     else if ((s8)flag != 0)
     {
-        switch (((GameObject*)obj)->anim.seqId)
+        switch (obj->anim.seqId)
         {
         case 0:
         case 0x1f:
@@ -1516,16 +1516,16 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
             if (OBJPRINT_ACTIVE_BANK(obj) != NULL)
             {
                 objRenderModel(obj);
-                if (((GameObject*)obj)->anim.hitVolumeTransforms != NULL)
+                if (obj->anim.hitVolumeTransforms != NULL)
                 {
-                    objRenderFn_80041018((GameObject*)obj);
+                    objRenderFn_80041018(obj);
                 }
             }
             break;
         }
     }
     doNothing_afterRenderObject();
-    for (i = 0, walk = (int)obj; i < (s32)(u32)((GameObject*)obj)->childCount; i++)
+    for (i = 0, walk = (int)obj; i < (s32)(u32)obj->childCount; i++)
     {
         int staff = *(int*)&((GameObject*)walk)->childObjs[0];
         if (((GameObject*)staff)->anim.classId == 0x2d)
