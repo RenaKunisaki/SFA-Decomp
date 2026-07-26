@@ -148,8 +148,8 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
     list = (GameObject**)ObjList_GetObjects(&objIdx, &objCount);
     animUpdate->sequenceEventActive = 0;
     player = Obj_GetPlayerObject();
-    dx = ((GameObject*)player)->anim.localPosX - def->head.posX;
-    dy = ((GameObject*)player)->anim.localPosZ - def->head.posZ;
+    dx = player->anim.localPosX - def->head.posX;
+    dy = player->anim.localPosZ - def->head.posZ;
     dist = sqrtf(dx * dx + dy * dy);
     if (sub->gameBitA == -1)
     {
@@ -185,7 +185,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
         sd = mathSinf(ang[0]);
         s = mathCosf(ang[0]);
         sd = -(def->head.posX * sd + def->head.posZ * s) +
-             (sd * ((GameObject*)player)->anim.localPosX + s * ((GameObject*)player)->anim.localPosZ);
+             (sd * player->anim.localPosX + s * player->anim.localPosZ);
         thr = sub->openRange;
         if (dist < thr && gb != 0 && sd < thr && sd > -thr)
         {
@@ -222,7 +222,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
             sd = mathSinf(ang[0]);
             s = mathCosf(ang[0]);
             sd = -(def->head.posX * sd + def->head.posZ * s) +
-                 (sd * ((GameObject*)player)->anim.localPosX + s * ((GameObject*)player)->anim.localPosZ);
+                 (sd * player->anim.localPosX + s * player->anim.localPosZ);
             if (((GameObject*)obj)->userData2 == 0)
             {
                 if (sd < 0.0f && sd > -30.0f)
@@ -265,17 +265,17 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
             for (i = objIdx, walk = (GameObject**)((char*)list + i * 4); i < objCount && active == 0; walk++, i++)
             {
                 other = *walk;
-                if (((GameObject*)other)->anim.seqId == DOORF4_EXPLODABLE_SEQID)
+                if (other->anim.seqId == DOORF4_EXPLODABLE_SEQID)
                 {
-                    dx = ((GameObject*)other)->anim.localPosX - def->head.posX;
-                    dy = ((GameObject*)other)->anim.localPosZ - def->head.posZ;
+                    dx = other->anim.localPosX - def->head.posX;
+                    dy = other->anim.localPosZ - def->head.posZ;
                     if (sqrtf(dx * dx + dy * dy) < 320.0f)
                     {
                         ang[0] = (3.1415927f * (f32)(def->yawByte << 8)) / 32768.0f;
                         sd = mathSinf(ang[0]);
                         s = mathCosf(ang[0]);
                         sd = -(def->head.posX * sd + def->head.posZ * s) +
-                             (sd * ((GameObject*)other)->anim.localPosX + s * ((GameObject*)other)->anim.localPosZ);
+                             (sd * other->anim.localPosX + s * other->anim.localPosZ);
                         if (sd < 160.0f && sd > -200.0f)
                         {
                             active = 1;
@@ -316,7 +316,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
             sd = mathSinf(ang[0]);
             s = mathCosf(ang[0]);
             sd = -(def->head.posX * sd + def->head.posZ * s) +
-                 (sd * ((GameObject*)player)->anim.localPosX + s * ((GameObject*)player)->anim.localPosZ);
+                 (sd * player->anim.localPosX + s * player->anim.localPosZ);
             if (sd < 60.0f && sd > -60.0f)
             {
                 active = 1;
