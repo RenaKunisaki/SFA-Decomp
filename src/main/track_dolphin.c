@@ -3383,8 +3383,8 @@ u8 doEdges;
                         m = PSVECMag(en);
                         if (m > eps)
                         {
-                            f32 inv = one / m;
-                            PSVECScale(en, en, inv);
+                            m = one / m;
+                            PSVECScale(en, en, m);
                             *(f32*)(cur + (k22++) * 4 + 0x24) = en[0];
                             *(f32*)(cur + (k22++) * 4 + 0x24) = en[1];
                             *(f32*)(cur + (k22++) * 4 + 0x24) = en[2];
