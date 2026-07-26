@@ -1,5 +1,5 @@
 /*
- * ccqueen - CloudRunner Queen object (DLL 0x0187). The Queen in the
+ * CCqueen - CloudRunner Queen object (DLL 0x0187). The Queen in the
  * Crystal Caves throne room. Once the gas puzzle is done (gameBit 0xA3) and
  * the player gets close she latches gameBit 0x1C2; gameBit 0x1C3 retires
  * her (hidden + hits disabled). Otherwise she advances her current move,
