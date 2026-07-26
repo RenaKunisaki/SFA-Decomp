@@ -11,12 +11,12 @@
 #include "game/objects/object.h"
 #include "main/dll/bwalphaanim.h"
 
-void SB_CloudRunner_onSeqFree(int* obj)
+void SB_CloudRunner_onSeqFree(GameObject* obj)
 {
-    SnowBikeState* state = ((GameObject*)obj)->extra;
-    state->riderPosX = ((GameObject*)obj)->anim.localPosX;
-    state->riderPosY = ((GameObject*)obj)->anim.localPosY;
-    state->riderPosZ = ((GameObject*)obj)->anim.localPosZ;
-    state->riderYawOnFree = (s16)(((GameObject*)obj)->anim.rotX - 0x4000);
-    state->riderPitchOnFree = ((GameObject*)obj)->anim.rotZ;
+    SnowBikeState* state = obj->extra;
+    state->riderPosX = obj->anim.localPosX;
+    state->riderPosY = obj->anim.localPosY;
+    state->riderPosZ = obj->anim.localPosZ;
+    state->riderYawOnFree = (s16)(obj->anim.rotX - 0x4000);
+    state->riderPitchOnFree = obj->anim.rotZ;
 }
