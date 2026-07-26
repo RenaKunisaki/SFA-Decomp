@@ -37,7 +37,6 @@
 u8 gSbShipHeadHasFiredFireball = 1;
 
 STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
-
 STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 
 #define SBSHIPHEAD_OBJGROUP 3

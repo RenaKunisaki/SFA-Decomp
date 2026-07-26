@@ -1832,7 +1832,7 @@ config.libs = [
             Object(NonMatching, "dlls/objects/488_SB_Galleon/SB_Galleon.c", cflags=cflags_dll_noopt_noloopinv, mw_version="GC/1.3"),
             Object(Matching, "main/dll/dbdustgeezer.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/489_SB_Propelle/SB_Propelle.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/SB/dll_01EA_sbshiphead.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/490_SB_ShipHead/SB_ShipHead.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/SB/dll_01EB_sbshipmast.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/SB/dll_01EC_sbshipgun.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/SB/dll_01EE_sbcannonball.c", cflags=cflags_dll_noopt),
