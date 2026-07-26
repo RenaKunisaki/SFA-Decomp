@@ -1,5 +1,6 @@
 #include "dlls/objects/198_AnimatedObj.h"
 #include "dlls/objects/199_DIM2RoofRub.h"
+#include "dlls/objects/200_DepthOfFieldPoint.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -147,8 +148,7 @@ extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescript
     gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
 extern ResourceDescriptor gDeathGasObjDescriptor, gDeathSeqObjDescriptor, gDecoration11AObjDescriptor,
-    gDepthOfFieldPointObjDescriptor, gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor,
-    gDfppowerslObjDescriptor;
+    gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
 extern ResourceDescriptor gDfpstatue1ObjDescriptor, gDfptargetblockObjDescriptor, gDirectionalLightObjDescriptor,
     gDll14DObjDescriptor, gDllFCObjDescriptor, gDoorF4ObjDescriptor, gDoorObjDescriptor;
 extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gDrCageControlObjDescriptor,
@@ -1117,7 +1117,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&lbl_80320700,
     (ResourceDescriptor*)&gAnimatedObjDescriptor,
     (ResourceDescriptor*)&gDIM2RoofRubObjDescriptor,
-    &gDepthOfFieldPointObjDescriptor,
+    (ResourceDescriptor*)&gDepthOfFieldPointObjDescriptor,
     &gBaddieObjDescriptor,
     &gIceBaddieObjDescriptor,
     &dll_CB,

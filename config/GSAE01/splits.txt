@@ -1682,12 +1682,12 @@ dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c:
 
 dlls/objects/200_DepthOfFieldPoint/DepthOfFieldPoint.c:
 	.text       start:0x8016CD48 end:0x8016CEE8
-	.data       start:0x80320868 end:0x8032090C
+	.data       start:0x80320868 end:0x803208A0
 
 dlls/objects/226/226.c:
 	.text       start:0x8016CEE8 end:0x8016F16C
 	.rodata     start:0x802C2220 end:0x802C2260
-	.data       start:0x8032090C end:0x80320984
+	.data       start:0x803208A0 end:0x80320984
 	.bss        start:0x803AC6B8 end:0x803AC6E0
 	.sdata      start:0x803DBD50 end:0x803DBD58
 	.sbss       start:0x803DDAA0 end:0x803DDAB0
