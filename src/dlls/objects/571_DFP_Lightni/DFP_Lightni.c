@@ -1,9 +1,7 @@
-#include "main/dll/partfx_interface.h"
 #include "main/dfplightni.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
 #include "game/objects/object.h"
-#include "main/objhits.h"
 #include "main/frame_timing.h"
 
 #define DFPLIGHTNI_TIMER_MAX 1000.0f
@@ -216,28 +214,6 @@ void DFP_Lightni_init(DfpLightniObject* obj, DfpLightniMapData* mapData)
         state->eventId = mapData->eventId;
     }
     return;
-}
-
-int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject* obj)
-{
-    int i;
-    int outObj;
-
-    outObj = 0;
-    if (obj == 0)
-    {
-        return 0;
-    }
-    i = ObjHits_GetPriorityHit((GameObject*)obj, &outObj, 0, 0);
-    if (((u32)outObj != 0) && (i != 0))
-    {
-        i = 1;
-        do
-        {
-            (*gPartfxInterface)->spawnObject(obj, DFPPOWERSL_SPAWN_OBJECT_ID, 0, 1, 0xffffffff, 0);
-        } while (i++ < DFPPOWERSL_SPAWN_COUNT);
-    }
-    return 0;
 }
 
 ObjectDescriptor gDfplightniObjDescriptor = {

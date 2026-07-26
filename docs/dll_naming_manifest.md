@@ -614,7 +614,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x238 | LINKA_levco | COMPLETE | dlls/objects/568_LINKA_levco/LINKA_levco.c | = (canonical) | Exact retail basename; internal FireObject symbols retained |
 | 0x239 | — | COMPLETE | dlls/objects/569/569.c | = (canonical) | No recovered DLL basename; DFP_TextblockObj and KP_textbloc are object aliases; diagnostic string follows descriptor |
 | 0x23A | DFP_Platfor | COMPLETE | dlls/objects/570_DFP_Platfor/DFP_Platfor.c | = (canonical) | Exact truncated retail basename; diagnostic strings follow descriptor |
-| 0x23B | DFP_Lightni | CONFIRMED | main/dfplightni.c | main/dll/DF/dll_023B_dfplightni.c | engine/SDK host: main/dfplightni.c |
+| 0x23B | DFP_Lightni | COMPLETE | dlls/objects/571_DFP_Lightni/DFP_Lightni.c | = (canonical) | Exact truncated retail basename; next-slot DFP_PowerSl helper removed |
 | 0x23C | DFP_PowerSl | CONFIRMED | main/dfppowersl.c | main/dll/DF/dll_023C_dfppowersl.c | engine/SDK host: main/dfppowersl.c |
 | 0x23D | DBPointMum | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x23E | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |

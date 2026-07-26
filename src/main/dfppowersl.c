@@ -1,6 +1,5 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dfppowersl.h"
-#include "main/dfplightni.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
@@ -8,6 +7,28 @@
 static inline DfpPowerSlState* dfppowersl_getState(DfpPowerSlObject* obj)
 {
     return obj->state;
+}
+
+int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject* obj)
+{
+    int i;
+    int outObj;
+
+    outObj = 0;
+    if (obj == 0)
+    {
+        return 0;
+    }
+    i = ObjHits_GetPriorityHit((GameObject*)obj, &outObj, 0, 0);
+    if (((u32)outObj != 0) && (i != 0))
+    {
+        i = 1;
+        do
+        {
+            (*gPartfxInterface)->spawnObject(obj, DFPPOWERSL_SPAWN_OBJECT_ID, 0, 1, 0xffffffff, 0);
+        } while (i++ < DFPPOWERSL_SPAWN_COUNT);
+    }
+    return 0;
 }
 
 int dfppowersl_getExtraSize(void)
