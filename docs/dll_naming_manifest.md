@@ -330,7 +330,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x11A | — (+DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF) | NO-RETAIL-NAME | dlls/objects/282/282.c | = (canonical) | — |
 | 0x11B | Landed_Arwi | CONFIRMED | dlls/objects/283_Landed_Arwi/Landed_Arwi.c | = (canonical) | — |
 | 0x11C | — (+LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT) | NO-RETAIL-NAME | dlls/objects/284/284.c | = (canonical) | — |
-| 0x11D | TreasureChest (+MapTreasure) | CONFIRMED | main/dll/dll_011D_treasurechest.c | = (canonical) | — |
+| 0x11D | — (+TreasureChe, MapTreasure) | NO-RETAIL-NAME | dlls/objects/285/285.c | = (canonical) | — |
 | 0x11E | MagicCaveBottom | CONFIRMED | main/dll/dll_011E_magiccavebottom.c | = (canonical) | — |
 | 0x11F | MagicCaveTop | CONFIRMED | main/dll/dll_011F_magiccavetop.c | = (canonical) | — |
 | 0x120 | TrickyGuardspot | CONFIRMED | main/dll/dll_0120_trickyguardspot.c | = (canonical) | — |
