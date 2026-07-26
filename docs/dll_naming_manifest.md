@@ -456,7 +456,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x19A | — | NO-RETAIL-NAME | dlls/objects/410/410.c | = (canonical) | — |
 | 0x19B | — | NO-RETAIL-NAME | dlls/objects/411/411.c | = (canonical) | — |
 | 0x19C | — | NO-RETAIL-NAME | dlls/objects/412/412.c | = (canonical) | — |
-| 0x19D | — | NO-RETAIL-NAME | main/dll/dll_019D_dll19d.c | = (canonical) | — |
+| 0x19D | — | NO-RETAIL-NAME | dlls/objects/413/413.c | = (canonical) | — |
 | 0x19E | — | NO-RETAIL-NAME | main/dll/dll_019E_dim_tricky.c | = (canonical) | — |
 | 0x19F | NW_treebrid | RAW | main/dll/dll_019F_nwtreebrid.c | main/dll/NW/dll_019F_nwtreebrid.c | — |
 | 0x1A0 | NW_geyser | COMPLETE | main/dll/dll_01A0_nwgeyser.c | main/dll/NW/dll_01A0_nwgeyser.c | — |
