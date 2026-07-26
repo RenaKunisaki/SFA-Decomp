@@ -1,5 +1,5 @@
 /*
- * DragonRock Shrine lantern (DLL 0x178; "DFSH_Shrine") - the shrine's
+ * DFSH_Shrine (DLL 0x178) - the Dragon Rock shrine's
  * floating lantern object: it orbits and sways (sin-driven), animates its
  * model light, and once activated triggers the level unlock, music change
  * and screen transition.

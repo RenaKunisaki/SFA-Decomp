@@ -579,7 +579,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `CF` | CloudRunner Fortress | `src/dlls/objects/298_CFCrate/CFCrate.c` |
 | `DF` | DragonRock (rope/cradle machinery) | `src/dlls/objects/373_DFropenode/DFropenode.c` |
 | `DFP` | DragonRock Palace (spell-puzzle level) | `src/main/dll/DF/dll_0229_dfplevelcontrol.c` |
-| `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/main/dll/DF/dll_0178_dfshshrine.c` |
+| `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c` |
 | `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/main/dll/DIM/dll_01BE_dimlava.c` |
 | `GPSH` | a Krazoa-spirit shrine (area code not decoded) | `src/main/dll/dll_0192_gpshshrine.c` |
 | `MMP` | Moon Mountain Pass | `src/dlls/objects/271_MMP_Bridge/MMP_Bridge.c` |

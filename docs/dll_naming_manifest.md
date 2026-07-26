@@ -419,7 +419,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x175 | DFropenode | COMPLETE | dlls/objects/373_DFropenode/DFropenode.c | = (canonical) | — |
 | 0x176 | DFSH_Door1S | RAW | dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c | = (canonical) | data-only DLL |
 | 0x177 | — (+DFSH_Door2S, DFSH_Door3S, DFSH_Door4S) | NO-RETAIL-NAME | dlls/objects/375/375.c | = (canonical) | — |
-| 0x178 | DFSH_Shrine | CONFIRMED | main/dll/dll_0178_dfshshrine.c | main/dll/DF/dll_0178_dfshshrine.c | — |
+| 0x178 | DFSH_Shrine | CONFIRMED | dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c | = (canonical) | — |
 | 0x179 | DFSH_ObjCreator | CONFIRMED | main/dll/dll_0179_dfshobjcreator.c | main/dll/DF/dll_0179_dfshobjcreator.c | — |
 | 0x17A | SpiritPrize (+ECSH_Spirit) | CONFIRMED | main/dll/dll_017A_spiritprize.c | = (canonical) | — |
 | 0x17B | DFSH_LaserBeam | CONFIRMED | main/dll/dll_017B_dfshlaserbeam.c | main/dll/DF/dll_017B_dfshlaserbeam.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x178 | main/dll/dll_0178_dfshshrine.c | main/dll/DF/dll_0178_dfshshrine.c | CONFIRMED |
 | 0x179 | main/dll/dll_0179_dfshobjcreator.c | main/dll/DF/dll_0179_dfshobjcreator.c | CONFIRMED |
 | 0x17B | main/dll/dll_017B_dfshlaserbeam.c | main/dll/DF/dll_017B_dfshlaserbeam.c | CONFIRMED |
 | 0x17E | main/dll/dll_017E_mmplevelcontrol.c | main/dll/MMP/dll_017E_mmplevelcontrol.c | CONFIRMED |
