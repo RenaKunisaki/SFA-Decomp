@@ -1,5 +1,5 @@
 /*
- * barrelpad (DLL 0x12F) - the barrel-launcher pad object. Spawns
+ * BarrelPad (DLL 0x12F) - the barrel-launcher pad object. Spawns
  * arced-burst particle effects when the barrel's seqId indicates an
  * active launch (0x79) or a secondary launch state (0x748). init reads
  * rotation and rootMotionScale from the placement record and enables the

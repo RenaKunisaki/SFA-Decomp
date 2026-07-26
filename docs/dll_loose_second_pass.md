@@ -41,7 +41,7 @@ Total: **64** files.
 | dll_00D4_skeetlawall.c | 0 | 0 | 0 | 2 | 3 |
 | dll_00FC_babycloudrunner.c | 0 | 0 | 0 | 5 | 7 |
 | dll_0127_dll127.c | 0 | 0 | 0 | 3 | 5 |
-| dll_012F_barrelpad.c | 0 | 0 | 0 | 1 | 12 |
+| dlls/objects/303_BarrelPad/BarrelPad.c | 0 | 0 | 0 | 1 | 12 |
 | dll_0134_texscroll2.c | 0 | 0 | 0 | 3 | 9 |
 | dll_013D_explodeanimator.c | 0 | 0 | 0 | 2 | 6 |
 | dll_0142_felevcontrol.c | 0 | 0 | 0 | 4 | 2 |

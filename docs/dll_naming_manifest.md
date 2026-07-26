@@ -348,7 +348,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x12C | Transporter (+KP_Transpor) | CONFIRMED | dlls/objects/300_Transporter/Transporter.c | = (canonical) | — |
 | 0x12D | LFXEmitter | COMPLETE | dlls/objects/301_LFXEmitter/LFXEmitter.c | = (canonical) | — |
 | 0x12E | CFLightWall (+LaserTurret, DIMSpellsto, InfoTablet, CFrunnersta, CFLightPill, CFDungeonLi, CFGCrubble1, CFGCrubble2, CFGCrubble3, CFGCrubble4, CFGCpillbre, CFGCsmallbl, SkyDome, WCSunDoor, WCMoonDoor, DIM2Torch, CCdarkness, WORLDshield, GFRONT_Asse, LINKH_Asset, LINKC_Asset, LINKE_Asset, LINKJ_Asset, LINKF_Asset, AndrossSpir, GF_Pilotsea, GF_JukeBox, MMP_defenDo, NWCellLock, SH_BeaconTw, KP_console_, VFP_Warding, VFP_Maindoo, DFPSplstne, VFPSplstne, WM_Explosiv, DBprotectZo, KillerSpike, DR_Tower, DR_TestWall, DR_IonCanno, DR_TrackDoo, DR_CloudCal, DieSeqObjec, ARWArwingTa, ARWStarFiel, DirectionSi, FirePole, DragonFly) | CONFIRMED | dlls/objects/302/302.c | = (canonical) | — |
-| 0x12F | BarrelPad (+NWCallOFEld) | COMPLETE | main/dll/dll_012F_barrelpad.c | = (canonical) | — |
+| 0x12F | BarrelPad (+NWCallOFEld) | COMPLETE | dlls/objects/303_BarrelPad/BarrelPad.c | = (canonical) | — |
 | 0x130 | AreaFXEmit (+TAreaFXEmit) | COMPLETE | main/dll/dll_0130_areafxemit.c | = (canonical) | — |
 | 0x131 | CF_DoorLight (+DR_LightPol) | CONFIRMED | main/dll/dll_0131_cfdoorlight.c | main/dll/CF/dll_0131_cfdoorlight.c | — |
 | 0x132 | WaterFallSpray | CONFIRMED | main/dll/dll_0132_waterfallspray.c | = (canonical) | — |
