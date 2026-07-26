@@ -3211,7 +3211,7 @@ dlls/objects/508/508.c:
 	.data       start:0x803287B8 end:0x803287F0
 	.sdata2     start:0x803E5D10 end:0x803E5D58
 
-main/dll/dll_01FE_pressureswitch.c:
+dlls/objects/510/510.c:
 	.text       start:0x801F160C end:0x801F1BC8
 	.data       start:0x803287F0 end:0x80328828
 	.sdata2     start:0x803E5D58 end:0x803E5D7C

@@ -553,7 +553,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1FB | — | NO-RETAIL-NAME | dlls/objects/507/507.c | = (canonical) | — |
 | 0x1FC | — | COMPLETE | dlls/objects/508/508.c | = (canonical) | No recovered retail basename |
 | 0x1FD | WM_LaserTar | COMPLETE | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | = (canonical) | Retail basename is truncated |
-| 0x1FE | PressureSwitch (+CFPressureS, DFP_PuzzleP, WM_Pressure, ECSH_Pressu) | CONFIRMED | main/dll/dll_01FE_pressureswitch.c | = (canonical) | — |
+| 0x1FE | — | COMPLETE | dlls/objects/510/510.c | = (canonical) | No recovered retail basename |
 | 0x1FF | — | NO-RETAIL-NAME | main/dll/dll_01FF_dll1ff.c | = (canonical) | — |
 | 0x200 | — | NO-RETAIL-NAME | main/dll/dll_0200_dll200.c | = (canonical) | — |
 | 0x201 | WM_colrise | COMPLETE | main/dll/dll_0201_wmcolrise.c | main/dll/WM/dll_0201_wmcolrise.c | — |

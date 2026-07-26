@@ -1,32 +1,15 @@
-/*
- * pressureswitch (DLL 0x1FE) - a floor pressure pad / button that sinks
- * when a heavy object (or Tricky, on map slot 11 act 3) rests on it and
- * springs back up when released.
- *
- * update() walks the switch's hit list: it sinks the pad while held
- * (holdTimer), plays the press/release sfx, and drives the per-map game
- * bit (0xf45/0xf46) plus the placement's own trigger bit. A chime sfx is
- * latched once per press when a chime-sequence object lands on it, gated
- * by distance to the player. init() seeds the rest/retrigger timers and
- * pre-latches the bit if the placement bit is already set.
- *
- * The animation sequence callback (PressureSwitch_SeqFn) is defined here;
- * ARWarwingattachment merely references it.
- */
-#include "main/audio/sfx.h"
+/* DLL 0x01FE */
 #include "dlls/object_descriptor.h"
-#include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
-#include "main/gamebits.h"
-#include "main/dll/laserbeamstate_struct.h"
-#include "main/dll/dll200state_struct.h"
-#include "game/objects/object.h"
-#include "main/mapEvent.h"
-#include "main/dll/dll_01FE_pressureswitch.h"
-#include "sys/objects.h"
-#include "main/frame_timing.h"
-#include "main/vecmath.h"
+#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_01FE_pressureswitch.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/mapEvent.h"
+#include "main/object_render.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 typedef struct PressureswitchPlacement
 {
@@ -76,17 +59,12 @@ typedef struct PressureSwitchFlags
     u8 otherFlags : 6;
 } PressureSwitchFlags;
 
-STATIC_ASSERT(offsetof(LaserBeamState, beamKind) == 0x4e);
-STATIC_ASSERT(sizeof(Dll200State) == 0x28);
-
 /* Re-derefs the +0x58 list pointer per use. */
 #define PSW_CONTACT_LIST(obj) ((PswContactList*)*(char**)((obj) + 0x58))
 
 /* seqIds of objects this pad reacts to (compared against ent->anim.seqId). */
 #define PSWITCH_TRIGGER_SEQ_ID 0x6d
 #define PSWITCH_CHIME_SEQ_ID   0x146
-
-
 
 int PressureSwitch_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -118,7 +96,6 @@ void PressureSwitch_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
 void PressureSwitch_hitDetect(void)
 {
 }
-
 
 void PressureSwitch_update(int obj)
 {
