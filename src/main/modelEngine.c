@@ -52,6 +52,7 @@
 #include "dlls/objects/253.h"
 #include "dlls/objects/254_MagicPlant.h"
 #include "dlls/objects/255.h"
+#include "dlls/objects/256_TrickyWarp.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -249,8 +250,7 @@ extern ResourceDescriptor gStayPointObjDescriptor, gTexFrameAnimatorObjDescripto
     gTexscrollObjDescriptor, gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreasureChestObjDescriptor,
     gTreeBirdObjDescriptor, gTrickyCurveObjDescriptor, gTrickyGuardObjDescriptor, gTrickyGuardSpotObjDescriptor;
-extern ResourceDescriptor gTrickyObjDescriptor, gTrickyWarpObjDescriptor, gTriggerObjDescriptor,
-    gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
+extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
 extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescriptor, gVFP_LevelControlObjDescriptor,
     gVFP_MiniFireObjDescriptor, gVFP_ObjCreatorObjDescriptor, gVFP_PlatformObjDescriptor,
@@ -1199,7 +1199,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDllFDObjDescriptor,
     (ResourceDescriptor*)&gMagicPlantObjDescriptor,
     (ResourceDescriptor*)&gMagicGemObjDescriptor,
-    &gTrickyWarpObjDescriptor,
+    (ResourceDescriptor*)&gTrickyWarpObjDescriptor,
     &gTrickyGuardObjDescriptor,
     &gStayPointObjDescriptor,
     &gCurveFishObjDescriptor,

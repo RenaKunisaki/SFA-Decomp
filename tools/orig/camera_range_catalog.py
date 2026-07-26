@@ -132,7 +132,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Tricky warp visibility",
-        "src/main/dll/dll_0100_trickywarp.c",
+        "src/dlls/objects/256_TrickyWarp/TrickyWarp.c",
         "TrickyWarp_update",
         "Permits companion relocation only when the warp host is outside the view frustum.",
         "investigate",
