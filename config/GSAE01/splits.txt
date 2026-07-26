@@ -1644,7 +1644,7 @@ dlls/objects/214_KaldachomMe/KaldachomMe.c:
 	.data       start:0x80320458 end:0x80320490
 	.sdata2     start:0x803E30D0 end:0x803E30DC
 
-main/dll/dll_00D7_kaldachompspit.c:
+dlls/objects/215/215.c:
 	.text       start:0x801696D4 end:0x80169EF4
 	.data       start:0x80320490 end:0x803204C8
 	.sdata2     start:0x803E30E0 end:0x803E3110

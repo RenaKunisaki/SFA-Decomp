@@ -1,5 +1,5 @@
 /*
- * kaldachompspit (DLL 0x00D7) - the projectile spat by the KaldaChomp
+ * DLL 0x00D7 - the projectile spat by the KaldaChomp
  * plant. The object flies ballistically (gravity on velocityY), spins,
  * carries a glow light, and bursts on contact. Two variants keyed on
  * anim.seqId: 0x869 is the explosive variant (orange glow, spawnExplosion

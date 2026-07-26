@@ -73,7 +73,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/dlls/objects/204_ChukChuk/ChukChuk | 100.0000 | 62.2481 | -37.7519 |
 | main/main/objanim | 99.4767 | 61.8438 | -37.6330 |
 | main/main/dll/dll_016A_crrockfall | 100.0000 | 62.5634 | -37.4366 |
-| main/main/dll/dll_00D7_kaldachompspit | 100.0000 | 63.0135 | -36.9865 |
+| main/dlls/objects/215/215 | 100.0000 | 63.0135 | -36.9865 |
 | main/dlls/objects/208_Grimble/Grimble | 100.0000 | 63.0332 | -36.9668 |
 | main/main/dll/dll_0184_animsharpclaw | 100.0000 | 63.2147 | -36.7853 |
 | main/main/model | 99.7706 | 63.0566 | -36.7140 |
