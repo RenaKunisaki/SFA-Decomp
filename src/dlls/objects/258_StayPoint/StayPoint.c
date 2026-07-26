@@ -25,6 +25,8 @@
 #include "main/dll/dll_0102_staypoint.h"
 #include "main/vecmath_distance_api.h"
 
+extern f32 lbl_803E38A8; /* stay-point engage radius, squared */
+
 typedef void (*StayPointCommandCallback)(GameObject* tricky, GameObject* stayPoint, int enabled, int mode);
 
 typedef struct StayPointTrickyInterface
@@ -37,8 +39,6 @@ STATIC_ASSERT(offsetof(StayPointTrickyInterface, commandStay) == 0x28);
 
 /* hit-volume priority when a cMenu item is / isn't selected. */
 #define STAYPOINT_PRIORITY_MENU 0x10
-
-extern f32 lbl_803E38A8; /* stay-point engage radius, squared */
 
 void StayPoint_update(GameObject* obj)
 {
