@@ -1,5 +1,5 @@
 /*
- * mmpmoonrock (DLL 0x182) - Moon Mountain Pass carryable moon rock.
+ * MMP_moonroc (DLL 0x182) - Moon Mountain Pass carryable moon rock.
  *
  * A gCarryableInterface-backed object the player picks up and places on
  * pedestals. State tracks a "kind" gamebit (0..6) and a flag word driving
