@@ -389,8 +389,8 @@ Other concrete matches:
 - **The "Changed Names" section is independently corroborated by this codebase's own comments** —
   written from the disassembly with no knowledge of this wiki page, yet describing the exact same
   renames:
-  - `src/main/dll/WM/dll_020E_wmsun.c:2-3`: `"(map 'warlock' = Dinosaur Planet's Warlock Mountain,
-    hence the WM dll ...)"` — matches wiki's Krazoa Palace ⇐ Warlock Mountain.
+  - `src/dlls/objects/526_WM_sun/WM_sun.c:2-3` identifies the finale sky and crystal objects
+    with Warlock Mountain on Dinosaur Planet — matching Krazoa Palace ⇐ Warlock Mountain.
   - `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` implements `SB_Galleon`; its `SB` prefix matches
     the wiki's map `00`/dir `shipbattle`.
   - `src/dlls/objects/429_SH_thorntai/SH_thorntai.c:2`, `src/dlls/objects/433_SH_staff/SH_staff.c:4`: ThornTail Hollow

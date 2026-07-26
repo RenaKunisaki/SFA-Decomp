@@ -569,7 +569,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x20B | FireFly | COMPLETE | dlls/objects/523_FireFly/FireFly.c | = (canonical) | — |
 | 0x20C | WM_spiritpl | COMPLETE | dlls/objects/524_WM_spiritpl/WM_spiritpl.c | = (canonical) | — |
 | 0x20D | WM_seqpoint | COMPLETE | dlls/objects/525_WM_seqpoint/WM_seqpoint.c | = (canonical) | — |
-| 0x20E | WM_sun (+WM_Crystal) | COMPLETE | main/dll/dll_020E_wmsun.c | main/dll/WM/dll_020E_wmsun.c | — |
+| 0x20E | WM_sun | COMPLETE | dlls/objects/526_WM_sun/WM_sun.c | = (canonical) | — |
 | 0x20F | WM_SpiritSet | CONFIRMED | main/dll/dll_020F_wmspiritset.c | main/dll/WM/dll_020F_wmspiritset.c | — |
 | 0x210 | WM_Planets (+WM_PlanetsS) | COMPLETE | main/dll/dll_0210_wmplanets.c | main/dll/WM/dll_0210_wmplanets.c | — |
 | 0x211 | WM_WallCrawler (+DR_BigSkeet, DR_SmallSke) | CONFIRMED | main/dll/dll_0211_wmwallcrawler.c | main/dll/WM/dll_0211_wmwallcrawler.c | — |
@@ -884,7 +884,7 @@ name was a deliberate choice by a previous carve:
 | 0x20A | main/dll/dll_020A_wmgeneralscales.c | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | COMPLETE |
 | 0x20C | main/dll/dll_020C_wmspiritplace.c | dlls/objects/524_WM_spiritpl/WM_spiritpl.c | COMPLETE |
 | 0x20D | main/dll/dll_020D_wmseqpoint.c | dlls/objects/525_WM_seqpoint/WM_seqpoint.c | COMPLETE |
-| 0x20E | main/dll/dll_020E_wmsun.c | main/dll/WM/dll_020E_wmsun.c | COMPLETE |
+| 0x20E | main/dll/dll_020E_wmsun.c | dlls/objects/526_WM_sun/WM_sun.c | COMPLETE |
 | 0x20F | main/dll/dll_020F_wmspiritset.c | main/dll/WM/dll_020F_wmspiritset.c | CONFIRMED |
 | 0x210 | main/dll/dll_0210_wmplanets.c | main/dll/WM/dll_0210_wmplanets.c | COMPLETE |
 | 0x211 | main/dll/dll_0211_wmwallcrawler.c | main/dll/WM/dll_0211_wmwallcrawler.c | CONFIRMED |

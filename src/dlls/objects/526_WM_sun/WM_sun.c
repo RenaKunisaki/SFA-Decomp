@@ -1,54 +1,30 @@
 /*
- * wmsun (DLL 0x20E) - the finale sky/crystal objects at Krazoa Palace
- * (map 'warlock' = Dinosaur Planet's Warlock Mountain, hence the WM dll
- * prefix). One DLL serves two retail object defs, neither placed by any
- * romlist on the 124 retail maps - instances are spawned at runtime:
- *  - def 922 'WM_Crystal' (romlist type 0x262): Krystal's crystal
- *    prison above the palace. Each returned Krazoa spirit (game bits
- *    0x21B/0x21C/0x21D/0x21F/0x221/0x222) raises its rise threshold
- *    (100..6400); while below it the crystal grows, climbs and spins
- *    faster, rumbling the camera (bit 0x370) past 0x960. Once the
- *    last spirit is in it sets bit 0x38D, clears 0x370 and frees
- *    itself.
- *  - def 907 'WM_sun' (romlist type 0x2BD): despite the retail name
- *    there is no sun in the finale's storm sky - three additive layers
- *    (alpha 0xFF/0x55/0x19 by placement bank) that spawn INVISIBLE and
- *    spin until the crystal sets bit 0x38D; bank 0 then runs the finale
- *    countdowns in gWmSunQuakeTimer..B0 (armed to 800 at init): quakes, a
- *    ONE-SHOT envfx 0x30/0x34 burst, and finally bit 0x38F, after which
- *    every bank fades in and bank 0 flickers the view-dependent glare
- *    (wmsun_updateGlare, intensity/damping state in gWmSunGlareIntensity/A4).
- *    The on-screen visual is unconfirmed - plausibly the bright energy
- *    mass in the storm sky where the released spirits converge. The
- *    repeated explosion flashes over the crystal during the shake come
- *    from elsewhere (the wmnewcrystal detonations are three one-shots;
- *    this unit's envfx fires once).
- * A third variant (type 0x2C2, mapped to no def by the retail
- * OBJINDEX, so unreachable in retail) allocates the WmSunGlareParams
- * flicker table and scroll-fades a texture once bit 0x38F is set.
+ * WM_sun (DLL 0x020E) - finale sky and crystal objects at Warlock
+ * Mountain on Dinosaur Planet.
+ *
+ * The crystal rises as Krazoa Spirits return. The sun layers drive the
+ * finale quake, environment effects, fade, and view-dependent glare.
  */
-#include "main/audio/sfx_ids.h"
-#include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/render_envfx_api.h"
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/WM/dll_020E_wmsun.h"
-#include "main/object_render.h"
-#include "main/lightmap_api.h"
-#include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "main/objtexture.h"
-#include "main/mm.h"
-#include "main/gamebits.h"
-#include "main/mapEventTypes.h"
-#include "main/vecmath.h"
 #include "main/camera.h"
 #include "main/camera_shake_api.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/WM/dll_020E_wmsun.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/lightmap_api.h"
+#include "main/mapEventTypes.h"
+#include "main/mm.h"
+#include "main/object_render.h"
+#include "main/objtexture.h"
+#include "main/render_envfx_api.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
-/* romlist object-def variants driving this DLL's seqId branches (see
-   docblock): def 922 'WM_Crystal' (0x262) and def 907 'WM_sun' (0x2BD). */
+/* Object variants handled by this DLL. */
 #define WMSUN_SEQID_CRYSTAL 0x262
 #define WMSUN_SEQID_SUN     0x2bd
 
@@ -241,7 +217,7 @@ void wmsun_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
     if (vis != 0 && state->renderEnabled != 0)
     {
         doNothing_8005D148(p2, 0x10000);
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f); /* 1.0f */
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         doNothing_8005D14C(p2, 0x10000);
     }
 }
@@ -335,13 +311,10 @@ void wmsun_update(GameObject* obj)
         }
         return;
     }
-    if ((obj)->anim.seqId == 0x2c2) /* unreachable in retail */
+    if ((obj)->anim.seqId == 0x2c2)
     {
         if (mainGetBit(0x38f) != 0)
         {
-            /* v is only set when b < 0xfa - retail-faithful shape (at
-               b >= 0xfa the clamp-and-store is effectively a no-op);
-               same pattern in the fades below. Do not "fix". */
             curAlpha = objAnim->alpha;
             if (curAlpha < 0xfa)
             {
@@ -500,7 +473,7 @@ void wmsun_init(GameObject* obj, WmSunMapData* mapData)
         }
         else
         {
-            obj->anim.rootMotionScale = 1.0f; /* 1.0f */
+            obj->anim.rootMotionScale = 1.0f;
         }
     }
     else if (mode == WMSUN_SEQID_SUN) /* WM_sun */
@@ -538,7 +511,7 @@ void wmsun_init(GameObject* obj, WmSunMapData* mapData)
         }
         objAnim->alpha = 0;
     }
-    else if (mode == 0x2c2) /* unreachable in retail (no OBJINDEX entry) */
+    else if (mode == 0x2c2)
     {
         state->glareParams = (WmSunGlareParams*)mmAlloc(sizeof(WmSunGlareParams), 0xe, 0);
         i = 0x14;
