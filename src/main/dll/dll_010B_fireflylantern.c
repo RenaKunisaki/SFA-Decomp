@@ -213,3 +213,20 @@ void FireFlyLantern_init(GameObject* obj, FireFlyLanternPlacement* placement)
         }
     }
 }
+
+ObjectDescriptor gFireFlyLanternObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)FireFlyLantern_init,
+    (ObjectDescriptorCallback)FireFlyLantern_update,
+    0,
+    (ObjectDescriptorCallback)FireFlyLantern_render,
+    (ObjectDescriptorCallback)FireFlyLantern_free,
+    (ObjectDescriptorCallback)FireFlyLantern_getObjectTypeId,
+    FireFlyLantern_getExtraSize,
+};

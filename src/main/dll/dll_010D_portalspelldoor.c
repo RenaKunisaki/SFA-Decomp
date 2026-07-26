@@ -1,6 +1,5 @@
 /*
  * PortalSpellStone (DLL 0x10D, descriptor gPortalSpellDoorObjDescriptor).
- * TU = 0x80186498..0x80186704.
  */
 #include "game/objects/object.h"
 #include "main/object_render.h"
@@ -9,31 +8,16 @@
 #include "main/dll/dll_80136a40.h"
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
-#include "main/dll/windlift107state_struct.h"
 #include "main/dll/portalspelldoorstate_struct.h"
-#include "main/dll/scarabstate_struct.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
-#include "main/dll/dll_00E7_flammablevine.h"
-#include "main/dll/dll_0119_coldwatercontrol.h"
-#include "main/dll/dll_00EC_infopoint.h"
-#include "main/dll/dll_011A_decoration11a.h"
-#include "main/dll/dll_010C_lanternfirefly.h"
-#include "main/dll/dll_010B_fireflylantern.h"
-#include "main/dll/dll_010A_fallladders.h"
-#include "main/dll/dll_0109_unk.h"
-#include "main/dll/CF/windlift.h"
 
 typedef struct PortalspelldoorPlacement
 {
     u8 pad0[0x1E - 0x0];
     s16 openedGameBit;
 } PortalspelldoorPlacement;
-
-STATIC_ASSERT(sizeof(ScarabState) == 0x34);
-
-STATIC_ASSERT(sizeof(WindLift107State) == 0x2c);
 
 STATIC_ASSERT(sizeof(PortalSpellDoorState) == 0x10);
 
@@ -171,142 +155,4 @@ ObjectDescriptor gPortalSpellDoorObjDescriptor = {
     (ObjectDescriptorCallback)PortalSpellDoor_free,
     (ObjectDescriptorCallback)PortalSpellDoor_getObjectTypeId,
     PortalSpellDoor_getExtraSize,
-};
-
-/* descriptor/ptr table auto 0x80321830-0x80321a28 */
-ObjectDescriptor13WithPadding gLanternFireFlyObjDescriptor = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_13_SLOTS,
-        (ObjectDescriptorCallback)LanternFireFly_initialise,
-        (ObjectDescriptorCallback)LanternFireFly_release,
-        0,
-        (ObjectDescriptorCallback)LanternFireFly_init,
-        (ObjectDescriptorCallback)LanternFireFly_update,
-        (ObjectDescriptorCallback)LanternFireFly_hitDetect,
-        (ObjectDescriptorCallback)LanternFireFly_render,
-        (ObjectDescriptorCallback)LanternFireFly_free,
-        (ObjectDescriptorCallback)LanternFireFly_getObjectTypeId,
-        LanternFireFly_getExtraSize,
-        (ObjectDescriptorCallback)LanternFireFly_setScale,
-        (ObjectDescriptorCallback)LanternFireFly_func0B,
-        (ObjectDescriptorCallback)LanternFireFly_modelMtxFn,
-    },
-    0,
-};
-ObjectDescriptor gFireFlyLanternObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)FireFlyLantern_init,
-    (ObjectDescriptorCallback)FireFlyLantern_update,
-    0,
-    (ObjectDescriptorCallback)FireFlyLantern_render,
-    (ObjectDescriptorCallback)FireFlyLantern_free,
-    (ObjectDescriptorCallback)FireFlyLantern_getObjectTypeId,
-    FireFlyLantern_getExtraSize,
-};
-ObjectDescriptor gFlammableVineObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)FlammableVine_initialise,
-    (ObjectDescriptorCallback)FlammableVine_release,
-    0,
-    (ObjectDescriptorCallback)FlammableVine_init,
-    (ObjectDescriptorCallback)FlammableVine_update,
-    (ObjectDescriptorCallback)FlammableVine_hitDetect,
-    (ObjectDescriptorCallback)FlammableVine_render,
-    (ObjectDescriptorCallback)FlammableVine_free,
-    (ObjectDescriptorCallback)FlammableVine_getObjectTypeId,
-    FlammableVine_getExtraSize,
-};
-ObjectDescriptor gBreakableCarryableObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)breakableCarryable_initialise,
-    (ObjectDescriptorCallback)breakableCarryable_release,
-    0,
-    (ObjectDescriptorCallback)breakableCarryable_init,
-    (ObjectDescriptorCallback)breakableCarryable_update,
-    (ObjectDescriptorCallback)breakableCarryable_hitDetect,
-    (ObjectDescriptorCallback)breakableCarryable_render,
-    (ObjectDescriptorCallback)breakableCarryable_free,
-    (ObjectDescriptorCallback)breakableCarryable_getObjectTypeId,
-    breakableCarryable_getExtraSize,
-};
-ObjectDescriptor gFall_LaddersObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)Fall_Ladders_initialise,
-    (ObjectDescriptorCallback)Fall_Ladders_release,
-    0,
-    (ObjectDescriptorCallback)Fall_Ladders_init,
-    (ObjectDescriptorCallback)Fall_Ladders_update,
-    (ObjectDescriptorCallback)Fall_Ladders_hitDetect,
-    (ObjectDescriptorCallback)Fall_Ladders_render,
-    (ObjectDescriptorCallback)Fall_Ladders_free,
-    (ObjectDescriptorCallback)Fall_Ladders_getObjectTypeId,
-    Fall_Ladders_getExtraSize,
-};
-ObjectDescriptor gColdWaterControlObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)ColdWaterControl_init,
-    (ObjectDescriptorCallback)ColdWaterControl_update,
-    0,
-    0,
-    0,
-    0,
-    ColdWaterControl_getExtraSize,
-};
-InfoPointRenderBounds lbl_80321990 = {0x50, 0x230, 0x3c, 0x190};
-InfoPointSharedResources lbl_803219A0 = {NULL, {0, 0, 0, 0, 0}};
-ObjectDescriptor gInfoPointObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)InfoPoint_initialise,
-    (ObjectDescriptorCallback)InfoPoint_release,
-    0,
-    (ObjectDescriptorCallback)InfoPoint_init,
-    (ObjectDescriptorCallback)InfoPoint_update,
-    (ObjectDescriptorCallback)InfoPoint_hitDetect,
-    (ObjectDescriptorCallback)InfoPoint_render,
-    (ObjectDescriptorCallback)InfoPoint_free,
-    (ObjectDescriptorCallback)InfoPoint_getObjectTypeId,
-    InfoPoint_getExtraSize,
-};
-ObjectDescriptor gDecoration11AObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)decoration11a_init,
-    (ObjectDescriptorCallback)decoration11a_update,
-    (ObjectDescriptorCallback)decoration11a_hitDetect,
-    (ObjectDescriptorCallback)decoration11a_render,
-    (ObjectDescriptorCallback)decoration11a_free,
-    0,
-    decoration11a_getExtraSize,
 };

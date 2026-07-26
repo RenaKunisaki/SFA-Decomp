@@ -1,5 +1,5 @@
 /*
- * flammablevine (DLL 0xE7) - a burnable vine obstacle.
+ * DLL 0xE7 - flammablevine, CCeyeVines, and BurnableVin objects.
  *
  * Lives in object group 0x31. A flame hit (ObjHits priority-hit type
  * 0x1a) ignites it: the placement's "burned" game bit (placement->burnedBit)
@@ -28,6 +28,7 @@
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_00E7_flammablevine.h"
+#include "dlls/object_descriptor.h"
 
 #define FLAMMABLEVINE_SEQID_CC_EYE_VINES 0x102 /* retail "CCeyeVines" (DLL 0xE7) */
 #define FLAMMABLEVINE_HIT_VOLUME_SLOT 9
@@ -242,3 +243,20 @@ void FlammableVine_release(void)
 void FlammableVine_initialise(void)
 {
 }
+
+ObjectDescriptor gFlammableVineObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)FlammableVine_initialise,
+    (ObjectDescriptorCallback)FlammableVine_release,
+    0,
+    (ObjectDescriptorCallback)FlammableVine_init,
+    (ObjectDescriptorCallback)FlammableVine_update,
+    (ObjectDescriptorCallback)FlammableVine_hitDetect,
+    (ObjectDescriptorCallback)FlammableVine_render,
+    (ObjectDescriptorCallback)FlammableVine_free,
+    (ObjectDescriptorCallback)FlammableVine_getObjectTypeId,
+    FlammableVine_getExtraSize,
+};

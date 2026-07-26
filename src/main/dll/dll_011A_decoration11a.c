@@ -22,6 +22,7 @@
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/object_render.h"
 #include "main/object_transform.h"
+#include "dlls/object_descriptor.h"
 
 /* model/seq ids of the three variants that carry a collision volume */
 enum
@@ -224,3 +225,20 @@ void decoration11a_init(GameObject* obj, Decoration11ASetup* setup)
         }
     }
 }
+
+ObjectDescriptor gDecoration11AObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)decoration11a_init,
+    (ObjectDescriptorCallback)decoration11a_update,
+    (ObjectDescriptorCallback)decoration11a_hitDetect,
+    (ObjectDescriptorCallback)decoration11a_render,
+    (ObjectDescriptorCallback)decoration11a_free,
+    0,
+    decoration11a_getExtraSize,
+};

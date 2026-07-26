@@ -22,6 +22,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_010C_lanternfirefly.h"
+#include "dlls/object_descriptor.h"
 
 f32 lbl_803DBDD8 = 60.0f;
 
@@ -446,3 +447,26 @@ void LanternFireFly_release(void)
 void LanternFireFly_initialise(void)
 {
 }
+
+ObjectDescriptor13WithPadding gLanternFireFlyObjDescriptor = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_13_SLOTS,
+        (ObjectDescriptorCallback)LanternFireFly_initialise,
+        (ObjectDescriptorCallback)LanternFireFly_release,
+        0,
+        (ObjectDescriptorCallback)LanternFireFly_init,
+        (ObjectDescriptorCallback)LanternFireFly_update,
+        (ObjectDescriptorCallback)LanternFireFly_hitDetect,
+        (ObjectDescriptorCallback)LanternFireFly_render,
+        (ObjectDescriptorCallback)LanternFireFly_free,
+        (ObjectDescriptorCallback)LanternFireFly_getObjectTypeId,
+        LanternFireFly_getExtraSize,
+        (ObjectDescriptorCallback)LanternFireFly_setScale,
+        (ObjectDescriptorCallback)LanternFireFly_func0B,
+        (ObjectDescriptorCallback)LanternFireFly_modelMtxFn,
+    },
+    0,
+};

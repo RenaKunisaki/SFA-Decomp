@@ -108,3 +108,22 @@ void InfoPoint_release(void)
 void InfoPoint_initialise(void)
 {
 }
+
+InfoPointRenderBounds lbl_80321990 = {0x50, 0x230, 0x3c, 0x190};
+InfoPointSharedResources lbl_803219A0 = {NULL, {0, 0, 0, 0, 0}};
+ObjectDescriptor gInfoPointObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)InfoPoint_initialise,
+    (ObjectDescriptorCallback)InfoPoint_release,
+    0,
+    (ObjectDescriptorCallback)InfoPoint_init,
+    (ObjectDescriptorCallback)InfoPoint_update,
+    (ObjectDescriptorCallback)InfoPoint_hitDetect,
+    (ObjectDescriptorCallback)InfoPoint_render,
+    (ObjectDescriptorCallback)InfoPoint_free,
+    (ObjectDescriptorCallback)InfoPoint_getObjectTypeId,
+    InfoPoint_getExtraSize,
+};

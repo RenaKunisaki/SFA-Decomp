@@ -135,3 +135,20 @@ void breakableCarryable_release(void)
 void breakableCarryable_initialise(void)
 {
 }
+
+ObjectDescriptor gBreakableCarryableObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)breakableCarryable_initialise,
+    (ObjectDescriptorCallback)breakableCarryable_release,
+    0,
+    (ObjectDescriptorCallback)breakableCarryable_init,
+    (ObjectDescriptorCallback)breakableCarryable_update,
+    (ObjectDescriptorCallback)breakableCarryable_hitDetect,
+    (ObjectDescriptorCallback)breakableCarryable_render,
+    (ObjectDescriptorCallback)breakableCarryable_free,
+    (ObjectDescriptorCallback)breakableCarryable_getObjectTypeId,
+    breakableCarryable_getExtraSize,
+};

@@ -28,6 +28,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "dlls/object_descriptor.h"
 
 /* sequence id during which the object reacts to the two game bits */
 #define FALLLADDERS_SEQ_ID 0x548
@@ -173,3 +174,20 @@ void Fall_Ladders_release(void)
 void Fall_Ladders_initialise(void)
 {
 }
+
+ObjectDescriptor gFall_LaddersObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)Fall_Ladders_initialise,
+    (ObjectDescriptorCallback)Fall_Ladders_release,
+    0,
+    (ObjectDescriptorCallback)Fall_Ladders_init,
+    (ObjectDescriptorCallback)Fall_Ladders_update,
+    (ObjectDescriptorCallback)Fall_Ladders_hitDetect,
+    (ObjectDescriptorCallback)Fall_Ladders_render,
+    (ObjectDescriptorCallback)Fall_Ladders_free,
+    (ObjectDescriptorCallback)Fall_Ladders_getObjectTypeId,
+    Fall_Ladders_getExtraSize,
+};

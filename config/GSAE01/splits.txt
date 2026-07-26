@@ -1960,39 +1960,47 @@ main/dll/dll_0108_endobject.c:
 
 main/dll/dll_010D_portalspelldoor.c:
 	.text       start:0x80186498 end:0x80186704
-	.data       start:0x803217F8 end:0x80321A28
+	.data       start:0x803217F8 end:0x80321830
 
 main/dll/dll_010C_lanternfirefly.c:
 	.text       start:0x80186704 end:0x801871C8
+	.data       start:0x80321830 end:0x80321878
 	.sdata      start:0x803DBDD8 end:0x803DBDE0
 	.sbss       start:0x803DDAD8 end:0x803DDAE0
 	.sdata2     start:0x803E3AB0 end:0x803E3AB8
 
 main/dll/dll_010B_fireflylantern.c:
 	.text       start:0x801871C8 end:0x80187640
+	.data       start:0x80321878 end:0x803218B0
 
-main/dll/dll_00E7_flammablevine.c:
+dlls/objects/231/231.c:
 	.text       start:0x80187640 end:0x80187BA0
+	.data       start:0x803218B0 end:0x803218E8
 	.sdata2     start:0x803E3AF8 end:0x803E3B40
 
 main/dll/dll_0109_unk.c:
 	.text       start:0x80187BA0 end:0x80187F30
+	.data       start:0x803218E8 end:0x80321920
 	.sdata2     start:0x803E3B40 end:0x803E3B4C
 
 main/dll/dll_010A_fallladders.c:
 	.text       start:0x80187F30 end:0x8018824C
+	.data       start:0x80321920 end:0x80321958
 	.sdata2     start:0x803E3B50 end:0x803E3B68
 
 main/dll/dll_0119_coldwatercontrol.c:
 	.text       start:0x8018824C end:0x80188398
+	.data       start:0x80321958 end:0x80321990
 	.sdata2     start:0x803E3B68 end:0x803E3B70
 
 main/dll/dll_00EC_infopoint.c:
 	.text       start:0x80188398 end:0x80188584
+	.data       start:0x80321990 end:0x803219F0
 	.sdata2     start:0x803E3B70 end:0x803E3B74
 
 main/dll/dll_011A_decoration11a.c:
 	.text       start:0x80188584 end:0x801889C8
+	.data       start:0x803219F0 end:0x80321A28
 	.sdata2     start:0x803E3B78 end:0x803E3B98
 
 main/dll/dll_011B_landedarwing.c:

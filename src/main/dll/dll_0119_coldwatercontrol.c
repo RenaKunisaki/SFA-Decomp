@@ -21,6 +21,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0119_coldwatercontrol.h"
 #include "main/dll/player_api.h"
+#include "dlls/object_descriptor.h"
 
 #define GAMEBIT_COLDWATER_ARM  0x1bf
 #define GAMEBIT_COLDWATER_DONE 0x1bd
@@ -80,3 +81,20 @@ void ColdWaterControl_init(GameObject* obj)
     state->timer = -30.0f;
     obj->objectFlags = (u16)(obj->objectFlags | (COLDWATER_OBJFLAG_HIDDEN | COLDWATER_OBJFLAG_HITDETECT_DISABLED));
 }
+
+ObjectDescriptor gColdWaterControlObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)ColdWaterControl_init,
+    (ObjectDescriptorCallback)ColdWaterControl_update,
+    0,
+    0,
+    0,
+    0,
+    ColdWaterControl_getExtraSize,
+};
