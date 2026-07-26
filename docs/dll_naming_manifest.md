@@ -687,7 +687,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x281 | DR_EarthCal | RAW | dlls/objects/641_DR_EarthCal/DR_EarthCal.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x282 | BarrelGener | RAW | dlls/objects/642_BarrelGener/BarrelGener.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x283 | DR_BarrelGr | RAW | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | = (canonical) | Exact complete TU with descriptor at the physical end |
-| 0x284 | shopitem (+SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis) | GUESSED | main/dll/dll_0284_shopitem.c | = (canonical) | — |
+| 0x284 | — | NO-RETAIL-NAME | dlls/objects/644/644.c | = (canonical) | Exact complete ShopItem-family TU with descriptor at the physical end; object-definition aliases are not DLL basenames |
 | 0x285 | SPShop | CONFIRMED | main/dll/dll_0285_spshop.c | main/dll/SP/dll_0285_spshop.c | — |
 | 0x286 | SPShopKeeper | CONFIRMED | main/dll/dll_0286_spshopkeeper.c | main/dll/SP/dll_0286_spshopkeeper.c | — |
 | 0x287 | SPScarab | COMPLETE | main/dll/dll_0287_spscarab.c | main/dll/SP/dll_0287_spscarab.c | — |
