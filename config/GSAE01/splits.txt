@@ -2246,7 +2246,7 @@ dlls/objects/331_CFMainCryst/CFMainCryst.c:
 	.sbss       start:0x803DDB10 end:0x803DDB18
 	.sdata2     start:0x803E41D8 end:0x803E4210
 
-main/dll/dll_014C_babycloudrunner.c:
+dlls/objects/332/332.c:
 	.text       start:0x8019E3F4 end:0x8019F540
 	.data       start:0x80322B28 end:0x80322BA8
 	.sdata      start:0x803DBE28 end:0x803DBE50

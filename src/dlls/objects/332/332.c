@@ -1,6 +1,6 @@
 /*
- * sandwormBoss.c - 10-DLL container (DLL 0x14A CFPowerBase .. 0x157
- * SpiritDoorSpirit), TU [8019D578-801A0B14).
+ * DLL 0x14C - Baby CloudRunner behavior shared by the CFCloudBaby,
+ * CFAmbientCl, and SHCloudBaby object definitions.
  */
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"

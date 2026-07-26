@@ -375,7 +375,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x149 | — (+CFWindLift, CFTreasWind) | NO-RETAIL-NAME | dlls/objects/329/329.c | = (canonical) | — |
 | 0x14A | CFPowerBase | CONFIRMED | dlls/objects/330_CFPowerBase/CFPowerBase.c | = (canonical) | — |
 | 0x14B | CFMainCryst | CONFIRMED | dlls/objects/331_CFMainCryst/CFMainCryst.c | = (canonical) | — |
-| 0x14C | babycloudrunner (+CFCloudBaby, CFAmbientCl, SHCloudBaby) | GUESSED | main/dll/dll_014C_babycloudrunner.c | = (canonical) | — |
+| 0x14C | — (+babycloudrunner, CFCloudBaby, CFAmbientCl, SHCloudBaby) | NO-RETAIL-NAME | dlls/objects/332/332.c | = (canonical) | — |
 | 0x14D | LaserBeam | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x14E | CFPrisonGuard | CONFIRMED | main/dll/dll_014E_cfprisonguard.c | main/dll/CF/dll_014E_cfprisonguard.c | — |
 | 0x14F | CFPrisonUncle | CONFIRMED | main/dll/dll_014F_cfprisonuncle.c | main/dll/CF/dll_014F_cfprisonuncle.c | — |
