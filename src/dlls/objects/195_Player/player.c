@@ -7347,18 +7347,18 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
     }
     {
         PlayerState* player = obj->extra;
-        player->flags360 &= ~2LL;
-        player->flags360 |= 0x2000;
+        *(u32*)&player->flags360 &= ~2LL;
+        *(u32*)&player->flags360 |= 0x2000;
     }
-    state->baddie.flags4 |= 0x100000;
+    *(int*)((char*)state + 4) |= 0x100000;
     {
         f32 z = lbl_803E7EA4;
         state->baddie.animSpeedA = z;
         state->baddie.animSpeedB = z;
-        state->baddie.flags0 |= 0x200000;
+        *(int*)state |= 0x200000;
         obj->anim.velocityX = z;
         obj->anim.velocityZ = z;
-        state->baddie.flags4 |= 0x8000000;
+        *(int*)((char*)state + 4) |= 0x8000000;
         obj->anim.velocityY = z;
     }
     model = Player_GetActiveModel((int)obj);
@@ -8829,13 +8829,13 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         *(u32*)((char*)in2 + 0x360) &= ~2LL;
         *(u32*)((char*)in2 + 0x360) |= 0x2000LL;
     }
-    *(u32*)((char*)state + 4) |= 0x100000;
+    *(int*)((char*)state + 4) |= 0x100000;
     ((PlayerState*)state)->baddie.animSpeedA = z;
     ((PlayerState*)state)->baddie.animSpeedB = z;
-    *(u32*)state |= 0x200000;
+    *(int*)state |= 0x200000;
     ((GameObject*)obj)->anim.velocityX = z;
     ((GameObject*)obj)->anim.velocityZ = z;
-    *(u32*)((char*)state + 4) |= 0x8000000;
+    *(int*)((char*)state + 4) |= 0x8000000;
     gPlayerPrevMoveId = gPlayerCurrentMoveId;
     switch (gPlayerCurrentMoveId)
     {
@@ -8971,7 +8971,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.animSpeedB = z;
             ((GameObject*)obj)->anim.velocityX = z;
             ((GameObject*)obj)->anim.velocityZ = z;
-            *(u32*)((char*)state + 4) &= ~0x100000;
+            *(int*)((char*)state + 4) &= ~0x100000;
             fn_802AB5A4((GameObject*)obj, inner, 5);
             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
@@ -9016,7 +9016,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
                                              ((PlayerState*)inner)->moveStartZ;
         if (((GameObject*)obj)->anim.currentMoveProgress > lbl_803E7F68)
         {
-            *(u32*)((char*)state + 4) &= ~0x100000;
+            *(int*)((char*)state + 4) &= ~0x100000;
             fn_802AB5A4((GameObject*)obj, inner, 5);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_802A514C;
