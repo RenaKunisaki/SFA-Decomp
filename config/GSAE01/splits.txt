@@ -1855,7 +1855,7 @@ dlls/objects/250_InvisibleHi/InvisibleHi.c:
 dlls/objects/251/251.c:
 	.text       start:0x8017AC2C end:0x8017B5C8
 	.data       start:0x80321088 end:0x803210C0
-	.sdata2     start:0x803E3758 end:0x803E3780
+	.sdata2     start:0x803E3758 end:0x803E377C
 
 dlls/objects/272/272.c:
 	.text       start:0x8017B5C8 end:0x8017BB80
