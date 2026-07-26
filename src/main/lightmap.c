@@ -372,7 +372,7 @@ extern void* lbl_803DCEA0;
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage)
 {
     MapRomListPage* page;
-    MapRomListPage** pp;
+    MapRomListPage** pp[1];
     int inner_idx;
     int outer;
     int total_offset;
@@ -380,9 +380,9 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
     u16 limit;
     int sz;
 
-    for (outer = 0, pp = gLoadedRomListPages; outer < ROM_LIST_PAGE_COUNT; pp++, outer++)
+    for (outer = 0, pp[0] = gLoadedRomListPages; outer < ROM_LIST_PAGE_COUNT; pp[0]++, outer++)
     {
-        page = *pp;
+        page = *pp[0];
         if (page == NULL) continue;
 
         lbl_803DCEA0 = page;
