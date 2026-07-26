@@ -1,15 +1,9 @@
 /*
- * dimlava (DLL 0x1BE) - DIM lava-ball objects; the 0x1BE variant handles
+ * DLL 446 (0x1BE) - DIM lava-ball objects; this variant handles
  * both a small debris particle (seqId 0x1FA) and a full physics lava-ball
  * that homes on a target, glows, and triggers explosions on contact.
  */
 
-#define LAVA1BE_SEQID_DEBRIS 0x1fa
-#define LAVA1BE_PARTFX       0x1f5
-
-#define LAVA1BE_FLAG_UPDATED    0x08
-#define LAVA1BE_FLAG_INACTIVE   0x10
-#define LAVA1BE_FLAG_FALLING    0x20
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DIM/dll_01BE_dimlava.h"
 #include "main/rcp_dolphin_api.h"
@@ -20,7 +14,6 @@
 #include "main/objhits.h"
 #include "main/dll/IM/dll_016D_imicepillar.h"
 #include "dlls/object_descriptor.h"
-
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
@@ -31,6 +24,13 @@
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+
+#define LAVA1BE_SEQID_DEBRIS 0x1fa
+#define LAVA1BE_PARTFX       0x1f5
+
+#define LAVA1BE_FLAG_UPDATED  0x08
+#define LAVA1BE_FLAG_INACTIVE 0x10
+#define LAVA1BE_FLAG_FALLING  0x20
 
 typedef struct DimLavaDebrisLaunch
 {

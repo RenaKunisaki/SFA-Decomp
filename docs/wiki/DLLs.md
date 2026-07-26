@@ -580,7 +580,7 @@ spell several of these out explicitly where the wiki page doesn't:
 | `DF` | DragonRock (rope/cradle machinery) | `src/dlls/objects/373_DFropenode/DFropenode.c` |
 | `DFP` | DragonRock Palace (spell-puzzle level) | `src/main/dll/DF/dll_0229_dfplevelcontrol.c` |
 | `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c` |
-| `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/main/dll/DIM/dll_01BE_dimlava.c` |
+| `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/dlls/objects/446/446.c` |
 | `GPSH` | a Krazoa-spirit shrine (area code not decoded) | `src/dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c` |
 | `MMP` | Moon Mountain Pass | `src/dlls/objects/271_MMP_Bridge/MMP_Bridge.c` |
 | `MMSH` | Moon Mountain Pass Shrine (Krazoa spirit) | `src/dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c` |

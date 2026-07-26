@@ -142,7 +142,7 @@ address,section,size_bytes,byte_class,subtype_reason,adjacent_owner,adjacency_co
 0x803E442C,.sdata2,12,float-pool,read-only const/float pool (.sdata2),dll_0166_exploded.c,high,2,main/dll/dll_0167_spiritdoorlock.o,4,4,0,0
 0x803E4440,.sdata2,32,float-pool,read-only const/float pool (.sdata2),dll_0167_spiritdoorlock.c,high,1,main/dll/dll_0167_spiritdoorlock.o,28,4,0,0
 0x803E46D8,.sdata2,16,float-pool,read-only const/float pool (.sdata2),dll_018B_cclevcontrol.c,high,2,main/dll/DIM/DIMboulder.o,12,4,0,0
-0x803E480C,.sdata2,12,float-pool,read-only const/float pool (.sdata2),dll_01BE_dimlava.c,high,2,main/dll/DIM/dll_01BF_dimlavaball.o,8,4,0,0
+0x803E480C,.sdata2,12,float-pool,read-only const/float pool (.sdata2),446.c,high,2,main/dll/DIM/dll_01BF_dimlavaball.o,8,4,0,0
 0x803E4BB8,.sdata2,4,float-pool,read-only const/float pool (.sdata2),dll_01DF_dll1df.c,high,2,main/dll/dll_801b9ecc.o,4,0,0,0
 0x803E4C34,.sdata2,156,float-pool,read-only const/float pool (.sdata2),dim2lift.c,high,15,main/dll/DIM/DIM2icicle.o,148,8,0,0
 0x803E4D60,.sdata2,48,float-pool,read-only const/float pool (.sdata2),dll_01E5_dimbossspit.c,high,3,main/dll/DIM/dll_01E5_dimbossspit.o,44,4,0,0

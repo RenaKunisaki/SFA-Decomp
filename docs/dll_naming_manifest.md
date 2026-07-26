@@ -489,7 +489,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1BB | SC_totembon | COMPLETE | dlls/objects/443_SC_totembon/SC_totembon.c | = (canonical) | — |
 | 0x1BC | SC_totemstr | COMPLETE | dlls/objects/444_SC_totemstr/SC_totemstr.c | = (canonical) | — |
 | 0x1BD | SC_paypoint (+SPWell) | COMPLETE | dlls/objects/445/445.c | = (canonical) | No single recovered TU basename |
-| 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | GUESSED | main/dll/dll_01BE_dimlava.c | main/dll/DIM/dll_01BE_dimlava.c | — |
+| 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | COMPLETE | dlls/objects/446/446.c | = (canonical) | No single recovered TU basename |
 | 0x1BF | DIMLavaBall | RAW | main/dll/dll_01BF_dimlavaball.c | main/dll/DIM/dll_01BF_dimlavaball.c | — |
 | 0x1C0 | DIMLogFire (+DIMLogFireR) | COMPLETE | main/dll/dll_01C0_dimlogfire.c | main/dll/DIM/dll_01C0_dimlogfire.c | — |
 | 0x1C1 | DIMSnowBall | CONFIRMED | main/dll/dll_01C1_dimsnowball.c | main/dll/DIM/dll_01C1_dimsnowball.c | — |
@@ -823,7 +823,7 @@ name was a deliberate choice by a previous carve:
 | 0x1BB | main/dll/dll_01BB_sctotembond.c | dlls/objects/443_SC_totembon/SC_totembon.c | COMPLETE |
 | 0x1BC | main/dll/dll_01BC_sctotemstrength.c | dlls/objects/444_SC_totemstr/SC_totemstr.c | COMPLETE |
 | 0x1BD | main/dll/dll_01BD_paymentkiosk.c | dlls/objects/445/445.c | COMPLETE |
-| 0x1BE | main/dll/dll_01BE_dimlava.c | main/dll/DIM/dll_01BE_dimlava.c | GUESSED |
+| 0x1BE | main/dll/dll_01BE_dimlava.c | dlls/objects/446/446.c | COMPLETE |
 | 0x1BF | main/dll/dll_01BF_dimlavaball.c | main/dll/DIM/dll_01BF_dimlavaball.c | RAW |
 | 0x1C0 | main/dll/dll_01C0_dimlogfire.c | main/dll/DIM/dll_01C0_dimlogfire.c | COMPLETE |
 | 0x1C1 | main/dll/dll_01C1_dimsnowball.c | main/dll/DIM/dll_01C1_dimsnowball.c | CONFIRMED |
