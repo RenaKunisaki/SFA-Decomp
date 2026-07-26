@@ -1777,7 +1777,7 @@ main/dll/dll_00FF_magicgem.c:
 	.data       start:0x80320CB8 end:0x80320D10
 	.sdata2     start:0x803E34A8 end:0x803E3508
 
-main/dll/dll_00EE_effectbox.c:
+dlls/objects/238_EffectBox/EffectBox.c:
 	.text       start:0x80173F80 end:0x80174438
 	.data       start:0x80320D10 end:0x80320D48
 	.sdata2     start:0x803E3508 end:0x803E3528

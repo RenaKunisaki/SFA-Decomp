@@ -1,5 +1,5 @@
 /*
- * effectbox (DLL 0x00EE) - an oriented box trigger volume placed in a
+ * EffectBox (DLL 0xEE) - an oriented box trigger volume placed in a
  * level. Each frame EffectBox_update transforms a candidate object's
  * position into the box's local space (yaw/pitch from the placement) and,
  * if it lies inside the box extents, fires an action on that object.
