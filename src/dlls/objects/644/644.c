@@ -105,9 +105,9 @@ STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
 #define GX_ALWAYS      7
 #define GX_AOP_AND     0
 
-void shopitem_sparkleBlendSetup(int obj)
+void shopitem_sparkleBlendSetup(GameObject* obj)
 {
-    if (*(u8*)(obj + 0x37) == 0xFF)
+    if (obj->anim.renderAlpha == 0xFF)
     {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
     }
@@ -120,9 +120,9 @@ void shopitem_sparkleBlendSetup(int obj)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void shopitem_renderSparkle(int obj, int p2, int p3, int p4, int p5)
+void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
 {
-    ShopItemState* state = *(ShopItemState**)&((GameObject*)obj)->extra;
+    ShopItemState* state = *(ShopItemState**)&obj->extra;
     u8 i;
     u8 spawned = 0;
     ShopSparkleSpawn v;
@@ -131,17 +131,17 @@ void shopitem_renderSparkle(int obj, int p2, int p3, int p4, int p5)
 
     if (b->flag_40)
     {
-        objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 1, 1, 0x14, 3.5f, NULL, 0);
+        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 1, 1, 0x14, 3.5f, NULL, 0);
     }
     else
     {
-        objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 1, 1, 0x14, 4.5f, NULL, 0);
+        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 1, 1, 0x14, 4.5f, NULL, 0);
     }
     {
-        ModelRenderOp* renderOp = ObjModel_GetRenderOp(Obj_GetActiveModel((GameObject*)obj)->file, 0);
+        ModelRenderOp* renderOp = ObjModel_GetRenderOp(Obj_GetActiveModel(obj)->file, 0);
         renderOp->alphaOverride = 0x7F;
     }
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     for (i = 0; i < 10; i++)
     {
         if (state->lightningHandles[i] != NULL)
@@ -162,11 +162,11 @@ void shopitem_renderSparkle(int obj, int p2, int p3, int p4, int p5)
         {
             if (spawned == 0 && getHudHiddenFrameCount() == 0)
             {
-                v.owner = obj;
-                v.x = ((GameObject*)obj)->anim.localPosX;
-                v.y = ((GameObject*)obj)->anim.localPosY;
-                v.z = ((GameObject*)obj)->anim.localPosZ;
-                if ((u32)v.owner == obj)
+                v.owner = (int)obj;
+                v.x = obj->anim.localPosX;
+                v.y = obj->anim.localPosY;
+                v.z = obj->anim.localPosZ;
+                if ((u32)v.owner == (u32)obj)
                 {
                     if (b->flag_40)
                     {
@@ -181,7 +181,7 @@ void shopitem_renderSparkle(int obj, int p2, int p3, int p4, int p5)
                     v.z = scale * (f32)(int)(randomGetRange(0, 2000) - 1000) + v.z;
                 }
                 state->lightningHandles[i] =
-                    lightningCreate((const Vec3f*)(obj + 0xC), (const Vec3f*)&v, 4.0f, 0.2f,
+                    lightningCreate((const Vec3f*)&obj->anim.localPosX, (const Vec3f*)&v, 4.0f, 0.2f,
                                             0x14, 0x40, 0);
                 state->lightningTimers[i] = 0.0f;
                 spawned = 1;
@@ -293,7 +293,7 @@ void shopitem_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible
     {
         if ((obj)->anim.seqId == SHOPITEM_SEQ_SPARKLE)
         {
-            shopitem_renderSparkle((int)obj, 0, 0, 0, 0);
+            shopitem_renderSparkle(obj, 0, 0, 0, 0);
         }
         else
         {
@@ -428,7 +428,7 @@ void shopitem_update(GameObject* obj)
         }
         if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_DISABLED) == 0)
         {
-            objRenderFn_80041018((GameObject*)obj);
+            objRenderFn_80041018(obj);
         }
     }
 }
