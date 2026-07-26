@@ -46,6 +46,368 @@
 #include "dlls/object_descriptor.h"
 #include "string.h"
 #include "main/dll/dll_00D2_tumbleweed.h"
+#include "sys/objects/lifecycle.h"
+#include "main/obj_message.h"
+#include "main/gamebits.h"
+
+extern const f32 lbl_803E2FD8;
+extern const f32 lbl_803E2FDC;
+extern const f32 lbl_803E2FE0;
+extern const f32 gBackpackBounceDampingHorizontal;
+extern const f32 gBackpackBounceDampingVertical;
+extern const f32 lbl_803E2FEC;
+extern const f32 gBackpackBounceRestitution;
+extern const f32 lbl_803E2FF4;
+extern const f32 lbl_803E2FF8;
+extern const f32 lbl_803E2FFC;
+extern const f32 lbl_803E3000;
+extern const f32 lbl_803E3004;
+extern const f32 lbl_803E3008;
+extern const f32 lbl_803E300C;
+extern const f32 lbl_803E3010;
+
+#define LANDED_ARWING_SCRIPT_MODE 6
+
+/* obj+0xB8 overlay used only by TriggerLaunchTarget; the named fields line
+   up with GroundBaddieState (triggerId/gameBitA/subMode at 0x3F0/0x3F2/0x405). */
+typedef struct LandedArwingTriggerLaunchTargetState
+{
+    u8 pad0[0x3F0 - 0x0];
+    s16 launchMoveId;   /* 0x3F0 */
+    s16 triggerGameBit; /* 0x3F2 */
+    u8 pad3F4[0x405 - 0x3F4];
+    u8 subMode;         /* 0x405 */
+    u8 pad406[0x408 - 0x406];
+} LandedArwingTriggerLaunchTargetState;
+
+/* BaddieState+0x27A (moveJustStartedA): just-collided / move-just-started one-shot */
+#define LANDED_ARWING_JUST_COLLIDED 0x27A
+/* part of LANDED_ARWING_FLAG_LAUNCHING (0x02004000): mark launch active */
+#define LANDED_ARWING_FLAG_BOUNCE 0x4000
+
+int LandedArwing_ReturnZero(void)
+{
+    return 0;
+}
+
+int LandedArwing_TriggerLaunchTarget(int obj, int target)
+{
+    int* aux = ((GameObject*)obj)->extra;
+    if (*(s8*)(target + LANDED_ARWING_JUST_COLLIDED) != 0)
+    {
+        (*gBaddieControlInterface)
+            ->spawnChild((GameObject*)obj, (int)((LandedArwingTriggerLaunchTargetState*)aux)->launchMoveId, -1, 0);
+        (*gPlayerInterface)->spawnPartfx((void*)obj, (void*)target, 0x3c, 0xa, 0);
+        mainSetBits((int)((LandedArwingTriggerLaunchTargetState*)aux)->triggerGameBit, 1);
+        ((LandedArwingTriggerLaunchTargetState*)aux)->subMode = 0;
+    }
+    return 0;
+}
+
+int LandedArwing_UpdateBounceFade(int obj, u32* stateWord)
+{
+    f32 horizontalDamping;
+    LandedArwingState* state;
+    ObjHitsPriorityState* hitState;
+
+    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&((GameObject*)obj)->extra)->control;
+    ((BaddieState*)stateWord)->stateTag = 3;
+    if (*(s8*)((int)stateWord + LANDED_ARWING_JUST_COLLIDED) != 0)
+    {
+        ObjHits_DisableObject((GameObject*)obj);
+        ((GameObject*)obj)->anim.velocityX = -((GameObject*)obj)->anim.velocityX;
+        ((GameObject*)obj)->anim.velocityY = ((GameObject*)obj)->anim.velocityY + lbl_803E2FD8;
+        ((GameObject*)obj)->anim.velocityZ = -((GameObject*)obj)->anim.velocityZ;
+        ObjAnim_SetCurrentMove(obj, 3, lbl_803E2FDC, 0);
+        state->animSpeed = lbl_803E2FE0;
+    }
+    hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
+    hitState->objectPairHitVolume = 0;
+    *stateWord = *stateWord | LANDED_ARWING_FLAG_BOUNCE;
+    ((GameObject*)obj)->anim.velocityX =
+        ((GameObject*)obj)->anim.velocityX * (horizontalDamping = gBackpackBounceDampingHorizontal);
+    ((GameObject*)obj)->anim.velocityY =
+        gBackpackBounceDampingVertical * (((GameObject*)obj)->anim.velocityY - lbl_803E2FEC);
+    ((GameObject*)obj)->anim.velocityZ = ((GameObject*)obj)->anim.velocityZ * horizontalDamping;
+    objMove((GameObject*)obj, ((GameObject*)obj)->anim.velocityX, ((GameObject*)obj)->anim.velocityY,
+            ((GameObject*)obj)->anim.velocityZ);
+    if (((GameObject*)obj)->anim.localPosX < state->boundsMinX)
+    {
+        ((GameObject*)obj)->anim.localPosX = state->boundsMinX;
+        ((GameObject*)obj)->anim.velocityX = gBackpackBounceRestitution * -((GameObject*)obj)->anim.velocityX;
+    }
+    if (((GameObject*)obj)->anim.localPosX > state->boundsMaxX)
+    {
+        ((GameObject*)obj)->anim.localPosX = state->boundsMaxX;
+        ((GameObject*)obj)->anim.velocityX = gBackpackBounceRestitution * -((GameObject*)obj)->anim.velocityX;
+    }
+    if (((GameObject*)obj)->anim.localPosY < state->boundsMinY)
+    {
+        ((GameObject*)obj)->anim.localPosY = state->boundsMinY;
+        ((GameObject*)obj)->anim.velocityY = gBackpackBounceRestitution * -((GameObject*)obj)->anim.velocityY;
+    }
+    if (((GameObject*)obj)->anim.localPosY > state->boundsMaxY)
+    {
+        ((GameObject*)obj)->anim.localPosY = state->boundsMaxY;
+        ((GameObject*)obj)->anim.velocityY = gBackpackBounceRestitution * -((GameObject*)obj)->anim.velocityY;
+    }
+    if (((GameObject*)obj)->anim.localPosZ < state->boundsMinZ)
+    {
+        ((GameObject*)obj)->anim.localPosZ = state->boundsMinZ;
+        ((GameObject*)obj)->anim.velocityZ = gBackpackBounceRestitution * -((GameObject*)obj)->anim.velocityZ;
+    }
+    if (((GameObject*)obj)->anim.localPosZ > state->boundsMaxZ)
+    {
+        ((GameObject*)obj)->anim.localPosZ = state->boundsMaxZ;
+        ((GameObject*)obj)->anim.velocityZ = gBackpackBounceRestitution * -((GameObject*)obj)->anim.velocityZ;
+    }
+    if (lbl_803E2FF4 == ((GameObject*)obj)->anim.currentMoveProgress)
+    {
+        ObjMsg_SendToObjects(0, 3, (void*)obj, 0xe0000, obj);
+        Obj_FreeObject((GameObject*)obj);
+        return 0;
+    }
+    else
+    {
+        ((GameObject*)obj)->anim.alpha = (u8)(255 - (s32)(lbl_803E2FF8 * ((GameObject*)obj)->anim.currentMoveProgress));
+    }
+    return 0;
+}
+
+int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
+{
+    f32 scale;
+    int player;
+    LandedArwingState* state;
+    GameObject* playerObj;
+    f32 x;
+    f32 y;
+    f32 z;
+
+    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    player = (int)Obj_GetPlayerObject();
+    playerObj = (GameObject*)player;
+    ((BaddieState*)stateWord)->stateTag = 1;
+    if (*(s8*)(stateWord + LANDED_ARWING_JUST_COLLIDED) != 0)
+    {
+        state->scriptTimer = 0x3c;
+        state->speed = lbl_803E2FFC;
+        ObjHits_DisableObject(obj);
+    }
+    if (state->surfaceMode != LANDED_ARWING_SCRIPT_MODE &&
+        ((u32)player == 0 || playerObj->anim.worldPosX < state->boundsMinX ||
+         (playerObj->anim.worldPosX > state->boundsMaxX && playerObj->anim.worldPosY < state->boundsMinY) ||
+         (playerObj->anim.worldPosY > state->boundsMaxY && playerObj->anim.worldPosZ < state->boundsMinZ) ||
+         playerObj->anim.worldPosZ > state->boundsMaxZ))
+    {
+        x = (obj)->anim.localPosX;
+        y = (obj)->anim.localPosY;
+        z = (obj)->anim.localPosZ;
+        scale = lbl_803E2FDC;
+    }
+    else
+    {
+        x = (obj)->anim.localPosX - lbl_803E3000 * (playerObj->anim.localPosX - (obj)->anim.localPosX);
+        y = (obj)->anim.localPosY - lbl_803E3000 * (playerObj->anim.localPosY - (obj)->anim.localPosY);
+        z = (obj)->anim.localPosZ - lbl_803E3000 * (playerObj->anim.localPosZ - (obj)->anim.localPosZ);
+        scale = lbl_803E2FF4;
+    }
+    landedarwing_updateConstrainedChaseVelocity(obj, x, y, z, scale);
+    if (state->surfaceMode == LANDED_ARWING_SCRIPT_MODE)
+    {
+        if ((u32)((state->flags92 >> 2) & 1) != 0U)
+        {
+            landedarwing_updateAirborneMotion(obj, (int)state);
+        }
+        else
+        {
+            landedarwing_moveAlongSurface((int)obj, (int)state);
+        }
+    }
+    else
+    {
+        landedarwing_moveSurfaceCrawler((short*)obj, state);
+    }
+    if ((int)state->scriptTimer <= (int)(u32)framesThisStep)
+    {
+        return 2;
+    }
+    state->scriptTimer -= framesThisStep;
+    return 0;
+}
+
+ObjectDescriptor dll_D3 = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_D3_initialise,
+    (ObjectDescriptorCallback)dll_D3_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_D3_init,
+    (ObjectDescriptorCallback)dll_D3_update,
+    (ObjectDescriptorCallback)dll_D3_hitDetect_nop,
+    (ObjectDescriptorCallback)dll_D3_render,
+    (ObjectDescriptorCallback)dll_D3_free,
+    (ObjectDescriptorCallback)dll_D3_getObjectTypeId,
+    dll_D3_getExtraSize_ret_1188,
+};
+
+/* raw offsets used by the landed-arwing state handlers */
+#define BADDIESTATE_HANDLER_TICK_FLAG 0x34d
+#define BADDIESTATE_JUST_LAUNCHED 0x27a
+
+#define LANDED_ARWING_OBJECT_PAIR_PRIORITY 9
+#define LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME 1
+
+#define LANDED_ARWING_TARGET_PLAYER 0
+#define LANDED_ARWING_TARGET_WANDER 1
+#define LANDED_ARWING_TARGET_SCRIPT 2
+
+#define LANDED_ARWING_FLAG_SCRIPT_TARGET 0x01
+#define LANDED_ARWING_FLAG_LAUNCHING 0x02004000
+
+#define LANDED_ARWING_REVERSE_CHASE_GAMEBIT 0x698
+#define LANDED_ARWING_WANDER_TIME_MIN 0x12c
+#define LANDED_ARWING_WANDER_TIME_MAX 0x258
+
+typedef struct
+{
+    u8 high7 : 7;
+    u8 bit0 : 1;
+} LandedArwingFlags;
+
+u32 LandedArwing_UpdateFlightChase(int obj, int state)
+{
+    int playerObj;
+    LandedArwingState* sub;
+    int targetMode;
+    f32 targetX;
+    f32 targetY;
+    f32 targetZ;
+    f32 chaseScale;
+    u32 scriptFlags;
+
+    sub = (LandedArwingState*)((GroundBaddieState*)*(int*)&((GameObject*)obj)->extra)->control;
+    playerObj = (int)Obj_GetPlayerObject();
+    *(u8*)(state + BADDIESTATE_HANDLER_TICK_FLAG) = 1;
+
+    if (*(s8*)(state + BADDIESTATE_JUST_LAUNCHED) != 0)
+    {
+        sub->speed = lbl_803E3004;
+        ObjHits_EnableObject((GameObject*)obj);
+        ((GameObject*)obj)->anim.velocityX =
+            -sub->speed * fsin16Precise(((GameObject*)obj)->anim.rotX & 0xffff);
+        ((GameObject*)obj)->anim.velocityY = lbl_803E2FDC;
+        ((GameObject*)obj)->anim.velocityZ =
+            -sub->speed * fcos16Precise(((GameObject*)obj)->anim.rotX & 0xffff);
+        *(u32*)state |= LANDED_ARWING_FLAG_LAUNCHING;
+        ObjAnim_SetCurrentMove(obj, 0, lbl_803E2FDC, 0);
+        sub->animSpeed = lbl_803E3008;
+    }
+
+    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, LANDED_ARWING_OBJECT_PAIR_PRIORITY, LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME, -1);
+    ((ObjHitsPriorityState *)((GameObject *)obj)->anim.hitReactState)->objectPairPriority = LANDED_ARWING_OBJECT_PAIR_PRIORITY;
+    ((ObjHitsPriorityState *)((GameObject *)obj)->anim.hitReactState)->objectPairHitVolume = LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME;
+    ObjHits_RegisterActiveHitVolumeObject((GameObject*)obj);
+
+    (*gPathControlInterface)->advance((void*)obj, (void*)(state + 4), timeDelta);
+
+    if (sub->surfaceMode != LANDED_ARWING_SCRIPT_MODE)
+    {
+        if ((u32)playerObj != 0 &&
+            ((GameObject*)playerObj)->anim.worldPosX >= sub->boundsMinX &&
+            ((GameObject*)playerObj)->anim.worldPosX <= sub->boundsMaxX &&
+            ((GameObject*)playerObj)->anim.worldPosY >= sub->boundsMinY &&
+            ((GameObject*)playerObj)->anim.worldPosY <= sub->boundsMaxY &&
+            ((GameObject*)playerObj)->anim.worldPosZ >= sub->boundsMinZ &&
+            ((GameObject*)playerObj)->anim.worldPosZ <= sub->boundsMaxZ)
+        {
+            targetMode = LANDED_ARWING_TARGET_PLAYER;
+        }
+        else
+        {
+            targetMode = LANDED_ARWING_TARGET_WANDER;
+        }
+    }
+    else
+    {
+        scriptFlags = sub->flags92;
+        if ((scriptFlags & LANDED_ARWING_FLAG_SCRIPT_TARGET) != 0)
+        {
+            targetMode = LANDED_ARWING_TARGET_SCRIPT;
+            if ((s32)sub->scriptTimer <= framesThisStep)
+            {
+                ((LandedArwingFlags*)&sub->flags92)->bit0 = 0;
+            }
+            else
+            {
+                sub->scriptTimer -= framesThisStep;
+            }
+        }
+        else
+        {
+            targetMode = LANDED_ARWING_TARGET_PLAYER;
+        }
+    }
+
+    switch (targetMode)
+    {
+    case LANDED_ARWING_TARGET_PLAYER:
+        targetX = ((GameObject*)playerObj)->anim.localPosX;
+        targetY = ((GameObject*)playerObj)->anim.localPosY - lbl_803E2FD8;
+        targetZ = ((GameObject*)playerObj)->anim.localPosZ;
+        chaseScale = lbl_803E300C;
+        if (mainGetBit(LANDED_ARWING_REVERSE_CHASE_GAMEBIT) != 0)
+        {
+            chaseScale = -lbl_803E300C;
+        }
+        break;
+    case LANDED_ARWING_TARGET_WANDER:
+        if ((s32)sub->wanderTimer <= framesThisStep)
+        {
+            sub->wanderTargetX = (f32)(s32)randomGetRange((s32)sub->boundsMinX, sub->boundsMaxX);
+            sub->wanderTargetY = (f32)(s32)randomGetRange((s32)sub->boundsMinY, sub->boundsMaxY);
+            sub->wanderTargetZ = (f32)(s32)randomGetRange((s32)sub->boundsMinZ, sub->boundsMaxZ);
+            sub->wanderTimer = randomGetRange(LANDED_ARWING_WANDER_TIME_MIN, LANDED_ARWING_WANDER_TIME_MAX);
+        }
+        else
+        {
+            sub->wanderTimer -= framesThisStep;
+        }
+        targetX = sub->wanderTargetX;
+        targetY = sub->wanderTargetY;
+        targetZ = sub->wanderTargetZ;
+        chaseScale = lbl_803E3010;
+        break;
+    case LANDED_ARWING_TARGET_SCRIPT:
+        targetX = sub->scriptTargetX;
+        targetY = sub->scriptTargetY;
+        targetZ = sub->scriptTargetZ;
+        chaseScale = lbl_803E300C;
+        break;
+    }
+
+    landedarwing_updateConstrainedChaseVelocity((GameObject*)(obj), targetX, targetY, targetZ, chaseScale);
+
+    if (sub->surfaceMode == LANDED_ARWING_SCRIPT_MODE)
+    {
+        if ((u32)((sub->flags92 >> 2) & 1) != 0)
+        {
+            landedarwing_updateAirborneMotion((GameObject*)(obj), (int)sub);
+        }
+        else
+        {
+            landedarwing_moveAlongSurface(obj, (int)sub);
+        }
+    }
+    else
+    {
+        landedarwing_moveSurfaceCrawler((short*)obj, sub);
+    }
+
+    return 0;
+}
 
 #define STAFFACTION_HIT_VOLUME_SLOT 9
 
@@ -60,9 +422,6 @@
 #define BOUNCE_WALL_MAXY 0x10 /* boundsMaxY -> surfaceMode 4 */
 #define BOUNCE_WALL_MINY 0x20 /* boundsMinY -> surfaceMode 5 */
 
-extern const f32 lbl_803E2FDC;
-extern f32 lbl_803E2FF4;
-extern f32 lbl_803E3004;
 typedef struct LandedArwingMovementFlags
 {
     u8 boundsLookupRetries : 4;

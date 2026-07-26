@@ -1617,19 +1617,12 @@ dlls/objects/210/210.c:
 	.sdata      start:0x803DBD40 end:0x803DBD48
 	.sdata2     start:0x803E2F78 end:0x803E2FD4
 
-dlls/objects/211/backpack.c:
-	.text       start:0x801650D0 end:0x8016558C
-	.data       start:0x80320380 end:0x803203B8
-
-dlls/objects/211/landedArwing.c:
-	.text       start:0x8016558C end:0x801659B8
-	.sdata2     start:0x803E3018 end:0x803E3020
-
 dlls/objects/211/211.c:
-	.text       start:0x801659B8 end:0x801675E0
+	.text       start:0x801650D0 end:0x801675E0
+	.data       start:0x80320380 end:0x803203B8
 	.bss        start:0x803AC638 end:0x803AC668
 	.sbss       start:0x803DDA88 end:0x803DDA90
-	.sdata2     start:0x803E3020 end:0x803E3050
+	.sdata2     start:0x803E2FD4 end:0x803E3050
 
 dlls/objects/212_SkeetlaWall/SkeetlaWall.c:
 	.text       start:0x801675E0 end:0x80167764

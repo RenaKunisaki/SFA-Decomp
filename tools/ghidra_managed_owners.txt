@@ -13,7 +13,6 @@ main/dll/alphaanim.c
 main/dll/anim.c
 main/dll/ARW/ARWarwingattachment.c
 main/dll/autoTransporter.c
-dlls/objects/211/backpack.c
 main/dll/balloonBaddie.c
 main/dll/baddie/chuka.c
 main/dll/baddie/chukachuck.c
@@ -266,7 +265,6 @@ main/dll/IMicicle.c
 main/dll/IM/IMsnowbike.c
 main/dll/IMspacecraft.c
 main/dll/ladders.c
-dlls/objects/211/landedArwing.c
 main/dll/laser19F.c
 main/dll/LGTcontrollight.c
 main/dll/LGT/LGTdirectionallight.c
