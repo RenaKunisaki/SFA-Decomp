@@ -343,16 +343,16 @@ int isInBounds(f32 x, f32 z)
 
 int objPosToMapBlockIdx(f32 x, f32 y, f32 z)
 {
-    s8** tp;
+    s8** tp[1];
     int ix = (int)(fastFloorf(x / gMapBlockWorldSize) - (f32)gMapBlockOriginX);
     int iz = (int)(fastFloorf(z / gMapBlockWorldSize) - (f32)gMapBlockOriginZ);
     int i;
     if (ix < 0 || ix >= 16) return -1;
     if (iz < 0 || iz >= 16) return -1;
     ix = ix + (iz << 4);
-    for (tp = gMapBlockLayerTables, i = 0; i < MAP_BLOCK_LAYER_COUNT; tp++, i++)
+    for (tp[0] = gMapBlockLayerTables, i = 0; i < MAP_BLOCK_LAYER_COUNT; tp[0]++, i++)
     {
-        s8* table = *tp;
+        s8* table = *tp[0];
         int idx = table[ix];
         if (idx > -1)
         {
