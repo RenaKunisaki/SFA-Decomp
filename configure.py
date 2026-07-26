@@ -1226,7 +1226,10 @@ config.libs = [
                 NonMatching, "main/tex_dolphin.c", cflags=cflags_dll_noopt,
                 section_alignments={".data": 4},
             ),
+            Object(NonMatching, "main/mapblock_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/shadow_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/track_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/texblend_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows_alloc.c", cflags=cflags_dll_noopt_nodead_noloopinv_noautoinline),
             Object(
