@@ -1,5 +1,5 @@
 /*
- * EndObject (DLL 0x108) - terminal marker object whose callbacks are stubs.
+ * EndObject (DLL 0x108) - terminal marker object with stub callbacks.
  */
 #include "main/dll/dll_0108_endobject.h"
 

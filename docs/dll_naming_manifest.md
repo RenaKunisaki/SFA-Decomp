@@ -309,7 +309,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x105 | LargeCrate (+DrakorCrate, LargeBasket, LargeCrateL) | COMPLETE | dlls/objects/261_LargeCrate/LargeCrate.c | = (canonical) | — |
 | 0x106 | Scarab (+GreenScarab, RedScarab, GoldScarab, RainScarab, Blue_bean) | CONFIRMED | dlls/objects/262/262.c | = (canonical) | — |
 | 0x107 | — | NO-RETAIL-NAME | dlls/objects/263/263.c | = (canonical) | — |
-| 0x108 | EndObject | COMPLETE | main/dll/dll_0108_endobject.c | = (canonical) | — |
+| 0x108 | EndObject | COMPLETE | dlls/objects/264_EndObject/EndObject.c | = (canonical) | — |
 | 0x109 | — | NO-RETAIL-NAME | main/dll/dll_0109_unk.c | = (canonical) | — |
 | 0x10A | Fall_Ladders | CONFIRMED | main/dll/dll_010A_fallladders.c | = (canonical) | — |
 | 0x10B | FireFlyLantern | CONFIRMED | main/dll/dll_010B_fireflylantern.c | = (canonical) | — |
@@ -776,7 +776,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | main/dll/dll_02BD_androsshand.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
 | 0x0ED | CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi | `collectible_*` | unrelated | dlls/objects/237/237.c |
-| 0x108 | EndObject | `Dummy108_*` | unrelated | main/dll/dll_0108_endobject.c |
+| 0x108 | EndObject | `Dummy108_*` | unrelated | dlls/objects/264_EndObject/EndObject.c |
 | 0x10E | DieDuster, DieFox, DieKrystal | `deathseq_*` | unrelated | main/dll/dll_010E_deathseq.c |
 | 0x11A | DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF | `decoration11a_*` | unrelated | main/dll/dll_011A_decoration11a.c |
 | 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | main/dll/dll_01BD_paymentkiosk.c |
