@@ -200,7 +200,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/worldplanet_lighting | 100.0000 | 91.2387 | -8.7613 |
 | main/main/dll/skeetla | 99.7052 | 91.0786 | -8.6265 |
 | main/main/audio/snd3dgroup | 100.0000 | 91.4300 | -8.5700 |
-| main/main/dll/dll_0266_kytesmum | 100.0000 | 91.7997 | -8.2003 |
+| main/dlls/objects/614_KytesMum/KytesMum | 100.0000 | 91.7997 | -8.2003 |
 | main/main/dll/dll_000B_dll0b | 98.8607 | 90.7162 | -8.1444 |
 | main/main/dll/dll_0119_coldwatercontrol | 100.0000 | 91.8795 | -8.1205 |
 | main/main/dll/dll_01A9_bombplant | 100.0000 | 91.9378 | -8.0622 |

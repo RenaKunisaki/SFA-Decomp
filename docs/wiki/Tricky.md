@@ -187,7 +187,7 @@ is unconfirmed.
   `include/main/gamebits.h`) is a **different**, unrelated counter — the player's carried GrubTub
   Fungus inventory, not Tricky's own energy meter.
 - **Kyte**: confirmed and better-documented in our own code than the wiki:
-  - `src/main/dll/dll_0266_kytesmum.c` — DLL `0x266`, object type `0x43`, "Kyte's mum" NPC (per the
+  - `src/dlls/objects/614_KytesMum/KytesMum.c` — DLL `0x266`, object type `0x43`, "Kyte's mum" NPC (per the
     file's own header comment), supporting the wiki's inference of a Kyte backstory beyond just
     the caged bird.
   - `CagedKyte` on Scales' galleon: `src/main/dll/SB/dll_01F2_sbcagekyte.c` (`SB_CageKyte`, DLL
