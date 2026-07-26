@@ -386,7 +386,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | dlls/objects/340/340.c | = (canonical) | — |
 | 0x155 | — | NO-RETAIL-NAME | dlls/objects/341/341.c | = (canonical) | data-only DLL |
 | 0x156 | — | NO-RETAIL-NAME | dlls/objects/342/342.c | = (canonical) | data-only DLL |
-| 0x157 | SpiritDoorSpirit | CONFIRMED | main/dll/dll_0157_spiritdoorspirit.c | = (canonical) | — |
+| 0x157 | SpiritDoorS | CONFIRMED | dlls/objects/343_SpiritDoorS/SpiritDoorS.c | = (canonical) | — |
 | 0x158 | GunPowderBarrel (+MetalBarrel) | CONFIRMED | main/dll/dll_0158_gunpowderbarrel.c | = (canonical) | — |
 | 0x159 | Blasted (+CFBlastedRo, CFBlastedWa, CFBlastedTu, DRBlastedWa) | CONFIRMED | main/dll/dll_0159_blasted.c | = (canonical) | — |
 | 0x15A | explodable (+CFbrokenGra, CFbrokenWal, CFExplodeWa, CFExplodeFl, DIM2_WallEx, LINKE_Explo, CCExploding, NW_IcePriso, SH_BombWall, DRSmallExpl, ExplodeWall, ExplodePlan) | GUESSED | main/dll/dll_015A_explodable.c | = (canonical) | — |

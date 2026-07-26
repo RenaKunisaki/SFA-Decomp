@@ -2291,7 +2291,7 @@ dlls/objects/340/340.c:
 	.data       start:0x80322CB8 end:0x80322CF0
 	.sdata2     start:0x803E42B0 end:0x803E42B8
 
-main/dll/dll_0157_spiritdoorspirit.c:
+dlls/objects/343_SpiritDoorS/SpiritDoorS.c:
 	.text       start:0x801A0994 end:0x801A0B14
 	.data       start:0x80322CF0 end:0x80322D28
 	.sdata      start:0x803DBE78 end:0x803DBE80

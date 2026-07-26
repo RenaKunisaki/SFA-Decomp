@@ -1,9 +1,5 @@
 /*
- * DLL 0x157 - spirit door spirit; the last entry of the sandwormBoss
- * 10-DLL container (0x14A CFPowerBase .. 0x157 SpiritDoorSpirit) covering
- * [8019D578-801A0B14).
- *
- * A spirit-door spirit is a fade-in/fade-out apparition gated on a game
+ * SpiritDoorS (DLL 0x157) - a fade-in/fade-out apparition gated on a game
  * bit (placement->gateGameBit). While the bit is clear the spirit is "active":
  * it joins object group 0x4E, runs its idle effect (fn_80098B18), and
  * fades alpha up to 0xFF; once the bit is set it leaves the group and
