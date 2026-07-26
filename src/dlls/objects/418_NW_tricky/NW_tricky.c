@@ -1,5 +1,5 @@
 /*
- * nwtricky (DLL 0x1A2) - the SnowHorn Wastes controller for Tricky (the
+ * NW_tricky (DLL 0x1A2) - the SnowHorn Wastes controller for Tricky (the
  * player's companion) during the SnowHorn herding objective (map
  * 'nwastes', 0x0A).
  *
