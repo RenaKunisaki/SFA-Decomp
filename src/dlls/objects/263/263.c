@@ -8,8 +8,6 @@
 #include "main/camera_interface.h"
 #include "main/vecmath.h"
 #include "main/dll/windlift107state_struct.h"
-#include "main/dll/portalspelldoorstate_struct.h"
-#include "main/dll/scarabstate_struct.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/player_state.h"
@@ -25,7 +23,6 @@
 #include "main/sky_interface.h"
 #include "main/pad.h"
 #include "main/audio/sfx.h"
-#include "main/pad.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #define UNUSED_HIT_VOLUME_SLOT 0xe
@@ -38,11 +35,7 @@
 #define UNUSED107_MSG_PLAYER_BURST 0x60004  /* knock the player back with a burst hit */
 #define UNUSED107_MSG_PLAYER_GRAB  0x100010 /* tells player to grab/hold this object */
 
-STATIC_ASSERT(sizeof(ScarabState) == 0x34);
-
 STATIC_ASSERT(sizeof(WindLift107State) == 0x2c);
-
-STATIC_ASSERT(sizeof(PortalSpellDoorState) == 0x10);
 
 static const f32 gWindLift107LaunchGravity = -0.12f;
 static const f32 gWindLift107RadiusScale = 10.0f;
