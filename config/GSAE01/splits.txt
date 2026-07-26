@@ -1961,7 +1961,7 @@ dlls/objects/264_EndObject/EndObject.c:
 	.text       start:0x8018646C end:0x80186498
 	.data       start:0x803217C0 end:0x803217F8
 
-main/dll/dll_010D_portalspelldoor.c:
+dlls/objects/269_PortalSpell/PortalSpell.c:
 	.text       start:0x80186498 end:0x80186704
 	.data       start:0x803217F8 end:0x80321830
 

@@ -22,6 +22,7 @@
 #include "main/dll/dll_0113_seqobj2.h"
 #include "main/dll/dll_0108_endobject.h"
 #include "main/dll/dll_0109_unk.h"
+#include "main/dll/dll_010D_portalspell.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/dll_0293_suntemple.h"
 #include "main/dll/dll_0294_wctemple.h"
@@ -191,9 +192,8 @@ extern ResourceDescriptor gMagicPlantObjDescriptor, gMikaBombObjDescriptor, gMik
     gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
-extern ResourceDescriptor gPortalSpellDoorObjDescriptor, gPressureSwitchFBObjDescriptor,
-    gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProjectileSwitchObjDescriptor,
-    gProximityMineObjDescriptor;
+extern ResourceDescriptor gPressureSwitchFBObjDescriptor, gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor,
+    gProjectileSwitchObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gPushableObjDescriptor, gReStartMarkerObjDescriptor, gRingObjDescriptor,
     gRollingBarrelObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor, gSB_CloudBallObjDescriptor,
     gSB_CloudRunnerObjDescriptor;
@@ -1185,7 +1185,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gFall_LaddersObjDescriptor,
     &gFireFlyLanternObjDescriptor,
     &gLanternFireFlyObjDescriptor,
-    &gPortalSpellDoorObjDescriptor,
+    (ResourceDescriptor*)&gPortalSpellDoorObjDescriptor,
     &gDeathSeqObjDescriptor,
     &gMMP_BridgeObjDescriptor,
     &gDoorObjDescriptor,

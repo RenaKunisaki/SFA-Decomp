@@ -314,7 +314,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x10A | Fall_Ladder | CONFIRMED | dlls/objects/266_Fall_Ladder/Fall_Ladder.c | = (canonical) | — |
 | 0x10B | FireFlyLant | CONFIRMED | dlls/objects/267_FireFlyLant/FireFlyLant.c | = (canonical) | — |
 | 0x10C | LanternFire | CONFIRMED | dlls/objects/268_LanternFire/LanternFire.c | = (canonical) | — |
-| 0x10D | PortalSpelldoor | CONFIRMED | main/dll/dll_010D_portalspelldoor.c | = (canonical) | — |
+| 0x10D | PortalSpell | CONFIRMED | dlls/objects/269_PortalSpell/PortalSpell.c | = (canonical) | — |
 | 0x10E | deathseq (+DieDuster, DieFox, DieKrystal) | GUESSED | main/dll/dll_010E_deathseq.c | = (canonical) | — |
 | 0x10F | MMP_Bridge | COMPLETE | main/dll/dll_010F_mmpbridge.c | main/dll/MMP/dll_010F_mmpbridge.c | — |
 | 0x110 | Door (+KT_RexDoorP, KT_RexDoorT, CFPrisonDoo, CFWinPrison, CF_MovDeckD, CFTreasureD, CFExplosive, CFMainDoorA, CFBrokenPil, WCTempleDoo, WCSunTemple, WCMoonTempl, WCSlabDoor, WCBossDoor, WCGeneralDo, WCSunInside, WCMoonInsid, WCTempleTop, DIM_Portcul, DIMWoodDoor, DIM2IcePlat, DIM2TrapDoo, DIM2CellDoo, DIM2PuzzleD, DIM2IceGrat, IMPrisonGat, IMFence, LINK_Portcu, CCwaterShut, CCOceanDoor, CCskullDoor, CCclawOnlyD, CCprisonDoo, CCclawdoor, GF_DoorLeft, MMP_MagicCa, NW_Portcull, SH_MagicCav, SH_QueensDo, SH_Portcull, KP_SectionD, KP_FinDoor, SC_Shrine_d, SC_mounddoo, SC_settelme, BossTRexPor, SC_capeclaw, SC_stepping, SC_hutdoor, VFP_Doorloc, OFPclawOnly, DFP_Bridge, DFP_RoundDo, WM_Door1, WMFinalDoor, SPDoor, EC_Shrine_d, DR_EarthDoo, DR_Shield, DR_CloudDoo, DR_HighDoor, DR_James1Bo, DR_DrakorDo, MCProjDoor) | CONFIRMED | main/dll/dll_0110_door.c | = (canonical) | — |

@@ -1,13 +1,12 @@
 /*
- * PortalSpellStone (DLL 0x10D, descriptor gPortalSpellDoorObjDescriptor).
+ * PortalSpell (DLL 0x10D, descriptor gPortalSpellDoorObjDescriptor).
  */
-#include "game/objects/object.h"
+#include "main/dll/dll_010D_portalspell.h"
 #include "main/object_render.h"
 #include "main/dll/player_api.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/dll_80136a40.h"
 #include "sys/objects.h"
-#include "dlls/object_descriptor.h"
 #include "main/dll/portalspelldoorstate_struct.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
