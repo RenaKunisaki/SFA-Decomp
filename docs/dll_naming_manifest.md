@@ -254,8 +254,8 @@ Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 3
 | 0x0CE | — | NO-RETAIL-NAME | dlls/objects/206/206.c | = (canonical) | — |
 | 0x0CF | CannonClaw (+CannonClawO) | COMPLETE | dlls/objects/207_CannonClaw/CannonClaw.c | = (canonical) | — |
 | 0x0D0 | Grimble | COMPLETE | dlls/objects/208_Grimble/Grimble.c | = (canonical) | — |
-| 0x0D1 | TumbleWeedBush | CONFIRMED | main/dll/dll_00D1_tumbleweedbush.c | = (canonical) | — |
-| 0x0D2 | Tumbleweed (+Tumbleweed1, Tumbleweed2, Tumbleweed3, Tumbleweed4) | CONFIRMED | main/dll/dll_00D2_tumbleweed.c | = (canonical) | — |
+| 0x0D1 | TumbleWeedB | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | shared retail TU with 0x0D2 |
+| 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | shared retail TU with 0x0D1 |
 | 0x0D3 | — | NO-RETAIL-NAME | main/dll/dll_00D3_staffAction.c | = (canonical) | — |
 | 0x0D4 | SkeetlaWall | CONFIRMED | main/dll/dll_00D4_skeetlawall.c | = (canonical) | — |
 | 0x0D5 | Kaldachom | COMPLETE | main/dll/dll_00D5_kaldachom.c | = (canonical) | — |
