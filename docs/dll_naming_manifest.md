@@ -704,7 +704,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x292 | WCTrexStatu | RAW | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | = (canonical) | Exact complete ten-function TU with its sole descriptor at the physical end |
 | 0x293 | — | NO-RETAIL-NAME | dlls/objects/659/659.c | = (canonical) | Exact complete ten-function TU; `SunTemple` is an internal object alias, not a recovered DLL basename |
 | 0x294 | — | NO-RETAIL-NAME | dlls/objects/660/660.c | = (canonical) | Exact complete nine-function TU; `wctemple` is an internal object-family alias, not a recovered DLL basename |
-| 0x295 | WCApertureS | CONFIRMED | main/dll/dll_0295_wcapertures.c | main/dll/WC/dll_0295_wcapertures.c | — |
+| 0x295 | WCApertureS | RAW | dlls/objects/661_WCApertureS/WCApertureS.c | = (canonical) | Exact complete ten-function TU with its sole descriptor at the physical end |
 | 0x296 | WCTempleDia | CONFIRMED | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | — |
 | 0x297 | WCTempleBri | CONFIRMED | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | — |
 | 0x298 | WCFloorTile | CONFIRMED | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | — |
