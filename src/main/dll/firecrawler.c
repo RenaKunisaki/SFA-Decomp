@@ -344,7 +344,7 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
     }
 }
 
-void firecrawler_spawnFireHole(int* obj, u8* state)
+void firecrawler_spawnFireHole(GameObject* obj, u8* state)
 {
     FireHoleSetup* setup;
     GameObject* child;
@@ -352,7 +352,7 @@ void firecrawler_spawnFireHole(int* obj, u8* state)
     if (Obj_IsLoadingLocked() != 0)
     {
         setup = (FireHoleSetup*)Obj_AllocObjectSetup(0x24, FIREHOLE_OBJ_ID);
-        ObjPath_GetPointWorldPosition((GameObject*)obj, 0, &setup->head.posX, &setup->head.posY, &setup->head.posZ, 0);
+        ObjPath_GetPointWorldPosition(obj, 0, &setup->head.posX, &setup->head.posY, &setup->head.posZ, 0);
         setup->head.color[0] = 1;
         setup->head.color[1] = 4;
         setup->head.color[2] = 0xff;
@@ -368,21 +368,21 @@ void firecrawler_spawnFireHole(int* obj, u8* state)
         child = Obj_SetupObject(&setup->head, 5, -1, -1, 0);
         if (child != NULL)
         {
-            ObjLink_AttachChild((GameObject*)obj, child, 0);
+            ObjLink_AttachChild(obj, child, 0);
             firepipe_setLinkedUpdateFlag((FirePipeObject*)child);
             child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
     }
 }
 
-void firecrawler_spawnProjectile(int* obj, u8* state)
+void firecrawler_spawnProjectile(GameObject* obj, u8* state)
 {
     u8 locked = Obj_IsLoadingLocked();
     if (locked != 0)
     {
         int child;
         int setup = (int)Obj_AllocObjectSetup(0x24, FIRECRAWLER_PROJECTILE_OBJ);
-        ObjPath_GetPointWorldPosition((GameObject*)obj, 0, (f32*)(setup + 8), (f32*)(setup + 0xc), (f32*)(setup + 0x10),
+        ObjPath_GetPointWorldPosition(obj, 0, (f32*)(setup + 8), (f32*)(setup + 0xc), (f32*)(setup + 0x10),
                                       0);
         ((ObjPlacement*)setup)->color[0] = 1;
         ((ObjPlacement*)setup)->color[1] = 4;
@@ -408,7 +408,7 @@ void firecrawler_spawnProjectile(int* obj, u8* state)
     }
 }
 
-void fn_80157CDC(int obj, int state)
+void fn_80157CDC(GameObject* obj, u8* state)
 {
     typedef struct
     {
@@ -438,20 +438,20 @@ void fn_80157CDC(int obj, int state)
             sub = &entry[i];
             if (sub->sfxId != 0)
             {
-                Sfx_PlayFromObject(obj, (u16)sub->sfxId);
+                Sfx_PlayFromObject((int)obj, (u16)sub->sfxId);
             }
             if (sub->shakeAmt != 0)
             {
-                CameraShake_ApplyRadial(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                        ((GameObject*)obj)->anim.localPosZ, 160.0f, (f32)(u32)sub->shakeAmt);
+                CameraShake_ApplyRadial(obj->anim.localPosX, obj->anim.localPosY,
+                                        obj->anim.localPosZ, 160.0f, (f32)(u32)sub->shakeAmt);
             }
             if (sub->rumbleAmt != 0)
             {
-                void* player = Obj_GetPlayerObject();
-                if ((((GameObject*)player)->objectFlags & FIRECRAWLER_OBJFLAG_PARENT_SLACK) == 0)
+                GameObject* player = Obj_GetPlayerObject();
+                if ((player->objectFlags & FIRECRAWLER_OBJFLAG_PARENT_SLACK) == 0)
                 {
                     f32 dist =
-                        Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX);
+                        Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
                     if (dist <= 640.0f)
                     {
                         f32 amt = 1.0f - dist / 640.0f;
@@ -466,23 +466,23 @@ void fn_80157CDC(int obj, int state)
                     ((FCVars*)state)->flagsD = (u8)(((FCVars*)state)->flagsD ^ 0x40);
                     if ((((FCVars*)state)->flagsD & 0x40) != 0)
                     {
-                        if (((GameObject*)obj)->childObjs[0] == NULL)
+                        if (obj->childObjs[0] == NULL)
                         {
-                            firecrawler_spawnFireHole((int*)obj, (u8*)state);
+                            firecrawler_spawnFireHole(obj, state);
                         }
                         else
                         {
-                            firepipe_setLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+                            firepipe_setLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
                         }
                     }
-                    else if (((GameObject*)obj)->childObjs[0] != NULL)
+                    else if (obj->childObjs[0] != NULL)
                     {
-                        firepipe_clearLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+                        firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
                     }
                 }
                 if ((sub->flags & 2) != 0)
                 {
-                    firecrawler_spawnProjectile((int*)obj, (u8*)state);
+                    firecrawler_spawnProjectile(obj, state);
                 }
             }
         }
@@ -568,7 +568,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         {
             step = 3;
         }
-        fn_8014D08C((GameObject*)obj, (int)state, tbl[step].moveId, tbl[step].spd, 0, tbl[step].mask & 0xff);
+        fn_8014D08C(obj, (int)state, tbl[step].moveId, tbl[step].spd, 0, tbl[step].mask & 0xff);
         ((FCVars*)state)->flagsC = tbl[step].flagC;
         (obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
         ((FCVars*)state)->reactStep = tbl[step].next9;
@@ -615,7 +615,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         ((BaddieState*)state)->userData2 == 1)
     {
         u8 v;
-        fn_8014D08C((GameObject*)obj, (int)state, tbl[1].moveId, tbl[1].spd, 0, tbl[1].mask & 0xff);
+        fn_8014D08C(obj, (int)state, tbl[1].moveId, tbl[1].spd, 0, tbl[1].mask & 0xff);
         ((FCVars*)state)->flagsC = tbl[1].flagC;
         (obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
         ((FCVars*)state)->reactStep = tbl[1].next9;
@@ -628,7 +628,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
             {
                 if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
                 {
-                    switch (((GameObject*)attacker)->anim.seqId)
+                    switch (attacker->anim.seqId)
                     {
                     case 0x416:
                         Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -655,7 +655,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
             {
                 if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
                 {
-                    switch (((GameObject*)attacker)->anim.seqId)
+                    switch (attacker->anim.seqId)
                     {
                     case 0x416:
                         Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -684,7 +684,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         {
             if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
             {
-                switch (((GameObject*)attacker)->anim.seqId)
+                switch (attacker->anim.seqId)
                 {
                 case 0x416:
                     Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -706,7 +706,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
     ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
 }
 
-void crawler_updateC(s16* obj, u8* state)
+void crawler_updateC(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
     CrawlerSeq12* t8 = d[((BaddieState*)state)->userData2].tbl8;
@@ -720,9 +720,9 @@ void crawler_updateC(s16* obj, u8* state)
     f32 dv[3];
 
     ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
-    if (((GameObject*)obj)->childObjs[0] != NULL)
+    if (obj->childObjs[0] != NULL)
     {
-        firepipe_clearLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+        firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
     }
 
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
@@ -735,7 +735,7 @@ void crawler_updateC(s16* obj, u8* state)
         }
         if (((BaddieState*)state)->userData2 == 0)
         {
-            crawler_checkNearbyActive((GameObject*)obj, state);
+            crawler_checkNearbyActive(obj, state);
         }
         ((BaddieState*)state)->userData1 = 0;
     }
@@ -749,7 +749,7 @@ void crawler_updateC(s16* obj, u8* state)
             ((FCVars*)state)->emergeTimer = cap;
             ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
-            ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+            obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].nextA;
         }
         if ((((BaddieState*)state)->controlFlags & (BADDIE_CONTROL_JUST_TRIGGERED | BADDIE_CONTROL_SEQUENCE_DRIVEN)) ==
@@ -763,15 +763,15 @@ void crawler_updateC(s16* obj, u8* state)
         u32 flags = ((BaddieState*)state)->controlFlags;
         if ((flags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
         {
-            int count = fn_8014C11C((GameObject*)obj, 250.0f, 1, 0x28, gCrawlerNearbyObjectBuffer);
+            int count = fn_8014C11C(obj, 250.0f, 1, 0x28, gCrawlerNearbyObjectBuffer);
             if (count >= 1 && (f32)gCrawlerNearbyObjectBuffer[0].dist <= 250.0f)
             {
                 f32* dp = dv;
                 int rel;
                 u16 oct;
-                dp[0] = ((GameObject*)obj)->anim.worldPosX - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosX;
-                dp[1] = ((GameObject*)obj)->anim.worldPosY - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosY;
-                dp[2] = ((GameObject*)obj)->anim.worldPosZ - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosZ;
+                dp[0] = obj->anim.worldPosX - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosX;
+                dp[1] = obj->anim.worldPosY - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosY;
+                dp[2] = obj->anim.worldPosZ - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosZ;
                 rel = (getAngle(-dp[0], -dp[2]) & 0xffff) - ((int)*(s16*)obj & 0xffffu);
                 if (rel > 0x8000)
                 {
@@ -792,8 +792,8 @@ void crawler_updateC(s16* obj, u8* state)
                 }
             }
             {
-                f32 dx = base->posX - ((GameObject*)obj)->anim.localPosX;
-                f32 dz = base->posZ - ((GameObject*)obj)->anim.localPosZ;
+                f32 dx = base->posX - obj->anim.localPosX;
+                f32 dz = base->posZ - obj->anim.localPosZ;
                 f32 dist = sqrtf(dx * dx + dz * dz);
                 if (dist > 160.0f)
                 {
@@ -852,11 +852,11 @@ void crawler_updateC(s16* obj, u8* state)
                 ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x20;
                 if (((FCVars*)state)->reactStep != 0)
                 {
-                    fn_8014D08C((GameObject*)obj, (int)state, seq[((FCVars*)state)->reactStep].moveId,
+                    fn_8014D08C(obj, (int)state, seq[((FCVars*)state)->reactStep].moveId,
                                    seq[((FCVars*)state)->reactStep].spd, 0,
                                    seq[((FCVars*)state)->reactStep].mask & 0xff);
                     ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
-                    ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+                    obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
                     ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].next9;
                 }
                 else
@@ -865,9 +865,9 @@ void crawler_updateC(s16* obj, u8* state)
                     int rel2;
                     u16 oct2;
                     u8 mv;
-                    dp2[0] = ((GameObject*)obj)->anim.worldPosX - base->posX;
-                    dp2[1] = ((GameObject*)obj)->anim.worldPosY - base->posY;
-                    dp2[2] = ((GameObject*)obj)->anim.worldPosZ - base->posZ;
+                    dp2[0] = obj->anim.worldPosX - base->posX;
+                    dp2[1] = obj->anim.worldPosY - base->posY;
+                    dp2[2] = obj->anim.worldPosZ - base->posZ;
                     rel2 = (getAngle(-dp2[0], -dp2[2]) & 0xffff) - ((int)*(s16*)obj & 0xffffu);
                     if (rel2 > 0x8000)
                     {
@@ -912,26 +912,26 @@ void crawler_updateC(s16* obj, u8* state)
                     }
                     else
                     {
-                        fn_8014D08C((GameObject*)obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
+                        fn_8014D08C(obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
                         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 8;
                     }
                 }
             }
             if ((((FCVars*)state)->moveStartFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
             {
-                baddieTurnTowardPoint((GameObject*)obj, (int)state, base->posX, base->posZ, 0xf, 0);
+                baddieTurnTowardPoint(obj, (int)state, base->posX, base->posZ, 0xf, 0);
             }
         }
         else if ((flags & 0xc0000000) != 0)
         {
             i = randomGetRange(1, t8[0].moveId) & 0xff;
-            fn_8014D08C((GameObject*)obj, (int)state, t8[i].moveId, t8[i].spd, 0, t8[i].mode);
+            fn_8014D08C(obj, (int)state, t8[i].moveId, t8[i].spd, 0, t8[i].mode);
         }
     }
-    fn_80157CDC((int)obj, (int)state);
+    fn_80157CDC(obj, state);
 }
 
-void crawler_updateB(s16* obj, u8* state)
+void crawler_updateB(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
     CrawlerSeq12* t10 = d[((BaddieState*)state)->userData2].tbl10;
@@ -959,12 +959,12 @@ void crawler_updateB(s16* obj, u8* state)
         }
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 0x10;
         ((BaddieState*)state)->userData1 = 0;
-        if (((GameObject*)obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+        if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch_var);
-            if (((GameObject*)obj)->childObjs[0] != NULL)
+            if (obj->childObjs[0] != NULL)
             {
-                firepipe_clearLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+                firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
             }
         }
     }
@@ -978,12 +978,12 @@ void crawler_updateB(s16* obj, u8* state)
             ((FCVars*)state)->emergeTimer = cap;
             ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
-            ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+            obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].nextA;
         }
     }
 
-    count = fn_8014C11C((GameObject*)obj, 180.0f, 1, 0x28, gCrawlerNearbyObjectBuffer);
+    count = fn_8014C11C(obj, 180.0f, 1, 0x28, gCrawlerNearbyObjectBuffer);
     if (count >= 1)
     {
         if ((((FCVars*)state)->flagsD & 0x20) == 0 ||
@@ -991,10 +991,10 @@ void crawler_updateB(s16* obj, u8* state)
         {
             if (((FCVars*)state)->reactStep != 0)
             {
-                fn_8014D08C((GameObject*)obj, (int)state, seq[((FCVars*)state)->reactStep].moveId,
+                fn_8014D08C(obj, (int)state, seq[((FCVars*)state)->reactStep].moveId,
                                seq[((FCVars*)state)->reactStep].spd, 0, seq[((FCVars*)state)->reactStep].mask & 0xff);
                 ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
-                ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+                obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
                 ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].next9;
             }
             else
@@ -1002,9 +1002,9 @@ void crawler_updateB(s16* obj, u8* state)
                 f32* dp = dv;
                 int rel;
                 u16 oct;
-                dp[0] = ((GameObject*)obj)->anim.worldPosX - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosX;
-                dp[1] = ((GameObject*)obj)->anim.worldPosY - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosY;
-                dp[2] = ((GameObject*)obj)->anim.worldPosZ - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosZ;
+                dp[0] = obj->anim.worldPosX - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosX;
+                dp[1] = obj->anim.worldPosY - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosY;
+                dp[2] = obj->anim.worldPosZ - gCrawlerNearbyObjectBuffer[0].obj->anim.worldPosZ;
                 rel = (getAngle(-dp[0], -dp[2]) & 0xffff) - ((int)*(s16*)obj & 0xffffu);
                 if (rel > 0x8000)
                 {
@@ -1026,23 +1026,23 @@ void crawler_updateB(s16* obj, u8* state)
                         {
                             int i2 = ((FCVars*)state)->moveChainIndex;
 
-                            fn_8014D08C((GameObject*)obj, (int)state, t4[i2].moveId, t4[i2].spd, 0, t4[i2].mode);
+                            fn_8014D08C(obj, (int)state, t4[i2].moveId, t4[i2].spd, 0, t4[i2].mode);
                             ((FCVars*)state)->moveChainIndex = t4[((FCVars*)state)->moveChainIndex].next;
                         }
                         else
                         {
-                            fn_8014D08C((GameObject*)obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
+                            fn_8014D08C(obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
                         }
                     }
                     else
                     {
                         i = randomGetRange(1, t8[0].moveId) & 0xff;
-                        fn_8014D08C((GameObject*)obj, (int)state, t8[i].moveId, t8[i].spd, 0, t8[i].mode);
+                        fn_8014D08C(obj, (int)state, t8[i].moveId, t8[i].spd, 0, t8[i].mode);
                     }
                 }
                 else
                 {
-                    fn_8014D08C((GameObject*)obj, (int)state, t10[0].moveId, t10[0].spd, 0, t10[0].mode);
+                    fn_8014D08C(obj, (int)state, t10[0].moveId, t10[0].spd, 0, t10[0].mode);
                 }
                 ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 0x20;
                 ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x10;
@@ -1054,17 +1054,17 @@ void crawler_updateB(s16* obj, u8* state)
         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
-            if (((GameObject*)obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER &&
-                ((GameObject*)obj)->childObjs[0] != NULL)
+            if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER &&
+                obj->childObjs[0] != NULL)
             {
-                firepipe_clearLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+                firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
             }
             if (((FCVars*)state)->reactStep != 0)
             {
-                fn_8014D08C((GameObject*)obj, (int)state, seq[((FCVars*)state)->reactStep].moveId,
+                fn_8014D08C(obj, (int)state, seq[((FCVars*)state)->reactStep].moveId,
                                seq[((FCVars*)state)->reactStep].spd, 0, seq[((FCVars*)state)->reactStep].mask & 0xff);
                 ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
-                ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+                obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
                 ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].next9;
             }
             else
@@ -1079,11 +1079,11 @@ void crawler_updateB(s16* obj, u8* state)
                     mv = tC[i].moveId;
                     if (mv == 0)
                     {
-                        fn_8014D08C((GameObject*)obj, (int)state, q->moveId, t4[i2].spd, 0, q->mode);
+                        fn_8014D08C(obj, (int)state, q->moveId, t4[i2].spd, 0, q->mode);
                     }
                     else
                     {
-                        fn_8014D08C((GameObject*)obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
+                        fn_8014D08C(obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
                     }
                 }
                 else
@@ -1094,11 +1094,11 @@ void crawler_updateB(s16* obj, u8* state)
                     if (mv == 0)
                     {
                         int i4 = randomGetRange(1, t8[0].moveId) & 0xff;
-                        fn_8014D08C((GameObject*)obj, (int)state, t8[i4].moveId, t8[i4].spd, 0, t8[i4].mode);
+                        fn_8014D08C(obj, (int)state, t8[i4].moveId, t8[i4].spd, 0, t8[i4].mode);
                     }
                     else
                     {
-                        fn_8014D08C((GameObject*)obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
+                        fn_8014D08C(obj, (int)state, mv, tC[i].spd, 0, tC[i].mode);
                     }
                 }
                 {
@@ -1108,21 +1108,21 @@ void crawler_updateB(s16* obj, u8* state)
         }
     }
 
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority = 0;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumeId = 0;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 0;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     {
         int j = 1;
         u8* p = (u8*)t18 + 0xc;
         int c;
         for (c = *(u8*)((char*)t18 + 8); c >= 1; c--)
         {
-            if (((GameObject*)obj)->anim.currentMove == *(u8*)(p + 8))
+            if (obj->anim.currentMove == *(u8*)(p + 8))
             {
                 p = (u8*)t18 + j * 0xc;
-                ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority =
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
                     (s8) * (int*)(p + 4);
-                ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumeId = (s8) * (u8*)(p + 9);
-                if (((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority == 0x1f)
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = (s8) * (u8*)(p + 9);
+                if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
                 {
                     ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x40;
                 }
@@ -1139,14 +1139,14 @@ void crawler_updateB(s16* obj, u8* state)
 
     if ((((FCVars*)state)->moveStartFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
     {
-        baddieTurnTowardPoint((GameObject*)obj, (int)state,
+        baddieTurnTowardPoint(obj, (int)state,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
     }
-    fn_80157CDC((int)obj, (int)state);
+    fn_80157CDC(obj, state);
 }
 
-void crawler_update(int* obj, u8* state)
+void crawler_update(GameObject* obj, u8* state)
 {
     typedef struct
     {
@@ -1180,9 +1180,9 @@ void crawler_update(int* obj, u8* state)
         {
             (*gCameraInterface)->loadTriggeredCamAction(0, 0x6c, 0);
         }
-        if (((GameObject*)obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && ((GameObject*)obj)->childObjs[0] != NULL)
+        if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
         {
-            firepipe_clearLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+            firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
         }
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 0x10;
     }
@@ -1196,7 +1196,7 @@ void crawler_update(int* obj, u8* state)
             ((FCVars*)state)->emergeTimer = cap;
             ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((FCVars*)state)->flagsC = t6[((FCVars*)state)->reactStep].flagC;
-            ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+            obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = t6[((FCVars*)state)->reactStep].nextA;
         }
     }
@@ -1204,16 +1204,16 @@ void crawler_update(int* obj, u8* state)
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
-        if (((GameObject*)obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && ((GameObject*)obj)->childObjs[0] != NULL)
+        if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
         {
-            firepipe_clearLinkedUpdateFlag((FirePipeObject*)((GameObject*)obj)->childObjs[0]);
+            firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
         }
         if (((FCVars*)state)->reactStep != 0)
         {
-            fn_8014D08C((GameObject*)obj, (int)state, t6[((FCVars*)state)->reactStep].moveId, t6[((FCVars*)state)->reactStep].spd, 0,
+            fn_8014D08C(obj, (int)state, t6[((FCVars*)state)->reactStep].moveId, t6[((FCVars*)state)->reactStep].spd, 0,
                            t6[((FCVars*)state)->reactStep].mask & 0xff);
             ((FCVars*)state)->flagsC = t6[((FCVars*)state)->reactStep].flagC;
-            ((GameObject*)obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
+            obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = t6[((FCVars*)state)->reactStep].next9;
         }
         else
@@ -1225,38 +1225,38 @@ void crawler_update(int* obj, u8* state)
                 {
                     ((BaddieState*)state)->userData1 = 0;
                 }
-                fn_8014C11C((GameObject*)obj, 250.0f, 6, 0x28, gCrawlerNearbyObjectBuffer);
+                fn_8014C11C(obj, 250.0f, 6, 0x28, gCrawlerNearbyObjectBuffer);
                 if ((((BaddieState*)state)->controlFlags & t9[((BaddieState*)state)->userData1].mask) == 0 &&
                     t9[((BaddieState*)state)->userData1].next != 0)
                 {
                     ((BaddieState*)state)->userData1 = t9[((BaddieState*)state)->userData1].next;
                 }
-                fn_8014D08C((GameObject*)obj, (int)state, t9[((BaddieState*)state)->userData1].moveId,
+                fn_8014D08C(obj, (int)state, t9[((BaddieState*)state)->userData1].moveId,
                                t9[((BaddieState*)state)->userData1].spd, 0,
                                t9[((BaddieState*)state)->userData1].mode);
                 ((BaddieState*)state)->userData1 = t9[((BaddieState*)state)->userData1].next;
             }
             else
             {
-                fn_8014D08C((GameObject*)obj, (int)state, t7[i].moveId, t7[i].spd, 0, t7[i].mode);
+                fn_8014D08C(obj, (int)state, t7[i].moveId, t7[i].spd, 0, t7[i].mode);
             }
         }
     }
 
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority = 0;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumeId = 0;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 0;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     j = 1;
     p = (u8*)t8 + 0xc;
     n = *(u8*)((char*)t8 + 8);
     for (; j <= n; j++)
     {
-        if (((GameObject*)obj)->anim.currentMove == *(u8*)(p + 8))
+        if (obj->anim.currentMove == *(u8*)(p + 8))
         {
-            ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority =
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
                 (s8) * (int*)((char*)t8 + j * 0xc + 4);
-            ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumeId =
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId =
                 (s8) * (u8*)((char*)t8 + j * 0xc + 9);
-            if (((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority == 0x1f)
+            if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
             {
                 ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x40;
             }
@@ -1271,24 +1271,24 @@ void crawler_update(int* obj, u8* state)
 
     if ((((FCVars*)state)->moveStartFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
     {
-        baddieTurnTowardPoint((GameObject*)obj, (int)state,
+        baddieTurnTowardPoint(obj, (int)state,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
     }
-    fn_80157CDC((int)obj, (int)state);
+    fn_80157CDC(obj, state);
 }
 
 /* crawler_initModelVariant: crawler-family variant init. Dispatches on obj->modelType
  * (offset 0x46): values 0x6a2/0x6a3/0x6a4 each pick a different float +
  * byte tuple to seed state[0x2a8..0x322]. The trailing block sets
- * shared state floats and computes obj[0x8] from params[0x28]. */
-void crawler_initModelVariant(s16* obj, u8* state)
+ * shared state floats and computes obj->anim.rootMotionScale from params[0x28]. */
+void crawler_initModelVariant(GameObject* obj, u8* state)
 {
-    u8* params = (u8*)((GameObject*)obj)->anim.placementData;
+    u8* params = (u8*)obj->anim.placementData;
     *(u32*)&((BaddieState*)state)->unk2E4 = 0xb;
     *(u32*)&((BaddieState*)state)->unk2E4 |= 0x400b0LL;
     *(u32*)&((BaddieState*)state)->unk2E4 |= 0x40001040LL;
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (obj->anim.seqId)
     {
     case FIRECRAWLER_SEQID_REDEYE:
         ((BaddieState*)state)->speedScale = 150.0f;
@@ -1338,5 +1338,5 @@ void crawler_initModelVariant(s16* obj, u8* state)
     {
         ((BaddieState*)state)->controlFlags |= 1;
     }
-    ((GameObject*)obj)->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / gCrawlerS8Norm127);
+    obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / gCrawlerS8Norm127);
 }

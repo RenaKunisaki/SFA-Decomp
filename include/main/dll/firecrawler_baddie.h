@@ -3,9 +3,9 @@
 
 #include "global.h"
 
-void crawler_update(int* obj, u8* state);
-void crawler_updateB(s16* obj, u8* state);
-void crawler_updateC(s16* obj, u8* state);
-void crawler_initModelVariant(s16* obj, u8* state);
+void crawler_update(struct GameObject* obj, u8* state);
+void crawler_updateB(struct GameObject* obj, u8* state);
+void crawler_updateC(struct GameObject* obj, u8* state);
+void crawler_initModelVariant(struct GameObject* obj, u8* state);
 
 #endif /* H_MAIN_DLL_FIRECRAWLER_BADDIE_H */

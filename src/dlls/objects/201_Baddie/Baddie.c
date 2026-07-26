@@ -1355,7 +1355,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             case ENEMY_REDEYE_OBJ:
             case ENEMY_SHADOWHUNTER_OBJ:
             case ENEMY_SWAMPSTRIDER_OBJ:
-                crawler_update((int*)obj, (u8*)state);
+                crawler_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_HAGABONMK2_OBJ:
                 hagabonMK2_updateB(obj, (u8*)state);
@@ -1432,7 +1432,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             case ENEMY_REDEYE_OBJ:
             case ENEMY_SHADOWHUNTER_OBJ:
             case ENEMY_SWAMPSTRIDER_OBJ:
-                crawler_updateB(obj, (u8*)state);
+                crawler_updateB((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_HAGABONMK2_OBJ:
                 hagabonMK2_update(obj, (u8*)state);
@@ -1543,7 +1543,7 @@ void enemyObjAnimUpdate(short* obj, int state)
         case ENEMY_REDEYE_OBJ:
         case ENEMY_SHADOWHUNTER_OBJ:
         case ENEMY_SWAMPSTRIDER_OBJ:
-            crawler_updateC(obj, (u8*)state);
+            crawler_updateC((GameObject*)obj, (u8*)state);
             break;
         case ENEMY_HAGABONMK2_OBJ:
             hagabonMK2_updateB(obj, (u8*)state);
@@ -3072,7 +3072,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         case ENEMY_REDEYE_OBJ:
         case ENEMY_SHADOWHUNTER_OBJ:
         case ENEMY_SWAMPSTRIDER_OBJ:
-            crawler_initModelVariant((s16*)obj, state);
+            crawler_initModelVariant(obj, state);
             break;
         case ENEMY_HAGABONMK2_OBJ:
             hagabonMK2_init((int*)obj, (int*)state);
