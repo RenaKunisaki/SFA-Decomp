@@ -1,7 +1,7 @@
 /*
  * Hagabon (DLL 0xDF) - a flying baddie that patrols a rom curve path and,
- * when the player closes in, breaks off to chase. Its curve walker shares a
- * last-seen point cache with SwarmBaddie.
+ * when the player closes in, breaks off to chase. Its curve walker tracks the
+ * last-seen point in a TU-local cache.
  *
  * fn_8014E1DC is the per-frame motion integrator: it advances the curve walker
  * (relinking via gRomCurveInterface when a point is exhausted), drives the
@@ -39,6 +39,8 @@
 #include "main/dll/curve_walker.h"
 
 int lbl_803DBC70[2] = {2, 3};
+int gHagabonLastCurvePoint;
+
 #define HAGABON_HIT_VOLUME_SLOT 10
 
 /* object group this object belongs to */
@@ -64,7 +66,6 @@ typedef struct HagabonPlacement
 #define HAGABON_FLAG_FADE_IN         0x08
 #define HAGABON_FLAG_FADE_OUT        0x10
 
-extern f32 lbl_803DDA58; /* last-seen curve point cache, shared with swarmbaddie */
 #define HAGABON_ALPHA_MAX 255.0f
 STATIC_ASSERT(sizeof(HagabonState) == 0x28);
 STATIC_ASSERT(offsetof(HagabonState, wavePhaseA) == 0x20);
@@ -87,14 +88,14 @@ void fn_8014E1DC(GameObject* obj, HagabonState* state)
     curve = state->curve;
     flags = &state->flags;
 
-    if (((Curve_AdvanceAlongPath((Curve*)curve, state->curveStep) != 0) || (((RomCurveWalker*)curve)->atSegmentEnd != *(int*)&lbl_803DDA58)) &&
+    if (((Curve_AdvanceAlongPath((Curve*)curve, state->curveStep) != 0) || (((RomCurveWalker*)curve)->atSegmentEnd != gHagabonLastCurvePoint)) &&
         ((*gRomCurveInterface)->goNextPoint((void*)curve) != 0) &&
         ((*gRomCurveInterface)->initCurve((void*)state->curve, (void*)obj, (400.0f), lbl_803DBC70, -1) != 0))
     {
         *flags &= ~HAGABON_FLAG_PATH_NEEDS_LINK;
     }
 
-    *(int*)&lbl_803DDA58 = ((RomCurveWalker*)curve)->atSegmentEnd;
+    gHagabonLastCurvePoint = ((RomCurveWalker*)curve)->atSegmentEnd;
 
     *(u16*)&state->wavePhaseA += (u16)((128.0f) * timeDelta);
     *(u16*)&state->wavePhaseB += (u16)((256.0f) * timeDelta);
