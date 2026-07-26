@@ -1570,7 +1570,11 @@ config.libs = [
                 cflags=cflags_dll_noopt,
                 section_alignments={".data": 4},
             ),
-            Object(MatchingFor("GSAE01"), "dlls/objects/228/228.c", cflags=cflags_dll_noopt_nocse),
+            Object(
+                MatchingFor("GSAE01"),
+                "dlls/objects/228_FlameThrowerspe/FlameThrowerspe.c",
+                cflags=cflags_dll_noopt_nocse,
+            ),
             Object(NonMatching, "dlls/objects/229/229.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/293_curve/curve.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/230_ReStartMark/ReStartMark.c", cflags=cflags_dll_noopt),

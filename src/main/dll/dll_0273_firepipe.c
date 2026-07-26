@@ -19,7 +19,7 @@
  * FirePipeBitFlags overlay (emitting, glowEnabled, renderEnabled, ...).
  *
  * Live-verified (Dolphin) against the nearest emitter in the loaded save:
- * the object spawns pooled `flamethrowerspe` (DLL 0x0E4) flame-stream
+ * the object spawns pooled `FlameThrowerspe` (DLL 0x0E4) flame-stream
  * effects (FirePipeExtra.effectObjs); clearing `emitting` stops the jet and
  * freezing `cycleTimer` keeps it off; FirePipeMapData.rotX/rotY aim the jet
  * (changing them swings the model and the flame); `glowLight` is the
@@ -78,7 +78,7 @@ extern f32 lbl_803E6B98;
 #define FIREPIPE_OBJ_STEAM_HOLE_DE   0x732
 #define FIREPIPE_OBJ_FIRE_PIPE       0x4a4
 #define FIREPIPE_OBJ_BOSSDRAKOR_FIRE 0x70a
-/* FlameThrower child (DLL 0xE4 flamethrowerspe) spawned as the emitted effect. */
+/* FlameThrowerspe child (DLL 0xE4) spawned as the emitted effect. */
 #define FIREPIPE_CHILD_OBJ_FLAMETHROWER 0x1b5
 
 /* emitted effect-type (flavour) per objectId variant (docblock: "0x6f9 -> type

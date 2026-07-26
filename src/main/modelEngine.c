@@ -24,6 +24,7 @@
 #include "dlls/objects/224_SwarmBaddie.h"
 #include "dlls/objects/225_WispBaddie.h"
 #include "dlls/objects/227_Fireball.h"
+#include "dlls/objects/228_FlameThrowerspe.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -174,8 +175,8 @@ extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescripto
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
     gFXEmitObjDescriptor, gFall_LaddersObjDescriptor, gFireFlyLanternObjDescriptor, gFireFlyObjDescriptor,
     gFireObjDescriptor;
-extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFlameThrowerSpeObjDescriptor,
-    gFlameblastObjDescriptor, gFlammableVineObjDescriptor, gFogControlObjDescriptor, gFuelCellObjDescriptor;
+extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFlameblastObjDescriptor,
+    gFlammableVineObjDescriptor, gFogControlObjDescriptor, gFuelCellObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
@@ -1152,7 +1153,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWispBaddieObjDescriptor,
     &gStaffObjDescriptor,
     (ResourceDescriptor*)&gFireballObjDescriptor,
-    &gFlameThrowerSpeObjDescriptor,
+    (ResourceDescriptor*)&gFlameThrowerspeObjDescriptor,
     &gShieldObjDescriptor,
     &gReStartMarkerObjDescriptor,
     &gFlammableVineObjDescriptor,
