@@ -592,7 +592,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x222 | VFPDragHead | COMPLETE | dlls/objects/546_VFPDragHead/VFPDragHead.c | = (canonical) | — |
 | 0x223 | VFP_corepla | COMPLETE | dlls/objects/547_VFP_corepla/VFP_corepla.c | = (canonical) | Exact recovered retail basename |
 | 0x224 | — | COMPLETE | dlls/objects/548/548.c | = (canonical) | No recovered retail basename |
-| 0x225 | VFP_flamepoint | CONFIRMED | main/main.c | main/dll/VF/dll_0225_vfpflamepoint.c | engine/SDK host: main/main.c |
+| 0x225 | VFP_flamepo | COMPLETE | dlls/objects/549_VFP_flamepo/VFP_flamepo.c | = (canonical) | Exact recovered retail basename |
 | 0x226 | VFP_lavapool | CONFIRMED | main/main.c | main/dll/VF/dll_0226_vfplavapool.c | engine/SDK host: main/main.c |
 | 0x227 | VFP_lavastar | CONFIRMED | main/main.c | main/dll/VF/dll_0227_vfplavastar.c | engine/SDK host: main/main.c |
 | 0x228 | VFP_SpellPlace (+VFPSpPl) | CONFIRMED | main/main.c | main/dll/VF/dll_0228_vfpspellplace.c | engine/SDK host: main/main.c |

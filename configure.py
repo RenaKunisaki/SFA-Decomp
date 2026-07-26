@@ -1178,6 +1178,7 @@ config.libs = [
             Object(NonMatching, "dlls/objects/546_VFPDragHead/VFPDragHead.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/547_VFP_corepla/VFP_corepla.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/548/548.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/549_VFP_flamepo/VFP_flamepo.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_024D_bossdrakor.c", cflags=cflags_dll_noopt_nocse_noprop_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_024E_drakordthornbush.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "main/audio/snd_midictrl.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),

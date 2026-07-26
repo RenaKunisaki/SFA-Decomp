@@ -3409,9 +3409,14 @@ dlls/objects/548/548.c:
 	.sbss       start:0x803DDCC8 end:0x803DDCCC
 	.sdata2     start:0x803E6150 end:0x803E6154
 
+dlls/objects/549_VFP_flamepo/VFP_flamepo.c:
+	.text       start:0x801FD4A8 end:0x801FD6B4
+	.data       start:0x803291D8 end:0x80329210
+	.sdata2     start:0x803E6158 end:0x803E615C
+
 main/main.c:
-	.text       start:0x801FD4A8 end:0x801FDBBC
-	.data       start:0x803291D8 end:0x80329248
+	.text       start:0x801FD6B4 end:0x801FDBBC
+	.data       start:0x80329210 end:0x80329248
 
 main/main_lavastar.c:
 	.text       start:0x801FDBBC end:0x801FE118
