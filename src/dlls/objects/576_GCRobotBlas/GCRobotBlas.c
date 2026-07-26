@@ -24,7 +24,6 @@ STATIC_ASSERT(offsetof(GCRobotBlastPlacement, mode) == 0x19);
 extern f32 lbl_803E6270;
 extern f32 lbl_803E6274;
 
-
 int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     GCRobotBlastState* state = obj->extra;

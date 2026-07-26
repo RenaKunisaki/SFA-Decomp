@@ -619,7 +619,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x23D | DBPointMum | COMPLETE | dlls/objects/573_DBPointMum/DBPointMum.c | = (canonical) | Descriptor data only; no .text functions |
 | 0x23E | — | NO-RETAIL-NAME | dlls/objects/574/574.c | = (canonical) | Descriptor data only; no .text functions |
 | 0x23F | DB_egg | COMPLETE | dlls/objects/575_DB_egg/DB_egg.c | = (canonical) | Exact recovered retail basename; descriptor precedes diagnostic string and compiler-generated jump table in retail data order |
-| 0x240 | GCRobotBlast | CONFIRMED | main/dll/dll_0240_gcrobotblast.c | = (canonical) | — |
+| 0x240 | GCRobotBlas | COMPLETE | dlls/objects/576_GCRobotBlas/GCRobotBlas.c | = (canonical) | Exact truncated retail basename; internal GCRobotBlast symbols retained |
 | 0x241 | DrakorEnergy | CONFIRMED | main/dll/dll_0241_drakorenergy.c | = (canonical) | — |
 | 0x242 | DBstealerworm | CONFIRMED | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | — |
 | 0x243 | DBHoleControl1 | CONFIRMED | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | — |
