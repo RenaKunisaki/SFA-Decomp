@@ -31,9 +31,15 @@
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/hint_text_api.h"
 #include "main/pause_menu_api.h"
+#include "main/fsin16_approx_api.h"
+#include "main/fcos16_approx_api.h"
 
 #define WORLDPLANET_SKY_LIGHT_MASK  7
 #define WORLDPLANET_SKY_COLOR_SCALE 0x40
+#define WORLDPLANET_CAMMODE_WORLDMAP 0x4e /* cameramode DLL dll_004E_cameramodeworldmap */
+
+#define PAD_BUTTON_A 0x100
+#define PAD_BUTTON_B 0x200
 
 #define WORLDPLANET_LERP_CHANNEL(dst, from, to, channel, t)                                                            \
     {                                                                                                                  \
@@ -48,6 +54,21 @@ extern f32 gWorldPlanetLightingMinIntensity;
 extern f32 gWorldPlanetLightingIntensityRange;
 extern f32 gWorldPlanetLightingSkyDirX;
 extern f32 gWorldPlanetLightingSkyDirZ;
+extern int gWorldPlanetSelectConfirmTimer;
+extern u8 gWorldPlanetExitWarpTimer;
+extern s16 gWorldPlanetInputLockTimer;
+extern int gWorldPlanetLoadedMapId;
+extern f32 gWorldPlanetPathProgress;
+extern f32 lbl_803DDD00;
+extern s16 gWorldPlanetReselectDelayTimer;
+extern int lbl_803DDD10;
+extern f32 gWorldPlanetPfxOffsetX;
+extern f32 gWorldPlanetPfxOffsetY;
+extern f32 gWorldPlanetPfxOffsetZ;
+extern f32 gWorldPlanetPathProgressStep;
+extern f32 gWorldPlanetPathProgressMax;
+extern f32 gWorldPlanetOrbitRadius;
+
 void worldplanet_updateMapLighting(GameObject* obj)
 {
     skyFn_80089710(WORLDPLANET_SKY_LIGHT_MASK, 1, 0);
@@ -162,48 +183,6 @@ void worldplanet_hitDetect(void)
 {
     return;
 }
-
-/* descriptor/ptr table auto 0x8032a1c8-0x8032a200 */
-ObjectDescriptor gWorldPlanetObjDescriptor = {
-    0x00000000,
-    0x00000000,
-    0x00000000,
-    0x00090000,
-    (ObjectDescriptorCallback)worldplanet_initialise,
-    (ObjectDescriptorCallback)worldplanet_release,
-    0x00000000,
-    (ObjectDescriptorCallback)worldplanet_init,
-    (ObjectDescriptorCallback)worldplanet_update,
-    (ObjectDescriptorCallback)worldplanet_hitDetect,
-    (ObjectDescriptorCallback)worldplanet_render,
-    (ObjectDescriptorCallback)worldplanet_free,
-    (ObjectDescriptorCallback)worldplanet_getObjectTypeId,
-    worldplanet_getExtraSize,
-};
-
-#define WORLDPLANET_CAMMODE_WORLDMAP 0x4e /* cameramode DLL dll_004E_cameramodeworldmap */
-
-#define PAD_BUTTON_A 0x100
-#define PAD_BUTTON_B 0x200
-
-extern int gWorldPlanetSelectConfirmTimer;
-extern u8 gWorldPlanetExitWarpTimer;
-extern s16 gWorldPlanetInputLockTimer;
-extern int gWorldPlanetLoadedMapId;
-extern f32 gWorldPlanetPathProgress;
-
-extern f32 lbl_803DDD00;
-extern s16 gWorldPlanetReselectDelayTimer;
-extern int lbl_803DDD10;
-
-#include "main/fsin16_approx_api.h"
-#include "main/fcos16_approx_api.h"
-extern f32 gWorldPlanetPfxOffsetX;
-extern f32 gWorldPlanetPfxOffsetY;
-extern f32 gWorldPlanetPfxOffsetZ;
-extern f32 gWorldPlanetPathProgressStep;
-extern f32 gWorldPlanetPathProgressMax;
-extern f32 gWorldPlanetOrbitRadius;
 
 void worldplanet_update(GameObject* obj)
 {
@@ -734,3 +713,20 @@ void worldplanet_release(void)
 void worldplanet_initialise(void)
 {
 }
+
+ObjectDescriptor gWorldPlanetObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)worldplanet_initialise,
+    (ObjectDescriptorCallback)worldplanet_release,
+    0,
+    (ObjectDescriptorCallback)worldplanet_init,
+    (ObjectDescriptorCallback)worldplanet_update,
+    (ObjectDescriptorCallback)worldplanet_hitDetect,
+    (ObjectDescriptorCallback)worldplanet_render,
+    (ObjectDescriptorCallback)worldplanet_free,
+    (ObjectDescriptorCallback)worldplanet_getObjectTypeId,
+    worldplanet_getExtraSize,
+};
