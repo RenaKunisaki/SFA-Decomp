@@ -2139,7 +2139,7 @@ dlls/objects/311_AlphaAnimat/AlphaAnimat.c:
 	.data       start:0x803221C0 end:0x803221F8
 	.sdata2     start:0x803E3F78 end:0x803E3F98
 
-main/dll/dll_0138_groundanimator.c:
+dlls/objects/312_GroundAnima/GroundAnima.c:
 	.text       start:0x80193100 end:0x80193DBC
 	.data       start:0x803221F8 end:0x80322240
 	.sdata      start:0x803DBDF0 end:0x803DBDF8

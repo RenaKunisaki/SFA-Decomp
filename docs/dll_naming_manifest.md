@@ -357,7 +357,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x135 | texscroll | COMPLETE | dlls/objects/309_texscroll/texscroll.c | = (canonical) | — |
 | 0x136 | WaveAnimato | CONFIRMED | dlls/objects/310_WaveAnimato/WaveAnimato.c | = (canonical) | — |
 | 0x137 | AlphaAnimat | CONFIRMED | dlls/objects/311_AlphaAnimat/AlphaAnimat.c | = (canonical) | — |
-| 0x138 | GroundAnimator | CONFIRMED | main/dll/dll_0138_groundanimator.c | = (canonical) | — |
+| 0x138 | GroundAnima | CONFIRMED | dlls/objects/312_GroundAnima/GroundAnima.c | = (canonical) | — |
 | 0x139 | HitAnimator | CONFIRMED | main/dll/dll_0139_hitanimator.c | = (canonical) | — |
 | 0x13A | VisAnimator | CONFIRMED | main/dll/dll_013A_visanimator.c | = (canonical) | — |
 | 0x13B | WallAnimator | CONFIRMED | main/dll/dll_013B_wallanimator.c | = (canonical) | — |

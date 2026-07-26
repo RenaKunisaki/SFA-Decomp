@@ -1,4 +1,4 @@
-/* DLL 0x0138 (groundanimator) - Ground animator object [0x80193100-0x80193DBC). */
+/* DLL 0x0138 (GroundAnima) - ground animator object [0x80193100-0x80193DBC). */
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
