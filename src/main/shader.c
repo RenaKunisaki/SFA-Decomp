@@ -483,7 +483,7 @@ int objShouldUnload(GameObject* obj)
     f32 z;
     f32 dist;
 
-    def = *(u8**)&((GameObject*)obj)->anim.placementData;
+    def = *(u8**)&obj->anim.placementData;
     if (def == NULL)
     {
         return 0;
@@ -492,7 +492,7 @@ int objShouldUnload(GameObject* obj)
     {
         return 0;
     }
-    m = (*gMapEventInterface)->getMapAct(((GameObject*)obj)->anim.mapEventSlot);
+    m = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
     keep = objIsVisibleInAct(def, m);
     if (keep == 0)
     {
@@ -505,20 +505,20 @@ int objShouldUnload(GameObject* obj)
     }
     if (flags & 0x10)
     {
-        return !(u8)(*gMapEventInterface)->getObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, def[6]);
+        return !(u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, def[6]);
     }
-    if (((GameObject*)obj)->pendingParentObj != NULL && ((GameObject*)obj)->seqIndex < 0)
+    if (obj->pendingParentObj != NULL && obj->seqIndex < 0)
     {
         return 0;
     }
-    if (((GameObject*)obj)->ownerObj != NULL)
+    if (obj->ownerObj != NULL)
     {
         return 0;
     }
-    if (((GameObject*)obj)->anim.parent == NULL)
+    if (obj->anim.parent == NULL)
     {
-        bx = (int)fastFloorf((((GameObject*)obj)->anim.localPosX - playerMapOffsetX) / gMapBlockWorldSize);
-        bz = (int)fastFloorf((((GameObject*)obj)->anim.localPosZ - playerMapOffsetZ) / gMapBlockWorldSize);
+        bx = (int)fastFloorf((obj->anim.localPosX - playerMapOffsetX) / gMapBlockWorldSize);
+        bz = (int)fastFloorf((obj->anim.localPosZ - playerMapOffsetZ) / gMapBlockWorldSize);
         if (bx < 0 || bz < 0 || bx >= 0x10 || bz >= 0x10)
         {
             return 1;
@@ -544,7 +544,7 @@ int objShouldUnload(GameObject* obj)
     {
         return 0;
     }
-    if ((flags & 4) && (p = (u8*)Obj_GetPlayerObject()) != NULL && ((GameObject*)obj)->anim.parent == NULL)
+    if ((flags & 4) && (p = (u8*)Obj_GetPlayerObject()) != NULL && obj->anim.parent == NULL)
     {
         x = ((GameObject*)p)->anim.worldPosX;
         y = ((GameObject*)p)->anim.worldPosY;
@@ -552,7 +552,7 @@ int objShouldUnload(GameObject* obj)
     }
     else
     {
-        src = *(u8**)&((GameObject*)obj)->anim.parent;
+        src = *(u8**)&obj->anim.parent;
         if (src != NULL)
         {
             idx2 = (s8)src[0x35] + 1;
@@ -565,18 +565,18 @@ int objShouldUnload(GameObject* obj)
         y = lbl_80386648[idx2].y;
         z = lbl_80386648[idx2].z;
     }
-    dist = ((GameObject*)obj)->anim.loadDistance;
-    if (((GameObject*)obj)->anim.parent != NULL)
+    dist = obj->anim.loadDistance;
+    if (obj->anim.parent != NULL)
     {
-        x -= ((GameObject*)obj)->anim.localPosX;
-        y -= ((GameObject*)obj)->anim.localPosY;
-        z -= ((GameObject*)obj)->anim.localPosZ;
+        x -= obj->anim.localPosX;
+        y -= obj->anim.localPosY;
+        z -= obj->anim.localPosZ;
     }
     else
     {
-        x -= ((GameObject*)obj)->anim.worldPosX;
-        y -= ((GameObject*)obj)->anim.worldPosY;
-        z -= ((GameObject*)obj)->anim.worldPosZ;
+        x -= obj->anim.worldPosX;
+        y -= obj->anim.worldPosY;
+        z -= obj->anim.worldPosZ;
     }
     if (x * x + y * y + z * z < (40.0f + dist) * (40.0f + dist))
     {
@@ -707,9 +707,9 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
         player = Obj_GetPlayerObject();
         if (player != NULL)
         {
-            x = ((GameObject*)player)->anim.worldPosX;
-            y = ((GameObject*)player)->anim.worldPosY;
-            z = ((GameObject*)player)->anim.worldPosZ;
+            x = player->anim.worldPosX;
+            y = player->anim.worldPosY;
+            z = player->anim.worldPosZ;
         }
         else
         {
@@ -3092,39 +3092,39 @@ int objUpdateOpacity(GameObject* obj)
     f32 prod;
     f32 offZ, offX;
 
-    op = ((GameObject*)obj)->anim.alpha;
+    op = obj->anim.alpha;
     if (op == 0)
     {
-        ((GameObject*)obj)->anim.renderAlpha = 0;
+        obj->anim.renderAlpha = 0;
         return 0;
     }
-    ptr = (void*)((GameObject*)obj)->anim.placementData;
+    ptr = (void*)obj->anim.placementData;
     if (ptr != 0 && (*(u8*)(ptr + 5) & 1))
     {
-        ((GameObject*)obj)->anim.renderAlpha = (u8)(((op + 1) * 255) >> 8);
+        obj->anim.renderAlpha = (u8)(((op + 1) * 255) >> 8);
     }
     else
     {
-        range = ((GameObject*)obj)->anim.cullDistance2;
+        range = obj->anim.cullDistance2;
         if (range < lbl_803DEBB8)
         {
-            ((GameObject*)obj)->anim.renderAlpha = 0;
+            obj->anim.renderAlpha = 0;
             return 0;
         }
         player = Obj_GetPlayerObject();
         if (ptr != 0 && (*(u8*)(ptr + 5) & 2) && player != 0)
         {
-            d = Vec_distance(&((GameObject*)obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX);
+            d = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
         }
         else
         {
-            d = Camera_DistanceToCurrentViewPosition(((GameObject*)obj)->anim.worldPosX,
-                                                     ((GameObject*)obj)->anim.worldPosY,
-                                                     ((GameObject*)obj)->anim.worldPosZ);
+            d = Camera_DistanceToCurrentViewPosition(obj->anim.worldPosX,
+                                                     obj->anim.worldPosY,
+                                                     obj->anim.worldPosZ);
         }
         if (d > range)
         {
-            ((GameObject*)obj)->anim.renderAlpha = 0;
+            obj->anim.renderAlpha = 0;
             return 0;
         }
         alpha = 255;
@@ -3135,40 +3135,40 @@ int objUpdateOpacity(GameObject* obj)
             d = d - near;
             alpha = (int)(lbl_803DEBD8 * (lbl_803DEBDC - d / range));
         }
-        Camera_ProjectWorldSphere(((GameObject*)obj)->anim.worldPosX - playerMapOffsetX,
-                                  ((GameObject*)obj)->anim.worldPosY,
-                                  ((GameObject*)obj)->anim.worldPosZ - playerMapOffsetZ,
-                                  ((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale, &o1,
+        Camera_ProjectWorldSphere(obj->anim.worldPosX - playerMapOffsetX,
+                                  obj->anim.worldPosY,
+                                  obj->anim.worldPosZ - playerMapOffsetZ,
+                                  obj->anim.hitboxScale * obj->anim.rootMotionScale, &o1,
                                   &o2, &o3, &sz, &o5, &o6);
         sz = __fabsf(sz);
         sz = sz * gMapBlockWorldSize;
         if (sz < 10.0f)
         {
-            ((GameObject*)obj)->anim.renderAlpha = 0;
+            obj->anim.renderAlpha = 0;
             return 0;
         }
         if (sz < 15.0f)
         {
             alpha = (int)(((f32)alpha * (sz - 10.0f)) / 5.0f);
         }
-        ((GameObject*)obj)->anim.renderAlpha = (u8)((alpha * (((GameObject*)obj)->anim.alpha + 1)) >> 8);
+        obj->anim.renderAlpha = (u8)((alpha * (obj->anim.alpha + 1)) >> 8);
     }
-    if (((GameObject*)obj)->anim.renderAlpha == 0)
+    if (obj->anim.renderAlpha == 0)
     {
         return 0;
     }
     else
     {
-        prod = ((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale;
+        prod = obj->anim.hitboxScale * obj->anim.rootMotionScale;
         i = 0;
         offZ = playerMapOffsetZ;
         offX = playerMapOffsetX;
         for (; i < FRUSTUM_PLANE_COUNT; i++)
         {
             FrustumPlane* plane = &gViewFrustumPlanes[i];
-            if (prod + (plane->distance + (plane->normalZ * (((GameObject*)obj)->anim.worldPosZ - offZ) +
-                                           (((GameObject*)obj)->anim.worldPosY * plane->normalY +
-                                            plane->normalX * (((GameObject*)obj)->anim.worldPosX - offX)))) <
+            if (prod + (plane->distance + (plane->normalZ * (obj->anim.worldPosZ - offZ) +
+                                           (obj->anim.worldPosY * plane->normalY +
+                                            plane->normalX * (obj->anim.worldPosX - offX)))) <
                 *(f32*)&lbl_803DEBCC)
                 return 0;
         }
@@ -3403,9 +3403,9 @@ void playerVecFn_8005a9b0(void)
     invRotMtx = Camera_GetInverseViewRotationMatrix();
     if (player != NULL)
     {
-        clipDist = -Camera_DistanceToCurrentViewPosition(((GameObject*)player)->anim.worldPosX,
-                                                         ((GameObject*)player)->anim.worldPosY,
-                                                         ((GameObject*)player)->anim.worldPosZ);
+        clipDist = -Camera_DistanceToCurrentViewPosition(player->anim.worldPosX,
+                                                         player->anim.worldPosY,
+                                                         player->anim.worldPosZ);
     }
     else
     {
