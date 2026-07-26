@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_00D1_TUMBLEWEEDBUSH_H_
 
 #include "ghidra_import.h"
+#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
 
