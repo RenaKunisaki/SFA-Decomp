@@ -1329,7 +1329,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 rachnopUpdateAttack((int*)obj, state);
                 break;
             case ENEMY_SPITTINGEBA_OBJ:
-                spittingEbaUpdateEngaged((u32)obj, state);
+                spittingEbaUpdateEngaged((GameObject*)(obj), state);
                 break;
             case ENEMY_WB_OBJ:
                 wbUpdateEngaged((u32)obj, state);
@@ -1406,7 +1406,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 rachnopUpdateApproach((int*)obj, state);
                 break;
             case ENEMY_SPITTINGEBA_OBJ:
-                spittingEbaUpdateEngaged((u32)obj, state);
+                spittingEbaUpdateEngaged((GameObject*)(obj), state);
                 break;
             case ENEMY_WB_OBJ:
                 wbUpdateEngaged((u32)obj, state);
