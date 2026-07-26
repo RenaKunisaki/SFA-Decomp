@@ -721,7 +721,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A3 | — | NO-RETAIL-NAME | dlls/objects/675/675.c | = (canonical) | Exact complete eleven-function TU with its two mutable globals and terminal descriptor |
 | 0x2A4 | — | NO-RETAIL-NAME | dlls/objects/676/676.c | = (canonical) | Exact complete eleven-function TU with its terminal descriptor and formerly unassigned `1.0f`/`0.0f` constants |
 | 0x2A5 | ARWGenerato | RAW | dlls/objects/677_ARWGenerato/ARWGenerato.c | = (canonical) | Exact complete eleven-function TU with its terminal descriptor and formerly unassigned `10.0f` constant/alignment |
-| 0x2A6 | ARWSquadron (+ARWBigAster, ARWSmallAst, ARWMobileGu, ARWGroundGu, ARWShipFly, ARWShipTwin, ARWShipAnge) | CONFIRMED | main/dll/dll_02A6_arwsquadron.c | main/dll/ARW/dll_02A6_arwsquadron.c | — |
+| 0x2A6 | ARWSquadron | RAW | dlls/objects/678_ARWSquadron/ARWSquadron.c | = (canonical) | Exact complete fourteen-function TU with its source-only inline range helper, early descriptor, and full constant pool |
 | 0x2A7 | ARWProximit (+ARWTimedMin) | CONFIRMED | main/dll/dll_02A7_arwproximit.c | main/dll/ARW/dll_02A7_arwproximit.c | — |
 | 0x2A8 | ARWBlocker (+ARWBlockerS) | COMPLETE | main/dll/dll_02A8_arwblocker.c | main/dll/ARW/dll_02A8_arwblocker.c | — |
 | 0x2A9 | LGTPointLight (+CF_WallTorc) | CONFIRMED | main/dll/dll_02A9_lgtpointlight.c | main/dll/LGT/dll_02A9_lgtpointlight.c | — |

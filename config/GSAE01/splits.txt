@@ -3969,7 +3969,7 @@ dlls/objects/677_ARWGenerato/ARWGenerato.c:
 	.data       start:0x8032B8B0 end:0x8032B8E8
 	.sdata2     start:0x803E7140 end:0x803E7160
 
-main/dll/ARW/dll_02A6_arwsquadron.c:
+dlls/objects/678_ARWSquadron/ARWSquadron.c:
 	.text       start:0x80231A90 end:0x802331B0
 	.data       start:0x8032B8E8 end:0x8032B920
 	.sdata2     start:0x803E7160 end:0x803E71D8

@@ -411,6 +411,7 @@ ObjectDescriptor gARWSquadronObjDescriptor = {
     (ObjectDescriptorCallback)ARWSquadron_free, (ObjectDescriptorCallback)ARWSquadron_getObjectTypeId,
     ARWSquadron_getExtraSize,
 };
+
 void ARWSquadron_render(GameObject* obj, int p2, int p3, int p4, int p5)
 {
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
