@@ -2,6 +2,7 @@
 #define MAIN_DLL_IM_DLL_0114_IMMULTISEQ_H_
 
 #include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
@@ -30,12 +31,12 @@ extern ObjectDescriptor gIMMultiSeqObjDescriptor;
 int IMMultiSeq_getExtraSize(void);
 int IMMultiSeq_getObjectTypeId(void);
 void IMMultiSeq_free(int obj);
-void IMMultiSeq_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
+void IMMultiSeq_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void IMMultiSeq_hitDetect(void);
-void IMMultiSeq_update(int* obj);
-void IMMultiSeq_init(int* obj, IMMultiSeqPlacement* params);
+void IMMultiSeq_update(GameObject* obj);
+void IMMultiSeq_init(GameObject* obj, IMMultiSeqPlacement* params);
 void IMMultiSeq_release(void);
 void IMMultiSeq_initialise(void);
-int IMMultiSeq_SeqFn(int* obj, int* anim, ObjAnimUpdateState* animUpdate);
+int IMMultiSeq_SeqFn(GameObject* obj, int* anim, ObjAnimUpdateState* animUpdate);
 
 #endif /* MAIN_DLL_IM_DLL_0114_IMMULTISEQ_H_ */

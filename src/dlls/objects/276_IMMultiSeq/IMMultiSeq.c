@@ -40,13 +40,13 @@ STATIC_ASSERT(offsetof(IMMultiSeqPlacement, polarityMask) == 0x30);
    peek at the next step's active game bit; if its polarity has flipped
    (GameBit != the polarityMask bit for that step) end the current
    sequence. Always latches the advance bit before returning. */
-int IMMultiSeq_SeqFn(int* obj, int* anim, ObjAnimUpdateState* animUpdate)
+int IMMultiSeq_SeqFn(GameObject* obj, int* anim, ObjAnimUpdateState* animUpdate)
 {
-    IMMultiSeqState* state = ((GameObject*)obj)->extra;
-    IMMultiSeqPlacement* def = *(IMMultiSeqPlacement**)&((GameObject*)obj)->anim.placementData;
+    IMMultiSeqState* state = obj->extra;
+    IMMultiSeqPlacement* def = *(IMMultiSeqPlacement**)&obj->anim.placementData;
     animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
     animUpdate->sequenceEventActive = 0;
-    if (((GameObject*)obj)->seqIndex == -1)
+    if (obj->seqIndex == -1)
     {
         return 0;
     }
@@ -64,7 +64,7 @@ int IMMultiSeq_SeqFn(int* obj, int* anim, ObjAnimUpdateState* animUpdate)
                     int expected = !((def->polarityMask >> next) & 1);
                     if ((u32)expected == bitValue)
                     {
-                        (*gObjectTriggerInterface)->endSequence(((GameObject*)obj)->seqIndex);
+                        (*gObjectTriggerInterface)->endSequence(obj->seqIndex);
                     }
                 }
             }
@@ -88,18 +88,18 @@ void IMMultiSeq_free(int obj)
     ObjGroup_RemoveObject(obj, IMMULTISEQ_OBJGROUP);
 }
 
-void IMMultiSeq_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void IMMultiSeq_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void IMMultiSeq_hitDetect(void)
 {
 }
 
-void IMMultiSeq_update(int* obj)
+void IMMultiSeq_update(GameObject* obj)
 {
     IMMultiSeqState* state;
     IMMultiSeqPlacement* def;
@@ -107,8 +107,8 @@ void IMMultiSeq_update(int* obj)
     int prevStep;
     s16 bitId;
 
-    state = ((GameObject*)obj)->extra;
-    def = *(IMMultiSeqPlacement**)&((GameObject*)obj)->anim.placementData;
+    state = obj->extra;
+    def = *(IMMultiSeqPlacement**)&obj->anim.placementData;
 
     if ((state->flags & IMMULTISEQ_LATCH_ADVANCE_BIT) != 0)
     {
@@ -154,18 +154,18 @@ void IMMultiSeq_update(int* obj)
     }
 }
 
-void IMMultiSeq_init(int* obj, IMMultiSeqPlacement* params)
+void IMMultiSeq_init(GameObject* obj, IMMultiSeqPlacement* params)
 {
     ObjAnimComponent* objAnim;
     IMMultiSeqState* state;
     int i;
 
     objAnim = (ObjAnimComponent*)obj;
-    state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)(params->initialYaw << 8);
-    ((GameObject*)obj)->animEventCallback = IMMultiSeq_SeqFn;
-    ((GameObject*)obj)->objectFlags =
-        (u16)(((GameObject*)obj)->objectFlags | (IMMULTISEQ_OBJFLAG_HIDDEN | IMMULTISEQ_OBJFLAG_HITDETECT_DISABLED));
+    state = obj->extra;
+    obj->anim.rotX = (s16)(params->initialYaw << 8);
+    obj->animEventCallback = IMMultiSeq_SeqFn;
+    obj->objectFlags =
+        (u16)(obj->objectFlags | (IMMULTISEQ_OBJFLAG_HIDDEN | IMMULTISEQ_OBJFLAG_HITDETECT_DISABLED));
     objAnim->bankIndex = params->modelBankIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
     {

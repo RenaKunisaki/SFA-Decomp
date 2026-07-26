@@ -100,7 +100,7 @@ void enemy_initialise(void);
 void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void enemy_hitDetect(GameObject* obj);
 void enemy_free(GameObject* obj, int flag);
-void enemy_update(int obj);
+void enemy_update(GameObject* obj);
 void enemy_init(GameObject* obj, u8* setup, int flag);
 void FUN_8014ccb8(double param_1, double param_2, double param_3, int param_4, int param_5, float* param_6,
                   char param_7);

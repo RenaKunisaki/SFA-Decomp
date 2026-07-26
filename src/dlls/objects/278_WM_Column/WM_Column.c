@@ -75,17 +75,17 @@ int WM_Column_getObjectTypeId(void)
     return 0;
 }
 
-void WM_Column_free(int obj)
+void WM_Column_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject(obj, WMCOLUMN_OBJGROUP);
-    (*gCarryableInterface)->free((GameObject*)obj);
+    ObjGroup_RemoveObject((int)obj, WMCOLUMN_OBJGROUP);
+    (*gCarryableInterface)->free(obj);
 }
 
-void WM_Column_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void WM_Column_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    if ((*gCarryableInterface)->updateRenderState((GameObject*)obj, visible) != 0)
+    if ((*gCarryableInterface)->updateRenderState(obj, visible) != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -93,7 +93,7 @@ void WM_Column_hitDetect(void)
 {
 }
 
-void WM_Column_update(int obj)
+void WM_Column_update(GameObject* obj)
 {
     int* objects;
     u32 playerFlags;
@@ -103,18 +103,18 @@ void WM_Column_update(int obj)
     int other;
     int state;
 
-    state = *(int*)&((GameObject*)obj)->extra;
+    state = *(int*)&obj->extra;
     nearest = 10000.0f;
-    if ((*gCarryableInterface)->updateHeld((GameObject*)obj, ((GameObject*)obj)->extra) != 0)
+    if ((*gCarryableInterface)->updateHeld(obj, obj->extra) != 0)
     {
-        if ((((GameObject*)obj)->userData1 & 2) != 0)
+        if ((obj->userData1 & 2) != 0)
         {
             objects = ObjList_GetObjects(&i, &count);
             for (; i < count; i++)
             {
                 other = objects[i];
-                if (((u32)other != obj) && (((GameObject*)other)->anim.seqId == WMCOLUMN_SCENE_MARKER_OBJ) &&
-                    (Vec_distance((float*)(obj + 0x18), (float*)(other + 0x18)) < 35.0f))
+                if (((u32)other != (u32)obj) && (((GameObject*)other)->anim.seqId == WMCOLUMN_SCENE_MARKER_OBJ) &&
+                    (Vec_distance(&obj->anim.worldPosX, (float*)(other + 0x18)) < 35.0f))
                 {
                     other = ((WmColumnPlacement*)((GameObject*)objects[i])->anim.placement)->gameBit;
                     if (other != -1)
@@ -125,36 +125,36 @@ void WM_Column_update(int obj)
             }
         }
         playerFlags = (int)Obj_GetPlayerObject();
-        ObjGroup_FindNearestObject(WMCOLUMN_TARGET_OBJGROUP, (GameObject*)obj, &nearest);
+        ObjGroup_FindNearestObject(WMCOLUMN_TARGET_OBJGROUP, obj, &nearest);
         playerFlags = playerGetStateFlag310((GameObject*)playerFlags);
         if (((playerFlags & 0x4000) != 0) && (nearest > 60.0f))
         {
             (*gCarryableInterface)->setDropDisabled((void*)state, 0);
             setAButtonIcon(5);
-            *(u32*)&((GameObject*)obj)->userData1 |= 1;
+            *(u32*)&obj->userData1 |= 1;
         }
         else
         {
             (*gCarryableInterface)->setDropDisabled((void*)state, 1);
         }
-        *(u32*)&((GameObject*)obj)->userData1 &= ~2;
+        *(u32*)&obj->userData1 &= ~2;
     }
     else
     {
         /* just put down: snap to the nearest scene spot and set/clear
            its bit by whether this column variant belongs there */
-        if ((((GameObject*)obj)->userData1 & 1) != 0)
+        if ((obj->userData1 & 1) != 0)
         {
             objects = ObjList_GetObjects(&i, &count);
             for (; i < count; i++)
             {
                 other = objects[i];
-                if (((u32)other != obj) && (((GameObject*)other)->anim.seqId == WMCOLUMN_SCENE_MARKER_OBJ) &&
-                    (Vec_distance((float*)(obj + 0x18), (float*)(other + 0x18)) < 35.0f))
+                if (((u32)other != (u32)obj) && (((GameObject*)other)->anim.seqId == WMCOLUMN_SCENE_MARKER_OBJ) &&
+                    (Vec_distance(&obj->anim.worldPosX, (float*)(other + 0x18)) < 35.0f))
                 {
                     WmColumnPlacement* mapData =
                         (WmColumnPlacement*)*(int*)&((GameObject*)objects[i])->anim.placementData;
-                    if (((GameObject*)obj)->anim.seqId == (s8)mapData->modelIndex + 500)
+                    if (obj->anim.seqId == (s8)mapData->modelIndex + 500)
                     {
                         if (mapData->gameBit != -1)
                         {
@@ -165,9 +165,9 @@ void WM_Column_update(int obj)
                     {
                         mainSetBits(mapData->gameBit, 0);
                     }
-                    ((GameObject*)obj)->anim.localPosX = ((GameObject*)objects[i])->anim.localPosX;
-                    ((GameObject*)obj)->anim.localPosY = ((GameObject*)objects[i])->anim.localPosY;
-                    ((GameObject*)obj)->anim.localPosZ = ((GameObject*)objects[i])->anim.localPosZ;
+                    obj->anim.localPosX = ((GameObject*)objects[i])->anim.localPosX;
+                    obj->anim.localPosY = ((GameObject*)objects[i])->anim.localPosY;
+                    obj->anim.localPosZ = ((GameObject*)objects[i])->anim.localPosZ;
                 }
             }
         }
@@ -175,14 +175,14 @@ void WM_Column_update(int obj)
         if ((playerFlags & 0x4000) != 0)
         {
             (*gCarryableInterface)->setDropDisabled((void*)state, 0);
-            *(u32*)&((GameObject*)obj)->userData1 |= 2;
+            *(u32*)&obj->userData1 |= 2;
         }
         else
         {
             (*gCarryableInterface)->setDropDisabled((void*)state, 1);
-            *(u32*)&((GameObject*)obj)->userData1 &= ~2;
+            *(u32*)&obj->userData1 &= ~2;
         }
-        *(u32*)&((GameObject*)obj)->userData1 &= ~1;
+        *(u32*)&obj->userData1 &= ~1;
     }
 }
 

@@ -81,7 +81,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/NW/dll_01A5_nwlevcontrol | 100.0000 | 64.4007 | -35.5993 |
 | main/main/dll/dll_02BB_gflevelcon | 100.0000 | 65.1733 | -34.8267 |
 | main/main/curves | 100.0000 | 66.1867 | -33.8133 |
-| main/main/dll/WC/dll_0296_wctempledia | 100.0000 | 67.7368 | -32.2632 |
+| main/dlls/objects/662_WCTempleDia/WCTempleDia | 100.0000 | 67.7368 | -32.2632 |
 | main/main/dll/CC/dll_0189_ccsharpclawpad | 100.0000 | 67.8719 | -32.1281 |
 | main/main/dll/dll_3b | 100.0000 | 68.0723 | -31.9277 |
 | main/main/main | 99.8279 | 68.0867 | -31.7412 |
@@ -133,13 +133,13 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_00F0_warppoint | 100.0000 | 80.8028 | -19.1972 |
 | main/main/dll/VF/dll_0216_vfplevelcontrol | 100.0000 | 80.8854 | -19.1146 |
 | main/main/dll/dll_017F_moonseedbush | 100.0000 | 81.3284 | -18.6716 |
-| main/main/dll/WC/dll_0297_wctemplebri | 100.0000 | 81.4000 | -18.6000 |
+| main/dlls/objects/663_WCTempleBri/WCTempleBri | 100.0000 | 81.4000 | -18.6000 |
 | main/main/dll/dll_01CE_dll1ce | 100.0000 | 81.5400 | -18.4600 |
 | main/main/dll/dll_013A_visanimator | 100.0000 | 81.5478 | -18.4522 |
 | main/main/dll/dll_017D_rollingbarrel | 100.0000 | 81.6367 | -18.3633 |
 | main/main/dll/fireflygroup | 100.0000 | 81.7300 | -18.2700 |
 | main/main/dll/CC/dll_0185_ccgasvent | 100.0000 | 81.8442 | -18.1558 |
-| main/main/dll/ARW/dll_029D_arwarwinggu | 100.0000 | 81.9671 | -18.0329 |
+| main/dlls/objects/669_ARWArwingGu/ARWArwingGu | 100.0000 | 81.9671 | -18.0329 |
 | main/main/dll/dll_0003_checkpoint | 99.3938 | 81.3705 | -18.0233 |
 | main/main/dll/SC/dll_01BB_sctotembond | 100.0000 | 82.1324 | -17.8676 |
 | main/main/mm | 99.5834 | 81.7241 | -17.8593 |
@@ -151,7 +151,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/CC/dll_0186_ccgasventcontrol | 100.0000 | 83.0330 | -16.9670 |
 | main/main/dll/SH/SHthorntail | 100.0000 | 83.2576 | -16.7424 |
 | main/main/dll/CF/dll_0148_cfguardian | 100.0000 | 84.1805 | -15.8195 |
-| main/main/dll/WC/dll_0291_wctile | 100.0000 | 84.2817 | -15.7183 |
+| main/dlls/objects/657_WCTile/WCTile | 100.0000 | 84.2817 | -15.7183 |
 | main/main/dll/dll_010C_lanternfirefly | 100.0000 | 84.4412 | -15.5588 |
 | main/dlls/objects/677_ARWGenerato/ARWGenerato | 100.0000 | 84.5118 | -15.4882 |
 | main/main/dll/NW/nwmammothgroup | 100.0000 | 84.7063 | -15.2937 |
@@ -166,7 +166,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_01AA_bombplantspore | 100.0000 | 86.1777 | -13.8223 |
 | main/main/dll/duster_wb | 100.0000 | 86.2121 | -13.7879 |
 | main/main/dll/dll_0271_drakorhoverpad | 100.0000 | 86.2241 | -13.7759 |
-| main/main/dll/ARW/dll_029A_arwarwing | 100.0000 | 86.2676 | -13.7324 |
+| main/dlls/objects/666_ARWArwing/ARWArwing | 100.0000 | 86.2676 | -13.7324 |
 | main/main/modelEngine | 100.0000 | 86.3317 | -13.6683 |
 | main/main/dll/dll_801c0bf8 | 98.6299 | 85.2597 | -13.3701 |
 | main/main/objprint | 99.9558 | 86.7247 | -13.2311 |
@@ -209,7 +209,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/SH/dll_01AE_shlevelcontrol | 100.0000 | 92.5453 | -7.4547 |
 | main/main/dll/camshipbattle5c | 99.7560 | 92.5326 | -7.2234 |
 | main/main/shader | 98.9392 | 92.0709 | -6.8682 |
-| main/main/dll/dll_02A0_ring | 100.0000 | 93.4272 | -6.5728 |
+| main/dlls/objects/672/672 | 100.0000 | 93.4272 | -6.5728 |
 | main/main/audio | 100.0000 | 93.4540 | -6.5460 |
 | main/dlls/objects/202/202 | 100.0000 | 93.5470 | -6.4530 |
 | main/main/dll/pathcamgroup | 100.0000 | 94.0781 | -5.9219 |
@@ -255,7 +255,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_80136a40 | 99.1092 | 96.5304 | -2.5788 |
 | main/main/dll/dll_0032_titlescreeninit | 100.0000 | 97.5015 | -2.4985 |
 | main/main/dll/dll_00F5_sidekickball | 100.0000 | 97.5680 | -2.4320 |
-| main/main/dll/ARW/dll_029F_arwbombcoll | 100.0000 | 97.6175 | -2.3825 |
+| main/dlls/objects/671_ARWBombColl/ARWBombColl | 100.0000 | 97.6175 | -2.3825 |
 | main/main/dll/dll_0017_savegame | 99.7631 | 97.4521 | -2.3110 |
 | main/main/tex_dolphin | 99.9727 | 97.6931 | -2.2796 |
 | main/main/dll/laserturretgroup | 100.0000 | 97.7680 | -2.2320 |
@@ -324,7 +324,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_bb | 100.0000 | 99.6584 | -0.3416 |
 | main/main/dll/dll_01A7_ediblemushroom | 100.0000 | 99.6598 | -0.3402 |
 | main/main/dll/dll_011D_treasurechest | 100.0000 | 99.6698 | -0.3302 |
-| main/main/dll/dll_029B_arwingandrossstuff | 100.0000 | 99.6727 | -0.3273 |
+| main/dlls/objects/667/667 | 100.0000 | 99.6727 | -0.3273 |
 | main/main/dll/dll_012C_transporter | 100.0000 | 99.6791 | -0.3209 |
 | main/main/dll/dll_00C4_tricky | 100.0000 | 99.6979 | -0.3021 |
 | main/main/dll/dll_013C_xyzanimator | 99.9580 | 99.6603 | -0.2977 |
@@ -339,7 +339,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_002E_moveLib | 100.0000 | 99.8606 | -0.1394 |
 | main/main/dll/dll_0103_curvefish | 100.0000 | 99.8667 | -0.1333 |
 | main/dlls/objects/211/211 | 100.0000 | 99.8946 | -0.1054 |
-| main/main/dll/dll_02A3 | 100.0000 | 99.9005 | -0.0995 |
+| main/dlls/objects/675/675 | 100.0000 | 99.9005 | -0.0995 |
 | main/main/dll/dll_02AE_waterflowwe | 100.0000 | 99.9048 | -0.0952 |
 | main/main/dll/dll_0136_waveanimator | 100.0000 | 99.9085 | -0.0915 |
 | main/main/dll/DR/dll_0251_ktrexfloorswitch | 100.0000 | 99.9114 | -0.0886 |

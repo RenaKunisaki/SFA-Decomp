@@ -63,7 +63,7 @@ STATIC_ASSERT(offsetof(CurveFishState, moveStepScale) == 0x118);
 STATIC_ASSERT(offsetof(CurveFishState, phaseTimer) == 0x11C);
 
 int CurveFish_getExtraSize(void);
-void CurveFish_update(int obj);
+void CurveFish_update(GameObject* obj);
 void CurveFish_init(GameObject* obj, CurveFishPlacement* placement);
 
 extern ObjectDescriptor gCurveFishObjDescriptor;

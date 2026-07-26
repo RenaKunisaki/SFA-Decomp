@@ -46,15 +46,14 @@ typedef struct AppleOnTreeState
     f32 unk60;
 } AppleOnTreeState;
 
-void AppleOnTree_update(int param_1);
-void AppleOnTree_init(int obj, int def);
+void AppleOnTree_update(GameObject* objArg);
 int AppleOnTree_getExtraSize(void);
 void AppleOnTree_setScale(void);
 
 
 /* extern-cleanup: defining-file public prototypes */
-void AppleOnTree_render(int obj, int p1, int p2, int p3, int p4, s8 visible);
-void AppleOnTree_free(int* obj);
-u8 AppleOnTree_modelMtxFn(int* obj);
+void AppleOnTree_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible);
+void AppleOnTree_free(GameObject* obj);
+u8 AppleOnTree_modelMtxFn(GameObject* obj);
 
 #endif /* MAIN_DLL_CRACKANIM_H_ */

@@ -9,10 +9,10 @@ struct WmColumnPlacement;
 
 int WM_Column_getExtraSize(void);
 int WM_Column_getObjectTypeId(void);
-void WM_Column_free(int obj);
-void WM_Column_render(int param_1, int param_2, int param_3, int param_4, int param_5, s8 visible);
+void WM_Column_free(GameObject* obj);
+void WM_Column_render(GameObject* param_1, int param_2, int param_3, int param_4, int param_5, s8 visible);
 void WM_Column_hitDetect(void);
-void WM_Column_update(int obj);
+void WM_Column_update(GameObject* obj);
 void WM_Column_init(GameObject* obj, struct WmColumnPlacement* mapData);
 void WM_Column_release(void);
 void WM_Column_initialise(void);

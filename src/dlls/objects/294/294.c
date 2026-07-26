@@ -91,8 +91,8 @@ extern f32 lbl_803E40D8;
 void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distSq)
 {
     char* desc = (char*)&gTriggerObjDescriptor;
-    u8* state = ((GameObject*)obj)->extra;
-    u8* p = (u8*)(*(int*)&((GameObject*)obj)->anim.placementData + 0x18);
+    u8* state = obj->extra;
+    u8* p = (u8*)(*(int*)&obj->anim.placementData + 0x18);
     u8 i = 0;
     u8 b;
     u8 sflags;
@@ -306,7 +306,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     break;
                 case 10:
                     getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), distSq);
-                    OSReport(desc + 0x68, (int)((GameObject*)obj)->anim.classId, (p[2] << 8) | p[3], distSq);
+                    OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], distSq);
                     break;
                 case 0xd:
                     getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, distSq, 0);
@@ -388,7 +388,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     break;
                 case 0x13:
                     (*gMapEventInterface)
-                        ->setObjGroupStatus((int)((GameObject*)obj)->anim.mapEventSlot, (p[2] << 8) | p[3], 1);
+                        ->setObjGroupStatus((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3], 1);
                     break;
                 case 0x27:
                     id = (p[2] << 8) | p[3];
@@ -421,14 +421,14 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     break;
                 case 0x14:
                     (*gMapEventInterface)
-                        ->setObjGroupStatus((int)((GameObject*)obj)->anim.mapEventSlot, (p[2] << 8) | p[3], 0);
+                        ->setObjGroupStatus((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3], 0);
                     break;
                 case 0x22:
                     id = (p[2] << 8) | p[3];
                     groupStatus =
-                        (u8)(*gMapEventInterface)->getObjGroupStatus((int)((GameObject*)obj)->anim.mapEventSlot, id);
+                        (u8)(*gMapEventInterface)->getObjGroupStatus((int)obj->anim.mapEventSlot, id);
                     (*gMapEventInterface)
-                        ->setObjGroupStatus((int)((GameObject*)obj)->anim.mapEventSlot, id, groupStatus ^ 1);
+                        ->setObjGroupStatus((int)obj->anim.mapEventSlot, id, groupStatus ^ 1);
                     break;
                 case 0x15:
                     t = (int)getTablesBinEntry((u16)((p[2] << 8) | p[3]) + 2);
@@ -458,7 +458,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     }
                     break;
                 case 0x18:
-                    (*gMapEventInterface)->setMapAct((int)((GameObject*)obj)->anim.mapEventSlot, (p[2] << 8) | p[3]);
+                    (*gMapEventInterface)->setMapAct((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3]);
                     break;
                 case 0x1a:
                     (*gMapEventInterface)->setObjGroupStatus(p[3], p[2], 1);
@@ -474,7 +474,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     break;
                 case 0x1f:
                     t = (int)Obj_GetPlayerObject();
-                    angleDiff = ((GameObject*)obj)->anim.rotX - (u16) * (s16*)t;
+                    angleDiff = obj->anim.rotX - (u16) * (s16*)t;
                     if (angleDiff > 0x8000)
                     {
                         angleDiff = (angleDiff - 0x10000) + 1;
@@ -494,13 +494,13 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     if (ang > 0x4000)
                     {
                         (*gMapEventInterface)
-                            ->savePoint((int)obj + 0xc, (int)(s16)(((GameObject*)obj)->anim.rotX + 0x8000), p[3],
+                            ->savePoint((int)obj + 0xc, (int)(s16)(obj->anim.rotX + 0x8000), p[3],
                                         getCurMapLayer());
                     }
                     else
                     {
                         (*gMapEventInterface)
-                            ->savePoint((int)obj + 0xc, (int)((GameObject*)obj)->anim.rotX, p[3], getCurMapLayer());
+                            ->savePoint((int)obj + 0xc, (int)obj->anim.rotX, p[3], getCurMapLayer());
                     }
                     break;
                 case 0x20:
@@ -518,7 +518,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     {
                     case 0:
                         (*gMapEventInterface)
-                            ->restartPoint((void*)((int)obj + 0xc), (int)((GameObject*)obj)->anim.rotX,
+                            ->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX,
                                            getCurMapLayer(), 0);
                         break;
                     case 1:
@@ -529,7 +529,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                         break;
                     case 3:
                         (*gMapEventInterface)
-                            ->restartPoint((void*)((int)obj + 0xc), (int)((GameObject*)obj)->anim.rotX,
+                            ->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX,
                                            getCurMapLayer(), 1);
                         break;
                     }
@@ -917,35 +917,35 @@ void Trigger_update(void)
 {
 }
 
-void Trigger_init(u8* obj, u8* params)
+void Trigger_init(GameObject* obj, u8* params)
 {
     u8* state;
     f32 range;
 
-    objSetSlot((GameObject*)obj, 0x28);
-    state = ((GameObject*)obj)->extra;
+    objSetSlot(obj, 0x28);
+    state = obj->extra;
     switch (((TriggerPlacement*)params)->typeId)
     {
     case 0x4b:
         range = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);
         ((TriggerState*)state)->rangeSq = range * range;
-        ((GameObject*)obj)->anim.rotZ = 0;
-        ((GameObject*)obj)->anim.rotY = 0;
-        ((GameObject*)obj)->anim.rotX = (s16)(((TriggerPlacement*)params)->rot[0] << 8);
-        ((GameObject*)obj)->anim.rootMotionScale = range / 55.4256f;
+        obj->anim.rotZ = 0;
+        obj->anim.rotY = 0;
+        obj->anim.rotX = (s16)(((TriggerPlacement*)params)->rot[0] << 8);
+        obj->anim.rootMotionScale = range / 55.4256f;
         break;
     case 0x4c:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];
-        objFn_80198fa4((GameObject*)obj, (MmpGyserventPlacement*)params);
+        objFn_80198fa4(obj, (MmpGyserventPlacement*)params);
         break;
     case 0x230:
         ((TriggerState*)state)->rangeSq = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);
         ((TriggerState*)state)->rangeSq = ((TriggerState*)state)->rangeSq * ((TriggerState*)state)->rangeSq;
         break;
     case 0x4d:
-        ((GameObject*)obj)->anim.rotX = (s16)(((TriggerPlacement*)params)->rot[0] << 8);
-        ((GameObject*)obj)->anim.rotY = (s16)(((TriggerPlacement*)params)->rot[1] << 8);
-        ((GameObject*)obj)->anim.rotZ = 0;
+        obj->anim.rotX = (s16)(((TriggerPlacement*)params)->rot[0] << 8);
+        obj->anim.rotY = (s16)(((TriggerPlacement*)params)->rot[1] << 8);
+        obj->anim.rotZ = 0;
         break;
     case 0x54:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];

@@ -427,11 +427,11 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x17D | — (+DIM2_barrel, MMP_barrel) | NO-RETAIL-NAME | dlls/objects/381/381.c | = (canonical) | — |
 | 0x17E | MMP_levelco | COMPLETE | dlls/objects/382_MMP_levelco/MMP_levelco.c | = (canonical) | — |
 | 0x17F | — (+MSBush, MSVine) | NO-RETAIL-NAME | dlls/objects/383/383.c | = (canonical) | — |
-| 0x180 | MMP_asteroid_re | CONFIRMED | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | — |
-| 0x181 | MMP_trenchFx | CONFIRMED | main/dll/dll_0181_mmptrenchfx.c | main/dll/MMP/dll_0181_mmptrenchfx.c | — |
-| 0x182 | MMP_moonrock | CONFIRMED | main/dll/dll_0182_mmpmoonrock.c | main/dll/MMP/dll_0182_mmpmoonrock.c | — |
-| 0x183 | MMP_gyservent | CONFIRMED | main/dll/dll_0183_mmpgyservent.c | main/dll/MMP/dll_0183_mmpgyservent.c | — |
-| 0x184 | AnimSharpclaw (+DIMAnimShar, MMPAnimShar) | CONFIRMED | main/dll/dll_0184_animsharpclaw.c | = (canonical) | — |
+| 0x180 | MMP_asteroi | COMPLETE | dlls/objects/384_MMP_asteroi/MMP_asteroi.c | = (canonical) | — |
+| 0x181 | MMP_trenchF | COMPLETE | dlls/objects/385_MMP_trenchF/MMP_trenchF.c | = (canonical) | — |
+| 0x182 | MMP_moonroc | COMPLETE | dlls/objects/386_MMP_moonroc/MMP_moonroc.c | = (canonical) | — |
+| 0x183 | MMP_gyserve | COMPLETE | dlls/objects/387_MMP_gyserve/MMP_gyserve.c | = (canonical) | — |
+| 0x184 | — (+DIMAnimShar, MMPAnimShar) | NO-RETAIL-NAME | dlls/objects/388/388.c | = (canonical) | — |
 | 0x185 | CCgasvent | COMPLETE | main/dll/dll_0185_ccgasvent.c | main/dll/CC/dll_0185_ccgasvent.c | — |
 | 0x186 | CCgasventControl | CONFIRMED | main/dll/dll_0186_ccgasventcontrol.c | main/dll/CC/dll_0186_ccgasventcontrol.c | — |
 | 0x187 | CCqueen | COMPLETE | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | — |
@@ -700,26 +700,26 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x28E | WCBeacon | COMPLETE | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | — |
 | 0x28F | WCPressureS | CONFIRMED | main/dll/dll_028F_wcpressures.c | main/dll/WC/dll_028F_wcpressures.c | — |
 | 0x290 | WCPushBlock | CONFIRMED | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | — |
-| 0x291 | WCTile | COMPLETE | main/dll/dll_0291_wctile.c | main/dll/WC/dll_0291_wctile.c | — |
-| 0x292 | WCTrexStatu | CONFIRMED | main/dll/dll_0292_wctrexstatu.c | main/dll/WC/dll_0292_wctrexstatu.c | — |
-| 0x293 | SunTemple (+CFSunTemple, WCInvUseObj, WCSunTemple) | CONFIRMED | main/dll/dll_0293_suntemple.c | = (canonical) | — |
-| 0x294 | wctemple (+WCMoonTempl, WCSunTemple) | GUESSED | main/dll/dll_0294_wctemple.c | = (canonical) | — |
-| 0x295 | WCApertureS | CONFIRMED | main/dll/dll_0295_wcapertures.c | main/dll/WC/dll_0295_wcapertures.c | — |
-| 0x296 | WCTempleDia | CONFIRMED | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | — |
-| 0x297 | WCTempleBri | CONFIRMED | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | — |
-| 0x298 | WCFloorTile | CONFIRMED | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | — |
-| 0x299 | — | NO-RETAIL-NAME | main/dll/dll_0299.c | = (canonical) | — |
-| 0x29A | ARWArwing | COMPLETE | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | — |
-| 0x29B | arwingandrossstuff (+rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | GUESSED | main/dll/dll_029B_arwingandrossstuff.c | = (canonical) | — |
-| 0x29C | ARWArwingBo | CONFIRMED | main/dll/dll_029C_arwarwingbo.c | main/dll/ARW/dll_029C_arwarwingbo.c | — |
-| 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | main/dll/dll_029D_arwarwinggu.c | main/dll/ARW/dll_029D_arwarwinggu.c | — |
-| 0x29E | — | NO-RETAIL-NAME | main/dll/dll_029E_Dummy29E.c | = (canonical) | — |
-| 0x29F | ARWBombColl (+ARWLaserCol, ARWContaine, ARWSporeCol, ARWDinoEggC, ARWMoonSeed) | CONFIRMED | main/dll/dll_029F_arwbombcoll.c | main/dll/ARW/dll_029F_arwbombcoll.c | — |
-| 0x2A0 | Ring (+WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | CONFIRMED | main/dll/dll_02A0_ring.c | = (canonical) | — |
-| 0x2A1 | ARWLevelCon | CONFIRMED | main/dll/dll_02A1_arwlevelcon.c | main/dll/ARW/dll_02A1_arwlevelcon.c | — |
-| 0x2A2 | ARWSpeedStr | CONFIRMED | main/dll/dll_02A2_arwspeedstr.c | main/dll/ARW/dll_02A2_arwspeedstr.c | — |
-| 0x2A3 | — | NO-RETAIL-NAME | main/dll/dll_02A3.c | = (canonical) | — |
-| 0x2A4 | — | NO-RETAIL-NAME | main/dll/dll_02A4.c | = (canonical) | — |
+| 0x291 | WCTile | COMPLETE | dlls/objects/657_WCTile/WCTile.c | = (canonical) | — |
+| 0x292 | WCTrexStatu | CONFIRMED | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | = (canonical) | — |
+| 0x293 | — (+SunTemple, CFSunTemple, WCInvUseObj, WCSunTemple) | NO-RETAIL-NAME | dlls/objects/659/659.c | = (canonical) | — |
+| 0x294 | — (+wctemple, WCMoonTempl, WCSunTemple) | NO-RETAIL-NAME | dlls/objects/660/660.c | = (canonical) | — |
+| 0x295 | WCApertureS | CONFIRMED | dlls/objects/661_WCApertureS/WCApertureS.c | = (canonical) | — |
+| 0x296 | WCTempleDia | CONFIRMED | dlls/objects/662_WCTempleDia/WCTempleDia.c | = (canonical) | — |
+| 0x297 | WCTempleBri | CONFIRMED | dlls/objects/663_WCTempleBri/WCTempleBri.c | = (canonical) | — |
+| 0x298 | WCFloorTile | CONFIRMED | dlls/objects/664_WCFloorTile/WCFloorTile.c | = (canonical) | — |
+| 0x299 | — | NO-RETAIL-NAME | dlls/objects/665/665.c | = (canonical) | — |
+| 0x29A | ARWArwing | COMPLETE | dlls/objects/666_ARWArwing/ARWArwing.c | = (canonical) | — |
+| 0x29B | — (+arwingandrossstuff, rapidFireLa, ANDAsteroid, ANDSuckAste, AndrossRing, ARWArwingLa) | NO-RETAIL-NAME | dlls/objects/667/667.c | = (canonical) | — |
+| 0x29C | ARWArwingBo | CONFIRMED | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | = (canonical) | — |
+| 0x29D | ARWArwingGu (+ARWArwingBo, ARWArwingRo) | CONFIRMED | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | = (canonical) | — |
+| 0x29E | — | NO-RETAIL-NAME | dlls/objects/670/670.c | = (canonical) | — |
+| 0x29F | ARWBombColl (+ARWLaserCol, ARWContaine, ARWSporeCol, ARWDinoEggC, ARWMoonSeed) | CONFIRMED | dlls/objects/671_ARWBombColl/ARWBombColl.c | = (canonical) | — |
+| 0x2A0 | — (+Ring, WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | NO-RETAIL-NAME | dlls/objects/672/672.c | = (canonical) | — |
+| 0x2A1 | ARWLevelCon | CONFIRMED | dlls/objects/673_ARWLevelCon/ARWLevelCon.c | = (canonical) | — |
+| 0x2A2 | ARWSpeedStr | CONFIRMED | dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c | = (canonical) | — |
+| 0x2A3 | — | NO-RETAIL-NAME | dlls/objects/675/675.c | = (canonical) | — |
+| 0x2A4 | — | NO-RETAIL-NAME | dlls/objects/676/676.c | = (canonical) | — |
 | 0x2A5 | ARWGenerato | CONFIRMED | dlls/objects/677_ARWGenerato/ARWGenerato.c | = (canonical) | — |
 | 0x2A6 | ARWSquadron (+ARWBigAster, ARWSmallAst, ARWMobileGu, ARWGroundGu, ARWShipFly, ARWShipTwin, ARWShipAnge) | CONFIRMED | dlls/objects/678_ARWSquadron/ARWSquadron.c | = (canonical) | — |
 | 0x2A7 | ARWProximit (+ARWTimedMin) | CONFIRMED | dlls/objects/679_ARWProximit/ARWProximit.c | = (canonical) | — |
@@ -770,7 +770,7 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | main/dll/dll_0230_dfpwallbar.c |
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | main/dll/dll_0231_dfpforceaw.c |
 | 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | main/dll/dll_0232_dfprotatep.c |
-| 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | main/dll/dll_0294_wctemple.c |
+| 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | dlls/objects/660/660.c |
 | 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
 | 0x0ED | CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi | `collectible_*` | unrelated | dlls/objects/237/237.c |
@@ -798,10 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x180 | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | CONFIRMED |
-| 0x181 | main/dll/dll_0181_mmptrenchfx.c | main/dll/MMP/dll_0181_mmptrenchfx.c | CONFIRMED |
-| 0x182 | main/dll/dll_0182_mmpmoonrock.c | main/dll/MMP/dll_0182_mmpmoonrock.c | CONFIRMED |
-| 0x183 | main/dll/dll_0183_mmpgyservent.c | main/dll/MMP/dll_0183_mmpgyservent.c | CONFIRMED |
 | 0x185 | main/dll/dll_0185_ccgasvent.c | main/dll/CC/dll_0185_ccgasvent.c | COMPLETE |
 | 0x186 | main/dll/dll_0186_ccgasventcontrol.c | main/dll/CC/dll_0186_ccgasventcontrol.c | CONFIRMED |
 | 0x187 | main/dll/dll_0187_ccqueen.c | main/dll/CC/dll_0187_ccqueen.c | COMPLETE |
@@ -956,18 +952,18 @@ name was a deliberate choice by a previous carve:
 | 0x28E | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | COMPLETE |
 | 0x28F | main/dll/dll_028F_wcpressures.c | main/dll/WC/dll_028F_wcpressures.c | CONFIRMED |
 | 0x290 | main/dll/dll_0290_wcpushblock.c | main/dll/WC/dll_0290_wcpushblock.c | CONFIRMED |
-| 0x291 | main/dll/dll_0291_wctile.c | main/dll/WC/dll_0291_wctile.c | COMPLETE |
-| 0x292 | main/dll/dll_0292_wctrexstatu.c | main/dll/WC/dll_0292_wctrexstatu.c | CONFIRMED |
-| 0x295 | main/dll/dll_0295_wcapertures.c | main/dll/WC/dll_0295_wcapertures.c | CONFIRMED |
-| 0x296 | main/dll/dll_0296_wctempledia.c | main/dll/WC/dll_0296_wctempledia.c | CONFIRMED |
-| 0x297 | main/dll/dll_0297_wctemplebri.c | main/dll/WC/dll_0297_wctemplebri.c | CONFIRMED |
-| 0x298 | main/dll/dll_0298_wcfloortile.c | main/dll/WC/dll_0298_wcfloortile.c | CONFIRMED |
-| 0x29A | main/dll/dll_029A_arwarwing.c | main/dll/ARW/dll_029A_arwarwing.c | COMPLETE |
-| 0x29C | main/dll/dll_029C_arwarwingbo.c | main/dll/ARW/dll_029C_arwarwingbo.c | CONFIRMED |
-| 0x29D | main/dll/dll_029D_arwarwinggu.c | main/dll/ARW/dll_029D_arwarwinggu.c | CONFIRMED |
-| 0x29F | main/dll/dll_029F_arwbombcoll.c | main/dll/ARW/dll_029F_arwbombcoll.c | CONFIRMED |
-| 0x2A1 | main/dll/dll_02A1_arwlevelcon.c | main/dll/ARW/dll_02A1_arwlevelcon.c | CONFIRMED |
-| 0x2A2 | main/dll/dll_02A2_arwspeedstr.c | main/dll/ARW/dll_02A2_arwspeedstr.c | CONFIRMED |
+| 0x291 | main/dll/dll_0291_wctile.c | dlls/objects/657_WCTile/WCTile.c | COMPLETE |
+| 0x292 | main/dll/dll_0292_wctrexstatu.c | dlls/objects/658_WCTrexStatu/WCTrexStatu.c | CONFIRMED |
+| 0x295 | main/dll/dll_0295_wcapertures.c | dlls/objects/661_WCApertureS/WCApertureS.c | CONFIRMED |
+| 0x296 | main/dll/dll_0296_wctempledia.c | dlls/objects/662_WCTempleDia/WCTempleDia.c | CONFIRMED |
+| 0x297 | main/dll/dll_0297_wctemplebri.c | dlls/objects/663_WCTempleBri/WCTempleBri.c | CONFIRMED |
+| 0x298 | main/dll/dll_0298_wcfloortile.c | dlls/objects/664_WCFloorTile/WCFloorTile.c | CONFIRMED |
+| 0x29A | main/dll/dll_029A_arwarwing.c | dlls/objects/666_ARWArwing/ARWArwing.c | COMPLETE |
+| 0x29C | main/dll/dll_029C_arwarwingbo.c | dlls/objects/668_ARWArwingBo/ARWArwingBo.c | CONFIRMED |
+| 0x29D | main/dll/dll_029D_arwarwinggu.c | dlls/objects/669_ARWArwingGu/ARWArwingGu.c | CONFIRMED |
+| 0x29F | main/dll/dll_029F_arwbombcoll.c | dlls/objects/671_ARWBombColl/ARWBombColl.c | CONFIRMED |
+| 0x2A1 | main/dll/dll_02A1_arwlevelcon.c | dlls/objects/673_ARWLevelCon/ARWLevelCon.c | CONFIRMED |
+| 0x2A2 | main/dll/dll_02A2_arwspeedstr.c | dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c | CONFIRMED |
 | 0x2A5 | main/dll/dll_02A5_arwgenerato.c | dlls/objects/677_ARWGenerato/ARWGenerato.c | CONFIRMED |
 | 0x2A6 | main/dll/dll_02A6_arwsquadron.c | dlls/objects/678_ARWSquadron/ARWSquadron.c | CONFIRMED |
 | 0x2A7 | main/dll/dll_02A7_arwproximit.c | dlls/objects/679_ARWProximit/ARWProximit.c | CONFIRMED |
