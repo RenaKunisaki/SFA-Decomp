@@ -1,3 +1,4 @@
+#include "dlls/objects/198_AnimatedObj.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -109,9 +110,8 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
     gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAnimatedObjDescriptor, gAppleOnTreeObjDescriptor, gAreaFXEmitObjDescriptor,
-    gAreaObjDescriptor, gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor,
-    gBaddieInterestPObjDescriptor;
+extern ResourceDescriptor gAppleOnTreeObjDescriptor, gAreaFXEmitObjDescriptor, gAreaObjDescriptor,
+    gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor, gBaddieInterestPObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBarrelPadObjDescriptor,
     gBlastedObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor,
     gBossDrakorObjDescriptor;
@@ -1114,7 +1114,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     NULL,
     &gTrickyObjDescriptor,
     (ResourceDescriptor*)&lbl_80320700,
-    &gAnimatedObjDescriptor,
+    (ResourceDescriptor*)&gAnimatedObjDescriptor,
     &gDIM2RoofRubObjDescriptor,
     &gDepthOfFieldPointObjDescriptor,
     &gBaddieObjDescriptor,
