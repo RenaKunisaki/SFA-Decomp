@@ -5,13 +5,13 @@
  * plane, then spawns an explosion effect and fades out.
  */
 #include "dlls/objects/219_MikaBomb.h"
+#include "dlls/objects/220_MikaBombShadow.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_shake_api.h"
-#include "main/dll/dll_00DC_mikabombshadow_api.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"

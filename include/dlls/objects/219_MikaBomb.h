@@ -31,9 +31,5 @@ void MikaBomb_initialise(void);
 
 extern ObjectDescriptor gMikaBombObjDescriptor;
 extern const ModgfxSpawnCountRange gMikaBombExplosionSpawnCountRange;
-extern const f32 gMikaBombRenderScale;
-extern const f32 gMikaBombFadeRate;
-extern const f32 gMikaBombZero;
-extern const f32 gMikaBombInitialVelocityY;
 
 #endif /* DLLS_OBJECTS_219_MIKABOMB_H_ */
