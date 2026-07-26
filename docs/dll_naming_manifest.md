@@ -556,7 +556,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1FE | — | COMPLETE | dlls/objects/510/510.c | = (canonical) | No recovered retail basename |
 | 0x1FF | — | COMPLETE | dlls/objects/511/511.c | = (canonical) | No recovered retail basename |
 | 0x200 | — | COMPLETE | dlls/objects/512/512.c | = (canonical) | No recovered retail basename |
-| 0x201 | WM_colrise | COMPLETE | main/dll/dll_0201_wmcolrise.c | main/dll/WM/dll_0201_wmcolrise.c | — |
+| 0x201 | WM_colrise | COMPLETE | dlls/objects/513_WM_colrise/WM_colrise.c | = (canonical) | — |
 | 0x202 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x203 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x204 | WM_Torch | COMPLETE | main/dll/dll_0204_wmtorch.c | main/dll/WM/dll_0204_wmtorch.c | — |
@@ -877,7 +877,7 @@ name was a deliberate choice by a previous carve:
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | COMPLETE |
 | 0x1FA | main/dll/dll_01FA_wmseqobject.c | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | COMPLETE |
 | 0x1FD | main/dll/dll_01FD_wmlasertarget.c | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | COMPLETE |
-| 0x201 | main/dll/dll_0201_wmcolrise.c | main/dll/WM/dll_0201_wmcolrise.c | COMPLETE |
+| 0x201 | main/dll/dll_0201_wmcolrise.c | dlls/objects/513_WM_colrise/WM_colrise.c | COMPLETE |
 | 0x204 | main/dll/dll_0204_wmtorch.c | main/dll/WM/dll_0204_wmtorch.c | COMPLETE |
 | 0x207 | main/dll/dll_0207_wmworm.c | main/dll/WM/dll_0207_wmworm.c | COMPLETE |
 | 0x209 | main/dll/dll_0209_wmlevelcontrol.c | main/dll/WM/dll_0209_wmlevelcontrol.c | CONFIRMED |

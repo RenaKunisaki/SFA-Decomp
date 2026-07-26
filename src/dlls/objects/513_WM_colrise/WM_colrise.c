@@ -1,6 +1,5 @@
 /*
- * wmcolrise (DLL 0x0201) - the rising column platform at Krazoa Palace.
- * TU: 0x801F2E80-0x801F30DC (WM_colrise_* only).
+ * WM_colrise (DLL 0x0201) - the rising column platform at Krazoa Palace.
  *
  * While its game bit allows and something stands on a column higher
  * than 3.0 above it (the rider registry the shared platform
@@ -8,24 +7,21 @@
  * placement height + 120 and plays its rumble; otherwise it sinks
  * 0.125/tick back to placement height.
  */
-#include "main/audio/sfx_ids.h"
-#include "main/object_render.h"
+#include "dlls/object_descriptor.h"
+#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/WM/dll_0201_wmcolrise.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx.h"
-#include "main/dll/WM/dll_0201_wmcolrise.h"
-#include "dlls/object_descriptor.h"
+#include "main/object_render.h"
 
-extern f32 lbl_803E5DC8; /* 1.0: render scale */
-extern const f32 lbl_803E5DCC; /* 3.0: rider height to trigger the rise */
-extern f32 lbl_803E5DD0;       /* 20.0 */
-extern f32 lbl_803E5DD4;       /* 100.0: raised height above placement */
-extern f32 lbl_803E5DD8;       /* 0.5: settle speed when overshot */
-extern f32 lbl_803E5DDC;       /* 0.25: rise speed */
-extern f32 lbl_803E5DE0;       /* 0.125: sink speed */
+const f32 lbl_803E5DC8 = 1.0f;   /* render scale */
+const f32 lbl_803E5DCC = 3.0f;   /* rider height to trigger the rise */
+const f32 lbl_803E5DD0 = 20.0f;
+const f32 lbl_803E5DD4 = 100.0f; /* raised height above placement */
+const f32 lbl_803E5DD8 = 0.5f;   /* settle speed when overshot */
+const f32 lbl_803E5DDC = 0.25f;  /* rise speed */
+const f32 lbl_803E5DE0 = 0.125f; /* sink speed */
 
 #define WM_COLRISE_RENDER_SCALE          lbl_803E5DC8
 #define WM_COLRISE_RIDER_HEIGHT          lbl_803E5DCC
