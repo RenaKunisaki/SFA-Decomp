@@ -1,5 +1,5 @@
 /*
- * dll115 - a game-bit driven multi-stage sequence object.
+ * DLL 0x115 is a game-bit driven multi-stage sequence object.
  *
  * Each instance walks a step counter (state[0], 0..10) over three parallel
  * arrays in its placement data, all indexed by the current step:
@@ -13,14 +13,13 @@
  * the seqFn latch (state[1] bit 0) and rewinds while earlier set bits
  * (placement+0x18) go false.
  */
+#include "main/dll/dll_0115_dll115.h"
 #include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/objanim_update.h"
 #include "main/obj_group.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
-#include "main/dll/dll_0115_dll115.h"
-
 
 /* object group this object joins while active */
 #define DLL115_OBJGROUP 0xf
@@ -46,7 +45,6 @@ STATIC_ASSERT(offsetof(Dll115Placement, preemptArg) == 0x3C);
 STATIC_ASSERT(offsetof(Dll115Placement, triggerSeqIds) == 0x40);
 STATIC_ASSERT(sizeof(Dll115Placement) == 0x48);
 STATIC_ASSERT(sizeof(Dll115State) == 0x2);
-
 
 /* Sequence-event callback: while a trigger sequence is running on an
  * indexed step, end it once the NEXT step's gate bit (placement+0x28) has

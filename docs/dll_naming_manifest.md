@@ -322,7 +322,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x112 | — (+BossDrakor_, KT_RexSeque, CFGoldenPer, LINKIseqobj, CFseqobject, CFRaceSeqob, CAMERAseqob, WCSeqObject, WCTempleBlo, DIMBridge, DIMSeqObjec, DIM2SeqObje, DIM2Mammoth, DIM2CellLoc, DIM2StonePi, IMSeqObject, LINKE_stone, linkB_Stone, ANDSeqObjec, GF_sequence, MMP_seqobje, SH_seqobjec, KP_sequence, SC_sequence, VFPSeqObj, VFP_Bobbing, SPSeqObj, FrontSeq, NWSH_Seqobj, DR_Seqobj, FireHoleCon, DR_SeqobjBo, DR_TrackDoo, KPLandingPa, CF_BobbingC, CFLandingPa, LandingPad_, WC_LandingP, SH_NT_Landi, MSSeqObject, ARWSeqObjec, DFsequences) | NO-RETAIL-NAME | dlls/objects/274/274.c | = (canonical) | — |
 | 0x113 | — (+CAMERAnewse, LINKJseqobj, LINKB_seqob, LINKC_seqob, CCBridge, CCseqobj, NWSteppingS, NW_seqobjec, SH_newseqob, SH_BottomSe) | NO-RETAIL-NAME | dlls/objects/275/275.c | = (canonical) | — |
 | 0x114 | IMMultiSeq | COMPLETE | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | = (canonical) | — |
-| 0x115 | — | NO-RETAIL-NAME | main/dll/dll_0115_dll115.c | = (canonical) | — |
+| 0x115 | — | NO-RETAIL-NAME | dlls/objects/277/277.c | = (canonical) | — |
 | 0x116 | WM_Column (+WM_Column_T, GPSHpickobj) | COMPLETE | main/dll/dll_0116_wmcolumn.c | main/dll/WM/dll_0116_wmcolumn.c | — |
 | 0x117 | AppleOnTree | CONFIRMED | main/dll/dll_0117_appleontree.c | = (canonical) | — |
 | 0x118 | Duster | COMPLETE | main/dll/dll_0118_duster.c | = (canonical) | — |

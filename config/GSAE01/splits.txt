@@ -1874,7 +1874,7 @@ dlls/objects/276_IMMultiSeq/IMMultiSeq.c:
 	.data       start:0x803213F0 end:0x80321428
 	.sdata2     start:0x803E37A8 end:0x803E37AC
 
-main/dll/dll_0115_dll115.c:
+dlls/objects/277/277.c:
 	.text       start:0x8017CF90 end:0x8017D37C
 	.data       start:0x80321428 end:0x80321460
 	.sdata2     start:0x803E37B0 end:0x803E37B4
