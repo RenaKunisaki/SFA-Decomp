@@ -4013,11 +4013,11 @@ dlls/objects/685/685.c:
 	.sbss       start:0x803DDD98 end:0x803DDDA8
 	.sdata2     start:0x803E7288 end:0x803E72B0
 
-main/dll/dll_02AE_waterflowwe.c:
+dlls/objects/686_WaterFlowWe/WaterFlowWe.c:
 	.text       start:0x8023503C end:0x802356CC
 	.data       start:0x8032BBA8 end:0x8032BBE0
 	.sbss       start:0x803DDDA8 end:0x803DDDB8
-	.sdata2     start:0x803E72D8 end:0x803E72E8
+	.sdata2     start:0x803E72B0 end:0x803E72F8
 
 main/dll/dll_02AF_tree.c:
 	.text       start:0x802356CC end:0x80236154

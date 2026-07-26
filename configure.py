@@ -2020,7 +2020,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/683_LGTProjecte/LGTProjecte.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "dlls/objects/684_LGTControlL/LGTControlL.c", cflags=cflags_dll_noopt_level1),
             Object(MatchingFor("GSAE01"), "dlls/objects/685/685.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_02AE_waterflowwe.c", cflags=cflags_dll_noopt, extra_cflags=["-opt", "nodeadstore"]),
+            Object(NonMatching, "dlls/objects/686_WaterFlowWe/WaterFlowWe.c", cflags=cflags_dll_noopt, extra_cflags=["-opt", "nodeadstore"]),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02AF_tree.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_02B0_brokenpipe.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_02B1_cmbsrc.c", cflags=cflags_dll_noopt_noautoinline),
