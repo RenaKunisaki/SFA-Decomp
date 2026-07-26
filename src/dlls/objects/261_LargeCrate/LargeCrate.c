@@ -31,8 +31,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/objfx.h"
 #include "main/dll/dll_0105_largecrate.h"
-#include "main/dll/dll_0106_scarab.h"
-#include "main/dll/CF/windlift.h"
 #include "main/mapEventTypes.h"
 #include "main/resource.h"
 #include "main/sky_interface.h"
@@ -701,38 +699,3 @@ void largecrate_release(void)
 void largecrate_initialise(void)
 {
 }
-
-
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-ObjectDescriptor gScarabObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)Scarab_init,
-    (ObjectDescriptorCallback)Scarab_update,
-    0,
-    (ObjectDescriptorCallback)Scarab_render,
-    (ObjectDescriptorCallback)Scarab_free,
-    0,
-    Scarab_getExtraSize,
-};
-ObjectDescriptor gWindLift107ObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)windLift107_initialise,
-    (ObjectDescriptorCallback)windLift107_release,
-    0,
-    (ObjectDescriptorCallback)windLift107_init,
-    (ObjectDescriptorCallback)windLift107_update,
-    (ObjectDescriptorCallback)windLift107_hitDetect,
-    (ObjectDescriptorCallback)windLift107_render,
-    (ObjectDescriptorCallback)windLift107_free,
-    (ObjectDescriptorCallback)windLift107_getObjectTypeId,
-    windLift107_getExtraSize,
-};

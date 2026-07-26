@@ -74,7 +74,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   This is a live-verified mapping: `include/main/dll/collectible_state.h`'s header comment
   records a Dolphin session that broke a crate, traced object type `0xB`/seqId `11` through
   proximity-detect -> pickup-message -> collect, and watched player health rise 4 -> 8.
-- These exact two ids are **independently confirmed** by `src/main/dll/dll_0105_largecrate.c`:
+- These exact two ids are **independently confirmed** by `src/dlls/objects/261_LargeCrate/LargeCrate.c`:
   `largecrate_spawnDropContents`'s `dropType == 5` spawns object id `0xb`, and
   `dropType == 6` spawns object id `0x3cd` — the same two numbers, same two items, from a
   completely different call site (a crate breaking, not an enemy dying), which is why the
@@ -90,7 +90,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 
 ### Container/enemy "break -> spawn a drop item" pattern
 
-- `src/main/dll/dll_0105_largecrate.c`: `LargeCrateState.dropType`
+- `src/dlls/objects/261_LargeCrate/LargeCrate.c`: `LargeCrateState.dropType`
   (`include/main/dll/largecrate_state.h`) selects between crate debris (`dropType` 1-3),
   the two collectible items above (`dropType` 5/6, via DLL 0x00ED object ids `0xb`/`0x3cd`), a
   no-op break (7/8), and a third pickup kind (`dropType` 9, object id `0x259`, unidentified
@@ -154,7 +154,7 @@ where the identification is solid.
 
 ```c
 /* largecrate_state.h LargeCrateState.dropType values, from largecrate_spawnDropContents'
- * switch (src/main/dll/dll_0105_largecrate.c). Not a wiki table -- named here for reference
+ * switch (src/dlls/objects/261_LargeCrate/LargeCrate.c). Not a wiki table -- named here for reference
  * since the switch itself has no symbolic constants yet. */
 #define LARGECRATE_DROP_FRAGMENT_A   1   /* obj id 0x3d3, launched crate debris */
 #define LARGECRATE_DROP_FRAGMENT_B   2   /* obj id 0x3d4 */

@@ -306,7 +306,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x102 | StayPoint | COMPLETE | dlls/objects/258_StayPoint/StayPoint.c | = (canonical) | — |
 | 0x103 | CurveFish | COMPLETE | dlls/objects/259_CurveFish/CurveFish.c | = (canonical) | — |
 | 0x104 | SmallBasket (+ReinforcedC) | CONFIRMED | dlls/objects/260_SmallBasket/SmallBasket.c | = (canonical) | — |
-| 0x105 | LargeCrate (+DrakorCrate, LargeBasket, LargeCrateL) | COMPLETE | main/dll/dll_0105_largecrate.c | = (canonical) | — |
+| 0x105 | LargeCrate (+DrakorCrate, LargeBasket, LargeCrateL) | COMPLETE | dlls/objects/261_LargeCrate/LargeCrate.c | = (canonical) | — |
 | 0x106 | Scarab (+GreenScarab, RedScarab, GoldScarab, RainScarab, Blue_bean) | CONFIRMED | main/dll/dll_0106_scarab.c | = (canonical) | — |
 | 0x107 | — | NO-RETAIL-NAME | main/dll/dll_0107_unused.c | = (canonical) | — |
 | 0x108 | EndObject | COMPLETE | main/dll/dll_0108_endobject.c | = (canonical) | — |

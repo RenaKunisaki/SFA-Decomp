@@ -507,3 +507,20 @@ void windLift107_release(void)
 void windLift107_initialise(void)
 {
 }
+
+ObjectDescriptor gWindLift107ObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)windLift107_initialise,
+    (ObjectDescriptorCallback)windLift107_release,
+    0,
+    (ObjectDescriptorCallback)windLift107_init,
+    (ObjectDescriptorCallback)windLift107_update,
+    (ObjectDescriptorCallback)windLift107_hitDetect,
+    (ObjectDescriptorCallback)windLift107_render,
+    (ObjectDescriptorCallback)windLift107_free,
+    (ObjectDescriptorCallback)windLift107_getObjectTypeId,
+    windLift107_getExtraSize,
+};

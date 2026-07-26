@@ -816,3 +816,20 @@ void Scarab_init(GameObject* obj, ScarabPlacement* placement)
     }
     ObjMsg_AllocQueue(obj, 2);
 }
+
+ObjectDescriptor gScarabObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)Scarab_init,
+    (ObjectDescriptorCallback)Scarab_update,
+    0,
+    (ObjectDescriptorCallback)Scarab_render,
+    (ObjectDescriptorCallback)Scarab_free,
+    0,
+    Scarab_getExtraSize,
+};

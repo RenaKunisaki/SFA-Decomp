@@ -11,6 +11,7 @@
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
+#include "dlls/object_descriptor.h"
 
 /* Crate spawners allocate 0x24 bytes for scarab setup records and initialize
    the lifetime at 0x1A before passing the common placement head to the object
@@ -31,5 +32,7 @@ void Scarab_free(void);
 void Scarab_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void Scarab_update(GameObject* obj);
 void Scarab_init(GameObject* obj, ScarabPlacement* placement);
+
+extern ObjectDescriptor gScarabObjDescriptor;
 
 #endif
