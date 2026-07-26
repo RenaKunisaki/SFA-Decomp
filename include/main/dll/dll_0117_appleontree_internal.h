@@ -65,6 +65,7 @@ extern f32 lbl_803E3810;
 extern f32 lbl_803E3814;
 extern f32 lbl_803E3818;
 
+void AppleOnTree_init(GameObject* obj, AppleontreeObjectDef* def);
 void appleontree_knockLoose(GameObject* obj, int msg);
 void appleontree_handleCollectableHit(GameObject* obj);
 
