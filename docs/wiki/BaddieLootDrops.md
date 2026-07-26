@@ -63,8 +63,8 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 
 ### Tier 3 items — Apple / EnergyEgg (health refills)
 
-- `src/main/dll/dll_00ED_collectible.c` is DLL 0x00ED, the generic "collectible / genprops"
-  pickup handler (`0x80171D14`–`0x801723DC`). Its header comment already documents: "health
+- `src/dlls/objects/237/237.c` is DLL 0x00ED, the generic collectible pickup handler
+  (`0x80171D14`–`0x80173224`). Its header comment already documents: "health
   items add health, dust items bump counters" — i.e. this one DLL hosts *both* the Tier 1 dust
   counters and the Tier 3 health pickups, distinguished by `obj->anim.seqId`.
 - In `collectible_applyPickup`, the health branch (`switch` on a category read from the

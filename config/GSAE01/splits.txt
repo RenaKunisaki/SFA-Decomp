@@ -1767,7 +1767,7 @@ dlls/objects/233_Setuppoint/Setuppoint.c:
 	.text       start:0x80171D10 end:0x80171D14
 	.data       start:0x80320C20 end:0x80320C58
 
-main/dll/dll_00ED_collectible.c:
+dlls/objects/237/237.c:
 	.text       start:0x80171D14 end:0x80173224
 	.data       start:0x80320C58 end:0x80320CB8
 	.sdata2     start:0x803E3440 end:0x803E34A4
