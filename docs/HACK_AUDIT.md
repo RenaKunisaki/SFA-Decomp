@@ -70,7 +70,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_02C0_front | 99.7227 | 58.9538 | -40.7689 |
 | main/main/dll/dll_016C_dll16c | 100.0000 | 59.5588 | -40.4412 |
 | main/main/lightmap | 99.7713 | 60.9359 | -38.8354 |
-| main/main/dll/dll_00CC_chukchuk | 100.0000 | 62.2481 | -37.7519 |
+| main/dlls/objects/204_ChukChuk/ChukChuk | 100.0000 | 62.2481 | -37.7519 |
 | main/main/objanim | 99.4767 | 61.8438 | -37.6330 |
 | main/main/dll/dll_016A_crrockfall | 100.0000 | 62.5634 | -37.4366 |
 | main/main/dll/dll_00D7_kaldachompspit | 100.0000 | 63.0135 | -36.9865 |

@@ -1080,6 +1080,7 @@ config.libs = [
             Object(NonMatching, "dlls/objects/201_Baddie/Baddie.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/202/202.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/objects/203/203.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/204_ChukChuk/ChukChuk.c", cflags=cflags_dll_noopt_noprop_noinline),
 
             # main
             Object(MatchingFor("GSAE01"), "main/audio/synth_constants.c"),
@@ -1533,7 +1534,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/snowworm.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/baddiewhirlpool.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00CE_dllce.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00CC_chukchuk.c", cflags=cflags_dll_noopt_noprop_noinline),
             Object(Matching, "main/dll/dll_00CD_iceball.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "main/dll/grimblegroup.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00CF_cannonclaw.c", cflags=cflags_dll_noopt),

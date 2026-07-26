@@ -249,7 +249,7 @@ Expansion status over the 448 named dlls: COMPLETE 116, CONFIRMED 276, GUESSED 3
 | 0x0C9 | Baddie (+GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral) | COMPLETE | dlls/objects/201_Baddie/Baddie.c | = (canonical) | — |
 | 0x0CA | — | NO-RETAIL-NAME | dlls/objects/202/202.c | = (canonical) | — |
 | 0x0CB | — | NO-RETAIL-NAME | dlls/objects/203/203.c | = (canonical) | — |
-| 0x0CC | ChukChuk | COMPLETE | main/dll/dll_00CC_chukchuk.c | = (canonical) | — |
+| 0x0CC | ChukChuk | COMPLETE | dlls/objects/204_ChukChuk/ChukChuk.c | = (canonical) | — |
 | 0x0CD | IceBall (+IceBallSmal, ChukaChuck) | COMPLETE | main/dll/dll_00CD_iceball.c | = (canonical) | — |
 | 0x0CE | — | NO-RETAIL-NAME | main/dll/dll_00CE_dllce.c | = (canonical) | — |
 | 0x0CF | CannonClaw (+CannonClawO) | COMPLETE | main/dll/dll_00CF_cannonclaw.c | = (canonical) | — |

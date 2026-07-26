@@ -110,7 +110,6 @@ void ChukChuk_hitDetect(void)
 
 void ChukChuk_update(GameObject* obj)
 {
-
     ChukChukState* state;
     u16 playerDistance;
     GameObject* player;
