@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
@@ -432,3 +433,20 @@ void sfxplayer_release(void)
 void sfxplayer_initialise(void)
 {
 }
+
+ObjectDescriptor gSfxplayerObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)sfxplayer_initialise,
+    (ObjectDescriptorCallback)sfxplayer_release,
+    0,
+    (ObjectDescriptorCallback)sfxplayer_init,
+    (ObjectDescriptorCallback)sfxplayer_update,
+    (ObjectDescriptorCallback)sfxplayer_hitDetect,
+    (ObjectDescriptorCallback)sfxplayer_render,
+    (ObjectDescriptorCallback)sfxplayer_free,
+    (ObjectDescriptorCallback)sfxplayer_getObjectTypeId,
+    sfxplayer_getExtraSize,
+};
