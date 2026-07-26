@@ -384,7 +384,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x152 | CF_ObjCreat | RAW | dlls/objects/338_CF_ObjCreat/CF_ObjCreat.c | = (canonical) | data-only DLL |
 | 0x153 | CFPerch | COMPLETE | dlls/objects/339_CFPerch/CFPerch.c | = (canonical) | — |
 | 0x154 | CFPrisonCage (+CFCageSwitc) | CONFIRMED | dlls/objects/340/340.c | = (canonical) | — |
-| 0x155 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x155 | — | NO-RETAIL-NAME | dlls/objects/341/341.c | = (canonical) | data-only DLL |
 | 0x156 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x157 | SpiritDoorSpirit | CONFIRMED | main/dll/dll_0157_spiritdoorspirit.c | = (canonical) | — |
 | 0x158 | GunPowderBarrel (+MetalBarrel) | CONFIRMED | main/dll/dll_0158_gunpowderbarrel.c | = (canonical) | — |

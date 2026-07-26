@@ -1656,6 +1656,7 @@ config.libs = [
             Object(NonMatching, "dlls/objects/316_XYZAnimator/XYZAnimator.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/317_ExplodeAnim/ExplodeAnim.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/318/318.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/341/341.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/319_TexFrameAni/TexFrameAni.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/320_fogControl/fogControl.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/321_Lightning/Lightning.c", cflags=cflags_dll_noopt),
