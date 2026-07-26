@@ -16,6 +16,7 @@
 #include "dlls/objects/215.h"
 #include "dlls/objects/216_PinPonSpike.h"
 #include "dlls/objects/217_Pollen.h"
+#include "dlls/objects/219_MikaBomb.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -192,9 +193,8 @@ extern ResourceDescriptor gMMP_BridgeObjDescriptor, gMMP_asteroid_reObjDescripto
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
     gMMSH_WaterSpikeObjDescriptor, gMagicCaveBottomObjDescriptor, gMagicCaveTopObjDescriptor, gMagicGemObjDescriptor,
     gMagicLightObjDescriptor;
-extern ResourceDescriptor gMagicPlantObjDescriptor, gMikaBombObjDescriptor, gMikaBombShadowObjDescriptor,
-    gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor,
-    gNW_geyserObjDescriptor;
+extern ResourceDescriptor gMagicPlantObjDescriptor, gMikaBombShadowObjDescriptor, gMoonSeedBushObjDescriptor,
+    gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchFBObjDescriptor, gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor,
@@ -1140,7 +1140,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gPinPonSpikeObjDescriptor,
     (ResourceDescriptor*)&gPollenObjDescriptor,
     (ResourceDescriptor*)&gPollenFragmentObjDescriptor,
-    &gMikaBombObjDescriptor,
+    (ResourceDescriptor*)&gMikaBombObjDescriptor,
     &gMikaBombShadowObjDescriptor,
     &gGCbaddieShieldObjDescriptor,
     &gBaddieInterestPObjDescriptor,
