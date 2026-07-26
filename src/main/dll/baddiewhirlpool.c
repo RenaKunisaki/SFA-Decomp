@@ -28,7 +28,6 @@
 #include "main/camera.h"
 #include "main/obj_path.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/dll_00CD_iceball.h"
 #include "main/voxmaps.h"
 #include "main/obj_group.h"
 #include "main/dll/baddiewhirlpool.h"

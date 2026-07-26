@@ -87,7 +87,7 @@ int ChukChuk_getExtraSize(void) {
 }
 
 int ChukChuk_getObjectTypeId(void) {
-    return 0x0;
+    return 0;
 }
 
 void ChukChuk_free(GameObject* obj) {
