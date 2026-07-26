@@ -1729,7 +1729,7 @@ dlls/objects/228/228.c:
 	.sdata      start:0x803DBD60 end:0x803DBD70
 	.sdata2     start:0x803E3388 end:0x803E33A0
 
-main/dll/dll_00E5_shield.c:
+dlls/objects/229/229.c:
 	.text       start:0x801702D4 end:0x80171300
 	.data       start:0x80320A28 end:0x80320AC0
 	.sdata      start:0x803DBD70 end:0x803DBD90

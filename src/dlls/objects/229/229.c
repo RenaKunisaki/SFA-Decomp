@@ -1,5 +1,5 @@
 /*
- * DLL 0x00E5 - the player's energy-shield object.
+ * DLL 0xE5 - the shield, fox_shield, and omni_shield objects.
  *
  * The shield (seqId 0x836 uses staff-mode 5, otherwise mode 7) is
  * a four-segment ring driven by staffFn_80170380: each mode sets the
@@ -11,12 +11,8 @@
  * per-segment rotation and (off-HUD) spawns particle fx 2028 at the
  * staff tips.
  *
- * staffFn_80170380 (vtbl/cmd dispatch 0..7) is shared with the staff
- * object; its per-segment scale table (lbl_80320A28) and switch
- * jumptable (jumptable_80320AA0) live in the shared descriptor-catalogue
- * data split out of this TU by the retail layout.
- *
- * TU: 0x8016B230-0x8016B2E0.
+ * staffFn_80170380 is also used by the staff object. Its per-segment scale
+ * table and switch table are owned by this TU.
  */
 #include "main/dll/partfx_interface.h"
 #include "main/hud_visibility_api.h"
@@ -38,6 +34,13 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/trig.h"
+
+extern f32 lbl_803E33A8;
+extern f32 lbl_803E33AC;
+extern f32 lbl_803E33E8;
+extern f32 lbl_803E33EC;
+extern f32 lbl_803E33D8;
+extern f32 lbl_803E33DC;
 
 s16 lbl_803DBD70[4] = {-1024, -512, 512, 1024};
 s16 lbl_803DBD78[4] = {-500, 50, 50, 200};
@@ -83,13 +86,6 @@ STATIC_ASSERT(offsetof(ShieldState, segRotY) == 0x4C);
 STATIC_ASSERT(offsetof(ShieldState, segRotZ) == 0x54);
 STATIC_ASSERT(offsetof(ShieldState, segmentFlags) == 0x5C);
 STATIC_ASSERT(sizeof(ShieldState) == 0x60);
-
-extern f32 lbl_803E33A8;
-extern f32 lbl_803E33AC;
-extern f32 lbl_803E33E8;
-extern f32 lbl_803E33EC;
-extern f32 lbl_803E33D8;
-extern f32 lbl_803E33DC;
 
 f32 lbl_80320A28[] = {
     0.5f,

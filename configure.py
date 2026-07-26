@@ -1563,7 +1563,7 @@ config.libs = [
                 section_alignments={".data": 4},
             ),
             Object(MatchingFor("GSAE01"), "dlls/objects/228/228.c", cflags=cflags_dll_noopt_nocse),
-            Object(NonMatching, "main/dll/dll_00E5_shield.c", cflags=cflags_dll_noopt),
+            Object(NonMatching, "dlls/objects/229/229.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0125_curve.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00E6_restartmarker.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00F7_dllf7.c", cflags=cflags_dll_noopt),
