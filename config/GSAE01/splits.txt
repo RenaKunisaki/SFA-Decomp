@@ -1654,7 +1654,7 @@ dlls/objects/216_PinPonSpike/PinPonSpike.c:
 	.data       start:0x803204C8 end:0x80320500
 	.sdata2     start:0x803E3110 end:0x803E3138
 
-main/dll/dll_00D9_pollen.c:
+dlls/objects/217_Pollen/Pollen.c:
 	.text       start:0x8016A3C8 end:0x8016A8E0
 	.data       start:0x80320500 end:0x80320538
 	.sdata2     start:0x803E3138 end:0x803E3158

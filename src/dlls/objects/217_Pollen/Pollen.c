@@ -1,5 +1,5 @@
 /*
- * pollen (DLL 0x00D9)
+ * Pollen (DLL 0x0D9)
  *
  * A drifting pollen mote. It falls under gravity (anim.velocityY ramped by
  * 0.045f * timeDelta each frame); when its descent passes through zero
@@ -62,7 +62,6 @@ STATIC_ASSERT(sizeof(PollenExtra) == 0x14);
 #define POLLEN_PARTFX_MOTE 0x4ba
 
 u8 Pollen_burst(GameObject* obj);
-
 
 int Pollen_getExtraSize(void)
 {
