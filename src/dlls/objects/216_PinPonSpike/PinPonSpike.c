@@ -50,7 +50,7 @@ int pinponspike_calculateLaunchAngle(f32* from, f32* to, f32 speed, u8 highArc, 
     dz = from[2] - to[2];
     dist = sqrtf(dx * dx + dz * dz);
     dy = from[1] - to[1];
-    dist = dist * 1.05f;
+    dist *= 1.05f;
     sp2 = 0.25f * gravity;
     coeff = sp2 * gravity;
     {
