@@ -410,19 +410,19 @@ ObjectDescriptor gARWSquadronObjDescriptor = {
     (ObjectDescriptorCallback)ARWSquadron_free, (ObjectDescriptorCallback)ARWSquadron_getObjectTypeId,
     ARWSquadron_getExtraSize,
 };
-void ARWSquadron_render(int obj, int p2, int p3, int p4, int p5)
+void ARWSquadron_render(GameObject* obj, int p2, int p3, int p4, int p5)
 {
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void ARWSquadron_hitDetect(void)
 {
 }
 
-void ARWSquadron_update(int obj)
+void ARWSquadron_update(GameObject* obj)
 {
-    ArwSquadronState* state = *(ArwSquadronState**)&((GameObject*)obj)->extra;
-    ArwSquadronSetup* setup = *(ArwSquadronSetup**)&((GameObject*)obj)->anim.placementData;
+    ArwSquadronState* state = *(ArwSquadronState**)&obj->extra;
+    ArwSquadronSetup* setup = *(ArwSquadronSetup**)&obj->anim.placementData;
     SquadCmdFlags* flags = &state->flags.cmd;
     u8 phase = state->phase;
 
@@ -431,7 +431,7 @@ void ARWSquadron_update(int obj)
 
     if (state->dialogueVariant == 1)
     {
-        if (arwsquadron_isPlayerWithinRangeZ((GameObject*)obj, 2700.0f))
+        if (arwsquadron_isPlayerWithinRangeZ(obj, 2700.0f))
         {
             if (randomGetRange(0, 1) != 0)
                 gameTextFn_80125ba4(0x10);
@@ -446,10 +446,10 @@ void ARWSquadron_update(int obj)
     case ARW_SQUADRON_STATE_WAITING:
     {
         GameObject* leader;
-        ArwSquadronSetup* placement = *(ArwSquadronSetup**)&((GameObject*)obj)->anim.placementData;
+        ArwSquadronSetup* placement = *(ArwSquadronSetup**)&obj->anim.placementData;
         int activate;
         getArwing();
-        leader = (GameObject*)obj;
+        leader = obj;
         if (placement->leaderObjectId > 0)
         {
             if (state->leaderObj == NULL)
@@ -464,11 +464,11 @@ void ARWSquadron_update(int obj)
             activate = 0;
         if (activate)
         {
-            ((GameObject*)obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            ObjHits_EnableObject((GameObject*)obj);
+            obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+            ObjHits_EnableObject(obj);
             state->phase = ARW_SQUADRON_STATE_ACTIVE;
             {
-                ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&((GameObject*)obj)->anim.placementData;
+                ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&obj->anim.placementData;
                 if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
                 {
                     flags->volleyInProgress = 0;
@@ -484,10 +484,10 @@ void ARWSquadron_update(int obj)
         GameObject* leader;
         ArwSquadronSetup* placement;
         int deactivate;
-        ((GameObject*)obj)->anim.alpha = 0xff;
-        placement = *(ArwSquadronSetup**)&((GameObject*)obj)->anim.placementData;
+        obj->anim.alpha = 0xff;
+        placement = *(ArwSquadronSetup**)&obj->anim.placementData;
         getArwing();
-        leader = (GameObject*)obj;
+        leader = obj;
         if (state->leaderObj != NULL)
             leader = state->leaderObj;
         if (leader != NULL && !arwsquadron_isPlayerWithinRangeZ(leader, state->activationDistance) &&
@@ -498,8 +498,8 @@ void ARWSquadron_update(int obj)
             deactivate = 0;
         if (deactivate)
         {
-            ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            ObjHits_DisableObject((GameObject*)obj);
+            obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            ObjHits_DisableObject(obj);
             state->phase = ARW_SQUADRON_STATE_DISABLED;
             return;
         }
@@ -507,28 +507,28 @@ void ARWSquadron_update(int obj)
         {
             if (setup->pathMode != 2)
             {
-                ((GameObject*)obj)->anim.rotX = state->rotXSpeed * timeDelta + (f32)((GameObject*)obj)->anim.rotX;
-                ((GameObject*)obj)->anim.rotY = state->rotYSpeed * timeDelta + (f32)((GameObject*)obj)->anim.rotY;
+                obj->anim.rotX = state->rotXSpeed * timeDelta + (f32)obj->anim.rotX;
+                obj->anim.rotY = state->rotYSpeed * timeDelta + (f32)obj->anim.rotY;
             }
             if (flags->rollCmdActive || setup->pathMode != 2)
             {
-                ((GameObject*)obj)->anim.rotZ = state->rotZSpeed * timeDelta + (f32)((GameObject*)obj)->anim.rotZ;
+                obj->anim.rotZ = state->rotZSpeed * timeDelta + (f32)obj->anim.rotZ;
             }
         }
         if (state->leaderObj != NULL)
         {
-            arwsquadron_followLeader((GameObject*)obj, state);
+            arwsquadron_followLeader(obj, state);
         }
         else if (flags->followingCurve)
         {
-            arwsquadron_followPath((GameObject*)obj, state);
+            arwsquadron_followPath(obj, state);
         }
         if (flags->attackWindowOpen)
         {
-            ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&((GameObject*)obj)->anim.placementData;
+            ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&obj->anim.placementData;
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWSQUADRON_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
             if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
-                arwsquadron_updateVolley((GameObject*)obj, state, volleyPlacement);
+                arwsquadron_updateVolley(obj, state, volleyPlacement);
         }
         break;
     }
@@ -539,10 +539,10 @@ void ARWSquadron_update(int obj)
         break;
     }
 
-    arwsquadron_handleDamage((GameObject*)obj, state);
+    arwsquadron_handleDamage(obj, state);
     if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
-        arwsquadron_emitEffects((GameObject*)obj, state);
-    if (((GameObject*)obj)->anim.modelInstance->flags == 0)
+        arwsquadron_emitEffects(obj, state);
+    if (obj->anim.modelInstance->flags == 0)
         ObjAnim_AdvanceCurrentMove((int)obj, 0.01f, timeDelta, 0);
 }
 
