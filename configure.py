@@ -1589,7 +1589,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/218/218.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/219_MikaBomb/MikaBomb.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/220_MikaBombSha/MikaBombSha.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_025A_staticcamera.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/602_StaticCamer/StaticCamer.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/221_GCbaddieShi/GCbaddieShi.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/222_baddieInter/baddieInter.c", cflags=cflags_dll_noopt_noloopinv),
             Object(

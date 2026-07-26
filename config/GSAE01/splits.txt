@@ -1652,7 +1652,7 @@ dlls/objects/220_MikaBombSha/MikaBombSha.c:
 	.data       start:0x80320620 end:0x80320658
 	.sdata2     start:0x803E31C0 end:0x803E31E8
 
-main/dll/dll_025A_staticcamera.c:
+dlls/objects/602_StaticCamer/StaticCamer.c:
 	.text       start:0x8016B898 end:0x8016B99C
 	.data       start:0x80320658 end:0x80320690
 	.sdata2     start:0x803E31E8 end:0x803E31F8
