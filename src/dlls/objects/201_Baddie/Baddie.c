@@ -1343,7 +1343,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 break;
             case ENEMY_SNOWWORM_OBJ:
             case ENEMY_SNOWWORM_BABY_OBJ:
-                snowworm_update((int*)obj, (u8*)state);
+                snowworm_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_HOODEDZYCK_OBJ:
                 hoodedZyck_update((GameObject*)obj, (u8*)state);
@@ -1420,7 +1420,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 break;
             case ENEMY_SNOWWORM_OBJ:
             case ENEMY_SNOWWORM_BABY_OBJ:
-                snowworm_update((int*)obj, (u8*)state);
+                snowworm_update((GameObject*)obj, (u8*)state);
                 break;
             case ENEMY_HOODEDZYCK_OBJ:
                 hoodedZyck_updateB((GameObject*)obj, (u8*)state);
@@ -1531,7 +1531,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             break;
         case ENEMY_SNOWWORM_OBJ:
         case ENEMY_SNOWWORM_BABY_OBJ:
-            snowworm_applyReactionState((int*)obj, (int*)state);
+            snowworm_applyReactionState((GameObject*)obj, (int*)state);
             break;
         case ENEMY_HOODEDZYCK_OBJ:
             hoodedZyck_updateIdle((GameObject*)(obj), state);
@@ -3060,7 +3060,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             break;
         case ENEMY_SNOWWORM_OBJ:
         case ENEMY_SNOWWORM_BABY_OBJ:
-            snowworm_init((int*)obj, (int*)state);
+            snowworm_init(obj, (int*)state);
             break;
         case ENEMY_HOODEDZYCK_OBJ:
             hoodedZyck_init(obj, (struct BaddieState*)state);

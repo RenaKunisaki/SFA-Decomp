@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-void snowworm_update(int* obj, u8* state);
-void snowworm_applyReactionState(int* obj, int* st);
-void snowworm_init(int* obj, int* st);
+void snowworm_update(struct GameObject* obj, u8* state);
+void snowworm_applyReactionState(struct GameObject* obj, int* st);
+void snowworm_init(struct GameObject* obj, int* st);
 
 #endif /* H_MAIN_DLL_SNOWWORM_H */

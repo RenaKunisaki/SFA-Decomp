@@ -183,15 +183,15 @@ STATIC_ASSERT(offsetof(FCVars, reactStep) == 0x33f);
 STATIC_ASSERT(offsetof(FCVars, linkedObj) == 0x340);
 
 
-void snowworm_spawnProjectile(s16* obj)
+void snowworm_spawnProjectile(GameObject* obj)
 {
     u8 locked = Obj_IsLoadingLocked();
     if (locked != 0)
     {
         int* setup = (int*)Obj_AllocObjectSetup(0x24, KALDACHOM_SPIT_OBJ);
-        ((GameObject*)setup)->anim.rootMotionScale = ((GameObject*)obj)->anim.localPosX;
-        ((GameObject*)setup)->anim.localPosX = lbl_803E2C98 + ((GameObject*)obj)->anim.localPosY;
-        ((GameObject*)setup)->anim.localPosY = ((GameObject*)obj)->anim.localPosZ;
+        ((GameObject*)setup)->anim.rootMotionScale = obj->anim.localPosX;
+        ((GameObject*)setup)->anim.localPosX = lbl_803E2C98 + obj->anim.localPosY;
+        ((GameObject*)setup)->anim.localPosY = obj->anim.localPosZ;
         ((ObjPlacement*)setup)->color[0] = 1;
         ((ObjPlacement*)setup)->color[1] = 4;
         ((ObjPlacement*)setup)->color[3] = 0xff;
@@ -199,10 +199,10 @@ void snowworm_spawnProjectile(s16* obj)
         if (setup != NULL)
         {
             ((GameObject*)setup)->anim.velocityX =
-                lbl_803E2C9C * -mathSinf((gCrawlerPi * (f32)*obj) / gCrawlerHalfCircleBams);
+                lbl_803E2C9C * -mathSinf((gCrawlerPi * (f32)*(s16*)obj) / gCrawlerHalfCircleBams);
             ((GameObject*)setup)->anim.velocityY = lbl_803E2CA8;
             ((GameObject*)setup)->anim.velocityZ =
-                lbl_803E2C9C * -mathCosf((gCrawlerPi * (f32)*obj) / gCrawlerHalfCircleBams);
+                lbl_803E2C9C * -mathCosf((gCrawlerPi * (f32)*(s16*)obj) / gCrawlerHalfCircleBams);
         }
     }
 }
@@ -259,10 +259,10 @@ void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int su
     Sfx_PlayFromObject(obj, SFXTRIG_stftest);
 }
 
-void crawler_playReactionEffects(int* obj, int* st)
+void crawler_playReactionEffects(GameObject* obj, int* st)
 {
     u16 flag = 0;
-    switch (((GameObject*)obj)->anim.currentMove)
+    switch (obj->anim.currentMove)
     {
     case 2:
         if (((FCVars*)st)->moveEventMask != 0)
@@ -280,7 +280,7 @@ void crawler_playReactionEffects(int* obj, int* st)
     case 4:
         if (((FCVars*)st)->moveEventMask != 0)
         {
-            if (((GameObject*)obj)->anim.currentMoveProgress < 0.15f)
+            if (obj->anim.currentMoveProgress < 0.15f)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_blooplaugh1);
             }
@@ -329,24 +329,24 @@ void crawler_playReactionEffects(int* obj, int* st)
     }
 }
 
-void snowworm_update(int* obj, u8* state)
+void snowworm_update(GameObject* obj, u8* state)
 {
     u8* tbl = *(u8**)((char*)gCrawlerReactionTables + ((FCVars*)state)->turnDelta * 8);
     int i;
 
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority = 10;
-    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumeId = 1;
-    if (((GameObject*)obj)->anim.currentMove == 0)
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 10;
+    ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
+    if (obj->anim.currentMove == 0)
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
-        ObjHits_DisableObject((GameObject*)obj);
+        *(u8*)&obj->anim.resetHitboxMode =
+            *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+        ObjHits_DisableObject(obj);
     }
     else
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
-        ObjHits_EnableObject((GameObject*)obj);
+        *(u8*)&obj->anim.resetHitboxMode =
+            *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
+        ObjHits_EnableObject(obj);
     }
 
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0 &&
@@ -373,44 +373,44 @@ void snowworm_update(int* obj, u8* state)
         if (((FCVars*)state)->moveTableIndex < 4)
         {
             i = ((BaddieState*)state)->userData1 * 0xc;
-            fn_8014D08C((GameObject*)obj, (int)state, (tbl + i)[8], *(f32*)((int)tbl + i), 0, 0);
+            fn_8014D08C(obj, (int)state, (tbl + i)[8], *(f32*)((int)tbl + i), 0, 0);
         }
         else
         {
             i = ((BaddieState*)state)->userData1 * 0xc;
-            fn_8014D08C((GameObject*)obj, (int)state, (tbl + i)[9], *(f32*)((int)tbl + i), 0, 0);
+            fn_8014D08C(obj, (int)state, (tbl + i)[9], *(f32*)((int)tbl + i), 0, 0);
         }
-        if (((GameObject*)obj)->anim.currentMove == 9)
+        if (obj->anim.currentMove == 9)
         {
-            snowworm_spawnProjectile((s16*)obj);
+            snowworm_spawnProjectile(obj);
         }
-        else if (((GameObject*)obj)->anim.currentMove == 1)
+        else if (obj->anim.currentMove == 1)
         {
             int r = randomGetRange(0, ((BaddieState*)state)->userData2);
             s16 a = randomGetRange(-0x8000, 0x7fff);
             f32 angle = (gCrawlerPi * a) / gCrawlerHalfCircleBams;
-            ((GameObject*)obj)->anim.localPosX =
-                r * mathSinf(angle) + *(f32*)(*(int*)&((GameObject*)obj)->anim.placementData + 8);
-            ((GameObject*)obj)->anim.localPosZ =
-                r * mathCosf(angle) + ((GameObject*)((GameObject*)obj)->anim.placementData)->anim.localPosY;
-            baddieTurnTowardPoint((GameObject*)obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
+            obj->anim.localPosX =
+                r * mathSinf(angle) + *(f32*)(*(int*)&obj->anim.placementData + 8);
+            obj->anim.localPosZ =
+                r * mathCosf(angle) + ((GameObject*)obj->anim.placementData)->anim.localPosY;
+            baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                         ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 1, 0);
         }
     }
 
-    baddieTurnTowardPoint((GameObject*)obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
+    baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                 ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ,
                 lbl_803DBD30[((FCVars*)state)->turnDelta], 0);
     crawler_playReactionEffects(obj, (int*)state);
 }
 
-void snowworm_applyReactionState(int* obj, int* st)
+void snowworm_applyReactionState(GameObject* obj, int* st)
 {
     u8* t1 = *(u8**)((char*)gCrawlerReactionTables + ((FCVars*)st)->turnDelta * 8);
     *((u8*)obj + 0xaf) = (u8)(*((u8*)obj + 0xaf) | 0x8);
     if ((((BaddieState*)st)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        s16 a = ((GameObject*)obj)->anim.currentMove;
+        s16 a = obj->anim.currentMove;
         if (a == 7)
         {
             ((BaddieState*)st)->userData1 = 1;
@@ -424,13 +424,13 @@ void snowworm_applyReactionState(int* obj, int* st)
             f32* fbase = (f32*)t1;
             u32 idx2 = ((BaddieState*)st)->userData1;
             u32 off = idx2 * 0xc;
-            fn_8014D08C((GameObject*)obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
+            fn_8014D08C(obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
         }
     }
     crawler_playReactionEffects(obj, st);
 }
 
-void snowworm_init(int* obj, int* st)
+void snowworm_init(GameObject* obj, int* st)
 {
     ((BaddieState*)st)->speedScale = 60.0f;
     /* 0x33b: crawler variant selector (shares slot with BaddieState.userData2);
@@ -451,7 +451,7 @@ void snowworm_init(int* obj, int* st)
         ((BaddieState*)st)->unk31C = d;
     }
     ((BaddieState*)st)->userData1 = 1;
-    ((FCVars*)st)->turnDelta = (u16)(((GameObject*)obj)->anim.seqId == SNOWWORM_SEQID_BABY);
+    ((FCVars*)st)->turnDelta = (u16)(obj->anim.seqId == SNOWWORM_SEQID_BABY);
 }
 
 void whirlpool_updateWhileFrozen(int wpad0, u8* wpad1, int wpad2, int wpad3, int wpad4, int wpad5, Vec* wpad6,
