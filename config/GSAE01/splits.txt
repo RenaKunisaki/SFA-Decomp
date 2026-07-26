@@ -3341,6 +3341,9 @@ dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c:
 dlls/objects/573_DBPointMum/DBPointMum.c:
 	.sdata      start:0x803DC150 end:0x803DC158
 
+dlls/objects/574/574.c:
+	.sdata      start:0x803DC158 end:0x803DC160
+
 dlls/objects/535_VFP_ObjCrea/VFP_ObjCrea.c:
 	.text       start:0x801F9D78 end:0x801FA228
 	.data       start:0x80328EC8 end:0x80328F00
