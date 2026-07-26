@@ -342,7 +342,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/dlls/objects/675/675 | 100.0000 | 99.9005 | -0.0995 |
 | main/main/dll/dll_02AE_waterflowwe | 100.0000 | 99.9048 | -0.0952 |
 | main/main/dll/dll_0136_waveanimator | 100.0000 | 99.9085 | -0.0915 |
-| main/main/dll/DR/dll_0251_ktrexfloorswitch | 100.0000 | 99.9114 | -0.0886 |
+| main/dlls/objects/593_KT_RexFloor/KT_RexFloor | 100.0000 | 99.9114 | -0.0886 |
 | main/main/dll/dll_00A6_dlla6func0 | 100.0000 | 99.9149 | -0.0851 |
 | main/main/dll/dll_008E_dll8efunc0 | 100.0000 | 99.9195 | -0.0805 |
 | main/main/dll/dll_009A_dll9afunc0 | 100.0000 | 99.9409 | -0.0591 |

@@ -3544,7 +3544,7 @@ main/dll/DR/dll_0250_ktrex.c:
 	.sbss       start:0x803DDD48 end:0x803DDD60
 	.sdata2     start:0x803E67B0 end:0x803E6854
 
-main/dll/DR/dll_0251_ktrexfloorswitch.c:
+dlls/objects/593_KT_RexFloor/KT_RexFloor.c:
 	.text       start:0x80215A3C end:0x802164D0
 	.rodata     start:0x802C2560 end:0x802C2578
 	.sdata      start:0x803DC2A0 end:0x803DC2A8
