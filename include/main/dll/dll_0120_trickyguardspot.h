@@ -17,6 +17,7 @@
 #define TRICKY_GUARD_SPOT_ACTION_PARAM       3
 typedef GameObject TrickyGuardSpotObject;
 
+/* Tricky object vtable subset used by guard-action objects. */
 typedef struct TrickyGuardSpotInterfaceVTable
 {
     void* pad00[10];
@@ -24,12 +25,12 @@ typedef struct TrickyGuardSpotInterfaceVTable
     void* pad2C[4];
     void (*resetGuardSpotAction)(ObjAnimComponent* tricky);
     void* pad40;
-    int (*isGuardSpotActionReady)(ObjAnimComponent* tricky);
+    int (*isBusy)(ObjAnimComponent* tricky);
 } TrickyGuardSpotInterfaceVTable;
 
 STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, setGuardSpotAction) == 0x28);
 STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, resetGuardSpotAction) == 0x3C);
-STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, isGuardSpotActionReady) == 0x44);
+STATIC_ASSERT(offsetof(TrickyGuardSpotInterfaceVTable, isBusy) == 0x44);
 
 typedef struct TrickyGuardSpotPlacement
 {
