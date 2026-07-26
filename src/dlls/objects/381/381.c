@@ -1,3 +1,6 @@
+/*
+ * DLL 0x17D handles the DIM2_barrel and MMP_barrel object variants.
+ */
 #include "main/audio/sfx_ids.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"

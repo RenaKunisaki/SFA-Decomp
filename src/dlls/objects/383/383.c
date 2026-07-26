@@ -1,5 +1,5 @@
 /*
- * DLL 0x17F - moonseedbush: a plantable "moon seed" bush spot.
+ * DLL 0x17F handles the plantable MSBush and MSVine "moon seed" variants.
  *
  * The spot watches its trigger game bit (placement->triggerGameBit);
  * once that bit is set the seed is considered grown (seedState 2). On

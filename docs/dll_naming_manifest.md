@@ -424,9 +424,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x17A | SpiritPrize (+ECSH_Spirit) | COMPLETE | dlls/objects/378_SpiritPrize/SpiritPrize.c | = (canonical) | — |
 | 0x17B | DFSH_LaserB | COMPLETE | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | = (canonical) | — |
 | 0x17C | GCRobotPatr | RAW | dlls/objects/380_GCRobotPatr/GCRobotPatr.c | = (canonical) | inert data-only DLL |
-| 0x17D | RollingBarrel (+DIM2_barrel, MMP_barrel) | GUESSED | main/dll/dll_017D_rollingbarrel.c | = (canonical) | — |
-| 0x17E | MMP_levelcontrol | CONFIRMED | main/dll/dll_017E_mmplevelcontrol.c | main/dll/MMP/dll_017E_mmplevelcontrol.c | — |
-| 0x17F | MoonSeedBush (+MSBush, MSVine) | GUESSED | main/dll/dll_017F_moonseedbush.c | = (canonical) | — |
+| 0x17D | — (+DIM2_barrel, MMP_barrel) | NO-RETAIL-NAME | dlls/objects/381/381.c | = (canonical) | — |
+| 0x17E | MMP_levelco | COMPLETE | dlls/objects/382_MMP_levelco/MMP_levelco.c | = (canonical) | — |
+| 0x17F | — (+MSBush, MSVine) | NO-RETAIL-NAME | dlls/objects/383/383.c | = (canonical) | — |
 | 0x180 | MMP_asteroid_re | CONFIRMED | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | — |
 | 0x181 | MMP_trenchFx | CONFIRMED | main/dll/dll_0181_mmptrenchfx.c | main/dll/MMP/dll_0181_mmptrenchfx.c | — |
 | 0x182 | MMP_moonrock | CONFIRMED | main/dll/dll_0182_mmpmoonrock.c | main/dll/MMP/dll_0182_mmpmoonrock.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x17E | main/dll/dll_017E_mmplevelcontrol.c | main/dll/MMP/dll_017E_mmplevelcontrol.c | CONFIRMED |
 | 0x180 | main/dll/dll_0180_mmpasteroidre.c | main/dll/MMP/dll_0180_mmpasteroidre.c | CONFIRMED |
 | 0x181 | main/dll/dll_0181_mmptrenchfx.c | main/dll/MMP/dll_0181_mmptrenchfx.c | CONFIRMED |
 | 0x182 | main/dll/dll_0182_mmpmoonrock.c | main/dll/MMP/dll_0182_mmpmoonrock.c | CONFIRMED |

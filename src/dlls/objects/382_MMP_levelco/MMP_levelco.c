@@ -1,5 +1,5 @@
 /*
- * mmplevelcontrol (DLL 0x17E) - Moon Mountain Pass level controller.
+ * MMP_levelco (DLL 0x17E) - Moon Mountain Pass level controller.
  *
  * A singleton manager object that drives the area's environment. init
  * unlocks the map, primes the fog/heat-haze countdown (lbl_803DDB28) and
