@@ -1,4 +1,4 @@
-/* DLL 0x190 - ECSHCup [801C835C-801C8B68) */
+/* ECSH_Cup (DLL 0x190) */
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/vecmath_distance_api.h"

@@ -1,5 +1,5 @@
 /*
- * DLL 0x18F - ECSH Krazoa Spirit Shrine: the "Test of Observation". ("ECSH" is
+ * ECSH_Shrine (DLL 0x18F) - Krazoa Spirit Shrine: the "Test of Observation". ("ECSH" is
  * the retail prefix for this shrine - one of the MMSH/ECSH/DFSH/DBSH/GPSH Krazoa
  * shrine family; the "EC" area code is unidentified, so it's left undecoded.)
  *

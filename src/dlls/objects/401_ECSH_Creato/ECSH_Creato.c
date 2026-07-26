@@ -1,6 +1,5 @@
 /*
- * DLL 0x0191 - ecshcreator ("ECSH_Creato", the ecshrine-map SharpClaw
- * wave spawner). TU 0x801C6E0C-0x801C70F0.
+ * ECSH_Creato (DLL 0x0191) - the ecshrine-map SharpClaw wave spawner.
  *
  * A placement-spawned manager object: on init it stores a per-instance
  * EcshCreatorState (in obj->extra) with the countdown (=100) and the

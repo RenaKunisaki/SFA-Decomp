@@ -1,4 +1,4 @@
-/* DLL 0x0192 - GPS-H shrine objects [801C70F0-801C7724) */
+/* GPSH_Shrine (DLL 0x0192) */
 #include "game/objects/object_setup.h"
 #include "main/dll/objfx_api.h"
 #include "main/vecmath_distance_api.h"
@@ -41,14 +41,6 @@
 #define GPSHSHRINE_OBJGROUP 0xb
 #define GPSHSHRINE_MAP_SHRINE 0xb
 #define GPSHSHRINE_SPAWNED_OBJGROUP 0x10 /* puzzle-spawned objects, freed on completion */
-
-
-
-
-
-
-
-
 
 ObjectDescriptor gGPSH_ShrineObjDescriptor = {
     0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,

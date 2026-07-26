@@ -581,10 +581,10 @@ spell several of these out explicitly where the wiki page doesn't:
 | `DFP` | DragonRock Palace (spell-puzzle level) | `src/main/dll/DF/dll_0229_dfplevelcontrol.c` |
 | `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c` |
 | `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/main/dll/DIM/dll_01BE_dimlava.c` |
-| `GPSH` | a Krazoa-spirit shrine (area code not decoded) | `src/main/dll/dll_0192_gpshshrine.c` |
+| `GPSH` | a Krazoa-spirit shrine (area code not decoded) | `src/dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c` |
 | `MMP` | Moon Mountain Pass | `src/dlls/objects/271_MMP_Bridge/MMP_Bridge.c` |
 | `MMSH` | Moon Mountain Pass Shrine (Krazoa spirit) | `src/dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c` |
-| `ECSH` | a Krazoa-spirit shrine (area code "EC" not decoded — comment notes the MMSH/ECSH/DFSH/DBSH/GPSH family explicitly) | `src/main/dll/dll_018F_ecshshrine.c` |
+| `ECSH` | a Krazoa-spirit shrine (area code "EC" not decoded — comment notes the MMSH/ECSH/DFSH/DBSH/GPSH family explicitly) | `src/dlls/objects/399_ECSH_Shrine/ECSH_Shrine.c` |
 | `NW` | SnowHorn Wastes (map `nwastes`) | `src/main/dll/NW/dll_0198_nwshlevcon.c` |
 | `SH` | SnowHorn / ThornTail Hollow | `src/main/dll/SH/dll_01AE_shlevelcontrol.c` |
 | `SB` | ShipBattle (the prologue) | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
