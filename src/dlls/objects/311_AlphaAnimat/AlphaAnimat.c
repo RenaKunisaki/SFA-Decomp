@@ -1,5 +1,5 @@
 /*
- * DLL 0x137 - AlphaAnimator
+ * DLL 0x137 - AlphaAnimat
  *
  * Object that animates the alpha/fade of the map block it sits in. On the
  * first tick where its block is loaded (MapBlockData.unk4 & 8) it latches the
