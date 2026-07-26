@@ -41,6 +41,7 @@
 #include "dlls/objects/242_iceblast.h"
 #include "dlls/objects/243_flameblast.h"
 #include "dlls/objects/244.h"
+#include "dlls/objects/245_SidekickBal.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -231,8 +232,8 @@ extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPSca
     gSPitembeamObjDescriptor, gScarabObjDescriptor, gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxPlayerObjDescriptor, gSfxplayerObjDescriptor, gShipBattleObjDescriptor,
     gShopItemObjDescriptor, gShopKeeperObjDescriptor, gShopObjDescriptor;
-extern ResourceDescriptor gSidekickBallObjDescriptor, gSlidingDoorObjDescriptor, gSmallBasketObjDescriptor,
-    gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
+extern ResourceDescriptor gSlidingDoorObjDescriptor, gSmallBasketObjDescriptor, gSnowBikeObjDescriptor,
+    gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffActivatedObjDescriptor, gStaffObjDescriptor,
     gStaticCameraObjDescriptor;
@@ -1179,7 +1180,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gIceblastObjDescriptor,
     (ResourceDescriptor*)&gFlameblastObjDescriptor,
     (ResourceDescriptor*)&gDoorF4ObjDescriptor,
-    &gSidekickBallObjDescriptor,
+    (ResourceDescriptor*)&gSidekickBallObjDescriptor,
     &gAreaObjDescriptor,
     &dll_F7,
     &gLevelNameObjDescriptor,

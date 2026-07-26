@@ -64,7 +64,7 @@
 #include "game/objects/object_setup.h"
 #include "main/trig.h"
 #include "main/frustum.h"
-#include "main/dll/dll_00F5_sidekickball.h"
+#include "dlls/objects/245_SidekickBal.h"
 #include "main/dll/NW/dll_01A1_nwmammoth.h"
 #include "main/dll/tricky_substates.h"
 #include "dlls/objects/209_TumbleWeedB.h"

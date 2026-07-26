@@ -201,11 +201,12 @@ is unconfirmed.
 ### Playing (Tricky's Ball)
 
 - Ball object: DLL `0x00F5` -> `src/dlls/objects/245_SidekickBal/SidekickBal.c` /
-  `include/main/dll/dll_00F5_sidekickball.h`, `SidekickBall_init`/`_update`, mode machine
-  `SidekickBallMode` (`IDLE` -> `trickyBallFn_801793b8`, `THROWN`/`MOVING` ->
-  `trickyBallMove`, `FADING`). Per the file's own header comment, the ball self-frees if the
+  `include/dlls/objects/245_SidekickBal.h`, `SidekickBall_init`/`_update`, mode machine
+  `SidekickBallMode` (`SIDEKICK_BALL_IDLE` -> `sidekickBall_handlePlayerInteraction`,
+  `SIDEKICK_BALL_THROWN`/`SIDEKICK_BALL_MOVING` -> `trickyBallMove`,
+  `SIDEKICK_BALL_FADING` -> alpha fade). The ball self-frees if the
   player or Tricky is missing/dead, or `GAMEBIT_NoBallsAllowed = 0xD00` ("Disables/despawns
-  Tricky's ball", `include/main/gamebits.h`) is set — this is the "if it suddenly becomes disabled
+  Tricky's ball", `include/main/gamebit_ids.h`) is set — this is the "if it suddenly becomes disabled
   (e.g. boss awake) it will just disappear" behavior from the wiki.
 - Color-per-10-retrieves: `Tricky_init` (`src/dlls/objects/196_Tricky/tricky.c:9706`) computes
   `modelVariant = progressPtr[2] / 10` and stores it in `TrickyState.modelVariant`
