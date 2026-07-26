@@ -273,7 +273,6 @@ void drakord_thornbush_init(GameObject* obj, u8* init)
     }
 }
 
-
 void drakord_thornbush_release(void)
 {
 }
