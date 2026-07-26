@@ -2839,7 +2839,7 @@ dlls/objects/412/412.c:
 	.data       start:0x803266A8 end:0x803266E0
 	.sdata2     start:0x803E51B0 end:0x803E51B8
 
-main/dll/dll_019D_dll19d.c:
+dlls/objects/413/413.c:
 	.text       start:0x801CC998 end:0x801CCFA4
 	.data       start:0x803266E0 end:0x80326718
 	.sdata2     start:0x803E51B8 end:0x803E51C8
