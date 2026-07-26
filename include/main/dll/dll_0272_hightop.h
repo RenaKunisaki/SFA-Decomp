@@ -27,7 +27,7 @@ typedef struct HighTopDeathSpawn
 
 typedef struct HighTopPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 rotByte;
     s8 spawnVariant;
     s16 airMeterParam;
