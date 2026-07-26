@@ -242,14 +242,14 @@ void DIMLogFire_update(GameObject* obj)
     }
 }
 
-void DIMLogFire_init(int obj, DimlogfireObjectDef* def)
+void DIMLogFire_init(GameObject* obj, DimlogfireObjectDef* def)
 {
     int radius;
     DimLogFireState* state;
 
-    ((GameObject*)obj)->animEventCallback = DIMLogFire_SeqFn;
-    ObjGroup_AddObject(obj, DIMLOGFIRE_GROUP);
-    state = ((GameObject*)obj)->extra;
+    obj->animEventCallback = DIMLogFire_SeqFn;
+    ObjGroup_AddObject((int)obj, DIMLOGFIRE_GROUP);
+    state = obj->extra;
     state->unk20 = 0;
     state->initMode = def->initMode;
     state->strengthInit = (s8)def->strengthInit;
@@ -259,26 +259,26 @@ void DIMLogFire_init(int obj, DimlogfireObjectDef* def)
         state->mode = DIMLOGFIRE_MODE_LIT;
         state->dousedLatch = 1;
     }
-    ((GameObject*)obj)->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     state->flickerTimerA = 10.0f;
     state->flickerTimerB = 1.0f;
     if (state->light == NULL)
     {
-        state->light = objCreateLight((GameObject*)obj, 1);
+        state->light = objCreateLight(obj, 1);
     }
     if (state->light != NULL)
     {
         modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(state->light, 0xff, 0x7f, 0, 0xff);
         modelLightStruct_setSpecularColor(state->light, 0xff, 0x7f, 0, 0xff);
-        radius = (int)(20.0f * ((GameObject*)obj)->anim.rootMotionScale);
+        radius = (int)(20.0f * obj->anim.rootMotionScale);
         modelLightStruct_setDistanceAttenuation(state->light, radius, 30.0f + radius);
         modelLightStruct_setEnabled(state->light, 1, 0.0f);
         modelLightStruct_setPosition(state->light, 0.0f, 12.0f, 0.0f);
         modelLightStruct_startColorFade(state->light, 1, 3);
         modelLightStruct_setDiffuseTargetColor(state->light, 0xff, 0x5c, 0, 0xff);
         modelLightStruct_setupGlow(state->light, 0, 0xff, 0x7f, 0, 0x87,
-                                   40.0f * ((GameObject*)obj)->anim.rootMotionScale);
+                                   40.0f * obj->anim.rootMotionScale);
         modelLightStruct_setGlowProjectionRadius(state->light, 30.0f);
     }
 }
