@@ -132,6 +132,6 @@ void bossdrakor_updateHeadTracking(GameObject* obj, int state);
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut);
 void bossdrakor_spawnAttackObjects(GameObject* obj, int state, int action);
 void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init);
-void bossdrakor_render(int p1, int p2, int p3, int p4, int p5, s8 vis);
+void bossdrakor_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 vis);
 
 #endif
