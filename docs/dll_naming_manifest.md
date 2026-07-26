@@ -722,7 +722,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A4 | — | NO-RETAIL-NAME | main/dll/dll_02A4.c | = (canonical) | — |
 | 0x2A5 | ARWGenerato | CONFIRMED | main/dll/dll_02A5_arwgenerato.c | main/dll/ARW/dll_02A5_arwgenerato.c | — |
 | 0x2A6 | ARWSquadron (+ARWBigAster, ARWSmallAst, ARWMobileGu, ARWGroundGu, ARWShipFly, ARWShipTwin, ARWShipAnge) | CONFIRMED | main/dll/dll_02A6_arwsquadron.c | main/dll/ARW/dll_02A6_arwsquadron.c | — |
-| 0x2A7 | ARWProximit (+ARWTimedMin) | CONFIRMED | main/dll/dll_02A7_arwproximit.c | main/dll/ARW/dll_02A7_arwproximit.c | — |
+| 0x2A7 | ARWProximit (+ARWTimedMin) | CONFIRMED | dlls/objects/679_ARWProximit/ARWProximit.c | = (canonical) | — |
 | 0x2A8 | ARWBlocker (+ARWBlockerS) | COMPLETE | dlls/objects/680_ARWBlocker/ARWBlocker.c | = (canonical) | — |
 | 0x2A9 | — (+LGTPointLight, CF_WallTorc) | NO-RETAIL-NAME | dlls/objects/681/681.c | = (canonical) | — |
 | 0x2AA | LGTDirectionallight | CONFIRMED | dlls/objects/682_LGTDirectio/LGTDirectio.c | = (canonical) | — |
@@ -976,7 +976,7 @@ name was a deliberate choice by a previous carve:
 | 0x2A2 | main/dll/dll_02A2_arwspeedstr.c | main/dll/ARW/dll_02A2_arwspeedstr.c | CONFIRMED |
 | 0x2A5 | main/dll/dll_02A5_arwgenerato.c | main/dll/ARW/dll_02A5_arwgenerato.c | CONFIRMED |
 | 0x2A6 | main/dll/dll_02A6_arwsquadron.c | main/dll/ARW/dll_02A6_arwsquadron.c | CONFIRMED |
-| 0x2A7 | main/dll/dll_02A7_arwproximit.c | main/dll/ARW/dll_02A7_arwproximit.c | CONFIRMED |
+| 0x2A7 | main/dll/dll_02A7_arwproximit.c | dlls/objects/679_ARWProximit/ARWProximit.c | CONFIRMED |
 | 0x2A8 | main/dll/dll_02A8_arwblocker.c | dlls/objects/680_ARWBlocker/ARWBlocker.c | COMPLETE |
 | 0x2A9 | main/dll/dll_02A9_lgtpointlight.c | dlls/objects/681/681.c | CONFIRMED |
 | 0x2AA | main/dll/dll_02AA_lgtdirectionallight.c | dlls/objects/682_LGTDirectio/LGTDirectio.c | CONFIRMED |

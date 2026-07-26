@@ -1,5 +1,5 @@
 /*
- * arwproximit (DLL 0x2A7) - a proximity mine in the on-rails Arwing
+ * ARWProximit (DLL 0x2A7) - a proximity mine in the on-rails Arwing
  * sections. It spins in place and walks through a small phase machine
  * (state->phase): dormant until the Arwing approaches (phase 0), then it
  * spawns a glowing green light and fades in (phase 1); when the Arwing gets
