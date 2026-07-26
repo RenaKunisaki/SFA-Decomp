@@ -17622,13 +17622,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 Rcp_SetSpiritVisionEnabled(0);
                 break;
             case 0x2b:
-            {
-                register u32 m;
-                m = ((GameObject*)obj)->anim.modelState->flags;
-                m &= ~OBJ_MODEL_STATE_SHADOW_VISIBLE;
-                ((GameObject*)obj)->anim.modelState->flags = m;
+                ((GameObject*)obj)->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_VISIBLE;
                 break;
-            }
             case 0x2c:
                 ((GameObject*)obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
                 break;
