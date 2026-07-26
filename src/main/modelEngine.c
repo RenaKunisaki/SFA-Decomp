@@ -36,6 +36,7 @@
 #include "dlls/objects/237.h"
 #include "dlls/objects/238_EffectBox.h"
 #include "dlls/objects/239.h"
+#include "dlls/objects/240_WarpPoint.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -255,8 +256,7 @@ extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gW
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWallAnimatorObjDescriptor,
-    gWarpPointObjDescriptor, gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFallSprayObjDescriptor,
-    gWaterFlowWeObjDescriptor;
+    gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFallSprayObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor gWaveAnimatorObjDescriptor, gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor,
     gWorldObjObjDescriptor, gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor, lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
@@ -1171,7 +1171,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCollectibleObjDescriptor,
     (ResourceDescriptor*)&gEffectBoxObjDescriptor,
     (ResourceDescriptor*)&gPushableObjDescriptor,
-    &gWarpPointObjDescriptor,
+    (ResourceDescriptor*)&gWarpPointObjDescriptor,
     &gInvHitObjDescriptor,
     &gIceblastObjDescriptor,
     &gFlameblastObjDescriptor,

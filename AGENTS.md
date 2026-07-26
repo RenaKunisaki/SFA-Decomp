@@ -113,6 +113,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   declarations. Where a generic registry intentionally stores differently shaped descriptor
   types, use an explicit cast at that boundary rather than lying about the descriptor's type in an
   `extern`.
+- In an already-exact unit, test apparently redundant predicates, casts, and integer/pointer
+  launders before normalizing them. If the simpler spelling changes codegen, retain the proven
+  spelling and improve the surrounding names instead; cosmetic uniformity does not justify a match
+  regression.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.
