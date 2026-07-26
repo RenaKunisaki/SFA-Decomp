@@ -1,5 +1,5 @@
 /*
- * spiritdoorlock (DLL 0x167) - a spinning, glowing lock guarding a spirit
+ * SpiritDoorL (DLL 0x167) - a spinning, glowing lock guarding a spirit
  * door, plus its ring of orbiting key objects.
  *
  * Behaviour:
