@@ -148,7 +148,7 @@ void guardClaw_update(GameObject* obj, u8* state)
     }
     if (gSeq11EStateTable[((BaddieState*)state)->userData1].flagB != 0)
     {
-        groundBaddiePushPlayerOut((int)obj, state);
+        groundBaddiePushPlayerOut(obj, state);
     }
 }
 

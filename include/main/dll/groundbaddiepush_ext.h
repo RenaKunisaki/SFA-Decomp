@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-void groundBaddiePushPlayerOut(int obj, u8* state);
+void groundBaddiePushPlayerOut(GameObject* obj, u8* state);
 
 #endif /* MAIN_DLL_GROUNDBADDIEPUSH_EXT_H_ */

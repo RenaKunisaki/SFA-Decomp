@@ -592,7 +592,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     break;
                 case 0xd8:
                 case 0x281:
-                    guardClawUpdateWhileFrozen((int)obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    guardClawUpdateWhileFrozen((GameObject*)(obj), state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x613:
                     gcRobotPatrol_updateWhileFrozen((int)obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
