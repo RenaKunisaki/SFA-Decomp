@@ -245,7 +245,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/dll_0100_trickywarp.c` | 12 | `* (ViewFrustum_IsSphereVisible) so the warp can't trigger in view.` |
 | `src/main/dll/dll_0100_trickywarp.c` | 143 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX, lbl_803E38A0) != 0)` |
 | `src/dlls/objects/262/262.c` | 378 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX,` |
-| `src/main/dll/dll_0109_unk.c` | 137 | `if (ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX,` |
+| `src/dlls/objects/265/265.c` | 137 | `if (ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX,` |
 | `src/main/dll/dll_010E_deathseq.c` | 72 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_010E_deathseq.c` | 197 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_0197_dll197.c` | 274 | `camera = Camera_GetCurrentViewSlot();` |

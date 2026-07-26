@@ -310,7 +310,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x106 | Scarab (+GreenScarab, RedScarab, GoldScarab, RainScarab, Blue_bean) | CONFIRMED | dlls/objects/262/262.c | = (canonical) | — |
 | 0x107 | — | NO-RETAIL-NAME | dlls/objects/263/263.c | = (canonical) | — |
 | 0x108 | EndObject | COMPLETE | dlls/objects/264_EndObject/EndObject.c | = (canonical) | — |
-| 0x109 | — | NO-RETAIL-NAME | main/dll/dll_0109_unk.c | = (canonical) | — |
+| 0x109 | — | NO-RETAIL-NAME | dlls/objects/265/265.c | = (canonical) | — |
 | 0x10A | Fall_Ladders | CONFIRMED | main/dll/dll_010A_fallladders.c | = (canonical) | — |
 | 0x10B | FireFlyLantern | CONFIRMED | main/dll/dll_010B_fireflylantern.c | = (canonical) | — |
 | 0x10C | LanternFireFly | CONFIRMED | main/dll/dll_010C_lanternfirefly.c | = (canonical) | — |

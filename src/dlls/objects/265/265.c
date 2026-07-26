@@ -1,5 +1,5 @@
 /*
- * dll_0109 - a "carryable that breaks and respawns" placed object.
+ * DLL 0x109 - a "carryable that breaks and respawns" placed object.
  *
  * Driven by a carryable interface (gCarryableInterface). On a priority
  * hit while being carried it plays a break fx + sfx, sets a sphere

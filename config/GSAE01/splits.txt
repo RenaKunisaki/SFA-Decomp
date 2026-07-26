@@ -1981,7 +1981,7 @@ dlls/objects/231/231.c:
 	.data       start:0x803218B0 end:0x803218E8
 	.sdata2     start:0x803E3AF8 end:0x803E3B40
 
-main/dll/dll_0109_unk.c:
+dlls/objects/265/265.c:
 	.text       start:0x80187BA0 end:0x80187F30
 	.data       start:0x803218E8 end:0x80321920
 	.sdata2     start:0x803E3B40 end:0x803E3B4C
