@@ -641,7 +641,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x253 | KT_Lazerlight | CONFIRMED | main/dll/dll_0253_ktlazerlight.c | main/dll/DR/dll_0253_ktlazerlight.c | — |
 | 0x254 | KT_Fallingrocks | CONFIRMED | main/dll/dll_0254_ktfallingrocks.c | main/dll/DR/dll_0254_ktfallingrocks.c | — |
 | 0x255 | SnowBike (+CRSnowBike, CRSnowClawB, IMSnowBike, IMSnowClawB) | CONFIRMED | main/dll/dll_0255_snowbike.c | = (canonical) | — |
-| 0x256 | DIMSnowHorn1 | CONFIRMED | main/dll/dll_0256_dimsnowhorn1.c | main/dll/DIM/dll_0256_dimsnowhorn1.c | — |
+| 0x256 | DIMSnowHorn1 | CONFIRMED | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | = (canonical) | — |
 | 0x257 | DR_EarthWarrior | CONFIRMED | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | = (canonical) | — |
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | — |
 | 0x259 | SB_Cloudrunner | CONFIRMED | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | — |
@@ -911,7 +911,7 @@ name was a deliberate choice by a previous carve:
 | 0x252 | main/dll/dll_0252_ktlazerwall.c | main/dll/DR/dll_0252_ktlazerwall.c | CONFIRMED |
 | 0x253 | main/dll/dll_0253_ktlazerlight.c | main/dll/DR/dll_0253_ktlazerlight.c | CONFIRMED |
 | 0x254 | main/dll/dll_0254_ktfallingrocks.c | main/dll/DR/dll_0254_ktfallingrocks.c | CONFIRMED |
-| 0x256 | main/dll/dll_0256_dimsnowhorn1.c | main/dll/DIM/dll_0256_dimsnowhorn1.c | CONFIRMED |
+| 0x256 | main/dll/dll_0256_dimsnowhorn1.c | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | CONFIRMED |
 | 0x257 | main/dll/dll_0257_drearthwarrior.c | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | CONFIRMED |
 | 0x258 | main/dll/dll_0258_drcloudrunner.c | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | CONFIRMED |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | CONFIRMED |

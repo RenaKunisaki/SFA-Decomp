@@ -221,7 +221,7 @@ is unconfirmed.
 ### Exploits and bugs
 
 - **Mammoth Dismount (DarkIce Mines SnowHorn)**: the rideable SnowHorn is DLL `0x256` ->
-  `src/main/dll/DIM/dll_0256_dimsnowhorn1.c` (`DIMSnowHorn1State.mountMode`: `0` = unmounted,
+  `src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c` (`DIMSnowHorn1State.mountMode`: `0` = unmounted,
   `2` = riding; local `#define GAMEBIT_SNOWHORN_RIDING 0x3e3`, which matches
   `GAMEBIT_NW_SnowHorn03E3 = 0x3E3` in `include/main/gamebits.h:547`, commented "related to riding
   SnowHorn" despite its `NW`-prefixed name). The player-side "mounted object" pointer the wiki says isn't

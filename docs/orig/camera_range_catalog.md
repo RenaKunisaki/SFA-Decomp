@@ -232,7 +232,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/maybetemplate.c` | 2086 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DF/dll_022B_dfptorch.c` | 87 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DIM/dll_019E_dim_tricky.c` | 102 | `camera = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/DIM/dll_0256_dimsnowhorn1.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 832 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 2007 | `cameraSlot = (ExpgfxCameraViewSlot*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000B_dll0b.c` | 1086 | `view = Camera_GetCurrentViewSlot();` |

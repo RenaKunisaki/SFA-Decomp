@@ -242,7 +242,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0013_waterfx | 99.8671 | 96.5743 | -3.2928 |
 | main/main/dll/animobjd2 | 99.1506 | 95.9151 | -3.2355 |
 | main/track/intersect | 100.0000 | 96.8889 | -3.1111 |
-| main/main/dll/DIM/dll_0256_dimsnowhorn1 | 100.0000 | 96.8979 | -3.1021 |
+| main/dlls/objects/598_DIMSnowHorn/DIMSnowHorn | 100.0000 | 96.8979 | -3.1021 |
 | main/main/dll/dll_004E_cameramodeworldmap | 99.8534 | 96.7666 | -3.0868 |
 | main/main/sky | 99.8372 | 96.9997 | -2.8375 |
 | main/main/dll/trickyfollow | 99.8147 | 96.9942 | -2.8206 |
