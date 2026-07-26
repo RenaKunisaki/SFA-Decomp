@@ -3993,7 +3993,7 @@ main/dll/dll_02B6_cnthitobjec.c:
 	.sdata      start:0x803DC428 end:0x803DC430
 	.sdata2     start:0x803E7428 end:0x803E7440
 
-main/dll/dll_02B7_mcupgrade.c:
+dlls/objects/695_MCUpgrade/MCUpgrade.c:
 	.text       start:0x80238FA4 end:0x80239114
 	.data       start:0x8032BF40 end:0x8032BF78
 

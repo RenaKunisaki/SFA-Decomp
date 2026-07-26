@@ -738,7 +738,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2B4 | CNTcounter | COMPLETE | main/dll/dll_02B4_cntcounter.c | = (canonical) | — |
 | 0x2B5 | Timer (+CNTstopwatc) | COMPLETE | main/dll/dll_02B5_timer.c | = (canonical) | — |
 | 0x2B6 | CNThitObjec (+CNTColideOb, DR_TowerSwi) | CONFIRMED | main/dll/dll_02B6_cnthitobjec.c | = (canonical) | — |
-| 0x2B7 | MCUpgrade | COMPLETE | main/dll/dll_02B7_mcupgrade.c | = (canonical) | — |
+| 0x2B7 | MCUpgrade | COMPLETE | dlls/objects/695_MCUpgrade/MCUpgrade.c | = (canonical) | — |
 | 0x2B8 | MCUpgradeMa | CONFIRMED | dlls/objects/696_MCUpgradeMa/MCUpgradeMa.c | = (canonical) | — |
 | 0x2B9 | MCStaffEffe | CONFIRMED | dlls/objects/697_MCStaffEffe/MCStaffEffe.c | = (canonical) | — |
 | 0x2BA | MCLightning | CONFIRMED | dlls/objects/698_MCLightning/MCLightning.c | = (canonical) | — |
