@@ -467,7 +467,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A5 | NW_levcontr | COMPLETE | dlls/objects/421_NW_levcontr/NW_levcontr.c | = (canonical) | — |
 | 0x1A6 | SH_tricky | COMPLETE | dlls/objects/422_SH_tricky/SH_tricky.c | = (canonical) | — |
 | 0x1A7 | — | NO-RETAIL-NAME | dlls/objects/423/423.c | = (canonical) | — |
-| 0x1A8 | SH_killermushroom | GUESSED | main/dll/dll_01A8_shkillermushroom.c | main/dll/SH/dll_01A8_shkillermushroom.c | — |
+| 0x1A8 | SH_killermu | COMPLETE | dlls/objects/424_SH_killermu/SH_killermu.c | = (canonical) | — |
 | 0x1A9 | BombPlant | COMPLETE | main/dll/dll_01A9_bombplant.c | = (canonical) | — |
 | 0x1AA | BombPlantSpore | CONFIRMED | main/dll/dll_01AA_bombplantspore.c | = (canonical) | — |
 | 0x1AB | BombPlantingspot | CONFIRMED | main/dll/dll_01AB_bombplantingspot.c | = (canonical) | — |
@@ -804,7 +804,7 @@ name was a deliberate choice by a previous carve:
 | 0x1A2 | main/dll/dll_01A2_nwtricky.c | dlls/objects/418_NW_tricky/NW_tricky.c | COMPLETE |
 | 0x1A5 | main/dll/dll_01A5_nwlevcontrol.c | dlls/objects/421_NW_levcontr/NW_levcontr.c | COMPLETE |
 | 0x1A6 | main/dll/dll_01A6_shtricky.c | dlls/objects/422_SH_tricky/SH_tricky.c | COMPLETE |
-| 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | main/dll/SH/dll_01A8_shkillermushroom.c | GUESSED |
+| 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | dlls/objects/424_SH_killermu/SH_killermu.c | COMPLETE |
 | 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | main/dll/SH/dll_01AC_shqueenearthwalker.c | CONFIRMED |
 | 0x1AD | main/dll/dll_01AD_shthorntail.c | main/dll/SH/dll_01AD_shthorntail.c | CONFIRMED |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | main/dll/SH/dll_01AE_shlevelcontrol.c | CONFIRMED |
@@ -983,7 +983,7 @@ blocked units will surface more when carved.
 | 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
 | 0x1A0 | dlls/objects/416_NW_geyser/NW_geyser.c | include/main/dll/dll_01A0_nwgeyser.h |
 | 0x1A1 | dlls/objects/417/417.c | include/main/dll/dll_01A1_nwmammoth.h |
-| 0x1A8 | main/dll/dll_01A8_shkillermushroom.c | include/main/dll/dll_01A8_shkillermushroom.h |
+| 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/main/dll/dll_01A8_shkillermushroom.h |
 | 0x1AC | main/dll/dll_01AC_shqueenearthwalker.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |
 | 0x1B0 | main/dll/dll_01B0_shswapston.c | include/main/dll/SH/dll_01B0_shswapston.h |

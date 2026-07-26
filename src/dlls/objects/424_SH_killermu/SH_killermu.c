@@ -1,5 +1,5 @@
 /*
- * shkillermushroom (DLL 0x1A8) - the large red poisonous mushroom enemy
+ * SH_killermu (DLL 0x1A8) - the large red poisonous mushroom enemy
  * rooted in the ground in ThornTail Hollow. It is always visible and never
  * chases; when the player runs close it shakes in place and spreads a growing
  * cloud of poison that damages anyone inside its radius. Striking it knocks it

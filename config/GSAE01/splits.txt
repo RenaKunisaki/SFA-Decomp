@@ -2882,10 +2882,7 @@ dlls/objects/423/423.c:
 	.data       start:0x80326BD0 end:0x80326C78
 	.sdata2     start:0x803E5288 end:0x803E52F8
 
-main/dll/DIM/dim_boss.c:
-	.text       start:0x801D1BFC end:0x801D1BFC
-
-main/dll/SH/dll_01A8_shkillermushroom.c:
+dlls/objects/424_SH_killermu/SH_killermu.c:
 	.text       start:0x801D1BFC end:0x801D286C
 	.data       start:0x80326C78 end:0x80326D20
 	.sdata2     start:0x803E52F8 end:0x803E5354
