@@ -1782,7 +1782,7 @@ dlls/objects/238_EffectBox/EffectBox.c:
 	.data       start:0x80320D10 end:0x80320D48
 	.sdata2     start:0x803E3508 end:0x803E3528
 
-main/dll/dll_00EF_pushable.c:
+dlls/objects/239/239.c:
 	.text       start:0x80174438 end:0x80176FC4
 	.rodata     start:0x802C2270 end:0x802C2280
 	.data       start:0x80320D48 end:0x80320DB8

@@ -1,4 +1,4 @@
-/* DLL 0xEF - pushable object [80174A80-801755CC) */
+/* DLL 0xEF - pushable object family */
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "sys/objects.h"
