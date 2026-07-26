@@ -1,15 +1,17 @@
 /*
- * dimsnowball (DLL 0x1C1) - DIM snowball rolling hazard; follows a spline
+ * DIMSnowBall (DLL 0x1C1) - DIM snowball rolling hazard; follows a spline
  * path defined by gDimSnowballCoords, plays a jingle on sharp course changes,
  * and drives a hit-detect object that clears its target on impact.
  */
-#include "main/dll/linklevcontrolstate_struct.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
-#include "main/dll/lavaball1bfstate_struct.h"
-#include "main/dll/imspacethrusterstate_struct.h"
-#include "main/dll/lavaball1bestate_struct.h"
-#include "main/dll/imanimspacecraftstate_struct.h"
+#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "game/objects/object.h"
+#include "sys/objects/lifecycle.h"
+#include "dlls/object_descriptor.h"
+#include "main/object_render.h"
+#include "main/audio/sfx.h"
 
 typedef struct DimsnowballState
 {
@@ -41,24 +43,6 @@ typedef struct DimSnowballDef
     u8 unk0[0x14];
     int targetId;
 } DimSnowballDef;
-
-STATIC_ASSERT(sizeof(ImAnimSpacecraftState) == 0x4);
-
-STATIC_ASSERT(sizeof(ImSpaceThrusterState) == 0xC);
-
-STATIC_ASSERT(sizeof(LinkLevControlState) == 0x10);
-
-STATIC_ASSERT(sizeof(Lavaball1beState) == 0x14);
-
-STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
-
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "dlls/object_descriptor.h"
-#include "main/object_render.h"
-#include "main/audio/sfx.h"
 
 s16 lbl_803DBEE8 = 0x3E6;
 
@@ -123,7 +107,7 @@ void dimsnowball_update(GameObject* obj)
     player = Obj_GetPlayerObject();
     if (*(void**)state == NULL)
     {
-            Obj_FreeObject(obj);
+        Obj_FreeObject(obj);
         return;
     }
     frames = framesThisStep;
@@ -272,7 +256,7 @@ void dimsnowball_initialise(void)
 {
 }
 
-/* .data 0x80323BC0-0x80325360 */
+/* Spline path coordinates. */
 s16 gDimSnowballCoords[2994] = {
     0,     0,      0,      26,    0,      -54,    52,    0,      -109,   78,    0,      -164,   104,   0,      -219,
     130,   0,      -274,   156,   0,      -329,   182,   0,      -384,   208,   0,      -439,   234,   0,      -494,
@@ -476,22 +460,19 @@ s16 gDimSnowballCoords[2994] = {
     23520, -16375, 5300,   23548, -16520, 5358,   23577, -16667, 5416,
 };
 
-ObjectDescriptor10WithPadding gDIMSnowBallObjDescriptor = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-        (ObjectDescriptorCallback)dimsnowball_initialise,
-        (ObjectDescriptorCallback)dimsnowball_release,
-        0,
-        (ObjectDescriptorCallback)dimsnowball_init,
-        (ObjectDescriptorCallback)dimsnowball_update,
-        (ObjectDescriptorCallback)dimsnowball_hitDetect,
-        (ObjectDescriptorCallback)dimsnowball_render,
-        (ObjectDescriptorCallback)dimsnowball_free,
-        (ObjectDescriptorCallback)dimsnowball_getObjectTypeId,
-        dimsnowball_getExtraSize,
-    },
+ObjectDescriptor gDIMSnowBallObjDescriptor = {
     0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dimsnowball_initialise,
+    (ObjectDescriptorCallback)dimsnowball_release,
+    0,
+    (ObjectDescriptorCallback)dimsnowball_init,
+    (ObjectDescriptorCallback)dimsnowball_update,
+    (ObjectDescriptorCallback)dimsnowball_hitDetect,
+    (ObjectDescriptorCallback)dimsnowball_render,
+    (ObjectDescriptorCallback)dimsnowball_free,
+    (ObjectDescriptorCallback)dimsnowball_getObjectTypeId,
+    dimsnowball_getExtraSize,
 };

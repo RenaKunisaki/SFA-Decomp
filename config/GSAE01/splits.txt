@@ -2508,9 +2508,9 @@ dlls/objects/448_DIMLogFire/DIMLogFire.c:
 	.data       start:0x80323B88 end:0x80323BC0
 	.sdata2     start:0x803E4820 end:0x803E4848
 
-main/dll/DIM/dll_01C1_dimsnowball.c:
+dlls/objects/449_DIMSnowBall/DIMSnowBall.c:
 	.text       start:0x801B0DD4 end:0x801B13E8
-	.data       start:0x80323BC0 end:0x80325360
+	.data       start:0x80323BC0 end:0x8032535C
 	.sdata      start:0x803DBEE8 end:0x803DBEEA
 	.sdata2     start:0x803E4848 end:0x803E4860
 

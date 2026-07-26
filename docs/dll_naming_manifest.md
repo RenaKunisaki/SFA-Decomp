@@ -492,7 +492,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | COMPLETE | dlls/objects/446/446.c | = (canonical) | No single recovered TU basename |
 | 0x1BF | DIMLavaBall | COMPLETE | dlls/objects/447_DIMLavaBall/DIMLavaBall.c | = (canonical) | — |
 | 0x1C0 | DIMLogFire (+DIMLogFireR) | COMPLETE | dlls/objects/448_DIMLogFire/DIMLogFire.c | = (canonical) | — |
-| 0x1C1 | DIMSnowBall | CONFIRMED | main/dll/dll_01C1_dimsnowball.c | main/dll/DIM/dll_01C1_dimsnowball.c | — |
+| 0x1C1 | DIMSnowBall | COMPLETE | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | = (canonical) | — |
 | 0x1C2 | DIMSnowBall1c2 | CONFIRMED | main/dll/dll_01C2_dimsnowball1c2.c | main/dll/DIM/dll_01C2_dimsnowball1c2.c | — |
 | 0x1C3 | DIMGate (+DIM2BossDoo) | COMPLETE | main/dll/dll_01C3_dimgate.c | main/dll/DIM/dll_01C3_dimgate.c | — |
 | 0x1C4 | DIMIceWall | COMPLETE | main/dll/dll_01C4_dimicewall.c | main/dll/DIM/dll_01C4_dimicewall.c | — |
@@ -826,7 +826,7 @@ name was a deliberate choice by a previous carve:
 | 0x1BE | main/dll/dll_01BE_dimlava.c | dlls/objects/446/446.c | COMPLETE |
 | 0x1BF | main/dll/dll_01BF_dimlavaball.c | dlls/objects/447_DIMLavaBall/DIMLavaBall.c | COMPLETE |
 | 0x1C0 | main/dll/dll_01C0_dimlogfire.c | dlls/objects/448_DIMLogFire/DIMLogFire.c | COMPLETE |
-| 0x1C1 | main/dll/dll_01C1_dimsnowball.c | main/dll/DIM/dll_01C1_dimsnowball.c | CONFIRMED |
+| 0x1C1 | main/dll/dll_01C1_dimsnowball.c | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | COMPLETE |
 | 0x1C2 | main/dll/dll_01C2_dimsnowball1c2.c | main/dll/DIM/dll_01C2_dimsnowball1c2.c | CONFIRMED |
 | 0x1C3 | main/dll/dll_01C3_dimgate.c | main/dll/DIM/dll_01C3_dimgate.c | COMPLETE |
 | 0x1C4 | main/dll/dll_01C4_dimicewall.c | main/dll/DIM/dll_01C4_dimicewall.c | COMPLETE |
