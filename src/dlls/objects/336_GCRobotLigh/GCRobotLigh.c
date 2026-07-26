@@ -1,7 +1,7 @@
 /*
- * DLL 0x150 - GCRobotLight (retail object name "GCRobotLigh[t]"), the
- * electric scanning-beam of CloudRunner Fortress. It is spawned as the
- * child of a GCRobotPatrol robot (the patrolling enemy run by
+ * GCRobotLigh (DLL 0x150) - the electric scanning-beam of CloudRunner
+ * Fortress. It is spawned as the child of a GCRobotPatrol robot (the
+ * patrolling enemy run by
  * dll_00C9_enemy.c, placed in CloudRunner Fortress / fortress.romlist):
  * gcrobotlightbea_update aims a point light along a traced vector (the
  * beam) and gcrobotlightbea_hitDetect flags "player caught in the beam"

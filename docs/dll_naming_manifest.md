@@ -379,7 +379,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x14D | LaserBeam | COMPLETE | dlls/objects/333_LaserBeam/LaserBeam.c | = (canonical) | data-only DLL |
 | 0x14E | CFPrisonGua | CONFIRMED | dlls/objects/334_CFPrisonGua/CFPrisonGua.c | = (canonical) | — |
 | 0x14F | CFPrisonUnc | CONFIRMED | dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c | = (canonical) | — |
-| 0x150 | GCRobotLightbea | CONFIRMED | main/dll/dll_0150_gcrobotlightbea.c | = (canonical) | — |
+| 0x150 | GCRobotLigh | CONFIRMED | dlls/objects/336_GCRobotLigh/GCRobotLigh.c | = (canonical) | — |
 | 0x151 | CFScalesGal | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x152 | CF_ObjCreat | RAW | *(none)* | — | no .text fns (descriptor data only) |
 | 0x153 | CFPerch | COMPLETE | main/dll/dll_0153_cfperch.c | main/dll/CF/dll_0153_cfperch.c | — |
