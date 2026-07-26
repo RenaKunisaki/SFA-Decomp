@@ -1893,7 +1893,7 @@ main/dll/dll_0117_appleontree_update.c:
 	.text       start:0x8017DAF0 end:0x8017EC10
 	.data       start:0x803214DC end:0x80321530
 
-main/dll/dll_00FC_babycloudrunner.c:
+dlls/objects/252/252.c:
 	.text       start:0x8017EC10 end:0x8017EF6C
 	.sdata2     start:0x803E3848 end:0x803E3850
 

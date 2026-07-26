@@ -297,7 +297,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0F9 | ProjectileSwitch (+DRProjectil) | CONFIRMED | dlls/objects/249/249.c | = (canonical) | — |
 | 0x0FA | InvisibleHitSwitch | CONFIRMED | dlls/objects/250_InvisibleHi/InvisibleHi.c | = (canonical) | — |
 | 0x0FB | Pressureswitchfb (+WCTemplePre, LINK_SnowPr, LINK_UnderW, CC_Pressure, SH_Pressure, SC_Pressure, VFP_PuzzleP, GroundQuake) | CONFIRMED | dlls/objects/251/251.c | = (canonical) | — |
-| 0x0FC | — | NO-RETAIL-NAME | main/dll/dll_00FC_babycloudrunner.c | = (canonical) | — |
+| 0x0FC | — | NO-RETAIL-NAME | dlls/objects/252/252.c | = (canonical) | — |
 | 0x0FD | — | NO-RETAIL-NAME | main/dll/dll_00FD.c | = (canonical) | — |
 | 0x0FE | MagicPlant | COMPLETE | main/dll/dll_00FE_magicplant.c | = (canonical) | — |
 | 0x0FF | MagicDust (+MagicDustSm, MagicDustMi, MagicDustLa, MagicDustHu) | CONFIRMED | main/dll/dll_00FF_magicdust.c | = (canonical) | — |
