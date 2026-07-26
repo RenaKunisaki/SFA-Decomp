@@ -1952,6 +1952,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/611_GM_MazeWell/GM_MazeWell.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/612/612.c", cflags=cflags_dll_noopt),
             Object(Matching, "dlls/objects/614_KytesMum/KytesMum.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/615/615.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/613_DR_Creator/DR_Creator.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0269_explodeplan.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0268_drcagecontrol.c", cflags=cflags_dll_noopt),
