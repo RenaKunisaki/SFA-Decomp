@@ -64,8 +64,4 @@ ObjectDescriptor gPlatform1ObjDescriptor = {
 
 char sPlatform1DrawNoLongerSupported[] = "<platform1 draw>No Longer supported \n";
 char sPlatform1ControlNoLongerSupported[] = "<platform1 control>No Longer supported \n";
-/* Explicit length 44 (string data is 38 bytes; NUL-fill supplies the 6-byte
- * retail pad gap_07_80329DCA_data) so .data ends 8-aligned at +0xB8 as in
- * retail. The 2-/3-byte gaps after the first two strings are ordinary 4-byte
- * object alignment and need no explicit padding. */
 char sPlatform1InitNoLongerSupported[] = "<platform1 Init>No Longer supported \n";
