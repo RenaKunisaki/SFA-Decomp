@@ -745,7 +745,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2BB | GF_LevelCon | CONFIRMED | main/dll/dll_02BB_gflevelcon.c | = (canonical) | — |
 | 0x2BC | Andross | COMPLETE | main/dll/dll_02BC_andross.c | = (canonical) | — |
 | 0x2BD | androsshand (+Androssleft, Androssrigh) | CONFIRMED | main/dll/dll_02BD_androsshand.c | = (canonical) | — |
-| 0x2BE | AndrossBrain | CONFIRMED | main/dll/dll_02BE_androssbrain.c | = (canonical) | — |
+| 0x2BE | AndrossBrai | CONFIRMED | dlls/objects/702_AndrossBrai/AndrossBrai.c | = (canonical) | — |
 | 0x2BF | AndrossLigh | CONFIRMED | dlls/objects/703_AndrossLigh/AndrossLigh.c | = (canonical) | — |
 | 0x2C0 | — (+Front, FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet) | NO-RETAIL-NAME | dlls/objects/704/704.c | = (canonical) | — |
 
