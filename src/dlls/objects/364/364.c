@@ -1,5 +1,5 @@
 /*
- * dll_16C - map-event boulder proxy object (object type id 0x3, extra size 0x24).
+ * DLL 0x16C - map-event boulder proxy object (object type id 0x3, extra size 0x24).
  *
  * Drives a "boulder" GameObject that mirrors a separately-spawned map-event
  * sub-object: on update it relinks to a member of object group 10 chosen by

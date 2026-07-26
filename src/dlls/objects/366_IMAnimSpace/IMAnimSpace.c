@@ -1,5 +1,5 @@
 /*
- * imanimspacecraft (DLL 0x16E) - the animated SpaceCraft cinematic
+ * IMAnimSpace (DLL 0x16E) - the animated SpaceCraft cinematic
  * object on the Ice Mountain map.
  *
  * Its animation sequence (imanimspacecraft_SeqFn) toggles a set of

@@ -412,7 +412,7 @@ tree — it doesn't, in every case checked:
   `0x1E8`).
 - ObjType `008C SB_Cloudrun` — `src/main/dll/dll_008C_dll8cfunc0.c` is likewise a foodbag effect; the
   actual Cloudrunner-mount object is `src/main/dll/SB/dll_0259_sbcloudrunner.c` (DLL `0x259`).
-- ObjType `0168 IMAnimSpace` — the real object is `src/main/dll/IM/dll_016E_imanimspacecraft.c` (DLL
+- ObjType `0168 IMAnimSpace` — the real object is `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` (DLL
   `0x16E`), off by 6 from the wiki's `ObjType`.
 - Confirmed directly in-tree: `src/main/dll/SB/dll_01F0_sbkytecage.c:32-33` defines
   `#define SB_KYTE_OBJECT_TYPE 0x121` for a child object it looks up — that object's own DLL is
@@ -432,7 +432,7 @@ manually verified by reading the file, not by name-guessing):
 | `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/main/dll/NW/dll_019F_nwtreebrid.c` |
 | `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/main/dll/DIM/dll_01CB_dimwooddoor2.c`, `dimwooddoor.c` |
 | `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/main/dll/DIM/dll_01DC_dim2icefloe.c` |
-| `imspacecraft` (0x66) | `IMAnimSpace` | `src/main/dll/IM/dll_016E_imanimspacecraft.c` |
+| `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |
 | `dimbossgut` (0x67) | `DIM_BossGut` | `src/main/dll/DIM/dll_01E1_dimbossgut.c`, `dll_01E3_dimbossgut2.c` |
 | `wmcolrise` (0x68) | `WM_colrise` | `src/main/dll/WM/dll_0201_wmcolrise.c` |
 | `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/main/dll/WC/dll_0290_wcpushblock.c`, `wcpushblock.c` |
