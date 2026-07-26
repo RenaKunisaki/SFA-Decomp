@@ -3948,7 +3948,7 @@ dlls/objects/673_ARWLevelCon/ARWLevelCon.c:
 	.data       start:0x8032B7D0 end:0x8032B808
 	.sdata2     start:0x803E70E0 end:0x803E70F8
 
-main/dll/ARW/dll_02A2_arwspeedstr.c:
+dlls/objects/674_ARWSpeedStr/ARWSpeedStr.c:
 	.text       start:0x80230E2C end:0x80231028
 	.data       start:0x8032B808 end:0x8032B840
 	.sdata2     start:0x803E70F8 end:0x803E7110

@@ -1,5 +1,5 @@
 /*
- * arwspeedstr (DLL 0x2A2) - the streaking "speed line" particles that fly
+ * ARWSpeedStr (DLL 674) - the streaking "speed line" particles that fly
  * past the camera during the on-rails Arwing sections, conveying forward
  * speed. On first update each streak picks a random spread offset in
  * camera space, transforms it through the inverse view matrix into world
