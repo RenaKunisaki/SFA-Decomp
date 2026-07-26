@@ -100,7 +100,7 @@ extern Mtx44 hudMatrix;
 
 void initViewport(void)
 {
-    C_MTXOrtho(hudMatrix, lbl_803DEA70, lbl_803DEA88, lbl_803DEA70, lbl_803DEA8C, lbl_803DEA78, lbl_803DEA90);
+    C_MTXOrtho(hudMatrix, 0.0f, 480.0f, 0.0f, 640.0f, 1.0f, 100.0f);
 }
 void videoInit(void* wpad0, int wpad1)
 {
@@ -108,16 +108,14 @@ void videoInit(void* wpad0, int wpad1)
     f32 mtx[3][4];
     u8* arenaLo;
     u8* arenaHi;
-    u32 fifoSize;
     int fbSize;
     arenaLo = OSGetArenaLo();
     arenaHi = OSGetArenaHi();
     memcpy(arenaHi - 0x40000, gLoadingScreenTextures, 0x40000);
     DCStoreRange(arenaHi - 0x40000, 0x40000);
-    fifoSize = 0x40000;
-    lbl_803DCCE4 = (void*)fifoSize;
+    lbl_803DCCE4 = (void*)0x40000;
     lbl_803DCCD8 = gLoadingScreenTextures;
-    DCInvalidateRange(lbl_803DCCD8, fifoSize);
+    DCInvalidateRange(lbl_803DCCD8, (u32)lbl_803DCCE4);
     lbl_803DCCD4 = GXInit(lbl_803DCCD8, (u32)lbl_803DCCE4);
     lbl_803DCCE0 = lbl_803DCCD8;
     GXSetDispCopySrc(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
@@ -466,242 +464,4 @@ void waitNextFrame(void)
     Camera_ApplyFullViewport();
     GXInvalidateVtxCache();
     GXInvalidateTexAll();
-}
-
-int pathSearchNodeMatchesTarget(int* ctx, int* ref)
-{
-    int* node;
-    int target;
-    target = ctx[4];
-    node = (int*)ref[0];
-    switch (((s8*)node)[0x19])
-    {
-    case 0x24:
-    {
-        u8 idx = ((u8*)ref)[0xc];
-        if ((idx & 0x80) == 0)
-        {
-            if (((u8*)node)[3] != 0)
-            {
-                return target == ((u8*)node)[3];
-            }
-            else
-            {
-                int* p;
-                int* arr;
-                int i;
-                arr = (int*)*(int*)((char*)ctx[0] + (idx << 4));
-                for (i = 0, p = arr; i < 4; i++)
-                {
-                    if ((u32)node[5] == *(u32*)((char*)p + 0x1c))
-                    {
-                        return target == ((u8*)arr)[i + 4];
-                    }
-                    p++;
-                }
-            }
-        }
-        return 0;
-    }
-    default:
-        return target == (int)node;
-    }
-}
-
-void pathSearchHeapSiftDown(u8* arr, int size, int idx)
-{
-    u16* h = (u16*)arr;
-    int half;
-    u8* childptr;
-    u32 key = *(u32*)((int)arr + idx * 8);
-    u16 val = h[idx * 4 + 2];
-    int child;
-    u8* cp;
-    half = size >> 1;
-    while (idx <= half)
-    {
-        child = idx + idx;
-        if (child < size)
-        {
-            cp = arr + child * 8;
-            if (*(u32*)cp < *(u32*)(cp + 8))
-            {
-                child++;
-            }
-        }
-        childptr = arr + child * 8;
-        if (key >= *(u32*)childptr)
-            break;
-        *(u32*)(arr + idx * 8) = *(u32*)childptr;
-        *(u16*)(arr + idx * 8 + 4) = *(u16*)(childptr + 4);
-        idx = child;
-    }
-    *(u32*)((int)arr + idx * 8) = key;
-    h[idx * 4 + 2] = val;
-}
-
-
-extern GXTexObj lbl_803779A0;
-
-
-int pathSearchNodeMatchesTarget(int* ctx, int* ref);
-void pathSearchHeapSiftDown(u8* arr, int size, int idx);
-static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)
-{
-    int i;
-    u16 idx16;
-    u32 key;
-    int parent;
-    u32* heap;
-    u16* hh;
-    heap = (u32*)search->heap;
-    hh = (u16*)search->heap;
-    hh[++search->heapSize * 4 + 2] = index;
-    *(u32*)((int)heap + search->heapSize * 8) = pri;
-    i = search->heapSize;
-    key = *(u32*)((int)heap + i * 8);
-    idx16 = hh[i * 4 + 2];
-    *heap = -1;
-    while (parent = i >> 1, *(u32*)(hh + parent * 4) < key)
-    {
-        *(u16*)((int)heap + i * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
-        *(u32*)((int)heap + i * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
-        i = parent;
-    }
-    *(u32*)((int)heap + i * 8) = key;
-    hh[i * 4 + 2] = idx16;
-}
-
-static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, int* countOut, int* visitedOut)
-{
-    int index = 0;
-    int offset = 0;
-    int n;
-
-    *countOut = search->nodeCount;
-    for (n = *countOut; n > 0; n--)
-    {
-        PathSearchNode* scanNode = (PathSearchNode*)((u8*)search->nodes + offset);
-        if (scanNode->point == point)
-        {
-            *visitedOut = scanNode->visited;
-            return index;
-        }
-        offset += 0x10;
-        index++;
-    }
-    return -1;
-}
-
-void pathSearchEnqueuePoint(int* q, int* elem, int idx, u32 d, char* obj)
-{
-    PathSearch* search = (PathSearch*)q;
-    PathPoint* point = (PathPoint*)obj;
-    int pos;
-    u16* hh;
-    int cnt2;
-    PathSearchNode* node;
-    u32* heap;
-    int z[2];
-    PathSearchNode* node4;
-    int visited;
-    int cnt;
-    if (pathSearchNodeMatchesTarget(q, elem) != 0)
-    {
-        cnt = search->nodeCount;
-        if (cnt != 0xfe)
-        {
-            node = &search->nodes[search->nodeCount++];
-            node->point = point;
-            node->routeDistance = d;
-            node->parentIndex = (u16)idx;
-            node->distanceToTarget = (u32)vec3f_distanceSquared(node->point->position, search->targetPosition);
-        }
-        pathSearchHeapInsert(search, cnt, 0xfffffffe);
-    }
-    z[0] = pathSearchFindPointNode(search, point, &cnt2, &visited);
-    if (z[0] >= 0 && visited == 0)
-    {
-        PathSearchNode* node3 = &search->nodes[z[0]];
-        if (d < node3->routeDistance)
-        {
-            u32 newpri;
-            int s2;
-            int j;
-            u16 target;
-            u32* entry;
-            u32 old;
-            node3->parentIndex = idx;
-            node3->routeDistance = d;
-            newpri = node3->distanceToTarget + node3->routeDistance;
-            s2 = search->heapSize;
-            heap = (u32*)search->heap;
-            hh = (u16*)heap;
-            j = 0;
-            target = z[0];
-            for (; j <= s2; j++)
-            {
-                if (target == *(u16*)(heap + j * 2 + 1))
-                {
-                    pos = j;
-                    j = s2 + 1;
-                }
-            }
-            entry = heap + pos * 2;
-            old = *entry;
-            *entry = newpri;
-            if (newpri < old)
-            {
-                pathSearchHeapSiftDown((u8*)heap, s2, pos);
-            }
-            else if (newpri > old)
-            {
-                u32 pri = *entry;
-                u16 idx16 = ((u16*)entry)[2];
-                int parent;
-                *heap = -1;
-                while (parent = pos >> 1, *(u32*)(hh + parent * 4) < pri)
-                {
-                    *(u16*)((int)heap + pos * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
-                    *(u32*)((int)heap + pos * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
-                    pos = parent;
-                }
-                *(u32*)((int)heap + pos * 8) = pri;
-                hh[pos * 4 + 2] = idx16;
-            }
-        }
-    }
-    else if (z[0] < 0)
-    {
-        if (cnt2 == 0xfe)
-        {
-            node4 = NULL;
-        }
-        else
-        {
-            node4 = &search->nodes[search->nodeCount++];
-            node4->point = point;
-            node4->routeDistance = d;
-            node4->parentIndex = (u16)idx;
-            node4->distanceToTarget = (u32)vec3f_distanceSquared(node4->point->position, search->targetPosition);
-        }
-        if (node4 != NULL)
-        {
-            if (node4->distanceToTarget > search->closestDistance)
-            {
-                u32 newpri = node4->distanceToTarget + node4->routeDistance;
-                pathSearchHeapInsert(search, cnt2, -1 - newpri);
-            }
-            else
-            {
-                u32 newpri;
-                if (node4->distanceToTarget < search->closestDistance)
-                {
-                    search->closestDistance = node4->distanceToTarget;
-                }
-                newpri = node4->distanceToTarget + node4->routeDistance;
-                pathSearchHeapInsert(search, cnt2, -1 - newpri);
-            }
-        }
-    }
 }

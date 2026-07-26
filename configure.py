@@ -471,6 +471,12 @@ cflags_dll_noopt_noloopinv_zerodata = [
     '-pragma "explicit_zero_data on"',
 ]
 
+cflags_dll_noopt_noloopinv_noprop_zerodata = [
+    *cflags_base,
+    "-opt", "nopeephole,noschedule,noloopinvariants,nopropagation",
+    '-pragma "explicit_zero_data on"',
+]
+
 # ...plus register-lifetime optimization off (opt_lifetimes off).
 cflags_dll_noopt_nolifetimes_noautoinline = [
     *cflags_base,
@@ -1211,7 +1217,7 @@ config.libs = [
             Object(NonMatching, "main/objprint.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/objprint_dolphin.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/pi_dolphin.c", cflags=[*cflags_dll_noopt_noloopinv_zerodata, "-inline", "noauto"]),
-            Object(NonMatching, "main/pi_videoinit.c", cflags=[*cflags_dll_noopt_noloopinv_zerodata, "-inline", "noauto"]),
+            Object(NonMatching, "main/pi_videoinit.c", cflags=[*cflags_dll_noopt_noloopinv_noprop_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/pi_pathsearch.c", cflags=[*cflags_dll_noopt_noloopinv_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/zlb.c", **zlb_object_kwargs),
             Object(NonMatching, "main/shader_dolphin.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
