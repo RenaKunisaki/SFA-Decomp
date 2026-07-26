@@ -483,19 +483,19 @@ void DR_LaserCannon_update(GameObject* obj)
                         }
                         else
                         {
-                            DrLaserCannonBeamSetup* o =
-                                (DrLaserCannonBeamSetup*)Obj_AllocObjectSetup(DR_LASERCANNON_SETUP_SIZE,
-                                                                              DR_LASERCANNON_BEAM_OBJECT_TYPE);
-                            o->objectType = DR_LASERCANNON_BEAM_OBJECT_TYPE;
-                            o->field02 = 8;
-                            o->field04 = 1;
-                            o->field06 = 0xff;
-                            o->field05 = 1;
-                            o->field07 = 0xff;
-                            o->spawnX = ((DrLaserCannonState*)spawned)->muzzleX;
-                            o->spawnY = ((DrLaserCannonState*)spawned)->muzzleY;
-                            o->spawnZ = ((DrLaserCannonState*)spawned)->muzzleZ;
-                            spawned = (int)Obj_SetupObject((ObjPlacement*)o, 5, (obj)->anim.mapEventSlot, -1, NULL);
+                            ObjPlacement* o =
+                                Obj_AllocObjectSetup(DR_LASERCANNON_SETUP_SIZE,
+                                                     DR_LASERCANNON_BEAM_OBJECT_TYPE);
+                            o->objectId = DR_LASERCANNON_BEAM_OBJECT_TYPE;
+                            o->size = 8;
+                            o->color[0] = 1;
+                            o->color[2] = 0xff;
+                            o->color[1] = 1;
+                            o->color[3] = 0xff;
+                            o->posX = ((DrLaserCannonState*)spawned)->muzzleX;
+                            o->posY = ((DrLaserCannonState*)spawned)->muzzleY;
+                            o->posZ = ((DrLaserCannonState*)spawned)->muzzleZ;
+                            spawned = (int)Obj_SetupObject(o, 5, (obj)->anim.mapEventSlot, -1, NULL);
                         }
                         if ((void*)spawned != NULL)
                         {

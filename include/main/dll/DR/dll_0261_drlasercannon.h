@@ -3,24 +3,11 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-
-typedef struct DrLaserCannonBeamSetup
-{
-    s16 objectType;
-    u8 field02;
-    u8 pad03;
-    u8 field04;
-    u8 field05;
-    u8 field06;
-    u8 field07;
-    f32 spawnX;
-    f32 spawnY;
-    f32 spawnZ;
-} DrLaserCannonBeamSetup;
+#include "game/objects/object_setup.h"
 
 typedef struct DrLaserCannonSetup
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 initialYaw;
     s8 reloadFrames;
     s16 targetRange;
@@ -37,15 +24,6 @@ typedef struct DrLaserCannonAim
     s16 pitch;
 } DrLaserCannonAim;
 
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, objectType) == 0x0);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, field02) == 0x2);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, field04) == 0x4);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, field05) == 0x5);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, field06) == 0x6);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, field07) == 0x7);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, spawnX) == 0x8);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, spawnY) == 0xc);
-STATIC_ASSERT(offsetof(DrLaserCannonBeamSetup, spawnZ) == 0x10);
 STATIC_ASSERT(offsetof(DrLaserCannonSetup, initialYaw) == 0x18);
 STATIC_ASSERT(offsetof(DrLaserCannonSetup, reloadFrames) == 0x19);
 STATIC_ASSERT(offsetof(DrLaserCannonSetup, targetRange) == 0x1a);
