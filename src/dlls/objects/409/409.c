@@ -1,4 +1,4 @@
-/* DLL 0x199 - NW shrine level controller / dll199 objects [801CA9C0-801CAD80) */
+/* DLL 0x199 */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/dll197state_struct.h"
 #include "main/frame_timing.h"

@@ -1792,7 +1792,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/407/407.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/408_NWSH_levcon/NWSH_levcon.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/symbol.c"),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0199_dll199.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/409/409.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_019A_dll19a.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_019B_dll19b.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_019C_dll19c.c", cflags=cflags_dll_noopt),
