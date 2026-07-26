@@ -81,7 +81,7 @@ The shop is implemented by three DLLs (per this repo's own [DLLs](DLLs.md) /
 | DLL id | wiki role | this repo |
 |--------|-----------|-----------|
 | `0x284` | shop item pickup/model | `src/main/dll/dll_0284_shopitem.c`, `include/main/dll/dll_0284_shopitem.h` — `shopitem_*` symbols |
-| `0x285` | the shop stall / item-table manager | `src/main/dll/SP/dll_0285_spshop.c` — `shop_*` symbols |
+| `0x285` | the shop stall / item-table manager | `src/dlls/objects/645_SPShop/SPShop.c` — `shop_*` symbols |
 | `0x286` | the ShopKeeper NPC | `src/main/dll/SP/dll_0286_spshopkeeper.c`, `include/main/dll/shopkeeperstate_struct.h` — `ShopKeeper_*` symbols |
 | `0x287` | scarab coins the ShopKeeper scatters on purchase (`OBJTYPE_SPSCARAB` = 1151) | `src/dlls/objects/647_SPScarab/SPScarab.c` |
 
@@ -128,7 +128,7 @@ typedef struct ShopItemRow
 
 ### `shop_buyItem`'s switch cases are literally the wiki's "No" column
 
-`shop_buyItem` (`src/main/dll/SP/dll_0285_spshop.c`) switches on `itemIndex` (the row's `No`) to
+`shop_buyItem` (`src/dlls/objects/645_SPShop/SPShop.c`) switches on `itemIndex` (the row's `No`) to
 apply each item's purchase effect, and the case values match the wiki table row-for-row:
 
 | `itemIndex` (switch case) | effect in this repo | wiki row `No` / item |
@@ -191,7 +191,7 @@ glance), `CC` = Cape Claw, `DIM` = DarkIce Mines, `VFP` = Volcano Force Point. O
 `GAMEBIT_ITEM_MapLV_Got` uses `LV`, but the same legend gives Lightfoot Village's prefix as `LF` —
 that one mismatch is called out here rather than papered over.)
 
-Other shop-related GameBits used directly in `dll_0285_spshop.c` and already named in
+Other shop-related GameBits used directly in `SPShop.c` and already named in
 `gamebits.h`, confirmed by literal id:
 
 - `mainSetBits(0xefe, 1)` in `shop_initBody` / `mainSetBits(3838, 0)` (`0xefe` in decimal) in
