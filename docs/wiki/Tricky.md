@@ -221,7 +221,7 @@ is unconfirmed.
 ### Exploits and bugs
 
 - **Mammoth Dismount (DarkIce Mines SnowHorn)**: the rideable SnowHorn is DLL `0x256` ->
-  `src/main/dll/DIM/dll_0256_dimsnowhorn1.c` (`DIMSnowHorn1State.mountMode`: `0` = unmounted,
+  `src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c` (`DIMSnowHorn1State.mountMode`: `0` = unmounted,
   `2` = riding; local `#define GAMEBIT_SNOWHORN_RIDING 0x3e3`, which matches
   `GAMEBIT_NW_SnowHorn03E3 = 0x3E3` in `include/main/gamebits.h:547`, commented "related to riding
   SnowHorn" despite its `NW`-prefixed name). The player-side "mounted object" pointer the wiki says isn't
@@ -231,7 +231,7 @@ is unconfirmed.
   `src/dlls/objects/195_Player/player.c` — but this
   mapping is **not independently confirmed** by tracing the specific out-of-bounds freeze check the
   wiki describes.
-- The similar Ice Mountain bike dismount: DLL for the bike is `src/main/dll/dll_0255_snowbike.c`;
+- The similar Ice Mountain bike dismount: DLL for the bike is `src/dlls/objects/597/597.c`;
   `GAMEBIT_IM_OnBike = 0xC8` (`include/main/gamebits.h`).
 - **Death Crash**: **found, exact match.** `sideCommandEnable` (`src/dlls/objects/196_Tricky/tricky.c:8293`) is a
   generic command-enqueue function taking a `targetObj` — the shape "Feed to Tricky" needs

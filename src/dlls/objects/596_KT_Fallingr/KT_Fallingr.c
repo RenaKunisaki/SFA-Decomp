@@ -1,5 +1,5 @@
 /*
- * ktfallingrocks (DLL 0x254) - a one-shot rockfall trigger that rains
+ * KT_Fallingrocks (DLL 0x254) - a one-shot rockfall trigger that rains
  * particle effects down around the player.
  *
  * Each update tick it watches a placement game bit; when the bit is set

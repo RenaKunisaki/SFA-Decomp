@@ -123,7 +123,7 @@ int drshackle_setScale(GameObject* obj, int a, int b, int c, int d, int e, int f
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
         objSetMtxFn_800412d4((u32)ObjPath_GetPointModelMtx((GameObject*)a, b));
     }
-    ObjPath_GetPointWorldPosition((GameObject*)a, b, &((GameObject*)obj)->anim.localPosX, &((GameObject*)obj)->anim.localPosY, &((GameObject*)obj)->anim.localPosZ,
+    ObjPath_GetPointWorldPosition((GameObject*)a, b, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
                                   0);
     objRenderModelAndHitVolumes(obj, c, d, e, f, (double)lbl_803E6A2C);
 
@@ -132,7 +132,7 @@ int drshackle_setScale(GameObject* obj, int a, int b, int c, int d, int e, int f
         char* entry = *(char**)a;
         if (entry != NULL)
         {
-            ObjPath_GetPointWorldPosition((GameObject*)obj, p[i + 0x1b], (f32*)(entry + 0xc),
+            ObjPath_GetPointWorldPosition(obj, p[i + 0x1b], (f32*)(entry + 0xc),
                                           (f32*)(entry + 0x10), (f32*)(entry + 0x14), 0);
         }
         a += 4;

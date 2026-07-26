@@ -364,7 +364,7 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state)
         result = (**(int (**)(int*))(*(int*)(*(int*)&((GameObject*)playerChild)->anim.dll) + 0x44))(playerChild);
         if (result != 0)
         {
-            if (((GameObject*)player)->anim.seqId != 0)
+            if (player->anim.seqId != 0)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
             }
@@ -375,7 +375,7 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state)
         }
         else
         {
-            if (((GameObject*)player)->anim.seqId != 0)
+            if (player->anim.seqId != 0)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
             }
@@ -650,7 +650,7 @@ void chukChuk_acquireTarget(GameObject* obj, int state, int target)
     }
     else
     {
-        void* player = Obj_GetPlayerObject();
+        GameObject* player = Obj_GetPlayerObject();
         f32 dist;
         struct
         {
@@ -659,9 +659,9 @@ void chukChuk_acquireTarget(GameObject* obj, int state, int target)
         f32* dp = &d.x;
         if (player != NULL)
         {
-            d.x = ((GameObject*)player)->anim.worldPosX - obj->anim.worldPosX;
-            d.y = ((GameObject*)player)->anim.worldPosY - obj->anim.worldPosY;
-            d.z = ((GameObject*)player)->anim.worldPosZ - obj->anim.worldPosZ;
+            d.x = player->anim.worldPosX - obj->anim.worldPosX;
+            d.y = player->anim.worldPosY - obj->anim.worldPosY;
+            d.z = player->anim.worldPosZ - obj->anim.worldPosZ;
             dist = sqrtf(d.z * d.z + (d.x * d.x + d.y * d.y));
         }
         else
@@ -682,7 +682,7 @@ void chukChuk_acquireTarget(GameObject* obj, int state, int target)
 
 void chukChuk_updateTargeting(GameObject* obj, int state, int target)
 {
-    void* player;
+    GameObject* player;
     char* targetObj;
     int result;
     struct
@@ -719,7 +719,7 @@ void chukChuk_updateTargeting(GameObject* obj, int state, int target)
 
     if (result != 0)
     {
-        void* pc8 = ((GameObject*)player)->childObjs[0];
+        void* pc8 = player->childObjs[0];
         (*(void (**)(void*))(**(int**)&((GameObject*)pc8)->anim.dll + 0x50))(pc8);
     }
 }

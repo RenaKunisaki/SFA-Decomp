@@ -440,23 +440,23 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
     u8* p = (obj)->extra;
     DrakorHoverpadFlags* f = (DrakorHoverpadFlags*)(p + 0x178);
     DrakorHoverpadPathFlags* g = (DrakorHoverpadPathFlags*)(p + 0x179);
-    int player;
+    GameObject* player;
     f32 shakeMag;
     f32 absP;
     f32 cur;
     f32 half;
 
     half = 0.5f;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     *(int*)out = -1;
     switch (eventCode)
     {
     case 1:
-        player = (int)Obj_GetPlayerObject();
+        player = Obj_GetPlayerObject();
         ((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel =
             0.8f * -((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel;
         ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-        if (((GameObject*)player)->anim.parent == (void*)obj)
+        if (player->anim.parent == (void*)obj)
         {
             Camera_EnableViewYOffset();
             if (((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel >= 0.0f)
@@ -483,11 +483,11 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             break;
         }
-        player = (int)Obj_GetPlayerObject();
+        player = Obj_GetPlayerObject();
         ((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel =
             0.8f * -((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel;
         ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-        if (((GameObject*)player)->anim.parent == (void*)obj)
+        if (player->anim.parent == (void*)obj)
         {
             Camera_EnableViewYOffset();
             if (((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel >= 0.0f)
@@ -585,7 +585,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             break;
         }
-        if (((GameObject*)player)->anim.parent != (void*)obj)
+        if (player->anim.parent != (void*)obj)
         {
             break;
         }
@@ -596,7 +596,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             break;
         }
-        if (((GameObject*)player)->anim.parent != (void*)obj)
+        if (player->anim.parent != (void*)obj)
         {
             break;
         }
@@ -609,11 +609,11 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         }
         if (((DrakorHoverpadState*)p)->commandSpeed >= 0.0f)
         {
-            player = (int)Obj_GetPlayerObject();
+            player = Obj_GetPlayerObject();
             ((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel =
                 0.8f * -((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel;
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-            if (((GameObject*)player)->anim.parent == (void*)obj)
+            if (player->anim.parent == (void*)obj)
             {
                 Camera_EnableViewYOffset();
                 if (((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel >= 0.0f)
@@ -635,11 +635,11 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         }
         if (((DrakorHoverpadState*)p)->commandSpeed <= 0.0f)
         {
-            player = (int)Obj_GetPlayerObject();
+            player = Obj_GetPlayerObject();
             ((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel =
                 0.8f * -((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel;
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-            if (((GameObject*)player)->anim.parent == (void*)obj)
+            if (player->anim.parent == (void*)obj)
             {
                 Camera_EnableViewYOffset();
                 if (((DrakorHoverpadHandlePathPointEventState*)p)->verticalVel >= 0.0f)

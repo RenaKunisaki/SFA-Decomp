@@ -470,7 +470,7 @@ const f32 gStaffAngleUnitScale = 32768.0f;
 
 void superQuakeFn_8016d9fc(f32* pos)
 {
-    int* player;
+    GameObject* player;
 
     if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->active != 0)
     {
@@ -485,7 +485,7 @@ void superQuakeFn_8016d9fc(f32* pos)
     ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius = 0.4f;
     ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale = 1.0f;
     CameraShake_Start(5.0f, 10.0f, 4.0f);
-    player = (int*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     if (player != NULL && Obj_IsLoadingLocked() != 0)
     {
         PartFxSpawnParams v;
@@ -508,8 +508,8 @@ void superQuakeFn_8016d9fc(f32* pos)
         ((ObjPlacement*)setup)->posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
         ((ObjPlacement*)setup)->posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
         ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object =
-            (int*)Obj_SetupObject((ObjPlacement*)setup, 5, ((GameObject*)player)->anim.mapEventSlot, -1,
-                                  ((GameObject*)player)->anim.parent);
+            (int*)Obj_SetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1,
+                                  player->anim.parent);
         if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0)
         {
             ((ObjAnimComponent*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object)->bankIndex = 1;

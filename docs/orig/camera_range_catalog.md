@@ -232,7 +232,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/maybetemplate.c` | 2086 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DF/dll_022B_dfptorch.c` | 87 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DIM/dll_019E_dim_tricky.c` | 102 | `camera = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/DIM/dll_0256_dimsnowhorn1.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 832 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 2007 | `cameraSlot = (ExpgfxCameraViewSlot*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000B_dll0b.c` | 1086 | `view = Camera_GetCurrentViewSlot();` |
@@ -254,7 +254,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/dll_b8.c` | 27 | `vs = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 47 | `view = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 204 | `view = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/DR/dll_0257_drearthwarrior.c` | 591 | `slot = (int)Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c` | 591 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/600_DR_CloudRun/DR_CloudRun.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/objfx.c` | 1227 | `f32 d = Camera_DistanceToCurrentViewPosition(` |
 | `src/main/dll/objfx.c` | 1274 | `f32 d = Camera_DistanceToCurrentViewPosition(((ObjAnimComponent*)src)->worldPosX,` |

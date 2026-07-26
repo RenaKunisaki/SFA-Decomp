@@ -1,5 +1,5 @@
 /*
- * DLL 0x0240 - GC robot-blast object [0x801FF884-0x801FF9B0).
+ * GCRobotBlast (DLL 0x240) - GC robot-blast object [0x801FF884-0x801FF9B0).
  *
  * A passive blast-effect object. Its sequence callback (GCRobotBlast_SeqFn)
  * latches the latest anim event id into the blast-fired flag (flags04 bit

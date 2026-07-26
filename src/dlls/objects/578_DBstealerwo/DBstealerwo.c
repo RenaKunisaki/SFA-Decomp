@@ -1,5 +1,5 @@
 /*
- * dbstealerworm (DLL 0x242, object type id 0x49) - a burrowing "stealer
+ * DBstealerworm (DLL 0x242, object type id 0x49) - a burrowing "stealer
  * worm" ground baddie.
  *
  * It is a GroundBaddieState/BaddieState baddie driven through the shared

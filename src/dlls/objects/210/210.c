@@ -145,15 +145,15 @@ int tumbleweed_func0E(GameObject *obj)
     return ((BackpackState*)(obj)->extra)->phase == TUMBLEWEED_PHASE_HOMING;
 }
 
-void tumbleweed_render2(int* obj, int targetPos)
+void tumbleweed_render2(GameObject* obj, int targetPos)
 {
-    int* state = ((GameObject*)obj)->extra;
+    int* state = obj->extra;
     f32 half;
     ((TumbleweedState*)state)->mode = TUMBLEWEED_PHASE_HOMING;
     *(int*)&((BackpackState*)state)->targetPos = targetPos;
     half = 0.5f;
     ((BackpackState*)state)->speed = timeDelta * half;
-    ObjHits_DisableObject((GameObject*)obj);
+    ObjHits_DisableObject(obj);
 }
 
 void tumbleweed_modelMtxFn(GameObject *obj)
@@ -226,9 +226,9 @@ void tumbleweed_free(int* obj)
     ObjGroup_RemoveObject((int)obj, TUMBLEWEED_OBJGROUP_SECONDARY);
 }
 
-void tumbleweed_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void tumbleweed_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    if ((s32)visible >= 1) objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    if ((s32)visible >= 1) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 void tumbleweed_updateStateMachine(GameObject* obj)
 {
@@ -429,7 +429,7 @@ void tumbleweed_updateStateMachine(GameObject* obj)
                 obj->anim.velocityZ = kv * ((BackpackState*)aux)->speed;
             }
             d = getXZDistance((f32*)&obj->anim.localPosX, ((BackpackState*)aux)->targetPos);
-            objMove((GameObject*)obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
+            objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
             if (getXZDistance((f32*)&obj->anim.localPosX, ((BackpackState*)aux)->targetPos) > d)
             {

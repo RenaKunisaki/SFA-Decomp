@@ -133,7 +133,7 @@ f32 gSmallBasketHitVelocity[4];
 void* gSmallBasketResource;
 
 /* Handles SmallBasket hit effects, nearby-object damage, and content drops. */
-void fn_801814D0(int obj, int arg, u8* state)
+void fn_801814D0(GameObject* obj, GameObject* arg, u8* state)
 {
     int hitWork[4];
     SmallBasketHitEffectPos effectPos;
@@ -145,13 +145,13 @@ void fn_801814D0(int obj, int arg, u8* state)
     f32 candidateY;
     f32 launchVel;
 
-    hitType = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitWork[3], &hitWork[2], (u32*)&hitWork[1],
+    hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitWork[3], &hitWork[2], (u32*)&hitWork[1],
                                                  &effectPos.x, &effectPos.y, &effectPos.z);
     if (hitType != 0)
     {
         if (hitType == 0x10)
         {
-            Obj_StartModelFadeIn((GameObject*)obj, 0x12c);
+            Obj_StartModelFadeIn(obj, 0x12c);
         }
         else
         {
@@ -164,7 +164,7 @@ void fn_801814D0(int obj, int arg, u8* state)
                     objLightFn_8009a1dc((void*)obj, lbl_803E3934, &effectPos, 4, 0);
                     if (Sfx_IsPlayingFromObject(0, SFXTRIG_staff_rocket_powerup) == 0)
                     {
-                        Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_powerup);
+                        Sfx_PlayFromObject((u32)obj, SFXTRIG_staff_rocket_powerup);
                     }
                     return;
                 }
@@ -176,10 +176,10 @@ void fn_801814D0(int obj, int arg, u8* state)
                     if (ObjHits_IsObjectEnabled((ObjAnimComponent*)*objects) != 0)
                     {
                         candidateY = ((GameObject*)*objects)->anim.localPosY;
-                        dusterY = ((GameObject*)obj)->anim.localPosY;
+                        dusterY = obj->anim.localPosY;
                         if (candidateY > dusterY && candidateY < dusterY + lbl_803DBDA8)
                         {
-                            if (Vec_xzDistance((f32*)(*objects + 0x18), (f32*)(obj + 0x18)) < lbl_803DBDA4)
+                            if (Vec_xzDistance((f32*)(*objects + 0x18), &obj->anim.worldPosX) < lbl_803DBDA4)
                             {
                                 ObjHits_RecordObjectHit((GameObject*)*objects, (GameObject*)hitWork[3], 5, 1, 0);
                             }
@@ -189,22 +189,22 @@ void fn_801814D0(int obj, int arg, u8* state)
                 }
             }
             objLightFn_8009a1dc((void*)obj, lbl_803E3934, &effectPos, 1, 0);
-            Obj_SetModelColorFadeRecursive((GameObject*)obj, 0xf, 0xc8, 0, 0, 1);
+            Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
             if (Sfx_IsPlayingFromObject(0, (u16)((CfperchState*)state)->sfxId) == 0)
             {
-                Sfx_PlayFromObject(obj, (u16)((CfperchState*)state)->sfxId);
+                Sfx_PlayFromObject((u32)obj, (u16)((CfperchState*)state)->sfxId);
             }
             ((CfperchState*)state)->disableTimer = 0x32;
             ((CfperchState*)state)->throwState = 0;
-            smallbasket_spawnContents((GameObject*)obj, (GameObject*)arg, state);
-            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            smallbasket_spawnContents(obj, arg, state);
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             launchVel = lbl_803E3938;
-            ((GameObject*)obj)->anim.velocityX = lbl_803E3938;
-            ((GameObject*)obj)->anim.velocityZ = launchVel;
+            obj->anim.velocityX = lbl_803E3938;
+            obj->anim.velocityZ = launchVel;
             ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
             if (lbl_803DBDA0 != 0)
             {
-                ObjHits_DisableObject((GameObject*)obj);
+                ObjHits_DisableObject(obj);
             }
         }
     }
@@ -1038,7 +1038,7 @@ void SmallBasket_update(GameObject* obj)
         }
         else
         {
-            fn_801814D0((int)obj, (int)player, (u8*)state);
+            fn_801814D0(obj, player, (u8*)state);
         }
         if ((state->randomTimer <= 0) && (state->carryState != 0))
         {

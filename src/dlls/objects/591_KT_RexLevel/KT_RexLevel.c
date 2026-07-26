@@ -1,5 +1,5 @@
 /*
- * ktrexlevel (DLL 0x24F) - level controller object for the SharpClaw
+ * KT_RexLevel (DLL 0x24F) - level controller object for the SharpClaw
  * T-rex (Galdon) arena in the DarkIce Mines / Krazoa region.
  *
  * On init it forces the level's sky/cloud/lighting setup, primes the

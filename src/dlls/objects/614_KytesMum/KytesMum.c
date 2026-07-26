@@ -71,7 +71,7 @@ int kytesmum_updateInteractionRangeCallback(GameObject* obj, int unused, u8* arg
     KytesMumSetup* setup = ((KytesMumObject*)obj)->setup;
     f32 dist;
     ObjHits_DisableObject(obj);
-    dist = Vec_xzDistance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX);
+    dist = Vec_xzDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX);
     if (dist < setup->interactionRange)
     {
         arg[0x90] |= 4;
@@ -101,7 +101,7 @@ int kytesmum_updateQuestStateCallback(GameObject* obj, int unused, u8* arg)
     count = 0;
     Obj_GetPlayerObject();
     runtime = (KytesMumRuntime*)(obj)->extra;
-    saveGame_saveObjectPos((GameObject*)obj);
+    saveGame_saveObjectPos(obj);
     ObjHits_DisableObject(obj);
     for (; questBits[count] != -1 && mainGetBit(questBits[count]) != 0; count++)
     {
@@ -215,7 +215,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
     }
     if ((tricky != 0 && Vec_xzDistance(&(obj)->anim.worldPosX, (f32*)((char*)tricky + 0x18)) < 40.0f) ||
         (player != 0 &&
-         Vec_xzDistance(&(obj)->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) < 40.0f))
+         Vec_xzDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) < 40.0f))
     {
         if ((obj)->anim.currentMove != 9)
         {
@@ -252,27 +252,27 @@ int kytesmum_spawnInteractionCallback(GameObject* obj)
     return 0;
 }
 
-int kytesmum_animEventCallback(int obj, int unused, ObjAnimUpdateState* animUpdate)
+int kytesmum_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     KytesMumRuntime* runtime = ((KytesMumObject*)obj)->runtime;
     KytesMumSetup* setup;
     int i;
     Obj_GetPlayerObject();
     setup = ((KytesMumObject*)obj)->setup;
-    ObjHits_EnableObject((GameObject*)obj);
-    ObjHits_RegisterActiveHitVolumeObject((GameObject*)obj);
+    ObjHits_EnableObject(obj);
+    ObjHits_RegisterActiveHitVolumeObject(obj);
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         if (animUpdate->eventIds[i] == 1 && setup->mode != 0)
         {
-            Obj_RemoveFromUpdateList((GameObject*)obj);
-            ObjHits_DisableObject((GameObject*)obj);
-            ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            Obj_RemoveFromUpdateList(obj);
+            ObjHits_DisableObject(obj);
+            obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
     }
     {
         int move2 = runtime->moveSet->moves[2];
-        int result = !dll_2E_func07((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, move2, move2);
+        int result = !dll_2E_func07(obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, move2, move2);
         return !result;
     }
 }
@@ -296,12 +296,12 @@ void kytesmum_free(int obj)
     }
 }
 
-void kytesmum_render(void* obj, int p2, int p3, int p4, int p5, char visible)
+void kytesmum_render(GameObject* obj, int p2, int p3, int p4, int p5, char visible)
 {
     f32 scale = 1.0f;
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, scale);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, scale);
     }
 }
 

@@ -284,17 +284,17 @@ void AndrossHand_update(int obj)
     case ANDROSSHAND_STATE_IDLE:
         if (changed)
         {
-            GameObject* gobj = (GameObject*)o->extra;
+            AndrossHandState* hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 0, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[0];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[0];
         }
         break;
     case ANDROSSHAND_STATE_EXIT:
         if (changed)
         {
-            GameObject* gobj = (GameObject*)o->extra;
+            AndrossHandState* hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 4, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[4];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[4];
         }
         if (o->anim.currentMoveProgress >= 1.0f)
         {
@@ -305,9 +305,9 @@ void AndrossHand_update(int obj)
     case ANDROSSHAND_STATE_ENTER:
         if (changed)
         {
-            GameObject* gobj = (GameObject*)o->extra;
+            AndrossHandState* hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 5, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[5];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[5];
         }
         if (o->anim.currentMoveProgress >= 1.0f)
         {
@@ -317,11 +317,11 @@ void AndrossHand_update(int obj)
     case ANDROSSHAND_STATE_SWIPE:
         if (changed)
         {
-            GameObject* gobj;
+            AndrossHandState* hand;
             state->soundGate = 0;
-            gobj = (GameObject*)o->extra;
+            hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 1, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[1];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[1];
         }
         {
             ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)o->anim.hitReactState;
@@ -359,11 +359,11 @@ void AndrossHand_update(int obj)
     case ANDROSSHAND_STATE_GRAB:
         if (changed)
         {
-            GameObject* gobj;
+            AndrossHandState* hand;
             state->soundGate = 0;
-            gobj = (GameObject*)o->extra;
+            hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 2, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[2];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[2];
         }
         if (state->sideFlag != 0 && o->anim.currentMoveProgress >= 1.0f)
         {
@@ -415,9 +415,9 @@ void AndrossHand_update(int obj)
     case ANDROSSHAND_STATE_SHOOT:
         if (changed)
         {
-            GameObject* gobj = (GameObject*)o->extra;
+            AndrossHandState* hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 3, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[3];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[3];
             state->shotTimer = -1;
         }
         state->shotTimer -= framesThisStep;
@@ -445,9 +445,9 @@ void AndrossHand_update(int obj)
     case ANDROSSHAND_STATE_IDLE2:
         if (changed)
         {
-            GameObject* gobj = (GameObject*)o->extra;
+            AndrossHandState* hand = o->extra;
             ObjAnim_SetCurrentMove(obj, 0, 0.0f, 0);
-            gobj->anim.localPosZ = gAndrossHandMoveAnimSpeeds[0];
+            hand->animSpeed = gAndrossHandMoveAnimSpeeds[0];
         }
         break;
     case ANDROSSHAND_STATE_DEAD:

@@ -161,7 +161,7 @@ void HighTop_initialise(void);
 int hightop_handleMotionEvent(int obj, u8 event);
 void HighTop_hitDetect(GameObject* obj);
 void HighTop_update(GameObject* obj);
-int hightop_stateHandler04(int obj, HighTopRuntime* runtime);
+int hightop_stateHandler04(GameObject* obj, HighTopRuntime* runtime);
 int hightop_stateHandler07(GameObject* obj, HighTopRuntime* runtime);
 int hightop_stateHandler09(GameObject* obj, HighTopRuntime* runtime);
 int hightop_stateHandler10(GameObject* obj, HighTopRuntime* runtime);

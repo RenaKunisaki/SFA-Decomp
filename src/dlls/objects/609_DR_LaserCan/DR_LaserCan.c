@@ -374,7 +374,7 @@ void DR_LaserCannon_update(GameObject* obj)
     int target;
     DrLaserCannonState* state = (obj)->extra;
     DrLaserCannonSetup* setup = (DrLaserCannonSetup*)(obj)->anim.placementData;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     int spawned;
     int hit;
     f32 dist;
@@ -463,7 +463,7 @@ void DR_LaserCannon_update(GameObject* obj)
         {
             if ((void*)target == (void*)player)
             {
-                objGetFirstChild((GameObject*)player);
+                objGetFirstChild(player);
             }
             switch (state->hasFirepipe)
             {

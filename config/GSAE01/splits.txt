@@ -3173,7 +3173,7 @@ main/dll/drhightop.c:
 main/dll/drpickup.c:
 	.text       start:0x801EC1AC end:0x801EC7A0
 
-main/dll/dll_0255_snowbike.c:
+dlls/objects/597/597.c:
 	.text       start:0x801EC7A0 end:0x801EE088
 	.data       start:0x8032855C end:0x80328618
 	.sdata      start:0x803DC0B8 end:0x803DC0F0
@@ -3352,27 +3352,27 @@ main/main.c:
 	.text       start:0x801FD4A8 end:0x801FE118
 	.data       start:0x803291D8 end:0x803292B8
 
-main/dll/dll_023F_dbegg.c:
+dlls/objects/575_DB_egg/DB_egg.c:
 	.text       start:0x801FE118 end:0x801FF884
 	.data       start:0x803292B8 end:0x8032933C
 	.sdata2     start:0x803E61C0 end:0x803E626C
 
-main/dll/dll_0240_gcrobotblast.c:
+dlls/objects/576_GCRobotBlas/GCRobotBlas.c:
 	.text       start:0x801FF884 end:0x801FF9B0
 	.data       start:0x80329340 end:0x80329378
 
-main/dll/dll_0241_drakorenergy.c:
+dlls/objects/577_DrakorEnerg/DrakorEnerg.c:
 	.text       start:0x801FF9B0 end:0x801FFE18
 	.data       start:0x80329378 end:0x803293B8
 	.sdata      start:0x803DC160 end:0x803DC180
 	.sdata2     start:0x803E6298 end:0x803E62A4
 
-main/dll/dll_0242_dbstealerworm.c:
+dlls/objects/578_DBstealerwo/DBstealerwo.c:
 	.text       start:0x801FFE18 end:0x80203C78
 	.data       start:0x803293B8 end:0x80329940
 	.sdata2     start:0x803E62A8 end:0x803E6390
 
-main/dll/dll_0243_dbholecontrol1.c:
+dlls/objects/579_DBHoleContr/DBHoleContr.c:
 	.text       start:0x80203C78 end:0x80204098
 	.sbss       start:0x803DDCE0 end:0x803DDCE8
 	.sdata2     start:0x803E6390 end:0x803E6398
@@ -3404,7 +3404,7 @@ main/dll/DF/dll_022B_dfptorch.c:
 	.sbss       start:0x803DDCE8 end:0x803DDCF0
 	.sdata2     start:0x803E63C8 end:0x803E63F8
 
-main/dll/DF/dll_0230_dfpwallbar.c:
+dlls/objects/560_DFP_wallbar/DFP_wallbar.c:
 	.text       start:0x80205F40 end:0x80206474
 	.data       start:0x803299D8 end:0x80329A20
 	.sdata2     start:0x803E63F8 end:0x803E6408
@@ -3419,23 +3419,23 @@ main/dll/teslagroup.c:
 	.sbss       start:0x803DDCF0 end:0x803DDCF8
 	.sdata2     start:0x803E6438 end:0x803E6450
 
-main/dll/DF/dll_0232_dfprotatep.c:
+dlls/objects/562_DFP_RotateP/DFP_RotateP.c:
 	.text       start:0x8020768C end:0x80208098
 	.sdata2     start:0x803E6450 end:0x803E647C
 
 main/dll/crate.c:
 	.text       start:0x80208098 end:0x802081F4
 
-main/dll/DF/dll_0233_dfpstatue1.c:
+dlls/objects/563_DFP_Statue1/DFP_Statue1.c:
 	.text       start:0x802081F4 end:0x8020848C
 	.data       start:0x80329AD8 end:0x80329B10
 	.sdata2     start:0x803E6480 end:0x803E6488
 
-main/dll/DF/dll_0234_dfpperchsw.c:
+dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c:
 	.text       start:0x8020848C end:0x80208508
 	.data       start:0x80329B10 end:0x80329B71
 
-main/dll/DF/dll_0235_dfptargetblock.c:
+dlls/objects/565_DFP_TargetB/DFP_TargetB.c:
 	.text       start:0x80208508 end:0x80208FDC
 	.data       start:0x80329B78 end:0x80329BC0
 	.sbss       start:0x803DDCF8 end:0x803DDD00
@@ -3445,11 +3445,11 @@ main/dll/CF/laser.c:
 	.text       start:0x80208FDC end:0x802090A8
 	.data       start:0x80329BC0 end:0x80329C48
 
-main/dll/DF/dll_0237_dfpsppl.c:
+dlls/objects/567_DFPSpPl/DFPSpPl.c:
 	.text       start:0x802090A8 end:0x8020930C
 	.data       start:0x80329C48 end:0x80329C80
 
-main/dll/dll_0238_linkalevco.c:
+dlls/objects/568_LINKA_levco/LINKA_levco.c:
 	.text       start:0x8020930C end:0x80209810
 	.data       start:0x80329C80 end:0x80329CB8
 	.sdata2     start:0x803E64D8 end:0x803E64DC
@@ -3492,12 +3492,12 @@ main/dll/dll_024A_dummy24a.c:
 main/dll/dll_024B_dummy24b.c:
 	.data       start:0x80329F60 end:0x80329F90
 
-main/dll/dll_024D_bossdrakor.c:
+dlls/objects/589_BossDrakor/BossDrakor.c:
 	.text       start:0x8020A1C8 end:0x8020BAB4
 	.data       start:0x80329F90 end:0x8032A0D8
 	.sdata      start:0x803DC188 end:0x803DC1A0
 
-main/dll/dll_024E_drakordthornbush.c:
+dlls/objects/590/590.c:
 	.text       start:0x8020BAB4 end:0x8020C278
 	.data       start:0x8032A0D8 end:0x8032A140
 	.sdata      start:0x803DC1A0 end:0x803DC1B8
@@ -3552,12 +3552,12 @@ main/proximitymine_update.c:
 	.sdata      start:0x803DC230 end:0x803DC250
 	.sdata2     start:0x803E6790 end:0x803E6798
 
-main/dll/DR/dll_024F_ktrexlevel.c:
+dlls/objects/591_KT_RexLevel/KT_RexLevel.c:
 	.text       start:0x80211C24 end:0x80211F38
 	.data       start:0x8032A4D8 end:0x8032A510
 	.sbss       start:0x803DDD40 end:0x803DDD48
 
-main/dll/DR/dll_0250_ktrex.c:
+dlls/objects/592_KT_Rex/KT_Rex.c:
 	.text       start:0x80211F38 end:0x80215A3C
 	.rodata     start:0x802C2550 end:0x802C2560
 	.data       start:0x8032A510 end:0x8032A7C0
@@ -3565,22 +3565,22 @@ main/dll/DR/dll_0250_ktrex.c:
 	.sbss       start:0x803DDD48 end:0x803DDD60
 	.sdata2     start:0x803E67B0 end:0x803E6854
 
-main/dll/DR/dll_0251_ktrexfloorswitch.c:
+dlls/objects/593_KT_RexFloor/KT_RexFloor.c:
 	.text       start:0x80215A3C end:0x802164D0
 	.rodata     start:0x802C2560 end:0x802C2578
 	.sdata      start:0x803DC2A0 end:0x803DC2A8
 	.sbss       start:0x803DDD60 end:0x803DDD68
 	.sdata2     start:0x803E6858 end:0x803E6898
 
-main/dll/DR/dll_0252_ktlazerwall.c:
+dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c:
 	.text       start:0x802164D0 end:0x80216B48
 	.sdata2     start:0x803E6898 end:0x803E68C0
 
-main/dll/DR/dll_0253_ktlazerlight.c:
+dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c:
 	.text       start:0x80216B48 end:0x80216D18
 	.sdata2     start:0x803E68C0 end:0x803E68D0
 
-main/dll/DR/dll_0254_ktfallingrocks.c:
+dlls/objects/596_KT_Fallingr/KT_Fallingr.c:
 	.text       start:0x80216D18 end:0x80216EAC
 	.sdata2     start:0x803E68D0 end:0x803E68D8
 
@@ -4968,7 +4968,7 @@ main/dll/dll_01B5_lightfoot.c:
 	.data       start:0x80334FF8 end:0x80335030
 	.bss        start:0x803DB0D0 end:0x803DB0F0
 
-main/dll/DIM/dll_0256_dimsnowhorn1.c:
+dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:
 	.text       start:0x802B9780 end:0x802BC0D0
 	.data       start:0x80335030 end:0x803351A8
 	.bss        start:0x803DB0F0 end:0x803DB160
@@ -4983,7 +4983,7 @@ main/dll/DIM/dll_01D9_dim2prisonmammoth.c:
 main/audio/synth_constants.c:
 	.sdata2     start:0x803E8368 end:0x803E8390
 
-main/dll/DR/dll_0257_drearthwarrior.c:
+dlls/objects/599_DR_EarthWar/DR_EarthWar.c:
 	.text       start:0x802BC7C0 end:0x802BF0C8
 	.rodata     start:0x802C2CA8 end:0x802C2D00
 	.data       start:0x803351F8 end:0x803356F0

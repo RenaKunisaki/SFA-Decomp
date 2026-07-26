@@ -92,12 +92,12 @@ void GM_MazeWell_render(void* obj, int p2, int p3, int p4, int p5, s8 visible)
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E6978);
 }
 
-void GM_MazeWell_update(unsigned int obj)
+void GM_MazeWell_update(GameObject* obj)
 {
     int objId;
     s16* questBits = lbl_8032A730;
     s32* questBits32 = (s32*)questBits;
-    GmmazewellState* state = ((GameObject*)obj)->extra;
+    GmmazewellState* state = obj->extra;
     GameObject* player;
     int matchedBit;
     s16* questBitPtr;
@@ -114,7 +114,7 @@ void GM_MazeWell_update(unsigned int obj)
         }
     }
 
-    ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
 
     for (i = 0, questBitPtr = questBits;;)
     {
@@ -134,14 +134,14 @@ void GM_MazeWell_update(unsigned int obj)
 
     if (matchedBit != 0)
     {
-        ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
     else
     {
-        ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
 
-    objId = obj;
+    objId = (int)obj;
     if ((((GameObject*)objId)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
     {
         int found;
@@ -151,7 +151,7 @@ void GM_MazeWell_update(unsigned int obj)
             {
                 if (lbl_803DC968 != 0)
                 {
-                    state = ((GameObject*)obj)->extra;
+                    state = obj->extra;
                     switch (i)
                     {
                     case 0:
@@ -166,7 +166,7 @@ void GM_MazeWell_update(unsigned int obj)
                 }
                 else
                 {
-                    state = ((GameObject*)obj)->extra;
+                    state = obj->extra;
                     state->pendingDialogue = questBits32[i + QUEST_DIALOGUE_BASE32];
                     switch (i)
                     {
@@ -200,7 +200,7 @@ void GM_MazeWell_update(unsigned int obj)
         }
     }
 
-    ((void (*)(int))objRenderFn_80041018)(obj);
+    ((void (*)(int))objRenderFn_80041018)((int)obj);
 }
 
 void GM_MazeWell_init(GameObject* obj)

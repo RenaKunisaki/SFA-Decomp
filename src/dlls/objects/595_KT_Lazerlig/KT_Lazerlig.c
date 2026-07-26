@@ -1,5 +1,5 @@
 /*
- * ktlazerlight (DLL 0x253) - the point light cast by a SharpClaw laser
+ * KT_Lazerlight (DLL 0x253) - the point light cast by a SharpClaw laser
  * fence/wall (see ktlazerwall, DLL 0x252).
  *
  * On init it spawns a model light at the placement's position. Each

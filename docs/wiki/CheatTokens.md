@@ -145,7 +145,7 @@ This page maps almost completely onto one already-decompiled object and a set of
     The table's Dragon Rock ownership is consistent with (but not proof of) the Well physically
     being sited there. Not independently confirmed against placement/map data in this pass.
 - The wiki's "table" (9 watched bits × {reward bit, follow-up bit, dialogue id}) is the flat
-  `s16 lbl_8032A730[44]` array, defined at `src/main/dll/DR/dll_0250_ktrex.c:1961` (`.data:0x8032A730`,
+  `s16 lbl_8032A730[44]` array, defined at `src/dlls/objects/592_KT_Rex/KT_Rex.c:1961` (`.data:0x8032A730`,
   size `0x58` per `config/GSAE01/symbols.txt`) and declared `extern` in
   `include/main/dll/DR/dll_0250_ktrex.h`. Its 44 raw values are **byte-identical** to the wiki's
   table read column-major:
@@ -293,7 +293,7 @@ enum CheatId
 
 ```c
 /* GM_MazeWell (DLL 0x263) quest-bit table row indices, into lbl_8032A730[] /
- * gQuestBitTable (src/main/dll/DR/dll_0250_ktrex.c, consumed by
+ * gQuestBitTable (src/dlls/objects/592_KT_Rex/KT_Rex.c, consumed by
  * src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c). Matches CheatId above for rows 0-3; rows 4-7 grant
  * no cheat ("nothing" in the wiki's Unlocks column); row 8 is the unused/dead 9th token. */
 enum QuestWellRow

@@ -603,26 +603,26 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x22D | DFP_seqpoint | CONFIRMED | main/dll/dll_022D_dfpseqpoint.c | main/dll/DF/dll_022D_dfpseqpoint.c | — |
 | 0x22E | DFP_DoorSwitch (+DFPSpDA) | CONFIRMED | main/dll/dll_022E_dfpdoorswitch.c | main/dll/DF/dll_022E_dfpdoorswitch.c | — |
 | 0x22F | DFP_floorbar | CONFIRMED | main/dll/dll_022F_dfpfloorbar.c | main/dll/DF/dll_022F_dfpfloorbar.c | — |
-| 0x230 | DFP_wallbar | RAW | main/dll/dll_0230_dfpwallbar.c | main/dll/DF/dll_0230_dfpwallbar.c | — |
+| 0x230 | DFP_wallbar | RAW | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | = (canonical) | — |
 | 0x231 | DFP_ForceAw | RAW | main/dll/dll_0231_dfpforceaw.c | main/dll/DF/dll_0231_dfpforceaw.c | — |
-| 0x232 | DFP_RotateP | RAW | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | — |
-| 0x233 | DFP_Statue1 | CONFIRMED | main/dll/dll_0233_dfpstatue1.c | main/dll/DF/dll_0233_dfpstatue1.c | — |
-| 0x234 | DFP_PerchSw | RAW | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | — |
-| 0x235 | DFP_TargetBlock | CONFIRMED | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | — |
+| 0x232 | DFP_RotateP | RAW | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | = (canonical) | — |
+| 0x233 | DFP_Statue1 | CONFIRMED | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | = (canonical) | — |
+| 0x234 | DFP_PerchSw | RAW | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | = (canonical) | — |
+| 0x235 | DFP_TargetBlock | CONFIRMED | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | = (canonical) | — |
 | 0x236 | DFP_LaserBe | CONFIRMED | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | — |
-| 0x237 | DFPSpPl | COMPLETE | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | — |
-| 0x238 | LINKA_levco | RAW | main/dll/dll_0238_linkalevco.c | = (canonical) | — |
+| 0x237 | DFPSpPl | COMPLETE | dlls/objects/567_DFPSpPl/DFPSpPl.c | = (canonical) | — |
+| 0x238 | LINKA_levco | RAW | dlls/objects/568_LINKA_levco/LINKA_levco.c | = (canonical) | — |
 | 0x239 | DFP_TextblockObj (+KP_textbloc) | CONFIRMED | main/textblock.c | main/dll/DF/dll_0239_dfptextblockobj.c | engine/SDK host: main/textblock.c |
 | 0x23A | DFP_Platform1 | CONFIRMED | main/platform1.c | main/dll/DF/dll_023A_dfpplatform1.c | engine/SDK host: main/platform1.c |
 | 0x23B | DFP_Lightni | CONFIRMED | main/dfplightni.c | main/dll/DF/dll_023B_dfplightni.c | engine/SDK host: main/dfplightni.c |
 | 0x23C | DFP_PowerSl | CONFIRMED | main/dfppowersl.c | main/dll/DF/dll_023C_dfppowersl.c | engine/SDK host: main/dfppowersl.c |
 | 0x23D | DBPointMum | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x23E | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x23F | DB_egg | COMPLETE | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | — |
-| 0x240 | GCRobotBlast | CONFIRMED | main/dll/dll_0240_gcrobotblast.c | = (canonical) | — |
-| 0x241 | DrakorEnergy | CONFIRMED | main/dll/dll_0241_drakorenergy.c | = (canonical) | — |
-| 0x242 | DBstealerworm | CONFIRMED | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | — |
-| 0x243 | DBHoleControl1 | CONFIRMED | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | — |
+| 0x23F | DB_egg | COMPLETE | dlls/objects/575_DB_egg/DB_egg.c | = (canonical) | — |
+| 0x240 | GCRobotBlast | CONFIRMED | dlls/objects/576_GCRobotBlas/GCRobotBlas.c | = (canonical) | — |
+| 0x241 | DrakorEnergy | CONFIRMED | dlls/objects/577_DrakorEnerg/DrakorEnerg.c | = (canonical) | — |
+| 0x242 | DBstealerworm | CONFIRMED | dlls/objects/578_DBstealerwo/DBstealerwo.c | = (canonical) | — |
+| 0x243 | DBHoleControl1 | CONFIRMED | dlls/objects/579_DBHoleContr/DBHoleContr.c | = (canonical) | — |
 | 0x244 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x245 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x246 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
@@ -632,17 +632,17 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x24A | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24B | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x24C | BossDrakor__free | CONFIRMED | *(none)* | — | no .text fns (descriptor data only) |
-| 0x24D | BossDrakor | COMPLETE | main/dll/dll_024D_bossdrakor.c | = (canonical) | — |
-| 0x24E | drakord_thornbush (+BossDrakorD, ThornBush) | GUESSED | main/dll/dll_024E_drakordthornbush.c | = (canonical) | — |
-| 0x24F | KT_RexLevel | CONFIRMED | main/dll/dll_024F_ktrexlevel.c | main/dll/DR/dll_024F_ktrexlevel.c | — |
-| 0x250 | KT_Rex | COMPLETE | main/dll/dll_0250_ktrex.c | main/dll/DR/dll_0250_ktrex.c | — |
-| 0x251 | KT_RexFloorswitch | CONFIRMED | main/dll/dll_0251_ktrexfloorswitch.c | main/dll/DR/dll_0251_ktrexfloorswitch.c | — |
-| 0x252 | KT_Lazerwall | CONFIRMED | main/dll/dll_0252_ktlazerwall.c | main/dll/DR/dll_0252_ktlazerwall.c | — |
-| 0x253 | KT_Lazerlight | CONFIRMED | main/dll/dll_0253_ktlazerlight.c | main/dll/DR/dll_0253_ktlazerlight.c | — |
-| 0x254 | KT_Fallingrocks | CONFIRMED | main/dll/dll_0254_ktfallingrocks.c | main/dll/DR/dll_0254_ktfallingrocks.c | — |
-| 0x255 | SnowBike (+CRSnowBike, CRSnowClawB, IMSnowBike, IMSnowClawB) | CONFIRMED | main/dll/dll_0255_snowbike.c | = (canonical) | — |
-| 0x256 | DIMSnowHorn1 | CONFIRMED | main/dll/dll_0256_dimsnowhorn1.c | main/dll/DIM/dll_0256_dimsnowhorn1.c | — |
-| 0x257 | DR_EarthWarrior | CONFIRMED | main/dll/dll_0257_drearthwarrior.c | main/dll/DR/dll_0257_drearthwarrior.c | — |
+| 0x24D | BossDrakor | COMPLETE | dlls/objects/589_BossDrakor/BossDrakor.c | = (canonical) | — |
+| 0x24E | — (+drakord_thornbush, BossDrakorD, ThornBush) | NO-RETAIL-NAME | dlls/objects/590/590.c | = (canonical) | — |
+| 0x24F | KT_RexLevel | CONFIRMED | dlls/objects/591_KT_RexLevel/KT_RexLevel.c | = (canonical) | — |
+| 0x250 | KT_Rex | COMPLETE | dlls/objects/592_KT_Rex/KT_Rex.c | = (canonical) | — |
+| 0x251 | KT_RexFloorswitch | CONFIRMED | dlls/objects/593_KT_RexFloor/KT_RexFloor.c | = (canonical) | — |
+| 0x252 | KT_Lazerwall | CONFIRMED | dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c | = (canonical) | — |
+| 0x253 | KT_Lazerlight | CONFIRMED | dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c | = (canonical) | — |
+| 0x254 | KT_Fallingrocks | CONFIRMED | dlls/objects/596_KT_Fallingr/KT_Fallingr.c | = (canonical) | — |
+| 0x255 | — (+SnowBike, CRSnowBike, CRSnowClawB, IMSnowBike, IMSnowClawB) | NO-RETAIL-NAME | dlls/objects/597/597.c | = (canonical) | — |
+| 0x256 | DIMSnowHorn1 | CONFIRMED | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | = (canonical) | — |
+| 0x257 | DR_EarthWarrior | CONFIRMED | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | = (canonical) | — |
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | — |
 | 0x259 | SB_Cloudrunner | CONFIRMED | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | — |
 | 0x25A | StaticCamera | CONFIRMED | dlls/objects/602_StaticCamer/StaticCamer.c | = (canonical) | — |
@@ -767,9 +767,9 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x0D6 | KaldachomMe | `kaldachompme_*` | cross-dll (names dll 0x0D5) | dlls/objects/214_KaldachomMe/KaldachomMe.c |
 | 0x0D7 | KaldachomSp, FireCrawler | `kaldachompspit_*` | cross-dll (names dll 0x0D5) | dlls/objects/215/215.c |
 | 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | dlls/objects/284/284.c |
-| 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | main/dll/dll_0230_dfpwallbar.c |
+| 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | dlls/objects/560_DFP_wallbar/DFP_wallbar.c |
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | main/dll/dll_0231_dfpforceaw.c |
-| 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | main/dll/dll_0232_dfprotatep.c |
+| 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | dlls/objects/562_DFP_RotateP/DFP_RotateP.c |
 | 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | dlls/objects/660/660.c |
 | 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
@@ -779,8 +779,8 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x11A | DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF | `decoration11a_*` | unrelated | dlls/objects/282/282.c |
 | 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | main/dll/dll_01BD_paymentkiosk.c |
 | 0x1F5 | generalscal, CF_generals, NW_GeneralS, SB_FireBall | `ShipBattle_*` | unrelated | main/dll/dll_01F5_shipbattle.c |
-| 0x237 | DFPSpPl | `laserObj_*` | unrelated | main/dll/dll_0237_dfpsppl.c |
-| 0x238 | LINKA_levco | `fireObj_*` | unrelated | main/dll/dll_0238_linkalevco.c |
+| 0x237 | DFPSpPl | `laserObj_*` | unrelated | dlls/objects/567_DFPSpPl/DFPSpPl.c |
+| 0x238 | LINKA_levco | `fireObj_*` | unrelated | dlls/objects/568_LINKA_levco/LINKA_levco.c |
 | 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | dlls/objects/644/644.c |
 | 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
 | 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
@@ -894,25 +894,25 @@ name was a deliberate choice by a previous carve:
 | 0x22D | main/dll/dll_022D_dfpseqpoint.c | main/dll/DF/dll_022D_dfpseqpoint.c | CONFIRMED |
 | 0x22E | main/dll/dll_022E_dfpdoorswitch.c | main/dll/DF/dll_022E_dfpdoorswitch.c | CONFIRMED |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | main/dll/DF/dll_022F_dfpfloorbar.c | CONFIRMED |
-| 0x230 | main/dll/dll_0230_dfpwallbar.c | main/dll/DF/dll_0230_dfpwallbar.c | RAW |
+| 0x230 | main/dll/dll_0230_dfpwallbar.c | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | RAW |
 | 0x231 | main/dll/dll_0231_dfpforceaw.c | main/dll/DF/dll_0231_dfpforceaw.c | RAW |
-| 0x232 | main/dll/dll_0232_dfprotatep.c | main/dll/DF/dll_0232_dfprotatep.c | RAW |
-| 0x233 | main/dll/dll_0233_dfpstatue1.c | main/dll/DF/dll_0233_dfpstatue1.c | CONFIRMED |
-| 0x234 | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | RAW |
-| 0x235 | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | CONFIRMED |
+| 0x232 | main/dll/dll_0232_dfprotatep.c | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | RAW |
+| 0x233 | main/dll/dll_0233_dfpstatue1.c | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | CONFIRMED |
+| 0x234 | main/dll/dll_0234_dfpperchsw.c | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | RAW |
+| 0x235 | main/dll/dll_0235_dfptargetblock.c | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | CONFIRMED |
 | 0x236 | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | CONFIRMED |
-| 0x237 | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | COMPLETE |
-| 0x23F | main/dll/dll_023F_dbegg.c | main/dll/DB/dll_023F_dbegg.c | COMPLETE |
-| 0x242 | main/dll/dll_0242_dbstealerworm.c | main/dll/DB/dll_0242_dbstealerworm.c | CONFIRMED |
-| 0x243 | main/dll/dll_0243_dbholecontrol1.c | main/dll/DB/dll_0243_dbholecontrol1.c | CONFIRMED |
-| 0x24F | main/dll/dll_024F_ktrexlevel.c | main/dll/DR/dll_024F_ktrexlevel.c | CONFIRMED |
-| 0x250 | main/dll/dll_0250_ktrex.c | main/dll/DR/dll_0250_ktrex.c | COMPLETE |
-| 0x251 | main/dll/dll_0251_ktrexfloorswitch.c | main/dll/DR/dll_0251_ktrexfloorswitch.c | CONFIRMED |
-| 0x252 | main/dll/dll_0252_ktlazerwall.c | main/dll/DR/dll_0252_ktlazerwall.c | CONFIRMED |
-| 0x253 | main/dll/dll_0253_ktlazerlight.c | main/dll/DR/dll_0253_ktlazerlight.c | CONFIRMED |
-| 0x254 | main/dll/dll_0254_ktfallingrocks.c | main/dll/DR/dll_0254_ktfallingrocks.c | CONFIRMED |
-| 0x256 | main/dll/dll_0256_dimsnowhorn1.c | main/dll/DIM/dll_0256_dimsnowhorn1.c | CONFIRMED |
-| 0x257 | main/dll/dll_0257_drearthwarrior.c | main/dll/DR/dll_0257_drearthwarrior.c | CONFIRMED |
+| 0x237 | main/dll/dll_0237_dfpsppl.c | dlls/objects/567_DFPSpPl/DFPSpPl.c | COMPLETE |
+| 0x23F | main/dll/dll_023F_dbegg.c | dlls/objects/575_DB_egg/DB_egg.c | COMPLETE |
+| 0x242 | main/dll/dll_0242_dbstealerworm.c | dlls/objects/578_DBstealerwo/DBstealerwo.c | CONFIRMED |
+| 0x243 | main/dll/dll_0243_dbholecontrol1.c | dlls/objects/579_DBHoleContr/DBHoleContr.c | CONFIRMED |
+| 0x24F | main/dll/dll_024F_ktrexlevel.c | dlls/objects/591_KT_RexLevel/KT_RexLevel.c | CONFIRMED |
+| 0x250 | main/dll/dll_0250_ktrex.c | dlls/objects/592_KT_Rex/KT_Rex.c | COMPLETE |
+| 0x251 | main/dll/dll_0251_ktrexfloorswitch.c | dlls/objects/593_KT_RexFloor/KT_RexFloor.c | CONFIRMED |
+| 0x252 | main/dll/dll_0252_ktlazerwall.c | dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c | CONFIRMED |
+| 0x253 | main/dll/dll_0253_ktlazerlight.c | dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c | CONFIRMED |
+| 0x254 | main/dll/dll_0254_ktfallingrocks.c | dlls/objects/596_KT_Fallingr/KT_Fallingr.c | CONFIRMED |
+| 0x256 | main/dll/dll_0256_dimsnowhorn1.c | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | CONFIRMED |
+| 0x257 | main/dll/dll_0257_drearthwarrior.c | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | CONFIRMED |
 | 0x258 | main/dll/dll_0258_drcloudrunner.c | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | CONFIRMED |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | main/dll/SB/dll_0259_sbcloudrunner.c | CONFIRMED |
 | 0x261 | main/dll/dll_0261_drlasercannon.c | dlls/objects/609_DR_LaserCan/DR_LaserCan.c | CONFIRMED |
@@ -993,6 +993,6 @@ blocked units will surface more when carved.
 | 0x1F9 | main/dll/dll_01F9_wmobjcreator.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x207 | main/dll/dll_0207_wmworm.c | include/main/dll/LGT/dll_0207_wmworm.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
-| 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
+| 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
 | 0x287 | main/dll/dll_0287_spscarab.c | include/main/dll/DR/dll_0287_spscarab.h |

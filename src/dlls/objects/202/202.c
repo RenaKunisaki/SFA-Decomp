@@ -457,7 +457,7 @@ int iceBaddie_checkTargetState(GameObject* obj, int state)
 int iceBaddie_updateLandingState(GameObject* obj, int state)
 {
     GroundBaddieState* sub = (obj)->extra;
-    int player;
+    GameObject* player;
     f32 noBlend;
 
     ((GroundBaddieState*)state)->baddie.stateTag = 3;
@@ -472,8 +472,8 @@ int iceBaddie_updateLandingState(GameObject* obj, int state)
     }
     if ((((GroundBaddieState*)state)->baddie.moveEventFlags & 1) == 0)
     {
-        player = (int)Obj_GetPlayerObject();
-        if (((GameObject*)player)->anim.seqId != 0)
+        player = Obj_GetPlayerObject();
+        if (player->anim.seqId != 0)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
         }
@@ -569,7 +569,7 @@ int iceBaddie_stateHandlerA0B(GameObject* obj, int state)
 int iceBaddie_updateDropState(GameObject* obj, int state)
 {
     int control = (int)((GroundBaddieState*)(obj)->extra)->control;
-    int player;
+    GameObject* player;
 
     ((IceBaddieControl*)control)->effectFlags |= ICEBADDIE_FX_BURST;
     if ((s8)((GroundBaddieState*)state)->baddie.moveJustStartedA != 0)
@@ -580,8 +580,8 @@ int iceBaddie_updateDropState(GameObject* obj, int state)
     if ((s8)((GroundBaddieState*)state)->baddie.moveJustStartedA != 0)
     {
         Obj_GetPlayerObject();
-        player = (int)Obj_GetPlayerObject();
-        if (((GameObject*)player)->anim.seqId != 0)
+        player = Obj_GetPlayerObject();
+        if (player->anim.seqId != 0)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
         }

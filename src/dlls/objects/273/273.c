@@ -191,7 +191,7 @@ void Lock_DoorLock_update(GameObject* obj)
         if (((((ObjAnimComponent*)obj)->modelInstance->flags & 1) != 0) &&
             (((ObjAnimComponent*)obj)->hitVolumeTransforms != NULL))
         {
-            objRenderFn_80041018((GameObject*)obj);
+            objRenderFn_80041018(obj);
         }
     }
 }

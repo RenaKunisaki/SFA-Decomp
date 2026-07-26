@@ -88,7 +88,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0035_saveselectscreen | 99.9292 | 68.3547 | -31.5745 |
 | main/main/rcp_dolphin | 99.7276 | 68.2845 | -31.4431 |
 | main/main/audio/sal_volume | 100.0000 | 69.6708 | -30.3292 |
-| main/main/dll/dll_0255_snowbike | 100.0000 | 69.6763 | -30.3237 |
+| main/dlls/objects/597/597 | 100.0000 | 69.6763 | -30.3237 |
 | main/main/pi_dolphin | 98.6446 | 68.4667 | -30.1779 |
 | main/main/dll/dll_011A_decoration11a | 100.0000 | 70.3114 | -29.6886 |
 | main/main/dll/dll_0040_credits | 100.0000 | 70.4585 | -29.5415 |
@@ -161,8 +161,8 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_010A_fallladders | 100.0000 | 85.3920 | -14.6080 |
 | main/main/fileio | 100.0000 | 85.6233 | -14.3767 |
 | main/main/dll/DIM/dimgut2group | 100.0000 | 85.8364 | -14.1636 |
-| main/main/dll/DR/dll_0252_ktlazerwall | 100.0000 | 85.8575 | -14.1425 |
-| main/main/dll/dll_024D_bossdrakor | 99.5893 | 85.5837 | -14.0056 |
+| main/dlls/objects/594_KT_Lazerwal/KT_Lazerwal | 100.0000 | 85.8575 | -14.1425 |
+| main/dlls/objects/589_BossDrakor/BossDrakor | 99.5893 | 85.5837 | -14.0056 |
 | main/main/dll/dll_01AA_bombplantspore | 100.0000 | 86.1777 | -13.8223 |
 | main/main/dll/duster_wb | 100.0000 | 86.2121 | -13.7879 |
 | main/dlls/objects/625/625 | 100.0000 | 86.2241 | -13.7759 |
@@ -186,7 +186,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/MMP/dll_0183_mmpgyservent | 100.0000 | 88.4382 | -11.5618 |
 | main/dlls/objects/213_Kaldachom/Kaldachom | 100.0000 | 89.0893 | -10.9107 |
 | main/main/dll/dll_0107_unused | 100.0000 | 89.1886 | -10.8114 |
-| main/main/dll/DF/dll_0235_dfptargetblock | 100.0000 | 89.2309 | -10.7691 |
+| main/dlls/objects/565_DFP_TargetB/DFP_TargetB | 100.0000 | 89.2309 | -10.7691 |
 | main/main/dll/SH/dll_01AC_shqueenearthwalker | 100.0000 | 89.3002 | -10.6998 |
 | main/main/objHitReact | 100.0000 | 89.3645 | -10.6355 |
 | main/main/dll/dll_003C_tumbleweedbush | 99.8834 | 89.2541 | -10.6294 |
@@ -222,11 +222,11 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/WM/dll_0211_wmwallcrawler | 100.0000 | 94.7003 | -5.2997 |
 | main/main/dll/dll_8011d918 | 100.0000 | 94.7368 | -5.2632 |
 | main/dlls/objects/609_DR_LaserCan/DR_LaserCan | 99.4782 | 94.3216 | -5.1565 |
-| main/main/dll/dll_0242_dbstealerworm | 99.9161 | 94.8762 | -5.0398 |
+| main/dlls/objects/578_DBstealerwo/DBstealerwo | 99.9161 | 94.8762 | -5.0398 |
 | main/main/objseq | 99.7434 | 94.7181 | -5.0253 |
-| main/main/dll/DR/dll_0257_drearthwarrior | 99.8439 | 94.9341 | -4.9098 |
+| main/dlls/objects/599_DR_EarthWar/DR_EarthWar | 99.8439 | 94.9341 | -4.9098 |
 | main/dlls/objects/626/626 | 100.0000 | 95.0953 | -4.9047 |
-| main/main/dll/DF/dll_0233_dfpstatue1 | 100.0000 | 95.1807 | -4.8193 |
+| main/dlls/objects/563_DFP_Statue1/DFP_Statue1 | 100.0000 | 95.1807 | -4.8193 |
 | main/main/dll/tricky_flameguard | 99.9461 | 95.1526 | -4.7935 |
 | main/main/newshadows | 97.9941 | 93.2277 | -4.7664 |
 | main/main/audio/mcmd_exec | 99.6306 | 94.9170 | -4.7136 |
@@ -242,7 +242,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0013_waterfx | 99.8671 | 96.5743 | -3.2928 |
 | main/main/dll/animobjd2 | 99.1506 | 95.9151 | -3.2355 |
 | main/track/intersect | 100.0000 | 96.8889 | -3.1111 |
-| main/main/dll/DIM/dll_0256_dimsnowhorn1 | 100.0000 | 96.8979 | -3.1021 |
+| main/dlls/objects/598_DIMSnowHorn/DIMSnowHorn | 100.0000 | 96.8979 | -3.1021 |
 | main/main/dll/dll_004E_cameramodeworldmap | 99.8534 | 96.7666 | -3.0868 |
 | main/main/sky | 99.8372 | 96.9997 | -2.8375 |
 | main/main/dll/trickyfollow | 99.8147 | 96.9942 | -2.8206 |
@@ -260,7 +260,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/tex_dolphin | 99.9727 | 97.6931 | -2.2796 |
 | main/main/dll/laserturretgroup | 100.0000 | 97.7680 | -2.2320 |
 | main/main/dll/dll_0045_camTalk | 99.9591 | 97.7451 | -2.2141 |
-| main/main/dll/DR/dll_0250_ktrex | 100.0000 | 97.8409 | -2.1591 |
+| main/dlls/objects/592_KT_Rex/KT_Rex | 100.0000 | 97.8409 | -2.1591 |
 | main/main/dll/frontend_control | 100.0000 | 97.8855 | -2.1145 |
 | main/main/dll/dll_02AD_softbody | 100.0000 | 97.9618 | -2.0382 |
 | main/main/audio/synth_queue | 99.7566 | 97.7389 | -2.0177 |
@@ -271,13 +271,13 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0046_cameramodedebug | 100.0000 | 98.1799 | -1.8201 |
 | main/main/dll/cloudaction | 100.0000 | 98.2189 | -1.7811 |
 | main/main/dll/dll_00DE_baddieinterestp | 100.0000 | 98.2407 | -1.7593 |
-| main/main/dll/dll_024E_drakordthornbush | 100.0000 | 98.3441 | -1.6559 |
+| main/dlls/objects/590/590 | 100.0000 | 98.3441 | -1.6559 |
 | main/dlls/objects/683_LGTProjecte/LGTProjecte | 100.0000 | 98.3660 | -1.6340 |
 | main/main/audio/voice_manage | 100.0000 | 98.4296 | -1.5704 |
 | main/main/camera | 99.7639 | 98.2861 | -1.4778 |
 | main/dlls/objects/651/651 | 100.0000 | 98.5294 | -1.4706 |
 | main/main/dll/dll_0138_groundanimator | 99.4356 | 97.9693 | -1.4663 |
-| main/main/dll/dll_023F_dbegg | 100.0000 | 98.5857 | -1.4143 |
+| main/dlls/objects/575_DB_egg/DB_egg | 100.0000 | 98.5857 | -1.4143 |
 | main/main/maketex | 99.9532 | 98.5706 | -1.3827 |
 | main/dlls/objects/291_fuelCell/fuelCell | 100.0000 | 98.6375 | -1.3625 |
 | main/main/dll/WM/dll_0209_wmlevelcontrol | 100.0000 | 98.6942 | -1.3058 |
@@ -342,7 +342,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/dlls/objects/675/675 | 100.0000 | 99.9005 | -0.0995 |
 | main/main/dll/dll_02AE_waterflowwe | 100.0000 | 99.9048 | -0.0952 |
 | main/main/dll/dll_0136_waveanimator | 100.0000 | 99.9085 | -0.0915 |
-| main/main/dll/DR/dll_0251_ktrexfloorswitch | 100.0000 | 99.9114 | -0.0886 |
+| main/dlls/objects/593_KT_RexFloor/KT_RexFloor | 100.0000 | 99.9114 | -0.0886 |
 | main/main/dll/dll_00A6_dlla6func0 | 100.0000 | 99.9149 | -0.0851 |
 | main/main/dll/dll_008E_dll8efunc0 | 100.0000 | 99.9195 | -0.0805 |
 | main/main/dll/dll_009A_dll9afunc0 | 100.0000 | 99.9409 | -0.0591 |
