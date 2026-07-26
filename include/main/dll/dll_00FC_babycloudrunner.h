@@ -1,8 +1,11 @@
 #ifndef MAIN_DLL_DLL_00FC_BABYCLOUDRUNNER_H_
 #define MAIN_DLL_DLL_00FC_BABYCLOUDRUNNER_H_
 
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "ghidra_import.h"
+
+extern ObjectDescriptor gDllFCObjDescriptor;
 
 void dll_FC_update(GameObject* obj);
 void dll_FC_init(GameObject* obj, int objDef);

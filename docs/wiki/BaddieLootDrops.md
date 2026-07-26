@@ -83,7 +83,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 - State/setup structs: `CollectibleState` / `CollectibleSetup` in
   `include/main/dll/collectible_state.h` (per-instance despawn timer, hide/visibility/collect
   gamebits, bounce/path-follow physics).
-- Not the same thing: `src/main/dll/dll_0117_appleontree.c` (`AppleOnTree_*`, DLL 0x0117) is a
+- Not the same thing: `src/dlls/objects/279_AppleOnTree/AppleOnTree.c` (`AppleOnTree_*`, DLL 0x117) is a
   *tree-fruit-harvesting* object (an apple you knock down/pick off a tree), a different game
   mechanic from the loose "Apple" collectible dropped as enemy/crate loot. Worth not conflating
   the two despite the shared name.

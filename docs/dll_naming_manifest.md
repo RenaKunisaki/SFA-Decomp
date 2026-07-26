@@ -324,7 +324,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x114 | IMMultiSeq | COMPLETE | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | = (canonical) | — |
 | 0x115 | — | NO-RETAIL-NAME | dlls/objects/277/277.c | = (canonical) | — |
 | 0x116 | WM_Column (+WM_Column_T, GPSHpickobj) | COMPLETE | dlls/objects/278_WM_Column/WM_Column.c | = (canonical) | — |
-| 0x117 | AppleOnTree | CONFIRMED | main/dll/dll_0117_appleontree.c | = (canonical) | — |
+| 0x117 | AppleOnTree | CONFIRMED | dlls/objects/279_AppleOnTree/AppleOnTree.c | = (canonical) | — |
 | 0x118 | Duster | COMPLETE | main/dll/dll_0118_duster.c | = (canonical) | — |
 | 0x119 | coldWaterControl | CONFIRMED | main/dll/dll_0119_coldwatercontrol.c | = (canonical) | — |
 | 0x11A | decoration11a (+DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF) | GUESSED | main/dll/dll_011A_decoration11a.c | = (canonical) | — |

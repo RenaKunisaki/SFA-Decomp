@@ -17,7 +17,6 @@
  *   0x2 = clear the gate game bit when the sequence fires
  *   0x4 = pick the trigger sequence id randomly in [triggerIdMin..Max]
  */
-#include "main/dll/dll_0117_appleontree.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
 #include "game/objects/object.h"
@@ -216,3 +215,20 @@ void dll_FC_release_nop(void)
 void dll_FC_initialise_nop(void)
 {
 }
+
+ObjectDescriptor gDllFCObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_FC_initialise_nop,
+    (ObjectDescriptorCallback)dll_FC_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_FC_init,
+    (ObjectDescriptorCallback)dll_FC_update,
+    (ObjectDescriptorCallback)dll_FC_hitDetect,
+    (ObjectDescriptorCallback)dll_FC_render,
+    (ObjectDescriptorCallback)dll_FC_free_nop,
+    (ObjectDescriptorCallback)dll_FC_getObjectTypeId,
+    dll_FC_getExtraSize_ret_8,
+};

@@ -1,4 +1,8 @@
-/* DLL 0x0117 - appleontree / groundAnimator group. TU: 0x8017DAF0-0x8017EC10. */
+/*
+ * AppleOnTree (DLL 0x117) controls an apple from growth on the tree through
+ * falling, collection, bouncing, and despawn. The DOL confirms one TU with
+ * text at 0x8017D818-0x8017EC10 and data at 0x80321498-0x803214F8.
+ */
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
 #include "main/vecmath_distance_api.h"
@@ -22,12 +26,154 @@
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
 #include "main/objhits.h"
-#include "main/dll/dll_00FC_babycloudrunner.h"
 #include "main/dll/dll_0117_appleontree.h"
 #include "main/dll/player_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "main/dll/dll_0117_appleontree_internal.h"
+
+ObjectDescriptor13 gAppleOnTreeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_13_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)AppleOnTree_init,
+    (ObjectDescriptorCallback)AppleOnTree_update,
+    0,
+    (ObjectDescriptorCallback)AppleOnTree_render,
+    (ObjectDescriptorCallback)AppleOnTree_free,
+    0,
+    AppleOnTree_getExtraSize,
+    (ObjectDescriptorCallback)AppleOnTree_setScale,
+    (ObjectDescriptorCallback)AppleOnTree_setPosition,
+    (ObjectDescriptorCallback)AppleOnTree_modelMtxFn,
+};
+
+void AppleOnTree_setPosition(GameObject* obj, float* pos)
+{
+    AppleOnTreeState* state = obj->extra;
+
+    if (state->animState == APPLEONTREE_STATE_KNOCKED)
+    {
+        return;
+    }
+    if (state->animState == APPLEONTREE_STATE_BURST)
+    {
+        return;
+    }
+    if (state->animState == APPLEONTREE_STATE_FADEOUT)
+    {
+        return;
+    }
+    obj->anim.localPosX = pos[0];
+    obj->anim.localPosY = pos[1];
+    obj->anim.localPosZ = pos[2];
+}
+void appleontree_knockLoose(GameObject* obj, int msg)
+{
+    int state = *(int*)&obj->extra;
+    int healthRestore;
+
+    switch (msg)
+    {
+    case 0:
+        healthRestore = 2;
+        break;
+    case 1:
+        healthRestore = 2;
+        break;
+    case 2:
+        healthRestore = 2;
+        break;
+    default:
+        healthRestore = 0;
+        break;
+    }
+    ((AppleOnTreeState*)state)->healthRestore = healthRestore;
+    ((AppleOnTreeState*)state)->animState = APPLEONTREE_STATE_KNOCKED;
+    ((AppleOnTreeState*)state)->elapsedTime = timeDelta;
+    ((AppleOnTreeState*)state)->flightTime = timeDelta;
+    ((AppleOnTreeState*)state)->rotX = randomGetRange(-0x8000, 0x7fff);
+    ((AppleOnTreeState*)state)->rotY = randomGetRange(-0x8000, 0x7fff);
+    ((AppleOnTreeState*)state)->rotZ = 0x2000;
+
+    if (fn_80065684(obj, obj->anim.localPosX, obj->anim.localPosY,
+                    obj->anim.localPosZ, (f32*)(state + 0x30), 0) == 0)
+    {
+        appleontree_markFallen(obj);
+    }
+    else
+    {
+        f32 m = ((AppleOnTreeState*)state)->gravity;
+        f32 g = lbl_803E37D8 * m;
+        f32 q = sqrtf(-(g * ((AppleOnTreeState*)state)->dropHeight - lbl_803E37D4));
+        f32 t = lbl_803E37DC * m;
+        f32 r;
+
+        if (t >= lbl_803E37D4)
+        {
+            r = t;
+        }
+        else
+        {
+            r = -t;
+        }
+        if (r <= lbl_803E37E0)
+        {
+            r = lbl_803E37C8;
+        }
+        else
+        {
+            f32 r2;
+            r = (lbl_803E37E4 - q) / t;
+            r2 = (lbl_803E37E4 + q) / t;
+            r = (r > *(f32*)&lbl_803E37D4) ? r : r2;
+        }
+        ((AppleOnTreeState*)state)->totalFlightTime = r;
+
+        if (((AppleOnTreeState*)state)->velY < lbl_803E37D4)
+        {
+            ((AppleOnTreeState*)state)->dropHeight =
+                -(lbl_803E37D8 * ((AppleOnTreeState*)state)->fallScale - ((AppleOnTreeState*)state)->dropHeight);
+        }
+        else
+        {
+            ((AppleOnTreeState*)state)->dropHeight = lbl_803E37E8 * (lbl_803E37D8 * ((AppleOnTreeState*)state)->fallScale) +
+                                                     ((AppleOnTreeState*)state)->dropHeight;
+        }
+
+        if (((AppleOnTreeState*)state)->dropHeight <= lbl_803E37D4)
+        {
+            state = *(int*)&obj->extra;
+            if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0)
+            {
+                Obj_FreeObject(obj);
+            }
+            else
+            {
+                if (obj->anim.hitReactState != NULL)
+                {
+                    ObjHits_DisableObject(obj);
+                }
+                ((AppleOnTreeState*)state)->flags = (u8)(((AppleOnTreeState*)state)->flags | 2);
+            }
+        }
+        else
+        {
+            ((AppleOnTreeState*)state)->posY = obj->anim.localPosY;
+            ((AppleOnTreeState*)state)->splashPosY =
+                obj->anim.localPosY - ((AppleOnTreeState*)state)->dropHeight;
+            if (obj->anim.hitReactState != NULL)
+            {
+                ObjHits_DisableObject(obj);
+            }
+            Sfx_PlayFromObject((int)obj, SFXTRIG_en_tranch_6);
+        }
+    }
+}
 
 /* appleontree_handleCollectableHit: ground-animator collectable hit handler. When player is in
  * range, either send a trigger event (first contact) or apply healing +
@@ -682,21 +828,3 @@ void AppleOnTree_init(int obj, int def)
         ObjMsg_AllocQueue((void*)obj, 2);
     }
 }
-
-
-ObjectDescriptor gDllFCObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_FC_initialise_nop,
-    (ObjectDescriptorCallback)dll_FC_release_nop,
-    0,
-    (ObjectDescriptorCallback)dll_FC_init,
-    (ObjectDescriptorCallback)dll_FC_update,
-    (ObjectDescriptorCallback)dll_FC_hitDetect,
-    (ObjectDescriptorCallback)dll_FC_render,
-    (ObjectDescriptorCallback)dll_FC_free_nop,
-    (ObjectDescriptorCallback)dll_FC_getObjectTypeId,
-    dll_FC_getExtraSize_ret_8,
-};

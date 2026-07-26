@@ -1884,19 +1884,13 @@ dlls/objects/278_WM_Column/WM_Column.c:
 	.data       start:0x80321460 end:0x80321498
 	.sdata2     start:0x803E37B8 end:0x803E37C8
 
-main/dll/dll_0117_appleontree.c:
-	.text       start:0x8017D818 end:0x8017D854
-	.data       start:0x80321498 end:0x803214DC
-
-main/dll/dll_0117_appleontree_knockloose.c:
-	.text       start:0x8017D854 end:0x8017DAF0
-
-main/dll/dll_0117_appleontree_update.c:
-	.text       start:0x8017DAF0 end:0x8017EC10
-	.data       start:0x803214DC end:0x80321530
+dlls/objects/279_AppleOnTree/AppleOnTree.c:
+	.text       start:0x8017D818 end:0x8017EC10
+	.data       start:0x80321498 end:0x803214F8
 
 dlls/objects/252/252.c:
 	.text       start:0x8017EC10 end:0x8017EF6C
+	.data       start:0x803214F8 end:0x80321530
 	.sdata2     start:0x803E3848 end:0x803E3850
 
 dlls/objects/253/253.c:

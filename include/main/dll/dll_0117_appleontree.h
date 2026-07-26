@@ -46,8 +46,6 @@ typedef struct AppleOnTreeState
     f32 unk60;
 } AppleOnTreeState;
 
-extern ObjectDescriptor gDllFCObjDescriptor;
-
 void AppleOnTree_update(int param_1);
 void AppleOnTree_init(int obj, int def);
 int AppleOnTree_getExtraSize(void);
