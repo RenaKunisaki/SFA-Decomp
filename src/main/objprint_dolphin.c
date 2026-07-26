@@ -2858,12 +2858,14 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     {
         int joff;
         int j;
+        f32 one;
         j = 0;
         joff = 0;
+        one = lbl_803DEA1C;
         for (; j < ((ModelFileHeader*)m)->jointCount; j++)
         {
             f32 sc =
-                (f32)gObjFuzzStep * (fade / *(f32*)(((ModelFileHeader*)m)->jointBlendData + joff + 0xc)) + lbl_803DEA1C;
+                (f32)gObjFuzzStep * (fade / *(f32*)(((ModelFileHeader*)m)->jointBlendData + joff + 0xc)) + one;
             f32* jm = (f32*)ObjModel_GetJointMatrix((u8*)am, j);
             PSMTXScale((MtxPtr)sm, sc, sc, sc);
             if (lbl_803DCC35 == 0)
@@ -3632,12 +3634,16 @@ void setForceLoadImmediately(void)
 {
     lbl_803DCC70 = 0x1;
 }
-int getLoadedFileFlags(int slot)
+static inline int loadedFileFlags(int slot)
 {
     int s = OSDisableInterrupts();
     u32 v = lbl_803DCC80;
     OSRestoreInterrupts(s);
     return v;
+}
+int getLoadedFileFlags(int slot)
+{
+    return loadedFileFlags(slot);
 }
 
 extern u8 lbl_80345E10[0x160];
@@ -3655,7 +3661,7 @@ void defragMemory(int mode)
     done = 0;
     pass = 0;
     texFlagFn_80023cbc(2);
-    if (getLoadedFileFlags(0) != 0)
+    if (loadedFileFlags(0) != 0)
     {
         return;
     }
@@ -4376,7 +4382,7 @@ u32 loadTableFiles(void)
 {
     u8* base = lbl_80345E10;
     int s = OSDisableInterrupts();
-    int flags = getLoadedFileFlags(0);
+    int flags = loadedFileFlags(0);
     lbl_803DCC80;
     if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && *(s32*)(base + 0x191e4) == -1)
     {
