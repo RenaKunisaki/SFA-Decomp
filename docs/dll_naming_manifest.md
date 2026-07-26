@@ -632,7 +632,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x24A | — | NO-RETAIL-NAME | dlls/objects/586/586.c | = (canonical) | Descriptor data only; Dummy24A retained as the internal symbol |
 | 0x24B | — | NO-RETAIL-NAME | dlls/objects/587/587.c | = (canonical) | Descriptor data only; Dummy24B retained as the internal symbol |
 | 0x24C | BossDrakor__free | CONFIRMED | dlls/objects/588_BossDrakor_/BossDrakor_.c | = (canonical) | Descriptor data only; carved from the trailing 0x30 bytes of DLL 0x24E's former .data split |
-| 0x24D | BossDrakor | COMPLETE | main/dll/dll_024D_bossdrakor.c | = (canonical) | — |
+| 0x24D | BossDrakor | COMPLETE | dlls/objects/589_BossDrakor/BossDrakor.c | = (canonical) | Descriptor precedes handleActionEvent so its compiler-generated jump table follows the descriptor in retail .data order |
 | 0x24E | drakord_thornbush (+BossDrakorD, ThornBush) | GUESSED | main/dll/dll_024E_drakordthornbush.c | = (canonical) | — |
 | 0x24F | KT_RexLevel | CONFIRMED | main/dll/dll_024F_ktrexlevel.c | main/dll/DR/dll_024F_ktrexlevel.c | — |
 | 0x250 | KT_Rex | COMPLETE | main/dll/dll_0250_ktrex.c | main/dll/DR/dll_0250_ktrex.c | — |

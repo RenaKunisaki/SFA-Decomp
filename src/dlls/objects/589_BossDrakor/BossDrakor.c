@@ -975,13 +975,6 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
     s->lightObj = 0;
 }
 
-/* groups owned by other DLLs, queried here */
-
-/* object-type ids of the attack children Drakor spawns (see file docblock). */
-
-
-/* env effects co-activated on first-frame setup (b10); opaque distinct roles */
-
 void bossdrakor_release(void)
 {
 }
