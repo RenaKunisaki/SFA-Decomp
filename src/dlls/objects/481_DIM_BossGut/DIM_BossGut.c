@@ -10,10 +10,6 @@
 #include "main/object_render.h"
 #include "main/frame_timing.h"
 
-extern f32 lbl_803E4C80;
-extern f32 lbl_803E4C84;
-extern f32 lbl_803E4C88;
-
 int DIM_BossGut_SeqFn(int obj, int runtime, ObjAnimUpdateState* animUpdate)
 {
     animUpdate->hitVolumePair = -1;
@@ -41,8 +37,8 @@ void DIM_BossGut_render(int obj, u32 p2, u32 p3, u32 p4, u32 p5, char shouldRend
     visible = shouldRender;
     if (visible != 0)
     {
-        ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E4C80, timeDelta, NULL);
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, (double)lbl_803E4C84);
+        ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -61,8 +57,8 @@ void DIM_BossGut_init(void* obj)
     objSetSlot((GameObject*)obj, 0x5a);
     ((GameObject*)obj)->animEventCallback = DIM_BossGut_SeqFn;
     objArg = (int)obj;
-    ObjAnim_SetCurrentMove(objArg, 0, lbl_803E4C88, 0);
-    ObjAnim_AdvanceCurrentMove(objArg, (double)lbl_803E4C80, (double)timeDelta, NULL);
+    ObjAnim_SetCurrentMove(objArg, 0, 0.0f, 0);
+    ObjAnim_AdvanceCurrentMove(objArg, 0.005f, timeDelta, NULL);
 }
 
 void DIM_BossGut_release(void)

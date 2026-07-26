@@ -433,7 +433,7 @@ manually verified by reading the file, not by name-guessing):
 | `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c`, `dimwooddoor.c` |
 | `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c` |
 | `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |
-| `dimbossgut` (0x67) | `DIM_BossGut` | `src/main/dll/DIM/dll_01E1_dimbossgut.c`, `dll_01E3_dimbossgut2.c` |
+| `dimbossgut` (0x67) | `DIM_BossGut` | `src/dlls/objects/481_DIM_BossGut/DIM_BossGut.c`, `dll_01E3_dimbossgut2.c` |
 | `wmcolrise` (0x68) | `WM_colrise` | `src/main/dll/WM/dll_0201_wmcolrise.c` |
 | `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/main/dll/WC/dll_0290_wcpushblock.c`, `wcpushblock.c` |
 | `wcbouncycrate` (0x6f) | `WCBouncyCra` | `src/main/dll/WC/dll_028C_wcbouncycra.c` |

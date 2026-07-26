@@ -524,7 +524,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1DE | DIM2LavaCon | COMPLETE | dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c | = (canonical) | — |
 | 0x1DF | — | COMPLETE | dlls/objects/479/479.c | = (canonical) | No recovered retail basename |
 | 0x1E0 | DIM_Boss | COMPLETE | dlls/objects/480_DIM_Boss/DIM_Boss.c | = (canonical) | — |
-| 0x1E1 | DIM_BossGut | CONFIRMED | main/dll/dll_01E1_dimbossgut.c | main/dll/DIM/dll_01E1_dimbossgut.c | — |
+| 0x1E1 | DIM_BossGut | COMPLETE | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | = (canonical) | — |
 | 0x1E2 | DIM_BossTonsil | CONFIRMED | main/dll/dll_01E2_dimbosstonsil.c | main/dll/DIM/dll_01E2_dimbosstonsil.c | — |
 | 0x1E3 | DIM_BossGut2 | CONFIRMED | main/dll/dll_01E3_dimbossgut2.c | main/dll/DIM/dll_01E3_dimbossgut2.c | — |
 | 0x1E4 | MAGICMaker | COMPLETE | main/dll/dll_01E4_magicmaker.c | = (canonical) | — |
@@ -851,7 +851,7 @@ name was a deliberate choice by a previous carve:
 | 0x1DD | main/dll/dll_01DD_dim2icicle.c | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | COMPLETE |
 | 0x1DE | main/dll/dll_01DE_dim2lavacontrol.c | dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c | COMPLETE |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | dlls/objects/480_DIM_Boss/DIM_Boss.c | COMPLETE |
-| 0x1E1 | main/dll/dll_01E1_dimbossgut.c | main/dll/DIM/dll_01E1_dimbossgut.c | CONFIRMED |
+| 0x1E1 | main/dll/dll_01E1_dimbossgut.c | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | COMPLETE |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | main/dll/DIM/dll_01E2_dimbosstonsil.c | CONFIRMED |
 | 0x1E3 | main/dll/dll_01E3_dimbossgut2.c | main/dll/DIM/dll_01E3_dimbossgut2.c | CONFIRMED |
 | 0x1E5 | main/dll/dll_01E5_dimbossspit.c | main/dll/DIM/dll_01E5_dimbossspit.c | CONFIRMED |
