@@ -1,21 +1,17 @@
 /*
- * dll_1CE: hatch-door object. The lid coasts open under a clamped velocity
+ * DLL 0x1CE - hatch-door object. The lid coasts open under a clamped velocity
  * while idle; once a key object (seqId 0x18F or 0x1D6) is in range it counts
  * down, sets its placement gamebit, and - if the load isn't locked and the
  * placement's contents-spawn value matches gamebit 0x46D - spawns its
  * contents object (object id 0x246) seeded from the door's placement.
  */
-#include "main/dll/dll1ceplacement_struct.h"
-#include "main/dll/collectible_state.h"
 #include "main/dll/dll_01CE_dll1ce.h"
-#include "main/dll/fbwgpipe_struct.h"
+#include "main/dll/collectible_state.h"
 #include "main/dll/dll1cestate_struct.h"
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
-#include "main/audio/sfx_ids.h"
-#include "main/objseq.h"
 #include "main/resource.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
@@ -36,6 +32,7 @@ int dll_1CE_getExtraSize(void)
 {
     return 0xc;
 }
+
 int dll_1CE_getObjectTypeId(void)
 {
     return 0x0;
@@ -54,7 +51,9 @@ void dll_1CE_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
+    {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
 }
 
 void dll_1CE_hitDetect(void)
@@ -71,7 +70,9 @@ void dll_1CE_update(GameObject* obj)
     Dll1CEState* state = obj->extra;
     ObjHitsPriorityState* hitState;
     if (obj->anim.alpha == 0)
+    {
         return;
+    }
     if (state->unlockCountdown <= 0)
     {
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
@@ -92,7 +93,9 @@ void dll_1CE_update(GameObject* obj)
         }
     }
     if (obj->anim.seqId == DLL1CE_SEQID_DIM_HUT_DOOR)
+    {
         return;
+    }
     {
         int offset;
         int i;
@@ -115,18 +118,26 @@ void dll_1CE_update(GameObject* obj)
             offset += sizeof(proximityList->objects[0]);
         }
         if (!found)
+        {
             return;
+        }
     }
     {
         if ((state->unlockCountdown -= 1) > 0)
+        {
             return;
+        }
     }
     mainSetBits(placement->openedGameBit, 1);
     state->opened = 1;
     if ((u32)(s16)placement->contentsSpawnBitValue != mainGetBit(DLL1CE_CONTENTS_GATE_GAMEBIT))
+    {
         return;
+    }
     if (Obj_IsLoadingLocked() == 0)
+    {
         return;
+    }
     {
         CollectibleSetup* contentsSetup =
             (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), DLL1CE_CONTENTS_OBJECT_ID);
@@ -171,8 +182,6 @@ void dll_1CE_release(void)
 void dll_1CE_initialise(void)
 {
 }
-
-FbWGPipe GXWGFifo : (0xCC008000);
 
 ObjectDescriptor dll_1CE = {
     0,

@@ -505,7 +505,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1CB | DIMWoodDoor | COMPLETE | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | = (canonical) | — |
 | 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | — |
 | 0x1CD | DIM_LevelCo | COMPLETE | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | = (canonical) | — |
-| 0x1CE | — | NO-RETAIL-NAME | main/dll/dll_01CE_dll1ce.c | = (canonical) | — |
+| 0x1CE | — | COMPLETE | dlls/objects/462/462.c | = (canonical) | No recovered retail basename |
 | 0x1CF | — | NO-RETAIL-NAME | main/dll/dll_01CF_dll1cf.c | = (canonical) | — |
 | 0x1D0 | DIM_tricky | COMPLETE | main/dll/dll_01D0_dimtricky.c | main/dll/DIM/dll_01D0_dimtricky.c | — |
 | 0x1D1 | DIMTruthHornice | CONFIRMED | main/dll/dll_01D1_dimtruthhornice.c | main/dll/DIM/dll_01D1_dimtruthhornice.c | — |
@@ -839,6 +839,7 @@ name was a deliberate choice by a previous carve:
 | 0x1CB | main/dll/dll_01CB_dimwooddoor2.c | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | COMPLETE |
 | 0x1CC | main/dll/dll_01CC_dimmagicbridge.c | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | COMPLETE |
 | 0x1CD | main/dll/dll_01CD_dimlevelcontrol.c | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | COMPLETE |
+| 0x1CE | main/dll/dll_01CE_dll1ce.c | dlls/objects/462/462.c | COMPLETE |
 | 0x1D0 | main/dll/dll_01D0_dimtricky.c | main/dll/DIM/dll_01D0_dimtricky.c | COMPLETE |
 | 0x1D1 | main/dll/dll_01D1_dimtruthhornice.c | main/dll/DIM/dll_01D1_dimtruthhornice.c | CONFIRMED |
 | 0x1D5 | main/dll/dll_01D5_dim2conveyor.c | main/dll/DIM/dll_01D5_dim2conveyor.c | CONFIRMED |
