@@ -1786,7 +1786,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/403_GPSH_ObjCre/GPSH_ObjCre.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/404_GPSH_Scene/GPSH_Scene.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/400_ECSH_Cup/ECSH_Cup.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0195_dbshshrine.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/405_DBSH_Shrine/DBSH_Shrine.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/colrise.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0196_dbshsymbol.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0197_dll197.c", cflags=cflags_dll_noopt),

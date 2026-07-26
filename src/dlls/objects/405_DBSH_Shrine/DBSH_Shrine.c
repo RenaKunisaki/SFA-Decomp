@@ -1,5 +1,5 @@
 /*
- * dbsh_shrine (DLL 0x195) - a rising Krazoa-shrine object in the
+ * DBSH_Shrine (DLL 0x195) - a rising Krazoa-shrine object in the
  * "dbshrine" map (mapId 43, a Krazoa spirit shrine). Idle until the map-event trigger
  * fires, it raises the spirit-vision sky and env fx, plays an idle sfx on
  * a randomised timer, then steps a small state machine

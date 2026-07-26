@@ -2794,7 +2794,7 @@ dlls/objects/400_ECSH_Cup/ECSH_Cup.c:
 	.sbss       start:0x803DDBC8 end:0x803DDBD0
 	.sdata2     start:0x803E5060 end:0x803E50A0
 
-main/dll/dll_0195_dbshshrine.c:
+dlls/objects/405_DBSH_Shrine/DBSH_Shrine.c:
 	.text       start:0x801C8B68 end:0x801C9660
 	.data       start:0x80326470 end:0x803264A8
 	.sdata2     start:0x803E50A0 end:0x803E50E0
