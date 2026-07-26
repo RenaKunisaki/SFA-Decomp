@@ -2492,7 +2492,7 @@ dlls/objects/368_IMSpaceRing/IMSpaceRing.c:
 	.data       start:0x80323868 end:0x803238A0
 	.sdata2     start:0x803E47B8 end:0x803E47BC
 
-main/dll/IM/dll_0171_imspaceringgen.c:
+dlls/objects/369_IMSpaceRing/IMSpaceRing.c:
 	.text       start:0x801AEAE4 end:0x801AEE2C
 	.data       start:0x803238A0 end:0x803238D8
 	.sdata2     start:0x803E47C0 end:0x803E47C8

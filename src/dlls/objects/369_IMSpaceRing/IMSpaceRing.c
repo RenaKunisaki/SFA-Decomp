@@ -1,5 +1,5 @@
 /*
- * imspaceringgen (DLL 0x171) - the spawner/anchor for the space-ring
+ * IMSpaceRing (DLL 0x171) - the spawner/anchor for the space-ring
  * swarm that orbits the SpaceCraft cinematic on the Ice Mountain map.
  *
  * It locates the two reference ring objects (A and B) once they exist,
