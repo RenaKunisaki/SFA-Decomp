@@ -695,7 +695,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x289 | SPitembeam | RAW | dlls/objects/649_SPitembeam/SPitembeam.c | = (canonical) | Exact complete TU; descriptor is followed by a DOL-proven 76-byte SnowBike table |
 | 0x28A | — | NO-RETAIL-NAME | dlls/objects/650/650.c | = (canonical) | Exact complete TU containing the EarthWalker object and the following eight DLL 651 state handlers; internal object aliases are not DLL basenames |
 | 0x28B | — | NO-RETAIL-NAME | dlls/objects/651/651.c | = (canonical) | Exact complete descriptor/lifecycle TU; its eight state handlers are DOL-confirmed in DLL 650's TU |
-| 0x28C | WCBouncyCra | CONFIRMED | main/dll/dll_028C_wcbouncycra.c | main/dll/WC/dll_028C_wcbouncycra.c | — |
+| 0x28C | WCBouncyCra | RAW | dlls/objects/652_WCBouncyCra/WCBouncyCra.c | = (canonical) | Exact complete TU containing the trailing shared `wcblock_*` helper and descriptor at the physical end |
 | 0x28D | WCLevelCont | CONFIRMED | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | — |
 | 0x28E | WCBeacon | COMPLETE | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | — |
 | 0x28F | WCPressureS | CONFIRMED | dlls/objects/655_WCPressureS/WCPressureS.c | = (canonical) | — |
