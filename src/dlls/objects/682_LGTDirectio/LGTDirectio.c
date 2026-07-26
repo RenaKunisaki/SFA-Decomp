@@ -1,5 +1,5 @@
 /*
- * lgtdirectionallight (DLL 0x2AA) - a placeable directional light.
+ * LGTDirectio (DLL 682) - a placeable directional light.
  *
  * init creates a ModelLight of kind DIRECTIONAL and configures its direction,
  * diffuse colour (or the live ambient colour when the
@@ -93,7 +93,7 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             obj->anim.rotX += 0x3e8;
         }
-    logPrintf((char*)(desc + 0x38));
+        logPrintf((char*)(desc + 0x38));
         logPrintf((char*)(desc + 0x44), obj->anim.rotX);
         break;
     case 1:

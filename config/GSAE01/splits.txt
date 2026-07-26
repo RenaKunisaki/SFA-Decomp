@@ -3990,7 +3990,7 @@ dlls/objects/681/681.c:
 	.data       start:0x8032B990 end:0x8032B9C8
 	.sdata2     start:0x803E7230 end:0x803E7250
 
-main/dll/LGT/dll_02AA_lgtdirectionallight.c:
+dlls/objects/682_LGTDirectio/LGTDirectio.c:
 	.text       start:0x8023404C end:0x80234748
 	.rodata     start:0x802C2608 end:0x802C2618
 	.data       start:0x8032B9C8 end:0x8032BB00

@@ -725,7 +725,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A7 | ARWProximit | RAW | dlls/objects/679_ARWProximit/ARWProximit.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor and full constant pool |
 | 0x2A8 | ARWBlocker | RAW | dlls/objects/680_ARWBlocker/ARWBlocker.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor and full constant pool |
 | 0x2A9 | — | NO-RETAIL-NAME | dlls/objects/681/681.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor and full rodata/constant pools; `LGTPointLight` and `CF_WallTorc` remain object identities |
-| 0x2AA | LGTDirectionallight | CONFIRMED | main/dll/dll_02AA_lgtdirectionallight.c | main/dll/LGT/dll_02AA_lgtdirectionallight.c | — |
+| 0x2AA | LGTDirectio | RAW | dlls/objects/682_LGTDirectio/LGTDirectio.c | = (canonical) | Exact complete ten-function TU with its early descriptor/debug-string block, switch table, and full constant pools |
 | 0x2AB | LGTProjectedlight | CONFIRMED | main/dll/dll_02AB_lgtprojectedlight.c | main/dll/LGT/dll_02AB_lgtprojectedlight.c | — |
 | 0x2AC | LGTControlLight | CONFIRMED | main/dll/dll_02AC_lgtcontrollight.c | main/dll/LGT/dll_02AC_lgtcontrollight.c | — |
 | 0x2AD | softbody (+LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL) | GUESSED | main/dll/dll_02AD_softbody.c | = (canonical) | — |
