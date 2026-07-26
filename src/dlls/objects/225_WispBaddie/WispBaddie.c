@@ -10,7 +10,6 @@
 #include "main/audio/sfx_position_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/dll/swarmbaddiestate_struct.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/dll_00C9_enemy.h"
