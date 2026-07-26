@@ -1,5 +1,5 @@
 /*
- * cnthitobjec (DLL 0x2B6) - a destructible "counted-hit" object.
+ * CNThitObjec (DLL 0x2B6) - a destructible "counted-hit" object.
  *
  * The object starts inert and is armed when its startGameBit is set: it
  * gains startHealth and (in the hidden-collider mode) a sphere hitbox.
