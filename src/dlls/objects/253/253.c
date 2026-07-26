@@ -16,13 +16,10 @@
 #include "main/dll/dll_00FE_magicplant.h"
 #include "main/audio/sfx_trigger_ids.h"
 
-#define DLL00FD_OBJFLAG_HIDDEN 0x4000
 extern f32 lbl_803E3850;
-
-
-
-
 extern f32 lbl_803E3854;
+
+#define DLL00FD_OBJFLAG_HIDDEN 0x4000
 
 typedef struct Dll14DState
 {
@@ -201,7 +198,10 @@ void dll_FD_initialise(void)
 }
 
 ObjectDescriptor gDll14DObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     (ObjectDescriptorCallback)dll_FD_initialise,
     (ObjectDescriptorCallback)dll_FD_release,
     0,

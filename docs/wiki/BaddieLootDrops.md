@@ -111,7 +111,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 
 ### "Special" (moving a previous drop)
 
-- `src/main/dll/dll_00FE_magicplant.c` (`MagicPlant_*`) + `src/main/dll/dll_00FD.c`
+- `src/main/dll/dll_00FE_magicplant.c` (`MagicPlant_*`) + `src/dlls/objects/253/253.c`
   (`magicPlantDropGem`): a magic plant already owns a child gem object
   (`state->childObj`, in `MagicPlantBridgeState`) attached at spawn time. On being hit
   (`MAGICPLANT_MODE_HIT_REACT`), `magicPlantDropGem` **detaches and launches the existing child**
