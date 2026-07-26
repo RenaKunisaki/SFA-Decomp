@@ -473,6 +473,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
     f32 blendScale;
     f32 blendWeight;
     f32 moveWeight;
+    f32 rootMotionScale;
     int hasFirstAxis;
     int broke;
     ObjAnimDef* animDef;
@@ -485,8 +486,9 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
     }
 
     state = bank->currentState;
+    rootMotionScale = objAnim->rootMotionScale;
     model = objAnim->modelInstance;
-    targetDistance = distance * (objAnim->rootMotionScale / model->rootMotionScaleBase);
+    targetDistance = distance * (rootMotionScale / model->rootMotionScaleBase);
     blendSamples = NULL;
 
     if (state->eventState != 0)
@@ -505,7 +507,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
         if (moveData->rootCurveOffset != 0)
         {
             blendCurve = ObjAnim_GetMoveDataRootCurve(moveData);
-            blendScale = blendCurve->scale * objAnim->rootMotionScale;
+            blendScale = blendCurve->scale * rootMotionScale;
             blendSamples = ObjAnim_GetRootCurveAxisData(blendCurve);
             if (*blendSamples == 0)
             {
@@ -538,7 +540,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
     {
         curve = ObjAnim_GetMoveDataRootCurve(moveData);
 
-        rootScale = curve->scale * objAnim->rootMotionScale;
+        rootScale = curve->scale * rootMotionScale;
         segmentCount = curve->sampleCount - 1;
         axis = ObjAnim_GetRootCurveAxisData(curve);
         hasFirstAxis = 0;
@@ -562,7 +564,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
         axisFirstSample = *axis;
         if (axisFirstSample != 0)
         {
-            lastSample = ObjAnim_ReadRootAxisSample(axis, segmentCount);
+            lastSample = axis[segmentCount + 1];
             if (lastSample < 0)
             {
                 rootScale = -rootScale;
@@ -618,11 +620,12 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
                     previousDistance = nextDistance;
                     if (blendSamples != NULL)
                     {
-                        s16* axisAt = &axis[sampleIndex];
+                        s16* at = &axis[sampleIndex];
                         f32 blendDelta;
                         f32 moveDelta;
-                        blendDelta = blendScale * ((f32)blendSamples[sampleIndex + 1] - blendSamples[sampleIndex]);
-                        moveDelta = rootScale * ((f32)axisAt[2] - axisAt[1]);
+                        moveDelta = rootScale * ((f32)at[2] - at[1]);
+                        at = &blendSamples[sampleIndex];
+                        blendDelta = blendScale * ((f32)at[1] - at[0]);
                         nextDistance += (moveDelta * moveWeight) + (blendDelta * blendWeight);
                     }
                     else
@@ -683,6 +686,7 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
     int axisIndex;
     s16* axis;
     s16* blendAxis;
+    s16* at;
     int previousSampleIndex;
     int currentSampleIndex;
     ObjAnimPackedEvent eventEntry;
@@ -917,24 +921,26 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
                 {
                     blendAxis++;
                 }
-                previousAxisValue = moveWeight * axis[previousSampleIndex];
+                at = &axis[previousSampleIndex];
+                previousAxisValue = moveWeight * at[0];
                 if (blendAxis != NULL)
                 {
                     previousAxisValue += blendWeight * blendAxis[previousSampleIndex];
                 }
-                previousAxisNextValue = moveWeight * axis[previousSampleIndex + 1];
+                previousAxisNextValue = moveWeight * at[1];
                 if (blendAxis != NULL)
                 {
                     previousAxisNextValue += blendWeight * blendAxis[previousSampleIndex + 1];
                 }
                 previousInterp = previousAxisValue + previousFraction * (previousAxisNextValue - previousAxisValue);
 
-                currentAxisValue = moveWeight * axis[currentSampleIndex];
+                at = &axis[currentSampleIndex];
+                currentAxisValue = moveWeight * at[0];
                 if (blendAxis != NULL)
                 {
                     currentAxisValue += blendWeight * blendAxis[currentSampleIndex];
                 }
-                currentAxisNextValue = moveWeight * axis[currentSampleIndex + 1];
+                currentAxisNextValue = moveWeight * at[1];
                 if (blendAxis != NULL)
                 {
                     currentAxisNextValue += blendWeight * blendAxis[currentSampleIndex + 1];
