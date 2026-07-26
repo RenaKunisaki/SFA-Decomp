@@ -31,6 +31,10 @@ force_active:
   - gPicMenuReadedBufferMessages
   - gPicMenuFreeReadBufferMessages
   - gPicMenuVideoDecodeThreadStack
+  # gameloop.c: the retail link retained this uncalled function (its jumptable
+  # and the .sbss word only it reads come along via its own references);
+  # dropping it would shorten .text and shift every later section.
+  - cardShowMessage
 
 # Path to the main.dol file.
 object: sys/main.dol
