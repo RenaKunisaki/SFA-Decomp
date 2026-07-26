@@ -1,5 +1,5 @@
 /*
- * shqueenearthwalker (DLL 0x1AC) - the Queen EarthWalker in ThornTail
+ * SH_queenear (DLL 0x1AC) - the Queen EarthWalker in ThornTail
  * Hollow, the giant matriarch dinosaur the player tends.
  *
  * update() is driven by the area's map-event act: it picks the queen's
@@ -9,7 +9,6 @@
  * and the spell-portal opening. stateIndex selects the locomotion move
  * (gQueenEarthWalkerMoveTable/E24 tables); the flags byte tracks the per-frame mode.
  */
-#include "main/dll/dll_801d4198.h"
 #include "sys/objects/lifecycle.h"
 #include "main/gamebit_ids.h"
 #include "game/objects/object.h"
@@ -28,7 +27,9 @@
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/dll/tricky_api.h"
+#include "main/objanim_update.h"
 #include "dlls/object_descriptor.h"
 
 u8 gQueenEarthWalkerEventTableAct1[4] = {1, 0, 0, 0};
@@ -46,7 +47,7 @@ u8 gQueenEarthWalkerEventTableComplete[8] = {5, 7, 8, 9, 0x0A, 0x0B, 0, 0};
 /* object group scanned for the nearest target (player group) */
 #define SHQUEENEARTHWALKER_TARGET_OBJGROUP 0xf
 
-/* QueenEarthWalkerState::flags bits (shared with dll_801d4198.c) */
+/* QueenEarthWalkerState::flags bits */
 #define QEW_FLAG_STARTED   0x1  /* first update ran; per-act logic engaged */
 #define QEW_FLAG_TARGETING 0x2  /* targeting the player */
 #define QEW_FLAG_LATCHED   0x4  /* player position captured */
@@ -80,6 +81,78 @@ ObjectDescriptor gSH_queenearthwalkerObjDescriptor = {
     0,
     (ObjectDescriptorExtraSizeCallback)sh_queenearthwalker_getExtraSize,
 };
+
+/*
+ * Processes animation events that drive the Queen's attack and feeding
+ * behaviour. Event IDs 0/1 enable and disable the eye-animation branch;
+ * events 2/3 enter and leave targeting, with event 3 also arming two
+ * hit-volume pair bits.
+ *
+ * While targeting, the Queen latches the player's position once and then
+ * either runs the bite or eye tracking according to QEW_FLAG_EYE_ANIMS.
+ * QEW_FLAG_INIT_DONE is a one-shot guard that stops looping SFX channel 0x7f.
+ */
+int sh_queenearthwalker_processAnimEvents(GameObject* obj, void* unused, ObjAnimUpdateState* animUpdate)
+{
+    QueenEarthWalkerState* state = (obj)->extra;
+    int i;
+    u8 flags;
+
+    if ((state->flags & QEW_FLAG_INIT_DONE) == 0)
+    {
+        Sfx_StopObjectChannel((int)obj, 0x7f);
+        state->flags &= ~QEW_FLAG_ACTIVE;
+        state->flags |= QEW_FLAG_INIT_DONE;
+    }
+
+    for (i = 0; i < animUpdate->eventCount; i++)
+    {
+        switch (animUpdate->eventIds[i])
+        {
+        case 0:
+            state->flags |= QEW_FLAG_EYE_ANIMS;
+            break;
+        case 1:
+            state->flags &= ~QEW_FLAG_EYE_ANIMS;
+            break;
+        case 2:
+            state->flags |= QEW_FLAG_TARGETING;
+            break;
+        case 3:
+            state->flags &= ~QEW_FLAG_TARGETING;
+            animUpdate->hitVolumePair |= 0x8;
+            animUpdate->hitVolumePair |= 0x40;
+            break;
+        }
+    }
+
+    flags = state->flags;
+    if ((flags & QEW_FLAG_TARGETING) != 0)
+    {
+        if ((flags & QEW_FLAG_LATCHED) == 0)
+        {
+            GameObject* player;
+
+            animUpdate->hitVolumePair &= ~0x8;
+            player = Obj_GetPlayerObject();
+            state->eyeAnimEnabled = 1;
+            state->targetX = player->anim.localPosX;
+            state->targetY = player->anim.localPosY;
+            state->targetZ = player->anim.localPosZ;
+            fn_8003B500(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+        }
+        animUpdate->hitVolumePair &= ~0x40;
+        if ((state->flags & QEW_FLAG_EYE_ANIMS) != 0)
+        {
+            fn_8003B228(obj, (u8*)state + 0x8);
+        }
+        else
+        {
+            characterDoEyeAnims(obj, (u8*)state + 0x8);
+        }
+    }
+    return 0;
+}
 
 void openPortalFn_801d4364(GameObject* obj, void* state)
 {

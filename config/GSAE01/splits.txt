@@ -2893,21 +2893,18 @@ dlls/objects/425_BombPlant/BombPlant.c:
 	.data       start:0x80326D20 end:0x80326D98
 	.sdata2     start:0x803E5358 end:0x803E5384
 
-main/dll/dll_01AA_bombplantspore.c:
+dlls/objects/426_BombPlantSp/BombPlantSp.c:
 	.text       start:0x801D3378 end:0x801D3FF4
 	.data       start:0x80326D98 end:0x80326DE0
 	.sdata      start:0x803DBFC0 end:0x803DBFC8
 	.sdata2     start:0x803E53A0 end:0x803E53A8
 
-main/dll/dll_01AB_bombplantingspot.c:
+dlls/objects/427_BombPlantin/BombPlantin.c:
 	.text       start:0x801D3FF4 end:0x801D4198
 	.data       start:0x80326DE0 end:0x80326E18
 
-main/dll/dll_801d4198.c:
-	.text       start:0x801D4198 end:0x801D4364
-
-main/dll/SH/dll_01AC_shqueenearthwalker.c:
-	.text       start:0x801D4364 end:0x801D4CD0
+dlls/objects/428_SH_queenear/SH_queenear.c:
+	.text       start:0x801D4198 end:0x801D4CD0
 	.data       start:0x80326E18 end:0x80326E98
 	.sdata      start:0x803DBFC8 end:0x803DBFF8
 
