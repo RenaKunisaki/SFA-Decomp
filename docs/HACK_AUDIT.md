@@ -94,7 +94,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0040_credits | 100.0000 | 70.4585 | -29.5415 |
 | main/dlls/objects/641_DR_EarthCal/DR_EarthCal | 100.0000 | 70.8681 | -29.1319 |
 | main/main/dll/dll_0041_warpstoneui | 99.6296 | 70.8788 | -28.7508 |
-| main/main/dll/dll_025B_msplantings | 100.0000 | 71.4044 | -28.5956 |
+| main/dlls/objects/603_MSPlantingS/MSPlantingS | 100.0000 | 71.4044 | -28.5956 |
 | main/main/object | 99.9370 | 71.5331 | -28.4040 |
 | main/main/dll/dll_0038_weirdunusedmenu | 100.0000 | 72.3010 | -27.6990 |
 | main/main/objlib | 99.9354 | 72.3720 | -27.5633 |
