@@ -3300,7 +3300,7 @@ dlls/objects/526_WM_sun/WM_sun.c:
 	.data       start:0x80328D28 end:0x80328D60
 	.sdata2     start:0x803E5F20 end:0x803E5F90
 
-main/dll/WM/dll_020F_wmspiritset.c:
+dlls/objects/527_WM_SpiritSe/WM_SpiritSe.c:
 	.text       start:0x801F7C50 end:0x801F7D34
 	.data       start:0x80328D60 end:0x80328D98
 	.sdata2     start:0x803E5F90 end:0x803E5F98

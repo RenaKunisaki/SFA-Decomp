@@ -1,23 +1,16 @@
 /*
- * wmspiritset (DLL 0x20F) - the Krazoa-spirit display object at Krazoa
- * Palace (map 'warlock' = Dinosaur Planet's Warlock Mountain, hence
- * the WM dll prefix). Retail object def 921 'WM_SpiritSet' (romlist
- * type 0x264); no romlist on any of the 124 retail maps places one -
- * instances are spawned at runtime.
- * Purely visual: init orients the model from the placement rotX byte
- * and, for the retail spirit type, shrinks it to root-motion scale
- * 0.0085; render then draws it only while the placement's visibility
- * game bit is set (or always, when the bit is -1).
+ * WM_SpiritSe (DLL 0x020F) - Krazoa Spirit display object.
+ *
+ * The object is oriented from its placement data and rendered while
+ * its visibility game bit is set.
  */
+#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "main/dll/WM/dll_020F_wmspiritset.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/WM/dll_020F_wmspiritset.h"
-#include "dlls/object_descriptor.h"
 
-/* romlist object-def variant driving this DLL (see docblock): def 921
-   'WM_SpiritSet' (romlist type 0x264). */
+/* Object variant handled by this DLL. */
 #define WMSPIRITSET_SEQID_SPIRITSET 0x264
 
 int wmspiritset_getExtraSize(void)
