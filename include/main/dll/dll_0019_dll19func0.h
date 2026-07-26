@@ -26,7 +26,7 @@ void dll_19_func07(GameObject* obj, GameObject* target, int div, u16* outYaw, u1
 u8 dll_19_func08(GameObject* obj, void* state, f32 dist);
 int dll_19_func09_ret_0(void);
 u16 dll_19_func0A(GameObject* obj);
-f32 dll_19_func0B(int* obj);
+f32 dll_19_func0B(GameObject* obj);
 void dll_19_func0C(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substate, s16 moveMode,
                    int animMove, s8 field25f);
 void dll_19_func0D(GameObject* obj, void* state, f32 gravity, s8 field25f);

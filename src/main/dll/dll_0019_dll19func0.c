@@ -434,13 +434,13 @@ int dll_19_func16(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit,
         {
             if (((Dll19Placement*)state)->oscValue > 2.0f)
             {
-                int other = *(int*)&((GameObject*)obj)->anim.placementData;
+                int other = *(int*)&obj->anim.placementData;
                 ((Dll19Placement*)state)->oscValue = 0.0f;
                 ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
                 ((BaddieState*)baddieState)->hitPoints = 0;
-                ((GameObject*)obj)->anim.alpha = 0;
-                ((GameObject*)obj)->userData1 = 1;
-                ((GameObject*)obj)->anim.flags = ((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN;
+                obj->anim.alpha = 0;
+                obj->userData1 = 1;
+                obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
                 (*gMapEventInterface)->addTime(*(int*)(other + 20), (f32)(s32)(*(s16*)(other + 44) * 60));
             }
         }
@@ -651,7 +651,7 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
     setup->color[2] = state[6];
     setup->color[1] = state[5];
     setup->color[3] = state[7];
-    gDll19NearestObj = Obj_SetupObject(setup, 5, ((GameObject*)obj)->anim.mapEventSlot, -1, source->anim.parent);
+    gDll19NearestObj = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
     return gDll19NearestObj;
 }
 
@@ -721,9 +721,9 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
 
     while (found == 0 && (void*)(obj = *list) != NULL)
     {
-        dp[0] = ((GameObject*)obj)->anim.worldPosX - ((GameObject*)self)->anim.worldPosX;
-        dp[1] = ((GameObject*)obj)->anim.worldPosY - ((GameObject*)self)->anim.worldPosY;
-        dp[2] = ((GameObject*)obj)->anim.worldPosZ - ((GameObject*)self)->anim.worldPosZ;
+        dp[0] = ((GameObject*)obj)->anim.worldPosX - self->anim.worldPosX;
+        dp[1] = ((GameObject*)obj)->anim.worldPosY - self->anim.worldPosY;
+        dp[2] = ((GameObject*)obj)->anim.worldPosZ - self->anim.worldPosZ;
         if (sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1])) < frange)
         {
             if ((s8)((BaddieState*)state)->hitPoints != 0)
@@ -733,9 +733,9 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
                     found = 1;
                 }
                 delta = getAngle(-dp[0], -dp[2]) & 0xffff;
-                if (((GameObject*)self)->anim.parent != NULL)
+                if (self->anim.parent != NULL)
                 {
-                    delta -= (((GameObject*)self)->anim.rotX + *(s16*)(*(int*)&((GameObject*)self)->anim.parent)) & 0xffff;
+                    delta -= (self->anim.rotX + *(s16*)(*(int*)&self->anim.parent)) & 0xffff;
                     if (delta > 0x8000)
                     {
                         delta -= 0xffff;
@@ -747,7 +747,7 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
                 }
                 else
                 {
-                    delta -= ((GameObject*)self)->anim.rotX & 0xffff;
+                    delta -= self->anim.rotX & 0xffff;
                     if (delta > 0x8000)
                     {
                         delta -= 0xffff;
@@ -771,9 +771,9 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
                 }
                 else
                 {
-                    gridIn[0] = ((GameObject*)self)->anim.localPosX;
-                    gridIn[1] = 10.0f + ((GameObject*)self)->anim.localPosY;
-                    gridIn[2] = ((GameObject*)self)->anim.localPosZ;
+                    gridIn[0] = self->anim.localPosX;
+                    gridIn[1] = 10.0f + self->anim.localPosY;
+                    gridIn[2] = self->anim.localPosZ;
                     voxmaps_worldToGrid(gridIn, (s16*)gridA);
                     gridIn[0] = ((GameObject*)obj)->anim.localPosX;
                     gridIn[1] = 10.0f + ((GameObject*)obj)->anim.localPosY;
@@ -1043,9 +1043,9 @@ int dll_19_func0F(GameObject* obj, ObjSeqState* seq, char* st, void* moveHandler
     return 1;
 }
 
-f32 dll_19_func0B(int* obj)
+f32 dll_19_func0B(GameObject* obj)
 {
-    return *(f32*)((char*)((GameObject*)obj)->extra + 0x3e4);
+    return *(f32*)((char*)obj->extra + 0x3e4);
 }
 
 u16 dll_19_func0A(GameObject* obj)
