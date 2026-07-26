@@ -3547,7 +3547,7 @@ dlls/objects/571_DFP_Lightni/DFP_Lightni.c:
 	.data       start:0x80329DD0 end:0x80329E08
 	.sdata2     start:0x803E64E0 end:0x803E64F8
 
-main/dfppowersl.c:
+dlls/objects/572_DFP_PowerSl/DFP_PowerSl.c:
 	.text       start:0x80209F34 end:0x8020A1C8
 	.data       start:0x80329E08 end:0x80329E40
 
