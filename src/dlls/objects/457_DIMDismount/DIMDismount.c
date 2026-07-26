@@ -1,5 +1,5 @@
 /*
- * dimdismountpoint (DLL 0x1C9) - dismount-point object for Dinosaur Island
+ * DIMDismount (DLL 0x1C9) - dismount-point object for Dinosaur Island
  * Mission 2.  Tracks the nearest conveyor object and exposes a signed-distance
  * plane test so the conveyor can determine which side of the dismount point
  * the player is on.
@@ -19,12 +19,12 @@
 #define DIMDISMOUNT_GROUP         0x13
 #define DIMCONVEYOR_GROUP         0xa
 
-void DIMDismountPoint_func0B(GameObject *obj, int flag)
+void DIMDismountPoint_func0B(GameObject* obj, int flag)
 {
     (*gObjectTriggerInterface)->runSequence((flag ^ 1) + 2, (void*)obj, -1);
 }
 
-int DIMDismountPoint_setScale(GameObject *obj)
+int DIMDismountPoint_setScale(GameObject* obj)
 {
     GameObject* player = Obj_GetPlayerObject();
     DIMDismountPointState* state = obj->extra;
@@ -32,9 +32,9 @@ int DIMDismountPoint_setScale(GameObject *obj)
     int side;
 
     result = state->planeD +
-    (state->planeNZ * player->anim.localPosZ +
-        (state->planeNX * player->anim.localPosX +
-            state->planeNY * player->anim.localPosY));
+             (state->planeNZ * player->anim.localPosZ +
+              (state->planeNX * player->anim.localPosX +
+               state->planeNY * player->anim.localPosY));
 
     if (result >= 0.0f)
     {
@@ -48,17 +48,26 @@ int DIMDismountPoint_setScale(GameObject *obj)
     return side;
 }
 
-int DIMDismountPoint_getExtraSize(void) { return sizeof(DIMDismountPointState); }
-
-int DIMDismountPoint_getObjectTypeId(void) { return 0; }
-
-void DIMDismountPoint_free(GameObject* obj) { ObjGroup_RemoveObject((int)obj, DIMDISMOUNT_GROUP); }
-
-void DIMDismountPoint_render(GameObject *obj, int p1, int p2, int p3, int p4, s8 visible)
+int DIMDismountPoint_getExtraSize(void)
 {
-    if (visible == 0 || (obj)->userData2 != 0)
+    return sizeof(DIMDismountPointState);
+}
+
+int DIMDismountPoint_getObjectTypeId(void)
+{
+    return 0;
+}
+
+void DIMDismountPoint_free(GameObject* obj)
+{
+    ObjGroup_RemoveObject((int)obj, DIMDISMOUNT_GROUP);
+}
+
+void DIMDismountPoint_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
+{
+    if (visible == 0 || obj->userData2 != 0)
     {
-        if ((obj)->userData2 != 0)
+        if (obj->userData2 != 0)
         {
             objRenderFn_80041018(obj);
         }
@@ -99,8 +108,7 @@ void DIMDismountPoint_update(GameObject* obj)
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
     }
-    if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0 &&
-        obj->anim.hitVolumeTransforms != NULL)
+    if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0 && obj->anim.hitVolumeTransforms != NULL)
     {
         objRenderFn_80041018(obj);
     }
@@ -116,8 +124,9 @@ void DIMDismountPoint_init(GameObject* obj, DIMDismountPointPlacement* placement
     state->planeNX = mathSinf(3.1415927f * (f32)(s32)obj->anim.rotX / 32768.0f);
     state->planeNY = 0.0f;
     state->planeNZ = mathCosf(3.1415927f * (f32)(s32)obj->anim.rotX / 32768.0f);
-    state->planeD = -(state->planeNX * obj->anim.localPosX + state->planeNY * obj->anim.localPosY +
-        state->planeNZ * obj->anim.localPosZ);
+    state->planeD = -(state->planeNX * obj->anim.localPosX +
+                      state->planeNY * obj->anim.localPosY +
+                      state->planeNZ * obj->anim.localPosZ);
     obj->userData2 = 1;
 }
 
@@ -147,4 +156,3 @@ ObjectDescriptor12 gDIMDismountPointObjDescriptor = {
     (ObjectDescriptorCallback)DIMDismountPoint_setScale,
     (ObjectDescriptorCallback)DIMDismountPoint_func0B,
 };
-
