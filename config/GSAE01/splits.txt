@@ -3770,6 +3770,9 @@ dlls/objects/630/630.c:
 dlls/objects/631_CFWindLiftL/CFWindLiftL.c:
 	.sdata      start:0x803DC370 end:0x803DC378
 
+dlls/objects/632/632.c:
+	.sdata      start:0x803DC378 end:0x803DC380
+
 main/dll/DR/dll_0279_drenergydisc.c:
 	.text       start:0x80220608 end:0x80220808
 	.data       start:0x8032ACC8 end:0x8032AD30
