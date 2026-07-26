@@ -26,7 +26,7 @@
 #include "main/dll/player_api.h"
 #include "main/dll/fireflyLantern.h"
 #include "main/dll/duster.h"
-#include "main/dll/dll_00D8_pinponspike_arc_api.h"
+#include "dlls/objects/216_PinPonSpike.h"
 
 #define DUSTER_CHILD_OBJ_POLLEN_SPIT 0x47b
 
