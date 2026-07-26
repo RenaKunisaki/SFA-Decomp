@@ -2629,7 +2629,7 @@ dlls/objects/472_DIM2PathGen/DIM2PathGen.c:
 	.text       start:0x801B837C end:0x801B8798
 	.data       start:0x803257C8 end:0x80325808
 
-main/dll/dll_01DA_dll1da.c:
+dlls/objects/474/474.c:
 	.text       start:0x801B8798 end:0x801B8B70
 	.data       start:0x80325808 end:0x80325840
 	.sdata2     start:0x803E4AD8 end:0x803E4B08

@@ -1,12 +1,3 @@
-/* DLL 0x1DA - rolling-rock object (DIM2 / SnowHorn region). One placed
- * instance per object: render draws the rock model; init seeds the floor
- * height into extra[0] and lifts the rock up by a fixed amount; hitDetect
- * reacts to priority hit type 0xE (a fire/torch volume) by kicking the
- * rock's XZ velocity from the hit normal and playing the put-out-fire sfx;
- * update runs the rolling physics each frame (velocity damping that depends
- * on whether the rock is grounded, geometry-normal bounce, gravity fall,
- * landing on a contact object, and a floor clamp), then persists the
- * object's position. Re-split from a former multi-object TU. */
 #include "main/audio/sfx_ids.h"
 #include "main/object_render.h"
 #include "main/dll/savegame_object_api.h"
@@ -40,7 +31,6 @@ typedef struct
     f32 nz;
     int pad[8];
 } RockHitInfo;
-
 
 int dll_1DA_getExtraSize(void)
 {
@@ -79,8 +69,6 @@ void dll_1DA_hitDetect(GameObject* obj)
     }
 }
 
-/* dll_1DA_update: rolling-rock physics -- damp velocity, bounce off geometry normal,
- * fall, land on contact object, clamp to floor height. */
 void dll_1DA_update(GameObject* obj)
 {
     Dll1DAState* state;
