@@ -1,5 +1,5 @@
 /*
- * arwproximit (DLL 0x2A7) - a proximity mine in the on-rails Arwing
+ * ARWProximit (DLL 679) - a proximity mine in the on-rails Arwing
  * sections. It spins in place and walks through a small phase machine
  * (state->phase): dormant until the Arwing approaches (phase 0), then it
  * spawns a glowing green light and fades in (phase 1); when the Arwing gets
@@ -39,7 +39,6 @@ enum ArwProximitPhase
     ARWPROXIMIT_PHASE_DETONATE = 3, /* exploded, blast hitbox active */
     ARWPROXIMIT_PHASE_DONE = 4      /* disabled, light freed */
 };
-
 
 const f32 gArwProximitZero[1] = {0.0f};
 const f32 gArwProximitExplosionRadius[1] = {100.0f};
