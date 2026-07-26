@@ -175,9 +175,9 @@ void snowworm_spawnProjectile(GameObject* obj)
     if (locked != 0)
     {
         int* setup = (int*)Obj_AllocObjectSetup(0x24, KALDACHOM_SPIT_OBJ);
-        ((GameObject*)setup)->anim.rootMotionScale = obj->anim.localPosX;
-        ((GameObject*)setup)->anim.localPosX = lbl_803E2C98 + obj->anim.localPosY;
-        ((GameObject*)setup)->anim.localPosY = obj->anim.localPosZ;
+        ((ObjPlacement*)setup)->posX = obj->anim.localPosX;
+        ((ObjPlacement*)setup)->posY = lbl_803E2C98 + obj->anim.localPosY;
+        ((ObjPlacement*)setup)->posZ = obj->anim.localPosZ;
         ((ObjPlacement*)setup)->color[0] = 1;
         ((ObjPlacement*)setup)->color[1] = 4;
         ((ObjPlacement*)setup)->color[3] = 0xff;
