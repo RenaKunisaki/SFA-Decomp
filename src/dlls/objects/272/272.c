@@ -1,4 +1,4 @@
-/* DLL 0x0110 - door objects [0x8017B5C8-0x8017BB80). */
+/* DLL 0x110 - door objects [0x8017B5C8, 0x8017BB80). */
 
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"

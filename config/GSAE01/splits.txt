@@ -1845,7 +1845,7 @@ dlls/objects/251/251.c:
 	.data       start:0x80321088 end:0x803210C0
 	.sdata2     start:0x803E3758 end:0x803E3780
 
-main/dll/dll_0110_door.c:
+dlls/objects/272/272.c:
 	.text       start:0x8017B5C8 end:0x8017BB80
 	.data       start:0x803210C0 end:0x803210F8
 	.sdata2     start:0x803E3780 end:0x803E3798
