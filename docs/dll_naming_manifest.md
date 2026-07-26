@@ -718,7 +718,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x2A0 | Ring (+WCSunRing, WCMoonRing, ANDSilverRi, ARWGoldRing, ARWSilverRi) | CONFIRMED | main/dll/dll_02A0_ring.c | = (canonical) | — |
 | 0x2A1 | ARWLevelCon | CONFIRMED | main/dll/dll_02A1_arwlevelcon.c | main/dll/ARW/dll_02A1_arwlevelcon.c | — |
 | 0x2A2 | ARWSpeedStr | CONFIRMED | main/dll/dll_02A2_arwspeedstr.c | main/dll/ARW/dll_02A2_arwspeedstr.c | — |
-| 0x2A3 | — | NO-RETAIL-NAME | main/dll/dll_02A3.c | = (canonical) | — |
+| 0x2A3 | — | NO-RETAIL-NAME | dlls/objects/675/675.c | = (canonical) | — |
 | 0x2A4 | — | NO-RETAIL-NAME | dlls/objects/676/676.c | = (canonical) | — |
 | 0x2A5 | ARWGenerato | CONFIRMED | dlls/objects/677_ARWGenerato/ARWGenerato.c | = (canonical) | — |
 | 0x2A6 | ARWSquadron (+ARWBigAster, ARWSmallAst, ARWMobileGu, ARWGroundGu, ARWShipFly, ARWShipTwin, ARWShipAnge) | CONFIRMED | dlls/objects/678_ARWSquadron/ARWSquadron.c | = (canonical) | — |

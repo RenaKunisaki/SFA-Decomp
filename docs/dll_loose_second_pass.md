@@ -51,7 +51,7 @@ Total: **64** files.
 | dll_0263_gmmazewell.c | 0 | 0 | 0 | 2 | 0 |
 | dll_0293_suntemple.c | 0 | 0 | 0 | 2 | 0 |
 | dll_0294_wctemple.c | 0 | 0 | 0 | 2 | 0 |
-| dll_02A3.c | 0 | 0 | 0 | 2 | 0 |
+| dlls/objects/675/675.c | 0 | 0 | 0 | 2 | 0 |
 | dll_02AF_tree.c | 0 | 0 | 0 | 2 | 0 |
 | dll_02B3_vortex.c | 0 | 0 | 0 | 2 | 0 |
 | dll_02B4_cntcounter.c | 0 | 0 | 0 | 3 | 0 |

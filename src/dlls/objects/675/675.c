@@ -1,5 +1,5 @@
 /*
- * dll_02A3 - a short-lived spinning debris/particle object.
+ * DLL 0x2A3 - a short-lived spinning debris/particle object.
  *
  * On init it fades in from alpha 0, picks a random starting orientation
  * and random per-axis spin speeds. Each frame it fades the alpha up to a
