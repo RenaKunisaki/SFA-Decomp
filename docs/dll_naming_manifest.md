@@ -686,7 +686,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x280 | DR_CloudPer | CONFIRMED | main/dll/dll_0280_drcloudper.c | main/dll/DR/dll_0280_drcloudper.c | — |
 | 0x281 | DR_EarthCal | CONFIRMED | main/dll/dll_0281_drearthcal.c | main/dll/DR/dll_0281_drearthcal.c | — |
 | 0x282 | BarrelGener | CONFIRMED | main/dll/dll_0282_barrelgener.c | = (canonical) | — |
-| 0x283 | DR_BarrelGr | CONFIRMED | main/dll/dll_0283_drbarrelgr.c | main/dll/DR/dll_0283_drbarrelgr.c | — |
+| 0x283 | DR_BarrelGr | CONFIRMED | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | = (canonical) | — |
 | 0x284 | — (+shopitem, SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis) | NO-RETAIL-NAME | dlls/objects/644/644.c | = (canonical) | — |
 | 0x285 | SPShop | CONFIRMED | dlls/objects/645_SPShop/SPShop.c | = (canonical) | — |
 | 0x286 | SPShopKeeper | CONFIRMED | main/dll/dll_0286_spshopkeeper.c | main/dll/SP/dll_0286_spshopkeeper.c | — |
@@ -930,7 +930,7 @@ name was a deliberate choice by a previous carve:
 | 0x27E | main/dll/dll_027E_drmusiccont.c | main/dll/DR/dll_027E_drmusiccont.c | CONFIRMED |
 | 0x280 | main/dll/dll_0280_drcloudper.c | main/dll/DR/dll_0280_drcloudper.c | CONFIRMED |
 | 0x281 | main/dll/dll_0281_drearthcal.c | main/dll/DR/dll_0281_drearthcal.c | CONFIRMED |
-| 0x283 | main/dll/dll_0283_drbarrelgr.c | main/dll/DR/dll_0283_drbarrelgr.c | CONFIRMED |
+| 0x283 | main/dll/dll_0283_drbarrelgr.c | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | CONFIRMED |
 | 0x285 | main/dll/dll_0285_spshop.c | dlls/objects/645_SPShop/SPShop.c | CONFIRMED |
 | 0x286 | main/dll/dll_0286_spshopkeeper.c | main/dll/SP/dll_0286_spshopkeeper.c | CONFIRMED |
 | 0x287 | main/dll/dll_0287_spscarab.c | dlls/objects/647_SPScarab/SPScarab.c | COMPLETE |
