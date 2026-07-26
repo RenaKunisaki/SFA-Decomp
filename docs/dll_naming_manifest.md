@@ -607,7 +607,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x231 | DFP_ForceAw | COMPLETE | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x232 | DFP_RotateP | COMPLETE | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x233 | DFP_Statue1 | COMPLETE | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
-| 0x234 | DFP_PerchSw | RAW | main/dll/dll_0234_dfpperchsw.c | main/dll/DF/dll_0234_dfpperchsw.c | — |
+| 0x234 | DFP_PerchSw | COMPLETE | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | = (canonical) | Exact recovered retail basename; diagnostic string follows descriptor in retail data order |
 | 0x235 | DFP_TargetBlock | CONFIRMED | main/dll/dll_0235_dfptargetblock.c | main/dll/DF/dll_0235_dfptargetblock.c | — |
 | 0x236 | DFP_LaserBe | CONFIRMED | main/dll/dll_0236_dfplaserbe.c | main/dll/DF/dll_0236_dfplaserbe.c | — |
 | 0x237 | DFPSpPl | COMPLETE | main/dll/dll_0237_dfpsppl.c | main/dll/DF/dll_0237_dfpsppl.c | — |
