@@ -1,5 +1,5 @@
 /*
- * cfmagicwall (DLL 0x162) - magic wall at CF (CloudRunner Fortress).
+ * CFMagicWall (DLL 0x162) - magic wall at CF (CloudRunner Fortress).
  * While the placement's game bit is set, fades the wall by viewing
  * angle and distance: invisible from behind (|yaw delta| > 1/4 turn),
  * otherwise alpha ramps from 0 up to full over the placement's range

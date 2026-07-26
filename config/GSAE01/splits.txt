@@ -2353,7 +2353,7 @@ dlls/objects/351/351.c:
 	.data       start:0x80322F90 end:0x80322FD0
 	.sdata2     start:0x803E43D0 end:0x803E43D4
 
-main/dll/CF/dll_0162_cfmagicwall.c:
+dlls/objects/354_CFMagicWall/CFMagicWall.c:
 	.text       start:0x801A4380 end:0x801A4524
 	.data       start:0x80322FD0 end:0x80323008
 	.sdata2     start:0x803E43D8 end:0x803E43E8
