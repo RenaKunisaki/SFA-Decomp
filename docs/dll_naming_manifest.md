@@ -393,7 +393,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x15B | CFForceFiel | CONFIRMED | dlls/objects/347_CFForceFiel/CFForceFiel.c | = (canonical) | — |
 | 0x15C | CFForceFiel | RAW | dlls/objects/348_CFForceFiel/CFForceFiel.c | = (canonical) | data-only DLL |
 | 0x15D | — (+CFSlideDoor, CFMainSlide) | NO-RETAIL-NAME | dlls/objects/349/349.c | = (canonical) | — |
-| 0x15E | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
+| 0x15E | — | NO-RETAIL-NAME | dlls/objects/350/350.c | = (canonical) | data-only DLL |
 | 0x15F | Attractor (+CFAttractor, DBAttractor) | CONFIRMED | main/dll/dll_015F_attractor.c | = (canonical) | — |
 | 0x160 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
 | 0x161 | CFTreasRobo | RAW | *(none)* | — | no .text fns (descriptor data only) |
