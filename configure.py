@@ -1693,6 +1693,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/348_CFForceFiel/CFForceFiel.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/349/349.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/350/350.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/353_CFTreasRobo/CFTreasRobo.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/351/351.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/352/352.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/CF/dll_0162_cfmagicwall.c", cflags=cflags_dll_noopt),
