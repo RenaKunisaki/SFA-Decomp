@@ -1582,7 +1582,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/244/244.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/245_SidekickBal/SidekickBal.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/246_Area/Area.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00F8_levelname.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/248_LevelName/LevelName.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00F9_projectileswitch.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00FA_invisiblehitswitch.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/dll_147.c"),

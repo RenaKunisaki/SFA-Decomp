@@ -1,5 +1,5 @@
 /*
- * levelname (DLL 0xF8) - the on-screen "level name" banner object.
+ * LevelName (DLL 0xF8) - the on-screen "level name" banner object.
  *
  * A placement-spawned marker that animates a text banner in and out as the
  * player approaches. The obj extra (0x18 bytes) is the shared TFrameAnimator
@@ -169,7 +169,10 @@ void LevelName_initialise(void)
 }
 
 ObjectDescriptor gLevelNameObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     LevelName_initialise,
     LevelName_release,
     0,
