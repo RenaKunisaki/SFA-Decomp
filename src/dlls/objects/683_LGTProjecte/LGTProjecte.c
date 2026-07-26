@@ -1,5 +1,5 @@
 /*
- * lgtprojectedlight (DLL 0x2AB) - a placeable projected (gobo/spot) light.
+ * LGTProjectedlight (DLL 0x2AB) - a placeable projected (gobo/spot) light.
  *
  * init creates a ModelLight of kind PROJECTED, points it from the placement
  * record and loads its projection texture (falling back to
