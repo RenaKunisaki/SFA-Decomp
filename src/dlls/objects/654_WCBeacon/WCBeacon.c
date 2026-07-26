@@ -1,5 +1,5 @@
 /*
- * wcbeacon (DLL 0x28E) - a Tricky-activated beacon puzzle prop in the
+ * WCBeacon (DLL 0x28E) - a Tricky-activated beacon puzzle prop in the
  * Walled City (WC).
  *
  * The beacon advances through WCBEACON_PHASE_*:

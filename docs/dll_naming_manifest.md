@@ -697,7 +697,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x28B | — | NO-RETAIL-NAME | main/dll/dll_028B.c | = (canonical) | — |
 | 0x28C | WCBouncyCra | CONFIRMED | main/dll/dll_028C_wcbouncycra.c | main/dll/WC/dll_028C_wcbouncycra.c | — |
 | 0x28D | WCLevelCont | CONFIRMED | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | — |
-| 0x28E | WCBeacon | COMPLETE | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | — |
+| 0x28E | WCBeacon | COMPLETE | dlls/objects/654_WCBeacon/WCBeacon.c | = (canonical) | — |
 | 0x28F | WCPressureS | CONFIRMED | dlls/objects/655_WCPressureS/WCPressureS.c | = (canonical) | — |
 | 0x290 | WCPushBlock | CONFIRMED | dlls/objects/656_WCPushBlock/WCPushBlock.c | = (canonical) | — |
 | 0x291 | WCTile | COMPLETE | dlls/objects/657_WCTile/WCTile.c | = (canonical) | — |
@@ -939,7 +939,7 @@ name was a deliberate choice by a previous carve:
 | 0x28A | main/dll/dll_028A_wcearthwalker.c | main/dll/WC/dll_028A_wcearthwalker.c | CONFIRMED |
 | 0x28C | main/dll/dll_028C_wcbouncycra.c | main/dll/WC/dll_028C_wcbouncycra.c | CONFIRMED |
 | 0x28D | main/dll/dll_028D_wclevelcont.c | main/dll/WC/dll_028D_wclevelcont.c | CONFIRMED |
-| 0x28E | main/dll/dll_028E_wcbeacon.c | main/dll/WC/dll_028E_wcbeacon.c | COMPLETE |
+| 0x28E | main/dll/dll_028E_wcbeacon.c | dlls/objects/654_WCBeacon/WCBeacon.c | COMPLETE |
 | 0x28F | main/dll/dll_028F_wcpressures.c | dlls/objects/655_WCPressureS/WCPressureS.c | CONFIRMED |
 | 0x290 | main/dll/dll_0290_wcpushblock.c | dlls/objects/656_WCPushBlock/WCPushBlock.c | CONFIRMED |
 | 0x291 | main/dll/dll_0291_wctile.c | dlls/objects/657_WCTile/WCTile.c | COMPLETE |
