@@ -450,7 +450,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x194 | GPSH_Scene | COMPLETE | dlls/objects/404_GPSH_Scene/GPSH_Scene.c | = (canonical) | — |
 | 0x195 | DBSH_Shrine | COMPLETE | dlls/objects/405_DBSH_Shrine/DBSH_Shrine.c | = (canonical) | — |
 | 0x196 | DBSH_Symbol | COMPLETE | dlls/objects/406_DBSH_Symbol/DBSH_Symbol.c | = (canonical) | — |
-| 0x197 | — | NO-RETAIL-NAME | main/dll/dll_0197_dll197.c | = (canonical) | — |
+| 0x197 | — | NO-RETAIL-NAME | dlls/objects/407/407.c | = (canonical) | — |
 | 0x198 | NWSH_levcon | CONFIRMED | main/dll/dll_0198_nwshlevcon.c | main/dll/NW/dll_0198_nwshlevcon.c | — |
 | 0x199 | — | NO-RETAIL-NAME | main/dll/dll_0199_dll199.c | = (canonical) | — |
 | 0x19A | — | NO-RETAIL-NAME | main/dll/dll_019A_dll19a.c | = (canonical) | — |

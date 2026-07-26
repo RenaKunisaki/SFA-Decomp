@@ -1,5 +1,5 @@
 /*
- * dll197 - the three-stage "cup" / spin-symbol contact puzzle object.
+ * DLL 0x197 - the three-stage "cup" / spin-symbol contact puzzle object.
  *
  * objType 0 is the contact cup (Cup197State): it toggles active on a
  * priority hit, plays proximity sfx (channel 0x40), spawns 0x1a3 spark
