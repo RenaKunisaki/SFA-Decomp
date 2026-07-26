@@ -595,7 +595,7 @@ main/dll/pickup.c                                       13 dlls: 0x09D:lbl_80318
 main/dll/pressureSwitch.c                               2 dlls: 0x0DF:Hagabon, 0x0E0:SwarmBaddie
 main/dll/projball1D8.c                                  2 dlls: 0x1A5:NW_levcontr, 0x1A6:SH_tricky
 main/dll/savegame.c                                     9 dlls: 0x091:lbl_8031719C, 0x092:lbl_8031723C, 0x093:lbl_80317468, 0x094:lbl_80317504, 0x095:lbl_803175C8, 0x096:lbl_803177F0, 0x097:lbl_8031788C, 0x098:lbl_80317AD4, 0x099:lbl_80317B74
-main/dll/scarab.c                                       4 dlls: 0x0CB:gDllCBObjDescriptor, 0x0CC:ChukChuk, 0x0CD:IceBall, 0x0CE:dll_CE
+main/dll/scarab.c                                       4 dlls: 0x0CB:gDllCBObjDescriptor, 0x0CC:ChukChuk, 0x0CD:IceBall, 0x0CE:gDllCEObjDescriptor
 main/dll/screens.c                                      3 dlls: 0x09A:lbl_80317BB8, 0x09B:lbl_80317DE0, 0x09C:lbl_80318014
 main/dll/shrine1CE.c                                    3 dlls: 0x19B:dll_19B, 0x19C:dll_19C, 0x19D:dll_19D
 main/dll/tFrameAnimator.c                               2 dlls: 0x0F6:Area, 0x0F8:LevelName

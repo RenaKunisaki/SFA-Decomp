@@ -447,7 +447,7 @@ void dll_CB_init(GameObject* obj, DllCBPlacement* placement, int flags) {
     }
 }
 
-void dll_CB_release_nop(void) {
+void dll_CB_release(void) {
 }
 
 void dll_CB_initialise(void) {

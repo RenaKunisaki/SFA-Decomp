@@ -1097,7 +1097,7 @@ void iceBaddie_init(GameObject* obj, IceBaddiePlacement* placement, int flags) {
     objectState->baddie.physicsActive = 0;
 }
 
-void iceBaddie_release_nop(void) {
+void iceBaddie_release(void) {
 }
 
 void iceBaddie_initialise(void) {
@@ -1110,7 +1110,7 @@ ObjectDescriptor12 gIceBaddieObjDescriptor = {
     0,
     OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
     (ObjectDescriptorCallback)iceBaddie_initialise,
-    (ObjectDescriptorCallback)iceBaddie_release_nop,
+    (ObjectDescriptorCallback)iceBaddie_release,
     0,
     (ObjectDescriptorCallback)iceBaddie_init,
     (ObjectDescriptorCallback)iceBaddie_update,

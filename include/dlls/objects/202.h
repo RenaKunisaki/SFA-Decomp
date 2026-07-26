@@ -58,7 +58,7 @@ void iceBaddie_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, in
 void iceBaddie_hitDetect(GameObject* obj);
 void iceBaddie_update(GameObject* obj, int unusedA, int unusedB);
 void iceBaddie_init(GameObject* obj, IceBaddiePlacement* placement, int flags);
-void iceBaddie_release_nop(void);
+void iceBaddie_release(void);
 void iceBaddie_initialise(void);
 
 extern IceBaddieStateHandler gIceBaddieStateHandlersA[];

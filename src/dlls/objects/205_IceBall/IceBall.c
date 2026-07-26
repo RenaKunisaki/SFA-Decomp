@@ -224,7 +224,7 @@ ObjectDescriptor12 gDllCBObjDescriptor = {
     0,
     OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
     (ObjectDescriptorCallback)dll_CB_initialise,
-    (ObjectDescriptorCallback)dll_CB_release_nop,
+    (ObjectDescriptorCallback)dll_CB_release,
     0,
     (ObjectDescriptorCallback)dll_CB_init,
     (ObjectDescriptorCallback)dll_CB_update,

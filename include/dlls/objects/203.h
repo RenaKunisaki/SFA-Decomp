@@ -50,7 +50,7 @@ void dll_CB_advanceAI(GameObject* obj, GroundBaddieState* objectState, GroundBad
 int dll_CB_seqFn(GameObject* obj, int unused, struct ObjSeqState* sequenceState);
 
 void dll_CB_initialise(void);
-void dll_CB_release_nop(void);
+void dll_CB_release(void);
 void dll_CB_init(GameObject* obj, DllCBPlacement* placement, int flags);
 void dll_CB_update(GameObject* obj);
 void dll_CB_hitDetect(GameObject* obj);

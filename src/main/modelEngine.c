@@ -5,6 +5,7 @@
 #include "dlls/objects/203.h"
 #include "dlls/objects/204_ChukChuk.h"
 #include "dlls/objects/205_IceBall.h"
+#include "dlls/objects/206.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -109,7 +110,7 @@ extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19, dll
     dll_19C;
 extern ResourceDescriptor dll_19D, dll_19E, dll_1CE, dll_1CF, dll_1D6, dll_1DA, dll_1DB, dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
-extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_CE, dll_D3, dll_F7, expgfx_funcs;
+extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, dll_F7, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
@@ -1125,7 +1126,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDllCBObjDescriptor,
     (ResourceDescriptor*)&gChukChukObjDescriptor,
     (ResourceDescriptor*)&gIceBallObjDescriptor,
-    &dll_CE,
+    (ResourceDescriptor*)&gDllCEObjDescriptor,
     (ResourceDescriptor*)&gCannonClawObjDescriptor,
     (ResourceDescriptor*)&gGrimbleObjDescriptor,
     (ResourceDescriptor*)&gTumbleWeedBushObjDescriptor,
