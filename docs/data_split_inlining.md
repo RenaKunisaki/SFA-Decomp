@@ -87,7 +87,7 @@ not the filename.
 Add a `.sdata2` line to the unit's entry (end address is exclusive):
 
 ```
-main/dll/dll_011F_magiccavetop.c:
+dlls/objects/287_MagicCaveTo/MagicCaveTo.c:
 	.text       start:0x8018AFC8 end:0x8018B7B0
 	.sdata2     start:0x803E3C30 end:0x803E3C78
 ```
@@ -230,7 +230,7 @@ else inlined as plain literals. Complete (80/80 data).
 ## Worked example — `magiccavetop` (commit `ad84d1a5`)
 
 Moved 16 `.sdata2` floats (`225 … 10.0`) + the conversion bias out of the auto
-pool into `dll_011F_magiccavetop.c`.
+pool into `src/dlls/objects/287_MagicCaveTo/MagicCaveTo.c`.
 
 | Step | fuzzy | data | linked/complete |
 |---|---|---|---|

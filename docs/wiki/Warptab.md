@@ -216,7 +216,8 @@ literal — these are the runtime "typed pointer into WARPTAB" equivalent of the
 
 - **`dll_00F0_warppoint.c`** (DLL `0x00F0`, warppoint/save-point markers): placement field
   `def->warpMapIdx` (`s8`, offset `0x1a`) is passed straight to `warpToMap`.
-- **`dll_011F_magiccavetop.c`** / **`dll_011E_magiccavebottom.c`** (DLL `0x011F`/`0x011E`, Magic
+- **`src/dlls/objects/287_MagicCaveTo/MagicCaveTo.c`** /
+  **`src/dlls/objects/286_MagicCaveBo/MagicCaveBo.c`** (DLL `0x011F`/`0x011E`, Magic
   Cave top/bottom): `MagiccavetopPlacement.warpMapId` (`s8`) is one placement field; a *second*
   field, `.gameBitValue` (`s8`), is written into game bit `0x1B8`
   (`GAMEBIT_MagicCaveExitWarp` in `include/main/gamebits.h`, commented there as "WARPTAB index that

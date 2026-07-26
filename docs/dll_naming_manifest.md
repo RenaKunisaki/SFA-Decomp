@@ -332,7 +332,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x11C | — (+LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT) | NO-RETAIL-NAME | dlls/objects/284/284.c | = (canonical) | — |
 | 0x11D | — (+TreasureChe, MapTreasure) | NO-RETAIL-NAME | dlls/objects/285/285.c | = (canonical) | — |
 | 0x11E | MagicCaveBo | CONFIRMED | dlls/objects/286_MagicCaveBo/MagicCaveBo.c | = (canonical) | — |
-| 0x11F | MagicCaveTop | CONFIRMED | main/dll/dll_011F_magiccavetop.c | = (canonical) | — |
+| 0x11F | MagicCaveTo | CONFIRMED | dlls/objects/287_MagicCaveTo/MagicCaveTo.c | = (canonical) | — |
 | 0x120 | TrickyGuardspot | CONFIRMED | main/dll/dll_0120_trickyguardspot.c | = (canonical) | — |
 | 0x121 | InfoText (+LINKF_InfoT, LinkG_InfoT, MMPass_Info, DIM_InfoTex, NW_InfoText, SH_InfoPoin, SH_FireWeed, VFP_InfoTex) | CONFIRMED | main/dll/dll_0121_infotext.c | = (canonical) | — |
 | 0x122 | CCTestInfot | CONFIRMED | main/dll/dll_0122_cctestinfot.c | main/dll/CC/dll_0122_cctestinfot.c | — |
