@@ -1,5 +1,5 @@
 /*
- * sbminifire (DLL 0x1F3) - the small fire/spark projectile spawned during
+ * SB_MiniFire (DLL 0x1F3) - the small fire/spark projectile spawned during
  * the ShipBattle (SB) set. At init it picks a randomised launch velocity,
  * a cycling resource variant (gSbMiniFireResourceVariant, 1..3) and plays its spawn
  * sfx. Each tick it integrates its position, spins, spawns three partfx
@@ -9,20 +9,13 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/shipbattlestate_struct.h"
 #include "main/object_render.h"
-#include "main/dll/sbkytecagestate_struct.h"
-#include "main/dll/sbfireballstate_struct.h"
-#include "main/dll/sbcloudballstate_struct.h"
-
 #include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "sys/objects.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
@@ -32,37 +25,6 @@
 int gSbMiniFireResourceVariant = 1;
 
 #define SBMINIFIRE_PARTFX 0xa0
-
-/*
- * Per-object extra state for the ShipBattle cloud-ball projectile
- * (SB_CloudBall_getExtraSize == 0x24).
- */
-
-STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
-
-/*
- * Per-object extra state for the ShipBattle fireball projectile
- * (SB_FireBall_getExtraSize == SB_FIREBALL_EXTRA_SIZE == 0x18).
- */
-
-STATIC_ASSERT(sizeof(SBFireBallState) == 0x18);
-
-/*
- * Per-object extra state for the ShipBattle kyte cage
- * (SB_KyteCage_getExtraSize == 0x8).
- */
-
-STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
-
-/*
- * Per-object extra state for the ShipBattle chain segment
- * (ShipBattle_getExtraSize == 0x140). The head is handed to
- * gObjectTriggerInterface (+0x1C/+0x24) - interface-owned record;
- * only the locally-evidenced fields are named.
- */
-
-STATIC_ASSERT(sizeof(ShipBattleState) == 0x140);
-
 
 int SB_MiniFire_getExtraSize(void)
 {
@@ -154,8 +116,8 @@ void SB_MiniFire_init(GameObject* obj)
         gSbMiniFireResourceVariant = 1;
     }
     Resource_Release(resource);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_trpopn_c_35);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_2ca);
+    Sfx_PlayFromObject((u32)obj, SFXTRIG_en_trpopn_c_35);
+    Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_2ca);
 }
 
 void SB_MiniFire_release(void)

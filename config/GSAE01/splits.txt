@@ -3081,7 +3081,7 @@ dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c:
 	.data       start:0x80327E80 end:0x80327EB8
 	.sdata2     start:0x803E5920 end:0x803E5924
 
-main/dll/SB/dll_01F3_sbminifire.c:
+dlls/objects/499_SB_MiniFire/SB_MiniFire.c:
 	.text       start:0x801E519C end:0x801E55B8
 	.data       start:0x80327EB8 end:0x80327EF0
 	.sdata      start:0x803DC098 end:0x803DC0A0
