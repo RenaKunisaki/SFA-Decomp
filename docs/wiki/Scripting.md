@@ -404,7 +404,7 @@ load/unload, level-bucket lock/unlock, NPC dialogue, texture defrag, nearby-time
 
 Cross-references verified by reading the source at the paths below. This page maps almost
 entirely onto `src/main/objseq.c` (DLL 0x02, "ObjSeq" — see `docs/wiki/DLLs.md`), with the
-Triggers section in `src/main/dll/dll_0126_trigger.c` and the Player Commands section in
+Triggers section in `src/dlls/objects/294/294.c` and the Player Commands section in
 `src/dlls/objects/195_Player/player.c`.
 
 ### Starting a sequence / the sequence-ID lookup chain
@@ -598,7 +598,7 @@ individually re-verified in this pass but follow the same `switch (cmdByte)` str
 
 ### Triggers
 
-`src/main/dll/dll_0126_trigger.c` (DLL 0x126) is the wiki's entire "Triggers" section:
+`src/dlls/objects/294/294.c` (DLL 0x126) is the wiki's entire "Triggers" section:
 
 - `TriggerPlacement`/`TriggerState` (top of the file) are `STATIC_ASSERT`-verified against exactly
   the wiki's offsets: `triggerId`@0x38 (wiki `localId`), `gameBitSrc`@0x44 (wiki `activate`),
@@ -607,14 +607,14 @@ individually re-verified in this pass but follow the same `switch (cmdByte)` str
   the `gateBitSrc[4]` array span (0x48-0x4F), specifically its 3rd `s16` element. `size`/`rot`/
   `target` (wiki 0x3A/0x3D/0x43) fall inside an as-yet-unnamed `pad3A[0x44-0x3A]` gap — not
   individually named fields in this repo yet.
-- `Trigger_init` (`dll_0126_trigger.c:212`) `switch (((TriggerPlacement*)params)->typeId)` matches
+- `Trigger_init` (`src/dlls/objects/294/294.c:920`) `switch (((TriggerPlacement*)params)->typeId)` matches
   **all nine** of the wiki's `Types of Triggers` defNos exactly, case-for-case: `0x4b`→TrigPnt
   (reads `params[0x3a]*2` as a diameter→radius, matching "sphere, diameter size[0]"), `0x4c`→TrigPln,
   `0x230`→TrigCyl (`params[0x3a]*2`, squared, matching "diameter size[0]"), `0x4d`→TrigArea (reads
   `params[0x3d]`/`params[0x3e]` into rotX/rotY, matching "rotated by quaternion {rot[0],rot[1],0}"),
   `0x54`→TrigBits (copies all 4 `gateBitSrc` entries), `0x4e`/`0x4f`/`0x50`→TrigTime/TrigButt/
   TriggSetp (no init needed), `0xf4`→TrigCrve.
-- `objInterpretSeq` (`dll_0126_trigger.c:269`) *is* `0x801993b0` per symbols.txt
+- `objInterpretSeq` (`src/dlls/objects/294/294.c:91`) *is* `0x801993b0` per symbols.txt
   (`objInterpretSeq = .text:0x801993B0`) and its header comment (already in-repo) independently
   describes the same flags-byte gating the wiki documents (enter/exit bits, once-only latches,
   unconditional/override-disabled bits) via the file's own `TRIGGER_CMD_*`/`TRIGGER_SFLAG_*`

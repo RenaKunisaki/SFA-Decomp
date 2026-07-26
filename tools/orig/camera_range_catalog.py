@@ -111,7 +111,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Trigger cleanup",
-        "src/main/dll/dll_0126_trigger.c",
+        "src/dlls/objects/294/294.c",
         "Trigger_free",
         "Stops owned SFX but does not synthesize an exit leg or replay a missed command.",
         "critical",
@@ -146,7 +146,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Camera-target trigger mode",
-        "src/main/dll/dll_0126_trigger.c",
+        "src/dlls/objects/294/294.c",
         "Trigger_hitDetect target kind 2",
         "The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2.",
         "inactive_retail",

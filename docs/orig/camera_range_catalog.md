@@ -203,12 +203,12 @@ The companion CSV contains every individual placement. This table is the complet
 | Residency load | `src/main/shader.c` | `objShouldLoad` | Selects Fox only for flag 0x04; otherwise uses the current view/load-center position and bound*8. | `critical` |
 | Residency unload | `src/main/rcp_dolphin.c` | `objShouldUnload` | Mirrors center selection, honors group/owner pins, and unloads beyond runtime radius + 40. | `critical` |
 | Plane crossing | `src/main/dll/dll_80198a00.c` | `fn_80198DE8` | Tests the previous-to-current target segment against a finite plane; missed movement is not replayed. | `critical` |
-| Trigger cleanup | `src/main/dll/dll_0126_trigger.c` | `Trigger_free` | Stops owned SFX but does not synthesize an exit leg or replay a missed command. | `critical` |
+| Trigger cleanup | `src/dlls/objects/294/294.c` | `Trigger_free` | Stops owned SFX but does not synthesize an exit leg or replay a missed command. | `critical` |
 | Untargeted staff projectile origin | `src/dlls/objects/195_Player/player.c` | `staffShootFireball / fn_802AA014` | Untargeted projectiles allocate at current camera XYZ and derive velocity from camera orientation/FOV. A stored camera can therefore originate a hit remotely. | `high_remote_hit` |
 | Arwing trace origin | `src/main/dll/ARW/dll_029A_arwarwing.c` | `arwarwing_SeqFn / arwarwing_hitDetect` | A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it. | `high_hit_detection` |
 | Tricky warp visibility | `src/main/dll/dll_0100_trickywarp.c` | `TrickyWarp_update` | Permits companion relocation only when the warp host is outside the view frustum. | `investigate` |
 | Door side routing | `src/dlls/objects/244/244.c` | `DoorF4 update events` | Code chooses a side GameBit from the camera side of a door plane, but observed retail placements have zero masks or disabled side bits. | `inactive_retail` |
-| Camera-target trigger mode | `src/main/dll/dll_0126_trigger.c` | `Trigger_hitDetect target kind 2` | The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2. | `inactive_retail` |
+| Camera-target trigger mode | `src/dlls/objects/294/294.c` | `Trigger_hitDetect target kind 2` | The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2. | `inactive_retail` |
 | Proximity mine cull branch | `src/main/proximitymine_update.c` | `ProximityMine_update` | Camera-derived opacity selects a path point versus target-root attack anchor; object is runtime-spawned and situational. | `investigate` |
 | DIM Tricky LOS | `src/main/dll/DIM/dll_019E_dim_tricky.c` | `DIMTricky_render` | Uses camera distance and voxel LOS to keep/free a visibility effect source. | `presentation` |
 | Combat-source visuals | `src/main/dll/dll_02B1_cmbsrc.c` | `cmbsrc_updateVisuals` | Camera distance gates glow/effect rendering, not encounter completion or spawning. | `presentation` |

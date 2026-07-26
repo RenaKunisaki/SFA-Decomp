@@ -1663,7 +1663,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0133_sfxplayer.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_80198a00.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/mmp_gyservent.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0126_trigger.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
+            Object(NonMatching, "dlls/objects/294/294.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0145_cloudprisoncontrol.c", cflags=cflags_dll_noopt),
             Object(
                 NonMatching,

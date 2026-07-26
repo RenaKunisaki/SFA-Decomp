@@ -54,9 +54,9 @@ lives in the map/sequence data, not the code. Confirm by reading that data live.
 
 | file:line | function | expression |
 |---|---|---|
-| `src/main/dll/dll_0126_trigger.c:179` | StopFromObject | `(u16)((entry[2] << 8) \| entry[3])` |
-| `src/main/dll/dll_0126_trigger.c:356` | PlayFromObject | `(u16)((p[2] << 8) \| p[3])` |
-| `src/main/dll/dll_0126_trigger.c:360` | StopFromObject | `(u16)((p[2] << 8) \| p[3])` |
+| `src/dlls/objects/294/294.c:667` | StopFromObject | `(u16)((entry[2] << 8) \| entry[3])` |
+| `src/dlls/objects/294/294.c:213` | PlayFromObject | `(u16)((p[2] << 8) \| p[3])` |
+| `src/dlls/objects/294/294.c:217` | StopFromObject | `(u16)((p[2] << 8) \| p[3])` |
 | `src/main/objseq.c:2464` | PlayFromObject | `(u16)(*(s16*)(cmd + 2) & 0xfff)` |
 | `src/main/objseq.c:2468` | PlayFromObject | `(u16)(*(s16*)(cmd + 2) & 0xfff)` |
 

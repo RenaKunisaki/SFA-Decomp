@@ -2202,7 +2202,7 @@ main/dll/dll_80198a00.c:
 main/dll/mmp_gyservent.c:
 	.text       start:0x80198FA4 end:0x801993B0
 
-main/dll/dll_0126_trigger.c:
+dlls/objects/294/294.c:
 	.text       start:0x801993B0 end:0x8019AA7C
 	.data       start:0x803224E0 end:0x80322518
 

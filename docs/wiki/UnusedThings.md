@@ -214,7 +214,8 @@ FileId `0xc` is `LACTIONS.bin` (`sResourceFileNameLactionsBin`, see [Files](File
 ever reading from it, and unconditionally returns 0 — i.e. "reads entries, then immediately
 discards them without using them" and "entries are 0x28 bytes each" are both confirmed directly from
 source, not inferred. `getLActions` is called from ~15 `dll_*.c` files across the codebase
-(`dll_01F8_wmgalleon.c`, `dll_01F0_sbkytecage.c`, `dll_012A_cfcrate.c`, `dll_0126_trigger.c`, etc.),
+(`dll_01F8_wmgalleon.c`, `dll_01F0_sbkytecage.c`, `dll_012A_cfcrate.c`,
+`src/dlls/objects/294/294.c`, etc.),
 always with the same no-op result.
 
 ### SCREENS.bin / DLL 0x11 — exact match, plus one refinement
