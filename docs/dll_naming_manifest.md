@@ -374,7 +374,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x148 | CFGuardian | COMPLETE | dlls/objects/328_CFGuardian/CFGuardian.c | = (canonical) | — |
 | 0x149 | — (+CFWindLift, CFTreasWind) | NO-RETAIL-NAME | dlls/objects/329/329.c | = (canonical) | — |
 | 0x14A | CFPowerBase | CONFIRMED | dlls/objects/330_CFPowerBase/CFPowerBase.c | = (canonical) | — |
-| 0x14B | CFMainCrystal | CONFIRMED | main/dll/dll_014B_cfmaincrystal.c | main/dll/CF/dll_014B_cfmaincrystal.c | — |
+| 0x14B | CFMainCryst | CONFIRMED | dlls/objects/331_CFMainCryst/CFMainCryst.c | = (canonical) | — |
 | 0x14C | babycloudrunner (+CFCloudBaby, CFAmbientCl, SHCloudBaby) | GUESSED | main/dll/dll_014C_babycloudrunner.c | = (canonical) | — |
 | 0x14D | LaserBeam | COMPLETE | *(none)* | — | no .text fns (descriptor data only) |
 | 0x14E | CFPrisonGuard | CONFIRMED | main/dll/dll_014E_cfprisonguard.c | main/dll/CF/dll_014E_cfprisonguard.c | — |
@@ -798,7 +798,6 @@ name was a deliberate choice by a previous carve:
 | 0x10F | main/dll/dll_010F_mmpbridge.c | dlls/objects/271_MMP_Bridge/MMP_Bridge.c | COMPLETE |
 | 0x114 | main/dll/dll_0114_immultiseq.c | dlls/objects/276_IMMultiSeq/IMMultiSeq.c | COMPLETE |
 | 0x116 | main/dll/dll_0116_wmcolumn.c | dlls/objects/278_WM_Column/WM_Column.c | COMPLETE |
-| 0x14B | main/dll/dll_014B_cfmaincrystal.c | main/dll/CF/dll_014B_cfmaincrystal.c | CONFIRMED |
 | 0x14E | main/dll/dll_014E_cfprisonguard.c | main/dll/CF/dll_014E_cfprisonguard.c | CONFIRMED |
 | 0x14F | main/dll/dll_014F_cfprisonuncle.c | main/dll/CF/dll_014F_cfprisonuncle.c | CONFIRMED |
 | 0x153 | main/dll/dll_0153_cfperch.c | main/dll/CF/dll_0153_cfperch.c | COMPLETE |

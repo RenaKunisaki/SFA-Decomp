@@ -1,9 +1,9 @@
 /*
- * cfmaincrystal (DLL 0x14B) - the CloudRunner Fortress main crystal.
+ * CFMainCryst (DLL 0x14B) - the CloudRunner Fortress main crystal.
  * Collects pylon beam reports (0x110001..3 messages) and the crystal
  * position (0x110004), draws up to ten beams between charged pylons
  * and the crystal, charges up once all three pylons are lit and fires
- * the convergence beam. Carved from the sandwormBoss container.
+ * the convergence beam.
  */
 
 #include "main/dll/partfx_interface.h"
