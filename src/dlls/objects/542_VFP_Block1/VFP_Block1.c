@@ -69,13 +69,13 @@ void VFP_Block1_update(GameObject* obj)
     }
 }
 
-void VFP_Block1_init(int obj, int data)
+void VFP_Block1_init(GameObject* obj, int data)
 {
     VfpBlock1Placement* def = (VfpBlock1Placement*)data;
-    VfpBlock1State* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (((s32)def->rotXByte) << 8);
+    VfpBlock1State* state = obj->extra;
+    obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;
-    ((GameObject*)obj)->objectFlags |= (VFPBLOCK1_OBJFLAG_HIDDEN | VFPBLOCK1_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (VFPBLOCK1_OBJFLAG_HIDDEN | VFPBLOCK1_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void VFP_Block1_release(void)
