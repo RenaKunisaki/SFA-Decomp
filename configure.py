@@ -1965,6 +1965,7 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_0271_drakorhoverpad_updatemain.c", cflags=cflags_dll_noopt_nocse_nodead_nofpcontract_noautoinline),
             Object(NonMatching, "main/dll/dll_0272_hightop.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/623/623.c", cflags=cflags_dll_noopt),
+            Object(MatchingFor("GSAE01"), "dlls/objects/624_DR_Rock/DR_Rock.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/dll_0273_firepipe.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_0279_drenergydisc.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/DR/dll_027C_drlightbea.c", cflags=cflags_dll_noopt),
