@@ -274,9 +274,9 @@ extern f32 lbl_803E25F4;
 extern f32 lbl_803E25F8;
 extern f32 lbl_803E25FC;
 
-void baddie_updateEngagementState(int* obj, int* sub);
-void baddieTurnTowardTarget(int* node, int* sub);
-void baddie_decodePlayerAttackFlags(int* obj, u32 flags, f32 f, u16 val);
+void baddie_updateEngagementState(GameObject* obj, TrickyState* sub);
+void baddieTurnTowardTarget(GameObject* node, TrickyState* sub);
+void baddie_decodePlayerAttackFlags(TrickyState* state, u32 flags, f32 f, u16 val);
 void Tricky_findNearbyFloorHeights(GameObject* obj, int state, f32* nearestFloorY, f32* nearestSpecialY);
 typedef struct
 {
@@ -505,7 +505,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
             ((TrickyState*)state)->freezeRecoverTimer = lbl_803E2574;
         }
         fn_802972B4((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &impactSfx);
-        baddie_decodePlayerAttackFlags((int*)state, hitEffects, fxA, impactSfx);
+        baddie_decodePlayerAttackFlags((TrickyState*)state, hitEffects, fxA, impactSfx);
         if (hit != 0)
         {
             if (fromHit)
@@ -515,7 +515,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     params.scale = lbl_803E258C;
                     (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x7fb, NULL, 0x64, &params);
                     (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x7fc, NULL, 0x32, NULL);
-                    Obj_Shatter((GameObject*)obj);
+                    Obj_Shatter(obj);
                     *(u16*)&((TrickyState*)state)->eventTime = 0;
                     ((TrickyState*)state)->flags2E8 = ((TrickyState*)state)->flags2E8 & ~0x20LL;
                     ((TrickyState*)state)->flags2E8 = ((TrickyState*)state)->flags2E8 | 0x200;
@@ -549,7 +549,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                             {
                                 (obj)->anim.velocityZ = fxB;
                             }
-                            vecRotateZXY(&((GameObject*)obj)->anim.rotX, &((GameObject*)obj)->anim.velocityX);
+                            vecRotateZXY(&obj->anim.rotX, &obj->anim.velocityX);
                         }
                     }
                 }
@@ -728,7 +728,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_fox_kick2);
                 ((FrozenByte2F6*)((TrickyState*)state)->pad2F6)->fadeCounter = 0x1f;
             }
-            Obj_StartModelFadeIn((GameObject*)obj, 0x12c);
+            Obj_StartModelFadeIn(obj, 0x12c);
         }
         else
         {
@@ -741,54 +741,54 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
     }
 }
 
-void baddie_decodePlayerAttackFlags(int* obj, u32 flags, f32 f, u16 val)
+void baddie_decodePlayerAttackFlags(TrickyState* state, u32 flags, f32 f, u16 val)
 {
-    ((TrickyState*)obj)->flags2F1 = 0;
+    state->flags2F1 = 0;
     if ((flags & 0x2) != 0)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x20);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x20);
     }
     if ((flags & 0x1) != 0)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x40);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x40);
     }
     if ((flags & 0x4) != 0)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x1);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x1);
     }
     if ((flags & 0x8) != 0)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x2);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x2);
     }
     if ((flags & 0x10) != 0)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x4);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x4);
     }
     if (lbl_803E25A4 == f)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x8);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x8);
     }
     else if (lbl_803E2594 == f)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x10);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x10);
     }
     if ((flags & 0x80) != 0)
     {
-        ((TrickyState*)obj)->flags2F1 = (u8)(((TrickyState*)obj)->flags2F1 | 0x80);
+        state->flags2F1 = (u8)(state->flags2F1 | 0x80);
     }
     if ((flags & 0x100) != 0)
     {
-        ((TrickyState*)obj)->spawnBits = 1;
+        state->spawnBits = 1;
     }
     else if ((flags & 0x200) != 0)
     {
-        ((TrickyState*)obj)->spawnBits = 2;
+        state->spawnBits = 2;
     }
     else if ((flags & 0x400) != 0)
     {
-        ((TrickyState*)obj)->spawnBits = 3;
+        state->spawnBits = 3;
     }
-    ((TrickyState*)obj)->impactSfxId = val;
+    state->impactSfxId = val;
 }
 
 int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAltMode, u32 mode)
@@ -1021,7 +1021,7 @@ u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to)
     return visible;
 }
 
-void baddie_updateSightQuadrants(int obj, int state, f32 radius)
+void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius)
 {
     u8 traceHit[4];
     s16 probeGrid[4];
@@ -1037,25 +1037,25 @@ void baddie_updateSightQuadrants(int obj, int state, f32 radius)
     s16 setupId;
 
     visibilityBits = gTrickyVisibilityBitsInit;
-    probe.x = ((GameObject*)obj)->anim.localPosX;
-    probe.y = lbl_803E25A0 + ((GameObject*)obj)->anim.localPosY;
-    probe.z = ((GameObject*)obj)->anim.localPosZ;
+    probe.x = obj->anim.localPosX;
+    probe.y = lbl_803E25A0 + obj->anim.localPosY;
+    probe.z = obj->anim.localPosZ;
     voxmaps_worldToGrid((f32*)&probe, baseGrid);
-    if (*(u32*)&((GameObject*)obj)->anim.parent != 0)
+    if (*(u32*)&obj->anim.parent != 0)
     {
-        baseAngle = *(s16*)obj + **(s16**)&((GameObject*)obj)->anim.parent;
+        baseAngle = obj->anim.rotX + **(s16**)&obj->anim.parent;
     }
     else
     {
-        baseAngle = *(s16*)obj;
+        baseAngle = obj->anim.rotX;
     }
     for (i = 0; i < 4; i++)
     {
         angle = (lbl_803E25B4 * (f32)(s32)((s32)baseAngle + ((u32)(u16)i << 0xe))) / lbl_803E25B8;
-        probe.x = ((GameObject*)obj)->anim.worldPosX - (radius * mathSinf(angle));
-        probe.y = ((GameObject*)obj)->anim.worldPosY;
-        probe.z = ((GameObject*)obj)->anim.worldPosZ - (radius * mathCosf(angle));
-        setupId = ((GameObject*)obj)->anim.seqId;
+        probe.x = obj->anim.worldPosX - (radius * mathSinf(angle));
+        probe.y = obj->anim.worldPosY;
+        probe.z = obj->anim.worldPosZ - (radius * mathCosf(angle));
+        setupId = obj->anim.seqId;
         if (((((setupId != 0x613) && (setupId != 0x642)) && (setupId != 0x3fe)) &&
              ((setupId != 0x7c6) && (setupId != 0x7c8))) &&
             ((setupId != 0x251) && (setupId != 0x851)))
@@ -1063,10 +1063,10 @@ void baddie_updateSightQuadrants(int obj, int state, f32 radius)
             probe.y += lbl_803E25A0;
         }
         voxmaps_worldToGrid((f32*)&probe, probeGrid);
-        PSVECSubtract((f32*)(obj + 0x18), (f32*)&probe, (f32*)&delta);
+        PSVECSubtract(&obj->anim.worldPosX, (f32*)&probe, (f32*)&delta);
         if (PSVECMag((f32*)&delta) < enemySightRange)
         {
-            if (*(u32*)&((GameObject*)obj)->anim.parent != 0)
+            if (*(u32*)&obj->anim.parent != 0)
             {
                 visible = 1;
             }
@@ -1083,22 +1083,22 @@ void baddie_updateSightQuadrants(int obj, int state, f32 radius)
         {
             visible = 0;
         }
-        if ((visible != 0) && ((((TrickyState*)state)->controlFlags & TRICKY_CONTROL_FLAG_BBOX_BLOCKS_SIGHT) != 0))
+        if ((visible != 0) && ((state->controlFlags & TRICKY_CONTROL_FLAG_BBOX_BLOCKS_SIGHT) != 0))
         {
-            if (objBboxFn_800640cc((f32*)(obj + 0x18), (f32*)&probe, lbl_803E256C, 0, &bboxHit,
-                                   (GameObject*)obj,
-                                   ((TrickyState*)state)->unk261, -1, 0, 0) != 0)
+            if (objBboxFn_800640cc(&obj->anim.worldPosX, (f32*)&probe, lbl_803E256C, 0, &bboxHit,
+                                   obj,
+                                   state->unk261, -1, 0, 0) != 0)
             {
                 visible = 0;
             }
         }
         if (visible != 0)
         {
-            ((TrickyState*)state)->flags2DC |= visibilityBits.w[i];
+            state->flags2DC |= visibilityBits.w[i];
         }
         else
         {
-            ((TrickyState*)state)->flags2DC &= ~visibilityBits.w[i];
+            state->flags2DC &= ~visibilityBits.w[i];
         }
     }
 }
@@ -1691,32 +1691,32 @@ void enemyObjAnimUpdate(short* obj, int state)
     }
 }
 
-void baddie_updateEngagementState(int* obj, int* sub)
+void baddie_updateEngagementState(GameObject* obj, TrickyState* sub)
 {
-    int* player;
+    GameObject* player;
     int* tricky;
-    int* target;
-    int* camTarget;
+    GameObject* target;
+    GameObject* camTarget;
 
-    player = (int*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     tricky = (int*)getTrickyObject();
-    target = (int*)((TrickyState*)sub)->actionTargetObj;
-    if (target != NULL && (((TrickyState*)sub)->controlFlags & 0x10000) == 0 &&
-        (target != player || (((GameObject*)player)->objectFlags & ENEMY_OBJFLAG_PARENT_SLACK) == 0))
+    target = sub->actionTargetObj;
+    if (target != NULL && (sub->controlFlags & 0x10000) == 0 &&
+        (target != player || (player->objectFlags & ENEMY_OBJFLAG_PARENT_SLACK) == 0))
     {
-        ((TrickyState*)sub)->flags2DC &= ~0x800000LL;
-        camTarget = (int*)(*gCameraInterface)->getOverrideTarget();
+        sub->flags2DC &= ~0x800000LL;
+        camTarget = (GameObject*)(*gCameraInterface)->getOverrideTarget();
         if (camTarget == obj)
         {
-            ((TrickyState*)sub)->flags2DC |= 0x800200LL;
+            sub->flags2DC |= 0x800200LL;
         }
         {
-            u16 dist = ((TrickyState*)sub)->targetDist;
-            u16 near = (u16)(int)((TrickyState*)sub)->waterLevel;
+            u16 dist = sub->targetDist;
+            u16 near = (u16)(int)sub->waterLevel;
             if (dist < near)
             {
-                ((TrickyState*)sub)->flags2DC |= 0x400LL;
-                ((TrickyState*)sub)->flags2DC &= ~0x200LL;
+                sub->flags2DC |= 0x400LL;
+                sub->flags2DC &= ~0x200LL;
             }
             else
             {
@@ -1724,15 +1724,15 @@ void baddie_updateEngagementState(int* obj, int* sub)
                 u16 mid = (u16)(int)midf;
                 if (dist < mid)
                 {
-                    ((TrickyState*)sub)->flags2DC |= 0x200LL;
-                    ((TrickyState*)sub)->flags2DC &= ~0x400LL;
+                    sub->flags2DC |= 0x200LL;
+                    sub->flags2DC &= ~0x400LL;
                 }
                 else
                 {
                     u16 far = (u16)(int)(lbl_803E25D8 * midf);
                     if (dist > far)
                     {
-                        ((TrickyState*)sub)->flags2DC &= ~0x20000600LL;
+                        sub->flags2DC &= ~0x20000600LL;
                     }
                 }
             }
@@ -1740,92 +1740,92 @@ void baddie_updateEngagementState(int* obj, int* sub)
     }
     else
     {
-        ((TrickyState*)sub)->flags2DC &= ~0x800600LL;
-        if ((((TrickyState*)sub)->controlFlags & 0x10000) != 0 ||
-            (((TrickyState*)sub)->actionTargetObj == (GameObject*)player &&
-             (((GameObject*)player)->objectFlags & ENEMY_OBJFLAG_PARENT_SLACK) != 0))
+        sub->flags2DC &= ~0x800600LL;
+        if ((sub->controlFlags & 0x10000) != 0 ||
+            (sub->actionTargetObj == player &&
+             (player->objectFlags & ENEMY_OBJFLAG_PARENT_SLACK) != 0))
         {
-            ((TrickyState*)sub)->flags2DC &= ~0x20000000LL;
+            sub->flags2DC &= ~0x20000000LL;
         }
     }
-    ((TrickyState*)sub)->flags2DC &= ~0x76f0008LL;
+    sub->flags2DC &= ~0x76f0008LL;
     if (tricky != NULL)
     {
         u8 r = (*(u8(**)(int*))(*(int*)*(int*)((char*)tricky + 0x68) + 0x40))(tricky);
         if (r != 0)
-            ((TrickyState*)sub)->flags2DC |= 0x200000LL;
+            sub->flags2DC |= 0x200000LL;
     }
-    if (((TrickyState*)sub)->actionTargetObj == (GameObject*)player)
+    if (sub->actionTargetObj == player)
     {
-        if (playerIsDisguised((GameObject*)player) != 0)
+        if (playerIsDisguised(player) != 0)
         {
-            ((TrickyState*)sub)->flags2DC |= 8LL;
-            if ((((TrickyState*)sub)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
+            sub->flags2DC |= 8LL;
+            if ((sub->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
             {
-                ((TrickyState*)sub)->flags2DC &= ~0x800600LL;
+                sub->flags2DC &= ~0x800600LL;
             }
         }
     }
-    if ((((TrickyState*)sub)->flags2DC & 0x20000600) != 0)
+    if ((sub->flags2DC & 0x20000600) != 0)
     {
-        if ((((TrickyState*)sub)->controlFlags & 0x1000) != 0)
+        if ((sub->controlFlags & 0x1000) != 0)
         {
-            u8 r = baddie_canSeeTarget((GameObject*)obj, (int)sub, (f32*)((char*)obj + 0x18),
-                                           (u8*)((TrickyState*)sub)->actionTargetObj + 0x18);
+            u8 r = baddie_canSeeTarget(obj, (int)sub, &obj->anim.worldPosX,
+                                           (u8*)sub->actionTargetObj + 0x18);
             if (r != 0)
-                ((TrickyState*)sub)->flags2DC |= 0x1000000LL;
-            if ((((TrickyState*)sub)->flags2DC & 0x1000000) == 0)
+                sub->flags2DC |= 0x1000000LL;
+            if ((sub->flags2DC & 0x1000000) == 0)
             {
-                ((TrickyState*)sub)->flags2DC &= ~0x20000000LL;
+                sub->flags2DC &= ~0x20000000LL;
             }
         }
         else
         {
-            ((TrickyState*)sub)->flags2DC |= 0x1000000LL;
+            sub->flags2DC |= 0x1000000LL;
         }
         {
-            u16 mode = ((TrickyState*)sub)->turnOctant;
+            u16 mode = sub->turnOctant;
             if (mode < 2 || mode > 5)
             {
-                ((TrickyState*)sub)->flags2DC |= 0x400000LL;
+                sub->flags2DC |= 0x400000LL;
             }
-            else if ((((TrickyState*)sub)->flags2DC & 0x1000000) != 0)
+            else if ((sub->flags2DC & 0x1000000) != 0)
             {
-                ((TrickyState*)sub)->flags2DC |= 0x2000000LL;
+                sub->flags2DC |= 0x2000000LL;
             }
         }
-        if ((((TrickyState*)sub)->controlFlags & 0x4000) == 0)
+        if ((sub->controlFlags & 0x4000) == 0)
         {
-            f32* t = (f32*)((TrickyState*)sub)->actionTargetObj;
+            f32* t = (f32*)sub->actionTargetObj;
             f32 mag = sqrtf(t[11] * t[11] + (t[9] * t[9] + t[10] * t[10]));
             if (mag > lbl_803E25D4)
-                ((TrickyState*)sub)->flags2DC |= 0x4000000LL;
+                sub->flags2DC |= 0x4000000LL;
         }
-        if ((((TrickyState*)sub)->flags2DC & 0x600) != 0 && (((TrickyState*)sub)->flags2DC & 0x6800000) != 0 &&
-            (((TrickyState*)sub)->flags2DC & 0x1000000) != 0)
+        if ((sub->flags2DC & 0x600) != 0 && (sub->flags2DC & 0x6800000) != 0 &&
+            (sub->flags2DC & 0x1000000) != 0)
         {
-            ((TrickyState*)sub)->flags2DC |= 0x20000000LL;
+            sub->flags2DC |= 0x20000000LL;
         }
-        if ((((TrickyState*)sub)->flags2DC & 0x20000000) != 0)
+        if ((sub->flags2DC & 0x20000000) != 0)
         {
-            if ((((TrickyState*)sub)->controlFlags & 0x40) != 0)
+            if ((sub->controlFlags & 0x40) != 0)
             {
-                baddie_updateSightQuadrants((int)obj, (int)sub, ((TrickyState*)sub)->waterLevel);
+                baddie_updateSightQuadrants(obj, sub, sub->waterLevel);
             }
             else
             {
-                ((TrickyState*)sub)->flags2DC |= 0xf0000LL;
+                sub->flags2DC |= 0xf0000LL;
             }
         }
     }
     if (((BaddieState*)sub)->hitCounter == 0)
     {
-        ((TrickyState*)sub)->flags2DC |= 0x800LL;
+        sub->flags2DC |= 0x800LL;
     }
 }
-void baddieTurnTowardTarget(int* node, int* sub)
+void baddieTurnTowardTarget(GameObject* node, TrickyState* sub)
 {
-    GameObject* target = ((TrickyState*)sub)->actionTargetObj;
+    GameObject* target = sub->actionTargetObj;
     if (target != NULL)
     {
         f32 d[3];
@@ -1835,34 +1835,34 @@ void baddieTurnTowardTarget(int* node, int* sub)
         f32 dist;
         u16 ua;
 
-        if ((((TrickyState*)sub)->controlFlags & 0x8000) != 0)
+        if ((sub->controlFlags & 0x8000) != 0)
         {
-            dp[0] = ((GameObject*)node)->anim.worldPosX - target->anim.worldPosX;
+            dp[0] = node->anim.worldPosX - target->anim.worldPosX;
             dp[1] = lbl_803E2574;
-            dp[2] = ((GameObject*)node)->anim.worldPosZ - target->anim.worldPosZ;
+            dp[2] = node->anim.worldPosZ - target->anim.worldPosZ;
         }
         else
         {
-            dp[0] = ((GameObject*)node)->anim.worldPosX - target->anim.worldPosX;
-            dp[1] = ((GameObject*)node)->anim.worldPosY - target->anim.worldPosY;
-            dp[2] = ((GameObject*)node)->anim.worldPosZ - target->anim.worldPosZ;
+            dp[0] = node->anim.worldPosX - target->anim.worldPosX;
+            dp[1] = node->anim.worldPosY - target->anim.worldPosY;
+            dp[2] = node->anim.worldPosZ - target->anim.worldPosZ;
         }
         ua = getAngle(-dp[0], -dp[2]);
-        if (*(int**)&((GameObject*)node)->anim.parent != NULL)
+        if (*(int**)&node->anim.parent != NULL)
         {
-            raw = (s16)(((GameObject*)node)->anim.rotX + **(s16**)&((GameObject*)node)->anim.parent);
+            raw = (s16)(node->anim.rotX + **(s16**)&node->anim.parent);
         }
         else
         {
-            raw = ((GameObject*)node)->anim.rotX;
+            raw = node->anim.rotX;
         }
         delta = ua - (u16)(s16)raw;
         if (delta > 0x8000)
             delta -= 0xFFFF;
         if (delta < -0x8000)
             delta += 0xFFFF;
-        ((TrickyState*)sub)->turnAngleDelta = delta;
-        ((TrickyState*)sub)->turnOctant = (u32)(u16)delta >> 13;
+        sub->turnAngleDelta = delta;
+        sub->turnOctant = (u32)(u16)delta >> 13;
 
         {
             f32 sqX;
@@ -1877,12 +1877,12 @@ void baddieTurnTowardTarget(int* node, int* sub)
             sqY = t * t;
             dist = sqrtf(sqZ + (sqX + sqY));
         }
-        *(s16*)&((TrickyState*)sub)->targetDist = (s16)dist;
+        *(s16*)&sub->targetDist = (s16)dist;
 
         {
-            GameObject* targetObj = ((TrickyState*)sub)->actionTargetObj;
-            *(s16*)&((TrickyState*)sub)->targetHeightDelta =
-                (s16)(targetObj->anim.worldPosY - ((GameObject*)node)->anim.worldPosY);
+            GameObject* targetObj = sub->actionTargetObj;
+            *(s16*)&sub->targetHeightDelta =
+                (s16)(targetObj->anim.worldPosY - node->anim.worldPosY);
         }
     }
 }
@@ -1914,12 +1914,12 @@ ObjectDescriptor gBaddieObjDescriptor = {
 
 int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
 {
-    char* sub = *(char**)&((GameObject*)node)->extra;
-    s8* n29 = *(s8**)&((GameObject*)node)->anim.placementData;
+    char* sub = *(char**)&node->extra;
+    s8* n29 = *(s8**)&node->anim.placementData;
     int i;
-    int* obj;
+    GameObject* obj;
 
-    if (((GameObject*)node)->userData1 != 0)
+    if (node->userData1 != 0)
         return 0;
     ((TrickyState*)sub)->flags2DC |= 0x8000LL;
     memcpy(sub + 0x2c4, sub + 0x2b8, 0xc);
@@ -1929,25 +1929,25 @@ int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
         switch (animUpdate->eventIds[i])
         {
         case 1:
-            obj = (int*)getTrickyObject();
+            obj = getTrickyObject();
             if (obj != NULL)
             {
-                (*(void (*)(int*, int, int*))(*(int*)(*(int*)(*(int*)&((GameObject*)obj)->anim.dll) + 0x34)))(
-                    obj, 1, (int*)node);
+                (*(void (*)(GameObject*, int, GameObject*))(*(int*)(*(int*)(*(int*)&obj->anim.dll) + 0x34)))(
+                    obj, 1, node);
                 ((TrickyState*)sub)->flags2DC |= 0x200000LL;
-                ((TrickyState*)sub)->actionTargetObj = (GameObject*)obj;
+                ((TrickyState*)sub)->actionTargetObj = obj;
             }
             break;
         case 4:
-            obj = (int*)Obj_GetPlayerObject();
+            obj = Obj_GetPlayerObject();
             if (obj != NULL)
             {
                 ((TrickyState*)sub)->flags2DC &= ~0x200000LL;
-                ((TrickyState*)sub)->actionTargetObj = (GameObject*)obj;
+                ((TrickyState*)sub)->actionTargetObj = obj;
             }
             break;
         case 2:
-            if (((GameObject*)node)->anim.seqId == ENEMY_BOSSGENERAL_OBJ)
+            if (node->anim.seqId == ENEMY_BOSSGENERAL_OBJ)
                 *(u16*)(sub + 0x2b6) = 0x7a5;
             else
                 *(u16*)(sub + 0x2b6) = 0x33;
@@ -1965,8 +1965,8 @@ int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
             break;
         }
     }
-    baddieInstantiateWeapon((GameObject*)(node), (int)sub);
-    if (((GameObject*)node)->seqIndex == -1)
+    baddieInstantiateWeapon(node, (int)sub);
+    if (node->seqIndex == -1)
     {
         ((TrickyState*)sub)->flags2E8 &= ~3LL;
         ObjHits_DisableObject(node);
@@ -1974,14 +1974,14 @@ int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
     }
     if ((((TrickyState*)sub)->flags2DC & 0x1800) == 0)
     {
-        baddieTurnTowardTarget((int*)node, (int*)sub);
-        baddie_updateEngagementState((int*)node, (int*)sub);
+        baddieTurnTowardTarget(node, (TrickyState*)sub);
+        baddie_updateEngagementState(node, (TrickyState*)sub);
     }
     if (n29[0x2e] != -1)
     {
         if ((((TrickyState*)sub)->flags2DC & 0x600) != 0)
         {
-            if (animUpdate->sequenceSlot == ((GameObject*)node)->seqIndex)
+            if (animUpdate->sequenceSlot == node->seqIndex)
                 return 4;
         }
     }
@@ -1999,7 +1999,7 @@ void sidekickToy_updateCurveTargetLatch(GameObject* obj)
     u8* data = *(u8**)state;
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
-        if ((u8)baddie_canSeeTarget((GameObject*)obj, (int)state, &(obj)->anim.worldPosX, data + 0x68) != 0)
+        if ((u8)baddie_canSeeTarget(obj, (int)state, &(obj)->anim.worldPosX, data + 0x68) != 0)
         {
             return;
         }
@@ -2308,22 +2308,22 @@ void fn_8014C678(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f3
             speed = maxSpeed;
     }
 
-    ((GameObject*)obj)->anim.velocityX = targetDir[0] * speed;
-    ((GameObject*)obj)->anim.velocityY = targetDir[1] * speed;
-    ((GameObject*)obj)->anim.velocityZ = targetDir[2] * speed;
+    obj->anim.velocityX = targetDir[0] * speed;
+    obj->anim.velocityY = targetDir[1] * speed;
+    obj->anim.velocityZ = targetDir[2] * speed;
 
     if (clampToGround != 0)
     {
-        f32 y = ((GameObject*)obj)->anim.velocityY;
+        f32 y = obj->anim.velocityY;
         if (y < lbl_803E2574)
         {
-            f32 floor_height = ((GameObject*)obj)->anim.localPosY;
+            f32 floor_height = obj->anim.localPosY;
             GameObject* target = *(GameObject**)((char*)state + 0x29c);
             f32 ground = lbl_803E25D0 + target->anim.localPosY;
             if (floor_height < ground)
             {
                 f32 t = (ground - floor_height) / lbl_803E25D0;
-                ((GameObject*)obj)->anim.velocityY = y * (lbl_803E256C - t);
+                obj->anim.velocityY = y * (lbl_803E256C - t);
             }
         }
     }
@@ -2443,7 +2443,7 @@ void fn_8014CD1C(GameObject* node, void* sub, int divisor, f32 fa, f32 fb, u8 us
         dt = lbl_803E256C;
 
     angle = (u16)getAngle(-((TrickyState*)sub)->lookDirX, -((TrickyState*)sub)->lookDirZ);
-    delta = angle - (u16)((GameObject*)node)->anim.rotX;
+    delta = angle - (u16)node->anim.rotX;
     delta_f = delta;
     if (delta_f > lbl_803E25B8)
         delta_f = lbl_803E25EC + delta_f;
@@ -2451,23 +2451,23 @@ void fn_8014CD1C(GameObject* node, void* sub, int divisor, f32 fa, f32 fb, u8 us
         delta_f = lbl_803E25F0 + delta_f;
     delta_f *= dt;
     newVal = (s16)(*(s16*)(int)node + (s32)delta_f);
-    ((GameObject*)node)->anim.rotX = newVal;
+    node->anim.rotX = newVal;
 
     if (fa != lbl_803E2574)
     {
         if (useScaledRoll != 0)
         {
-            ((GameObject*)node)->anim.rotZ = (s16)(((GameObject*)node)->anim.rotZ + (s32)(fa * (delta_f * dt)));
+            node->anim.rotZ = (s16)(node->anim.rotZ + (s32)(fa * (delta_f * dt)));
         }
         else
         {
-            ((GameObject*)node)->anim.rotZ = (s16)(oneOverTimeDelta * (delta_f * fa));
+            node->anim.rotZ = (s16)(oneOverTimeDelta * (delta_f * fa));
             {
-                s16 v = ((GameObject*)node)->anim.rotZ;
+                s16 v = node->anim.rotZ;
                 if (v > 0x2000)
-                    ((GameObject*)node)->anim.rotZ = 0x2000;
+                    node->anim.rotZ = 0x2000;
                 else if (v < -0x2000)
-                    ((GameObject*)node)->anim.rotZ = -0x2000;
+                    node->anim.rotZ = -0x2000;
             }
         }
     }
@@ -2478,7 +2478,7 @@ void fn_8014CD1C(GameObject* node, void* sub, int divisor, f32 fa, f32 fb, u8 us
         f32 dx2 = ((TrickyState*)sub)->lookDirX * ((TrickyState*)sub)->lookDirX;
         f32 hyp = sqrtf(dz2 + dx2);
         int angle2 = (u16)getAngle(((TrickyState*)sub)->lookDirY * fb, hyp);
-        s32 d2 = angle2 - (u16)((GameObject*)node)->anim.rotY;
+        s32 d2 = angle2 - (u16)node->anim.rotY;
         f32 d2f = d2;
         s16 newVal2;
         if (d2f > lbl_803E25B8)
@@ -2486,7 +2486,7 @@ void fn_8014CD1C(GameObject* node, void* sub, int divisor, f32 fa, f32 fb, u8 us
         if (d2f < lbl_803E25F4)
             d2f = lbl_803E25F0 + d2f;
         newVal2 = (s16)(*(s16*)((int)node + 2) + (s32)(d2f * dt));
-        ((GameObject*)node)->anim.rotY = newVal2;
+        node->anim.rotY = newVal2;
     }
 }
 
@@ -2603,10 +2603,10 @@ void enemy_free(GameObject* obj, int flag)
 
 void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    EnemyState* state = ((GameObject*)obj)->extra;
+    EnemyState* state = obj->extra;
     if (visible != 0)
     {
-        switch (((GameObject*)obj)->userData1)
+        switch (obj->userData1)
         {
         case 0:
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E256C);
@@ -2623,7 +2623,7 @@ void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                     {
                         state->modelLight = objCreateLight(0, 1);
                     }
-                    objParticleFn_80099d84((GameObject*)obj, lbl_803E256C, 3, state->particleScale,
+                    objParticleFn_80099d84(obj, lbl_803E256C, 3, state->particleScale,
                                            state->modelLight);
                 }
             }
@@ -2633,22 +2633,22 @@ void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                 {
                     state->modelLight = objCreateLight(0, 1);
                 }
-                objParticleFn_80099d84((GameObject*)obj, lbl_803E256C, 4, state->particleScale,
+                objParticleFn_80099d84(obj, lbl_803E256C, 4, state->particleScale,
                                        state->modelLight);
             }
             if ((*(u32*)&state->flags2E8 & 0x40) != 0)
             {
                 Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_forcecryslp11);
-                objParticleFn_80099d84((GameObject*)obj, lbl_803E256C, 5, state->particleScale, 0);
+                objParticleFn_80099d84(obj, lbl_803E256C, 5, state->particleScale, 0);
             }
             if ((*(u32*)&state->flags2E8 & 0x80) != 0)
             {
                 Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_forcecryslp11);
-                objParticleFn_80099d84((GameObject*)obj, lbl_803E25F8, 6, state->particleScale, 0);
+                objParticleFn_80099d84(obj, lbl_803E25F8, 6, state->particleScale, 0);
             }
             if ((*(u32*)&state->flags2E8 & 0x100) != 0)
             {
-                objParticleFn_80099d84((GameObject*)obj, lbl_803E25FC, 7, state->particleScale, 0);
+                objParticleFn_80099d84(obj, lbl_803E25FC, 7, state->particleScale, 0);
             }
             break;
         }
@@ -2682,7 +2682,7 @@ void enemy_hitDetect(GameObject* obj)
     }
 }
 
-void enemy_update(int obj)
+void enemy_update(GameObject* obj)
 {
     u8* player;
     u8* state;
@@ -2692,8 +2692,8 @@ void enemy_update(int obj)
     u8* s2;
     f32 fz;
 
-    state = ((GameObject*)obj)->extra;
-    setup = *(u8**)&((GameObject*)obj)->anim.placementData;
+    state = obj->extra;
+    setup = *(u8**)&obj->anim.placementData;
     tricky = (u8*)getTrickyObject();
     if (getCurUiDll() == 4)
     {
@@ -2701,22 +2701,22 @@ void enemy_update(int obj)
     }
     if ((((EnemyState*)state)->flags2E4 & 0x8000006) != 0)
     {
-        if (objPosToMapBlockIdx(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                ((GameObject*)obj)->anim.localPosZ) == -1)
+        if (objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY,
+                                obj->anim.localPosZ) == -1)
         {
             return;
         }
     }
     else
     {
-        if (isInBounds(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosZ) == 0)
+        if (isInBounds(obj->anim.localPosX, obj->anim.localPosZ) == 0)
         {
             return;
         }
     }
     if (objIsFrozen((u8*)obj) != 0)
     {
-        baddie_updateWhileFrozen((GameObject*)(obj), state, 1);
+        baddie_updateWhileFrozen(obj, state, 1);
         return;
     }
     if (((EnemyState*)state)->trackedObj == NULL)
@@ -2728,7 +2728,7 @@ void enemy_update(int obj)
         ((EnemyState*)state)->trackedObj = Obj_GetPlayerObject();
     }
     ((EnemyState*)state)->initialFlags = *(int*)&((EnemyState*)state)->controlFlags;
-    baddieInstantiateWeapon((GameObject*)(obj), (int)state);
+    baddieInstantiateWeapon(obj, (int)state);
     flags = ((EnemyState*)state)->controlFlags;
     if ((flags & 1) != 0 && (flags & 2) == 0)
     {
@@ -2738,16 +2738,16 @@ void enemy_update(int obj)
         }
         if (setup != NULL && (((EnemyPlacement*)setup)->flags2B & 8) != 0)
         {
-            ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)setup)->posX;
-            ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)setup)->posY;
-            ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)setup)->posZ;
+            obj->anim.localPosX = ((ObjPlacement*)setup)->posX;
+            obj->anim.localPosY = ((ObjPlacement*)setup)->posY;
+            obj->anim.localPosZ = ((ObjPlacement*)setup)->posZ;
         }
-        (*gObjectTriggerInterface)->runSequence(((EnemyPlacement*)setup)->triggerSeqId, (void*)obj, -1);
+        (*gObjectTriggerInterface)->runSequence(((EnemyPlacement*)setup)->triggerSeqId, obj, -1);
         ((EnemyState*)state)->controlFlags |= 2;
         *(u32*)&((EnemyState*)state)->controlFlags = *(u32*)&((EnemyState*)state)->controlFlags & ~1LL;
         return;
     }
-    if (((GameObject*)obj)->userData1 != 0)
+    if (obj->userData1 != 0)
     {
         if (((EnemyPlacement*)setup)->gameBit2 != -1)
         {
@@ -2776,7 +2776,7 @@ void enemy_update(int obj)
                 if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->posX) >
                     enemyRespawnDistanceSq)
                 {
-                    enemy_init((GameObject*)(obj), setup, 0);
+                    enemy_init(obj, setup, 0);
                     ((EnemyState*)state)->controlFlags |= 0x1000;
                     *(u32*)&((EnemyState*)state)->initialFlags &= ~0x1000LL;
                 }
@@ -2806,7 +2806,7 @@ void enemy_update(int obj)
                 if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->posX) >
                     enemyRespawnDistanceSq)
                 {
-                    enemy_init((GameObject*)(obj), setup, 0);
+                    enemy_init(obj, setup, 0);
                     ((EnemyState*)state)->controlFlags |= 0x1000;
                     *(u32*)&((EnemyState*)state)->initialFlags &= ~0x1000LL;
                 }
@@ -2840,7 +2840,7 @@ void enemy_update(int obj)
                         if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->posX) >
                             enemyRespawnDistanceSq)
                         {
-                            enemy_init((GameObject*)(obj), setup, 0);
+                            enemy_init(obj, setup, 0);
                             ((EnemyState*)state)->controlFlags |= 0x1000;
                             *(u32*)&((EnemyState*)state)->initialFlags &= ~0x1000LL;
                         }
@@ -2868,43 +2868,43 @@ void enemy_update(int obj)
     if ((((EnemyState*)state)->controlFlags & 0x8000) != 0)
     {
         hudFn_8011f38c(0);
-        (*gPathControlInterface)->attachObject((void*)obj, state + 4);
+        (*gPathControlInterface)->attachObject(obj, state + 4);
         ((EnemyState*)state)->controlFlags &= ~0x8003;
         if ((((EnemyState*)state)->flags2E4 & 0x20000) != 0)
         {
-            s2 = *(u8**)&((GameObject*)obj)->anim.placementData;
-            ((GameObject*)obj)->anim.localPosX = ((EnemyPlacement*)s2)->posX;
-            ((GameObject*)obj)->anim.localPosY = ((EnemyPlacement*)s2)->posY;
-            ((GameObject*)obj)->anim.localPosZ = ((EnemyPlacement*)s2)->posZ;
-            ((GameObject*)obj)->anim.rotZ = 0;
-            ((GameObject*)obj)->anim.rotY = 0;
-            ((GameObject*)obj)->anim.rotX = ((EnemyPlacement*)s2)->rotXByte << 8;
+            s2 = *(u8**)&obj->anim.placementData;
+            obj->anim.localPosX = ((EnemyPlacement*)s2)->posX;
+            obj->anim.localPosY = ((EnemyPlacement*)s2)->posY;
+            obj->anim.localPosZ = ((EnemyPlacement*)s2)->posZ;
+            obj->anim.rotZ = 0;
+            obj->anim.rotY = 0;
+            obj->anim.rotX = ((EnemyPlacement*)s2)->rotXByte << 8;
             fz = lbl_803E2574;
-            ((GameObject*)obj)->anim.velocityX = fz;
-            ((GameObject*)obj)->anim.velocityY = fz;
-            ((GameObject*)obj)->anim.velocityZ = fz;
+            obj->anim.velocityX = fz;
+            obj->anim.velocityY = fz;
+            obj->anim.velocityZ = fz;
         }
     }
     if ((((EnemyState*)state)->flags2E4 & 0x80000) != 0)
     {
         if (tricky != NULL && mainGetBit(0x9e) != 0)
         {
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
         else
         {
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        if (tricky != NULL && (*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
+        if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
         {
-            (**(void (**)(u8*, int, int, int))(*(int*)(*(int*)(tricky + 0x68)) + 0x28))(tricky, obj, 1, 2);
+            (**(void (**)(u8*, int, int, int))(*(int*)(*(int*)(tricky + 0x68)) + 0x28))(tricky, (int)obj, 1, 2);
         }
     }
-    baddie_updateWhileFrozen((GameObject*)(obj), state, 0);
+    baddie_updateWhileFrozen(obj, state, 0);
     if ((((EnemyState*)state)->controlFlags & 0x1800) == 0)
     {
-        baddieTurnTowardTarget((int*)obj, (int*)state);
-        baddie_updateEngagementState((int*)obj, (int*)state);
+        baddieTurnTowardTarget(obj, (TrickyState*)state);
+        baddie_updateEngagementState(obj, (TrickyState*)state);
     }
     enemyObjAnimUpdate((short*)obj, (int)state);
 }
@@ -3104,7 +3104,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         {
             (*gPathControlInterface)->setup(state + 4, 1, lbl_8031DBD8, &lbl_803DBC60, &lbl_803DBC68);
         }
-        (*gPathControlInterface)->attachObject((void*)obj, state + 4);
+        (*gPathControlInterface)->attachObject(obj, state + 4);
         if ((((EnemyState*)state)->flags2E4 & 0xc) != 0)
         {
             state[0x25f] = 1;
