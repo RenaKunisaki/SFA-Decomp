@@ -1755,7 +1755,7 @@ dlls/objects/232_Checkpoint4/Checkpoint4.c:
 	.data       start:0x80320B70 end:0x80320BB0
 	.sdata2     start:0x803E3420 end:0x803E3440
 
-main/dll/dll_00EA_sideload.c:
+dlls/objects/234_Sideload/Sideload.c:
 	.text       start:0x80171BAC end:0x80171C78
 	.data       start:0x80320BB0 end:0x80320BE8
 

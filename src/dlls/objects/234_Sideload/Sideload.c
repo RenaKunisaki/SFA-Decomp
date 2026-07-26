@@ -1,5 +1,5 @@
 /*
- * sideload (DLL 0x00EA) [0x80171BAC-0x80171C78).
+ * DLL 0xEA - Sideload.
  *
  * The only function this object contributes is sideload_update: a deferred
  * spawner placed in a map. Each tick, once the level has finished loading
@@ -8,9 +8,6 @@
  * setup (type 0x24), copies the spawner's position into it, hands it to
  * Obj_SetupObject, and seeds the new object's first field from placement
  * rotX byte.
- *
- * Foreign ObjectDescriptor tables are not present in this translation unit;
- * each descriptor is defined by its own DLL.
  */
 #include "game/objects/object.h"
 #include "sys/objects.h"

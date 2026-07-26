@@ -279,7 +279,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0E7 | flammablevine (+CCeyeVines, BurnableVin) | GUESSED | dlls/objects/231/231.c | = (canonical) | — |
 | 0x0E8 | Checkpoint4 | CONFIRMED | dlls/objects/232_Checkpoint4/Checkpoint4.c | = (canonical) | — |
 | 0x0E9 | Setuppoint | COMPLETE | dlls/objects/233_Setuppoint/Setuppoint.c | = (canonical) | — |
-| 0x0EA | sideload | COMPLETE | main/dll/dll_00EA_sideload.c | = (canonical) | — |
+| 0x0EA | Sideload | COMPLETE | dlls/objects/234_Sideload/Sideload.c | = (canonical) | — |
 | 0x0EB | siderepel (+siderepelWi) | COMPLETE | main/dll/dll_00EB_siderepel.c | = (canonical) | — |
 | 0x0EC | InfoPoint | COMPLETE | main/dll/dll_00EC_infopoint.c | = (canonical) | — |
 | 0x0ED | collectible (+CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi) | GUESSED | main/dll/dll_00ED_collectible.c | = (canonical) | — |
