@@ -228,17 +228,11 @@ typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0,
 extern GameTextDrawFunc gameTextDrawFunc;
 extern LanguageName sLanguageNameTable[];
 extern u8 lbl_802C8680[];
-extern const f32 lbl_803DE70C;
-extern const f32 lbl_803DE710;
-extern const f32 lbl_803DE714;
-extern const f32 lbl_803DE718;
 extern int gGameTextShadowOffsetX;
 extern int gGameTextShadowOffsetY;
 extern int gameTextCharset;
-extern CtrlCharEntry lbl_802C86F0[];
 
 extern u8 gGameTextBase[];
-extern u8 lbl_803399A0[];
 extern u8* gGameTextLastEntry;
 extern int gCurTextBuffer;
 extern int gGameTextBufferIndex;
@@ -250,7 +244,6 @@ extern int lbl_803DC9D0;
 extern int lbl_803DC9D4;
 extern int gGameTextLastLanguage;
 extern f32 gSubtitleCurTime;
-extern u32 lbl_80339C40[];
 
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
 void translateToDinoLanguage(u8* str);

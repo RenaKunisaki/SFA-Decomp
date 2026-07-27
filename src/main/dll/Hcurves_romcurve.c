@@ -120,13 +120,11 @@ STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkEdges) == 0x34);
 
 extern f32 lbl_803E0640;
 extern f32 gFloatOne;
-extern f32 lbl_803E05C8;
 extern f32 lbl_803E0610;
 extern f32 gRomCurveAnglePi2;
 extern f32 lbl_803E0618;
 extern f32 gFloatZero;
 extern f32 gFloatNegOne;
-extern f32 lbl_803E0608;
 
 extern f32 gFloatHalf;
 extern const f32 gRomCurveFindDistInit;

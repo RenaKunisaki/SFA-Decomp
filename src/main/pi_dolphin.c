@@ -150,9 +150,6 @@ int lbl_803DB5E4 = 0;
 #define GX_LEQUAL     3
 #define PAD_BUTTON_A  0x100
 #define PAD_BUTTON_B  0x200
-extern int lbl_803DCD6C;
-extern int lbl_803DCD70;
-extern int lbl_803DCD74;
 extern char sResourceFileNameAudioTab[];
 extern u8 lbl_80345E10[]; /* resource file table -- see struct MldfTables */
 extern s16 lbl_803DCC92;
@@ -907,13 +904,6 @@ void* jumptable_802CC254[73] = {
 char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
-extern u8 lbl_803DCD28;
-extern f32 lbl_803DCD44;
-extern f32 lbl_803DCD40;
-extern u8 lbl_803DCD31;
-extern f32 lbl_803DCD34;
-extern f32 lbl_803DCD38;
-extern f32 lbl_803DCD3C;
 extern u8 lbl_803DCCB0;
 void gxPerfFn_8004a77c(int);
 extern void* lbl_803DCD10;
@@ -922,32 +912,10 @@ extern void* renderFrameBuffer;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
 extern u8 lbl_803DCCA7;
-extern u8 lbl_803DCD30;
-extern u8 lbl_803DCD68;
-extern int lbl_803DCD80;
-extern u8 lbl_803DCD69;
-extern f32 lbl_803DEACC;
-extern f32 lbl_803DEADC;
-extern int lbl_803DCD78;
-extern u8* lbl_803DCD2C;
-extern f32 lbl_803DEAE4;
-extern u8 lbl_803DCD6B;
-extern f32 lbl_803DEAF4;
-extern f32 lbl_803DEAF8;
-extern f32 lbl_803DEAFC;
-extern f32 lbl_803DEB00;
-extern int lbl_803DCD84;
-extern f32 lbl_803DEAE8;
-extern f32 lbl_803DEAEC;
-extern f32 lbl_803DEAF0;
 extern u8 gLoadingScreenTextures[];
 extern OSStopwatch lbl_8035F680;
 extern f32 lbl_803DCCC0;
-extern f32 lbl_803DEAA0;
-extern f32 lbl_803DEA74;
-extern f32 lbl_803DEA7C;
 extern f32 lbl_803DCCB4;
-extern u8 lbl_803DB411;
 extern volatile int lbl_803DCCAC;
 extern int lbl_803DCCA0;
 extern u16 lbl_803DCCAA;
@@ -970,8 +938,6 @@ extern int lbl_803DCCF4;
 extern u8 lbl_803DCD00;
 extern int lbl_803DCCFC;
 extern u8 lbl_803DCCF8;
-extern f32 lbl_803DEA94;
-extern f32 lbl_803DEA98;
 void piRomLoadSection(int romOffset, int mapIndex, int destBuf);
 int GXFlush_(u8 visible, int unused);
 void waitNextFrame(void);
@@ -3724,7 +3690,6 @@ void tex1GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
     }
 }
 
-extern f32 lbl_803DEAC8;
 
 void tex0GetFrame(int texId, int unused, int* outA, int* outB, int count, int* frameTable, int queryMode)
 {

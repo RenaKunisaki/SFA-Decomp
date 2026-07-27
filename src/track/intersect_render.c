@@ -54,7 +54,6 @@
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-extern int lbl_803DD03C;
 extern f32 gFogNearZ;
 extern f32 gFogFarZ;
 extern u32 gTevStageCursor;
@@ -78,7 +77,6 @@ extern u8 gTevIndStageCount;
 
 extern u8 lbl_803DB678;
 extern u8 gHudTintAlpha;
-extern u32 lbl_803DB67C;
 extern GXColor lbl_803DB680;
 extern GXColor lbl_803DB684;
 extern GXColor lbl_803DB688;
@@ -138,7 +136,6 @@ extern f32 hudScale;
 extern f32 gSynthDelayedActionWord0, gSynthFadeMask;
 extern f32 lbl_803DEF08, lbl_803DEF20;
 extern double lbl_803DEF10, lbl_803DEF18;
-extern f32 lbl_803DEE40;
 extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
 extern f32 lbl_803DEED8, lbl_803DEEE8, lbl_803DEEEC, lbl_803DEEF4;
 extern f32 lbl_803DEF24, lbl_803DEF28, lbl_803DEF30, lbl_803DEF34, lbl_803DEF38;
@@ -167,9 +164,6 @@ extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
 extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern u8 lbl_803DD059;
-extern f32 lbl_803DEE20;
-extern f32 lbl_803DEE24;
 typedef struct RippleEntry
 {
     f32 x, y, z;
@@ -202,8 +196,6 @@ STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
 STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
 STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
-extern int lbl_803DD03C;
-extern int lbl_803968C0[];
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
@@ -4870,4 +4862,3 @@ int saveCb_8007e748(int saveId, int size, void* dst);
 
 /* .bss block 0x80391DC0-0x803967C0 */
 
-extern int lbl_803968C0[0x10];

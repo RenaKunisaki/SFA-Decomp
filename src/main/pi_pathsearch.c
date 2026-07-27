@@ -140,7 +140,6 @@ void pathSearchHeapSiftDown(u8* arr, int size, int idx)
 }
 
 
-extern GXTexObj lbl_803779A0;
 
 
 static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)

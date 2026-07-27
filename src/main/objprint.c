@@ -47,17 +47,7 @@ f32 lbl_803DB464 = 20.0f;
 extern f32 lbl_803DE9D8;
 extern f32 lbl_803DE9DC;
 extern f32 lbl_803DE9E0;
-extern int lbl_803DCC48;
-extern f32 lbl_803DEA04;
 extern f32 lbl_803DE9E4;
-extern int lbl_803DCC44;
-extern u8 lbl_803DCC3E;
-extern u32 lbl_803DB468;
-extern f32 lbl_803DEA28;
-extern f32 lbl_803DEA2C;
-extern f32 lbl_803DEA30;
-extern f32 lbl_803DEA04;
-extern f32 lbl_803DEA1C;
 
 
 

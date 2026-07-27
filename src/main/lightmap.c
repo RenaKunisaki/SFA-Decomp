@@ -56,7 +56,6 @@
 u8 colorFilterColor[4] = {0xFF, 0x70, 0x40, 0};
 u8 colorScale = 0xFF;
 extern f32 widescreenAspect_803DEC1C;
-extern f32 lbl_803DB670;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
@@ -118,13 +117,6 @@ typedef struct
     u32 key;
     u32 d;
 } LightSortEntry;
-extern void* lbl_803DCE78;
-extern void* lbl_803DCE7C;
-extern void* lbl_803DCE80;
-extern void* lbl_803DCE84;
-extern s16 lbl_803DCE90;
-extern s16 lbl_803DCEBA;
-extern s16 lbl_803DCEB8;
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
 extern s32 gHeatEffectFadeDirection;
 
@@ -1044,7 +1036,6 @@ void gameFlagFn_8005cd24(int v);
 int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 extern f32 widescreenAspect_803DEC1C;
-extern f32 lbl_803DB670;
 
 int setWidescreen(u8 v);
 int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
@@ -1111,7 +1102,6 @@ typedef union
 
 
 
-extern f32 lbl_803DEC20;
 
 void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
 

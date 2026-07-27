@@ -119,12 +119,9 @@ STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, walkGroup) == 0x3);
 STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkIds) == 0x1C);
 STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkEdges) == 0x34);
 
-extern f32 lbl_803E0640;
 extern char sObjfsaFoundNewWalkGroupPatch[];
 extern char sObjfsaIsPointWithinPatchGroupError[];
 extern f32 lbl_803E05C8;
-extern f32 lbl_803E0610;
-extern f32 lbl_803E0618;
 extern f32 lbl_803E0608;
 
 extern char sObjfsaMissingPatchExitPoint0[];

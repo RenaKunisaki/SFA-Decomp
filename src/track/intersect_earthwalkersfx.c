@@ -48,9 +48,6 @@
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-extern int lbl_803DD03C;
-extern u8 lbl_803DD010;
-extern f32 lbl_803DD00C;
 
 extern u8 gWaterFxDisabled;
 extern u8 gWaterQuadWriteIdx;
@@ -58,39 +55,7 @@ extern u8 gWaterRippleWriteIdx;
 extern u32 lbl_803DCFF4;
 extern u8 gWaterFxBank;
 
-extern u8 lbl_803DB678;
-extern u32 lbl_803DB67C;
-extern GXColor lbl_803DB680;
-extern GXColor lbl_803DB684;
-extern GXColor lbl_803DB688;
-extern GXColor lbl_803DB68C;
-extern u32 lbl_803DB690;
-extern u32 lbl_803DB694;
-extern u32 lbl_803DB698;
-extern u32 lbl_803DB69C;
 extern GXColor lbl_803DB6A0;
-extern GXColor lbl_803DB6A4;
-extern u32 lbl_803DB6A8;
-extern f32 lbl_803DB6AC;
-extern f32 lbl_803DB6B0;
-extern f32 lbl_803DB6B4;
-extern f32 lbl_803DB6B8;
-extern GXColor lbl_803DB6BC;
-extern f32 lbl_803DB6C0;
-extern f32 lbl_803DB6C4;
-extern f32 lbl_803DB6C8;
-extern f32 lbl_803DB6CC;
-extern GXColor lbl_803DB6D0;
-extern GXColor lbl_803DB6D4;
-extern GXColor lbl_803DB6D8;
-extern GXColor lbl_803DB6DC;
-extern GXColor lbl_803DB6E0;
-extern GXColor lbl_803DB6E4;
-extern GXColor lbl_803DB6E8;
-extern GXColor lbl_803DB6EC;
-extern GXColor lbl_803DB6F0;
-extern u32 lbl_803DB6F4;
-extern u32 lbl_803DB6F8;
 
 typedef struct
 {
@@ -106,11 +71,9 @@ typedef struct
 
 
 
-extern f32 lbl_803DEE90;
 
 extern f32 lbl_803DEF08, lbl_803DEF20;
 extern double lbl_803DEF10, lbl_803DEF18;
-extern f32 lbl_803DEE40;
 extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
 extern f32 lbl_803DEE5C, lbl_803DEE64;
 extern f32 lbl_803DEE60;
@@ -122,11 +85,6 @@ extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80, lbl_803DEF84, lbl_803DEF88;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 extern GXColor lbl_803DEEB4, lbl_803E8454;
 
-extern f32 lbl_8030EA10[3][2][3];
-extern f32 lbl_8030EA58[2][3];
-extern f32 lbl_8030EA70[2][3];
-extern f32 lbl_8030EA88[2][3];
-extern f32 lbl_8030EAA0[2][3];
 
 int cardDeleteFn_8007d99c(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
@@ -138,12 +96,9 @@ typedef struct StageCountTable
 } StageCountTable;
 
 extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
-extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern u8 lbl_803DD059;
 extern f32 lbl_803DEE20;
-extern f32 lbl_803DEE24;
 typedef struct RippleEntry
 {
     f32 x, y, z;
@@ -179,16 +134,6 @@ STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
 STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
 STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
-extern f32 lbl_803DEE6C;
-extern f32 lbl_803DEE70;
-extern f32 lbl_803DEE74;
-extern f32 lbl_803DEE78;
-extern f32 lbl_803DEE7C;
-extern f32 lbl_803DEE80;
-extern int lbl_803DD03C;
-extern int lbl_803968C0[];
-extern f32 lbl_803DEE98;
-extern f32 lbl_803DEE9C;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
@@ -673,4 +618,3 @@ int saveCb_8007e748(int saveId, int size, void* dst);
 
 /* .bss block 0x80391DC0-0x803967C0 */
 
-extern int lbl_803968C0[0x10];

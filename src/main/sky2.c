@@ -83,22 +83,7 @@ u8 lbl_803DB758 = 1;
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
-extern const f32 lbl_803DF058;
-extern f32 lbl_803DF060;
-extern f32 lbl_803DF064;
-extern f32 lbl_803DF068;
-extern const f32 lbl_803DF0F0;
-extern const f32 lbl_803DF0F8;
-extern const f32 lbl_803DF0FC;
-extern const f32 lbl_803DF100;
-extern const f32 lbl_803DF104;
-extern f32 lbl_803DF088;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
-extern const f32 lbl_803DF0AC;
-extern const f32 lbl_803DF0B4;
-extern const f32 lbl_803DF0B8;
-extern const f32 lbl_803DF0C0;
-extern const f32 lbl_803DF0C4;
 extern const f32 lbl_803DF108;
 extern const f32 lbl_803DF10C;
 extern const f32 lbl_803DF110;
@@ -131,7 +116,6 @@ extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
 const SkyVec3 lbl_802C1F98 = {-1000.0f, -1000.0f, -1000.0f};
 extern u8 gSkyColorBlendTable[];
-extern int lbl_803E8458;
 extern f32 lbl_803DF190;
 extern f32 lbl_803DF194;
 
@@ -193,7 +177,6 @@ typedef struct SkyDllInterface {
     ObjectDescriptorCallback slot17;
 } SkyDllInterface;
 
-extern SkyDllInterface lbl_8030F414;
 
 void skyFn_80088c94(int flags, u8 mode);
 

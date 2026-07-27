@@ -133,7 +133,6 @@ typedef struct
 
 
 
-extern f32 lbl_803DEE90;
 
 extern f32 hudMatrix[4][4];
 extern f32 lbl_803DEF08, lbl_803DEF20;
@@ -141,7 +140,6 @@ extern double lbl_803DEF10, lbl_803DEF18;
 extern f32 lbl_803DEE40;
 extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
 extern f32 lbl_803DEE5C, lbl_803DEE64;
-extern f32 lbl_803DEE60;
 extern f32 lbl_803DEED8, lbl_803DEEE8, lbl_803DEEEC, lbl_803DEEF4;
 extern f32 lbl_803DEF24, lbl_803DEF28, lbl_803DEF30, lbl_803DEF34, lbl_803DEF38;
 extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
@@ -188,10 +186,8 @@ typedef struct StageCountTable
 } StageCountTable;
 
 extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
-extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern u8 lbl_803DD059;
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
 typedef struct RippleEntry
@@ -230,16 +226,8 @@ STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
 STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
 STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
-extern f32 lbl_803DEE6C;
-extern f32 lbl_803DEE70;
-extern f32 lbl_803DEE74;
-extern f32 lbl_803DEE78;
-extern f32 lbl_803DEE7C;
-extern f32 lbl_803DEE80;
 extern int lbl_803DD03C;
 extern int lbl_803968C0[];
-extern f32 lbl_803DEE98;
-extern f32 lbl_803DEE9C;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);

@@ -85,25 +85,9 @@ extern u32 renderFlags;
 #define RENDERFLAG_OVERCAST        0x40000
 #define RENDERFLAG_HIDE_STARS      0x80000
 
-extern f32 lbl_803DEBF8;
 extern f32 lbl_803DEBFC;
-extern f32 lbl_803DEBCC;
-extern f32 lbl_803DEBDC;
-extern f32 lbl_803DEC00;
-extern F32Pair lbl_803DEC08;
-extern f32 lbl_803DEC0C;
 
 extern u8 lbl_803DCE98; /* count of allocated blocks */
-extern f32 lbl_803DEC18;
-extern u32 lbl_803DCE34;
-extern f32 lbl_803DEC10;
-extern u16 lbl_803DCEAC;
-extern u8 lbl_803DCE06;
-extern s8 lbl_8030E65C[];
-extern s8 lbl_8030E66C[];
-extern int lbl_8038228C[];
-extern f32 lbl_803DCE58;
-extern f32 lbl_803DCE54;
 typedef struct
 {
     u32 a;
@@ -111,14 +95,6 @@ typedef struct
     u32 key;
     u32 d;
 } LightSortEntry;
-extern void* lbl_803DCE78;
-extern void* lbl_803DCE7C;
-extern void* lbl_803DCE80;
-extern void* lbl_803DCE84;
-extern s16 lbl_803DCE90;
-extern s16 lbl_803DCEBA;
-extern s16 lbl_803DCEB8;
-extern EnvironmentUpdateInterface** lbl_803DCAB0;
 
 typedef union
 {
@@ -205,7 +181,6 @@ typedef struct
     u32 deferred[20];
 } LightmapDrawQueue;
 
-extern s16* lbl_803822A0[];
 
 int coordsToMapCell(f32 x, f32 z);
 
@@ -218,7 +193,6 @@ int isInBounds(f32 x, f32 z);
 
 int objPosToMapBlockIdx(f32 x, f32 y, f32 z);
 
-extern void* lbl_803DCEA0;
 
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage);
 
@@ -247,15 +221,10 @@ static inline void fillBoxRows(u8* map, int* box)
 }
 
 void renderSceneGeometry(u8 renderType, s8* order);
-extern f32 lbl_803DB62C;
 
-extern f32 lbl_803DCE50;
-extern f32 lbl_803DCE4C;
-extern f32 lbl_803DEC14;
 
 void sceneDraw(void);
 
-extern int lbl_803DCEA8;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5);
 

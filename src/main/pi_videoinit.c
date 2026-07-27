@@ -95,7 +95,6 @@ void videoFn_800499e8(void);
 
 extern f32 lbl_803DEA70;
 extern f32 lbl_803DEA78;
-extern f32 lbl_803DEA88;
 extern f32 lbl_803DEA8C;
 extern f32 lbl_803DEA90;
 extern Mtx44 hudMatrix;
@@ -246,10 +245,6 @@ void setColor_803db5d0(u8 r, u8 g, u8 b)
     lbl_803DB5D0.b = b;
 }
 
-extern int lbl_803DCD88;
-extern int lbl_803DCD8C;
-extern int lbl_803DCD90;
-extern u8 lbl_803DCD6A;
 void setDisplayCopyFilter(void)
 {
     GXRenderModeObj* renderMode = gRenderModeObj;

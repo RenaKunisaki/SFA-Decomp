@@ -84,13 +84,10 @@
 
 
 extern u8 framesThisStep;
-extern u8 lbl_803DB411;
 extern f32 timeDelta;
 extern int gGameLoopPendingUiDllId;
 extern f32 gGameLoopMusicFadeTimer;
 extern u8 gGameLoopResetComboDebounce;
-extern int lbl_803DB428;
-extern int lbl_803DB42C;
 
 extern char sGameLoopResetMessages[0x50];
 

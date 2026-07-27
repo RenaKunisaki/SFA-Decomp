@@ -24,7 +24,6 @@ CameraModeCombatState* gCamCombatState;
 #define PAD_BUTTON_B 0x200
 extern f32 lbl_803E18C0;
 extern f32 lbl_803E18C4;
-extern f32 lbl_803E18C8;
 
 
 
