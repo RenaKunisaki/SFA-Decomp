@@ -215,7 +215,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         GameObject* child2;
 
         if (*(s8*)((char*)def + 0x2e) != -1 && (child2 = obj->childObjs[0]) != 0 &&
-            fn_801A0174(child2) != 0)
+            gcrobotlightbea_isPlayerCaught(child2) != 0)
         {
             ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
             gcRobotLight_init(obj, 0x3b2);

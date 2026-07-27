@@ -37,7 +37,7 @@ STATIC_ASSERT(offsetof(BlastedTargetState, pieceCount) == 0x10);
 STATIC_ASSERT(offsetof(BlastedTargetState, damageStep) == 0x11);
 STATIC_ASSERT(sizeof(BlastedTargetState) == 0x14);
 
-int fn_801A27B8(GameObject* obj, int id);
+int blasted_activateMapLayer(GameObject* obj, int id);
 int blasted_getExtraSize(void);
 int blasted_getObjectTypeId(void);
 void blasted_free(void);

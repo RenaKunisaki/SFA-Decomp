@@ -13,7 +13,7 @@
 void* trickyGetQueuedPathParticlePos(GameObject* obj);
 f32 fn_80138F78(GameObject* tricky);
 GameObject* trickyGetStayPoint(GameObject* tricky);
-int fn_80138F90(GameObject* tricky);
+int trickyGetAimPitchOffset(GameObject* tricky);
 int trickyFn_80138f14(GameObject* tricky);
 void trickyImpress(GameObject* obj);
 void trickySetSoundSuppressed(GameObject* obj, int value);
@@ -32,6 +32,6 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
 void Tricky_updateBlendChannelWeight(int obj, u8* state);
 void Tricky_emitQueuedPathParticles(u8* obj, u8* state);
 int trickySelectQueuedCommandTarget(TrickyState* state, int commandType);
-void fn_80138D7C(int obj, int state);
+void tricky_updateModelVariantFade(int obj, int state);
 
 #endif

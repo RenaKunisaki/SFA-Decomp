@@ -41,7 +41,7 @@ STATIC_ASSERT(offsetof(VfpLevelControlSetup, areaMode) == 0x1A);
 
 extern int lbl_803DC148;
 
-void fn_801F9804(GameObject* obj);
+void VFP_LevelControl_updateSpellTabletPuzzle(GameObject* obj);
 int VFP_LevelControl_getExtraSize(void);
 int VFP_LevelControl_getObjectTypeId(void);
 void VFP_LevelControl_free(GameObject* obj);

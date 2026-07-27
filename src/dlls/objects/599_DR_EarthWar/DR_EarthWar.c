@@ -1477,7 +1477,7 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
     ((DREarthWarriorState*)inner)->tailSimHandle = (s32)ObjModelChain_Alloc(&gEarthWarriorTailChainDesc, 1);
     ObjModelChain_SetOrigin((ObjModelChain*)((DREarthWarriorState*)inner)->tailSimHandle, lbl_803E8324, lbl_803E831C,
                             lbl_803E8394);
-    *(int*)((char*)obj + 0x108) = (int)fn_802BC788;
+    *(int*)((char*)obj + 0x108) = (int)dim2prisonmammoth_updateModelChain;
     ObjModelChain_SetEnabled((ObjModelChain*)((DREarthWarriorState*)inner)->tailSimHandle, 1);
 }
 

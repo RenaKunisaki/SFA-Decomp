@@ -9,7 +9,7 @@
  *    map-event interface), each state counting down the shared timer
  *    lbl_803DC148 and rolling up groups of progress bits into summary
  *    bits;
- *  - the spell-tablet ordered-sequence puzzle (fn_801F9804), which
+ *  - the spell-tablet ordered-sequence puzzle (VFP_LevelControl_updateSpellTabletPuzzle), which
  *    requires the four step bits to light in order and grants the
  *    "sequence done" bit when all four are set;
  *  - two music latches driven through SCGameBitLatch_Update.
@@ -35,7 +35,7 @@ int lbl_803DC148 = 0x82;
 #define VFPLEVELCONTROL_OBJGROUP 9
 
 /* Ordered spell-tablet sequence: the four step bits must light in this
-   array order (advanced by fn_801F9804); lighting them out of order
+   array order (advanced by VFP_LevelControl_updateSpellTabletPuzzle); lighting them out of order
    resets the puzzle. SEQUENCE_DONE is granted once all four are set. */
 enum
 {
@@ -66,7 +66,7 @@ enum
 /* Advance the ordered spell-tablet puzzle. The four step bits must be
    set in array order; the next-expected bit advances the step, any
    later bit lighting early resets the whole puzzle. */
-void fn_801F9804(GameObject* obj)
+void VFP_LevelControl_updateSpellTabletPuzzle(GameObject* obj)
 {
     s16* p;
     VfpLevelControlState* state = obj->extra;
@@ -186,7 +186,7 @@ void VFP_LevelControl_update(GameObject* obj)
                 lbl_803DC148 = 0;
             }
         }
-        fn_801F9804(obj);
+        VFP_LevelControl_updateSpellTabletPuzzle(obj);
         break;
     case 3:
         if (lbl_803DC148 != 0)

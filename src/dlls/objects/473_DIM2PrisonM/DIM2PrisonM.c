@@ -262,7 +262,7 @@ void dim2prisonmammoth_initialise(void)
     gDim2PrisonMammothDefaultStateHandler[0] = dim2prisonmammoth_defaultStateHandler;
 }
 
-void fn_802BC788(GameObject* obj, int b)
+void dim2prisonmammoth_updateModelChain(GameObject* obj, int b)
 {
     ObjModelChain_Update((int*)b, *(int*)b, (ObjModelChain*)*(int*)(*(int*)&obj->extra + 0x14f8), NULL);
 }

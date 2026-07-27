@@ -1252,7 +1252,7 @@ void dll_D3_update(GameObject* obj)
 
     if (((LandedArwingMovementFlags*)&extra->flags92)->contactCallbackRegistered == 0u)
     {
-    if (ObjContact_AddCallback(obj, player, fn_80167550) != 0)
+    if (ObjContact_AddCallback(obj, player, LandedArwing_OnPlayerContact) != 0)
         {
             ((LandedArwingMovementFlags*)&extra->flags92)->contactCallbackRegistered = 1;
         }
@@ -1400,7 +1400,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     extra->unk_40 = fz;
 }
 
-void fn_80167550(GameObject* obj, GameObject* otherObj)
+void LandedArwing_OnPlayerContact(GameObject* obj, GameObject* otherObj)
 {
     int* state = obj->extra;
     (*gPlayerInterface)->setState(obj, state, 2);

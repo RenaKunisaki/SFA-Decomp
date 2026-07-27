@@ -40,7 +40,7 @@ STATIC_ASSERT(sizeof(GcRobotLightBeaState) == 0xc);
 #define GCROBOTLIGHTBEA_HIT_VOLUME_SLOT 0x17
 
 
-int fn_801A0174(GameObject* obj)
+int gcrobotlightbea_isPlayerCaught(GameObject* obj)
 {
     return (((GcRobotLightBeaState*)(int*)obj->extra)->hitFlags >> 7) & 1;
 }

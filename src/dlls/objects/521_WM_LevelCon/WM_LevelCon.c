@@ -5,7 +5,7 @@
  * (the 0xD1B..0xD1F spirit chain consumed by wmspiritplace and
  * friends); update shows the intro message while messageTimer runs,
  * drives the music game-bit latches, and calls the sky/light override
- * helper every frame. fn_801F3F18 cross-fades the palace's sky, light
+ * helper every frame. WM_LevelControl_updateSkyLighting cross-fades the palace's sky, light
  * and fog colors toward their spirit-restored values while the
  * gWmLevelControlBlendFactor blend factor (held at 1.0 during restore progress,
  * decaying 0.02/tick after) is up.
@@ -145,7 +145,7 @@ static void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to)
     }
 }
 
-void fn_801F3F18(GameObject* obj)
+void WM_LevelControl_updateSkyLighting(GameObject* obj)
 {
     LightVec3 auxDir;
     LightVec3 fromDir;
@@ -291,7 +291,7 @@ void WM_LevelControl_update(GameObject* obj)
         }
         SCGameBitLatch_Update(&state->latch, 0x20, -1, -1, 0xcbb, 0xc4);
     }
-    fn_801F3F18(obj);
+    WM_LevelControl_updateSkyLighting(obj);
     state->frameCounter = state->frameCounter + 1;
     return;
 }

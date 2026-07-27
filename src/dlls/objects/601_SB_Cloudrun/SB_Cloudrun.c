@@ -664,7 +664,7 @@ int shipBattleFn_801eed24(GameObject* obj)
 }
 
 
-void fn_801EED5C(GameObject* obj, f32* x, f32* y, f32* z)
+void SB_CloudRunner_getSpawnPos(GameObject* obj, f32* x, f32* y, f32* z)
 {
     SBCloudRunnerState* state = obj->extra;
     *x = state->spawnPosX;

@@ -7,7 +7,7 @@
 struct SBGalleonState;
 
 GameObject* getSbGalleon(void);
-void fn_801E1588(GameObject* obj, struct SBGalleonState* state);
+void SB_Galleon_updateSkyLighting(GameObject* obj, struct SBGalleonState* state);
 int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int SB_Galleon_func0E(GameObject* obj);
 u8 SB_Galleon_getDamagePhase(GameObject* obj);

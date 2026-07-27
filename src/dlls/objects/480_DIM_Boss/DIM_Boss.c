@@ -73,7 +73,7 @@ static inline Dim2PlayerInterface* DIM2_GetPlayerInterface(void)
     return (Dim2PlayerInterface*)*gPlayerInterface;
 }
 
-int fn_801B9ECC(int a, int obj)
+int DIMbossAnim_updateBossHitReaction(int a, int obj)
 {
     DimAnimTable* base;
     BaddieState* state;
@@ -2015,7 +2015,7 @@ void DIMboss_initialiseAnimTables(void)
     animTable->hasMoveDone = DIMbossAnim_hasMoveDone;
     animTable->finishDefeat = DIMbossAnim_finishDefeat;
     animTable->updatePlayerHitReaction = DIMbossAnim_updatePlayerHitReaction;
-    animTable->updateBossHitReaction = fn_801B9ECC;
+    animTable->updateBossHitReaction = DIMbossAnim_updateBossHitReaction;
 }
 
 int gDim2IcicleHitCooldown;

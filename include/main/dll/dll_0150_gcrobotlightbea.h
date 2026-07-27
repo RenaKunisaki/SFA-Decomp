@@ -13,7 +13,7 @@ typedef struct GcRobotLightBeaState
     u8 pad9[3];
 } GcRobotLightBeaState;
 
-int fn_801A0174(GameObject* obj);
+int gcrobotlightbea_isPlayerCaught(GameObject* obj);
 int gcrobotlightbea_getExtraSize(void);
 int gcrobotlightbea_getObjectTypeId(void);
 void gcrobotlightbea_free(GameObject* obj);

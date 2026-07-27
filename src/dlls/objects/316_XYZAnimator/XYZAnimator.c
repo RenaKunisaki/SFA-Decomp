@@ -6,7 +6,7 @@
  * edge positions into a freshly mmAlloc'd buffer (XyzAnimator_captureGeometry), then on
  * each tick walks an offset vec toward the placement's per-axis targets
  * and writes the displaced positions back into the live block
- * (fn_80194C40). The placement animation mode selects the drive style:
+ * (XyzAnimator_applyToMapBlock). The placement animation mode selects the drive style:
  *   0/4 = one-shot toward target (sets the completion game bit),
  *   1   = looping (per-axis wrap), 2 = game-bit gated forward/reverse.
  * A game bit gates whether the animation runs.
@@ -179,7 +179,7 @@ void XyzAnimator_free(GameObject* obj, int flag)
         block = (int)mapGetBlock(block);
         if (((void*)block != NULL) && (state->vertexCount != 0))
         {
-            fn_80194C40(setup, state, block);
+            XyzAnimator_applyToMapBlock(setup, state, block);
         }
     }
     if ((void*)state->dataBuffer != NULL)
@@ -196,7 +196,7 @@ void XyzAnimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
-void fn_80194C40(XyzAnimatorPlacement* def, XyzAnimatorState* state, int block)
+void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* def, XyzAnimatorState* state, int block)
 {
     VertexS16* vtx;
     MapBlockData* mb = (MapBlockData*)block;
@@ -367,9 +367,9 @@ void XyzAnimator_update(GameObject* obj)
         XyzAnimator_captureGeometry(setup, state, block);
         if (setup->mode != 4)
         {
-            fn_80194C40(setup, state, block);
+            XyzAnimator_applyToMapBlock(setup, state, block);
             ((MapBlockData*)block)->flags4 = ((MapBlockData*)block)->flags4 ^ 1;
-            fn_80194C40(setup, state, block);
+            XyzAnimator_applyToMapBlock(setup, state, block);
             ((MapBlockData*)block)->flags4 = ((MapBlockData*)block)->flags4 ^ 1;
         }
     }
@@ -724,7 +724,7 @@ void XyzAnimator_update(GameObject* obj)
         }
         break;
     }
-    fn_80194C40(setup, state, block);
+    XyzAnimator_applyToMapBlock(setup, state, block);
     return;
 }
 

@@ -6,7 +6,7 @@
 
 void nw_levcontrol_update(int obj);
 void nw_levcontrol_init(struct GameObject* obj);
-int fn_801CFD68(u8* stateBytes);
+int nw_levcontrol_advanceSequenceTable(u8* stateBytes);
 int nw_levcontrol_getExtraSize(void);
 void nw_levcontrol_free(GameObject* obj);
 

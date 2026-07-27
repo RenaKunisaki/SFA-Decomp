@@ -31,6 +31,6 @@ typedef struct DimAnimTable
     s16 group1[8];    /* 0x194: hitPoints==1 round-robin anim ids */
 } DimAnimTable;
 
-int fn_801B9ECC(int a, int obj);
+int DIMbossAnim_updateBossHitReaction(int a, int obj);
 
 #endif /* MAIN_DLL_DLL_801B9ECC_H_ */

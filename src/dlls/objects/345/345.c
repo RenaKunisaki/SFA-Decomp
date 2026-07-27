@@ -17,7 +17,7 @@ extern f32 lbl_803E4348;
 int lbl_803DDB18;
 
 
-int fn_801A27B8(GameObject* obj, int id)
+int blasted_activateMapLayer(GameObject* obj, int id)
 {
     MapBlockData* block;
 
@@ -102,7 +102,7 @@ void blasted_update(GameObject* obj)
     }
     if ((u32)mainGetBit(setup->completedGameBit) != 0)
     {
-        state->triggerFired = fn_801A27B8(obj, setup->triggerId);
+        state->triggerFired = blasted_activateMapLayer(obj, setup->triggerId);
         return;
     }
     {
@@ -156,7 +156,7 @@ void blasted_update(GameObject* obj)
                         mainSetBits(gbIndex + BLASTED_GAMEBIT_DAMAGE_BASE, 0);
                     }
                     mainSetBits(setup->completedGameBit, 1);
-                    fn_801A27B8(obj, setup->triggerId);
+                    blasted_activateMapLayer(obj, setup->triggerId);
                     Obj_SetActiveModelIndex(obj, 2);
                     state->triggerFired = 1;
                 }
@@ -196,7 +196,7 @@ void blasted_init(GameObject* obj, BlastedTargetSetup* setup)
     obj->anim.rotX = (s16)((s32)setup->rotX << 8);
     if ((u32)mainGetBit(setup->completedGameBit) != 0)
     {
-        state->triggerFired = fn_801A27B8(obj, setup->triggerId);
+        state->triggerFired = blasted_activateMapLayer(obj, setup->triggerId);
     }
 }
 

@@ -853,7 +853,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                     layerByte = layer->typeBits & 0x7f;
                     if ((SHADER_FLAGS(shader) & 0x40000) != 0)
                     {
-                        fn_80051528((void*)texture, texMtx);
+                        addTexLayerStagesLit((void*)texture, texMtx);
                     }
                     else
                     {

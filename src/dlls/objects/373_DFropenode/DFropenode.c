@@ -90,7 +90,7 @@ typedef struct DfropenodePlacement
  * Build the six-vertex mesh for one rope segment. The template is rotated
  * around the Y axis and its two end caps are translated onto the link nodes.
  */
-void fn_801C0BF8(void* templateData, int angle, float* startNode, float* endNode, LightmapVertex* out)
+void dfropenode_buildRopeSegmentMesh(void* templateData, int angle, float* startNode, float* endNode, LightmapVertex* out)
 {
     s16 startX;
     s16 startY;
@@ -908,7 +908,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3)
         for (segment = 0; segment < (int)(extra->rope->count - 1); segment++)
         {
             node++;
-            fn_801C0BF8((u8*)gRopeNodeSegmentDataA, extra->angle, (node - 1)->pos, node->pos, segmentVerts);
+            dfropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataA, extra->angle, (node - 1)->pos, node->pos, segmentVerts);
             drawFn_8005cf8c(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
         }
         if (objDef->textureIndex == 1)
@@ -925,7 +925,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3)
             for (segment = 0; segment < (int)(extra->rope->count - 1); segment++)
             {
                 node++;
-                fn_801C0BF8((u8*)gRopeNodeSegmentDataB, extra->angle, (node - 1)->pos, node->pos, segmentVerts);
+                dfropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataB, extra->angle, (node - 1)->pos, node->pos, segmentVerts);
                 drawFn_8005cf8c(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
             }
         }

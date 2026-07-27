@@ -256,7 +256,7 @@ void fn_801DFA28(GameObject* obj)
         return;
     if ((tricky != NULL) && (tricky->userData1 == 0))
     {
-        fn_801EED5C(tricky, &state->homeX, &state->homeY, &state->homeZ);
+        SB_CloudRunner_getSpawnPos(tricky, &state->homeX, &state->homeY, &state->homeZ);
     }
     state->timer26 -= framesThisStep;
     if (state->timer26 < 0)
@@ -1092,9 +1092,9 @@ enum SbGalleonCameraState
 #define SBGALLEON_TEXTURE_SKY_B    0x89  /* gSbGalleonSkyTexB */
 #define SBGALLEON_MUSIC_INTRO      0xa3
 #define SBGALLEON_MAP_PALACE       0xb /* map-event/dir id this boss locks */
-#define SBGALLEON_SKY_LIGHT_SLOT   7   /* sky override light slot fn_801E1588 drives */
+#define SBGALLEON_SKY_LIGHT_SLOT   7   /* sky override light slot SB_Galleon_updateSkyLighting drives */
 
-void fn_801E1588(GameObject* obj, SBGalleonState* state)
+void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
 {
     ObjModel* activeModel;
     int renderOpIndex;
@@ -1203,7 +1203,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     int i;
 
     obj->anim.mapEventSlot = -1;
-    fn_801E1588(obj, state);
+    SB_Galleon_updateSkyLighting(obj, state);
     {
         f32 z = lbl_803E56CC;
         state->moveScale = lbl_803E56CC;
@@ -1498,7 +1498,7 @@ void SB_Galleon_update(GameObject* obj)
 {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
     obj->anim.mapEventSlot = state->mapLayer;
-    fn_801E1588(obj, state);
+    SB_Galleon_updateSkyLighting(obj, state);
     if (mainGetBit(SBGALLEON_GAMEBIT_INTRO) == 0)
     {
         (*gMapEventInterface)->setMapAct(SBGALLEON_MAP_PALACE, 1);

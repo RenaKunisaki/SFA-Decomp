@@ -3,6 +3,6 @@
 
 #include "main/lightmap_api.h"
 
-void fn_801C0BF8(void* templateData, int angle, float* startNode, float* endNode, LightmapVertex* out);
+void dfropenode_buildRopeSegmentMesh(void* templateData, int angle, float* startNode, float* endNode, LightmapVertex* out);
 
 #endif /* MAIN_DLL_DLL_801C0BF8_H_ */

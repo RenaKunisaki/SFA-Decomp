@@ -15,6 +15,6 @@ int dll_D3_getObjectTypeId(void);
 int dll_D3_getExtraSize_ret_1188(void);
 
 /* extern-cleanup: defining-file public prototypes */
-void fn_80167550(GameObject* obj, GameObject* otherObj);
+void LandedArwing_OnPlayerContact(GameObject* obj, GameObject* otherObj);
 
 #endif /* MAIN_DLL_STAFFACTION_H_ */

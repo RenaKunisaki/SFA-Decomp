@@ -101,8 +101,8 @@ f32 lbl_803DD9CC;
 f32 gTitleScreenCursorY;
 f32 lbl_803DD9C4;
 u8 lbl_803DD9C0;
-u32 lbl_803DD9BC;
-u32 lbl_803DD9B8;
+u32 gNameEntryScrollX;
+u32 gNameEntryScrollY;
 f32 lbl_803DD9B4;
 f32 gTitleScreenCursorX;
 int gTitleScreenCopyrightBaseY;
@@ -505,11 +505,11 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
 
 u8 gTitleScreenMtx[0x34];
 
-/* Two-word setter for state pair. */
+/* Sets the name-entry text scroll offsets (x is applied in 4-px steps). */
 void nameEntrySetScroll(u32 a, u32 b)
 {
-    lbl_803DD9BC = a;
-    lbl_803DD9B8 = b;
+    gNameEntryScrollX = a;
+    gNameEntryScrollY = b;
 }
 void titleScreenPositionElements(f32 a, f32 b)
 {
@@ -532,22 +532,22 @@ void nameEntryTextDrawFunc(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u
     GXSetScissor((int)((u32) * (f32*)(gTitleScreenMtx + 0xc) + 0x39),
                  (int)((u32) * (f32*)(gTitleScreenMtx + 0x1c) + 0x4e), 0x104, 0x16);
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
-    GXWGFifo.s16 = (s16)(x0 - *(u32*)&lbl_803DD9BC * 4 + 0x208);
+    GXWGFifo.s16 = (s16)(x0 - *(u32*)&gNameEntryScrollX * 4 + 0x208);
     GXWGFifo.s16 = y0;
     GXWGFifo.s16 = -0x20;
     GXWGFifo.f32 = u0;
     GXWGFifo.f32 = v0;
-    GXWGFifo.s16 = (s16)(x1 - *(u32*)&lbl_803DD9BC * 4 + 0x208);
+    GXWGFifo.s16 = (s16)(x1 - *(u32*)&gNameEntryScrollX * 4 + 0x208);
     GXWGFifo.s16 = y0;
     GXWGFifo.s16 = -0x20;
     GXWGFifo.f32 = u1;
     GXWGFifo.f32 = v0;
-    GXWGFifo.s16 = (s16)(x1 - *(u32*)&lbl_803DD9BC * 4 + 0x208);
+    GXWGFifo.s16 = (s16)(x1 - *(u32*)&gNameEntryScrollX * 4 + 0x208);
     GXWGFifo.s16 = y1;
     GXWGFifo.s16 = -0x20;
     GXWGFifo.f32 = u1;
     GXWGFifo.f32 = v1;
-    GXWGFifo.s16 = (s16)(x0 - *(u32*)&lbl_803DD9BC * 4 + 0x208);
+    GXWGFifo.s16 = (s16)(x0 - *(u32*)&gNameEntryScrollX * 4 + 0x208);
     GXWGFifo.s16 = y1;
     GXWGFifo.s16 = -0x20;
     GXWGFifo.f32 = u0;

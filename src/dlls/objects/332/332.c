@@ -59,7 +59,7 @@ extern f32 lbl_803E422C;
 /* Pick the burrow/surface move from the vertical speed, clamp the playback
  * rate, latch the spit SFX while surfacing fast, and advance the current
  * move. */
-int fn_8019E3F4(GameObject* obj)
+int babycloudrunner_updateBurrowAnim(GameObject* obj)
 {
     f32 speed;
     BabyCloudRunnerState* sub = obj->extra;
@@ -185,7 +185,7 @@ extern f32 lbl_803E4254;
 void babycloudrunner_release(void);
 void babycloudrunner_initialise(void);
 
-int fn_8019E3F4(GameObject* obj);
+int babycloudrunner_updateBurrowAnim(GameObject* obj);
 void sandworm_turnTowardTargetAnim(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove);
 /* When the player gets within the trigger radius and the runner is in state 3,
  * fire its burst (notify, bump the counter, set the gamebit); otherwise just
@@ -511,7 +511,7 @@ void babycloudrunner_update(GameObject* obj)
                         s16toFloat(&sub->countdownTimer,
                                    (s16)gBabyCloudRunnerAirMeterValues[sub->runnerIndex]);
                     }
-                    fn_8019E3F4(obj);
+                    babycloudrunner_updateBurrowAnim(obj);
                     return;
                 }
                 if (sub->runnerState == 2)
@@ -545,7 +545,7 @@ void babycloudrunner_update(GameObject* obj)
                             enemy_setTrackedObj((GameObject*)near, Obj_GetPlayerObject());
                         }
                     }
-                    fn_8019E3F4(obj);
+                    babycloudrunner_updateBurrowAnim(obj);
                 }
             }
             inRange = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <

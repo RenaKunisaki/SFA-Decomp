@@ -2,7 +2,7 @@
  * Tricky companion DLL.
  *
  * Blend-channel weight animation (Tricky_updateBlendChannelWeight), the
- * impress fade (fn_80138D7C / trickyImpress), queued-path particle emission
+ * impress fade (tricky_updateModelVariantFade / trickyImpress), queued-path particle emission
  * (Tricky_emitQueuedPathParticles), baddie target search
  * (trickyFindNearestUsableBaddie) and queued-command target selection
  * (trickySelectQueuedCommandTarget), plus small state accessors.
@@ -476,7 +476,7 @@ void Tricky_updateBlendChannelWeight(int obj, u8* state)
     }
 }
 
-void fn_80138D7C(int obj, int state)
+void tricky_updateModelVariantFade(int obj, int state)
 {
     u8 ratio = (u8)((s32) * (u8*)(*(int*)(state + 0) + 2) / 10);
 
@@ -552,7 +552,7 @@ GameObject* trickyGetStayPoint(GameObject* obj)
 {
     return ((TrickyImpressState*)obj->extra)->stayPoint;
 }
-int fn_80138F90(GameObject* obj)
+int trickyGetAimPitchOffset(GameObject* obj)
 {
     return ((TrickyImpressState*)obj->extra)->unk414;
 }
@@ -8133,7 +8133,7 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
     objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
     objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
     objAnimFreeChildren(obj, state, (GameObject**)&((TrickyState*)state)->child);
-    fn_80138D7C(obj, state);
+    tricky_updateModelVariantFade(obj, state);
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
     objAudioFn_8006ef38((GameObject*)obj, &animUpdate->animEvents, 1, (void*)(state + 0x7d8),
                         (void*)(state + 0xf8), lbl_803E23E8,
@@ -9567,7 +9567,7 @@ void Tricky_update(int obj)
             TRICKY_VOICE(obj, sfxId, 0x500);
         }
     }
-    fn_80138D7C(obj, state);
+    tricky_updateModelVariantFade(obj, state);
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
     if (trickyState->speed > lbl_803E254C)
     {

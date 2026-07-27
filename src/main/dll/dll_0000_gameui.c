@@ -891,7 +891,7 @@ void hudDrawMagicBar(u8 alpha, int elemAlpha, u8 flags);
 int cMenuRingModelRenderFn(GameObject* obj, int block, int idx);
 int cMenuRingIconRenderFn(GameObject* obj, int block, int idx);
 void pauseMenuDrawStatus_801274A0(GameObject* arg1);
-void fn_80127F24(s32 alpha);
+void pauseMenuDrawSideRails(s32 alpha);
 void pauseMenuFn_8012b77c(void);
 void pauseMenuRunSubmenu(int p1);
 void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q);
@@ -4812,7 +4812,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                                          0);
                 }
             }
-            fn_80127F24(x);
+            pauseMenuDrawSideRails(x);
             lbl_803DD824 = lbl_803DD7C4 ? statusTable->gridBD0 : statusTable->grid9F8;
             pauseMenuDrawGrid(panelAlpha);
             model = Obj_GetActiveModel(lbl_803DD860[1]);
@@ -5166,7 +5166,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
         f64 tmp = (double)(s16)ty1 * (lbl_803E2080 - (double)lbl_803DD75C);
         ty = (s32)(tmp * lbl_803E2088);
     }
-    fn_80127F24(ty);
+    pauseMenuDrawSideRails(ty);
     if (lbl_803DD7C4 != 0)
     {
         for (i8 = 0x14; i8 >= 0; i8 -= 4)
@@ -5301,7 +5301,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     Camera_ApplyFullViewport();
 }
 
-void fn_80127F24(s32 alpha)
+void pauseMenuDrawSideRails(s32 alpha)
 {
     f32 phase;
     f32 brightness;

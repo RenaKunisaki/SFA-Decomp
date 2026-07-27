@@ -7,7 +7,7 @@
  * latched game-bit -> music/sfx reactions (SCGameBitLatch_Update), the
  * timed-challenge timer (init / count-up / stop with the SnowHorn rescue
  * bits 0x19d/0x19f), and a state machine that walks a table of target
- * objects (fn_801CFD68) firing their trigger sequences in turn.
+ * objects (nw_levcontrol_advanceSequenceTable) firing their trigger sequences in turn.
  */
 #include "dlls/object_descriptor.h"
 #include "main/audio/sfx_ids.h"
@@ -109,7 +109,7 @@ ObjectDescriptor gNW_levcontrolObjDescriptor = {
     nw_levcontrol_getExtraSize,
 };
 
-int fn_801CFD68(u8* stateBytes)
+int nw_levcontrol_advanceSequenceTable(u8* stateBytes)
 {
     NwLevControlState* state = (NwLevControlState*)stateBytes;
     s32* table;
@@ -270,7 +270,7 @@ void nw_levcontrol_update(int objArg)
             mainSetBits(0xecd, 1);
             break;
         case NWLEVCONTROL_MODE_WALK_TABLE:
-            obj = fn_801CFD68((u8*)state);
+            obj = nw_levcontrol_advanceSequenceTable((u8*)state);
             if (obj != 0)
             {
                 state->timerMinutes = 0x32;
@@ -282,10 +282,10 @@ void nw_levcontrol_update(int objArg)
         case 5:
         case 6:
         case 7:
-            fn_801CFD68((u8*)state);
+            nw_levcontrol_advanceSequenceTable((u8*)state);
             break;
         case NWLEVCONTROL_MODE_WALK_FINAL:
-            obj = fn_801CFD68((u8*)state);
+            obj = nw_levcontrol_advanceSequenceTable((u8*)state);
             if (obj == 1)
             {
                 state->flags = state->flags | 4;

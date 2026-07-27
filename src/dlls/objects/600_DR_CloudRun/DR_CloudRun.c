@@ -5,12 +5,12 @@
  * / scripted, 1 = transition, 2 = mounted free-flight); the eight state
  * handlers (gDRCloudRunnerStateHandlers[0..7]) drive idle, scripted-move,
  * flight, restart and hit responses, dispatched through the shared
- * baddie/player interface in fn_802C11BC.
+ * baddie/player interface in DR_CloudRunner_updateFlightControl.
  *
  * Free-flight (stateHandler05) integrates velocity from stick input,
  * gravity and a banking model, clamps speed/pitch/roll against the
  * per-move parameter table at gDRCloudRunnerMoveParamTable, and follows the wind-curve
- * collision path set up in fn_802BF0C8. The air meter and several map
+ * collision path set up in DR_CloudRunner_setupPath. The air meter and several map
  * game bits are managed across init/free/hitDetect.
  *
  * CloudRunnerState (its 'extra' block, 0xbc8 bytes) lives in
@@ -83,7 +83,7 @@ STATIC_ASSERT(sizeof(CloudRunnerState) == 0xbc8);
 
 
 
-void fn_802BF0C8(GameObject* obj, CloudRunnerState* state, int mode)
+void DR_CloudRunner_setupPath(GameObject* obj, CloudRunnerState* state, int mode)
 {
     u8* base = gDRCloudRunnerMoveParamTable;
     u8 stk[4] = { 0, 1, 1, 1 };
@@ -198,7 +198,7 @@ void DR_CloudRunner_func23(GameObject* obj, int mode, int* out)
     }
 }
 
-void fn_802BF4D8(GameObject* obj)
+void DR_CloudRunner_fireProjectile(GameObject* obj)
 {
     f32 dir[3];
     f32 diff[3];
@@ -418,7 +418,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
         if (!((ByteFlags*)&inner->flagsBC0)->b20)
         {
             ((ByteFlags*)&inner->flagsBC0)->b20 = 1;
-            fn_802BF0C8(obj, baddie, ((ByteFlags*)&inner->flagsBC0)->b20);
+            DR_CloudRunner_setupPath(obj, baddie, ((ByteFlags*)&inner->flagsBC0)->b20);
         }
         ObjAnim_SetCurrentMove((int)obj, *(s16*)(base + 0x68), 0.0f, 0);
         inner->pitchAngle = *(s16*)(base + 0x74);
@@ -812,7 +812,7 @@ int DR_CloudRunner_stateHandler03(GameObject* obj, CloudRunnerState* baddie)
         if (((ByteFlags*)&inner->flagsBC0)->b20)
         {
             ((ByteFlags*)&inner->flagsBC0)->b20 = 0;
-            fn_802BF0C8(obj, baddie, ((ByteFlags*)&inner->flagsBC0)->b20);
+            DR_CloudRunner_setupPath(obj, baddie, ((ByteFlags*)&inner->flagsBC0)->b20);
         }
     }
     switch ((obj)->anim.currentMove)
@@ -1150,7 +1150,7 @@ void DR_CloudRunner_hitDetect(GameObject* obj)
     }
 }
 
-void fn_802C11BC(GameObject* obj, f32 f, int triggerFrame)
+void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame)
 {
     CloudRunnerState* inner;
     int flag;
@@ -1199,7 +1199,7 @@ void fn_802C11BC(GameObject* obj, f32 f, int triggerFrame)
                                 &gDRCloudRunnerDefaultStateHandler);
     if ((*(int*)&inner->baddie.eventFlags & 1) != 0)
     {
-        fn_802BF4D8(obj);
+        DR_CloudRunner_fireProjectile(obj);
     }
     if (((ByteFlags*)&inner->flagsBC0)->b02 != 0)
     {
@@ -1218,13 +1218,13 @@ void DR_CloudRunner_update(GameObject* obj)
     if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
         *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-        fn_802C11BC(obj, timeDelta, -1);
+        DR_CloudRunner_updateFlightControl(obj, timeDelta, -1);
         ((ObjAnimComponent*)obj)->modelInstance->flags |= 0x200000LL;
     }
     else
     {
         inner->baddie.physicsActive = 0;
-        fn_802C11BC(obj, timeDelta, -1);
+        DR_CloudRunner_updateFlightControl(obj, timeDelta, -1);
         ((ObjAnimComponent*)obj)->modelInstance->flags &= ~0x200000LL;
     }
     if (inner->cooldownTimer != 0)
@@ -1314,7 +1314,7 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     }
     (*gPlayerInterface)->init(obj, (void*)inner, 8, 1);
     ((CloudRunnerState*)inner)->baddie.gravity = 0.17f;
-    fn_802BF0C8(obj, (CloudRunnerState*)inner, ((ByteFlags*)((char*)inner + 0xbc0))->b20);
+    DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((ByteFlags*)((char*)inner + 0xbc0))->b20);
     dll_2E_func05(obj, (MoveLibState*)((char*)inner + 0x4c4), -0x11c7, 0x1555, 1);
     dll_2E_func08((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
     ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);

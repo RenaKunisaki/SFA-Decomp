@@ -2259,7 +2259,7 @@ void textureFn_80051348(void* p1, u8 p2)
 
 
 
-void fn_80051528(void* p1, void* mtx)
+void addTexLayerStagesLit(void* p1, void* mtx)
 {
     u8 buf[3];
     int out_c;

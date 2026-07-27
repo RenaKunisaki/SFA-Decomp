@@ -53,6 +53,6 @@ void dim2prisonmammoth_update(GameObject* obj);
 void dim2prisonmammoth_init(GameObject* obj, int params);
 void dim2prisonmammoth_release(void);
 void dim2prisonmammoth_initialise(void);
-void fn_802BC788(GameObject* obj, int b);
+void dim2prisonmammoth_updateModelChain(GameObject* obj, int b);
 
 #endif
