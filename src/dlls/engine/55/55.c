@@ -1,16 +1,3 @@
-/*
- * optionsscreen (DLL 0x37) - the front-end Options screen, run as a
- * title-menu sub-state through gTitleMenuLinkInterface / gTitleMenuItemInterface.
- *
- * lbl_803DBA28 selects the active panel: 0 = top-level options list,
- * 1 = audio, 2 = gameplay (widescreen / rumble), 3 = misc (subtitles +
- * cheat toggles). _run() reads the highlighted item, dispatches to the
- * matching optionsMenu_* handler, and mirrors the chosen settings into
- * the save-file struct (lbl_803DD708). _render() fades the panel
- * text in/out against the screen-transition progress; _initialise()
- * loads the text directory and the active panel's item list. Selecting
- * Exit (panel 3, item 0) starts the transition out and reloads UI DLL 4.
- */
 #include "main/audio/sfx_ids.h"
 #include "main/model_engine.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -35,10 +22,8 @@
 #include "main/dll/dll_0015_curves.h"
 #include "main/gametext_color_api.h"
 
-/* Menu-item slots per options panel (lbl_803A87D0[8], size 0x20 / 4). */
 #define OPTIONSSCREEN_MENU_ITEM_COUNT 8
 
-/* Active panel id (lbl_803DBA28; see file header). */
 #define OPTIONSSCREEN_PANEL_NONE     (-1)
 #define OPTIONSSCREEN_PANEL_TOP      0
 #define OPTIONSSCREEN_PANEL_AUDIO    1
@@ -54,19 +39,19 @@ typedef struct OptionsScreenPanelConfig {
     u16 padding;
 } OptionsScreenPanelConfig;
 
-s8 lbl_803DBA28 = -1;      /* active panel id (-1 = none) */
+s8 lbl_803DBA28 = -1;
 extern f32 lbl_803E1DD4;
 extern f32 lbl_803E1DD8;
 extern f32 lbl_803E1DDC;
 extern f32 lbl_803E1DE0;
 extern f32 lbl_803E1DE4;
-extern s8 lbl_803DD706;  /* render-stale countdown */
-extern s8 lbl_803DD70C;  /* last top-level item index (read by other DLL) */
-extern s8 lbl_803DD705;  /* exit-in-progress flag */
+extern s8 lbl_803DD706;
+extern s8 lbl_803DD70C;
+extern s8 lbl_803DD705;
 extern u8 lbl_803DD6F9;
-extern u8 lbl_803DD6F8;  /* initial panel selector */
-extern s8 lbl_803DD704;  /* exit fade countdown */
-extern int lbl_803DD700; /* last highlighted item (for select sfx) */
+extern u8 lbl_803DD6F8;
+extern s8 lbl_803DD704;
+extern int lbl_803DD700;
 
 u16 lbl_8031A8F8[90] = {
     0x035a, 0x0012, 0x0140, 0x00a4, 0x0000, 0x0140, 0x0034, 0x0000, 0xffff, 0xffff, 0x00c8, 0x0200, 0x0000, 0xff01, 0xffff, 0xff00,
