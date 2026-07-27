@@ -1,14 +1,3 @@
-/*
- * effect7 (DLL 0x20) - a particle/effect spawner DLL exposing the
- * projgfx_funcs ObjectDescriptor. Effect7_func04 is the spawn entry
- * point: given an effectId (0x84..0xab range) it fills a PartFxSpawn
- * request - velocities, start positions, scale and lifetime randomised
- * per effect via randomGetRange - and submits it through
- * gExpgfxInterface->spawnEffect. Effect7_func05 advances per-frame the
- * shared scroll/sine animation globals used by the effects. Most other
- * fns here (the modgfx and projgfx families) are drift duplicates of
- * dll_000C_projgfx.c.
- */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/partfxspawn_struct.h"
@@ -442,14 +431,6 @@ int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 }
 #undef FILL368
 
-/*
- * Field names inherited from ExpgfxSpawnConfig (include/main/expgfx_internal.h),
- * the consumer-side definition of this 0x64-byte spawn request consumed by
- * gExpgfxInterface->spawnEffect (expgfx_addremove). Widths kept as written here
- * (colorWord0..2 are the u16 spelling of the consumer's ExpgfxSpawnColorPair;
- * effectIdByte/modelIdByte land in bytes the consumer currently ignores).
- */
-
 void Effect7_func05(void)
 {
     f32 sum;
@@ -487,8 +468,6 @@ void Effect7_func03_nop(void)
 void Effect7_release(void)
 {
 }
-
-
 
 void Effect7_initialise(void)
 {
