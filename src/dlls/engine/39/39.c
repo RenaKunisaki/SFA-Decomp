@@ -1,18 +1,3 @@
-/*
- * effect14 (DLL 0x27) - one of the numbered particle-effect DLLs.
- * Its single worker, Effect14_func04, fills an EffectSpawnParams request
- * for one of a fixed set of effect ids (0x4b0..0x4cd) and hands it to
- * gExpgfxInterface->spawnEffect. Per-id it sets the particle kind,
- * lifetime (count), alpha, behaviour/render flags and a randomised
- * position/velocity/scale (via randomGetRange and the lbl_803E.. float
- * constants); id 0x4c5 rotates a velocity by the model's rotation
- * (vecRotateZXY) and seeds the shared source params gEffect14SharedSrcParams.
- *
- * flags bit 0x200000 means the caller supplied an explicit EffectSrcParams
- * source (copied into the request); behaviour-flag bit 1 then adds either
- * that source position or the model's world position (model+0x18..0x20)
- * to the spawn position.
- */
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/effectsrcparams_struct.h"
@@ -565,5 +550,3 @@ void Effect14_release(void)
 void Effect14_initialise(void)
 {
 }
-
-/* .sdata2 constant pool */
