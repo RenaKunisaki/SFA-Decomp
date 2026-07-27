@@ -1,4 +1,3 @@
-/* DLL 0x156 */
-#include "global.h"
+#include "dlls/objects/342.h"
 
-u32 lbl_803DBE70[2] = {0};
+u32 gDll156NullResourceDescriptor[DLL156_NULL_DESCRIPTOR_WORD_COUNT] = {0};

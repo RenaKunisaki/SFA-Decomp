@@ -137,6 +137,7 @@
 #include "dlls/objects/339_CFPerch.h"
 #include "dlls/objects/340.h"
 #include "dlls/objects/341.h"
+#include "dlls/objects/342.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -379,7 +380,7 @@ extern ResourceDescriptorCallbacks8 lbl_80320700;
 extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
 extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0;
-extern ResourceDescriptor lbl_803DBE70, lbl_803DBEA0, lbl_803DBEA8, lbl_803DBEB0, lbl_803DBEB8, lbl_803DBEC0;
+extern ResourceDescriptor lbl_803DBEA0, lbl_803DBEA8, lbl_803DBEB0, lbl_803DBEB8, lbl_803DBEC0;
 extern ResourceDescriptor lbl_803DBEC8, lbl_803DBEE0, lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138,
     lbl_803DC140, lbl_803DC150;
 extern ResourceDescriptor lbl_803DC158, lbl_803DC2C0, lbl_803DC2D8, lbl_803DC2E0, lbl_803DC2E8, lbl_803DC338,
@@ -1337,7 +1338,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFPerchObjDescriptor,
     (ResourceDescriptor*)&gCFPrisonCageObjDescriptor,
     (ResourceDescriptor*)&gDll155NullResourceDescriptor,
-    &lbl_803DBE70,
+    (ResourceDescriptor*)&gDll156NullResourceDescriptor,
     &gSpiritDoorSpiritObjDescriptor,
     &gGunPowderBarrelObjDescriptor,
     &gBlastedObjDescriptor,
