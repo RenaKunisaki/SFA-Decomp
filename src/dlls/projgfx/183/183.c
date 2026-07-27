@@ -1,5 +1,5 @@
 /*
- * projship1 (DLL 0xB7) - retired "ship projectile 1" object.
+ * projship1 (DLL 183 / 0xB7) - retired "ship projectile 1" object.
  *
  * The object's behaviour was removed during development: its only live
  * entry point, projship1_doUnsupported, just logs a "no longer supported"
