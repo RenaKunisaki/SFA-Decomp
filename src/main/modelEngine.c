@@ -202,6 +202,7 @@
 #include "dlls/objects/405_DBSH_Shrine.h"
 #include "dlls/objects/406_DBSH_Symbol.h"
 #include "dlls/objects/407.h"
+#include "dlls/objects/408_NWSH_levcon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -330,8 +331,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
     gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor,
-    gNW_geyserObjDescriptor;
+extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1449,7 +1449,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDBSHShrineObjDescriptor,
     (ResourceDescriptor*)&gDBSHSymbolObjDescriptor,
     (ResourceDescriptor*)&gDll407ObjDescriptor,
-    &gNWSH_levconObjDescriptor,
+    (ResourceDescriptor*)&gNWSHLevelControlObjDescriptor,
     &dll_199,
     &dll_19A,
     &dll_19B,
