@@ -40,7 +40,6 @@ typedef struct DusterState
 
 
 extern int lbl_803DBCD8[2];
-extern const f32 lbl_803E2A98;
 extern const f32 lbl_803E2AA8;
 extern const f32 lbl_803E2AAC;
 extern const f32 lbl_803E2AB0;
@@ -108,7 +107,7 @@ void wbUpdateEngaged(u32 obj, int state)
         Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_261);
     }
     ((DusterState*)state)->decoyTimer = ((DusterState*)state)->decoyTimer - timeDelta;
-    if (((DusterState*)state)->decoyTimer <= lbl_803E2A98)
+    if (((DusterState*)state)->decoyTimer <= 0.0f)
     {
         if ((((BaddieState*)state)->controlFlags & 0x600) != 0)
         {
@@ -124,12 +123,12 @@ void wbUpdateEngaged(u32 obj, int state)
     }
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        ObjAnim_SetCurrentMove(obj, 3, lbl_803E2A98, *(u8*)(state + 0x323));
+        ObjAnim_SetCurrentMove(obj, 3, 0.0f, *(u8*)(state + 0x323));
     }
-    if (((DusterState*)state)->phaseTimer > lbl_803E2A98)
+    if (((DusterState*)state)->phaseTimer > 0.0f)
     {
         ((DusterState*)state)->phaseTimer = ((DusterState*)state)->phaseTimer - timeDelta;
-        if (((DusterState*)state)->phaseTimer <= lbl_803E2A98)
+        if (((DusterState*)state)->phaseTimer <= 0.0f)
         {
             ((DusterState*)state)->phaseTimer = lbl_803E2AB0;
             *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
@@ -150,12 +149,12 @@ void wbUpdateEngaged(u32 obj, int state)
             (GameObject*)(obj), tracked->anim.worldPosX, lbl_803E2AB8 + tracked->anim.worldPosY,
             tracked->anim.worldPosZ, lbl_803E2ABC, lbl_803E2AC0, lbl_803E2AC4, ((BaddieState*)state)->unk304);
     }
-    if (((moveSpeed > lbl_803E2A98) && (((GameObject*)obj)->anim.velocityY < lbl_803E2AC8)) ||
+    if (((moveSpeed > 0.0f) && (((GameObject*)obj)->anim.velocityY < lbl_803E2AC8)) ||
         ((((BaddieState*)state)->controlFlags & 0x8000000) != 0))
     {
         ((BaddieState*)state)->userData1 = 1;
     }
-    if ((((BaddieState*)state)->userData1 != 0) && (moveSpeed > lbl_803E2A98))
+    if ((((BaddieState*)state)->userData1 != 0) && (moveSpeed > 0.0f))
     {
         ((BaddieState*)state)->unk308 = lbl_803E2ACC;
         if (((BaddieState*)state)->hitCounter != 0)
@@ -179,7 +178,7 @@ void wbUpdateEngaged(u32 obj, int state)
             ((BaddieState*)state)->unk308 = -(lbl_803E2AE0 * timeDelta - ((BaddieState*)state)->unk308);
         }
     }
-    baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, lbl_803E2A98, *(f32*)&lbl_803E2A98, 0);
+    baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, 0.0f, 0.0f, 0);
 }
 
 void wbUpdateIdle(u32 obj, int state)
@@ -200,7 +199,7 @@ void wbUpdateIdle(u32 obj, int state)
         Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_261);
     }
     ((DusterState*)state)->decoyTimer = ((DusterState*)state)->decoyTimer - timeDelta;
-    if (((DusterState*)state)->decoyTimer <= lbl_803E2A98)
+    if (((DusterState*)state)->decoyTimer <= 0.0f)
     {
         if ((((BaddieState*)state)->controlFlags & 0x600) != 0)
         {
@@ -216,14 +215,14 @@ void wbUpdateIdle(u32 obj, int state)
     }
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        ObjAnim_SetCurrentMove(obj, 0, lbl_803E2A98, *(u8*)(state + 0x323));
+        ObjAnim_SetCurrentMove(obj, 0, 0.0f, *(u8*)(state + 0x323));
     }
-    if (((DusterState*)state)->phaseTimer > lbl_803E2A98)
+    if (((DusterState*)state)->phaseTimer > 0.0f)
     {
         ((DusterState*)state)->phaseTimer = ((DusterState*)state)->phaseTimer - timeDelta;
-        if (((DusterState*)state)->phaseTimer <= lbl_803E2A98)
+        if (((DusterState*)state)->phaseTimer <= 0.0f)
         {
-            ((DusterState*)state)->phaseTimer = lbl_803E2A98;
+            ((DusterState*)state)->phaseTimer = 0.0f;
         }
     }
     else
@@ -262,12 +261,12 @@ void wbUpdateIdle(u32 obj, int state)
                                                          placement->posZ, lbl_803E2ABC, lbl_803E2AC0, lbl_803E2AC4,
                                                          ((BaddieState*)state)->unk304);
     }
-    if (((moveSpeed > lbl_803E2A98) && (((GameObject*)obj)->anim.velocityY < lbl_803E2AC8)) ||
+    if (((moveSpeed > 0.0f) && (((GameObject*)obj)->anim.velocityY < lbl_803E2AC8)) ||
         ((((BaddieState*)state)->controlFlags & 0x8000000) != 0))
     {
         ((BaddieState*)state)->userData1 = 1;
     }
-    if ((((BaddieState*)state)->userData1 != 0) && (moveSpeed > lbl_803E2A98))
+    if ((((BaddieState*)state)->userData1 != 0) && (moveSpeed > 0.0f))
     {
         ((BaddieState*)state)->unk308 = lbl_803E2ACC;
         if (((BaddieState*)state)->hitCounter != 0)
@@ -291,7 +290,7 @@ void wbUpdateIdle(u32 obj, int state)
             ((BaddieState*)state)->unk308 = -(lbl_803E2AE0 * timeDelta - ((BaddieState*)state)->unk308);
         }
     }
-    baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, lbl_803E2A98, *(f32*)&lbl_803E2A98, 0);
+    baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, 0.0f, 0.0f, 0);
 }
 
 void wbInit(u32 unused, int state)

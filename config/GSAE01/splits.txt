@@ -1537,7 +1537,7 @@ main/dll/spittingeba.c:
 
 main/dll/duster_wb.c:
 	.text       start:0x801561EC end:0x80156D44
-	.sdata2     start:0x803E2AA0 end:0x803E2AA8
+	.sdata2     start:0x803E2A98 end:0x803E2AA8
 
 main/dll/hoodedzyck.c:
 	.text       start:0x80156D44 end:0x80157988
