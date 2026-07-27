@@ -11,13 +11,27 @@ typedef enum DimBossIceSmashPlacementFlag {
     DIM_BOSS_ICE_SMASH_PLACEMENT_TRAIL_PARTICLES = 0x04,
 } DimBossIceSmashPlacementFlag;
 
+typedef enum DimBossIceSmashStateFlag {
+    DIM_BOSS_ICE_SMASH_STATE_ACTIVE = 0x01,
+    DIM_BOSS_ICE_SMASH_STATE_FINISHED = 0x02,
+} DimBossIceSmashStateFlag;
+
+typedef enum DimBossIceSmashDirectionFlag {
+    DIM_BOSS_ICE_SMASH_POSITIVE_VELOCITY_X = 0x01,
+    DIM_BOSS_ICE_SMASH_POSITIVE_VELOCITY_Z = 0x02,
+    DIM_BOSS_ICE_SMASH_POSITIVE_ANGULAR_VELOCITY_X = 0x04,
+    DIM_BOSS_ICE_SMASH_POSITIVE_ANGULAR_VELOCITY_Y = 0x08,
+    DIM_BOSS_ICE_SMASH_POSITIVE_ANGULAR_VELOCITY_Z = 0x10,
+} DimBossIceSmashDirectionFlag;
+
 /*
  * The setup fields through homingTargetZ are evidenced by this TU. The
  * complete record extent after 0x47 is not yet proven.
  */
 typedef struct DimBossIceSmashPlacement {
     ObjPlacement base;   /* 0x00 */
-    u8 pad18[2];         /* 0x18 */
+    u8 bankIndex;        /* 0x18 */
+    u8 pad19;            /* 0x19 */
     s16 spawnRotX;       /* 0x1A */
     s16 spawnRotY;       /* 0x1C */
     s16 spawnRotZ;       /* 0x1E */
@@ -46,31 +60,33 @@ typedef struct DimBossIceSmashPlacement {
 
 /* DIMBossIceSmash_getExtraSize proves the complete 0x2A0-byte allocation. */
 typedef struct DimBossIceSmashState {
-    u8 pad000[0x68];  /* 0x000 */
-    f32 homingDirX;   /* 0x068 */
-    f32 homingDirY;   /* 0x06C */
-    f32 homingDirZ;   /* 0x070 */
-    u8 pad074[0x1ED]; /* 0x074 */
-    s8 homingEnabled; /* 0x261 */
-    u8 pad262[0x0A];  /* 0x262 */
-    f32 spawnScaleX;  /* 0x26C */
-    f32 spawnScaleY;  /* 0x270 */
-    f32 spawnScaleZ;  /* 0x274 */
-    f32 angVelX;      /* 0x278 */
-    f32 angVelY;      /* 0x27C */
-    f32 angVelZ;      /* 0x280 */
-    f32 angAccelX;    /* 0x284 */
-    f32 angAccelY;    /* 0x288 */
-    f32 angAccelZ;    /* 0x28C */
-    f32 accelX;       /* 0x290 */
-    f32 accelY;       /* 0x294 */
-    f32 accelZ;       /* 0x298 */
-    s16 timer;        /* 0x29C */
-    u8 pad29E[2];     /* 0x29E */
+    u8 pad000[0x68];      /* 0x000 */
+    f32 collisionNormalX; /* 0x068 */
+    f32 collisionNormalY; /* 0x06C */
+    f32 collisionNormalZ; /* 0x070 */
+    u8 pad074[0x1ED];     /* 0x074 */
+    s8 hasCollision;      /* 0x261: signed access is codegen-sensitive */
+    u8 pad262[0x0A];      /* 0x262 */
+    f32 spawnScaleX;      /* 0x26C */
+    f32 spawnScaleY;      /* 0x270 */
+    f32 spawnScaleZ;      /* 0x274 */
+    f32 angVelX;          /* 0x278 */
+    f32 angVelY;          /* 0x27C */
+    f32 angVelZ;          /* 0x280 */
+    f32 angAccelX;        /* 0x284 */
+    f32 angAccelY;        /* 0x288 */
+    f32 angAccelZ;        /* 0x28C */
+    f32 accelX;           /* 0x290 */
+    f32 accelY;           /* 0x294 */
+    f32 accelZ;           /* 0x298 */
+    s16 timer;            /* 0x29C */
+    u8 stateFlags;        /* 0x29E: DimBossIceSmashStateFlag */
+    u8 directionFlags;    /* 0x29F: DimBossIceSmashDirectionFlag */
 } DimBossIceSmashState;
 
 STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, base) == 0x00);
-STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, pad18) == 0x18);
+STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, bankIndex) == 0x18);
+STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, pad19) == 0x19);
 STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, spawnRotX) == 0x1A);
 STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, spawnRotY) == 0x1C);
 STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, spawnRotZ) == 0x1E);
@@ -96,10 +112,10 @@ STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, homingTargetX) == 0x42);
 STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, homingTargetY) == 0x44);
 STATIC_ASSERT(offsetof(DimBossIceSmashPlacement, homingTargetZ) == 0x46);
 
-STATIC_ASSERT(offsetof(DimBossIceSmashState, homingDirX) == 0x068);
-STATIC_ASSERT(offsetof(DimBossIceSmashState, homingDirY) == 0x06C);
-STATIC_ASSERT(offsetof(DimBossIceSmashState, homingDirZ) == 0x070);
-STATIC_ASSERT(offsetof(DimBossIceSmashState, homingEnabled) == 0x261);
+STATIC_ASSERT(offsetof(DimBossIceSmashState, collisionNormalX) == 0x068);
+STATIC_ASSERT(offsetof(DimBossIceSmashState, collisionNormalY) == 0x06C);
+STATIC_ASSERT(offsetof(DimBossIceSmashState, collisionNormalZ) == 0x070);
+STATIC_ASSERT(offsetof(DimBossIceSmashState, hasCollision) == 0x261);
 STATIC_ASSERT(offsetof(DimBossIceSmashState, spawnScaleX) == 0x26C);
 STATIC_ASSERT(offsetof(DimBossIceSmashState, spawnScaleY) == 0x270);
 STATIC_ASSERT(offsetof(DimBossIceSmashState, spawnScaleZ) == 0x274);
@@ -113,17 +129,19 @@ STATIC_ASSERT(offsetof(DimBossIceSmashState, accelX) == 0x290);
 STATIC_ASSERT(offsetof(DimBossIceSmashState, accelY) == 0x294);
 STATIC_ASSERT(offsetof(DimBossIceSmashState, accelZ) == 0x298);
 STATIC_ASSERT(offsetof(DimBossIceSmashState, timer) == 0x29C);
-STATIC_ASSERT(offsetof(DimBossIceSmashState, pad29E) == 0x29E);
+STATIC_ASSERT(offsetof(DimBossIceSmashState, stateFlags) == 0x29E);
+STATIC_ASSERT(offsetof(DimBossIceSmashState, directionFlags) == 0x29F);
 STATIC_ASSERT(sizeof(DimBossIceSmashState) == 0x2A0);
 
-void DIMBossIceSmash_initLaunchState(GameObject* obj, u8* state, u8* placement);
+void DIMBossIceSmash_initLaunchState(GameObject* obj, DimBossIceSmashState* state, DimBossIceSmashPlacement* placement);
 int DIMBossIceSmash_getExtraSize(void);
 u32 DIMBossIceSmash_getObjectTypeId(GameObject* obj);
 void DIMBossIceSmash_free(GameObject* obj);
-void DIMBossIceSmash_render(int objAddress, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void DIMBossIceSmash_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible);
 void DIMBossIceSmash_hitDetect(void);
 void DIMBossIceSmash_update(GameObject* obj);
-void DIMBossIceSmash_init(GameObject* obj, u8* placement);
+void DIMBossIceSmash_init(GameObject* obj, DimBossIceSmashPlacement* placement);
 void DIMBossIceSmash_release(void);
 void DIMBossIceSmash_initialise(void);
 

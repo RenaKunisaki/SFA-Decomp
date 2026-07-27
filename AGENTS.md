@@ -170,6 +170,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   replacing `1u` with a macro whose replacement is `1` can change the usual arithmetic conversions
   and turn a target `cmplwi` into `cmpwi`, even when the runtime values are identical. Rebuild the
   affected function after every such lift.
+- Do not infer unsigned storage merely because a byte is used as a boolean. Preserve signedness
+  evidenced by the exact load/compare sequence; an `s8` zero-test can require the target's sign
+  extension even when negative values have no separately recovered meaning.
 - Before retaining a unit-prefixed alias for an engine-wide flag, enum value, or ID, search the
   canonical engine headers. Use the shared definition when it already exists; local duplicates such
   as per-object names for `OBJECT_OBJFLAG_HITDETECT_DISABLED` obscure that multiple DLLs implement
