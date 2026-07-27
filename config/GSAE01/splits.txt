@@ -670,7 +670,7 @@ dlls/modgfx/163/163.c:
 main/dll/dll_0066_dll66func0.c:
 	.text       start:0x800EF3A0 end:0x800EF7B4
 
-main/dll/dll_0067_dll67func0.c:
+dlls/modgfx/103/103.c:
 	.text       start:0x800EF7B4 end:0x800EFA30
 
 dlls/modgfx/104/104.c:

@@ -1,5 +1,5 @@
 /*
- * dll67func0 (DLL 0x67) - a gameplay-preview effect spawner.
+ * DLL 103 / 0x67 - a gameplay-preview effect spawner.
  *
  * dll_67_func03 builds a modgfx command list on the stack (seven GfxCmd
  * layers over the shared asset table lbl_803133B8) and spawns a
@@ -16,7 +16,6 @@
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL67_EFFECT_ID 0xe3
-
 
 extern u8 lbl_803133B8[];
 extern f32 lbl_803E09C8;
