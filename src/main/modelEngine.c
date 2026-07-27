@@ -94,6 +94,7 @@
 #include "dlls/objects/296_KT_Torch.h"
 #include "dlls/objects/297_CampFire.h"
 #include "dlls/objects/298_CFCrate.h"
+#include "dlls/objects/299_FXEmit.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -228,7 +229,7 @@ extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescrip
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
     gExplodableObjDescriptor, gExplodeAnimatorObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
-    gFXEmitObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
+    gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
@@ -1264,7 +1265,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gKT_TorchObjDescriptor,
     (ResourceDescriptor*)&gCampFireObjDescriptor,
     (ResourceDescriptor*)&gCFCrateObjDescriptor,
-    &gFXEmitObjDescriptor,
+    (ResourceDescriptor*)&gFXEmitObjDescriptor,
     &gTransporterObjDescriptor,
     &gLFXEmitterObjDescriptor,
     &gCflightwallObjDescriptor,
