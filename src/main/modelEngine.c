@@ -78,6 +78,7 @@
 #include "dlls/objects/279_AppleOnTree.h"
 #include "dlls/objects/280_Duster.h"
 #include "dlls/objects/281_coldWaterCo.h"
+#include "dlls/objects/282.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -201,8 +202,8 @@ extern ResourceDescriptor gDIMSnowBall1C2ObjDescriptor, gDIMSnowBallObjDescripto
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_LevelControlObjDescriptor,
     gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
-extern ResourceDescriptor gDeathGasObjDescriptor, gDecoration11AObjDescriptor, gDfperchwitchObjDescriptor,
-    gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
+extern ResourceDescriptor gDeathGasObjDescriptor, gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor,
+    gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
 extern ResourceDescriptor gDfpstatue1ObjDescriptor, gDfptargetblockObjDescriptor, gDirectionalLightObjDescriptor;
 extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gDrCageControlObjDescriptor,
     gDrCageWithObjDescriptor, gDrChimmeyObjDescriptor, gDrCloudPerObjDescriptor, gDrCreatorObjDescriptor;
@@ -1236,7 +1237,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gAppleOnTreeObjDescriptor,
     (ResourceDescriptor*)&gDusterObjDescriptor,
     (ResourceDescriptor*)&gColdWaterControlObjDescriptor,
-    &gDecoration11AObjDescriptor,
+    (ResourceDescriptor*)&gDecoration11AObjDescriptor,
     &gLanded_ArwingObjDescriptor,
     &gStaffActivatedObjDescriptor,
     &gTreasureChestObjDescriptor,
