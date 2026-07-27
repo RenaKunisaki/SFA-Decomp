@@ -164,7 +164,7 @@ void nw_levcontrol_free(GameObject* obj)
 void nw_levcontrol_update(int objArg)
 {
     int obj;
-    short* player;
+    GameObject* player;
     u8 status;
     int sunPos;
     u32 gameBit;
@@ -176,7 +176,7 @@ void nw_levcontrol_update(int objArg)
 
     obj = objArg;
     state = (NwLevControlState*)((GameObject*)obj)->extra;
-    player = (short*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     if (state->countdown > 0.0f)
     {
         gameTextShow(0x435);
@@ -292,13 +292,13 @@ void nw_levcontrol_update(int objArg)
             }
             break;
         case NWLEVCONTROL_MODE_WAIT_MENU_LOCK:
-            if ((*(u16*)(player + 0x58) & 0x1000) != 0)
+            if (((player)->objectFlags & 0x1000) != 0)
             {
                 state->mode = NWLEVCONTROL_MODE_TIMER_STEP;
             }
             break;
         case NWLEVCONTROL_MODE_TIMER_STEP:
-            if ((*(u16*)(player + 0x58) & 0x1000) == 0)
+            if (((player)->objectFlags & 0x1000) == 0)
             {
                 flags = state->flags;
                 if ((flags & 1) != 0)
@@ -307,7 +307,7 @@ void nw_levcontrol_update(int objArg)
                     state->flags = state->flags | 2;
                     gameTimerInit(0x15, (u32)state->timerMinutes);
                     timerSetToCountUp();
-                    (*gMapEventInterface)->savePoint((int)(player + 6), (int)*player, 0, 0);
+                    (*gMapEventInterface)->savePoint((int)&(player)->anim.localPosX, (int)(player)->anim.rotX, 0, 0);
                 }
                 else if ((flags & 4) != 0)
                 {
@@ -344,14 +344,14 @@ void nw_levcontrol_update(int objArg)
     return;
 }
 
-void nw_levcontrol_init(int* obj)
+void nw_levcontrol_init(GameObject* obj)
 {
     char* base = (char*)lbl_803269F8;
-    NwLevControlState* state = ((GameObject*)obj)->extra;
+    NwLevControlState* state = (obj)->extra;
 
     Obj_GetPlayerObject();
-    ((GameObject*)obj)->objectFlags = (u16)(((GameObject*)obj)->objectFlags |
-                                            (NWLEVCONTROL_OBJFLAG_HIDDEN | NWLEVCONTROL_OBJFLAG_HITDETECT_DISABLED));
+    (obj)->objectFlags = (u16)((obj)->objectFlags |
+                               (NWLEVCONTROL_OBJFLAG_HIDDEN | NWLEVCONTROL_OBJFLAG_HITDETECT_DISABLED));
 
     if (mainGetBit(GAMEBIT_SnowHornArtifact19F) != 0)
     {

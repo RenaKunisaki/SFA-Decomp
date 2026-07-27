@@ -389,11 +389,11 @@ Other concrete matches:
 - **The "Changed Names" section is independently corroborated by this codebase's own comments** —
   written from the disassembly with no knowledge of this wiki page, yet describing the exact same
   renames:
-  - `src/main/dll/WM/dll_020E_wmsun.c:2-3`: `"(map 'warlock' = Dinosaur Planet's Warlock Mountain,
-    hence the WM dll ...)"` — matches wiki's Krazoa Palace ⇐ Warlock Mountain.
-  - `src/main/dll/SB/dll_01E8_sbgalleon.c:2-4`: `"SB" is the retail map name "ShipBattle"` — matches
-    wiki's map `00`/dir `shipbattle`.
-  - `src/main/dll/SH/shthorntail.c:2`, `src/main/dll/SH/dll_01B1_shstaff.c:4`: ThornTail Hollow
+  - `src/dlls/objects/526_WM_sun/WM_sun.c:2-3` identifies the finale sky and crystal objects
+    with Warlock Mountain on Dinosaur Planet — matching Krazoa Palace ⇐ Warlock Mountain.
+  - `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` implements `SB_Galleon`; its `SB` prefix matches
+    the wiki's map `00`/dir `shipbattle`.
+  - `src/dlls/objects/429_SH_thorntai/SH_thorntai.c:2`, `src/dlls/objects/433_SH_staff/SH_staff.c:4`: ThornTail Hollow
     naming, matching wiki's ThornTail Hollow ⇐ SwapStone Hollow (dir `swaphol`).
 - **DLL-directory prefixes that resolve to a map in this list** (verified via in-file comment text,
   not just directory-name guessing): `SB` → `shipbattle` (map `00`/`frontend`), `WM` → `warlock` (map
@@ -408,15 +408,15 @@ Do not assume the second table's `ObjType` hex value equals a `dll_XXXX_*.c` fil
 tree — it doesn't, in every case checked:
 
 - ObjType `008E SB_Galleon` — `src/main/dll/dll_008E_dll8efunc0.c` is an unrelated foodbag
-  particle-effect spawner; the real galleon object is `src/main/dll/SB/dll_01E8_sbgalleon.c` (DLL
+  particle-effect spawner; the real galleon object is `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` (DLL
   `0x1E8`).
 - ObjType `008C SB_Cloudrun` — `src/main/dll/dll_008C_dll8cfunc0.c` is likewise a foodbag effect; the
-  actual Cloudrunner-mount object is `src/main/dll/SB/dll_0259_sbcloudrunner.c` (DLL `0x259`).
+  actual Cloudrunner-mount object is `src/dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c` (DLL `0x259`).
 - ObjType `0168 IMAnimSpace` — the real object is `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` (DLL
   `0x16E`), off by 6 from the wiki's `ObjType`.
-- Confirmed directly in-tree: `src/main/dll/SB/dll_01F0_sbkytecage.c:32-33` defines
+- Confirmed directly in-tree: `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c:34` defines
   `#define SB_KYTE_OBJECT_TYPE 0x121` for a child object it looks up — that object's own DLL is
-  `dll_01F2_sbcagekyte.c` (`0x1F2`). Object-type ID and DLL ID are tracked as separate fields in our
+  `src/dlls/objects/498_SB_CageKyte/SB_CageKyte.c` (`0x1F2`). Object-type ID and DLL ID are tracked as separate fields in our
   own code, exactly as this mismatch would predict.
 
 `ObjType` is almost certainly an index into the separate object-class table (`OBJECTS.bin`/
@@ -426,16 +426,16 @@ manually verified by reading the file, not by name-guessing):
 
 | Map (wiki 2nd table) | Wiki `ObjType` name | Matched in this tree |
 |---|---|---|
-| `galleonship` (0x50) | `SB_Galleon` | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
-| `cloudrunnermap` (0x55) | `SB_Cloudrun` | `src/main/dll/SB/dll_0259_sbcloudrunner.c` |
+| `galleonship` (0x50) | `SB_Galleon` | `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` |
+| `cloudrunnermap` (0x55) | `SB_Cloudrun` | `src/dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c` |
 | `cfprisoncage` (0x5a) | `CFPrisonCag` | `src/main/dll/CF/dll_0154_cfprisoncage.c` |
 | `nwtreebridge2` (0x5b) | `NW_treebrid` | `src/dlls/objects/415_NW_treebrid/NW_treebrid.c` |
-| `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/main/dll/DIM/dll_01CB_dimwooddoor2.c`, `dimwooddoor.c` |
-| `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/main/dll/DIM/dll_01DC_dim2icefloe.c` |
+| `dimpushblock` (0x5d) | `DIMWoodDoor` | `src/dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c`, `dimwooddoor.c` |
+| `dim2icefloe*` (0x62-0x64) | `DIM2IceFloe` | `src/dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c` |
 | `imspacecraft` (0x66) | `IMAnimSpace` | `src/dlls/objects/366_IMAnimSpace/IMAnimSpace.c` |
-| `dimbossgut` (0x67) | `DIM_BossGut` | `src/main/dll/DIM/dll_01E1_dimbossgut.c`, `dll_01E3_dimbossgut2.c` |
-| `wmcolrise` (0x68) | `WM_colrise` | `src/main/dll/WM/dll_0201_wmcolrise.c` |
-| `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/dlls/objects/656_WCPushBlock/WCPushBlock.c`, `wcpushblock.c` |
+| `dimbossgut` (0x67) | `DIM_BossGut` | `src/dlls/objects/481_DIM_BossGut/DIM_BossGut.c`, `src/dlls/objects/483_DIM_BossGut/DIM_BossGut.c` |
+| `wmcolrise` (0x68) | `WM_colrise` | `src/dlls/objects/513_WM_colrise/WM_colrise.c` |
+| `bossdrakorflatr` (0x6e) / `wcpushblock` (0x70) | `WCPushBlock` | `src/dlls/objects/656_WCPushBlock/WCPushBlock.c`, `src/dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c` |
 | `wcbouncycrate` (0x6f) | `WCBouncyCra` | `src/dlls/objects/652_WCBouncyCra/WCBouncyCra.c` |
 
 Not found in this tree (either not yet split out as a distinct file, or bundled inside another
@@ -456,8 +456,8 @@ local `#define` for the map IDs they care about, e.g.:
 ```
 
 (`include/main/crcloudrace.h:9` and `include/main/worldplanet.h:9` follow the same one-off pattern.)
-Most call sites (`src/dlls/objects/300_Transporter/Transporter.c`, `dll_02BC_andross.c`, `WM/dll_020C_wmspiritplace.c`,
-`ARW/dll_029A_arwarwing.c`, etc.) just pass a bare hex literal to `mapGetDirIdx`/`lockLevel`/
+Most call sites (`src/dlls/objects/300_Transporter/Transporter.c`, `src/dlls/objects/700_Andross/Andross.c`, `WM/dll_020C_wmspiritplace.c`,
+`src/dlls/objects/666_ARWArwing/ARWArwing.c`, etc.) just pass a bare hex literal to `mapGetDirIdx`/`lockLevel`/
 `unlockLevel`/`mapUnload` with no name at all.
 
 ## Ready-to-adopt code

@@ -1,5 +1,5 @@
 /*
- * DLL 0x294 - a temple door/aperture object in the CloudRunner
+ * DLL 660 - a temple door/aperture object in the CloudRunner
  * Fortress (WC) area. Each instance counts down a timer and toggles between
  * two trigger sequences (closed→open, open→closed) when the player activates
  * the hitbox interaction flag. The 'type' field from placement sets the

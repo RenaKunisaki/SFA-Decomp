@@ -125,14 +125,14 @@ SOURCE_CHECKS = [
     ),
     (
         "Arwing trace origin",
-        "src/main/dll/ARW/dll_029A_arwarwing.c",
+        "src/dlls/objects/666_ARWArwing/ARWArwing.c",
         "arwarwing_SeqFn / arwarwing_hitDetect",
         "A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it.",
         "high_hit_detection",
     ),
     (
         "Tricky warp visibility",
-        "src/main/dll/dll_0100_trickywarp.c",
+        "src/dlls/objects/256_TrickyWarp/TrickyWarp.c",
         "TrickyWarp_update",
         "Permits companion relocation only when the warp host is outside the view frustum.",
         "investigate",
@@ -167,7 +167,7 @@ SOURCE_CHECKS = [
     ),
     (
         "Combat-source visuals",
-        "src/main/dll/dll_02B1_cmbsrc.c",
+        "src/dlls/objects/689_CmbSrc/CmbSrc.c",
         "cmbsrc_updateVisuals",
         "Camera distance gates glow/effect rendering, not encounter completion or spawning.",
         "presentation",

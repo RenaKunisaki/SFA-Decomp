@@ -21,6 +21,7 @@
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_006A_dll6afunc0.h"
 #include "main/dll/foodbag.h"
+#include "game/objects/object_setup.h"
 
 #define DLL19B_TARGET_OBJGROUP 0xe
 
@@ -36,7 +37,8 @@ u32 lbl_803DDBE0;
  * value at 0x1A (the high byte >> 8 seeds Dll19BState.activationDist). */
 typedef struct Dll19BPlacement
 {
-    u8 pad0[0x1A - 0x00];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 activationDistPacked; /* 0x1A */
 } Dll19BPlacement;
 
@@ -180,8 +182,8 @@ char sShrineTimeFormat[] = "time %d\n";
 void dll_19B_update(int obj)
 {
     Dll19BState* st;
-    int player;
-    int near;
+    GameObject* player;
+    GameObject* near;
     Dll19BState* st2;
     int v;
     f32 dy;
@@ -191,7 +193,7 @@ void dll_19B_update(int obj)
     int unk8;
 
     st = ((GameObject*)obj)->extra;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     dist = 1000.0f;
     st2 = ((GameObject*)obj)->extra;
     unk16 = 0;
@@ -253,10 +255,10 @@ void dll_19B_update(int obj)
     }
     else
     {
-        near = ObjGroup_FindNearestObject(DLL19B_TARGET_OBJGROUP, (GameObject*)player, &dist);
-        if ((u32)near != 0 && dist < 300.0f && dist > 100.0f)
+        near = (GameObject*)ObjGroup_FindNearestObject(DLL19B_TARGET_OBJGROUP, player, &dist);
+        if (near != NULL && dist < 300.0f && dist > 100.0f)
         {
-            dy = ((GameObject*)near)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ;
+            dy = near->anim.localPosZ - player->anim.localPosZ;
             if (dy <= 0.0f)
             {
                 if (dy < 0.0f)
@@ -284,7 +286,7 @@ void dll_19B_update(int obj)
         switch (st->phase)
         {
         case DLL19B_PHASE_IDLE:
-            if (Vec_distance(&((GameObject*)obj)->anim.worldPosX, (f32*)(player + 0x18)) < st->activationDist)
+            if (Vec_distance(&((GameObject*)obj)->anim.worldPosX, &player->anim.worldPosX) < st->activationDist)
             {
                 st->phase = DLL19B_PHASE_WAIT_EVENT;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
@@ -350,7 +352,7 @@ void dll_19B_update(int obj)
             }
             else
             {
-                playerCancelSpell((GameObject*)player, -1);
+                playerCancelSpell(player, -1);
                 mainSetBits(0x126, 0);
                 gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2a, 0x50, st->brightnessB & 0xff, 0);
                 st->brightnessBVel = 1;

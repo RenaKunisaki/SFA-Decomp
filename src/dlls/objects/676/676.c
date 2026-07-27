@@ -1,5 +1,5 @@
 /*
- * DLL 0x2A4 - a short-lived spinning debris object spawned around the
+ * DLL 676 - a short-lived spinning debris object spawned around the
  * on-rails Arwing flight sections.
  *
  * dll_2A4_setLifetime / dll_2A4_setVelocity are the launch helpers the enemy generator's
@@ -53,7 +53,7 @@ void dll_2A4_free_nop(void)
 
 void dll_2A4_render(GameObject* obj, int p2, int p3, int p4, int p5)
 {
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E7138);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void dll_2A4_hitDetect_nop(void)
@@ -64,12 +64,12 @@ void dll_2A4_update(GameObject* obj)
 {
     Dll2A4State* state = obj->extra;
 
-    if (state->lifetime > lbl_803E713C)
+    if (state->lifetime > 0.0f)
     {
         state->lifetime -= timeDelta;
-        if (state->lifetime <= lbl_803E713C)
+        if (state->lifetime <= 0.0f)
         {
-            state->lifetime = lbl_803E713C;
+            state->lifetime = 0.0f;
             Obj_FreeObject(obj);
             return;
         }

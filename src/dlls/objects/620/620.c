@@ -1,5 +1,5 @@
 /*
- * DLL 0x26C - a hanging cage with a winch rope. On first
+ * DLL 620 - a hanging cage with a winch rope. On first
  * hit it spawns its linked rope/winch object and, while unlocked,
  * integrates a damped angular velocity (angularVel) from the object's
  * horizontal motion, driving the rope segments' rotZ and the linked
@@ -27,7 +27,7 @@
 #define DRCAGEWITH_CAGE_NOROPE_OBJ 2154
 #define DRCAGEWITH_CAGE_ROPE_OBJ 2155
 /* the caged CloudRunner itself; corroborated by the GAMEBIT_DR_RescuedCloudRunner guard. */
-#define DRCAGEWITH_CLOUDRUNNER_OBJ 1049 /* "DR_CloudRun" (DLL 0x258) */
+#define DRCAGEWITH_CLOUDRUNNER_OBJ 1049 /* "DR_CloudRun" (DLL 600) */
 
 #define DRCAGEWITH_OBJGROUP 0x18
 

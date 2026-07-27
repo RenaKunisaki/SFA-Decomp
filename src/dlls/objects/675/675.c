@@ -1,10 +1,10 @@
 /*
- * DLL 0x2A3 - a short-lived spinning debris/particle object.
+ * DLL 675 - a short-lived spinning debris/particle object.
  *
  * On init it fades in from alpha 0, picks a random starting orientation
  * and random per-axis spin speeds. Each frame it fades the alpha up to a
  * cap, advances its rotation by the spin speeds, and drifts along its
- * velocity (gravity/launch supplied by dll_2A4_setVelocity). It self-frees once
+ * velocity (gravity/launch supplied by dll_2A3_setVelocity). It self-frees once
  * its lifetime decays past a threshold.
  *
  * lbl_803DDD90 is a live-instance refcount (bumped on init, dropped on
@@ -17,12 +17,12 @@
 #include "main/vecmath.h"
 #include "main/dll/ARW/dll_02A2_arwspeedstr.h"
 #include "main/dll/ARW/dll_02A3.h"
-
-int lbl_803DDD94;
-int lbl_803DDD90;
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
+
+int lbl_803DDD94;
+int lbl_803DDD90;
 
 void dll_2A3_setSpeed(GameObject* obj, int speed)
 {
@@ -36,7 +36,6 @@ void dll_2A3_setVelocity(GameObject* obj, ARWSpeedStrVelocity* velocity)
     obj->anim.velocityY = velocity->y;
     obj->anim.velocityZ = velocity->z;
 }
-
 
 int dll_2A3_getExtraSize_ret_12(void)
 {

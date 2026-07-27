@@ -150,19 +150,19 @@ void Carryable_free(GameObject* obj)
 
 int Carryable_updateRenderState(GameObject* obj, int flag)
 {
-    int* p50 = *(int**)&((GameObject*)obj)->anim.modelInstance;
+    int* p50 = *(int**)&obj->anim.modelInstance;
     if (((ObjDef*)p50)->shadowType == OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
     {
-        if (((GameObject*)obj)->seqIndex == -1)
+        if (obj->seqIndex == -1)
         {
-            ((GameObject*)obj)->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+            obj->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
         else
         {
-            ((GameObject*)obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+            obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
     }
-    if (((GameObject*)obj)->userData2 != 0)
+    if (obj->userData2 != 0)
     {
         if (flag != -1)
             return 0;
@@ -179,12 +179,12 @@ int Carryable_updateHeld(GameObject* obj, void* state)
 {
     TrackGroundHit** list;
     GameObject* player;
-    u8* held;
-    held = ((GameObject*)obj)->extra;
-    ((CarryableUpdateHeldState*)held)->surfaceType = 0;
-    ((CarryableUpdateHeldState*)held)->flags &= ~CARRYABLE_FLAG_JUST_GRABBED;
+    CarryableUpdateHeldState* held;
+    held = obj->extra;
+    held->surfaceType = 0;
+    held->flags &= ~CARRYABLE_FLAG_JUST_GRABBED;
     player = Obj_GetPlayerObject();
-    if (((CarryableUpdateHeldState*)held)->carryState == CARRY_STATE_RESTING)
+    if (held->carryState == CARRY_STATE_RESTING)
     {
         struct
         {
@@ -192,46 +192,46 @@ int Carryable_updateHeld(GameObject* obj, void* state)
         }* t;
         int newCarryState = 0;
         t = (void*)*(u8**)((u8*)obj + 0x78);
-        if ((t[((GameObject*)obj)->hitVolumeIndex].e & 0xf) == 6 && (buttonGetDisabled(0) & PAD_BUTTON_A) == 0 &&
-            (*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 &&
-            ((GameObject*)obj)->userData2 == 0)
+        if ((t[obj->hitVolumeIndex].e & 0xf) == 6 && (buttonGetDisabled(0) & PAD_BUTTON_A) == 0 &&
+            (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 &&
+            obj->userData2 == 0)
         {
             *(s16*)held = 0;
             buttonDisable(0, PAD_BUTTON_A);
             newCarryState = 1;
         }
-        ((CarryableUpdateHeldState*)held)->carryState = newCarryState;
-        if (((CarryableUpdateHeldState*)held)->carryState != CARRY_STATE_RESTING)
+        held->carryState = newCarryState;
+        if (held->carryState != CARRY_STATE_RESTING)
         {
-            ((CarryableUpdateHeldState*)held)->flags |= CARRYABLE_FLAG_JUST_GRABBED;
-            ((CarryableUpdateHeldState*)held)->isHeld = 1;
+            held->flags |= CARRYABLE_FLAG_JUST_GRABBED;
+            held->isHeld = 1;
         }
-        if (((GameObject*)obj)->userData2 == 0)
+        if (obj->userData2 == 0)
         {
             GameObject* hit;
             int cnt, i, j;
-            ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-            if ((((CarryableUpdateHeldState*)held)->flags & CARRYABLE_FLAG_GRAVITY_DISABLED) == 0)
+            ObjHits_SyncObjectPositionIfDirty(obj);
+            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+            if ((held->flags & CARRYABLE_FLAG_GRAVITY_DISABLED) == 0)
             {
-                ((GameObject*)obj)->anim.velocityY = -(lbl_803E06DC * timeDelta - ((GameObject*)obj)->anim.velocityY);
-                ((GameObject*)obj)->anim.localPosY =
-                    ((GameObject*)obj)->anim.velocityY * timeDelta + ((GameObject*)obj)->anim.localPosY;
+                obj->anim.velocityY = -(lbl_803E06DC * timeDelta - obj->anim.velocityY);
+                obj->anim.localPosY =
+                    obj->anim.velocityY * timeDelta + obj->anim.localPosY;
             }
-            cnt = hitDetectFn_80065e50((GameObject*)obj, ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                                       ((GameObject*)obj)->anim.localPosZ, &list, 0, 1);
+            cnt = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY,
+                                       obj->anim.localPosZ, &list, 0, 1);
             hit = 0;
             i = 0;
             for (j = cnt; j > 0; j--)
             {
                 if ((s8)list[i]->surfaceType != 0xe)
                 {
-                    if (((GameObject*)obj)->anim.localPosY < list[i]->height &&
-                        ((GameObject*)obj)->anim.localPosY > list[i]->height - lbl_803E06E0)
+                    if (obj->anim.localPosY < list[i]->height &&
+                        obj->anim.localPosY > list[i]->height - lbl_803E06E0)
                     {
                         hit = list[i]->object;
-                        ((GameObject*)obj)->anim.localPosY = list[i]->height;
-                        ((GameObject*)obj)->anim.velocityY = lbl_803E06E4;
+                        obj->anim.localPosY = list[i]->height;
+                        obj->anim.velocityY = lbl_803E06E4;
                         break;
                     }
                 }
@@ -240,7 +240,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             i = 0;
             for (; cnt > 0; cnt--)
             {
-                f32 d = ((GameObject*)obj)->anim.localPosY - list[i]->height;
+                f32 d = obj->anim.localPosY - list[i]->height;
                 if (d < lbl_803E06E4)
                 {
                     d = -d;
@@ -248,9 +248,9 @@ int Carryable_updateHeld(GameObject* obj, void* state)
                 if (d < lbl_803E06E8)
                 {
                     s8 t2 = *(s8*)&list[i]->surfaceType;
-                    if (t2 > ((CarryableUpdateHeldState*)held)->surfaceType)
+                    if (t2 > held->surfaceType)
                     {
-                        *(s8*)&((CarryableUpdateHeldState*)held)->surfaceType = t2;
+                        *(s8*)&held->surfaceType = t2;
                     }
                 }
                 i++;
@@ -266,10 +266,10 @@ int Carryable_updateHeld(GameObject* obj, void* state)
     else
     {
         ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
         if ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0)
         {
-            if ((((CarryableUpdateHeldState*)held)->flags & CARRYABLE_FLAG_DROP_DISABLED) != 0 ||
+            if ((held->flags & CARRYABLE_FLAG_DROP_DISABLED) != 0 ||
                 isTrickyNear(player) == 0)
             {
                 Sfx_PlayFromObject(0, SFXTRIG_id_10a);
@@ -277,32 +277,32 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             else
             {
                 buttonDisable(0, PAD_BUTTON_A);
-                ((CarryableUpdateHeldState*)held)->isHeld = 0;
+                held->isHeld = 0;
             }
         }
-        if (((GameObject*)obj)->userData2 == 1)
+        if (obj->userData2 == 1)
         {
-            ((CarryableUpdateHeldState*)held)->carryState = CARRY_STATE_PUTDOWN;
+            held->carryState = CARRY_STATE_PUTDOWN;
         }
-        if (((CarryableUpdateHeldState*)held)->carryState == CARRY_STATE_PUTDOWN && ((GameObject*)obj)->userData2 == 0)
+        if (held->carryState == CARRY_STATE_PUTDOWN && obj->userData2 == 0)
         {
-            u8* h2 = ((GameObject*)obj)->extra;
-            ((CarryableUpdateHeldState*)h2)->carryState = CARRY_STATE_RESTING;
-            ((CarryableUpdateHeldState*)h2)->isHeld = 0;
-            if ((((CarryableUpdateHeldState*)h2)->flags & CARRYABLE_FLAG_SUPPRESS_POS_SAVE) == 0)
+            CarryableUpdateHeldState* h2 = obj->extra;
+            h2->carryState = CARRY_STATE_RESTING;
+            h2->isHeld = 0;
+            if ((h2->flags & CARRYABLE_FLAG_SUPPRESS_POS_SAVE) == 0)
             {
-                ((GameObject*)obj)->anim.localPosY = ((GameObject*)obj)->anim.localPosY + lbl_803E06D8;
-                saveGame_saveObjectPos((GameObject*)obj);
-                ((GameObject*)obj)->anim.localPosY = ((GameObject*)obj)->anim.localPosY - lbl_803E06D8;
+                obj->anim.localPosY = obj->anim.localPosY + lbl_803E06D8;
+                saveGame_saveObjectPos(obj);
+                obj->anim.localPosY = obj->anim.localPosY - lbl_803E06D8;
             }
         }
-        if (*(s8*)&((CarryableUpdateHeldState*)held)->isHeld != 0)
+        if (*(s8*)&held->isHeld != 0)
         {
             ObjMsg_SendToObject(player, CARRYABLE_MSG_PLAYER_GRAB, obj,
-                                (((CarryableUpdateHeldState*)held)->unk2 << 16) | (u16) * (s16*)held);
+                                (held->unk2 << 16) | (u16) * (s16*)held);
         }
     }
-    return ((CarryableUpdateHeldState*)held)->carryState;
+    return held->carryState;
 }
 
 void Carryable_init(GameObject* obj, void* state, int arg2)

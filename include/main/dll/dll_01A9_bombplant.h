@@ -14,6 +14,6 @@ typedef struct BombPlantState
     /* 0x15 */ u8 flags;
 } BombPlantState;
 
-void bombplant_throwSpore(int* obj, int* p2);
+void bombplant_throwSpore(GameObject* obj, int* p2);
 
 #endif /* MAIN_DLL_DLL_01A9_BOMBPLANT_H_ */

@@ -1,7 +1,6 @@
 /*
- * DLL 0x2BD - one of Andross's two hands in the Arwing boss fight,
- * used by the Androssleft and Androssrigh object definitions.
- * Tracks the Andross body object (id 0x47b77) and the
+ * DLL 701 (0x2BD) - one of Andross's two hands in the Arwing
+ * boss fight. Tracks the Andross body object (id 0x47b77) and the
  * player's Arwing, mirrors the body's facing, and applies a damped
  * spring to its Z position so the hand bobs relative to the body.
  *
@@ -76,8 +75,8 @@ void androsshand_spawnShot(GameObject* obj, AndrossHandState* state, int p3)
         obj = loadObjectAtObject(obj, &setup->head);
         if (obj != NULL)
         {
-            arwprojectile_setLifetime(obj, lbl_803DC510);
-            arwprojectile_placeForward(obj, lbl_803DC50C);
+            arwprojectile_setLifetime(obj, gAndrossHandProjectileLifetime);
+            arwprojectile_placeForward(obj, gAndrossHandProjectileForwardStep);
         }
     }
 }
@@ -105,7 +104,7 @@ void androsshand_handleDamage(GameObject* obj, AndrossHandState* state)
         case 0:
             state->health -= 1;
             state->hitCooldown = 6;
-            state->zSpringVelocity = lbl_803DC508;
+            state->zSpringVelocity = gAndrossHandHitImpulse;
             Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_nameoff);
             if (state->health == 0)
             {
@@ -139,7 +138,7 @@ void androsshand_handleDamage(GameObject* obj, AndrossHandState* state)
     }
 }
 
-const f32 gAndrossHandZero = 0.0f;
+const f32 gAndrossHandZero[1] = {0.0f};
 
 void androsshand_setState(GameObject* obj, AndrossHandStateId newState, u8 force)
 {
@@ -257,7 +256,8 @@ void AndrossHand_update(int obj)
             fScale *= -1.0f;
         }
         prevVel = state->zSpringVelocity;
-        state->zSpringVelocity = prevVel + ((-state->zSpringOffset / lbl_803DC4FC - prevVel) / lbl_803DC500);
+        state->zSpringVelocity =
+            prevVel + ((-state->zSpringOffset / lbl_803DC4FC - prevVel) / gAndrossHandSpringDivisor);
         state->zSpringOffset = state->zSpringOffset + state->zSpringVelocity;
 
         angle = 3.1415927f * (f32)(s16)(int)((f32)state->androssObj->anim.rotX + fScale) /
@@ -285,7 +285,7 @@ void AndrossHand_update(int obj)
         if (changed)
         {
             AndrossHandState* hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 0, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 0, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[0];
         }
         break;
@@ -293,7 +293,7 @@ void AndrossHand_update(int obj)
         if (changed)
         {
             AndrossHandState* hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 4, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 4, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[4];
         }
         if (o->anim.currentMoveProgress >= 1.0f)
@@ -306,7 +306,7 @@ void AndrossHand_update(int obj)
         if (changed)
         {
             AndrossHandState* hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 5, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 5, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[5];
         }
         if (o->anim.currentMoveProgress >= 1.0f)
@@ -320,7 +320,7 @@ void AndrossHand_update(int obj)
             AndrossHandState* hand;
             state->soundGate = 0;
             hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 1, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 1, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[1];
         }
         {
@@ -329,8 +329,8 @@ void AndrossHand_update(int obj)
             {
                 Vec3f vel;
                 swipeVel.x = state->sideFlag ? -20.0f : 20.0f;
-                swipeVel.y = 0.0f;
-                swipeVel.z = 0.0f;
+                swipeVel.y = gAndrossHandZero[0];
+                swipeVel.z = gAndrossHandZero[0];
                 vel = swipeVel;
                 arwarwing_setVelocity(state->arwingObj, (int)&vel);
                 doRumble(5.0f);
@@ -362,7 +362,7 @@ void AndrossHand_update(int obj)
             AndrossHandState* hand;
             state->soundGate = 0;
             hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 2, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 2, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[2];
         }
         if (state->sideFlag != 0 && o->anim.currentMoveProgress >= 1.0f)
@@ -383,9 +383,9 @@ void AndrossHand_update(int obj)
             if (hitState->lastHitObject != 0)
             {
                 Vec3f vel;
-                grabVel.x = 0.0f;
+                grabVel.x = gAndrossHandZero[0];
                 grabVel.y = -10.0f;
-                grabVel.z = 0.0f;
+                grabVel.z = gAndrossHandZero[0];
                 vel = grabVel;
                 arwarwing_setVelocity(state->arwingObj, (int)&vel);
                 doRumble(5.0f);
@@ -416,7 +416,7 @@ void AndrossHand_update(int obj)
         if (changed)
         {
             AndrossHandState* hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 3, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 3, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[3];
             state->shotTimer = -1;
         }
@@ -432,7 +432,7 @@ void AndrossHand_update(int obj)
             if (state->shotTimer < 0)
             {
                 androsshand_spawnShot((GameObject*)obj, state, 0);
-                state->shotTimer = lbl_803DC504;
+                state->shotTimer = gAndrossHandShotInterval;
             }
         }
         if (o->anim.currentMoveProgress >= 1.0f)
@@ -446,7 +446,7 @@ void AndrossHand_update(int obj)
         if (changed)
         {
             AndrossHandState* hand = o->extra;
-            ObjAnim_SetCurrentMove(obj, 0, 0.0f, 0);
+            ObjAnim_SetCurrentMove(obj, 0, gAndrossHandZero[0], 0);
             hand->animSpeed = gAndrossHandMoveAnimSpeeds[0];
         }
         break;
@@ -478,13 +478,20 @@ void AndrossHand_init(int obj, AndrossHandSetup* setup)
     *(u8*)&state->handState = ANDROSSHAND_STATE_IDLE2;
     *(u8*)&state->prevState = ANDROSSHAND_STATE_IDLE2;
     state = gobj->extra;
-    ObjAnim_SetCurrentMove(obj, 4, 0.0f, 0);
+    ObjAnim_SetCurrentMove(obj, 4, gAndrossHandZero[0], 0);
     state->animSpeed = gAndrossHandMoveAnimSpeeds[4];
     gobj->anim.currentMoveProgress = 1.0f;
     ObjHits_SetTargetMask((GameObject*)obj, 4);
 }
 
+int gAndrossHandShotPitch;
+
 f32 lbl_803DC4F0 = 400.0f;
 f32 lbl_803DC4F4 = -100.0f;
 f32 lbl_803DC4F8 = -20000.0f;
 int lbl_803DC4FC = 20;
+int gAndrossHandSpringDivisor = 10;
+int gAndrossHandShotInterval = 2;
+int gAndrossHandHitImpulse = 20;
+int gAndrossHandProjectileForwardStep = 10;
+int gAndrossHandProjectileLifetime = 150;

@@ -88,10 +88,38 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   attributed to the wrong file; preserve both slots and re-audit the misplaced contents against
   the DOL. A multi-descriptor TU needs independent DOL evidence and is not implied by one source
   file currently defining multiple descriptors.
+- Treat the generated `src/dlls/<bank>/<slot>[_<name>]/<file>.c` path as immutable source-truth.
+  Rename symbols and types freely when evidence supports them, but do not rename an existing DLL
+  source folder or filename. Use `python tools/regenerate_dll_scaffold.py --audit-ref <ref>` with
+  `--slots <range>` when checking a suspected path change.
+- Rehome DLL source one numbered slot at a time. Before moving a source into its canonical folder,
+  audit the complete TU, neighbouring text/data boundaries, descriptor ownership, artificial
+  fragments, and section-alignment overrides, then build it. Do not bulk-rehome DLL sources with
+  path-only mechanical moves.
 - Address-suffixed fragments such as `foo_80123456.c` are not acceptable once DOL evidence shows
   they belong to one TU. Merge them in retail function order, keep one TU-level compiler profile,
   and accept match regressions rather than preserving an artificial split. Only redraw a boundary
   when DOL section, pool, function-order, or source-tag evidence establishes a different real TU.
+- End an object DLL TU with its `ObjectDescriptor` definition. Do not move the descriptor earlier
+  merely to reproduce post-link section order; keep the source structure plausible and leave the
+  unit `NonMatching` when the reconstructed declaration order exposes a data mismatch. Conversely,
+  retain a descriptor's proven earlier position when an already-exact TU and retail symbol order
+  show that other TU-owned data follows it; do not reduce a 100% unit for cosmetic uniformity.
+- Give each cleaned object DLL one canonical unit-owned header under `include/dlls/<bank>/`. Keep
+  that header self-contained, put the unit's state/setup types and public API there, and do not use
+  one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
+  source; keep private helper types and constants in the TU.
+- Size placement/setup structs from active-target evidence such as a direct `Obj_AllocObjectSetup`
+  allocation or retail romlist width, not from the last field accessed by the TU or donor-project
+  padding. Assert the proven total size as well as every recovered field offset.
+- Include an object's canonical header at direct consumers instead of repeating hand-written
+  declarations. Where a generic registry intentionally stores differently shaped descriptor
+  types, use an explicit cast at that boundary rather than lying about the descriptor's type in an
+  `extern`.
+- In an already-exact unit, test apparently redundant predicates, casts, and integer/pointer
+  launders before normalizing them. If the simpler spelling changes codegen, retain the proven
+  spelling and improve the surrounding names instead; cosmetic uniformity does not justify a match
+  regression.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.

@@ -1,5 +1,5 @@
 /*
- * KytesMum (DLL 0x266, object type 0x43) - the "Kyte's mum" NPC.
+ * KytesMum (DLL 614, object type 0x43) - the "Kyte's mum" NPC.
  *
  * The placement's mode byte selects one of three behaviours, wired up in
  * kytesmum_init:
@@ -45,6 +45,7 @@
 #include "main/dll/DR/dll_0265_drcreator.h"
 
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
+s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
 
 #define KYTESMUM_OBJGROUP        0x3
 #define KYTESMUM_TARGET_OBJGROUP 0x1
@@ -418,7 +419,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
         mainSetBits(0x933, 0);
         runtime->moveSet = &moveSets[2];
         runtime->updateCallback = (KytesMumUpdateCallback)kytesmum_updateQuestStateCallback;
-        runtime->eventSfxTable = (s16*)&lbl_803DC2D0;
+        runtime->eventSfxTable = lbl_803DC2D0;
         kytesMum->interactionCallback = kytesmum_updateInteractionRangeCallback;
         break;
     }
@@ -439,7 +440,7 @@ void kytesmum_initialise(void)
 
 char sKytesMumYawDiffMessage[] = " YAW DIFF ";
 
-/* descriptor/ptr table auto 0x8032a878-0x8032a8b0 */
+/* DLL 613's descriptor is pooled in DLL 614's data. */
 ObjectDescriptor gDrCreatorObjDescriptor = {
     0,
     0,

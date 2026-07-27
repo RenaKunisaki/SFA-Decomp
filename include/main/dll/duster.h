@@ -9,7 +9,7 @@ void rachnopUpdateApproach(int* obj, int state);
 void rachnopUpdateAttack(int* obj, int state);
 void rachnopUpdateIdle(int* obj, int state);
 void spittingEbaUpdateIdle(GameObject* obj, int state);
-void spittingEbaUpdateEngaged(u32 obj, int state);
+void spittingEbaUpdateEngaged(GameObject* obj, int state);
 
 void FUN_80155b6c(u64 param_1,double param_2,double param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,
@@ -21,7 +21,7 @@ void FUN_80155e00(u64 param_1,double param_2,double param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,
                  int *param_9,int param_10);
 void rachnopInit(u32 param_1,int param_2);
-void spittingEbaSpawnPollen(u32 param_9,int param_10);
+void spittingEbaSpawnPollen(GameObject* obj,int state);
 void spittingEbaUpdateTimeOfDay(int param_9,int param_10);
 void FUN_8015666c(u64 param_1,double param_2,double param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,

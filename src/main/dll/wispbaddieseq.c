@@ -83,8 +83,6 @@ typedef struct
 extern FamilyTable lbl_8031F16C[]; /* per-family table-of-tables, 0x28-byte rows */
 extern u8 lbl_8031DD30[];          /* per-anim move-progress floats, indexed anim*4 */
 
-f32 lbl_803E2740 = 0.0f;
-
 u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
 {
     u8* base = lbl_8031DD30;
@@ -110,7 +108,7 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
     {
         return 0;
     }
-    if (((HagabonAnimState*)state)->unk328 != lbl_803E2740 && ((HagabonAnimState*)state)->unk338 != 0)
+    if (((HagabonAnimState*)state)->unk328 && ((HagabonAnimState*)state)->unk338 != 0)
     {
         return 0;
     }
@@ -137,15 +135,15 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
     }
     if ((u8)allowNewEvent != 0)
     {
-        if ((eventFlags != 0 || ((HagabonAnimState*)state)->eventDelayTimer != lbl_803E2740) &&
+        if ((eventFlags != 0 || ((HagabonAnimState*)state)->eventDelayTimer) &&
             (stateFlags & 0x40) == 0 && flag20 == 0)
         {
-            if (((HagabonAnimState*)state)->eventDelayTimer != lbl_803E2740)
+            if (((HagabonAnimState*)state)->eventDelayTimer)
             {
                 ((HagabonAnimState*)state)->eventDelayTimer = ((HagabonAnimState*)state)->eventDelayTimer - timeDelta;
-                if (((HagabonAnimState*)state)->eventDelayTimer <= lbl_803E2740)
+                if (((HagabonAnimState*)state)->eventDelayTimer <= 0.0f)
                 {
-                    ((HagabonAnimState*)state)->eventDelayTimer = lbl_803E2740;
+                    ((HagabonAnimState*)state)->eventDelayTimer = 0.0f;
                 }
                 else
                 {
@@ -158,14 +156,14 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
                 ((HagabonAnimState*)state)->eventDelayTimer =
                     ((HagabonAnimState*)state)->unk334 +
                     (f32)(int)randomGetRange(base[eventTableIndex + 0x152c], base[eventTableIndex + 0x152d]);
-                ((HagabonAnimState*)state)->unk334 = lbl_803E2740;
+                ((HagabonAnimState*)state)->unk334 = 0.0f;
                 return 0;
             }
         }
     }
     if ((((u8)allowNewEvent != 0 && ((HagabonAnimState*)state)->animEvent != 0 && eventRows[eventIndex].moveId != 0) ||
          (((HagabonAnimState*)state)->animEvent & 0x20) != 0) &&
-        !(((HagabonAnimState*)state)->activeEventIndex == eventIndex && lbl_803E2740 != ((HagabonAnimState*)state)->moveHoldTimer))
+        !(((HagabonAnimState*)state)->activeEventIndex == eventIndex && 0.0f != ((HagabonAnimState*)state)->moveHoldTimer))
     {
         sf2 = ((BaddieState*)state)->controlFlags;
         if ((sf2 & 0x800080) != 0 || (((HagabonAnimState*)state)->animEvent & 0x20) != 0)
@@ -188,7 +186,7 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
         }
         return 0;
     }
-    if (((HagabonAnimState*)state)->moveHoldTimer != lbl_803E2740)
+    if (((HagabonAnimState*)state)->moveHoldTimer)
     {
         GameObject* pos = (GameObject*)((BaddieState*)state)->trackedObj;
         baddieTurnTowardPoint(obj, (int)state, pos->anim.localPosX, pos->anim.localPosZ, 0xf, 0);
@@ -206,10 +204,10 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
                 (ObjAnimComponent*)obj, *(f32*)(base + eventRows[((HagabonAnimState*)state)->activeEventIndex].moveId * 4));
         }
         ((HagabonAnimState*)state)->moveHoldTimer = ((HagabonAnimState*)state)->moveHoldTimer - timeDelta;
-        if (((HagabonAnimState*)state)->moveHoldTimer <= lbl_803E2740)
+        if (((HagabonAnimState*)state)->moveHoldTimer <= 0.0f)
         {
-            ((HagabonAnimState*)state)->moveHoldTimer = lbl_803E2740;
-            *(int*)&((BaddieState*)state)->controlFlags &= ~0x40LL;
+            ((HagabonAnimState*)state)->moveHoldTimer = 0.0f;
+            ((BaddieState*)state)->controlFlags &= ~0x40LL;
             ((BaddieState*)state)->controlFlags =
                 ((BaddieState*)state)->controlFlags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((HagabonAnimState*)state)->animFlags = ((HagabonAnimState*)state)->animFlags & ~0x80;

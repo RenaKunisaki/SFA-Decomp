@@ -1,55 +1,17 @@
-/* DLL 0x243 - DBHoleControl1 [801FE118-801FEB30) */
+/* DBHoleContr (DLL 0x243) */
 #include "game/objects/object.h"
 #include "main/object_update_list.h"
 #include "main/obj_group.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
-#include "main/dll/baddie_state.h"
-#include "main/dll/dll22cstate_struct.h"
-#include "main/dll/dfpobjcreatorstate_struct.h"
 #include "main/dll/dbholecontrol1state_struct.h"
-#include "main/dll/dfptorchstate_struct.h"
-#include "main/dll/dbeggstate_struct.h"
-#include "main/dll/drakorenergystate_struct.h"
-#include "main/dll/dbstealerwormcontrol_struct.h"
-#include "main/dll/blastflags4_types.h"
-#include "main/dll/dfp_types.h"
-#include "main/audio/sfx_ids.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
-#include "main/objhits.h"
 #include "main/obj_message.h"
 #include "sys/objects.h"
-#include "main/dll/dll_0242_dbstealerworm.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
 #include "string.h"
 #include "main/lightmap.h"
-
-
-/*
- * DbStealerwormControl - the per-family control record hung off
- * GroundBaddieState.control (state+0x40C) for dbstealerworm
- * (extraSize 0x460 = GroundBaddieState 0x410 + a 0x50 private tail;
- * the control record itself is memset(0x50) in dbstealerworm_init).
- */
-
-STATIC_ASSERT(sizeof(DbStealerwormControl) == 0x50);
-
-STATIC_ASSERT(sizeof(DfpLevelControlState) == 0xC);
-
-STATIC_ASSERT(sizeof(DfpObjCreatorState) == 0x1C);
-
-STATIC_ASSERT(sizeof(DfpTorchState) == 0x10);
-
-STATIC_ASSERT(sizeof(Dll22CState) == 0x10);
-
-STATIC_ASSERT(offsetof(DbEggState, mode) == 0x118);
-
-STATIC_ASSERT(sizeof(DfpSeqPointState) == 0x10);
-
-STATIC_ASSERT(sizeof(DrakorEnergyState) == 0xC);
-
-STATIC_ASSERT(sizeof(GCRobotBlastState) == 0x8);
 
 STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
@@ -58,34 +20,6 @@ STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 #define DBHOLECONTROL1_CHILD_OBJ 1337
 
 int lbl_803DDCE0;
-
-
-void DBstealerwo_setFuncPtrs_80203c78(void)
-{
-    gDBStealerWormStateHandlersA[0] = (int)dbstealerworm_stateHandlerA00;
-    gDBStealerWormStateHandlersA[1] = (int)dbstealerworm_stateHandlerA01;
-    gDBStealerWormStateHandlersA[2] = (int)dbstealerworm_stateHandlerA02;
-    gDBStealerWormStateHandlersA[3] = (int)dbstealerworm_stateHandlerA03;
-    gDBStealerWormStateHandlersA[4] = (int)dbstealerworm_stateHandlerA04;
-    gDBStealerWormStateHandlersA[5] = (int)dbstealerworm_stateHandlerA05;
-    gDBStealerWormStateHandlersA[6] = (int)dbstealerworm_stateHandlerA06;
-    gDBStealerWormStateHandlersA[7] = (int)dbstealerworm_stateHandlerA07;
-    gDBStealerWormStateHandlersA[8] = (int)dbstealerworm_stateHandlerA08;
-    gDBStealerWormStateHandlersA[9] = (int)dbstealerworm_stateHandlerA09;
-    gDBStealerWormStateHandlersA[10] = (int)dbstealerworm_stateHandlerA0A;
-    gDBStealerWormStateHandlersA[11] = (int)dbstealerworm_stateHandlerA0B;
-    gDBStealerWormStateHandlersA[12] = (int)dbstealerworm_stateHandlerA0C;
-    gDBStealerWormStateHandlersA[13] = (int)dbstealerworm_stateHandlerA0D;
-    gDBStealerWormStateHandlersA[14] = (int)dbstealerworm_stateHandlerA0E;
-    gDBStealerWormStateHandlersA[15] = (int)dbstealerworm_stateHandlerA0F;
-    gDBStealerWormStateHandlersB[0] = (int)dbstealerworm_stateHandlerB00;
-    gDBStealerWormStateHandlersB[1] = (int)dbstealerworm_stateHandlerB01;
-    gDBStealerWormStateHandlersB[2] = (int)dbstealerworm_stateHandlerB02;
-    gDBStealerWormStateHandlersB[3] = (int)dbstealerworm_stateHandlerB03;
-    gDBStealerWormStateHandlersB[4] = (int)dbstealerworm_stateHandlerB04;
-    gDBStealerWormStateHandlersB[5] = (int)dbstealerworm_stateHandlerB05;
-    gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
-}
 
 int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
@@ -191,3 +125,20 @@ void dbholecontrol1_release(void)
 void dbholecontrol1_initialise(void)
 {
 }
+
+ObjectDescriptor gDBHoleControl1ObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dbholecontrol1_initialise,
+    (ObjectDescriptorCallback)dbholecontrol1_release,
+    0,
+    (ObjectDescriptorCallback)dbholecontrol1_init,
+    (ObjectDescriptorCallback)dbholecontrol1_update,
+    (ObjectDescriptorCallback)dbholecontrol1_hitDetect,
+    (ObjectDescriptorCallback)dbholecontrol1_render,
+    (ObjectDescriptorCallback)dbholecontrol1_free,
+    (ObjectDescriptorCallback)dbholecontrol1_getObjectTypeId,
+    dbholecontrol1_getExtraSize,
+};

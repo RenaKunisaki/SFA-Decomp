@@ -11,11 +11,13 @@
 #include "main/frame_timing.h"
 #include "main/audio/sfx.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 #define DLL19D_HIT_VOLUME_SLOT 0xe
 
 typedef struct Dll19DPlacement
 {
-    u8 pad0[0x19 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 variant;
     u8 pad1A[0x20 - 0x1A];
 } Dll19DPlacement;

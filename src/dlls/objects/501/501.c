@@ -1,0 +1,202 @@
+/*
+ * DLL 0x01F5 - the chain object of the Lylat-cruise
+ * ship-battle set piece (objectTypeId 0xB). It builds the multi-segment
+ * chain from the placement def, optionally spawns a point light on the
+ * fire sequence (0x171), and is the segment that drives the shared trigger
+ * sequence (gObjectTriggerInterface) each frame. When the sequence
+ * reaches its pending state (seqIndex == -2) the chain scans the object
+ * list for its sequence-group peers and ends the group once it is the
+ * last one standing, then frees itself.
+ */
+#include "main/dll/shipbattlestate_struct.h"
+#include "game/objects/object.h"
+#include "main/dll/objfx.h"
+#include "main/objseq.h"
+#include "sys/objects/lifecycle.h"
+#include "main/object_render.h"
+#include "main/obj_list.h"
+#include "main/model_light.h"
+#include "main/dll/dll_01F5_shipbattle.h"
+#include "dlls/object_descriptor.h"
+#include "main/dll/dll_0004_dummy04.h"
+
+STATIC_ASSERT(sizeof(ShipBattleState) == 0x140);
+
+#define SHIPBATTLE_OBJECT_TYPE_ID 0xb
+#define SHIPBATTLE_FIRE_SEQ_ID    0x171
+#define SEQINDEX_PENDING          -2
+#define CLASSID_SEQUENCE_OBJECT   0x10
+
+extern u8 lbl_803DB411;
+f32 lbl_803DDC50[2];
+
+static void ShipBattle_resetTrackedState(void)
+{
+    lbl_803DDC50[0] = 0.0f;
+    *(u8*)&lbl_803DDC50[1] = 0;
+}
+
+int ShipBattle_getExtraSize(void)
+{
+    return 0x140;
+}
+int ShipBattle_getObjectTypeId(void)
+{
+    return SHIPBATTLE_OBJECT_TYPE_ID;
+}
+
+void ShipBattle_free(int* obj)
+{
+    int* state = ((GameObject*)obj)->extra;
+    int light;
+    (*gObjectTriggerInterface)->freeState((u8*)state);
+    gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
+    light = ((GameObject*)obj)->userData2;
+    if (light != 0)
+    {
+        ModelLightStruct_free((ModelLightStruct*)light);
+    }
+}
+
+void ShipBattle_render(int* obj, int p2, int p3, int p4, int p5, s8 visible)
+{
+    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    if (((GameObject*)obj)->anim.seqId == SHIPBATTLE_FIRE_SEQ_ID)
+    {
+        objfx_spawnFlaggedTrailBurst(obj, 0.11f, 4, 389, 5, NULL);
+    }
+}
+
+void ShipBattle_hitDetect(void)
+{
+}
+
+void ShipBattle_update(GameObject* obj)
+{
+    int groupId;
+    int* objects;
+    int i;
+    int objectCount;
+    int current;
+    int linkedObject;
+    int groupId2;
+    int sameGroupCount;
+
+    if ((obj)->anim.placementData == NULL)
+    {
+        return;
+    }
+    if (((ShipBattleObjectDef*)(obj)->anim.placementData)->segmentIndex == -1)
+    {
+        return;
+    }
+
+    i = (*gObjectTriggerInterface)->update((u8*)obj, lbl_803DB411);
+    if (i == 0)
+    {
+        return;
+    }
+    if ((obj)->seqIndex != SEQINDEX_PENDING)
+    {
+        return;
+    }
+
+    groupId = *(s8*)&((ObjSeqState*)(obj)->extra)->slot;
+    linkedObject = 0;
+    objects = ObjList_GetObjects(&i, &objectCount);
+    sameGroupCount = 0;
+    i = 0;
+    groupId2 = groupId;
+    groupId2 |= groupId;
+    while (i < objectCount)
+    {
+        current = objects[i];
+        if (((GameObject*)current)->seqIndex == groupId)
+        {
+            linkedObject = current;
+        }
+        if (((GameObject*)current)->seqIndex == SEQINDEX_PENDING &&
+            ((GameObject*)current)->anim.classId == CLASSID_SEQUENCE_OBJECT &&
+            groupId2 == *(s8*)&((ObjSeqState*)((GameObject*)current)->extra)->slot)
+        {
+            sameGroupCount++;
+        }
+        i++;
+    }
+
+    if (sameGroupCount <= 1 && (void*)linkedObject != NULL && ((GameObject*)linkedObject)->seqIndex != -1)
+    {
+        ((GameObject*)linkedObject)->seqIndex = -1;
+        (*gObjectTriggerInterface)->endSequence(groupId2);
+    }
+    (obj)->seqIndex = -1;
+    Obj_FreeObject(obj);
+}
+
+void ShipBattle_init(GameObject* obj, int def)
+{
+    ShipBattleState* state;
+    int light;
+    int chainIndex;
+
+    state = obj->extra;
+    state->unk6A = ((ShipBattleObjectDef*)def)->unk1A;
+    state->unk6E = -1;
+    state->unk24 = 1.0f / (1.0f + (f32)((ShipBattleObjectDef*)def)->dampingDivisor);
+    state->unk28 = -1;
+
+    chainIndex = obj->userData1;
+    if (chainIndex == 0 && ((ShipBattleObjectDef*)def)->segmentIndex != 1)
+    {
+        (*gObjectTriggerInterface)->loadAnimData((u8*)state, (u8*)def);
+        obj->userData1 = ((ShipBattleObjectDef*)def)->segmentIndex + 1;
+    }
+    else if (chainIndex != 0 && ((ShipBattleObjectDef*)def)->segmentIndex != chainIndex - 1)
+    {
+        (*gObjectTriggerInterface)->freeState((u8*)state);
+        if (((ShipBattleObjectDef*)def)->segmentIndex != -1)
+        {
+            (*gObjectTriggerInterface)->loadAnimData((u8*)state, (u8*)def);
+        }
+        obj->userData1 = ((ShipBattleObjectDef*)def)->segmentIndex + 1;
+    }
+
+    if (obj->anim.seqId == SHIPBATTLE_FIRE_SEQ_ID)
+    {
+        light = (int)objCreateLight(obj, 1);
+        if ((u32)light != 0)
+        {
+            modelLightStruct_setLightKind((ModelLightStruct*)light, MODEL_LIGHT_KIND_POINT);
+            modelLightStruct_setDiffuseColor((ModelLightStruct*)light, 200, 60, 0, 0);
+            modelLightStruct_setDistanceAttenuation((ModelLightStruct*)light, 30.0f, 80.0f);
+        }
+        obj->userData2 = light;
+    }
+
+    ShipBattle_resetTrackedState();
+}
+
+void ShipBattle_release(void)
+{
+}
+
+void ShipBattle_initialise(void)
+{
+}
+
+ObjectDescriptor gShipBattleObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)ShipBattle_initialise,
+    (ObjectDescriptorCallback)ShipBattle_release,
+    0,
+    (ObjectDescriptorCallback)ShipBattle_init,
+    (ObjectDescriptorCallback)ShipBattle_update,
+    (ObjectDescriptorCallback)ShipBattle_hitDetect,
+    (ObjectDescriptorCallback)ShipBattle_render,
+    (ObjectDescriptorCallback)ShipBattle_free,
+    (ObjectDescriptorCallback)ShipBattle_getObjectTypeId,
+    ShipBattle_getExtraSize,
+};

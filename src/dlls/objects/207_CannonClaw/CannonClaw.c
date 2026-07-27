@@ -1,44 +1,50 @@
 /*
- * dll_00CF cannonclaw - a trigger-once cannon-arm awakener: plays move 0x208
- * until the Tricky object's gate game bit fires, then disables its own hits
- * and stops animating (userData1 latch).
+ * CannonClaw object (DLL slot 207).
  *
- * The object descriptor and all CannonClaw callbacks live in this TU.
+ * Plays its arm animation until Tricky's placement game bit is set, then
+ * disables its hit volumes and rendering.
  */
+#include "dlls/objects/207_CannonClaw.h"
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/dll/dll_00CF_cannonclaw.h"
-#include "main/gamebits.h"
-#include "main/objhits.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
+#include "main/objanim.h"
+#include "main/objhits.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define CANNONCLAW_OBJID_TRICKY 0x1723
-#define CANNONCLAW_MOVE_ARM     0x208
+#define CANNON_CLAW_TRICKY_OBJECT_ID 0x1723
+#define CANNON_CLAW_ARM_MOVE_ID      0x208
+#define CANNON_CLAW_ANIM_SPEED       0.005f
+#define CANNON_CLAW_STATUS_ACTIVE    0
+#define CANNON_CLAW_STATUS_DISABLED  1
 
-int cannonclaw_getExtraSize(void)
-{
-    return 0x0;
+typedef struct CannonClawGatePlacement {
+    ObjPlacement base;     /* 0x00 */
+    u8 pad18[2];           /* 0x18 */
+    s16 activationGameBit; /* 0x1A */
+} CannonClawGatePlacement;
+
+STATIC_ASSERT(offsetof(CannonClawGatePlacement, activationGameBit) == 0x1A);
+
+int cannonclaw_getExtraSize(void) {
+    return 0;
 }
 
-int cannonclaw_getObjectTypeId(void)
-{
-    return 0x0;
+int cannonclaw_getObjectTypeId(void) {
+    return 0;
 }
 
-void cannonclaw_free(void)
-{
+void cannonclaw_free(GameObject* obj) {
+    (void)obj;
 }
 
-void cannonclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible != 0)
-    {
-        switch (obj->userData1)
-        {
-        case 0:
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void cannonclaw_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    if (visible != 0) {
+        switch (obj->userData1) {
+        case CANNON_CLAW_STATUS_ACTIVE:
+            objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
             break;
         default:
             break;
@@ -46,44 +52,46 @@ void cannonclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
     }
 }
 
-void cannonclaw_hitDetect(void)
-{
+void cannonclaw_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void cannonclaw_update(GameObject* obj)
-{
+void cannonclaw_update(GameObject* obj) {
     GameObject* trickyObj;
+    CannonClawGatePlacement* gatePlacement;
+
     getTrickyObject();
-    trickyObj = ObjList_FindObjectById(CANNONCLAW_OBJID_TRICKY);
-    if (obj->userData1 != 0)
+    trickyObj = ObjList_FindObjectById(CANNON_CLAW_TRICKY_OBJECT_ID);
+    if (obj->userData1 != CANNON_CLAW_STATUS_ACTIVE) {
         return;
-    if (obj->anim.currentMove != CANNONCLAW_MOVE_ARM)
-    {
-        ObjAnim_SetCurrentMove((int)obj, CANNONCLAW_MOVE_ARM, 0.0f, 0);
     }
-    ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
-    if (trickyObj == NULL)
+    if (obj->anim.currentMove != CANNON_CLAW_ARM_MOVE_ID) {
+        ObjAnim_SetCurrentMove((int)obj, CANNON_CLAW_ARM_MOVE_ID, 0.0f, 0);
+    }
+    ObjAnim_AdvanceCurrentMove((int)obj, CANNON_CLAW_ANIM_SPEED, timeDelta, NULL);
+    if (trickyObj == NULL) {
         return;
-    if (mainGetBit(trickyObj->anim.placementData[13]) == 0)
+    }
+    gatePlacement = (CannonClawGatePlacement*)trickyObj->anim.placementData;
+    if (mainGetBit(gatePlacement->activationGameBit) == 0) {
         return;
-    obj->userData1 = 1;
-    *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    }
+    obj->userData1 = CANNON_CLAW_STATUS_DISABLED;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     ObjHits_DisableObject(obj);
 }
 
-void cannonclaw_init(GameObject* obj, CannonClawPlacement* placement)
-{
-    s8 rotXByte = placement->rotXByte;
-    s16 rotX = rotXByte << 8;
+void cannonclaw_init(GameObject* obj, CannonClawPlacement* placement) {
+    s8 rotXScale = placement->rotXScale;
+    s16 rotX = rotXScale << 8;
+
     obj->anim.rotX = rotX;
 }
 
-void cannonclaw_release(void)
-{
+void cannonclaw_release(void) {
 }
 
-void cannonclaw_initialise(void)
-{
+void cannonclaw_initialise(void) {
 }
 
 ObjectDescriptor gCannonClawObjDescriptor = {

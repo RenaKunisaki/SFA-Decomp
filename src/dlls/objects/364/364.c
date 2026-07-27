@@ -91,6 +91,21 @@ void dll_16C_syncSubObjectTransform(GameObject* dst, GameObject* src, int p1, in
     dst->anim.velocityZ = src->anim.velocityZ;
 }
 
+static void dll_16C_advanceLinkedMove(GameObject* obj, GameObject* sub)
+{
+    f32 b;
+    f32 blend;
+    f32 a;
+    if (obj->anim.currentMove != 0x100)
+    {
+        ObjAnim_SetCurrentMove((int)obj, 0x100, 0.0f, 0);
+    }
+    (*(Dll16CLinkedObjectInterfaceVTable**)sub->anim.dll)->getBlendStep(sub, &blend);
+    blend = 0.01f;
+    (*(Dll16CLinkedObjectInterfaceVTable**)sub->anim.dll)->getBlendRange(sub, &a, &b);
+    ObjAnim_AdvanceCurrentMove((int)obj, blend, (f32)(u32)framesThisStep, NULL);
+}
+
 int dll_16C_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     GameObject* linkedObj;

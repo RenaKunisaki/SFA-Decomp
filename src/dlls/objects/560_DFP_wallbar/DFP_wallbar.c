@@ -1,7 +1,7 @@
 /*
  * DragonRock Palace "chuka" wall-bar object (DLL 0x230; "DFP_wallbar").
- * The DLL's real object is the chuka_* family - a moving wall/floor bar
- * driven by the shared baddie state machine.
+ * Its callbacks retain the recovered chuka_* names for the moving
+ * wall/floor bar driven by the shared baddie state machine.
  */
 #include "game/objects/object.h"
 #include "sys/objects.h"

@@ -1,5 +1,5 @@
 /*
- * WCTile (DLL 0x291) - one cell of a sliding-tile grid puzzle in the
+ * WCTile (DLL 657) - one cell of a sliding-tile grid puzzle in the
  * Walled City (WC). On its first update it has no controller, so it
  * locates the nearest level-controller object (ObjGroup group
  * WCTILE_CONTROLLER_GROUP) and caches it in state->controller; all grid

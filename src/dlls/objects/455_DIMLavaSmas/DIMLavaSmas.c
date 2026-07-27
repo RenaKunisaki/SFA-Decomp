@@ -1,0 +1,212 @@
+/*
+ * DIMLavaSmas (DLL 0x1C7) - DIM lava-smash hazard; a surface object that
+ * rises and smashes when struck by a certain hit type, sets surface-passable
+ * flags on the underlying map block, and triggers a game-bit sequence event
+ * on completion.
+ */
+#include "main/lightmap_api.h"
+#include "main/pi_dolphin_api.h"
+#include "game/objects/object.h"
+#include "dlls/object_descriptor.h"
+#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/DIM/DIMlevcontrol.h"
+#include "main/objseq.h"
+#include "main/gamebits.h"
+#include "main/map_block.h"
+#include "main/track_dolphin_map_api.h"
+#include "main/object_render.h"
+#include "main/objhits.h"
+#include "main/audio/sfx.h"
+#include "main/dll/DIM/dll_01C7_dimlavasmash.h"
+
+#define DIMLAVASMASH_HIT_SEQID_CANNONBALL 397 /* dimlavaball cannonball (0x18d) */
+
+void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfaceType)
+{
+    int clearMask;
+    int i;
+    int j;
+    int* block;
+    int got;
+    for (j = 0; j < (int)((MapBlockData*)map)->polyGroupCount; j++)
+    {
+        block = mapBlockGetPolygonGroup(map, j);
+        got = mapBlockGetPolygonGroupType(block);
+        if (surfaceType == got)
+        {
+            if (disable != 0)
+            {
+                *(u32*)(block + 0x10 / 4) &= ~2LL;
+                *(u32*)(block + 0x10 / 4) &= ~1LL;
+            }
+            else
+            {
+                block[0x10 / 4] = block[0x10 / 4] | 2;
+                block[0x10 / 4] = block[0x10 / 4] | 1;
+            }
+        }
+    }
+    for (i = 0, clearMask = ~2; i < (int)((MapBlockData*)map)->shaderCount; i++)
+    {
+        block = (int*)mapBlockGetShader(map, i);
+        if (surfaceType == (int)*((u8*)Shader_getLayer(block, 0) + 5))
+        {
+            if (disable != 0)
+            {
+                *(u32*)(block + 0x3c / 4) &= clearMask;
+            }
+            else
+            {
+                block[0x3c / 4] = block[0x3c / 4] | 2;
+            }
+        }
+    }
+}
+
+int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    int* def;
+    int hit;
+    MapBlockData* block;
+    int* state;
+    ObjHitsPriorityState* hitState;
+    state = (obj)->extra;
+    def = *(int**)&(obj)->anim.placementData;
+    if (((DimlavasmashState*)state)->state == 0)
+    {
+        if (mainGetBit(((DimlavasmashPlacement*)def)->gateGameBit) != 0)
+        {
+            hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
+            hitState->flags |= 1;
+            if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0)
+            {
+                if (((GameObject*)hit)->anim.seqId == DIMLAVASMASH_HIT_SEQID_CANNONBALL)
+                {
+                    ((DimlavasmashState*)state)->state = 2;
+                    Sfx_PlayFromObject((int)obj, SFXTRIG_en_mushsporedisp22);
+                    block = mapGetBlock(
+                        objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
+                    if (block != NULL)
+                    {
+                        dimlavasmash_setBlockSurfaceFlags(block, 1, ((DimlavasmashState*)state)->surfaceLayerId);
+                        dimlavasmash_setBlockSurfaceFlags(block, 0, ((DimlavasmashState*)state)->surfaceLayerId + 1);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        if (animUpdate->triggerCommand == 1)
+        {
+            mainSetBits(((DimlavasmashPlacement*)def)->triggerGameBit, 1);
+            ((DimlavasmashState*)state)->state = 1;
+        }
+    }
+    return ((DimlavasmashState*)state)->state == 0;
+}
+
+int dimlavasmash_getExtraSize(void)
+{
+    return 0x3;
+}
+int dimlavasmash_getObjectTypeId(void)
+{
+    return 0x0;
+}
+
+#define DIMLAVASMASH_OBJFLAG_HITDETECT_DISABLED 0x2000
+
+void dimlavasmash_free(void)
+{
+}
+
+void dimlavasmash_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
+{
+    u8* state = obj->extra;
+    if (state[2] == 2 && visible != 0)
+    {
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    }
+}
+
+void dimlavasmash_hitDetect(void)
+{
+}
+
+void dimlavasmash_update(GameObject* obj)
+{
+    u8* state;
+    ObjHitsPriorityState* hitState;
+    state = obj->extra;
+    if (state[2] == 1)
+    {
+        hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+        hitState->flags &= ~1;
+    }
+    else if (obj->userData1 == 0)
+    {
+        if ((s8)state[0] != -1)
+        {
+            (*gObjectTriggerInterface)->runSequence((s8)state[0], obj, -1);
+        }
+        obj->userData1 = 1;
+    }
+}
+
+void dimlavasmash_init(GameObject* obj, s8* def)
+{
+    ObjAnimComponent* objAnim;
+    MapBlockData* block;
+    DimlavasmashState* inner;
+    ObjHitsPriorityState* hitState;
+
+    objAnim = (ObjAnimComponent*)obj;
+    obj->anim.rotX = (s16)((s32)def[0x18] << 8);
+    obj->animEventCallback = dimlavasmash_SeqFn;
+    inner = obj->extra;
+    inner->surfaceLayerId = (u8)((DimlavasmashObjectDef*)def)->surfaceLayerId;
+    inner->seqSlot = (s8)((DimlavasmashObjectDef*)def)->unk1C;
+    inner->state = mainGetBit(((DimlavasmashObjectDef*)def)->triggerGameBit);
+    if (inner->state == 1)
+    {
+        block = mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX,
+                                                obj->anim.localPosY,
+                                                obj->anim.localPosZ));
+        if (block != NULL)
+        {
+            dimlavasmash_setBlockSurfaceFlags(block, 1, inner->surfaceLayerId);
+            dimlavasmash_setBlockSurfaceFlags(block, 0, inner->surfaceLayerId + 1);
+        }
+    }
+    objAnim->bankIndex = def[0x19];
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+    hitState->flags &= ~1;
+    obj->objectFlags = (u16)(obj->objectFlags | DIMLAVASMASH_OBJFLAG_HITDETECT_DISABLED);
+}
+
+void dimlavasmash_release(void)
+{
+}
+
+void dimlavasmash_initialise(void)
+{
+}
+
+ObjectDescriptor gDIMLavaSmashObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dimlavasmash_initialise,
+    (ObjectDescriptorCallback)dimlavasmash_release,
+    0,
+    (ObjectDescriptorCallback)dimlavasmash_init,
+    (ObjectDescriptorCallback)dimlavasmash_update,
+    (ObjectDescriptorCallback)dimlavasmash_hitDetect,
+    (ObjectDescriptorCallback)dimlavasmash_render,
+    (ObjectDescriptorCallback)dimlavasmash_free,
+    (ObjectDescriptorCallback)dimlavasmash_getObjectTypeId,
+    dimlavasmash_getExtraSize,
+};

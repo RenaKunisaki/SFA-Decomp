@@ -1,5 +1,5 @@
 /*
- * ARWArwing (DLL 0x29A) - the player's Arwing in the on-rails flight
+ * ARWArwing (DLL 666) - the player's Arwing in the on-rails flight
  * sections. This is the core object of the section; the singleton instance
  * is published through the gArwing global (getArwing) so the pickups,
  * squadron and level-controller TUs can find it.
@@ -61,8 +61,6 @@
 
 #include "main/dll/ARW/arwing_state.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
-
-GameObject* gArwing;
 #include "main/dll/ARW/dll_029C_arwarwingbo.h"
 #include "main/dll/ARW/dll_029D_arwarwinggu.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
@@ -70,6 +68,8 @@ GameObject* gArwing;
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
+
+GameObject* gArwing;
 
 u8 gArwingCourseMapIds[8] = {7, 0x13, 0x0D, 0x0C, 2, 0, 0, 0};
 
@@ -87,31 +87,6 @@ typedef struct ArwInitCfgAB
     int a;
     int b;
 } ArwInitCfgAB;
-
-typedef struct ArwArwingProjectileSetup
-{
-    s16 objectId;
-    u8 pad02[2];
-    u8 field04;
-    u8 field05;
-    u8 pad06[2];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[4];
-    u8 rotZ;
-    u8 rotY;
-    u8 rotX;
-} ArwArwingProjectileSetup;
-
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, field04) == 0x04);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, field05) == 0x05);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, posX) == 0x08);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, posY) == 0x0c);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, posZ) == 0x10);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, rotZ) == 0x18);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, rotY) == 0x19);
-STATIC_ASSERT(offsetof(ArwArwingProjectileSetup, rotX) == 0x1a);
 
 typedef struct ArwArwingVec3
 {
@@ -209,26 +184,13 @@ static inline f32 arwarwing_readTriggerL(void)
     return -(f32)(u32)(u8)padGetLTrigger(0) / 150.0f;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void arwarwing_readControls(GameObject* obj, ArwingState* state)
 {
     ArwingState* aw = state;
     f32 knockX;
     f32 knockY;
     f32 knockBlend;
+    f32 trim;
     int btn;
 
     debugPrintSetColor(0xff, 0xff, 0xff, 0xff);
@@ -253,9 +215,11 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
         }
     }
     aw->rTriggerTrim = (f32)(u8)padGetRTrigger(0) / 150.0f;
-    aw->rTriggerTrim = clampPos(aw->rTriggerTrim, 0.0f, 1.0f);
+    trim = aw->rTriggerTrim;
+    aw->rTriggerTrim = clampPos(trim, 0.0f, 1.0f);
     aw->lTriggerTrim = -(f32)(u8)padGetLTrigger(0) / 150.0f;
-    aw->lTriggerTrim = clampNeg(aw->lTriggerTrim, -1.0f, 0.0f);
+    trim = aw->lTriggerTrim;
+    aw->lTriggerTrim = clampNeg(trim, -1.0f, 0.0f);
     aw->inputFlags = getButtonsJustPressed(0);
     aw->inputFlagsPrev = getButtonsJustPressedIfNotBusy(0);
     aw->inputFlags2 = getButtonsHeld(0);
@@ -357,7 +321,7 @@ void arwarwing_updateBarrelRoll(GameObject* obj, ArwingState* state)
                     state->accelX / state->barrelRollAccelScale;
                 arwarwingbo_setActiveVisible((GameObject*)(state->bombObj), 0, 0);
             }
-            else if (rollAngle <= fullTurnEnd && rollAngle > halfTurn)
+            else if (rollAngle > halfTurn)
             {
                 int trimOffset = rollAngle - (u16)trimAngle;
                 if (trimOffset > 0x8000)
@@ -393,7 +357,7 @@ void arwarwing_updateBarrelRoll(GameObject* obj, ArwingState* state)
                     state->accelX / state->barrelRollAccelScale;
                 arwarwingbo_setActiveVisible((GameObject*)(state->bombObj), 0, 0);
             }
-            else if (rollAngle >= fullTurnEnd && rollAngle > halfTurn)
+            else if (rollAngle > halfTurn)
             {
                 int trimOffset = rollAngle - (u16)trimAngle;
                 if (trimOffset > 0x8000)
@@ -619,8 +583,9 @@ void arwarwing_updateBombFire(GameObject* obj, ArwingState* state)
     if (arwing->activeBombObj != NULL)
         return;
     {
+        f32 zero;
         f32 bombCooldown = arwing->bombCooldown;
-        f32 zero = 0.0f;
+        zero = 0.0f;
         if (bombCooldown > zero)
         {
             arwing->bombCooldown = bombCooldown - timeDelta;
@@ -667,17 +632,17 @@ void arwarwing_spawnLaserShot(GameObject* obj, ArwingState* state, int side, int
         arwarwinggu_setActiveVisible(state->gunObjR, 1, level == 2);
     }
     {
-        ArwArwingProjectileSetup* setup =
-            (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_LASERSHOT);
-        setup->posX = px;
-        setup->posY = py;
-        setup->posZ = pz;
+        ArwProjectileSetup* setup =
+            (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_LASERSHOT);
+        setup->base.posX = px;
+        setup->base.posY = py;
+        setup->base.posZ = pz;
         setup->rotX = (obj)->anim.rotX >> 8;
         setup->rotY = (obj)->anim.rotY >> 8;
         setup->rotZ = 0;
-        setup->field04 = 1;
-        setup->field05 = 1;
-        proj = (int)loadObjectAtObject(obj, (ObjPlacement*)setup);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 1;
+        proj = (int)loadObjectAtObject(obj, &setup->base);
     }
     if ((void*)proj == NULL)
         return;
@@ -705,8 +670,9 @@ void arwarwing_updateWeaponFire(GameObject* obj, ArwingState* state)
     int fire;
     arwarwing_updateThrusters(obj, state);
     {
+        f32 zero;
         f32 fireCooldown = state->fireCooldown;
-        f32 zero = 0.0f;
+        zero = 0.0f;
         if (fireCooldown > zero)
         {
             state->fireCooldown = fireCooldown - timeDelta;
@@ -1126,15 +1092,15 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
         case 0xa:
             if (Obj_IsLoadingLocked())
             {
-                ArwArwingProjectileSetup* setup =
-                    (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x24, ARWARWING_CHILD_OBJ_BOMB);
+                ArwProjectileSetup* setup =
+                    (ArwProjectileSetup*)Obj_AllocObjectSetup(0x24, ARWARWING_CHILD_OBJ_BOMB);
                 int bombObjInt;
-                setup->posX = obj->anim.localPosX;
-                setup->posY = obj->anim.localPosY;
-                setup->posZ = obj->anim.localPosZ;
-                setup->field04 = 1;
-                setup->field05 = 1;
-                bombObjInt = (int)loadObjectAtObject(obj, (ObjPlacement*)setup);
+                setup->base.posX = obj->anim.localPosX;
+                setup->base.posY = obj->anim.localPosY;
+                setup->base.posZ = obj->anim.localPosZ;
+                setup->base.color[0] = 1;
+                setup->base.color[1] = 1;
+                bombObjInt = (int)loadObjectAtObject(obj, &setup->base);
                 if ((void*)bombObjInt != 0)
                     arwbombcoll_setLifetime((GameObject*)(bombObjInt), 0x12c);
             }
@@ -1282,15 +1248,15 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
 
     if (state->thrusterL == NULL && state->thrusterR == NULL)
     {
-        ArwArwingProjectileSetup* setup;
-        setup = (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
-        setup->field04 = 1;
-        setup->field05 = 1;
-        state->thrusterL = loadObjectAtObject(obj, (ObjPlacement*)setup);
-        setup = (ArwArwingProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
-        setup->field04 = 1;
-        setup->field05 = 1;
-        state->thrusterR = loadObjectAtObject(obj, (ObjPlacement*)setup);
+        ArwProjectileSetup* setup;
+        setup = (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 1;
+        state->thrusterL = loadObjectAtObject(obj, &setup->base);
+        setup = (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWARWING_CHILD_OBJ_THRUSTER);
+        setup->base.color[0] = 1;
+        setup->base.color[1] = 1;
+        state->thrusterR = loadObjectAtObject(obj, &setup->base);
     }
 
     allAttached = 0;

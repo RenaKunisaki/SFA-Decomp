@@ -23,7 +23,7 @@ typedef struct NwObjPos
 int NW_tricky_getExtraSize(void);
 int NW_tricky_SeqFn(void);
 void NW_tricky_free(int obj);
-void NW_tricky_update(int* obj);
-void NW_tricky_init(int* obj);
+void NW_tricky_update(GameObject* obj);
+void NW_tricky_init(GameObject* obj);
 
 #endif /* MAIN_DLL_NW_DLL_01A2_NWTRICKY_H_ */

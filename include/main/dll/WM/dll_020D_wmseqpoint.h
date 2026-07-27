@@ -48,7 +48,7 @@ STATIC_ASSERT(offsetof(WmSeqPointMapData, disableGameBit) == 0x20);
 STATIC_ASSERT(sizeof(WmSeqPointMapData) == 0x24);
 
 void wmseqpoint_onSeqFree(GameObject* obj);
-int wmseqpoint_SeqFn(int obj, int unused, ObjAnimUpdateState* actor);
+int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor);
 int wmseqpoint_getExtraSize(void);
 int wmseqpoint_getObjectTypeId(void);
 void wmseqpoint_free(void);

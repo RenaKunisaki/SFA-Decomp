@@ -1,80 +1,59 @@
 /*
- * WispBaddie (DLL 0xE1) - a curve-following flying baddie that chases the
- * player and emits particle effects. This TU also owns the baddie-variant
- * data blobs and pointer table referenced by the seqobj units.
+ * WispBaddie object (DLL slot 225).
+ *
+ * Follows a ROM curve, chases nearby players, and owns the family tables
+ * shared by the sequence-driven baddie objects.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/rom_curve_interface.h"
-#include "main/pad_api.h"
+#include "dlls/objects/225_WispBaddie.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_position_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/vecmath.h"
-#include "main/dll/swarmbaddiestate_struct.h"
-#include "main/dll/hagabonstate_struct.h"
-#include "main/dll/baddie_state.h"
-#include "main/dll/baddie_setmove.h"
-#include "main/dll/dll_00C9_enemy.h"
-#include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/dll/dll_00E1_wispbaddie.h"
-#include "main/objhits.h"
-#include "main/obj_group.h"
-#include "main/mm.h"
-#include "string.h"
-#include "main/dll/objfsa.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/sfx_ids.h"
+#include "main/curve.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
-#include "main/camera_shake_api.h"
-#include "main/dll/seqobj11d_ext.h"
-#include "main/dll/baddie_frozen.h"
+#include "main/mm.h"
+#include "main/obj_group.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "string.h"
+#include "sys/objects.h"
 
-int gWispBaddieCurveInitData[2] = {2, 3};
 #define WISPBADDIE_HIT_VOLUME_SLOT 10
 
-/* object group this object belongs to */
-#define WISPBADDIE_OBJGROUP                   3
-/*
- * WispBaddieState.flags (u8 at +0x24). Same path/chase pair as the sibling
- * swarmbaddie: the wisp follows its ROM curve until the player comes within
- * range, then CHASE_PLAYER steers velocity toward the player; straying too
- * far from the path sets CHASE_LOCKOUT to block re-chase until it returns.
- */
+#define WISPBADDIE_OBJECT_GROUP 3
+
 #define WISPBADDIE_FLAG_PATH_NEEDS_LINK 0x01
 #define WISPBADDIE_FLAG_CHASE_PLAYER    0x02
-#define WISPBADDIE_FLAG_CHASE_LOCKOUT   0x04 /* strayed too far; block re-chase until back near path */
+#define WISPBADDIE_FLAG_CHASE_LOCKOUT   0x04
 #define WISPBADDIE_FLAG_CHASE_MASK      0x06
+
+#define WISPBADDIE_PI              3.1415927f
+#define WISPBADDIE_S16_ANGLE_SCALE 32768.0f
+
+int gWispBaddieCurveInitData[2] = {2, 3};
 int gWispBaddieLastSegmentEnd;
 
-STATIC_ASSERT(sizeof(HagabonState) == 0x28);
-STATIC_ASSERT(offsetof(HagabonState, wavePhaseA) == 0x20);
-STATIC_ASSERT(offsetof(HagabonState, flags) == 0x26);
+ObjectDescriptor gWispBaddieObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)WispBaddie_initialise,
+    (ObjectDescriptorCallback)WispBaddie_release,
+    0,
+    (ObjectDescriptorCallback)WispBaddie_init,
+    (ObjectDescriptorCallback)WispBaddie_update,
+    (ObjectDescriptorCallback)WispBaddie_hitDetect,
+    (ObjectDescriptorCallback)WispBaddie_render,
+    (ObjectDescriptorCallback)WispBaddie_free,
+    (ObjectDescriptorCallback)WispBaddie_getObjectTypeId,
+    WispBaddie_getExtraSize,
+};
 
-typedef struct WispEventRow
-{
-    f32 blend; /* +0x0 */
-    u32 flags; /* +0x4 (low byte = move flags) */
-    u8 moveId; /* +0x8 */
-    u8 pad9[3];
-} WispEventRow;
-STATIC_ASSERT(sizeof(WispEventRow) == 0xc);
-STATIC_ASSERT(offsetof(WispEventRow, moveId) == 0x8);
-
-/*
- * HagabonAnimState - file-local overlay naming the PER-FAMILY anim-control
- * scratch that baddie_state.h leaves raw for the hagabon/swarmbaddie fighter
- * driven by FUN_8014ffa8 / fn_8014FFB4. moveEventFlags(0x2F8) is the u16
- * per-frame move-progress event bitmask read by fn_8015039C to fire SFX.
- */
-typedef struct HagabonAnimState
-{
-    u8 pad00[0x2F8];
-    u16 moveEventFlags; /* 0x2F8 move-progress event bits (0x200/0x40/0x1000/1/0x80) */
-} HagabonAnimState;
-
-void WispBaddie_updateMovement(GameObject* obj, WispBaddieState* state)
-{
+void WispBaddie_updateMovement(GameObject* obj, WispBaddieState* state) {
     RomCurveWalker* curve;
     int pathEnded;
     f32 step;
@@ -84,105 +63,92 @@ void WispBaddie_updateMovement(GameObject* obj, WispBaddieState* state)
     state->pathWavePhase += (s16)(512.0f * timeDelta);
     state->hoverWavePhase += (s16)(2048.0f * timeDelta);
 
-    wave = 1.0f + mathSinf((3.1415927f * (f32)state->pathWavePhase) / 32768.0f);
+    wave = 1.0f + mathSinf((WISPBADDIE_PI * (f32)state->pathWavePhase) / WISPBADDIE_S16_ANGLE_SCALE);
     pathEnded = Curve_AdvanceAlongPath(&curve->curve, state->hitRadius * wave);
     if (((pathEnded != 0) || (curve->atSegmentEnd != gWispBaddieLastSegmentEnd)) &&
         ((*gRomCurveInterface)->goNextPoint((void*)curve) != 0) &&
-        ((*gRomCurveInterface)->initCurve((void*)state->curve, (void*)obj, 400.0f, gWispBaddieCurveInitData, -1) != 0))
-    {
-        state->flags = state->flags & ~WISPBADDIE_FLAG_PATH_NEEDS_LINK;
+        ((*gRomCurveInterface)->initCurve((void*)state->curve, (void*)obj, 400.0f, gWispBaddieCurveInitData, -1) !=
+         0)) {
+        state->flags = (u8)(state->flags & ~WISPBADDIE_FLAG_PATH_NEEDS_LINK);
     }
     gWispBaddieLastSegmentEnd = curve->atSegmentEnd;
 
-    if ((state->flags & WISPBADDIE_FLAG_CHASE_PLAYER) != 0)
-    {
-        (obj)->anim.velocityX =
-            0.006f * (state->playerObj->anim.localPosX - (obj)->anim.localPosX) + (obj)->anim.velocityX;
+    if ((state->flags & WISPBADDIE_FLAG_CHASE_PLAYER) != 0) {
+        obj->anim.velocityX = 0.006f * (state->player->anim.localPosX - obj->anim.localPosX) + obj->anim.velocityX;
 
-        wave = mathSinf((3.1415927f * (f32)state->hoverWavePhase) / 32768.0f);
-        wave = ((30.0f + state->playerObj->anim.localPosY) + 40.0f * wave) - (obj)->anim.localPosY;
-        (obj)->anim.velocityY = 0.006f * wave + (obj)->anim.velocityY;
-        (obj)->anim.velocityZ =
-            0.006f * (state->playerObj->anim.localPosZ - (obj)->anim.localPosZ) + (obj)->anim.velocityZ;
-    }
-    else
-    {
-        (obj)->anim.velocityX =
-            0.006f * (curve->posX - (obj)->anim.localPosX) + (obj)->anim.velocityX;
+        wave = mathSinf((WISPBADDIE_PI * (f32)state->hoverWavePhase) / WISPBADDIE_S16_ANGLE_SCALE);
+        wave = ((30.0f + state->player->anim.localPosY) + 40.0f * wave) - obj->anim.localPosY;
+        obj->anim.velocityY = 0.006f * wave + obj->anim.velocityY;
+        obj->anim.velocityZ = 0.006f * (state->player->anim.localPosZ - obj->anim.localPosZ) + obj->anim.velocityZ;
+    } else {
+        obj->anim.velocityX = 0.006f * (curve->posX - obj->anim.localPosX) + obj->anim.velocityX;
 
-        wave = mathSinf((3.1415927f * (f32)state->hoverWavePhase) / 32768.0f);
-        wave = (40.0f * wave + curve->posY) - (obj)->anim.localPosY;
-        (obj)->anim.velocityY = 0.006f * wave + (obj)->anim.velocityY;
-        (obj)->anim.velocityZ =
-            0.006f * (curve->posZ - (obj)->anim.localPosZ) + (obj)->anim.velocityZ;
+        wave = mathSinf((WISPBADDIE_PI * (f32)state->hoverWavePhase) / WISPBADDIE_S16_ANGLE_SCALE);
+        wave = (40.0f * wave + curve->posY) - obj->anim.localPosY;
+        obj->anim.velocityY = 0.006f * wave + obj->anim.velocityY;
+        obj->anim.velocityZ = 0.006f * (curve->posZ - obj->anim.localPosZ) + obj->anim.velocityZ;
     }
 
-    (obj)->anim.velocityX = (obj)->anim.velocityX * (step = 0.9f);
-    (obj)->anim.velocityY *= step;
-    (obj)->anim.velocityZ *= step;
+    obj->anim.velocityX = obj->anim.velocityX * (step = 0.9f);
+    obj->anim.velocityY *= step;
+    obj->anim.velocityZ *= step;
 
-    if ((obj)->anim.velocityX > 2.1f)
-    {
-        (obj)->anim.velocityX = 2.1f;
+    if (obj->anim.velocityX > 2.1f) {
+        obj->anim.velocityX = 2.1f;
     }
-    if ((obj)->anim.velocityY > 2.1f)
-    {
-        (obj)->anim.velocityY = 2.1f;
+    if (obj->anim.velocityY > 2.1f) {
+        obj->anim.velocityY = 2.1f;
     }
-    if ((obj)->anim.velocityZ > 2.1f)
-    {
-        (obj)->anim.velocityZ = 2.1f;
+    if (obj->anim.velocityZ > 2.1f) {
+        obj->anim.velocityZ = 2.1f;
     }
-    if ((obj)->anim.velocityX < -2.1f)
-    {
-        (obj)->anim.velocityX = -2.1f;
+    if (obj->anim.velocityX < -2.1f) {
+        obj->anim.velocityX = -2.1f;
     }
-    if ((obj)->anim.velocityY < -2.1f)
-    {
-        (obj)->anim.velocityY = -2.1f;
+    if (obj->anim.velocityY < -2.1f) {
+        obj->anim.velocityY = -2.1f;
     }
-    if ((obj)->anim.velocityZ < -2.1f)
-    {
-        (obj)->anim.velocityZ = -2.1f;
+    if (obj->anim.velocityZ < -2.1f) {
+        obj->anim.velocityZ = -2.1f;
     }
 
-    objMove(obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
-            (obj)->anim.velocityZ * timeDelta);
+    (void)objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
+                  obj->anim.velocityZ * timeDelta);
 }
 
-int wispbaddie_getExtraSize(void)
-{
+int WispBaddie_getExtraSize(void) {
     return sizeof(WispBaddieState);
 }
 
-int wispbaddie_getObjectTypeId(void)
-{
+int WispBaddie_getObjectTypeId(void) {
     return 0x9;
 }
 
-void wispbaddie_free(GameObject* obj)
-{
-    WispBaddieState* state = (obj)->extra;
-    ObjGroup_RemoveObject((int)obj, WISPBADDIE_OBJGROUP);
-    if (state->curve != NULL)
-    {
+void WispBaddie_free(GameObject* obj) {
+    WispBaddieState* state = obj->extra;
+    ObjGroup_RemoveObject((int)obj, WISPBADDIE_OBJECT_GROUP);
+    if (state->curve != NULL) {
         mm_free(state->curve);
         state->curve = NULL;
     }
 }
 
-void wispbaddie_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void WispBaddie_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    (void)obj;
+    (void)fwdArg2;
+    (void)fwdArg3;
+    (void)fwdArg4;
+    (void)fwdArg5;
+
     if (visible == 0)
         return;
 }
 
-void wispbaddie_hitDetect(void)
-{
+void WispBaddie_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void wispbaddie_update(GameObject* obj)
-{
+void WispBaddie_update(GameObject* obj) {
     WispBaddieState* state;
     RomCurveWalker* curve;
     int hitPriority;
@@ -197,16 +163,14 @@ void wispbaddie_update(GameObject* obj)
     u8 flags;
     void* deltaAlias = (void*)delta;
 
-    state = (obj)->extra;
+    state = obj->extra;
     curve = state->curve;
     hitPriority = ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObjectBits, (int*)&hitSphereIndexBits,
                                                      (u32*)&hitVolumeBits, &hitPosX, &hitPosY, &hitPosZ);
-    if (hitPriority != 0)
-    {
+    if (hitPriority != 0) {
         state->hitRadius = 0.01f;
         flags = state->flags;
-        if ((flags & WISPBADDIE_FLAG_CHASE_PLAYER) != 0)
-        {
+        if ((flags & WISPBADDIE_FLAG_CHASE_PLAYER) != 0) {
             state->flags = (u8)(flags & ~WISPBADDIE_FLAG_CHASE_PLAYER);
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_CHASE_LOCKOUT);
         }
@@ -218,13 +182,10 @@ void wispbaddie_update(GameObject* obj)
     particleMode = 3;
     (*gPartfxInterface)->spawnObject((void*)obj, state->particleId, NULL, 2, -1, &particleMode);
 
-    if (state->hitRadius < state->maxHitRadius)
-    {
+    if (state->hitRadius < state->maxHitRadius) {
         state->hitRadius += 0.005f;
         ObjHits_DisableObject(obj);
-    }
-    else
-    {
+    } else {
         state->hitRadius = state->maxHitRadius;
         particleMode = 2;
         (*gPartfxInterface)->spawnObject((void*)obj, state->particleId, NULL, 2, -1, &particleMode);
@@ -236,54 +197,43 @@ void wispbaddie_update(GameObject* obj)
 
     particleMode = 1;
     (*gPartfxInterface)->spawnObject((void*)obj, state->particleId, NULL, 2, -1, &particleMode);
-    state->playerObj = Obj_GetPlayerObject();
-    if (state->playerObj != NULL)
-    {
-        delta[0] = state->playerObj->anim.worldPosX - (obj)->anim.worldPosX;
-        delta[1] = state->playerObj->anim.worldPosY - (obj)->anim.worldPosY;
-        delta[2] = state->playerObj->anim.worldPosZ - (obj)->anim.worldPosZ;
-        state->playerDistance =
-            sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1]));
+    state->player = Obj_GetPlayerObject();
+    if (state->player != NULL) {
+        delta[0] = state->player->anim.worldPosX - obj->anim.worldPosX;
+        delta[1] = state->player->anim.worldPosY - obj->anim.worldPosY;
+        delta[2] = state->player->anim.worldPosZ - obj->anim.worldPosZ;
+        state->playerDistance = sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1]));
     }
-    if (curve != 0)
-    {
-        delta[0] = curve->posX - (obj)->anim.worldPosX;
-        delta[1] = curve->posY - (obj)->anim.worldPosY;
-        delta[2] = curve->posZ - (obj)->anim.worldPosZ;
-        state->curveDistance =
-            sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1]));
+    if (curve != NULL) {
+        delta[0] = curve->posX - obj->anim.worldPosX;
+        delta[1] = curve->posY - obj->anim.worldPosY;
+        delta[2] = curve->posZ - obj->anim.worldPosZ;
+        state->curveDistance = sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1]));
     }
 
     flags = state->flags;
-    if ((flags & WISPBADDIE_FLAG_CHASE_PLAYER) != 0)
-    {
-        if (state->curveDistance > 250.0f)
-        {
+    if ((flags & WISPBADDIE_FLAG_CHASE_PLAYER) != 0) {
+        if (state->curveDistance > 250.0f) {
             state->flags = (u8)(flags & ~WISPBADDIE_FLAG_CHASE_PLAYER);
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_CHASE_LOCKOUT);
         }
         state->cryTimer -= timeDelta;
-        if (state->cryTimer < 0.0f)
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_fball2_c);
-            state->cryTimer = (f32)(int)randomGetRange(0x3c, 0x78);
+        if (state->cryTimer < 0.0f) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_fball2_c);
+            state->cryTimer = (f32)randomGetRange(60, 120);
         }
         state->particleId = 0x338;
     }
     flags = state->flags;
-    if ((flags & WISPBADDIE_FLAG_CHASE_LOCKOUT) != 0)
-    {
-        if (state->curveDistance < 60.0f)
-        {
+    if ((flags & WISPBADDIE_FLAG_CHASE_LOCKOUT) != 0) {
+        if (state->curveDistance < 60.0f) {
             state->flags = (u8)(flags & ~WISPBADDIE_FLAG_CHASE_LOCKOUT);
         }
         state->particleId = 0x337;
     }
-    if ((state->flags & WISPBADDIE_FLAG_CHASE_MASK) == 0)
-    {
-        if ((state->hitRadius >= state->maxHitRadius) && (state->playerObj != 0) &&
-            (state->playerDistance < state->triggerDistance))
-        {
+    if ((state->flags & WISPBADDIE_FLAG_CHASE_MASK) == 0) {
+        if ((state->hitRadius >= state->maxHitRadius) && (state->player != NULL) &&
+            (state->playerDistance < state->triggerDistance)) {
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_CHASE_PLAYER);
         }
         state->particleId = 0x337;
@@ -291,61 +241,39 @@ void wispbaddie_update(GameObject* obj)
     WispBaddie_updateMovement(obj, state);
 }
 
-void wispbaddie_init(GameObject* obj, WispBaddiePlacement* placement, int initialised)
-{
+void WispBaddie_init(GameObject* obj, WispBaddiePlacement* placement, int skipAlloc) {
     WispBaddieState* state;
     f32 value;
 
-    state = (obj)->extra;
-    value = (f32)placement->maxHitRadiusParam / 25.0f;
+    state = obj->extra;
+    value = (f32)placement->maxHitRadiusParameter / 25.0f;
     state->maxHitRadius = value;
     state->hitRadius = value;
     state->triggerDistance = 4.0f * (f32)placement->triggerDistanceScale;
     state->particleId = 0x337;
 
-    if (initialised == 0)
-    {
-        state->curve = (RomCurveWalker*)mmAlloc(sizeof(RomCurveWalker), 0x1a, 0);
-        if ((void*)state->curve != NULL)
-        {
-            memset((void*)state->curve, 0, sizeof(RomCurveWalker));
+    if (skipAlloc == 0) {
+        state->curve = mmAlloc(sizeof(RomCurveWalker), 0x1A, 0);
+        if (state->curve != NULL) {
+            (void)memset(state->curve, 0, sizeof(RomCurveWalker));
         }
         if ((*gRomCurveInterface)
-                ->initCurve((void*)state->curve, (void*)obj, state->triggerDistance, gWispBaddieCurveInitData, -1) == 0)
-        {
+                ->initCurve((void*)state->curve, (void*)obj, state->triggerDistance, gWispBaddieCurveInitData, -1) ==
+            0) {
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_PATH_NEEDS_LINK);
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_23b);
+        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_23b);
     }
-    (obj)->objectFlags = (u16)((obj)->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
-void wispbaddie_release(void)
-{
+void WispBaddie_release(void) {
 }
 
-void wispbaddie_initialise(void)
-{
+void WispBaddie_initialise(void) {
 }
 
-ObjectDescriptor gWispBaddieObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)wispbaddie_initialise,
-    (ObjectDescriptorCallback)wispbaddie_release,
-    0,
-    (ObjectDescriptorCallback)wispbaddie_init,
-    (ObjectDescriptorCallback)wispbaddie_update,
-    (ObjectDescriptorCallback)wispbaddie_hitDetect,
-    (ObjectDescriptorCallback)wispbaddie_render,
-    (ObjectDescriptorCallback)wispbaddie_free,
-    (ObjectDescriptorCallback)wispbaddie_getObjectTypeId,
-    wispbaddie_getExtraSize,
-};
-
-/* .data pointer table + baddie-variant data blobs (referenced via extern here and by seqobj units) */
+/* Baddie-family animation data shared with the sequence-driver TUs. */
 u8 lbl_8031DD30[288] = {
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,

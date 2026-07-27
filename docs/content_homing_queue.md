@@ -18,13 +18,13 @@ catch for the spellstone-in-prisonuncle content-drift class.
 
 | metric | count |
 |---|---|
-| dll-hosting units audited | 806 |
-| actionable (non-OK) | 92 |
-| verdict CANONICAL-OK | 624 |
+| dll-hosting units audited | 807 |
+| actionable (non-OK) | 90 |
+| verdict CANONICAL-OK | 627 |
 | verdict CONTAINER | 0 |
 | verdict MISLABELED | 2 |
 | verdict HELPER-TU | 162 |
-| verdict ENGINE-HOST | 18 |
+| verdict ENGINE-HOST | 16 |
 
 ### Effort-class counts (actionable only)
 
@@ -32,7 +32,7 @@ catch for the spellstone-in-prisonuncle content-drift class.
 |---|---|---|
 | CARVE | 0 | tool-ready container dissolution (`dll_boundary_resplit.py --carve`) |
 | CARVE-HARD | 0 | container with a known blocker (interleave / irreducible) |
-| FORENSIC | 20 | fn-prefix anomaly / appendix mislabel — human-grade content read |
+| FORENSIC | 18 | fn-prefix anomaly / appendix mislabel — human-grade content read |
 | RENAME-ONLY | 72 | clean filename↔content stem rename (no carve) |
 
 > **CARVE-HARD = 0**: the June-2026 `dll_boundary_resplit.py` campaign
@@ -49,7 +49,7 @@ catch for the spellstone-in-prisonuncle content-drift class.
 |---|---|---|
 | MISLABELED | FORENSIC | 2 |
 | HELPER-TU | RENAME-ONLY | 72 |
-| ENGINE-HOST | FORENSIC | 18 |
+| ENGINE-HOST | FORENSIC | 16 |
 
 ## Worst 10 files by content-anomaly fn count
 
@@ -65,7 +65,7 @@ families.)
 | 3 | `main/dll/tricky.c` | 0 | 30 | gameui×10, pause×3, game×2, hudfn×2, fear×2 | HELPER-TU/OK |
 | 4 | `main/dll/dll_000F_unk.c` | 1 | 24 | player×24 | CANONICAL-OK/OK |
 | 5 | `main/dll/dll_0285_spshop.c` | 1 | 23 | shop×23 | CANONICAL-OK/OK |
-| 6 | `main/dll/dll_02C0_front.c` | 1 | 21 | titlescreen×9, title×3, titlescreenfn×3, credits×2, should×1 | CANONICAL-OK/OK |
+| 6 | `dlls/objects/704/704.c` | 1 | 21 | titlescreen×9, title×3, titlescreenfn×3, credits×2, should×1 | CANONICAL-OK/OK |
 | 7 | `main/dll/dll_003C_tumbleweedbush.c` | 1 | 19 | link×16, linkdrawfn×2, titlescreenfn×1 | MISLABELED/FORENSIC |
 | 8 | `main/dll/dll_0001_camcontrol.c` | 1 | 18 | camera×18 | CANONICAL-OK/OK |
 | 9 | `main/dll/grenade.c` | 0 | 18 | trickyfn×12, trickyfoodfn×3, tricky×2, trickyflamefn×1 | HELPER-TU/OK |
@@ -149,8 +149,6 @@ address. `[lo-hi)` is the splits.txt `.text` range (the partition unit).
 | 72 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 73 | `main/dll/dll_801e66dc.c` | 801E66DC-801E67BC | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | 74 | `main/dll/dll_801e991c.c` | 801E991C-801E9C00 | HELPER-TU | RENAME-ONLY | — | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| 75 | `main/light.c` | 801FB9AC-801FD4A8 | ENGINE-HOST | FORENSIC | 0x21E,0x21F,0x220,0x221,0x222,0x223,0x224 anom:spellstoneusefn | engine/SDK host of DLL(s) 0x21E,0x21F,0x220,0x221,0x222,0x223,0x224 |
-| 76 | `main/main.c` | 801FD4A8-801FE118 | ENGINE-HOST | FORENSIC | 0x225,0x226,0x227,0x228 anom:return1 | engine/SDK host of DLL(s) 0x225,0x226,0x227,0x228 |
 | 77 | `main/sky.c` | 80088758-8008EE18 | ENGINE-HOST | FORENSIC | 0x005,0x006 anom:envfxfn,getskycolorfn,envfxactfn,playerenvfxfn | engine/SDK host of DLL(s) 0x005,0x006 |
 | 78 | `main/newclouds.c` | 8008EE18-80094494 | ENGINE-HOST | FORENSIC | 0x007 anom:snow,lightning,cloud,mm | engine/SDK host of DLL(s) 0x007 |
 | 79 | `main/objseq.c` | 80080DE8-80088758 | ENGINE-HOST | FORENSIC | 0x002 anom:rom,animated,seq | engine/SDK host of DLL(s) 0x002 |
@@ -317,8 +315,6 @@ Batches: 12. Region-disjoint: NO OVERLAP — verified (each batch owns a contigu
 | `main/dll/dll_801dd170.c` | 801DD170-801DD1A8 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801e66dc.c` | 801E66DC-801E67BC | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
 | `main/dll/dll_801e991c.c` | 801E991C-801E9C00 | HELPER-TU | RENAME-ONLY | no descriptor; violates helper-TU naming rule (must be lowercase, no dll_ prefix) |
-| `main/light.c` | 801FB9AC-801FD4A8 | ENGINE-HOST | FORENSIC | engine/SDK host of DLL(s) 0x21E,0x21F,0x220,0x221,0x222,0x223,0x224 |
-| `main/main.c` | 801FD4A8-801FE118 | ENGINE-HOST | FORENSIC | engine/SDK host of DLL(s) 0x225,0x226,0x227,0x228 |
 
 ### Batch B11 — `80209810-802106C0` (8 items)
 

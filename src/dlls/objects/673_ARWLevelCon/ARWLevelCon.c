@@ -1,5 +1,5 @@
 /*
- * ARWLevelCon (DLL 0x2A1) - the level controller for one of the on-rails
+ * ARWLevelCon (DLL 673) - the level controller for one of the on-rails
  * Arwing flight courses. There is one instance per course, distinguished by
  * its mapEventSlot (0x3a-0x3e), which selects the course's audio stream id
  * and the ring-choice trigger id. On the first update it configures the sky
@@ -28,7 +28,6 @@
 #include "main/gamebit_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
-
 
 /* env effects co-activated once with the sky preset; opaque distinct roles */
 #define ARWLEVELCON_ENVFX_A 0x21f

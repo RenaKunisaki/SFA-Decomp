@@ -21,12 +21,13 @@
 #include "main/frame_timing.h"
 #include "main/shader_api.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 u16 lbl_803DBDF0[4] = {0x109, 0x7E, 0, 0};
 
 typedef struct GroundanimatorPlacement
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     s16 sunkGameBit;
     s16 enableGameBit;
     u8 pad1C[0x20 - 0x1C];

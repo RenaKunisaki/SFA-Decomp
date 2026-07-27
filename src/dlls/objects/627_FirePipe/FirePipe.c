@@ -1,5 +1,5 @@
 /*
- * FirePipe (DLL 0x273) - a cyclic flame/jet emitter placed in the world.
+ * FirePipe (DLL 627) - a cyclic flame/jet emitter placed in the world.
  *
  * Each tick the object emits a particle effect sub-object (a fresh
  * spawn-def is allocated, positioned at the emitter and handed to a
@@ -19,7 +19,7 @@
  * FirePipeBitFlags overlay (emitting, glowEnabled, renderEnabled, ...).
  *
  * Live-verified (Dolphin) against the nearest emitter in the loaded save:
- * the object spawns pooled `flamethrowerspe` (DLL 0x0E4) flame-stream
+ * the object spawns pooled `FlameThrowerspe` (DLL 0x0E4) flame-stream
  * effects (FirePipeExtra.effectObjs); clearing `emitting` stops the jet and
  * freezing `cycleTimer` keeps it off; FirePipeMapData.rotX/rotY aim the jet
  * (changing them swings the model and the flame); `glowLight` is the
@@ -78,7 +78,7 @@ extern f32 lbl_803E6B98;
 #define FIREPIPE_OBJ_STEAM_HOLE_DE   0x732
 #define FIREPIPE_OBJ_FIRE_PIPE       0x4a4
 #define FIREPIPE_OBJ_BOSSDRAKOR_FIRE 0x70a
-/* FlameThrower child (DLL 0xE4 flamethrowerspe) spawned as the emitted effect. */
+/* FlameThrowerspe child (DLL 0xE4) spawned as the emitted effect. */
 #define FIREPIPE_CHILD_OBJ_FLAMETHROWER 0x1b5
 
 /* emitted effect-type (flavour) per objectId variant (docblock: "0x6f9 -> type
@@ -286,7 +286,7 @@ void firepipe_updateState(FirePipeObject* obj)
 
     if (flags->emitting != 0)
     {
-        if (((((GameObject*)obj)->objectFlags & FIREPIPE_OBJFLAG_RENDERED) != 0) || (obj->callback != NULL))
+        if (((obj->objectFlags & FIREPIPE_OBJFLAG_RENDERED) != 0) || (obj->callback != NULL))
         {
             fn_80098B18(obj, lbl_803E6B70 * mapData->scale, (u8)extra->effectType, 0, 0, NULL);
         }
@@ -372,9 +372,9 @@ void firepipe_updateState(FirePipeObject* obj)
         spawnDef->head.color[0] = 2;
         spawnDef->effectMode = ex3->effectMode;
         spawnDef->scale = md3->scale;
-        spawnDef->head.posX = ((GameObject*)obj)->anim.localPosX;
-        spawnDef->head.posY = ((GameObject*)obj)->anim.localPosY;
-        spawnDef->head.posZ = ((GameObject*)obj)->anim.localPosZ;
+        spawnDef->head.posX = obj->anim.localPosX;
+        spawnDef->head.posY = obj->anim.localPosY;
+        spawnDef->head.posZ = obj->anim.localPosZ;
         if (spawnDef == 0)
         {
             effectObj = 0;
@@ -385,11 +385,11 @@ void firepipe_updateState(FirePipeObject* obj)
         }
         if (effectObj != 0)
         {
-            effectObj->anim.localPosX = ((GameObject*)obj)->anim.localPosX;
-            effectObj->anim.localPosY = ((GameObject*)obj)->anim.localPosY;
-            effectObj->anim.localPosZ = ((GameObject*)obj)->anim.localPosZ;
-            effectObj->anim.rotX = ((GameObject*)obj)->anim.rotX;
-            effectObj->anim.rotY = ((GameObject*)obj)->anim.rotY;
+            effectObj->anim.localPosX = obj->anim.localPosX;
+            effectObj->anim.localPosY = obj->anim.localPosY;
+            effectObj->anim.localPosZ = obj->anim.localPosZ;
+            effectObj->anim.rotX = obj->anim.rotX;
+            effectObj->anim.rotY = obj->anim.rotY;
             effectObj->anim.velocityY = lbl_803DC344;
         }
         storeZeroToFloatParam(&extra->emitTimer);

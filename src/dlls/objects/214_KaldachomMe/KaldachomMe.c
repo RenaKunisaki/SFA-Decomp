@@ -1,35 +1,43 @@
 /*
- * kaldachomme (DLL 0x00D6) - the KaldaChompMe animated chomping-mouth
- * object.
+ * KaldaChompMe object (DLL slot 214).
  *
- * KaldaChompMe drives a single animation move toward a target progress
- * value (state @0x00..0x0C) at state->step per frame; setLinkedMouthMode
- * looks up a paired mouth object by placement-mapId and (re)arms its
- * open/close move (mode 1 = moveId 0, mode 2 = moveId 1). render draws
- * via objRenderModelAndHitVolumes when the visible flag is set; init seeds the
- * rotation from the placement bytes and starts move 0.
+ * Drives a linked mouth animation toward a requested progress and selects
+ * linked mouth objects from the owning Kaldachom's placement ID.
  */
+#include "dlls/objects/214_KaldachomMe.h"
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/dll/dll_00D6_kaldachomme_api.h"
-#include "game/objects/object_setup.h"
 #include "main/frame_timing.h"
-#include "dlls/object_descriptor.h"
+#include "main/objanim.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
-#define KALDACHOMME_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define KALDACHOMPME_OBJECT_FLAG_HIT_DETECT_DISABLED 0x2000
 
-void kaldachompme_setLinkedMouthMode(u8* obj, KaldaChompMeLinkedMode mode)
-{
+ObjectDescriptor gKaldaChompMeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)KaldaChompMe_initialise,
+    (ObjectDescriptorCallback)KaldaChompMe_release,
+    0,
+    (ObjectDescriptorCallback)KaldaChompMe_init,
+    (ObjectDescriptorCallback)KaldaChompMe_update,
+    (ObjectDescriptorCallback)KaldaChompMe_hitDetect,
+    (ObjectDescriptorCallback)KaldaChompMe_render,
+    (ObjectDescriptorCallback)KaldaChompMe_free,
+    (ObjectDescriptorCallback)KaldaChompMe_getObjectTypeId,
+    KaldaChompMe_getExtraSize,
+};
+
+void kaldachompme_setLinkedMouthMode(GameObject* obj, KaldaChompMeLinkedMode mode) {
     KaldaChompMeState* state;
     GameObject* linkedObj;
 
-    if (obj == NULL)
-    {
+    if (obj == NULL) {
         return;
     }
-    switch (((GameObject*)obj)->anim.placement->mapId)
-    {
+    switch (obj->anim.placement->mapId) {
     case 0x43d14:
         linkedObj = ObjList_FindObjectById(0x4b3b5);
         break;
@@ -73,17 +81,15 @@ void kaldachompme_setLinkedMouthMode(u8* obj, KaldaChompMeLinkedMode mode)
         return;
     }
     state = linkedObj->extra;
-    if (state != NULL)
-    {
-        switch (mode)
-        {
-        case KALDACHOMPME_LINKED_MOVE_0:
+    if (state != NULL) {
+        switch (mode) {
+        case KALDACHOMPME_LINKED_MODE_MOVE_0:
             state->targetProgress = 1.0f;
             state->progress = 0.0f;
             state->step = 0.025f;
             state->moveId = 0;
             break;
-        case KALDACHOMPME_LINKED_MOVE_1:
+        case KALDACHOMPME_LINKED_MODE_MOVE_1:
             state->targetProgress = 1.0f;
             state->progress = 0.0f;
             state->step = 0.025f;
@@ -93,101 +99,66 @@ void kaldachompme_setLinkedMouthMode(u8* obj, KaldaChompMeLinkedMode mode)
     }
 }
 
-int KaldaChompMe_getExtraSize(void)
-{
+int KaldaChompMe_getExtraSize(void) {
     return sizeof(KaldaChompMeState);
 }
 
-int KaldaChompMe_getObjectTypeId(void)
-{
+int KaldaChompMe_getObjectTypeId(void) {
     return 0;
 }
 
-void KaldaChompMe_free(void)
-{
+void KaldaChompMe_free(GameObject* obj) {
+    (void)obj;
 }
 
-void KaldaChompMe_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 renderFlag)
-{
-    if (renderFlag != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void KaldaChompMe_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 
-void KaldaChompMe_hitDetect(void)
-{
+void KaldaChompMe_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void KaldaChompMe_update(GameObject* obj)
-{
+void KaldaChompMe_update(GameObject* obj) {
     f32 target;
     f32 current;
     f32 step;
-    KaldaChompMeState* extra;
+    KaldaChompMeState* state;
 
-    extra = (obj)->extra;
-    current = extra->progress;
-    target = extra->targetProgress;
-    if (current != target)
-    {
-        step = extra->step;
-        if (step > 0.0f)
-        {
-            if (current < target)
-            {
-                extra->progress = current + step * timeDelta;
+    state = obj->extra;
+    current = state->progress;
+    target = state->targetProgress;
+    if (current != target) {
+        step = state->step;
+        if (step > 0.0f) {
+            if (current < target) {
+                state->progress = current + step * timeDelta;
+            } else {
+                state->progress = target;
             }
-            else
-            {
-                extra->progress = target;
-            }
-        }
-        else
-        {
-            if (current > target)
-            {
-                extra->progress = current + step * timeDelta;
-            }
-            else
-            {
-                extra->progress = target;
+        } else {
+            if (current > target) {
+                state->progress = current + step * timeDelta;
+            } else {
+                state->progress = target;
             }
         }
     }
-    ObjAnim_SetCurrentMove((int)obj, extra->moveId, extra->progress, 0);
+    ObjAnim_SetCurrentMove((int)obj, state->moveId, state->progress, 0);
 }
 
-void KaldaChompMe_init(GameObject* obj, KaldaChompMePlacement* placement)
-{
-    (obj)->anim.rotZ = (s16)(placement->rotZByte << 8);
-    (obj)->anim.rotY = (s16)(placement->rotYByte << 8);
-    (obj)->anim.rotX = (s16)(placement->rotXByte << 8);
-    (obj)->objectFlags = (u16)((obj)->objectFlags | KALDACHOMME_OBJFLAG_HITDETECT_DISABLED);
+void KaldaChompMe_init(GameObject* obj, KaldaChompMePlacement* placement) {
+    obj->anim.rotZ = (s16)(placement->rotZByte << 8);
+    obj->anim.rotY = (s16)(placement->rotYByte << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
+    obj->objectFlags |= KALDACHOMPME_OBJECT_FLAG_HIT_DETECT_DISABLED;
     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
 }
 
-void KaldaChompMe_release(void)
-{
+void KaldaChompMe_release(void) {
 }
 
-void KaldaChompMe_initialise(void)
-{
+void KaldaChompMe_initialise(void) {
 }
-
-ObjectDescriptor gKaldaChompMeObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)KaldaChompMe_initialise,
-    (ObjectDescriptorCallback)KaldaChompMe_release,
-    0,
-    (ObjectDescriptorCallback)KaldaChompMe_init,
-    (ObjectDescriptorCallback)KaldaChompMe_update,
-    (ObjectDescriptorCallback)KaldaChompMe_hitDetect,
-    (ObjectDescriptorCallback)KaldaChompMe_render,
-    (ObjectDescriptorCallback)KaldaChompMe_free,
-    (ObjectDescriptorCallback)KaldaChompMe_getObjectTypeId,
-    KaldaChompMe_getExtraSize,
-};

@@ -1,90 +1,82 @@
 /*
- * iceblast (DLL 0xF2) - a path-following ice projectile in the
- * pushable/transporter object family (shares the dll_00EF pushable
- * descriptor; sibling of flameblast/invhit/warppoint).
+ * iceblast (DLL 0xF2) - path-following ice projectiles cast by the player.
  *
- * The blast rides the player's first child path object: iceblast_update
- * copies that path object's heading into the blast's rotation, runs a
- * per-frame countdown timer and, each time the timer expires, re-seeds
- * the launch position from the rotated heading and the path's world
- * point, then integrates localPos by velocity*timeDelta every frame.
- * The placement's useAltHitVolume byte selects the hit-volume slot (3 when set,
- * else 1). The extra block is an IceblastState (just the countdown timer).
+ * Each blast follows the player's first child path object. Its launch timer
+ * staggers repeated velocity resets along that path, producing the seven-part
+ * stream created by playerCastIceSpell.
  */
-#include "main/dll/dll_00F2_iceblast.h"
-#include "sys/objects.h"
+#include "dlls/objects/242_iceblast.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/objhits.h"
-#include "main/obj_path.h"
-#include "main/frame_timing.h"
 #include "main/dll/vecrotatezxy.h"
+#include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
+#include "sys/objects.h"
 
-STATIC_ASSERT(offsetof(IceblastPlacement, useAltHitVolume) == 0x19);
-STATIC_ASSERT(offsetof(IceblastPlacement, initialTimer) == 0x1a);
-STATIC_ASSERT(sizeof(IceblastState) == 0x4);
+#define ICEBLAST_OBJECT_TYPE_ID 0
+#define ICEBLAST_RENDER_SCALE   1.0f
+#define ICEBLAST_TARGET_MASK    1
 
-#define ICEBLAST_HIT_VOLUME_SLOT 0x10
+#define ICEBLAST_HIT_VOLUME_SLOT    0x10
+#define ICEBLAST_DEFAULT_HIT_TYPE   1
+#define ICEBLAST_ALTERNATE_HIT_TYPE 3
 
-int iceblast_getExtraSize(void)
-{
+#define ICEBLAST_LAUNCH_PERIOD     24.0f
+#define ICEBLAST_VERTICAL_VELOCITY -3.0f
+
+int iceblast_getExtraSize(void) {
     return sizeof(IceblastState);
 }
 
-int iceblast_getObjectTypeId(void)
-{
-    return 0x0;
+int iceblast_getObjectTypeId(void) {
+    return ICEBLAST_OBJECT_TYPE_ID;
 }
 
-void iceblast_free(void)
-{
+void iceblast_free(GameObject* obj) {
 }
 
-void iceblast_render(GameObject* obj, int p1, int p2, int p3, int p4)
-{
-    objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
+void iceblast_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5) {
+    objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, ICEBLAST_RENDER_SCALE);
 }
 
-void iceblast_hitDetect(void)
-{
+void iceblast_hitDetect(GameObject* obj) {
 }
 
-void iceblast_update(GameObject* obj)
-{
-    GameObject* path;
+void iceblast_update(GameObject* obj) {
+    GameObject* pathObj;
     GameObject* player = Obj_GetPlayerObject();
     IceblastState* state = obj->extra;
-    IceblastPlacement* def = (IceblastPlacement*)obj->anim.placementData;
-    VecRotateZXYArg vec;
-    if (player != NULL && (path = player->childObjs[0]) != NULL)
-    {
-        obj->anim.rotZ = path->anim.rotZ;
-        obj->anim.rotY = path->anim.rotY;
-        obj->anim.rotX = path->anim.rotX;
-    }
-    else
-    {
+    IceblastPlacement* placement = (IceblastPlacement*)obj->anim.placementData;
+    VecRotateZXYArg rotationArg;
+
+    if (player != NULL && (pathObj = player->childObjs[0]) != NULL) {
+        obj->anim.rotZ = pathObj->anim.rotZ;
+        obj->anim.rotY = pathObj->anim.rotY;
+        obj->anim.rotX = pathObj->anim.rotX;
+    } else {
         return;
     }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ICEBLAST_HIT_VOLUME_SLOT, def->useAltHitVolume != 0 ? 3 : 1, 0);
+    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ICEBLAST_HIT_VOLUME_SLOT,
+                             placement->hitVolumeMode != 0 ? ICEBLAST_ALTERNATE_HIT_TYPE
+                                                           : ICEBLAST_DEFAULT_HIT_TYPE,
+                             0);
 
-    state->timer -= timeDelta;
-    if (state->timer <= 0.0f)
-    {
-        state->timer += 24.0f;
+    state->launchTimer -= timeDelta;
+    if (state->launchTimer <= 0.0f) {
+        state->launchTimer += ICEBLAST_LAUNCH_PERIOD;
         obj->anim.velocityX = 0.0f;
         obj->anim.velocityZ = 0.0f;
-        obj->anim.velocityY = -3.0f;
-        vec.pos[1] = 0.0f;
-        vec.pos[2] = 0.0f;
-        vec.pos[3] = 0.0f;
-        vec.pos[0] = 1.0f;
-        vec.dir[2] = path->anim.rotZ;
-        vec.dir[1] = path->anim.rotY;
-        vec.dir[0] = path->anim.rotX;
-        vecRotateZXY(&vec.rotation.x, &obj->anim.velocity.x);
-        ObjPath_GetPointWorldPosition(path, 0, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
+        obj->anim.velocityY = ICEBLAST_VERTICAL_VELOCITY;
+        rotationArg.pos[1] = 0.0f;
+        rotationArg.pos[2] = 0.0f;
+        rotationArg.pos[3] = 0.0f;
+        rotationArg.pos[0] = 1.0f;
+        rotationArg.rotation.z = pathObj->anim.rotZ;
+        rotationArg.rotation.y = pathObj->anim.rotY;
+        rotationArg.rotation.x = pathObj->anim.rotX;
+        vecRotateZXY(&rotationArg.rotation.x, &obj->anim.velocity.x);
+        ObjPath_GetPointWorldPosition(pathObj, 0, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
                                       0);
         ObjHits_EnableObject(obj);
     }
@@ -96,34 +88,32 @@ void iceblast_update(GameObject* obj)
     obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
 }
 
-void iceblast_init(GameObject* obj, IceblastPlacement* def)
-{
+void iceblast_init(GameObject* obj, IceblastPlacement* placement) {
     IceblastState* state = obj->extra;
-    state->timer = def->initialTimer;
-    ObjHits_SetTargetMask(obj, 1);
+
+    state->launchTimer = placement->initialLaunchTimer;
+    ObjHits_SetTargetMask(obj, ICEBLAST_TARGET_MASK);
 }
 
-void iceblast_release(void)
-{
+void iceblast_release(void) {
 }
 
-void iceblast_initialise(void)
-{
+void iceblast_initialise(void) {
 }
 
 ObjectDescriptor gIceblastObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)iceblast_initialise,
-    (ObjectDescriptorCallback)iceblast_release,
-    0,
-    (ObjectDescriptorCallback)iceblast_init,
-    (ObjectDescriptorCallback)iceblast_update,
-    (ObjectDescriptorCallback)iceblast_hitDetect,
-    (ObjectDescriptorCallback)iceblast_render,
-    (ObjectDescriptorCallback)iceblast_free,
-    (ObjectDescriptorCallback)iceblast_getObjectTypeId,
-    iceblast_getExtraSize,
+    0,                                                  /* reserved0 */
+    0,                                                  /* reserved1 */
+    0,                                                  /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,                   /* slotCountAndFlags */
+    (ObjectDescriptorCallback)iceblast_initialise,      /* initialise */
+    (ObjectDescriptorCallback)iceblast_release,         /* release */
+    0,                                                  /* slot02 */
+    (ObjectDescriptorCallback)iceblast_init,            /* init */
+    (ObjectDescriptorCallback)iceblast_update,          /* update */
+    (ObjectDescriptorCallback)iceblast_hitDetect,       /* hitDetect */
+    (ObjectDescriptorCallback)iceblast_render,          /* render */
+    (ObjectDescriptorCallback)iceblast_free,            /* free */
+    (ObjectDescriptorCallback)iceblast_getObjectTypeId, /* getObjectTypeId */
+    iceblast_getExtraSize,                              /* getExtraSize */
 };

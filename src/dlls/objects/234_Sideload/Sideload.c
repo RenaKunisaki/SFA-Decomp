@@ -1,58 +1,52 @@
 /*
- * DLL 0xEA - Sideload.
+ * Sideload object (DLL slot 234 / 0xEA).
  *
- * The only function this object contributes is sideload_update: a deferred
- * spawner placed in a map. Each tick, once the level has finished loading
- * (Obj_IsLoadingLocked), the player object exists, Tricky is absent, and the
- * placement's arming game bit (placement+0x18) is set, it allocates an object
- * setup (type 0x24), copies the spawner's position into it, hands it to
- * Obj_SetupObject, and seeds the new object's first field from placement
- * rotX byte.
+ * This deferred spawner creates Tricky once loading is unlocked, the player
+ * exists, Tricky is absent, and the placement's arming game bit is set. The
+ * spawned Tricky inherits the spawner's position and placement rotation.
  */
+#include "dlls/objects/234_Sideload.h"
 #include "game/objects/object.h"
+#include "main/gamebits_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "main/gamebits.h"
-#include "main/dll/dll_00EA_sideload.h"
 
-/* object id sideload_update defers into existence once its arming game bit is set */
-#define SIDELOAD_TRICKY_OBJECT_ID 0x24
+#define SIDELOAD_TRICKY_SEQ_ID 0x24
+#define SIDELOAD_SETUP_FLAGS   5
 
-void sideload_update(GameObject* self)
-{
+void sideload_update(GameObject* obj) {
     SideloadPlacement* placement;
     ObjPlacement* setup;
-    GameObject* child;
+    GameObject* tricky;
 
-    placement = (SideloadPlacement*)self->anim.placementData;
-    if ((Obj_IsLoadingLocked() != 0) && (Obj_GetPlayerObject() != NULL) && (getTrickyObject() == NULL) &&
-        (mainGetBit(placement->armGameBit) != 0))
-    {
-        setup = Obj_AllocObjectSetup(sizeof(ObjPlacement), SIDELOAD_TRICKY_OBJECT_ID);
-        setup->color[0] = 2;
-        setup->color[1] = 4;
-        setup->color[3] = 0xff;
-        setup->posX = self->anim.localPosX;
-        setup->posY = self->anim.localPosY;
-        setup->posZ = self->anim.localPosZ;
-        child = Obj_SetupObject(setup, 5, -1, -1, NULL);
-        child->anim.rotX = (s16)((u8)placement->rotX << 8);
+    placement = (SideloadPlacement*)obj->anim.placementData;
+    if (Obj_IsLoadingLocked() != 0 && Obj_GetPlayerObject() != NULL && getTrickyObject() == NULL &&
+        mainGetBit(placement->armingGameBit) != 0) {
+        setup = Obj_AllocObjectSetup(sizeof(ObjPlacement), SIDELOAD_TRICKY_SEQ_ID);
+        setup->loadFlags = 2;
+        setup->mapActFlagsHi = 4;
+        setup->unk07 = 0xFF;
+        setup->posX = obj->anim.localPosX;
+        setup->posY = obj->anim.localPosY;
+        setup->posZ = obj->anim.localPosZ;
+        tricky = Obj_SetupObject(setup, SIDELOAD_SETUP_FLAGS, -1, -1, NULL);
+        tricky->anim.rotX = (s16)(placement->childRotXByte << 8);
     }
 }
 
 ObjectDescriptor gSideloadObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)sideload_update,
-    0,
-    0,
-    0,
-    0,
-    0,
+    0,                                         /* reserved0 */
+    0,                                         /* reserved1 */
+    0,                                         /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,          /* slotCountAndFlags */
+    0,                                         /* initialise */
+    0,                                         /* release */
+    0,                                         /* slot02 */
+    0,                                         /* init */
+    (ObjectDescriptorCallback)sideload_update, /* update */
+    0,                                         /* hitDetect */
+    0,                                         /* render */
+    0,                                         /* free */
+    0,                                         /* getObjectTypeId */
+    0,                                         /* getExtraSize */
 };

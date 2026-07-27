@@ -47,7 +47,6 @@
 #include "dolphin/gx/GXEnum.h"
 #include "string.h"
 #include "main/dll/dll_00E2_staff_api.h"
-#include "main/dll/dll_00C8_depthoffieldpoint_api.h"
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebit_ids.h"
@@ -59,6 +58,25 @@ extern u8 gStaffQuakeSpellState[0x28];
 extern void* gStaffSwipeTextures[2];
 extern f32 lbl_803E32A4;
 extern StaffCollisionInterface** gStaffSwipeResource;
+
+#define STAFF_CONTACT_HIT_VOLUME_COUNT 36
+
+/* Hit-volume-indexed staff impact SFX ids; zero entries are filled at initialisation. */
+static s16 sStaffContactSfxIds[STAFF_CONTACT_HIT_VOLUME_COUNT] = {
+    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
+    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
+    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
+    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
+    0x00C2, 0x006F, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+};
+
+/* Hit-volume-indexed entries in gStaffSwipeColorTable. */
+static u8 sStaffContactColorIndices[STAFF_CONTACT_HIT_VOLUME_COUNT] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
 
 s16 sStaffSwipeTextureIdTable[4] = {0xC7F, 0x3EC, 0, 0};
 #define STAFF_QUAKE_HIT_VOLUME_SLOT 17
@@ -1027,9 +1045,9 @@ void staff_hitDetectGeometry(GameObject* obj)
             (*gStaffSwipeResource)
                 ->spawn(OBJHITREACT_HIT_EFFECT_PARENT_NONE, OBJHITREACT_HIT_EFFECT_MODE, &v,
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE,
-                        &tbl.colors[((u8*)lbl_803208E8)[idx]]);
+                        &tbl.colors[sStaffContactColorIndices[idx]]);
             Sfx_PlayAtPositionFromObject((int)obj, hitState->contactPosX, hitState->contactPosY,
-                                         hitState->contactPosZ, (u16)((s16*)lbl_803208A0)[idx]);
+                                         hitState->contactPosZ, (u16)sStaffContactSfxIds[idx]);
         }
     }
 }
@@ -1299,5 +1317,5 @@ void staff_initialise(void)
     int i;
 
     i = 0;
-    staff_initialiseBody((s16*)lbl_803208A0, i);
+    staff_initialiseBody(sStaffContactSfxIds, i);
 }

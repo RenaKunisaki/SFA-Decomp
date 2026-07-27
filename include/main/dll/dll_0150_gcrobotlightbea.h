@@ -13,14 +13,14 @@ typedef struct GcRobotLightBeaState
     u8 pad9[3];
 } GcRobotLightBeaState;
 
-int fn_801A0174(int* obj);
+int fn_801A0174(GameObject* obj);
 int gcrobotlightbea_getExtraSize(void);
 int gcrobotlightbea_getObjectTypeId(void);
-void gcrobotlightbea_free(int* obj);
+void gcrobotlightbea_free(GameObject* obj);
 void gcrobotlightbea_render(void);
 void gcrobotlightbea_hitDetect(GameObject* obj);
-void gcrobotlightbea_update(int* obj);
-void gcrobotlightbea_init(int* obj);
+void gcrobotlightbea_update(GameObject* obj);
+void gcrobotlightbea_init(GameObject* obj);
 void gcrobotlightbea_release(void);
 void gcrobotlightbea_initialise(void);
 

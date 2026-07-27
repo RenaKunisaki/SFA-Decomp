@@ -5,16 +5,13 @@
 #include "types.h"
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
+#include "game/objects/object_setup.h"
 
 extern ObjectDescriptor gDBHoleControl1ObjDescriptor;
 
 typedef struct Dbholecontrol1Placement
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    s32 mapId;
+    ObjPlacement base;
     u8 unk18;
     s8 triggerSeqId; /* 0x19: run as an object sequence when triggerGameBit is set */
     s16 gameBitA; /* copied into DbHoleControl1State.gameBitA */
@@ -29,8 +26,6 @@ typedef struct Dbholecontrol1Placement
     s8 unk2E;
     u8 pad2F[0x30 - 0x2F];
 } Dbholecontrol1Placement;
-
-void DBstealerwo_setFuncPtrs_80203c78(void);
 
 int dbholecontrol1_getExtraSize(void);
 int dbholecontrol1_getObjectTypeId(void);

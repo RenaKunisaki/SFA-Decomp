@@ -11,10 +11,12 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "game/objects/object_setup.h"
 
 typedef struct DFSHDoor2SpeciPlacement
 {
-    u8 pad0[0x1B - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1B - 0x18];
     u8 unk1B;
     u8 pad1C[0x22 - 0x1C];
     s16 gameBit;

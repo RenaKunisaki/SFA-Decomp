@@ -132,7 +132,7 @@ void cflevelcontrol_hitDetect(void)
 void cflevelcontrol_update(GameObject* obj)
 {
     u8* state = obj->extra;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     Vec3f triggerPos;
     u32 bit974;
     u8 bit975;
@@ -208,17 +208,17 @@ void cflevelcontrol_update(GameObject* obj)
     }
 
     if (mainGetBit(GAMEBIT_CF_NotRecoveredStaff) != 0 &&
-        (((GameObject*)player)->objectFlags & CFLEVELCONTROL_OBJFLAG_PARENT_SLACK) == 0)
+        ((player)->objectFlags & CFLEVELCONTROL_OBJFLAG_PARENT_SLACK) == 0)
     {
         mainSetBits(GAMEBIT_CF_HaveStaff, 0);
     }
 
     bit94e = mainGetBit(GAMEBIT_CF_HaveStaff);
-    if (bit94e != 0 && playerIsDisguised((GameObject*)player) == 0)
+    if (bit94e != 0 && playerIsDisguised(player) == 0)
     {
         staffToggle((GameObject*)Obj_GetPlayerObject(), 0);
     }
-    else if (bit94e == 0 && playerIsDisguised((GameObject*)player) == 0)
+    else if (bit94e == 0 && playerIsDisguised(player) == 0)
     {
         staffToggle((GameObject*)Obj_GetPlayerObject(), 1);
     }
@@ -276,19 +276,19 @@ void cflevelcontrol_update(GameObject* obj)
     SCGameBitLatch_Update((SCGameBitLatchState*)(state + 8), 0x800, -1, -1, 0xcbb, 0xc4);
 }
 
-void cflevelcontrol_init(u8* obj, u8* params)
+void cflevelcontrol_init(GameObject* obj, u8* params)
 {
     u8* sub;
     int i;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = (obj)->extra;
     ((CflevelcontrolState*)sub)->unk8 = 0;
     ((CflevelcontrolState*)sub)->unkD = -1;
     storeZeroToFloatParam(&((CflevelcontrolState*)sub)->timer);
     s16toFloat(&((CflevelcontrolState*)sub)->timer, 0x1e0);
     ((CfLevelControlFlags*)(sub + 0xc))->b6 = 0;
-    ((GameObject*)obj)->animEventCallback = CFLevelControl_SeqFn;
-    mainSetBits(GAMEBIT_CFRelated0983, *(int*)(*(int*)&((GameObject*)obj)->anim.placementData + 0x14) != 0x2cef);
+    (obj)->animEventCallback = CFLevelControl_SeqFn;
+    mainSetBits(GAMEBIT_CFRelated0983, *(int*)(*(int*)&(obj)->anim.placementData + 0x14) != 0x2cef);
     if (mainGetBit(GAMEBIT_CFRelated02FE) == 0)
     {
         for (i = 0; i < 0x17; i++)
@@ -296,13 +296,13 @@ void cflevelcontrol_init(u8* obj, u8* params)
             mainSetBits(lbl_80323008[i], 0);
         }
     }
-    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 4, 0);
-    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0x11, 0);
-    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0x15, 0);
-    (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 0x16, 0);
+    (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 4, 0);
+    (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 0x11, 0);
+    (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 0x15, 0);
+    (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 0x16, 0);
     ((CfLevelControlFlags*)(sub + 0xc))->b5 = mainGetBit(GAMEBIT_CFLever0974);
     ((CfLevelControlFlags*)(sub + 0xc))->b4 = mainGetBit(GAMEBIT_CFLever0975);
-    objSetSlot((GameObject*)obj, 0x51);
+    objSetSlot(obj, 0x51);
     ((CfLevelControlFlags*)(sub + 0xc))->b3 = 1;
 }
 

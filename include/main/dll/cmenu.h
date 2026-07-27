@@ -4,10 +4,11 @@
 #include "ghidra_import.h"
 
 struct CMenuItemDef;
+struct GameObject;
 int cMenuSetItems(struct CMenuItemDef* items, char useTricky);
-int cMenuRingModelRenderFn(int obj, int block, int idx);
+int cMenuRingModelRenderFn(struct GameObject* obj, int block, int idx);
 void drawTrickyHudOverlay(int obj, int unused1, int unused2);
-int cMenuRingIconRenderFn(int obj, int block, int idx);
+int cMenuRingIconRenderFn(struct GameObject* obj, int block, int idx);
 void hudDrawCMenu(int p1, int p2, int p3);
 void cMenuRotateFn_80124d80(void);
 

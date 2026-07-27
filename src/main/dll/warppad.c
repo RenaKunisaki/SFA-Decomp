@@ -47,7 +47,7 @@ extern s16 lbl_803DCEB8;
 #define WARP_PAD_PULSE_STAGE2_TIME 360.0f
 #define WARP_PAD_PULSE_STAGE3_TIME 420.0f
 #define WARP_PAD_PULSE_END_TIME 480.0f
-f32 lbl_803E3E98 = 0.0f;
+const f32 gWarpPadZero[1] = {0.0f};
 /* state->flags bits are defined in warp_pad.h (WARPPAD_FLAG_*) */
 
 void warpPadFn_8019042c(GameObject* obj)
@@ -68,9 +68,9 @@ void warpPadFn_8019042c(GameObject* obj)
 
     state = (obj)->extra;
     player = Obj_GetPlayerObject();
-    fx.pos[0] = lbl_803E3E98;
+    fx.pos[0] = gWarpPadZero[0];
     fx.pos[1] = 55.0f;
-    fx.pos[2] = lbl_803E3E98;
+    fx.pos[2] = gWarpPadZero[0];
     flags = state->flags;
 
     if ((flags & WARPPAD_FLAG_WARP_A) != 0)
@@ -186,7 +186,7 @@ void warpPadFn_8019042c(GameObject* obj)
         }
         else if (!(state->pulseTimer < WARP_PAD_PULSE_END_TIME))
         {
-            state->pulseTimer = 0.0f;
+            state->pulseTimer = gWarpPadZero[0];
             state->flags = state->flags & ~WARPPAD_FLAG_PULSE_FX;
         }
         state->pulseTimer = state->pulseTimer + timeDelta;
@@ -273,9 +273,11 @@ void warpPadPlayerStandingOn(GameObject* obj)
         }
     }
     state->cooldownTimer = state->cooldownTimer - timeDelta;
-    if (state->cooldownTimer <= 0.0f)
+    if (state->cooldownTimer <= gWarpPadZero[0])
     {
-        state->cooldownTimer = 0.0f;
+        state->cooldownTimer = gWarpPadZero[0];
         state->unk0A = -1;
     }
 }
+
+const f32 gWarpPadRestZero[1] = {0.0f};

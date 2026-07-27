@@ -4,8 +4,8 @@
  * The object starts inert and is armed when its startGameBit is set: it
  * gains startHealth and (in the hidden-collider mode) a sphere hitbox.
  * Each frame hitDetect polls the priority hit; a hit is only counted if
- * its source matches one of the object's allowed hit-source profiles
- * (CNTHIT_PROFILE_* tables lbl_8032BEF8/lbl_803DC42C). Counted damage is
+ * its source matches one of the object's allowed hit-source profiles.
+ * Counted damage is
  * subtracted from remainingHealth; in CNTHIT_MODE_VISIBLE_OBJECT the
  * object flashes and plays a hit sfx. On depletion it sets its
  * doneGameBit, spawns an explosion (size depends on mode/explosionSize,
@@ -14,8 +14,8 @@
  * destroyed across reloads. The anim-event callback spawns the
  * per-event explosion list.
  *
- * mcupgrade_SeqFn lives here but belongs to the sibling mcupgrade DLL
- * (0x2B7), which installs it as its anim-event callback.
+ * mcupgrade_SeqFn is part of this DOL-confirmed TU and is installed as an
+ * anim-event callback by the following MCUpgrade DLL.
  */
 #include "main/audio/sfx.h"
 #include "main/game_ui_interface.h"
@@ -30,8 +30,14 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
-int lbl_803DC428 = 5;
-u8 lbl_803DC42C[4] = {2, 1, 0, 0};
+static int sCntHitSourcesProfile0[2] = {0xf, 0xe};
+static int sCntHitSourceProfile1 = 5;
+static u8 sCntHitSourceCounts[4] = {2, 1, 0, 0};
+static int* sCntHitSourcesByProfile[3] = {
+    sCntHitSourcesProfile0,
+    &sCntHitSourceProfile1,
+    sCntHitSourcesProfile0,
+};
 
 int cnthitobjec_SeqFn(int obj, int unused, CntHitObjectAnimEvent* event)
 {
@@ -166,9 +172,9 @@ void cnthitobjec_init(GameObject* obj, CntHitObjectSetup* setup)
 
     state->remainingHealth = 0;
     setupData->hitSourceProfile = (s8)((u32)setupData->hitSourceProfile % CNTHIT_PROFILE_COUNT);
-    state->allowedHitSources = lbl_8032BEF8[setupData->hitSourceProfile];
-    state->allowedHitSourceCount = lbl_803DC42C[setupData->hitSourceProfile];
-    if (state->allowedHitSources == &lbl_803DC428)
+    state->allowedHitSources = sCntHitSourcesByProfile[setupData->hitSourceProfile];
+    state->allowedHitSourceCount = sCntHitSourceCounts[setupData->hitSourceProfile];
+    if (state->allowedHitSources == &sCntHitSourceProfile1)
     {
         ObjHits_ClearSourceMask((ObjAnimComponent*)obj, 8);
     }
@@ -204,14 +210,6 @@ int mcupgrade_SeqFn(GameObject* obj, int unused, CntHitObjectAnimEvent* event)
     }
     return 0;
 }
-
-extern int lbl_803DC420[];
-
-int* lbl_8032BEF8[3] = {
-    lbl_803DC420,
-    &lbl_803DC428,
-    lbl_803DC420,
-};
 
 ObjectDescriptor11ExtraSize gCNThitObjecObjDescriptor = {
     0,

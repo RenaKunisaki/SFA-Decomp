@@ -1,5 +1,5 @@
 /*
- * DLL 0x2C0 - the title/attract-mode front-end object and its
+ * DLL 704 (0x2C0) - the title/attract-mode front-end object and its
  * UI. gTitleScreenObjDescriptor drives the title-screen actor: init
  * seeds anim moves per seqId (0x77d..0x780 = the four pilots on the Great
  * Fox bridge - retail OBJECTS.bin names FrontFox/FrontPeppy/FrontSlippy/
@@ -356,26 +356,6 @@ void titleScreenShowCopyright(u8 arg)
         gameTextShow(FRONT_TEXT_COPYRIGHT);
     }
 }
-
-ObjectDescriptor10WithPadding gTitleScreenObjDescriptor = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-        (ObjectDescriptorCallback)TitleScreen_initialise,
-        (ObjectDescriptorCallback)TitleScreen_release,
-        0,
-        (ObjectDescriptorCallback)TitleScreen_init,
-        (ObjectDescriptorCallback)TitleScreen_update,
-        (ObjectDescriptorCallback)TitleScreen_hitDetect,
-        (ObjectDescriptorCallback)TitleScreen_render,
-        (ObjectDescriptorCallback)TitleScreen_free,
-        (ObjectDescriptorCallback)TitleScreen_getObjectTypeId,
-        TitleScreen_getExtraSize,
-    },
-    0,
-};
 
 void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
 
@@ -1125,3 +1105,23 @@ CreditEntry gCreditEntries[] = {
 
 s16 gTitleScreenTextureIds[20] = {0x60B, 0x60C, 0x60D, 0x60E, 0x60F, 0x610, 0x611, 0x612, 0x619, 0x61A,
                                   0x61B, 0x61C, 0x61D, 0x620, 0x621, 0x622, 0x61E, 0x61F, 0x618, 0x000};
+
+ObjectDescriptor10WithPadding gTitleScreenObjDescriptor = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+        (ObjectDescriptorCallback)TitleScreen_initialise,
+        (ObjectDescriptorCallback)TitleScreen_release,
+        0,
+        (ObjectDescriptorCallback)TitleScreen_init,
+        (ObjectDescriptorCallback)TitleScreen_update,
+        (ObjectDescriptorCallback)TitleScreen_hitDetect,
+        (ObjectDescriptorCallback)TitleScreen_render,
+        (ObjectDescriptorCallback)TitleScreen_free,
+        (ObjectDescriptorCallback)TitleScreen_getObjectTypeId,
+        TitleScreen_getExtraSize,
+    },
+    0,
+};

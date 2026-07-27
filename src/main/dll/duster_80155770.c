@@ -19,8 +19,6 @@
 #include "main/dll/player_api.h"
 #include "main/dll/fireflyLantern.h"
 #include "main/dll/duster.h"
-#include "main/dll/dll_00D8_pinponspike_arc_api.h"
-
 
 /* object-type id of the pollen-spit projectile spawned by spittingEbaSpawnPollen
  * (see file docblock). */
@@ -119,7 +117,7 @@ void rachnopUpdateAttack(int* obj, int state)
         {
             fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)0.5f);
         }
-        fireflyLanternGetTargetAngleAndDistance((int)obj, state, outIds, outVec);
+        fireflyLanternGetTargetAngleAndDistance((GameObject*)obj, state, outIds, outVec);
         if (((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0) ||
             ((outIds[0] < 0x5dc && (((GameObject*)obj)->anim.currentMove != 1))))
         {

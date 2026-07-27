@@ -287,11 +287,11 @@ int ecsh_shrine_SeqFn(void* objArg, int unused, void* eventListArg)
 
 void ecsh_shrine_checkCupPick(u8 cupIndex)
 {
-    int* obj = (int*)gEcShShrineActiveObject;
+    GameObject* obj = gEcShShrineActiveObject;
     int* inner;
     if (obj == NULL)
         return;
-    inner = ((GameObject*)obj)->extra;
+    inner = obj->extra;
     if ((u32)(u8)cupIndex == ((EcshShrineState*)inner)->spiritCup)
     {
         ((EcshShrineState*)inner)->matchFlag = 1;
@@ -314,11 +314,11 @@ void ecsh_shrine_setCupPos(u8 cupIndex, f32 x, f32 z)
 
 void ecsh_shrine_getPhaseAndSpiritCup(int* outAnimState, u8* outSpiritCup)
 {
-    int* obj = (int*)gEcShShrineActiveObject;
+    GameObject* obj = gEcShShrineActiveObject;
     int* inner;
     if (obj == NULL)
         return;
-    inner = ((GameObject*)obj)->extra;
+    inner = obj->extra;
     *outSpiritCup = ((EcshShrineState*)inner)->spiritCup;
     *outAnimState = ((EcshShrineState*)inner)->animState;
 }
@@ -336,11 +336,11 @@ void ecsh_shrine_getCupPos(u8 cupIndex, f32* outX, f32* outZ)
 
 void ecsh_shrine_setScale(s16* out)
 {
-    int* obj = gEcShShrineActiveObject;
+    GameObject* obj = gEcShShrineActiveObject;
     int* state;
     if (obj == NULL)
         return;
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     *out = ((EcshShrineState*)state)->scale;
 }
 
@@ -415,7 +415,7 @@ void ecsh_shrine_hitDetect(void)
  *   8->2->5/0->1->4->2 etc. as each shuffle iteration plays out, with 7/9
  *   used as round-entry/exit and 5 as the guess-resolution state.
  */
-void ecsh_shrine_update(s16* obj)
+void ecsh_shrine_update(GameObject* obj)
 {
     f32 t[2];
     int msgC;
@@ -432,7 +432,7 @@ void ecsh_shrine_update(s16* obj)
     f32 fv;
 
     ps = (EcshPuzzleState*)gEcShShrinePuzzleState;
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     player = Obj_GetPlayerObject();
     *(EcshIntPair*)&t[0] = *(EcshIntPair*)&lbl_803E8470;
     if (sub[0x32] == 0)
@@ -444,10 +444,10 @@ void ecsh_shrine_update(s16* obj)
             (*gGameUIInterface)->showNpcDialogue(0x285, 0x14, 0x8c, 1);
         }
     }
-    if (((GameObject*)obj)->userData1 != 0)
+    if (obj->userData1 != 0)
     {
-        ((GameObject*)obj)->userData1 = ((GameObject*)obj)->userData1 - 1;
-        if (((GameObject*)obj)->userData1 == 0)
+        obj->userData1 = obj->userData1 - 1;
+        if (obj->userData1 == 0)
         {
             skyFn_80088c94(7, 1);
             getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_A, 0);
@@ -488,7 +488,7 @@ void ecsh_shrine_update(s16* obj)
         switch (sub[0x2f])
         {
         case 0:
-            ((GameObject*)obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+            obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
             fv = ((EcshShrineState*)sub)->voiceTimer - timeDelta;
             ((EcshShrineState*)sub)->voiceTimer = fv;
             if (fv <= zero)
@@ -496,7 +496,7 @@ void ecsh_shrine_update(s16* obj)
             Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
                 ((EcshShrineState*)sub)->voiceTimer = (f32)(int)randomGetRange(500, 1000);
             }
-            if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
+            if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
             {
                 sub[0x2f] = 1;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
@@ -537,7 +537,7 @@ void ecsh_shrine_update(s16* obj)
                 mainSetBits(GAMEBIT_ECSH_TestObservRunning, 1);
                 (*gScreenTransitionInterface)->step(0x78, 1);
             }
-            ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
             break;
         case 2:
             sub[0x2f] = 3;

@@ -55,7 +55,7 @@
 #define TRANSPORTER_ENVFX_G4_A 0x238 /* dest 0x4cb6a */
 #define TRANSPORTER_ENVFX_G4_B 0x239
 
-extern f32 lbl_803E3E98;
+extern const f32 gWarpPadZero[1];
 extern s16 lbl_803DCEB8;
 
 
@@ -219,7 +219,7 @@ int Transporter_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_SKY, 0);
                 setDrawCloudsAndLights(0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, lbl_803E3E98);
+                skyFn_80088e54(0, gWarpPadZero[0]);
                 break;
             case 0x48506:
             case 0x4a533:
@@ -231,7 +231,7 @@ int Transporter_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_C, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_D, 0);
                 skyFn_80088c94(1, 0);
-                skyFn_80088e54(0, lbl_803E3E98);
+                skyFn_80088e54(0, gWarpPadZero[0]);
                 break;
             case 0x4b666:
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_A, 0);
@@ -242,7 +242,7 @@ int Transporter_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_B, 0);
                 (*gMapEventInterface)->setObjGroupStatus(0x15, 2, 1);
                 getEnvfxActImmediately(0, 0, TRANSPORTER_ENVFX_G2_C, 0);
-                skyFn_80088e54(1, lbl_803E3E98);
+                skyFn_80088e54(1, gWarpPadZero[0]);
                 break;
             case 0x4670d:
             case 0x4827e:
@@ -256,7 +256,7 @@ int Transporter_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_A, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_B, 0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, lbl_803E3E98);
+                skyFn_80088e54(0, gWarpPadZero[0]);
             case 0x4cb84:
                 mainSetBits(0xef6, 0);
                 break;

@@ -1,70 +1,56 @@
 /*
- * area (DLL 0xF6) - the trigger-area object class. A behaviourless
- * marker placed in a level: every per-frame callback (update / render /
- * hitDetect / free) is empty and it carries no extra state
- * (getExtraSize == 0). init() only stamps two bits (0xA000) into the
- * GameObject flag word; the object exists purely so the placement /
- * map-event system can reference an addressable region. Exported through
- * gAreaObjDescriptor with 10 callback slots.
+ * Area (DLL 0xF6) - inert area marker objects.
+ *
+ * Instances carry no extra state and disable both updates and hit detection.
  */
-#include "dlls/object_descriptor.h"
+#include "dlls/objects/246_Area.h"
 #include "game/objects/object.h"
-#include "main/dll/dll_00F6_area.h"
 
-#define AREA_OBJFLAG_UPDATE_DISABLED    0x8000
-#define AREA_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define AREA_OBJECT_TYPE_ID 0
 
-int area_getExtraSize(void)
-{
-    return 0x0;
-}
-int area_getObjectTypeId(void)
-{
-    return 0x0;
+int area_getExtraSize(void) {
+    return 0;
 }
 
-void area_free(void)
-{
+int area_getObjectTypeId(void) {
+    return AREA_OBJECT_TYPE_ID;
 }
 
-void area_render(void)
-{
+void area_free(void) {
 }
 
-void area_hitDetect(void)
-{
+void area_render(void) {
 }
 
-void area_update(void)
-{
+void area_hitDetect(void) {
 }
 
-void area_init(GameObject* obj)
-{
-    obj->objectFlags = (u16)(obj->objectFlags | (AREA_OBJFLAG_UPDATE_DISABLED | AREA_OBJFLAG_HITDETECT_DISABLED));
+void area_update(void) {
 }
 
-void area_release(void)
-{
+void area_init(GameObject* obj) {
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_UPDATE_DISABLED | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
-void area_initialise(void)
-{
+void area_release(void) {
+}
+
+void area_initialise(void) {
 }
 
 ObjectDescriptor gAreaObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    area_initialise,
-    area_release,
-    0,
-    (ObjectDescriptorCallback)area_init,
-    (ObjectDescriptorCallback)area_update,
-    (ObjectDescriptorCallback)area_hitDetect,
-    (ObjectDescriptorCallback)area_render,
-    (ObjectDescriptorCallback)area_free,
-    (ObjectDescriptorCallback)area_getObjectTypeId,
-    area_getExtraSize,
+    0,                                              /* reserved0 */
+    0,                                              /* reserved1 */
+    0,                                              /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,               /* slotCountAndFlags */
+    (ObjectDescriptorCallback)area_initialise,      /* initialise */
+    (ObjectDescriptorCallback)area_release,         /* release */
+    0,                                              /* slot02 */
+    (ObjectDescriptorCallback)area_init,            /* init */
+    (ObjectDescriptorCallback)area_update,          /* update */
+    (ObjectDescriptorCallback)area_hitDetect,       /* hitDetect */
+    (ObjectDescriptorCallback)area_render,          /* render */
+    (ObjectDescriptorCallback)area_free,            /* free */
+    (ObjectDescriptorCallback)area_getObjectTypeId, /* getObjectTypeId */
+    area_getExtraSize,                              /* getExtraSize */
 };

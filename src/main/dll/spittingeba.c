@@ -26,7 +26,7 @@
 #include "main/dll/player_api.h"
 #include "main/dll/fireflyLantern.h"
 #include "main/dll/duster.h"
-#include "main/dll/dll_00D8_pinponspike_arc_api.h"
+#include "dlls/objects/216_PinPonSpike.h"
 
 #define DUSTER_CHILD_OBJ_POLLEN_SPIT 0x47b
 
@@ -40,7 +40,7 @@ extern const f32 lbl_803E2A88;
 extern const f32 lbl_803E2A8C;
 extern const f32 lbl_803E2A90;
 
-void spittingEbaSpawnPollen(u32 obj, int state)
+void spittingEbaSpawnPollen(GameObject* obj, int state)
 {
     u32 loadLocked;
     int ref;
@@ -59,9 +59,9 @@ void spittingEbaSpawnPollen(u32 obj, int state)
     loadLocked = Obj_IsLoadingLocked();
     if ((loadLocked & 0xff) != 0)
     {
-        a[0] = ((GameObject*)obj)->anim.localPosX;
-        a[1] = 15.0f + ((GameObject*)obj)->anim.localPosY;
-        a[2] = ((GameObject*)obj)->anim.localPosZ;
+        a[0] = obj->anim.localPosX;
+        a[1] = 15.0f + obj->anim.localPosY;
+        a[2] = obj->anim.localPosZ;
         ref = *(int*)&((BaddieState*)state)->trackedObj;
         b[0] = ((GameObject*)ref)->anim.localPosX;
         b[1] = 30.0f + ((GameObject*)ref)->anim.localPosY;
@@ -71,8 +71,8 @@ void spittingEbaSpawnPollen(u32 obj, int state)
         fn_80293018(ref, &cosVal, &velXZ);
         velXZ = velXZ * spd;
         cosVal = cosVal * spd;
-        dx = b[0] - ((GameObject*)obj)->anim.localPosX;
-        dz = b[2] - ((GameObject*)obj)->anim.localPosZ;
+        dx = b[0] - obj->anim.localPosX;
+        dz = b[2] - obj->anim.localPosZ;
         if (0.0f != dz)
         {
             ref = getAngle(dx, dz);
@@ -99,8 +99,8 @@ void spittingEbaSpawnPollen(u32 obj, int state)
             ((GameObject*)ref)->anim.velocityX = velXZ;
             ((GameObject*)ref)->anim.velocityY = cosVal;
             ((GameObject*)ref)->anim.velocityZ = velY;
-            *(u32*)&((GameObject*)ref)->ownerObj = obj;
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_cackle);
+            *(u32*)&((GameObject*)ref)->ownerObj = (u32)obj;
+            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_mika_cackle);
         }
     }
     return;
@@ -200,7 +200,7 @@ void spittingEbaUpdateIdle(GameObject* obj, int state)
     return;
 }
 
-void spittingEbaUpdateEngaged(u32 obj, int state)
+void spittingEbaUpdateEngaged(GameObject* obj, int state)
 {
     u8 timerExpired;
 
@@ -213,30 +213,30 @@ void spittingEbaUpdateEngaged(u32 obj, int state)
     }
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        if (((GameObject*)obj)->anim.currentMove == 4)
+        if (obj->anim.currentMove == 4)
         {
             spittingEbaSpawnPollen(obj, state);
             ((DusterState*)state)->phaseTimer = lbl_803E2A80;
             Baddie_SetMove(obj, state, 5, (1.0f), 0, 0);
         }
-        else if ((((GameObject*)obj)->anim.currentMove == 5) && (timerExpired))
+        else if ((obj->anim.currentMove == 5) && (timerExpired))
         {
             Baddie_SetMove(obj, state, 6, (1.0f), 0, 0);
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_death);
         }
-        else if (((GameObject*)obj)->anim.currentMove == 6)
+        else if (obj->anim.currentMove == 6)
         {
             Baddie_SetMove(obj, state, 2, (1.0f), 0, 0);
             ((DusterState*)state)->phaseTimer = lbl_803E2A80;
         }
-        else if ((((GameObject*)obj)->anim.currentMove == 2) && (timerExpired) &&
+        else if ((obj->anim.currentMove == 2) && (timerExpired) &&
                  ((((BaddieState*)state)->controlFlags & 0x4000000) != 0))
         {
             Baddie_SetMove(obj, state, 4, (1.0f), 0, 0);
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_hit);
+            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_hit);
         }
     }
-    spittingEbaUpdateTimeOfDay(obj, state);
+    spittingEbaUpdateTimeOfDay((int)obj, state);
     return;
 }
 

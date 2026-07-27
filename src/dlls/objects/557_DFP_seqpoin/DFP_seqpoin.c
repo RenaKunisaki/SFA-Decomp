@@ -1,0 +1,270 @@
+/*
+ * DragonRock Palace sequence point (DLL 0x22D; "DFP_seqpoint") - a
+ * trigger volume: when the player enters its radius and the gate gamebit
+ * is set it fires a trigger sequence, latches done, and sets the done
+ * gamebit.
+ */
+#include "main/dll/dfp_types.h"
+#include "main/object_render_legacy.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/map_load.h"
+#include "main/gamebits.h"
+#include "game/objects/object.h"
+#include "game/objects/object_setup.h"
+#include "main/mapEventTypes.h"
+#include "main/dll/DF/dll_022D_dfpseqpoint.h"
+#include "main/objseq.h"
+#include "sys/objects.h"
+#include "main/vecmath.h"
+#include "dlls/object_descriptor.h"
+
+#define DFPSEQPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
+
+/* Placement trigger-mode selector (DfpSeqPointState::triggerMode). */
+#define DFPSEQPOINT_MODE_RADIUS           0 /* player within radius */
+#define DFPSEQPOINT_MODE_GATE             1 /* gate gamebit set */
+#define DFPSEQPOINT_MODE_RADIUS_AND_GATE  2 /* within radius and gate set */
+#define DFPSEQPOINT_MODE_RADIUS_AND_UNSET 3 /* within radius and gate clear, then set gate */
+#define DFPSEQPOINT_MODE_GATE_UNSET       4 /* gate clear, then set gate */
+#define DFPSEQPOINT_MODE_GATE_REPEAT      5 /* gate set, fire every frame (no latch) */
+
+typedef struct DfpseqpointPlacement
+{
+    ObjPlacement head;  /* 0x00..0x17 (posX 0x08, mapId 0x14) */
+    s8 rotXByte;       /* 0x18 */
+    u8 triggerMode;    /* 0x19 */
+    s16 triggerRadius; /* 0x1A */
+    s16 triggerId;     /* 0x1C */
+    s16 gameBitGate;   /* 0x1E */
+    s16 gameBitDone;   /* 0x20 */
+    u8 pad22[0x24 - 0x22];
+    s16 unk24;
+    u8 pad26[0x2B - 0x26];
+    u8 unk2B;
+    u8 pad2C[0x2E - 0x2C];
+    s8 unk2E;
+    u8 pad2F[0x30 - 0x2F];
+} DfpseqpointPlacement;
+
+STATIC_ASSERT(sizeof(DfpSeqPointState) == 0x10);
+
+int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    DfpSeqPointState* blob = obj->extra;
+    DfpseqpointPlacement* data = (DfpseqpointPlacement*)obj->anim.placementData;
+    int i;
+
+    animUpdate->activeHitVolumePair = -1;
+    animUpdate->sequenceEventActive = 0;
+    for (i = 0; i < animUpdate->eventCount; i++)
+    {
+        switch (blob->triggerId)
+        {
+        case 1:
+            switch (animUpdate->eventIds[i])
+            {
+            case 1:
+                if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 1)
+                {
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 5, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 7, 0);
+                }
+                else if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)
+                {
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 5, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 0);
+                    (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 7, 0);
+                }
+                break;
+            }
+            break;
+        case 0xa:
+            switch (animUpdate->eventIds[i])
+            {
+            case 0x14:
+                if (*(u32*)&data->head.mapId == 0x49de8)
+                {
+                    ((DfpFlags7*)&blob->flags0F)->b80 = 1;
+                }
+                else
+                {
+                    if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 1 ||
+                        (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)
+                    {
+                        unlockLevel(0, 0, 1);
+                        lockLevel(mapGetDirIdx(0x32), 0);
+                        (*gMapEventInterface)->setMapAct(0x32, 2);
+                        warpToMap(0x73, 0);
+                    }
+                }
+                break;
+            }
+            break;
+        }
+        animUpdate->eventIds[i] = 0;
+    }
+    return 0;
+}
+
+int DFP_seqpoint_getExtraSize(void)
+{
+    return 0x10;
+}
+int DFP_seqpoint_getObjectTypeId(void)
+{
+    return 0x0;
+}
+
+void DFP_seqpoint_free(void)
+{
+}
+
+void DFP_seqpoint_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+{
+    s32 v = visible;
+    if (v != 0)
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+}
+
+void DFP_seqpoint_hitDetect(void)
+{
+}
+
+void DFP_seqpoint_update(GameObject* obj)
+{
+    GameObject* self;
+    GameObject* player;
+    DfpSeqPointState* state;
+    int gameBit;
+
+    self = obj;
+    player = (GameObject*)Obj_GetPlayerObject();
+    state = self->extra;
+    if (((u32)state->flags0F >> 7 & 1) != 0)
+    {
+        mainSetBits(0xef7, 1);
+        ((DfpFlags7*)&state->flags0F)->b80 = 0;
+    }
+    gameBit = state->gameBitDone;
+    if (gameBit != -1)
+    {
+        if (state->doneLatch != 0)
+        {
+            if (mainGetBit(gameBit) != 0)
+            {
+                return;
+            }
+            mainSetBits(state->gameBitDone, 1);
+            state->doneLatch = 1;
+            return;
+        }
+        if (mainGetBit(gameBit) != 0)
+        {
+            state->doneLatch = 1;
+            return;
+        }
+    }
+    if (state->doneLatch != 0)
+    {
+        return;
+    }
+    switch (state->triggerMode)
+    {
+    case DFPSEQPOINT_MODE_RADIUS:
+        if (Vec_distance(&self->anim.worldPosX, &player->anim.worldPosX) < state->triggerRadius)
+        {
+            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+            state->doneLatch = 1;
+        }
+        break;
+    case DFPSEQPOINT_MODE_GATE:
+        gameBit = state->gameBitGate;
+        if (gameBit != -1 && mainGetBit(gameBit) != 0)
+        {
+            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+            state->doneLatch = 1;
+        }
+        break;
+    case DFPSEQPOINT_MODE_RADIUS_AND_GATE:
+        if (Vec_distance(&self->anim.worldPosX, &player->anim.worldPosX) < state->triggerRadius)
+        {
+            gameBit = state->gameBitGate;
+            if (gameBit != -1 && mainGetBit(gameBit) != 0)
+            {
+                (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+                state->doneLatch = 1;
+            }
+        }
+        break;
+    case DFPSEQPOINT_MODE_RADIUS_AND_UNSET:
+        if (Vec_distance(&self->anim.worldPosX, &player->anim.worldPosX) < state->triggerRadius)
+        {
+            gameBit = state->gameBitGate;
+            if (gameBit != -1 && mainGetBit(gameBit) == 0)
+            {
+                (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+                mainSetBits(state->gameBitGate, 1);
+                state->doneLatch = 1;
+            }
+        }
+        break;
+    case DFPSEQPOINT_MODE_GATE_UNSET:
+        gameBit = state->gameBitGate;
+        if (gameBit != -1 && mainGetBit(gameBit) == 0)
+        {
+            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+            mainSetBits(state->gameBitGate, 1);
+            state->doneLatch = 1;
+        }
+        break;
+    case DFPSEQPOINT_MODE_GATE_REPEAT:
+        gameBit = state->gameBitGate;
+        if (gameBit != -1 && mainGetBit(gameBit) != 0)
+        {
+            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+        }
+        break;
+    }
+}
+
+void DFP_seqpoint_init(GameObject* obj, u8* init)
+{
+    DfpSeqPointState* sub;
+    sub = obj->extra;
+    obj->animEventCallback = DFP_seqpoint_SeqFn;
+    obj->anim.rotX = (s16)((s8)init[0x18] << 8);
+    sub->triggerRadius = (f32)(s32) * (s16*)(init + 0x1a);
+    sub->triggerId = *(s16*)(init + 0x1c);
+    sub->triggerMode = init[0x19];
+    sub->gameBitGate = *(s16*)(init + 0x1e);
+    sub->gameBitDone = *(s16*)(init + 0x20);
+    obj->objectFlags = (u16)(obj->objectFlags | DFPSEQPOINT_OBJFLAG_HITDETECT_DISABLED);
+    ((DfpFlags7*)&sub->flags0F)->b80 = 0;
+}
+
+void DFP_seqpoint_release(void)
+{
+}
+
+void DFP_seqpoint_initialise(void)
+{
+}
+
+ObjectDescriptor gDFP_seqpointObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)DFP_seqpoint_initialise,
+    (ObjectDescriptorCallback)DFP_seqpoint_release,
+    0,
+    (ObjectDescriptorCallback)DFP_seqpoint_init,
+    (ObjectDescriptorCallback)DFP_seqpoint_update,
+    (ObjectDescriptorCallback)DFP_seqpoint_hitDetect,
+    (ObjectDescriptorCallback)DFP_seqpoint_render,
+    (ObjectDescriptorCallback)DFP_seqpoint_free,
+    (ObjectDescriptorCallback)DFP_seqpoint_getObjectTypeId,
+    DFP_seqpoint_getExtraSize,
+};

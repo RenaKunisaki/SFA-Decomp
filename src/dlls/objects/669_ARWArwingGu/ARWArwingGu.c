@@ -1,5 +1,5 @@
 /*
- * ARWArwingGu (DLL 0x29D) - the Arwing's attached "gear" models in the
+ * ARWArwingGu (DLL 669) - the Arwing's attached "gear" models in the
  * on-rails flight sections: the twin laser guns (def 0x610 / 0x615), the
  * bomb model (def 0x611) and the engine/escort model (def 0x606). One DLL
  * drives all of them, branching on the object's seqId. getExtraSize and
@@ -54,7 +54,7 @@ void arwarwinggu_setActiveVisible(GameObject* obj, u8 active, u8 visible)
         Obj_SetActiveModelIndex(obj, visible != 0 ? 1 : 0);
         (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
         objAnim->alpha = 0xff;
-        state->visibleTimer = lbl_803E7058;
+        state->visibleTimer = 5.0f;
     }
     else
     {
@@ -137,7 +137,7 @@ void ARWArwingGu_update(GameObject* obj)
         ArwingGuState* state = (obj)->extra;
         f32 minTimer;
         f32 vt = state->visibleTimer;
-        if (vt > (minTimer = lbl_803E7060))
+        if (vt > (minTimer = 0.0f))
         {
             state->visibleTimer = vt - timeDelta;
             if (state->visibleTimer <= minTimer)
@@ -154,19 +154,19 @@ void ARWArwingGu_update(GameObject* obj)
         f32 alpha;
         if (state->fadeIn != 0)
         {
-            alpha = lbl_803E705C * timeDelta + (f32)(u32)objAnim->alpha;
+            alpha = 255.0f * timeDelta + (f32)(u32)objAnim->alpha;
         }
         else
         {
-            alpha = (f32)(u32)objAnim->alpha - lbl_803E705C * timeDelta;
+            alpha = (f32)(u32)objAnim->alpha - 255.0f * timeDelta;
         }
-        if (alpha < lbl_803E7060)
+        if (alpha < 0.0f)
         {
-            alpha = lbl_803E7060;
+            alpha = 0.0f;
         }
-        else if (alpha > lbl_803E705C)
+        else if (alpha > 255.0f)
         {
-            alpha = lbl_803E705C;
+            alpha = 255.0f;
         }
         objAnim->alpha = alpha;
         break;

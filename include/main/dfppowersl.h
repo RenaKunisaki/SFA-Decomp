@@ -18,6 +18,8 @@
 #define DFPPOWERSL_SPAWN_MODE_ACTIVE 1
 #define DFPPOWERSL_HIT_VOLUME_SLOT 0x13
 #define DFPPOWERSL_HIT_VOLUME_ENABLED 1
+#define DFPPOWERSL_SPAWN_OBJECT_ID 0x39e
+#define DFPPOWERSL_SPAWN_COUNT 0x14
 
 typedef struct DfpPowerSlState {
   s32 activateObjectId;
@@ -64,6 +66,7 @@ STATIC_ASSERT(offsetof(DfpPowerSlObject, hitCallback) == 0xBC);
 extern ObjectDescriptor gDfppowerslObjDescriptor;
 
 int dfppowersl_getExtraSize(void);
+int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject *obj);
 void dfppowersl_free(DfpPowerSlObject *obj);
 void dfppowersl_render(DfpPowerSlObject *obj);
 void dfppowersl_update(DfpPowerSlObject *obj);

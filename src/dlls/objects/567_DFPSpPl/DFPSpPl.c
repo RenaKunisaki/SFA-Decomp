@@ -1,8 +1,7 @@
 /*
- * DragonRock Palace spellstone placement slot (DLL 0x237; "DFPSpPl").
- * A LaserObject spellplace: enabled while its activationGameBit is set; when
- * the placement sequence event completes it sets completionGameBit, clears the
- * activation bit, and disables itself. Sibling of vfpspellplace (VFP).
+ * DragonRock Palace spellstone placement. It remains enabled while its
+ * activation GameBit is set; when the placement sequence completes it sets
+ * the completion GameBit, clears the activation bit, and disables itself.
  */
 #include "main/dll/CF/laser.h"
 #include "game/objects/object.h"

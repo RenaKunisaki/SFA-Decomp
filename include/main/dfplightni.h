@@ -3,7 +3,6 @@
 
 #include "global.h"
 #include "ghidra_import.h"
-#include "main/dfppowersl.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
@@ -30,9 +29,6 @@
 #define DFPLIGHTNI_EVENT_ACTIVE_EFFECT_FRAMES 10
 #define DFPLIGHTNI_ANGLE_STEP 0xc
 #define DFPLIGHTNI_EFFECT_ANGLE_MASK 0xff
-
-#define DFPPOWERSL_SPAWN_OBJECT_ID 0x39e
-#define DFPPOWERSL_SPAWN_COUNT 0x14
 
 typedef struct DfpLightniMapData {
   ObjPlacement base;
@@ -88,6 +84,4 @@ void DFP_Lightni_free(DfpLightniObject *obj);
 void DFP_Lightni_render(DfpLightniObject *obj);
 void DFP_Lightni_update(DfpLightniObject *obj);
 void DFP_Lightni_init(DfpLightniObject *obj,DfpLightniMapData *mapData);
-int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject *obj);
-
 #endif /* MAIN_DFPLIGHTNI_H_ */

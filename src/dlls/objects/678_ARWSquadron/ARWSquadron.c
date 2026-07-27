@@ -57,6 +57,7 @@
 
 union ArwSquadronConstU32 { u32 u; };
 const union ArwSquadronConstU32 gArwSquadronDefaultCurveMode = { 0x28 };
+const f32 gArwSquadronMinRangeZ[1] = { -100.0f };
 
 static inline int arwsquadron_isPlayerWithinRangeZ(GameObject* obj, f32 range)
 {
@@ -65,7 +66,7 @@ static inline int arwsquadron_isPlayerWithinRangeZ(GameObject* obj, f32 range)
     if (craft == NULL)
         craft = Obj_GetPlayerObject();
     distZ = obj->anim.localPosZ - craft->anim.localPosZ;
-    return distZ < range && distZ > -100.0f;
+    return distZ < range && distZ > gArwSquadronMinRangeZ[0];
 }
 
 void arwsquadron_emitEffects(GameObject* obj, ArwSquadronState* state)
@@ -257,20 +258,20 @@ void arwsquadron_spawnProjectile(GameObject* obj, int pathIdx, int angle, int fl
 {
     f32 pz, py, px;
     GameObject* proj;
-    ArwSquadronProjectileSetup* setup;
+    ArwProjectileSetup* setup;
     if (Obj_IsLoadingLocked() == 0)
         return;
     ObjPath_GetPointWorldPosition(obj, pathIdx, &px, &py, &pz, 0);
-    setup = (ArwSquadronProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWSQUADRON_CHILD_OBJ_PROJECTILE);
-    setup->posX = px;
-    setup->posY = py;
-    setup->posZ = pz;
+    setup = (ArwProjectileSetup*)Obj_AllocObjectSetup(0x20, ARWSQUADRON_CHILD_OBJ_PROJECTILE);
+    setup->base.posX = px;
+    setup->base.posY = py;
+    setup->base.posZ = pz;
     setup->rotX = ((obj)->anim.rotX + 0x10000 + angle - 0x8000) >> 8;
     setup->rotY = -(obj)->anim.rotY >> 8;
     setup->rotZ = 0;
-    setup->field04 = 1;
-    setup->field05 = 1;
-    proj = loadObjectAtObject(obj, (ObjPlacement*)setup);
+    setup->base.color[0] = 1;
+    setup->base.color[1] = 1;
+    proj = loadObjectAtObject(obj, &setup->base);
     if (proj == NULL)
         return;
     if ((u8)flag != 0)
@@ -410,6 +411,7 @@ ObjectDescriptor gARWSquadronObjDescriptor = {
     (ObjectDescriptorCallback)ARWSquadron_free, (ObjectDescriptorCallback)ARWSquadron_getObjectTypeId,
     ARWSquadron_getExtraSize,
 };
+
 void ARWSquadron_render(GameObject* obj, int p2, int p3, int p4, int p5)
 {
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
@@ -572,14 +574,14 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
     state->rotZSpeed = setupData->rotZSpeed << 4;
     ObjHits_SetTargetMask(obj, 4);
 
-    if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ || setupData->objectId == ARW_SQUADRON_SMALLASTEROID_OBJ)
+    if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ || setupData->base.objectId == ARW_SQUADRON_SMALLASTEROID_OBJ)
     {
         state->variant = ARW_SQUADRON_VARIANT_ASTEROID;
-        if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
+        if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
         {
             flags->acceptsDamage = 0;
         }
-        if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
+        if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
         {
             state->activationDistance = 10000.0f;
         }
@@ -589,7 +591,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
         }
         state->deathScore = 5;
         state->hitScore = 0;
-        if (setupData->objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
+        if (setupData->base.objectId == ARW_SQUADRON_BIGASTEROID_OBJ)
         {
             state->hitVolumeMode = 2;
         }
@@ -602,7 +604,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
         state->rotZSpeed = randomGetRange(-0x12c, 0x12c);
         flags->attackWindowOpen = 1;
     }
-    else if (setupData->objectId == ARW_SQUADRON_OBJ)
+    else if (setupData->base.objectId == ARW_SQUADRON_OBJ)
     {
         state->variant = ARW_SQUADRON_VARIANT_SQUADRON;
         flags->acceptsDamage = 0;

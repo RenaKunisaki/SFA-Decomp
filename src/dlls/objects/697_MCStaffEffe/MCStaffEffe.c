@@ -5,8 +5,8 @@
  * staff glow level (profiles 0-3, default = profile 0); each render tick
  * spawns the staff particle fx (fn_80098B18) scaled by the object's
  * root-motion scale. update is a no-op. The anim-event callback
- * mcstaffeffe_SeqFn (defined alongside mcupgradema in DLL 0x2B8) drives
- * the player's staff glow from sequence events.
+ * mcstaffeffe_SeqFn (provided by the preceding MCUpgradeMa TU) drives the
+ * player's staff glow from sequence events.
  */
 #include "main/dll/dll_02B9_mcstaffeffe.h"
 #include "game/objects/object.h"

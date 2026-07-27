@@ -1,0 +1,123 @@
+#include "main/dll/partfx_interface.h"
+#include "main/dfppowersl.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/gamebits.h"
+#include "main/objhits.h"
+
+static inline DfpPowerSlState* dfppowersl_getState(DfpPowerSlObject* obj)
+{
+    return obj->state;
+}
+
+int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject* obj)
+{
+    int i;
+    int outObj;
+
+    outObj = 0;
+    if (obj == 0)
+    {
+        return 0;
+    }
+    i = ObjHits_GetPriorityHit((GameObject*)obj, &outObj, 0, 0);
+    if (((u32)outObj != 0) && (i != 0))
+    {
+        i = 1;
+        do
+        {
+            (*gPartfxInterface)->spawnObject(obj, DFPPOWERSL_SPAWN_OBJECT_ID, 0, 1, 0xffffffff, 0);
+        } while (i++ < DFPPOWERSL_SPAWN_COUNT);
+    }
+    return 0;
+}
+
+int dfppowersl_getExtraSize(void)
+{
+    return sizeof(DfpPowerSlState);
+}
+
+void dfppowersl_free(DfpPowerSlObject* obj)
+{
+    if (obj != 0)
+    {
+        (*gExpgfxInterface)->freeSource2((u32)obj);
+    }
+    return;
+}
+
+void dfppowersl_render(DfpPowerSlObject* obj)
+{
+    DfpPowerSlObject* powerSl;
+    DfpPowerSlState* state;
+
+    powerSl = obj;
+    if ((u32)powerSl != 0)
+    {
+        state = dfppowersl_getState(powerSl);
+        if (mainGetBit(state->eventId) == 0)
+        {
+            (*gPartfxInterface)
+                ->spawnObject(powerSl, state->spawnObjectId, 0, DFPPOWERSL_SPAWN_MODE_PRELOAD, 0xffffffff, 0);
+            (*gPartfxInterface)
+                ->spawnObject(powerSl, state->spawnObjectId, 0, DFPPOWERSL_SPAWN_MODE_ACTIVE, 0xffffffff, 0);
+        }
+    }
+    return;
+}
+
+void dfppowersl_update(DfpPowerSlObject* obj)
+{
+    DfpPowerSlObject* powerSl;
+    DfpPowerSlState* state;
+
+    powerSl = obj;
+    if ((u32)powerSl != 0)
+    {
+        state = dfppowersl_getState(powerSl);
+        (*gObjectTriggerInterface)->preempt((int)powerSl, state->activateObjectId);
+        (*gObjectTriggerInterface)->runSequence(0, powerSl, 0xffffffff);
+    }
+    return;
+}
+
+void dfppowersl_init(DfpPowerSlObject* obj, DfpPowerSlMapData* mapData)
+{
+    DfpPowerSlState* state;
+
+    if (obj != 0)
+    {
+        state = dfppowersl_getState(obj);
+        if (mapData->activateObjectId <= 0)
+        {
+            mapData->activateObjectId = DFPPOWERSL_DEFAULT_PARAM_OBJECT_ID;
+        }
+        if (mapData->spawnObjectId <= 0)
+        {
+            mapData->spawnObjectId = DFPPOWERSL_DEFAULT_PARAM_OBJECT_ID;
+        }
+        obj->hitCallback = dfppowersl_spawnSeqObjectsOnHit;
+        state->activateObjectId = mapData->activateObjectId;
+        state->spawnObjectId = mapData->spawnObjectId;
+        state->eventId = mapData->eventId;
+        obj->anim.rotX = mapData->mode << DFPPOWERSL_MODE_WORD_SHIFT;
+        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DFPPOWERSL_HIT_VOLUME_SLOT, DFPPOWERSL_HIT_VOLUME_ENABLED, 0);
+    }
+    return;
+}
+
+ObjectDescriptor gDfppowerslObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)dfppowersl_init,
+    (ObjectDescriptorCallback)dfppowersl_update,
+    0,
+    (ObjectDescriptorCallback)dfppowersl_render,
+    (ObjectDescriptorCallback)dfppowersl_free,
+    0,
+    dfppowersl_getExtraSize,
+};

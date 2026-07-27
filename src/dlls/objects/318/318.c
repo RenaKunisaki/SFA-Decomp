@@ -23,7 +23,8 @@ u8 lbl_803DBDF8[8] = {0x40, 0x80, 0, 0, 0, 0, 0, 0};
 
 typedef struct DimbossicesmashPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 spawnRotX;
     s16 spawnRotY;
     s16 spawnRotZ;

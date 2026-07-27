@@ -19,16 +19,16 @@ typedef void (*BaddieStateExitFn)(struct GameObject* obj, struct BaddieState* st
  * Shared layout evidence:
  * - scarab.c (dll_CA/CB/CE: extraSizes 0x458/0x41c/0x410 - this struct is
  *   the common 0x410 prefix; nothing past 0x40C is referenced there) and
- *   mediumbasket.c (dll_CA family straddles both TUs) - converted.
+ *   slot 202's iceBaddie implementation - converted.
  * - player.c's "inner" is the SAME record (0x274 mode compares, 0x27A
  *   just-started flag, 0x346 latch, ...) - adoption left to Zac/future.
- * - treasurechest.c / dll_01B5_lightfoot.c reference the same offsets -
+ * - treasurechest.c / dlls/objects/437/437.c reference the same offsets -
  *   future passes.
  * - DR_CloudRunner's 0xBC8 extra block EMBEDS this record as its prefix
  *   (0x25F/0x28C/0x314/0x354 head + private tail from ~0x410) - layout
  *   evidence; not converted this round.
  *
- * Only fields with read/write evidence in scarab.c/mediumbasket.c are
+ * Only fields with read/write evidence in scarab.c and iceBaddie are
  * named; everything else is padded. The engine-side writers (the
  * interface implementations) own most of the unobserved head.
  */
@@ -81,7 +81,7 @@ typedef struct BaddieState {
     f32 inputMagnitude;
     void *trackedObj; /* current target/player object (cross-family census: lwz 668) */
     /* 0x2A0-0x2A7 is a PER-FAMILY UNION (lead-arbitrated): scarab and
-     * mediumbasket targets store f32 here (stfs f0,672(rN) -- the
+     * iceBaddie targets store f32 here (stfs f0,672(rN) -- the
      * published types below), but the smallbasket family's
      * target reads u16 (lhz r0,672(r30) in snowworm_update,
      * lhz r0,676(r29) in firecrawler_spawnProjectile: a *0xc move-table
@@ -102,7 +102,7 @@ typedef struct BaddieState {
     u8 pad2B2[0x2B8 - 0x2B2];
     f32 velSmoothTime; /* first-order velocity smoothing divisor: vel += t * (target - vel) / velSmoothTime */
     u8 pad2BC[0x2C0 - 0x2BC];
-    f32 targetDistance; /* sqrtf dist to targetObj (scarab/campfire/anim/mediumbasket); also (s32)-compared */
+    f32 targetDistance; /* sqrtf dist to targetObj (scarab/campfire/anim/iceBaddie); also (s32)-compared */
     u8 unk2C4[0x2D0 - 0x2C4];
     void *targetObj; /* current attack/aggro target */
     u8 pad2D4[0x2DC - 0x2D4];
@@ -150,7 +150,7 @@ typedef struct BaddieState {
     u8 unk322;
     /* 0x323-0x345 is largely PER-FAMILY scratch: magicPlant/duster/seqObj11E
      * targets use f32 timers at 0x324/0x328/0x32C/0x330/0x334 and a u16 angle
-     * at 0x338 where the published s16 fields below (mediumbasket whirlpool
+     * at 0x338 where the published s16 fields below (iceBaddie whirlpool
      * evidence) overlap them; those families keep RAW spellings here. */
     u8 unk323[0x32E - 0x323];
     s16 stateTimer; /* count-up dt-accumulating timer, gated > 0x78, reset to 0 on state entry */
@@ -204,7 +204,7 @@ STATIC_ASSERT(offsetof(BaddieState, hitPoints) == 0x354);
 
 /*
  * GroundBaddieState - BaddieState plus the route/config tail shared by the
- * ground-bug baddie cluster (scarab dll_CA/CB/CE, mediumbasket; treasurechest
+ * ground-bug baddie cluster (scarab dll_CA/CB/CE, iceBaddie; treasurechest
  * and lightfoot reference the same tail offsets). The 0x35C+ region is
  * PER-FAMILY in general: the dll_2E look-controller block sits at 0x35C for
  * DRpushcart/DIMSnowHorn1, 0x3EC for hightop, 0x4C4 for DR_CloudRunner -

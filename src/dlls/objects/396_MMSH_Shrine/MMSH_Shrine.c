@@ -38,6 +38,7 @@
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
 #include "main/dll/dll_0000_gameui.h"
+#include "game/objects/object_setup.h"
 
 /* env-effect ids fired when the shrine load-trigger timer expires (index-style; roles opaque) */
 /* camera mode DLL 0x4c = dll_004C_camDebug */
@@ -177,7 +178,8 @@ typedef struct MMSHShrineRuntime
 
 typedef struct MMSHShrinePlacement
 {
-    u8 pad00[0x1a];
+    ObjPlacement base;
+    u8 pad18[0x1a - 0x18];
     s16 initCountParam; /* 0x1a: >>8 seeds runtime initCount */
 } MMSHShrinePlacement;
 

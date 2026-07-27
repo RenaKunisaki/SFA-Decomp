@@ -1,5 +1,5 @@
 /*
- * DLL 0x2A9 - a placeable point light.
+ * DLL 681 - a placeable point light.
  *
  * On init it creates a ModelLight of kind POINT and configures it from the
  * placement record: diffuse colour (or the live ambient colour when

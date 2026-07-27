@@ -8,11 +8,6 @@
  * finds the level's linked point-light and scroll objects (by their
  * placement def ids 0x477E3 / 0x4A946 / 0x4A947) and toggles / scrolls
  * them per frame.
- *
- * The fn_8023* helpers (referenced from dll_02BC_andross.c) spawn and
- * aim the Arwing projectile/effect objects used during the boss fight,
- * and andross_processPartHits is the hit-reaction handler (three breakable hit
- * zones + texture-state swaps).
  */
 #include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"

@@ -1,41 +1,79 @@
 /*
- * DLL 0x00C8 (DepthOfFieldPoint) - depth-of-field point object
- * [0x8016CD48-0x8016CEE8).
+ * DepthOfFieldPoint (DLL 0x00C8) - placed depth-of-field focus point.
  *
- * A placed point that drives the screen blur (depth-of-field) filter.
- * Its animation-event callback (depthoffieldpoint_SeqFn) toggles the
- * filter: while enabled it feeds the point's world position plus two
- * mode bytes to turnOnBlurFilter every tick; sequence events select the
- * mode (off / default / two variants) and the update handler tears the
- * filter back down. State lives in a 3-byte extra (DofState).
+ * Sequence events enable or disable the blur filter and select its area and
+ * size modes. While enabled, the sequence callback keeps the filter focused
+ * on the object's world position.
  */
-#include "main/dll/dll_00C8_depthoffieldpoint.h"
+#include "dlls/objects/200_DepthOfFieldPoint.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/CAM/cutCam.h"
 #include "main/rcp_dolphin_api.h"
 
-#define DEPTHOFFIELDPOINT_OBJFLAG_HIDDEN 0x4000
+#define DEPTHOFFIELDPOINT_SEQEV_DISABLE       0
+#define DEPTHOFFIELDPOINT_SEQEV_ENABLE        1
+#define DEPTHOFFIELDPOINT_SEQEV_ENABLE_AREA   2
+#define DEPTHOFFIELDPOINT_SEQEV_ENABLE_BIGGER 3
 
-typedef struct DofState
-{
-    u8 enabled : 1; /* 0x00 & 0x01: blur filter currently active */
-    u8 unusedPad : 7;
-    u8 mode0;       /* 0x01: turnOnBlurFilter mode arg 1 */
-    u8 mode1;       /* 0x02: turnOnBlurFilter mode arg 2 */
-} DofState;
+int depthoffieldpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    DepthOfFieldPointState* state = obj->extra;
+    int eventIndex;
 
-/* sequence event opcodes consumed by depthoffieldpoint_SeqFn */
-enum
-{
-    DOF_SEQEV_DISABLE = 0,
-    DOF_SEQEV_ENABLE = 1,
-    DOF_SEQEV_ENABLE_MODE0 = 2,
-    DOF_SEQEV_ENABLE_MODE1 = 3
-};
+    (void)unused;
+    if (state->enabled) {
+        turnOnBlurFilter(obj->anim.worldPosX, obj->anim.worldPosY, obj->anim.worldPosZ, state->useArea, state->bigger);
+    }
+    for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
+        switch (animUpdate->eventIds[eventIndex]) {
+        case DEPTHOFFIELDPOINT_SEQEV_ENABLE:
+            state->enabled = 1;
+            state->useArea = 0;
+            break;
+        case DEPTHOFFIELDPOINT_SEQEV_DISABLE:
+            state->enabled = 0;
+            Rcp_DisableBlurFilter();
+            break;
+        case DEPTHOFFIELDPOINT_SEQEV_ENABLE_AREA:
+            state->enabled = 1;
+            state->useArea = 1;
+            state->bigger = 0;
+            break;
+        case DEPTHOFFIELDPOINT_SEQEV_ENABLE_BIGGER:
+            state->enabled = 1;
+            state->bigger = 1;
+            state->useArea = 0;
+            break;
+        }
+    }
+    return 0;
+}
+
+int depthoffieldpoint_getExtraSize(void) {
+    return sizeof(DepthOfFieldPointState);
+}
+
+void depthoffieldpoint_update(GameObject* obj) {
+    DepthOfFieldPointState* state = obj->extra;
+
+    if (state->enabled) {
+        state->enabled = 0;
+        Rcp_DisableBlurFilter();
+    }
+}
+
+void depthoffieldpoint_init(GameObject* obj) {
+    DepthOfFieldPointState* state = obj->extra;
+
+    state->enabled = 0;
+    obj->animEventCallback = depthoffieldpoint_SeqFn;
+    state->useArea = 0;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
+}
 
 ObjectDescriptor gDepthOfFieldPointObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     0,
     0,
     0,
@@ -47,81 +85,3 @@ ObjectDescriptor gDepthOfFieldPointObjDescriptor = {
     0,
     depthoffieldpoint_getExtraSize,
 };
-
-u16 lbl_803208A0[] = {
-    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
-    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
-    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
-    0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
-    0x00C2, 0x006F, 0x00C3, 0x00C3, 0x00C3, 0x00C3,
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-};
-
-u32 lbl_803208E8[] = {
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0x01020000,
-    0,
-    0,
-};
-
-int depthoffieldpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    DofState* state = obj->extra;
-    int ev;
-    if (state->enabled)
-    {
-        turnOnBlurFilter(obj->anim.worldPosX, obj->anim.worldPosY,
-                         obj->anim.worldPosZ, state->mode0, state->mode1);
-    }
-    for (ev = 0; ev < animUpdate->eventCount; ev++)
-    {
-        switch (animUpdate->eventIds[ev])
-        {
-        case DOF_SEQEV_ENABLE:
-            state->enabled = 1;
-            state->mode0 = 0;
-            break;
-        case DOF_SEQEV_DISABLE:
-            state->enabled = 0;
-            Rcp_DisableBlurFilter();
-            break;
-        case DOF_SEQEV_ENABLE_MODE0:
-            state->enabled = 1;
-            state->mode0 = 1;
-            state->mode1 = 0;
-            break;
-        case DOF_SEQEV_ENABLE_MODE1:
-            state->enabled = 1;
-            state->mode1 = 1;
-            state->mode0 = 0;
-            break;
-        }
-    }
-    return 0;
-}
-
-int depthoffieldpoint_getExtraSize(void) { return 0x3; }
-
-void depthoffieldpoint_update(GameObject* obj)
-{
-    DofState* state = obj->extra;
-    if (state->enabled)
-    {
-        state->enabled = 0;
-        Rcp_DisableBlurFilter();
-    }
-}
-
-void depthoffieldpoint_init(GameObject* obj)
-{
-    DofState* state = obj->extra;
-    state->enabled = 0;
-    obj->animEventCallback = depthoffieldpoint_SeqFn;
-    state->mode0 = 0;
-    obj->objectFlags |= DEPTHOFFIELDPOINT_OBJFLAG_HIDDEN;
-}

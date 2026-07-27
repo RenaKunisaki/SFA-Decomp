@@ -2526,8 +2526,8 @@ void ObjModel_UpdateAnimMatrices(ObjModel* model, ModelFileHeader* blend, GameOb
     ch = ((ObjModel*)model)->animStateA;
     if (ch->moveControlFlags & 4)
     {
-        ObjModel_SampleJointTransform((ObjModel*)model, 0, 0, ((GameObject*)obj)->anim.currentMoveProgress,
-                                      ((GameObject*)obj)->anim.rootMotionScale, pos, rot);
+        ObjModel_SampleJointTransform((ObjModel*)model, 0, 0, obj->anim.currentMoveProgress,
+                                      obj->anim.rootMotionScale, pos, rot);
         gModelRootRotX = rot[0];
         gModelRootRotY = rot[1];
         gModelRootRotZ = rot[2];
@@ -2535,30 +2535,30 @@ void ObjModel_UpdateAnimMatrices(ObjModel* model, ModelFileHeader* blend, GameOb
     if (*(u16*)((u8*)((ObjModel*)model)->file + 2) & 8)
     {
         modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x2c),
-                              ((GameObject*)obj)->anim.currentMoveProgress, 0x7f);
+                              obj->anim.currentMoveProgress, 0x7f);
     }
     else if (((ObjAnimState*)((ObjModel*)model)->animStateA)->moveControlFlags & OBJANIM_MOVE_CONTROL_REFRESH_SAVED_STEP)
     {
         ch2 = ((ObjModel*)model)->animStateB;
-        modelAnimEvalSlotPair((u8*)dst, model, ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 0, 2, 0x14,
+        modelAnimEvalSlotPair((u8*)dst, model, ch, obj->anim.currentMoveProgress, 0x7f, 0, 0, 2, 0x14,
                              (s16)ch->eventState);
-        modelAnimEvalSlotPair((u8*)dst, model, ch2, ((GameObject*)obj)->anim.activeMoveProgress, 0x7f, 0, 0, 2, 0x18,
+        modelAnimEvalSlotPair((u8*)dst, model, ch2, obj->anim.activeMoveProgress, 0x7f, 0, 0, 2, 0x18,
                              (s16)ch2->eventState);
-        modelAnimEvalSlotPair((u8*)dst, model, ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 0, 0, 7,
+        modelAnimEvalSlotPair((u8*)dst, model, ch, obj->anim.currentMoveProgress, 0x7f, 0, 0, 0, 7,
                              (s16)ch2->eventCountdown);
-        modelAnimEvalSlotPair((u8*)dst, model, ch, ((GameObject*)obj)->anim.currentMoveProgress, 0x7f, 0, 1, 1, 1,
+        modelAnimEvalSlotPair((u8*)dst, model, ch, obj->anim.currentMoveProgress, 0x7f, 0, 1, 1, 1,
                              (s16)ch->eventCountdown);
     }
     else
     {
         modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x2c),
-                              ((GameObject*)obj)->anim.currentMoveProgress, 0x7f);
+                              obj->anim.currentMoveProgress, 0x7f);
         ch2 = ((ObjModel*)model)->animStateB;
-        if (ch2 != NULL && ((GameObject*)obj)->anim.activeMove > -1)
+        if (ch2 != NULL && obj->anim.activeMove > -1)
         {
             ObjModel_BuildAnimBlendTable((u8*)obj, *(u8**)((u8*)model + 0x30), (u8*)blend);
             modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x30),
-                                  ((GameObject*)obj)->anim.activeMoveProgress, -1);
+                                  obj->anim.activeMoveProgress, -1);
         }
     }
 }

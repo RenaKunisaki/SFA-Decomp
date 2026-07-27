@@ -1,5 +1,5 @@
 /*
- * DR_CageControl (DLL 0x268) - drives a cage that opens in response to
+ * DR_CageCont (DLL 616) - drives a cage that opens in response to
  * game bits. The placement supplies the game bit that arms the cage
  * and the bit watched by the trigger callback to play the pickup sfx
  * and report completion.
@@ -15,7 +15,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0268_drcagecontrol.h"
 #include "dlls/object_descriptor.h"
-
 
 int DR_CageControl_SeqFn(GameObject* obj)
 {

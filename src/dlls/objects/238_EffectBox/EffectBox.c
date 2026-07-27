@@ -1,28 +1,25 @@
 /*
- * EffectBox (DLL 0xEE) - an oriented box trigger volume placed in a
- * level. Each frame EffectBox_update transforms a candidate object's
- * position into the box's local space (yaw/pitch from the placement) and,
- * if it lies inside the box extents, fires an action on that object.
+ * Oriented box-trigger volume (DLL slot 238 / 0xEE).
  *
- * The placement's targetMode selects the candidate set: 0 = the player,
- * 1 = Tricky, 2 = every object in object group 5. The action depends on
- * the same mode (the player gets fn_80295918 with actionArg; group members get
- * their action callback). A non-negative placement game bit gates the
- * box: it only runs while the bit's value differs from gameBitValue.
+ * Each update transforms the selected objects into the box's local space. The
+ * placement selects the player, Tricky, or object group 5 and can gate the
+ * trigger with a game bit. Player and group targets receive mode-specific
+ * actions when they enter the box; the Tricky action is a no-op.
  */
+#include "dlls/objects/238_EffectBox.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "game/objects/object.h"
 #include "main/dll/player_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "sys/objects/lifecycle.h"
 #include "main/gamebits.h"
-#include "game/objects/object_setup.h"
-#include "dlls/object_descriptor.h"
 #include "main/obj_group.h"
-#include "sys/objects.h"
 #include "main/object_render.h"
-#include "main/dll/dll_00EE_effectbox.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define EFFECTBOX_TARGET_OBJGROUP 5
+#define EFFECTBOX_TARGET_OBJECT_GROUP 5
+#define EFFECTBOX_OBJECT_TYPE_ID      0
+#define EFFECTBOX_NO_GAME_BIT         -1
+#define EFFECTBOX_PLAYER_ACTION       1
 
 #define EFFECTBOX_RENDER_SCALE 1.0f
 #define EFFECTBOX_PI           3.1415927f
@@ -31,185 +28,164 @@
 
 typedef void (*EffectBoxActionCallback)(GameObject* obj, int actionArg);
 
-typedef struct EffectBoxTargetInterface
-{
+typedef struct EffectBoxTargetInterface {
     void* callbacks[10];
     EffectBoxActionCallback applyAction;
 } EffectBoxTargetInterface;
 
 STATIC_ASSERT(offsetof(EffectBoxTargetInterface, applyAction) == 0x28);
 
-int EffectBox_getExtraSize(void)
-{
-    return 0x0;
-}
-int EffectBox_getObjectTypeId(void)
-{
-    return 0x0;
+int EffectBox_getExtraSize(void) {
+    return 0;
 }
 
-void EffectBox_free(GameObject* obj)
-{
+int EffectBox_getObjectTypeId(void) {
+    return EFFECTBOX_OBJECT_TYPE_ID;
+}
+
+void EffectBox_free(GameObject* obj) {
     Obj_UnregisterEffectBox(obj);
 }
 
-void EffectBox_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, EFFECTBOX_RENDER_SCALE);
+void EffectBox_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, EFFECTBOX_RENDER_SCALE);
+    }
 }
 
-void EffectBox_hitDetect(void)
-{
+void EffectBox_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void EffectBox_update(GameObject* obj)
-{
-    GameObject** list;
-    EffectboxPlacement* placement;
-    GameObject* single;
-    int count;
-    int i;
-    GameObject* other;
-    f32 cosY;
-    f32 sinY;
-    f32 cosX;
-    f32 sinX;
-    f32 negExtX;
-    f32 negExtZ;
-    f32 extX;
-    f32 extY;
-    f32 extZ;
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 proj;
+void EffectBox_update(GameObject* obj) {
+    GameObject** targets;
+    EffectBoxPlacement* placement;
+    GameObject* singleTarget;
+    int targetCount;
+    int targetIndex;
+    GameObject* target;
+    f32 yawCos;
+    f32 yawSin;
+    f32 pitchCos;
+    f32 pitchSin;
+    f32 negativeExtentX;
+    f32 negativeExtentZ;
+    f32 extentX;
+    f32 extentY;
+    f32 extentZ;
+    f32 offsetX;
+    f32 offsetY;
+    f32 offsetZ;
+    f32 projection;
     int gateGameBit;
 
-    placement = (EffectboxPlacement*)obj->anim.placementData;
+    placement = (EffectBoxPlacement*)obj->anim.placementData;
     gateGameBit = obj->userData2;
-    if ((gateGameBit <= -1) || (placement->gameBitValue != mainGetBit(gateGameBit)))
-    {
-        cosY = mathCosf((EFFECTBOX_PI * (f32) - (placement->rotYaw << 8)) / EFFECTBOX_ANGLE_SCALE);
-        sinY = mathSinf((EFFECTBOX_PI * (f32) - (placement->rotYaw << 8)) / EFFECTBOX_ANGLE_SCALE);
-        cosX = mathCosf((EFFECTBOX_PI * (f32) - (placement->rotPitch << 8)) / EFFECTBOX_ANGLE_SCALE);
-        sinX = mathSinf((EFFECTBOX_PI * (f32) - (placement->rotPitch << 8)) / EFFECTBOX_ANGLE_SCALE);
-        extX = (f32)placement->extentX;
-        extY = (f32)(placement->extentY << 1);
-        extZ = (f32)placement->extentZ;
-        switch (placement->targetMode)
-        {
+    if (gateGameBit <= EFFECTBOX_NO_GAME_BIT || placement->gameBitValue != mainGetBit(gateGameBit)) {
+        yawCos = mathCosf((EFFECTBOX_PI * (f32)(-(placement->rotYaw << 8))) / EFFECTBOX_ANGLE_SCALE);
+        yawSin = mathSinf((EFFECTBOX_PI * (f32)(-(placement->rotYaw << 8))) / EFFECTBOX_ANGLE_SCALE);
+        pitchCos = mathCosf((EFFECTBOX_PI * (f32)(-(placement->rotPitch << 8))) / EFFECTBOX_ANGLE_SCALE);
+        pitchSin = mathSinf((EFFECTBOX_PI * (f32)(-(placement->rotPitch << 8))) / EFFECTBOX_ANGLE_SCALE);
+        extentX = (f32)placement->extentX;
+        extentY = (f32)(placement->extentY << 1);
+        extentZ = (f32)placement->extentZ;
+        switch (placement->targetMode) {
         case EFFECTBOX_TARGET_PLAYER:
-            single = Obj_GetPlayerObject();
-            if (single == NULL)
-            {
+            singleTarget = Obj_GetPlayerObject();
+            if (singleTarget == NULL) {
                 return;
             }
-            list = &single;
-            count = 1;
+            targets = &singleTarget;
+            targetCount = 1;
             break;
         case EFFECTBOX_TARGET_TRICKY:
-            single = getTrickyObject();
-            if (single == NULL)
-            {
+            singleTarget = getTrickyObject();
+            if (singleTarget == NULL) {
                 return;
             }
-            list = &single;
-            count = 1;
+            targets = &singleTarget;
+            targetCount = 1;
             break;
         case EFFECTBOX_TARGET_GROUP:
-            list = (GameObject**)ObjGroup_GetObjects(EFFECTBOX_TARGET_OBJGROUP, &count);
-            if (list == NULL)
-            {
+            targets = (GameObject**)ObjGroup_GetObjects(EFFECTBOX_TARGET_OBJECT_GROUP, &targetCount);
+            if (targets == NULL) {
                 return;
             }
             break;
         }
-        i = 0;
-        negExtX = -extX;
-        negExtZ = -extZ;
-        for (; i < count; i++)
-        {
-            other = *list;
-            dx = other->anim.localPosX;
-            dy = other->anim.localPosY;
-            dz = other->anim.localPosZ;
-            dx = dx - obj->anim.localPosX;
-            dy = dy - obj->anim.localPosY;
-            dz = dz - obj->anim.localPosZ;
-            proj = dx * cosY + dz * sinY;
-            if ((proj > negExtX) && (proj < extX))
-            {
-                proj = (-dx) * sinY + dz * cosY;
-                proj = (-dy) * sinX + proj * cosX;
-                if ((proj > negExtZ) && (proj < extZ))
-                {
-                    proj = dy * cosX + proj * sinX;
-                    if ((proj >= EFFECTBOX_ZERO) && (proj < extY))
-                    {
-                        switch (placement->targetMode)
-                        {
+        targetIndex = 0;
+        negativeExtentX = -extentX;
+        negativeExtentZ = -extentZ;
+        for (; targetIndex < targetCount; targetIndex++) {
+            target = *targets;
+            offsetX = target->anim.localPosX;
+            offsetY = target->anim.localPosY;
+            offsetZ = target->anim.localPosZ;
+            offsetX = offsetX - obj->anim.localPosX;
+            offsetY = offsetY - obj->anim.localPosY;
+            offsetZ = offsetZ - obj->anim.localPosZ;
+            projection = offsetX * yawCos + offsetZ * yawSin;
+            if (projection > negativeExtentX && projection < extentX) {
+                projection = (-offsetX) * yawSin + offsetZ * yawCos;
+                projection = (-offsetY) * pitchSin + projection * pitchCos;
+                if (projection > negativeExtentZ && projection < extentZ) {
+                    projection = offsetY * pitchCos + projection * pitchSin;
+                    if (projection >= EFFECTBOX_ZERO && projection < extentY) {
+                        switch (placement->targetMode) {
                         case EFFECTBOX_TARGET_TRICKY:
                             break;
                         case EFFECTBOX_TARGET_PLAYER:
-                            fn_80295918(other, 1, (f32)placement->actionArg);
+                            fn_80295918(target, EFFECTBOX_PLAYER_ACTION, (f32)placement->actionArg);
                             break;
                         case EFFECTBOX_TARGET_GROUP:
-                            ((EffectBoxTargetInterface*)*other->anim.dll)->applyAction(
-                                other, placement->actionArg);
+                            ((EffectBoxTargetInterface*)*target->anim.dll)->applyAction(target, placement->actionArg);
                             break;
                         }
                     }
                 }
             }
-            list++;
+            targets++;
         }
     }
 }
 
-void EffectBox_init(GameObject* obj, EffectboxPlacement* placement)
-{
+void EffectBox_init(GameObject* obj, EffectBoxPlacement* placement) {
     s16 gateGameBit;
-    u32 flags;
-    if (obj->userData1 == 0)
-    {
+    u32 objectFlags;
+
+    if (obj->userData1 == 0) {
         Obj_RegisterEffectBox(obj);
     }
     obj->userData1 = 1;
     gateGameBit = placement->gameBitIndex;
-    if (gateGameBit > -1)
-    {
+    if (gateGameBit > EFFECTBOX_NO_GAME_BIT) {
         obj->userData2 = gateGameBit;
+    } else {
+        obj->userData2 = EFFECTBOX_NO_GAME_BIT;
     }
-    else
-    {
-        obj->userData2 = -1;
-    }
-    flags = (u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    obj->objectFlags = flags;
+    objectFlags = (u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags = objectFlags;
 }
 
-void EffectBox_release(void)
-{
+void EffectBox_release(void) {
 }
 
-void EffectBox_initialise(void)
-{
+void EffectBox_initialise(void) {
 }
 
 ObjectDescriptor gEffectBoxObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)EffectBox_initialise,
-    (ObjectDescriptorCallback)EffectBox_release,
-    0,
-    (ObjectDescriptorCallback)EffectBox_init,
-    (ObjectDescriptorCallback)EffectBox_update,
-    (ObjectDescriptorCallback)EffectBox_hitDetect,
-    (ObjectDescriptorCallback)EffectBox_render,
-    (ObjectDescriptorCallback)EffectBox_free,
-    (ObjectDescriptorCallback)EffectBox_getObjectTypeId,
-    EffectBox_getExtraSize,
+    0,                                                   /* reserved0 */
+    0,                                                   /* reserved1 */
+    0,                                                   /* reserved2 */
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,                    /* slotCountAndFlags */
+    (ObjectDescriptorCallback)EffectBox_initialise,      /* initialise */
+    (ObjectDescriptorCallback)EffectBox_release,         /* release */
+    0,                                                   /* slot02 */
+    (ObjectDescriptorCallback)EffectBox_init,            /* init */
+    (ObjectDescriptorCallback)EffectBox_update,          /* update */
+    (ObjectDescriptorCallback)EffectBox_hitDetect,       /* hitDetect */
+    (ObjectDescriptorCallback)EffectBox_render,          /* render */
+    (ObjectDescriptorCallback)EffectBox_free,            /* free */
+    (ObjectDescriptorCallback)EffectBox_getObjectTypeId, /* getObjectTypeId */
+    EffectBox_getExtraSize,                              /* getExtraSize */
 };

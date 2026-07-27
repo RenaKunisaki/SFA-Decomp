@@ -57,9 +57,6 @@ STATIC_ASSERT(sizeof(CntHitObjectSetup) == 0x24);
 STATIC_ASSERT(offsetof(CntHitObjectAnimEvent, explosionIds) == 0x81);
 STATIC_ASSERT(offsetof(CntHitObjectAnimEvent, explosionCount) == 0x8B);
 
-extern int* lbl_8032BEF8[];
-extern u8 lbl_803DC42C[4];
-extern int lbl_803DC428;
 extern ObjectDescriptor11ExtraSize gCNThitObjecObjDescriptor;
 
 int cnthitobjec_getExtraSize(void);

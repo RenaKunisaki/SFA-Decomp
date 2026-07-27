@@ -16,9 +16,25 @@ force_active:
   # dll_012B_fxemit.c: the retail link retained this unreferenced .sdata2 zero
   # atom; dropping it would shorten the pool and shift later SDA2 references.
   - lbl_803E3E44
+  # gcrobotpatrol.c: the retail link retained this unreferenced .sdata2 zero
+  # atom; dropping it would shorten the pool and shift the mikaladon SDA2
+  # references that follow it.
+  - gGcRobotPatrolZero
   # aram_data.c: the retail link retained this unreferenced .bss block;
   # dropping it would shorten the section and shift every later .bss address.
   - lbl_803D4868
+  # picmenu.c: the retail link retained the thread message buffers and the
+  # video-decode stack even though live code reaches them only through the
+  # surrounding thread-area base pointers; dropping them would shorten .bss
+  # and shift every later .bss/.sdata address.
+  - gPicMenuReadedBuffer2Messages
+  - gPicMenuReadedBufferMessages
+  - gPicMenuFreeReadBufferMessages
+  - gPicMenuVideoDecodeThreadStack
+  # gameloop.c: the retail link retained this uncalled function (its jumptable
+  # and the .sbss word only it reads come along via its own references);
+  # dropping it would shorten .text and shift every later section.
+  - cardShowMessage
 
 # Path to the main.dol file.
 object: sys/main.dol

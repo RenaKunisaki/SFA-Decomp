@@ -203,7 +203,7 @@ void weevil_updateIdle(GameObject* obj, int state)
 }
 
 
-void weevil_updateEngaged(int obj, int state)
+void weevil_updateEngaged(GameObject* obj, int state)
 {
     u8 done;
 
@@ -215,14 +215,14 @@ void weevil_updateEngaged(int obj, int state)
         done = 1;
         ((WeevilState*)state)->approachTimer = 360.0f;
         ((WeevilState*)state)->recoverTimer = gWeevilZero;
-        if (((GameObject*)obj)->anim.currentMove != 0)
+        if (obj->anim.currentMove != 0)
         {
-            fn_8014D08C((GameObject*)obj, state, 2, gWeevilHalf, 0, 3);
+            fn_8014D08C(obj, state, 2, gWeevilHalf, 0, 3);
         }
     }
-    if (((GameObject*)obj)->anim.currentMove != 3)
+    if (obj->anim.currentMove != 3)
     {
-        baddieTurnTowardPoint((GameObject*)obj, state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
+        baddieTurnTowardPoint(obj, state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x3c, 0);
     }
     else
@@ -233,7 +233,7 @@ void weevil_updateEngaged(int obj, int state)
             done = 1;
             ((WeevilState*)state)->recoverTimer = gWeevilRecoverDurationFrames;
             ((WeevilState*)state)->approachTimer = gWeevilApproachDurationFrames;
-            fn_8014D08C((GameObject*)obj, state, 4, gWeevilMoveBlendSpeed, 0, 3);
+            fn_8014D08C(obj, state, 4, gWeevilMoveBlendSpeed, 0, 3);
         }
     }
     if (done != 0)
@@ -243,19 +243,19 @@ void weevil_updateEngaged(int obj, int state)
     else if (((BaddieState*)state)->userData1 == 0)
     {
         ((BaddieState*)state)->userData1 = 1;
-        fn_8014D08C((GameObject*)obj, state, 1, 0.35f, 0, 3);
+        fn_8014D08C(obj, state, 1, 0.35f, 0, 3);
     }
     else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 &&
-             (fn_8014D08C((GameObject*)obj, state, 3, 0.375f, 0, 3),
+             (fn_8014D08C(obj, state, 3, 0.375f, 0, 3),
               gWeevilZero == ((WeevilState*)state)->retreatTimer))
     {
         ((WeevilState*)state)->retreatTimer = 50.0f;
-        baddieTurnTowardPoint((GameObject*)obj, state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
+        baddieTurnTowardPoint(obj, state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 1, 0);
-        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_25d);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25d);
     }
-    ((GameObject*)obj)->anim.rotY = ((BaddieState*)state)->spawnRotY;
-    ((GameObject*)obj)->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+    obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
+    obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
     if (((BaddieState*)state)->userData2 != 0)
     {
         ((BaddieState*)state)->userData2 -= 1;

@@ -200,7 +200,7 @@ Offset|Wiki name|`ObjDef` field|Evidence
 0x4a|shadowTexture|`shadowTextureId` (`s16`)|Exact match.
 0x4e|hitbox_flags60|`hitboxFlags` (`s16`)|Exact offset match, and the wiki's "60" suffix is explained below — see the `ObjHitsPriorityState` cross-reference.
 0x50|dll_id|**not named** (raw `*(s16*)(def+0x50)`)|**Confirmed**: `loadCharacter`: `if ((int)*(s16*)(def + 0x50) != -1) tmpl.dll = Resource_Acquire(*(s16*)(def + 0x50) & 0xffff, 6);`. This is *the* field behind every `src/main/dll/dll_XXXX_*.c` file name in the repo (729 such files under `src/main/dll/`).
-0x52|category (`ObjCategory`)|**not named** (raw `*(s16*)(def+0x52)`, local var `f44` in `loadCharacter`'s `LoadedObj`)|Read as `tmpl.f44 = *(s16*)(def + 0x52);`. This is the same id our own `tools/orig/object_catalog.py`/`object_class_packets.py` call `class_id` — a large space of romlist "type" ids (hundreds, not a small enum; see e.g. `WMOBJCREATOR_SPAWN_WM_WALLCRAWLER = 0x275` in `src/main/dll/WM/dll_01F9_wmobjcreator.c`, or "type 0x275"/"type 0x179" callouts in `dll_0211_wmwallcrawler.c`/`dll_0207_wmworm.c`).
+0x52|category (`ObjCategory`)|**not named** (raw `*(s16*)(def+0x52)`, local var `f44` in `loadCharacter`'s `LoadedObj`)|Read as `tmpl.f44 = *(s16*)(def + 0x52);`. This is the same id our own `tools/orig/object_catalog.py`/`object_class_packets.py` call `class_id` — a large space of romlist "type" ids (hundreds, not a small enum; see e.g. `WMOBJCREATOR_SPAWN_WM_WALLCRAWLER = 0x275` in `src/dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c`, or the related code in `src/dlls/objects/529/529.c`).
 0x55|nModels|`modelCount` (`s8`)|Exact offset match.
 0x56|numPlayerObjs|`group8RegistrationCount` (`s8`)|**Confirmed**, and better-named than the wiki's guess: `if (...->group8RegistrationCount > 0) ObjGroup_RemoveObject((u32)obj, 8);` (`object.c:1580`) is the teardown mirror of the wiki's `objAddObjectType(obj, 8)`.
 0x58|nAttachPoints (`noplacements`)|**not found** (inside `pad57` gap, 0x57-0x58)|Never read in `src/`.
@@ -276,7 +276,7 @@ Every one of these seven pairs matches exactly, independently confirming both th
 - **`0x7c` help texts, 4 vs. 8 entries**: the wiki says `GameTextId[4]` (8 bytes, ending 0x84), and
   our own `tools/orig/object_catalog.py` independently reads exactly 4 `u16`s at this offset too.
   Every DLL call site found in this pass (`dll_a6.c:75`, `dll_0189_ccsharpclawpad.c:81`,
-  `src/dlls/objects/290_CCTestInfot/CCTestInfot.c:59`, `dll_01B1_shstaff.c:442`,
+  `src/dlls/objects/290_CCTestInfot/CCTestInfot.c:59`, `src/dlls/objects/433_SH_staff/SH_staff.c:408`,
   `src/dlls/objects/289/289.c:32`) indexes
   `helpTextIds[0..3]`-range values only. But `ObjDef.helpTextIds` in
   `include/main/objanim_internal.h:256` is declared `s16[8]` (16 bytes, 0x7C-0x8B), which would

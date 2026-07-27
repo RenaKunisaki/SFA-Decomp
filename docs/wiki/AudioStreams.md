@@ -1207,7 +1207,7 @@ the same area abbreviations as this wiki's stream directories (KP, TTH, DIM, CRF
 
 ### Callers (what actually plays a stream, and which wiki directory it lines up with)
 
-- **`src/main/dll/ARW/dll_02A1_arwlevelcon.c`** (`arwlevelcon_update`) — one instance per on-rails
+- **`src/dlls/objects/673_ARWLevelCon/ARWLevelCon.c`** (`arwlevelcon_update`) — one instance per on-rails
   Arwing course; `ARWLevelConState.streamId` (set per `mapEventSlot`) is passed straight to
   `AudioStream_Play`. This is the code behind the wiki's five `ARW/2*.adp` course files.
 - **`src/main/objseq.c`** — the cutscene/map-event sequencer. `gObjSeqStreamTableA`/`gObjSeqStreamTableB`
@@ -1255,11 +1255,11 @@ the wiki's own "?" guesses:
 | `DFS` | one of the Krazoa Spirit shrines | Confirmed: `"dfshrine"` (mapId 39). |
 | `DIM` | DarkIce Mines | Confirmed: `"darkicemines"`(26) / `"darkicemines2"`(34). |
 | `DR` | Dragon Rock | Confirmed: `"dragrock"`(4) / `"dragrockbot"`(10). |
-| `GB` | Ship Battle | Confirmed: `"shipbattle"`(13); `src/main/dll/SB/dll_01E8_sbgalleon.c` comment: `"SB" is the retail map name "ShipBattle"`. |
+| `GB` | Ship Battle | Confirmed: `"shipbattle"`(13); `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` is the corresponding galleon object. |
 | `GF` | Game Front? or Great Fox? | **Both** exist as separate maps: `"gamefront"`(61) and `"greatfox"`(63) — resolves the wiki's own uncertainty; it isn't one or the other. |
 | `IM` | Ice Mountain | Confirmed: `"icemountain"`(30); plus `"newicemount"`/`"newicemount2"`/`"newicemount3"` sub-maps. |
 | `KP` | Krazoa Palace | Confirmed via two names: `"krazoapalace"` (sub-map table) and the canonical by-id name `"warlock"`(15). `src/main/dll/WM/*` (`wmspiritplace`, `wmsun`, `wmplanets`, `wmwallcrawler`, `wmseqpoint`) are the Krazoa-Palace/spirit-world DLLs. `MUSICTRIG_KP_Text` reuses "KP" directly. |
-| `LV` | LightFoot Village | Confirmed: `"lightfoot"`(21); internal map name `"swapcircle"`, `src/main/dll/SC/dll_01B6_sclevelcontrol.c`: "Master controller for the LightFoot Village (map `swapcircle`...)". |
+| `LV` | LightFoot Village | Confirmed: `"lightfoot"`(21); internal map name `"swapcircle"`, `src/dlls/objects/438_SC_levelcon/SC_levelcon.c`: "Master controller for the LightFoot Village (map `swapcircle`...)". |
 | `MAP` | World Map | Confirmed: `"worldmap"`(45). |
 | `MC` | Magic Cave? or Maze Cave? | Confirmed: `"magiccave"`(38) is a real map — "Magic Cave" is right. A separate, apparently unrelated `"mazecave"`(9) also exists; the two guesses turn out to both be real but distinct maps, and the 2-file `MC` stream folder (`MCaveIn`/`MCaveOut`) most likely corresponds to `"magiccave"`. |
 | `MMP` | Moon Mountain Pass | Confirmed: `"moonpass"` (sub-map table) / `"mmpass"` (by-id table, 25). |
@@ -1267,7 +1267,7 @@ the wiki's own "?" guesses:
 | `SSH` | WarpStone ("SwapStone Hollow"?) | Confirmed: `"swaphol"`(12) / `"swapholbot"`(19) — directly spells out "SwapHol[low]". |
 | `SW` | SnowHorn Wastes | Confirmed as a location, but our internal 2-letter code is `Nw`, not `Sw`: `"nwastes"`(14); `src/dlls/objects/408_NWSH_levcon/NWSH_levcon.c`: "the SnowHorn level controller for SnowHorn Wastes (map `nwastes`...)". |
 | `TREX` | T-Rex Boss | Confirmed: `"bosstrex"`(53) / `"trexboss"` (sub-map table). |
-| `VFP` | Volcano Force Point | Confirmed: `"volcano"`(7); `src/main/dll/VF/dll_0216_vfplevelcontrol.c`: "the Volcano Force Point Temple". |
+| `VFP` | Volcano Force Point | Confirmed: `"volcano"`(7); `src/dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c`: "the Volcano Force Point Temple". |
 | `WC` | Walled City | Confirmed: `"wallcity"`(20); `src/dlls/objects/650/650.c`: "the Walled City (WC)". |
 | `AN`, `GNR`, `KS`, `OFP`, `SSS`, `TOSKL`, `TTH` | (mostly unconfirmed in the wiki itself) | Not found as an exact map-table name. `AN` might correspond to the `"animtest"` placeholder map (used as a filler entry for ~20 unused mapIds) but that's speculative. `SSS`'s files all carry a `_sk`/`_cr` speaker suffix (ShopKeeper/CloudRunner) and could plausibly be `"swapstore"` (a Shop sub-room inside SwapStone Hollow) but this isn't confirmed either. `TOSKL` may relate to `"kraztest"` (sub-map table) and `MUSICTRIG_test_of_fear` (triggered from `src/main/dll/dll_0195_dbshshrine.c`'s `dbsh_shrine` Krazoa-shrine object — that file's own header comment guesses its map is a "Discovered/Bone-shop", though the literal map-table name `"dbshrine"` is arguably a better fit for its "dbsh" abbreviation), also unconfirmed. `TTH` (ThornTail Hollow) has no matching map-table string found, but `MUSICTRIG_TTH_Fight`/`MUSICTRIG_TTH_Night` use the same "TTH" abbreviation directly. `KS`/`OFP`/`GNR` — not found anywhere in the source tree. |
 

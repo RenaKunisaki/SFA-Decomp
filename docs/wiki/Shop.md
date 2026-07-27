@@ -82,7 +82,7 @@ The shop is implemented by three DLLs (per this repo's own [DLLs](DLLs.md) /
 |--------|-----------|-----------|
 | `0x284` | shop item pickup/model | `src/dlls/objects/644/644.c`, `include/main/dll/dll_0284_shopitem.h` — `shopitem_*` symbols |
 | `0x285` | the shop stall / item-table manager | `src/dlls/objects/645_SPShop/SPShop.c` — `shop_*` symbols |
-| `0x286` | the ShopKeeper NPC | `src/main/dll/SP/dll_0286_spshopkeeper.c`, `include/main/dll/shopkeeperstate_struct.h` — `ShopKeeper_*` symbols |
+| `0x286` | the ShopKeeper NPC | `src/dlls/objects/646_SPShopKeepe/SPShopKeepe.c`, `include/main/dll/shopkeeperstate_struct.h` — `ShopKeeper_*` symbols |
 | `0x287` | scarab coins the ShopKeeper scatters on purchase (`OBJTYPE_SPSCARAB` = 1151) | `src/dlls/objects/647_SPScarab/SPScarab.c` |
 
 `docs/wiki/DLLs.md` (`| 284 | ShopItem |`, `| 285 | Shop |`, `| 286 | ShopKeeper |`, `| 287 |
@@ -191,7 +191,7 @@ glance), `CC` = Cape Claw, `DIM` = DarkIce Mines, `VFP` = Volcano Force Point. O
 `GAMEBIT_ITEM_MapLV_Got` uses `LV`, but the same legend gives Lightfoot Village's prefix as `LF` —
 that one mismatch is called out here rather than papered over.)
 
-Other shop-related GameBits used directly in `SPShop.c` and already named in
+Other shop-related GameBits used directly in `dll_0285_spshop.c` and already named in
 `gamebits.h`, confirmed by literal id:
 
 - `mainSetBits(0xefe, 1)` in `shop_initBody` / `mainSetBits(3838, 0)` (`0xefe` in decimal) in

@@ -33,6 +33,17 @@ s16 gVortexRotZTable[2] = {-1024, 1024};
 #define VORTEX_OBJ_SKYVORTC  0x29a /* SkyVortC */
 #define VORTEX_OBJ_SKYVORTS  0x829 /* SkyVortS */
 
+#define VORTEX_ZERO                        0.0f
+#define VORTEX_TEXTURE_SCROLL_SPEED        128.0f
+#define VORTEX_PARTICLE_INTERVAL           20.0f
+#define VORTEX_RADIUS_PARAM_SCALE          16384.0f
+#define VORTEX_FULL_ALPHA                  1.0f
+#define VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED 127.0f
+#define VORTEX_DIMPIT_VERTICAL_OFFSET      80.0f
+#define VORTEX_DEFAULT_VERTICAL_OFFSET     250.0f
+#define VORTEX_ALPHA_FADE_SPEED            0.01f
+#define VORTEX_CULL_DISTANCE_SCALE         2.0f
+
 int Vortex_getExtraSize(void)
 {
     return 0x28;
@@ -71,14 +82,14 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     hudHidden = getHudHiddenFrameCount();
     if (hudHidden != 0)
     {
-        dt = lbl_803E73D0;
+        dt = VORTEX_ZERO;
     }
     else
     {
         dt = timeDelta;
     }
 
-    if (state->flags.active == 0 && state->alpha == lbl_803E73D0)
+    if (state->flags.active == 0 && state->alpha == VORTEX_ZERO)
     {
         return;
     }
@@ -99,15 +110,15 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             }
             if (reverse != 0)
             {
-                texture->offsetS = (s16)(texture->offsetS - (int)(lbl_803E73D4 * dt));
-                if ((f32)texture->offsetS <= lbl_803E73D0)
+                texture->offsetS = (s16)(texture->offsetS - (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
+                if ((f32)texture->offsetS <= VORTEX_ZERO)
                 {
                     texture->offsetS += 10000;
                 }
             }
             else
             {
-                texture->offsetS = (s16)(texture->offsetS + (int)(lbl_803E73D4 * dt));
+                texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
                 if (texture->offsetS >= 10000)
                 {
                     texture->offsetS -= 10000;
@@ -116,12 +127,12 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         }
 
         state->particleTimer = state->particleTimer - dt;
-        if (state->particleTimer <= lbl_803E73D0 && hudHidden == 0)
+        if (state->particleTimer <= VORTEX_ZERO && hudHidden == 0)
         {
-            state->particleTimer = lbl_803E73D8;
-            particleArgs.scale = ((f32)setup->radiusParam / gVortexRadiusParamScale) *
+            state->particleTimer = VORTEX_PARTICLE_INTERVAL;
+            particleArgs.scale = ((f32)setup->radiusParam / VORTEX_RADIUS_PARAM_SCALE) *
                               (obj->anim.rootMotionScale * state->alpha);
-            particleArgs.posY = lbl_803E73D0;
+            particleArgs.posY = VORTEX_ZERO;
             (*gPartfxInterface)->spawnObject((void*)obj, VORTEX_PARTFX_A, &particleArgs, 2, -1, NULL);
         }
 
@@ -135,11 +146,11 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             obj->anim.rotZ = gVortexRotZTable[i];
             obj->anim.rotX = state->angles[i];
             state->angles[i] = state->angles[i] + dt * gVortexAngleSpeed835[i];
-            obj->anim.rootMotionScale = ((f32)setup->radiusParam / gVortexRadiusParamScale) *
+            obj->anim.rootMotionScale = ((f32)setup->radiusParam / VORTEX_RADIUS_PARAM_SCALE) *
                                         (state->alpha * (state->radiusScale[i] * objScale));
             *((u8*)obj + 0x37) = state->alpha * (state->alphaScale[i] * (f32)(u32)objAlpha);
             ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~8);
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E73E0);
+            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, VORTEX_FULL_ALPHA);
         }
         obj->anim.rootMotionScale = objScale;
         obj->anim.alpha = objAlpha;
@@ -151,9 +162,9 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetS = (s16)(texture->offsetS + (int)(lbl_803E73E4 * dt));
+            texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt));
         }
-        obj->anim.rotX = (s16)(obj->anim.rotX + (int)(lbl_803E73D4 * dt));
+        obj->anim.rotX = (s16)(obj->anim.rotX + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
         if (texture->offsetS >= 10000)
         {
             texture->offsetS -= 10000;
@@ -171,11 +182,11 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             obj->anim.rootMotionScale = state->alpha * (state->radiusScale[i] * objScale);
             *((u8*)obj + 0x37) = state->alpha * (state->alphaScale[i] * (f32)(u32)objAlpha);
             {
-                f32 radius = lbl_803E73E8 * state->radiusScale[i];
+                f32 radius = VORTEX_DIMPIT_VERTICAL_OFFSET * state->radiusScale[i];
                 obj->anim.localPosY = objZ - radius * state->alpha;
             }
             ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~8);
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E73E0);
+            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, VORTEX_FULL_ALPHA);
         }
         obj->anim.rootMotionScale = objScale;
         obj->anim.alpha = objAlpha;
@@ -187,9 +198,9 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetS = (s16)(texture->offsetS + (int)(lbl_803E73E4 * dt));
+            texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt));
         }
-        obj->anim.rotX = (s16)(obj->anim.rotX + (int)(lbl_803E73D4 * dt));
+        obj->anim.rotX = (s16)(obj->anim.rotX + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
         if (texture->offsetS >= 10000)
         {
             texture->offsetS -= 10000;
@@ -213,11 +224,11 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             obj->anim.rootMotionScale = state->alpha * (state->radiusScale[i] * objScale);
             *((u8*)obj + 0x37) = state->alpha * (state->alphaScale[i] * (f32)(u32)objAlpha);
             {
-                f32 radius = lbl_803E73EC * state->radiusScale[i];
+                f32 radius = VORTEX_DEFAULT_VERTICAL_OFFSET * state->radiusScale[i];
                 obj->anim.localPosY = radius * state->alpha + objZ;
             }
             ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~8);
-            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E73E0);
+            objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, VORTEX_FULL_ALPHA);
         }
         obj->anim.rootMotionScale = objScale;
         obj->anim.alpha = objAlpha;
@@ -256,10 +267,10 @@ void Vortex_update(GameObject* obj)
     active = state->flags.active;
     if (active != 0)
     {
-        if (state->alpha < lbl_803E73E0)
+        if (state->alpha < VORTEX_FULL_ALPHA)
         {
-            f32 hi = lbl_803E73E0;
-            state->alpha = gVortexAlphaFadeSpeed * timeDelta + state->alpha;
+            f32 hi = VORTEX_FULL_ALPHA;
+            state->alpha = VORTEX_ALPHA_FADE_SPEED * timeDelta + state->alpha;
             if (state->alpha > hi)
             {
                 state->alpha = hi;
@@ -269,10 +280,10 @@ void Vortex_update(GameObject* obj)
     }
     if (active == 0)
     {
-        if (state->alpha > lbl_803E73D0)
+        if (state->alpha > VORTEX_ZERO)
         {
-            f32 lo = lbl_803E73D0;
-            state->alpha = state->alpha - gVortexAlphaFadeSpeed * timeDelta;
+            f32 lo = VORTEX_ZERO;
+            state->alpha = state->alpha - VORTEX_ALPHA_FADE_SPEED * timeDelta;
             if (state->alpha < lo)
             {
                 state->alpha = lo;
@@ -339,11 +350,11 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
     o->objectFlags |= VORTEX_OBJFLAG_HITDETECT_DISABLED;
     ObjModel_SetPostRenderCallback(Obj_GetActiveModel(o), postRenderSetAlphaBlendState);
     if (state->flags.active != 0)
-        state->alpha = lbl_803E73E0;
+        state->alpha = VORTEX_FULL_ALPHA;
     else
-        state->alpha = lbl_803E73D0;
+        state->alpha = VORTEX_ZERO;
     state->particleTimer = randomGetRange(0, 0x14);
-    o->anim.cullDistance2 = o->anim.cullDistance2 * lbl_803E7404;
+    o->anim.cullDistance2 = o->anim.cullDistance2 * VORTEX_CULL_DISTANCE_SCALE;
 }
 
 void Vortex_release(void)

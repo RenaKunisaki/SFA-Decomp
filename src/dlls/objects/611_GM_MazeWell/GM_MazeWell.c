@@ -1,5 +1,5 @@
 /*
- * GM_MazeWell (DLL 0x263) - the wishing/quest well in the maze area.
+ * GM_MazeWell (DLL 611) - the wishing/quest well in the maze area.
  *
  * The well watches a fixed set of nine quest/event game bits (the
  * gQuestBitTable rows below). While the well's hitbox is being touched

@@ -1,5 +1,5 @@
 /*
- * DR_EnergyDisc (DLL 0x279) - an energy-disc dressing object whose
+ * DR_EnergyDi (DLL 633) - an energy-disc dressing object whose
  * activation is driven by two placement game bits.
  *
  * While the "active" game bit (placement 0x20) is set the disc plays a
@@ -141,8 +141,4 @@ ObjectDescriptor gDrEnergyDiscObjDescriptor = {
     (ObjectDescriptorCallback)DR_EnergyDisc_free,
     (ObjectDescriptorCallback)DR_EnergyDisc_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)DR_EnergyDisc_getExtraSize,
-};
-
-u32 lbl_8032AD00[12] = {
-    0xFFFFFFFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };

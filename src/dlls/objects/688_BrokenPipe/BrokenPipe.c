@@ -1,5 +1,5 @@
 /*
- * BrokenPipe (DLL 0x2B0) - a static, breakable pipe prop.
+ * BrokenPipe (DLL 688) - a static, breakable pipe prop.
  *
  * init applies the placement's packed Z/Y/X rotation bytes (1/256 turns)
  * and an optional uniform scale: the scale byte is normalised, and if the

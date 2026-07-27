@@ -182,6 +182,6 @@ void SnowBike_resetToRomListPosition(GameObject* obj);
 void fn_801EC870(int obj, int state);
 s32 SnowBike_getRouteRank(GameObject* obj);
 s32 SnowBike_isAtRankGate(GameObject* obj);
-int SnowBike_SeqFn(short* obj, int unused, ObjSeqState* seq);
+int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq);
 
 #endif /* MAIN_DLL_DLL_0255_SNOWBIKE_H_ */

@@ -1,5 +1,5 @@
 /*
- * LINKA_levco (DLL 0x238) - "LinkA level control" sequence object (FireObject).
+ * LinkA level-control sequence object (FireObject).
  *
  * A scripted level-progression controller placed in the LinkA map. It runs
  * trigger sequence 0 every update and reacts to that sequence's anim events

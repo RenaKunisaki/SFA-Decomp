@@ -18,14 +18,11 @@ typedef struct GfProjectileSetup
     u8 yawHi;          /* 0x1a */
 } GfProjectileSetup;
 
-/* The next two typedefs are two views over the SAME 0x10-byte obj->extra
-   allocation (gf_levelcon_getExtraSize returns 0x10). findLinkedObjects
-   caches the three linked object handles as s32 ids (light, scrollA,
-   scrollB); handleScriptEvents reads scrollA/scrollB back as
-   s16* scroll-offset pointers and promptTimer as the prompt countdown. The split
-   into two casts (with differing field types at scrollA/scrollB) is
-   matching-required: collapsing to one struct changes the cast keys and
-   the codegen. */
+/* Two views over the same 0x10-byte obj->extra allocation.
+ * findLinkedObjects stores the three linked object handles as s32 ids;
+ * the sequence handler accesses the scroll handles as pointers and the
+ * final word as the prompt countdown.
+ */
 typedef struct GfLevelconFindLinkedObjectsState
 {
     s32 light;

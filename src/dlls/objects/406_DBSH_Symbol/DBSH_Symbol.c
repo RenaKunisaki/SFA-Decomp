@@ -277,9 +277,9 @@ void DBSH_Symbol_update(GameObject* obj)
     }
 }
 
-void DBSH_Symbol_init(int* obj)
+void DBSH_Symbol_init(GameObject* obj)
 {
-    DbshSymbolState* state = ((GameObject*)obj)->extra;
+    DbshSymbolState* state = obj->extra;
 
     state->spinSpeed = 0.0f;
     state->spinProgress = 0;
@@ -289,10 +289,10 @@ void DBSH_Symbol_init(int* obj)
     state->flags.finished = 0;
     state->flags.active = 1;
 
-    ((GameObject*)obj)->anim.localPosY -= 50.0f;
-    ((GameObject*)obj)->animEventCallback = DBSH_Symbol_SeqFn;
+    (obj)->anim.localPosY -= 50.0f;
+    (obj)->animEventCallback = DBSH_Symbol_SeqFn;
 
-    ((GameObject*)obj)->anim.modelState->flags &= ~(u64)DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG;
+    (obj)->anim.modelState->flags &= ~(u64)DBSH_SYMBOL_OBJECT_MODEL_ACTIVE_FLAG;
 }
 
 ObjectDescriptor gDBSH_SymbolObjDescriptor = {

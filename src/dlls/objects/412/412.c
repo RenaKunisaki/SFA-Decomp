@@ -17,12 +17,8 @@
 
 typedef struct Dll19CPlacement
 {
-    u8 pad0[0x4 - 0x0];
-    u8 color[4];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x19 - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 unk19;
     u8 pad1A[0x1E - 0x1A];
     s8 rotXByte;
@@ -49,55 +45,55 @@ void dll_19C_hitDetect(void)
 {
 }
 
-void dll_19C_update(int* obj)
+void dll_19C_update(GameObject* obj)
 {
 
-    u8* def;
-    u8* sub;
+    Dll19CPlacement* def;
+    Dll19CState* sub;
     Dll82Interface** res;
     ObjPlacement* setup;
 
-    def = *(u8**)&((GameObject*)obj)->anim.placementData;
-    sub = ((GameObject*)obj)->extra;
-    if (((GameObject*)obj)->userData2 != 0)
+    def = (Dll19CPlacement*)obj->anim.placementData;
+    sub = obj->extra;
+    if (obj->userData2 != 0)
     {
         if (mainGetBit(0x1d4) != 0)
         {
-            ((GameObject*)obj)->userData2 = 0;
+            obj->userData2 = 0;
         }
     }
-    if (((GameObject*)obj)->userData2 == 0)
+    if (obj->userData2 == 0)
     {
         if (mainGetBit(GAMEBIT_WM_KrazTest1TorchesActive) != 0)
         {
             res = Resource_Acquire(0x82, 1);
-            (*res)->spawn((GameObject*)obj, 0, NULL, 1, -1, NULL);
-            (*res)->spawn((GameObject*)obj, 1, NULL, 1, -1, NULL);
+            (*res)->spawn(obj, 0, NULL, 1, -1, NULL);
+            (*res)->spawn(obj, 1, NULL, 1, -1, NULL);
             Sfx_PlayFromObject(0, SFXTRIG_hitpos_6);
             Resource_Release(res);
-            ((Dll19CState*)sub)->active = 1;
-            ((GameObject*)obj)->userData2 = 1;
+            sub->active = 1;
+            obj->userData2 = 1;
         }
     }
-    if (((Dll19CState*)sub)->active != 0)
+    if (sub->active != 0)
     {
-        ((Dll19CState*)sub)->spawnTimer = (s16)(((Dll19CState*)sub)->spawnTimer - ((Dll19CState*)sub)->active * framesThisStep);
+        sub->spawnTimer = (s16)(sub->spawnTimer - sub->active * framesThisStep);
     }
-    if (((Dll19CState*)sub)->spawnTimer <= 0 && ((Dll19CPlacement*)def)->unk1F == 0 && Obj_IsLoadingLocked() != 0)
+    if (sub->spawnTimer <= 0 && def->unk1F == 0 && Obj_IsLoadingLocked() != 0)
     {
         setup = Obj_AllocObjectSetup(0x18, DLL19C_CHILD_OBJ);
-        setup->posX = ((Dll19CPlacement*)def)->posX;
-        setup->posY = 50.0f + ((Dll19CPlacement*)def)->posY;
-        setup->posZ = ((Dll19CPlacement*)def)->posZ;
+        setup->posX = def->base.posX;
+        setup->posY = 50.0f + def->base.posY;
+        setup->posZ = def->base.posZ;
         setup->objectId = DLL19C_CHILD_OBJ;
         setup->mapId = -1;
-        setup->color[0] = ((Dll19CPlacement*)def)->color[0];
-        setup->color[1] = ((Dll19CPlacement*)def)->color[1];
-        setup->color[2] = ((Dll19CPlacement*)def)->color[2];
-        setup->color[3] = ((Dll19CPlacement*)def)->color[3];
-        Obj_SetupObject(setup, 5, ((GameObject*)obj)->anim.mapEventSlot, -1, ((GameObject*)obj)->anim.parent);
-        ((Dll19CState*)sub)->spawnTimer = 0x64;
-        ((Dll19CState*)sub)->active = 0;
+        setup->color[0] = def->base.color[0];
+        setup->color[1] = def->base.color[1];
+        setup->color[2] = def->base.color[2];
+        setup->color[3] = def->base.color[3];
+        Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        sub->spawnTimer = 0x64;
+        sub->active = 0;
     }
 }
 

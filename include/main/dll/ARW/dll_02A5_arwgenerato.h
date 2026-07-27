@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 
 typedef struct ARWGeneratorState
 {
@@ -11,7 +12,7 @@ typedef struct ARWGeneratorState
 
 typedef struct ARWGeneratorSetup
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     u16 spawnInterval;
     u16 projectileSpeed;
     s8 velocityX;

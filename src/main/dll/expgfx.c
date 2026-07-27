@@ -299,8 +299,8 @@ const ObjFxRandomBurstTable gObjFxRandomBurstTbl = {
 /*
  * Setup buffer the explosion spawners (DIMexplosionFn_8009a96c / spawnExplosion)
  * fill from Obj_AllocObjectSetup (0x24 bytes, def id 0x253). Embeds the common
- * ObjPlacement head (the spawn position is stored into the head's posX/posY/posZ
- * slots via a GameObject anim view); 0x19/0x1a/0x1c carry this class's own slots.
+ * ObjPlacement head (the spawn position goes in the head's posX/posY/posZ);
+ * 0x19/0x1a/0x1c carry this class's own slots.
  * The class byte at 0x18 is left unwritten. Field names beyond the head are
  * generic (provenance is the raw store offsets). Only unk19 is accessed through
  * this struct; the 0x1a scaled value (an f32->s16 truncation) and the 0x1c s16
@@ -311,7 +311,7 @@ const ObjFxRandomBurstTable gObjFxRandomBurstTbl = {
  */
 typedef struct ExplosionSetup
 {
-    ObjPlacement head;     /* 0x00: common placement head (position via GameObject anim view) */
+    ObjPlacement head;     /* 0x00: common placement head */
     u8 pad18;              /* 0x18: class byte (unwritten here) */
     s8 unk19;              /* 0x19 */
     u8 pad1A[0x1C - 0x1A]; /* 0x1A: scaled s16 value, written raw (see note) */
@@ -1596,8 +1596,8 @@ void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale
     if (light != NULL)
     {
         modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setPosition(light, ((GameObject*)obj)->anim.worldPosX,
-                                     ((GameObject*)obj)->anim.worldPosY + lightYOffset, ((GameObject*)obj)->anim.worldPosZ);
+        modelLightStruct_setPosition(light, obj->anim.worldPosX,
+                                     obj->anim.worldPosY + lightYOffset, obj->anim.worldPosZ);
         rPtr = (u8*)&colorTbl;
         gPtr = (u8*)&colorTbl + 1;
         bPtr = (u8*)&colorTbl + 2;
@@ -1747,7 +1747,7 @@ void fn_8009A8C8(GameObject* obj, f32 shakeRange)
     {
         return;
     }
-    if (((GameObject*)player)->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK)
+    if (player->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK)
     {
         return;
     }
@@ -1772,9 +1772,9 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
         setup = (ExplosionSetup*)Obj_AllocObjectSetup(0x24, OBJFX_CHILD_OBJ_EXPLOSION);
         setup->head.color[0] = 2;
         setup->head.color[1] = 1;
-        ((GameObject*)setup)->anim.rootMotionScale = x;
-        ((GameObject*)setup)->anim.localPosX = y;
-        ((GameObject*)setup)->anim.localPosY = z;
+        setup->head.posX = x;
+        setup->head.posY = y;
+        setup->head.posZ = z;
         ((ExplosionSetup*)setup)->unk19 = kind;
         *(s16*)((char*)setup + 0x1a) = (s16)(256.0f * scale);
         *(s16*)((char*)setup + 0x1c) = f1cinit;
@@ -1797,7 +1797,7 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
         if (doShake != 0)
         {
             GameObject* player = Obj_GetPlayerObject();
-            if (player != NULL && (((GameObject*)player)->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
+            if (player != NULL && (player->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
             {
                 f32 d = Camera_DistanceToCurrentViewPosition(((ObjAnimComponent*)src)->worldPosX,
                                                              ((ObjAnimComponent*)src)->worldPosY,
@@ -1823,9 +1823,9 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
         setup = (ExplosionSetup*)Obj_AllocObjectSetup(0x24, OBJFX_CHILD_OBJ_EXPLOSION);
         setup->head.color[0] = 2;
         setup->head.color[1] = 1;
-        ((GameObject*)setup)->anim.rootMotionScale = src->anim.worldPosX;
-        ((GameObject*)setup)->anim.localPosX = src->anim.worldPosY;
-        ((GameObject*)setup)->anim.localPosY = src->anim.worldPosZ;
+        setup->head.posX = src->anim.worldPosX;
+        setup->head.posY = src->anim.worldPosY;
+        setup->head.posZ = src->anim.worldPosZ;
         ((ExplosionSetup*)setup)->unk19 = kind;
         *(s16*)((char*)setup + 0x1a) = (s16)(256.0f * scale);
         *(s16*)((char*)setup + 0x1c) = f1cinit;
@@ -1848,7 +1848,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
         if (doShake != 0)
         {
             GameObject* player = Obj_GetPlayerObject();
-            if (player != NULL && (((GameObject*)player)->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
+            if (player != NULL && (player->objectFlags & OBJFX_OBJFLAG_PARENT_SLACK) == 0)
             {
                 f32 d = Camera_DistanceToCurrentViewPosition(src->anim.worldPosX, src->anim.worldPosY,
                                                              src->anim.worldPosZ);
@@ -2487,8 +2487,8 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     attractRatio = 1.0f;
     trickyRange = 0.0f;
     playerRange = trickyRange;
-    player = (GameObject*)Obj_GetPlayerObject();
-    tricky = (GameObject*)getTrickyObject();
+    player = Obj_GetPlayerObject();
+    tricky = getTrickyObject();
     cache = getCache();
     gExpgfxPhaseAngleA += (u16)(120.0f * timeDelta);
     gExpgfxPhaseAngleB += (u16)(480.0f * timeDelta);
@@ -3538,17 +3538,17 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 {
     s16 signedPoolIndex;
     int result;
-    ExpgfxSourceObject** poolSourceIds;
+    ExpgfxSourceObject** poolSourceIds[1];
     int poolIndex;
     result = EXPGFX_SOURCE_FRAME_STATE_NONE;
     lbl_803DD253 = 0;
     poolIndex = 0;
-    poolSourceIds = gExpgfxTrackedPoolSourceIds;
+    poolSourceIds[0] = gExpgfxTrackedPoolSourceIds;
 
-    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds++, poolIndex++)
+    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, poolIndex++)
     {
         if ((((ExpgfxSourceObject*)sourceObject)->objType == EXPGFX_SOURCE_OBJTYPE_MATCH_ALL) ||
-            (*poolSourceIds == sourceObject))
+            (*poolSourceIds[0] == sourceObject))
         {
             s64 frameBit;
 

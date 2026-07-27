@@ -35,32 +35,24 @@ A fully-implemented **cut ice baddie in the ChukChuk family**:
 - A `GroundBaddie` (extra size `0x458` = `GroundBaddieState`) that pursues the
   player (aggression / aggroRange, hit points) and dies.
 - **Spits the retail `IceBall` projectile** (object id 100 → def "IceBall";
-  see `mediumbasket_spawnIceBall`) — the same projectile family as its
-  descriptor-table neighbours ChukChuk (`0xCC`) and IceBall (`0xCD`), whose
-  descriptor structs this TU also hosts.
+  see `iceBaddie_spawnIceBall`) — the same projectile family as its
+  descriptor-table neighbours ChukChuk (`0xCC`) and IceBall (`0xCD`).
 - State machine: drop / land (camera-shake stomp), spin, open, hide-reset,
   impact / contact-hit, height-blend, plus an A/B target-engagement dispatch via
-  `gMediumBasketStateHandlersA/B` (filled by `fn_8015DAE8` in dll_CE).
-- The `*WhirlpoolGroup` / `initWhirlpoolState` helpers in this TU are **shared**
-  engine utilities (the `Baddie` TU calls them) — not specific
-  to this creature; keep them general when renaming.
+  `gIceBaddieStateHandlersA/B` (installed by `iceBaddie_installStateHandlers`
+  in slot 206).
+- The adjacent `*WhirlpoolGroup` / `initWhirlpoolState` helpers are **shared**
+  engine utilities in `src/main/dll/baddiewhirlpool.c` (the `Baddie` TU calls
+  them), not part of this creature's TU.
 
-## Proposed names
+## Applied names
 
-There is no canonical retail name, so this is a descriptive choice. Suggested
-prefix **`iceBaddie`** / file **`dll_00CA_icebaddie.c`** (alternatives:
-`icechukbaddie`, `frostbaddie`). To apply:
-
-1. The source TU is `src/dlls/objects/202/202.c`; the internal interface is
-   `include/main/dll/dll_00CA_icebaddie.h`.
-2. Update `configure.py` and `config/GSAE01/splits.txt` for the new path.
-3. Symbol-prefix renames in source **and** `config/GSAE01/symbols.txt`:
-   - `mediumbasket_*` → `iceBaddie_*`
-   - `dll_CA_*` → `iceBaddie_*` (descriptor callbacks)
-   - `gMediumBasketStateHandlersA/B` → `gIceBaddieStateHandlersA/B`
-     (also referenced in `src/dlls/objects/206/206.c`).
-4. Update `#include "main/dll/dll_00CA_mediumbasket.h"` in
-   `src/dlls/objects/201_Baddie/Baddie.c`.
+There is no canonical retail name, so the source keeps the neutral slot path
+`src/dlls/objects/202/202.c` and uses `iceBaddie` only as a descriptive symbol
+prefix. Its interface is `include/dlls/objects/202.h`. The former
+`mediumbasket_*`, `dll_CA_*`, and `gMediumBasketStateHandlersA/B` symbols are
+now `iceBaddie_*`, `gIceBaddieObjDescriptor`, and
+`gIceBaddieStateHandlersA/B`, respectively.
 
 ## Optional: behavioral names for the slot-numbered state handlers
 

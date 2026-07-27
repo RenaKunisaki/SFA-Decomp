@@ -50,7 +50,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   `config/GSAE01/symbols.txt`: `MagicDust_getExtraSize`/`_free`/`_render`/`_update`/`_init`).
   Its functions are literally named `MagicDust_init`/`_update`/`_render`/`_free`/`_getExtraSize`
   — this is the dust pickup the wiki calls MagicDustSm/Mi/La/Hu.
-- State struct: `MagicGemState` in `include/main/dll/magicgemstate_struct.h`. Its `mode` field
+- State struct: `MagicGemState` in `include/dlls/objects/255.h`. Its `mode` field
   is commented "particle color row" and is set in `MagicDust_init`'s `switch (obj->anim.seqId)`:
   `seqId 0x2c4 -> mode 4`, `0x2cd -> mode 1`, `0x2ce -> mode 2`, default (incl. `0x2cf`) ->
   `mode 6` — each branch also picks its own `ambientEffectId`/`burstEffectId`/`sfxId`. This is
@@ -64,16 +64,15 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
 ### Tier 3 items — Apple / EnergyEgg (health refills)
 
 - `src/dlls/objects/237/237.c` is DLL 0x00ED, the generic collectible pickup handler
-  (`0x80171D14`–`0x80173224`). Its header comment already documents: "health
-  items add health, dust items bump counters" — i.e. this one DLL hosts *both* the Tier 1 dust
-  counters and the Tier 3 health pickups, distinguished by `obj->anim.seqId`.
+  (`0x80171D14`–`0x80173224`). This one DLL hosts *both* the Tier 1 dust counters and the
+  Tier 3 health pickups, distinguished by `obj->anim.seqId`.
 - In `collectible_applyPickup`, the health branch (`switch` on a category read from the
   object's model resource, case `4`) has exactly two cases:
   - `seqId 11` (`0xB`) -> `playerAddHealth(player, 4)` — **the large refill, i.e. EnergyEgg**.
   - `seqId 973` (`0x3CD`) -> `playerAddHealth(player, 2)` — **the small refill, i.e. Apple**.
-  This is a live-verified mapping: `include/main/dll/collectible_state.h`'s header comment
-  records a Dolphin session that broke a crate, traced object type `0xB`/seqId `11` through
-  proximity-detect -> pickup-message -> collect, and watched player health rise 4 -> 8.
+  This mapping was live-verified in a Dolphin session that broke a crate, traced object type
+  `0xB`/seqId `11` through proximity-detect -> pickup-message -> collect, and watched player
+  health rise 4 -> 8.
 - These exact two ids are **independently confirmed** by `src/dlls/objects/261_LargeCrate/LargeCrate.c`:
   `largecrate_spawnDropContents`'s `dropType == 5` spawns object id `0xb`, and
   `dropType == 6` spawns object id `0x3cd` — the same two numbers, same two items, from a
@@ -81,7 +80,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   identification is treated as solid here despite `seqId`/"object id" not being formally typed
   anywhere in the codebase yet.
 - State/setup structs: `CollectibleState` / `CollectibleSetup` in
-  `include/main/dll/collectible_state.h` (per-instance despawn timer, hide/visibility/collect
+  `include/dlls/objects/237.h` (per-instance despawn timer, hide/visibility/collect
   gamebits, bounce/path-follow physics).
 - Not the same thing: `src/dlls/objects/279_AppleOnTree/AppleOnTree.c` (`AppleOnTree_*`, DLL 0x117) is a
   *tree-fruit-harvesting* object (an apple you knock down/pick off a tree), a different game
@@ -97,7 +96,7 @@ instance (Snowclaw) that implements the same *shape* of mechanic on a smaller sc
   against the wiki's item list). This isn't the *baddie* system the wiki page is about, but it's
   the same "container takes damage -> on death, look up an item id from a small per-instance
   table -> spawn it" shape, and a good model for whoever finds the baddie-side equivalent.
-- `src/main/snowclaw.c`: `SnowclawState.dropIndex` (an `init[0x27]` placement byte) indexes a
+- `src/dlls/objects/604/604.c`: `SnowclawState.dropIndex` (an `init[0x27]` placement byte) indexes a
   small per-species table, `extern SnowClawAnimTbl gSnowClawDropObjectTable;` (this codebase
   types `SnowClawAnimTbl` as `{ s16 v[5]; }`, i.e. 10 bytes; `config/GSAE01/symbols.txt` records
   the retail symbol itself as `.rodata:0x802C2540 size:0x10` — the 6-byte discrepancy against

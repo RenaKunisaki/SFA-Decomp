@@ -32,7 +32,7 @@ typedef struct FireCrawlerState {
 STATIC_ASSERT(offsetof(FireCrawlerState, engineLight) == 0x368);
 STATIC_ASSERT(offsetof(FireCrawlerState, tailModelChain) == 0x36c);
 
-void crawler_playReactionEffects(int* obj, int* st);
+void crawler_playReactionEffects(struct GameObject* obj, int* st);
 
 extern u8 gCrawlerSeqTable[];
 extern u8 gSnowwormSeqIndexReset[4];

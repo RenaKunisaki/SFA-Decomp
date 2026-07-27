@@ -1330,9 +1330,9 @@ void dll_0B_func05(void)
                                 tmpl.posZ = ((ModgfxEffectSlot*)eff)->posOffsetZ + tmpl.posZ;
                             }
                             o = (int*)Obj_AllocObjectSetup(0x20, DLL0B_CHILD_OBJ_INVHIT);
-                            ((GameObject*)o)->anim.rootMotionScale = tmpl.posX;
-                            ((GameObject*)o)->anim.localPosX = tmpl.posY;
-                            *(f32*)&((ObjDef*)o)->jointData = tmpl.posZ;
+                            ((ObjPlacement*)o)->posX = tmpl.posX;
+                            ((ObjPlacement*)o)->posY = tmpl.posY;
+                            ((ObjPlacement*)o)->posZ = tmpl.posZ;
                             *(int*)eff = (int)Obj_SetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
                             *(int*)(*(int*)eff + 0xf8) = 1;
                         }

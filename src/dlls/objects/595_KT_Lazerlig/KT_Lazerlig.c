@@ -1,5 +1,5 @@
 /*
- * KT_Lazerlight (DLL 0x253) - the point light cast by a SharpClaw laser
+ * KT_Lazerlig (DLL 0x253) - the point light cast by a SharpClaw laser
  * fence/wall (see ktlazerwall, DLL 0x252).
  *
  * On init it spawns a model light at the placement's position. Each
@@ -12,8 +12,6 @@
 #include "main/gamebits.h"
 #include "main/model_light.h"
 #include "main/dll/DR/dll_0253_ktlazerlight.h"
-
-
 
 int ktlazerlight_getExtraSize(void)
 {
@@ -79,7 +77,7 @@ void ktlazerlight_init(GameObject* obj, KtlazerlightPlacement* placement)
     if (state->light != NULL)
     {
         modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setPosition(state->light, placement->posX, placement->posY, placement->posZ);
+        modelLightStruct_setPosition(state->light, placement->base.posX, placement->base.posY, placement->base.posZ);
         modelLightStruct_setAffectsAabbLightSelection(state->light, 1);
     }
 }

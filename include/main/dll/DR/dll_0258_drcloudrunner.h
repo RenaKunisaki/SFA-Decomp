@@ -5,11 +5,13 @@
 #include "global.h"
 #include "main/objanim_update.h"
 #include "main/dll/DR/cloudrunner_state.h"
+#include "game/objects/object_setup.h"
 
 /* placement record passed to init / read by the state handlers */
 typedef struct DRCloudRunnerPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 airMeterCapacity; /* 0x1A: initial air meter capacity */
     u8 pad1C[0x1E - 0x1C];
     s16 enableGameBit; /* 0x1E: game bit that enables the mount */

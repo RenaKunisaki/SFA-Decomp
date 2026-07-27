@@ -1,12 +1,12 @@
 /*
- * DLL 0x28B - a player-control-interface driven NPC character.
+ * DLL 651 - a player-control-interface driven NPC character.
  *
  * The object joins object group 3 and runs entirely off the shared
  * gPlayerInterface vtable: init() wires its move/state tables, and each
  * frame update() drives it through update() (using the gDll28BStateHandlers
  * main and gDll28BSubstateHandlers sub state-handler tables installed by
  * initialise(); the handler functions themselves are compiled into the
- * dll_028A_wcearthwalker TU). Its obj+0xB8 block is also described by
+ * DLL 650's TU). Its obj+0xB8 block is also described by
  * Dll28BAiState in earthwalker_state.h (where the handlers view it).
  * Per-frame it caches its planar distance to the player, runs the shared
  * dll_2E (moveLib) look-at/turn block at state+0x35C, the eye-animation

@@ -1,5 +1,5 @@
 /*
- * AndrossLigh (DLL 0x2BF) - the lightning beam between Andross's hands in
+ * AndrossLigh (DLL 703 / 0x2BF) - the lightning beam between Andross's hands in
  * the final boss fight. It locks onto a light-anchor object (0x47dd9),
  * mirroring that object's position each frame, and in its active state
  * (ANDROSSLIGH_ACTIVE) builds a screen-space lightning bolt that arcs
@@ -27,16 +27,23 @@ enum
     ANDROSSLIGH_ANCHOR_OBJ_ID = 0x47dd9
 };
 
+static f32 gAndrossLighRadiusX = 0.025f;
+static f32 gAndrossLighRadiusY = 0.1f;
+static f32 gAndrossLighLifetime = 10.0f;
+static f32 gAndrossLighWidth = 100.0f;
+static f32 gAndrossLighHalfLength = 300.0f;
+static f32 gAndrossLighViewOffsetScale = 0.05f;
+
 void androssligh_updateBeam(GameObject* obj, AndrossLighState* state)
 {
     Vec start;
     Vec end;
     Vec offset;
 
-    start.x = obj->anim.localPosX - lbl_803DC528;
+    start.x = obj->anim.localPosX - gAndrossLighHalfLength;
     start.y = obj->anim.localPosY;
     start.z = obj->anim.localPosZ;
-    end.x = obj->anim.localPosX + lbl_803DC528;
+    end.x = obj->anim.localPosX + gAndrossLighHalfLength;
     end.y = start.y;
     end.z = start.z;
     offset.x = start.x - playerMapOffsetX;
@@ -46,7 +53,7 @@ void androssligh_updateBeam(GameObject* obj, AndrossLighState* state)
     offset.x = -offset.x;
     offset.y = -offset.y;
     offset.z = -offset.z;
-    PSVECScale(&offset, &offset, lbl_803DC52C);
+    PSVECScale(&offset, &offset, gAndrossLighViewOffsetScale);
     PSMTXMultVec((MtxP)Camera_GetInverseViewRotationMatrix(), &offset, &offset);
     PSVECAdd(&start, &offset, &start);
     offset.x = end.x - playerMapOffsetX;
@@ -56,13 +63,13 @@ void androssligh_updateBeam(GameObject* obj, AndrossLighState* state)
     offset.x = -offset.x;
     offset.y = -offset.y;
     offset.z = -offset.z;
-    PSVECScale(&offset, &offset, lbl_803DC52C);
+    PSVECScale(&offset, &offset, gAndrossLighViewOffsetScale);
     PSMTXMultVec((MtxP)Camera_GetInverseViewRotationMatrix(), &offset, &offset);
     PSVECAdd(&end, &offset, &end);
     if (state->bolt == NULL)
     {
-        state->bolt = lightningCreate((const Vec3f*)&start, (const Vec3f*)&end, lbl_803DC518, lbl_803DC51C,
-                                                 lbl_803DC520, lbl_803DC524, 0);
+        state->bolt = lightningCreate((const Vec3f*)&start, (const Vec3f*)&end, gAndrossLighRadiusX,
+                                      gAndrossLighRadiusY, gAndrossLighLifetime, gAndrossLighWidth, 0);
         state->boltAge = 0.0f;
     }
     else

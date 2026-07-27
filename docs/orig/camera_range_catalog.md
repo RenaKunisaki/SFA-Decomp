@@ -205,13 +205,13 @@ The companion CSV contains every individual placement. This table is the complet
 | Plane crossing | `src/main/dll/dll_80198a00.c` | `fn_80198DE8` | Tests the previous-to-current target segment against a finite plane; missed movement is not replayed. | `critical` |
 | Trigger cleanup | `src/dlls/objects/294/294.c` | `Trigger_free` | Stops owned SFX but does not synthesize an exit leg or replay a missed command. | `critical` |
 | Untargeted staff projectile origin | `src/dlls/objects/195_Player/player.c` | `staffShootFireball / fn_802AA014` | Untargeted projectiles allocate at current camera XYZ and derive velocity from camera orientation/FOV. A stored camera can therefore originate a hit remotely. | `high_remote_hit` |
-| Arwing trace origin | `src/main/dll/ARW/dll_029A_arwarwing.c` | `arwarwing_SeqFn / arwarwing_hitDetect` | A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it. | `high_hit_detection` |
-| Tricky warp visibility | `src/main/dll/dll_0100_trickywarp.c` | `TrickyWarp_update` | Permits companion relocation only when the warp host is outside the view frustum. | `investigate` |
+| Arwing trace origin | `src/dlls/objects/666_ARWArwing/ARWArwing.c` | `arwarwing_SeqFn / arwarwing_hitDetect` | A sequence snapshots camera position/orientation and later transforms the Arwing trace origin from it. | `high_hit_detection` |
+| Tricky warp visibility | `src/dlls/objects/256_TrickyWarp/TrickyWarp.c` | `TrickyWarp_update` | Permits companion relocation only when the warp host is outside the view frustum. | `investigate` |
 | Door side routing | `src/dlls/objects/244/244.c` | `DoorF4 update events` | Code chooses a side GameBit from the camera side of a door plane, but observed retail placements have zero masks or disabled side bits. | `inactive_retail` |
 | Camera-target trigger mode | `src/dlls/objects/294/294.c` | `Trigger_hitDetect target kind 2` | The interpreter can target the camera itself, but no observed retail trigger placement uses target kind 2. | `inactive_retail` |
 | Proximity mine cull branch | `src/main/proximitymine_update.c` | `ProximityMine_update` | Camera-derived opacity selects a path point versus target-root attack anchor; object is runtime-spawned and situational. | `investigate` |
 | DIM Tricky LOS | `src/main/dll/DIM/dll_019E_dim_tricky.c` | `DIMTricky_render` | Uses camera distance and voxel LOS to keep/free a visibility effect source. | `presentation` |
-| Combat-source visuals | `src/main/dll/dll_02B1_cmbsrc.c` | `cmbsrc_updateVisuals` | Camera distance gates glow/effect rendering, not encounter completion or spawning. | `presentation` |
+| Combat-source visuals | `src/dlls/objects/689_CmbSrc/CmbSrc.c` | `cmbsrc_updateVisuals` | Camera distance gates glow/effect rendering, not encounter completion or spawning. | `presentation` |
 | Object render fade | `src/main/shader.c` | `object visibility path` | Camera distance fades/culls rendered models; object logic remains separate. | `presentation` |
 | Explosion feedback | `src/main/dll/objfx.c` | `camera-distance feedback paths` | Attenuates camera shake, rumble, and effects by camera distance. | `presentation` |
 
@@ -223,8 +223,8 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 |---|---:|---|
 | `src/main/audio.c` | 389 | `void* slot = Camera_GetCurrentViewSlot();` |
 | `src/main/audio.c` | 1233 | `slot = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/ARW/dll_029A_arwarwing.c` | 1294 | `Camera_GetCurrentViewSlot();` |
-| `src/main/dll/ARW/dll_029A_arwarwing.c` | 1317 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/666_ARWArwing/ARWArwing.c` | 1294 | `Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/666_ARWArwing/ARWArwing.c` | 1317 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/298_CFCrate/CFCrate.c` | 148 | `cam = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/CF/dll_0162_cfmagicwall.c` | 84 | `fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,` |
 | `src/main/dll/CF/dll_0162_cfmagicwall.c` | 89 | `fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,` |
@@ -232,7 +232,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/dll/maybetemplate.c` | 2086 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DF/dll_022B_dfptorch.c` | 87 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/DIM/dll_019E_dim_tricky.c` | 102 | `camera = Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
+| `src/main/dll/DIM/dll_0256_dimsnowhorn1.c` | 1144 | `viewSlot = (int*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 832 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000A_expgfx.c` | 2007 | `cameraSlot = (ExpgfxCameraViewSlot*)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_000B_dll0b.c` | 1086 | `view = Camera_GetCurrentViewSlot();` |
@@ -242,20 +242,19 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/dlls/objects/196_Tricky/tricky.c` | 7906 | `if (ViewFrustum_IsSphereVisible(&((GameObject*)obj)->anim.localPosX, lbl_803E2500) == 0)` |
 | `src/dlls/objects/244/244.c` | 492 | `vs = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/244/244.c` | 557 | `vs = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/dll_0100_trickywarp.c` | 12 | `* (ViewFrustum_IsSphereVisible) so the warp can't trigger in view.` |
-| `src/main/dll/dll_0100_trickywarp.c` | 143 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX, lbl_803E38A0) != 0)` |
+| `src/dlls/objects/256_TrickyWarp/TrickyWarp.c` | 130 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX, TRICKYWARP_VISIBILITY_RADIUS) != 0) {` |
 | `src/dlls/objects/262/262.c` | 378 | `if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX,` |
 | `src/dlls/objects/265/265.c` | 137 | `if (ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX,` |
 | `src/dlls/objects/270/270.c` | 54 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/270/270.c` | 180 | `CameraViewSlot* cam = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_0197_dll197.c` | 274 | `camera = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/dll_02B1_cmbsrc.c` | 283 | `viewSlot = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/689_CmbSrc/CmbSrc.c` | 283 | `viewSlot = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_b8.c` | 21 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_b8.c` | 27 | `vs = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 47 | `view = Camera_GetCurrentViewSlot();` |
 | `src/main/dll/dll_bb.c` | 204 | `view = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c` | 591 | `slot = (int)Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/600_DR_CloudRun/DR_CloudRun.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
+| `src/main/dll/DR/dll_0258_drcloudrunner.c` | 1037 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/objfx.c` | 1227 | `f32 d = Camera_DistanceToCurrentViewPosition(` |
 | `src/main/dll/objfx.c` | 1274 | `f32 d = Camera_DistanceToCurrentViewPosition(((ObjAnimComponent*)src)->worldPosX,` |
 | `src/main/dll/objfx.c` | 1325 | `f32 d = Camera_DistanceToCurrentViewPosition(src->anim.worldPosX, src->anim.worldPosY,` |
@@ -263,16 +262,16 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/dlls/objects/195_Player/player.c` | 12671 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/195_Player/player.c` | 12720 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/195_Player/player.c` | 18381 | `int cam = (int)Camera_GetCurrentViewSlot();` |
-| `src/main/dll/SH/dll_01AD_shthorntail.c` | 538 | `(ref = ViewFrustum_IsSphereVisible(&obj->modelPos.x, obj->cullRadius * obj->modelScale), ref == 0))` |
-| `src/main/dll/SH/shthorntail_ai.c` | 193 | `value = ViewFrustum_IsSphereVisible((float*)&object->modelPos, object->cullRadius * object->modelScale);` |
-| `src/dlls/objects/648_SPDrape/SPDrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/648_SPDrape/SPDrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/429_SH_thorntai/SH_thorntai.c` | 1086 | `(ref = ViewFrustum_IsSphereVisible(&obj->modelPos.x, obj->cullRadius * obj->modelScale), ref == 0))` |
+| `src/dlls/objects/429_SH_thorntai/SH_thorntai.c` | 205 | `value = ViewFrustum_IsSphereVisible((float*)&object->modelPos, object->cullRadius * object->modelScale);` |
+| `src/main/dll/SP/dll_0288_spdrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
+| `src/main/dll/SP/dll_0288_spdrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/tricky.c` | 1509 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/dll/WC/dll_0298_wcfloortile.c` | 459 | `slot = Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/196_Tricky/tricky.c` | 4691 | `ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)` |
-| `src/main/dll/WM/dll_020E_wmsun.c` | 195 | `cam = Camera_GetCurrentViewSlot();` |
-| `src/main/dll/WM/dll_0215_wmnewcrystal.c` | 64 | `PSVECSubtract((f32*)((char*)Camera_GetCurrentViewSlot() + 0xc), &obj->anim.localPosX, cameraDelta);` |
-| `src/main/light.c` | 512 | `CameraViewSlot* camView = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/526_WM_sun/WM_sun.c` | 72 | `cam = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/533_WM_newcryst/WM_newcryst.c` | 45 | `PSVECSubtract(&Camera_GetCurrentViewSlot()->position.x, &obj->anim.localPosX, cameraDelta);` |
+| `src/dlls/objects/544/544.c` | 46 | `CameraViewSlot* camView = Camera_GetCurrentViewSlot();` |
 | `src/main/lightmap.c` | 83 | `cam = (u8*)Camera_GetCurrentViewSlot();` |
 | `src/main/lightmap.c` | 416 | `lbl_803DCEA8 = (int)Camera_GetCurrentViewSlot();` |
 | `src/main/newclouds.c` | 112 | `Camera_GetCurrentViewSlot();` |
@@ -295,7 +294,7 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/main/sky.c` | 2810 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/sky.c` | 3171 | `cam = Camera_GetCurrentViewSlot();` |
 | `src/main/track_dolphin.c` | 1447 | `inv = (Camera_DistanceToCurrentViewPosition((obj)->anim.worldPosX, (obj)->anim.worldPosY, (obj)->anim.worldPosZ) -` |
-| `src/main/worldobj.c` | 473 | `view = Camera_GetCurrentViewSlot();` |
+| `src/dlls/objects/467/467.c` | 463 | `view = Camera_GetCurrentViewSlot();` |
 
 ## Interpretation rules
 

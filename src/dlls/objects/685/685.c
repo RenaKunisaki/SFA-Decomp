@@ -1,5 +1,5 @@
 /*
- * DLL 0x2AD - a decorative wobbling/swaying object whose
+ * DLL 685 - a decorative wobbling/swaying object whose
  * animation move is driven by a pair of shared, free-running phase
  * accumulators. The first non-disabled instance to update becomes the
  * global phase driver
@@ -14,16 +14,16 @@
  * extra state (getExtraSize returns 0).
  */
 #include "main/dll/dll_02AD_softbody.h"
-
-f32 gSoftBodySlowPhase;
-f32 gSoftBodyFastPhase;
-GameObject* gSoftBodyPhaseDriver;
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
 #include "main/objanim.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+
+f32 gSoftBodySlowPhase;
+f32 gSoftBodyFastPhase;
+GameObject* gSoftBodyPhaseDriver;
 
 #define SOFTBODY_OBJECT_FLAGS_INIT 0x2000
 #define SOFTBODY_SLOW_PHASE_RATE   0.001f

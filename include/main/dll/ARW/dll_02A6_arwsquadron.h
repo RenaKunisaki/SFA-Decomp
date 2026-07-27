@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/dll/curve_walker.h"
 
 typedef struct SquadFlags
@@ -37,8 +38,7 @@ typedef struct SquadPfx
 
 typedef struct ArwSquadronSetup
 {
-    s16 objectId;
-    u8 pad02[0x16];
+    ObjPlacement base;
     u8 rotX;
     u8 rotY;
     u8 rotZ;
@@ -62,30 +62,9 @@ typedef struct ArwSquadronSetup
     s16 gameBit;
 } ArwSquadronSetup;
 
-typedef struct ArwSquadronProjectileSetup
-{
-    s16 objectId;
-    u8 pad02[2];
-    u8 field04;
-    u8 field05;
-    u8 pad06[2];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[4];
-    u8 rotZ;
-    u8 rotY;
-    u8 rotX;
-} ArwSquadronProjectileSetup;
-
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, field04) == 0x04);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, field05) == 0x05);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, posX) == 0x08);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, posY) == 0x0c);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, posZ) == 0x10);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, rotZ) == 0x18);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, rotY) == 0x19);
-STATIC_ASSERT(offsetof(ArwSquadronProjectileSetup, rotX) == 0x1a);
+STATIC_ASSERT(offsetof(ArwSquadronSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(ArwSquadronSetup, leaderObjectId) == 0x20);
+STATIC_ASSERT(sizeof(ArwSquadronSetup) == 0x34);
 
 typedef struct ArwSquadronPathCommand
 {

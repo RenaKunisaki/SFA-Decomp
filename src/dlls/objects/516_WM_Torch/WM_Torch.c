@@ -1,0 +1,143 @@
+/*
+ * WM_Torch (DLL 0x0204) - the lightable torch at Krazoa Palace.
+ *
+ * init attaches the flame effect for the placement's torch type (two
+ * variants from resource 0x69, the third from 0x63) and scales the
+ * model; update spins type-2 torches and runs a proximity sound loop
+ * around the player; free releases the flame and the optional linked
+ * object.
+ */
+#include "dlls/object_descriptor.h"
+#include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/WM/dll_0204_wmtorch.h"
+#include "main/dll/dll_0063_dll63func0.h"
+#include "main/dll/dll_0069_dll69func0.h"
+#include "main/dll/modgfx_interface.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/resource.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
+
+#define WMTORCH_OBJFLAG_HITDETECT_DISABLED 0x2000
+
+int wmtorch_getExtraSize(void)
+{
+    return sizeof(WmTorchState);
+}
+int wmtorch_getObjectTypeId(void)
+{
+    return 0x1;
+}
+
+void wmtorch_free(GameObject* obj, int mode)
+{
+    WmTorchState* state = obj->extra;
+    if (mode == 0 && state->linkedObj != 0)
+    {
+        Obj_FreeObject(state->linkedObj);
+    }
+    (*gModgfxInterface)->detachSource((void*)obj);
+    (*gExpgfxInterface)->freeSource((int)obj);
+}
+
+void wmtorch_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
+{
+    if (visible == 0)
+        return;
+}
+
+void wmtorch_hitDetect(void)
+{
+}
+
+void wmtorch_update(GameObject* obj)
+{
+    WmTorchState* state = obj->extra;
+    if (state->torchType == 2)
+    {
+        (obj)->anim.rotX += 0x32;
+    }
+    if (Vec_distance(&((GameObject*)Obj_GetPlayerObject())->anim.worldPosX, &(obj)->anim.worldPosX) < 90.0f)
+    {
+        Sfx_PlayFromObject((int)obj, SFXTRIG_mushdizzylp12);
+    }
+    else
+    {
+        Sfx_StopObjectChannel((int)obj, 0x40);
+    }
+}
+
+void wmtorch_init(GameObject* obj, WmTorchPlacement* placement)
+{
+    WmTorchState* state;
+    void* res;
+    f32 flameParams[5]; /* flame params; only [4] is set, the rest raw on purpose */
+
+    state = obj->extra;
+    if (placement->motionRate != 0)
+    {
+        state->motionRate = (f32)(s32)placement->motionRate;
+    }
+    else
+    {
+        state->motionRate = 75.0f;
+    }
+    if (placement->colorIdx != 0)
+    {
+        state->colorIdx = placement->colorIdx;
+    }
+    else
+    {
+        state->colorIdx = 0x8c;
+    }
+    state->torchType = placement->torchType;
+    flameParams[4] = -2.0f;
+    if (state->torchType == 0)
+    {
+        res = Resource_Acquire(0x69, 1);
+        obj->anim.rootMotionScale *= 0.5f;
+        (*(Dll69Interface**)res)->spawn(obj, 1, flameParams, 0x10004, -1, NULL);
+    }
+    else if (state->torchType == 0x7f)
+    {
+        res = Resource_Acquire(0x69, 1);
+        obj->anim.rootMotionScale *= 0.5f;
+        (*(Dll69Interface**)res)->spawn(obj, 2, flameParams, 0x10004, -1, NULL);
+    }
+    else
+    {
+        res = Resource_Acquire(0x63, 1);
+        obj->anim.rootMotionScale *= 0.5f;
+        (*(Dll63Interface**)res)->spawn(obj, 2, flameParams, 0x10004, -1, NULL);
+    }
+    obj->anim.rootMotionScale *= 2.0f;
+    Resource_Release(res);
+    obj->objectFlags = (u16)(obj->objectFlags | WMTORCH_OBJFLAG_HITDETECT_DISABLED);
+}
+
+void wmtorch_release(void)
+{
+}
+
+void wmtorch_initialise(void)
+{
+}
+
+ObjectDescriptor gWM_TorchObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)wmtorch_initialise,
+    (ObjectDescriptorCallback)wmtorch_release,
+    0,
+    (ObjectDescriptorCallback)wmtorch_init,
+    (ObjectDescriptorCallback)wmtorch_update,
+    (ObjectDescriptorCallback)wmtorch_hitDetect,
+    (ObjectDescriptorCallback)wmtorch_render,
+    (ObjectDescriptorCallback)wmtorch_free,
+    (ObjectDescriptorCallback)wmtorch_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)wmtorch_getExtraSize,
+};

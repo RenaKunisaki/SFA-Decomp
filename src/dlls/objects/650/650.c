@@ -1,5 +1,5 @@
 /*
- * DLL 0x28A - the large EarthWalker dinosaur NPC as it
+ * DLL 650 - the large EarthWalker dinosaur NPC as it
  * appears in the Walled City (WC). Its per-instance record lives at
  * ewObj->state (obj+0xB8; getExtraSize 0x660) and is viewed through
  * EarthWalkerState (dll_028A_wcearthwalker.h). render/update/hitDetect
@@ -21,7 +21,7 @@
  * (lastTriggeredState observed -1 -> 4).
  *
  * The dll_28B_stateHandlerN / dll_28B_substateHandlerN functions below are
- * compiled into this TU but belong to DLL 0x28B's state machine (a separate
+ * compiled into this TU but belong to DLL 651's state machine (a separate
  * player-following NPC): dll_028B.c installs them into gDll28BStateHandlers /
  * gDll28BSubstateHandlers and drives them via gPlayerInterface->update().
  * They operate on Dll28BAiState (earthwalker_state.h), NOT EarthWalkerState.
@@ -36,6 +36,7 @@
 #include "main/audio/sfx.h"
 #include "main/curve.h"
 #include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
 #include "main/mapEventTypes.h"
@@ -617,7 +618,3 @@ int dll_28B_stateHandler0(void)
 {
     return 0x2;
 }
-
-
-#include "main/objHitReact.h"
-#include "main/gamebit_ids.h"

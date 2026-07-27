@@ -74,7 +74,6 @@ main/dll/CR/CRfueltank.c
 main/dll/CRsnowbike.c
 main/dll/CR/CRsnowClaw.c
 main/dll/crackanim.c
-main/dll/crate.c
 main/dll/crate2.c
 main/dll/creator19D.c
 main/dll/creator1C4.c
@@ -86,10 +85,8 @@ main/dll/cup1C3.c
 main/dll/curves.c
 main/dll/DB/DBbonedust.c
 main/dll/DBdustgeezer.c
-main/dll/DBpointmum.c
 main/dll/DBprotection.c
 main/dll/DBrockfall.c
-main/dll/DBstealerworm.c
 main/dll/DBwaterflow.c
 main/dll/dimenu.c
 main/dll/prof.c
@@ -212,7 +209,6 @@ main/dll/dll_C0.c
 main/dll/tumbleweedbush.c
 main/dll/dll_D3.c
 main/dll/staff.c
-main/dll/infopoint.c
 main/dll/door.c
 main/dll/DR/cannontargetControl.c
 main/dll/DR/DRbarrelplace.c
@@ -332,7 +328,6 @@ main/dll/SP/SPshop.c
 main/dll/SP/SPshopkeeper.c
 dlls/objects/211/211.c
 main/dll/symbol.c
-main/dll/tesla.c
 main/dll/texScroll.c
 main/dll/tFrameAnimator.c
 main/dll/torch1CD.c
@@ -359,9 +354,7 @@ main/dll/WM/WMlevcontrol.c
 main/dll/zBomb.c
 main/dll/expgfx.c
 main/expr.c
-main/light.c
 main/lightmap.c
-main/main.c
 main/maketex.c
 main/newshadows.c
 main/objanim.c
@@ -374,7 +367,6 @@ main/pi_dolphin.c
 main/rcp_dolphin.c
 main/shader.c
 main/tex_dolphin.c
-main/textblock.c
 main/timer.c
 main/track_dolphin.c
 main/unknown/autos/placeholder_800066E0.c

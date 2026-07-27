@@ -1,5 +1,5 @@
 /*
- * ARWGenerato (DLL 0x2A5) - spawner used in the on-rails Arwing flight
+ * ARWGenerato (DLL 677) - spawner used in the on-rails Arwing flight
  * sections. It holds a single countdown timer (state->spawnTimer, seeded
  * from the placement's spawnInterval) and, when the timer elapses, calls
  * one of two spawn helpers selected by the placement's spawnMode before
@@ -19,54 +19,45 @@
 #include "main/dll/ARW/dll_02A3.h"
 #include "main/dll/ARW/dll_02A4.h"
 #include "main/dll/ARW/dll_02A5_arwgenerato.h"
+#include "main/dll/ARW/dll_02A6_arwsquadron.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
-
-/* Spawn-setup buffer for a squadron ship: ObjPlacement head (pos/color) plus
- * the class-specific rotation bytes the parent seeds (all 0) at +0x18. */
-typedef struct SquadronShipSetup
-{
-    ObjPlacement head; /* 0x00: pos/color/mapId */
-    u8 rot18;          /* 0x18 */
-    u8 rot19;          /* 0x19 */
-    u8 rot1A;          /* 0x1a */
-} SquadronShipSetup;
 
 /* squadron-ship object ids spawned by the generator's two modes */
 #define OBJ_ID_SQUADRON_SHIP_A 0x616
 #define OBJ_ID_SQUADRON_SHIP_B 0x617
 
-/* spawned squadron-ship extra block; fields written at +0x4,0x5,0x8,0xc,0x10,0x18..0x1a */
+/* squadron-ship spawn-setup allocation: a truncated ArwSquadronSetup covering
+ * only the fields the generator seeds (base.color/pos + rotX..rotZ) */
 #define SPAWN_EXTRA_SIZE 0x20
-
 
 void arwgenerato_spawnSquadronShipA(GameObject* obj, ARWGeneratorState* state, ARWGeneratorSetup* setup)
 {
-    SquadronShipSetup* newObj;
+    ArwSquadronSetup* newObj;
     Dll2A3Velocity dir;
 
     if (Obj_IsLoadingLocked())
     {
-        newObj = (SquadronShipSetup*)Obj_AllocObjectSetup(SPAWN_EXTRA_SIZE, OBJ_ID_SQUADRON_SHIP_A);
-        newObj->head.posX =
+        newObj = (ArwSquadronSetup*)Obj_AllocObjectSetup(SPAWN_EXTRA_SIZE, OBJ_ID_SQUADRON_SHIP_A);
+        newObj->base.posX =
             obj->anim.localPosX +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadX, *(s8*)&setup->spreadX);
-        newObj->head.posY =
+        newObj->base.posY =
             obj->anim.localPosY +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadY, *(s8*)&setup->spreadY);
-        newObj->head.posZ =
+        newObj->base.posZ =
             obj->anim.localPosZ +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadZ, *(s8*)&setup->spreadZ);
-        newObj->rot1A = 0;
-        newObj->rot19 = 0;
-        newObj->rot18 = 0;
-        newObj->head.color[0] = 1;
-        newObj->head.color[1] = 1;
-        newObj = (SquadronShipSetup*)loadObjectAtObject(obj, &newObj->head);
-        dir.x = setup->velocityX / *(f32*)&lbl_803E7140;
-        dir.y = setup->velocityY / *(f32*)&lbl_803E7140;
-        dir.z = setup->velocityZ / *(f32*)&lbl_803E7140;
+        newObj->rotZ = 0;
+        newObj->rotY = 0;
+        newObj->rotX = 0;
+        newObj->base.color[0] = 1;
+        newObj->base.color[1] = 1;
+        newObj = (ArwSquadronSetup*)loadObjectAtObject(obj, &newObj->base);
+        dir.x = setup->velocityX / 10.0f;
+        dir.y = setup->velocityY / 10.0f;
+        dir.z = setup->velocityZ / 10.0f;
         dll_2A4_setVelocity((GameObject*)(newObj), &dir);
         dll_2A4_setLifetime((GameObject*)(newObj), setup->projectileSpeed);
     }
@@ -74,30 +65,30 @@ void arwgenerato_spawnSquadronShipA(GameObject* obj, ARWGeneratorState* state, A
 
 void arwgenerato_spawnSquadronShipB(GameObject* obj, ARWGeneratorState* state, ARWGeneratorSetup* setup)
 {
-    SquadronShipSetup* newObj;
+    ArwSquadronSetup* newObj;
     ARWSpeedStrVelocity dir;
 
     if (Obj_IsLoadingLocked())
     {
-        newObj = (SquadronShipSetup*)Obj_AllocObjectSetup(SPAWN_EXTRA_SIZE, OBJ_ID_SQUADRON_SHIP_B);
-        newObj->head.posX =
+        newObj = (ArwSquadronSetup*)Obj_AllocObjectSetup(SPAWN_EXTRA_SIZE, OBJ_ID_SQUADRON_SHIP_B);
+        newObj->base.posX =
             obj->anim.localPosX +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadX, *(s8*)&setup->spreadX);
-        newObj->head.posY =
+        newObj->base.posY =
             obj->anim.localPosY +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadY, *(s8*)&setup->spreadY);
-        newObj->head.posZ =
+        newObj->base.posZ =
             obj->anim.localPosZ +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadZ, *(s8*)&setup->spreadZ);
-        newObj->rot1A = 0;
-        newObj->rot19 = 0;
-        newObj->rot18 = 0;
-        newObj->head.color[0] = 1;
-        newObj->head.color[1] = 1;
-        newObj = (SquadronShipSetup*)loadObjectAtObject(obj, &newObj->head);
-        dir.x = setup->velocityX / *(f32*)&lbl_803E7140;
-        dir.y = setup->velocityY / *(f32*)&lbl_803E7140;
-        dir.z = setup->velocityZ / *(f32*)&lbl_803E7140;
+        newObj->rotZ = 0;
+        newObj->rotY = 0;
+        newObj->rotX = 0;
+        newObj->base.color[0] = 1;
+        newObj->base.color[1] = 1;
+        newObj = (ArwSquadronSetup*)loadObjectAtObject(obj, &newObj->base);
+        dir.x = setup->velocityX / 10.0f;
+        dir.y = setup->velocityY / 10.0f;
+        dir.z = setup->velocityZ / 10.0f;
         dll_2A3_setVelocity((GameObject*)(newObj), &dir);
         dll_2A3_setSpeed((GameObject*)(newObj), setup->projectileSpeed);
     }

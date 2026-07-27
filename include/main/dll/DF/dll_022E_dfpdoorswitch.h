@@ -5,8 +5,6 @@
 
 extern char sDoorswitchInitNoLongerSupported[];
 extern ObjectDescriptor gDoorswitchObjDescriptor;
-extern ObjectDescriptor gDFP_seqpointObjDescriptor;
-extern ObjectDescriptor gDFP_TorchObjDescriptor;
 
 int doorswitch_getExtraSize(void);
 int doorswitch_getObjectTypeId(void);

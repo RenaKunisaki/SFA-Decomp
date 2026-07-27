@@ -1,6 +1,6 @@
 /*
- * SPScarab (DLL 0x287) - the scarab coin / pickup that the shopkeeper
- * scatters when paid (see spshopkeeper ShopKeeper_spawnScarabs, which spawns object
+ * SPScarab (DLL 647) - the scarab coin / pickup that the shopkeeper
+ * scatters when paid (see SPShopKeepe's ShopKeeper_spawnScarabs, which spawns object
  * type 1151 = this object).
  *
  * Each scarab is launched along its facing angle, falls under gravity and
@@ -11,8 +11,6 @@
  * interface vtable. Two kinds (placement->kind 0/1) differ only in sfx,
  * particle mode and the trailing dust-burst count.
  */
-#include "main/dll/shopkeeperstate_struct.h"
-#include "main/dll/pushcartstate97_types.h"
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
@@ -33,9 +31,6 @@ typedef struct
 
 const u16 gSpScarabPaletteBytesA = 0x0213;
 const u8 gSpScarabPaletteByteB = 0x16;
-STATIC_ASSERT(sizeof(ShopItemState) == 0xEC);
-STATIC_ASSERT(sizeof(ShopkeeperState) == 0x9D8);
-STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
 
 typedef struct SpscarabPlacement
 {

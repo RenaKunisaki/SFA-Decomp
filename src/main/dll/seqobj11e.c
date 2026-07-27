@@ -64,24 +64,24 @@ typedef struct
 
 extern Seq11ERow gSeq11EStateTable[];
 
-void guardClaw_update(int* obj, u8* state)
+void guardClaw_update(GameObject* obj, u8* state)
 {
-    int* def = *(int**)&((GameObject*)obj)->anim.placementData;
+    int* def = *(int**)&(obj)->anim.placementData;
     u32 flags;
 
     if (((BaddieState*)state)->userData1 == 2 && mainGetBit(*(s16*)((char*)def + 0x1c)) == 0)
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
-        if (*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+        *(u8*)&(obj)->anim.resetHitboxMode =
+            (u8)(*(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
+        if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
         {
             fn_80151C68((int)obj, state);
         }
     }
     else
     {
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-            (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        *(u8*)&(obj)->anim.resetHitboxMode =
+            (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
     }
     flags = ((BaddieState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_JUST_TRIGGERED)
@@ -133,7 +133,7 @@ void guardClaw_update(int* obj, u8* state)
         {
             ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].next;
         }
-        anim = ((GameObject*)obj)->anim.currentMove;
+        anim = (obj)->anim.currentMove;
         if (anim != (animTbl = (u8*)gSeq11EStateTable + 8)[((BaddieState*)state)->userData1 * 12])
         {
             if (animTbl[((BaddieState*)state)->userData1 * 12] != 0 &&
@@ -142,19 +142,19 @@ void guardClaw_update(int* obj, u8* state)
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_eggsnatch_carry3);
             }
             ((SeqObj11ESetMovePointerStateFn)fn_8014D08C)(
-                (GameObject*)obj, state, animTbl[((BaddieState*)state)->userData1 * 12],
+                obj, state, animTbl[((BaddieState*)state)->userData1 * 12],
                 *(f32*)((u8*)gSeq11EStateTable + ((BaddieState*)state)->userData1 * 12), 0, 0xf);
         }
     }
     if (gSeq11EStateTable[((BaddieState*)state)->userData1].flagB != 0)
     {
-        groundBaddiePushPlayerOut((int)obj, state);
+        groundBaddiePushPlayerOut(obj, state);
     }
 }
 
-void guardClaw_init(int* obj, u8* state)
+void guardClaw_init(GameObject* obj, u8* state)
 {
-    int* sub = *(int**)&((GameObject*)obj)->anim.placementData;
+    int* sub = *(int**)&(obj)->anim.placementData;
     f32 fz;
     ((BaddieState*)state)->speedScale = 200.0f;
     ((BaddieState*)state)->unk2A8 = 300.0f;
@@ -174,7 +174,7 @@ void guardClaw_init(int* obj, u8* state)
     {
         *(int*)&((BaddieState*)state)->controlFlags |= 1;
     }
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
 }
 
 GameObject* gcRobotLight_init(GameObject* obj, int childId)

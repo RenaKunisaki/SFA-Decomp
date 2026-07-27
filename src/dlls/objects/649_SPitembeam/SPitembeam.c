@@ -1,5 +1,5 @@
 /*
- * SPitembeam (DLL 0x289) - the glowing "for sale" beam that marks a
+ * SPitembeam (DLL 649) - the glowing "for sale" beam that marks a
  * purchasable item on a SnowHorn shop stall.
  *
  * Each beam latches onto the nearest shop object (object group 9, the
@@ -9,11 +9,11 @@
  * longer available, or has already been bought, the beam hides and
  * despawns itself.
  */
-#include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/objtexture.h"
 #include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/dll/SP/dll_0289_spitembeam.h"
+#include "dlls/object_descriptor.h"
 
 /* slots on the shop object's interface vtable (obj+0x68) queried per item */
 enum
@@ -123,7 +123,7 @@ ObjectDescriptor gSPitembeamObjDescriptor = {
     spitembeam_getExtraSize,
 };
 
-/* used by dll_0255 (snowbike) as a base+offset table; placed in this unit by link order */
+/* Used by SnowBike (DLL 597) as a base+offset table; placed in this unit by link order. */
 f32 lbl_803284E0[19] = {
     -6.5f, 0.0f,  -13.0f, 6.5f, 0.0f, -13.0f, 6.5f, 0.0f, 13.0f, -6.5f,
     0.0f,  13.0f, 1.0f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f,

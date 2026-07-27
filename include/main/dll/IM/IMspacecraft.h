@@ -2,6 +2,7 @@
 #define MAIN_DLL_IM_IMSPACECRAFT_H_
 
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
 #include "main/modellight_api.h"
 #include "main/dll/curve_walker.h"
@@ -34,7 +35,7 @@ typedef struct SpiritDoorLockState
 
 typedef struct SpiritDoorLockMapData
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     s8 yaw;
     s8 scale;
     s16 orbitCount;

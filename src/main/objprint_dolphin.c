@@ -3101,14 +3101,14 @@ void objRenderFn_80041018(GameObject* obj)
     int* model;
     ObjDefHitVolume* base;
     int i;
-    base = ((GameObject*)obj)->anim.modelInstance->hitVolumes;
-    q = ((GameObject*)obj)->anim.hitVolumeTransforms;
-    if (!(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & 0x28))
+    base = obj->anim.modelInstance->hitVolumes;
+    q = obj->anim.hitVolumeTransforms;
+    if (!(*(u8*)&obj->anim.resetHitboxMode & 0x28))
     {
-        model = (int*)Obj_GetActiveModel((GameObject*)obj);
+        model = (int*)Obj_GetActiveModel(obj);
         i = 0;
         p = base;
-        for (; i < ((GameObject*)obj)->anim.modelInstance->hitVolumeCount; i++)
+        for (; i < obj->anim.modelInstance->hitVolumeCount; i++)
         {
             int j = p->jointIndices[OBJPRINT_ACTIVE_BANK_INDEX(obj)];
             ObjModelJointMatrix* mtx;
@@ -4298,13 +4298,18 @@ void mapLoadDataFiles(int mapIdx);
 
 extern int sMapFileNameIndexRemapTable[];
 
-s32 mapCheckCurBlocks(int v)
+static inline s32 mapCheckCurBlocksImpl(int v)
 {
     if (((s16*)((char*)gObjMapBlockInfo + 0x4a))[0] == v)
         return 0;
     if (((s16*)((char*)gObjMapBlockInfo + 0x8e))[0] == v)
         return 1;
     return -1;
+}
+
+s32 mapCheckCurBlocks(int v)
+{
+    return mapCheckCurBlocksImpl(v);
 }
 
 int loadMapAndParent(int mapId)
@@ -4320,7 +4325,7 @@ int loadMapAndParent(int mapId)
         idx = sMapFileNameIndexRemapTable[mapId];
     }
     parent = sMapFileNameAdjacencyTable[idx];
-    if (parent != -1 && mapCheckCurBlocks(parent) == -1)
+    if (parent != -1 && mapCheckCurBlocksImpl(parent) == -1)
     {
         mapLoadDataFiles(parent);
         return parent;

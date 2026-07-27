@@ -22,7 +22,7 @@
 #define GROUND_BADDIE_PUSH_MAX_DEPTH -20.0f
 
 
-void groundBaddiePushPlayerOut(int obj, u8* state)
+void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
 {
     GameObject* player;
     ObjPlacement* setup;
@@ -37,26 +37,26 @@ void groundBaddiePushPlayerOut(int obj, u8* state)
     f32 dx;
     f32 dz;
 
-    player = (GameObject*)Obj_GetPlayerObject();
-    setup = ((GameObject*)obj)->anim.placement;
-    dy = player->anim.localPosY - ((GameObject*)obj)->anim.localPosY;
+    player = Obj_GetPlayerObject();
+    setup = obj->anim.placement;
+    dy = player->anim.localPosY - obj->anim.localPosY;
     dy = (dy >= 0.0f) ? dy : -dy;
     if (dy > GROUND_BADDIE_PUSH_RADIUS)
     {
         return;
     }
     px0 = setup->posX - GROUND_BADDIE_PUSH_RADIUS * mathSinf(GROUND_BADDIE_PI *
-                                                             (f32)((GameObject*)obj)->anim.rotX /
+                                                             (f32)obj->anim.rotX /
                                                              GROUND_BADDIE_ANGLE_UNIT_SCALE);
     pz0 = setup->posZ - GROUND_BADDIE_PUSH_RADIUS * mathCosf(GROUND_BADDIE_PI *
-                                                             (f32)((GameObject*)obj)->anim.rotX /
+                                                             (f32)obj->anim.rotX /
                                                              GROUND_BADDIE_ANGLE_UNIT_SCALE);
     dx = player->anim.worldPosX - px0;
     dz = player->anim.worldPosZ - pz0;
     if (sqrtf(dx * dx + dz * dz) < ((GroundBaddieState*)state)->baddie.speedScale)
     {
-        cosA = mathSinf(GROUND_BADDIE_PI * (f32)((GameObject*)obj)->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
-        sinA = mathCosf(GROUND_BADDIE_PI * (f32)((GameObject*)obj)->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
+        cosA = mathSinf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
+        sinA = mathCosf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
         base = -(cosA * (px0 - cosA) + sinA * (pz0 - sinA));
         f5 = base + (cosA * player->anim.previousWorldPosX + sinA * player->anim.previousWorldPosZ);
         f2v = base + (cosA * player->anim.worldPosX + sinA * player->anim.worldPosZ);
@@ -75,9 +75,9 @@ void groundBaddiePushPlayerOut(int obj, u8* state)
     }
 }
 
-void guardClawUpdateWhileFrozen(int obj, u8* state, int wpad0, int wpad1, int wpad2, int wpad3, Vec* wpad4,
+void guardClawUpdateWhileFrozen(GameObject* obj, u8* state, int wpad0, int wpad1, int wpad2, int wpad3, Vec* wpad4,
                                 int wpad5)
 {
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_pole1_c_23);
+    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_pole1_c_23);
     ((GroundBaddieState*)state)->baddie.reactionFlags |= 0x10;
 }

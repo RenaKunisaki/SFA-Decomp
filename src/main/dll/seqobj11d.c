@@ -40,7 +40,7 @@
 #include "main/gamebit_ids.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/wispbaddieseq_ext.h"
-#include "main/dll/dll_00E1_wispbaddie.h"
+#include "dlls/objects/225_WispBaddie.h"
 
 typedef struct GroundBaddieModelChainDescriptor
 {
@@ -221,7 +221,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
     }
     fn_8015039C(obj, state);
     tv = *(f32*)(state + 0x328);
-    fz = lbl_803E2740;
+    fz = 0.0f;
     if (tv != fz && *(u16*)(state + 0x338) != 0)
     {
         *(f32*)(state + 0x328) = tv - timeDelta;

@@ -1,5 +1,5 @@
 /*
- * KT_RexFloorswitch (DLL 0x251) - a stompable floor plate in the T-rex
+ * KT_RexFloor (DLL 0x251) - a stompable floor plate in the T-rex
  * (Galdon) arena that the player charges by standing on it.
  *
  * Its placement game bit (activeBit) gates three behaviours: standing on

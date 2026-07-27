@@ -70,4 +70,4 @@ effect was reported but unconfirmed.
 - `arwbombcoll_update` `0x8022F5C4`, seqId switch ~`+0x3b0`; `arwbombcoll_handleArwingHit` `0x8022FB5C`
 - `arwarwing_incrementPickup6D8Count` `0x8022D5DC` (6D9 `0x8022D5C8`, 6DA `0x8022D5A0`, 6DB `0x8022D5B4`)
 - `ArwingState.pickup6D8Count` at extra+0x472; `gArwing` `0x803DDD88`
-- dispatch source: `src/main/dll/ARW/dll_029F_arwbombcoll.c`
+- dispatch source: `src/dlls/objects/671_ARWBombColl/ARWBombColl.c`

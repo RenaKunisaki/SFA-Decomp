@@ -39,6 +39,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 extern PartFxSpawnParams gMoonRockSpawnParams;
 #define MMPMOONROCK_OBJGROUP        4
@@ -67,7 +68,8 @@ STATIC_ASSERT(sizeof(MmpMoonrockState) == 0x30);
 
 typedef struct MmpMoonrockPlacement
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 kindGameBit; /* 0x1A: gamebit whose value selects the moonrock kind */
     u8 pad1C[0x1E - 0x1C];
     s16 placedGameBit; /* 0x1E: gamebit set 0 when returned home, 1 when carried away */

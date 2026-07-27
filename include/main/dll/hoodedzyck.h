@@ -4,8 +4,8 @@
 #include "game/objects/object.h"
 
 void hoodedZyck_updateIdle(GameObject* obj, int state);
-void hoodedZyck_updateB(s16* obj, u8* state);
-void hoodedZyck_update(s16* obj, u8* state);
-void hoodedZyck_init(int* obj, int* st);
+void hoodedZyck_updateB(GameObject* obj, u8* state);
+void hoodedZyck_update(GameObject* obj, u8* state);
+void hoodedZyck_init(GameObject* obj, struct BaddieState* st);
 
 #endif /* H_MAIN_DLL_HOODEDZYCK_H */

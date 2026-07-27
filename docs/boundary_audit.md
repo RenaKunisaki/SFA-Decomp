@@ -27,7 +27,7 @@ serve. Therefore a DLL's TU spans
 (previous DLL's initialise end) .. (own initialise end)
 ```
 
-Validated against the descriptor-carved `dll_0215_wmnewcrystal.c`:
+Validated against the descriptor-carved `dlls/objects/533_WM_newcryst/WM_newcryst.c`:
 unit = [801F943C, 801F9804), and dll 0x215's fns are 801F974C..801F9800
 (initialise 801F9800 + 4 = unit end exactly; helpers 801F943C..801F974C
 precede). The same model holds at every clean per-descriptor unit checked.
@@ -90,8 +90,6 @@ DLLs whose fns it hosts:
 
 | unit | actually hosts | evidence |
 |---|---|---|
-| main/light.c (801FB9F4-801FD398) | VFP_Block1 0x21E tail, dll_224 head — VFP-lane DLL code (vfpplatform/vfpdoorswitch/seqpoint/vfpdraghead/vfpcoreplat symbols) | not engine light code |
-| main/main.c (801FD398-801FEB30) | dll_224 tail, DB_egg 0x23F fns | not engine main() |
 | main/dll/CF/windlift.c | scarab 0x106 body+tail, dll_107, EndObject 0x108 (+its descriptor .data 0x803217C0), PortalSpellStone 0x10D, LanternFireFly 0x10C head | real CFWindLift (0x149) lives in DR/sandwormBoss.c 8019CCF8-8019D574 |
 | main/dll/DR/gasvent.c (801A1230-801A1A60) | the MIDDLE of GunPowderBarrel 0x158 (801A0EF8-801A25E8) — nothing else | |
 | main/dll/ARW/ARWarwingattachment.c (801F0B50-801F37CC) | LaserBeam 0x1FC tail, PressureSwitch 0x1FE, dll_1FF, WM_LaserTarget 0x1FD, dll_200, WM_colrise 0x201, WM_Torch 0x204, LightSource 0x206 head — 8 WM-lane DLLs, no arwing attachment | |
@@ -135,11 +133,11 @@ inside LGTprojectedlight.c. This is part of a one-DLL-shift chain:
 0x1F8 cut at 801F02F0, 0x1FC cut at 801F0B50, 0x206 cut at 801F37CC,
 0x207 cut at 801F3C7C, 0x209 cut at 801F44B4.
 
-### 4 (clean new). dll_01BA_sctotempuzzle | dll_01BB_sctotembond
+### 4 (clean new). SC_totempuz | SC_totembon
 
 Boundary 801DD46C cuts 0x1BA mid-block (between hitDetect and update);
 ranges do not interleave; real edge = 801DDA28 (0x1BA initialise
-801DDA24 + 4). The 01BA file header already notes "boundary fix pending".
+801DDA24 + 4).
 
 ## Surgery status (this campaign)
 
@@ -432,7 +430,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x115 | lbl_80321428 | 8017D06C-8017D378 | 8017CF90-8017D37C | 8017D0D4 (main/dll/alphaanim.c \| main/dll/groundAnimator.c) | n |  |
 | 0x117 | gAppleOnTreeObjDescriptor | 8017D818-8017E964 | 8017D818-8017EC10 | 8017E1A0 (main/dll/groundAnimator.c \| main/dll/crackanim.c) | Y | AppleOnTree |
 | 0x0FC | gDllFCObjDescriptor | 8017EC10-8017EF68 | 8017EC10-8017EF6C | 8017EC94 (main/dll/crackanim.c \| main/dll/babycloudrunner.c) | n |  |
-| 0x0FD | gDll14DObjDescriptor | 8017EF6C-8017F330 | 8017EF6C-8017F334 | 8017EFF0 (main/dll/babycloudrunner.c \| main/dll/dll_14D.c) | n |  |
+| 0x0FD | gDllFDObjDescriptor | 8017EF6C-8017F330 | 8017EF6C-8017F334 | 8017EFF0 (main/dll/babycloudrunner.c \| main/dll/dll_14D.c) | n |  |
 | 0x104 | gSmallBasketObjDescriptor | 80182594-80183094 | 801814D0-80183204 | 801826E8 (main/dll/gcrobotlightbea.c \| main/dll/cfperch.c) | Y | SmallBasket,ReinforcedC |
 | 0x105 | gLargeCrateObjDescriptor | 80183B44-801843BC | 80183204-801843C0 | 80184180 (main/dll/explodable.c \| main/dll/cfforcefield.c) | Y | DrakorCrate,LargeBasket,LargeCrate,LargeCrateL |
 | 0x106 | gScarabObjDescriptor | 801847E8-801856C4 | 801843C0-80185868 | 80184930 (main/dll/CF/CFguardian.c \| main/dll/CF/windlift.c) | Y | GreenScarab,RedScarab,GoldScarab,RainScarab |
@@ -493,7 +491,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x1B1 | gSH_staffObjDescriptor | 801D9B1C-801DA608 | 801D9B1C-801DA8C4 | 801D9BDC (main/dll/IM/IMsnowbike.c \| main/dll/DR/DRearthwalk.c) | Y | SH_staff |
 | 0x1B4 | gSH_EmptyTumbleWObjDescriptor | 801DAFA4-801DAFDC | 801DAFA4-801DB098 | 801DAFDC (main/dll/DR/DRearthwalk.c \| main/dll/CR/CRsnowbike.c) | Y | SH_EmptyTum |
 | 0x1B7 | gSC_MusicTreeObjDescriptor | 801DC230-801DC8D0 | 801DBFA0-801DC8D4 | 801DC310 (main/dll/CR/CRsnowbike.c \| main/dll/DR/DRcloudrunner.c) | Y | SC_MusicTre,SC_BirchTre |
-| 0x1BA | gSC_totempuzzleObjDescriptor | 801DD424-801DDA24 | 801DD170-801DDA28 | 801DD46C (main/dll/SC/dll_01BA_sctotempuzzle.c \| main/dll/SC/dll_01BB_sctotembond.c) | Y | SC_totempuz |
+| 0x1BA | gSC_totempuzzleObjDescriptor | 801DD424-801DDA24 | 801DD170-801DDA28 | 801DD46C (dlls/objects/442_SC_totempuz/SC_totempuz.c \| dlls/objects/443_SC_totembon/SC_totembon.c) | Y | SC_totempuz |
 | 0x1BD | gPaymentKioskObjDescriptor | 801DF304-801DF4A8 | 801DF110-801DF4AC | 801DF43C (main/dll/VF/platform1.c \| main/dll/VF/draghead.c); 801DF43C (main/dll/VF/platform1.c \| main/dll/VF/lavaflow.c); 801DF43C (main/dll/VF/platform1.c \| main/dll/DB/DBrockfall.c) | Y | SC_paypoint,SPWell |
 | 0x1EC | gSB_ShipGunObjDescriptor | 801E341C-801E3D14 | 801E341C-801E3D30 | 801E34C0 (main/dll/DB/DBstealerworm.c \| main/dll/TREX/TREX_levelcontrol.c) | Y | SB_ShipGun |
 | 0x1ED | gSB_FireBallObjDescriptor | 801E4288-801E45A8 | 801E4288-801E45AC | 801E42F8 (main/dll/TREX/TREX_levelcontrol.c \| main/dll/TREX/TREX_trex.c) | Y | SB_FireBall |
@@ -595,7 +593,7 @@ main/dll/pickup.c                                       13 dlls: 0x09D:lbl_80318
 main/dll/pressureSwitch.c                               2 dlls: 0x0DF:Hagabon, 0x0E0:SwarmBaddie
 main/dll/projball1D8.c                                  2 dlls: 0x1A5:NW_levcontr, 0x1A6:SH_tricky
 main/dll/savegame.c                                     9 dlls: 0x091:lbl_8031719C, 0x092:lbl_8031723C, 0x093:lbl_80317468, 0x094:lbl_80317504, 0x095:lbl_803175C8, 0x096:lbl_803177F0, 0x097:lbl_8031788C, 0x098:lbl_80317AD4, 0x099:lbl_80317B74
-main/dll/scarab.c                                       4 dlls: 0x0CB:dll_CB, 0x0CC:ChukChuk, 0x0CD:IceBall, 0x0CE:dll_CE
+main/dll/scarab.c                                       4 dlls: 0x0CB:gDllCBObjDescriptor, 0x0CC:ChukChuk, 0x0CD:IceBall, 0x0CE:gDllCEObjDescriptor
 main/dll/screens.c                                      3 dlls: 0x09A:lbl_80317BB8, 0x09B:lbl_80317DE0, 0x09C:lbl_80318014
 main/dll/shrine1CE.c                                    3 dlls: 0x19B:dll_19B, 0x19C:dll_19C, 0x19D:dll_19D
 main/dll/tFrameAnimator.c                               2 dlls: 0x0F6:Area, 0x0F8:LevelName

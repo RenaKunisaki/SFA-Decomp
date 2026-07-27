@@ -1,0 +1,294 @@
+/*
+ * DIMMagicBri (DLL 0x1CC) - the flame bridge across a lava gap.
+ *
+ * The bridge mesh is a strip of segments whose vertices are displaced by a
+ * travelling sine wave (dimmagicbridge_updateVertexWave) while two material
+ * channels scroll (dimmagicbridge_scrollTextureChannels). When ignited
+ * (gamebit 0x1E9, or once the player's emission controller lingers over
+ * gamebit 0x1EF) it fires the death VFX (fn_80065574) and latches gamebit
+ * 0x1E8; the flame sequence (dimmagicbridge_SeqFn) lights successive
+ * segments and ramps their glow toward full.
+ *
+ * The per-object extra block is DimMagicBridgeState (getExtraSize == 0x68).
+ */
+#include "main/dll/dimmagicbridge_state.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "main/model.h"
+#include "main/dll/fbwgpipe_struct.h"
+#include "game/objects/object.h"
+#include "main/dll/player_api.h"
+#include "sys/objects.h"
+#include "main/dll/DIM/dll_01CC_dimmagicbridge.h"
+#include "main/objtexture.h"
+#include "main/gamebits.h"
+#include "dolphin/os/OSCache.h"
+#include "main/frame_timing.h"
+#include "main/track_dolphin_api.h"
+#include "main/object_render.h"
+
+STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
+
+#define DIMMAGICBRIDGE_GAMEBIT_IGNITED 0x1e9
+#define DIMMAGICBRIDGE_GAMEBIT_TRIGGER 0x1ef
+#define DIMMAGICBRIDGE_GAMEBIT_LATCH   0x1e8
+
+void dimmagicbridge_updateVertexWave(GameObject* obj, u8* sub)
+{
+    int i;
+    int cnt;
+    ModelFileHeader* mdl;
+    ObjModel* model;
+    f32 amp;
+    DimMagicBridgeState* state = (DimMagicBridgeState*)sub;
+    model = Obj_GetActiveModel(obj);
+    mdl = model->file;
+    i = 0;
+    amp = 65535.0f;
+    for (; cnt = mdl->vertexCount, i < cnt; i++)
+    {
+        s16* vc = ObjModel_GetCurrentVertexCoords(model, i);
+        s16* vb = ObjModel_GetBaseVertexCoords(mdl, i);
+        int wavePos = (u16)(int)(amp * ((f32)(int)vc[2] / state->minVertexY));
+        wavePos = wavePos + state->wavePhase;
+        if (*vb > 0)
+        {
+            *vc = 256.0f * mathSinf((3.1415927f * (f32)(int)wavePos) / 32768.0f) + (f32)(int)*vb;
+        }
+        else
+        {
+            *vc = -(256.0f * mathSinf((3.1415927f * (f32)(int)wavePos) / 32768.0f) - (f32)(int)*vb);
+        }
+    }
+    DCStoreRange((void*)ObjModel_GetCurrentVertexCoords(model, 0), cnt * 6);
+    (obj)->anim.alpha = state->segmentGlow[1];
+}
+
+void dimmagicbridge_scrollTextureChannels(int obj, u8* extra)
+{
+    DimMagicBridgeState* state = (DimMagicBridgeState*)extra;
+    ObjTextureRuntimeSlot* tex;
+    s32 phase;
+
+    tex = objFindTexture((GameObject*)obj, 0, 0);
+    tex->offsetT += 0x14;
+    if (tex->offsetT > 10000)
+    {
+        tex->offsetT -= 10000;
+    }
+    tex->offsetS += 10;
+    if (tex->offsetS > 10000)
+    {
+        tex->offsetS -= 10000;
+    }
+    tex = objFindTexture((GameObject*)obj, 1, 0);
+    tex->offsetT += 0x1e;
+    if (tex->offsetT > 10000)
+    {
+        tex->offsetT -= 10000;
+    }
+    phase = (s32)state->wavePhase + framesThisStep * 0x100;
+    if (phase > 0xffff)
+    {
+        phase = phase - 0xffff;
+    }
+    state->wavePhase = phase;
+    phase = (s32)state->wavePhaseB + framesThisStep * 0x80;
+    if (phase > 0xffff)
+    {
+        phase = phase - 0xffff;
+    }
+    state->wavePhaseB = phase;
+}
+
+int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    int j;
+    int i;
+    u8* sub = (obj)->extra;
+    DimMagicBridgeState* state = (DimMagicBridgeState*)sub;
+    animUpdate->sequenceEventActive = 0;
+    animUpdate->hitVolumePair &= ~0x40;
+    dimmagicbridge_scrollTextureChannels((int)obj, sub);
+    if (animUpdate->triggerCommand == 1)
+    {
+        animUpdate->triggerCommand = 0;
+        state->ignited = 1;
+    }
+    if (state->ignited != 0)
+    {
+        state->igniteTimer -= framesThisStep;
+        if (state->igniteTimer <= 0)
+        {
+            state->igniteTimer = 0x10;
+            for (j = 1; state->segmentLit[j] != 0 && j < state->segmentCount; j++)
+            {
+            }
+            state->segmentLit[j] = 1;
+        }
+        for (i = 1; i < state->segmentCount; i++)
+        {
+            if (state->segmentLit[i] != 0)
+            {
+                int sv = state->segmentGlow[i];
+                int v = sv + framesThisStep;
+                if (v > 0xff)
+                {
+                    v = 0xff;
+                }
+                state->segmentGlow[i] = v;
+            }
+        }
+    }
+    dimmagicbridge_updateVertexWave(obj, sub);
+    return 0;
+}
+
+FbWGPipe GXWGFifo : (0xCC008000);
+
+int dimmagicbridge_getExtraSize(void)
+{
+    return 0x68;
+}
+
+int dimmagicbridge_getObjectTypeId(void)
+{
+    return 0x0;
+}
+
+void dimmagicbridge_free(void)
+{
+}
+
+void dimmagicbridge_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+{
+    s32 isVisible = visible;
+    if (isVisible != 0)
+    {
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    }
+}
+
+void dimmagicbridge_hitDetect(void)
+{
+}
+
+void dimmagicbridge_update(GameObject* obj)
+{
+    DimMagicBridgeState* sub;
+    void* player;
+    player = Obj_GetPlayerObject();
+    sub = (obj)->extra;
+    dimmagicbridge_scrollTextureChannels((int)obj, (u8*)sub);
+    dimmagicbridge_updateVertexWave(obj, (u8*)sub);
+    if (sub->ignited == 0)
+    {
+        if (mainGetBit(DIMMAGICBRIDGE_GAMEBIT_TRIGGER) != 0)
+        {
+            if (EmissionController_IsLingering((GameObject*)(player)) != 0)
+            {
+                mainSetBits(DIMMAGICBRIDGE_GAMEBIT_LATCH, 1);
+            }
+        }
+    }
+    else
+    {
+        fn_80065574(0x11, (GameObject*)(0), 0);
+    }
+}
+
+void dimmagicbridge_init(GameObject* obj, u8* params)
+{
+    DimMagicBridgeState* state;
+    int i;
+    s32 minY;
+    ObjModel* model;
+    ModelFileHeader* modelData;
+    f32* pair;
+    int j;
+    int sorted;
+    f32 first, second;
+    s16* vtx;
+    s16 vertexY;
+
+    obj->anim.rotX = (s16)(((s16)(s8)params[0x18]) << 8);
+    obj->animEventCallback = dimmagicbridge_SeqFn;
+    state = obj->extra;
+    minY = 0;
+    model = Obj_GetActiveModel(obj);
+    modelData = model->file;
+
+    i = 0;
+    while (i < modelData->vertexCount)
+    {
+        vtx = ObjModel_GetCurrentVertexCoords(model, i);
+        vertexY = vtx[2];
+        if (vertexY < minY)
+        {
+            minY = vertexY;
+        }
+        i++;
+    }
+
+    sorted = 0;
+    while (sorted == 0)
+    {
+        sorted = 1;
+        j = 0;
+        pair = (f32*)state;
+        while (j < state->segmentCount - 1)
+        {
+            first = pair[1];
+            second = pair[2];
+            if (first < second)
+            {
+                pair[1] = second;
+                pair[2] = (f32)(s32)first;
+                sorted = 0;
+            }
+            pair++;
+            j++;
+        }
+    }
+
+    state->segmentCount = 0xa;
+    state->minVertexY = minY;
+
+    if (mainGetBit(DIMMAGICBRIDGE_GAMEBIT_IGNITED) != 0)
+    {
+        state->ignited = 1;
+    }
+    if (state->ignited != 0)
+    {
+        for (i = 0; i < state->segmentCount; i++)
+        {
+            state->segmentGlow[i] = 0xff;
+            state->segmentLit[i] = 1;
+            fn_80065574(0x11, (GameObject*)(0), 0);
+        }
+    }
+}
+
+void dimmagicbridge_release(void)
+{
+}
+
+void dimmagicbridge_initialise(void)
+{
+}
+
+ObjectDescriptor gDIMMagicBridgeObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dimmagicbridge_initialise,
+    (ObjectDescriptorCallback)dimmagicbridge_release,
+    0,
+    (ObjectDescriptorCallback)dimmagicbridge_init,
+    (ObjectDescriptorCallback)dimmagicbridge_update,
+    (ObjectDescriptorCallback)dimmagicbridge_hitDetect,
+    (ObjectDescriptorCallback)dimmagicbridge_render,
+    (ObjectDescriptorCallback)dimmagicbridge_free,
+    (ObjectDescriptorCallback)dimmagicbridge_getObjectTypeId,
+    dimmagicbridge_getExtraSize,
+};

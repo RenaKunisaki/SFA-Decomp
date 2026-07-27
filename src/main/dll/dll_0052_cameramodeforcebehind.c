@@ -39,6 +39,7 @@ void CameraModeForceBehind_free(void)
 
 void CameraModeForceBehind_update(u8* obj)
 {
+    extern const f32 gCamForceBehindEaseRate[1];
     CameraObject* camera = (CameraObject*)obj;
     GameObject* target = (GameObject*)camera->anim.targetObj;
     s16 yaw;
@@ -81,7 +82,7 @@ void CameraModeForceBehind_update(u8* obj)
     {
         yaw = yaw + 0xffff;
     }
-    camera->anim.rotX = (f32)(s32)camera->anim.rotX + interpolate((f32)yaw, 0.25f, timeDelta);
+    camera->anim.rotX = (f32)(s32)camera->anim.rotX + interpolate((f32)yaw, gCamForceBehindEaseRate[0], timeDelta);
 
     pitch = (s16)(pitch - (u16)camera->anim.rotY);
     if (pitch > 0x8000)
@@ -92,7 +93,7 @@ void CameraModeForceBehind_update(u8* obj)
     {
         pitch = pitch + 0xffff;
     }
-    camera->anim.rotY = (f32)(s32)camera->anim.rotY + interpolate((f32)pitch, 0.25f, timeDelta);
+    camera->anim.rotY = (f32)(s32)camera->anim.rotY + interpolate((f32)pitch, gCamForceBehindEaseRate[0], timeDelta);
 
     cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
     sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
@@ -114,7 +115,7 @@ void CameraModeForceBehind_update(u8* obj)
                                    *(int*)&camera->anim.parent);
 }
 
-const f32 gCamForceBehindZero = 0.0f;
+const f32 gCamForceBehindEaseRate[1] = {0.25f};
 
 void CameraModeForceBehind_init(u8* obj, int unused, f32* params)
 {

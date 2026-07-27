@@ -20,7 +20,7 @@
 #include "main/dll/player_spirit_api.h"
 #include "main/dll/player_state_api.h"
 #include "main/dll/player_motion_api.h"
-#include "main/dll/dll_00E5_shield_api.h"
+#include "dlls/objects/229_Shield.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"
 #include "main/dll/DB/DBprotection.h"
@@ -1617,7 +1617,7 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-            staffFn_80170380(gPlayerStaffObject, 2);
+            Shield_setMode(gPlayerStaffObject, 2);
             ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ObjHits_SyncObjectPositionIfDirty(obj);
@@ -1863,7 +1863,7 @@ int playerState41(GameObject* obj, int state, f32 fv)
         ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
         ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
         ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-        staffFn_80170380(gPlayerStaffObject, 2);
+        Shield_setMode(gPlayerStaffObject, 2);
         ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
@@ -7010,7 +7010,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    inner->flags360 &= ~2;
+    *(int*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
     inner->flags360 |= 0x2000;
     *(int*)((char*)state + 0x4) |= 0x100000;
     {
@@ -8029,7 +8029,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                     ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
                     ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
                     ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-                    staffFn_80170380(gPlayerStaffObject, 2);
+                    Shield_setMode(gPlayerStaffObject, 2);
                     ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
                     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                     ObjHits_SyncObjectPositionIfDirty(obj);
@@ -8461,7 +8461,7 @@ int playerStateOnLadder(int obj, int state)
                             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
                             ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
                             ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-                            staffFn_80170380(gPlayerStaffObject, 2);
+                            Shield_setMode(gPlayerStaffObject, 2);
                             ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
                             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                             ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
@@ -8978,7 +8978,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-            staffFn_80170380(gPlayerStaffObject, 2);
+            Shield_setMode(gPlayerStaffObject, 2);
             ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
@@ -10051,7 +10051,7 @@ void fn_802A514C(GameObject* obj, int state)
     }
     if (((PlayerState*)state)->baddie.controlMode != 2)
     {
-        staffFn_80170380(gPlayerStaffObject, 2);
+        Shield_setMode(gPlayerStaffObject, 2);
         ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
@@ -10241,7 +10241,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                         ((PlayerState*)inner)->staffActionRequest = 1;
                         ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
                     }
-                    staffFn_80170380(gPlayerStaffObject, 2);
+                    Shield_setMode(gPlayerStaffObject, 2);
                     ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
                     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                     ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
@@ -12316,7 +12316,7 @@ void fn_802A93F4(GameObject* obj, int p2, int p3)
     ((ByteFlags*)((char*)inner + 0x3f0))->b20 = 0;
     inner->animState = -1;
     ((ByteFlags*)((char*)inner + 0x3f6))->b40 = 0;
-    staffFn_80170380(gPlayerStaffObject, 2);
+    Shield_setMode(gPlayerStaffObject, 2);
     ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
     ObjHits_SyncObjectPositionIfDirty(obj);
@@ -13739,7 +13739,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                 ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
                 ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
                 ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-                staffFn_80170380(gPlayerStaffObject, 2);
+                Shield_setMode(gPlayerStaffObject, 2);
                 ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
                 *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                 ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
@@ -13841,7 +13841,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                 }
                 if (ok != 0 && !((ByteFlags*)((char*)inner + 0x3f0))->b02)
                 {
-                    staffFn_80170380(gPlayerStaffObject, 1);
+                    Shield_setMode(gPlayerStaffObject, 1);
                     ObjAnim_SetCurrentMove(obj, 0x4f, ((GameObject*)obj)->anim.currentMoveProgress, 0);
                     ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 8);
                     if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
@@ -14276,7 +14276,7 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
         ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
         ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
         ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-        staffFn_80170380(gPlayerStaffObject, 2);
+        Shield_setMode(gPlayerStaffObject, 2);
         ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
@@ -14676,7 +14676,7 @@ void fn_802AE9C8(GameObject* obj, int inner, int state)
     ((PlayerState*)inner)->staffHoldFrames = 0;
     ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
     ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-    staffFn_80170380(gPlayerStaffObject, 2);
+    Shield_setMode(gPlayerStaffObject, 2);
     ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
     ObjHits_SyncObjectPositionIfDirty(obj);
@@ -14753,7 +14753,7 @@ void fn_802AED2C(GameObject* obj, int state, int p3)
     ((PlayerState*)state)->unk844 = lbl_803E7EA4;
     ((ByteFlags*)((char*)state + 0x3f0))->b10 = 1;
     ((ByteFlags*)((char*)state + 0x3f0))->b80 = 0;
-    staffFn_80170380(gPlayerStaffObject, 2);
+    Shield_setMode(gPlayerStaffObject, 2);
     ((ByteFlags*)((char*)state + 0x3f0))->b02 = 0;
     *(u32*)&((PlayerState*)state)->flags360 |= PLAYER_FLAG_TELEPORTED;
     ObjHits_SyncObjectPositionIfDirty(obj);
@@ -16776,7 +16776,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     seq->freeCallback = (ObjAnimSequenceFreeCallback)fn_802A93F4;
     if (gPlayerStaffObject != NULL)
     {
-        staffFn_80170380(gPlayerStaffObject, 0);
+        Shield_setMode(gPlayerStaffObject, 0);
     }
     playerStaffInit((GameObject*)obj, (int)inner);
     if (*(void**)&gPlayerEggObject == NULL && Obj_IsLoadingLocked() != 0)
@@ -17622,13 +17622,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 Rcp_SetSpiritVisionEnabled(0);
                 break;
             case 0x2b:
-            {
-                register u32 m;
-                m = ((GameObject*)obj)->anim.modelState->flags;
-                m &= ~OBJ_MODEL_STATE_SHADOW_VISIBLE;
-                ((GameObject*)obj)->anim.modelState->flags = m;
+                ((GameObject*)obj)->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_VISIBLE;
                 break;
-            }
             case 0x2c:
                 ((GameObject*)obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
                 break;

@@ -1,5 +1,5 @@
 /*
- * DR_CloudRunner (DLL 0x258) - the rideable CloudRunner creature on
+ * DR_CloudRun (DLL 0x258) - the rideable CloudRunner creature on
  * Dinosaur Planet. A large baddie-derived state machine that the player
  * mounts and flies. flightState selects the high-level mode (0 = grounded
  * / scripted, 1 = transition, 2 = mounted free-flight); the eight state

@@ -6,6 +6,7 @@
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct
 {
@@ -21,7 +22,8 @@ typedef struct
 
 typedef struct BossdrakorPlacement
 {
-    u8 pad0[0x19 - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x19 - 0x18];
     u8 curveStartIndex;
     s16 airMeterMax;
     s16 unk1C;
@@ -132,6 +134,6 @@ void bossdrakor_updateHeadTracking(GameObject* obj, int state);
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut);
 void bossdrakor_spawnAttackObjects(GameObject* obj, int state, int action);
 void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init);
-void bossdrakor_render(int p1, int p2, int p3, int p4, int p5, s8 vis);
+void bossdrakor_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 vis);
 
 #endif

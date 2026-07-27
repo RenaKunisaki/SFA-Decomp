@@ -4,10 +4,11 @@
 #include "game/objects/object.h"
 #include "types.h"
 #include "main/objanim_update.h"
+#include "game/objects/object_setup.h"
 
 typedef struct Dim2prisonmammothPlacement
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     s8 rotByte;      /* 0x18 packed into rotX as (s16)(rotByte << 8) at init */
     s8 spawnVariant; /* 0x19 spawn variant selector (stateHandler00) */
     u8 pad1A[0x20 - 0x1A];

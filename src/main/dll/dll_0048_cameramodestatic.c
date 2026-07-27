@@ -22,7 +22,7 @@ void* fn_80109B04(f32 x, f32 y, f32 z, int filter1, int filter2)
     void* best;
     f32 bestDist;
     int count;
-    int* obj;
+    GameObject* obj;
     int* tmpList;
     f32 dx, dy, dz;
     f32 yy;
@@ -33,13 +33,13 @@ void* fn_80109B04(f32 x, f32 y, f32 z, int filter1, int filter2)
     tmpList = (int*)ObjGroup_GetObjects(7, &count);
     for (i = 0, list = tmpList; i < count; i++)
     {
-        obj = (int*)*list;
-        if (((GameObject*)obj)->anim.classId == filter2 &&
-            *(u8*)(*(int*)&((GameObject*)obj)->anim.placementData + 0x18) == filter1)
+        obj = (GameObject*)*list;
+        if (obj->anim.classId == filter2 &&
+            *(u8*)(*(int*)&obj->anim.placementData + 0x18) == filter1)
         {
-            dx = x - ((GameObject*)obj)->anim.worldPosX;
-            dy = y - ((GameObject*)obj)->anim.worldPosY;
-            dz = z - ((GameObject*)obj)->anim.worldPosZ;
+            dx = x - obj->anim.worldPosX;
+            dy = y - obj->anim.worldPosY;
+            dz = z - obj->anim.worldPosZ;
             yy = dy * dy;
             dist = sqrtf(yy + dx * dx + dz * dz);
             if (dist < bestDist)

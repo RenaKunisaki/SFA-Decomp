@@ -1,212 +1,163 @@
-#include "main/object_render.h"
+/*
+ * AnimatedObj (DLL 0x00C6) - generic animation-sequence object.
+ *
+ * Each instance loads sequence data selected by its placement, advances that
+ * sequence every frame, and renders camera-relative sequences with a corrected
+ * world transform. The AnimKrystal variant also attaches and detaches a staff
+ * child in response to sequence events.
+ */
+#include "dlls/objects/198_AnimatedObj.h"
 #include "dolphin/mtx/mtx_legacy.h"
-#include "main/shader_api.h"
-#include "main/objprint_render_api.h"
-#include "main/dll/dll_00C6_animatedobj_api.h"
-#include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/obj_list.h"
-#include "main/obj_link.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
 #include "main/audio/sfx_looped_object_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/camera_interface.h"
-#include "main/maketex_sequence_api.h"
-#include "main/objseq.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/frame_timing.h"
+#include "main/maketex_sequence_api.h"
+#include "main/obj_link.h"
+#include "main/obj_list.h"
+#include "main/objprint_render_api.h"
+#include "main/object_render.h"
+#include "main/shader_api.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define ANIMATEDOBJ_OBJFLAG_UPDATE_DISABLED 0x8000
-/* Child object spawned and attached on sequence event 0xa. */
-#define ANIMATEDOBJ_CHILD_OBJ 0x69
-#define ANIMATEDOBJ_KRYSTAL_OBJ 0x774
+#define ANIMATEDOBJ_CLASS_ID                  0x10
+#define ANIMATEDOBJ_CHILD_OBJ_STAFF           0x69
+#define ANIMATEDOBJ_SEQID_ANIM_KRYSTAL        0x774
+#define ANIMATEDOBJ_SEQEV_ATTACH_STAFF        0xa
+#define ANIMATEDOBJ_SEQEV_DETACH_STAFF        0xb
+#define ANIMATEDOBJ_STATEFLAG_CAMERA_RELATIVE 0x4
 
-typedef struct AnimatedObjPlacement
-{
-    u8 pad0[0x8 - 0x0];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    s32 mapId; /* 0x14: ObjPlacement map id */
-    s16 loadKey;
-    s16 gameBit; /* 0x1A: copied into ObjSeqState.gameBit at init */
-    s16 unk1C;
-    s16 unk1E;
-    s16 unk20;
-    u8 pad22[0x24 - 0x22];
-    u8 posOffsetDecayTime;
-    u8 pad25[0x2C - 0x25];
-    s16 unk2C;
-    u8 pad2E[0x30 - 0x2E];
-} AnimatedObjPlacement;
-
-int animatedobj_getExtraSize(void)
-{
-    return 0x140;
+int animatedobj_getExtraSize(void) {
+    return sizeof(AnimatedObjState);
 }
 
-ObjectDescriptor gAnimatedObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)animatedobj_init,
-    (ObjectDescriptorCallback)animatedobj_update,
-    0,
-    (ObjectDescriptorCallback)animatedobj_render,
-    (ObjectDescriptorCallback)animatedobj_free,
-    0,
-    animatedobj_getExtraSize,
-};
-
-void animatedobj_free(GameObject* obj, int seqFlag)
-{
-    (*gObjectTriggerInterface)
-        ->freeState(obj->extra);
+void animatedobj_free(GameObject* obj, int clearSequence) {
+    (*gObjectTriggerInterface)->freeState(obj->extra);
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
     Sfx_RemoveLoopedObjectSoundForObject((u32)obj);
     Sfx_StopObjectChannel((int)obj, 0x7f);
-    if (obj->anim.seqId == ANIMATEDOBJ_KRYSTAL_OBJ && obj->childCount != 0)
-    {
+    if (obj->anim.seqId == ANIMATEDOBJ_SEQID_ANIM_KRYSTAL && obj->childCount != 0) {
         Obj_FreeObject(obj->childObjs[0]);
         ObjLink_DetachChild(obj, obj->childObjs[0]);
     }
-    if (seqFlag != 0)
-    {
+    if (clearSequence != 0) {
         clearCurSeqNo();
     }
 }
 
-void animatedobj_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    f32 mWorld[12];
-    f32 mTransPlayer[12];
-    f32 mWorldCombined[12];
-    f32 mTransNeg[12];
-    f32 mRotY[12];
-    f32 mRotZ[12];
-    f32 mTransPos[12];
-    f32 mCam[12];
-    f32 mA[12];
-    f32 mB[12];
-    f32 mC[12];
-    f32 mD[12];
-    f32 mFinal[12];
+void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 unusedVisible) {
+    AnimatedObjState* state;
+    f32 worldMatrix[12];
+    f32 playerTranslation[12];
+    f32 translatedWorld[12];
+    f32 inverseCameraTranslation[12];
+    f32 flipY[12];
+    f32 flipZ[12];
+    f32 cameraTranslation[12];
+    f32 cameraMatrix[12];
+    f32 cameraWithoutTranslation[12];
+    f32 cameraFlippedY[12];
+    f32 cameraFlippedYZ[12];
+    f32 mirroredCamera[12];
+    f32 renderMatrix[12];
 
-    ObjSeqState* seq = obj->extra;
-    if ((seq->stateFlags & 4) != 0)
-    {
-        AnimatedObjPlacement* params;
+    (void)unusedVisible;
+    state = obj->extra;
+    if ((state->sequence.stateFlags & ANIMATEDOBJ_STATEFLAG_CAMERA_RELATIVE) != 0) {
+        AnimatedObjPlacement* placement;
         GameObject* camera;
-        Obj_BuildWorldTransformMatrix(obj, mWorld, 0);
-        params = (AnimatedObjPlacement*)obj->anim.placementData;
-        PSMTXTrans(mTransPlayer, -(params->posX - playerMapOffsetX),
-                   -params->posY,
-                   -(params->posZ - playerMapOffsetZ));
-        PSMTXConcat(mTransPlayer, mWorld, mWorldCombined);
+
+        Obj_BuildWorldTransformMatrix(obj, worldMatrix, 0);
+        placement = (AnimatedObjPlacement*)obj->anim.placementData;
+        PSMTXTrans(playerTranslation, -(placement->base.posX - playerMapOffsetX), -placement->base.posY,
+                   -(placement->base.posZ - playerMapOffsetZ));
+        PSMTXConcat(playerTranslation, worldMatrix, translatedWorld);
         camera = (GameObject*)(*gCameraInterface)->getCamera();
         camera->anim.rotY += 0x8000;
         camera->anim.rootMotionScale = 1.0f;
-        Obj_BuildWorldTransformMatrix(camera, mCam, 0);
+        Obj_BuildWorldTransformMatrix(camera, cameraMatrix, 0);
         camera->anim.rotY += 0x8000;
         camera->anim.rootMotionScale = 0.0f;
-        PSMTXTrans(mTransNeg, -mCam[3], -mCam[7], -mCam[11]);
-        PSMTXRotRad(mRotY, 'y', 3.1415927f);
-        PSMTXRotRad(mRotZ, 'z', 3.1415927f);
-        PSMTXTrans(mTransPos, mCam[3], mCam[7], mCam[11]);
-        PSMTXConcat(mTransNeg, mCam, mA);
-        PSMTXConcat(mRotY, mA, mB);
-        PSMTXConcat(mRotZ, mB, mC);
-        PSMTXConcat(mTransPos, mC, mD);
-        PSMTXConcat(mD, mWorldCombined, mFinal);
-        objSetMtxFn_800412d4((u32)mFinal);
+        PSMTXTrans(inverseCameraTranslation, -cameraMatrix[3], -cameraMatrix[7], -cameraMatrix[11]);
+        PSMTXRotRad(flipY, 'y', 3.1415927f);
+        PSMTXRotRad(flipZ, 'z', 3.1415927f);
+        PSMTXTrans(cameraTranslation, cameraMatrix[3], cameraMatrix[7], cameraMatrix[11]);
+        PSMTXConcat(inverseCameraTranslation, cameraMatrix, cameraWithoutTranslation);
+        PSMTXConcat(flipY, cameraWithoutTranslation, cameraFlippedY);
+        PSMTXConcat(flipZ, cameraFlippedY, cameraFlippedYZ);
+        PSMTXConcat(cameraTranslation, cameraFlippedYZ, mirroredCamera);
+        PSMTXConcat(mirroredCamera, translatedWorld, renderMatrix);
+        objSetMtxFn_800412d4((u32)renderMatrix);
         objRenderModel(obj);
-    }
-    else
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    } else {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 
-
-void animatedobj_update(GameObject* obj)
-{
-    AnimatedObjPlacement* params;
-    int res;
-    int count;
-    int objectSeqIndex;
-    GameObject* match;
-    ObjSeqState* seq;
-    GameObject** list;
+void animatedobj_update(GameObject* obj) {
+    AnimatedObjPlacement* placement;
+    int result;
+    int objectCount;
+    int sequenceIndex;
+    GameObject* sequenceOwner;
+    ObjSeqState* sequence;
+    GameObject** objects;
     int sequenceSlot;
-    int slotObjectCount;
+    int siblingCount;
     GameObject* other;
-    int i;
+    int eventIndex;
     GameObject* child;
 
-    seq = obj->extra;
-    params = (AnimatedObjPlacement*)obj->anim.placementData;
-    if (params != NULL && params->loadKey != -1)
-    {
-        res = (*gObjectTriggerInterface)->update((u8*)obj, timeDelta);
-        if (res != 0 && obj->seqIndex == -2)
-        {
-            objectSeqIndex = seq->slot;
-            match = NULL;
-            list = ObjList_GetObjects(&res, &count);
-            slotObjectCount = 0;
-            res = 0;
-            sequenceSlot = (s8)objectSeqIndex;
-            while (res < count)
-            {
-                other = *list;
-                if (other->seqIndex == objectSeqIndex)
-                {
-                    match = *list;
+    sequence = &((AnimatedObjState*)obj->extra)->sequence;
+    placement = (AnimatedObjPlacement*)obj->anim.placementData;
+    if (placement != NULL && placement->animDataIndex != -1) {
+        result = (*gObjectTriggerInterface)->update((u8*)obj, timeDelta);
+        if (result != 0 && obj->seqIndex == -2) {
+            sequenceIndex = sequence->slot;
+            sequenceOwner = NULL;
+            objects = ObjList_GetObjects(&result, &objectCount);
+            siblingCount = 0;
+            result = 0;
+            sequenceSlot = (s8)sequenceIndex;
+            while (result < objectCount) {
+                other = *objects;
+                if (other->seqIndex == sequenceIndex) {
+                    sequenceOwner = *objects;
                 }
-                if (other->seqIndex == -2 && other->anim.classId == 0x10)
-                {
-                    seq = other->extra;
-                    if (sequenceSlot == seq->slot)
-                    {
-                        slotObjectCount++;
+                if (other->seqIndex == -2 && other->anim.classId == ANIMATEDOBJ_CLASS_ID) {
+                    sequence = &((AnimatedObjState*)other->extra)->sequence;
+                    if (sequenceSlot == sequence->slot) {
+                        siblingCount++;
                     }
                 }
-                list++;
-                res++;
+                objects++;
+                result++;
             }
-            if (slotObjectCount <= 1 && match != NULL && match->seqIndex != -1)
-            {
-                match->seqIndex = -1;
+            if (siblingCount <= 1 && sequenceOwner != NULL && sequenceOwner->seqIndex != -1) {
+                sequenceOwner->seqIndex = -1;
                 (*gObjectTriggerInterface)->endSequence(sequenceSlot);
             }
             obj->seqIndex = -1;
-            obj->objectFlags |= ANIMATEDOBJ_OBJFLAG_UPDATE_DISABLED;
+            obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
-        switch (obj->anim.seqId)
-        {
-        case ANIMATEDOBJ_KRYSTAL_OBJ:
-        {
-            for (i = 0; i < seq->eventCount; i++)
-            {
-                switch (seq->eventIds[i])
-                {
-                case 0xa:
-                    if ((u8)Obj_IsLoadingLocked() != 0)
-                    {
-                        child = Obj_SetupObject(
-                            Obj_AllocObjectSetup(0x18, ANIMATEDOBJ_CHILD_OBJ),
-                            4, -1, -1, 0);
+        switch (obj->anim.seqId) {
+        case ANIMATEDOBJ_SEQID_ANIM_KRYSTAL: {
+            for (eventIndex = 0; eventIndex < sequence->eventCount; eventIndex++) {
+                switch (sequence->eventIds[eventIndex]) {
+                case ANIMATEDOBJ_SEQEV_ATTACH_STAFF:
+                    if (Obj_IsLoadingLocked() != 0) {
+                        child = Obj_SetupObject(Obj_AllocObjectSetup(sizeof(ObjPlacement), ANIMATEDOBJ_CHILD_OBJ_STAFF),
+                                                4, -1, -1, NULL);
                         ObjLink_AttachChild(obj, child, 0);
                         ObjAnim_SetCurrentMove((int)child, 0, 0.0f, 0);
-                        ObjAnim_AdvanceCurrentMove(
-                            (int)child, 1.0f, timeDelta, NULL);
+                        ObjAnim_AdvanceCurrentMove((int)child, 1.0f, timeDelta, NULL);
                     }
                     break;
-                case 0xb:
-                    if (obj->childCount != 0)
-                    {
+                case ANIMATEDOBJ_SEQEV_DETACH_STAFF:
+                    if (obj->childCount != 0) {
                         Obj_FreeObject(obj->childObjs[0]);
                         ObjLink_DetachChild(obj, obj->childObjs[0]);
                     }
@@ -219,49 +170,62 @@ void animatedobj_update(GameObject* obj)
     }
 }
 
+void animatedobj_init(GameObject* obj, AnimatedObjPlacement* placement) {
+    AnimatedObjState* state;
+    ObjSeqState* sequence;
+    int loadedAnimDataIndexPlusOne;
 
-void animatedobj_init(GameObject* obj, AnimatedObjPlacement* params)
-{
-    ObjSeqState* seq;
-    int f4;
     objSetSlot(obj, 0x64);
-    seq = obj->extra;
-    seq->gameBit = params->gameBit;
-    seq->flags = -1;
+    state = obj->extra;
+    sequence = &state->sequence;
+    sequence->gameBit = placement->sequenceGameBit;
+    sequence->flags = -1;
     {
-        f32 d = 1.0f;
-        seq->posOffsetDecay = d / (d + (f32)(u32)params->posOffsetDecayTime);
+        f32 one = 1.0f;
+
+        sequence->posOffsetDecay = one / (one + (f32)(u32)placement->positionDamping);
     }
-    seq->curveId = -1;
-    seq->animEntries = NULL;
-    seq->cmds = NULL;
-    seq->baseRotX = 0;
-    seq->baseRotY = 0;
-    seq->freeCallback = NULL;
-    f4 = obj->userData1;
-    if (f4 == 0 && params->loadKey != 1)
-    {
-        (*gObjectTriggerInterface)
-            ->loadAnimData((u8*)seq, (u8*)params);
-        obj->userData1 = params->loadKey + 1;
-    }
-    else if (f4 != 0 && params->loadKey != f4 - 1)
-    {
-        (*gObjectTriggerInterface)->freeState((u8*)seq);
-        if (params->loadKey != -1)
-        {
-            (*gObjectTriggerInterface)
-                ->loadAnimData((u8*)seq, (u8*)params);
+    sequence->curveId = -1;
+    sequence->animEntries = NULL;
+    sequence->cmds = NULL;
+    sequence->baseRotX = 0;
+    sequence->baseRotY = 0;
+    sequence->freeCallback = NULL;
+    loadedAnimDataIndexPlusOne = obj->userData1;
+    if (loadedAnimDataIndexPlusOne == 0 && placement->animDataIndex != 1) {
+        (*gObjectTriggerInterface)->loadAnimData((u8*)sequence, (u8*)placement);
+        obj->userData1 = placement->animDataIndex + 1;
+    } else if (loadedAnimDataIndexPlusOne != 0 && placement->animDataIndex != loadedAnimDataIndexPlusOne - 1) {
+        (*gObjectTriggerInterface)->freeState((u8*)sequence);
+        if (placement->animDataIndex != -1) {
+            (*gObjectTriggerInterface)->loadAnimData((u8*)sequence, (u8*)placement);
         }
-        obj->userData1 = params->loadKey + 1;
+        obj->userData1 = placement->animDataIndex + 1;
     }
     {
         ObjModelState* modelState = obj->anim.modelState;
-        if (modelState != NULL)
-        {
+
+        if (modelState != NULL) {
             modelState->shadowTintA = 0x64;
             obj->anim.modelState->shadowTintB = 0x96;
         }
     }
     Obj_SetModelRenderOpAlpha(obj, 0xff);
 }
+
+ObjectDescriptor gAnimatedObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)animatedobj_init,
+    (ObjectDescriptorCallback)animatedobj_update,
+    0,
+    (ObjectDescriptorCallback)animatedobj_render,
+    (ObjectDescriptorCallback)animatedobj_free,
+    0,
+    animatedobj_getExtraSize,
+};

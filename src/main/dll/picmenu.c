@@ -64,6 +64,27 @@ char gPicMenuVideoDecodeThreadArea[0x18];
 OSMessageQueue gPicMenuDecodedTextureSetQueue;
 OSMessageQueue gPicMenuFreeTextureSetQueue;
 OSThread gPicMenuVideoDecodeThread;
+OSMessage gPicMenuReadedBuffer2Messages[10];
+OSMessage gPicMenuReadedBufferMessages[10];
+OSMessage gPicMenuFreeReadBufferMessages[10];
+char gPicMenuVideoDecodeThreadStack[0x1000];
+
+static void PicMenu_ResetThreadWork(void)
+{
+    memset(gPicMenuReadThreadArea, 0, sizeof(gPicMenuReadThreadArea));
+    memset(&gPicMenuReadThread, 0, sizeof(gPicMenuReadThread));
+    memset(gPicMenuReadedBuffer2Messages, 0, sizeof(gPicMenuReadedBuffer2Messages));
+    memset(gPicMenuReadedBufferMessages, 0, sizeof(gPicMenuReadedBufferMessages));
+    memset(gPicMenuFreeReadBufferMessages, 0, sizeof(gPicMenuFreeReadBufferMessages));
+    memset(&gPicMenuReadedBuffer2Queue, 0, sizeof(gPicMenuReadedBuffer2Queue));
+    memset(&gPicMenuReadedBufferQueue, 0, sizeof(gPicMenuReadedBufferQueue));
+    memset(&gPicMenuFreeReadBufferQueue, 0, sizeof(gPicMenuFreeReadBufferQueue));
+    memset(gPicMenuVideoDecodeThreadArea, 0, sizeof(gPicMenuVideoDecodeThreadArea));
+    memset(&gPicMenuDecodedTextureSetQueue, 0, sizeof(gPicMenuDecodedTextureSetQueue));
+    memset(&gPicMenuFreeTextureSetQueue, 0, sizeof(gPicMenuFreeTextureSetQueue));
+    memset(gPicMenuVideoDecodeThreadStack, 0, sizeof(gPicMenuVideoDecodeThreadStack));
+    memset(&gPicMenuVideoDecodeThread, 0, sizeof(gPicMenuVideoDecodeThread));
+}
 
 BOOL movieLoad(const char* fileName, void* onMemory)
 {

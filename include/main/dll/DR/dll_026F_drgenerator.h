@@ -5,10 +5,11 @@
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
 #include "main/dll/DR/dr_types.h"
+#include "game/objects/object_setup.h"
 
 typedef struct DrgeneratorPlacement
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     s8 initialYaw;
     u8 pad19;
     s16 timerMinutes;

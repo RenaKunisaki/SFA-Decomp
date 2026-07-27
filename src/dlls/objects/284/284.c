@@ -168,11 +168,11 @@ void staffactivated_spawnMapEventDebris(GameObject* obj)
 {
     int i;
     StaffActivatedSetup* setup;
-    int player;
-    u32 tricky;
+    GameObject* player;
+    GameObject* tricky;
     StaffActivatedState* state;
     int spawnedSetup;
-    int spawnedObj;
+    GameObject* spawnedObj;
     ObjPlacement* spawnedPlacement;
     f32 zero;
     f32 lenSq;
@@ -181,16 +181,16 @@ void staffactivated_spawnMapEventDebris(GameObject* obj)
     PrisonGuardRotationWork rotate;
 
     setup = (StaffActivatedSetup*)obj->anim.placementData;
-    player = (int)Obj_GetPlayerObject();
-    tricky = (u32)getTrickyObject();
+    player = Obj_GetPlayerObject();
+    tricky = getTrickyObject();
     state = obj->extra;
 
     if ((*gMapEventInterface)->shouldNotSaveTime(setup->base.mapId) != 0 && Obj_IsLoadingLocked() != 0)
     {
         (*gMapEventInterface)->addTime(setup->base.mapId, 60.0f * setup->timedEventSeconds);
-        if (tricky != 0)
+        if (tricky != NULL)
         {
-            trickyImpress((GameObject*)tricky);
+            trickyImpress(tricky);
         }
 
         zero = 0.0f;
@@ -204,27 +204,27 @@ void staffactivated_spawnMapEventDebris(GameObject* obj)
             spawnedPlacement->posZ = state->targetZ;
             *(s16*)((StaffActivatedSetup*)spawnedPlacement)->pad1A = 0x190;
 
-            spawnedObj = (int)Obj_SetupObject((ObjPlacement*)spawnedSetup, 5, obj->anim.mapEventSlot, -1,
+            spawnedObj = Obj_SetupObject((ObjPlacement*)spawnedSetup, 5, obj->anim.mapEventSlot, -1,
                                               *(void**)&obj->anim.parent);
-            ((GameObject*)spawnedObj)->anim.velocityX = obj->anim.localPosX - *(f32*)(player + 0xc);
-            ((GameObject*)spawnedObj)->anim.velocityZ = obj->anim.localPosZ - *(f32*)(player + 0x14);
+            spawnedObj->anim.velocityX = obj->anim.localPosX - player->anim.localPosX;
+            spawnedObj->anim.velocityZ = obj->anim.localPosZ - player->anim.localPosZ;
 
-            lenSq = (((GameObject*)spawnedObj)->anim.velocityX * ((GameObject*)spawnedObj)->anim.velocityX) +
-                    (((GameObject*)spawnedObj)->anim.velocityZ * ((GameObject*)spawnedObj)->anim.velocityZ);
+            lenSq = (spawnedObj->anim.velocityX * spawnedObj->anim.velocityX) +
+                    (spawnedObj->anim.velocityZ * spawnedObj->anim.velocityZ);
             if (lenSq != zero)
             {
                 len = sqrtf(lenSq);
-                ((GameObject*)spawnedObj)->anim.velocityX = ((GameObject*)spawnedObj)->anim.velocityX / len;
-                ((GameObject*)spawnedObj)->anim.velocityZ = ((GameObject*)spawnedObj)->anim.velocityZ / len;
+                spawnedObj->anim.velocityX = spawnedObj->anim.velocityX / len;
+                spawnedObj->anim.velocityZ = spawnedObj->anim.velocityZ / len;
             }
 
-            ((GameObject*)spawnedObj)->anim.velocityX =
-                ((GameObject*)spawnedObj)->anim.velocityX *
+            spawnedObj->anim.velocityX =
+                spawnedObj->anim.velocityX *
                 (lbl_803E3BBC - (lbl_803E3BC4 * (f32)(int)randomGetRange(0, 0x19)));
-            ((GameObject*)spawnedObj)->anim.velocityZ =
-                ((GameObject*)spawnedObj)->anim.velocityZ *
+            spawnedObj->anim.velocityZ =
+                spawnedObj->anim.velocityZ *
                 (lbl_803E3BBC - (lbl_803E3BC4 * (f32)(int)randomGetRange(0, 0x19)));
-            ((GameObject*)spawnedObj)->anim.velocityY = 2.2f;
+            spawnedObj->anim.velocityY = 2.2f;
 
             rotate.tx = zero;
             rotate.ty = zero;
@@ -233,11 +233,11 @@ void staffactivated_spawnMapEventDebris(GameObject* obj)
             rotate.z = 0;
             rotate.x = 0;
             rotate.y = randomGetRange(-10000, 10000);
-            vecRotateZXY((s16*)&rotate, (f32*)(spawnedObj + 0x24));
+            vecRotateZXY((s16*)&rotate, &spawnedObj->anim.velocityX);
 
-            yawDelta = ((GameObject*)spawnedObj)->anim.rotX -
-                       (u16)getAngle(((GameObject*)spawnedObj)->anim.velocityX,
-                                     -((GameObject*)spawnedObj)->anim.velocityZ);
+            yawDelta = spawnedObj->anim.rotX -
+                       (u16)getAngle(spawnedObj->anim.velocityX,
+                                     -spawnedObj->anim.velocityZ);
             if (yawDelta > 0x8000)
             {
                 yawDelta -= 0xffff;
@@ -246,7 +246,7 @@ void staffactivated_spawnMapEventDebris(GameObject* obj)
             {
                 yawDelta += 0xffff;
             }
-            ((GameObject*)spawnedObj)->anim.rotX = yawDelta;
+            spawnedObj->anim.rotX = yawDelta;
             i++;
         }
     }

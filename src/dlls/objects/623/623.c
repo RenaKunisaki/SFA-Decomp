@@ -1,5 +1,5 @@
 /*
- * DLL 0x26F - a destructible generator/power node. It
+ * DLL 623 - a destructible generator/power node. It
  * takes hits until its hit count (hitsRemaining) reaches zero, then
  * explodes, sets its completion game bit (placement completionGameBit)
  * and either extends a nearby timer object or disables itself. It can

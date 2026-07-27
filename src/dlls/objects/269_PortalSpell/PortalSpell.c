@@ -11,10 +11,12 @@
 #include "main/objseq.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
+#include "game/objects/object_setup.h"
 
 typedef struct PortalspelldoorPlacement
 {
-    u8 pad0[0x1E - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1E - 0x18];
     s16 openedGameBit;
 } PortalspelldoorPlacement;
 

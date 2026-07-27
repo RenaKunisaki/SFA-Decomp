@@ -10,7 +10,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj);
 int warpstone_getExtraSize(void);
 int warpstone_getObjectTypeId(void);
 void warpstone_free(GameObject* obj, int mode);
-void warpstone_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
+void warpstone_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void warpstone_hitDetect(GameObject* obj);
 void warpstone_update(int obj);
 void warpstone_init(GameObject* obj, u8* setup);

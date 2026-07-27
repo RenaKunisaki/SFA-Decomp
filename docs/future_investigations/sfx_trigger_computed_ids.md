@@ -30,7 +30,7 @@ values), then define the table with named constants — that names every call th
 | `src/dlls/objects/226/226.c:1032` | PlayAtPositionFromObject | `(u16)((s16*)lbl_803208A0)[idx]` | `lbl_803208A0` |
 | `src/dlls/objects/312_GroundAnima/GroundAnima.c:416` | PlayFromObject | `lbl_803DBDF0[r20->sfxIndex]` | `lbl_803DBDF0` |
 | `src/dlls/objects/626/626.c:352` | PlayFromObject | `(u16)(&gHighTopMovementSfxIds)[idx]` | `gHighTopMovementSfxIds` |
-| `src/dlls/objects/578_DBstealerwo/DBstealerwo.c:1224` | PlayFromObject | `lbl_80329640[1]` | `lbl_80329640` |
+| `src/main/dll/dll_0242_dbstealerworm.c:1224` | PlayFromObject | `lbl_80329640[1]` | `lbl_80329640` |
 
 ### B. Object / placement state fields (id stored per-object)
 The id is a field on the object's runtime/placement struct. Trace where the field

@@ -56,7 +56,7 @@ void VFPLift_free(int obj);
 void VFPLift_render(int p1, int p2, int p3, int p4, int p5, s8 vis);
 void VFPLift_hitDetect(GameObject* obj);
 void VFPLift_update(GameObject* obj);
-void VFPLift_init(int* obj, VfpLiftPlacement* init);
+void VFPLift_init(GameObject* obj, VfpLiftPlacement* init);
 void VFPLift_release(void);
 void VFPLift_initialise(void);
 

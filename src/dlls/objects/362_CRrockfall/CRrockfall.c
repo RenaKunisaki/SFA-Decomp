@@ -92,12 +92,12 @@ void crrockfall_free(void)
 {
 }
 
-void crrockfall_render(int obj, int p1, int p2, int p3, int p4, s8 visible)
+void crrockfall_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 {
-    CrRockfallState* state = ((GameObject*)obj)->extra;
+    CrRockfallState* state = obj->extra;
     if (state->mode != zcEn3_ROCKFALL_MODE_SHATTERED && visible != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p1, p2, p3, p4, 1.0f);
+        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
     }
 }
 
@@ -105,12 +105,12 @@ void crrockfall_hitDetect(void)
 {
 }
 
-void crrockfall_update(int* obj)
+void crrockfall_update(GameObject* obj)
 {
-    CrRockfallState* state = ((GameObject*)obj)->extra;
-    ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&((GameObject*)obj)->anim.hitReactState;
-    ObjModelState* modelState = ((GameObject*)obj)->anim.modelState;
-    int* placement = *(int**)&((GameObject*)obj)->anim.placementData;
+    CrRockfallState* state = obj->extra;
+    ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
+    ObjModelState* modelState = obj->anim.modelState;
+    CrrockfallPlacement* placement = *(CrrockfallPlacement**)&obj->anim.placementData;
 
     if (gRockfallResource == NULL)
     {
@@ -119,11 +119,11 @@ void crrockfall_update(int* obj)
 
     if (state->floorFound == 0)
     {
-        state->floorY = crrockfall_findFloorY((GameObject*)obj);
+        state->floorY = crrockfall_findFloorY(obj);
         if (state->floorFound != 0 && modelState != NULL)
         {
             modelState->overrideWorldPosY = state->floorY;
-            objShadowInvalidate((GameObject*)obj);
+            objShadowInvalidate(obj);
         }
         return;
     }
@@ -136,7 +136,7 @@ void crrockfall_update(int* obj)
             f32 dist;
             int alphaScale;
             GameObject* player;
-            frac = (((GameObject*)obj)->anim.localPosY - state->floorY) / (state->startY - state->floorY);
+            frac = (obj->anim.localPosY - state->floorY) / (state->startY - state->floorY);
             if (frac > 1.0f)
             {
                 frac = 1.0f;
@@ -149,7 +149,7 @@ void crrockfall_update(int* obj)
             player = Obj_GetPlayerObject();
             if (player != NULL)
             {
-                dist = Vec_distance(&((GameObject*)obj)->anim.worldPosX, &player->anim.worldPosX);
+                dist = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
                 if (dist > 350.0f)
                 {
                     dist = 350.0f;
@@ -170,8 +170,8 @@ void crrockfall_update(int* obj)
                 (int)(((f32)(u32) * (u8*)((char*)obj + 0x37) / 255.0f) * ((f32)alphaScale * dist));
         }
 
-        if (((CrrockfallPlacement*)placement)->gameBitId != -1 &&
-            mainGetBit(((CrrockfallPlacement*)placement)->gameBitId) == 0)
+        if (placement->gameBitId != -1 &&
+            mainGetBit(placement->gameBitId) == 0)
         {
             return;
         }
@@ -180,26 +180,26 @@ void crrockfall_update(int* obj)
         {
         case zcEn3_ROCKFALL_MODE_ARMED:
         {
-            int* desc;
+            CrrockfallPlacement* desc;
             f32 xz;
             f32 dy;
             int inRange;
-            int* player = (int*)Obj_GetPlayerObject();
+            GameObject* player = Obj_GetPlayerObject();
             if (player == NULL)
             {
                 inRange = 0;
             }
             else
             {
-                desc = *(int**)&((GameObject*)obj)->anim.placementData;
-                xz = Vec_xzDistance(&((GameObject*)obj)->anim.worldPosX,
-                                    &((GameObject*)player)->anim.worldPosX);
-                dy = ((GameObject*)obj)->anim.localPosY - ((GameObject*)player)->anim.localPosY;
+                desc = *(CrrockfallPlacement**)&obj->anim.placementData;
+                xz = Vec_xzDistance(&obj->anim.worldPosX,
+                                    &player->anim.worldPosX);
+                dy = obj->anim.localPosY - player->anim.localPosY;
                 if (dy < 0.0f)
                 {
                     dy = 0.0f;
                 }
-                if (xz < 4.0f * (f32)(u32)((CrrockfallPlacement*)desc)->triggerRange && dy < 300.0f)
+                if (xz < 4.0f * (f32)(u32)desc->triggerRange && dy < 300.0f)
                 {
                     inRange = 1;
                 }
@@ -221,8 +221,8 @@ void crrockfall_update(int* obj)
             if (state->fallStarted == 0)
             {
                 state->fallStarted = 1;
-                ((GameObject*)obj)->anim.velocityY = 0.0f;
-                if (((GameObject*)obj)->anim.seqId == CRROCKFALL_SEQ_QUARRY)
+                obj->anim.velocityY = 0.0f;
+                if (obj->anim.seqId == CRROCKFALL_SEQ_QUARRY)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_155);
                 }
@@ -233,13 +233,13 @@ void crrockfall_update(int* obj)
             *(int*)&hitState->skeletonHitMask = 16;
             hitState->hitVolumeId = 1;
             hitState->hitVolumePriority = 13;
-            ((GameObject*)obj)->anim.velocityY = -0.15f * timeDelta + ((GameObject*)obj)->anim.velocityY;
-            ((GameObject*)obj)->anim.localPosY =
-                ((GameObject*)obj)->anim.velocityY * timeDelta + ((GameObject*)obj)->anim.localPosY;
-            if (((GameObject*)obj)->anim.localPosY < state->floorY + state->cfg->restOffsetY)
+            obj->anim.velocityY = -0.15f * timeDelta + obj->anim.velocityY;
+            obj->anim.localPosY =
+                obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+            if (obj->anim.localPosY < state->floorY + state->cfg->restOffsetY)
             {
-                ((GameObject*)obj)->anim.localPosY =
-                    state->cfg->restOffsetY * ((GameObject*)obj)->anim.rootMotionScale + state->floorY;
+                obj->anim.localPosY =
+                    state->cfg->restOffsetY * obj->anim.rootMotionScale + state->floorY;
                 state->mode = zcEn3_ROCKFALL_MODE_RESTING;
                 if (state->cfg->landSfx != 0)
                 {
@@ -262,14 +262,14 @@ void crrockfall_update(int* obj)
             hitState->flags &= ~1;
             state->mode = zcEn3_ROCKFALL_MODE_SHATTERED;
             Sfx_StopObjectChannel((int)obj, 8);
-            if (((GameObject*)obj)->anim.seqId == CRROCKFALL_SEQ_QUARRY)
+            if (obj->anim.seqId == CRROCKFALL_SEQ_QUARRY)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_dinostomp1);
             }
             else
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_bombbeep);
-                spawnExplosion((GameObject*)obj, (f32)(u32)((CrrockfallPlacement*)placement)->scaleByte, 1, 1, 0, 1,
+                spawnExplosion(obj, (f32)(u32)placement->scaleByte, 1, 1, 0, 1,
                                      1, 1, 1);
             }
         }
@@ -277,43 +277,43 @@ void crrockfall_update(int* obj)
 
     {
         f32 z = 0.0f;
-        ((GameObject*)obj)->anim.velocityX = z;
-        ((GameObject*)obj)->anim.velocityZ = z;
+        obj->anim.velocityX = z;
+        obj->anim.velocityZ = z;
     }
 }
 
-void crrockfall_init(int* obj, CrrockfallPlacement* params)
+void crrockfall_init(GameObject* obj, CrrockfallPlacement* params)
 {
-    CrRockfallState* state = ((GameObject*)obj)->extra;
+    CrRockfallState* state = obj->extra;
     ObjHitsPriorityState* hitState;
     ObjModelState* modelState;
 
     state->mode = zcEn3_ROCKFALL_MODE_ARMED;
-    state->startY = ((GameObject*)obj)->anim.localPosY;
+    state->startY = obj->anim.localPosY;
     state->fallDelay = params->fallDelay;
-    ((GameObject*)obj)->anim.rootMotionScale = (f32)(u32)params->scaleByte / 127.0f;
+    obj->anim.rootMotionScale = (f32)(u32)params->scaleByte / 127.0f;
 
-    hitState = *(ObjHitsPriorityState**)&((GameObject*)obj)->anim.hitReactState;
+    hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
     if (hitState != NULL)
     {
-        f32 scale = ((GameObject*)obj)->anim.rootMotionScale;
+        f32 scale = obj->anim.rootMotionScale;
         ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (int)((f32)hitState->primaryRadius * scale),
                                    (int)((f32)hitState->primaryCapsuleOffsetA * scale),
                                    (int)((f32)hitState->primaryCapsuleOffsetB * scale));
-        ObjHits_DisableObject((GameObject*)obj);
+        ObjHits_DisableObject(obj);
     }
 
-    modelState = ((GameObject*)obj)->anim.modelState;
+    modelState = obj->anim.modelState;
     if (modelState != NULL)
     {
         modelState->flags |= 0xb0;
         modelState->flags |= 0xc00;
-        modelState->overrideWorldPosX = ((GameObject*)obj)->anim.localPosX;
-        modelState->overrideWorldPosZ = ((GameObject*)obj)->anim.localPosZ;
-        modelState->shadowScale = modelState->shadowScale * ((GameObject*)obj)->anim.rootMotionScale;
+        modelState->overrideWorldPosX = obj->anim.localPosX;
+        modelState->overrideWorldPosZ = obj->anim.localPosZ;
+        modelState->shadowScale = modelState->shadowScale * obj->anim.rootMotionScale;
     }
 
-    if (((GameObject*)obj)->anim.seqId == CRROCKFALL_SEQ_BIG)
+    if (obj->anim.seqId == CRROCKFALL_SEQ_BIG)
     {
         state->cfg = (CrRockfallCfgEntry*)&gRockfallCfgTable[0xc];
     }

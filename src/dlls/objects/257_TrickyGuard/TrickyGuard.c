@@ -1,59 +1,47 @@
 /*
- * trickyguard (DLL 0x0101) - a passive guard volume that, while its
- * arming game bit is set, hands the player's Tricky (the fox companion)
- * a stay/guard command at this object's position.
+ * DLL 0x101 - TrickyGuard.
  *
- * Each frame TrickyGuard_update arms INTERACT_FLAG_DISABLED, gates on the
- * placement's arming game bit (offset 0x1A; -1 = always armed), fetches
- * the live Tricky object, and - if Tricky is not already busy
- * (TRICKY_VTBL_IS_BUSY) and the player just entered range
- * (INTERACT_FLAG_IN_RANGE) - issues the guard command (TRICKY_VTBL_GUARD:
- * tricky, this, 1, 3) before clearing the disable bit and re-running the
- * object render hook.
- *
- * TrickyGuard_init seeds rotX from the placement yaw byte and marks the
- * object with TRICKYGUARD_OBJECT_FLAG.
- *
- * The descriptor follows the implementation below.
+ * Directs an available Tricky to guard this object's position when its
+ * optional game-bit condition is met and the player enters range.
  */
-#include "main/dll/dll_0101_trickyguard.h"
+#include "dlls/objects/257_TrickyGuard.h"
+#include "game/objects/object.h"
 #include "main/dll/dll_0120_trickyguardspot.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebits.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
-#include "main/gamebits.h"
 
-#define TRICKY_GUARD_VTABLE(tricky) \
-    (*(TrickyGuardSpotInterfaceVTable**)((tricky)->anim.dll))
+#define TRICKYGUARD_GAMEBIT_NONE   -1
+#define TRICKYGUARD_VTABLE(tricky) (*(TrickyGuardSpotInterfaceVTable**)((tricky)->anim.dll))
 
-void TrickyGuard_update(GameObject* obj)
-{
+void TrickyGuard_update(GameObject* obj) {
     GameObject* tricky;
     TrickyGuardPlacement* placement = (TrickyGuardPlacement*)obj->anim.placementData;
+
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    if (placement->armingGameBit != -1)
-    {
-        if ((u32)mainGetBit(placement->armingGameBit) == 0)
+    if (placement->armingGameBit != TRICKYGUARD_GAMEBIT_NONE) {
+        if ((u32)mainGetBit(placement->armingGameBit) == 0) {
             return;
+        }
     }
     tricky = getTrickyObject();
-    if (tricky == NULL)
+    if (tricky == NULL) {
         return;
-    if ((u8)TRICKY_GUARD_VTABLE(tricky)->isGuardSpotActionReady(&tricky->anim) != 0)
+    }
+    if ((u8)TRICKYGUARD_VTABLE(tricky)->isBusy(tricky) != 0) {
         return;
-    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
-    {
-        TRICKY_GUARD_VTABLE(tricky)->setGuardSpotAction(
-            &tricky->anim, (TrickyGuardSpotObject*)obj,
-            TRICKY_GUARD_SPOT_ACTION, TRICKY_GUARD_SPOT_ACTION_PARAM);
+    }
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
+        TRICKYGUARD_VTABLE(tricky)->sideCommandEnable(tricky, (TrickyGuardSpotObject*)obj, TRICKY_GUARD_SPOT_ACTION,
+                                                      TRICKY_GUARD_SPOT_ACTION_PARAM);
     }
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
     objRenderFn_80041018(obj);
 }
 
-void TrickyGuard_init(GameObject* obj, TrickyGuardPlacement* placement)
-{
+void TrickyGuard_init(GameObject* obj, TrickyGuardPlacement* placement) {
     u32 flags;
+
     obj->anim.rotX = (s16)((u32)placement->rotXByte << 8);
     flags = obj->objectFlags;
     flags |= OBJECT_OBJFLAG_HIDDEN;

@@ -69,10 +69,10 @@ u8 lbl_803239F0[224] = {
 };
 
 
-void link_levcontrol_updateAreaMusic(int* obj)
+void link_levcontrol_updateAreaMusic(GameObject* obj)
 {
-    LinkLevControlState* state = ((GameObject*)obj)->extra;
-    switch (((GameObject*)obj)->anim.mapEventSlot)
+    LinkLevControlState* state = obj->extra;
+    switch (obj->anim.mapEventSlot)
     {
     case AREA_CELL_47:
         if ((*gSkyInterface)->getSunPosition(0) != 0)
@@ -125,14 +125,14 @@ void link_levcontrol_updateAreaMusic(int* obj)
     }
 }
 
-void link_levcontrol_applyEnterAreaEffects(int* obj)
+void link_levcontrol_applyEnterAreaEffects(GameObject* obj)
 {
     u8* tbl = lbl_803239F0;
-    switch (((GameObject*)obj)->anim.mapEventSlot)
+    switch (obj->anim.mapEventSlot)
     {
     case AREA_CELL_47:
         skySetEnvFxRampTables(tbl + 0x38, tbl, tbl + 0x70, tbl + 0xa8);
-        if (((GameObject*)obj)->userData1 == LEVCON_SAVE_STATUS_LOADED)
+        if (obj->userData1 == LEVCON_SAVE_STATUS_LOADED)
         {
             envFxActFn_800887f8(0x3f);
         }
@@ -186,16 +186,16 @@ void link_levcontrol_free(GameObject* obj)
     }
 }
 
-void link_levcontrol_update(int* obj)
+void link_levcontrol_update(GameObject* obj)
 {
-    LinkLevControlState* state = ((GameObject*)obj)->extra;
+    LinkLevControlState* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
     if (player == NULL)
         return;
 
-    if ((s32)state->areaCell != (s32)((GameObject*)obj)->anim.mapEventSlot)
+    if ((s32)state->areaCell != (s32)obj->anim.mapEventSlot)
     {
-        if ((s32)((GameObject*)obj)->anim.mapEventSlot ==
+        if ((s32)obj->anim.mapEventSlot ==
             coordsToMapCell(player->anim.localPosX, player->anim.localPosZ))
         {
             link_levcontrol_applyEnterAreaEffects(obj);
@@ -205,7 +205,7 @@ void link_levcontrol_update(int* obj)
             return;
         }
     }
-    if ((s32)((GameObject*)obj)->anim.mapEventSlot ==
+    if ((s32)obj->anim.mapEventSlot ==
         coordsToMapCell(player->anim.localPosX, player->anim.localPosZ))
     {
         link_levcontrol_updateAreaMusic(obj);
@@ -213,20 +213,20 @@ void link_levcontrol_update(int* obj)
     state->areaCell = coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
 }
 
-void link_levcontrol_init(int* obj)
+void link_levcontrol_init(GameObject* obj)
 {
-    LinkLevControlState* state = ((GameObject*)obj)->extra;
+    LinkLevControlState* state = obj->extra;
     state->areaCell = -1;
     state->unk04 = -1;
     state->musicTrack = -1;
-    ((GameObject*)obj)->objectFlags |= LINKLEVCONTROL_OBJFLAG_HIDDEN;
+    obj->objectFlags |= LINKLEVCONTROL_OBJFLAG_HIDDEN;
     if (getSaveGameLoadStatus() != 0)
     {
-        ((GameObject*)obj)->userData1 = LEVCON_SAVE_STATUS_LOADED;
+        obj->userData1 = LEVCON_SAVE_STATUS_LOADED;
     }
     else
     {
-        ((GameObject*)obj)->userData1 = LEVCON_SAVE_STATUS_FRESH;
+        obj->userData1 = LEVCON_SAVE_STATUS_FRESH;
     }
 }
 

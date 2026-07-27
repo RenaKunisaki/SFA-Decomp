@@ -1,5 +1,5 @@
 /*
- * DLL 0x2AF - placeable scenery tree / foliage object.
+ * DLL 687 - placeable scenery tree / foliage object.
  *
  * Drives swaying motion, hit reactions, and particle bursts. The setup
  * record's flag word (flagsHi:flagsLo) selects behaviour: a burst-mode
@@ -12,9 +12,6 @@
  *
  * The ambient effect objects are driven through an interface at +0x68
  * (vtable slots 0x24 = setPosition, 0x28 = getState).
- *
- * The target binary has no ObjectDescriptor global nor lifecycle stubs for
- * this DLL - the .text holds only the functions below.
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
@@ -370,7 +367,6 @@ void tree_init(GameObject* obj, TreeSetup* setup)
     }
 }
 
-
 f32 gTreeEffectColors[] = {
     0.0f, 250.0f, 0.0f, 80.0f,  0.0f,  250.0f, 0.0f, 110.0f, 25.0f, 200.0f, 0.0f, 80.0f,  0.0f, 100.0f, 0.0f, 60.0f,
     0.0f, 200.0f, 0.0f, 140.0f, 0.0f,  250.0f, 0.0f, 160.0f, 0.0f,  200.0f, 0.0f, 100.0f, 0.0f, 350.0f, 0.0f, 130.0f,
@@ -381,7 +377,7 @@ ObjectDescriptor gTreeObjDescriptor = {
     0,
     0,
     0,
-    0x00090000,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     NULL,
     NULL,
     NULL,

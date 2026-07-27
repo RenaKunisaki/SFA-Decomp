@@ -4,10 +4,14 @@
 #include "types.h"
 #include "main/map_block.h"
 #include "main/objanim_update.h"
+#include "game/objects/object_setup.h"
+
+struct GameObject;
 
 typedef struct DimlavasmashPlacement
 {
-    u8 pad0[0x1E - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1E - 0x18];
     s16 triggerGameBit;
     s16 gateGameBit;
     u8 pad22[0x28 - 0x22];
@@ -29,7 +33,7 @@ typedef struct DimlavasmashState
 
 typedef struct DimlavasmashObjectDef
 {
-    u8 pad0[0x18 - 0x0];
+    ObjPlacement base;
     s16 rotByte;        /* 0x18 rotation byte (read raw as def[0x18] into anim.rotX) */
     s16 surfaceLayerId; /* 0x1A def source for state.surfaceLayerId */
     s16 unk1C;
@@ -38,11 +42,11 @@ typedef struct DimlavasmashObjectDef
 
 void dimlavasmash_free(void);
 void dimlavasmash_hitDetect(void);
-void dimlavasmash_update(int* obj);
+void dimlavasmash_update(struct GameObject* obj);
 int dimlavasmash_getExtraSize(void);
 int dimlavasmash_getObjectTypeId(void);
 void dimlavasmash_setBlockSurfaceFlags(MapBlockData* block, int disable, int surfaceType);
-void dimlavasmash_init(s16* obj, s8* def);
+void dimlavasmash_init(struct GameObject* obj, s8* def);
 void dimlavasmash_release(void);
 void dimlavasmash_initialise(void);
 

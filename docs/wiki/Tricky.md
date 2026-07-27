@@ -188,12 +188,12 @@ is unconfirmed.
   `include/main/gamebits.h`) is a **different**, unrelated counter — the player's carried GrubTub
   Fungus inventory, not Tricky's own energy meter.
 - **Kyte**: confirmed and better-documented in our own code than the wiki:
-  - `src/dlls/objects/614_KytesMum/KytesMum.c` — DLL `0x266`, object type `0x43`, "Kyte's mum" NPC (per the
+  - `src/dlls/objects/614_KytesMum/KytesMum.c` — DLL 614 (resource ID `0x266`), object type `0x43`, "Kyte's mum" NPC (per the
     file's own header comment), supporting the wiki's inference of a Kyte backstory beyond just
     the caged bird.
-  - `CagedKyte` on Scales' galleon: `src/main/dll/SB/dll_01F2_sbcagekyte.c` (`SB_CageKyte`, DLL
+  - `CagedKyte` on Scales' galleon: `src/dlls/objects/498_SB_CageKyte/SB_CageKyte.c` (`SB_CageKyte`, DLL
     `0x1F2`, "Kyte, the captive baby Cloudrunner held in the deck cage... during the ShipBattle
-    prologue") and `src/main/dll/SB/dll_01F0_sbkytecage.c` (`SB_KyteCage`, DLL `0x1F0`, the cage
+    prologue") and `src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c` (`SB_KyteCage`, DLL `0x1F0`, the cage
     object itself, `include/main/dll/sbkytecagestate_struct.h` -> `SBKyteCageState`). Matches the
     wiki's claim almost verbatim, including that "Kyte is never actually freed — talking just
     opens the deck door."
@@ -201,11 +201,12 @@ is unconfirmed.
 ### Playing (Tricky's Ball)
 
 - Ball object: DLL `0x00F5` -> `src/dlls/objects/245_SidekickBal/SidekickBal.c` /
-  `include/main/dll/dll_00F5_sidekickball.h`, `SidekickBall_init`/`_update`, mode machine
-  `SidekickBallMode` (`IDLE` -> `trickyBallFn_801793b8`, `THROWN`/`MOVING` ->
-  `trickyBallMove`, `FADING`). Per the file's own header comment, the ball self-frees if the
+  `include/dlls/objects/245_SidekickBal.h`, `SidekickBall_init`/`_update`, mode machine
+  `SidekickBallMode` (`SIDEKICK_BALL_IDLE` -> `sidekickBall_handlePlayerInteraction`,
+  `SIDEKICK_BALL_THROWN`/`SIDEKICK_BALL_MOVING` -> `trickyBallMove`,
+  `SIDEKICK_BALL_FADING` -> alpha fade). The ball self-frees if the
   player or Tricky is missing/dead, or `GAMEBIT_NoBallsAllowed = 0xD00` ("Disables/despawns
-  Tricky's ball", `include/main/gamebits.h`) is set — this is the "if it suddenly becomes disabled
+  Tricky's ball", `include/main/gamebit_ids.h`) is set — this is the "if it suddenly becomes disabled
   (e.g. boss awake) it will just disappear" behavior from the wiki.
 - Color-per-10-retrieves: `Tricky_init` (`src/dlls/objects/196_Tricky/tricky.c:9706`) computes
   `modelVariant = progressPtr[2] / 10` and stores it in `TrickyState.modelVariant`

@@ -13,6 +13,7 @@
  * already-complete markers (completeGameBit == activeGameBit); below that the
  * complete bit lives at activeGameBit + 0x64.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object_setup.h"
 #include "main/frame_timing.h"
@@ -29,7 +30,6 @@
 #include "sys/objects.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_00FE_magicplant.h"
 #include "main/mapEventTypes.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
@@ -38,7 +38,8 @@
 
 typedef struct DusterSetup
 {
-    u8 pad00[0x24];
+    ObjPlacement base;
+    u8 pad18[0x24 - 0x18];
     s16 activeGameBit;
 } DusterSetup;
 

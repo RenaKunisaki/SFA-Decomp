@@ -13,7 +13,7 @@ The GameBits table from this wiki has already been imported as code: 687 named b
 | [AudioStreams](AudioStreams.md) | Documents the /streams/*.adp cutscene-dialogue directory listing and cross-references it to our fully-recovered playback path (StreamEntry in include/main/engine_shared.h, AudioStr... |
 | [BaddieLootDrops](BaddieLootDrops.md) | Wiki's 6-tier/50%-chance baddie loot system maps concretely to two matched pickup DLLs (0x00FF MagicDust dust, 0x00ED collectible Apple/EnergyEgg health) plus a magicplant 'move ex... |
 | [ChapBits](ChapBits.md) | CHAPBITS.bin (disc-root, 0x14000 bytes, mostly zero) is verified byte-for-byte and fully zero-mapped against this repo's own retail ISO, but is not referenced anywhere in our decom... |
-| [CheatTokens](CheatTokens.md) | Documents the 8 Cheat Tokens / Well mechanic and cross-references it to a fully-decompiled implementation: GM_MazeWell (DLL 0x263, src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c) driving lbl_8... |
+| [CheatTokens](CheatTokens.md) | Documents the 8 Cheat Tokens / Well mechanic and cross-references it to a fully-decompiled implementation: GM_MazeWell (DLL 611, src/dlls/objects/611_GM_MazeWell/GM_MazeWell.c) driving lbl_8... |
 | [Curves](Curves.md) | Documents the RomCurve object network (DLL 0x125 point object, DLL 0x14 navigation/interpolation) and its known Type-field values, cross-referenced against src/dlls/objects/293_curve/curve.c, dll_00... |
 | [DLLs](DLLs.md) | Full 469-entry DLL ID table preserved verbatim, cross-referenced against gResourceDescriptors[]/Resource_Acquire/Release in src/main/modelEngine.c (confirms the wiki's refcount-onl... |
 | [Files](Files.md) | Wiki's disc file catalogue maps almost entirely onto src/main/pi_dolphin.c's sResourceFileNameTable[90]/mapLoadDataFile dual-slot streaming system, with concrete fileIds and confir... |
@@ -26,7 +26,7 @@ The GameBits table from this wiki has already been imported as code: 687 named b
 | [Objects](Objects.md) | Wiki's ObjInstance layout, message-queue system, object-name prefixes, and object-category IDs mapped field-by-field to this repo's ObjAnimComponent (objanim_internal.h) + GameObje... |
 | [Romlist](Romlist.md) | Wiki's disc romlist entry format (type/size/acts/loadFlags/bound/cullDist/position/id, act-bit tables, OBJINDEX.bin) is matched almost verbatim: ObjPlacement, SaveGameRomListPositi... |
 | [Scripting](Scripting.md) | Rena's Scripting wiki page (ANIMCURV/OBJSEQ sequence VM, condition scripts, triggers) maps almost entirely onto src/main/objseq.c (DLL 0x02 ObjSeq), src/dlls/objects/294/294.c... |
-| [Shop](Shop.md) | ThornTail shop item price/discount/gamebit/text table, cross-mapped to DLLs 0x284/0x285/0x286 (shopitem/spshop/spshopkeeper), the ShopItemRow struct in SPShop.c, and ~20 a... |
+| [Shop](Shop.md) | ThornTail shop item price/discount/gamebit/text table, cross-mapped to DLLs 0x284/0x285/0x286 (shopitem/spshop/spshopkeeper), the ShopItemRow struct in dll_0285_spshop.c, and ~20 a... |
 | [Textures](Textures.md) | Covers TEXn.bin/tab layout, the 0x60-byte Texture header, GXTexFmt/GXTexObj, texture-ID translation (TEXTABLE/TEX0/TEX1/TEXPRE), the model Shader/ShaderLayer/ShaderFlags/AttrFlags ... |
 | [Tricky](Tricky.md) | Covers Tricky's attack-timer mechanic, unused Decoy/Guard/Baddie-Alert/Kyte content, ball-play color progression, and the Mammoth Dismount/Death Crash/Weird Head Movement bugs, cro... |
 | [UnusedThings](UnusedThings.md) | Cross-referenced the wiki's unused-content page against this repo; strongest confirmed matches are getLActions() in src/main/render.c (LACTIONS.bin, byte-for-byte), DLL 0x11 = src/... |
@@ -63,7 +63,7 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 - Add GAMEBIT_MAZEWELL_ACTIVE = 0xEFC to include/main/gamebits.h's enum GameBitId (currently only a private #define in GM_MazeWell.c) between the existing 0xEFB and 0xEFE entries
 
 ### Curves
-- ObjfsaRomCurveDef (include/main/dll/objfsa_romcurve.h) tail 's8 angle; u8 pad2D[3];' at 0x2C-0x2F should be split into 'rotZ/rotY/rotX/pad2F' (s8/s8/u8/u8) to match the sibling RomCurvePlacementDef (dll_0015_curves.h) and DrakorCurveNode (src/dlls/objects/625/625.c) overlays of the exact same offsets, which already use three named one-byte fields instead of one byte + padding.
+- ObjfsaRomCurveDef (include/main/dll/objfsa_romcurve.h) tail 's8 angle; u8 pad2D[3];' at 0x2C-0x2F should be split into 'rotZ/rotY/rotX/pad2F' (s8/s8/u8/u8) to match the sibling RomCurvePlacementDef (dll_0015_curves.h) and DrakorCurveNode (`src/dlls/objects/625/625.c`) overlays of the exact same offsets, which already use three named one-byte fields instead of one byte + padding.
 - Centralize the verified RomCurve Type literals (0x03 HagabonMK2, 0x15 DIM2PathGenerator/ROMCURVE_TYPE_ACTION, 0x16, 0x17, 0x23 CurveFish, 0x24 Tricky) as named #defines next to ROMCURVE_TYPE_ACTION/ROMCURVE_TYPE_SCALE_OVERRIDE_15 in include/main/dll/dll_0015_curves.h instead of bare hex literals scattered across dll_0014_unk.c and `src/dlls/objects/259_CurveFish/CurveFish.c`.
 
 ### DLLs

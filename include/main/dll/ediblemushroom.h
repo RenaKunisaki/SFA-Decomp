@@ -3,13 +3,14 @@
 
 #include "global.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
 #include "main/dll/curve_walker.h"
 #include "main/objanim_internal.h"
 
 typedef struct EdibleMushroomPlacement
 {
-    u8 pad00[0x18];
+    ObjPlacement base;
     u8 objectTypeParam; /* 0x18: variant selector (switch 4/5) */
     u8 pad19[0x1A - 0x19];
     s16 gameBitId; /* 0x1a: pickup/spawn GameBit id */
@@ -18,11 +19,8 @@ typedef struct EdibleMushroomPlacement
 
 typedef struct EnemyMushroomMapData
 {
-    u8 pad00[0x08];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x1A - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     u16 respawnFrameLimit;
     s16 gameBitId;
     s8 yawParam;
@@ -111,9 +109,9 @@ typedef struct EdibleMushroomState
     f32 pickupMsgDelay;
 } EdibleMushroomState;
 
-STATIC_ASSERT(offsetof(EnemyMushroomMapData, posX) == 0x08);
-STATIC_ASSERT(offsetof(EnemyMushroomMapData, posY) == 0x0C);
-STATIC_ASSERT(offsetof(EnemyMushroomMapData, posZ) == 0x10);
+STATIC_ASSERT(offsetof(EnemyMushroomMapData, base.posX) == 0x08);
+STATIC_ASSERT(offsetof(EnemyMushroomMapData, base.posY) == 0x0C);
+STATIC_ASSERT(offsetof(EnemyMushroomMapData, base.posZ) == 0x10);
 STATIC_ASSERT(offsetof(EnemyMushroomMapData, respawnFrameLimit) == 0x1A);
 STATIC_ASSERT(offsetof(EnemyMushroomMapData, gameBitId) == 0x1C);
 STATIC_ASSERT(offsetof(EnemyMushroomMapData, yawParam) == 0x1E);
@@ -159,7 +157,7 @@ STATIC_ASSERT(offsetof(EdibleMushroomState, pickupMsgDelay) == 0x140);
 STATIC_ASSERT(sizeof(EdibleMushroomState) == 0x144);
 
 void EdibleMushroom_init(GameObject* obj, int aux);
-int EdibleMushroom_SeqFn(int* obj);
+int EdibleMushroom_SeqFn(GameObject* obj);
 void enemymushroom_resetToSpawn(EnemyMushroomObject* obj, EnemyMushroomState* state, int enableTimer);
 int enemymushroom_getExtraSize(void);
 int enemymushroom_getObjectTypeId(EnemyMushroomObject* obj);

@@ -4,6 +4,6 @@
 #include "game/objects/object.h"
 #include "main/gamebits.h"
 
-void DIMwooddoor_updateFallingDebris(int* obj);
+void DIMwooddoor_updateFallingDebris(GameObject* obj);
 
 #endif

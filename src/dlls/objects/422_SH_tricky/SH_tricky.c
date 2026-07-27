@@ -28,12 +28,12 @@ int sh_tricky_getExtraSize(void)
     return 1;
 }
 
-void sh_tricky_update(int* obj)
+void sh_tricky_update(GameObject* obj)
 {
     u8* state;
     int* tricky;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     tricky = (int*)getTrickyObject();
     if (tricky == NULL)
     {
@@ -55,7 +55,7 @@ void sh_tricky_update(int* obj)
         state[0] = SHTRICKY_STATE_POLL_TASK;
         break;
     case SHTRICKY_STATE_POLL_TASK:
-        if (((int (*)(int*, int*))(*(int*)(*(int*)(tricky[0x1a]) + 0x38)))(tricky, obj) != 0)
+        if (((int (*)(int*, int*))(*(int*)(*(int*)(tricky[0x1a]) + 0x38)))(tricky, (int*)obj) != 0)
         {
             state[0] = SHTRICKY_STATE_WATCH_COMPLETE;
         }
@@ -73,9 +73,9 @@ void sh_tricky_update(int* obj)
     }
 }
 
-void sh_tricky_init(int* obj)
+void sh_tricky_init(GameObject* obj)
 {
-    u8* state = ((GameObject*)obj)->extra;
+    u8* state = obj->extra;
     if (mainGetBit(GAMEBIT_SH_ReturnedToQueen) != 0)
     {
         *state = SHTRICKY_STATE_DONE;
@@ -84,8 +84,8 @@ void sh_tricky_init(int* obj)
     {
         *state = SHTRICKY_STATE_WAIT_TRIGGER;
     }
-    ((GameObject*)obj)->objectFlags =
-        (u16)(((GameObject*)obj)->objectFlags | (SHTRICKY_OBJFLAG_HIDDEN | SHTRICKY_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags =
+        (u16)(obj->objectFlags | (SHTRICKY_OBJFLAG_HIDDEN | SHTRICKY_OBJFLAG_HITDETECT_DISABLED));
 }
 
 ObjectDescriptor gSH_trickyObjDescriptor = {

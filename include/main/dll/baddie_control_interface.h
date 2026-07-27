@@ -1,9 +1,9 @@
 #ifndef MAIN_DLL_BADDIE_CONTROL_INTERFACE_H_
 #define MAIN_DLL_BADDIE_CONTROL_INTERFACE_H_
 
+#include "game/objects/object_fwd.h"
 #include "types.h"
 
-typedef struct GameObject GameObject;
 typedef struct ObjSeqState ObjSeqState;
 
 /* Function-pointer table exported by the baddie-control DLL (0x19); word slot N

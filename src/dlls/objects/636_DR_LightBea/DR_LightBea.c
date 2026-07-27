@@ -1,5 +1,5 @@
 /*
- * DR_LightBea (DLL 0x27C) - a lightning-beam effect that arcs from this
+ * DR_LightBea (DLL 636) - a lightning-beam effect that arcs from this
  * object to a target while its placement game bit (0x20) is set.
  *
  * The target is either another placed object (resolved by id via
@@ -161,8 +161,4 @@ ObjectDescriptor gDrLightBeaObjDescriptor = {
     (ObjectDescriptorCallback)DR_LightBea_free,
     (ObjectDescriptorCallback)DR_LightBea_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)DR_LightBea_getExtraSize,
-};
-
-u32 lbl_8032AD68[12] = {
-    0xFFFFFFFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };

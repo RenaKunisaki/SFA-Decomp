@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "main/model_light.h"
 #include "global.h"
+#include "game/objects/object_setup.h"
 
 typedef struct KtlazerlightState
 {
@@ -14,17 +15,13 @@ typedef struct KtlazerlightState
 
 typedef struct KtlazerlightPlacement
 {
-    u8 pad0[0x8 - 0x0];
-    f32 posX; /* 0x8: ObjPlacement head */
-    f32 posY; /* 0xC */
-    f32 posZ; /* 0x10 */
-    u8 pad14[0x1A - 0x14];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 onIntensityBit; /* 0x1A: game bit; value scales distance falloff */
     s16 onStayLitBit;   /* 0x1C: game bit; keeps the light lit */
     u8 pad1E[0x20 - 0x1E];
 } KtlazerlightPlacement;
 
-STATIC_ASSERT(offsetof(KtlazerlightPlacement, posX) == 0x8);
 STATIC_ASSERT(offsetof(KtlazerlightPlacement, onIntensityBit) == 0x1A);
 STATIC_ASSERT(offsetof(KtlazerlightPlacement, onStayLitBit) == 0x1C);
 STATIC_ASSERT(sizeof(KtlazerlightPlacement) == 0x20);

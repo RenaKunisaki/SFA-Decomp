@@ -25,9 +25,8 @@ typedef struct DimlogfireObjectDef
 } DimlogfireObjectDef;
 
 /*
- * Per-object extra state for the dimlogfire burning log
- * (DIMLogFire_getExtraSize == 0x24). init/update in DIMlavasmash.c,
- * free/SeqFn/render in DIMcannon.c.
+ * Per-object extra state for DLL 448's DIMLogFire burning log
+ * (DIMLogFire_getExtraSize == 0x24).
  */
 typedef struct DimLogFireState
 {
@@ -57,7 +56,7 @@ int DIMLogFire_getObjectTypeId(void);
 void DIMLogFire_free(GameObject* obj, int mode);
 void DIMLogFire_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void DIMLogFire_update(GameObject* obj);
-void DIMLogFire_init(int obj, DimlogfireObjectDef* def);
+void DIMLogFire_init(GameObject* obj, DimlogfireObjectDef* def);
 
 STATIC_ASSERT(offsetof(DimlogfirePlacement, douseGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(DimlogfireObjectDef, initMode) == 0x1A);

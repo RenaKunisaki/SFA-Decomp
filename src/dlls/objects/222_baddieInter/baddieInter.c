@@ -1,214 +1,29 @@
 /*
- * baddieInter (DLL 0xDE) - an invisible "baddie interest point" trigger
- * object. Most callbacks are empty stubs; BaddieInterestP_render draws the
- * model when visible, and BaddieInterestP_update does the real work: when
- * its placement's gate bits permit (enableGameBit set, doneGameBit clear),
- * it scans ObjGroup 3 for a nearby object matching the placement id
- * (targetIdLo/targetIdHi), then by sun-position mode (modeKind bits 4-5)
- * fires a reaction (fn_801504BC) on staff/baddie seqIds and sets the done
- * bit. The retail TU also owns the gBaddieInterestPObjDescriptor table.
+ * BaddieInterestP object (DLL slot 222).
+ *
+ * Triggers a nearby matching baddie's reaction when its game-bit and
+ * time-of-day conditions are satisfied.
  */
-
-#include "main/dll/dll_00DE_baddieinterestp_api.h"
-#include "main/object_render.h"
-#include "main/sky_interface.h"
+#include "dlls/objects/222_BaddieInterestP.h"
 #include "game/objects/object.h"
+#include "main/dll/wispbaddieseq_ext.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
-#include "main/vecmath_distance_api.h"
-#include "main/dll/wispbaddieseq_ext.h"
+#include "main/object_render.h"
+#include "main/sky_interface.h"
+#include "main/vecmath.h"
 
-typedef struct BaddieinterestpPlacement
-{
-    u8 pad0[0x14 - 0x0];   /* 0x00 */
-    s32 linkId;            /* 0x14 id (matched against other placements' linkId) */
-    s8 modeKind;           /* 0x18 high nibble = sun mode (bits 4-5), low nibble = reaction kind */
-    s8 prob;               /* 0x19 trigger probability (1..100) */
-    s16 targetIdLo;        /* 0x1A id low half */
-    s16 targetIdHi;        /* 0x1C id high half */
-    s16 doneGameBit;       /* 0x1E done-gate gamebit */
-    s16 enableGameBit;     /* 0x20 enable-gate gamebit */
-    u8 pad22[0x2C - 0x22]; /* 0x22 */
-    s16 unk2C;             /* 0x2C layout placeholder; never accessed in this TU */
-    u8 pad2E[0x30 - 0x2E]; /* 0x2E */
-} BaddieinterestpPlacement;
-
-
-int BaddieInterestP_getExtraSize(void)
-{
-    return 0x0;
-}
-
-int BaddieInterestP_getObjectTypeId(void)
-{
-    return 0x0;
-}
-
-void BaddieInterestP_free(void)
-{
-}
-
-void BaddieInterestP_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-}
-
-void BaddieInterestP_hitDetect(void)
-{
-}
-
-void BaddieInterestP_update(GameObject* obj)
-{
-    int* params = *(int**)&obj->anim.placementData;
-
-    if (((int)((BaddieinterestpPlacement*)params)->enableGameBit == -1 ||
-         mainGetBit((int)((BaddieinterestpPlacement*)params)->enableGameBit) != 0) &&
-        ((int)((BaddieinterestpPlacement*)params)->doneGameBit == -1 ||
-         mainGetBit((int)((BaddieinterestpPlacement*)params)->doneGameBit) == 0))
-    {
-        int count;
-        int* objs = (int*)ObjGroup_GetObjects(3, &count);
-        if (count > 0)
-        {
-            u32 id = (u32)(u16)((BaddieinterestpPlacement*)params)->targetIdHi << 16;
-            int* other;
-            u16 i;
-            u8 found;
-            id |= (u16)((BaddieinterestpPlacement*)params)->targetIdLo;
-            for (i = 0; i < count; i++)
-            {
-                int* otherParams;
-                other = (int*)objs[i];
-                otherParams = *(int**)&((GameObject*)other)->anim.placementData;
-                if (otherParams != NULL)
-                {
-                    found = 0;
-                    if (id == *(u32*)&((BaddieinterestpPlacement*)otherParams)->linkId || id == 0)
-                    {
-                        found = 1;
-                    }
-                }
-                else
-                {
-                    found = 1;
-                }
-                if (found != 0)
-                {
-                    found = 0;
-                    if (vec3f_distanceSquared(&obj->anim.worldPosX,
-                                              &((GameObject*)other)->anim.worldPosX) < 1600.0f)
-                    {
-                        if (obj->userData1 == 0)
-                        {
-                            if ((int)randomGetRange(1, 100) <= ((BaddieinterestpPlacement*)params)->prob)
-                            {
-                                f32 sunTime;
-                                int* target;
-                                int kind;
-                                int b = ((BaddieinterestpPlacement*)params)->modeKind;
-                                switch ((b & 0x30) >> 4)
-                                {
-                                case 0:
-                                {
-                                    kind = b & 0xf;
-                                    target = (int*)objs[i];
-                                    if ((int)((BaddieinterestpPlacement*)params)->doneGameBit != -1)
-                                    {
-                                        mainSetBits((int)((BaddieinterestpPlacement*)params)->doneGameBit, 1);
-                                    }
-                                    switch (((GameObject*)target)->anim.seqId)
-                                    {
-                                    case 17:
-                                    case 314:
-                                    case 1463:
-                                    case 1464:
-                                    case 1465:
-                                    case 1505:
-                                        fn_801504BC((int)target, kind);
-                                        break;
-                                    }
-                                    break;
-                                }
-                                case 1:
-                                    if ((*gSkyInterface)->getSunPosition(&sunTime) == 0)
-                                    {
-                                        int* target;
-                                        int kind;
-                                        u8 b2 = (u8)((BaddieinterestpPlacement*)params)->modeKind;
-                                        kind = b2 & 0xf;
-                                        target = (int*)objs[i];
-                                        if ((int)((BaddieinterestpPlacement*)params)->doneGameBit != -1)
-                                        {
-                                            mainSetBits((int)((BaddieinterestpPlacement*)params)->doneGameBit, 1);
-                                        }
-                                        switch (((GameObject*)target)->anim.seqId)
-                                        {
-                                        case 17:
-                                        case 314:
-                                        case 1463:
-                                        case 1464:
-                                        case 1465:
-                                        case 1505:
-                                            fn_801504BC((int)target, kind);
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                case 2:
-                                    if ((*gSkyInterface)->getSunPosition(&sunTime) != 0)
-                                    {
-                                        int* target;
-                                        int kind;
-                                        u8 b2 = (u8)((BaddieinterestpPlacement*)params)->modeKind;
-                                        kind = b2 & 0xf;
-                                        target = (int*)objs[i];
-                                        if ((int)((BaddieinterestpPlacement*)params)->doneGameBit != -1)
-                                        {
-                                            mainSetBits((int)((BaddieinterestpPlacement*)params)->doneGameBit, 1);
-                                        }
-                                        switch (((GameObject*)target)->anim.seqId)
-                                        {
-                                        case 17:
-                                        case 314:
-                                        case 1463:
-                                        case 1464:
-                                        case 1465:
-                                        case 1505:
-                                            fn_801504BC((int)target, kind);
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                            obj->userData1 = 1;
-                        }
-                        found = 1;
-                    }
-                    i = count;
-                }
-            }
-            if (found == 0)
-            {
-                obj->userData1 = 0;
-            }
-        }
-    }
-}
-
-void BaddieInterestP_init(void)
-{
-}
-
-void BaddieInterestP_release(void)
-{
-}
-
-void BaddieInterestP_initialise(void)
-{
-}
+#define BADDIE_INTEREST_OBJECT_GROUP              3
+#define BADDIE_INTEREST_RANGE_SQUARED             1600.0f
+#define BADDIE_INTEREST_PROBABILITY_MIN           1
+#define BADDIE_INTEREST_PROBABILITY_MAX           100
+#define BADDIE_INTEREST_SUN_MODE_MASK             0x30
+#define BADDIE_INTEREST_SUN_MODE_SHIFT            4
+#define BADDIE_INTEREST_REACTION_KIND_MASK        0xf
+#define BADDIE_INTEREST_SUN_MODE_UNCONDITIONAL    0
+#define BADDIE_INTEREST_SUN_MODE_POSITION_ZERO    1
+#define BADDIE_INTEREST_SUN_MODE_POSITION_NONZERO 2
+#define BADDIE_INTEREST_GAME_BIT_NONE             -1
 
 ObjectDescriptor gBaddieInterestPObjDescriptor = {
     0,
@@ -226,3 +41,153 @@ ObjectDescriptor gBaddieInterestPObjDescriptor = {
     (ObjectDescriptorCallback)BaddieInterestP_getObjectTypeId,
     BaddieInterestP_getExtraSize,
 };
+
+int BaddieInterestP_getExtraSize(void) {
+    return 0;
+}
+
+int BaddieInterestP_getObjectTypeId(void) {
+    return 0;
+}
+
+void BaddieInterestP_free(GameObject* obj) {
+    (void)obj;
+}
+
+void BaddieInterestP_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    s32 visible32 = visible;
+    if (visible32 != 0) {
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
+    }
+}
+
+void BaddieInterestP_hitDetect(GameObject* obj) {
+    (void)obj;
+}
+
+void BaddieInterestP_update(GameObject* obj) {
+    BaddieInterestPPlacement* placement = (BaddieInterestPPlacement*)obj->anim.placementData;
+
+    if (((int)placement->enableGameBit == BADDIE_INTEREST_GAME_BIT_NONE ||
+         mainGetBit((int)placement->enableGameBit) != 0) &&
+        ((int)placement->doneGameBit == BADDIE_INTEREST_GAME_BIT_NONE ||
+         mainGetBit((int)placement->doneGameBit) == 0)) {
+        int objectCount;
+        u32* objects = ObjGroup_GetObjects(BADDIE_INTEREST_OBJECT_GROUP, &objectCount);
+        if (objectCount > 0) {
+            u32 targetLinkId = (u32)(u16)placement->targetLinkIdHi << 16;
+            GameObject* candidate;
+            u16 objectIndex;
+            u8 foundTarget;
+            targetLinkId |= (u16)placement->targetLinkIdLo;
+            for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
+                BaddieInterestPPlacement* candidatePlacement;
+                candidate = (GameObject*)objects[objectIndex];
+                candidatePlacement = (BaddieInterestPPlacement*)candidate->anim.placementData;
+                if (candidatePlacement != NULL) {
+                    foundTarget = 0;
+                    if (targetLinkId == *(u32*)&candidatePlacement->base.mapId || targetLinkId == 0) {
+                        foundTarget = 1;
+                    }
+                } else {
+                    foundTarget = 1;
+                }
+                if (foundTarget != 0) {
+                    foundTarget = 0;
+                    if (vec3f_distanceSquared(&obj->anim.worldPosX, &candidate->anim.worldPosX) <
+                        BADDIE_INTEREST_RANGE_SQUARED) {
+                        if (obj->userData1 == 0) {
+                            if ((int)randomGetRange(BADDIE_INTEREST_PROBABILITY_MIN, BADDIE_INTEREST_PROBABILITY_MAX) <=
+                                placement->triggerProbability) {
+                                f32 sunTime;
+                                GameObject* target;
+                                int kind;
+                                int modeKind = placement->modeKind;
+                                switch ((modeKind & BADDIE_INTEREST_SUN_MODE_MASK) >> BADDIE_INTEREST_SUN_MODE_SHIFT) {
+                                case BADDIE_INTEREST_SUN_MODE_UNCONDITIONAL: {
+                                    kind = modeKind & BADDIE_INTEREST_REACTION_KIND_MASK;
+                                    target = (GameObject*)objects[objectIndex];
+                                    if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
+                                        mainSetBits((int)placement->doneGameBit, 1);
+                                    }
+                                    switch (target->anim.seqId) {
+                                    case 0x11:
+                                    case 0x13a:
+                                    case 0x5b7:
+                                    case 0x5b8:
+                                    case 0x5b9:
+                                    case 0x5e1:
+                                        fn_801504BC((int)target, kind);
+                                        break;
+                                    }
+                                    break;
+                                }
+                                case BADDIE_INTEREST_SUN_MODE_POSITION_ZERO:
+                                    if ((*gSkyInterface)->getSunPosition(&sunTime) == 0) {
+                                        GameObject* target;
+                                        int kind;
+                                        u8 modeKind = (u8)placement->modeKind;
+                                        kind = modeKind & BADDIE_INTEREST_REACTION_KIND_MASK;
+                                        target = (GameObject*)objects[objectIndex];
+                                        if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
+                                            mainSetBits((int)placement->doneGameBit, 1);
+                                        }
+                                        switch (target->anim.seqId) {
+                                        case 0x11:
+                                        case 0x13a:
+                                        case 0x5b7:
+                                        case 0x5b8:
+                                        case 0x5b9:
+                                        case 0x5e1:
+                                            fn_801504BC((int)target, kind);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                case BADDIE_INTEREST_SUN_MODE_POSITION_NONZERO:
+                                    if ((*gSkyInterface)->getSunPosition(&sunTime) != 0) {
+                                        GameObject* target;
+                                        int kind;
+                                        u8 modeKind = (u8)placement->modeKind;
+                                        kind = modeKind & BADDIE_INTEREST_REACTION_KIND_MASK;
+                                        target = (GameObject*)objects[objectIndex];
+                                        if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
+                                            mainSetBits((int)placement->doneGameBit, 1);
+                                        }
+                                        switch (target->anim.seqId) {
+                                        case 0x11:
+                                        case 0x13a:
+                                        case 0x5b7:
+                                        case 0x5b8:
+                                        case 0x5b9:
+                                        case 0x5e1:
+                                            fn_801504BC((int)target, kind);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            obj->userData1 = 1;
+                        }
+                        foundTarget = 1;
+                    }
+                    objectIndex = (u16)objectCount;
+                }
+            }
+            if (foundTarget == 0) {
+                obj->userData1 = 0;
+            }
+        }
+    }
+}
+
+void BaddieInterestP_init(GameObject* obj) {
+    (void)obj;
+}
+
+void BaddieInterestP_release(void) {
+}
+
+void BaddieInterestP_initialise(void) {
+}

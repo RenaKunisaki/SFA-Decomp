@@ -4,6 +4,7 @@
 #include "global.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 /* placement block read via anim.placementData */
 typedef struct MmshWaterspikePlacement
@@ -17,7 +18,8 @@ typedef struct MmshWaterspikePlacement
 /* object-def layout; unk1A/unk1C pack into the 32-bit XYZ-animator object ID */
 typedef struct MmshWaterspikeObjectDef
 {
-    u8 pad0[0x1A - 0x0];
+    ObjPlacement base;
+    u8 pad18[0x1A - 0x18];
     s16 xyzAnimIdLow;  /* 0x1A: low 16 bits of the animator object ID */
     s16 xyzAnimIdHigh; /* 0x1C: high 16 bits of the animator object ID */
     u8 pad1E[0x24 - 0x1E];

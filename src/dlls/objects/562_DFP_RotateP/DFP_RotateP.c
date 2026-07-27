@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
@@ -398,13 +399,13 @@ void sfxplayer_update(GameObject* obj)
     return;
 }
 
-void sfxplayer_init(int obj, int config)
+void sfxplayer_init(GameObject* obj, int config)
 {
     SfxplayerState* state;
 
-    state = (SfxplayerState*)((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)((s8) * (u8*)(config + SFXPLAYER_CONFIG_MAP_ID_OFFSET) << 8);
-    ((GameObject*)obj)->animEventCallback = (void*)TrickyCurve_activateEffectHandleRing;
+    state = (SfxplayerState*)obj->extra;
+    obj->anim.rotX = (s16)((s8) * (u8*)(config + SFXPLAYER_CONFIG_MAP_ID_OFFSET) << 8);
+    obj->animEventCallback = (void*)TrickyCurve_activateEffectHandleRing;
     state->config19 = *(u8*)(config + SFXPLAYER_CONFIG_MODE_OFFSET);
     state->eventId = *(s16*)(config + SFXPLAYER_CONFIG_EVENT_ID_OFFSET);
     state->config20 = *(s16*)(config + SFXPLAYER_CONFIG_FIELD20_OFFSET);
@@ -422,7 +423,7 @@ void sfxplayer_init(int obj, int config)
     {
         state->flags.bit20 = 1;
     }
-    ((GameObject*)obj)->objectFlags = ((GameObject*)obj)->objectFlags | SFXPLAYER_OBJECT_FLAGS;
+    obj->objectFlags = obj->objectFlags | SFXPLAYER_OBJECT_FLAGS;
 }
 
 void sfxplayer_release(void)
@@ -432,3 +433,20 @@ void sfxplayer_release(void)
 void sfxplayer_initialise(void)
 {
 }
+
+ObjectDescriptor gSfxplayerObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)sfxplayer_initialise,
+    (ObjectDescriptorCallback)sfxplayer_release,
+    0,
+    (ObjectDescriptorCallback)sfxplayer_init,
+    (ObjectDescriptorCallback)sfxplayer_update,
+    (ObjectDescriptorCallback)sfxplayer_hitDetect,
+    (ObjectDescriptorCallback)sfxplayer_render,
+    (ObjectDescriptorCallback)sfxplayer_free,
+    (ObjectDescriptorCallback)sfxplayer_getObjectTypeId,
+    sfxplayer_getExtraSize,
+};

@@ -3,16 +3,13 @@
 
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_setup.h"
 
 extern ObjectDescriptor12 gDrakorEnergyObjDescriptor;
 
 typedef struct DrakorenergyPlacement
 {
-    u8 pad_0[0x8 - 0x0];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    s32 mapId;
+    ObjPlacement base;
     u8 pad_18[0x19 - 0x18];
     u8 unk19;
     u8 pad_1A[0x1E - 0x1A];

@@ -1,5 +1,5 @@
 /*
- * DLL 0x299 - an ambient particle-effect object.
+ * DLL 665 - an ambient particle-effect object.
  *
  * On init it stores a placement-supplied s16 id into its 2-byte extra
  * state, acquires resource 0xA6, and seeds three 0x545 and one 0x546
@@ -11,14 +11,14 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/dll_0299.h"
-
-void* lbl_803DDD80;
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx.h"
 #include "game/objects/object.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
 #include "dlls/object_descriptor.h"
+
+void* lbl_803DDD80;
 
 #define DLL0299_OBJFLAG_HITDETECT_DISABLED 0x2000
 

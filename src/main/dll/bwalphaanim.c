@@ -4,19 +4,19 @@
  * SB_CloudRunner_onSeqFree runs when the object's animation sequence is
  * freed: it snapshots the rider's local position and orientation back
  * into the shared SnowBikeState extra block (the same fields the bike's
- * SeqFn seeds on entry, see SB/dll_0259_sbcloudrunner.c). rotX is
+ * SeqFn seeds on entry, see dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c). rotX is
  * rebased by 0x4000 (quarter-turn) to recover the rider yaw.
  */
 #include "main/dll/dll_0255_snowbike.h"
 #include "game/objects/object.h"
 #include "main/dll/bwalphaanim.h"
 
-void SB_CloudRunner_onSeqFree(int* obj)
+void SB_CloudRunner_onSeqFree(GameObject* obj)
 {
-    SnowBikeState* state = ((GameObject*)obj)->extra;
-    state->riderPosX = ((GameObject*)obj)->anim.localPosX;
-    state->riderPosY = ((GameObject*)obj)->anim.localPosY;
-    state->riderPosZ = ((GameObject*)obj)->anim.localPosZ;
-    state->riderYawOnFree = (s16)(((GameObject*)obj)->anim.rotX - 0x4000);
-    state->riderPitchOnFree = ((GameObject*)obj)->anim.rotZ;
+    SnowBikeState* state = obj->extra;
+    state->riderPosX = obj->anim.localPosX;
+    state->riderPosY = obj->anim.localPosY;
+    state->riderPosZ = obj->anim.localPosZ;
+    state->riderYawOnFree = (s16)(obj->anim.rotX - 0x4000);
+    state->riderPitchOnFree = obj->anim.rotZ;
 }

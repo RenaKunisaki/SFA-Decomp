@@ -1,5 +1,5 @@
 /*
- * DBstealerworm (DLL 0x242, object type id 0x49) - a burrowing "stealer
+ * DBstealerwo (DLL 0x242, object type id 0x49) - a burrowing "stealer
  * worm" ground baddie.
  *
  * It is a GroundBaddieState/BaddieState baddie driven through the shared
@@ -17,12 +17,6 @@
  * (dbstealerworm_processEffectFlags), and on a successful steal increments a placement game bit
  * and adds map time (dbstealerworm_stateHandlerA06). chuka is the linked
  * thrown sub-object.
- *
- * Unimplemented trailing functions (not in scope here):
- *   Trivial 0-returner.
- *   Trivial 0-returner.
- *   if (p6) objRenderModelAndHitVolumes(lbl_803E6408).
- *   if (b->_8 && (b->_8->_6 & 0x40)) clear.
  */
 #include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
@@ -60,12 +54,7 @@
 #define OBJ_YAW_DELTA_RETURNS_S16
 #include "main/obj_query.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_0243_dbholecontrol1.h"
 #include "main/dll/dll_0242_dbstealerworm.h"
-#include "main/dll/dll_022C_dll22c.h"
-#include "main/dll/DF/dll_0229_dfplevelcontrol.h"
-#include "main/dll/DF/dll_022A_dfpobjcreator.h"
-#include "main/dll/DF/dll_022E_dfpdoorswitch.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "string.h"
 #include "main/dll/baddie_control_interface.h"
@@ -148,7 +137,7 @@ int dbstealerworm_turnToFaceObject(GameObject* obj, GameObject* otherObj, f32 ya
 int dbstealerworm_turnToFaceObjectVertical(GameObject* obj, GameObject* otherObj, f32 yawOffset, f32 speed, f32 unused, f32 range);
 int dbstealerworm_avoidObjects(GameObject* obj, int* objs, f32* weights, int n, f32 limit);
 
-int dbstealerworm_stateHandlerB06(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
 {
 
     GroundBaddieState* state = (obj)->extra;
@@ -161,7 +150,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, int baddie)
 
     range = 1500.0f;
     sub = (DbStealerwormControl*)state->control;
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedB != 0 || sub->msgAdvance != 0)
+    if (*(s8*)&baddie->moveJustStartedB != 0 || sub->msgAdvance != 0)
     {
         sub->flags15 &= ~4;
         sub->msgAdvance = 0;
@@ -192,17 +181,17 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, int baddie)
         case 0:
             if (sub->objGroup != 0)
             {
-                ((BaddieState*)baddie)->targetObj =
+                baddie->targetObj =
                     ObjGroup_FindNearestObjectForObject(sub->objGroup, obj, &range);
             }
             break;
         case 1:
-            *(int*)&((BaddieState*)baddie)->targetObj = sub->objGroup;
+            *(int*)&baddie->targetObj = sub->objGroup;
             break;
         }
-        if (*(void**)&((BaddieState*)baddie)->targetObj != NULL)
+        if (*(void**)&baddie->targetObj != NULL)
         {
-            (*gPlayerInterface)->setState(obj, (void*)baddie, *(int*)&sub->msgCode);
+            (*gPlayerInterface)->setState(obj, baddie, *(int*)&sub->msgCode);
         }
         return 0;
     }
@@ -211,26 +200,26 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, int baddie)
         switch (sub->msgMode)
         {
         case 0:
-            if (*(void**)&((BaddieState*)baddie)->targetObj == NULL)
+            if (*(void**)&baddie->targetObj == NULL)
             {
                 sub->msgAdvance = 1;
             }
             else if (sub->objGroup != 0)
             {
-                if (ObjGroup_ContainsObject(*(int*)&((BaddieState*)baddie)->targetObj, sub->objGroup) == 0)
+                if (ObjGroup_ContainsObject(*(int*)&baddie->targetObj, sub->objGroup) == 0)
                 {
-                    ((BaddieState*)baddie)->targetObj =
+                    baddie->targetObj =
                         ObjGroup_FindNearestObjectForObject(sub->objGroup, obj, 0);
-                    if (*(void**)&((BaddieState*)baddie)->targetObj == NULL)
+                    if (*(void**)&baddie->targetObj == NULL)
                     {
                         sub->msgAdvance = 1;
                     }
-                    ((BaddieState*)baddie)->animSpeedA = 0.0f;
+                    baddie->animSpeedA = 0.0f;
                 }
             }
             break;
         case 1:
-            if (*(void**)&((BaddieState*)baddie)->targetObj == NULL)
+            if (*(void**)&baddie->targetObj == NULL)
             {
                 sub->msgAdvance = 1;
             }
@@ -248,7 +237,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, int baddie)
     }
 }
 
-int dbstealerworm_stateHandlerB05(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = (obj)->extra;
     DbStealerwormControl* sub;
@@ -264,7 +253,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, int baddie)
 
     range = 1500.0f;
     sub = (DbStealerwormControl*)state->control;
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedB != 0 || ((u32)sub->flags44 >> 6 & 1) != 0)
+    if (*(s8*)&baddie->moveJustStartedB != 0 || ((u32)sub->flags44 >> 6 & 1) != 0)
     {
         sub->flags15 &= ~4;
         ((DbStealerwormFlags44*)&sub->flags44)->flag40 = 0;
@@ -287,12 +276,12 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, int baddie)
         }
         if (*(int*)(sub->routeCursor + 4) != 0)
         {
-            ((BaddieState*)baddie)->targetObj =
+            baddie->targetObj =
                 ObjGroup_FindNearestObjectForObject(*(int*)(sub->routeCursor + 4), obj, &range);
         }
-        if (*(void**)&((BaddieState*)baddie)->targetObj != NULL)
+        if (*(void**)&baddie->targetObj != NULL)
         {
-            (*gPlayerInterface)->setState(obj, (void*)baddie, *(int*)sub->routeCursor);
+            (*gPlayerInterface)->setState(obj, baddie, *(int*)sub->routeCursor);
         }
         return 0;
     }
@@ -314,16 +303,16 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, int baddie)
                     found = nearest;
                 }
             }
-            ((BaddieState*)baddie)->targetObj = found;
+            baddie->targetObj = found;
             if (found != 0)
             {
                 if (range < 50.0f)
                 {
-                    (*gPlayerInterface)->setState(obj, (void*)baddie, 2);
+                    (*gPlayerInterface)->setState(obj, baddie, 2);
                 }
                 else
                 {
-                    (*gPlayerInterface)->setState(obj, (void*)baddie, 4);
+                    (*gPlayerInterface)->setState(obj, baddie, 4);
                 }
             }
         }
@@ -369,15 +358,15 @@ extern int gDbStealerwormSfxIds[];
 extern u8 gDbWormEffectSpawnWork[];
 extern u32 lbl_803293B8[];
 
-int dbstealerworm_stateHandlerB04(int obj, int baddie)
+int dbstealerworm_stateHandlerB04(GameObject* obj, BaddieState* baddie)
 {
     float fz;
     int b8;
 
-    b8 = *(int*)&((GameObject*)obj)->extra;
-    if (*(char*)&((BaddieState*)baddie)->moveJustStartedB != '\0')
+    b8 = *(int*)&obj->extra;
+    if (*(char*)&baddie->moveJustStartedB != '\0')
     {
-        (*gPlayerInterface)->setState((void*)obj, (void*)baddie, 1);
+        (*gPlayerInterface)->setState(obj, baddie, 1);
         b8 = *(int*)&((GroundBaddieState*)b8)->control;
         fz = 0.0f;
         ((DbStealerwormControl*)b8)->countdown = 0.0f;
@@ -387,39 +376,39 @@ int dbstealerworm_stateHandlerB04(int obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerB03(int obj, int baddie)
+int dbstealerworm_stateHandlerB03(GameObject* obj, BaddieState* baddie)
 {
-    GroundBaddieState* state = ((GameObject*)obj)->extra;
-    if ((s8)((BaddieState*)baddie)->moveJustStartedB != 0)
+    GroundBaddieState* state = obj->extra;
+    if ((s8)baddie->moveJustStartedB != 0)
     {
         (*gBaddieControlInterface)
-            ->spawnChild((GameObject*)obj, state->triggerId, -1, 0);
+            ->spawnChild(obj, state->triggerId, -1, 0);
     }
     return 0;
 }
 
-int dbstealerworm_stateHandlerB02(int obj, int baddie)
+int dbstealerworm_stateHandlerB02(GameObject* obj, BaddieState* baddie)
 {
     int b8;
     float fz;
     s8 flag2;
 
-    b8 = *(int*)&((GameObject*)obj)->extra;
-    if (*(char*)&((BaddieState*)baddie)->moveJustStartedB != '\0')
+    b8 = *(int*)&obj->extra;
+    if (*(char*)&baddie->moveJustStartedB != '\0')
     {
         b8 = *(int*)&((GroundBaddieState*)b8)->control;
         fz = 0.0f;
         ((DbStealerwormControl*)b8)->countdown = 0.0f;
         ((DbStealerwormControl*)b8)->nextSfxTime = fz;
         ((DbStealerwormControl*)b8)->unk04 = fz;
-        (*gPlayerInterface)->setState((void*)obj, (void*)baddie, 6);
+        (*gPlayerInterface)->setState(obj, baddie, 6);
     }
     else
     {
-        flag2 = *(char*)&((BaddieState*)baddie)->moveDone;
+        flag2 = *(char*)&baddie->moveDone;
         if (flag2 != 0)
         {
-            if (((GameObject*)obj)->anim.alpha == 0)
+            if (obj->anim.alpha == 0)
             {
                 if (flag2 != 0)
                 {
@@ -431,12 +420,12 @@ int dbstealerworm_stateHandlerB02(int obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerB01(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerB01(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = obj->extra;
-    if ((s8)((BaddieState*)baddie)->hitPoints < 1)
+    if ((s8)baddie->hitPoints < 1)
         return 3;
-    if ((s8)((BaddieState*)baddie)->moveDone != 0)
+    if ((s8)baddie->moveDone != 0)
     {
         ((DbStealerwormControl*)state->control)->spawnAccumulator += 170.0f;
         return 7;
@@ -444,9 +433,9 @@ int dbstealerworm_stateHandlerB01(GameObject* obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerB00(int obj, int baddie)
+int dbstealerworm_stateHandlerB00(GameObject* obj, BaddieState* baddie)
 {
-    BaddieState* p = (BaddieState*)baddie;
+    BaddieState* p = baddie;
     f32 fz;
     if (*(void**)&p->targetObj != NULL)
     {
@@ -554,10 +543,10 @@ int dbstealerworm_stateHandlerA0F(GameObject* obj, int baddie, f32 t)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA0E(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA0E(GameObject* obj, BaddieState* baddie)
 {
     DbStealerwormControl* sub = (DbStealerwormControl*)(*(GroundBaddieState**)&(obj)->extra)->control;
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
     sub->flags14 = sub->flags14 | DBWORM_FLAG14_FX_DUST;
     sub->flags15 = sub->flags15 | 0x4;
     bs->moveSpeed = 0.02f;
@@ -581,10 +570,10 @@ int dbstealerworm_stateHandlerA0E(GameObject* obj, int baddie)
     }
     return 0;
 }
-int dbstealerworm_stateHandlerA0D(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA0D(GameObject* obj, BaddieState* baddie)
 {
     DbStealerwormControl* sub = (DbStealerwormControl*)(*(GroundBaddieState**)&obj->extra)->control;
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
     int targetObj;
     f32 v;
     f32 d;
@@ -656,7 +645,7 @@ int dbstealerworm_stateHandlerA0D(GameObject* obj, int baddie)
     }
     return 0;
 }
-int dbstealerworm_stateHandlerA0C(GameObject* obj, int baddie, f32 t)
+int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
 {
     char* tbl = (char*)lbl_803293B8;
     GroundBaddieState* blob = obj->extra;
@@ -700,12 +689,12 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, int baddie, f32 t)
         sub->msgAdvance = 1;
         return 0;
     }
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedA != 0)
+    if (*(s8*)&baddie->moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
-        ((BaddieState*)baddie)->moveDone = 0;
+        baddie->moveDone = 0;
     }
-    ((BaddieState*)baddie)->moveSpeed = 0.018f;
+    baddie->moveSpeed = 0.018f;
     frac = blob->aggression / 50.0f;
     if (*(void**)&sub->linkedObj == NULL)
     {
@@ -771,7 +760,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, int baddie, f32 t)
         {
             if (((GameObject*)best)->anim.seqId == DBSTEALERWORM_SEQID)
             {
-                *(int*)&((BaddieState*)baddie)->targetObj = best;
+                *(int*)&baddie->targetObj = best;
                 if (randomGetRange(0, n) == 0)
                 {
                     if ((**(int (**)(int, int, int))(*(int*)(*(int*)(best + 0x68)) + 0x24))(best, 0x82,
@@ -799,7 +788,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, int baddie, f32 t)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
+int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
 {
 
     DbStealerwormControl* sub;
@@ -837,7 +826,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
     c30 = sub->objGroup;
     sub->flags14 |= DBWORM_FLAG14_FX_DUST;
     sub->flags15 &= ~4;
-    if (ObjGroup_ContainsObject(*(int*)&((BaddieState*)baddie)->targetObj, c30) == 0)
+    if (ObjGroup_ContainsObject(*(int*)&baddie->targetObj, c30) == 0)
     {
         ObjGroup_GetObjects(c30, &cnt1);
         if (cnt1 == 0)
@@ -855,7 +844,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
             return 0;
         }
     }
-    q = *(int*)&((BaddieState*)baddie)->targetObj;
+    q = *(int*)&baddie->targetObj;
     found = 0;
     ptr = (int*)ObjGroup_GetObjects(DBSTEALERWORM_OBJGROUP, &cnt2);
     for (i = 0, objs = ptr; i < cnt2; i++)
@@ -873,9 +862,9 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
     if (found == 0)
     {
         if ((u32)obj ==
-            ObjGroup_FindNearestObject(DBSTEALERWORM_OBJGROUP, (GameObject*)*(int*)&((BaddieState*)baddie)->targetObj, 0))
+            ObjGroup_FindNearestObject(DBSTEALERWORM_OBJGROUP, (GameObject*)*(int*)&baddie->targetObj, 0))
         {
-            sub->savedTargetObj = *(int*)&((BaddieState*)baddie)->targetObj;
+            sub->savedTargetObj = *(int*)&baddie->targetObj;
             {
                 int tmpB;
                 int tmpA;
@@ -929,15 +918,15 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
         }
     }
     sub = (DbStealerwormControl*)blob->control;
-    ((BaddieState*)baddie)->stateTag = 0x1f;
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedA != 0)
+    baddie->stateTag = 0x1f;
+    if (*(s8*)&baddie->moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 0xf, 0.0f, 0);
-        ((BaddieState*)baddie)->moveDone = 0;
+        baddie->moveDone = 0;
     }
     if (*(void**)&sub->savedTargetObj != NULL)
     {
-        if (ObjGroup_ContainsObject(*(int*)&((BaddieState*)baddie)->targetObj, c30) != 0)
+        if (ObjGroup_ContainsObject(*(int*)&baddie->targetObj, c30) != 0)
         {
             {
                 int tEb;
@@ -981,7 +970,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
         }
     }
     frac = blob->aggression / 40.0f;
-    dbstealerworm_turnToFaceObject(obj, ((BaddieState*)baddie)->targetObj, 200.0f, frac, 0.2f, t);
+    dbstealerworm_turnToFaceObject(obj, baddie->targetObj, 200.0f, frac, 0.2f, t);
     if (((u32)sub->flags44 >> 5 & 1) != 0)
     {
         dbstealerworm_avoidObjects(obj, lbl_8032971C, lbl_8032972C, 4, frac);
@@ -1007,7 +996,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, int baddie, f32 t)
             }
         }
         player = Obj_GetPlayerObject();
-        ((BaddieState*)baddie)->targetObj = player;
+        baddie->targetObj = player;
         {
             int tHb;
             int tHa;
@@ -1132,9 +1121,9 @@ int dbstealerworm_stateHandlerA0A(GameObject* obj, BaddieState* state)
     }
 }
 
-int dbstealerworm_stateHandlerA09(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA09(GameObject* obj, BaddieState* baddie)
 {
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
     DbStealerwormControl* sub_40c;
     int slotIndex;
     int frame[3];
@@ -1585,14 +1574,14 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA06(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
 {
 
 
     GroundBaddieState* sub = (obj)->extra;
     int data = *(int*)&(obj)->anim.placementData;
     DbStealerwormControl* sub_40c = (DbStealerwormControl*)sub->control;
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
 
     bs->stateTag = 0x11;
 
@@ -1639,15 +1628,15 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, int baddie)
         }
         sub->configFlags |= ((DbstealerwormPlacement*)data)->configFlags;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)baddie, 0, 2, lbl_80329634);
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)baddie, 7, 0, lbl_80329640);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 0, 2, lbl_80329634);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, lbl_80329640);
     return 0;
 }
 
-int dbstealerworm_stateHandlerA05(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA05(GameObject* obj, BaddieState* baddie)
 {
 
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
     DbStealerwormControl* sub_40c;
     int frame[3];
 
@@ -1706,10 +1695,10 @@ int dbstealerworm_stateHandlerA05(GameObject* obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA04(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA04(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = (obj)->extra;
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
     u32 eventFlags;
     DbStealerwormControl* sub;
     if (*(s8*)&bs->moveJustStartedA != 0)
@@ -1739,32 +1728,32 @@ int dbstealerworm_stateHandlerA04(GameObject* obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA03(int obj, int baddie)
+int dbstealerworm_stateHandlerA03(GameObject* obj, BaddieState* baddie)
 {
 
 
-    if (*(char*)&((BaddieState*)baddie)->moveJustStartedA != '\0')
+    if (*(char*)&baddie->moveJustStartedA != '\0')
     {
-        ObjHits_EnableObject((GameObject*)obj);
+        ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DBSTEALERWORM_HIT_VOLUME_SLOT, 1, -1);
-    ((BaddieState*)baddie)->moveSpeed = 0.01f;
-    if (*(char*)&((BaddieState*)baddie)->moveJustStartedA != '\0')
+    baddie->moveSpeed = 0.01f;
+    if (*(char*)&baddie->moveJustStartedA != '\0')
     {
         ObjAnim_SetCurrentMove((int)obj, 5, 0.0f, 0);
-        ((BaddieState*)baddie)->moveDone = 0;
+        baddie->moveDone = 0;
     }
-    ((BaddieState*)baddie)->stateTag = 1;
+    baddie->stateTag = 1;
     return 0;
 }
 
 
-int dbstealerworm_stateHandlerA02(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA02(GameObject* obj, BaddieState* baddie)
 {
 
     GroundBaddieState* state = (obj)->extra;
     DbStealerwormControl* sub = (DbStealerwormControl*)state->control;
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
 
     if (*(s8*)&bs->moveJustStartedA != 0)
     {
@@ -1801,9 +1790,9 @@ int dbstealerworm_stateHandlerA02(GameObject* obj, int baddie)
     return 0;
 }
 
-int dbstealerworm_stateHandlerA01(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
 {
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
     GroundBaddieState* sub;
     DbStealerwormControl* sub_40c;
     int placementData;
@@ -1849,16 +1838,16 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, int baddie)
         }
         sub_40c->msgAdvance = 1;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)baddie, 7, 0, lbl_80329640);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, lbl_80329640);
     return 0;
 }
 
-int dbstealerworm_stateHandlerA00(GameObject* obj, int baddie)
+int dbstealerworm_stateHandlerA00(GameObject* obj, BaddieState* baddie)
 {
 
     GroundBaddieState* sub = (obj)->extra;
     DbStealerwormControl* sub_40c = (DbStealerwormControl*)sub->control;
-    BaddieState* bs = (BaddieState*)baddie;
+    BaddieState* bs = baddie;
 
     if ((s32)(s8)bs->moveJustStartedA != 0)
     {
@@ -1893,7 +1882,7 @@ int dbstealerworm_stateHandlerA00(GameObject* obj, int baddie)
         sub_40c->flags14 = (u8)(sub_40c->flags14 | DBWORM_FLAG14_FX_DUST);
     }
 
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)baddie, 7, 0, lbl_80329640);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, lbl_80329640);
     return 0;
 }
 
@@ -2124,7 +2113,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     DbStealerwormControl* sub = (DbStealerwormControl*)st->control;
     GameObject* near;
     int data;
-    char* player;
+    GameObject* player;
     f32 dist;
     struct
     {
@@ -2155,12 +2144,12 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     }
     else
     {
-        player = (char*)Obj_GetPlayerObject();
+        player = Obj_GetPlayerObject();
         if (player != NULL)
         {
-            stk.d[0] = ((GameObject*)player)->anim.worldPosX - obj->anim.worldPosX;
-            stk.d[1] = ((GameObject*)player)->anim.worldPosY - obj->anim.worldPosY;
-            stk.d[2] = ((GameObject*)player)->anim.worldPosZ - obj->anim.worldPosZ;
+            stk.d[0] = player->anim.worldPosX - obj->anim.worldPosX;
+            stk.d[1] = player->anim.worldPosY - obj->anim.worldPosY;
+            stk.d[2] = player->anim.worldPosZ - obj->anim.worldPosZ;
             dist = sqrtf(stk.d[2] * stk.d[2] + (stk.d[0] * stk.d[0] + stk.d[1] * stk.d[1]));
         }
         else
@@ -2219,9 +2208,9 @@ int dbstealerworm_func0B(GameObject* obj, u8 msg, int* out)
 }
 
 
-s16 dbstealerworm_setScale(int* obj)
+s16 dbstealerworm_setScale(GameObject* obj)
 {
-    return ((BaddieState*)((int**)obj)[0xb8 / 4])->controlMode;
+    return ((BaddieState*)obj->extra)->controlMode;
 }
 
 int dbstealerworm_getExtraSize(void)
@@ -2277,7 +2266,7 @@ void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             if ((state->flags400 & 0x60) != 0)
             {
-                objParticleFn_80099d84((GameObject*)obj, 1.0f, 3, state->glowAlpha, 0);
+                objParticleFn_80099d84(obj, 1.0f, 3, state->glowAlpha, 0);
             }
             path = *(char**)&sub->linkedObj;
             if (path != NULL && *(void**)(path + 0x50) != NULL)
@@ -2303,7 +2292,7 @@ void dbstealerworm_update(u8* objp)
     int blob;
     int data;
     int sub;
-    int obj;
+    GameObject* obj;
     DbWormMsgGroup* grp;
     int sub3;
     int n;
@@ -2317,13 +2306,13 @@ void dbstealerworm_update(u8* objp)
         f32 v[3];
     } stk;
 
-    obj = (int)objp;
+    obj = (GameObject*)objp;
     st = (char*)(int)gDbWormEffectSpawnWork;
     tbl = (char*)lbl_803293B8;
-    blob = *(int*)&((GameObject*)obj)->extra;
-    data = (int)((GameObject*)obj)->anim.placementData;
+    blob = *(int*)&obj->extra;
+    data = (int)obj->anim.placementData;
     sub = *(int*)&((GroundBaddieState*)blob)->control;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     if ((u32)((DbStealerwormControl*)sub)->flags44 >> 4 & 1)
     {
         grp = (DbWormMsgGroup*)(tbl + ((DbstealerwormPlacement*)data)->cfgTableIndex * 8);
@@ -2339,33 +2328,33 @@ void dbstealerworm_update(u8* objp)
     }
     if (mainGetBit(((GroundBaddieState*)blob)->gameBitC) != 0)
     {
-        if (((GameObject*)obj)->userData1 != 0)
+        if (obj->userData1 != 0)
         {
             if ((((GroundBaddieState*)blob)->configFlags & 4) == 0 &&
                 (*gMapEventInterface)->shouldNotSaveTime(*(int*)&((DbstealerwormPlacement*)data)->eventConfigId) != 0)
             {
                 (*gBaddieControlInterface)
-                    ->initGroundBaddie((GameObject*)obj, (u8*)data, (u8*)blob, 0x10, 7, 0x10a, 0x26, 20.0f);
+                    ->initGroundBaddie(obj, (u8*)data, (u8*)blob, 0x10, 7, 0x10a, 0x26, 20.0f);
                 ObjGroup_AddObject((int)obj, DBSTEALERWORM_OBJGROUP);
                 ((GroundBaddieState*)blob)->targetState = 0;
                 ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
                 ((GroundBaddieState*)blob)->baddie.moveDone = 0;
-                ((GameObject*)obj)->anim.alpha = 0xff;
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                obj->anim.alpha = 0xff;
+                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
             }
         }
-        else if (((GameObject*)obj)->userData2 == 0)
+        else if (obj->userData2 == 0)
         {
-            ((GameObject*)obj)->anim.localPosX = ((DbstealerwormPlacement*)data)->homePosX;
-            ((GameObject*)obj)->anim.localPosY = ((DbstealerwormPlacement*)data)->homePosY;
-            ((GameObject*)obj)->anim.localPosZ = ((DbstealerwormPlacement*)data)->homePosZ;
+            obj->anim.localPosX = ((DbstealerwormPlacement*)data)->homePosX;
+            obj->anim.localPosY = ((DbstealerwormPlacement*)data)->homePosY;
+            obj->anim.localPosZ = ((DbstealerwormPlacement*)data)->homePosZ;
             (*gObjectTriggerInterface)->runSequence(((DbstealerwormPlacement*)data)->seqId, (void*)obj, -1);
-            ((GameObject*)obj)->userData2 = 1;
+            obj->userData2 = 1;
         }
         else
         {
             if ((*gBaddieControlInterface)
-                    ->isObjectValid((GameObject*)obj, (void*)blob, 0) == 0)
+                    ->isObjectValid(obj, (void*)blob, 0) == 0)
             {
                 ((GroundBaddieState*)blob)->targetState = 0;
             }
@@ -2374,15 +2363,15 @@ void dbstealerworm_update(u8* objp)
                 t = *(int*)&((GroundBaddieState*)blob)->baddie.targetObj;
                 if (*(void**)&((GroundBaddieState*)blob)->baddie.targetObj != NULL)
                 {
-                    stk.v[0] = ((GameObject*)t)->anim.worldPosX - ((GameObject*)obj)->anim.worldPosX;
-                    stk.v[1] = ((GameObject*)t)->anim.worldPosY - ((GameObject*)obj)->anim.worldPosY;
-                    stk.v[2] = ((GameObject*)t)->anim.worldPosZ - ((GameObject*)obj)->anim.worldPosZ;
+                    stk.v[0] = ((GameObject*)t)->anim.worldPosX - obj->anim.worldPosX;
+                    stk.v[1] = ((GameObject*)t)->anim.worldPosY - obj->anim.worldPosY;
+                    stk.v[2] = ((GameObject*)t)->anim.worldPosZ - obj->anim.worldPosZ;
                     ((GroundBaddieState*)blob)->baddie.targetDistance =
                         sqrtf(stk.v[2] * stk.v[2] + (stk.v[0] * stk.v[0] + stk.v[1] * stk.v[1]));
                 }
                 stk.msg = 0;
                 stk.argA = 0;
-                sub2 = *(int*)&((GroundBaddieState*)*(int*)&((GameObject*)obj)->extra)->control;
+                sub2 = *(int*)&((GroundBaddieState*)*(int*)&obj->extra)->control;
                 while (ObjMsg_Pop((void*)obj, &stk.msg, (u32*)&stk.argB, &stk.msg + 1) != 0)
                 {
                     if (stk.msg == 0x11 && ((DbStealerwormControl*)sub2)->msgSlotIndex != -1)
@@ -2394,33 +2383,33 @@ void dbstealerworm_update(u8* objp)
                     }
                 }
                 if ((*gBaddieControlInterface)
-                        ->updateHitReaction((GameObject*)obj, (void*)blob, (char*)blob + 0x35c,
+                        ->updateHitReaction(obj, (void*)blob, (char*)blob + 0x35c,
                                             ((GroundBaddieState*)blob)->gameBitB, (int*)(tbl + 0x2ac),
                                             (u8*)(tbl + 0x324), 1, (void*)(int)gDbWormEffectSpawnWork) != 0)
                 {
-                    ((DbWormEffectSpawnWork*)st)->posX = ((GameObject*)obj)->anim.localPosX;
-                    ((DbWormEffectSpawnWork*)st)->posY = ((GameObject*)obj)->anim.localPosY;
-                    ((DbWormEffectSpawnWork*)st)->posZ = ((GameObject*)obj)->anim.localPosZ;
+                    ((DbWormEffectSpawnWork*)st)->posX = obj->anim.localPosX;
+                    ((DbWormEffectSpawnWork*)st)->posY = obj->anim.localPosY;
+                    ((DbWormEffectSpawnWork*)st)->posZ = obj->anim.localPosZ;
                     objLightFn_8009a1dc((void*)obj, 0.014f, (char*)(int)gDbWormEffectSpawnWork, 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
-                    dbstealerworm_acquireTarget((GameObject*)obj, blob, blob);
+                    dbstealerworm_acquireTarget(obj, blob, blob);
                 }
                 else
                 {
                     sub3 = *(int*)&((GroundBaddieState*)blob)->control;
-                    dbstealerworm_processEffectFlags((GameObject*)(obj), blob);
+                    dbstealerworm_processEffectFlags(obj, blob);
                     (*gBaddieControlInterface)
-                        ->updateGravity((GameObject*)obj, (void*)blob, 0.17f, -1);
+                        ->updateGravity(obj, (void*)blob, 0.17f, -1);
                     if ((((DbStealerwormControl*)sub3)->flags15 & 4) == 0)
                     {
                         (*gPlayerInterface)->rotateTowardTarget((void*)obj, (void*)blob, timeDelta, 4);
                     }
-                    ((GroundBaddieState*)blob)->savedObjC0 = *(int*)&((GameObject*)obj)->pendingParentObj;
-                    *(int*)&((GameObject*)obj)->pendingParentObj = 0;
+                    ((GroundBaddieState*)blob)->savedObjC0 = *(int*)&obj->pendingParentObj;
+                    *(int*)&obj->pendingParentObj = 0;
                     (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, st + 0x34, st + 0x18);
-                    *(int*)&((GameObject*)obj)->pendingParentObj = ((GroundBaddieState*)blob)->savedObjC0;
+                    *(int*)&obj->pendingParentObj = ((GroundBaddieState*)blob)->savedObjC0;
                 }
             }
         }
@@ -2428,23 +2417,23 @@ void dbstealerworm_update(u8* objp)
 }
 
 
-void dbstealerworm_init(int* obj, u8* def, int flag)
+void dbstealerworm_init(GameObject* obj, u8* def, int flag)
 {
     u8* sub;
     int* p40c;
     u8 mode;
     int randomValue;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     mode = 6;
     if (flag != 0)
     {
         mode |= 1;
     }
     (*gBaddieControlInterface)
-        ->initGroundBaddie((GameObject*)obj, def, sub, 0x10, 7, 0x10a, mode, 20.0f);
+        ->initGroundBaddie(obj, def, sub, 0x10, 7, 0x10a, mode, 20.0f);
     ObjGroup_AddObject((int)obj, DBSTEALERWORM_OBJGROUP);
-    ((GameObject*)obj)->animEventCallback = NULL;
+    obj->animEventCallback = NULL;
     p40c = *(int**)&((GroundBaddieState*)sub)->control;
     memset(p40c, 0, sizeof(DbStealerwormControl));
     ((DbStealerwormControl*)p40c)->unk08 = 20.0f;
@@ -2455,16 +2444,16 @@ void dbstealerworm_init(int* obj, u8* def, int flag)
     ((DbStealerwormFlags44*)&((DbStealerwormControl*)p40c)->flags44)->flag10 = 1;
     ((DbStealerwormControl*)p40c)->linkedObj = 0;
     ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-        (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    *(u8*)&obj->anim.resetHitboxMode =
+        (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
     (*gPlayerInterface)->setState(obj, sub, 3);
     ((GroundBaddieState*)sub)->baddie.substate = 0;
     ((GroundBaddieState*)sub)->baddie.physicsActive = 1;
-    ObjHits_EnableObject((GameObject*)obj);
+    ObjHits_EnableObject(obj);
     ObjMsg_AllocQueue(obj, 4);
-    if (((GameObject*)obj)->anim.modelState != NULL)
+    if (obj->anim.modelState != NULL)
     {
-        ((GameObject*)obj)->anim.modelState->flags |= 0x4008;
+        obj->anim.modelState->flags |= 0x4008;
     }
 }
 
@@ -2478,13 +2467,32 @@ void dbstealerworm_initialise(void)
     DBstealerwo_setFuncPtrs_80203c78();
 }
 
-/* Trivial 0-returner. */
-
-/* Trivial 0-returner. */
-
-/* if (p6) objRenderModelAndHitVolumes(lbl_803E6408). */
-
-/* if (b->_8 && (b->_8->_6 & 0x40)) clear. */
+void DBstealerwo_setFuncPtrs_80203c78(void)
+{
+    gDBStealerWormStateHandlersA[0] = (int)dbstealerworm_stateHandlerA00;
+    gDBStealerWormStateHandlersA[1] = (int)dbstealerworm_stateHandlerA01;
+    gDBStealerWormStateHandlersA[2] = (int)dbstealerworm_stateHandlerA02;
+    gDBStealerWormStateHandlersA[3] = (int)dbstealerworm_stateHandlerA03;
+    gDBStealerWormStateHandlersA[4] = (int)dbstealerworm_stateHandlerA04;
+    gDBStealerWormStateHandlersA[5] = (int)dbstealerworm_stateHandlerA05;
+    gDBStealerWormStateHandlersA[6] = (int)dbstealerworm_stateHandlerA06;
+    gDBStealerWormStateHandlersA[7] = (int)dbstealerworm_stateHandlerA07;
+    gDBStealerWormStateHandlersA[8] = (int)dbstealerworm_stateHandlerA08;
+    gDBStealerWormStateHandlersA[9] = (int)dbstealerworm_stateHandlerA09;
+    gDBStealerWormStateHandlersA[10] = (int)dbstealerworm_stateHandlerA0A;
+    gDBStealerWormStateHandlersA[11] = (int)dbstealerworm_stateHandlerA0B;
+    gDBStealerWormStateHandlersA[12] = (int)dbstealerworm_stateHandlerA0C;
+    gDBStealerWormStateHandlersA[13] = (int)dbstealerworm_stateHandlerA0D;
+    gDBStealerWormStateHandlersA[14] = (int)dbstealerworm_stateHandlerA0E;
+    gDBStealerWormStateHandlersA[15] = (int)dbstealerworm_stateHandlerA0F;
+    gDBStealerWormStateHandlersB[0] = (int)dbstealerworm_stateHandlerB00;
+    gDBStealerWormStateHandlersB[1] = (int)dbstealerworm_stateHandlerB01;
+    gDBStealerWormStateHandlersB[2] = (int)dbstealerworm_stateHandlerB02;
+    gDBStealerWormStateHandlersB[3] = (int)dbstealerworm_stateHandlerB03;
+    gDBStealerWormStateHandlersB[4] = (int)dbstealerworm_stateHandlerB04;
+    gDBStealerWormStateHandlersB[5] = (int)dbstealerworm_stateHandlerB05;
+    gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
+}
 
 u32 lbl_803293B8[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
                         0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x00000003,
@@ -2573,83 +2581,3 @@ u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        0x48414e43,
                                        0x45202569,
                                        0x200a0000};
-ObjectDescriptor gDBHoleControl1ObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dbholecontrol1_initialise,
-    (ObjectDescriptorCallback)dbholecontrol1_release,
-    0,
-    (ObjectDescriptorCallback)dbholecontrol1_init,
-    (ObjectDescriptorCallback)dbholecontrol1_update,
-    (ObjectDescriptorCallback)dbholecontrol1_hitDetect,
-    (ObjectDescriptorCallback)dbholecontrol1_render,
-    (ObjectDescriptorCallback)dbholecontrol1_free,
-    (ObjectDescriptorCallback)dbholecontrol1_getObjectTypeId,
-    dbholecontrol1_getExtraSize,
-};
-s16 gDFPLevelControlPuzzleValues[10] = {1, 2, 3, 0, 0, 0, 0, 0, 0, 0};
-ObjectDescriptor11 gDFP_LevelControlObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,
-    (ObjectDescriptorCallback)DFP_LevelControl_initialise,
-    (ObjectDescriptorCallback)DFP_LevelControl_release,
-    0,
-    (ObjectDescriptorCallback)DFP_LevelControl_init,
-    (ObjectDescriptorCallback)DFP_LevelControl_update,
-    (ObjectDescriptorCallback)DFP_LevelControl_hitDetect,
-    (ObjectDescriptorCallback)DFP_LevelControl_render,
-    (ObjectDescriptorCallback)DFP_LevelControl_free,
-    (ObjectDescriptorCallback)DFP_LevelControl_getObjectTypeId,
-    (ObjectDescriptorCallback)DFP_LevelControl_getExtraSize,
-    (ObjectDescriptorCallback)DFP_LevelControl_copyPuzzleValues,
-};
-ObjectDescriptor gDFP_ObjCreatorObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DFP_ObjCreator_initialise,
-    (ObjectDescriptorCallback)DFP_ObjCreator_release,
-    0,
-    (ObjectDescriptorCallback)DFP_ObjCreator_init,
-    (ObjectDescriptorCallback)DFP_ObjCreator_update,
-    (ObjectDescriptorCallback)DFP_ObjCreator_hitDetect,
-    (ObjectDescriptorCallback)DFP_ObjCreator_render,
-    (ObjectDescriptorCallback)DFP_ObjCreator_free,
-    (ObjectDescriptorCallback)DFP_ObjCreator_getObjectTypeId,
-    DFP_ObjCreator_getExtraSize,
-};
-u32 lbl_803298D0[14] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00090000,
-                        (u32)dll_22C_initialise_nop,
-                        (u32)dll_22C_release_nop,
-                        0x00000000,
-                        (u32)dll_22C_init,
-                        (u32)dll_22C_update,
-                        (u32)dll_22C_hitDetect_nop,
-                        (u32)dll_22C_render,
-                        (u32)dll_22C_free,
-                        (u32)dll_22C_getObjectTypeId,
-                        (u32)dll_22C_getExtraSize_ret_16};
-ObjectDescriptor gDoorswitchObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)doorswitch_initialise,
-    (ObjectDescriptorCallback)doorswitch_release,
-    0,
-    (ObjectDescriptorCallback)doorswitch_init,
-    (ObjectDescriptorCallback)doorswitch_update,
-    (ObjectDescriptorCallback)doorswitch_hitDetect,
-    (ObjectDescriptorCallback)doorswitch_render,
-    (ObjectDescriptorCallback)doorswitch_free,
-    (ObjectDescriptorCallback)doorswitch_getObjectTypeId,
-    doorswitch_getExtraSize,
-};

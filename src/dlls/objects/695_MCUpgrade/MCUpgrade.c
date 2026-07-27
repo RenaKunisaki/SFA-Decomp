@@ -4,13 +4,12 @@
  * mcupgrade_update gates the object on its placement's collectedGameBit:
  * once that bit is set the object is flagged collected; until then, an
  * object-trigger hit sets the bit and runs trigger sequence 0 (the
- * pickup sequence). The sequence drives the HUD and an NPC dialogue line
- * through MCUpgrade's own SeqFn (mcupgradema_SeqFn): show HUD, show NPC
- * dialogue 0x468, hide HUD.
+ * pickup sequence).
  *
  * mcupgrade_init wires the object's anim event callback to mcupgrade_SeqFn,
- * which lives in the CNThitObjec TU (DLL 0x2B6). Sibling object MCUpgradeMa
- * lives in DLL 0x2B8.
+ * which is provided by the preceding CNThitObjec TU. This DOL-confirmed TU
+ * also provides mcupgradema_SeqFn to the following MCUpgradeMa DLL; that
+ * callback shows the HUD, displays NPC dialogue 0x468, then hides the HUD.
  */
 #include "main/dll/dll_02B6_cnthitobjec.h"
 #include "main/objprint_render_api.h"

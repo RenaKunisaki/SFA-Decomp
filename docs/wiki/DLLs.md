@@ -258,12 +258,12 @@ The highest valid ID is 0x2C1.
 | 1BA | SC_totempuz |  |
 | 1BB | SC_totembon |  |
 | 1BC | SC_totemstr |  |
-| 1BD | PaymentKiosk | for cheat tokens, Cape Claw entrance |
+| 1BD | SC_paypoint, SPWell | for cheat tokens, Cape Claw entrance |
 | 1BE | LavaBall1BE |  |
 | 1BF | LavaBall1BF |  |
 | 1C0 | DIMLogFire |  |
-| 1C1 | DIMSnowBall1C1 |  |
-| 1C2 | DIMSnowBall1C2 |  |
+| 1C1 | DIMSnowBall |  |
+| 1C2 | DIMSnowBall |  |
 | 1C3 | DIMGate |  |
 | 1C4 | DIMIceWall |  |
 | 1C5 | DIMBarrier |  |
@@ -544,19 +544,20 @@ on-disk form of the wiki's "all functions stubbed" DLLs:
   - DLL 0x002 (`ObjSeq`) → `src/main/objseq.c`; DLL 0x005 (`Sky`) → `src/main/sky.c`.
   - DLL 0x239 (`TextBlock`) → `src/main/textblock.c`; 0x23A (`Platform1`) → `src/main/platform1.c`;
     0x23B (`DFP_Lightni`) → `src/main/dfplightni.c`; 0x23C (`DFP_PowerSl`) → `src/main/dfppowersl.c`.
-  - DLL 0x1D2/0x1D3/0x1D4 (`WORLDplanet`/`WorldMapObj`/`WORLDAstero`) →
-    `src/main/worldplanet.c` / `worldobj.c` / `worldasteroids.c` (`gWorldPlanetObjDescriptor` etc.,
+  - DLL 0x1D2 (`WORLDplanet`) → `src/dlls/objects/466_WORLDplanet/WORLDplanet.c`;
+    DLL 0x1D3 (`WorldMapObj`) → `src/dlls/objects/467/467.c`; DLL 0x1D4 (`WORLDAstero`) →
+    `src/dlls/objects/468_WORLDAstero/WORLDAstero.c` (`gWorldPlanetObjDescriptor` etc.,
     `gResourceDescriptors[0x1D2..0x1D4]`).
   - DLL 0x25C/0x25D/0x25E (`SnowClaw`/`CRCloudRace`/`FireSpellStone`) →
-    `src/main/snowclaw.c` / `crcloudrace.c` / `spellstone.c`.
-  - DLL 0x25F/0x260 (`CRFuelTank`/`ProximityMine`) → both descriptors (`gCrFuelTankObjDescriptor`,
-    `gProximityMineObjDescriptor`) are defined together in `src/main/crfueltank.c`.
+    `src/dlls/objects/604/604.c` / `src/dlls/objects/605_CRCloudRace/CRCloudRace.c` /
+    `src/dlls/objects/606/606.c`.
+  - DLL 0x25F (`CRFuelTank`) → `src/dlls/objects/607_CRFuelTank/CRFuelTank.c`; DLL 0x260
+    (`ProximityMine`) is the separate DOL unit at `src/dlls/objects/608/608.c`.
   - DLL 0x21E-0x223 and 0x225-0x228 (the `VFP_Block1`/`VFP_Platfor`/`VFP_DoorSwi`/`SeqPoint`/
     `VFPDragHead`/`VFP_corepla`/`VFP_flamepo`/`VFP_lavapoo`/`VFP_lavasta`/`VFP_SpellPl` row of the
-    wiki table) are ten separate `ObjectDescriptor`s (`gVFP_Block1ObjDescriptor`,
-    `VFPDragHead_*`, `VFP_coreplat_*`, ...) all defined in the single file `src/main/light.c` —
-    the Volcano Force Point Temple's small placeable-prop objects were apparently one retail
-    translation unit.
+    wiki table) are separate DOL-confirmed translation units. Their callbacks and descriptors
+    were previously concatenated into `src/main/light.c` and `src/main/main.c`; they are being
+    restored one DLL at a time.
 - **26 wiki IDs have no matching file or named descriptor at all** — in `gResourceDescriptors[]`
   they still point at a literal shared placeholder blob (`{0xffffffff, 0, 0, ..., 0}`, a 12-word
   stub with no real `acquire`/callback pointers), the same pattern used for other genuinely-inert
@@ -578,22 +579,22 @@ spell several of these out explicitly where the wiki page doesn't:
 | `CC` | Cape Claw | `src/dlls/objects/290_CCTestInfot/CCTestInfot.c` |
 | `CF` | CloudRunner Fortress | `src/dlls/objects/298_CFCrate/CFCrate.c` |
 | `DF` | DragonRock (rope/cradle machinery) | `src/dlls/objects/373_DFropenode/DFropenode.c` |
-| `DFP` | DragonRock Palace (spell-puzzle level) | `src/main/dll/DF/dll_0229_dfplevelcontrol.c` |
+| `DFP` | DragonRock Palace (spell-puzzle level) | `src/dlls/objects/553_DFP_LevelCo/DFP_LevelCo.c` |
 | `DFSH` | DragonRock Shrine (a Krazoa-spirit shrine) | `src/dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c` |
-| `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/main/dll/DIM/dll_01BE_dimlava.c` |
+| `DIM`/`DIM2` | DarkIce Mines (+ boss area) | `src/dlls/objects/446/446.c` |
 | `GPSH` | a Krazoa-spirit shrine (area code not decoded) | `src/dlls/objects/402_GPSH_Shrine/GPSH_Shrine.c` |
 | `MMP` | Moon Mountain Pass | `src/dlls/objects/271_MMP_Bridge/MMP_Bridge.c` |
 | `MMSH` | Moon Mountain Pass Shrine (Krazoa spirit) | `src/dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c` |
 | `ECSH` | a Krazoa-spirit shrine (area code "EC" not decoded — comment notes the MMSH/ECSH/DFSH/DBSH/GPSH family explicitly) | `src/dlls/objects/399_ECSH_Shrine/ECSH_Shrine.c` |
 | `NW` | SnowHorn Wastes (map `nwastes`) | `src/dlls/objects/408_NWSH_levcon/NWSH_levcon.c` |
-| `SH` | SnowHorn / ThornTail Hollow | `src/main/dll/SH/dll_01AE_shlevelcontrol.c` |
-| `SB` | ShipBattle (the prologue) | `src/main/dll/SB/dll_01E8_sbgalleon.c` |
-| `SC` | LightFoot Village (map `swapcircle`) | `src/main/dll/SC/dll_01B6_sclevelcontrol.c` |
-| `VF`/`VFP` | Volcano Force Point Temple | `src/main/dll/VF/dll_0216_vfplevelcontrol.c` |
+| `SH` | SnowHorn / ThornTail Hollow | `src/dlls/objects/430_SH_LevelCon/SH_LevelCon.c` |
+| `SB` | ShipBattle (the prologue) | `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` |
+| `SC` | LightFoot Village (map `swapcircle`) | `src/dlls/objects/438_SC_levelcon/SC_levelcon.c` |
+| `VF`/`VFP` | Volcano Force Point Temple | `src/dlls/objects/534_VFP_LevelCo/VFP_LevelCo.c` |
 | `WC` | Walled City | `src/dlls/objects/650/650.c` |
 | `WM` | Krazoa Palace | `src/main/dll/WM/dll_0209_wmlevelcontrol.c` (comment states this explicitly) |
 | `KT` | (torches shared across) KrazoaPalace / ThornTail | `src/dlls/objects/296_KT_Torch/KT_Torch.c` |
-| `ARW` | Arwing space-combat sections | `src/main/dll/ARW/dll_029A_arwarwing.c` |
+| `ARW` | Arwing space-combat sections | `src/dlls/objects/666_ARWArwing/ARWArwing.c` |
 
 ### The `_DLL_ID` convention
 

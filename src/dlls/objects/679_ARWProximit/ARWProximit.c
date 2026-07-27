@@ -1,5 +1,5 @@
 /*
- * ARWProximit (DLL 0x2A7) - a proximity mine in the on-rails Arwing
+ * ARWProximit (DLL 679) - a proximity mine in the on-rails Arwing
  * sections. It spins in place and walks through a small phase machine
  * (state->phase): dormant until the Arwing approaches (phase 0), then it
  * spawns a glowing green light and fades in (phase 1); when the Arwing gets
@@ -40,6 +40,9 @@ enum ArwProximitPhase
     ARWPROXIMIT_PHASE_DONE = 4      /* disabled, light freed */
 };
 
+const f32 gArwProximitZero[1] = {0.0f};
+const f32 gArwProximitExplosionRadius[1] = {100.0f};
+const f32 gArwProximitBigExplosionRadius[1] = {127.0f};
 int arwproximit_getExtraSize(void)
 {
     return 0x18;
@@ -104,7 +107,7 @@ void arwproximit_update(GameObject* obj)
             if (state->light != NULL)
             {
                 modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-                modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 50.0f);
+                modelLightStruct_setPosition(state->light, gArwProximitZero[0], gArwProximitZero[0], 50.0f);
                 modelLightStruct_setDiffuseColor(state->light, 0, 0xff, 0, 0);
                 modelLightStruct_setDiffuseTargetColor(state->light, 0, 0, 0, 0);
                 modelLightStruct_setDistanceAttenuation(state->light, 50.0f, 70.0f);
@@ -165,8 +168,8 @@ void arwproximit_update(GameObject* obj)
             storeZeroToFloatParam((void*)&state->warningTimer);
             s16toFloat((void*)&state->despawnTimer, 0x14);
             if (state->light != NULL)
-                modelLightStruct_setEnabled(state->light, 0, 0.0f);
-            spawnExplosion((GameObject*)(int)obj, 127.0f, 1, 0, 1, 1, 0, 0, 1);
+                modelLightStruct_setEnabled(state->light, 0, gArwProximitZero[0]);
+            spawnExplosion((GameObject*)(int)obj, gArwProximitBigExplosionRadius[0], 1, 0, 1, 1, 0, 0, 1);
             ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x12c);
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWPROXIMIT_HIT_VOLUME_SLOT, 1, 0);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
@@ -199,8 +202,8 @@ void arwproximit_update(GameObject* obj)
             if (state->textVariant == 3)
                 gameTextFn_80125ba4(0xe);
             if (state->light != NULL)
-                modelLightStruct_setEnabled(state->light, 0, 0.0f);
-            spawnExplosion((GameObject*)(int)obj, 100.0f, 1, 0, 0, 0, 0, 0, 1);
+                modelLightStruct_setEnabled(state->light, 0, gArwProximitZero[0]);
+            spawnExplosion((GameObject*)(int)obj, gArwProximitExplosionRadius[0], 1, 0, 0, 0, 0, 0, 1);
             ObjHits_DisableObject(obj);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);

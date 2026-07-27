@@ -1,5 +1,5 @@
 /*
- * DLL 0x284 - a purchasable item displayed at a shopkeeper's
+ * DLL 644 - a purchasable item displayed at a shopkeeper's
  * stall. Each instance finds its nearest vendor object (ObjGroup kind 9)
  * and drives buying through the vendor's vtable: query availability/price
  * (slots 0x28/0x2C/0x38/0x3C) and commit a purchase (slot 0x40) when the

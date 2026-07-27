@@ -5,8 +5,8 @@
 #include "game/objects/object.h"
 #include "main/dll/DIM/DIMbosstonsil.h"
 
-typedef int (*DIMbosstonsilHitReactionCallback)(void* obj, DIMbosstonsilState* state);
-typedef int (*DIMbosstonsilUpdateHitReactionCallback)(void* obj, DIMbosstonsilState* state, int unused);
+typedef int (*DIMbosstonsilHitReactionCallback)(GameObject* obj, DIMbosstonsilState* state);
+typedef int (*DIMbosstonsilUpdateHitReactionCallback)(GameObject* obj, DIMbosstonsilState* state, int unused);
 
 typedef struct DIMbosstonsilStateHandlerTable {
     DIMbosstonsilHitReactionCallback startIdle;
@@ -18,10 +18,10 @@ typedef struct DIMbosstonsilSubstateHandlerTable {
     DIMbosstonsilUpdateHitReactionCallback update;
 } DIMbosstonsilSubstateHandlerTable;
 
-int DIMbosstonsil_updateHitReaction(void* obj, DIMbosstonsilState* state, int unused);
-int DIMbosstonsil_enableHitReaction(void* obj, DIMbosstonsilState* state);
-int DIMbosstonsil_chooseHitReaction(void* obj, DIMbosstonsilState* state);
-int DIMbosstonsil_startIdleHitReaction(void* obj, DIMbosstonsilState* state);
+int DIMbosstonsil_updateHitReaction(GameObject* obj, DIMbosstonsilState* state, int unused);
+int DIMbosstonsil_enableHitReaction(GameObject* obj, DIMbosstonsilState* state);
+int DIMbosstonsil_chooseHitReaction(GameObject* obj, DIMbosstonsilState* state);
+int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* state);
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state);
 
 extern DIMbosstonsilStateHandlerTable lbl_803DDBB0;

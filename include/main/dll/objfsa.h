@@ -1,6 +1,8 @@
 #ifndef MAIN_DLL_OBJFSA_H_
 #define MAIN_DLL_OBJFSA_H_
 
+struct GameObject;
+
 #include "ghidra_import.h"
 #include "main/curve.h"
 #include "main/dll/curve_walker.h"
@@ -59,7 +61,7 @@ FUN_800de998(double param_1,u64 param_2,double param_3,u64 param_4,u64 param_5,
             u64 param_6,u64 param_7,u64 param_8,float *param_9,int param_10,
             u32 param_11,int param_12,u32 param_13,u32 param_14,
             u32 param_15,u32 param_16);
-int curves_findNearObj(int obj,int *curveTypes,int typeCount,int action,int bboxMode);
+int curves_findNearObj(struct GameObject* obj,int *curveTypes,int typeCount,int action,int bboxMode);
 f32 curves_getPathLength(u32 a, u32 b, f32 *posA, f32 *posB, f32 t1, f32 t2);
 void curves_getPos(int curve,float *outX,float *outY,float *outZ,f32 phase);
 int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* outPhase);

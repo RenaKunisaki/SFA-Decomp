@@ -40,8 +40,8 @@ STATIC_ASSERT(sizeof(MagicmakerSetup) == 0x30);
 
 extern u16 gMagicMakerSpawnObjectIds[6];
 extern ObjectDescriptor10WithPadding gMAGICMakerObjDescriptor;
-extern f32 gMagicMakerRenderScale;
-extern f32 gMagicMakerSpawnHeightOffset;
+extern const f32 gMagicMakerRenderScale[1];
+extern const f32 gMagicMakerSpawnHeightOffset[1];
 
 int magicmaker_getExtraSize(void);
 int magicmaker_getObjectTypeId(void);

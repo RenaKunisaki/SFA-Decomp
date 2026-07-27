@@ -68,26 +68,26 @@ void gpsh_objcreator_hitDetect(void)
 {
 }
 
-void gpsh_objcreator_update(int* obj)
+void gpsh_objcreator_update(GameObject* obj)
 {
     u8* sub;
     GpshObjcreatorSpawnSetup* setup;
 
-    sub = ((GameObject*)obj)->extra;
+    sub = obj->extra;
     if (mainGetBit(0x5af) != 0)
     {
-        ((GameObject*)obj)->userData2 = 0;
+        obj->userData2 = 0;
         ((GpshShrineFlags*)(sub + 5))->b80 = 0;
         *(u8*)((char*)obj + 0x37) = 0xff;
-        ((GameObject*)obj)->anim.alpha = 0xff;
+        obj->anim.alpha = 0xff;
     }
     if (((GpshShrineFlags*)(sub + 5))->b80) return;
-    if (((GameObject*)obj)->userData2 == 0)
+    if (obj->userData2 == 0)
     {
         if (mainGetBit(0x148) != 0)
         {
             *(f32*)sub = 100.0f;
-            ((GameObject*)obj)->userData2 = 1;
+            obj->userData2 = 1;
         }
     }
     if ((u8)Obj_IsLoadingLocked() == 0) return;
@@ -102,29 +102,29 @@ void gpsh_objcreator_update(int* obj)
         setup->base.color[3] = 0xff;
         setup->base.color[0] = 0x20;
         setup->base.color[1] = 2;
-        setup->base.posX = ((GameObject*)obj)->anim.localPosX;
-        setup->base.posY = ((GameObject*)obj)->anim.localPosY;
-        setup->base.posZ = ((GameObject*)obj)->anim.localPosZ;
+        setup->base.posX = obj->anim.localPosX;
+        setup->base.posY = obj->anim.localPosY;
+        setup->base.posZ = obj->anim.localPosZ;
         setup->base.objectId = (s16)(sub[4] + 0x1f4);
         setup->rotByte = (u8)((s32) * (s16*)obj >> 8);
         setup->unk1A = lbl_803263B8[sub[4]];
-        Obj_SetupObject(&setup->base, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
-                        ((GameObject*)obj)->anim.parent);
+        Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1,
+                        obj->anim.parent);
     }
 }
 
-void gpsh_objcreator_init(int* obj, int* def)
+void gpsh_objcreator_init(GameObject* obj, int* def)
 {
     register u32 zero;
     register int* state;
-    state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)((GpshObjcreatorObjectDef*)def)->rotX << 8);
+    state = obj->extra;
+    obj->anim.rotX = (s16)((s32)((GpshObjcreatorObjectDef*)def)->rotX << 8);
     zero = 0;
-    ((GameObject*)obj)->userData2 = zero;
+    obj->userData2 = zero;
     ((GpshObjcreatorState*)state)->objTypeIndex = (u8)((GpshObjcreatorObjectDef*)def)->objTypeIndex;
     ((GpshShrineFlags*)((char*)state + 5))->b80 = 0;
     *(u8*)((char*)obj + 0x37) = 0xff;
-    ((GameObject*)obj)->anim.alpha = 0xff;
+    obj->anim.alpha = 0xff;
 }
 
 void gpsh_objcreator_release(void)

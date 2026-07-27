@@ -1,116 +1,114 @@
 /*
- * DLL 0xE8 - Checkpoint4.
+ * Checkpoint4 object (DLL slot 232 / 0xE8).
  *
- * The TU's own object is the "checkpoint4" trigger volume: checkpoint4_init
- * builds an oriented plane (normal + signed distance via setMatrixFromObjectPos
- * + Matrix_TransformPoint) from the placement rotation/radius, seeds a set
- * of random headings, and stows the checkpoint index. checkpoint4_render emits a
- * plain model render. The rest of the callbacks are stubs.
- *
+ * Initialization derives an oriented checkpoint plane from the placement
+ * rotation, scales its trigger radius, seeds four random headings, and stores
+ * the checkpoint index in the object's class-owned scratch word. Rendering
+ * draws the regular model; the remaining runtime callbacks are empty.
  */
-#include "dlls/object_descriptor.h"
-#include "main/dll/checkpoint4.h"
-#include "main/object_render.h"
+#include "dlls/objects/232_Checkpoint4.h"
 #include "game/objects/object.h"
+#include "main/object_render.h"
+#include "main/vecmath.h"
 
-void checkpoint4_setScale(void)
-{
+#define CHECKPOINT4_OBJECT_TYPE_ID     0x10
+#define CHECKPOINT4_MIN_RADIUS         5.0f
+#define CHECKPOINT4_RADIUS_SCALE       0.0078125f
+#define CHECKPOINT4_TRIGGER_SCALE      2.0f
+#define CHECKPOINT4_RANDOM_HEADING_MAX 0xF0
+
+void checkpoint4_setScale(void) {
 }
 
-int checkpoint4_getExtraSize(void)
-{
-    return 0x40;
-}
-int checkpoint4_getObjectTypeId(void)
-{
-    return 0x10;
+int checkpoint4_getExtraSize(void) {
+    return sizeof(Checkpoint4State);
 }
 
-void checkpoint4_free(void)
-{
+int checkpoint4_getObjectTypeId(void) {
+    return CHECKPOINT4_OBJECT_TYPE_ID;
 }
 
-void checkpoint4_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void checkpoint4_free(GameObject* obj) {
+    (void)obj;
 }
 
-void checkpoint4_hitDetect(void)
-{
+void checkpoint4_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    (void)visible;
+
+    objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
 }
 
-void checkpoint4_update(void)
-{
+void checkpoint4_hitDetect(GameObject* obj) {
+    (void)obj;
 }
 
-void checkpoint4_init(Checkpoint4Object* checkpoint, Checkpoint4Placement* placement)
-{
+void checkpoint4_update(GameObject* obj) {
+    (void)obj;
+}
+
+void checkpoint4_init(GameObject* obj, Checkpoint4Placement* placement) {
     f32 radius;
     u32 heading;
     int i;
-    f32 yy;
+    f32 normalYContribution;
     Checkpoint4State* state;
     MatrixTransform transform;
     f32 matrix[16];
-    state = checkpoint->state;
+
+    state = obj->extra;
     radius = (f32)(int)placement->radius;
-    if ((f32)(int)placement->radius < 5.0f)
-    {
-        radius = 5.0f;
+    if ((f32)(int)placement->radius < CHECKPOINT4_MIN_RADIUS) {
+        radius = CHECKPOINT4_MIN_RADIUS;
     }
-    radius *= 0.0078125f;
-    checkpoint->objAnim.rootMotionScale = radius;
-    checkpoint->objAnim.rotX = (s16)((s16)placement->rotX << 8);
-    transform.rotX = checkpoint->objAnim.rotX;
-    transform.rotY = checkpoint->objAnim.rotY;
-    transform.rotZ = checkpoint->objAnim.rotZ;
+    radius *= CHECKPOINT4_RADIUS_SCALE;
+    obj->anim.rootMotionScale = radius;
+    obj->anim.rotX = (s16)((s16)placement->rotX << 8);
+    transform.rotX = obj->anim.rotX;
+    transform.rotY = obj->anim.rotY;
+    transform.rotZ = obj->anim.rotZ;
     transform.scale = 1.0f;
     transform.x = 0.0f;
     transform.y = 0.0f;
     transform.z = 0.0f;
     setMatrixFromObjectPos(matrix, &transform);
-    Matrix_TransformPoint(matrix, 0.0f, 0.0f, 1.0f, &state->planeNormalX, &state->planeNormalY,
-                          &state->planeNormalZ);
-    yy = checkpoint->objAnim.localPosY * state->planeNormalY;
-    state->planeDistance = -(yy + checkpoint->objAnim.localPosX * state->planeNormalX +
-                             checkpoint->objAnim.localPosZ * state->planeNormalZ);
-    state->triggerRadius = 2.0f * checkpoint->objAnim.rootMotionScale;
+    Matrix_TransformPoint(matrix, 0.0f, 0.0f, 1.0f, &state->planeNormalX, &state->planeNormalY, &state->planeNormalZ);
+    normalYContribution = obj->anim.localPosY * state->planeNormalY;
+    state->planeDistance =
+        -(normalYContribution + obj->anim.localPosX * state->planeNormalX + obj->anim.localPosZ * state->planeNormalZ);
+    state->triggerRadius = CHECKPOINT4_TRIGGER_SCALE * obj->anim.rootMotionScale;
     i = 0;
-    do
-    {
+    do {
         heading = randomGetRange(0, CHECKPOINT4_RANDOM_HEADING_MAX);
         state->randomHeadings[i] = heading;
         i++;
     } while (i < CHECKPOINT4_RANDOM_HEADING_COUNT);
-    checkpoint->checkpointIndex = placement->checkpointIndex;
-    checkpoint->objectFlags |= CHECKPOINT4_OBJECT_FLAGS_ENABLED;
+    obj->userData1 = placement->checkpointIndex;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_UPDATE_DISABLED;
 }
 
-void checkpoint4_release(void)
-{
+void checkpoint4_release(void) {
 }
 
-void checkpoint4_initialise(void)
-{
+void checkpoint4_initialise(void) {
 }
 
 ObjectDescriptor11WithPadding gCheckpoint4ObjDescriptor = {
     {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,
-        (ObjectDescriptorCallback)checkpoint4_initialise,
-        (ObjectDescriptorCallback)checkpoint4_release,
-        0,
-        (ObjectDescriptorCallback)checkpoint4_init,
-        (ObjectDescriptorCallback)checkpoint4_update,
-        (ObjectDescriptorCallback)checkpoint4_hitDetect,
-        (ObjectDescriptorCallback)checkpoint4_render,
-        (ObjectDescriptorCallback)checkpoint4_free,
-        (ObjectDescriptorCallback)checkpoint4_getObjectTypeId,
-        checkpoint4_getExtraSize,
-        (ObjectDescriptorCallback)checkpoint4_setScale,
+        0,                                                     /* reserved0 */
+        0,                                                     /* reserved1 */
+        0,                                                     /* reserved2 */
+        OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,                      /* slotCountAndFlags */
+        (ObjectDescriptorCallback)checkpoint4_initialise,      /* initialise */
+        (ObjectDescriptorCallback)checkpoint4_release,         /* release */
+        0,                                                     /* slot02 */
+        (ObjectDescriptorCallback)checkpoint4_init,            /* init */
+        (ObjectDescriptorCallback)checkpoint4_update,          /* update */
+        (ObjectDescriptorCallback)checkpoint4_hitDetect,       /* hitDetect */
+        (ObjectDescriptorCallback)checkpoint4_render,          /* render */
+        (ObjectDescriptorCallback)checkpoint4_free,            /* free */
+        (ObjectDescriptorCallback)checkpoint4_getObjectTypeId, /* getObjectTypeId */
+        checkpoint4_getExtraSize,                              /* getExtraSize */
+        (ObjectDescriptorCallback)checkpoint4_setScale,        /* slot0A */
     },
-    0,
+    0, /* padding */
 };

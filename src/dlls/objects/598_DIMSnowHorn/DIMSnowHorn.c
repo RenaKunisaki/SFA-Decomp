@@ -1,5 +1,5 @@
 /*
- * DIMSnowHorn1 (DLL 0x256) - the rideable SnowHorn mammoth found in
+ * DIMSnowHorn (DLL 0x256) - the rideable SnowHorn mammoth found in
  * DIM (Dinosaur InfernoMountain).  Fox can mount the mammoth and use it to
  * clear puzzle obstacles.  The object runs a 12-state BaddieState machine
  * (stateHandler00-0B); the riding sub-loop (DIMSnowHorn1_ridingUpdate) handles stick/button
@@ -61,6 +61,13 @@ int gDIMSnowHorn1StateHandlers[12];
 #define SNOWHORN1_FLAG_RIDING        0x2  /* GAMEBIT_SNOWHORN_RIDING active (set cross-DLL) */
 #define SNOWHORN1_FLAG_HITVOL_PRIO   0x8  /* suppress hit-volume priority this frame */
 #define SNOWHORN1_FLAG_SEQ_TRIGGERED 0x20 /* interaction sequence armed */
+
+typedef struct DIMSnowHorn1PieceCounts
+{
+    u8 counts[4];
+} DIMSnowHorn1PieceCounts;
+
+static const DIMSnowHorn1PieceCounts sDIMSnowHorn1DefaultPieceCounts = { { 1, 1, 1, 1 } };
 
 void DIMSnowHorn1_func23(void)
 {
@@ -521,7 +528,7 @@ int DIMSnowHorn1_stateHandler06(GameObject* obj, int state)
 
 int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
 {
-    void* player;
+    GameObject* player;
     DIMSnowHorn1State* inner;
     int bit_a, bit_b;
     int id_a, id_b, id_c, id_d;
@@ -540,7 +547,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
     *(int*)state |= 0x200000;
 
     inner = (obj)->extra;
-    player = (void*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     switch (inner->mode)
     {
     case 1:
@@ -571,7 +578,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
     }
 
     if (mainGetBit(bit_a) != 0 && mainGetBit(bit_b) != 0 && player != NULL &&
-        Vec_distance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX) < 150.0f)
+        Vec_distance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 150.0f)
     {
         switch (inner->mode)
         {
@@ -595,7 +602,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
         switch (phase)
         {
         case 1:
-            if (Vec_distance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX) < 200.0f)
+            if (Vec_distance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 200.0f)
             {
                 o1 = (int*)ObjList_FindObjectById(id_a);
                 if (o1 != NULL)
@@ -609,7 +616,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
         case 0:
         case 2:
             if ((u32)phase == 0 ||
-                Vec_distance(&((GameObject*)player)->anim.worldPosX, &(obj)->anim.worldPosX) > 300.0f)
+                Vec_distance(&player->anim.worldPosX, &(obj)->anim.worldPosX) > 300.0f)
             {
                 o1 = (int*)ObjList_FindObjectById(id_a);
                 o2 = (int*)ObjList_FindObjectById(id_c);
@@ -817,7 +824,7 @@ int DIMSnowHorn1_stateHandler00(GameObject* obj)
     }
 }
 
-int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* animUpdate)
+int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     DIMSnowHorn1State* state;
     int animState;
@@ -825,14 +832,14 @@ int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* anim
     f32 fz;
 
     (void)unused;
-    state = ((GameObject*)obj)->extra;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    state = obj->extra;
+    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
 
     switch (state->mode)
     {
     case 0:
         animUpdate->sequenceEventActive = 0;
-        if (((GameObject*)obj)->seqIndex == -1)
+        if (obj->seqIndex == -1)
         {
             for (i = 0; i < (int)(u32)animUpdate->eventCount; i++)
             {
@@ -852,7 +859,7 @@ int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* anim
         break;
     case 1:
         animUpdate->sequenceEventActive = 0;
-        if (((GameObject*)obj)->seqIndex != -1)
+        if (obj->seqIndex != -1)
         {
             switch (state->triggerMode)
             {
@@ -888,9 +895,9 @@ int DIMSnowHorn1_animEventCallback(int obj, int unused, ObjAnimUpdateState* anim
     state->baddie.animSpeedC = fz;
     state->baddie.animSpeedB = fz;
     state->baddie.animSpeedA = fz;
-    ((GameObject*)obj)->anim.velocityX = fz;
-    ((GameObject*)obj)->anim.velocityY = fz;
-    ((GameObject*)obj)->anim.velocityZ = fz;
+    obj->anim.velocityX = fz;
+    obj->anim.velocityY = fz;
+    obj->anim.velocityZ = fz;
     return (u32)(-(s8)animUpdate->sequenceEventActive | (s8)animUpdate->sequenceEventActive) >> 0x1f;
 }
 
@@ -1108,9 +1115,9 @@ int DIMSnowHorn1_getObjectTypeId(void)
     return 0x43;
 }
 
-void DIMSnowHorn1_free(int obj)
+void DIMSnowHorn1_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject(obj, DIMSNOWHORN1_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, DIMSNOWHORN1_OBJGROUP);
 }
 
 void DIMSnowHorn1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -1228,7 +1235,7 @@ static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, char* found)
     return angleDelta;
 }
 
-static inline void DIMSnowHorn1_updateOverridePos(GameObject* obj)
+static void DIMSnowHorn1_updateOverridePos(GameObject* obj)
 {
     MatrixTransform v;
     f32 matrix[16];
@@ -1249,13 +1256,13 @@ void DIMSnowHorn1_update(GameObject* obj)
 {
     f32 nearDist;
     u8* base = (u8*)(int)gDIMSnowHorn1ConfigTable;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     int data;
     s8 modeIndex = -1;
     s16 angleDelta;
     char* found;
     int statePtr;
-    char* playerObj;
+    GameObject* playerObj;
     u32 flip;
     int flags;
 
@@ -1319,9 +1326,9 @@ void DIMSnowHorn1_update(GameObject* obj)
     case 0:
     case 5:
         statePtr = *(int*)&(obj)->extra;
-        playerObj = (char*)Obj_GetPlayerObject();
+        playerObj = Obj_GetPlayerObject();
         if (playerObj != NULL &&
-            Vec_distance(&((GameObject*)playerObj)->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
+            Vec_distance(&playerObj->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
             ((DIMSnowHorn1State*)statePtr)->mountMode == 0)
         {
             ((DIMSnowHorn1State*)statePtr)->playerNearby = 1;
@@ -1344,7 +1351,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         nearDist = 300.0f;
         found = (char*)ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &nearDist);
         if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
-            getXZDistance((f32*)(player + 0x18), &(obj)->anim.worldPosX) < 10000.0f)
+            getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {
             if (found != NULL && (*(u8*)&((GameObject*)found)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE))
             {
@@ -1352,7 +1359,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                 if (*(u8*)&((GameObject*)found)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
                 {
                     int layer = getCurMapLayer();
-                    (*gMapEventInterface)->restartPoint((void*)(player + 0xc), 0x584, layer, 0);
+                    (*gMapEventInterface)->restartPoint(&player->anim.localPosX, 0x584, layer, 0);
                     buttonDisable(0, PAD_BUTTON_A);
                     mainSetBits(GAMEBIT_SNOWHORN_RIDING, 1);
                     angleDelta = DIMSnowHorn1_angleTo(obj, found);
@@ -1430,13 +1437,27 @@ void DIMSnowHorn1_update(GameObject* obj)
         break;
     }
     characterDoEyeAnims(obj, (void*)(data + 0x980));
-    DIMSnowHorn1_updateOverridePos(obj);
+    {
+        MatrixTransform v;
+        f32 matrix[16];
+
+        v.x = (obj)->anim.localPosX;
+        v.y = (obj)->anim.localPosY;
+        v.z = (obj)->anim.localPosZ;
+        v.rotX = (obj)->anim.rotX;
+        v.rotY = (obj)->anim.rotY;
+        v.rotZ = (obj)->anim.rotZ;
+        v.scale = 1.0f;
+        setMatrixFromObjectPos(matrix, &v);
+        Matrix_TransformPoint(matrix, 0.0f, -30.0f, -20.0f, &(obj)->anim.modelState->overrideWorldPosX,
+                              &(obj)->anim.modelState->overrideWorldPosY, &(obj)->anim.modelState->overrideWorldPosZ);
+    }
 }
 
 void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
 {
     u8* base = gDIMSnowHorn1ConfigTable;
-    u8 stk[4] = {1, 1, 1, 1};
+    DIMSnowHorn1PieceCounts stk = sDIMSnowHorn1DefaultPieceCounts;
     DIMSnowHorn1State* inner;
     u8* pathState;
     s8 idx;
@@ -1467,7 +1488,7 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
     case 4:
         (*gPathControlInterface)->init(pathState, 3, 0x200020, 1);
         (*gPathControlInterface)->setLocalPointCollision(pathState, 2, base + 0xe0, &gDIMSnowHorn1PathCollisionData, 8);
-        (*gPathControlInterface)->setup(pathState, 4, base + 0xa0, base + 0xd0, stk);
+        (*gPathControlInterface)->setup(pathState, 4, base + 0xa0, base + 0xd0, stk.counts);
         (*gPathControlInterface)->attachObject((void*)obj, pathState);
         break;
     case 2:
