@@ -97,6 +97,7 @@
 #include "dlls/objects/299_FXEmit.h"
 #include "dlls/objects/300_Transporter.h"
 #include "dlls/objects/301_LFXEmitter.h"
+#include "dlls/objects/302.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -197,8 +198,7 @@ extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFF
     gCFGuardianObjDescriptor, gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor, gCFMainCrystalObjDescriptor;
 extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFPrisonCageObjDescriptor,
     gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor, gCF_DoorLightObjDescriptor;
-extern ResourceDescriptor gCRrockfallObjDescriptor, gCflightwallObjDescriptor, gChukaObjDescriptor,
-    gCloudPrisonControlObjDescriptor;
+extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
@@ -1269,7 +1269,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFXEmitObjDescriptor,
     (ResourceDescriptor*)&gTransporterObjDescriptor,
     (ResourceDescriptor*)&gLFXEmitterObjDescriptor,
-    &gCflightwallObjDescriptor,
+    (ResourceDescriptor*)&gCFLightWallObjDescriptor,
     &gBarrelPadObjDescriptor,
     &gAreaFXEmitObjDescriptor,
     &gCF_DoorLightObjDescriptor,
