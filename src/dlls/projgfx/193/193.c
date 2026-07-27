@@ -1,5 +1,5 @@
 /*
- * projcore3 (DLL 0x00C1) - retired projectile-core variant.
+ * projcore3 (DLL 193 / 0x00C1) - retired projectile-core variant.
  *
  * Every functional entry point has been stubbed out: the lone behavioural
  * hook, projcore3_doUnsupported, just logs the "no longer supported"

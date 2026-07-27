@@ -236,7 +236,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0BE | — | NO-RETAIL-NAME | main/dll/dll_00BE_projtesla.c | = (canonical) | — |
 | 0x0BF | — | NO-RETAIL-NAME | main/dll/dll_00BF_projcore1.c | = (canonical) | — |
 | 0x0C0 | — | NO-RETAIL-NAME | main/dll/dll_00C0_projcore2.c | = (canonical) | — |
-| 0x0C1 | — | NO-RETAIL-NAME | main/dll/dll_00C1_projcore3.c | = (canonical) | — |
+| 0x0C1 | — | NO-RETAIL-NAME | dlls/projgfx/193/193.c | = (canonical) | — |
 | 0x0C2 | — | NO-RETAIL-NAME | dlls/projgfx/194/194.c | = (canonical) | — |
 | 0x0C3 | Player | COMPLETE | dlls/objects/195_Player/player.c | = (canonical) | — |
 | 0x0C4 | Tricky | COMPLETE | dlls/objects/196_Tricky/tricky.c | = (canonical) | — |
