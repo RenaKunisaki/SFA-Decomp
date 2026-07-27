@@ -140,8 +140,8 @@ STATIC_ASSERT(offsetof(PartfxEffectState, textureIsBorrowed) == 0x13F);
 u8 gModgfxSpawnContextStorage[0x60];
 ModgfxPendingSpawn gModgfxPendingSpawnQueue[0x300 / sizeof(ModgfxPendingSpawn)];
 void partfx_freeEffectsBySequence(s16 a, int b);
-extern f32 lbl_803DF430;
-extern f32 lbl_803DF434;
+extern const f32 lbl_803DF430;
+extern const f32 lbl_803DF434;
 
 s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
                   void* textureResource);
