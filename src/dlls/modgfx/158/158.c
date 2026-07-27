@@ -1,5 +1,5 @@
 /*
- * dll9efunc0 (DLL 0x9E) - one of the per-effect pickup/modgfx spawners.
+ * DLL 158 / 0x9E - one of the per-effect pickup/modgfx spawners.
  *
  * dll_9E_func03 builds a fixed list of 14 modgfx draw commands (GfxCmd
  * entries[], one mode/blend + xyz per command, texture sub-tables taken
@@ -23,7 +23,7 @@
 #define DLL9E_EFFECT_ID 0x46c
 
 
-/* lbl_80318260: shared texture + halfword table. Home TU unknown. */
+/* Shared texture and halfword table. */
 extern u8 lbl_80318260[];
 
 void dll_9E_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)

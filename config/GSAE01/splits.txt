@@ -925,7 +925,7 @@ main/dll/dll_009D_dll9dfunc0.c:
 	.text       start:0x800FD744 end:0x800FDA98
 	.sdata2     start:0x803E13F8 end:0x803E1418
 
-main/dll/dll_009E_dll9efunc0.c:
+dlls/modgfx/158/158.c:
 	.text       start:0x800FDA98 end:0x800FDE18
 	.sdata2     start:0x803E1418 end:0x803E1444
 
