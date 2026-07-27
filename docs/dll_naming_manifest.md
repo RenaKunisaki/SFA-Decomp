@@ -173,7 +173,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x07F | — | NO-RETAIL-NAME | main/dll/dll_007F_dll7ffunc0.c | = (canonical) | — |
 | 0x080 | — | NO-RETAIL-NAME | main/dll/dll_0080_dll80func0.c | = (canonical) | — |
 | 0x081 | — | NO-RETAIL-NAME | main/dll/dll_0081_dll81func0.c | = (canonical) | — |
-| 0x082 | — | NO-RETAIL-NAME | main/dll/dll_0082_dll82func0.c | = (canonical) | — |
+| 0x082 | — | NO-RETAIL-NAME | dlls/modgfx/130/130.c | = (canonical) | — |
 | 0x083 | — | NO-RETAIL-NAME | dlls/modgfx/131/131.c | = (canonical) | — |
 | 0x084 | — | NO-RETAIL-NAME | dlls/modgfx/132/132.c | = (canonical) | — |
 | 0x085 | — | NO-RETAIL-NAME | dlls/modgfx/133/133.c | = (canonical) | — |
