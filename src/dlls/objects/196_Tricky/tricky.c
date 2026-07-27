@@ -1995,12 +1995,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         s16 _pad1;
     } rot;
     f32 delta[3];
-    struct
-    {
-        u8 pad; /* offset 0: mask is at +1, patch[] at +2 */
-        u8 mask;
-        u16 patch[5];
-    } wgi;
+    ObjfsaWalkGroupPatchInfo wgi;
     void* routePtrs[9];
 
     moved = 1;
@@ -2031,7 +2026,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         state->patch[2] = 0;
         state->patch[3] = 0;
     }
-    targetWg = Objfsa_GetWalkGroupIndexAtPoint(target, (ObjfsaWalkGroupPatchInfo*)&wgi);
+    targetWg = Objfsa_GetWalkGroupIndexAtPoint(target, &wgi);
     if (((wg != 0) && (targetWg == 0)) && ((ulink = getPatchGroup(target, wg)) != 0))
     {
         walkPath_writeU16LE(ulink, pair);
@@ -2066,9 +2061,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         mask = 1;
         for (; i < 4; i++, mask = mask << 1)
         {
-            if (wgi.mask & mask)
+            if (wgi.patchMask & mask)
             {
-                state->patch[i] = wgi.patch[i];
+                state->patch[i] = wgi.patchGroupIds[i];
                 state->patchTargets[i].x = ((TrickyPoint3*)target)->x;
                 state->patchTargets[i].y = ((TrickyPoint3*)target)->y;
                 state->patchTargets[i].z = ((TrickyPoint3*)target)->z;
@@ -2086,7 +2081,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         {
             for (i = 0, link = prod; i < 4; i++)
             {
-                if ((prod == wgi.patch[i]) && (((1 << i) & wgi.mask) != 0))
+                if ((prod == wgi.patchGroupIds[i]) && (((1 << i) & wgi.patchMask) != 0))
                 {
                     state->linkedWalkGroup = link;
                     state->linkedPatchPos.x = ((TrickyPoint3*)target)->x;
