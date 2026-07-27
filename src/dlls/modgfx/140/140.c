@@ -1,5 +1,5 @@
 /*
- * dll_008C (foodbag effect 0x8C) - builds a fixed 14-entry modgfx command
+ * DLL 140 / 0x8C - builds a fixed 14-entry modgfx command
  * list (FbBuf/FbCmd) and spawns it through gModgfxInterface->spawnEffect.
  *
  * dll_8C_func03 is the effect's func03 spawn entry (one of the dll_NN_func03
