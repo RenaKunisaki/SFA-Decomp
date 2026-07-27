@@ -15488,7 +15488,8 @@ void fn_802AFB0C(int obj, int inner, int state)
             }
             if (gPlayerStepSfxTimer == 0)
             {
-                char* pt = *(char**)((char*)Player_GetActiveModel(obj) + 0x50);
+                char* pt = (char*)Player_GetActiveModel(obj);
+                pt = *(char**)(pt + 0x50);
                 desc.x = playerMapOffsetX + *(f32*)(pt + surfIdx * 0x10 + 4);
                 desc.y = *(f32*)(pt + surfIdx * 0x10 + 8);
                 desc.z = playerMapOffsetZ + *(f32*)(pt + surfIdx * 0x10 + 0xc);
