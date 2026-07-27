@@ -1,16 +1,3 @@
-/*
- * effect11 (DLL 0x24) - a particle-effect spawner DLL.
- *
- * Effect11_func04 is the per-effect spawn handler: given a model, an effect
- * id (0x12c-0x138) and an optional EffectSrcParams source packet, it fills an
- * EffectSpawnParams config (count, scale, alpha, position/velocity, behaviour
- * flags and texture kind) - mostly from per-id tuning constants (lbl_803DFFxx)
- * and randomGetRange jitter - then hands it to the expgfx interface to spawn.
- *
- * flags bit 0x200000 selects an explicit source offset (otherwise the model's
- * world position at +0x18/0x1c/0x20 is used); behaviour-flag bit 0 enables that
- * positional offset. Ids that take no source default it to gEffect11DefaultSrcParams.
- */
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/effectsrcparams_struct.h"

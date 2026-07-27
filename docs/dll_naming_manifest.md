@@ -79,7 +79,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x021 | — | NO-RETAIL-NAME | main/dll/dll_0021_effect8.c | = (canonical) | — |
 | 0x022 | — | NO-RETAIL-NAME | main/dll/dll_0022_effect9.c | = (canonical) | — |
 | 0x023 | — | NO-RETAIL-NAME | main/dll/dll_0023_effect10.c | = (canonical) | — |
-| 0x024 | — | NO-RETAIL-NAME | main/dll/dll_0024_effect11.c | = (canonical) | — |
+| 0x024 | — | NO-RETAIL-NAME | dlls/engine/36/36.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x025 | — | NO-RETAIL-NAME | dlls/engine/37/37.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x026 | — | NO-RETAIL-NAME | dlls/engine/38/38.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x027 | — | NO-RETAIL-NAME | dlls/engine/39/39.c | = (canonical) | Complete DOL-confirmed TU |
