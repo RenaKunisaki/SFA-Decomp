@@ -1,5 +1,5 @@
 /*
- * projmagicstream (DLL 0xAC) - retired projectile object.
+ * projmagicstream (DLL 172 / 0xAC) - retired projectile object.
  *
  * One of the stubbed-out projectile DLLs. The object has
  * no behaviour left: release/initialise are empty and doUnsupported just
