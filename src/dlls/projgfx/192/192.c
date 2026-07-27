@@ -8,7 +8,6 @@
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00C0_projcore2.h"
-#include "main/dll/dll_00C1_projcore3.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -26,10 +25,8 @@ void projcore2_initialise(void)
 {
 }
 
-char sProjcore2DoNoLongerSupported[] = "<projcore2 Do>No Longer supported \n";
+DllDescriptorTable lbl_803199B0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projcore2_initialise, projcore2_release, (void*)0x00000000,
+                                    projcore2_doUnsupported}};
 
-/* projcore3 (DLL 0xC1) ResourceDescriptor, referenced by modelEngine.
- * Same idiom as dll_00AD_projmagicemmit1 / dll_000A_expgfx. */
-DllDescriptorTable lbl_803199F8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projcore3_initialise, projcore3_release, (void*)0x00000000,
-                                    projcore3_doUnsupported}};
+char sProjcore2DoNoLongerSupported[] = "<projcore2 Do>No Longer supported \n";

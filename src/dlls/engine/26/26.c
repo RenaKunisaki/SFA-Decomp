@@ -1,4 +1,5 @@
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/mtxbuildarg_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
@@ -1089,3 +1090,18 @@ void Effect1_release(void)
 void Effect1_initialise(void)
 {
 }
+
+char sModgfxAlphaDebugFormat[10] = "alpha %d\n";
+
+ObjectDescriptor6 lbl_80310638 = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)Effect1_initialise,
+    (ObjectDescriptorCallback)Effect1_release,
+    0,
+    (ObjectDescriptorCallback)Effect1_func03_nop,
+    (ObjectDescriptorCallback)Effect1_func04,
+    (ObjectDescriptorCallback)Effect1_func05,
+};

@@ -4,16 +4,15 @@
  * The object's behavior has been removed: the only live entry point,
  * projwallpower_doUnsupported, just reports that the feature is no longer
  * supported and returns 0 (false). release/initialise are empty lifecycle
- * stubs. sProjwallpowerDoNoLongerSupported is the message string (a data-only
- * extern resolved from the assembly data stub, declared in dll_64.h).
+ * stubs.
  *
  * Note: unlike the rest of the retired-projectile family (projlightning1,
  * projquakeshock, etc.) which return the -1 unsupported sentinel, wallpower
  * returns 0.
  */
 #include "dolphin/os/OSReport.h"
+#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BB_projwallpower.h"
-#include "main/dll/dll_00BC_projquakeshock.h"
 
 int projwallpower_doUnsupported(void)
 {
@@ -29,9 +28,8 @@ void projwallpower_initialise(void)
 {
 }
 
-char sProjwallpowerDoNoLongerSupported[] = "<projwallpower Do>No Longer supported \n";
+DllDescriptorTable lbl_80319840 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projwallpower_initialise, projwallpower_release, (void*)0x00000000,
+                                    projwallpower_doUnsupported}};
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-void* lbl_80319888[8] = {(void*)0x00000000, (void*)0x00000000,           (void*)0x00000000,
-                         (void*)0x00030000, projquakeshock_initialise,   projquakeshock_release,
-                         (void*)0x00000000, projquakeshock_doUnsupported};
+char sProjwallpowerDoNoLongerSupported[] = "<projwallpower Do>No Longer supported \n";

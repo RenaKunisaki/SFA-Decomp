@@ -9,8 +9,6 @@
 #include "main/dll/modgfx.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_001B_effect2.h"
-#include "main/dll/dll_000E_partfx.h"
-#include "main/dll/dll_001A_effect1.h"
 
 int lbl_803DD348;
 f32 gEffect2SinValueA;
@@ -26,51 +24,6 @@ f32 gEffect2ScrollPhaseB = 0.3f;
 PartFxSpawnParams lbl_8039C338;
 extern int lbl_803DD2C4;
 
-EmitterCfg gEffect2VelocityRangeTable = {
-    {
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.01f, 0.0f, 0.0f},
-    },
-    {10.0f, 0.0f, 0.0f},
-    517.0f,
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
-    0xFF,
-    0xFF,
-    {0x00, 0x00},
-};
-
-ObjectDescriptor6 lbl_80310604 = {
-    0,
-    0,
-    0,
-    0x00050000,
-    (ObjectDescriptorCallback)partfx_initialise,
-    (ObjectDescriptorCallback)partfx_release,
-    0,
-    (ObjectDescriptorCallback)partfx_onMapSetup,
-    (ObjectDescriptorCallback)partfx_spawnObject,
-    (ObjectDescriptorCallback)partfx_updateFrameState,
-};
-char sModgfxAlphaDebugFormat[10] = "alpha %d\n";
-ObjectDescriptor6 lbl_80310638 = {
-    0,
-    0,
-    0,
-    0x00050000,
-    (ObjectDescriptorCallback)Effect1_initialise,
-    (ObjectDescriptorCallback)Effect1_release,
-    0,
-    (ObjectDescriptorCallback)Effect1_func03_nop,
-    (ObjectDescriptorCallback)Effect1_func04,
-    (ObjectDescriptorCallback)Effect1_func05,
-};
 s32 gEffect2TextureIdTable[4] = {0xDF, 0x1FC, 0x200, 0x1FB};
 ObjectDescriptor6 lbl_80310670 = {
     0,

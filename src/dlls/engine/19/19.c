@@ -14,6 +14,7 @@
 #include "track/intersect_api.h"
 #include "main/texture.h"
 #include "main/camera.h"
+#include "main/resource.h"
 #include "dolphin/os/OSCache.h"
 
 u8* gWaterfxRippleVtx;
@@ -892,5 +893,19 @@ void waterfx_initialise(void)
     waterfx_onMapSetup();
     waterfx_buildSplashDisplayList();
 }
+
+ResourceDescriptorCallbacks11 lbl_8030F830 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x000a0000},
+    {(ResourceDescriptorCallback)waterfx_initialise,
+     (ResourceDescriptorCallback)waterfx_release,
+     0x00000000,
+     (ResourceDescriptorCallback)waterfx_run,
+     (ResourceDescriptorCallback)waterfx_spawnImpactSurface,
+     (ResourceDescriptorCallback)waterfx_render,
+     (ResourceDescriptorCallback)waterfx_spawnSplashBurst,
+     (ResourceDescriptorCallback)waterfx_spawnRipple,
+     (ResourceDescriptorCallback)waterfx_spawnSimpleRipple,
+     (ResourceDescriptorCallback)waterfx_onMapSetup,
+     (ResourceDescriptorCallback)waterfx_setRippleScale}};
 
 char sWaterfxDllAllocFailed[] = "Could not allocate memory for waterfx dll\n";

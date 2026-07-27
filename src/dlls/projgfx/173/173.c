@@ -9,7 +9,6 @@
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AD_projmagicemmit1.h"
-#include "main/dll/dll_00AE_projroombeam.h"
 
 int projmagicemmit1_doUnsupported(void)
 {
@@ -25,8 +24,8 @@ void projmagicemmit1_initialise(void)
 {
 }
 
-char sProjmagicemmit1DoNoLongerSupported[] = "<projmagicemmit1 Do>No Longer supported \n";
+DllDescriptorTable lbl_80319410 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projmagicemmit1_initialise, projmagicemmit1_release, (void*)0x00000000,
+                                    projmagicemmit1_doUnsupported}};
 
-DllDescriptorTable lbl_80319460 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projroombeam_initialise, projroombeam_release, (void*)0x00000000,
-                                    projroombeam_doUnsupported}};
+char sProjmagicemmit1DoNoLongerSupported[] = "<projmagicemmit1 Do>No Longer supported \n";

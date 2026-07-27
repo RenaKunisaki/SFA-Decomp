@@ -1,7 +1,7 @@
 /*
  * DLL 122 / 0x7A - a model-fx command-list spawner stub DLL.
  *
- * dll_7A_func03 builds a GfxCmd array on the stack from the shared
+ * dll_7A_func03 builds a GfxCmd array on the stack from the
  * lbl_80314BD0 resource block and hands it to
  * gModgfxInterface->spawnEffect; the two tiny dll_7A entry stubs are
  * no-ops.
@@ -19,7 +19,12 @@
 #define DLL7A_EFFECT_ID_VARIANT0 0x156
 #define DLL7A_EFFECT_ID_VARIANT1 0xc0d
 
-extern u32 lbl_80314BD0[];
+u32 lbl_80314BD0[48] = {0x03e80000, 0x0190001f, 0x001f02c3, 0xfd3d0190, 0x0000001f, 0x0000fc18, 0x0190001f, 0x001ffd3d,
+                        0xfd3d0190, 0x0000001f, 0xfc180000, 0x0190001f, 0x001ffd3d, 0x02c30190, 0x0000001f, 0x000003e8,
+                        0x0190001f, 0x001f02c3, 0x02c30190, 0x0000001f, 0x00000000, 0x0000000f, 0x00000000, 0x00000001,
+                        0x00080001, 0x00020008, 0x00020003, 0x00080003, 0x00040008, 0x00040005, 0x00080005, 0x00060008,
+                        0x00060007, 0x00080007, 0x00000008, 0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080000,
+                        0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00000064, 0x00000000, 0x00000000, 0x00000000};
 
 s16 dll_7A_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
 {
@@ -155,3 +160,7 @@ void dll_7A_func01_nop(void)
 void dll_7A_func00_nop(void)
 {
 }
+
+u32 lbl_80314C90[8] = {
+    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_7A_func00_nop, (u32)dll_7A_func01_nop,
+    0x00000000, (u32)dll_7A_func03};

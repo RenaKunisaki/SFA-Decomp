@@ -366,7 +366,7 @@ dlls/engine/8/8.c:
 
 dlls/engine/9/9.c:
 	.text       start:0x8009436C end:0x80094F7C
-	.data       start:0x8030F7B0 end:0x8030F86C
+	.data       start:0x8030F7B0 end:0x8030F830
 	.bss        start:0x8039AB28 end:0x8039AB48
 	.sdata      start:0x803DB780 end:0x803DB788
 	.sbss       start:0x803DD1E0 end:0x803DD1F8
@@ -374,7 +374,7 @@ dlls/engine/9/9.c:
 
 dlls/engine/19/19.c:
 	.text       start:0x80094F7C end:0x80096994
-	.data       start:0x8030F86C end:0x8030F898
+	.data       start:0x8030F830 end:0x8030F898
 	.bss        start:0x8039AB48 end:0x8039AB58
 	.sbss       start:0x803DD1F8 end:0x803DD250
 	.sdata2     start:0x803DF2E0 end:0x803DF340
@@ -382,7 +382,7 @@ dlls/engine/19/19.c:
 dlls/engine/10_expgfx/expgfx.c:
 	.text       start:0x80096994 end:0x8009FFF0
 	.rodata     start:0x802C1FD8 end:0x802C2160
-	.data       start:0x8030F898 end:0x8030FD20
+	.data       start:0x8030F898 end:0x8030FCA8
 	.bss        start:0x8039AB58 end:0x8039BE98
 	.sdata      start:0x803DB788 end:0x803DB798
 	.sbss       start:0x803DD250 end:0x803DD280
@@ -390,6 +390,7 @@ dlls/engine/10_expgfx/expgfx.c:
 
 dlls/engine/11/11.c:
 	.text       start:0x8009FFF0 end:0x800A3A40
+	.data       start:0x8030FCA8 end:0x8030FD20
 	.bss        start:0x8039BE98 end:0x8039C2C0
 	.sbss       start:0x803DD280 end:0x803DD298
 	.sdata2     start:0x803DF42C end:0x803DF468
@@ -415,6 +416,7 @@ dlls/engine/24/24.c:
 
 dlls/engine/14/14.c:
 	.text       start:0x800A4DF4 end:0x800AF688
+	.data       start:0x80310560 end:0x8031062C
 	.bss        start:0x8039C2E0 end:0x8039C320
 	.sdata      start:0x803DB7A0 end:0x803DB7B0
 	.sbss       start:0x803DD2C0 end:0x803DD328
@@ -422,6 +424,7 @@ dlls/engine/14/14.c:
 
 dlls/engine/26/26.c:
 	.text       start:0x800AF688 end:0x800B319C
+	.data       start:0x8031062C end:0x80310660
 	.bss        start:0x8039C320 end:0x8039C338
 	.sdata      start:0x803DB7B0 end:0x803DB7C0
 	.sbss       start:0x803DD328 end:0x803DD338
@@ -429,7 +432,7 @@ dlls/engine/26/26.c:
 
 dlls/engine/27/27.c:
 	.text       start:0x800B319C end:0x800B6EF8
-	.data       start:0x80310560 end:0x80310804
+	.data       start:0x80310660 end:0x80310804
 	.bss        start:0x8039C338 end:0x8039C350
 	.sdata      start:0x803DB7C0 end:0x803DB7D0
 	.sbss       start:0x803DD338 end:0x803DD350
@@ -636,6 +639,7 @@ dlls/modgfx/90/90.c:
 	.text       start:0x800EB098 end:0x800EB618
 	.data       start:0x80311DA8 end:0x80311E30
 	.sdata      start:0x803DB898 end:0x803DB8B0
+	.sdata2     start:0x803E0728 end:0x803E0730
 
 dlls/modgfx/91/91.c:
 	.text       start:0x800EB618 end:0x800EC7BC
@@ -655,67 +659,82 @@ dlls/modgfx/93/93.c:
 
 dlls/modgfx/94/94.c:
 	.text       start:0x800ECE04 end:0x800ED294
-	.data       start:0x80312340 end:0x80313AD0
+	.data       start:0x80312340 end:0x80312650
 	.sdata2     start:0x803E07C0 end:0x803E07FC
 
 dlls/modgfx/95/95.c:
 	.text       start:0x800ED294 end:0x800ED5E4
+	.data       start:0x80312650 end:0x80312790
 	.sdata2     start:0x803E0800 end:0x803E082C
 
 dlls/modgfx/96/96.c:
 	.text       start:0x800ED5E4 end:0x800EDA28
+	.data       start:0x80312790 end:0x803128E8
 	.sdata2     start:0x803E0830 end:0x803E0858
 
 dlls/modgfx/97/97.c:
 	.text       start:0x800EDA28 end:0x800EDE74
+	.data       start:0x803128E8 end:0x803129C8
 	.sdata      start:0x803DB8C0 end:0x803DB8C8
 	.sdata2     start:0x803E0858 end:0x803E0898
 
 dlls/modgfx/98/98.c:
 	.text       start:0x800EDE74 end:0x800EE25C
+	.data       start:0x803129C8 end:0x80312BD8
 	.sdata2     start:0x803E0898 end:0x803E08C8
 
 dlls/modgfx/99/99.c:
 	.text       start:0x800EE25C end:0x800EE8FC
+	.data       start:0x80312BD8 end:0x80312D18
 	.sdata2     start:0x803E08C8 end:0x803E0908
 
 dlls/modgfx/100/100.c:
 	.text       start:0x800EE8FC end:0x800EEC34
+	.data       start:0x80312D18 end:0x80312E58
 	.sdata2     start:0x803E0908 end:0x803E0930
 
 dlls/modgfx/101/101.c:
 	.text       start:0x800EEC34 end:0x800EEFEC
+	.data       start:0x80312E58 end:0x80312F98
 	.sdata2     start:0x803E0930 end:0x803E0968
 
 dlls/modgfx/163/163.c:
 	.text       start:0x800EEFEC end:0x800EF3A0
+	.data       start:0x80312F98 end:0x803131A8
 	.sdata2     start:0x803E0968 end:0x803E0990
 
 dlls/modgfx/102/102.c:
 	.text       start:0x800EF3A0 end:0x800EF7B4
+	.data       start:0x803131A8 end:0x803133B8
 	.sdata2     start:0x803E0990 end:0x803E09C4
 
 dlls/modgfx/103/103.c:
 	.text       start:0x800EF7B4 end:0x800EFA30
+	.data       start:0x803133B8 end:0x803135C8
 	.sdata2     start:0x803E09C8 end:0x803E09E0
 
 dlls/modgfx/104/104.c:
 	.text       start:0x800EFA30 end:0x800EFD34
+	.data       start:0x803135C8 end:0x803137D8
 	.sdata2     start:0x803E09E0 end:0x803E09FC
 
 dlls/engine/88/88.c:
 	.text       start:0x800EFD34 end:0x800EFD44
+	.data       start:0x803137D8 end:0x803137F8
 
 dlls/modgfx/105/105.c:
 	.text       start:0x800EFD44 end:0x800F022C
+	.data       start:0x803137F8 end:0x803138A0
 	.sdata2     start:0x803E0A00 end:0x803E0A28
 
 dlls/modgfx/106/106.c:
 	.text       start:0x800F022C end:0x800F058C
+	.data       start:0x803138A0 end:0x80313A40
 	.sdata2     start:0x803E0A28 end:0x803E0A58
 
 dlls/modgfx/107/107.c:
 	.text       start:0x800F058C end:0x800F07DC
+	.data       start:0x80313A40 end:0x80313AD0
 	.sdata2     start:0x803E0A58 end:0x803E0A74
 
 dlls/modgfx/108/108.c:
@@ -740,51 +759,59 @@ dlls/modgfx/111/111.c:
 
 dlls/modgfx/112/112.c:
 	.text       start:0x800F11E4 end:0x800F16E4
-	.data       start:0x80313E98 end:0x80314920
+	.data       start:0x80313E98 end:0x80314060
 	.sdata      start:0x803DB8D0 end:0x803DB8D8
 	.sdata2     start:0x803E0AF8 end:0x803E0B34
 
 dlls/modgfx/113/113.c:
 	.text       start:0x800F16E4 end:0x800F1A58
+	.data       start:0x80314060 end:0x80314288
 	.sdata2     start:0x803E0B38 end:0x803E0B5C
 
 dlls/modgfx/114/114.c:
 	.text       start:0x800F1A58 end:0x800F1D64
+	.data       start:0x80314288 end:0x803144B0
 	.sdata2     start:0x803E0B60 end:0x803E0B80
 
 dlls/modgfx/115/115.c:
 	.text       start:0x800F1D64 end:0x800F220C
+	.data       start:0x803144B0 end:0x803146D8
 	.sdata2     start:0x803E0B80 end:0x803E0BB8
 
 dlls/modgfx/116/116.c:
 	.text       start:0x800F220C end:0x800F2694
+	.data       start:0x803146D8 end:0x80314920
 	.sdata2     start:0x803E0BB8 end:0x803E0BE8
 
 dlls/modgfx/117/117.c:
 	.text       start:0x800F2694 end:0x800F2A8C
-	.data       start:0x80314920 end:0x80314AF0
+	.data       start:0x80314920 end:0x80314950
 	.sdata2     start:0x803E0BE8 end:0x803E0C40
 
 dlls/modgfx/118/118.c:
 	.text       start:0x800F2A8C end:0x800F2CEC
+	.data       start:0x80314950 end:0x80314980
 	.sdata2     start:0x803E0C40 end:0x803E0C58
 
 dlls/modgfx/119/119.c:
 	.text       start:0x800F2CEC end:0x800F2F4C
+	.data       start:0x80314980 end:0x803149B0
 	.sdata2     start:0x803E0C58 end:0x803E0C70
 
 dlls/modgfx/120/120.c:
 	.text       start:0x800F2F4C end:0x800F3400
+	.data       start:0x803149B0 end:0x80314AF0
 	.sdata2     start:0x803E0C70 end:0x803E0CB0
 
 dlls/modgfx/121/121.c:
 	.text       start:0x800F3400 end:0x800F3CD0
-	.data       start:0x80314AF0 end:0x80314CB0
+	.data       start:0x80314AF0 end:0x80314BD0
 	.sdata      start:0x803DB8D8 end:0x803DB8E0
 	.sdata2     start:0x803E0CB0 end:0x803E0D08
 
 dlls/modgfx/122/122.c:
 	.text       start:0x800F3CD0 end:0x800F4174
+	.data       start:0x80314BD0 end:0x80314CB0
 	.sdata2     start:0x803E0D08 end:0x803E0D38
 
 dlls/modgfx/123/123.c:
@@ -794,34 +821,40 @@ dlls/modgfx/123/123.c:
 
 dlls/modgfx/124/124.c:
 	.text       start:0x800F472C end:0x800F4C70
-	.data       start:0x80314E08 end:0x80315998
+	.data       start:0x80314E08 end:0x80315030
 	.sdata2     start:0x803E0D88 end:0x803E0DD4
 
 dlls/modgfx/125/125.c:
 	.text       start:0x800F4C70 end:0x800F4FA4
+	.data       start:0x80315030 end:0x80315258
 	.sbss       start:0x803DD4B0 end:0x803DD4B8
 	.sdata2     start:0x803E0DD8 end:0x803E0DFC
 
 dlls/modgfx/126/126.c:
 	.text       start:0x800F4FA4 end:0x800F52E0
+	.data       start:0x80315258 end:0x80315328
 	.sdata      start:0x803DB8E0 end:0x803DB8E8
 	.sdata2     start:0x803E0E00 end:0x803E0E20
 
 dlls/modgfx/127/127.c:
 	.text       start:0x800F52E0 end:0x800F57D8
+	.data       start:0x80315328 end:0x80315468
 	.sdata      start:0x803DB8E8 end:0x803DB8F0
 	.sdata2     start:0x803E0E20 end:0x803E0E58
 
 dlls/modgfx/128/128.c:
 	.text       start:0x800F57D8 end:0x800F5A8C
+	.data       start:0x80315468 end:0x80315548
 	.sdata2     start:0x803E0E58 end:0x803E0E78
 
 dlls/modgfx/129/129.c:
 	.text       start:0x800F5A8C end:0x800F6150
+	.data       start:0x80315548 end:0x80315770
 	.sdata2     start:0x803E0E78 end:0x803E0EAC
 
 dlls/modgfx/130/130.c:
 	.text       start:0x800F6150 end:0x800F6534
+	.data       start:0x80315770 end:0x80315998
 	.sdata2     start:0x803E0EB0 end:0x803E0ED4
 
 dlls/modgfx/131/131.c:
@@ -836,38 +869,45 @@ dlls/modgfx/132/132.c:
 
 dlls/modgfx/133/133.c:
 	.text       start:0x800F6DDC end:0x800F7434
-	.data       start:0x80315FA8 end:0x80316B60
+	.data       start:0x80315FA8 end:0x80316020
 	.sdata      start:0x803DB8F0 end:0x803DB900
 	.sdata2     start:0x803E0F70 end:0x803E0FB0
 
 dlls/modgfx/134/134.c:
 	.text       start:0x800F7434 end:0x800F77BC
+	.data       start:0x80316020 end:0x80316050
 	.sdata2     start:0x803E0FB0 end:0x803E0FE8
 
 dlls/modgfx/135/135.c:
 	.text       start:0x800F77BC end:0x800F7AC0
+	.data       start:0x80316050 end:0x80316240
 	.sdata      start:0x803DB900 end:0x803DB908
 	.sdata2     start:0x803E0FE8 end:0x803E100C
 
 dlls/modgfx/136/136.c:
 	.text       start:0x800F7AC0 end:0x800F7D90
+	.data       start:0x80316240 end:0x80316460
 	.sdata2     start:0x803E1010 end:0x803E1028
 
 dlls/modgfx/137/137.c:
 	.text       start:0x800F7D90 end:0x800F8094
+	.data       start:0x80316460 end:0x80316650
 	.sdata      start:0x803DB908 end:0x803DB910
 	.sdata2     start:0x803E1028 end:0x803E104C
 
 dlls/modgfx/138/138.c:
 	.text       start:0x800F8094 end:0x800F8250
+	.data       start:0x80316650 end:0x80316728
 	.sdata2     start:0x803E1050 end:0x803E105C
 
 dlls/modgfx/139/139.c:
 	.text       start:0x800F8250 end:0x800F87E8
+	.data       start:0x80316728 end:0x80316950
 	.sdata2     start:0x803E1060 end:0x803E10B0
 
 dlls/modgfx/140/140.c:
 	.text       start:0x800F87E8 end:0x800F8D68
+	.data       start:0x80316950 end:0x80316B60
 	.sdata2     start:0x803E10B0 end:0x803E10E0
 
 dlls/modgfx/141/141.c:
@@ -877,12 +917,13 @@ dlls/modgfx/141/141.c:
 
 dlls/modgfx/142/142.c:
 	.text       start:0x800F977C end:0x800F9E78
-	.data       start:0x80316C40 end:0x80316E30
+	.data       start:0x80316C40 end:0x80316C90
 	.sdata      start:0x803DB910 end:0x803DB920
 	.sdata2     start:0x803E1138 end:0x803E1178
 
 dlls/modgfx/143/143.c:
 	.text       start:0x800F9E78 end:0x800FA16C
+	.data       start:0x80316C90 end:0x80316E30
 	.sdata2     start:0x803E1178 end:0x803E11A0
 
 dlls/modgfx/144/144.c:
@@ -893,211 +934,233 @@ dlls/modgfx/144/144.c:
 
 dlls/modgfx/145/145.c:
 	.text       start:0x800FA5D8 end:0x800FA9F8
-	.data       start:0x80316FF8 end:0x80318488
+	.data       start:0x80316FF8 end:0x803171C0
 	.sdata      start:0x803DB928 end:0x803DB930
 	.sdata2     start:0x803E11D8 end:0x803E120C
 
 dlls/modgfx/146/146.c:
 	.text       start:0x800FA9F8 end:0x800FADA8
+	.data       start:0x803171C0 end:0x80317260
 	.sdata      start:0x803DB930 end:0x803DB938
 	.sdata2     start:0x803E1210 end:0x803E123C
 
 dlls/modgfx/147/147.c:
 	.text       start:0x800FADA8 end:0x800FB078
+	.data       start:0x80317260 end:0x80317488
 	.sdata2     start:0x803E1240 end:0x803E1268
 
 dlls/modgfx/148/148.c:
 	.text       start:0x800FB078 end:0x800FB428
+	.data       start:0x80317488 end:0x80317528
 	.sdata      start:0x803DB938 end:0x803DB940
 	.sdata2     start:0x803E1268 end:0x803E1294
 
 dlls/modgfx/149/149.c:
 	.text       start:0x800FB428 end:0x800FB720
+	.data       start:0x80317528 end:0x803175E8
 	.sdata      start:0x803DB940 end:0x803DB948
 	.sdata2     start:0x803E1298 end:0x803E12BC
 
 dlls/modgfx/150/150.c:
 	.text       start:0x800FB720 end:0x800FBA40
+	.data       start:0x803175E8 end:0x80317810
 	.sdata2     start:0x803E12C0 end:0x803E12E8
 
 dlls/modgfx/151/151.c:
 	.text       start:0x800FBA40 end:0x800FBDF0
+	.data       start:0x80317810 end:0x803178B0
 	.sdata      start:0x803DB948 end:0x803DB950
 	.sdata2     start:0x803E12E8 end:0x803E1314
 
 dlls/modgfx/152/152.c:
 	.text       start:0x800FBDF0 end:0x800FC208
+	.data       start:0x803178B0 end:0x80317AF8
 	.sdata2     start:0x803E1318 end:0x803E1340
 
 dlls/modgfx/153/153.c:
 	.text       start:0x800FC208 end:0x800FC5B8
+	.data       start:0x80317AF8 end:0x80317B98
 	.sdata      start:0x803DB950 end:0x803DB958
 	.sdata2     start:0x803E1340 end:0x803E136C
 
 dlls/modgfx/154/154.c:
 	.text       start:0x800FC5B8 end:0x800FCF3C
 	.rodata     start:0x802C2180 end:0x802C2190
+	.data       start:0x80317B98 end:0x80317BD8
 	.sdata      start:0x803DB958 end:0x803DB970
 	.sdata2     start:0x803E1370 end:0x803E13A0
 
 dlls/modgfx/155/155.c:
 	.text       start:0x800FCF3C end:0x800FD2B4
+	.data       start:0x80317BD8 end:0x80317E00
 	.sdata2     start:0x803E13A0 end:0x803E13C8
 
 dlls/modgfx/156/156.c:
 	.text       start:0x800FD2B4 end:0x800FD744
+	.data       start:0x80317E00 end:0x80318038
 	.sdata2     start:0x803E13C8 end:0x803E13F8
 
 dlls/modgfx/157/157.c:
 	.text       start:0x800FD744 end:0x800FDA98
+	.data       start:0x80318038 end:0x80318260
 	.sdata2     start:0x803E13F8 end:0x803E1418
 
 dlls/modgfx/158/158.c:
 	.text       start:0x800FDA98 end:0x800FDE18
+	.data       start:0x80318260 end:0x80318488
 	.sdata2     start:0x803E1418 end:0x803E1444
 
 dlls/modgfx/159/159.c:
 	.text       start:0x800FDE18 end:0x800FE240
-	.data       start:0x80318488 end:0x80318E10
+	.data       start:0x80318488 end:0x803186B0
 	.sdata2     start:0x803E1448 end:0x803E1488
 
 dlls/modgfx/160/160.c:
 	.text       start:0x800FE240 end:0x800FE5A8
+	.data       start:0x803186B0 end:0x803188D8
 	.sdata2     start:0x803E1488 end:0x803E14B4
 
 dlls/modgfx/161/161.c:
 	.text       start:0x800FE5A8 end:0x800FE928
+	.data       start:0x803188D8 end:0x80318B00
 	.sdata2     start:0x803E14B8 end:0x803E14E0
 
 dlls/modgfx/162/162.c:
 	.text       start:0x800FE928 end:0x800FEC74
+	.data       start:0x80318B00 end:0x80318D28
 	.sdata2     start:0x803E14E0 end:0x803E1504
 
 dlls/modgfx/164/164.c:
 	.text       start:0x800FEC74 end:0x800FEC84
+	.data       start:0x80318D28 end:0x80318D48
 
 dlls/modgfx/165/165.c:
 	.text       start:0x800FEC84 end:0x800FF004
+	.data       start:0x80318D48 end:0x80318DF0
 	.sdata      start:0x803DB970 end:0x803DB980
 	.sdata2     start:0x803E1508 end:0x803E1530
 
 dlls/modgfx/166/166.c:
 	.text       start:0x800FF004 end:0x800FF6A0
-	.data       start:0x80318E10 end:0x80319398
+	.data       start:0x80318DF0 end:0x80318E40
 	.sdata      start:0x803DB980 end:0x803DB990
 	.sdata2     start:0x803E1530 end:0x803E1570
 
 dlls/modgfx/167/167.c:
 	.text       start:0x800FF6A0 end:0x800FFB44
+	.data       start:0x80318E40 end:0x80318EE8
 	.sdata2     start:0x803E1570 end:0x803E1598
 
 dlls/modgfx/168/168.c:
 	.text       start:0x800FFB44 end:0x800FFF04
+	.data       start:0x80318EE8 end:0x80319028
 	.sdata2     start:0x803E1598 end:0x803E15CC
 
 dlls/modgfx/169/169.c:
 	.text       start:0x800FFF04 end:0x801002C0
+	.data       start:0x80319028 end:0x80319168
 	.sdata2     start:0x803E15D0 end:0x803E1600
 
 dlls/modgfx/170/170.c:
 	.text       start:0x801002C0 end:0x80100550
+	.data       start:0x80319168 end:0x80319378
 	.sdata2     start:0x803E1600 end:0x803E1628
 
 dlls/projgfx/171/171.c:
 	.text       start:0x80100550 end:0x80100588
-	.data       start:0x80319398 end:0x803193E0
+	.data       start:0x80319378 end:0x803193C0
 
 dlls/projgfx/172/172.c:
 	.text       start:0x80100588 end:0x801005C0
-	.data       start:0x803193E0 end:0x80319430
+	.data       start:0x803193C0 end:0x80319410
 
 dlls/projgfx/173/173.c:
 	.text       start:0x801005C0 end:0x801005F8
-	.data       start:0x80319430 end:0x80319480
+	.data       start:0x80319410 end:0x80319460
 
 dlls/projgfx/174/174.c:
 	.text       start:0x801005F8 end:0x80100630
-	.data       start:0x80319480 end:0x803194C8
+	.data       start:0x80319460 end:0x803194A8
 
 dlls/projgfx/175/175.c:
 	.text       start:0x80100630 end:0x80100668
-	.data       start:0x803194C8 end:0x80319518
+	.data       start:0x803194A8 end:0x803194F8
 
 dlls/projgfx/176/176.c:
 	.text       start:0x80100668 end:0x801006A0
-	.data       start:0x80319518 end:0x80319568
+	.data       start:0x803194F8 end:0x80319548
 
 dlls/projgfx/177/177.c:
 	.text       start:0x801006A0 end:0x801006D8
-	.data       start:0x80319568 end:0x803195B8
+	.data       start:0x80319548 end:0x80319598
 
 dlls/projgfx/179/179.c:
 	.text       start:0x801006D8 end:0x80100710
-	.data       start:0x803195B8 end:0x80319608
+	.data       start:0x80319598 end:0x803195E8
 
 dlls/projgfx/184/184.c:
 	.text       start:0x80100710 end:0x80100748
-	.data       start:0x80319608 end:0x80319658
+	.data       start:0x803195E8 end:0x80319638
 
 dlls/projgfx/185/185.c:
 	.text       start:0x80100748 end:0x80100780
-	.data       start:0x80319658 end:0x803196A8
+	.data       start:0x80319638 end:0x80319688
 
 dlls/projgfx/186/186.c:
 	.text       start:0x80100780 end:0x801007B8
-	.data       start:0x803196A8 end:0x803196F8
+	.data       start:0x80319688 end:0x803196D8
 
 dlls/projgfx/180/180.c:
 	.text       start:0x801007B8 end:0x801007F0
-	.data       start:0x803196F8 end:0x80319740
+	.data       start:0x803196D8 end:0x80319720
 
 dlls/projgfx/181/181.c:
 	.text       start:0x801007F0 end:0x80100828
-	.data       start:0x80319740 end:0x80319788
+	.data       start:0x80319720 end:0x80319768
 
 dlls/projgfx/178/178.c:
 	.text       start:0x80100828 end:0x80100860
-	.data       start:0x80319788 end:0x803197D0
+	.data       start:0x80319768 end:0x803197B0
 
 dlls/projgfx/182/182.c:
 	.text       start:0x80100860 end:0x80100898
-	.data       start:0x803197D0 end:0x80319818
+	.data       start:0x803197B0 end:0x803197F8
 
 dlls/projgfx/183/183.c:
 	.text       start:0x80100898 end:0x801008D0
-	.data       start:0x80319818 end:0x80319860
+	.data       start:0x803197F8 end:0x80319840
 
 dlls/projgfx/187/187.c:
 	.text       start:0x801008D0 end:0x80100908
-	.data       start:0x80319860 end:0x803198A8
+	.data       start:0x80319840 end:0x80319888
 
 dlls/projgfx/188/188.c:
 	.text       start:0x80100908 end:0x80100940
-	.data       start:0x803198A8 end:0x803198F8
+	.data       start:0x80319888 end:0x803198D8
 
 dlls/projgfx/189/189.c:
 	.text       start:0x80100940 end:0x80100978
-	.data       start:0x803198F8 end:0x80319940
+	.data       start:0x803198D8 end:0x80319920
 
 dlls/projgfx/190/190.c:
 	.text       start:0x80100978 end:0x801009B0
-	.data       start:0x80319940 end:0x80319988
+	.data       start:0x80319920 end:0x80319968
 
 dlls/projgfx/191/191.c:
 	.text       start:0x801009B0 end:0x801009E8
-	.data       start:0x80319988 end:0x803199D0
+	.data       start:0x80319968 end:0x803199B0
 
 dlls/projgfx/192/192.c:
 	.text       start:0x801009E8 end:0x80100A20
-	.data       start:0x803199D0 end:0x80319A18
+	.data       start:0x803199B0 end:0x803199F8
 
 dlls/projgfx/193/193.c:
 	.text       start:0x80100A20 end:0x80100A58
-	.data       start:0x80319A18 end:0x80319A60
+	.data       start:0x803199F8 end:0x80319A40
 
 dlls/projgfx/194/194.c:
 	.text       start:0x80100A58 end:0x80100A90
-	.data       start:0x80319A60 end:0x80319B14
+	.data       start:0x80319A40 end:0x80319B14
 
 main/dll/dll_8b.c:
 	.text       start:0x80100A90 end:0x80100AA4

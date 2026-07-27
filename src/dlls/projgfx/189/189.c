@@ -7,8 +7,8 @@
  * empty stubs that keep the DLL loadable.
  */
 #include "dolphin/os/OSReport.h"
+#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BD_projsunshock.h"
-#include "main/dll/dll_00BE_projtesla.h"
 
 int projsunshock_doUnsupported(void)
 {
@@ -24,8 +24,8 @@ void projsunshock_initialise(void)
 {
 }
 
-char sProjsunshockDoNoLongerSupported[] = "<projsunshock Do>No Longer supported \n";
+DllDescriptorTable lbl_803198D8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projsunshock_initialise, projsunshock_release, (void*)0x00000000,
+                                    projsunshock_doUnsupported}};
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
-void* lbl_80319920[8] = {(void*)0x00000000,    (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         projtesla_initialise, projtesla_release, (void*)0x00000000, projtesla_doUnsupported};
+char sProjsunshockDoNoLongerSupported[] = "<projsunshock Do>No Longer supported \n";

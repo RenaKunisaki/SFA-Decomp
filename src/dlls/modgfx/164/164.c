@@ -19,3 +19,6 @@ void DummyA4_release(void)
 void DummyA4_initialise(void)
 {
 }
+
+void* lbl_80318D28[8] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                         DummyA4_initialise, DummyA4_release,   (void*)0x00000000, DummyA4_func03_ret_0};

@@ -10,7 +10,6 @@
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AF_projlightning1.h"
-#include "main/dll/dll_00B0_projlightning2.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -28,8 +27,13 @@ void projlightning1_initialise(void)
 {
 }
 
-char sProjlightning1DoNoLongerSupported[] = "<projlightning1 Do>No Longer supported \n";
+u32 lbl_803194A8[8] = {0x00000000,
+                       0x00000000,
+                       0x00000000,
+                       0x00030000,
+                       (u32)projlightning1_initialise,
+                       (u32)projlightning1_release,
+                       0x00000000,
+                       (u32)projlightning1_doUnsupported};
 
-DllDescriptorTable lbl_803194F8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projlightning2_initialise, projlightning2_release, (void*)0x00000000,
-                                    projlightning2_doUnsupported}};
+char sProjlightning1DoNoLongerSupported[] = "<projlightning1 Do>No Longer supported \n";

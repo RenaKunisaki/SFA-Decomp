@@ -9,8 +9,8 @@
  */
 #include "dolphin/os/OSReport.h"
 #include "types.h"
+#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B4_projenergise1.h"
-#include "main/dll/dll_00B5_projenergise2.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -28,14 +28,8 @@ void projenergise1_initialise(void)
 {
 }
 
-char sProjenergise1DoNoLongerSupported[] = "<projenergise1 Do>No Longer supported \n";
+DllDescriptorTable lbl_803196D8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projenergise1_initialise, projenergise1_release, (void*)0x00000000,
+                                    projenergise1_doUnsupported}};
 
-/* descriptor/ptr table auto 0x80319720-0x80319740 */
-u32 lbl_80319720[8] = {0x00000000,
-                       0x00000000,
-                       0x00000000,
-                       0x00030000,
-                       (u32)projenergise2_initialise,
-                       (u32)projenergise2_release,
-                       0x00000000,
-                       (u32)projenergise2_doUnsupported};
+char sProjenergise1DoNoLongerSupported[] = "<projenergise1 Do>No Longer supported \n";

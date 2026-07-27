@@ -9,7 +9,6 @@
 #include "dolphin/os.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00C1_projcore3.h"
-#include "main/dll/dll_00C2_projdfp1r.h"
 
 int projcore3_doUnsupported(void)
 {
@@ -25,10 +24,8 @@ void projcore3_initialise(void)
 {
 }
 
-char sProjcore3DoNoLongerSupported[] = "<projcore3 Do>No Longer supported \n";
+DllDescriptorTable lbl_803199F8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projcore3_initialise, projcore3_release, (void*)0x00000000,
+                                    projcore3_doUnsupported}};
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs).
- * Same idiom as dll_00AD_projmagicemmit1 / dll_000A_expgfx. */
-DllDescriptorTable lbl_80319A40 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projdfp1r_initialise, projdfp1r_release, (void*)0x00000000,
-                                    projdfp1r_doUnsupported}};
+char sProjcore3DoNoLongerSupported[] = "<projcore3 Do>No Longer supported \n";

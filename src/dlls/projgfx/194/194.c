@@ -9,6 +9,7 @@
 #include "main/dll/dll_BB.h"
 #include "main/dll/dll_BC.h"
 #include "main/dll/dll_8B.h"
+#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00C2_projdfp1r.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
@@ -27,15 +28,14 @@ void projdfp1r_initialise(void)
 {
 }
 
-/* Explicit length 40 (string data is 36 bytes; NUL-fill supplies the 4-byte
- * retail pad gap_07_80319A84_data) so the 35-word descriptor table below
- * starts 8-aligned at +0x28 as in retail. The u64-union idiom used by the
- * 8-word tables (dll_00AD/dll_000A) can't be used here: MWCC rounds the
- * union's size up to 0x90, adding 4 trailing bytes retail doesn't have. */
+DllDescriptorTable lbl_80319A40 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projdfp1r_initialise, projdfp1r_release, (void*)0x00000000,
+                                    projdfp1r_doUnsupported}};
+
+/* Explicit length preserves the four-byte retail padding before lbl_80319A88. */
 char sProjdfp1rDoNoLongerSupported[40] = "<projdfp1r Do>No Longer supported \n";
 
-/* descriptor/ptr table auto 0x80319a88-0x80319b14 (8-byte aligned in retail;
- * pointer tables regenerate ADDR32 relocs) */
+/* Camera interface table. */
 void* lbl_80319A88[35] = {(void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,

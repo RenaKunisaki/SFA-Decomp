@@ -31,7 +31,6 @@
 #include "main/dll/objfx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
 #include "main/dll/viewfinder.h"
-#include "main/dll/dll_000B_dll0b.h"
 #include "track/intersect_api.h"
 #include "main/lightmap.h"
 #include "main/dll/dll_80136a40.h"
@@ -83,12 +82,6 @@ typedef struct ExpgfxBillboardAngles
     s16 pitch;
     s16 yaw;
 } ExpgfxBillboardAngles;
-
-typedef union Dll0BDescriptorTable
-{
-    u32 words[30];
-    u64 align8;
-} Dll0BDescriptorTable;
 
 #define GX_BM_NONE        0
 #define GX_BM_BLEND       1
@@ -3466,37 +3459,6 @@ char sExpgfxExpTabIsFull[] = "expgfx.c: exptab is FULL\n";
 char sExpgfxInvalidTabIndex[] = "expgfx.c: invalid tabindex\n";
 
 char sExpgfxScaleOverflow[] = "expgfx.c: scale overflow\n";
-
-Dll0BDescriptorTable lbl_8030FCA8 = {{0x00000000,
-                                      0x00000000,
-                                      0x00000000,
-                                      0x00180000,
-                                      (u32)dll_0B_initialise,
-                                      (u32)dll_0B_release,
-                                      0x00000000,
-                                      (u32)dll_0B_onMapSetup,
-                                      (u32)dll_0B_func04,
-                                      (u32)dll_0B_func05,
-                                      (u32)dll_0B_func06,
-                                      (u32)dll_0B_func07,
-                                      (u32)dll_0B_func08,
-                                      (u32)dll_0B_func09,
-                                      (u32)dll_0B_func0A,
-                                      (u32)dll_0B_func0B,
-                                      (u32)dll_0B_func0C,
-                                      (u32)dll_0B_func0D,
-                                      (u32)dll_0B_func0E,
-                                      (u32)dll_0B_func0F,
-                                      (u32)dll_0B_func10,
-                                      (u32)dll_0B_func11,
-                                      (u32)dll_0B_func12,
-                                      (u32)dll_0B_func13,
-                                      (u32)dll_0B_func14,
-                                      (u32)dll_0B_func15,
-                                      (u32)dll_0B_func16,
-                                      (u32)dll_0B_func17,
-                                      (u32)dll_0B_func18,
-                                      0x00000000}};
 
 int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s16 resourceId)
 {

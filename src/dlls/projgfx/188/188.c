@@ -8,7 +8,6 @@
 #include "dolphin/os.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BC_projquakeshock.h"
-#include "main/dll/dll_00BD_projsunshock.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -26,8 +25,8 @@ void projquakeshock_initialise(void)
 {
 }
 
-char sProjquakeshockDoNoLongerSupported[] = "<projquakeshock Do>No Longer supported \n";
+void* lbl_80319888[8] = {(void*)0x00000000, (void*)0x00000000,           (void*)0x00000000,
+                         (void*)0x00030000, projquakeshock_initialise,   projquakeshock_release,
+                         (void*)0x00000000, projquakeshock_doUnsupported};
 
-DllDescriptorTable lbl_803198D8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projsunshock_initialise, projsunshock_release, (void*)0x00000000,
-                                    projsunshock_doUnsupported}};
+char sProjquakeshockDoNoLongerSupported[] = "<projquakeshock Do>No Longer supported \n";

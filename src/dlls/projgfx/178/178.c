@@ -7,7 +7,6 @@
 #include "dolphin/os.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B2_projrobotfire.h"
-#include "main/dll/dll_00B6_projsquirt1.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -25,8 +24,8 @@ void projrobotfire_initialise(void)
 {
 }
 
-char sProjrobotfireDoNoLongerSupported[] = "<projrobotfire Do>No Longer supported \n";
+DllDescriptorTable lbl_80319768 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projrobotfire_initialise, projrobotfire_release, (void*)0x00000000,
+                                    projrobotfire_doUnsupported}};
 
-DllDescriptorTable lbl_803197B0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projsquirt1_initialise, projsquirt1_release, (void*)0x00000000,
-                                    projsquirt1_doUnsupported}};
+char sProjrobotfireDoNoLongerSupported[] = "<projrobotfire Do>No Longer supported \n";

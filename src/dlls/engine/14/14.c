@@ -1,4 +1,5 @@
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/debug.h"
 #include "main/dll/mtxbuildarg_struct.h"
@@ -3779,3 +3780,36 @@ void partfx_initialise(void)
     }
     gPartfxCachedResourceCount = 0;
 }
+
+EmitterCfg gEffect2VelocityRangeTable = {
+    {
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.01f, 0.0f, 0.0f},
+    },
+    {10.0f, 0.0f, 0.0f},
+    517.0f,
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0},
+    {0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+    0xFF,
+    0xFF,
+    {0x00, 0x00},
+};
+
+ObjectDescriptor6 lbl_80310604 = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)partfx_initialise,
+    (ObjectDescriptorCallback)partfx_release,
+    0,
+    (ObjectDescriptorCallback)partfx_onMapSetup,
+    (ObjectDescriptorCallback)partfx_spawnObject,
+    (ObjectDescriptorCallback)partfx_updateFrameState,
+};

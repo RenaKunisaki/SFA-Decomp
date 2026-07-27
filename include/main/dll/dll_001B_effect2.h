@@ -19,6 +19,7 @@ typedef struct EmitterCfg
     u8 pad[2];
 } EmitterCfg;
 
+extern EmitterCfg gEffect2VelocityRangeTable;
 extern char sModgfxAlphaDebugFormat[];
 
 void Effect2_func03_nop(void);

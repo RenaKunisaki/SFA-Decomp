@@ -3,7 +3,6 @@
 #include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/texture.h"
-#include "main/dll/waterfx.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "main/cloud_action_runtime.h"
 #include "main/cloud_layer_state.h"
@@ -495,16 +494,3 @@ ResourceDescriptorCallbacks14 lbl_8030F7E8 = {
      (ResourceDescriptorCallback)__begin_critical_region,
      (ResourceDescriptorCallback)__kill_critical_regions,
      0x00000000}};
-ResourceDescriptorCallbacks11 lbl_8030F830 = {
-    {0x00000000, 0x00000000, 0x00000000, 0x000a0000},
-    {(ResourceDescriptorCallback)waterfx_initialise,
-     (ResourceDescriptorCallback)waterfx_release,
-     0x00000000,
-     (ResourceDescriptorCallback)waterfx_run,
-     (ResourceDescriptorCallback)waterfx_spawnImpactSurface,
-     (ResourceDescriptorCallback)waterfx_render,
-     (ResourceDescriptorCallback)waterfx_spawnSplashBurst,
-     (ResourceDescriptorCallback)waterfx_spawnRipple,
-     (ResourceDescriptorCallback)waterfx_spawnSimpleRipple,
-     (ResourceDescriptorCallback)waterfx_onMapSetup,
-     (ResourceDescriptorCallback)waterfx_setRippleScale}};

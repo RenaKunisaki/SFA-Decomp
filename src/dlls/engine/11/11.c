@@ -30,6 +30,12 @@
 #include "track/intersect_api.h"
 #include "string.h"
 
+typedef union Dll0BDescriptorTable
+{
+    u32 words[30];
+    u64 align8;
+} Dll0BDescriptorTable;
+
 ModgfxPendingSpawn* gModgfxPendingSpawnStartCursor;
 ModgfxPendingSpawn* gModgfxPendingSpawnWriteCursor;
 s16 gModgfxSequenceParamIndex;
@@ -1939,3 +1945,34 @@ void dll_0B_initialise(void)
         arr[i] = NULL;
     }
 }
+
+Dll0BDescriptorTable lbl_8030FCA8 = {{0x00000000,
+                                      0x00000000,
+                                      0x00000000,
+                                      0x00180000,
+                                      (u32)dll_0B_initialise,
+                                      (u32)dll_0B_release,
+                                      0x00000000,
+                                      (u32)dll_0B_onMapSetup,
+                                      (u32)dll_0B_func04,
+                                      (u32)dll_0B_func05,
+                                      (u32)dll_0B_func06,
+                                      (u32)dll_0B_func07,
+                                      (u32)dll_0B_func08,
+                                      (u32)dll_0B_func09,
+                                      (u32)dll_0B_func0A,
+                                      (u32)dll_0B_func0B,
+                                      (u32)dll_0B_func0C,
+                                      (u32)dll_0B_func0D,
+                                      (u32)dll_0B_func0E,
+                                      (u32)dll_0B_func0F,
+                                      (u32)dll_0B_func10,
+                                      (u32)dll_0B_func11,
+                                      (u32)dll_0B_func12,
+                                      (u32)dll_0B_func13,
+                                      (u32)dll_0B_func14,
+                                      (u32)dll_0B_func15,
+                                      (u32)dll_0B_func16,
+                                      (u32)dll_0B_func17,
+                                      (u32)dll_0B_func18,
+                                      0x00000000}};

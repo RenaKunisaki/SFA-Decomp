@@ -9,7 +9,6 @@
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B7_projship1.h"
-#include "main/dll/dll_00BB_projwallpower.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -27,8 +26,8 @@ void projship1_initialise(void)
 {
 }
 
-char sProjship1DoNoLongerSupported[] = "<projship1 Do>No Longer supported \n";
+DllDescriptorTable lbl_803197F8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projship1_initialise, projship1_release, (void*)0x00000000,
+                                    projship1_doUnsupported}};
 
-DllDescriptorTable lbl_80319840 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projwallpower_initialise, projwallpower_release, (void*)0x00000000,
-                                    projwallpower_doUnsupported}};
+char sProjship1DoNoLongerSupported[] = "<projship1 Do>No Longer supported \n";
