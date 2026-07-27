@@ -3831,6 +3831,7 @@ void fn_8013E0D0(GameObject* gobj, TrickyState* t)
     u8 ok;
     int go;
     int* best = NULL;
+    f32 detourRatio;
     f32 bestd = lbl_803E23DC;
     int count;
     u8* cfg;
@@ -4151,13 +4152,14 @@ void fn_8013E0D0(GameObject* gobj, TrickyState* t)
             void** list = (void**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
             int i = 0;
             p = list;
+            detourRatio = lbl_803E23F8;
             for (; i < count; i++)
             {
                 f32 d1 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &tgt->anim.worldPosX);
                 f32 d2 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX,
                                         &t->playerObj->anim.worldPosX);
                 f32 d3 = Vec_xzDistance(&tgt->anim.worldPosX, &t->playerObj->anim.worldPosX);
-                if (d1 + d2 > lbl_803E23F8 * d3)
+                if (d1 + d2 > detourRatio * d3)
                 {
                     f32 d4 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &gobj->anim.worldPosX);
                     if (d2 - d4 > bestd)
