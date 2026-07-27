@@ -246,7 +246,4 @@ void lfxemitter_init(LfxEmitterObject* obj, LfxEmitterPlacement* setup);
 void lfxemitter_release(void);
 void lfxemitter_initialise(void);
 
-void warpPadPlayerStandingOn(GameObject* obj);
-void warpPadFn_8019042c(GameObject* obj);
-
 #endif /* MAIN_DLL_CF_CFCHUCKOBJ_H_ */

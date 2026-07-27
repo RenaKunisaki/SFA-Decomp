@@ -344,10 +344,11 @@ main.dol byte-identical):
 Trailing-fragment dispositions (the descriptor TU-end pin leaves post-init
 helper tails as synthetic units):
 - **warppad.c** (`8019042C-80190BD4`, ex-`dll_8019042C.c`): the transporter
-  DLL (0x12C) head — `warpPadFn_8019042c`/`warpPadPlayerStandingOn`, a
-  NO-RETAIL-NAME infrastructure helper TU called by dll_012C_transporter via
-  external `bl` relocs (distinct TU, not inlined). Renamed after its
-  `warp_pad.h` / `warpPad*` stem.
+  DLL (0x12C) head — `Transporter_updateEffects`/`Transporter_updateInteraction`,
+  a NO-RETAIL-NAME infrastructure helper TU called by
+  `src/dlls/objects/300_Transporter/Transporter.c` via external `bl` relocs
+  (distinct TU, not inlined). Its shared layouts and API live in the slot-300
+  canonical header.
 - **landed_arwing tail** (`80189610-801899B4`): `updateHitReaction`/
   `updateDamageTexture` are part of the Landed_Arwing DLL (0x11B) — called by
   `landed_arwing_update`, kept as one TU in retail (distinct global symbols,
