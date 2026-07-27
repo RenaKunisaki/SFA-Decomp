@@ -215,7 +215,7 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
         inpResetChannelDefaults((u8)i, seqId);
     }
 
-    if (midiData != NULL)
+    if (midiSetup != NULL)
     {
         for (i = 0; i < 16; i++)
         {
