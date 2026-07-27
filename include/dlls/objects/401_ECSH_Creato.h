@@ -11,7 +11,7 @@ typedef struct ECSHCreatorPlacement {
     u8 unknown1A[0x1E - 0x1A];
     s8 initialYaw;
     s8 childGameBitOffset;
-    u8 childGroupSlotOffset;
+    u8 hitPointsOffset;
     u8 unknown21[0x24 - 0x21];
 } ECSHCreatorPlacement;
 
@@ -21,7 +21,7 @@ STATIC_ASSERT(offsetof(ECSHCreatorPlacement, triggerGameBit) == 0x18);
 STATIC_ASSERT(offsetof(ECSHCreatorPlacement, unknown1A) == 0x1A);
 STATIC_ASSERT(offsetof(ECSHCreatorPlacement, initialYaw) == 0x1E);
 STATIC_ASSERT(offsetof(ECSHCreatorPlacement, childGameBitOffset) == 0x1F);
-STATIC_ASSERT(offsetof(ECSHCreatorPlacement, childGroupSlotOffset) == 0x20);
+STATIC_ASSERT(offsetof(ECSHCreatorPlacement, hitPointsOffset) == 0x20);
 STATIC_ASSERT(offsetof(ECSHCreatorPlacement, unknown21) == 0x21);
 
 typedef struct ECSHCreatorState {
@@ -29,7 +29,7 @@ typedef struct ECSHCreatorState {
     s16 spawnTimerRate;
     s16 triggerGameBit;
     s16 unknown06;
-    s16 childGroupSlot;
+    s16 sharpClawHitPoints;
 } ECSHCreatorState;
 
 STATIC_ASSERT(sizeof(ECSHCreatorState) == 0x0A);
@@ -37,7 +37,7 @@ STATIC_ASSERT(offsetof(ECSHCreatorState, spawnTimer) == 0x00);
 STATIC_ASSERT(offsetof(ECSHCreatorState, spawnTimerRate) == 0x02);
 STATIC_ASSERT(offsetof(ECSHCreatorState, triggerGameBit) == 0x04);
 STATIC_ASSERT(offsetof(ECSHCreatorState, unknown06) == 0x06);
-STATIC_ASSERT(offsetof(ECSHCreatorState, childGroupSlot) == 0x08);
+STATIC_ASSERT(offsetof(ECSHCreatorState, sharpClawHitPoints) == 0x08);
 
 extern const f32 gECSHCreatorRenderScale;
 extern ObjectDescriptor gECSHCreatorObjDescriptor;
