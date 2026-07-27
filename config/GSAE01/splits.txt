@@ -1028,7 +1028,7 @@ dlls/projgfx/181/181.c:
 	.text       start:0x801007F0 end:0x80100828
 	.data       start:0x80319740 end:0x80319788
 
-main/dll/dll_00B2_projrobotfire.c:
+dlls/projgfx/178/178.c:
 	.text       start:0x80100828 end:0x80100860
 	.data       start:0x80319788 end:0x803197D0
 

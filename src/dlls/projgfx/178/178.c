@@ -1,5 +1,5 @@
 /*
- * projrobotfire (DLL 0x00B2) - the robot fire projectile object.
+ * projrobotfire (DLL 178 / 0x00B2) - the robot fire projectile object.
  *
  * The entire retail DLL is a stub: doUnsupported logs "no longer supported"
  * via OSReport and returns -1; release/initialise are empty.
