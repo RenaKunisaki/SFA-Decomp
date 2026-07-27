@@ -1,8 +1,8 @@
 /* FireFlyLant (DLL 0x10B) - container and release point for lantern fireflies. */
 #include "dlls/objects/267_FireFlyLant.h"
 
+#include "dlls/objects/268_LanternFire.h"
 #include "game/objects/object.h"
-#include "main/dll/dll_010C_lanternfirefly.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits.h"
@@ -33,18 +33,6 @@
 static const f32 sFireFlyLanternSpawnHeightOffset = 2.0f;
 static const f32 sFireFlyLanternAnchorHeightOffset = 5.0f;
 static const f32 sFireFlyLanternModelScale = 1.0f;
-
-typedef void (*LanternFireFlyReleaseCallback)(GameObject* firefly);
-typedef void (*LanternFireFlySetAnchorCallback)(GameObject* firefly, f32 x, f32 y, f32 z);
-
-typedef struct LanternFireFlyRuntimeInterface {
-    void* callbacks[9];
-    LanternFireFlyReleaseCallback release;
-    LanternFireFlySetAnchorCallback setAnchor;
-} LanternFireFlyRuntimeInterface;
-
-STATIC_ASSERT(offsetof(LanternFireFlyRuntimeInterface, release) == 0x24);
-STATIC_ASSERT(offsetof(LanternFireFlyRuntimeInterface, setAnchor) == 0x28);
 
 GameObject* FireFlyLantern_spawnFireFly(GameObject* obj) {
     LanternFireFlyPlacement* setup;
@@ -83,7 +71,7 @@ int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
             if (state->fireflyCount != 0) {
                 child = state->fireflies[state->fireflyCount - 1];
                 if (child != NULL) {
-                    ((LanternFireFlyRuntimeInterface*)*child->anim.dll)->release(child);
+                    ((LanternFireFlyRuntimeInterface*)*child->anim.dll)->releaseFromLantern(child);
                 }
                 --state->fireflyCount;
                 --state->remainingCount;
@@ -145,7 +133,7 @@ void FireFlyLantern_update(GameObject* obj) {
         if (state->fireflyCount != 0) {
             child = state->fireflies[0];
             if (child != NULL) {
-                ((LanternFireFlyRuntimeInterface*)*child->anim.dll)->release(child);
+                ((LanternFireFlyRuntimeInterface*)*child->anim.dll)->releaseFromLantern(child);
             }
             gameBitDecrement(state->countGameBit);
         }

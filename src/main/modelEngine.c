@@ -64,6 +64,7 @@
 #include "dlls/objects/265.h"
 #include "dlls/objects/266_Fall_Ladder.h"
 #include "dlls/objects/267_FireFlyLant.h"
+#include "dlls/objects/268_LanternFire.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -220,7 +221,7 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
 extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLanded_ArwingObjDescriptor,
-    gLanternFireFlyObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
+    gLaserBeamObjDescriptor, gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMMP_BridgeObjDescriptor, gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
@@ -1216,7 +1217,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gBreakableCarryableObjDescriptor,
     (ResourceDescriptor*)&gFall_LaddersObjDescriptor,
     (ResourceDescriptor*)&gFireFlyLanternObjDescriptor,
-    &gLanternFireFlyObjDescriptor,
+    (ResourceDescriptor*)&gLanternFireFlyObjDescriptor,
     (ResourceDescriptor*)&gPortalSpellDoorObjDescriptor,
     &gDeathSeqObjDescriptor,
     &gMMP_BridgeObjDescriptor,

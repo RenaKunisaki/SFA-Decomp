@@ -134,6 +134,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   launders before normalizing them. If the simpler spelling changes codegen, retain the proven
   spelling and improve the surrounding names instead; cosmetic uniformity does not justify a match
   regression.
+- Preserve a literal's C type when lifting it into a named macro or enum. Suffixes are semantic:
+  replacing `1u` with a macro whose replacement is `1` can change the usual arithmetic conversions
+  and turn a target `cmplwi` into `cmpwi`, even when the runtime values are identical. Rebuild the
+  affected function after every such lift.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.
