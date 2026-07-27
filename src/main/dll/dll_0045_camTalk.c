@@ -5,14 +5,11 @@
 #include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/camera_interface.h"
-#include "main/dll/CAM/viewfinder_state.h"
 #include "main/object_transform.h"
 #include "string.h"
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/player_api.h"
-#include "main/dll/DB/DBprotection.h"
-#include "main/dll/SB/dll_01E8_sbgalleon.h"
 
 CameraModeBikeState* gCamTalkBikeState;
 extern const f32 gCamTalkDefaultFov;
@@ -25,12 +22,6 @@ extern const f32 lbl_803E17A8;
 #define CAM_TALK_FOLLOW_SMOOTHING lbl_803E17A8
 #define CAM_TALK_ROLL_SCALE lbl_803E17A8
 #define CAM_TALK_ROLL_SMOOTHING lbl_803E17B4
-extern ViewfinderState* lbl_803DD548;
-extern f32 lbl_803E17C0;
-extern f32 lbl_803E17C4;
-extern f32 lbl_803E17C8;
-extern f32 lbl_803E17CC;
-extern f32 lbl_803E17D0;
 
 void CameraModeBike_copyToCurrent(f32* inputs)
 {
@@ -162,132 +153,4 @@ void CameraModeBike_release(void)
 
 void CameraModeBike_initialise(void)
 {
-}
-
-void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
-{
-    register GameObject* self = focus;
-    GameObject* galleon;
-    int galleonState;
-    float prevPosZ;
-    float prevPosY;
-    float prevPosX;
-    float localOffset[3];
-
-    if (self->anim.classId == 1)
-    {
-        cameraGetPrevPos2(self, &prevPosX, &prevPosY, &prevPosZ);
-        if (((resetClamp != 0) || (lbl_803DD548->camPosX != prevPosX)) || (lbl_803DD548->camPosZ != prevPosZ))
-        {
-            lbl_803DD548->clampedPosY = prevPosY;
-        }
-        lbl_803DD548->camPosX = prevPosX;
-        lbl_803DD548->camPosY = prevPosY;
-        lbl_803DD548->camPosZ = prevPosZ;
-    }
-    else
-    {
-        lbl_803DD548->camPosX = self->anim.worldPosX;
-        lbl_803DD548->camPosY = lbl_803E17C0 + self->anim.worldPosY;
-        lbl_803DD548->camPosZ = self->anim.worldPosZ;
-        lbl_803DD548->clampedPosY = lbl_803DD548->camPosY;
-    }
-    galleon = getSbGalleon();
-    if (galleon != NULL)
-    {
-        galleonState = DBprotection_getCameraState(galleon);
-        if (galleonState == 2)
-        {
-            localOffset[0] = self->anim.worldPosX - galleon->anim.worldPosX;
-            localOffset[1] = (lbl_803E17C0 + self->anim.worldPosY) - galleon->anim.worldPosY;
-            localOffset[2] = self->anim.worldPosZ - galleon->anim.worldPosZ;
-            vecRotateZXY(&galleon->anim.rotX, localOffset);
-            lbl_803DD548->camPosX = galleon->anim.worldPosX + localOffset[0];
-            lbl_803DD548->camPosY = galleon->anim.worldPosY + localOffset[1];
-            lbl_803DD548->camPosZ = galleon->anim.worldPosZ + localOffset[2];
-        }
-    }
-    return;
-}
-
-void firstPersonExit(CameraObject* camera)
-{
-    register CameraObject* self = camera;
-    GameObject* target;
-    CameraModeBikeState* st;
-    float tangent;
-    float dx;
-    float dz;
-    int targetYaw;
-    float targetPos[3];
-    u8 unusedAngle[4];
-
-    target = (GameObject*)self->anim.targetObj;
-    lbl_803DD548->posXCurve.start = self->anim.worldPosX;
-    tangent = lbl_803E17C4;
-    lbl_803DD548->posXCurve.startTangent = lbl_803E17C4;
-    lbl_803DD548->posXCurve.endTangent = tangent;
-    lbl_803DD548->posYCurve.start = self->anim.worldPosY;
-    lbl_803DD548->posYCurve.startTangent = tangent;
-    lbl_803DD548->posYCurve.endTangent = tangent;
-    lbl_803DD548->posZCurve.start = self->anim.worldPosZ;
-    lbl_803DD548->posZCurve.startTangent = tangent;
-    lbl_803DD548->posZCurve.endTangent = tangent;
-    camcontrol_getTargetPosition(self, &target->anim, targetPos, (s16*)unusedAngle);
-    lbl_803DD548->posXCurve.end = targetPos[0];
-    lbl_803DD548->posYCurve.end = targetPos[1];
-    lbl_803DD548->posZCurve.end = targetPos[2];
-    dx = lbl_803DD548->posXCurve.end - lbl_803DD548->posXCurve.start;
-    dz = lbl_803DD548->posZCurve.end - lbl_803DD548->posZCurve.start;
-    lbl_803DD548->exitDistance = sqrtf(dx * dx + dz * dz);
-    lbl_803DD548->viewCurve.px = &lbl_803DD548->yawCurve.start;
-    lbl_803DD548->viewCurve.py = &lbl_803DD548->pitchCurve.start;
-    lbl_803DD548->viewCurve.pz = NULL;
-    lbl_803DD548->viewCurve.count = 4;
-    lbl_803DD548->viewCurve.dir = 0;
-    lbl_803DD548->viewCurve.eval = Curve_EvalHermite;
-    lbl_803DD548->viewCurve.coeffFn = Curve_BuildHermiteCoeffs;
-    lbl_803DD548->yawCurve.start = (float)(int)self->anim.rotX;
-    targetYaw = getAngle((double)(lbl_803DD548->posXCurve.end - target->anim.worldPosX),
-                         (double)(lbl_803DD548->posZCurve.end - target->anim.worldPosZ));
-    lbl_803DD548->yawCurve.end = (float)(int)(short)(0x8000 - targetYaw);
-    tangent = lbl_803E17C4;
-    lbl_803DD548->yawCurve.startTangent = lbl_803E17C4;
-    lbl_803DD548->yawCurve.endTangent = tangent;
-    if (((lbl_803DD548->yawCurve.start - lbl_803DD548->yawCurve.end) > lbl_803E17C8) ||
-        ((lbl_803DD548->yawCurve.start - lbl_803DD548->yawCurve.end) < lbl_803E17CC))
-    {
-        if (lbl_803DD548->yawCurve.start < lbl_803E17C4)
-        {
-            lbl_803DD548->yawCurve.start = *(f32*)&lbl_803DD548->yawCurve.start + lbl_803E17D0;
-        }
-        else
-        {
-            if (lbl_803DD548->yawCurve.end < lbl_803E17C4)
-            {
-                lbl_803DD548->yawCurve.end = *(f32*)&lbl_803DD548->yawCurve.end + lbl_803E17D0;
-            }
-        }
-    }
-    lbl_803DD548->pitchCurve.start = (float)(int)self->anim.rotY;
-    tangent = lbl_803E17C4;
-    lbl_803DD548->pitchCurve.end = lbl_803E17C4;
-    lbl_803DD548->pitchCurve.startTangent = tangent;
-    lbl_803DD548->pitchCurve.endTangent = tangent;
-    if (((lbl_803DD548->pitchCurve.start - lbl_803DD548->pitchCurve.end) > lbl_803E17C8) ||
-        ((lbl_803DD548->pitchCurve.start - lbl_803DD548->pitchCurve.end) < lbl_803E17CC))
-    {
-        if (lbl_803DD548->pitchCurve.start < lbl_803E17C4)
-        {
-            lbl_803DD548->pitchCurve.start = *(f32*)&lbl_803DD548->pitchCurve.start + lbl_803E17D0;
-        }
-        else
-        {
-            if (lbl_803DD548->pitchCurve.end < lbl_803E17C4)
-            {
-                lbl_803DD548->pitchCurve.end = *(f32*)&lbl_803DD548->pitchCurve.end + lbl_803E17D0;
-            }
-        }
-    }
-    curvesMove(&lbl_803DD548->viewCurve);
 }

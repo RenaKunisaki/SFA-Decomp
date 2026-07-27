@@ -1084,11 +1084,8 @@ main/dll/CAM/cammodes.c:
 	.data       start:0x80319B58 end:0x80319CB4
 
 main/dll/cutcam.c:
-	.text       start:0x80103524 end:0x801046F4
+	.text       start:0x80103524 end:0x80106654
 	.sbss       start:0x803DD528 end:0x803DD538
-
-main/dll/dll_0042_unk.c:
-	.text       start:0x801046F4 end:0x80106654
 	.sdata2     start:0x803E16D0 end:0x803E16D8
 
 main/dll/pathcamgroup.c:
@@ -1097,12 +1094,12 @@ main/dll/pathcamgroup.c:
 	.sdata2     start:0x803E1740 end:0x803E177C
 
 main/dll/dll_0045_camTalk.c:
-	.text       start:0x80107AEC end:0x8010847C
+	.text       start:0x80107AEC end:0x80108010
 	.sbss       start:0x803DD540 end:0x803DD548
 	.sdata2     start:0x803E177C end:0x803E17C0
 
 main/dll/dll_0044_cameramodeviewfinder.c:
-	.text       start:0x8010847C end:0x80109748
+	.text       start:0x80108010 end:0x80109748
 	.sdata      start:0x803DB9A0 end:0x803DB9A8
 	.sbss       start:0x803DD548 end:0x803DD550
 
