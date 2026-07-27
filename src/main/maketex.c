@@ -6808,7 +6808,6 @@ void* jumptable_8030F298[12] = {
 #include "main/mm.h"
 #include "main/maketex_sequence_api.h"
 
-extern u8 gObjSeqRuntimeBuffer[];
 extern f32 lbl_803DEFF0;
 extern u8 gObjSeqCameraActive;
 extern int gObjSeqCamMode;

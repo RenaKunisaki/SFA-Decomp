@@ -501,9 +501,7 @@ typedef struct CounterText
 extern const CounterText gHudBlankCounterTextA;
 extern const CounterText gHudBlankCounterTextB;
 extern const f32 lbl_803E1FB8;
-extern f32 lbl_803DD83C;
 extern u8 lbl_803DD840;
-extern f32 lbl_803DD844;
 extern f32 gHudElemOpacityFloor;
 extern const f32 lbl_803E1FC0;
 extern f32 gHudMoneyFlashOpacity;

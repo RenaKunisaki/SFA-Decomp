@@ -1172,7 +1172,6 @@ void objFreeObjDef(u8* obj, int flag)
     mm_free(obj);
 }
 
-extern s16 gObjPartitionPivot;
 extern ObjLinkedList gObjUpdateList;
 extern s8 gEffectBoxObjectCount;
 
