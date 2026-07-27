@@ -160,6 +160,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   canonical engine headers. Use the shared definition when it already exists; local duplicates such
   as per-object names for `OBJECT_OBJFLAG_HITDETECT_DISABLED` obscure that multiple DLLs implement
   the same engine contract.
+- When an object-family group or ID is owned by one DLL but used by other TUs, define it once in
+  the owning canonical header and use that definition at every proven consumer. Do not preserve
+  consumer-local aliases or raw numeric lookups for the same family contract; audit all active-target
+  uses before declaring the migration complete.
 - When a unit-local semantic name conflicts with the canonical name for the same engine value, audit
   every active-target consumer before choosing either name. If the combined behavior establishes a
   stronger shared meaning, correct the canonical definition and back-apply it to all consumers

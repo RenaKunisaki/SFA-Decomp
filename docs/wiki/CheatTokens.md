@@ -312,9 +312,8 @@ enum QuestWellRow
 ```
 
 ```c
-/* Add to include/main/gamebits.h's enum GameBitId (between GAMEBIT_WarpRelated0EFB = 0xEFB and
- * GAMEBIT_PlayerInShop = 0xEFE - slot 0xEFD stays a gap). Currently a private
- * #define GAMEBIT_MAZEWELL_ACTIVE 0xefc in GM_MazeWell.c; gates Music_Trigger(0x36, ..)
- * and the Well's hitbox-disable state. Set in GM_MazeWell_init, cleared in GM_MazeWell_free. */
+/* In include/main/gamebit_ids.h's GameBitId enum, between GAMEBIT_MC_IsActive and
+ * GAMEBIT_SETPIECE_ACTIVE. Gates Music_Trigger(0x36, ...) and the Well's
+ * hitbox-disable state. Set in GM_MazeWell_init and cleared in GM_MazeWell_free. */
 GAMEBIT_MAZEWELL_ACTIVE = 0xEFC, /* table 0; Music_Trigger(0x36) + Well active/hitbox state */
 ```

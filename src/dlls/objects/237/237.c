@@ -33,7 +33,6 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define COLLECTIBLE_OBJECT_GROUP        4
 #define COLLECTIBLE_SEQ_ID_FIRE_CRYSTAL 0xA8
 #define COLLECTIBLE_SEQ_ID_TRUTH_HORN   0x156
 #define COLLECTIBLE_SEQ_ID_MOON_SEED    0x6A6

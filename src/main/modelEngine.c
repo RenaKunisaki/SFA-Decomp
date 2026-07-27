@@ -81,6 +81,8 @@
 #include "dlls/objects/282.h"
 #include "dlls/objects/283_Landed_Arwi.h"
 #include "dlls/objects/284.h"
+#include "dlls/objects/285.h"
+#include "dlls/objects/286_MagicCaveBo.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -236,7 +238,7 @@ extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, 
 extern ResourceDescriptor gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
     gMMP_levelcontrolObjDescriptor, gMMP_moonrockObjDescriptor;
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
-    gMMSH_WaterSpikeObjDescriptor, gMagicCaveBottomObjDescriptor, gMagicCaveTopObjDescriptor,
+    gMMSH_WaterSpikeObjDescriptor, gMagicCaveTopObjDescriptor,
     gMagicLightObjDescriptor;
 extern ResourceDescriptor gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor,
     gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
@@ -263,8 +265,8 @@ extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpi
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
     gTextBlockObjDescriptor, gTimerObjDescriptor;
-extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreasureChestObjDescriptor,
-    gTreeBirdObjDescriptor, gTrickyCurveObjDescriptor, gTrickyGuardSpotObjDescriptor;
+extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreeBirdObjDescriptor,
+    gTrickyCurveObjDescriptor, gTrickyGuardSpotObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
 extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescriptor, gVFP_LevelControlObjDescriptor,
@@ -1241,8 +1243,8 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDecoration11AObjDescriptor,
     (ResourceDescriptor*)&gLanded_ArwingObjDescriptor,
     (ResourceDescriptor*)&gStaffActivatedObjDescriptor,
-    &gTreasureChestObjDescriptor,
-    &gMagicCaveBottomObjDescriptor,
+    (ResourceDescriptor*)&gTreasureChestObjDescriptor,
+    (ResourceDescriptor*)&gMagicCaveBottomObjDescriptor,
     &gMagicCaveTopObjDescriptor,
     &gTrickyGuardSpotObjDescriptor,
     &gInfoTextObjDescriptor,

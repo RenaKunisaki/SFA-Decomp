@@ -218,12 +218,11 @@ literal — these are the runtime "typed pointer into WARPTAB" equivalent of the
   `def->warpMapIdx` (`s8`, offset `0x1a`) is passed straight to `warpToMap`.
 - **`src/dlls/objects/287_MagicCaveTo/MagicCaveTo.c`** /
   **`src/dlls/objects/286_MagicCaveBo/MagicCaveBo.c`** (DLL `0x011F`/`0x011E`, Magic
-  Cave top/bottom): `MagiccavetopPlacement.warpMapId` (`s8`) is one placement field; a *second*
+  Cave top/bottom): the top placement's `warpMapId` (`s8`) is one field; a *second*
   field, `.gameBitValue` (`s8`), is written into game bit `0x1B8`
-  (`GAMEBIT_MagicCaveExitWarp` in `include/main/gamebits.h`, commented there as "WARPTAB index that
-  magic cave will exit to") by the top half, then read back by the bottom half
-  (`MAGICCAVE_GAMEBIT_WARP_DEST`, `mainGetBit(...)` passed to `warpToMap`). Both files independently
-  define `#define MAGICCAVE_GAMEBIT_WARP_DEST 0x1b8`, matching the gamebit enum exactly.
+  (`GAMEBIT_MagicCaveExitWarp` in `include/main/gamebit_ids.h`, documented there as the WARPTAB index
+  that the Magic Cave exits to) by the top half, then read back through the same canonical gamebit ID
+  by the bottom half (`mainGetBit(...)` passed to `warpToMap`).
 - **`CF/warp_pad.h`**: `WarpPadPlacement.warpId` (`s8`, offset `0x1A`) — the generic warp-pad
   object's placement-authored destination index (used by `src/dlls/objects/300_Transporter/Transporter.c`'s
   `setup->warpId`).
