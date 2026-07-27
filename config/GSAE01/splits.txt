@@ -1203,7 +1203,7 @@ main/dll/dll_004F_dll4f.c:
 	.sbss       start:0x803DD590 end:0x803DD598
 	.sdata2     start:0x803E1A88 end:0x803E1AC0
 
-main/dll/dll_0050_cameramodecrawl.c:
+dlls/engine/80/80.c:
 	.text       start:0x8010F540 end:0x8010FA54
 	.data       start:0x80319E68 end:0x80319E98
 	.sbss       start:0x803DD598 end:0x803DD5A0

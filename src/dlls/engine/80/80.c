@@ -1,20 +1,5 @@
 /*
- * cameramodecrawl (DLL 0x50) - the "crawl" camera mode.
- *
- * Owns the CameraModeCrawlState singleton (lbl_803DD598): allocates it on
- * init, frees it on shutdown, and on each update positions the camera behind
- * the target. The packed yaw is converted to radians via 3.1415927f/32768.0f
- * (pi numerator over 0x8000 denominator). With its own handler it
- * parks the camera at a fixed follow distance/height (13.0f/20.0f)
- * facing the target's yaw, eases rotX toward the target heading and pins
- * rotY to 2048; with the default handler
- * active it delegates positioning to the shared camera-interface entry and
- * forwards the result. copyToCurrent snapshots the target's transform into
- * the live camera. The camera position is finally pushed back to local space
- * via Obj_TransformWorldPointToLocal.
- *
- * The remaining entry points (release/initialise) are empty mode-table slots
- * shared with the sibling camera-mode DLLs.
+ * DLL 80 / 0x50 - crawl camera mode.
  */
 #include "main/mm.h"
 #include "main/resource.h"
