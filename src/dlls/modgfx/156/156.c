@@ -1,5 +1,5 @@
 /*
- * dll9cfunc0 (DLL 0x9C) - one of the screenfx scene builders (sibling of
+ * DLL 156 / 0x9C - one of the screenfx scene builders (sibling of
  * DLL 0x9A/0x9B). dll_9C_func03 fills a ScreenFxPart list (two fixed
  * entries, then 0/1 variant entries selected by `b`) plus a ScreenFxHdr
  * describing a multi-state screen effect (texture/model ids, per-part
@@ -21,7 +21,6 @@
 
 
 extern u8 lbl_80317E00[];
-
 
 void dll_9C_func03(int target, int variant, int parent, u32 flags)
 {
