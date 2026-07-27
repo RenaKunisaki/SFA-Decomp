@@ -241,23 +241,25 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
             {
                 if (j == 0)
                 {
-                    *w1 = pts[1]->x + (pts[1]->x - pts[2]->x);
-                    *w2 = pts[1]->y + (pts[1]->y - pts[2]->y);
-                    *w3 = pts[1]->z + (pts[1]->z - pts[2]->z);
-                    *w4 = (f32)(pts[1]->sampleA + (pts[1]->sampleA - pts[2]->sampleA));
-                    *w5 = (f32)(pts[1]->sampleB + (pts[1]->sampleB - pts[2]->sampleB));
-                    *w6 = (f32)(pts[1]->sampleC + (pts[1]->sampleC - pts[2]->sampleC));
-                    *w7 = (f32)pts[1]->sampleD + ((f32)pts[1]->sampleD - (f32)pts[2]->sampleD);
+                    node = pts[1];
+                    *w1 = node->x + (node->x - pts[2]->x);
+                    *w2 = node->y + (node->y - pts[2]->y);
+                    *w3 = node->z + (node->z - pts[2]->z);
+                    *w4 = (f32)(node->sampleA + (node->sampleA - pts[2]->sampleA));
+                    *w5 = (f32)(node->sampleB + (node->sampleB - pts[2]->sampleB));
+                    *w6 = (f32)(node->sampleC + (node->sampleC - pts[2]->sampleC));
+                    *w7 = (f32)node->sampleD + ((f32)node->sampleD - (f32)pts[2]->sampleD);
                 }
                 else if (j == 3)
                 {
-                    *w1 = pts[2]->x + (pts[2]->x - pts[1]->x);
-                    *w2 = pts[2]->y + (pts[2]->y - pts[1]->y);
-                    *w3 = pts[2]->z + (pts[2]->z - pts[1]->z);
-                    *w4 = (f32)(pts[2]->sampleA + (pts[2]->sampleA - pts[1]->sampleA));
-                    *w5 = (f32)(pts[2]->sampleB + (pts[2]->sampleB - pts[1]->sampleB));
-                    *w6 = (f32)(pts[2]->sampleC + (pts[2]->sampleC - pts[1]->sampleC));
-                    *w7 = (f32)pts[2]->sampleD + ((f32)pts[2]->sampleD - (f32)pts[1]->sampleD);
+                    node = pts[2];
+                    *w1 = node->x + (node->x - pts[1]->x);
+                    *w2 = node->y + (node->y - pts[1]->y);
+                    *w3 = node->z + (node->z - pts[1]->z);
+                    *w4 = (f32)(node->sampleA + (node->sampleA - pts[1]->sampleA));
+                    *w5 = (f32)(node->sampleB + (node->sampleB - pts[1]->sampleB));
+                    *w6 = (f32)(node->sampleC + (node->sampleC - pts[1]->sampleC));
+                    *w7 = (f32)node->sampleD + ((f32)node->sampleD - (f32)pts[1]->sampleD);
                 }
             }
             pwNode++;
@@ -289,7 +291,8 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
             {
                 wp = axisOut;
                 upper = 32768.0f;
-                do
+                step = 0;
+                while (step < 3)
                 {
                     v0 = wp[0];
                     v1 = wp[1];
@@ -306,7 +309,8 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
                         }
                     }
                     wp++;
-                } while (wp < axisOut + 3);
+                    step++;
+                }
             }
             axis++;
         } while (axis < 3);
@@ -426,8 +430,8 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
     dz1 = pts[2]->z - pts[1]->z;
     if (pts[0] != NULL)
     {
-        sz = pts[1]->z - pts[0]->z;
         sx = pts[1]->x - pts[0]->x;
+        sz = pts[1]->z - pts[0]->z;
     }
     else
     {
@@ -442,8 +446,8 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
         nx = nx / len;
         nz = nz / len;
     }
-    p1z = pts[1]->z;
     p1x = pts[1]->x;
+    p1z = pts[1]->z;
     negdot = nx * p1x + nz * p1z;
     negdot = -negdot;
     t1 = nx * dx1 + nz * dz1;
