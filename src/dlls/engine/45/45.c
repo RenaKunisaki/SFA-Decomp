@@ -1,21 +1,3 @@
-/*
- * effect20 (DLL 0x2D) - a particle-effect spawn table DLL.
- *
- * Effect20_func04 is the workhorse: given an effect id (0x79E..), a source
- * object, optional PartFxSpawnParams / extra-arg vectors and spawn flags, it
- * fills a PartFxSpawn request (position, velocity, scale, lifetime, texture,
- * colors, behavior/render flags) per-id and hands it to
- * gExpgfxInterface->spawnEffect. Most parameters are randomized via
- * randomGetRange and scaled by per-id float constants; vecRotateZXY orients
- * velocity into the source's frame.
- *
- * Effect20_func05 advances this DLL's shared animation phases each step
- * (gEffect20StepScrollA/88C scroll accumulators wrapped at 1.0, and the
- * gEffect20SinePhase0/404 sine sweeps clamped to 0x7FFF).
- *
- * Effect20_func03_nop, Effect20_release, and Effect20_initialise are empty
- * stubs.
- */
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
@@ -36,15 +18,6 @@ f32 gEffect20SpawnScrollA = 0.1f;
 f32 gEffect20SpawnScrollB = 0.3f;
 f32 gEffect20StepScrollA = 0.1f;
 f32 gEffect20StepScrollB = 0.3f;
-
-
-/*
- * Field names inherited from ExpgfxSpawnConfig (include/main/expgfx_internal.h),
- * the consumer-side definition of this 0x64-byte spawn request consumed by
- * gExpgfxInterface->spawnEffect (expgfx_addremove). Widths kept as written here
- * (colorWord0..2 are the u16 spelling of the consumer's ExpgfxSpawnColorPair;
- * effectIdByte/modelIdByte land in bytes the consumer currently ignores).
- */
 
 ObjectDescriptor6 lbl_80311100 = {
     0,
