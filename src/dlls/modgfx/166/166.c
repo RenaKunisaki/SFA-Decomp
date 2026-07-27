@@ -1,5 +1,5 @@
 /*
- * dlla6func0 (DLL 0xA6) - a modgfx effect spawner (sibling of DLL 0xA8).
+ * dlla6func0 (DLL 166 / 0xA6) - a modgfx effect spawner (sibling of DLL 0xA8).
  *
  * dll_A6_func03 builds a stack command buffer of GfxCmd primitives on the
  * stack, with a small variant-0/variant-1 prefix command, then a fixed set
@@ -267,5 +267,3 @@ void* lbl_80319354[9] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000
                          dll_AA_func01_nop, (void*)0x00000000, dll_AA_func03,     (void*)0x00000000};
 void* lbl_80319378[8] = {(void*)0x00000000,    (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
                          projdummy_initialise, projdummy_release, (void*)0x00000000, projdummy_doUnsupported};
-
-/* auto 0x803e1570-0x803e1590 */
