@@ -1875,8 +1875,7 @@ config.libs = [
             Object(NonMatching, "main/obj_movelib.c", cflags=cflags_dll_noopt_nocse),
 
             # MSL-derived game math
-            Object(MatchingFor("GSAE01"), "main/acosf.c", mw_version="GC/1.2.5n", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions", "-inline", "auto", *msl_math_extra], progress_category="game"),
-            Object(NonMatching, "main/atan2f.c", mw_version="GC/1.2.5n", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "peephole,functions", "-inline", "auto", *msl_math_extra], progress_category="game"),
+            Object(NonMatching, "main/acosf.c", mw_version="GC/1.2.5n", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "peephole,functions", "-inline", "auto", *msl_math_extra], progress_category="game"),
             Object(NonMatching, "main/trig.c", mw_version="GC/1.2.5n", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions", "-inline", "auto", *msl_math_extra], progress_category="game"),
         ],
     },

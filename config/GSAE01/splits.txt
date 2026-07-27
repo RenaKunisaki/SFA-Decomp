@@ -4956,10 +4956,7 @@ dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.c:
 	.sdata2     start:0x803E7978 end:0x803E79C0
 
 main/acosf.c:
-	.text       start:0x80291F44 end:0x802923C4
-
-main/atan2f.c:
-	.text       start:0x802923C4 end:0x802927A4
+	.text       start:0x80291F44 end:0x802927A4
 
 dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
 	.text       start:0x802927A4 end:0x80292B44

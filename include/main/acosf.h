@@ -1,5 +1,5 @@
-#ifndef MAIN_ATAN2F_H_
-#define MAIN_ATAN2F_H_
+#ifndef MAIN_ACOSF_H_
+#define MAIN_ACOSF_H_
 
 #include "dolphin/types.h"
 
