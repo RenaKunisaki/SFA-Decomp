@@ -1,5 +1,5 @@
 /*
- * dll96func0 (DLL 0x96) - particle/gfx effect spawner DLL.
+ * DLL 150 / 0x96 - particle/gfx effect spawner.
  *
  * Exports two empty entry stubs (func01/func00) plus func03, which builds a
  * 7-entry GfxCmd command buffer on the stack and submits it through
