@@ -902,7 +902,7 @@ main/dll/dll_0098_dll98func0.c:
 	.text       start:0x800FBDF0 end:0x800FC208
 	.sdata2     start:0x803E1318 end:0x803E1340
 
-main/dll/dll_0099_dll99func0.c:
+dlls/modgfx/153/153.c:
 	.text       start:0x800FC208 end:0x800FC5B8
 	.sdata      start:0x803DB950 end:0x803DB958
 	.sdata2     start:0x803E1340 end:0x803E136C
