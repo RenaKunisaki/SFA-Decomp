@@ -5,14 +5,14 @@
  * optional game-bit condition is met and the player enters range.
  */
 #include "dlls/objects/257_TrickyGuard.h"
+#include "dlls/objects/288_TrickyGuard.h"
 #include "game/objects/object.h"
-#include "main/dll/dll_0120_trickyguardspot.h"
 #include "main/gamebits.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
 
 #define TRICKYGUARD_GAMEBIT_NONE   -1
-#define TRICKYGUARD_VTABLE(tricky) (*(TrickyGuardSpotInterfaceVTable**)((tricky)->anim.dll))
+#define TRICKYGUARD_VTABLE(tricky) (*(TrickyGuardInterfaceVTable**)((tricky)->anim.dll))
 
 void TrickyGuard_update(GameObject* obj) {
     GameObject* tricky;
@@ -28,12 +28,12 @@ void TrickyGuard_update(GameObject* obj) {
     if (tricky == NULL) {
         return;
     }
-    if ((u8)TRICKYGUARD_VTABLE(tricky)->isBusy(tricky) != 0) {
+    if ((u8)TRICKYGUARD_VTABLE(tricky)->isGuarding(tricky) != 0) {
         return;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-        TRICKYGUARD_VTABLE(tricky)->sideCommandEnable(tricky, (TrickyGuardSpotObject*)obj, TRICKY_GUARD_SPOT_ACTION,
-                                                      TRICKY_GUARD_SPOT_ACTION_PARAM);
+        TRICKYGUARD_VTABLE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
+                                                      TRICKY_GUARD_COMMAND_TYPE);
     }
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
     objRenderFn_80041018(obj);

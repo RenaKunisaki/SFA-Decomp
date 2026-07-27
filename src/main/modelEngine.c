@@ -84,6 +84,7 @@
 #include "dlls/objects/285.h"
 #include "dlls/objects/286_MagicCaveBo.h"
 #include "dlls/objects/287_MagicCaveTo.h"
+#include "dlls/objects/288_TrickyGuard.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -266,7 +267,7 @@ extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpi
 extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
     gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreeBirdObjDescriptor,
-    gTrickyCurveObjDescriptor, gTrickyGuardSpotObjDescriptor;
+    gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
 extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescriptor, gVFP_LevelControlObjDescriptor,
@@ -1246,7 +1247,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTreasureChestObjDescriptor,
     (ResourceDescriptor*)&gMagicCaveBottomObjDescriptor,
     (ResourceDescriptor*)&gMagicCaveTopObjDescriptor,
-    &gTrickyGuardSpotObjDescriptor,
+    (ResourceDescriptor*)&gTrickyGuardSpotObjDescriptor,
     &gInfoTextObjDescriptor,
     &gCCTestInfotObjDescriptor,
     &gFuelCellObjDescriptor,

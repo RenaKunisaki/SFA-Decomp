@@ -3,9 +3,9 @@
  * On shatter (hp reaches zero), emits particle bursts and latches a gamebit;
  * while intact, allows Tricky to push through it.
  */
+#include "dlls/objects/288_TrickyGuard.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DIM/dll_01C4_dimicewall.h"
-#include "main/dll/dll_0120_trickyguardspot.h"
 #include "main/dll/dimicewallstate_struct.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
@@ -92,7 +92,7 @@ void dimicewall_update(GameObject* obj)
             {
                 if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
                 {
-                    (*(TrickyGuardSpotInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
+                    (*(TrickyGuardInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
                         tricky, obj, 1, 4);
                 }
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;

@@ -1,82 +1,76 @@
-/* DLL 0x120 implements a Tricky guard-spot object. */
-
-#include "main/dll/dll_0120_trickyguardspot.h"
-#include "main/frame_timing.h"
-#include "main/vecmath_distance_api.h"
-#include "main/objprint_render_api.h"
+/*
+ * Timed Tricky guard spot (DLL slot 288 / 0x120).
+ *
+ * Offers Tricky's guard command while inactive, tracks him inside the spot's
+ * radius while guarding, and recalls him when the configured timer expires.
+ */
+#include "dlls/objects/288_TrickyGuard.h"
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
+#include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
-#include "dlls/object_descriptor.h"
+#include "main/objprint_render_api.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects/lifecycle.h"
 
-int TrickyGuardSpot_getExtraSize(void) { return sizeof(TrickyGuardSpotState); }
+#define TRICKY_GUARD_SPOT_GROUP             0x1E
+#define TRICKY_GUARD_SPOT_FRAMES_PER_SECOND 60
 
-void TrickyGuardSpot_free(TrickyGuardSpotObject* obj) { ObjGroup_RemoveObject((int)obj, TRICKY_GUARD_SPOT_GROUP); }
+#define TRICKY_GUARD_SPOT_VTABLE(tricky) (*(TrickyGuardInterfaceVTable**)((tricky)->anim.dll))
 
-void TrickyGuardSpot_render(void)
-{
+int TrickyGuardSpot_getExtraSize(void) {
+    return sizeof(TrickyGuardSpotState);
 }
 
-#define TRICKY_GUARD_SPOT_VTABLE(tricky) \
-    (*(TrickyGuardSpotInterfaceVTable**)((tricky)->anim.dll))
+void TrickyGuardSpot_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, TRICKY_GUARD_SPOT_GROUP);
+}
 
-void TrickyGuardSpot_update(TrickyGuardSpotObject* obj)
-{
+void TrickyGuardSpot_render(void) {
+}
 
+void TrickyGuardSpot_update(GameObject* obj) {
     TrickyGuardSpotState* state;
     TrickyGuardSpotPlacement* placement;
     GameObject* tricky;
-    TrickyGuardSpotStateFlags* flags;
+    TrickyGuardSpotStateFlags* stateFlags;
 
     state = obj->extra;
     placement = (TrickyGuardSpotPlacement*)obj->anim.placementData;
     tricky = getTrickyObject();
-    flags = &state->flags;
-    obj->anim.resetHitboxFlags =
-        (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
-    flags->trickyInRange = 0;
-    if (tricky != NULL)
-    {
-        if ((u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isBusy(tricky) != 0)
-        {
-            if (Vec_xzDistance(&obj->anim.worldPosX, &tricky->anim.worldPosX) <
-                (f32)(s32)placement->triggerRadius)
-            {
-                state->resetTimer = state->resetTimer - framesThisStep;
-                flags->trickyInRange = 1;
+    stateFlags = &state->flags;
+    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+    stateFlags->trickyInRange = 0;
+    if (tricky != NULL) {
+        if ((u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isGuarding(tricky) != 0) {
+            if (Vec_xzDistance(&obj->anim.worldPosX, &tricky->anim.worldPosX) < (f32)(s32)placement->triggerRadius) {
+                state->guardTimer = state->guardTimer - framesThisStep;
+                stateFlags->trickyInRange = 1;
             }
         }
     }
-    if (state->resetTimer != 0)
-    {
-        if (tricky != NULL &&
-            (u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isBusy(tricky) == 0)
-        {
-            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
-            {
-                TRICKY_GUARD_SPOT_VTABLE(tricky)->sideCommandEnable(
-                    tricky, obj, TRICKY_GUARD_SPOT_ACTION, TRICKY_GUARD_SPOT_ACTION_PARAM);
+    if (state->guardTimer != 0) {
+        if (tricky != NULL && (u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isGuarding(tricky) == 0) {
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
+                TRICKY_GUARD_SPOT_VTABLE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
+                                                                    TRICKY_GUARD_COMMAND_TYPE);
             }
-            obj->anim.resetHitboxFlags =
-                (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
             objRenderFn_80041018(obj);
         }
-    }
-    else if (tricky != NULL)
-    {
+    } else if (tricky != NULL) {
         TRICKY_GUARD_SPOT_VTABLE(tricky)->requestRecall(tricky);
-        state->resetTimer = placement->resetSeconds * 0x3c;
+        state->guardTimer = placement->guardDurationSeconds * TRICKY_GUARD_SPOT_FRAMES_PER_SECOND;
     }
-    mainSetBits(placement->rangeGameBit, flags->trickyInRange);
+    mainSetBits(placement->trickyInRangeGameBit, stateFlags->trickyInRange);
 }
 
-void TrickyGuardSpot_init(TrickyGuardSpotObject* obj, TrickyGuardSpotPlacement* def)
-{
+void TrickyGuardSpot_init(GameObject* obj, TrickyGuardSpotPlacement* placement) {
     TrickyGuardSpotState* state = obj->extra;
+
     ObjGroup_AddObject((int)obj, TRICKY_GUARD_SPOT_GROUP);
-    state->resetTimer = def->resetSeconds * 60;
-    obj->anim.rotX = (s16)(s32)def->initialYaw;
+    state->guardTimer = placement->guardDurationSeconds * TRICKY_GUARD_SPOT_FRAMES_PER_SECOND;
+    obj->anim.rotX = (s16)(s32)placement->rotationX;
 }
 
 ObjectDescriptor gTrickyGuardSpotObjDescriptor = {
