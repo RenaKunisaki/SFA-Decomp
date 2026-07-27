@@ -141,6 +141,7 @@
 #include "dlls/objects/343_SpiritDoorS.h"
 #include "dlls/objects/344.h"
 #include "dlls/objects/345.h"
+#include "dlls/objects/346.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -267,7 +268,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor, gECSH_CreatorObjDescriptor,
     gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
-    gExplodableObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
+    gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor,
@@ -1345,7 +1346,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSpiritDoorSpiritObjDescriptor,
     (ResourceDescriptor*)&gGunpowderBarrelObjDescriptor,
     (ResourceDescriptor*)&gBlastedObjDescriptor,
-    &gExplodableObjDescriptor,
+    (ResourceDescriptor*)&gExplodableObjDescriptor,
     &gCFForceFieldObjDescriptor,
     &lbl_803DBEA0,
     &gSlidingDoorObjDescriptor,

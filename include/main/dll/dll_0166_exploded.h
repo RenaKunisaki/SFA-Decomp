@@ -2,17 +2,26 @@
 #define MAIN_DLL_DLL_0166_EXPLODED_H_
 
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
 #include "main/objanim_internal.h"
 #include "main/objanim_update.h"
 
 typedef struct ExplodedObjectMapData
 {
-    u8 pad00[0x08];
-    f32 positionX;
-    f32 positionY;
-    f32 positionZ;
-    u8 pad14[0x18 - 0x14];
+    union
+    {
+        ObjPlacement base;
+        struct
+        {
+            s16 objectId;
+            u8 pad02[0x08 - 0x02];
+            f32 positionX;
+            f32 positionY;
+            f32 positionZ;
+            s32 mapId;
+        };
+    };
     u8 objectTypeTag;
     u8 pad19;
     s16 initialAngleX;
@@ -30,11 +39,32 @@ typedef struct ExplodedObjectMapData
     s16 spinVelocityX;
     s16 spinVelocityY;
     s16 spinVelocityZ;
-    s16 lifetimeFrames;
-    s16 floorOffset;
+    u16 lifetimeFrames;
+    union
+    {
+        s16 floorOffset;
+        u16 floorOffsetRaw;
+    };
     u8 pad3C;
     s8 scaleByte;
+    u8 pad3E[0x44 - 0x3E];
 } ExplodedObjectMapData;
+
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, base) == 0x00);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, objectId) == 0x00);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, positionX) == 0x08);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, objectTypeTag) == 0x18);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, initialAngleX) == 0x1A);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, initialVelocityX) == 0x20);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, accelerationX) == 0x26);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, spinX) == 0x2C);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, spinVelocityX) == 0x32);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, lifetimeFrames) == 0x38);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, floorOffset) == 0x3A);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, floorOffsetRaw) == 0x3A);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, scaleByte) == 0x3D);
+STATIC_ASSERT(offsetof(ExplodedObjectMapData, pad3E) == 0x3E);
+STATIC_ASSERT(sizeof(ExplodedObjectMapData) == 0x44);
 
 typedef struct ExplodedObjectState
 {

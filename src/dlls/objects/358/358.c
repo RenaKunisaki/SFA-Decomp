@@ -1,5 +1,4 @@
 /* DLL 0x166 */
-#include "main/dll/drexplodable_types.h"
 #include "main/object_render.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/dll_0166_exploded.h"
@@ -11,11 +10,6 @@
 #include "main/object_transform.h"
 #include "main/objseq.h"
 #include "main/vecmath.h"
-
-STATIC_ASSERT(sizeof(DrExplodableChunk) == 0x70);
-
-STATIC_ASSERT(offsetof(DrExplodableState, children) == 0x690);
-STATIC_ASSERT(sizeof(DrExplodableState) == 0x6e8);
 
 /* ExplodedObjectState.explodePhase */
 #define EXPLODED_PHASE_IDLE    0 /* settled; no physics */
@@ -99,7 +93,7 @@ void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedObjectState* state, 
     state->spinZ = (f32)(s32)data->spinZ;
 
     {
-        u16 off = *(u16*)&data->floorOffset;
+        u16 off = data->floorOffsetRaw;
         if (off == 0)
         {
             trackGetHeightAboveGround((GameObject*)obj, obj->x, obj->y - 10.0f, obj->z, floorY, 0);
@@ -119,9 +113,9 @@ void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedObjectState* state, 
     state->accelerationZ = (f32)(s32)data->accelerationZ / 1000.0f;
 
     state->elapsedFrames = 0;
-    if (*(u16*)&data->lifetimeFrames != 0)
+    if (data->lifetimeFrames != 0)
     {
-        state->durationFrames = *(u16*)&data->lifetimeFrames * ((int)randomGetRange(0, 100) + 100) / 200;
+        state->durationFrames = data->lifetimeFrames * ((int)randomGetRange(0, 100) + 100) / 200;
     }
     else
     {
