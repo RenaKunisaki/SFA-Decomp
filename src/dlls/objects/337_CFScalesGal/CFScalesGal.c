@@ -1,4 +1,3 @@
-/* DLL 0x151 - CFScalesGal */
-#include "global.h"
+#include "dlls/objects/337_CFScalesGal.h"
 
-u32 lbl_803DBE60[2] = {0};
+u32 gCFScalesGalNullResourceDescriptor[CFSCALESGAL_NULL_DESCRIPTOR_WORD_COUNT] = {0};
