@@ -3075,7 +3075,7 @@ dlls/objects/646_SPShopKeepe/SPShopKeepe.c:
 	.text       start:0x801E66DC end:0x801E832C
 	.data       start:0x80328370 end:0x803283DC
 	.bss        start:0x803AD068 end:0x803AD088
-	.sdata      start:0x803DC0A0 end:0x803DC0B0
+	.sdata      start:0x803DC0A0 end:0x803DC0AC
 	.sbss       start:0x803DDC58 end:0x803DDC5C
 	.sdata2     start:0x803E59D0 end:0x803E5A2C
 
