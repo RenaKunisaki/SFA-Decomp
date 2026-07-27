@@ -1054,6 +1054,7 @@ config.libs = [
         "objects": [
             # dlls/engine
             Object(MatchingFor("GSAE01"), "dlls/engine/48/48.c"),
+            Object(MatchingFor("GSAE01"), "dlls/engine/50/50.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "dlls/engine/51/51.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/52/52.c", cflags=cflags_dll_noopt),
             Object(
@@ -1524,7 +1525,6 @@ config.libs = [
             Object(Matching, "main/dll/attentioncam.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_60.c"),
             Object(NonMatching, "main/dll/dll_0019_dll19func0.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0032_titlescreeninit.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "main/dll/dll_3b.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/n_options.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/n_pausemenu.c"),

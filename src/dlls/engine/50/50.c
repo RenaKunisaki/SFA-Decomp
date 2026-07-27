@@ -1,21 +1,3 @@
-/*
- * titlescreeninit (DLL 0x32) - boot/loading-screen front-end object.
- *
- * On initialise it unloads the prior map (0x3d), force-loads the title
- * map (0x3f) plus sun/moon and the game UI resources, inits the lock
- * icon, and warps to map 0x12. frameStart kicks the UI DLL (id 4) once,
- * one frame after init.
- *
- * runLoadingScreens advances a frame counter (gTitleScreenInitLoadingFrameCounter) and fades
- * three full-screen loading-screen textures in/out across three timed
- * windows, using a precomputed alpha ramp. A DVD read error
- * (gDvdErrorPauseActive) freezes the counter and, once past the third
- * window, shows a localized error string (text id 0x565).
- *
- * initLoadingScreenTextures carves the three textures out of the top of
- * the OS arena (OSGetArenaHi - 0x40000) and builds a GX texture object
- * for each.
- */
 #include "main/dll/FRONT/dll_0032_n_rareware.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/model_engine.h"
@@ -59,13 +41,10 @@ typedef struct LoadingScreenTexture
     u8 imageData[1];
 } LoadingScreenTexture;
 
-/* Boot-sequence map ids (docblock): unload the prior map, force-load the
- * title map, then warp to the intro map. */
 #define TITLESCREENINIT_MAP_PRIOR 0x3d
 #define TITLESCREENINIT_MAP_TITLE 0x3f
 #define TITLESCREENINIT_MAP_WARP  0x12
 
-/* Localized DVD-read-error string (docblock: "localized error string (text id 0x565)"). */
 #define TITLESCREENINIT_TEXT_DVD_ERROR 0x565
 
 int gTitleScreenInitLoadingTextures[4];

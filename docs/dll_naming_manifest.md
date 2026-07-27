@@ -93,7 +93,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x02F | — | NO-RETAIL-NAME | main/dll/dll_002F_carryable.c | = (canonical) | — |
 | 0x030 | — | NO-RETAIL-NAME | dlls/engine/48/48.c | = (canonical) | Complete DOL-confirmed data-only TU |
 | 0x031 | — | NO-RETAIL-NAME | main/dll/dll_0031_minimap.c | = (canonical) | — |
-| 0x032 | — | NO-RETAIL-NAME | main/dll/dll_0032_titlescreeninit.c | = (canonical) | DOL-confirmed data tail restored from DLL 46 |
+| 0x032 | — | NO-RETAIL-NAME | dlls/engine/50/50.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
 | 0x033 | — | NO-RETAIL-NAME | dlls/engine/51/51.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
 | 0x034 | — | NO-RETAIL-NAME | dlls/engine/52/52.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x035 | — | NO-RETAIL-NAME | dlls/engine/53/53.c | = (canonical) | Complete DOL-confirmed TU |
