@@ -494,7 +494,7 @@ u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBloc
     return 1;
 }
 
-void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, MapShader* shader,
+void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, MapShader* shader,
                              ModelRenderInstrsState* state, float* mtx)
 {
     int lightPos[3];
@@ -539,7 +539,7 @@ void mapBlockRender_callList(u32 passSelect, u32 visArg, MapBlockData* block, Ma
         {
             return;
         }
-        if ((u8)passSelect == 0)
+        if (passSelect == 0)
         {
             flags = SHADER_FLAGS(shader);
             if ((flags & 0x80000000) != 0)
@@ -1182,11 +1182,11 @@ void renderMapBlock(MapBlockData* block, u8 type)
 {
     ModelRenderInstrsState state;
     f32 m[16];
-    u16 instructionCount;
     void* instructions;
+    int done;
     MapShader* shader;
     u8 doSetup;
-    int done;
+    u16 instructionCount;
     void* viewMtx;
 
     shader = NULL;
@@ -1219,11 +1219,13 @@ void renderMapBlock(MapBlockData* block, u8 type)
     {
         u32 word;
         int op;
-        int pos = state.bit;
+        int pos;
+        int off = (pos = state.bit) >> 3;
+        u8* base;
         u8* bp;
 
-        bp = state.instrs;
-        bp += pos >> 3;
+        base = state.instrs;
+        bp = base + off;
         word = bp[0];
         word |= bp[1] << 8;
         word |= bp[2] << 16;
@@ -1246,16 +1248,16 @@ void renderMapBlock(MapBlockData* block, u8 type)
             int cnt;
             int i;
             u8* bp2;
+            ModelRenderInstrsState* sp = &state;
             int pos2 = pos + 4;
-            bp2 = state.instrs;
-            bp2 += pos2 >> 3;
+            bp2 = base + (pos2 >> 3);
             word2 = bp2[0];
             word2 |= bp2[1] << 8;
             word2 |= bp2[2] << 16;
             state.bit = pos2 + 4;
             cnt = (word2 >> (pos2 & 7)) & 0xf;
             for (i = 0; i < cnt; i++)
-                modelRenderInstrsState_advance(&state, 8);
+                modelRenderInstrsState_advance(sp, 8);
             break;
         }
         case 5:

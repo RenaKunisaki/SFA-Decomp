@@ -31,7 +31,7 @@ struct MapShader* mapBlockRender_setShader(u8 doSetup, struct MapBlockData* bloc
 struct MapShader* mapBlockRender_setShader(int doSetup, struct MapBlockData* blockData,
                                            ModelRenderInstrsState* state);
 #endif
-void mapBlockRender_callList(u32 passSelect, u32 visArg, struct MapBlockData* block, struct MapShader* shader,
+void mapBlockRender_callList(u8 passSelect, u32 visArg, struct MapBlockData* block, struct MapShader* shader,
                              ModelRenderInstrsState* state, float* mtx);
 
 #endif /* MAIN_TEX_DOLPHIN_H_ */
