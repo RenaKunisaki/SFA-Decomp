@@ -113,7 +113,7 @@ float atanf_fast(float value) {
         return value * ((lbl_803E7A18 * squared + lbl_803E7A14) * squared + lbl_803E7A10);
     }
 
-    reciprocal = fn_80292DEC(absoluteValue);
+    reciprocal = fastReciprocal(absoluteValue);
     squared = reciprocal * reciprocal;
     polynomial = (lbl_803E7A18 * squared + lbl_803E7A14) * squared + lbl_803E7A10;
     positiveResult = lbl_803E79C8 - reciprocal * polynomial;

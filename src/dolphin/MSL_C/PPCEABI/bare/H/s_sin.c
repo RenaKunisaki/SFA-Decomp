@@ -49,7 +49,7 @@ float mathCosf(float angle) {
     }
 }
 
-float fn_802942EC(float angle) {
+float mathCosfPrecise(float angle) {
     u16 quadrant;
     float reducedAngle = trigReduceQuadrant(&quadrant, angle);
     float reducedSquared = reducedAngle * reducedAngle;

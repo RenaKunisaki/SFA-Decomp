@@ -9,6 +9,6 @@ float fsin16HighPrecision(int angle);
 float fcos16HighPrecision(int angle);
 float fsin16(int angle);
 float fcos16(int angle);
-float fn_80293DA4(float x);
+float mathSinfFast(float x);
 
 #endif /* MAIN_TRIG_H_ */

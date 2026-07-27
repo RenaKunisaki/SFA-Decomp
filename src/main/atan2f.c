@@ -104,7 +104,7 @@ float atan2f(float y, float x) {
     }
 }
 
-float fn_802925C4(float y, float x) {
+float atan2fHighPrecision(float y, float x) {
     float absoluteX = __fabsf(x);
     float absoluteY = __fabsf(y);
     double axisRatio;

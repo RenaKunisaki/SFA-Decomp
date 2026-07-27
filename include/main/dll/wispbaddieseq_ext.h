@@ -4,7 +4,7 @@
 #include "global.h"
 #include "game/objects/object.h"
 
-u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent);
+u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent);
 void wispBaddiePlayMoveEventSfx(GameObject* obj, void* state);
 void wispBaddieQueueNextEvent(int obj, int delta);
 

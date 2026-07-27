@@ -24,7 +24,7 @@ extern float lbl_803E7C64;
 extern float lbl_803E7C68;
 extern float lbl_803E7C6C;
 
-float fn_80292DEC(float value) {
+float fastReciprocal(float value) {
     float reciprocal;
 
     reciprocal = __fres(value);
@@ -54,7 +54,7 @@ float fn_80292DEC(float value) {
             break;                                        \
     }
 
-void fn_80292E20(int angle, float* sinOut, float* cosOut) {
+void angleToVec2Fast(int angle, float* sinOut, float* cosOut) {
     s16 scaledAngleBits = (u16)angle << 1 << 1;
     float scaledAngle = fastCastS16ToFloat(&scaledAngleBits);
     float angleSquared = scaledAngle * scaledAngle;
@@ -74,7 +74,7 @@ void angleToVec2(int angle, float* sinOut, float* cosOut) {
     STORE_SINCOS(angle, sine, cosine, sinOut, cosOut);
 }
 
-void fn_80293018(int angle, float* sinOut, float* cosOut) {
+void angleToVec2Precise(int angle, float* sinOut, float* cosOut) {
     s16 scaledAngleBits = (u16)angle << 1 << 1;
     float scaledAngle = fastCastS16ToFloat(&scaledAngleBits);
     float angleSquared = scaledAngle * scaledAngle;

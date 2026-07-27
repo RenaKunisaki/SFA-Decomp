@@ -5,7 +5,7 @@
 
 struct GameObject;
 
-void fn_801DFA28(struct GameObject *obj);
+void DBprotection_updateFlight(struct GameObject *obj);
 void DBprotection_updateEnvfxGameBits(u8 *state);
 int DBprotection_getCameraState(struct GameObject *obj);
 void DBprotection_updateShield(struct GameObject *obj);

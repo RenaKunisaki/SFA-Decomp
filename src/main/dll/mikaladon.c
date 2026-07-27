@@ -97,7 +97,7 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
 
     state->actor.orbitAngle =
         MIKALADON_ORBIT_ANGLE_SPEED * timeDelta + (f32)(u32)state->actor.orbitAngle;
-    fn_80293018(state->actor.orbitAngle, &sinOut, &cosOut);
+    angleToVec2Precise(state->actor.orbitAngle, &sinOut, &cosOut);
     sinOut = sinOut * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterX;
     cosOut = cosOut * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterZ;
     if (state->actor.verticalPhase == MIKALADON_PHASE_ORBIT)
@@ -210,7 +210,7 @@ void mikaladon_init(GameObject* obj, MikaladonState* state)
     state->actor.ambientSfxTimer = zero;
     ((BaddieState*)state)->pathStep = 8.0f;
 
-    fn_80293018(state->actor.orbitAngle, &a, &b);
+    angleToVec2Precise(state->actor.orbitAngle, &a, &b);
     obj->anim.localPosX =
         a * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterX;
     obj->anim.localPosZ =

@@ -124,7 +124,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
         }
     }
     (obj)->anim.rotY =
-        -(1024.0f * fn_80293DA4(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) - (f32)(obj)->anim.rotY);
+        -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) - (f32)(obj)->anim.rotY);
     baddieTurnTowardLookDir(obj, (void*)state, 0xf, 7.5f, 1.0f, 0);
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
@@ -152,6 +152,6 @@ void pinPon_updateIdle(GameObject* obj, int state)
     }
     ((BaddieState*)state)->userData1 += 1;
     (obj)->anim.rotY =
-        1024.0f * fn_80293DA4(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) + (f32)(obj)->anim.rotY;
+        1024.0f * mathSinfFast(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) + (f32)(obj)->anim.rotY;
     baddieSpawnWaterRipple(obj, (BaddieState*)state);
 }

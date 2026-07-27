@@ -22,9 +22,9 @@ float trigReduceQuadrant(u16* quadrant, float angle);
 float acosf_fast(float x);
 float atanf_fast(float x);
 void mathSinCosf(float angle, float* sinOut, float* cosOut);
-float fn_80293F7C(float x);
-float fn_802942EC(float x);
+float mathSinfPrecise(float x);
+float mathCosfPrecise(float x);
 float mathTanf(float angle);
-float fn_802945E0(float value);
+float log2fBitEstimate(float value);
 
 #endif /* DOLPHIN_MSL_C_PPCEABI_BARE_H_MATH_API_H_ */

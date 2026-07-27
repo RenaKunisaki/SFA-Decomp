@@ -283,7 +283,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             }
         }
     }
-    if ((u8)fn_8014FFB4(obj, state, 0) != 0)
+    if ((u8)wispBaddieProcessAnimEvent(obj, state, 0) != 0)
     {
         return;
     }
@@ -482,7 +482,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         }
     }
 
-    if ((u8)fn_8014FFB4(obj, state, 0) != 0)
+    if ((u8)wispBaddieProcessAnimEvent(obj, state, 0) != 0)
     {
         return;
     }

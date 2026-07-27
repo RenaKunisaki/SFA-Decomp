@@ -28,7 +28,7 @@ float mathTanf(float angle) {
     return -tangent;
 }
 
-float fn_802945E0(float value) {
+float log2fBitEstimate(float value) {
     u32 rawBits;
     float normalizedMantissa;
     float exponentAsFloat;

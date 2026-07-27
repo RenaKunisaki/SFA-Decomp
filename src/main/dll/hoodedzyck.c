@@ -138,7 +138,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         fromPos[0] = (obj)->anim.localPosX;
         fromPos[1] = (obj)->anim.localPosY;
         fromPos[2] = (obj)->anim.localPosZ;
-        fn_80292E20((u32)(u16)(obj)->anim.rotX, &sinYaw, &cosYaw);
+        angleToVec2Fast((u32)(u16)(obj)->anim.rotX, &sinYaw, &cosYaw);
         toPos[0] = (obj)->anim.localPosX - 10.0f * sinYaw;
         toPos[1] = 5.0f + (obj)->anim.localPosY;
         toPos[2] = (obj)->anim.localPosZ - 10.0f * cosYaw;
@@ -233,7 +233,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         posA[0] = obj->anim.localPosX;
         posA[1] = obj->anim.localPosY;
         posA[2] = obj->anim.localPosZ;
-        fn_80292E20((u16)obj->anim.rotX, &sinA, &cosA);
+        angleToVec2Fast((u16)obj->anim.rotX, &sinA, &cosA);
         tgtA[0] = -(10.0f * sinA - obj->anim.localPosX);
         tgtA[1] = 5.0f + obj->anim.localPosY;
         tgtA[2] = -(10.0f * cosA - obj->anim.localPosZ);
@@ -285,7 +285,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
                     posB[0] = obj->anim.localPosX;
                     posB[1] = obj->anim.localPosY;
                     posB[2] = obj->anim.localPosZ;
-                    fn_80292E20((u16)obj->anim.rotX, &sinB, &cosB);
+                    angleToVec2Fast((u16)obj->anim.rotX, &sinB, &cosB);
                     tgtB[0] = -(10.0f * sinB - obj->anim.localPosX);
                     tgtB[1] = 5.0f + obj->anim.localPosY;
                     tgtB[2] = -(10.0f * cosB - obj->anim.localPosZ);

@@ -15,7 +15,7 @@
  * each game loop) holding up to 10 entries (lbl_803DD414/lbl_803DD416).
  *
  * Checkpoint_Add / Checkpoint_Remove keep the table key-sorted;
- * Checkpoint_find does a binary search by key. fn_800D55BC builds the per-
+ * Checkpoint_find does a binary search by key. Checkpoint_buildControlPoints builds the per-
  * segment Hermite control points (curve mode 0 = endpoints, 1 = full 4-point
  * spline sampled along the heading-rotated cross section, >=2 = single point);
  * Checkpoint_func08 walks the route advancing by arc length and clamps the
@@ -88,7 +88,7 @@ typedef struct CheckpointNavState
     u8 branchFlag; /* 0x30 */
 } CheckpointNavState;
 
-s32 fn_800D55BC(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32* outY, f32* outZ, u8 mode,
+s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32* outY, f32* outZ, u8 mode,
                  f32 lateralOffset, f32 verticalOffset)
 {
     f32 cosB;
@@ -343,7 +343,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
         {
             alt = 1;
         }
-        if (fn_800D55BC(n, alt, v1, v2, v3, mode, 0.0f, 0.0f) == 0)
+        if (Checkpoint_buildControlPoints(n, alt, v1, v2, v3, mode, 0.0f, 0.0f) == 0)
         {
             return 1;
         }

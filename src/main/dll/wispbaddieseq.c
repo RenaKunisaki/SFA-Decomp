@@ -1,6 +1,6 @@
 /*
  * wispbaddieseq - the wisp/hagabon anim-sequence driver shared with the
- * sidekick-toy and ground-baddie seq objects: fn_8014FFB4 walks the per-family
+ * sidekick-toy and ground-baddie seq objects: wispBaddieProcessAnimEvent walks the per-family
  * event rows and starts the next move, wispBaddiePlayMoveEventSfx fires the per-frame
  * move-progress sfx (with rumble + radial camera shake), and wispBaddieQueueNextEvent
  * primes the next chain entry. The per-family tables live in the wisp baddie
@@ -37,7 +37,7 @@ STATIC_ASSERT(offsetof(WispEventRow, moveId) == 0x8);
 /*
  * HagabonAnimState - file-local overlay naming the PER-FAMILY anim-control
  * scratch that baddie_state.h leaves raw for the hagabon/swarmbaddie fighter
- * driven by fn_8014FFB4. moveEventFlags(0x2F8) is the u16 per-frame
+ * driven by wispBaddieProcessAnimEvent. moveEventFlags(0x2F8) is the u16 per-frame
  * move-progress event bitmask read by wispBaddiePlayMoveEventSfx to fire SFX.
  */
 typedef struct HagabonAnimState
@@ -83,7 +83,7 @@ typedef struct
 extern FamilyTable lbl_8031F16C[]; /* per-family table-of-tables, 0x28-byte rows */
 extern u8 lbl_8031DD30[];          /* per-anim move-progress floats, indexed anim*4 */
 
-u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
+u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
 {
     u8* base = lbl_8031DD30;
     u8* sequenceBase;

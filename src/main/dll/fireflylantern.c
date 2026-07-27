@@ -78,7 +78,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
         *(u32*)&state[0xb9] |= 0x10000LL;
         ((FireflyLanternState*)state)->trackTimer = 0.0f;
     }
-    (obj)->anim.rotY = -(1024.0f * fn_80293DA4(0.19634955f * (f32)(u32)((BaddieState*)state)->userData1) -
+    (obj)->anim.rotY = -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((BaddieState*)state)->userData1) -
                          (f32)(obj)->anim.rotY);
     if (flag == 0)
     {
@@ -141,7 +141,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
         }
     }
     ((BaddieState*)state)->userData1 += 1;
-    (obj)->anim.rotY = (1024.0f * fn_80293DA4(0.19634955f * (f32)(u32)((BaddieState*)state)->userData1) +
+    (obj)->anim.rotY = (1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((BaddieState*)state)->userData1) +
                         (f32)(obj)->anim.rotY);
     baddieSpawnWaterRipple(obj, (BaddieState*)state);
 }

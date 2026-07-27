@@ -2,7 +2,7 @@
  * dbprotection - galleon damage-phase + boss handlers for the SB_Galleon boss.
  * Runs on the SB_Galleon object (extra == SBGalleonState).
  *
- * fn_801DFA28 is the per-step movement/flight driver: it locates the
+ * DBprotection_updateFlight is the per-step movement/flight driver: it locates the
  * "tricky" target object (seqId 0x8C), runs the wander/drift bob in phase
  * 0, the flight-pattern approach in phase 1, and the swooping attack sweep
  * in phases 2-8, finally fading the screen out (kind 0x41) and refreshing
@@ -179,7 +179,7 @@ ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     (ObjectDescriptorCallback)SB_Galleon_func0E,
 };
 
-void fn_801DFA28(GameObject* obj)
+void DBprotection_updateFlight(GameObject* obj)
 {
     ObjPlacement* spawnData;
     SBGalleonState* state;
@@ -1521,7 +1521,7 @@ void SB_Galleon_update(GameObject* obj)
         switch ((s8)state->cameraState)
         {
         case SBGALLEON_CAM_APPROACH:
-            fn_801DFA28(obj);
+            DBprotection_updateFlight(obj);
             break;
         case SBGALLEON_CAM_START_INTRO:
             (*gObjectTriggerInterface)->runSequence(3, obj, -1);

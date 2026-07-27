@@ -249,8 +249,8 @@ void waterfx_buildSplashDisplayList(void)
                 f32 cv;
                 pos = (f32*)((u8*)gWaterfxSplashPosArray + j * 12);
                 ang = gWaterfxPi * (f32)(j * 2) / lbl_803DF314;
-                sv = fn_802942EC(ang);
-                cv = fn_80293F7C(ang);
+                sv = mathCosfPrecise(ang);
+                cv = mathSinfPrecise(ang);
                 pos[0] = sv;
                 pos[1] = lbl_803DF300;
                 pos[2] = cv;

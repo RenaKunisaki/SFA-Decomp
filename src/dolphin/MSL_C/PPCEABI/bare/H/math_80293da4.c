@@ -25,7 +25,7 @@ extern float lbl_803E7DA4;
 extern float lbl_803E7DA8;
 extern float lbl_803E7DAC;
 
-float fn_80293DA4(float angle) {
+float mathSinfFast(float angle) {
     u16 quadrant;
     float reducedAngle;
     float reducedSquared;
@@ -67,7 +67,7 @@ float mathSinf(float angle) {
     }
 }
 
-float fn_80293F7C(float angle) {
+float mathSinfPrecise(float angle) {
     u16 quadrant;
     float reducedAngle;
     float reducedSquared;

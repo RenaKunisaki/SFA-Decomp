@@ -885,7 +885,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
     if (state->mode < ARWING_MODE_DEAD && mainGetBit(GAMEBIT_ArwingRelated09D6) == 0 &&
         mainGetBit(GAMEBIT_ARWING_FLIGHT_RINGS_PASSED) == 0)
     {
-        sum = lbl_803E6F48 + fn_802945E0(state->velZ / state->maxSpeedZ);
+        sum = lbl_803E6F48 + log2fBitEstimate(state->velZ / state->maxSpeedZ);
         vol = (f32)(sum * lbl_803E6F50);
         Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_ar_boost16);
         Sfx_SetObjectChannelVolume(obj, 0x40, 0xfe, vol);
