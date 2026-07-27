@@ -1,25 +1,3 @@
-/*
- * savegame (DLL 0x17) - the live save-game buffer and its persistence.
- *
- * Owns the in-RAM save image gSaveGameData (0xF70 bytes; the first 0x6EC
- * are the persisted slot, mirrored to lbl_803DD498 and optionally to a
- * restart-point allocation). Provides:
- *   - new-game/load/save flow (gplayNewGame, trySaveGame, gplaySaveGame,
- *     saveGame_save) over the three on-disk slots, via loadSaveGame/_saveGame.
- *   - save-select summaries (saveSelect_getInfo): name, percent-complete
- *     (save byte 0x55D), rank tiers and task-hint phrases.
- *   - per-map act state and object-group status bits, backed by GameBit_*
- *     and cached in the contiguous .bss block gTransientMapBits /
- *     gMapObjGroupStatuses / gExtendedMapActLookup (SaveGameMapState).
- *     Cleared group bits below an act threshold are queued as transient
- *     bits that expire after a few frames (SaveGame_updateTransientMapBits).
- *   - object-position persistence keyed by placement objectId
- *     (saveGame_saveObjectPos / restore / unsave), 0x3F slots at 0x168.
- *   - per-character save/restart points (position, angle, map) and the
- *     time-attack record table at save offset 0x6EC.
- *   - the high-score files (saveData, insertHighScore) and unlockable
- *     cheat/debug option bits.
- */
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/audio/audio_control_api.h"
@@ -42,14 +20,7 @@
 #include "main/gameloop_api.h"
 #include "main/dll/dll_0016_screentransition.h"
 #include "track/intersect_card_api.h"
-#include "main/dll/dll_0059_dll59func0.h"
-#include "main/dll/dll_005C_dll5cfunc0.h"
-#include "main/dll/dll_005D_dll5dfunc0.h"
 #include "main/pad.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
-#include "main/dll/dll_002F_carryable.h"
-#include "main/dll/dll_0011_screens.h"
 
 u32 pRestartPoint;
 u8* lbl_803DD498;
@@ -210,9 +181,6 @@ u8 gExtendedMapActLookup[0x28];
 
 MapBitTransient gTransientMapBits[0x3C / sizeof(MapBitTransient)];
 
-/* The three .bss objects gTransientMapBits (0x803A2F80), gMapObjGroupStatuses
- * (+0x3C) and gExtendedMapActLookup (+0x21C) are contiguous; the retail VtableFn
- * addresses them through a single base register (#16 overlay). */
 typedef struct SaveGameMapState
 {
     MapBitTransient transient[SAVEGAME_TRANSIENT_MAP_BIT_COUNT]; /* 0x000 */
@@ -1298,7 +1266,6 @@ u16 gSaveGameMapObjGroupBits[120] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 };
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 void* lbl_80311900[56] = {(void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,
@@ -1355,81 +1322,3 @@ void* lbl_80311900[56] = {(void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000};
-u8 lbl_803119E0[512] = {
-    255, 255, 0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 0,   0,   0,   0,   0,   6,   0,   6,   0,
-    6,   0,   6,   0,   6,   0,   6,   255, 255, 255, 255, 0,   2,   0,   2,   0,   5,   0,   5,   0,   5,   0,   5,
-    0,   6,   255, 255, 255, 255, 0,   6,   0,   6,   0,   6,   0,   6,   0,   6,   0,   6,   255, 255, 0,   5,   255,
-    255, 0,   5,   0,   6,   0,   7,   255, 255, 0,   7,   0,   7,   0,   7,   0,   7,   0,   7,   0,   7,   0,   7,
-    0,   7,   0,   7,   0,   7,   255, 255, 255, 255, 255, 255, 255, 255, 0,   7,   0,   6,   0,   9,   0,   9,   0,
-    10,  0,   10,  0,   10,  0,   10,  0,   10,  255, 255, 0,   9,   0,   9,   0,   9,   0,   9,   0,   9,   0,   9,
-    0,   6,   255, 255, 0,   0,   0,   0,   0,   12,  255, 255, 0,   12,  255, 255, 255, 255, 0,   12,  0,   6,   0,
-    11,  255, 255, 0,   11,  0,   11,  0,   11,  0,   11,  0,   11,  0,   11,  255, 255, 255, 255, 255, 255, 255, 255,
-    0,   11,  255, 255, 0,   12,  0,   8,   0,   8,   0,   8,   0,   8,   255, 255, 255, 255, 255, 255, 0,   6,   0,
-    4,   0,   4,   0,   4,   255, 255, 0,   4,   255, 255, 255, 255, 255, 255, 0,   4,   255, 255, 0,   0,   0,   6,
-    0,   6,   0,   3,   255, 255, 0,   3,   0,   3,   0,   3,   0,   3,   255, 255, 255, 255, 255, 255, 0,   3,   0,
-    10,  0,   10,  0,   10,  0,   10,  255, 255, 0,   6,   255, 255, 0,   6,   0,   5,   0,   5,   0,   5,   255, 255,
-    0,   0,   255, 255, 0,   6,   0,   1,   255, 255, 255, 255, 0,   1,   0,   1,   0,   1,   0,   1,   255, 255, 0,
-    1,   0,   1,   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0,   1,   0,   12,  0,   8,   255, 255,
-    0,   8,   255, 255, 255, 255, 0,   6,   0,   6,   0,   3,   0,   3,   255, 255, 0,   3,   255, 255, 255, 255, 255,
-    255, 0,   3,   0,   3,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 0,   0,   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 0,   0};
-void* lbl_80311BE0[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
-                          screens_initialise, screens_release,   (void*)0x00000000, screens_show,
-                          screens_remove,     screens_run};
-void* Carryable_funcs[20] = {(void*)0x00000000,
-                             (void*)0x00000000,
-                             (void*)0x00000000,
-                             (void*)0x000E0000,
-                             Carryable_initialise,
-                             Carryable_release,
-                             (void*)0x00000000,
-                             Carryable_init,
-                             Carryable_updateHeld,
-                             Carryable_updateRenderState,
-                             Carryable_free,
-                             Carryable_getCarryState,
-                             Carryable_wasJustGrabbed,
-                             Carryable_getSurfaceType,
-                             Carryable_setGravityEnabled,
-                             Carryable_setDropDisabled,
-                             Carryable_getDropDisabled,
-                             Carryable_setSuppressPositionSave,
-                             Carryable_stopCarrying,
-                             (void*)0x00000000};
-u8 lbl_80311C58[304] = {
-    0,   0,   0, 0,   0, 0,   0,   15,  0,   0,   0,   150, 1,   144, 3,   132, 0,   0,   0, 127, 255, 206, 1,   144,
-    3,   232, 0, 31,  0, 127, 0,   50,  2,   18,  252, 24,  0,   0,   0,   127, 255, 106, 2, 18,  252, 174, 0,   31,
-    0,   127, 3, 232, 0, 100, 0,   150, 0,   0,   0,   127, 4,   176, 0,   100, 255, 206, 0, 31,  0,   127, 252, 24,
-    1,   14,  0, 50,  0, 0,   0,   127, 252, 24,  1,   14,  255, 206, 0,   31,  0,   127, 2, 108, 2,   38,  3,   12,
-    0,   0,   0, 127, 3, 12,  2,   38,  3,   152, 0,   31,  0,   127, 252, 204, 0,   210, 3, 12,  0,   0,   0,   127,
-    253, 188, 0, 210, 3, 52,  0,   31,  0,   127, 3,   52,  0,   100, 252, 244, 0,   0,   0, 127, 3,   12,  0,   100,
-    253, 148, 0, 31,  0, 127, 252, 104, 1,   214, 252, 244, 0,   0,   0,   127, 252, 244, 1, 214, 252, 204, 0,   31,
-    0,   127, 0, 0,   0, 0,   0,   1,   0,   2,   0,   0,   0,   3,   0,   4,   0,   0,   0, 5,   0,   6,   0,   0,
-    0,   7,   0, 8,   0, 0,   0,   9,   0,   10,  0,   0,   0,   11,  0,   12,  0,   0,   0, 13,  0,   14,  0,   0,
-    0,   15,  0, 16,  0, 0,   0,   1,   0,   2,   0,   3,   0,   4,   0,   5,   0,   6,   0, 7,   0,   8,   0,   9,
-    0,   10,  0, 11,  0, 12,  0,   13,  0,   14,  0,   15,  0,   16,  0,   0,   0,   1,   0, 2,   0,   3,   0,   4,
-    0,   5,   0, 6,   0, 7,   0,   8,   0,   9,   0,   10,  0,   11,  0,   12,  0,   13,  0, 14,  0,   15,  0,   16,
-    0,   0,   0, 90,  0, 50,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0};
-void* lbl_80311D88[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_59_func00_nop, dll_59_func01_nop, (void*)0x00000000, dll_59_func03};
-u8 lbl_80311DA8[100] = {0, 30, 0, 0, 0, 0,   0, 0,  0, 31, 255, 226, 0, 0, 0, 0,   0,   15,  0, 31, 0, 0, 0, 0,  3, 232,
-                        0, 8,  0, 0, 0, 0,   0, 15, 0, 0,  0,   0,   0, 0, 0, 31,  255, 241, 0, 0,  0, 0, 0, 15, 0, 31,
-                        0, 15, 0, 0, 7, 208, 0, 8,  0, 0,  255, 241, 0, 0, 7, 208, 0,   8,   0, 0,  0, 0, 0, 1,  0, 2,
-                        0, 1,  0, 3, 0, 2,   0, 0,  0, 80, 0,   0,   0, 0, 0, 0,   0,   0,   0, 0,  0, 0};
-void* lbl_80311E0C[9] = {(void*)0x00000000, (void*)0x00000000,     (void*)0x00000000,
-                         (void*)0x00030000, (void*)0x00000000,     (void*)0x00000000,
-                         (void*)0x00000000, StaffCollision_func03, (void*)0x00000000};
-u8 lbl_80311E30[80] = {0,   0,   2, 88, 0, 0,  0, 15, 0, 31, 2,   88,  0, 0, 0,   0,   0, 0,  0, 0,
-                       253, 168, 0, 0,  2, 88, 0, 15, 0, 0,  253, 168, 0, 0, 253, 168, 0, 31, 0, 0,
-                       0,   0,   0, 1,  0, 2,  0, 0,  0, 2,  0,   3,   0, 0, 0,   3,   0, 1,  0, 1,
-                       0,   3,   0, 2,  0, 0,  0, 70, 0, 0,  0,   0,   0, 0, 0,   0,   0, 0,  0, 0};
-void* lbl_80311E80[18] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, (void*)0x00000000,
-                          (void*)0x00000000, (void*)0x00000000, modgfx_func03,     (void*)0x21212121, (void*)0x20546869,
-                          (void*)0x73206D6F, (void*)0x64676678, (void*)0x206E6565, (void*)0x64732061, (void*)0x6E206F77,
-                          (void*)0x6E657220, (void*)0x6F626A65, (void*)0x63740A00};

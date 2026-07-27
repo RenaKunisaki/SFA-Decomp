@@ -302,3 +302,24 @@ void Carryable_release(void)
 void Carryable_initialise(void)
 {
 }
+
+void* Carryable_funcs[20] = {(void*)0x00000000,
+                             (void*)0x00000000,
+                             (void*)0x00000000,
+                             (void*)0x000E0000,
+                             Carryable_initialise,
+                             Carryable_release,
+                             (void*)0x00000000,
+                             Carryable_init,
+                             Carryable_updateHeld,
+                             Carryable_updateRenderState,
+                             Carryable_free,
+                             Carryable_getCarryState,
+                             Carryable_wasJustGrabbed,
+                             Carryable_getSurfaceType,
+                             Carryable_setGravityEnabled,
+                             Carryable_setDropDisabled,
+                             Carryable_getDropDisabled,
+                             Carryable_setSuppressPositionSave,
+                             Carryable_stopCarrying,
+                             (void*)0x00000000};

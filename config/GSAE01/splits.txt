@@ -602,31 +602,35 @@ main/dll/dll_0015_curves.c:
 	.bss        start:0x803A2C38 end:0x803A2F80
 	.sbss       start:0x803DD480 end:0x803DD488
 
-main/dll/dll_0017_savegame.c:
+dlls/engine/23/23.c:
 	.text       start:0x800E8100 end:0x800EA174
 	.rodata     start:0x802C2170 end:0x802C217C
-	.data       start:0x80311720 end:0x80311EC8
+	.data       start:0x80311720 end:0x803119E0
 	.bss        start:0x803A2F80 end:0x803A4218
 	.sdata      start:0x803DB890 end:0x803DB898
 	.sbss       start:0x803DD488 end:0x803DD4A0
 
 main/dll/dll_0011_screens.c:
 	.text       start:0x800EA174 end:0x800EA774
+	.data       start:0x803119E0 end:0x80311C08
 	.sbss       start:0x803DD4A0 end:0x803DD4B0
 
 dlls/engine/47/47.c:
 	.text       start:0x800EA774 end:0x800EADCC
+	.data       start:0x80311C08 end:0x80311C58
 
 dlls/modgfx/89/89.c:
 	.text       start:0x800EADCC end:0x800EB098
+	.data       start:0x80311C58 end:0x80311DA8
 
 dlls/modgfx/90/90.c:
 	.text       start:0x800EB098 end:0x800EB618
+	.data       start:0x80311DA8 end:0x80311E30
 	.sdata      start:0x803DB898 end:0x803DB8B0
 
 dlls/modgfx/91/91.c:
 	.text       start:0x800EB618 end:0x800EC7BC
-	.data       start:0x80311EC8 end:0x80311F20
+	.data       start:0x80311E30 end:0x80311F20
 	.sdata      start:0x803DB8B0 end:0x803DB8C0
 	.sdata2     start:0x803E0730 end:0x803E0760
 

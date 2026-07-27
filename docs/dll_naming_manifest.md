@@ -60,13 +60,13 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x00E | — | NO-RETAIL-NAME | main/dll/dll_000E_partfx.c | = (canonical) | — |
 | 0x00F | — | NO-RETAIL-NAME | main/dll/dll_000F_unk.c | = (canonical) | — |
 | 0x010 | — | NO-RETAIL-NAME | main/dll/dll_0010_uicontroller.c | = (canonical) | — |
-| 0x011 | — | NO-RETAIL-NAME | main/dll/dll_0011_screens.c | = (canonical) | — |
+| 0x011 | — | NO-RETAIL-NAME | main/dll/dll_0011_screens.c | = (canonical) | Complete DOL-confirmed TU; data table and descriptor restored from DLL 23 tail |
 | 0x012 | — | NO-RETAIL-NAME | main/dll/dll_0012_unk.c | = (canonical) | — |
 | 0x013 | — | NO-RETAIL-NAME | main/dll/dll_0013_waterfx.c | = (canonical) | — |
 | 0x014 | — | NO-RETAIL-NAME | main/dll/dll_0014_unk.c | = (canonical) | — |
 | 0x015 | — | NO-RETAIL-NAME | main/dll/dll_0015_curves.c | = (canonical) | — |
 | 0x016 | — | NO-RETAIL-NAME | main/dll/dll_0016_screentransition.c | = (canonical) | — |
-| 0x017 | — | NO-RETAIL-NAME | main/dll/dll_0017_savegame.c | = (canonical) | — |
+| 0x017 | — | NO-RETAIL-NAME | dlls/engine/23/23.c | = (canonical) | Complete DOL-confirmed TU; foreign data tails restored to DLLs 17, 47, 89, 90, and 91 |
 | 0x018 | — | NO-RETAIL-NAME | dlls/engine/24/24.c | = (canonical) | Complete DOL-confirmed TU; missing BSS and sdata owners restored |
 | 0x019 | — | NO-RETAIL-NAME | dlls/engine/25/25.c | = (canonical) | Complete DOL-confirmed TU; data vectors and descriptor restored from DLL 87 tail |
 | 0x01A | — | NO-RETAIL-NAME | dlls/engine/26/26.c | = (canonical) | Complete DOL-confirmed text TU; missing BSS owner restored; registration record remains embedded in DLL 27 data |
@@ -90,7 +90,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x02C | — | NO-RETAIL-NAME | dlls/engine/44/44.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x02D | — | NO-RETAIL-NAME | dlls/engine/45/45.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x02E | — | NO-RETAIL-NAME | dlls/engine/46/46.c | = (canonical) | Complete DOL-confirmed TU; adjacent data tails restored to DLLs 48, 50, and 51 |
-| 0x02F | — | NO-RETAIL-NAME | dlls/engine/47/47.c | = (canonical) | Complete DOL-confirmed text TU; interface table is embedded in the shared Savegame data block |
+| 0x02F | — | NO-RETAIL-NAME | dlls/engine/47/47.c | = (canonical) | Complete DOL-confirmed TU; descriptor restored from DLL 23 tail |
 | 0x030 | — | NO-RETAIL-NAME | dlls/engine/48/48.c | = (canonical) | Complete DOL-confirmed data-only TU |
 | 0x031 | — | NO-RETAIL-NAME | dlls/engine/49/49.c | = (canonical) | Complete DOL-confirmed TU; map rows restored from DLL 60 |
 | 0x032 | — | NO-RETAIL-NAME | dlls/engine/50/50.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
@@ -132,9 +132,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x056 | — | NO-RETAIL-NAME | dlls/engine/86/86.c | = (canonical) | — |
 | 0x057 | — | NO-RETAIL-NAME | dlls/engine/87/87.c | = (canonical) | Complete DOL-confirmed TU; DLL 25 data tail detached |
 | 0x058 | — | NO-RETAIL-NAME | dlls/engine/88/88.c | = (canonical) | — |
-| 0x059 | — | NO-RETAIL-NAME | dlls/modgfx/89/89.c | = (canonical) | — |
-| 0x05A | — | NO-RETAIL-NAME | dlls/modgfx/90/90.c | = (canonical) | — |
-| 0x05B | — | NO-RETAIL-NAME | dlls/modgfx/91/91.c | = (canonical) | — |
+| 0x059 | — | NO-RETAIL-NAME | dlls/modgfx/89/89.c | = (canonical) | Complete DOL-confirmed TU; data and descriptor restored from DLL 23 tail |
+| 0x05A | — | NO-RETAIL-NAME | dlls/modgfx/90/90.c | = (canonical) | Complete DOL-confirmed TU; data and descriptor restored from DLL 23 tail |
+| 0x05B | — | NO-RETAIL-NAME | dlls/modgfx/91/91.c | = (canonical) | Complete DOL-confirmed TU; leading data and descriptor restored from DLL 23 tail |
 | 0x05C | — | NO-RETAIL-NAME | dlls/modgfx/92/92.c | = (canonical) | — |
 | 0x05D | — | NO-RETAIL-NAME | dlls/modgfx/93/93.c | = (canonical) | — |
 | 0x05E | — | NO-RETAIL-NAME | dlls/modgfx/94/94.c | = (canonical) | — |
