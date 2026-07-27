@@ -73,6 +73,31 @@ from function_objdump import (
 )
 from ndiff import normalize
 import difflib
+import os
+import shutil
+
+
+def shell_bash() -> str:
+    """Path to a POSIX bash that can run the repo's shell tools.
+
+    On Windows a bare "bash" resolves to WSL's System32\\bash.exe, which cannot
+    see the repo's Windows paths: locked_ninja then fails *after* the caller has
+    already deleted the .o, so every sweep reports a spurious build failure.
+    """
+    if os.name != "nt":
+        return "bash"
+    for env in ("GIT_BASH", "BASH"):
+        p = os.environ.get(env)
+        if p and Path(p).is_file():
+            return p
+    for p in (r"C:\Program Files\Git\bin\bash.exe",
+              r"C:\Program Files (x86)\Git\bin\bash.exe"):
+        if Path(p).is_file():
+            return p
+    found = shutil.which("bash")
+    if found and "system32" not in found.lower():
+        return found
+    return "bash"
 
 REPO = Path(__file__).resolve().parent.parent
 
@@ -584,7 +609,7 @@ def rebuild(unit_object: str, version: str) -> bool:
         pass
     # ninja resolves targets relative to the build root -- pass the repo-relative
     # path, never an absolute path (ninja won't recognise the latter as a target).
-    r = subprocess.run(["bash", "--noprofile", "--norc", "tools/locked_ninja.sh", rel],
+    r = subprocess.run([shell_bash(), "--noprofile", "--norc", "tools/locked_ninja.sh", rel],
                        cwd=REPO, capture_output=True, text=True)
     return r.returncode == 0 and src_o.is_file()
 
@@ -633,7 +658,10 @@ def install_restore_guard(src_file: Path, original: bytes):
         os._exit(130)
 
     atexit.register(finish)
-    for s in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+    sigs = [signal.SIGINT, signal.SIGTERM]
+    if hasattr(signal, "SIGHUP"):
+        sigs.append(signal.SIGHUP)
+    for s in sigs:
         try:
             signal.signal(s, on_signal)
         except (ValueError, OSError):
