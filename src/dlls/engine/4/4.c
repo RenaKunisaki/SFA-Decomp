@@ -1,14 +1,3 @@
-/*
- * dummy04 (DLL 0x0004) - an inert placeholder object DLL.
- *
- * Provides the full set of object-interface entry points the engine
- * expects (init/release, per-frame hooks func04..func26 (slots 06 and
- * 09 are absent from this DLL's interface), plus the
- * onSetupPlayer/onSelectSave game-flow callbacks), but every one is a
- * stub: the *_nop functions do nothing and the *_ret_* functions
- * return a fixed constant (0, 0x7f, or -1). Used to fill a DLL slot
- * with a known no-op so the dispatch tables stay valid.
- */
 #include "dolphin/types.h"
 #include "main/dll/dll_0004_dummy04.h"
 

@@ -571,7 +571,7 @@ dlls/engine/22/22.c:
 	.sbss       start:0x803DD420 end:0x803DD430
 	.sdata2     start:0x803E0540 end:0x803E0570
 
-main/dll/dll_0004_dummy04.c:
+dlls/engine/4/4.c:
 	.text       start:0x800D7F5C end:0x800D8020
 	.data       start:0x80311378 end:0x80311438
 
