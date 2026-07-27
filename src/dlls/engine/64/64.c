@@ -1,21 +1,8 @@
-/*
- * credits (DLL 0x40) - the end-credits roll.
- *
- * Credits_initialise loads the credits texture asset (0xC5) and the
- * credits text block (0x1FD), resets the page cursor to page 0 and seeds
- * the scroll time. Credits_frameStart advances that time by timeDelta
- * each frame, steps to the next page once the time passes the page's end
- * marker (endTime), then for every line on the current page computes a
- * fade-in/hold/fade-out alpha from the four per-line time keys
- * (t0..t3) and scrolls visible lines up. Credits_release frees the
- * texture. Credits_render / Credits_frameEnd are empty stubs.
- */
 #include "main/texture.h"
 #include "main/frame_timing.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0040_credits.h"
 
-/* credits texture asset loaded at init (freed in Credits_release) */
 #define CREDITS_TEXTURE_ID 0xC5
 
 extern f32 lbl_803DD968;
@@ -241,7 +228,6 @@ void Credits_initialise(void)
     lbl_803DD968 = lbl_803E22A8;
 }
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 void* lbl_8031CC10[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
                           Credits_initialise, Credits_release,   (void*)0x00000000, Credits_frameStart,
                           Credits_frameEnd,   Credits_render};
