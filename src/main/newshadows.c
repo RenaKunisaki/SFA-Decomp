@@ -1723,17 +1723,17 @@ static inline void fillFalloffTexture(void)
         lowoff = i & 7;
         cy = i - lbl_803DED1C;
         lowoff += rowoff;
-        cy = cy * lbl_803DEDE0;
         for (; j < 0x80; j++)
         {
             int off;
             u8 val;
-            f32 cx, d2;
+            f32 cx, dy, d2;
             base = (u8*)gNewShadowFalloffTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
+            dy = cy * lbl_803DEDE0;
             cx = ((f32)j - lbl_803DED1C) * lbl_803DEDE0;
-            d2 = sqrtf(cx * cx + cy * cy);
+            d2 = sqrtf(dy * dy + cx * cx);
             if (d2 < lbl_803DED38)
             {
                 val = 0xa0;
