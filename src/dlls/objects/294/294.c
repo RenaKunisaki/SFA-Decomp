@@ -331,7 +331,7 @@ void objFn_80198fa4(GameObject* obj, MmpGyserventPlacement* placement)
     xf.y = lbl_803E40D8;
     xf.z = lbl_803E40D8;
     setMatrixFromObjectPos(posMtx, &xf);
-    Matrix_TransformPoint(posMtx, lbl_803E40D8, *(f32*)&lbl_803E40D8, lbl_803E40E0, &outY, &outZ, &outX);
+    Matrix_TransformPoint(posMtx, lbl_803E40D8, lbl_803E40D8, lbl_803E40E0, &outY, &outZ, &outX);
     state->planeNormalX = outY;
     state->planeNormalY = outZ;
     state->planeNormalZ = outX;
