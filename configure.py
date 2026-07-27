@@ -1180,12 +1180,6 @@ config.libs = [
             Object(NonMatching, "dlls/objects/599_DR_EarthWar/DR_EarthWar.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/600_DR_CloudRun/DR_CloudRun.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "main/objanim.c", cflags=cflags_dll_noopt_nocse),
-            Object(NonMatching, "main/lightmap.c", cflags=cflags_dll_noopt_noautoinline_deferred),
-            Object(NonMatching, "main/lightmap_initmapblocks.c", cflags=cflags_dll_noopt_noautoinline_deferred),
-            Object(
-                NonMatching, "main/lightmap_draw.c", cflags=cflags_dll_noopt_noautoinline_deferred,
-                section_alignments={".data": 4},
-            ),
             Object(MatchingFor("GSAE01"), "main/textblock.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/objHitReact.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/objhits.c", cflags=cflags_dll_noopt_noautoinline_level3),
@@ -1216,10 +1210,6 @@ config.libs = [
             Object(NonMatching, "main/rcp_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/texture.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/shader.c", cflags=cflags_dll_noopt_noautoinline_deferred),
-            Object(
-                NonMatching, "main/tex_dolphin.c", cflags=cflags_dll_noopt_noautoinline_deferred,
-                section_alignments={".data": 4},
-            ),
             Object(NonMatching, "main/shadow_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/track_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_noautoinline),
