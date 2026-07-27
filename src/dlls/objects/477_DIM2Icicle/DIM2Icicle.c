@@ -75,12 +75,8 @@ void dim2icicle_update(GameObject *obj)
         break;
     case DIM2ICICLE_MODE_WOBBLE:
     {
-        f32 wobble;
-
         obj->anim.rotY = icicle->wobbleRotY;
-        wobble = (f32)icicle->wobbleRotY;
-        wobble *= 0.333f;
-        icicle->wobbleRotY = wobble;
+        icicle->wobbleRotY *= 0.333f;
         if ((obj)->anim.rotY >= 10)
         {
             break;
