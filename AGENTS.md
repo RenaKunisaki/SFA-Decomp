@@ -140,6 +140,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 - When two proven consumers interpret the same shared placement byte with different signedness and
   both views are codegen-significant, model explicit union views at the shared offset. Do not force
   one canonical signedness and scatter casts; assert both offsets and rebuild every consumer.
+- When a shared placement record has proven mode-specific roles at the same offsets, expose
+  explicit semantic union views in the owning canonical header and use the relevant view in each
+  mode or consumer. Do not preserve one misleading generic name or duplicate the record as
+  competing padded structs; assert every recovered view at the shared offset.
 - Include an object's canonical header at direct consumers instead of repeating hand-written
   declarations. Where a generic registry intentionally stores differently shaped descriptor
   types, use an explicit cast at that boundary rather than lying about the descriptor's type in an
