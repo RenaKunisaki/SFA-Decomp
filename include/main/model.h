@@ -16,7 +16,7 @@ typedef struct ModelRenderOp
     u8 layerCount;
     u8 pad2A[0x34 - 0x2A];
     s32 layer0TextureId;
-    u8 pad38[4];
+    s32 layer1TextureId;
     u32 flags;
     u8 pad40;
     u8 mode;
