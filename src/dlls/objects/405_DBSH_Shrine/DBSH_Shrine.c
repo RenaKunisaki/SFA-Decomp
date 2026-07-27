@@ -1,172 +1,191 @@
 /*
- * DBSH_Shrine (DLL 0x195) - a rising Krazoa-shrine object in the
- * "dbshrine" map (mapId 43, a Krazoa spirit shrine). Idle until the map-event trigger
- * fires, it raises the spirit-vision sky and env fx, plays an idle sfx on
- * a randomised timer, then steps a small state machine
- * (WAITING -> RISING -> ACTIVE -> CLOSING -> RESET) gated by the
- * DBSH_SHRINE_GB_* game bits. The sequence callback DBSH_Shrine_SeqFn drives
- * level/map unlocks and toggles the attached point light.
+ * DBSH_Shrine (DLL 0x195) - Krazoa Shrine Test of Strength.
+ *
+ * Runs the floating shrine model, its activation sequence, and the state
+ * transitions that award the Krazoa Spirit and reset the test.
  */
-#include "main/dll/dll_0195_dbshshrine.h"
-#include "main/vecmath_distance_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/player_api.h"
-#include "main/dll/objfx_api.h"
-#include "main/frame_timing.h"
-#include "main/game_timer_control_api.h"
-#include "main/sky_api.h"
+#include "dlls/objects/405_DBSH_Shrine.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "game/objects/object.h"
 #include "main/audio/audio_control_api.h"
 #include "main/audio/music_api.h"
-#include "main/pi_dolphin_api.h"
+#include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
+#include "main/frame_timing.h"
+#include "main/game_timer_control_api.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/map_load.h"
-#include "main/model_light.h"
-#include "main/vecmath.h"
-#include "main/render_envfx_api.h"
-#include "main/objseq.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/audio/sfx.h"
-#include "sys/objects.h"
+#include "main/model_light.h"
 #include "main/object_render.h"
-#include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/audio/music_trigger_ids.h"
-#include "dlls/object_descriptor.h"
+#include "main/objseq.h"
+#include "main/pi_dolphin_api.h"
+#include "main/render_envfx_api.h"
+#include "main/sky_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
-#define DBSHSHRINE_OBJGROUP   0xb
-#define DBSHSHRINE_MAP_SHRINE 0xb
+#define DBSH_SHRINE_OBJ_GROUP 0xB
 
-#define DBSH_SHRINE_STATE_WAITING 0
-#define DBSH_SHRINE_STATE_RISING  1
-#define DBSH_SHRINE_STATE_ACTIVE  2
-#define DBSH_SHRINE_STATE_CLOSING 4
-#define DBSH_SHRINE_STATE_RESET   5
+#define DBSH_SHRINE_REWARD_MAP_ID  0xB
+#define DBSH_SHRINE_REWARD_MAP_ACT 3
 
-#define DBSH_SHRINE_OBJ_FLAG_ACTIVE    0x4000
-#define DBSH_SHRINE_MAP_FLAG_TRIGGERED 0x1
+#define DBSH_SHRINE_ORBIT_RATE_A         512.0f
+#define DBSH_SHRINE_ORBIT_RATE_B         128.0f
+#define DBSH_SHRINE_ORBIT_RATE_C         192.0f
+#define DBSH_SHRINE_ORBIT_HEIGHT         20.0f
+#define DBSH_SHRINE_ORBIT_ROTATION_SCALE 600.0f
+#define DBSH_SHRINE_ANIMATION_STEP       0.005f
+#define DBSH_SHRINE_TURN_RATE_DIVISOR    12.0f
+#define DBSH_SHRINE_FADE_DISTANCE        30.0f
+#define DBSH_SHRINE_FULL_ALPHA           255.0f
+#define DBSH_SHRINE_ORBIT_PI             3.1415927f
+#define DBSH_SHRINE_ORBIT_ANGLE_SCALE    32768.0f
+#define DBSH_SHRINE_ANGLE_HALF_TURN      0x8000
+#define DBSH_SHRINE_ANGLE_WRAP           0xFFFF
 
-#define DBSH_SHRINE_GB_APPROACH    0xdd3
-#define DBSH_SHRINE_GB_FIRST_RISE  0x15f
-#define DBSH_SHRINE_GB_RISE_DONE   0x16a
-#define DBSH_SHRINE_GB_CLOSE_A     0x16b
-#define DBSH_SHRINE_GB_CLOSE_B     0x16c
-#define DBSH_SHRINE_GB_RESET_A     0xc72
-#define DBSH_SHRINE_GB_RESET_B     0xc73
-#define DBSH_SHRINE_GB_SCENE_BLOCK 0xcbb
-#define DBSH_SHRINE_GB_ACTIVE      0xefa
-#define DBSH_SHRINE_GB_INITIALIZED 0xf08
+#define DBSH_SHRINE_PLAYER_ANIM_STATE_FLAG 2
+#define DBSH_SHRINE_MESSAGE_QUEUE_CAPACITY 4
+#define DBSH_SHRINE_TRANSITION_ROTATION    0x7FFF
 
-#define DBSH_SHRINE_ENVFX_A  0xd4
-#define DBSH_SHRINE_ENVFX_B  0xd5
-#define DBSH_SHRINE_ENVFX_C  0x222
-#define DBSH_SHRINE_IDLE_SFX 0x343
+#define DBSH_SHRINE_GAMEBIT_015F     0x15F
+#define DBSH_SHRINE_GAMEBIT_016A     0x16A
+#define DBSH_SHRINE_GAMEBIT_016B     0x16B
+#define DBSH_SHRINE_GAMEBIT_016C     0x16C
+#define DBSH_SHRINE_GAMEBIT_0C72     0xC72
+#define DBSH_SHRINE_GAMEBIT_0C73     0xC73
+#define DBSH_SHRINE_GAMEBIT_APPROACH 0xDD3
+#define DBSH_SHRINE_GAMEBIT_0F08     0xF08
 
-void dbsh_shrine_updateSpirit(int obj)
-{
-    register int self = obj;
-    register int state2 = *(int*)&((GameObject*)self)->anim.placementData;
-    register int state = *(int*)&((GameObject*)self)->extra;
-    GameObject* player = Obj_GetPlayerObject();
-    ObjAnimEventList local_var;
-    f32 dist;
-    f32 angA, angB;
-    int delta;
+#define DBSH_SHRINE_ENVFX_A 0xD4
+#define DBSH_SHRINE_ENVFX_B 0xD5
+#define DBSH_SHRINE_ENVFX_C 0x222
 
-    if ((((GameObject*)self)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
-    {
-        ((GameObject*)self)->anim.rotX = 0;
-        ((GameObject*)self)->anim.localPosY = *(float*)(state2 + 0xc);
+#define DBSH_SHRINE_UNLOCK_LEVEL       0
+#define DBSH_SHRINE_LOCK_MAP_DIR_INDEX 10
+
+enum {
+    DBSH_SHRINE_ANIM_EVENT_ACTIVATE = 3,
+    DBSH_SHRINE_ANIM_EVENT_GRANT_SPIRIT = 7,
+    DBSH_SHRINE_ANIM_EVENT_LOCK_POSE = 14,
+    DBSH_SHRINE_ANIM_EVENT_UNLOCK_POSE = 15,
+};
+
+typedef enum DBSHShrinePhase {
+    DBSH_SHRINE_PHASE_WAITING = 0,
+    DBSH_SHRINE_PHASE_RISING = 1,
+    DBSH_SHRINE_PHASE_ACTIVE = 2,
+    DBSH_SHRINE_PHASE_CLOSING = 4,
+    DBSH_SHRINE_PHASE_RESET = 5,
+} DBSHShrinePhase;
+
+void dbshShrine_updateHoverMotion(GameObject* obj) {
+    const DBSHShrinePlacement* placement;
+    DBSHShrineState* state;
+    GameObject* player;
+    f32 trigA;
+    f32 trigB;
+    f32 distance;
+    s32 angleDelta;
+    ObjAnimEventList animEvents;
+
+    placement = (const DBSHShrinePlacement*)obj->anim.placementData;
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
+
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
+        obj->anim.rotX = 0;
+        obj->anim.localPosY = placement->base.posY;
         return;
     }
 
-    *(short*)(state + 0xe) = (short)((int)*(short*)(state + 0xe) + (int)(512.0f * timeDelta));
-    *(short*)(state + 0x10) = (short)((int)*(short*)(state + 0x10) + (int)(128.0f * timeDelta));
-    *(short*)(state + 0x12) = (short)((int)*(short*)(state + 0x12) + (int)(192.0f * timeDelta));
+    state->orbitPhaseA += (s32)(DBSH_SHRINE_ORBIT_RATE_A * timeDelta);
+    state->orbitPhaseB += (s32)(DBSH_SHRINE_ORBIT_RATE_B * timeDelta);
+    state->orbitPhaseC += (s32)(DBSH_SHRINE_ORBIT_RATE_C * timeDelta);
 
-    ((GameObject*)self)->anim.localPosY =
-        20.0f + (*(float*)(state2 + 0xc) +
-                        mathSinf((3.1415927f * (f32)(s32) * (short*)(state + 0xe)) / 32768.0f));
-    angA = mathSinf((3.1415927f * (f32)(s32) * (short*)(state + 0x10)) / 32768.0f);
-    angB = mathSinf((3.1415927f * (f32)(s32) * (short*)(state + 0xe)) / 32768.0f);
-    angB = angB + angA;
-    *(s16*)&((GameObject*)self)->anim.rotZ = (600.0f * angB);
-    angA = mathSinf((3.1415927f * (f32)(s32) * (short*)(state + 0x12)) / 32768.0f);
-    angB = mathSinf((3.1415927f * (f32)(s32) * (short*)(state + 0xe)) / 32768.0f);
-    angB = angB + angA;
-    *(s16*)&((GameObject*)self)->anim.rotY = (600.0f * angB);
+    obj->anim.localPosY =
+        DBSH_SHRINE_ORBIT_HEIGHT +
+        (placement->base.posY + mathSinf((DBSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / DBSH_SHRINE_ORBIT_ANGLE_SCALE));
 
-    ObjAnim_AdvanceCurrentMove(self, 0.005f, timeDelta,
-                                                                 (ObjAnimEventList*)&local_var);
+    trigA = mathSinf((DBSH_SHRINE_ORBIT_PI * state->orbitPhaseB) / DBSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB = mathSinf((DBSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / DBSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB += trigA;
+    obj->anim.rotZ = (s16)(DBSH_SHRINE_ORBIT_ROTATION_SCALE * trigB);
 
-    if (player == NULL)
+    trigA = mathSinf((DBSH_SHRINE_ORBIT_PI * state->orbitPhaseC) / DBSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB = mathSinf((DBSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / DBSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB += trigA;
+    obj->anim.rotY = (s16)(DBSH_SHRINE_ORBIT_ROTATION_SCALE * trigB);
+
+    ObjAnim_AdvanceCurrentMove((int)obj, DBSH_SHRINE_ANIMATION_STEP, timeDelta, &animEvents);
+
+    if (player == NULL) {
         return;
+    }
 
-    {
-        float dx = ((GameObject*)self)->anim.worldPosX - player->anim.worldPosX;
-        float dz = ((GameObject*)self)->anim.worldPosZ - player->anim.worldPosZ;
-        int ang = (u16)getAngle(dx, dz);
-        delta = ang - (int)(u16)((GameObject*)self)->anim.rotX;
-        if (delta > 0x8000)
-            delta -= 0xffff;
-        if (delta < -0x8000)
-            delta += 0xffff;
-        ((GameObject*)self)->anim.rotX =
-            (short)((int)*(s16*)(int)(GameObject*)self + (int)((f32)delta * timeDelta / 12.0f));
+    angleDelta =
+        (u16)getAngle(obj->anim.worldPosX - player->anim.worldPosX, obj->anim.worldPosZ - player->anim.worldPosZ) -
+        (u16)obj->anim.rotX;
+    if (angleDelta > DBSH_SHRINE_ANGLE_HALF_TURN) {
+        angleDelta -= DBSH_SHRINE_ANGLE_WRAP;
     }
-    dist = Vec_xzDistance((f32*)((u8*)self + 24), &player->anim.worldPosX);
-    if (dist <= 30.0f)
-    {
-        ((GameObject*)self)->anim.alpha = (u8)(int)(255.0f * (dist / 30.0f));
+    if (angleDelta < -DBSH_SHRINE_ANGLE_HALF_TURN) {
+        angleDelta += DBSH_SHRINE_ANGLE_WRAP;
     }
-    else
-    {
-        ((GameObject*)self)->anim.alpha = 0xff;
+    obj->anim.rotX =
+        (s16)(*(s16*)(int)&obj->anim.rotX + (s32)(((f32)angleDelta * timeDelta) / DBSH_SHRINE_TURN_RATE_DIVISOR));
+
+    distance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+    if (distance <= DBSH_SHRINE_FADE_DISTANCE) {
+        obj->anim.alpha = (u8)(s32)(DBSH_SHRINE_FULL_ALPHA * (distance / DBSH_SHRINE_FADE_DISTANCE));
+    } else {
+        obj->anim.alpha = 0xFF;
     }
 }
 
-int DBSH_Shrine_SeqFn(int obj, u32 unused, ObjAnimUpdateState* animUpdate)
-{
-    DbshShrineRuntime* runtime;
+int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    DBSHShrineState* state = obj->extra;
     GameObject* player;
     int i;
-    u32 event;
+    u8 event;
 
-    runtime = ((GameObject*)obj)->extra;
+    (void)unused;
     player = Obj_GetPlayerObject();
-    animUpdate->activeHitVolumePair = -1;
+    animUpdate->savedFlags = -1;
     animUpdate->sequenceEventActive = 0;
 
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
+    for (i = 0; i < animUpdate->eventCount; i++) {
         event = animUpdate->eventIds[i];
-        if (event != 0)
-        {
-            switch (event)
-            {
-            case 3:
-                runtime->flags.latchStarted = 1;
+        if (event != 0) {
+            switch (event) {
+            case DBSH_SHRINE_ANIM_EVENT_ACTIVATE:
+                state->flags.riseSequenceReady = 1;
                 break;
-            case 7:
-                objSetAnimStateFlags(player, 2, 1);
-                mainSetBits(DBSH_SHRINE_GB_FIRST_RISE, 1);
+            case DBSH_SHRINE_ANIM_EVENT_GRANT_SPIRIT:
+                objSetAnimStateFlags(player, DBSH_SHRINE_PLAYER_ANIM_STATE_FLAG, 1);
+                mainSetBits(DBSH_SHRINE_GAMEBIT_015F, 1);
                 mainSetBits(GAMEBIT_ITEM_SpiritTestStrength_Got, 1);
-                (*gMapEventInterface)->setMapAct(DBSHSHRINE_MAP_SHRINE, 3);
-                unlockLevel(0, 0, 1);
-                lockLevel(mapGetDirIdx(10), 0);
+                (*gMapEventInterface)->setMapAct(DBSH_SHRINE_REWARD_MAP_ID, DBSH_SHRINE_REWARD_MAP_ACT);
+                unlockLevel(DBSH_SHRINE_UNLOCK_LEVEL, 0, 1);
+                lockLevel(mapGetDirIdx(DBSH_SHRINE_LOCK_MAP_DIR_INDEX), 0);
                 break;
-            case 0xe:
-                ((GameObject*)obj)->anim.flags = (s16)(((GameObject*)obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
-                if (runtime->light != NULL)
-                {
-                    modelLightStruct_setEnabled(runtime->light, 0, 1.0f);
+            case DBSH_SHRINE_ANIM_EVENT_LOCK_POSE:
+                obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                if (state->light != NULL) {
+                    modelLightStruct_setEnabled(state->light, 0, 1.0f);
                 }
                 break;
-            case 0xf:
-                ((GameObject*)obj)->anim.flags = (s16)(((GameObject*)obj)->anim.flags & ~OBJANIM_FLAG_HIDDEN);
-                if (runtime->light != NULL)
-                {
-                    modelLightStruct_setEnabled(runtime->light, 0, 1.0f);
+            case DBSH_SHRINE_ANIM_EVENT_UNLOCK_POSE:
+                obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+                if (state->light != NULL) {
+                    modelLightStruct_setEnabled(state->light, 0, 1.0f);
                 }
                 break;
             }
@@ -177,81 +196,64 @@ int DBSH_Shrine_SeqFn(int obj, u32 unused, ObjAnimUpdateState* animUpdate)
     return 0;
 }
 
-int dbsh_shrine_getExtraSize(void)
-{
-    return sizeof(DbshShrineRuntime);
+int dbshShrine_getExtraSize(void) {
+    return sizeof(DBSHShrineState);
 }
 
-int dbsh_shrine_getObjectTypeId(void)
-{
+int dbshShrine_getObjectTypeId(void) {
     return 0;
 }
 
-void dbsh_shrine_free(GameObject* obj)
-{
-    DbshShrineRuntime* runtime;
+void dbshShrine_free(GameObject* obj) {
+    DBSHShrineState* state = obj->extra;
 
-    runtime = (obj)->extra;
-    if (runtime->light != NULL)
-    {
-        ModelLightStruct_free(runtime->light);
-        runtime->light = NULL;
+    if (state->light != NULL) {
+        ModelLightStruct_free(state->light);
+        state->light = NULL;
     }
     gameTimerStop();
-    ObjGroup_RemoveObject((int)obj, DBSHSHRINE_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, DBSH_SHRINE_OBJ_GROUP);
     Music_Trigger(MUSICTRIG_DIM_Snow, 0);
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
     Music_Trigger(MUSICTRIG_test_of_fear, 0);
-    mainSetBits(DBSH_SHRINE_GB_ACTIVE, 0);
-    mainSetBits(DBSH_SHRINE_GB_SCENE_BLOCK, 1);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 0);
+    mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
 }
 
-void dbsh_shrine_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, s8 visible)
-{
-    DbshShrineRuntime* runtime;
+void dbshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    DBSHShrineState* state = obj->extra;
 
-    runtime = (obj)->extra;
-    if (visible == 0)
-    {
-        if (runtime->light != NULL)
-        {
-            modelLightStruct_setEnabled(runtime->light, 0, 1.0f);
+    if (visible == 0) {
+        if (state->light != NULL) {
+            modelLightStruct_setEnabled(state->light, 0, 1.0f);
         }
-    }
-    else
-    {
-        if (runtime->light != NULL)
-        {
-            modelLightStruct_setEnabled(runtime->light, 1, 1.0f);
+    } else {
+        if (state->light != NULL) {
+            modelLightStruct_setEnabled(state->light, 1, 1.0f);
         }
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, runtime->light);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, state->light);
     }
 }
 
-void dbsh_shrine_hitDetect(void)
-{
+void dbshShrine_hitDetect(void) {
 }
 
-void dbsh_shrine_update(DbshShrineObject* obj)
-{
+void dbshShrine_update(GameObject* obj) {
     GameObject* player;
-    u8 active;
-    DbshShrineRuntime* runtime;
+    u8 groupActive;
+    DBSHShrineState* state = obj->extra;
+    f32 idleSfxTimer;
 
-    runtime = obj->runtime;
     player = Obj_GetPlayerObject();
-    if (player == NULL)
-    {
+    if (player == NULL) {
         return;
     }
 
-    if (obj->introDelay != 0)
-    {
-        obj->introDelay--;
-        if (obj->introDelay == 0)
-        {
+    if (obj->userData1 != 0) {
+        obj->userData1--;
+        if (obj->userData1 == 0) {
             skyFn_80088c94(7, 1);
             getEnvfxAct(obj, player, DBSH_SHRINE_ENVFX_A, 0);
             getEnvfxAct(obj, player, DBSH_SHRINE_ENVFX_B, 0);
@@ -259,126 +261,119 @@ void dbsh_shrine_update(DbshShrineObject* obj)
         }
     }
 
-    dbsh_shrine_updateSpirit((int)obj);
-    SCGameBitLatch_Update(&runtime->latch, 2, -1, -1, DBSH_SHRINE_GB_APPROACH, 0xe);
-    SCGameBitLatch_UpdateInverted(&runtime->latch, 1, -1, -1, DBSH_SHRINE_GB_SCENE_BLOCK, 8);
-    SCGameBitLatch_Update(&runtime->latch, 4, -1, -1, DBSH_SHRINE_GB_SCENE_BLOCK, 0xc4);
+    dbshShrine_updateHoverMotion(obj);
+    SCGameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, DBSH_SHRINE_GAMEBIT_APPROACH, 0xE);
+    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 1, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 8);
+    SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 0xC4);
 
-    switch (runtime->state)
-    {
-    case DBSH_SHRINE_STATE_WAITING:
-        obj->flags &= ~DBSH_SHRINE_OBJ_FLAG_ACTIVE;
-        {
-            f32 idleSfxTimer = runtime->idleSfxTimer - timeDelta;
-            runtime->idleSfxTimer = idleSfxTimer;
-            if (idleSfxTimer <= 0.0f)
-            {
-                Sfx_PlayFromObject((u32)obj, DBSH_SHRINE_IDLE_SFX);
-                runtime->idleSfxTimer = (f32)(int)randomGetRange(500, 1000);
-            }
+    switch ((DBSHShrinePhase)state->phase) {
+    case DBSH_SHRINE_PHASE_WAITING:
+        obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+        idleSfxTimer = state->idleSfxTimer - timeDelta;
+        state->idleSfxTimer = idleSfxTimer;
+        if (idleSfxTimer <= 0.0f) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
+            state->idleSfxTimer = (f32)(int)randomGetRange(500, 1000);
         }
-        if ((obj->mapFlags & DBSH_SHRINE_MAP_FLAG_TRIGGERED) != 0)
-        {
-            active = (*gMapEventInterface)->getObjGroupStatus(obj->mapId, 1);
-            if (active != 0)
-            {
-                (*gMapEventInterface)->setObjGroupStatus(obj->mapId, 1, 0);
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+            groupActive = (*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 1);
+            if (groupActive != 0) {
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);
             }
-            runtime->state = DBSH_SHRINE_STATE_RISING;
-            mainSetBits(DBSH_SHRINE_GB_APPROACH, 1);
-            obj->triggerRadius = 0x7fff;
+            state->phase = DBSH_SHRINE_PHASE_RISING;
+            mainSetBits(DBSH_SHRINE_GAMEBIT_APPROACH, 1);
+            obj->anim.rotX = DBSH_SHRINE_TRANSITION_ROTATION;
             (*gObjectTriggerInterface)->runSequence(0, obj, -1);
             Music_Trigger(MUSICTRIG_DIM_Snow, 1);
         }
         break;
-    case DBSH_SHRINE_STATE_RISING:
-        obj->flags |= DBSH_SHRINE_OBJ_FLAG_ACTIVE;
-        if (runtime->flags.latchStarted != 0)
-        {
-            runtime->state = DBSH_SHRINE_STATE_ACTIVE;
-            mainSetBits(DBSH_SHRINE_GB_RISE_DONE, 1);
+    case DBSH_SHRINE_PHASE_RISING:
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        if (state->flags.riseSequenceReady != 0) {
+            state->phase = DBSH_SHRINE_PHASE_ACTIVE;
+            mainSetBits(DBSH_SHRINE_GAMEBIT_016A, 1);
         }
         break;
-    case DBSH_SHRINE_STATE_ACTIVE:
-        if (mainGetBit(DBSH_SHRINE_GB_CLOSE_A) != 0)
-        {
-            runtime->state = DBSH_SHRINE_STATE_CLOSING;
-            runtime->resetTimer = 0;
-        }
-        else if (mainGetBit(DBSH_SHRINE_GB_CLOSE_B) != 0)
-        {
-            runtime->state = DBSH_SHRINE_STATE_RESET;
-            mainSetBits(DBSH_SHRINE_GB_RESET_A, 1);
-            runtime->resetTimer = 10;
+    case DBSH_SHRINE_PHASE_ACTIVE:
+        if (mainGetBit(DBSH_SHRINE_GAMEBIT_016B) != 0) {
+            state->phase = DBSH_SHRINE_PHASE_CLOSING;
+            state->unknown0C = 0;
+        } else if (mainGetBit(DBSH_SHRINE_GAMEBIT_016C) != 0) {
+            state->phase = DBSH_SHRINE_PHASE_RESET;
+            mainSetBits(DBSH_SHRINE_GAMEBIT_0C72, 1);
+            state->unknown0C = 10;
         }
         break;
-    case DBSH_SHRINE_STATE_CLOSING:
-        runtime->state = DBSH_SHRINE_STATE_RESET;
+    case DBSH_SHRINE_PHASE_CLOSING:
+        state->phase = DBSH_SHRINE_PHASE_RESET;
         audioStopByMask(3);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);
-        mainSetBits(DBSH_SHRINE_GB_APPROACH, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_APPROACH, 0);
         break;
-    case DBSH_SHRINE_STATE_RESET:
-        runtime->state = DBSH_SHRINE_STATE_WAITING;
-        runtime->flags.latchStarted = 0;
-        runtime->resetTimer = 0;
-        mainSetBits(DBSH_SHRINE_GB_APPROACH, 0);
-        mainSetBits(DBSH_SHRINE_GB_FIRST_RISE, 0);
-        mainSetBits(DBSH_SHRINE_GB_RISE_DONE, 0);
-        mainSetBits(DBSH_SHRINE_GB_CLOSE_A, 0);
-        mainSetBits(DBSH_SHRINE_GB_CLOSE_B, 0);
-        mainSetBits(DBSH_SHRINE_GB_RESET_A, 0);
-        mainSetBits(DBSH_SHRINE_GB_RESET_B, 0);
+    case DBSH_SHRINE_PHASE_RESET:
+        state->phase = DBSH_SHRINE_PHASE_WAITING;
+        state->flags.riseSequenceReady = 0;
+        state->unknown0C = 0;
+        mainSetBits(DBSH_SHRINE_GAMEBIT_APPROACH, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_015F, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_016A, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_016B, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_016C, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_0C72, 0);
+        mainSetBits(DBSH_SHRINE_GAMEBIT_0C73, 0);
         break;
     }
 }
 
-void dbsh_shrine_init(DbshShrineObject* obj)
-{
-    DbshShrineRuntime* runtime;
+void dbshShrine_init(GameObject* obj, const DBSHShrinePlacement* placement) {
+    DBSHShrineState* state = obj->extra;
 
-    runtime = obj->runtime;
-    obj->messageFn = DBSH_Shrine_SeqFn;
-    obj->triggerRadius = 0;
-    runtime->state = DBSH_SHRINE_STATE_WAITING;
-    runtime->flags.latchStarted = 0;
-    runtime->resetTimer = 0;
+    (void)placement;
+    obj->animEventCallback = dbshShrine_processAnimEvents;
+    obj->anim.rotX = 0;
+    state->phase = DBSH_SHRINE_PHASE_WAITING;
+    state->flags.riseSequenceReady = 0;
+    state->unknown0C = 0;
 
-    ObjMsg_AllocQueue(obj, 4);
-    mainSetBits(DBSH_SHRINE_GB_FIRST_RISE, 0);
+    ObjMsg_AllocQueue(obj, DBSH_SHRINE_MESSAGE_QUEUE_CAPACITY);
+    mainSetBits(DBSH_SHRINE_GAMEBIT_015F, 0);
 
-    if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->mapId, 1) == 0)
-    {
-        (*gMapEventInterface)->setObjGroupStatus(obj->mapId, 1, 1);
+    if ((*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 1) == 0) {
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 1);
     }
 
-    obj->startX = obj->x;
-    obj->startY = obj->y;
-    obj->startZ = obj->z;
-    obj->introDelay = 1;
+    obj->anim.worldPosX = obj->anim.localPosX;
+    obj->anim.worldPosY = obj->anim.localPosY;
+    obj->anim.worldPosZ = obj->anim.localPosZ;
+    obj->userData1 = 1;
 
-    if (runtime->light == 0)
-    {
-        runtime->light = objCreateLight(0, 1);
+    if (state->light == NULL) {
+        state->light = objCreateLight(NULL, 1);
     }
 
-    mainSetBits(DBSH_SHRINE_GB_ACTIVE, 1);
-    mainSetBits(DBSH_SHRINE_GB_INITIALIZED, 1);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 1);
+    mainSetBits(DBSH_SHRINE_GAMEBIT_0F08, 1);
 }
 
-void dbsh_shrine_release(void)
-{
+void dbshShrine_release(void) {
 }
 
-void dbsh_shrine_initialise(void)
-{
+void dbshShrine_initialise(void) {
 }
 
-ObjectDescriptor gDBSH_ShrineObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dbsh_shrine_initialise, (ObjectDescriptorCallback)dbsh_shrine_release, 0,
-    (ObjectDescriptorCallback)dbsh_shrine_init, (ObjectDescriptorCallback)dbsh_shrine_update,
-    (ObjectDescriptorCallback)dbsh_shrine_hitDetect, (ObjectDescriptorCallback)dbsh_shrine_render,
-    (ObjectDescriptorCallback)dbsh_shrine_free, (ObjectDescriptorCallback)dbsh_shrine_getObjectTypeId,
-    dbsh_shrine_getExtraSize,
+ObjectDescriptor gDBSHShrineObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dbshShrine_initialise,
+    (ObjectDescriptorCallback)dbshShrine_release,
+    0,
+    (ObjectDescriptorCallback)dbshShrine_init,
+    (ObjectDescriptorCallback)dbshShrine_update,
+    (ObjectDescriptorCallback)dbshShrine_hitDetect,
+    (ObjectDescriptorCallback)dbshShrine_render,
+    (ObjectDescriptorCallback)dbshShrine_free,
+    (ObjectDescriptorCallback)dbshShrine_getObjectTypeId,
+    dbshShrine_getExtraSize,
 };

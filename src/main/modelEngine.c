@@ -199,6 +199,7 @@
 #include "dlls/objects/402_GPSH_Shrine.h"
 #include "dlls/objects/403_GPSH_ObjCre.h"
 #include "dlls/objects/404_GPSH_Scene.h"
+#include "dlls/objects/405_DBSH_Shrine.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -291,9 +292,8 @@ extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPl
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
-extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
-    gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
-    gDFP_TorchObjDescriptor;
+extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_SymbolObjDescriptor, gDB_eggObjDescriptor,
+    gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor, gDFP_TorchObjDescriptor;
 extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
@@ -1445,7 +1445,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gGPSHShrineObjDescriptor,
     (ResourceDescriptor*)&gGPSHObjCreatorObjDescriptor,
     (ResourceDescriptor*)&gGPSHSceneObjDescriptor,
-    &gDBSH_ShrineObjDescriptor,
+    (ResourceDescriptor*)&gDBSHShrineObjDescriptor,
     &gDBSH_SymbolObjDescriptor,
     &dll_197,
     &gNWSH_levconObjDescriptor,

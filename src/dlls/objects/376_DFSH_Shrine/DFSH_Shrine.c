@@ -194,7 +194,7 @@ void dfshShrine_free(GameObject* obj) {
     Music_Trigger(MUSICTRIG_DIM_Snow, 0);
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 0);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 0);
     mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
 }
 
@@ -418,7 +418,7 @@ void dfshShrine_init(GameObject* obj, const DFSHShrinePlacement* placement) {
     }
     obj->userData1 = 1;
     mainSetBits(GAMEBIT_MMP_EnteredKrazoaShrine, 1);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 1);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 1);
 }
 
 void dfshShrine_release(void) {

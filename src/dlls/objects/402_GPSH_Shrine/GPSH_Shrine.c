@@ -222,7 +222,7 @@ void gpshShrine_free(GameObject* obj) {
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
     Music_Trigger(MUSICTRIG_krazoa_tunnel_2, 0);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 0);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 0);
     mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, mainGetBit(0xc91) == 0);
 }
 
@@ -464,7 +464,7 @@ void gpshShrine_init(GameObject* obj, const void* placement) {
         state->light = objCreateLight(NULL, 1);
     }
     mainSetBits(GAMEBIT_WC_EnteredShrine, 1);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 1);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 1);
 }
 
 void gpshShrine_release(void) {

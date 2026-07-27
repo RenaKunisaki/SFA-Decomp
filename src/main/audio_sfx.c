@@ -391,7 +391,7 @@ void Sfx_UpdateObjectSounds(void)
     {
         globalCtrl = 0xE;
     }
-    else if (mainGetBit(GAMEBIT_ECSH_InShrine) != 0)
+    else if (mainGetBit(GAMEBIT_IN_KRAZOA_SHRINE) != 0)
     {
         globalCtrl = 0xC;
     }
