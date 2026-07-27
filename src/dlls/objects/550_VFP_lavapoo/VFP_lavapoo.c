@@ -67,7 +67,7 @@ void VFP_lavapool_updateWave(GameObject* obj)
     f32 phase;
     ObjTextureRuntimeSlot* tex;
     f32 scrollT;
-    f32 wave;
+    f32 waveScale;
     struct
     {
         u8 pad[8];
@@ -87,8 +87,9 @@ void VFP_lavapool_updateWave(GameObject* obj)
         Sfx_PlayFromObject((u32)obj, SFXTRIG_id_111);
         speed = 255.0f;
     }
-    gVfpLavaPoolWaveSin = wave = mathSinf((gVfpLavaPoolPi * (f32)(s16)(int)state->phase) / lbl_803E6178);
-    obj->anim.rootMotionScale = lbl_803E617C * state->amplitude + lbl_803E6180 * state->amplitude * wave;
+    gVfpLavaPoolWaveSin = mathSinf((gVfpLavaPoolPi * (f32)(s16)(int)state->phase) / lbl_803E6178);
+    waveScale = lbl_803E6180 * state->amplitude;
+    obj->anim.rootMotionScale = lbl_803E617C * state->amplitude + waveScale * gVfpLavaPoolWaveSin;
     phase = state->phase;
     if (phase > lbl_803E6184 && phase < lbl_803E6188)
     {
@@ -111,7 +112,8 @@ void VFP_lavapool_updateWave(GameObject* obj)
     tex = objFindTexture((GameObject*)obj, 0, 0);
     if (tex != NULL)
     {
-        scrollT = (f32)(int)tex->offsetT + lbl_803E6160;
+        scrollT = (f32)(int)tex->offsetT;
+        scrollT += lbl_803E6160;
         if (scrollT >= lbl_803E6194)
         {
             scrollT -= lbl_803E6194;
@@ -121,7 +123,8 @@ void VFP_lavapool_updateWave(GameObject* obj)
     tex = objFindTexture((GameObject*)obj, 1, 0);
     if (tex != NULL)
     {
-        scrollT = (f32)(int)tex->offsetT + lbl_803E6198;
+        scrollT = (f32)(int)tex->offsetT;
+        scrollT += lbl_803E6198;
         if (scrollT >= lbl_803E6194)
         {
             scrollT -= lbl_803E6194;
