@@ -440,7 +440,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x11D | gTreasureChestObjDescriptor | 8018A9B4-8018ADB0 | 8018A8BC-8018ADB4 | 8018AA60 (main/dll/CF/dll_165.c \| main/dll/CF/dll_166.c) | Y | TreasureChe,MapTreasure |
 | 0x11E | gMagicCaveBottomObjDescriptor | 8018ADB4-8018ADF0 | 8018ADB4-8018AFC8 | 8018ADF0 (main/dll/CF/dll_166.c \| main/dll/CF/CFtoggleswitch.c) | Y | MagicCaveBo |
 | 0x124 | gDeathGasObjDescriptor | 8018BC48-8018BFBC | 8018BC48-8018C000 | 8018BC50 (main/dll/CF/CFtoggleswitch.c \| main/dll/CF/CFforcecontrol.c) | Y | deathGas,deathGasNoF |
-| 0x127 | lbl_80321E58 | 8018CD64-8018CEE0 | 8018CD64-8018CEE4 | 8018CDAC (main/dll/CF/CFforcecontrol.c \| main/dll/CF/treasureRelated0177.c) | n |  |
+| 0x127 | gDll127ObjDescriptor | 8018CD64-8018CEE0 | 8018CD64-8018CEE4 | 8018CDAC (main/dll/CF/CFforcecontrol.c \| main/dll/CF/treasureRelated0177.c) | n |  |
 | 0x12A | gCFCrateObjDescriptor | 8018D6E8-8018E6C0 | 8018D6E8-8018E6C4 | 8018D728 (main/dll/CF/treasureRelated0177.c \| main/dll/CF/dll_179.c); 8018D8DC (main/dll/CF/dll_179.c \| main/dll/CF/dll_17A.c); 8018D8DC (main/dll/CF/dll_179.c \| main/dll/CF/CFlevelControl.c); 8018E0A4 (main/dll/CF/CFlevelControl.c \| main/dll/CF/CFTreasSharpy.c) | Y | CFCrate,LinkF_liftg,LinkF_cog,MMP_Organic |
 | 0x12B | gFXEmitObjDescriptor | 8018EC24-8018F144 | 8018E6C4-8018F148 | 8018EFE0 (main/dll/CF/CFTreasSharpy.c \| main/dll/CF/CFchuckobj.c) | Y | FXEmit |
 | 0x12C | gTransporterObjDescriptor | 801914A0-801916A0 | 8019042C-80191A70 | 801916A0 (main/dll/CF/CFwalltorch.c \| main/dll/moonseedbush.c); 801916A0 (main/dll/CF/CFwalltorch.c \| main/dll/mmp_asteroid_re.c) | Y | KP_Transpor,Transporter |
@@ -526,7 +526,7 @@ main/dll/CF/CFBaby.c                                    7 dlls: 0x0E7:CCeyeVines
 main/dll/CF/CFchuckobj.c                                2 dlls: 0x12D:LFXEmitter, 0x130:AreaFXEmit
 main/dll/CF/CFforcecontrol.c                            3 dlls: 0x10E:DieDuster, 0x123:fuelCell, 0x124:deathGas
 main/dll/CF/CFtoggleswitch.c                            5 dlls: 0x11E:MagicCaveBo, 0x11F:MagicCaveTo, 0x120:TrickyGuard, 0x121:LINKF_InfoT, 0x122:CCTestInfot
-main/dll/CF/treasureRelated0177.c                       3 dlls: 0x127:lbl_80321E58, 0x128:KT_Torch, 0x129:CampFire
+main/dll/CF/treasureRelated0177.c                       3 dlls: 0x127:gDll127ObjDescriptor, 0x128:KT_Torch, 0x129:CampFire
 main/dll/CR/CRsnowbike.c                                2 dlls: 0x1B4:SH_EmptyTum, 0x1B6:SC_levelcon
 main/dll/DB/DBrockfall.c                                3 dlls: 0x142:FElevContro, 0x143:FEseqobject, 0x144:lbl_80327BA8
 main/dll/DB/DBstealerworm.c                             4 dlls: 0x1E8:SB_Galleon, 0x1E9:SB_Propelle, 0x1EA:SB_ShipHead, 0x1EB:SB_ShipMast
