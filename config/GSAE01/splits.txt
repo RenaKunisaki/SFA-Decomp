@@ -4323,7 +4323,7 @@ dolphin/gx/GXInit.c:
 	.bss        start:0x803AE4C0 end:0x803AEA38
 	.sdata      start:0x803DC5A8 end:0x803DC5AC
 	.sbss       start:0x803DE0A8 end:0x803DE0B8
-	.sdata2     start:0x803E7658 end:0x803E7680
+	.sdata2     start:0x803E7658 end:0x803E7678
 
 dolphin/gx/GXFifo.c:
 	.text       start:0x80255DBC end:0x80256820
@@ -4344,6 +4344,7 @@ dolphin/gx/GXGeometry.c:
 dolphin/gx/GXFrameBuf.c:
 	.text       start:0x80258BDC end:0x80259670
 	.data       start:0x8032E620 end:0x8032E750
+	.sdata2     start:0x803E7678 end:0x803E7680
 
 dolphin/gx/GXLight.c:
 	.text       start:0x80259670 end:0x8025A088
