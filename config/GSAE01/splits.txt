@@ -534,7 +534,7 @@ main/dll/dll_002B_effect18.c:
 	.sbss       start:0x803DD3E0 end:0x803DD3F0
 	.sdata2     start:0x803E0220 end:0x803E02D8
 
-main/dll/dll_002C_effect19.c:
+dlls/engine/44/44.c:
 	.text       start:0x800CCF5C end:0x800CD430
 	.data       start:0x803110D8 end:0x80311100
 	.sdata      start:0x803DB870 end:0x803DB880

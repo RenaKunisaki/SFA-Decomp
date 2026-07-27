@@ -1,17 +1,3 @@
-/*
- * effect19 (DLL 0x2C) - one of the dim_partfx particle-effect DLLs.
- * Exposes the standard effect vtable entry points (func03_nop / func04 /
- * func05 / release / initialise) registered through gExpgfxInterface.
- *
- * Effect19_func04 builds a PartFxSpawn request from a switch over the
- * effect id (only id 0x76c is handled here) and hands it to
- * gExpgfxInterface->spawnEffect. Effect19_func05 advances this DLL's
- * animated scroll/oscillator globals once per game step.
- *
- * Field names on PartFxSpawn are inherited from the consumer-side
- * ExpgfxSpawnConfig (include/main/expgfx_internal.h), the 0x64-byte spawn
- * request consumed by gExpgfxInterface->spawnEffect (expgfx_addremove).
- */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
