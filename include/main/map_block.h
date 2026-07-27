@@ -91,9 +91,13 @@ STATIC_ASSERT(offsetof(MapShader, auxTexture) == 0x34);
 STATIC_ASSERT(offsetof(MapShader, flags) == 0x3C);
 STATIC_ASSERT(offsetof(MapShader, layerCount) == 0x41);
 
+typedef enum MapBlockFlag {
+    MAP_BLOCK_FLAG_LOADED = 0x0008,
+} MapBlockFlag;
+
 typedef struct MapBlockData {
     void* unk0;
-    u16 flags4; /* 0x04: block-state bits; bit 8 = block loaded, bit 1 toggled per tick */
+    u16 flags4; /* 0x04: MapBlockFlag plus an unidentified bit toggled per tick */
     u16 unk6;
     u32 size;
     f32 transform[3][4];

@@ -114,6 +114,7 @@
 #include "dlls/objects/316_XYZAnimator.h"
 #include "dlls/objects/317_ExplodeAnim.h"
 #include "dlls/objects/318.h"
+#include "dlls/objects/319_TexFrameAni.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -285,7 +286,7 @@ extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gSh
 extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
-extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTextBlockObjDescriptor, gTimerObjDescriptor;
+extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
@@ -1297,7 +1298,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gXYZAnimatorObjDescriptor,
     (ResourceDescriptor*)&gExplodeAnimatorObjDescriptor,
     (ResourceDescriptor*)&gDIMBossIceSmashObjDescriptor,
-    &gTexFrameAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gTexFrameAnimatorObjDescriptor,
     &gFogControlObjDescriptor,
     &gLightningObjDescriptor,
     &gFElevControlObjDescriptor,

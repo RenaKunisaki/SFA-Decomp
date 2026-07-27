@@ -267,7 +267,7 @@ void XyzAnimator_update(GameObject* obj) {
         state->passCount = 0;
         return;
     }
-    if ((((MapBlockData*)blockAddress)->flags4 & 8) == 0) {
+    if ((((MapBlockData*)blockAddress)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
     if (state->vertexCount == 0) {

@@ -60,7 +60,7 @@ void AlphaAnimator_update(GameObject* obj) {
         state->completedCycles = 0;
         return;
     }
-    if ((block->flags4 & 8) == 0) {
+    if ((block->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
     if (state->vertexCount == 0) {

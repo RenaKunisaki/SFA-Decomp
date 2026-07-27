@@ -109,7 +109,7 @@ void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, 
     f32 blockLocalX;
     block = mapGetBlock(
         objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY, (double)obj->anim.localPosZ));
-    if (block == NULL || (((MapBlockData*)block)->flags4 & 8) == 0) {
+    if (block == NULL || (((MapBlockData*)block)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
     mapCellX = fastFloorf((obj->anim.localPosX - playerMapOffsetX) / (640.0f));
@@ -310,7 +310,7 @@ void GroundAnimator_update(GameObject* obj) {
         }
     }
     block = mapGetBlock(blockIndex);
-    if (block == NULL || (((MapBlockData*)block)->flags4 & 8) == 0) {
+    if (block == NULL || (((MapBlockData*)block)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
     if (state->sinkDepth > (0.0f)) {
