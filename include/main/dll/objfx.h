@@ -23,6 +23,11 @@ typedef struct ObjFxS32Table5
     s32 values[5];
 } ObjFxS32Table5;
 
+typedef struct ObjFxU16Table3
+{
+    u16 values[3];
+} ObjFxU16Table3;
+
 typedef struct ObjFxU16Table11
 {
     u16 values[11];
@@ -114,8 +119,6 @@ extern ObjFxCrystalBurstTable gObjFxCrystalAmpTbl;
 extern s16 gObjFxCrystalSpinSpeed[4];
 extern u8 gObjFxLightColorTbl[];
 
-extern s32 lbl_803DF340;
-extern u16 lbl_803DF344;
 extern f32 lbl_803DF384;
 extern f32 lbl_803DF38C;
 extern f32 lbl_803DF390;
