@@ -32,7 +32,7 @@ extern s16 lbl_803DD918;
 extern f32 lbl_803DD91C;
 extern s8 lbl_803DD920;
 void* lbl_803A9DB8[TITLE_MENU_ITEM_TEXTURE_COUNT];
-extern s16 lbl_8031C2A8[TITLE_MENU_ITEM_TEXTURE_COUNT];
+s16 lbl_8031C2A8[TITLE_MENU_ITEM_TEXTURE_COUNT] = {1558, 1557, 777, 778, 779, 780};
 
 void TitleMenuItem_setAButtonToggle(TitleMenuItem* item, int flag)
 {
@@ -394,3 +394,23 @@ void TitleMenuItem_initialise(void)
     slots[4] = NULL;
     slots[5] = NULL;
 }
+
+u32 lbl_8031C2B4[19] = {0x00000000,
+                        0x00000000,
+                        0x00000000,
+                        0x000e0000,
+                        (u32)TitleMenuItem_initialise,
+                        (u32)TitleMenuItem_release,
+                        0x00000000,
+                        (u32)TitleMenuItem_createWithText,
+                        (u32)TitleMenuItem_create,
+                        (u32)TitleMenuItem_createWithWindow,
+                        (u32)TitleMenuItem_free,
+                        (u32)TitleMenuItem_update,
+                        (u32)TitleMenuItem_render,
+                        (u32)TitleMenuItem_isEnabled,
+                        (u32)TitleMenuItem_setEnabled,
+                        (u32)TitleMenuItem_getVal,
+                        (u32)TitleMenuItem_setVal,
+                        (u32)TitleMenuItem_isChanged,
+                        (u32)TitleMenuItem_setAButtonToggle};

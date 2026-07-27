@@ -119,40 +119,45 @@ typedef struct MinimapTextBox
     s16 y;
 } MinimapTextBox;
 
-extern MinimapRow lbl_8031C328[];
-extern MinimapRow lbl_8031C33C[];
-extern MinimapRow lbl_8031C350[];
-extern MinimapRow lbl_8031C364[];
-extern MinimapRow lbl_8031C378[];
-extern MinimapRow lbl_8031C38C[];
-extern MinimapRow lbl_8031C3A0[];
-extern MinimapRow lbl_8031C3B4[];
-extern MinimapRow lbl_8031C3C8[];
-extern MinimapRow lbl_8031C3DC[];
-extern MinimapRow lbl_8031C3F0[];
-extern MinimapRow lbl_8031C404[];
-extern MinimapRow lbl_8031C418[];
-extern MinimapRow lbl_8031C440[];
-extern MinimapRow lbl_8031C454[];
-extern MinimapRow lbl_8031C468[];
-extern MinimapRow lbl_8031C47C[];
-extern MinimapRow lbl_8031C490[];
-extern MinimapRow lbl_8031C4A4[];
-extern MinimapRow lbl_8031C4B8[];
-extern MinimapRow lbl_8031C4CC[];
-extern MinimapRow lbl_8031C4E0[];
-extern MinimapRow lbl_8031C4F4[];
+u32 lbl_8031C328[5] = {0xd800e700, 0x20804100, 0x80007fff, 0x00950000, 0x041a0000};
+u32 lbl_8031C33C[5] = {0xd300e200, 0x3c004b00, 0x80007fff, 0x00950000, 0x04420000};
+u32 lbl_8031C350[5] = {0xf1000280, 0xf3800000, 0x80007fff, 0x00950000, 0x04520000};
+u32 lbl_8031C364[5] = {0xf100f880, 0xec00f380, 0x80007fff, 0x00950000, 0x041e0000};
+u32 lbl_8031C378[5] = {0xe200f100, 0xf100fd80, 0x80007fff, 0x00950000, 0x04550000};
+u32 lbl_8031C38C[5] = {0xe480e980, 0xfd800500, 0x80007fff, 0x00950000, 0x041f0000};
+u32 lbl_8031C3A0[5] = {0xcb80df80, 0xec000000, 0x80007fff, 0x00950000, 0x05590000};
+u32 lbl_8031C3B4[5] = {0xdd00e480, 0xf8800000, 0x80007fff, 0x00950000, 0x04410000};
+u32 lbl_8031C3C8[5] = {0xb500cb80, 0xc180d300, 0x80007fff, 0x00950000, 0x052c0000};
+u32 lbl_8031C3DC[5] = {0xfb001180, 0xb500c180, 0x80007fff, 0x00950000, 0x03e00000};
+u32 lbl_8031C3F0[5] = {0xee800000, 0xc180d080, 0x80007fff, 0x00950000, 0x04190000};
+u32 lbl_8031C404[5] = {0x28003480, 0x00001900, 0x80007fff, 0x00950000, 0x04150000};
+u32 lbl_8031C418[10] = {0xb000c400, 0xfd800780, 0x80007fff, 0x00950000, 0x04160000,
+                        0xbc80c400, 0xf8800780, 0x80007fff, 0x00950000, 0x04160000};
+u32 lbl_8031C440[5] = {0xc400cb80, 0xfd800500, 0x80007fff, 0x00950000, 0x04430000};
+u32 lbl_8031C454[5] = {0xe480e980, 0xf600fb00, 0x80007fff, 0x00950000, 0x04590000};
+u32 lbl_8031C468[5] = {0xe700fb00, 0x02801180, 0x80007fff, 0x00950000, 0x04480000};
+u32 lbl_8031C47C[5] = {0xfb000280, 0x07800c80, 0x80007fff, 0x00950000, 0x04180000};
+u32 lbl_8031C490[5] = {0x0a000f00, 0xda80e700, 0x80007fff, 0x00950000, 0x04170000};
+u32 lbl_8031C4A4[5] = {0x05001180, 0xd800df80, 0x80007fff, 0x00950000, 0x04440000};
+u32 lbl_8031C4B8[5] = {0x0c800f00, 0xe700ee80, 0x80007fff, 0x00950000, 0x04450000};
+u32 lbl_8031C4CC[5] = {0x05000f00, 0xec00fb00, 0x80007fff, 0x00950000, 0x04200000};
+u32 lbl_8031C4E0[5] = {0x02800500, 0xee80f600, 0x80007fff, 0x00950000, 0x041d0000};
+u32 lbl_8031C4F4[5] = {0xba00ce00, 0x20803700, 0x80007fff, 0x00950000, 0x04460000};
 
 MinimapMapEntry gMinimapCellTable[25] = {
-    {lbl_8031C328, 0x059E, 0x13, 1}, {lbl_8031C33C, 0x059E, 0x1B, 1}, {lbl_8031C350, 0x05A2, 0x0E, 1},
-    {lbl_8031C364, 0x05A2, 0x47, 1}, {lbl_8031C378, 0x05A3, 0x07, 1}, {lbl_8031C38C, 0x05A3, 0x43, 1},
-    {lbl_8031C3A0, 0x0835, 0x12, 1}, {lbl_8031C3B4, 0x0835, 0x45, 1}, {lbl_8031C3C8, 0x082E, 0x0D, 1},
-    {lbl_8031C3DC, 0x05A1, 0x0C, 1}, {lbl_8031C3DC, 0x05A1, 0x10, 1}, {lbl_8031C3DC, 0x05A1, 0x0F, 1},
-    {lbl_8031C3F0, 0x05A1, 0x2B, 1}, {lbl_8031C404, 0x07E5, 0x0B, 1}, {lbl_8031C418, 0x059D, 0x04, 2},
-    {lbl_8031C440, 0x059D, 0x46, 1}, {lbl_8031C454, 0x05A3, 0x08, 1}, {lbl_8031C468, 0x05A0, 0x0A, 1},
-    {lbl_8031C47C, 0x05A0, 0x38, 1}, {lbl_8031C490, 0x07E9, 0x32, 1}, {lbl_8031C4A4, 0x07E9, 0x15, 1},
-    {lbl_8031C4B8, 0x07E9, 0x49, 1}, {lbl_8031C4CC, 0x082F, 0x1D, 1}, {lbl_8031C4E0, 0x082F, 0x48, 1},
-    {lbl_8031C4F4, 0x07DD, 0x02, 1},
+    {(MinimapRow*)lbl_8031C328, 0x059E, 0x13, 1}, {(MinimapRow*)lbl_8031C33C, 0x059E, 0x1B, 1},
+    {(MinimapRow*)lbl_8031C350, 0x05A2, 0x0E, 1}, {(MinimapRow*)lbl_8031C364, 0x05A2, 0x47, 1},
+    {(MinimapRow*)lbl_8031C378, 0x05A3, 0x07, 1}, {(MinimapRow*)lbl_8031C38C, 0x05A3, 0x43, 1},
+    {(MinimapRow*)lbl_8031C3A0, 0x0835, 0x12, 1}, {(MinimapRow*)lbl_8031C3B4, 0x0835, 0x45, 1},
+    {(MinimapRow*)lbl_8031C3C8, 0x082E, 0x0D, 1}, {(MinimapRow*)lbl_8031C3DC, 0x05A1, 0x0C, 1},
+    {(MinimapRow*)lbl_8031C3DC, 0x05A1, 0x10, 1}, {(MinimapRow*)lbl_8031C3DC, 0x05A1, 0x0F, 1},
+    {(MinimapRow*)lbl_8031C3F0, 0x05A1, 0x2B, 1}, {(MinimapRow*)lbl_8031C404, 0x07E5, 0x0B, 1},
+    {(MinimapRow*)lbl_8031C418, 0x059D, 0x04, 2}, {(MinimapRow*)lbl_8031C440, 0x059D, 0x46, 1},
+    {(MinimapRow*)lbl_8031C454, 0x05A3, 0x08, 1}, {(MinimapRow*)lbl_8031C468, 0x05A0, 0x0A, 1},
+    {(MinimapRow*)lbl_8031C47C, 0x05A0, 0x38, 1}, {(MinimapRow*)lbl_8031C490, 0x07E9, 0x32, 1},
+    {(MinimapRow*)lbl_8031C4A4, 0x07E9, 0x15, 1}, {(MinimapRow*)lbl_8031C4B8, 0x07E9, 0x49, 1},
+    {(MinimapRow*)lbl_8031C4CC, 0x082F, 0x1D, 1}, {(MinimapRow*)lbl_8031C4E0, 0x082F, 0x48, 1},
+    {(MinimapRow*)lbl_8031C4F4, 0x07DD, 0x02, 1},
 };
 
 void Minimap_drawCompassBlip(void);

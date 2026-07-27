@@ -1,22 +1,3 @@
-/*
- * dll_003C - the "Link" on-screen menu / icon-bar widget (despite the
- * TumbleweedBush DLL name, this object's symbol set is the EN v1.0 Link
- * menu code that was retargeted into this TU).
- *
- * A Link menu is an array of up to 40 LinkMenuItem entries (mirror copy in
- * gTumbleweedBushItems). Each item carries a textId/boxId, position, a texture, and
- * up/down/left/right navigation links. Link_setup() installs the items and
- * the base/selected text colors; Link_update() reads analog + button input,
- * walks the navigation links, drives the highlight pulse (linkCount_803dd90e
- * oscillating 0..0xFF via gTumbleweedBushPulseDir) and returns 1 (accept) / 0 (cancel) /
- * -1 (idle). Link_render() draws each item's text/box/texture with the pulsed
- * highlight color and per-slot icon strip. The slot icons are picked by
- * linkInitTextures() from a random budget over the six entries in linkTextures
- * (LinkTextureSlot[6]).
- *
- * Item flag bits (LINK_FLAG_*) select draw style; navigation honors
- * LINK_FLAG_DISABLE_NAV_TO / LINK_FLAG_NO_ACCEPT. GameBit 0x44f gates accept.
- */
 #include "dolphin/os/OSReport.h"
 #include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
@@ -24,8 +5,6 @@
 #include "main/gametext_box_api.h"
 #include "main/gametext_command_api.h"
 #include "main/dll/baddie/dll_003C_TumbleweedBush.h"
-#include "main/dll/dll_003D_titlemenuitem.h"
-#include "main/dll/dll_003E_dummy3e.h"
 #include "main/gametext_show_api.h"
 #include "main/gametext_show_str_api.h"
 #include "main/hud_visibility_api.h"
@@ -39,9 +18,9 @@
 #include "main/gametext_color_api.h"
 #include "main/vecmath.h"
 
-#define LINK_ITEM_SLOTS 25 /* per-item icon-strip slot capacity */
+#define LINK_ITEM_SLOTS 25
 
-extern u8 linkTextures[0x30];                  /* LinkTextureSlot[6] */
+extern u8 linkTextures[0x30];
 s8 gTumbleweedBushInputEnabled[5];
 s8 linkSelected;
 s8 gTumbleweedBushItemCount;
@@ -57,8 +36,8 @@ s16 gTumbleweedBushSelColorG;
 s16 gTumbleweedBushSelColorB;
 u8 linkIsRotated;
 u8 linkFlag_803dd8f8;
-extern char sTumbleweedBushSlotOverflowErr[]; /* "too many slots" overflow error format string */
-extern char sTumbleweedBushNavLinkRangeErr[]; /* base of the nav-link out-of-range error format strings */
+extern char sTumbleweedBushSlotOverflowErr[];
+extern char sTumbleweedBushNavLinkRangeErr[];
 
 extern u8 lbl_802C8680[];
 #define PAD_BUTTON_A     0x100
@@ -868,7 +847,6 @@ struct LinkObjDescriptor lbl_8031C1E4 = {
     },
 };
 
-/* pooled PICMENU overflow debug format strings (embedded NULs), raw bytes. */
 char sTumbleweedBushSlotOverflowErr[] = {
     0x50, 0x49, 0x43, 0x4D, 0x45, 0x4E, 0x55, 0x3A, 0x20, 0x74, 0x65, 0x78, 0x20, 0x6F, 0x76, 0x65, 0x72,
     0x66, 0x6C, 0x6F, 0x77, 0x0A, 0x00, 0x00, 0x55, 0x50, 0x4C, 0x49, 0x4E, 0x4B, 0x20, 0x6F, 0x76, 0x65,
@@ -882,59 +860,3 @@ char sTumbleweedBushSlotOverflowErr[] = {
 char sTumbleweedBushNavLinkRangeErr[] = {
     0x00, 0x00, 0x00, 0xF9, 0x00, 0x00, 0x01, 0x03, 0x00, 0x00, 0x03, 0x71,
 };
-
-/* descriptor/ptr table auto 0x8031c2a8-0x8031c508 */
-s16 lbl_8031C2A8[6] = {1558, 1557, 777, 778, 779, 780};
-u32 lbl_8031C2B4[19] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x000e0000,
-                        (u32)TitleMenuItem_initialise,
-                        (u32)TitleMenuItem_release,
-                        0x00000000,
-                        (u32)TitleMenuItem_createWithText,
-                        (u32)TitleMenuItem_create,
-                        (u32)TitleMenuItem_createWithWindow,
-                        (u32)TitleMenuItem_free,
-                        (u32)TitleMenuItem_update,
-                        (u32)TitleMenuItem_render,
-                        (u32)TitleMenuItem_isEnabled,
-                        (u32)TitleMenuItem_setEnabled,
-                        (u32)TitleMenuItem_getVal,
-                        (u32)TitleMenuItem_setVal,
-                        (u32)TitleMenuItem_isChanged,
-                        (u32)TitleMenuItem_setAButtonToggle};
-u32 lbl_8031C300[10] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00050000,
-                        (u32)Dummy3E_initialise,
-                        (u32)Dummy3E_release,
-                        0x00000000,
-                        (u32)Dummy3E_func03_ret_0,
-                        (u32)Dummy3E_func04_nop,
-                        (u32)Dummy3E_func05_ret_1};
-u32 lbl_8031C328[5] = {0xd800e700, 0x20804100, 0x80007fff, 0x00950000, 0x041a0000};
-u32 lbl_8031C33C[5] = {0xd300e200, 0x3c004b00, 0x80007fff, 0x00950000, 0x04420000};
-u32 lbl_8031C350[5] = {0xf1000280, 0xf3800000, 0x80007fff, 0x00950000, 0x04520000};
-u32 lbl_8031C364[5] = {0xf100f880, 0xec00f380, 0x80007fff, 0x00950000, 0x041e0000};
-u32 lbl_8031C378[5] = {0xe200f100, 0xf100fd80, 0x80007fff, 0x00950000, 0x04550000};
-u32 lbl_8031C38C[5] = {0xe480e980, 0xfd800500, 0x80007fff, 0x00950000, 0x041f0000};
-u32 lbl_8031C3A0[5] = {0xcb80df80, 0xec000000, 0x80007fff, 0x00950000, 0x05590000};
-u32 lbl_8031C3B4[5] = {0xdd00e480, 0xf8800000, 0x80007fff, 0x00950000, 0x04410000};
-u32 lbl_8031C3C8[5] = {0xb500cb80, 0xc180d300, 0x80007fff, 0x00950000, 0x052c0000};
-u32 lbl_8031C3DC[5] = {0xfb001180, 0xb500c180, 0x80007fff, 0x00950000, 0x03e00000};
-u32 lbl_8031C3F0[5] = {0xee800000, 0xc180d080, 0x80007fff, 0x00950000, 0x04190000};
-u32 lbl_8031C404[5] = {0x28003480, 0x00001900, 0x80007fff, 0x00950000, 0x04150000};
-u32 lbl_8031C418[10] = {0xb000c400, 0xfd800780, 0x80007fff, 0x00950000, 0x04160000,
-                        0xbc80c400, 0xf8800780, 0x80007fff, 0x00950000, 0x04160000};
-u32 lbl_8031C440[5] = {0xc400cb80, 0xfd800500, 0x80007fff, 0x00950000, 0x04430000};
-u32 lbl_8031C454[5] = {0xe480e980, 0xf600fb00, 0x80007fff, 0x00950000, 0x04590000};
-u32 lbl_8031C468[5] = {0xe700fb00, 0x02801180, 0x80007fff, 0x00950000, 0x04480000};
-u32 lbl_8031C47C[5] = {0xfb000280, 0x07800c80, 0x80007fff, 0x00950000, 0x04180000};
-u32 lbl_8031C490[5] = {0x0a000f00, 0xda80e700, 0x80007fff, 0x00950000, 0x04170000};
-u32 lbl_8031C4A4[5] = {0x05001180, 0xd800df80, 0x80007fff, 0x00950000, 0x04440000};
-u32 lbl_8031C4B8[5] = {0x0c800f00, 0xe700ee80, 0x80007fff, 0x00950000, 0x04450000};
-u32 lbl_8031C4CC[5] = {0x05000f00, 0xec00fb00, 0x80007fff, 0x00950000, 0x04200000};
-u32 lbl_8031C4E0[5] = {0x02800500, 0xee80f600, 0x80007fff, 0x00950000, 0x041d0000};
-u32 lbl_8031C4F4[5] = {0xba00ce00, 0x20803700, 0x80007fff, 0x00950000, 0x04460000};

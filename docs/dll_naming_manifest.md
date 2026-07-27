@@ -103,7 +103,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x039 | — | NO-RETAIL-NAME | main/dll/dll_0039_dummy39.c | = (canonical) | — |
 | 0x03A | — | NO-RETAIL-NAME | main/dll/dll_003A_dummy3a.c | = (canonical) | — |
 | 0x03B | — | NO-RETAIL-NAME | main/dll/dll_003B_menu.c | = (canonical) | — |
-| 0x03C | — | NO-RETAIL-NAME | main/dll/dll_003C_tumbleweedbush.c | = (canonical) | — |
+| 0x03C | — | NO-RETAIL-NAME | dlls/engine/60/60.c | = (canonical) | Complete DOL-confirmed TU; adjacent DLL and minimap data tails restored to their owning units |
 | 0x03D | — | NO-RETAIL-NAME | dlls/engine/61/61.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x03E | — | NO-RETAIL-NAME | dlls/engine/62/62.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x03F | — | NO-RETAIL-NAME | dlls/engine/63/63.c | = (canonical) | Complete DOL-confirmed TU |
