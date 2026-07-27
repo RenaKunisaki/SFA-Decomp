@@ -116,7 +116,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x046 | — | NO-RETAIL-NAME | main/dll/dll_0046_cameramodedebug.c | = (canonical) | — |
 | 0x047 | — | NO-RETAIL-NAME | main/dll/dll_0047_cameramodeteststrength.c | = (canonical) | — |
 | 0x048 | — | NO-RETAIL-NAME | main/dll/dll_0048_cameramodestatic.c | = (canonical) | — |
-| 0x049 | — | NO-RETAIL-NAME | main/dll/dll_0049_cameramodecombat.c | = (canonical) | — |
+| 0x049 | — | NO-RETAIL-NAME | dlls/engine/73/73.c | = (canonical) | Complete DOL-confirmed TU restored from the former match-only helper split |
 | 0x04A | — | NO-RETAIL-NAME | dlls/engine/74/74.c | = (canonical) | — |
 | 0x04B | — | NO-RETAIL-NAME | dlls/engine/75/75.c | = (canonical) | — |
 | 0x04C | — | NO-RETAIL-NAME | dlls/engine/76/76.c | = (canonical) | — |
