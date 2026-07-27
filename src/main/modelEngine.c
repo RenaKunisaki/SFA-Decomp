@@ -138,6 +138,7 @@
 #include "dlls/objects/340.h"
 #include "dlls/objects/341.h"
 #include "dlls/objects/342.h"
+#include "dlls/objects/343_SpiritDoorS.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -305,7 +306,7 @@ extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gSh
     gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
-    gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
+    gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
@@ -1339,7 +1340,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFPrisonCageObjDescriptor,
     (ResourceDescriptor*)&gDll155NullResourceDescriptor,
     (ResourceDescriptor*)&gDll156NullResourceDescriptor,
-    &gSpiritDoorSpiritObjDescriptor,
+    (ResourceDescriptor*)&gSpiritDoorSpiritObjDescriptor,
     &gGunPowderBarrelObjDescriptor,
     &gBlastedObjDescriptor,
     &gExplodableObjDescriptor,

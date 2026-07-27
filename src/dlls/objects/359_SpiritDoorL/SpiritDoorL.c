@@ -8,7 +8,7 @@
  *  - Update arms the lock when the player walks within range
  *    (GAMEBIT_K1_SPIRITDOORLOCK_PLAYER_APPROACHED) and the placement's
  *    activeGameBit is set: once active it drives a loop sfx, spins, and lays
- *    out the SPIRITDOORLOCK_ORBIT_OBJECT_GROUP objects evenly around itself
+ *    out the SPIRIT_DOOR_SPIRIT_OBJECT_GROUP objects evenly around itself
  *    (one step = 0x10000 / orbitCount), fades the model in, and scrolls its
  *    texture. When the orbit group empties the lock clears its active flag,
  *    sets the placement's doneGameBit and disables. While inactive-but-done
@@ -16,7 +16,7 @@
  *
  * In-game this is the red "life force" seal in front of a gate: a
  * skull-and-crossbones at the centre (this lock) ringed by orbiting skulls.
- * Each skull is a group-SPIRITDOORLOCK_ORBIT_OBJECT_GROUP SpiritDoorSpirit
+ * Each skull is a group-SPIRIT_DOOR_SPIRIT_OBJECT_GROUP SpiritDoorSpirit
  * (DLL 0x157) and marks one monster you must kill in the area; killing the
  * monster sets that spirit's gateGameBit so its skull leaves the ring, and
  * when the ring empties the seal breaks (doneGameBit) and the gate opens.
@@ -24,6 +24,8 @@
  * State lives in the obj extra block (SpiritDoorLockState); placement data is
  * SpiritDoorLockMapData. Both are defined in IMspacecraft.h.
  */
+#include "dlls/objects/343_SpiritDoorS.h"
+
 #include "main/audio/sfx_ids.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/object_render.h"
@@ -177,7 +179,7 @@ void SpiritDoorLock_update(GameObject* obj)
         {
             Sfx_KeepAliveLoopedObjectSound((int)obj, SPIRITDOORLOCK_LOOP_SFX);
         }
-        orbitObjs = (int*)ObjGroup_GetObjects(SPIRITDOORLOCK_ORBIT_OBJECT_GROUP, &orbitCount);
+        orbitObjs = (int*)ObjGroup_GetObjects(SPIRIT_DOOR_SPIRIT_OBJECT_GROUP, &orbitCount);
         angleStep = 0x10000 / state->orbitCount;
         angle = state->spinAngle;
         orbitOffset[1] = gSpiritDoorLockOrbitOffsetY;
