@@ -449,10 +449,10 @@ void CameraModeViewfinder_free(int camObj)
 
 void CameraModeViewfinder_update(CameraObject* obj)
 {
+    int camObj;
     GameObject* targetObj;
     int brightness;
     GameObject* exitTarget;
-    int camObj;
     int angleDiff;
     f32 outA;
     f32 hitY;
@@ -526,15 +526,15 @@ void CameraModeViewfinder_update(CameraObject* obj)
         obj->anim.worldPosY = lbl_803DD548->posYCurve.end;
         obj->anim.worldPosZ = lbl_803DD548->posZCurve.end;
         {
-            f32 fade = (lbl_803E17E8 - obj->blendProgress) - lbl_803E1824;
-            if (fade < lbl_803E17C4)
+            f32 fade = (1.0f - obj->blendProgress) - 0.2f;
+            if (fade < 0.0f)
             {
-                fade = lbl_803E17C4;
+                fade = 0.0f;
             }
-            fade = fade * lbl_803E1828;
-            if (fade > lbl_803E17E8)
+            fade = fade * 1.25f;
+            if (fade > 1.0f)
             {
-                fade = lbl_803E17E8;
+                fade = 1.0f;
             }
             brightness = (int)(gCamViewfinderBrightnessScale * fade);
         }
