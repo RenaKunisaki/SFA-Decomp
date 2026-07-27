@@ -12,7 +12,7 @@
 #define IM_SPACE_RING_GENERATOR_SEQUENCE_ID_A 0x164
 #define IM_SPACE_RING_GENERATOR_SEQUENCE_ID_B 0x168
 
-#define IM_SPACE_RING_GENERATOR_CHILD_OBJECT_ID 0x301
+#define IM_SPACE_RING_GENERATOR_CHILD_OBJECT_ID  0x301
 #define IM_SPACE_RING_GENERATOR_HAS_SPAWNED(obj) ((obj)->userData1)
 
 int imSpaceRingGenerator_getExtraSize(void) {
@@ -27,13 +27,12 @@ void imSpaceRingGenerator_free(void) {
     gIMSpaceRingLeader = NULL;
 }
 
-void imSpaceRingGenerator_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void imSpaceRingGenerator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                                 s8 visible) {
     IMSpaceRingGeneratorState* state = obj->extra;
 
     if (visible != 0 && (state->visible != 0 || obj->anim.alpha != 0)) {
-        objRenderModelAndHitVolumes(
-            obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -51,8 +50,7 @@ void imSpaceRingGenerator_update(GameObject* obj) {
     placement = obj->anim.placement;
     state = obj->extra;
     if (state->ringA == NULL || state->ringB == NULL) {
-        GameObject** objects =
-            (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        GameObject** objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
 
         for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             GameObject* candidate = objects[objectIndex];
@@ -82,11 +80,9 @@ void imSpaceRingGenerator_update(GameObject* obj) {
         obj->anim.alpha = alpha;
 
         if (IM_SPACE_RING_GENERATOR_HAS_SPAWNED(obj) == 0 && Obj_IsLoadingLocked() != 0) {
-            for (ringIndex = 0; ringIndex < IM_SPACE_RING_GENERATOR_CHILD_COUNT;
-                 ringIndex++) {
-                ringPlacement = (IMSpaceRingPlacement*)Obj_AllocObjectSetup(
-                    sizeof(IMSpaceRingPlacement),
-                    IM_SPACE_RING_GENERATOR_CHILD_OBJECT_ID);
+            for (ringIndex = 0; ringIndex < IM_SPACE_RING_GENERATOR_CHILD_COUNT; ringIndex++) {
+                ringPlacement = (IMSpaceRingPlacement*)Obj_AllocObjectSetup(sizeof(IMSpaceRingPlacement),
+                                                                            IM_SPACE_RING_GENERATOR_CHILD_OBJECT_ID);
                 ringPlacement->base.posX = obj->anim.localPosX;
                 ringPlacement->base.posY = obj->anim.localPosY;
                 ringPlacement->base.posZ = obj->anim.localPosZ;
@@ -103,17 +99,14 @@ void imSpaceRingGenerator_update(GameObject* obj) {
                 ringPlacement->base.color[2] = placement->color[2];
                 ringPlacement->base.color[1] = 1;
                 ringPlacement->base.color[3] = 0xFF;
-                Obj_SetupObject(
-                    &ringPlacement->base, 5, obj->anim.mapEventSlot, -1,
-                    obj->anim.parent);
+                Obj_SetupObject(&ringPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             }
             IM_SPACE_RING_GENERATOR_HAS_SPAWNED(obj) = 1;
         }
 
-        objMove(
-            obj, state->ringA->anim.localPosX - obj->anim.localPosX,
-            (9.0f + state->ringA->anim.localPosY) - obj->anim.localPosY,
-            state->ringA->anim.localPosZ - obj->anim.localPosZ);
+        objMove(obj, state->ringA->anim.localPosX - obj->anim.localPosX,
+                (9.0f + state->ringA->anim.localPosY) - obj->anim.localPosY,
+                state->ringA->anim.localPosZ - obj->anim.localPosZ);
         obj->anim.rotX = obj->anim.rotX + framesThisStep * 0x100;
         obj->anim.rotY = obj->anim.rotY + framesThisStep * 0x20;
         obj->anim.rotZ = obj->anim.rotZ + framesThisStep * 0x40;

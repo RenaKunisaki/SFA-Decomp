@@ -34,8 +34,8 @@ STATIC_ASSERT(sizeof(IMSpaceRingInterface) == 0x28);
 int imSpaceRingGenerator_getExtraSize(void);
 int imSpaceRingGenerator_getObjectTypeId(void);
 void imSpaceRingGenerator_free(void);
-void imSpaceRingGenerator_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void imSpaceRingGenerator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                                 s8 visible);
 void imSpaceRingGenerator_hitDetect(void);
 void imSpaceRingGenerator_update(GameObject* obj);
 void imSpaceRingGenerator_init(GameObject* obj);
