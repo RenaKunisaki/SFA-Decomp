@@ -587,7 +587,7 @@ void macHandleActive(McmdVoiceState* sv)
     u8* channelDefaults;
     f32 one;
     f32 dlsScaleMax;
-    u32 unused[2];
+    u32 unused;
     u8* dataTables = lbl_8032EDD0;
 
     if (MAC_CFLAGS(sv) & 3)
@@ -904,7 +904,7 @@ void macHandleActive(McmdVoiceState* sv)
         case 0x1d: /* pitch sweep 1 */
         {
             s32 delta;
-            McmdCommandArgs unused2;
+            u32 unused2[5];
             sv->sweepOff[0] = 0;
             sv->sweepNum[0] = (macCurrentCmd.flags >> 8) & 0xff;
             sv->sweepCnt[0] = sv->sweepNum[0] << 0x10;
