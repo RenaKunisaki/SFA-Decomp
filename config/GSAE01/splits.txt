@@ -785,7 +785,7 @@ main/dll/dll_007F_dll7ffunc0.c:
 	.sdata      start:0x803DB8E8 end:0x803DB8F0
 	.sdata2     start:0x803E0E20 end:0x803E0E58
 
-main/dll/dll_0080_dll80func0.c:
+dlls/modgfx/128/128.c:
 	.text       start:0x800F57D8 end:0x800F5A8C
 	.sdata2     start:0x803E0E58 end:0x803E0E78
 

@@ -1,5 +1,5 @@
 /*
- * dll80func0 (DLL 0x80) - a foodbag-family modgfx effect builder.
+ * DLL 128 / 0x80 - a foodbag-family modgfx effect builder.
  *
  * dll_80_func03 fills a stack FbBuf with a fixed list of FbCmd draw
  * entries (textures taken from the `lbl_80315468` texture data array) and hands it
