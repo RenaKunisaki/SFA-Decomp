@@ -1,161 +1,129 @@
-/*
- * DLL 0x17F handles the plantable MSBush and MSVine "moon seed" variants.
- *
- * The spot watches its trigger game bit (placement->triggerGameBit);
- * once that bit is set the seed is considered grown (seedState 2). On
- * the first update tick (flags bit 0) it fires its placement-configured
- * trigger sequence (placement->sequence) - optionally pre-empted by
- * another sequence (placement->preemptSeq) when the seed has already
- * been planted - then clears the run-once flag.
- *
- * The sequence callback (MoonSeedBush_SeqFn) handles two anim events:
- *   1 = plant the seed (seedState 1, set placement->grownGameBit);
- *   2 = burst the seed particle fx (one 0x70B + 0x28 x 0x70C spawns).
- * SeqFn returns non-zero until the seed is fully grown.
- */
-#include "main/dll/partfx_interface.h"
+/* Moon seed bush and vine objects (DLL 0x17F). */
+
+#include "dlls/objects/383.h"
+
 #include "game/objects/object.h"
-#include "main/gamebits.h"
-#include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/dll/partfx_interface.h"
+#include "main/gamebits_api.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/dll_017F_moonseedbush.h"
 
-STATIC_ASSERT(sizeof(MoonSeedBushState) == 0x2);
+#define MOON_SEED_BUSH_ANIM_EVENT_PLANTED   1
+#define MOON_SEED_BUSH_ANIM_EVENT_PARTICLES 2
 
-#define MOONSEEDBUSH_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define MOON_SEED_BUSH_PRIMARY_PARTICLE_ID      0x70B
+#define MOON_SEED_BUSH_SECONDARY_PARTICLE_ID    0x70C
+#define MOON_SEED_BUSH_SECONDARY_PARTICLE_COUNT 0x28
 
-/* sequence event opcodes consumed by MoonSeedBush_SeqFn */
-#define MOONSEEDBUSH_SEQEV_PLANT    1
-#define MOONSEEDBUSH_SEQEV_BURST_FX 2
+#define MOON_SEED_BUSH_STATE_UNPLANTED 0
+#define MOON_SEED_BUSH_STATE_PLANTED   1
+#define MOON_SEED_BUSH_STATE_GROWN     2
 
-/* seed-burst particle fx: one lead burst + 0x28 spray spawns */
-#define MOONSEEDBUSH_PARTFX_BURST 0x70B
-#define MOONSEEDBUSH_PARTFX_SPRAY 0x70C
+#define MOON_SEED_BUSH_UPDATE_FLAG_RUN_SEQUENCE 1
 
-/* seedState growth phases */
-#define MOONSEEDBUSH_SEED_UNGROWN 0 /* dormant, watching trigger bit */
-#define MOONSEEDBUSH_SEED_PLANTED 1 /* planted, growing */
-#define MOONSEEDBUSH_SEED_GROWN   2 /* fully grown / triggered */
-
-int MoonSeedBush_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int moonSeedBush_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
     MoonSeedBushState* state = obj->extra;
-    MoonSeedBushPlacement* placement = (MoonSeedBushPlacement*)obj->anim.placementData;
-    int i;
-    int j;
-    if (state->seedState == MOONSEEDBUSH_SEED_UNGROWN)
-    {
-        if (mainGetBit(placement->triggerGameBit) != 0)
-        {
-            state->seedState = MOONSEEDBUSH_SEED_GROWN;
+    const MoonSeedBushPlacement* placement = (const MoonSeedBushPlacement*)obj->anim.placementData;
+    int eventIndex;
+    int particleIndex;
+
+    if (state->seedState == MOON_SEED_BUSH_STATE_UNPLANTED) {
+        if (mainGetBit(placement->growthTriggerGameBit) != 0) {
+            state->seedState = MOON_SEED_BUSH_STATE_GROWN;
         }
     }
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        switch ((s32)animUpdate->eventIds[i])
-        {
-        case MOONSEEDBUSH_SEQEV_PLANT:
-            state->seedState = MOONSEEDBUSH_SEED_PLANTED;
-            if (placement->grownGameBit != -1)
-            {
-                mainSetBits(placement->grownGameBit, 1);
+
+    for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
+        switch ((s32)animUpdate->eventIds[eventIndex]) {
+        case MOON_SEED_BUSH_ANIM_EVENT_PLANTED:
+            state->seedState = MOON_SEED_BUSH_STATE_PLANTED;
+            if (placement->plantedGameBit != -1) {
+                mainSetBits(placement->plantedGameBit, 1);
             }
             break;
-        case MOONSEEDBUSH_SEQEV_BURST_FX:
-            (*gPartfxInterface)->spawnObject((void*)obj, MOONSEEDBUSH_PARTFX_BURST, NULL, 2, -1, NULL);
-            for (j = 0; j < 0x28; j++)
-            {
-                (*gPartfxInterface)->spawnObject((void*)obj, MOONSEEDBUSH_PARTFX_SPRAY, NULL, 2, -1, NULL);
+        case MOON_SEED_BUSH_ANIM_EVENT_PARTICLES:
+            (*gPartfxInterface)->spawnObject((void*)obj, MOON_SEED_BUSH_PRIMARY_PARTICLE_ID, NULL, 2, -1, NULL);
+            for (particleIndex = 0; particleIndex < MOON_SEED_BUSH_SECONDARY_PARTICLE_COUNT; particleIndex++) {
+                (*gPartfxInterface)->spawnObject((void*)obj, MOON_SEED_BUSH_SECONDARY_PARTICLE_ID, NULL, 2, -1, NULL);
             }
             break;
         }
     }
-    return state->seedState != MOONSEEDBUSH_SEED_GROWN;
+
+    return state->seedState != MOON_SEED_BUSH_STATE_GROWN;
 }
 
-int MoonSeedBush_getExtraSize(void)
-{
+int moonSeedBush_getExtraSize(void) {
     return sizeof(MoonSeedBushState);
 }
-int MoonSeedBush_getObjectTypeId(void)
-{
-    return 0x0;
+
+int moonSeedBush_getObjectTypeId(void) {
+    return 0;
 }
 
-void MoonSeedBush_free(void)
-{
+void moonSeedBush_free(void) {
 }
 
-void MoonSeedBush_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void moonSeedBush_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void MoonSeedBush_hitDetect(void)
-{
+void moonSeedBush_hitDetect(void) {
 }
 
-void MoonSeedBush_update(GameObject* obj)
-{
+void moonSeedBush_update(GameObject* obj) {
     MoonSeedBushState* state = obj->extra;
-    MoonSeedBushPlacement* placement = (MoonSeedBushPlacement*)obj->anim.placementData;
-    int preemptSlot;
-    if ((state->flags & 1) == 0)
+    const MoonSeedBushPlacement* placement = (const MoonSeedBushPlacement*)obj->anim.placementData;
+    int sequenceFlags;
+
+    if ((state->updateFlags & MOON_SEED_BUSH_UPDATE_FLAG_RUN_SEQUENCE) == 0) {
         return;
-    if (placement->preemptSeq != 0 && state->seedState != MOONSEEDBUSH_SEED_UNGROWN)
-    {
-        preemptSlot = placement->preemptSlot;
-        (*gObjectTriggerInterface)->preempt((int)obj, placement->preemptSeq);
     }
-    else
-    {
-        preemptSlot = -1;
+    if (placement->preemptTriggerId != 0 && state->seedState != MOON_SEED_BUSH_STATE_UNPLANTED) {
+        sequenceFlags = placement->sequenceFlags;
+        (*gObjectTriggerInterface)->preempt((int)obj, placement->preemptTriggerId);
+    } else {
+        sequenceFlags = -1;
     }
     {
-        u8 sequence = placement->sequence;
-        s32 idx = (s8)sequence;
-        if (idx != -1)
-        {
-            (*gObjectTriggerInterface)->runSequence(idx, (void*)obj, preemptSlot);
+        u8 sequence = placement->sequenceIndex;
+        s32 sequenceIndex = (s8)sequence;
+
+        if (sequenceIndex != -1) {
+            (*gObjectTriggerInterface)->runSequence(sequenceIndex, (void*)obj, sequenceFlags);
         }
     }
-    state->flags &= ~1;
+
+    state->updateFlags &= ~MOON_SEED_BUSH_UPDATE_FLAG_RUN_SEQUENCE;
 }
 
-void MoonSeedBush_init(GameObject* obj, MoonSeedBushPlacement* placement)
-{
+void moonSeedBush_init(GameObject* obj, const MoonSeedBushPlacement* placement) {
     MoonSeedBushState* state = obj->extra;
-    state->flags = 1;
+
+    state->updateFlags = MOON_SEED_BUSH_UPDATE_FLAG_RUN_SEQUENCE;
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
-    obj->animEventCallback = MoonSeedBush_SeqFn;
-    obj->objectFlags |= MOONSEEDBUSH_OBJFLAG_HITDETECT_DISABLED;
+    obj->animEventCallback = moonSeedBush_processAnimEvents;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     obj->anim.rootMotionScale = (f32)(u32)placement->scaleByte / 64.0f;
-    if (!obj->anim.rootMotionScale)
-    {
+    if (!obj->anim.rootMotionScale) {
         obj->anim.rootMotionScale = 1.0f;
     }
     obj->anim.rootMotionScale = obj->anim.rootMotionScale * obj->anim.modelInstance->rootMotionScaleBase;
-    if (placement->grownGameBit != -1)
-    {
-        state->seedState = mainGetBit(placement->grownGameBit);
-    }
-    else
-    {
-        state->seedState = MOONSEEDBUSH_SEED_UNGROWN;
+    if (placement->plantedGameBit != -1) {
+        state->seedState = mainGetBit(placement->plantedGameBit);
+    } else {
+        state->seedState = MOON_SEED_BUSH_STATE_UNPLANTED;
     }
 }
 
-void MoonSeedBush_release(void)
-{
+void moonSeedBush_release(void) {
 }
 
-void MoonSeedBush_initialise(void)
-{
+void moonSeedBush_initialise(void) {
 }
 
 ObjectDescriptor gMoonSeedBushObjDescriptor = {
@@ -163,14 +131,14 @@ ObjectDescriptor gMoonSeedBushObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)MoonSeedBush_initialise,
-    (ObjectDescriptorCallback)MoonSeedBush_release,
+    (ObjectDescriptorCallback)moonSeedBush_initialise,
+    (ObjectDescriptorCallback)moonSeedBush_release,
     0,
-    (ObjectDescriptorCallback)MoonSeedBush_init,
-    (ObjectDescriptorCallback)MoonSeedBush_update,
-    (ObjectDescriptorCallback)MoonSeedBush_hitDetect,
-    (ObjectDescriptorCallback)MoonSeedBush_render,
-    (ObjectDescriptorCallback)MoonSeedBush_free,
-    (ObjectDescriptorCallback)MoonSeedBush_getObjectTypeId,
-    MoonSeedBush_getExtraSize,
+    (ObjectDescriptorCallback)moonSeedBush_init,
+    (ObjectDescriptorCallback)moonSeedBush_update,
+    (ObjectDescriptorCallback)moonSeedBush_hitDetect,
+    (ObjectDescriptorCallback)moonSeedBush_render,
+    (ObjectDescriptorCallback)moonSeedBush_free,
+    (ObjectDescriptorCallback)moonSeedBush_getObjectTypeId,
+    moonSeedBush_getExtraSize,
 };
