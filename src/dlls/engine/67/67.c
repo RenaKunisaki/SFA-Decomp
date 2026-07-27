@@ -169,6 +169,13 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
 {
     u16 buttons;
     GameObject* targetObj;
+    CamcontrolPathState* path;
+    CameraInterface* cam;
+    s16 targetClass;
+    int zPressed;
+    int canView;
+    void* lockSlot;
+    void* pendingParent;
     struct
     {
         f32 x;
@@ -176,26 +183,44 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
         s16 y;
     } actionPayload;
 
-    if (*(u32*)&target->pendingParentObj == 0)
+    pendingParent = target->pendingParentObj;
+    if (pendingParent != NULL)
     {
-        buttons = getButtonsJustPressed(0);
-        targetObj = (GameObject*)camera->currentTarget;
-        if ((targetObj != NULL &&
-             (targetObj->anim.classId == 0x1c || targetObj->anim.classId == 0x2a) && target->anim.classId == 1 &&
-             objFn_80296700(target) != 0) ||
-            (camera->targetFlags & 2) != 0)
-        {
-            (*gCameraInterface)->setMode(CAMMODE_COMBAT, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
-        }
-        else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
-                 (objFn_802962b4((GameObject*)target) != 0))
-        {
-            actionPayload.x = gCamcontrolPathState->actionParamX;
-            actionPayload.z = gCamcontrolPathState->actionParamZ;
-            actionPayload.y = gCamcontrolPathState->actionParamY;
-            (*gCameraInterface)->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &actionPayload, 0, 0xff);
-        }
+        return;
     }
+    buttons = getButtonsJustPressed(0);
+    targetObj = (GameObject*)camera->currentTarget;
+    if ((targetObj != NULL &&
+         (targetObj->anim.classId == 0x1c || targetObj->anim.classId == 0x2a) && target->anim.classId == 1 &&
+         objFn_80296700(target) != 0) ||
+        (camera->targetFlags & 2) != 0)
+    {
+        lockSlot = &camera->currentTarget;
+        cam = *gCameraInterface;
+        cam->setMode(CAMMODE_COMBAT, 1, 0, 4, lockSlot, 0x3c, 0xff);
+        return;
+    }
+    zPressed = buttons & PAD_TRIGGER_Z;
+    if (zPressed == 0)
+    {
+        return;
+    }
+    targetClass = target->anim.classId;
+    if (targetClass != 1)
+    {
+        return;
+    }
+    canView = objFn_802962b4(target);
+    if (canView == 0)
+    {
+        return;
+    }
+    path = gCamcontrolPathState;
+    actionPayload.x = path->actionParamX;
+    actionPayload.z = path->actionParamZ;
+    actionPayload.y = path->actionParamY;
+    cam = *gCameraInterface;
+    cam->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &actionPayload, 0, 0xff);
 }
 
 void CameraModeStaffAnim_copyToCurrent(void)
