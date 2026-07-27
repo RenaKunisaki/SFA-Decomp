@@ -5,13 +5,6 @@
 #include "ghidra_import.h"
 #include "main/objanim_update.h"
 
-void DFSH_Door2Speci_free(void);
-void DFSH_Door2Speci_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
-void DFSH_Door2Speci_hitDetect(void);
-void DFSH_Door2Speci_update(void);
-void DFSH_Door2Speci_init(GameObject* obj, int def);
-void DFSH_Door2Speci_release(void);
-void DFSH_Door2Speci_initialise(void);
 void dfshshrine_updateHoverMotion(int obj);
 int DFSH_Shrine_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int DFSH_Shrine_getExtraSize(void);

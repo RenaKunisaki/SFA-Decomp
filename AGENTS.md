@@ -140,6 +140,14 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   canonical header to a registry such as `modelEngine.c` does not authorize whole-file formatting
   or unrelated cleanup there; change only the required include, declaration, cast, or use sites
   unless that consumer TU is itself the active cleanup target.
+- Use attached braces for control flow in cleaned code: `if (...) {`, `} else {`, `for (...) {`,
+  `while (...) {`, and `switch (...) {`. Keep the controlled block on its own indented lines even
+  when it contains one statement. Do not introduce Allman-style control-flow braces into a cleaned
+  TU or preserve them merely because the surrounding imported decomp is inconsistent.
+- For the object-DLL housekeeping pass, assign each TU cleanup to a sub-agent and keep no more than
+  three sub-agents active at once. The primary agent must personally review every resulting diff,
+  stale-symbol search, match report, shared-consumer edit, and generated-path audit before
+  committing. Commit and push reviewed TUs one coherent slot at a time.
 - Claim a cleaned TU's complete evidenced constant pool only when the source can emit it without
   duplicate named constants, invented section placement, or codegen changes. MWCC may copy a
   same-TU named `const` scalar into a second anonymous literal while leaving the named definition

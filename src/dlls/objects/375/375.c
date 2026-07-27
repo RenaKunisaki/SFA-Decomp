@@ -1,179 +1,134 @@
 /*
- * DLL 0x177 is shared by DFSH_Door2S, DFSH_Door3S, and DFSH_Door4S.
- * Its texture fades in and then pulses: state 0 waits for its gamebit,
- * state 1 ramps the texture alpha up to 0x100, and state 2 drives a cosine
- * pulse of the texture id.
+ * Shared texture animation for the DFSH_Door2S, DFSH_Door3S, and
+ * DFSH_Door4S object definitions.
  */
-#include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
+
+#include "dlls/objects/375.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/objtexture.h"
-#include "main/gamebits.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/DF/DFlantern.h"
+#include "main/objtexture.h"
 
-typedef struct DFSHDoor2SpeciPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1B - 0x18];
-    u8 unk1B;
-    u8 pad1C[0x22 - 0x1C];
-    s16 gameBit;
-    u8 pad24[0x28 - 0x24];
-} DFSHDoor2SpeciPlacement;
+extern const f32 gDll177TextureValueMaximum;
+extern const f32 gDll177TexturePulseAmplitude;
+extern const f32 gDll177UnitValue;
+extern const f32 gDll177Pi;
+extern const f32 gDll177HalfCycleUnits;
 
-typedef struct DFDoorSpeciExtra
-{
-    u16 phase;
-    u8 pad02;
-    u8 state;
-    u8 pad04[2];
-} DFDoorSpeciExtra;
-
-typedef enum DFSHDoor2SpeciState
-{
-    DFSH_DOOR2SPECI_STATE_WAIT_FOR_GAMEBIT = 0,
-    DFSH_DOOR2SPECI_STATE_FADE_IN = 1,
-    DFSH_DOOR2SPECI_STATE_PULSE = 2,
-} DFSHDoor2SpeciState;
-
-extern f32 lbl_803E4E30;
-extern f32 lbl_803E4E34;
-extern f32 lbl_803E4E38;
-extern f32 lbl_803E4E3C;
-extern f32 lbl_803E4E40;
-
-
-int DFSH_Door2Speci_SeqFn(GameObject* obj)
-{
+int dll_177_updateTextureAnimation(GameObject* obj) {
     ObjTextureRuntimeSlot* texture;
-    DFDoorSpeciExtra* extra;
-    int objDef;
+    Dll177State* state;
+    const Dll177Placement* placement;
     int alpha;
     u32 phaseStep;
     f32 phase;
 
-    extra = obj->extra;
-    objDef = *(int*)&obj->anim.placementData;
-    switch (extra->state)
-    {
-    case DFSH_DOOR2SPECI_STATE_WAIT_FOR_GAMEBIT:
-        if (mainGetBit(((DFSHDoor2SpeciPlacement*)objDef)->gameBit) != 0)
-        {
-            extra->state = DFSH_DOOR2SPECI_STATE_FADE_IN;
+    state = obj->extra;
+    placement = (const Dll177Placement*)obj->anim.placementData;
+    switch (state->textureState) {
+    case DLL_177_TEXTURE_STATE_WAIT_FOR_GAME_BIT:
+        if (mainGetBit(placement->gameBit) != 0) {
+            state->textureState = DLL_177_TEXTURE_STATE_FADE_IN;
         }
         break;
-    case DFSH_DOOR2SPECI_STATE_FADE_IN:
-        texture = objFindTexture((GameObject*)obj, 0, 0);
-        if (texture != NULL)
-        {
+    case DLL_177_TEXTURE_STATE_FADE_IN:
+        texture = objFindTexture(obj, 0, 0);
+        if (texture != NULL) {
             alpha = texture->textureId + framesThisStep * 0x10;
-            if (alpha > 0x100)
-            {
+            if (alpha > 0x100) {
                 alpha = 0x100;
-                extra->state = DFSH_DOOR2SPECI_STATE_PULSE;
+                state->textureState = DLL_177_TEXTURE_STATE_PULSE;
             }
             texture->textureId = alpha;
         }
         break;
-    case DFSH_DOOR2SPECI_STATE_PULSE:
+    case DLL_177_TEXTURE_STATE_PULSE:
     default:
-        texture = objFindTexture((GameObject*)obj, 0, 0);
-        if (texture != NULL)
-        {
-            phaseStep = (extra->phase + framesThisStep * 800) & 0xffff;
-            extra->phase = phaseStep;
-            phase = (lbl_803E4E3C * (f32)(u32)extra->phase) / lbl_803E4E40;
-            texture->textureId = (s32) - (lbl_803E4E34 * (lbl_803E4E38 - mathCosf(phase)) - lbl_803E4E30);
+        texture = objFindTexture(obj, 0, 0);
+        if (texture != NULL) {
+            phaseStep = (state->pulsePhase + framesThisStep * 800) & 0xFFFF;
+            state->pulsePhase = phaseStep;
+            phase =
+                (gDll177Pi * (f32)(u32)state->pulsePhase) / gDll177HalfCycleUnits;
+            texture->textureId =
+                (s32)-(gDll177TexturePulseAmplitude *
+                          (gDll177UnitValue - mathCosf(phase)) -
+                      gDll177TextureValueMaximum);
         }
         break;
     }
     return 0;
 }
 
-int DFSH_Door2Speci_getExtraSize(void)
-{
-    return sizeof(DFDoorSpeciExtra);
+int dll_177_getExtraSize(void) {
+    return sizeof(Dll177State);
 }
 
-int DFSH_Door2Speci_getObjectTypeId(void)
-{
+int dll_177_getObjectTypeId(void) {
     return 0;
 }
 
-void DFSH_Door2Speci_free(void)
-{
+void dll_177_free(void) {
 }
 
-void DFSH_Door2Speci_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 visibleFlag;
-
-    visibleFlag = visible;
-    if (visibleFlag != 0)
-    {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E4E38);
+void dll_177_render(
+    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(
+            obj, renderArg2, renderArg3, renderArg4, renderArg5, gDll177UnitValue);
     }
 }
 
-void DFSH_Door2Speci_hitDetect(void)
-{
+void dll_177_hitDetect(void) {
 }
 
-void DFSH_Door2Speci_update(void)
-{
+void dll_177_update(void) {
 }
 
-void DFSH_Door2Speci_init(GameObject* obj, int def)
-{
-    int state;
+void dll_177_init(GameObject* obj, const Dll177Placement* placement) {
+    Dll177State* state;
     ObjTextureRuntimeSlot* texture;
 
-    state = *(int*)&obj->extra;
-    obj->animEventCallback = DFSH_Door2Speci_SeqFn;
-    if (mainGetBit((int)*(short*)(def + 0x22)) != 0)
-    {
-        *(unsigned char*)(state + 3) = 2;
+    state = obj->extra;
+    obj->animEventCallback = dll_177_updateTextureAnimation;
+    if (mainGetBit(placement->gameBit) != 0) {
+        state->textureState = DLL_177_TEXTURE_STATE_PULSE;
+    } else {
+        state->textureState = DLL_177_TEXTURE_STATE_WAIT_FOR_GAME_BIT;
     }
-    else
-    {
-        *(unsigned char*)(state + 3) = 0;
-    }
-    texture = objFindTexture((GameObject*)obj, 0, 0);
-    if (texture != NULL)
-    {
-        if (*(unsigned char*)(state + 3) == 2)
-        {
+    texture = objFindTexture(obj, 0, 0);
+    if (texture != NULL) {
+        if (state->textureState == DLL_177_TEXTURE_STATE_PULSE) {
             texture->textureId = 1;
-        }
-        else
-        {
+        } else {
             texture->textureId = 0;
         }
     }
-    *(short*)state = 0;
+    state->pulsePhase = 0;
 }
 
-void DFSH_Door2Speci_release(void)
-{
+void dll_177_release(void) {
 }
 
-void DFSH_Door2Speci_initialise(void)
-{
+void dll_177_initialise(void) {
 }
 
-ObjectDescriptor gDFSH_Door2SpeciObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_initialise,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_release,
+ObjectDescriptor gDll177ObjDescriptor = {
     0,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_init,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_update,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_hitDetect,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_render,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_free,
-    (ObjectDescriptorCallback)DFSH_Door2Speci_getObjectTypeId,
-    DFSH_Door2Speci_getExtraSize,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)dll_177_initialise,
+    (ObjectDescriptorCallback)dll_177_release,
+    0,
+    (ObjectDescriptorCallback)dll_177_init,
+    (ObjectDescriptorCallback)dll_177_update,
+    (ObjectDescriptorCallback)dll_177_hitDetect,
+    (ObjectDescriptorCallback)dll_177_render,
+    (ObjectDescriptorCallback)dll_177_free,
+    (ObjectDescriptorCallback)dll_177_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)dll_177_getExtraSize,
 };

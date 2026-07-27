@@ -169,6 +169,7 @@
 #include "dlls/objects/371_LINK_levcon.h"
 #include "dlls/objects/372_CCriverflow.h"
 #include "dlls/objects/374_DFSH_Door1S.h"
+#include "dlls/objects/375.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -268,8 +269,8 @@ extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor,
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
     gDFP_TorchObjDescriptor;
-extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFSH_Door2SpeciObjDescriptor, gDFSH_LaserBeamObjDescriptor,
-    gDFSH_ObjCreatorObjDescriptor, gDFSH_ShrineObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
+extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFSH_LaserBeamObjDescriptor, gDFSH_ObjCreatorObjDescriptor,
+    gDFSH_ShrineObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor;
@@ -1396,7 +1397,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCCRiverFlowObjDescriptor,
     &gDFropenodeObjDescriptor,
     (ResourceDescriptor*)&gDFSH_Door1SNullResourceDescriptor,
-    &gDFSH_Door2SpeciObjDescriptor,
+    (ResourceDescriptor*)&gDll177ObjDescriptor,
     &gDFSH_ShrineObjDescriptor,
     &gDFSH_ObjCreatorObjDescriptor,
     &gSpiritPrizeObjDescriptor,
