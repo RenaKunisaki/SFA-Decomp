@@ -1,61 +1,52 @@
 /*
- * DLL 0x184 handles the DIMAnimShar and MMPAnimShar anim/sequence objects.
- *
- * init wires the object's anim/trigger state (slot 0x64), records the
- * sequence id from placement, and either loads or reloads its anim data
- * depending on the placement variant byte. Each update ticks the object
- * trigger interface, services anim sequence events (event 1
- * spawns a child setup object 0x30B and attaches it, event 2 detaches and
- * frees the child), then - once the object reaches the terminal sequence
- * index (-2) - scans the live object list for the matching sequence kind
- * and ends the shared trigger sequence when this is the last participant.
- * free detaches/frees the child, releases trigger state, drives the title-
- * menu control vtable slot 2, and stops the object's sfx channel.
+ * Object DLL 0x184 advances animation sequences and manages child objects
+ * requested by sequence events.
  */
-#include "main/objanim_update.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
+#include "dlls/objects/388.h"
+
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/obj_link.h"
-#include "main/objseq.h"
-#include "main/dll/dll_0184_animsharpclaw.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/frame_timing.h"
+#include "main/obj_link.h"
 #include "main/obj_list.h"
+#include "main/object_render.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-/* child setup-object id spawned on anim sequence event 1 */
-#define ANIMSHARPCLAW_CHILD_SETUP_ID 0x30B
-#define ANIMSHARPCLAW_OBJECT_TYPE_ID 0xB
-#define ANIMSHARPCLAW_CLASS_ID       0x10
+#define DLL_184_ANIM_EVENT_CREATE_CHILD  1
+#define DLL_184_ANIM_EVENT_REMOVE_CHILD  2
+#define DLL_184_CHILD_SETUP_ID           0x30B
+#define DLL_184_OBJECT_TYPE_ID           0xB
+#define DLL_184_CLASS_ID                 0x10
+#define DLL_184_OBJECT_SLOT              0x64
+#define DLL_184_SHADOW_TINT_A            0x64
+#define DLL_184_SHADOW_TINT_B            0x96
+#define DLL_184_OBJECT_SOUND_CHANNEL_ALL 0x7F
 
-int animsharpclaw_handleAnimEvents(GameObject* obj, ObjAnimUpdateState* animUpdate)
-{
+int dll_184_handleAnimEvents(GameObject* obj, const ObjSeqState* sequence) {
     int i;
     GameObject* child;
-    AnimsharpclawChildSetup* childSetup;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        u8 eventId = animUpdate->eventIds[i];
-        switch (eventId)
-        {
-        case 1:
-            obj->userData2 = ANIMSHARPCLAW_CHILD_SETUP_ID;
+    Dll184ChildSetup* childSetup;
+
+    for (i = 0; i < sequence->eventCount; i++) {
+        u8 eventId = sequence->eventIds[i];
+
+        switch (eventId) {
+        case DLL_184_ANIM_EVENT_CREATE_CHILD:
+            obj->userData2 = DLL_184_CHILD_SETUP_ID;
             child = obj->childObjs[0];
-            if (child != NULL)
-            {
+            if (child != NULL) {
                 ObjLink_DetachChild(obj, child);
                 Obj_FreeObject(child);
             }
-            childSetup = (AnimsharpclawChildSetup*)Obj_AllocObjectSetup(sizeof(AnimsharpclawChildSetup),
-                                                                        obj->userData2);
+            childSetup = (Dll184ChildSetup*)Obj_AllocObjectSetup(sizeof(Dll184ChildSetup), obj->userData2);
             child = Obj_SetupObject(&childSetup->base, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
             ObjLink_AttachChild(obj, child, 0);
             break;
-        case 2:
+        case DLL_184_ANIM_EVENT_REMOVE_CHILD:
             child = obj->childObjs[0];
-            if (child != NULL)
-            {
+            if (child != NULL) {
                 ObjLink_DetachChild(obj, child);
                 Obj_FreeObject(child);
             }
@@ -66,101 +57,91 @@ int animsharpclaw_handleAnimEvents(GameObject* obj, ObjAnimUpdateState* animUpda
     return 0;
 }
 
-int animsharpclaw_getExtraSize(void)
-{
-    return sizeof(AnimsharpclawState);
-}
-int animsharpclaw_getObjectTypeId(void)
-{
-    return ANIMSHARPCLAW_OBJECT_TYPE_ID;
+int dll_184_getExtraSize(void) {
+    return sizeof(Dll184State);
 }
 
-void animsharpclaw_free(GameObject* obj)
-{
-    AnimsharpclawState* state;
+int dll_184_getObjectTypeId(void) {
+    return DLL_184_OBJECT_TYPE_ID;
+}
+
+void dll_184_free(GameObject* obj) {
+    Dll184State* state;
     GameObject* child;
+
     state = obj->extra;
     child = obj->childObjs[0];
-    if (child != NULL)
-    {
+    if (child != NULL) {
         ObjLink_DetachChild(obj, child);
         Obj_FreeObject(child);
     }
     (*gObjectTriggerInterface)->freeState((u8*)state);
     gTitleMenuControlInterfaceCopy->vtable->func05((void*)obj, 0xffff, 0, 0, 0);
-    Sfx_StopObjectChannel(obj, 0x7f);
+    Sfx_StopObjectChannel((int)obj, DLL_184_OBJECT_SOUND_CHANNEL_ALL);
 }
 
-void animsharpclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void dll_184_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 isVisible = visible;
-    if (isVisible != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void animsharpclaw_hitDetect(void)
-{
+void dll_184_hitDetect(void) {
 }
 
-void animsharpclaw_update(GameObject* obj)
-{
-    AnimsharpclawPlacement* placement;
-    int kind;
-    int kindExt;
-    int matchCount;
-    int* objList;
-    AnimsharpclawState* state;
-    int found;
+void dll_184_update(GameObject* obj) {
+    const Dll184Placement* placement;
+    int sequenceSlot;
+    int sequenceSlotExt;
+    int participantCount;
+    GameObject** objectList;
+    Dll184State* state;
+    GameObject* sequenceObject;
     int i;
-    int count;
+    int objectCount;
 
     state = obj->extra;
-    placement = (AnimsharpclawPlacement*)obj->anim.placementData;
-    if ((placement != NULL) && (placement->animationBank != -1))
-    {
+    placement = (const Dll184Placement*)obj->anim.placementData;
+    if (placement != NULL && placement->animDataIndex != -1) {
         i = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStep);
-        animsharpclaw_handleAnimEvents(obj, (ObjAnimUpdateState*)state);
-        if ((i != 0) && (obj->seqIndex == -2))
-        {
-            kind = *(s8*)&state->sequence.slot;
-            found = 0;
-            objList = (int*)ObjList_GetObjects(&i, &count);
-            matchCount = 0;
-            for (i = 0, kindExt = (int)(s8)kind; i < count; i++)
-            {
-                int other = *objList;
-                GameObject* o = (GameObject*)other;
-                if (o->seqIndex == kind)
-                {
-                    found = other;
+        dll_184_handleAnimEvents(obj, &state->sequence);
+        if (i != 0 && obj->seqIndex == -2) {
+            sequenceSlot = state->sequence.slot;
+            sequenceObject = NULL;
+            objectList = (GameObject**)ObjList_GetObjects(&i, &objectCount);
+            participantCount = 0;
+            for (i = 0, sequenceSlotExt = (int)(s8)sequenceSlot; i < objectCount; i++) {
+                GameObject* otherObject = *objectList;
+
+                if (otherObject->seqIndex == sequenceSlot) {
+                    sequenceObject = otherObject;
                 }
-                if (o->seqIndex == -2 && o->anim.classId == ANIMSHARPCLAW_CLASS_ID &&
-                    kindExt == ((AnimsharpclawState*)o->extra)->sequence.slot)
-                {
-                    matchCount++;
+                if (otherObject->seqIndex == -2 && otherObject->anim.classId == DLL_184_CLASS_ID &&
+                    sequenceSlotExt == ((Dll184State*)otherObject->extra)->sequence.slot) {
+                    participantCount++;
                 }
-                objList = objList + 1;
+                objectList++;
             }
-            if (matchCount <= 1 && (u32)found != 0 && ((GameObject*)found)->seqIndex != -1)
-            {
-                ((GameObject*)found)->seqIndex = -1;
-                (*gObjectTriggerInterface)->endSequence(kindExt);
+            if (participantCount <= 1 && sequenceObject != NULL && sequenceObject->seqIndex != -1) {
+                sequenceObject->seqIndex = -1;
+                (*gObjectTriggerInterface)->endSequence(sequenceSlotExt);
             }
             obj->seqIndex = -1;
         }
     }
 }
 
-void animsharpclaw_init(GameObject* obj, AnimsharpclawPlacement* placement)
-{
+void dll_184_init(GameObject* obj, const Dll184Placement* placement) {
     u8* sequenceData;
-    int prevLinkCount;
-    AnimsharpclawState* state;
+    int cachedAnimDataIndexPlusOne;
+    Dll184State* state;
 
     obj->animEventCallback = NULL;
-    objSetSlot(obj, 0x64);
+    objSetSlot(obj, DLL_184_OBJECT_SLOT);
     sequenceData = obj->extra;
-    state = (AnimsharpclawState*)sequenceData;
+    state = (Dll184State*)sequenceData;
     state->sequence.gameBit = placement->sequenceGameBit;
     state->sequence.flags = -1;
     state->sequence.posOffsetDecay = 1.0f / (1.0f + (f32)(u32)placement->positionDamping);
@@ -168,49 +149,42 @@ void animsharpclaw_init(GameObject* obj, AnimsharpclawPlacement* placement)
     state->sequence.animEntries = NULL;
     state->sequence.cmds = NULL;
     obj->userData2 = -1;
-    prevLinkCount = obj->userData1;
-    if (prevLinkCount == 0 && placement->animationBank != 1)
-    {
+    cachedAnimDataIndexPlusOne = obj->userData1;
+    if (cachedAnimDataIndexPlusOne == 0 && placement->animDataIndex != 1) {
         (*gObjectTriggerInterface)->loadAnimData(sequenceData, (u8*)placement);
-        obj->userData1 = placement->animationBank + 1;
-    }
-    else if (prevLinkCount != 0 && placement->animationBank != prevLinkCount - 1)
-    {
+        obj->userData1 = placement->animDataIndex + 1;
+    } else if (cachedAnimDataIndexPlusOne != 0 && placement->animDataIndex != cachedAnimDataIndexPlusOne - 1) {
         (*gObjectTriggerInterface)->freeState(sequenceData);
-        if (placement->animationBank != -1)
-        {
+        if (placement->animDataIndex != -1) {
             (*gObjectTriggerInterface)->loadAnimData(sequenceData, (u8*)placement);
         }
-        obj->userData1 = placement->animationBank + 1;
+        obj->userData1 = placement->animDataIndex + 1;
     }
-    if (obj->anim.modelState != NULL)
-    {
-        obj->anim.modelState->shadowTintA = 0x64;
-        obj->anim.modelState->shadowTintB = 0x96;
+    if (obj->anim.modelState != NULL) {
+        obj->anim.modelState->shadowTintA = DLL_184_SHADOW_TINT_A;
+        obj->anim.modelState->shadowTintB = DLL_184_SHADOW_TINT_B;
     }
 }
 
-void animsharpclaw_release(void)
-{
+void dll_184_release(void) {
 }
 
-void animsharpclaw_initialise(void)
-{
+void dll_184_initialise(void) {
 }
 
-ObjectDescriptor gAnimSharpclawObjDescriptor = {
+ObjectDescriptor gDll184ObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)animsharpclaw_initialise,
-    (ObjectDescriptorCallback)animsharpclaw_release,
+    (ObjectDescriptorCallback)dll_184_initialise,
+    (ObjectDescriptorCallback)dll_184_release,
     0,
-    (ObjectDescriptorCallback)animsharpclaw_init,
-    (ObjectDescriptorCallback)animsharpclaw_update,
-    (ObjectDescriptorCallback)animsharpclaw_hitDetect,
-    (ObjectDescriptorCallback)animsharpclaw_render,
-    (ObjectDescriptorCallback)animsharpclaw_free,
-    (ObjectDescriptorCallback)animsharpclaw_getObjectTypeId,
-    animsharpclaw_getExtraSize,
+    (ObjectDescriptorCallback)dll_184_init,
+    (ObjectDescriptorCallback)dll_184_update,
+    (ObjectDescriptorCallback)dll_184_hitDetect,
+    (ObjectDescriptorCallback)dll_184_render,
+    (ObjectDescriptorCallback)dll_184_free,
+    (ObjectDescriptorCallback)dll_184_getObjectTypeId,
+    dll_184_getExtraSize,
 };

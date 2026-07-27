@@ -182,6 +182,7 @@
 #include "dlls/objects/385_MMP_trenchF.h"
 #include "dlls/objects/386_MMP_moonroc.h"
 #include "dlls/objects/387_MMP_gyserve.h"
+#include "dlls/objects/388.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -270,7 +271,7 @@ extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, 
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
-extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAnimSharpclawObjDescriptor;
+extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor,
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
@@ -1418,7 +1419,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMMPTrenchFxObjDescriptor,
     (ResourceDescriptor*)&gMMPMoonRockObjDescriptor,
     (ResourceDescriptor*)&gMMPGeyserVentObjDescriptor,
-    &gAnimSharpclawObjDescriptor,
+    (ResourceDescriptor*)&gDll184ObjDescriptor,
     &gCCgasventObjDescriptor,
     (ResourceDescriptor*)&gCCgasventControlObjDescriptor,
     &gCCqueenObjDescriptor,
