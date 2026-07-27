@@ -1861,7 +1861,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/439/439.c", cflags=cflags_dll_noopt_nocse_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/440_SC_totempol/SC_totempol.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_801dd170.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/442_SC_totempuz/SC_totempuz.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/443_SC_totembon/SC_totembon.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/444_SC_totemstr/SC_totemstr.c", cflags=cflags_dll_noopt),

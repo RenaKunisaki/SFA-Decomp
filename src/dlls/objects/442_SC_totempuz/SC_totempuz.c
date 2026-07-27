@@ -58,6 +58,14 @@ extern f32 lbl_803E5628;
 extern f32 lbl_803E562C;
 extern f32 lbl_803E5630;
 
+int sc_totempuzzle_animEventCallback(ScTotemPuzzleObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+{
+    int r;
+    if (mainGetBit(GAMEBIT_SC_totempuzzle_running) != 0) { r = 0; }
+    else { r = 1; }
+    return r;
+}
+
 u8 sc_totempuzzle_checkSolvedSequence(ScTotemPuzzleObject* obj, ScTotemPuzzleState* state)
 {
     SCTotemPuzzleParticleBox particleBox;
