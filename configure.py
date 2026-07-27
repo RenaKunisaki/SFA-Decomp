@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/65/65.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/engine/66/66.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/engine/67/67.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/engine/68/68.c", cflags=cflags_dll_noopt_noautoinline),
@@ -1544,7 +1545,6 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_0031_minimap.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_003F_dll3f.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0040_credits.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0041_warpstoneui.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/704/704.c", cflags=cflags_dll_noopt_noloopinv),
             Object(NonMatching, "main/dll/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
             Object(MatchingFor("GSAE01"), "dlls/objects/223_Hagabon/Hagabon.c", cflags=cflags_dll_noopt),

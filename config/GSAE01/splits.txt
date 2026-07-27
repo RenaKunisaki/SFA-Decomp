@@ -1402,7 +1402,7 @@ main/dll/dll_0040_credits.c:
 	.data       start:0x8031C620 end:0x8031CC38
 	.sdata2     start:0x803E22C0 end:0x803E22D0
 
-main/dll/dll_0041_warpstoneui.c:
+dlls/engine/65/65.c:
 	.text       start:0x801343CC end:0x80134870
 	.data       start:0x8031CC38 end:0x8031CDE8
 	.bss        start:0x803A9DD0 end:0x803A9F50

@@ -108,7 +108,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x03E | — | NO-RETAIL-NAME | main/dll/dll_003E_dummy3e.c | = (canonical) | — |
 | 0x03F | — | NO-RETAIL-NAME | main/dll/dll_003F_dll3f.c | = (canonical) | — |
 | 0x040 | — | NO-RETAIL-NAME | main/dll/dll_0040_credits.c | = (canonical) | — |
-| 0x041 | — | NO-RETAIL-NAME | main/dll/dll_0041_warpstoneui.c | = (canonical) | — |
+| 0x041 | — | NO-RETAIL-NAME | dlls/engine/65/65.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x042 | — | NO-RETAIL-NAME | dlls/engine/66/66.c | = (canonical) | Complete DOL-confirmed TU consolidated from the former cutcam and DLL 0x42 fragments |
 | 0x043 | — | NO-RETAIL-NAME | dlls/engine/67/67.c | = (canonical) | Complete DOL-confirmed TU consolidated from pathcam, camlockon, and the former DLL 0x43 fragment |
 | 0x044 | — | NO-RETAIL-NAME | dlls/engine/68/68.c | = (canonical) | DOL-confirmed callback TU including the leading first-person helper pair; descriptor data is pooled elsewhere |

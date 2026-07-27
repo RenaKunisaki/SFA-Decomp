@@ -1,18 +1,3 @@
-/*
- * warpstoneUI (DLL 0x41) - the warpstone screen-overlay UI.
- *
- * State machine driven by warpstoneUIState (a UI page id); WarpstoneUI_showUI
- * dispatches on it each frame:
- *   1        warpstone texture + intro text (gameText 0x37C..0x37E)
- *   2,3,5    shared status line (gameText 0x3DD)
- *   4        the level-warp menu: builds the selectable list from the six
- *            warpstone game bits (WarpstoneUI_getMenuItems over gWarpStoneUiEntryTable) and drives
- *            the gTitleMenuLinkInterface vtable; a selection issues a map act
- *            on map 0x42.
- * WarpstoneUI_frameStart ramps the overlay opacity (lbl_803DD97C) in/out and
- * clamps it; WarpstoneUI_initialise loads the two textures, WarpstoneUI_release
- * frees them. Drawn alpha follows lbl_803DD97C throughout.
- */
 #include "main/texture.h"
 #include "track/intersect_hud_api.h"
 #include "main/gametext_command_api.h"
@@ -33,16 +18,11 @@ int lbl_803DBBFC = 0x136;
 int lbl_803DBC00 = 0x10E;
 int lbl_803DBC04 = 0x140;
 
-/* texture assets loaded by WarpstoneUI_initialise (A -> lbl_803DD984, B -> lbl_803DD980) */
 #define WARPSTONEUI_TEXTURE_A 0x4FA
 #define WARPSTONEUI_TEXTURE_B 0x5E3
 
-/* gWarpStoneUiEntryTable holds one WarpstoneEntry per warpstone destination
-   (data symbol size 0x18 / sizeof(WarpstoneEntry) == 6). */
 #define WARPSTONE_UI_ENTRY_COUNT 6
 
-/* Krazoa Palace map-event id (where the WarpStone stands; the warp menu
-   issues the selected destination's act on it). */
 #define WARPSTONEUI_MAPEVENT_KRAZOA 0x42
 
 u8 warpstoneUIState[8];
@@ -226,7 +206,6 @@ u8 gWarpStoneUiMenuItemTemplates[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-/* descriptor/ptr table auto 0x8031cdb8-0x8031cde8 */
 u32 lbl_8031CDB8[12] = {0x00000000,
                         0x00000000,
                         0x00000000,
