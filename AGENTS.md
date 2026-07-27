@@ -149,6 +149,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   every active-target consumer before choosing either name. If the combined behavior establishes a
   stronger shared meaning, correct the canonical definition and back-apply it to all consumers
   instead of preserving divergent aliases or adopting a misleading canonical name.
+- Do not promote an unnamed DLL to a named object solely from a nearby debug-side source tag, an
+  adjacent named slot, or behavioral resemblance. Keep a numbered namespace until retail object
+  mappings, strings, symbols, or similarly direct evidence establishes the identity; recover
+  semantic field, state, and helper names in the meantime.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.
