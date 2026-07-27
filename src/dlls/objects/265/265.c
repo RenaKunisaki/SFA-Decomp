@@ -7,112 +7,118 @@
  * object at its position. It then disables itself, snaps back to its
  * placement position, and runs a respawn timer; once the timer expires
  * and the object is off-screen (frustum cull) it re-enables and resets.
- * render is suppressed while broken or respawning (phase != 0), and
+ * Rendering is suppressed while broken or respawning (phase != 0), and
  * otherwise falls through to the carryable visibility test.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/carryable_interface.h"
-#include "game/objects/object_setup.h"
-#include "main/frustum.h"
+#include "dlls/objects/265.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/audio/sfx_ids.h"
+#include "game/objects/object_setup.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/objhits.h"
-#include "sys/objects/lifecycle.h"
+#include "main/carryable_interface.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/frustum.h"
+#include "main/objhits.h"
 #include "main/object_render.h"
-#include "main/audio/sfx.h"
-#include "main/dll/dll_0109_unk.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT 5
-#define BREAKABLE_CARRYABLE_OBJECT_FLAG_HITDETECT_DISABLED 0x2000
+#define BREAKABLE_CARRYABLE_HITBOX_RADIUS   0x28
+#define BREAKABLE_CARRYABLE_HITBOX_TYPE     4
+
+#define BREAKABLE_CARRYABLE_RESPAWN_DELAY 300.0f
+
+#define BREAKABLE_CARRYABLE_EXPLOSION_SETUP_SIZE  0x24
+#define BREAKABLE_CARRYABLE_EXPLOSION_SETUP_FLAGS 5
+#define BREAKABLE_CARRYABLE_EFFECT_A_ID           0x355
+#define BREAKABLE_CARRYABLE_EFFECT_B_ID           0x352
+#define BREAKABLE_CARRYABLE_EFFECT_MODEL_ID       -1
+
+#define BREAKABLE_CARRYABLE_INIT_ARG          0x21
+#define BREAKABLE_CARRYABLE_ROTATION_SHIFT    8
+#define BREAKABLE_CARRYABLE_SUPPRESS_POS_SAVE 1
 
 /* Replacement object dropped at break; retail OBJECTS.bin name
    "DIMExplosio..." (DLL 0x1CA). */
 #define BREAKABLE_CARRYABLE_CHILD_DIM_EXPLOSION 0x253
 
-int breakableCarryable_getExtraSize(void)
-{
+int breakableCarryable_getExtraSize(void) {
     return sizeof(BreakableCarryableState);
 }
-int breakableCarryable_getObjectTypeId(void)
-{
-    return 0x0;
+
+int breakableCarryable_getObjectTypeId(void) {
+    return 0;
 }
 
-void breakableCarryable_free(GameObject* obj)
-{
+void breakableCarryable_free(GameObject* obj) {
     (*gCarryableInterface)->free(obj);
 }
 
-void breakableCarryable_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
-{
+void breakableCarryable_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
     BreakableCarryableState* state = obj->extra;
-    if (state->phase == BREAKABLE_CARRYABLE_PHASE_INTACT)
-    {
-        if ((*gCarryableInterface)->updateRenderState(obj, visible) != 0)
-        {
-            objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
+    if (state->phase == BREAKABLE_CARRYABLE_PHASE_INTACT) {
+        if ((*gCarryableInterface)->updateRenderState(obj, renderState) != 0) {
+            objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
         }
     }
 }
 
-void breakableCarryable_hitDetect(void)
-{
+void breakableCarryable_hitDetect(void) {
 }
 
-void breakableCarryable_update(GameObject* obj)
-{
+void breakableCarryable_update(GameObject* obj) {
     BreakableCarryableState* state;
-    ObjPlacement* placement;
+    BreakableCarryablePlacement* placement;
     ObjPlacement* setup;
-    u32 hitVolume;
+    u32 hitVolumeIndex;
 
-    state = (obj)->extra;
-    placement = (ObjPlacement*)(obj)->anim.placementData;
-    switch (state->phase)
-    {
+    state = obj->extra;
+    placement = *(BreakableCarryablePlacement**)&obj->anim.placementData;
+    switch (state->phase) {
     case BREAKABLE_CARRYABLE_PHASE_INTACT:
         (*gCarryableInterface)->updateHeld(obj, state);
-        if (ObjHits_GetPriorityHit(obj, 0, 0, &hitVolume) != 0)
-        {
+        if (ObjHits_GetPriorityHit(obj, NULL, NULL, &hitVolumeIndex) != 0) {
             (*gCarryableInterface)->stopCarrying(obj, state);
             Sfx_PlayFromObject((int)obj, SFXTRIG_crtsmsh6);
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x28);
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT, 4, 0);
-            if (Obj_IsLoadingLocked() != 0)
-            {
-                setup = Obj_AllocObjectSetup(0x24, BREAKABLE_CARRYABLE_CHILD_DIM_EXPLOSION);
-                setup->posX = (obj)->anim.localPosX;
-                setup->posY = (obj)->anim.localPosY;
-                setup->posZ = (obj)->anim.localPosZ;
-                Obj_SetupObject(setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, BREAKABLE_CARRYABLE_HITBOX_RADIUS);
+            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT,
+                                     BREAKABLE_CARRYABLE_HITBOX_TYPE, 0);
+            if (Obj_IsLoadingLocked() != 0) {
+                setup = Obj_AllocObjectSetup(BREAKABLE_CARRYABLE_EXPLOSION_SETUP_SIZE,
+                                             BREAKABLE_CARRYABLE_CHILD_DIM_EXPLOSION);
+                setup->posX = obj->anim.localPosX;
+                setup->posY = obj->anim.localPosY;
+                setup->posZ = obj->anim.localPosZ;
+                Obj_SetupObject(setup, BREAKABLE_CARRYABLE_EXPLOSION_SETUP_FLAGS, obj->anim.mapEventSlot, -1,
+                                obj->anim.parent);
             }
-            (*gPartfxInterface)->spawnObject((void*)obj, 0x355, NULL, 0, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)obj, 0x352, NULL, 0, -1, NULL);
+            (*gPartfxInterface)
+                ->spawnObject(obj, BREAKABLE_CARRYABLE_EFFECT_A_ID, NULL, 0, BREAKABLE_CARRYABLE_EFFECT_MODEL_ID, NULL);
+            (*gPartfxInterface)
+                ->spawnObject(obj, BREAKABLE_CARRYABLE_EFFECT_B_ID, NULL, 0, BREAKABLE_CARRYABLE_EFFECT_MODEL_ID, NULL);
             state->phase = BREAKABLE_CARRYABLE_PHASE_BREAKING;
         }
         break;
     case BREAKABLE_CARRYABLE_PHASE_BREAKING:
         ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
         ObjHits_DisableObject(obj);
-        *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         state->phase = BREAKABLE_CARRYABLE_PHASE_RESPAWNING;
         state->respawnTimer = 0.0f;
-        (obj)->anim.localPosX = placement->posX;
-        (obj)->anim.localPosY = placement->posY;
-        (obj)->anim.localPosZ = placement->posZ;
+        obj->anim.localPosX = placement->base.posX;
+        obj->anim.localPosY = placement->base.posY;
+        obj->anim.localPosZ = placement->base.posZ;
         break;
     case BREAKABLE_CARRYABLE_PHASE_RESPAWNING:
         state->respawnTimer += timeDelta;
-        if (state->respawnTimer > 300.0f)
-        {
-            if (ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX,
-                                            (obj)->anim.hitboxScale * (obj)->anim.rootMotionScale) == 0)
-            {
+        if (state->respawnTimer > BREAKABLE_CARRYABLE_RESPAWN_DELAY) {
+            if (ViewFrustum_IsSphereVisible(&obj->anim.localPosX, obj->anim.hitboxScale * obj->anim.rootMotionScale) ==
+                0) {
                 ObjHits_EnableObject(obj);
-                *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
                 state->phase = BREAKABLE_CARRYABLE_PHASE_INTACT;
             }
         }
@@ -120,20 +126,17 @@ void breakableCarryable_update(GameObject* obj)
     }
 }
 
-void breakableCarryable_init(GameObject* obj, BreakableCarryablePlacement* placement)
-{
-    obj->anim.rotX = (s16)((s32)placement->rotX << 8);
-    obj->objectFlags |= BREAKABLE_CARRYABLE_OBJECT_FLAG_HITDETECT_DISABLED;
-    (*gCarryableInterface)->init(obj, obj->extra, 0x21);
-    (*gCarryableInterface)->setSuppressPositionSave(obj->extra, 1);
+void breakableCarryable_init(GameObject* obj, BreakableCarryablePlacement* placement) {
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << BREAKABLE_CARRYABLE_ROTATION_SHIFT);
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    (*gCarryableInterface)->init(obj, obj->extra, BREAKABLE_CARRYABLE_INIT_ARG);
+    (*gCarryableInterface)->setSuppressPositionSave(obj->extra, BREAKABLE_CARRYABLE_SUPPRESS_POS_SAVE);
 }
 
-void breakableCarryable_release(void)
-{
+void breakableCarryable_release(void) {
 }
 
-void breakableCarryable_initialise(void)
-{
+void breakableCarryable_initialise(void) {
 }
 
 ObjectDescriptor gBreakableCarryableObjDescriptor = {
