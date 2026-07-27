@@ -219,7 +219,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0AD | — | NO-RETAIL-NAME | main/dll/dll_00AD_projmagicemmit1.c | = (canonical) | — |
 | 0x0AE | — | NO-RETAIL-NAME | main/dll/dll_00AE_projroombeam.c | = (canonical) | — |
 | 0x0AF | — | NO-RETAIL-NAME | main/dll/dll_00AF_projlightning1.c | = (canonical) | — |
-| 0x0B0 | — | NO-RETAIL-NAME | main/dll/dll_00B0_projlightning2.c | = (canonical) | — |
+| 0x0B0 | — | NO-RETAIL-NAME | dlls/projgfx/176/176.c | = (canonical) | — |
 | 0x0B1 | — | NO-RETAIL-NAME | dlls/projgfx/177/177.c | = (canonical) | — |
 | 0x0B2 | — | NO-RETAIL-NAME | dlls/projgfx/178/178.c | = (canonical) | — |
 | 0x0B3 | — | NO-RETAIL-NAME | dlls/projgfx/179/179.c | = (canonical) | — |
