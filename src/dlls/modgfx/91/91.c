@@ -1,15 +1,5 @@
 /*
- * modgfxfunc03 (DLL 0x5B) - a one-shot impact/burst graphics spawner.
- *
- * modgfx_func03() builds a list of GfxCmd "modgfx" billboard entries on
- * the stack (textured shards plus a couple of motion/scale layers) and
- * hands the assembled list to gModgfxInterface->spawnEffect. The number
- * and exact composition of entries is chosen by effectId, with per-shard
- * jitter pulled from randomGetRange and one entry oriented via
- * vecRotateZXY. It then fires a matching set of gPartfxInterface particle
- * objects (smoke/spark/debris seq ids) selected by a second switch on
- * effectId. Returns the spawnEffect handle, or -1 if the source object or
- * its active model is missing.
+ * DLL 91 / 0x5B - an impact and debris effect spawner.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
