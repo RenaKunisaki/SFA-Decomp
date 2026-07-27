@@ -89,7 +89,9 @@ extern int gTexIndMtxTable[];
 extern u8 lbl_8037E0C0[];
 extern int lbl_80382008[5];
 #define FRUSTUM_PLANE_COUNT 5
-extern FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
+u8 gRcpPendingWarpDest[0x10];
+FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
+FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];
 extern int gTexShaderFogColor;
 extern int gTexLightmapFogColor;
 

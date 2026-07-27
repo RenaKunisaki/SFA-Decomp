@@ -411,7 +411,7 @@ void gxTransformFn_8004a83c(void)
     gxPerfFn_8004a77c(0);
 }
 
-extern char sThreadStateAttrSuspendFormat[];
+char sThreadStateAttrSuspendFormat[] = "thread: state=%d attr=%d suspend=%d\n";
 
 void waitNextFrame(void)
 {

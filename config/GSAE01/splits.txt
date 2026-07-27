@@ -208,6 +208,7 @@ main/boot_logo.c:
 
 main/pi_videoinit.c:
 	.text       start:0x80049B2C end:0x8004AA24
+	.data       start:0x8030C858 end:0x8030C880
 
 main/pi_pathsearch.c:
 	.text       start:0x8004AA24 end:0x8004B658
@@ -215,19 +216,21 @@ main/pi_pathsearch.c:
 main/zlb.c:
 	.text       start:0x8004B658 end:0x8004BF88
 	.rodata     start:0x802C1C50 end:0x802C1D50
+	.data       start:0x8030C880 end:0x8030CEE0
 	.bss        start:0x8035F740 end:0x803779A0
 	.sbss       start:0x803DCD18 end:0x803DCD28
 
 main/shader_dolphin.c:
 	.text       start:0x8004BF88 end:0x80052974
 	.rodata     start:0x802C1D50 end:0x802C1E58
+	.data       start:0x8030CEE0 end:0x8030D028
 	.bss        start:0x803779A0 end:0x803779C0
 	.sdata      start:0x803DB5E8 end:0x803DB600
 	.sbss       start:0x803DCD28 end:0x803DCD98
 
 main/rcp_dolphin.c:
 	.text       start:0x80052974 end:0x800536C0
-	.data       start:0x8030C858 end:0x8030D058
+	.data       start:0x8030D028 end:0x8030D058
 	.bss        start:0x803779C0 end:0x8037E0A8
 	.sdata      start:0x803DB600 end:0x803DB608
 	.sbss       start:0x803DCD98 end:0x803DCDA8
@@ -245,6 +248,7 @@ main/shader.c:
 	.data       start:0x8030E4B0 end:0x8030E81C
 	.bss        start:0x8037E0C0 end:0x803868D8
 	.sdata      start:0x803DB620 end:0x803DB630
+	.sbss       start:0x803DCDC8 end:0x803DCED4
 
 main/lightmap.c:
 	.text       start:0x8005AB70 end:0x8005CA4C
@@ -261,6 +265,7 @@ main/lightmap_draw.c:
 main/tex_dolphin.c:
 	.text       start:0x8005DF5C end:0x80061094
 	.data       start:0x8030E844 end:0x8030E864
+	.bss        start:0x803878D8 end:0x803879B0
 	.sdata      start:0x803DB638 end:0x803DB648
 
 main/shadow_dolphin.c:

@@ -1432,7 +1432,9 @@ void fn_8004F2B0(void)
     lbl_803DCD90 = lbl_803DCD90 + 1;
     lbl_803DCD6A++;
 }
-extern int lbl_8030CEE0[];
+int lbl_8030CEE0[9] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8,
+};
 
 extern f32 lbl_803DEB38;
 
@@ -2075,7 +2077,6 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
     return result;
 }
 
-extern int lbl_8030CEE0[];
 extern f32 lbl_803DEB38;
 extern f32 lbl_803DEB3C;
 
@@ -2533,7 +2534,11 @@ typedef struct TevSwapEntry
     int g;
     int b;
 } TevSwapEntry;
-extern TevSwapEntry gRcpTevSwapTable[24];
+TevSwapEntry gRcpTevSwapTable[24] = {
+    {0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {2, 0, 1}, {1, 2, 0}, {2, 1, 0}, {0, 0, 2}, {0, 2, 0},
+    {2, 0, 0}, {0, 0, 1}, {0, 1, 0}, {1, 0, 0}, {1, 1, 2}, {1, 2, 1}, {2, 1, 1}, {1, 1, 0},
+    {1, 0, 1}, {0, 1, 1}, {2, 2, 0}, {2, 0, 2}, {0, 2, 2}, {2, 2, 1}, {2, 1, 2}, {1, 2, 2},
+};
 
 void gxFn_80051fb8(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam, u8 swapsel, u8 useK)
 {
