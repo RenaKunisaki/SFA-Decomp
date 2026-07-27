@@ -81,10 +81,10 @@ f32 gBoneParticleConfigTable[108] = {
 void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
 {
     BoneFxVtx vtx;
-    ObjModel* model;
     s16 j;
     s16 k;
     int row;
+    ObjModel* model;
     u32 id;
     u32 cls;
     u8* mtx;
