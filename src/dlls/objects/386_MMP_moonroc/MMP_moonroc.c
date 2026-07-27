@@ -6,6 +6,7 @@
  * impact starts a timed reset to the rock's saved home position.
  */
 #include "dlls/objects/386_MMP_moonroc.h"
+#include "dlls/objects/387_MMP_gyserve.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "game/objects/object.h"
@@ -61,22 +62,6 @@
 #define MMP_MOON_ROCK_FLAG_FLOOR_HIT        0x100
 #define MMP_MOON_ROCK_FLAG_RESETTING        0x200
 #define MMP_MOON_ROCK_FLAG_PLACED           0x400
-
-/* Accessed prefix of the neighbouring geyser vent placement. */
-typedef struct MMPMoonRockGeyserPlacementView {
-    ObjPlacement base;
-    u8 unknown18[2];
-    s16 moonRockKind;
-    u8 unknown1C[2];
-    s16 disableGameBit;
-} MMPMoonRockGeyserPlacementView;
-
-STATIC_ASSERT(sizeof(MMPMoonRockGeyserPlacementView) == 0x20);
-STATIC_ASSERT(offsetof(MMPMoonRockGeyserPlacementView, base) == 0x00);
-STATIC_ASSERT(offsetof(MMPMoonRockGeyserPlacementView, unknown18) == 0x18);
-STATIC_ASSERT(offsetof(MMPMoonRockGeyserPlacementView, moonRockKind) == 0x1A);
-STATIC_ASSERT(offsetof(MMPMoonRockGeyserPlacementView, unknown1C) == 0x1C);
-STATIC_ASSERT(offsetof(MMPMoonRockGeyserPlacementView, disableGameBit) == 0x1E);
 
 int mmpMoonRock_probeFloor(GameObject* obj, f32 x, f32 y, f32 z, f32 maxY, f32* floorYOut,
                            GameObject** floorObjectOut) {
@@ -227,7 +212,7 @@ void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
     int count;
     int* list;
     MMPMoonRockState* state;
-    MMPMoonRockGeyserPlacementView* ventPlacement;
+    MMPGeyserVentPlacement* ventPlacement;
     MMPMoonRockPlacement* rockPlacement;
     s8 pedestalCount;
     s8 inventoryCount;
@@ -238,7 +223,7 @@ void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
         u32 otherObj = list[i];
         if (otherObj != (u32)obj && ((GameObject*)otherObj)->anim.seqId == MMP_GEYSER_VENT_SEQUENCE_ID &&
             Vec_distance(&obj->anim.worldPosX, (void*)(otherObj + 0x18)) < 40.0f) {
-            ventPlacement = (MMPMoonRockGeyserPlacementView*)((GameObject*)list[i])->anim.placementData;
+            ventPlacement = (MMPGeyserVentPlacement*)((GameObject*)list[i])->anim.placementData;
             rockPlacement = (MMPMoonRockPlacement*)obj->anim.placementData;
             pedestalCount = mainGetBit(MMP_MOON_ROCK_PEDESTAL_COUNT_GAMEBIT);
             inventoryCount = mainGetBit(MMP_MOON_ROCK_INVENTORY_COUNT_GAMEBIT);

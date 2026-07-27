@@ -299,7 +299,7 @@ void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
 #define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
 #define MMP_GYSERVENT_PLACE_INSTANCE 0x14 /* instance id */
 
-void objFn_80198fa4(GameObject* obj, MmpGyserventPlacement* placement)
+void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 {
     MmpGyserventState* state;
     MatrixTransform xf;
@@ -367,7 +367,7 @@ void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)
     MmpGyserventState* state;
 
     state = (obj)->extra;
-    speed = (float)(s32)(((MmpGyserventPlacement*)obj->anim.placementData)->speed * 2);
+    speed = (float)(s32)(((MMPTriggerGeyserPlacement*)obj->anim.placementData)->speed * 2);
     t = state->reachAX - (obj)->anim.worldPosX;
     dyA = state->reachAY - (obj)->anim.worldPosY;
     distSqA = state->reachAZ - (obj)->anim.worldPosZ;
@@ -1305,7 +1305,7 @@ void Trigger_init(GameObject* obj, u8* params)
         break;
     case 0x4c:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];
-        objFn_80198fa4(obj, (MmpGyserventPlacement*)params);
+        objFn_80198fa4(obj, (MMPTriggerGeyserPlacement*)params);
         break;
     case 0x230:
         ((TriggerState*)state)->rangeSq = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);

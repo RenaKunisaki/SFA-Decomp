@@ -2,9 +2,24 @@
 #define MAIN_DLL_MMP_GYSERVENT_H_
 
 #include "global.h"
-#include "main/dll/MMP/dll_0183_mmpgyservent.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
+
+typedef struct MMPTriggerGeyserPlacement
+{
+    ObjPlacement base;
+    u8 unknown18[0x3A - 0x18];
+    u8 reachScale;
+    u8 speed;
+    u8 unknown3C;
+    u8 rotX;
+    u8 rotY;
+} MMPTriggerGeyserPlacement;
+
+STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, reachScale) == 0x3A);
+STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, speed) == 0x3B);
+STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, rotX) == 0x3D);
+STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, rotY) == 0x3E);
 
 typedef struct MmpGyserventState
 {
@@ -31,7 +46,7 @@ STATIC_ASSERT(offsetof(MmpGyserventState, reachAX) == 0x1C);
 STATIC_ASSERT(offsetof(MmpGyserventState, reachBX) == 0x28);
 STATIC_ASSERT(offsetof(MmpGyserventState, reach) == 0x34);
 
-void objFn_80198fa4(GameObject* obj, MmpGyserventPlacement* placement);
+void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement);
 void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj);
 void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj);
 

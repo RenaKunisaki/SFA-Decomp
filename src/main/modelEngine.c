@@ -181,6 +181,7 @@
 #include "dlls/objects/384_MMP_asteroi.h"
 #include "dlls/objects/385_MMP_trenchF.h"
 #include "dlls/objects/386_MMP_moonroc.h"
+#include "dlls/objects/387_MMP_gyserve.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -317,7 +318,6 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
     gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMMP_gyserventObjDescriptor;
 extern ResourceDescriptor gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor, gMMSH_WaterSpikeObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor,
     gNW_geyserObjDescriptor;
@@ -1417,7 +1417,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMMPAsteroidReObjDescriptor,
     (ResourceDescriptor*)&gMMPTrenchFxObjDescriptor,
     (ResourceDescriptor*)&gMMPMoonRockObjDescriptor,
-    &gMMP_gyserventObjDescriptor,
+    (ResourceDescriptor*)&gMMPGeyserVentObjDescriptor,
     &gAnimSharpclawObjDescriptor,
     &gCCgasventObjDescriptor,
     (ResourceDescriptor*)&gCCgasventControlObjDescriptor,
