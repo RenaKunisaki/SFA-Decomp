@@ -120,6 +120,11 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   cleaned DLL's accesses. Do not publish a unit-local object overlay that duplicates the common
   object prefix, `extra`, animation callback, or `userData` slots; retain a custom overlay only for
   evidenced class-specific storage that the canonical object record cannot represent.
+- Keep an engine-owned object table or deliberately reused scratch pointer in its codegen-proven
+  storage shape when a fully typed local changes MWCC register allocation. Use a narrow cast and
+  canonical `offsetof` expression at each semantic dereference instead of hard-coded offsets or a
+  fake object overlay; do not extend a typed pointer's lifetime across phases merely for cosmetic
+  uniformity.
 - Format the object TU and its unit-owned header, but keep shared consumer edits surgical. Adding a
   canonical header to a registry such as `modelEngine.c` does not authorize whole-file formatting
   or unrelated cleanup there; change only the required include, declaration, cast, or use sites

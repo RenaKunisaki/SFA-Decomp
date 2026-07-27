@@ -116,6 +116,7 @@
 #include "dlls/objects/318.h"
 #include "dlls/objects/319_TexFrameAni.h"
 #include "dlls/objects/320_fogControl.h"
+#include "dlls/objects/321_Lightning.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -259,7 +260,7 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
 extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLaserBeamObjDescriptor,
     gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
-    gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
+    gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
     gMMP_levelcontrolObjDescriptor, gMMP_moonrockObjDescriptor;
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
@@ -1301,7 +1302,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMBossIceSmashObjDescriptor,
     (ResourceDescriptor*)&gTexFrameAnimatorObjDescriptor,
     (ResourceDescriptor*)&gFogControlObjDescriptor,
-    &gLightningObjDescriptor,
+    (ResourceDescriptor*)&gLightningObjDescriptor,
     &gFElevControlObjDescriptor,
     &gFEseqobjectObjDescriptor,
     &lbl_80327BA8,
