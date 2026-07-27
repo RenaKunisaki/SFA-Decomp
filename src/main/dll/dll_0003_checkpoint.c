@@ -29,7 +29,6 @@
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];
 extern s16 lbl_803DD414;
 extern s16 lbl_803DD416;
-extern f32 lbl_803E04E8;
 extern f32 lbl_803E0500;
 extern f32 gCheckpointPi;
 extern f32 gCheckpointAngleToRadians;
@@ -177,7 +176,7 @@ s32 fn_800D55BC(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32*
         outY[0] = sclA * verticalOffset + checkpoint->posY;
         outY[1] = sclB * verticalOffset + nextCheckpoint->posY;
         {
-            f32 zero = lbl_803E04E8;
+            f32 zero = 0.0f;
             outY[2] = zero;
             outY[3] = zero;
         }
@@ -204,7 +203,7 @@ s32 fn_800D55BC(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32*
         outY[0] = sclA * checkpoint->heightOffsets[pointIndex] + checkpoint->posY;
         outY[1] = sclB * nextCheckpoint->heightOffsets[pointIndex] + nextCheckpoint->posY;
         {
-            f32 zero = lbl_803E04E8;
+            f32 zero = 0.0f;
             outY[2] = zero;
             outY[3] = zero;
         }
@@ -319,7 +318,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
 
     i = 0;
     mode = p3 + 2;
-    kMin = lbl_803E04E8;
+    kMin = 0.0f;
     kMax = lbl_803E0504;
     do
     {
@@ -342,7 +341,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
         {
             alt = 1;
         }
-        if (fn_800D55BC(n, alt, v1, v2, v3, mode, lbl_803E04E8, *(f32*)&lbl_803E04E8) == 0)
+        if (fn_800D55BC(n, alt, v1, v2, v3, mode, 0.0f, 0.0f) == 0)
         {
             return 1;
         }
@@ -397,7 +396,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
         else if (clamp == 1 && seg < dist)
         {
             o->route.startCheckpointId = n->forwardLinkIds[alt];
-            o->route.pathT = lbl_803E04E8;
+            o->route.pathT = 0.0f;
             if (alt != 0 && o->route.startCheckpointId < 0)
             {
                 o->route.startCheckpointId = n->forwardLink0;
@@ -523,7 +522,7 @@ void Checkpoint_func0C(CheckpointRouteState* o)
     if (ret == 0)
     {
         o->currentCheckpointId = 0;
-        o->routeProgress = lbl_803E04E8;
+        o->routeProgress = 0.0f;
     }
     else
     {
@@ -533,7 +532,7 @@ void Checkpoint_func0C(CheckpointRouteState* o)
             o->linkDepth = o->linkDepth + 1;
         }
         o->currentCheckpointId = o->startCheckpointId;
-        o->routeProgress = lbl_803E04E8;
+        o->routeProgress = 0.0f;
     }
 }
 
@@ -566,7 +565,7 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
     if (state->currentCheckpointId < 0)
     {
         state->linkDepth = 0;
-        state->routeProgress = lbl_803E04E8;
+        state->routeProgress = 0.0f;
         if (state->startCheckpointId < 0)
         {
             return 0;
@@ -583,7 +582,7 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
     sinv = mathCosf((gCheckpointPi * (f32)(cp->heading << 8)) / gCheckpointAngleToRadians);
     offs = -(cp->posX * cosv + cp->posZ * sinv);
     dist = offs + (cosv * obj->anim.localPosX + sinv * obj->anim.localPosZ);
-    if (cp->backLink0 > -1 && dist >= lbl_803E04E8)
+    if (cp->backLink0 > -1 && dist >= 0.0f)
     {
         state->currentCheckpointId = cp->backLink0;
         state->routeProgress = lbl_803E050C;
@@ -600,7 +599,7 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
     sin2 = mathCosf((gCheckpointPi * (f32)(cp2->heading << 8)) / gCheckpointAngleToRadians);
     offs2 = -(cp2->posX * cos2 + cp2->posZ * sin2);
     dist2 = offs2 + (cos2 * obj->anim.localPosX + sin2 * obj->anim.localPosZ);
-    zero = lbl_803E04E8;
+    zero = 0.0f;
     if (dist2 < zero)
     {
         state->currentCheckpointId = cp->forwardLink0;
@@ -777,11 +776,11 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                     }
                     else
                     {
-                        frac = lbl_803E04E8;
+                        frac = 0.0f;
                     }
-                    if (frac < lbl_803E04E8)
+                    if (frac < 0.0f)
                     {
-                        frac = lbl_803E04E8;
+                        frac = 0.0f;
                     }
                     if (frac >= lbl_803E0518)
                     {

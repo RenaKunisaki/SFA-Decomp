@@ -447,7 +447,7 @@ void waterfx_spawnSplashBurst(void* obj, f32 a, f32 b, f32 c, f32 d)
     i = 0;
     base = (WaterParticle*)gWaterfxSplashPool;
     p = base;
-    while (i < WATERFX_MAX_SPLASHES && (p->dropCount != 0 || p->life < *(f32*)&lbl_803DF2EC))
+    while (i < WATERFX_MAX_SPLASHES && (p->dropCount != 0 || p->life < 1.0f))
     {
         p++;
         i++;
@@ -465,7 +465,7 @@ void waterfx_spawnSplashBurst(void* obj, f32 a, f32 b, f32 c, f32 d)
     rnd = randomGetRange((int)slot->size, (int)(lbl_803DF2FC * slot->size));
     slot->dropCount = waterfx_spawnSplashDrops(&((WaterParticle*)gWaterfxSplashPool)[i], i, rnd, slot->size);
     slot->life = lbl_803DF300;
-    slot->lifeSpeed = lbl_803DF2EC / (lbl_803DF320 * sqrtf(slot->size));
+    slot->lifeSpeed = 1.0f / (lbl_803DF320 * sqrtf(slot->size));
 }
 
 int waterfx_spawnSplashDrops(WaterParticle* src, int idx, int count, f32 v)
@@ -551,7 +551,7 @@ void waterfx_render(int obj, int renderParam)
                 dp.rotX = e->rot;
                 dp.rotZ = 0;
                 dp.rotY = 0;
-                Camera_LoadModelViewMatrix(obj, renderParam, &dp, lbl_803DF2EC, lbl_803DF300,
+                Camera_LoadModelViewMatrix(obj, renderParam, &dp, 1.0f, lbl_803DF300,
                                            NULL);
                 loadReflectionTexMtxs();
                 drawFn_8005cf8c(gWaterfxRippleVtx + i * 0x40,
@@ -571,7 +571,7 @@ void waterfx_render(int obj, int renderParam)
             GXSetVtxDesc(GX_VA_CLR0, GX_INDEX16);
             GXSetVtxDesc(GX_VA_TEX0, GX_INDEX16);
         }
-        for (poolOffset = 0, thr = lbl_803DF2EC; j < WATERFX_MAX_SPLASHES; poolOffset += 0x3c, j++)
+        for (poolOffset = 0, thr = 1.0f; j < WATERFX_MAX_SPLASHES; poolOffset += 0x3c, j++)
         {
             s = (WaterParticle*)(gWaterfxSplashPool + poolOffset);
             if (s->life < thr)
@@ -616,7 +616,7 @@ void waterfx_render(int obj, int renderParam)
                 dp.rotX = g->rot;
                 dp.rotZ = 0;
                 dp.rotY = 0;
-                Camera_LoadModelViewMatrix(obj, renderParam, &dp, lbl_803DF2EC, lbl_803DF300,
+                Camera_LoadModelViewMatrix(obj, renderParam, &dp, 1.0f, lbl_803DF300,
                                            NULL);
                 loadReflectionTexMtxs();
                 drawFn_8005cf8c(gWaterfxWakeVtx + vertexOffset,
@@ -768,7 +768,7 @@ void waterfx_onMapSetup(void)
         f32 initThreshold;
         f32 initPos;
         initPos = lbl_803DF300;
-        initThreshold = lbl_803DF2EC;
+        initThreshold = 1.0f;
         for (i = 0; i < WATERFX_MAX_SPLASHES; i++)
         {
             WaterParticle* s = &((WaterParticle*)gWaterfxSplashPool)[i];

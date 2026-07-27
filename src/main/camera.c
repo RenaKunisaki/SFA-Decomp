@@ -569,9 +569,9 @@ void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* 
         *outZ *= invW;
 
         pos[2] += radius;
-        if (pos[2] > *(f32*)&lbl_803DE624)
+        if (pos[2] > -1.0f)
         {
-            pos[2] = lbl_803DE624;
+            pos[2] = -1.0f;
         }
 
         w = gCameraProjectionMatrix[15] + (gCameraProjectionMatrix[12] * pos[0] + gCameraProjectionMatrix[13] * pos[1] +
@@ -1125,7 +1125,7 @@ void Camera_InitState(void)
     else
     {
         C_MTXPerspective((f32*)(base + 5824), gCameraFovY, gCameraAspectRatio, gCameraNearPlane, gCameraFarPlane);
-        C_MTXLightPerspective((f32*)lbl_80396850, gCameraFovY, gCameraAspectRatio, lbl_803DE628, *(f32*)&lbl_803DE628, 0.5f,
+        C_MTXLightPerspective((f32*)lbl_80396850, gCameraFovY, gCameraAspectRatio, 0.4f, 0.4f, 0.5f,
                               0.5f);
         C_MTXLightPerspective((f32*)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
         C_MTXLightPerspective((f32*)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, lbl_803DE630, 0.5f, 0.5f);

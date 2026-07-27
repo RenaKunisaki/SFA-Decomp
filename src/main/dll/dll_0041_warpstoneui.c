@@ -49,9 +49,7 @@ void* lbl_803DD984;
 void* lbl_803DD980;
 f32 lbl_803DD97C;
 int gWarpStoneUiMenuActive;
-extern f32 lbl_803E22E0;
 extern f32 lbl_803E22D8;
-extern f32 lbl_803E22DC;
 extern u8 gWarpStoneUiMenuItemTemplates[];
 
 WarpstoneMenuItem gWarpStoneUiMenuItems[WARPSTONE_UI_ENTRY_COUNT];
@@ -181,13 +179,13 @@ int WarpstoneUI_frameStart(void)
         lbl_803DD97C = lbl_803DD97C + (lbl_803E22D8 * timeDelta);
     }
     alpha = lbl_803DD97C;
-    if (alpha > *(f32*)&lbl_803E22DC)
+    if (alpha > 255.0f)
     {
-        lbl_803DD97C = lbl_803E22DC;
+        lbl_803DD97C = 255.0f;
     }
-    else if (alpha < *(f32*)&lbl_803E22E0)
+    else if (alpha < 0.0f)
     {
-        lbl_803DD97C = lbl_803E22E0;
+        lbl_803DD97C = 0.0f;
     }
     return 0;
 }
@@ -202,7 +200,7 @@ void WarpstoneUI_initialise(void)
 {
     lbl_803DD984 = textureLoadAsset(WARPSTONEUI_TEXTURE_A);
     lbl_803DD980 = textureLoadAsset(WARPSTONEUI_TEXTURE_B);
-    lbl_803DD97C = lbl_803E22E0;
+    lbl_803DD97C = 0.0f;
 }
 
 u8 gWarpStoneUiMenuItemTemplates[] = {
