@@ -105,6 +105,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   unit `NonMatching` when the reconstructed declaration order exposes a data mismatch. Conversely,
   retain a descriptor's proven earlier position when an already-exact TU and retail symbol order
   show that other TU-owned data follows it; do not reduce a 100% unit for cosmetic uniformity.
+- When a descriptor symbol provably includes data beyond its advertised callback count, model the
+  complete symbol as an object-descriptor-plus-tail layout. Keep unexplained tail words opaque and
+  size-asserted until real consumers establish their fields; do not inflate the callback type or
+  assign meanings from value patterns alone.
 - Give each cleaned object DLL one canonical unit-owned header under `include/dlls/<bank>/`. Keep
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
@@ -174,6 +178,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   launders before normalizing them. If the simpler spelling changes codegen, retain the proven
   spelling and improve the surrounding names instead; cosmetic uniformity does not justify a match
   regression.
+- Preserve TU-global declaration order while renaming or retyping symbols, especially mixed-width
+  `.sbss` and `.sdata` objects. Objdiff can report zero-filled sections and symbol-normalized
+  relocations as exact while MWCC has changed the symbols' packed offsets; inspect object symbol
+  offsets and require the final DOL checksum before accepting the cleanup.
 - Preserve a literal's C type when lifting it into a named macro or enum. Suffixes are semantic:
   replacing `1u` with a macro whose replacement is `1` can change the usual arithmetic conversions
   and turn a target `cmplwi` into `cmpwi`, even when the runtime values are identical. Rebuild the

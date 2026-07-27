@@ -1,217 +1,204 @@
-/*
- * CloudPrison (DLL 0x145) - the per-map controller object for the
- * cloud-prison set piece. It owns no per-instance state (getExtraSize
- * returns 0) and acts purely as a message hub: on its first update it
- * caches a rom-curve handle (slot 40, curve id 8) into lbl_803DDB0C, then
- * drains its ObjMsg queue every frame.
- *
- * Two global tables, keyed by the controller's own anim.mapEventSlot,
- * track the prison members:
- *   - lbl_803AC7D8: registered-target list (8B entries, count lbl_803DDB09)
- *   - lbl_803AC878: deferred-message queue (12B entries, count lbl_803DDB08)
- *
- * Messages handled (objmsg ids 0xF000x):
- *   0xF0004 register/update a target (replies 0xF0003 to the sender),
- *   0xF0005..0xF0007 ignored, 0xF0008 unregister a target (compacts the
- *   list), any other id is appended to the deferred-message queue.
- */
+#include "dlls/objects/325_CloudPrison.h"
+
 #include "game/objects/object.h"
-#include "main/obj_message.h"
-#include "main/dll/cloudprisoncontrol.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 
-s8 lbl_803DBE08 = 1;
+#define CLOUD_PRISON_CONTROL_CURVE_ACTION                 8
+#define CLOUD_PRISON_CONTROL_MESSAGE_QUEUE_CAPACITY       10
+#define CLOUD_PRISON_CONTROL_TARGET_CAPACITY              20
+#define CLOUD_PRISON_CONTROL_DEFERRED_STORAGE_WORD_COUNT  0x22
+#define CLOUD_PRISON_CONTROL_DEFERRED_MESSAGE_RECORD_SIZE 0x0C
 
-/* Registered prison-member entry (list keyed by the controller's map-event slot). */
-typedef struct CPTargetEntry
-{
-    u32 obj;   /* member GameObject* (compared/stored as a word) */
-    s16 value; /* per-member value supplied with the register message */
-    u8 flags;  /* cleared on registration */
-    u8 pad;
-} CPTargetEntry;
+typedef struct CloudPrisonTarget {
+    GameObject* object;
+    s16 value;
+    u8 flags;
+    u8 padding;
+} CloudPrisonTarget;
 
-/* Deferred message queued for another handler (12B entries). */
-typedef struct CPDeferredMsg
-{
-    int msgId;
-    u32 sender; /* sending GameObject* */
+typedef struct CloudPrisonDeferredMessage {
+    int messageId;
+    GameObject* sender;
     int data;
-} CPDeferredMsg;
+} CloudPrisonDeferredMessage;
 
-/* ObjMsg ids exchanged with prison members */
-enum
-{
-    CPMSG_ACK = 0xf0003,      /* controller -> member: registered */
-    CPMSG_REGISTER = 0xf0004, /* member -> controller: register/update */
-    CPMSG_IGNORED_5 = 0xf0005,
-    CPMSG_IGNORED_6 = 0xf0006,
-    CPMSG_IGNORED_7 = 0xf0007,
-    CPMSG_UNREGISTER = 0xf0008 /* member -> controller: remove */
-};
+typedef enum CloudPrisonControlMessage {
+    CLOUD_PRISON_CONTROL_MESSAGE_REGISTERED = 0xF0003,
+    CLOUD_PRISON_CONTROL_MESSAGE_REGISTER = 0xF0004,
+    CLOUD_PRISON_CONTROL_MESSAGE_IGNORED_5 = 0xF0005,
+    CLOUD_PRISON_CONTROL_MESSAGE_IGNORED_6 = 0xF0006,
+    CLOUD_PRISON_CONTROL_MESSAGE_IGNORED_7 = 0xF0007,
+    CLOUD_PRISON_CONTROL_MESSAGE_UNREGISTER = 0xF0008,
+} CloudPrisonControlMessage;
 
-int lbl_803DDB0C; /* cached rom-curve handle */
-s8 lbl_803DDB09;  /* registered-target list count */
-s8 lbl_803DDB08;  /* deferred-message queue count */
+STATIC_ASSERT(sizeof(CloudPrisonTarget) == 0x08);
+STATIC_ASSERT(offsetof(CloudPrisonTarget, object) == 0x00);
+STATIC_ASSERT(offsetof(CloudPrisonTarget, value) == 0x04);
+STATIC_ASSERT(offsetof(CloudPrisonTarget, flags) == 0x06);
+STATIC_ASSERT(sizeof(CloudPrisonDeferredMessage) == CLOUD_PRISON_CONTROL_DEFERRED_MESSAGE_RECORD_SIZE);
+STATIC_ASSERT(offsetof(CloudPrisonDeferredMessage, messageId) == 0x00);
+STATIC_ASSERT(offsetof(CloudPrisonDeferredMessage, sender) == 0x04);
+STATIC_ASSERT(offsetof(CloudPrisonDeferredMessage, data) == 0x08);
 
+s8 gCloudPrisonControlNeedsCurveLookup = 1;
 
-CPTargetEntry lbl_803AC7D8[20]; /* registered-target list */
-int lbl_803AC878[0x22];         /* deferred-message queue storage */
+int gCloudPrisonCurveId;
+s8 gCloudPrisonTargetCount;
+s8 gCloudPrisonDeferredMessageCount;
 
-int CloudPrisonControl_getExtraSize(void)
-{
-    return 0x0;
-}
-int CloudPrisonControl_getObjectTypeId(void)
-{
-    return 0x0;
-}
+CloudPrisonTarget gCloudPrisonTargets[CLOUD_PRISON_CONTROL_TARGET_CAPACITY];
+/* The retail 0x88-byte extent is not an integral number of message records. */
+u32 gCloudPrisonDeferredMessageStorage[CLOUD_PRISON_CONTROL_DEFERRED_STORAGE_WORD_COUNT];
 
-void CloudPrisonControl_free(void)
-{
-}
-
-void CloudPrisonControl_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+int CloudPrisonControl_getExtraSize(void) {
+    return 0;
 }
 
-void CloudPrisonControl_hitDetect(void)
-{
+int CloudPrisonControl_getObjectTypeId(void) {
+    return 0;
 }
 
-void CloudPrisonControl_update(GameObject* obj)
-{
-    int target;
+void CloudPrisonControl_free(void) {
+}
+
+void CloudPrisonControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                               s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
+}
+
+void CloudPrisonControl_hitDetect(void) {
+}
+
+void CloudPrisonControl_update(GameObject* obj) {
+    int sender;
     int data;
-    int msg[2];
-    int i;
-    int count;
-    int idx;
-    int dval;
-    int msgId;
-    CPTargetEntry* p[1];
-    CPTargetEntry* q[1];
-    int found;
-    u32 t;
+    int message[2];
+    int targetIndex;
+    int targetCount;
+    int deferredOffset;
+    int targetValue;
+    int messageId;
+    CloudPrisonTarget* targetEntry[1];
+    CloudPrisonTarget* targetSearch[1];
+    int targetFound;
+    u32 targetAddress;
 
     data = 0;
-    if (lbl_803DBE08 != 0)
-    {
-        lbl_803DDB0C = (*gRomCurveInterface)->findByAction(8);
-        lbl_803DBE08 = 0;
+    if (gCloudPrisonControlNeedsCurveLookup != 0) {
+        gCloudPrisonCurveId = (*gRomCurveInterface)->findByAction(CLOUD_PRISON_CONTROL_CURVE_ACTION);
+        gCloudPrisonControlNeedsCurveLookup = 0;
     }
-    lbl_803DDB08 = 0;
-    while (ObjMsg_Pop(obj, (u32*)msg, (u32*)&target, (u32*)&data) != 0)
-    {
-        msgId = msg[0];
-        switch (msgId)
-        {
-        case CPMSG_REGISTER:
-            if (((GameObject*)target)->anim.mapEventSlot == (obj)->anim.mapEventSlot)
-            {
-                found = 0;
-                t = target;
-                p[0] = lbl_803AC7D8;
-                dval = data;
-                count = lbl_803DDB09;
-                for (i = 0; i < count; i++)
-                {
-                    if (p[0]->obj == t)
-                    {
-                        p[0]->value = dval;
-                        found = 1;
+    gCloudPrisonDeferredMessageCount = 0;
+    while (ObjMsg_Pop(obj, (u32*)message, (u32*)&sender, (u32*)&data) != 0) {
+        messageId = message[0];
+        switch (messageId) {
+        case CLOUD_PRISON_CONTROL_MESSAGE_REGISTER:
+            if (((GameObject*)sender)->anim.mapEventSlot == obj->anim.mapEventSlot) {
+                targetFound = 0;
+                targetAddress = sender;
+                targetEntry[0] = gCloudPrisonTargets;
+                targetValue = data;
+                targetCount = gCloudPrisonTargetCount;
+                for (targetIndex = 0; targetIndex < targetCount; targetIndex++) {
+                    if ((u32)targetEntry[0]->object == targetAddress) {
+                        targetEntry[0]->value = targetValue;
+                        targetFound = 1;
                     }
-                    p[0]++;
+                    targetEntry[0]++;
                 }
-                if (!found)
-                {
-                    lbl_803AC7D8[lbl_803DDB09].obj = target;
-                    lbl_803AC7D8[lbl_803DDB09].flags = 0;
-                    lbl_803AC7D8[lbl_803DDB09++].value = data;
+                if (!targetFound) {
+                    gCloudPrisonTargets[gCloudPrisonTargetCount].object = (GameObject*)sender;
+                    gCloudPrisonTargets[gCloudPrisonTargetCount].flags = 0;
+                    gCloudPrisonTargets[gCloudPrisonTargetCount++].value = data;
                 }
-                ObjMsg_SendToObject((void*)target, CPMSG_ACK, obj, 0);
+                ObjMsg_SendToObject((void*)sender, CLOUD_PRISON_CONTROL_MESSAGE_REGISTERED, obj, 0);
             }
             break;
-        case CPMSG_IGNORED_5:
-        case CPMSG_IGNORED_6:
-        case CPMSG_IGNORED_7:
+        case CLOUD_PRISON_CONTROL_MESSAGE_IGNORED_5:
+        case CLOUD_PRISON_CONTROL_MESSAGE_IGNORED_6:
+        case CLOUD_PRISON_CONTROL_MESSAGE_IGNORED_7:
             break;
-        case CPMSG_UNREGISTER:
-            i = 0;
-            q[0] = lbl_803AC7D8;
-            while (i < lbl_803DDB09 && q[0]->obj != (u32)target)
-            {
-                q[0]++;
-                i++;
+        case CLOUD_PRISON_CONTROL_MESSAGE_UNREGISTER:
+            targetIndex = 0;
+            targetSearch[0] = gCloudPrisonTargets;
+            while (targetIndex < gCloudPrisonTargetCount && targetSearch[0]->object != (GameObject*)sender) {
+                targetSearch[0]++;
+                targetIndex++;
             }
-            lbl_803DDB09--;
-            count = lbl_803DDB09;
-            p[0] = &lbl_803AC7D8[count];
-            while (count > i)
-            {
-                p[0][-1].obj = p[0][0].obj;
-                p[0][-1].value = p[0][0].value;
-                p[0][-1].flags = p[0][0].flags;
-                p[0]--;
-                count--;
+            gCloudPrisonTargetCount--;
+            targetCount = gCloudPrisonTargetCount;
+            targetEntry[0] = &gCloudPrisonTargets[targetCount];
+            while (targetCount > targetIndex) {
+                targetEntry[0][-1].object = targetEntry[0][0].object;
+                targetEntry[0][-1].value = targetEntry[0][0].value;
+                targetEntry[0][-1].flags = targetEntry[0][0].flags;
+                targetEntry[0]--;
+                targetCount--;
             }
             break;
         default:
-            idx = lbl_803DDB08 * 0xc;
-            ((CPDeferredMsg*)((char*)lbl_803AC878 + idx))->sender = target;
-            ((CPDeferredMsg*)((char*)lbl_803AC878 + idx))->msgId = msgId;
-            ((CPDeferredMsg*)((char*)lbl_803AC878 + idx))->data = data;
-            lbl_803DDB08++;
+            deferredOffset = gCloudPrisonDeferredMessageCount * CLOUD_PRISON_CONTROL_DEFERRED_MESSAGE_RECORD_SIZE;
+            ((CloudPrisonDeferredMessage*)((char*)gCloudPrisonDeferredMessageStorage + deferredOffset))->sender =
+                (GameObject*)sender;
+            ((CloudPrisonDeferredMessage*)((char*)gCloudPrisonDeferredMessageStorage + deferredOffset))->messageId =
+                messageId;
+            ((CloudPrisonDeferredMessage*)((char*)gCloudPrisonDeferredMessageStorage + deferredOffset))->data = data;
+            gCloudPrisonDeferredMessageCount++;
             break;
         }
     }
 }
 
-void CloudPrisonControl_init(GameObject* obj)
-{
-    ObjMsg_AllocQueue(obj, 0xa);
+void CloudPrisonControl_init(GameObject* obj) {
+    ObjMsg_AllocQueue(obj, CLOUD_PRISON_CONTROL_MESSAGE_QUEUE_CAPACITY);
 }
 
-void CloudPrisonControl_release(void)
-{
+void CloudPrisonControl_release(void) {
 }
 
-void CloudPrisonControl_initialise(void)
-{
-    lbl_803DBE08 = 1;
+void CloudPrisonControl_initialise(void) {
+    gCloudPrisonControlNeedsCurveLookup = 1;
 }
 
-u32 gCloudPrisonControlObjDescriptor[30] = {0x00000000,
-                                            0x00000000,
-                                            0x00000000,
-                                            0x00090000,
-                                            (u32)CloudPrisonControl_initialise,
-                                            (u32)CloudPrisonControl_release,
-                                            0x00000000,
-                                            (u32)CloudPrisonControl_init,
-                                            (u32)CloudPrisonControl_update,
-                                            (u32)CloudPrisonControl_hitDetect,
-                                            (u32)CloudPrisonControl_render,
-                                            (u32)CloudPrisonControl_free,
-                                            (u32)CloudPrisonControl_getObjectTypeId,
-                                            (u32)CloudPrisonControl_getExtraSize,
-                                            0x00000000,
-                                            0x00000000,
-                                            0x00000000,
-                                            0x00000000,
-                                            0x41b00000,
-                                            0x00000000,
-                                            0x00000000,
-                                            0x41c00000,
-                                            0x41c80000,
-                                            0x00000000,
-                                            0x41f00000,
-                                            0xc1c80000,
-                                            0x00000000,
-                                            0x41b80000,
-                                            0x41a00000,
-                                            0x41800000};
+CloudPrisonControlDescriptor gCloudPrisonControlObjDescriptor = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+        CloudPrisonControl_initialise,
+        CloudPrisonControl_release,
+        0,
+        (ObjectDescriptorCallback)CloudPrisonControl_init,
+        (ObjectDescriptorCallback)CloudPrisonControl_update,
+        CloudPrisonControl_hitDetect,
+        (ObjectDescriptorCallback)CloudPrisonControl_render,
+        CloudPrisonControl_free,
+        (ObjectDescriptorCallback)CloudPrisonControl_getObjectTypeId,
+        CloudPrisonControl_getExtraSize,
+    },
+    {
+        0x00000000,
+        0x00000000,
+        0x00000000,
+        0x00000000,
+        0x41B00000,
+        0x00000000,
+        0x00000000,
+        0x41C00000,
+        0x41C80000,
+        0x00000000,
+        0x41F00000,
+        0xC1C80000,
+        0x00000000,
+        0x41B80000,
+        0x41A00000,
+        0x41800000,
+    },
+};

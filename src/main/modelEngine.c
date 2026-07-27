@@ -120,6 +120,7 @@
 #include "dlls/objects/322_FElevContro.h"
 #include "dlls/objects/323_FEseqobject.h"
 #include "dlls/objects/324.h"
+#include "dlls/objects/325_CloudPrison.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -218,7 +219,7 @@ extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFF
     gCFGuardianObjDescriptor, gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor, gCFMainCrystalObjDescriptor;
 extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFPrisonCageObjDescriptor,
     gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor;
-extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
+extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
@@ -1307,7 +1308,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFElevControlObjDescriptor,
     (ResourceDescriptor*)&gFEseqobjectObjDescriptor,
     (ResourceDescriptor*)&gDll144ObjDescriptor,
-    &gCloudPrisonControlObjDescriptor,
+    (ResourceDescriptor*)&gCloudPrisonControlObjDescriptor,
     &lbl_803DBE10,
     &lbl_803DBE18,
     &gCFGuardianObjDescriptor,
