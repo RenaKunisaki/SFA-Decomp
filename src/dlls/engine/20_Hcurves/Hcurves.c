@@ -122,6 +122,8 @@ u8 gObjfsaWalkGroupActive[0xB8];
     (P).planes[K].normalZ = (s16)(32767.0f * dzn);                                                      \
     (P).planeOffsets[K] = -((f32)(P).planes[K].normalX * (XA) + (f32)(P).planes[K].normalZ * (ZA))
 #define OBJFSA_NEWPATCH (patchBase[0][gObjfsaPatchCount])
+#define OBJFSA_NEWPATCH_S16(F)                                                                                        \
+    (*(s16*)((gObjfsaPatchCount * sizeof(ObjfsaPatch) + offsetof(ObjfsaPatch, F)) + (int)patchBase[0]))
 #define OBJFSA_SET_NEWPATCH_PLANE(K, DXE, DZE, XA, ZA)                                                                 \
     pl = &OBJFSA_NEWPATCH.planes[K];                                                                                   \
     po = &OBJFSA_NEWPATCH.planeOffsets[K];                                                                             \
@@ -1501,24 +1503,24 @@ void walkgroupFindExitPointFn_800dc398(void)
                             if (fy0 > fy1)
                             {
                                 fyv = fy0;
-                                OBJFSA_NEWPATCH.maxY = fyv;
+                                OBJFSA_NEWPATCH_S16(maxY) = fyv;
                             }
                             else
                             {
                                 fyv = fy1;
-                                OBJFSA_NEWPATCH.maxY = fyv;
+                                OBJFSA_NEWPATCH_S16(maxY) = fyv;
                             }
                             fy0 = -(2.0f * curve->minYExtent - curve->y);
                             fy1 = -(2.0f * linked->minYExtent - linked->y);
                             if (fy0 < fy1)
                             {
                                 fyv = fy0;
-                                OBJFSA_NEWPATCH.minY = fyv;
+                                OBJFSA_NEWPATCH_S16(minY) = fyv;
                             }
                             else
                             {
                                 fyv = fy1;
-                                OBJFSA_NEWPATCH.minY = fyv;
+                                OBJFSA_NEWPATCH_S16(minY) = fyv;
                             }
                             gObjfsaPatchCount++;
                         }
