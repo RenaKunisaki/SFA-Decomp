@@ -27,7 +27,6 @@
 
 
 extern f32 gDusterWallProbeOffsets[];
-extern u8 gDusterEbaMoveTable[];
 
 void rachnopUpdateWhileFrozen(u32 obj, int state, u32 unused, int eventKind, int wpad0, int wpad1, void* wpad2, int wpad3)
 {

@@ -53,7 +53,6 @@ int lbl_803DBCD8[2] = {2, 3};
 
 
 extern f32 gDusterWallProbeOffsets[];
-extern u8 gDusterEbaMoveTable[];
 
 void wallPlaneClampMoveTarget(float* outPos, WallPlaneState* plane, float lateral, float height)
 {

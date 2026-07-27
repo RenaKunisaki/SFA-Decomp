@@ -71,8 +71,6 @@ extern u8 gTevTexGenCount;
 extern u8 gTevChanCount;
 extern u8 gTevIndStageCount;
 extern u32 screenWidth;
-extern u16 gDepthReadResultCount;
-extern u16 gDepthReadPendingCount;
 
 extern u8 gWaterFxDisabled;
 extern u8 gWaterQuadWriteIdx;
@@ -1168,13 +1166,6 @@ extern f32 gWaterFxState[4];
 extern Texture* gWaterFxTextures[4];
 extern RippleEntry gWaterRipples[0x100];
 extern SplashQuad gWaterSplashQuads[0x100];
-extern DepthReadRequest gDepthReadResults[0x14];
-extern DepthReadRequest gDepthReadPendingQueue[0x14];
 
-extern f32 lbl_803967C0[3][4];
-extern f32 lbl_803967F0[3][4];
-extern f32 lbl_80396820[3][4];
-extern f32 lbl_80396850[3][4];
 extern f32 hudMatrix[4][4];
 extern int lbl_803968C0[0x10];
-extern SaveCardFileInfo lbl_80396900;

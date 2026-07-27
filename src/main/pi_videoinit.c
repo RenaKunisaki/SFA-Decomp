@@ -71,7 +71,6 @@ extern u8 lbl_803DCD00;
 extern int lbl_803DCCFC;
 extern u8 lbl_803DCCF8;
 extern int lbl_803DCCF4;
-extern GXRenderModeObj* gRenderModeObj;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
 extern void* lbl_803DCCE4;
