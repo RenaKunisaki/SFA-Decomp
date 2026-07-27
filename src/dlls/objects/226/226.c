@@ -545,7 +545,7 @@ void staffDrawQuakeSpellRing(void)
         f32 z;
         quakeSpellTextureFn_8007366c((int)((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade);
         memcpy(mView, Camera_GetViewMatrix(), 0x30);
-        PSMTXRotRad(mRot, 'x', *(f32*)&gStaffHalfPi);
+        PSMTXRotRad(mRot, 'x', gStaffHalfPi);
         scale = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale;
         PSMTXScale(mScale, scale, scale * ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale, scale);
         PSMTXConcat(mScale, mRot, mScale);
@@ -653,7 +653,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
         {
             ang += **(s16**)&obj->anim.parent;
         }
-        angle = (*(f32*)&gStaffPi * (f32)(int)-ang) / *(f32*)&gStaffAngleUnitScale;
+        angle = (gStaffPi * (f32)(int)-ang) / gStaffAngleUnitScale;
         sinv = mathSinf(angle);
         cosv = mathCosf(angle);
         model2 = *(u8**)((char*)Obj_GetActiveModel(obj) + 0x2c);
