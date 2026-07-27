@@ -1032,7 +1032,7 @@ main/dll/dll_00B2_projrobotfire.c:
 	.text       start:0x80100828 end:0x80100860
 	.data       start:0x80319788 end:0x803197D0
 
-main/dll/dll_00B6_projsquirt1.c:
+dlls/projgfx/182/182.c:
 	.text       start:0x80100860 end:0x80100898
 	.data       start:0x803197D0 end:0x80319818
 

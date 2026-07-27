@@ -1,5 +1,5 @@
 /*
- * projsquirt1 (DLL 0xB6) - retired "squirt" projectile object.
+ * projsquirt1 (DLL 182 / 0xB6) - retired "squirt" projectile object.
  *
  * The object's behaviour has been removed: its single live entry point
  * just logs that it is no longer supported and returns failure. The
