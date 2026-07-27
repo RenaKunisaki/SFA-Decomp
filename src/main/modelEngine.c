@@ -89,6 +89,7 @@
 #include "dlls/objects/290_CCTestInfot.h"
 #include "dlls/objects/291_fuelCell.h"
 #include "dlls/objects/292.h"
+#include "dlls/objects/293_curve.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -192,8 +193,7 @@ extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFP
     gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor, gCF_DoorLightObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gCampFireObjDescriptor, gCflightwallObjDescriptor,
     gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
-extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor,
-    gCurveObjDescriptor;
+extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
     gDFP_TorchObjDescriptor;
@@ -1255,7 +1255,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCCTestInfotObjDescriptor,
     (ResourceDescriptor*)&gFuelCellObjDescriptor,
     (ResourceDescriptor*)&gDeathGasObjDescriptor,
-    &gCurveObjDescriptor,
+    (ResourceDescriptor*)&gCurveObjDescriptor,
     &gTriggerObjDescriptor,
     &lbl_80321E58,
     &gKT_TorchObjDescriptor,

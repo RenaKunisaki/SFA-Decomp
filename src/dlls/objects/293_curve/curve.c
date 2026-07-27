@@ -1,65 +1,50 @@
 /*
- * DLL 0x125 - "curve" object DLL. TU range 0x80171300-0x801713D8.
+ * Curve placement object (DLL slot 293 / 0x125).
  *
- * The curve object itself is a placement-only animator: curve_init reads the
- * ROMCURVE placement type to set rotation (rotX/rotY from the placement bytes,
- * rotZ from a special-angle field for the angle-8/1A types) and a root-motion
- * scale (overridden for the scale-15/16 types, otherwise the model default);
- * curve_render just forwards a render fn when visible. The remaining callbacks
- * (getExtraSize/getObjectTypeId/func11/setScale/free) are stubs.
+ * Curve metadata supplies the object's initial orientation and selects either
+ * a type-specific scale or the model's default scale.
  */
-#include "main/dll/dll_0125_curve_api.h"
+#include "dlls/objects/293_curve.h"
+
 #include "main/object_render.h"
 
-int curve_func0B(void)
-{
-    return 0x0;
+int curve_func0B(void) {
+    return 0;
 }
 
-void curve_setScale(void)
-{
+void curve_setScale(void) {
 }
 
-int curve_getExtraSize(void)
-{
-    return 0x0;
-}
-int curve_getObjectTypeId(void)
-{
-    return 0x0;
+int curve_getExtraSize(void) {
+    return 0;
 }
 
-void curve_free(void)
-{
+int curve_getObjectTypeId(void) {
+    return 0;
 }
 
-void curve_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+void curve_free(void) {
 }
 
-void curve_init(ObjAnimComponent* obj, CurvePlacementParams* params)
-{
-    obj->rotX = (s16)(params->placement.rotZ << 8);
-    obj->rotY = (s16)(params->placement.rotY << 8);
-    if (params->placement.base.type == ROMCURVE_TYPE_SPECIAL_ANGLE_8 ||
-        params->placement.base.type == ROMCURVE_TYPE_SPECIAL_ANGLE_1A)
-    {
-        obj->rotZ = params->specialAngle;
+void curve_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
-    if (params->placement.base.type == ROMCURVE_TYPE_SCALE_OVERRIDE_15)
-    {
-        obj->rootMotionScale = 1.25f;
+}
+
+void curve_init(GameObject* obj, CurvePlacement* placement) {
+    obj->anim.rotX = (s16)(placement->yaw << 8);
+    obj->anim.rotY = (s16)(placement->pitch << 8);
+    if (placement->curve.type == ROMCURVE_TYPE_SPECIAL_ANGLE_8 ||
+        placement->curve.type == ROMCURVE_TYPE_SPECIAL_ANGLE_1A) {
+        obj->anim.rotZ = placement->roll;
     }
-    else if (params->placement.base.type == ROMCURVE_TYPE_SCALE_OVERRIDE_16)
-    {
-        obj->rootMotionScale = 1.1f;
-    }
-    else
-    {
-        obj->rootMotionScale = obj->modelInstance->rootMotionScaleBase;
+    if (placement->curve.type == ROMCURVE_TYPE_SCALE_OVERRIDE_15) {
+        obj->anim.rootMotionScale = 1.25f;
+    } else if (placement->curve.type == ROMCURVE_TYPE_SCALE_OVERRIDE_16) {
+        obj->anim.rootMotionScale = 1.1f;
+    } else {
+        obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
     }
 }
 

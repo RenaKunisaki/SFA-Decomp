@@ -32,7 +32,6 @@ typedef struct GameObject GameObject;
 #define ROMCURVE_PLACEMENT_ROT_Y_OFFSET         0x2d
 #define ROMCURVE_PLACEMENT_ROT_X_OFFSET         0x2e
 #define ROMCURVE_PLACEMENT_EXT_SIZE             0x30
-#define ROMCURVE_PLACEMENT_SPECIAL_ANGLE_OFFSET 0x38
 #define ROMCURVE_TYPE_ACTION                    0x15
 #define ROMCURVE_TYPE_SPECIAL_ANGLE_8           0x08
 #define ROMCURVE_TYPE_SPECIAL_ANGLE_1A          0x1a
@@ -85,13 +84,6 @@ typedef struct RomCurvePlacementDef
     u8 rotX;
     u8 pad2F;
 } RomCurvePlacementDef;
-
-typedef struct CurvePlacementParams
-{
-    RomCurvePlacementDef placement;
-    u8 pad30[ROMCURVE_PLACEMENT_SPECIAL_ANGLE_OFFSET - ROMCURVE_PLACEMENT_EXT_SIZE];
-    s16 specialAngle;
-} CurvePlacementParams;
 
 typedef struct RomCurvePoint
 {
@@ -184,8 +176,6 @@ STATIC_ASSERT(sizeof(RomCurvePlacementDef) == ROMCURVE_PLACEMENT_EXT_SIZE);
 STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotZ) == ROMCURVE_PLACEMENT_ROT_Z_OFFSET);
 STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotY) == ROMCURVE_PLACEMENT_ROT_Y_OFFSET);
 STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotX) == ROMCURVE_PLACEMENT_ROT_X_OFFSET);
-STATIC_ASSERT(offsetof(CurvePlacementParams, specialAngle) == ROMCURVE_PLACEMENT_SPECIAL_ANGLE_OFFSET);
-
 STATIC_ASSERT(sizeof(RomCurvePoint) == ROMCURVE_POINT_SIZE);
 STATIC_ASSERT(offsetof(RomCurvePoint, object) == 0x10);
 STATIC_ASSERT(offsetof(RomCurvePoint, type) == 0x14);
