@@ -20,6 +20,11 @@ force_active:
   # atom; dropping it would shorten the pool and shift the mikaladon SDA2
   # references that follow it.
   - gGcRobotPatrolZero
+  # WispBaddie.c: the retail link retained these unreferenced per-family
+  # scalar tables that follow the lbl_8031F16C family table; dropping them
+  # would shorten .data and shift every later .data address.
+  - lbl_8031F25C
+  - lbl_8031F268
   # aram_data.c: the retail link retained this unreferenced .bss block;
   # dropping it would shorten the section and shift every later .bss address.
   - lbl_803D4868

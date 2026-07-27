@@ -70,14 +70,16 @@ STATIC_ASSERT(offsetof(HagabonAnimState, activeEventIndex) == 0x33C);
  * sub-tables that drive a family's anim sequencing. */
 typedef struct
 {
-    u8* tbl0;       /* 0x00 */
-    u8* tbl4;       /* 0x04 */
-    u8 pad08[0x08]; /* 0x08 */
-    u8* tbl10;      /* 0x10 */
-    u8 pad14[0x08]; /* 0x14 */
-    u8* tbl1c;      /* 0x1c */
-    u8* tbl20;      /* 0x20 */
-    u8* tbl24;      /* 0x24 */
+    u8* tbl0;  /* 0x00 */
+    u8* tbl4;  /* 0x04 */
+    u8* tbl8;  /* 0x08 */
+    u8* tblC;  /* 0x0c */
+    u8* tbl10; /* 0x10 */
+    u8* tbl14; /* 0x14 */
+    u8* tbl18; /* 0x18 */
+    u8* tbl1c; /* 0x1c */
+    u8* tbl20; /* 0x20 */
+    u8* tbl24; /* 0x24 */
 } FamilyTable;
 
 extern FamilyTable lbl_8031F16C[]; /* per-family table-of-tables, 0x28-byte rows */

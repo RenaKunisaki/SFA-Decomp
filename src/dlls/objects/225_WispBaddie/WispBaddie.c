@@ -274,6 +274,20 @@ void WispBaddie_initialise(void) {
 }
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
+typedef struct WispBaddieFamilyTable
+{
+    u8* tbl0;
+    u8* tbl4;
+    u8* tbl8;
+    u8* tblC;
+    u8* tbl10;
+    u8* tbl14;
+    u8* tbl18;
+    u8* tbl1c;
+    u8* tbl20;
+    u8* tbl24;
+} WispBaddieFamilyTable;
+
 u8 lbl_8031DD30[288] = {
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,
@@ -485,17 +499,20 @@ u8 lbl_8031F064[240] = {
     63, 128, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 0, 8, 0, 0, 5, 0, 0,  0,   0, 0, 0, 0,
     63, 128, 0, 0, 0, 2, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0};
 u8 lbl_8031F154[24] = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
-void* lbl_8031F16C[69] = {
-    lbl_8031DE50,      lbl_8031DE80,      lbl_8031DFC4,      lbl_8031E49C,      lbl_8031E2A0,      lbl_8031E21C,
-    lbl_8031E240,      lbl_8031E3CC,      lbl_8031E64C,      lbl_8031E0F0,      lbl_8031DE50,      lbl_8031DE80,
-    lbl_8031DFC4,      lbl_8031E49C,      lbl_8031E2A0,      lbl_8031E21C,      lbl_8031E240,      lbl_8031E3CC,
-    lbl_8031E64C,      lbl_8031E0F0,      lbl_8031DE50,      lbl_8031DE80,      lbl_8031DFC4,      lbl_8031E664,
-    lbl_8031E2A0,      lbl_8031E21C,      lbl_8031E240,      lbl_8031E3CC,      lbl_8031E814,      lbl_8031E0F0,
-    lbl_8031DE50,      lbl_8031DE80,      lbl_8031DFC4,      lbl_8031E850,      lbl_8031E2A0,      lbl_8031E82C,
-    lbl_8031E240,      lbl_8031E3CC,      lbl_8031EA00,      lbl_8031E0F0,      lbl_8031DE50,      lbl_8031DE80,
-    lbl_8031DFC4,      lbl_8031EA18,      lbl_8031E2A0,      lbl_8031E21C,      lbl_8031E240,      lbl_8031E3CC,
-    lbl_8031EBEC,      lbl_8031E0F0,      lbl_8031EC04,      lbl_8031EC34,      lbl_8031EC4C,      lbl_8031F064,
-    lbl_8031EF28,      lbl_8031EEA4,      lbl_8031EEC8,      lbl_8031F054,      lbl_8031F154,      lbl_8031ED78,
-    (void*)0x0F3C0A32, (void*)0x07140514, (void*)0x030F030F, (void*)0x3F000000, (void*)0x3F000000, (void*)0x3F333333,
-    (void*)0x3F19999A, (void*)0x3FC00000, (void*)0x3FC00000};
+WispBaddieFamilyTable lbl_8031F16C[6] = {
+    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E49C, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
+     lbl_8031E64C, lbl_8031E0F0},
+    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E49C, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
+     lbl_8031E64C, lbl_8031E0F0},
+    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E664, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
+     lbl_8031E814, lbl_8031E0F0},
+    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E850, lbl_8031E2A0, lbl_8031E82C, lbl_8031E240, lbl_8031E3CC,
+     lbl_8031EA00, lbl_8031E0F0},
+    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031EA18, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
+     lbl_8031EBEC, lbl_8031E0F0},
+    {lbl_8031EC04, lbl_8031EC34, lbl_8031EC4C, lbl_8031F064, lbl_8031EF28, lbl_8031EEA4, lbl_8031EEC8, lbl_8031F054,
+     lbl_8031F154, lbl_8031ED78},
+};
+u8 lbl_8031F25C[12] = {15, 60, 10, 50, 7, 20, 5, 20, 3, 15, 3, 15};
+f32 lbl_8031F268[6] = {0.5f, 0.5f, 0.7f, 0.6f, 1.5f, 1.5f};
 u32 gGroundBaddieModelChainIds[4] = {6, 7, 8, 9};
