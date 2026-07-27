@@ -1012,7 +1012,7 @@ main/dll/dll_00B8_projlightning5.c:
 	.text       start:0x80100710 end:0x80100748
 	.data       start:0x80319608 end:0x80319658
 
-main/dll/dll_00B9_projlightning7.c:
+dlls/projgfx/185/185.c:
 	.text       start:0x80100748 end:0x80100780
 	.data       start:0x80319658 end:0x803196A8
 

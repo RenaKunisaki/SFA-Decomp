@@ -1,5 +1,5 @@
 /*
- * projlightning7 (DLL 0x00B9) - retired "lightning 7" projectile object.
+ * projlightning7 (DLL 185 / 0x00B9) - retired "lightning 7" projectile object.
  *
  * The object's behaviour was cut from the shipping game: its "do" entry
  * point now only logs a "no longer supported" message and returns the
