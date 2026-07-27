@@ -3778,7 +3778,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
     }
     else
     {
-        f32 t = fn_80292194(((f32*)vec)[0] / ((f32*)vec)[1]);
+        f32 t = atanf_fast(((f32*)vec)[0] / ((f32*)vec)[1]);
         angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, lbl_803DEF5C, timeDelta);
         lbl_803DD00C = angle;
     }

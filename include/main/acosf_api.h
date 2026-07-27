@@ -4,6 +4,6 @@
 #include "types.h"
 
 float acosf(float x);
-float fn_80292248(float x);
+float atanf(float x);
 
 #endif /* MAIN_ACOSF_API_H_ */

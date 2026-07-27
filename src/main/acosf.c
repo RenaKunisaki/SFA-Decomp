@@ -36,7 +36,7 @@ extern double lbl_803E7AA8;
 extern double lbl_803E7AB0;
 
 
-float __kernel_sin(float value) {
+float asinf(float value) {
     float absoluteValue = __fabsf(value);
     float reduced;
     float polynomial;
@@ -56,7 +56,7 @@ float __kernel_sin(float value) {
     return lbl_803E79CC * polynomial - lbl_803E79C8;
 }
 
-float fn_80291FF4(float value) {
+float acosf_fast(float value) {
     float absoluteValue = __fabsf(value);
     float reduced;
     float polynomial;
@@ -99,7 +99,7 @@ float acosf(float value) {
     return lbl_803E79E8 - lbl_803E79CC * polynomial;
 }
 
-float fn_80292194(float value) {
+float atanf_fast(float value) {
     float absoluteValue = __fabsf(value);
     float reciprocal;
     float squared;
@@ -123,7 +123,7 @@ float fn_80292194(float value) {
     return negativeResult;
 }
 
-float fn_80292248(float value) {
+float atanf(float value) {
     float absoluteValue = __fabsf(value);
     double reduced;
     double squared;

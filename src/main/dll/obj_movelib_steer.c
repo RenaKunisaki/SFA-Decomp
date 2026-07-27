@@ -78,7 +78,7 @@ void Obj_SteerVelocityTowardVector(GameObject* obj, Vec3f* currentVelocity, Vec3
     PSVECCrossProduct((const Vec*)n1, (const Vec*)n2, (Vec*)cross);
     if (PSVECMag((const Vec*)cross) > lbl_803E6C38)
     {
-        ang = fn_80291FF4(PSVECDotProduct((const Vec*)n1, (const Vec*)n2));
+        ang = acosf_fast(PSVECDotProduct((const Vec*)n1, (const Vec*)n2));
         gt = (ang > maxTurnAngle);
         gtf = __fabs((f32)gt);
         if (gtf != lbl_803E6C38)

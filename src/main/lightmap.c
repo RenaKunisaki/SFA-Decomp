@@ -214,7 +214,7 @@ void updateVisibleGeometry(void)
     ratio2 = ratio * ratio;
     ff = lbl_803DEC08.lo;
     tt = ff * ratio2;
-    tt = fn_80292248(sqrtf(ff * tt + ratio2));
+    tt = atanf(sqrtf(ff * tt + ratio2));
     ff = mathSinfHighPrecision(tt);
     ss = mathCosfHighPrecision(tt);
     Matrix_TransformPoint(m, ss, lbl_803DEBCC, -ff, &ox, &oy, &oz);

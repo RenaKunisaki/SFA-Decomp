@@ -150,7 +150,7 @@ int objRotateFn_8003bce8(f32* m, s16* outA, s16* outB, s16* outC)
     {
         return 0;
     }
-    x = __kernel_sin(-buf[6]);
+    x = asinf(-buf[6]);
     if (x < gObjPrintHalfPi)
     {
         if (x > gObjPrintNegHalfPi)

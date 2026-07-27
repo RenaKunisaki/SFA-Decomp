@@ -2280,7 +2280,7 @@ void enemy_steerVelocityToward(GameObject* obj, void* state, f32* desiredVec, f3
         int gt;
         f64 gtf;
         f32 zero;
-        angle = fn_80291FF4(PSVECDotProduct(curDir, targetDir));
+        angle = acosf_fast(PSVECDotProduct(curDir, targetDir));
         gt = (angle > maxTurnRad);
         zero = 0.0f;
         gtf = __fabs((f32)gt);

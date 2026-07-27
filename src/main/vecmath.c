@@ -49,7 +49,7 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
     b0 = b[0];
     b1 = b[1];
     a2 = a[2];
-    sinp = __kernel_sin(-b[2]);
+    sinp = asinf(-b[2]);
     if (sinp < gVecMathHalfPi)
     {
         if (sinp > gVecMathNegHalfPi)

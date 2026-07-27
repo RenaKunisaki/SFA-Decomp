@@ -6,7 +6,7 @@
 
 double __fabs(double);
 double __frsqrte(double x);
-f32 __kernel_sin(f32 x);
+f32 asinf(f32 x);
 f32 powf(f32 x, f32 y);
 f32 powfCoreFast(f32 x, f32 y);
 f32 powfCoreHighPrecision(f32 x, f32 y);
@@ -19,8 +19,8 @@ void Vec_normalize(void* input, void* output);
 void Vec_scale(void* input, void* output, float scale);
 float Vec_lengthSquared(void* input);
 float trigReduceQuadrant(u16* quadrant, float angle);
-float fn_80291FF4(float x);
-float fn_80292194(float x);
+float acosf_fast(float x);
+float atanf_fast(float x);
 void mathSinCosf(float angle, float* sinOut, float* cosOut);
 float fn_80293F7C(float x);
 float fn_802942EC(float x);

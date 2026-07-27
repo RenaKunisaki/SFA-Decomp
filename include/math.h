@@ -96,11 +96,11 @@ _MATH_INLINE float atan2f(float y, float x)
 {
     return (float)atan2((double)y, (double)x);
 }
-_MATH_INLINE float fn_80292248(float x)
+_MATH_INLINE float atanf(float x)
 {
     return (float)atan((double)x);
 }
-_MATH_INLINE float __kernel_sin(float x)
+_MATH_INLINE float asinf(float x)
 {
     return (float)asin((double)x);
 }
