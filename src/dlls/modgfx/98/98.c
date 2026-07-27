@@ -1,5 +1,5 @@
 /*
- * DLL 0x62 (dll62func0) - a thin gameplay-effect DLL exporting three
+ * DLL 98 / 0x62 - a thin gameplay-effect DLL exporting three
  * object hooks. func01/func00 are empty no-op slots; func03 builds a
  * fourteen-command modgfx effect list on the stack (texture/blend modes
  * from the lbl_803E089x float constants and the lbl_803129C8 resource
@@ -18,12 +18,6 @@
 #include "main/dll/modgfx.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0062_dll62func0.h"
-
-enum
-{
-    SAVEGAME_EMPTY_TASK_HINT = -1,
-    SAVEGAME_DEFAULT_VOLUME = 0x7f,
-};
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL62_EFFECT_ID 0x5e0
