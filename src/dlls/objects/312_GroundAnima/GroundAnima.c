@@ -4,11 +4,11 @@
  */
 #include "dlls/objects/312_GroundAnima.h"
 
+#include "dlls/objects/386_MMP_moonroc.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSCache.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx.h"
-#include "main/dll/MMP/dll_0182_mmpmoonrock.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
@@ -74,7 +74,7 @@ f32 GroundAnimator_setScale(GameObject* obj, GameObject* target) {
             linkedObject = state->linkedObject;
             switch (linkedObject->anim.seqId) {
             case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
-                mmp_moonrock_setFrozen(linkedObject, 0);
+                mmpMoonRock_setFrozen(linkedObject, 0);
                 break;
             default:
                 (*(void (**)(void*, int))(*(int*)(*(int*)((char*)linkedObject + 0x68)) + 0x24))(linkedObject, 0);
@@ -290,9 +290,9 @@ void GroundAnimator_update(GameObject* obj) {
                 switch (state->linkedObject->anim.seqId) {
                 case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
                     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0) {
-                        mmp_moonrock_setFrozen((GameObject*)(linkedObject), 1);
+                        mmpMoonRock_setFrozen((GameObject*)(linkedObject), 1);
                     }
-                    mmp_moonrock_setPosition((GameObject*)(linkedObject), obj->anim.localPosX,
+                    mmpMoonRock_setPosition((GameObject*)(linkedObject), obj->anim.localPosX,
                                              obj->anim.localPosY - state->yOffset, obj->anim.localPosZ);
                     break;
                 default:
@@ -336,7 +336,7 @@ void GroundAnimator_update(GameObject* obj) {
                 if (state->linkedObject != NULL && state->linkedObject->extra != NULL) {
                     switch (state->linkedObject->anim.seqId) {
                     case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
-                        mmp_moonrock_setFrozen(state->linkedObject, 0);
+                        mmpMoonRock_setFrozen(state->linkedObject, 0);
                         break;
                     default:
                         (*(void (**)(void*, int))(*(int*)(*(int*)((char*)state->linkedObject + 0x68)) + 0x24))(

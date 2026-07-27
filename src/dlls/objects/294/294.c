@@ -63,7 +63,6 @@
 #include "main/sky.h"
 #include "main/dll/dll_80198a00.h"
 #include "main/dll/dll_0126_trigger_api.h"
-#include "main/dll/MMP/mmp_moonrock_state.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/vecmath.h"
 #include "dolphin/mtx/mtx_legacy.h"
