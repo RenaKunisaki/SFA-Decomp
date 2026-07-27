@@ -667,7 +667,7 @@ dlls/modgfx/163/163.c:
 	.text       start:0x800EEFEC end:0x800EF3A0
 	.sdata2     start:0x803E0968 end:0x803E0990
 
-main/dll/dll_0066_dll66func0.c:
+dlls/modgfx/102/102.c:
 	.text       start:0x800EF3A0 end:0x800EF7B4
 
 dlls/modgfx/103/103.c:

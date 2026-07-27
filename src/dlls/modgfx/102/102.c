@@ -1,5 +1,5 @@
 /*
- * dll66func0 (DLL 0x66) - one of a family of near-identical per-DLL modgfx
+ * DLL 102 / 0x66 - one of a family of near-identical per-DLL modgfx
  * emitters (dll_005E..dll_007B). func00/func01 are empty entry stubs;
  * dll_66_func03 builds a fixed modgfx command list (GfxCmd entries off
  * lbl_803131A8) and submits it via gModgfxInterface->spawnEffect.
@@ -30,12 +30,6 @@ extern f32 lbl_803E09B4;
 extern f32 lbl_803E09B8;
 extern f32 lbl_803E09BC;
 extern f32 lbl_803E09C0;
-
-static inline u8* Gameplay_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (u8*)objAnim->banks[objAnim->bankIndex];
-}
 
 void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
