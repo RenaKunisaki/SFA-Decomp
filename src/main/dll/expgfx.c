@@ -2201,7 +2201,7 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
             found = 1;
             break;
         }
-        poolSlotTypeIds++;
+        poolSlotTypeIds = (s16*)(poolSlotTypeIds + 1);
         searchIndex++;
         if ((sourceId == sourceIdWalk[1]) && (slotTypeVal == *poolSlotTypeIds) &&
             (activeCountWalk[1] < EXPGFX_SLOTS_PER_POOL))
@@ -2210,7 +2210,7 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
             found = 1;
             break;
         }
-        poolSlotTypeIds++;
+        poolSlotTypeIds = (s16*)(poolSlotTypeIds + 1);
         searchIndex++;
         if ((sourceId == sourceIdWalk[2]) && (slotTypeVal == *poolSlotTypeIds) &&
             (activeCountWalk[2] < EXPGFX_SLOTS_PER_POOL))
@@ -2219,7 +2219,7 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
             found = 1;
             break;
         }
-        poolSlotTypeIds++;
+        poolSlotTypeIds = (s16*)(poolSlotTypeIds + 1);
         searchIndex++;
         if ((sourceId == sourceIdWalk[3]) && (slotTypeVal == *poolSlotTypeIds) &&
             (activeCountWalk[3] < EXPGFX_SLOTS_PER_POOL))
@@ -2228,7 +2228,7 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
             found = 1;
             break;
         }
-        poolSlotTypeIds++;
+        poolSlotTypeIds = (s16*)(poolSlotTypeIds + 1);
         searchIndex++;
         if ((sourceId == sourceIdWalk[4]) && (slotTypeVal == *poolSlotTypeIds) &&
             (activeCountWalk[4] < EXPGFX_SLOTS_PER_POOL))
