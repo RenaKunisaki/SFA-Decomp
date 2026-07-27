@@ -90,7 +90,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "string.h"
 #include "main/dll/dll_002F_carryable.h"
-#include "main/dll/dll_0104_smallbasket.h"
+#include "dlls/objects/260_SmallBasket.h"
 #define FEAR_TEST_METER_POSITION_INT
 #include "main/dll/dll_0000_gameui.h"
 #undef FEAR_TEST_METER_POSITION_INT
@@ -1232,9 +1232,9 @@ int playerSetHeldObject(GameObject* obj, GameObject* heldObj)
         if (sub != NULL)
         {
             s16 id = sub->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504(sub);
+                SmallBasket_throw(sub);
             }
             else
             {
@@ -1628,9 +1628,9 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
             if (((PlayerState*)inner)->heldObj != NULL)
             {
                 short id = ((GameObject*)inner->heldObj)->anim.seqId;
-                if (id == 0x3cf || id == 0x662)
+                if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)(inner->heldObj));
+                    SmallBasket_throw((GameObject*)(inner->heldObj));
                 }
                 else
                 {
@@ -1875,9 +1875,9 @@ int playerState41(GameObject* obj, int state, f32 fv)
         if (sub != NULL)
         {
             s16 id = ((GameObject*)sub)->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504((GameObject*)sub);
+                SmallBasket_throw((GameObject*)sub);
             }
             else
             {
@@ -8041,9 +8041,9 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                     if (sub != NULL)
                     {
                         s16 id = ((GameObject*)sub)->anim.seqId;
-                        if (id == 0x3cf || id == 0x662)
+                        if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
-                            objThrowFn_80182504((GameObject*)sub);
+                            SmallBasket_throw((GameObject*)sub);
                         }
                         else
                         {
@@ -8471,10 +8471,12 @@ int playerStateOnLadder(int obj, int state)
                             ((PlayerState*)inner)->isHoldingObject = 0;
                             if (((PlayerState*)inner)->heldObj != NULL)
                             {
-                                if (((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId == 0x3cf ||
-                                    ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId == 0x662)
+                                if (((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId ==
+                                        SMALLBASKET_SEQUENCE_VARIANT_A ||
+                                    ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId ==
+                                        SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                                 {
-                                    objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                                    SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                                 }
                                 else
                                 {
@@ -8989,9 +8991,9 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             if (((PlayerState*)inner)->heldObj != NULL)
             {
                 s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                if (typ == 0x3cf || typ == 0x662)
+                if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                    SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                 }
                 else
                 {
@@ -9224,9 +9226,9 @@ int playerStateGrabLedge(GameObject* obj, int state)
         if (sub != NULL)
         {
             s16 id = ((GameObject*)sub)->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504((GameObject*)sub);
+                SmallBasket_throw((GameObject*)sub);
             }
             else
             {
@@ -9765,9 +9767,9 @@ int playerStateThrowing(GameObject* obj, int state)
         {
             GameObject* s2 = inner->heldObj;
             s16 id = s2->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504(s2);
+                SmallBasket_throw(s2);
             }
             else
             {
@@ -9842,9 +9844,9 @@ int playerState06(GameObject* obj, int state)
         {
             GameObject* s2 = inner->heldObj;
             s16 id = s2->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504(s2);
+                SmallBasket_throw(s2);
             }
             else
             {
@@ -10003,9 +10005,9 @@ void fn_802A514C(GameObject* obj, int state)
             if (sub != NULL)
             {
                 s16 id = ((GameObject*)sub)->anim.seqId;
-                if (id == 0x3cf || id == 0x662)
+                if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)sub);
+                    SmallBasket_throw((GameObject*)sub);
                 }
                 else
                 {
@@ -13750,9 +13752,9 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                 if (((PlayerState*)inner)->heldObj != NULL)
                 {
                     s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                    if (t == 0x3cf || t == 0x662)
+                    if (t == SMALLBASKET_SEQUENCE_VARIANT_A || t == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                     {
-                        objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                        SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                     }
                     else
                     {
@@ -13861,9 +13863,9 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                     if (((PlayerState*)inner)->heldObj != NULL)
                     {
                         s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                        if (t == 0x3cf || t == 0x662)
+                        if (t == SMALLBASKET_SEQUENCE_VARIANT_A || t == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
-                            objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                            SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                         }
                         else
                         {
@@ -14288,9 +14290,9 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
         if (sub != NULL)
         {
             s16 id = ((GameObject*)sub)->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504((GameObject*)sub);
+                SmallBasket_throw((GameObject*)sub);
             }
             else
             {
@@ -14597,9 +14599,9 @@ void fn_802AE83C(int obj, int inner, int state)
     if (sub != NULL)
     {
         s16 id = sub->anim.seqId;
-        if (id == 0x3cf || id == 0x662)
+        if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
         {
-            objThrowFn_80182504(sub);
+            SmallBasket_throw(sub);
         }
         else
         {
@@ -14720,9 +14722,9 @@ void fn_802AE9C8(GameObject* obj, int inner, int state)
         if (sub != NULL)
         {
             s16 id = ((GameObject*)sub)->anim.seqId;
-            if (id == 0x3cf || id == 0x662)
+            if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
-                objThrowFn_80182504((GameObject*)sub);
+                SmallBasket_throw((GameObject*)sub);
             }
             else
             {
@@ -14770,9 +14772,9 @@ void fn_802AED2C(GameObject* obj, int state, int p3)
     if (((PlayerState*)state)->heldObj != NULL)
     {
         short id = ((GameObject*)((PlayerState*)state)->heldObj)->anim.seqId;
-        if (id == 0x3cf || id == 0x662)
+        if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
         {
-            objThrowFn_80182504((GameObject*)(((PlayerState*)state)->heldObj));
+            SmallBasket_throw((GameObject*)(((PlayerState*)state)->heldObj));
         }
         else
         {
@@ -15661,9 +15663,9 @@ void fn_802AFB0C(int obj, int inner, int state)
             if (((PlayerState*)inner)->heldObj != NULL)
             {
                 s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                if (t == 0x3cf || t == 0x662)
+                if (t == SMALLBASKET_SEQUENCE_VARIANT_A || t == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                    SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                 }
                 else
                 {
@@ -16548,9 +16550,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             if (((PlayerState*)inner)->heldObj != NULL)
             {
                 s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                if (typ == 0x3cf || typ == 0x662)
+                if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                    SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                 }
                 else
                 {
@@ -16588,9 +16590,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             if (((PlayerState*)inner)->heldObj != NULL)
             {
                 s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                if (typ == 0x3cf || typ == 0x662)
+                if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                    SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                 }
                 else
                 {
@@ -16631,9 +16633,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             if (((PlayerState*)inner)->heldObj != NULL)
             {
                 s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
-                if (typ == 0x3cf || typ == 0x662)
+                if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
-                    objThrowFn_80182504((GameObject*)(((PlayerState*)inner)->heldObj));
+                    SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
                 }
                 else
                 {
@@ -16835,9 +16837,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 if (p != NULL)
                 {
                     s16 sp = p->anim.seqId;
-                    if (sp == 0x3cf || sp == 0x662)
+                    if (sp == SMALLBASKET_SEQUENCE_VARIANT_A || sp == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                     {
-                        objThrowFn_80182504(p);
+                        SmallBasket_throw(p);
                     }
                     else
                     {
@@ -17444,9 +17446,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                         if ((u32)p17 != 0)
                         {
                             s16 sp17 = ((GameObject*)p17)->anim.seqId;
-                            if (sp17 == 0x3cf || sp17 == 0x662)
+                            if (sp17 == SMALLBASKET_SEQUENCE_VARIANT_A || sp17 == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                             {
-                                objThrowFn_80182504((GameObject*)(p17));
+                                SmallBasket_throw((GameObject*)(p17));
                             }
                             else
                             {
@@ -18561,9 +18563,9 @@ void playerUpdate(GameObject* obj)
                     if (held != NULL)
                     {
                         s16 typ = held->anim.seqId;
-                        if (typ == 0x3cf || typ == 0x662)
+                        if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
-                            objThrowFn_80182504((GameObject*)held);
+                            SmallBasket_throw((GameObject*)held);
                         }
                         else
                         {

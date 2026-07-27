@@ -56,6 +56,7 @@
 #include "dlls/objects/257_TrickyGuard.h"
 #include "dlls/objects/258_StayPoint.h"
 #include "dlls/objects/259_CurveFish.h"
+#include "dlls/objects/260_SmallBasket.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -244,8 +245,7 @@ extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPSca
     gSPitembeamObjDescriptor, gScarabObjDescriptor, gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxPlayerObjDescriptor, gSfxplayerObjDescriptor, gShipBattleObjDescriptor,
     gShopItemObjDescriptor, gShopKeeperObjDescriptor, gShopObjDescriptor;
-extern ResourceDescriptor gSlidingDoorObjDescriptor, gSmallBasketObjDescriptor, gSnowBikeObjDescriptor,
-    gSnowClawObjDescriptor;
+extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffActivatedObjDescriptor, gStaffObjDescriptor,
     gStaticCameraObjDescriptor;
@@ -1206,7 +1206,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTrickyGuardObjDescriptor,
     (ResourceDescriptor*)&gStayPointObjDescriptor,
     (ResourceDescriptor*)&gCurveFishObjDescriptor,
-    &gSmallBasketObjDescriptor,
+    (ResourceDescriptor*)&gSmallBasketObjDescriptor,
     &gLargeCrateObjDescriptor,
     &gScarabObjDescriptor,
     &gWindLift107ObjDescriptor,
