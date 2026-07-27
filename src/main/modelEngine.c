@@ -95,6 +95,7 @@
 #include "dlls/objects/297_CampFire.h"
 #include "dlls/objects/298_CFCrate.h"
 #include "dlls/objects/299_FXEmit.h"
+#include "dlls/objects/300_Transporter.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -273,7 +274,7 @@ extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpi
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
     gTextBlockObjDescriptor, gTimerObjDescriptor;
-extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreeBirdObjDescriptor,
+extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
@@ -1266,7 +1267,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCampFireObjDescriptor,
     (ResourceDescriptor*)&gCFCrateObjDescriptor,
     (ResourceDescriptor*)&gFXEmitObjDescriptor,
-    &gTransporterObjDescriptor,
+    (ResourceDescriptor*)&gTransporterObjDescriptor,
     &gLFXEmitterObjDescriptor,
     &gCflightwallObjDescriptor,
     &gBarrelPadObjDescriptor,

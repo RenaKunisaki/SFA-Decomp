@@ -223,9 +223,9 @@ literal — these are the runtime "typed pointer into WARPTAB" equivalent of the
   (`GAMEBIT_MagicCaveExitWarp` in `include/main/gamebit_ids.h`, documented there as the WARPTAB index
   that the Magic Cave exits to) by the top half, then read back through the same canonical gamebit ID
   by the bottom half (`mainGetBit(...)` passed to `warpToMap`).
-- **`CF/warp_pad.h`**: `WarpPadPlacement.warpId` (`s8`, offset `0x1A`) — the generic warp-pad
-  object's placement-authored destination index (used by `src/dlls/objects/300_Transporter/Transporter.c`'s
-  `setup->warpId`).
+- **`include/dlls/objects/300_Transporter.h`**: `TransporterPlacement.warpId`
+  (`s8`, offset `0x1A`) — the generic warp-pad object's placement-authored
+  destination index used by `src/dlls/objects/300_Transporter/Transporter.c`.
 - **`worldplanet.c`**: `gWorldPlanetWarpMapIndices[6]` (`extern u8[6]`) is indexed by
   `gWorldPlanetSelectionToIndex[state->selectedPlanet]` and fed to `warpToMap` when leaving the
   World Map planet-select screen. Declared `extern` only in this repo — its backing byte values

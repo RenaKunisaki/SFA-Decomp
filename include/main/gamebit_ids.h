@@ -86,9 +86,9 @@ enum GameBitId {
      * shrine, dll_018F, anim-event 7 - the same event that calls
      * objSetAnimStateFlags(player, 0x08, 1) to set the spirit bit in playerStatus). It is
      * one of the three guard bits (with 0x316 and 0x511) that disable the K1
-     * Krazoa Shrine return transporter pad (dll_012C destinationId 0x43F83 ->
-     * map 0x21): once the spirit is taken, the pad locks out. Live-verified that
-     * setting this disable path kills the pad's A-prompt.
+     * Krazoa Shrine return transporter pad (slot 300, base.mapId 0x43F83 ->
+     * map 0x21): once the spirit is taken, the pad locks out. Live-verified
+     * that setting this disable path kills the pad's A-prompt.
      */
     GAMEBIT_K1_SPIRIT_COLLECTED = 0xBA8,
 
@@ -100,8 +100,8 @@ enum GameBitId {
      * mainSetBits(state->sequenceGameBit) in WM_spiritplace_update - i.e.
      * DATA-DRIVEN, so no mainSetBits(0x316) literal exists (which is why a code
      * grep finds no setter; traced live in Dolphin by catching the write, with
-     * r28 == 0x316*4 and the wmspiritplace object in r27). Read as a code
-     * literal by Transporter.c - one of the three 0xBA8/0x316/0x511
+     * r28 == 0x316*4 and the wmspiritplace object in r27). Read directly by
+     * Transporter.c - one of the three 0xBA8/0x316/0x511
      * guard bits that lock out the K1 return pad once you progress.
      */
     GAMEBIT_K1_SPIRIT_DEPOSITED = 0x316,
@@ -499,7 +499,7 @@ enum GameBitId {
     GAMEBIT_ITEM_SilverKey282_Got = 0x282,               /* table 2 */
     GAMEBIT_ITEM_SilverKey282_Used = 0x283,              /* table 2 */
     GAMEBIT_ITEM_Spirit2_Used = 0x29A,                   /* table 2; hint 316 */
-    GAMEBIT_TransporterRelated029B = 0x29B,              /* table 2 */
+    GAMEBIT_WM_SpiritPlace2Ready = 0x29B,                /* table 2; gates spirit-place 2 and its return pad */
     GAMEBIT_SH_OpenedGateToCape = 0x2B2,                 /* table 2; ref hollow/StaffLeverO activated */
     GAMEBIT_LV_CapturedByLightFoot = 0x2B5,              /* table 2; hint 346 */
     GAMEBIT_LV_TestStrengthBestTime1 = 0x2B6,            /* table 2; size 16 */
@@ -603,7 +603,7 @@ enum GameBitId {
     GAMEBIT_FoundSpellStoneWarpPad = 0x4FA,              /* table 2; hint 372; ref temple/HitAnimator target */
     GAMEBIT_VFP_ActNo = 0x4FE,                           /* table 2; size 4 */
     GAMEBIT_VFP_ObjGroups = 0x500,                       /* table 3; size 32 */
-    GAMEBIT_TransporterRelated0511 = 0x511,              /* table 2 */
+    GAMEBIT_K1_ReturnPadGuard = 0x511,                   /* table 2; no traced setter */
     GAMEBIT_AnimTest_ObjGroups = 0x517,                  /* table 3; size 32 */
     GAMEBIT_DIM_Entered540 = 0x540,                      /* table 1 */
     GAMEBIT_ITEM_TrickyStayFind_Got = 0x544,             /* table 2; hint 263 */
@@ -683,9 +683,9 @@ enum GameBitId {
     GAMEBIT_ITEM_RockCandyRelated0886 = 0x886,           /* table 2; related to rock candy */
     GAMEBIT_SH_SawWarpStoneIntro = 0x887,                /* table 2 */
     GAMEBIT_MMP_MovedMeteor = 0x89B,                     /* table 2; hint 310; ref moonpass/HitAnimator target */
-    GAMEBIT_ITEM_Unknown8A0_Got = 0x8A0,                 /* table 2; hint 357; Hint text is "Released Third Krazoa Spirit" */
+    GAMEBIT_ITEM_Spirit3_Released = 0x8A0,               /* table 2; hint 357: "Released Third Krazoa Spirit" */
     GAMEBIT_WM_Warp1Enabled = 0x8A1,                     /* table 2; ref warlock/Transporter enabled */
-    GAMEBIT_ITEM_Unknown8A0_Used = 0x8A2,                /* table 2; set at chapter 4 */
+    GAMEBIT_WM_SpiritPlace3Ready = 0x8A2,                /* table 2; gates spirit-place 3 and its return pad */
     GAMEBIT_KP_ActNo = 0x8EC,                            /* table 1; size 4; old "krazoapalace" map */
     GAMEBIT_KP_ObjGroups = 0x8ED,                        /* table 3; size 32 */
     GAMEBIT_ITEM_WaterSpellStone1_902 = 0x902,           /* table 1 */
@@ -834,7 +834,7 @@ enum GameBitId {
     GAMEBIT_ITEM_Viewfinder_Got = 0xC64,                 /* table 2; hint 409; aka High-Defnition Display Device or Zoom Goggles */
     GAMEBIT_ITEM_SpiritTestStrength_Got = 0xC6E,         /* table 2; hint 380 */
     GAMEBIT_ITEM_Spirit4_Used = 0xC70,                   /* table 2; hint 382 */
-    GAMEBIT_TransporterRelated07C1 = 0xC71,              /* table 2 */
+    GAMEBIT_WM_SpiritPlace4Ready = 0xC71,                /* table 2; gates spirit-place 4 and its return pad */
     GAMEBIT_ITEM_RockCandy_Got = 0xC7C,                  /* table 2 */
     GAMEBIT_ITEM_RockCandy_Used = 0xC7D,                 /* table 2; hint 258 */
     GAMEBIT_SH_WarpStoneComplainingAboutGifts = 0xC7E,   /* table 2; triggers "nobody brings me gifts" scene */
@@ -851,8 +851,9 @@ enum GameBitId {
     GAMEBIT_IM_OpenedCheatWell = 0xCB3,                  /* table 2; ref newicemount/HitAnimator target */
     GAMEBIT_IM_CheatWellCaveRelated0CB4 = 0xCB4,         /* table 2; ref newicemount/ExplodeWall onExplode */
     GAMEBIT_ITEM_Spirit5_Released = 0xCB5,               /* table 2; hint 420 */
+    GAMEBIT_WM_SpiritPlace5Ready = 0xCB6,                /* table 2; gates spirit-place 5 and its return pad */
     GAMEBIT_ITEM_Spirit6_Released = 0xCB7,               /* table 2; hint 423; hint: "Andross Revealed" */
-    GAMEBIT_TransportedRelated0CB8 = 0xCB8,              /* table 2; related to transporter */
+    GAMEBIT_WM_SpiritPlace6Ready = 0xCB8,                /* table 2; gates spirit-place 6 and its return pad */
     GAMEBIT_SHRINE_MUSIC_LOCK = 0xCBB,                   /* Krazoa-shrine music lock: set (success-gated in GPSH) when a Krazoa shrine object (MMSH/ECSH/DFSH/DBSH/GPSH) frees; every area's level-control DLL watches it via SCGameBitLatch_Update to start/stop MUSICTRIG_PU3_Adventure_c4 and hand back its own ambient music, and it also raises audio.c's SFX reverb bus and suppresses doorf4's door-close SFX during the transition */
     GAMEBIT_ITEM_SpellStone_Disabled = 0xCBC,            /* table 2; dims them in the menu */
     GAMEBIT_SawFuelCell = 0xCBE,                         /* table 2 */
@@ -973,6 +974,7 @@ enum GameBitId {
     GAMEBIT_SH_Related0EDE = 0xEDE,                      /* table 2; Triggers a communication after pushing switch at bottom of well */
     GAMEBIT_ITEM_SnowHornArtifactEE5 = 0xEE5,            /* table 2; set when using artifact */
     GAMEBIT_ITEM_SnowHornArtifactEE6 = 0xEE6,            /* table 2; set when using artifact */
+    GAMEBIT_VFP_EnvironmentRelated0EF6 = 0xEF6,           /* table 2; transporter-controlled VFP environment state */
     GAMEBIT_ECSH_InShrine = 0xEFA,                       /* table 0; set when entering Krazoa test 1, cleared when leaving */
     GAMEBIT_MC_IsActive = 0xEFB,                         /* table 0; set while the Magic Cave interior is active; selects SFX global control 0xD */
     GAMEBIT_MAZEWELL_ACTIVE = 0xEFC,                     /* table 0; Music_Trigger(0x36) + Well active/hitbox state */

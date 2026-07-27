@@ -70,16 +70,6 @@ enum
     WMSPIRITPLACE_SEQEV_SPIRIT_VISION_OFF = 9
 };
 
-/* Each gate bit allows its shrine's follow-up sequence to run. */
-enum
-{
-    GAMEBIT_SPIRITPLACE_2_READY = 0x29B,
-    GAMEBIT_SPIRITPLACE_3_READY = 0x8A2,
-    GAMEBIT_SPIRITPLACE_4_READY = 0xC71,
-    GAMEBIT_SPIRITPLACE_5_READY = 0xCB6,
-    GAMEBIT_SPIRITPLACE_6_READY = 0xCB8
-};
-
 ObjectDescriptor gWM_spiritplaceObjDescriptor = {
     0,
     0,
@@ -289,7 +279,8 @@ void WM_spiritplace_update(GameObject* obj)
                         state->sequenceStarted = 1;
                     }
                 }
-                else if (mainGetBit(state->sequenceGameBit) != 0 && mainGetBit(GAMEBIT_SPIRITPLACE_2_READY) != 0)
+                else if (mainGetBit(state->sequenceGameBit) != 0 &&
+                         mainGetBit(GAMEBIT_WM_SpiritPlace2Ready) != 0)
                 {
                     (*gObjectTriggerInterface)->runSequence(1, obj, -1);
                     mainSetBits(state->promptGameBit, 0);
@@ -367,7 +358,8 @@ void WM_spiritplace_update(GameObject* obj)
                         state->sequenceStarted = 1;
                     }
                 }
-                else if (mainGetBit(state->sequenceGameBit) != 0 && mainGetBit(GAMEBIT_SPIRITPLACE_3_READY) != 0)
+                else if (mainGetBit(state->sequenceGameBit) != 0 &&
+                         mainGetBit(GAMEBIT_WM_SpiritPlace3Ready) != 0)
                 {
                     (*gObjectTriggerInterface)->runSequence(1, obj, -1);
                     mainSetBits(state->promptGameBit, 0);
@@ -409,7 +401,8 @@ void WM_spiritplace_update(GameObject* obj)
                         state->sequenceStarted = 1;
                     }
                 }
-                else if (mainGetBit(state->sequenceGameBit) != 0 && mainGetBit(GAMEBIT_SPIRITPLACE_4_READY) != 0)
+                else if (mainGetBit(state->sequenceGameBit) != 0 &&
+                         mainGetBit(GAMEBIT_WM_SpiritPlace4Ready) != 0)
                 {
                     (*gObjectTriggerInterface)->runSequence(1, obj, -1);
                     mainSetBits(state->promptGameBit, 0);
@@ -452,7 +445,8 @@ void WM_spiritplace_update(GameObject* obj)
                         state->envFxPending = 1;
                     }
                 }
-                else if (mainGetBit(state->sequenceGameBit) != 0 && mainGetBit(GAMEBIT_SPIRITPLACE_5_READY) != 0)
+                else if (mainGetBit(state->sequenceGameBit) != 0 &&
+                         mainGetBit(GAMEBIT_WM_SpiritPlace5Ready) != 0)
                 {
                     if (state->envFxPending)
                     {
@@ -504,7 +498,8 @@ void WM_spiritplace_update(GameObject* obj)
                         mainSetBits(state->promptGameBit, 0);
                     }
                 }
-                else if (mainGetBit(state->sequenceGameBit) != 0 && mainGetBit(GAMEBIT_SPIRITPLACE_6_READY) != 0)
+                else if (mainGetBit(state->sequenceGameBit) != 0 &&
+                         mainGetBit(GAMEBIT_WM_SpiritPlace6Ready) != 0)
                 {
                     mainSetBits(state->promptGameBit, 0);
                     mainSetBits(state->sequenceGameBit, 1);
@@ -566,4 +561,3 @@ void WM_spiritplace_release(void)
 void WM_spiritplace_initialise(void)
 {
 }
-

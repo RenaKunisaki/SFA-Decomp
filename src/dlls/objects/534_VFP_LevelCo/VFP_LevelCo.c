@@ -47,7 +47,6 @@ enum
 };
 
 /* the level's intro environment transition (run once) */
-#define GAMEBIT_VFP_INTRO_DONE  0xef6 /* global "intro already played" gate */
 #define GAMEBIT_VFP_SKY_PENDING 0xd72 /* request the day sky swap, cleared after */
 #define VFP_ENVFX_INTRO_0       0x10c
 #define VFP_ENVFX_INTRO_1       0x10d
@@ -139,7 +138,7 @@ void VFP_LevelControl_update(GameObject* obj)
     int player = (int)Obj_GetPlayerObject();
     u8 mapEventState;
 
-    if ((obj)->userData1 == 0 && mainGetBit(GAMEBIT_VFP_INTRO_DONE) == 0u)
+    if ((obj)->userData1 == 0 && mainGetBit(GAMEBIT_VFP_EnvironmentRelated0EF6) == 0u)
     {
         if (mainGetBit(GAMEBIT_VFP_SKY_PENDING) != 0u)
         {
