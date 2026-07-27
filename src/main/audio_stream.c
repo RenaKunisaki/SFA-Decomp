@@ -43,6 +43,9 @@
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
 
+static const f32 gAudioStreamEndPosInfinite = 9.0e9f;
+static const f32 gAudioStreamFramesPerSecond = 60.0f;
+
 u8 gAudioStreamVolumeLeft = 0xFF;
 u8 gAudioStreamVolumeRight = 0xFF;
 u8 gAudioStreamPlayAddrCallbackDone = 1;
@@ -71,6 +74,15 @@ AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 #define AI_STREAM_STOP  0
 #define AI_STREAM_START 1
 
+
+static void AudioStream_ResetWork(void)
+{
+    memset(&gAudioStreamDvdBlockCurrent, 0, sizeof(gAudioStreamDvdBlockCurrent));
+    memset(&gAudioStreamDvdBlockPrepared, 0, sizeof(gAudioStreamDvdBlockPrepared));
+    memset(gSfxLoopedObjectSoundFlags, 0, sizeof(gSfxLoopedObjectSoundFlags));
+    memset(gSfxLoopedObjectSoundIds, 0, sizeof(gSfxLoopedObjectSoundIds));
+    memset(gSfxLoopedObjectSoundObjects, 0, sizeof(gSfxLoopedObjectSoundObjects));
+}
 
 void AudioStream_StopAll(void)
 {
@@ -234,7 +246,7 @@ void AudioStream_StartPrepared(void)
                 AISetStreamVolRight(gAudioStreamVolumeRight);
                 AISetStreamPlayState(AI_STREAM_START);
                 gAudioStreamPlaying = 1;
-                gAudioStreamPos = lbl_803DE5D0;
+                gAudioStreamPos = 0.0f;
                 gAudioStreamCurrentId = gAudioStreamPreparedId;
                 gAudioStreamPreparedId = 0;
                 gAudioStreamPreparingId = 0;
@@ -336,8 +348,8 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
             gAudioStreamPlaying = 0;
         }
 
-        gAudioStreamEndPos = (f32)(u32)s->lengthRaw / lbl_803DE5D4;
-        if (lbl_803DE5D0 == gAudioStreamEndPos)
+        gAudioStreamEndPos = (f32)(u32)s->lengthRaw / 100.0f;
+        if (0.0f == gAudioStreamEndPos)
         {
             gAudioStreamEndPos = gAudioStreamEndPosInfinite;
         }
@@ -399,7 +411,7 @@ void AudioStream_UpdateFadeTimer(void)
     }
     else
     {
-        gAudioStreamPos = lbl_803DE5D0;
+        gAudioStreamPos = 0.0f;
     }
 }
 
@@ -439,7 +451,7 @@ void AudioStream_PrepareCallback(s32 result, DVDFileInfo* fileInfo)
             AISetStreamVolRight(gAudioStreamVolumeRight);
             AISetStreamPlayState(AI_STREAM_START);
             gAudioStreamPlaying = 1;
-            gAudioStreamPos = lbl_803DE5D0;
+            gAudioStreamPos = 0.0f;
             gAudioStreamCurrentId = gAudioStreamPreparedId;
             gAudioStreamPreparedId = 0;
             gAudioStreamPreparingId = 0;

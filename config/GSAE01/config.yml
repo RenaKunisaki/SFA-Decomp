@@ -41,6 +41,11 @@ force_active:
   # and the .sbss word only it reads come along via its own references);
   # dropping it would shorten .text and shift every later section.
   - cardShowMessage
+  # audio_stream.c: the looped-object-sound table is reached through the
+  # gSfxLoopedObjectSoundFlags base, so no relocation names the id or object
+  # halves; dropping them would shorten .bss and shift every later address.
+  - gSfxLoopedObjectSoundIds
+  - gSfxLoopedObjectSoundObjects
 
 # Path to the main.dol file.
 object: sys/main.dol
