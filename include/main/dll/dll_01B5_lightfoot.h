@@ -15,7 +15,7 @@ extern u32 lbl_803DC70C[2];
 extern u32 lbl_803DC714;
 extern u32 lbl_803DC718[2];
 extern u32 lbl_803DC720;
-extern u32 lbl_803DC724[3];
+extern u32 lbl_803DC724[2];
 extern f32 lbl_803E817C;
 extern f32 lbl_803E8180;
 extern f32 lbl_803E8188;
