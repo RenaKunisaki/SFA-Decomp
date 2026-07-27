@@ -1,15 +1,3 @@
-/*
- * playershadow (DLL 0x000D) - the player's projected ground shadow / footfall fx.
- *
- * The TU proper is small: a gPlayerShadowMode setter (playerShadow_setMode,
- * which only accepts 0 or values >= 0xa) and playerShadow_renderObject, which
- * builds an 8-corner swept-sphere box (radius/height chosen per shadow mode,
- * modes 0xb..0x11) around the object, runs it through the terrain hit-detect
- * pipeline, then hands the resulting tri hits to playerShadow_scatterFootfallEffects. playerShadow_scatterFootfallEffects
- * walks those hits and, for surface types 0x10-0x17, scatters bone/foot
- * particle effects (partfx ids 0x72/0x73/0x190) at random barycentric points
- * on the struck triangles relative to the camera.
- */
 #include "main/dll/partfx_interface.h"
 #include "main/vecmath.h"
 #include "game/objects/object.h"
