@@ -1,5 +1,5 @@
 /*
- * dll78func0 (DLL 0x78) - modgfx particle/aura effect builder.
+ * DLL 120 / 0x78 - modgfx particle/aura effect builder.
  *
  * One real entry point of note: dll_78_func03 assembles a fixed
  * 12-command modgfx draw list (the spirit/aura particle effect) into a
