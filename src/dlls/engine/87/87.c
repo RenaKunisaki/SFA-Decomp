@@ -22,7 +22,6 @@
 #include "main/attract_movie_api.h"
 #include "main/audio/audio_control_api.h"
 #include "main/audio/music_api.h"
-#include "main/dll/dll_0019_dll19func0.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
 
 u8 gCamTitleCurPose;
@@ -230,37 +229,3 @@ ResourceDescriptorCallbacks7 lbl_8031A01C = {{0x00000000,
                         (ResourceDescriptorCallback)CameraModeTitle_update,
                         (ResourceDescriptorCallback)CameraModeTitle_loadVolumes,
                         (ResourceDescriptorCallback)CameraModeTitle_moveCam}};
-u32 lbl_8031A048[3] = {0x00000000, 0x00000000, 0x00000000};
-u32 lbl_8031A054[3] = {0x00000000, 0x00000000, 0x00000000};
-u32 dll_19[32] = {0x00000000,
-                  0x00000000,
-                  0x00000000,
-                  0x001a0000,
-                  (u32)dll_19_func03_nop,
-                  (u32)dll_19_func04_nop,
-                  0x00000000,
-                  (u32)dll_19_func03_nop,
-                  (u32)dll_19_func04_nop,
-                  (u32)dll_19_func05,
-                  (u32)dll_19_func06,
-                  (u32)dll_19_func07,
-                  (u32)dll_19_func08,
-                  (u32)dll_19_func09_ret_0,
-                  (u32)dll_19_func0A,
-                  (u32)dll_19_func0B,
-                  (u32)dll_19_func0C,
-                  (u32)dll_19_func0D,
-                  (u32)dll_19_func0E,
-                  (u32)dll_19_func0F,
-                  (u32)dll_19_func10,
-                  (u32)dll_19_func11,
-                  (u32)dll_19_func12,
-                  (u32)dll_19_func13,
-                  (u32)dll_19_func14,
-                  (u32)dll_19_func15,
-                  (u32)dll_19_func16,
-                  (u32)dll_19_func17,
-                  (u32)dll_19_func18,
-                  (u32)dll_19_func19,
-                  (u32)dll_19_func1A,
-                  0x00000000};

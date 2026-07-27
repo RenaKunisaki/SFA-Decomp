@@ -1251,15 +1251,16 @@ dlls/engine/86/86.c:
 
 dlls/engine/87/87.c:
 	.text       start:0x801115E4 end:0x80111D14
-	.data       start:0x80319FB8 end:0x8031A0E0
+	.data       start:0x80319FB8 end:0x8031A048
 	.bss        start:0x803A4420 end:0x803A4438
 	.sdata      start:0x803DB9D8 end:0x803DB9E0
 	.sbss       start:0x803DD5D0 end:0x803DD5D8
 	.sdata2     start:0x803E1BE0 end:0x803E1C18
 
-main/dll/dll_0019_dll19func0.c:
+dlls/engine/25/25.c:
 	.text       start:0x80111D14 end:0x80113F8C
 	.rodata     start:0x802C2190 end:0x802C21A0
+	.data       start:0x8031A048 end:0x8031A0E0
 	.sdata      start:0x803DB9E0 end:0x803DB9E8
 	.sbss       start:0x803DD5D8 end:0x803DD5E8
 	.sdata2     start:0x803E1C18 end:0x803E1C88

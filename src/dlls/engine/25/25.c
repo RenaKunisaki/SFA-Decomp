@@ -1,4 +1,3 @@
-/* DLL 0x0019 - dll19 / camDebug group. TU: 0x8010DB7C-0x8010DD58. */
 #include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/track_bbox_api.h"
@@ -90,8 +89,8 @@ const union Dll19ConstU32 gDll19DefaultCurveMode = { 2 };
 
 
 const Dll19ChildObjectIdTable lbl_802C2190 = {{0x23, 0x69, 0x33, 0x64, 0x1D}};
-extern u8 lbl_8031A054[];
-extern u8 lbl_8031A048[];
+u32 lbl_8031A048[3] = {0, 0, 0};
+u32 lbl_8031A054[3] = {0, 0, 0};
 
 int dll_19_func1B(GameObject* obj)
 {
@@ -1267,3 +1266,38 @@ void dll_19_func04_nop(void)
 void dll_19_func03_nop(void)
 {
 }
+
+u32 dll_19[32] = {
+    0,
+    0,
+    0,
+    0x001a0000,
+    (u32)dll_19_func03_nop,
+    (u32)dll_19_func04_nop,
+    0,
+    (u32)dll_19_func03_nop,
+    (u32)dll_19_func04_nop,
+    (u32)dll_19_func05,
+    (u32)dll_19_func06,
+    (u32)dll_19_func07,
+    (u32)dll_19_func08,
+    (u32)dll_19_func09_ret_0,
+    (u32)dll_19_func0A,
+    (u32)dll_19_func0B,
+    (u32)dll_19_func0C,
+    (u32)dll_19_func0D,
+    (u32)dll_19_func0E,
+    (u32)dll_19_func0F,
+    (u32)dll_19_func10,
+    (u32)dll_19_func11,
+    (u32)dll_19_func12,
+    (u32)dll_19_func13,
+    (u32)dll_19_func14,
+    (u32)dll_19_func15,
+    (u32)dll_19_func16,
+    (u32)dll_19_func17,
+    (u32)dll_19_func18,
+    (u32)dll_19_func19,
+    (u32)dll_19_func1A,
+    0,
+};

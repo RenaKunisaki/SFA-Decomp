@@ -68,7 +68,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x016 | — | NO-RETAIL-NAME | main/dll/dll_0016_screentransition.c | = (canonical) | — |
 | 0x017 | — | NO-RETAIL-NAME | main/dll/dll_0017_savegame.c | = (canonical) | — |
 | 0x018 | — | NO-RETAIL-NAME | main/dll/dll_0018_boneparticleeffect.c | = (canonical) | — |
-| 0x019 | — | NO-RETAIL-NAME | main/dll/dll_0019_dll19func0.c | = (canonical) | — |
+| 0x019 | — | NO-RETAIL-NAME | dlls/engine/25/25.c | = (canonical) | Complete DOL-confirmed TU; data vectors and descriptor restored from DLL 87 tail |
 | 0x01A | — | NO-RETAIL-NAME | dlls/engine/26/26.c | = (canonical) | Complete DOL-confirmed text TU; missing BSS owner restored; registration record remains embedded in DLL 27 data |
 | 0x01B | — | NO-RETAIL-NAME | dlls/engine/27/27.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored; PartFX and Effect1 registration records remain embedded in Effect2 data |
 | 0x01C | — | NO-RETAIL-NAME | dlls/engine/28/28.c | = (canonical) | Complete DOL-confirmed TU |
@@ -130,7 +130,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x054 | — | NO-RETAIL-NAME | dlls/engine/84/84.c | = (canonical) | — |
 | 0x055 | — | NO-RETAIL-NAME | dlls/engine/85/85.c | = (canonical) | — |
 | 0x056 | — | NO-RETAIL-NAME | dlls/engine/86/86.c | = (canonical) | — |
-| 0x057 | — | NO-RETAIL-NAME | dlls/engine/87/87.c | = (canonical) | — |
+| 0x057 | — | NO-RETAIL-NAME | dlls/engine/87/87.c | = (canonical) | Complete DOL-confirmed TU; DLL 25 data tail detached |
 | 0x058 | — | NO-RETAIL-NAME | dlls/engine/88/88.c | = (canonical) | — |
 | 0x059 | — | NO-RETAIL-NAME | dlls/modgfx/89/89.c | = (canonical) | — |
 | 0x05A | — | NO-RETAIL-NAME | dlls/modgfx/90/90.c | = (canonical) | — |
