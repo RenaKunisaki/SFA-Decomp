@@ -5079,7 +5079,7 @@ dlls/objects/437/437.c:
 	.data       start:0x80334FF8 end:0x80335030
 	.bss        start:0x803DB0D0 end:0x803DB0F0
 	.sdata      start:0x803DC6F0 end:0x803DC730
-	.sdata2     start:0x803E8214 end:0x803E8230
+	.sdata2     start:0x803E8214 end:0x803E822C
 
 dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:
 	.text       start:0x802B9780 end:0x802BC0D0
@@ -5104,7 +5104,7 @@ dlls/objects/599_DR_EarthWar/DR_EarthWar.c:
 	.bss        start:0x803DB170 end:0x803DB1C0
 	.sdata      start:0x803DC760 end:0x803DC76C
 	.sbss       start:0x803DE4D0 end:0x803DE4D8
-	.sdata2     start:0x803E82D4 end:0x803E8398
+	.sdata2     start:0x803E82D8 end:0x803E8398
 
 dlls/objects/600_DR_CloudRun/DR_CloudRun.c:
 	.text       start:0x802BF0C8 end:0x802C187C

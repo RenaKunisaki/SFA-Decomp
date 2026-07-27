@@ -83,7 +83,6 @@ const f32 lbl_803E821C = 24.0f;
 const f32 lbl_803E8220 = 0.75f;
 const f32 lbl_803E8224 = 48.0f;
 const f32 lbl_803E8228 = 20.0f;
-const f32 lbl_803E822C = 0.0f;
 
 int lightfoot_getExtraSize(void)
 {

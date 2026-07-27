@@ -29,7 +29,6 @@ extern const f32 lbl_803E821C;
 extern const f32 lbl_803E8220;
 extern const f32 lbl_803E8224;
 extern const f32 lbl_803E8228;
-extern const f32 lbl_803E822C;
 
 int lightfoot_getExtraSize(void);
 int lightfoot_getObjectTypeId(void);
