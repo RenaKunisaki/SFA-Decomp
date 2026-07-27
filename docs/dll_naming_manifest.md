@@ -987,7 +987,7 @@ blocked units will surface more when carved.
 | 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/dlls/objects/379_DFSH_LaserB.h |
 | 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/dlls/objects/408_NWSH_levcon.h |
-| 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/main/dll/dll_019F_nwtreebrid.h |
+| 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/dlls/objects/415_NW_treebrid.h |
 | 0x1A0 | dlls/objects/416_NW_geyser/NW_geyser.c | include/main/dll/dll_01A0_nwgeyser.h |
 | 0x1A1 | dlls/objects/417/417.c | include/main/dll/dll_01A1_nwmammoth.h |
 | 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/main/dll/dll_01A8_shkillermushroom.h |

@@ -209,6 +209,7 @@
 #include "dlls/objects/412.h"
 #include "dlls/objects/413.h"
 #include "dlls/objects/414.h"
+#include "dlls/objects/415_NW_treebrid.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -360,8 +361,7 @@ extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gStaffObjDescriptor,
     gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
-extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
-    gTrickyCurveObjDescriptor;
+extern ResourceDescriptor gTitleScreenObjDescriptor, gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
 extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescriptor, gVFP_LevelControlObjDescriptor,
@@ -1462,7 +1462,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll412ObjDescriptor,
     (ResourceDescriptor*)&gDll413ObjDescriptor,
     (ResourceDescriptor*)&gDll414ObjDescriptor,
-    &gTreeBirdObjDescriptor,
+    (ResourceDescriptor*)&gNWTreeBridgeObjDescriptor,
     &gNW_geyserObjDescriptor,
     &gNW_mammothObjDescriptor,
     &gNW_trickyObjDescriptor,
