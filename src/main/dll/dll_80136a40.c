@@ -15,6 +15,7 @@
  *     debugPrintDrawRecord (record interpreter: color/tab/newline/position tags).
  */
 #include "main/texture.h"
+#include "track/intersect_api.h"
 #include "main/frame_timing.h"
 #include "main/lightmap_text_color_api.h"
 #include "main/debug.h"
