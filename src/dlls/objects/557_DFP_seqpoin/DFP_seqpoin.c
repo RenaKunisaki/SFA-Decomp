@@ -35,9 +35,9 @@ typedef struct DfpseqpointPlacement
     s8 rotXByte;       /* 0x18 */
     u8 triggerMode;    /* 0x19 */
     s16 triggerRadius; /* 0x1A */
-    s16 triggerId;     /* 0x1C */
-    s16 gameBitGate;   /* 0x1E */
-    s16 gameBitDone;   /* 0x20 */
+    s16 sequenceId;    /* 0x1C */
+    s16 conditionGameBit; /* 0x1E */
+    s16 disableGameBit;   /* 0x20 */
     u8 pad22[0x24 - 0x22];
     s16 unk24;
     u8 pad26[0x2B - 0x26];
@@ -59,7 +59,7 @@ int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
     animUpdate->sequenceEventActive = 0;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
-        switch (blob->triggerId)
+        switch (blob->sequenceId)
         {
         case 1:
             switch (animUpdate->eventIds[i])
@@ -147,7 +147,7 @@ void DFP_seqpoint_update(GameObject* obj)
         mainSetBits(0xef7, 1);
         ((DfpFlags7*)&state->flags0F)->b80 = 0;
     }
-    gameBit = state->gameBitDone;
+    gameBit = state->disableGameBit;
     if (gameBit != -1)
     {
         if (state->doneLatch != 0)
@@ -156,7 +156,7 @@ void DFP_seqpoint_update(GameObject* obj)
             {
                 return;
             }
-            mainSetBits(state->gameBitDone, 1);
+            mainSetBits(state->disableGameBit, 1);
             state->doneLatch = 1;
             return;
         }
@@ -175,25 +175,25 @@ void DFP_seqpoint_update(GameObject* obj)
     case DFPSEQPOINT_MODE_RADIUS:
         if (Vec_distance(&self->anim.worldPosX, &player->anim.worldPosX) < state->triggerRadius)
         {
-            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+            (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
             state->doneLatch = 1;
         }
         break;
     case DFPSEQPOINT_MODE_GATE:
-        gameBit = state->gameBitGate;
+        gameBit = state->conditionGameBit;
         if (gameBit != -1 && mainGetBit(gameBit) != 0)
         {
-            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+            (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
             state->doneLatch = 1;
         }
         break;
     case DFPSEQPOINT_MODE_RADIUS_AND_GATE:
         if (Vec_distance(&self->anim.worldPosX, &player->anim.worldPosX) < state->triggerRadius)
         {
-            gameBit = state->gameBitGate;
+            gameBit = state->conditionGameBit;
             if (gameBit != -1 && mainGetBit(gameBit) != 0)
             {
-                (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+                (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
                 state->doneLatch = 1;
             }
         }
@@ -201,29 +201,29 @@ void DFP_seqpoint_update(GameObject* obj)
     case DFPSEQPOINT_MODE_RADIUS_AND_UNSET:
         if (Vec_distance(&self->anim.worldPosX, &player->anim.worldPosX) < state->triggerRadius)
         {
-            gameBit = state->gameBitGate;
+            gameBit = state->conditionGameBit;
             if (gameBit != -1 && mainGetBit(gameBit) == 0)
             {
-                (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
-                mainSetBits(state->gameBitGate, 1);
+                (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
+                mainSetBits(state->conditionGameBit, 1);
                 state->doneLatch = 1;
             }
         }
         break;
     case DFPSEQPOINT_MODE_GATE_UNSET:
-        gameBit = state->gameBitGate;
+        gameBit = state->conditionGameBit;
         if (gameBit != -1 && mainGetBit(gameBit) == 0)
         {
-            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
-            mainSetBits(state->gameBitGate, 1);
+            (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
+            mainSetBits(state->conditionGameBit, 1);
             state->doneLatch = 1;
         }
         break;
     case DFPSEQPOINT_MODE_GATE_REPEAT:
-        gameBit = state->gameBitGate;
+        gameBit = state->conditionGameBit;
         if (gameBit != -1 && mainGetBit(gameBit) != 0)
         {
-            (*gObjectTriggerInterface)->runSequence(state->triggerId, (void*)obj, -1);
+            (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
         }
         break;
     }
@@ -236,10 +236,10 @@ void DFP_seqpoint_init(GameObject* obj, u8* init)
     obj->animEventCallback = DFP_seqpoint_SeqFn;
     obj->anim.rotX = (s16)((s8)init[0x18] << 8);
     sub->triggerRadius = (f32)(s32) * (s16*)(init + 0x1a);
-    sub->triggerId = *(s16*)(init + 0x1c);
+    sub->sequenceId = *(s16*)(init + 0x1c);
     sub->triggerMode = init[0x19];
-    sub->gameBitGate = *(s16*)(init + 0x1e);
-    sub->gameBitDone = *(s16*)(init + 0x20);
+    sub->conditionGameBit = *(s16*)(init + 0x1e);
+    sub->disableGameBit = *(s16*)(init + 0x20);
     obj->objectFlags = (u16)(obj->objectFlags | DFPSEQPOINT_OBJFLAG_HITDETECT_DISABLED);
     ((DfpFlags7*)&sub->flags0F)->b80 = 0;
 }

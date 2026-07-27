@@ -24,9 +24,9 @@ typedef struct DfpLevelControlState
 typedef struct DfpSeqPointState
 {
     f32 triggerRadius; /* def+0x1A */
-    s16 gameBitGate; /* 0x04: def+0x1E */
-    s16 gameBitDone; /* 0x06: def+0x20 */
-    s16 triggerId; /* 0x08: def+0x1C */
+    s16 conditionGameBit; /* 0x04: def+0x1E */
+    s16 disableGameBit; /* 0x06: def+0x20 */
+    s16 sequenceId; /* 0x08: def+0x1C */
     u8 unk0A[3];
     u8 doneLatch; /* 0x0D */
     u8 triggerMode; /* 0x0E: def+0x19 */

@@ -31,12 +31,12 @@ typedef enum SeqPointMode
 typedef struct SeqPointState
 {
     f32 triggerRadius;
-    s16 conditionBit;
-    s16 disableBit;
+    s16 conditionGameBit;
+    s16 disableGameBit;
     s16 sequenceId;
     u8 pad0A[3];
-    u8 done;
-    u8 mode;
+    u8 doneLatch;
+    u8 triggerMode;
     u8 pad0F;
 } SeqPointState;
 
@@ -44,11 +44,11 @@ typedef struct SeqPointPlacement
 {
     ObjPlacement base;
     s8 rotXByte;
-    u8 mode;
+    u8 triggerMode;
     s16 triggerRadius;
     s16 sequenceId;
-    s16 conditionBit;
-    s16 disableBit;
+    s16 conditionGameBit;
+    s16 disableGameBit;
 } SeqPointPlacement;
 
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
@@ -133,79 +133,79 @@ void SeqPoint_update(GameObject* obj)
 {
     GameObject* player = Obj_GetPlayerObject();
     SeqPointState* self = obj->extra;
-    int key = self->disableBit;
+    int key = self->disableGameBit;
 
     if (key != -1)
     {
-        if (self->done != 0)
+        if (self->doneLatch != 0)
         {
             if (mainGetBit(key) != 0)
                 return;
-            mainSetBits(self->disableBit, 1);
-            self->done = 1;
+            mainSetBits(self->disableGameBit, 1);
+            self->doneLatch = 1;
             return;
         }
         if (mainGetBit(key) != 0)
         {
-            self->done = 1;
+            self->doneLatch = 1;
             return;
         }
     }
-    if (self->done != 0)
+    if (self->doneLatch != 0)
         return;
-    switch (self->mode)
+    switch (self->triggerMode)
     {
     case SEQPOINT_MODE_RADIUS:
         if (!(Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
               self->triggerRadius))
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        self->done = 1;
+        self->doneLatch = 1;
         break;
     case SEQPOINT_MODE_BIT:
-        if (self->conditionBit == -1)
+        if (self->conditionGameBit == -1)
             return;
-        if (mainGetBit(self->conditionBit) == 0)
+        if (mainGetBit(self->conditionGameBit) == 0)
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        self->done = 1;
+        self->doneLatch = 1;
         break;
     case SEQPOINT_MODE_RADIUS_AND_BIT:
         if (!(Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
               self->triggerRadius))
             return;
-        if (self->conditionBit == -1)
+        if (self->conditionGameBit == -1)
             return;
-        if (mainGetBit(self->conditionBit) == 0)
+        if (mainGetBit(self->conditionGameBit) == 0)
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        self->done = 1;
+        self->doneLatch = 1;
         break;
     case SEQPOINT_MODE_RADIUS_BIT_ONCE:
         if (!(Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
               self->triggerRadius))
             return;
-        if (self->conditionBit == -1)
+        if (self->conditionGameBit == -1)
             return;
-        if (mainGetBit(self->conditionBit) != 0)
+        if (mainGetBit(self->conditionGameBit) != 0)
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        mainSetBits(self->conditionBit, 1);
-        self->done = 1;
+        mainSetBits(self->conditionGameBit, 1);
+        self->doneLatch = 1;
         break;
     case SEQPOINT_MODE_BIT_ONCE:
-        if (self->conditionBit == -1)
+        if (self->conditionGameBit == -1)
             return;
-        if (mainGetBit(self->conditionBit) != 0)
+        if (mainGetBit(self->conditionGameBit) != 0)
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
-        mainSetBits(self->conditionBit, 1);
-        self->done = 1;
+        mainSetBits(self->conditionGameBit, 1);
+        self->doneLatch = 1;
         break;
     case SEQPOINT_MODE_BIT_REPEAT:
-        if (self->conditionBit == -1)
+        if (self->conditionGameBit == -1)
             return;
-        if (mainGetBit(self->conditionBit) == 0)
+        if (mainGetBit(self->conditionGameBit) == 0)
             return;
         (*gObjectTriggerInterface)->runSequence(self->sequenceId, obj, -1);
         break;
@@ -220,9 +220,9 @@ void SeqPoint_init(GameObject* obj, int data)
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->triggerRadius = def->triggerRadius;
     state->sequenceId = def->sequenceId;
-    state->mode = def->mode;
-    state->conditionBit = def->conditionBit;
-    state->disableBit = def->disableBit;
+    state->triggerMode = def->triggerMode;
+    state->conditionGameBit = def->conditionGameBit;
+    state->disableGameBit = def->disableGameBit;
     obj->objectFlags |= SEQPOINT_OBJFLAG_HITDETECT_DISABLED;
 }
 
