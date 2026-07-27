@@ -615,7 +615,7 @@ dlls/engine/23/23.c:
 	.sdata      start:0x803DB890 end:0x803DB898
 	.sbss       start:0x803DD488 end:0x803DD4A0
 
-main/dll/dll_0011_screens.c:
+dlls/engine/17/17.c:
 	.text       start:0x800EA174 end:0x800EA774
 	.data       start:0x803119E0 end:0x80311C08
 	.sbss       start:0x803DD4A0 end:0x803DD4B0
