@@ -135,6 +135,7 @@
 #include "dlls/objects/337_CFScalesGal.h"
 #include "dlls/objects/338_CF_ObjCreat.h"
 #include "dlls/objects/339_CFPerch.h"
+#include "dlls/objects/340.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -231,7 +232,6 @@ extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
     gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor;
-extern ResourceDescriptor gCFPrisonCageObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1334,7 +1334,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFScalesGalNullResourceDescriptor,
     (ResourceDescriptor*)&gCFObjCreatNullResourceDescriptor,
     (ResourceDescriptor*)&gCFPerchObjDescriptor,
-    &gCFPrisonCageObjDescriptor,
+    (ResourceDescriptor*)&gCFPrisonCageObjDescriptor,
     &lbl_803DBE00,
     &lbl_803DBE70,
     &gSpiritDoorSpiritObjDescriptor,
