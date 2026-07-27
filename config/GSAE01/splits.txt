@@ -3765,7 +3765,7 @@ dlls/objects/642_BarrelGener/BarrelGener.c:
 main/obj_movelib.c:
 	.text       start:0x80221978 end:0x802227EC
 	.sdata      start:0x803DC3A0 end:0x803DC3B0
-	.sdata2     start:0x803E6C38 end:0x803E6CA0
+	.sdata2     start:0x803E6C38 end:0x803E6C9C
 
 dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c:
 	.text       start:0x802227EC end:0x80223004
