@@ -8868,7 +8868,6 @@ void Tricky_update(int obj)
     char* base;
     int state;
     TrickyState* trickyState;
-    TrickyCommand* command;
     int found;
     int sfxId;
     TrickyState* st;
@@ -8877,6 +8876,7 @@ void Tricky_update(int obj)
         int index;
     } childLoop;
     int i;
+    int ref;
     int setup;
     int count;
     u32 flags;
@@ -9023,11 +9023,11 @@ void Tricky_update(int obj)
         {
             cmd = (*gGameUIInterface)->isOneOfItemsBeingUsed(cmdQuery.ids, TRICKY_ITEM_ID_COUNT);
         }
-        command = trickyState->commands;
+        ref = state;
         count = trickyState->commandCount;
-        for (i = 0; i < count; i++, command++)
+        for (i = 0; i < count; i++, ref += 8)
         {
-            if (command->type == cmd)
+            if (*(s8*)(ref + 0x74d) == cmd)
             {
                 found = 1;
                 break;
@@ -9145,11 +9145,11 @@ void Tricky_update(int obj)
                     played = 0;
                     if (trickyState->commandPhase == 3)
                     {
-                        command = trickyState->commands;
+                        ref = state;
                         count = trickyState->commandCount;
-                        for (i = 0; i < count; i++, command++)
+                        for (i = 0; i < count; i++, ref += 8)
                         {
-                            if (command->type == 3)
+                            if (*(s8*)(ref + 0x74d) == 3)
                             {
                                 played = 1;
                             }
@@ -9487,15 +9487,15 @@ void Tricky_update(int obj)
     trickyState->prevSpeed = trickyState->speed;
     i = trickyState->commandCount - 1;
     {
-        TrickyCommand* command = &trickyState->commands[i];
+        int cur = state + i * 8;
 
-        for (; i >= 0; command--, i--)
+        for (; i >= 0; cur -= 8, i--)
         {
-            command->ttl--;
-            if (command->ttl == 0)
+            *(s8*)(cur + 0x74e) -= 1;
+            if (*(s8*)(cur + 0x74e) == 0)
             {
-                memmove(command, command + 1,
-                        (trickyState->commandCount - i - 1) * sizeof(*command));
+                memmove((void*)(cur + 0x748), (void*)(state + (i + 1) * 8 + 0x748),
+                        (trickyState->commandCount - i - 1) * 8);
                 trickyState->commandCount -= 1;
             }
         }
