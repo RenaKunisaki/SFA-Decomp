@@ -115,6 +115,7 @@
 #include "dlls/objects/317_ExplodeAnim.h"
 #include "dlls/objects/318.h"
 #include "dlls/objects/319_TexFrameAni.h"
+#include "dlls/objects/320_fogControl.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -246,7 +247,7 @@ extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescripto
     gExplodableObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
     gFireFlyObjDescriptor, gFireObjDescriptor;
-extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor;
+extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor, gIMAnimSpaceCraftObjDescriptor,
@@ -1299,7 +1300,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gExplodeAnimatorObjDescriptor,
     (ResourceDescriptor*)&gDIMBossIceSmashObjDescriptor,
     (ResourceDescriptor*)&gTexFrameAnimatorObjDescriptor,
-    &gFogControlObjDescriptor,
+    (ResourceDescriptor*)&gFogControlObjDescriptor,
     &gLightningObjDescriptor,
     &gFElevControlObjDescriptor,
     &gFEseqobjectObjDescriptor,

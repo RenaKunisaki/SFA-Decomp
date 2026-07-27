@@ -11,7 +11,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
 int mapGetDirIdx(int idx);
 u8 isHeavyFogEnabled(void);
 void disableHeavyFog(void);
-void enableHeavyFog(f32 top, f32 bottom, f32 red, f32 green, f32 blue, u8 mode);
+void enableHeavyFog(f32 top, f32 bottom, f32 depthScale, f32 depthOffset, f32 worldScale, u8 mode);
 void addWavyCausticTevStage(void);
 void addTexModulateReg2Stage(void);
 void addShadowFalloffTevStages(void);

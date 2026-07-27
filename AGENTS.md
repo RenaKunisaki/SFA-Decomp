@@ -154,6 +154,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 - When two proven consumers interpret the same shared placement byte with different signedness and
   both views are codegen-significant, model explicit union views at the shared offset. Do not force
   one canonical signedness and scatter casts; assert both offsets and rebuild every consumer.
+- Recover a placement field at the width actually loaded. If a supposed `s16` is only accessed as
+  `*(u8*)&field` at the field's address, model the evidenced `u8` plus the following unknown byte;
+  on the big-endian target that cast selects the first/high-order byte, not a generic "low byte."
 - When a shared placement record has proven mode-specific roles at the same offsets, expose
   explicit semantic union views in the owning canonical header and use the relevant view in each
   mode or consumer. Do not preserve one misleading generic name or duplicate the record as
