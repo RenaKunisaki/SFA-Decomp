@@ -4,7 +4,7 @@
 #include "ghidra_import.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "main/dll/texscroll_types.h"
+#include "dlls/objects/texscroll_types.h"
 
 extern ObjectDescriptor gTexscrollObjDescriptor;
 

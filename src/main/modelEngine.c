@@ -103,6 +103,7 @@
 #include "dlls/objects/305.h"
 #include "dlls/objects/306_WaterFallSp.h"
 #include "dlls/objects/307_sfxPlayer.h"
+#include "dlls/objects/308_texscroll2.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -276,8 +277,8 @@ extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gSh
 extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
-extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
-    gTextBlockObjDescriptor, gTimerObjDescriptor;
+extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscrollObjDescriptor, gTextBlockObjDescriptor,
+    gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
@@ -1279,7 +1280,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCF_DoorLightObjDescriptor,
     (ResourceDescriptor*)&gWaterFallSprayObjDescriptor,
     (ResourceDescriptor*)&gSfxPlayerObjDescriptor,
-    &gTexscroll2ObjDescriptor,
+    (ResourceDescriptor*)&gTexscroll2ObjDescriptor,
     &gTexscrollObjDescriptor,
     &gWaveAnimatorObjDescriptor,
     &gAlphaAnimatorObjDescriptor,
