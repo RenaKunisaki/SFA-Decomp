@@ -102,6 +102,7 @@
 #include "dlls/objects/304_AreaFXEmit.h"
 #include "dlls/objects/305.h"
 #include "dlls/objects/306_WaterFallSp.h"
+#include "dlls/objects/307_sfxPlayer.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -270,8 +271,8 @@ extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescripto
     gSH_staffObjDescriptor, gSH_thorntailObjDescriptor;
 extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPScarabObjDescriptor,
     gSPitembeamObjDescriptor, gSeqPointObjDescriptor;
-extern ResourceDescriptor gSfxPlayerObjDescriptor, gSfxplayerObjDescriptor, gShipBattleObjDescriptor,
-    gShopItemObjDescriptor, gShopKeeperObjDescriptor, gShopObjDescriptor;
+extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
+    gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
@@ -1277,7 +1278,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gAreaFXEmitObjDescriptor,
     (ResourceDescriptor*)&gCF_DoorLightObjDescriptor,
     (ResourceDescriptor*)&gWaterFallSprayObjDescriptor,
-    &gSfxPlayerObjDescriptor,
+    (ResourceDescriptor*)&gSfxPlayerObjDescriptor,
     &gTexscroll2ObjDescriptor,
     &gTexscrollObjDescriptor,
     &gWaveAnimatorObjDescriptor,
