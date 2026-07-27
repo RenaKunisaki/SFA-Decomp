@@ -770,12 +770,14 @@ void seqPairTableSort(SeqSortPair* arr, int n)
 {
     int key;
     int val;
+    int limit;
     int i;
     int j;
     int gap;
 
     gap = 1;
-    while (gap <= (n - 1) / 9)
+    limit = (n - 1) / 9;
+    while (gap <= limit)
     {
         gap = gap * 3 + 1;
     }
