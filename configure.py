@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/71/71.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/engine/72/72.c", cflags=cflags_dll_noopt_noinline),
             Object(NonMatching, "dlls/engine/73/73.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "dlls/engine/74/74.c", cflags=cflags_dll_noopt_nocse_noprop),
@@ -1502,7 +1503,6 @@ config.libs = [
                 NonMatching, "main/dll/camshipbattle5c.c", cflags=cflags_dll_noopt_nocse,
                 section_alignments={".data": 4},
             ),
-            Object(NonMatching, "main/dll/dll_0047_cameramodeteststrength.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "main/dll/attentioncam.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_60.c"),
             Object(NonMatching, "main/dll/dll_0019_dll19func0.c", cflags=cflags_dll_noopt),

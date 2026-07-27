@@ -1,4 +1,6 @@
-/* DLL 0x47 - CameraModeTestStrength [8010AEA8-8010B424) */
+/*
+ * DLL 71 / 0x47.
+ */
 #include "main/camera_interface.h"
 #include "main/curve.h"
 #include "main/dll/CAM/camcannon_state.h"
@@ -17,7 +19,6 @@
 
 CamCannonState* lbl_803DD560;
 
-/* Release camera back to the default gameplay mode on exit (cameramode DLL 0x42). */
 #define CAMTESTSTRENGTH_CAMMODE_DEFAULT 0x42
 
 void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* posEnd, s32 rotXEnd, s32 rotYEnd,
