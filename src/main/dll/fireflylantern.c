@@ -204,12 +204,12 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     vecA[0] = *(f32*)(state + 0x344) * d + obj->anim.localPosX;
     vecA[1] = *(f32*)(state + 0x348) * d + (objY = obj->anim.localPosY);
     vecA[2] = *(f32*)(state + 0x34c) * d + obj->anim.localPosZ;
-    axisA[0] = gWallPlaneZero;
-    axisA[1] = gWallPlaneOne;
-    axisA[2] = gWallPlaneZero;
+    axisA[0] = lbl_803E2A00;
+    axisA[1] = lbl_803E2A04;
+    axisA[2] = lbl_803E2A00;
     PSVECCrossProduct(axisA, (f32*)(state + 0x344), crossA);
     PSVECNormalize(crossA, crossA);
-    if (gWallPlaneZero != crossA[0])
+    if (lbl_803E2A00 != crossA[0])
     {
         dxDiff = (obj->anim.localPosX - ((FireflyState*)state)->planeAnchorX) / crossA[0];
     }
@@ -229,12 +229,12 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     vecB[0] = *(f32*)(state + 0x344) * d + targetPos[0];
     vecB[1] = *(f32*)(state + 0x348) * d + (dy = targetPos[1]);
     vecB[2] = *(f32*)(state + 0x34c) * d + targetPos[2];
-    axisB[0] = gWallPlaneZero;
-    axisB[1] = gWallPlaneOne;
-    axisB[2] = gWallPlaneZero;
+    axisB[0] = lbl_803E2A00;
+    axisB[1] = lbl_803E2A04;
+    axisB[2] = lbl_803E2A00;
     PSVECCrossProduct(axisB, (f32*)(state + 0x344), crossB);
     PSVECNormalize(crossB, crossB);
-    if (gWallPlaneZero != crossB[0])
+    if (lbl_803E2A00 != crossB[0])
     {
         d = (targetPos[0] - ((FireflyState*)state)->planeAnchorX) / crossB[0];
     }

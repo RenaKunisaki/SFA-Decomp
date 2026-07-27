@@ -52,12 +52,12 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     vecA[0] = fs->wallPlane.normal[0] * d + o->anim.localPosX;
     vecA[1] = fs->wallPlane.normal[1] * d + (objY = o->anim.localPosY);
     vecA[2] = fs->wallPlane.normal[2] * d + o->anim.localPosZ;
-    axisA[0] = gWallPlaneZero;
-    axisA[1] = gWallPlaneOne;
-    axisA[2] = gWallPlaneZero;
+    axisA[0] = lbl_803E2A00;
+    axisA[1] = lbl_803E2A04;
+    axisA[2] = lbl_803E2A00;
     PSVECCrossProduct(axisA, fs->wallPlane.normal, crossA);
     PSVECNormalize(crossA, crossA);
-    if (gWallPlaneZero != crossA[0])
+    if (lbl_803E2A00 != crossA[0])
     {
         dxA = (o->anim.localPosX - fs->wallPlane.anchorX) / crossA[0];
     }
@@ -77,12 +77,12 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     vecB[0] = fs->wallPlane.normal[0] * d + targetPos[0];
     vecB[1] = fs->wallPlane.normal[1] * d + (targetY = targetPos[1]);
     vecB[2] = fs->wallPlane.normal[2] * d + targetPos[2];
-    axisB[0] = gWallPlaneZero;
-    axisB[1] = gWallPlaneOne;
-    axisB[2] = gWallPlaneZero;
+    axisB[0] = lbl_803E2A00;
+    axisB[1] = lbl_803E2A04;
+    axisB[2] = lbl_803E2A00;
     PSVECCrossProduct(axisB, fs->wallPlane.normal, crossB);
     PSVECNormalize(crossB, crossB);
-    if (gWallPlaneZero != crossB[0])
+    if (lbl_803E2A00 != crossB[0])
     {
         d = (targetPos[0] - fs->wallPlane.anchorX) / crossB[0];
     }
@@ -104,9 +104,9 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
         delta = delta + 0xffff;
     }
     turnStep = timeDelta / (f32)(turnTime & 0xffff);
-    if (turnStep > gWallPlaneOne)
+    if (turnStep > lbl_803E2A04)
     {
-        turnStep = gWallPlaneOne;
+        turnStep = lbl_803E2A04;
     }
     angleStep = (int)((f32)delta * turnStep);
     *obj = (s16)(rot + angleStep);
@@ -116,7 +116,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     turnStep = sqrtf(dxDiff * dxDiff + dy * dy);
     if (turnStep > maxDistance)
     {
-        f32 ratio = gWallPlaneOne / turnStep;
+        f32 ratio = lbl_803E2A04 / turnStep;
         dxDiff = maxDistance * (dxDiff * ratio);
         dy = maxDistance * (dy * ratio);
     }
@@ -125,7 +125,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     wallPlaneClampMoveTarget(moveTarget, &fs->wallPlane, dxA, turnStep);
     PSVECSubtract(moveTarget, (f32*)(obj + 6), moveDelta);
     objMove((GameObject*)obj, moveDelta[0], moveDelta[1], moveDelta[2]);
-    turnStep = gWallPlaneZero;
+    turnStep = lbl_803E2A00;
     o->anim.velocityX = turnStep;
     o->anim.velocityY = turnStep;
     o->anim.velocityZ = turnStep;
