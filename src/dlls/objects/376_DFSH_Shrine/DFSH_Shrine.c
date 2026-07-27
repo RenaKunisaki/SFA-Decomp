@@ -1,155 +1,78 @@
-/*
- * DFSH_Shrine (DLL 0x178) - the Dragon Rock shrine's
- * floating lantern object: it orbits and sways (sin-driven), animates its
- * model light, and once activated triggers the level unlock, music change
- * and screen transition.
- */
-#include "main/mapEvent.h"
-#include "main/dll/objfx_api.h"
-#include "main/game_timer_control_api.h"
-#include "main/sky_api.h"
+#include "dlls/objects/376_DFSH_Shrine.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "game/objects/object.h"
 #include "main/audio/audio_control_api.h"
 #include "main/audio/music_api.h"
-#include "main/object_render.h"
-#include "main/pi_dolphin_api.h"
-#include "main/map_load.h"
-#include "main/model_light.h"
-#include "main/vecmath.h"
-#include "main/render_envfx_api.h"
-#include "main/gamebit_ids.h"
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "sys/objects.h"
-#include "main/dll/DF/DFlantern.h"
-#include "main/dll/player_api.h"
-#include "main/objseq.h"
-#include "main/screen_transition.h"
-#include "main/gamebits.h"
-#include "main/obj_list.h"
-#include "main/obj_message.h"
+#include "main/audio/music_trigger_ids.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/music_trigger_ids.h"
-#include "main/frame_timing.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
+#include "main/frame_timing.h"
+#include "main/game_timer_control_api.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/map_load.h"
+#include "main/mapEvent.h"
+#include "main/obj_list.h"
+#include "main/obj_message.h"
+#include "main/object_render.h"
+#include "main/objseq.h"
+#include "main/pi_dolphin_api.h"
+#include "main/render_envfx_api.h"
+#include "main/screen_transition.h"
+#include "main/sky_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
-u8 gDfShShrinePendingReward = 1;
-
-typedef struct DFlanternShrineState
-{
-    ModelLightStruct* light;
-    u8 pad04[0x14 - 0x04];
-    s16 orbitA;
-    s16 orbitB;
-    s16 orbitC;
-    u8 pad1a[0x1c - 0x1a];
-    u8 flags;
-} DFlanternShrineState;
-
-typedef struct LanternFlagBits
-{
-    u8 on : 1;
-    u8 rest : 7;
-} LanternFlagBits;
-
-typedef struct DfshShrineState
-{
-    ModelLightStruct* light;
-    f32 rewardTimer;
-    f32 idleChimeTimer;
-    u8 musicLatch[4];
-    s16 startDelayFrames;
-    s16 transitionTimer;
-    u8 pad14[0x1A - 0x14];
-    u8 mode;
-    u8 rewardIndex;
-    u8 flags;
-    u8 pad1D[0x20 - 0x1D];
-} DfshShrineState;
-
-typedef struct DfshShrinePlacement
-{
-    ObjPlacement base;
-    s8 initialYaw;
-    u8 pad19;
-    s16 startDelay;
-    u8 pad1C[0x24 - 0x1C];
-} DfshShrinePlacement;
-
-typedef struct DfshShrineFlagsBits
-{
+typedef struct DFSHShrineFlags {
     u8 openedBySequence : 1;
     u8 success : 1;
-    u8 b2 : 1;
-    u8 b3 : 1;
-    u8 b4 : 1;
-    u8 b5 : 1;
-    u8 b6 : 1;
-    u8 b7 : 1;
-} DfshShrineFlagsBits;
+    u8 unknown2 : 1;
+    u8 unknown3 : 1;
+    u8 unknown4 : 1;
+    u8 unknown5 : 1;
+    u8 unknown6 : 1;
+    u8 unknown7 : 1;
+} DFSHShrineFlags;
 
-typedef struct DfshShrineFlags
-{
-    u8 openedBySequence : 1;
-    u8 unused1 : 1;
-    u8 unused2 : 1;
-    u8 unused3 : 1;
-    u8 unused4 : 1;
-    u8 unused5 : 1;
-    u8 unused6 : 1;
-    u8 unused7 : 1;
-} DfshShrineFlags;
+STATIC_ASSERT(sizeof(DFSHShrineFlags) == 0x01);
 
-STATIC_ASSERT(sizeof(DfshShrinePlacement) == 0x24);
-STATIC_ASSERT(offsetof(DfshShrinePlacement, initialYaw) == 0x18);
-STATIC_ASSERT(offsetof(DfshShrinePlacement, startDelay) == 0x1A);
-
-#define DFSHSHRINE_MAP_SHRINE 0xb
+#define DFSH_SHRINE_MAP_ID 0xB
 
 /* shrine-lantern state machine (state->mode) */
 #define DFSH_SHRINE_ENVFX_A 0x78
 #define DFSH_SHRINE_ENVFX_B 0x79
 #define DFSH_SHRINE_ENVFX_C 0x222
 
-#define DFSHRINE_MODE_IDLE          0 /* orbit/chime; wait for player activation */
-#define DFSHRINE_MODE_AWAIT_OPEN    1 /* wait for the open sequence to finish */
-#define DFSHRINE_MODE_GRANT_REWARDS 2 /* timed reward-bit granting loop */
-#define DFSHRINE_MODE_POST_FINISH   3 /* run success/fail follow-up, then reset */
-#define DFSHRINE_MODE_RESET         4 /* clear latches/bits, return to idle */
-#define DFSHRINE_MODE_BEGIN_TRANS   5 /* start the intro screen transition */
-#define DFSHRINE_MODE_AFTER_FINISH  6 /* one frame after the finish transition */
-#define DFSHRINE_MODE_FINISH        7 /* start the finishing screen transition */
+#define DFSH_SHRINE_MODE_IDLE          0 /* orbit/chime; wait for player activation */
+#define DFSH_SHRINE_MODE_AWAIT_OPEN    1 /* wait for the open sequence to finish */
+#define DFSH_SHRINE_MODE_GRANT_REWARDS 2 /* timed reward-bit granting loop */
+#define DFSH_SHRINE_MODE_POST_FINISH   3 /* run success/fail follow-up, then reset */
+#define DFSH_SHRINE_MODE_RESET         4 /* clear latches/bits, return to idle */
+#define DFSH_SHRINE_MODE_BEGIN_TRANS   5 /* start the intro screen transition */
+#define DFSH_SHRINE_MODE_AFTER_FINISH  6 /* one frame after the finish transition */
+#define DFSH_SHRINE_MODE_FINISH        7 /* start the finishing screen transition */
 
-#define DFSH_REWARD_BIT(idx)    (base[0][(idx)])
-#define DFSH_REWARD_DELAY(idx)  (base[0][10 + (idx)])
-#define DFSH_REQUIRED_BIT(idx)  (((u16*)((u8*)base[0] + 40))[(idx)])
-#define DFSH_TARGET_OBJECT(idx) (((int*)((u8*)base[0] + 0x3c))[(idx)])
+#define DFSH_SHRINE_REWARD_BIT(idx)    (rewardTableCursor[0][(idx)])
+#define DFSH_SHRINE_REWARD_DELAY(idx)  (rewardTableCursor[0][10 + (idx)])
+#define DFSH_SHRINE_TARGET_OBJECT(idx) (((int*)((u8*)rewardTableCursor[0] + 0x3C))[(idx)])
 
-#define DFSH_FLAGS(state) ((DfshShrineFlagsBits*)&(state)->flags)
+#define DFSH_SHRINE_FLAGS(state) ((DFSHShrineFlags*)&(state)->flags)
 
-u16 gDfShShrineRewardTable[50] = {
+u8 gDFSHShrinePendingReward = 1;
+
+u16 gDFSHShrineRewardTable[50] = {
     246, 2997,  247, 2998,  248,  249,   250,  251,   2995, 2996,  60,   60,    60,   60,    600,   600,   600,
     600, 600,   600, 3000,  3008, 3001,  3009, 3002,  3003, 3004,  3005, 3006,  3007, 4,     36948, 4,     37071,
     4,   37054, 4,   37083, 4,    37063, 4,    37065, 4,    37066, 4,    37067, 4,    37068, 4,     37070,
 };
-void DFSH_Shrine_update(int objArg);
-void DFSH_Shrine_hitDetect(void);
-void DFSH_Shrine_release(void);
-void DFSH_Shrine_initialise(void);
-void DFSH_Shrine_init(GameObject* obj, DfshShrinePlacement* init);
-void DFSH_Shrine_hitDetect(void);
-void DFSH_Shrine_update(int objArg);
-void DFSH_Shrine_init(GameObject* obj, DfshShrinePlacement* init);
-void DFSH_Shrine_release(void);
-void DFSH_Shrine_initialise(void);
 
-void dfshshrine_updateHoverMotion(int objArg)
-{
-    ObjPlacement* def;
-    DFlanternShrineState* state;
+void dfshShrine_updateHoverMotion(int objArg) {
+    ObjPlacement* placement;
+    DFSHShrineHoverState* state;
     GameObject* player;
     GameObject* obj = (GameObject*)objArg;
     f32 trigA;
@@ -159,67 +82,57 @@ void dfshshrine_updateHoverMotion(int objArg)
     int turnStep;
     u8 animEvents[32];
 
-    def = (ObjPlacement*)obj->anim.placementData;
+    placement = (ObjPlacement*)obj->anim.placementData;
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
-    {
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
         obj->anim.rotX = 0;
-        obj->anim.localPosY = def->posY;
+        obj->anim.localPosY = placement->posY;
         return;
     }
 
-    state->orbitA += (s32)(512.0f * timeDelta);
-    state->orbitB += (s32)(128.0f * timeDelta);
-    state->orbitC += (s32)(192.0f * timeDelta);
+    state->hoverPhase += (s32)(512.0f * timeDelta);
+    state->rollPhase += (s32)(128.0f * timeDelta);
+    state->yawPhase += (s32)(192.0f * timeDelta);
 
-    obj->anim.localPosY =
-        20.0f + (def->posY + mathSinf((3.1415927f * state->orbitA) / 32768.0f));
+    obj->anim.localPosY = 20.0f + (placement->posY + mathSinf((3.1415927f * state->hoverPhase) / 32768.0f));
 
-    trigA = mathSinf((3.1415927f * state->orbitB) / 32768.0f);
-    trigB = mathSinf((3.1415927f * state->orbitA) / 32768.0f);
+    trigA = mathSinf((3.1415927f * state->rollPhase) / 32768.0f);
+    trigB = mathSinf((3.1415927f * state->hoverPhase) / 32768.0f);
     trigB = trigB + trigA;
     obj->anim.rotZ = 600.0f * trigB;
 
-    trigA = mathSinf((3.1415927f * state->orbitC) / 32768.0f);
-    trigB = mathSinf((3.1415927f * state->orbitA) / 32768.0f);
+    trigA = mathSinf((3.1415927f * state->yawPhase) / 32768.0f);
+    trigB = mathSinf((3.1415927f * state->hoverPhase) / 32768.0f);
     trigB = trigB + trigA;
     obj->anim.rotY = 600.0f * trigB;
 
-    ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta,
-                                                                 (ObjAnimEventList*)animEvents);
-    if (player != NULL)
-    {
-        angleDelta = ((u16)getAngle(obj->anim.worldPosX - player->anim.worldPosX,
-                                    obj->anim.worldPosZ - player->anim.worldPosZ) -
-                      ((u16)obj->anim.rotX));
-        if (angleDelta > 0x8000)
-        {
-            angleDelta -= 0xffff;
+    ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, (ObjAnimEventList*)animEvents);
+    if (player != NULL) {
+        angleDelta =
+            ((u16)getAngle(obj->anim.worldPosX - player->anim.worldPosX, obj->anim.worldPosZ - player->anim.worldPosZ) -
+             ((u16)obj->anim.rotX));
+        if (angleDelta > 0x8000) {
+            angleDelta -= 0xFFFF;
         }
-        if (angleDelta < -0x8000)
-        {
-            angleDelta += 0xffff;
+        if (angleDelta < -0x8000) {
+            angleDelta += 0xFFFF;
         }
         turnStep = (s32)(((f32)angleDelta * timeDelta) / 12.0f);
         obj->anim.rotX += turnStep;
 
         distance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
-        if (distance <= 30.0f)
-        {
+        if (distance <= 30.0f) {
             obj->anim.alpha = (u8)(s32)(255.0f * (distance / 30.0f));
-        }
-        else
-        {
-            obj->anim.alpha = 0xff;
+        } else {
+            obj->anim.alpha = 0xFF;
         }
     }
 }
 
-int DFSH_Shrine_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
     GameObject* objLocal;
-    DFlanternShrineState* state;
+    DFSHShrineHoverState* state;
     GameObject* player;
     int i;
     u8 cmd;
@@ -228,33 +141,28 @@ int DFSH_Shrine_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
     state = objLocal->extra;
     player = Obj_GetPlayerObject();
     animUpdate->sequenceEventActive = 0;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
+    for (i = 0; i < animUpdate->eventCount; i++) {
         cmd = animUpdate->eventIds[i];
-        if (cmd != 0)
-        {
-            switch (cmd)
-            {
+        if (cmd != 0) {
+            switch (cmd) {
             case 3:
-                ((LanternFlagBits*)&state->flags)->on = 1;
+                ((DFSHShrineFlags*)&state->flags)->openedBySequence = 1;
                 break;
             case 7:
                 objSetAnimStateFlags(player, 1, 1);
                 mainSetBits(GAMEBIT_ITEM_TestCombatSpirit_Got, 1);
                 mainSetBits(GAMEBIT_FlewToPlanet, 1);
-                (*gMapEventInterface)->setMapAct(DFSHSHRINE_MAP_SHRINE, 2);
+                (*gMapEventInterface)->setMapAct(DFSH_SHRINE_MAP_ID, 2);
                 break;
-            case 0xe:
+            case 0xE:
                 objLocal->anim.flags = (s16)(objLocal->anim.flags | OBJANIM_FLAG_HIDDEN);
-                if (state->light != NULL)
-                {
+                if (state->light != NULL) {
                     modelLightStruct_setEnabled(state->light, 0, 1.0f);
                 }
                 break;
-            case 0xf:
+            case 0xF:
                 objLocal->anim.flags = (s16)(objLocal->anim.flags & ~OBJANIM_FLAG_HIDDEN);
-                if (state->light != NULL)
-                {
+                if (state->light != NULL) {
                     modelLightStruct_setEnabled(state->light, 0, 1.0f);
                 }
                 break;
@@ -265,28 +173,24 @@ int DFSH_Shrine_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
     return 0;
 }
 
-int DFSH_Shrine_getExtraSize(void)
-{
+int dfshShrine_getExtraSize(void) {
     return 0x20;
 }
 
-int DFSH_Shrine_getObjectTypeId(void)
-{
+int dfshShrine_getObjectTypeId(void) {
     return 0;
 }
 
-void DFSH_Shrine_free(GameObject* obj)
-{
-    ModelLightStruct** state;
+void dfshShrine_free(GameObject* obj) {
+    DFSHShrineState* state;
 
     state = obj->extra;
-    if (*state != NULL)
-    {
-        ModelLightStruct_free(*state);
-        *state = NULL;
+    if (state->light != NULL) {
+        ModelLightStruct_free(state->light);
+        state->light = NULL;
     }
     gameTimerStop();
-    unlockLevel(mapGetDirIdx(0x1f), 1, 0);
+    unlockLevel(mapGetDirIdx(0x1F), 1, 0);
     Music_Trigger(MUSICTRIG_DIM_Snow, 0);
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
@@ -294,232 +198,196 @@ void DFSH_Shrine_free(GameObject* obj)
     mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
 }
 
-void DFSH_Shrine_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    DfshShrineState* state;
+void dfshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    DFSHShrineState* state;
     ModelLightStruct* light;
     s32 isVisible;
 
     state = obj->extra;
     isVisible = visible;
-    if (isVisible == 0)
-    {
+    if (isVisible == 0) {
         light = state->light;
-        if (light != NULL)
-        {
+        if (light != NULL) {
             modelLightStruct_setEnabled(light, 0, 1.0f);
         }
-    }
-    else
-    {
+    } else {
         light = state->light;
-        if (light != NULL)
-        {
+        if (light != NULL) {
             modelLightStruct_setEnabled(light, 1, 1.0f);
         }
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f,
-                               (ModelLightStruct*)state->light);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, state->light);
     }
 }
 
-
-ObjectDescriptor gDFSH_ShrineObjDescriptor = {
+ObjectDescriptor gDFSHShrineObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DFSH_Shrine_initialise,
-    (ObjectDescriptorCallback)DFSH_Shrine_release,
+    (ObjectDescriptorCallback)dfshShrine_initialise,
+    (ObjectDescriptorCallback)dfshShrine_release,
     0,
-    (ObjectDescriptorCallback)DFSH_Shrine_init,
-    (ObjectDescriptorCallback)DFSH_Shrine_update,
-    (ObjectDescriptorCallback)DFSH_Shrine_hitDetect,
-    (ObjectDescriptorCallback)DFSH_Shrine_render,
-    (ObjectDescriptorCallback)DFSH_Shrine_free,
-    (ObjectDescriptorCallback)DFSH_Shrine_getObjectTypeId,
-    DFSH_Shrine_getExtraSize,
+    (ObjectDescriptorCallback)dfshShrine_init,
+    (ObjectDescriptorCallback)dfshShrine_update,
+    (ObjectDescriptorCallback)dfshShrine_hitDetect,
+    (ObjectDescriptorCallback)dfshShrine_render,
+    (ObjectDescriptorCallback)dfshShrine_free,
+    (ObjectDescriptorCallback)dfshShrine_getObjectTypeId,
+    dfshShrine_getExtraSize,
 };
-void DFSH_Shrine_hitDetect(void)
-{
+
+void dfshShrine_hitDetect(void) {
 }
 
-void DFSH_Shrine_update(int objArg)
-{
-
-    u16* base[1];
-    DfshShrineState* state;
+void dfshShrine_update(int objArg) {
+    u16* rewardTableCursor[1];
+    DFSHShrineState* state;
     GameObject* player;
     s16 i;
     u8 anyMissing;
     u16* required;
     GameObject* obj = (GameObject*)objArg;
 
-    base[0] = gDfShShrineRewardTable;
+    rewardTableCursor[0] = gDFSHShrineRewardTable;
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (obj->userData1 != 0)
-    {
+    if (obj->userData1 != 0) {
         obj->userData1 = obj->userData1 - 1;
-        if (obj->userData1 == 0)
-        {
+        if (obj->userData1 == 0) {
             skyFn_80088c94(7, 1);
             getEnvfxAct(obj, player, DFSH_SHRINE_ENVFX_A, 0);
             getEnvfxAct(obj, player, DFSH_SHRINE_ENVFX_B, 0);
             getEnvfxAct(obj, player, DFSH_SHRINE_ENVFX_C, 0);
         }
     }
-    dfshshrine_updateHoverMotion((int)obj);
-    if (gDfShShrinePendingReward != 0)
-    {
+    dfshShrine_updateHoverMotion((int)obj);
+    if (gDFSHShrinePendingReward != 0) {
         obj->anim.worldPosX = obj->anim.localPosX;
         obj->anim.worldPosY = obj->anim.localPosY;
         obj->anim.worldPosZ = obj->anim.localPosZ;
         playerAddRemoveMagic(player, 0x14);
         mainSetBits(GAMEBIT_ITEM_DeletedSpell1D7, 1);
-        gDfShShrinePendingReward = 0;
+        gDFSHShrinePendingReward = 0;
     }
-    SCGameBitLatch_UpdateInverted((SCGameBitLatchState*)state->musicLatch, 1, -1, -1, 0xcbb, 8);
-    SCGameBitLatch_Update((SCGameBitLatchState*)state->musicLatch, 4, -1, -1, 0xcbb, 0xc4);
-    if ((f32)(s32)state->transitionTimer > 0.0f)
-    {
+    SCGameBitLatch_UpdateInverted(&state->musicLatch, 1, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 8);
+    SCGameBitLatch_Update(&state->musicLatch, 4, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
+    if ((f32)(s32)state->transitionTimer > 0.0f) {
         state->transitionTimer = (f32)(s32)state->transitionTimer - timeDelta;
-        if ((f32)(s32)state->transitionTimer <= 0.0f)
-        {
+        if ((f32)(s32)state->transitionTimer <= 0.0f) {
             state->transitionTimer = 0;
         }
         return;
     }
 
-    switch (state->mode)
-    {
-    case DFSHRINE_MODE_IDLE:
-    {
+    switch (state->mode) {
+    case DFSH_SHRINE_MODE_IDLE: {
         f32 t = state->idleChimeTimer - timeDelta;
         state->idleChimeTimer = t;
-        if (t <= 0.0f)
-        {
+        if (t <= 0.0f) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_spirit_voice);
             state->idleChimeTimer = (f32)(s32)randomGetRange(500, 1000);
         }
     }
-        if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
-        {
+        if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
             mainSetBits(0x589, 0);
-            state->mode = DFSHRINE_MODE_BEGIN_TRANS;
+            state->mode = DFSH_SHRINE_MODE_BEGIN_TRANS;
             Music_Trigger(MUSICTRIG_DIM_Snow, 1);
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
             mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
         }
         break;
-    case DFSHRINE_MODE_BEGIN_TRANS:
-        state->transitionTimer = 0x1f;
-        (*gScreenTransitionInterface)->step(0x1e, 1);
-        state->mode = DFSHRINE_MODE_AWAIT_OPEN;
+    case DFSH_SHRINE_MODE_BEGIN_TRANS:
+        state->transitionTimer = 0x1F;
+        (*gScreenTransitionInterface)->step(0x1E, 1);
+        state->mode = DFSH_SHRINE_MODE_AWAIT_OPEN;
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         break;
-    case DFSHRINE_MODE_AWAIT_OPEN:
-        if (DFSH_FLAGS(state)->openedBySequence == 1)
-        {
-            state->mode = DFSHRINE_MODE_GRANT_REWARDS;
-            mainSetBits(0xb76, 1);
-            gameTimerInit(0x19, 0xd2);
+    case DFSH_SHRINE_MODE_AWAIT_OPEN:
+        if (DFSH_SHRINE_FLAGS(state)->openedBySequence == 1) {
+            state->mode = DFSH_SHRINE_MODE_GRANT_REWARDS;
+            mainSetBits(0xB76, 1);
+            gameTimerInit(0x19, 0xD2);
             timerSetToCountUp();
         }
         break;
-    case DFSHRINE_MODE_GRANT_REWARDS:
-        if (state->rewardIndex < 10)
-        {
+    case DFSH_SHRINE_MODE_GRANT_REWARDS:
+        if (state->rewardIndex < 10) {
             state->rewardTimer -= timeDelta;
-            if (state->rewardTimer <= 0.0f)
-            {
-                mainSetBits(DFSH_REWARD_BIT(state->rewardIndex), 1);
-                state->rewardTimer = (f32)(u32)DFSH_REWARD_DELAY(state->rewardIndex);
+            if (state->rewardTimer <= 0.0f) {
+                mainSetBits(DFSH_SHRINE_REWARD_BIT(state->rewardIndex), 1);
+                state->rewardTimer = (f32)(u32)DFSH_SHRINE_REWARD_DELAY(state->rewardIndex);
                 state->rewardIndex++;
             }
         }
         anyMissing = 0;
-        for (i = 0; i < 10; i++)
-        {
-            if (mainGetBit(*(u16*)((u8*)&base[0][20] + i * 2)) == 0u)
-            {
+        for (i = 0; i < 10; i++) {
+            if (mainGetBit(*(u16*)((u8*)&rewardTableCursor[0][20] + i * 2)) == 0u) {
                 anyMissing = 1;
                 i = 10;
             }
         }
-        if (anyMissing == 0)
-        {
-            state->mode = DFSHRINE_MODE_FINISH;
-            DFSH_FLAGS(state)->success = 1;
+        if (anyMissing == 0) {
+            state->mode = DFSH_SHRINE_MODE_FINISH;
+            DFSH_SHRINE_FLAGS(state)->success = 1;
             gameTimerStop();
-        }
-        else if (isGameTimerDisabled() != 0)
-        {
-            state->mode = DFSHRINE_MODE_FINISH;
-            DFSH_FLAGS(state)->success = 0;
+        } else if (isGameTimerDisabled() != 0) {
+            state->mode = DFSH_SHRINE_MODE_FINISH;
+            DFSH_SHRINE_FLAGS(state)->success = 0;
             state->transitionTimer = 0x78;
-            for (i = 0; i < 10; i++)
-            {
+            for (i = 0; i < 10; i++) {
                 int targetId;
                 void* targetObj;
 
-                targetId = DFSH_TARGET_OBJECT(i);
-                if (targetId != -1)
-                {
+                targetId = DFSH_SHRINE_TARGET_OBJECT(i);
+                if (targetId != -1) {
                     targetObj = ObjList_FindObjectById(targetId);
-                    if (targetObj != 0)
-                    {
+                    if (targetObj != 0) {
                         enemy_setHealthZero((GameObject*)targetObj);
                     }
                 }
             }
         }
         break;
-    case DFSHRINE_MODE_FINISH:
-        state->mode = DFSHRINE_MODE_AFTER_FINISH;
+    case DFSH_SHRINE_MODE_FINISH:
+        state->mode = DFSH_SHRINE_MODE_AFTER_FINISH;
         state->transitionTimer = 0x23;
-        (*gScreenTransitionInterface)->start(0x1e, 1);
+        (*gScreenTransitionInterface)->start(0x1E, 1);
         break;
-    case DFSHRINE_MODE_AFTER_FINISH:
-        state->mode = DFSHRINE_MODE_POST_FINISH;
+    case DFSH_SHRINE_MODE_AFTER_FINISH:
+        state->mode = DFSH_SHRINE_MODE_POST_FINISH;
         break;
-    case DFSHRINE_MODE_POST_FINISH:
-        if (objGetAnimStateFlags(player, 1) != 0 || mainGetBit(GAMEBIT_ITEM_TestCombatSpirit_Got) != 0u)
-        {
-            state->mode = DFSHRINE_MODE_RESET;
-        }
-        else if (DFSH_FLAGS(state)->success == 0)
-        {
-            state->mode = DFSHRINE_MODE_RESET;
-            mainSetBits(0xb70, 1);
-        }
-        else
-        {
-            state->mode = DFSHRINE_MODE_RESET;
+    case DFSH_SHRINE_MODE_POST_FINISH:
+        if (objGetAnimStateFlags(player, 1) != 0 || mainGetBit(GAMEBIT_ITEM_TestCombatSpirit_Got) != 0u) {
+            state->mode = DFSH_SHRINE_MODE_RESET;
+        } else if (DFSH_SHRINE_FLAGS(state)->success == 0) {
+            state->mode = DFSH_SHRINE_MODE_RESET;
+            mainSetBits(0xB70, 1);
+        } else {
+            state->mode = DFSH_SHRINE_MODE_RESET;
             audioStopByMask(3);
             (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
         }
         mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-        mainSetBits(0xb76, 0);
+        mainSetBits(0xB76, 0);
         break;
-    case DFSHRINE_MODE_RESET:
-        state->mode = DFSHRINE_MODE_IDLE;
-        DFSH_FLAGS(state)->openedBySequence = 0;
+    case DFSH_SHRINE_MODE_RESET:
+        state->mode = DFSH_SHRINE_MODE_IDLE;
+        DFSH_SHRINE_FLAGS(state)->openedBySequence = 0;
         state->rewardIndex = 0;
         state->rewardTimer = 0.0f;
         mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-        mainSetBits(0xb70, 0);
-        mainSetBits(0xb71, 0);
-        mainSetBits(0xb76, 0);
+        mainSetBits(0xB70, 0);
+        mainSetBits(0xB71, 0);
+        mainSetBits(0xB76, 0);
         mainSetBits(0x589, 1);
         {
             s16 j;
-            for (j = 0, required = (u16*)((u8*)base[0] + 40); j < 10; j++)
-            {
+            for (j = 0, required = (u16*)((u8*)rewardTableCursor[0] + 40); j < 10; j++) {
                 mainSetBits(*required, 0);
-                mainSetBits(*base[0], 0);
+                mainSetBits(*rewardTableCursor[0], 0);
                 required++;
-                base[0]++;
+                rewardTableCursor[0]++;
             }
         }
         obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
@@ -527,28 +395,25 @@ void DFSH_Shrine_update(int objArg)
     }
 }
 
-void DFSH_Shrine_init(GameObject* obj, DfshShrinePlacement* init)
-{
-    DfshShrineState* state;
+void dfshShrine_init(GameObject* obj, const DFSHShrinePlacement* placement) {
+    DFSHShrineState* state;
 
     state = obj->extra;
-    obj->anim.rotX = (s16)(init->initialYaw << 8);
-    state->startDelayFrames = 0xa;
-    if (init->startDelay > 0)
-    {
-        state->startDelayFrames = (s16)((s32)init->startDelay >> 8);
+    obj->anim.rotX = (s16)(placement->initialYaw << 8);
+    state->startDelayFrames = 0xA;
+    if (placement->startDelay > 0) {
+        state->startDelayFrames = (s16)((s32)placement->startDelay >> 8);
     }
-    state->mode = DFSHRINE_MODE_RESET;
-    ((DfshShrineFlags*)&state->flags)->openedBySequence = 0;
+    state->mode = DFSH_SHRINE_MODE_RESET;
+    DFSH_SHRINE_FLAGS(state)->openedBySequence = 0;
     state->transitionTimer = 0;
-    obj->animEventCallback = DFSH_Shrine_SeqFn;
+    obj->animEventCallback = dfshShrine_processAnimEvents;
     ObjMsg_AllocQueue(obj, 4);
     mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
     state->rewardIndex = 0;
     state->rewardTimer = 0.0f;
-    unlockLevel(mapGetDirIdx(0x1f), 1, 0);
-    if (state->light == NULL)
-    {
+    unlockLevel(mapGetDirIdx(0x1F), 1, 0);
+    if (state->light == NULL) {
         state->light = objCreateLight(NULL, 1);
     }
     obj->userData1 = 1;
@@ -556,10 +421,8 @@ void DFSH_Shrine_init(GameObject* obj, DfshShrinePlacement* init)
     mainSetBits(GAMEBIT_ECSH_InShrine, 1);
 }
 
-void DFSH_Shrine_release(void)
-{
+void dfshShrine_release(void) {
 }
 
-void DFSH_Shrine_initialise(void)
-{
+void dfshShrine_initialise(void) {
 }

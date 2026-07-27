@@ -5,8 +5,6 @@
 #include "ghidra_import.h"
 #include "main/objanim_update.h"
 
-void DFSH_Shrine_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void DFSH_Shrine_update(int obj);
 void FUN_801c33b4(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8, u16* param_9);
 void SpiritPrize_free(GameObject* obj);

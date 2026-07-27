@@ -466,7 +466,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x1E7 | gDIMbossfireObjDescriptor | 801C04B8-801C0A5C | 801C04B8-801C0A60 | 801C053C (main/dll/DF/rope.c \| main/dll/DF/DFcradle.c) | Y | DIMbossfire,MMP_CraterF,CraterFlame |
 | 0x175 | gDFropenodeObjDescriptor | 801C1970-801C2680 | 801C0BF8-801C26E0 | 801C1BC8 (main/dll/DF/dll_194.c \| main/dll/DF/dll_195.c); 801C1BF0 (main/dll/DF/dll_195.c \| main/dll/DF/dll_196.c); 801C1EAC (main/dll/DF/dll_196.c \| main/dll/DF/DFmole.c); 801C1F5C (main/dll/DF/DFmole.c \| main/dll/DF/DFwhirlpool.c); 801C2278 (main/dll/DF/DFwhirlpool.c \| main/dll/DF/dll_198.c) | Y | DFropenode |
 | 0x177 | gDll177ObjDescriptor | 801C281C-801C2910 | 801C26E0-801C2914 | 801C2824 (main/dll/DF/dll_198.c \| main/dll/DF/dll_199.c); 801C282C (main/dll/DF/dll_199.c \| main/dll/DF/DFlantern.c) | Y | DFSH_Door2S,DFSH_Door3S,DFSH_Door4S |
-| 0x178 | gDFSH_ShrineObjDescriptor | 801C2DC4-801C3614 | 801C2914-801C3618 | 801C2E68 (main/dll/DF/DFlantern.c \| main/dll/dll_19C.c) | Y | DFSH_Shrine |
+| 0x178 | gDFSHShrineObjDescriptor | 801C2DC4-801C3614 | 801C2914-801C3618 | 801C2E68 (main/dll/DF/DFlantern.c \| main/dll/dll_19C.c) | Y | DFSH_Shrine |
 | 0x179 | gDFSH_ObjCreatorObjDescriptor | 801C3B68-801C3E38 | 801C3B68-801C3E3C | 801C3BB0 (main/dll/dll_19C.c \| main/dll/dll_19E.c) | Y | DFSH_ObjCre |
 | 0x17B | gDFSH_LaserBeamObjDescriptor | 801C3E3C-801C4660 | 801C3E3C-801C4664 | 801C3EB8 (main/dll/dll_19E.c \| main/dll/creator19D.c) | Y | DFSH_LaserB |
 | 0x18C | gMMSH_ShrineObjDescriptor | 801C4D78-801C539C | 801C4664-801C53A0 | 801C52D8 (main/dll/laser19F.c \| main/dll/mmshrine/shrine.c) | Y | MMSH_Shrine |

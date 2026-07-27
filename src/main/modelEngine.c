@@ -170,6 +170,7 @@
 #include "dlls/objects/372_CCriverflow.h"
 #include "dlls/objects/374_DFSH_Door1S.h"
 #include "dlls/objects/375.h"
+#include "dlls/objects/376_DFSH_Shrine.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -270,7 +271,7 @@ extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescripto
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
     gDFP_TorchObjDescriptor;
 extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFSH_LaserBeamObjDescriptor, gDFSH_ObjCreatorObjDescriptor,
-    gDFSH_ShrineObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
+    gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor;
@@ -1398,7 +1399,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gDFropenodeObjDescriptor,
     (ResourceDescriptor*)&gDFSH_Door1SNullResourceDescriptor,
     (ResourceDescriptor*)&gDll177ObjDescriptor,
-    &gDFSH_ShrineObjDescriptor,
+    (ResourceDescriptor*)&gDFSHShrineObjDescriptor,
     &gDFSH_ObjCreatorObjDescriptor,
     &gSpiritPrizeObjDescriptor,
     &gDFSH_LaserBeamObjDescriptor,
