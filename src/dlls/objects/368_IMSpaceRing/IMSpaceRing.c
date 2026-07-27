@@ -8,50 +8,39 @@
 
 #define IM_SPACE_RING_SPIN_AXIS(obj) ((obj)->userData1)
 
-int imSpaceRing_getExtraSize(void)
-{
+int imSpaceRing_getExtraSize(void) {
     return 0;
 }
 
-int imSpaceRing_getObjectTypeId(void)
-{
+int imSpaceRing_getObjectTypeId(void) {
     return 0;
 }
 
-void imSpaceRing_free(void)
-{
+void imSpaceRing_free(void) {
 }
 
 void imSpaceRing_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
-{
-    if (visible != 0)
-    {
+    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
         objRenderModelAndHitVolumes(
             obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void imSpaceRing_hitDetect(void)
-{
+void imSpaceRing_hitDetect(void) {
 }
 
-void imSpaceRing_update(GameObject* obj)
-{
+void imSpaceRing_update(GameObject* obj) {
     const IMSpaceRingPlacement* placement =
         (const IMSpaceRingPlacement*)obj->anim.placementData;
 
-    if (IM_SPACE_RING_SPIN_AXIS(obj) != 0)
-    {
+    if (IM_SPACE_RING_SPIN_AXIS(obj) != 0) {
         obj->anim.rotX = (s16)(obj->anim.rotX + placement->spinSpeed * framesThisStep);
-    }
-    else
-    {
+    } else {
         obj->anim.rotY = (s16)(obj->anim.rotY + placement->spinSpeed * framesThisStep);
     }
     obj->anim.rotZ = (s16)(obj->anim.rotZ + placement->tiltSpeed * framesThisStep);
-    if (gIMSpaceRingLeader != NULL)
-    {
+    if (gIMSpaceRingLeader != NULL) {
         obj->anim.alpha = gIMSpaceRingLeader->anim.alpha;
         objMove(
             obj, gIMSpaceRingLeader->anim.localPosX - obj->anim.localPosX,
@@ -60,18 +49,15 @@ void imSpaceRing_update(GameObject* obj)
     }
 }
 
-void imSpaceRing_init(GameObject* obj, const IMSpaceRingPlacement* placement)
-{
+void imSpaceRing_init(GameObject* obj, const IMSpaceRingPlacement* placement) {
     obj->anim.rotX = (s16)((s32)placement->initialRotX << 8);
     IM_SPACE_RING_SPIN_AXIS(obj) = randomGetRange(0, 1);
 }
 
-void imSpaceRing_release(void)
-{
+void imSpaceRing_release(void) {
 }
 
-void imSpaceRing_initialise(void)
-{
+void imSpaceRing_initialise(void) {
 }
 
 ObjectDescriptor gIMSpaceRingObjDescriptor = {
