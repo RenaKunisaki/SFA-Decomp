@@ -1592,16 +1592,11 @@ dlls/objects/207_CannonClaw/CannonClaw.c:
 	.sdata2     start:0x803E2F30 end:0x803E2F3C
 
 dlls/objects/209_TumbleWeedB/TumbleWeedB.c:
-	.text       start:0x801631C8 end:0x80163BBC
-	.data       start:0x803201E8 end:0x80320288
-	.sbss       start:0x803DDA80 end:0x803DDA88
-	.sdata2     start:0x803E2F40 end:0x803E2F78
-
-dlls/objects/210/210.c:
-	.text       start:0x80163BBC end:0x801650D0
-	.data       start:0x80320288 end:0x80320380
+	.text       start:0x801631C8 end:0x801650D0
+	.data       start:0x803201E8 end:0x80320380
 	.sdata      start:0x803DBD40 end:0x803DBD48
-	.sdata2     start:0x803E2F78 end:0x803E2FD4
+	.sbss       start:0x803DDA80 end:0x803DDA84
+	.sdata2     start:0x803E2F40 end:0x803E2FD4
 
 dlls/objects/211/211.c:
 	.text       start:0x801650D0 end:0x801675E0
