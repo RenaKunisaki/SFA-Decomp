@@ -141,23 +141,24 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
     {
         SynthVoice* sv;
         u8* seq;
-        u8* pptr;
+        SynthSeqPattern* pat;
         u8 prog;
 
         tEntry = (SeqTrackEntry*)event->data;
         sv = gSynthCurrentVoice;
         seq = sv->arrbase;
         pattern = SYNTH_SEQUENCE_STATE(sv, event->trackId);
-        pptr = (u8*)(*(u32*)(*(u32*)(seq + 4) + (u32)seq + tEntry->pattern * 4) + (u32)seq);
-        pattern->noteData = pptr + 0xc;
+        pat = (SynthSeqPattern*)(*(u32*)(((SynthArrangement*)seq)->patternTableOffset + (u32)seq + tEntry->pattern * 4) +
+                                 (u32)seq);
+        pattern->noteData = (u8*)(pat + 1);
         pattern->lastTime = 0;
         pattern->baseTime = tEntry->time;
         pattern->patternInfo = tEntry;
-        seqInitStream(&pattern->pitchBend, *(u32*)(pptr + 4));
+        seqInitStream(&pattern->pitchBend, pat->pitchBendOffset);
         pattern->pitchBend.value = 0x2000;
-        seqInitStream(&pattern->modulation, *(u32*)(pptr + 8));
+        seqInitStream(&pattern->modulation, pat->modulationOffset);
         pattern->modulation.value = 0;
-        pattern->midi = *(u8*)(*(u32*)(gSynthCurrentVoice->arrbase + 8) +
+        pattern->midi = *(u8*)(((SynthArrangement*)gSynthCurrentVoice->arrbase)->trackMidiTableOffset +
                                (u32)gSynthCurrentVoice->arrbase + event->trackId);
         prog = tEntry->prgChange;
         if (prog != 0xff)

@@ -26,6 +26,13 @@ typedef struct SynthArrangement
     u32 trackSectionTableOffset;
 } SynthArrangement;
 
+typedef struct SynthSeqPattern
+{
+    u32 unk00;
+    u32 pitchBendOffset;
+    u32 modulationOffset;
+} SynthSeqPattern;
+
 typedef struct SynthSeqVolumeDefinition
 {
     u8 track;
