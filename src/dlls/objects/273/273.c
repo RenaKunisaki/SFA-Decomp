@@ -1,247 +1,217 @@
-/*
- * DLL 0x111 - door-lock objects [0x8017BCF8, 0x8017C294).
- *
- * A lockable door/gate placed from a DoorLockPlacement. Its
- * lock state mirrors a per-instance game bit (DoorLockPlacement::lockGameBit):
- * when set, the door is hidden (alpha 0) or its hittable flag (userData2) cleared,
- * depending on the placement mode flags at def+0x1B / modeFlags.
- *
- * Lock_DoorLock_update polls trigger conditions (ObjTrigger_IsSet[ById] against the
- * placement's prerequisite bits) and, when satisfied, fires the unlock trigger
- * sequence at def+0x20, sets the lock bit, and disables the A-button prompt.
- * The locked path can yield/preempt a queued sequence (def+0x24) and forwards
- * placement flag bits 0x20/0x40/0x80 as runSequence flags 2/4/8. Lock_DoorLock_SeqFn
- * is the trigger callback: command 1 sets the lock bit (when flag bit 4 is set),
- * command 2 yields the queued sequence. GameBit 0x930 gates a one-shot global
- * unlock sequence.
- */
+#include "dlls/objects/273.h"
+
+#include "dolphin/pad.h"
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/objprint_render_api.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
 #include "main/obj_group.h"
 #include "main/obj_trigger.h"
+#include "main/objanim_update.h"
+#include "main/objprint_render_api.h"
 #include "main/objseq.h"
-#include "main/dll/dll_0111_doorlock.h"
-#include "main/gamebits.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
-#include "main/pad.h"
+#include "main/pad_api.h"
 
-#define PAD_BUTTON_A 0x100
+#define DOOR_LOCK_OBJECT_GROUP                       0xF
+#define DOOR_LOCK_INPUT_PORT                         0
+#define DOOR_LOCK_CMENU_EXPLANATION_SEQUENCE         1
+#define DOOR_LOCK_SEQUENCE_WORLD_SPACE_MODE          0
+#define DOOR_LOCK_GAME_BIT_NONE                      -1
+#define DOOR_LOCK_SEQUENCE_ID_NONE                   -1
+#define DOOR_LOCK_QUEUED_SEQUENCE_ID_NONE            0
+#define DOOR_LOCK_SEQUENCE_ARG_NONE                  -1
+#define DOOR_LOCK_TRIGGER_COMMAND_NONE               0
+#define DOOR_LOCK_TRIGGER_COMMAND_SET_UNLOCKED       1
+#define DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED       2
+#define DOOR_LOCK_FLAG_HIDE_WHEN_UNLOCKED            0x01
+#define DOOR_LOCK_FLAG_CALLBACK_SETS_UNLOCKED        0x04
+#define DOOR_LOCK_FLAG_CLEAR_REQUIRED_GAME_BIT       0x08
+#define DOOR_LOCK_FLAG_DISABLE_IF_REQUIRED_BIT_CLEAR 0x10
+#define DOOR_LOCK_FLAG_SEQUENCE_OPTION_2             0x20
+#define DOOR_LOCK_FLAG_SEQUENCE_OPTION_4             0x40
+#define DOOR_LOCK_FLAG_SEQUENCE_OPTION_8             0x80
+#define DOOR_LOCK_MODE_CUSTOM_RENDER_WHEN_LOCKED     0x01
+#define DOOR_LOCK_SEQUENCE_FLAGS_BASE                1
+#define DOOR_LOCK_SEQUENCE_FLAG_2                    2
+#define DOOR_LOCK_SEQUENCE_FLAG_4                    4
+#define DOOR_LOCK_SEQUENCE_FLAG_8                    8
+#define DOOR_LOCK_ROTATION_SHIFT                     8
+#define DOOR_LOCK_DEFAULT_MODEL_BANK                 0
+#define DOOR_LOCK_MODEL_SCALE                        1.0f
+#define DOOR_LOCK_LOCKED                             0
+#define DOOR_LOCK_UNLOCKED                           1
+#define DOOR_LOCK_SEQUENCE_NOT_STARTED               0
+#define DOOR_LOCK_SEQUENCE_STARTED                   1
+#define DOOR_LOCK_CUSTOM_RENDER_DISABLED             0
+#define DOOR_LOCK_CUSTOM_RENDER_ENABLED              1
+#define DOOR_LOCK_HIDDEN_ALPHA                       0
 
-/* one-shot global "doors unlocked" game bit gating the bulk unlock sequence */
-#define GAMEBIT_DOORLOCK_UNLOCKED 0x930
-#define DOORLOCK_OBJGROUP         0xf
-
-int Lock_DoorLock_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int DoorLock_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     DoorLockPlacement* placement;
 
+    (void)unused;
+
     placement = (DoorLockPlacement*)obj->anim.placementData;
-    if (animUpdate->triggerCommand != 0)
-    {
-        if (((placement->flags & 4) != 0) && (animUpdate->triggerCommand == 1))
-        {
-            mainSetBits(placement->lockGameBit, 1);
+    if (animUpdate->triggerCommand != DOOR_LOCK_TRIGGER_COMMAND_NONE) {
+        if ((placement->flags & DOOR_LOCK_FLAG_CALLBACK_SETS_UNLOCKED) != 0 &&
+            animUpdate->triggerCommand == DOOR_LOCK_TRIGGER_COMMAND_SET_UNLOCKED) {
+            mainSetBits(placement->unlockedGameBit, DOOR_LOCK_UNLOCKED);
         }
-        if ((animUpdate->triggerCommand == 2) && (placement->queuedSequenceId != 0))
-        {
+        if (animUpdate->triggerCommand == DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED &&
+            placement->queuedSequenceId != DOOR_LOCK_QUEUED_SEQUENCE_ID_NONE) {
             (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, placement->queuedSequenceId);
         }
-        animUpdate->triggerCommand = 0;
+        animUpdate->triggerCommand = DOOR_LOCK_TRIGGER_COMMAND_NONE;
     }
-    obj->userData2 = 0;
+    obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_DISABLED;
     return 0;
 }
 
-int Lock_DoorLock_getExtraSize(void)
-{
-    return 0x1;
+int DoorLock_getExtraSize(void) {
+    return DOOR_LOCK_STATE_SIZE;
 }
 
-void Lock_DoorLock_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, DOORLOCK_OBJGROUP);
+void DoorLock_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, DOOR_LOCK_OBJECT_GROUP);
 }
 
-void Lock_DoorLock_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible == 0 || obj->userData2 != 0)
-    {
-        if (obj->userData2 == 0)
-        {
+void DoorLock_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+    if (renderState == 0 || obj->userData2 != DOOR_LOCK_CUSTOM_RENDER_DISABLED) {
+        if (obj->userData2 == DOOR_LOCK_CUSTOM_RENDER_DISABLED) {
             return;
         }
         objRenderFn_80041018(obj);
         return;
     }
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, DOOR_LOCK_MODEL_SCALE);
 }
 
-void Lock_DoorLock_update(GameObject* obj)
-{
+void DoorLock_update(GameObject* obj) {
     DoorLockState* state;
     DoorLockPlacement* placement;
-    int seqFlags;
-    u8 placeFlags;
+    int sequenceFlags;
+    u8 placementFlags;
 
-    state = (DoorLockState*)(obj)->extra;
+    state = obj->extra;
     placement = (DoorLockPlacement*)obj->anim.placementData;
-    if (((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) &&
-        (mainGetBit(GAMEBIT_DOORLOCK_UNLOCKED) == 0))
-    {
-        buttonDisable(0, PAD_BUTTON_A);
-        (*gObjectTriggerInterface)->setRunSequenceWorldSpace((int)obj, 0);
-        (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
-        mainSetBits(GAMEBIT_DOORLOCK_UNLOCKED, 1);
-    }
-    else
-    {
-        state->unlocked = mainGetBit(placement->lockGameBit);
-        if ((placement->flags & 1) != 0)
-        {
-            if (state->unlocked != 0)
-            {
-                (obj)->anim.alpha = 0;
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0 && mainGetBit(GAMEBIT_SawCMenuExplanation) == 0) {
+        buttonDisable(DOOR_LOCK_INPUT_PORT, PAD_BUTTON_A);
+        (*gObjectTriggerInterface)->setRunSequenceWorldSpace((int)obj, DOOR_LOCK_SEQUENCE_WORLD_SPACE_MODE);
+        (*gObjectTriggerInterface)->runSequence(DOOR_LOCK_CMENU_EXPLANATION_SEQUENCE, obj, DOOR_LOCK_SEQUENCE_ARG_NONE);
+        mainSetBits(GAMEBIT_SawCMenuExplanation, 1);
+    } else {
+        state->unlocked = mainGetBit(placement->unlockedGameBit);
+        if ((placement->flags & DOOR_LOCK_FLAG_HIDE_WHEN_UNLOCKED) != 0) {
+            if (state->unlocked != DOOR_LOCK_LOCKED) {
+                obj->anim.alpha = DOOR_LOCK_HIDDEN_ALPHA;
+            }
+        } else if ((placement->modeFlags & DOOR_LOCK_MODE_CUSTOM_RENDER_WHEN_LOCKED) != 0) {
+            if (state->unlocked != DOOR_LOCK_LOCKED) {
+                obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_DISABLED;
+            } else {
+                obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_ENABLED;
             }
         }
-        else if ((placement->modeFlags & 1) != 0)
-        {
-            if (state->unlocked != 0)
-            {
-                (obj)->userData2 = 0;
-            }
-            else
-            {
-                (obj)->userData2 = 1;
-            }
-        }
-        if (state->unlocked == 0)
-        {
-            *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-            *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-            if ((placement->prereqGameBit1 != -1) &&
-                (mainGetBit(placement->prereqGameBit1) == 0))
-            {
-                *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
-                if ((placement->flags & 0x10) != 0)
-                {
-                    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        if (state->unlocked == DOOR_LOCK_LOCKED) {
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            if (placement->requiredGameBit != DOOR_LOCK_GAME_BIT_NONE && mainGetBit(placement->requiredGameBit) == 0) {
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+                if ((placement->flags & DOOR_LOCK_FLAG_DISABLE_IF_REQUIRED_BIT_CLEAR) != 0) {
+                    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
             }
-            if ((placement->prereqGameBit0 != -1) &&
-                (mainGetBit(placement->prereqGameBit0) == 0))
-            {
-                *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+            if (placement->triggerGameBit != DOOR_LOCK_GAME_BIT_NONE && mainGetBit(placement->triggerGameBit) == 0) {
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
             }
-            if (((placement->prereqGameBit0 != -1) &&
-                 (ObjTrigger_IsSetById((int)obj, placement->prereqGameBit0) != 0)) ||
-                ((placement->prereqGameBit0 == -1) && (ObjTrigger_IsSet((int)obj) != 0)))
-            {
-                if (placement->unlockSequenceId != -1)
-                {
+            if ((placement->triggerGameBit != DOOR_LOCK_GAME_BIT_NONE &&
+                 ObjTrigger_IsSetById((int)obj, placement->triggerGameBit) != 0) ||
+                (placement->triggerGameBit == DOOR_LOCK_GAME_BIT_NONE && ObjTrigger_IsSet((int)obj) != 0)) {
+                if (placement->unlockSequenceId != DOOR_LOCK_SEQUENCE_ID_NONE) {
                     (*gObjectTriggerInterface)
-                        ->runSequence((int)placement->unlockSequenceId, (void*)obj, -1);
+                        ->runSequence((int)placement->unlockSequenceId, obj, DOOR_LOCK_SEQUENCE_ARG_NONE);
                 }
-                if ((placement->flags & 4) == 0)
-                {
-                    mainSetBits(placement->lockGameBit, 1);
+                if ((placement->flags & DOOR_LOCK_FLAG_CALLBACK_SETS_UNLOCKED) == 0) {
+                    mainSetBits(placement->unlockedGameBit, DOOR_LOCK_UNLOCKED);
                 }
-                if ((placement->flags & 8) != 0)
-                {
-                    mainSetBits(placement->prereqGameBit1, 0);
+                if ((placement->flags & DOOR_LOCK_FLAG_CLEAR_REQUIRED_GAME_BIT) != 0) {
+                    mainSetBits(placement->requiredGameBit, 0);
+                } else {
+                    state->unlocked = DOOR_LOCK_UNLOCKED;
+                    obj->userData1 = DOOR_LOCK_SEQUENCE_STARTED;
                 }
-                else
-                {
-                    state->unlocked = 1;
-                    (obj)->userData1 = 1;
-                }
-                buttonDisable(0, PAD_BUTTON_A);
+                buttonDisable(DOOR_LOCK_INPUT_PORT, PAD_BUTTON_A);
             }
-        }
-        else
-        {
-            if ((obj)->userData1 == 0)
-            {
-                if ((placement->unlockSequenceId != -1) &&
-                    (placement->queuedSequenceId != 0))
-                {
+        } else {
+            if (obj->userData1 == DOOR_LOCK_SEQUENCE_NOT_STARTED) {
+                if (placement->unlockSequenceId != DOOR_LOCK_SEQUENCE_ID_NONE &&
+                    placement->queuedSequenceId != DOOR_LOCK_QUEUED_SEQUENCE_ID_NONE) {
                     (*gObjectTriggerInterface)->preempt((int)obj, placement->queuedSequenceId);
-                    seqFlags = 1;
-                    placeFlags = placement->flags;
-                    if ((placeFlags & 0x20) != 0)
-                    {
-                        seqFlags |= 2;
+                    sequenceFlags = DOOR_LOCK_SEQUENCE_FLAGS_BASE;
+                    placementFlags = placement->flags;
+                    if ((placementFlags & DOOR_LOCK_FLAG_SEQUENCE_OPTION_2) != 0) {
+                        sequenceFlags |= DOOR_LOCK_SEQUENCE_FLAG_2;
                     }
-                    if ((placeFlags & 0x40) != 0)
-                    {
-                        seqFlags |= 4;
+                    if ((placementFlags & DOOR_LOCK_FLAG_SEQUENCE_OPTION_4) != 0) {
+                        sequenceFlags |= DOOR_LOCK_SEQUENCE_FLAG_4;
                     }
-                    if ((placeFlags & 0x80) != 0)
-                    {
-                        seqFlags |= 8;
+                    if ((placementFlags & DOOR_LOCK_FLAG_SEQUENCE_OPTION_8) != 0) {
+                        sequenceFlags |= DOOR_LOCK_SEQUENCE_FLAG_8;
                     }
-                    (*gObjectTriggerInterface)
-                        ->runSequence((int)placement->unlockSequenceId, (void*)obj, seqFlags);
+                    (*gObjectTriggerInterface)->runSequence((int)placement->unlockSequenceId, obj, sequenceFlags);
                 }
-                (obj)->userData1 = 1;
+                obj->userData1 = DOOR_LOCK_SEQUENCE_STARTED;
             }
-            *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
-        if (((((ObjAnimComponent*)obj)->modelInstance->flags & 1) != 0) &&
-            (((ObjAnimComponent*)obj)->hitVolumeTransforms != NULL))
-        {
+        if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0 && obj->anim.hitVolumeTransforms != NULL) {
             objRenderFn_80041018(obj);
         }
     }
 }
 
-void Lock_DoorLock_init(GameObject* obj, DoorLockPlacement* placement)
-{
+void DoorLock_init(GameObject* obj, DoorLockPlacement* placement) {
     ObjAnimComponent* objAnim;
     DoorLockState* state;
 
     objAnim = &obj->anim;
-    obj->anim.rotX = (short)((u8)placement->rotXByte << 8);
-    obj->anim.rotY = (short)(placement->rotYByte << 8);
-    obj->anim.rotZ = (short)(placement->rotZByte << 8);
-    obj->animEventCallback = Lock_DoorLock_SeqFn;
+    objAnim->rotX = (s16)(placement->rotXByte << DOOR_LOCK_ROTATION_SHIFT);
+    objAnim->rotY = (s16)(placement->rotYByte << DOOR_LOCK_ROTATION_SHIFT);
+    objAnim->rotZ = (s16)(placement->rotZByte << DOOR_LOCK_ROTATION_SHIFT);
+    obj->animEventCallback = DoorLock_animEventCallback;
     *(u8*)&objAnim->bankIndex = placement->modelBankIndex;
-    if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
-    {
-        objAnim->bankIndex = 0;
+    if (objAnim->bankIndex >= objAnim->modelInstance->modelCount) {
+        objAnim->bankIndex = DOOR_LOCK_DEFAULT_MODEL_BANK;
     }
     state = obj->extra;
-    state->unlocked = mainGetBit(placement->lockGameBit);
-    ObjGroup_AddObject((int)obj, DOORLOCK_OBJGROUP);
-    if ((placement->flags & 1) != 0)
-    {
-        if (state->unlocked != 0)
-        {
-            objAnim->alpha = 0;
+    state->unlocked = mainGetBit(placement->unlockedGameBit);
+    ObjGroup_AddObject((int)obj, DOOR_LOCK_OBJECT_GROUP);
+    if ((placement->flags & DOOR_LOCK_FLAG_HIDE_WHEN_UNLOCKED) != 0) {
+        if (state->unlocked != DOOR_LOCK_LOCKED) {
+            objAnim->alpha = DOOR_LOCK_HIDDEN_ALPHA;
         }
-    }
-    else if ((placement->modeFlags & 1) != 0)
-    {
-        if (state->unlocked != 0)
-        {
-            obj->userData2 = 0;
-        }
-        else
-        {
-            obj->userData2 = 1;
+    } else if ((placement->modeFlags & DOOR_LOCK_MODE_CUSTOM_RENDER_WHEN_LOCKED) != 0) {
+        if (state->unlocked != DOOR_LOCK_LOCKED) {
+            obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_DISABLED;
+        } else {
+            obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_ENABLED;
         }
     }
 }
 
 ObjectDescriptor gDoorLockObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0, 0, 0,
-    (ObjectDescriptorCallback)Lock_DoorLock_init,
-    (ObjectDescriptorCallback)Lock_DoorLock_update,
     0,
-    (ObjectDescriptorCallback)Lock_DoorLock_render,
-    (ObjectDescriptorCallback)Lock_DoorLock_free,
     0,
-    Lock_DoorLock_getExtraSize,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)DoorLock_init,
+    (ObjectDescriptorCallback)DoorLock_update,
+    0,
+    (ObjectDescriptorCallback)DoorLock_render,
+    (ObjectDescriptorCallback)DoorLock_free,
+    0,
+    DoorLock_getExtraSize,
 };

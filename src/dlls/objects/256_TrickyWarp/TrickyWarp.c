@@ -49,7 +49,6 @@ STATIC_ASSERT(offsetof(TrickyWarpCurveNode, pad08) == 0x8);
 STATIC_ASSERT(offsetof(TrickyWarpCurveNode, requiredGameBit) == 0x30);
 STATIC_ASSERT(offsetof(TrickyWarpCurveNode, forbiddenGameBit) == 0x32);
 
-#define GAMEBIT_TRICKY_AVAILABLE      0x4E5
 #define TRICKYWARP_OBJ_GROUP          0x4B
 #define TRICKYWARP_PATCH_GROUP_NONE   0
 #define TRICKYWARP_CURVE_NODE_ID_NONE 0
@@ -99,7 +98,7 @@ int TrickyWarp_isPlayerReachable(GameObject* obj, TrickyWarpState* state) {
     GameObject* player;
     int playerPatchGroup;
 
-    if (mainGetBit(GAMEBIT_TRICKY_AVAILABLE) == 0) {
+    if (mainGetBit(GAMEBIT_TrickyWarpEnabled) == 0) {
         return 0;
     }
     if (getTrickyObject() == NULL) {

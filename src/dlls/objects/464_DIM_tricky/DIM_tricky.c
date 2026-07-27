@@ -73,7 +73,7 @@ void dim_tricky_update(GameObject* obj)
         if (mainGetBit(DIMTRICKY_TRIGGER_GAMEBIT) != 0)
         {
             mainSetBits(GAMEBIT_Tricky_Usable, 0);
-            mainSetBits(GAMEBIT_IM_DoneRace, 0);
+            mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
             state->phase = DIMTRICKY_STATE_HAND_CONTROL;
         }
         break;
