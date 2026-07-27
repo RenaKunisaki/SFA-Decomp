@@ -1056,6 +1056,7 @@ config.libs = [
             # dlls/engine
 
             # dlls/modgfx
+            Object(MatchingFor("GSAE01"), "dlls/modgfx/163/163.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/modgfx/164/164.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/modgfx/165/165.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/modgfx/166/166.c", cflags=cflags_dll_noopt_noprop),
@@ -1364,7 +1365,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0063_dll63func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0064_dll64func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0065_dll65func0.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00A3_dlla3func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0066_dll66func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0067_dll67func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0068_dll68func0.c", cflags=cflags_dll_noopt),

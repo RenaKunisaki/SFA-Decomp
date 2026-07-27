@@ -1,5 +1,5 @@
 /*
- * dll_00A3 (dlla3func0) - bone-particle effect spawner.
+ * dll_00A3 (DLL 163 / 0xA3) - bone-particle effect spawner.
  *
  * dll_A3_func03 builds a 14-command GfxCmd list on the stack from a data
  * blob (lbl_80312F98: per-command texture offsets, half-words and the
