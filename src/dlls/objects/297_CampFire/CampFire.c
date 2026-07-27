@@ -122,7 +122,7 @@ void CampFire_update(GameObject* obj)
     params[0] = 0.0f;
     params[1] = 10.0f;
     params[2] = 0.0f;
-    fn_80098B18(obj, 1.4f * obj->anim.rootMotionScale, type, mode, flag, params);
+    objfx_spawnPulseBurst(obj, 1.4f * obj->anim.rootMotionScale, type, mode, flag, params);
     {
         ModelLightStruct* light = state->light;
         if (light != NULL && light->glowType != 0 && light->enabled != 0)

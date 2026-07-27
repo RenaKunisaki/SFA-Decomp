@@ -4,7 +4,7 @@
  * mode (ShBeaconState.mode): 0 = unlit, 1 = lit, 2 = igniting. While
  * unlit it waits for the light event (0x194); igniting spawns the flame
  * child object (type 0x55), runs the ignite sequence and ticks the
- * flame/fade effects through fn_80098B18; once lit it loops the fire sfx
+ * flame/fade effects through objfx_spawnPulseBurst; once lit it loops the fire sfx
  * and sets its progress game bit. The placement carries the lit/ignite
  * game-bit ids.
  */
@@ -63,7 +63,7 @@ int sh_beacon_SeqFn(GameObject* obj)
         extra->seqTimer = extra->seqTimer - 20.0f;
         if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
         {
-            fn_80098B18(obj, (obj)->anim.rootMotionScale, 0, 2, 0, NULL);
+            objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 0, 2, 0, NULL);
         }
     }
     return 0;
@@ -135,7 +135,7 @@ void sh_beacon_update(GameObject* obj)
             state2->seqTimer = state2->seqTimer - 20.0f;
             if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
             {
-                fn_80098B18(obj, (obj)->anim.rootMotionScale, 0, 2, 0, NULL);
+                objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 0, 2, 0, NULL);
             }
         }
         break;
@@ -161,7 +161,7 @@ void sh_beacon_update(GameObject* obj)
             if (state->burstTimer > 2.0f)
             {
                 state->burstTimer = state->burstTimer - 2.0f;
-                fn_80098B18(obj, (obj)->anim.rootMotionScale, 2, mode, 0, NULL);
+                objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 2, mode, 0, NULL);
             }
         }
         break;
@@ -204,7 +204,7 @@ void sh_beacon_update(GameObject* obj)
         state->fadeTimer = state->fadeTimer - timeDelta;
         if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
         {
-            fn_80098B18(obj, 0.6f * (obj)->anim.rootMotionScale, 3, 0, 0, NULL);
+            objfx_spawnPulseBurst(obj, 0.6f * (obj)->anim.rootMotionScale, 3, 0, 0, NULL);
         }
         if ((state->fadeTimer <= 0.0f) && (state->mode == SH_BEACON_MODE_IGNITING))
         {

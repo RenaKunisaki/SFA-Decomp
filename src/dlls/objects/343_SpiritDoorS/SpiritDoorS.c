@@ -1,7 +1,7 @@
 /*
  * SpiritDoorS (DLL 0x157) - a fade-in/fade-out apparition gated on a game
  * bit (placement->gateGameBit). While the bit is clear the spirit is "active":
- * it joins object group 0x4E, runs its idle effect (fn_80098B18), and
+ * it joins object group 0x4E, runs its idle effect (objfx_spawnPulseBurst), and
  * fades alpha up to 0xFF; once the bit is set it leaves the group and
  * fades alpha back to 0. It only renders while active.
  */
@@ -68,7 +68,7 @@ void spiritdoorspirit_update(GameObject* obj)
     }
     else
     {
-        fn_80098B18(obj, lbl_803DBE78, 5, 0, 0, NULL);
+        objfx_spawnPulseBurst(obj, lbl_803DBE78, 5, 0, 0, NULL);
         state->active = active = (u8)(mainGetBit(def->gateGameBit) == 0);
         if (active == 0)
         {

@@ -4,7 +4,7 @@
  * (gMapEventInterface->getMapAct). Per mode it plays idle/move anims,
  * lets the player interact (A-button) to spend magic and grant game
  * bits, runs trigger sequences (dll_200_SeqFn / dll_200_unlockFireBlasterSpell), and in
- * mode 2 (fn_801F2290) steers a wandering attachment toward scripted
+ * mode 2 (dll_200_updateAct2Wander) steers a wandering attachment toward scripted
  * targets (gArwingAttachmentTargets) via getAngle/sqrtf. Object body is Dll200State
  * (0x28); render scales through objRenderModelAndHitVolumes and gates on
  * GameBit 0x2bd when the placement's map-act is 4.
@@ -77,7 +77,7 @@ ObjectDescriptor dll_200 = {
 
 char sArwingAttachmentDiffFormat[9] = "diff %d\n";
 
-void fn_801F20D4(GameObject* obj)
+void dll_200_updateAct6Idle(GameObject* obj)
 {
     Dll200State* state;
     ItemIdSet3 itemSet;
@@ -124,7 +124,7 @@ void fn_801F20D4(GameObject* obj)
     }
 }
 
-void fn_801F2290(GameObject* obj)
+void dll_200_updateAct2Wander(GameObject* obj)
 {
     Dll200State* state;
     u8 mode;
@@ -289,7 +289,7 @@ void fn_801F2290(GameObject* obj)
     }
 }
 
-void fn_801F27E4(GameObject* obj)
+void dll_200_updateAct1Interact(GameObject* obj)
 {
     Dll200State* state;
 
@@ -471,10 +471,10 @@ void dll_200_update(int obj)
         switch (ev)
         {
         case 1:
-            fn_801F27E4((GameObject*)(obj));
+            dll_200_updateAct1Interact((GameObject*)(obj));
             break;
         case 2:
-            fn_801F2290((GameObject*)obj);
+            dll_200_updateAct2Wander((GameObject*)obj);
             break;
         case 4:
             *(u8*)&o->anim.resetHitboxMode =
@@ -487,7 +487,7 @@ void dll_200_update(int obj)
                                                                          NULL);
             break;
         case 6:
-            fn_801F20D4((GameObject*)(obj));
+            dll_200_updateAct6Idle((GameObject*)(obj));
             break;
         case 0:
         case 3:

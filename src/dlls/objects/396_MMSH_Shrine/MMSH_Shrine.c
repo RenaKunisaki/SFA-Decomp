@@ -232,7 +232,7 @@ ObjectDescriptor gMMSH_ShrineObjDescriptor = {
 /*
  * Advances the ambient laser-beam bob, aim, and player proximity alpha.
  */
-void fn_801C4664(void* objArg)
+void dfshLaserBeam_updateOrbit(void* objArg)
 {
     DFSHLaserBeamConfig* config;
     DFSHLaserBeamRuntime* runtime;
@@ -309,9 +309,9 @@ void fn_801C4664(void* objArg)
 /*
  * Drives the DragonRock Shrine laser-beam sway controller.
  */
-int fn_801C49B8(void* objArg);
+int dfshLaserBeam_updateFearSway(void* objArg);
 
-int fn_801C49B8(void* objArg)
+int dfshLaserBeam_updateFearSway(void* objArg)
 {
     DFSHLaserBeamObject* obj;
     DFSHLaserBeamRuntime* runtime;
@@ -430,7 +430,7 @@ int MMSH_Shrine_SeqFn(int objArg, u32 unused, MMSHShrineSequenceState* seq)
         seq->commands[i] = 0;
     }
 
-    if (((runtime->latch.activeMask & MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE) != 0) && ((u8)fn_801C49B8((void*)objArg) != 0))
+    if (((runtime->latch.activeMask & MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE) != 0) && ((u8)dfshLaserBeam_updateFearSway((void*)objArg) != 0))
     {
         fearTestMeterSetFadeIn(0);
         runtime->latch.activeMask &= ~(MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE | MMSH_SHRINE_LATCH_FLAG_SWAY_RESET);
@@ -533,7 +533,7 @@ void MMSH_Shrine_update(int objArg)
         }
     }
     unlockLevel(mapGetDirIdx(MMSH_SHRINE_LOAD_MAP_DIR), 1, 0);
-    fn_801C4664((void*)obj);
+    dfshLaserBeam_updateOrbit((void*)obj);
     SCGameBitLatch_Update(&runtime->latch, MMSH_SHRINE_LATCH_FLAG_AMBIENT_LOCK, -1, -1, MMSH_SHRINE_GB_OPEN, 0xa);
     SCGameBitLatch_UpdateInverted(&runtime->latch, MMSH_SHRINE_LATCH_FLAG_CHECK_COMPLETE, -1, -1,
                                   MMSH_SHRINE_GB_MUSIC_LOCK, 8);

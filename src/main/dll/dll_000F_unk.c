@@ -1,10 +1,10 @@
 /*
  * dll_000F: the shared "player_*" movement controller used by the
  * follow / escort objects (BaddieState-driven). It runs a small per-object
- * state machine (playerRunStateMachine / fn_800D915C step a table of state
+ * state machine (playerRunStateMachine / player_runSubstateMachine step a table of state
  * functions + their substates), does curve following (player_followCurve /
  * player_updateCurve through gRomCurveInterface), input-magnitude yaw
- * steering (fn_800D8414), gravity + matrix-relative velocity integration
+ * steering (player_steerFromInput), gravity + matrix-relative velocity integration
  * (player_applyVelocityStep / objMove), per-move animation-event sound
  * triggers (player_playSoundFn0F/10) and particle/projectile gfx spawns
  * (player_updateParticles / player_doProjGfx). Most tuning values live in
@@ -192,7 +192,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
             obj->anim.velocityZ * t);
 }
 
-void fn_800D8414(GameObject* obj, int* ctx)
+void player_steerFromInput(GameObject* obj, int* ctx)
 {
     int diff;
     f32 mx;
@@ -614,7 +614,7 @@ void player_advanceMove(short* moveState, u32* obj, f32 dt, int flags)
     gPlayerMoveAdvanced = 1;
 }
 
-void fn_800D915C(GameObject* gameObj, BaddieState* state, f32 dt, PlayerSubstateFn* stateFns)
+void player_runSubstateMachine(GameObject* gameObj, BaddieState* state, f32 dt, PlayerSubstateFn* stateFns)
 {
     int iterations;
     int startState;
@@ -905,7 +905,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     pathObj = ((GameObject*)pos)->pendingParentObj;
     if ((*(int*)state & 0x8000) != 0 && pathObj == NULL)
     {
-        fn_800D915C((GameObject*)pos, (BaddieState*)state, dt, (PlayerSubstateFn*)auxStateFns);
+        player_runSubstateMachine((GameObject*)pos, (BaddieState*)state, dt, (PlayerSubstateFn*)auxStateFns);
         ((BaddieState*)state)->stateTimer = (s16)((f32)((BaddieState*)state)->stateTimer + dt);
         if ((f32)((BaddieState*)state)->stateTimer > lbl_803E05C4)
         {
@@ -939,7 +939,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
     if ((*(int*)state & 0x1000000) == 0)
     {
-        fn_800D8414((GameObject*)pos, (int*)state);
+        player_steerFromInput((GameObject*)pos, (int*)state);
     }
 
     *(u32*)state &= 0xffdfffff;

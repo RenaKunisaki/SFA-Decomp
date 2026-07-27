@@ -175,7 +175,7 @@ extern f32 lbl_803E2338;
 extern f32 lbl_803E233C;
 extern f32 lbl_803E2340;
 
-void fn_80134870(GameObject* obj, u8* arr)
+void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
     s8* sarr = (s8*)arr;
     int i;
@@ -506,7 +506,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
 u8 gTitleScreenMtx[0x34];
 
 /* Two-word setter for state pair. */
-void fn_80135814(u32 a, u32 b)
+void nameEntrySetScroll(u32 a, u32 b)
 {
     lbl_803DD9BC = a;
     lbl_803DD9B8 = b;
@@ -783,7 +783,7 @@ void TitleScreen_update(GameObject* obj)
                     }
                 }
             }
-            fn_80134870(obj, buf);
+            titleScreenPlayActorSfx(obj, buf);
         }
         t = obj->anim.seqId;
         if (t == FRONT_SEQID_PEPPY && ((phase = state->animPhase) == 0 || phase == 4))

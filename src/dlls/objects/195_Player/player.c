@@ -15655,7 +15655,7 @@ void fn_802AFB0C(int obj, int inner, int state)
             }
             if (((PlayerState*)state)->baddie.controlMode == 0x1a)
             {
-                fn_8009A8C8((GameObject*)obj, lbl_803E8134);
+                objfx_shakeCameraByDistance((GameObject*)obj, lbl_803E8134);
             }
             ((PlayerState*)inner)->idleHoldTimer = lbl_803E7EA4;
             ((PlayerState*)inner)->idleWaitTimer = randomGetRange(800, 0x44c);
@@ -19557,7 +19557,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
             scale = lbl_803E8210;
             for (; j != 0; j--)
             {
-                fn_80098B18(obj, scale * obj->anim.rootMotionScale, 3, 0, 0, arr);
+                objfx_spawnPulseBurst(obj, scale * obj->anim.rootMotionScale, 3, 0, 0, arr);
             }
             break;
         }
@@ -19582,7 +19582,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
             snd[1] = lbl_803E81C4;
             snd[2] = lbl_803E8180;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_foot_metal_scuff_455);
-            fn_80098B18(obj, lbl_803E81C8 * obj->anim.rootMotionScale, 3, mode, 0, snd);
+            objfx_spawnPulseBurst(obj, lbl_803E81C8 * obj->anim.rootMotionScale, 3, mode, 0, snd);
         }
     }
     *(u16*)((char*)inner + 0x400) = *(u16*)((char*)inner + 0x400) | 2;

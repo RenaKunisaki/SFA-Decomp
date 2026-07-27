@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 
-void fn_801AC01C(GameObject* obj);
-void fn_801AC108(GameObject* obj, void* extra);
+void imWorldMapEnter(GameObject* obj);
+void imWorldMapExit(GameObject* obj, void* extra);
 
 #endif /* MAIN_DLL_IM_WORLD_MAP_API_H_ */

@@ -82,7 +82,7 @@ void flameblast_render(GameObject* obj) {
     offset[0] = 0.0f;
     offset[1] = 1.0f;
     offset[2] = 0.0f;
-    fn_80098B18(obj, scale, FLAMEBLAST_RENDER_EFFECT, 0, 0, offset);
+    objfx_spawnPulseBurst(obj, scale, FLAMEBLAST_RENDER_EFFECT, 0, 0, offset);
 }
 
 void flameblast_update(GameObject* obj) {

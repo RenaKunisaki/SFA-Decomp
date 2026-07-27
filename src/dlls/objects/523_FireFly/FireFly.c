@@ -3,7 +3,7 @@
  *
  * A firefly sleeps until its required game bit (if any) is set, then
  * lights up (a 100/255/100 point light) and wanders a cubic B-spline
- * whose control points are re-targeted by fn_801F4D54, trailing blue
+ * whose control points are re-targeted by firefly_pickWanderTarget, trailing blue
  * or orange particles by kind. Flying near
  * the player brightens its glow. The first touch anywhere sends the
  * firefly talk message to the player (game bit 0xD28); later touches
@@ -52,7 +52,7 @@ int firefly_animEventCallback(GameObject* obj)
     return 0;
 }
 
-void fn_801F4C28(GameObject* obj, LgtFireFlyRec* record)
+void firefly_initFlightRec(GameObject* obj, LgtFireFlyRec* record)
 {
     record->src0X = obj->anim.localPosX;
     record->src0Y = obj->anim.localPosY;
@@ -84,7 +84,7 @@ void fn_801F4C28(GameObject* obj, LgtFireFlyRec* record)
     record->unk78 = 1200.0f;
 }
 
-void fn_801F4D54(GameObject* obj, LgtFireFlyRec* record)
+void firefly_pickWanderTarget(GameObject* obj, LgtFireFlyRec* record)
 {
     struct
     {
@@ -131,7 +131,7 @@ void fn_801F4D54(GameObject* obj, LgtFireFlyRec* record)
     record->offZ += record->posZ;
 }
 
-void fn_801F4ECC(GameObject* obj, BoulderShakeRec* record)
+void firefly_shiftPathHistory(GameObject* obj, BoulderShakeRec* record)
 {
     record->histX0 = record->histX1;
     record->histY0 = record->histY1;
@@ -196,7 +196,7 @@ void firefly_activeTick(GameObject* obj)
         }
         else
         {
-            fn_801F4D54(obj, (LgtFireFlyRec*)state);
+            firefly_pickWanderTarget(obj, (LgtFireFlyRec*)state);
         }
         state->splineX[0] = state->splineX[1];
         state->splineY[0] = state->splineY[1];
@@ -401,7 +401,7 @@ void firefly_init(GameObject* obj, FireFlyMapData* mapData)
     FireFlyState* state;
 
     state = (obj)->extra;
-    fn_801F4C28(obj, (LgtFireFlyRec*)state);
+    firefly_initFlightRec(obj, (LgtFireFlyRec*)state);
     (obj)->anim.alpha = 0;
     (obj)->animEventCallback = firefly_animEventCallback;
     ObjMsg_AllocQueue(obj, 1);

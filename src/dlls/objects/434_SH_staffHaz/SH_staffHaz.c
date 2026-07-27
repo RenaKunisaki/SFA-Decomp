@@ -2,7 +2,7 @@
  * SH_staffHaz (DLL 0x1B2) - the shimmering haze drawn around the staff.
  *
  * render() draws the object model at a fixed scale and overlays the haze
- * effect through fn_80098B18; update() frees the object once its
+ * effect through objfx_spawnPulseBurst; update() frees the object once its
  * animation has been hidden.
  */
 #include "dlls/object_descriptor.h"
@@ -19,7 +19,7 @@ void SH_StaffHaze_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5)
     vec[0] = 0.0f;
     vec[1] = 0.5f;
     vec[2] = 0.0f;
-    fn_80098B18(obj, (obj)->anim.rootMotionScale, 4, 0, 0, vec);
+    objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 4, 0, 0, vec);
 }
 
 void SH_StaffHaze_update(GameObject* obj)

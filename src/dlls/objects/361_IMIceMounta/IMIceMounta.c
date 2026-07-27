@@ -51,7 +51,7 @@
  * select the HUD state from the player's current mode and synchronize
  * the associated race and map-event game bits.
  */
-void fn_801AC01C(GameObject* obj)
+void imWorldMapEnter(GameObject* obj)
 {
     int state = *(int*)&(obj)->extra;
     int mode;
@@ -84,7 +84,7 @@ void fn_801AC01C(GameObject* obj)
     mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
 }
 
-void fn_801AC108(GameObject* obj, void* extra)
+void imWorldMapExit(GameObject* obj, void* extra)
 {
     int mode;
     GameObject* player;
@@ -251,7 +251,7 @@ void imicemountain_updateEventState(GameObject* obj)
         }
         break;
     case 4:
-        fn_801AC108(obj, extra);
+        imWorldMapExit(obj, extra);
         break;
     case 5:
         if ((extra->latchFlags & 1) != 0)
@@ -341,7 +341,7 @@ void IMIceMountain_update(GameObject* obj)
     case 2:
         if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
         {
-            fn_801AC01C(obj);
+            imWorldMapEnter(obj);
         }
         break;
     case 3:

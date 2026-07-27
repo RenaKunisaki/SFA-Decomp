@@ -188,7 +188,7 @@ void viewFinderSetZoomTo50(void)
  * (objfx_spawnCrystalOrbitEffects), generic hit/impact bursts, directional /
  * arced / box scatter bursts, the A-button glow, projectile trails, item
  * pickup sparkles, and dynamic lights (objParticleFn / objLightFn driving
- * modelLightStruct_*). fn_8009A8C8 / spawnExplosion / DIMexplosionFn add a
+ * modelLightStruct_*). objfx_shakeCameraByDistance / spawnExplosion / DIMexplosionFn add a
  * distance-attenuated camera shake + rumble and spawn the shared explosion
  * object (type 0x24, id 0x253). The numerous 0x3xx/0x7xx literals are
  * particle-effect resource ids; the float lbl_803DFxxx symbols are tuning
@@ -836,7 +836,7 @@ void objfx_spawnFrameTimedHitPulse(GameObject* obj, f32 scale, u8 type, u8 varia
         switch (type)
         {
         case 1:
-            fn_80098B18(obj, scale, (u8)variantTbl.values[variant], frame, 0, offset);
+            objfx_spawnPulseBurst(obj, scale, (u8)variantTbl.values[variant], frame, 0, offset);
             break;
         }
     }
@@ -1080,7 +1080,7 @@ void objfx_spawnFlaggedTrailBurst(void* obj, f32 fval, u8 mode, int f6val, int f
     }
 }
 
-void fn_80098B18(void* obj, f32 scale, int type, int count, int mode, f32* vec)
+void objfx_spawnPulseBurst(void* obj, f32 scale, int type, int count, int mode, f32* vec)
 {
     ObjFxParticleParams params;
     int j;
@@ -1740,7 +1740,7 @@ void objLightFn_8009a1dc(void* obj, f32 scale, void* origin, u8 type, void* ligh
     }
 }
 
-void fn_8009A8C8(GameObject* obj, f32 shakeRange)
+void objfx_shakeCameraByDistance(GameObject* obj, f32 shakeRange)
 {
     GameObject* player = Obj_GetPlayerObject();
     if (player == NULL)

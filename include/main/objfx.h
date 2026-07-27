@@ -20,7 +20,7 @@ void objfx_spawnBoxBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, u8 chan
                          f32 scaleZ, void* origin, int flags);
 void projectileParticleFxFn_80099660(void* obj, f32 scale, int mode);
 void itemPickupDoParticleFx(void* obj, f32 scale, int mode, u8 count);
-void fn_80098B18(void* obj, f32 scale, int type, int count, int mode, f32* offset);
+void objfx_spawnPulseBurst(void* obj, f32 scale, int type, int count, int mode, f32* offset);
 void spawnExplosion(GameObject* source, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake, u8 flag20,
                     u8 initialFlags);
 

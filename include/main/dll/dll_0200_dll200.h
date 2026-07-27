@@ -35,8 +35,8 @@ typedef struct ArwAttachTarget
     f32 speed;
 } ArwAttachTarget;
 
-void fn_801F20D4(GameObject* obj);
-void fn_801F27E4(GameObject* obj);
+void dll_200_updateAct6Idle(GameObject* obj);
+void dll_200_updateAct1Interact(GameObject* obj);
 void dll_200_free_nop(void);
 void dll_200_hitDetect_nop(void);
 void dll_200_release_nop(void);
@@ -48,6 +48,6 @@ void dll_200_init(GameObject* obj, Dll200Placement* def);
 int dll_200_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate, int arg3);
 int dll_200_unlockFireBlasterSpell(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate, int arg3);
 void dll_200_update(int obj);
-void fn_801F2290(GameObject* obj);
+void dll_200_updateAct2Wander(GameObject* obj);
 
 #endif /* MAIN_DLL_DLL_0200_DLL200_H_ */

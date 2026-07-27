@@ -3,7 +3,7 @@
  *
  * From its placement effectProfile, init selects a particle type and a
  * staff glow level (profiles 0-3, default = profile 0); each render tick
- * spawns the staff particle fx (fn_80098B18) scaled by the object's
+ * spawns the staff particle fx (objfx_spawnPulseBurst) scaled by the object's
  * root-motion scale. update is a no-op. The anim-event callback
  * mcstaffeffe_SeqFn (provided by the preceding MCUpgradeMa TU) drives the
  * player's staff glow from sequence events.
@@ -16,7 +16,7 @@
 
 void mcstaffeffe_render(McStaffEffectObject* staffEffect)
 {
-    fn_80098B18(staffEffect, staffEffect->anim.rootMotionScale, (u8)staffEffect->particleType, 0, 0, NULL);
+    objfx_spawnPulseBurst(staffEffect, staffEffect->anim.rootMotionScale, (u8)staffEffect->particleType, 0, 0, NULL);
 }
 
 void mcstaffeffe_update(void)

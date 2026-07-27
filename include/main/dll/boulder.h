@@ -32,6 +32,6 @@ STATIC_ASSERT(offsetof(BoulderShakeRec, histZ0) == 0x24);
 STATIC_ASSERT(offsetof(BoulderShakeRec, liveX) == 0x34);
 STATIC_ASSERT(offsetof(BoulderShakeRec, amplitude) == 0x44);
 
-void fn_801F4ECC(GameObject* obj, BoulderShakeRec* record);
+void firefly_shiftPathHistory(GameObject* obj, BoulderShakeRec* record);
 
 #endif /* MAIN_DLL_BOULDER_H_ */

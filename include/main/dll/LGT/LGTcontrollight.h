@@ -6,7 +6,7 @@
 
 
 int firefly_animEventCallback(GameObject* obj);
-void fn_801F4C28(GameObject* obj, LgtFireFlyRec* record);
-void fn_801F4D54(GameObject* obj, LgtFireFlyRec* record);
+void firefly_initFlightRec(GameObject* obj, LgtFireFlyRec* record);
+void firefly_pickWanderTarget(GameObject* obj, LgtFireFlyRec* record);
 
 #endif /* MAIN_DLL_LGT_LGTCONTROLLIGHT_H_ */

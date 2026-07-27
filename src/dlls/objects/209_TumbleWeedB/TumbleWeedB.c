@@ -921,9 +921,9 @@ void tumbleweed_updateEffects(GameObject* obj) {
         (obj->objectFlags & TUMBLEWEED_OBJECT_FLAG_RENDERED) != 0) {
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, TUMBLEWEED_HIT_PULSE_VOLUME_SLOT, 1, 0);
         if ((int)(u8)(++state->hitPulseCounter) % TUMBLEWEED_HIT_PULSE_PERIOD != 0) {
-            fn_80098B18(obj, obj->anim.rootMotionScale, 1, 0, 0, NULL);
+            objfx_spawnPulseBurst(obj, obj->anim.rootMotionScale, 1, 0, 0, NULL);
         } else {
-            fn_80098B18(obj, obj->anim.rootMotionScale, 1, TUMBLEWEED_HIT_PULSE_ALT_STYLE, 0, NULL);
+            objfx_spawnPulseBurst(obj, obj->anim.rootMotionScale, 1, TUMBLEWEED_HIT_PULSE_ALT_STYLE, 0, NULL);
         }
         Sfx_KeepAliveLoopedObjectSound((u32)obj, TUMBLEWEED_SFX_HIT_LOOP);
     }

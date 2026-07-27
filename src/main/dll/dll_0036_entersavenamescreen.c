@@ -57,7 +57,7 @@ void EnterSaveNameScreen_render(void)
     buf[1] = 0;
     gameTextSetDrawFunc(nameEntryTextDrawFunc);
     titleScreenPositionElements(lbl_803E1D80, lbl_803E1D84);
-    fn_80135814((int)(gEnterSaveNameScrollPos + lbl_803DD6DC - lbl_803E1D88), 0);
+    nameEntrySetScroll((int)(gEnterSaveNameScrollPos + lbl_803DD6DC - lbl_803E1D88), 0);
     gameTextBoxFn_80134d40(0xff, 1, 1);
     gameTextSetColor(0xc0, 0xc0, 0xc0, 0xff);
     gameTextShow(0x3ae);

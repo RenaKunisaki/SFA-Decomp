@@ -88,7 +88,7 @@ void drgenerator_hitDetect(GameObject* obj)
     }
     ((char*)state)[0x19a] = state->hitsRemaining - hitVolume;
     Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hitPosX, lbl_803E6B5C);
-    fn_8009A8C8(obj, lbl_803E6B60);
+    objfx_shakeCameraByDistance(obj, lbl_803E6B60);
     if (((char*)state)[0x19a] > 0)
     {
         return;

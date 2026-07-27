@@ -838,7 +838,7 @@ void hightop_playMovementSfx(GameObject* obj, HighTopRuntime* state2, HighTopRun
     }
     if ((s32)state->baddie.eventFlags & 0x100)
     {
-        fn_8009A8C8(obj, 1000.0f);
+        objfx_shakeCameraByDistance(obj, 1000.0f);
         Sfx_PlayFromObject((u32)obj, gHighTopMovementSfxIds[0]);
     }
 }
@@ -1060,7 +1060,7 @@ void HighTop_hitDetect(GameObject* obj)
     if (st == 2 || st == 8)
     {
         runtime->airMeterRemaining -= 1;
-        fn_8009A8C8(obj, 1000.0f);
+        objfx_shakeCameraByDistance(obj, 1000.0f);
         if (runtime->airMeterRemaining <= 0)
         {
             (*gGameUIInterface)->airMeterSetShutdown();

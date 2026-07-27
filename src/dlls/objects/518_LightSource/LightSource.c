@@ -6,7 +6,7 @@
  * attenuation, glow and projection radius, then primes the spark/fx
  * timers.  update toggles the lit state on a priority hit (mode 1),
  * latches the associated game bit, drives the per-frame particle fx
- * (fn_80098B18) and spark spawns, ramps the glow brightness byte at
+ * (objfx_spawnPulseBurst) and spark spawns, ramps the glow brightness byte at
  * light+0x2F9, and adds/removes the looping ambient sfx (0x72).  render
  * queues the glow and draws the object; free releases the light.
  *
@@ -157,7 +157,7 @@ void lightsource_update(GameObject* obj)
                 vec[1] = 3.5f;
             }
             vec[2] = 0.0f;
-            fn_80098B18(obj, 10.0f * (obj)->anim.rootMotionScale, state->fxType, sfxFlag, 0, vec);
+            objfx_spawnPulseBurst(obj, 10.0f * (obj)->anim.rootMotionScale, state->fxType, sfxFlag, 0, vec);
         }
         if (state->sparks != 0)
         {

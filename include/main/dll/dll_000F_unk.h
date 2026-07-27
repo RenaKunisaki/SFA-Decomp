@@ -25,7 +25,7 @@ typedef struct PlayerMoveBuf
 void player_moveTowardPoint(GameObject* a, int* ctx, f32 px, f32 pz, f32 lo, f32 hi, f32 spd);
 void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int unused);
 void player_applyVelocityStep(GameObject* p, int* ctx, f32 t);
-void fn_800D8414(GameObject* obj, int* ctx);
+void player_steerFromInput(GameObject* obj, int* ctx);
 void player_updateParticles(GameObject* obj, int unused, int effectId, int count, int mode);
 void player_doProjGfx(GameObject* obj, int unusedA, int resIdBase, int count, int unusedB, int mode);
 void player_updateSecondaryBlend(GameObject* obj, int* ctx, int moveA, int moveB);
@@ -42,7 +42,7 @@ void player_render2(GameObject* obj, int* state, f32 f1, f32 f2);
 void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2);
 void dll_0F_func0B(GameObject* obj, int* state, f32 f1, f32 f2, f32 f3);
 void player_advanceMove(short* moveState, u32* obj, f32 dt, int flags);
-void fn_800D915C(GameObject* obj, BaddieState* state, f32 dt, PlayerSubstateFn* stateFns);
+void player_runSubstateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSubstateFn* stateFns);
 void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerStateFn* stateFns);
 void player_setState(void* ctx, void* p, int new_state);
 void player_setOverride(u32 x);

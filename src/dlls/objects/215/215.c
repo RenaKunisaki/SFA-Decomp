@@ -175,7 +175,7 @@ void KaldaChompSpit_update(GameObject* obj) {
             kaldachompspit_burst(obj);
         } else {
             if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
-                fn_80098B18((void*)obj, 1.0f, 1, 0, 0, NULL);
+                objfx_spawnPulseBurst((void*)obj, 1.0f, 1, 0, 0, NULL);
             } else {
                 (*gPartfxInterface)
                     ->spawnObject((void*)obj, KALDACHOMPSPIT_PARTFX_POISON_TRAIL, NULL, 2, -1, &objAnim->alpha);

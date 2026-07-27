@@ -793,7 +793,7 @@ void snowclaw_update(GameObject* obj)
             pulseVec[2] = 0.0f;
             pulseType = &pulseTypes[pulseIndex];
             pulseMode = &pulseModes[pulseIndex];
-            fn_80098B18(obj, lbl_803DC218, (u8)*pulseType, (u8)*pulseMode, 0, pulseVec);
+            objfx_spawnPulseBurst(obj, lbl_803DC218, (u8)*pulseType, (u8)*pulseMode, 0, pulseVec);
         }
     }
 }

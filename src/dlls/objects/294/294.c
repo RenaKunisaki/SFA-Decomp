@@ -119,7 +119,7 @@ STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
 
 #define MOONROCK_ANGLE_TO_RADIANS(angle) ((lbl_803E40C8 * (f32)(s32)(-(angle))) / lbl_803E40CC)
 
-void fn_80198A00(u8* obj, GameObject* seqObj)
+void triggerEvalCurveLoop(u8* obj, GameObject* seqObj)
 {
     MmpTriggerPlaneState* state;
     f32 hitDistance;
@@ -159,7 +159,7 @@ void fn_80198A00(u8* obj, GameObject* seqObj)
     }
 }
 
-int fn_80198B68(u8* obj, f32* point)
+int triggerPointInBox(u8* obj, f32* point)
 {
     u8* data;
     f32 pointX;
@@ -1222,8 +1222,8 @@ void Trigger_hitDetect(GameObject* obj)
                     if (ok)
                     {
                         TriggerState* st = (TriggerState*)(obj)->extra;
-                        inside = fn_80198B68((u8*)obj, &st->prevTargetPosX);
-                        wasInside = fn_80198B68((u8*)obj, &st->targetPosX);
+                        inside = triggerPointInBox((u8*)obj, &st->prevTargetPosX);
+                        wasInside = triggerPointInBox((u8*)obj, &st->targetPosX);
                         if (inside != 0)
                         {
                             if (wasInside == 0)
@@ -1277,7 +1277,7 @@ void Trigger_hitDetect(GameObject* obj)
                 case 0xf4:
                     if (ok)
                     {
-                        fn_80198A00((u8*)obj, target);
+                        triggerEvalCurveLoop((u8*)obj, target);
                     }
                     break;
                 }

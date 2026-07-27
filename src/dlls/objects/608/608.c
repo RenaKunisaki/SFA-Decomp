@@ -69,7 +69,7 @@ void ProximityMine_expire(ProximityMineObject* obj)
     ObjHits_EnableObject((GameObject*)obj);
     ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
     storeZeroToFloatParam(&state->resetTimer);
-    fn_8009A8C8((GameObject*)obj, lbl_803E676C);
+    objfx_shakeCameraByDistance((GameObject*)obj, lbl_803E676C);
     {
         f32 triggerRadiusDelta = state->triggerDistance - lbl_803E6774;
         spawnExplosion((GameObject*)obj, triggerRadiusDelta * lbl_803DC24C + lbl_803E6770, 1, 1, 0, 1, 0, 1,

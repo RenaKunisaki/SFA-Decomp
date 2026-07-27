@@ -344,7 +344,7 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
         state->lastHitObject = hitObject;
         state->health -= hitVolume;
         Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hitPosX, lbl_803E68F0);
-        fn_8009A8C8(obj, lbl_803E68F4);
+        objfx_shakeCameraByDistance(obj, lbl_803E68F4);
         Sfx_PlayFromObject((u32)obj, SFXTRIG_ar_awghitobj16);
         if (state->health <= 0)
         {

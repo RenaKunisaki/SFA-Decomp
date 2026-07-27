@@ -243,9 +243,9 @@ int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             }
             else
             {
-                fn_801F4D54(obj, (LgtFireFlyRec*)sub);
+                firefly_pickWanderTarget(obj, (LgtFireFlyRec*)sub);
             }
-            fn_801F4ECC(obj, (BoulderShakeRec*)sub);
+            firefly_shiftPathHistory(obj, (BoulderShakeRec*)sub);
         }
     }
         {
@@ -402,9 +402,9 @@ void shopitem_update(GameObject* obj)
                     }
                     else
                     {
-                        fn_801F4D54(obj, (LgtFireFlyRec*)state);
+                        firefly_pickWanderTarget(obj, (LgtFireFlyRec*)state);
                     }
-                    fn_801F4ECC(obj, (BoulderShakeRec*)state);
+                    firefly_shiftPathHistory(obj, (BoulderShakeRec*)state);
                 }
                 (obj)->anim.localPosX =
                     Curve_EvalBSpline(s->controlX, s->splineT, 0);
@@ -452,7 +452,7 @@ void shopitem_init(GameObject* obj, int data)
     switch ((obj)->anim.seqId)
     {
     case SHOPITEM_SEQ_BSPLINE:
-        fn_801F4C28(obj, (LgtFireFlyRec*)state);
+        firefly_initFlightRec(obj, (LgtFireFlyRec*)state);
         break;
     case SHOPITEM_SEQ_AMBIENT:
         (*gPartfxInterface)->spawnObject((void*)obj, SHOPITEM_PARTFX_AMBIENT, NULL, 4, -1, NULL);
