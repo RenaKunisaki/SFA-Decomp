@@ -1,12 +1,9 @@
 /*
- * dll73func0 (DLL 0x73) - modgfx spirit/effect spawner DLL.
+ * DLL 115 / 0x73 - modgfx spirit/effect spawner.
  *
- * The retail dll_0073 object carries only func03/func01/func00; the
- * save/cheat helpers (saveFileStruct_unlockCheat / isCheatUnlocked /
- * saveFileStruct_resetVolumes / getSaveFileStruct / loadSaveSettings) are
- * mainDol drift-duplicates whose retail home is dll_0015_curves.
- *   - dll_73_func03: builds the modgfx command list (the spirit/aura
- *     particle effect) and submits it via gModgfxInterface->spawnEffect.
+ * dll_73_func03 builds the command list for a spirit/aura particle effect
+ * and submits it through gModgfxInterface. func00/func01 are empty
+ * lifecycle slots.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
