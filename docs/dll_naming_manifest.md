@@ -55,7 +55,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x009 | — | NO-RETAIL-NAME | main/dll/cloudaction.c \| dolphin/MSL_C/PPCEABI/bare/H/gamecube.c | main/dll/dll_0009_cloudaction.c | cut across: main/dll/cloudaction.c \| dolphin/MSL_C/PPCEABI/bare/H/gamecube.c; stem from fn prefix `cloudaction_*` |
 | 0x00A | — | NO-RETAIL-NAME | main/dll/dll_000A_expgfx.c | = (canonical) | — |
 | 0x00B | — | NO-RETAIL-NAME | main/dll/dll_000B_dll0b.c | = (canonical) | — |
-| 0x00C | — | NO-RETAIL-NAME | main/dll/dll_000C_projgfx.c | = (canonical) | — |
+| 0x00C | — | NO-RETAIL-NAME | dlls/engine/12/12.c | main/dll/dll_000C_projgfx.c | Complete DOL-confirmed TU; trailing six bytes are linker alignment |
 | 0x00D | — | NO-RETAIL-NAME | dlls/engine/13/13.c | main/dll/dll_000D_playershadow.c | Complete DOL-confirmed TU |
 | 0x00E | — | NO-RETAIL-NAME | dlls/engine/14/14.c | main/dll/dll_000E_partfx.c | Complete DOL-confirmed TU |
 | 0x00F | — | NO-RETAIL-NAME | dlls/engine/15/15.c | main/dll/dll_000F_unk.c | Complete DOL-confirmed TU; full sdata2 owner restored |

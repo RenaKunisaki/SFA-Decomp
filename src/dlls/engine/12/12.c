@@ -1,9 +1,3 @@
-/*
- * projgfx (DLL 0x0C) - model-graphics / preset-particle effect support.
- *
- * projgfx_funcs is the object's ObjectDescriptor11; most slots are no-ops or
- * "No Longer supported" OSReport stubs (release/rayhit/setzscale).
- */
 #include "main/dll/modgfx.h"
 #include "game/objects/object.h"
 #include "dolphin/os/OSReport.h"
