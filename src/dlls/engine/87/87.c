@@ -1,5 +1,5 @@
 /*
- * DLL 0x0057 - CameraModeTitle: the title-screen camera.
+ * DLL 87 / 0x57 - the title-screen camera.
  *
  * Holds the camera on one of a fixed table of authored poses (gCamTitlePoseTable,
  * pose index 4 = the resting title pose). moveCam latches the previous pose
@@ -219,7 +219,6 @@ CameraModeTitlePose gCamTitlePoseTable[5] = {
     {-18876.25f, 33.25548f, 28366.39f, 9419, 3496, 170},
 };
 
-/* descriptor/ptr table auto 0x8031a01c-0x8031a0e0 */
 ResourceDescriptorCallbacks7 lbl_8031A01C = {{0x00000000,
                         0x00000000,
                         0x00000000,
