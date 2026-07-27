@@ -1,195 +1,158 @@
-/*
- * IMMultiSeq (DLL 0x114) - a multi-sequence controller on the Ice
- * Mountain map. It walks a small step counter (0..4) through up to four
- * scripted sequences, each gated by a pair of game bits in the
- * placement: activeGameBits[] decides whether the step's trigger
- * sequence should run, and completionGameBits[] records that a step has
- * finished. The placement's polarityMask carries the expected bit
- * polarity for each step - the low nibble for the active test, the high
- * nibble (bits 4..7) for the completion test - so a step both advances
- * (when its completion bit flips) and rewinds (when an earlier
- * completion bit clears).
- */
-#include "main/dll/IM/dll_0114_immultiseq.h"
+#include "dlls/objects/276_IMMultiSeq.h"
+
 #include "game/objects/object.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
+#include "main/obj_group.h"
+#include "main/objanim_update.h"
+#include "main/objseq.h"
 
+#define IM_MULTI_SEQ_GROUP                     0xF
+#define IM_MULTI_SEQ_TYPE_ID                   0
+#define IM_MULTI_SEQ_SEQUENCE_INDEX_NONE       -1
+#define IM_MULTI_SEQ_GAME_BIT_NONE             -1
+#define IM_MULTI_SEQ_SEQUENCE_ID_NONE          -1
+#define IM_MULTI_SEQ_SEQUENCE_ARG_NONE         -1
+#define IM_MULTI_SEQ_COMPLETION_POLARITY_SHIFT 4
+#define IM_MULTI_SEQ_ROTATION_SHIFT            8
+#define IM_MULTI_SEQ_DEFAULT_MODEL_BANK        0
+#define IM_MULTI_SEQ_MODEL_SCALE               1.0f
+#define IM_MULTI_SEQ_STATE_ADVANCE_PENDING     0x01
 
-STATIC_ASSERT(sizeof(IMMultiSeqState) == 0x2);
-STATIC_ASSERT(sizeof(IMMultiSeqPlacement) == 0x34);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, completionGameBits) == 0x18);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, activeGameBits) == 0x20);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, initialYaw) == 0x28);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, modelBankIndex) == 0x2A);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, triggerIds) == 0x2C);
-STATIC_ASSERT(offsetof(IMMultiSeqPlacement, polarityMask) == 0x30);
+int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate) {
+    IMMultiSeqState* state;
+    IMMultiSeqPlacement* placement;
+    int step;
 
-#define IMMULTISEQ_OBJGROUP 0xf
+    (void)unused;
 
-/* state->flags: SeqFn latched a step advance for update() to consume */
-#define IMMULTISEQ_LATCH_ADVANCE_BIT 0x01
-
-#define IMMULTISEQ_OBJFLAG_HIDDEN             0x4000
-#define IMMULTISEQ_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-
-/* IMMultiSeq_SeqFn: end-of-sequence predicate. With a valid trigger id,
-   peek at the next step's active game bit; if its polarity has flipped
-   (GameBit != the polarityMask bit for that step) end the current
-   sequence. Always latches the advance bit before returning. */
-int IMMultiSeq_SeqFn(GameObject* obj, int* anim, ObjAnimUpdateState* animUpdate)
-{
-    IMMultiSeqState* state = obj->extra;
-    IMMultiSeqPlacement* def = *(IMMultiSeqPlacement**)&obj->anim.placementData;
+    state = obj->extra;
+    placement = (IMMultiSeqPlacement*)obj->anim.placementData;
     animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
     animUpdate->sequenceEventActive = 0;
-    if (obj->seqIndex == -1)
-    {
+    if (obj->seqIndex == IM_MULTI_SEQ_SEQUENCE_INDEX_NONE) {
         return 0;
     }
-    {
-        int step = state->step;
-        if (step != 4)
-        {
-            int next = step + 1;
-            if ((s32)next < 4)
-            {
-                s16 gbit = def->activeGameBits[next];
-                if (gbit != -1)
-                {
-                    int bitValue = mainGetBit(gbit);
-                    int expected = !((def->polarityMask >> next) & 1);
-                    if ((u32)expected == bitValue)
-                    {
-                        (*gObjectTriggerInterface)->endSequence(obj->seqIndex);
-                    }
+    step = state->step;
+    if (step != IM_MULTI_SEQ_STEP_COUNT) {
+        int nextStep = step + 1;
+
+        if ((s32)nextStep < IM_MULTI_SEQ_STEP_COUNT) {
+            s16 gameBit = placement->activeGameBits[nextStep];
+
+            if (gameBit != IM_MULTI_SEQ_GAME_BIT_NONE) {
+                int bitValue = mainGetBit(gameBit);
+                int expectedValue = !((placement->polarityMask >> nextStep) & 1);
+
+                if ((u32)expectedValue == bitValue) {
+                    (*gObjectTriggerInterface)->endSequence(obj->seqIndex);
                 }
             }
         }
     }
-    state->flags = (u8)(state->flags | IMMULTISEQ_LATCH_ADVANCE_BIT);
+    state->flags = (u8)(state->flags | IM_MULTI_SEQ_STATE_ADVANCE_PENDING);
     return 0;
 }
 
-int IMMultiSeq_getExtraSize(void)
-{
-    return 0x2;
-}
-int IMMultiSeq_getObjectTypeId(void)
-{
-    return 0x0;
+int IMMultiSeq_getExtraSize(void) {
+    return IM_MULTI_SEQ_STATE_SIZE;
 }
 
-void IMMultiSeq_free(int obj)
-{
-    ObjGroup_RemoveObject(obj, IMMULTISEQ_OBJGROUP);
+int IMMultiSeq_getObjectTypeId(void) {
+    return IM_MULTI_SEQ_TYPE_ID;
 }
 
-void IMMultiSeq_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void IMMultiSeq_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, IM_MULTI_SEQ_GROUP);
 }
 
-void IMMultiSeq_hitDetect(void)
-{
+void IMMultiSeq_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+    if (renderState != 0) {
+        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, IM_MULTI_SEQ_MODEL_SCALE);
+    }
 }
 
-void IMMultiSeq_update(GameObject* obj)
-{
+void IMMultiSeq_hitDetect(void) {
+}
+
+void IMMultiSeq_update(GameObject* obj) {
     IMMultiSeqState* state;
-    IMMultiSeqPlacement* def;
+    IMMultiSeqPlacement* placement;
     u8 step;
-    int prevStep;
-    s16 bitId;
+    int previousStep;
+    s16 gameBit;
 
     state = obj->extra;
-    def = *(IMMultiSeqPlacement**)&obj->anim.placementData;
+    placement = (IMMultiSeqPlacement*)obj->anim.placementData;
 
-    if ((state->flags & IMMULTISEQ_LATCH_ADVANCE_BIT) != 0)
-    {
+    if ((state->flags & IM_MULTI_SEQ_STATE_ADVANCE_PENDING) != 0) {
         step = state->step;
-        bitId = def->completionGameBits[step];
-        mainSetBits(bitId, !((def->polarityMask >> (step + 4)) & 1));
-        state->flags = (u8)(state->flags & ~IMMULTISEQ_LATCH_ADVANCE_BIT);
+        gameBit = placement->completionGameBits[step];
+        mainSetBits(gameBit, !((placement->polarityMask >> (step + IM_MULTI_SEQ_COMPLETION_POLARITY_SHIFT)) & 1));
+        state->flags = (u8)(state->flags & ~IM_MULTI_SEQ_STATE_ADVANCE_PENDING);
         state->step++;
     }
 
-    if ((int)state->step != 4)
-    {
-        u8 st = state->step;
-        bitId = def->activeGameBits[st];
-        if (bitId == -1)
-        {
-            state->step = 4;
-        }
-        else if ((u32) !((def->polarityMask >> state->step) & 1) == mainGetBit(bitId))
-        {
-            s8 triggerId = def->triggerIds[state->step];
-            if (triggerId != -1)
-            {
-                (*gObjectTriggerInterface)->runSequence(triggerId, obj, -1);
+    if ((int)state->step != IM_MULTI_SEQ_STEP_COUNT) {
+        u8 activeStep = state->step;
+
+        gameBit = placement->activeGameBits[activeStep];
+        if (gameBit == IM_MULTI_SEQ_GAME_BIT_NONE) {
+            state->step = IM_MULTI_SEQ_STEP_COUNT;
+        } else if ((u32)(!((placement->polarityMask >> state->step) & 1)) == mainGetBit(gameBit)) {
+            s8 sequenceId = placement->sequenceIds[state->step];
+
+            if (sequenceId != IM_MULTI_SEQ_SEQUENCE_ID_NONE) {
+                (*gObjectTriggerInterface)->runSequence(sequenceId, obj, IM_MULTI_SEQ_SEQUENCE_ARG_NONE);
             }
         }
     }
 
-    prevStep = state->step - 1;
-    while (prevStep >= 0)
-    {
-        bitId = def->completionGameBits[prevStep];
-        if (bitId == -1)
-        {
+    previousStep = state->step - 1;
+    while (previousStep >= 0) {
+        gameBit = placement->completionGameBits[previousStep];
+        if (gameBit == IM_MULTI_SEQ_GAME_BIT_NONE) {
             break;
         }
-        if (((def->polarityMask >> (prevStep + 4)) & 1) != mainGetBit(bitId))
-        {
+        if (((placement->polarityMask >> (previousStep + IM_MULTI_SEQ_COMPLETION_POLARITY_SHIFT)) & 1) !=
+            mainGetBit(gameBit)) {
             break;
         }
         state->step--;
-        prevStep--;
+        previousStep--;
     }
 }
 
-void IMMultiSeq_init(GameObject* obj, IMMultiSeqPlacement* params)
-{
+void IMMultiSeq_init(GameObject* obj, IMMultiSeqPlacement* placement) {
     ObjAnimComponent* objAnim;
     IMMultiSeqState* state;
-    int i;
+    int step;
 
-    objAnim = (ObjAnimComponent*)obj;
+    objAnim = &obj->anim;
     state = obj->extra;
-    obj->anim.rotX = (s16)(params->initialYaw << 8);
-    obj->animEventCallback = IMMultiSeq_SeqFn;
-    obj->objectFlags =
-        (u16)(obj->objectFlags | (IMMULTISEQ_OBJFLAG_HIDDEN | IMMULTISEQ_OBJFLAG_HITDETECT_DISABLED));
-    objAnim->bankIndex = params->modelBankIndex;
-    if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
-    {
-        objAnim->bankIndex = 0;
+    objAnim->rotX = (s16)(placement->initialYaw << IM_MULTI_SEQ_ROTATION_SHIFT);
+    obj->animEventCallback = IMMultiSeq_animEventCallback;
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
+    objAnim->bankIndex = placement->modelBankIndex;
+    if (objAnim->bankIndex >= objAnim->modelInstance->modelCount) {
+        objAnim->bankIndex = IM_MULTI_SEQ_DEFAULT_MODEL_BANK;
     }
-    ObjGroup_AddObject((int)obj, IMMULTISEQ_OBJGROUP);
-    i = 0;
-    while (i < 4)
-    {
-        if ((u32)((params->polarityMask >> (i + 4)) & 1) == mainGetBit(params->completionGameBits[i]))
-        {
+    ObjGroup_AddObject((int)obj, IM_MULTI_SEQ_GROUP);
+    step = 0;
+    while (step < IM_MULTI_SEQ_STEP_COUNT) {
+        if ((u32)((placement->polarityMask >> (step + IM_MULTI_SEQ_COMPLETION_POLARITY_SHIFT)) & 1) ==
+            mainGetBit(placement->completionGameBits[step])) {
             break;
         }
-        i++;
+        step++;
     }
-    state->step = i;
+    state->step = step;
 }
 
-void IMMultiSeq_release(void)
-{
+void IMMultiSeq_release(void) {
 }
 
-void IMMultiSeq_initialise(void)
-{
+void IMMultiSeq_initialise(void) {
 }
 
 ObjectDescriptor gIMMultiSeqObjDescriptor = {
