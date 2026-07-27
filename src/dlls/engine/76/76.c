@@ -1,11 +1,5 @@
 /*
- * camDebug (DLL 0x4C) - "fixed" camera mode.
- *
- * A static/debug camera mode object: most of its lifecycle hooks are
- * no-ops (copyToCurrent/free/update/release/init-pass). CameraModeFixed_init
- * snapshots a source camera into this one - copying world position,
- * deriving the local-space position relative to the source's parent, and
- * cloning the orientation and field of view - then holds that pose fixed.
+ * DLL 76 / 0x4C.
  */
 #include "main/camera_object.h"
 #include "main/resource.h"

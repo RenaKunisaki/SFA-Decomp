@@ -1181,7 +1181,7 @@ main/dll/dll_004B_cameramodeclimb.c:
 	.sbss       start:0x803DD578 end:0x803DD580
 	.sdata2     start:0x803E1990 end:0x803E19A0
 
-main/dll/dll_004C_camDebug.c:
+dlls/engine/76/76.c:
 	.text       start:0x8010DAD4 end:0x8010DB7C
 	.data       start:0x80319D78 end:0x80319DA8
 

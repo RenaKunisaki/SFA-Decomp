@@ -119,7 +119,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x049 | — | NO-RETAIL-NAME | main/dll/dll_0049_cameramodecombat.c | = (canonical) | — |
 | 0x04A | — | NO-RETAIL-NAME | main/dll/dll_004A_cameramodeshipbattle.c | = (canonical) | — |
 | 0x04B | — | NO-RETAIL-NAME | main/dll/dll_004B_cameramodeclimb.c | = (canonical) | — |
-| 0x04C | — | NO-RETAIL-NAME | main/dll/dll_004C_camDebug.c | = (canonical) | — |
+| 0x04C | — | NO-RETAIL-NAME | dlls/engine/76/76.c | = (canonical) | — |
 | 0x04D | — | NO-RETAIL-NAME | dlls/engine/77/77.c | = (canonical) | — |
 | 0x04E | — | NO-RETAIL-NAME | dlls/engine/78/78.c | = (canonical) | — |
 | 0x04F | — | NO-RETAIL-NAME | dlls/engine/79/79.c | = (canonical) | — |
