@@ -62,30 +62,19 @@ typedef struct
     u8 _f2 : 6;
 } WindLiftSub;
 
-extern f32 lbl_803E4190;
-extern const f32 lbl_803E416C;
 extern u8 gWindLiftSeqDurationTable[];
 extern u8 gWindLiftSeqGamebitTable[];
-extern const f32 lbl_803E4168;
-extern f32 lbl_803E4170;
-extern f32 lbl_803E4174;
-extern f32 lbl_803E4178;
-extern f32 lbl_803E417C;
-extern f32 lbl_803E4180;
-extern f32 lbl_803E4184;
-extern f32 lbl_803E4188;
-extern f32 lbl_803E418C;
-extern f32 lbl_803E4194;
-extern f32 lbl_803E4198;
-extern f32 lbl_803E419C;
-extern f32 lbl_803E41A0;
-extern f32 lbl_803E41A4;
-extern f32 lbl_803E41A8;
-extern f32 lbl_803E41AC;
-extern f32 lbl_803E41B0;
-extern f32 lbl_803E41B4;
-extern f32 lbl_803E41B8;
-extern f32 lbl_803E41BC;
+
+static void WindLift_resetSlot(WindLiftSlot* slot)
+{
+    slot->phaseFlags = 0;
+    slot->phaseFlags &= ~0xf1;
+    slot->f4 = 0.1f;
+    slot->riseSpeed = 0.0f;
+    slot->speedDelta = 0.0f;
+    slot->riderObj = 0;
+    slot->oscCounter = 0;
+}
 
 /* WindLift_updateRider: per-rider wind lift physics - track the rider while
  * above the lift and in range, send the lift/drop messages on state
@@ -110,12 +99,12 @@ void WindLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
     int fe;
     player = Obj_GetPlayerObject();
     dy = ((GameObject*)rider)->anim.localPosY - obj->anim.localPosY;
-    if (dy < lbl_803E416C)
+    if (dy < 0.0f)
     {
         return;
     }
     dist = Vec_xzDistance(&((GameObject*)rider)->anim.worldPosX, &obj->anim.worldPosX);
-    if (dist > lbl_803E4170 + height && (slot->phaseFlags & 0xe0) == 0)
+    if (dist > 10.0f + height && (slot->phaseFlags & 0xe0) == 0)
     {
         return;
     }
@@ -128,14 +117,14 @@ void WindLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
     {
         if ((flags & 0xe0) == 0 || (flags & WLSLOT_LATCH) != 0)
         {
-            if (gb != 0 && (!flags & WLSLOT_LATCH) != 0 && dy < lbl_803E4174)
+            if (gb != 0 && (!flags & WLSLOT_LATCH) != 0 && dy < 20.0f)
             {
                 slot->phaseFlags |= WLSLOT_LATCH;
                 return;
             }
             if ((flags & WLSLOT_PENDING) != 0)
             {
-                if (dy / pull > lbl_803E4178)
+                if (dy / pull > 0.8f)
                 {
                     slot->phaseFlags |= WLSLOT_PULLUP;
                     slot->phaseFlags &= ~WLSLOT_PULLDOWN;
@@ -156,7 +145,7 @@ void WindLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
             }
             else
             {
-                if (dy > lbl_803E417C)
+                if (dy > 30.0f)
                 {
                     ObjMsg_SendToObject(rider, 0xf, obj, (((slot->phaseFlags & 0xe0) >> 4) << 8) | dur);
                 }
@@ -164,45 +153,45 @@ void WindLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
                 slot->phaseFlags &= ~WLSLOT_RELEASE;
             }
         }
-        scale = lbl_803E4180;
+        scale = 0.324f;
         fl = slot->phaseFlags;
         fe = fl & 0xe;
         if (fe != 0 && (fl & WLSLOT_PULLDOWN) != 0 && gb == 0)
         {
-            pull = pull * lbl_803E4184;
+            pull *= 0.6f;
         }
-        pull = pull * lbl_803E4184;
-        if (pull <= lbl_803E4170)
+        pull *= 0.6f;
+        if (pull <= 10.0f)
         {
             return;
         }
-        if (dy < lbl_803E4188)
+        if (dy < 3.0f)
         {
-            dy = lbl_803E4188;
+            dy = 3.0f;
         }
         if (gb == 0)
         {
-            lim = pull - (pull / lbl_803E418C) * (slot->riseSpeed * (slot->riseSpeed * slot->riseSpeed));
+            lim = pull - (pull / 50.0f) * (slot->riseSpeed * (slot->riseSpeed * slot->riseSpeed));
             if (dy > lim)
             {
-                rise = lbl_803E416C;
+                rise = 0.0f;
             }
             else
             {
                 over = lim - dy;
-                if (over > lbl_803E4174)
+                if (over > 20.0f)
                 {
-                    rise = lbl_803E4190;
+                    rise = 1.0f;
                 }
                 else
                 {
-                    rise = over / lbl_803E4174;
+                    rise = over / 20.0f;
                 }
             }
             factor = rise;
             slot->phaseFlags |= WLSLOT_RISING;
-            if (((slot->riseSpeed < lbl_803E4194 && slot->oscCounter % 2 != 0) ||
-                 (slot->riseSpeed > lbl_803E4198 && slot->oscCounter % 2 == 0)) &&
+            if (((slot->riseSpeed < -0.2f && slot->oscCounter % 2 != 0) ||
+                 (slot->riseSpeed > 0.2f && slot->oscCounter % 2 == 0)) &&
                 (slot->phaseFlags & WLSLOT_PULLDOWN) != 0)
             {
                 if (slot->oscCounter++ > 2)
@@ -217,57 +206,57 @@ void WindLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
             speed = slot->riseSpeed;
             if (fe != 0)
             {
-                thr = lbl_803E4168;
+                thr = 0.1f;
             }
             else
             {
-                thr = lbl_803E419C;
+                thr = 0.5f;
             }
             if (speed > thr)
             {
                 slot->oscCounter = 1;
             }
-            scale = scale * lbl_803E41A0;
+            scale *= 1.5f;
             if (slot->oscCounter == 0)
             {
                 if ((slot->phaseFlags & 0xe) != 0)
                 {
-                    factor = lbl_803E4190 - dy / (lbl_803E41A4 * pull);
+                    factor = 1.0f - dy / (1.55f * pull);
                 }
                 else
                 {
-                    factor = lbl_803E4190 - dy / (lbl_803E41A8 * pull);
+                    factor = 1.0f - dy / (0.9f * pull);
                 }
-                if (factor < lbl_803E416C)
+                if (factor < 0.0f)
                 {
-                    factor = lbl_803E416C;
+                    factor = 0.0f;
                 }
                 factor = factor * factor;
             }
             else
             {
-                factor = lbl_803E41AC;
+                factor = 0.01f;
             }
         }
-        slot->speedDelta = scale * factor - lbl_803E41B0;
+        slot->speedDelta = scale * factor - 0.18f;
         slot->riseSpeed = slot->riseSpeed + slot->speedDelta;
-        if (slot->riseSpeed > lbl_803E41B4)
+        if (slot->riseSpeed > 8.0f)
         {
-            slot->riseSpeed = *(f32*)&lbl_803E41B4;
+            slot->riseSpeed = 8.0f;
         }
-        if (lbl_803E416C == slot->riseSpeed)
+        if (0.0f == slot->riseSpeed)
         {
-            slot->riseSpeed = lbl_803E41B8;
+            slot->riseSpeed = -0.001f;
         }
-        if (dy < lbl_803E4174 && gb != 0)
+        if (dy < 20.0f && gb != 0)
         {
-            slot->riseSpeed = lbl_803E416C;
+            slot->riseSpeed = 0.0f;
             slot->oscCounter = 0;
             ObjMsg_SendToObject(rider, 0x10, obj, gb);
             slot->phaseFlags |= WLSLOT_LATCH;
             if (pm != 0)
             {
-                player->anim.velocityY = lbl_803E416C;
+                player->anim.velocityY = 0.0f;
             }
         }
         if (pm != 0)
@@ -284,13 +273,13 @@ void WindLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
     {
         if (pm != 0)
         {
-            Player_SetLiftVelocityY((int)rider, lbl_803E416C);
+            Player_SetLiftVelocityY((int)rider, 0.0f);
         }
         if (pm == 0)
         {
             ObjMsg_SendToObject(rider, 0x10, obj, gb);
             slot->phaseFlags &= ~0xf1;
-            slot->riseSpeed = lbl_803E416C;
+            slot->riseSpeed = 0.0f;
             slot->oscCounter = 0;
         }
     }
@@ -309,7 +298,7 @@ int WindLift_getObjectTypeId(void)
 void WindLift_free(GameObject* obj)
 {
     void* p = Obj_GetPlayerObject();
-    if (p == NULL || Player_GetLiftVelocityY((int)p) == lbl_803E416C)
+    if (p == NULL || Player_GetLiftVelocityY((int)p) == 0.0f)
     {
         Music_Trigger(MUSICTRIG_DIM_Cavern, 0);
     }
@@ -320,7 +309,7 @@ void WindLift_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 vis = visible;
     if (vis != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E4190);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
 }
 
 void WindLift_hitDetect(void)
@@ -346,7 +335,7 @@ void WindLift_update(GameObject* obj)
     def = (u8*)obj->anim.placement;
     if (sub->active)
     {
-        level = (int)(lbl_803E41BC * timeDelta + (f32)(int)obj->anim.alpha);
+        level = (int)(2.0f * timeDelta + (f32)(int)obj->anim.alpha);
         if (sub->gamebit != -1 && mainGetBit(sub->gamebit) == 0)
         {
             sub->active = 0;
@@ -354,7 +343,7 @@ void WindLift_update(GameObject* obj)
     }
     else
     {
-        level = (int)-(lbl_803E41BC * timeDelta - (f32)(int)obj->anim.alpha);
+        level = (int)-(2.0f * timeDelta - (f32)(int)obj->anim.alpha);
         if (sub->gamebit != -1 && mainGetBit(sub->gamebit) != 0)
         {
             sub->active = 1;
@@ -403,13 +392,13 @@ void WindLift_update(GameObject* obj)
             if ((sub->slots[0].phaseFlags & 0xe0) != 0)
             {
                 u8 flags;
-                Player_SetLiftVelocityY((int)player, lbl_803E416C);
+                Player_SetLiftVelocityY((int)player, 0.0f);
                 flags = sub->slots[0].phaseFlags;
                 if ((flags & 0xe) != 0)
                 {
                     sub->slots[0].phaseFlags = flags | WLSLOT_PENDING;
                 }
-                sub->slots[0].riseSpeed = lbl_803E416C;
+                sub->slots[0].riseSpeed = 0.0f;
                 sub->slots[0].oscCounter = 0;
                 sub->slots[0].phaseFlags &= ~0xf1;
             }
@@ -441,13 +430,7 @@ void WindLift_update(GameObject* obj)
                     if ((u32)sub->slots[j].riderObj == 0)
                     {
                         found = j;
-                        sub->slots[j].phaseFlags = 0;
-                        sub->slots[j].phaseFlags &= ~0xf1;
-                        sub->slots[j].f4 = lbl_803E4168;
-                        sub->slots[j].riseSpeed = lbl_803E416C;
-                        sub->slots[j].speedDelta = lbl_803E416C;
-                        sub->slots[j].riderObj = 0;
-                        sub->slots[j].oscCounter = 0;
+                        WindLift_resetSlot(&sub->slots[j]);
                         j = 2000;
                     }
                 }
@@ -534,13 +517,7 @@ void WindLift_init(GameObject* obj, u8* def)
         WindLiftSub* p = sub;
         for (i = 0; i < WINDLIFT_SLOTS; i++)
         {
-            p->slots[i].phaseFlags = 0;
-            p->slots[i].phaseFlags &= ~0xf1;
-            p->slots[i].f4 = lbl_803E4168;
-            p->slots[i].riseSpeed = lbl_803E416C;
-            p->slots[i].speedDelta = lbl_803E416C;
-            p->slots[i].riderObj = 0;
-            p->slots[i].oscCounter = 0;
+            WindLift_resetSlot(&p->slots[i]);
         }
     }
     ObjGroup_AddObject((int)obj, CFWINDLIFT_OBJGROUP);

@@ -2222,7 +2222,7 @@ dlls/objects/328_CFGuardian/CFGuardian.c:
 dlls/objects/329/329.c:
 	.text       start:0x8019C784 end:0x8019D578
 	.data       start:0x80322A48 end:0x80322AB8
-	.sdata2     start:0x803E41C0 end:0x803E41D0
+	.sdata2     start:0x803E4168 end:0x803E41D0
 
 dlls/objects/330_CFPowerBase/CFPowerBase.c:
 	.text       start:0x8019D578 end:0x8019D9F0
