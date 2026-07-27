@@ -255,7 +255,6 @@ extern f32 lbl_803E25A0;
 extern f32 lbl_803E25A4;
 extern f32 lbl_803E25A8;
 extern f32 lbl_803E25AC;
-extern f32 lbl_803E25B4;
 extern f32 lbl_803E25B8;
 extern f32 lbl_803E25BC;
 extern f32 lbl_803E25C0;
@@ -285,7 +284,7 @@ typedef struct
 extern f32 enemyRespawnDistanceSq;
 extern u8 lbl_8031DBD8[];
 extern u8 lbl_8031DBE4[];
-extern f32 enemySightRange;
+extern const f32 enemySightRange;
 
 void Tricky_resumeAfterCommand(GameObject* obj, int state)
 {
@@ -1033,9 +1032,6 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
     u16 i;
     u8 visible;
     s16 setupId;
-    f32 angleDiv;
-    f32 sightRange;
-    f32 angleScale;
     f32 angle;
 
     visibilityBits = gTrickyVisibilityBitsInit;
@@ -1051,13 +1047,10 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
     {
         baseAngle = obj->anim.rotX;
     }
-    angleScale = lbl_803E25B4;
     i = 0;
-    angleDiv = lbl_803E25B8;
-    sightRange = enemySightRange;
     for (; i < 4; i++)
     {
-        angle = (angleScale * (f32)(s32)((s32)baseAngle + ((u32)(u16)i << 0xe))) / angleDiv;
+        angle = (3.1415927f * (f32)(s32)((s32)baseAngle + ((u32)(u16)i << 0xe))) / 32768.0f;
         probe.x = obj->anim.worldPosX - (radius * mathSinf(angle));
         probe.y = obj->anim.worldPosY;
         probe.z = obj->anim.worldPosZ - (radius * mathCosf(angle));
@@ -1070,7 +1063,7 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
         }
         voxmaps_worldToGrid((f32*)&probe, probeGrid);
         PSVECSubtract(&obj->anim.worldPosX, (f32*)&probe, (f32*)&delta);
-        if (PSVECMag((f32*)&delta) < sightRange)
+        if (PSVECMag((f32*)&delta) < enemySightRange)
         {
             if (*(u32*)&obj->anim.parent != 0)
             {
@@ -2249,7 +2242,7 @@ void fn_8014C678(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f3
     f32 rotMtx[12];
 
     curMag = PSVECMag((f32*)((int)state + 0x2b8));
-    if (curMag > lbl_803E2574)
+    if (curMag > 0.0f)
     {
         f32 inv = lbl_803E256C / curMag;
         curDir[0] = ((f32*)state)[174] * inv;
@@ -2259,13 +2252,13 @@ void fn_8014C678(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f3
     }
     else
     {
-        curDir[0] = lbl_803E2574;
-        curDir[1] = lbl_803E2574;
-        curDir[2] = lbl_803E2574;
+        curDir[0] = 0.0f;
+        curDir[1] = 0.0f;
+        curDir[2] = 0.0f;
     }
 
     targetMag = PSVECMag(desiredVec);
-    if (targetMag > lbl_803E2574)
+    if (targetMag > 0.0f)
     {
         f32 inv = lbl_803E256C / targetMag;
         targetDir[0] = desiredVec[0] * inv;
@@ -2274,24 +2267,26 @@ void fn_8014C678(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f3
     }
     else
     {
-        targetDir[0] = lbl_803E2574;
-        targetDir[1] = lbl_803E2574;
-        targetDir[2] = lbl_803E2574;
+        targetDir[0] = 0.0f;
+        targetDir[1] = 0.0f;
+        targetDir[2] = 0.0f;
     }
 
     PSVECCrossProduct(curDir, targetDir, turnAxis);
     axisMag = PSVECMag(turnAxis);
-    if (axisMag > lbl_803E2574)
+    if (axisMag > 0.0f)
     {
         f32 angle;
         int gt;
         f64 gtf;
+        f32 zero;
         angle = fn_80291FF4(PSVECDotProduct(curDir, targetDir));
         gt = (angle > maxTurnRad);
+        zero = 0.0f;
         gtf = __fabs((f32)gt);
-        if (gtf != lbl_803E2574)
+        if (gtf != zero)
         {
-            f32 rot = maxTurnRad * ((angle > lbl_803E2574) ? lbl_803E256C : lbl_803E25C4);
+            f32 rot = maxTurnRad * ((angle > 0.0f) ? lbl_803E256C : lbl_803E25C4);
             PSMTXRotAxisRad(rotMtx, turnAxis, rot);
             PSMTXMultVecSR(rotMtx, curDir, targetDir);
         }
@@ -2321,7 +2316,7 @@ void fn_8014C678(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f3
     if (clampToGround != 0)
     {
         f32 y = obj->anim.velocityY;
-        if (y < lbl_803E2574)
+        if (y < 0.0f)
         {
             f32 floor_height = obj->anim.localPosY;
             GameObject* target = *(GameObject**)((char*)state + 0x29c);
