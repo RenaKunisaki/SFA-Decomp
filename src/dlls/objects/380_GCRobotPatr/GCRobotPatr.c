@@ -1,6 +1,7 @@
-/*
- * GCRobotPatr (DLL 0x17C) is an inert data-only slot in the retail DOL.
- */
-#include "global.h"
+/* Inert GCRobotPatr resource slot. */
 
-u32 lbl_803230F8[12] = {-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+#include "dlls/objects/380_GCRobotPatr.h"
+
+u32 gGCRobotPatrNullResourceDescriptor[GC_ROBOT_PATR_NULL_DESCRIPTOR_WORD_COUNT] = {
+    0xFFFFFFFF,
+};

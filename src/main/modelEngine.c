@@ -174,6 +174,7 @@
 #include "dlls/objects/377_DFSH_ObjCre.h"
 #include "dlls/objects/378_SpiritPrize.h"
 #include "dlls/objects/379_DFSH_LaserB.h"
+#include "dlls/objects/380_GCRobotPatr.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -406,7 +407,7 @@ extern ResourceDescriptor lbl_8031A178, lbl_8031A1A0, lbl_8031A304, lbl_8031A82C
     lbl_8031ADA4, lbl_8031ADD0;
 extern ResourceDescriptor lbl_8031ADF8, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, lbl_8031C300,
     lbl_8031C5D0, lbl_8031C5F8;
-extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_803230F8;
+extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
 extern ResourceDescriptor lbl_80325928, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
@@ -1405,7 +1406,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDFSHObjCreatorObjDescriptor,
     (ResourceDescriptor*)&gSpiritPrizeObjDescriptor,
     (ResourceDescriptor*)&gDFSHLaserBeamObjDescriptor,
-    &lbl_803230F8,
+    (ResourceDescriptor*)&gGCRobotPatrNullResourceDescriptor,
     &gRollingBarrelObjDescriptor,
     &gMMP_levelcontrolObjDescriptor,
     &gMoonSeedBushObjDescriptor,
