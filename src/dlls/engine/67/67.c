@@ -1,37 +1,153 @@
-/*
- * DLL 0x43 - climb/path camera control.
- *
- * Drives the camera while the player climbs along a B-spline path:
- *   camclimb_update      - per-frame: transforms the path points into the
- *                          camera parent's local frame, samples the path
- *                          state, tracks yaw toward the target and triggers
- *                          a fallback to camera mode 0x42 on reset.
- *   CameraModeStaffAnim_init - builds the B-spline path (allocating the
- *                          shared gCamcontrolPathState), choosing an active
- *                          fast path or constructing curve points; plays a
- *                          snort sfx on a large turn.
- *   camcontrol_updatePathTargetAction - reads the pad and switches to
- *                          camera mode 0x49 (follow) or 0x44 (action).
- *
- * All path geometry lives in the singleton gCamcontrolPathState.
- */
+#include "main/dll/CAM/pathcam.h"
 #include "main/camera_interface.h"
+#include "main/dll/CAM/camcontrol_path_state.h"
+#include "main/object_transform.h"
+#include "string.h"
+#include "main/dll/CAM/camlockon.h"
+#include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "main/dll/player_api.h"
-#include "main/dll/CAM/camcontrol_path_state.h"
-#include "main/dll/CAM/pathcam.h"
-#include "main/dll/CAM/camlockon.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/dll/CAM/dll_0043_unk.h"
 #include "main/pad.h"
-#include "main/object_transform.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
 #include "main/mm.h"
 #include "main/dll/modgfx.h"
 #include "main/frame_timing.h"
+
+
+u8 camcontrol_samplePathState(f32* outX, f32* height, f32* outZ, GameObject* target, CameraObject* camera)
+{
+    CamcontrolPathSampleWork work;
+    int handler;
+    int i;
+    f32 pathT;
+
+    memset(&work, 0, 0x144);
+    work.model = (int)camera->anim.parent;
+    work.sampleX = gCamcontrolPathState->pointsX[gCamcontrolPathState->pathCurve.count - 2];
+    work.sampleY = *height;
+    work.sampleZ = gCamcontrolPathState->pointsZ[gCamcontrolPathState->pathCurve.count - 2];
+    work.localX = work.sampleX;
+    work.localY = work.sampleY;
+    work.localZ = work.sampleZ;
+    Obj_TransformLocalPointToWorld((double)work.localX, (double)work.localY, (double)work.localZ, &work.worldX,
+                                   &work.worldY, work.worldZ, work.model);
+    work.targetObj = target;
+    handler = (int)(*gCameraInterface)->getDefaultHandlerEntry();
+    (*(VtableFn*)(**(int**)(handler + 4) + 0x14))(&work, target);
+    Obj_TransformLocalPointToWorld(work.sampleX, work.sampleY, work.sampleZ, &work.targetX, &work.targetY, work.targetZ,
+                                   work.model);
+    (*(VtableFn*)(**(int**)(handler + 4) + 0x24))(&work, 1, 3, &gCamcontrolPathState->curveMin,
+                                                  &gCamcontrolPathState->curveMax);
+    i = gCamcontrolPathState->pathCurve.count + -3;
+    for (; i < gCamcontrolPathState->pathCurve.count; i = i + 1)
+    {
+        gCamcontrolPathState->pointsX[i] = work.sampleX;
+        gCamcontrolPathState->pointsZ[i] = work.sampleZ;
+    }
+    if (0.0f != gCamcontrolPathState->pathCurve.pathLength)
+    {
+        pathT = gCamcontrolPathState->pathCurve.pathDistance / gCamcontrolPathState->pathCurve.pathLength;
+    }
+    else
+    {
+        pathT = 0.0f;
+    }
+    if (pathT > 1.0f)
+    {
+        pathT = 1.0f;
+    }
+    else if (pathT < 0.0f)
+    {
+        pathT = 0.0f;
+    }
+    pathT = Curve_EvalHermite(gCamcontrolPathState->initialiseCurve, pathT, (float*)0x0);
+    if (pathT < 0.2f)
+    {
+        pathT = 0.2f;
+    }
+    Curve_AdvanceAlongPath(&gCamcontrolPathState->pathCurve, pathT);
+    *outX = gCamcontrolPathState->pathCurve.sample[0];
+    *outZ = gCamcontrolPathState->pathCurve.sample[2];
+    return;
+}
+
+CamcontrolPathState* gCamcontrolPathState;
+
+void camcontrol_buildPathAngles(s16* outArr, u16* outCount, s16 baseAngle, s16 deltaAngle,
+                                s16 limit)
+{
+    if (deltaAngle >= limit)
+    {
+        camcontrol_buildPathAngles(outArr, outCount, baseAngle, deltaAngle >> 1, limit);
+        camcontrol_buildPathAngles(outArr, outCount, baseAngle + (deltaAngle >> 1), deltaAngle >> 1,
+                                   limit);
+    }
+    else
+    {
+        outArr[(*outCount)++] = baseAngle;
+    }
+}
+
+void camcontrol_buildPathPoints(f32 baseX, f32 baseZ, f32 targetX, f32 baseY, f32 targetZ,
+                                f32 targetY, s16 angleRange, s16 angleLimit,
+                                int* outPointCount)
+{
+    u16 angleCount;
+    s16 rot[3];
+    f32 vec[3];
+    s16 pathAngles[CAMCONTROL_PATH_POINT_CAPACITY];
+    s16 absAngleRange;
+    f32 deltaX;
+    f32 deltaY;
+    f32 deltaZ;
+    int i;
+    int pointCount;
+
+    if (angleRange < 0)
+    {
+        absAngleRange = -angleRange;
+    }
+    else
+    {
+        absAngleRange = angleRange;
+    }
+
+    angleCount = 0;
+    camcontrol_buildPathAngles(pathAngles, &angleCount, 0, absAngleRange, angleLimit);
+
+    deltaX = targetX - baseX;
+    deltaY = targetY - baseY;
+    deltaZ = targetZ - baseZ;
+    i = 1;
+    pointCount = 3;
+
+    while (i < angleCount)
+    {
+        vec[0] = deltaX;
+        vec[1] = deltaY;
+        vec[2] = deltaZ;
+
+        rot[0] = angleRange < 0 ? pathAngles[i] : -pathAngles[i];
+        rot[1] = 0;
+        rot[2] = 0;
+        vecRotateZXY(rot, vec);
+
+        gCamcontrolPathState->pointsX[pointCount] = baseX + vec[0];
+        gCamcontrolPathState->pointsY[pointCount] =
+            baseY + (deltaY * ((f32)pathAngles[i] / absAngleRange));
+        gCamcontrolPathState->pointsZ[pointCount] = baseZ + vec[2];
+
+        i++;
+        pointCount++;
+    }
+
+    *outPointCount = pointCount;
+}
 
 #define PAD_TRIGGER_Z 0x10
 
@@ -44,10 +160,46 @@ typedef struct CameraModeStaffAnimSettings
 
 typedef void (*CameraBoundsFn)(CameraObject* camera, GameObject* target, f32 min, f32 max);
 
-/* Camera mode ids passed to setMode() (== the target camera-mode DLL number). */
-#define CAMMODE_DEFAULT    0x42 /* dll_0042 - default/release camera */
-#define CAMMODE_VIEWFINDER 0x44 /* dll_0044_cameramodeviewfinder (action) */
-#define CAMMODE_COMBAT     0x49 /* dll_0049_cameramodecombat (follow) */
+#define CAMMODE_DEFAULT    0x42
+#define CAMMODE_VIEWFINDER 0x44
+#define CAMMODE_COMBAT     0x49
+
+void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
+{
+    u16 buttons;
+    GameObject* targetObj;
+    struct
+    {
+        f32 x;
+        f32 z;
+        s16 y;
+    } actionPayload;
+
+    if (*(u32*)&target->pendingParentObj == 0)
+    {
+        buttons = getButtonsJustPressed(0);
+        targetObj = (GameObject*)camera->currentTarget;
+        if ((targetObj != NULL &&
+             (targetObj->anim.classId == 0x1c || targetObj->anim.classId == 0x2a) && target->anim.classId == 1 &&
+             objFn_80296700(target) != 0) ||
+            (camera->targetFlags & 2) != 0)
+        {
+            (*gCameraInterface)->setMode(CAMMODE_COMBAT, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
+        }
+        else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
+                 (objFn_802962b4((GameObject*)target) != 0))
+        {
+            actionPayload.x = gCamcontrolPathState->actionParamX;
+            actionPayload.z = gCamcontrolPathState->actionParamZ;
+            actionPayload.y = gCamcontrolPathState->actionParamY;
+            (*gCameraInterface)->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &actionPayload, 0, 0xff);
+        }
+    }
+}
+
+void CameraModeStaffAnim_copyToCurrent(void)
+{
+}
 
 void camcontrol_releasePathState(void)
 {
@@ -150,43 +302,6 @@ void camclimb_update(CameraObject* cam)
                                        *(int*)&cam->anim.parent);
     }
     return;
-}
-
-void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
-{
-    u16 buttons;
-    GameObject* targetObj;
-    struct
-    {
-        f32 x;
-        f32 z;
-        s16 y;
-    } actionPayload;
-
-    if (*(u32*)&target->pendingParentObj == 0)
-    {
-        buttons = getButtonsJustPressed(0);
-        targetObj = (GameObject*)camera->currentTarget;
-        if ((targetObj != NULL &&
-             (targetObj->anim.classId == 0x1c || targetObj->anim.classId == 0x2a) && target->anim.classId == 1 &&
-             objFn_80296700(target) != 0) ||
-            (camera->targetFlags & 2) != 0)
-        {
-            (*gCameraInterface)->setMode(CAMMODE_COMBAT, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
-        }
-        else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
-                 (objFn_802962b4((GameObject*)target) != 0))
-        {
-            actionPayload.x = gCamcontrolPathState->actionParamX;
-            actionPayload.z = gCamcontrolPathState->actionParamZ;
-            actionPayload.y = gCamcontrolPathState->actionParamY;
-            (*gCameraInterface)->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &actionPayload, 0, 0xff);
-        }
-    }
-}
-
-void CameraModeStaffAnim_copyToCurrent(void)
-{
 }
 
 static inline f32 CameraModeStaffAnim_angleToRadians(int angle)

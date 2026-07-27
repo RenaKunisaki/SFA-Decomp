@@ -1125,7 +1125,7 @@ main/dll/cutcam.c:
 	.sbss       start:0x803DD528 end:0x803DD538
 	.sdata2     start:0x803E16D0 end:0x803E16D8
 
-main/dll/pathcamgroup.c:
+dlls/engine/67/67.c:
 	.text       start:0x80106654 end:0x80107AEC
 	.sbss       start:0x803DD538 end:0x803DD540
 	.sdata2     start:0x803E1740 end:0x803E177C
