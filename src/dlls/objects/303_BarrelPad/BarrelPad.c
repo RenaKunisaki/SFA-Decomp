@@ -1,56 +1,54 @@
 /*
- * BarrelPad (DLL 0x12F) - the barrel-launcher pad object. Spawns
- * arced-burst particle effects when the barrel's seqId indicates an
- * active launch (0x79) or a secondary launch state (0x748). init reads
- * rotation and rootMotionScale from the placement record and enables the
- * object in the engine with hit detection disabled.
+ * Barrel-launcher pad family. Its launch sequences spawn arced particle
+ * bursts; placement data supplies the initial rotation and optional scale.
  */
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
+#include "dlls/objects/303_BarrelPad.h"
+
 #include "main/objfx.h"
 #include "main/object_render.h"
-#include "main/dll/dll_012F_barrelpad.h"
-#include "dlls/object_descriptor.h"
 
-/* anim.seqId variants driving the launch particle burst */
-#define BARRELPAD_SEQ_LAUNCH_ACTIVE    0x79  /* active launch burst */
-#define BARRELPAD_SEQ_LAUNCH_SECONDARY 0x748 /* secondary launch state */
+#define BARRELPAD_SEQ_LAUNCH_ACTIVE    0x79
+#define BARRELPAD_SEQ_LAUNCH_SECONDARY 0x748
 
-int BarrelPad_getExtraSize(void)
-{
-    return 0x0;
-}
-int BarrelPad_getObjectTypeId(void)
-{
-    return 0x0;
-}
+#define BARRELPAD_ROTATION_SHIFT 8
+#define BARRELPAD_SCALE_DIVISOR  255.0f
+#define BARRELPAD_DEFAULT_SCALE  1.0f
 
-void BarrelPad_free(void)
-{
-}
+typedef struct BarrelPadParticleArgs {
+    u8 pad00[0xC];
+    f32 offset[3];
+} BarrelPadParticleArgs;
 
-void BarrelPad_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+STATIC_ASSERT(offsetof(BarrelPadParticleArgs, offset) == 0x0C);
+STATIC_ASSERT(sizeof(BarrelPadParticleArgs) == 0x18);
+
+int BarrelPad_getExtraSize(void) {
+    return 0;
 }
 
-void BarrelPad_hitDetect(void)
-{
+int BarrelPad_getObjectTypeId(void) {
+    return 0;
 }
 
-void BarrelPad_update(GameObject* obj)
-{
+void BarrelPad_free(void) {
+}
+
+void BarrelPad_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, BARRELPAD_DEFAULT_SCALE);
+}
+
+void BarrelPad_hitDetect(void) {
+}
+
+void BarrelPad_update(GameObject* obj) {
     BarrelPadParticleArgs particleArgs;
 
-    if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_ACTIVE)
-    {
+    if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_ACTIVE) {
         particleArgs.offset[0] = 0.0f;
         particleArgs.offset[1] = 8.0f;
         particleArgs.offset[2] = 0.0f;
         objfx_spawnArcedBurst(obj, 5, 0.75f, 5, 2, 0x19, 12.0f, 12.0f, 2.0f, &particleArgs, 0);
-    }
-    else if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_SECONDARY)
-    {
+    } else if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_SECONDARY) {
         particleArgs.offset[0] = 0.0f;
         particleArgs.offset[1] = 6.0f;
         particleArgs.offset[2] = 0.0f;
@@ -58,29 +56,24 @@ void BarrelPad_update(GameObject* obj)
     }
 }
 
-void BarrelPad_init(GameObject* obj, BarrelPadSetup* setup)
-{
-    obj->anim.rotZ = (s16)((s32)setup->rotZ << 8);
-    obj->anim.rotY = (s16)((s32)setup->rotY << 8);
-    obj->anim.rotX = (s16)((s32)setup->rotX << 8);
-    if (setup->scale != 0)
-    {
-        obj->anim.rootMotionScale = (f32)(u32)setup->scale / 255.0f;
-        if (!obj->anim.rootMotionScale)
-        {
-            obj->anim.rootMotionScale = 1.0f;
+void BarrelPad_init(GameObject* obj, BarrelPadPlacement* placement) {
+    obj->anim.rotZ = (s16)((s32)placement->initialRotZ << BARRELPAD_ROTATION_SHIFT);
+    obj->anim.rotY = (s16)((s32)placement->initialRotY << BARRELPAD_ROTATION_SHIFT);
+    obj->anim.rotX = (s16)((s32)placement->initialRotX << BARRELPAD_ROTATION_SHIFT);
+    if (placement->scale != 0) {
+        obj->anim.rootMotionScale = (f32)(u32)placement->scale / BARRELPAD_SCALE_DIVISOR;
+        if (!obj->anim.rootMotionScale) {
+            obj->anim.rootMotionScale = BARRELPAD_DEFAULT_SCALE;
         }
         obj->anim.rootMotionScale = obj->anim.rootMotionScale * obj->anim.modelInstance->rootMotionScaleBase;
     }
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
-void BarrelPad_release(void)
-{
+void BarrelPad_release(void) {
 }
 
-void BarrelPad_initialise(void)
-{
+void BarrelPad_initialise(void) {
 }
 
 ObjectDescriptor gBarrelPadObjDescriptor = {
