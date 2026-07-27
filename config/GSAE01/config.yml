@@ -46,6 +46,10 @@ force_active:
   # halves; dropping them would shorten .bss and shift every later address.
   - gSfxLoopedObjectSoundIds
   - gSfxLoopedObjectSoundObjects
+  # intersect_surfacesfx.c: the retail link retained this uncalled function
+  # (its own switch jumptable is the only thing that names it); dropping it
+  # would shorten .text and shift every later section.
+  - surfaceSfxGetRecord
 
 # Path to the main.dol file.
 object: sys/main.dol
