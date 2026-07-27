@@ -10382,8 +10382,9 @@ int playerStateMoving(int obj, int state, f32 fv)
             t = mathSinf((gPlayerPi * (f32) ((PlayerState*)inner)->targetYaw) / lbl_803E7F98);
             {
                 f32 sn = mathCosf((gPlayerPi * (f32) ((PlayerState*)inner)->targetYaw) / lbl_803E7F98);
-                f32 nx = -((PlayerState*)inner)->smoothVelZ * sn - ((PlayerState*)inner)->smoothVelX * t;
-                ya = ((PlayerState*)inner)->smoothVelX * sn - ((PlayerState*)inner)->smoothVelZ * t;
+                f32 nz = -((PlayerState*)inner)->smoothVelZ;
+                f32 nx = nz * sn - ((PlayerState*)inner)->smoothVelX * t;
+                ya = ((PlayerState*)inner)->smoothVelX * sn + nz * t;
                 ((PlayerState*)state)->baddie.animSpeedA =
                     ((PlayerState*)state)->baddie.animSpeedA +
                     interpolate(nx - ((PlayerState*)state)->baddie.animSpeedA, ((PlayerState*)inner)->targetAnimSpeed,
