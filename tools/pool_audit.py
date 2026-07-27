@@ -236,12 +236,23 @@ def run_all(json_out=None):
         groups[find(u)].append(u)
     measures = load_report_measures()
     addr2size = {a: z for n, (s, a, z) in name2addr.items() if s == '.sdata2'}
+    addr2dtype = {}
+    for line in open(SYMBOLS, errors='replace'):
+        m = re.match(r'^\S+\s*=\s*\.sdata2:(0x[0-9A-Fa-f]+);.*data:(\w+)', line)
+        if m:
+            addr2dtype[int(m.group(1), 16)] = m.group(2)
     internal = {}
     for u, pool in unit_pool.items():
         own = [a for a in pool if owner_of(a) == u or len(addr_units[a]) == 1]
         byval = defaultdict(list)
         for a in own:
-            k = value_key(dol, a, addr2size.get(a))
+            sz = addr2size.get(a)
+            if sz is not None and sz not in (4, 8):
+                continue
+            dt = addr2dtype.get(a)
+            if dt is not None and dt not in ('float', 'double'):
+                continue
+            k = value_key(dol, a, sz)
             if k is not None:
                 byval[k].append(a)
         dups = {}
