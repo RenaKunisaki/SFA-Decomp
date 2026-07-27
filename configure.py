@@ -968,7 +968,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/451_DIMGate/DIMGate.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/452_DIMIceWall/DIMIceWall.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/453_DIMBarrier/DIMBarrier.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_801b1d84.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dolphin/TRK_MINNOW_DOLPHIN/main.c", progress_category="sdk"),
             Object(MatchingFor("GSAE01"), "dolphin/TRK_MINNOW_DOLPHIN/CircleBuffer.c", progress_category="sdk"),
             Object(MatchingFor("GSAE01"), "dolphin/TRK_MINNOW_DOLPHIN/main_gdev.c", progress_category="sdk"),
