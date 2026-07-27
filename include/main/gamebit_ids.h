@@ -26,9 +26,9 @@ enum GameBitId {
     /*
      * Entrance-intro signal for the K1 (ECSH) Krazoa Shrine. The shrine-entrance
      * trigger volume sets this (via objInterpretSeq, dll_0126) when the player
-     * crosses it; ecsh_shrine_update polls it once and, the first frame it sees
+     * crosses it; ecshShrine_update polls it once and, the first frame it sees
      * it set, plays the "You have found your way into a KRAZOA SHRINE..."
-     * NPC dialogue (0x285), latching EcshShrineState.introTextLatch so it never
+     * NPC dialogue (0x285), latching ECSHShrineState.introTextLatch so it never
      * repeats. NOT a "seen" gate - live-verified in Dolphin: setting this bit
      * makes the shrine play the intro on the spot (it is the trigger, and the
      * one-shot behaviour lives in the shrine's latch, not in this bit).

@@ -1,171 +1,218 @@
 /*
- * ECSH_Shrine (DLL 0x18F) - Krazoa Spirit Shrine: the "Test of Observation". ("ECSH" is
- * the retail prefix for this shrine - one of the MMSH/ECSH/DFSH/DBSH/GPSH Krazoa
- * shrine family; the "EC" area code is unidentified, so it's left undecoded.)
+ * ECSH_Shrine (DLL 0x18F) - Krazoa Shrine Test of Observation.
  *
- * This is a 3-round cup shell-game. The Krazoa Spirit hides in one of 6 cups
- * (the golden urns; the cup objects themselves are DLL 0x190 ECSH_Cup). Each
- * round the cups shuffle around the player - faster and with more shuffle
- * patterns each round - and the player walks up to a cup to make their guess.
- * A wrong guess teleports the player out; a correct guess advances to the next
- * round; 3 correct guesses in a row obtains the spirit (sets
- * GAMEBIT_K1_SPIRIT_COLLECTED via anim-event 7 in ecsh_shrine_SeqFn).
- *
- * Drives the floating shrine object: a bobbing model that orbits/wobbles
- * toward the player (ecsh_shrine_updateMotion) and fades with distance, plus its
- * anim-event callback (ecsh_shrine_SeqFn) which reacts to torch signals, sets camera vars, and
- * toggles the model light.
- *
- * ecsh_shrine_update is the main state machine. The puzzle working set lives in
- * a shared scratch buffer (EcshPuzzleState at gEcShShrinePuzzleState - the 6
- * cups' (x,z) positions plus current/next slot->cup maps that are rotated or
- * swapped per shuffle step). It sequences the screen transitions, object
- * sequences and looping SFX as the test advances through its phases.
- *
- * Helpers, all reaching the active instance through the gEcShShrineActiveObject
- * singleton: ecsh_shrine_getPhaseAndSpiritCup (outputs animState + spiritCup),
- * ecsh_shrine_checkCupPick (the PICK CHECK: sets matchFlag = guess==spiritCup,
- * called from ecsh_cup_update), ecsh_shrine_getCupPos / ecsh_shrine_setCupPos
- * (read/write a cup's (x,z) via the slot->cup map gEcShShrineCupSlotMap), plus
- * setScale.
- *
- * The DLL owns a cluster of GameBits set on init/free/transition (0xefa,
- * 0xcbb, 0xa7f, 0xb9d, 0x129, 0x143, ...). It also reads the entrance-intro
- * trigger GAMEBIT_K1_SHRINE_INTRO_TEXT_TRIGGER (0x58b), set by the shrine's
- * entrance trigger volume, and on the first frame it sees it set plays the
- * "found your way into a KRAZOA SHRINE" dialogue (0x285), latching
- * introTextLatch (live-verified; it is NOT a torch signal).
+ * Runs the three-round cup shuffle, the floating shrine model, and the
+ * animation events that drive the test's camera, lighting, and reward.
  */
+#include "dlls/objects/399_ECSH_Shrine.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/dll/objfx_api.h"
-#include "main/sky_api.h"
+#include "game/objects/object_setup.h"
 #include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
+#include "main/audio/music_trigger_ids.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/vecmath_distance_api.h"
-#include "main/audio/music_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
+#include "main/dll/player_staff_api.h"
+#include "main/frame_timing.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/model_light.h"
+#include "main/object_render.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "sys/objects.h"
-#include "main/object_render.h"
-#include "main/model_light.h"
-#include "main/render_envfx_api.h"
-#include "main/dll/mmshrineanimobj_struct.h"
-#include "game/objects/object_setup.h"
 #include "main/objseq.h"
-#include "main/dll/mmshrine/ecsh_shrine_state.h"
-#include "main/dll/mmshrine/ecsh_shrine.h"
-#include "main/game_ui_interface.h"
+#include "main/render_envfx_api.h"
 #include "main/screen_transition.h"
-#include "main/gamebits.h"
-#include "main/frame_timing.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/sky_api.h"
 #include "main/vecmath.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/music_trigger_ids.h"
-#include "main/gamebit_ids.h"
-#include "main/dll/player_staff_api.h"
-#include "main/dll/player_api.h"
+#include "sys/objects.h"
 
-typedef struct EcshIntPair
-{
-    int a;
-    int b;
-} EcshIntPair;
+typedef struct ECSHShrineWordPair {
+    u32 first;
+    u32 second;
+} ECSHShrineWordPair;
 
-typedef struct MmShrineAnimState
-{
-    ModelLightStruct* light;
-    u8 pad04[0x24];
-    s16 orbitA;
-    s16 orbitB;
-    s16 orbitC;
-    u8 pad2E[0x2];
-    u8 hasTorchSignal;
-} MmShrineAnimState;
+typedef struct ECSHShrineCupPosition {
+    f32 x;
+    f32 z;
+} ECSHShrineCupPosition;
 
-typedef struct MmShrineAnimEvents
-{
-    u8 pad00[0x56];
-    u8 eventStatus;
-    u8 pad57[0x19];
-    s16 eventModel;
-    u8 pad72[0xF];
-    u8 events[10];
-    u8 eventCount;
-} MmShrineAnimEvents;
+typedef struct ECSHShrinePuzzleScratch {
+    f32 cupPositions[12];
+    s16 cupSlotMap[6];
+    s16 nextCupSlotMap[6];
+} ECSHShrinePuzzleScratch;
 
-typedef struct EcshRenderPair
-{
-    f32 a;
-    f32 b;
-} EcshRenderPair;
+STATIC_ASSERT(offsetof(ECSHShrinePuzzleScratch, cupPositions) == 0x00);
+STATIC_ASSERT(offsetof(ECSHShrinePuzzleScratch, cupSlotMap) == 0x30);
+STATIC_ASSERT(offsetof(ECSHShrinePuzzleScratch, nextCupSlotMap) == 0x3C);
+STATIC_ASSERT(sizeof(ECSHShrinePuzzleScratch) == 0x48);
+STATIC_ASSERT(sizeof(ECSHShrineCupPosition) == 0x08);
 
-typedef struct EcshPuzzleState
-{
-    f32 cupPos[12];        /* 0x00: the 6 cups' (x,z) positions */
-    s16 cupSlotMap[6];     /* 0x30: current slot->cup index map (== gEcShShrineCupSlotMap) */
-    s16 nextCupSlotMap[7]; /* 0x3c: next round's slot->cup map */
-} EcshPuzzleState;
+#define ECSH_SHRINE_OBJ_GROUP 0xB
 
-#define ECSHSHRINE_OBJGROUP 0xb
+#define ECSH_SHRINE_CAMERA_MODE_STATIC 0x48
 
-/* camera mode DLL 0x48 = dll_0048_cameramodestatic */
-#define ECSHSHRINE_CAMMODE_STATIC 0x48
-
-/* env-effect ids fired when the shrine intro countdown expires (index-style; roles opaque) */
 #define ECSH_SHRINE_ENVFX_A 0x221
 #define ECSH_SHRINE_ENVFX_B 0x220
 #define ECSH_SHRINE_ENVFX_C 0x222
 
-/* Number of cups in the shuffle puzzle (cupSlotMap[6], cupPos holds 6 (x,z) pairs). */
-#define ECSHSHRINE_CUP_COUNT 6
+#define ECSH_SHRINE_CUP_COUNT      6
+#define ECSH_SHRINE_LAST_CUP_INDEX 5
+
+#define ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG 8
+#define ECSH_SHRINE_AUDIO_STOP_MASK        3
+#define ECSH_SHRINE_STAFF_DISABLED         0
+
+#define ECSH_SHRINE_CAMERA_ARG1 100
+#define ECSH_SHRINE_CAMERA_ARG2 0
+#define ECSH_SHRINE_CAMERA_ARG3 0x50
+
+#define ECSH_SHRINE_DIALOGUE_ID            0x285
+#define ECSH_SHRINE_DIALOGUE_UNUSED_A      0x14
+#define ECSH_SHRINE_DIALOGUE_UNUSED_B      0x8C
+#define ECSH_SHRINE_DIALOGUE_DISABLE_INPUT 1
+
+#define ECSH_SHRINE_SKY_FLAGS   7
+#define ECSH_SHRINE_ENVFX_FLAGS 0
+
+#define ECSH_SHRINE_LIGHT_DISABLED       0
+#define ECSH_SHRINE_LIGHT_ENABLED        1
+#define ECSH_SHRINE_LIGHT_FADE_DURATION  1.0f
+#define ECSH_SHRINE_RENDER_SCALE         1.0f
+#define ECSH_SHRINE_PARTICLE_SCALE       1.0f
+#define ECSH_SHRINE_PARTICLE_TYPE        7
+#define ECSH_SHRINE_PARTICLE_EXTRA_SCALE 1.0f
+
+#define ECSH_SHRINE_SEQUENCE_INTRO   0
+#define ECSH_SHRINE_SEQUENCE_SUCCESS 1
+#define ECSH_SHRINE_SEQUENCE_ROUND   2
+#define ECSH_SHRINE_SEQUENCE_FLAGS   -1
+
+#define ECSH_SHRINE_STATE_FLAG_TEST_RUNNING   0x02
+#define ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_01 0x01
+#define ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10 0x10
+#define ECSH_SHRINE_NO_GAMEBIT                -1
+
+#define ECSH_SHRINE_VOICE_DELAY_MIN 500
+#define ECSH_SHRINE_VOICE_DELAY_MAX 1000
+
+#define ECSH_SHRINE_INTRO_COOLDOWN           200.0f
+#define ECSH_SHRINE_INTRO_TRANSITION_FRAMES  0x78
+#define ECSH_SHRINE_ROUND_START_COOLDOWN     80.0f
+#define ECSH_SHRINE_SHUFFLE_ANIM_TIMER       40.0f
+#define ECSH_SHRINE_SHUFFLE_COOLDOWN         60.0f
+#define ECSH_SHRINE_GUESS_TIMER              600.0f
+#define ECSH_SHRINE_SHUFFLE_SFX_DELAY_MIN    0x28
+#define ECSH_SHRINE_SHUFFLE_SFX_DELAY_MAX    0x3C
+#define ECSH_SHRINE_SHUFFLE_START_TIMER      2.0f
+#define ECSH_SHRINE_SHUFFLE_MOVE_TIMER       100.0f
+#define ECSH_SHRINE_RESULT_TRANSITION_FRAMES 0x1E
+#define ECSH_SHRINE_RESULT_COOLDOWN          31.0f
+#define ECSH_SHRINE_NEXT_ROUND_COOLDOWN      150.0f
+#define ECSH_SHRINE_NEXT_ROUND_ANIM_TIMER    12.0f
+#define ECSH_SHRINE_RESET_COOLDOWN           400.0f
+
+#define ECSH_SHRINE_ROUND_ONE_SHUFFLES   5
+#define ECSH_SHRINE_ROUND_TWO_SHUFFLES   7
+#define ECSH_SHRINE_ROUND_THREE_SHUFFLES 9
+
+#define ECSH_SHRINE_ROUND_ONE_PATTERN_MAX   1
+#define ECSH_SHRINE_ROUND_TWO_PATTERN_MAX   5
+#define ECSH_SHRINE_ROUND_THREE_PATTERN_MAX 7
+
+#define ECSH_SHRINE_SHUFFLE_SFX_ROLL_MAX       10
+#define ECSH_SHRINE_SHUFFLE_SFX_ROLL_THRESHOLD 7
+
+#define ECSH_SHRINE_MESSAGE_QUEUE_CAPACITY 4
+#define ECSH_SHRINE_LOAD_TIMER_START       1
+
+#define ECSH_SHRINE_PLACEMENT_ROTATION_OFFSET 0x18
+#define ECSH_SHRINE_PLACEMENT_ROTATION_SHIFT  8
+
+#define ECSH_SHRINE_GAMEBIT_0A6D 0xA6D
+#define ECSH_SHRINE_GAMEBIT_0A6F 0xA6F
+#define ECSH_SHRINE_GAMEBIT_0A70 0xA70
+
+#define ECSH_SHRINE_UNKNOWN_18_INITIAL 0x0C
+#define ECSH_SHRINE_UNKNOWN_1C_INITIAL 0x1E
+
+#define ECSH_SHRINE_ORBIT_RATE_A         512.0f
+#define ECSH_SHRINE_ORBIT_RATE_B         128.0f
+#define ECSH_SHRINE_ORBIT_RATE_C         192.0f
+#define ECSH_SHRINE_ORBIT_HEIGHT         20.0f
+#define ECSH_SHRINE_ORBIT_ROTATION_SCALE 600.0f
+#define ECSH_SHRINE_ANIMATION_STEP       0.005f
+#define ECSH_SHRINE_TURN_RATE_DIVISOR    12.0f
+#define ECSH_SHRINE_FADE_DISTANCE        30.0f
+#define ECSH_SHRINE_FULL_ALPHA           255.0f
+#define ECSH_SHRINE_ANGLE_HALF_TURN      0x8000
+#define ECSH_SHRINE_ANGLE_WRAP           0xFFFF
+#define ECSH_SHRINE_ORBIT_PI             3.1415927f
+#define ECSH_SHRINE_ORBIT_ANGLE_SCALE    32768.0f
+
+enum {
+    ECSH_SHRINE_ANIM_EVENT_TRANSITION_READY = 3,
+    ECSH_SHRINE_ANIM_EVENT_GRANT_SPIRIT = 7,
+    ECSH_SHRINE_ANIM_EVENT_SET_CAMERA = 13,
+    ECSH_SHRINE_ANIM_EVENT_LOCK_POSE = 14,
+    ECSH_SHRINE_ANIM_EVENT_UNLOCK_POSE = 15,
+};
+
+typedef enum ECSHShrinePhase {
+    ECSH_SHRINE_PHASE_IDLE = 0,
+    ECSH_SHRINE_PHASE_INTRO_TRANSITION = 1,
+    ECSH_SHRINE_PHASE_PREPARE_ROUND_ONE = 2,
+    ECSH_SHRINE_PHASE_ROUND_ONE = 3,
+    ECSH_SHRINE_PHASE_ROUND_TWO = 4,
+    ECSH_SHRINE_PHASE_ROUND_THREE = 5,
+    ECSH_SHRINE_PHASE_SUCCESS = 6,
+    ECSH_SHRINE_PHASE_POST_SUCCESS = 7,
+    ECSH_SHRINE_PHASE_RESET = 8,
+    ECSH_SHRINE_PHASE_FAIL = 10,
+} ECSHShrinePhase;
 
 extern int lbl_803DDBC0;
-extern void* gEcShShrineActiveObject;
-extern EcshIntPair lbl_803E8470;
+extern GameObject* gECSHShrineActiveObject;
+extern u32 lbl_803E8470;
 
-/*
- * The shell-game working set: the 6 cups' (x,z) positions (see EcshPuzzleState
- * in ecsh_shrine_update - the slot->cup maps that follow it in memory are
- * gEcShShrineCupSlotMap below).
- */
-EcshRenderPair gEcShShrinePuzzleState[6] = {0};
+ECSHShrineCupPosition gECSHShrineCupPositions[ECSH_SHRINE_CUP_COUNT] = {0};
 
-/* Current slot->cup index map for the 6 cups, followed by next round's map. */
-s16 gEcShShrineCupSlotMap[] = {
+s16 gECSHShrineCupSlotMap[ECSH_SHRINE_CUP_COUNT * 2] = {
     0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5,
 };
 
-ObjectDescriptor15 gECSH_ShrineObjDescriptor = {
+ObjectDescriptor15 gECSHShrineObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_15_SLOTS,
-    (ObjectDescriptorCallback)ecsh_shrine_initialise,
-    (ObjectDescriptorCallback)ecsh_shrine_release,
+    (ObjectDescriptorCallback)ecshShrine_initialise,
+    (ObjectDescriptorCallback)ecshShrine_release,
     0,
-    (ObjectDescriptorCallback)ecsh_shrine_init,
-    (ObjectDescriptorCallback)ecsh_shrine_update,
-    (ObjectDescriptorCallback)ecsh_shrine_hitDetect,
-    (ObjectDescriptorCallback)ecsh_shrine_render,
-    (ObjectDescriptorCallback)ecsh_shrine_free,
-    (ObjectDescriptorCallback)ecsh_shrine_getObjectTypeId,
-    ecsh_shrine_getExtraSize,
-    (ObjectDescriptorCallback)ecsh_shrine_setScale,
-    (ObjectDescriptorCallback)ecsh_shrine_getCupPos,
-    (ObjectDescriptorCallback)ecsh_shrine_getPhaseAndSpiritCup,
-    (ObjectDescriptorCallback)ecsh_shrine_setCupPos,
-    (ObjectDescriptorCallback)ecsh_shrine_checkCupPick,
+    (ObjectDescriptorCallback)ecshShrine_init,
+    (ObjectDescriptorCallback)ecshShrine_update,
+    (ObjectDescriptorCallback)ecshShrine_hitDetect,
+    (ObjectDescriptorCallback)ecshShrine_render,
+    (ObjectDescriptorCallback)ecshShrine_free,
+    (ObjectDescriptorCallback)ecshShrine_getObjectTypeId,
+    ecshShrine_getExtraSize,
+    (ObjectDescriptorCallback)ecshShrine_getScale,
+    (ObjectDescriptorCallback)ecshShrine_getCupPosition,
+    (ObjectDescriptorCallback)ecshShrine_getPhaseAndSpiritCup,
+    (ObjectDescriptorCallback)ecshShrine_setCupPosition,
+    (ObjectDescriptorCallback)ecshShrine_checkCupPick,
 };
 
-
-void ecsh_shrine_updateMotion(MmShrineAnimObj* obj)
-{
-    ObjPlacement* config;
-    MmShrineAnimState* state;
+void ecshShrine_updateHoverMotion(GameObject* obj) {
+    const ObjPlacement* placement;
+    ECSHShrineState* state;
     GameObject* player;
     f32 trigA;
     f32 trigB;
@@ -173,235 +220,222 @@ void ecsh_shrine_updateMotion(MmShrineAnimObj* obj)
     s32 angleDelta;
     ObjAnimEventList animEvents;
 
-    config = (ObjPlacement*)obj->config;
-    state = (MmShrineAnimState*)obj->state;
+    placement = (const ObjPlacement*)obj->anim.placementData;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
 
-    if ((obj->flags & MMSHRINE_FLAG_POSE_LOCKED) != 0)
-    {
-        obj->yaw = 0;
-        obj->posY = config->posY;
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
+        obj->anim.rotX = 0;
+        obj->anim.localPosY = placement->posY;
         return;
     }
 
-    state->orbitA = (s16)(state->orbitA + (s32)(512.0f * timeDelta));
-    state->orbitB = (s16)(state->orbitB + (s32)(128.0f * timeDelta));
-    state->orbitC = (s16)(state->orbitC + (s32)(192.0f * timeDelta));
+    state->orbitPhaseA = (s16)(state->orbitPhaseA + (s32)(ECSH_SHRINE_ORBIT_RATE_A * timeDelta));
+    state->orbitPhaseB = (s16)(state->orbitPhaseB + (s32)(ECSH_SHRINE_ORBIT_RATE_B * timeDelta));
+    state->orbitPhaseC = (s16)(state->orbitPhaseC + (s32)(ECSH_SHRINE_ORBIT_RATE_C * timeDelta));
 
-    obj->posY = 20.0f + (config->posY + mathSinf((3.1415927f * state->orbitA) / 32768.0f));
+    obj->anim.localPosY =
+        ECSH_SHRINE_ORBIT_HEIGHT +
+        (placement->posY + mathSinf((ECSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / ECSH_SHRINE_ORBIT_ANGLE_SCALE));
 
-    trigA = mathSinf((3.1415927f * state->orbitB) / 32768.0f);
-    trigB = mathSinf((3.1415927f * state->orbitA) / 32768.0f);
+    trigA = mathSinf((ECSH_SHRINE_ORBIT_PI * state->orbitPhaseB) / ECSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB = mathSinf((ECSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / ECSH_SHRINE_ORBIT_ANGLE_SCALE);
     trigB = trigB + trigA;
-    obj->roll = 600.0f * trigB;
+    obj->anim.rotZ = ECSH_SHRINE_ORBIT_ROTATION_SCALE * trigB;
 
-    trigA = mathSinf((3.1415927f * state->orbitC) / 32768.0f);
-    trigB = mathSinf((3.1415927f * state->orbitA) / 32768.0f);
+    trigA = mathSinf((ECSH_SHRINE_ORBIT_PI * state->orbitPhaseC) / ECSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB = mathSinf((ECSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / ECSH_SHRINE_ORBIT_ANGLE_SCALE);
     trigB = trigB + trigA;
-    obj->pitch = 600.0f * trigB;
+    obj->anim.rotY = ECSH_SHRINE_ORBIT_ROTATION_SCALE * trigB;
 
-    ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, &animEvents);
+    ObjAnim_AdvanceCurrentMove((int)obj, ECSH_SHRINE_ANIMATION_STEP, timeDelta, &animEvents);
 
-    if (player != NULL)
-    {
+    if (player != NULL) {
         angleDelta =
-            (u16)getAngle(obj->posX - player->anim.worldPosX, obj->posZ - player->anim.worldPosZ) - (u16)obj->yaw;
-        if (angleDelta > 0x8000)
-        {
-            angleDelta -= 0xFFFF;
+            (u16)getAngle(obj->anim.worldPosX - player->anim.worldPosX, obj->anim.worldPosZ - player->anim.worldPosZ) -
+            (u16)obj->anim.rotX;
+        if (angleDelta > ECSH_SHRINE_ANGLE_HALF_TURN) {
+            angleDelta -= ECSH_SHRINE_ANGLE_WRAP;
         }
-        if (angleDelta < -0x8000)
-        {
-            angleDelta += 0xFFFF;
+        if (angleDelta < -ECSH_SHRINE_ANGLE_HALF_TURN) {
+            angleDelta += ECSH_SHRINE_ANGLE_WRAP;
         }
 
-        obj->yaw = (s16)(*(s16*)(int)&obj->yaw + (s32)(((f32)angleDelta * timeDelta) / 12.0f));
-        distance = Vec_xzDistance((f32*)((int)&obj->posX), (f32*)((int)player + 0x18));
-        if (distance <= 30.0f)
-        {
-            obj->fadeAlpha = (u8)(s32)(255.0f * (distance / 30.0f));
-        }
-        else
-        {
-            obj->fadeAlpha = 0xFF;
+        obj->anim.rotX =
+            (s16)(*(s16*)(int)&obj->anim.rotX + (s32)(((f32)angleDelta * timeDelta) / ECSH_SHRINE_TURN_RATE_DIVISOR));
+        distance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+        if (distance <= ECSH_SHRINE_FADE_DISTANCE) {
+            obj->anim.alpha = (u8)(s32)(ECSH_SHRINE_FULL_ALPHA * (distance / ECSH_SHRINE_FADE_DISTANCE));
+        } else {
+            obj->anim.alpha = 0xFF;
         }
     }
 }
 
-int ecsh_shrine_SeqFn(void* objArg, int unused, void* eventListArg)
-{
-    MmShrineAnimObj* obj;
-    MmShrineAnimState* state;
-    MmShrineAnimEvents* eventList;
+int ecshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    ECSHShrineState* state;
     GameObject* player;
     int i;
     u8 event;
 
     (void)unused;
-    obj = (MmShrineAnimObj*)objArg;
-    eventList = (MmShrineAnimEvents*)eventListArg;
-    state = (MmShrineAnimState*)obj->state;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
-    eventList->eventModel = -1;
-    eventList->eventStatus = 0;
+    animUpdate->savedFlags = -1;
+    animUpdate->sequenceEventActive = 0;
 
-    for (i = 0; i < eventList->eventCount; i++)
-    {
-        event = eventList->events[i];
-        if (event != 0)
-        {
-            switch (event)
-            {
-            case 3:
-                state->hasTorchSignal = 1;
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        event = animUpdate->eventIds[i];
+        if (event != 0) {
+            switch (event) {
+            case ECSH_SHRINE_ANIM_EVENT_TRANSITION_READY:
+                state->transitionReady = 1;
                 break;
-            case 7:
-                objSetAnimStateFlags(player, 8, 1);
+            case ECSH_SHRINE_ANIM_EVENT_GRANT_SPIRIT:
+                objSetAnimStateFlags(player, ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG, 1);
                 mainSetBits(GAMEBIT_WM_Spirit1Related_0143, 1);
                 mainSetBits(GAMEBIT_K1_SPIRIT_COLLECTED, 1);
                 break;
-            case 13:
-                (*gObjectTriggerInterface)->setCamVars(ECSHSHRINE_CAMMODE_STATIC, 100, 0, 0x50);
+            case ECSH_SHRINE_ANIM_EVENT_SET_CAMERA:
+                (*gObjectTriggerInterface)
+                    ->setCamVars(ECSH_SHRINE_CAMERA_MODE_STATIC, ECSH_SHRINE_CAMERA_ARG1, ECSH_SHRINE_CAMERA_ARG2,
+                                 ECSH_SHRINE_CAMERA_ARG3);
                 break;
-            case 14:
-                obj->flags |= MMSHRINE_FLAG_POSE_LOCKED;
-                if (state->light != NULL)
-                {
-                    modelLightStruct_setEnabled(state->light, 0, 1.0f);
+            case ECSH_SHRINE_ANIM_EVENT_LOCK_POSE:
+                obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                if (state->light != NULL) {
+                    modelLightStruct_setEnabled(state->light, ECSH_SHRINE_LIGHT_DISABLED,
+                                                ECSH_SHRINE_LIGHT_FADE_DURATION);
                 }
                 break;
-            case 15:
-                obj->flags &= ~MMSHRINE_FLAG_POSE_LOCKED;
-                if (state->light != NULL)
-                {
-                    modelLightStruct_setEnabled(state->light, 0, 1.0f);
+            case ECSH_SHRINE_ANIM_EVENT_UNLOCK_POSE:
+                obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+                if (state->light != NULL) {
+                    modelLightStruct_setEnabled(state->light, ECSH_SHRINE_LIGHT_DISABLED,
+                                                ECSH_SHRINE_LIGHT_FADE_DURATION);
                 }
                 break;
             }
         }
-        eventList->events[i] = 0;
+        animUpdate->eventIds[i] = 0;
     }
 
     return 0;
 }
 
-void ecsh_shrine_checkCupPick(u8 cupIndex)
-{
-    GameObject* obj = gEcShShrineActiveObject;
-    int* inner;
-    if (obj == NULL)
+void ecshShrine_checkCupPick(u8 cupIndex) {
+    GameObject* obj = gECSHShrineActiveObject;
+    ECSHShrineState* state;
+
+    if (obj == NULL) {
         return;
-    inner = obj->extra;
-    if ((u32)(u8)cupIndex == ((EcshShrineState*)inner)->spiritCup)
-    {
-        ((EcshShrineState*)inner)->matchFlag = 1;
     }
-    else
-    {
-        ((EcshShrineState*)inner)->matchFlag = 0;
-    }
-}
-
-void ecsh_shrine_setCupPos(u8 cupIndex, f32 x, f32 z)
-{
-    int slot;
-    if ((int*)gEcShShrineActiveObject == NULL)
-        return;
-    slot = gEcShShrineCupSlotMap[cupIndex];
-    gEcShShrinePuzzleState[slot].a = x;
-    gEcShShrinePuzzleState[slot].b = z;
-}
-
-void ecsh_shrine_getPhaseAndSpiritCup(int* outAnimState, u8* outSpiritCup)
-{
-    GameObject* obj = gEcShShrineActiveObject;
-    int* inner;
-    if (obj == NULL)
-        return;
-    inner = obj->extra;
-    *outSpiritCup = ((EcshShrineState*)inner)->spiritCup;
-    *outAnimState = ((EcshShrineState*)inner)->animState;
-}
-
-void ecsh_shrine_getCupPos(u8 cupIndex, f32* outX, f32* outZ)
-{
-    int slot;
-    if (gEcShShrineActiveObject == NULL)
-        return;
-    slot = gEcShShrineCupSlotMap[cupIndex];
-    *outX = *(f32*)((char*)gEcShShrinePuzzleState + slot * 8);
-    slot = gEcShShrineCupSlotMap[cupIndex];
-    *outZ = *(f32*)((char*)gEcShShrinePuzzleState + slot * 8 + 4);
-}
-
-void ecsh_shrine_setScale(s16* out)
-{
-    GameObject* obj = gEcShShrineActiveObject;
-    int* state;
-    if (obj == NULL)
-        return;
     state = obj->extra;
-    *out = ((EcshShrineState*)state)->scale;
+    if (cupIndex == state->spiritCup) {
+        state->matchFlag = 1;
+    } else {
+        state->matchFlag = 0;
+    }
 }
 
-int ecsh_shrine_getExtraSize(void)
-{
-    return 0x38;
+void ecshShrine_setCupPosition(u8 cupIndex, f32 x, f32 z) {
+    int slot;
+
+    if (gECSHShrineActiveObject == NULL) {
+        return;
+    }
+    slot = gECSHShrineCupSlotMap[cupIndex];
+    gECSHShrineCupPositions[slot].x = x;
+    gECSHShrineCupPositions[slot].z = z;
 }
 
-int ecsh_shrine_getObjectTypeId(void)
-{
+void ecshShrine_getPhaseAndSpiritCup(int* outAnimState, u8* outSpiritCup) {
+    GameObject* obj = gECSHShrineActiveObject;
+    ECSHShrineState* state;
+
+    if (obj == NULL) {
+        return;
+    }
+    state = obj->extra;
+    *outSpiritCup = state->spiritCup;
+    *outAnimState = state->animState;
+}
+
+void ecshShrine_getCupPosition(u8 cupIndex, f32* outX, f32* outZ) {
+    int slot;
+
+    if (gECSHShrineActiveObject == NULL) {
+        return;
+    }
+    slot = gECSHShrineCupSlotMap[cupIndex];
+    *outX = gECSHShrineCupPositions[slot].x;
+    slot = gECSHShrineCupSlotMap[cupIndex];
+    *outZ = gECSHShrineCupPositions[slot].z;
+}
+
+void ecshShrine_getScale(s16* outScale) {
+    GameObject* obj = gECSHShrineActiveObject;
+    ECSHShrineState* state;
+
+    if (obj == NULL) {
+        return;
+    }
+    state = obj->extra;
+    *outScale = state->scale;
+}
+
+int ecshShrine_getExtraSize(void) {
+    return sizeof(ECSHShrineState);
+}
+
+int ecshShrine_getObjectTypeId(void) {
     return 0;
 }
 
-void ecsh_shrine_free(GameObject* obj)
-{
-    int* inner = obj->extra;
+void ecshShrine_free(GameObject* obj) {
+    ECSHShrineState* state = obj->extra;
+
     Music_Trigger(MUSICTRIG_DIM_Snow, 0);
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
     Music_Trigger(MUSICTRIG_krazoa_doors_open, 0);
-    if (*(void**)inner != NULL)
-    {
-        ModelLightStruct_free(*(ModelLightStruct**)inner);
-        *(void**)inner = NULL;
+    if (state->light != NULL) {
+        ModelLightStruct_free(state->light);
+        state->light = NULL;
     }
-    ObjGroup_RemoveObject((int)obj, ECSHSHRINE_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, ECSH_SHRINE_OBJ_GROUP);
     mainSetBits(GAMEBIT_ECSH_InShrine, 0);
     mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
     mainSetBits(GAMEBIT_WMRelated0A7F, 1);
 }
 
-void ecsh_shrine_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    void** inner = (obj)->extra;
-    if (visible == 0)
-    {
-        if (*inner != NULL)
-        {
-            modelLightStruct_setEnabled((ModelLightStruct*)*inner, 0, 1.0f);
+void ecshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    ECSHShrineState* state = obj->extra;
+
+    if (visible == 0) {
+        if (state->light != NULL) {
+            modelLightStruct_setEnabled(state->light, ECSH_SHRINE_LIGHT_DISABLED, ECSH_SHRINE_LIGHT_FADE_DURATION);
         }
         return;
     }
-    if (*inner != NULL)
-    {
-        modelLightStruct_setEnabled((ModelLightStruct*)*inner, 1, 1.0f);
+    if (state->light != NULL) {
+        modelLightStruct_setEnabled(state->light, ECSH_SHRINE_LIGHT_ENABLED, ECSH_SHRINE_LIGHT_FADE_DURATION);
     }
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-    objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, (ModelLightStruct*)*inner);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, ECSH_SHRINE_RENDER_SCALE);
+    objParticleFn_80099d84(obj, ECSH_SHRINE_PARTICLE_SCALE, ECSH_SHRINE_PARTICLE_TYPE, ECSH_SHRINE_PARTICLE_EXTRA_SCALE,
+                           state->light);
 }
 
-void ecsh_shrine_hitDetect(void)
-{
+void ecshShrine_hitDetect(void) {
 }
 
 /*
  * Main state machine.
  *
- * Outer phase = the raw byte sub[0x2F] (== EcshShrineState.testPhase):
+ * Outer phase = ECSHShrineState.testPhase:
  *   0  idle / waiting for player to engage
  *   1  intro screen transition
- *   2  spirit hides + pick the target cup (spiritCup = randomGetRange(0,5))
+ *   2  spirit hides and selects the target cup (spiritCup = randomGetRange(0,5))
  *   3  round 1 (5 shuffles, pattern randomGetRange(0,1))
  *   4  round 2 (7 shuffles, pattern randomGetRange(0,5))
  *   5  round 3 (9 shuffles, pattern randomGetRange(0,7))
@@ -410,465 +444,409 @@ void ecsh_shrine_hitDetect(void)
  *   8  reset step (clears state back to idle)
  *   10 fail / teleport player out
  *
- * Inner shuffle-animation state = EcshShrineState.animState (0x24), values 0-9:
+ * Inner shuffle-animation state = ECSHShrineState.animState (0x24), values 0-9:
  *   drives the per-step cup shuffle animation and SFX; transitions cycle
  *   8->2->5/0->1->4->2 etc. as each shuffle iteration plays out, with 7/9
  *   used as round-entry/exit and 5 as the guess-resolution state.
  */
-void ecsh_shrine_update(GameObject* obj)
-{
-    f32 t[2];
-    int msgC;
-    int msgA;
-    int msgB;
-    EcshPuzzleState* ps;
-    u8* sub;
+void ecshShrine_update(GameObject* obj) {
+    f32 cupPositionSwap[2];
+    int messageArgC;
+    int messageArgA;
+    int messageArgB;
+    ECSHShrinePuzzleScratch* puzzle;
+    ECSHShrineState* state;
     GameObject* player;
-    u8 gv;
-    int pick;
-    int n;
+    u8 byteValue;
+    int shufflePattern;
+    int cupIndex;
     s16 swapSlot;
     f32 zero;
-    f32 fv;
+    f32 timerValue;
 
-    ps = (EcshPuzzleState*)gEcShShrinePuzzleState;
-    sub = obj->extra;
+    puzzle = (ECSHShrinePuzzleScratch*)gECSHShrineCupPositions;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
-    *(EcshIntPair*)&t[0] = *(EcshIntPair*)&lbl_803E8470;
-    if (sub[0x32] == 0)
-    {
-        gv = mainGetBit(GAMEBIT_K1_SHRINE_INTRO_TEXT_TRIGGER);
-        sub[0x32] = gv;
-        if (sub[0x32] != 0)
-        {
-            (*gGameUIInterface)->showNpcDialogue(0x285, 0x14, 0x8c, 1);
+    /*
+     * The retail pair copy spans lbl_803E8470 and the adjacent
+     * lbl_803E8474 word. Keep the combined access because splitting the
+     * assignment changes MWCC's load/store order.
+     */
+    *(ECSHShrineWordPair*)&cupPositionSwap[0] = *(ECSHShrineWordPair*)(void*)&lbl_803E8470;
+    if (state->introTextLatch == 0) {
+        byteValue = mainGetBit(GAMEBIT_K1_SHRINE_INTRO_TEXT_TRIGGER);
+        state->introTextLatch = byteValue;
+        if (state->introTextLatch != 0) {
+            (*gGameUIInterface)
+                ->showNpcDialogue(ECSH_SHRINE_DIALOGUE_ID, ECSH_SHRINE_DIALOGUE_UNUSED_A, ECSH_SHRINE_DIALOGUE_UNUSED_B,
+                                  ECSH_SHRINE_DIALOGUE_DISABLE_INPUT);
         }
     }
-    if (obj->userData1 != 0)
-    {
+    if (obj->userData1 != 0) {
         obj->userData1 = obj->userData1 - 1;
-        if (obj->userData1 == 0)
-        {
-            skyFn_80088c94(7, 1);
-            getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_A, 0);
-            getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_B, 0);
-            getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_C, 0);
+        if (obj->userData1 == 0) {
+            skyFn_80088c94(ECSH_SHRINE_SKY_FLAGS, 1);
+            getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_A, ECSH_SHRINE_ENVFX_FLAGS);
+            getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_B, ECSH_SHRINE_ENVFX_FLAGS);
+            getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_C, ECSH_SHRINE_ENVFX_FLAGS);
         }
     }
-    ecsh_shrine_updateMotion((MmShrineAnimObj*)obj);
-    if (player != NULL && objIsCurModelNotZero(player) == 0)
-    {
-        staffToggle(player, 0);
+    ecshShrine_updateHoverMotion(obj);
+    if (player != NULL && objIsCurModelNotZero(player) == 0) {
+        staffToggle(player, ECSH_SHRINE_STAFF_DISABLED);
     }
-    msgC = 0;
-    while (ObjMsg_Pop(obj, (u32*)&msgA, (u32*)&msgB, (u32*)&msgC) != 0)
-    {
+    messageArgC = 0;
+    while (ObjMsg_Pop(obj, (u32*)&messageArgA, (u32*)&messageArgB, (u32*)&messageArgC) != 0) {
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)(sub + 0x34), 2, -1, -1, 0xb9d, 0xd);
-    SCGameBitLatch_UpdateInverted((SCGameBitLatchState*)(sub + 0x34), 1, -1, -1, 0xcbb, 8);
-    SCGameBitLatch_Update((SCGameBitLatchState*)(sub + 0x34), 0x10, -1, -1, 0xcbb, 0xc4);
-    if (((EcshShrineState*)sub)->cooldownTimer > (zero = 0.0f))
-    {
-        ((EcshShrineState*)sub)->cooldownTimer = ((EcshShrineState*)sub)->cooldownTimer - timeDelta;
-        if (((EcshShrineState*)sub)->cooldownTimer <= zero)
-        {
-            ((EcshShrineState*)sub)->cooldownTimer = zero;
+    SCGameBitLatch_Update(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_TEST_RUNNING, ECSH_SHRINE_NO_GAMEBIT,
+                          ECSH_SHRINE_NO_GAMEBIT, GAMEBIT_ECSH_TestObservRunning, MUSICTRIG_krazoa_doors_open);
+    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_01, ECSH_SHRINE_NO_GAMEBIT,
+                                  ECSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_vfp_walkabout);
+    SCGameBitLatch_Update(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10, ECSH_SHRINE_NO_GAMEBIT,
+                          ECSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
+    if (state->cooldownTimer > (zero = 0.0f)) {
+        state->cooldownTimer = state->cooldownTimer - timeDelta;
+        if (state->cooldownTimer <= zero) {
+            state->cooldownTimer = zero;
         }
-    }
-    else
-    {
-        /*
-         * Raw byte accesses below (kept raw to preserve codegen):
-         *   sub[0x2e] = EcshShrineState.spiritCup        (target cup, 0-5)
-         *   sub[0x2f] = EcshShrineState.testPhase        (outer phase, see above)
-         *   sub[0x30] = EcshShrineState.transitionReady  (intro transition done)
-         *   sub[0x31] = pad31 scratch flag (one-shot "near-miss SFX played" latch
-         *               for the current shuffle step; no named field in the struct)
-         */
-        switch (sub[0x2f])
-        {
-        case 0:
+    } else {
+        switch (state->testPhase) {
+        case ECSH_SHRINE_PHASE_IDLE:
             obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            fv = ((EcshShrineState*)sub)->voiceTimer - timeDelta;
-            ((EcshShrineState*)sub)->voiceTimer = fv;
-            if (fv <= zero)
-            {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
-                ((EcshShrineState*)sub)->voiceTimer = (f32)(int)randomGetRange(500, 1000);
+            timerValue = state->voiceTimer - timeDelta;
+            state->voiceTimer = timerValue;
+            if (timerValue <= zero) {
+                Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
+                state->voiceTimer = (f32)(int)randomGetRange(ECSH_SHRINE_VOICE_DELAY_MIN, ECSH_SHRINE_VOICE_DELAY_MAX);
             }
-            if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
-            {
-                sub[0x2f] = 1;
+            if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
+                state->testPhase = ECSH_SHRINE_PHASE_INTRO_TRANSITION;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
-                (*gObjectTriggerInterface)->runSequence(0, obj, -1);
+                (*gObjectTriggerInterface)->runSequence(ECSH_SHRINE_SEQUENCE_INTRO, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
                 Music_Trigger(MUSICTRIG_DIM_Snow, 1);
                 {
                     f32 fz = 0.0f;
-                    ps->cupPos[0] = fz;
-                    ps->cupPos[1] = fz;
-                    ps->cupPos[2] = fz;
-                    ps->cupPos[3] = fz;
-                    ps->cupPos[4] = fz;
-                    ps->cupPos[5] = fz;
-                    ps->cupPos[6] = fz;
-                    ps->cupPos[7] = fz;
-                    ps->cupPos[8] = fz;
-                    ps->cupPos[9] = fz;
-                    ps->cupPos[10] = fz;
-                    ps->cupPos[11] = fz;
+                    puzzle->cupPositions[0] = fz;
+                    puzzle->cupPositions[1] = fz;
+                    puzzle->cupPositions[2] = fz;
+                    puzzle->cupPositions[3] = fz;
+                    puzzle->cupPositions[4] = fz;
+                    puzzle->cupPositions[5] = fz;
+                    puzzle->cupPositions[6] = fz;
+                    puzzle->cupPositions[7] = fz;
+                    puzzle->cupPositions[8] = fz;
+                    puzzle->cupPositions[9] = fz;
+                    puzzle->cupPositions[10] = fz;
+                    puzzle->cupPositions[11] = fz;
                 }
-                ps->cupSlotMap[0] = ps->nextCupSlotMap[0];
-                ps->cupSlotMap[1] = ps->nextCupSlotMap[1];
-                ps->cupSlotMap[2] = ps->nextCupSlotMap[2];
-                ps->cupSlotMap[3] = ps->nextCupSlotMap[3];
-                ps->cupSlotMap[4] = ps->nextCupSlotMap[4];
-                ps->cupSlotMap[5] = ps->nextCupSlotMap[5];
-                ps->nextCupSlotMap[0] = ps->nextCupSlotMap[6];
+                puzzle->cupSlotMap[0] = puzzle->nextCupSlotMap[0];
+                puzzle->cupSlotMap[1] = puzzle->nextCupSlotMap[1];
+                puzzle->cupSlotMap[2] = puzzle->nextCupSlotMap[2];
+                puzzle->cupSlotMap[3] = puzzle->nextCupSlotMap[3];
+                puzzle->cupSlotMap[4] = puzzle->nextCupSlotMap[4];
+                puzzle->cupSlotMap[5] = puzzle->nextCupSlotMap[5];
+                /*
+                 * Retail reads the first halfword of the adjacent descriptor
+                 * at 0x48. Preserve the overrun without enlarging this
+                 * allocation-backed scratch layout.
+                 */
+                puzzle->nextCupSlotMap[0] = *(s16*)((u8*)puzzle + sizeof(ECSHShrinePuzzleScratch));
             }
             break;
-        case 1:
-            if (sub[0x30] == 1)
-            {
-                sub[0x2f] = 2;
-                ((EcshShrineState*)sub)->cooldownTimer = 200.0f;
-                ((EcshShrineState*)sub)->animState = 6;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
-                ((EcshShrineState*)sub)->animTimer = 0.0f;
+        case ECSH_SHRINE_PHASE_INTRO_TRANSITION:
+            if (state->transitionReady == 1) {
+                state->testPhase = ECSH_SHRINE_PHASE_PREPARE_ROUND_ONE;
+                state->cooldownTimer = ECSH_SHRINE_INTRO_COOLDOWN;
+                state->animState = 6;
+                Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                state->animTimer = 0.0f;
                 mainSetBits(GAMEBIT_ECSH_TestObservRunning, 1);
-                (*gScreenTransitionInterface)->step(0x78, 1);
+                (*gScreenTransitionInterface)->step(ECSH_SHRINE_INTRO_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
             }
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
             break;
-        case 2:
-            sub[0x2f] = 3;
-            ((EcshShrineState*)sub)->cooldownTimer = 80.0f;
-            ((EcshShrineState*)sub)->animState = 8;
-            ((EcshShrineState*)sub)->animTimer = 40.0f;
-            ((EcshShrineState*)sub)->shuffleCount = 5;
-            gv = randomGetRange(0, 5);
-            sub[0x2e] = gv;
-            (*gObjectTriggerInterface)->runSequence(2, obj, -1);
+        case ECSH_SHRINE_PHASE_PREPARE_ROUND_ONE:
+            state->testPhase = ECSH_SHRINE_PHASE_ROUND_ONE;
+            state->cooldownTimer = ECSH_SHRINE_ROUND_START_COOLDOWN;
+            state->animState = 8;
+            state->animTimer = ECSH_SHRINE_SHUFFLE_ANIM_TIMER;
+            state->shuffleCount = ECSH_SHRINE_ROUND_ONE_SHUFFLES;
+            byteValue = randomGetRange(0, ECSH_SHRINE_LAST_CUP_INDEX);
+            state->spiritCup = byteValue;
+            (*gObjectTriggerInterface)->runSequence(ECSH_SHRINE_SEQUENCE_ROUND, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
             break;
-        case 3:
-        case 4:
-        case 5:
-            if (((EcshShrineState*)sub)->animTimer > (fv = 0.0f))
-            {
-                if (((EcshShrineState*)sub)->animState == 1 && sub[0x31] == 0 &&
-                    ((EcshShrineState*)sub)->animTimer < ((EcshShrineState*)sub)->shuffleSfxThreshold)
-                {
-                    if ((int)randomGetRange(0, 10) > 7)
-                    {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice_var);
+        case ECSH_SHRINE_PHASE_ROUND_ONE:
+        case ECSH_SHRINE_PHASE_ROUND_TWO:
+        case ECSH_SHRINE_PHASE_ROUND_THREE:
+            if (state->animTimer > (timerValue = 0.0f)) {
+                if (state->animState == 1 && state->shuffleSfxPlayed == 0 &&
+                    state->animTimer < state->shuffleSfxThreshold) {
+                    if ((int)randomGetRange(0, ECSH_SHRINE_SHUFFLE_SFX_ROLL_MAX) >
+                        ECSH_SHRINE_SHUFFLE_SFX_ROLL_THRESHOLD) {
+                        Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice_var);
                     }
-                    sub[0x31] = 1;
+                    state->shuffleSfxPlayed = 1;
                 }
-                ((EcshShrineState*)sub)->animTimer = ((EcshShrineState*)sub)->animTimer - timeDelta;
-                if (((EcshShrineState*)sub)->animTimer < 0.0f)
-                {
-                    ((EcshShrineState*)sub)->animTimer = 0.0f;
+                state->animTimer = state->animTimer - timeDelta;
+                if (state->animTimer < 0.0f) {
+                    state->animTimer = 0.0f;
                 }
-            }
-            else
-            {
-                switch (((EcshShrineState*)sub)->animState)
-                {
+            } else {
+                switch (state->animState) {
                 case 8:
-                    ((EcshShrineState*)sub)->animState = 2;
-                    ((EcshShrineState*)sub)->animTimer = 40.0f;
-                    ((EcshShrineState*)sub)->cooldownTimer = 60.0f;
+                    state->animState = 2;
+                    state->animTimer = ECSH_SHRINE_SHUFFLE_ANIM_TIMER;
+                    state->cooldownTimer = ECSH_SHRINE_SHUFFLE_COOLDOWN;
                     break;
                 case 9:
-                    ((EcshShrineState*)sub)->animState = 8;
-                    ((EcshShrineState*)sub)->animTimer = 40.0f;
-                    ((EcshShrineState*)sub)->cooldownTimer = 60.0f;
+                    state->animState = 8;
+                    state->animTimer = ECSH_SHRINE_SHUFFLE_ANIM_TIMER;
+                    state->cooldownTimer = ECSH_SHRINE_SHUFFLE_COOLDOWN;
                     break;
                 case 7:
-                    ((EcshShrineState*)sub)->animState = 3;
-                    ((EcshShrineState*)sub)->animTimer = 40.0f;
-                    ((EcshShrineState*)sub)->cooldownTimer = 60.0f;
+                    state->animState = 3;
+                    state->animTimer = ECSH_SHRINE_SHUFFLE_ANIM_TIMER;
+                    state->cooldownTimer = ECSH_SHRINE_SHUFFLE_COOLDOWN;
                     break;
                 case 2:
-                    ((EcshShrineState*)sub)->shuffleCount -= 1;
-                    if (((EcshShrineState*)sub)->shuffleCount <= 0)
-                    {
+                    state->shuffleCount -= 1;
+                    if (state->shuffleCount <= 0) {
                         Sfx_PlayFromObject(0, SFXTRIG_commsbleep);
-                        ((EcshShrineState*)sub)->animState = 5;
-                        if (sub[0x2f] == 3)
-                        {
-                            ((EcshShrineState*)sub)->guessTimer = 600.0f;
+                        state->animState = 5;
+                        if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_ONE) {
+                            state->guessTimer = ECSH_SHRINE_GUESS_TIMER;
+                        } else if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_TWO) {
+                            state->guessTimer = ECSH_SHRINE_GUESS_TIMER;
+                        } else {
+                            state->guessTimer = ECSH_SHRINE_GUESS_TIMER;
                         }
-                        else if (sub[0x2f] == 4)
-                        {
-                            ((EcshShrineState*)sub)->guessTimer = 600.0f;
+                    } else {
+                        state->shuffleSfxPlayed = 0;
+                        state->shuffleSfxThreshold = (f32)(int)randomGetRange(ECSH_SHRINE_SHUFFLE_SFX_DELAY_MIN,
+                                                                              ECSH_SHRINE_SHUFFLE_SFX_DELAY_MAX);
+                        Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_basketspin);
+                        state->animState = 0;
+                        state->animTimer = ECSH_SHRINE_SHUFFLE_START_TIMER;
+                        if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_ONE) {
+                            shufflePattern = randomGetRange(0, ECSH_SHRINE_ROUND_ONE_PATTERN_MAX);
+                        } else if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_TWO) {
+                            shufflePattern = randomGetRange(0, ECSH_SHRINE_ROUND_TWO_PATTERN_MAX);
+                        } else {
+                            shufflePattern = randomGetRange(0, ECSH_SHRINE_ROUND_THREE_PATTERN_MAX);
                         }
-                        else
-                        {
-                            ((EcshShrineState*)sub)->guessTimer = 600.0f;
-                        }
-                    }
-                    else
-                    {
-                        sub[0x31] = 0;
-                        ((EcshShrineState*)sub)->shuffleSfxThreshold = (f32)(int)randomGetRange(0x28, 0x3c);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_basketspin);
-                        ((EcshShrineState*)sub)->animState = 0;
-                        ((EcshShrineState*)sub)->animTimer = 2.0f;
-                        if (sub[0x2f] == 3)
-                        {
-                            pick = randomGetRange(0, 1);
-                        }
-                        else if (sub[0x2f] == 4)
-                        {
-                            pick = randomGetRange(0, 5);
-                        }
-                        else
-                        {
-                            pick = randomGetRange(0, 7);
-                        }
-                        if (pick == 0)
-                        {
-                            for (n = 0; n < ECSHSHRINE_CUP_COUNT; n++)
-                            {
-                                ps->cupSlotMap[n] += 1;
-                                if (ps->cupSlotMap[n] > 5)
-                                {
-                                    ps->cupSlotMap[n] = 0;
+                        if (shufflePattern == 0) {
+                            for (cupIndex = 0; cupIndex < ECSH_SHRINE_CUP_COUNT; cupIndex++) {
+                                puzzle->cupSlotMap[cupIndex] += 1;
+                                if (puzzle->cupSlotMap[cupIndex] > ECSH_SHRINE_LAST_CUP_INDEX) {
+                                    puzzle->cupSlotMap[cupIndex] = 0;
                                 }
                             }
-                        }
-                        else if (pick == 1)
-                        {
-                            for (n = 0; n < ECSHSHRINE_CUP_COUNT; n++)
-                            {
-                                ps->cupSlotMap[n] -= 1;
-                                if (ps->cupSlotMap[n] < 0)
-                                {
-                                    ps->cupSlotMap[n] = 5;
+                        } else if (shufflePattern == 1) {
+                            for (cupIndex = 0; cupIndex < ECSH_SHRINE_CUP_COUNT; cupIndex++) {
+                                puzzle->cupSlotMap[cupIndex] -= 1;
+                                if (puzzle->cupSlotMap[cupIndex] < 0) {
+                                    puzzle->cupSlotMap[cupIndex] = 5;
                                 }
                             }
-                        }
-                        else if (pick == 2)
-                        {
-                            swapSlot = ps->cupSlotMap[0];
-                            ps->cupSlotMap[0] = ps->cupSlotMap[2];
-                            ps->cupSlotMap[2] = ps->cupSlotMap[4];
-                            ps->cupSlotMap[4] = swapSlot;
-                        }
-                        else if (pick == 3)
-                        {
-                            swapSlot = ps->cupSlotMap[4];
-                            ps->cupSlotMap[4] = ps->cupSlotMap[0];
-                            ps->cupSlotMap[0] = ps->cupSlotMap[2];
-                            ps->cupSlotMap[2] = swapSlot;
-                        }
-                        else if (pick == 4)
-                        {
-                            swapSlot = ps->cupSlotMap[1];
-                            ps->cupSlotMap[1] = ps->cupSlotMap[3];
-                            ps->cupSlotMap[3] = ps->cupSlotMap[5];
-                            ps->cupSlotMap[5] = swapSlot;
-                        }
-                        else if (pick == 5)
-                        {
-                            swapSlot = ps->cupSlotMap[5];
-                            ps->cupSlotMap[5] = ps->cupSlotMap[1];
-                            ps->cupSlotMap[1] = ps->cupSlotMap[3];
-                            ps->cupSlotMap[3] = swapSlot;
-                        }
-                        else if (pick == 6)
-                        {
-                            t[0] = ps->cupPos[2];
-                            t[1] = ps->cupPos[3];
-                            ps->cupPos[2] = ps->cupPos[4];
-                            ps->cupPos[3] = ps->cupPos[5];
-                            ps->cupPos[4] = ps->cupPos[8];
-                            ps->cupPos[5] = ps->cupPos[9];
-                            ps->cupPos[8] = ps->cupPos[10];
-                            ps->cupPos[9] = ps->cupPos[11];
-                            ps->cupPos[10] = t[0];
-                            ps->cupPos[11] = t[1];
-                        }
-                        else if (pick == 7)
-                        {
-                            t[0] = ps->cupPos[10];
-                            t[1] = ps->cupPos[11];
-                            ps->cupPos[10] = ps->cupPos[8];
-                            ps->cupPos[11] = ps->cupPos[9];
-                            ps->cupPos[8] = ps->cupPos[4];
-                            ps->cupPos[9] = ps->cupPos[5];
-                            ps->cupPos[4] = ps->cupPos[2];
-                            ps->cupPos[5] = ps->cupPos[3];
-                            ps->cupPos[2] = t[0];
-                            ps->cupPos[3] = t[1];
+                        } else if (shufflePattern == 2) {
+                            swapSlot = puzzle->cupSlotMap[0];
+                            puzzle->cupSlotMap[0] = puzzle->cupSlotMap[2];
+                            puzzle->cupSlotMap[2] = puzzle->cupSlotMap[4];
+                            puzzle->cupSlotMap[4] = swapSlot;
+                        } else if (shufflePattern == 3) {
+                            swapSlot = puzzle->cupSlotMap[4];
+                            puzzle->cupSlotMap[4] = puzzle->cupSlotMap[0];
+                            puzzle->cupSlotMap[0] = puzzle->cupSlotMap[2];
+                            puzzle->cupSlotMap[2] = swapSlot;
+                        } else if (shufflePattern == 4) {
+                            swapSlot = puzzle->cupSlotMap[1];
+                            puzzle->cupSlotMap[1] = puzzle->cupSlotMap[3];
+                            puzzle->cupSlotMap[3] = puzzle->cupSlotMap[5];
+                            puzzle->cupSlotMap[5] = swapSlot;
+                        } else if (shufflePattern == 5) {
+                            swapSlot = puzzle->cupSlotMap[5];
+                            puzzle->cupSlotMap[5] = puzzle->cupSlotMap[1];
+                            puzzle->cupSlotMap[1] = puzzle->cupSlotMap[3];
+                            puzzle->cupSlotMap[3] = swapSlot;
+                        } else if (shufflePattern == 6) {
+                            cupPositionSwap[0] = puzzle->cupPositions[2];
+                            cupPositionSwap[1] = puzzle->cupPositions[3];
+                            puzzle->cupPositions[2] = puzzle->cupPositions[4];
+                            puzzle->cupPositions[3] = puzzle->cupPositions[5];
+                            puzzle->cupPositions[4] = puzzle->cupPositions[8];
+                            puzzle->cupPositions[5] = puzzle->cupPositions[9];
+                            puzzle->cupPositions[8] = puzzle->cupPositions[10];
+                            puzzle->cupPositions[9] = puzzle->cupPositions[11];
+                            puzzle->cupPositions[10] = cupPositionSwap[0];
+                            puzzle->cupPositions[11] = cupPositionSwap[1];
+                        } else if (shufflePattern == 7) {
+                            cupPositionSwap[0] = puzzle->cupPositions[10];
+                            cupPositionSwap[1] = puzzle->cupPositions[11];
+                            puzzle->cupPositions[10] = puzzle->cupPositions[8];
+                            puzzle->cupPositions[11] = puzzle->cupPositions[9];
+                            puzzle->cupPositions[8] = puzzle->cupPositions[4];
+                            puzzle->cupPositions[9] = puzzle->cupPositions[5];
+                            puzzle->cupPositions[4] = puzzle->cupPositions[2];
+                            puzzle->cupPositions[5] = puzzle->cupPositions[3];
+                            puzzle->cupPositions[2] = cupPositionSwap[0];
+                            puzzle->cupPositions[3] = cupPositionSwap[1];
                         }
                     }
                     break;
                 case 0:
-                    ((EcshShrineState*)sub)->animState = 1;
-                    ((EcshShrineState*)sub)->animTimer = 100.0f;
+                    state->animState = 1;
+                    state->animTimer = ECSH_SHRINE_SHUFFLE_MOVE_TIMER;
                     break;
                 case 1:
-                    ((EcshShrineState*)sub)->animState = 4;
-                    ((EcshShrineState*)sub)->animTimer = fv;
+                    state->animState = 4;
+                    state->animTimer = timerValue;
                     break;
                 case 4:
-                    ((EcshShrineState*)sub)->animState = 2;
-                    ((EcshShrineState*)sub)->animTimer = fv;
+                    state->animState = 2;
+                    state->animTimer = timerValue;
                     break;
                 case 5:
                     Sfx_KeepAliveLoopedObjectSound(0, SFXTRIG_commsbleep);
-                    if (((EcshShrineState*)sub)->matchFlag == 0)
-                    {
-                        (*gScreenTransitionInterface)->start(0x1e, 1);
-                        ((EcshShrineState*)sub)->cooldownTimer = 31.0f;
-                        ((EcshShrineState*)sub)->animState = 7;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
-                        sub[0x2f] = 10;
-                    }
-                    else if (((EcshShrineState*)sub)->matchFlag == 1)
-                    {
-                        if (sub[0x2f] == 3)
-                        {
-                            gv = randomGetRange(0, 5);
-                            sub[0x2e] = gv;
-                            sub[0x2f] = 4;
-                            ((EcshShrineState*)sub)->animState = 9;
-                            ((EcshShrineState*)sub)->cooldownTimer = 150.0f;
-                            ((EcshShrineState*)sub)->animTimer = 12.0f;
-                            ((EcshShrineState*)sub)->shuffleCount = 7;
-                            ((EcshShrineState*)sub)->matchFlag = -1;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k);
-                            (*gObjectTriggerInterface)->runSequence(2, obj, -1);
+                    if (state->matchFlag == 0) {
+                        (*gScreenTransitionInterface)
+                            ->start(ECSH_SHRINE_RESULT_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
+                        state->cooldownTimer = ECSH_SHRINE_RESULT_COOLDOWN;
+                        state->animState = 7;
+                        Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                        state->testPhase = ECSH_SHRINE_PHASE_FAIL;
+                    } else if (state->matchFlag == 1) {
+                        if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_ONE) {
+                            byteValue = randomGetRange(0, ECSH_SHRINE_LAST_CUP_INDEX);
+                            state->spiritCup = byteValue;
+                            state->testPhase = ECSH_SHRINE_PHASE_ROUND_TWO;
+                            state->animState = 9;
+                            state->cooldownTimer = ECSH_SHRINE_NEXT_ROUND_COOLDOWN;
+                            state->animTimer = ECSH_SHRINE_NEXT_ROUND_ANIM_TIMER;
+                            state->shuffleCount = ECSH_SHRINE_ROUND_TWO_SHUFFLES;
+                            state->matchFlag = -1;
+                            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k);
+                            (*gObjectTriggerInterface)
+                                ->runSequence(ECSH_SHRINE_SEQUENCE_ROUND, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
+                        } else if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_TWO) {
+                            byteValue = randomGetRange(0, ECSH_SHRINE_LAST_CUP_INDEX);
+                            state->spiritCup = byteValue;
+                            state->testPhase = ECSH_SHRINE_PHASE_ROUND_THREE;
+                            state->animState = 9;
+                            state->cooldownTimer = ECSH_SHRINE_NEXT_ROUND_COOLDOWN;
+                            state->animTimer = ECSH_SHRINE_NEXT_ROUND_ANIM_TIMER;
+                            state->shuffleCount = ECSH_SHRINE_ROUND_THREE_SHUFFLES;
+                            state->matchFlag = -1;
+                            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k);
+                            (*gObjectTriggerInterface)
+                                ->runSequence(ECSH_SHRINE_SEQUENCE_ROUND, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
+                        } else {
+                            state->cooldownTimer = ECSH_SHRINE_RESULT_COOLDOWN;
+                            (*gScreenTransitionInterface)
+                                ->start(ECSH_SHRINE_RESULT_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
+                            state->testPhase = ECSH_SHRINE_PHASE_SUCCESS;
+                            state->animState = 3;
+                            state->matchFlag = 0;
+                            state->animState = 7;
+                            Sfx_PlayFromObject((u32)obj, SFXTRIG_mpick1_b);
+                            Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
                         }
-                        else if (sub[0x2f] == 4)
-                        {
-                            gv = randomGetRange(0, 5);
-                            sub[0x2e] = gv;
-                            sub[0x2f] = 5;
-                            ((EcshShrineState*)sub)->animState = 9;
-                            ((EcshShrineState*)sub)->cooldownTimer = 150.0f;
-                            ((EcshShrineState*)sub)->animTimer = 12.0f;
-                            ((EcshShrineState*)sub)->shuffleCount = 9;
-                            ((EcshShrineState*)sub)->matchFlag = -1;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k);
-                            (*gObjectTriggerInterface)->runSequence(2, obj, -1);
-                        }
-                        else
-                        {
-                            ((EcshShrineState*)sub)->cooldownTimer = 31.0f;
-                            (*gScreenTransitionInterface)->start(0x1e, 1);
-                            sub[0x2f] = 6;
-                            ((EcshShrineState*)sub)->animState = 3;
-                            ((EcshShrineState*)sub)->matchFlag = 0;
-                            ((EcshShrineState*)sub)->animState = 7;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_mpick1_b);
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
-                        }
-                    }
-                    else
-                    {
-                        ((EcshShrineState*)sub)->guessTimer = ((EcshShrineState*)sub)->guessTimer - timeDelta;
-                        if (((EcshShrineState*)sub)->guessTimer <= 0.0f)
-                        {
-                            sub[0x2f] = 10;
-                            (*gScreenTransitionInterface)->start(0x1e, 1);
-                            ((EcshShrineState*)sub)->cooldownTimer = 31.0f;
-                            ((EcshShrineState*)sub)->animState = 7;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                    } else {
+                        state->guessTimer = state->guessTimer - timeDelta;
+                        if (state->guessTimer <= 0.0f) {
+                            state->testPhase = ECSH_SHRINE_PHASE_FAIL;
+                            (*gScreenTransitionInterface)
+                                ->start(ECSH_SHRINE_RESULT_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
+                            state->cooldownTimer = ECSH_SHRINE_RESULT_COOLDOWN;
+                            state->animState = 7;
+                            Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
                         }
                     }
                     break;
                 }
             }
             break;
-        case 10:
-            mainSetBits(0xa6f, 1);
-            sub[0x2f] = 8;
+        case ECSH_SHRINE_PHASE_FAIL:
+            mainSetBits(ECSH_SHRINE_GAMEBIT_0A6F, 1);
+            state->testPhase = ECSH_SHRINE_PHASE_RESET;
             break;
-        case 6:
+        case ECSH_SHRINE_PHASE_SUCCESS:
             mainSetBits(GAMEBIT_ECSH_TestObservRunning, 0);
-            audioStopByMask(3);
-            if (objGetAnimStateFlags((GameObject*)player, 8) != 0)
-            {
+            audioStopByMask(ECSH_SHRINE_AUDIO_STOP_MASK);
+            if (objGetAnimStateFlags((GameObject*)player, ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG) != 0) {
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-                sub[0x2f] = 7;
-            }
-            else
-            {
-                sub[0x2f] = 7;
-                (*gObjectTriggerInterface)->runSequence(1, obj, -1);
+                state->testPhase = ECSH_SHRINE_PHASE_POST_SUCCESS;
+            } else {
+                state->testPhase = ECSH_SHRINE_PHASE_POST_SUCCESS;
+                (*gObjectTriggerInterface)->runSequence(ECSH_SHRINE_SEQUENCE_SUCCESS, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
             }
             break;
-        case 7:
+        case ECSH_SHRINE_PHASE_POST_SUCCESS:
             mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
-            sub[0x2f] = 8;
+            state->testPhase = ECSH_SHRINE_PHASE_RESET;
             break;
-        case 8:
-            sub[0x2f] = 0;
-            ((EcshShrineState*)sub)->animTimer = zero;
-            ((EcshShrineState*)sub)->scale = 0;
-            ((EcshShrineState*)sub)->shuffleCount = 0;
-            ((EcshShrineState*)sub)->animState = 0;
-            ((EcshShrineState*)sub)->matchFlag = -1;
-            sub[0x2e] = 0;
-            sub[0x30] = 0;
-            ((EcshShrineState*)sub)->cooldownTimer = 400.0f;
+        case ECSH_SHRINE_PHASE_RESET:
+            state->testPhase = ECSH_SHRINE_PHASE_IDLE;
+            state->animTimer = zero;
+            state->scale = 0;
+            state->shuffleCount = 0;
+            state->animState = 0;
+            state->matchFlag = -1;
+            state->spiritCup = 0;
+            state->transitionReady = 0;
+            state->cooldownTimer = ECSH_SHRINE_RESET_COOLDOWN;
             mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
             mainSetBits(GAMEBIT_ECSH_TestObservRunning, 0);
-            mainSetBits(0xa6d, 0);
-            mainSetBits(0xa6f, 0);
-            mainSetBits(0xa70, 0);
+            mainSetBits(ECSH_SHRINE_GAMEBIT_0A6D, 0);
+            mainSetBits(ECSH_SHRINE_GAMEBIT_0A6F, 0);
+            mainSetBits(ECSH_SHRINE_GAMEBIT_0A70, 0);
             mainSetBits(GAMEBIT_WM_Spirit1Related_0143, 0);
-            sub[0x30] = 0;
-            ((EcshShrineState*)sub)->matchFlag = -1;
+            state->transitionReady = 0;
+            state->matchFlag = -1;
             break;
         }
     }
 }
 
-void ecsh_shrine_init(s16* obj, s8* def)
-{
-    int* sub = ((GameObject*)obj)->extra;
-    u8 gv;
+void ecshShrine_init(GameObject* obj, const s8* placement) {
+    ECSHShrineState* state = obj->extra;
+    u8 byteValue;
+
     lbl_803DDBC0 = 0;
-    gEcShShrineActiveObject = 0;
-    *obj = (s16)((s32)def[0x18] << 8);
-    ((EcshShrineState*)sub)->testPhase = 0;
-    ((EcshShrineState*)sub)->transitionReady = 0;
-    ((EcshShrineState*)sub)->animTimer = 0.0f;
-    ((EcshShrineState*)sub)->scale = 0;
-    ((EcshShrineState*)sub)->shuffleCount = 0;
-    ((EcshShrineState*)sub)->animState = 0;
-    ((EcshShrineState*)sub)->matchFlag = -1;
-    ((EcshShrineState*)sub)->spiritCup = 0;
-    ((EcshShrineState*)sub)->gameBitLatchState = 0;
-    ((GameObject*)obj)->animEventCallback = ecsh_shrine_SeqFn;
-    ObjMsg_AllocQueue(obj, 4);
+    gECSHShrineActiveObject = NULL;
+    obj->anim.rotX =
+        (s16)((s32)placement[ECSH_SHRINE_PLACEMENT_ROTATION_OFFSET] << ECSH_SHRINE_PLACEMENT_ROTATION_SHIFT);
+    state->testPhase = ECSH_SHRINE_PHASE_IDLE;
+    state->transitionReady = 0;
+    state->animTimer = 0.0f;
+    state->scale = 0;
+    state->shuffleCount = 0;
+    state->animState = 0;
+    state->matchFlag = -1;
+    state->spiritCup = 0;
+    state->gameBitLatch.activeMask = 0;
+    obj->animEventCallback = ecshShrine_processAnimEvents;
+    ObjMsg_AllocQueue(obj, ECSH_SHRINE_MESSAGE_QUEUE_CAPACITY);
     mainSetBits(GAMEBIT_ECSH_Entered, 1);
     mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
     mainSetBits(GAMEBIT_WM_Spirit1Related_0143, 0);
-    ((EcshShrineState*)sub)->unk18 = 0xc;
-    ((EcshShrineState*)sub)->unk1C = 0x1e;
-    ((EcshShrineState*)sub)->cooldownTimer = 200.0f;
-    ((EcshShrineState*)sub)->unk1A = 0;
-    ((EcshShrineState*)sub)->unk1E = 0;
-    gv = mainGetBit(GAMEBIT_K1_SHRINE_INTRO_TEXT_TRIGGER);
-    ((EcshShrineState*)sub)->introTextLatch = gv;
-    gEcShShrineActiveObject = obj;
-    ObjGroup_AddObject((int)obj, ECSHSHRINE_OBJGROUP);
-    ((GameObject*)obj)->userData1 = 1;
-    if (*(void**)sub == NULL)
-    {
-        *(ModelLightStruct**)sub = objCreateLight(NULL, 1);
+    state->unknown18 = ECSH_SHRINE_UNKNOWN_18_INITIAL;
+    state->unknown1C = ECSH_SHRINE_UNKNOWN_1C_INITIAL;
+    state->cooldownTimer = ECSH_SHRINE_INTRO_COOLDOWN;
+    state->unknown1A = 0;
+    state->unknown1E = 0;
+    byteValue = mainGetBit(GAMEBIT_K1_SHRINE_INTRO_TEXT_TRIGGER);
+    state->introTextLatch = byteValue;
+    gECSHShrineActiveObject = obj;
+    ObjGroup_AddObject((int)obj, ECSH_SHRINE_OBJ_GROUP);
+    obj->userData1 = ECSH_SHRINE_LOAD_TIMER_START;
+    if (state->light == NULL) {
+        state->light = objCreateLight(NULL, 1);
     }
     mainSetBits(GAMEBIT_ECSH_InShrine, 1);
 }
 
-void ecsh_shrine_release(void)
-{
+void ecshShrine_release(void) {
 }
 
-void ecsh_shrine_initialise(void)
-{
+void ecshShrine_initialise(void) {
 }
