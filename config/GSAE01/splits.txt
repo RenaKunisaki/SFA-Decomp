@@ -1185,7 +1185,7 @@ dlls/engine/66/66.c:
 dlls/engine/67/67.c:
 	.text       start:0x80106654 end:0x80107AEC
 	.data       start:0x80319B98 end:0x80319BC8
-	.sbss       start:0x803DD538 end:0x803DD540
+	.sbss       start:0x803DD538 end:0x803DD53C
 	.sdata2     start:0x803E1740 end:0x803E177C
 
 dlls/engine/69/69.c:
