@@ -1,13 +1,3 @@
-/*
- * dll_0012_unk (DLL 0x12) - a tiny stub object DLL whose only live code is
- * a set of standalone object-DLL callbacks.
- *
- * Aside from dll_12_func09 (which latches a status word to 3) and
- * dll_12_func06_ret_0 (a constant 0 return), every entry is an empty
- * no-op/dummy callback. The bulk of the curve/sector code that Ghidra
- * attributed to this address range actually belongs to the dll_0014 sibling
- * TU; only these ten symbols (0x800D9EB4..0x800D9EE8) live here.
- */
 #include "dolphin/types.h"
 #include "main/dll/dll_0012_unk.h"
 
