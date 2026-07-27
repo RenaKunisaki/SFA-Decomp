@@ -934,7 +934,7 @@ main/dll/dll_009F_dll9ffunc0.c:
 	.data       start:0x80318488 end:0x80318E10
 	.sdata2     start:0x803E1448 end:0x803E1488
 
-main/dll/dll_00A0_dlla0func0.c:
+dlls/modgfx/160/160.c:
 	.text       start:0x800FE240 end:0x800FE5A8
 	.sdata2     start:0x803E1488 end:0x803E14B4
 

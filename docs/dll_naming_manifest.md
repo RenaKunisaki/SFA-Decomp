@@ -203,7 +203,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x09D | — | NO-RETAIL-NAME | main/dll/dll_009D_dll9dfunc0.c | = (canonical) | — |
 | 0x09E | — | NO-RETAIL-NAME | main/dll/dll_009E_dll9efunc0.c | = (canonical) | — |
 | 0x09F | — | NO-RETAIL-NAME | main/dll/dll_009F_dll9ffunc0.c | = (canonical) | — |
-| 0x0A0 | — | NO-RETAIL-NAME | main/dll/dll_00A0_dlla0func0.c | = (canonical) | — |
+| 0x0A0 | — | NO-RETAIL-NAME | dlls/modgfx/160/160.c | = (canonical) | — |
 | 0x0A1 | — | NO-RETAIL-NAME | dlls/modgfx/161/161.c | = (canonical) | — |
 | 0x0A2 | — | NO-RETAIL-NAME | dlls/modgfx/162/162.c | = (canonical) | — |
 | 0x0A3 | — | NO-RETAIL-NAME | dlls/modgfx/163/163.c | = (canonical) | — |

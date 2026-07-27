@@ -1,5 +1,5 @@
 /*
- * dlla0func0 (DLL 0x00A0) - spawns a layered model-graphics (modgfx)
+ * dlla0func0 (DLL 160 / 0x00A0) - spawns a layered model-graphics (modgfx)
  * effect for a source object.
  *
  * dll_A0_func03 builds a fixed command list of GfxCmd descriptors plus a
