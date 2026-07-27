@@ -2661,10 +2661,10 @@ extern u16* lbl_803DCE84;
 void mapBlockFn_80059354(int x, int z, MapCellEntry* out, int layer)
 {
     int id;
-    char* activeFlags;
     MapRomListGrid* grid;
     int adjacentMapId2;
     char* slots;
+    char* activeFlags;
     int slot;
     int adjacentMapId1;
     s16* adjacentMapIds;
