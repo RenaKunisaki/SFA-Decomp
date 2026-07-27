@@ -1448,7 +1448,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         if (sunT < gSkySunFadeInThreshold)
         {
-            if (sunT < lbl_803DF058)
+            if (sunT < 0.0f)
             {
                 gSkySunAlpha = 0;
             }
