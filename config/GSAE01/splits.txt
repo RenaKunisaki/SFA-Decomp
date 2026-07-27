@@ -1170,7 +1170,7 @@ main/dll/dll_0049_cameramodecombat.c:
 	.sbss       start:0x803DD568 end:0x803DD570
 	.sdata2     start:0x803E1938 end:0x803E1940
 
-main/dll/dll_004A_cameramodeshipbattle.c:
+dlls/engine/74/74.c:
 	.text       start:0x8010CEC0 end:0x8010D33C
 	.data       start:0x80319D18 end:0x80319D48
 	.sbss       start:0x803DD570 end:0x803DD578

@@ -1,7 +1,8 @@
-/* DLL 0x4A - CameraModeShipBattle [8010BF08-8010C0D8) */
+/*
+ * DLL 74 / 0x4A - ship-battle camera mode.
+ */
 #include "main/mm.h"
 #include "main/resource.h"
-
 #include "main/camera_object.h"
 #include "main/dll/CAM/camshipbattle_state.h"
 #include "game/objects/object.h"
