@@ -11,7 +11,6 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll_000A_expgfx.h"
@@ -34,7 +33,7 @@ f32 gEffect7ScrollPhaseB = 0.3f;
 f32 gEffect7TexScrollPhaseA = 0.1f;
 f32 gEffect7TexScrollPhaseB = 0.3f;
 
-extern FxNode9 lbl_8039C368;
+extern PartFxSpawnParams lbl_8039C368;
 
 ObjectDescriptor6 lbl_80310A78 = {
     0,
@@ -60,7 +59,7 @@ ObjectDescriptor6 lbl_80310A78 = {
         lbl_8039C368.unk0 = 0;                                                                                         \
         lbl_8039C368.unk2 = 0;                                                                                         \
         lbl_8039C368.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C368;                                                               \
+        spawnParams = &lbl_8039C368;                                                               \
     } while (0)
 
 int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

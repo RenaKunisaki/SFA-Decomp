@@ -18,7 +18,6 @@
 #include "main/dll/partfx_interface.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
@@ -41,7 +40,7 @@ f32 gEffect2SpawnPhaseB = 0.3f;
 f32 gEffect2ScrollPhaseA = 0.1f;
 f32 gEffect2ScrollPhaseB = 0.3f;
 
-extern FxNode9 lbl_8039C338;
+extern PartFxSpawnParams lbl_8039C338;
 extern int lbl_803DD2C4;
 
 EmitterCfg gEffect2VelocityRangeTable = {
@@ -123,7 +122,7 @@ ObjectDescriptor6 lbl_80310670 = {
         lbl_8039C338.unk0 = 0;                                                                                         \
         lbl_8039C338.unk2 = 0;                                                                                         \
         lbl_8039C338.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C338;                                                               \
+        spawnParams = &lbl_8039C338;                                                               \
     } while (0)
 
 int Effect2_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

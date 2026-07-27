@@ -1,6 +1,5 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/mtxbuildarg_struct.h"
-#include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"

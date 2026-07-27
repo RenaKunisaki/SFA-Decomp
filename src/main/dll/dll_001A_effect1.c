@@ -1,6 +1,5 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/mtxbuildarg_struct.h"
-#include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
@@ -21,16 +20,16 @@ f32 gEffect1AnimRampB = 0.3f;
 
 extern f32 lbl_803DF878;
 extern f32 lbl_803DFCE0;
-extern FxNode9 lbl_8039C398;
-extern FxNode9 lbl_8039C380;
-extern FxNode9 lbl_8039C338;
+extern PartFxSpawnParams lbl_8039C398;
+extern PartFxSpawnParams lbl_8039C380;
+extern PartFxSpawnParams lbl_8039C338;
 extern f32 lbl_803DF884;
-extern FxNode9 lbl_8039C368;
+extern PartFxSpawnParams lbl_8039C368;
 extern f32 lbl_803DFCEC;
-extern FxNode9 lbl_8039C350;
+extern PartFxSpawnParams lbl_8039C350;
 extern f32 lbl_803DF9D0;
 extern f32 lbl_803DF9D4;
-extern FxNode9 lbl_8039C320;
+extern PartFxSpawnParams lbl_8039C320;
 
 
 /*
@@ -51,7 +50,7 @@ extern FxNode9 lbl_8039C320;
         lbl_8039C398.unk0 = 0;                                                                                         \
         lbl_8039C398.unk2 = 0;                                                                                         \
         lbl_8039C398.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C398;                                                               \
+        spawnParams = &lbl_8039C398;                                                               \
     } while (0)
 
 #undef FILL9
@@ -66,7 +65,7 @@ extern FxNode9 lbl_8039C320;
         lbl_8039C380.unk0 = 0;                                                                                         \
         lbl_8039C380.unk2 = 0;                                                                                         \
         lbl_8039C380.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C380;                                                               \
+        spawnParams = &lbl_8039C380;                                                               \
     } while (0)
 
 #undef FILL8
@@ -81,7 +80,7 @@ extern FxNode9 lbl_8039C320;
         lbl_8039C338.unk0 = 0;                                                                                         \
         lbl_8039C338.unk2 = 0;                                                                                         \
         lbl_8039C338.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C338;                                                               \
+        spawnParams = &lbl_8039C338;                                                               \
     } while (0)
 
 #undef FILL338
@@ -96,7 +95,7 @@ extern FxNode9 lbl_8039C320;
         lbl_8039C368.unk0 = 0;                                                                                         \
         lbl_8039C368.unk2 = 0;                                                                                         \
         lbl_8039C368.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C368;                                                               \
+        spawnParams = &lbl_8039C368;                                                               \
     } while (0)
 
 #undef FILL368
@@ -111,7 +110,7 @@ extern FxNode9 lbl_8039C320;
         lbl_8039C350.unk0 = 0;                                                                                         \
         lbl_8039C350.unk2 = 0;                                                                                         \
         lbl_8039C350.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C350;                                                               \
+        spawnParams = &lbl_8039C350;                                                               \
     } while (0)
 
 #undef FILL350
@@ -126,7 +125,7 @@ extern FxNode9 lbl_8039C320;
         lbl_8039C320.unk0 = 0;                                                                                         \
         lbl_8039C320.unk2 = 0;                                                                                         \
         lbl_8039C320.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C320;                                                               \
+        spawnParams = &lbl_8039C320;                                                               \
     } while (0)
 
 int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

@@ -1,6 +1,5 @@
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll_000A_expgfx.h"
@@ -22,7 +21,7 @@ f32 lbl_803DB814 = 0.3f;
 f32 lbl_803DB818 = 0.1f;
 f32 lbl_803DB81C = 0.3f;
 
-extern FxNode9 lbl_8039C380;
+extern PartFxSpawnParams lbl_8039C380;
 
 ObjectDescriptor6 lbl_80310B50 = {
     0,
@@ -48,7 +47,7 @@ ObjectDescriptor6 lbl_80310B50 = {
         lbl_8039C380.unk0 = 0;                                                                                         \
         lbl_8039C380.unk2 = 0;                                                                                         \
         lbl_8039C380.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C380;                                                               \
+        spawnParams = &lbl_8039C380;                                                               \
     } while (0)
 
 int Effect8_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
@@ -500,7 +499,7 @@ void Effect8_initialise(void)
         lbl_8039C338.unk0 = 0;                                                                                         \
         lbl_8039C338.unk2 = 0;                                                                                         \
         lbl_8039C338.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C338;                                                               \
+        spawnParams = &lbl_8039C338;                                                               \
     } while (0)
 
 #undef FILL338
@@ -515,7 +514,7 @@ void Effect8_initialise(void)
         lbl_8039C368.unk0 = 0;                                                                                         \
         lbl_8039C368.unk2 = 0;                                                                                         \
         lbl_8039C368.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C368;                                                               \
+        spawnParams = &lbl_8039C368;                                                               \
     } while (0)
 
 #undef FILL368
@@ -530,7 +529,7 @@ void Effect8_initialise(void)
         lbl_8039C350.unk0 = 0;                                                                                         \
         lbl_8039C350.unk2 = 0;                                                                                         \
         lbl_8039C350.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C350;                                                               \
+        spawnParams = &lbl_8039C350;                                                               \
     } while (0)
 
 #undef FILL350
@@ -545,7 +544,7 @@ void Effect8_initialise(void)
         lbl_8039C320.unk0 = 0;                                                                                         \
         lbl_8039C320.unk2 = 0;                                                                                         \
         lbl_8039C320.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C320;                                                               \
+        spawnParams = &lbl_8039C320;                                                               \
     } while (0)
 
 #undef FILL320

@@ -19,7 +19,6 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/fxnode9_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll_000A_expgfx.h"
@@ -40,7 +39,7 @@ f32 gEffect9PhaseB = 0.3f;
 f32 gEffect9PhaseC = 0.1f;
 f32 gEffect9PhaseD = 0.3f;
 
-extern FxNode9 lbl_8039C398;
+extern PartFxSpawnParams lbl_8039C398;
 
 ObjectDescriptor6 lbl_80310BD8 = {
     0,
@@ -71,7 +70,7 @@ ObjectDescriptor6 lbl_80310BD8 = {
         lbl_8039C398.unk0 = 0;                                                                                         \
         lbl_8039C398.unk2 = 0;                                                                                         \
         lbl_8039C398.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C398;                                                               \
+        spawnParams = &lbl_8039C398;                                                               \
     } while (0)
 
 int Effect9_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
