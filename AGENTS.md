@@ -109,6 +109,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   complete symbol as an object-descriptor-plus-tail layout. Keep unexplained tail words opaque and
   size-asserted until real consumers establish their fields; do not inflate the callback type or
   assign meanings from value patterns alone.
+- Keep a functionless DLL's proven eight-byte null resource record as two raw words. Do not widen
+  it into `ResourceDescriptor` or `ObjectDescriptor` merely because the generic registry stores its
+  address; give the record a unit-owned name and cast only at that registry boundary.
 - Give each cleaned object DLL one canonical unit-owned header under `include/dlls/<bank>/`. Keep
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
