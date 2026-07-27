@@ -137,10 +137,10 @@ extern int gObjSeqPreemptList[][2];
 extern void* lbl_803DD0B8;
 extern int gObjSeqPreparingStreamSlot;
 extern int lbl_803DD064;
-extern u64 lbl_803DD050;
-extern u32 lbl_803DD054;
+extern u64 gSaveCardChecksumHi;
+extern u32 gSaveCardChecksumLo;
 extern u8* gSaveCardImageBuffer;
-extern u64 lbl_803DD048;
+extern u64 gSaveCardSerialHi;
 extern u8 lbl_803DD059;
 extern int gObjSeqStreamResumeOffset;
 extern f32 lbl_803DEFB0;
@@ -207,7 +207,7 @@ int saveGame_doWrite(int slot)
             }
             else
             {
-                lbl_803DD050 = chk2;
+                gSaveCardChecksumHi = chk2;
             }
         }
     }
@@ -269,9 +269,9 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     {
         if (lbl_803DD059 != 0)
         {
-            if (lbl_803DD050 != 0)
+            if (gSaveCardChecksumHi != 0)
             {
-                if (chk != lbl_803DD050)
+                if (chk != gSaveCardChecksumHi)
                 {
                     result = -0x55;
                     lbl_803DB700 = 0xb;
@@ -279,14 +279,14 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
             }
             else
             {
-                lbl_803DD054 = (u32)chk;
-                *(u32*)&lbl_803DD050 = (u32)(chk >> 32);
+                gSaveCardChecksumLo = (u32)chk;
+                *(u32*)&gSaveCardChecksumHi = (u32)(chk >> 32);
             }
         }
         else
         {
-            lbl_803DD054 = (u32)chk;
-            *(u32*)&lbl_803DD050 = (u32)(chk >> 32);
+            gSaveCardChecksumLo = (u32)chk;
+            *(u32*)&gSaveCardChecksumHi = (u32)(chk >> 32);
         }
     }
     if (result == 0)
@@ -548,9 +548,9 @@ int saveGame(int writeImages)
         {
             if (lbl_803DD059 != 0)
             {
-                if (lbl_803DD048 != 0)
+                if (gSaveCardSerialHi != 0)
                 {
-                    if (serial != lbl_803DD048)
+                    if (serial != gSaveCardSerialHi)
                     {
                         result = -0x55;
                         lbl_803DB700 = 0xb;
@@ -558,12 +558,12 @@ int saveGame(int writeImages)
                 }
                 else
                 {
-                    lbl_803DD048 = serial;
+                    gSaveCardSerialHi = serial;
                 }
             }
             else
             {
-                lbl_803DD048 = serial;
+                gSaveCardSerialHi = serial;
             }
         }
         else
@@ -659,7 +659,7 @@ int saveGame(int writeImages)
                 result = CARDSetStatus(0, lbl_80396900.fileInfo.fileNo, &stat);
                 if (result == CARD_RESULT_READY)
                 {
-                    lbl_803DD050 = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
+                    gSaveCardChecksumHi = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
                 }
             }
         }

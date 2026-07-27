@@ -163,10 +163,10 @@ extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
 extern volatile s32 lbl_803DB700;
 extern u8 lbl_803DD059;
-extern u32 lbl_803DD048;
+extern u32 gSaveCardSerialHi;
 extern u32 gSaveCardSerialLo;
-extern u32 lbl_803DD050;
-extern u32 lbl_803DD054;
+extern u32 gSaveCardChecksumHi;
+extern u32 gSaveCardChecksumLo;
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
 typedef struct RippleEntry
@@ -4815,7 +4815,7 @@ void OSReport(const char* msg, ...);
  * "no card filesystem" (-13) it remembers we need to format. On a check
  * error (-6) it runs CARDCheck; if that also returns -6 it formats. On a
  * clean mount (or after the recovery path) it reads the card serial and
- * compares against the cached pair (lbl_803DD048/04C). If the cached pair
+ * compares against the cached pair (gSaveCardSerialHi/Lo). If the cached pair
  * is zero, or doesn't match the live card, the cache is rejected with a
  * "wrong card" error code (-0x55, lbl_803DB700 = 11). Otherwise CARDFormat
  * if we still owe one, else success: clear the cache, set state 13,
