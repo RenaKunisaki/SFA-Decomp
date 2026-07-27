@@ -1,21 +1,5 @@
 /*
- * dll_0044_cameramodeviewfinder - the first-person "viewfinder" camera
- * mode (binoculars / spyglass aiming) for the dll_5B camera-mode set.
- *
- * Shares the heap-allocated ViewfinderState (the .sbss pointer
- * lbl_803DD548) with the other dll_5B modes. _init blends the live
- * camera into the viewfinder pose along Hermite curves (posX/Y/Z + yaw
- * curves); _update runs a small state machine over ViewfinderState.mode:
- *   0 enter blend, 1 yaw settle, 2 active look, 3 exit blend, 4 fade
- *   back to gameplay, 5 idle (skip-blend entry).
- * In the active state firstPersonDoControls turns the control stick into
- * yaw/pitch deltas and the C-stick into a zoom (FOV) adjust, and toggles
- * the on-screen viewfinder HUD / zoom SFX. Exit is forced when the look
- * button (0x210) is pressed or ObjHits_GetPriorityHit reports a blocking
- * hit. GameBit 0xC64 selects the zoom-HUD ("binocular") variant.
- *
- * All tunables live in the lbl_803E17C0..gCamViewfinderPi .sdata2 float pool
- * (interpolation rates, clamp limits, FOV span); lbl_803E17C4 is 0.0f.
+ * DLL 68 / 0x44 - viewfinder camera mode.
  */
 #include "main/audio/sfx.h"
 #include "main/debug.h"
@@ -37,7 +21,6 @@
 #include "main/dll/player_objects.h"
 #include "main/rcp_dolphin.h"
 #include "main/camera.h"
-#include "main/pad.h"
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -61,10 +44,8 @@ typedef struct CameraModeViewfinderInitArgs
     u16 height;
 } CameraModeViewfinderInitArgs;
 
-/* Release camera back to the default gameplay mode on exit (cameramode DLL 0x42). */
 #define VIEWFINDER_CAMMODE_DEFAULT 0x42
 
-/* ViewfinderState.mode state machine (see file header) */
 #define VIEWFINDER_MODE_ENTER_BLEND 0
 #define VIEWFINDER_MODE_YAW_SETTLE  1
 #define VIEWFINDER_MODE_ACTIVE      2

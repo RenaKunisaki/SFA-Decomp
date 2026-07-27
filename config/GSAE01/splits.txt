@@ -1135,7 +1135,7 @@ dlls/engine/69/69.c:
 	.sbss       start:0x803DD540 end:0x803DD548
 	.sdata2     start:0x803E1780 end:0x803E17C0
 
-main/dll/dll_0044_cameramodeviewfinder.c:
+dlls/engine/68/68.c:
 	.text       start:0x80108010 end:0x80109748
 	.sdata      start:0x803DB9A0 end:0x803DB9A8
 	.sbss       start:0x803DD548 end:0x803DD550

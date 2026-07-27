@@ -111,7 +111,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x041 | — | NO-RETAIL-NAME | main/dll/dll_0041_warpstoneui.c | = (canonical) | — |
 | 0x042 | — | NO-RETAIL-NAME | main/dll/dll_0042_unk.c | = (canonical) | — |
 | 0x043 | — | NO-RETAIL-NAME | main/dll/dll_0043_unk.c | = (canonical) | — |
-| 0x044 | — | NO-RETAIL-NAME | main/dll/dll_0044_cameramodeviewfinder.c | = (canonical) | — |
+| 0x044 | — | NO-RETAIL-NAME | dlls/engine/68/68.c | = (canonical) | DOL-confirmed callback TU including the leading first-person helper pair; descriptor data is pooled elsewhere |
 | 0x045 | — | NO-RETAIL-NAME | dlls/engine/69/69.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
 | 0x046 | — | NO-RETAIL-NAME | dlls/engine/70/70.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
 | 0x047 | — | NO-RETAIL-NAME | dlls/engine/71/71.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |

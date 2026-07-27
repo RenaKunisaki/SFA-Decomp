@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/68/68.c", cflags=cflags_dll_noopt_noautoinline),
             Object(
                 NonMatching, "dlls/engine/69/69.c", cflags=cflags_dll_noopt_noprop,
                 section_alignments={".sdata2": 4},
@@ -1450,7 +1451,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_002F_carryable.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/cutcam.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/pathcamgroup.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0044_cameramodeviewfinder.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_002E_moveLib.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_b8.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/n_attractmode.c", cflags=cflags_dll_noopt),
