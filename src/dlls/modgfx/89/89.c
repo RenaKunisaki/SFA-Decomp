@@ -1,17 +1,9 @@
 /*
- * DLL 0x59 (dll59func0) - a thin gameplay-effect DLL exporting three
- * object hooks. func00/func01 are empty no-op slots; func03 builds an
- * nine-command modgfx effect list on the stack (texture/blend modes
- * from the lbl_803E06xx float constants and the lbl_80311C58 resource
- * blob) and submits it through gModgfxInterface->spawnEffect. When the
- * effect's flag bit 0 is set, the spawn position is offset either by the
- * source object's local position (object 0x18/0x1c/0x20) or, if absent,
- * by the PartFxSpawnParams packet at posSource.
+ * DLL 89 / 0x59 - a modgfx particle-sequence spawn DLL.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0059_dll59func0.h"
 
