@@ -162,10 +162,10 @@ void cmbsrc_updateVisuals(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
     }
     else
     {
-        f32 t = sourceState->hitCharge;
+        f32 t = sourceState->hitCharge / 15.0f;
         f32 radiusScaled;
         f32 fullRadius;
-        t /= 15.0f;
+        t = t;
         radiusScaled = setup->radius / 4.0f;
         fullRadius = 2.0f * setup->radius;
         sourceState->radius += interpolate(t * (fullRadius - radiusScaled) + radiusScaled - sourceState->radius,
