@@ -148,7 +148,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
     }
     if ((flags & 0x200000) == 0)
     {
-        obj->anim.velocityY = obj->anim.velocityY * PLAYER_MOVE_VELOCITY_DAMPING;
+        obj->anim.velocityY *= PLAYER_MOVE_VELOCITY_DAMPING;
         obj->anim.velocityY = -(((BaddieState*)ctx)->gravity * t) + obj->anim.velocityY;
     }
     b = *(s8*)((char*)ctx + 0x34c);
