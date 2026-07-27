@@ -1,5 +1,5 @@
 /*
- * dll8afunc0 (DLL 0x8A) - one of the foodbag modgfx effect spawners
+ * DLL 138 / 0x8A - one of the foodbag modgfx effect spawners
  * (dll_NN_func03 family, see foodbag.h). func03 builds a single-command
  * FbBuf from the effect's resource table (lbl_80316650) and hands it to
  * the modgfx interface to spawn a bone particle effect; flag bit 0 sources
