@@ -597,11 +597,12 @@ main/dll/Hcurves_romcurve.c:
 	.bss        start:0x803A17E8 end:0x803A2C38
 	.sbss       start:0x803DD470 end:0x803DD47C
 
-main/dll/dll_0015_curves.c:
+dlls/engine/21/21.c:
 	.text       start:0x800E5434 end:0x800E8100
 	.data       start:0x803116E0 end:0x80311720
 	.bss        start:0x803A2C38 end:0x803A2F80
 	.sbss       start:0x803DD480 end:0x803DD488
+	.sdata2     start:0x803E0668 end:0x803E06C8
 
 dlls/engine/23/23.c:
 	.text       start:0x800E8100 end:0x800EA174

@@ -64,7 +64,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x012 | — | NO-RETAIL-NAME | main/dll/dll_0012_unk.c | = (canonical) | — |
 | 0x013 | — | NO-RETAIL-NAME | main/dll/dll_0013_waterfx.c | = (canonical) | — |
 | 0x014 | — | NO-RETAIL-NAME | main/dll/dll_0014_unk.c | = (canonical) | — |
-| 0x015 | — | NO-RETAIL-NAME | main/dll/dll_0015_curves.c | = (canonical) | — |
+| 0x015 | — | NO-RETAIL-NAME | dlls/engine/21/21.c | = (canonical) | Complete DOL-confirmed TU; missing sdata2 owner restored |
 | 0x016 | — | NO-RETAIL-NAME | dlls/engine/22/22.c | = (canonical) | Complete DOL-confirmed TU; missing sdata2 owner restored |
 | 0x017 | — | NO-RETAIL-NAME | dlls/engine/23/23.c | = (canonical) | Complete DOL-confirmed TU; foreign data tails restored to DLLs 17, 47, 89, 90, and 91 |
 | 0x018 | — | NO-RETAIL-NAME | dlls/engine/24/24.c | = (canonical) | Complete DOL-confirmed TU; missing BSS and sdata owners restored |
