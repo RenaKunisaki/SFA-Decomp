@@ -1,5 +1,5 @@
 /*
- * dll7bfunc0 (DLL 0x7B) - save-icon / preview modgfx effect DLL.
+ * DLL 123 / 0x7B - save-icon / preview modgfx effect DLL.
  *
  * dll_7B_func03 builds a modgfx command list on the stack and submits it
  * (the save-icon / preview effect).
