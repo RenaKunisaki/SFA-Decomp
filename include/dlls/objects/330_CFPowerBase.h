@@ -26,6 +26,10 @@ typedef enum CfPowerBasePylonMessage {
     CFPOWERBASE_PYLON_MESSAGE_3 = 0x110003,
 } CfPowerBasePylonMessage;
 
+typedef enum CfPowerBaseObjectId {
+    CFPOWERBASE_OBJECT_ID = 0xDA,
+} CfPowerBaseObjectId;
+
 STATIC_ASSERT(offsetof(CfPowerBasePlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(CfPowerBasePlacement, initialYaw) == 0x18);
 STATIC_ASSERT(offsetof(CfPowerBasePlacement, pad19) == 0x19);

@@ -181,6 +181,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   launders before normalizing them. If the simpler spelling changes codegen, retain the proven
   spelling and improve the surrounding names instead; cosmetic uniformity does not justify a match
   regression.
+- Do not split a multi-role local in an already-exact function solely to give each lifetime a more
+  specific name without testing codegen. MWCC can assign different nonvolatile registers even when
+  the lifetimes do not overlap; if the split changes codegen, retain one neutrally named local and
+  let each use site supply the meaning.
 - Preserve TU-global declaration order while renaming or retyping symbols, especially mixed-width
   `.sbss` and `.sdata` objects. Objdiff can report zero-filled sections and symbol-normalized
   relocations as exact while MWCC has changed the symbols' packed offsets; inspect object symbol

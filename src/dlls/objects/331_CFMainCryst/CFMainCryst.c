@@ -1,403 +1,375 @@
-/*
- * CFMainCryst (DLL 0x14B) - the CloudRunner Fortress main crystal.
- * Collects pylon beam reports (0x110001..3 messages) and the crystal
- * position (0x110004), draws up to ten beams between charged pylons
- * and the crystal, charges up once all three pylons are lit and fires
- * the convergence beam.
- */
+/* CloudRunner Fortress main-crystal controller and position source. */
+
+#include "dlls/objects/331_CFMainCryst.h"
 
 #include "dlls/objects/330_CFPowerBase.h"
-
-#include "main/dll/partfx_interface.h"
-#include "main/render_envfx_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
-#include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
-#include "main/object_render.h"
-#include "main/obj_message.h"
-#include "main/camera.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/gamebits.h"
-#include "main/dll/CF/dll_014B_cfmaincrystal.h"
-#include "main/frame_timing.h"
-#include "main/vecmath.h"
 #include "main/audio/sfx.h"
-#include "dlls/object_descriptor.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/camera.h"
+#include "main/dll/expgfx_interface.h"
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/obj_message.h"
+#include "main/object_render.h"
+#include "main/render_envfx_api.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 
-#define CFMAINCRYSTAL_PYLON_FRAMES 0x78 /* beam hold time once reported */
-#define CFMAINCRYSTAL_CHARGE_START 0x5A /* charge frames granted by 0x57 */
-#define CFMAINCRYSTAL_CHARGE_FIRE  0x3C /* charge at which the bolt fires */
+#define CFMAINCRYSTAL_PYLON_ACTIVE_FRAMES  0x78
+#define CFMAINCRYSTAL_FORCED_CHARGE_FRAMES 0x5A
+#define CFMAINCRYSTAL_CHARGE_FIRE_FRAMES   0x3C
+#define CFMAINCRYSTAL_PARTIAL_CHARGE_TOTAL 0x12C
+#define CFMAINCRYSTAL_PYLON_TIMER_LIMIT    0x80
+#define CFMAINCRYSTAL_PYLON_CHIME_PERIOD   0x64
+#define CFMAINCRYSTAL_BEAM_CHIME_PERIOD    0x14
+#define CFMAINCRYSTAL_PYLON_CHIME_DELAY    0x1E
+#define CFMAINCRYSTAL_PARTFX_CHARGE_SPARK  0x81
+#define CFMAINCRYSTAL_PARTFX_BEAM          0x7F4
+#define CFMAINCRYSTAL_ENVFX                0x7F
 
-/* Spark fx emitted (1-in-3) while the pylons are still partially charged
-   (sum of pylonTimer[0..2] < 0x12c). */
-#define CFMAINCRYSTAL_PARTFX_CHARGE_SPARK 0x81
-/* beam particle spawned along each crystal<->pylon link as the beams[] slot is activated */
-#define CFMAINCRYSTAL_PARTFX_BEAM 0x7f4
-/* env effect activated once when all three pylons chime and the main charge begins */
-#define CFMAINCRYSTAL_ENVFX 0x7f
+#define CFMAINCRYSTAL_POSITION_REQUEST_FLAGS 5
+#define CFMAINCRYSTAL_PYLON_REQUEST_FLAGS    4
+#define CFMAINCRYSTAL_MESSAGE_QUEUE_CAPACITY 2
+#define CFMAINCRYSTAL_OBJECT_TYPE_ID         1
+#define CFMAINCRYSTAL_RENDER_BANK_INDEX      1
+#define CFMAINCRYSTAL_BEAM_CHIME_INDEX       CFMAINCRYSTAL_PYLON_COUNT
+#define CFMAINCRYSTAL_INITIAL_RED_CHIME      0x28
+#define CFMAINCRYSTAL_INITIAL_BEAM_CHIME     0x46
 
-/* beam-report protocol shared with cfpowerbase (dll_014A): probe each
-   pylon group (class 0xDA) with its message; the crystal itself answers
-   position probes (class 0xDC) with CFMAINCRYSTAL_MSG_CRYSTAL. */
-#define CFMAINCRYSTAL_MSG_CRYSTAL 0x110004
+#define CFMAINCRYSTAL_PYLON_BEAM_Y              1945.0f
+#define CFMAINCRYSTAL_CRYSTAL_BEAM_Y_OFFSET     20.0f
+#define CFMAINCRYSTAL_PYLON_BEAM_Y_OFFSET       55.0f
+#define CFMAINCRYSTAL_DOWNWARD_BEAM_Y           -80.0f
+#define CFMAINCRYSTAL_CHARGE_BEAM_FRAME_DIVISOR 30.0f
+#define CFMAINCRYSTAL_CHARGE_BEAM_Y_OFFSET      15.0f
+#define CFMAINCRYSTAL_CHARGE_BEAM_SPEED         250.0f
+#define CFMAINCRYSTAL_HUM_INITIAL_VOLUME        0.66f
+#define CFMAINCRYSTAL_HUM_BASE_VOLUME           0.33f
+#define CFMAINCRYSTAL_HUM_PYLON_DIVISOR         3.0f
+#define CFMAINCRYSTAL_HUM_APPROACH_RATE         0.0625f
 
-/* game bits: the three base bits (see cfpowerbase) + 0x57 = the
-   convergence cutscene bit that pins everything fully charged - and
-   the "power restored" bit that starts the city's wind lifts
-   (see cfwindlift) */
-enum
-{
-    GAMEBIT_CFBASE_1 = 0x54,
-    GAMEBIT_CFBASE_2 = 0x55,
-    GAMEBIT_CFBASE_3 = 0x56,
-    GAMEBIT_CF_CONVERGENCE = 0x57
-};
+#define CFMAINCRYSTAL_HUM_CHANNEL           0x40
+#define CFMAINCRYSTAL_HUM_VOLUME            0x64
+#define CFMAINCRYSTAL_PYLON_ROTATION_SPEED  0x7E
+#define CFMAINCRYSTAL_IDLE_ROTATION_SPEED   0x2A
+#define CFMAINCRYSTAL_SOURCE_ROTATION_SPEED 0xB6
 
-typedef struct
-{
-    s16 a, b, c, d; /* per-effect s16 params; c/d carry the beam index */
-    u8 pad[4];
-    f32 x, y, z;
-} PartPayload;
+typedef enum CfMainCrystalMessage {
+    CFMAINCRYSTAL_MESSAGE_POSITION = 0x110004,
+} CfMainCrystalMessage;
 
-STATIC_ASSERT(sizeof(CfMainCrystalState) == 0x160);
+typedef enum CfMainCrystalPylonIndex {
+    CFMAINCRYSTAL_PYLON_RED = 0,
+    CFMAINCRYSTAL_PYLON_GREEN = 1,
+    CFMAINCRYSTAL_PYLON_BLUE = 2,
+} CfMainCrystalPylonIndex;
 
+extern f32 gCfMainCrystalRenderScale;
 
-extern f32 lbl_803E4210;
+GameObject* gCfMainCrystalPositionObject;
 
-GameObject* gCfMainCrystalObj;
-
-/* cfmaincrystal_updateBeams: main crystal beam update -
- * collect the three pylon positions from messages, re-request missing ones,
- * emit the beam particles toward the crystal (and down from each pylon),
- * ramp the convergence charge, hum volume and per-beam chime timers. */
-void cfmaincrystal_updateBeams(GameObject* obj)
-{
-    int i;
-    CfMainCrystalState* sub = obj->extra;
-    int idx;
-    int count;
-    PartPayload pay;
-    f32 dir[3];
-    GameObject* msgSrc;
-    int msgType;
-    int payload = 0;
+void cfMainCrystal_updateBeams(GameObject* obj) {
+    int pylonIndex;
+    CfMainCrystalState* state = obj->extra;
+    int index;
+    int activePylonCount;
+    PartFxSpawnParams effectParams;
+    f32 beamDirection[3];
+    GameObject* messageSender;
+    u32 message;
+    u32 unusedMessageArgument = 0;
     Obj_GetPlayerObject();
     Camera_EnableViewYOffset();
-    while (ObjMsg_Pop(obj, (u32*)&msgType, (u32*)&msgSrc, (u32*)&payload) != 0)
-    {
-        switch (msgType)
-        {
+    while (ObjMsg_Pop(obj, &message, (u32*)&messageSender, &unusedMessageArgument) != 0) {
+        switch (message) {
         case CFPOWERBASE_PYLON_MESSAGE_1:
-            sub->pylonX[0] = msgSrc->anim.localPosX;
-            sub->pylonY[0] = 1945.0f;
-            sub->pylonZ[0] = msgSrc->anim.localPosZ;
-            sub->pylonTimer[0] = 1;
+            state->pylonX[CFMAINCRYSTAL_PYLON_RED] = messageSender->anim.localPosX;
+            state->pylonY[CFMAINCRYSTAL_PYLON_RED] = CFMAINCRYSTAL_PYLON_BEAM_Y;
+            state->pylonZ[CFMAINCRYSTAL_PYLON_RED] = messageSender->anim.localPosZ;
+            state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] = 1;
             break;
         case CFPOWERBASE_PYLON_MESSAGE_2:
-            sub->pylonX[1] = msgSrc->anim.localPosX;
-            sub->pylonY[1] = 1945.0f;
-            sub->pylonZ[1] = msgSrc->anim.localPosZ;
-            sub->pylonTimer[1] = 1;
+            state->pylonX[CFMAINCRYSTAL_PYLON_GREEN] = messageSender->anim.localPosX;
+            state->pylonY[CFMAINCRYSTAL_PYLON_GREEN] = CFMAINCRYSTAL_PYLON_BEAM_Y;
+            state->pylonZ[CFMAINCRYSTAL_PYLON_GREEN] = messageSender->anim.localPosZ;
+            state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] = 1;
             break;
         case CFPOWERBASE_PYLON_MESSAGE_3:
-            sub->pylonX[2] = msgSrc->anim.localPosX;
-            sub->pylonY[2] = 1945.0f;
-            sub->pylonZ[2] = msgSrc->anim.localPosZ;
-            sub->pylonTimer[2] = 1;
+            state->pylonX[CFMAINCRYSTAL_PYLON_BLUE] = messageSender->anim.localPosX;
+            state->pylonY[CFMAINCRYSTAL_PYLON_BLUE] = CFMAINCRYSTAL_PYLON_BEAM_Y;
+            state->pylonZ[CFMAINCRYSTAL_PYLON_BLUE] = messageSender->anim.localPosZ;
+            state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] = 1;
             break;
-        case CFMAINCRYSTAL_MSG_CRYSTAL:
-            sub->crystalX = msgSrc->anim.localPosX;
-            sub->crystalY = msgSrc->anim.localPosY;
-            sub->crystalZ = msgSrc->anim.localPosZ;
-            sub->crystalKnown = 1;
+        case CFMAINCRYSTAL_MESSAGE_POSITION:
+            state->crystalX = messageSender->anim.localPosX;
+            state->crystalY = messageSender->anim.localPosY;
+            state->crystalZ = messageSender->anim.localPosZ;
+            state->hasCrystalPosition = 1;
             break;
         }
     }
-    if (sub->crystalKnown == 0)
-    {
-        ObjMsg_SendToObjects(0xdc, 5, obj, CFMAINCRYSTAL_MSG_CRYSTAL, 0);
+    if (state->hasCrystalPosition == 0) {
+        ObjMsg_SendToObjects(CFMAINCRYSTAL_OBJECT_ID, CFMAINCRYSTAL_POSITION_REQUEST_FLAGS, obj,
+                             CFMAINCRYSTAL_MESSAGE_POSITION, 0);
     }
-    if (mainGetBit(GAMEBIT_CFBASE_1) != 0 && sub->pylonTimer[0] == 0)
-    {
-        ObjMsg_SendToObjects(0xda, 4, obj, CFPOWERBASE_PYLON_MESSAGE_1, 0);
+    if (mainGetBit(GAMEBIT_CF_RedPowerBasePowered) != 0 && state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] == 0) {
+        ObjMsg_SendToObjects(CFPOWERBASE_OBJECT_ID, CFMAINCRYSTAL_PYLON_REQUEST_FLAGS, obj, CFPOWERBASE_PYLON_MESSAGE_1,
+                             0);
     }
-    if (mainGetBit(GAMEBIT_CFBASE_2) != 0 && sub->pylonTimer[1] == 0)
-    {
-        ObjMsg_SendToObjects(0xda, 4, obj, CFPOWERBASE_PYLON_MESSAGE_2, 0);
+    if (mainGetBit(GAMEBIT_CF_GreenPowerBasePowered) != 0 && state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] == 0) {
+        ObjMsg_SendToObjects(CFPOWERBASE_OBJECT_ID, CFMAINCRYSTAL_PYLON_REQUEST_FLAGS, obj, CFPOWERBASE_PYLON_MESSAGE_2,
+                             0);
     }
-    if (mainGetBit(GAMEBIT_CFBASE_3) != 0 && sub->pylonTimer[2] == 0)
-    {
-        ObjMsg_SendToObjects(0xda, 4, obj, CFPOWERBASE_PYLON_MESSAGE_3, 0);
+    if (mainGetBit(GAMEBIT_CF_BluePowerBasePowered) != 0 && state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] == 0) {
+        ObjMsg_SendToObjects(CFPOWERBASE_OBJECT_ID, CFMAINCRYSTAL_PYLON_REQUEST_FLAGS, obj, CFPOWERBASE_PYLON_MESSAGE_3,
+                             0);
     }
-    sub->beams[0].active = 0;
-    sub->beams[1].active = 0;
-    sub->beams[2].active = 0;
-    sub->beams[3].active = 0;
-    sub->beams[4].active = 0;
-    sub->beams[5].active = 0;
-    sub->beams[6].active = 0;
-    sub->beams[7].active = 0;
-    sub->beams[8].active = 0;
-    sub->beams[9].active = 0;
-    count = 0;
-    idx = 0;
-    if (sub->crystalKnown != 0)
-    {
-        if (mainGetBit(GAMEBIT_CF_CONVERGENCE) != 0)
-        {
-            if (sub->pylonTimer[0] != 0)
-            {
-                sub->pylonTimer[0] = CFMAINCRYSTAL_PYLON_FRAMES;
+    state->beams[0].active = 0;
+    state->beams[1].active = 0;
+    state->beams[2].active = 0;
+    state->beams[3].active = 0;
+    state->beams[4].active = 0;
+    state->beams[5].active = 0;
+    state->beams[6].active = 0;
+    state->beams[7].active = 0;
+    state->beams[8].active = 0;
+    state->beams[9].active = 0;
+    activePylonCount = 0;
+    index = 0;
+    if (state->hasCrystalPosition != 0) {
+        if (mainGetBit(GAMEBIT_CF_PowerOn) != 0) {
+            if (state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] != 0) {
+                state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] = CFMAINCRYSTAL_PYLON_ACTIVE_FRAMES;
             }
-            if (sub->pylonTimer[1] != 0)
-            {
-                sub->pylonTimer[1] = CFMAINCRYSTAL_PYLON_FRAMES;
+            if (state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] != 0) {
+                state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] = CFMAINCRYSTAL_PYLON_ACTIVE_FRAMES;
             }
-            if (sub->pylonTimer[2] != 0)
-            {
-                sub->pylonTimer[2] = CFMAINCRYSTAL_PYLON_FRAMES;
+            if (state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] != 0) {
+                state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] = CFMAINCRYSTAL_PYLON_ACTIVE_FRAMES;
             }
-            sub->charge = CFMAINCRYSTAL_CHARGE_START;
+            state->chargeTimer = CFMAINCRYSTAL_FORCED_CHARGE_FRAMES;
         }
-        i = 0;
-        do
-        {
-            if (i <= 2 && sub->pylonTimer[i] != 0)
-            {
-                CrystalBeam* sl = &sub->beams[idx++];
-                sl->active = 1;
-                sl->colorR = 0x7f;
-                sl->colorG = 0x7f;
-                sl->colorB = 0xff;
-                sl->startX = sub->crystalX;
-                sl->startY = 20.0f + sub->crystalY;
-                sl->startZ = sub->crystalZ;
-                dir[0] = sub->pylonX[i] - sl->startX;
-                dir[1] = (55.0f + sub->pylonY[i]) - sl->startY;
-                dir[2] = sub->pylonZ[i] - sl->startZ;
-                PSVECNormalize(dir, dir);
-                pay.x = sub->pylonX[i] - sub->crystalX;
-                pay.y = (55.0f + sub->pylonY[i]) - sub->crystalY;
-                pay.z = sub->pylonZ[i] - sub->crystalZ;
-                dir[0] = -dir[0];
-                dir[1] = -dir[1];
-                dir[2] = -dir[2];
-                pay.d = i;
-                (*gPartfxInterface)->spawnObject(obj, CFMAINCRYSTAL_PARTFX_BEAM, &pay, 2, -1, dir);
-                dir[0] = sub->pylonX[i] - gCfMainCrystalObj->anim.localPosX;
-                dir[1] = -80.0f;
-                dir[2] = sub->pylonZ[i] - gCfMainCrystalObj->anim.localPosZ;
-                PSVECNormalize(dir, dir);
-                pay.x = 0.0f;
-                pay.y = 20.0f;
-                pay.z = 0.0f;
-                pay.d = i + 3;
-                (*gPartfxInterface)->spawnObject(gCfMainCrystalObj, CFMAINCRYSTAL_PARTFX_BEAM, &pay, 2, -1, dir);
-                pay.x = sub->pylonX[i];
-                pay.y = sub->pylonY[i];
-                pay.z = sub->pylonZ[i];
-                if (sub->chime[3] > 0x14)
-                {
-                    pay.x = sub->pylonX[i];
-                    pay.y = sub->pylonY[i];
-                    pay.z = sub->pylonZ[i];
-                    pay.c = i;
+        pylonIndex = 0;
+        do {
+            if (pylonIndex <= CFMAINCRYSTAL_PYLON_BLUE && state->pylonTimers[pylonIndex] != 0) {
+                CfMainCrystalBeam* beam = &state->beams[index++];
+                beam->active = 1;
+                beam->colorR = 0x7F;
+                beam->colorG = 0x7F;
+                beam->colorB = 0xFF;
+                beam->startX = state->crystalX;
+                beam->startY = CFMAINCRYSTAL_CRYSTAL_BEAM_Y_OFFSET + state->crystalY;
+                beam->startZ = state->crystalZ;
+                beamDirection[0] = state->pylonX[pylonIndex] - beam->startX;
+                beamDirection[1] = (CFMAINCRYSTAL_PYLON_BEAM_Y_OFFSET + state->pylonY[pylonIndex]) - beam->startY;
+                beamDirection[2] = state->pylonZ[pylonIndex] - beam->startZ;
+                PSVECNormalize(beamDirection, beamDirection);
+                effectParams.posX = state->pylonX[pylonIndex] - state->crystalX;
+                effectParams.posY = (CFMAINCRYSTAL_PYLON_BEAM_Y_OFFSET + state->pylonY[pylonIndex]) - state->crystalY;
+                effectParams.posZ = state->pylonZ[pylonIndex] - state->crystalZ;
+                beamDirection[0] = -beamDirection[0];
+                beamDirection[1] = -beamDirection[1];
+                beamDirection[2] = -beamDirection[2];
+                effectParams.arg3 = pylonIndex;
+                (*gPartfxInterface)->spawnObject(obj, CFMAINCRYSTAL_PARTFX_BEAM, &effectParams, 2, -1, beamDirection);
+                beamDirection[0] = state->pylonX[pylonIndex] - gCfMainCrystalPositionObject->anim.localPosX;
+                beamDirection[1] = CFMAINCRYSTAL_DOWNWARD_BEAM_Y;
+                beamDirection[2] = state->pylonZ[pylonIndex] - gCfMainCrystalPositionObject->anim.localPosZ;
+                PSVECNormalize(beamDirection, beamDirection);
+                effectParams.posX = 0.0f;
+                effectParams.posY = CFMAINCRYSTAL_CRYSTAL_BEAM_Y_OFFSET;
+                effectParams.posZ = 0.0f;
+                effectParams.arg3 = pylonIndex + CFMAINCRYSTAL_PYLON_COUNT;
+                (*gPartfxInterface)
+                    ->spawnObject(gCfMainCrystalPositionObject, CFMAINCRYSTAL_PARTFX_BEAM, &effectParams, 2, -1,
+                                  beamDirection);
+                effectParams.posX = state->pylonX[pylonIndex];
+                effectParams.posY = state->pylonY[pylonIndex];
+                effectParams.posZ = state->pylonZ[pylonIndex];
+                if (state->chimeTimers[CFMAINCRYSTAL_BEAM_CHIME_INDEX] > CFMAINCRYSTAL_BEAM_CHIME_PERIOD) {
+                    effectParams.posX = state->pylonX[pylonIndex];
+                    effectParams.posY = state->pylonY[pylonIndex];
+                    effectParams.posZ = state->pylonZ[pylonIndex];
+                    effectParams.arg2 = pylonIndex;
                 }
-                pay.x = sub->pylonX[i];
-                pay.y = sub->pylonY[i];
-                pay.z = sub->pylonZ[i];
-                pay.c = i;
-                sl = &sub->beams[idx++];
-                sl->active = 1;
-                count++;
+                effectParams.posX = state->pylonX[pylonIndex];
+                effectParams.posY = state->pylonY[pylonIndex];
+                effectParams.posZ = state->pylonZ[pylonIndex];
+                effectParams.arg2 = pylonIndex;
+                beam = &state->beams[index++];
+                beam->active = 1;
+                activePylonCount++;
             }
-            i++;
-        } while (i < 3);
-        if (sub->pylonTimer[0] + sub->pylonTimer[1] + sub->pylonTimer[2] < 0x12c && (int)randomGetRange(0, 3) == 0)
-        {
+            pylonIndex++;
+        } while (pylonIndex < CFMAINCRYSTAL_PYLON_COUNT);
+        if (state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] + state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] +
+                    state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] <
+                CFMAINCRYSTAL_PARTIAL_CHARGE_TOTAL &&
+            (int)randomGetRange(0, CFMAINCRYSTAL_PYLON_COUNT) == 0) {
             (*gPartfxInterface)->spawnObject(obj, CFMAINCRYSTAL_PARTFX_CHARGE_SPARK, NULL, 0, -1, NULL);
         }
-        if (sub->pylonTimer[0] != 0 || sub->pylonTimer[1] != 0 || sub->pylonTimer[2] != 0)
-        {
-            if (sub->chime[0] > 0x64)
-            {
-                sub->chime[0] = 0;
+        if (state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] != 0 || state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] != 0 ||
+            state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] != 0) {
+            if (state->chimeTimers[CFMAINCRYSTAL_PYLON_RED] > CFMAINCRYSTAL_PYLON_CHIME_PERIOD) {
+                state->chimeTimers[CFMAINCRYSTAL_PYLON_RED] = 0;
             }
-            if (sub->chime[1] > 0x64)
-            {
-                sub->chime[1] = 0;
+            if (state->chimeTimers[CFMAINCRYSTAL_PYLON_GREEN] > CFMAINCRYSTAL_PYLON_CHIME_PERIOD) {
+                state->chimeTimers[CFMAINCRYSTAL_PYLON_GREEN] = 0;
             }
-            if (sub->chime[2] > 0x64)
-            {
-                sub->chime[2] = 0;
+            if (state->chimeTimers[CFMAINCRYSTAL_PYLON_BLUE] > CFMAINCRYSTAL_PYLON_CHIME_PERIOD) {
+                state->chimeTimers[CFMAINCRYSTAL_PYLON_BLUE] = 0;
             }
-            if (sub->chime[3] > 0x14)
-            {
-                sub->chime[3] = 0;
+            if (state->chimeTimers[CFMAINCRYSTAL_BEAM_CHIME_INDEX] > CFMAINCRYSTAL_BEAM_CHIME_PERIOD) {
+                state->chimeTimers[CFMAINCRYSTAL_BEAM_CHIME_INDEX] = 0;
             }
-            sub->chime[0] += framesThisStep;
-            sub->chime[1] += framesThisStep;
-            sub->chime[2] += framesThisStep;
-            sub->chime[3] += framesThisStep;
+            state->chimeTimers[CFMAINCRYSTAL_PYLON_RED] += framesThisStep;
+            state->chimeTimers[CFMAINCRYSTAL_PYLON_GREEN] += framesThisStep;
+            state->chimeTimers[CFMAINCRYSTAL_PYLON_BLUE] += framesThisStep;
+            state->chimeTimers[CFMAINCRYSTAL_BEAM_CHIME_INDEX] += framesThisStep;
         }
-        if (count == 3)
-        {
-            if (sub->charge == 0)
-            {
+        if (activePylonCount == CFMAINCRYSTAL_PYLON_COUNT) {
+            if (state->chargeTimer == 0) {
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
                 getEnvfxAct(0, 0, CFMAINCRYSTAL_ENVFX, 0);
             }
-            sub->charge += framesThisStep;
+            state->chargeTimer += framesThisStep;
         }
-        if (sub->charge >= CFMAINCRYSTAL_CHARGE_FIRE)
-        {
-            f32 fr = (f32)(sub->charge - CFMAINCRYSTAL_CHARGE_FIRE);
-            CrystalBeam* sl;
-            fr = fr / 30.0f;
-            sl = &sub->beams[idx];
-            sl->active = 1;
-            sl->colorR = 0;
-            sl->colorG = 0;
-            sl->colorB = 0;
-            sl->startX = obj->anim.localPosX;
-            sl->startY = 15.0f + obj->anim.localPosY;
-            sl->startZ = obj->anim.localPosZ;
-            sl->endX = sl->startX;
-            sl->endY = -(250.0f * fr - sl->startY);
-            sl->endZ = sl->startZ;
+        if (state->chargeTimer >= CFMAINCRYSTAL_CHARGE_FIRE_FRAMES) {
+            f32 chargeProgress = (f32)(state->chargeTimer - CFMAINCRYSTAL_CHARGE_FIRE_FRAMES);
+            CfMainCrystalBeam* beam;
+            chargeProgress = chargeProgress / CFMAINCRYSTAL_CHARGE_BEAM_FRAME_DIVISOR;
+            beam = &state->beams[index];
+            beam->active = 1;
+            beam->colorR = 0;
+            beam->colorG = 0;
+            beam->colorB = 0;
+            beam->startX = obj->anim.localPosX;
+            beam->startY = CFMAINCRYSTAL_CHARGE_BEAM_Y_OFFSET + obj->anim.localPosY;
+            beam->startZ = obj->anim.localPosZ;
+            beam->endX = beam->startX;
+            beam->endY = -(CFMAINCRYSTAL_CHARGE_BEAM_SPEED * chargeProgress - beam->startY);
+            beam->endZ = beam->startZ;
         }
-        obj->anim.rotX += framesThisStep * (count * 0x7e);
+        obj->anim.rotX += framesThisStep * (activePylonCount * CFMAINCRYSTAL_PYLON_ROTATION_SPEED);
     }
-    if (count != 0)
-    {
-        if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x40) == 0)
-        {
+    if (activePylonCount != 0) {
+        if (Sfx_IsPlayingFromObjectChannel((int)obj, CFMAINCRYSTAL_HUM_CHANNEL) == 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_d5);
-            sub->humVolume = 0.66f;
-        }
-        else
-        {
-            f32 vol = 0.33f + count / 3.0f;
+            state->humVolume = CFMAINCRYSTAL_HUM_INITIAL_VOLUME;
+        } else {
+            f32 targetVolume = CFMAINCRYSTAL_HUM_BASE_VOLUME + activePylonCount / CFMAINCRYSTAL_HUM_PYLON_DIVISOR;
             {
-                f32 d = vol - sub->humVolume;
-                f32 approachRate = 0.0625f;
-                sub->humVolume = d * approachRate + sub->humVolume;
+                f32 volumeDelta = targetVolume - state->humVolume;
+                f32 approachRate = CFMAINCRYSTAL_HUM_APPROACH_RATE;
+                state->humVolume = volumeDelta * approachRate + state->humVolume;
             }
-            if (sub->charge >= CFMAINCRYSTAL_CHARGE_FIRE)
-            {
-                sub->humVolume = vol;
+            if (state->chargeTimer >= CFMAINCRYSTAL_CHARGE_FIRE_FRAMES) {
+                state->humVolume = targetVolume;
             }
-            Sfx_SetObjectChannelVolume((int)obj, 0x40, 0x64, sub->humVolume);
+            Sfx_SetObjectChannelVolume((int)obj, CFMAINCRYSTAL_HUM_CHANNEL, CFMAINCRYSTAL_HUM_VOLUME, state->humVolume);
         }
     }
-    i = 0;
-    do
-    {
-        idx = sub->pylonTimer[i];
-        if (idx != 0 && idx < 0x80)
-        {
-            sub->pylonTimer[i] += framesThisStep;
-            if (idx == 1 && sub->pylonTimer[i] > 1)
-            {
+    pylonIndex = 0;
+    do {
+        index = state->pylonTimers[pylonIndex];
+        if (index != 0 && index < CFMAINCRYSTAL_PYLON_TIMER_LIMIT) {
+            state->pylonTimers[pylonIndex] += framesThisStep;
+            if (index == 1 && state->pylonTimers[pylonIndex] > 1) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_en_icecrk16_d6);
             }
-            if (idx < 0x1e && sub->pylonTimer[i] >= 0x1e)
-            {
+            if (index < CFMAINCRYSTAL_PYLON_CHIME_DELAY &&
+                state->pylonTimers[pylonIndex] >= CFMAINCRYSTAL_PYLON_CHIME_DELAY) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_en_lflsh1_c);
             }
         }
-        i++;
-    } while (i < 3);
-    obj->anim.rotX += framesThisStep * 0x2a;
+        pylonIndex++;
+    } while (pylonIndex < CFMAINCRYSTAL_PYLON_COUNT);
+    obj->anim.rotX += framesThisStep * CFMAINCRYSTAL_IDLE_ROTATION_SPEED;
 }
 
-int CFMainCrystal_getExtraSize(void)
-{
-    return 0x160;
+int cfMainCrystal_getExtraSize(void) {
+    return sizeof(CfMainCrystalState);
 }
 
-int CFMainCrystal_getObjectTypeId(void)
-{
-    return 0x1;
+int cfMainCrystal_getObjectTypeId(void) {
+    return CFMAINCRYSTAL_OBJECT_TYPE_ID;
 }
 
-void CFMainCrystal_free(GameObject* obj)
-{
+void cfMainCrystal_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource((u32)obj);
 }
 
-void CFMainCrystal_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4210);
+void cfMainCrystal_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gCfMainCrystalRenderScale);
+    }
 }
 
-void CFMainCrystal_hitDetect(void)
-{
+void cfMainCrystal_hitDetect(void) {
 }
 
-void CFMainCrystal_update(GameObject* obj)
-{
-    u32 payload;
-    u32 msgType;
-    u32 srcObjId;
-    s8 mode;
-    mode = ((s8*)obj->anim.placement)[0x19];
-    switch (mode)
-    {
-    case 0:
-        cfmaincrystal_updateBeams(obj);
+void cfMainCrystal_update(GameObject* obj) {
+    u32 unusedMessageArgument;
+    u32 message;
+    u32 messageSender;
+    s8 variant;
+    variant = ((CfMainCrystalPlacement*)obj->anim.placement)->variant;
+    switch (variant) {
+    case CFMAINCRYSTAL_VARIANT_BEAM_CONTROLLER:
+        cfMainCrystal_updateBeams(obj);
         break;
-    case 1:
-        payload = 0;
-        while (ObjMsg_Pop(obj, (u32*)&msgType, (u32*)&srcObjId, (u32*)&payload) != 0)
-        {
-            switch (msgType)
-            {
-            case CFMAINCRYSTAL_MSG_CRYSTAL:
-                ObjMsg_SendToObject((void*)srcObjId, CFMAINCRYSTAL_MSG_CRYSTAL, obj, 0);
+    case CFMAINCRYSTAL_VARIANT_POSITION_SOURCE:
+        unusedMessageArgument = 0;
+        while (ObjMsg_Pop(obj, &message, &messageSender, &unusedMessageArgument) != 0) {
+            switch (message) {
+            case CFMAINCRYSTAL_MESSAGE_POSITION:
+                ObjMsg_SendToObject((GameObject*)messageSender, CFMAINCRYSTAL_MESSAGE_POSITION, obj, 0);
                 break;
             }
         }
-        gCfMainCrystalObj = obj;
-        obj->anim.rotX = (s16)(obj->anim.rotX + framesThisStep * 0xb6);
+        gCfMainCrystalPositionObject = obj;
+        obj->anim.rotX = (s16)(obj->anim.rotX + framesThisStep * CFMAINCRYSTAL_SOURCE_ROTATION_SPEED);
         break;
     }
 }
 
-void CFMainCrystal_init(GameObject* obj, u8* def)
-{
+void cfMainCrystal_init(GameObject* obj, CfMainCrystalPlacement* placement) {
     CfMainCrystalState* state = obj->extra;
-    obj->anim.rotX = (s16)((s32) * (s8*)((char*)def + 0x18) << 8);
-    if (*(s8*)((char*)def + 0x19) == 0)
-    {
-        state->chime[0] = 0x28;
-        state->chime[1] = 0;
-        state->chime[2] = 0;
-        state->chime[3] = 0x46;
-        ((ObjAnimComponent*)obj)->bankIndex = 1;
-        state->unk158 = 0;
+    obj->anim.rotX = (s16)((s32)placement->initialYaw << 8);
+    if (placement->variant == CFMAINCRYSTAL_VARIANT_BEAM_CONTROLLER) {
+        state->chimeTimers[CFMAINCRYSTAL_PYLON_RED] = CFMAINCRYSTAL_INITIAL_RED_CHIME;
+        state->chimeTimers[CFMAINCRYSTAL_PYLON_GREEN] = 0;
+        state->chimeTimers[CFMAINCRYSTAL_PYLON_BLUE] = 0;
+        state->chimeTimers[CFMAINCRYSTAL_BEAM_CHIME_INDEX] = CFMAINCRYSTAL_INITIAL_BEAM_CHIME;
+        obj->anim.bankIndex = CFMAINCRYSTAL_RENDER_BANK_INDEX;
+        state->unknown158 = 0;
     }
-    ObjMsg_AllocQueue(obj, 2);
+    ObjMsg_AllocQueue(obj, CFMAINCRYSTAL_MESSAGE_QUEUE_CAPACITY);
 }
 
-void CFMainCrystal_release(void)
-{
+void cfMainCrystal_release(void) {
 }
 
-void CFMainCrystal_initialise(void)
-{
+void cfMainCrystal_initialise(void) {
 }
 
 ObjectDescriptor gCFMainCrystalObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)CFMainCrystal_initialise, (ObjectDescriptorCallback)CFMainCrystal_release, 0,
-    (ObjectDescriptorCallback)CFMainCrystal_init, (ObjectDescriptorCallback)CFMainCrystal_update,
-    (ObjectDescriptorCallback)CFMainCrystal_hitDetect, (ObjectDescriptorCallback)CFMainCrystal_render,
-    (ObjectDescriptorCallback)CFMainCrystal_free, (ObjectDescriptorCallback)CFMainCrystal_getObjectTypeId,
-    CFMainCrystal_getExtraSize,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)cfMainCrystal_initialise,
+    (ObjectDescriptorCallback)cfMainCrystal_release,
+    0,
+    (ObjectDescriptorCallback)cfMainCrystal_init,
+    (ObjectDescriptorCallback)cfMainCrystal_update,
+    (ObjectDescriptorCallback)cfMainCrystal_hitDetect,
+    (ObjectDescriptorCallback)cfMainCrystal_render,
+    (ObjectDescriptorCallback)cfMainCrystal_free,
+    (ObjectDescriptorCallback)cfMainCrystal_getObjectTypeId,
+    cfMainCrystal_getExtraSize,
 };
