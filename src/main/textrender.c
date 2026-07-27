@@ -280,7 +280,6 @@ extern int gameTextCharset;
 extern CtrlCharEntry lbl_802C86F0[];
 
 extern u8 gGameTextBase[];
-extern u8 lbl_803399A0[];
 extern u32 lbl_80339C40[];
 
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);

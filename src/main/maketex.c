@@ -1545,16 +1545,6 @@ extern ObjSeqBgCmd lbl_8039A5BC[];
 extern u8 gObjSeqRuntimeBuffer[];
 extern int lbl_8030EDA4[];
 extern ObjSeqStreamMapEntry gObjSeqStreamTableA[];
-extern ObjSeqAnimLookup* lbl_803DD0D4;
-extern u8 lbl_803DD0D8;
-extern int lbl_803DD090;
-extern s8 lbl_803DD113;
-extern u16 lbl_803DD0B6;
-extern void* lbl_803DD0B8;
-extern u8 lbl_803DD124;
-extern f32 lbl_803DD0DC;
-extern u8 lbl_803DD0F8;
-extern f32 lbl_803DEFB0;
 extern f32 lbl_803DEFC8;
 extern f32 gObjSeqDefaultFadeRate;
 extern f32 lbl_803DF000;
@@ -1637,10 +1627,6 @@ extern char sObjLoadAnimdataNullACRomTabWarning[];
 #define OBJSEQ_ENVFX_B2 0x143
 
 extern u8 lbl_80399E50[];
-extern int lbl_803DD064;
-extern int lbl_803DD084;
-extern s16 lbl_803DD060;
-extern s16 lbl_803DD062;
 extern char sObjSequenceMissingObjectFormat[];
 extern s8 gObjSeqMsgSendModes[];
 extern int gObjSeqMsgIds[];
@@ -1648,21 +1634,12 @@ extern s8 gObjSeqJumpLatch[];
 int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8 flag);
 
 extern ObjSeqStreamMapEntry gObjSeqStreamTableB[];
-extern f32 lbl_803DD0F4;
-extern f32 lbl_803DD0F0;
-extern f32 lbl_803DD0EC;
 extern u8 lbl_8039944C[];
-extern int lbl_803DD0C0;
-extern s16 lbl_803DD08A;
 extern f32 lbl_803DF048;
 extern f32 lbl_803DF04C;
 extern u8 lbl_803DB411;
-extern u8 lbl_803DD0D9;
-extern u8 lbl_803DD078;
 extern f32 lbl_803DF054;
 extern f32 lbl_803DF050;
-extern u8 lbl_803DD111;
-extern u8 lbl_803DD112;
 extern f32 lbl_803DF02C;
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);
 void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* placement);
@@ -6832,17 +6809,12 @@ void* jumptable_8030F298[12] = {
 #include "main/maketex_sequence_api.h"
 
 extern u8 gObjSeqRuntimeBuffer[];
-extern f32 lbl_803DEFB0;
 extern f32 lbl_803DEFF0;
-extern u8 lbl_803DD124;
 extern u8 gObjSeqCameraActive;
 extern int gObjSeqCamMode;
 extern int gObjSeqCamModeArgB;
 extern int gObjSeqCamModeArgD;
-extern u8 lbl_803DD0F8;
-extern f32 lbl_803DD0DC;
 extern s8 gObjSeqBgCmdCount;
-extern void* lbl_803DD0B8;
 
 #define OBJSEQ_SLOT_COUNT 85
 

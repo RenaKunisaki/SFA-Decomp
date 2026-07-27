@@ -212,10 +212,6 @@ extern f32 lbl_803DE8BC;
 extern f32 gObjPi;
 extern f32 lbl_803DE8C4;
 extern f32 lbl_803DE8C8;
-extern int lbl_803DCB70;
-extern int lbl_803DCB8C;
-extern GameObject** lbl_803DCB90;
-extern void* lbl_803DCBC0;
 extern int* gObjFileOffsetTable;
 extern int gObjFileCount;
 extern f32 gMapSavedPlayerOffsetX;
@@ -1177,12 +1173,8 @@ void objFreeObjDef(u8* obj, int flag)
 }
 
 extern s16 gObjPartitionPivot;
-extern void* lbl_803DCBC0;
-extern GameObject** lbl_803DCB90;
-extern int lbl_803DCB8C;
 extern ObjLinkedList gObjUpdateList;
 extern s8 gEffectBoxObjectCount;
-extern int lbl_803DCB70;
 
 extern int gObjDefCaptureMode;
 
@@ -1217,24 +1209,7 @@ extern int gObjDefCaptureMode;
 #define OBJLOAD_FLAG_INDEXED_MODEL 0x0400 /* load one model at index (flags29>>11 & 0xf) */
 #define OBJLOAD_FLAG_SHADOW_TYPE3  0x8000 /* modelDef->shadowType == 3 */
 
-extern f32 lbl_803DE888;
-extern f32 lbl_803DE88C;
-extern f32 lbl_803DE894;
-extern f32 lbl_803DE898;
-extern f32 lbl_803DE8D4;
-extern f32 lbl_803DE8D8;
 extern GameObject* gEffectBoxObjects[20];
-extern const f32 lbl_803DE890;
-extern const f32 lbl_803DE8B8;
-extern f32 lbl_803DE8CC;
-extern f32 lbl_803DE8D0;
-extern f32 lbl_803DE8BC;
-extern f32 lbl_803DE8C4;
-extern f32 lbl_803DE8C8;
-extern int lbl_803DCB70;
-extern int lbl_803DCB8C;
-extern GameObject** lbl_803DCB90;
-extern void* lbl_803DCBC0;
 
 void Obj_RegisterObject(GameObject* obj, int b);
 int loadModLines(int n, s16* out);

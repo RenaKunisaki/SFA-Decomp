@@ -117,7 +117,6 @@ typedef union Dll0BDescriptorTable
 
 #define GXWGFifo (*(volatile ExpgfxWGPipe*)0xCC008000)
 
-extern u8 lbl_803DD253;
 extern f32 gExpgfxYVelocityPositiveLimit;
 extern f32 gExpgfxYVelocityFastStep;
 extern f32 gExpgfxYVelocitySlowStep;
@@ -128,7 +127,6 @@ extern const f32 gExpgfxBoundsInitMin;
 extern const f32 gExpgfxBoundsInitMax;
 extern const f32 gExpgfxU16ToUnitScale;
 extern int gExpgfxSlotType1Count;
-extern int lbl_803DD274;
 extern int gExpgfxSlotType1Average;
 
 static inline ExpgfxTableEntry* Expgfx_GetTableEntry(int tableIndex)

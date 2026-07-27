@@ -664,7 +664,6 @@ typedef struct CameraModeNormalInitData
     u8 heightOffsetWide;
 } CameraModeNormalInitData;
 
-extern f32 lbl_803DD52C;
 extern f32 lbl_803E1688;
 extern f32 lbl_803E168C;
 extern f32 lbl_803E1690;

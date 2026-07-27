@@ -135,30 +135,16 @@ const IndTexMtx23 gTexIndMtxTable = {
 
 extern f32 Prepared_803DEAD8;
 extern f32 lbl_803DEAE0;
-extern int lbl_803DCD7C;
 extern int lbl_803DEAB0; /* first word of a GXColorS10 (through 803DEAC0) */
 extern int lbl_803DEAB8;
 extern int lbl_803DEABC;
 extern int lbl_803DEAC0;
-extern int lbl_803DCD74;
-extern int lbl_803DCD70;
-extern int lbl_803DCD6C;
 extern GXTexObj lbl_803779A0;
-extern u8 lbl_803DCD68;
-extern int lbl_803DCD80;
-extern u8 lbl_803DCD69;
 extern f32 lbl_803DEADC;
-extern int lbl_803DCD78;
-extern u8 lbl_803DCD6B;
 extern f32 lbl_803DEAFC;
 extern f32 lbl_803DEB00;
-extern int lbl_803DCD84;
 extern f32 lbl_803DEAC8;
 extern f32 lbl_803DEACC;
-extern int lbl_803DCD88;
-extern int lbl_803DCD8C;
-extern int lbl_803DCD90;
-extern u8 lbl_803DCD6A;
 
 
 void gxTextureFn_8004bf88(void* bufp, u8 flag1, u8 flag2, int* out1, int* out2)
@@ -2080,8 +2066,6 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
     return result;
 }
 
-extern f32 lbl_803DEB38;
-extern f32 lbl_803DEB3C;
 
 
 

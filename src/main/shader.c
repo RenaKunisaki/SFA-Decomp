@@ -183,7 +183,6 @@ extern f32 gShaderLoadCenterX;
 extern int gShaderCurMapEventId;
 int mapCoordsToId(int x, int z, int layer);
 extern s16* gMapBlockIds;
-extern u8 lbl_803DCE98;
 extern u8* gMapBlockRefCounts;
 extern char lbl_8037E0C0[];
 typedef struct ShaderRomListSlot
@@ -193,7 +192,6 @@ typedef struct ShaderRomListSlot
     s8 flag;
     s8 pad;
 } ShaderRomListSlot;
-extern int lbl_803DCE7C;
 extern int gShaderMapRomBuffers[];
 #define INIT_MAP_SLOT(slot)                                                                                 \
     e = (char*)gShaderMapRomBuffers[1] + (slot) * 10 + ofs[0];                                              \
@@ -210,10 +208,6 @@ extern s8* gMapLayerCellStates;
 extern int gMapPendingFileFlags;
 extern int* gMapBlockIndexList;
 extern int gMapBlockIndexCount;
-extern s16 lbl_803DCE70;
-extern u8 lbl_803DCDED;
-extern void* lbl_803DCEA8;
-extern int lbl_803DCE74;
 
 typedef struct MapLoadRec
 {
@@ -296,8 +290,6 @@ void Rcp_DisableBlurFilter(void)
     bEnableBlurFilter = 0x0;
 }
 
-extern f32 lbl_803DCE50;
-extern f32 lbl_803DCE4C;
 extern f32 blurFilterArea;
 extern u8 bBlurFilterUseArea;
 extern u8 bBiggerBlurFilter;
@@ -369,12 +361,7 @@ typedef struct WarpDestination
 } WarpDestination;
 
 extern u8 gRcpPendingWarpDest[];
-extern u8* lbl_803DCE78;
-extern s16 lbl_803DCEBA;
 extern u8 gRcpWarpTransitionType;
-extern u8 lbl_803DCEBD;
-extern s16 lbl_803DCEB8;
-extern u8 lbl_803DCDE0;
 extern u8 lbl_803DCA40;
 
 void loadNextMap(void)
@@ -1591,8 +1578,6 @@ void unloadMap(void)
 
 extern s8 curMapLayer;
 extern s8 curMapType;
-extern s16 lbl_803DCEB4;
-extern s16 lbl_803DCEB6;
 extern u32 renderFlags;
 s32 getCurMapLayer(void)
 {
@@ -1620,7 +1605,6 @@ void gameTextLoadForMap_800571f0(u8 force)
     }
 }
 
-extern u8* lbl_803DCE78;
 
 void mapSetup(int mapType, f32 a, int* outMapId, int* outEvent, f32 b, f32 c)
 {
@@ -1712,15 +1696,12 @@ const PlayerFrustumPlaneDirections sPlayerFrustumPlaneDirs = {
 const PlayerFrustumPlaneScales sPlayerFrustumPlaneScales = {
     {0.0f, -25.0f, -25.0f, -25.0f, -25.0f}};
 
-extern s16 lbl_803DCEB8;
-extern u8 lbl_803DCDE0;
 extern int gMapBlockOriginX;
 extern int gMapBlockOriginZ;
 extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 extern int gMapCurRomListSlot;
 extern u8 gMapLoadDeferred;
-extern u8 lbl_803DCEBD;
 extern f32 gShaderDefaultTimeOfDay;
 void beginLoadingMap(void)
 {
@@ -2622,7 +2603,6 @@ void initMaps(void)
 }
 
 extern int lbl_803DB648;
-extern void* lbl_803DCEA0;
 
 MapRomList* mapBlockFn_800592e4(void)
 {
@@ -2654,8 +2634,6 @@ MapCellEntry* mapGetCellEntry(int x, int z)
     return (MapCellEntry*)((char*)base + (x + (z << 4)) * 12);
 }
 
-extern s16 lbl_803DCE90;
-extern u16* lbl_803DCE84;
 
 void mapBlockFn_80059354(int x, int z, MapCellEntry* out, int layer)
 {

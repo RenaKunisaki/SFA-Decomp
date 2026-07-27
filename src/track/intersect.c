@@ -226,8 +226,6 @@ STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
 STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
 STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
-extern int lbl_803DD03C;
-extern int lbl_803968C0[];
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
