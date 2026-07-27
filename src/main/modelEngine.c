@@ -92,6 +92,7 @@
 #include "dlls/objects/293_curve.h"
 #include "dlls/objects/295.h"
 #include "dlls/objects/296_KT_Torch.h"
+#include "dlls/objects/297_CampFire.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -193,8 +194,8 @@ extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFC
     gCFMainCrystalObjDescriptor;
 extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFPrisonCageObjDescriptor,
     gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor, gCF_DoorLightObjDescriptor;
-extern ResourceDescriptor gCRrockfallObjDescriptor, gCampFireObjDescriptor, gCflightwallObjDescriptor,
-    gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
+extern ResourceDescriptor gCRrockfallObjDescriptor, gCflightwallObjDescriptor, gChukaObjDescriptor,
+    gCloudPrisonControlObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
@@ -1261,7 +1262,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gTriggerObjDescriptor,
     (ResourceDescriptor*)&gDll127ObjDescriptor,
     (ResourceDescriptor*)&gKT_TorchObjDescriptor,
-    &gCampFireObjDescriptor,
+    (ResourceDescriptor*)&gCampFireObjDescriptor,
     &gCFCrateObjDescriptor,
     &gFXEmitObjDescriptor,
     &gTransporterObjDescriptor,
