@@ -915,6 +915,11 @@ void SHthorntail_render(SHthorntailObject* obj, int p2, int p3, int p4, int p5, 
     } while (pointIndex < SHTHORNTAIL_RENDER_PATH_POINT_COUNT);
 }
 
+static void SHthorntail_applyGravity(SHthorntailObject* obj)
+{
+    obj->velocityY = -(0.17f * timeDelta - obj->velocityY);
+}
+
 void SHthorntail_update(int obj)
 {
     u8* stateTables;
