@@ -1,5 +1,5 @@
 /*
- * dll_0085 (foodbag effect dll 0x85) - func03 builds a ModgfxInterface
+ * DLL 133 / 0x85 - func03 builds a ModgfxInterface
  * effect command list (FbBuf) and spawns it. Two layouts are emitted:
  * variant 4 (a self-contained burst, base flags 0x4004400) and the
  * default variant (scaled off the source object's field 8 and a child
@@ -7,7 +7,7 @@
  * OR'd in; flag bit 0 adds the source/position-source world offsets to
  * buf.pos before the spawn. Several command slots seed x with a random
  * angle from randomGetRange. The two trailing _nop entry points are the
- * dll's unused func00/func01 slots.
+ * DLL's unused func00/func01 slots.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
@@ -254,9 +254,7 @@ u8 gFoodbagEffectTemplate[88] = {
     0, 30, 3, 232, 0, 0, 0, 0, 0, 15, 0,   0,   0, 1,   0, 2,   0, 0,   0, 2, 0,   3,   0, 0,   0, 10,  0, 15, 0, 80,
     0, 0,  0, 0,   0, 0, 0, 0, 5, 39, 5,   40,  0, 223, 0, 222, 0, 223, 2, 0, 1,   251, 1, 251, 0, 223, 0, 222};
 
-/* .sdata2 float-pool constants */
-
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
+/* DLL entry and resource tables. */
 void* lbl_80316000[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
                          dll_85_func00_nop, dll_85_func01_nop, (void*)0x00000000, dll_85_func03};
 s16 lbl_80316020[8] = {0, 255, 0, 0, 0, 0, 0, 0};
