@@ -1,7 +1,6 @@
 #ifndef MAIN_DLL_CF_CFBABY_H_
 #define MAIN_DLL_CF_CFBABY_H_
 
-#include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "main/objanim_update.h"
 
@@ -23,6 +22,4 @@ u32 FUN_80189054(u64 param_1, double param_2, double param_3, u64 param_4, u64 p
                  u32 param_14, u32 param_15, u32 param_16);
 void FUN_80189a90(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8, int param_9);
-int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-
 #endif /* MAIN_DLL_CF_CFBABY_H_ */

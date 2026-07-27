@@ -26,7 +26,7 @@
 #include "main/object_render.h"
 #include "main/gamebits.h"
 #include "dlls/object_descriptor.h"
-#include "main/dll/dll_011B_landedarwing.h"
+#include "dlls/objects/283_Landed_Arwi.h"
 
 STATIC_ASSERT(sizeof(StaffActivatedState) == 0x24);
 STATIC_ASSERT(offsetof(StaffActivatedState, targetX) == 0x00);
@@ -38,6 +38,11 @@ STATIC_ASSERT(offsetof(StaffActivatedState, peakLiftHeight) == 0x18);
 STATIC_ASSERT(offsetof(StaffActivatedState, liftReset) == 0x1c);
 STATIC_ASSERT(offsetof(StaffActivatedState, flags) == 0x1d);
 STATIC_ASSERT(offsetof(StaffActivatedState, hitCooldown) == 0x20);
+STATIC_ASSERT(sizeof(StaffActivatedState) == sizeof(LandedArwingHitReactionState));
+STATIC_ASSERT(offsetof(StaffActivatedState, pad08) == offsetof(LandedArwingHitReactionState, animationStepScale));
+STATIC_ASSERT(offsetof(StaffActivatedState, liftReset) == offsetof(LandedArwingHitReactionState, hitStarted));
+STATIC_ASSERT(offsetof(StaffActivatedState, flags) == offsetof(LandedArwingHitReactionState, flags));
+STATIC_ASSERT(offsetof(StaffActivatedState, hitCooldown) == offsetof(LandedArwingHitReactionState, hitEffectCooldown));
 STATIC_ASSERT(sizeof(StaffActivatedSetup) == 0x28);
 STATIC_ASSERT(offsetof(StaffActivatedSetup, type) == 0x18);
 STATIC_ASSERT(offsetof(StaffActivatedSetup, mode) == 0x1c);
@@ -383,11 +388,11 @@ void staffactivated_update(GameObject* obj)
         staffactivated_updateLiftHeight((GameObject*)obj, state);
         break;
     case STAFFACTIVATED_MODE_HIT_REACTION:
-        landed_arwing_updateHitReaction(obj, (LandedArwingObjectState*)state);
+        landed_arwing_updateHitReaction(obj, (LandedArwingHitReactionState*)state);
         break;
     case STAFFACTIVATED_MODE_DAMAGE_FIRST:
     case STAFFACTIVATED_MODE_DAMAGE_SECOND:
-        landed_arwing_updateDamageTexture(obj, (LandedArwingObjectState*)state);
+        landed_arwing_updateDamageTexture(obj, (LandedArwingHitReactionState*)state);
         break;
     case STAFFACTIVATED_MODE_ACTION:
         if (obj->anim.resetHitboxFlags & STAFFACTIVATED_OBJ_FLAG_HIT_TRIGGER)

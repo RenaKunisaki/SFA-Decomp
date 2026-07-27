@@ -133,6 +133,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   to the next known field. If the code caps a six-element child list and the next field is eight
   words later, model six elements plus an unknown trailing word; do not invent a seventh child to
   consume the offset.
+- Size an object state from that object's allocation contract, not from every helper defined in its
+  TU. If a helper is called only with another object's larger state and accesses beyond the owner's
+  `getExtraSize`, model the owning state and the cross-object helper overlay as separate types,
+  assert both layouts, and keep the cast explicit at the reuse boundary.
 - When two proven consumers interpret the same shared placement byte with different signedness and
   both views are codegen-significant, model explicit union views at the shared offset. Do not force
   one canonical signedness and scatter casts; assert both offsets and rebuild every consumer.

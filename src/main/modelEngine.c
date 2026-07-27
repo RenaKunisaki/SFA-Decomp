@@ -79,6 +79,7 @@
 #include "dlls/objects/280_Duster.h"
 #include "dlls/objects/281_coldWaterCo.h"
 #include "dlls/objects/282.h"
+#include "dlls/objects/283_Landed_Arwi.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -227,8 +228,8 @@ extern ResourceDescriptor gInfoTextObjDescriptor, gKT_TorchObjDescriptor, gKtFal
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
-extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLanded_ArwingObjDescriptor,
-    gLaserBeamObjDescriptor, gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
+extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLaserBeamObjDescriptor,
+    gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
@@ -1238,7 +1239,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDusterObjDescriptor,
     (ResourceDescriptor*)&gColdWaterControlObjDescriptor,
     (ResourceDescriptor*)&gDecoration11AObjDescriptor,
-    &gLanded_ArwingObjDescriptor,
+    (ResourceDescriptor*)&gLanded_ArwingObjDescriptor,
     &gStaffActivatedObjDescriptor,
     &gTreasureChestObjDescriptor,
     &gMagicCaveBottomObjDescriptor,
