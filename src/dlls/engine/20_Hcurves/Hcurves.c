@@ -1,27 +1,3 @@
-/*
- * DLL 0x14 - RomCurve navigation library + ObjFSA walk-group spatial query.
- *
- * Two related subsystems back AI pathing on this DLL's maps:
- *
- *  - RomCurve_ / curves_ : the curve network. romCurves[] holds the loaded
- *    curve defs (nRomCurves entries); curves register/unregister through
- *    RomCurve_add/RomCurve_remove and are looked up by id, type, action
- *    or proximity. Walkers (RomCurveWalker) step along a curve, pick the next
- *    control point/linked curve (RomCurve_goNextPoint, RomCurve_func29, the
- *    getControlPointId_2A/2B link choosers) and clamp progress. Curve type
- *    and action filters select among candidate links; many queries pick a
- *    random eligible link via randomGetRange.
- *
- *  - Objfsa_*: a flat-2D patch / walk-group subdivision. A walk group and its
- *    patches each store four edge half-planes (normalX/normalZ + offset) plus
- *    a Y range; a point is "inside" when it sits below every plane and within
- *    the Y span. Objfsa_GetWalkGroupIndexAtPoint / Objfsa_GetPatchGroupIdAtPoint
- *    resolve which group/patch contains a world point, with a per-call cache
- *    of the last hit group index.
- *
- * The whole DLL is exposed to the rest of the game through gRomCurveInterface;
- * it owns no game objects of its own.
- */
 #define OBJFSA_PATCH_EXIT_U16
 #define TRACK_BBOX_FLAGS_S8
 #include "dolphin/os/OSReport.h"
@@ -43,8 +19,6 @@
 #include "main/dll/dll_0014_unk.h"
 #include "main/vecmath_distance_api.h"
 #include "main/shader_api.h"
-
-
 
 static int sObjfsaUnused0;
 int gObjfsaPatchCount;
@@ -121,11 +95,12 @@ STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkEdges) == 0x34);
 
 extern char sObjfsaFoundNewWalkGroupPatch[];
 extern char sObjfsaIsPointWithinPatchGroupError[];
-extern f32 lbl_803E05C8;
-extern f32 lbl_803E0608;
 
 extern char sObjfsaMissingPatchExitPoint0[];
 extern char sObjfsaMissingPatchExitPoint1[];
+
+#define OBJFSA_PHASE_LIMIT 1.0f
+#define OBJFSA_HALF        0.5f
 
 int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx);
 int RomCurve_getControlPointId(int curve, int exclude, int pickIdx);
@@ -249,7 +224,7 @@ void RomCurve_swapEndpointNodes(RomCurveWalker* p)
     *a ^= *b;
     *b ^= *a;
     *a ^= *b;
-    if (p->phase >= lbl_803E05C8)
+    if (p->phase >= OBJFSA_PHASE_LIMIT)
     {
         p->phase = 0.99f;
     }
@@ -559,7 +534,7 @@ int curveFn_800da23c(RomCurveWalker* state, void* targetCurve)
         if (state->moveNetwork != 0)
         {
             curvesSetupMoveNetworkCurve(&state->curve);
-            if (state->phase >= lbl_803E05C8)
+            if (state->phase >= OBJFSA_PHASE_LIMIT)
             {
                 state->phase = 0.99f;
             }
@@ -574,7 +549,7 @@ void RomCurve_stepClamped(RomCurveWalker* state, f32 dt)
     {
         state->phase = 0.01f;
     }
-    else if (state->phase >= lbl_803E05C8)
+    else if (state->phase >= OBJFSA_PHASE_LIMIT)
     {
         state->phase = 0.99f;
     }
@@ -1110,68 +1085,6 @@ int Objfsa_GetWalkGroupIndexAtPoint(float* point, ObjfsaWalkGroupPatchInfo* patc
     }
     return wgi;
 }
-
-
-static inline int RomCurve_pickRandomControlPointId_2A(int curve)
-{
-    int count;
-    u32 mask;
-    int i;
-    int result;
-    int candidates[4];
-
-    count = 0;
-    mask = 1;
-    for (i = 0; i < 4; i = i + 1)
-    {
-        if ((-1 < ((RomCurveDef*)curve)->linkIds[i]) && ((((RomCurveDef*)curve)->blockedLinkMask & mask) == 0) &&
-            (((RomCurveDef*)curve)->linkIds[i] != -1))
-        {
-            candidates[count++] = ((RomCurveDef*)curve)->linkIds[i];
-        }
-        mask = mask << 1;
-    }
-    if (count != 0)
-    {
-        result = candidates[randomGetRange(0, count - 1)];
-    }
-    else
-    {
-        result = -1;
-    }
-    return result;
-}
-
-static inline int RomCurve_pickRandomControlPointId_2B(int curve)
-{
-    int count;
-    u32 mask;
-    int i;
-    int result;
-    int candidates[4];
-
-    count = 0;
-    mask = 1;
-    for (i = 0; i < 4; i = i + 1)
-    {
-        if ((-1 < ((RomCurveDef*)curve)->linkIds[i]) && ((((RomCurveDef*)curve)->blockedLinkMask & mask) != 0) &&
-            (((RomCurveDef*)curve)->linkIds[i] != -1))
-        {
-            candidates[count++] = ((RomCurveDef*)curve)->linkIds[i];
-        }
-        mask = mask << 1;
-    }
-    if (count != 0)
-    {
-        result = candidates[randomGetRange(0, count - 1)];
-    }
-    else
-    {
-        result = -1;
-    }
-    return result;
-}
-
 int Objfsa_GetPatchGroupIdAtPoint(float* point)
 {
     int n;
@@ -1554,9 +1467,9 @@ void walkgroupFindExitPointFn_800dc398(void)
                             {
                                 f32 sm;
                                 sm = x0 + x1;
-                                np->exit0X = (s16)(sm * lbl_803E0608);
+                                np->exit0X = (s16)(sm * OBJFSA_HALF);
                                 sm = z0 + z1;
-                                np->exit0Z = (s16)(sm * lbl_803E0608);
+                                np->exit0Z = (s16)(sm * OBJFSA_HALF);
                             }
 
                             OBJFSA_SET_NEWPATCH_PLANE(0, z1 - z0, x0 - x1, x0, z0);
@@ -1571,9 +1484,9 @@ void walkgroupFindExitPointFn_800dc398(void)
                             {
                                 f32 sm;
                                 sm = x2 + x3;
-                                (ep = &OBJFSA_NEWPATCH)->exit1X = (s16)(sm * lbl_803E0608);
+                                (ep = &OBJFSA_NEWPATCH)->exit1X = (s16)(sm * OBJFSA_HALF);
                                 sm = z2 + z3;
-                                ep->exit1Z = (s16)(sm * lbl_803E0608);
+                                ep->exit1Z = (s16)(sm * OBJFSA_HALF);
                             }
 
                             OBJFSA_SET_NEWPATCH_PLANE(2, z3 - z2, x2 - x3, x2, z2);

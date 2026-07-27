@@ -585,17 +585,19 @@ main/dll/dll_0012_unk.c:
 	.data       start:0x803114D8 end:0x80311518
 	.sbss       start:0x803DD458 end:0x803DD460
 
-main/dll/Hcurves.c:
+dlls/engine/20_Hcurves/Hcurves.c:
 	.text       start:0x800D9EE8 end:0x800DD648
 	.data       start:0x80311518 end:0x803115F8
 	.bss        start:0x8039CAE8 end:0x803A17E8
 	.sbss       start:0x803DD460 end:0x803DD470
+	.sdata2     start:0x803E05C8 end:0x803E0610
 
-main/dll/Hcurves_romcurve.c:
+dlls/engine/20_Hcurves/Hcurves_romcurve.c:
 	.text       start:0x800DD648 end:0x800E5434
 	.data       start:0x803115F8 end:0x803116E0
 	.bss        start:0x803A17E8 end:0x803A2C38
 	.sbss       start:0x803DD470 end:0x803DD47C
+	.sdata2     start:0x803E0610 end:0x803E0668
 
 dlls/engine/21/21.c:
 	.text       start:0x800E5434 end:0x800E8100

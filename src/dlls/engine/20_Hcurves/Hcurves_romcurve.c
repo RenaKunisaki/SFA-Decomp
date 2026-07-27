@@ -1,27 +1,3 @@
-/*
- * DLL 0x14 - RomCurve navigation library + ObjFSA walk-group spatial query.
- *
- * Two related subsystems back AI pathing on this DLL's maps:
- *
- *  - RomCurve_ / curves_ : the curve network. romCurves[] holds the loaded
- *    curve defs (nRomCurves entries); curves register/unregister through
- *    RomCurve_add/RomCurve_remove and are looked up by id, type, action
- *    or proximity. Walkers (RomCurveWalker) step along a curve, pick the next
- *    control point/linked curve (RomCurve_goNextPoint, RomCurve_func29, the
- *    getControlPointId_2A/2B link choosers) and clamp progress. Curve type
- *    and action filters select among candidate links; many queries pick a
- *    random eligible link via randomGetRange.
- *
- *  - Objfsa_*: a flat-2D patch / walk-group subdivision. A walk group and its
- *    patches each store four edge half-planes (normalX/normalZ + offset) plus
- *    a Y range; a point is "inside" when it sits below every plane and within
- *    the Y span. Objfsa_GetWalkGroupIndexAtPoint / Objfsa_GetPatchGroupIdAtPoint
- *    resolve which group/patch contains a world point, with a per-call cache
- *    of the last hit group index.
- *
- * The whole DLL is exposed to the rest of the game through gRomCurveInterface;
- * it owns no game objects of its own.
- */
 #define OBJFSA_PATCH_EXIT_U16
 #define TRACK_BBOX_FLAGS_S8
 #include "dolphin/os/OSReport.h"
@@ -118,16 +94,15 @@ STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, walkGroup) == 0x3);
 STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkIds) == 0x1C);
 STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkEdges) == 0x34);
 
-extern f32 lbl_803E0640;
-extern f32 gFloatOne;
-extern f32 lbl_803E0610;
-extern f32 gRomCurveAnglePi2;
-extern f32 lbl_803E0618;
-extern f32 gFloatZero;
-extern f32 gFloatNegOne;
-
-extern f32 gFloatHalf;
-extern const f32 gRomCurveFindDistInit;
+#define ROMCURVE_TANGENT_SCALE        2.0f
+#define ROMCURVE_ANGLE_PI             3.1415927f
+#define ROMCURVE_HALF_CIRCLE_ANGLE    32768.0f
+#define ROMCURVE_NEG_ONE              -1.0f
+#define ROMCURVE_ONE                  1.0f
+#define ROMCURVE_ZERO                 0.0f
+#define ROMCURVE_VERTICAL_OFFSET      10.0f
+#define ROMCURVE_HALF                 0.5f
+#define ROMCURVE_FIND_DISTANCE_INITIAL 3.4028235e38f
 
 int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx);
 int RomCurve_getControlPointId(int curve, int exclude, int pickIdx);
@@ -499,30 +474,30 @@ static inline int RomCurve_pickRandomControlPointId_2B(int curve)
     *(f32*)(stateBytes + 0xb8) = *(f32*)(*(s32*)(stateBytes + 0xa0) + 0x8);                                            \
     *(f32*)(stateBytes + 0xbc) = *(f32*)(*(s32*)(stateBytes + (secondOff)) + 0x8);                                     \
     t = (float)(u32) * (u8*)(*(s32*)(stateBytes + 0xa0) + 0x2e) *                                                      \
-        mathSinf(gRomCurveAnglePi2 * (float)((s32) * (s8*)(*(s32*)(stateBytes + 0xa0) + 0x2c) << 8) / lbl_803E0618);   \
-    *(f32*)(stateBytes + 0xc0) = lbl_803E0610 * t;                                                                     \
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32) * (s8*)(*(s32*)(stateBytes + 0xa0) + 0x2c) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);   \
+    *(f32*)(stateBytes + 0xc0) = ROMCURVE_TANGENT_SCALE * t;                                                                     \
     t = (float)(u32) * (u8*)(*(s32*)(stateBytes + (secondOff)) + 0x2e) *                                               \
-        mathSinf(gRomCurveAnglePi2 * (float)((s32) * (s8*)(*(s32*)(stateBytes + (secondOff)) + 0x2c) << 8) /           \
-                 lbl_803E0618);                                                                                        \
-    *(f32*)(stateBytes + 0xc4) = lbl_803E0610 * t;                                                                     \
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32) * (s8*)(*(s32*)(stateBytes + (secondOff)) + 0x2c) << 8) /           \
+                 ROMCURVE_HALF_CIRCLE_ANGLE);                                                                                        \
+    *(f32*)(stateBytes + 0xc4) = ROMCURVE_TANGENT_SCALE * t;                                                                     \
     *(f32*)(stateBytes + 0xd8) = *(f32*)(*(s32*)(stateBytes + 0xa0) + 0xc);                                            \
     *(f32*)(stateBytes + 0xdc) = *(f32*)(*(s32*)(stateBytes + (secondOff)) + 0xc);                                     \
     t = (float)(u32) * (u8*)(*(s32*)(stateBytes + 0xa0) + 0x2e) *                                                      \
-        mathSinf(gRomCurveAnglePi2 * (float)((s32) * (s8*)(*(s32*)(stateBytes + 0xa0) + 0x2d) << 8) / lbl_803E0618);   \
-    *(f32*)(stateBytes + 0xe0) = lbl_803E0610 * t;                                                                     \
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32) * (s8*)(*(s32*)(stateBytes + 0xa0) + 0x2d) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);   \
+    *(f32*)(stateBytes + 0xe0) = ROMCURVE_TANGENT_SCALE * t;                                                                     \
     t = (float)(u32) * (u8*)(*(s32*)(stateBytes + (secondOff)) + 0x2e) *                                               \
-        mathSinf(gRomCurveAnglePi2 * (float)((s32) * (s8*)(*(s32*)(stateBytes + (secondOff)) + 0x2d) << 8) /           \
-                 lbl_803E0618);                                                                                        \
-    *(f32*)(stateBytes + 0xe4) = lbl_803E0610 * t;                                                                     \
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32) * (s8*)(*(s32*)(stateBytes + (secondOff)) + 0x2d) << 8) /           \
+                 ROMCURVE_HALF_CIRCLE_ANGLE);                                                                                        \
+    *(f32*)(stateBytes + 0xe4) = ROMCURVE_TANGENT_SCALE * t;                                                                     \
     *(f32*)(stateBytes + 0xf8) = *(f32*)(*(s32*)(stateBytes + 0xa0) + 0x10);                                           \
     *(f32*)(stateBytes + 0xfc) = *(f32*)(*(s32*)(stateBytes + (secondOff)) + 0x10);                                    \
     t = (float)(u32) * (u8*)(*(s32*)(stateBytes + 0xa0) + 0x2e) *                                                      \
-        mathCosf(gRomCurveAnglePi2 * (float)((s32) * (s8*)(*(s32*)(stateBytes + 0xa0) + 0x2c) << 8) / lbl_803E0618);   \
-    *(f32*)(stateBytes + 0x100) = lbl_803E0610 * t;                                                                    \
+        mathCosf(ROMCURVE_ANGLE_PI * (float)((s32) * (s8*)(*(s32*)(stateBytes + 0xa0) + 0x2c) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);   \
+    *(f32*)(stateBytes + 0x100) = ROMCURVE_TANGENT_SCALE * t;                                                                    \
     t = (float)(u32) * (u8*)(*(s32*)(stateBytes + (secondOff)) + 0x2e) *                                               \
-        mathCosf(gRomCurveAnglePi2 * (float)((s32) * (s8*)(*(s32*)(stateBytes + (secondOff)) + 0x2c) << 8) /           \
-                 lbl_803E0618);                                                                                        \
-    *(f32*)(stateBytes + 0x104) = lbl_803E0610 * t
+        mathCosf(ROMCURVE_ANGLE_PI * (float)((s32) * (s8*)(*(s32*)(stateBytes + (secondOff)) + 0x2c) << 8) /           \
+                 ROMCURVE_HALF_CIRCLE_ANGLE);                                                                                        \
+    *(f32*)(stateBytes + 0x104) = ROMCURVE_TANGENT_SCALE * t
 
 int RomCurve_func2C(RomCurveWalker* state, GameObject* unusedObj, int startCurveId,
                     RomCurveInterface* unusedInterface)
@@ -711,11 +686,11 @@ int RomCurve_func29(RomCurveWalker* state, int pickIdx)
 
             if (state->reverse != 0)
             {
-                Curve_AdvanceAlongPath(&state->curve, gFloatNegOne);
+                Curve_AdvanceAlongPath(&state->curve, ROMCURVE_NEG_ONE);
             }
             else
             {
-                Curve_AdvanceAlongPath(&state->curve, gFloatOne);
+                Curve_AdvanceAlongPath(&state->curve, ROMCURVE_ONE);
             }
             return 0;
         }
@@ -737,16 +712,16 @@ void RomCurve_setNextNode(void* walker, void* curve)
         state->nodeA4 = curve;
         state->hermX2[1] = *(f32*)((char*)state->nodeA4 + 0x8);
         t = (float)(u32) * (u8*)((char*)state->nodeA4 + 0x2e) *
-            mathSinf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / lbl_803E0618);
-        state->hermX2[3] = lbl_803E0610 * t;
+            mathSinf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+        state->hermX2[3] = ROMCURVE_TANGENT_SCALE * t;
         state->hermY2[1] = *(f32*)((char*)state->nodeA4 + 0xc);
         t = (float)(u32) * (u8*)((char*)state->nodeA4 + 0x2e) *
-            mathSinf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2d)) << 8) / lbl_803E0618);
-        state->hermY2[3] = lbl_803E0610 * t;
+            mathSinf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2d)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+        state->hermY2[3] = ROMCURVE_TANGENT_SCALE * t;
         state->hermZ2[1] = *(f32*)((char*)state->nodeA4 + 0x10);
         t = (float)(u32) * (u8*)((char*)state->nodeA4 + 0x2e) *
-            mathCosf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / lbl_803E0618);
-        state->hermZ2[3] = lbl_803E0610 * t;
+            mathCosf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+        state->hermZ2[3] = ROMCURVE_TANGENT_SCALE * t;
     }
 }
 
@@ -775,29 +750,29 @@ int RomCurve_setClosed(RomCurveWalker* state, int closed)
     state->hermX2[0] = *(f32*)((char*)state->nodeA0 + 0x8);
     state->hermX2[1] = *(f32*)((char*)state->nodeA4 + 0x8);
     t = (float)(u32) * (u8*)((char*)state->nodeA0 + 0x2e) *
-        mathSinf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA0 + 0x2c)) << 8) / lbl_803E0618);
-    state->hermX2[2] = lbl_803E0610 * t;
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA0 + 0x2c)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+    state->hermX2[2] = ROMCURVE_TANGENT_SCALE * t;
     t = (float)(u32) * (u8*)((char*)state->nodeA4 + 0x2e) *
-        mathSinf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / lbl_803E0618);
-    state->hermX2[3] = lbl_803E0610 * t;
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+    state->hermX2[3] = ROMCURVE_TANGENT_SCALE * t;
 
     state->hermY2[0] = *(f32*)((char*)state->nodeA0 + 0xc);
     state->hermY2[1] = *(f32*)((char*)state->nodeA4 + 0xc);
     t = (float)(u32) * (u8*)((char*)state->nodeA0 + 0x2e) *
-        mathSinf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA0 + 0x2d)) << 8) / lbl_803E0618);
-    state->hermY2[2] = lbl_803E0610 * t;
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA0 + 0x2d)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+    state->hermY2[2] = ROMCURVE_TANGENT_SCALE * t;
     t = (float)(u32) * (u8*)((char*)state->nodeA4 + 0x2e) *
-        mathSinf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2d)) << 8) / lbl_803E0618);
-    state->hermY2[3] = lbl_803E0610 * t;
+        mathSinf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2d)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+    state->hermY2[3] = ROMCURVE_TANGENT_SCALE * t;
 
     state->hermZ2[0] = *(f32*)((char*)state->nodeA0 + 0x10);
     state->hermZ2[1] = *(f32*)((char*)state->nodeA4 + 0x10);
     t = (float)(u32) * (u8*)((char*)state->nodeA0 + 0x2e) *
-        mathCosf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA0 + 0x2c)) << 8) / lbl_803E0618);
-    state->hermZ2[2] = lbl_803E0610 * t;
+        mathCosf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA0 + 0x2c)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+    state->hermZ2[2] = ROMCURVE_TANGENT_SCALE * t;
     t = (float)(u32) * (u8*)((char*)state->nodeA4 + 0x2e) *
-        mathCosf(gRomCurveAnglePi2 * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / lbl_803E0618);
-    state->hermZ2[3] = lbl_803E0610 * t;
+        mathCosf(ROMCURVE_ANGLE_PI * (float)((s32)((s8) * ((char*)state->nodeA4 + 0x2c)) << 8) / ROMCURVE_HALF_CIRCLE_ANGLE);
+    state->hermZ2[3] = ROMCURVE_TANGENT_SCALE * t;
 
     if (RomCurve_goNextPoint(state) != 0)
     {
@@ -869,11 +844,11 @@ u8 RomCurve_goNextPoint(RomCurveWalker* state)
             }
             if (state->reverse != 0)
             {
-                Curve_AdvanceAlongPath(&state->curve, gFloatNegOne);
+                Curve_AdvanceAlongPath(&state->curve, ROMCURVE_NEG_ONE);
             }
             else
             {
-                Curve_AdvanceAlongPath(&state->curve, gFloatOne);
+                Curve_AdvanceAlongPath(&state->curve, ROMCURVE_ONE);
             }
             return 0;
         }
@@ -948,7 +923,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
             return 1;
         }
 
-        if (maxDistance != gFloatZero)
+        if (maxDistance != ROMCURVE_ZERO)
         {
             if (state->reverse != 0)
             {
@@ -1014,7 +989,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
     bestActionCurve = NULL;
 
     curvePos[0] = (obj)->anim.localPosX;
-    curvePos[1] = lbl_803E0640 + (obj)->anim.localPosY;
+    curvePos[1] = ROMCURVE_VERTICAL_OFFSET + (obj)->anim.localPosY;
     curvePos[2] = (obj)->anim.localPosZ;
     voxmaps_worldToGrid(curvePos, objGrid);
 
@@ -1033,13 +1008,13 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
                 if (distance < bestDistance)
                 {
                     curvePos[0] = curve->x;
-                    curvePos[1] = lbl_803E0640 + curve->y;
+                    curvePos[1] = ROMCURVE_VERTICAL_OFFSET + curve->y;
                     curvePos[2] = curve->z;
                     voxmaps_worldToGrid(curvePos, curveGrid);
                     traceResult = voxmaps_traceLine((VoxPos*)curveGrid, (VoxPos*)objGrid, NULL, &traceHit, 0);
                     if (((traceHit == 1) || (traceResult != 0)) &&
                         (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))objBboxFn_800640cc)(
-                             &(obj)->anim.localPosX, curvePos, gFloatOne, 0, (TrackBBoxHit*)bboxHit, obj,
+                             &(obj)->anim.localPosX, curvePos, ROMCURVE_ONE, 0, (TrackBBoxHit*)bboxHit, obj,
                              bboxMode, -1, 0, 0) == 0))
                     {
                         bestDistance = distance;
@@ -1049,13 +1024,13 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
                 if ((curve->action == action) && (distance < bestActionDistance))
                 {
                     curvePos[0] = curve->x;
-                    curvePos[1] = lbl_803E0640 + curve->y;
+                    curvePos[1] = ROMCURVE_VERTICAL_OFFSET + curve->y;
                     curvePos[2] = curve->z;
                     voxmaps_worldToGrid(curvePos, curveGrid);
                     traceResult = voxmaps_traceLine((VoxPos*)curveGrid, (VoxPos*)objGrid, NULL, &traceHit, 0);
                     if (((traceHit == 1) || (traceResult != 0)) &&
                         (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))objBboxFn_800640cc)(
-                             &(obj)->anim.localPosX, curvePos, gFloatOne, 0, (TrackBBoxHit*)bboxHit, obj,
+                             &(obj)->anim.localPosX, curvePos, ROMCURVE_ONE, 0, (TrackBBoxHit*)bboxHit, obj,
                              bboxMode, -1, 0, 0) == 0))
                     {
                         bestActionDistance = distance;
@@ -1615,7 +1590,7 @@ int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* ou
         curve = Objfsa_FindRomCurveById(linkId);
     }
 
-    *outPhase = gFloatZero;
+    *outPhase = ROMCURVE_ZERO;
     return curve;
 }
 
@@ -1659,10 +1634,10 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
         tdx = dx;
         tdz = dz;
     }
-    tangentDx = gFloatHalf * (tdx + dx);
-    tangentDz = gFloatHalf * (tdz + dz);
+    tangentDx = ROMCURVE_HALF * (tdx + dx);
+    tangentDz = ROMCURVE_HALF * (tdz + dz);
     tangentLen = sqrtf(tangentDx * tangentDx + tangentDz * tangentDz);
-    if ((*(f32*)&gFloatZero) != tangentLen)
+    if (ROMCURVE_ZERO != tangentLen)
     {
         tangentDx = tangentDx / tangentLen;
         tangentDz = tangentDz / tangentLen;
@@ -1673,7 +1648,7 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
     tangentLen = (tangentDx * x1) + (tangentDz * z1);
     numer = -tangentLen;
     startPhase = tangentDx * segmentDx + tangentDz * segmentDz;
-    if (gFloatZero != startPhase)
+    if (ROMCURVE_ZERO != startPhase)
     {
         startPhase = -(numer + ((tangentDx * x) + (tangentDz * z))) / startPhase;
     }
@@ -1690,10 +1665,10 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
         tdx = dx;
         tdz = dz;
     }
-    tangentDx = gFloatHalf * (tdx + dx);
-    tangentDz = gFloatHalf * (tdz + dz);
+    tangentDx = ROMCURVE_HALF * (tdx + dx);
+    tangentDz = ROMCURVE_HALF * (tdz + dz);
     tangentLen = sqrtf(tangentDx * tangentDx + tangentDz * tangentDz);
-    if ((*(f32*)&gFloatZero) != tangentLen)
+    if (ROMCURVE_ZERO != tangentLen)
     {
         tangentDx = tangentDx / tangentLen;
         tangentDz = tangentDz / tangentLen;
@@ -1701,7 +1676,7 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
 
     numer = -((tangentDx * curves[2]->x) + (tangentDz * curves[2]->z));
     endPhase = tangentDx * segmentDx + tangentDz * segmentDz;
-    if (gFloatZero != endPhase)
+    if (ROMCURVE_ZERO != endPhase)
     {
         endPhase = -(numer + ((tangentDx * x) + (tangentDz * z))) / endPhase;
     }
@@ -1711,7 +1686,7 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
      * unnormalized lateral fallback (segmentDx/segmentDz still hold the raw
      * segment deltas, which equal dx/dz when segmentLen is degenerate). */
     tangentDx = -startPhase / (endPhase - startPhase);
-    if ((tangentDx >= *(f32*)(int)&gFloatZero) && (tangentDx < gFloatOne))
+    if ((tangentDx >= ROMCURVE_ZERO) && (tangentDx < ROMCURVE_ONE))
     {
         f32 projX;
         f32 projY;
@@ -1719,9 +1694,9 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
 
         tdz = curves[2]->y - curves[1]->y;
         segmentLen = sqrtf(dx * dx + tdz * tdz + dz * dz);
-        if (segmentLen > (*(f32*)&gFloatZero))
+        if (segmentLen > ROMCURVE_ZERO)
         {
-            segmentLen = gFloatOne / segmentLen;
+            segmentLen = ROMCURVE_ONE / segmentLen;
             segmentDx = -dx * segmentLen;
             segmentDz = -dz * segmentLen;
         }
@@ -1837,8 +1812,8 @@ int curves_findNearestOfType16(f32 x, f32 y, f32 z, int queryAll)
     int objectCount;
 
     objects = ObjList_GetObjects(&startIndex, &objectCount);
-    nearestCurveId = gFloatNegOne;
-    nearestDistance = gFloatZero;
+    nearestCurveId = ROMCURVE_NEG_ONE;
+    nearestDistance = ROMCURVE_ZERO;
     for (i = 0; i < objectCount; i = i + 1)
     {
         obj = objects[i];
@@ -1850,7 +1825,7 @@ int curves_findNearestOfType16(f32 x, f32 y, f32 z, int queryAll)
             dy = (obj)->anim.worldPosY - y;
             dz = (obj)->anim.worldPosZ - z;
             distance = sqrtf(dz * dz + (dx * dx + dy * dy));
-            if (gFloatNegOne == nearestCurveId || distance < nearestDistance)
+            if (ROMCURVE_NEG_ONE == nearestCurveId || distance < nearestDistance)
             {
                 nearestDistance = distance;
                 nearestCurveId = (float)curve->id;
@@ -2301,7 +2276,7 @@ f32 curves_distXZ(f32 x, f32 z, u32 curveId)
         return sqrtf(dx * dx + dz * dz);
     }
 
-    return gFloatNegOne;
+    return ROMCURVE_NEG_ONE;
 }
 
 f32 curves_distToObj(GameObject* obj, u32 curveId)
@@ -2320,10 +2295,10 @@ f32 curves_distToObj(GameObject* obj, u32 curveId)
         return sqrtf(dx * dx + dy * dy + dz * dz);
     }
 
-    return gFloatNegOne;
+    return ROMCURVE_NEG_ONE;
 }
 
-#define ROMCURVE_PLACEMENT_ANGLE(v) ((gRomCurveAnglePi2 * (f32)((s32)(v) << 8)) / lbl_803E0618)
+#define ROMCURVE_PLACEMENT_ANGLE(v) ((ROMCURVE_ANGLE_PI * (f32)((s32)(v) << 8)) / ROMCURVE_HALF_CIRCLE_ANGLE)
 
 static inline int RomCurve_noUnblockedLinks(RomCurvePlacementDef* curve)
 {
@@ -2379,7 +2354,7 @@ f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY,
     pointX = x;
     pointY = y;
     pointZ = z;
-    zero = gFloatZero;
+    zero = ROMCURVE_ZERO;
     *outZ = zero;
     *outY = zero;
     *outX = zero;
@@ -2405,8 +2380,8 @@ f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY,
                         segment.endY = linkedCurve->y;
                         segment.endZ = linkedCurve->z;
                         distance = RomCurve_distanceToSegment(pointX, pointY, pointZ, &segment);
-                        absBestDistance = (bestDistance < *(f32*)&gFloatZero) ? -bestDistance : bestDistance;
-                        absDistance = (distance < gFloatZero) ? -distance : distance;
+                        absBestDistance = (bestDistance < ROMCURVE_ZERO) ? -bestDistance : bestDistance;
+                        absDistance = (distance < ROMCURVE_ZERO) ? -distance : distance;
                         if (absDistance < absBestDistance)
                         {
                             gRomCurveLastFindStart = curve;
@@ -2510,13 +2485,13 @@ int RomCurve_func20(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ
                 outY[n] = next->y;
                 tz = next->z;
                 outZ[n++] = tz;
-                outX[n] = lbl_803E0610 * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
-                outY[n] = lbl_803E0610 * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotY)));
-                tz = lbl_803E0610 * ((f32)curve->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
+                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
+                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotY)));
+                tz = ROMCURVE_TANGENT_SCALE * ((f32)curve->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
                 outZ[n++] = tz;
-                outX[n] = lbl_803E0610 * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
-                outY[n] = lbl_803E0610 * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotY)));
-                tz = lbl_803E0610 * ((f32)((RomCurvePlacementDef*)next)->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
+                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
+                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotY)));
+                tz = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurvePlacementDef*)next)->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
                 outZ[n++] = tz;
             }
             curve = (RomCurvePlacementDef*)hold;
@@ -2549,13 +2524,13 @@ int RomCurve_func20(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ
                 outY[n] = next->y;
                 tz = next->z;
                 outZ[n++] = tz;
-                outX[n] = lbl_803E0610 * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
-                outY[n] = lbl_803E0610 * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotY)));
-                tz = lbl_803E0610 * ((f32)curve->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
+                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
+                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)curve->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->rotY)));
+                tz = ROMCURVE_TANGENT_SCALE * ((f32)curve->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(curve->rotZ)));
                 outZ[n++] = tz;
-                outX[n] = lbl_803E0610 * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
-                outY[n] = lbl_803E0610 * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotY)));
-                tz = lbl_803E0610 * ((f32)((RomCurvePlacementDef*)next)->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
+                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
+                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurvePlacementDef*)next)->rotX * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotY)));
+                tz = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurvePlacementDef*)next)->rotX * mathCosf(ROMCURVE_PLACEMENT_ANGLE(((RomCurvePlacementDef*)next)->rotZ)));
                 outZ[n++] = tz;
             }
             curve = (RomCurvePlacementDef*)next;
@@ -2729,8 +2704,8 @@ int RomCurve_getNearestAdjacentLink(RomCurveDef* curve, int excludeLinkId, f32 x
 
     bestLink[1] = ROMCURVE_LINK_ID_NONE;
     bestLink[0] = ROMCURVE_LINK_ID_NONE;
-    bestDistance[1] = gFloatZero;
-    bestDistance[0] = gFloatZero;
+    bestDistance[1] = ROMCURVE_ZERO;
+    bestDistance[0] = ROMCURVE_ZERO;
     segment.startX = curve->x;
     segment.startY = curve->y;
     segment.startZ = curve->z;
@@ -2799,23 +2774,23 @@ f32 RomCurve_distanceToSegment(f32 x, f32 y, f32 z, RomCurveSegmentProjection* s
     endZ = segment->endZ;
     startZ = segment->startZ;
     deltaZ = endZ - startZ;
-    if (((gFloatZero == deltaX) && (gFloatZero == deltaY)) && (gFloatZero == deltaZ))
+    if (((ROMCURVE_ZERO == deltaX) && (ROMCURVE_ZERO == deltaY)) && (ROMCURVE_ZERO == deltaZ))
     {
-        projection = gFloatZero;
+        projection = ROMCURVE_ZERO;
     }
     else
     {
         projection = (deltaX * (x - startX) + deltaY * (y - startY) + deltaZ * (z - startZ)) /
                      (deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
     }
-    if (projection < *(f32*)&gFloatZero)
+    if (projection < ROMCURVE_ZERO)
     {
         nearestX = startX;
         nearestY = startY;
         nearestZ = startZ;
         distance = -((startZ - z) * (startZ - z) + ((startX - x) * (startX - x) + (startY - y) * (startY - y)));
     }
-    else if (projection > gFloatOne)
+    else if (projection > ROMCURVE_ONE)
     {
         nearestX = endX;
         nearestY = endY;
@@ -2963,7 +2938,7 @@ int RomCurve_find(f32 x, f32 y, f32 z, int* types, int typeCount, int action)
     f32 distance;
     f32 point[3];
 
-    bestDistance = gRomCurveFindDistInit;
+    bestDistance = ROMCURVE_FIND_DISTANCE_INITIAL;
     bestCurve = NULL;
     bestActionDistance = bestDistance;
     bestActionCurve = NULL;
