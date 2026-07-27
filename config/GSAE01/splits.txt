@@ -1317,7 +1317,7 @@ main/dll/frontend_control.c:
 main/dll/dll_43.c:
 	.text       start:0x80119FAC end:0x8011A0DC
 
-main/dll/dll_0035_saveselectscreen.c:
+dlls/engine/53/53.c:
 	.text       start:0x8011A0DC end:0x8011B5D4
 	.data       start:0x8031A7BC end:0x8031A880
 	.bss        start:0x803A8658 end:0x803A8690

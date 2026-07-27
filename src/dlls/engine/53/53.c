@@ -1,17 +1,3 @@
-/*
- * saveselectscreen (DLL 0x35) - the front-end save-file / save-slot
- * screen reached from the title menu.
- *
- * It drives several sub-panels selected by the current panel index
- * gSaveSelectPanelIndex (0 = choose-slot, 1 = open-file, 2 = slot-action,
- * 3 = confirm/erase prompt, 4 = chapter-select), each backed by an
- * entry in the gSaveSelectPanels panel table. _initialise allocates the
- * save-slot buffers and textures, _run polls menu input and dispatches
- * to the per-panel handlers, _render draws the panel text with a
- * transition-driven fade, and _release/_Free tear the screen down.
- * Selecting a slot can start a new game, load/save, or hand off to
- * other UI DLLs via loadUiDll.
- */
 #include "main/audio/sfx_ids.h"
 #include "main/frame_timing.h"
 #include "main/audio/music_api.h"
@@ -32,7 +18,6 @@
 #include "main/dll/front_game_text_box_api.h"
 #include "main/gametext_api.h"
 #include "main/gametext_show_api.h"
-#include "main/mm.h"
 #include "main/model_engine.h"
 #include "main/map_load.h"
 #include "main/fileio.h"
@@ -63,14 +48,13 @@ char sFrontendPercentFormat[] = "%d%";
 #define PAD_BUTTON_A 0x100
 #define PAD_BUTTON_B 0x200
 
-/* gSaveSelectPanelIndex: current sub-panel (index into gSaveSelectPanels; -1 = none). */
 typedef enum SaveSelectPanelId
 {
-    SAVE_SELECT_PANEL_CHOOSE_SLOT = 0,   /* pick a save slot */
-    SAVE_SELECT_PANEL_OPEN_FILE = 1,     /* opened file: continue / save */
-    SAVE_SELECT_PANEL_SLOT_ACTION = 2,   /* copy / erase slot action */
-    SAVE_SELECT_PANEL_CONFIRM_ERASE = 3, /* confirm-erase prompt */
-    SAVE_SELECT_PANEL_CHAPTER_SELECT = 4 /* chapter (act) select */
+    SAVE_SELECT_PANEL_CHOOSE_SLOT = 0,
+    SAVE_SELECT_PANEL_OPEN_FILE = 1,
+    SAVE_SELECT_PANEL_SLOT_ACTION = 2,
+    SAVE_SELECT_PANEL_CONFIRM_ERASE = 3,
+    SAVE_SELECT_PANEL_CHAPTER_SELECT = 4
 } SaveSelectPanelId;
 
 typedef struct SaveSelectPanel
@@ -83,13 +67,10 @@ typedef struct SaveSelectPanel
     u8 padA[2];
 } SaveSelectPanel;
 
-/* TitleMenuTextEntry.flags (at offset 0x16): row is hidden / non-selectable. */
 #define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
 
-/* count of gSaveSelectTextBuffers scratch allocations (symbol size 0x28 / 4). */
 #define SAVE_SELECT_TEXT_BUFFER_COUNT 10
 
-/* texture asset loaded into gSaveSelectTexture */
 #define SAVESELECTSCREEN_TEXTURE_ID 0x2dd
 
 s8 lbl_803DD6CF;
@@ -124,6 +105,11 @@ extern f32 lbl_803E1D6C;
 extern f32 gSaveSelectPositionScale;
 extern f32 lbl_803E1D74;
 extern void* lbl_803DD498;
+extern TitleMenuTextEntry lbl_8031A4B0[];
+extern TitleMenuTextEntry lbl_8031A564[];
+extern TitleMenuTextEntry lbl_8031A618[];
+extern TitleMenuTextEntry lbl_8031A5DC[];
+extern TitleMenuTextEntry lbl_8031A654[];
 char sSaveGameBinPathFormat[] = "/savegame/save%d.bin";
 
 void saveSelectOpenFile(int sel, int slot)
@@ -781,12 +767,6 @@ void SaveSelectScreen_initialise(void)
         gSaveSelectTextBuffers[i] = mmAlloc(5, 5, 0);
     }
 }
-
-extern TitleMenuTextEntry lbl_8031A4B0[];
-extern TitleMenuTextEntry lbl_8031A564[];
-extern TitleMenuTextEntry lbl_8031A618[];
-extern TitleMenuTextEntry lbl_8031A5DC[];
-extern TitleMenuTextEntry lbl_8031A654[];
 
 SaveSelectPanel gSaveSelectPanels[] = {
     {lbl_8031A4B0, 3, 0, 0x0379, 0x0367, {2, 0}}, {lbl_8031A564, 2, 0, 0x0379, 0x0367, {2, 0}},
