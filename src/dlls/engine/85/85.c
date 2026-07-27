@@ -1,16 +1,5 @@
 /*
- * cameramodeperv (DLL 0x0055) - the "perv" (peering/peeking) camera mode
- * handlers [0x80110C80-0x80110E30).
- *
- * The mode keeps a single shared CameraModePervState (lbl_803DD5C8) holding a
- * countdown timer and a cached camera Y. init() allocates the state on first
- * use, seeds the timer and the camera Y from the target object's world Y; free
- * releases it. update() ticks the timer down (clamped to a floor), then places
- * the camera a fixed radius behind the target on the X/Z plane using the
- * target's facing angle (rotX) and pins the camera pitch (rotY = -0x4000).
- *
- * The remaining vtable slots (copyToCurrent / release / initialise) are empty
- * no-op stubs.
+ * DLL 85 / 0x55 - peering camera mode.
  */
 #include "main/mm.h"
 #include "main/resource.h"

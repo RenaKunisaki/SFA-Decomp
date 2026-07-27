@@ -128,7 +128,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x052 | — | NO-RETAIL-NAME | main/dll/dll_0052_cameramodeforcebehind.c | = (canonical) | — |
 | 0x053 | — | NO-RETAIL-NAME | main/dll/dll_0053_cameramodecloudrunner.c | = (canonical) | — |
 | 0x054 | — | NO-RETAIL-NAME | main/dll/dll_0054_dll54.c | = (canonical) | — |
-| 0x055 | — | NO-RETAIL-NAME | main/dll/dll_0055_cameramodeperv.c | = (canonical) | — |
+| 0x055 | — | NO-RETAIL-NAME | dlls/engine/85/85.c | = (canonical) | — |
 | 0x056 | — | NO-RETAIL-NAME | dlls/engine/86/86.c | = (canonical) | — |
 | 0x057 | — | NO-RETAIL-NAME | dlls/engine/87/87.c | = (canonical) | — |
 | 0x058 | — | NO-RETAIL-NAME | dlls/engine/88/88.c | = (canonical) | — |
