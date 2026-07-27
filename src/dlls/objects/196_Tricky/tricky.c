@@ -2110,10 +2110,13 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x2e4, getPatchGroup(target, state->activeWalkGroup));
     if ((state->stateFlags & 0x400) != 0)
     {
-        int pref = (int)state;
-        int qref = (int)state;
+        int pref;
+        int qref;
 
-        for (i = 0; i < 4; pref += 2, qref += 12, i++)
+        i = 0;
+        pref = (int)state;
+        qref = (int)state;
+        for (; i < 4; pref += 2, qref += 12, i++)
         {
             if (*(s16*)(pref + 152) != 0)
             {
