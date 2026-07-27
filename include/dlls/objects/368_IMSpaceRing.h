@@ -25,8 +25,7 @@ STATIC_ASSERT(sizeof(IMSpaceRingPlacement) == 0x24);
 int imSpaceRing_getExtraSize(void);
 int imSpaceRing_getObjectTypeId(void);
 void imSpaceRing_free(void);
-void imSpaceRing_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void imSpaceRing_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void imSpaceRing_hitDetect(void);
 void imSpaceRing_update(GameObject* obj);
 void imSpaceRing_init(GameObject* obj, const IMSpaceRingPlacement* placement);
