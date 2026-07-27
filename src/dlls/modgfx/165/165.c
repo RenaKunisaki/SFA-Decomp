@@ -1,5 +1,5 @@
 /*
- * dlla5func0 (DLL 0xA5) - a modgfx effect spawner (sibling of DLL 0xA6/0xA8).
+ * dlla5func0 (DLL 165 / 0xA5) - a modgfx effect spawner (sibling of DLL 0xA6/0xA8).
  *
  * dll_A5_func03 builds a fixed 13-entry GfxCmd command buffer on the stack
  * (mode/layer/flags plus three coordinate words per primitive, several
@@ -175,5 +175,3 @@ void dll_A5_func01_nop(void)
 void dll_A5_func00_nop(void)
 {
 }
-
-/* .sdata2 float-pool constants referenced via extern by sibling dll_00A6 */

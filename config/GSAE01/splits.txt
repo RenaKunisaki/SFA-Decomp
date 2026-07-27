@@ -949,7 +949,7 @@ main/dll/dll_00A2_dlla2func0.c:
 main/dll/dll_00A4_dummya4.c:
 	.text       start:0x800FEC74 end:0x800FEC84
 
-main/dll/dll_00A5_dlla5func0.c:
+dlls/modgfx/165/165.c:
 	.text       start:0x800FEC84 end:0x800FF004
 	.sdata      start:0x803DB970 end:0x803DB980
 	.sdata2     start:0x803E1508 end:0x803E1530
