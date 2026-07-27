@@ -113,7 +113,6 @@ u8 lbl_803DBD38[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 
 extern void* gCrawlerDescriptorTable[];
 
-extern f32 gCrawlerS8Norm127;
 EnemyTargetSearchResult gCrawlerNearbyObjectBuffer[16];
 
 f32 gCrawlerHitSfxTimer;
@@ -1324,5 +1323,5 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
     {
         ((BaddieState*)state)->controlFlags |= 1;
     }
-    obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / gCrawlerS8Norm127);
+    obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / 127.0f);
 }
