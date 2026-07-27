@@ -839,7 +839,7 @@ f32 shopKeeperRotateFn_801e7c4c(s16* obj, void* player, int mode)
     dx = ((GameObject*)player)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
     dz = ((GameObject*)player)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
     dist = sqrtf(dx * dx + dz * dz);
-    if (dist != 0.0f)
+    if (dist)
     {
         dx /= dist;
         dz /= dist;
