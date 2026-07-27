@@ -221,9 +221,9 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
     for (i = 0, off = 0; i < def->extraJointCount; i++)
     {
         MtxPtr out;
+        MtxPtr m2;
         MtxPtr m1;
         char* jd;
-        MtxPtr m2;
         u8* grp;
         f32 w;
         f32 wi;
