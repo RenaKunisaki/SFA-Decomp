@@ -145,8 +145,7 @@ void arwbombcoll_updateMovingAxis(GameObject* obj, RingState* state)
 void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
 {
     GameObject* arwingObj = arwing;
-    ArwbombcollHandleArwingHitPlacement* setup =
-        (ArwbombcollHandleArwingHitPlacement*)obj->anim.placementData;
+    RingPlacement* setup = (RingPlacement*)obj->anim.placementData;
     u8 mode = state->mode;
     if (mode == 0)
     {
@@ -169,7 +168,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     else if (mode == 3 || mode == 4)
     {
         Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_lsrhitobj16);
-        gameBitIncrement(setup->eventId);
+        gameBitIncrement(setup->counterGameBit);
     }
     else
     {

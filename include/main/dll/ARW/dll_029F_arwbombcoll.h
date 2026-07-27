@@ -6,13 +6,6 @@
 
 typedef struct RingState RingState;
 
-typedef struct ArwbombcollHandleArwingHitPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1E - 0x18];
-    s16 eventId;
-} ArwbombcollHandleArwingHitPlacement;
-
 typedef struct ARWBombCollSetup
 {
     ObjPlacement base;
