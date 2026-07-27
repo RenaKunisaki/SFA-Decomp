@@ -700,7 +700,7 @@ main/dll/dll_006D_dll6dfunc0.c:
 	.data       start:0x80313AF0 end:0x80313C30
 	.sdata2     start:0x803E0A78 end:0x803E0A94
 
-main/dll/dll_006E_dll6efunc0.c:
+dlls/modgfx/110/110.c:
 	.text       start:0x800F0A4C end:0x800F0C9C
 	.data       start:0x80313C30 end:0x80313CC0
 	.sdata2     start:0x803E0A98 end:0x803E0AB4

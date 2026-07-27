@@ -1,17 +1,8 @@
 /*
- * dll_006E (dll6efunc0) - a small gameplay DLL whose only live export is
- * func03: a one-shot spawner that builds a 6-command Modgfx draw list on
- * the stack and submits it through (*gModgfxInterface)->spawnEffect. The
- * command template and its geometry/colour constants are read from the
- * lbl_80313C30 data blob and the lbl_803E0A9* float pool. When the request
- * flag bit 0 is set, the world position is taken either from the source
- * object (sourceObj+0x18..0x20) or from the PartFxSpawnParams packet.
+ * DLL 110 / 0x6E - one-shot modgfx effect spawner.
  *
- * func00/func01 are the DLL's empty lifecycle hooks. (The Ghidra dump of
- * this TU also carried a large block of mainDol drift duplicates -
- * save-file/cheat/settings helpers from the gameplay.h family, real copies
- * in sibling units - dropped here to match the retail object, which holds
- * only these three functions.)
+ * func03 builds a six-command draw list from lbl_80313C30 and submits it
+ * through gModgfxInterface. func00/func01 are empty lifecycle slots.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
