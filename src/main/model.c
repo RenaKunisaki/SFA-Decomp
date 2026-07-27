@@ -402,8 +402,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
     ObjAnimState work;
     int mtxBuf;
     int slotEvent;
-    ModelFileHeader* file;
     int outFlags;
+    ModelFileHeader* file;
     int ctrlFlags;
     int slotCount;
     int j;
