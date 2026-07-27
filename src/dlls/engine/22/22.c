@@ -7,6 +7,13 @@
 #include "main/fileio.h"
 #include "track/intersect_hud_api.h"
 
+#define SCREEN_TRANSITION_ALPHA_MIDPOINT 127.0f
+#define SCREEN_TRANSITION_ALPHA_SCALE    2.0f
+#define SCREEN_TRANSITION_EDGE_SCALE     0.0078125f
+#define SCREEN_TRANSITION_ALPHA_MAX      255.0f
+#define SCREEN_TRANSITION_FADE_STEP      256.0f
+#define SCREEN_TRANSITION_HOLD_DURATION  120.0f
+
 u8 screenTransitionPause;
 u8 gScreenTransitionDelay;
 u8 gScreenTransitionDone;
@@ -14,9 +21,6 @@ u8 gScreenTransitionType;
 f32 gScreenTransitionHoldTimer;
 f32 gScreenTransitionAlphaStep;
 f32 screenTransitionAlpha;
-
-
-extern f32 gScreenTransitionHoldDuration;
 
 static inline void screenTransitionFadeBlack(void)
 {
@@ -51,10 +55,6 @@ static inline void screenTransitionFadeColor(u8 r, u8 g, u8 b)
     hudDrawRect(sx, sy, sw, sh, col);
     GXSetScissor(sx, sy, sw, sh);
 }
-
-extern f32 gScreenTransitionAlphaMidpoint;
-extern f32 lbl_803E0544;
-extern f32 gScreenTransitionEdgeScale;
 
 /*
  * SCREEN_TRANSITION_WHITE_WIPE renderer: draws an opaque colored band across the
@@ -105,20 +105,20 @@ void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b)
     width = viewWidth & 0xffff;
     viewHeight = vb - vy;
     height = viewHeight & 0xffff;
-    if (screenTransitionAlpha > gScreenTransitionAlphaMidpoint)
+    if (screenTransitionAlpha > SCREEN_TRANSITION_ALPHA_MIDPOINT)
     {
         maxAlpha = 0xff;
-        wipe = (int)(screenTransitionAlpha - gScreenTransitionAlphaMidpoint);
+        wipe = (int)(screenTransitionAlpha - SCREEN_TRANSITION_ALPHA_MIDPOINT);
     }
     else
     {
-        maxAlpha = lbl_803E0544 * screenTransitionAlpha;
+        maxAlpha = SCREEN_TRANSITION_ALPHA_SCALE * screenTransitionAlpha;
         wipe = 0;
     }
     half = (u16)(width >> 1);
     wipeSpan = wipe & 0xffff;
     conv = (f32)(int)(wipeSpan * half);
-    band = (u32)(int)(conv * gScreenTransitionEdgeScale) & 0xffff;
+    band = (u32)(int)(conv * SCREEN_TRANSITION_EDGE_SCALE) & 0xffff;
     if (band == half)
     {
         screenTransitionFadeColor(r, b, g);
@@ -161,7 +161,7 @@ void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b)
         hudDrawRect(vx, vy, vx + (band & 0xffff) + 1, vb, col);
         band = (u16)(height >> 1);
         conv = (f32)(int)(wipeSpan * band);
-        wipe = (u32)(int)(conv * gScreenTransitionEdgeScale) & 0xffff;
+        wipe = (u32)(int)(conv * SCREEN_TRANSITION_EDGE_SCALE) & 0xffff;
         half = (band - wipe) & 0xffff;
         fadeSpan = (band + wipe) & 0xffff;
         wipe = ((band - 1) - wipe) & 0xffff;
@@ -197,7 +197,6 @@ void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b)
     }
 }
 
-
 void setScreenTransitionPause(u32 pause)
 {
     screenTransitionPause = pause;
@@ -213,30 +212,24 @@ f32 screenTransition_getAlpha(void)
     return screenTransitionAlpha;
 }
 
-extern f32 gScreenTransitionAlphaMax;
-extern f32 lbl_803E0564;
-extern f32 lbl_803E055C;
-
 void screenTransition_fadeFrom(int duration, int type, f32 from)
 {
-    screenTransitionAlpha = gScreenTransitionAlphaMax * from;
-    gScreenTransitionAlphaStep = -(lbl_803E055C * from) / duration;
+    screenTransitionAlpha = SCREEN_TRANSITION_ALPHA_MAX * from;
+    gScreenTransitionAlphaStep = -(SCREEN_TRANSITION_FADE_STEP * from) / duration;
     gScreenTransitionHoldTimer = 0.0f;
     gScreenTransitionType = type;
     gScreenTransitionDelay = 1;
 }
 
-
 int isScreenTransitionActive(void)
 {
-    return gScreenTransitionAlphaMax == screenTransitionAlpha;
+    return SCREEN_TRANSITION_ALPHA_MAX == screenTransitionAlpha;
 }
-
 
 void screenTransition_holdThenFadeIn(int duration, int type)
 {
-    screenTransitionAlpha = gScreenTransitionAlphaMax;
-    gScreenTransitionAlphaStep = lbl_803E0564 / duration;
+    screenTransitionAlpha = SCREEN_TRANSITION_ALPHA_MAX;
+    gScreenTransitionAlphaStep = -SCREEN_TRANSITION_FADE_STEP / duration;
     gScreenTransitionHoldTimer = 0.0f;
     gScreenTransitionType = type;
     gScreenTransitionDelay = 5;
@@ -246,9 +239,9 @@ void screenTransition_fadeIn(int duration, int type)
 {
     if (gScreenTransitionAlphaStep >= 0.0f || 0.0f == screenTransitionAlpha)
     {
-        screenTransitionAlpha = gScreenTransitionAlphaMax;
+        screenTransitionAlpha = SCREEN_TRANSITION_ALPHA_MAX;
     }
-    gScreenTransitionAlphaStep = lbl_803E0564 / duration;
+    gScreenTransitionAlphaStep = -SCREEN_TRANSITION_FADE_STEP / duration;
     gScreenTransitionHoldTimer = 0.0f;
     gScreenTransitionType = type;
     gScreenTransitionDelay = 1;
@@ -256,11 +249,11 @@ void screenTransition_fadeIn(int duration, int type)
 
 void screenTransition_fadeOut(int duration, int type)
 {
-    if (gScreenTransitionAlphaStep <= 0.0f || gScreenTransitionAlphaMax == screenTransitionAlpha)
+    if (gScreenTransitionAlphaStep <= 0.0f || SCREEN_TRANSITION_ALPHA_MAX == screenTransitionAlpha)
     {
         screenTransitionAlpha = 0.0f;
     }
-    gScreenTransitionAlphaStep = lbl_803E055C / duration;
+    gScreenTransitionAlphaStep = SCREEN_TRANSITION_FADE_STEP / duration;
     gScreenTransitionHoldTimer = 0.0f;
     gScreenTransitionType = type;
     gScreenTransitionDelay = 0;
@@ -274,7 +267,7 @@ void screenTransition_update(int p1, int p2, int p3)
     }
     else
     {
-        if (screenTransitionPause == 0 && gScreenTransitionHoldTimer >= gScreenTransitionHoldDuration)
+        if (screenTransitionPause == 0 && gScreenTransitionHoldTimer >= SCREEN_TRANSITION_HOLD_DURATION)
         {
             (*gScreenTransitionInterface)->step(0x1e, gScreenTransitionType);
             gScreenTransitionHoldTimer = 0.0f;
@@ -290,9 +283,9 @@ void screenTransition_update(int p1, int p2, int p3)
             }
             return;
         }
-        if (screenTransitionAlpha > gScreenTransitionAlphaMax)
+        if (screenTransitionAlpha > SCREEN_TRANSITION_ALPHA_MAX)
         {
-            screenTransitionAlpha = gScreenTransitionAlphaMax;
+            screenTransitionAlpha = SCREEN_TRANSITION_ALPHA_MAX;
             gScreenTransitionDone = 1;
             if (screenTransitionPause == 0)
             {
@@ -337,6 +330,7 @@ void screenTransition_update(int p1, int p2, int p3)
     }
 }
 
+const f32 lbl_803E056C = 0.0f;
 
 u32 lbl_80311340[14] = {
     0, 0, 0, 0x00080000,
