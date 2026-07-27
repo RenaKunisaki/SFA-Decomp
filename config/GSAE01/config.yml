@@ -20,11 +20,12 @@ force_active:
   # atom; dropping it would shorten the pool and shift the mikaladon SDA2
   # references that follow it.
   - gGcRobotPatrolZero
-  # WispBaddie.c: the retail link retained these unreferenced per-family
-  # scalar tables that follow the lbl_8031F16C family table; dropping them
-  # would shorten .data and shift every later .data address.
-  - lbl_8031F25C
-  - lbl_8031F268
+  # WispBaddie.c: the seq-driver TUs reach these per-family scalar tables
+  # only through the gBaddieMoveProgressTable base (+0x152C/+0x1538), so no
+  # relocation references them by name; dropping them would shorten .data and
+  # shift every later .data address.
+  - gBaddieEventDelayRanges
+  - gBaddieFamilySpeedScales
   # aram_data.c: the retail link retained this unreferenced .bss block;
   # dropping it would shorten the section and shift every later .bss address.
   - lbl_803D4868

@@ -2,7 +2,7 @@
  * seqobj11d - a family of ground/walking baddie variants sharing one
  * sequence-driven animation update. The variant is selected by anim.seqId
  * in sharpClawInit (init) into a 0..5 type index (state+0x33b) that selects
- * per-type tables (lbl_8031F16C entries) of movement
+ * per-type tables (gBaddieFamilyTables entries) of movement
  * sequence entries (SeqEntry: anim id + reaction mask + colour bytes).
  *
  * The per-frame update walks those tables to pick the next animation,
@@ -92,7 +92,7 @@ void groundBaddiePickIdleMove(GameObject* obj, u8* state)
     u8 wrapIdx;
     char* base;
 
-    base = (char*)lbl_8031F16C;
+    base = (char*)gBaddieFamilyTables;
     base += ((GroundBaddieState*)state)->baddie.userData2 * 40;
     entry = *(SeqEntry**)(base + 12);
     if ((f32) * (u16*)(state + 0x2a4) > 0.6f * ((GroundBaddieState*)state)->baddie.speedScale)
@@ -121,7 +121,7 @@ void groundBaddiePickIdleMove(GameObject* obj, u8* state)
     *(u8*)(state + 0x2f4) = entry[state[0x33a]].b;
     baddieSetMove(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
-                            *(f32*)(lbl_8031DD30 + entry[state[0x33a]].anim * 4));
+                            *(f32*)(gBaddieMoveProgressTable + entry[state[0x33a]].anim * 4));
     (((GroundBaddieState*)state)->baddie.userData1)++;
     if (state[0x33a] > entry[0].anim)
     {
@@ -136,7 +136,7 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
     s16 d;
     char* base;
 
-    base = (char*)lbl_8031F16C;
+    base = (char*)gBaddieFamilyTables;
     base += ((GroundBaddieState*)state)->baddie.userData2 * 40;
     entry = *(SeqEntry**)(base + 12);
     if (enemy_findNearbyEnemies(obj, 100.0f, 1, 16, gGroundBaddieTargetSearchResult) >= 1)
@@ -188,7 +188,7 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
     *(u8*)(state + 0x2f4) = entry[state[0x33a]].b;
     baddieSetMove(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
-                            *(f32*)(lbl_8031DD30 + entry[state[0x33a]].anim * 4));
+                            *(f32*)(gBaddieMoveProgressTable + entry[state[0x33a]].anim * 4));
     (((GroundBaddieState*)state)->baddie.userData1)++;
     if (state[0x33a] > entry[0].anim)
     {
@@ -206,7 +206,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
     f32 fz;
     GroundBaddieSequenceTable* table;
 
-    table = (GroundBaddieSequenceTable*)lbl_8031F16C;
+    table = (GroundBaddieSequenceTable*)gBaddieFamilyTables;
     tableIdx = ((GroundBaddieState*)state)->baddie.userData2;
     p20 = table[tableIdx].hitEntries;
     p28 = table[tableIdx].sequenceEntries;
@@ -249,7 +249,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
                             (u8) * (u32*)(&p28[*(u16*)(state + 0x338) * 16 + 4]));
                 ObjAnim_SetMoveProgress(
                     (ObjAnimComponent*)obj,
-                    *(f32*)(lbl_8031DD30 + (p28 + *(u16*)(state + 0x338) * 16)[8] * 4));
+                    *(f32*)(gBaddieMoveProgressTable + (p28 + *(u16*)(state + 0x338) * 16)[8] * 4));
                 *(u16*)(state + 0x338) = (p28 + *(u16*)(state + 0x338) * 16)[9];
             }
             else

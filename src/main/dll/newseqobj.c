@@ -12,8 +12,8 @@
  *     curve (path-chase with distance/turn speed shaping when controlFlags
  *     0x2000 is set), and fall back to randomised idle anims otherwise.
  * Group 5 (the whirlpool group) sets game bit 0x1c8 once it is active.
- * Tables: lbl_8031F16C is the per-family table-of-tables (0x28-stride rows);
- * lbl_8031DD30 holds per-anim move-progress floats.
+ * Tables: gBaddieFamilyTables is the per-family table-of-tables (0x28-stride rows);
+ * gBaddieMoveProgressTable holds per-anim move-progress floats.
  */
 #include "main/dll/baddie_state.h"
 #include "main/dll/baddie_setmove.h"
@@ -91,10 +91,10 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
     u8* trig;
     u8 ret;
 
-    animRows = lbl_8031F16C[((BaddieState*)state)->userData2].tbl10;
-    rowsC = lbl_8031F16C[((BaddieState*)state)->userData2].tbl24;
-    rowsB = lbl_8031F16C[((BaddieState*)state)->userData2].tbl1c;
-    trig = lbl_8031F16C[((BaddieState*)state)->userData2].tbl20;
+    animRows = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl10;
+    rowsC = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl24;
+    rowsB = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl1c;
+    trig = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl20;
     ret = 0;
 
     if (((BaddieState*)state)->userData2 == 5)
@@ -133,7 +133,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
                                (u8)rows[state[0x33c]].flags);
             }
             ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
-                                    *(f32*)(lbl_8031DD30 + rowsC[state[0x33c] * 12 + 8] * 4));
+                                    *(f32*)(gBaddieMoveProgressTable + rowsC[state[0x33c] * 12 + 8] * 4));
             if (rowsC[state[0x33c] * 12 + 0xa] != 0)
             {
                 state[0x33a] = rowsC[state[0x33c] * 12 + 0xa];
@@ -189,7 +189,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             }
             ObjAnim_SetMoveProgress(
                 (ObjAnimComponent*)obj,
-                *(f32*)(lbl_8031DD30 + rowsB[rowsB[((SeqObj11EState*)state)->seqNode * 16 + 0xb] * 16 + 8] * 4));
+                *(f32*)(gBaddieMoveProgressTable + rowsB[rowsB[((SeqObj11EState*)state)->seqNode * 16 + 0xb] * 16 + 8] * 4));
         }
         else
         {
@@ -199,7 +199,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             Baddie_SetMove(obj, state, rows[(u8)amount].anim, *(f32*)(animRows + (u8)amount * 12), 0,
                            (u8)rows[(u8)amount].flags);
             ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
-                                    *(f32*)(lbl_8031DD30 + rows[(u8)amount].anim * 4));
+                                    *(f32*)(gBaddieMoveProgressTable + rows[(u8)amount].anim * 4));
             ((SeqObj11EState*)state)->seqNode = animRows[off + 9];
             ((SeqObj11EState*)state)->seqTimer = (f32)(u32) * (u16*)(state + 0x2ec);
         }
@@ -260,9 +260,9 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     u8* tbl1c;
     u32 flags;
 
-    tbl4 = lbl_8031F16C[((BaddieState*)state)->userData2].tbl4;
-    tbl0 = lbl_8031F16C[((BaddieState*)state)->userData2].tbl0;
-    tbl1c = lbl_8031F16C[((BaddieState*)state)->userData2].tbl1c;
+    tbl4 = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl4;
+    tbl0 = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl0;
+    tbl1c = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl1c;
 
     if (((BaddieState*)state)->userData2 == 5 && (((BaddieState*)state)->controlFlags & 0x800000))
     {
@@ -301,7 +301,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                                (u8)idleRows[state[0x33d]].flags);
             }
             ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
-                                    *(f32*)(lbl_8031DD30 + tbl4[state[0x33d] * 12 + 8] * 4));
+                                    *(f32*)(gBaddieMoveProgressTable + tbl4[state[0x33d] * 12 + 8] * 4));
             state[0x33d] = tbl4[state[0x33d] * 12 + 9];
             state[0x33e] = 0;
         }
@@ -371,7 +371,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                                (u8)seqRow16[((SeqObj11EState*)state)->seqNode].flags);
                 ObjAnim_SetMoveProgress(
                     (ObjAnimComponent*)obj,
-                    *(f32*)(lbl_8031DD30 + tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 8] * 4));
+                    *(f32*)(gBaddieMoveProgressTable + tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 8] * 4));
                 ((SeqObj11EState*)state)->seqNode = tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 9];
             }
             else if (*(f32*)(state + 0x310) > 0.0001f)
@@ -419,7 +419,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                 }
                 ObjAnim_SetMoveProgress(
                     (ObjAnimComponent*)obj,
-                    *(f32*)(lbl_8031DD30 + tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 8] * 4));
+                    *(f32*)(gBaddieMoveProgressTable + tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 8] * 4));
                 ((SeqObj11EState*)state)->seqNode = tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 9];
             }
             else
@@ -434,7 +434,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                     state[0x2f4] = 0;
                     Baddie_SetMove(obj, state, row->anim, *(f32*)(tbl4 + off), 0, 3);
                     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
-                                            *(f32*)(lbl_8031DD30 + row->anim * 4));
+                                            *(f32*)(gBaddieMoveProgressTable + row->anim * 4));
                 }
             }
         }
@@ -446,7 +446,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
  * curve-follow speed shaping, called from the sharpClawUpdateIdle update path. */
 void sharpClawUpdateApproach(GameObject* obj, void* state)
 {
-    u8* table = lbl_8031DD30;
+    u8* table = gBaddieMoveProgressTable;
     u8 idx = ((BaddieState*)state)->userData2;
     void* animCtrl = *(void**)(table + idx * 0x28 + 0x143c);
     void* idleSrc = *(void**)(table + idx * 0x28 + 0x1454);

@@ -82,12 +82,12 @@ typedef struct
     u8* tbl24; /* 0x24 */
 } FamilyTable;
 
-extern FamilyTable lbl_8031F16C[]; /* per-family table-of-tables, 0x28-byte rows */
-extern u8 lbl_8031DD30[];          /* per-anim move-progress floats, indexed anim*4 */
+extern FamilyTable gBaddieFamilyTables[]; /* per-family table-of-tables, 0x28-byte rows */
+extern u8 gBaddieMoveProgressTable[];          /* per-anim move-progress floats, indexed anim*4 */
 
 u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
 {
-    u8* base = lbl_8031DD30;
+    u8* base = gBaddieMoveProgressTable;
     u8* sequenceBase;
     WispEventRow* eventRows;
     u8 eventIndex;
@@ -268,7 +268,7 @@ void wispBaddiePlayMoveEventSfx(GameObject* obj, void* animState)
 void wispBaddieQueueNextEvent(int obj, int delta)
 {
     u8* inner = ((GameObject*)obj)->extra;
-    u8* ptr = lbl_8031F16C[inner[0x33b]].tbl4;
+    u8* ptr = gBaddieFamilyTables[inner[0x33b]].tbl4;
     inner[0x33d] = (u8)(delta + (u32)ptr[8] + 1);
     inner[0x33e] = 1;
 }
