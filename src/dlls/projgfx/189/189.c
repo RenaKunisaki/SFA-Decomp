@@ -1,5 +1,5 @@
 /*
- * projsunshock (DLL 0xBD) - a deprecated projectile object DLL.
+ * projsunshock (DLL 189 / 0xBD) - a deprecated projectile object DLL.
  *
  * Only the standard DLL lifecycle entry points survive. The object is
  * no longer functional: doUnsupported logs a "no longer supported"

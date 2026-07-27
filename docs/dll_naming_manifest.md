@@ -232,7 +232,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0BA | — | NO-RETAIL-NAME | main/dll/dll_00BA_projlightning6.c | = (canonical) | — |
 | 0x0BB | — | NO-RETAIL-NAME | main/dll/dll_00BB_projwallpower.c | = (canonical) | — |
 | 0x0BC | — | NO-RETAIL-NAME | main/dll/dll_00BC_projquakeshock.c | = (canonical) | — |
-| 0x0BD | — | NO-RETAIL-NAME | main/dll/dll_00BD_projsunshock.c | = (canonical) | — |
+| 0x0BD | — | NO-RETAIL-NAME | dlls/projgfx/189/189.c | = (canonical) | — |
 | 0x0BE | — | NO-RETAIL-NAME | dlls/projgfx/190/190.c | = (canonical) | — |
 | 0x0BF | — | NO-RETAIL-NAME | dlls/projgfx/191/191.c | = (canonical) | — |
 | 0x0C0 | — | NO-RETAIL-NAME | dlls/projgfx/192/192.c | = (canonical) | — |
