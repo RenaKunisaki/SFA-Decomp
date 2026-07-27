@@ -25,6 +25,7 @@
 #include "main/render_internal.h"
 #include "string.h"
 #include "main/vecmath.h"
+#include "dolphin/os/OSFastCast.h"
 
 int gModelTabEntryCount;
 s16* gModelResourceBuffer;
@@ -112,163 +113,91 @@ extern f32 gMapSavedPlayerOffsetZ;
 
 void setGQR7Packed(int a, int b, int c, int d);
 void setGQR6_2(int a, int b, int c, int d);
-asm void modelBoneTransforms_next(void);
+u8* modelBoneTransforms_next(u8* stream, int* dx, int* dy, int* dz);
 static inline void* modelGetBoneMtx(ObjModel* model, int idx);
-asm void ObjModel_TransformVerticesWithTranslation(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count);
-asm void ObjModel_TransformVerticesLinear(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count);
-asm void ObjModel_TransformQuadVerticesLinear(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count);
+void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
+void ObjModel_TransformVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
+void ObjModel_TransformQuadVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
+static u32 sGQR6Config;
+static u32 sGQR7Config;
 
-asm void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16 pos)
+void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16 pos)
 {
-    // clang-format off
-    nofralloc
-    mflr r0
-    stwu r1, -80(r1)
-    stw r0, 84(r1)
-    stmw r14, 8(r1)
-    lwz r23, 0(r6)      // a = *pd
-    lwz r24, 0(r7)      // b = *pe
-    li r25, 0           // i = 0
-    lis r17, 1
-    subf r17, r8, r17   // wHi = 0x10000 - f
-lbl_ABT_top:
-    lha r18, 0(r23)
-    lha r19, 0(r24)
-    andi. r18, r18, 0x1fff
-    andi. r19, r19, 0x1fff
-    subf r18, r9, r18   // aIdx = (*a & 0x1fff) - pos
-    subf r19, r9, r19   // bIdx = (*b & 0x1fff) - pos
-lbl_ABT_copy:
-    cmpw r25, r5
-    bge lbl_ABT_done
-    cmpw r25, r18
-    bge lbl_ABT_a
-    cmpw r25, r19
-    bge lbl_ABT_bOnly
-    lwz r20, 0(r3)      // copy an untouched 6-byte vertex
-    lha r22, 4(r3)
-    addi r3, r3, 6
-    stw r20, 0(r4)
-    addi r25, r25, 1
-    sth r22, 4(r4)
-    addi r4, r4, 6
-    b lbl_ABT_copy
-lbl_ABT_a:
-    cmpw r25, r19
-    bne lbl_ABT_aOnly
-    mr r20, r24         // both streams hit: blend a and b deltas
-    bl modelBoneTransforms_next
-    mr r24, r20
-    mr r11, r10
-    mr r14, r12
-    mr r16, r15
-    mr r20, r23
-    bl modelBoneTransforms_next
-    mr r23, r20
-    mullw r10, r10, r17
-    mullw r12, r12, r17
-    mullw r15, r15, r17
-    mullw r11, r11, r8
-    mullw r14, r14, r8
-    mullw r16, r16, r8
-    add r10, r10, r11
-    add r12, r12, r14
-    add r15, r15, r16
-    srwi r10, r10, 16
-    srwi r12, r12, 16
-    srwi r15, r15, 16
-    lha r11, 0(r3)
-    lha r14, 2(r3)
-    lha r16, 4(r3)
-    add r10, r10, r11
-    add r12, r12, r14
-    add r15, r15, r16
-    sth r10, 0(r4)
-    sth r12, 2(r4)
-    sth r15, 4(r4)
-    addi r3, r3, 6
-    addi r4, r4, 6
-    addi r25, r25, 1
-    b lbl_ABT_top
-lbl_ABT_aOnly:
-    mr r20, r23         // only stream a hits: weight by wHi
-    bl modelBoneTransforms_next
-    mr r23, r20
-    mullw r10, r10, r17
-    mullw r12, r12, r17
-    mullw r15, r15, r17
-    srwi r10, r10, 16
-    srwi r12, r12, 16
-    srwi r15, r15, 16
-    lha r11, 0(r3)
-    lha r14, 2(r3)
-    lha r16, 4(r3)
-    add r10, r10, r11
-    add r12, r12, r14
-    add r15, r15, r16
-    sth r10, 0(r4)
-    sth r12, 2(r4)
-    sth r15, 4(r4)
-    addi r3, r3, 6
-    addi r4, r4, 6
-    addi r25, r25, 1
-    b lbl_ABT_top
-lbl_ABT_bOnly:
-    mr r20, r24         // only stream b hits: weight by f
-    bl modelBoneTransforms_next
-    mr r24, r20
-    mullw r10, r10, r8
-    mullw r12, r12, r8
-    mullw r15, r15, r8
-    srwi r10, r10, 16
-    srwi r12, r12, 16
-    srwi r15, r15, 16
-    lha r11, 0(r3)
-    lha r14, 2(r3)
-    lha r16, 4(r3)
-    add r10, r10, r11
-    add r12, r12, r14
-    add r15, r15, r16
-    sth r10, 0(r4)
-    sth r12, 2(r4)
-    sth r15, 4(r4)
-    addi r3, r3, 6
-    addi r4, r4, 6
-    addi r25, r25, 1
-    b lbl_ABT_top
-lbl_ABT_done:
-    stw r23, 0(r6)      // *pd = a
-    stw r24, 0(r7)      // *pe = b
-    lwz r0, 84(r1)
-    mtlr r0
-    lmw r14, 8(r1)
-    addi r1, r1, 80
-    blr
-    // clang-format on
+    u8* a = *pd;
+    u8* b = *pe;
+    int i = 0;
+    int wHi = 0x10000 - f;
+    int aIdx;
+    int bIdx;
+    int ax, ay, az;
+    int bx, by, bz;
+
+    while (i < n)
+    {
+        aIdx = (*(s16*)a & 0x1fff) - pos;
+        bIdx = (*(s16*)b & 0x1fff) - pos;
+        if (i >= aIdx)
+        {
+            if (i == bIdx)
+            {
+                b = modelBoneTransforms_next(b, &bx, &by, &bz);
+                a = modelBoneTransforms_next(a, &ax, &ay, &az);
+                *(s16*)out = ((u32)(ax * wHi + bx * f) >> 16) + *(s16*)p;
+                *(s16*)(out + 2) = ((u32)(ay * wHi + by * f) >> 16) + *(s16*)(p + 2);
+                *(s16*)(out + 4) = ((u32)(az * wHi + bz * f) >> 16) + *(s16*)(p + 4);
+            }
+            else
+            {
+                a = modelBoneTransforms_next(a, &ax, &ay, &az);
+                *(s16*)out = ((u32)(ax * wHi) >> 16) + *(s16*)p;
+                *(s16*)(out + 2) = ((u32)(ay * wHi) >> 16) + *(s16*)(p + 2);
+                *(s16*)(out + 4) = ((u32)(az * wHi) >> 16) + *(s16*)(p + 4);
+            }
+        }
+        else if (i >= bIdx)
+        {
+            b = modelBoneTransforms_next(b, &bx, &by, &bz);
+            *(s16*)out = ((u32)(bx * f) >> 16) + *(s16*)p;
+            *(s16*)(out + 2) = ((u32)(by * f) >> 16) + *(s16*)(p + 2);
+            *(s16*)(out + 4) = ((u32)(bz * f) >> 16) + *(s16*)(p + 4);
+        }
+        else
+        {
+            *(u32*)out = *(u32*)p;
+            *(s16*)(out + 4) = *(s16*)(p + 4);
+        }
+        p += 6;
+        out += 6;
+        i++;
+    }
+    *pd = a;
+    *pe = b;
 }
-asm void modelBoneTransforms_next(void)
+
+u8* modelBoneTransforms_next(u8* stream, int* dx, int* dy, int* dz)
 {
-    nofralloc
-    lhz r21, 0(r20)
-    addi r20, r20, 2
-    andi. r22, r21, MODEL_BONEXFORM_HAS_X
-    li r10, 0
-    beq lbl_BTN_y
-    lha r10, 0(r20)
-    addi r20, r20, 2
-lbl_BTN_y:
-    andi. r22, r21, MODEL_BONEXFORM_HAS_Y
-    li r12, 0
-    beq lbl_BTN_z
-    lha r12, 0(r20)
-    addi r20, r20, 2
-lbl_BTN_z:
-    andi. r22, r21, MODEL_BONEXFORM_HAS_Z
-    li r15, 0
-    beqlr
-    lha r15, 0(r20)
-    addi r20, r20, 2
-    blr
+    u16 flags = *(u16*)stream;
+
+    stream += 2;
+    *dx = 0;
+    if (flags & MODEL_BONEXFORM_HAS_X)
+    {
+        *dx = *(s16*)stream;
+        stream += 2;
+    }
+    *dy = 0;
+    if (flags & MODEL_BONEXFORM_HAS_Y)
+    {
+        *dy = *(s16*)stream;
+        stream += 2;
+    }
+    *dz = 0;
+    if (flags & MODEL_BONEXFORM_HAS_Z)
+    {
+        *dz = *(s16*)stream;
+        stream += 2;
+    }
+    return stream;
 }
 
 void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int channelCount)
@@ -2403,21 +2332,6 @@ void ObjModel_ToggleMatrixBuffer(ObjModel* model)
 /* Per-bone delta-transform opcode bits: a set bit means the X/Y/Z
    component is present (as an s16) in the stream, else it is 0. */
 
-/* Hand-written assembly: modelBoneTransforms_next is a
-   private subroutine of modelApplyBoneTransform with a custom calling
-   convention no C signature can express -- it takes the delta-stream cursor
-   in r20 (advanced in place), returns the unpacked x/y/z deltas in
-   r10/r12/r15, and clobbers only r21/r22, letting the caller keep its own
-   incoming arguments live in the volatile argument registers across the
-   calls. modelApplyBoneTransform itself is EABI-conformant externally.
-
-   Behavior: interpolates two per-vertex s16 delta streams (a = *pd, b = *pe)
-   with weights (0x10000 - f) and f, adds the result to the source vertex
-   stream p (6-byte x/y/z records), and writes n blended vertices to out.
-   Each stream record is a u16 header: low 13 bits = vertex index, top three
-   bits flag which of x/y/z deltas follow (MODEL_BONEXFORM_HAS_*).
-   Vertices before both streams' next index are copied through unchanged. */
-
 ObjModelJointMatrix* ObjModel_GetJointMatrix(u8* modelBytes, int jointIndex)
 {
     ObjModel* model;
@@ -3131,107 +3045,38 @@ void ObjModel_InitScratchBuffers(void)
     gModelCacheBuffersB[5] = c + 0x3800;
 }
 
-asm void ObjModel_TransformVerticesWithTranslation(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count)
+void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, int d2, int count)
 {
-    nofralloc
-    stwu r1, -160(r1)
-    stfd f14, 8(r1)
-    addi r9, count, -1
-    stfd f15, 16(r1)
-    stfd f16, 24(r1)
-    stfd f17, 32(r1)
-    stfd f18, 40(r1)
-    stfd f19, 48(r1)
-    stfd f20, 56(r1)
-    stfd f21, 64(r1)
-    stfd f22, 72(r1)
-    stfd f23, 80(r1)
-    stfd f24, 88(r1)
-    stfd f25, 96(r1)
-    stfd f26, 104(r1)
-    stfd f27, 112(r1)
-    mtctr r9
-    psq_l f0, 0(m1), 0, 0
-    addi d1, d1, -2
-    psq_l f1, 8(m1), 1, 0
-    addi d2, d2, -2
-    psq_l f6, 36(m1), 0, 0
-    addi src, src, -2
-    psq_lu f8, 2(d1), 0, 7
-    psq_l f7, 44(m1), 1, 0
-    psq_lu f9, 4(d1), 1, 7
-    psq_lu f27, 2(src), 0, 6
-    ps_madds0 f15, f0, f8, f6
-    psq_l f2, 12(m1), 0, 0
-    ps_madds0 f16, f1, f8, f7
-    psq_l f3, 20(m1), 1, 0
-    psq_l f5, 32(m1), 1, 0
-    ps_madds1 f15, f2, f8, f15
-    psq_l f19, 0(m2), 0, 0
-    ps_madds1 f16, f3, f8, f16
-    psq_l f4, 24(m1), 0, 0
-    psq_l f20, 8(m2), 1, 0
-    psq_l f21, 12(m2), 0, 0
-    ps_madds0 f15, f4, f9, f15
-    psq_l f22, 20(m2), 1, 0
-    ps_madds0 f16, f5, f9, f16
-    psq_l f23, 24(m2), 0, 0
-    psq_l f24, 32(m2), 1, 0
-    psq_l f25, 36(m2), 0, 0
-    ps_muls0 f15, f15, f27
-    psq_l f26, 44(m2), 1, 0
-    ps_muls0 f16, f16, f27
-    ps_madds0 f11, f19, f8, f25
-    ps_madds0 f12, f20, f8, f26
-    ps_madds1 f11, f21, f8, f11
-    ps_madds1 f12, f22, f8, f12
-    psq_lu f8, 2(d1), 0, 7
-    ps_madds0 f11, f23, f9, f11
-    ps_madds0 f12, f24, f9, f12
-    psq_lu f9, 4(d1), 1, 7
-    ps_madds1 f11, f11, f27, f15
-    ps_madds1 f12, f12, f27, f16
-lbl_TVWT_loop:
-    ps_madds0 f15, f0, f8, f6
-    psq_stu f11, 2(d2), 0, 7
-    ps_madds0 f16, f1, f8, f7
-    psq_stu f12, 4(d2), 1, 7
-    ps_madds1 f15, f2, f8, f15
-    ps_madds1 f16, f3, f8, f16
-    ps_madds0 f15, f4, f9, f15
-    ps_madds0 f16, f5, f9, f16
-    psq_lu f27, 2(src), 0, 6
-    ps_muls0 f15, f15, f27
-    ps_muls0 f16, f16, f27
-    ps_madds0 f11, f19, f8, f25
-    ps_madds0 f12, f20, f8, f26
-    ps_madds1 f11, f21, f8, f11
-    ps_madds1 f12, f22, f8, f12
-    psq_lu f8, 2(d1), 0, 7
-    ps_madds0 f11, f23, f9, f11
-    ps_madds0 f12, f24, f9, f12
-    psq_lu f9, 4(d1), 1, 7
-    ps_madds1 f11, f11, f27, f15
-    ps_madds1 f12, f12, f27, f16
-    bdnz lbl_TVWT_loop
-    psq_stu f11, 2(d2), 0, 7
-    psq_stu f12, 4(d2), 1, 7
-    lfd f14, 8(r1)
-    lfd f15, 16(r1)
-    lfd f16, 24(r1)
-    lfd f17, 32(r1)
-    lfd f18, 40(r1)
-    lfd f19, 48(r1)
-    lfd f20, 56(r1)
-    lfd f21, 64(r1)
-    lfd f22, 72(r1)
-    lfd f23, 80(r1)
-    lfd f24, 88(r1)
-    lfd f25, 96(r1)
-    lfd f26, 104(r1)
-    lfd f27, 112(r1)
-    addi r1, r1, 160
-    blr
+    f32* ma = (f32*)m1;
+    f32* mb = (f32*)m2;
+    u8* w = src;
+    s16* in = (s16*)d1;
+    s16* out = (s16*)d2;
+    f32 scale = (f32)(1 << ((sGQR7Config >> 24) & 0x3f));
+    f32 invScale = 1.0f / scale;
+    f32 x, y, z, w0, w1, ox, oy, oz;
+    int i;
+
+    for (i = 0; i < count; i++)
+    {
+        w0 = __OSu8tof32(w) * (1.0f / 128.0f);
+        w1 = __OSu8tof32(w + 1) * (1.0f / 128.0f);
+        w += 2;
+        x = __OSs16tof32(&in[0]) * invScale;
+        y = __OSs16tof32(&in[1]) * invScale;
+        z = __OSs16tof32(&in[2]) * invScale;
+        in += 3;
+        ox = (ma[0] * x + ma[3] * y + ma[6] * z + ma[9]) * w0 +
+             (mb[0] * x + mb[3] * y + mb[6] * z + mb[9]) * w1;
+        oy = (ma[1] * x + ma[4] * y + ma[7] * z + ma[10]) * w0 +
+             (mb[1] * x + mb[4] * y + mb[7] * z + mb[10]) * w1;
+        oz = (ma[2] * x + ma[5] * y + ma[8] * z + ma[11]) * w0 +
+             (mb[2] * x + mb[5] * y + mb[8] * z + mb[11]) * w1;
+        out[0] = __OSf32tos16(ox * scale);
+        out[1] = __OSf32tos16(oy * scale);
+        out[2] = __OSf32tos16(oz * scale);
+        out += 3;
+    }
 }
 
 typedef struct
@@ -3246,297 +3091,79 @@ typedef struct
     int vals[2];
 } ChF34;
 
-asm void ObjModel_TransformVerticesLinear(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count)
+void ObjModel_TransformVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count)
 {
-    nofralloc
-    stwu r1, -160(r1)
-    stfd f14, 8(r1)
-    addi r9, count, -1
-    stfd f15, 16(r1)
-    stfd f16, 24(r1)
-    stfd f17, 32(r1)
-    stfd f18, 40(r1)
-    stfd f19, 48(r1)
-    stfd f20, 56(r1)
-    stfd f21, 64(r1)
-    stfd f22, 72(r1)
-    stfd f23, 80(r1)
-    stfd f24, 88(r1)
-    stfd f25, 96(r1)
-    stfd f26, 104(r1)
-    stfd f27, 112(r1)
-    mtctr r9
-    psq_l f0, 0(m1), 0, 0
-    addi d1, d1, -1
-    psq_l f1, 8(m1), 1, 0
-    addi d2, d2, -1
-    addi src, src, -2
-    psq_lu f8, 1(d1), 0, 7
-    psq_lu f9, 2(d1), 1, 7
-    psq_lu f27, 2(src), 0, 6
-    ps_muls0 f15, f0, f8
-    psq_l f2, 12(m1), 0, 0
-    ps_muls0 f16, f1, f8
-    psq_l f3, 20(m1), 1, 0
-    psq_l f5, 32(m1), 1, 0
-    ps_madds1 f15, f2, f8, f15
-    psq_l f19, 0(m2), 0, 0
-    ps_madds1 f16, f3, f8, f16
-    psq_l f4, 24(m1), 0, 0
-    psq_l f20, 8(m2), 1, 0
-    psq_l f21, 12(m2), 0, 0
-    ps_madds0 f15, f4, f9, f15
-    psq_l f22, 20(m2), 1, 0
-    ps_madds0 f16, f5, f9, f16
-    psq_l f23, 24(m2), 0, 0
-    psq_l f24, 32(m2), 1, 0
-    ps_muls0 f15, f15, f27
-    ps_muls0 f16, f16, f27
-    ps_muls0 f11, f19, f8
-    ps_muls0 f12, f20, f8
-    ps_madds1 f11, f21, f8, f11
-    ps_madds1 f12, f22, f8, f12
-    psq_lu f8, 1(d1), 0, 7
-    ps_madds0 f11, f23, f9, f11
-    ps_madds0 f12, f24, f9, f12
-    psq_lu f9, 2(d1), 1, 7
-    ps_madds1 f11, f11, f27, f15
-    ps_madds1 f12, f12, f27, f16
-lbl_TVL_loop:
-    ps_muls0 f15, f0, f8
-    psq_stu f11, 1(d2), 0, 7
-    ps_muls0 f16, f1, f8
-    psq_stu f12, 2(d2), 1, 7
-    ps_madds1 f15, f2, f8, f15
-    ps_madds1 f16, f3, f8, f16
-    ps_madds0 f15, f4, f9, f15
-    ps_madds0 f16, f5, f9, f16
-    psq_lu f27, 2(src), 0, 6
-    ps_muls0 f15, f15, f27
-    ps_muls0 f16, f16, f27
-    ps_muls0 f11, f19, f8
-    ps_muls0 f12, f20, f8
-    ps_madds1 f11, f21, f8, f11
-    ps_madds1 f12, f22, f8, f12
-    psq_lu f8, 1(d1), 0, 7
-    ps_madds0 f11, f23, f9, f11
-    ps_madds0 f12, f24, f9, f12
-    psq_lu f9, 2(d1), 1, 7
-    ps_madds1 f11, f11, f27, f15
-    ps_madds1 f12, f12, f27, f16
-    bdnz lbl_TVL_loop
-    psq_stu f11, 1(d2), 0, 7
-    psq_stu f12, 2(d2), 1, 7
-    lfd f14, 8(r1)
-    lfd f15, 16(r1)
-    lfd f16, 24(r1)
-    lfd f17, 32(r1)
-    lfd f18, 40(r1)
-    lfd f19, 48(r1)
-    lfd f20, 56(r1)
-    lfd f21, 64(r1)
-    lfd f22, 72(r1)
-    lfd f23, 80(r1)
-    lfd f24, 88(r1)
-    lfd f25, 96(r1)
-    lfd f26, 104(r1)
-    lfd f27, 112(r1)
-    addi r1, r1, 160
-    blr
+    f32* ma = (f32*)m1;
+    f32* mb = (f32*)m2;
+    u8* w = src;
+    s8* in = (s8*)d1;
+    s8* out = (s8*)d2;
+    f32 scale = (f32)(1 << ((sGQR7Config >> 24) & 0x3f));
+    f32 invScale = 1.0f / scale;
+    f32 x, y, z, w0, w1, ox, oy, oz;
+    int i;
+
+    for (i = 0; i < count; i++)
+    {
+        w0 = __OSu8tof32(w) * (1.0f / 128.0f);
+        w1 = __OSu8tof32(w + 1) * (1.0f / 128.0f);
+        w += 2;
+        x = __OSs8tof32(&in[0]) * invScale;
+        y = __OSs8tof32(&in[1]) * invScale;
+        z = __OSs8tof32(&in[2]) * invScale;
+        in += 3;
+        ox = (ma[0] * x + ma[3] * y + ma[6] * z) * w0 + (mb[0] * x + mb[3] * y + mb[6] * z) * w1;
+        oy = (ma[1] * x + ma[4] * y + ma[7] * z) * w0 + (mb[1] * x + mb[4] * y + mb[7] * z) * w1;
+        oz = (ma[2] * x + ma[5] * y + ma[8] * z) * w0 + (mb[2] * x + mb[5] * y + mb[8] * z) * w1;
+        out[0] = __OSf32tos8(ox * scale);
+        out[1] = __OSf32tos8(oy * scale);
+        out[2] = __OSf32tos8(oz * scale);
+        out += 3;
+    }
 }
-asm void ObjModel_TransformQuadVerticesLinear(register u8* m1, register u8* m2, register u8* src, register int d1, register int d2, register int count)
+void ObjModel_TransformQuadVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count)
 {
-    nofralloc
-    stwu    r1,-160(r1)
-    stfd    f14,8(r1)
-    addi    r9,count,-1
-    stfd    f15,16(r1)
-    stfd    f16,24(r1)
-    stfd    f17,32(r1)
-    stfd    f18,40(r1)
-    stfd    f19,48(r1)
-    stfd    f20,56(r1)
-    stfd    f21,64(r1)
-    stfd    f22,72(r1)
-    stfd    f23,80(r1)
-    stfd    f24,88(r1)
-    stfd    f25,96(r1)
-    stfd    f26,104(r1)
-    stfd    f27,112(r1)
-    mtctr   r9
-    psq_l   f0,0(m1),0,0
-    addi    d1,d1,-1
-    psq_l   f1,8(m1),1,0
-    addi    d2,d2,-1
-    addi    src,src,-2
-    psq_lu  f8,1(d1),0,7
-    psq_lu  f9,2(d1),1,7
-    psq_lu  f27,2(src),0,6
-    ps_muls0 f15,f0,f8
-    psq_l   f2,12(m1),0,0
-    ps_muls0 f16,f1,f8
-    psq_l   f3,20(m1),1,0
-    psq_l   f5,32(m1),1,0
-    ps_madds1 f15,f2,f8,f15
-    psq_l   f19,0(m2),0,0
-    ps_madds1 f16,f3,f8,f16
-    psq_l   f4,24(m1),0,0
-    psq_l   f20,8(m2),1,0
-    psq_l   f21,12(m2),0,0
-    ps_madds0 f15,f4,f9,f15
-    psq_l   f22,20(m2),1,0
-    ps_madds0 f16,f5,f9,f16
-    psq_l   f23,24(m2),0,0
-    psq_l   f24,32(m2),1,0
-    ps_muls0 f15,f15,f27
-    ps_muls0 f16,f16,f27
-    ps_muls0 f11,f19,f8
-    ps_muls0 f12,f20,f8
-    ps_madds1 f11,f21,f8,f11
-    ps_madds1 f12,f22,f8,f12
-    psq_lu  f8,1(d1),0,7
-    ps_madds0 f11,f23,f9,f11
-    ps_madds0 f12,f24,f9,f12
-    psq_lu  f9,2(d1),1,7
-    ps_madds1 f11,f11,f27,f15
-    ps_madds1 f12,f12,f27,f16
-    ps_muls0 f15,f0,f8
-    psq_stu f11,1(d2),0,7
-    ps_muls0 f16,f1,f8
-    psq_stu f12,2(d2),1,7
-    ps_madds1 f15,f2,f8,f15
-    ps_madds1 f16,f3,f8,f16
-    ps_madds0 f15,f4,f9,f15
-    ps_madds0 f16,f5,f9,f16
-    ps_muls0 f15,f15,f27
-    ps_muls0 f16,f16,f27
-    ps_muls0 f11,f19,f8
-    ps_muls0 f12,f20,f8
-    ps_madds1 f11,f21,f8,f11
-    ps_madds1 f12,f22,f8,f12
-    psq_lu  f8,1(d1),0,7
-    ps_madds0 f11,f23,f9,f11
-    ps_madds0 f12,f24,f9,f12
-    psq_lu  f9,2(d1),1,7
-    ps_madds1 f11,f11,f27,f15
-    ps_madds1 f12,f12,f27,f16
-    ps_muls0 f15,f0,f8
-    psq_stu f11,1(d2),0,7
-    ps_muls0 f16,f1,f8
-    psq_stu f12,2(d2),1,7
-    ps_madds1 f15,f2,f8,f15
-    ps_madds1 f16,f3,f8,f16
-    ps_madds0 f15,f4,f9,f15
-    ps_madds0 f16,f5,f9,f16
-    ps_muls0 f15,f15,f27
-    ps_muls0 f16,f16,f27
-    ps_muls0 f11,f19,f8
-    ps_muls0 f12,f20,f8
-    ps_madds1 f11,f21,f8,f11
-    ps_madds1 f12,f22,f8,f12
-    psq_lu  f8,1(d1),0,7
-    ps_madds0 f11,f23,f9,f11
-    ps_madds0 f12,f24,f9,f12
-    psq_lu  f9,2(d1),1,7
-    ps_madds1 f11,f11,f27,f15
-    ps_madds1 f12,f12,f27,f16
-lbl_TQVL_loop:
-    ps_muls0 f15,f0,f8
-    psq_stu f11,1(d2),0,7
-    ps_muls0 f16,f1,f8
-    psq_stu f12,2(d2),1,7
-    ps_madds1 f15,f2,f8,f15
-    ps_madds1 f16,f3,f8,f16
-    ps_madds0 f15,f4,f9,f15
-    ps_madds0 f16,f5,f9,f16
-    psq_lu  f27,2(src),0,6
-    ps_muls0 f15,f15,f27
-    ps_muls0 f16,f16,f27
-    ps_muls0 f11,f19,f8
-    ps_muls0 f12,f20,f8
-    ps_madds1 f11,f21,f8,f11
-    ps_madds1 f12,f22,f8,f12
-    psq_lu  f8,1(d1),0,7
-    ps_madds0 f11,f23,f9,f11
-    ps_madds0 f12,f24,f9,f12
-    psq_lu  f9,2(d1),1,7
-    ps_madds1 f11,f11,f27,f15
-    ps_madds1 f12,f12,f27,f16
-    ps_muls0 f15,f0,f8
-    psq_stu f11,1(d2),0,7
-    ps_muls0 f16,f1,f8
-    psq_stu f12,2(d2),1,7
-    ps_madds1 f15,f2,f8,f15
-    ps_madds1 f16,f3,f8,f16
-    ps_madds0 f15,f4,f9,f15
-    ps_madds0 f16,f5,f9,f16
-    ps_muls0 f15,f15,f27
-    ps_muls0 f16,f16,f27
-    ps_muls0 f11,f19,f8
-    ps_muls0 f12,f20,f8
-    ps_madds1 f11,f21,f8,f11
-    ps_madds1 f12,f22,f8,f12
-    psq_lu  f8,1(d1),0,7
-    ps_madds0 f11,f23,f9,f11
-    ps_madds0 f12,f24,f9,f12
-    psq_lu  f9,2(d1),1,7
-    ps_madds1 f11,f11,f27,f15
-    ps_madds1 f12,f12,f27,f16
-    ps_muls0 f15,f0,f8
-    psq_stu f11,1(d2),0,7
-    ps_muls0 f16,f1,f8
-    psq_stu f12,2(d2),1,7
-    ps_madds1 f15,f2,f8,f15
-    ps_madds1 f16,f3,f8,f16
-    ps_madds0 f15,f4,f9,f15
-    ps_madds0 f16,f5,f9,f16
-    ps_muls0 f15,f15,f27
-    ps_muls0 f16,f16,f27
-    ps_muls0 f11,f19,f8
-    ps_muls0 f12,f20,f8
-    ps_madds1 f11,f21,f8,f11
-    ps_madds1 f12,f22,f8,f12
-    psq_lu  f8,1(d1),0,7
-    ps_madds0 f11,f23,f9,f11
-    ps_madds0 f12,f24,f9,f12
-    psq_lu  f9,2(d1),1,7
-    ps_madds1 f11,f11,f27,f15
-    ps_madds1 f12,f12,f27,f16
-    bdnz lbl_TQVL_loop
-    psq_stu f11,1(d2),0,7
-    psq_stu f12,2(d2),1,7
-    lfd     f14,8(r1)
-    lfd     f15,16(r1)
-    lfd     f16,24(r1)
-    lfd     f17,32(r1)
-    lfd     f18,40(r1)
-    lfd     f19,48(r1)
-    lfd     f20,56(r1)
-    lfd     f21,64(r1)
-    lfd     f22,72(r1)
-    lfd     f23,80(r1)
-    lfd     f24,88(r1)
-    lfd     f25,96(r1)
-    lfd     f26,104(r1)
-    lfd     f27,112(r1)
-    addi    r1,r1,160
-    blr
+    f32* ma = (f32*)m1;
+    f32* mb = (f32*)m2;
+    u8* w = src;
+    s8* in = (s8*)d1;
+    s8* out = (s8*)d2;
+    f32 scale = (f32)(1 << ((sGQR7Config >> 24) & 0x3f));
+    f32 invScale = 1.0f / scale;
+    f32 x, y, z, w0, w1, ox, oy, oz;
+    int i;
+    int k;
+
+    for (i = 0; i < count; i++)
+    {
+        w0 = __OSu8tof32(w) * (1.0f / 128.0f);
+        w1 = __OSu8tof32(w + 1) * (1.0f / 128.0f);
+        w += 2;
+        for (k = 0; k < 3; k++)
+        {
+            x = __OSs8tof32(&in[0]) * invScale;
+            y = __OSs8tof32(&in[1]) * invScale;
+            z = __OSs8tof32(&in[2]) * invScale;
+            in += 3;
+            ox = (ma[0] * x + ma[3] * y + ma[6] * z) * w0 + (mb[0] * x + mb[3] * y + mb[6] * z) * w1;
+            oy = (ma[1] * x + ma[4] * y + ma[7] * z) * w0 + (mb[1] * x + mb[4] * y + mb[7] * z) * w1;
+            oz = (ma[2] * x + ma[5] * y + ma[8] * z) * w0 + (mb[2] * x + mb[5] * y + mb[8] * z) * w1;
+            out[0] = __OSf32tos8(ox * scale);
+            out[1] = __OSf32tos8(oy * scale);
+            out[2] = __OSf32tos8(oz * scale);
+            out += 3;
+        }
+    }
 }
 
-asm
-void setGQR6(register u32 v)
+void setGQR6(u32 v)
 {
-    nofralloc
-    mtspr GQR6, v
-    blr
+    sGQR6Config = v;
 }
 
-asm
-void setGQR7(register u32 v)
+void setGQR7(u32 v)
 {
-    nofralloc
-    mtspr GQR7, v
-    blr
+    sGQR7Config = v;
 }
 void setGQR7Packed(int a, int b, int c, int d)
 {
