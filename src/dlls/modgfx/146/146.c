@@ -1,5 +1,5 @@
 /*
- * dll92func0 (DLL 0x92) - entry-point table for DLL 0x92.
+ * DLL 146 / 0x92 - mod-gfx effect spawner.
  *
  * func00/func01 are no-op slots. func03 builds a modgfx effect: a stack
  * ModgfxSpawnPacket holding a fixed list of GfxCmd entries (textures from

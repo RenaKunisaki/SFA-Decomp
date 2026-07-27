@@ -870,7 +870,7 @@ main/dll/dll_0091_dll91func0.c:
 	.sdata      start:0x803DB928 end:0x803DB930
 	.sdata2     start:0x803E11D8 end:0x803E120C
 
-main/dll/dll_0092_dll92func0.c:
+dlls/modgfx/146/146.c:
 	.text       start:0x800FA9F8 end:0x800FADA8
 	.sdata      start:0x803DB930 end:0x803DB938
 	.sdata2     start:0x803E1210 end:0x803E123C
