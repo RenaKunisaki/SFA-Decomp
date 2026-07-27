@@ -110,6 +110,7 @@
 #include "dlls/objects/312_GroundAnima.h"
 #include "dlls/objects/313_HitAnimator.h"
 #include "dlls/objects/314_VisAnimator.h"
+#include "dlls/objects/315_WallAnimato.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -300,8 +301,8 @@ extern ResourceDescriptor gWM_GalleonObjDescriptor, gWM_GeneralScalesObjDescript
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
-extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWallAnimatorObjDescriptor,
-    gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
+extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWarpStoneLiftObjDescriptor,
+    gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor,
     gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor, lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
@@ -1290,7 +1291,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gGroundAnimatorObjDescriptor,
     (ResourceDescriptor*)&gHitAnimatorObjDescriptor,
     (ResourceDescriptor*)&gVisAnimatorObjDescriptor,
-    &gWallAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gWallAnimatorObjDescriptor,
     &gXYZAnimatorObjDescriptor,
     &gExplodeAnimatorObjDescriptor,
     &gDIMBossIceSmashObjDescriptor,

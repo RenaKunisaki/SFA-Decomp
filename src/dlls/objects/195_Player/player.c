@@ -22,6 +22,7 @@
 #include "main/dll/player_motion_api.h"
 #include "dlls/objects/229_Shield.h"
 #include "dlls/objects/284.h"
+#include "dlls/objects/315_WallAnimato.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"
 #include "main/dll/DB/DBprotection.h"
@@ -11553,7 +11554,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
                 continue;
             }
             nearDist = lbl_803E808C;
-            t8 = ObjGroup_FindNearestObject(0x23, (GameObject*)obj, &nearDist);
+            t8 = ObjGroup_FindNearestObject(WALL_ANIMATOR_GROUP_CLIMBABLE, (GameObject*)obj, &nearDist);
             ok2 = 1;
             if ((u32)t8 != 0)
             {
