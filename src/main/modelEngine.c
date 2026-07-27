@@ -151,6 +151,7 @@
 #include "dlls/objects/353_CFTreasRobo.h"
 #include "dlls/objects/354_CFMagicWall.h"
 #include "dlls/objects/355.h"
+#include "dlls/objects/356_CFLevelCont.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -244,7 +245,7 @@ extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPl
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
-extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFLevelControlObjDescriptor;
+extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1362,7 +1363,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFTreasRoboNullResourceDescriptor,
     (ResourceDescriptor*)&gCFMagicWallObjDescriptor,
     (ResourceDescriptor*)&gDll355NullResourceDescriptor,
-    &gCFLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gCFLevelControlObjDescriptor,
     &lbl_803DBEC8,
     &gExplodedObjDescriptor,
     &gSpiritDoorLockObjDescriptor,
