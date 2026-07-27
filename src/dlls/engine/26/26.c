@@ -1091,8 +1091,6 @@ void Effect1_initialise(void)
 {
 }
 
-char sModgfxAlphaDebugFormat[10] = "alpha %d\n";
-
 ObjectDescriptor6 lbl_80310638 = {
     0,
     0,

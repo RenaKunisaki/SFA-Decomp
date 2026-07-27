@@ -56,8 +56,8 @@ int gKTRexContactEffectCooldown;
 StaffCollisionInterface** gKTRexResource;
 
 KTRexWork gKTRexEffectSpawnWork;
-void* gKTRexStateHandlersB[10];
 void* gKTRexStateHandlersA[12];
+void* gKTRexStateHandlersB[10];
 
 s16 lbl_803DC250[4] = {9, 0x12, 0x12, 0};
 s16 lbl_803DC258[4] = {1, 2, 3, 0};
@@ -1555,6 +1555,11 @@ void ktrex_hitDetect(GameObject* obj)
         modelLightStruct_setPosition(gKTRexState->light, x, y, z);
         modelLightStruct_updateGlowAlpha(gKTRexState->light);
     }
+}
+
+static void* ktrex_getStateHandler(int state)
+{
+    return gKTRexStateHandlersA[state];
 }
 
 void ktrex_update(GameObject* obj)

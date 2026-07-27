@@ -2055,17 +2055,24 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x268, velBefore, state->speed);
     if (targetWg == state->activeWalkGroup)
     {
+        int wref;
+        int sref;
+        int tref;
+
         state->stateFlags = state->stateFlags | 0x400;
         i = 0;
         mask = 1;
-        for (; i < 4; i++, mask = mask << 1)
+        wref = (int)&wgi;
+        sref = (int)state;
+        tref = (int)state;
+        for (; i < 4; wref += 2, sref += 2, tref += 12, i++, mask = mask << 1)
         {
             if (wgi.patchMask & mask)
             {
-                state->patch[i] = wgi.patchGroupIds[i];
-                state->patchTargets[i].x = ((TrickyPoint3*)target)->x;
-                state->patchTargets[i].y = ((TrickyPoint3*)target)->y;
-                state->patchTargets[i].z = ((TrickyPoint3*)target)->z;
+                *(s16*)(sref + 152) = *(u16*)(wref + 2);
+                *(f32*)(tref + 160) = ((TrickyPoint3*)target)->x;
+                *(f32*)(tref + 164) = ((TrickyPoint3*)target)->y;
+                *(f32*)(tref + 168) = ((TrickyPoint3*)target)->z;
             }
         }
     }
@@ -2101,12 +2108,15 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x2e4, getPatchGroup(target, state->activeWalkGroup));
     if ((state->stateFlags & 0x400) != 0)
     {
-        for (i = 0; i < 4; i++)
+        int pref = (int)state;
+        int qref = (int)state;
+
+        for (i = 0; i < 4; pref += 2, qref += 12, i++)
         {
-            if (state->patch[i] != 0)
+            if (*(s16*)(pref + 152) != 0)
             {
-                trickyDebugPrint(strs + 0x308, i, state->patchTargets[i].x, state->patchTargets[i].y,
-                                 state->patchTargets[i].z);
+                trickyDebugPrint(strs + 0x308, i, *(f32*)(qref + 160), *(f32*)(qref + 164),
+                                 *(f32*)(qref + 168));
             }
         }
     }
@@ -2150,9 +2160,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     if (wg != 0)
                     {
-                        for (i = 0; i < 4; i++)
+                        int pref = (int)state;
+                        
+                        for (i = 0; i < 4; pref += 2, i++)
                         {
-                            if (state->patch[i] == tp)
+                            if (*(s16*)(pref + 152) == tp)
                             {
                                 slot = i;
                                 state->followPhase = 2;
@@ -2176,9 +2188,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     {
                         if ((u32)trickyPatch != 0)
                         {
-                            for (i = 0; i < 4; i++)
+                            int pref = (int)state;
+                            
+                            for (i = 0; i < 4; pref += 2, i++)
                             {
-                                if (state->patch[i] == trickyPatch)
+                                if (*(s16*)(pref + 152) == trickyPatch)
                                 {
                                     trickyPatch = i & 0xffff;
                                     state->followPhase = 2;
@@ -2202,9 +2216,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     if (wg != 0)
                     {
-                        for (i = 0; i < 4; i++)
+                        int pref = (int)state;
+                        
+                        for (i = 0; i < 4; pref += 2, i++)
                         {
-                            if (state->patch[i] == tp)
+                            if (*(s16*)(pref + 152) == tp)
                             {
                                 slot = i;
                                 state->followPhase = 2;
@@ -2282,9 +2298,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         }
                         else
                         {
-                            for (i = 0; i < 4; i++)
+                            int pref = (int)state;
+                            
+                            for (i = 0; i < 4; pref += 2, i++)
                             {
-                                if (state->patch[i] == targetWg)
+                                if (*(s16*)(pref + 152) == targetWg)
                                 {
                                     slot = i;
                                     state->followPhase = 2;
@@ -2304,9 +2322,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             if (targetWg == state->activeWalkGroup)
                             {
-                                for (i = 0; i < 4; i++)
+                                int pref = (int)state;
+                                
+                                for (i = 0; i < 4; pref += 2, i++)
                                 {
-                                    if (state->patch[i] == p)
+                                    if (*(s16*)(pref + 152) == p)
                                     {
                                         slot = i;
                                         state->followPhase = 2;
@@ -3844,8 +3864,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         else
         {
             t->stateIndex = 1;
-            go = 0;
-            t->substate = go;
+            t->substate = go = 0;
             TRICKY_RESET_TAIL((u8*)t)
         }
         if (go != 0)
@@ -3922,8 +3941,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         else
         {
             t->stateIndex = 1;
-            go = 0;
-            t->substate = go;
+            t->substate = go = 0;
             TRICKY_RESET_TAIL((u8*)t)
         }
         if (go != 0)
@@ -4048,8 +4066,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         else
         {
             t->stateIndex = 1;
-            go = 0;
-            t->substate = go;
+            t->substate = go = 0;
             TRICKY_RESET_TAIL((u8*)t)
         }
         if (go != 0 && ok != 1)

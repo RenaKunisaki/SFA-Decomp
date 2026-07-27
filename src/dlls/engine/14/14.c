@@ -3813,3 +3813,5 @@ ObjectDescriptor6 lbl_80310604 = {
     (ObjectDescriptorCallback)partfx_spawnObject,
     (ObjectDescriptorCallback)partfx_updateFrameState,
 };
+
+char sModgfxAlphaDebugFormat[10] = "alpha %d\n";
