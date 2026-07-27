@@ -1,5 +1,5 @@
 /*
- * dll79func0 (DLL 0x79) - a model-graphics effect spawner.
+ * DLL 121 / 0x79 - a model-graphics effect spawner.
  *
  * dll_79_func03 builds a stack-resident GfxCmd command list describing a
  * multi-layer billboard/sprite effect, selected by `variant` (0, 1 or 2),
