@@ -1,5 +1,5 @@
 /*
- * dll6ffunc0 (DLL 0x6F, foodbag family, func03 slot): dll_6F_func03 builds a
+ * DLL 111 / 0x6F (foodbag family, func03 slot): dll_6F_func03 builds a
  * 32-entry modgfx command list (the spirit/aura particle effect) and submits
  * it via gModgfxInterface->spawnEffect. func00/func01 are the DLL's empty
  * entry-point slots.
@@ -17,7 +17,6 @@ u8 gDll6FGfxCmdTexture[8] = {0, 0, 0, 6, 0, 0x0C, 0, 0x12};
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL6F_EFFECT_ID 0x48
-
 
 extern u8 gDll6FGfxCmdResourceTable[];
 
