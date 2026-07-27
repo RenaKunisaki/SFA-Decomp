@@ -49,8 +49,6 @@ RomCurveDef* gRomCurveLastFindStart;
 RomCurveDef* gRomCurveLastFindEnd;
 
 extern int gObjfsaPatchCount;
-extern int gObjfsaLastWalkGroupIndex;
-extern int gObjfsaBlockFlagsChecksum;
 
 #define OBJFSA_PATCHGROUP_STRIDE        0x28
 #define OBJFSA_ACTIVE_WALKGROUPS_OFFSET 0x4C48
@@ -122,8 +120,6 @@ STATIC_ASSERT(offsetof(ObjfsaWalkCurveDef, linkEdges) == 0x34);
 
 extern f32 lbl_803E0640;
 extern f32 gFloatOne;
-extern char sObjfsaFoundNewWalkGroupPatch[];
-extern char sObjfsaIsPointWithinPatchGroupError[];
 extern f32 lbl_803E05C8;
 extern f32 lbl_803E0610;
 extern f32 gRomCurveAnglePi2;
@@ -132,8 +128,6 @@ extern f32 gFloatZero;
 extern f32 gFloatNegOne;
 extern f32 lbl_803E0608;
 
-extern char sObjfsaMissingPatchExitPoint0[];
-extern char sObjfsaMissingPatchExitPoint1[];
 extern f32 gFloatHalf;
 extern const f32 gRomCurveFindDistInit;
 

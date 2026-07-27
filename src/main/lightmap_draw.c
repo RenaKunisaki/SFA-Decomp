@@ -54,7 +54,6 @@
 #include "dolphin/os/OSFastCast.h"
 
 extern u8 colorFilterColor[4];
-extern u8 colorScale;
 extern f32 widescreenAspect_803DEC1C;
 extern f32 lbl_803DB670;
 
@@ -91,10 +90,8 @@ extern f32 lbl_803DEBFC;
 extern f32 lbl_803DEBCC;
 extern f32 lbl_803DEBDC;
 extern f32 lbl_803DEC00;
-extern f32 gLightmapDegToBamScale;
 extern F32Pair lbl_803DEC08;
 extern f32 lbl_803DEC0C;
-extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 lbl_803DCE98; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
@@ -102,13 +99,9 @@ extern u32 lbl_803DCE34;
 extern f32 lbl_803DEC10;
 extern u16 lbl_803DCEAC;
 extern u8 lbl_803DCE06;
-extern s32 heatEffectIntensity;
-extern u8 gLightmapScreenImageEnabled;
 extern s8 lbl_8030E65C[];
 extern s8 lbl_8030E66C[];
 extern int lbl_8038228C[];
-extern s8* gMapLayerCellStates;
-extern s32 gMapCurRomListSlot;
 extern f32 lbl_803DCE58;
 extern f32 lbl_803DCE54;
 typedef struct
@@ -118,8 +111,6 @@ typedef struct
     u32 key;
     u32 d;
 } LightSortEntry;
-extern s16* gMapBlockIds;
-extern u8* gMapBlockRefCounts;
 extern void* lbl_803DCE78;
 extern void* lbl_803DCE7C;
 extern void* lbl_803DCE80;
@@ -128,7 +119,6 @@ extern s16 lbl_803DCE90;
 extern s16 lbl_803DCEBA;
 extern s16 lbl_803DCEB8;
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
-extern s32 gHeatEffectFadeDirection;
 
 typedef union
 {
@@ -177,9 +167,6 @@ MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
 
 void* RomList_GetLoadedPages(void);
 
-extern u32 gVisibleObjectSortKeys[0x400];
-extern int gLightmapDeferredObjectCount;
-extern s16 gVisibleObjectSortKeyCount;
 
 typedef struct LightmapDrawEntry
 {
@@ -219,9 +206,6 @@ typedef struct
 } LightmapDrawQueue;
 
 extern s16* lbl_803822A0[];
-extern f32 gMapBlockWorldSize;
-extern int gMapBlockOriginX;
-extern int gMapBlockOriginZ;
 
 int coordsToMapCell(f32 x, f32 z);
 
@@ -263,28 +247,14 @@ static inline void fillBoxRows(u8* map, int* box)
 }
 
 void renderSceneGeometry(u8 renderType, s8* order);
-extern u8 bEnableMotionBlur;
 extern f32 lbl_803DB62C;
 
-extern u8 bEnableBlurFilter;
 extern f32 lbl_803DCE50;
 extern f32 lbl_803DCE4C;
-extern f32 blurFilterArea;
-extern u8 bBlurFilterUseArea;
-extern u8 bBiggerBlurFilter;
-extern u8 bEnableDistortionFilter;
-extern f32 distortionFilterAngle1;
-extern f32 distortionFilterAngle2;
-extern u8 distortionFilterColor[3];
-extern u8 bEnableMonochromeFilter;
-extern u8 bEnableSpiritVision;
-extern u8 bEnableViewFinderHud;
 extern f32 lbl_803DEC14;
-extern s32 bEnableColorFilter;
 
 void sceneDraw(void);
 
-extern s8 curMapType;
 extern int lbl_803DCEA8;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5);

@@ -153,7 +153,6 @@ extern f32 lbl_8030EA58[2][3];
 extern f32 lbl_8030EA70[2][3];
 extern f32 lbl_8030EA88[2][3];
 extern f32 lbl_8030EAA0[2][3];
-extern char sMemoryCardFileNameString[20];
 
 int cardDeleteFn_8007d99c(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
@@ -168,12 +167,7 @@ extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
 extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern volatile s32 gSaveCardState;
 extern u8 lbl_803DD059;
-extern u32 gSaveCardSerialHi;
-extern u32 gSaveCardSerialLo;
-extern u32 gSaveCardChecksumHi;
-extern u32 gSaveCardChecksumLo;
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
 typedef struct RippleEntry
@@ -196,10 +190,6 @@ typedef struct SplashQuad
 STATIC_ASSERT(sizeof(RippleEntry) == 0x10);
 STATIC_ASSERT(sizeof(SplashQuad) == 0x38);
 
-extern f32 gWaterFxState[4];
-extern Texture* gWaterFxTextures[4];
-extern RippleEntry gWaterRipples[0x100];
-extern SplashQuad gWaterSplashQuads[0x100];
 
 typedef struct
 {
@@ -214,7 +204,6 @@ STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
 extern int lbl_803DD03C;
 extern int lbl_803968C0[];
-extern u8 gSaveCardRetry;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);

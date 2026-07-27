@@ -136,8 +136,6 @@ typedef struct
 extern f32 lbl_803DEE90;
 
 extern f32 hudMatrix[4][4];
-extern f32 hudScale;
-extern f32 gSynthDelayedActionWord0, gSynthFadeMask;
 extern f32 lbl_803DEF08, lbl_803DEF20;
 extern double lbl_803DEF10, lbl_803DEF18;
 extern f32 lbl_803DEE40;
@@ -193,12 +191,7 @@ extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
 extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern volatile s32 gSaveCardState;
 extern u8 lbl_803DD059;
-extern u32 gSaveCardSerialHi;
-extern u32 gSaveCardSerialLo;
-extern u32 gSaveCardChecksumHi;
-extern u32 gSaveCardChecksumLo;
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
 typedef struct RippleEntry
@@ -237,7 +230,6 @@ STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
 STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
 STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
-extern f32 gGxPi;
 extern f32 lbl_803DEE6C;
 extern f32 lbl_803DEE70;
 extern f32 lbl_803DEE74;
@@ -248,7 +240,6 @@ extern int lbl_803DD03C;
 extern int lbl_803968C0[];
 extern f32 lbl_803DEE98;
 extern f32 lbl_803DEE9C;
-extern u8 gSaveCardRetry;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);

@@ -118,8 +118,6 @@ typedef struct
     u32 key;
     u32 d;
 } LightSortEntry;
-extern s16* gMapBlockIds;
-extern u8* gMapBlockRefCounts;
 extern void* lbl_803DCE78;
 extern void* lbl_803DCE7C;
 extern void* lbl_803DCE80;

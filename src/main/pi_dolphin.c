@@ -943,7 +943,6 @@ extern f32 lbl_803DEAF0;
 extern u8 gLoadingScreenTextures[];
 extern OSStopwatch lbl_8035F680;
 extern f32 lbl_803DCCC0;
-extern f32 physicsTimeScale;
 extern f32 lbl_803DEAA0;
 extern f32 lbl_803DEA74;
 extern f32 lbl_803DEA7C;

@@ -281,19 +281,9 @@ extern CtrlCharEntry lbl_802C86F0[];
 
 extern u8 gGameTextBase[];
 extern u8 lbl_803399A0[];
-extern int gGameTextFallbackBuf;
-extern u8* gGameTextLastEntry;
-extern int gCurTextBuffer;
-extern int gGameTextBufferIndex;
-extern const f32 gGameTextFadeLimit;
-extern void* curGameTextDir;
 extern u8 lbl_803DC980;
-extern int gGameTextLastDir;
 extern int lbl_803DC9D0;
 extern int lbl_803DC9D4;
-extern int gGameTextLastLanguage;
-extern GXColor gGameTextBoxFillColor;
-extern f32 gSubtitleCurTime;
 extern u32 lbl_80339C40[];
 
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
