@@ -294,7 +294,8 @@ STATIC_ASSERT(offsetof(ObjModel, renderCallback) == 0x38);
 STATIC_ASSERT(offsetof(ObjModel, vtxBufDirty) == 0x60);
 
 /* Verlet-style bone-chain node (player tail etc.), simulated by the
- * fn_80025F38 / fn_80026308 / fn_80026928 / modelAnimFn_80026790 cluster. */
+ * modelChainUpdateNodesPassive / modelChainUpdateNodes /
+ * modelChainInitNodesFromJoints / modelAnimFn_80026790 cluster. */
 typedef struct ObjModelChainNode {
     f32 pos[3];         /* 0x00: current world position */
     f32 posDelta[3];    /* 0x0C: per-frame momentum (damped + jittered) */

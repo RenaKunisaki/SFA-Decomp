@@ -30,7 +30,7 @@ int dbstealerworm_stateHandlerB03(GameObject* obj, BaddieState* baddie);
 int dbstealerworm_stateHandlerB04(GameObject* obj, BaddieState* baddie);
 int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie);
 int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie);
-void fn_80202EF0(GameObject* obj, int baddie);
+void dbstealerworm_launchIceBall(GameObject* obj, int baddie);
 
 s16 dbstealerworm_setScale(GameObject* obj);
 int dbstealerworm_getExtraSize(void);
