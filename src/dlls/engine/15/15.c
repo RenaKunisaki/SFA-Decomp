@@ -1,16 +1,3 @@
-/*
- * dll_000F: the shared "player_*" movement controller used by the
- * follow / escort objects (BaddieState-driven). It runs a small per-object
- * state machine (playerRunStateMachine / player_runSubstateMachine step a table of state
- * functions + their substates), does curve following (player_followCurve /
- * player_updateCurve through gRomCurveInterface), input-magnitude yaw
- * steering (player_steerFromInput), gravity + matrix-relative velocity integration
- * (player_applyVelocityStep / objMove), per-move animation-event sound
- * triggers (player_playSoundFn0F/10) and particle/projectile gfx spawns
- * (player_updateParticles / player_doProjGfx). Most tuning values live in
- * cross-TU .sdata2 floats (lbl_803Exxxx); the lbl_803DD4xx globals are
- * per-frame scratch carrying yaw/position between the update sub-passes.
- */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "sys/objects.h"
@@ -39,26 +26,26 @@ u32 gPlayerMoveSlowMoveId;
 u8 gPlayerMoveVelHandled;
 u32 playerOverride;
 
-extern const f32 lbl_803E0570;
-extern const f32 lbl_803E0574;
-extern const f32 lbl_803E0578;
-extern const f32 lbl_803E057C;
-extern const f32 lbl_803E0580;
-extern const f32 lbl_803E0584;
-extern const f32 lbl_803E0588;
-extern const f32 lbl_803E058C;
-extern const f32 gPlayerMoveDegToAngle;
-extern const f32 lbl_803E0594;
-extern const f32 lbl_803E05A0;
-extern const f32 gPlayerMovePi;
-extern const f32 gPlayerMoveHalfCircleAngle;
-extern const f32 lbl_803E05AC;
-extern const f32 lbl_803E05B0;
-extern const f32 lbl_803E05B4;
-extern const f32 lbl_803E05B8;
-extern const f32 lbl_803E05BC;
-extern const f32 lbl_803E05C0;
-extern const f32 lbl_803E05C4;
+#define PLAYER_MOVE_ZERO              0.0f
+#define PLAYER_MOVE_DAMPING           0.9f
+#define PLAYER_MOVE_INPUT_MAX         65.0f
+#define PLAYER_MOVE_INPUT_MIN         -65.0f
+#define PLAYER_MOVE_NEAR_DISTANCE     15.0f
+#define PLAYER_MOVE_DISTANCE_SCALE    3.0f
+#define PLAYER_MOVE_ONE               1.0f
+#define PLAYER_MOVE_VELOCITY_DAMPING  0.97f
+#define PLAYER_MOVE_DEG_TO_ANGLE      182.04f
+#define PLAYER_MOVE_INPUT_THRESHOLD   0.05f
+#define PLAYER_MOVE_QUARTER_TURN      16384.0f
+#define PLAYER_MOVE_PI                3.1415927f
+#define PLAYER_MOVE_HALF_CIRCLE       32768.0f
+#define PLAYER_MOVE_CONTROL_MIN       0.02f
+#define PLAYER_MOVE_ANIM_SPEED_MIN    0.04f
+#define PLAYER_MOVE_OVERRIDE_MIN      0.1f
+#define PLAYER_MOVE_DEGREES_PER_RAD   182.0f
+#define PLAYER_MOVE_TIMER_LIMIT       10.0f
+#define PLAYER_MOVE_ROTATION_SCALE    0.125f
+#define PLAYER_MOVE_COUNTER_MAX       10000.0f
 
 void player_moveTowardPoint(GameObject* a, int* ctx, f32 px, f32 pz, f32 lo, f32 hi, f32 spd)
 {
@@ -69,7 +56,7 @@ void player_moveTowardPoint(GameObject* a, int* ctx, f32 px, f32 pz, f32 lo, f32
     dz = a->anim.localPosZ - pz;
     mag = sqrtf(dx * dx + dz * dz);
     *(f32*)((char*)ctx + 0x2bc) = mag;
-    if (lbl_803E0570 != mag)
+    if (PLAYER_MOVE_ZERO != mag)
     {
         dx = dx / mag;
         dz = dz / mag;
@@ -81,24 +68,24 @@ void player_moveTowardPoint(GameObject* a, int* ctx, f32 px, f32 pz, f32 lo, f32
     }
     else
     {
-        ((BaddieState*)ctx)->animSpeedC = ((BaddieState*)ctx)->animSpeedC * lbl_803E0574;
-        ((BaddieState*)ctx)->moveInputZ = ((BaddieState*)ctx)->moveInputX = lbl_803E0570;
+        ((BaddieState*)ctx)->animSpeedC = ((BaddieState*)ctx)->animSpeedC * PLAYER_MOVE_DAMPING;
+        ((BaddieState*)ctx)->moveInputZ = ((BaddieState*)ctx)->moveInputX = PLAYER_MOVE_ZERO;
     }
-    if (((BaddieState*)ctx)->moveInputX > lbl_803E0578)
+    if (((BaddieState*)ctx)->moveInputX > PLAYER_MOVE_INPUT_MAX)
     {
-        ((BaddieState*)ctx)->moveInputX = lbl_803E0578;
+        ((BaddieState*)ctx)->moveInputX = PLAYER_MOVE_INPUT_MAX;
     }
-    if (((BaddieState*)ctx)->moveInputX < lbl_803E057C)
+    if (((BaddieState*)ctx)->moveInputX < PLAYER_MOVE_INPUT_MIN)
     {
-        ((BaddieState*)ctx)->moveInputX = lbl_803E057C;
+        ((BaddieState*)ctx)->moveInputX = PLAYER_MOVE_INPUT_MIN;
     }
-    if (((BaddieState*)ctx)->moveInputZ > lbl_803E0578)
+    if (((BaddieState*)ctx)->moveInputZ > PLAYER_MOVE_INPUT_MAX)
     {
-        ((BaddieState*)ctx)->moveInputZ = lbl_803E0578;
+        ((BaddieState*)ctx)->moveInputZ = PLAYER_MOVE_INPUT_MAX;
     }
-    if (((BaddieState*)ctx)->moveInputZ < lbl_803E057C)
+    if (((BaddieState*)ctx)->moveInputZ < PLAYER_MOVE_INPUT_MIN)
     {
-        ((BaddieState*)ctx)->moveInputZ = lbl_803E057C;
+        ((BaddieState*)ctx)->moveInputZ = PLAYER_MOVE_INPUT_MIN;
     }
 }
 
@@ -111,11 +98,11 @@ void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int 
     dz = obj->anim.localPosZ - cz;
     dist = sqrtf(dx * dx + dz * dz);
     *(f32*)((char*)state + 0x2bc) = dist;
-    max = lbl_803E0578;
-    if (*(f32*)((char*)state + 0x2bc) < lbl_803E0580)
+    max = PLAYER_MOVE_INPUT_MAX;
+    if (*(f32*)((char*)state + 0x2bc) < PLAYER_MOVE_NEAR_DISTANCE)
     {
-        max = lbl_803E0584 * *(f32*)((char*)state + 0x2bc);
-        ((BaddieState*)state)->animSpeedC = ((BaddieState*)state)->animSpeedC * lbl_803E0574;
+        max = PLAYER_MOVE_DISTANCE_SCALE * *(f32*)((char*)state + 0x2bc);
+        ((BaddieState*)state)->animSpeedC = ((BaddieState*)state)->animSpeedC * PLAYER_MOVE_DAMPING;
     }
     if (dist > max)
     {
@@ -127,21 +114,21 @@ void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int 
     ((BaddieState*)state)->moveInputZ = -dz;
     ((BaddieState*)state)->moveInputX = ((BaddieState*)state)->moveInputX * t;
     ((BaddieState*)state)->moveInputZ = ((BaddieState*)state)->moveInputZ * t;
-    if (((BaddieState*)state)->moveInputX > lbl_803E0578)
+    if (((BaddieState*)state)->moveInputX > PLAYER_MOVE_INPUT_MAX)
     {
-        ((BaddieState*)state)->moveInputX = lbl_803E0578;
+        ((BaddieState*)state)->moveInputX = PLAYER_MOVE_INPUT_MAX;
     }
-    if (((BaddieState*)state)->moveInputX < lbl_803E057C)
+    if (((BaddieState*)state)->moveInputX < PLAYER_MOVE_INPUT_MIN)
     {
-        ((BaddieState*)state)->moveInputX = lbl_803E057C;
+        ((BaddieState*)state)->moveInputX = PLAYER_MOVE_INPUT_MIN;
     }
-    if (((BaddieState*)state)->moveInputZ > lbl_803E0578)
+    if (((BaddieState*)state)->moveInputZ > PLAYER_MOVE_INPUT_MAX)
     {
-        ((BaddieState*)state)->moveInputZ = lbl_803E0578;
+        ((BaddieState*)state)->moveInputZ = PLAYER_MOVE_INPUT_MAX;
     }
-    if (((BaddieState*)state)->moveInputZ < lbl_803E057C)
+    if (((BaddieState*)state)->moveInputZ < PLAYER_MOVE_INPUT_MIN)
     {
-        ((BaddieState*)state)->moveInputZ = lbl_803E057C;
+        ((BaddieState*)state)->moveInputZ = PLAYER_MOVE_INPUT_MIN;
     }
 }
 
@@ -161,7 +148,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
     }
     if ((flags & 0x200000) == 0)
     {
-        obj->anim.velocityY = obj->anim.velocityY * lbl_803E058C;
+        obj->anim.velocityY = obj->anim.velocityY * PLAYER_MOVE_VELOCITY_DAMPING;
         obj->anim.velocityY = -(((BaddieState*)ctx)->gravity * t) + obj->anim.velocityY;
     }
     b = *(s8*)((char*)ctx + 0x34c);
@@ -170,10 +157,10 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
         desc.rotX = obj->anim.rotX;
         desc.rotY = obj->anim.rotY;
         desc.rotZ = 0;
-        desc.scale = lbl_803E0588;
-        desc.x = lbl_803E0570;
-        desc.y = lbl_803E0570;
-        desc.z = lbl_803E0570;
+        desc.scale = PLAYER_MOVE_ONE;
+        desc.x = PLAYER_MOVE_ZERO;
+        desc.y = PLAYER_MOVE_ZERO;
+        desc.z = PLAYER_MOVE_ZERO;
         setMatrixFromObjectPos(mtx, &desc);
         if ((ctx[0] & 0x10000) != 0)
         {
@@ -182,7 +169,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
         }
         else
         {
-            Matrix_TransformPoint(mtx, ((BaddieState*)ctx)->animSpeedB, lbl_803E0570, -((BaddieState*)ctx)->animSpeedA,
+            Matrix_TransformPoint(mtx, ((BaddieState*)ctx)->animSpeedB, PLAYER_MOVE_ZERO, -((BaddieState*)ctx)->animSpeedA,
                                   &outX, &outY, &outZ);
         }
         obj->anim.velocityX = outX;
@@ -201,11 +188,11 @@ void player_steerFromInput(GameObject* obj, int* ctx)
     mx = ((BaddieState*)ctx)->moveInputX * ((BaddieState*)ctx)->moveInputX;
     mz = ((BaddieState*)ctx)->moveInputZ * ((BaddieState*)ctx)->moveInputZ;
     ((BaddieState*)ctx)->inputMagnitude = sqrtf(mx + mz);
-    if (((BaddieState*)ctx)->inputMagnitude > lbl_803E0578)
+    if (((BaddieState*)ctx)->inputMagnitude > PLAYER_MOVE_INPUT_MAX)
     {
-        ((BaddieState*)ctx)->inputMagnitude = lbl_803E0578;
+        ((BaddieState*)ctx)->inputMagnitude = PLAYER_MOVE_INPUT_MAX;
     }
-    ((BaddieState*)ctx)->inputMagnitude = ((BaddieState*)ctx)->inputMagnitude / lbl_803E0578;
+    ((BaddieState*)ctx)->inputMagnitude = ((BaddieState*)ctx)->inputMagnitude / PLAYER_MOVE_INPUT_MAX;
     gPlayerMoveTargetYaw = getAngle(((BaddieState*)ctx)->moveInputX, -((BaddieState*)ctx)->moveInputZ);
     gPlayerMoveTargetYaw -= ((BaddieState*)ctx)->cameraYaw;
     diff = gPlayerMoveTargetYaw;
@@ -218,7 +205,7 @@ void player_steerFromInput(GameObject* obj, int* ctx)
     {
         diff += 0xffff;
     }
-    *(s16*)&((BaddieState*)ctx)->turnRate = ((f32)diff / gPlayerMoveDegToAngle);
+    *(s16*)&((BaddieState*)ctx)->turnRate = ((f32)diff / PLAYER_MOVE_DEG_TO_ANGLE);
     if (diff < 0)
     {
         *(s16*)((char*)ctx + 0x334) = -((BaddieState*)ctx)->turnRate;
@@ -228,7 +215,7 @@ void player_steerFromInput(GameObject* obj, int* ctx)
         *(s16*)((char*)ctx + 0x334) = ((BaddieState*)ctx)->turnRate;
     }
     diff = diff + 0x10000u;
-    if (((BaddieState*)ctx)->inputMagnitude < lbl_803E0594)
+    if (((BaddieState*)ctx)->inputMagnitude < PLAYER_MOVE_INPUT_THRESHOLD)
     {
         *(u8*)((char*)ctx + 0x34b) = 0;
     }
@@ -302,12 +289,12 @@ void player_updateSecondaryBlend(GameObject* obj, int* ctx, int moveA, int moveB
     if ((s8)gPlayerMoveVelHandled != 0)
     {
         f32 speedA = ((BaddieState*)ctx)->animSpeedA;
-        if (speedA > lbl_803E0570 && obj->anim.currentMove != (int)gPlayerMoveFastMoveId)
+        if (speedA > PLAYER_MOVE_ZERO && obj->anim.currentMove != (int)gPlayerMoveFastMoveId)
         {
             ObjAnim_SetCurrentMove((int)obj, gPlayerMoveFastMoveId, obj->anim.currentMoveProgress, 0);
             ((BaddieState*)ctx)->moveDone = 0;
         }
-        else if (speedA < lbl_803E0570 && obj->anim.currentMove != (int)gPlayerMoveSlowMoveId)
+        else if (speedA < PLAYER_MOVE_ZERO && obj->anim.currentMove != (int)gPlayerMoveSlowMoveId)
         {
             ObjAnim_SetCurrentMove((int)obj, gPlayerMoveSlowMoveId, obj->anim.currentMoveProgress, 0);
             ((BaddieState*)ctx)->moveDone = 0;
@@ -319,18 +306,18 @@ void player_updateSecondaryBlend(GameObject* obj, int* ctx, int moveA, int moveB
         {
             ((BaddieState*)ctx)->moveSpeed = tmp;
         }
-        tmp = (lbl_803E0570 != mag) ? ((BaddieState*)ctx)->animSpeedB / mag : lbl_803E0570;
+        tmp = (PLAYER_MOVE_ZERO != mag) ? ((BaddieState*)ctx)->animSpeedB / mag : PLAYER_MOVE_ZERO;
         ratio = tmp;
-        idx = (int)(lbl_803E05A0 * (f32)ratio);
+        idx = (int)(PLAYER_MOVE_QUARTER_TURN * (f32)ratio);
         if (idx < 0)
         {
             idx = -idx;
         }
-        if ((f32)idx > lbl_803E05A0)
+        if ((f32)idx > PLAYER_MOVE_QUARTER_TURN)
         {
             idx = 0x4000;
         }
-        if (((BaddieState*)ctx)->animSpeedB > lbl_803E0570)
+        if (((BaddieState*)ctx)->animSpeedB > PLAYER_MOVE_ZERO)
         {
             Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, moveB, idx);
         }
@@ -349,7 +336,7 @@ void player_setAnimIds(int unused1, int unused2, u32 a, u32 b)
 
 void player_clearXZvel(GameObject* obj, int* state)
 {
-    f32 z = lbl_803E0570;
+    f32 z = PLAYER_MOVE_ZERO;
     obj->anim.velocityX = z;
     obj->anim.velocityZ = z;
     ((BaddieState*)state)->animSpeedC = z;
@@ -364,12 +351,12 @@ void dll_0F_func13(GameObject* obj, int* state, int angle, f32 t, f32 scale)
     *(s8*)((char*)state + 0x34c) |= 1;
     if ((s8)gPlayerMoveVelHandled == 0)
     {
-        ang = (gPlayerMovePi * angle) / gPlayerMoveHalfCircleAngle;
+        ang = (PLAYER_MOVE_PI * angle) / PLAYER_MOVE_HALF_CIRCLE;
         vx = scale * (((BaddieState*)state)->inputMagnitude * -mathSinf(ang));
         vz = scale * (((BaddieState*)state)->inputMagnitude * -mathCosf(ang));
-        if (((BaddieState*)state)->inputMagnitude < lbl_803E05AC)
+        if (((BaddieState*)state)->inputMagnitude < PLAYER_MOVE_CONTROL_MIN)
         {
-            vx = lbl_803E0570;
+            vx = PLAYER_MOVE_ZERO;
             vz = vx;
         }
         obj->anim.velocityX =
@@ -387,15 +374,15 @@ void dll_0F_func13(GameObject* obj, int* state, int angle, f32 t, f32 scale)
     w = obj->anim.velocityZ * obj->anim.velocityZ;
     dist = sqrtf(q + w);
     ((BaddieState*)state)->animSpeedC = dist;
-    if (((BaddieState*)state)->animSpeedC < lbl_803E05B0)
+    if (((BaddieState*)state)->animSpeedC < PLAYER_MOVE_ANIM_SPEED_MIN)
     {
-        f32 z = lbl_803E0570;
+        f32 z = PLAYER_MOVE_ZERO;
         ((BaddieState*)state)->animSpeedC = z;
         obj->anim.velocityX = z;
         obj->anim.velocityZ = z;
     }
-    c = mathSinf((gPlayerMovePi * (f32)*(s16*)obj) / gPlayerMoveHalfCircleAngle);
-    s = mathCosf((gPlayerMovePi * (f32)*(s16*)obj) / gPlayerMoveHalfCircleAngle);
+    c = mathSinf((PLAYER_MOVE_PI * (f32)*(s16*)obj) / PLAYER_MOVE_HALF_CIRCLE);
+    s = mathCosf((PLAYER_MOVE_PI * (f32)*(s16*)obj) / PLAYER_MOVE_HALF_CIRCLE);
     ((BaddieState*)state)->animSpeedB = obj->anim.velocityX * s - obj->anim.velocityZ * c;
     ((BaddieState*)state)->animSpeedA =
         -obj->anim.velocityZ * s - obj->anim.velocityX * c;
@@ -410,14 +397,14 @@ void player_updateCurve(GameObject* obj, int* state, f32 t)
     int idx = *(int*)((char*)state + 828);
     if (idx == -1)
     {
-        *(f32*)((char*)state + 700) = lbl_803E0570;
+        *(f32*)((char*)state + 700) = PLAYER_MOVE_ZERO;
     }
     else
     {
         int* curve = (int*)(*gRomCurveInterface)->getById(idx);
         if (curve == NULL)
         {
-            *(f32*)((char*)state + 700) = lbl_803E0570;
+            *(f32*)((char*)state + 700) = PLAYER_MOVE_ZERO;
         }
         else
         {
@@ -489,7 +476,7 @@ void player_rotateTowardEnemy(GameObject* obj, int* ctx, int spd)
             diff += 0xffff;
         }
         obj->anim.rotX =
-            (s16)(obj->anim.rotX + (int)((f32)diff * timeDelta / (lbl_803E0584 * spd)));
+            (s16)(obj->anim.rotX + (int)((f32)diff * timeDelta / (PLAYER_MOVE_DISTANCE_SCALE * spd)));
     }
 }
 
@@ -497,13 +484,13 @@ void player_render2(GameObject* obj, int* state, f32 f1, f32 f2)
 {
     f32 cur = ((BaddieState*)state)->unk2A8;
     f32 new_ = f2 * f1 + cur;
-    if (new_ > lbl_803E0588)
+    if (new_ > PLAYER_MOVE_ONE)
     {
-        new_ = lbl_803E0588;
+        new_ = PLAYER_MOVE_ONE;
     }
     {
         f32 delta = new_ - cur;
-        if (delta > lbl_803E0570)
+        if (delta > PLAYER_MOVE_ZERO)
         {
             *(s16*)obj += (s16)(((BaddieState*)state)->animDeltaScale * delta);
             ((BaddieState*)state)->unk2A8 = new_;
@@ -515,13 +502,13 @@ void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2)
 {
     f32 cur = ((BaddieState*)state)->speedScale;
     f32 new_ = f2 * f1 + cur;
-    if (new_ > lbl_803E0588)
+    if (new_ > PLAYER_MOVE_ONE)
     {
-        new_ = lbl_803E0588;
+        new_ = PLAYER_MOVE_ONE;
     }
     {
         f32 delta = new_ - cur;
-        if (delta > lbl_803E0570)
+        if (delta > PLAYER_MOVE_ZERO)
         {
             *(f32*)((char*)mtx + 12) = *(f32*)((char*)state + 756) * delta + *(f32*)((char*)mtx + 12);
             *(f32*)((char*)mtx + 16) = *(f32*)((char*)state + 760) * delta + *(f32*)((char*)mtx + 16);
@@ -533,10 +520,10 @@ void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2)
 
 void dll_0F_func0B(GameObject* obj, int* state, f32 f1, f32 f2, f32 f3)
 {
-    if (((BaddieState*)state)->inputMagnitude > lbl_803E05B4)
+    if (((BaddieState*)state)->inputMagnitude > PLAYER_MOVE_OVERRIDE_MIN)
     {
         f32 q = (f2 * f1) / f3;
-        obj->anim.rotX = (f32)*(s16*)obj + lbl_803E05B8 * q;
+        obj->anim.rotX = (f32)*(s16*)obj + PLAYER_MOVE_DEGREES_PER_RAD * q;
     }
 }
 
@@ -606,7 +593,7 @@ void player_advanceMove(short* moveState, u32* obj, f32 dt, int flags)
     }
     else
     {
-        stopVal = lbl_803E0570;
+        stopVal = PLAYER_MOVE_ZERO;
         ((BaddieState*)obj)->animSpeedA = stopVal;
         ((BaddieState*)obj)->animSpeedB = stopVal;
     }
@@ -674,7 +661,7 @@ void player_runSubstateMachine(GameObject* gameObj, BaddieState* state, f32 dt, 
     if (stateChanged == 0)
     {
         state->moveJustStartedB = 0;
-        if (state->controlTimer > lbl_803E05BC)
+        if (state->controlTimer > PLAYER_MOVE_TIMER_LIMIT)
         {
             state->moveJustStartedB = 0;
         }
@@ -795,9 +782,9 @@ void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSt
         f32 t;
 
         t = (f32)(int)obj->anim.rotY * dt;
-        obj->anim.rotY -= (s16)(t * lbl_803E05C0);
+        obj->anim.rotY -= (s16)(t * PLAYER_MOVE_ROTATION_SCALE);
         t = (f32)(int)obj->anim.rotZ * dt;
-        obj->anim.rotZ -= (s16)(t * lbl_803E05C0);
+        obj->anim.rotZ -= (s16)(t * PLAYER_MOVE_ROTATION_SCALE);
     }
 }
 
@@ -841,8 +828,8 @@ void player_updateVel(char* p, char* obj, void* stateFns)
     f32 vz;
     if (((s32)(s8) * (obj + 0x34c) & 1) != 0)
     {
-        fcos = mathSinf(gPlayerMovePi * (float)(s32)((GameObject*)p)->anim.rotX / gPlayerMoveHalfCircleAngle);
-        fsin = mathCosf(gPlayerMovePi * (float)(s32)((GameObject*)p)->anim.rotX / gPlayerMoveHalfCircleAngle);
+        fcos = mathSinf(PLAYER_MOVE_PI * (float)(s32)((GameObject*)p)->anim.rotX / PLAYER_MOVE_HALF_CIRCLE);
+        fsin = mathCosf(PLAYER_MOVE_PI * (float)(s32)((GameObject*)p)->anim.rotX / PLAYER_MOVE_HALF_CIRCLE);
         if (((s32)(s8) * (obj + 0x34c) & 8) != 0)
         {
             ((BaddieState*)obj)->animSpeedA =
@@ -899,7 +886,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     }
     else
     {
-        ((BaddieState*)state)->targetDistance = lbl_803E0570;
+        ((BaddieState*)state)->targetDistance = PLAYER_MOVE_ZERO;
     }
 
     pathObj = ((GameObject*)pos)->pendingParentObj;
@@ -907,7 +894,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     {
         player_runSubstateMachine((GameObject*)pos, (BaddieState*)state, dt, (PlayerSubstateFn*)auxStateFns);
         ((BaddieState*)state)->stateTimer = (s16)((f32)((BaddieState*)state)->stateTimer + dt);
-        if ((f32)((BaddieState*)state)->stateTimer > lbl_803E05C4)
+        if ((f32)((BaddieState*)state)->stateTimer > PLAYER_MOVE_COUNTER_MAX)
         {
             ((BaddieState*)state)->stateTimer = 10000;
         }
@@ -920,20 +907,20 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         localTransform.rotX = ((GameObject*)pos)->anim.rotX;
         localTransform.rotY = ((GameObject*)pos)->anim.rotY;
         localTransform.rotZ = ((GameObject*)pos)->anim.rotZ;
-        localTransform.scale = lbl_803E0588;
-        localTransform.x = lbl_803E0570;
-        localTransform.y = lbl_803E0570;
-        localTransform.z = lbl_803E0570;
+        localTransform.scale = PLAYER_MOVE_ONE;
+        localTransform.x = PLAYER_MOVE_ZERO;
+        localTransform.y = PLAYER_MOVE_ZERO;
+        localTransform.z = PLAYER_MOVE_ZERO;
         setMatrixFromObjectPos(matrix, &localTransform);
 
         attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, lbl_803E0570, lbl_803E0570, lbl_803E0588, (f32*)(attachment + 0x0),
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, (f32*)(attachment + 0x0),
                               (f32*)(attachment + 0x4), (f32*)(attachment + 0x8));
         attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, lbl_803E0570, lbl_803E0588, lbl_803E0570, (f32*)(attachment + 0xc),
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, (f32*)(attachment + 0xc),
                               (f32*)(attachment + 0x10), (f32*)(attachment + 0x14));
         attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, lbl_803E0588, lbl_803E0570, lbl_803E0570, (f32*)(attachment + 0x18),
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, (f32*)(attachment + 0x18),
                               (f32*)(attachment + 0x1c), (f32*)(attachment + 0x20));
     }
 
@@ -952,7 +939,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     playerRunStateMachine((GameObject*)pos, (BaddieState*)state, dt, (PlayerStateFn*)stateFns);
 
     *(s16*)(state + 0x338) = (s16)((f32) * (s16*)(state + 0x338) + dt);
-    if ((f32) * (s16*)(state + 0x338) > lbl_803E05C4)
+    if ((f32) * (s16*)(state + 0x338) > PLAYER_MOVE_COUNTER_MAX)
     {
         *(s16*)(state + 0x338) = 10000;
     }
@@ -978,17 +965,17 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         dx = ((GameObject*)overrideObj)->anim.localPosX - gPlayerMoveOverridePosX;
         dz = ((GameObject*)overrideObj)->anim.localPosZ - gPlayerMoveOverridePosZ;
         dist = sqrtf(dx * dx + dz * dz);
-        if (dist < lbl_803E05BC)
+        if (dist < PLAYER_MOVE_TIMER_LIMIT)
         {
             ldx = ((GameObject*)pos)->anim.localPosX - gPlayerMoveOverridePosX;
             ldz = ((GameObject*)pos)->anim.localPosZ - gPlayerMoveOverridePosZ;
             limit = sqrtf(ldx * ldx + ldz * ldz);
-            if (limit < lbl_803E05B4)
+            if (limit < PLAYER_MOVE_OVERRIDE_MIN)
             {
-                limit = lbl_803E05B4;
+                limit = PLAYER_MOVE_OVERRIDE_MIN;
             }
 
-            if (dist < lbl_803E0588)
+            if (dist < PLAYER_MOVE_ONE)
             {
                 ((GameObject*)pos)->anim.localPosX = ((GameObject*)overrideObj)->anim.localPosX;
                 ((GameObject*)pos)->anim.localPosZ = ((GameObject*)overrideObj)->anim.localPosZ;
@@ -1049,7 +1036,7 @@ void player_init(void* unused, void* obj, int a, int b)
     *(s16*)((char*)obj + 0x26e) = b;
     ((BaddieState*)obj)->moveJustStartedA = 1;
     ((BaddieState*)obj)->moveJustStartedB = 1;
-    ((BaddieState*)obj)->velSmoothTime = lbl_803E05BC;
+    ((BaddieState*)obj)->velSmoothTime = PLAYER_MOVE_TIMER_LIMIT;
     *(s32*)((char*)obj + 0x33c) = -1;
     *(s32*)((char*)obj + 0x340) = -1;
     *(u8*)((char*)obj + 0x358) = 0;
