@@ -2675,7 +2675,7 @@ dlls/objects/482_DIM_BossTon/DIM_BossTon.c:
 	.text       start:0x801BDCF8 end:0x801BEEA0
 	.data       start:0x80325C30 end:0x80325C70
 	.sbss       start:0x803DDB90 end:0x803DDBB8
-	.sdata2     start:0x803E4C8C end:0x803E4CD0
+	.sdata2     start:0x803E4C90 end:0x803E4CD0
 
 dlls/objects/483_DIM_BossGut/DIM_BossGut.c:
 	.text       start:0x801BEEA0 end:0x801BF8D8
@@ -2809,7 +2809,7 @@ dlls/objects/407/407.c:
 dlls/objects/408_NWSH_levcon/NWSH_levcon.c:
 	.text       start:0x801CA718 end:0x801CA9C0
 	.data       start:0x80326518 end:0x80326550
-	.sdata2     start:0x803E5150 end:0x803E5158
+	.sdata2     start:0x803E5150 end:0x803E5154
 
 dlls/objects/409/409.c:
 	.text       start:0x801CA9C0 end:0x801CB7A8
@@ -2820,7 +2820,7 @@ dlls/objects/409/409.c:
 dlls/objects/410/410.c:
 	.text       start:0x801CB7A8 end:0x801CBA98
 	.data       start:0x803265E0 end:0x80326618
-	.sdata2     start:0x803E5180 end:0x803E5188
+	.sdata2     start:0x803E5180 end:0x803E5184
 
 dlls/objects/411/411.c:
 	.text       start:0x801CBA98 end:0x801CC72C
