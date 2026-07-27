@@ -1422,7 +1422,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/325_CloudPrison/CloudPrison.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/326_CloudShipCo/CloudShipCo.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/327/327.c"),
-            Object(NonMatching, "dlls/objects/328_CFGuardian/CFGuardian.c", cflags=cflags_dll_noopt_nocse_noinline),
+            Object(Matching, "dlls/objects/328_CFGuardian/CFGuardian.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/329/329.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/330_CFPowerBase/CFPowerBase.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/331_CFMainCryst/CFMainCryst.c"),
