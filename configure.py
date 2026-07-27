@@ -1058,6 +1058,7 @@ config.libs = [
             # dlls/modgfx
 
             # dlls/projgfx
+            Object(MatchingFor("GSAE01"), "dlls/projgfx/192/192.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/193/193.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/194/194.c", cflags=cflags_dll_noopt),
 
@@ -1442,7 +1443,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_00BD_projsunshock.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00BE_projtesla.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00BF_projcore1.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00C0_projcore2.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_8b.c"),
             Object(Matching, "main/dll/dll_8c.c"),
             Object(Matching, "main/dll/dll_8d.c"),

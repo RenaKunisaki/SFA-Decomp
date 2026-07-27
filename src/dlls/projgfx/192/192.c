@@ -1,5 +1,5 @@
 /*
- * projcore2 (DLL 0xC0) - retired projectile-core DLL.
+ * projcore2 (DLL 192 / 0xC0) - retired projectile-core DLL.
  *
  * The only live entry point reports that projectiles are no longer
  * supported and returns the unsupported sentinel (-1); the DLL's
