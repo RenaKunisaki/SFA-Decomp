@@ -1216,13 +1216,13 @@ dlls/engine/71/71.c:
 	.text       start:0x8010A104 end:0x8010BF08
 	.data       start:0x80319C88 end:0x80319CE8
 	.sbss       start:0x803DD560 end:0x803DD568
-	.sdata2     start:0x803E1888 end:0x803E1938
+	.sdata2     start:0x803E1888 end:0x803E18C0
 
 dlls/engine/73/73.c:
 	.text       start:0x8010BF08 end:0x8010CEC0
 	.data       start:0x80319CE8 end:0x80319D18
 	.sbss       start:0x803DD568 end:0x803DD570
-	.sdata2     start:0x803E1938 end:0x803E1940
+	.sdata2     start:0x803E18C0 end:0x803E1944
 
 dlls/engine/74/74.c:
 	.text       start:0x8010CEC0 end:0x8010D33C

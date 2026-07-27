@@ -19,13 +19,6 @@
 #include "main/debug.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
-const f32 lbl_803E1888 = 0.0f;
-const f32 lbl_803E188C = 1.0f;
-const f32 lbl_803E1890 = 32768.0f;
-const f32 lbl_803E1894 = -32768.0f;
-const f32 lbl_803E1898 = 65535.0f;
-const f32 lbl_803E18A8 = 0.5f;
-
 typedef RomCurvePathNode RomCurveNode;
 
 /* curve-node field offsets (raw walking-pointer accesses below) */
@@ -38,8 +31,8 @@ typedef RomCurvePathNode RomCurveNode;
 
 extern char sPathCamNeedTwoControlPointsError[];
 
-#define PATHCAM_NEAR_THRESHOLD lbl_803E1888
-#define PATHCAM_FAR_THRESHOLD  lbl_803E188C
+#define PATHCAM_NEAR_THRESHOLD 0.0f
+#define PATHCAM_FAR_THRESHOLD  1.0f
 
 void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
 {
@@ -295,21 +288,21 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
             if (axisOut != NULL)
             {
                 wp = axisOut;
-                upper = lbl_803E1890;
+                upper = 32768.0f;
                 do
                 {
                     v0 = wp[0];
                     v1 = wp[1];
                     d = v0 - v1;
-                    if (d > upper || d < lbl_803E1894)
+                    if (d > upper || d < -32768.0f)
                     {
-                        if (v0 < lbl_803E1888)
+                        if (v0 < 0.0f)
                         {
-                            wp[0] += lbl_803E1898;
+                            wp[0] += 65535.0f;
                         }
-                        else if (v1 < lbl_803E1888)
+                        else if (v1 < 0.0f)
                         {
-                            wp[1] += lbl_803E1898;
+                            wp[1] += 65535.0f;
                         }
                     }
                     wp++;
@@ -441,8 +434,8 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
         sx = dx1;
         sz = dz1;
     }
-    nx = lbl_803E18A8 * (sx + dx1);
-    nz = lbl_803E18A8 * (sz + dz1);
+    nx = 0.5f * (sx + dx1);
+    nz = 0.5f * (sz + dz1);
     len = sqrtf(nx * nx + nz * nz);
     if (0.0f != len)
     {
@@ -470,8 +463,8 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
         nsx = sx;
         nsz = sz;
     }
-    nx = lbl_803E18A8 * (nsx + sx);
-    nz = lbl_803E18A8 * (nsz + sz);
+    nx = 0.5f * (nsx + sx);
+    nz = 0.5f * (nsz + sz);
     len = sqrtf(nx * nx + nz * nz);
     if (0.0f != len)
     {
