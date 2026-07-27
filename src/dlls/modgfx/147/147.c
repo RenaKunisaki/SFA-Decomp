@@ -1,8 +1,8 @@
 /*
- * dll_0093 (dll93func0) - mod-gfx effect spawner for DLL 0x93.
+ * DLL 147 / 0x93 - mod-gfx effect spawner.
  *
  * func00/func01 are empty stub entry points (kept to align this DLL's
- * exported function set with the v1.0 asm). func03 builds a six-entry
+ * exported function set with the v1.0 assembly). func03 builds a six-entry
  * GfxCmd display list on the stack from the resource blob at
  * lbl_80317260, fills out the surrounding ModgfxSpawnPacket parameters, optionally
  * offsets the effect position by the source/posSource object's world
