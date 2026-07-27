@@ -115,7 +115,7 @@ typedef struct
 
 extern f32 lbl_803DEE90;
 
-extern f32 gSynthDelayedActionWord0, gSynthFadeMask;
+extern f32 gSynthDelayedActionWord0;
 extern f32 lbl_803DEF08, lbl_803DEF20;
 extern double lbl_803DEF10, lbl_803DEF18;
 extern f32 lbl_803DEE40;
