@@ -47,7 +47,7 @@ extern f32 lbl_803E18A8; /* midpoint factor (segment normal averaging) */
 
 extern const f32 lbl_803E188C; /* far distance threshold */
 
-void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
+void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
 {
     int node;
     int linked;
@@ -120,9 +120,9 @@ void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
         }
     }
     node = (int)(*gRomCurveInterface)->getById(*nodeId);
-    fn_8010A47C(node, &span, tag);
+    pathcam_walkToPathEnd(node, &span, tag);
     node = (int)(*gRomCurveInterface)->getById(*leadNodeId);
-    *leadNodeId = ((RomCurvePathNode*)fn_8010A47C(node, &farSpan, tag))->selfId;
+    *leadNodeId = ((RomCurvePathNode*)pathcam_walkToPathEnd(node, &farSpan, tag))->selfId;
     for (step = 0; step < span; step++)
     {
         node = (int)(*gRomCurveInterface)->getById(*leadNodeId);
@@ -144,7 +144,7 @@ void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
     }
 }
 
-int fn_8010A47C(int curve, int* count, int tag)
+int pathcam_walkToPathEnd(int curve, int* count, int tag)
 {
     int slot;
     int done;
