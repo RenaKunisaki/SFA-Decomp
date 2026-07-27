@@ -1,25 +1,3 @@
-/*
- * cutcam - shared camera collision/avoidance helpers used by the camera
- * mode DLLs (dll_0042..dll_0052).
- *
- * camcontrol_traceMove runs a swept-sphere/bbox trace from one point to
- * another through the world hit-detect system and reports whether the
- * line of sight is clear. camcontrol_traceFromTarget and
- * camcontrol_getTargetPosition build the trace endpoints from a target
- * object's world position (using cameraGetPrevPos2 for class 1 = the
- * player) plus the active CamcontrolModeSettings (gCamcontrolModeSettings) and
- * return the desired camera position / yaw.
- *
- * cameraFn_80103b40 and camcontrol_updateWallAvoidance sweep candidate camera
- * positions in fan steps around the target to slide the camera around
- * walls, writing the resulting yaw nudge into
- * gCamcontrolModeSettings->avoidanceYawOffset.
- *
- * camcontrol_updateTargetAction polls the pad and switches camera modes
- * (modes 0x43/0x44/0x49) on lock-on / button input.
- * camcontrol_updateModeSettings interpolates every mode setting along a
- * Hermite curve during a mode transition.
- */
 #include "main/dll/CAM/cutCam.h"
 #include "main/objseq_api.h"
 #include "game/objects/object.h"
@@ -50,32 +28,49 @@ u8 gCutCamBboxBlocked;
 #define PAD_TRIGGER_Z 0x10
 #define PAD_TRIGGER_L 0x40
 
-/* Camera mode ids passed to setMode() (== the target camera-mode DLL number). */
-#define CAMMODE_CLIMB      0x43 /* dll_0043 climb/path camera */
-#define CAMMODE_VIEWFINDER 0x44 /* dll_0044_cameramodeviewfinder */
-#define CAMMODE_COMBAT     0x49 /* dll_0049_cameramodecombat (follow) */
+#define CAMMODE_CLIMB 0x43
+#define CAMMODE_VIEWFINDER 0x44
+#define CAMMODE_COMBAT 0x49
 
-extern f32 lbl_803DD52C;      /* yaw-offset blend gain */
-extern f32 lbl_803E1688;      /* 4.0f  - collision probe / trace radius */
-extern f32 lbl_803E168C;      /* 3.1415927f (pi); angle-units -> radians with lbl_803E1690 */
-extern f32 lbl_803E1690;      /* 32768.0f - angle units per pi (0x8000 == 180 degrees) */
-extern f32 lbl_803E1694;      /* 5.0f   - min squared camera distance */
-extern f32 lbl_803E16A0;      /* 3.9f   - fan-probe sphere radius */
-extern f32 lbl_803E16A4;      /* 1.0f */
-extern f32 lbl_803E16A8;      /* 3.0f */
-extern f32 lbl_803E16AC;      /* 0.0f */
-extern f32 lbl_803E16B0;      /* 500.0f */
-extern f32 lbl_803E16B4;      /* 10.0f  - min yaw nudge */
-extern f32 lbl_803E16B8;      /* 100.0f - max yaw nudge */
-extern f32 lbl_803E16BC;      /* 1000.0f  - avoidance yaw-offset clamp */
-extern f32 lbl_803E16C0;      /* -1000.0f - avoidance yaw-offset clamp */
-extern f32 lbl_803E16C4;      /* 0.9f   - per-frame yaw-offset decay */
-extern f32 lbl_803E16C8;      /* 0.5f   - decay dead-zone (snap to 0 inside) */
-extern f32 lbl_803E16CC;      /* -0.5f  - decay dead-zone (snap to 0 inside) */
-
-int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
-                         u8 runBbox, float radius);
-
+extern f32 lbl_803E1688;
+extern f32 lbl_803E168C;
+extern f32 lbl_803E1690;
+extern f32 lbl_803E1694;
+extern f32 lbl_803E16A0;
+extern f32 lbl_803E16A4;
+extern f32 lbl_803E16A8;
+extern f32 lbl_803E16AC;
+extern f32 lbl_803E16B0;
+extern f32 lbl_803E16B4;
+extern f32 lbl_803E16B8;
+extern f32 lbl_803E16BC;
+extern f32 lbl_803E16C0;
+extern f32 lbl_803E16C4;
+extern f32 lbl_803E16C8;
+extern f32 lbl_803E16CC;
+extern f32 lbl_803E16D8;
+extern f32 lbl_803E16DC;
+extern f32 lbl_803E16E0;
+extern f32 lbl_803E16E4;
+extern f32 lbl_803E16E8;
+extern f32 lbl_803E16EC;
+extern f32 lbl_803E16F0;
+extern f32 lbl_803E16F4;
+extern f32 lbl_803E1700;
+extern f32 lbl_803E1704;
+extern f32 lbl_803E1708;
+extern f32 lbl_803E170C;
+extern f32 gCamcontrolByteRateNormalizer;
+extern f32 lbl_803E1714;
+extern f32 lbl_803E1718;
+extern f32 lbl_803E171C;
+extern f32 lbl_803E1720;
+extern f32 lbl_803E1724;
+extern f32 lbl_803E1728;
+extern f32 lbl_803E172C;
+extern f32 lbl_803E1730;
+extern f32 lbl_803E1734;
+extern f32 lbl_803E1738;
 
 int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
                          u8 runBbox, float radius)
@@ -663,38 +658,6 @@ typedef struct CameraModeNormalInitData
     u8 pad1e;
     u8 heightOffsetWide;
 } CameraModeNormalInitData;
-
-extern f32 lbl_803E1688;
-extern f32 lbl_803E168C;
-extern f32 lbl_803E1690;
-extern f32 lbl_803E1694;
-extern f32 lbl_803E16A4;
-extern f32 lbl_803E16AC;
-extern f32 lbl_803E16B4;
-extern f32 lbl_803E16B8;
-extern f32 lbl_803E16D8;
-extern f32 lbl_803E16DC;
-extern f32 lbl_803E16E0;
-extern f32 lbl_803E16E4;
-extern f32 lbl_803E16E8;
-extern f32 lbl_803E16EC;
-extern f32 lbl_803E16F0;
-extern f32 lbl_803E16F4;
-extern f32 lbl_803E1700;
-extern f32 lbl_803E1704;
-extern f32 lbl_803E1708;
-extern f32 lbl_803E170C;
-extern f32 gCamcontrolByteRateNormalizer;
-extern f32 lbl_803E1714;
-extern f32 lbl_803E1718;
-extern f32 lbl_803E171C;
-extern f32 lbl_803E1720;
-extern f32 lbl_803E1724;
-extern f32 lbl_803E1728;
-extern f32 lbl_803E172C;
-extern f32 lbl_803E1730;
-extern f32 lbl_803E1734;
-extern f32 lbl_803E1738;
 
 void camcontrol_updateVerticalBounds(CameraObject* camera, int flags, int collisionFlag, float* upperBound,
                                      float* lowerBound)

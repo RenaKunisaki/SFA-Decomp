@@ -1120,7 +1120,7 @@ main/dll/CAM/camcontrol.c:
 main/dll/CAM/cammodes.c:
 	.data       start:0x80319B58 end:0x80319CB4
 
-main/dll/cutcam.c:
+dlls/engine/66/66.c:
 	.text       start:0x80103524 end:0x80106654
 	.sbss       start:0x803DD528 end:0x803DD538
 	.sdata2     start:0x803E16D0 end:0x803E16D8
