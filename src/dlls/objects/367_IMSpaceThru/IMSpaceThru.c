@@ -14,7 +14,7 @@
 #define IM_SPACE_THRUSTER_ROOT_MOTION_SCALE_KIND4  0.72f
 #define IM_SPACE_THRUSTER_ROOT_MOTION_SCALE_KIND56 0.58f
 
-#define IM_SPACE_THRUSTER_WEIGHT_MAX 1.0f
+#define IM_SPACE_THRUSTER_WEIGHT_MAX            1.0f
 #define IM_SPACE_THRUSTER_ALPHA_TO_WEIGHT_SCALE 255.0f
 
 s16 gIMSpaceThrusterKeyframeIndicesA[6] = {0x160, 0x161, 0x162, 0x163, 0x165, 0};
@@ -45,12 +45,10 @@ void imSpaceThruster_free(GameObject* obj) {
     }
 }
 
-void imSpaceThruster_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void imSpaceThruster_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible) {
     if (visible != 0) {
-        objRenderModelAndHitVolumes(
-            obj, renderArg2, renderArg3, renderArg4, renderArg5,
-            IM_SPACE_THRUSTER_WEIGHT_MAX);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, IM_SPACE_THRUSTER_WEIGHT_MAX);
     }
 }
 
@@ -70,8 +68,7 @@ void imSpaceThruster_update(GameObject* obj) {
         switch (state->phase) {
         case IM_SPACE_THRUSTER_PHASE_OFF:
             if (thrusterMode == 1) {
-                ObjModel_SetBlendChannelTargets(
-                    imSpaceThruster_getActiveModel(obj), 0, -1, 0, -0.2f, 0x10);
+                ObjModel_SetBlendChannelTargets(imSpaceThruster_getActiveModel(obj), 0, -1, 0, -0.2f, 0x10);
                 obj->anim.alpha = 0xFF;
                 state->phase = IM_SPACE_THRUSTER_PHASE_ON;
             } else {
@@ -85,8 +82,7 @@ void imSpaceThruster_update(GameObject* obj) {
             break;
         case IM_SPACE_THRUSTER_PHASE_ON:
             if (thrusterMode == 0) {
-                ObjModel_SetBlendChannelTargets(
-                    imSpaceThruster_getActiveModel(obj), 0, -1, 0, 0.2f, 0x10);
+                ObjModel_SetBlendChannelTargets(imSpaceThruster_getActiveModel(obj), 0, -1, 0, 0.2f, 0x10);
                 state->blendTimer = 0xB4;
                 obj->anim.alpha = 0xA4;
                 state->phase = IM_SPACE_THRUSTER_PHASE_FADE_OUT;
@@ -165,13 +161,11 @@ void imSpaceThruster_init(GameObject* obj, const IMSpaceThrusterPlacement* place
 
         if (kind < 5) {
             state->keyframesA = mmAlloc(0x28, 0x12, 0);
-            getTabEntry(
-                state->keyframesA, MLDF_FILEID_LACTIONS_BIN,
-                gIMSpaceThrusterKeyframeIndicesA[kind] * 0x28, 0x28);
+            getTabEntry(state->keyframesA, MLDF_FILEID_LACTIONS_BIN, gIMSpaceThrusterKeyframeIndicesA[kind] * 0x28,
+                        0x28);
             state->keyframesB = mmAlloc(0x28, 0x12, 0);
-            getTabEntry(
-                state->keyframesB, MLDF_FILEID_LACTIONS_BIN,
-                gIMSpaceThrusterKeyframeIndicesB[kind] * 0x28, 0x28);
+            getTabEntry(state->keyframesB, MLDF_FILEID_LACTIONS_BIN, gIMSpaceThrusterKeyframeIndicesB[kind] * 0x28,
+                        0x28);
         }
     }
 

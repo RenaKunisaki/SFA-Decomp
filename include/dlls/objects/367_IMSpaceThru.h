@@ -56,14 +56,13 @@ STATIC_ASSERT(offsetof(IMSpaceThrusterParentInterface, slot09) == 0x24);
 STATIC_ASSERT(offsetof(IMSpaceThrusterParentInterface, setThrusterWeight) == 0x28);
 STATIC_ASSERT(sizeof(IMSpaceThrusterParentInterface) == 0x2C);
 
-#define IM_SPACE_THRUSTER_PARENT_INTERFACE(parent) \
-    ((IMSpaceThrusterParentInterface*)*((GameObject*)(parent))->anim.dll)
+#define IM_SPACE_THRUSTER_PARENT_INTERFACE(parent) ((IMSpaceThrusterParentInterface*)*((GameObject*)(parent))->anim.dll)
 
 int imSpaceThruster_getExtraSize(void);
 int imSpaceThruster_getObjectTypeId(void);
 void imSpaceThruster_free(GameObject* obj);
-void imSpaceThruster_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void imSpaceThruster_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible);
 void imSpaceThruster_hitDetect(void);
 void imSpaceThruster_update(GameObject* obj);
 void imSpaceThruster_init(GameObject* obj, const IMSpaceThrusterPlacement* placement);
