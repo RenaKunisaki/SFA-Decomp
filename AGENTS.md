@@ -109,6 +109,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
   source; keep private helper types and constants in the TU.
+- Format the object TU and its unit-owned header, but keep shared consumer edits surgical. Adding a
+  canonical header to a registry such as `modelEngine.c` does not authorize whole-file formatting
+  or unrelated cleanup there; change only the required include, declaration, cast, or use sites
+  unless that consumer TU is itself the active cleanup target.
 - Claim a cleaned TU's complete evidenced constant pool only when the source can emit it without
   duplicate named constants, invented section placement, or codegen changes. MWCC may copy a
   same-TU named `const` scalar into a second anonymous literal while leaving the named definition
