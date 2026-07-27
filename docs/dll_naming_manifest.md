@@ -50,7 +50,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x004 | — | NO-RETAIL-NAME | main/dll/dll_0004_dummy04.c | = (canonical) | — |
 | 0x005 | — | NO-RETAIL-NAME | main/sky.c | main/dll/dll_0005_rendersky.c | engine/SDK host: main/sky.c; stem from fn prefix `renderSky_*` |
 | 0x006 | — | NO-RETAIL-NAME | main/sky.c | main/dll/dll_0006_sky2.c | engine/SDK host: main/sky.c; stem from fn prefix `sky2_*` |
-| 0x007 | — | NO-RETAIL-NAME | main/newclouds.c | main/dll/dll_0007_newclouds.c | engine/SDK host: main/newclouds.c |
+| 0x007 | — | NO-RETAIL-NAME | dlls/engine/7/7.c | main/newclouds.c | Complete DOL-confirmed TU |
 | 0x008 | — | NO-RETAIL-NAME | dlls/engine/8/8.c | main/skystars.c | Complete DOL-confirmed data-only TU; descriptor separated from skystars |
 | 0x009 | — | NO-RETAIL-NAME | dlls/engine/9/9.c | main/dll/cloudaction.c | Complete DOL-confirmed TU; critical-region stubs and waterfx registration record remain embedded |
 | 0x00A | expgfx | DOL-RECOVERED | dlls/engine/10_expgfx/expgfx.c | main/dll/expgfx.c | Complete DOL-confirmed TU |

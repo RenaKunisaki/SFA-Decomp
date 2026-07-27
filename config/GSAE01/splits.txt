@@ -345,7 +345,7 @@ main/sky2.c:
 	.sdata      start:0x803DB750 end:0x803DB760
 	.sbss       start:0x803DD180 end:0x803DD190
 
-main/newclouds.c:
+dlls/engine/7/7.c:
 	.text       start:0x8008ED88 end:0x80093AE0
 	.rodata     start:0x802C1FA8 end:0x802C1FD8
 	.data       start:0x8030F5A0 end:0x8030F770
