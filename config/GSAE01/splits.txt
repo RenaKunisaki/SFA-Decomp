@@ -439,7 +439,7 @@ main/dll/dll_001D_effect4.c:
 	.sbss       start:0x803DD350 end:0x803DD360
 	.sdata2     start:0x803DFA88 end:0x803DFBE0
 
-main/dll/dll_001E_effect5.c:
+dlls/engine/30/30.c:
 	.text       start:0x800BC244 end:0x800BD43C
 	.data       start:0x803109B8 end:0x80310A20
 	.sdata      start:0x803DB7E0 end:0x803DB7F0

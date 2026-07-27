@@ -1,22 +1,9 @@
-/*
- * effect5 (DLL 0x1E) - one of the per-effect particle DLLs.
- *
- * Effect5_func04 is the spawn dispatcher: given an effect id (0xC8..0xD7) it
- * fills a PartFxSpawn request - position/velocity/scale jitter from
- * randomGetRange, texture id, lifetime, alpha and behavior/render flag words -
- * then hands it to gExpgfxInterface->spawnEffect. Effect5_func05 advances the
- * global per-frame scroll-phase accumulators (texture u/v scroll and two sine
- * oscillator angles). The three
- * Effect5_func03_nop / Effect5_release / Effect5_initialise stubs and the
- * lbl_803109B8 object descriptor complete the TU.
- */
 #include "main/dll/partfx_interface.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/mtxbuildarg_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "game/objects/object.h"
-#include "main/dll/modgfx_types.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx.h"
 #include "main/frame_timing.h"
@@ -32,25 +19,6 @@ f32 gEffect5AnimProgressB = 0.3f;
 f32 gEffect5AnimProgressC = 0.1f;
 f32 gEffect5AnimProgressD = 0.3f;
 
-STATIC_ASSERT(sizeof(PartfxEffectState) == 0x140);
-STATIC_ASSERT(offsetof(PartfxEffectState, vertexBuffers) == 0x78);
-STATIC_ASSERT(offsetof(PartfxEffectState, textureResource) == 0x98);
-STATIC_ASSERT(offsetof(PartfxEffectState, flags) == 0xA4);
-STATIC_ASSERT(offsetof(PartfxEffectState, drawPosX) == 0x60);
-STATIC_ASSERT(offsetof(PartfxEffectState, velocityX) == 0x6C);
-STATIC_ASSERT(offsetof(PartfxEffectState, alphaValues) == 0xAC);
-STATIC_ASSERT(offsetof(PartfxEffectState, blendColorR) == 0xBC);
-STATIC_ASSERT(offsetof(PartfxEffectState, renderScale) == 0xD4);
-STATIC_ASSERT(offsetof(PartfxEffectState, vertexCount) == 0xEA);
-STATIC_ASSERT(offsetof(PartfxEffectState, colorVertexCount) == 0xEC);
-STATIC_ASSERT(offsetof(PartfxEffectState, stageDurations) == 0xEE);
-STATIC_ASSERT(offsetof(PartfxEffectState, sequenceId) == 0x10C);
-STATIC_ASSERT(offsetof(PartfxEffectState, inlineData) == 0x12C);
-STATIC_ASSERT(offsetof(PartfxEffectState, activeVertexBufferIndex) == 0x130);
-STATIC_ASSERT(offsetof(PartfxEffectState, emitterCount) == 0x139);
-STATIC_ASSERT(offsetof(PartfxEffectState, textureIsBorrowed) == 0x13F);
-
-
 ObjectDescriptor6 lbl_803109B8 = {
     0,
     0,
@@ -63,15 +31,6 @@ ObjectDescriptor6 lbl_803109B8 = {
     (ObjectDescriptorCallback)Effect5_func04,
     (ObjectDescriptorCallback)Effect5_func05,
 };
-
-
-/*
- * Field names inherited from ExpgfxSpawnConfig (include/main/expgfx_internal.h),
- * the consumer-side definition of this 0x64-byte spawn request consumed by
- * gExpgfxInterface->spawnEffect (expgfx_addremove). Widths kept as written here
- * (colorWord0..2 are the u16 spelling of the consumer's ExpgfxSpawnColorPair;
- * effectIdByte/modelIdByte land in bytes the consumer currently ignores).
- */
 
 int Effect5_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
