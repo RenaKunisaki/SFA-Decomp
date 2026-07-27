@@ -100,6 +100,7 @@
 #include "dlls/objects/302.h"
 #include "dlls/objects/303_BarrelPad.h"
 #include "dlls/objects/304_AreaFXEmit.h"
+#include "dlls/objects/305.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -198,7 +199,7 @@ extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor,
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
     gCFGuardianObjDescriptor, gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor, gCFMainCrystalObjDescriptor;
 extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFPrisonCageObjDescriptor,
-    gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor, gCF_DoorLightObjDescriptor;
+    gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1273,7 +1274,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFLightWallObjDescriptor,
     (ResourceDescriptor*)&gBarrelPadObjDescriptor,
     (ResourceDescriptor*)&gAreaFXEmitObjDescriptor,
-    &gCF_DoorLightObjDescriptor,
+    (ResourceDescriptor*)&gCF_DoorLightObjDescriptor,
     &gWaterFallSprayObjDescriptor,
     &gSfxPlayerObjDescriptor,
     &gTexscroll2ObjDescriptor,
