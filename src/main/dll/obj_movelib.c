@@ -198,3 +198,232 @@ void Obj_SpawnHitLightAndFade(GameObject* obj, const Vec3f* pos, f32 scale)
     objLightFn_8009a1dc(obj, lbl_803E6C68, &s, 1, 0);
     Obj_SetModelColorFadeRecursive(obj, 0x5a, 0xc8, 0, 0, 1);
 }
+
+void Obj_SteerVelocityTowardVector(GameObject* obj, Vec3f* currentVelocity, Vec3f* desiredDirection, f32 maxSpeed,
+                                   f32 maxSpeedDelta, f32 maxTurnAngle)
+{
+    f32 mtx[12];
+    f32 n1[3];
+    f32 n2[3];
+    f32 cross[3];
+    f32 mag1, mag2, t, ang;
+    int gt;
+    f64 gtf;
+
+    mag1 = PSVECMag((const Vec*)currentVelocity);
+    if (mag1 > lbl_803E6C38)
+    {
+        f32 inv = lbl_803E6C6C / mag1;
+        n1[0] = currentVelocity->x * inv;
+        n1[1] = currentVelocity->y * inv;
+        n1[2] = currentVelocity->z * inv;
+        PSVECNormalize((const Vec*)n1, (Vec*)n1);
+    }
+    else
+    {
+        n1[0] = lbl_803E6C38;
+        n1[1] = lbl_803E6C38;
+        n1[2] = lbl_803E6C38;
+    }
+    mag2 = PSVECMag((const Vec*)desiredDirection);
+    if (mag2 > lbl_803E6C38)
+    {
+        f32 inv = lbl_803E6C6C / mag2;
+        n2[0] = desiredDirection->x * inv;
+        n2[1] = desiredDirection->y * inv;
+        n2[2] = desiredDirection->z * inv;
+    }
+    else
+    {
+        n2[0] = lbl_803E6C38;
+        n2[1] = lbl_803E6C38;
+        n2[2] = lbl_803E6C38;
+    }
+    PSVECCrossProduct((const Vec*)n1, (const Vec*)n2, (Vec*)cross);
+    if (PSVECMag((const Vec*)cross) > lbl_803E6C38)
+    {
+        ang = acosf_fast(PSVECDotProduct((const Vec*)n1, (const Vec*)n2));
+        gt = (ang > maxTurnAngle);
+        gtf = __fabs((f32)gt);
+        if (gtf != lbl_803E6C38)
+        {
+            PSMTXRotAxisRad((MtxP)mtx, (const Vec*)cross,
+                            maxTurnAngle * (ang > lbl_803E6C38 ? lbl_803E6C6C : lbl_803E6C70));
+            PSMTXMultVecSR((MtxP)mtx, (const Vec*)n1, (Vec*)n2);
+        }
+    }
+    t = mag2 * lbl_803E6C74;
+    if (t > mag1 + maxSpeedDelta)
+        t = mag1 + maxSpeedDelta;
+    else if (t < mag1 - maxSpeedDelta)
+        t = mag1 - maxSpeedDelta;
+    if (t > maxSpeed)
+        t = maxSpeed;
+    obj->anim.velocityX = n2[0] * t;
+    obj->anim.velocityY = n2[1] * t;
+    obj->anim.velocityZ = n2[2] * t;
+}
+
+int Obj_UpdateRomCurveFollowVelocityIndexed(GameObject* obj, RomCurveWalker* route, f32 advanceStep,
+                                            f32 arriveRadius, f32 speed, int flag, int* pickIdx)
+{
+    int result;
+    f32 delta[3];
+    f32 dist, ang;
+
+    result = 0;
+    delta[0] = obj->anim.localPosX - route->posX;
+    delta[2] = obj->anim.localPosZ - route->posZ;
+    {
+        f32 xx = delta[0] * delta[0];
+        f32 zz = delta[2] * delta[2];
+        dist = sqrtf(xx + zz);
+    }
+    if (dist < arriveRadius)
+    {
+        if (Curve_AdvanceAlongPath(&route->curve, advanceStep) != 0 || route->atSegmentEnd != 0)
+        {
+            if ((*gRomCurveInterface)->goNextPointIndexed(route, *pickIdx) != 0)
+                result = -1;
+            else
+                result = *(s8*)((int)route->node9C + 0x18);
+            *pickIdx = 0;
+        }
+        speed = lbl_803E6C78 * advanceStep;
+    }
+    delta[0] = route->posX - obj->anim.localPosX;
+    delta[1] = route->posY - obj->anim.localPosY;
+    delta[2] = route->posZ - obj->anim.localPosZ;
+    if ((u8)flag == 0)
+    {
+        ObjUpdateRomCurveFollowVelocityState* state = obj->extra;
+        s16 raw;
+        delta[0] = obj->anim.localPosX - route->posX;
+        delta[2] = obj->anim.localPosZ - route->posZ;
+        raw = (s16)getAngle(delta[0], delta[2]);
+        ang = gBarrelGenPi * (f32)(-raw) / gBarrelGenAngleHalfRange;
+        state->velZ = speed * -mathSinf(ang);
+        state->velX = speed * -mathCosf(ang);
+    }
+    else
+    {
+        Obj_SteerVelocityTowardVector(obj, (Vec3f*)&obj->anim.velocityX, (Vec3f*)delta, speed,
+                                      speed / lbl_803E6C7C, lbl_803E6C80);
+    }
+    return result;
+}
+
+int Obj_UpdateRomCurveFollowVelocity(GameObject* obj, RomCurveWalker* route, f32 advanceStep, f32 arriveRadius,
+                                     f32 speed, int flag)
+{
+    int result;
+    f32 delta[3];
+    f32 dist, ang;
+
+    result = 0;
+    delta[0] = obj->anim.localPosX - route->posX;
+    delta[2] = obj->anim.localPosZ - route->posZ;
+    {
+        f32 xx = delta[0] * delta[0];
+        f32 zz = delta[2] * delta[2];
+        dist = sqrtf(xx + zz);
+    }
+    if (dist < arriveRadius)
+    {
+        if (Curve_AdvanceAlongPath(&route->curve, advanceStep) != 0 || route->atSegmentEnd != 0)
+        {
+            if ((*gRomCurveInterface)->goNextPoint(route) != 0)
+                result = -1;
+            else
+                result = *(s8*)((int)route->node9C + 0x18);
+        }
+        speed = lbl_803E6C78 * advanceStep;
+    }
+    delta[0] = route->posX - obj->anim.localPosX;
+    delta[1] = route->posY - obj->anim.localPosY;
+    delta[2] = route->posZ - obj->anim.localPosZ;
+    if ((u8)flag == 0)
+    {
+        ObjUpdateRomCurveFollowVelocityState* state = obj->extra;
+        s16 raw;
+        delta[0] = obj->anim.localPosX - route->posX;
+        delta[2] = obj->anim.localPosZ - route->posZ;
+        raw = (s16)getAngle(delta[0], delta[2]);
+        ang = gBarrelGenPi * (f32)(-raw) / gBarrelGenAngleHalfRange;
+        state->velZ = speed * -mathSinf(ang);
+        state->velX = speed * -mathCosf(ang);
+    }
+    else
+    {
+        Obj_SteerVelocityTowardVector(obj, (Vec3f*)&obj->anim.velocityX, (Vec3f*)delta, speed,
+                                      speed / lbl_803E6C7C, lbl_803E6C80);
+    }
+    return result;
+}
+
+void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, int turnFrames, f32 rollFactor,
+                                        f32 pitchFactor)
+{
+    ObjAnimComponent* anim = &obj->anim;
+    f32 rate;
+    f32 delta;
+    f32 clamped;
+    f32 dist;
+    int rotZ;
+
+    rate = timeDelta / (f32)(u32)(u16)turnFrames;
+    if (rate > lbl_803E6C6C)
+    {
+        rate = lbl_803E6C6C;
+    }
+
+    delta = (f32)(int)((u16)getAngle(-velocity->x, -velocity->z) - (u16)anim->rotX);
+    if (delta > gBarrelGenAngleHalfRange)
+    {
+        delta = gBarrelGenAngleWrapNeg + delta;
+    }
+    if (delta < gBarrelGenAngleWrapThreshold)
+    {
+        delta = gBarrelGenAngleWrapPos + delta;
+    }
+    delta *= rate;
+    clamped = (delta < gBarrelGenTurnRateClampMin)
+                  ? gBarrelGenTurnRateClampMin
+                  : ((delta > gBarrelGenTurnRateClampMax) ? gBarrelGenTurnRateClampMax : delta);
+    anim->rotX += (int)clamped;
+
+    if (rollFactor != lbl_803E6C38)
+    {
+        anim->rotZ = (s16)(lbl_803E6C98 * (f32)anim->rotZ);
+        anim->rotZ = (s16)(oneOverTimeDelta * (lbl_803E6C5C * (clamped * rollFactor)) + (f32)anim->rotZ);
+        rotZ = anim->rotZ;
+        if (rotZ < -0x2000)
+        {
+            rotZ = -0x2000;
+        }
+        else if (rotZ > 0x2000)
+        {
+            rotZ = 0x2000;
+        }
+        anim->rotZ = rotZ;
+    }
+
+    if (lbl_803E6C38 != pitchFactor)
+    {
+        {
+            f32 xx = velocity->x * velocity->x;
+            f32 zz = velocity->z * velocity->z;
+            dist = sqrtf(xx + zz);
+        }
+        delta = (f32)(int)((u16)getAngle(velocity->y * pitchFactor, dist) - (u16)anim->rotY);
+        if (delta > gBarrelGenAngleHalfRange)
+        {
+            delta = gBarrelGenAngleWrapNeg + delta;
+        }
+        if (delta < gBarrelGenAngleWrapThreshold)
+        {
+            delta = gBarrelGenAngleWrapPos + delta;
+        }
+        anim->rotY += (int)(delta * rate);
+    }
+}
