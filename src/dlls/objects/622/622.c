@@ -6,8 +6,7 @@
  * a distance-scaled footstep-style rattle when active.
  *
  * The 0x1A flag byte is a BitFlags8 whose b0 = "active" (chain visible
- * and rattling); the matching attachment logic lives in the separate
- * drshackle.c build unit (DRshackle.h).
+ * and rattling).
  */
 #include "dolphin/mtx/mtx_legacy.h"
 #include "game/objects/object.h"

@@ -32,8 +32,6 @@ enum
 
 #define SPITEMBEAM_TARGET_OBJGROUP 9
 
-extern f32 lbl_803E5AD8;
-
 int spitembeam_getExtraSize(void)
 {
     return 0x0;
@@ -64,7 +62,7 @@ void spitembeam_update(GameObject* obj)
 
     shop = *(int**)&obj->userData1;
     def = *(u8**)&obj->anim.placementData;
-    searchRadius = lbl_803E5AD8;
+    searchRadius = 10000.0f;
     if (shop == NULL)
     {
         *(int**)&obj->userData1 =
@@ -121,10 +119,4 @@ ObjectDescriptor gSPitembeamObjDescriptor = {
     (ObjectDescriptorCallback)spitembeam_free,
     (ObjectDescriptorCallback)spitembeam_getObjectTypeId,
     spitembeam_getExtraSize,
-};
-
-/* Used by SnowBike (DLL 597) as a base+offset table; placed in this unit by link order. */
-f32 lbl_803284E0[19] = {
-    -6.5f, 0.0f,  -13.0f, 6.5f, 0.0f, -13.0f, 6.5f, 0.0f, 13.0f, -6.5f,
-    0.0f,  13.0f, 1.0f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f,
 };

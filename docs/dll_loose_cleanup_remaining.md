@@ -32,7 +32,6 @@ through `tools/dll_cleanup_wave.js` (per-file match-gated).
 | dll_0272_hightop.c | 1218 | Zachary, ~1h (ACTIVE) |
 | dll_0271_drakorhoverpad.c | 997 | Zachary |
 | dll_00D0_grimble.c | 963 | Zachary |
-| drhightop.c | 749 | Zachary |
 | dll_00CF_cannonclaw.c | 537 | Zachary |
 | dll_0282_barrelgener.c | 505 | Zachary |
 | dll_003D_titlemenuitem.c | 451 | Zachary |

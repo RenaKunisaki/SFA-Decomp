@@ -3135,37 +3135,17 @@ dlls/objects/648_SPDrape/SPDrape.c:
 
 dlls/objects/649_SPitembeam/SPitembeam.c:
 	.text       start:0x801E97DC end:0x801E991C
-	.data       start:0x803284A8 end:0x8032852C
-
-main/dll/dll_801e991c.c:
-	.text       start:0x801E991C end:0x801E9C00
-	.sbss       start:0x803DDC60 end:0x803DDC64
-
-main/dll/drcloudcage.c:
-	.text       start:0x801E9C00 end:0x801EA240
-	.rodata     start:0x802C2428 end:0x802C2470
-
-main/dll/drcloudcage_engine.c:
-	.text       start:0x801EA240 end:0x801EA678
-	.sbss       start:0x803DDC64 end:0x803DDC68
-
-main/dll/drcloudcage_pitch.c:
-	.text       start:0x801EA678 end:0x801EA854
-
-main/dll/DR/drshackle.c:
-	.text       start:0x801EA854 end:0x801EAE4C
-
-main/dll/drhightop.c:
-	.text       start:0x801EAE4C end:0x801EC1AC
-	.data       start:0x8032852C end:0x8032855C
-
-main/dll/drpickup.c:
-	.text       start:0x801EC1AC end:0x801EC7A0
+	.data       start:0x803284A8 end:0x803284E0
+	.sdata2     start:0x803E5AD8 end:0x803E5AE0
 
 dlls/objects/597/597.c:
-	.text       start:0x801EC7A0 end:0x801EE088
-	.data       start:0x8032855C end:0x80328618
+	.text       start:0x801E991C end:0x801EE088
+	.rodata     start:0x802C2428 end:0x802C2470
+	.data       start:0x803284E0 end:0x80328618
+	.bss        start:0x803AD088 end:0x803AD0C0
 	.sdata      start:0x803DC0B8 end:0x803DC0F0
+	.sbss       start:0x803DDC60 end:0x803DDC68
+	.sdata2     start:0x803E5AE0 end:0x803E5CA0
 
 main/dll/bwalphaanim.c:
 	.text       start:0x801EE088 end:0x801EE0C0
