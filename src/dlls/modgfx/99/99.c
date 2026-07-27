@@ -1,5 +1,5 @@
 /*
- * dll63func0 (DLL 0x63) - save-icon / preview modgfx effect DLL.
+ * DLL 99 / 0x63 - save-icon / preview modgfx effect DLL.
  *
  * dll_63_func03 builds a per-object bone-particle command list (GfxCmd
  * entries) and submits it via gModgfxInterface->spawnEffect; variant
