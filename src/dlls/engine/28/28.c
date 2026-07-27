@@ -1,14 +1,3 @@
-/*
- * effect3 (DLL 0x1C) - a particle-effect spawner object.
- *
- * The live entry point is Effect3_spawnEffect: a spawn dispatcher keyed on
- * effectId (0x1F4..0x20E). For each id it fills a PartFxSpawn request -
- * texture, lifetime, scale, start position, velocity, color, behavior and
- * render flags, mostly randomized via randomGetRange - then hands it to
- * gExpgfxInterface->spawnEffect. Behavior-flag bit 0 means "offset start
- * position by the attached source"; spawnFlags bit 0x200000 selects an
- * explicit PartFxSpawnParams source over the attached object.
- */
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx.h"
