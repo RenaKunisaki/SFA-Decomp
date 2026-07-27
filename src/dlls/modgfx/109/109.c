@@ -1,13 +1,9 @@
 /*
- * dll6dfunc0 (DLL 0x6D) - spirit/aura particle-effect spawner.
+ * DLL 109 / 0x6D - spirit/aura particle-effect spawner.
  *
  * dll_6D_func03 builds a 6-entry modgfx command list (the spirit/aura
  * particle effect) and submits it via gModgfxInterface->spawnEffect.
- * func00/func01 are the DLL's empty lifecycle hooks. (The Ghidra dump of
- * this TU also carried a large block of mainDol drift duplicates -
- * save-file/cheat/settings helpers from the gameplay.h family, real copies
- * in sibling units - dropped here to match the retail object, which holds
- * only these three functions.)
+ * func00/func01 are the DLL's empty lifecycle hooks.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
