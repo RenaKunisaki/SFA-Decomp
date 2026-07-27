@@ -1,5 +1,5 @@
 /*
- * dll97func0 (DLL 0x97) - effect spawner DLL.
+ * DLL 151 / 0x97 - effect spawner.
  *
  * func00/func01 are empty entry-point stubs. func03 builds a stack
  * ModgfxSpawnPacket command list of nine GfxCmd entries (textures sourced from
@@ -8,7 +8,7 @@
  * and a position source, then hands the buffer to the modgfx interface
  * (gModgfxInterface->spawnEffect). The `variant` arg picks alternate
  * size/scale constants; `flags` is OR'd into the buffer command flags.
- * The sibling DLL 0x98 (dll_0098_dll98func0.c) follows the same shape.
+ * The sibling DLL 152 / 0x98 follows the same shape.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
@@ -163,7 +163,6 @@ void dll_97_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     }
     (*gModgfxInterface)->spawnEffect(&buf, 0, 6, resource[0], 4, resource[0]->spawnData, DLL97_EFFECT_ID, 0);
 }
-
 
 void dll_97_func01_nop(void)
 {
