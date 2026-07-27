@@ -1,15 +1,9 @@
 /*
- * dll74func0 (DLL 0x74) - shared save-game / world-progress core lib.
+ * DLL 116 / 0x74 - modgfx effect spawner.
  *
- * A near-clone of the dll_6D core (same exported entry points; this DLL
- * instance differs only in its private effect-list data labels). The retail
- * dll_0074 object carries only func03/func01/func00; the save/cheat helpers
- * (saveFileStruct_unlockCheat / isCheatUnlocked / saveFileStruct_resetVolumes /
- * getSaveFileStruct / loadSaveSettings) are mainDol drift-duplicates whose
- * retail home is dll_0015_curves.
- *   - dll_74_func03: builds the modgfx command list (the spirit/aura particle
- *     effect, a 0/non-0 variant pair) and submits it via
- *     gModgfxInterface->spawnEffect.
+ * dll_74_func03 builds the command list for a two-variant spirit/aura
+ * effect and submits it through gModgfxInterface. func00/func01 are
+ * empty lifecycle slots.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
