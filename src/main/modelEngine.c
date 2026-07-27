@@ -156,6 +156,7 @@
 #include "dlls/objects/358.h"
 #include "dlls/objects/359_SpiritDoorL.h"
 #include "dlls/objects/360_HoloPoint.h"
+#include "dlls/objects/361_IMIceMounta.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -285,8 +286,7 @@ extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireO
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor,
     gGmMazeWellObjDescriptor;
-extern ResourceDescriptor gHighTopObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor,
-    gIMIcePillarObjDescriptor;
+extern ResourceDescriptor gHighTopObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
@@ -1371,7 +1371,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gExplodedObjDescriptor,
     (ResourceDescriptor*)&gSpiritDoorLockObjDescriptor,
     (ResourceDescriptor*)&gHoloPointNullResourceDescriptor,
-    &gIMIceMountainObjDescriptor,
+    (ResourceDescriptor*)&gIMIceMountainObjDescriptor,
     &gCRrockfallObjDescriptor,
     &gMagicLightObjDescriptor,
     &lbl_80323740,
