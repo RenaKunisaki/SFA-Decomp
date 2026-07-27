@@ -46,8 +46,8 @@ void HitAnimator_applyBlockState(MapBlockData* block, GameObject* obj, HitAnimat
     if ((placement->setupFlags & HIT_ANIMATOR_SETUP_AFFECT_SHADERS) != 0) {
         for (index = 0; index < block->shaderCount; index++) {
             MapShader* shader = mapBlockGetShader(block, index);
-            u8* layer = Shader_getLayer(shader, 0);
-            if (placement->blockEffectId == layer[5]) {
+            MapShaderLayer* layer = Shader_getLayer(shader, 0);
+            if (placement->blockEffectId == layer->mapLayerId) {
                 if (state->active != 0) {
                     shader->flags &= ~2LL;
                 } else {

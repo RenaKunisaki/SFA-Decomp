@@ -62,6 +62,7 @@ typedef struct MapShaderLayer
     union {
         u8 overrideType;
         u8 overrideByte;
+        u8 mapLayerId;
     };
     union {
         u8 scrollMtx;
@@ -69,6 +70,9 @@ typedef struct MapShaderLayer
     };
     u8 unk7;
 } MapShaderLayer;
+
+STATIC_ASSERT(offsetof(MapShaderLayer, mapLayerId) == 0x05);
+STATIC_ASSERT(sizeof(MapShaderLayer) == 0x08);
 
 typedef struct MapShader
 {

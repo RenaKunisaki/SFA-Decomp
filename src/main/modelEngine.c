@@ -140,6 +140,7 @@
 #include "dlls/objects/342.h"
 #include "dlls/objects/343_SpiritDoorS.h"
 #include "dlls/objects/344.h"
+#include "dlls/objects/345.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -230,8 +231,8 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAnimSharpclawObjDescriptor;
 extern ResourceDescriptor gAttractorObjDescriptor;
-extern ResourceDescriptor gBaddieObjDescriptor, gBlastedObjDescriptor, gBombPlantObjDescriptor,
-    gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
+extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor,
+    gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
@@ -1343,7 +1344,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll156NullResourceDescriptor,
     (ResourceDescriptor*)&gSpiritDoorSpiritObjDescriptor,
     (ResourceDescriptor*)&gGunpowderBarrelObjDescriptor,
-    &gBlastedObjDescriptor,
+    (ResourceDescriptor*)&gBlastedObjDescriptor,
     &gExplodableObjDescriptor,
     &gCFForceFieldObjDescriptor,
     &lbl_803DBEA0,
