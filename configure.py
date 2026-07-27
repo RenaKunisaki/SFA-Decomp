@@ -1053,6 +1053,10 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(
+                NonMatching, "dlls/engine/19/19.c", cflags=cflags_dll_noopt_noautoinline,
+                section_alignments={".data": 4},
+            ),
             Object(NonMatching, "dlls/engine/20_Hcurves/Hcurves.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/engine/20_Hcurves/Hcurves_romcurve.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/engine/21/21.c", cflags=cflags_dll_noopt_noautoinline),
@@ -1327,10 +1331,6 @@ config.libs = [
             Object(NonMatching, "main/newclouds.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/skystars.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/cloudaction.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
-            Object(
-                NonMatching, "main/dll/dll_0013_waterfx.c", cflags=cflags_dll_noopt_noautoinline,
-                section_alignments={".data": 4},
-            ),
             Object(MatchingFor("GSAE01"), "main/audio_decode_thread.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/523_FireFly/FireFly.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/524_WM_spiritpl/WM_spiritpl.c", cflags=cflags_dll_noopt),

@@ -62,7 +62,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x010 | — | NO-RETAIL-NAME | main/dll/dll_0010_uicontroller.c | = (canonical) | — |
 | 0x011 | — | NO-RETAIL-NAME | main/dll/dll_0011_screens.c | = (canonical) | Complete DOL-confirmed TU; data table and descriptor restored from DLL 23 tail |
 | 0x012 | — | NO-RETAIL-NAME | main/dll/dll_0012_unk.c | = (canonical) | — |
-| 0x013 | — | NO-RETAIL-NAME | main/dll/dll_0013_waterfx.c | = (canonical) | — |
+| 0x013 | — | NO-RETAIL-NAME | dlls/engine/19/19.c | main/dll/dll_0013_waterfx.c | Complete DOL-confirmed TU; missing sdata2 owner restored |
 | 0x014 | Hcurves | DOL-RECOVERED | dlls/engine/20_Hcurves/Hcurves.c \| dlls/engine/20_Hcurves/Hcurves_romcurve.c | main/dll/Hcurves.c \| main/dll/Hcurves_romcurve.c | DOL-confirmed DLL with two literal-pool-proven TUs; both rehomed intact |
 | 0x015 | — | NO-RETAIL-NAME | dlls/engine/21/21.c | = (canonical) | Complete DOL-confirmed TU; missing sdata2 owner restored |
 | 0x016 | — | NO-RETAIL-NAME | dlls/engine/22/22.c | = (canonical) | Complete DOL-confirmed TU; missing sdata2 owner restored |
