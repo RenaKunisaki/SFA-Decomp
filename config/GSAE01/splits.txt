@@ -673,7 +673,7 @@ main/dll/dll_0066_dll66func0.c:
 main/dll/dll_0067_dll67func0.c:
 	.text       start:0x800EF7B4 end:0x800EFA30
 
-main/dll/dll_0068_dll68func0.c:
+dlls/modgfx/104/104.c:
 	.text       start:0x800EFA30 end:0x800EFD34
 
 main/dll/dll_0058_dummy58.c:

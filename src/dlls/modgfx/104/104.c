@@ -1,5 +1,5 @@
 /*
- * DLL 0x68 (dll68func0) - a thin gameplay-effect DLL.
+ * DLL 104 / 0x68 - a thin gameplay-effect DLL.
  *
  * Real exports (per the DLL's .text):
  *   dll_68_func00_nop / dll_68_func01_nop - empty entry-point stubs.
@@ -19,12 +19,6 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0068_dll68func0.h"
 
-enum
-{
-    SAVEGAME_EMPTY_TASK_HINT = -1,
-    SAVEGAME_DEFAULT_VOLUME = 0x7f,
-};
-
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL68_EFFECT_ID 0x41
 
@@ -36,12 +30,6 @@ extern f32 lbl_803E09EC;
 extern f32 lbl_803E09F0;
 extern f32 lbl_803E09F4;
 extern f32 lbl_803E09F8;
-
-static inline u8* Gameplay_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (u8*)objAnim->banks[objAnim->bankIndex];
-}
 
 void dll_68_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
