@@ -168,6 +168,7 @@
 #include "dlls/objects/370_LINKB_levco.h"
 #include "dlls/objects/371_LINK_levcon.h"
 #include "dlls/objects/372_CCriverflow.h"
+#include "dlls/objects/374_DFSH_Door1S.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -403,7 +404,7 @@ extern ResourceDescriptor lbl_8031ADF8, lbl_8031C020, lbl_8031C168, lbl_8031C1E4
     lbl_8031C5D0, lbl_8031C5F8;
 extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_803230F8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
-extern ResourceDescriptor lbl_80325928, lbl_80325F20, lbl_80328AD8, lbl_80328E28, lbl_80329340;
+extern ResourceDescriptor lbl_80325928, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
 extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0;
 extern ResourceDescriptor lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138, lbl_803DC140, lbl_803DC150;
@@ -1394,7 +1395,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLINKLevelControlObjDescriptor,
     (ResourceDescriptor*)&gCCRiverFlowObjDescriptor,
     &gDFropenodeObjDescriptor,
-    &lbl_80325F20,
+    (ResourceDescriptor*)&gDFSH_Door1SNullResourceDescriptor,
     &gDFSH_Door2SpeciObjDescriptor,
     &gDFSH_ShrineObjDescriptor,
     &gDFSH_ObjCreatorObjDescriptor,
