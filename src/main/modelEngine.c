@@ -129,6 +129,7 @@
 #include "dlls/objects/331_CFMainCryst.h"
 #include "dlls/objects/332.h"
 #include "dlls/objects/333_LaserBeam.h"
+#include "dlls/objects/334_CFPrisonGua.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -225,8 +226,7 @@ extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
     gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor;
-extern ResourceDescriptor gCFPerchObjDescriptor, gCFPrisonCageObjDescriptor, gCFPrisonGuardObjDescriptor,
-    gCFPrisonUncleObjDescriptor;
+extern ResourceDescriptor gCFPerchObjDescriptor, gCFPrisonCageObjDescriptor, gCFPrisonUncleObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1324,7 +1324,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFMainCrystalObjDescriptor,
     (ResourceDescriptor*)&gBabyCloudRunnerObjDescriptor,
     (ResourceDescriptor*)&gLaserBeamNullResourceDescriptor,
-    &gCFPrisonGuardObjDescriptor,
+    (ResourceDescriptor*)&gCFPrisonGuardObjDescriptor,
     &gCFPrisonUncleObjDescriptor,
     &gGCRobotLightBeaObjDescriptor,
     &lbl_803DBE60,
