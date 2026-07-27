@@ -1,4 +1,3 @@
-/* In-game HUD, C-menu, head display, and pause-menu implementation. */
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
@@ -89,6 +88,14 @@
 #include "main/dll/dll_8B.h"
 #include "main/dll/player_spirit_api.h"
 #include "main/loaded_file_flags.h"
+#include "main/fsin16_approx_api.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/trig.h"
+#include "main/dll/dll_0017_savegame_api.h"
+#include "main/dll/dll_0011_screens_api.h"
+#include "string.h"
+#include "dolphin/gx/GXPixel.h"
+#include "track/intersect_api.h"
 
 u16 lbl_803DBA30 = 420;
 f32 lbl_803DBA34 = 0.3f;
@@ -615,14 +622,6 @@ extern const f32 lbl_803E205C;
 extern const f32 lbl_803E2060;
 extern const f32 lbl_803E2064;
 extern const f32 lbl_803E2068;
-#include "main/fsin16_approx_api.h"
-#include "main/audio/sfx_limited_object_api.h"
-#include "main/trig.h"
-#include "main/dll/dll_0017_savegame_api.h"
-#include "main/dll/dll_0011_screens_api.h"
-#include "string.h"
-#include "dolphin/gx/GXPixel.h"
-#include "track/intersect_api.h"
 extern f32 lbl_803DD748;
 extern f32 lbl_803DD74C;
 extern u16 lbl_803DD750;

@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/0/0.c", cflags=cflags_dll_noopt, extra_cflags=["-inline", "noauto"]),
             Object(
                 NonMatching, "dlls/engine/1_camcontrol/camcontrol.c", cflags=cflags_dll_noopt,
                 section_alignments={".data": 4},
@@ -1549,7 +1550,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_4e.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_4d.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/prof.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0000_gameui.c", cflags=cflags_dll_noopt, extra_cflags=["-inline", "noauto"]),
             Object(NonMatching, "dlls/objects/704/704.c", cflags=cflags_dll_noopt_noloopinv),
             Object(NonMatching, "main/dll/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
             Object(MatchingFor("GSAE01"), "dlls/objects/223_Hagabon/Hagabon.c", cflags=cflags_dll_noopt),
