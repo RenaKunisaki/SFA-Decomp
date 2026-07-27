@@ -45,7 +45,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 |---|---|---|---|---|---|
 | 0x000 | — | NO-RETAIL-NAME | main/dll/dll_0000_baby_snowworm.c | = (canonical) | — |
 | 0x001 | — | NO-RETAIL-NAME | main/dll/dll_0001_camcontrol.c | = (canonical) | — |
-| 0x002 | — | NO-RETAIL-NAME | main/objseq.c | main/dll/dll_0002_objseq.c | engine/SDK host: main/objseq.c |
+| 0x002 | — | NO-RETAIL-NAME | dlls/engine/2/2.c | main/maketex.c | Complete DOL-confirmed TU; maketex, ObjSeq, and ObjSeq init share one compiler object |
 | 0x003 | — | NO-RETAIL-NAME | dlls/engine/3/3.c | main/dll/dll_0003_checkpoint.c | Complete DOL-confirmed TU |
 | 0x004 | — | NO-RETAIL-NAME | dlls/engine/4/4.c | main/dll/dll_0004_dummy04.c | Complete DOL-confirmed TU |
 | 0x005 | — | NO-RETAIL-NAME | dlls/engine/5/5.c | main/sky.c | Complete DOL-confirmed TU |
