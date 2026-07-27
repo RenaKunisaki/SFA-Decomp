@@ -54,6 +54,10 @@ MapRomList* gKTRexMapBlock;
 int gKTRexContactEffectCooldown;
 StaffCollisionInterface** gKTRexResource;
 
+KTRexWork gKTRexEffectSpawnWork;
+void* gKTRexStateHandlersB[10];
+void* gKTRexStateHandlersA[12];
+
 s16 lbl_803DC250[4] = {9, 0x12, 0x12, 0};
 s16 lbl_803DC258[4] = {1, 2, 3, 0};
 s16 lbl_803DC260[4] = {4, 6, 6, 0};

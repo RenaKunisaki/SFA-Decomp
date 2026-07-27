@@ -2921,6 +2921,7 @@ dlls/objects/429_SH_thorntai/SH_thorntai.c:
 dlls/objects/432_SH_swapston/SH_swapston.c:
 	.text       start:0x801D6914 end:0x801D7BA8
 	.data       start:0x80327560 end:0x80327614
+	.bss        start:0x803AD048 end:0x803AD068
 	.sdata      start:0x803DC038 end:0x803DC054
 	.sbss       start:0x803DDBF0 end:0x803DDBF8
 	.sdata2     start:0x803E5460 end:0x803E54B0
@@ -3449,6 +3450,7 @@ dlls/objects/577_DrakorEnerg/DrakorEnerg.c:
 dlls/objects/578_DBstealerwo/DBstealerwo.c:
 	.text       start:0x801FFE18 end:0x80203DA0
 	.data       start:0x803293B8 end:0x80329810
+	.bss        start:0x803AD0C0 end:0x803AD138
 	.sdata2     start:0x803E62A8 end:0x803E6390
 
 dlls/objects/579_DBHoleContr/DBHoleContr.c:
@@ -3506,6 +3508,7 @@ dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c:
 dlls/objects/562_DFP_RotateP/DFP_RotateP.c:
 	.text       start:0x8020768C end:0x80208098
 	.data       start:0x80329AA0 end:0x80329AD8
+	.bss        start:0x803AD138 end:0x803AD158
 	.sdata2     start:0x803E6450 end:0x803E647C
 
 dlls/objects/563_DFP_Statue1/DFP_Statue1.c:
@@ -3640,6 +3643,7 @@ dlls/objects/592_KT_Rex/KT_Rex.c:
 	.text       start:0x80211F38 end:0x80215A3C
 	.rodata     start:0x802C2550 end:0x802C2560
 	.data       start:0x8032A510 end:0x8032A7C0
+	.bss        start:0x803AD158 end:0x803AD1C8
 	.sdata      start:0x803DC250 end:0x803DC2A0
 	.sbss       start:0x803DDD48 end:0x803DDD60
 	.sdata2     start:0x803E67B0 end:0x803E6854
@@ -3729,6 +3733,7 @@ dlls/objects/622/622.c:
 dlls/objects/625/625.c:
 	.text       start:0x8021B358 end:0x8021CF60
 	.data       start:0x8032A9E8 end:0x8032AB30
+	.bss        start:0x803AD1C8 end:0x803AD208
 	.sdata      start:0x803DC2F8 end:0x803DC308
 	.sdata2     start:0x803E6A38 end:0x803E6AA0
 
@@ -3736,6 +3741,7 @@ dlls/objects/626/626.c:
 	.text       start:0x8021CF60 end:0x8021F34C
 	.rodata     start:0x802C2590 end:0x802C25B8
 	.data       start:0x8032AB30 end:0x8032AC58
+	.bss        start:0x803AD208 end:0x803AD278
 	.sdata      start:0x803DC308 end:0x803DC338
 	.sbss       start:0x803DDD78 end:0x803DDD80
 	.sdata2     start:0x803E6AA0 end:0x803E6B58
@@ -3839,6 +3845,7 @@ dlls/objects/651/651.c:
 	.text       start:0x80223D18 end:0x8022408C
 	.rodata     start:0x802C25B8 end:0x802C25D8
 	.data       start:0x8032AF40 end:0x8032AF78
+	.bss        start:0x803AD278 end:0x803AD298
 
 dlls/objects/652_WCBouncyCra/WCBouncyCra.c:
 	.text       start:0x8022408C end:0x802243F4
@@ -3853,6 +3860,7 @@ dlls/objects/656_WCPushBlock/WCPushBlock.c:
 dlls/objects/653_WCLevelCont/WCLevelCont.c:
 	.text       start:0x802251B4 end:0x802272C8
 	.data       start:0x8032B108 end:0x8032B178
+	.bss        start:0x803AD298 end:0x803AD320
 	.sdata2     start:0x803E6DC8 end:0x803E6DD0
 
 dlls/objects/654_WCBeacon/WCBeacon.c:
