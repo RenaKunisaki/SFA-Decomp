@@ -51,12 +51,9 @@ int dll_177_updateTextureAnimation(GameObject* obj) {
         if (texture != NULL) {
             phaseStep = (state->pulsePhase + framesThisStep * 800) & 0xFFFF;
             state->pulsePhase = phaseStep;
-            phase =
-                (gDll177Pi * (f32)(u32)state->pulsePhase) / gDll177HalfCycleUnits;
-            texture->textureId =
-                (s32)-(gDll177TexturePulseAmplitude *
-                          (gDll177UnitValue - mathCosf(phase)) -
-                      gDll177TextureValueMaximum);
+            phase = (gDll177Pi * (f32)(u32)state->pulsePhase) / gDll177HalfCycleUnits;
+            texture->textureId = (s32) - (gDll177TexturePulseAmplitude * (gDll177UnitValue - mathCosf(phase)) -
+                                          gDll177TextureValueMaximum);
         }
         break;
     }
@@ -74,11 +71,9 @@ int dll_177_getObjectTypeId(void) {
 void dll_177_free(void) {
 }
 
-void dll_177_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void dll_177_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     if (visible != 0) {
-        objRenderModelAndHitVolumes(
-            obj, renderArg2, renderArg3, renderArg4, renderArg5, gDll177UnitValue);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gDll177UnitValue);
     }
 }
 

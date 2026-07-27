@@ -38,8 +38,7 @@ int dll_177_updateTextureAnimation(GameObject* obj);
 int dll_177_getExtraSize(void);
 int dll_177_getObjectTypeId(void);
 void dll_177_free(void);
-void dll_177_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void dll_177_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dll_177_hitDetect(void);
 void dll_177_update(void);
 void dll_177_init(GameObject* obj, const Dll177Placement* placement);
