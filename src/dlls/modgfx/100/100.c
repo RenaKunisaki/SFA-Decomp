@@ -1,5 +1,5 @@
 /*
- * dll64func0 (DLL 0x64) - particle/effect spawner front-end.
+ * DLL 100 / 0x64 - particle/effect spawner front-end.
  *
  * dll_64_func03 builds a fixed nine-command Modgfx effect description on
  * the stack (the GfxCmd entries[] table, each a textured billboard layer
@@ -19,7 +19,6 @@
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL64_EFFECT_ID 0x5e0
-
 
 extern u8 lbl_80312D18[];
 
