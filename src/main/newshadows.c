@@ -186,7 +186,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     int pixelColumnOffset = (j & 3) * 2;
                     int tileColumnOffset;
                     u8 *ad, *bd, *ct, *cd;
-                    int aLo, bLo, aHi, bHi;
+                    u8 aLo, bLo, aHi, bHi;
                     ad = (u8*)src1 + pixelColumnOffset;
                     tileColumnOffset = (j >> 2) * 0x40;
                     ad += tileColumnOffset;
@@ -198,15 +198,11 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     bd += tileRowOffset;
                     bd += rowDataOffset;
                     aLo = READ_TEXTURE_U16(ad + 0x60);
-                    aLo = (u8)aLo;
                     bLo = READ_TEXTURE_U16(bd + 0x60);
-                    bLo = (u8)bLo;
                     pixelA = READ_TEXTURE_U16(ad + 0x80);
                     aHi = (pixelA & 0xff00) >> 8;
-                    aHi = (u8)aHi;
                     pixelB = READ_TEXTURE_U16(bd + 0x80);
                     bHi = (pixelB & 0xff00) >> 8;
-                    bHi = (u8)bHi;
                     ct = (u8*)dst + pixelColumnOffset + 0x60;
                     cd = ct + tileColumnOffset;
                     cd += tileRowOffset;
