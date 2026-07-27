@@ -1,12 +1,3 @@
-/*
- * uicontroller (DLL 0x10) - the game's top-level UI frame driver.
- *
- * A thin shim over the shared GameUIInterface vtable (gGameUIInterface):
- * frameStart/frameEnd bracket the per-frame UI pass, and render advances
- * the on-screen game timer (gameTimerRun) when it is running and refreshes
- * the HUD number readout before forwarding to the interface's render.
- * release/initialise are the DLL load/unload hooks (no-ops here).
- */
 #include "main/game_ui_interface.h"
 #include "main/model_engine.h"
 #include "main/dll/dll_0010_uicontroller.h"

@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(MatchingFor("GSAE01"), "dlls/engine/16/16.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/17/17.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/18/18.c"),
             Object(
@@ -1473,7 +1474,6 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_0003_checkpoint.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0004_dummy04.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_000F_unk.c", cflags=cflags_dll_noopt_nocse_noautoinline),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0010_uicontroller.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_b8.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/n_attractmode.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/modanimeflash1.c"),

@@ -577,7 +577,7 @@ main/dll/dll_000F_unk.c:
 	.sbss       start:0x803DD430 end:0x803DD458
 	.sdata2     start:0x803E0598 end:0x803E05A0
 
-main/dll/dll_0010_uicontroller.c:
+dlls/engine/16/16.c:
 	.text       start:0x800D9DCC end:0x800D9EB4
 	.data       start:0x803114B0 end:0x803114D8
 

@@ -59,7 +59,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x00D | — | NO-RETAIL-NAME | main/dll/dll_000D_playershadow.c | = (canonical) | — |
 | 0x00E | — | NO-RETAIL-NAME | main/dll/dll_000E_partfx.c | = (canonical) | — |
 | 0x00F | — | NO-RETAIL-NAME | main/dll/dll_000F_unk.c | = (canonical) | — |
-| 0x010 | — | NO-RETAIL-NAME | main/dll/dll_0010_uicontroller.c | = (canonical) | — |
+| 0x010 | — | NO-RETAIL-NAME | dlls/engine/16/16.c | main/dll/dll_0010_uicontroller.c | Complete DOL-confirmed TU |
 | 0x011 | — | NO-RETAIL-NAME | dlls/engine/17/17.c | main/dll/dll_0011_screens.c | Complete DOL-confirmed TU; data table and descriptor restored from DLL 23 tail |
 | 0x012 | — | NO-RETAIL-NAME | dlls/engine/18/18.c | main/dll/dll_0012_unk.c | Complete DOL-confirmed TU |
 | 0x013 | — | NO-RETAIL-NAME | dlls/engine/19/19.c | main/dll/dll_0013_waterfx.c | Complete DOL-confirmed TU; missing sdata2 owner restored |
