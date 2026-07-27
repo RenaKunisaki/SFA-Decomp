@@ -7,6 +7,7 @@
  * "player caught in the beam" hit flag to react - the sharp-claw disguise
  * fools the beam. ("GC" = GameCube; see the dll_0150 header.)
  */
+#include "dlls/objects/237.h"
 #include "dlls/object_descriptor.h"
 #include "main/camera_interface.h"
 #include "main/dll/objfx_api.h"
@@ -866,7 +867,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
                 (obj)->anim.worldPosZ = ((ObjPlacement*)parentSetup)->posZ;
             }
             nearestDistance = lbl_803E25A8;
-            gTrickyNearestObject = ObjGroup_FindNearestObject(4, obj, &nearestDistance);
+            gTrickyNearestObject = ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDistance);
             (obj)->anim.worldPosX = savedX;
             (obj)->anim.worldPosY = savedY;
             (obj)->anim.worldPosZ = savedZ;

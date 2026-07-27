@@ -27,8 +27,7 @@
 
 #define DLLF7_OBJECT_TYPE_ID 2
 
-#define DLLF7_OBJECT_GROUP             0x3E
-#define DLLF7_COLLECTIBLE_OBJECT_GROUP 4
+#define DLLF7_OBJECT_GROUP 0x3E
 
 #define DLLF7_RESOURCE_STAFF_COLLISION 0x5A
 #define DLLF7_RESOURCE_MODGFX          0x5B
@@ -188,7 +187,7 @@ void dll_F7_update(GameObject* obj) {
             GameObject* collectible;
 
             radius = DLLF7_COLLECTIBLE_SEARCH_RADIUS;
-            collectible = (GameObject*)ObjGroup_FindNearestObject(DLLF7_COLLECTIBLE_OBJECT_GROUP, obj, &radius);
+            collectible = (GameObject*)ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
             if (collectible != NULL) {
                 collectible->anim.localPosX = collectible->anim.worldPosX = obj->anim.localPosX;
                 collectible->anim.localPosY = collectible->anim.worldPosY =

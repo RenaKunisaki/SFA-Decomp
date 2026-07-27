@@ -81,6 +81,7 @@
 #include "dlls/objects/282.h"
 #include "dlls/objects/283_Landed_Arwi.h"
 #include "dlls/objects/284.h"
+#include "dlls/objects/285.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -263,8 +264,8 @@ extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpi
     gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
     gTextBlockObjDescriptor, gTimerObjDescriptor;
-extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreasureChestObjDescriptor,
-    gTreeBirdObjDescriptor, gTrickyCurveObjDescriptor, gTrickyGuardSpotObjDescriptor;
+extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreeBirdObjDescriptor,
+    gTrickyCurveObjDescriptor, gTrickyGuardSpotObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
 extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescriptor, gVFP_LevelControlObjDescriptor,
@@ -1241,7 +1242,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDecoration11AObjDescriptor,
     (ResourceDescriptor*)&gLanded_ArwingObjDescriptor,
     (ResourceDescriptor*)&gStaffActivatedObjDescriptor,
-    &gTreasureChestObjDescriptor,
+    (ResourceDescriptor*)&gTreasureChestObjDescriptor,
     &gMagicCaveBottomObjDescriptor,
     &gMagicCaveTopObjDescriptor,
     &gTrickyGuardSpotObjDescriptor,

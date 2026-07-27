@@ -7,6 +7,9 @@
 
 struct ObjAnimUpdateState;
 
+/* ObjGroup slot containing the collectible object family. */
+#define COLLECTIBLE_OBJECT_GROUP 4
+
 /* Health-refill collectible sequence IDs. */
 #define COLLECTIBLE_ITEM_ENERGY_EGG 0xB   /* large refill: +4 health */
 #define COLLECTIBLE_ITEM_APPLE      0x3CD /* small refill: +2 health */
