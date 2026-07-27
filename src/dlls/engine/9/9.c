@@ -1,21 +1,3 @@
-/*
- * cloudaction - the sky-cloud layer renderer/updater for the env-fx DLL
- * (shares its TU/runtime with the water and explosion fx). It owns up to
- * three cloud-layer objects in
- * CloudActionRuntime (lbl_8039AB28): a main layer, an upper layer and a
- * lower layer, each spawned from an asset id picked out of the per-env
- * CloudEnvTbl (gCloudActionEnvTbl) by the current environment's layer-state
- * bytes.
- *
- * renderClouds() positions each live layer to the current camera view
- * slot (or to the gCloudOverride* position when one is set), draws it via
- * objRender, and additionally draws a procedural sun/glare quad through
- * the GX FIFO when the active lightning flash's remaining-life fraction
- * (lightningGetRemainingFraction) is above threshold. cloudaction_update() re-reads the env layer state each step,
- * (re)spawns/frees the three layers as their asset ids change, and feeds
- * the texture-scroll step; cloudaction_func05() scrolls the main layer's
- * texture each frame.
- */
 #include "main/dll/cloudaction.h"
 #include "main/newclouds.h"
 #include "main/pi_dolphin_api.h"
@@ -497,7 +479,6 @@ CloudEnvTbl gCloudActionEnvTbl = {
     {0, 1578, 2140, 2145, 2147},
 };
 
-/* descriptor/ptr table auto 0x8030f7e8-0x8030f86c */
 ResourceDescriptorCallbacks14 lbl_8030F7E8 = {
     {0x00000000, 0x00000000, 0x00000000, 0x000c0000},
     {(ResourceDescriptorCallback)cloudaction_initialise,

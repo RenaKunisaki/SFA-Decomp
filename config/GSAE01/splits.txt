@@ -361,7 +361,7 @@ main/skystars.c:
 	.sbss       start:0x803DD1D0 end:0x803DD1E0
 	.sdata2     start:0x803DF280 end:0x803DF2B0
 
-main/dll/cloudaction.c:
+dlls/engine/9/9.c:
 	.text       start:0x8009436C end:0x80094F7C
 	.data       start:0x8030F7B0 end:0x8030F86C
 	.bss        start:0x8039AB28 end:0x8039AB48

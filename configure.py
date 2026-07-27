@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/9/9.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(NonMatching, "dlls/engine/10_expgfx/expgfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(
                 NonMatching, "dlls/engine/11/11.c", cflags=cflags_dll_noopt_noautoinline,
@@ -1342,7 +1343,6 @@ config.libs = [
             Object(NonMatching, "main/sky2.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newclouds.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/skystars.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/cloudaction.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(MatchingFor("GSAE01"), "main/audio_decode_thread.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/523_FireFly/FireFly.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/524_WM_spiritpl/WM_spiritpl.c", cflags=cflags_dll_noopt),

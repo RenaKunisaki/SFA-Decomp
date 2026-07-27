@@ -52,7 +52,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x006 | — | NO-RETAIL-NAME | main/sky.c | main/dll/dll_0006_sky2.c | engine/SDK host: main/sky.c; stem from fn prefix `sky2_*` |
 | 0x007 | — | NO-RETAIL-NAME | main/newclouds.c | main/dll/dll_0007_newclouds.c | engine/SDK host: main/newclouds.c |
 | 0x008 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x009 | — | NO-RETAIL-NAME | main/dll/cloudaction.c \| dolphin/MSL_C/PPCEABI/bare/H/gamecube.c | main/dll/dll_0009_cloudaction.c | cut across: main/dll/cloudaction.c \| dolphin/MSL_C/PPCEABI/bare/H/gamecube.c; stem from fn prefix `cloudaction_*` |
+| 0x009 | — | NO-RETAIL-NAME | dlls/engine/9/9.c | main/dll/cloudaction.c | Complete DOL-confirmed TU; critical-region stubs and waterfx registration record remain embedded |
 | 0x00A | expgfx | DOL-RECOVERED | dlls/engine/10_expgfx/expgfx.c | main/dll/expgfx.c | Complete DOL-confirmed TU |
 | 0x00B | — | NO-RETAIL-NAME | dlls/engine/11/11.c | main/dll/dll_000B_dll0b.c | Complete DOL-confirmed TU; missing sdata2 owner restored |
 | 0x00C | — | NO-RETAIL-NAME | dlls/engine/12/12.c | main/dll/dll_000C_projgfx.c | Complete DOL-confirmed TU; trailing six bytes are linker alignment |
