@@ -107,6 +107,7 @@
 #include "dlls/objects/309_texscroll.h"
 #include "dlls/objects/310_WaveAnimato.h"
 #include "dlls/objects/311_AlphaAnimat.h"
+#include "dlls/objects/312_GroundAnima.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -242,8 +243,8 @@ extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, g
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
-extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
-    gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
+extern ResourceDescriptor gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor, gHitAnimatorObjDescriptor,
+    gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
@@ -1285,7 +1286,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTexscrollObjDescriptor,
     (ResourceDescriptor*)&gWaveAnimatorObjDescriptor,
     (ResourceDescriptor*)&gAlphaAnimatorObjDescriptor,
-    &gGroundAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gGroundAnimatorObjDescriptor,
     &gHitAnimatorObjDescriptor,
     &gVisAnimatorObjDescriptor,
     &gWallAnimatorObjDescriptor,

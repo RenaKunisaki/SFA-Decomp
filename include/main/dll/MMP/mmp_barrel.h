@@ -2,11 +2,9 @@
 #define MAIN_DLL_MMP_MMP_BARREL_H_
 
 #include "dlls/object_descriptor.h"
-#include "dlls/objects/310_WaveAnimato.h"
 #include "game/objects/object_setup.h"
 #include "main/objanim_internal.h"
 
-extern ObjectDescriptor14 gGroundAnimatorObjDescriptor;
 extern ObjectDescriptor gHitAnimatorObjDescriptor;
 
 #define HITANIMATOR_DLL_ID            0x0139
@@ -71,15 +69,6 @@ STATIC_ASSERT(offsetof(HitAnimatorObject, objectFlags) == 0xB0);
 STATIC_ASSERT(offsetof(HitAnimatorObject, state) == 0xB8);
 
 #define WALLANIMATOR_DONE_TIMER 3000
-
-u8 groundanimator_modelMtxFn(int* obj);
-u8 groundanimator_isFullySunk(int* obj);
-f32 groundanimator_setScale(int* obj, int* target);
-int groundanimator_getExtraSize(void);
-void groundanimator_free(int* obj, int flag);
-void groundanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void groundanimator_update(int* obj);
-void groundanimator_init(int* obj, int* desc);
 
 int HitAnimator_getExtraSize(void);
 void HitAnimator_update(HitAnimatorObject* obj);

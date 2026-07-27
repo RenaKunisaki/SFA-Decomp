@@ -11,30 +11,19 @@ typedef enum WaveAnimatorStateFlag {
     WAVE_ANIMATOR_STATE_MODEL_MTX_PENDING = 0x04,
 } WaveAnimatorStateFlag;
 
-/*
- * WaveAnimator and GroundAnimator interpret the shared placement tail
- * differently at 0x1E-0x1F.
- */
 typedef struct WaveAnimatorPlacement {
     ObjPlacement base; /* 0x00 */
     s16 originX;       /* 0x18 */
     s16 originY;       /* 0x1A */
     s8 spanX;          /* 0x1C */
     s8 spanY;          /* 0x1D */
-    union {
-        s16 modelVariant; /* 0x1E: GroundAnimator */
-        struct {
-            s8 ampX; /* 0x1E: WaveAnimator */
-            s8 ampY; /* 0x1F: WaveAnimator */
-        };
-    };
+    s8 ampX;           /* 0x1E */
+    s8 ampY;           /* 0x1F */
     s8 sinkDepthScale; /* 0x20 */
     s8 period;         /* 0x21 */
     s8 gridN;          /* 0x22 */
     u8 pad23[2];       /* 0x23 */
-    u8 sinkEnable;     /* 0x25: GroundAnimator */
-    u8 radius;         /* 0x26: GroundAnimator */
-    u8 yOffset;        /* 0x27: GroundAnimator */
+    u8 pad25[3];       /* 0x25 */
 } WaveAnimatorPlacement;
 
 /* WaveAnimator_getExtraSize proves the complete 0x3C-byte allocation. */
@@ -65,16 +54,13 @@ STATIC_ASSERT(offsetof(WaveAnimatorPlacement, originX) == 0x18);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, originY) == 0x1A);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, spanX) == 0x1C);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, spanY) == 0x1D);
-STATIC_ASSERT(offsetof(WaveAnimatorPlacement, modelVariant) == 0x1E);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, ampX) == 0x1E);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, ampY) == 0x1F);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, sinkDepthScale) == 0x20);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, period) == 0x21);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, gridN) == 0x22);
 STATIC_ASSERT(offsetof(WaveAnimatorPlacement, pad23) == 0x23);
-STATIC_ASSERT(offsetof(WaveAnimatorPlacement, sinkEnable) == 0x25);
-STATIC_ASSERT(offsetof(WaveAnimatorPlacement, radius) == 0x26);
-STATIC_ASSERT(offsetof(WaveAnimatorPlacement, yOffset) == 0x27);
+STATIC_ASSERT(offsetof(WaveAnimatorPlacement, pad25) == 0x25);
 STATIC_ASSERT(sizeof(WaveAnimatorPlacement) == 0x28);
 
 STATIC_ASSERT(offsetof(WaveAnimatorState, originX) == 0x00);

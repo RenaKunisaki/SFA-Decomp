@@ -13,7 +13,7 @@
  * related wave/alpha/ground/vis state layout checks below.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/dll/groundanimator_state.h"
+#include "dlls/objects/312_GroundAnima.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"

@@ -16,7 +16,7 @@
 #include "dlls/objects/311_AlphaAnimat.h"
 #include "main/dll/visanimatorstate_struct.h"
 #include "main/map_block.h"
-#include "main/dll/groundanimator_state.h"
+#include "dlls/objects/312_GroundAnima.h"
 #include "main/dll/MMP/mmp_barrel.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
