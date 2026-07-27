@@ -1,5 +1,5 @@
 /*
- * dlla9func0 (DLL 0xA9) - a modgfx pickup/effect spawner.
+ * dlla9func0 (DLL 169 / 0xA9) - a modgfx pickup/effect spawner.
  *
  * dll_A9_func03 builds a stack command buffer of GfxCmd primitives (two
  * variant layouts selected by extraArgs) plus a per-effect header (colour,
