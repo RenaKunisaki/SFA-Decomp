@@ -88,6 +88,7 @@
 #include "dlls/objects/289.h"
 #include "dlls/objects/290_CCTestInfot.h"
 #include "dlls/objects/291_fuelCell.h"
+#include "dlls/objects/292.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -211,8 +212,8 @@ extern ResourceDescriptor gDIMSnowBall1C2ObjDescriptor, gDIMSnowBallObjDescripto
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_LevelControlObjDescriptor,
     gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
-extern ResourceDescriptor gDeathGasObjDescriptor, gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor,
-    gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
+extern ResourceDescriptor gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor,
+    gDfppowerslObjDescriptor;
 extern ResourceDescriptor gDfpstatue1ObjDescriptor, gDfptargetblockObjDescriptor, gDirectionalLightObjDescriptor;
 extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gDrCageControlObjDescriptor,
     gDrCageWithObjDescriptor, gDrChimmeyObjDescriptor, gDrCloudPerObjDescriptor, gDrCreatorObjDescriptor;
@@ -1253,7 +1254,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gInfoTextObjDescriptor,
     (ResourceDescriptor*)&gCCTestInfotObjDescriptor,
     (ResourceDescriptor*)&gFuelCellObjDescriptor,
-    &gDeathGasObjDescriptor,
+    (ResourceDescriptor*)&gDeathGasObjDescriptor,
     &gCurveObjDescriptor,
     &gTriggerObjDescriptor,
     &lbl_80321E58,
