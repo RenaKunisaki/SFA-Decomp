@@ -1197,7 +1197,7 @@ main/dll/dll_004E_cameramodeworldmap.c:
 	.data       start:0x80319E08 end:0x80319E38
 	.sbss       start:0x803DD588 end:0x803DD590
 
-main/dll/dll_004F_dll4f.c:
+dlls/engine/79/79.c:
 	.text       start:0x8010F2F8 end:0x8010F540
 	.data       start:0x80319E38 end:0x80319E68
 	.sbss       start:0x803DD590 end:0x803DD598

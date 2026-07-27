@@ -1,4 +1,6 @@
-/* DLL 0x004F - Camera mode misc handler [0x8010F2F8-0x8010F540). */
+/*
+ * DLL 79 / 0x4F.
+ */
 #include "main/mm.h"
 #include "main/resource.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
