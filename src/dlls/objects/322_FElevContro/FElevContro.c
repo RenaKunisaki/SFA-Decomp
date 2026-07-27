@@ -1,55 +1,47 @@
-/*
- * FElevContro (DLL 0x142) - floating elevator control object for the
- * CloudRunner Fortress / Dinosaur Planet elevator sequences.
- *
- * The render function passes lbl_803E56B8 (the elevator's render scale /
- * distance threshold) to the common objRenderModelAndHitVolumes.
- *
- */
-#include "main/dll/DB/DBrockfall.h"
-#include "game/objects/object.h"
+/* Supplies the render and message-queue callbacks for FElevControl. */
+#include "dlls/objects/322_FElevContro.h"
+
+#include "main/obj_message.h"
 #include "main/object_render.h"
 
+/* 1.0f model render scale from the shared scalar pool. */
 extern f32 lbl_803E56B8;
 
-int FElevControl_getExtraSize(void)
-{
-    return 0x0;
-}
-int FElevControl_getObjectTypeId(void)
-{
-    return 0x0;
+enum {
+    FELEV_CONTROL_MESSAGE_QUEUE_CAPACITY = 2,
+};
+
+int FElevControl_getExtraSize(void) {
+    return 0;
 }
 
-void FElevControl_free(void)
-{
+int FElevControl_getObjectTypeId(void) {
+    return 0;
 }
 
-void FElevControl_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E56B8);
+void FElevControl_free(void) {
 }
 
-void FElevControl_hitDetect(void)
-{
+void FElevControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E56B8);
+    }
 }
 
-void FElevControl_update(void)
-{
+void FElevControl_hitDetect(void) {
 }
 
-void FElevControl_init(int obj)
-{
-    ObjMsg_AllocQueue(obj, 0x2);
+void FElevControl_update(void) {
 }
 
-void FElevControl_release(void)
-{
+void FElevControl_init(GameObject* obj) {
+    ObjMsg_AllocQueue(obj, FELEV_CONTROL_MESSAGE_QUEUE_CAPACITY);
 }
 
-void FElevControl_initialise(void)
-{
+void FElevControl_release(void) {
+}
+
+void FElevControl_initialise(void) {
 }
 
 ObjectDescriptor gFElevControlObjDescriptor = {

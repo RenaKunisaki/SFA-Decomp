@@ -29,17 +29,6 @@ void FEseqobject_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 void FEseqobject_hitDetect(void);
 void FEseqobject_release(void);
 void FEseqobject_initialise(void);
-int FElevControl_getExtraSize(void);
-int FElevControl_getObjectTypeId(void);
-void FElevControl_free(void);
-void FElevControl_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void FElevControl_hitDetect(void);
-void FElevControl_update(void);
-void FElevControl_init(int x);
-void FElevControl_release(void);
-void FElevControl_initialise(void);
-
 extern ObjectDescriptor gFEseqobjectObjDescriptor;
-extern ObjectDescriptor gFElevControlObjDescriptor;
 
 #endif /* MAIN_DLL_DB_DBROCKFALL_H_ */
