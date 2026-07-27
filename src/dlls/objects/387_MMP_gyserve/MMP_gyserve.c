@@ -17,6 +17,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/MMP/dll_0183_mmpgyservent.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
 #define MMPGYSERVENT_PARTFX_GEYSER              0x724
 #define MMPGYSERVENT_INITIAL_IDLE_MIN            10

@@ -23,6 +23,7 @@
 #include "main/objtexture.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
+#include "main/vecmath.h"
 
 typedef struct SCTotemPuzzleParticleBox
 {

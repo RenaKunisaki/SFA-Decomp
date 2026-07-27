@@ -16,6 +16,7 @@
 #include "main/obj_group.h"
 #include "main/dll/dll_013D_explodeanimator.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
 #define EXPLODEANIMATOR_OBJGROUP 0x1a
 #define EXPLODEANIMATOR_FLAG_FIRED 0x1

@@ -17,6 +17,7 @@
 #include "main/dll/savegame.h"
 #include "main/gamebits.h"
 #include "main/dll/dll_0096_dll96func0.h"
+#include "main/vecmath.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL96_EFFECT_ID 0x89

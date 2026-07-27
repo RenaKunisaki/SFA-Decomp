@@ -1,6 +1,7 @@
 #include "main/audio/sal_dsp.h"
 #include "main/audio/hw_samplemem.h"
 #include "dolphin/os.h"
+#include "dolphin/os/OSInterrupt.h"
 
 void hwEnableIrq(void)
 {

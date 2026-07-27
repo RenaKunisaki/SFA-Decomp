@@ -22,6 +22,10 @@
 
 #include "main/dll/DR/dll_026E_drshackle.h"
 #include "main/dll/DR/dr_types.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/gamebits_api.h"
+#include "main/obj_path.h"
+#include "main/vecmath.h"
 
 int lbl_803DDD70;
 int lbl_803DC2F0 = -32768;

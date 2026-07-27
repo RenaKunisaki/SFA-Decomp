@@ -42,6 +42,7 @@
 #include "main/dll/sfxplayer.h"
 #include "main/gamebit_ids.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
 #define TRICKY_CURVE_GAMEBIT_HIT       0x468
 #define TRICKY_CURVE_PLAYER_ANIM_SLIDE 0x1d7

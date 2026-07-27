@@ -18,6 +18,7 @@
 #include "main/object_render.h"
 #include "main/mm.h"
 #include "dlls/object_descriptor.h"
+#include "main/dll/MMP/mmp_barrel.h"
 
 typedef struct WaveAnimatorColor
 {

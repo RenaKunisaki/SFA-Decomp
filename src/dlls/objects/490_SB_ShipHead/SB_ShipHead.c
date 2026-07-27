@@ -33,6 +33,7 @@
 #include "main/dll/SB/dll_01EA_sbshiphead.h"
 #include "main/dll/SB/dll_01E8_sbgalleon.h"
 #include "dlls/object_descriptor.h"
+#include "main/objhits.h"
 
 u8 gSbShipHeadHasFiredFireball = 1;
 

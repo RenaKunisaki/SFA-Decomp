@@ -16,6 +16,12 @@
 #include "main/audio/mcmd_wait.h"
 #include "main/audio/synth_config.h"
 #include "main/audio/mcmd_loop.h"
+#include "main/audio/hw_aram.h"
+#include "main/audio/hw_break.h"
+#include "main/audio/hw_voice_params.h"
+#include "main/audio/mcmd_setup.h"
+#include "main/audio/snd_core.h"
+#include "string.h"
 extern int macActiveRoot;
 extern int macTimeQueueRoot;
 extern u64 macRealTime;

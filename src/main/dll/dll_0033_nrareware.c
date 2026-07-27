@@ -4,6 +4,7 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/model_engine.h"
+#include "main/dll/FRONT/dll_39.h"
 extern int gNrarewareFrameCounter;
 extern f32 gNrarewareStage3Timer;
 extern f32 gNrarewareStage1Timer;

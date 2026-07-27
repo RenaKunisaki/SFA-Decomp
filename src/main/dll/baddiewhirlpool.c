@@ -32,6 +32,7 @@
 #include "main/obj_group.h"
 #include "main/dll/baddiewhirlpool.h"
 #include "track/intersect_whirlpool_api.h"
+#include "main/model.h"
 
 #define ICEBADDIE_OBJGROUP_SECONDARY 80
 #define ICEBADDIE_HIT_VOLUME_SLOT    10

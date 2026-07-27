@@ -22,6 +22,7 @@
 #include "main/gametext_show_api.h"
 #include "main/textrender_api.h"
 #include "dlls/object_descriptor.h"
+#include "main/gametext_color_api.h"
 
 #define PAD_BUTTON_A 0x100
 

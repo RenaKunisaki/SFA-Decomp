@@ -13,6 +13,7 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
+#include "main/dll/dll_009B_dll9bfunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL9B_EFFECT_ID 0x156

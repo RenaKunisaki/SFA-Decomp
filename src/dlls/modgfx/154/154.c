@@ -15,6 +15,8 @@
 #include "main/dll/screens.h"
 #include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
+#include "main/dll/dll_009A_dll9afunc0.h"
+#include "main/vecmath.h"
 
 u8 lbl_803DB958[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gScreenFx9APartTexB[4] = {0, 2, 0, 0};

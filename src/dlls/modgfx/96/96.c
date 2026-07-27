@@ -13,6 +13,7 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0060_dll60func0.h"
+#include "main/vecmath.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL60_EFFECT_ID 0x46

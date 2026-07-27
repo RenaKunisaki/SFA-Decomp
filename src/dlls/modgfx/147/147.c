@@ -14,6 +14,7 @@
 #include "main/dll/partfx_interface.h"
 #include "ghidra_import.h"
 #include "main/dll/dll_0093_dll93func0.h"
+#include "main/vecmath.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL93_EFFECT_ID 0x89

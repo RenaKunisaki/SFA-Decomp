@@ -1,6 +1,7 @@
 #include "PowerPC_EABI_Support/Runtime/runtime.h"
 #include "main/audio/hw_aram.h"
 #include "main/audio/synth_config.h"
+#include "main/audio/aram.h"
 
 
 extern f32 lbl_803E78E8;

@@ -10,6 +10,7 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
+#include "main/objhits.h"
 
 int spellstone_idleCallback(void)
 {

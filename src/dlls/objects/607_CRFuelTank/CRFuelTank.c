@@ -8,6 +8,7 @@
 #include "main/proximitymine.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
+#include "sys/objects.h"
 
 /* GameObject anim.flags bit (== OBJANIM_FLAG_HIDDEN): hides the tank from
    render/update; toggled with the hit-volume enable/disable. */

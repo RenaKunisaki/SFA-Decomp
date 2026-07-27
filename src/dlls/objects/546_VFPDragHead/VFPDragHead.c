@@ -11,6 +11,7 @@
 #include "main/resource.h"
 #include "sys/objects/lifecycle.h"
 #include "game/objects/object_setup.h"
+#include "main/vecmath.h"
 
 #define VFPDRAGHEAD_OBJFLAG_HIDDEN             0x4000
 #define VFPDRAGHEAD_OBJFLAG_HITDETECT_DISABLED 0x2000

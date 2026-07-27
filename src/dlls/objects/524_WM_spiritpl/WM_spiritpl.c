@@ -28,6 +28,7 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
+#include "main/lightmap_render_control_api.h"
 
 /* placement mapId tags of the six spirit-place instances; place N
    becomes active once the palace's map-event mode reaches N. */

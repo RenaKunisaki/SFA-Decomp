@@ -40,6 +40,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "string.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
 
 u8 gNewCloudBlizzardActivePrev;
 void* lbl_803DD1C8;

@@ -29,6 +29,8 @@
 #include "main/pi_dolphin_api.h"
 #include "main/sky_api.h"
 #include "main/textrender_api.h"
+#include "main/gametext_color_api.h"
+#include "sys/objects.h"
 
 u8 gWmLevelControlSkyColorFrom[4] = {0x14, 0x20, 0x28, 0};
 u8 gWmLevelControlSkyColorTo[4] = {0x12, 0x1E, 0x23, 0};

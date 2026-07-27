@@ -41,6 +41,7 @@
 #include "string.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0042_unk.h"
+#include "dolphin/os.h"
 
 CamcontrolModeSettings* gCamcontrolModeSettings;
 f32 lbl_803DD52C;

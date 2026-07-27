@@ -30,6 +30,7 @@
 #include "main/obj_trigger.h"
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"
+#include "main/vecmath.h"
 
 #define WARPPAD_OBJFLAG_PARENT_SLACK 0x1000
 

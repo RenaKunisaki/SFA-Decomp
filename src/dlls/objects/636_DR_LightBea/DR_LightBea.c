@@ -26,6 +26,7 @@
 #include "main/lightningeffect.h"
 
 #include "main/dll/DR/dll_027C_drlightbea.h"
+#include "sys/objects/lifecycle.h"
 
 
 int DR_LightBea_getExtraSize(void)

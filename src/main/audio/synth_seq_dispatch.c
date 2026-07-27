@@ -7,6 +7,7 @@
 #include "main/audio/synth_seq_dispatch.h"
 #include "main/audio/synth_seq_events.h"
 #include "main/audio/synth_voice.h"
+#include "dolphin/fake_tgmath.h"
 
 typedef struct
 {

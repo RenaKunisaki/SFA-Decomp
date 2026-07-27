@@ -43,6 +43,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/DR/dll_0265_drcreator.h"
+#include "main/vecmath.h"
 
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
 s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};

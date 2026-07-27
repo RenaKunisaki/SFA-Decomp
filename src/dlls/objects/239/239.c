@@ -39,6 +39,7 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "string.h"
+#include "main/camera.h"
 
 typedef struct PushableCollisionProbe {
     f32 radii[4];   /* 0x00 */

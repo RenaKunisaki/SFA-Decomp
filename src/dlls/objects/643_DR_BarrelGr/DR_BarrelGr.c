@@ -30,6 +30,7 @@
 #include "main/objfx.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx/vec.h"
 
 f32 lbl_803DC3B0 = 2.0f;
 f32 gDrBarrelGenGrabYOffset = -50.0f;

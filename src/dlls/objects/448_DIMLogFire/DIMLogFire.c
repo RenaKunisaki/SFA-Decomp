@@ -21,6 +21,8 @@
 #include "main/objhits.h"
 #include "main/obj_group.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 #define DIMLOGFIRE_HIT_VOLUME_SLOT            0x1f
 /* smoke particle emitted while the smoke-toggle phase is active */

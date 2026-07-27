@@ -68,6 +68,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
+#include "dolphin/mtx/vec.h"
+#include "main/debug.h"
 
 GameObject* gArwing;
 

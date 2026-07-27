@@ -14,6 +14,7 @@
 #include "main/frame_timing.h"
 #include "string.h"
 #include "main/dll/CAM/camshipbattle5C.h"
+#include "main/vecmath.h"
 
 CamCannonState* lbl_803DD560;
 

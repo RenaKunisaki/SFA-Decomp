@@ -27,6 +27,7 @@
 #include "main/obj_group.h"
 #include "main/audio/sfx.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
 /* placement record: only the +0x1C short (debris spawn roll) is read here */
 typedef struct WallanimatorPlacement

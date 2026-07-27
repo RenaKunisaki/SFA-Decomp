@@ -21,6 +21,7 @@
 #include "main/dll/IM/dll_0171_imspaceringgen.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
 /* anim.seqId of the two reference ring objects the generator tracks */
 #define SEQID_RING_A 0x164

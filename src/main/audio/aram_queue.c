@@ -1,5 +1,6 @@
 #include "ghidra_import.h"
 #include "main/audio/aram_queue.h"
+#include "dolphin/os/OSInterrupt.h"
 
 
 AramTransferQueue lbl_803D3F60;

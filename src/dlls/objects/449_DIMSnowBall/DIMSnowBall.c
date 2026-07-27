@@ -12,6 +12,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 #include "main/audio/sfx.h"
+#include "main/dll/DIM/DIMlavasmash.h"
 
 typedef struct DimsnowballState
 {

@@ -13,6 +13,7 @@
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/gamebits.h"
+#include "main/vecmath.h"
 
 #define DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define DIMLAVABALL_OBJFLAG_HIDDEN             0x4000

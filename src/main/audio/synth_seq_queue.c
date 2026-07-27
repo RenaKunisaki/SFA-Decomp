@@ -1,4 +1,5 @@
 #include "src/main/audio/synth_internal.h"
+#include "main/audio/synth_seq_events.h"
 
 void synthInitChannelEventQueues(void)
 {

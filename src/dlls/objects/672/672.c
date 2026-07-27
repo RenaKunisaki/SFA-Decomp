@@ -32,6 +32,8 @@
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/dll_02A0_ring.h"
 #include "main/object_render.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/dll/headdisplay.h"
 
 #define RING_SEQID_ARW_ARWING 0x601 /* "ARWArwing" (DLL 0x29A) */
 #define RING_OBJ_ARW_GOLD   0x060b

@@ -1,4 +1,5 @@
 #include "src/main/audio/synth_voice_overlays.h"
+#include "main/audio/synth_delay.h"
 
 
 #define SYNTH_CALLBACK_ACTIVE_LIST_COUNT    2

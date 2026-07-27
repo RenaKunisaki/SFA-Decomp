@@ -21,6 +21,7 @@
 #include "main/dll/dll_00A9_dlla9func0.h"
 #include "main/dll/dll_00AA_dllaafunc0.h"
 #include "main/dll/dll_00AB_projdummy.h"
+#include "main/vecmath.h"
 
 u8 lbl_803DB980[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gDllA6EffectTex[8] = {0, 0, 0, 1, 0, 2, 0, 0};

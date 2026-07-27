@@ -25,6 +25,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/gameloop_gamebit_api.h"
 
 /* flame child object spawned on ignition, cached in ShBeaconState.childObj */
 #define SHBEACON_CHILD_OBJ_FLAME 0x55

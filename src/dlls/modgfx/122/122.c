@@ -13,6 +13,7 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_007A_dll7afunc0.h"
+#include "main/vecmath.h"
 
 /* spawnEffect effect ids per variant (textureAssetId arg). */
 #define DLL7A_EFFECT_ID_VARIANT0 0x156

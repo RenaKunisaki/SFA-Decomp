@@ -22,6 +22,7 @@
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "stdlib.h"
+#include "dolphin/mtx/vec.h"
 
 u8 gNewCloudStarsInitialized;
 Texture* gNewCloudStarTextureB;
