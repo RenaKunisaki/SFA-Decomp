@@ -1,6 +1,6 @@
 /*
- * dll98func0 (DLL 0x98) - a model/screen effect emitter sharing foodbag's
- * modgfx command-list pattern (cf. dll_0099_dll99func0.c). func00/func01 are
+ * DLL 152 / 0x98 - a model/screen effect emitter sharing foodbag's
+ * modgfx command-list pattern (cf. DLL 153 / 0x99). func00/func01 are
  * empty entry stubs (defined below in reverse address order: func01 then
  * func00); func03 fills a ModgfxSpawnPacket of nine command entries from the .sdata2
  * float table at 0.0f.. and the per-entry flag/texture/anim table at
