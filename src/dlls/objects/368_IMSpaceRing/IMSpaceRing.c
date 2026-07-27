@@ -50,13 +50,13 @@ void imSpaceRing_update(GameObject* obj)
         obj->anim.rotY = (s16)(obj->anim.rotY + placement->spinSpeed * framesThisStep);
     }
     obj->anim.rotZ = (s16)(obj->anim.rotZ + placement->tiltSpeed * framesThisStep);
-    if (gSpaceRingLeader != NULL)
+    if (gIMSpaceRingLeader != NULL)
     {
-        obj->anim.alpha = gSpaceRingLeader->anim.alpha;
+        obj->anim.alpha = gIMSpaceRingLeader->anim.alpha;
         objMove(
-            obj, gSpaceRingLeader->anim.localPosX - obj->anim.localPosX,
-            gSpaceRingLeader->anim.localPosY - obj->anim.localPosY,
-            gSpaceRingLeader->anim.localPosZ - obj->anim.localPosZ);
+            obj, gIMSpaceRingLeader->anim.localPosX - obj->anim.localPosX,
+            gIMSpaceRingLeader->anim.localPosY - obj->anim.localPosY,
+            gIMSpaceRingLeader->anim.localPosZ - obj->anim.localPosZ);
     }
 }
 

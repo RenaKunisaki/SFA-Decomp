@@ -33,7 +33,7 @@ void imSpaceRing_init(GameObject* obj, const IMSpaceRingPlacement* placement);
 void imSpaceRing_release(void);
 void imSpaceRing_initialise(void);
 
-extern GameObject* gSpaceRingLeader;
+extern GameObject* gIMSpaceRingLeader;
 extern ObjectDescriptor gIMSpaceRingObjDescriptor;
 
 #endif /* DLLS_OBJECTS_368_IMSPACERING_H_ */
