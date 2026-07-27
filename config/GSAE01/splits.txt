@@ -1369,12 +1369,12 @@ main/thp/picmenu.c:
 main/thp/THPRead.c:
 	.text       start:0x80119458 end:0x80119724
 	.bss        start:0x803A5F08 end:0x803A72F0
-	.sbss       start:0x803DD688 end:0x803DD690
+	.sbss       start:0x803DD688 end:0x803DD68C
 
 main/thp/THPVideoDecode.c:
 	.text       start:0x80119724 end:0x80119C20
 	.bss        start:0x803A72F0 end:0x803A8658
-	.sbss       start:0x803DD690 end:0x803DD6A0
+	.sbss       start:0x803DD690 end:0x803DD69C
 
 dlls/engine/53/53.c:
 	.text       start:0x80119C20 end:0x8011B5D4

@@ -5,16 +5,32 @@
 #include "main/dll/FRONT/attract_movie.h"
 #include "main/dll/FRONT/picmenu.h"
 #include "main/fileio.h"
+#include "string.h"
 #include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
 
-char gPicMenuReadThreadArea[0x13E8];
+char gPicMenuReadThreadArea[0x1000];
+OSThread gPicMenuReadThread;
+OSMessageQueue gPicMenuReadedBuffer2Queue;
+OSMessageQueue gPicMenuReadedBufferQueue;
+OSMessageQueue gPicMenuFreeReadBufferQueue;
+OSMessage gPicMenuReadedBuffer2Messages[10];
+OSMessage gPicMenuReadedBufferMessages[10];
+OSMessage gPicMenuFreeReadBufferMessages[10];
+
 s32 gPicMenuReadThreadCreated;
 
-#define gPicMenuReadThread             (*(OSThread*)(gPicMenuReadThreadArea + 0x1000))
-#define gPicMenuReadedBuffer2Queue     (*(OSMessageQueue*)(gPicMenuReadThreadArea + 0x1388))
-#define gPicMenuReadedBufferQueue      (*(OSMessageQueue*)(gPicMenuReadThreadArea + 0x13A8))
-#define gPicMenuFreeReadBufferQueue    (*(OSMessageQueue*)(gPicMenuReadThreadArea + 0x13C8))
+static void THPRead_ResetWork(void)
+{
+    memset(gPicMenuReadThreadArea, 0, sizeof(gPicMenuReadThreadArea));
+    memset(&gPicMenuReadThread, 0, sizeof(gPicMenuReadThread));
+    memset(gPicMenuReadedBuffer2Messages, 0, sizeof(gPicMenuReadedBuffer2Messages));
+    memset(gPicMenuReadedBufferMessages, 0, sizeof(gPicMenuReadedBufferMessages));
+    memset(gPicMenuFreeReadBufferMessages, 0, sizeof(gPicMenuFreeReadBufferMessages));
+    memset(&gPicMenuReadedBuffer2Queue, 0, sizeof(gPicMenuReadedBuffer2Queue));
+    memset(&gPicMenuReadedBufferQueue, 0, sizeof(gPicMenuReadedBufferQueue));
+    memset(&gPicMenuFreeReadBufferQueue, 0, sizeof(gPicMenuFreeReadBufferQueue));
+}
 
 void PushReadedBuffer2(OSMessage msg)
 {

@@ -1861,8 +1861,8 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/thp/dll_3e.c", cflags=cflags_dll_noopt, section_alignments={".sbss": 4}),
             Object(MatchingFor("GSAE01"), "main/thp/attractmovie.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/thp/picmenu.c", cflags=cflags_dll_noopt_noinline, section_alignments={".sdata2": 4}),
-            Object(NonMatching, "main/thp/THPRead.c", cflags=cflags_dll_noopt_noinline),
-            Object(NonMatching, "main/thp/THPVideoDecode.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "main/thp/THPRead.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "main/thp/THPVideoDecode.c", cflags=cflags_dll_noopt_noinline),
             Object(NonMatching, "main/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
             Object(NonMatching, "main/obj_movelib.c", cflags=cflags_dll_noopt_nocse),
 
