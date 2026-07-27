@@ -45,7 +45,7 @@ typedef struct GameObject GameObject;
 #define ROMCURVE_TYPE_DIM2_PATHGEN                    0x15 /* == ROMCURVE_TYPE_ACTION; curves_findByAction */
 #define ROMCURVE_TYPE_16                              0x16 /* curves_findNearestOfType16 */
 #define ROMCURVE_TYPE_17                              0x17 /* RomCurve_func16 */
-#define ROMCURVE_TYPE_CURVEFISH                       0x23 /* dll_0103_curvefish.c gCurveFishCurveQueryKey */
+#define ROMCURVE_TYPE_CURVEFISH                       0x23 /* CurveFish path query */
 #define ROMCURVE_TYPE_TRICKY                          0x24 /* Objfsa_FindNearest(Enabled)CurveType24 */
 #define ROMCURVE_GETCURVES_MAX_POINTS                 0x23
 #define ROMCURVE_POINT_TYPE_WATER                     0x0e

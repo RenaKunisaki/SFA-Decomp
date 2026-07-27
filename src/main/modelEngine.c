@@ -55,6 +55,7 @@
 #include "dlls/objects/256_TrickyWarp.h"
 #include "dlls/objects/257_TrickyGuard.h"
 #include "dlls/objects/258_StayPoint.h"
+#include "dlls/objects/259_CurveFish.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -167,7 +168,7 @@ extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFP
 extern ResourceDescriptor gCRrockfallObjDescriptor, gCampFireObjDescriptor, gCflightwallObjDescriptor,
     gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
 extern ResourceDescriptor gColdWaterControlObjDescriptor, gControlLightObjDescriptor,
-    gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor, gCurveFishObjDescriptor, gCurveObjDescriptor;
+    gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor, gCurveObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
     gDFP_TorchObjDescriptor;
@@ -1204,7 +1205,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTrickyWarpObjDescriptor,
     (ResourceDescriptor*)&gTrickyGuardObjDescriptor,
     (ResourceDescriptor*)&gStayPointObjDescriptor,
-    &gCurveFishObjDescriptor,
+    (ResourceDescriptor*)&gCurveFishObjDescriptor,
     &gSmallBasketObjDescriptor,
     &gLargeCrateObjDescriptor,
     &gScarabObjDescriptor,
