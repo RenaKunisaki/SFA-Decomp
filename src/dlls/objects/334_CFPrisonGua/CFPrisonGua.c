@@ -95,7 +95,7 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
     uncleFlewOff = mainGetBit(GAMEBIT_CF_UncleFlewOff);
     guardianFreed = mainGetBit(GAMEBIT_CF_GuardianFreed);
     if ((state->sequenceFlags & CFPRISONGUARD_SEQUENCE_FLAG_WAITING_FOR_PERCH) != 0 &&
-        mainGetBit(GAMEBIT_CFPerchRelated004D) != 0) {
+        mainGetBit(GAMEBIT_CF_PrisonCageOpened) != 0) {
         state->sequenceFlags &= ~CFPRISONGUARD_SEQUENCE_FLAG_WAITING_FOR_PERCH;
         return CFPRISONGUARD_SEQUENCE_TRANSITION;
     }
@@ -265,7 +265,7 @@ void cfPrisonGuard_init(GameObject* obj, CfPrisonGuardPlacement* placement) {
     obj->animEventCallback = cfPrisonGuard_sequenceCallback;
     ObjMsg_AllocQueue(obj, CFPRISONGUARD_MESSAGE_QUEUE_CAPACITY);
     state->uncleFlewOffLatch = 1;
-    if (mainGetBit(GAMEBIT_CFPerchRelated004D) != 0) {
+    if (mainGetBit(GAMEBIT_CF_PrisonCageOpened) != 0) {
         state->sequenceFlags |= CFPRISONGUARD_SEQUENCE_FLAG_PERCH_ACTIVE;
     }
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;

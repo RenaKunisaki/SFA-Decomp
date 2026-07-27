@@ -314,7 +314,7 @@ enum GameBitId {
     GAMEBIT_CF_SavedQueen = 0x43,                        /* table 2; hint 329; ref fortress/CFExplodeFl onExplode */
     GAMEBIT_ITEM_PrisonKey_Got = 0x44,                   /* table 1 */
     GAMEBIT_CF_GuardianFreed = 0x48,                     /* table 1; the caged CloudRunner guardian has broken out */
-    GAMEBIT_CFPerchRelated004D = 0x4D,                   /* table 2; ref clouddungeon/HitAnimator target */
+    GAMEBIT_CF_PrisonCageOpened = 0x4D,                  /* table 2; old CloudRunner's cage is open */
     GAMEBIT_CF_UncleFlewOff = 0x50,                      /* Set once the old CloudRunner prisoner (cfprisonuncle) has flown off after his cage is opened; gates his own render/update, silences cfperch's squawk sequence, and flips cfprisonguard's alarm behavior */
     GAMEBIT_ITEM_CFRedCrystal_Got = 0x51,                /* table 2; power gems in CloudRunner Fortress */
     GAMEBIT_ITEM_CFGreenCrystal_Got = 0x52,              /* table 2 */
