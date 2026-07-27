@@ -166,7 +166,7 @@ extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
 extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern volatile s32 lbl_803DB700;
+extern volatile s32 gSaveCardState;
 extern u8 lbl_803DD059;
 extern u32 gSaveCardSerialHi;
 extern u32 gSaveCardSerialLo;
@@ -476,7 +476,7 @@ void OSReport(const char* msg, ...)
  * clean mount (or after the recovery path) it reads the card serial and
  * compares against the cached pair (gSaveCardSerialHi/Lo). If the cached pair
  * is zero, or doesn't match the live card, the cache is rejected with a
- * "wrong card" error code (-0x55, lbl_803DB700 = 11). Otherwise CARDFormat
+ * "wrong card" error code (-0x55, gSaveCardState = 11). Otherwise CARDFormat
  * if we still owe one, else success: clear the cache, set state 13,
  * unmount, return 1.
  */
@@ -497,7 +497,7 @@ int cardLoadFn_8007d72c(void)
         lbl_803DD040 = mmAlloc(0xA000, -1, 0);
         if (lbl_803DD040 == 0)
         {
-            lbl_803DB700 = 8;
+            gSaveCardState = 8;
             ok = 0;
         }
         else
@@ -509,7 +509,7 @@ int cardLoadFn_8007d72c(void)
     {
         return 0;
     }
-    lbl_803DB700 = 0;
+    gSaveCardState = 0;
     res = CARDMount(0, lbl_803DD040, (void*)cardSetStatusNoCard2);
     if (res == -13)
     {
@@ -532,7 +532,7 @@ int cardLoadFn_8007d72c(void)
             if (cache == 0 || cache != serial)
             {
                 res = -0x55;
-                lbl_803DB700 = 0xB;
+                gSaveCardState = 0xB;
             }
             else if (need_format)
             {
@@ -543,7 +543,7 @@ int cardLoadFn_8007d72c(void)
                 CARDUnmount(0);
                 mm_free(lbl_803DD040);
                 lbl_803DD040 = 0;
-                lbl_803DB700 = 0xD;
+                gSaveCardState = 0xD;
                 return 1;
             }
         }
@@ -554,17 +554,17 @@ int cardLoadFn_8007d72c(void)
     switch (res)
     {
     case -2:
-        lbl_803DB700 = 1;
+        gSaveCardState = 1;
         break;
     case -3:
-        if (lbl_803DB700 != 3)
-            lbl_803DB700 = 2;
+        if (gSaveCardState != 3)
+            gSaveCardState = 2;
         break;
     case -5:
-        lbl_803DB700 = 4;
+        gSaveCardState = 4;
         break;
     case 0:
-        lbl_803DB700 = 0xD;
+        gSaveCardState = 0xD;
         gSaveCardSerialLo = 0;
         gSaveCardSerialHi = 0;
         gSaveCardChecksumLo = 0;
@@ -592,12 +592,12 @@ void saveFn_8007d960(u32 enable)
 
 void cardSetStatusNeedInit(void)
 {
-    lbl_803DB700 = 0xd;
+    gSaveCardState = 0xd;
 }
 
 s32 saveGameGetStatus(void)
 {
-    return lbl_803DB700;
+    return gSaveCardState;
 }
 
 int cardDeleteFn_8007d99c(void)
@@ -618,7 +618,7 @@ int cardDeleteFn_8007d99c(void)
             lbl_803DD040 = mmAlloc(0xA000, -1, 0);
             if (lbl_803DD040 == 0)
             {
-                lbl_803DB700 = 8;
+                gSaveCardState = 8;
                 ok = 0;
             }
             else
@@ -630,7 +630,7 @@ int cardDeleteFn_8007d99c(void)
         {
             return 0;
         }
-        lbl_803DB700 = 0;
+        gSaveCardState = 0;
         res = CARDMount(0, lbl_803DD040, (CARDCallback)cardSetStatusNoCard2);
         if (res == 0 || res == -6)
         {
@@ -647,20 +647,20 @@ int cardDeleteFn_8007d99c(void)
         switch (res + 13)
         {
         case 11:
-            lbl_803DB700 = 1;
+            gSaveCardState = 1;
             break;
         case 10:
-            if (lbl_803DB700 != 3)
-                lbl_803DB700 = 2;
+            if (gSaveCardState != 3)
+                gSaveCardState = 2;
             break;
         case 0:
-            lbl_803DB700 = 6;
+            gSaveCardState = 6;
             break;
         case 8:
-            lbl_803DB700 = 4;
+            gSaveCardState = 4;
             break;
         case 13:
-            lbl_803DB700 = 13;
+            gSaveCardState = 13;
             return 1;
         }
         showMemCardError(0);
@@ -741,7 +741,7 @@ int memCardFn_8007dd04(u8 retry)
             CARDUnmount(0);
             mm_free(lbl_803DD040);
             lbl_803DD040 = 0;
-            lbl_803DB700 = 13;
+            gSaveCardState = 13;
             if (ret == 2)
             {
                 ret = saveGame_prepareAndWrite(0, 0, 0, NULL, NULL, NULL);
@@ -780,22 +780,22 @@ int cardProbe(u8 retry)
         {
             if (sectorSize == 0x2000)
             {
-                lbl_803DB700 = 13;
+                gSaveCardState = 13;
                 return 1;
             }
-            lbl_803DB700 = 7;
+            gSaveCardState = 7;
         }
         else if (res == -3)
         {
-            lbl_803DB700 = 2;
+            gSaveCardState = 2;
         }
         else if (res == -2)
         {
-            lbl_803DB700 = 1;
+            gSaveCardState = 1;
         }
         else
         {
-            lbl_803DB700 = 0;
+            gSaveCardState = 0;
         }
         if (retry != 0)
         {
@@ -812,15 +812,15 @@ void _initCardAndDsp(void)
 
 void cardGetMessage(u32* buttons, u32* texts, u32* count)
 {
-    if (lbl_803DD059 != 0 && (lbl_803DB700 == 7 || lbl_803DB700 == 9))
+    if (lbl_803DD059 != 0 && (gSaveCardState == 7 || gSaveCardState == 9))
     {
-        lbl_803DB700 = 11;
+        gSaveCardState = 11;
     }
-    switch (lbl_803DB700)
+    switch (gSaveCardState)
     {
     case 0:
         *count = 0;
-        lbl_803DB700 = 13;
+        gSaveCardState = 13;
         return;
     case 1:
         buttons[0] = 1;
@@ -915,7 +915,7 @@ void cardGetMessage(u32* buttons, u32* texts, u32* count)
     case 13:
     default:
         *count = 0;
-        lbl_803DB700 = 13;
+        gSaveCardState = 13;
         return;
     }
 }
@@ -943,7 +943,7 @@ void showMemCardError(u8 err)
     timer = 0;
     held = 0;
     gSaveCardRetry = 0;
-    if (lbl_803DB700 == 0xd || (err != 0 && lbl_803DB700 == 0xc))
+    if (gSaveCardState == 0xd || (err != 0 && gSaveCardState == 0xc))
     {
         return;
     }
@@ -1028,22 +1028,22 @@ void showMemCardError(u8 err)
                 sel = 0;
                 break;
             case 1:
-                lbl_803DB700 = 0xd;
+                gSaveCardState = 0xd;
                 gSaveCardRetry = 1;
                 break;
             case 2:
                 lbl_803DB424 = 0;
-                lbl_803DB700 = 0xd;
+                gSaveCardState = 0xd;
                 break;
             case 3:
                 setGameState(6);
                 lbl_803DB424 = 0;
-                lbl_803DB700 = 0xd;
+                gSaveCardState = 0xd;
                 break;
             case 4:
                 cardDeleteFn_8007d99c();
                 memCardFn_8007dd04(0);
-                if (lbl_803DB700 == 0xd)
+                if (gSaveCardState == 0xd)
                 {
                     gSaveCardRetry = 1;
                 }
@@ -1054,7 +1054,7 @@ void showMemCardError(u8 err)
                 {
                     memCardFn_8007dd04(0);
                 }
-                if (lbl_803DB700 == 0xd)
+                if (gSaveCardState == 0xd)
                 {
                     gSaveCardRetry = 1;
                 }
@@ -1063,10 +1063,10 @@ void showMemCardError(u8 err)
                 submenu = 0;
                 break;
             default:
-                lbl_803DB700 = 0xd;
+                gSaveCardState = 0xd;
             }
         }
-    } while (lbl_803DB700 != 0xd);
+    } while (gSaveCardState != 0xd);
 }
 
 /*

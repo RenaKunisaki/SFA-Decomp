@@ -161,7 +161,7 @@ extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
 extern StageCountTable lbl_803DEEAC;
 extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
 extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
-extern volatile s32 lbl_803DB700;
+extern volatile s32 gSaveCardState;
 extern u8 lbl_803DD059;
 extern u32 gSaveCardSerialHi;
 extern u32 gSaveCardSerialLo;
@@ -4817,7 +4817,7 @@ void OSReport(const char* msg, ...);
  * clean mount (or after the recovery path) it reads the card serial and
  * compares against the cached pair (gSaveCardSerialHi/Lo). If the cached pair
  * is zero, or doesn't match the live card, the cache is rejected with a
- * "wrong card" error code (-0x55, lbl_803DB700 = 11). Otherwise CARDFormat
+ * "wrong card" error code (-0x55, gSaveCardState = 11). Otherwise CARDFormat
  * if we still owe one, else success: clear the cache, set state 13,
  * unmount, return 1.
  */

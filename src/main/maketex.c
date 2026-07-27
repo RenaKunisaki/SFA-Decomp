@@ -31,7 +31,7 @@
 
 extern char sMemoryCardFileNameString[];
 
-volatile u32 lbl_803DB700 = 0xD;
+volatile u32 gSaveCardState = 0xD;
 char* sMemoryCardFileName = sMemoryCardFileNameString;
 int lbl_803DB708 = 0x404040FF;
 
@@ -203,7 +203,7 @@ int saveGame_doWrite(int slot)
             if (chk != chk2)
             {
                 result = -0x55;
-                lbl_803DB700 = 10;
+                gSaveCardState = 10;
             }
             else
             {
@@ -230,7 +230,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     lbl_803DD044 = (char*)m;
     if (m == NULL)
     {
-        lbl_803DB700 = 8;
+        gSaveCardState = 8;
         return 0;
     }
     if (saveGame(writeImages) == 0)
@@ -260,7 +260,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
                 else
                 {
                     result = -0x55;
-                    lbl_803DB700 = 10;
+                    gSaveCardState = 10;
                 }
             }
         }
@@ -274,7 +274,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
                 if (chk != gSaveCardChecksumHi)
                 {
                     result = -0x55;
-                    lbl_803DB700 = 0xb;
+                    gSaveCardState = 0xb;
                 }
             }
             else
@@ -304,7 +304,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
             lbl_803DD040 = NULL;
             mm_free((void*)lbl_803DD044);
             lbl_803DD044 = 0;
-            lbl_803DB700 = 8;
+            gSaveCardState = 8;
             return 0;
         }
         result = CARDRead(&lbl_80396900.fileInfo, m, 0x2000, 0);
@@ -316,7 +316,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
                 if ((u8)writeImages != 0)
                 {
                     result = -4;
-                    lbl_803DB700 = 0xc;
+                    gSaveCardState = 0xc;
                 }
                 else
                 {
@@ -364,10 +364,10 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     switch (result)
     {
     case -5:
-        lbl_803DB700 = 4;
+        gSaveCardState = 4;
         break;
     case 0:
-        lbl_803DB700 = 0xd;
+        gSaveCardState = 0xd;
         return 1;
     case -4:
         break;
@@ -521,7 +521,7 @@ int saveGame(int writeImages)
     {
         if ((lbl_803DD040 = mmAlloc(0xa000, -1, 0)) == NULL)
         {
-            lbl_803DB700 = 8;
+            gSaveCardState = 8;
             ok = 0;
         }
         else
@@ -533,7 +533,7 @@ int saveGame(int writeImages)
     {
         return 0;
     }
-    lbl_803DB700 = 0;
+    gSaveCardState = 0;
     result = CARDMount(0, lbl_803DD040, (CARDCallback)cardSetStatusNoCard2);
     if (result == CARD_RESULT_BROKEN)
     {
@@ -553,7 +553,7 @@ int saveGame(int writeImages)
                     if (serial != gSaveCardSerialHi)
                     {
                         result = -0x55;
-                        lbl_803DB700 = 0xb;
+                        gSaveCardState = 0xb;
                     }
                 }
                 else
@@ -613,7 +613,7 @@ int saveGame(int writeImages)
         }
         else
         {
-            lbl_803DB700 = 8;
+            gSaveCardState = 8;
             CARDUnmount(0);
             mm_free(lbl_803DD040);
             lbl_803DD040 = NULL;
@@ -674,35 +674,35 @@ int saveGame(int writeImages)
         }
         return 2;
     case CARD_RESULT_UNLOCKED:
-        lbl_803DB700 = 1;
+        gSaveCardState = 1;
         ret = 0;
         break;
     case CARD_RESULT_NOCARD:
-        if ((int)lbl_803DB700 != 3)
+        if ((int)gSaveCardState != 3)
         {
-            lbl_803DB700 = 2;
+            gSaveCardState = 2;
         }
         ret = 0;
         break;
     case CARD_RESULT_NOFILE:
-        lbl_803DB700 = 0xc;
+        gSaveCardState = 0xc;
         ret = 0;
         break;
     case CARD_RESULT_IOERROR:
-        lbl_803DB700 = 4;
+        gSaveCardState = 4;
         ret = 0;
         break;
     case CARD_RESULT_BROKEN:
-        lbl_803DB700 = 5;
+        gSaveCardState = 5;
         ret = 0;
         break;
     case CARD_RESULT_ENCODING:
-        lbl_803DB700 = 6;
+        gSaveCardState = 6;
         ret = 0;
         break;
     case CARD_RESULT_NOENT:
     case CARD_RESULT_INSSPACE:
-        lbl_803DB700 = 9;
+        gSaveCardState = 9;
         ret = 0;
         break;
     case -0x55:
@@ -725,7 +725,7 @@ int saveGame(int writeImages)
 
 void cardSetStatusNoCard2(void)
 {
-    lbl_803DB700 = 0x3;
+    gSaveCardState = 0x3;
 }
 
 int arrayRemoveUnordered(int* array, int* count, int value)
