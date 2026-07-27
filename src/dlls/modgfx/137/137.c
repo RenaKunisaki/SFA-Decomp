@@ -1,12 +1,12 @@
 /*
- * dll89func0 (DLL 0x89) - one entry of the foodbag/modgfx spawn-effect
- * family (dll_7C..dll_90 in foodbag.h). dll_89_func03 fills a stack
+ * DLL 137 / 0x89 - one entry of the foodbag/modgfx spawn-effect
+ * family covering DLLs 124-144 / 0x7C-0x90. dll_89_func03 fills a stack
  * FbBuf command list with ten FbCmd layers (texture/mode/xyz from float
  * literals and the lbl_80316460 resource block) and hands
  * it to gModgfxInterface->spawnEffect (effect 0x1fd). When flag bit 0 is
  * requested the effect is positioned from sourceObj's transform (+0x18)
  * or, when none, from posSource (+0xc). The two _nop entries are empty
- * vtable slots.
+ * DLL entry slots.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
