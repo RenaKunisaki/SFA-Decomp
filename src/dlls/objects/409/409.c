@@ -1,215 +1,193 @@
-/* DLL 0x199 */
-#include "main/dll/modgfx_interface.h"
-#include "main/dll/dll197state_struct.h"
-#include "main/frame_timing.h"
-#include "main/vecmath_distance_api.h"
-#include "main/object_render.h"
-#include "sys/objects.h"
-#include "main/render_envfx_api.h"
-#include "main/dll/dll199state_struct.h"
+#include "dlls/objects/409.h"
+
+#include "dolphin/pad.h"
 #include "game/objects/object.h"
-#include "main/obj_group.h"
-#include "main/obj_message.h"
-#include "sys/objects/lifecycle.h"
-#include "main/objseq.h"
-#include "main/dll/dimmagicbridge.h"
-#include "main/mapEventTypes.h"
-#include "main/resource.h"
-#include "main/gamebits.h"
-#include "main/pad.h"
-#include "dlls/object_descriptor.h"
-#include "main/shader_api.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_006A_dll6afunc0.h"
 #include "main/dll/foodbag.h"
-#include "game/objects/object_setup.h"
+#include "main/dll/modgfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/mapEventTypes.h"
+#include "main/object_render.h"
+#include "main/obj_group.h"
+#include "main/obj_message.h"
+#include "main/objseq.h"
+#include "main/pad.h"
+#include "main/render_envfx_api.h"
+#include "main/resource.h"
+#include "main/shader_api.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define PAD_BUTTON_A 0x100
-#define PAD_BUTTON_B 0x200
+#define DLL409_TARGET_OBJECT_GROUP  0xE
+#define DLL409_SPAWNED_OBJECT_GROUP 0x3
 
-#define DLL199_TARGET_OBJGROUP_1 0xe
-#define DLL199_TARGET_OBJGROUP_2 0x3
+#define DLL409_MAP_EVENT_ID     0xB
+#define DLL409_MAP_EVENT_ACTION 6
 
-#define DLL199_MAP_SHRINE 0xb /* NW shrine map-event id (setMapAct) */
+#define DLL409_ENVFX_A 0xC3
+#define DLL409_ENVFX_B 0x14
 
+#define DLL409_GAMEBIT_00FD 0xFD
+#define DLL409_GAMEBIT_0126 0x126
+#define DLL409_GAMEBIT_0127 0x127
+#define DLL409_GAMEBIT_0128 0x128
+#define DLL409_GAMEBIT_01CD 0x1CD
+#define DLL409_GAMEBIT_01CE 0x1CE
+#define DLL409_GAMEBIT_01CF 0x1CF
+#define DLL409_GAMEBIT_01E7 0x1E7
+#define DLL409_GAMEBIT_0594 0x594
+#define DLL409_GAMEBIT_05B2 0x5B2
+#define DLL409_GAMEBIT_05B5 0x5B5
+#define DLL409_GAMEBIT_05B9 0x5B9
 
-/* Env-fx ids activated per anim seq event (getEnvfxAct 3rd arg):
- * A on event 1, B on event 2 (default id when no override is set). */
-#define DLL199_ENVFX_A 0xc3
-#define DLL199_ENVFX_B 0x14
+#define DLL409_MESSAGE_DECREASE_CHANNEL_2 0x30005
+#define DLL409_MESSAGE_INCREASE_CHANNEL_2 0x30006
 
 extern int lbl_803DB610;
-u32 lbl_803DDBD8;
-typedef struct Dll199ObjectDef
-{
-    ObjPlacement base;
-    u8 pad18[0x1A - 0x18];
-    s16 initStateOverride; /* 0x1A: if >0, high byte (>>8) overrides the object's initial state (default 10) */
-    u8 pad1C[0x20 - 0x1C];
-} Dll199ObjectDef;
-void dll_199_hitDetect(void);
-int dll_199_getExtraSize(void);
-int dll_199_getObjectTypeId(void);
-void dll_199_free(int* obj);
-void dll_199_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-ObjectDescriptor dll_199 = {
+u32 gDll409Event9Result;
+
+ObjectDescriptor gDll409ObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_199_initialise,
-    (ObjectDescriptorCallback)dll_199_release,
+    (ObjectDescriptorCallback)dll409_initialise,
+    (ObjectDescriptorCallback)dll409_release,
     0,
-    (ObjectDescriptorCallback)dll_199_init,
-    (ObjectDescriptorCallback)dll_199_update,
-    (ObjectDescriptorCallback)dll_199_hitDetect,
-    (ObjectDescriptorCallback)dll_199_render,
-    (ObjectDescriptorCallback)dll_199_free,
-    (ObjectDescriptorCallback)dll_199_getObjectTypeId,
-    dll_199_getExtraSize,
+    (ObjectDescriptorCallback)dll409_init,
+    (ObjectDescriptorCallback)dll409_update,
+    (ObjectDescriptorCallback)dll409_hitDetect,
+    (ObjectDescriptorCallback)dll409_render,
+    (ObjectDescriptorCallback)dll409_free,
+    (ObjectDescriptorCallback)dll409_getObjectTypeId,
+    dll409_getExtraSize,
 };
 
-
-
-int dll_199_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    u8* st;
+int dll409_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    Dll409State* state;
     int i;
     u8 eventId;
 
-    st = ((GameObject*)obj)->extra;
+    state = obj->extra;
     animUpdate->activeHitVolumePair = -1;
     animUpdate->sequenceEventActive = 0;
-    if (((Dll197State*)st)->scrollVel != 0)
-    {
-        ((Dll197State*)st)->scrollPos += ((Dll197State*)st)->scrollVel;
-        if (((Dll197State*)st)->scrollPos <= 1 && ((Dll197State*)st)->scrollVel <= 0)
-        {
-            ((Dll197State*)st)->scrollPos = 1;
-            ((Dll197State*)st)->scrollVel = 0;
+    if (state->channel3BrightnessDelta != 0) {
+        state->channel3Brightness += state->channel3BrightnessDelta;
+        if (state->channel3Brightness <= 1 && state->channel3BrightnessDelta <= 0) {
+            state->channel3Brightness = 1;
+            state->channel3BrightnessDelta = 0;
+        } else if (state->channel3Brightness >= 0x46 && state->channel3BrightnessDelta >= 0) {
+            state->channel3Brightness = 0x46;
+            state->channel3BrightnessDelta = 0;
         }
-        else if (((Dll197State*)st)->scrollPos >= 0x46 && ((Dll197State*)st)->scrollVel >= 0)
-        {
-            ((Dll197State*)st)->scrollPos = 0x46;
-            ((Dll197State*)st)->scrollVel = 0;
-        }
-        gTitleMenuControlInterface->vtable->func11(3, ((Dll197State*)st)->scrollPos & 0xff);
+        gTitleMenuControlInterface->vtable->func11(3, state->channel3Brightness & 0xFF);
     }
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
+    for (i = 0; i < animUpdate->eventCount; i++) {
         eventId = animUpdate->eventIds[i];
-        if (eventId != 0)
-            switch (eventId)
-            {
-            case 0xb:
-                ((Dll197State*)st)->menuState = 7;
+        if (eventId != 0) {
+            switch (eventId) {
+            case 0xB:
+                state->phase = 7;
                 break;
             case 1:
-                getEnvfxAct(obj, obj, DLL199_ENVFX_A, 0);
+                getEnvfxAct(obj, obj, DLL409_ENVFX_A, 0);
                 break;
             case 2:
-                if (lbl_803DB610 == -1)
-                {
-                    getEnvfxAct(obj, obj, DLL199_ENVFX_B, 0);
-                }
-                else
-                {
+                if (lbl_803DB610 == -1) {
+                    getEnvfxAct(obj, obj, DLL409_ENVFX_B, 0);
+                } else {
                     getEnvfxAct(obj, obj, (u16)lbl_803DB610, 0);
                 }
                 break;
             case 3:
-                ((Dll197State*)st)->unk10 = 1;
+                state->sequenceEventState = 1;
                 break;
             case 4:
-                ((Dll197State*)st)->menuState = 4;
-                ((Dll197State*)st)->unk10 = 2;
+                state->phase = 4;
+                state->sequenceEventState = 2;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-                mainSetBits(0x1cf, 0);
-                mainSetBits(0x126, 1);
-                ((Dll197State*)st)->scrollVel = -3;
+                mainSetBits(DLL409_GAMEBIT_01CF, 0);
+                mainSetBits(DLL409_GAMEBIT_0126, 1);
+                state->channel3BrightnessDelta = -3;
                 break;
             case 5:
-                ((Dll197State*)st)->unk10 = 3;
-                ((Dll197State*)st)->scrollVel = -3;
+                state->sequenceEventState = 3;
+                state->channel3BrightnessDelta = -3;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
                 break;
             case 6:
-                mainSetBits(0x1cf, 1);
+                mainSetBits(DLL409_GAMEBIT_01CF, 1);
                 break;
             case 7:
-                mainSetBits(0x1cf, 0);
-                ((Dll197State*)st)->scrollVel = -3;
+                mainSetBits(DLL409_GAMEBIT_01CF, 0);
+                state->channel3BrightnessDelta = -3;
                 break;
             case 9:
-                mainSetBits(0x128, 1);
-                if (lbl_803DDBD8 == 0)
-                {
-                    lbl_803DDBD8 = return0_8005669C(1);
+                mainSetBits(DLL409_GAMEBIT_0128, 1);
+                if (gDll409Event9Result == 0) {
+                    gDll409Event9Result = return0_8005669C(1);
                 }
                 break;
             case 8:
-                mainSetBits(0x127, 1);
+                mainSetBits(DLL409_GAMEBIT_0127, 1);
                 break;
             case 10:
-                ((Dll197State*)st)->scrollPos = 100;
-                gTitleMenuControlInterface->vtable->onSelectSave(
-                    3, 0x2d, 0x50, ((Dll197State*)st)->scrollPos & 0xff, 0);
+                state->channel3Brightness = 100;
+                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2D, 0x50, state->channel3Brightness & 0xFF, 0);
                 break;
             }
+        }
         animUpdate->eventIds[i] = 0;
     }
-    switch ((int)((Dll197State*)st)->menuState)
-    {
+    switch ((int)state->phase) {
     case 7:
-        if ((getButtonsHeld(0) & PAD_BUTTON_A) != 0u)
-        {
+        if ((getButtonsHeld(0) & PAD_BUTTON_A) != 0u) {
             (*gObjectTriggerInterface)->endSequence(animUpdate->sequenceSlot);
-            ((Dll197State*)st)->menuState = 8;
-            ((Dll197State*)st)->unk2 = 0;
-        }
-        else if ((getButtonsHeld(0) & PAD_BUTTON_B) != 0u)
-        {
+            state->phase = 8;
+            state->actionTimer = 0;
+        } else if ((getButtonsHeld(0) & PAD_BUTTON_B) != 0u) {
             (*gObjectTriggerInterface)->endSequence(animUpdate->sequenceSlot);
-            ((Dll197State*)st)->menuState = 7;
-            ((Dll197State*)st)->unk2 = 0;
+            state->phase = 7;
+            state->actionTimer = 0;
         }
         break;
     }
     return 0;
 }
 
-int dll_199_getExtraSize(void)
-{
-    return 0x14;
+int dll409_getExtraSize(void) {
+    return sizeof(Dll409State);
 }
 
-int dll_199_getObjectTypeId(void)
-{
-    return 0x0;
+int dll409_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_199_free(int* obj)
-{
+void dll409_free(GameObject* obj) {
     (*gModgfxInterface)->detachSource(obj);
     gTitleMenuControlInterface->vtable->func11(3, 0);
     gTitleMenuControlInterface->vtable->func11(2, 0);
 }
 
-void dll_199_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-}
-void dll_199_hitDetect(void)
-{
+void dll409_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void dll_199_update(GameObject* obj)
-{
-    short* state;
+void dll409_hitDetect(void) {
+}
+
+void dll409_update(GameObject* obj) {
+    Dll409State* state;
     GameObject* player;
-    int queue;
+    int stateAddress;
     GameObject* found;
     f32 dist;
     u32 flags;
@@ -225,264 +203,229 @@ void dll_199_update(GameObject* obj)
     obj->anim.worldPosX = obj->anim.localPosX;
     obj->anim.worldPosY = obj->anim.localPosY;
     obj->anim.worldPosZ = obj->anim.localPosZ;
-    queue = *(int*)&obj->extra;
+    stateAddress = *(int*)&obj->extra;
     flags = 0;
-    while (ObjMsg_Pop(obj, &msg, &param, &flags) != 0)
-    {
-        switch (msg)
-        {
-        case 0x30005:
-            *(s16*)(queue + 6) = -3;
+    while (ObjMsg_Pop(obj, &msg, &param, &flags) != 0) {
+        switch (msg) {
+        case DLL409_MESSAGE_DECREASE_CHANNEL_2:
+            *(s16*)(stateAddress + offsetof(Dll409State, channel2BrightnessDelta)) = -3;
             break;
-        case 0x30006:
-            *(s16*)(queue + 6) = 0x10;
+        case DLL409_MESSAGE_INCREASE_CHANNEL_2:
+            *(s16*)(stateAddress + offsetof(Dll409State, channel2BrightnessDelta)) = 0x10;
             break;
         }
     }
-    mainSetBits(0x127, 1);
-    delta = state[3];
-    if (delta != 0)
-    {
-        state[2] += (s16)delta;
-        if (state[2] <= 0xc)
-        {
-            state[2] = 0xc;
-            state[3] = 0;
+    mainSetBits(DLL409_GAMEBIT_0127, 1);
+    delta = state->channel2BrightnessDelta;
+    if (delta != 0) {
+        state->channel2Brightness += (s16)delta;
+        if (state->channel2Brightness <= 0xC) {
+            state->channel2Brightness = 0xC;
+            state->channel2BrightnessDelta = 0;
+        } else if (state->channel2Brightness >= 0x46) {
+            state->channel2Brightness = 0x46;
+            state->channel2BrightnessDelta = 0;
         }
-        else if (state[2] >= 0x46)
-        {
-            state[2] = 0x46;
-            state[3] = 0;
-        }
-        gTitleMenuControlInterface->vtable->func11(2, state[2] & 0xff);
+        gTitleMenuControlInterface->vtable->func11(2, state->channel2Brightness & 0xFF);
     }
-    delta = state[5];
-    if (delta != 0)
-    {
-        state[4] += (s16)delta;
-        if ((state[4] <= 1) && (state[5] <= 0))
-        {
-            state[4] = 1;
-            state[5] = 0;
+    delta = state->channel3BrightnessDelta;
+    if (delta != 0) {
+        state->channel3Brightness += (s16)delta;
+        if ((state->channel3Brightness <= 1) && (state->channel3BrightnessDelta <= 0)) {
+            state->channel3Brightness = 1;
+            state->channel3BrightnessDelta = 0;
+        } else if ((state->channel3Brightness >= 0x46) && (state->channel3BrightnessDelta >= 0)) {
+            state->channel3Brightness = 0x46;
+            state->channel3BrightnessDelta = 0;
         }
-        else if ((state[4] >= 0x46) && (state[5] >= 0))
-        {
-            state[4] = 0x46;
-            state[5] = 0;
-        }
-        gTitleMenuControlInterface->vtable->func11(3, state[4] & 0xff);
+        gTitleMenuControlInterface->vtable->func11(3, state->channel3Brightness & 0xFF);
     }
-    if (state[1] > 0)
-    {
-        state[1] -= framesThisStep;
-        if (state[1] <= 0)
-        {
-            state[1] = 0;
-            if (((Dll199State*)state)->triggered == 0)
-            {
-                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2c, 0x50, state[4], 0);
-                ((Dll199State*)state)->triggered = 1;
+    if (state->actionTimer > 0) {
+        state->actionTimer -= framesThisStep;
+        if (state->actionTimer <= 0) {
+            state->actionTimer = 0;
+            if (state->timerActionTriggered == 0) {
+                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2C, 0x50, state->channel3Brightness, 0);
+                state->timerActionTriggered = 1;
             }
         }
-    }
-    else
-    {
-        found = (GameObject*)ObjGroup_FindNearestObject(DLL199_TARGET_OBJGROUP_1, player, &dist);
-        if ((found != 0) && (dist < 300.0f) && (dist > 100.0f))
-        {
+    } else {
+        found = (GameObject*)ObjGroup_FindNearestObject(DLL409_TARGET_OBJECT_GROUP, player, &dist);
+        if ((found != 0) && (dist < 300.0f) && (dist > 100.0f)) {
             dz = found->anim.localPosZ - player->anim.localPosZ;
-            if (dz <= 0.0f)
-            {
-                if (dz < 0.0f)
-                {
+            if (dz <= 0.0f) {
+                if (dz < 0.0f) {
                     dz *= -1.0f;
                 }
-                if (state[4] != 0x1e)
-                {
-                    state[4] = 0x1e;
+                if (state->channel3Brightness != 0x1E) {
+                    state->channel3Brightness = 0x1E;
                 }
-                brightness = (int)((f32)state[4] * ((dz - 100.0f) / 200.0f));
-                if ((s16)brightness < 1)
-                {
+                brightness = (int)((f32)state->channel3Brightness * ((dz - 100.0f) / 200.0f));
+                if ((s16)brightness < 1) {
                     brightness = 1;
                 }
-                gTitleMenuControlInterface->vtable->func11(3, brightness & 0xff);
-                brightness = (int)((f32)state[2] * ((200.0f - (dz - 100.0f)) / 200.0f));
-                if ((s16)brightness < 1)
-                {
+                gTitleMenuControlInterface->vtable->func11(3, brightness & 0xFF);
+                brightness = (int)((f32)state->channel2Brightness * ((200.0f - (dz - 100.0f)) / 200.0f));
+                if ((s16)brightness < 1) {
                     brightness = 1;
                 }
-                gTitleMenuControlInterface->vtable->func11(2, brightness & 0xff);
+                gTitleMenuControlInterface->vtable->func11(2, brightness & 0xFF);
             }
         }
-        switch (((Dll199State*)state)->phase)
-        {
+        switch (state->phase) {
         case 0:
-            if ((mainGetBit(0x5b5) == 0) && (mainGetBit(0x594) != 0))
-            {
-                mainSetBits(0x5b5, 1);
+            if ((mainGetBit(DLL409_GAMEBIT_05B5) == 0) && (mainGetBit(DLL409_GAMEBIT_0594) != 0)) {
+                mainSetBits(DLL409_GAMEBIT_05B5, 1);
             }
-            mainSetBits(0x5b9, 0);
-            if (Vec_distance((f32*)((int)obj + 0x18), (f32*)((u8*)player + 0x18)) < state[0])
-            {
-                ((Dll199State*)state)->phase = 1;
+            mainSetBits(DLL409_GAMEBIT_05B9, 0);
+            if (Vec_distance((f32*)((int)obj + 0x18), (f32*)((u8*)player + 0x18)) < state->activationDistance) {
+                state->phase = 1;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
                 (*gObjectTriggerInterface)->runSequence(0, obj, 0xffffffff);
                 {
                     Dll83Interface** res = Resource_Acquire(0x83, 1);
+
                     (*res)->spawn(obj, 0, NULL, 1, -1, NULL);
                     Resource_Release(res);
                 }
                 {
                     Dll84Interface** res = Resource_Acquire(0x84, 1);
+
                     (*res)->spawn(obj, 0, NULL, 1, -1, NULL);
                     Resource_Release(res);
                 }
-                mainSetBits(0x126, 0);
-                (*gModgfxInterface)->releaseHandle(state + 6);
+                mainSetBits(DLL409_GAMEBIT_0126, 0);
+                (*gModgfxInterface)->releaseHandle(&state->gfxHandle);
             }
             break;
         case 1:
-            if (((Dll199State*)state)->unk10 == 1)
-            {
-                ((Dll199State*)state)->phase = 2;
-                state[1] = 0xa0;
+            if (state->sequenceEventState == 1) {
+                state->phase = 2;
+                state->actionTimer = 0xA0;
             }
             break;
         case 2:
-            if ((((Dll199State*)state)->unlockCount == 0) && (mainGetBit(0x1cd) == 0))
-            {
-                mainSetBits(0x1cd, 1);
+            if ((state->unlockCount == 0) && (mainGetBit(DLL409_GAMEBIT_01CD) == 0)) {
+                mainSetBits(DLL409_GAMEBIT_01CD, 1);
             }
-            if (mainGetBit(0x5b2) != 0)
-            {
-                ((Dll199State*)state)->unlockCount += 1;
-                state[1] = 100;
-                if (((Dll199State*)state)->unlockCount == 1)
-                {
+            if (mainGetBit(DLL409_GAMEBIT_05B2) != 0) {
+                state->unlockCount += 1;
+                state->actionTimer = 100;
+                if (state->unlockCount == 1) {
                     (*gObjectTriggerInterface)->runSequence(3, obj, 0xffffffff);
                 }
             }
             break;
         case 7:
             (*gObjectTriggerInterface)->runSequence(5, obj, 0xffffffff);
-            ((Dll199State*)state)->phase = 3;
-            state[1] = 0;
-            state[5] = -3;
+            state->phase = 3;
+            state->actionTimer = 0;
+            state->channel3BrightnessDelta = -3;
             break;
         case 8:
             (*gObjectTriggerInterface)->runSequence(4, obj, 0xffffffff);
-            ((Dll199State*)state)->phase = 6;
-            state[1] = 0;
-            state[5] = -3;
+            state->phase = 6;
+            state->actionTimer = 0;
+            state->channel3BrightnessDelta = -3;
             break;
         case 6:
-            gTitleMenuControlInterface->vtable->onSelectSave(3, 0x35, 0x50, state[4] & 0xff, 0);
-            state[5] = 1;
+            gTitleMenuControlInterface->vtable->onSelectSave(3, 0x35, 0x50, state->channel3Brightness & 0xFF, 0);
+            state->channel3BrightnessDelta = 1;
             (*gObjectTriggerInterface)->runSequence(2, obj, 0xffffffff);
             dist = 10000.0f;
-            found = (GameObject*)ObjGroup_FindNearestObject(DLL199_TARGET_OBJGROUP_2, obj, &dist);
-            if (found != 0)
-            {
+            found = (GameObject*)ObjGroup_FindNearestObject(DLL409_SPAWNED_OBJECT_GROUP, obj, &dist);
+            if (found != 0) {
                 Obj_FreeObject(found);
             }
-            ((Dll199State*)state)->phase = 0;
-            state[1] = 400;
+            state->phase = 0;
+            state->actionTimer = 400;
             mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-            mainSetBits(0x126, 1);
-            mainSetBits(0x127, 1);
-            mainSetBits(0x5b2, 0);
-            mainSetBits(0x5b9, 1);
+            mainSetBits(DLL409_GAMEBIT_0126, 1);
+            mainSetBits(DLL409_GAMEBIT_0127, 1);
+            mainSetBits(DLL409_GAMEBIT_05B2, 0);
+            mainSetBits(DLL409_GAMEBIT_05B9, 1);
             {
                 Dll6AInterface** res = Resource_Acquire(0x6a, 1);
-                state[6] = (*res)->spawn(obj, 0, NULL, 0x402, -1, NULL);
+
+                state->gfxHandle = (*res)->spawn(obj, 0, NULL, 0x402, -1, NULL);
                 Resource_Release(res);
             }
-            mainSetBits(0x1cd, 0);
-            ((Dll199State*)state)->unlockCount = 0;
-            ((Dll199State*)state)->unk10 = 0;
+            mainSetBits(DLL409_GAMEBIT_01CD, 0);
+            state->unlockCount = 0;
+            state->sequenceEventState = 0;
             break;
         case 3:
             dist = 10000.0f;
-            found = (GameObject*)ObjGroup_FindNearestObject(DLL199_TARGET_OBJGROUP_2, obj, &dist);
-            if (found != 0)
-            {
+            found = (GameObject*)ObjGroup_FindNearestObject(DLL409_SPAWNED_OBJECT_GROUP, obj, &dist);
+            if (found != 0) {
                 Obj_FreeObject(found);
             }
-            if (mainGetBit(0x1ce) != 0)
-            {
-                state[4] = 1;
-                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2c, 0x50, state[4] & 0xff, 0);
-                state[5] = 1;
+            if (mainGetBit(DLL409_GAMEBIT_01CE) != 0) {
+                state->channel3Brightness = 1;
+                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2C, 0x50, state->channel3Brightness & 0xFF, 0);
+                state->channel3BrightnessDelta = 1;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-                ((Dll199State*)state)->phase = 5;
-            }
-            else
-            {
-                mainSetBits(0x126, 0);
-                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2a, 0x50, state[4] & 0xff, 0);
-                state[5] = 1;
+                state->phase = 5;
+            } else {
+                mainSetBits(DLL409_GAMEBIT_0126, 0);
+                gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2A, 0x50, state->channel3Brightness & 0xFF, 0);
+                state->channel3BrightnessDelta = 1;
                 (*gObjectTriggerInterface)->runSequence(1, obj, 0xffffffff);
             }
             break;
         case 4:
-            if (mainGetBit(0xfd) == 0)
-            {
-                mainSetBits(0xfd, 1);
+            if (mainGetBit(DLL409_GAMEBIT_00FD) == 0) {
+                mainSetBits(DLL409_GAMEBIT_00FD, 1);
             }
-            mainSetBits(0x1cf, 0);
-            mainSetBits(0x127, 0);
-            ((Dll199State*)state)->phase = 5;
-            gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2c, 0x50, state[4] & 0xff, 0);
-            mainSetBits(0x1ce, 1);
-            (*gMapEventInterface)->setMapAct(DLL199_MAP_SHRINE, 6);
+            mainSetBits(DLL409_GAMEBIT_01CF, 0);
+            mainSetBits(DLL409_GAMEBIT_0127, 0);
+            state->phase = 5;
+            gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2C, 0x50, state->channel3Brightness & 0xFF, 0);
+            mainSetBits(DLL409_GAMEBIT_01CE, 1);
+            (*gMapEventInterface)->setMapAct(DLL409_MAP_EVENT_ID, DLL409_MAP_EVENT_ACTION);
             break;
         }
     }
 }
 
-void dll_199_init(GameObject* obj, int def)
-{
-    short* state;
+void dll409_init(GameObject* obj, const Dll409Placement* placement) {
+    Dll409State* state;
     Dll6AInterface** res;
-    short id;
+    s16 id;
 
-    state = (obj)->extra;
-    (obj)->anim.rotX = 0;
-    *state = 10;
-    if (((Dll199ObjectDef*)def)->initStateOverride > 0)
-    {
-        *state = ((Dll199ObjectDef*)def)->initStateOverride >> 8;
+    state = obj->extra;
+    obj->anim.rotX = 0;
+    state->activationDistance = 10;
+    if (placement->activationDistancePacked > 0) {
+        state->activationDistance = placement->activationDistancePacked >> 8;
     }
-    ((Dll199State*)state)->phase = 0;
-    ((Dll199State*)state)->unk10 = 0;
-    state[1] = 0;
-    ((Dll199State*)state)->unlockCount = 0;
-    (obj)->animEventCallback = dll_199_SeqFn;
+    state->phase = 0;
+    state->sequenceEventState = 0;
+    state->actionTimer = 0;
+    state->unlockCount = 0;
+    obj->animEventCallback = dll409_processAnimEvents;
     ObjMsg_AllocQueue(obj, 4);
     mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-    mainSetBits(0x1cf, 0);
-    mainSetBits(0x126, 1);
-    mainSetBits(0x127, 1);
-    mainSetBits(0x1cd, 0);
-    mainSetBits(0x1e7, 0);
-    state[2] = 0xc;
-    state[4] = 0x1e;
-    state[1] = 200;
-    gTitleMenuControlInterface->vtable->onSelectSave(2, 0x2b, 0x50, 1, 0);
-    state[3] = 0;
-    state[5] = 0;
-    ((Dll199State*)state)->triggered = 0;
+    mainSetBits(DLL409_GAMEBIT_01CF, 0);
+    mainSetBits(DLL409_GAMEBIT_0126, 1);
+    mainSetBits(DLL409_GAMEBIT_0127, 1);
+    mainSetBits(DLL409_GAMEBIT_01CD, 0);
+    mainSetBits(DLL409_GAMEBIT_01E7, 0);
+    state->channel2Brightness = 0xC;
+    state->channel3Brightness = 0x1E;
+    state->actionTimer = 200;
+    gTitleMenuControlInterface->vtable->onSelectSave(2, 0x2B, 0x50, 1, 0);
+    state->channel2BrightnessDelta = 0;
+    state->channel3BrightnessDelta = 0;
+    state->timerActionTriggered = 0;
     res = Resource_Acquire(0x6a, 1);
     id = (*res)->spawn(obj, 0, NULL, 0x402, -1, NULL);
-    state[6] = id;
+    state->gfxHandle = id;
     Resource_Release(res);
 }
 
-void dll_199_release(void)
-{
+void dll409_release(void) {
 }
 
-void dll_199_initialise(void)
-{
+void dll409_initialise(void) {
 }

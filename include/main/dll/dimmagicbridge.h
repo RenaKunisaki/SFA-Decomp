@@ -26,11 +26,6 @@ STATIC_ASSERT(offsetof(Dll19APlacement, gateBitIndex) == 0x1f);
 STATIC_ASSERT(sizeof(Dll19APlacement) == 0x20);
 STATIC_ASSERT(sizeof(Dll19AState) == 0x4);
 
-void dll_199_update(GameObject* obj);
-void dll_199_init(GameObject* obj, int def);
-int dll_199_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-void dll_199_release(void);
-void dll_199_initialise(void);
 int dll_19A_getExtraSize(void);
 int dll_19A_getObjectTypeId(void);
 void dll_19A_free(void);
