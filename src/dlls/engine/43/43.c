@@ -1,5 +1,3 @@
-/* DLL 0x2B (Effect18): particle-effect spawner for effect IDs 0x708-0x724,
- * building PartFxSpawn requests dispatched through gExpgfxInterface->spawnEffect. */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
