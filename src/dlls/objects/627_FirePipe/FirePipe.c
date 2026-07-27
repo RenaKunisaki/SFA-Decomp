@@ -57,18 +57,6 @@ int lbl_803DC350 = 0x0A;
 #define FIREPIPE_OBJFLAG_RENDERED        0x800
 #define FIREPIPE_OBJFLAG_UPDATE_DISABLED 0x8000
 
-extern f32 lbl_803E6B70;
-extern f32 lbl_803E6B74;
-extern f32 lbl_803E6B78;
-extern f32 lbl_803E6B7C;
-extern f32 lbl_803E6B80;
-extern f32 gFirePipeNearAttenMin;
-extern f32 gFirePipeNearAttenMax;
-extern f32 lbl_803E6B8C;
-extern f32 gFirePipeFarAttenMin;
-extern f32 gFirePipeFarAttenMax;
-extern f32 lbl_803E6B98;
-
 /* objectId variants handled by this DLL (select the emitted effect); retail
  * OBJECTS.bin names: IceHole, SteamHoleNo/SteamHoleFi/SteamHoleDe (11-char
  * truncated), FirePipe, BossDrakorF. */
@@ -288,7 +276,7 @@ void firepipe_updateState(FirePipeObject* obj)
     {
         if (((obj->objectFlags & FIREPIPE_OBJFLAG_RENDERED) != 0) || (obj->callback != NULL))
         {
-            objfx_spawnPulseBurst(obj, lbl_803E6B70 * mapData->scale, (u8)extra->effectType, 0, 0, NULL);
+            objfx_spawnPulseBurst(obj, 0.2f * mapData->scale, (u8)extra->effectType, 0, 0, NULL);
         }
     }
 
@@ -315,8 +303,8 @@ void firepipe_updateState(FirePipeObject* obj)
                     extra->glowLight = modelLightStruct_createPointLight(obj, 0xff, 0x80, 0, 0);
                     if (extra->glowLight != 0)
                     {
-                        modelLightStruct_setEnabled(extra->glowLight, 0, lbl_803E6B74);
-                        modelLightStruct_setEnabled(extra->glowLight, 1, lbl_803E6B78);
+                        modelLightStruct_setEnabled(extra->glowLight, 0, 0.0f);
+                        modelLightStruct_setEnabled(extra->glowLight, 1, 1.0f);
                         if (obj->objectId == FIREPIPE_OBJ_ICE_HOLE)
                         {
                             modelLightStruct_setupGlow(extra->glowLight, 0, 0, 0xb4, 0xff, 0x64, lbl_803DC34C * obj->scale);
@@ -325,26 +313,26 @@ void firepipe_updateState(FirePipeObject* obj)
                         {
                             modelLightStruct_setupGlow(extra->glowLight, 0, 0xff, 0x80, 0, 0x64, lbl_803DC34C * obj->scale);
                         }
-                        modelLightStruct_setPosition(extra->glowLight, lbl_803E6B74, *(f32*)&lbl_803E6B74, lbl_803E6B7C);
-                        radius = lbl_803E6B80 * obj->scale;
-                        nearAtten = (radius < gFirePipeNearAttenMin)
-                                        ? gFirePipeNearAttenMin
-                                        : ((radius > gFirePipeNearAttenMax) ? gFirePipeNearAttenMax : radius);
-                        farAtten = lbl_803E6B8C + radius;
+                        modelLightStruct_setPosition(extra->glowLight, 0.0f, 0.0f, 3.0f);
+                        radius = 240.0f * obj->scale;
+                        nearAtten = (radius < 50.0f)
+                                        ? 50.0f
+                                        : ((radius > 70.0f) ? 70.0f : radius);
+                        farAtten = 30.0f + radius;
                         { /* separate local to reproduce reg assignment */
                             int light = (int)extra->glowLight;
                             modelLightStruct_setDistanceAttenuation(
                                 (ModelLightStruct*)light, nearAtten,
-                                (farAtten < gFirePipeFarAttenMin)
-                                    ? gFirePipeFarAttenMin
-                                    : ((farAtten > gFirePipeFarAttenMax) ? gFirePipeFarAttenMax : farAtten));
+                                (farAtten < 80.0f)
+                                    ? 80.0f
+                                    : ((farAtten > 100.0f) ? 100.0f : farAtten));
                         }
                     }
                 }
             }
             else if (extra->glowLight != 0)
             {
-                modelLightStruct_setEnabled(extra->glowLight, 0, lbl_803E6B98);
+                modelLightStruct_setEnabled(extra->glowLight, 0, 0.25f);
                 if (modelLightStruct_getActiveState((ModelLightStruct*)extra->glowLight) == 0)
                 {
                     modelLightStruct_freeSlot(&extra->glowLight);
@@ -463,7 +451,7 @@ void firepipe_render(FirePipeObject* obj, int p1, int p2, int p3, int p4, char v
     }
     if (visible != 0 && (u32)((extra->flags >> 1) & 1) != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p1, p2, p3, p4, (double)lbl_803E6B78);
+        objRenderModelAndHitVolumes((GameObject*)obj, p1, p2, p3, p4, 1.0f);
     }
 }
 
@@ -540,17 +528,17 @@ void firepipe_init(FirePipeObject* obj, FirePipeMapData* mapData)
         case FIREPIPE_OBJ_STEAM_HOLE_FI:
             extra->effectType = FIREPIPE_EFFECT_TYPE_STEAM_HOLE_FI;
             extra->effectMode = 2;
-            extra->effectScale = lbl_803E6B74;
+            extra->effectScale = 0.0f;
             break;
         case FIREPIPE_OBJ_STEAM_HOLE_NO:
             extra->effectType = FIREPIPE_EFFECT_TYPE_STEAM_HOLE_NO;
             extra->effectMode = 2;
-            extra->effectScale = lbl_803E6B74;
+            extra->effectScale = 0.0f;
             break;
         case FIREPIPE_OBJ_STEAM_HOLE_DE:
             extra->effectType = FIREPIPE_EFFECT_TYPE_STEAM_HOLE_DE;
             extra->effectMode = 2;
-            extra->effectScale = lbl_803E6B74;
+            extra->effectScale = 0.0f;
             break;
         case FIREPIPE_OBJ_FIRE_PIPE:
         case FIREPIPE_OBJ_BOSSDRAKOR_FIRE:

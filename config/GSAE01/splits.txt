@@ -3750,7 +3750,7 @@ dlls/objects/627_FirePipe/FirePipe.c:
 	.text       start:0x8021F8CC end:0x80220608
 	.data       start:0x8032AC90 end:0x8032ACC8
 	.sdata      start:0x803DC340 end:0x803DC358
-	.sdata2     start:0x803E6BA0 end:0x803E6BAC
+	.sdata2     start:0x803E6B70 end:0x803E6BAC
 
 dlls/objects/629_DR_cradle/DR_cradle.c:
 	.sdata      start:0x803DC358 end:0x803DC360
