@@ -300,9 +300,11 @@ track/intersect_earthwalkersfx.c:
 
 track/intersect_screenmath.c:
 	.text       start:0x8006FDF8 end:0x80070234
+	.sdata2     start:0x803DEE68 end:0x803DEE94
 
 track/intersect_mtx44.c:
 	.text       start:0x80070234 end:0x800702B8
+	.sdata2     start:0x803DEE98 end:0x803DEEA0
 
 track/intersect_render.c:
 	.text       start:0x800702B8 end:0x8007CF7C

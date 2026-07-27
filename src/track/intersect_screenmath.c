@@ -9,14 +9,8 @@
 
 extern u32 screenWidth;
 
-extern f32 gGxPi;
-extern f32 lbl_803DEE6C;
-extern f32 lbl_803DEE70;
-extern f32 lbl_803DEE74;
-extern f32 lbl_803DEE78;
-extern f32 lbl_803DEE7C;
-extern f32 lbl_803DEE80;
-extern f32 lbl_803DEE90;
+static const f32 gGxPi = 3.1415927f;
+
 extern f32 gFogNearZ;
 extern f32 gFogFarZ;
 extern int lbl_803DD03C;
@@ -95,14 +89,14 @@ void matrixFn_8006ff0c(float* mat, short* out, f32 fov, f32 aspect, f32 near, f3
 
     mtx44Identity((f32*)mat);
 
-    angle = (f32)(s32)(lbl_803DEE6C * fov) * gGxPi / lbl_803DEE70;
+    angle = (f32)(s32)(91.022f * fov) * gGxPi / 32768.0f;
     tan = mathCosf(angle) / mathSinf(angle);
     mat[0] = tan / aspect;
     mat[5] = tan;
     mat[10] = -near / (far - near);
-    mat[11] = lbl_803DEE74;
+    mat[11] = -1.0f;
     mat[14] = -near * far / (far - near);
-    mat[15] = lbl_803DEE78;
+    mat[15] = 0.0f;
 
     for (i = 0; i < 16; i++)
     {
@@ -111,13 +105,13 @@ void matrixFn_8006ff0c(float* mat, short* out, f32 fov, f32 aspect, f32 near, f3
 
     if (out != NULL)
     {
-        if ((f32)(near + far) <= lbl_803DEE7C)
+        if ((f32)(near + far) <= 2.0f)
         {
             *(u16*)out = 0xFFFF;
         }
         else
         {
-            *(s16*)out = (s16)(lbl_803DEE80 / (near + far));
+            *(s16*)out = (s16)(131072.0f / (near + far));
             if (*(u16*)out == 0)
             {
                 *out = 1;
@@ -136,7 +130,7 @@ void normalize(f32* x, f32* y, f32* z)
     f32 len;
 
     len = sqrtf(*z * *z + (*x * *x + *y * *y));
-    scale = lbl_803DEE90 / len;
+    scale = 1.0f / len;
     *x = *x * scale;
     *y = *y * scale;
     *z = *z * scale;
