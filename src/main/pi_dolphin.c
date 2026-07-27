@@ -2284,19 +2284,19 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     u32 tab0 = 0; /* TAB ptr of the primary slot of the pair, 0 = not ready */
     u32 tab1 = 0; /* TAB ptr of the alternate slot of the pair */
     u8 frame = 0; /* run a full frame per wait iteration once dvd error UI is up */
-    u32 hiSel;    /* caller's slot-select bit; cases 0x51/0x4f reuse it as the TAB ptr */
+    u32 hiSel;
     int entryOff;
     int flags;
     int intr;
     int i;
     int prev;
-    u32 slotPtrAddr; /* &tbl->ptrs[fileId], biased +0x6A28 for MLDF_QPTR */
+    u32 slotPtrAddr;
     u32 fileBuf;
     u32 alignedSize;
     int tmp;
     u32 decompSize;
     int entryByteOff;
-    u32 qptr;       /* MLDF_QPTR from the guard, reused for the first use of each branch */
+    u32 qptr;
     DVDFileInfo buf;
 
     switch (fileId)
@@ -3320,7 +3320,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             if (strncmp((char*)fileBuf, sZlbBlockTag, 3) == 0)
             {
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
-                zlbDecompress((u8*)(MLDF_QPTR + (offsetFlags + 0x10)), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
+                zlbDecompress((u8*)(MLDF_QPTR + offsetFlags + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
                 DCStoreRange((void*)destBuf, decompSize);
             }
@@ -3339,7 +3339,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             if (strncmp((char*)fileBuf, sZlbBlockTag, 3) == 0)
             {
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
-                zlbDecompress((u8*)(MLDF_QPTR + (offsetFlags + 0x10)), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
+                zlbDecompress((u8*)(MLDF_QPTR + offsetFlags + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
                 DCStoreRange((void*)destBuf, decompSize);
             }
@@ -3353,11 +3353,12 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             struct PackHeader* hdr = (struct PackHeader*)(qptr + offsetFlags);
             if (hdr->magic == 0xe0e0e0e0)
             {
-                memcpy((void*)destBuf, (void*)(qptr + (hdr->auxSize + (int)hdr - qptr + 0x18)), hdr->decompressedSize);
+                memcpy((void*)destBuf, (void*)(qptr + ((hdr->auxSize + 0x18) + (int)hdr - (int)qptr)),
+                       hdr->decompressedSize);
             }
             else if (hdr->magic == 0xfacefeed)
             {
-                zlbDecompress((u8*)(qptr + (hdr->auxSize + (int)hdr - qptr + 0x28)), hdr->compressedSize - 0x10,
+                zlbDecompress((u8*)(qptr + ((hdr->auxSize + 0x28) + (int)hdr - (int)qptr)), hdr->compressedSize - 0x10,
                               (u8*)destBuf, &hdr->decompressedSize);
                 DCStoreRange((void*)destBuf, hdr->decompressedSize);
             }
@@ -3375,12 +3376,12 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             fileBuf = qptr + entryIndex;
             if (strncmp(sDirBlockTag, (char*)fileBuf, 3) == 0)
             {
-                return (void*)(MLDF_QPTR + (entryIndex + 0x20));
+                return (void*)(MLDF_QPTR + entryIndex + 0x20);
             }
             if (strncmp((char*)fileBuf, sZlbBlockTag, 3) == 0)
             {
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
-                zlbDecompress((u8*)(MLDF_QPTR + (entryIndex + 0x10)), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
+                zlbDecompress((u8*)(MLDF_QPTR + entryIndex + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
                 DCStoreRange((void*)destBuf, decompSize);
             }
@@ -3391,12 +3392,12 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             fileBuf = qptr + entryIndex;
             if (strncmp(sDirBlockTag, (char*)fileBuf, 3) == 0)
             {
-                return (void*)(MLDF_QPTR + (entryIndex + 0x20));
+                return (void*)(MLDF_QPTR + entryIndex + 0x20);
             }
             if (strncmp((char*)fileBuf, sZlbBlockTag, 3) == 0)
             {
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
-                zlbDecompress((u8*)(MLDF_QPTR + (entryIndex + 0x10)), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
+                zlbDecompress((u8*)(MLDF_QPTR + entryIndex + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
                 DCStoreRange((void*)destBuf, decompSize);
             }
