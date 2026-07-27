@@ -23,7 +23,7 @@
 typedef struct ECSHCreatorSharpClawSetup {
     ObjPlacement base;
     s16 gameBit;
-    s16 unknown1A;
+    s16 gameBit2;
     u8 unknown1C[0x1E - 0x1C];
     s16 unknown1E;
     s16 unknown20;
@@ -31,15 +31,15 @@ typedef struct ECSHCreatorSharpClawSetup {
     s16 unknown24;
     u8 unknown26;
     s8 initialWeaponId;
-    u8 unknown28;
+    u8 objectFlagBits;
     u8 aggroRangeByte;
     s8 initialYaw;
     u8 flags;
-    s16 unknown2C;
+    s16 respawnEnabled;
     s8 triggerSequenceId;
-    u8 unknown2F;
+    u8 healthByte;
     s16 unknown30;
-    u8 childGroupSlot;
+    u8 hitPoints;
     u8 unknown33;
     u16 unknown34;
     u8 unknown36[0x38 - 0x36];
@@ -48,7 +48,7 @@ typedef struct ECSHCreatorSharpClawSetup {
 STATIC_ASSERT(sizeof(ECSHCreatorSharpClawSetup) == 0x38);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, base) == 0x00);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown1A) == 0x1A);
+STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, gameBit2) == 0x1A);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown1C) == 0x1C);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown1E) == 0x1E);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown20) == 0x20);
@@ -56,15 +56,15 @@ STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, droppedItemId) == 0x22);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown24) == 0x24);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown26) == 0x26);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, initialWeaponId) == 0x27);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown28) == 0x28);
+STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, objectFlagBits) == 0x28);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, aggroRangeByte) == 0x29);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, initialYaw) == 0x2A);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, flags) == 0x2B);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown2C) == 0x2C);
+STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, respawnEnabled) == 0x2C);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, triggerSequenceId) == 0x2E);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown2F) == 0x2F);
+STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, healthByte) == 0x2F);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown30) == 0x30);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, childGroupSlot) == 0x32);
+STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, hitPoints) == 0x32);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown33) == 0x33);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown34) == 0x34);
 STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown36) == 0x36);
@@ -73,7 +73,7 @@ STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown36) == 0x36);
 #define ECSH_CREATOR_SHARPCLAW_OBJECT_ID 0x11
 
 #define ECSH_CREATOR_SPAWN_TIMER           100
-#define ECSH_CREATOR_CHILD_GROUP_SLOT_BASE 2
+#define ECSH_CREATOR_SHARPCLAW_HIT_POINTS_BASE 2
 
 #define ECSH_CREATOR_SHARPCLAW_INITIAL_WEAPON_ID       3
 #define ECSH_CREATOR_SHARPCLAW_FLAGS                   2
@@ -148,7 +148,7 @@ void ecshCreator_update(GameObject* obj) {
         spawnSetup->base.color[2] = placement->base.color[2];
         spawnSetup->base.color[3] = placement->base.color[3];
         spawnSetup->initialWeaponId = ECSH_CREATOR_SHARPCLAW_INITIAL_WEAPON_ID;
-        spawnSetup->unknown28 = 0;
+        spawnSetup->objectFlagBits = 0;
         spawnSetup->gameBit = state->triggerGameBit + placement->childGameBitOffset;
         spawnSetup->unknown30 = -1;
         spawnSetup->initialYaw = (s8)(obj->anim.rotX >> ECSH_CREATOR_INITIAL_YAW_SHIFT);
@@ -159,10 +159,10 @@ void ecshCreator_update(GameObject* obj) {
         spawnSetup->aggroRangeByte = ECSH_CREATOR_SHARPCLAW_AGGRO_RANGE_BYTE;
         spawnSetup->triggerSequenceId = ECSH_CREATOR_SHARPCLAW_NO_TRIGGER_SEQUENCE;
         spawnSetup->unknown24 = 0;
-        spawnSetup->unknown2C = 0;
+        spawnSetup->respawnEnabled = 0;
         spawnSetup->unknown34 = 0xFFFF;
-        spawnSetup->unknown1A = 0;
-        spawnSetup->childGroupSlot = state->childGroupSlot;
+        spawnSetup->gameBit2 = 0;
+        spawnSetup->hitPoints = state->sharpClawHitPoints;
         sharpClaw = Obj_SetupObject(&spawnSetup->base, ECSH_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
                                     ECSH_CREATOR_NO_OBJECT_INDEX, obj->anim.parent);
         if (sharpClaw != NULL) {
@@ -183,8 +183,8 @@ void ecshCreator_init(GameObject* obj, const ECSHCreatorPlacement* placement) {
     obj->anim.renderAlpha = ECSH_CREATOR_FULL_ALPHA;
     obj->anim.alpha = ECSH_CREATOR_FULL_ALPHA;
     state->triggerGameBit = placement->triggerGameBit;
-    state->childGroupSlot = ECSH_CREATOR_CHILD_GROUP_SLOT_BASE;
-    state->childGroupSlot += placement->childGroupSlotOffset;
+    state->sharpClawHitPoints = ECSH_CREATOR_SHARPCLAW_HIT_POINTS_BASE;
+    state->sharpClawHitPoints += placement->hitPointsOffset;
 }
 
 void ecshCreator_release(void) {

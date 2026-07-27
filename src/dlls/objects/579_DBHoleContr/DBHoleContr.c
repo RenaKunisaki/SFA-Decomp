@@ -16,13 +16,14 @@
 STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
 #define DBEGG_OBJGROUP           0x24
-#define DBHOLECONTROL1_CHILD_OBJ 1337
+#define DBHOLECONTROL1_CHILD_OBJ        1337
+#define DBHOLECONTROL1_CHILD_SETUP_SIZE 56
 
 int lbl_803DDCE0;
 
 int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
-    int newObj;
+    ObjPlacement* childPlacement;
     void* res;
     int* objs;
     int count;
@@ -41,14 +42,14 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
             res = mapRomListFindItem(0x4658A, 0, 0, 0, 0);
             if (res == NULL)
                 continue;
-            newObj = (int)Obj_AllocObjectSetup(56, DBHOLECONTROL1_CHILD_OBJ);
-            memcpy((void*)newObj, res, 56);
-            ((GameObject*)newObj)->anim.rootMotionScale = obj->anim.localPosX;
-            ((GameObject*)newObj)->anim.localPosX = obj->anim.localPosY;
-            ((GameObject*)newObj)->anim.localPosY = obj->anim.localPosZ;
-            *(int*)&((GameObject*)newObj)->anim.localPosZ = -1;
-            *(s16*)(newObj + 26) = 149;
-            loadObjectAtObject(obj, (ObjPlacement*)newObj);
+            childPlacement = Obj_AllocObjectSetup(DBHOLECONTROL1_CHILD_SETUP_SIZE, DBHOLECONTROL1_CHILD_OBJ);
+            memcpy(childPlacement, res, DBHOLECONTROL1_CHILD_SETUP_SIZE);
+            childPlacement->posX = obj->anim.localPosX;
+            childPlacement->posY = obj->anim.localPosY;
+            childPlacement->posZ = obj->anim.localPosZ;
+            childPlacement->mapId = -1;
+            *(s16*)((u8*)childPlacement + 0x1A) = 149;
+            loadObjectAtObject(obj, childPlacement);
             break;
         }
     }

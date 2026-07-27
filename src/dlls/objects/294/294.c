@@ -70,13 +70,30 @@
 #include "main/gameloop_api.h"
 #include "track/intersect_api.h"
 
-const char sMoonrockTriggerIdentFormat[] = "!!!!!!!!!!! TRIGGER %d  ident %d\n";
+ObjectDescriptor gTriggerObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)Trigger_initialise,
+    (ObjectDescriptorCallback)Trigger_release,
+    0,
+    (ObjectDescriptorCallback)Trigger_init,
+    (ObjectDescriptorCallback)Trigger_update,
+    (ObjectDescriptorCallback)Trigger_hitDetect,
+    (ObjectDescriptorCallback)Trigger_render,
+    (ObjectDescriptorCallback)Trigger_free,
+    (ObjectDescriptorCallback)Trigger_getObjectTypeId,
+    Trigger_getExtraSize,
+};
+
+char sMoonrockTriggerIdentFormat[] = "!!!!!!!!!!! TRIGGER %d  ident %d\n";
 char lbl_8032253C[] =
     "initialise\n\0"
     "Trigger [%d], Environment Effect, Action Num [%d], Range [%d]\0\0\0"
-    "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0"
-    "^^^^^^^^\n^^^^^^^^\nFREE %d\n\0"
-    "^^^^^^^^\n^^^^^^^^\nLEVELLOCKED level %d  bucket %d\n\0"
+    "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0\0"
+    "^^^^^^^^\n^^^^^^^^\nFREE %d\n\0\0"
+    "^^^^^^^^\n^^^^^^^^\nLEVELLOCKED level %d  bucket %d\n\0\0"
     "^^^^^^^^\n^^^^^^^^\nLEVELUNLOCKED level %d  bucket %d\n\0\0\0";
 
 const f32 lbl_803E40C8 = 3.1415927f;
@@ -1348,19 +1365,3 @@ void Trigger_initialise(void)
 {
 }
 
-ObjectDescriptor gTriggerObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)Trigger_initialise,
-    (ObjectDescriptorCallback)Trigger_release,
-    0,
-    (ObjectDescriptorCallback)Trigger_init,
-    (ObjectDescriptorCallback)Trigger_update,
-    (ObjectDescriptorCallback)Trigger_hitDetect,
-    (ObjectDescriptorCallback)Trigger_render,
-    (ObjectDescriptorCallback)Trigger_free,
-    (ObjectDescriptorCallback)Trigger_getObjectTypeId,
-    Trigger_getExtraSize,
-};

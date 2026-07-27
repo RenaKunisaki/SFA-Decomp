@@ -62,12 +62,15 @@ typedef struct HoodedZyckSpawnSetup
 {
     ObjPlacement base;
     s16 triggerGameBit; /* 0x18: the creator's own gate bit, handed on */
-    u8 pad1A[8];
-    s16 unk22; /* 0x22: 1 */
+    s16 gameBit2;       /* 0x1A */
+    u8 pad1C[6];
+    s16 droppedItemId; /* 0x22 */
     u8 pad24[6];
     s8 yawByte; /* 0x2A: random heading */
 } HoodedZyckSpawnSetup;
 
+STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, gameBit2) == 0x1A);
+STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, droppedItemId) == 0x22);
 STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, yawByte) == 0x2A);
 
 /* romlist object types this creator spawns (names from the retail
@@ -267,7 +270,7 @@ void WM_ObjCreator_update(GameObject* obj)
                 setup->posY = obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ;
                 ((HoodedZyckSpawnSetup*)setup)->triggerGameBit = state->gameBit;
-                ((HoodedZyckSpawnSetup*)setup)->unk22 = 1;
+                ((HoodedZyckSpawnSetup*)setup)->droppedItemId = 1;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 if ((u32)spawned != 0)
                 {

@@ -1,186 +1,189 @@
 /*
- * NW_treebrid (DLL 0x19F) - a path-bound bird object in SnowHorn Wastes
- * (map 'nwastes', 0x0A).
+ * NW_treebrid (DLL 0x19F).
  *
- * On its animation events it emits bursts of particle fx (the burst id
- * varies with the active sequence and trigger variant). Each frame it
- * samples a point along its object path and drags a linked target object
- * to that world position. It runs its trigger sequence either when armed
- * by an immediate trigger (set once its game bit is found set at init)
- * or directly once its game bit becomes set, after first locating a
- * nearby object in object group 4.
+ * Moves a nearby group-4 object to path point zero and starts the placement's
+ * sequence when its game bit is set. Animation events emit particle bursts.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/dll_019F_nwtreebrid.h"
+#include "dlls/objects/415_NW_treebrid.h"
+
 #include "game/objects/object.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
+#include "main/dll/partfx_interface.h"
+#include "main/gamebits_api.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
+#include "main/objseq.h"
 
-#define NWTREEBRID_TARGET_OBJGROUP 4
+#define NW_TREE_BRIDGE_TARGET_OBJECT_GROUP           4
+#define NW_TREE_BRIDGE_PATH_INDEX                    0
+#define NW_TREE_BRIDGE_TARGET_SEARCH_DISTANCE        100.0f
+#define NW_TREE_BRIDGE_TARGET_SEARCH_ATTEMPTS        4
+#define NW_TREE_BRIDGE_RENDER_SCALE                  1.0f
+#define NW_TREE_BRIDGE_PREEMPT_SEQUENCE_ID           0x154
+#define NW_TREE_BRIDGE_PREEMPT_SEQUENCE_FLAGS        1
+#define NW_TREE_BRIDGE_GAMEBIT_SEQUENCE_FLAGS        (-1)
+#define NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID    0x5D
+#define NW_TREE_BRIDGE_SEQUENCE_ID_0                 0
+#define NW_TREE_BRIDGE_SEQUENCE_ID_1                 1
+#define NW_TREE_BRIDGE_EVENT_LARGE_BURST             1
+#define NW_TREE_BRIDGE_EVENT_MEDIUM_BURST            2
+#define NW_TREE_BRIDGE_EVENT_SMALL_BURST             3
+#define NW_TREE_BRIDGE_LARGE_BURST_PARTICLE_ID       0xCC
+#define NW_TREE_BRIDGE_MEDIUM_SEQUENCE_0_PARTICLE_ID 0xCD
+#define NW_TREE_BRIDGE_SMALL_SEQUENCE_0_PARTICLE_ID  0xCE
+#define NW_TREE_BRIDGE_MEDIUM_SEQUENCE_1_PARTICLE_ID 0xCF
+#define NW_TREE_BRIDGE_SMALL_SEQUENCE_1_PARTICLE_ID  0xD0
+#define NW_TREE_BRIDGE_MEDIUM_SPECIAL_PARTICLE_ID    0xD3
+#define NW_TREE_BRIDGE_SMALL_SPECIAL_PARTICLE_ID     0xD4
+#define NW_TREE_BRIDGE_PARTICLE_MODE                 1
+#define NW_TREE_BRIDGE_LARGE_BURST_COUNT             200
+#define NW_TREE_BRIDGE_MEDIUM_BURST_COUNT            100
+#define NW_TREE_BRIDGE_SMALL_BURST_COUNT             5
 
-int TreeBird_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    NwTreeBirdState* state;
-    int i;
-    int j;
-    u8 cmd;
+int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+    NwTreeBridgeState* state;
+    int eventIndex;
+    int particlesRemaining;
+    u8 eventId;
 
-    state = (obj)->extra;
-    i = 0;
-    while (i < animUpdate->eventCount)
-    {
-        cmd = animUpdate->eventIds[i];
-        switch (cmd)
-        {
-        case 1:
-            j = 200;
-            do
-            {
-                (*gPartfxInterface)->spawnObject(obj, 0xcc, 0, 1, -1, 0);
-                j--;
-            } while (j != 0);
+    (void)unusedArg;
+    state = obj->extra;
+    eventIndex = 0;
+    while (eventIndex < animUpdate->eventCount) {
+        eventId = animUpdate->eventIds[eventIndex];
+        switch (eventId) {
+        case NW_TREE_BRIDGE_EVENT_LARGE_BURST:
+            particlesRemaining = NW_TREE_BRIDGE_LARGE_BURST_COUNT;
+            do {
+                (*gPartfxInterface)
+                    ->spawnObject(obj, NW_TREE_BRIDGE_LARGE_BURST_PARTICLE_ID, NULL, NW_TREE_BRIDGE_PARTICLE_MODE, -1,
+                                  NULL);
+                particlesRemaining--;
+            } while (particlesRemaining != 0);
             break;
-        case 2:
-            j = 100;
-            if ((obj)->anim.seqId == 0x5d)
-            {
-                do
-                {
-                    (*gPartfxInterface)->spawnObject(obj, 0xd3, 0, 1, -1, 0);
-                    j--;
-                } while (j != 0);
-            }
-            else if (state->triggerId == 0)
-            {
-                do
-                {
-                    (*gPartfxInterface)->spawnObject(obj, 0xcd, 0, 1, -1, 0);
-                    j--;
-                } while (j != 0);
-            }
-            else if (state->triggerId == 1)
-            {
-                do
-                {
-                    (*gPartfxInterface)->spawnObject(obj, 0xcf, 0, 1, -1, 0);
-                    j--;
-                } while (j != 0);
+        case NW_TREE_BRIDGE_EVENT_MEDIUM_BURST:
+            particlesRemaining = NW_TREE_BRIDGE_MEDIUM_BURST_COUNT;
+            if (obj->anim.seqId == NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID) {
+                do {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, NW_TREE_BRIDGE_MEDIUM_SPECIAL_PARTICLE_ID, NULL,
+                                      NW_TREE_BRIDGE_PARTICLE_MODE, -1, NULL);
+                    particlesRemaining--;
+                } while (particlesRemaining != 0);
+            } else if (state->sequenceId == NW_TREE_BRIDGE_SEQUENCE_ID_0) {
+                do {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, NW_TREE_BRIDGE_MEDIUM_SEQUENCE_0_PARTICLE_ID, NULL,
+                                      NW_TREE_BRIDGE_PARTICLE_MODE, -1, NULL);
+                    particlesRemaining--;
+                } while (particlesRemaining != 0);
+            } else if (state->sequenceId == NW_TREE_BRIDGE_SEQUENCE_ID_1) {
+                do {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, NW_TREE_BRIDGE_MEDIUM_SEQUENCE_1_PARTICLE_ID, NULL,
+                                      NW_TREE_BRIDGE_PARTICLE_MODE, -1, NULL);
+                    particlesRemaining--;
+                } while (particlesRemaining != 0);
             }
             break;
-        case 3:
-            j = 5;
-            if ((obj)->anim.seqId == 0x5d)
-            {
-                do
-                {
-                    (*gPartfxInterface)->spawnObject(obj, 0xd4, 0, 1, -1, 0);
-                    j--;
-                } while (j != 0);
-            }
-            else if (state->triggerId == 0)
-            {
-                do
-                {
-                    (*gPartfxInterface)->spawnObject(obj, 0xce, 0, 1, -1, 0);
-                    j--;
-                } while (j != 0);
-            }
-            else if (state->triggerId == 1)
-            {
-                do
-                {
-                    (*gPartfxInterface)->spawnObject(obj, 0xd0, 0, 1, -1, 0);
-                    j--;
-                } while (j != 0);
+        case NW_TREE_BRIDGE_EVENT_SMALL_BURST:
+            particlesRemaining = NW_TREE_BRIDGE_SMALL_BURST_COUNT;
+            if (obj->anim.seqId == NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID) {
+                do {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, NW_TREE_BRIDGE_SMALL_SPECIAL_PARTICLE_ID, NULL, NW_TREE_BRIDGE_PARTICLE_MODE,
+                                      -1, NULL);
+                    particlesRemaining--;
+                } while (particlesRemaining != 0);
+            } else if (state->sequenceId == NW_TREE_BRIDGE_SEQUENCE_ID_0) {
+                do {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, NW_TREE_BRIDGE_SMALL_SEQUENCE_0_PARTICLE_ID, NULL,
+                                      NW_TREE_BRIDGE_PARTICLE_MODE, -1, NULL);
+                    particlesRemaining--;
+                } while (particlesRemaining != 0);
+            } else if (state->sequenceId == NW_TREE_BRIDGE_SEQUENCE_ID_1) {
+                do {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, NW_TREE_BRIDGE_SMALL_SEQUENCE_1_PARTICLE_ID, NULL,
+                                      NW_TREE_BRIDGE_PARTICLE_MODE, -1, NULL);
+                    particlesRemaining--;
+                } while (particlesRemaining != 0);
             }
             break;
         }
-        i++;
+        eventIndex++;
     }
     return 0;
 }
 
-int treebird_getExtraSize(void)
-{
-    return sizeof(NwTreeBirdState);
+int nwTreeBridge_getExtraSize(void) {
+    return sizeof(NwTreeBridgeState);
 }
 
-void treebird_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    NwTreeBirdState* state;
-    f32 fx, fy, fz;
+void nwTreeBridge_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                         s8 unusedVisible) {
+    NwTreeBridgeState* state;
+    f32 pathX, pathY, pathZ;
 
+    (void)unusedVisible;
     state = obj->extra;
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-    if (state->pathFollower != NULL)
-    {
-        ObjPath_GetPointWorldPosition(obj, 0, &fx, &fy, &fz, 0);
-        state->pathFollower->anim.localPosX = fx;
-        state->pathFollower->anim.localPosY = fy;
-        state->pathFollower->anim.localPosZ = fz;
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, NW_TREE_BRIDGE_RENDER_SCALE);
+    if (state->pathTarget != NULL) {
+        ObjPath_GetPointWorldPosition(obj, NW_TREE_BRIDGE_PATH_INDEX, &pathX, &pathY, &pathZ, 0);
+        state->pathTarget->anim.localPosX = pathX;
+        state->pathTarget->anim.localPosY = pathY;
+        state->pathTarget->anim.localPosZ = pathZ;
     }
 }
 
-void treebird_update(GameObject* obj)
-{
-    NwTreeBirdState* state;
+void nwTreeBridge_update(GameObject* obj) {
+    NwTreeBridgeState* state;
     int preemptSequenceId;
-    f32 dist;
+    f32 searchDistance;
 
-    state = (obj)->extra;
-    dist = 100.0f;
-    if (state->searchDelay != 0)
-    {
-        state->pathFollower = (GameObject*)ObjGroup_FindNearestObject(NWTREEBRID_TARGET_OBJGROUP, obj, &dist);
-        if (state->pathFollower != NULL)
-        {
-            state->searchDelay = 0;
+    state = obj->extra;
+    searchDistance = NW_TREE_BRIDGE_TARGET_SEARCH_DISTANCE;
+    if (state->targetSearchAttempts != 0) {
+        state->pathTarget =
+            (GameObject*)ObjGroup_FindNearestObject(NW_TREE_BRIDGE_TARGET_OBJECT_GROUP, obj, &searchDistance);
+        if (state->pathTarget != NULL) {
+            state->targetSearchAttempts = 0;
+        } else {
+            state->targetSearchAttempts--;
         }
-        else
-        {
-            state->searchDelay--;
-        }
-    }
-    else if (state->triggerLatched == 0)
-    {
+    } else if (state->sequenceStarted == 0) {
         preemptSequenceId = state->preemptSequenceId;
-        if (preemptSequenceId != 0)
-        {
+        if (preemptSequenceId != 0) {
             (*gObjectTriggerInterface)->preempt((int)obj, preemptSequenceId);
-            (*gObjectTriggerInterface)->runSequence((int)state->triggerId, (void*)obj, 1);
-            state->triggerLatched = 1;
-        }
-        else if (mainGetBit((int)state->gameBit) != 0)
-        {
-            (*gObjectTriggerInterface)->runSequence((int)state->triggerId, (void*)obj, -1);
-            state->triggerLatched = 1;
+            (*gObjectTriggerInterface)
+                ->runSequence((int)state->sequenceId, (void*)obj, NW_TREE_BRIDGE_PREEMPT_SEQUENCE_FLAGS);
+            state->sequenceStarted = 1;
+        } else if (mainGetBit((int)state->gameBit) != 0) {
+            (*gObjectTriggerInterface)
+                ->runSequence((int)state->sequenceId, (void*)obj, NW_TREE_BRIDGE_GAMEBIT_SEQUENCE_FLAGS);
+            state->sequenceStarted = 1;
         }
     }
 }
 
-void treebird_init(GameObject* obj, NwTreeBirdPlacement* placement)
-{
-    NwTreeBirdState* state;
+void nwTreeBridge_init(GameObject* obj, const NwTreeBridgePlacement* placement) {
+    NwTreeBridgeState* state;
 
     state = obj->extra;
-    obj->animEventCallback = TreeBird_SeqFn;
+    obj->animEventCallback = nwTreeBridge_processAnimEvents;
     obj->anim.rotX = (s16)(placement->initialRotX << 8);
     obj->anim.rotY = placement->initialRotY;
     obj->anim.rotZ = placement->initialRotZ;
-    state->triggerId = placement->triggerVariant;
+    state->sequenceId = placement->sequenceId;
     state->gameBit = placement->gameBit;
-    if (mainGetBit((int)state->gameBit) != 0)
-    {
-        state->preemptSequenceId = 0x154;
+    if (mainGetBit((int)state->gameBit) != 0) {
+        state->preemptSequenceId = NW_TREE_BRIDGE_PREEMPT_SEQUENCE_ID;
     }
-    state->searchDelay = 4;
+    state->targetSearchAttempts = NW_TREE_BRIDGE_TARGET_SEARCH_ATTEMPTS;
 }
 
-ObjectDescriptor gTreeBirdObjDescriptor = {
+ObjectDescriptor gNWTreeBridgeObjDescriptor = {
     0,
     0,
     0,
@@ -188,11 +191,11 @@ ObjectDescriptor gTreeBirdObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)treebird_init,
-    (ObjectDescriptorCallback)treebird_update,
+    (ObjectDescriptorCallback)nwTreeBridge_init,
+    (ObjectDescriptorCallback)nwTreeBridge_update,
     0,
-    (ObjectDescriptorCallback)treebird_render,
+    (ObjectDescriptorCallback)nwTreeBridge_render,
     0,
     0,
-    treebird_getExtraSize,
+    nwTreeBridge_getExtraSize,
 };

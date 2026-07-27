@@ -126,6 +126,7 @@ typedef struct CollectibleSetup {
     u8 colorB;             /* 0x2A */
     u8 pad2B;              /* 0x2B */
     s16 counterGameBit;    /* 0x2C bit incremented on collect (>0 = active) */
+    s16 spawnMode;         /* 0x2E reward-spawn variant selected by the spawner */
 } CollectibleSetup;
 
 typedef struct CollectibleModelSetup {
@@ -153,6 +154,7 @@ STATIC_ASSERT(offsetof(CollectibleSetup, colorG) == 0x29);
 STATIC_ASSERT(offsetof(CollectibleSetup, colorB) == 0x2A);
 STATIC_ASSERT(offsetof(CollectibleSetup, pad2B) == 0x2B);
 STATIC_ASSERT(offsetof(CollectibleSetup, counterGameBit) == 0x2C);
+STATIC_ASSERT(offsetof(CollectibleSetup, spawnMode) == 0x2E);
 STATIC_ASSERT(sizeof(CollectibleSetup) == 0x30);
 
 STATIC_ASSERT(offsetof(CollectibleModelSetup, pad00) == 0x0);

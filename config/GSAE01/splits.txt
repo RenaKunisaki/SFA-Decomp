@@ -39,7 +39,8 @@ main/audio_stream.c:
 	.data       start:0x802C5DB8 end:0x802C5E00
 	.bss        start:0x80336C40 end:0x80337090
 	.sdata      start:0x803DB250 end:0x803DB260
-	.sbss       start:0x803DC848 end:0x803DC880
+	.sbss       start:0x803DC848 end:0x803DC87A
+	.sdata2     start:0x803DE5D0 end:0x803DE5EC
 
 main/camera.c:
 	.text       start:0x8000DD74 end:0x8000FE8C
@@ -232,7 +233,8 @@ main/rcp_dolphin.c:
 	.data       start:0x8030D028 end:0x8030D058
 	.bss        start:0x803779C0 end:0x8037E0A8
 	.sdata      start:0x803DB600 end:0x803DB608
-	.sbss       start:0x803DCD98 end:0x803DCDA8
+	.sbss       start:0x803DCD98 end:0x803DCDA6
+	.sdata2     start:0x803DEB48 end:0x803DEB98
 
 main/texture.c:
 	.text       start:0x800536C0 end:0x80054F64
@@ -2148,7 +2150,7 @@ dlls/objects/307_sfxPlayer/sfxPlayer.c:
 
 dlls/objects/294/294.c:
 	.text       start:0x80198A00 end:0x8019AA7C
-	.data       start:0x803224E0 end:0x80322720
+	.data       start:0x803224E0 end:0x8032271C
 	.sdata2     start:0x803E40C8 end:0x803E4108
 
 dlls/objects/325_CloudPrison/CloudPrison.c:
@@ -3765,7 +3767,7 @@ dlls/objects/642_BarrelGener/BarrelGener.c:
 main/obj_movelib.c:
 	.text       start:0x80221978 end:0x802227EC
 	.sdata      start:0x803DC3A0 end:0x803DC3B0
-	.sdata2     start:0x803E6C38 end:0x803E6CA0
+	.sdata2     start:0x803E6C38 end:0x803E6C9C
 
 dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c:
 	.text       start:0x802227EC end:0x80223004

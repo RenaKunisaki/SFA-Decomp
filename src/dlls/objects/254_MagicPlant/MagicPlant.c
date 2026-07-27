@@ -213,12 +213,12 @@ void MagicPlant_spawnChild(GameObject* obj, int objectId) {
     if ((u8)Obj_IsLoadingLocked() != 0) {
         placement = (MagicGemPlacement*)Obj_AllocObjectSetup(sizeof(MagicGemPlacement), objectId);
         placement->unk1A = MAGICPLANT_CHILD_UNK1A;
-        placement->unk2C = MAGICPLANT_CHILD_SENTINEL;
-        placement->unk1C = MAGICPLANT_CHILD_SENTINEL;
+        placement->counterGameBit = MAGICPLANT_CHILD_SENTINEL;
+        placement->hideGameBit = MAGICPLANT_CHILD_SENTINEL;
         placement->base.posX = obj->anim.localPosX;
         placement->base.posY = obj->anim.localPosY;
         placement->base.posZ = obj->anim.localPosZ;
-        placement->unk24 = MAGICPLANT_CHILD_SENTINEL;
+        placement->visibilityGameBit = MAGICPLANT_CHILD_SENTINEL;
         placement->base.color[0] = placementData[0x04];
         placement->base.color[2] = placementData[0x06];
         placement->base.color[1] = placementData[0x05];

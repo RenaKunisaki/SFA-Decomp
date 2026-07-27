@@ -58,7 +58,7 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
     f32 pos[3];
 
     spawned = 0;
-    if (lbl_803E6C38 == intensity)
+    if (0.0f == intensity)
     {
         spawned = 0;
         for (i = 0; i < count; i++)
@@ -93,9 +93,9 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
             pos[0] = obj->anim.localPosX;
             pos[1] = obj->anim.localPosY;
             pos[2] = obj->anim.localPosZ;
-            pos[0] += lbl_803E6C3C * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
-            pos[1] += lbl_803E6C3C * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
-            pos[2] += lbl_803E6C3C * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
+            pos[0] += 0.001f * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
+            pos[1] += 0.001f * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
+            pos[2] += 0.001f * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
             entries[i] =
                 lightningCreate((const Vec3f*)&obj->anim.localPosX, (const Vec3f*)pos, lbl_803DC3A0,
                                            lbl_803DC3A4, lbl_803DC3A8, (u8)lbl_803DC3AC, 0);
@@ -108,8 +108,8 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
         *light = modelLightStruct_createPointLight(obj, 0x80, 0x80, 0xff, 0);
         if (*light != 0)
         {
-            modelLightStruct_setPosition(*light, lbl_803E6C38, intensity * lbl_803E6C40, lbl_803E6C38);
-            modelLightStruct_setDistanceAttenuation(*light, intensity, lbl_803E6C44 + intensity);
+            modelLightStruct_setPosition(*light, 0.0f, intensity / 4.0f, 0.0f);
+            modelLightStruct_setDistanceAttenuation(*light, intensity, 50.0f + intensity);
         }
     }
     return 1;
@@ -137,7 +137,7 @@ int Obj_PredictInterceptPoint(GameObject* obj, f32 dt, const Vec3f* targetPos, V
     }
     PSVECScale((const Vec*)vel, (Vec*)vel, oneOverTimeDelta);
     pos[0] = (obj)->anim.localPosX;
-    pos[1] = lbl_803E6C58 + (obj)->anim.localPosY;
+    pos[1] = 15.0f + (obj)->anim.localPosY;
     pos[2] = (obj)->anim.localPosZ;
     for (i = 0; i < 5; i++)
     {
@@ -151,6 +151,16 @@ int Obj_PredictInterceptPoint(GameObject* obj, f32 dt, const Vec3f* targetPos, V
     voxmaps_worldToGrid((void*)targetPos, (s16*)gridA);
     voxmaps_worldToGrid(pos, (s16*)gridB);
     return voxmaps_traceLine((VoxPos*)gridA, (VoxPos*)gridB, (VoxPos*)gridOut, NULL, 0) != 0;
+}
+
+static f32 Obj_RollFromTurnRate(f32 turn)
+{
+    return 0.05f * turn;
+}
+
+static f32 Obj_HeadingRadians(s16 heading)
+{
+    return 3.1415927f * (f32)(-heading) / 32768.0f;
 }
 
 int voxmaps_traceWorldLine(void* startPos, void* endPos)
@@ -195,7 +205,7 @@ void Obj_SpawnHitLightAndFade(GameObject* obj, const Vec3f* pos, f32 scale)
     s.vec[0] = pos->x + playerMapOffsetX;
     s.vec[1] = pos->y;
     s.vec[2] = pos->z + playerMapOffsetZ;
-    objLightFn_8009a1dc(obj, lbl_803E6C68, &s, 1, 0);
+    objLightFn_8009a1dc(obj, 0.014f, &s, 1, 0);
     Obj_SetModelColorFadeRecursive(obj, 0x5a, 0xc8, 0, 0, 1);
 }
 
@@ -208,12 +218,12 @@ void Obj_SteerVelocityTowardVector(GameObject* obj, Vec3f* currentVelocity, Vec3
     f32 cross[3];
     f32 mag1, mag2, t, ang;
     int gt;
-    f64 gtf;
+    f32 gtf;
 
     mag1 = PSVECMag((const Vec*)currentVelocity);
-    if (mag1 > lbl_803E6C38)
+    if (mag1 > 0.0f)
     {
-        f32 inv = lbl_803E6C6C / mag1;
+        f32 inv = 1.0f / mag1;
         n1[0] = currentVelocity->x * inv;
         n1[1] = currentVelocity->y * inv;
         n1[2] = currentVelocity->z * inv;
@@ -221,38 +231,39 @@ void Obj_SteerVelocityTowardVector(GameObject* obj, Vec3f* currentVelocity, Vec3
     }
     else
     {
-        n1[0] = lbl_803E6C38;
-        n1[1] = lbl_803E6C38;
-        n1[2] = lbl_803E6C38;
+        n1[0] = 0.0f;
+        n1[1] = 0.0f;
+        n1[2] = 0.0f;
     }
     mag2 = PSVECMag((const Vec*)desiredDirection);
-    if (mag2 > lbl_803E6C38)
+    if (mag2 > 0.0f)
     {
-        f32 inv = lbl_803E6C6C / mag2;
+        f32 inv = 1.0f / mag2;
         n2[0] = desiredDirection->x * inv;
         n2[1] = desiredDirection->y * inv;
         n2[2] = desiredDirection->z * inv;
     }
     else
     {
-        n2[0] = lbl_803E6C38;
-        n2[1] = lbl_803E6C38;
-        n2[2] = lbl_803E6C38;
+        n2[0] = 0.0f;
+        n2[1] = 0.0f;
+        n2[2] = 0.0f;
     }
     PSVECCrossProduct((const Vec*)n1, (const Vec*)n2, (Vec*)cross);
-    if (PSVECMag((const Vec*)cross) > lbl_803E6C38)
+    if (PSVECMag((const Vec*)cross) > 0.0f)
     {
         ang = acosf_fast(PSVECDotProduct((const Vec*)n1, (const Vec*)n2));
         gt = (ang > maxTurnAngle);
-        gtf = __fabs((f32)gt);
-        if (gtf != lbl_803E6C38)
+        gtf = __fabsf((f32)gt);
+        if (gtf)
         {
             PSMTXRotAxisRad((MtxP)mtx, (const Vec*)cross,
-                            maxTurnAngle * (ang > lbl_803E6C38 ? lbl_803E6C6C : lbl_803E6C70));
+                            maxTurnAngle * (ang > 0.0f ? 1.0f : -1.0f));
             PSMTXMultVecSR((MtxP)mtx, (const Vec*)n1, (Vec*)n2);
         }
     }
-    t = mag2 * lbl_803E6C74;
+    t = mag2;
+    t *= 0.075f;
     if (t > mag1 + maxSpeedDelta)
         t = mag1 + maxSpeedDelta;
     else if (t < mag1 - maxSpeedDelta)
@@ -289,7 +300,7 @@ int Obj_UpdateRomCurveFollowVelocityIndexed(GameObject* obj, RomCurveWalker* rou
                 result = *(s8*)((int)route->node9C + 0x18);
             *pickIdx = 0;
         }
-        speed = lbl_803E6C78 * advanceStep;
+        speed = 2.0f * advanceStep;
     }
     delta[0] = route->posX - obj->anim.localPosX;
     delta[1] = route->posY - obj->anim.localPosY;
@@ -301,14 +312,14 @@ int Obj_UpdateRomCurveFollowVelocityIndexed(GameObject* obj, RomCurveWalker* rou
         delta[0] = obj->anim.localPosX - route->posX;
         delta[2] = obj->anim.localPosZ - route->posZ;
         raw = (s16)getAngle(delta[0], delta[2]);
-        ang = gBarrelGenPi * (f32)(-raw) / gBarrelGenAngleHalfRange;
+        ang = Obj_HeadingRadians(raw);
         state->velZ = speed * -mathSinf(ang);
         state->velX = speed * -mathCosf(ang);
     }
     else
     {
         Obj_SteerVelocityTowardVector(obj, (Vec3f*)&obj->anim.velocityX, (Vec3f*)delta, speed,
-                                      speed / lbl_803E6C7C, lbl_803E6C80);
+                                      speed / 30.0f, 0.3f);
     }
     return result;
 }
@@ -337,7 +348,7 @@ int Obj_UpdateRomCurveFollowVelocity(GameObject* obj, RomCurveWalker* route, f32
             else
                 result = *(s8*)((int)route->node9C + 0x18);
         }
-        speed = lbl_803E6C78 * advanceStep;
+        speed = 2.0f * advanceStep;
     }
     delta[0] = route->posX - obj->anim.localPosX;
     delta[1] = route->posY - obj->anim.localPosY;
@@ -349,14 +360,14 @@ int Obj_UpdateRomCurveFollowVelocity(GameObject* obj, RomCurveWalker* route, f32
         delta[0] = obj->anim.localPosX - route->posX;
         delta[2] = obj->anim.localPosZ - route->posZ;
         raw = (s16)getAngle(delta[0], delta[2]);
-        ang = gBarrelGenPi * (f32)(-raw) / gBarrelGenAngleHalfRange;
+        ang = Obj_HeadingRadians(raw);
         state->velZ = speed * -mathSinf(ang);
         state->velX = speed * -mathCosf(ang);
     }
     else
     {
         Obj_SteerVelocityTowardVector(obj, (Vec3f*)&obj->anim.velocityX, (Vec3f*)delta, speed,
-                                      speed / lbl_803E6C7C, lbl_803E6C80);
+                                      speed / 30.0f, 0.3f);
     }
     return result;
 }
@@ -372,30 +383,30 @@ void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, 
     int rotZ;
 
     rate = timeDelta / (f32)(u32)(u16)turnFrames;
-    if (rate > lbl_803E6C6C)
+    if (rate > 1.0f)
     {
-        rate = lbl_803E6C6C;
+        rate = 1.0f;
     }
 
     delta = (f32)(int)((u16)getAngle(-velocity->x, -velocity->z) - (u16)anim->rotX);
-    if (delta > gBarrelGenAngleHalfRange)
+    if (delta > 32768.0f)
     {
-        delta = gBarrelGenAngleWrapNeg + delta;
+        delta = -65535.0f + delta;
     }
-    if (delta < gBarrelGenAngleWrapThreshold)
+    if (delta < -32768.0f)
     {
-        delta = gBarrelGenAngleWrapPos + delta;
+        delta = 65535.0f + delta;
     }
     delta *= rate;
-    clamped = (delta < gBarrelGenTurnRateClampMin)
-                  ? gBarrelGenTurnRateClampMin
-                  : ((delta > gBarrelGenTurnRateClampMax) ? gBarrelGenTurnRateClampMax : delta);
+    clamped = (delta < -512.0f)
+                  ? -512.0f
+                  : ((delta > 512.0f) ? 512.0f : delta);
     anim->rotX += (int)clamped;
 
-    if (rollFactor != lbl_803E6C38)
+    if (rollFactor)
     {
-        anim->rotZ = (s16)(lbl_803E6C98 * (f32)anim->rotZ);
-        anim->rotZ = (s16)(oneOverTimeDelta * (lbl_803E6C5C * (clamped * rollFactor)) + (f32)anim->rotZ);
+        anim->rotZ = (s16)(0.9f * (f32)anim->rotZ);
+        anim->rotZ = (s16)(oneOverTimeDelta * Obj_RollFromTurnRate(clamped * rollFactor) + (f32)anim->rotZ);
         rotZ = anim->rotZ;
         if (rotZ < -0x2000)
         {
@@ -408,7 +419,7 @@ void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, 
         anim->rotZ = rotZ;
     }
 
-    if (lbl_803E6C38 != pitchFactor)
+    if (0.0f != pitchFactor)
     {
         {
             f32 xx = velocity->x * velocity->x;
@@ -416,13 +427,13 @@ void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, 
             dist = sqrtf(xx + zz);
         }
         delta = (f32)(int)((u16)getAngle(velocity->y * pitchFactor, dist) - (u16)anim->rotY);
-        if (delta > gBarrelGenAngleHalfRange)
+        if (delta > 32768.0f)
         {
-            delta = gBarrelGenAngleWrapNeg + delta;
+            delta = -65535.0f + delta;
         }
-        if (delta < gBarrelGenAngleWrapThreshold)
+        if (delta < -32768.0f)
         {
-            delta = gBarrelGenAngleWrapPos + delta;
+            delta = 65535.0f + delta;
         }
         anim->rotY += (int)(delta * rate);
     }

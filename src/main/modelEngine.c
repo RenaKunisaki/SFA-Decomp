@@ -209,6 +209,8 @@
 #include "dlls/objects/412.h"
 #include "dlls/objects/413.h"
 #include "dlls/objects/414.h"
+#include "dlls/objects/415_NW_treebrid.h"
+#include "dlls/objects/416_NW_geyser.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -337,7 +339,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
     gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
+extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNW_animiceObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -360,8 +362,7 @@ extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gStaffObjDescriptor,
     gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
-extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
-    gTrickyCurveObjDescriptor;
+extern ResourceDescriptor gTitleScreenObjDescriptor, gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
     gVFP_Block1ObjDescriptor;
 extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescriptor, gVFP_LevelControlObjDescriptor,
@@ -1462,8 +1463,8 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll412ObjDescriptor,
     (ResourceDescriptor*)&gDll413ObjDescriptor,
     (ResourceDescriptor*)&gDll414ObjDescriptor,
-    &gTreeBirdObjDescriptor,
-    &gNW_geyserObjDescriptor,
+    (ResourceDescriptor*)&gNWTreeBridgeObjDescriptor,
+    (ResourceDescriptor*)&gNWGeyserObjDescriptor,
     &gNW_mammothObjDescriptor,
     &gNW_trickyObjDescriptor,
     &gNW_animiceObjDescriptor,

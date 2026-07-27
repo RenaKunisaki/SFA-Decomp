@@ -23,12 +23,12 @@ typedef struct MagicGemPlacement {
     u8 pad18[2];       /* 0x18 */
     u8 unk1A;          /* 0x1A */
     u8 pad1B;          /* 0x1B */
-    s16 unk1C;         /* 0x1C */
+    s16 hideGameBit;   /* 0x1C bit set on collect so the gem stays gone */
     u8 pad1E[6];       /* 0x1E */
-    s16 unk24;         /* 0x24 */
+    s16 visibilityGameBit; /* 0x24 gem is active only while this bit is set */
     u8 bankIndex;      /* 0x26 */
     u8 pad27[5];       /* 0x27 */
-    s16 unk2C;         /* 0x2C */
+    s16 counterGameBit; /* 0x2C bit incremented on collect (>0 = active) */
     s16 spawnMode;     /* 0x2E */
 } MagicGemPlacement;
 
@@ -71,12 +71,12 @@ STATIC_ASSERT(offsetof(MagicGemPlacement, base) == 0x0);
 STATIC_ASSERT(offsetof(MagicGemPlacement, pad18) == 0x18);
 STATIC_ASSERT(offsetof(MagicGemPlacement, unk1A) == 0x1A);
 STATIC_ASSERT(offsetof(MagicGemPlacement, pad1B) == 0x1B);
-STATIC_ASSERT(offsetof(MagicGemPlacement, unk1C) == 0x1C);
+STATIC_ASSERT(offsetof(MagicGemPlacement, hideGameBit) == 0x1C);
 STATIC_ASSERT(offsetof(MagicGemPlacement, pad1E) == 0x1E);
-STATIC_ASSERT(offsetof(MagicGemPlacement, unk24) == 0x24);
+STATIC_ASSERT(offsetof(MagicGemPlacement, visibilityGameBit) == 0x24);
 STATIC_ASSERT(offsetof(MagicGemPlacement, bankIndex) == 0x26);
 STATIC_ASSERT(offsetof(MagicGemPlacement, pad27) == 0x27);
-STATIC_ASSERT(offsetof(MagicGemPlacement, unk2C) == 0x2C);
+STATIC_ASSERT(offsetof(MagicGemPlacement, counterGameBit) == 0x2C);
 STATIC_ASSERT(offsetof(MagicGemPlacement, spawnMode) == 0x2E);
 STATIC_ASSERT(sizeof(MagicGemPlacement) == MAGICGEM_PLACEMENT_SIZE);
 

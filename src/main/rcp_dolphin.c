@@ -69,7 +69,6 @@ typedef struct F32Pair
 } F32Pair;
 extern u8 gRcpWarpDistortListBuilt;
 extern u32 gRcpWarpDistortListSize;
-extern const f32 lbl_803DEB64;
 typedef struct RcpDistortSlot
 {
     u8* texture;   // 0x00
@@ -94,8 +93,8 @@ extern RcpDistortSlot gRcpDistortSlots[6];
 extern u8 gRcpDistortSlotIndex;
 extern void* gRcpDistortTexture;
 extern u8 gRcpDistortGroup;
-extern f32 gRcpScreenWidth;
-extern f32 gRcpScreenHeight;
+static const f32 gRcpScreenWidth = 640.0f;
+static const f32 gRcpScreenHeight = 480.0f;
 void* textureLoadAsset(int asset);
 void* textureAlloc(u16 w, u16 h, int fmt, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT, u8 minFilter, u8 magFilter);
 static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** lights);
@@ -125,6 +124,10 @@ void textureFn_800524ec(GXColor* param);
 void Rcp_ApplyTextureStageCounts(void);
 void Rcp_ResetTextureStageState(void);
 int Rcp_SetupDistortionLights(int model, f32* params);
+static const f32 gRcpDistortScaleA[1] = {2.146452f};
+static const f32 gRcpDistortPowExp[1] = {2.520326f};
+static const f32 gRcpDistortColorScale[1] = {255.0f};
+
 void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*32, 0.0f) */
 {
     f32 x0;
@@ -138,6 +141,7 @@ void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*
     f32 bulge;
     f32 col0;
     f32 col1;
+    f32 meshZ;
     u32 i;
     u32 j;
 
@@ -150,6 +154,7 @@ void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*
         span = 15.0f;
         half = 1.0f;
         step = 2.0f;
+        meshZ = -2.0f;
         for (; i < 0x10; i++)
         {
             GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT4, 0x22);
@@ -173,7 +178,7 @@ void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*
                 }
                 *(volatile f32*)0xCC008000 = x0;
                 *(volatile f32*)0xCC008000 = y;
-                *(volatile f32*)0xCC008000 = lbl_803DEB64;
+                *(volatile f32*)0xCC008000 = meshZ;
                 *(volatile f32*)0xCC008000 = x0;
                 *(volatile f32*)0xCC008000 = y;
                 *(volatile f32*)0xCC008000 = bulge;
@@ -188,7 +193,7 @@ void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*
                 }
                 *(volatile f32*)0xCC008000 = x1;
                 *(volatile f32*)0xCC008000 = y;
-                *(volatile f32*)0xCC008000 = lbl_803DEB64;
+                *(volatile f32*)0xCC008000 = meshZ;
                 *(volatile f32*)0xCC008000 = x1;
                 *(volatile f32*)0xCC008000 = y;
                 *(volatile f32*)0xCC008000 = bulge;
@@ -427,9 +432,6 @@ void shaderInit(u8* def, ModelRenderOpTextureRefs* textures, GameObject* obj, in
     textures->texture1 = slot->texture;
 }
 
-extern f32 gRcpDistortScaleA;
-extern f32 gRcpDistortPowExp;
-
 typedef struct RcpDistortConfig
 {
     f32 radius;
@@ -459,15 +461,15 @@ void Rcp_InitDistortionEffects(void)
     gRcpDistortSlotIndex = i = 0;
     cfg = &gRcpDistortConfigs[0].radius;
     slots = gRcpDistortSlots;
-    radiusScale = gRcpDistortScaleA;
-    strengthScale = 255.0f;
+    radiusScale = gRcpDistortScaleA[0];
+    strengthScale = gRcpDistortColorScale[0];
     do
     {
         strength = cfg[i * 2 + 1];
         (slot = &slots[gRcpDistortSlotIndex])->colR = 0xff;
         slot->colG = 0xff;
         slot->colB = 0xff;
-        falloff = radiusScale / powfCoreHighPrecision(cfg[i * 2], gRcpDistortPowExp);
+        falloff = radiusScale / powfCoreHighPrecision(cfg[i * 2], gRcpDistortPowExp[0]);
         slot = &slots[gRcpDistortSlotIndex];
         pairIdx = i & 1;
         slot->params[pairIdx] = falloff;
@@ -488,7 +490,7 @@ void Rcp_InitDistortionEffects(void)
 RcpDistortConfig gRcpDistortConfigs[6] ALIGN_DECL(8) = {
     {0.5f, 1.0f}, {0.5f, 0.5f}, {0.4f, 1.0f}, {0.3f, 0.8f}, {0.2f, 1.0f}, {0.4f, 0.5f},
 };
-u8 gRcpWarpDistortDisplayList[0x6640];
 RcpDistortSlot gRcpDistortSlots[6];
+u8 gRcpWarpDistortDisplayList[0x6640];
 
 
