@@ -207,11 +207,8 @@ STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
 extern int lbl_803DD03C;
 extern int lbl_803968C0[];
-extern f32 lbl_803DEE98;
-extern f32 lbl_803DEE9C;
 extern u8 gSaveCardRetry;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
-void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
@@ -227,28 +224,6 @@ void timeFn_8006f400(f32 step);
 void drawFn_8006f500(void);
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
-
-/* 4x4 identity fill. */
-void mtx44Identity(f32* mat)
-{
-    int i = 0, j;
-    f32 zero, one;
-    one = lbl_803DEE98;
-    zero = lbl_803DEE9C;
-    for (; i < 4; i++)
-    {
-        for (j = 0; j < 4; j++)
-        {
-            if (i == j)
-                mat[j] = one;
-            else
-                mat[j] = zero;
-        }
-        mat += 4;
-    }
-}
-
-
 
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc)
 {
