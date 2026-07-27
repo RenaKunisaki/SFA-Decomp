@@ -47,23 +47,21 @@ typedef struct DFSHLaserBeamRuntime
     f32 swayVelocity;
     f32 swayAccel;
     f32 swayTarget;
-    u8 pad14[0x18 - 0x14];
-    s32 flags;
+    f32 rangeBase;
+    f32 rangeValue;
     f32 beamVolumeScale;
-    s16 orbitAngleA;
-    s16 orbitAngleB;
-    s16 orbitAngleC;
+    u8 pad20[0x24 - 0x20];
     u8 beamActive;
-    u8 beamLocked;
-    s8 proximityHalfWidth;
-    s8 hitCooldown;
+    u8 beamBlocked;
+    s8 heightWindow;
+    s8 damageCooldown;
     s16 hitStrength;
-    s16 lockTimer;
+    s16 blockTimer;
     s16 cycleTimer;
     s16 warmupThreshold;
     f32 hitPos[3];
     f32 hitX;
-    u8 pad40[0x44 - 0x40];
+    f32 hitY;
     f32 hitZ;
     u8 modgfxAttached;
     u8 blastPhase;
@@ -96,26 +94,7 @@ typedef struct DFSHLaserBeamObject
 #define DFSHLASERBEAM_TEXTURE_ID         0x2E
 #define DFSHLASERBEAM_EFFECT_RESOURCE_ID 0x81
 
-#define DFSH_LASER_ORBIT_A(runtime)          (*(s16*)((u8*)(runtime) + 0x1E))
-#define DFSH_LASER_ORBIT_B(runtime)          (*(s16*)((u8*)(runtime) + 0x20))
-#define DFSH_LASER_ORBIT_C(runtime)          (*(s16*)((u8*)(runtime) + 0x22))
-#define DFSH_LASER_ACTIVE(runtime)           (*(u8*)((u8*)(runtime) + 0x24))
-#define DFSH_LASER_BLOCKED(runtime)          (*(u8*)((u8*)(runtime) + 0x25))
-#define DFSH_LASER_HEIGHT_WINDOW(runtime)    (*(s8*)((u8*)(runtime) + 0x26))
-#define DFSH_LASER_DAMAGE_COOLDOWN(runtime)  (*(s8*)((u8*)(runtime) + 0x27))
-#define DFSH_LASER_HIT_STRENGTH(runtime)     (*(s16*)((u8*)(runtime) + 0x28))
-#define DFSH_LASER_BLOCK_TIMER(runtime)      (*(s16*)((u8*)(runtime) + 0x2A))
-#define DFSH_LASER_CYCLE_TIMER(runtime)      (*(s16*)((u8*)(runtime) + 0x2C))
-#define DFSH_LASER_WARMUP_THRESHOLD(runtime) (*(s16*)((u8*)(runtime) + 0x2E))
-#define DFSH_LASER_HIT_POS(runtime)          ((f32*)((u8*)(runtime) + 0x30))
-#define DFSH_LASER_HIT_X(runtime)            (*(f32*)((u8*)(runtime) + 0x3C))
-#define DFSH_LASER_HIT_Z(runtime)            (*(f32*)((u8*)(runtime) + 0x44))
-#define DFSH_LASER_MODGFX_ATTACHED(runtime)  (*(u8*)((u8*)(runtime) + 0x48))
-#define DFSH_LASER_BLAST_PHASE(runtime)      (*(u8*)((u8*)(runtime) + 0x49))
-#define DFSH_LASER_PROXIMITY_MODE(runtime)   (*(u8*)((u8*)(runtime) + 0x4A))
-#define DFSH_LASER_RANGE_VALUE(runtime)      (*(f32*)((u8*)(runtime) + 0x18))
-#define DFSH_LASER_FLAGS(runtime)            (*(s32*)((u8*)(runtime) + 0x18))
-#define DFSH_MSG_PLAYER_HIT                  0x60003 /* message the player on a laser hit */
+#define DFSH_MSG_PLAYER_HIT 0x60003 /* message the player on a laser hit */
 
 Dll81Interface** gLaserBeamEffectResource;
 
@@ -173,51 +152,51 @@ void DFSH_LaserBeam_update(u32 objAddr)
     config = obj->config;
     runtime = obj->runtime;
 
-    DFSH_LASER_CYCLE_TIMER(runtime) -= framesThisStep;
+    runtime->cycleTimer -= framesThisStep;
     if (mainGetBit(config->disableGameBit) == 0)
     {
-        if (DFSH_LASER_CYCLE_TIMER(runtime) < 0)
+        if (runtime->cycleTimer < 0)
         {
-            if (DFSH_LASER_BLOCKED(runtime) == 0)
+            if (runtime->beamBlocked == 0)
             {
-                DFSH_LASER_CYCLE_TIMER(runtime) = 0x190;
+                runtime->cycleTimer = 0x190;
             Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_78);
                 runtime->beamVolumeScale = (0.0f);
             }
             else
             {
-                DFSH_LASER_CYCLE_TIMER(runtime) = 0x113;
+                runtime->cycleTimer = 0x113;
             }
-            DFSH_LASER_BLAST_PHASE(runtime) = 0;
+            runtime->blastPhase = 0;
         }
-        else if (DFSH_LASER_CYCLE_TIMER(runtime) < DFSH_LASER_WARMUP_THRESHOLD(runtime))
+        else if (runtime->cycleTimer < runtime->warmupThreshold)
         {
-            if (DFSH_LASER_BLAST_PHASE(runtime) == 0)
+            if (runtime->blastPhase == 0)
             {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_79);
-                if (DFSH_LASER_BLOCKED(runtime) == 0)
+                if (runtime->beamBlocked == 0)
                 {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_77);
                 }
-                DFSH_LASER_BLAST_PHASE(runtime) = 1;
+                runtime->blastPhase = 1;
                 if (gLaserBeamEffectResource != NULL)
                 {
                     (*gLaserBeamEffectResource)->spawn((int)obj, 10, NULL, 0x10004, -1, 0);
                 }
             }
-            if (DFSH_LASER_CYCLE_TIMER(runtime) < 0x28)
+            if (runtime->cycleTimer < 0x28)
             {
                 Sfx_StopObjectChannel((int)obj, 0x40);
-                if ((runtime->beamVolumeScale >= (0.0f)) && (DFSH_LASER_BLOCKED(runtime) == 0))
+                if ((runtime->beamVolumeScale >= (0.0f)) && (runtime->beamBlocked == 0))
                 {
                     runtime->beamVolumeScale -= (0.0026000000070780516f) * timeDelta;
                 }
             }
-            else if (DFSH_LASER_CYCLE_TIMER(runtime) < 0x8C)
+            else if (runtime->cycleTimer < 0x8C)
             {
-                if (DFSH_LASER_BLAST_PHASE(runtime) == 1)
+                if (runtime->blastPhase == 1)
                 {
-                    DFSH_LASER_BLAST_PHASE(runtime) = 2;
+                    runtime->blastPhase = 2;
                     if (gLaserBeamEffectResource != NULL)
                     {
                         (*gLaserBeamEffectResource)->spawn((int)obj, 0xB, NULL, 0x10004, -1, 0);
@@ -231,7 +210,7 @@ void DFSH_LaserBeam_update(u32 objAddr)
         }
     }
 
-    if (DFSH_LASER_ACTIVE(runtime) != 0)
+    if (runtime->beamActive != 0)
     {
         Sfx_SetObjectChannelVolume((u32)obj, 0x40, 127.0f * runtime->beamVolumeScale, 0.5f);
     }
@@ -243,54 +222,54 @@ void DFSH_LaserBeam_update(u32 objAddr)
     beamPlane = -(obj->localPosX * yawSin + obj->localPosZ * yawCos);
     playerObj = Obj_GetPlayerObject();
 
-    DFSH_LASER_DAMAGE_COOLDOWN(runtime) = (s8)(DFSH_LASER_DAMAGE_COOLDOWN(runtime) - framesThisStep);
-    if (DFSH_LASER_DAMAGE_COOLDOWN(runtime) < 0)
+    runtime->damageCooldown = (s8)(runtime->damageCooldown - framesThisStep);
+    if (runtime->damageCooldown < 0)
     {
-        DFSH_LASER_DAMAGE_COOLDOWN(runtime) = 0;
+        runtime->damageCooldown = 0;
     }
 
     damageDistance = beamPlane + (yawSin * playerObj->anim.localPosX +
                                   yawCos * playerObj->anim.localPosZ);
-    if ((DFSH_LASER_PROXIMITY_MODE(runtime) == 1) ||
-        ((damageDistance > (0.0f)) && (DFSH_LASER_PROXIMITY_MODE(runtime) != 0)))
+    if ((runtime->proximityMode == 1) ||
+        ((damageDistance > (0.0f)) && (runtime->proximityMode != 0)))
     {
-        DFSH_LASER_BLOCK_TIMER(runtime) -= framesThisStep;
-        if (DFSH_LASER_BLOCK_TIMER(runtime) < 0)
+        runtime->blockTimer -= framesThisStep;
+        if (runtime->blockTimer < 0)
         {
-            DFSH_LASER_BLOCK_TIMER(runtime) = 0;
-            DFSH_LASER_BLOCKED(runtime) = 0;
+            runtime->blockTimer = 0;
+            runtime->beamBlocked = 0;
         }
     }
     else
     {
-        DFSH_LASER_BLOCK_TIMER(runtime) += framesThisStep;
-        if (DFSH_LASER_BLOCK_TIMER(runtime) > 0x3C)
+        runtime->blockTimer += framesThisStep;
+        if (runtime->blockTimer > 0x3C)
         {
-            DFSH_LASER_BLOCK_TIMER(runtime) = 0x3C;
-            DFSH_LASER_BLOCKED(runtime) = 1;
+            runtime->blockTimer = 0x3C;
+            runtime->beamBlocked = 1;
         }
     }
 
-    if (DFSH_LASER_BLOCKED(runtime) == 0)
+    if (runtime->beamBlocked == 0)
     {
-        DFSH_LASER_ACTIVE(runtime) = DFSH_LASER_BLAST_PHASE(runtime) & 3;
+        runtime->beamActive = runtime->blastPhase & 3;
     }
     else
     {
-        DFSH_LASER_ACTIVE(runtime) = 1;
+        runtime->beamActive = 1;
     }
     if (mainGetBit(config->disableGameBit) != 0)
     {
-        DFSH_LASER_ACTIVE(runtime) = 0;
+        runtime->beamActive = 0;
     }
 
-    if (DFSH_LASER_DAMAGE_COOLDOWN(runtime) == 0)
+    if (runtime->damageCooldown == 0)
     {
-        DFSH_LASER_HIT_STRENGTH(runtime) = 0;
+        runtime->hitStrength = 0;
     }
-    if (((playerObj != NULL) && (DFSH_LASER_DAMAGE_COOLDOWN(runtime) == 0)) && (DFSH_LASER_ACTIVE(runtime) != 0))
+    if (((playerObj != NULL) && (runtime->damageCooldown == 0)) && (runtime->beamActive != 0))
     {
-        heightThreshold = (5.0f) + (f32)(int)DFSH_LASER_HEIGHT_WINDOW(runtime);
+        heightThreshold = (5.0f) + (f32)(int)runtime->heightWindow;
         heightDelta = playerObj->anim.localPosY - obj->localPosY;
         if ((heightDelta < heightThreshold) && (heightDelta > -((25.0f) + heightThreshold)))
         {
@@ -310,11 +289,11 @@ void DFSH_LaserBeam_update(u32 objAddr)
                     lateralAbs = (63.0f);
                 }
                 lateralAbs = (63.0f) - lateralAbs;
-                DFSH_LASER_HIT_STRENGTH(runtime) = (s16)(int)((2.0f) * lateralAbs);
-                if (DFSH_LASER_MODGFX_ATTACHED(runtime) == 1)
+                runtime->hitStrength = (s16)(int)((2.0f) * lateralAbs);
+                if (runtime->modgfxAttached == 1)
                 {
                     (*gModgfxInterface)->detachSource(obj);
-                    DFSH_LASER_MODGFX_ATTACHED(runtime) = 0;
+                    runtime->modgfxAttached = 0;
                 }
                 if ((damageDistance < heightThreshold) && (damageDistance > -heightThreshold))
                 {
@@ -332,13 +311,13 @@ void DFSH_LaserBeam_update(u32 objAddr)
                             (*gPartfxInterface)->spawnObject(Obj_GetPlayerObject(), 0x28B, (void*)0, 4, -1,
                                                              (void*)0);
                         }
-                        DFSH_LASER_HIT_X(runtime) = yawSin * pushDistance + playerObj->anim.localPosX;
-                        DFSH_LASER_HIT_Z(runtime) = yawCos * pushDistance + playerObj->anim.localPosZ;
-                        if ((DFSH_LASER_PROXIMITY_MODE(runtime) == 0) || (DFSH_LASER_PROXIMITY_MODE(runtime) == 1))
+                        runtime->hitX = yawSin * pushDistance + playerObj->anim.localPosX;
+                        runtime->hitZ = yawCos * pushDistance + playerObj->anim.localPosZ;
+                        if ((runtime->proximityMode == 0) || (runtime->proximityMode == 1))
                         {
-                            ObjMsg_SendToObject(playerObj, DFSH_MSG_PLAYER_HIT, DFSH_LASER_HIT_POS(runtime), 0);
+                            ObjMsg_SendToObject(playerObj, DFSH_MSG_PLAYER_HIT, runtime->hitPos, 0);
                         }
-                        DFSH_LASER_DAMAGE_COOLDOWN(runtime) = 0x14;
+                        runtime->damageCooldown = 0x14;
                     }
                     else
                     {
@@ -349,17 +328,17 @@ void DFSH_LaserBeam_update(u32 objAddr)
         }
     }
 
-    if ((DFSH_LASER_ACTIVE(runtime) == 0) && (DFSH_LASER_MODGFX_ATTACHED(runtime) == 1))
+    if ((runtime->beamActive == 0) && (runtime->modgfxAttached == 1))
     {
         (*gModgfxInterface)->detachSource(obj);
-        DFSH_LASER_MODGFX_ATTACHED(runtime) = 0;
+        runtime->modgfxAttached = 0;
     }
 
-    *(f32*)((u8*)runtime + 0x14) = runtime->swayAccel = runtime->swayPhase = (0.0f);
+    runtime->rangeBase = runtime->swayAccel = runtime->swayPhase = (0.0f);
     runtime->swayVelocity = runtime->swayPhase;
     runtime->swayTarget = runtime->swayAccel;
-    DFSH_LASER_RANGE_VALUE(runtime) = *(f32*)((u8*)runtime + 0x14) + range;
-    DFSH_LASER_HEIGHT_WINDOW(runtime) = 8;
+    runtime->rangeValue = runtime->rangeBase + range;
+    runtime->heightWindow = 8;
     ((GameObject*)obj)->anim.currentMoveProgress += (0.04f) * timeDelta;
     if (((GameObject*)obj)->anim.currentMoveProgress > (1.0f))
     {
@@ -383,12 +362,12 @@ void DFSH_LaserBeam_init(void* objArg, void* configArg)
     ObjMsg_AllocQueue(obj, 2);
     obj->yaw = (s16)((s32)config->yawByte << 8);
     timer = randomGetRange(-0x50, 0x50);
-    runtime->lockTimer = (s16)(timer + 0x190);
-    DFSH_LASER_BLAST_PHASE(runtime) = 0;
+    runtime->cycleTimer = (s16)(timer + 0x190);
+    runtime->blastPhase = 0;
     gLaserBeamEffectResource = Resource_Acquire(DFSHLASERBEAM_EFFECT_RESOURCE_ID, 1);
     runtime->beamVolumeScale = (0.0f);
-    DFSH_LASER_PROXIMITY_MODE(runtime) = config->proximityMode;
-    runtime->cycleTimer = 0x118;
+    runtime->proximityMode = config->proximityMode;
+    runtime->warmupThreshold = 0x118;
     if (runtime->beamTexture == NULL)
     {
         runtime->beamTexture = textureLoadAsset(DFSHLASERBEAM_TEXTURE_ID);
