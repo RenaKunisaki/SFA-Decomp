@@ -400,9 +400,11 @@ main/dll/dll_000D_playershadow.c:
 	.sbss       start:0x803DD298 end:0x803DD2A0
 	.sdata2     start:0x803DF468 end:0x803DF4A8
 
-main/dll/dll_0018_boneparticleeffect.c:
+dlls/engine/24/24.c:
 	.text       start:0x800A4338 end:0x800A4DF4
 	.data       start:0x8030FE38 end:0x80310560
+	.bss        start:0x8039C2C0 end:0x8039C2E0
+	.sdata      start:0x803DB798 end:0x803DB7A0
 	.sbss       start:0x803DD2A0 end:0x803DD2C0
 	.sdata2     start:0x803DF4A8 end:0x803DF4C8
 

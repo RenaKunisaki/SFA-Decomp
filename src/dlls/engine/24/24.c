@@ -39,14 +39,14 @@ s32 gBoneParticleBufferFlip;
 #define BONE_PARTICLE_EFFECT_BUFFER_BYTES 0x140
 #define BONE_PARTICLE_EFFECT_SLOT_COUNT   20
 
+void* gBoneParticleEffectBuffers[8];
+f32 gBoneParticleDriftVelocity[2] = {10.0f, 0.0f};
+
 /* the two bone-particle texture assets loaded at init (gBoneParticleTextureA/B) */
 #define BONE_PARTICLE_TEXTURE_A_ID 0x16b
 #define BONE_PARTICLE_TEXTURE_B_ID 0x201
 
 #define GX_CULL_NONE 0
-
-extern void* gBoneParticleEffectBuffers[];
-extern f32 gBoneParticleDriftVelocity;
 
 #define BONE_PARTICLE_DRIFT_MAX    500.0f
 #define BONE_PARTICLE_DRIFT_MIN      -500.0f
@@ -62,8 +62,6 @@ static inline int* Modgfx_GetActiveModel(void* obj)
 void boneParticleEffect_func08_nop(void)
 {
 }
-
-/* scheduling-off intentionally stays in effect through end-of-file. Do not close. */
 
 f32 gBoneParticleConfigTable[108] = {
     -1500.0f, 0.0f,     -1500.0f, -1500.0f, 0.0f,     1500.0f, 1500.0f, 0.0f,    1500.0f, 1500.0f,  0.0f,    -1500.0f,
@@ -127,16 +125,16 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     {
         gBoneParticleScrollOffset = gBoneParticleScrollOffset - 0x1f;
     }
-    gBoneParticleDrift = gBoneParticleDriftVelocity * timeDelta + gBoneParticleDrift;
+    gBoneParticleDrift = gBoneParticleDriftVelocity[0] * timeDelta + gBoneParticleDrift;
     if (gBoneParticleDrift > BONE_PARTICLE_DRIFT_MAX)
     {
-        gBoneParticleDriftVelocity *= BONE_PARTICLE_DRIFT_REBOUND;
+        gBoneParticleDriftVelocity[0] *= BONE_PARTICLE_DRIFT_REBOUND;
         gBoneParticleDrift = BONE_PARTICLE_DRIFT_MAX;
         Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_282);
     }
     else if (gBoneParticleDrift < BONE_PARTICLE_DRIFT_MIN)
     {
-        gBoneParticleDriftVelocity *= BONE_PARTICLE_DRIFT_REBOUND;
+        gBoneParticleDriftVelocity[0] *= BONE_PARTICLE_DRIFT_REBOUND;
         gBoneParticleDrift = BONE_PARTICLE_DRIFT_MIN;
         Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_282);
     }
@@ -480,7 +478,6 @@ void boneParticleEffect_initialise(void)
     }
 }
 
-/* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 void* boneParticleEffect_funcs[14] = {(void*)0x00000000,
                                       (void*)0x00000000,
                                       (void*)0x00000000,

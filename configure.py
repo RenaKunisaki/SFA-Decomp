@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/24/24.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/engine/25/25.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/26/26.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/27/27.c", cflags=cflags_dll_noopt),
@@ -1461,7 +1462,6 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_000B_dll0b.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_000C_projgfx.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_000D_playershadow.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0018_boneparticleeffect.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_000E_partfx.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_0003_checkpoint.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/dll_0016_screentransition.c", cflags=cflags_dll_noopt),
