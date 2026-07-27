@@ -210,6 +210,7 @@
 #include "dlls/objects/413.h"
 #include "dlls/objects/414.h"
 #include "dlls/objects/415_NW_treebrid.h"
+#include "dlls/objects/416_NW_geyser.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -338,7 +339,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
     gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
+extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNW_animiceObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1463,7 +1464,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll413ObjDescriptor,
     (ResourceDescriptor*)&gDll414ObjDescriptor,
     (ResourceDescriptor*)&gNWTreeBridgeObjDescriptor,
-    &gNW_geyserObjDescriptor,
+    (ResourceDescriptor*)&gNWGeyserObjDescriptor,
     &gNW_mammothObjDescriptor,
     &gNW_trickyObjDescriptor,
     &gNW_animiceObjDescriptor,
