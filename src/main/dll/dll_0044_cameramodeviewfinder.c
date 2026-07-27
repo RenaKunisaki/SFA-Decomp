@@ -44,6 +44,8 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_B8.h"
 #include "string.h"
+#include "main/dll/CAM/cutCam.h"
+#include "main/dll/player_api.h"
 
 ViewfinderState* lbl_803DD548;
 

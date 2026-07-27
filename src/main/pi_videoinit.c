@@ -63,6 +63,9 @@
 #include "main/newshadows_texture_api.h"
 #include "main/rcp_dolphin_render_api.h"
 #include "dolphin/gx/GXBump.h"
+#include "dolphin/gx/GXFifo.h"
+#include "dolphin/os/OSThread.h"
+#include "dolphin/vi/vifuncs.h"
 
 extern u8 lbl_803DCD00;
 extern int lbl_803DCCFC;

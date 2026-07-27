@@ -64,6 +64,7 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_geom_api.h"
 #include "track/intersect_render_setup_api.h"
+#include "main/dll/DR/DRcradle.h"
 
 const u32 lbl_803E5AE0 = 0x05050505;
 const GXColor lbl_803E5AE4 = {0x20, 0x20, 0x20, 0x80};

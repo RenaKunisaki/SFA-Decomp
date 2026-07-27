@@ -48,6 +48,8 @@
 #include "string.h"
 #include "main/sky.h"
 #include "main/resource.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/critical_regions.gamecube.h"
+#include "sys/objects/lifecycle.h"
 
 CloudActionRuntime lbl_8039AB28;
 

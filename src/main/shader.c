@@ -56,6 +56,8 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/obj_list.h"
 #include "main/track_dolphin_api.h"
 #include "dolphin/os/OSCache.h"
+#include "dolphin/fake_tgmath.h"
+#include "dolphin/mtx/vec.h"
 extern char sShaderDebugStrings[];
 #define MAP_BLOCK_LAYER_COUNT 5
 #define FRUSTUM_PLANE_COUNT   5

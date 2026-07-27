@@ -13,6 +13,8 @@
 #include "main/audio/voice_alloc.h"
 #include "main/audio/voice_manage.h"
 #include "main/audio/voice_unregister.h"
+#include "main/audio/hw_break.h"
+#include "main/audio/hw_break.h"
 
 static McmdVidListNode vidListNodes[128];
 static u8 voiceMidiKeySlots[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];

@@ -47,6 +47,7 @@
 #include "main/textrender_api.h"
 #include "main/pause_menu_api.h"
 #include "main/dll/dll_003F_dll3f.h"
+#include "main/gametext_color_api.h"
 
 u8 gMinimapEnabled = 1;
 s8 gMinimapSavedViewMode = -1;

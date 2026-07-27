@@ -45,6 +45,15 @@
 #include "main/pad_api.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXLighting.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTev.h"
+#include "dolphin/gx/GXTransform.h"
+#include "dolphin/mtx/vec.h"
+#include "dolphin/os/OSCache.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "string.h"
 
 typedef union ExpgfxWGPipe
 {

@@ -1,5 +1,6 @@
 #include "dolphin/types.h"
 #include "main/atan2f.h"
+#include "dolphin/fake_tgmath.h"
 
 extern float lbl_803E79C8;
 extern float lbl_803E79E8;

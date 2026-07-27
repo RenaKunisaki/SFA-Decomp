@@ -31,6 +31,8 @@
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebit_ids.h"
+#include "main/objhits.h"
+#include "sys/objects/lifecycle.h"
 
 typedef struct LightfootState
 {

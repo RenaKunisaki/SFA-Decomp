@@ -43,6 +43,7 @@
 #include "main/sky.h"
 #include "dolphin/gx/GXLegacyDecls.h"
 #include "track/intersect_api.h"
+#include "string.h"
 
 ModgfxPendingSpawn* gModgfxPendingSpawnStartCursor;
 ModgfxPendingSpawn* gModgfxPendingSpawnWriteCursor;

@@ -45,6 +45,7 @@
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "string.h"
+#include "main/gametext_color_api.h"
 
 u16 gSaveSelectSlotTextIds[4] = {0x23, 0x24, 0x25, 0};
 u8 gSaveSelectInfoTextIds[3] = {0x21, 0x20, 0x1F};

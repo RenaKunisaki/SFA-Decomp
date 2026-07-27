@@ -22,6 +22,7 @@
 #include "main/shader_api.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
+#include "sys/objects.h"
 
 u16 lbl_803DBDF0[4] = {0x109, 0x7E, 0, 0};
 

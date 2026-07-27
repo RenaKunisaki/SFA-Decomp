@@ -26,6 +26,7 @@
 #include "main/dll/dll_0041_warpstoneui.h"
 #include "main/gameloop_api.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
+#include "string.h"
 
 int lbl_803DBBF8 = 0x140;
 int lbl_803DBBFC = 0x136;

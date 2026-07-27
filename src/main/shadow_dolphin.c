@@ -62,6 +62,8 @@
 #include "main/atan2f_api.h"
 #include "main/tex_dolphin.h"
 #include "string.h"
+#include "main/track_dolphin_sky_api.h"
+#include "main/track_dolphin_sky_api.h"
 
 int gShadowVolumeBuffer;
 void* lbl_803DCF24[2];
