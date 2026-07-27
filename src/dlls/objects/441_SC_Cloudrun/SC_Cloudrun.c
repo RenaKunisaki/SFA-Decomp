@@ -18,7 +18,7 @@ extern u8 lbl_803DB411;    /* trigger-interface update parameter */
 
 /* Child object spawned in sc_cloudrunnera_update case 0, cached in childObjs[0]
  * and attached via ObjLink_AttachChild. */
-#define SCCLOUDRUNNERA_CHILD_OBJ 0x6e8
+#define SCCLOUDRUNNERA_CHILD_OBJ CMBSRC_SEQ_DEFAULT
 
 typedef struct ScCloudrunneraPlacement
 {
@@ -32,27 +32,6 @@ typedef struct ScCloudrunneraPlacement
 
 /* Obj_AllocObjectSetup buffer filled in sc_cloudrunnera_update (case 0).
  * File-local layout recovered from constant-offset stores. */
-typedef struct ScCloudrunneraSetup
-{
-    u8 pad00[0x04];   /* 0x00 */
-    u8 unk04;         /* 0x04 */
-    u8 unk05;         /* 0x05 */
-    u8 unk06;         /* 0x06 */
-    u8 unk07;         /* 0x07 */
-    u8 pad08[0x1B - 0x08];
-    u8 unk1B;         /* 0x1B */
-    u8 unk1C;         /* 0x1C */
-    u8 unk1D;         /* 0x1D */
-    u8 pad1E[0x20 - 0x1E];
-    f32 unk20;        /* 0x20 */
-    s16 unk24;        /* 0x24 */
-    u8 unk26;         /* 0x26 */
-    u8 unk27;         /* 0x27 */
-    u8 unk28;         /* 0x28 */
-    u8 unk29;         /* 0x29 */
-    u8 unk2A;         /* 0x2A */
-} ScCloudrunneraSetup;
-
 int sc_cloudrunnera_getExtraSize(void) { return 0x140; }
 int sc_cloudrunnera_getObjectTypeId(void) { return 0xb; }
 
@@ -131,7 +110,7 @@ void sc_cloudrunnera_update(int obj)
         {
         case 0:
             {
-                ScCloudrunneraSetup* setup;
+                CmbSrcMapData* setup;
                 GameObject* newObj;
                 if (((GameObject*)obj)->childObjs[0] != NULL)
                 {
@@ -141,22 +120,22 @@ void sc_cloudrunnera_update(int obj)
                 {
                     break;
                 }
-                setup = (ScCloudrunneraSetup*)Obj_AllocObjectSetup(0x30, SCCLOUDRUNNERA_CHILD_OBJ);
-                setup->unk1B = 0x9;
-                setup->unk1C = 0;
-                setup->unk1D = 0;
-                setup->unk20 = 1.0f;
-                setup->unk26 = 0xff;
-                setup->unk27 = 0xff;
-                setup->unk28 = 0xff;
-                setup->unk24 = -1;
-                setup->unk04 = 2;
-                setup->unk05 = 1;
-                setup->unk06 = 0xff;
-                setup->unk07 = 0xff;
-                setup->unk29 = 1;
-                setup->unk2A = 0;
-                newObj = Obj_SetupObject((ObjPlacement*)setup, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
+                setup = (CmbSrcMapData*)Obj_AllocObjectSetup(CMBSRC_PLACEMENT_BYTES, SCCLOUDRUNNERA_CHILD_OBJ);
+                setup->colorIndex = 0x9;
+                setup->effectMode = 0;
+                setup->pulseSubMode = 0;
+                setup->radius = 1.0f;
+                setup->colorDistance = 0xff;
+                setup->effectDistance = 0xff;
+                setup->pulseDistance = 0xff;
+                setup->gameBit = -1;
+                setup->base.color[0] = 2;
+                setup->base.color[1] = 1;
+                setup->base.color[2] = 0xff;
+                setup->base.color[3] = 0xff;
+                setup->flags = 1;
+                setup->behaviorFlags = 0;
+                newObj = Obj_SetupObject(&setup->base, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
                                          ((GameObject*)obj)->anim.parent);
                 newObj->anim.flags = (s16)(newObj->anim.flags | OBJANIM_FLAG_HIDDEN);
                 ObjLink_AttachChild((GameObject*)obj, newObj, 0);

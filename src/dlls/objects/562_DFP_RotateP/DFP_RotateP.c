@@ -10,47 +10,17 @@
 #include "main/mapEvent.h"
 #include "main/dll/TrickyCurve.h"
 #include "main/dll/sfxplayer.h"
+#include "main/dll/dll_02B1_cmbsrc.h"
 #include "main/gamebits.h"
 #include "main/model_engine.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 
-typedef struct RingIdPair
+typedef struct CmbSrcColorIndexPair
 {
     u32 a;
     u32 b;
-} RingIdPair;
-
-/* Obj_AllocObjectSetup(0x2C,...) ring-visual spawn buffer composed in
- * sfxplayer_ensureEffectHandlePair. Head is the common ObjPlacement
- * (the 0x04..0x07 bytes live in ObjPlacement.color); tail (0x18..0x2B)
- * is file-local. */
-typedef struct SfxplayerRingVisualSetup
-{
-    ObjPlacement base; /* 0x00..0x17 */
-    u8 unk18;          /* 0x18 */
-    u8 unk19;          /* 0x19 */
-    u8 unk1A;          /* 0x1A */
-    u8 ringId;         /* 0x1B */
-    u8 unk1C;          /* 0x1C */
-    u8 unk1D;          /* 0x1D */
-    u8 pad1E[2];       /* 0x1E..0x1F */
-    f32 unk20;         /* 0x20 */
-    s16 gameBit;       /* 0x24: GameBit slot (-1 = none) */
-    u8 unk26;          /* 0x26 */
-    u8 unk27;          /* 0x27 */
-    u8 unk28;          /* 0x28 */
-    u8 unk29;          /* 0x29 */
-    u8 unk2A;          /* 0x2A */
-    u8 pad2B[1];       /* 0x2B */
-} SfxplayerRingVisualSetup;
-
-STATIC_ASSERT(offsetof(SfxplayerRingVisualSetup, unk18) == 0x18);
-STATIC_ASSERT(offsetof(SfxplayerRingVisualSetup, ringId) == 0x1B);
-STATIC_ASSERT(offsetof(SfxplayerRingVisualSetup, unk20) == 0x20);
-STATIC_ASSERT(offsetof(SfxplayerRingVisualSetup, gameBit) == 0x24);
-STATIC_ASSERT(offsetof(SfxplayerRingVisualSetup, unk2A) == 0x2A);
-STATIC_ASSERT(sizeof(SfxplayerRingVisualSetup) == 0x2C);
+} CmbSrcColorIndexPair;
 
 #define SFXPLAYER_EFFECT_RING_COUNT       4
 #define SFXPLAYER_EFFECT_HANDLES_PER_RING 2
@@ -59,7 +29,7 @@ STATIC_ASSERT(sizeof(SfxplayerRingVisualSetup) == 0x2C);
 #define SFXPLAYER_TIMEOUT_RESET_SFX       0x1CE
 #define SFXPLAYER_GAMEBIT_RING_ACTIVE     0xEDF
 #define SFXPLAYER_RING_VISUAL_SETUP_SIZE  0x2C
-#define SFXPLAYER_RING_VISUAL_OBJECT_ID   0x6E8
+#define SFXPLAYER_RING_VISUAL_OBJECT_ID   CMBSRC_SEQ_DEFAULT
 #define SFXPLAYER_RING_HIT_SETUP_SIZE     4
 #define SFXPLAYER_RING_HIT_OBJECT_ID      0x71C
 #define SFXPLAYER_RING_SETUP_MODE         5
@@ -83,7 +53,7 @@ STATIC_ASSERT(sizeof(SfxplayerRingVisualSetup) == 0x2C);
 int gSfxplayerEffectHandles[8];
 #define SFXPLAYER_OBJECT_FLAGS            0x6000
 
-static const RingIdPair lbl_803E6450 = {0x00040005, 0x0006000B};
+static const CmbSrcColorIndexPair lbl_803E6450 = {0x00040005, 0x0006000B};
 
 #define SFXPLAYER_UPDATE_EFFECT_HANDLE_POS(handleExpr, obj, rot, angleStep)                                            \
     do                                                                                                                 \
@@ -152,14 +122,14 @@ void TrickyCurve_updateEffectHandleRing(GameObject* obj)
 
 int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
 {
-    u32 ringIdWords[2];
+    u32 colorIndexWords[2];
     int* handles;
     int* pair;
-    SfxplayerRingVisualSetup* setup;
+    CmbSrcMapData* setup;
     int handleOffset;
-    s16* ringIds;
+    s16* colorIndices;
 
-    *(RingIdPair*)ringIdWords = *(RingIdPair*)&lbl_803E6450;
+    *(CmbSrcColorIndexPair*)colorIndexWords = *(CmbSrcColorIndexPair*)&lbl_803E6450;
 
     if (Obj_IsLoadingLocked() == 0)
     {
@@ -170,7 +140,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
     handles = gSfxplayerEffectHandles;
     if (*(void**)((int)handles + handleOffset) == NULL)
     {
-        setup = (SfxplayerRingVisualSetup*)Obj_AllocObjectSetup(SFXPLAYER_RING_VISUAL_SETUP_SIZE, SFXPLAYER_RING_VISUAL_OBJECT_ID);
+        setup = (CmbSrcMapData*)Obj_AllocObjectSetup(SFXPLAYER_RING_VISUAL_SETUP_SIZE, SFXPLAYER_RING_VISUAL_OBJECT_ID);
         setup->base.color[2] = 0xff;
         setup->base.color[3] = 0xff;
         setup->base.color[0] = 2;
@@ -179,26 +149,26 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
         setup->base.posY = obj->anim.localPosY;
         setup->base.posZ = obj->anim.localPosZ;
         setup->gameBit = -1;
-        setup->unk1A = 0;
-        setup->unk18 = 0;
-        setup->unk19 = 0;
+        setup->rotX = 0;
+        setup->rotZ = 0;
+        setup->rotY = 0;
         if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == SFXPLAYER_MODE_SEQUENCE)
         {
-            ringIds = (s16*)ringIdWords;
-            setup->ringId = ringIds[ringIndex & 0xff];
+            colorIndices = (s16*)colorIndexWords;
+            setup->colorIndex = colorIndices[ringIndex & 0xff];
         }
         else
         {
-            setup->ringId = (u8) * (s16*)((char*)ringIdWords + 6);
+            setup->colorIndex = (u8) * (s16*)((char*)colorIndexWords + 6);
         }
-        setup->unk1C = 0;
-        setup->unk1D = 0;
-        setup->unk26 = 0x64;
-        setup->unk27 = 0;
-        setup->unk28 = 0;
-        setup->unk20 = 0.5f;
-        setup->unk29 = 0xd2;
-        setup->unk2A = 0;
+        setup->effectMode = 0;
+        setup->pulseSubMode = 0;
+        setup->colorDistance = 0x64;
+        setup->effectDistance = 0;
+        setup->pulseDistance = 0;
+        setup->radius = 0.5f;
+        setup->flags = 0xd2;
+        setup->behaviorFlags = 0;
         *(int*)((int)handles + handleOffset) =
             (int)Obj_SetupObject(&setup->base, SFXPLAYER_RING_SETUP_MODE, obj->anim.mapEventSlot, -1, obj->anim.parent);
     }
@@ -209,7 +179,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
     }
     if (*(void**)pair == NULL)
     {
-        setup = (SfxplayerRingVisualSetup*)Obj_AllocObjectSetup(SFXPLAYER_RING_HIT_SETUP_SIZE, SFXPLAYER_RING_HIT_OBJECT_ID);
+        setup = (CmbSrcMapData*)Obj_AllocObjectSetup(SFXPLAYER_RING_HIT_SETUP_SIZE, SFXPLAYER_RING_HIT_OBJECT_ID);
         setup->base.color[2] = 0xff;
         setup->base.color[3] = 0xff;
         setup->base.color[0] = 2;
