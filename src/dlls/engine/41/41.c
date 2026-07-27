@@ -1,21 +1,3 @@
-/*
- * effect16 (DLL 0x29) - one of the particle-effect spawner DLLs
- * (siblings effect13..effect20 share the same skeleton).
- *
- * Effect16_func04 is the per-effect spawn dispatcher: given an effect
- * id (handled ranges 0x6d7..0x6e1 and 0x6f2..0x6f8; ids 0x6e2..0x6f1
- * are unhandled and fall to default: return -1), it fills an
- * EffectSpawnConfig (velocity, scale,
- * lifetime, colour, texture, behaviour/render flags) - randomised via
- * randomGetRange - and hands it to gExpgfxInterface->spawnEffect. When
- * spawnFlags has 0x200000 set the source transform is read from the
- * caller's PartFxSpawnParams; behaviour bit 0 offsets the start
- * position by the attached source object's world position (+0x18/1c/20).
- *
- * Effect16_func05 advances this DLL's shared animation phases each tick
- * (two looping 0..1 scroll accumulators and two sin-driven values
- * stepped by framesThisStep). The remaining entry points are no-ops.
- */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/waterfxcfg_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
