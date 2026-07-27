@@ -1,5 +1,5 @@
 /*
- * dll76func0 (DLL 0x76) - DLL entrypoint stubs plus a particle-effect
+ * DLL 118 / 0x76 - DLL entrypoint stubs plus a particle-effect
  * spawn builder.
  *
  * dll_76_func00/01_nop are the empty per-DLL lifecycle hooks. dll_76_func03
