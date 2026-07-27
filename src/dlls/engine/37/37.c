@@ -1,18 +1,3 @@
-/*
- * effect12 (DLL 0x25) - one of the numbered particle-effect DLLs.
- * Its single worker, Effect12_func04, fills an EffectSpawnParams request
- * for one of a fixed set of effect ids (0x47e..0x48c) and hands it to
- * gExpgfxInterface->spawnEffect. Per-id it sets the particle kind,
- * lifetime (count), alpha, behaviour/render flags and a randomised
- * position/velocity/scale (via randomGetRange and per-effect tuning
- * constants); id 0x48c additionally rotates a velocity by the model's
- * rotX (vecRotateZXY).
- *
- * flags bit 0x200000 means the caller supplied an explicit EffectSrcParams
- * source (copied into the request); behaviour-flag bit 1 then adds either
- * that source position or the model's world position (model+0x18..0x20)
- * to the spawn position.
- */
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/effectsrcparams_struct.h"

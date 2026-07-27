@@ -488,7 +488,7 @@ main/dll/dll_0024_effect11.c:
 	.bss        start:0x8039C3C8 end:0x8039C3E0
 	.sdata2     start:0x803DFF38 end:0x803DFFA8
 
-main/dll/dll_0025_effect12.c:
+dlls/engine/37/37.c:
 	.text       start:0x800C56E0 end:0x800C65B4
 	.data       start:0x80310D80 end:0x80310DE4
 	.bss        start:0x8039C3E0 end:0x8039C3F8
