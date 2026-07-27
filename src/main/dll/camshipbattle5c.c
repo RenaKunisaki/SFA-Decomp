@@ -1,7 +1,7 @@
 /*
- * Path-camera ROM-curve sampling helpers (DLL 0x5B / camshipbattle5C
- * family, sibling of dll_8010a104.c). Operates on the ROM curve-node
- * graph reached through gRomCurveInterface->getById.
+ * Path-camera ROM-curve graph navigation and sampling helpers (DLL 0x5B /
+ * camshipbattle5C family). Operates on the ROM curve-node graph reached
+ * through gRomCurveInterface->getById.
  *
  * Each curve node holds a world position (f32 x/y/z at +0x08/+0x0C/+0x10),
  * a packed rotation/fov sample (s16 at +0x34/+0x36/+0x38, s8 at +0x3A),
@@ -41,6 +41,146 @@ extern const f32 lbl_803E1888; /* angle near/zero threshold */
 extern char sPathCamNeedTwoControlPointsError[];
 
 extern f32 lbl_803E18A8; /* midpoint factor (segment normal averaging) */
+
+#define PATHCAM_NEAR_THRESHOLD lbl_803E1888
+#define PATHCAM_FAR_THRESHOLD  lbl_803E188C
+
+extern const f32 lbl_803E188C; /* far distance threshold */
+
+void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
+{
+    int node;
+    int linked;
+    int noForwardExit;
+    int slot;
+    int slot2;
+    int step;
+    int window[4];
+    int span;
+    int farSpan;
+    int settled;
+    f32 dist;
+    f32 nearThresh;
+
+    node = (int)(*gRomCurveInterface)->getById(*nodeId);
+    noForwardExit = 1;
+    for (slot = 0; slot < ROM_CURVE_PATH_LINK_COUNT; slot++)
+    {
+        if (((RomCurvePathNode*)node)->links[slot] > -1 && (((RomCurvePathNode*)node)->directionMask & (1 << slot)) == 0)
+        {
+            linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot]);
+            if ((u32)linked != 0 && (((RomCurvePathNode*)linked)->tag0 == tag || ((RomCurvePathNode*)linked)->tag1 == tag ||
+                                     ((RomCurvePathNode*)linked)->tag2 == tag))
+            {
+                noForwardExit = 0;
+                slot = ROM_CURVE_PATH_LINK_COUNT;
+            }
+        }
+    }
+    if (noForwardExit != 0)
+    {
+        for (slot = 0; slot < ROM_CURVE_PATH_LINK_COUNT; slot++)
+        {
+            if (((RomCurvePathNode*)node)->links[slot] > -1 && (((RomCurvePathNode*)node)->directionMask & (1 << slot)) != 0)
+            {
+                linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot]);
+                if ((u32)linked != 0 &&
+                    (((RomCurvePathNode*)linked)->tag0 == tag || ((RomCurvePathNode*)linked)->tag1 == tag ||
+                     ((RomCurvePathNode*)linked)->tag2 == tag))
+                {
+                    *nodeId = ((RomCurvePathNode*)node)->links[slot];
+                    slot = ROM_CURVE_PATH_LINK_COUNT;
+                }
+            }
+        }
+    }
+    settled = 0;
+    nearThresh = PATHCAM_NEAR_THRESHOLD;
+    while (settled == 0)
+    {
+        settled = 1;
+        node = (int)(*gRomCurveInterface)->getById(*nodeId);
+        pathcam_findTaggedNodeWindow((u8*)node, window, tag);
+        dist = pathcam_segmentParam(x, y, z, window);
+        if (dist < nearThresh)
+        {
+            if (window[0] > -1)
+            {
+                *nodeId = window[0];
+                settled = 0;
+            }
+        }
+        else if (dist > PATHCAM_FAR_THRESHOLD)
+        {
+            if (window[2] > -1 && window[3] > -1)
+            {
+                *nodeId = window[2];
+                settled = 0;
+            }
+        }
+    }
+    node = (int)(*gRomCurveInterface)->getById(*nodeId);
+    fn_8010A47C(node, &span, tag);
+    node = (int)(*gRomCurveInterface)->getById(*leadNodeId);
+    *leadNodeId = ((RomCurvePathNode*)fn_8010A47C(node, &farSpan, tag))->selfId;
+    for (step = 0; step < span; step++)
+    {
+        node = (int)(*gRomCurveInterface)->getById(*leadNodeId);
+        for (slot2 = 0; slot2 < ROM_CURVE_PATH_LINK_COUNT; slot2++)
+        {
+            if (((RomCurvePathNode*)node)->links[slot2] > -1 &&
+                (((RomCurvePathNode*)node)->directionMask & (1 << slot2)) == 0)
+            {
+                linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot2]);
+                if ((u32)linked != 0 &&
+                    (((RomCurvePathNode*)linked)->tag0 == tag || ((RomCurvePathNode*)linked)->tag1 == tag ||
+                     ((RomCurvePathNode*)linked)->tag2 == tag))
+                {
+                    *leadNodeId = ((RomCurvePathNode*)node)->links[slot2];
+                    slot2 = ROM_CURVE_PATH_LINK_COUNT;
+                }
+            }
+        }
+    }
+}
+
+int fn_8010A47C(int curve, int* count, int tag)
+{
+    int slot;
+    int done;
+    int linked;
+
+    done = 0;
+    *count = 0;
+    while (done == 0)
+    {
+        done = 1;
+        if ((((RomCurvePathNode*)curve)->type != 0x1b) && (((RomCurvePathNode*)curve)->type != 0x1a))
+        {
+            for (slot = 0; slot < ROM_CURVE_PATH_LINK_COUNT; slot++)
+            {
+                if ((((RomCurvePathNode*)curve)->links[slot] > -1) &&
+                    ((((RomCurvePathNode*)curve)->directionMask & (1 << slot)) != 0))
+                {
+                    linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)curve)->links[slot]);
+                    if (((u32)linked != 0) &&
+                        ((((RomCurvePathNode*)linked)->tag0 == tag || (((RomCurvePathNode*)linked)->tag1 == tag)) ||
+                         (((RomCurvePathNode*)linked)->tag2 == tag)))
+                    {
+                        curve = linked;
+                        done = 0;
+                        slot = ROM_CURVE_PATH_LINK_COUNT;
+                    }
+                }
+            }
+        }
+        if (done == 0)
+        {
+            (*count)++;
+        }
+    }
+    return curve;
+}
 
 void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, f32* o5, f32* o6, f32* o7)
 {

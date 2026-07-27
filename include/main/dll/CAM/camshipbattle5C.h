@@ -3,6 +3,8 @@
 
 #include "ghidra_import.h"
 
+void fn_8010A104(int *p1, int *p2, f32 x, f32 y, f32 z, int tag);
+int fn_8010A47C(int curve, int *count, int tag);
 void pathcam_buildWindowSamples(int *nodes, f32 *o1, f32 *o2, f32 *o3, f32 *o4,
                                 f32 *o5, f32 *o6, f32 *o7);
 void pathcam_findTaggedNodeWindow(u8 *node, int *out, int tag);

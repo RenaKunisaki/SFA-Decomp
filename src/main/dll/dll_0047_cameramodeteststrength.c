@@ -9,11 +9,10 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/pad.h"
-#include "main/dll/dll_8010a104.h"
+#include "main/dll/CAM/camshipbattle5C.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "string.h"
-#include "main/dll/CAM/camshipbattle5C.h"
 #include "main/vecmath.h"
 
 CamCannonState* lbl_803DD560;
