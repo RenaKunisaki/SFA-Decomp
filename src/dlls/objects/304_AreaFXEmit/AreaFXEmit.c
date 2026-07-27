@@ -1,90 +1,85 @@
 /*
- * AreaFXEmit (DLL 0x130) - a proximity particle-effect emitter object.
- *
- * Each tick AreaFxEmit_update measures the distance from the emitter to
- * the player; once inside state->triggerRadius (a sentinel radius means
- * "always") it runs areafxemit_emitEffect. emitType selects how the fx
- * is spawned: 0 = world-positioned local fx (spawn flag 0x200001),
- * 1/2 = an acquired object resource (effectId + 0x58 / 0xAB) driven
- * through its vtable, 3 = local-space fx (flag 2), >=6 = pre-rotated
- * fx with type 6 world-positioned. emitCount controls the per-emit
- * particle count (>0) or, when <=0, a re-emit cooldown counted down in
- * frames; emitCount 0 self-suppresses after one emit. For emitType >= 4
- * crossing the trigger radius also fires a one-shot approach burst
- * (areafxemit_emitBurst, AREAFXEMIT_APPROACH_BURST_COUNT particles).
- *
- * Gating: state->enableBit (-1 = always) arms the emitter, state->stopBit
- * permanently suppresses it once set. Sequence event id 1 (AreaFxEmit_SeqFn)
- * also triggers an emit.
+ * Proximity particle emitter family with placement-controlled volume,
+ * effect type, emission cadence, rotation, and game-bit gates.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/CF/CFchuckobj.h"
-#include "sys/objects.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/resource.h"
-#include "main/gamebits.h"
-#include "main/frame_timing.h"
+#include "dlls/objects/304_AreaFXEmit.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/resource.h"
 #include "main/vecmath.h"
-#include "dlls/object_descriptor.h"
+#include "sys/objects.h"
 
-typedef struct CFEmitterFxArgs
-{
-    u32 unk0;
-    u32 unk4;
-    f32 scale;
-    f32 pos[3];
-} CFEmitterFxArgs;
+#define AREAFXEMIT_GAME_BIT_NONE -1
 
-enum
-{
-    AREAFXEMIT_SEQEV_EMIT = 1
-};
+#define AREAFXEMIT_EXTENT_SHIFT   2
+#define AREAFXEMIT_ROTATION_SHIFT 8
 
-#define CF_EMITTER_RANDOMIZE_OFFSET(state, pos)                                                                        \
-    do                                                                                                                 \
-    {                                                                                                                  \
+#define AREAFXEMIT_EFFECT_SCALE      1.0f
+#define AREAFXEMIT_ROOT_MOTION_SCALE 0.1f
+
+#define AREAFXEMIT_RESOURCE_OFFSET     0x58
+#define AREAFXEMIT_ALT_RESOURCE_OFFSET 0xAB
+#define AREAFXEMIT_RESOURCE_GROUP      1
+
+#define AREAFXEMIT_WORLD_SPAWN_MODE 0x200001
+#define AREAFXEMIT_LOCAL_SPAWN_MODE 2
+#define AREAFXEMIT_MODEL_NONE       -1
+
+#define AREAFXEMIT_APPROACH_BURST_COUNT 0x23
+
+typedef enum AreaFXEmitSpawnType {
+    AREAFXEMIT_SPAWN_LOCAL_WORLD = 0,
+    AREAFXEMIT_SPAWN_OBJECT_RESOURCE = 1,
+    AREAFXEMIT_SPAWN_OBJECT_RESOURCE_ALT = 2,
+    AREAFXEMIT_SPAWN_LOCAL_OBJECT = 3,
+} AreaFXEmitSpawnType;
+
+typedef enum AreaFXEmitSequenceEvent {
+    AREAFXEMIT_SEQUENCE_EVENT_EMIT = 1,
+} AreaFXEmitSequenceEvent;
+
+#define AREAFXEMIT_RANDOMIZE_OFFSET(state, position)                                                                   \
+    do {                                                                                                               \
         u16 range;                                                                                                     \
         range = (state)->extentX;                                                                                      \
-        (pos)[0] = (f32)(s32)randomGetRange(-range, range);                                                            \
+        (position)[0] = (f32)(s32)randomGetRange(-range, range);                                                       \
         range = (state)->extentY;                                                                                      \
-        (pos)[1] = (f32)(s32)randomGetRange(-range, range);                                                            \
+        (position)[1] = (f32)(s32)randomGetRange(-range, range);                                                       \
         range = (state)->extentZ;                                                                                      \
-        (pos)[2] = (f32)(s32)randomGetRange(-range, range);                                                            \
+        (position)[2] = (f32)(s32)randomGetRange(-range, range);                                                       \
     } while (0)
 
-#define CF_EMITTER_ROTATE_FROM_LOCAL(obj, state, args, rot)                                                            \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (rot)[0] = (state)->emitAngles[0];                                                                             \
-        (rot)[1] = (state)->emitAngles[1];                                                                             \
-        (rot)[2] = (state)->emitAngles[2];                                                                             \
-        if ((obj)->objAnim.parent != NULL)                                                                             \
-        {                                                                                                              \
-            (rot)[2] += ((ObjAnimComponent*)(obj)->objAnim.parent)->rotZ;                                              \
+#define AREAFXEMIT_ROTATE_FROM_LOCAL(obj, state, position, rotation)                                                   \
+    do {                                                                                                               \
+        (rotation)[0] = (state)->emitAngles[0];                                                                        \
+        (rotation)[1] = (state)->emitAngles[1];                                                                        \
+        (rotation)[2] = (state)->emitAngles[2];                                                                        \
+        if ((obj)->anim.parent != NULL) {                                                                              \
+            (rotation)[2] += ((ObjAnimComponent*)(obj)->anim.parent)->rotZ;                                            \
         }                                                                                                              \
-        vecRotateZXY((rot), (args)->pos);                                                                              \
+        vecRotateZXY((rotation), (position));                                                                          \
     } while (0)
 
-#define CF_EMITTER_ADD_OBJECT_POSITION(obj, args)                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (args)->pos[0] += (obj)->objAnim.localPosX;                                                                    \
-        (args)->pos[1] += (obj)->objAnim.localPosY;                                                                    \
-        (args)->pos[2] += (obj)->objAnim.localPosZ;                                                                    \
+#define AREAFXEMIT_ADD_OBJECT_POSITION(obj, position)                                                                  \
+    do {                                                                                                               \
+        (position)[0] += (obj)->anim.localPosX;                                                                        \
+        (position)[1] += (obj)->anim.localPosY;                                                                        \
+        (position)[2] += (obj)->anim.localPosZ;                                                                        \
     } while (0)
 
-void areafxemit_emitBurst(AreaFxEmitObject* obj, int count)
-{
-    AreaFxEmitState* state;
+void AreaFXEmit_emitBurst(GameObject* obj, int count) {
+    AreaFXEmitState* state;
     s16 i;
     PartFxSpawnParams args;
 
-    state = obj->state;
-    if (count > 0)
-    {
-        for (i = 0; i < count; i++)
-        {
+    state = obj->extra;
+    if (count > 0) {
+        for (i = 0; i < count; i++) {
             {
                 u16 sx = state->extentX;
                 args.posX = (f32)(s32)randomGetRange(-sx, sx);
@@ -100,287 +95,244 @@ void areafxemit_emitBurst(AreaFxEmitObject* obj, int count)
             vecRotateZXY(state->emitAngles, &args.posX);
             {
                 u8 type = state->emitType;
-                if (type == 4 || type == 6)
-                {
-                    args.posX += obj->objAnim.localPosX;
-                    args.posY += obj->objAnim.localPosY;
-                    args.posZ += obj->objAnim.localPosZ;
-                    (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 0x200001, -1, NULL);
-                }
-                else
-                {
-                    (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 2, -1, NULL);
+                if (type == 4 || type == 6) {
+                    args.posX += obj->anim.localPosX;
+                    args.posY += obj->anim.localPosY;
+                    args.posZ += obj->anim.localPosZ;
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_WORLD_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                      NULL);
+                } else {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_LOCAL_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                      NULL);
                 }
             }
         }
     }
 }
 
-void areafxemit_emitEffect(AreaFxEmitObject* obj)
-{
-    AreaFxEmitState* state;
+void AreaFXEmit_emitEffect(GameObject* obj) {
+    AreaFXEmitState* state;
     s16 i;
-    s16 rot[3];
+    s16 rotation[3];
     u8 type;
     void* resource;
-    CFEmitterFxArgs args;
+    PartFxSpawnParams args;
 
-    state = obj->state;
-    args.scale = 1.0f;
+    state = obj->extra;
+    args.scale = AREAFXEMIT_EFFECT_SCALE;
     type = state->emitType;
 
-    if (type == AREAFXEMIT_SPAWN_LOCAL_WORLD)
-    {
-        if (state->emitCount > 0)
-        {
-            for (i = 0; i < state->emitCount; i++)
-            {
-                CF_EMITTER_RANDOMIZE_OFFSET(state, args.pos);
-                CF_EMITTER_ROTATE_FROM_LOCAL(obj, state, &args, rot);
-                CF_EMITTER_ADD_OBJECT_POSITION(obj, &args);
-                (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 0x200001, -1, NULL);
+    if (type == AREAFXEMIT_SPAWN_LOCAL_WORLD) {
+        if (state->emitCount > 0) {
+            for (i = 0; i < state->emitCount; i++) {
+                AREAFXEMIT_RANDOMIZE_OFFSET(state, &args.posX);
+                AREAFXEMIT_ROTATE_FROM_LOCAL(obj, state, &args.posX, rotation);
+                AREAFXEMIT_ADD_OBJECT_POSITION(obj, &args.posX);
+                (*gPartfxInterface)
+                    ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_WORLD_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                  NULL);
             }
+        } else {
+            AREAFXEMIT_RANDOMIZE_OFFSET(state, &args.posX);
+            AREAFXEMIT_ROTATE_FROM_LOCAL(obj, state, &args.posX, rotation);
+            AREAFXEMIT_ADD_OBJECT_POSITION(obj, &args.posX);
+            (*gPartfxInterface)
+                ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_WORLD_SPAWN_MODE, AREAFXEMIT_MODEL_NONE, NULL);
         }
-        else
-        {
-            CF_EMITTER_RANDOMIZE_OFFSET(state, args.pos);
-            CF_EMITTER_ROTATE_FROM_LOCAL(obj, state, &args, rot);
-            CF_EMITTER_ADD_OBJECT_POSITION(obj, &args);
-            (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 0x200001, -1, NULL);
-        }
-    }
-    else if (type == AREAFXEMIT_SPAWN_OBJECT_RESOURCE)
-    {
-        resource = Resource_Acquire((u16)(state->effectId + 0x58), 1);
-        if (state->emitCount > 0)
-        {
-            for (i = 0; i < state->emitCount; i++)
-            {
-                (*(void (**)(AreaFxEmitObject*, int, int, int, int, int))(*(int*)resource + 4))(obj, 0, 0, 1, -1, 0);
+    } else if (type == AREAFXEMIT_SPAWN_OBJECT_RESOURCE) {
+        resource = Resource_Acquire((u16)(state->effectId + AREAFXEMIT_RESOURCE_OFFSET), AREAFXEMIT_RESOURCE_GROUP);
+        if (state->emitCount > 0) {
+            for (i = 0; i < state->emitCount; i++) {
+                (*(void (**)(GameObject*, int, int, int, int, int))(*(int*)resource + 4))(obj, 0, 0, 1, -1, 0);
             }
-        }
-        else
-        {
-            (*(void (**)(AreaFxEmitObject*, int, int, int, int, int))(*(int*)resource + 4))(obj, 0, 0, 1, -1, 0);
+        } else {
+            (*(void (**)(GameObject*, int, int, int, int, int))(*(int*)resource + 4))(obj, 0, 0, 1, -1, 0);
         }
         Resource_Release(resource);
-    }
-    else if (type == AREAFXEMIT_SPAWN_OBJECT_RESOURCE_ALT)
-    {
-        resource = Resource_Acquire((u16)(state->effectId + 0xab), 1);
-        if (state->emitCount > 0)
-        {
-            for (i = 0; i < state->emitCount; i++)
-            {
-                (*(void (**)(AreaFxEmitObject*, int, int, int, int, int, int))(*(int*)resource + 4))(
-                    obj, 0, 0, 1, -1, state->effectId & 0xff, 0);
+    } else if (type == AREAFXEMIT_SPAWN_OBJECT_RESOURCE_ALT) {
+        resource = Resource_Acquire((u16)(state->effectId + AREAFXEMIT_ALT_RESOURCE_OFFSET), AREAFXEMIT_RESOURCE_GROUP);
+        if (state->emitCount > 0) {
+            for (i = 0; i < state->emitCount; i++) {
+                (*(void (**)(GameObject*, int, int, int, int, int, int))(*(int*)resource + 4))(
+                    obj, 0, 0, 1, -1, state->effectId & 0xFF, 0);
             }
-        }
-        else
-        {
-            (*(void (**)(AreaFxEmitObject*, int, int, int, int, int, int))(*(int*)resource + 4))(
-                obj, 0, 0, 1, -1, state->effectId & 0xff, 0);
+        } else {
+            (*(void (**)(GameObject*, int, int, int, int, int, int))(*(int*)resource + 4))(obj, 0, 0, 1, -1,
+                                                                                           state->effectId & 0xFF, 0);
         }
         Resource_Release(resource);
-    }
-    else if (type == AREAFXEMIT_SPAWN_LOCAL_OBJECT)
-    {
-        if (state->emitCount > 0)
-        {
-            for (i = 0; i < state->emitCount; i++)
-            {
-                CF_EMITTER_RANDOMIZE_OFFSET(state, args.pos);
-                CF_EMITTER_ROTATE_FROM_LOCAL(obj, state, &args, rot);
-                (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 2, -1, NULL);
+    } else if (type == AREAFXEMIT_SPAWN_LOCAL_OBJECT) {
+        if (state->emitCount > 0) {
+            for (i = 0; i < state->emitCount; i++) {
+                AREAFXEMIT_RANDOMIZE_OFFSET(state, &args.posX);
+                AREAFXEMIT_ROTATE_FROM_LOCAL(obj, state, &args.posX, rotation);
+                (*gPartfxInterface)
+                    ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_LOCAL_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                  NULL);
             }
+        } else {
+            AREAFXEMIT_RANDOMIZE_OFFSET(state, &args.posX);
+            AREAFXEMIT_ROTATE_FROM_LOCAL(obj, state, &args.posX, rotation);
+            (*gPartfxInterface)
+                ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_LOCAL_SPAWN_MODE, AREAFXEMIT_MODEL_NONE, NULL);
         }
-        else
-        {
-            CF_EMITTER_RANDOMIZE_OFFSET(state, args.pos);
-            CF_EMITTER_ROTATE_FROM_LOCAL(obj, state, &args, rot);
-            (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 2, -1, NULL);
-        }
-    }
-    else if (type >= 6)
-    {
-        if (state->emitCount > 0)
-        {
-            for (i = 0; i < state->emitCount; i++)
-            {
-                CF_EMITTER_RANDOMIZE_OFFSET(state, args.pos);
-                vecRotateZXY(state->emitAngles, args.pos);
-                if (state->emitType == 6)
-                {
-                    CF_EMITTER_ADD_OBJECT_POSITION(obj, &args);
-                    (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 0x200001, -1, NULL);
-                }
-                else
-                {
-                    (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 2, -1, NULL);
+    } else if (type >= 6) {
+        if (state->emitCount > 0) {
+            for (i = 0; i < state->emitCount; i++) {
+                AREAFXEMIT_RANDOMIZE_OFFSET(state, &args.posX);
+                vecRotateZXY(state->emitAngles, &args.posX);
+                if (state->emitType == 6) {
+                    AREAFXEMIT_ADD_OBJECT_POSITION(obj, &args.posX);
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_WORLD_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                      NULL);
+                } else {
+                    (*gPartfxInterface)
+                        ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_LOCAL_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                      NULL);
                 }
             }
-        }
-        else
-        {
-            CF_EMITTER_RANDOMIZE_OFFSET(state, args.pos);
-            vecRotateZXY(state->emitAngles, args.pos);
-            if (state->emitType == 6)
-            {
-                CF_EMITTER_ADD_OBJECT_POSITION(obj, &args);
-                (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 0x200001, -1, NULL);
-            }
-            else
-            {
-                (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, 2, -1, NULL);
+        } else {
+            AREAFXEMIT_RANDOMIZE_OFFSET(state, &args.posX);
+            vecRotateZXY(state->emitAngles, &args.posX);
+            if (state->emitType == 6) {
+                AREAFXEMIT_ADD_OBJECT_POSITION(obj, &args.posX);
+                (*gPartfxInterface)
+                    ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_WORLD_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                  NULL);
+            } else {
+                (*gPartfxInterface)
+                    ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_LOCAL_SPAWN_MODE, AREAFXEMIT_MODEL_NONE,
+                                  NULL);
             }
         }
     }
 }
 
-int AreaFxEmit_SeqFn(AreaFxEmitObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int AreaFXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     u8 i;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        switch ((s32)animUpdate->eventIds[i])
-        {
-        case AREAFXEMIT_SEQEV_EMIT:
-            areafxemit_emitEffect(obj);
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        switch ((s32)animUpdate->eventIds[i]) {
+        case AREAFXEMIT_SEQUENCE_EVENT_EMIT:
+            AreaFXEmit_emitEffect(obj);
             break;
         }
     }
     return 0;
 }
 
-int AreaFxEmit_getExtraSize(void)
-{
-    return sizeof(AreaFxEmitState);
-}
-int AreaFxEmit_getObjectTypeId(void)
-{
-    return 0x0;
+int AreaFXEmit_getExtraSize(void) {
+    return sizeof(AreaFXEmitState);
 }
 
-void AreaFxEmit_free(AreaFxEmitObject* obj)
-{
+int AreaFXEmit_getObjectTypeId(void) {
+    return 0;
+}
+
+void AreaFXEmit_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void AreaFxEmit_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible == 0)
+void AreaFXEmit_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible == 0) {
         return;
+    }
 }
 
-void AreaFxEmit_hitDetect(void)
-{
+void AreaFXEmit_hitDetect(void) {
 }
 
-void AreaFxEmit_update(AreaFxEmitObject* obj)
-{
-    AreaFxEmitState* state;
+void AreaFXEmit_update(GameObject* obj) {
+    AreaFXEmitState* state;
     ObjAnimComponent* player;
     f32 xDelta;
     f32 yDelta;
     f32 zDelta;
-    f32 yy;
+    f32 ySquared;
     f32 distance;
     f32 radius;
 
-    state = obj->state;
+    state = obj->extra;
     player = (ObjAnimComponent*)Obj_GetPlayerObject();
-    if ((player != NULL) && ((state->enableBit == -1) || (mainGetBit(state->enableBit) != 0)))
-    {
-        switch (state->suppressed)
-        {
+    if ((player != NULL) &&
+        ((state->enableGameBit == AREAFXEMIT_GAME_BIT_NONE) || (mainGetBit(state->enableGameBit) != 0))) {
+        switch (state->suppressed) {
         case 0:
-            if (mainGetBit(state->stopBit) != 0)
-            {
+            if (mainGetBit(state->stopGameBit) != 0) {
                 state->suppressed = 1;
             }
-            if ((state->emitCount >= 0) || ((state->emitCount < 0) && (obj->emitCooldown <= 0)))
-            {
-                xDelta = obj->objAnim.worldPosX - player->worldPosX;
-                yDelta = obj->objAnim.worldPosY - player->worldPosY;
-                zDelta = obj->objAnim.worldPosZ - player->worldPosZ;
-                if (state->emitCount == 0)
-                {
+            if ((state->emitCount >= 0) || ((state->emitCount < 0) && (obj->userData1 <= 0))) {
+                xDelta = obj->anim.worldPosX - player->worldPosX;
+                yDelta = obj->anim.worldPosY - player->worldPosY;
+                zDelta = obj->anim.worldPosZ - player->worldPosZ;
+                if (state->emitCount == 0) {
                     state->suppressed = 1;
                 }
-                yy = yDelta * yDelta;
-                distance = sqrtf(yy + xDelta * xDelta + zDelta * zDelta);
+                ySquared = yDelta * yDelta;
+                distance = sqrtf(ySquared + xDelta * xDelta + zDelta * zDelta);
                 radius = state->triggerRadius;
-                if (distance <= radius || 0.0f == radius)
-                {
-                    if ((state->emitType >= 4) && ((state->lastDistance > radius && (0.0f != radius))))
-                    {
-                        areafxemit_emitBurst(obj, AREAFXEMIT_APPROACH_BURST_COUNT);
+                if (distance <= radius || 0.0f == radius) {
+                    if ((state->emitType >= 4) && ((state->lastDistance > radius && (0.0f != radius)))) {
+                        AreaFXEmit_emitBurst(obj, AREAFXEMIT_APPROACH_BURST_COUNT);
                     }
-                    areafxemit_emitEffect(obj);
+                    AreaFXEmit_emitEffect(obj);
                 }
-                obj->emitCooldown = -state->emitCount;
+                obj->userData1 = -state->emitCount;
                 state->lastDistance = distance;
-            }
-            else if ((state->emitCount < 0) && (0 < obj->emitCooldown))
-            {
-                obj->emitCooldown = obj->emitCooldown - framesThisStep;
+            } else if ((state->emitCount < 0) && (0 < obj->userData1)) {
+                obj->userData1 = obj->userData1 - framesThisStep;
             }
             break;
         }
     }
 }
 
-void AreaFxEmit_init(AreaFxEmitObject* obj, AreaFxEmitPlacement* setup)
-{
-    AreaFxEmitState* state;
+void AreaFXEmit_init(GameObject* obj, AreaFXEmitPlacement* placement) {
+    AreaFXEmitState* state;
     s16 angle;
 
-    obj->seqCallback = AreaFxEmit_SeqFn;
-    state = obj->state;
+    obj->animEventCallback = AreaFXEmit_sequenceCallback;
+    state = obj->extra;
 
-    state->triggerRadius = (f32)((s32)setup->triggerRadius << 2);
-    state->emitType = setup->emitType;
-    state->effectId = setup->effectId;
-    state->emitCount = setup->emitCount;
-    state->enableBit = setup->enableBit;
-    state->stopBit = setup->stopBit;
+    state->triggerRadius = (f32)((s32)placement->triggerRadius << AREAFXEMIT_EXTENT_SHIFT);
+    state->emitType = placement->emitType;
+    state->effectId = placement->effectId;
+    state->emitCount = placement->emitCount;
+    state->enableGameBit = placement->enableGameBit;
+    state->stopGameBit = placement->stopGameBit;
     state->suppressed = 0;
-    state->extentX = (u16)(setup->extentX << 2);
-    state->extentZ = (u16)(setup->extentZ << 2);
-    state->extentY = (u16)(setup->extentY << 2);
+    state->extentX = (u16)(placement->extentX << AREAFXEMIT_EXTENT_SHIFT);
+    state->extentZ = (u16)(placement->extentZ << AREAFXEMIT_EXTENT_SHIFT);
+    state->extentY = (u16)(placement->extentY << AREAFXEMIT_EXTENT_SHIFT);
 
-    angle = (s16)(setup->initialRoll << 8);
+    angle = (s16)(placement->initialRotZ << AREAFXEMIT_ROTATION_SHIFT);
     state->emitAngles[2] = angle;
-    obj->objAnim.rotZ = angle;
-    angle = (s16)(setup->initialPitch << 8);
+    obj->anim.rotZ = angle;
+    angle = (s16)(placement->initialRotY << AREAFXEMIT_ROTATION_SHIFT);
     state->emitAngles[1] = angle;
-    obj->objAnim.rotY = angle;
-    angle = (s16)(setup->initialYaw << 8);
+    obj->anim.rotY = angle;
+    angle = (s16)(placement->initialRotX << AREAFXEMIT_ROTATION_SHIFT);
     state->emitAngles[0] = angle;
-    obj->objAnim.rotX = angle;
-    obj->objAnim.rootMotionScale = 0.1f;
+    obj->anim.rotX = angle;
+    obj->anim.rootMotionScale = AREAFXEMIT_ROOT_MOTION_SCALE;
 
-    if (state->emitCount < 1)
-    {
-        obj->emitCooldown = state->emitCount;
-    }
-    else
-    {
-        obj->emitCooldown = 0;
+    if (state->emitCount < 1) {
+        obj->userData1 = state->emitCount;
+    } else {
+        obj->userData1 = 0;
     }
 
-    if (state->stopBit != -1 && mainGetBit(state->stopBit) != 0)
-    {
+    if (state->stopGameBit != AREAFXEMIT_GAME_BIT_NONE && mainGetBit(state->stopGameBit) != 0) {
         state->suppressed = 1;
     }
 }
 
-void AreaFxEmit_release(void)
-{
+void AreaFXEmit_release(void) {
 }
 
-void AreaFxEmit_initialise(void)
-{
+void AreaFXEmit_initialise(void) {
 }
 
 ObjectDescriptor gAreaFXEmitObjDescriptor = {
@@ -388,14 +340,14 @@ ObjectDescriptor gAreaFXEmitObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)AreaFxEmit_initialise,
-    (ObjectDescriptorCallback)AreaFxEmit_release,
+    (ObjectDescriptorCallback)AreaFXEmit_initialise,
+    (ObjectDescriptorCallback)AreaFXEmit_release,
     0,
-    (ObjectDescriptorCallback)AreaFxEmit_init,
-    (ObjectDescriptorCallback)AreaFxEmit_update,
-    (ObjectDescriptorCallback)AreaFxEmit_hitDetect,
-    (ObjectDescriptorCallback)AreaFxEmit_render,
-    (ObjectDescriptorCallback)AreaFxEmit_free,
-    (ObjectDescriptorCallback)AreaFxEmit_getObjectTypeId,
-    AreaFxEmit_getExtraSize,
+    (ObjectDescriptorCallback)AreaFXEmit_init,
+    (ObjectDescriptorCallback)AreaFXEmit_update,
+    (ObjectDescriptorCallback)AreaFXEmit_hitDetect,
+    (ObjectDescriptorCallback)AreaFXEmit_render,
+    (ObjectDescriptorCallback)AreaFXEmit_free,
+    (ObjectDescriptorCallback)AreaFXEmit_getObjectTypeId,
+    AreaFXEmit_getExtraSize,
 };

@@ -1,80 +1,62 @@
 /*
- * CF_DoorLight (DLL 0x131) - door-light texture animator at CF
- * (CloudRunner Fortress). Once the placement's trigger game bit is set,
- * runs the object's texture animation from frame 0 forward by frameStep
- * per tick (frames in 1/256 units). On passing maxFrame it either loops
- * back to resetFrame (doneEvent == -1) or grants the done game bit and
- * parks the frame at maxFrame. init re-checks the done bit so a
- * revisited map keeps an already-finished light lit.
+ * Door-light texture animator. A trigger game bit starts the animation;
+ * completion either loops to a configured frame or grants a game bit.
  */
+#include "dlls/objects/305.h"
+
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/objtexture.h"
 #include "main/gamebits.h"
-#include "main/dll/CF/dll_0131_cfdoorlight.h"
-#include "dlls/object_descriptor.h"
+#include "main/objtexture.h"
 
-#define CFDOORLIGHT_OBJFLAG_HIDDEN             0x4000
-#define CFDOORLIGHT_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define CFDOORLIGHT_GAME_BIT_NONE -1
 
-int CF_DoorLight_getExtraSize(void)
-{
-    return sizeof(CfDoorLightState);
+#define CFDOORLIGHT_FRAME_SHIFT    8
+#define CFDOORLIGHT_ROTATION_SHIFT 9
+
+#define CFDOORLIGHT_DEFAULT_TEXTURE_ID 0
+#define CFDOORLIGHT_MIN_FRAME          0
+
+int CF_DoorLight_getExtraSize(void) {
+    return sizeof(CFDoorLightState);
 }
 
-int CF_DoorLight_getObjectTypeId(void)
-{
-    return 0x0;
+int CF_DoorLight_getObjectTypeId(void) {
+    return 0;
 }
 
-void CF_DoorLight_free(void)
-{
+void CF_DoorLight_free(void) {
 }
 
-void CF_DoorLight_render(void)
-{
+void CF_DoorLight_render(void) {
 }
 
-void CF_DoorLight_hitDetect(void)
-{
+void CF_DoorLight_hitDetect(void) {
 }
 
-/* obj is a word here, not a pointer: target colors it r30 UNDER the state
-   copy (r31) = the integral-param pool. */
-void CF_DoorLight_update(GameObject* obj)
-{
-    CfDoorLightState* state;
-    CfDoorLightMapData* def;
+void CF_DoorLight_update(GameObject* obj) {
+    CFDoorLightState* state;
+    CFDoorLightPlacement* placement;
     ObjTextureRuntimeSlot* textureFrame;
 
     state = obj->extra;
-    def = (CfDoorLightMapData*)obj->anim.placement;
-    if (state->flags.active == 0 && mainGetBit(def->triggerEvent) != 0 && state->flags.done == 0)
-    {
+    placement = (CFDoorLightPlacement*)obj->anim.placement;
+    if (state->flags.active == 0 && mainGetBit(placement->triggerGameBit) != 0 && state->flags.done == 0) {
         state->flags.active = 1;
-        state->currentFrame = 0;
+        state->currentFrame = CFDOORLIGHT_MIN_FRAME;
     }
-    if (state->flags.active != 0)
-    {
-        textureFrame = objFindTexture((GameObject*)obj, state->textureId, 0);
-        if (textureFrame != 0)
-        {
+    if (state->flags.active != 0) {
+        textureFrame = objFindTexture(obj, state->textureId, 0);
+        if (textureFrame != 0) {
             state->currentFrame += state->frameStep;
-            if (state->currentFrame < 0)
-            {
-                state->currentFrame = 0;
-            }
-            else if (state->currentFrame > state->maxFrame)
-            {
-                if (def->doneEvent != -1)
-                {
-                    mainSetBits(def->doneEvent, 1);
+            if (state->currentFrame < CFDOORLIGHT_MIN_FRAME) {
+                state->currentFrame = CFDOORLIGHT_MIN_FRAME;
+            } else if (state->currentFrame > state->maxFrame) {
+                if (placement->doneGameBit != CFDOORLIGHT_GAME_BIT_NONE) {
+                    mainSetBits(placement->doneGameBit, 1);
                     state->flags.active = 0;
                     state->flags.done = 1;
                     state->currentFrame = state->maxFrame;
-                }
-                else
-                {
+                } else {
                     state->currentFrame = state->resetFrame;
                 }
             }
@@ -83,29 +65,26 @@ void CF_DoorLight_update(GameObject* obj)
     }
 }
 
-void CF_DoorLight_init(GameObject* obj, CfDoorLightMapData* mapData)
-{
-    register CfDoorLightState* state = obj->extra;
-    state->textureId = 0;
-    obj->anim.rotX = (s16)(mapData->rotXByte << 9);
-    state->maxFrame = mapData->maxFrame << 8;
-    state->frameStep = mapData->frameStep;
-    state->resetFrame = mapData->resetFrame << 8;
-    if (state->flags.done = mainGetBit(mapData->doneEvent))
-    {
+void CF_DoorLight_init(GameObject* obj, CFDoorLightPlacement* placement) {
+    register CFDoorLightState* state = obj->extra;
+
+    state->textureId = CFDOORLIGHT_DEFAULT_TEXTURE_ID;
+    obj->anim.rotX = (s16)(placement->initialRotX << CFDOORLIGHT_ROTATION_SHIFT);
+    state->maxFrame = placement->maxFrame << CFDOORLIGHT_FRAME_SHIFT;
+    state->frameStep = placement->frameStep;
+    state->resetFrame = placement->resetFrame << CFDOORLIGHT_FRAME_SHIFT;
+    if ((state->flags.done = mainGetBit(placement->doneGameBit))) {
         state->currentFrame = state->maxFrame;
         state->flags.active = 1;
     }
-    obj->objectFlags |= CFDOORLIGHT_OBJFLAG_HITDETECT_DISABLED;
-    obj->objectFlags |= CFDOORLIGHT_OBJFLAG_HIDDEN;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
 }
 
-void CF_DoorLight_release(void)
-{
+void CF_DoorLight_release(void) {
 }
 
-void CF_DoorLight_initialise(void)
-{
+void CF_DoorLight_initialise(void) {
 }
 
 ObjectDescriptor gCF_DoorLightObjDescriptor = {
