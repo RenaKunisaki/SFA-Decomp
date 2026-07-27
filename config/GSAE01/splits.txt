@@ -691,7 +691,7 @@ main/dll/dll_006B_dll6bfunc0.c:
 	.text       start:0x800F058C end:0x800F07DC
 	.sdata2     start:0x803E0A58 end:0x803E0A74
 
-main/dll/dll_006C_dummy6c.c:
+dlls/modgfx/108/108.c:
 	.text       start:0x800F07DC end:0x800F07EC
 	.data       start:0x80313AD0 end:0x80313AF0
 

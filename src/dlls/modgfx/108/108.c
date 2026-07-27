@@ -1,5 +1,5 @@
 /*
- * dummy6c (DLL 0x6C) - empty placeholder DLL.
+ * DLL 108 / 0x6C - empty placeholder DLL.
  *
  * Provides only the three required object-DLL entry points: a no-op
  * release and initialise, plus a func03 stub that returns 0. No game
