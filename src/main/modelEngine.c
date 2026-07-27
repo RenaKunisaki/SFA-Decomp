@@ -85,6 +85,7 @@
 #include "dlls/objects/286_MagicCaveBo.h"
 #include "dlls/objects/287_MagicCaveTo.h"
 #include "dlls/objects/288_TrickyGuard.h"
+#include "dlls/objects/289.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -229,7 +230,7 @@ extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDesc
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
     gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
-extern ResourceDescriptor gInfoTextObjDescriptor, gKT_TorchObjDescriptor, gKtFallingrocksObjDescriptor;
+extern ResourceDescriptor gKT_TorchObjDescriptor, gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
@@ -1248,7 +1249,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMagicCaveBottomObjDescriptor,
     (ResourceDescriptor*)&gMagicCaveTopObjDescriptor,
     (ResourceDescriptor*)&gTrickyGuardSpotObjDescriptor,
-    &gInfoTextObjDescriptor,
+    (ResourceDescriptor*)&gInfoTextObjDescriptor,
     &gCCTestInfotObjDescriptor,
     &gFuelCellObjDescriptor,
     &gDeathGasObjDescriptor,

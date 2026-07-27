@@ -1,51 +1,48 @@
-/* DLL 0x121 implements reusable information-text trigger objects. */
+/*
+ * Reusable information-text trigger object (DLL slot 289 / 0x121).
+ *
+ * Displays the selected model help-text entry while its trigger is active and
+ * the player remains inside the object's interaction range.
+ */
+#include "dlls/objects/289.h"
 #include "game/objects/object.h"
-#include "main/frame_timing.h"
-#include "sys/objects.h"
-#include "main/objprint_render_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/frame_timing.h"
 #include "main/minimap_api.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/dll_0121_infotext.h"
+#include "main/obj_trigger.h"
+#include "main/objprint_render_api.h"
+#include "sys/objects.h"
 
-int infotext_getExtraSize(void) { return sizeof(InfoTextState); }
+#define INFO_TEXT_DISPLAY_DURATION 600.0f
 
-void infotext_update(GameObject* obj)
-{
-    InfoTextState* state;
-    GameObject* objReg = obj;
+int infotext_getExtraSize(void) {
+    return sizeof(InfoTextState);
+}
 
-    state = objReg->extra;
-    if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0)
-    {
-        state->displayTimer = 600.0f;
+void infotext_update(GameObject* obj) {
+    InfoTextState* state = obj->extra;
+
+    if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0) {
+        state->displayTimer = INFO_TEXT_DISPLAY_DURATION;
     }
-    if (state->displayTimer > 0.0f)
-    {
-        if ((objReg->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
-        {
+    if (state->displayTimer > 0.0f) {
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0) {
             state->displayTimer = 0.0f;
-        }
-        else
-        {
+        } else {
             state->displayTimer = state->displayTimer - timeDelta;
-            showHelpText(objReg->anim.modelInstance->helpTextIds[
-                ((InfoTextSetup*)objReg->anim.placementData)->hintTextIndex]);
+            showHelpText(
+                obj->anim.modelInstance->helpTextIds[((InfoTextPlacement*)obj->anim.placementData)->hintTextIndex]);
         }
     }
-    if ((objReg->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0)
-    {
-        objRenderFn_80041018(objReg);
+    if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0) {
+        objRenderFn_80041018(obj);
     }
 }
 
-void infotext_init(GameObject* obj, InfoTextSetup* setup)
-{
-    u32 flags;
-    flags = (u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    obj->objectFlags = flags;
-    obj->anim.rotX = (s16)((s32)(u8)setup->rotation << 8);
-    objSetHintTextIdx(obj, (u8)setup->hintTextIndex);
+void infotext_init(GameObject* obj, InfoTextPlacement* placement) {
+    obj->objectFlags = (u16)((u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
+    obj->anim.rotX = (s16)((s32)(u8)placement->rotationX << 8);
+    objSetHintTextIdx(obj, (u8)placement->hintTextIndex);
 }
 
 ObjectDescriptor gInfoTextObjDescriptor = {
