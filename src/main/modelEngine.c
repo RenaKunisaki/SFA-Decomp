@@ -185,6 +185,7 @@
 #include "dlls/objects/388.h"
 #include "dlls/objects/389_CCgasvent.h"
 #include "dlls/objects/390_CCgasventCo.h"
+#include "dlls/objects/391_CCqueen.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -277,7 +278,6 @@ extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPl
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCClevcontrolObjDescriptor, gCClightfootObjDescriptor,
     gCCpedstalObjDescriptor;
-extern ResourceDescriptor gCCqueenObjDescriptor;
 extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1423,7 +1423,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll184ObjDescriptor,
     (ResourceDescriptor*)&gCCGasVentObjDescriptor,
     (ResourceDescriptor*)&gCCGasVentControlObjDescriptor,
-    &gCCqueenObjDescriptor,
+    (ResourceDescriptor*)&gCCQueenObjDescriptor,
     &gCClightfootObjDescriptor,
     &gCCSharpclawPadObjDescriptor,
     &gCCpedstalObjDescriptor,
