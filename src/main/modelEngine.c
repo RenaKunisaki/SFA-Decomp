@@ -157,6 +157,7 @@
 #include "dlls/objects/359_SpiritDoorL.h"
 #include "dlls/objects/360_HoloPoint.h"
 #include "dlls/objects/361_IMIceMounta.h"
+#include "dlls/objects/362_CRrockfall.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -251,7 +252,7 @@ extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPl
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor;
-extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
+extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
@@ -1372,7 +1373,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSpiritDoorLockObjDescriptor,
     (ResourceDescriptor*)&gHoloPointNullResourceDescriptor,
     (ResourceDescriptor*)&gIMIceMountainObjDescriptor,
-    &gCRrockfallObjDescriptor,
+    (ResourceDescriptor*)&gCRrockfallObjDescriptor,
     &gMagicLightObjDescriptor,
     &lbl_80323740,
     &gIMIcePillarObjDescriptor,
