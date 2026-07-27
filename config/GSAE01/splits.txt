@@ -1453,6 +1453,7 @@ dlls/engine/49/49.c:
 	.data       start:0x8031C328 end:0x8031C5F8
 	.sdata      start:0x803DBBB0 end:0x803DBBF0
 	.sbss       start:0x803DD928 end:0x803DD960
+	.sdata2     start:0x803E2200 end:0x803E22A0
 
 dlls/engine/63/63.c:
 	.text       start:0x80133F70 end:0x80134098

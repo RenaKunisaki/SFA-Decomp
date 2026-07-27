@@ -166,43 +166,9 @@ u8 gMinimapBlipPulse;
 u8 gMinimapRadarInited;
 u8 gMinimapAreaNameDelay;
 extern u8 lbl_803DD75B;
-extern u32 gMinimapBaseColor;
-extern const f32 gMinimapZero;
-extern f32 gMinimapF50;
-extern f32 gMinimapF256;
-extern f32 gMinimapFNeg10;
-extern f32 gMinimapFNeg6_67;
-extern f32 gMinimapPi;
-extern f32 gMinimapF32768;
-extern f32 gMinimapFNeg6;
-extern f32 gMinimapFNeg4;
-extern f32 gMinimapF32;
-extern f32 gMinimapF44;
-extern f32 gMinimapF52;
-extern f32 gMinimapF48;
-extern f32 gMinimapF28;
-extern f32 gMinimapF22;
-extern f32 gMinimapF68;
-extern f32 gMinimapF74;
 
-extern f32 gMinimapFNeg15;
-extern f32 gMinimapFNeg9_8;
-extern f32 gMinimapFNeg40;
-extern f32 gMinimapF0_05;
-
-extern f32 gMinimapF110;
-extern f32 gMinimapF43;
-extern f32 gMinimapF390;
-extern u32 gMinimapCompassColor;
-extern f32 gMinimapBlipNearDist;
-extern f32 gMinimapF65536;
-extern f32 gMinimapF60;
-extern f32 gMinimapTwo;
-extern f32 gMinimapF24576;
-extern f32 gMinimapFNeg24576;
-extern f32 gMinimapFltMax;
-extern f32 gMinimapOne;
-extern f32 gMinimapBlipVeryNearDist;
+const MinimapColor gMinimapCompassColor = {0x00FF0000};
+const MinimapColor gMinimapBaseColor = {0xFFFF0000};
 
 int Minimap_update(void)
 {
@@ -238,8 +204,8 @@ int Minimap_update(void)
     i = 0;
     k = 0;
     found = 0;
-    oy = ox = gMinimapZero;
-    color.value = gMinimapBaseColor;
+    oy = ox = 0.0f;
+    color.value = gMinimapBaseColor.value;
     player = Obj_GetPlayerObject();
     if (player != NULL)
     {
@@ -481,33 +447,33 @@ int Minimap_update(void)
                     color.channels.g = 0x4d;
                     color.channels.b = 0x84;
                     hudDrawRect(0x32, gMinimapBoxY, boxW + 0x32, gMinimapBoxY + boxH, color.channels);
-                    drawPartialTexture(minimapTexture, (gMinimapF50 - panx) - frac,
+                    drawPartialTexture(minimapTexture, (50.0f - panx) - frac,
                                        ((f32)(int)gMinimapBoxY - pany) - fv, gMinimapContentAlpha & 0xff,
-                                        (int)(gMinimapF256 * gMinimapZoom), texW - mapTileU, texH - mapTileV, mapTileU, mapTileV);
-                    cx = 0.5f + ((gMinimapZoom * (xrel * gMinimapWorldToTexScale) + gMinimapF50) - ox - panx);
+                                        (int)(256.0f * gMinimapZoom), texW - mapTileU, texH - mapTileV, mapTileU, mapTileV);
+                    cx = 0.5f + ((gMinimapZoom * (xrel * gMinimapWorldToTexScale) + 50.0f) - ox - panx);
                     cy =
                         0.5f + ((gMinimapZoom * (yrel * gMinimapWorldToTexScale) + (f32)(int)gMinimapBoxY) - oy - pany);
                     color.channels.a = gMinimapContentAlpha;
                     color.channels.r = 0;
                     color.channels.g = 0;
                     color.channels.b = 0;
-                    gMinimapArrowScale0 = gMinimapFNeg10;
-                    fv = gMinimapFNeg6_67;
+                    gMinimapArrowScale0 = -10.0f;
+                    fv = -6.67f;
                     gMinimapArrowScale1 = fv;
                     gMinimapArrowScale2 = fv;
                     {
                         f32 c1 = gMinimapArrowScale0 *
-                             mathSinf(gMinimapPi * (f32)player->anim.rotX / gMinimapF32768);
+                             mathSinf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
                         f32 s1 = gMinimapArrowScale0 *
-                             mathCosf(gMinimapPi * (f32)player->anim.rotX / gMinimapF32768);
+                             mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
                         f32 c2 = gMinimapArrowScale1 *
-                             mathSinf(gMinimapPi * (f32)(player->anim.rotX + 0x6000) / gMinimapF32768);
+                             mathSinf(3.1415927f * (f32)(player->anim.rotX + 0x6000) / 32768.0f);
                         f32 s2 = gMinimapArrowScale1 *
-                             mathCosf(gMinimapPi * (f32)(player->anim.rotX + 0x6000) / gMinimapF32768);
+                             mathCosf(3.1415927f * (f32)(player->anim.rotX + 0x6000) / 32768.0f);
                         f32 c3 = gMinimapArrowScale2 *
-                             mathSinf(gMinimapPi * (f32)(player->anim.rotX - 0x6000) / gMinimapF32768);
+                             mathSinf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
                         f32 s3 = gMinimapArrowScale2 *
-                             mathCosf(gMinimapPi * (f32)(player->anim.rotX - 0x6000) / gMinimapF32768);
+                             mathCosf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
                         hudDrawTriangle(cx - c1, cy - s1, cx - c2, cy - s2, cx - c3, cy - s3, color.channels);
                     }
                     color.channels.a = gMinimapContentAlpha;
@@ -515,16 +481,16 @@ int Minimap_update(void)
                     color.channels.g = 0xff;
                     color.channels.b = 0;
                     {
-                        f32 c1 = gMinimapFNeg6 * mathSinf(gMinimapPi * (f32)player->anim.rotX / gMinimapF32768);
-                        f32 s1 = gMinimapFNeg6 * mathCosf(gMinimapPi * (f32)player->anim.rotX / gMinimapF32768);
-                        f32 c2 = gMinimapFNeg4 *
-                             mathSinf(gMinimapPi * (f32)(player->anim.rotX + 0x6000) / gMinimapF32768);
-                        f32 s2 = gMinimapFNeg4 *
-                             mathCosf(gMinimapPi * (f32)(player->anim.rotX + 0x6000) / gMinimapF32768);
-                        f32 c3 = gMinimapFNeg4 *
-                             mathSinf(gMinimapPi * (f32)(player->anim.rotX - 0x6000) / gMinimapF32768);
-                        f32 s3 = gMinimapFNeg4 *
-                             mathCosf(gMinimapPi * (f32)(player->anim.rotX - 0x6000) / gMinimapF32768);
+                        f32 c1 = -6.0f * mathSinf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
+                        f32 s1 = -6.0f * mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
+                        f32 c2 = -4.0f *
+                             mathSinf(3.1415927f * (f32)(player->anim.rotX + 0x6000) / 32768.0f);
+                        f32 s2 = -4.0f *
+                             mathCosf(3.1415927f * (f32)(player->anim.rotX + 0x6000) / 32768.0f);
+                        f32 c3 = -4.0f *
+                             mathSinf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
+                        f32 s3 = -4.0f *
+                             mathCosf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
                         hudDrawTriangle(cx - c1, cy - s1, cx - c2, cy - s2, cx - c3, cy - s3, color.channels);
                     }
                 }
@@ -603,7 +569,7 @@ int Minimap_update(void)
                 break;
             }
             GXSetScissor(0, 0, 0x280, 0x1e0);
-            drawTexture(gMinimapCompassTexture, gMinimapF32, (f32)(int)(gMinimapBoxY - 0x14), gMinimapFadeAlpha & 0xff, 0x100);
+            drawTexture(gMinimapCompassTexture, 32.0f, (f32)(int)(gMinimapBoxY - 0x14), gMinimapFadeAlpha & 0xff, 0x100);
             if (gMinimapFadeAlpha != 0)
             {
                 compassColor.channels.a = gMinimapContentAlpha;
@@ -617,13 +583,13 @@ int Minimap_update(void)
                         if (gMinimapZoom < gMinimapMaxZoom)
                         {
                             t = (f32)(sv = xc - 0x14);
-                            hudDrawTriangle(gMinimapF44, t, gMinimapF52, (f32)sv, gMinimapF48,
+                            hudDrawTriangle(44.0f, t, 52.0f, (f32)sv, 48.0f,
                                             (f32)(xc - 0x1a), compassColor.channels);
                         }
                         if (gMinimapZoom > gMinimapMinZoom)
                         {
                             t = (f32)(sv = xc + 0x14);
-                            hudDrawTriangle(gMinimapF44, t, gMinimapF52, (f32)sv, gMinimapF48,
+                            hudDrawTriangle(44.0f, t, 52.0f, (f32)sv, 48.0f,
                                             (f32)(xc + 0x1a), compassColor.channels);
                         }
                     }
@@ -631,8 +597,8 @@ int Minimap_update(void)
                     e = (f32)(xr = xc + 4);
                     a = (f32)(sv = xc);
                     a = a;
-                    hudDrawTriangle(gMinimapF28, t, gMinimapF28, e, gMinimapF22, a, compassColor.channels);
-                    hudDrawTriangle(gMinimapF68, xl, gMinimapF68, xr, gMinimapF74, xc, compassColor.channels);
+                    hudDrawTriangle(28.0f, t, 28.0f, e, 22.0f, a, compassColor.channels);
+                    hudDrawTriangle(68.0f, xl, 68.0f, xr, 74.0f, xc, compassColor.channels);
                 }
             }
         }
@@ -662,6 +628,26 @@ u8 isAreaNameTextActive(void)
 
 PPCWGPipe GXWGFifo : (0xCC008000);
 
+static inline f32 compassTipSin(f32 scale, f32 phase)
+{
+    return scale * mathSinf((3.1415927f * phase) / 32768.0f);
+}
+
+static inline f32 compassTipCos(f32 scale, f32 phase)
+{
+    return scale * mathCosf((3.1415927f * phase) / 32768.0f);
+}
+
+static inline f32 compassNeedleSin(f32 scale, f32 phase, f32 offset)
+{
+    return scale * mathSinf((3.1415927f * (phase + offset)) / 32768.0f);
+}
+
+static inline f32 compassNeedleCos(f32 scale, f32 phase, f32 offset)
+{
+    return scale * mathCosf((3.1415927f * (phase + offset)) / 32768.0f);
+}
+
 void Minimap_drawCompassNeedle(void)
 {
     MinimapColor color;
@@ -673,21 +659,21 @@ void Minimap_drawCompassNeedle(void)
     f32 s2;
     int y;
 
-    color.value = gMinimapCompassColor;
+    color.value = gMinimapCompassColor.value;
     color.channels.a = gMinimapFadeAlpha;
-    gMinimapCompassPhase = -(gMinimapBlipNearDist * timeDelta - gMinimapCompassPhase);
-    if (gMinimapCompassPhase > *(f32*)&gMinimapF32768)
+    gMinimapCompassPhase = -(500.0f * timeDelta - gMinimapCompassPhase);
+    if (gMinimapCompassPhase > 32768.0f)
     {
-        gMinimapCompassPhase = gMinimapCompassPhase - gMinimapF65536;
+        gMinimapCompassPhase = gMinimapCompassPhase - 65536.0f;
     }
-    c0 = gMinimapF60 * mathSinf((gMinimapPi * gMinimapCompassPhase) / gMinimapF32768);
-    s0 = gMinimapF60 * mathCosf((gMinimapPi * gMinimapCompassPhase) / gMinimapF32768);
-    c1 = gMinimapTwo * mathSinf((gMinimapPi * (gMinimapCompassPhase + gMinimapF24576)) / gMinimapF32768);
-    s1 = gMinimapTwo * mathCosf((gMinimapPi * (gMinimapCompassPhase + gMinimapF24576)) / gMinimapF32768);
-    cc2 = gMinimapTwo * mathSinf((gMinimapPi * (gMinimapCompassPhase + gMinimapFNeg24576)) / gMinimapF32768);
-    s2 = gMinimapTwo * mathCosf((gMinimapPi * (gMinimapCompassPhase + gMinimapFNeg24576)) / gMinimapF32768);
+    c0 = compassTipSin(60.0f, gMinimapCompassPhase);
+    s0 = compassTipCos(60.0f, gMinimapCompassPhase);
+    c1 = compassNeedleSin(2.0f, gMinimapCompassPhase, 24576.0f);
+    s1 = compassNeedleCos(2.0f, gMinimapCompassPhase, 24576.0f);
+    cc2 = compassNeedleSin(2.0f, gMinimapCompassPhase, -24576.0f);
+    s2 = compassNeedleCos(2.0f, gMinimapCompassPhase, -24576.0f);
     y = gMinimapBoxY + 0x32;
-    hudDrawTriangle(gMinimapF110 - c0, y - s0, gMinimapF110 - c1, y - s1, gMinimapF110 - cc2, y - s2,
+    hudDrawTriangle(110.0f - c0, y - s0, 110.0f - c1, y - s1, 110.0f - cc2, y - s2,
                     color.channels);
 }
 
@@ -699,7 +685,7 @@ void Minimap_drawCompassBlip(void)
     ObjModel* model;
 
     count = 2;
-    viewFn_80129cbc(gMinimapF43, gMinimapF110, gMinimapF390);
+    viewFn_80129cbc(43.0f, 110.0f, 390.0f);
     pulseOn = (gMinimapBlipPulse >> 3) & 1;
     if (pulseOn != 0)
     {
@@ -733,11 +719,11 @@ void Minimap_setupCompassBlip(void)
     u8 i;
 
     i = 0;
-    posX = gMinimapFNeg15;
-    posY = gMinimapFNeg9_8;
-    center = gMinimapZero;
-    posZ = gMinimapFNeg40;
-    scale = gMinimapF0_05;
+    posX = -15.0f;
+    posY = -9.8f;
+    center = 0.0f;
+    posZ = -40.0f;
+    scale = 0.05f;
     for (; i < 2; i++)
     {
         gMinimapBlipObjects[i] = (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(32, MINIMAP_COMMAND_MENU_OBJ_BASE + i), 4, -1, -1, 0);
@@ -793,7 +779,7 @@ void Minimap_frameStart(void)
     f32 t;
     f32 old;
     f32 pw;
-    f32 dist = gMinimapFltMax;
+    f32 dist = 3.4028235e38f;
 
     sfx = 0;
     player = (int)Obj_GetPlayerObject();
@@ -897,7 +883,7 @@ void Minimap_frameStart(void)
                 }
                 else
                 {
-                    gMinimapZoomStep = gMinimapOne;
+                    gMinimapZoomStep = 1.0f;
                 }
                 t = (gMinimapZoomStep < gMinimapZoomStepMin)
                         ? gMinimapZoomStepMin
@@ -936,10 +922,10 @@ void Minimap_frameStart(void)
                     (GameObject*)ObjGroup_FindNearestObject(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
                 if ((void*)gMinimapRadarTarget != NULL)
                 {
-                    if (dist < gMinimapBlipNearDist)
+                    if (dist < 500.0f)
                     {
                         gMinimapBlipPulse += 1;
-                        if (dist < gMinimapBlipVeryNearDist)
+                        if (dist < 150.0f)
                         {
                             gMinimapBlipPulse += 1;
                         }
