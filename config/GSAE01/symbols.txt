@@ -18662,7 +18662,6 @@ lbl_803E176C = .sdata2:0x803E176C; // type:object size:0x4 align:4 data:float
 lbl_803E1770 = .sdata2:0x803E1770; // type:object size:0x4 align:4 data:float
 lbl_803E1774 = .sdata2:0x803E1774; // type:object size:0x4 align:4 data:float
 lbl_803E1778 = .sdata2:0x803E1778; // type:object size:0x4 align:4 data:float
-lbl_803E177C = .sdata2:0x803E177C; // type:object size:0x4 align:4 data:float
 lbl_803E1780 = .sdata2:0x803E1780; // type:object size:0x4 align:4 data:float
 gCamTalkDefaultFov = .sdata2:0x803E1784; // type:object size:0x4 align:4 data:float
 lbl_803E1788 = .sdata2:0x803E1788; // type:object size:0x4 align:4 data:float
