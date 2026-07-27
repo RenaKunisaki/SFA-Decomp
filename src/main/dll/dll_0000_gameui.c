@@ -653,7 +653,7 @@ extern const f32 lbl_803E2060;
 extern const f32 lbl_803E2064;
 extern const f32 lbl_803E2068;
 #include "main/fsin16_approx_api.h"
-#include "main/dll/dll_8011d918.h"
+#include "main/audio/sfx_limited_object_api.h"
 #include "main/trig.h"
 #include "main/dll/dll_0017_savegame_api.h"
 #include "main/dll/dll_0011_screens_api.h"
@@ -897,6 +897,36 @@ void pauseMenuDrawSideRails(s32 alpha);
 void pauseMenuFn_8012b77c(void);
 void pauseMenuRunSubmenu(int p1);
 void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q);
+
+void cMenuPlayTrickyCommandSfx(int obj)
+{
+    int sfx = 0;
+    switch (gCMenuActivatedId)
+    {
+    case 0:
+        sfx = 0x3FB;
+        break;
+    case 5:
+        sfx = 0x3FA;
+        break;
+    case 1:
+        sfx = 0x3F8;
+        break;
+    case 4:
+        sfx = 0x3F9;
+        break;
+    case 2:
+        sfx = 0x3F7;
+        break;
+    case 3:
+        sfx = 0x3FC;
+        break;
+    }
+    if (sfx != 0)
+    {
+        Sfx_PlayFromObjectLimited(obj, sfx, 1);
+    }
+}
 
 void gameUiLoadResources(void)
 {

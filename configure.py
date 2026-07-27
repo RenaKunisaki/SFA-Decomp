@@ -1537,7 +1537,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0038_weirdunusedmenu.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0039_dummy39.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_003A_dummy3a.c"),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_8011d918.c", cflags=cflags_dll_nosched),
             Object(NonMatching, "main/dll/dll_0000_gameui.c", cflags=cflags_dll_noopt, extra_cflags=["-inline", "noauto"]),
             Object(MatchingFor("GSAE01"), "main/dll/dll_003B_menu.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_003C_tumbleweedbush.c", cflags=cflags_dll_noopt_noinline),
