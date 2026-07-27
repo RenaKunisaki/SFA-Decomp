@@ -3,8 +3,14 @@
 declaration ORDER (decl order sets saved-register homes, per CLAUDE.md) and
 rebuilding + measuring each variant.
 
+It sweeps EVERY declaration block in the function: the leading block of the
+function body AND the leading block of every nested scope (loop bodies,
+if/else blocks, case blocks, bare blocks).  Blocks are swept one at a time by
+coordinate ascent -- each block is permuted with the others pinned at the best
+ordering found so far -- with an optional --cross pass over the small blocks.
+
 For each candidate ordering it:
-  1. rewrites the leading declaration block of the target function,
+  1. rewrites one declaration block of the target function,
   2. rebuilds ONLY that unit's src .o (locked_ninja),
   3. measures the function's instruction-match against the retail target .o
      (objdump both, normalize branch labels, SequenceMatcher ratio),
@@ -25,10 +31,27 @@ Usage:
   --apply-best    write the best-scoring variant even if the tool is re-run
                   (default: applies best iff strictly better than baseline).
 
+  --list-blocks   print every permutable declaration block and exit.
+  --block N       sweep only block N (repeatable).
+  --cross         after the per-block pass, try the cross-product of the
+                  small (<=4 item) blocks.
+  --top-level-only  restore the historical behaviour (body's leading block).
+
 Notes:
   * SJIS-safe: the file is read/written as latin-1 (byte-transparent).
-  * Only the leading declaration block is reordered; each item keeps its exact
-    source text (multi-line union/struct decls are moved as one unit).
+  * Each item keeps its exact source text (multi-line union/struct decls are
+    moved as one unit).
+  * Crash-safe: a `<file>.brutebak` sidecar holds the pristine bytes for the
+    whole run and a hard kill is repaired on the next invocation, so a killed
+    sweep can never leave the target file mid-permutation.
+
+WHY NESTED SCOPES MATTER: the saved-GPR band is filled r31-downward in two
+phases -- webs that never reach a loop header go first, in reverse
+first-definition order, then everything else in DECLARATION order.  A local
+declared inside a loop body is exactly the kind of web that phase split makes
+order-sensitive, and it is exactly what this tool used to skip.  Any historical
+"declaration order is inert" verdict for a function with inner-scope
+declarations was measured against the top-level block only and is void.
 """
 from __future__ import annotations
 
@@ -381,7 +404,12 @@ def looks_like_decl(core: str) -> bool:
 
 
 def parse_decl_block(src: str, body_open: int, body_end: int):
-    """Return (block_start, block_end, indent, items[list[str core]])."""
+    """Return (block_start, block_end, indent, items[list[str core]]).
+
+    Reads the run of declarations at the TOP of the block that opens at
+    `body_open` (C89 style).  `body_end` is the index of that block's closing
+    brace.  Works for the function body and for any nested scope alike.
+    """
     i = body_open + 1
     items = []
     block_start = None
@@ -405,6 +433,99 @@ def parse_decl_block(src: str, body_open: int, body_end: int):
         block_end = end
         i = end
     return block_start, block_end, indent, items
+
+
+# ------------------------------------------------- nested-scope enumeration
+SCOPE_PREV_CHARS = set(")};:{")
+SCOPE_PREV_WORDS = {"else", "do", "try"}
+
+
+def find_scope_blocks(src: str, body_open: int, body_end: int):
+    """Every SCOPE `{...}` in the function, outermost first, in source order.
+
+    Returns [(open_idx, close_idx), ...] including the function body itself.
+    Brace-initialisers (`= { ... }`, `, { ... }`) are classified as NON-scope
+    and are skipped whole, so `static const Foo t[] = {{..},{..}};` inside a
+    body never produces phantom blocks.
+
+    This is the fix for the long-standing false-negative: the sweeper used to
+    look only at the function body's leading declaration run, so a local
+    declared inside a loop body / if-block / case block was NEVER permuted, and
+    every "declaration order is inert" verdict for such a function was vacuous.
+    """
+    blocks = []
+    stack = []            # list of (open_idx, is_scope)
+    init_depth = 0        # >0 while inside a brace initialiser
+    last_code = ""        # last non-ws/comment char seen
+    last_word = ""        # last identifier token seen
+    i = body_open
+    n = body_end + 1
+    while i < n:
+        c = src[i]
+        if src.startswith("//", i):
+            while i < n and src[i] != "\n":
+                i += 1
+            continue
+        if src.startswith("/*", i):
+            i += 2
+            while i < n and not src.startswith("*/", i):
+                i += 1
+            i += 2
+            continue
+        if c in '"\'':
+            i = skip_string(src, i)
+            last_code = c
+            last_word = ""
+            continue
+        if c == "{":
+            if init_depth:
+                init_depth += 1
+                is_scope = False
+            else:
+                is_scope = (last_code in SCOPE_PREV_CHARS
+                            or last_word in SCOPE_PREV_WORDS
+                            or last_code == "")
+                if not is_scope:
+                    init_depth = 1
+            stack.append((i, is_scope))
+        elif c == "}":
+            if stack:
+                o, is_scope = stack.pop()
+                if is_scope:
+                    blocks.append((o, i))
+                elif init_depth:
+                    init_depth -= 1
+        if not c.isspace():
+            last_code = c
+            if c.isalnum() or c == "_":
+                last_word += c
+            else:
+                last_word = ""
+        i += 1
+    blocks.sort()
+    return blocks
+
+
+def collect_decl_blocks(src: str, body_open: int, body_end: int, min_items: int = 2):
+    """All permutable declaration blocks in a function: top-level AND nested.
+
+    -> [{'start','end','indent','items','scope','depth'}] in source order.
+    """
+    scopes = find_scope_blocks(src, body_open, body_end)
+    depth_of = {}
+    for o, c in scopes:
+        depth_of[o] = sum(1 for o2, c2 in scopes if o2 < o and c2 > c)
+    out = []
+    for o, c in scopes:
+        bs, be, indent, items = parse_decl_block(src, o, c)
+        if not items or len(items) < min_items:
+            continue
+        out.append({
+            "start": bs, "end": be, "indent": indent, "items": items,
+            "scope": (o, c), "depth": depth_of[o],
+        })
+    out.sort(key=lambda b: b["start"])
+    return out
 
 
 # ------------------------------------------------------------ variant gen
@@ -459,6 +580,78 @@ def rebuild(unit_object: str, version: str) -> bool:
     return r.returncode == 0 and src_o.is_file()
 
 
+# ------------------------------------------------------------ crash safety
+def install_restore_guard(src_file: Path, original: bytes):
+    """Guarantee the target file is never left mid-permutation.
+
+    A sidecar `<file>.brutebak` holds the pristine bytes for the whole run: if
+    the process is hard-killed (SIGTERM/SIGKILL, a wrapper timeout, a closed
+    terminal) the next invocation finds the sidecar and restores from it before
+    doing anything else.  atexit + SIGINT/SIGTERM handle the recoverable cases.
+    """
+    import atexit
+    import os
+    import signal
+
+    bak = src_file.with_suffix(src_file.suffix + ".brutebak")
+    bak.write_bytes(original)
+
+    state = {"done": False}
+
+    def restore(*_a):
+        if state["done"]:
+            return
+        state["done"] = True
+        try:
+            if src_file.read_bytes() != original:
+                src_file.write_bytes(original)
+        except OSError:
+            pass
+
+    def finish():
+        restore()
+        try:
+            bak.unlink()
+        except OSError:
+            pass
+
+    def on_signal(signum, _frame):
+        restore()
+        try:
+            bak.unlink()
+        except OSError:
+            pass
+        os._exit(130)
+
+    atexit.register(finish)
+    for s in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+        try:
+            signal.signal(s, on_signal)
+        except (ValueError, OSError):
+            pass
+
+    def keep(newbytes: bytes):
+        """Adopt `newbytes` as the value to leave on disk (a confirmed win)."""
+        state["done"] = True
+        src_file.write_bytes(newbytes)
+        try:
+            bak.unlink()
+        except OSError:
+            pass
+
+    return keep
+
+
+def recover_stale_backup(src_file: Path):
+    bak = src_file.with_suffix(src_file.suffix + ".brutebak")
+    if bak.is_file():
+        good = bak.read_bytes()
+        if src_file.read_bytes() != good:
+            print(f"# recovering {src_file.name} from a killed run's backup")
+            src_file.write_bytes(good)
+        bak.unlink()
+
+
 # --------------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -471,6 +664,17 @@ def main():
                     default="all")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply-best", action="store_true")
+    ap.add_argument("--list-blocks", action="store_true",
+                    help="print every permutable decl block (top-level AND "
+                         "nested scopes) and exit")
+    ap.add_argument("--block", type=int, action="append", default=None,
+                    help="sweep only these block indices (repeatable); "
+                         "default sweeps every block")
+    ap.add_argument("--top-level-only", action="store_true",
+                    help="old (buggy) behaviour: leading block of the body only")
+    ap.add_argument("--cross", action="store_true",
+                    help="after the per-block pass, also try the cross-product "
+                         "of the winning orderings of small blocks")
     args = ap.parse_args()
 
     config = REPO / "build" / args.version / "config.json"
@@ -481,6 +685,7 @@ def main():
     objdump = find_objdump()
     tgt_o, cur_o = objdump_paths(unit, args.version)
 
+    recover_stale_backup(src_file)
     original = src_file.read_bytes()
     src = original.decode("latin-1")
 
@@ -488,35 +693,72 @@ def main():
     if not body:
         raise SystemExit(f"could not locate definition of {args.symbol}")
     body_open, body_end = body
-    bstart, bend, indent, items = parse_decl_block(src, body_open, body_end)
-    if not items or len(items) < 2:
-        raise SystemExit(
-            f"decl block has {len(items) if items else 0} item(s); nothing to permute")
+
+    if args.top_level_only:
+        bstart, bend, indent, items = parse_decl_block(src, body_open, body_end)
+        blocks = ([{"start": bstart, "end": bend, "indent": indent,
+                    "items": items, "scope": (body_open, body_end), "depth": 0}]
+                  if items and len(items) >= 2 else [])
+    else:
+        blocks = collect_decl_blocks(src, body_open, body_end)
+
+    def lineno(idx):
+        return src.count("\n", 0, idx) + 1
 
     print(f"# {args.symbol} in {src_file.relative_to(REPO)}")
-    print(f"# decl block: {len(items)} items, indent={indent!r}")
-    for k, it in enumerate(items):
-        one = " ".join(it.split())
-        print(f"  [{k}] {one[:90]}")
+    if not blocks:
+        raise SystemExit("no declaration block with >=2 items; nothing to permute")
+    print(f"# {len(blocks)} permutable declaration block(s) "
+          f"(top-level + nested scopes):")
+    for bi, b in enumerate(blocks):
+        print(f"  block {bi}: depth={b['depth']} line {lineno(b['start'])}"
+              f"-{lineno(b['end'])}  {len(b['items'])} items  "
+              f"indent={b['indent']!r}")
+        for k, it in enumerate(b["items"]):
+            print(f"      [{k}] {' '.join(it.split())[:88]}")
 
-    def render(order):
-        # src[:bstart] already ends with the original leading newline+indent that
-        # precedes the first decl, so the first item carries no separator; each
-        # subsequent item gets its own "\n"+indent.
-        first = items[order[0]].lstrip()
-        rest = "".join("\n" + indent + items[k].lstrip() for k in order[1:])
-        return src[:bstart] + first + rest + src[bend:], ""
+    if args.list_blocks:
+        return
 
-    variants = gen_variants(len(items), args.strategy, args.max_variants)
-    print(f"# {len(variants)} variants (strategy={args.strategy}, "
-          f"cap={args.max_variants}, budget={args.time_budget}s)")
+    sel = list(range(len(blocks))) if args.block is None else sorted(set(args.block))
+    for bi in sel:
+        if bi < 0 or bi >= len(blocks):
+            raise SystemExit(f"--block {bi} out of range (0..{len(blocks)-1})")
+
+    def render(orders):
+        """orders: {block_index: tuple-of-item-indices} -> full source text.
+
+        Blocks are non-overlapping and spliced back-to-front so earlier offsets
+        stay valid.  src[:start] already ends with the newline+indent preceding
+        the first declaration, so item 0 carries no separator.
+        """
+        out = src
+        for bi in sorted(orders, reverse=True):
+            b = blocks[bi]
+            order = orders[bi]
+            it = b["items"]
+            first = it[order[0]].lstrip()
+            rest = "".join("\n" + b["indent"] + it[k].lstrip() for k in order[1:])
+            out = out[:b["start"]] + first + rest + out[b["end"]:]
+        return out
+
+    plan = {bi: gen_variants(len(blocks[bi]["items"]), args.strategy,
+                             args.max_variants) for bi in sel}
+    total = sum(len(v) - 1 for v in plan.values())
+    print(f"# sweeping blocks {sel}: {total} non-identity variants "
+          f"(strategy={args.strategy}, cap={args.max_variants}/block, "
+          f"budget={args.time_budget}s)")
 
     if args.dry_run:
-        print("# dry-run: baseline decl block would be replaced with, e.g.:")
-        newsrc, _ = render(variants[1] if len(variants) > 1 else variants[0])
-        seg = newsrc[bstart:bstart + 400]
-        print(seg)
+        for bi in sel:
+            vs = plan[bi]
+            print(f"# block {bi}: {len(vs)} orderings, e.g. "
+                  f"{list(vs[1] if len(vs) > 1 else vs[0])}")
+            newsrc = render({bi: vs[1] if len(vs) > 1 else vs[0]})
+            print(newsrc[blocks[bi]["start"]:blocks[bi]["start"] + 300])
         return
+
+    keep = install_restore_guard(src_file, original)
 
     # baseline measure. ALWAYS rebuild cur_o from the on-disk (original) source
     # first: in a multi-agent tree the .o can be stale (a peer rebuilt it, or a
@@ -546,61 +788,115 @@ def main():
 
     # DECIDING metric is fuzzy; proxy/regions are informational only. A sibling
     # proved region-count can be anti-correlated with fuzzy, so we never rank on
-    # it. results: (fuzzy, proxy, reg, order)
-    results = [(base_fz, base_proxy, base_reg, variants[0])]
-    best = (base_fz, base_proxy, 0)  # (fuzzy, proxy, variant_idx)
+    # it.  Coordinate ascent over the blocks: each block is swept with the other
+    # blocks pinned at the best ordering found so far, so gains from separate
+    # scopes accumulate.
+    held: dict[int, tuple] = {}
+    cur_fz, cur_px = base_fz, base_proxy
+    results = []          # (fuzzy, proxy, reg, block_index, order)
     t0 = time.time()
+    stop = False
+
+    def trial(orders):
+        src_file.write_bytes(render(orders).encode("latin-1"))
+        if not rebuild(unit["object"], args.version):
+            return None
+        px, reg = proxy()
+        return fuzzy(), px, reg
+
     try:
-        for vi, order in enumerate(variants):
-            if vi == 0:
-                continue
-            if time.time() - t0 > args.time_budget:
-                print(f"# time budget hit after {vi} variants")
+        for bi in sel:
+            if stop:
                 break
-            newsrc, _ = render(order)
-            src_file.write_bytes(newsrc.encode("latin-1"))
-            if not rebuild(unit["object"], args.version):
-                print(f"[{vi:3d}] BUILD FAIL {order}")
-                results.append((-1.0, -1.0, 999, order))
-                continue
-            px, reg = proxy()
-            fz = fuzzy()
-            results.append((fz, px, reg, order))
-            flag = ""
-            # rank strictly by fuzzy; proxy only breaks exact-fuzzy ties
-            if (fz, px) > (best[0], best[1]):
-                best = (fz, px, vi)
-                flag = "  <== best"
-            note = " (fuzzy read FAILED)" if fz < 0 else ""
-            print(f"[{vi:3d}] fuzzy={fz:8.4f}% proxy={px:7.3f}% reg={reg:2d} "
-                  f"{list(order)}{flag}{note}")
+            variants = plan[bi]
+            n_items = len(blocks[bi]["items"])
+            print(f"\n# --- block {bi} (depth {blocks[bi]['depth']}, "
+                  f"{n_items} items, {len(variants) - 1} orderings) ---")
+            block_best = None
+            for vi, order in enumerate(variants):
+                if vi == 0:
+                    continue
+                if time.time() - t0 > args.time_budget:
+                    print(f"# time budget hit (block {bi}, variant {vi})")
+                    stop = True
+                    break
+                res = trial({**held, bi: order})
+                if res is None:
+                    print(f"[b{bi} {vi:3d}] BUILD FAIL {list(order)}")
+                    continue
+                fz, px, reg = res
+                results.append((fz, px, reg, bi, order))
+                flag = ""
+                if (fz, px) > (cur_fz, cur_px) and (
+                        block_best is None or (fz, px) > block_best[:2]):
+                    block_best = (fz, px, order)
+                    flag = "  <== best"
+                note = " (fuzzy read FAILED)" if fz < 0 else ""
+                print(f"[b{bi} {vi:3d}] fuzzy={fz:8.4f}% proxy={px:7.3f}% "
+                      f"reg={reg:2d} {list(order)}{flag}{note}")
+            if block_best and block_best[0] > cur_fz + 1e-4:
+                held[bi] = block_best[2]
+                print(f"# block {bi}: HOLD {list(block_best[2])}  "
+                      f"fuzzy {cur_fz:.4f}% -> {block_best[0]:.4f}%")
+                cur_fz, cur_px = block_best[0], block_best[1]
+            else:
+                print(f"# block {bi}: inert (best {cur_fz:.4f}%)")
+
+        # optional cross-product refinement over the small blocks
+        if args.cross and not stop and len(sel) > 1:
+            small = [bi for bi in sel if len(blocks[bi]["items"]) <= 4]
+            combos = 1
+            for bi in small:
+                combos *= len(plan[bi])
+            if 1 < combos <= args.max_variants:
+                print(f"\n# --- cross-product over blocks {small} "
+                      f"({combos} combos) ---")
+                for combo in itertools.product(*(plan[bi] for bi in small)):
+                    if time.time() - t0 > args.time_budget:
+                        print("# time budget hit during cross-product")
+                        break
+                    orders = {**held}
+                    orders.update(dict(zip(small, combo)))
+                    res = trial(orders)
+                    if res is None:
+                        continue
+                    fz, px, reg = res
+                    if (fz, px) > (cur_fz, cur_px):
+                        cur_fz, cur_px = fz, px
+                        held = orders
+                        print(f"[cross] fuzzy={fz:8.4f}% proxy={px:7.3f}%  "
+                              f"{ {b: list(o) for b, o in orders.items()} }"
+                              "  <== best")
+            else:
+                print(f"\n# cross-product skipped ({combos} combos > cap)")
     finally:
-        # restore original before deciding
+        # never leave a permutation on disk while deciding
         src_file.write_bytes(original)
 
     print("\n# ranked by FUZZY (top 12):")
-    for fz, px, reg, order in sorted(results, key=lambda r: (-r[0], -r[1]))[:12]:
-        print(f"  fuzzy={fz:8.4f}% proxy={px:7.3f}% reg={reg:2d} {list(order)}")
+    for fz, px, reg, bi, order in sorted(results, key=lambda r: (-r[0], -r[1]))[:12]:
+        print(f"  fuzzy={fz:8.4f}% proxy={px:7.3f}% reg={reg:2d} "
+              f"block {bi} {list(order)}")
 
-    best_fz, best_px, best_vi = best
     # commit gate: true fuzzy must strictly rise
-    improved = best_fz > base_fz + 1e-4
-    if improved:
-        newsrc, _ = render(variants[best_vi])
-        src_file.write_bytes(newsrc.encode("latin-1"))
+    if held and cur_fz > base_fz + 1e-4:
+        newbytes = render(held).encode("latin-1")
+        src_file.write_bytes(newbytes)
         rebuild(unit["object"], args.version)
         confirm = fuzzy()
-        print(f"\n# APPLIED best variant #{best_vi}: "
-              f"fuzzy {base_fz:.4f}% -> {confirm:.4f}%")
-        print(f"# order = {list(variants[best_vi])}")
+        print(f"\n# APPLIED: fuzzy {base_fz:.4f}% -> {confirm:.4f}%")
+        for bi, order in sorted(held.items()):
+            print(f"#   block {bi} order = {list(order)}")
         if confirm <= base_fz + 1e-4:
             print("# WARNING: re-measured fuzzy did NOT confirm the gain -- "
                   "restoring original.")
             src_file.write_bytes(original)
             rebuild(unit["object"], args.version)
+        else:
+            keep(newbytes)
     else:
         rebuild(unit["object"], args.version)
-        print(f"\n# no fuzzy improvement (best {best_fz:.4f}% vs "
+        print(f"\n# no fuzzy improvement (best {cur_fz:.4f}% vs "
               f"base {base_fz:.4f}%); restored original.")
 
 
