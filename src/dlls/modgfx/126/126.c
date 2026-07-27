@@ -1,5 +1,6 @@
 /*
- * dll7efunc0 (DLL 0x7E) - one of the foodbag effect DLLs (siblings 0x7C..0x90).
+ * DLL 126 / 0x7E - one of the foodbag effect DLLs covering
+ * DLLs 124-144 / 0x7C-0x90.
  * dll_7E_func03 builds a FbBuf command list of textured billboard quads from
  * the resource blob at lbl_80315258, then hands it to the modgfx system via
  * (*gModgfxInterface)->spawnEffect. The `variant` arg picks one of two middle

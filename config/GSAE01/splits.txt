@@ -775,7 +775,7 @@ main/dll/dll_007D_dll7dfunc0.c:
 	.sbss       start:0x803DD4B0 end:0x803DD4B8
 	.sdata2     start:0x803E0DD8 end:0x803E0DFC
 
-main/dll/dll_007E_dll7efunc0.c:
+dlls/modgfx/126/126.c:
 	.text       start:0x800F4FA4 end:0x800F52E0
 	.sdata      start:0x803DB8E0 end:0x803DB8E8
 	.sdata2     start:0x803E0E00 end:0x803E0E20
