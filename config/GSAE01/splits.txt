@@ -4553,104 +4553,104 @@ dolphin/amcstubs/AmcExi2Stubs.c:
 dolphin/odenotstub/odenotstub.c:
 	.text       start:0x8026BF4C end:0x8026BF54
 
-main/audio/synth_callback.c:
+musyx/runtime/synth_callback.c:
 	extab       start:0x80005620 end:0x80005630
 	extabindex  start:0x80005CC0 end:0x80005CD8
 	.text       start:0x8026BF54 end:0x8026C488
 	.bss        start:0x803AF550 end:0x803B0950
 
-main/audio/synth_queue.c:
+musyx/runtime/synth_queue.c:
 	extab       start:0x80005630 end:0x80005650
 	extabindex  start:0x80005CD8 end:0x80005D08
 	.text       start:0x8026C488 end:0x8026D630
 	.bss        start:0x803B0950 end:0x803BCD90
 
-main/audio/synth_channel.c:
+musyx/runtime/synth_channel.c:
 	.text       start:0x8026D630 end:0x8026D6E4
 
-main/audio/synth_handle.c:
+musyx/runtime/synth_handle.c:
 	extab       start:0x80005650 end:0x80005660
 	extabindex  start:0x80005D08 end:0x80005D20
 	.text       start:0x8026D6E4 end:0x8026DE58
 
-main/audio/synth_seq_events.c:
+musyx/runtime/synth_seq_events.c:
 	.text       start:0x8026DE58 end:0x8026E0E4
 
-main/audio/synth_sequence.c:
+musyx/runtime/synth_sequence.c:
 	.text       start:0x8026E0E4 end:0x8026E0E4
 
-main/audio/synth_seq_dispatch.c:
+musyx/runtime/synth_seq_dispatch.c:
 	extab       start:0x80005660 end:0x80005680
 	extabindex  start:0x80005D20 end:0x80005D50
 	.text       start:0x8026E0E4 end:0x8026EC44
 	.data       start:0x8032ED80 end:0x8032EDD0
 
-main/audio/mcmd_data.c:
+musyx/runtime/mcmd_data.c:
 	.data       start:0x8032EDD0 end:0x8032F050
 
-main/audio/synth_seq_queue.c:
+musyx/runtime/synth_seq_queue.c:
 	.text       start:0x8026EC44 end:0x8026EC44
 
-main/audio/synth_channel_scale.c:
+musyx/runtime/synth_channel_scale.c:
 	extab       start:0x80005680 end:0x80005688
 	extabindex  start:0x80005D50 end:0x80005D5C
 	.text       start:0x8026EC44 end:0x8026F53C
 
-main/audio/synth.c:
+musyx/runtime/synth.c:
 	extab       start:0x80005688 end:0x80005738
 	extabindex  start:0x80005D5C end:0x80005E64
 	.text       start:0x8026F53C end:0x80272610
 	.bss        start:0x803BCD90 end:0x803BE378
 	.sdata2     start:0x803E7798 end:0x803E77D8
 
-main/audio/synth_control.c:
+musyx/runtime/synth_control.c:
 	extab       start:0x80005738 end:0x80005758
 	extabindex  start:0x80005E64 end:0x80005E94
 	.text       start:0x80272610 end:0x80272720
 
-main/audio/snd_synth_api.c:
+musyx/runtime/snd_synth_api.c:
 	extab       start:0x80005758 end:0x800057C8
 	extabindex  start:0x80005E94 end:0x80005F3C
 	.text       start:0x80272720 end:0x80272EA4
 
-main/audio/synth_job_init.c:
+musyx/runtime/synth_job_init.c:
 	.text       start:0x80272EA4 end:0x80272F70
 	.bss        start:0x803BE378 end:0x803BFC78
 
-main/audio/synth_jobs.c:
+musyx/runtime/synth_jobs.c:
 	extab       start:0x800057C8 end:0x800057E0
 	extabindex  start:0x80005F3C end:0x80005F60
 	.text       start:0x80272F70 end:0x802739B8
 
-main/audio/data_tables.c:
+musyx/runtime/data_tables.c:
 	extab       start:0x800057E0 end:0x80005880
 	extabindex  start:0x80005F60 end:0x80006050
 	.text       start:0x802739B8 end:0x80275364
 	.bss        start:0x803BFC78 end:0x803CA2B0
 
-main/audio/mcmd_wait.c:
+musyx/runtime/mcmd_wait.c:
 	extab       start:0x80005880 end:0x80005888
 	extabindex  start:0x80006050 end:0x8000605C
 	.text       start:0x80275364 end:0x8027566C
 
-main/audio/mcmd_loop.c:
+musyx/runtime/mcmd_loop.c:
 	extab       start:0x80005888 end:0x80005890
 	extabindex  start:0x8000605C end:0x80006068
 	.text       start:0x8027566C end:0x802757C4
 
-main/audio/mcmd_setup.c:
+musyx/runtime/mcmd_setup.c:
 	extab       start:0x80005890 end:0x800058C0
 	extabindex  start:0x80006068 end:0x800060B0
 	.text       start:0x802757C4 end:0x802763C0
 	.bss        start:0x803CA2B0 end:0x803CA2D0
 	.sdata2     start:0x803E77F0 end:0x803E7810
 
-main/audio/mcmd_volume.c:
+musyx/runtime/mcmd_volume.c:
 	extab       start:0x800058C0 end:0x800058D0
 	extabindex  start:0x800060B0 end:0x800060C8
 	.text       start:0x802763C0 end:0x8027656C
 
-main/audio/mcmd_exec.c:
+musyx/runtime/mcmd_exec.c:
 	extab       start:0x800058D0 end:0x80005958
 	extabindex  start:0x800060C8 end:0x80006194
 	.text       start:0x8027656C end:0x80278F0C
@@ -4660,178 +4660,178 @@ main/audio/mcmd_exec.c:
 dolphin/gx/GXTextureTables.c:
 	.data       start:0x8032F218 end:0x8032F618
 
-main/audio/adsr_data.c:
+musyx/runtime/adsr_data.c:
 	.data       start:0x8032F618 end:0x8032FDA0
 
-main/audio/vid_init.c:
+musyx/runtime/vid_init.c:
 	.text       start:0x80278F0C end:0x80279004
 
-main/audio/vid_get.c:
+musyx/runtime/vid_get.c:
 	.text       start:0x80279004 end:0x80279038
 
-main/audio/voice_id.c:
+musyx/runtime/voice_id.c:
 	extab       start:0x80005958 end:0x80005960
 	extabindex  start:0x80006194 end:0x800061A0
 	.text       start:0x80279038 end:0x802795CC
 
-main/audio/voice.c:
+musyx/runtime/voice.c:
 	extab       start:0x80005960 end:0x80005988
 	extabindex  start:0x800061A0 end:0x800061DC
 	.text       start:0x802795CC end:0x8027A330
 	.bss        start:0x803CA2D0 end:0x803CB290
 
-main/audio/voice_conv.c:
+musyx/runtime/voice_conv.c:
 	.text       start:0x8027A330 end:0x8027A4E0
 
-main/audio/synth_ac.c:
+musyx/runtime/synth_ac.c:
 	extab       start:0x80005988 end:0x80005990
 	extabindex  start:0x800061DC end:0x800061E8
 	.text       start:0x8027A4E0 end:0x8027A60C
 	.sdata2     start:0x803E7818 end:0x803E782C
 
-main/audio/synth_adsr.c:
+musyx/runtime/synth_adsr.c:
 	extab       start:0x80005990 end:0x800059C0
 	extabindex  start:0x800061E8 end:0x80006230
 	.text       start:0x8027A60C end:0x8027ACB8
 	.sdata2     start:0x803E7830 end:0x803E7858
 
-main/audio/synth_vsamples.c:
+musyx/runtime/synth_vsamples.c:
 	extab       start:0x800059C0 end:0x800059E0
 	extabindex  start:0x80006230 end:0x80006260
 	.text       start:0x8027ACB8 end:0x8027B42C
 	.bss        start:0x803CB290 end:0x803CBBE0
 
-main/audio/snd_groups.c:
+musyx/runtime/snd_groups.c:
 	extab       start:0x800059E0 end:0x80005A08
 	extabindex  start:0x80006260 end:0x8000629C
 	.text       start:0x8027B42C end:0x8027BA04
 	.bss        start:0x803CBBE0 end:0x803CC1E0
 
-main/audio/sal_studio.c:
+musyx/runtime/sal_studio.c:
 	extab       start:0x80005A08 end:0x80005A30
 	extabindex  start:0x8000629C end:0x800062D8
 	.text       start:0x8027BA04 end:0x8027C48C
 
-main/audio/hw_dspctrl.c:
+musyx/runtime/hw_dspctrl.c:
 	extab       start:0x80005A30 end:0x80005A50
 	extabindex  start:0x800062D8 end:0x80006308
 	.text       start:0x8027C48C end:0x8027F2AC
 	.data       start:0x8032FDA0 end:0x8032FDB8
 	.bss        start:0x803CC1E0 end:0x803CC8C0
 
-main/audio/sal_volume.c:
+musyx/runtime/sal_volume.c:
 	extab       start:0x80005A50 end:0x80005A58
 	extabindex  start:0x80006308 end:0x80006314
 	.text       start:0x8027F2AC end:0x8027FA44
 	.data       start:0x8032FDB8 end:0x8032FFE0
 	.sdata2     start:0x803E7858 end:0x803E7880
 
-main/audio/snd3dgroup.c:
+musyx/runtime/snd3dgroup.c:
 	extab       start:0x80005A58 end:0x80005A90
 	extabindex  start:0x80006314 end:0x80006368
 	.text       start:0x8027FA44 end:0x80281160
 	.bss        start:0x803CC8C0 end:0x803CD760
 	.sdata2     start:0x803E7880 end:0x803E78C8
 
-main/audio/snd_core.c:
+musyx/runtime/snd_core.c:
 	extab       start:0x80005A90 end:0x80005A98
 	extabindex  start:0x80006368 end:0x80006374
 	.text       start:0x80281160 end:0x80281310
 	.sdata2     start:0x803E78C8 end:0x803E78E0
 
-main/audio/snd_midictrl.c:
+musyx/runtime/snd_midictrl.c:
 	extab       start:0x80005A98 end:0x80005B40
 	extabindex  start:0x80006374 end:0x80006470
 	.text       start:0x80281310 end:0x80282E5C
 	.data       start:0x8032FFE0 end:0x80330028
 	.bss        start:0x803CD760 end:0x803D3F60
 
-main/audio/snd_service.c:
+musyx/runtime/snd_service.c:
 	extab       start:0x80005B40 end:0x80005B50
 	extabindex  start:0x80006470 end:0x80006488
 	.text       start:0x80282E5C end:0x80282FE0
 	.data       start:0x80330028 end:0x80330840
 	.sdata      start:0x803DC610 end:0x803DC618
 
-main/audio/hw_init.c:
+musyx/runtime/hw_init.c:
 	extab       start:0x80005B50 end:0x80005B70
 	extabindex  start:0x80006488 end:0x800064B8
 	.text       start:0x80282FE0 end:0x8028343C
 
-main/audio/hw_break.c:
+musyx/runtime/hw_break.c:
 	.text       start:0x8028343C end:0x8028348C
 
-main/audio/hw_adsr.c:
+musyx/runtime/hw_adsr.c:
 	extab       start:0x80005B70 end:0x80005B78
 	extabindex  start:0x800064B8 end:0x800064C4
 	.text       start:0x8028348C end:0x8028363C
 
-main/audio/hw_sample.c:
+musyx/runtime/hw_sample.c:
 	.text       start:0x8028363C end:0x802836AC
 
-main/audio/hw_voice_start.c:
+musyx/runtime/hw_voice_start.c:
 	extab       start:0x80005B78 end:0x80005B80
 	extabindex  start:0x800064C4 end:0x800064D0
 	.text       start:0x802836AC end:0x802836E8
 
-main/audio/hw_keyoff.c:
+musyx/runtime/hw_keyoff.c:
 	.text       start:0x802836E8 end:0x80283710
 
-main/audio/hw_voice_params.c:
+musyx/runtime/hw_voice_params.c:
 	.text       start:0x80283710 end:0x8028383C
 	.sdata      start:0x803DC618 end:0x803DC628
 
-main/audio/hw_volume.c:
+musyx/runtime/hw_volume.c:
 	extab       start:0x80005B80 end:0x80005BA0
 	extabindex  start:0x800064D0 end:0x80006500
 	.text       start:0x8028383C end:0x80283BA0
 	.sdata2     start:0x803E78E0 end:0x803E78E4
 
-main/audio/hw_input.c:
+musyx/runtime/hw_input.c:
 	extab       start:0x80005BA0 end:0x80005BA8
 	extabindex  start:0x80006500 end:0x8000650C
 	.text       start:0x80283BA0 end:0x80283BD4
 
-main/audio/hw_stream.c:
+musyx/runtime/hw_stream.c:
 	extab       start:0x80005BA8 end:0x80005BC0
 	extabindex  start:0x8000650C end:0x80006530
 	.text       start:0x80283BD4 end:0x80283D5C
 
-main/audio/hw_aram.c:
+musyx/runtime/hw_aram.c:
 	extab       start:0x80005BC0 end:0x80005BD8
 	extabindex  start:0x80006530 end:0x80006554
 	.text       start:0x80283D5C end:0x80283DFC
 	.sdata2     start:0x803E78F0 end:0x803E78F8
 
-main/audio/hw_samplemem.c:
+musyx/runtime/hw_samplemem.c:
 	extab       start:0x80005BD8 end:0x80005BF0
 	extabindex  start:0x80006554 end:0x80006578
 	.text       start:0x80283DFC end:0x80283FA0
 
-main/audio/aram_queue.c:
+musyx/runtime/aram_queue.c:
 	extab       start:0x80005BF0 end:0x80005C00
 	extabindex  start:0x80006578 end:0x80006590
 	.text       start:0x80283FA0 end:0x80284224
 	.bss        start:0x803D3F60 end:0x803D41E4
 
-main/audio/aram_init.c:
+musyx/runtime/aram_init.c:
 	extab       start:0x80005C00 end:0x80005C10
 	extabindex  start:0x80006590 end:0x800065A8
 	.text       start:0x80284224 end:0x80284468
 	.bss        start:0x803D41E4 end:0x803D4468
 
-main/audio/aram_data.c:
+musyx/runtime/aram_data.c:
 	extab       start:0x80005C10 end:0x80005C18
 	extabindex  start:0x800065A8 end:0x800065B4
 	.text       start:0x80284468 end:0x80284670
 	.bss        start:0x803D4468 end:0x803D4880
 
-main/audio/sal_ai.c:
+musyx/runtime/sal_ai.c:
 	extab       start:0x80005C18 end:0x80005C40
 	extabindex  start:0x800065B4 end:0x800065F0
 	.text       start:0x80284670 end:0x802848D8
 
-main/audio/sal_dsp.c:
+musyx/runtime/sal_dsp.c:
 	extab       start:0x80005C40 end:0x80005C60
 	extabindex  start:0x800065F0 end:0x80006620
 	.text       start:0x802848D8 end:0x80284A8C
@@ -4839,17 +4839,17 @@ main/audio/sal_dsp.c:
 	.bss        start:0x803D4880 end:0x803D68E0
 	.sdata      start:0x803DC628 end:0x803DC630
 
-main/audio/sal_dsp_irqinit.c:
+musyx/runtime/sal_dsp_irqinit.c:
 	extab       start:0x80005C60 end:0x80005C68
 	extabindex  start:0x80006620 end:0x8000662C
 	.text       start:0x80284A8C end:0x80284AB8
 
-main/audio/sal_dsp_irq.c:
+musyx/runtime/sal_dsp_irq.c:
 	extab       start:0x80005C68 end:0x80005C90
 	extabindex  start:0x8000662C end:0x80006668
 	.text       start:0x80284AB8 end:0x80284B94
 
-main/audio/snd_reverb.c:
+musyx/runtime/snd_reverb.c:
 	extab       start:0x80005C90 end:0x80005CA8
 	extabindex  start:0x80006668 end:0x8000668C
 	.text       start:0x80284B94 end:0x80284C58

@@ -88,8 +88,8 @@ typedef struct _SPB {
 } _SPB;
 
 /* DSPvoice/DSPstudioinfo + SAMPLE_INFO/VSampleInfo/ADSR_VARS moved to the
- * canonical include/main/audio/dsp_voice.h (+ adsr.h). */
-#include "main/audio/dsp_voice.h"
+ * canonical include/musyx/dsp_voice.h (+ adsr.h). */
+#include "musyx/dsp_voice.h"
 
 typedef struct SNDADPCMinfo {
     u16 unk0;          /* 0x00 */
