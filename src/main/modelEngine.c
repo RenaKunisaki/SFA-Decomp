@@ -201,6 +201,8 @@
 #include "dlls/objects/404_GPSH_Scene.h"
 #include "dlls/objects/405_DBSH_Shrine.h"
 #include "dlls/objects/406_DBSH_Symbol.h"
+#include "dlls/objects/407.h"
+#include "dlls/objects/408_NWSH_levcon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -281,8 +283,7 @@ char lbl_803DB2A0[] = ".";
 #define MODELENGINE_TIMER_DISABLED  2
 #define MODELENGINE_TIMER_RUNNING   4
 
-extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19, dll_197, dll_199, dll_19A, dll_19B,
-    dll_19C;
+extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19, dll_199, dll_19A, dll_19B, dll_19C;
 extern ResourceDescriptor dll_19D, dll_19E, dll_1CE, dll_1CF, dll_1D6, dll_1DA, dll_1DB, dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
@@ -330,8 +331,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
     gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor,
-    gNW_geyserObjDescriptor;
+extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1448,8 +1448,8 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gGPSHSceneObjDescriptor,
     (ResourceDescriptor*)&gDBSHShrineObjDescriptor,
     (ResourceDescriptor*)&gDBSHSymbolObjDescriptor,
-    &dll_197,
-    &gNWSH_levconObjDescriptor,
+    (ResourceDescriptor*)&gDll407ObjDescriptor,
+    (ResourceDescriptor*)&gNWSHLevelControlObjDescriptor,
     &dll_199,
     &dll_19A,
     &dll_19B,
