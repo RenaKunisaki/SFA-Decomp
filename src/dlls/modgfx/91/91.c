@@ -14,8 +14,12 @@ u8 lbl_803DB8B0[4] = {0};
 u8 lbl_803DB8B4[8] = {0, 0, 0, 1, 0, 2, 0, 3};
 
 extern u8 lbl_80311E30[];
-union ModgfxFunc03ConstU32 { u32 w; };
-const union ModgfxFunc03ConstU32 lbl_803E0730 = { 0x00050014 };
+
+#define MODGFX_FUNC03_SPAWN_MIN 5
+#define MODGFX_FUNC03_SPAWN_MAX 20
+
+const ModgfxSpawnCountRange gModgfxFunc03DefaultSpawnCount = {(MODGFX_FUNC03_SPAWN_MIN << 16) |
+                                                              MODGFX_FUNC03_SPAWN_MAX};
 
 static inline u8* Gameplay_GetActiveModel(void* obj)
 {
@@ -46,7 +50,7 @@ s16 modgfx_func03(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams,
     base[0] = lbl_80311E30;
     result = 0;
     model = Gameplay_GetActiveModel(sourceObj);
-    r.packed = lbl_803E0730.w;
+    r = gModgfxFunc03DefaultSpawnCount;
     if (countRange != NULL)
     {
         r.min = countRange->min;
