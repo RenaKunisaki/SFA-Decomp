@@ -1,8 +1,8 @@
 #include "dlls/objects/283_Landed_Arwi.h"
 
+#include "dlls/objects/284.h"
 #include "game/objects/object.h"
 #include "main/dll/ARW/dll_029D_arwarwinggu.h"
-#include "main/dll/CF/staffactivated_helpers.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
@@ -32,18 +32,11 @@
 #define LANDED_ARWING_GADGET_OBJECT_ID        0x606
 #define LANDED_ARWING_DEBRIS_OBJECT_ID        0x259
 #define LANDED_ARWING_PATH_EFFECT_COUNT       5
-#define LANDED_ARWING_STAFF_OBJECT_GROUP      0x41
 #define LANDED_ARWING_GADGET_TEXTURE_FRAME    0xAF
 #define LANDED_ARWING_GAME_BIT_NONE           -1
-#define LANDED_ARWING_DAMAGE_MODE_SECOND      5
 #define LANDED_ARWING_DAMAGE_TEXTURE_NONE     0
 #define LANDED_ARWING_DAMAGE_TEXTURE_FIRST    0x100
 #define LANDED_ARWING_DAMAGE_TEXTURE_SECOND   0x200
-#define LANDED_ARWING_HIT_EFFECT_MODE         8
-#define LANDED_ARWING_HIT_EFFECT_RED          0xB4
-#define LANDED_ARWING_HIT_EFFECT_GREEN        0xF0
-#define LANDED_ARWING_HIT_EFFECT_BLUE         0xFF
-#define LANDED_ARWING_HIT_EFFECT_SFX          0x6F
 
 enum {
     LANDED_ARWING_SEQUENCE_STATE_DIRECT = 0,
@@ -415,9 +408,9 @@ void landed_arwing_update(GameObject* obj) {
             state->sequenceState = LANDED_ARWING_SEQUENCE_STATE_CONFIRM;
             cutSceneFn_8011dd30();
         }
-        ObjHits_PollPriorityHitEffectWithCooldown(obj, LANDED_ARWING_HIT_EFFECT_MODE, LANDED_ARWING_HIT_EFFECT_RED,
-                                                  LANDED_ARWING_HIT_EFFECT_GREEN, LANDED_ARWING_HIT_EFFECT_BLUE,
-                                                  LANDED_ARWING_HIT_EFFECT_SFX, &state->sequenceHitCooldown);
+        ObjHits_PollPriorityHitEffectWithCooldown(obj, STAFF_ACTIVATED_HIT_EFFECT_MODE, STAFF_ACTIVATED_HIT_EFFECT_RED,
+                                                  STAFF_ACTIVATED_HIT_EFFECT_GREEN, STAFF_ACTIVATED_HIT_EFFECT_BLUE,
+                                                  STAFF_ACTIVATED_HIT_EFFECT_SFX, &state->sequenceHitCooldown);
         break;
     case LANDED_ARWING_SEQUENCE_STATE_CONFIRM:
         if (pauseMenuGetTokenConfirmFlag() != 0) {
@@ -442,14 +435,14 @@ void landed_arwing_init(GameObject* obj, LandedArwingPlacement* placement) {
 void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionState* state) {
     int spawnIndex;
     LandedArwingHitReactionState* otherState;
-    StaffActivatedSetup* placement;
+    StaffActivatedPlacement* placement;
     ObjPlacement* setup;
     GameObject* other;
     f32 range;
     f32 yOffset;
     ObjAnimEventList events;
 
-    placement = (StaffActivatedSetup*)obj->anim.placementData;
+    placement = (StaffActivatedPlacement*)obj->anim.placementData;
     if (!state->flags.damaged || (state->flags.impactHandled && state->hitStarted == 0u)) {
         return;
     }
@@ -457,11 +450,11 @@ void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionSta
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
         if (obj->anim.currentMoveProgress >= lbl_803E3BBC && !state->flags.reactionDone) {
-            if (placement->lockGameBit > 0) {
-                mainSetBits(placement->lockGameBit, 1);
+            if (placement->reactionCompleteGameBit > 0) {
+                mainSetBits(placement->reactionCompleteGameBit, 1);
             }
 
-            switch (placement->debrisObjectSet) {
+            switch (placement->hitReactionType) {
             case LANDED_ARWING_REACTION_SPAWN_DEBRIS:
                 if (Obj_IsLoadingLocked() != 0) {
                     spawnIndex = 0;
@@ -480,11 +473,11 @@ void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionSta
                 break;
             case LANDED_ARWING_REACTION_DAMAGE_NEAREST:
                 range = lbl_803E3BC0;
-                other = (GameObject*)ObjGroup_FindNearestObject(LANDED_ARWING_STAFF_OBJECT_GROUP, obj, &range);
+                other = (GameObject*)ObjGroup_FindNearestObject(STAFF_ACTIVATED_OBJECT_GROUP, obj, &range);
                 if (other != NULL) {
                     otherState = other->extra;
-                    if (((StaffActivatedSetup*)other->anim.placementData)->activeGameBit > 0) {
-                        mainSetBits(((StaffActivatedSetup*)other->anim.placementData)->activeGameBit, 1);
+                    if (((StaffActivatedPlacement*)other->anim.placementData)->siblingGameBit > 0) {
+                        mainSetBits(((StaffActivatedPlacement*)other->anim.placementData)->siblingGameBit, 1);
                     }
                     otherState->flags.damaged = 1;
                 }
@@ -498,30 +491,30 @@ void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionSta
         state->flags.impactHandled = 1;
         state->animationStepScale = lbl_803E3BC4;
     } else {
-        if (placement->debrisObjectSet == LANDED_ARWING_REACTION_JITTER) {
+        if (placement->hitReactionType == LANDED_ARWING_REACTION_JITTER) {
             obj->anim.rotY = randomGetRange(-200, 200);
             obj->anim.rotZ = randomGetRange(-200, 200);
         }
-        ObjHits_PollPriorityHitEffectWithCooldown(obj, LANDED_ARWING_HIT_EFFECT_MODE, LANDED_ARWING_HIT_EFFECT_RED,
-                                                  LANDED_ARWING_HIT_EFFECT_GREEN, LANDED_ARWING_HIT_EFFECT_BLUE,
-                                                  LANDED_ARWING_HIT_EFFECT_SFX, &state->hitEffectCooldown);
+        ObjHits_PollPriorityHitEffectWithCooldown(obj, STAFF_ACTIVATED_HIT_EFFECT_MODE, STAFF_ACTIVATED_HIT_EFFECT_RED,
+                                                  STAFF_ACTIVATED_HIT_EFFECT_GREEN, STAFF_ACTIVATED_HIT_EFFECT_BLUE,
+                                                  STAFF_ACTIVATED_HIT_EFFECT_SFX, &state->hitEffectCooldown);
     }
     ObjAnim_AdvanceCurrentMove((int)obj, state->animationStepScale, timeDelta, &events);
 }
 
 void landed_arwing_updateDamageTexture(GameObject* obj, LandedArwingHitReactionState* state) {
-    StaffActivatedSetup* placement;
+    StaffActivatedPlacement* placement;
     ObjTextureRuntimeSlot* texture;
     u32 bit;
     LandedArwingHitFlags* flags;
 
-    placement = (StaffActivatedSetup*)obj->anim.placementData;
+    placement = (StaffActivatedPlacement*)obj->anim.placementData;
     flags = &state->flags;
-    if (placement->lockGameBit != LANDED_ARWING_GAME_BIT_NONE) {
-        bit = mainGetBit(placement->lockGameBit);
+    if (placement->damageStateGameBit != LANDED_ARWING_GAME_BIT_NONE) {
+        bit = mainGetBit(placement->damageStateGameBit);
         flags->damageStateGameBitSet = bit;
         bit = flags->damageStateGameBitSet;
-        if (bit != 0 && placement->mode == LANDED_ARWING_DAMAGE_MODE_SECOND) {
+        if (bit != 0 && placement->mode == STAFF_ACTIVATED_MODE_DAMAGE_SECOND) {
             flags->impactHandled = 1;
         } else if (bit == 0) {
             flags->impactHandled = 0;
@@ -529,7 +522,7 @@ void landed_arwing_updateDamageTexture(GameObject* obj, LandedArwingHitReactionS
     }
 
     if (flags->damaged == 0) {
-        if (placement->activeGameBit != LANDED_ARWING_GAME_BIT_NONE && mainGetBit(placement->activeGameBit) != 0) {
+        if (placement->damagedGameBit != LANDED_ARWING_GAME_BIT_NONE && mainGetBit(placement->damagedGameBit) != 0) {
             flags->damaged = 1;
         }
     } else {

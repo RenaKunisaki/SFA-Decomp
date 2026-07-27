@@ -21,12 +21,12 @@
 #include "main/dll/player_state_api.h"
 #include "main/dll/player_motion_api.h"
 #include "dlls/objects/229_Shield.h"
+#include "dlls/objects/284.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"
 #include "main/dll/DB/DBprotection.h"
 #include "main/dll/SB/dll_01E8_sbgalleon.h"
 #include "main/dll/dll_00E2_staff_api.h"
-#include "main/dll/CF/staffactivated_helpers.h"
 #include "main/dll/viewfinder.h"
 #include "main/sky_api.h"
 #include "main/object_render.h"
@@ -471,7 +471,6 @@ static inline ObjHitsPriorityState* Player_GetObjHitsState(GameObject* obj)
 /* groups owned by other DLLs the player queries */
 #define CFGUARDIAN_OBJGROUP      0x16 /* DLL 0x148 cfguardian */
 #define BABYCLOUDRUNNER_OBJGROUP 0x20 /* DLL 0x14C babycloudrunner (secondary) */
-#define STAFFACTIVATED_OBJ_GROUP 0x41 /* DLL 0x11C staffactivated */
 #define MAGICPLANT_OBJGROUP_B    0x3e /* DLL 0xFE magicplant (group B) */
 
 /* GameCube controller button masks (tested against PlayerState.buttons* fields) */
@@ -9522,14 +9521,14 @@ int playerState08(GameObject* obj, int state, f32 fv)
         }
         if (((PlayerState*)inner)->heldObj == NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
         {
-            list = (int*)ObjGroup_GetObjects(STAFFACTIVATED_OBJ_GROUP, &cnt41);
+            list = (int*)ObjGroup_GetObjects(STAFF_ACTIVATED_OBJECT_GROUP, &cnt41);
             for (i = 0; i < cnt41; i++)
             {
                 int o = *list;
                 gPlayerInteractTarget = (GameObject*)o;
                 if ((*(u8*)((char*)o + 0xaf) & 4) != 0 && (*(u8*)((char*)o + 0xaf) & 0x10) == 0)
                 {
-                    switch ((u8)objGetByteParam1C(gPlayerInteractTarget))
+                    switch ((u8)staffactivated_getMode(gPlayerInteractTarget))
                     {
                     case 2:
                         setAButtonIcon(2);

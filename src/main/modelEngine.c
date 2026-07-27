@@ -80,6 +80,7 @@
 #include "dlls/objects/281_coldWaterCo.h"
 #include "dlls/objects/282.h"
 #include "dlls/objects/283_Landed_Arwi.h"
+#include "dlls/objects/284.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -259,8 +260,7 @@ extern ResourceDescriptor gSfxPlayerObjDescriptor, gSfxplayerObjDescriptor, gShi
     gShopItemObjDescriptor, gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
-    gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffActivatedObjDescriptor, gStaffObjDescriptor,
-    gStaticCameraObjDescriptor;
+    gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
     gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTransporterObjDescriptor, gTreasureChestObjDescriptor,
@@ -1240,7 +1240,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gColdWaterControlObjDescriptor,
     (ResourceDescriptor*)&gDecoration11AObjDescriptor,
     (ResourceDescriptor*)&gLanded_ArwingObjDescriptor,
-    &gStaffActivatedObjDescriptor,
+    (ResourceDescriptor*)&gStaffActivatedObjDescriptor,
     &gTreasureChestObjDescriptor,
     &gMagicCaveBottomObjDescriptor,
     &gMagicCaveTopObjDescriptor,
