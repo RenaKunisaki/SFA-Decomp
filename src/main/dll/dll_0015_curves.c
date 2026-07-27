@@ -67,8 +67,6 @@ typedef struct CurvesSaveGameObjectPosition
 
 #define SAVEGAME_OBJECT_POSITION_COUNT  0x3f
 #define SAVEGAME_OBJECT_POSITION_OFFSET 0x168
-
-extern f32 lbl_803E0668;
 extern const f32 lbl_803E068C;
 extern const f32 gCurvesSurfaceNormalZThreshold;
 extern const f32 lbl_803E067C;
@@ -186,7 +184,7 @@ void curves_countRandomPoints(GameObject* obj, CurvesCollisionState* collision)
     object = obj;
     if ((int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT == 4)
     {
-        sum0 = *(const f32*)&lbl_803E0668;
+        sum0 = 0.0f;
         count = 0;
         sum3 = sum2 = sum1 = sum0;
         for (i = 0; i < (int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT; i++)
@@ -361,7 +359,7 @@ void curves_resolveAveragedSegments(GameObject* obj, CurvesCollisionState* colli
     pointCount = collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT;
     if ((pointCount == 2) || (pointCount == 4))
     {
-        zero = lbl_803E0668;
+        zero = 0.0f;
         obj->anim.worldPosX = zero;
         obj->anim.worldPosY = zero;
         obj->anim.worldPosZ = zero;
@@ -484,9 +482,9 @@ void curves_updateSurfaceTilt(short* obj, int state)
         outVec[1] = 0;
         outVec[2] = 0;
         matrixBuf[0] = lbl_803E068C;
-        matrixBuf[1] = lbl_803E0668;
-        matrixBuf[2] = lbl_803E0668;
-        matrixBuf[3] = lbl_803E0668;
+        matrixBuf[1] = 0.0f;
+        matrixBuf[2] = 0.0f;
+        matrixBuf[3] = 0.0f;
         mtxRotateByVec3s(&matrixBuf[4], outVec);
         Matrix_TransformPoint((f32*)((u8*)matrixBuf + 0x10), (double)collision->surfaceNormalX, (double)collision->surfaceNormalY,
                               (double)collision->surfaceNormalZ, &dy, &dx, &dz);
@@ -505,8 +503,8 @@ void curves_updateSurfaceTilt(short* obj, int state)
     {
         collision->tiltPitch = collision->tiltPitch - ((int)((int)collision->tiltPitch * framesThisStep) >> 3);
         collision->tiltRoll = collision->tiltRoll - ((int)((int)collision->tiltRoll * framesThisStep) >> 3);
-        normalZ = lbl_803E0668;
-        collision->surfaceNormalX = lbl_803E0668;
+        normalZ = 0.0f;
+        collision->surfaceNormalX = 0.0f;
         collision->surfaceNormalY = lbl_803E068C;
         collision->surfaceNormalZ = normalZ;
     }
@@ -562,7 +560,7 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* coll
     seg = 0;
     topSentinel = gCurvesBoundsMaxSeed;
     floorSentinel = gCurvesBoundsMinSeed;
-    zero = lbl_803E0668;
+    zero = 0.0f;
     one = lbl_803E068C;
     for (; seg < 1; seg++)
     {
@@ -591,7 +589,7 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* coll
                     }
                     foundBelow = 1;
                 }
-                else if ((point->x >= (lbl_803E06AC + collision->points[0][1])) && (point->z < lbl_803E0668))
+                else if ((point->x >= (lbl_803E06AC + collision->points[0][1])) && (point->z < 0.0f))
                 {
                     collision->ceilingY[0] = point->x;
                 }
@@ -604,7 +602,7 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* coll
         }
         if (((s8)collision->surfaceFlags & (0x10 << seg)) != 0)
         {
-            collision->floorGap[0] = lbl_803E0668;
+            collision->floorGap[0] = 0.0f;
         }
         point = points;
         for (i = 0; i < hitCount; i++)
@@ -691,7 +689,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
     {
         if ((s32)(collision->flags & CURVES_COLLISION_STATE_KEEP_POSITION) == 0)
         {
-            zero = lbl_803E0668;
+            zero = 0.0f;
             obj->anim.localPosX = zero;
             obj->anim.localPosZ = zero;
             pointIndex = 0;
@@ -842,7 +840,7 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
         collision->resultFloorY = resetRange;
         resetMin = gCurvesBoundsMinSeed;
         collision->resultCeilingY = resetMin;
-        resetZero = lbl_803E0668;
+        resetZero = 0.0f;
         collision->resultWaterDepth = resetZero;
         collision->resultFloorGap = resetZero;
         collision->contactObj = 0;
@@ -988,7 +986,7 @@ f32 dll_15_func0B(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
     maxY = baseY + height;
     for (; i < hitCount; i++)
     {
-        if ((point->x < maxY) && (point->z > *(f32*)&lbl_803E0668))
+        if ((point->x < maxY) && (point->z > 0.0f))
         {
             return points[i].x;
         }
@@ -1067,7 +1065,7 @@ void dll_15_func08(GameObject* curveObj, CurvesCollisionState* state, f32 step)
     {
         sCurvesCachedHitObj = 0;
         sCurvesCachedHitCount = 0;
-        zero = lbl_803E0668;
+        zero = 0.0f;
         collision->surfaceNormalX = zero;
         collision->surfaceNormalY = one;
         collision->surfaceNormalZ = zero;
@@ -1244,7 +1242,7 @@ void dll_15_func08(GameObject* curveObj, CurvesCollisionState* state, f32 step)
                 curveObj->anim.velocityY = invStep * (curveObj->anim.worldPosY - linked->worldPosZ);
                 if (curveObj->anim.worldPosY > curveObj->anim.linkedAnim->worldPosZ)
                 {
-                    curveObj->anim.velocityY = lbl_803E0668;
+                    curveObj->anim.velocityY = 0.0f;
                 }
             }
             else

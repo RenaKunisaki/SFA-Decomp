@@ -116,10 +116,6 @@ extern u8 gObjFxLightColorTbl[];
 
 extern s32 lbl_803DF340;
 extern u16 lbl_803DF344;
-extern const f32 lbl_803DF350;
-extern const f32 lbl_803DF354;
-extern const f32 lbl_803DF358;
-extern const f32 lbl_803DF35C;
 extern f32 lbl_803DF384;
 extern f32 lbl_803DF38C;
 extern f32 lbl_803DF390;

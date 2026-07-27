@@ -56,7 +56,6 @@
 
 extern u8 gStaffQuakeSpellState[0x28];
 extern void* gStaffSwipeTextures[2];
-extern f32 lbl_803E32A4;
 extern StaffCollisionInterface** gStaffSwipeResource;
 
 #define STAFF_CONTACT_HIT_VOLUME_COUNT 36
@@ -696,10 +695,10 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
             tbl = obj->anim.weaponDaTable->entries;
             if (sw >= 0.0f)
             {
-                fla = fastFloorf(sw * *(f32*)&lbl_803E32A4) / *(f32*)&lbl_803E32A4;
+                fla = fastFloorf(sw * 40.0f) / 40.0f;
                 fla *= 2.0f;
-                tmax *= *(f32*)&lbl_803E32A4;
-                flb = fastFloorf(tmax) / *(f32*)&lbl_803E32A4;
+                tmax *= 40.0f;
+                flb = fastFloorf(tmax) / 40.0f;
                 flb *= 2.0f;
                 ibase = fla;
                 frac = fla - ibase;
