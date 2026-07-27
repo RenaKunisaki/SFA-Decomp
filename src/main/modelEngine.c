@@ -124,6 +124,7 @@
 #include "dlls/objects/326_CloudShipCo.h"
 #include "dlls/objects/327.h"
 #include "dlls/objects/328_CFGuardian.h"
+#include "dlls/objects/329.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -314,8 +315,8 @@ extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gW
     gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWarpStoneLiftObjDescriptor,
     gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
-extern ResourceDescriptor gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor,
-    gWorldPlanetObjDescriptor, lbl_8030EE34;
+extern ResourceDescriptor gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor, gWorldPlanetObjDescriptor,
+    lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
     lbl_8030FCA8, lbl_80310604;
 extern ResourceDescriptor lbl_80310638, lbl_80310670, lbl_80310808, lbl_803108A0, lbl_803109B8, lbl_80310A20,
@@ -1314,7 +1315,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCloudShipControlNullResourceDescriptor,
     (ResourceDescriptor*)&gDll147NullResourceDescriptor,
     (ResourceDescriptor*)&gCFGuardianObjDescriptor,
-    &gWindLiftObjDescriptor,
+    (ResourceDescriptor*)&gWindLiftObjDescriptor,
     &gCFPowerBaseObjDescriptor,
     &gCFMainCrystalObjDescriptor,
     &gBabyCloudRunnerObjDescriptor,
