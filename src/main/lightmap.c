@@ -1115,7 +1115,7 @@ typedef union
 
 extern f32 lbl_803DEC20;
 
-asm void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
+void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
 
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
