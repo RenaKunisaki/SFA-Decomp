@@ -91,6 +91,7 @@
 #include "dlls/objects/292.h"
 #include "dlls/objects/293_curve.h"
 #include "dlls/objects/295.h"
+#include "dlls/objects/296_KT_Torch.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -233,7 +234,7 @@ extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDesc
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
     gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
-extern ResourceDescriptor gKT_TorchObjDescriptor, gKtFallingrocksObjDescriptor;
+extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
@@ -1259,7 +1260,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCurveObjDescriptor,
     &gTriggerObjDescriptor,
     (ResourceDescriptor*)&gDll127ObjDescriptor,
-    &gKT_TorchObjDescriptor,
+    (ResourceDescriptor*)&gKT_TorchObjDescriptor,
     &gCampFireObjDescriptor,
     &gCFCrateObjDescriptor,
     &gFXEmitObjDescriptor,
