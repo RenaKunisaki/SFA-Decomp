@@ -1720,9 +1720,6 @@ extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 extern int gMapCurRomListSlot;
 extern u8 gMapLoadDeferred;
-extern u8 bEnableBlurFilter;
-extern u8 bEnableMotionBlur;
-extern int gHeatEffectFadeDirection;
 extern u8 lbl_803DCEBD;
 extern f32 gShaderDefaultTimeOfDay;
 void beginLoadingMap(void)

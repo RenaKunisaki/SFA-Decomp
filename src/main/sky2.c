@@ -101,14 +101,6 @@ u8 lbl_803DB758 = 1;
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
-extern u8 gSkyEnvFxFlags;
-extern u8* gSkyState;
-extern GameObject* gSkySunObject;
-extern GameObject* gSkyMoonObject;
-extern Texture* gSkySkyTexture;
-extern int gSkyObjectsInitialized;
-extern f32 gSkyOverrideLightIntensity;
-extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 lbl_803DF058;
 extern f32 lbl_803DF060;
@@ -123,8 +115,6 @@ extern const f32 lbl_803DF0FC;
 extern const f32 lbl_803DF100;
 extern const f32 lbl_803DF104;
 extern f32 lbl_803DF088;
-extern u16 gSkySunAlpha;
-extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 extern const SkyVec3 gSkyBaseSunDirection;
 extern const SkyVec3 gSkyBaseMoonDirection;
@@ -154,7 +144,6 @@ extern u8 colorScale;
 extern int lbl_803DB610;
 extern s8 gSky2DrawMode;
 extern u8* gSky2State;
-extern u8 gSkySunPositionPrev;
 extern f32 gSkySunDirection[];
 extern f32 gSkyMoonDirection[];
 extern f32 lbl_803DF14C;
@@ -204,9 +193,7 @@ void playerEnvFxFn_80088ad4(u8 idx);
 
 void loadSunAndMoon(void);
 
-extern f32 gSkySunDirection[];
 
-extern f32 gSkyMoonDirection[];
 
 extern u8 gSkyColorBlendTable[248];
 

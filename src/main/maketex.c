@@ -1659,8 +1659,6 @@ extern f32 lbl_803DF04C;
 extern u8 lbl_803DB411;
 extern u8 lbl_803DD0D9;
 extern u8 lbl_803DD078;
-extern s16 gObjSeqSlotValues[];
-extern f32 gObjSeqStreamRemainingTime;
 extern f32 lbl_803DF054;
 extern f32 lbl_803DF050;
 extern u8 lbl_803DD111;

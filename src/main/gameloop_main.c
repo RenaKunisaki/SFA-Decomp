@@ -109,7 +109,6 @@ extern int gGameLoopPlayerTrailTime;
 extern f32 gGameLoopResetHoldTimer;
 extern u8 gGameLoopHardReset;
 extern u8 lbl_803DCAC4;
-extern LinkInterface* gTitleMenuLinkInterface;
 extern void* lbl_803DCA94;
 extern u8 gGameLoopInitComplete;
 extern u8 gGameLoopButtonObjectCount;

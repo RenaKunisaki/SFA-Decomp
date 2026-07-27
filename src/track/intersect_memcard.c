@@ -1163,9 +1163,5 @@ int saveCb_8007e748(int saveId, int size, void* dst)
 
 /* .bss block 0x80391DC0-0x803967C0 */
 extern f32 gWaterFxState[4];
-extern Texture* gWaterFxTextures[4];
-extern RippleEntry gWaterRipples[0x100];
-extern SplashQuad gWaterSplashQuads[0x100];
 
-extern f32 hudMatrix[4][4];
 extern int lbl_803968C0[0x10];

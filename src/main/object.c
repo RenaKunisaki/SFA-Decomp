@@ -953,9 +953,6 @@ char sObjDebugStrings[] = {
 char sObjSetupObjectLoadingLockedWarning[] = "<objSetupObject>  loading is locked can't setup objno %d\n";
 
 extern u8** gObjFileBufferTable;
-extern u8* gObjFileRefCount;
-extern GameObject** gObjList;
-extern int gObjCount;
 extern char sObjFreeObjdefError[];
 
 /* ObjGroup ids (registered/unregistered in Obj_SetupObject / Obj_FreeObject) */
@@ -1181,23 +1178,9 @@ void objFreeObjDef(u8* obj, int flag)
 
 extern s16 gObjPartitionPivot;
 extern void* lbl_803DCBC0;
-extern int* gObjFileOffsetTable;
-extern int gObjFileCount;
-extern u8* gObjTablesBinData;
-extern int* gObjTablesBinIndex;
-extern int gObjTablesBinCount;
-extern u8** gObjFileBufferTable;
-extern u8* gObjFileRefCount;
-extern s16* gObjSeqToObjIdTable;
-extern int gObjSeqToObjIdMax;
-extern GameObject** gObjDeferredFreeList;
-extern int gObjDeferredFreeCount;
 extern GameObject** lbl_803DCB90;
 extern int lbl_803DCB8C;
-extern GameObject** gObjList;
-extern int gObjCount;
 extern ObjLinkedList gObjUpdateList;
-extern u32 gObjUpdateFlags;
 extern s8 gEffectBoxObjectCount;
 extern int lbl_803DCB70;
 
@@ -1240,46 +1223,24 @@ extern f32 lbl_803DE894;
 extern f32 lbl_803DE898;
 extern f32 lbl_803DE8D4;
 extern f32 lbl_803DE8D8;
-extern f32 gObjColorFadeRate;
-extern f32 gObjColorFadeAlphaMax;
 extern GameObject* gEffectBoxObjects[20];
-extern int gObjTablesBinCount;
-extern int* gObjTablesBinIndex;
-extern u8* gObjTablesBinData;
-extern int gObjCount;
-extern GameObject** gObjList;
 extern const f32 lbl_803DE890;
 extern const f32 lbl_803DE8B8;
-extern int gObjDeferredFreeCount;
-extern GameObject** gObjDeferredFreeList;
-extern char sObjSetupObjectLoadingLockedWarning[];
-extern char sObjDebugStrings[];
-extern s16 gObjPartitionPivot;
-extern int gObjSeqToObjIdMax;
-extern s16* gObjSeqToObjIdTable;
 extern f32 lbl_803DE8CC;
 extern f32 lbl_803DE8D0;
-extern u8* gObjFileRefCount;
-extern u32 gObjUpdateFlags;
 extern f32 lbl_803DE8BC;
-extern f32 gObjPi;
 extern f32 lbl_803DE8C4;
 extern f32 lbl_803DE8C8;
 extern int lbl_803DCB70;
 extern int lbl_803DCB8C;
 extern GameObject** lbl_803DCB90;
 extern void* lbl_803DCBC0;
-extern int* gObjFileOffsetTable;
-extern int gObjFileCount;
-extern f32 gMapSavedPlayerOffsetX;
-extern f32 gMapSavedPlayerOffsetZ;
 
 void Obj_RegisterObject(GameObject* obj, int b);
 int loadModLines(int n, s16* out);
 
 extern char sObjUnknownTypeUsingDummyObjectWarning[];
 
-extern char sObjFreeObjdefError[];
 
 extern u8 gObjCameraSetupBlock[32];
 
