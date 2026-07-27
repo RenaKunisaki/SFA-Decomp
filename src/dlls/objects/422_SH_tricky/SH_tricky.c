@@ -46,7 +46,7 @@ void sh_tricky_update(GameObject* obj)
         if (mainGetBit(0x94) != 0)
         {
             mainSetBits(GAMEBIT_Tricky_Usable, 0);
-            mainSetBits(GAMEBIT_IM_DoneRace, 0);
+            mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
             mainSetBits(GAMEBIT_MaybeHaveTricky, 1);
             state[0] = SHTRICKY_STATE_HAND_CONTROL;
         }
@@ -64,7 +64,7 @@ void sh_tricky_update(GameObject* obj)
         if (mainGetBit(GAMEBIT_SH_ReturnedToQueen) != 0)
         {
             mainSetBits(GAMEBIT_Tricky_Usable, 1);
-            mainSetBits(GAMEBIT_IM_DoneRace, 1);
+            mainSetBits(GAMEBIT_TrickyWarpEnabled, 1);
             mainSetBits(GAMEBIT_MaybeHaveTricky, 0);
         }
         break;

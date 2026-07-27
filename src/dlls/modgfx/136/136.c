@@ -1,6 +1,6 @@
 /*
- * dll88func0 (DLL 0x88) - one of the foodbag "func03" model-effect
- * spawners (siblings 0x7C..0x90). dll_88_func03 fills a stack FbBuf
+ * DLL 136 / 0x88 - one of the foodbag func03 model-effect spawners
+ * covering DLLs 124-144 / 0x7C-0x90. dll_88_func03 fills a stack FbBuf
  * command list (9 FbCmd model layers built from the lbl_80316240 asset
  * block) plus the per-effect color/position/scale/flags header, folds
  * the caller's flags in, and when bit 0 is set offsets the spawn

@@ -142,6 +142,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   canonical engine headers. Use the shared definition when it already exists; local duplicates such
   as per-object names for `OBJECT_OBJFLAG_HITDETECT_DISABLED` obscure that multiple DLLs implement
   the same engine contract.
+- When a unit-local semantic name conflicts with the canonical name for the same engine value, audit
+  every active-target consumer before choosing either name. If the combined behavior establishes a
+  stronger shared meaning, correct the canonical definition and back-apply it to all consumers
+  instead of preserving divergent aliases or adopting a misleading canonical name.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.

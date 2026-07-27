@@ -817,16 +817,16 @@ main/dll/dll_0086_dll86func0.c:
 	.text       start:0x800F7434 end:0x800F77BC
 	.sdata2     start:0x803E0FB0 end:0x803E0FE8
 
-main/dll/dll_0087_dll87func0.c:
+dlls/modgfx/135/135.c:
 	.text       start:0x800F77BC end:0x800F7AC0
 	.sdata      start:0x803DB900 end:0x803DB908
 	.sdata2     start:0x803E0FE8 end:0x803E100C
 
-main/dll/dll_0088_dll88func0.c:
+dlls/modgfx/136/136.c:
 	.text       start:0x800F7AC0 end:0x800F7D90
 	.sdata2     start:0x803E1010 end:0x803E1028
 
-main/dll/dll_0089_dll89func0.c:
+dlls/modgfx/137/137.c:
 	.text       start:0x800F7D90 end:0x800F8094
 	.sdata      start:0x803DB908 end:0x803DB910
 	.sdata2     start:0x803E1028 end:0x803E104C

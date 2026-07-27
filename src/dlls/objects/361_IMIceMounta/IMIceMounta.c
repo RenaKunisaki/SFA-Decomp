@@ -105,7 +105,7 @@ void fn_801AC108(GameObject* obj, void* extra)
         {
             mode = 0;
         }
-        mainSetBits(GAMEBIT_IM_DoneRace, 1);
+        mainSetBits(GAMEBIT_TrickyWarpEnabled, 1);
         (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 1, 1);
         if (mode == 1)
         {
@@ -273,7 +273,7 @@ void imicemountain_updateEventState(GameObject* obj)
         {
             if (--extra->warpCountdown == 0)
             {
-                mainSetBits(GAMEBIT_IM_DoneRace, 0);
+                mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
                 warpToMap(0x1a, 0);
             }
         }
