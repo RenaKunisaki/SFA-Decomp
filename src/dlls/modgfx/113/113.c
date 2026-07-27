@@ -1,5 +1,5 @@
 /*
- * dll71func0 (DLL 0x71) - a one-shot particle-effect spawner.
+ * DLL 113 / 0x71 - a one-shot particle-effect spawner.
  *
  * The single real export, dll_71_func03, fills a stacked modgfx command
  * list (14 GfxCmd entries across four render layers, sourced from the
@@ -18,7 +18,6 @@
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL71_EFFECT_ID 0x154
-
 
 extern u8 lbl_80314060[];
 
