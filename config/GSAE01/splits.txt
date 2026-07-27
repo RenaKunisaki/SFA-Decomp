@@ -460,7 +460,7 @@ main/dll/dll_0020_effect7.c:
 	.sbss       start:0x803DD380 end:0x803DD390
 	.sdata2     start:0x803DFCD8 end:0x803DFD98
 
-main/dll/dll_0021_effect8.c:
+dlls/engine/33/33.c:
 	.text       start:0x800BF978 end:0x800C11CC
 	.data       start:0x80310B50 end:0x80310BD8
 	.sdata      start:0x803DB810 end:0x803DB820

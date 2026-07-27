@@ -437,14 +437,6 @@ int Effect8_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 }
 #undef FILL8
 
-/*
- * Field names inherited from ExpgfxSpawnConfig (include/main/expgfx_internal.h),
- * the consumer-side definition of this 0x64-byte spawn request consumed by
- * gExpgfxInterface->spawnEffect (expgfx_addremove). Widths kept as written here
- * (colorWord0..2 are the u16 spelling of the consumer's ExpgfxSpawnColorPair;
- * effectIdByte/modelIdByte land in bytes the consumer currently ignores).
- */
-
 void Effect8_func05(void)
 {
     f32 sum;
@@ -483,68 +475,6 @@ void Effect8_release(void)
 {
 }
 
-
-
 void Effect8_initialise(void)
 {
 }
-
-#define FILL338()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C338.posX = lbl_803DF884;                                                                              \
-        lbl_8039C338.posY = lbl_803DF884;                                                                              \
-        lbl_8039C338.posZ = lbl_803DF884;                                                                              \
-        lbl_8039C338.scale = lbl_803DF878;                                                                             \
-        lbl_8039C338.unk0 = 0;                                                                                         \
-        lbl_8039C338.unk2 = 0;                                                                                         \
-        lbl_8039C338.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C338;                                                               \
-    } while (0)
-
-#undef FILL338
-
-#define FILL368()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C368.posX = lbl_803DFCEC;                                                                              \
-        lbl_8039C368.posY = lbl_803DFCEC;                                                                              \
-        lbl_8039C368.posZ = lbl_803DFCEC;                                                                              \
-        lbl_8039C368.scale = lbl_803DFCE0;                                                                             \
-        lbl_8039C368.unk0 = 0;                                                                                         \
-        lbl_8039C368.unk2 = 0;                                                                                         \
-        lbl_8039C368.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C368;                                                               \
-    } while (0)
-
-#undef FILL368
-
-#define FILL350()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C350.posX = lbl_803DF9D0;                                                                              \
-        lbl_8039C350.posY = lbl_803DF9D0;                                                                              \
-        lbl_8039C350.posZ = lbl_803DF9D0;                                                                              \
-        lbl_8039C350.scale = lbl_803DF9D4;                                                                             \
-        lbl_8039C350.unk0 = 0;                                                                                         \
-        lbl_8039C350.unk2 = 0;                                                                                         \
-        lbl_8039C350.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C350;                                                               \
-    } while (0)
-
-#undef FILL350
-
-#define FILL320()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C320.posX = 0.0f;                                                                                      \
-        lbl_8039C320.posY = 0.0f;                                                                                      \
-        lbl_8039C320.posZ = 0.0f;                                                                                      \
-        lbl_8039C320.scale = 1.0f;                                                                                     \
-        lbl_8039C320.unk0 = 0;                                                                                         \
-        lbl_8039C320.unk2 = 0;                                                                                         \
-        lbl_8039C320.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C320;                                                               \
-    } while (0)
-
-#undef FILL320
