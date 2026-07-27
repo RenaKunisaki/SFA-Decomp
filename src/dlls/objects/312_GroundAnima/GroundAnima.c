@@ -7,8 +7,7 @@
 #include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/audio/sfx.h"
-#include "main/dll/waveanimatorobjectdef_struct.h"
-#include "main/dll/waveanimatorstate_struct.h"
+#include "dlls/objects/310_WaveAnimato.h"
 #include "main/dll/alphaanimatorstate_struct.h"
 #include "main/dll/visanimatorstate_struct.h"
 #include "main/map_block.h"
@@ -40,9 +39,10 @@ typedef struct GroundanimatorPlacement
     u8 pad26[0x28 - 0x26];
 } GroundanimatorPlacement;
 
-/* waveanimator_getExtraSize == 0x3c (also the shared wave-grid config fed
- * to waveanimator_buildSharedTables; the grid/color/phase tables live in the lbl_803DDAEC/F0/F4
- * globals). */
+/*
+ * WaveAnimator_getExtraSize establishes the shared wave-grid configuration
+ * consumed by WaveAnimator_buildSharedTables.
+ */
 
 STATIC_ASSERT(sizeof(WaveAnimatorState) == 0x3C);
 
@@ -490,7 +490,7 @@ void groundanimator_update(GameObject* obj)
     objRenderFn_80041018(obj);
 }
 
-void groundanimator_init(GameObject* obj, WaveanimatorObjectDef* desc)
+void groundanimator_init(GameObject* obj, WaveAnimatorPlacement* desc)
 {
     GroundAnimatorState* vstate = (GroundAnimatorState*)*(int*)&obj->extra;
     vstate->modelVariant = (u8)desc->modelVariant;

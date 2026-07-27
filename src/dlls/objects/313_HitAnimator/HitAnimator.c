@@ -11,7 +11,7 @@
  * This TU also carries the layout asserts for the wave/alpha/ground/vis
  * animator states it shares headers with.
  */
-#include "main/dll/waveanimatorstate_struct.h"
+#include "dlls/objects/310_WaveAnimato.h"
 #include "game/objects/object.h"
 #include "main/dll/alphaanimatorstate_struct.h"
 #include "main/dll/visanimatorstate_struct.h"

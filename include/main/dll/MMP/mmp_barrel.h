@@ -1,13 +1,11 @@
 #ifndef MAIN_DLL_MMP_MMP_BARREL_H_
 #define MAIN_DLL_MMP_MMP_BARREL_H_
 
-#include "game/objects/object.h"
-#include "ghidra_import.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_internal.h"
+#include "dlls/objects/310_WaveAnimato.h"
 #include "game/objects/object_setup.h"
+#include "main/objanim_internal.h"
 
-extern ObjectDescriptor14 gWaveAnimatorObjDescriptor;
 extern ObjectDescriptor gAlphaAnimatorObjDescriptor;
 extern ObjectDescriptor14 gGroundAnimatorObjDescriptor;
 extern ObjectDescriptor gHitAnimatorObjDescriptor;
@@ -74,19 +72,6 @@ STATIC_ASSERT(offsetof(HitAnimatorObject, objectFlags) == 0xB0);
 STATIC_ASSERT(offsetof(HitAnimatorObject, state) == 0xB8);
 
 #define WALLANIMATOR_DONE_TIMER 3000
-
-void waveanimator_modelMtxFn(GameObject* obj, int a, int b, int c);
-void waveanimator_func0B(GameObject* obj);
-void waveanimator_setScale(GameObject* obj, f32 fval);
-int waveanimator_getExtraSize(void);
-int waveanimator_getObjectTypeId(void);
-void waveanimator_free(int* obj);
-void waveanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void waveanimator_hitDetect(GameObject* obj);
-void waveanimator_update(void);
-void waveanimator_init(GameObject* obj, struct WaveanimatorObjectDef* desc);
-void waveanimator_release(void);
-void waveanimator_initialise(void);
 
 int AlphaAnimator_getExtraSize(void);
 int AlphaAnimator_getObjectTypeId(void);

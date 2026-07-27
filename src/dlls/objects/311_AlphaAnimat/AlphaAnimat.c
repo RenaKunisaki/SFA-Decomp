@@ -19,11 +19,11 @@
  */
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
+#include "dlls/objects/310_WaveAnimato.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/audio/sfx.h"
 #include "main/gamebits.h"
-#include "main/dll/waveanimatorstate_struct.h"
 #include "main/dll/alphaanimatorstate_struct.h"
 #include "main/dll/visanimatorstate_struct.h"
 #include "main/map_block.h"
