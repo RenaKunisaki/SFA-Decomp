@@ -416,7 +416,7 @@ dlls/engine/24/24.c:
 
 dlls/engine/14/14.c:
 	.text       start:0x800A4DF4 end:0x800AF688
-	.data       start:0x80310560 end:0x8031062C
+	.data       start:0x80310560 end:0x80310636
 	.bss        start:0x8039C2E0 end:0x8039C320
 	.sdata      start:0x803DB7A0 end:0x803DB7B0
 	.sbss       start:0x803DD2C0 end:0x803DD328
@@ -424,7 +424,7 @@ dlls/engine/14/14.c:
 
 dlls/engine/26/26.c:
 	.text       start:0x800AF688 end:0x800B319C
-	.data       start:0x8031062C end:0x80310660
+	.data       start:0x80310638 end:0x80310660
 	.bss        start:0x8039C320 end:0x8039C338
 	.sdata      start:0x803DB7B0 end:0x803DB7C0
 	.sbss       start:0x803DD328 end:0x803DD338
