@@ -1787,7 +1787,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/464_DIM_tricky/DIM_tricky.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/465_DIMTruthHor/DIMTruthHor.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/objects/466_WORLDplanet/WORLDplanet.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
-            Object(NonMatching, "dlls/objects/467/467.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/467/467.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/468_WORLDAstero/WORLDAstero.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/470/470.c", cflags=cflags_dll_noopt_nocse),
