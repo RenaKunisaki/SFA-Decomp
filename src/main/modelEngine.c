@@ -195,6 +195,7 @@
 #include "dlls/objects/398_MMSH_WaterS.h"
 #include "dlls/objects/399_ECSH_Shrine.h"
 #include "dlls/objects/400_ECSH_Cup.h"
+#include "dlls/objects/401_ECSH_Creato.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -311,7 +312,7 @@ extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gD
 extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor, gDrLaserCannonObjDescriptor,
     gDrLightBeaObjDescriptor, gDrMusicContObjDescriptor, gDrShackleObjDescriptor, gDrakorDThornBushObjDescriptor,
     gDrakorEnergyObjDescriptor;
-extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor, gECSH_CreatorObjDescriptor;
+extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
     gExplodePlanObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
@@ -1438,7 +1439,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMMSHWaterSpikeObjDescriptor,
     (ResourceDescriptor*)&gECSHShrineObjDescriptor,
     (ResourceDescriptor*)&gECSHCupObjDescriptor,
-    &gECSH_CreatorObjDescriptor,
+    (ResourceDescriptor*)&gECSHCreatorObjDescriptor,
     &gGPSH_ShrineObjDescriptor,
     &gGPSH_ObjCreatorObjDescriptor,
     &gGPSH_SceneObjDescriptor,
