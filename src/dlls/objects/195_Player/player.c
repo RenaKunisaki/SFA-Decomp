@@ -6413,7 +6413,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     {
         int in2 = *(int*)&obj->extra;
-        *(u32*)((char*)in2 + 0x360) &= -3;
+        *(u32*)((char*)in2 + 0x360) &= ~PLAYER_FLAG_HITDETECT;
         *(u32*)((char*)in2 + 0x360) |= 0x2000LL;
     }
     *(int*)((char*)state + 0x4) |= 0x100000;
@@ -6758,7 +6758,7 @@ int playerState19(GameObject* obj, int state)
     }
     {
         int inner2 = *(int*)&obj->extra;
-        *(u32*)((char*)inner2 + 0x360) &= -3;
+        *(u32*)((char*)inner2 + 0x360) &= ~PLAYER_FLAG_HITDETECT;
         *(int*)((char*)inner2 + 0x360) |= 0x2000;
     }
     *(int*)((char*)state + 0x4) |= 0x100000;
@@ -7010,7 +7010,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    *(u32*)&inner->flags360 &= -3;
+    *(u32*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
     inner->flags360 |= 0x2000;
     *(int*)((char*)state + 0x4) |= 0x100000;
     {
@@ -7349,7 +7349,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
     }
     {
         PlayerState* player = obj->extra;
-        *(u32*)&player->flags360 &= -0x3;
+        *(u32*)&player->flags360 &= ~PLAYER_FLAG_HITDETECT;
         *(u32*)&player->flags360 |= 0x2000;
     }
     *(int*)((char*)state + 4) |= 0x100000;
@@ -11179,7 +11179,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     sc0p[0] = lbl_803E808C * vec[0];
     sc0p[1] = lbl_803E808C * vec[1];
     sc0p[2] = lbl_803E808C * vec[2];
-    *(u32*)&((PlayerState*)state)->flags360 &= -257;
+    *(u32*)&((PlayerState*)state)->flags360 &= ~PLAYER_FLAG_LEDGE_DETECTED;
     for (i = 0; i < PLAYER_SWEEP_DIR_COUNT; i++)
     {
         if ((mask & dirMasks[i]) == 0)
@@ -16815,7 +16815,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         inner->animState = -1;
     }
     ObjHits_DisableObject((GameObject*)obj);
-    *(u32*)&inner->flags360 &= -0x3;
+    *(u32*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
     if ((s8)seq->movementState != 0)
     {
         s8 c;
@@ -17987,7 +17987,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         }
         else if ((void*)gPlayerHeldObject != NULL)
         {
-                *(u32*)((char*)gPlayerHeldObject + 0x3c) &= -0x100001;
+            *(u32*)((char*)gPlayerHeldObject + 0x3c) &= ~0x100000;
             {
                 int zero = 0;
                 gPlayerHeldObject = zero;
@@ -18118,7 +18118,7 @@ void playerDoHitDetection(int obj)
     f32 y;
     f32 z;
 
-    *(u32*)&((PlayerState*)inner)->flags360 &= -0x8000001;
+    *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_WORLDPOS_OVERRIDE;
     if (((ByteFlags*)((char*)inner + 0x3f2))->b20 != 0 &&
         (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
     {
