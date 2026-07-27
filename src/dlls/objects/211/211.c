@@ -51,21 +51,6 @@
 #include "main/gamebits.h"
 #include "game/objects/object_setup.h"
 
-extern const f32 lbl_803E2FD8;
-extern const f32 lbl_803E2FDC;
-extern const f32 lbl_803E2FE0;
-extern const f32 gBackpackBounceDampingHorizontal;
-extern const f32 gBackpackBounceDampingVertical;
-extern const f32 lbl_803E2FEC;
-extern const f32 gBackpackBounceRestitution;
-extern const f32 lbl_803E2FF4;
-extern const f32 lbl_803E2FF8;
-extern const f32 lbl_803E2FFC;
-extern const f32 lbl_803E3000;
-extern const f32 lbl_803E3004;
-extern const f32 lbl_803E3008;
-extern const f32 lbl_803E300C;
-extern const f32 lbl_803E3010;
 
 #define LANDED_ARWING_SCRIPT_MODE 6
 
@@ -117,52 +102,52 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord)
     {
         ObjHits_DisableObject(obj);
         obj->anim.velocityX = -obj->anim.velocityX;
-        obj->anim.velocityY = obj->anim.velocityY + lbl_803E2FD8;
+        obj->anim.velocityY += 5.0f;
         obj->anim.velocityZ = -obj->anim.velocityZ;
-        ObjAnim_SetCurrentMove((int)obj, 3, lbl_803E2FDC, 0);
-        state->animSpeed = lbl_803E2FE0;
+        ObjAnim_SetCurrentMove((int)obj, 3, 0.0f, 0);
+        state->animSpeed = 0.012f;
     }
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     hitState->objectPairHitVolume = 0;
     *stateWord = *stateWord | LANDED_ARWING_FLAG_BOUNCE;
     obj->anim.velocityX =
-        obj->anim.velocityX * (horizontalDamping = gBackpackBounceDampingHorizontal);
+        obj->anim.velocityX * (horizontalDamping = 0.985f);
     obj->anim.velocityY =
-        gBackpackBounceDampingVertical * (obj->anim.velocityY - lbl_803E2FEC);
+        0.945f * (obj->anim.velocityY - 0.4f);
     obj->anim.velocityZ = obj->anim.velocityZ * horizontalDamping;
     objMove(obj, obj->anim.velocityX, obj->anim.velocityY,
             obj->anim.velocityZ);
     if (obj->anim.localPosX < state->boundsMinX)
     {
         obj->anim.localPosX = state->boundsMinX;
-        obj->anim.velocityX = gBackpackBounceRestitution * -obj->anim.velocityX;
+        obj->anim.velocityX = 0.9f * -obj->anim.velocityX;
     }
     if (obj->anim.localPosX > state->boundsMaxX)
     {
         obj->anim.localPosX = state->boundsMaxX;
-        obj->anim.velocityX = gBackpackBounceRestitution * -obj->anim.velocityX;
+        obj->anim.velocityX = 0.9f * -obj->anim.velocityX;
     }
     if (obj->anim.localPosY < state->boundsMinY)
     {
         obj->anim.localPosY = state->boundsMinY;
-        obj->anim.velocityY = gBackpackBounceRestitution * -obj->anim.velocityY;
+        obj->anim.velocityY = 0.9f * -obj->anim.velocityY;
     }
     if (obj->anim.localPosY > state->boundsMaxY)
     {
         obj->anim.localPosY = state->boundsMaxY;
-        obj->anim.velocityY = gBackpackBounceRestitution * -obj->anim.velocityY;
+        obj->anim.velocityY = 0.9f * -obj->anim.velocityY;
     }
     if (obj->anim.localPosZ < state->boundsMinZ)
     {
         obj->anim.localPosZ = state->boundsMinZ;
-        obj->anim.velocityZ = gBackpackBounceRestitution * -obj->anim.velocityZ;
+        obj->anim.velocityZ = 0.9f * -obj->anim.velocityZ;
     }
     if (obj->anim.localPosZ > state->boundsMaxZ)
     {
         obj->anim.localPosZ = state->boundsMaxZ;
-        obj->anim.velocityZ = gBackpackBounceRestitution * -obj->anim.velocityZ;
+        obj->anim.velocityZ = 0.9f * -obj->anim.velocityZ;
     }
-    if (lbl_803E2FF4 == obj->anim.currentMoveProgress)
+    if (1.0f == obj->anim.currentMoveProgress)
     {
         ObjMsg_SendToObjects(0, 3, obj, 0xe0000, (u32)obj);
         Obj_FreeObject(obj);
@@ -170,7 +155,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord)
     }
     else
     {
-        obj->anim.alpha = (u8)(255 - (s32)(lbl_803E2FF8 * obj->anim.currentMoveProgress));
+        obj->anim.alpha = (u8)(255 - (s32)(255.0f * obj->anim.currentMoveProgress));
     }
     return 0;
 }
@@ -192,7 +177,7 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
     if (*(s8*)(stateWord + LANDED_ARWING_JUST_COLLIDED) != 0)
     {
         state->scriptTimer = 0x3c;
-        state->speed = lbl_803E2FFC;
+        state->speed = 4.2f;
         ObjHits_DisableObject(obj);
     }
     if (state->surfaceMode != LANDED_ARWING_SCRIPT_MODE &&
@@ -204,14 +189,14 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
         x = (obj)->anim.localPosX;
         y = (obj)->anim.localPosY;
         z = (obj)->anim.localPosZ;
-        scale = lbl_803E2FDC;
+        scale = 0.0f;
     }
     else
     {
-        x = (obj)->anim.localPosX - lbl_803E3000 * (playerObj->anim.localPosX - (obj)->anim.localPosX);
-        y = (obj)->anim.localPosY - lbl_803E3000 * (playerObj->anim.localPosY - (obj)->anim.localPosY);
-        z = (obj)->anim.localPosZ - lbl_803E3000 * (playerObj->anim.localPosZ - (obj)->anim.localPosZ);
-        scale = lbl_803E2FF4;
+        x = (obj)->anim.localPosX - 2.0f * (playerObj->anim.localPosX - (obj)->anim.localPosX);
+        y = (obj)->anim.localPosY - 2.0f * (playerObj->anim.localPosY - (obj)->anim.localPosY);
+        z = (obj)->anim.localPosZ - 2.0f * (playerObj->anim.localPosZ - (obj)->anim.localPosZ);
+        scale = 1.0f;
     }
     landedarwing_updateConstrainedChaseVelocity(obj, x, y, z, scale);
     if (state->surfaceMode == LANDED_ARWING_SCRIPT_MODE)
@@ -295,16 +280,16 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
 
     if (*(s8*)(state + BADDIESTATE_JUST_LAUNCHED) != 0)
     {
-        sub->speed = lbl_803E3004;
+        sub->speed = 2.6f;
         ObjHits_EnableObject(obj);
         obj->anim.velocityX =
             -sub->speed * fsin16Precise(obj->anim.rotX & 0xffff);
-        obj->anim.velocityY = lbl_803E2FDC;
+        obj->anim.velocityY = 0.0f;
         obj->anim.velocityZ =
             -sub->speed * fcos16Precise(obj->anim.rotX & 0xffff);
         *(u32*)state |= LANDED_ARWING_FLAG_LAUNCHING;
-        ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E2FDC, 0);
-        sub->animSpeed = lbl_803E3008;
+        ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
+        sub->animSpeed = 0.1f;
     }
 
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, LANDED_ARWING_OBJECT_PAIR_PRIORITY, LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME, -1);
@@ -356,12 +341,12 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
     {
     case LANDED_ARWING_TARGET_PLAYER:
         targetX = playerObj->anim.localPosX;
-        targetY = playerObj->anim.localPosY - lbl_803E2FD8;
+        targetY = playerObj->anim.localPosY - 5.0f;
         targetZ = playerObj->anim.localPosZ;
-        chaseScale = lbl_803E300C;
+        chaseScale = 0.08f;
         if (mainGetBit(LANDED_ARWING_REVERSE_CHASE_GAMEBIT) != 0)
         {
-            chaseScale = -lbl_803E300C;
+            chaseScale = -chaseScale;
         }
         break;
     case LANDED_ARWING_TARGET_WANDER:
@@ -379,13 +364,13 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
         targetX = sub->wanderTargetX;
         targetY = sub->wanderTargetY;
         targetZ = sub->wanderTargetZ;
-        chaseScale = lbl_803E3010;
+        chaseScale = 0.005f;
         break;
     case LANDED_ARWING_TARGET_SCRIPT:
         targetX = sub->scriptTargetX;
         targetY = sub->scriptTargetY;
         targetZ = sub->scriptTargetZ;
-        chaseScale = lbl_803E300C;
+        chaseScale = 0.08f;
         break;
     }
 
@@ -444,14 +429,14 @@ u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
     *(u8*)((int)params + 0x34d) = 1;
     if (*(s8*)((int)params + 0x27a) != 0)
     {
-        state->speed = lbl_803E3004;
+        state->speed = 2.6f;
         ObjHits_EnableObject(obj);
         obj->anim.velocityX = -(state->speed) * fsin16Precise(obj->anim.rotX & 0xffff);
-        obj->anim.velocityY = lbl_803E2FDC;
+        obj->anim.velocityY = 0.0f;
         obj->anim.velocityZ = -(state->speed) * fcos16Precise(obj->anim.rotX & 0xffff);
         *params |= 0x2004000;
-        ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E2FDC, 0);
-        state->animSpeed = lbl_803E2FDC;
+        ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
+        state->animSpeed = 0.0f;
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, STAFFACTION_HIT_VOLUME_SLOT, 1, -1);
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 9;
@@ -500,7 +485,7 @@ void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state
     int hitFound;
 
     radius = 100.0f;
-    (obj)->anim.velocityY = (obj)->anim.velocityY - lbl_803E2FF4;
+    (obj)->anim.velocityY = (obj)->anim.velocityY - 1.0f;
     (obj)->anim.velocityX = (obj)->anim.velocityX * (damping = 0.97f);
     (obj)->anim.velocityY = (obj)->anim.velocityY * damping;
     (obj)->anim.velocityZ = (obj)->anim.velocityZ * damping;
@@ -510,7 +495,7 @@ void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state
     end[0] = start[0] + (obj)->anim.velocityX;
     end[1] = start[1] + (obj)->anim.velocityY;
     end[2] = start[2] + (obj)->anim.velocityZ;
-    hitScratch.hitRadius = lbl_803E2FDC;
+    hitScratch.hitRadius = 0.0f;
     hitScratch.hitType = 3;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
     hitDetectFn_800691c0(obj, &bounds, 0, 1);
@@ -548,7 +533,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = -obj->anim.velocityY;
                 state->surfaceMode = 5;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         else if (obj->anim.localPosY > state->boundsMaxY)
         {
@@ -558,7 +543,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = obj->anim.velocityY;
                 state->surfaceMode = 4;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         else if (obj->anim.localPosZ > state->boundsMaxZ)
         {
@@ -568,7 +553,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = obj->anim.velocityZ;
                 state->surfaceMode = 2;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         else if (obj->anim.localPosZ < state->boundsMinZ)
         {
@@ -578,7 +563,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = -obj->anim.velocityZ;
                 state->surfaceMode = 3;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         break;
     case 1:
@@ -590,7 +575,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = obj->anim.velocityY;
                 state->surfaceMode = 5;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         else if (obj->anim.localPosY > state->boundsMaxY)
         {
@@ -600,7 +585,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = -obj->anim.velocityY;
                 state->surfaceMode = 4;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         else if (obj->anim.localPosZ > state->boundsMaxZ)
         {
@@ -610,7 +595,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = -obj->anim.velocityZ;
                 state->surfaceMode = 2;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         else if (obj->anim.localPosZ < state->boundsMinZ)
         {
@@ -620,7 +605,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityX = obj->anim.velocityZ;
                 state->surfaceMode = 3;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         break;
     case 2:
@@ -632,7 +617,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = obj->anim.velocityX;
                 state->surfaceMode = 0;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosX > state->boundsMaxX)
         {
@@ -642,7 +627,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = -obj->anim.velocityX;
                 state->surfaceMode = 1;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosY < state->boundsMinY)
         {
@@ -652,7 +637,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = obj->anim.velocityY;
                 state->surfaceMode = 5;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         else if (obj->anim.localPosY > state->boundsMaxY)
         {
@@ -662,7 +647,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = -obj->anim.velocityY;
                 state->surfaceMode = 4;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         break;
     case 3:
@@ -674,7 +659,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = -obj->anim.velocityX;
                 state->surfaceMode = 0;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosX > state->boundsMaxX)
         {
@@ -684,7 +669,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = obj->anim.velocityX;
                 state->surfaceMode = 1;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosY < state->boundsMinY)
         {
@@ -694,7 +679,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = -obj->anim.velocityY;
                 state->surfaceMode = 5;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         else if (obj->anim.localPosY > state->boundsMaxY)
         {
@@ -704,7 +689,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityZ = obj->anim.velocityY;
                 state->surfaceMode = 4;
             }
-            obj->anim.velocityY = lbl_803E2FDC;
+            obj->anim.velocityY = 0.0f;
         }
         break;
     case 5:
@@ -716,7 +701,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = -obj->anim.velocityX;
                 state->surfaceMode = 0;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosX > state->boundsMaxX)
         {
@@ -726,7 +711,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = obj->anim.velocityX;
                 state->surfaceMode = 1;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosZ > state->boundsMaxZ)
         {
@@ -736,7 +721,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = obj->anim.velocityZ;
                 state->surfaceMode = 2;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         else if (obj->anim.localPosZ < state->boundsMinZ)
         {
@@ -746,7 +731,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = -obj->anim.velocityZ;
                 state->surfaceMode = 3;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         break;
     case 4:
@@ -758,7 +743,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = obj->anim.velocityX;
                 state->surfaceMode = 0;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosX > state->boundsMaxX)
         {
@@ -768,7 +753,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = -obj->anim.velocityX;
                 state->surfaceMode = 1;
             }
-            obj->anim.velocityX = lbl_803E2FDC;
+            obj->anim.velocityX = 0.0f;
         }
         else if (obj->anim.localPosZ > state->boundsMaxZ)
         {
@@ -778,7 +763,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = -obj->anim.velocityZ;
                 state->surfaceMode = 2;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         else if (obj->anim.localPosZ < state->boundsMinZ)
         {
@@ -788,7 +773,7 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
                 obj->anim.velocityY = obj->anim.velocityZ;
                 state->surfaceMode = 3;
             }
-            obj->anim.velocityZ = lbl_803E2FDC;
+            obj->anim.velocityZ = 0.0f;
         }
         break;
     }
@@ -864,7 +849,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     distanceRemaining = sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
                               (obj->anim.velocityX * obj->anim.velocityX +
                                obj->anim.velocityY * obj->anim.velocityY));
-    traveled = lbl_803E2FDC;
+    traveled = 0.0f;
     stepCount = 0;
     hitScratch.hitRadius = traveled;
     hitScratch.hitType = 3;
@@ -877,7 +862,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     radius = 100.0f;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
     hitDetectFn_800691c0(obj, &bounds, 0, 1);
-    one = lbl_803E2FF4;
+    one = 1.0f;
     while ((traveled < distanceRemaining) && (++stepCount < 10))
     {
         start[0] = obj->anim.localPosX;
@@ -911,7 +896,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     end[0] = -(4.0f * state->surfaceNormalX - start[0]);
     end[1] = -(4.0f * state->surfaceNormalY - start[1]);
     end[2] = -(4.0f * state->surfaceNormalZ - start[2]);
-    hitScratch.hitRadius = lbl_803E2FDC;
+    hitScratch.hitRadius = 0.0f;
     hitScratch.hitType = 3;
     hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
     if (hitFound != 0)
@@ -942,7 +927,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
         end[0] = 10.0f * end[0] + start[0];
         end[1] = 10.0f * end[1] + start[1];
         end[2] = 10.0f * end[2] + start[2];
-        hitScratch.hitRadius = lbl_803E2FDC;
+        hitScratch.hitRadius = 0.0f;
         hitScratch.hitType = 3;
         hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
         if (hitFound != 0)
@@ -993,9 +978,9 @@ void landedarwing_resolveSurfaceCollision(GameObject* obj, LandedArwingState* st
     planeY = objZ * (stateX - velX) + (stateZ * (velX - objX) + velZ * (objX - stateX));
     planeZ = objX * (stateY - velY) + (stateX * (velY - objY) + velX * (objY - stateY));
     len = sqrtf(planeZ * planeZ + (planeX * planeX + planeY * planeY));
-    if (len > lbl_803E2FDC)
+    if (len > 0.0f)
     {
-        len = lbl_803E2FF4 / len;
+        len = 1.0f / len;
         planeX *= len;
         planeY *= len;
         planeZ *= len;
@@ -1007,8 +992,8 @@ void landedarwing_resolveSurfaceCollision(GameObject* obj, LandedArwingState* st
     plane[3] = planeW;
     Vec3_Cross(plane, hit, response);
     Vec3_Normalize(response);
-    speed = lbl_803E3004;
-    obj->anim.velocityX = lbl_803E3004 * response[0];
+    speed = 2.6f;
+    obj->anim.velocityX = 2.6f * response[0];
     obj->anim.velocityY = speed * response[1];
     obj->anim.velocityZ = speed * response[2];
     state->surfaceNormalX = hit[0];
@@ -1038,7 +1023,7 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
         vy = targetY - (obj)->anim.localPosY;
         vz = targetZ - (obj)->anim.localPosZ;
         len = sqrtf(vz * vz + (vx * vx + vy * vy));
-        if (len >= lbl_803E2FDC)
+        if (len >= 0.0f)
         {
             scale = state->speed / len;
             vx *= scale;
@@ -1053,9 +1038,9 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
         {
         case 0:
         case 1:
-            vx = *(f32*)&lbl_803E2FDC;
+            vx = 0.0f;
             len = sqrtf(vy * vy + vz * vz);
-            if (len != lbl_803E2FDC)
+            if (len)
             {
                 scale = state->speed / len;
                 vy *= scale;
@@ -1064,9 +1049,9 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
             break;
         case 2:
         case 3:
-            vz = *(f32*)&lbl_803E2FDC;
+            vz = 0.0f;
             len = sqrtf(vx * vx + vy * vy);
-            if (len != lbl_803E2FDC)
+            if (len)
             {
                 scale = state->speed / len;
                 vx *= scale;
@@ -1075,9 +1060,9 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
             break;
         case 4:
         case 5:
-            vy = *(f32*)&lbl_803E2FDC;
+            vy = 0.0f;
             len = sqrtf(vx * vx + vz * vz);
-            if (len != lbl_803E2FDC)
+            if (len)
             {
                 scale = state->speed / len;
                 vx *= scale;
@@ -1090,7 +1075,7 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
             vy = -(dot * state->surfaceNormalY - vy);
             vz = -(dot * state->surfaceNormalZ - vz);
             len = sqrtf(vz * vz + (vx * vx + vy * vy));
-            if (len != lbl_803E2FDC)
+            if (len)
             {
                 scale = state->speed / len;
                 vx *= scale;
@@ -1156,12 +1141,12 @@ void dll_D3_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                 mtx[13] = (obj)->anim.localPosY;
                 mtx[14] = (obj)->anim.localPosZ - playerMapOffsetZ;
                 objSetModelMatrixOverride((f32*)mtx);
-                objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E2FF4);
+                objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
                 objSetModelMatrixOverride(NULL);
             }
             else
             {
-                objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E2FF4);
+                objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             }
             break;
         }
@@ -1334,7 +1319,7 @@ void dll_D3_update(GameObject* obj)
     }
 
     (*gBaddieControlInterface)
-        ->updateGravity(obj, state, lbl_803E2FDC, -1);
+        ->updateGravity(obj, state, 0.0f, -1);
 
     ((TreasureChestState*)state)->savedObjC0 = *(int*)&obj->pendingParentObj;
     *(int*)&obj->pendingParentObj = 0;
@@ -1383,9 +1368,9 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     memset((void*)extra, 0, 0x94);
     extra->surfaceMode = 5;
     ((LandedArwingMovementFlags*)&extra->flags92)->boundsLookupRetries = 3;
-    fz = lbl_803E2FDC;
+    fz = 0.0f;
     extra->surfaceNormalX = fz;
-    extra->surfaceNormalY = lbl_803E2FF4;
+    extra->surfaceNormalY = 1.0f;
     extra->surfaceNormalZ = fz;
     extra->surfacePlaneD = -(obj)->anim.localPosY;
     extra->scriptTargetX = (obj)->anim.localPosX;
@@ -1408,7 +1393,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     ((TreasureChestState*)state)->physicsActive = 0;
     ObjHits_DisableObject(obj);
 
-    fz = lbl_803E2FF4;
+    fz = 1.0f;
     extra->unk_04 = fz;
     extra->unk_18 = fz;
     extra->unk_2C = fz;
