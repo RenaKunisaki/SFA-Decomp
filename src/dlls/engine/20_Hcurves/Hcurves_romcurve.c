@@ -140,6 +140,11 @@ extern u8 gObjfsaWalkGroupActive[0xB8];
     pl->normalZ = (s16)(32767.0f * dzn);                                                                \
     *(po) = -((f32)pl->normalX * (XA) + (f32)pl->normalZ * (ZA))
 
+static f32 RomCurve_scaleTangent(f32 t)
+{
+    return ROMCURVE_TANGENT_SCALE * t;
+}
+
 static inline f32 RomCurveNode_GetHermiteTangent(void** nodePtr, int angleOffset, int useCos);
 inline f32 objfsaCorner(s8 ofs, f32 scl, f32* base);
 
