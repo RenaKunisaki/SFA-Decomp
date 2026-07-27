@@ -1,5 +1,5 @@
 /*
- * DLL 0x69 entry-point table (func0 object).
+ * DLL 105 / 0x69 entry-point table.
  *
  * dll_69_func03 builds a stack list of GfxCmd records describing a layered
  * 2D/billboard effect and submits it through gModgfxInterface->spawnEffect.

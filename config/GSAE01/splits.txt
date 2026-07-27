@@ -679,7 +679,7 @@ main/dll/dll_0068_dll68func0.c:
 main/dll/dll_0058_dummy58.c:
 	.text       start:0x800EFD34 end:0x800EFD44
 
-main/dll/dll_0069_dll69func0.c:
+dlls/modgfx/105/105.c:
 	.text       start:0x800EFD44 end:0x800F022C
 	.sdata2     start:0x803E0A20 end:0x803E0A28
 
