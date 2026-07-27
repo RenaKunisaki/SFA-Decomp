@@ -113,6 +113,15 @@ typedef struct DIMwooddoorUpdateFallingDebrisState
 /* DIMwooddoor_updateFallingDebris: integrate the falling debris under gravity, spin it, and on
  * contact (or scripted trigger) fire the explosion and start the despawn timer. */
 
+static void DIMwooddoor_explodeDebris(GameObject* obj, DIMwooddoorUpdateFallingDebrisState* extra)
+{
+    ObjHitbox_SetSphereRadius(&obj->anim, extra->hitboxRadius);
+    spawnExplosion(obj, 50.0f, 2, 1, 0, 1, 1, 1, 0);
+    obj->userData1 = 1180;
+    *(s8*)&extra->state = DIMWOODDOOR_DEBRIS_STATE_EXPLODED;
+    obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+}
+
 void DIMwooddoor_updateFallingDebris(GameObject* obj)
 {
     DIMwooddoorUpdateFallingDebrisState* extra = obj->extra;
@@ -142,12 +151,7 @@ void DIMwooddoor_updateFallingDebris(GameObject* obj)
             vol = (int*)hitState->lastHitObject;
             if (vol != NULL && vol != *(int**)extra)
             {
-                ObjHitbox_SetSphereRadius(&obj->anim,
-                                          extra->hitboxRadius);
-                spawnExplosion(obj, 50.0f, 2, 1, 0, 1, 1, 1, 0);
-                obj->userData1 = 1180;
-                *(s8*)&extra->state = DIMWOODDOOR_DEBRIS_STATE_EXPLODED;
-                obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                DIMwooddoor_explodeDebris(obj, extra);
             }
         }
         if ((mainGetBit(GAMEBIT_DIM2_CannonRelated085E) != 0 && mainGetBit(GAMEBIT_CannonRelated0C2D) == 0) ||
@@ -157,12 +161,7 @@ void DIMwooddoor_updateFallingDebris(GameObject* obj)
         }
         if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0)
         {
-            ObjHitbox_SetSphereRadius(&obj->anim,
-                                      extra->hitboxRadius);
-            spawnExplosion(obj, 50.0f, 2, 1, 0, 1, 1, 1, 0);
-            obj->userData1 = 1180;
-            *(s8*)&extra->state = DIMWOODDOOR_DEBRIS_STATE_EXPLODED;
-            obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            DIMwooddoor_explodeDebris(obj, extra);
         }
         break;
     }
@@ -377,14 +376,10 @@ f32 lbl_803DBF14 = -300.0f;
 #define CAMMODE_CANNON  0x51 /* dll_0051_cameramodecannon */
 #define CAMMODE_DEFAULT 0x42 /* dll_0042 - default/release camera */
 
-extern f32 lbl_803E48E8;
 STATIC_ASSERT(sizeof(DimCannonState) == 0xb4);
 void* lbl_803DDB50;
 
-extern f32 lbl_803E48B8;
 
-extern f32 lbl_803E48EC;
-extern f32 gDimCannonAnimAdvanceSpeed;
 typedef struct DimcannonPlacement
 {
     ObjPlacement base;
@@ -621,14 +616,14 @@ void DIMCannon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
         sub = obj->extra;
         saved = obj->anim.rotX;
         obj->anim.rotX = (s16)((s8)def[0x28] << 8);
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E48E8);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         obj->anim.rotX = saved;
         ObjPath_GetPointWorldPosition(obj, 0, &sub->posX, &sub->posY,
                                       &sub->posZ, 0);
     }
     else
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E48E8);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -714,7 +709,7 @@ void DIMCannon_update(GameObject* obj)
             f32 d = getXZDistance(&obj->anim.worldPosX,
                                   &((GameObject*)state->targetPlayer)->anim.worldPosX);
             int v = src->triggerRange * lbl_803DBF10;
-            if (d < v / lbl_803E48EC)
+            if (d < v / 100.0f)
             {
                 state->fireState = 1;
             }
@@ -778,7 +773,7 @@ void DIMCannon_update(GameObject* obj)
             {
                 f32 d2 = state->distance;
                 int v = src->triggerRange * lbl_803DBF0C;
-                if (d2 > v / lbl_803E48EC)
+                if (d2 > v / 100.0f)
                 {
                     state->fireState = 4;
                 }
@@ -791,8 +786,8 @@ void DIMCannon_update(GameObject* obj)
         break;
     }
 
-    gDimCannonAnimAdvanceSpeedCur = gDimCannonAnimAdvanceSpeed;
-    ObjAnim_AdvanceCurrentMove((int)obj, gDimCannonAnimAdvanceSpeed, timeDelta, NULL);
+    gDimCannonAnimAdvanceSpeedCur = 0.025f;
+    ObjAnim_AdvanceCurrentMove((int)obj, 0.025f, timeDelta, NULL);
 }
 
 void DIMCannon_init(GameObject* obj, DimcannonPlacement* arg)
@@ -858,7 +853,7 @@ void DIMCannon_init(GameObject* obj, DimcannonPlacement* arg)
         }
 
         state->refreshTimer = 0x80;
-        state->unk98 = lbl_803E48B8;
+        state->unk98 = 0.0f;
         *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
         obj->animEventCallback = DIMCannon_SeqFn;
         obj->anim.rotX = (s16)(arg->unk28 << 8);
