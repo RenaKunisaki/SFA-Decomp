@@ -48,7 +48,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x002 | — | NO-RETAIL-NAME | main/objseq.c | main/dll/dll_0002_objseq.c | engine/SDK host: main/objseq.c |
 | 0x003 | — | NO-RETAIL-NAME | main/dll/dll_0003_checkpoint.c | = (canonical) | — |
 | 0x004 | — | NO-RETAIL-NAME | main/dll/dll_0004_dummy04.c | = (canonical) | — |
-| 0x005 | — | NO-RETAIL-NAME | main/sky.c | main/dll/dll_0005_rendersky.c | engine/SDK host: main/sky.c; stem from fn prefix `renderSky_*` |
+| 0x005 | — | NO-RETAIL-NAME | dlls/engine/5/5.c | main/sky.c | Complete DOL-confirmed TU |
 | 0x006 | — | NO-RETAIL-NAME | dlls/engine/6/6.c | main/sky2.c | Complete DOL-confirmed TU |
 | 0x007 | — | NO-RETAIL-NAME | dlls/engine/7/7.c | main/newclouds.c | Complete DOL-confirmed TU |
 | 0x008 | — | NO-RETAIL-NAME | dlls/engine/8/8.c | main/skystars.c | Complete DOL-confirmed data-only TU; descriptor separated from skystars |
