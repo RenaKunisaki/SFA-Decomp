@@ -353,7 +353,7 @@ void worldplanet_update(GameObject* obj)
                     (*gCameraInterface)->releaseAction(&objId, 1);
                     Sfx_PlayFromObject(0, SFXTRIG_crf_babyambi3);
                 }
-                gWorldPlanetPathProgress = 0.0f;
+                gWorldPlanetPathProgress = gWorldPlanetLightingZero;
                 {
                     WorldObjState* planetState =
                         ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[prevPlanet]])->extra;
@@ -369,12 +369,17 @@ void worldplanet_update(GameObject* obj)
         gWorldPlanetPathProgress = gWorldPlanetPathProgress + gWorldPlanetPathProgressStep;
         if (gWorldPlanetPathProgress >= gWorldPlanetPathProgressMax)
         {
-            gWorldPlanetPathProgress = 0.0f;
+            gWorldPlanetPathProgress = gWorldPlanetLightingZero;
         }
         for (i = 0; i < WORLDPLANET_PLANET_COUNT; i++)
         {
-            GameObject* planet = ObjList_FindObjectById(tbl->flightPathObjectIds[i]);
-            WorldObjState* pstate = planet->extra;
+            int* pathIds;
+            GameObject* planet;
+            WorldObjState* pstate;
+            pathIds = (int*)tbl;
+            pathIds = pathIds + i;
+            planet = ObjList_FindObjectById(pathIds[10]);
+            pstate = planet->extra;
             planet->anim.rotY = (obj)->anim.rotY;
             planet->anim.rotX = (obj)->anim.rotX;
             if ((u8)state->selectionLocked != 0 || (((int)(u32)state->unlockedPlanetMask >> i) & 1) == 0)
@@ -476,7 +481,7 @@ void worldplanet_update(GameObject* obj)
                             gWorldPlanetLoadMapIndices[gWorldPlanetSelectionToIndex[state->selectedPlanet]]);
                         lockLevel(gWorldPlanetLoadedMapId, 1);
                         loadModelAndAnimTabs();
-                        lbl_803DDD00 = 0.0f;
+                        lbl_803DDD00 = gWorldPlanetLightingZero;
                         gWorldPlanetSavedSelection = state->selectedPlanet;
                     }
                 }
@@ -484,7 +489,7 @@ void worldplanet_update(GameObject* obj)
             case 1:
                 Pause_ResetMenuFrameCounter();
                 {
-                    int neq = lbl_803DDD00 != 0.0f;
+                    int neq = lbl_803DDD00 != gWorldPlanetLightingZero;
                     neq = !neq;
                     if (neq)
                     {
@@ -530,7 +535,11 @@ void worldplanet_update(GameObject* obj)
                 ang = -(obj)->anim.rotZ & 0xffff;
                 for (; spin < WORLDPLANET_PLANET_COUNT; spin++)
                 {
-                    GameObject* planetObj = ObjList_FindObjectById(tbl->flightPathObjectIds[spin]);
+                    int* pathIds;
+                    GameObject* planetObj;
+                    pathIds = (int*)tbl;
+                    pathIds = pathIds + spin;
+                    planetObj = ObjList_FindObjectById(pathIds[10]);
                     planetObj->anim.rotZ = -ang;
                 }
             }
