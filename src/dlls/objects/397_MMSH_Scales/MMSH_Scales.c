@@ -1,175 +1,160 @@
 /*
- * MMSH_Scales (DLL 0x018D) - a trigger-sequence "scales" object in the
- * Moon Mountain Shrine (mmsh) family; object type id 0xb.
- *
- * init() loads the object's animation/sequence data from its placement def
- * (re-loading only when the def's bank index changes), seeds the per-object
- * state, and - while the loader is locked - spawns a child object at the
- * object's world position and scales the child by lbl_803E4F78.
- *
- * update() advances the trigger sequence each frame; once the sequence has
- * ended (seqIndex == -2) it scans the live object list for sibling scales of
- * the same group tag (extra+0x57), ends the shared sequence when this is the
- * last one, and frees itself.
- *
- * free() releases the trigger state, notifies the title-menu control
- * interface (vtable slot 2), and frees the spawned child.
+ * MMSH_Scales (DLL 0x18D) advances object-trigger sequences and spawns the
+ * scalessword child used by the Moon Mountain Pass sequence.
  */
-#include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/obj_list.h"
-#include "main/objseq.h"
-#include "main/dll/dll_018D_mmshscales.h"
-#include "main/object_render.h"
-#include "main/dll/dll_0004_dummy04.h"
+#include "dlls/objects/397_MMSH_Scales.h"
 
-/* Child object spawned at init and cached in childObjs[0] (scaled x2);
-   retail OBJECTS.bin name "scalessword" (DLL 0x12A). */
-#define MMSHSCALES_CHILD_OBJ_SWORD 0x1b8
-#define MMSHSCALES_OBJECT_TYPE_ID  0xb
-#define MMSHSCALES_CLASS_ID        0x10
-#define MMSHSCALES_CHILD_SCALE     2.0f
+#include "game/objects/object.h"
+#include "main/dll/dll_0004_dummy04.h"
+#include "main/obj_list.h"
+#include "main/object_render.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
+
+#define MMSH_SCALES_CHILD_OBJECT_ID         0x1B8
+#define MMSH_SCALES_OBJECT_TYPE_ID          0xB
+#define MMSH_SCALES_CLASS_ID                0x10
+#define MMSH_SCALES_CHILD_SETUP_FLAGS       5
+#define MMSH_SCALES_CHILD_COLOR_RED         0x20
+#define MMSH_SCALES_CHILD_COLOR_GREEN       0x04
+#define MMSH_SCALES_CHILD_COLOR_ALPHA       0xFF
+#define MMSH_SCALES_CHILD_SCALE             2.0f
+#define MMSH_SCALES_RENDER_SCALE            1.0f
+#define MMSH_SCALES_SEQUENCE_PENDING        -2
+#define MMSH_SCALES_SEQUENCE_NONE           -1
+#define MMSH_SCALES_SEQUENCE_FLAGS          -1
+#define MMSH_SCALES_CURVE_NONE              -1
+#define MMSH_SCALES_ANIM_DATA_NONE          -1
+#define MMSH_SCALES_DEFAULT_ANIM_DATA_INDEX 1
+#define MMSH_SCALES_NO_MAP_LAYER            -1
+#define MMSH_SCALES_NO_OBJECT_INDEX         -1
 
 extern u8 lbl_803DB411;
 
-
-int MMSH_Scales_getExtraSize(void)
-{
-    return sizeof(MmshScalesState);
-}
-int MMSH_Scales_getObjectTypeId(void)
-{
-    return MMSHSCALES_OBJECT_TYPE_ID;
+int mmshScales_getExtraSize(void) {
+    return sizeof(MMSHScalesState);
 }
 
-void MMSH_Scales_free(GameObject* obj, int keepChild)
-{
+int mmshScales_getObjectTypeId(void) {
+    return MMSH_SCALES_OBJECT_TYPE_ID;
+}
+
+void mmshScales_free(GameObject* obj, int keepChild) {
     GameObject* child;
+
     (*gObjectTriggerInterface)->freeState(obj->extra);
-    gTitleMenuControlInterfaceCopy->vtable->func05((void*)obj, 0xffff, 0, 0, 0);
+    gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
     child = obj->childObjs[0];
-    if ((child != NULL) && (keepChild == 0))
-    {
+    if (child != NULL && keepChild == 0) {
         Obj_FreeObject(child);
     }
 }
 
-void MMSH_Scales_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void mmshScales_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, MMSH_SCALES_RENDER_SCALE);
+    }
 }
 
-void MMSH_Scales_hitDetect(void)
-{
+void mmshScales_hitDetect(void) {
 }
 
-void MMSH_Scales_update(GameObject* obj)
-{
+void mmshScales_update(GameObject* obj) {
     int sequenceSlot;
-    GameObject** list;
-    GameObject* other;
+    GameObject** objects;
+    GameObject* otherObj;
     GameObject* sequenceOwner;
     int groupSlot;
     int siblingCount;
-    int i;
-    int count;
+    int objectIndex;
+    int objectCount;
 
     if ((obj->anim.placementData != NULL) &&
-        (((MmshScalesPlacement*)obj->anim.placementData)->animationBank != -1))
-    {
-        i = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
-        if ((i != 0) && (obj->seqIndex == -2))
-        {
-            sequenceSlot = ((MmshScalesState*)obj->extra)->sequence.slot;
+        (((MMSHScalesPlacement*)obj->anim.placementData)->animDataIndex != MMSH_SCALES_ANIM_DATA_NONE)) {
+        objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
+        if (objectIndex != 0 && obj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING) {
+            sequenceSlot = ((MMSHScalesState*)obj->extra)->sequence.slot;
             sequenceOwner = NULL;
-            list = (GameObject**)ObjList_GetObjects(&i, &count);
+            objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
             siblingCount = 0;
-            for (i = 0, groupSlot = (int)(s8)sequenceSlot; i < count; i++)
-            {
-                other = *list;
-                if (other->seqIndex == sequenceSlot)
-                {
-                    sequenceOwner = other;
+            for (objectIndex = 0, groupSlot = (int)(s8)sequenceSlot; objectIndex < objectCount; objectIndex++) {
+                otherObj = *objects;
+                if (otherObj->seqIndex == sequenceSlot) {
+                    sequenceOwner = otherObj;
                 }
-                if (((other->seqIndex == -2) && (other->anim.classId == MMSHSCALES_CLASS_ID)) &&
-                    (groupSlot == ((MmshScalesState*)other->extra)->sequence.slot))
-                {
+                if ((otherObj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING &&
+                     otherObj->anim.classId == MMSH_SCALES_CLASS_ID) &&
+                    groupSlot == ((MMSHScalesState*)otherObj->extra)->sequence.slot) {
                     siblingCount++;
                 }
-                list = list + 1;
+                objects++;
             }
-            if (((siblingCount <= 1) && ((u32)sequenceOwner != 0)) && (sequenceOwner->seqIndex != -1))
-            {
-                sequenceOwner->seqIndex = -1;
+            if ((siblingCount <= 1 && sequenceOwner != NULL) && sequenceOwner->seqIndex != MMSH_SCALES_SEQUENCE_NONE) {
+                sequenceOwner->seqIndex = MMSH_SCALES_SEQUENCE_NONE;
                 (*gObjectTriggerInterface)->endSequence(groupSlot);
             }
-            obj->seqIndex = -1;
+            obj->seqIndex = MMSH_SCALES_SEQUENCE_NONE;
             Obj_FreeObject(obj);
         }
     }
 }
 
-void MMSH_Scales_init(GameObject* obj, MmshScalesPlacement* placement)
-{
-    MmshScalesState* state = obj->extra;
-    MmshScalesSpawnSetup* setup;
-    int loadedBank;
+void mmshScales_init(GameObject* obj, const MMSHScalesPlacement* placement) {
+    MMSHScalesState* state = obj->extra;
+    MMSHScalesChildSetup* childSetup;
+    int cachedAnimDataIndexPlusOne;
+
     state->sequence.gameBit = placement->sequenceGameBit;
-    state->sequence.flags = -1;
+    state->sequence.flags = MMSH_SCALES_SEQUENCE_FLAGS;
     state->sequence.posOffsetDecay = 1.0f / (1.0f + (f32)(u32)placement->positionDamping);
-    state->sequence.curveId = -1;
-    loadedBank = obj->userData1;
-    if (loadedBank == 0 && placement->animationBank != 1)
-    {
+    state->sequence.curveId = MMSH_SCALES_CURVE_NONE;
+    cachedAnimDataIndexPlusOne = obj->userData1;
+    if (cachedAnimDataIndexPlusOne == 0 && placement->animDataIndex != MMSH_SCALES_DEFAULT_ANIM_DATA_INDEX) {
         (*gObjectTriggerInterface)->loadAnimData((u8*)state, (u8*)placement);
-        obj->userData1 = placement->animationBank + 1;
-    }
-    else if (loadedBank != 0 && placement->animationBank != loadedBank - 1)
-    {
+        obj->userData1 = placement->animDataIndex + 1;
+    } else if (cachedAnimDataIndexPlusOne != 0 && placement->animDataIndex != cachedAnimDataIndexPlusOne - 1) {
         (*gObjectTriggerInterface)->freeState((u8*)state);
-        if (placement->animationBank != -1)
-        {
+        if (placement->animDataIndex != MMSH_SCALES_ANIM_DATA_NONE) {
             (*gObjectTriggerInterface)->loadAnimData((u8*)state, (u8*)placement);
         }
-        obj->userData1 = placement->animationBank + 1;
+        obj->userData1 = placement->animDataIndex + 1;
     }
-    if (Obj_IsLoadingLocked() == 0)
+    if (Obj_IsLoadingLocked() == 0) {
         return;
-    setup = (MmshScalesSpawnSetup*)Obj_AllocObjectSetup(sizeof(MmshScalesSpawnSetup), MMSHSCALES_CHILD_OBJ_SWORD);
-    setup->base.posX = obj->anim.localPosX;
-    setup->base.posY = obj->anim.localPosY;
-    setup->base.posZ = obj->anim.localPosZ;
-    setup->base.color[0] = 32;
-    setup->base.color[1] = 4;
-    setup->base.color[3] = 0xff;
-    obj->childObjs[0] = Obj_SetupObject(&setup->base, 5, -1, -1, NULL);
-    ((GameObject*)obj->childObjs[0])->anim.rootMotionScale *= MMSHSCALES_CHILD_SCALE;
+    }
+    childSetup = (MMSHScalesChildSetup*)Obj_AllocObjectSetup(sizeof(MMSHScalesChildSetup), MMSH_SCALES_CHILD_OBJECT_ID);
+    childSetup->base.posX = obj->anim.localPosX;
+    childSetup->base.posY = obj->anim.localPosY;
+    childSetup->base.posZ = obj->anim.localPosZ;
+    childSetup->base.color[0] = MMSH_SCALES_CHILD_COLOR_RED;
+    childSetup->base.color[1] = MMSH_SCALES_CHILD_COLOR_GREEN;
+    childSetup->base.color[3] = MMSH_SCALES_CHILD_COLOR_ALPHA;
+    obj->childObjs[0] = Obj_SetupObject(&childSetup->base, MMSH_SCALES_CHILD_SETUP_FLAGS, MMSH_SCALES_NO_MAP_LAYER,
+                                        MMSH_SCALES_NO_OBJECT_INDEX, NULL);
+    ((GameObject*)obj->childObjs[0])->anim.rootMotionScale *= MMSH_SCALES_CHILD_SCALE;
 }
 
-void MMSH_Scales_release(void)
-{
+void mmshScales_release(void) {
 }
 
-void MMSH_Scales_initialise(void)
-{
+void mmshScales_initialise(void) {
 }
 
-ObjectDescriptor gMMSH_ScalesObjDescriptor = {
+ObjectDescriptor gMMSHScalesObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)MMSH_Scales_initialise,
-    (ObjectDescriptorCallback)MMSH_Scales_release,
+    (ObjectDescriptorCallback)mmshScales_initialise,
+    (ObjectDescriptorCallback)mmshScales_release,
     0,
-    (ObjectDescriptorCallback)MMSH_Scales_init,
-    (ObjectDescriptorCallback)MMSH_Scales_update,
-    (ObjectDescriptorCallback)MMSH_Scales_hitDetect,
-    (ObjectDescriptorCallback)MMSH_Scales_render,
-    (ObjectDescriptorCallback)MMSH_Scales_free,
-    (ObjectDescriptorCallback)MMSH_Scales_getObjectTypeId,
-    MMSH_Scales_getExtraSize,
+    (ObjectDescriptorCallback)mmshScales_init,
+    (ObjectDescriptorCallback)mmshScales_update,
+    (ObjectDescriptorCallback)mmshScales_hitDetect,
+    (ObjectDescriptorCallback)mmshScales_render,
+    (ObjectDescriptorCallback)mmshScales_free,
+    (ObjectDescriptorCallback)mmshScales_getObjectTypeId,
+    mmshScales_getExtraSize,
 };
