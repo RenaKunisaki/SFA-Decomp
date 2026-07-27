@@ -218,7 +218,7 @@ char sSnowBikeVelDebugFmt[] = "vel %f\n";
 
 Texture* lbl_803DDC60;
 
-volatile ShWGPipe GXWGFifo : (0xCC008000);
+#define GXWGFifo (*(volatile ShWGPipe*)0xCC008000)
 
 static inline void shPos3f32(const f32 x, const f32 y, const f32 z)
 {
@@ -251,6 +251,8 @@ void fn_801E991C(int p1, char* table)
     char* p;
     int i;
     int j;
+    f32 texT;
+    f32 texS;
 
     color = lbl_803E5AE4;
     selectTexture((Texture*)lbl_803DDC60, 0);
@@ -278,21 +280,23 @@ void fn_801E991C(int p1, char* table)
         {
             j = 0;
             verts = *(f32**)(p + 0x4c8);
+            texS = lbl_803E5AE8;
+            texT = lbl_803E5AEC;
             while (j < *(s16*)(p + 0x4cc) - 2)
             {
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
                 shPos3f32(verts[0] - playerMapOffsetX, verts[0 + 1], verts[0 + 2] - playerMapOffsetZ);
                 shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0xc));
-                shTexCoord2f32(lbl_803E5AE8, lbl_803E5AE8);
+                shTexCoord2f32(texS, texS);
                 shPos3f32(verts[4] - playerMapOffsetX, verts[4 + 1], verts[4 + 2] - playerMapOffsetZ);
                 shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0x1c));
-                shTexCoord2f32(lbl_803E5AEC, lbl_803E5AE8);
+                shTexCoord2f32(texT, texS);
                 shPos3f32(verts[0xc] - playerMapOffsetX, verts[0xc + 1], verts[0xc + 2] - playerMapOffsetZ);
                 shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0x3c));
-                shTexCoord2f32(lbl_803E5AEC, lbl_803E5AE8);
+                shTexCoord2f32(texT, texS);
                 shPos3f32(verts[8] - playerMapOffsetX, verts[8 + 1], verts[8 + 2] - playerMapOffsetZ);
                 shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0x2c));
-                shTexCoord2f32(lbl_803E5AE8, lbl_803E5AE8);
+                shTexCoord2f32(texS, texS);
                 verts += 8;
                 j += 2;
             }
@@ -636,11 +640,11 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
             }
             if (gDrCloudCageWindVolume < *(f32*)&lbl_803E5B10)
             {
-                gDrCloudCageWindVolume = lbl_803E5B10;
+                gDrCloudCageWindVolume = *(f32*)&lbl_803E5B10;
             }
             if (gDrCloudCageWindVolume > *(f32*)&lbl_803E5B14)
             {
-                gDrCloudCageWindVolume = lbl_803E5B14;
+                gDrCloudCageWindVolume = *(f32*)&lbl_803E5B14;
             }
             if (((DRCloudCageState*)state)->distanceGate < lbl_803E5B18)
             {
@@ -714,11 +718,11 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
         }
         if (((DRCloudCageState*)state)->channel2Vol > *(f32*)&lbl_803E5B08)
         {
-            ((DRCloudCageState*)state)->channel2Vol = lbl_803E5B08;
+            ((DRCloudCageState*)state)->channel2Vol = *(f32*)&lbl_803E5B08;
         }
         if (((DRCloudCageState*)state)->channel2Vol < *(f32*)&lbl_803E5B30)
         {
-            ((DRCloudCageState*)state)->channel2Vol = lbl_803E5B30;
+            ((DRCloudCageState*)state)->channel2Vol = *(f32*)&lbl_803E5B30;
         }
         channelVol = ((DRCloudCageState*)state)->channel2Vol;
         ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol * lbl_803E5B38 + lbl_803E5B34);
@@ -736,11 +740,11 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
         }
         if (((DRCloudCageState*)state)->channel4Vol > *(f32*)&lbl_803E5B40)
         {
-            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B40;
+            ((DRCloudCageState*)state)->channel4Vol = *(f32*)&lbl_803E5B40;
         }
         if (((DRCloudCageState*)state)->channel4Vol < *(f32*)&lbl_803E5B44)
         {
-            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B44;
+            ((DRCloudCageState*)state)->channel4Vol = *(f32*)&lbl_803E5B44;
         }
         channelVol4 = ((DRCloudCageState*)state)->channel4Vol;
         ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol4, channelVol4 / lbl_803E5B48);
