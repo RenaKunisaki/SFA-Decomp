@@ -15,7 +15,7 @@ CameraModeStaticState* lbl_803DD558;
 #define CAMSTATIC_CAMMODE_DEFAULT 0x42
 
 
-void* fn_80109B04(f32 x, f32 y, f32 z, int filter1, int filter2)
+void* camStaticFindNearestAnchor(f32 x, f32 y, f32 z, int filter1, int filter2)
 {
     int* list;
     int i;
@@ -160,7 +160,7 @@ void CameraModeStatic_init(u8* cam, int p2, int* p3)
     }
     lbl_803DD558->active = 1;
     lbl_803DD558->missingObject = 0;
-    best = (GameObject*)fn_80109B04(state->anim.worldPosX, state->anim.worldPosY, state->anim.worldPosZ, *p3, 18);
+    best = (GameObject*)camStaticFindNearestAnchor(state->anim.worldPosX, state->anim.worldPosY, state->anim.worldPosZ, *p3, 18);
     if (best == NULL)
     {
         lbl_803DD558->missingObject = 1;

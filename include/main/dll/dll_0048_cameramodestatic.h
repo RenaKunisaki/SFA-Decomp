@@ -16,7 +16,7 @@ typedef struct CameraModeStaticPlacement
     u8 pad22[0x28 - 0x22];
 } CameraModeStaticPlacement;
 
-void* fn_80109B04(f32 x, f32 y, f32 z, int filter1, int filter2);
+void* camStaticFindNearestAnchor(f32 x, f32 y, f32 z, int filter1, int filter2);
 void CameraModeStatic_copyToCurrent(void);
 void CameraModeStatic_free(void);
 void CameraModeStatic_update(short* camObj);

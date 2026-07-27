@@ -4,7 +4,7 @@
 #include "main/camera_object.h"
 #include "types.h"
 
-u32 fn_8010AEA8(CameraObject* camera, u32 flagsIn);
+u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn);
 void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* posEnd, s32 rotXEnd, s32 rotYEnd,
                                       s32 rotZEnd);
 void CameraModeTestStrength_copyToCurrent(void);

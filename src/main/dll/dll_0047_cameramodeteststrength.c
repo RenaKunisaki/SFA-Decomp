@@ -34,7 +34,7 @@ void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* po
 
 extern f32 lbl_803E18BC;
 
-u32 fn_8010AEA8(CameraObject* camera, u32 flagsIn)
+u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn)
 {
     u8 flags;
     f32 speed;
@@ -293,7 +293,7 @@ void CameraModeTestStrength_update(short* cam)
             cam[2] = Curve_EvalCatmullRom(rollS, t, 0);
         }
         ((CameraObject*)cam)->fov = Curve_EvalBSpline(fov, t, 0);
-        if (lbl_803DD560->transitionComplete == 0 && (s32)fn_8010AEA8((CameraObject*)cam, (u32)flags) != 0)
+        if (lbl_803DD560->transitionComplete == 0 && (s32)camTestStrengthUpdateBlend((CameraObject*)cam, (u32)flags) != 0)
         {
             lbl_803DD560->transitionComplete = 1;
         }
@@ -398,7 +398,7 @@ void CameraModeTestStrength_init(short* cam, int param2, int* param3)
     lbl_803DD560->prevNodeId = (*gRomCurveInterface)->find(
         obj->anim.worldPosX, obj->anim.worldPosY, obj->anim.worldPosZ,
         tags, 2, lbl_803DD560->pathTag);
-    fn_8010A104(&lbl_803DD560->nextNodeId, &lbl_803DD560->prevNodeId, obj->anim.worldPosX,
+    pathcam_advanceNodePair(&lbl_803DD560->nextNodeId, &lbl_803DD560->prevNodeId, obj->anim.worldPosX,
                 obj->anim.worldPosY, obj->anim.worldPosZ, lbl_803DD560->pathTag);
     romNode = (int)(*gRomCurveInterface)->getById(lbl_803DD560->prevNodeId);
     curveNode2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->nextNodeId);

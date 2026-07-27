@@ -38,7 +38,7 @@ STATIC_ASSERT(sizeof(TitleMenuItemInterfaceVTable) == 0x34);
 extern TitleMenuItemInterface* gTitleMenuItemInterface;
 extern TitleMenuItem* lbl_803A87D0[8];
 
-void fn_80131F0C(void);
+void TitleMenuItem_loadTextures(void);
 int TitleMenuItem_isChanged(TitleMenuItem* item);
 void TitleMenuItem_setVal(TitleMenuItem* item, int value);
 int TitleMenuItem_getVal(TitleMenuItem* item);

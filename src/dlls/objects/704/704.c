@@ -958,7 +958,7 @@ void TitleScreen_update(GameObject* obj)
             skySetLightDirection(7, lbl_803E2318, lbl_803E2388, *(f32*)&lbl_803E2388);
             (*gCameraInterface)->setFocus(obj, 0);
             gTitleScreenSetupDone = 1;
-            fn_80131F0C();
+            TitleMenuItem_loadTextures();
         }
     }
 }

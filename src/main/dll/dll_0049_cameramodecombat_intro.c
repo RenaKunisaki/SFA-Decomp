@@ -20,7 +20,7 @@ extern f32 lbl_803E18C0;
 extern f32 lbl_803E18C4;
 extern f32 lbl_803E18C8;
 
-void fn_8010BF08(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY)
+void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY)
 {
     GameObject* focus;
     GameObject* target;

@@ -789,7 +789,7 @@ static inline void Minimap_freeObjectSlots(GameObject** slots, int count)
     }
 }
 
-void fn_80133934(void)
+void minimapFreeTexture(void)
 {
     if (minimapTexture != NULL)
     {

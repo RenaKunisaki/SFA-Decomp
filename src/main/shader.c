@@ -1582,7 +1582,7 @@ void unloadMap(void)
     playerMapOffsetZ = lbl_803DEBCC;
     voxmaps_resetLoadedMaps();
     textureFreeFn_8012fcec();
-    fn_80133934();
+    minimapFreeTexture();
     (*gNewCloudsInterface)->killSnowCloud(-1, 0);
     (*gCloudActionInterface)->freeCloudObjects();
 }

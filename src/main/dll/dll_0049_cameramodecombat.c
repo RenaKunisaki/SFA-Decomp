@@ -204,7 +204,7 @@ void CameraModeCombat_update(short* cam)
                             }
                             if (tgt->anim.modelInstance->hitVolumeCount > 1)
                             {
-                                fn_8010BF08((CameraObject*)cam, &dx, &dy, &dz, &ty);
+                                camCombatIntroEvalPos((CameraObject*)cam, &dx, &dy, &dz, &ty);
                             }
                             else
                             {

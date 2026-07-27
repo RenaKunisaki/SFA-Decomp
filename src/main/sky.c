@@ -1066,7 +1066,7 @@ ModelLightStruct* skyGetSunLight(void)
     return gSkySunLight;
 }
 
-void fn_80089A60(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
+void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
                  int lightIntensity, u8 blendAlpha)
 {
     f32 dir[3];
@@ -1210,7 +1210,7 @@ void skyFn_8008a04c(void)
     {
         for (blue = 0; blue < 3; blue++)
         {
-            fn_80089A60(blue, vec[0], vec[1], vec[2], 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
+            skySetLightSlot(blue, vec[0], vec[1], vec[2], 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
         }
     }
     else
@@ -1314,16 +1314,16 @@ void skyFn_8008a04c(void)
             time2 = ((SkyState*)gSkyState)->timeOfDay;
             if (time2 >= dayStart && time2 <= lbl_803DF088)
             {
-                fn_80089A60(i, vec[0], vec[1], vec[2], red, green, blue, ambientIntensity, lightIntensity,
+                skySetLightSlot(i, vec[0], vec[1], vec[2], red, green, blue, ambientIntensity, lightIntensity,
                             blendAlpha);
             }
             else
             {
-                fn_80089A60(i, -vec[3], vec[4], -vec[5], red, green, blue, ambientIntensity, lightIntensity,
+                skySetLightSlot(i, -vec[3], vec[4], -vec[5], red, green, blue, ambientIntensity, lightIntensity,
                             blendAlpha);
             }
         }
-        fn_80089A60(2, 0.0f, 0.0f, 0.0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
+        skySetLightSlot(2, 0.0f, 0.0f, 0.0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
     }
 }
 

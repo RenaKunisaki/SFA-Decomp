@@ -801,7 +801,7 @@ void sceneDraw(void)
                     (f32*)(q + 0x3f48));
     }
     mapDebugRender((int*)(q + 0x4164));
-    fn_80062894();
+    shadowBeginFrame();
     shadowVolumeBeginFrame();
     gVisibleObjectSortKeyCount = 1;
     lbl_803DCEAC = 0;
@@ -1114,7 +1114,7 @@ typedef union
 
 extern f32 lbl_803DEC20;
 
-asm void fn_8005D3B4(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
+asm void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
 
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);

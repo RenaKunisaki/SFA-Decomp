@@ -6,7 +6,7 @@
 #include "types.h"
 
 void CameraModeCombat_copyToCurrent(void);
-void fn_8010BF08(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY);
+void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY);
 void CameraModeCombat_free(CameraObject* camera);
 void CameraModeCombat_update(short* cam);
 void CameraModeCombat_init(CameraObject* camera, u32 unused, GameObject** targetPtr);

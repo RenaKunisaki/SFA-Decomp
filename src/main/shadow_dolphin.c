@@ -864,7 +864,7 @@ void shadowVolumeBeginFrame(void)
     lbl_803DCF0C = lbl_803DCF20;
 }
 
-void fn_80062894(void)
+void shadowBeginFrame(void)
 {
     lbl_803DCEF6 = 0;
     lbl_803DCEFA = 0;

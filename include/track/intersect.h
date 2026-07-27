@@ -12,7 +12,7 @@
 #include "main/projected_shadow.h"
 #include "ghidra_import.h"
 
-void* fn_8006F388(u32 i);
+void* surfaceSfxGetRecord(u32 i);
 void timeFn_8006f400(f32 step);
 void drawFn_8006f500(void);
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);

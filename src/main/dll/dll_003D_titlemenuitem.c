@@ -377,7 +377,7 @@ TitleMenuItem* TitleMenuItem_createWithText(s16 x, s16 y, s16 minValue, s16 maxV
     return item;
 }
 
-void fn_80131F0C(void)
+void TitleMenuItem_loadTextures(void)
 {
     int i;
 

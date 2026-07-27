@@ -519,7 +519,7 @@ typedef union
 
 extern f32 lbl_803DEC20;
 
-asm void fn_8005D3B4(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector)
+asm void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector)
 {
     nofralloc
     stwu r1, -48(r1)

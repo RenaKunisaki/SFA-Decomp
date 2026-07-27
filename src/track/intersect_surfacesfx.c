@@ -33,12 +33,12 @@ void* jumptable_8030E9B4[11] = {
     (void*)((u8*)objAudioFn_8006ef38 + 0x7C), (void*)((u8*)objAudioFn_8006ef38 + 0x8C),
     (void*)((u8*)objAudioFn_8006ef38 + 0x84)};
 void* jumptable_8030E9E0[11] = {
-    (void*)((u8*)fn_8006F388 + 0x70), (void*)((u8*)fn_8006F388 + 0x28),
-    (void*)((u8*)fn_8006F388 + 0x70), (void*)((u8*)fn_8006F388 + 0x30),
-    (void*)((u8*)fn_8006F388 + 0x38), (void*)((u8*)fn_8006F388 + 0x40),
-    (void*)((u8*)fn_8006F388 + 0x48), (void*)((u8*)fn_8006F388 + 0x68),
-    (void*)((u8*)fn_8006F388 + 0x50), (void*)((u8*)fn_8006F388 + 0x60),
-    (void*)((u8*)fn_8006F388 + 0x58)};
+    (void*)((u8*)surfaceSfxGetRecord + 0x70), (void*)((u8*)surfaceSfxGetRecord + 0x28),
+    (void*)((u8*)surfaceSfxGetRecord + 0x70), (void*)((u8*)surfaceSfxGetRecord + 0x30),
+    (void*)((u8*)surfaceSfxGetRecord + 0x38), (void*)((u8*)surfaceSfxGetRecord + 0x40),
+    (void*)((u8*)surfaceSfxGetRecord + 0x48), (void*)((u8*)surfaceSfxGetRecord + 0x68),
+    (void*)((u8*)surfaceSfxGetRecord + 0x50), (void*)((u8*)surfaceSfxGetRecord + 0x60),
+    (void*)((u8*)surfaceSfxGetRecord + 0x58)};
 
 void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state, f32 unused,
                          f32 scale)
@@ -216,7 +216,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     }
 }
 
-void* fn_8006F388(u32 i)
+void* surfaceSfxGetRecord(u32 i)
 {
     u8* base = lbl_8030E8B0;
     switch (i)

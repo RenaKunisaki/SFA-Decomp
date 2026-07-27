@@ -6,15 +6,15 @@
  * them into "forward"/"backward" links, plus three path-tag bytes
  * (+0x31..+0x33) used to keep a walk on the path selected by `tag`.
  *
- * fn_8010A104 advances the camera's near/far node pair
+ * pathcam_advanceNodePair advances the camera's near/far node pair
  * (*nodeId/*leadNodeId) along the tagged path: it nudges *nodeId to the
  * matching neighbour, then slides it by world distance through the node
  * window from pathcam_findTaggedNodeWindow (near/far thresholds
- * lbl_803E1888 / lbl_803E188C), counts the tagged span with fn_8010A47C,
+ * lbl_803E1888 / lbl_803E188C), counts the tagged span with pathcam_walkToPathEnd,
  * and walks *leadNodeId the same number of steps so the pair stays a
  * fixed span apart.
  *
- * fn_8010A47C walks a node along its forward tagged links until it hits
+ * pathcam_walkToPathEnd walks a node along its forward tagged links until it hits
  * an endpoint (node type 0x1A/0x1B at +0x19), returning the final node
  * and the number of steps taken.
  */
@@ -27,7 +27,7 @@
 
 extern f32 lbl_803E1888; /* near distance threshold */
 extern f32 lbl_803E188C; /* far distance threshold */
-void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
+void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
 {
     int node;
     int linked;
@@ -100,9 +100,9 @@ void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
         }
     }
     node = (int)(*gRomCurveInterface)->getById(*nodeId);
-    fn_8010A47C(node, &span, tag);
+    pathcam_walkToPathEnd(node, &span, tag);
     node = (int)(*gRomCurveInterface)->getById(*leadNodeId);
-    *leadNodeId = ((RomCurvePathNode*)fn_8010A47C(node, &farSpan, tag))->selfId;
+    *leadNodeId = ((RomCurvePathNode*)pathcam_walkToPathEnd(node, &farSpan, tag))->selfId;
     for (step = 0; step < span; step++)
     {
         node = (int)(*gRomCurveInterface)->getById(*leadNodeId);
@@ -124,7 +124,7 @@ void fn_8010A104(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
     }
 }
 
-int fn_8010A47C(int curve, int* count, int tag)
+int pathcam_walkToPathEnd(int curve, int* count, int tag)
 {
     int slot;
     int done;

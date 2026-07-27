@@ -217,7 +217,7 @@ void kooshy_updateIdle(GameObject* obj, int state)
             Sfx_PlayFromObject((int)obj, SFXTRIG_sc_clubswipe);
         }
     }
-    fn_8015355C(obj, state);
+    magicplantSpawnMovePuffs(obj, state);
 }
 
 void kooshy_updateEngaged(GameObject* obj, int state)
@@ -228,7 +228,7 @@ void kooshy_updateEngaged(GameObject* obj, int state)
         Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
         baddieSetMove(obj, state, 1, lbl_803E290C, 0, 0);
     }
-    fn_8015355C(obj, state);
+    magicplantSpawnMovePuffs(obj, state);
 }
 
 void kooshy_init(int unused, int state)

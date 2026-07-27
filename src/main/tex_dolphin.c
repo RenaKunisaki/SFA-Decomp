@@ -97,7 +97,7 @@ extern int gTexLightmapFogColor;
 
 /*
  * TexShadowRow - 0x10-stride rows of the pending-shadow queue at the head of
- * lbl_8037E0C0 (indexed by lbl_803DCE30, bumped after each fn_8005D3B4 push).
+ * lbl_8037E0C0 (indexed by lbl_803DCE30, bumped after each lightmapQueueShadowRow push).
  * mapBlockRender_callList writes type (4/5 = object shadow, 6 = indirect
  * lightmap) into the queued shadow row.
  */
@@ -546,7 +546,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
             {
                 int shadowType;
 
-                fn_8005D3B4(bounds[0], block, bounds[0]->selector);
+                lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 5;
                 *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
                          lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
@@ -556,7 +556,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
             {
                 int shadowType;
 
-                fn_8005D3B4(bounds[0], block, bounds[0]->selector);
+                lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 4;
                 *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
                          lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
@@ -681,7 +681,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
             {
                 int shadowType;
 
-                fn_8005D3B4(bounds[0], block, 0x17);
+                lightmapQueueShadowRow(bounds[0], block, 0x17);
                 shadowType = 6;
                 *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
                          lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;

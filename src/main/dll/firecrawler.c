@@ -394,7 +394,7 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
     }
 }
 
-void fn_80157CDC(GameObject* obj, u8* state)
+void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
 {
     typedef struct
     {
@@ -914,7 +914,7 @@ void crawler_updateC(GameObject* obj, u8* state)
             baddieSetMove(obj, (int)state, t8[i].moveId, t8[i].spd, 0, t8[i].mode);
         }
     }
-    fn_80157CDC(obj, state);
+    crawlerPlayMoveEventFx(obj, state);
 }
 
 void crawler_updateB(GameObject* obj, u8* state)
@@ -1129,7 +1129,7 @@ void crawler_updateB(GameObject* obj, u8* state)
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
     }
-    fn_80157CDC(obj, state);
+    crawlerPlayMoveEventFx(obj, state);
 }
 
 void crawler_update(GameObject* obj, u8* state)
@@ -1261,7 +1261,7 @@ void crawler_update(GameObject* obj, u8* state)
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
     }
-    fn_80157CDC(obj, state);
+    crawlerPlayMoveEventFx(obj, state);
 }
 
 /* crawler_initModelVariant: crawler-family variant init. Dispatches on obj->modelType
