@@ -1,6 +1,6 @@
 /*
- * dll7dfunc0 (DLL 0x7D) - one entry in the foodbag effect-DLL family
- * (DLLs 0x7C..0x90). dll_7D_func03 builds a 10-entry FbBuf model-graphics
+ * DLL 125 / 0x7D - one entry in the foodbag effect-DLL family
+ * (DLLs 124-144 / 0x7C-0x90). dll_7D_func03 builds a 10-entry FbBuf model-graphics
  * command list from sub-textures of the global texture blob lbl_80315030,
  * scales the second sprite by an optional caller scale (scaleOverride), positions
  * the effect from either the source object (flags bit 0 set, sourceObj
