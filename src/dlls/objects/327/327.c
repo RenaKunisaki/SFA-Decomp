@@ -1,4 +1,3 @@
-/* DLL 0x147 */
-#include "global.h"
+#include "dlls/objects/327.h"
 
-u32 lbl_803DBE18[2] = {0};
+u32 gDll147NullResourceDescriptor[DLL147_NULL_DESCRIPTOR_WORD_COUNT] = {0};
