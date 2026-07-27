@@ -1,5 +1,5 @@
 /*
- * dll_0072_dll72func0 - DLL 0x72 entry stubs.
+ * DLL 114 / 0x72 - modgfx effect spawner and entry stubs.
  *
  * The DLL exports three slots: func00 and func01 are empty no-op leaves and
  * func03 builds a modgfx spawn-command list on the stack and submits it
@@ -17,7 +17,6 @@
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL72_EFFECT_ID 0x154
-
 
 extern u8 lbl_80314288[];
 

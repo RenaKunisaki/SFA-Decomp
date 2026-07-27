@@ -721,7 +721,7 @@ main/dll/dll_0071_dll71func0.c:
 	.text       start:0x800F16E4 end:0x800F1A58
 	.sdata2     start:0x803E0B38 end:0x803E0B5C
 
-main/dll/dll_0072_dll72func0.c:
+dlls/modgfx/114/114.c:
 	.text       start:0x800F1A58 end:0x800F1D64
 	.sdata2     start:0x803E0B60 end:0x803E0B80
 
