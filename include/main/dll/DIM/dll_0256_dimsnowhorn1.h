@@ -56,7 +56,7 @@ typedef struct DIMSnowHorn1State
     u8 queryFlagA90;   /* 0xA90: nonzero queried by DIMSnowHorn1_func11 (set cross-DLL) */
     u8 proximityPhase; /* 0xA91: 0/1/2 phase toggling linked objects by player distance (stateHandler05) */
     u8 padA92[0xD00 - 0xA92];
-    u8 hitReactState; /* 0xD00: ObjHitReact_Update persistent state (in/out), gates fn_8003A168 */
+    u8 hitReactState; /* 0xD00: ObjHitReact_Update persistent state (in/out), gates characterHeadLookRelax */
     u8 padD01[0xB];
 } DIMSnowHorn1State;
 

@@ -191,12 +191,12 @@ void NW_mammoth_updateEyeTracking(GameObject* obj, int state, int flag)
     }
     if ((lbl_803268B4[s->stateIndex] & 0x2) != 0)
     {
-        fn_8003A168(obj, (void*)(state + 0x40c));
-        fn_8003B228(obj, (void*)(state + 0x40c));
+        characterHeadLookRelax(obj, (void*)(state + 0x40c));
+        characterCloseEyes(obj, (void*)(state + 0x40c));
     }
     else
     {
-        fn_8003A230(obj, (CharacterEyeAnimState*)(state + 0x40c), 0.0f);
+        characterUpdateHeadLook(obj, (CharacterEyeAnimState*)(state + 0x40c), 0.0f);
         characterDoEyeAnims(obj, (void*)(state + 0x40c));
     }
 }
@@ -816,7 +816,7 @@ void NW_mammoth_update(NwMammothObject* obj, int unused)
             ObjHitReact_Update((int)obj, hitReactEntries, 1, state->hitReactState, &state->hitReactStepScale);
         if (state->hitReactState != 0)
         {
-            fn_8003A168((GameObject*)obj, state->eyeAnimState);
+            characterHeadLookRelax((GameObject*)obj, state->eyeAnimState);
             characterDoEyeAnims((GameObject*)obj, state->eyeAnimState);
             return;
         }

@@ -178,13 +178,13 @@ void windLift107_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4,
             if (state->glowPulse > WINDLIFT107_GLOW_WRAP) {
                 state->glowPulse = 0;
             }
-            fn_8003B5E0(WINDLIFT107_GLOW_RED, WINDLIFT107_GLOW_GREEN, WINDLIFT107_GLOW_BLUE, state->glowPulse);
+            objSetGlowColor(WINDLIFT107_GLOW_RED, WINDLIFT107_GLOW_GREEN, WINDLIFT107_GLOW_BLUE, state->glowPulse);
         } else if (burstTimer < WINDLIFT107_GLOW_ACTIVE_THRESHOLD) {
             state->glowPulse += framesThisStep * WINDLIFT107_GLOW_SLOW_STEP;
             if (state->glowPulse > WINDLIFT107_GLOW_WRAP) {
                 state->glowPulse = 0;
             }
-            fn_8003B5E0(WINDLIFT107_GLOW_RED, WINDLIFT107_GLOW_GREEN, WINDLIFT107_GLOW_BLUE, state->glowPulse);
+            objSetGlowColor(WINDLIFT107_GLOW_RED, WINDLIFT107_GLOW_GREEN, WINDLIFT107_GLOW_BLUE, state->glowPulse);
         }
     }
     objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);

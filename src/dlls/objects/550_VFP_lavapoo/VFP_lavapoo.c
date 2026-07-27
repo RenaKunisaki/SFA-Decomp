@@ -156,7 +156,7 @@ void VFP_lavapool_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 vis
 {
     if (visible != 0)
     {
-        fn_8003B608(0xff, 0xe6, 0xd7);
+        objSetColorFilter(0xff, 0xe6, 0xd7);
         objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, lbl_803E6168);
     }
 }

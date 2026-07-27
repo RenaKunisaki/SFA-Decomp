@@ -125,7 +125,7 @@ int CFPrisonGuard_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
     switch (sub->guardState)
     {
     case 0:
-        fn_8003B228(obj, sub);
+        characterCloseEyes(obj, sub);
     dist = Vec_distance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX);
         if (gb48 == 0)
         {
@@ -153,7 +153,7 @@ int CFPrisonGuard_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         {
             sub->guardState = 1;
         }
-        fn_8003B228(obj, sub);
+        characterCloseEyes(obj, sub);
         break;
     case 1:
         dist = Vec_distance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX);

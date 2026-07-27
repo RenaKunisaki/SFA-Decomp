@@ -1028,7 +1028,7 @@ void iceBaddie_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, in
     }
 
     if (state->glowAlpha != zero) {
-        fn_8003B5E0(0xc8, 0, 0, state->glowAlpha);
+        objSetGlowColor(0xc8, 0, 0, state->glowAlpha);
     }
     objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     iceBaddie_updateEffectAnchors(obj, state);

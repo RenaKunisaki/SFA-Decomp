@@ -71,7 +71,7 @@ void ProjectileSwitch_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdA
 
     if (visible != 0) {
         if ((placement->renderFlags & PROJECTILE_SWITCH_RENDER_CUSTOM_COLOR) != 0) {
-            fn_8003B608(placement->colorR, placement->colorG, placement->colorB);
+            objSetColorFilter(placement->colorR, placement->colorG, placement->colorB);
         }
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }

@@ -788,7 +788,7 @@ void TitleScreen_update(GameObject* obj)
         t = obj->anim.seqId;
         if (t == FRONT_SEQID_PEPPY && ((phase = state->animPhase) == 0 || phase == 4))
         {
-            fn_8003B228(obj, state);
+            characterCloseEyes(obj, state);
         }
         else if (t >= FRONT_SEQID_FOX && t < FRONT_SEQID_PILOTS)
         {

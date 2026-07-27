@@ -19146,7 +19146,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
     void* p = ((PlayerState*)state)->baddie.targetObj;
     if (p != NULL)
     {
-        fn_8003B0D0(obj, (GameObject*)p, (CharacterEyeAnimState*)(inner + 0x3ac), 0x19);
+        characterSetHeadYawToTarget(obj, (GameObject*)p, (CharacterEyeAnimState*)(inner + 0x3ac), 0x19);
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0 ||
         *(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
@@ -19202,7 +19202,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
     GameObject* target = playerState->targetObj;
     if (target != NULL)
     {
-        fn_8003B0D0(obj, target, (CharacterEyeAnimState*)actor->eyeAnimState, 0x19);
+        characterSetHeadYawToTarget(obj, target, (CharacterEyeAnimState*)actor->eyeAnimState, 0x19);
     }
     if (obj->userData2 == 0)
     {
@@ -19303,7 +19303,7 @@ int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
     f32* blends;
     if (p != NULL)
     {
-        fn_8003B0D0(obj, (GameObject*)p, (CharacterEyeAnimState*)(inner + 0x3ac), 0x19);
+        characterSetHeadYawToTarget(obj, (GameObject*)p, (CharacterEyeAnimState*)(inner + 0x3ac), 0x19);
     }
     a4 = *(int*)((char*)inner + 0x40c);
     moves = *(s16**)((char*)a4 + 0);

@@ -112,7 +112,7 @@ void dll_F7_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int f
     if (state->broken == 0 && visible != 0) {
         f32 bounceOffset = state->bounceOffset;
         if (bounceOffset) {
-            fn_8003B5E0(DLLF7_RENDER_RED, 0, 0, bounceOffset);
+            objSetGlowColor(DLLF7_RENDER_RED, 0, 0, bounceOffset);
         }
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }

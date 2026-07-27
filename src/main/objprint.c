@@ -386,7 +386,7 @@ void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 
     }
 }
 
-int fn_80039834(s16* curve, s16* state, f32 a, f32 b)
+int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b)
 {
     f32 buf[4];
     f32 ratio;
@@ -434,7 +434,7 @@ int fn_80039834(s16* curve, s16* state, f32 a, f32 b)
     }
     return 0;
 }
-int fn_800399C0(s16* curve, s16* state)
+int characterTrackJointYaw(s16* curve, s16* state)
 {
     f32 buf[4];
     f32 ratio;
@@ -483,10 +483,10 @@ int fn_800399C0(s16* curve, s16* state)
     return 0;
 }
 
-int fn_80039834(s16* curve, s16* state, f32 a, f32 b);
-int fn_800399C0(s16* curve, s16* state);
+int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b);
+int characterTrackJointYaw(s16* curve, s16* state);
 
-void fn_80039B54(int obj, s16* curve, s16* state, f32 val)
+void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val)
 {
     int masked;
     int flag;
@@ -550,7 +550,7 @@ void fn_80039B54(int obj, s16* curve, s16* state, f32 val)
         {
             curve[14] -= framesThisStep;
         }
-        else if (fn_800399C0(curve, state))
+        else if (characterTrackJointYaw(curve, state))
         {
             curve[13] = (s16)(flag << 8 | 6);
             curve[10] = -curve[10];
@@ -562,7 +562,7 @@ void fn_80039B54(int obj, s16* curve, s16* state, f32 val)
         {
             curve[14] -= framesThisStep;
         }
-        else if (fn_800399C0(curve, state))
+        else if (characterTrackJointYaw(curve, state))
         {
             curve[13] = (s16)(flag << 8 | 4);
             curve[10] = 0;
@@ -574,7 +574,7 @@ void fn_80039B54(int obj, s16* curve, s16* state, f32 val)
         {
             curve[14] -= framesThisStep;
         }
-        else if (fn_800399C0(curve, state))
+        else if (characterTrackJointYaw(curve, state))
         {
             curve[13] = (s16)(flag << 8);
             state[1] = 0;
@@ -587,7 +587,7 @@ void fn_80039B54(int obj, s16* curve, s16* state, f32 val)
 
 extern f32 lbl_803DE9E8;
 
-void fn_80039DF8(GameObject* obj, s16* curve, s16* state, f32 val)
+void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
 {
     int masked;
     int flag;
@@ -657,7 +657,7 @@ void fn_80039DF8(GameObject* obj, s16* curve, s16* state, f32 val)
         }
         break;
     case 2:
-        if (*(s8*)curve != 0 || fn_800399C0(curve, state) != 0)
+        if (*(s8*)curve != 0 || characterTrackJointYaw(curve, state) != 0)
         {
             curve[13] = (s16)(flag << 8);
         }
@@ -721,7 +721,7 @@ void fn_80039DF8(GameObject* obj, s16* curve, s16* state, f32 val)
     }
 }
 
-void fn_8003A168(GameObject* obj, void* state)
+void characterHeadLookRelax(GameObject* obj, void* state)
 {
     s16* found;
 
@@ -740,7 +740,7 @@ void fn_8003A168(GameObject* obj, void* state)
 }
 
 
-void fn_8003A230(GameObject* obj, CharacterEyeAnimState* state, f32 val)
+void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 val)
 {
     s16* found;
     int flag;
@@ -758,11 +758,11 @@ void fn_8003A230(GameObject* obj, CharacterEyeAnimState* state, f32 val)
         }
         if (val <= lbl_803DE9E4)
         {
-            fn_80039DF8(obj, (s16*)state, found, val);
+            characterHeadLookIdle(obj, (s16*)state, found, val);
         }
         else
         {
-            fn_80039B54((int)obj, (s16*)state, found, val);
+            characterHeadLookAlert((int)obj, (s16*)state, found, val);
         }
         state->headTrackMode = (s16)(u16)(u8)state->headTrackMode;
         if (val > lbl_803DE9E4)
@@ -893,9 +893,9 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
         if (p4 != NULL)
         {
             ((ObjJointTrackPair*)p4)->yaw.angle = dst[0];
-            fn_800399C0((s16*)p4, found[0]);
+            characterTrackJointYaw((s16*)p4, found[0]);
             ((ObjJointTrackPair*)p4)->pitch.angle = dst[1];
-            fn_80039834((s16*)(p4 + 0x30), found[0], lbl_803DE9D8, lbl_803DE9DC);
+            characterTrackJointPitch((s16*)(p4 + 0x30), found[0], lbl_803DE9D8, lbl_803DE9DC);
             p4 += 0x60;
         }
         else
@@ -932,7 +932,7 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
     return src[0];
 }
 
-int fn_8003A8B4(GameObject* objArg, int* keyList, int countArg, u8* p4Arg)
+int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* p4Arg)
 {
     int* keys;
     int i;
@@ -951,8 +951,8 @@ int fn_8003A8B4(GameObject* objArg, int* keyList, int countArg, u8* p4Arg)
     while (i < count)
     {
         found = objFindJointVecByKey(obj, *keys);
-        total += fn_800399C0((s16*)p4, found);
-        total += fn_80039834((s16*)(p4 + 0x30), found, lbl_803DE9D8, lbl_803DE9DC);
+        total += characterTrackJointYaw((s16*)p4, found);
+        total += characterTrackJointPitch((s16*)(p4 + 0x30), found, lbl_803DE9D8, lbl_803DE9DC);
         keys++;
         i++;
         p4 += 0x60;
@@ -993,7 +993,7 @@ void objModelClearVecFn_8003aa40(GameObject* obj)
     }
 }
 
-void fn_8003AAE0(GameObject* obj, int* keys, int count, int lo, int hi)
+void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi)
 {
     s16* found;
     int idx;
@@ -1027,7 +1027,7 @@ void fn_8003AAE0(GameObject* obj, int* keys, int count, int lo, int hi)
     }
 }
 
-void fn_8003AC14(GameObject* obj, int* keys, int count)
+void characterDecayJointVecs(GameObject* obj, int* keys, int count)
 {
     s16* found;
     int idx;
@@ -1064,7 +1064,7 @@ void objFn_8003acfc(GameObject* obj, int* keys, int count, u8* out)
     }
 }
 
-void fn_8003ADC4(GameObject* obj, void* tgt, void* p3, int a, u8 inv, int b)
+void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 inv, int b)
 {
     s16 ang[2];
     s16* found[1];
@@ -1182,7 +1182,7 @@ u8 lbl_803DCC0A;
 u8 lbl_803DCC09;
 u8 lbl_803DCC08;
 
-void fn_8003B0D0(GameObject* obj, GameObject* target, CharacterEyeAnimState* state, int maxAngle)
+void characterSetHeadYawToTarget(GameObject* obj, GameObject* target, CharacterEyeAnimState* state, int maxAngle)
 {
     s16* found;
 
@@ -1206,7 +1206,7 @@ void fn_8003B0D0(GameObject* obj, GameObject* target, CharacterEyeAnimState* sta
     }
 }
 
-void fn_8003B228(GameObject* obj, void* state)
+void characterCloseEyes(GameObject* obj, void* state)
 {
     ObjTextureRuntimeSlot* foundA;
     ObjTextureRuntimeSlot* foundB;
@@ -1304,7 +1304,7 @@ void characterDoEyeAnims(GameObject* obj, void* stateData)
     }
 }
 
-void fn_8003B500(GameObject* obj, s16* state, f32 value)
+void characterHeadLookCalm(GameObject* obj, s16* state, f32 value)
 {
     s16* found;
 
@@ -1315,12 +1315,12 @@ void fn_8003B500(GameObject* obj, s16* state, f32 value)
         {
             found[0] = (s16)(found[0] * 3 / 4);
         }
-        fn_80039DF8(obj, state, found, lbl_803DE9A4);
+        characterHeadLookIdle(obj, state, found, lbl_803DE9A4);
         ((CharacterEyeAnimState*)state)->headTrackMode = (s16)(u16)(u8)((CharacterEyeAnimState*)state)->headTrackMode;
     }
 }
 
-void fn_8003B5E0(int a, int b, int c, u8 d)
+void objSetGlowColor(int a, int b, int c, u8 d)
 {
     lbl_803DCC0D = a;
     lbl_803DCC0C = b;
@@ -1330,7 +1330,7 @@ void fn_8003B5E0(int a, int b, int c, u8 d)
 }
 
 
-void fn_8003B608(s16 a, s16 b, s16 c)
+void objSetColorFilter(s16 a, s16 b, s16 c)
 {
     lbl_803DCC18 = a;
     lbl_803DCC16 = b;

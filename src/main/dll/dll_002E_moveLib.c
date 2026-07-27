@@ -504,7 +504,7 @@ void dll_2E_func06(GameObject* obj, MoveLibState* s, int point)
         f32 cA;
         f32 cB;
         f32 cC;
-        fn_8003AC14(obj, seqFn_800394a0(), s->pointCount);
+        characterDecayJointVecs(obj, seqFn_800394a0(), s->pointCount);
         ObjPath_GetPointWorldPosition(obj, point, &v.x0, &v.y0, &v.z0, 0);
         ObjPath_GetPointWorldPosition(obj, point + 1, &v.x1, &v.y1, &v.z1, 0);
         cA = 3.0f;
@@ -551,7 +551,7 @@ void dll_2E_func05(GameObject* obj, MoveLibState* s, s16 a, s16 b, int count)
     s->startOffsetY = zero;
     s->startOffsetZ = zero;
     s->reattackDelayBase = -1;
-    fn_8003AC14(obj, seqFn_800394a0(), count);
+    characterDecayJointVecs(obj, seqFn_800394a0(), count);
     objFn_8003acfc(obj, seqFn_800394a0(), count, s->animChannels);
     objJointTracksSetAngles(s->animChannels, s->pointCount, 0, 0);
     dll_2E_func09(s, gMoveLibDefaultMoveData, gMoveLibDefaultMoveData, s->pointCount);
@@ -603,7 +603,7 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                fn_8003AC14((GameObject*)obj, seqFn_800394a0(), (u32)s->pointCount);
+                characterDecayJointVecs((GameObject*)obj, seqFn_800394a0(), (u32)s->pointCount);
             }
         }
         else if (bit1 == 0 && s->phase == MOVELIB_PHASE_HELD)
@@ -619,11 +619,11 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
         {
             if (s->setupFlag != 0 && (s->modeBits & 8) == 0)
             {
-                s->setupFlag = !fn_8003A8B4(obj, (int*)seqHandle, s->pointCount, s->animChannels);
+                s->setupFlag = !characterTrackJointList(obj, (int*)seqHandle, s->pointCount, s->animChannels);
             }
             else
             {
-                fn_8003AC14((GameObject*)obj, seqFn_800394a0(), (u32)s->pointCount);
+                characterDecayJointVecs((GameObject*)obj, seqFn_800394a0(), (u32)s->pointCount);
             }
         }
         else
@@ -668,7 +668,7 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
                     }
                     if (s->setupFlag != 0)
                     {
-                        s->setupFlag = !fn_8003A8B4(obj, (int*)seqHandle, s->pointCount, s->animChannels);
+                        s->setupFlag = !characterTrackJointList(obj, (int*)seqHandle, s->pointCount, s->animChannels);
                     }
                     if (s->reattackTimer < -s->reattackDelayMin)
                     {
@@ -751,7 +751,7 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
                 }
                 if (((s->modeBits & 8) == 0) && (s->setupFlag != 0))
                 {
-                    s->setupFlag = !fn_8003A8B4(obj, (int*)seqHandle, s->pointCount, s->animChannels);
+                    s->setupFlag = !characterTrackJointList(obj, (int*)seqHandle, s->pointCount, s->animChannels);
                 }
             }
         }
@@ -805,7 +805,7 @@ int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turn
     if ((control->flags & 8) == 0)
     {
         control->blocked =
-            (u32)__cntlzw(fn_8003A8B4((GameObject*)objAnim, (int*)motion, control->contactAnim, control->secondary)) >> 5;
+            (u32)__cntlzw(characterTrackJointList((GameObject*)objAnim, (int*)motion, control->contactAnim, control->secondary)) >> 5;
     }
     control->blocked = 0;
 

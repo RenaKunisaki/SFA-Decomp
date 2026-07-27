@@ -2264,7 +2264,7 @@ void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
             f32 zero = 0.0f;
             if (state->glowAlpha != zero)
             {
-                fn_8003B5E0(0xc8, 0, 0, state->glowAlpha);
+                objSetGlowColor(0xc8, 0, 0, state->glowAlpha);
             }
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             if ((state->flags400 & 0x60) != 0)

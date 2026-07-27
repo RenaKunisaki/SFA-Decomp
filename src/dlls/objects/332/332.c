@@ -107,7 +107,7 @@ int fn_8019E3F4(GameObject* obj)
 void sandworm_turnTowardTargetAnim(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove)
 {
     int yawStep;
-    fn_8003ADC4(obj, target, state->lookBlock, 0x28, 0, 3);
+    characterAimHeadAtTarget(obj, target, state->lookBlock, 0x28, 0, 3);
     yawStep = Obj_GetYawDeltaToObject(obj, target, 0);
     obj->anim.rotX += (yawStep >>= 3);
     if (playMove == 0)
@@ -366,7 +366,7 @@ int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     case 8:
         animUpdate->hitVolumePair &= ~0x2;
         yaw = Obj_GetYawDeltaToObject(obj, player, 0);
-        fn_8003ADC4(obj, player, sub->lookBlock, 0x28, 0, 3);
+        characterAimHeadAtTarget(obj, player, sub->lookBlock, 0x28, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
         if (inRange != 0)
         {
@@ -380,7 +380,7 @@ int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     case 5:
         animUpdate->hitVolumePair &= ~0x2;
         yaw = Obj_GetYawDeltaToObject(obj, (GameObject*)getTrickyObject(), 0);
-        fn_8003ADC4(obj, getTrickyObject(), sub->lookBlock, 0x28, 0, 3);
+        characterAimHeadAtTarget(obj, getTrickyObject(), sub->lookBlock, 0x28, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
         break;
     }

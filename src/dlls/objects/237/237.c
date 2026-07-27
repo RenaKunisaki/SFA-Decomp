@@ -495,7 +495,7 @@ void collectible_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
         (obj->anim.seqId == COLLECTIBLE_SEQ_ID_TRUTH_HORN || ((CollectibleState*)state)->visibilityBitClear == 0)) {
         if ((obj->anim.modelInstance->flags & COLLECTIBLE_MODEL_FLAG_COLOR) != 0 &&
             ((CollectibleState*)state)->useColor != 0) {
-            fn_8003B608(((CollectibleState*)state)->colorR, ((CollectibleState*)state)->colorG,
+            objSetColorFilter(((CollectibleState*)state)->colorR, ((CollectibleState*)state)->colorG,
                         ((CollectibleState*)state)->colorB);
         }
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);

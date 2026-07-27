@@ -628,7 +628,7 @@ void kaldachom_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, in
         switch (obj->userData1) {
         case 0:
             if (state->glowAlpha) {
-                fn_8003B5E0(200, 0, 0, (int)state->glowAlpha);
+                objSetGlowColor(200, 0, 0, (int)state->glowAlpha);
             }
             objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
             if ((state->flags400 & 0x60) != 0) {

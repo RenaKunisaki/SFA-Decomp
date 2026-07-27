@@ -678,7 +678,7 @@ void dll_CE_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int f
     }
     alpha = state->glowAlpha;
     if (alpha != zero) {
-        fn_8003B5E0(200, 0, 0, alpha);
+        objSetGlowColor(200, 0, 0, alpha);
     }
     objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
 }

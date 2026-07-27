@@ -1297,7 +1297,7 @@ void DIMSnowHorn1_update(GameObject* obj)
             (int)obj, arm, 1, ((DIMSnowHorn1State*)data)->hitReactState, (f32*)((char*)data + 0xa94));
         if (((DIMSnowHorn1State*)data)->hitReactState != 0)
         {
-            fn_8003A168(obj, (void*)(data + 0x980));
+            characterHeadLookRelax(obj, (void*)(data + 0x980));
             characterDoEyeAnims(obj, (void*)(data + 0x980));
             return;
         }
@@ -1348,7 +1348,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         {
             ((DIMSnowHorn1State*)statePtr)->playerNearby = 0;
         }
-        fn_8003B500(obj, (s16*)(data + 0x980), 0.0f);
+        characterHeadLookCalm(obj, (s16*)(data + 0x980), 0.0f);
         break;
     }
     switch (((DIMSnowHorn1State*)data)->mode)

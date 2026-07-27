@@ -136,7 +136,7 @@ void tree_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 
     if (visible != 0)
     {
-        fn_8003B608(setup->colorR, setup->colorG, setup->colorB);
+        objSetColorFilter(setup->colorR, setup->colorG, setup->colorB);
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         if (state->flags & TREE_FLAG_AMBIENT_EFFECTS)
         {

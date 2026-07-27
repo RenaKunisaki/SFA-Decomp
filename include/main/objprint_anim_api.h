@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 
 void objAnimFn_80038f38(GameObject* obj, char* state);
-void fn_8003B500(GameObject* obj, s16* state, f32 value);
-void fn_80039B54(int obj, s16* curve, s16* state, f32 val);
+void characterHeadLookCalm(GameObject* obj, s16* state, f32 value);
+void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val);
 
 #endif /* MAIN_OBJPRINT_ANIM_API_H_ */

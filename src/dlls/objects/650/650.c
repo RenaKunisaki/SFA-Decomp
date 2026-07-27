@@ -124,7 +124,7 @@ void earthwalker_hitDetect(GameObject* obj)
 
     if (ewObj->currentMove == 0x203)
     {
-        fn_8003AAE0(obj, seqFn_800394a0(), ewState->hitTriggerId, 0, 0x186a0);
+        characterClampJointVecs(obj, seqFn_800394a0(), ewState->hitTriggerId, 0, 0x186a0);
     }
 }
 ObjHitReactEntry gEarthWalkerHitReactEntries[1] = {{575, 706, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.01f, {0, 0, 0, 0}}};

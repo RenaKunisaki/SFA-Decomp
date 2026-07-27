@@ -41,7 +41,7 @@ typedef struct ScMusictreePlacement
 {
     ObjPlacement base;
     u8 pad18[0x20 - 0x18];
-    u8 colorR; /* 0x20: render tint red   (passed to fn_8003B608) */
+    u8 colorR; /* 0x20: render tint red   (passed to objSetColorFilter) */
     u8 colorG; /* 0x21: render tint green */
     u8 colorB; /* 0x22: render tint blue */
     u8 pad23[0x28 - 0x23];
@@ -213,7 +213,7 @@ void sc_musictree_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
     SCMusicTreeState* state = obj->extra;
     int i;
     if (visible == 0) return;
-    fn_8003B608(((ScMusictreePlacement*)def)->colorR, ((ScMusictreePlacement*)def)->colorG,
+    objSetColorFilter(((ScMusictreePlacement*)def)->colorR, ((ScMusictreePlacement*)def)->colorG,
                  ((ScMusictreePlacement*)def)->colorB);
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     if ((state->flags & SCMUSICTREE_FLAG_SATELLITES) != 0)

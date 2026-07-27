@@ -9,7 +9,7 @@ typedef struct BabyCloudRunnerState
 {
     f32 triggeredLatch;
     u8 pad04[0x38]; /* 0x18: position used for the sandworm handoff */
-    u8 lookBlock[0x30]; /* 0x3c: fn_8003ADC4 head-track block */
+    u8 lookBlock[0x30]; /* 0x3c: characterAimHeadAtTarget head-track block */
     ObjSoundState soundState; /* 0x6c */
     u8 soundPad[0xc];
     f32 animSpeed;

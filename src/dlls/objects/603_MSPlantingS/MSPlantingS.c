@@ -142,7 +142,7 @@ void MoonSeedPlantingSpot_render(GameObject* obj, int p2, int p3, int p4, int p5
                 inner->colorPhase += 0x1000;
                 iv = (int)(63.0f * (1.0f + mathSinf(3.1415927f * (f32)inner->colorPhase /
                                                     32768.0f)));
-                fn_8003B608((u8)(iv + 0x7f), 0xff, 0xff);
+                objSetColorFilter((u8)(iv + 0x7f), 0xff, 0xff);
             }
         }
         else if (inner->phase == MSPLANTING_PHASE_CUT)
@@ -151,11 +151,11 @@ void MoonSeedPlantingSpot_render(GameObject* obj, int p2, int p3, int p4, int p5
             {
                 inner->colorPhase += 0xff;
             }
-            fn_8003B608((s16)(inner->colorPhase >> 7), 0xff, 0xff);
+            objSetColorFilter((s16)(inner->colorPhase >> 7), 0xff, 0xff);
         }
         else
         {
-            fn_8003B608(0xff, 0xff, 0xff);
+            objSetColorFilter(0xff, 0xff, 0xff);
         }
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }

@@ -200,7 +200,7 @@ void dim2prisonmammoth_update(GameObject* obj)
                                (f32*)(inner + 0x390));
         if (((Dim2prisonmammothState*)inner)->hitReactState != 0)
         {
-            fn_8003A168(obj, (void*)(inner + 0x35c));
+            characterHeadLookRelax(obj, (void*)(inner + 0x35c));
             characterDoEyeAnims(obj, (void*)(inner + 0x35c));
             return;
         }

@@ -147,7 +147,7 @@ void cfprisonuncle_update(GameObject* obj)
     if (state->released == 0)
     {
         player = Obj_GetPlayerObject();
-        fn_8003ADC4(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState, 0x41, 0, 3);
+        characterAimHeadAtTarget(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState, 0x41, 0, 3);
         if ((int)randomGetRange(0, 0x1e) == 0)
         {
             objAudioFn_80039270((int)obj, &state->soundState, 0x297);
@@ -155,7 +155,7 @@ void cfprisonuncle_update(GameObject* obj)
         if (ObjTrigger_IsSet((int)obj) != 0)
         {
             s16* vec;
-            fn_8003ADC4(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState, 0x41, 0, 3);
+            characterAimHeadAtTarget(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState, 0x41, 0, 3);
             vec = (s16*)objModelGetVecFn_800395d8(obj, 1);
             *vec = -0xaaa;
             (*gObjectTriggerInterface)->runSequence(1, obj, -1);

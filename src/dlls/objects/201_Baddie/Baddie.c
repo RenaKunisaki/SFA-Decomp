@@ -1266,7 +1266,7 @@ void enemyObjAnimUpdate(short* obj, int state)
     }
     if ((((TrickyState*)state)->actionTargetObj != NULL) && ((((TrickyState*)state)->controlFlags & 0x800) != 0))
     {
-        fn_8003B0D0((GameObject*)obj, ((TrickyState*)state)->actionTargetObj,
+        characterSetHeadYawToTarget((GameObject*)obj, ((TrickyState*)state)->actionTargetObj,
                     (CharacterEyeAnimState*)(state + 0x26c), 0x19);
     }
     ((TrickyState*)state)->prevActionId = ((TrickyState*)state)->actionId;

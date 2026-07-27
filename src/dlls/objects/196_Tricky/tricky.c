@@ -9461,12 +9461,12 @@ void Tricky_update(int obj)
     }
     if (((GameObject*)obj)->anim.currentMove == 0x2a)
     {
-        fn_8003A168((GameObject*)(obj), (void*)(state + 0x378));
-        fn_8003B228((GameObject*)(obj), (void*)(state + 0x378));
+        characterHeadLookRelax((GameObject*)(obj), (void*)(state + 0x378));
+        characterCloseEyes((GameObject*)(obj), (void*)(state + 0x378));
     }
     else
     {
-        fn_8003A230((GameObject*)obj, (CharacterEyeAnimState*)(state + 0x378), lbl_803E23DC);
+        characterUpdateHeadLook((GameObject*)obj, (CharacterEyeAnimState*)(state + 0x378), lbl_803E23DC);
         characterDoEyeAnims((GameObject*)obj, (void*)(state + 0x378));
     }
     objAnimFn_80038f38((GameObject*)obj, (char*)state + 0x3a8);

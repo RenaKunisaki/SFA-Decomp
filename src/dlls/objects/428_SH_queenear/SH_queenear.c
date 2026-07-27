@@ -139,12 +139,12 @@ int sh_queenearthwalker_processAnimEvents(GameObject* obj, void* unused, ObjAnim
             state->targetX = player->anim.localPosX;
             state->targetY = player->anim.localPosY;
             state->targetZ = player->anim.localPosZ;
-            fn_8003B500(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
         }
         animUpdate->hitVolumePair &= ~0x40;
         if ((state->flags & QEW_FLAG_EYE_ANIMS) != 0)
         {
-            fn_8003B228(obj, (u8*)state + 0x8);
+            characterCloseEyes(obj, (u8*)state + 0x8);
         }
         else
         {
@@ -192,7 +192,7 @@ void openPortalFn_801d4364(GameObject* obj, void* state)
     ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
     ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
     ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-    fn_8003B500(obj, (s16*)((int)state + 0x8), lbl_803E53F8);
+    characterHeadLookCalm(obj, (s16*)((int)state + 0x8), lbl_803E53F8);
 }
 
 void queenFeedFn_801d44a4(GameObject* obj, void* state)
@@ -272,7 +272,7 @@ void queenFeedFn_801d44a4(GameObject* obj, void* state)
         ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
         ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
         ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-        fn_8003B500(obj, (s16*)((int)state + 0x8), lbl_803E53F8);
+        characterHeadLookCalm(obj, (s16*)((int)state + 0x8), lbl_803E53F8);
         break;
     default:
         break;
@@ -323,7 +323,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            fn_8003B500(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
             break;
         case 5:
             openPortalFn_801d4364(obj, state);
@@ -342,7 +342,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            fn_8003B500(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
             break;
         case 7:
             if (mainGetBit(0x199) != 0)
@@ -358,7 +358,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            fn_8003B500(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
             break;
         case 8:
             player = Obj_GetPlayerObject();
@@ -366,7 +366,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            fn_8003B500(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
             break;
         case 0:
         case 1:
@@ -427,7 +427,7 @@ void sh_queenearthwalker_update(GameObject* obj)
 
     if ((((QueenEarthWalkerState*)state)->flags & QEW_FLAG_EYE_ANIMS) != 0)
     {
-        fn_8003B228(obj, (u8*)state + 0x8);
+        characterCloseEyes(obj, (u8*)state + 0x8);
     }
     else
     {

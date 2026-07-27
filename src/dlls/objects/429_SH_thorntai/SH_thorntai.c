@@ -1066,7 +1066,7 @@ void SHthorntail_update(int obj)
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] & SHTHORNTAIL_STATE_FLAG_HEAVY_HIT_REACT) !=
             0)
         {
-            fn_8003B228((GameObject*)obj, runtime->collisionShapeState);
+            characterCloseEyes((GameObject*)obj, runtime->collisionShapeState);
         }
         else
         {

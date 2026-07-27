@@ -991,7 +991,7 @@ void pushable_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int
                 if (state->renderTimer <= zero) {
                     state->renderTimer = zero;
                 } else {
-                    fn_8003B5E0(0xc8, 0, 0, 0xff);
+                    objSetGlowColor(0xc8, 0, 0, 0xff);
                 }
             }
             break;

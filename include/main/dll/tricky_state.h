@@ -186,7 +186,7 @@ typedef struct TrickyState {
     f32 hitCooldown;
     u8 groundSnapCounter; /* frame countdown that forces the ground-snap path: != 0 -> decrement and do the height snap; primed to 2 on state entry (tricky/skeetla) */
     u8 pad375[0x378 - 0x375];
-    u8 followPosValid; /* 1 when followObj is non-NULL and followPosX/Y/Z hold its captured world pos, else 0; the 0x378 record (flag + xyz) is passed to the eye-look / head-aim helpers fn_8003A168 / characterDoEyeAnims (tricky) */
+    u8 followPosValid; /* 1 when followObj is non-NULL and followPosX/Y/Z hold its captured world pos, else 0; the 0x378 record (flag + xyz) is passed to the eye-look / head-aim helpers characterHeadLookRelax / characterDoEyeAnims (tricky) */
     u8 pad379[0x37C - 0x379];
     f32 followPosX; /* captured world position of followObj (copied from followObj->anim.worldPos when followPosValid is set); read as the look/eye-aim target through the 0x378 record pointer (tricky) */
     f32 followPosY;
