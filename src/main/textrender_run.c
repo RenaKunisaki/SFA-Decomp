@@ -1094,7 +1094,7 @@ void setLanguageFn_8001ad64(GameTextLoadSlot* req)
                 {
                     *dst8++ = *src8++;
                 }
-                DCFlushRange((u8*)slot[4] + 0x60, *(u32*)((u8*)slot[4] + 0x44));
+                DCFlushRange((u8*)slot[4] + 0x60, ((Texture*)slot[4])->dataSize);
             }
             else
             {
@@ -1105,7 +1105,7 @@ void setLanguageFn_8001ad64(GameTextLoadSlot* req)
                 {
                     *dst16++ = *src16++;
                 }
-                DCFlushRange((u8*)slot[4] + 0x60, *(u32*)((u8*)slot[4] + 0x44));
+                DCFlushRange((u8*)slot[4] + 0x60, ((Texture*)slot[4])->dataSize);
             }
         }
         {

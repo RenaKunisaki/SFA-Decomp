@@ -1542,11 +1542,11 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         ((GameObject*)gSkyMoonObject)->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
         ((GameObject*)gSkyMoonObject)->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
         ((GameObject*)gSkyMoonObject)->anim.rootMotionScale = gSkySunMoonScale * scale;
-        *(s16*)gSkyMoonObject = 0x10000 - cam->yaw;
+        ((GameObject*)gSkyMoonObject)->anim.rotX = 0x10000 - cam->yaw;
         ((GameObject*)gSkyMoonObject)->anim.rotY = cam->pitch;
         vis = 0;
         ((GameObject*)gSkyMoonObject)->anim.rotZ = 0;
-        ((u8*)gSkyMoonObject)[0x37] = *(s16*)&gSkyMoonAlpha;
+        ((GameObject*)gSkyMoonObject)->anim.renderAlpha = *(s16*)&gSkyMoonAlpha;
         if (gSkySunObject->anim.renderAlpha != 0)
         {
             if (gSkyState != NULL)
@@ -1560,7 +1560,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
                 objRender(a, b, c, d, (GameObject*)gSkySunObject, 1);
             }
         }
-        if (((u8*)gSkyMoonObject)[0x37] != 0)
+        if (((GameObject*)gSkyMoonObject)->anim.renderAlpha != 0)
         {
             if (gSkyState != NULL)
             {

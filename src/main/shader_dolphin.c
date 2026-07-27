@@ -1974,7 +1974,7 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
         u32 div;
         int p2v = (p3 & 0xf) * 4 + 1;
         texptr = (Texture*)(textureIdxToPtr(p4));
-        div = (u32) texptr->width / (u32)(*(u16*)((char*)p1 + 0xa) * p2v);
+        div = (u32) texptr->width / (u32)(((Texture*)p1)->width * p2v);
         if (div != 0)
         {
             GXSetIndTexCoordScale(gRcpNextIndTexStage, lbl_8030CEE0[div - 1], lbl_8030CEE0[div - 1]);
