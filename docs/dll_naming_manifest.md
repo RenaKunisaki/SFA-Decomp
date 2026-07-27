@@ -97,7 +97,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x033 | — | NO-RETAIL-NAME | main/dll/dll_0033_nrareware.c | = (canonical) | — |
 | 0x034 | — | NO-RETAIL-NAME | main/dll/dll_0034_titlemenu.c | = (canonical) | — |
 | 0x035 | — | NO-RETAIL-NAME | main/dll/dll_0035_saveselectscreen.c | = (canonical) | — |
-| 0x036 | — | NO-RETAIL-NAME | main/dll/dll_0036_entersavenamescreen.c | = (canonical) | — |
+| 0x036 | — | NO-RETAIL-NAME | dlls/engine/54/54.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x037 | — | NO-RETAIL-NAME | dlls/engine/55/55.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x038 | — | NO-RETAIL-NAME | dlls/engine/56/56.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x039 | — | NO-RETAIL-NAME | dlls/engine/57/57.c | = (canonical) | Complete DOL-confirmed TU |

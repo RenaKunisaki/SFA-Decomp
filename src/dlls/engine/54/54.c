@@ -1,4 +1,3 @@
-/* DLL 0x36 - enter/save name screen controller [8011B5D4-8011B868) */
 #include "main/dll/dll_36.h"
 #include "main/audio/sfx_ids.h"
 #include "main/pad.h"
@@ -12,7 +11,6 @@
 #include "main/textrender_api.h"
 #include "main/model_engine.h"
 #include "dlls/object_descriptor.h"
-#include "main/pad.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/gameloop_api.h"
