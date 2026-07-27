@@ -1517,10 +1517,10 @@ void fearTestMeterDraw(void)
     GXColor col;
     int sc0, sc1, sc2, sc3;
     int a;
-    void* texB = *(void**)((u8*)hudTextures + 0x180);
+    void* texB = hudTextures[0x60];
     u16 hgt = ((Texture*)texB)->height;
     int gap = fearTestMeterOuterHalfWidth - fearTestMeterInnerHalfWidth;
-    void* texA = *(void**)((u8*)hudTextures + 0x17c);
+    void* texA = hudTextures[0x5f];
     int wid = *(u16*)((char*)texA + 0xa) & 0xff;
     if (gFearTestMeterFadeIn != 0)
     {
@@ -1544,15 +1544,15 @@ void fearTestMeterDraw(void)
         return;
     GXGetScissor(&sc0, &sc1, &sc2, &sc3);
     GXSetScissor(0, 0, 0x280, 0x1e0);
-    drawScaledTexture(*(void**)((u8*)hudTextures + 0x17c), (f32)(int)(0x140 - fearTestMeterOuterHalfWidth - wid),
+    drawScaledTexture(hudTextures[0x5f], (f32)(int)(0x140 - fearTestMeterOuterHalfWidth - wid),
                       lbl_803E1E9C, (u8)gFearTestMeterAlpha, 0x100, wid, hgt, 1);
-    drawScaledTexture(*(void**)((u8*)hudTextures + 0x180), (f32)(int)(0x140 - fearTestMeterInnerHalfWidth), lbl_803E1E9C,
+    drawScaledTexture(hudTextures[0x60], (f32)(int)(0x140 - fearTestMeterInnerHalfWidth), lbl_803E1E9C,
                       (u8)gFearTestMeterAlpha, 0x100, fearTestMeterInnerHalfWidth << 1, hgt, 0);
-    drawScaledTexture(*(void**)((u8*)hudTextures + 0x184), (f32)(int)(0x140 - fearTestMeterOuterHalfWidth), lbl_803E1E9C,
+    drawScaledTexture(hudTextures[0x61], (f32)(int)(0x140 - fearTestMeterOuterHalfWidth), lbl_803E1E9C,
                       (u8)gFearTestMeterAlpha, 0x100, gap, hgt, 0);
-    drawScaledTexture(*(void**)((u8*)hudTextures + 0x184), (f32)(int)((u8)fearTestMeterInnerHalfWidth + 0x140), lbl_803E1E9C,
+    drawScaledTexture(hudTextures[0x61], (f32)(int)((u8)fearTestMeterInnerHalfWidth + 0x140), lbl_803E1E9C,
                       (u8)gFearTestMeterAlpha, 0x100, gap, hgt, 0);
-    drawTexture(*(void**)((u8*)hudTextures + 0x17c), (f32)(int)((u8)fearTestMeterOuterHalfWidth + 0x140), lbl_803E1E9C,
+    drawTexture(hudTextures[0x5f], (f32)(int)((u8)fearTestMeterOuterHalfWidth + 0x140), lbl_803E1E9C,
                 (u8)gFearTestMeterAlpha, 0x100);
     col.r = 0xff;
     col.g = 0;
@@ -5239,7 +5239,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
                 for (; i8 >= 0; i8 -= 4)
                 {
                     s16 px = (s16)((0xff - i8) - lbl_803DD75C);
-                    pauseMenuDrawElement(*(int**)((u8*)hudTextures + tex * 4), fyj, lbl_803E20B4, px, ty,
+                    pauseMenuDrawElement((int*)hudTextures[tex], fyj, lbl_803E20B4, px, ty,
                                          (s32)lbl_803E20B8, 0);
                 }
             }
