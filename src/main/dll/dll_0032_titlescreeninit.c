@@ -259,3 +259,14 @@ void TitleScreenInit_initialise(void)
     lockIconInit();
     warpToMap(TITLESCREENINIT_MAP_WARP, 0);
 }
+
+u32 lbl_8031A178[10] = {0x00000000,
+                        0x00000000,
+                        0x00000000,
+                        0x00050000,
+                        (u32)TitleScreenInit_initialise,
+                        (u32)TitleScreenInit_release,
+                        0x00000000,
+                        (u32)TitleScreenInit_frameStart,
+                        (u32)TitleScreenInit_frameEnd,
+                        (u32)TitleScreenInit_render};
