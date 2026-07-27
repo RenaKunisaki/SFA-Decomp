@@ -4,7 +4,7 @@
  * update then preempts or starts the placement's sequence as its game bits
  * change. The game-bit IDs are placement data, with -1 as the unused sentinel.
  */
-#include "main/dll/dll_0112_seqobject.h"
+#include "dlls/objects/274.h"
 #include "main/dll/dll_0113_seqobj2.h"
 #include "game/objects/object.h"
 #include "main/gamebits.h"
@@ -111,7 +111,7 @@ void SeqObj2_update(GameObject* obj)
         OSReport(strBase + 0x108, def->base.mapId, def->sequenceParam);
         (*gObjectTriggerInterface)->preempt((int)obj, def->preemptSequenceId);
         bitValue = def->sequenceParam;
-        (*gObjectTriggerInterface)->runSequence(def->triggerId, obj, bitValue);
+        (*gObjectTriggerInterface)->runSequence(def->sequenceId, obj, bitValue);
         state->flags = (u8)(state->flags & ~SEQOBJECT_STATE_OPEN);
     }
     else if ((state->flags & SEQOBJECT_STATE_TRIGGER_SEQUENCE) != 0)
@@ -144,7 +144,7 @@ void SeqObj2_update(GameObject* obj)
                 OSReport(strBase + 0x1cc, def->base.mapId);
             }
             OSReport(strBase + 0x1f8, def->base.mapId);
-            (*gObjectTriggerInterface)->runSequence(def->triggerId, obj, -1);
+            (*gObjectTriggerInterface)->runSequence(def->sequenceId, obj, -1);
         }
     }
 }

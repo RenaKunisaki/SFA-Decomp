@@ -14,7 +14,7 @@
 #include "main/render_envfx_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
-#include "main/dll/dll_0112_seqobject.h"
+#include "dlls/objects/274.h"
 #include "main/mapEvent.h"
 #include "game/objects/object.h"
 #include "main/dll/SH/dll_01AE_shlevelcontrol.h"
@@ -53,7 +53,7 @@ typedef struct CfLevelControlFlags
     u8 b6 : 1;
     u8 b5 : 1; /* 0x20: last GameBit 0x974 */
     u8 b4 : 1; /* 0x10: last GameBit 0x975 */
-    u8 b3 : 1; /* 0x08: pending objCallOnloadCallback sweep */
+    u8 b3 : 1; /* 0x08: pending objCallOnLoadCallback sweep */
     u8 rest : 3;
 } CfLevelControlFlags;
 
@@ -143,14 +143,14 @@ void cflevelcontrol_update(GameObject* obj)
 
     if (((u32)state[0xc] >> 3 & 1) != 0)
     {
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x47fae));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x47f83));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x47f8f));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x47fa2));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x29f2));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x29f3));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x29ef));
-        objCallOnloadCallback((GameObject*)ObjList_FindObjectById(0x29ee));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x47fae));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x47f83));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x47f8f));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x47fa2));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x29f2));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x29f3));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x29ef));
+        objCallOnLoadCallback((GameObject*)ObjList_FindObjectById(0x29ee));
         ((CfLevelControlFlags*)&state[0xc])->b3 = 0;
     }
 
