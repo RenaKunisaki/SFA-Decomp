@@ -2321,8 +2321,8 @@ void ObjHits_Update(int objectCount)
     sweepEntries->maxX = gObjHitsSweepSortSentinel;
     gObjHitsSweepEntryPtrs[0] = sweepEntries;
     slotCount = 1;
-    nextEntry = &sweepEntries[1];
     entrySlotBase = &gObjHitsSweepEntryPtrs[1];
+    nextEntry = &sweepEntries[1];
     entrySlot = entrySlotBase;
     for (; objectCount > 0; objectCount--)
     {
