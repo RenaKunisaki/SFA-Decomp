@@ -75,6 +75,7 @@
 #include "dlls/objects/276_IMMultiSeq.h"
 #include "dlls/objects/277.h"
 #include "dlls/objects/278_WM_Column.h"
+#include "dlls/objects/279_AppleOnTree.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -165,8 +166,7 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
     gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAppleOnTreeObjDescriptor, gAreaFXEmitObjDescriptor, gAttractorObjDescriptor,
-    gBabyCloudRunnerObjDescriptor;
+extern ResourceDescriptor gAreaFXEmitObjDescriptor, gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBarrelPadObjDescriptor,
     gBlastedObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor,
     gBossDrakorObjDescriptor;
@@ -1231,7 +1231,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gIMMultiSeqObjDescriptor,
     (ResourceDescriptor*)&gDll115ObjDescriptor,
     (ResourceDescriptor*)&gWM_ColumnObjDescriptor,
-    &gAppleOnTreeObjDescriptor,
+    (ResourceDescriptor*)&gAppleOnTreeObjDescriptor,
     &gDusterObjDescriptor,
     &gColdWaterControlObjDescriptor,
     &gDecoration11AObjDescriptor,
