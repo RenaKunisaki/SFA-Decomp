@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/10_expgfx/expgfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(
                 NonMatching, "dlls/engine/11/11.c", cflags=cflags_dll_noopt_noautoinline,
                 section_alignments={".sdata2": 4},
@@ -1474,7 +1475,6 @@ config.libs = [
             Object(NonMatching, "track/intersect_texsetup.c", cflags=cflags_dll_noopt_nocse_noautoinline),
             Object(NonMatching, "track/intersect_memcard.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/maketex.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
-            Object(NonMatching, "main/dll/expgfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/dll_0003_checkpoint.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0004_dummy04.c"),
             Object(MatchingFor("GSAE01"), "main/dll/dll_b8.c", cflags=cflags_dll_noopt),
