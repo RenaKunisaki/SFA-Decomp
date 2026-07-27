@@ -1,4 +1,3 @@
-/* DLL 0x155 */
-#include "global.h"
+#include "dlls/objects/341.h"
 
-u32 lbl_803DBE00[2] = {0};
+u32 gDll155NullResourceDescriptor[DLL155_NULL_DESCRIPTOR_WORD_COUNT] = {0};
