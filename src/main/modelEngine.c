@@ -118,6 +118,7 @@
 #include "dlls/objects/320_fogControl.h"
 #include "dlls/objects/321_Lightning.h"
 #include "dlls/objects/322_FElevContro.h"
+#include "dlls/objects/323_FEseqobject.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -247,8 +248,7 @@ extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescrip
     gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
     gExplodableObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
-extern ResourceDescriptor gExplosionObjDescriptor, gFEseqobjectObjDescriptor, gFireFlyObjDescriptor,
-    gFireObjDescriptor;
+extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
@@ -1305,7 +1305,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFogControlObjDescriptor,
     (ResourceDescriptor*)&gLightningObjDescriptor,
     (ResourceDescriptor*)&gFElevControlObjDescriptor,
-    &gFEseqobjectObjDescriptor,
+    (ResourceDescriptor*)&gFEseqobjectObjDescriptor,
     &lbl_80327BA8,
     &gCloudPrisonControlObjDescriptor,
     &lbl_803DBE10,
