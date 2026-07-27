@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_IM_DLL_0171_IMSPACERINGGEN_H_
 #define MAIN_DLL_IM_DLL_0171_IMSPACERINGGEN_H_
 
-#include "main/dll/IM/dll_0170_imspacering.h"
+#include "dlls/objects/368_IMSpaceRing.h"
 
 /* per-object extra (getExtraSize == 0xc) */
 typedef struct RingGenState

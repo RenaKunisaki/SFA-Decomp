@@ -163,6 +163,7 @@
 #include "dlls/objects/365_IMIcePillar.h"
 #include "dlls/objects/366_IMAnimSpace.h"
 #include "dlls/objects/367_IMSpaceThru.h"
+#include "dlls/objects/368_IMSpaceRing.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -293,7 +294,7 @@ extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor,
     gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gHighTopObjDescriptor;
-extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor;
+extern ResourceDescriptor gIMSpaceRingGenObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLINKBLevControlObjDescriptor;
@@ -1384,7 +1385,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gIMIcePillarObjDescriptor,
     (ResourceDescriptor*)&gIMAnimSpaceObjDescriptor,
     (ResourceDescriptor*)&gIMSpaceThrusterObjDescriptor,
-    &gIMSpaceRingObjDescriptor,
+    (ResourceDescriptor*)&gIMSpaceRingObjDescriptor,
     &gIMSpaceRingGenObjDescriptor,
     &gLINKBLevControlObjDescriptor,
     &gLINKLevControlObjDescriptor,
