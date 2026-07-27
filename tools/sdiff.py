@@ -33,20 +33,23 @@ BRANCH = re.compile(r'^(b|ba|bl|bla|bc|bca|bcl|bdnz|bdz|b[a-z]{1,3}[+-]?)\s')
 
 
 def pool_float_syms(path='config/GSAE01/symbols.txt'):
-    """Names of 4-byte .sdata2 floats -- i.e. pool constants that happen to carry a
-    project-given name (gMoonRockPi) rather than a compiler-style one (lbl_803DF9D0).
-    Folding only the compiler-style spellings still let 13 of 16 named-pool relocs read
-    as structural work and re-promoted a capped function. Classify by SECTION AND TYPE,
-    not by how the name looks."""
+    """Names of 4-byte .sdata2 floats and 8-byte .sdata2 doubles -- i.e. pool constants
+    that happen to carry a project-given name (gMoonRockPi, gLightmapU32ToDoubleBias)
+    rather than a compiler-style one (lbl_803DF9D0). Folding only the compiler-style
+    spellings still let 13 of 16 named-pool relocs read as structural work and
+    re-promoted a capped function; folding only the 4-byte floats let the 0x43300000
+    u32-to-double bias magic read as a genuine symbol disagreement. Classify by SECTION
+    AND TYPE, not by how the name looks."""
     out = set()
     try:
         with open(path) as f:
             for l in f:
-                if '.sdata2:' not in l or 'data:float' not in l:
+                if '.sdata2:' not in l:
                     continue
-                if not re.search(r'size:0x4\b', l):
-                    continue
-                out.add(l.split('=')[0].strip())
+                if 'data:float' in l and re.search(r'size:0x4\b', l):
+                    out.add(l.split('=')[0].strip())
+                elif 'data:double' in l and re.search(r'size:0x8\b', l):
+                    out.add(l.split('=')[0].strip())
     except OSError:
         pass
     return out
