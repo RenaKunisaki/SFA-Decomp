@@ -1,18 +1,25 @@
 #include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/audio/sfx.h"
+#include "main/dll/FRONT/frontend_control.h"
+#include "main/dll/dll_0035_saveselectscreen.h"
+#include "main/gametext_show_str_api.h"
+#include "main/textrender_api.h"
+#include "track/intersect_hud_api.h"
+#include "main/pad.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
+#include "dolphin/pad.h"
+#include "main/gametext_color_api.h"
+#include "main/dll/dll_43.h"
+#include "main/screen_transition.h"
+#include "main/gameloop_api.h"
+#include "main/dll/dll_0004_dummy04.h"
 #include "main/frame_timing.h"
 #include "main/audio/music_api.h"
-#include "main/dll/dll_0035_saveselectscreen.h"
-#include "main/dll/FRONT/frontend_control.h"
 #include "main/dll/FRONT/title_menu.h"
-#include "main/screen_transition.h"
 #include "main/texture.h"
-#include "main/gameloop_api.h"
 #include "main/mm.h"
 #include "main/dll/FRONT/dll_39.h"
-#include "main/dll/dll_43.h"
-#include "main/pad.h"
-#include "main/audio/sfx.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/dll/dll_02C0_front.h"
 #include "main/dll/dll_02C0_front_api.h"
 #include "main/dll/front_game_text_box_api.h"
@@ -22,15 +29,189 @@
 #include "main/map_load.h"
 #include "main/fileio.h"
 #include "main/mapEventTypes.h"
-#include "main/textrender_api.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/savegame.h"
 #include "main/dll/player_status.h"
-#include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "string.h"
-#include "main/gametext_color_api.h"
+
+/*
+ * frontend_control - save-file-select screen behaviour for the front end.
+ *
+ * saveFileSelect_checkCheatCodes() watches controller 0 while a button
+ * (mask 0x10) is held and matches input against two nibble-packed button
+ * sequences: a debug-text unlock sequence and a per-slot save cheat. Each
+ * sequence is 5 entries long; a 16-frame input timer resets a partial
+ * match. Completing the debug sequence sets enableDebugText; completing
+ * the save sequence stamps cheatFlag=5 on the current save slot.
+ *
+ * saveSelect_drawText() renders the selected slot's summary: the two side
+ * textures, the slot name, completion percent, formatted play time
+ * (HH:MM:SS derived from playTimeSeconds), life count and magic count.
+ */
+
+#define CHEAT_SEQUENCE_LEN  5
+#define CHEAT_INPUT_TIMEOUT 0xF
+#define SECONDS_PER_HOUR    3600
+#define SECONDS_PER_MINUTE  60
+
+extern u8 enableDebugText;
+extern void* lbl_803A8680[4];
+
+void saveFileSelect_checkCheatCodes(void)
+{
+    u32 held;
+    u32 pressed;
+    u32 nibbles;
+    u32 hi;
+    u32 midHi;
+    u32 low;
+    u32 midLow;
+
+    if (saveFileSelect_debugCheatProgress != 0 || saveFileSelect_saveCheatProgress != 0)
+    {
+        saveFileSelect_cheatInputTimer++;
+        if (saveFileSelect_cheatInputTimer > CHEAT_INPUT_TIMEOUT)
+        {
+            saveFileSelect_debugCheatProgress = 0;
+            saveFileSelect_saveCheatProgress = 0;
+            saveFileSelect_cheatInputTimer = 0;
+        }
+    }
+    held = getButtonsHeld(0);
+    if ((held & PAD_TRIGGER_Z) == 0)
+        return;
+
+    if (saveFileSelect_saveCheatProgress == 0)
+    {
+        pressed = (u16)getButtonsJustPressed(0);
+        hi = (int)(pressed & 0xF000) >> 8;
+        midHi = (pressed & 0xF00) << 4;
+        low = (pressed & 0xF) << 8;
+        midLow = (int)(pressed & 0xF0) >> 4;
+        nibbles = hi | (midHi | (low | midLow));
+        if ((int)(nibbles & saveFileSelect_debugCheatSequence[saveFileSelect_debugCheatProgress]) != 0)
+        {
+            saveFileSelect_debugCheatProgress++;
+            saveFileSelect_cheatInputTimer = 0;
+        }
+        if (saveFileSelect_debugCheatProgress == CHEAT_SEQUENCE_LEN)
+        {
+            enableDebugText = 1;
+            Sfx_PlayFromObject(0, SFXTRIG_cam90_c);
+        }
+    }
+    if (saveFileSelect_debugCheatProgress != 0)
+        return;
+
+    pressed = (u16)getButtonsJustPressed(0);
+    hi = (int)(pressed & 0xF000) >> 8;
+    midHi = (pressed & 0xF00) << 4;
+    low = (pressed & 0xF) << 8;
+    midLow = (int)(pressed & 0xF0) >> 4;
+    nibbles = hi | (midHi | (low | midLow));
+    if ((int)(nibbles & saveFileSelect_slotCheatSequence[saveFileSelect_saveCheatProgress]) != 0)
+    {
+        saveFileSelect_saveCheatProgress++;
+        saveFileSelect_cheatInputTimer = 0;
+    }
+    if (saveFileSelect_saveCheatProgress == CHEAT_SEQUENCE_LEN)
+    {
+        saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].cheatFlag = 5;
+        saveFileSelect_saveDirty = 1;
+        Sfx_PlayFromObject(0, SFXTRIG_cam90_c);
+    }
+}
+
+void saveSelect_drawText(int unused, int alpha)
+{
+    char buf[16];
+    u32 secs;
+    u32 hours;
+    int rem;
+    int minutes;
+    int seconds;
+
+    drawTexture(lbl_803A8680[1], 282.0f, 142.0f, alpha, 0x100);
+    drawTexture(lbl_803A8680[2], 322.0f, 142.0f, alpha, 0x100);
+    gameTextSetColor(0xff, 0xff, 0xff, alpha);
+
+    saveFileSelect_saveSlots =
+        saveFileSelect_saveSlotsBase; /* retail draw path resets the working slot pointer to the base */
+    gameTextShowStr((char*)&saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex], 0x41, 0, 0);
+
+    sprintf(buf, sFrontendCompletionPercentFormat,
+            saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].completionPercent);
+    gameTextShowStr(buf, 0x42, 0, 0);
+
+    secs = saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].playTimeSeconds;
+    hours = secs / SECONDS_PER_HOUR;
+    rem = secs - hours * SECONDS_PER_HOUR;
+    minutes = rem / SECONDS_PER_MINUTE;
+    minutes = (u8)minutes; /* truncation must persist into the seconds remainder below */
+    seconds = rem - minutes * SECONDS_PER_MINUTE;
+    sprintf(buf, sFrontendTimeFormat, hours, (u32)(u8)minutes, (u32)(u8)seconds);
+    gameTextShowStr(buf, 0x43, 0, 0);
+
+    sprintf(buf, sFrontendSingleDigitFormat, saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].lifeCount);
+    gameTextShowStr(buf, 0x44, 0, 0);
+
+    sprintf(buf, sFrontendSingleDigitFormat, saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].magicCount);
+    gameTextShowStr(buf, 0x45, 0, 0);
+}
+
+/*
+ * dll_43 - save-select "confirm slot" action (companion to the save-select
+ * screen DLL 0x35).
+ *
+ * saveSelectSetSlot() is invoked from saveSelectScreen when the player
+ * confirms a slot. Slot 0 is the "back" choice: if a save already exists
+ * (lbl_803DB424) it returns to the choose-slot screen, otherwise it plays
+ * the rotation sfx, kicks off screen transition 0x14, and arms the
+ * pending-action flags (lbl_803DD6CC/CF). Any other slot starts a new
+ * game: it flags the choice, plays the confirm sfx, runs transition 0x14,
+ * tears down the four title-menu control sub-objects via vtable slot 7,
+ * and records the chosen value (lbl_803DD6C4).
+ *
+ * The lbl_803DD6xx / lbl_803DB424 state words are shared with DLL 0x35
+ * (its home TU); 0x23 here matches that TU's pending-action value.
+ */
+
+extern u8 lbl_803DD6C4;
+extern u8 lbl_803DD6CC;
+extern u8 lbl_803DD6CD;
+extern s8 lbl_803DD6CF;
+
+void saveSelectSetSlot(int slot, int value)
+{
+    if (slot == 0)
+    {
+        if (lbl_803DB424 != 0)
+        {
+            Sfx_PlayFromObject(0, SFXTRIG_menu_pause_down); /* back sfx (unnamed in sfx_ids.h) */
+            saveSelectGoToChooseSlot(0);
+        }
+        else
+        {
+            Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
+            (*gScreenTransitionInterface)->start(0x14, 5);
+            lbl_803DD6CF = 0x23;
+            lbl_803DD6CC = 1;
+        }
+    }
+    else
+    {
+        lbl_803DD6CD = 1;
+        Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up); /* confirm sfx (unnamed in sfx_ids.h) */
+        (*gScreenTransitionInterface)->start(0x14, 1);
+        gTitleMenuControlInterface->vtable->func0A(0);
+        gTitleMenuControlInterface->vtable->func0A(1);
+        gTitleMenuControlInterface->vtable->func0A(2);
+        gTitleMenuControlInterface->vtable->func0A(3);
+        lbl_803DD6CF = 0x23;
+        lbl_803DD6C4 = value;
+    }
+}
 
 u16 gSaveSelectSlotTextIds[4] = {0x23, 0x24, 0x25, 0};
 u8 gSaveSelectInfoTextIds[3] = {0x21, 0x20, 0x1F};
@@ -44,9 +225,6 @@ char sFrontendFoxName[] = "FOX";
 char sFrontendStringFormat[] = "%s";
 char lbl_803DBA20[4] = "";
 char sFrontendPercentFormat[] = "%d%";
-
-#define PAD_BUTTON_A 0x100
-#define PAD_BUTTON_B 0x200
 
 typedef enum SaveSelectPanelId
 {
@@ -99,11 +277,6 @@ extern u8 lbl_8031A7F8[];
 void saveSelectGoToChapterSelect(void);
 
 void* gSaveSelectTextBuffers[SAVE_SELECT_TEXT_BUFFER_COUNT];
-extern f32 lbl_803E1D64;
-extern f32 lbl_803E1D68;
-extern f32 lbl_803E1D6C;
-extern f32 gSaveSelectPositionScale;
-extern f32 lbl_803E1D74;
 extern void* lbl_803DD498;
 extern TitleMenuTextEntry lbl_8031A4B0[];
 extern TitleMenuTextEntry lbl_8031A564[];
@@ -411,16 +584,16 @@ void SaveSelectScreen_render(int param)
 
     panel = &gSaveSelectPanels[gSaveSelectPanelIndex];
     gameTextSetDrawFunc(titleScreenTextDrawFunc);
-    progress = (int)(lbl_803E1D64 - (*gScreenTransitionInterface)->getProgress());
+    progress = (int)(255.0f - (*gScreenTransitionInterface)->getProgress());
     if ((u8)progress < 0x80)
     {
         f32 conv = (f32)(int)((u8)progress * 0x86);
-        titleScreenPositionElements(lbl_803E1D68, lbl_803E1D6C - conv * gSaveSelectPositionScale);
+        titleScreenPositionElements(40.0f, 254.0f - conv * 0.0078125f);
         alpha = 0;
     }
     else
     {
-        titleScreenPositionElements(lbl_803E1D68, lbl_803E1D74);
+        titleScreenPositionElements(40.0f, 120.0f);
         transitionAlpha = ((u8)progress & 0x7f) * 2;
         alpha = transitionAlpha;
     }

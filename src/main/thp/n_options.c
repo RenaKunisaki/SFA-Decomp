@@ -48,13 +48,12 @@ static const GXColor sMovieKColor2 = {0xFF, 0x00, 0xFF, 0x80};
 #define S16_MIN               (-0x8000)
 #define S16_MAX               0x7fff
 
-extern s32 lbl_803DD660;               /* texture-set free queue active */
+s32 lbl_803DD660;                      /* texture-set free queue active */
 extern AIDCallback lbl_803DD668;       /* AI DMA done callback */
 extern s32 lbl_803DD66C;               /* DMA callback phase */
 extern u32 lbl_803DD670;               /* previous/pending DMA source addr */
 extern u32 lbl_803DD674;               /* queued next DMA source addr */
 extern u32 lbl_803DD678;               /* AI DMA double-buffer index */
-extern f32 lbl_803E1D50;               /* playback time accumulator */
 extern OSMessageQueue lbl_803A5CCC[1]; /* spent texture-set queue */
 
 u16 gAttractMovieVolumeScale[128] = {
@@ -508,7 +507,7 @@ int ProperTimingForGettingNextFrame(void)
     }
     else
     {
-        frame = (int)(lbl_803E1D50 * lbl_803A5D60.header.mFrameRate);
+        frame = (int)(100.0f * lbl_803A5D60.header.mFrameRate);
         if (VIGetTvFormat() == 1)
         {
             tick = lbl_803A5D60.retraceCount * frame;

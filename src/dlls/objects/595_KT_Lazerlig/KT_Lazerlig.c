@@ -8,6 +8,7 @@
  * (defaulting to 0x10 when set but zero), the second bit just keeps the
  * light lit. The light is freed when the object is destroyed.
  */
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/model_light.h"
@@ -89,3 +90,20 @@ void ktlazerlight_release(void)
 void ktlazerlight_initialise(void)
 {
 }
+
+ObjectDescriptor gKtLazerlightObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)ktlazerlight_initialise,
+    (ObjectDescriptorCallback)ktlazerlight_release,
+    0,
+    (ObjectDescriptorCallback)ktlazerlight_init,
+    (ObjectDescriptorCallback)ktlazerlight_update,
+    (ObjectDescriptorCallback)ktlazerlight_hitDetect,
+    (ObjectDescriptorCallback)ktlazerlight_render,
+    (ObjectDescriptorCallback)ktlazerlight_free,
+    (ObjectDescriptorCallback)ktlazerlight_getObjectTypeId,
+    ktlazerlight_getExtraSize,
+};

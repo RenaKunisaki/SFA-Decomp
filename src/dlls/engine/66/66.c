@@ -20,6 +20,7 @@
 #include "main/vecmath.h"
 #include "main/dll/dll_0042_unk.h"
 #include "dolphin/os.h"
+#include "main/resource.h"
 
 CamcontrolModeSettings* gCamcontrolModeSettings;
 f32 lbl_803DD52C;
@@ -32,45 +33,45 @@ u8 gCutCamBboxBlocked;
 #define CAMMODE_VIEWFINDER 0x44
 #define CAMMODE_COMBAT 0x49
 
-extern f32 lbl_803E1688;
-extern f32 lbl_803E168C;
-extern f32 lbl_803E1690;
-extern f32 lbl_803E1694;
-extern f32 lbl_803E16A0;
-extern f32 lbl_803E16A4;
-extern f32 lbl_803E16A8;
-extern f32 lbl_803E16AC;
-extern f32 lbl_803E16B0;
-extern f32 lbl_803E16B4;
-extern f32 lbl_803E16B8;
-extern f32 lbl_803E16BC;
-extern f32 lbl_803E16C0;
-extern f32 lbl_803E16C4;
-extern f32 lbl_803E16C8;
-extern f32 lbl_803E16CC;
-extern f32 lbl_803E16D8;
-extern f32 lbl_803E16DC;
-extern f32 lbl_803E16E0;
-extern f32 lbl_803E16E4;
-extern f32 lbl_803E16E8;
-extern f32 lbl_803E16EC;
-extern f32 lbl_803E16F0;
-extern f32 lbl_803E16F4;
-extern f32 lbl_803E1700;
-extern f32 lbl_803E1704;
-extern f32 lbl_803E1708;
-extern f32 lbl_803E170C;
-extern f32 gCamcontrolByteRateNormalizer;
-extern f32 lbl_803E1714;
-extern f32 lbl_803E1718;
-extern f32 lbl_803E171C;
-extern f32 lbl_803E1720;
-extern f32 lbl_803E1724;
-extern f32 lbl_803E1728;
-extern f32 lbl_803E172C;
-extern f32 lbl_803E1730;
-extern f32 lbl_803E1734;
-extern f32 lbl_803E1738;
+const f32 lbl_803E1688 = 4.0f;
+const f32 lbl_803E168C = 3.1415927f;
+const f32 lbl_803E1690 = 32768.0f;
+const f32 lbl_803E1694 = 5.0f;
+const f32 lbl_803E16A0 = 3.9f;
+const f32 lbl_803E16A4 = 1.0f;
+const f32 lbl_803E16A8 = 3.0f;
+const f32 lbl_803E16AC = 0.0f;
+const f32 lbl_803E16B0 = 500.0f;
+const f32 lbl_803E16B4 = 10.0f;
+const f32 lbl_803E16B8 = 100.0f;
+const f32 lbl_803E16BC = 1000.0f;
+const f32 lbl_803E16C0 = -1000.0f;
+const f32 lbl_803E16C4 = 0.9f;
+const f32 lbl_803E16C8 = 0.5f;
+const f32 lbl_803E16CC = -0.5f;
+const f32 lbl_803E16D8 = 25.0f;
+const f32 lbl_803E16DC = 30.0f;
+const f32 lbl_803E16E0 = 0.8f;
+const f32 lbl_803E16E4 = 0.05f;
+const f32 lbl_803E16E8 = -0.1f;
+const f32 lbl_803E16EC = -10.0f;
+const f32 lbl_803E16F0 = 35.0f;
+const f32 lbl_803E16F4 = 0.1f;
+const f32 lbl_803E1700 = 2.0f;
+const f32 lbl_803E1704 = 1.5f;
+const f32 lbl_803E1708 = 20.0f;
+const f32 lbl_803E170C = 0.25f;
+const f32 gCamcontrolByteRateNormalizer = 255.0f;
+const f32 lbl_803E1714 = 0.09f;
+const f32 lbl_803E1718 = 0.008f;
+const f32 lbl_803E171C = 0.2f;
+const f32 lbl_803E1720 = 0.055f;
+const f32 lbl_803E1724 = 70.0f;
+const f32 lbl_803E1728 = -0.707f;
+const f32 lbl_803E172C = 75.0f;
+const f32 lbl_803E1730 = 0.125f;
+const f32 lbl_803E1734 = 0.04f;
+const f32 lbl_803E1738 = 50.0f;
 
 int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
                          u8 runBbox, float radius)
@@ -1617,3 +1618,18 @@ void CameraModeNormal_initialise(void)
     gCamcontrolModeSettings = (CamcontrolModeSettings*)mmAlloc(sizeof(CamcontrolModeSettings), 0xf, 0);
     memset(gCamcontrolModeSettings, 0, sizeof(CamcontrolModeSettings));
 }
+
+ResourceDescriptorCallbacks12 lbl_80319B58 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x000b0000},
+    {(ResourceDescriptorCallback)CameraModeNormal_initialise,
+     (ResourceDescriptorCallback)CameraModeNormal_release,
+     0x00000000,
+     (ResourceDescriptorCallback)CameraModeNormal_init,
+     (ResourceDescriptorCallback)CameraModeNormal_update,
+     (ResourceDescriptorCallback)CameraModeNormal_free,
+     (ResourceDescriptorCallback)CameraModeNormal_copyToCurrent,
+     (ResourceDescriptorCallback)CameraModeNormal_follow,
+     (ResourceDescriptorCallback)firstperson_updatePitch,
+     (ResourceDescriptorCallback)camslide_update,
+     (ResourceDescriptorCallback)CameraModeNormal_func0A,
+     (ResourceDescriptorCallback)camcontrol_updateVerticalBounds}};

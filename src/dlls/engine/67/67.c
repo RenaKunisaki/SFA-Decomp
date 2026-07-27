@@ -17,6 +17,7 @@
 #include "main/mm.h"
 #include "main/dll/modgfx.h"
 #include "main/frame_timing.h"
+#include "main/resource.h"
 
 
 u8 camcontrol_samplePathState(f32* outX, f32* height, f32* outZ, GameObject* target, CameraObject* camera)
@@ -514,3 +515,14 @@ void CameraModeStaffAnim_release(void)
 void CameraModeStaffAnim_initialise(void)
 {
 }
+
+ResourceDescriptorCallbacks8 lbl_80319B98 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)CameraModeStaffAnim_initialise,
+     (ResourceDescriptorCallback)CameraModeStaffAnim_release,
+     0x00000000,
+     (ResourceDescriptorCallback)CameraModeStaffAnim_init,
+     (ResourceDescriptorCallback)camclimb_update,
+     (ResourceDescriptorCallback)camcontrol_releasePathState,
+     (ResourceDescriptorCallback)CameraModeStaffAnim_copyToCurrent,
+     0x00000000}};

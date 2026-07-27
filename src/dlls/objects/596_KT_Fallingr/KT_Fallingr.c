@@ -7,6 +7,7 @@
  * scattered within +/-200 units, plays the rockfall sfx, then clears the
  * bit so the burst only fires once per trigger.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/gamebits.h"
@@ -87,3 +88,20 @@ void ktfallingrocks_release(void)
 void ktfallingrocks_initialise(void)
 {
 }
+
+ObjectDescriptor gKtFallingrocksObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)ktfallingrocks_initialise,
+    (ObjectDescriptorCallback)ktfallingrocks_release,
+    0,
+    (ObjectDescriptorCallback)ktfallingrocks_init,
+    (ObjectDescriptorCallback)ktfallingrocks_update,
+    (ObjectDescriptorCallback)ktfallingrocks_hitDetect,
+    (ObjectDescriptorCallback)ktfallingrocks_render,
+    (ObjectDescriptorCallback)ktfallingrocks_free,
+    (ObjectDescriptorCallback)ktfallingrocks_getObjectTypeId,
+    ktfallingrocks_getExtraSize,
+};

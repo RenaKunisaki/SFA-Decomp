@@ -19,6 +19,7 @@
  * lbl_803A57C0 and the AttractMoviePlayer at lbl_803A5D60.
  */
 #include "global.h"
+#include "dolphin/ai.h"
 #include "dolphin/os.h"
 #include "dolphin/vi/vifuncs.h"
 #include "main/dll/FRONT/attract_movie.h"
@@ -85,9 +86,15 @@ enum
 extern OSMessageQueue lbl_803A5CCC;
 extern char lbl_803A57C0[];
 extern OSMessageQueue lbl_803A5CEC;
-extern OSMessage lbl_803DD67C;
 void InitAllMessageQueue(void);
 
+u8 gAttractMovieLoopCompleted;
+OSMessage lbl_803DD67C;
+u32 lbl_803DD678;
+u32 lbl_803DD674;
+u32 lbl_803DD670;
+s32 lbl_803DD66C;
+AIDCallback lbl_803DD668;
 static VIRetraceCallback OldVIPostCallback;
 
 static void PlayControl(u32 retraceCount)

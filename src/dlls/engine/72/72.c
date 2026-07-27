@@ -11,6 +11,7 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
+#include "main/resource.h"
 
 CameraModeStaticState* lbl_803DD558;
 
@@ -221,3 +222,14 @@ void CameraModeStatic_release(void)
 void CameraModeStatic_initialise(void)
 {
 }
+
+ResourceDescriptorCallbacks8 lbl_80319C58 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)CameraModeStatic_initialise,
+     (ResourceDescriptorCallback)CameraModeStatic_release,
+     0x00000000,
+     (ResourceDescriptorCallback)CameraModeStatic_init,
+     (ResourceDescriptorCallback)CameraModeStatic_update,
+     (ResourceDescriptorCallback)CameraModeStatic_free,
+     (ResourceDescriptorCallback)CameraModeStatic_copyToCurrent,
+     0x00000000}};

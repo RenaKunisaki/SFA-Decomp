@@ -11,6 +11,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_0046_cameramodedebug.h"
 #include "main/pad.h"
+#include "main/resource.h"
 
 CameraModeDebugState* gCamDebugState;
 
@@ -128,3 +129,14 @@ void CameraModeDebug_release_nop(void)
 void CameraModeDebug_initialise_nop(void)
 {
 }
+
+ResourceDescriptorCallbacks8 lbl_80319C28 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)CameraModeDebug_initialise_nop,
+     (ResourceDescriptorCallback)CameraModeDebug_release_nop,
+     0x00000000,
+     (ResourceDescriptorCallback)CameraModeDebug_init,
+     (ResourceDescriptorCallback)CameraModeDebug_update,
+     (ResourceDescriptorCallback)CameraModeDebug_free,
+     (ResourceDescriptorCallback)CameraModeDebug_copyToCurrent_nop,
+     0x00000000}};

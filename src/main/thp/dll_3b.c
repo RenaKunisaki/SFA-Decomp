@@ -1,3 +1,11 @@
+#include "main/dll/FRONT/dll_3B.h"
+#include "dolphin/os.h"
+#include "dolphin/thp/THPAudio.h"
+#include "main/dll/FRONT/picmenu.h"
+#include "dolphin/os/OSMessage.h"
+#include "dolphin/os/OSThread.h"
+#include "main/audio_decode_thread.h"
+
 /*
  * dll_3b (FRONT 0x3B) - attract-movie audio decode thread support.
  *
@@ -15,12 +23,6 @@
  * buffers from picmenu's reader queue. AudioDecodeThreadStart/
  * AudioDecodeThreadCancel are the resume/cancel hooks used by dll_3e.
  */
-#include "main/dll/FRONT/dll_3B.h"
-#include "dolphin/os.h"
-#include "dolphin/thp/THPAudio.h"
-#include "main/dll/FRONT/picmenu.h"
-#include "dolphin/os/OSMessage.h"
-#include "dolphin/os/OSThread.h"
 
 /* THP frame-component type id for the audio track (vs 0 = video). */
 #define THP_FRAME_COMP_AUDIO 1
@@ -31,9 +33,11 @@
  */
 #define THP_FRAME_HEADER_SIZE 8
 
+AttractMovieAudioMessageStorage gAttractMovieAudioDecodeContext;
 OSMessageQueue gAttractMovieDecodedAudioQueue;
 AttractMovieFreeQueueAndStack gAttractMovieFreeAudioQueueAndStack;
 AttractMovieDecodeThread gAttractMovieAudioDecodeThread;
+s32 gAttractMovieAudioThreadActive;
 
 void* PopDecodedAudioBuffer(int flags)
 {
@@ -154,4 +158,50 @@ void AudioDecodeThreadStart(void)
     {
         OSResumeThread(&gAttractMovieAudioDecodeThread.thread);
     }
+}
+
+typedef struct AttractMovieAudioDecodeLayout
+{
+    AttractMovieAudioMessageStorage messages;
+    OSMessageQueue decodedQueue;
+    AttractMovieFreeQueueAndStack freeQueueAndStack;
+    AttractMovieDecodeThread decodeThread;
+} AttractMovieAudioDecodeLayout;
+
+STATIC_ASSERT(offsetof(AttractMovieAudioDecodeLayout, decodedQueue) == 0x18);
+STATIC_ASSERT(offsetof(AttractMovieAudioDecodeLayout, freeQueueAndStack) == 0x38);
+STATIC_ASSERT(offsetof(AttractMovieAudioDecodeLayout, decodeThread) == 0x1058);
+STATIC_ASSERT(sizeof(AttractMovieAudioDecodeLayout) == 0x1378);
+
+BOOL CreateAudioDecodeThread(OSPriority priority, void* param)
+{
+    AttractMovieAudioDecodeLayout* context[1];
+    context[0] = (AttractMovieAudioDecodeLayout*)&gAttractMovieAudioDecodeContext;
+
+    if (param != NULL)
+    {
+        if (OSCreateThread(&context[0]->decodeThread.thread, AudioDecoderForOnMemory, param,
+                           context[0]->freeQueueAndStack.threadStack +
+                               ARRAY_COUNT(context[0]->freeQueueAndStack.threadStack),
+                           sizeof(context[0]->freeQueueAndStack.threadStack), priority, 1) == 0)
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        if (OSCreateThread(&context[0]->decodeThread.thread, AudioDecoder, NULL,
+                           context[0]->freeQueueAndStack.threadStack +
+                               ARRAY_COUNT(context[0]->freeQueueAndStack.threadStack),
+                           sizeof(context[0]->freeQueueAndStack.threadStack), priority, 1) == 0)
+        {
+            return 0;
+        }
+    }
+    OSInitMessageQueue(&context[0]->freeQueueAndStack.queue, context[0]->messages.free,
+                       ARRAY_COUNT(context[0]->messages.free));
+    OSInitMessageQueue(&context[0]->decodedQueue, context[0]->messages.decoded,
+                       ARRAY_COUNT(context[0]->messages.decoded));
+    gAttractMovieAudioThreadActive = 1;
+    return 1;
 }

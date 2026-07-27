@@ -29,6 +29,7 @@
 #include "string.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/dll/player_api.h"
+#include "main/resource.h"
 
 ViewfinderState* lbl_803DD548;
 
@@ -737,3 +738,14 @@ void CameraModeViewfinder_release(void)
 void CameraModeViewfinder_initialise(void)
 {
 }
+
+ResourceDescriptorCallbacks8 lbl_80319BF8 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)CameraModeViewfinder_initialise,
+     (ResourceDescriptorCallback)CameraModeViewfinder_release,
+     0x00000000,
+     (ResourceDescriptorCallback)CameraModeViewfinder_init,
+     (ResourceDescriptorCallback)CameraModeViewfinder_update,
+     (ResourceDescriptorCallback)CameraModeViewfinder_free,
+     (ResourceDescriptorCallback)CameraModeViewfinder_copyToCurrent,
+     0x00000000}};

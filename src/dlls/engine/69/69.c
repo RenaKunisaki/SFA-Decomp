@@ -12,6 +12,7 @@
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/player_api.h"
+#include "main/resource.h"
 
 CameraModeBikeState* gCamTalkBikeState;
 #define CAM_TALK_DEFAULT_FOV 85.0f
@@ -155,3 +156,14 @@ void CameraModeBike_release(void)
 void CameraModeBike_initialise(void)
 {
 }
+
+ResourceDescriptorCallbacks8 lbl_80319BC8 = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)CameraModeBike_initialise,
+     (ResourceDescriptorCallback)CameraModeBike_release,
+     0x00000000,
+     (ResourceDescriptorCallback)CameraModeBike_init,
+     (ResourceDescriptorCallback)CameraModeBike_update,
+     (ResourceDescriptorCallback)CameraModeBike_free,
+     (ResourceDescriptorCallback)CameraModeBike_copyToCurrent,
+     0x00000000}};

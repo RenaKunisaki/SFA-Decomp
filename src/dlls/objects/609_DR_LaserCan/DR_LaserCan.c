@@ -647,3 +647,20 @@ void DR_LaserCannon_release(void)
 void DR_LaserCannon_initialise(void)
 {
 }
+
+ObjectDescriptor gDrLaserCannonObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)DR_LaserCannon_initialise,
+    (ObjectDescriptorCallback)DR_LaserCannon_release,
+    0,
+    (ObjectDescriptorCallback)DR_LaserCannon_init,
+    (ObjectDescriptorCallback)DR_LaserCannon_update,
+    (ObjectDescriptorCallback)DR_LaserCannon_hitDetect,
+    (ObjectDescriptorCallback)DR_LaserCannon_render,
+    (ObjectDescriptorCallback)DR_LaserCannon_free,
+    (ObjectDescriptorCallback)DR_LaserCannon_getObjectTypeId,
+    DR_LaserCannon_getExtraSize,
+};

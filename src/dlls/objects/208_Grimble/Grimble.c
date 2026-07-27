@@ -835,6 +835,15 @@ void grimble_initialiseStateHandlerTables(void) {
     gGrimbleStateHandlersB[5] = grimble_stateHandlerB05;
 }
 
+int gGrimbleHitReactionMoves[30] = {
+    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+};
+
+u8 gGrimbleHitReactionDamage[32] = {
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0,   0,
+};
+
 ObjectDescriptor gGrimbleObjDescriptor = {
     0,
     0,

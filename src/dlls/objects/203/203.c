@@ -464,4 +464,32 @@ void dll_CB_initialise(void) {
     gDllCBStateHandlers[5] = dll_CB_stateHandler5;
 }
 
+int gDllCBHitReactionMoves[30] = {
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+};
+
+u8 gDllCBHitReactionDamage[32] = {
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0,   0,
+};
+
+ObjectDescriptor12 gDllCBObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
+    (ObjectDescriptorCallback)dll_CB_initialise,
+    (ObjectDescriptorCallback)dll_CB_release,
+    0,
+    (ObjectDescriptorCallback)dll_CB_init,
+    (ObjectDescriptorCallback)dll_CB_update,
+    (ObjectDescriptorCallback)dll_CB_hitDetect,
+    (ObjectDescriptorCallback)dll_CB_render,
+    (ObjectDescriptorCallback)dll_CB_free,
+    (ObjectDescriptorCallback)dll_CB_getObjectTypeId,
+    dll_CB_getExtraSize,
+    (ObjectDescriptorCallback)dll_CB_setScale,
+    (ObjectDescriptorCallback)dll_CB_handleMessage,
+};
+
 const f32 lbl_803E2EAC = 0.0f;

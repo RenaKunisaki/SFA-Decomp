@@ -42,7 +42,6 @@
 #include "game/objects/object_setup.h"
 #include "main/vecmath_distance_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/dll/DR/dll_0265_drcreator.h"
 #include "main/vecmath.h"
 
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
@@ -440,21 +439,3 @@ void kytesmum_initialise(void)
 }
 
 char sKytesMumYawDiffMessage[] = " YAW DIFF ";
-
-/* DLL 613's descriptor is pooled in DLL 614's data. */
-ObjectDescriptor gDrCreatorObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DR_Creator_initialise,
-    (ObjectDescriptorCallback)DR_Creator_release,
-    0,
-    (ObjectDescriptorCallback)DR_Creator_init,
-    (ObjectDescriptorCallback)DR_Creator_update,
-    (ObjectDescriptorCallback)DR_Creator_hitDetect,
-    (ObjectDescriptorCallback)DR_Creator_render,
-    (ObjectDescriptorCallback)DR_Creator_free,
-    (ObjectDescriptorCallback)DR_Creator_getObjectTypeId,
-    DR_Creator_getExtraSize,
-};

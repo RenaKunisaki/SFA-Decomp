@@ -18,31 +18,22 @@
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "main/gametext_color_api.h"
 
-extern u16 gEnterSaveNameColorAnimTime;
-extern u32 lbl_803DD6DC;
-extern f32 gEnterSaveNameScrollPos;
-extern u8 gEnterSaveNameLength;
 extern u16 gEnterSaveNameCharTextIds[];
-extern f32 lbl_803E1D80;
-extern f32 lbl_803E1D84;
-extern f32 lbl_803E1D88;
-extern f32 lbl_803E1D8C;
-extern f32 lbl_803E1D90;
-extern f32 lbl_803E1D94;
-extern f32 lbl_803E1D98;
-extern f32 lbl_803E1D9C;
-
 
 s32 gEnterSaveNameCharWidths[40];
 s32 gEnterSaveNameCharOffsets[40];
-extern f32 lbl_803DD6D0;
-extern f32 gEnterSaveNameTargetScrollVel;
-extern u8 gEnterSaveNameAutoScrolling;
-extern u32 gEnterSaveNameTotalWidth;
-extern u8 lbl_803DD6EC;
-extern u8 lbl_803DD6ED;
-extern char gEnterSaveNameBuffer[4];
-extern s32 gEnterSaveNameSelectedIndex;
+f32 lbl_803DD6D0;
+f32 gEnterSaveNameTargetScrollVel;
+u16 gEnterSaveNameColorAnimTime;
+u8 gEnterSaveNameAutoScrolling;
+u32 lbl_803DD6DC;
+f32 gEnterSaveNameScrollPos;
+s32 gEnterSaveNameSelectedIndex;
+u32 gEnterSaveNameTotalWidth;
+u8 lbl_803DD6EC;
+u8 lbl_803DD6ED;
+char gEnterSaveNameBuffer[4];
+u8 gEnterSaveNameLength;
 
 #define gEnterSaveNameScrollVelocity lbl_803DD6D0
 #define gEnterSaveNameScrollWrapOffset lbl_803DD6DC
@@ -55,8 +46,8 @@ void EnterSaveNameScreen_render(void)
 
     buf[1] = 0;
     gameTextSetDrawFunc(nameEntryTextDrawFunc);
-    titleScreenPositionElements(lbl_803E1D80, lbl_803E1D84);
-    nameEntrySetScroll((int)(gEnterSaveNameScrollPos + lbl_803DD6DC - lbl_803E1D88), 0);
+    titleScreenPositionElements(40.0f, 120.0f);
+    nameEntrySetScroll((int)(gEnterSaveNameScrollPos + lbl_803DD6DC - 8.0f), 0);
     gameTextBoxFn_80134d40(0xff, 1, 1);
     gameTextSetColor(0xc0, 0xc0, 0xc0, 0xff);
     gameTextShow(0x3ae);
@@ -72,9 +63,9 @@ void EnterSaveNameScreen_render(void)
 
     gEnterSaveNameColorAnimTime = gEnterSaveNameColorAnimTime + timeDelta;
 
-    gameTextSetColor((int)(mathSinf(lbl_803E1D94 * gEnterSaveNameColorAnimTime) * lbl_803E1D90 + lbl_803E1D8C),
-                        (int)(mathSinf(lbl_803E1D98 * gEnterSaveNameColorAnimTime) * lbl_803E1D90 + lbl_803E1D8C),
-                        (int)(mathSinf(lbl_803E1D9C * gEnterSaveNameColorAnimTime) * lbl_803E1D90 + lbl_803E1D8C),
+    gameTextSetColor((int)(mathSinf(0.17259522f * gEnterSaveNameColorAnimTime) * 128.0f + 127.0f),
+                        (int)(mathSinf(0.14382935f * gEnterSaveNameColorAnimTime) * 128.0f + 127.0f),
+                        (int)(mathSinf(0.11506347f * gEnterSaveNameColorAnimTime) * 128.0f + 127.0f),
                         0xff);
 
     i = gEnterSaveNameSelectedIndex;

@@ -48,6 +48,18 @@
 #include "main/pad.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/ship_battle_api.h"
+#include "main/dll/dll_0255_snowbike.h"
+
+void SB_CloudRunner_onSeqFree(GameObject* obj)
+{
+    SnowBikeState* state = obj->extra;
+    state->riderPosX = obj->anim.localPosX;
+    state->riderPosY = obj->anim.localPosY;
+    state->riderPosZ = obj->anim.localPosZ;
+    state->riderYawOnFree = (s16)(obj->anim.rotX - 0x4000);
+    state->riderPitchOnFree = obj->anim.rotZ;
+}
+
 
 typedef struct WCPushBlockObjectSetup
 {
