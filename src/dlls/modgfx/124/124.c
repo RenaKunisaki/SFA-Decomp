@@ -1,5 +1,5 @@
 /*
- * DLL 0x7C (foodbag family, func03 slot): builds a fixed FbBuf command
+ * DLL 124 / 0x7C (foodbag family, func03 slot): builds a fixed FbBuf command
  * list describing a multi-layer modgfx effect and spawns it via
  * gModgfxInterface->spawnEffect. The 6 variants (0-5) select the
  * sprite scale of the second command and the spawn offset (buf.pos),
@@ -13,14 +13,14 @@
 #include "main/dll/fb_cmd.h"
 #include "main/dll/foodbag.h"
 #include "main/dll/dll_007C_dll7cfunc0.h"
-
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL7C_EFFECT_ID 0x2e
-
 #include "main/dll/dll_007D_dll7dfunc0.h"
 #include "main/dll/dll_007E_dll7efunc0.h"
 #include "main/dll/dll_007F_dll7ffunc0.h"
 #include "main/dll/dll_0080_dll80func0.h"
+
+/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
+#define DLL7C_EFFECT_ID 0x2e
+
 u8 gFoodbagEffectResourceTable[] = {
     0x00, 0x00, 0x00, 0x00, 0x03, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x03, 0x62, 0x00, 0x00, 0x01, 0xF4, 0x00, 0x0B, 0x00,
     0x00, 0x03, 0x62, 0x00, 0x00, 0xFE, 0x0C, 0x00, 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFC, 0x18, 0x00, 0x20,
@@ -393,4 +393,3 @@ u8 lbl_80315770[520] = {
     0,   20,  0,   40,  0,   20,  0,   0,   0,   0,   0,   0,   0,   0};
 void* lbl_80315978[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
                          dll_82_func00_nop, dll_82_func01_nop, (void*)0x00000000, dll_82_func03};
-
