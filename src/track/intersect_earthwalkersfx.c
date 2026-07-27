@@ -333,9 +333,99 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
     }
 }
 
-void waterFxSetDisabled(int disabled);
+void waterFxSetDisabled(int disabled)
+{
+    int i;
+    SplashQuad* quads;
+    RippleEntry* ripples;
 
-void waterFxInit(void);
+    gWaterFxDisabled = disabled;
+    if (disabled != 0)
+    {
+        return;
+    }
+    quads = gWaterSplashQuads;
+    ripples = gWaterRipples;
+    for (i = 0; i < 32; i++)
+    {
+        quads[i * 8].alpha = 0;
+        ripples[i * 8].alpha = 0;
+        quads[i * 8 + 1].alpha = 0;
+        ripples[i * 8 + 1].alpha = 0;
+        quads[i * 8 + 2].alpha = 0;
+        ripples[i * 8 + 2].alpha = 0;
+        quads[i * 8 + 3].alpha = 0;
+        ripples[i * 8 + 3].alpha = 0;
+        quads[i * 8 + 4].alpha = 0;
+        ripples[i * 8 + 4].alpha = 0;
+        quads[i * 8 + 5].alpha = 0;
+        ripples[i * 8 + 5].alpha = 0;
+        quads[i * 8 + 6].alpha = 0;
+        ripples[i * 8 + 6].alpha = 0;
+        quads[i * 8 + 7].alpha = 0;
+        ripples[i * 8 + 7].alpha = 0;
+    }
+    gWaterQuadWriteIdx = 0;
+    gWaterRippleWriteIdx = 0;
+}
+
+void waterFxInit(void)
+{
+    int i;
+    WaterFxState* waterFx = (WaterFxState*)gWaterFxState;
+    SplashQuad* quads = waterFx->quads;
+    RippleEntry* ripples = waterFx->ripples;
+
+    for (i = 0; i < 16; i++)
+    {
+        quads[0].alpha = 0;
+        ripples[0].alpha = 0;
+        quads[1].alpha = 0;
+        ripples[1].alpha = 0;
+        quads[2].alpha = 0;
+        ripples[2].alpha = 0;
+        quads[3].alpha = 0;
+        ripples[3].alpha = 0;
+        quads[4].alpha = 0;
+        ripples[4].alpha = 0;
+        quads[5].alpha = 0;
+        ripples[5].alpha = 0;
+        quads[6].alpha = 0;
+        ripples[6].alpha = 0;
+        quads[7].alpha = 0;
+        ripples[7].alpha = 0;
+        quads[8].alpha = 0;
+        ripples[8].alpha = 0;
+        quads[9].alpha = 0;
+        ripples[9].alpha = 0;
+        quads[10].alpha = 0;
+        ripples[10].alpha = 0;
+        quads[11].alpha = 0;
+        ripples[11].alpha = 0;
+        quads[12].alpha = 0;
+        ripples[12].alpha = 0;
+        quads[13].alpha = 0;
+        ripples[13].alpha = 0;
+        quads[14].alpha = 0;
+        ripples[14].alpha = 0;
+        quads[15].alpha = 0;
+        ripples[15].alpha = 0;
+        quads += 16;
+        ripples += 16;
+    }
+    waterFx->textures[0] = textureLoadAsset(0x19);
+    waterFx->textures[1] = textureLoadAsset(0x18);
+    waterFx->textures[2] = textureLoadAsset(0x1A);
+    waterFx->textures[3] = textureLoadAsset(0x646);
+    waterFx->scales[0] = lbl_803DEE5C;
+    waterFx->scales[1] = lbl_803DEE60;
+    waterFx->scales[2] = lbl_803DEE60;
+    waterFx->scales[3] = lbl_803DEE64;
+    gWaterFxDisabled = 0;
+    gWaterQuadWriteIdx = 0;
+    gWaterRippleWriteIdx = 0;
+    lbl_803DCFF4 = 0;
+}
 
 /* Queues a GXPeekZ read at (x,y) tagged by an opaque requestKey (callers pass
  * any unique value - object ptrs, loop indices, even a function address) and

@@ -296,10 +296,10 @@ track/intersect.c:
 	.sbss       start:0x803DCFF0 end:0x803DD040
 
 track/intersect_earthwalkersfx.c:
-	.text       start:0x8006F950 end:0x8006FC00
+	.text       start:0x8006F950 end:0x8006FDF8
 
 track/intersect_render.c:
-	.text       start:0x8006FC00 end:0x8007CF7C
+	.text       start:0x8006FDF8 end:0x8007CF7C
 	.rodata     start:0x802C1EA8 end:0x802C1F80
 
 track/intersect_texsetup.c:
