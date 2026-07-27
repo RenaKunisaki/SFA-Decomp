@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/78/78.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "dlls/engine/79/79.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/80/80.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/81/81.c", cflags=cflags_dll_noopt),
@@ -1505,7 +1506,6 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_004A_cameramodeshipbattle.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "main/dll/dll_004C_camDebug.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_004D_cameramodenpcspeak.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/dll/dll_004E_cameramodeworldmap.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(NonMatching, "main/dll/dll_0019_dll19func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0032_titlescreeninit.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0033_nrareware.c", cflags=cflags_dll_noopt),

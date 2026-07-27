@@ -1,21 +1,5 @@
 /*
- * DLL 0x004E - camera mode: world map.
- *
- * The world-map camera follows a focus object across the planet map. Its
- * state (CameraModeWorldMapState, allocated lazily in _init via gCamWorldMapState)
- * tracks the orbit distance/velocity, a settle counter and a focus-blend
- * timer. _copyToCurrent feeds the mode byte and focus-object id from the
- * map UI; _update runs one of two cameras keyed on that mode:
- *   mode 0: free overview - C-stick yaws/pitches the orbit, L/R (button bits
- *           4/8) zoom, distance eased between gCamWorldMapDistanceMin..gCamWorldMapDistanceMax, and
- *           a focus blend slews the camera toward the focus object.
- *   mode 1: locked path camera aimed from a fixed pitch, also driving the
- *           map marker/reticle object (0x43077) and widescreen offset.
- * Both modes orbit around the map reference object (0x42fff): mode 0 blends
- * the focus toward it, mode 1 aims the path camera from it.
- * Each frame _update also points the compass marker (0x431dc) and fades the
- * highlight object (0x4325b) by view angle. A 0xC-class screen transition
- * gates entry to each mode.
+ * DLL 78 / 0x4E - world-map camera mode.
  */
 #include "main/mm.h"
 #include "main/resource.h"
@@ -33,9 +17,8 @@
 CameraModeWorldMapState* gCamWorldMapState;
 
 
-/* CameraModeWorldMapState.mode: which world-map camera _update runs */
-#define WORLDMAP_CAMERA_FREE_OVERVIEW 0 /* C-stick orbit + focus blend */
-#define WORLDMAP_CAMERA_LOCKED_PATH   1 /* fixed-pitch path camera + map marker */
+#define WORLDMAP_CAMERA_FREE_OVERVIEW 0
+#define WORLDMAP_CAMERA_LOCKED_PATH   1
 
 #define PAD_BUTTON_DOWN 0x004
 #define PAD_BUTTON_UP   0x008

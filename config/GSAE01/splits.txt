@@ -1192,7 +1192,7 @@ main/dll/dll_004D_cameramodenpcspeak.c:
 	.sbss       start:0x803DD580 end:0x803DD588
 	.sdata2     start:0x803E19D0 end:0x803E1A24
 
-main/dll/dll_004E_cameramodeworldmap.c:
+dlls/engine/78/78.c:
 	.text       start:0x8010E51C end:0x8010F2F8
 	.data       start:0x80319E08 end:0x80319E38
 	.sbss       start:0x803DD588 end:0x803DD590

@@ -121,7 +121,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x04B | — | NO-RETAIL-NAME | main/dll/dll_004B_cameramodeclimb.c | = (canonical) | — |
 | 0x04C | — | NO-RETAIL-NAME | main/dll/dll_004C_camDebug.c | = (canonical) | — |
 | 0x04D | — | NO-RETAIL-NAME | main/dll/dll_004D_cameramodenpcspeak.c | = (canonical) | — |
-| 0x04E | — | NO-RETAIL-NAME | main/dll/dll_004E_cameramodeworldmap.c | = (canonical) | — |
+| 0x04E | — | NO-RETAIL-NAME | dlls/engine/78/78.c | = (canonical) | — |
 | 0x04F | — | NO-RETAIL-NAME | dlls/engine/79/79.c | = (canonical) | — |
 | 0x050 | — | NO-RETAIL-NAME | dlls/engine/80/80.c | = (canonical) | — |
 | 0x051 | — | NO-RETAIL-NAME | dlls/engine/81/81.c | = (canonical) | — |
