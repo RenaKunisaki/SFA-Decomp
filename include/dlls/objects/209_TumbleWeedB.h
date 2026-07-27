@@ -7,19 +7,22 @@
 
 struct TumbleweedState;
 
+#define TUMBLEWEED_BUSH_PIECE_CAPACITY 3
+
 typedef struct TumbleweedBushState {
-    f32 scale;                   /* 0x00 */
-    u8 pad04[4];                 /* 0x04 */
-    u16 triggerRadius;           /* 0x08 */
-    u8 pad0A[2];                 /* 0x0A */
-    GameObject* pieceObjects[4]; /* 0x0C */
-    f32 pieceOffsets[3][3];      /* 0x1C */
-    u8 pad40[0x4C - 0x40];       /* 0x40 */
-    u8 variant;                  /* 0x4C */
-    u8 pad4D;                    /* 0x4D */
-    u16 spawnedCount;            /* 0x4E */
-    u8 pieceCount;               /* 0x50 */
-    u8 pad51[0x54 - 0x51];       /* 0x51 */
+    f32 scale;                                                /* 0x00 */
+    u8 pad04[4];                                              /* 0x04 */
+    u16 triggerRadius;                                        /* 0x08 */
+    u8 pad0A[2];                                              /* 0x0A */
+    GameObject* pieceObjects[TUMBLEWEED_BUSH_PIECE_CAPACITY]; /* 0x0C */
+    u8 pad18[4];                                              /* 0x18 */
+    f32 pieceOffsets[TUMBLEWEED_BUSH_PIECE_CAPACITY][3];      /* 0x1C */
+    u8 pad40[0x4C - 0x40];                                    /* 0x40 */
+    u8 variant;                                               /* 0x4C */
+    u8 pad4D;                                                 /* 0x4D */
+    u16 spawnedCount;                                         /* 0x4E */
+    u8 pieceCount;                                            /* 0x50 */
+    u8 pad51[0x54 - 0x51];                                    /* 0x51 */
 } TumbleweedBushState;
 
 typedef struct TumbleweedBushPlacement {
@@ -36,6 +39,7 @@ typedef struct TumbleweedBushPlacement {
 STATIC_ASSERT(offsetof(TumbleweedBushState, scale) == 0x0);
 STATIC_ASSERT(offsetof(TumbleweedBushState, triggerRadius) == 0x8);
 STATIC_ASSERT(offsetof(TumbleweedBushState, pieceObjects) == 0xC);
+STATIC_ASSERT(offsetof(TumbleweedBushState, pad18) == 0x18);
 STATIC_ASSERT(offsetof(TumbleweedBushState, pieceOffsets) == 0x1C);
 STATIC_ASSERT(offsetof(TumbleweedBushState, variant) == 0x4C);
 STATIC_ASSERT(offsetof(TumbleweedBushState, spawnedCount) == 0x4E);

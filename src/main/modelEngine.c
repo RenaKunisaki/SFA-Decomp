@@ -63,6 +63,7 @@
 #include "dlls/objects/264_EndObject.h"
 #include "dlls/objects/265.h"
 #include "dlls/objects/266_Fall_Ladder.h"
+#include "dlls/objects/267_FireFlyLant.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -206,7 +207,7 @@ extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescrip
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
     gExplodableObjDescriptor, gExplodeAnimatorObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
-    gFXEmitObjDescriptor, gFireFlyLanternObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
+    gFXEmitObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor,
     gFuelCellObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
@@ -1214,7 +1215,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gEndObjectObjDescriptor,
     (ResourceDescriptor*)&gBreakableCarryableObjDescriptor,
     (ResourceDescriptor*)&gFall_LaddersObjDescriptor,
-    &gFireFlyLanternObjDescriptor,
+    (ResourceDescriptor*)&gFireFlyLanternObjDescriptor,
     &gLanternFireFlyObjDescriptor,
     (ResourceDescriptor*)&gPortalSpellDoorObjDescriptor,
     &gDeathSeqObjDescriptor,

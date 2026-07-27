@@ -122,6 +122,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 - Size placement/setup structs from active-target evidence such as a direct `Obj_AllocObjectSetup`
   allocation or retail romlist width, not from the last field accessed by the TU or donor-project
   padding. Assert the proven total size as well as every recovered field offset.
+- Size struct arrays from evidenced indices or explicit runtime capacity, not merely from the gap
+  to the next known field. If the code caps a six-element child list and the next field is eight
+  words later, model six elements plus an unknown trailing word; do not invent a seventh child to
+  consume the offset.
 - Include an object's canonical header at direct consumers instead of repeating hand-written
   declarations. Where a generic registry intentionally stores differently shaped descriptor
   types, use an explicit cast at that boundary rather than lying about the descriptor's type in an

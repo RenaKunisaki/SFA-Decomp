@@ -43,7 +43,6 @@
 #define TUMBLEWEED_BUSH_SIBLING_D            0x4c1
 #define TUMBLEWEED_BUSH_OBJECT_GROUP         0x31
 #define TUMBLEWEED_BUSH_MAX_SIBLINGS         7
-#define TUMBLEWEED_BUSH_PIECE_COUNT          3
 #define TUMBLEWEED_BUSH_SIBLING_SETUP_SIZE   0x20
 #define TUMBLEWEED_BUSH_SIBLING_SETUP_FLAGS  5
 #define TUMBLEWEED_BUSH_ACTIVE_PIECE_PHASE   7
@@ -292,11 +291,11 @@ void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, in
     case TUMBLEWEED_BUSH_SEQUENCE_A:
     case TUMBLEWEED_BUSH_SEQUENCE_C:
     case TUMBLEWEED_BUSH_SEQUENCE_D:
-        state->pieceCount = TUMBLEWEED_BUSH_PIECE_COUNT;
+        state->pieceCount = TUMBLEWEED_BUSH_PIECE_CAPACITY;
         offsetTableIndex = 0;
         break;
     case TUMBLEWEED_BUSH_SEQUENCE_B:
-        state->pieceCount = TUMBLEWEED_BUSH_PIECE_COUNT;
+        state->pieceCount = TUMBLEWEED_BUSH_PIECE_CAPACITY;
         offsetTableIndex = 1;
         break;
     }
