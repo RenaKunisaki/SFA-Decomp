@@ -984,7 +984,7 @@ blocked units will surface more when carved.
 
 | dll | current unit | header |
 |---|---|---|
-| 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/main/dll/dll_017B_dfshlaserbeam.h |
+| 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/dlls/objects/379_DFSH_LaserB.h |
 | 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/main/dll/dll_019F_nwtreebrid.h |

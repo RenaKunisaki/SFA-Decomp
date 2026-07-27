@@ -577,7 +577,7 @@ enum GameBitId {
     GAMEBIT_ITEM_MMPKey_Used = 0x453,                    /* table 2; hint 299; ref moonpass/HitAnimator target */
     GAMEBIT_CF_ObjGroups = 0x458,                        /* table 3; size 32 */
     GAMEBIT_CT_ObjGroups = 0x45A,                        /* table 3; size 32 */
-    GAMEBIT_TRICKYCURVE_PLAYER_HIT = 0x468,              /* Hard-coded, area-agnostic "TrickyCurve" hazard-trigger hit-while-sliding signal: set by DFP_ForceAw/DFSH_LaserBeam/the generic laserbeam when the player enters the trigger box in the sliding anim state (0x1d7) instead of taking a normal hit; polled and cleared by the generic bone-particle-effect module, which arms a particle timer and plays an SFXsc_mumble01 reaction */
+    GAMEBIT_TRICKYCURVE_PLAYER_HIT = 0x468,              /* Hard-coded, area-agnostic "TrickyCurve" hazard-trigger hit-while-sliding signal: set by DFP_ForceAw/DFSH_LaserB/the generic laserbeam when the player enters the trigger box in the sliding anim state (0x1d7) instead of taking a normal hit; polled and cleared by the generic bone-particle-effect module, which arms a particle timer and plays an SFXsc_mumble01 reaction */
     GAMEBIT_DBSH_ObjGroups = 0x473,                      /* table 3; size 32 */
     GAMEBIT_GM_ObjGroups = 0x47B,                        /* table 3; size 32 */
     GAMEBIT_CD_ObjGroups = 0x47C,                        /* table 3; size 32 */

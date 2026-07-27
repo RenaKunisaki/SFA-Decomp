@@ -468,7 +468,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x177 | gDll177ObjDescriptor | 801C281C-801C2910 | 801C26E0-801C2914 | 801C2824 (main/dll/DF/dll_198.c \| main/dll/DF/dll_199.c); 801C282C (main/dll/DF/dll_199.c \| main/dll/DF/DFlantern.c) | Y | DFSH_Door2S,DFSH_Door3S,DFSH_Door4S |
 | 0x178 | gDFSHShrineObjDescriptor | 801C2DC4-801C3614 | 801C2914-801C3618 | 801C2E68 (main/dll/DF/DFlantern.c \| main/dll/dll_19C.c) | Y | DFSH_Shrine |
 | 0x179 | gDFSHObjCreatorObjDescriptor | 801C3B68-801C3E38 | 801C3B68-801C3E3C | 801C3BB0 (main/dll/dll_19C.c \| main/dll/dll_19E.c) | Y | DFSH_ObjCre |
-| 0x17B | gDFSH_LaserBeamObjDescriptor | 801C3E3C-801C4660 | 801C3E3C-801C4664 | 801C3EB8 (main/dll/dll_19E.c \| main/dll/creator19D.c) | Y | DFSH_LaserB |
+| 0x17B | gDFSHLaserBeamObjDescriptor | 801C3E3C-801C4660 | 801C3E3C-801C4664 | 801C3EB8 (main/dll/dll_19E.c \| main/dll/creator19D.c) | Y | DFSH_LaserB |
 | 0x18C | gMMSH_ShrineObjDescriptor | 801C4D78-801C539C | 801C4664-801C53A0 | 801C52D8 (main/dll/laser19F.c \| main/dll/mmshrine/shrine.c) | Y | MMSH_Shrine |
 | 0x18F | gECSH_ShrineObjDescriptor | 801C5E78-801C6E08 | 801C5990-801C6E0C | 801C5ED8 (main/dll/mmshrine/animobj1C0.c \| main/dll/mmshrine/torch1C1.c); 801C60B8 (main/dll/mmshrine/torch1C1.c \| main/dll/mmshrine/shrine1C2.c) | Y | ECSH_Shrine |
 | 0x192 | gGPSH_ShrineObjDescriptor | 801C75A8-801C8080 | 801C70F0-801C8084 | 801C7724 (main/dll/mmshrine/shrine1C2.c \| main/dll/creator1C4.c) | Y | GPSH_Shrine |
