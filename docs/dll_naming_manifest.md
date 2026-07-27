@@ -139,7 +139,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x05D | — | NO-RETAIL-NAME | main/dll/dll_005D_dll5dfunc0.c | = (canonical) | — |
 | 0x05E | — | NO-RETAIL-NAME | main/dll/dll_005E_dll5efunc0.c | = (canonical) | — |
 | 0x05F | — | NO-RETAIL-NAME | main/dll/dll_005F_dll5ffunc0.c | = (canonical) | — |
-| 0x060 | — | NO-RETAIL-NAME | main/dll/dll_0060_dll60func0.c | = (canonical) | — |
+| 0x060 | — | NO-RETAIL-NAME | dlls/modgfx/96/96.c | = (canonical) | — |
 | 0x061 | — | NO-RETAIL-NAME | dlls/modgfx/97/97.c | = (canonical) | — |
 | 0x062 | — | NO-RETAIL-NAME | dlls/modgfx/98/98.c | = (canonical) | — |
 | 0x063 | — | NO-RETAIL-NAME | dlls/modgfx/99/99.c | = (canonical) | — |

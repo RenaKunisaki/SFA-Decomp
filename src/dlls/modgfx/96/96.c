@@ -1,16 +1,10 @@
 /*
- * dll_0060 (gameplay/save-progress DLL) - a thin gameplay-effect DLL
- * exporting three object hooks. func01/func00 are empty no-op slots;
+ * DLL 96 / 0x60 - a thin gameplay-effect DLL exporting three object
+ * hooks. func01/func00 are empty no-op slots;
  * func03 builds a thirteen-command modgfx effect list on the stack
  * (texture/blend modes from the lbl_803E083x/4x float constants and the
  * lbl_80312790 resource blob) and submits it through
  * gModgfxInterface->spawnEffect.
- *
- * The save/cheat helpers (saveFileStruct_unlockCheat / isCheatUnlocked /
- * saveFileStruct_resetVolumes / getSaveFileStruct / loadSaveSettings)
- * that mainDol drift-duplicated into the dll_005E..dll_007B gameplay DLL
- * family live in dll_0015_curves (their retail home); the retail dll_0060
- * object carries only func03/func01/func00.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
@@ -19,12 +13,6 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0060_dll60func0.h"
-
-enum
-{
-    SAVEGAME_EMPTY_TASK_HINT = -1,
-    SAVEGAME_DEFAULT_VOLUME = 0x7f,
-};
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL60_EFFECT_ID 0x46
