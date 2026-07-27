@@ -1,61 +1,48 @@
-/*
- * CFMagicWall (DLL 0x162) - magic wall at CF (CloudRunner Fortress).
- * While the placement's game bit is set, fades the wall by viewing
- * angle and distance: invisible from behind (|yaw delta| > 1/4 turn),
- * otherwise alpha ramps from 0 up to full over the placement's range
- * using the nearer of player distance and camera distance.
- */
-#include "main/dll/CF/dll_0162_cfmagicwall.h"
-#include "main/object_render.h"
-#include "main/obj_query.h"
-#include "main/gamebits.h"
-#include "sys/objects.h"
+/* View-dependent magic wall in CloudRunner Fortress. */
+
+#include "dlls/objects/354_CFMagicWall.h"
+
 #include "main/camera.h"
-#include "main/vecmath.h"
+#include "main/gamebits_api.h"
+#include "main/obj_query.h"
+#include "main/object_render.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
-/* a quarter turn: the wall is invisible when viewed from behind */
-#define CFMAGICWALL_SIDE_ANGLE 0x4000
+#define CFMAGICWALL_MAX_VISIBLE_YAW 0x4000
 
-int cfmagicwall_getExtraSize(void)
-{
-    return 0x0;
+int cfmagicwall_getExtraSize(void) {
+    return 0;
 }
 
-int cfmagicwall_getObjectTypeId(void)
-{
-    return 0x0;
+int cfmagicwall_getObjectTypeId(void) {
+    return 0;
 }
 
-void cfmagicwall_free(void)
-{
+void cfmagicwall_free(void) {
 }
 
-void cfmagicwall_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void cfmagicwall_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 }
 
-void cfmagicwall_hitDetect(void)
-{
+void cfmagicwall_hitDetect(void) {
 }
 
-void cfmagicwall_update(GameObject* obj)
-{
-    CfMagicWallSetup* setup = (CfMagicWallSetup*)obj->anim.placementData;
+void cfmagicwall_update(GameObject* obj) {
+    CfMagicWallPlacement* placement = (CfMagicWallPlacement*)obj->anim.placementData;
     GameObject* player = Obj_GetPlayerObject();
-    u8 alpha = 0xff;
+    u8 alpha = 0xFF;
 
-    if (mainGetBit(setup->visibleGameBit) != 0)
-    {
+    if (mainGetBit(placement->visibleGameBit) != 0) {
         int yaw = (s16)Obj_GetYawDeltaToObject(obj, player, NULL);
 
         yaw = (yaw >= 0) ? yaw : -yaw;
 
-        if (yaw > CFMAGICWALL_SIDE_ANGLE)
-        {
-            (obj)->anim.alpha = 0;
+        if (yaw > CFMAGICWALL_MAX_VISIBLE_YAW) {
+            obj->anim.alpha = 0;
             return;
         }
 
@@ -63,44 +50,37 @@ void cfmagicwall_update(GameObject* obj)
             f32 playerDistance;
             f32 range;
             f32 fadeDistance;
-            range = (f32)(s32)setup->fadeRange;
+            range = (f32)(s32)placement->fadeRange;
             playerDistance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
-            fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,
-                                                                (obj)->anim.localPosZ);
+            fadeDistance =
+                Camera_DistanceToCurrentViewPosition(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ);
 
-            if (fadeDistance < playerDistance)
-            {
-                fadeDistance = Camera_DistanceToCurrentViewPosition((obj)->anim.localPosX, (obj)->anim.localPosY,
-                                                                    (obj)->anim.localPosZ);
-            }
-            else
-            {
+            if (fadeDistance < playerDistance) {
+                fadeDistance =
+                    Camera_DistanceToCurrentViewPosition(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ);
+            } else {
                 fadeDistance = playerDistance;
             }
 
-            if (fadeDistance < range)
-            {
+            if (fadeDistance < range) {
                 alpha = 255.0f * (fadeDistance / range);
             }
 
-            (obj)->anim.alpha = alpha;
+            obj->anim.alpha = alpha;
         }
     }
 }
 
-void cfmagicwall_init(GameObject* obj, CfMagicWallSetup* setup)
-{
-    s8 v = setup->rotX;
+void cfmagicwall_init(GameObject* obj, CfMagicWallPlacement* placement) {
+    s8 v = placement->rotXByte;
     s16 t = v << 8;
     obj->anim.rotX = t;
 }
 
-void cfmagicwall_release(void)
-{
+void cfmagicwall_release(void) {
 }
 
-void cfmagicwall_initialise(void)
-{
+void cfmagicwall_initialise(void) {
 }
 
 ObjectDescriptor gCFMagicWallObjDescriptor = {
