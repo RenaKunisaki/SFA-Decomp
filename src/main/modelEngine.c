@@ -128,6 +128,7 @@
 #include "dlls/objects/330_CFPowerBase.h"
 #include "dlls/objects/331_CFMainCryst.h"
 #include "dlls/objects/332.h"
+#include "dlls/objects/333_LaserBeam.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -371,7 +372,7 @@ extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_803230F8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
 extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
-extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0, lbl_803DBE00, lbl_803DBE50;
+extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0, lbl_803DBE00;
 extern ResourceDescriptor lbl_803DBE60, lbl_803DBE68, lbl_803DBE70, lbl_803DBEA0, lbl_803DBEA8, lbl_803DBEB0,
     lbl_803DBEB8, lbl_803DBEC0;
 extern ResourceDescriptor lbl_803DBEC8, lbl_803DBEE0, lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138,
@@ -1322,7 +1323,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFPowerBaseObjDescriptor,
     (ResourceDescriptor*)&gCFMainCrystalObjDescriptor,
     (ResourceDescriptor*)&gBabyCloudRunnerObjDescriptor,
-    &lbl_803DBE50,
+    (ResourceDescriptor*)&gLaserBeamNullResourceDescriptor,
     &gCFPrisonGuardObjDescriptor,
     &gCFPrisonUncleObjDescriptor,
     &gGCRobotLightBeaObjDescriptor,
