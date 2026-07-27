@@ -8,6 +8,12 @@
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 
+enum {
+    DBSH_GAMEBIT_SYMBOL_RISE_COMPLETE = 0x16A,
+    DBSH_GAMEBIT_SYMBOL_SPIN_SUCCEEDED = 0x16B,
+    DBSH_GAMEBIT_SYMBOL_SPIN_FAILED = 0x16C,
+};
+
 typedef struct DBSHShrinePlacement {
     ObjPlacement base;
     u8 unknown18[0x0C];
