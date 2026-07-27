@@ -756,7 +756,7 @@ main/dll/dll_0079_dll79func0.c:
 	.sdata      start:0x803DB8D8 end:0x803DB8E0
 	.sdata2     start:0x803E0CB0 end:0x803E0D08
 
-main/dll/dll_007A_dll7afunc0.c:
+dlls/modgfx/122/122.c:
 	.text       start:0x800F3CD0 end:0x800F4174
 	.sdata2     start:0x803E0D08 end:0x803E0D38
 

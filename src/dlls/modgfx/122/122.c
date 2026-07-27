@@ -1,5 +1,5 @@
 /*
- * dll7afunc0 (DLL 0x7A) - a model-fx command-list spawner stub DLL.
+ * DLL 122 / 0x7A - a model-fx command-list spawner stub DLL.
  *
  * dll_7A_func03 builds a GfxCmd array on the stack from the shared
  * lbl_80314BD0 resource block and hands it to
