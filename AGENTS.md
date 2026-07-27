@@ -119,6 +119,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   unreferenced, so source-only ownership and matching values are not enough. Keep the automatic
   gap until the original ownership model is recoverable; after any claim, verify generated section
   size, symbols, bytes, relocations, and the final DOL.
+- Preserve a packed TU-owned diagnostic or string block when splitting it into unreferenced named
+  `const` arrays makes MWCC migrate bytes between `.data` and `.rodata`. Give the backing block a
+  semantic name and recover a typed offset view instead, then verify section sizes and contents.
 - Size placement/setup structs from active-target evidence such as a direct `Obj_AllocObjectSetup`
   allocation or retail romlist width, not from the last field accessed by the TU or donor-project
   padding. Assert the proven total size as well as every recovered field offset.
