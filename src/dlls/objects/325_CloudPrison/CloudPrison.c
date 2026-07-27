@@ -51,7 +51,6 @@ enum
     CPMSG_UNREGISTER = 0xf0008 /* member -> controller: remove */
 };
 
-extern f32 lbl_803E4108; /* render scale */
 int lbl_803DDB0C; /* cached rom-curve handle */
 s8 lbl_803DDB09;  /* registered-target list count */
 s8 lbl_803DDB08;  /* deferred-message queue count */
@@ -77,7 +76,7 @@ void CloudPrisonControl_render(GameObject* obj, int p2, int p3, int p4, int p5, 
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4108);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void CloudPrisonControl_hitDetect(void)

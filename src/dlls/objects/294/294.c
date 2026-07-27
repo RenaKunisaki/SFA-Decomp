@@ -94,8 +94,6 @@ const f32 lbl_803E40F8 = 55.4256f;
 const f32 lbl_803E40FC = 14.0f;
 const f32 lbl_803E4100 = 0.1f;
 const f32 lbl_803E4104 = 200.0f;
-const f32 lbl_803E4108 = 1.0f;
-const f32 lbl_803E410C = 0.0f;
 
 typedef struct MmpTriggerPlaneState
 {
