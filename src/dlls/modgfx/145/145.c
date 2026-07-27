@@ -1,5 +1,5 @@
 /*
- * DLL 0x91 - func0 object. Holds the "func00"/"func01" no-op slots plus
+ * DLL 145 / 0x91. Holds the func00/func01 no-op slots plus
  * dll_91_func03, which assembles a fixed 19-entry modgfx command list (one
  * GfxCmd per sub-effect: per-layer texture, draw mode, and a position scale
  * triple) into a stack ModgfxSpawnPacket, optionally biases the spawn position by the
@@ -13,11 +13,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/dll_0091_dll91func0.h"
-
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL91_EFFECT_ID 0x45
-
-extern u8 gDll91Func0ResourceBlob[];
 #include "main/dll/dll_0092_dll92func0.h"
 #include "main/dll/dll_0093_dll93func0.h"
 #include "main/dll/dll_0094_dll94func0.h"
@@ -33,6 +28,11 @@ extern u8 gDll91Func0ResourceBlob[];
 #include "main/dll/dll_009C_dll9cfunc0.h"
 #include "main/dll/dll_009D_dll9dfunc0.h"
 #include "main/dll/dll_009E_dll9efunc0.h"
+
+/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
+#define DLL91_EFFECT_ID 0x45
+
+extern u8 gDll91Func0ResourceBlob[];
 
 u8 gDll91Func0Tex[8] = {0, 0x0A, 0, 0x0C, 0, 0x0E, 0, 0x10};
 
