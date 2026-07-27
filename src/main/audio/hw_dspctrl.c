@@ -12,6 +12,7 @@ extern u8 salMaxStudioNum;
 #include "dolphin/os.h"
 #include "dolphin/os/OSCache.h"
 #include "string.h"
+#include "main/audio/sal_studio.h"
 
 DSPstudioinfo dspStudio[8];
 DSPvoice* voices[64];

@@ -28,6 +28,7 @@
 #include "main/audio/stream_api.h"
 #include "main/audio/audio_control_api.h"
 #include "dolphin/dvd.h"
+#include "main/table_file.h"
 
 extern char sMemoryCardFileNameString[];
 

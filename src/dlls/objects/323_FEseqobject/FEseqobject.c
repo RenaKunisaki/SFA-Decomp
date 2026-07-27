@@ -19,6 +19,7 @@
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/obj_group.h"
 
 /* anim-event opcodes consumed by FEseqobject_SeqFn */
 enum

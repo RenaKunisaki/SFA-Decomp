@@ -15,6 +15,7 @@
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
 #include "main/dll/foodbag.h"
+#include "main/vecmath.h"
 
 extern s16 lbl_80316020[];
 

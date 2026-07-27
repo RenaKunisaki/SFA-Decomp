@@ -37,6 +37,8 @@
 #include "main/frame_timing.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/player_api.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 /*
  * Placement record written for each spawned villager/"orb" object

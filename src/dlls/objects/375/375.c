@@ -12,6 +12,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "game/objects/object_setup.h"
+#include "main/dll/DF/DFlantern.h"
 
 typedef struct DFSHDoor2SpeciPlacement
 {

@@ -9,6 +9,8 @@
 #include "main/audio/synth_virtual_sample.h"
 #include "main/audio/synth_channel_scale.h"
 #include "main/audio/snd_core.h"
+#include "main/audio/sal_ai.h"
+#include "main/audio/snd3d.h"
 
 extern u8 salTimeOffset;
 extern u8 salNumVoices;

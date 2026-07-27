@@ -75,6 +75,12 @@
 #include "dolphin/ai.h"
 #include "main/lightmap.h"
 #include "string.h"
+#include "dolphin/os/OSCache.h"
+#include "dolphin/os/OSReboot.h"
+#include "dolphin/os/OSReset.h"
+#include "dolphin/os/OSRtc.h"
+#include "dolphin/vi/vifuncs.h"
+#include "main/dll/player_api.h"
 
 
 extern u8 framesThisStep;

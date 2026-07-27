@@ -19,6 +19,7 @@
 #include "main/dll/kooshy.h"
 #include "main/dll/magicPlant.h"
 #include "main/dll/baddie_frozen.h"
+#include "sys/objects.h"
 
 
 #define MAGICPLANT_OBJFLAG_PARENT_SLACK 0x1000

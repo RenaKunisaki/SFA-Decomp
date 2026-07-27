@@ -15,6 +15,8 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_018E_mmshwaterspike.h"
 #include "dlls/object_descriptor.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 #define MMSHWATERSPIKE_HIT_VOLUME_SLOT 9
 #define MMSHWATERSPIKE_NO_RISE -9999.0f

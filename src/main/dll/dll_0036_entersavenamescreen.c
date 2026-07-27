@@ -18,6 +18,7 @@
 #include "main/gameloop_api.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 #include "main/dll/dll_0035_saveselectscreen.h"
+#include "main/gametext_color_api.h"
 
 extern u16 gEnterSaveNameColorAnimTime;
 extern u32 lbl_803DD6DC;

@@ -25,6 +25,7 @@
 #include "main/obj_query.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_004D_cameramodenpcspeak.h"
+#include "main/vecmath.h"
 
 CameraModeNpcSpeakState* gCameraModeNpcSpeakState;
 f32 gCameraModeNpcSpeakMode6AnchorLerpScale;

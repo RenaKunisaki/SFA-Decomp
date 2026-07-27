@@ -24,6 +24,7 @@
 #include "main/dll/WC/dll_0297_wctemplebri.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx/vec.h"
 
 #define WCTEMPLEBRI_EXTRA_SIZE        0x68
 #define WCTEMPLEBRI_RENDER_TYPE_BASE  0x400

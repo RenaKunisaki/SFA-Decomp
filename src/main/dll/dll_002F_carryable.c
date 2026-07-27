@@ -30,6 +30,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
+#include "main/obj_message.h"
 
 #define PAD_BUTTON_A              0x100
 #define CARRYABLE_MSG_PLAYER_GRAB 0x100008 /* tells player to grab/hold the prop */

@@ -5,6 +5,7 @@
 #include "main/audio/synth_config.h"
 #undef NAN
 #include "dolphin/math.h"
+#include "main/audio/snd3d.h"
 
 
 void sndQuit(void)

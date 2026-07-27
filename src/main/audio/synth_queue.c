@@ -4,6 +4,8 @@
 #include "main/audio/inp_midi.h"
 #include "main/audio/voice_manage.h"
 #include "main/audio/synth_queue.h"
+#include "main/audio/synth_callback.h"
+#include "main/audio/synth_channel_scale.h"
 
 typedef union SynthSeqRuntime
 {

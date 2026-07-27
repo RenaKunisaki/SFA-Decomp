@@ -9,6 +9,11 @@
 #include "main/mm.h"
 #include "main/dll/dll_3e_api.h"
 #include "main/pi_dolphin.h"
+#include "dolphin/os/OSCache.h"
+#include "dolphin/thp/THPDraw.h"
+#include "dolphin/thp/THPPlayer.h"
+#include "main/dll/FRONT/picmenu.h"
+#include "main/map_load.h"
 
 extern char sNAttractModeStringBlock[];
 

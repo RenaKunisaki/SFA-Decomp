@@ -28,6 +28,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/gametext_color_api.h"
 
 #define DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define DIMLEVELCONTROL_OBJFLAG_HIDDEN 0x4000

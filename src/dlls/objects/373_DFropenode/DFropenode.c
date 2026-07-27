@@ -28,6 +28,7 @@
 #include "string.h"
 #include "track/intersect_api.h"
 #include "game/objects/object_setup.h"
+#include "dolphin/mtx/vec.h"
 
 #define DFBARREL_SWAY_LIMIT          0x32
 #define DFBARREL_SWAY_DIR_INCREASING 1

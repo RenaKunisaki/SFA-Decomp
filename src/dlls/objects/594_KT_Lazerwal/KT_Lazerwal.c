@@ -26,6 +26,8 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0252_ktlazerwall.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/mm.h"
 
 void ktrexfloorswitch_spawnEnergyArc(GameObject* obj, f32 scale, int angle)
 {

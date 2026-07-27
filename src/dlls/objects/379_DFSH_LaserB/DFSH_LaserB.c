@@ -28,6 +28,7 @@
 #include "game/objects/object_setup.h"
 #include "main/dll/dll_017B_dfshlaserbeam.h"
 #include "main/dll/foodbag.h"
+#include "main/dll/dll_19E.h"
 
 typedef struct DFSHLaserBeamConfig
 {

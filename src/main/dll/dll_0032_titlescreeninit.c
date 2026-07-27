@@ -30,6 +30,7 @@
 #include "main/fileio.h"
 #include "main/sky.h"
 #include "track/intersect_hud_api.h"
+#include "main/gametext_color_api.h"
 
 f32 lbl_803DD5F4;
 s8 gTitleScreenInitFrameStartPending;

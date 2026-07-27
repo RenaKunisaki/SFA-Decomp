@@ -14,6 +14,7 @@
 #include "main/gamebit_ids.h"
 #include "main/dll/CC/dll_018A_ccpedstal.h"
 #include "dlls/object_descriptor.h"
+#include "main/obj_trigger.h"
 
 #define CCPEDSTAL_GAMEBIT_ALT_GATE         0xDC5
 #define CCPEDSTAL_GAMEBIT_ALT_PEDESTAL     0xAA

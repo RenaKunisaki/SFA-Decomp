@@ -42,6 +42,7 @@
 #include "dolphin/os/OSCache.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
+#include "main/audio/synth_callback.h"
 
 const MusicSeqStartParams gMusicSeqStartParamsDefault = {
     4, {0xFFFFFFFF, 0xFFFFFFFF}, 0x100, {0, 0x7F}, 0, NULL, 0, NULL};

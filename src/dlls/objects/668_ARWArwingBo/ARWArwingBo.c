@@ -29,6 +29,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
+#include "sys/objects/lifecycle.h"
 
 #define ARWARWINGBO_OBJGROUP        0x52
 #define ARWARWINGBO_PARTFX          0x79e

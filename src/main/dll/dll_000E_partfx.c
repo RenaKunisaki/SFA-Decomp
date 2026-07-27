@@ -24,6 +24,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_000E_partfx.h"
 #include "main/dll/dll_001B_effect2.h"
+#include "main/vecmath.h"
 
 extern u8 lbl_80380209[];
 

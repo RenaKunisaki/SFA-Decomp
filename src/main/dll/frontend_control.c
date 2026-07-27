@@ -23,6 +23,7 @@
 #include "main/pad.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "dolphin/pad.h"
+#include "main/gametext_color_api.h"
 
 #define CHEAT_SEQUENCE_LEN  5
 #define CHEAT_INPUT_TIMEOUT 0xF

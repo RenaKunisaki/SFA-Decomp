@@ -13,6 +13,8 @@
 #include "main/gamebits.h"
 #include "main/dll/dll_0269_explodeplan.h"
 #include "dlls/object_descriptor.h"
+#include "main/object_render.h"
+#include "main/objhits.h"
 
 int explodeplan_getExtraSize(void)
 {

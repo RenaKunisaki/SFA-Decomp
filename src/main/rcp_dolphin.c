@@ -52,6 +52,7 @@
 #include "main/pi_dolphin_texture_api.h"
 #include "main/gx_scissor_api.h"
 #include "string.h"
+#include "dolphin/gx/GXCull.h"
 
 u8 gRcpDistortSlotIndex;
 u8 gRcpDistortGroup;

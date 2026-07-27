@@ -32,6 +32,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_legacy_api.h"
 
 
 int wcfloortile_getExtraSize(void)

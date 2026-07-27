@@ -44,6 +44,7 @@
 #include "main/objprint_anim_api.h"
 #include "main/objprint_character_api.h"
 #include "main/dll/dll_00C9_enemy.h"
+#include "main/pad.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
 int gDIMSnowHorn1StateHandlers[12];

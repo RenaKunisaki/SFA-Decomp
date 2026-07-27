@@ -24,6 +24,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/dll/dll_19C.h"
 
 extern u8 lbl_803DB411;
 

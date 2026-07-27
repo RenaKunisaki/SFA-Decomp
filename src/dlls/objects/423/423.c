@@ -24,6 +24,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/NW/dll_01A7_ediblemushroom.h"
+#include "main/vecmath.h"
 
 #define EDIBLEMUSHROOM_OBJFLAG_HIDDEN       0x4000
 #define EDIBLEMUSHROOM_OBJFLAG_PARENT_SLACK 0x1000

@@ -64,6 +64,7 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_geom_api.h"
 #include "track/intersect_render_setup_api.h"
+#include "main/dll/DR/DRcradle.h"
 
 const u32 lbl_803E5AE0 = 0x05050505;
 const GXColor lbl_803E5AE4 = {0x20, 0x20, 0x20, 0x80};
@@ -716,13 +717,13 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
                     -(lbl_803E5B2C * timeDelta - ((DRCloudCageState*)state)->channel2Vol);
             }
         }
-        if (((DRCloudCageState*)state)->channel2Vol > *(f32*)&lbl_803E5B08)
+        if (((DRCloudCageState*)state)->channel2Vol > lbl_803E5B08)
         {
-            ((DRCloudCageState*)state)->channel2Vol = *(f32*)&lbl_803E5B08;
+            ((DRCloudCageState*)state)->channel2Vol = lbl_803E5B08;
         }
-        if (((DRCloudCageState*)state)->channel2Vol < *(f32*)&lbl_803E5B30)
+        if (((DRCloudCageState*)state)->channel2Vol < lbl_803E5B30)
         {
-            ((DRCloudCageState*)state)->channel2Vol = *(f32*)&lbl_803E5B30;
+            ((DRCloudCageState*)state)->channel2Vol = lbl_803E5B30;
         }
         channelVol = ((DRCloudCageState*)state)->channel2Vol;
         ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol * lbl_803E5B38 + lbl_803E5B34);
@@ -738,13 +739,13 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
                     -(lbl_803E5AF8 * timeDelta - ((DRCloudCageState*)state)->channel4Vol);
             }
         }
-        if (((DRCloudCageState*)state)->channel4Vol > *(f32*)&lbl_803E5B40)
+        if (((DRCloudCageState*)state)->channel4Vol > lbl_803E5B40)
         {
-            ((DRCloudCageState*)state)->channel4Vol = *(f32*)&lbl_803E5B40;
+            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B40;
         }
-        if (((DRCloudCageState*)state)->channel4Vol < *(f32*)&lbl_803E5B44)
+        if (((DRCloudCageState*)state)->channel4Vol < lbl_803E5B44)
         {
-            ((DRCloudCageState*)state)->channel4Vol = *(f32*)&lbl_803E5B44;
+            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B44;
         }
         channelVol4 = ((DRCloudCageState*)state)->channel4Vol;
         ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol4, channelVol4 / lbl_803E5B48);
@@ -811,7 +812,7 @@ f32 fn_801EA678(GameObject* obj, int state)
             d = (d >= lbl_803E5AE8) ? d : -d;
             if (d > gDrCloudCageRouteDistGate)
             {
-                result = *(f32*)&lbl_803E5AE8;
+                result = lbl_803E5AE8;
             }
         }
     }
@@ -888,9 +889,9 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
                            ? lbl_803E5AE8
                            : (((fade - lbl_803E5B10) > lbl_803E5B08) ? lbl_803E5B08 : (fade - lbl_803E5B10)));
     }
-    if (fade < *(f32*)&lbl_803E5AE8)
+    if (fade < lbl_803E5AE8)
     {
-        fade = *(f32*)&lbl_803E5AE8;
+        fade = lbl_803E5AE8;
     }
 
     hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->collider, fade, s->colliderMode, 1, 0);
@@ -1708,7 +1709,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         }
     }
     {
-        f32 fz = *(f32*)&lbl_803E5AE8;
+        f32 fz = lbl_803E5AE8;
         ((DRPickupState*)state)->localOffsetX = fz;
         ((DRPickupState*)state)->localOffsetY = fz;
     }

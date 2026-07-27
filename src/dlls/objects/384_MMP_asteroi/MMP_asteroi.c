@@ -31,6 +31,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/MMP/dll_0180_mmpasteroidre.h"
 #include "dlls/object_descriptor.h"
+#include "main/pad_api.h"
 
 STATIC_ASSERT(sizeof(MmpAsteroidReState) == 0x1C);
 

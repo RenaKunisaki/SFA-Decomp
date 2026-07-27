@@ -24,6 +24,7 @@
 #include "main/acosf_api.h"
 #include "main/render_internal.h"
 #include "string.h"
+#include "main/vecmath.h"
 
 int gModelTabEntryCount;
 s16* gModelResourceBuffer;

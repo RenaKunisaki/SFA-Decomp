@@ -57,6 +57,8 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "track/intersect_api.h"
 #include "track/intersect_depth_read_api.h"
+#include "dolphin/gx/GXFifo.h"
+#include "dolphin/os/OSThread.h"
 
 static u32 sPiUnused3;
 void* lbl_803DCD10;

@@ -19,6 +19,7 @@
 #include "main/dll/DIM/dll_01D9_dim2prisonmammoth.h"
 #include "main/player_control_interface.h"
 #include "main/object_render.h"
+#include "main/audio/sfx_play_legacy_api.h"
 
 #define DIM2PRISONMAMMOTH_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define PAD_BUTTON_A                                 0x100

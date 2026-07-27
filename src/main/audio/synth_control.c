@@ -1,5 +1,7 @@
 #include "main/audio/sal_dsp.h"
 #include "src/main/audio/synth_internal.h"
+#include "main/audio/synth_channel.h"
+#include "main/audio/synth_queue.h"
 
 void sndSeqStop(u32 handle)
 {

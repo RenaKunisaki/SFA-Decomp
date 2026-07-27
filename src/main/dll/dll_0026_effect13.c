@@ -9,6 +9,7 @@
 #include "main/dll/waterfx_interface.h"
 #include "main/audio/sfx.h"
 #include "main/dll/dll_0026_effect13.h"
+#include "main/vecmath.h"
 
 WaterfxCfg gEffect13DefaultSplashParams;
 

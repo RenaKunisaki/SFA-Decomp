@@ -17,6 +17,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0254_ktfallingrocks.h"
+#include "main/audio/sfx_play_legacy_api.h"
 
 int ktfallingrocks_getExtraSize(void)
 {

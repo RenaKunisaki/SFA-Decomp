@@ -51,6 +51,7 @@
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx/mtx_legacy.h"
+#include "main/lightmap.h"
 
 u8 colorFilterColor[4] = {0xFF, 0x70, 0x40, 0};
 u8 colorScale = 0xFF;

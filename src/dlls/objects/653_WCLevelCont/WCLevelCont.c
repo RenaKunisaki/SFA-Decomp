@@ -21,6 +21,9 @@
 #include "main/objseq.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 #define WCLEVELCONT_OBJGROUP 0x9
 

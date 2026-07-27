@@ -29,6 +29,7 @@
 #include "main/dll/dll_0166_exploded.h"
 #include "main/dll/IM/IMspacecraft.h"
 #include "main/dll/MMP/dll_017E_mmplevelcontrol.h"
+#include "main/gamebits_api.h"
 
 STATIC_ASSERT(sizeof(DrExplodableChunk) == 0x70);
 

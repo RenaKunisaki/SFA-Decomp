@@ -34,6 +34,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx/vec.h"
 
 void Obj_SteerVelocityTowardVector(GameObject* obj, Vec3f* currentVelocity, Vec3f* desiredDirection, f32 maxSpeed,
                                    f32 maxSpeedDelta, f32 maxTurnAngle)

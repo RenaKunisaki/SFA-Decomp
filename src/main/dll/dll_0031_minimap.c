@@ -47,6 +47,8 @@
 #include "main/textrender_api.h"
 #include "main/pause_menu_api.h"
 #include "main/dll/dll_003F_dll3f.h"
+#include "main/gametext_color_api.h"
+#include "dlls/objects/291_fuelCell.h"
 
 u8 gMinimapEnabled = 1;
 s8 gMinimapSavedViewMode = -1;
@@ -67,9 +69,6 @@ int gMinimapPrevAreaNameId = -1;
 f32 gMinimapWorldToTexScale = 0.08f;
 
 #define CAMMODE_VIEWFINDER 0x44 /* dll_0044_cameramodeviewfinder */
-
-/* group owned by another DLL, queried here */
-#define FUELCELL_OBJGROUP 0x4f /* DLL 0x123 fuelcell */
 
 #define MINIMAP_OBJFLAG_PARENT_SLACK 0x1000
 
@@ -951,7 +950,8 @@ void Minimap_frameStart(void)
                     Sfx_StopFromObject(0, SFXTRIG_pda_compassbeep_3f0);
                     gMinimapZoomSfxActive = 0;
                 }
-                gMinimapRadarTarget = (GameObject*)ObjGroup_FindNearestObject(FUELCELL_OBJGROUP, (GameObject*)player, &dist);
+                gMinimapRadarTarget =
+                    (GameObject*)ObjGroup_FindNearestObject(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
                 if ((void*)gMinimapRadarTarget != NULL)
                 {
                     if (dist < gMinimapBlipNearDist)

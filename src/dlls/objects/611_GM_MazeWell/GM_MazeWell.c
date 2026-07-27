@@ -28,6 +28,7 @@
 #include "main/objseq.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0263_gmmazewell.h"
+#include "main/object_render.h"
 
 #define PAD_BUTTON_A 0x100
 

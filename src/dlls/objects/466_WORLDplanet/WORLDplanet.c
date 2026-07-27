@@ -33,6 +33,8 @@
 #include "main/pause_menu_api.h"
 #include "main/fsin16_approx_api.h"
 #include "main/fcos16_approx_api.h"
+#include "main/frame_timing.h"
+#include "main/vecmath.h"
 
 #define WORLDPLANET_SKY_LIGHT_MASK  7
 #define WORLDPLANET_SKY_COLOR_SCALE 0x40

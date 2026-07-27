@@ -20,6 +20,7 @@
 #include "main/sky_api.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/DR/dll_024F_ktrexlevel.h"
+#include "main/lightmap_render_control_api.h"
 
 int lbl_803DDD40;
 

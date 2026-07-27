@@ -22,6 +22,7 @@
 #include "main/vecmath.h"
 #include "main/audio/sfx.h"
 #include "dlls/object_descriptor.h"
+#include "sys/objects.h"
 
 #define CFMAINCRYSTAL_PYLON_FRAMES 0x78 /* beam hold time once reported */
 #define CFMAINCRYSTAL_CHARGE_START 0x5A /* charge frames granted by 0x57 */

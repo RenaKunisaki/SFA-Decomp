@@ -34,6 +34,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/voxmaps.h"
 #include "main/dll/dll_0069_dll69func0.h"
+#include "main/dll/cup1C3.h"
 
 typedef struct Cup197State
 {

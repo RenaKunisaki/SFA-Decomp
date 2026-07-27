@@ -8,19 +8,6 @@ extern void* gDREarthWarriorStateHandlers[];
 extern void* gDREarthWarriorDefaultStateHandler;
 extern f32 gEarthWarriorMatrix[16];
 
-extern const f32 lbl_803E82E8;
-extern const f32 lbl_803E82EC;
-extern const f32 GXInit_ClearColor;
-extern const f32 GXInit_BlackColor;
-extern const f32 GXInit_WhiteColor;
-extern const f32 lbl_803E82FC;
-extern const f32 lbl_803E8300;
-extern const f32 lbl_803E8304;
-extern const f32 lbl_803E8308;
-extern const f32 lbl_803E830C;
-extern const f32 GX_F32_256;
-extern const f32 lbl_803E8338;
-extern const f32 lbl_803E8354;
 extern int lbl_8033527C[];
 extern f32 lbl_803DC76C;
 

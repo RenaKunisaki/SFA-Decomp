@@ -4,6 +4,7 @@
 #include "main/audio/aram.h"
 #include "main/audio/mcmd.h"
 #include "main/audio/hw_stream.h"
+#include "main/audio/hw_break.h"
 
 
 SynthVirtualSampleState synthVirtualSampleState;

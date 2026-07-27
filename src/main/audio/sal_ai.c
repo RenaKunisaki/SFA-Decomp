@@ -5,6 +5,9 @@
 #include "main/audio/snd_reverb.h"
 #include "string.h"
 #include "dolphin/os/OSCache.h"
+#include "dolphin/ai.h"
+#include "dolphin/os.h"
+#include "dolphin/os/OSInterrupt.h"
 
 #define SAL_AI_BUFFER_COUNT        4
 #define SAL_AI_DMA_CHUNK_SIZE      0x280

@@ -9,6 +9,7 @@
 #include "main/newclouds.h"
 #include "main/objfx.h"
 #include "game/objects/object_setup.h"
+#include "main/mm.h"
 
 
 int lightning_getExtraSize(void) { return 0x28; }

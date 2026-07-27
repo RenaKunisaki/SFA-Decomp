@@ -21,6 +21,7 @@
 #include "main/dll/dll_02BF_androssligh.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx/vec.h"
 
 enum
 {

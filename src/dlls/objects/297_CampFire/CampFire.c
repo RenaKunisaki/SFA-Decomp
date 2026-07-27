@@ -14,6 +14,7 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_0129_campfire.h"
+#include "main/vecmath.h"
 #define CAMPFIRE_HIT_VOLUME_SLOT 0x1f
 
 int CampFire_getExtraSize(void)

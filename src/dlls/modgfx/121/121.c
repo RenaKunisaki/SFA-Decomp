@@ -19,6 +19,7 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0079_dll79func0.h"
 #include "main/dll/dll_007A_dll7afunc0.h"
+#include "main/vecmath.h"
 
 u8 lbl_803DB8D8[8] = {0, 0, 0, 2, 0, 4, 0, 6};
 

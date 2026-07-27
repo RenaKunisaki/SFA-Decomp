@@ -1,5 +1,7 @@
 #include "main/audio_decode_thread.h"
 #include "main/dll/FRONT/dll_3B.h"
+#include "dolphin/os/OSMessage.h"
+#include "dolphin/os/OSThread.h"
 
 typedef struct AttractMovieAudioDecodeLayout
 {

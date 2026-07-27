@@ -32,6 +32,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/vecmath.h"
 
 #define COLLECTIBLE_SEQ_ID_FIRE_CRYSTAL 0xA8
 #define COLLECTIBLE_SEQ_ID_TRUTH_HORN   0x156

@@ -57,6 +57,7 @@
 #include "main/gamebit_ids.h"
 #include "dolphin/gx/GXLegacyDecls.h"
 #include "dolphin/mtx/mtx_legacy.h"
+#include "main/gametext_color_api.h"
 
 s8 lbl_803DBC08 = -1;
 s8 lbl_803DBC09 = -1;

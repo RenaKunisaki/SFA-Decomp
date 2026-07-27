@@ -13,6 +13,8 @@
 #include "main/objprint_render_api.h"
 #include "track/intersect_card_api.h"
 #include "dolphin/pad.h"
+#include "dolphin/os/OSRtc.h"
+#include "main/gametext_color_api.h"
 
 u8 framesThisStep = 1;
 u8 lbl_803DB411 = 1;

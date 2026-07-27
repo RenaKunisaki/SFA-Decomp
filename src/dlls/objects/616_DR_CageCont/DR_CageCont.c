@@ -15,6 +15,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0268_drcagecontrol.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 int DR_CageControl_SeqFn(GameObject* obj)
 {

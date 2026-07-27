@@ -87,6 +87,7 @@
 #include "dlls/objects/288_TrickyGuard.h"
 #include "dlls/objects/289.h"
 #include "dlls/objects/290_CCTestInfot.h"
+#include "dlls/objects/291_fuelCell.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -224,8 +225,7 @@ extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescripto
     gExplodableObjDescriptor, gExplodeAnimatorObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
     gFXEmitObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
-extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor,
-    gFuelCellObjDescriptor;
+extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor;
 extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
     gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
@@ -1252,7 +1252,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTrickyGuardSpotObjDescriptor,
     (ResourceDescriptor*)&gInfoTextObjDescriptor,
     (ResourceDescriptor*)&gCCTestInfotObjDescriptor,
-    &gFuelCellObjDescriptor,
+    (ResourceDescriptor*)&gFuelCellObjDescriptor,
     &gDeathGasObjDescriptor,
     &gCurveObjDescriptor,
     &gTriggerObjDescriptor,

@@ -51,6 +51,7 @@
 #include "main/textrender_api.h"
 #include "main/dll/player_spirit_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/vecmath.h"
 
 union SClanternAnimEvents {
     ObjAnimEventList list;

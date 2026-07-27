@@ -33,6 +33,7 @@
 #include "main/dll/dll_0037_optionsscreen.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/dll/dll_0015_curves.h"
+#include "main/gametext_color_api.h"
 
 /* Menu-item slots per options panel (lbl_803A87D0[8], size 0x20 / 4). */
 #define OPTIONSSCREEN_MENU_ITEM_COUNT 8

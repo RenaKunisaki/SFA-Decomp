@@ -273,13 +273,14 @@ string and dispatch are confirmed, the per-slot behavioral quirk is not.
 extensively-documented persistent-flag engine — the exact mechanism the wiki's "assigned the same
 GameBit" fuel-cell bugs exploit. The fuel cell object itself is decompiled:
 
-- `src/dlls/objects/291_fuelCell/fuelCell.c` (DLL 0x123, `fuelCell` in [DLLs](DLLs)) defines
-  `FuelcellSetup { ...; s16 offBit /* 0x1e */; s16 onBit /* 0x20 */; }` — per-placement GameBit ids,
+- `src/dlls/objects/291_fuelCell/fuelCell.c` (DLL 0x123, `fuelCell` in [DLLs](DLLs)) uses
+  `FuelCellPlacement { ...; s16 offBit /* 0x1e */; s16 onBit /* 0x20 */; }` from
+  `include/dlls/objects/291_fuelCell.h` — per-placement GameBit ids,
   i.e. exactly the "assigned the same GameBit" collision surface the wiki describes: two placements
   in `OBJECTS.bin`/level data sharing an `offBit`/`onBit` value would exhibit precisely the bugs
   reported ("collecting one causes the other to disappear").
-- `#define FUELCELL_GAMEBIT_CARRIED 0xe97` is a *global* bit (not per-placement) also defined in the
-  same file, unrelated to the per-instance bug.
+- `GAMEBIT_ITEM_FuelCell_CantGet` (`0xE97`) is a *global* bit (not per-placement), unrelated to the
+  per-instance bug.
 - The "acts" the wiki mentions (fuel cell "set to only appear in acts 9, 10, and 12") map onto this
   codebase's per-map act-counter system: `gSaveGameMapActBits[120]` /
   `SaveGame_getMapAct(int idx)` / `SaveGame_gplaySetAct(int idx, int act)`

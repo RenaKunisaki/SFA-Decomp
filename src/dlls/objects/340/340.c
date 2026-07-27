@@ -21,6 +21,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "dlls/object_descriptor.h"
+#include "main/objfx_hit_emitter_api.h"
 
 /* placement type ids this DLL serves (anim.seqId carries the romlist
    type; retail names CFPrisonCage / CFCageSwitch): the cage runs

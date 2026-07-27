@@ -5,6 +5,7 @@
 #include "main/dll/NW/dll_01A4_nwice.h"
 #include "main/dll/player_api.h"
 #include "dlls/object_descriptor.h"
+#include "main/objhits.h"
 
 #define NWICE_OBJGROUP      0x3c
 #define NWICE_LINK_OBJGROUP 0x3d /* scanned to find the paired ice object by linkId */

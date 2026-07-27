@@ -33,6 +33,10 @@
 #include "main/dll/FRONT/n_options.h"
 #include "dolphin/gx/GXGeometry.h"
 #include "main/pi_dolphin_api.h"
+#include "dolphin/os/OSCache.h"
+#include "dolphin/os/OSInterrupt.h"
+#include "dolphin/os/OSMessage.h"
+#include "dolphin/vi/vifuncs.h"
 
 static const GXColorS10 sMovieTevColor0 = {-90, 0, -114, 135};
 static const GXColor sMovieKColor0 = {0x00, 0x00, 0xE2, 0x58};

@@ -10,11 +10,12 @@
  *   0x467  item that rides a B-spline path (Curve_EvalBSpline) with a
  *          trailing particle stream
  *   0x468  sparkle/lightning item with a custom post-render pass
- *          (shopitem_renderSparkle) and ObjGroup membership 0x4F
+ *          (shopitem_renderSparkle) and FUEL_CELL_OBJECT_GROUP membership
  * Help text and the A-button buy prompt are raised from the per-frame
  * resetHitboxMode interaction bits.
  */
 #include "main/dll/partfx_interface.h"
+#include "dlls/objects/291_fuelCell.h"
 #include "main/dll_000A_expgfx.h"
 #include "track/intersect_depth_state_api.h"
 #include "main/frame_timing.h"
@@ -44,7 +45,6 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 
-#define SHOPITEM_OBJGROUP        0x4F
 #define SHOPITEM_TARGET_OBJGROUP 9
 
 #define SHOPITEM_OBJFLAG_HITDETECT_DISABLED 0x2000
@@ -94,16 +94,6 @@ STATIC_ASSERT(sizeof(ShopItemState) == 0xEC);
 
 STATIC_ASSERT(sizeof(ShopkeeperState) == 0x9D8);
 STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
-
-#define GX_BM_NONE     0
-#define GX_BM_BLEND    1
-#define GX_BL_ZERO     0
-#define GX_BL_ONE      1
-#define GX_BL_SRCALPHA 4
-#define GX_LO_NOOP     5
-#define GX_LEQUAL      3
-#define GX_ALWAYS      7
-#define GX_AOP_AND     0
 
 void shopitem_sparkleBlendSetup(GameObject* obj)
 {
@@ -282,7 +272,7 @@ void shopitem_free(GameObject* obj)
     switch ((obj)->anim.seqId)
     {
     case SHOPITEM_SEQ_SPARKLE:
-        ObjGroup_RemoveObject((int)obj, SHOPITEM_OBJGROUP);
+        ObjGroup_RemoveObject((int)obj, FUEL_CELL_OBJECT_GROUP);
         break;
     }
 }
@@ -459,7 +449,7 @@ void shopitem_init(GameObject* obj, int data)
         break;
     case SHOPITEM_SEQ_SPARKLE:
         ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), shopitem_sparkleBlendSetup);
-        ObjGroup_AddObject((int)obj, SHOPITEM_OBJGROUP);
+        ObjGroup_AddObject((int)obj, FUEL_CELL_OBJECT_GROUP);
         break;
     }
 }

@@ -11,6 +11,8 @@
 #include "main/pi_dolphin_api.h"
 #include "main/pi_flush_api.h"
 #include "string.h"
+#include "dolphin/os/OSAlloc.h"
+#include "dolphin/os/OSInterrupt.h"
 
 u8 gMmRegionCount;
 s16 gMmDeferredFreeCount;

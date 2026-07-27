@@ -12,6 +12,7 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0073_dll73func0.h"
+#include "main/vecmath.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL73_EFFECT_ID 0xd9

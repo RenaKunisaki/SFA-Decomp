@@ -44,6 +44,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/shader_api.h"
 #include "main/newshadows_audio_api.h"
+#include "dolphin/gx/GXTransform.h"
+#include "string.h"
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 

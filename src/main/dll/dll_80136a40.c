@@ -34,6 +34,8 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/vi.h"
+#include "dolphin/vi/vifuncs.h"
+#include "track/intersect_hud_api.h"
 
 extern u8 debugLogBuffer[];
 

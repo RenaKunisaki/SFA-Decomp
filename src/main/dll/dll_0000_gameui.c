@@ -87,6 +87,8 @@
 #undef INTERSECT_HUD_ALPHA_U8
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/dll_8B.h"
+#include "main/dll/player_spirit_api.h"
+#include "main/loaded_file_flags.h"
 
 u16 lbl_803DBA30 = 420;
 f32 lbl_803DBA34 = 0.3f;

@@ -34,6 +34,8 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx/vec.h"
+#include "main/objfx.h"
 
 f32 lbl_803DC3A0 = 2.0f;
 f32 lbl_803DC3A4 = 0.2f;

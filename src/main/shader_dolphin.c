@@ -57,6 +57,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "track/intersect_api.h"
 #include "track/intersect_depth_read_api.h"
+#include "dolphin/gx/GXBump.h"
+#include "main/newshadows_texture_api.h"
+#include "main/rcp_dolphin_render_api.h"
 
 
 static int sRcpUnused0;

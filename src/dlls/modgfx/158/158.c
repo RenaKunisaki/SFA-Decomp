@@ -18,6 +18,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/pickup.h"
+#include "main/dll/dll_009E_dll9efunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL9E_EFFECT_ID 0x46c

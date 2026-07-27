@@ -2,6 +2,9 @@
 #include "main/audio/sal_ai.h"
 #include "main/audio/hw_samplemem.h"
 #include "dolphin/dsp.h"
+#include "dolphin/PPCArch.h"
+#include "dolphin/os.h"
+#include "main/audio/hw_dspctrl.h"
 
 
 typedef struct

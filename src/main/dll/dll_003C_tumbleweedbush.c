@@ -36,6 +36,8 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "string.h"
+#include "main/gametext_color_api.h"
+#include "main/vecmath.h"
 
 #define LINK_ITEM_SLOTS 25 /* per-item icon-strip slot capacity */
 

@@ -22,6 +22,7 @@
 #include "main/objseq.h"
 #include "main/dll/dll_0184_animsharpclaw.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/obj_list.h"
 
 /* child setup-object id spawned on anim sequence event 1 */
 #define ANIMSHARPCLAW_CHILD_SETUP_ID 0x30B

@@ -25,6 +25,8 @@
 #include "main/checkpoint_route.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/curve.h"
+#include "main/vecmath.h"
+#include "main/vecmath.h"
 
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];
 extern s16 lbl_803DD414;

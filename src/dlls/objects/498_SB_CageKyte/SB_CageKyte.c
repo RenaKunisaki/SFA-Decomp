@@ -18,6 +18,8 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
+#include "main/vecmath_distance_api.h"
 
 /* anim.resetHitboxMode bit forced on each SeqFn / update tick. */
 #define SB_CAGEKYTE_HITBOX_RESET_BIT 0x8

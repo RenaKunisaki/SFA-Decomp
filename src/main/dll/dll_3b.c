@@ -19,6 +19,8 @@
 #include "dolphin/os.h"
 #include "dolphin/thp/THPAudio.h"
 #include "main/dll/FRONT/picmenu.h"
+#include "dolphin/os/OSMessage.h"
+#include "dolphin/os/OSThread.h"
 
 /* THP frame-component type id for the audio track (vs 0 = video). */
 #define THP_FRAME_COMP_AUDIO 1

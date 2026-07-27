@@ -25,6 +25,7 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "dlls/object_descriptor.h"
+#include "sys/objects.h"
 
 u16 lbl_803DC070[4] = {0x2B6, 0x2D7, 0x2D8, 0};
 

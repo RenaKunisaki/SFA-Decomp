@@ -17,6 +17,7 @@
 #include "game/objects/object.h"
 #include "main/dll/savegame.h"
 #include "main/dll/dll_0098_dll98func0.h"
+#include "main/vecmath.h"
 
 /* spawnEffect effect ids per variant (textureAssetId arg). */
 #define DLL98_EFFECT_ID_VARIANT0 0x3e9

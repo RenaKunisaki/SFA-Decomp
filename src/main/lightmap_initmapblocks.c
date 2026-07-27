@@ -51,6 +51,7 @@
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx/mtx_legacy.h"
+#include "main/asset_load.h"
 
 extern u8 colorFilterColor[4];
 extern u8 colorScale;

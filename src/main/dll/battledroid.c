@@ -2,6 +2,7 @@
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "game/objects/object.h"
+#include "main/dll/wispbaddie_baddie.h"
 
 void battleDroidUpdateWhileFrozen(int obj, int* state, int arg, int code, int wpad0, int wpad1, void* wpad2, int wpad3)
 {

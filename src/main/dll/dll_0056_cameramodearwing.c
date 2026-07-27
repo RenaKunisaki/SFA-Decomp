@@ -22,6 +22,8 @@
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/object_transform.h"
 #include "dolphin/mtx/mtx_legacy.h"
+#include "main/vecmath.h"
+#include "main/vecmath.h"
 
 typedef struct CameraArwingWork
 {

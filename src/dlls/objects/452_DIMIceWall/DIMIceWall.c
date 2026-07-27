@@ -16,6 +16,7 @@
 #include "sys/objects.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/vecmath.h"
 
 #define DIMICEWALL_OBJFLAG_HIDDEN 0x4000
 

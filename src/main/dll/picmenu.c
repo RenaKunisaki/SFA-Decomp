@@ -31,6 +31,10 @@
 #include "main/attract_movie_api.h"
 #include "main/dll/FRONT/picmenu.h"
 #include "main/dll/FRONT/n_options.h"
+#include "dolphin/os/OSCache.h"
+#include "dolphin/os/OSInterrupt.h"
+#include "dolphin/os/OSMessage.h"
+#include "dolphin/os/OSThread.h"
 
 char sPicMenuThpMagic[] = "THP";
 

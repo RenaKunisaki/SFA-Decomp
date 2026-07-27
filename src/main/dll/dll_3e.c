@@ -28,6 +28,7 @@
 #include "main/audio_decode_thread.h"
 #include "main/attract_movie_api.h"
 #include "main/fileio.h"
+#include "dolphin/os/OSMessage.h"
 
 typedef struct AttractMovieControl
 {
