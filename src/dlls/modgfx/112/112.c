@@ -1,5 +1,5 @@
 /*
- * dll70func0 (DLL 0x70) - particle/gfx spawn helper for a DLL object.
+ * DLL 112 / 0x70 - particle/gfx spawn helper.
  *
  * The unit owns three entry points:
  *   dll_70_func00_nop / dll_70_func01_nop - empty stubs.
@@ -24,7 +24,6 @@ u8 lbl_803DB8D0[8] = {0, 0x0A, 0, 0x0C, 0, 0x0E, 0, 0x10};
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL70_EFFECT_ID 0x45
-
 
 extern u8 gDll70Func03GfxLayoutTable[];
 
