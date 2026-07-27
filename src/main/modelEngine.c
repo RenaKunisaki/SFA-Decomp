@@ -158,6 +158,7 @@
 #include "dlls/objects/360_HoloPoint.h"
 #include "dlls/objects/361_IMIceMounta.h"
 #include "dlls/objects/362_CRrockfall.h"
+#include "dlls/objects/363.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -299,7 +300,7 @@ extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, 
 extern ResourceDescriptor gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
     gMMP_levelcontrolObjDescriptor, gMMP_moonrockObjDescriptor;
 extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
-    gMMSH_WaterSpikeObjDescriptor, gMagicLightObjDescriptor;
+    gMMSH_WaterSpikeObjDescriptor;
 extern ResourceDescriptor gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor,
     gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
@@ -1374,7 +1375,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gHoloPointNullResourceDescriptor,
     (ResourceDescriptor*)&gIMIceMountainObjDescriptor,
     (ResourceDescriptor*)&gCRrockfallObjDescriptor,
-    &gMagicLightObjDescriptor,
+    (ResourceDescriptor*)&gMagicLightObjDescriptor,
     &lbl_80323740,
     &gIMIcePillarObjDescriptor,
     &gIMAnimSpaceCraftObjDescriptor,

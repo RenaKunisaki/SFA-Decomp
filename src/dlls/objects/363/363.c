@@ -1,51 +1,38 @@
-/*
- * DLL 0x16B - proximity-triggered "magic light" object behavior.
- *
- * seqId 0x172 is a render-only variant (draws a glow each
- * visible frame). The other variants carry a MagicLightState: at init a
- * random lifetime is rolled and, for seqId 0x16B, the placement subtype
- * picks an enter/leave L-action pair and a trigger radius preset. Each
- * tick (MagicLight_SeqFn) the distance to the player is measured: crossing
- * inside triggerRadius fires the enter action, crossing back outside the
- * radius plus hysteresis fires the leave action. MagicLight_update kicks
- * off trigger sequence 0 once, on the first update.
- */
-#include "main/object_render.h"
-#include "main/vecmath.h"
-#include "main/render_lactions_api.h"
-#include "main/dll_000A_expgfx.h"
+#include "dlls/objects/363.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
+#include "main/dll/expgfx_interface.h"
 #include "main/objseq.h"
-#include "main/dll/dll_016B_magiclight.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
+#include "main/object_render.h"
+#include "main/render_lactions_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
-/* seqId of the render-only glow variant (no MagicLightState, no proximity logic) */
-#define MAGICLIGHT_SEQ_GLOW 0x172
-/* seqId of the main proximity-triggered variant (subtype-selected L-actions) */
-#define MAGICLIGHT_SEQ_PROXIMITY 0x16b
-#define MAGICLIGHT_SEQUENCE_STARTED(obj) ((obj)->userData1)
+#define MAGIC_LIGHT_SEQ_GLOW 0x172
+#define MAGIC_LIGHT_SEQ_PROXIMITY 0x16B
+#define MAGIC_LIGHT_SEQUENCE_STARTED(obj) ((obj)->userData1)
 
-int MagicLight_SeqFn(GameObject* obj)
+int MagicLight_sequenceCallback(GameObject* obj)
 {
     MagicLightState* state;
     GameObject* player;
-    f32 dist;
+    f32 distance;
 
-    if (obj->anim.seqId == MAGICLIGHT_SEQ_GLOW)
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW)
+    {
         return 0;
+    }
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    dist = Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX);
+    distance = Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX);
 
-    if (dist < state->triggerRadius && state->inRange == 0)
+    if (distance < state->triggerRadius && state->inRange == 0)
     {
         state->inRange = 1;
         getLActions(obj, obj, (u16)state->enterAction, 0, 0, 0);
     }
-    else if (dist > 10.0f + state->triggerRadius && state->inRange != 0)
+    else if (distance > 10.0f + state->triggerRadius && state->inRange != 0)
     {
         state->inRange = 0;
         getLActions(obj, obj, (u16)state->leaveAction, 0, 0, 0);
@@ -55,20 +42,24 @@ int MagicLight_SeqFn(GameObject* obj)
 
 int MagicLight_getExtraSize(GameObject* obj)
 {
-    if (obj->anim.seqId == MAGICLIGHT_SEQ_GLOW)
-        return 0x0;
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW)
+    {
+        return 0;
+    }
+
     return sizeof(MagicLightState);
 }
 
 int MagicLight_getObjectTypeId(void)
 {
-    return 0x0;
+    return 0;
 }
 
 void MagicLight_free(GameObject* obj)
 {
-    MagicLightState* state = (obj)->extra;
-    if ((obj)->anim.seqId != MAGICLIGHT_SEQ_GLOW)
+    MagicLightState* state = obj->extra;
+
+    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW)
     {
         if (state->inRange != 0)
         {
@@ -78,11 +69,13 @@ void MagicLight_free(GameObject* obj)
     }
 }
 
-void MagicLight_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
+void MagicLight_render(
+    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
 {
-    if ((obj)->anim.seqId == MAGICLIGHT_SEQ_GLOW && visible != 0)
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW && visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
+        objRenderModelAndHitVolumes(
+            obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -92,31 +85,33 @@ void MagicLight_hitDetect(void)
 
 void MagicLight_update(GameObject* obj)
 {
-    if (obj->anim.seqId != MAGICLIGHT_SEQ_GLOW && MAGICLIGHT_SEQUENCE_STARTED(obj) == 0)
+    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW &&
+        MAGIC_LIGHT_SEQUENCE_STARTED(obj) == 0)
     {
         obj->anim.rotX = 0;
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
-        (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-        MAGICLIGHT_SEQUENCE_STARTED(obj) = 1;
+        (*gObjectTriggerInterface)->runSequence(0, obj, -1);
+        MAGIC_LIGHT_SEQUENCE_STARTED(obj) = 1;
     }
 }
 
-void MagicLight_init(GameObject* obj, MagicLightPlacement* placement)
+void MagicLight_init(GameObject* obj, const MagicLightPlacement* placement)
 {
     MagicLightState* state;
-    MAGICLIGHT_SEQUENCE_STARTED(obj) = 0;
+
+    MAGIC_LIGHT_SEQUENCE_STARTED(obj) = 0;
     obj->anim.rotX = (s16)(placement->initialRotX << 8);
-    obj->animEventCallback = MagicLight_SeqFn;
-    if (obj->anim.seqId == MAGICLIGHT_SEQ_GLOW)
+    obj->animEventCallback = MagicLight_sequenceCallback;
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW)
     {
         return;
     }
     state = obj->extra;
-    state->lifetime = randomGetRange(0xc8, 0x258);
+    state->lifetime = randomGetRange(0xC8, 0x258);
     state->subtype = (s8)placement->subtype;
     state->inRange = 0;
-    if (obj->anim.seqId == MAGICLIGHT_SEQ_PROXIMITY)
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_PROXIMITY)
     {
         switch (state->subtype)
         {
@@ -141,11 +136,11 @@ void MagicLight_init(GameObject* obj, MagicLightPlacement* placement)
             state->triggerRadius = 100.0f;
             break;
         }
-        state->unk10 = 0x12d;
+        state->unknown10 = 0x12D;
     }
     else
     {
-        state->unk10 = 0x12d;
+        state->unknown10 = 0x12D;
     }
 }
 
