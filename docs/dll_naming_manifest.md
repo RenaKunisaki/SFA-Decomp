@@ -95,7 +95,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x031 | — | NO-RETAIL-NAME | main/dll/dll_0031_minimap.c | = (canonical) | — |
 | 0x032 | — | NO-RETAIL-NAME | main/dll/dll_0032_titlescreeninit.c | = (canonical) | — |
 | 0x033 | — | NO-RETAIL-NAME | main/dll/dll_0033_nrareware.c | = (canonical) | — |
-| 0x034 | — | NO-RETAIL-NAME | main/dll/dll_0034_titlemenu.c | = (canonical) | — |
+| 0x034 | — | NO-RETAIL-NAME | dlls/engine/52/52.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x035 | — | NO-RETAIL-NAME | dlls/engine/53/53.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x036 | — | NO-RETAIL-NAME | dlls/engine/54/54.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x037 | — | NO-RETAIL-NAME | dlls/engine/55/55.c | = (canonical) | Complete DOL-confirmed TU |

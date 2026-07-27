@@ -1,4 +1,3 @@
-/* DLL 0x0034 - title menu [8011611C-801166C8) */
 #include "main/dll/FRONT/dll_39.h"
 #include "main/dll/baddie/dll_003C_TumbleweedBush.h"
 #include "main/dll/dll_02C0_front_api.h"
@@ -59,12 +58,11 @@ u8 gTitleMenuSelection;
 s32 gAttractMovieState;
 static char sNRarewareReportTag[] = "n_rareware\n";
 
-/* TitleMenuTextEntry.flags: row is hidden / non-selectable (cleared on the
-   highlighted entry, set on the rest). */
 #define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
 
 
 extern TitleMenuTextEntry lbl_8031A214[4];
+extern TitleMenuTextEntry sNAttractModeStringBlock[1];
 extern u8 lbl_803DD6F8;
 
 extern u8* lbl_803DD498;
@@ -388,8 +386,6 @@ void TitleMenu_setSelection(int selection)
     gTitleMenuLinkInterface->vtable->setSelected(v);
 }
 
-extern TitleMenuTextEntry sNAttractModeStringBlock[1];
-
 void TitleMenu_initialise(void)
 {
     int i;
@@ -493,7 +489,6 @@ TitleMenuTextEntry sNAttractModeStringBlock[1] = {
     },
 };
 
-/* descriptor/ptr table auto 0x8031a214-0x8031a3b0 */
 TitleMenuTextEntry lbl_8031A214[4] = {
     {0x0331,
      {0x00, 0x11, 0x01, 0x40, 0x01, 0x0a, 0x00, 0x00, 0x01, 0x40, 0x00, 0xb4, 0x00, 0x00},
