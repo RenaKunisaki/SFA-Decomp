@@ -90,6 +90,7 @@
 #include "dlls/objects/291_fuelCell.h"
 #include "dlls/objects/292.h"
 #include "dlls/objects/293_curve.h"
+#include "dlls/objects/295.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -338,7 +339,7 @@ extern ResourceDescriptor lbl_8031A178, lbl_8031A1A0, lbl_8031A304, lbl_8031A82C
     lbl_8031ADA4, lbl_8031ADD0;
 extern ResourceDescriptor lbl_8031ADF8, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, lbl_8031C300,
     lbl_8031C5D0, lbl_8031C5F8;
-extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_80321E58, lbl_803230F8;
+extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_803230F8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
 extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80327BA8, lbl_80328AD8, lbl_80328E28,
     lbl_80329340;
@@ -1257,7 +1258,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDeathGasObjDescriptor,
     (ResourceDescriptor*)&gCurveObjDescriptor,
     &gTriggerObjDescriptor,
-    &lbl_80321E58,
+    (ResourceDescriptor*)&gDll127ObjDescriptor,
     &gKT_TorchObjDescriptor,
     &gCampFireObjDescriptor,
     &gCFCrateObjDescriptor,
