@@ -123,18 +123,6 @@ typedef struct PlayerSeqPlacement {
 
 STATIC_ASSERT(offsetof(PlayerSeqPlacement, movementEnabled) == 0x20);
 
-typedef struct
-{
-    int a;
-    int b;
-} ColPair;
-
-typedef struct
-{
-    int a;
-    int b;
-} IntPair2;
-
 #define LANTERNFIREFLY_OBJGROUP 0x30 /* DLL 0x10C lanternfirefly */
 
 void playerUpdateTail(int unused1, int* unused2, f32* vec, int unused3, int mode, f32 angle);
@@ -300,7 +288,6 @@ extern f32 lbl_803E8094;
 extern f32 lbl_803E8098;
 extern f32 lbl_803E809C;
 extern f32 lbl_803E80A0;
-extern ColPair lbl_803E7E78;
 extern f32 lbl_803E7FE4;
 extern u8 lbl_803DC6A8[8];
 extern u8 lbl_803DC6B0[2];
@@ -312,15 +299,12 @@ extern f32 lbl_803E803C;
 extern f32 lbl_803E8054;
 extern f32 lbl_803E8084;
 extern f32 lbl_803E8088;
-extern int lbl_803E7E70;
 extern f32 lbl_803E80FC;
 extern f32 lbl_803E8100;
 extern f32 lbl_803E8104;
 extern f32 lbl_803E8108;
 extern f32 lbl_803E810C;
 extern f32 lbl_803E8110;
-extern int lbl_803E7E68;
-extern int lbl_803E7E6C;
 extern f32 lbl_803E8134;
 
 static inline int staffCanContinueSpin(void* state)
@@ -6070,9 +6054,8 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     f32 xc;
     f32 yc;
     f32 yOut;
-    ColPair col;
+    f32 col[2] = {65.0f, 35.0f};
 
-    col = lbl_803E7E78;
     setAButtonIcon(0xf);
     if (*(s8*)&state->baddie.moveJustStartedA != 0)
     {
@@ -6090,7 +6073,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
             cameraSetInterpMode(2);
-            (*gCameraInterface)->setMode(0x52, 1, 0, 8, &col, 0x1e, 0xff);
+            (*gCameraInterface)->setMode(0x52, 1, 0, 8, col, 0x1e, 0xff);
         }
         inner->stickDirection = 0;
         inner->latchedStickDir = 0;
@@ -13632,13 +13615,12 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
 {
     int r;
     int ok;
-    IntPair2 camp;
+    f32 camp[2] = {60.0f, 37.0f};
     MatrixTransform pos;
     u8 buf[52];
     f32 mtx[16];
     f32 dummy;
 
-    camp = *(IntPair2*)&lbl_803E7E70;
     if (((PlayerState*)inner)->curAnimId != 0x48 && ((PlayerState*)inner)->curAnimId != 0x47 &&
         !((ByteFlags*)((char*)inner + 0x3f0))->b04 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
         ((PlayerState*)inner)->heldObj == NULL && !((ByteFlags*)((char*)inner + 0x3f0))->b02 &&
@@ -13688,7 +13670,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
         if (!((ByteFlags*)((char*)inner + 0x3f1))->b10)
         {
             cameraSetInterpMode(2);
-            (*gCameraInterface)->setMode(0x52, 1, 0, 8, &camp, 0x1e, 0xff);
+            (*gCameraInterface)->setMode(0x52, 1, 0, 8, camp, 0x1e, 0xff);
             if (gPlayerFrameCounter - gPlayerLastSfxFrame > 2)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_headcam_in);
@@ -17906,7 +17888,6 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
     f32 pz;
     f32 py;
     f32 px;
-    int tbl[2];
     struct
     {
         u16 mode;
@@ -18028,14 +18009,8 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         }
         if (((PlayerState*)inner)->knockbackTimer > lbl_803E7EA4 || (((PlayerState*)inner)->pendingFxFlags & 2) != 0)
         {
-            {
-                int t1;
-                int t0;
-                t0 = lbl_803E7E68;
-                t1 = lbl_803E7E6C;
-                tbl[0] = t0;
-                tbl[1] = t1;
-            }
+            int tbl[2] = {6, 8};
+
             objParticleFn_80099d84((GameObject*)obj, lbl_803E7E9C,
                                    tbl[((((PlayerState*)inner)->knockKindBits >> 5) & 7) - 1] & 0xff,
                                    lbl_803E7EE0, NULL);
