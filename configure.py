@@ -1058,6 +1058,7 @@ config.libs = [
             # dlls/modgfx
 
             # dlls/projgfx
+            Object(MatchingFor("GSAE01"), "dlls/projgfx/171/171.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/172/172.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/173/173.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/174/174.c", cflags=cflags_dll_noopt),
@@ -1442,7 +1443,6 @@ config.libs = [
             Object(Matching, "main/dll/n_attractmode.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0034_titlemenu.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/modanimeflash1.c"),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00AB_projdummy.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_8b.c"),
             Object(Matching, "main/dll/dll_8c.c"),
             Object(Matching, "main/dll/dll_8d.c"),

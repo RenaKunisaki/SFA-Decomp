@@ -1,5 +1,5 @@
 /*
- * projdummy (DLL 0xAB) - retired projectile object.
+ * projdummy (DLL 171 / 0xAB) - retired projectile object.
  *
  * One of the stubbed-out projectile DLLs. The object has
  * no behaviour left: release/initialise are empty and doUnsupported just
