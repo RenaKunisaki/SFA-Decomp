@@ -51,11 +51,4 @@ void drgenerator_init(GameObject* obj, DrgeneratorPlacement* placement);
 void drgenerator_release(void);
 void drgenerator_initialise(void);
 
-extern f32 lbl_803E6B58;
-extern f32 lbl_803E6B68;
-extern f32 lbl_803E6B6C;
-extern f32 lbl_803E6B5C;
-extern f32 lbl_803E6B60;
-extern f32 lbl_803E6B64;
-
 #endif /* MAIN_DLL_DR_DLL_026F_DRGENERATOR_H_ */

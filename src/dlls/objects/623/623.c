@@ -64,7 +64,7 @@ void drgenerator_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char vi
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E6B58);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -87,15 +87,15 @@ void drgenerator_hitDetect(GameObject* obj)
         return;
     }
     ((char*)state)[0x19a] = state->hitsRemaining - hitVolume;
-    Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hitPosX, lbl_803E6B5C);
-    objfx_shakeCameraByDistance(obj, lbl_803E6B60);
+    Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hitPosX, 6.0f);
+    objfx_shakeCameraByDistance(obj, 300.0f);
     if (((char*)state)[0x19a] > 0)
     {
         return;
     }
     {
         ObjTextureRuntimeSlot* tex = objFindTexture(obj, 0, 0);
-        spawnExplosion(obj, lbl_803E6B64, 1, 1, 1, 1, 0, 1, 0);
+        spawnExplosion(obj, 50.0f, 1, 1, 1, 1, 0, 1, 0);
         if (tex != 0)
         {
             tex->textureId = 0x100;
@@ -195,7 +195,7 @@ void drgenerator_init(GameObject* obj, DrgeneratorPlacement* placement)
         state->timerDuration = duration;
     }
     state->timerDuration = state->timerDuration * 0x3c;
-    state->unk124 = lbl_803E6B68;
+    state->unk124 = 0.018f;
     if (mainGetBit(0x9b9) != 0)
     {
         state->flags.b0 = 1;
@@ -205,7 +205,7 @@ void drgenerator_init(GameObject* obj, DrgeneratorPlacement* placement)
     {
         state->flags.b4 = 0;
     }
-    fv = lbl_803E6B6C;
+    fv = 0.0f;
     (obj)->anim.velocityZ = fv;
     (obj)->anim.velocityY = fv;
     (obj)->anim.velocityX = fv;

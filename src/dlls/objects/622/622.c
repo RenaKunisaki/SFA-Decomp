@@ -119,7 +119,7 @@ int drshackle_setScale(GameObject* obj, int a, int b, int c, int d, int e, int f
     {
         f32 savedY = jointPos[1];
         f32 mag;
-        jointPos[1] = lbl_803E6A28;
+        jointPos[1] = 0.0f;
         mag = PSVECMag(jointPos);
         obj->anim.rotZ = (s16)(lbl_803DC2F0 + getAngle(jointPos[0], jointPos[2]));
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
@@ -127,7 +127,7 @@ int drshackle_setScale(GameObject* obj, int a, int b, int c, int d, int e, int f
     }
     ObjPath_GetPointWorldPosition((GameObject*)a, b, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
                                   0);
-    objRenderModelAndHitVolumes(obj, c, d, e, f, (double)lbl_803E6A2C);
+    objRenderModelAndHitVolumes(obj, c, d, e, f, 1.0f);
 
     for (i = 0, a = (int)p; i < ((DrshackleState*)p)->slotCount; i++)
     {
@@ -164,7 +164,7 @@ void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visi
     int i;
     if (((BitFlags8*)(state + 0x1a))->b0 == 0 && visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E6A2C);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         for (i = 0; i < ((DrshackleState*)state)->slotCount; i++)
         {
             int* entry = ((int**)state)[i];
@@ -186,7 +186,7 @@ void drshackle_hitDetect(unsigned long obj)
         f32 vec[3];
         int n;
         PSVECSubtract(&((GameObject*)obj)->anim.localPosX, &((DrshackleState*)state)->savedPosX, vec);
-        n = 0xc8 - (int)(lbl_803E6A30 * PSVECMag(vec));
+        n = 0xc8 - (int)(30.0f * PSVECMag(vec));
         if ((int)randomGetRange(0, (n < 1) ? 1 : ((n > 0xc8) ? 0xc8 : n)) == 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_1b3);
