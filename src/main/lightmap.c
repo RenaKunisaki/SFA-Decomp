@@ -548,7 +548,7 @@ void getVisibleObjects(s8* opacity)
                             (i & 0x3ff) | (((sortDepth & 0x3ff) << 10) | key);
                         gVisibleObjectSortKeyCount++;
                         if ((((ObjAnimComponent*)o)->modelInstance->renderFlags & 0x20) != 0 &&
-                            (((GameObject*)o)->objectFlags & 0x400) == 0 &&
+                            (((GameObject*)o)->objectFlags & OBJECT_OBJFLAG_SHADOW_DISABLED) == 0 &&
                             (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);

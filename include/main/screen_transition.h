@@ -3,9 +3,17 @@
 
 #include "global.h"
 
+typedef enum ScreenTransitionType {
+    SCREEN_TRANSITION_BLACK = 1,      /* solid black rectangle */
+    SCREEN_TRANSITION_WHITE = 2,      /* solid white rectangle */
+    SCREEN_TRANSITION_WHITE_WIPE = 3, /* white edge wipe */
+    SCREEN_TRANSITION_RED = 4,        /* solid red rectangle */
+    SCREEN_TRANSITION_HUD = 5,        /* no rectangle; drives HUD opacity */
+} ScreenTransitionType;
+
 typedef void (*ScreenTransitionInitFn)(int transitionId, int value, int flags);
-typedef void (*ScreenTransitionStepFn)(int transitionId, int value);
-typedef void (*ScreenTransitionBlendFn)(int transitionId, int value, f32 blend);
+typedef void (*ScreenTransitionStepFn)(int duration, ScreenTransitionType type);
+typedef void (*ScreenTransitionBlendFn)(int duration, ScreenTransitionType type, f32 blend);
 typedef int (*ScreenTransitionFinishedFn)(void);
 typedef f32 (*ScreenTransitionProgressFn)(void);
 

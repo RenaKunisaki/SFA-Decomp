@@ -66,6 +66,7 @@
 #include "dlls/objects/267_FireFlyLant.h"
 #include "dlls/objects/268_LanternFire.h"
 #include "dlls/objects/269_PortalSpell.h"
+#include "dlls/objects/270.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -194,8 +195,8 @@ extern ResourceDescriptor gDIMSnowBall1C2ObjDescriptor, gDIMSnowBallObjDescripto
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_LevelControlObjDescriptor,
     gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
-extern ResourceDescriptor gDeathGasObjDescriptor, gDeathSeqObjDescriptor, gDecoration11AObjDescriptor,
-    gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
+extern ResourceDescriptor gDeathGasObjDescriptor, gDecoration11AObjDescriptor, gDfperchwitchObjDescriptor,
+    gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor, gDfppowerslObjDescriptor;
 extern ResourceDescriptor gDfpstatue1ObjDescriptor, gDfptargetblockObjDescriptor, gDirectionalLightObjDescriptor,
     gDoorObjDescriptor;
 extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gDrCageControlObjDescriptor,
@@ -1219,7 +1220,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFireFlyLanternObjDescriptor,
     (ResourceDescriptor*)&gLanternFireFlyObjDescriptor,
     (ResourceDescriptor*)&gPortalSpellDoorObjDescriptor,
-    &gDeathSeqObjDescriptor,
+    (ResourceDescriptor*)&gDeathSeqObjDescriptor,
     &gMMP_BridgeObjDescriptor,
     &gDoorObjDescriptor,
     (ResourceDescriptor*)&gDoorLockObjDescriptor,

@@ -5,14 +5,6 @@
 #include "main/screen_transition.h"
 #include "dolphin/gx/GXCull.h"
 
-/* gScreenTransitionType: which full-screen fade overlay screenTransition_update
- * draws each step (color picked directly in the type switch). */
-#define SCREEN_TRANSITION_BLACK 1     /* solid black rect fade */
-#define SCREEN_TRANSITION_WHITE 2     /* solid white rect fade */
-#define SCREEN_TRANSITION_WHITE_WIPE 3 /* white edge-wipe via screenTransition_drawWhiteWipe */
-#define SCREEN_TRANSITION_RED 4       /* solid red rect fade */
-#define SCREEN_TRANSITION_HUD 5       /* no rect; drives HUD opacity at fade endpoints */
-
 void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b);
 void screenTransition_holdThenFadeIn(int duration, int type);
 

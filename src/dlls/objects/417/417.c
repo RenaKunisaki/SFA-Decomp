@@ -165,7 +165,7 @@ int nw_mammoth_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     objAudioFn_8006ef38(obj, (ObjAnimEventList*)audioEvents, 8, audioPoints, audioScratch, 1.0f, 1.0f);
     if (animUpdate->eventCount != 0)
     {
-        obj->objectFlags = (u16)(obj->objectFlags & ~0x400);
+        obj->objectFlags = (u16)(obj->objectFlags & ~OBJECT_OBJFLAG_SHADOW_DISABLED);
         obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
     }
     return 0;
