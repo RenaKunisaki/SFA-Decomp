@@ -409,7 +409,7 @@ dlls/engine/24/24.c:
 	.sbss       start:0x803DD2A0 end:0x803DD2C0
 	.sdata2     start:0x803DF4A8 end:0x803DF4C8
 
-main/dll/dll_000E_partfx.c:
+dlls/engine/14/14.c:
 	.text       start:0x800A4DF4 end:0x800AF688
 	.bss        start:0x8039C2E0 end:0x8039C320
 	.sdata      start:0x803DB7A0 end:0x803DB7B0

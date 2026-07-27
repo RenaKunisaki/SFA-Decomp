@@ -57,7 +57,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x00B | — | NO-RETAIL-NAME | main/dll/dll_000B_dll0b.c | = (canonical) | — |
 | 0x00C | — | NO-RETAIL-NAME | main/dll/dll_000C_projgfx.c | = (canonical) | — |
 | 0x00D | — | NO-RETAIL-NAME | main/dll/dll_000D_playershadow.c | = (canonical) | — |
-| 0x00E | — | NO-RETAIL-NAME | main/dll/dll_000E_partfx.c | = (canonical) | — |
+| 0x00E | — | NO-RETAIL-NAME | dlls/engine/14/14.c | main/dll/dll_000E_partfx.c | Complete DOL-confirmed TU |
 | 0x00F | — | NO-RETAIL-NAME | dlls/engine/15/15.c | main/dll/dll_000F_unk.c | Complete DOL-confirmed TU; full sdata2 owner restored |
 | 0x010 | — | NO-RETAIL-NAME | dlls/engine/16/16.c | main/dll/dll_0010_uicontroller.c | Complete DOL-confirmed TU |
 | 0x011 | — | NO-RETAIL-NAME | dlls/engine/17/17.c | main/dll/dll_0011_screens.c | Complete DOL-confirmed TU; data table and descriptor restored from DLL 23 tail |

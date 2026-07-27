@@ -1,17 +1,3 @@
-/*
- * partfx (DLL 0x000E) - the particle-effect spawn dispatcher.
- *
- * partfx_spawnObject is the central entry point: it maps an effect id to a
- * fully-populated Expgfx spawn request (cfg) and submits it through
- * gExpgfxInterface->spawnEffect. The big effect-id ranges at the top are
- * delegated to one of 20 lazily-acquired particle resource modules
- * (gPartfxResourceModuleNN, Resource_Acquire ids 0x1a through 0x2d); each delegation
- * arms a 2000-frame keep-alive in gPartfxResourceTimeouts[NN] and forwards the
- * call to the module's vtable slot 8. partfx_updateFrameState ticks the global
- * scroll/sin phases and decays those 20 timeouts, releasing a module once its
- * timeout expires; partfx_release frees them all. partfx_initialise zeroes the
- * timeout table and cached-module count.
- */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/debug.h"
