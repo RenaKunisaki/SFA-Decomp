@@ -153,6 +153,7 @@
 #include "dlls/objects/355.h"
 #include "dlls/objects/356_CFLevelCont.h"
 #include "dlls/objects/357_CFRemovalSh.h"
+#include "dlls/objects/358.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -277,7 +278,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor, gECSH_CreatorObjDescriptor,
     gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
-    gExplodePlanObjDescriptor, gExplodedObjDescriptor;
+    gExplodePlanObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor,
@@ -1366,7 +1367,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll355NullResourceDescriptor,
     (ResourceDescriptor*)&gCFLevelControlObjDescriptor,
     (ResourceDescriptor*)&gCFRemovalShNullResourceDescriptor,
-    &gExplodedObjDescriptor,
+    (ResourceDescriptor*)&gExplodedObjDescriptor,
     &gSpiritDoorLockObjDescriptor,
     &lbl_803DBEE0,
     &gIMIceMountainObjDescriptor,

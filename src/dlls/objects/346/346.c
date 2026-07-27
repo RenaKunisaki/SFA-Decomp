@@ -1,11 +1,11 @@
 /* Destructible scenery that shatters into physics fragments. */
 
 #include "dlls/objects/346.h"
+#include "dlls/objects/358.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/dll/dll_0166_exploded.h"
 #include "main/gamebits_api.h"
 #include "main/model.h"
 #include "main/obj_group.h"
@@ -28,41 +28,41 @@
 #define EXPLODABLE_DEFAULT_SCALE                 20
 
 GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId, int chunkAddress, int fragmentIndex) {
-    ExplodedObjectMapData* fragmentPlacement;
+    ExplodedPlacement* fragmentPlacement;
     f32 scale;
     ExplodableChunk* chunk = (ExplodableChunk*)chunkAddress;
 
     if (Obj_IsLoadingLocked() == 0) {
         return 0;
     }
-    fragmentPlacement = (ExplodedObjectMapData*)Obj_AllocObjectSetup(sizeof(ExplodedObjectMapData), fragmentObjectId);
-    fragmentPlacement->objectId = fragmentObjectId;
+    fragmentPlacement = (ExplodedPlacement*)Obj_AllocObjectSetup(sizeof(ExplodedPlacement), fragmentObjectId);
+    fragmentPlacement->base.objectId = fragmentObjectId;
     fragmentPlacement->base.color[0] = 2;
     fragmentPlacement->base.color[2] = EXPLODABLE_FRAGMENT_FULL_ALPHA;
     fragmentPlacement->base.color[1] = 1;
     fragmentPlacement->base.color[3] = EXPLODABLE_FRAGMENT_FULL_ALPHA;
-    fragmentPlacement->positionX = obj->anim.localPosX;
-    fragmentPlacement->positionY = obj->anim.localPosY;
-    fragmentPlacement->positionZ = obj->anim.localPosZ;
+    fragmentPlacement->base.posX = obj->anim.localPosX;
+    fragmentPlacement->base.posY = obj->anim.localPosY;
+    fragmentPlacement->base.posZ = obj->anim.localPosZ;
     scale = 100.0f;
-    fragmentPlacement->initialVelocityX = 100.0f * chunk->velocityX;
-    fragmentPlacement->initialVelocityY = scale * chunk->velocityY;
-    fragmentPlacement->initialVelocityZ = scale * chunk->velocityZ;
-    fragmentPlacement->initialAngleX = chunk->rotX;
-    fragmentPlacement->initialAngleY = chunk->rotY;
-    fragmentPlacement->initialAngleZ = chunk->rotZ;
-    fragmentPlacement->spinX = chunk->spinX * (f32)(u32)chunk->spinScale;
-    fragmentPlacement->spinY = chunk->spinY * (f32)(u32)chunk->spinScale;
-    fragmentPlacement->spinZ = chunk->spinZ * (f32)(u32)chunk->spinScale;
+    fragmentPlacement->initialVelocity.x = 100.0f * chunk->velocityX;
+    fragmentPlacement->initialVelocity.y = scale * chunk->velocityY;
+    fragmentPlacement->initialVelocity.z = scale * chunk->velocityZ;
+    fragmentPlacement->initialRotation.x = chunk->rotX;
+    fragmentPlacement->initialRotation.y = chunk->rotY;
+    fragmentPlacement->initialRotation.z = chunk->rotZ;
+    fragmentPlacement->spin.x = chunk->spinX * (f32)(u32)chunk->spinScale;
+    fragmentPlacement->spin.y = chunk->spinY * (f32)(u32)chunk->spinScale;
+    fragmentPlacement->spin.z = chunk->spinZ * (f32)(u32)chunk->spinScale;
     scale = 10.0f;
-    fragmentPlacement->spinVelocityX = 10.0f * chunk->secondarySpinX;
-    fragmentPlacement->spinVelocityZ = scale * chunk->secondarySpinZ;
-    fragmentPlacement->spinVelocityY = scale * chunk->secondarySpinY;
+    fragmentPlacement->spinVelocity.x = 10.0f * chunk->secondarySpinX;
+    fragmentPlacement->spinVelocity.z = scale * chunk->secondarySpinZ;
+    fragmentPlacement->spinVelocity.y = scale * chunk->secondarySpinY;
     scale = 1000.0f;
-    fragmentPlacement->accelerationX = 1000.0f * chunk->secondaryVelocityX;
-    fragmentPlacement->accelerationY = scale * chunk->secondaryVelocityY;
-    fragmentPlacement->accelerationZ = scale * chunk->secondaryVelocityZ;
-    fragmentPlacement->objectTypeTag = fragmentIndex;
+    fragmentPlacement->acceleration.x = 1000.0f * chunk->secondaryVelocityX;
+    fragmentPlacement->acceleration.y = scale * chunk->secondaryVelocityY;
+    fragmentPlacement->acceleration.z = scale * chunk->secondaryVelocityZ;
+    fragmentPlacement->modelBankIndex = fragmentIndex;
     fragmentPlacement->scaleByte =
         (s8)(int)(20.0f * (obj->anim.rootMotionScale / obj->anim.modelInstance->rootMotionScaleBase));
     fragmentPlacement->lifetimeFrames = chunk->launchDelayBase;
