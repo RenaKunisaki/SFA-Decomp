@@ -1,184 +1,193 @@
-/* DLL 0x19A */
-#include "main/dll/dimmagicbridge.h"
-#include "game/objects/object_setup.h"
-#include "dlls/object_descriptor.h"
+/* DLL 0x19A (slot 410) - timed child-object spawner. */
+#include "dlls/objects/410.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/resource.h"
-#include "sys/objects/lifecycle.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/foodbag.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
+#include "main/resource.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-/* 0x38-byte spawn descriptor handed to Obj_SetupObject for the child
- * object (type 0x2d0). ObjPlacement-style head (color/position) plus
- * class-specific tail. */
-typedef struct Dll19ASpawnSetup
-{
+typedef struct Dll410SpawnSetup {
     ObjPlacement base;
-    s16 unk18;    /* 0x18 */
-    u8 pad1A[8];  /* 0x1a */
-    s16 unk22;    /* 0x22 */
-    u8 pad24[3];  /* 0x24 */
-    u8 unk27;     /* 0x27 */
-    u8 pad28;     /* 0x28 */
-    u8 unk29;     /* 0x29 */
-    s8 rotX;      /* 0x2a: anim.rotX >> 8 */
-    u8 unk2B;     /* 0x2b */
-    u8 pad2C[2];  /* 0x2c */
-    s8 unk2E;     /* 0x2e */
-    u8 pad2F;     /* 0x2f */
-    s16 unk30;    /* 0x30 */
-    u8 linkIndex; /* 0x32: placement gateBitIndex forwarded as child link index */
-    u8 pad33[5];  /* 0x33 */
-} Dll19ASpawnSetup;
+    s16 gameBit;
+    u8 unknown1A[0x22 - 0x1A];
+    s16 droppedItemId;
+    u8 unknown24[0x27 - 0x24];
+    u8 initialWeaponId;
+    u8 unknown28;
+    u8 aggroRangeByte;
+    s8 initialYaw;
+    u8 flags;
+    u8 unknown2C[0x2E - 0x2C];
+    s8 triggerSequenceId;
+    u8 unknown2F;
+    s16 unknown30;
+    u8 linkIndex;
+    u8 unknown33[0x38 - 0x33];
+} Dll410SpawnSetup;
 
-STATIC_ASSERT(offsetof(Dll19ASpawnSetup, base.posX) == 0x8);
-STATIC_ASSERT(offsetof(Dll19ASpawnSetup, unk18) == 0x18);
-STATIC_ASSERT(offsetof(Dll19ASpawnSetup, rotX) == 0x2a);
-STATIC_ASSERT(offsetof(Dll19ASpawnSetup, linkIndex) == 0x32);
-STATIC_ASSERT(sizeof(Dll19ASpawnSetup) == 0x38);
+STATIC_ASSERT(sizeof(Dll410SpawnSetup) == 0x38);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, base) == 0x00);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, gameBit) == 0x18);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown1A) == 0x1A);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, droppedItemId) == 0x22);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown24) == 0x24);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, initialWeaponId) == 0x27);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown28) == 0x28);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, aggroRangeByte) == 0x29);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, initialYaw) == 0x2A);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, flags) == 0x2B);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown2C) == 0x2C);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, triggerSequenceId) == 0x2E);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown2F) == 0x2F);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown30) == 0x30);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, linkIndex) == 0x32);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown33) == 0x33);
 
-#define GAMEBIT_DLL19A_RESET     0x5b9
-#define GAMEBIT_DLL19A_GATE_BASE 0x1cd
+#define DLL410_EFFECT_RESOURCE_ID      0x82
+#define DLL410_RESET_GAMEBIT           0x5B9
+#define DLL410_TRIGGER_GAMEBIT_BASE    0x1CD
+#define DLL410_DROPPED_ITEM_GAMEBIT    0x1CE
+#define DLL410_CHILD_GAMEBIT           0x1E7
+#define DLL410_CHILD_OBJECT_ID         0x2D0
+#define DLL410_CHILD_DROPPED_ITEM_ID   0x49
+#define DLL410_CHILD_INITIAL_WEAPON_ID 1
+#define DLL410_CHILD_AGGRO_RANGE       0xFF
+#define DLL410_CHILD_FLAGS             2
+#define DLL410_SPAWN_TIMER             100
+#define DLL410_FULL_ALPHA              0xFF
+#define DLL410_RENDER_SCALE            1.0f
+#define DLL410_CHILD_EXTRA_BYTE_OFFSET 0x404
+#define DLL410_CHILD_EXTRA_BYTE_VALUE  0x20
 
-/* type id of the child object spawned into a Dll19ASpawnSetup once the gate bit + timer elapse */
-#define DLL19A_CHILD_OBJ 0x2d0
-
-int dll_19A_getExtraSize(void)
-{
-    return sizeof(Dll19AState);
+int dll410_getExtraSize(void) {
+    return sizeof(Dll410State);
 }
-int dll_19A_getObjectTypeId(void)
-{
-    return 0x0;
+
+int dll410_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_19A_free(void)
-{
+void dll410_free(void) {
 }
 
-void dll_19A_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-}
+void dll410_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible;
 
-void dll_19A_hitDetect(void)
-{
-}
-
-void dll_19A_update(GameObject* obj)
-{
-    Dll19APlacement* placement;
-    Dll19AState* state;
-    Dll82Interface** res;
-    Dll19ASpawnSetup* newObj;
-    GameObject* r;
-
-    placement = (Dll19APlacement*)obj->anim.placementData;
-    state = obj->extra;
-    if (mainGetBit(GAMEBIT_DLL19A_RESET) != 0)
-    {
-        obj->userData2 = 0;
-        state->countdown = 100;
-        state->countdownRate = 0;
-        obj->anim.pad37[0] = 0xff;
-        obj->anim.alpha = 0xff;
+    isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DLL410_RENDER_SCALE);
     }
-    else
-    {
-        if ((obj->userData2 == 0) &&
-            (mainGetBit(placement->gateBitIndex + GAMEBIT_DLL19A_GATE_BASE) != 0))
-        {
-            res = Resource_Acquire(0x82, 1);
-            (*res)->spawn(obj, 0, NULL, 1, -1, NULL);
-            (*res)->spawn(obj, 1, NULL, 1, -1, NULL);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_hitpos_6);
-            Resource_Release(res);
-            state->countdownRate = 1;
+}
+
+void dll410_hitDetect(void) {
+}
+
+void dll410_update(GameObject* obj) {
+    const Dll410Placement* placement;
+    Dll410State* state;
+    Dll82Interface** effectResource;
+    Dll410SpawnSetup* spawnSetup;
+    GameObject* child;
+
+    placement = (const Dll410Placement*)obj->anim.placementData;
+    state = obj->extra;
+    if (mainGetBit(DLL410_RESET_GAMEBIT) != 0) {
+        obj->userData2 = 0;
+        state->spawnTimer = DLL410_SPAWN_TIMER;
+        state->spawnTimerRate = 0;
+        obj->anim.renderAlpha = DLL410_FULL_ALPHA;
+        obj->anim.alpha = DLL410_FULL_ALPHA;
+    } else {
+        if (obj->userData2 == 0 && mainGetBit(placement->triggerGameBitOffset + DLL410_TRIGGER_GAMEBIT_BASE) != 0) {
+            effectResource = Resource_Acquire(DLL410_EFFECT_RESOURCE_ID, 1);
+            (*effectResource)->spawn(obj, 0, NULL, 1, -1, NULL);
+            (*effectResource)->spawn(obj, 1, NULL, 1, -1, NULL);
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_hitpos_6);
+            Resource_Release(effectResource);
+            state->spawnTimerRate = 1;
             obj->userData2 = 1;
         }
-        if (state->countdownRate != 0)
-        {
-            state->countdown -= state->countdownRate * framesThisStep;
+        if (state->spawnTimerRate != 0) {
+            state->spawnTimer -= state->spawnTimerRate * framesThisStep;
         }
-        if ((state->countdown <= 0) && (Obj_IsLoadingLocked() != 0))
-        {
-            newObj = (Dll19ASpawnSetup*)Obj_AllocObjectSetup(sizeof(Dll19ASpawnSetup), DLL19A_CHILD_OBJ);
-            newObj->base.posX = placement->base.posX;
-            newObj->base.posY = placement->base.posY;
-            newObj->base.posZ = placement->base.posZ;
-            newObj->base.color[0] = placement->base.color[0];
-            newObj->base.color[1] = placement->base.color[1];
-            newObj->base.color[2] = placement->base.color[2];
-            newObj->base.color[3] = placement->base.color[3];
-            newObj->unk27 = 1;
-            newObj->unk18 = 0x1e7;
-            newObj->unk30 = 0xffff;
-            newObj->rotX = obj->anim.rotX >> 8;
-            newObj->unk2B = 2;
-            if (mainGetBit(GAMEBIT_DLL19A_GATE_BASE + 1) != 0)
-            {
-                newObj->unk22 = 0x49;
+        if (state->spawnTimer <= 0 && Obj_IsLoadingLocked() != 0) {
+            spawnSetup = (Dll410SpawnSetup*)Obj_AllocObjectSetup(sizeof(Dll410SpawnSetup), DLL410_CHILD_OBJECT_ID);
+            spawnSetup->base.posX = placement->base.posX;
+            spawnSetup->base.posY = placement->base.posY;
+            spawnSetup->base.posZ = placement->base.posZ;
+            spawnSetup->base.color[0] = placement->base.color[0];
+            spawnSetup->base.color[1] = placement->base.color[1];
+            spawnSetup->base.color[2] = placement->base.color[2];
+            spawnSetup->base.color[3] = placement->base.color[3];
+            spawnSetup->initialWeaponId = DLL410_CHILD_INITIAL_WEAPON_ID;
+            spawnSetup->gameBit = DLL410_CHILD_GAMEBIT;
+            spawnSetup->unknown30 = -1;
+            spawnSetup->initialYaw = (s8)(obj->anim.rotX >> 8);
+            spawnSetup->flags = DLL410_CHILD_FLAGS;
+            if (mainGetBit(DLL410_DROPPED_ITEM_GAMEBIT) != 0) {
+                spawnSetup->droppedItemId = DLL410_CHILD_DROPPED_ITEM_ID;
+            } else {
+                spawnSetup->droppedItemId = -1;
             }
-            else
+            spawnSetup->aggroRangeByte = DLL410_CHILD_AGGRO_RANGE;
+            spawnSetup->triggerSequenceId = -1;
             {
-                newObj->unk22 = 0xffff;
+                int linkIndex;
+
+                linkIndex = placement->triggerGameBitOffset;
+                spawnSetup->linkIndex = linkIndex;
             }
-            newObj->unk29 = 0xff;
-            newObj->unk2E = -1;
-            {
-                int linkIdx = placement->gateBitIndex;
-                newObj->linkIndex = linkIdx;
+            child = Obj_SetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            if (child != NULL && child->extra != NULL) {
+                /*
+                 * Retail writes beyond the spawned SC_levelcon object's 0x24-byte
+                 * state. Keep the out-of-bounds byte access explicit.
+                 */
+                *((u8*)child->extra + DLL410_CHILD_EXTRA_BYTE_OFFSET) = DLL410_CHILD_EXTRA_BYTE_VALUE;
             }
-            r = Obj_SetupObject(&newObj->base, 5, obj->anim.mapEventSlot, 0xffffffff, obj->anim.parent);
-            if ((r != NULL) && (r->extra != NULL))
-            {
-                *(u8*)((u8*)r->extra + 0x404) = 0x20;
-            }
-            state->countdown = 100;
-            state->countdownRate = 0;
+            state->spawnTimer = DLL410_SPAWN_TIMER;
+            state->spawnTimerRate = 0;
         }
     }
 }
 
-void dll_19A_init(GameObject* obj, Dll19APlacement* placement)
-{
-    Dll19AState* state = obj->extra;
-    obj->anim.rotX = (s16)((s32)placement->rotX << 8);
+void dll410_init(GameObject* obj, const Dll410Placement* placement) {
+    Dll410State* state;
+
+    state = obj->extra;
+    obj->anim.rotX = (s16)((s32)placement->initialYaw << 8);
     obj->userData2 = 0;
-    state->countdown = 100;
-    state->countdownRate = 0;
-    obj->anim.pad37[0] = 0xFF;
-    obj->anim.alpha = 0xFF;
+    state->spawnTimer = DLL410_SPAWN_TIMER;
+    state->spawnTimerRate = 0;
+    obj->anim.renderAlpha = DLL410_FULL_ALPHA;
+    obj->anim.alpha = DLL410_FULL_ALPHA;
 }
 
-void dll_19A_release(void)
-{
+void dll410_release(void) {
 }
 
-void dll_19A_initialise(void)
-{
+void dll410_initialise(void) {
 }
 
-ObjectDescriptor dll_19A = {
+ObjectDescriptor gDll410ObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_19A_initialise,
-    (ObjectDescriptorCallback)dll_19A_release,
+    (ObjectDescriptorCallback)dll410_initialise,
+    (ObjectDescriptorCallback)dll410_release,
     0,
-    (ObjectDescriptorCallback)dll_19A_init,
-    (ObjectDescriptorCallback)dll_19A_update,
-    (ObjectDescriptorCallback)dll_19A_hitDetect,
-    (ObjectDescriptorCallback)dll_19A_render,
-    (ObjectDescriptorCallback)dll_19A_free,
-    (ObjectDescriptorCallback)dll_19A_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll_19A_getExtraSize,
+    (ObjectDescriptorCallback)dll410_init,
+    (ObjectDescriptorCallback)dll410_update,
+    (ObjectDescriptorCallback)dll410_hitDetect,
+    (ObjectDescriptorCallback)dll410_render,
+    (ObjectDescriptorCallback)dll410_free,
+    (ObjectDescriptorCallback)dll410_getObjectTypeId,
+    dll410_getExtraSize,
 };
