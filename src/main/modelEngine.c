@@ -119,6 +119,7 @@
 #include "dlls/objects/321_Lightning.h"
 #include "dlls/objects/322_FElevContro.h"
 #include "dlls/objects/323_FEseqobject.h"
+#include "dlls/objects/324.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -360,8 +361,7 @@ extern ResourceDescriptor lbl_8031ADF8, lbl_8031C020, lbl_8031C168, lbl_8031C1E4
     lbl_8031C5D0, lbl_8031C5F8;
 extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_803230F8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
-extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80327BA8, lbl_80328AD8, lbl_80328E28,
-    lbl_80329340;
+extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
 extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0, lbl_803DBE00, lbl_803DBE10,
     lbl_803DBE18, lbl_803DBE50;
@@ -1306,7 +1306,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLightningObjDescriptor,
     (ResourceDescriptor*)&gFElevControlObjDescriptor,
     (ResourceDescriptor*)&gFEseqobjectObjDescriptor,
-    &lbl_80327BA8,
+    (ResourceDescriptor*)&gDll144ObjDescriptor,
     &gCloudPrisonControlObjDescriptor,
     &lbl_803DBE10,
     &lbl_803DBE18,

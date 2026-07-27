@@ -1,71 +1,54 @@
-/*
- * DLL 0x144 - a near-empty front-end sequence object stub.
- *
- * The active object callbacks are all no-ops (free/hitDetect/update/
- * release/initialise do nothing; getExtraSize/getObjectTypeId return 0).
- * Its SeqFn just clears the per-frame sequenceEventActive flag and its
- * init zeroes anim.rotX (obj+0x00) and installs the SeqFn as the anim
- * event callback. render forwards a fixed scale (lbl_803E56C0) to the
- * shared objRenderModelAndHitVolumes when visible.
- *
- */
-#include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "main/objanim_update.h"
-#include "main/object_render.h"
-#include "main/dll/dll_0144_dll144.h"
+/* Clears sequence-event state and supplies otherwise minimal callbacks. */
+#include "dlls/objects/324.h"
 
+#include "game/objects/object.h"
+#include "main/object_render.h"
+
+/* 1.0f model render scale from the shared scalar pool. */
 extern f32 lbl_803E56C0;
 
-int dll_144_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int dll_144_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     animUpdate->sequenceEventActive = 0;
     return 0;
 }
 
-int dll_144_getExtraSize(void)
-{
-    return 0x0;
-}
-int dll_144_getObjectTypeId(void)
-{
-    return 0x0;
+int dll_144_getExtraSize(void) {
+    return 0;
 }
 
-void dll_144_free(void)
-{
+int dll_144_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_144_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E56C0);
+void dll_144_free(void) {
 }
 
-void dll_144_hitDetect(void)
-{
+void dll_144_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E56C0);
+    }
 }
 
-void dll_144_update(void)
-{
+void dll_144_hitDetect(void) {
 }
 
-void dll_144_init(GameObject* obj)
-{
+void dll_144_update(void) {
+}
+
+void dll_144_init(GameObject* obj) {
     obj->anim.rotX = 0;
     obj->animEventCallback = dll_144_SeqFn;
 }
 
-void dll_144_release(void)
-{
+void dll_144_release(void) {
 }
 
-void dll_144_initialise(void)
-{
+void dll_144_initialise(void) {
 }
 
-ObjectDescriptor lbl_80327BA8 = {
+ObjectDescriptor gDll144ObjDescriptor = {
     0,
     0,
     0,

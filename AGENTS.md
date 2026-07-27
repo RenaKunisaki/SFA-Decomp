@@ -197,6 +197,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   adjacent named slot, or behavioral resemblance. Keep a numbered namespace until retail object
   mappings, strings, symbols, or similarly direct evidence establishes the identity; recover
   semantic field, state, and helper names in the meantime.
+- Once an unnamed numbered slot provably owns an address-labeled descriptor, give that descriptor a
+  stable numbered symbol such as `gDll144ObjDescriptor` and update the active symbol config. Keep
+  the functions in the same numbered namespace and do not treat this internal rename as evidence
+  for renaming the generated source folder or filename.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.
