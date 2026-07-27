@@ -2290,7 +2290,7 @@ void dbstealerworm_hitDetect(GameObject* obj)
 
 void dbstealerworm_update(u8* objp)
 {
-    char* st;
+    DbWormEffectSpawnWork* st;
     char* tbl;
     int blob;
     int data;
@@ -2310,7 +2310,7 @@ void dbstealerworm_update(u8* objp)
     } stk;
 
     obj = (GameObject*)objp;
-    st = (char*)&gDbWormEffectSpawnWork;
+    st = &gDbWormEffectSpawnWork;
     tbl = (char*)lbl_803293B8;
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
@@ -2388,12 +2388,12 @@ void dbstealerworm_update(u8* objp)
                 if ((*gBaddieControlInterface)
                         ->updateHitReaction(obj, (void*)blob, (char*)blob + 0x35c,
                                             ((GroundBaddieState*)blob)->gameBitB, (int*)(tbl + 0x2ac),
-                                            (u8*)(tbl + 0x324), 1, &gDbWormEffectSpawnWork) != 0)
+                                            (u8*)(tbl + 0x324), 1, st) != 0)
                 {
-                    ((DbWormEffectSpawnWork*)st)->posX = obj->anim.localPosX;
-                    ((DbWormEffectSpawnWork*)st)->posY = obj->anim.localPosY;
-                    ((DbWormEffectSpawnWork*)st)->posZ = obj->anim.localPosZ;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, (char*)&gDbWormEffectSpawnWork, 1, 0);
+                    st->posX = obj->anim.localPosX;
+                    st->posY = obj->anim.localPosY;
+                    st->posZ = obj->anim.localPosZ;
+                    objLightFn_8009a1dc((void*)obj, 0.014f, st, 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
@@ -2411,7 +2411,7 @@ void dbstealerworm_update(u8* objp)
                     }
                     ((GroundBaddieState*)blob)->savedObjC0 = *(int*)&obj->pendingParentObj;
                     *(int*)&obj->pendingParentObj = 0;
-                    (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, st + 0x34, st + 0x18);
+                    (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st + 0x34, (char*)st + 0x18);
                     *(int*)&obj->pendingParentObj = ((GroundBaddieState*)blob)->savedObjC0;
                 }
             }
