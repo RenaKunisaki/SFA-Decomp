@@ -1,91 +1,96 @@
-/*
- * CCriverflow (DLL 0x174) - Crystal Caves river-flow object. A presence
- * object that joins/leaves render group CCRIVERFLOW_OBJECT_GROUP depending
- * on its placement gameBit: while the bit is clear the flow is shown, once
- * set it is removed. A gameBit of -1 means "always on". init also derives
- * the surface height from the model base height plus a placement offset.
- */
-#include "main/obj_group.h"
+#include "dlls/objects/372_CCriverflow.h"
+
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/DF/DFcradle.h"
-#include "main/gamebits.h"
+#include "main/gamebits_api.h"
+#include "main/obj_group.h"
 
+#define CC_RIVER_FLOW_OBJECT_GROUP        0x14
+#define CC_RIVER_FLOW_DEFAULT_SPEED       0xFF
+#define CC_RIVER_FLOW_HEIGHT_OFFSET_SCALE 512.0f
+#define CC_RIVER_FLOW_MINIMUM_HEIGHT      0.01f
 
-int ccriverflow_getExtraSize(void)
+int ccRiverFlow_getExtraSize(void)
 {
-    return sizeof(CCriverflowState);
+    return sizeof(CCRiverFlowState);
 }
 
-void ccriverflow_free(CCriverflowObject* obj)
+void ccRiverFlow_free(GameObject* obj)
 {
-    if (obj->state->active != 0)
+    CCRiverFlowState* state = obj->extra;
+
+    if (state->active != 0)
     {
-        ObjGroup_RemoveObject((u32)obj, CCRIVERFLOW_OBJECT_GROUP);
+        ObjGroup_RemoveObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
     }
 }
 
-void ccriverflow_render(void)
+void ccRiverFlow_render(void)
 {
 }
 
-void ccriverflow_update(CCriverflowObject* obj)
+void ccRiverFlow_update(GameObject* obj)
 {
     u32 isGameBitSet;
-    CCriverflowMapData* mapData;
-    CCriverflowState* state;
+    CCRiverFlowPlacement* placement;
+    CCRiverFlowState* state;
 
-    mapData = obj->mapData;
-    if (mapData->gameBit != -1)
+    placement = (CCRiverFlowPlacement*)obj->anim.placementData;
+    if (placement->gameBit != -1)
     {
-        state = obj->state;
-        isGameBitSet = mainGetBit((int)mapData->gameBit);
+        state = obj->extra;
+        isGameBitSet = mainGetBit((int)placement->gameBit);
         if (isGameBitSet != 0)
         {
             if (state->active != 0)
             {
                 state->active = 0;
-                ObjGroup_RemoveObject((u32)obj, CCRIVERFLOW_OBJECT_GROUP);
+                ObjGroup_RemoveObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
             }
         }
         else if (state->active == 0)
         {
             state->active = 1;
-            ObjGroup_AddObject((u32)obj, CCRIVERFLOW_OBJECT_GROUP);
+            ObjGroup_AddObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
         }
     }
 }
 
-void ccriverflow_init(CCriverflowObject* obj, CCriverflowMapData* params)
+void ccRiverFlow_init(GameObject* obj, CCRiverFlowPlacement* placement)
 {
-    if (params->gameBit == -1)
+    if (placement->gameBit == -1)
     {
-        ObjGroup_AddObject((u32)obj, CCRIVERFLOW_OBJECT_GROUP);
-        obj->state->active = 1;
+        ObjGroup_AddObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
+        ((CCRiverFlowState*)obj->extra)->active = 1;
     }
-    obj->angle = params->angleByte << 8;
-    obj->height = obj->model->baseHeight;
-    obj->height = (f32)(u32)params->heightOffset / 512.0f + obj->height;
-    if (obj->height < (0.01f))
+
+    obj->anim.rotX = placement->angle << 8;
+    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
+    obj->anim.rootMotionScale =
+        (f32)(u32)placement->heightOffset / CC_RIVER_FLOW_HEIGHT_OFFSET_SCALE +
+        obj->anim.rootMotionScale;
+    if (obj->anim.rootMotionScale < CC_RIVER_FLOW_MINIMUM_HEIGHT)
     {
-        obj->height = (0.01f);
+        obj->anim.rootMotionScale = CC_RIVER_FLOW_MINIMUM_HEIGHT;
     }
-    if (params->speedByte == 0)
+    if (placement->speed == 0)
     {
-        params->speedByte = CCRIVERFLOW_DEFAULT_SPEED;
+        placement->speed = CC_RIVER_FLOW_DEFAULT_SPEED;
     }
 }
 
-ObjectDescriptor gCCriverflowObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+ObjectDescriptor gCCRiverFlowObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)ccriverflow_init,
-    (ObjectDescriptorCallback)ccriverflow_update,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     0,
-    (ObjectDescriptorCallback)ccriverflow_render,
-    (ObjectDescriptorCallback)ccriverflow_free,
     0,
-    ccriverflow_getExtraSize,
+    0,
+    (ObjectDescriptorCallback)ccRiverFlow_init,
+    (ObjectDescriptorCallback)ccRiverFlow_update,
+    0,
+    (ObjectDescriptorCallback)ccRiverFlow_render,
+    (ObjectDescriptorCallback)ccRiverFlow_free,
+    0,
+    (ObjectDescriptorExtraSizeCallback)ccRiverFlow_getExtraSize,
 };

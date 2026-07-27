@@ -167,6 +167,7 @@
 #include "dlls/objects/369_IMSpaceRing.h"
 #include "dlls/objects/370_LINKB_levco.h"
 #include "dlls/objects/371_LINK_levcon.h"
+#include "dlls/objects/372_CCriverflow.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -260,7 +261,7 @@ extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPl
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
-extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor;
+extern ResourceDescriptor gCCqueenObjDescriptor;
 extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1391,7 +1392,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gIMSpaceRingGeneratorObjDescriptor,
     (ResourceDescriptor*)&gLINKBLevelControlObjDescriptor,
     (ResourceDescriptor*)&gLINKLevelControlObjDescriptor,
-    &gCCriverflowObjDescriptor,
+    (ResourceDescriptor*)&gCCRiverFlowObjDescriptor,
     &gDFropenodeObjDescriptor,
     &lbl_80325F20,
     &gDFSH_Door2SpeciObjDescriptor,
