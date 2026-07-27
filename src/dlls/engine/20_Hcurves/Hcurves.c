@@ -1381,7 +1381,7 @@ void walkgroupFindExitPointFn_800dc398(void)
             {
                 gi = curve->walkGroup;
                 wg = &((ObjfsaWalkGroup*)(patchBase[0] + 256))[gi];
-                Objfsa_GetStorage(patchBase[0])->activeWalkGroups[gi] = 1;
+                *(u8*)((gi + OBJFSA_ACTIVE_WALKGROUPS_OFFSET) + (int)patchBase[0]) = 1;
 
                 x0 = objfsaCorner(curve->firstEdge[0], scale, &curve->x);
                 z0 = objfsaCorner(curve->firstEdge[1], scale, &curve->z);
