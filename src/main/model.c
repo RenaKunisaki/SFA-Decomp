@@ -274,8 +274,8 @@ void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int chan
 {
     int i;
     u8* mtxSlotRow;
-    u8* frameStream;
     u8* slotByte;
+    u8* frameStream;
     int frameIdx;
     int boneByteOff;
     int boneIdx;
