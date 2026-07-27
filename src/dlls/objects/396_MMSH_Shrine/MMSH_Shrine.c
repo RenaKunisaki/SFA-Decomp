@@ -365,7 +365,7 @@ void mmshShrine_free(GameObject* obj) {
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
     Music_Trigger(MMSH_SHRINE_MUSIC_TRIGGER_0A, 0);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 0);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 0);
     mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
     mainSetBits(MMSH_SHRINE_GAMEBIT_0E82, 0);
     mainSetBits(MMSH_SHRINE_GAMEBIT_0E83, 0);
@@ -503,7 +503,7 @@ void mmshShrine_init(GameObject* obj, const MMSHShrinePlacement* placement) {
         state->light = light;
     }
     mainSetBits(GAMEBIT_LV_LocatedKrazoaShrine, 1);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 1);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 1);
 }
 
 void mmshShrine_release(void) {

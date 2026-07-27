@@ -404,7 +404,7 @@ void ecshShrine_free(GameObject* obj) {
         state->light = NULL;
     }
     ObjGroup_RemoveObject((int)obj, ECSH_SHRINE_OBJ_GROUP);
-    mainSetBits(GAMEBIT_ECSH_InShrine, 0);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 0);
     mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
     mainSetBits(GAMEBIT_WMRelated0A7F, 1);
 }
@@ -842,7 +842,7 @@ void ecshShrine_init(GameObject* obj, const s8* placement) {
     if (state->light == NULL) {
         state->light = objCreateLight(NULL, 1);
     }
-    mainSetBits(GAMEBIT_ECSH_InShrine, 1);
+    mainSetBits(GAMEBIT_IN_KRAZOA_SHRINE, 1);
 }
 
 void ecshShrine_release(void) {

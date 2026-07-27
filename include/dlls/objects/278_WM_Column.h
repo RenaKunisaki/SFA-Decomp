@@ -9,11 +9,8 @@
 
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct WMColumnPlacement {
-    ObjPlacement base; /* 0x00 */
-    union {
-        u8 initialYaw;       /* 0x18: WM_Column's unsigned rotation view */
-        s8 signedInitialYaw; /* 0x18: GPSH_Scene's signed rotation view */
-    };
+    ObjPlacement base;   /* 0x00 */
+    u8 initialYaw;       /* 0x18 */
     u8 modelBankIndex;   /* 0x19: object ID is 500 plus its signed-byte view */
     u8 pad1A[4];         /* 0x1A */
     s16 occupiedGameBit; /* 0x1E: set while the matching column occupies this spot, or -1 */
@@ -26,7 +23,6 @@ typedef struct WMColumnState {
 
 STATIC_ASSERT(offsetof(WMColumnPlacement, base) == 0x0);
 STATIC_ASSERT(offsetof(WMColumnPlacement, initialYaw) == 0x18);
-STATIC_ASSERT(offsetof(WMColumnPlacement, signedInitialYaw) == 0x18);
 STATIC_ASSERT(offsetof(WMColumnPlacement, modelBankIndex) == 0x19);
 STATIC_ASSERT(offsetof(WMColumnPlacement, pad1A) == 0x1A);
 STATIC_ASSERT(offsetof(WMColumnPlacement, occupiedGameBit) == 0x1E);

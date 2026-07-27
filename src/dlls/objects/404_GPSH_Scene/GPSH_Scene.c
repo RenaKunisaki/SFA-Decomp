@@ -1,56 +1,66 @@
-/* GPSH_Scene (DLL 0x194) */
-#include "dlls/objects/278_WM_Column.h"
+/*
+ * GPSH_Scene (DLL 0x194) - Test of Knowledge scene geometry.
+ */
+#include "dlls/objects/404_GPSH_Scene.h"
 
-#include "main/screen_transition.h"
-#include "main/dll/dll_0194_gpshscene.h"
 #include "game/objects/object.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
-int gpsh_scene_getExtraSize(void) { return 0x0; }
-int gpsh_scene_getObjectTypeId(void) { return 0x0; }
+#define GPSH_SCENE_RENDER_SCALE 1.0f
 
-void gpsh_scene_free(void)
-{
+int gpshScene_getExtraSize(void) {
+    return 0;
 }
 
-void gpsh_scene_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+int gpshScene_getObjectTypeId(void) {
+    return 0;
 }
 
-void gpsh_scene_hitDetect(void)
-{
+void gpshScene_free(void) {
 }
 
-void gpsh_scene_update(void)
-{
+void gpshScene_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible;
+
+    isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, GPSH_SCENE_RENDER_SCALE);
+    }
 }
 
-void gpsh_scene_init(int* obj, int* def)
-{
-    WMColumnPlacement* place = (WMColumnPlacement*)def;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)place->signedInitialYaw << 8);
-    ((GameObject*)obj)->anim.worldPosX = ((GameObject*)obj)->anim.localPosX;
-    ((GameObject*)obj)->anim.worldPosY = ((GameObject*)obj)->anim.localPosY;
-    ((GameObject*)obj)->anim.worldPosZ = ((GameObject*)obj)->anim.localPosZ;
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode = (u8)(*(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+void gpshScene_hitDetect(void) {
 }
 
-void gpsh_scene_release(void)
-{
+void gpshScene_update(void) {
 }
 
-void gpsh_scene_initialise(void)
-{
+void gpshScene_init(GameObject* obj, const GPSHScenePlacement* placement) {
+    obj->anim.rotX = (s16)((s32)placement->initialYaw << 8);
+    obj->anim.worldPosX = obj->anim.localPosX;
+    obj->anim.worldPosY = obj->anim.localPosY;
+    obj->anim.worldPosZ = obj->anim.localPosZ;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
 }
 
-ObjectDescriptor gGPSH_SceneObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)gpsh_scene_initialise, (ObjectDescriptorCallback)gpsh_scene_release, 0,
-    (ObjectDescriptorCallback)gpsh_scene_init, (ObjectDescriptorCallback)gpsh_scene_update,
-    (ObjectDescriptorCallback)gpsh_scene_hitDetect, (ObjectDescriptorCallback)gpsh_scene_render,
-    (ObjectDescriptorCallback)gpsh_scene_free, (ObjectDescriptorCallback)gpsh_scene_getObjectTypeId,
-    gpsh_scene_getExtraSize,
+void gpshScene_release(void) {
+}
+
+void gpshScene_initialise(void) {
+}
+
+ObjectDescriptor gGPSHSceneObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)gpshScene_initialise,
+    (ObjectDescriptorCallback)gpshScene_release,
+    0,
+    (ObjectDescriptorCallback)gpshScene_init,
+    (ObjectDescriptorCallback)gpshScene_update,
+    (ObjectDescriptorCallback)gpshScene_hitDetect,
+    (ObjectDescriptorCallback)gpshScene_render,
+    (ObjectDescriptorCallback)gpshScene_free,
+    (ObjectDescriptorCallback)gpshScene_getObjectTypeId,
+    gpshScene_getExtraSize,
 };
