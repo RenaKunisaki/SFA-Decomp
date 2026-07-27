@@ -125,6 +125,7 @@
 #include "dlls/objects/327.h"
 #include "dlls/objects/328_CFGuardian.h"
 #include "dlls/objects/329.h"
+#include "dlls/objects/330_CFPowerBase.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -221,8 +222,8 @@ extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
     gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor, gCFMainCrystalObjDescriptor;
-extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFPrisonCageObjDescriptor,
-    gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor;
+extern ResourceDescriptor gCFPerchObjDescriptor, gCFPrisonCageObjDescriptor, gCFPrisonGuardObjDescriptor,
+    gCFPrisonUncleObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1316,7 +1317,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll147NullResourceDescriptor,
     (ResourceDescriptor*)&gCFGuardianObjDescriptor,
     (ResourceDescriptor*)&gWindLiftObjDescriptor,
-    &gCFPowerBaseObjDescriptor,
+    (ResourceDescriptor*)&gCFPowerBaseObjDescriptor,
     &gCFMainCrystalObjDescriptor,
     &gBabyCloudRunnerObjDescriptor,
     &lbl_803DBE50,

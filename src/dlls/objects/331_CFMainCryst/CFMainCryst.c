@@ -6,6 +6,8 @@
  * the convergence beam.
  */
 
+#include "dlls/objects/330_CFPowerBase.h"
+
 #include "main/dll/partfx_interface.h"
 #include "main/render_envfx_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
@@ -39,13 +41,7 @@
 /* beam-report protocol shared with cfpowerbase (dll_014A): probe each
    pylon group (class 0xDA) with its message; the crystal itself answers
    position probes (class 0xDC) with CFMAINCRYSTAL_MSG_CRYSTAL. */
-enum
-{
-    CFMAINCRYSTAL_MSG_PYLON_1 = 0x110001,
-    CFMAINCRYSTAL_MSG_PYLON_2 = 0x110002,
-    CFMAINCRYSTAL_MSG_PYLON_3 = 0x110003,
-    CFMAINCRYSTAL_MSG_CRYSTAL = 0x110004
-};
+#define CFMAINCRYSTAL_MSG_CRYSTAL 0x110004
 
 /* game bits: the three base bits (see cfpowerbase) + 0x57 = the
    convergence cutscene bit that pins everything fully charged - and
@@ -94,19 +90,19 @@ void cfmaincrystal_updateBeams(GameObject* obj)
     {
         switch (msgType)
         {
-        case CFMAINCRYSTAL_MSG_PYLON_1:
+        case CFPOWERBASE_PYLON_MESSAGE_1:
             sub->pylonX[0] = msgSrc->anim.localPosX;
             sub->pylonY[0] = 1945.0f;
             sub->pylonZ[0] = msgSrc->anim.localPosZ;
             sub->pylonTimer[0] = 1;
             break;
-        case CFMAINCRYSTAL_MSG_PYLON_2:
+        case CFPOWERBASE_PYLON_MESSAGE_2:
             sub->pylonX[1] = msgSrc->anim.localPosX;
             sub->pylonY[1] = 1945.0f;
             sub->pylonZ[1] = msgSrc->anim.localPosZ;
             sub->pylonTimer[1] = 1;
             break;
-        case CFMAINCRYSTAL_MSG_PYLON_3:
+        case CFPOWERBASE_PYLON_MESSAGE_3:
             sub->pylonX[2] = msgSrc->anim.localPosX;
             sub->pylonY[2] = 1945.0f;
             sub->pylonZ[2] = msgSrc->anim.localPosZ;
@@ -126,15 +122,15 @@ void cfmaincrystal_updateBeams(GameObject* obj)
     }
     if (mainGetBit(GAMEBIT_CFBASE_1) != 0 && sub->pylonTimer[0] == 0)
     {
-        ObjMsg_SendToObjects(0xda, 4, obj, CFMAINCRYSTAL_MSG_PYLON_1, 0);
+        ObjMsg_SendToObjects(0xda, 4, obj, CFPOWERBASE_PYLON_MESSAGE_1, 0);
     }
     if (mainGetBit(GAMEBIT_CFBASE_2) != 0 && sub->pylonTimer[1] == 0)
     {
-        ObjMsg_SendToObjects(0xda, 4, obj, CFMAINCRYSTAL_MSG_PYLON_2, 0);
+        ObjMsg_SendToObjects(0xda, 4, obj, CFPOWERBASE_PYLON_MESSAGE_2, 0);
     }
     if (mainGetBit(GAMEBIT_CFBASE_3) != 0 && sub->pylonTimer[2] == 0)
     {
-        ObjMsg_SendToObjects(0xda, 4, obj, CFMAINCRYSTAL_MSG_PYLON_3, 0);
+        ObjMsg_SendToObjects(0xda, 4, obj, CFPOWERBASE_PYLON_MESSAGE_3, 0);
     }
     sub->beams[0].active = 0;
     sub->beams[1].active = 0;
