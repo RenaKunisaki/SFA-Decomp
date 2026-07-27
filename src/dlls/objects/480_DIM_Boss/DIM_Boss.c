@@ -851,9 +851,9 @@ void DIM2icicle_updateBossSequenceEffects(DIMbossObject* obj, DIMbossRuntime* ru
             gDim2IcicleDustFxSource.posY = randomGetRange(-0x19, 0x19);
             gDim2IcicleDustFxSource.posZ = -75.0f;
             gDIMbossAnimScratchBase[0] =
-                gDim2IcicleDustFxSource.posX / (gDim2IcicleDustFxSource.posZ * 0.5f);
+                gDim2IcicleDustFxSource.posX / (gDim2IcicleDustFxSource.posZ / 2.0f);
             gDIMbossAnimScratchBase[1] =
-                gDim2IcicleDustFxSource.posY / (gDim2IcicleDustFxSource.posZ * 0.5f);
+                gDim2IcicleDustFxSource.posY / (gDim2IcicleDustFxSource.posZ / 2.0f);
             gDIMbossAnimScratchBase[2] = 2.0f;
             PSMTXMultVec(m, gDIMbossAnimScratchBase, gDIMbossAnimScratchBase);
             ObjPath_GetPointWorldPosition((GameObject*)objIndex, 0xb, &gDim2IcicleDustFxSource.posX,
@@ -1383,6 +1383,22 @@ Dim2BossMoveChoices gDim2LiftFarMoveChoices = {
     {3, 4, 3, 5, 4, 5, 6, 0},
     {5, 4, 3, 5, 4, 5, 6, 0},
     {4, 5, 4, 5, 4, 5, 6, 0},
+};
+
+ObjectDescriptor12 gDIM_BossObjDescriptor = {
+    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
+    (ObjectDescriptorCallback)DIMboss_initialise,
+    (ObjectDescriptorCallback)DIMboss_release,
+    0,
+    (ObjectDescriptorCallback)DIMboss_init,
+    (ObjectDescriptorCallback)DIMboss_update,
+    (ObjectDescriptorCallback)DIMboss_hitDetect,
+    (ObjectDescriptorCallback)DIMboss_render,
+    (ObjectDescriptorCallback)DIMboss_free,
+    (ObjectDescriptorCallback)DIMboss_getObjectTypeId,
+    DIMboss_getExtraSize,
+    (ObjectDescriptorCallback)DIMboss_setScale,
+    (ObjectDescriptorCallback)DIMboss_func0B,
 };
 
 #define DIMBOSS_OBJGROUP 3
@@ -2031,18 +2047,3 @@ u8 gDim2IcicleHitFxBuffer[0x18];
 PartFxSpawnParams gDim2IcicleDustFxSource;
 f32 gDIMbossAnimScratchBase[3];
 
-ObjectDescriptor12 gDIM_BossObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
-    (ObjectDescriptorCallback)DIMboss_initialise,
-    (ObjectDescriptorCallback)DIMboss_release,
-    0,
-    (ObjectDescriptorCallback)DIMboss_init,
-    (ObjectDescriptorCallback)DIMboss_update,
-    (ObjectDescriptorCallback)DIMboss_hitDetect,
-    (ObjectDescriptorCallback)DIMboss_render,
-    (ObjectDescriptorCallback)DIMboss_free,
-    (ObjectDescriptorCallback)DIMboss_getObjectTypeId,
-    DIMboss_getExtraSize,
-    (ObjectDescriptorCallback)DIMboss_setScale,
-    (ObjectDescriptorCallback)DIMboss_func0B,
-};
