@@ -146,8 +146,8 @@ void CFCrate_update(GameObject* obj)
     Obj_GetPlayerObject();
     state = (obj)->extra;
     cam = (int)Camera_GetCurrentViewSlot();
-    id = (obj)->anim.seqId;
     viewslot = *(int*)&(obj)->anim.placementData;
+    id = (obj)->anim.seqId;
 
     switch (id)
     {
