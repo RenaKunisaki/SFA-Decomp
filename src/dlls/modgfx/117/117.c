@@ -1,5 +1,5 @@
 /*
- * DLL 0x75 (dll75func0) - modgfx particle-spawn helper. dll_75_func03 emits a
+ * DLL 117 / 0x75 - modgfx particle-spawn helper. dll_75_func03 emits a
  * variant-selected effect through gModgfxInterface; variant (0..8) picks the
  * effect parameters and optional hardware tuning. dll_75_func00_nop /
  * dll_75_func01_nop are empty entry-point stubs.
