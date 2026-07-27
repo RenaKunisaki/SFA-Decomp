@@ -12,7 +12,6 @@
 #define VFPBLOCK1_OBJFLAG_HIDDEN             0x4000
 #define VFPBLOCK1_OBJFLAG_HITDETECT_DISABLED 0x2000
 
-extern f32 lbl_803E6100;
 
 typedef struct VfpBlock1State
 {
@@ -56,14 +55,14 @@ void VFP_Block1_update(GameObject* obj)
     f32 dist = Vec_distance(&((GameObject*)player)->anim.worldPosX, &obj->anim.worldPosX);
     if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x40) != 0)
     {
-        if (dist < lbl_803E6100)
+        if (dist < 90.0f)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_mv_mushdizzylp12);
         }
     }
     else
     {
-        if (dist >= lbl_803E6100)
+        if (dist >= 90.0f)
         {
             Sfx_StopObjectChannel((int)obj, 0x40);
         }
