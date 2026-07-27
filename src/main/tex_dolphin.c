@@ -1781,7 +1781,7 @@ void mapClearBlockEdgeFlags(void)
     }
 }
 
-int fn_80060C14(int* obj, int triBuf, void* planesOut, int vertsOut, int p7, f32 offX, f32 offZ, int p8, int kindMask)
+int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int p7, f32 offX, f32 offZ, int p8, int kindMask)
 {
     int j;
     f32 lm[12];

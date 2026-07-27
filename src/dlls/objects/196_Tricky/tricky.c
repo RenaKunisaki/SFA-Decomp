@@ -265,7 +265,7 @@ extern f32 lbl_803E2550;
 typedef struct TrickyImpressState
 {
     u8 pad0[0x14 - 0x0];
-    f32 unk14;
+    f32 animSpeed;
     u8 pad18[0x24 - 0x18];
     GameObject* stayPoint;
     u8 pad28[0x54 - 0x28];
@@ -543,9 +543,9 @@ int trickyFn_80138f14(GameObject* obj)
 
 PPCWGPipe GXWGFifo : (0xCC008000);
 
-f32 fn_80138F78(GameObject* obj)
+f32 trickyGetAnimSpeed(GameObject* obj)
 {
-    return ((TrickyImpressState*)obj->extra)->unk14;
+    return ((TrickyImpressState*)obj->extra)->animSpeed;
 }
 
 GameObject* trickyGetStayPoint(GameObject* obj)
@@ -3712,7 +3712,7 @@ void trickyGrowl(void* obj, void* trickyState)
  *                                   heading, and writes the desired
  *                                   x/y/z onto the state; trickyFn_8013b368
  *                                   then steers toward it.
- * fn_8013E0D0                    - the circling state machine, dispatched on
+ * trickyUpdateCircling                    - the circling state machine, dispatched on
  *                                   substate t->substate (0 acquire, 1 approach,
  *                                   2/3/4 the special charge/spawn/finish
  *                                   path, 5 orbit-and-pick-best). It spawns
@@ -3723,14 +3723,14 @@ void trickyGrowl(void* obj, void* trickyState)
 
 /* group owned by another DLL, queried here */
 #define ANIMOBJD2_OBJFLAG_FREED 0x40
-/* Objects spawned by the fn_8013E0D0 state machine (retail OBJECTS.bin names
+/* Objects spawned by the trickyUpdateCircling state machine (retail OBJECTS.bin names
    "TrickyFood" and "flameblast"). */
 #define ANIMOBJD2_TRICKY_FOOD_OBJ_ID 0x17b
 #define ANIMOBJD2_FLAMEBLAST_OBJ_ID  0x4f0
 /* seqId of the special actor Tricky circles when it is the current follow target (docblock: "the special seqId 0x6a3 actor") */
 #define ANIMOBJD2_CIRCLE_TARGET_SEQID 0x6a3
 
-/* fn_8013E0D0 circling substate machine (TrickyState.substate; this object's
+/* trickyUpdateCircling circling substate machine (TrickyState.substate; this object's
  * own values, not a globally shared TrickyState enum). */
 enum AnimObjD2Substate
 {
@@ -3820,7 +3820,7 @@ typedef struct
         }                                                                                                              \
     }
 
-void fn_8013E0D0(GameObject* gobj, TrickyState* t)
+void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
 {
     char* str = lbl_8031D2E8;
     u8 ok;

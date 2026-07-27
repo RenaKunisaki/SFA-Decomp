@@ -217,7 +217,7 @@ int triggerPointInBox(u8* obj, f32* point)
     return 0;
 }
 
-void fn_80198DE8(u8* obj, GameObject* seqObj)
+void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
 {
     f32 ny;
     MmpTriggerPlaneState* state;
@@ -1208,7 +1208,7 @@ void Trigger_hitDetect(GameObject* obj)
                     }
                     if (ok2 && ok)
                     {
-                        fn_80198DE8((u8*)obj, target);
+                        triggerEvalPlaneCrossing((u8*)obj, target);
                     }
                     break;
                 case 0x4e:

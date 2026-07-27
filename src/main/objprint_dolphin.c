@@ -1812,7 +1812,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             {
                 hasBaseTexture = 0;
             }
-            fn_800510F0((void*)refs[1], hasBaseTexture, ((u8*)op)[0x20]);
+            addLightTexReg2Stage((void*)refs[1], hasBaseTexture, ((u8*)op)[0x20]);
         }
         if (color[3] != 0)
         {
@@ -1825,7 +1825,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             {
                 hasBaseTexture = 0;
             }
-            fn_80050FF4(hasBaseTexture);
+            addAlphaLitColorReg2Stage(hasBaseTexture);
         }
     }
     else
@@ -1889,7 +1889,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         if ((t18 = ((ObjModelRenderOp*)op)->textureId) != 0 && ((ObjModelRenderOp*)op)->unk1C == 0 && refs[1] != 0)
         {
             textureIdxToPtr(t18);
-            fn_80050F2C();
+            addTexModulateReg2Stage();
         }
     }
     {
@@ -1952,7 +1952,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
     {
-        fn_80118240();
+        AttractMovie_AddVideoTevStages();
     }
     Rcp_ApplyTextureStageCounts();
     {

@@ -310,7 +310,7 @@ void SnowBike_DrawTrails(int p1, char* table)
  * Cloud-cage trail and audio effects used by the SnowBike.
  *
  * Provides three routines for the vehicle's trail, sound, and pitch state:
- *   fn_801E9C00  builds and fades the swirling cloud-trail ribbons. Each of the
+ *   drcloudcage_updateTrails  builds and fades the swirling cloud-trail ribbons. Each of the
  *                three emitters casts a transformed segment, ray-tests it
  *                (hitDetectFn_80065e50, mask 0x20), and when it strikes ground
  *                inserts a new fully-opaque point pair at the head of one of the
@@ -318,8 +318,8 @@ void SnowBike_DrawTrails(int p1, char* table)
  *                timeDelta and exhausted trails are freed.
  *   drcloudcage_updateEngineFx  drives the wind/engine sfx channels (8,1,2,4) by distance and
  *                rotZ, clamps each channel volume, and spawns two light pulses;
- *                then advances the trails via fn_801E9C00.
- *   fn_801EA678  returns a distance/route-rank weighted scalar (pitch/intensity)
+ *                then advances the trails via drcloudcage_updateTrails.
+ *   drcloudcage_getRouteIntensity  returns a distance/route-rank weighted scalar (pitch/intensity)
  *                from the checkpoint route rank, falling back to player distance
  *                when no rank gate (lbl_803DC0BC) is set.
  *
@@ -371,7 +371,7 @@ const DRCloudCagePoints gDrCloudCagePointTemplate = {
     {-6.0f, 1.0f, 15.0f, 6.0f, 1.0f, 15.0f, -7.5f, 1.0f, 15.0f, -4.0f, 1.0f,
      15.0f, 4.0f, 1.0f, 15.0f, 7.5f, 1.0f, 15.0f}};
 
-void fn_801E9C00(GameObject* obj, int state)
+void drcloudcage_updateTrails(GameObject* obj, int state)
 {
     f32 endZ;
     f32 endY;
@@ -759,10 +759,10 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
         objfx_spawnLightPulse(obj, lbl_803E5AF8, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / lbl_803E5B58,
                               &pulse);
     }
-    fn_801E9C00(obj, (int)state);
+    drcloudcage_updateTrails(obj, (int)state);
 }
 
-f32 fn_801EA678(GameObject* obj, int state)
+f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
 {
     f32 result;
     f32 d;
@@ -936,7 +936,7 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
     }
 
     {
-        f32 ang = fn_801EA678(o, (int)state);
+        f32 ang = drcloudcage_getRouteIntensity(o, (int)state);
         ang = -ang;
         if (s->lastPitch < ang || yawDelta > DRSHACKLE_ANGLE_RETURN_LIMIT || yawDelta < -DRSHACKLE_ANGLE_RETURN_LIMIT)
         {
@@ -974,7 +974,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
                 s->unk494 = zero;
                 s->unk498 = zero;
             }
-            s->lastPitch = -fn_801EA678(obj, (int)state);
+            s->lastPitch = -drcloudcage_getRouteIntensity(obj, (int)state);
             hitResult = (*gCheckpointInterface)
                             ->advanceRoute((u8*)state, &s->collider, -s->lastPitch * timeDelta, s->colliderMode, 1, 0);
             (*gCheckpointInterface)->getRouteHeading(obj, &s->collider);
@@ -1015,7 +1015,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
     }
 
     hitResult = (*gCheckpointInterface)
-                    ->advanceRoute((u8*)state, &s->collider, timeDelta * fn_801EA678(obj, (int)state), s->colliderMode,
+                    ->advanceRoute((u8*)state, &s->collider, timeDelta * drcloudcage_getRouteIntensity(obj, (int)state), s->colliderMode,
                                    1, 0);
     (*gCheckpointInterface)->getRouteHeading(obj, &s->collider);
     (*gCheckpointInterface)->queueRouteRankItem((CheckpointRankItem*)&s->collider);
@@ -1044,11 +1044,11 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
  * SnowBike "Hightop" vehicle helpers.
  *
  * Implements the per-frame logic of the snowbike vehicle: route following
- * along a checkpoint path (fn_801EAE4C / gCheckpointInterface), the air /
+ * along a checkpoint path (SnowBike_UpdateRouteFollowing / gCheckpointInterface), the air /
  * fuel meter and its UI + shutdown sequence (SnowBike_UpdateAirMeter), spawn / reset
  * latching (SnowBike_onSeqFree), the animation-event/sequence callback that seeds
  * the launch impulse from per-step velocity (SnowBike_SeqFn),
- * collision response and impact particle bursts (fn_801EB634), steering /
+ * collision response and impact particle bursts (SnowBike_UpdateCollisionResponse), steering /
  * pitch-roll integration with rumble + camera shake (SnowBike_UpdateSteering), and the
  * exhaust/contrail particle drivers blended toward per-state targets
  * (SnowBike_UpdateExhaustFx). State lives in SnowBikeState (dll_0255_snowbike.h); flags428 is
@@ -1073,7 +1073,7 @@ typedef struct HightopFlags
 #define DRHIGHTOP_HIT_VOLUME_SLOT        0x15
 
 
-void fn_801EAE4C(GameObject* obj, SnowBikeState* st)
+void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
 {
     f32 pathStep;
     u32 gameBitSet;
@@ -1332,7 +1332,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
     return 0;
 }
 
-void fn_801EB634(GameObject* obj, int stateRaw)
+void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
 {
     SnowBikeState* st = (SnowBikeState*)stateRaw;
     int hitKind;
@@ -2528,7 +2528,7 @@ void SnowBike_update(GameObject* obj)
     break;
     case 2:
     {
-        fn_801EAE4C(obj, (SnowBikeState*)state);
+        SnowBike_UpdateRouteFollowing(obj, (SnowBikeState*)state);
         if (((SnowBikeFlags*)(state + 0x428))->b02)
         {
             if (drshackle_updateAttachedPosition(obj, (ShackleSwingState*)state) != 0)
@@ -2668,7 +2668,7 @@ void SnowBike_update(GameObject* obj)
         SnowBike_UpdateAirMeter((int)obj, (int)state);
         drcloudcage_updateEngineFx(obj, state, s->distanceScale,
                                    (int)(lbl_803E5BA0 * -s->engineFxLevel), state + 0x461, 7);
-        fn_801EB634(obj, (int)state);
+        SnowBike_UpdateCollisionResponse(obj, (int)state);
         obj->anim.rotX = s->yaw;
     }
     break;

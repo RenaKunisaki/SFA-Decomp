@@ -1949,7 +1949,7 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
     return lbl_803DCF60;
 }
 
-int fn_800660C8(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 y, u8 type)
+int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 y, u8 type)
 {
     f32 displacement[3];
     f32 horizontalNormal[3];
@@ -2608,7 +2608,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                     }
                     pen = norm4[3] + (cur[2] * norm4[2] + (cur[0] * norm4[0] + cur[1] * norm4[1]));
                     pen = pen - radius;
-                    fn_800660C8(svWorld, cur, svHit, norm4, pen, maxStep, type);
+                    trackResolveSurfacePenetration(svWorld, cur, svHit, norm4, pen, maxStep, type);
                     if (objmtx != 0)
                     {
                         Matrix_TransformPoint(descSave->currentCollisionMatrix, cur[0], cur[1], cur[2], &cur[0],

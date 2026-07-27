@@ -9,7 +9,7 @@ void AttractMovieAudio_Mix(s16 *dst,s16 *src,u32 sampleCount);
 void AttractMovieAudio_DmaCallback(void);
 void THPPlayerPostDrawDone(void);
 BOOL THPPlayerGetVideoInfo(void *dst);
-void fn_80118240(void);
+void AttractMovie_AddVideoTevStages(void);
 BOOL AttractMovie_DrawTextureCallback(int unused, u32* modelPtr, u32 renderOpIdx);
 int ProperTimingForGettingNextFrame(void);
 

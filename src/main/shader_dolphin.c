@@ -2107,7 +2107,7 @@ void gxTextureFn_80050e28(u8 mode)
     lbl_803DCD6A++;
 }
 
-void fn_80050F2C(void)
+void addTexModulateReg2Stage(void)
 {
     GXSetTevDirect(lbl_803DCD90);
     GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
@@ -2121,7 +2121,7 @@ void fn_80050F2C(void)
 }
 
 
-void fn_80050FF4(u8 mode)
+void addAlphaLitColorReg2Stage(u8 mode)
 {
     GXSetTevDirect(lbl_803DCD90);
     GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -2142,7 +2142,7 @@ void fn_80050FF4(u8 mode)
 }
 extern f32 lbl_803DEB40;
 
-void fn_800510F0(void* p1, u8 flag2, u8 flag3)
+void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
 {
     f32 mtxB[3][4];
     f32 mtxA[3][4];

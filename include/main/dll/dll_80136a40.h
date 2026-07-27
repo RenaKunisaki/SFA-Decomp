@@ -11,7 +11,7 @@
  * consumers include this instead of hand-writing a local extern.
  */
 void* trickyGetQueuedPathParticlePos(GameObject* obj);
-f32 fn_80138F78(GameObject* tricky);
+f32 trickyGetAnimSpeed(GameObject* tricky);
 GameObject* trickyGetStayPoint(GameObject* tricky);
 int trickyGetAimPitchOffset(GameObject* tricky);
 int trickyFn_80138f14(GameObject* tricky);

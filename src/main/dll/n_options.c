@@ -4,7 +4,7 @@
  *
  *  - Video: THPPlayerDrawCurrentFrame builds the GX TEV pipeline that
  *    converts the decoded Y/U/V planes into RGB and blits the current
- *    frame; AttractMovie_DrawTextureCallback / fn_80118240 are the
+ *    frame; AttractMovie_DrawTextureCallback / AttractMovie_AddVideoTevStages are the
  *    per-model render hooks, THPPlayerPostDrawDone recycles spent
  *    texture sets, THPPlayerGetVideoInfo exposes the frame dimensions.
  *  - Audio: AttractMovieAudio_Mix scales decoded PCM by a fading volume
@@ -448,7 +448,7 @@ BOOL THPPlayerGetVideoInfo(void* dst)
     return FALSE;
 }
 
-void fn_80118240(void)
+void AttractMovie_AddVideoTevStages(void)
 {
     AttractMovieTextureSet* textureSet;
 

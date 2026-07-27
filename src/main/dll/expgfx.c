@@ -2532,7 +2532,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
         Camera_GetCurrentViewSlot();
         if (tricky != NULL)
         {
-            trickyRange = fn_80138F78(tricky);
+            trickyRange = trickyGetAnimSpeed(tricky);
         }
         if (player != NULL)
         {

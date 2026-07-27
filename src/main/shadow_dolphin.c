@@ -780,7 +780,7 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         trackGetTriangleBuffer(&idxOut, &alphaOut);
 
         alpha = alphaOut;
-        idxOut = fn_80060C14((int*)obj, alpha, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
+        idxOut = collectShadowTrackTriangles((int*)obj, alpha, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
         lbl_803DCEE0 = alpha;
         lbl_803DCEF0 = idxOut;
