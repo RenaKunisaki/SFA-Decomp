@@ -1,5 +1,5 @@
 /*
- * dll5efunc0 (DLL 0x5E) - a modgfx particle-sequence spawn stub DLL.
+ * DLL 94 / 0x5E - a modgfx particle-sequence spawn stub DLL.
  *
  * dll_5E_func03 spawns a modgfx particle sequence from the embedded
  * gDll5EFunc03SequenceData block; the two tiny dll_5E entry stubs are
@@ -12,9 +12,6 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx.h"
 #include "main/dll/dll_005E_dll5efunc0.h"
-
-extern u8 gDll5EFunc03SequenceData[];
-
 #include "main/dll/dll_0058_dummy58.h"
 #include "main/dll/dll_006C_dummy6c.h"
 #include "main/dll/dll_005F_dll5ffunc0.h"
@@ -33,6 +30,8 @@ extern u8 gDll5EFunc03SequenceData[];
 #include "main/dll/dll_006D_dll6dfunc0.h"
 #include "main/dll/dll_006E_dll6efunc0.h"
 #include "main/dll/dll_00A3_dlla3func0.h"
+
+extern u8 gDll5EFunc03SequenceData[];
 
 void dll_5E_func03(int sourceObj, int variant, u8* posSource, u32 flags)
 {

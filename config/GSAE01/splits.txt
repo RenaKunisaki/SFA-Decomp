@@ -629,7 +629,7 @@ main/dll/dll_005D_dll5dfunc0.c:
 	.text       start:0x800ECAE0 end:0x800ECE04
 	.data       start:0x80312130 end:0x80312340
 
-main/dll/dll_005E_dll5efunc0.c:
+dlls/modgfx/94/94.c:
 	.text       start:0x800ECE04 end:0x800ED294
 	.data       start:0x80312340 end:0x80313AD0
 	.sdata2     start:0x803E07C0 end:0x803E07FC
