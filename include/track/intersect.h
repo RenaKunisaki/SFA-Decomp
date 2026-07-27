@@ -35,10 +35,10 @@ void drawRect(f32 sx, f32 sy, int x, int y);
 void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx);
 void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx);
 void trackIntersect_drawColorBand(void);
-void fn_80077AD8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth);
-void fn_80077EF8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale);
+void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth);
+void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale);
 void FUN_80070ec8(void);
-void fn_8007880C(void);
+void gxSetOpaqueNoZWriteMode(void);
 void gxBlendFn_800788dc(void);
 void gxBlendFn_800789ac(void);
 void textBlendSetupFn_80078a7c(void);
@@ -53,11 +53,11 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
 void doHeatEffect(u8 alpha);
 void renderMotionBlur(f32 alpha);
 void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5);
-void fn_8007BD8C(int handle1, int handle2);
-void fn_8007C664(int param_1);
-void fn_8007CAF4(void* texture);
+void setupWaterReflectionTev(int handle1, int handle2);
+void setupReflectionDistortTev(int param_1);
+void setupReflectionBumpDistortTev(void* texture);
 void gxTextureSetupFn_8007cf7c(void);
-void fn_8007D670(void);
+void loadReflectionTexMtxs(void);
 void FUN_800723a0(void);
 
 #endif /* TRACK_INTERSECT_H_ */

@@ -1507,7 +1507,7 @@ void quakeSpellTextureFn_8007366c(u8 alpha)
     GXSetCullMode(GX_CULL_BACK);
 }
 
-void fn_80073AAC(void* texture, u32* colorA, u32* colorB)
+void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB)
 {
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     selectTexture((Texture*)texture, 0);
@@ -2977,7 +2977,7 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void fn_80077AD8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth)
+void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth)
 {
     extern f32 lbl_803DEEDC, lbl_803DEEE4;
     Mtx m58;
@@ -3062,7 +3062,7 @@ void fn_80077AD8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 dep
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void fn_80077EF8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale)
+void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale)
 {
     extern f32 lbl_803DEEDC, lbl_803DEEE4;
     typedef struct
@@ -3241,7 +3241,7 @@ void fn_80077EF8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 sca
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void fn_80078740(void)
+void gxSetOpaqueZWriteMode(void)
 {
     if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 || gGxZModeValid == 0)
     {
@@ -3261,7 +3261,7 @@ void fn_80078740(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void fn_8007880C(void)
+void gxSetOpaqueNoZWriteMode(void)
 {
     if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
     {
@@ -3395,7 +3395,7 @@ void gxDebugTextureFn_80078c1c(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void fn_80078DFC(void)
+void gxTevModulateRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
     GXSetTevDirect(gTevStageCursor);
@@ -3409,7 +3409,7 @@ void fn_80078DFC(void)
     gTevChanCount += 1;
 }
 
-void fn_80078ED0(void)
+void gxTevRasTimesColor1Stage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
     GXSetTevDirect(gTevStageCursor);
@@ -3454,7 +3454,7 @@ void gxTevAddColor1Stage(void)
     gTevChanCount += 1;
 }
 
-void fn_80079180(void)
+void gxTevPassRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
     GXSetTevDirect(gTevStageCursor);
@@ -4450,7 +4450,7 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
     Camera_RebuildProjectionMatrix();
 }
 
-void fn_8007BD8C(int handle1, int handle2)
+void setupWaterReflectionTev(int handle1, int handle2)
 {
     extern f32 lbl_803DEEDC, lbl_803DEEE4;
     Mtx mtx_30;
@@ -4618,7 +4618,7 @@ void setupReflectionIndirectTev(u8 flag)
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 }
 
-void fn_8007C664(int texHandle)
+void setupReflectionDistortTev(int texHandle)
 {
     extern f32 lbl_803DEEDC, lbl_803DEEE4;
 
@@ -4709,7 +4709,7 @@ void fn_8007C664(int texHandle)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void fn_8007CAF4(void* texture)
+void setupReflectionBumpDistortTev(void* texture)
 {
     extern f32 lbl_803DEEDC, lbl_803DEEE4;
 
@@ -4802,7 +4802,7 @@ void fn_8007CAF4(void* texture)
 
 void gxTextureSetupFn_8007cf7c(void);
 
-void fn_8007D670(void);
+void loadReflectionTexMtxs(void);
 
 /*
  * Retail ships a locally-defined empty OSReport that disables debug

@@ -314,7 +314,7 @@ void explosion_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
                 }
                 colB2 = colB;
                 colA2 = colA;
-                fn_80073AAC(tex, &colA2, &colB2);
+                setupAdditiveTintedTexture(tex, &colA2, &colB2);
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
                 {
                     f32 fc, fb, fa;

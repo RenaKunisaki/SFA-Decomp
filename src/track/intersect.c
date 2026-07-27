@@ -480,7 +480,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot);
  */
 void quakeSpellTextureFn_8007366c(u8 alpha);
 
-void fn_80073AAC(void* texture, u32* colorA, u32* colorB);
+void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB);
 
 int modelCb_80073d04(u8* obj, int* objB);
 
@@ -538,13 +538,13 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
 
 void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx);
 
-void fn_80077AD8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth);
+void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth);
 
-void fn_80077EF8(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale);
+void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale);
 
-void fn_80078740(void);
+void gxSetOpaqueZWriteMode(void);
 
-void fn_8007880C(void);
+void gxSetOpaqueNoZWriteMode(void);
 
 void gxBlendFn_800788dc(void);
 
@@ -556,15 +556,15 @@ void gxBlendFn_80078b4c(void);
 
 void gxDebugTextureFn_80078c1c(void);
 
-void fn_80078DFC(void);
+void gxTevModulateRasStage(void);
 
-void fn_80078ED0(void);
+void gxTevRasTimesColor1Stage(void);
 
 void textRenderSetup(void);
 
 void gxTevAddColor1Stage(void);
 
-void fn_80079180(void);
+void gxTevPassRasStage(void);
 
 void gxTexColorFn_80079254(void);
 
@@ -618,17 +618,17 @@ void renderMotionBlur(f32 alpha);
 
 void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5);
 
-void fn_8007BD8C(int handle1, int handle2);
+void setupWaterReflectionTev(int handle1, int handle2);
 
 void setupReflectionIndirectTev(u8 flag);
 
-void fn_8007C664(int texHandle);
+void setupReflectionDistortTev(int texHandle);
 
-void fn_8007CAF4(void* texture);
+void setupReflectionBumpDistortTev(void* texture);
 
 void gxTextureSetupFn_8007cf7c(void);
 
-void fn_8007D670(void);
+void loadReflectionTexMtxs(void);
 
 /*
  * Retail ships a locally-defined empty OSReport that disables debug
