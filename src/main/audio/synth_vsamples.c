@@ -125,7 +125,7 @@ u32 synthClaimVirtualSampleSlot(u8 voiceID)
 void synthHandleVirtualSampleDone(u32 packed)
 {
     SynthVirtualSampleState* state;
-    u8* entry;
+    SynthVirtualSampleEntry* entry;
     u32 entryOffset;
     u8* slots;
     u8 vid;
@@ -151,11 +151,9 @@ void synthHandleVirtualSampleDone(u32 packed)
     {
         state->callback(SYNTH_VIRTUAL_SAMPLE_DONE_CALLBACK_KIND, &state->entries[vid].callbackData);
     }
-    entry = (u8*)state + entryOffset;
-    *(u8*)(entry + SYNTH_VIRTUAL_SAMPLE_ENTRIES_OFFSET + VIRTUAL_SAMPLE_MODE_OFFSET) =
-        SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
-    slots[*(u8*)(entry + SYNTH_VIRTUAL_SAMPLE_ENTRIES_OFFSET + VIRTUAL_SAMPLE_VOICE_OFFSET)] =
-        SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
+    entry = (SynthVirtualSampleEntry*)((u8*)state->entries + entryOffset);
+    entry->mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+    slots[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
 }
 
 void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
@@ -238,16 +236,6 @@ void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
     }
 }
 
-typedef struct
-{
-    u8 head[8];
-
-    struct
-    {
-        u8 b[36];
-    } ent[64];
-} VSStateLayout;
-
 #define SYNTH_VIRTUAL_SAMPLE_VOICE_STRIDE         0x404
 #define SYNTH_VIRTUAL_SAMPLE_VOICE_RELEASE_OFFSET 0x206
 #define SYNTH_VIRTUAL_SAMPLE_RELEASE_SCALE        0xa0
@@ -265,18 +253,18 @@ extern s16 synthLoadedGroupCount;
  */
 void synthUpdateVirtualSamples(void)
 {
-    u8* state;
+    SynthVirtualSampleState* state;
     u8* slotMap;
     u32 i;
     u32 currentTick;
     u32 elapsed;
-    u8* entry;
+    SynthVirtualSampleEntry* entry;
     u8 vid;
 
     if (synthVirtualSampleState.callback != 0)
     {
-        state = (u8*)&synthVirtualSampleState;
-        slotMap = state;
+        state = &synthVirtualSampleState;
+        slotMap = (u8*)state;
         for (i = 0; i < SYNTH_VIRTUAL_SAMPLE_MAX_VOICES; i++, slotMap++)
         {
             vid = slotMap[SYNTH_VIRTUAL_SAMPLE_VOICE_MAP_OFFSET];
@@ -289,10 +277,10 @@ void synthUpdateVirtualSamples(void)
                 continue;
             }
             vid = slotMap[SYNTH_VIRTUAL_SAMPLE_VOICE_MAP_OFFSET];
-            entry = ((VSStateLayout*)state)->ent[vid].b;
+            entry = &state->entries[vid];
 
             currentTick = hwChangeStudio(i);
-            if (entry[VIRTUAL_SAMPLE_TYPE_OFFSET] == SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE)
+            if (entry->type == SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE)
             {
                 elapsed =
                     (currentTick / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES;
@@ -302,57 +290,52 @@ void synthUpdateVirtualSamples(void)
                 elapsed = currentTick;
             }
 
-            switch (entry[VIRTUAL_SAMPLE_MODE_OFFSET])
+            switch (entry->mode)
             {
             case SYNTH_VIRTUAL_SAMPLE_MODE_ACTIVE:
                 synthAdvanceVirtualSampleEntry(entry, elapsed);
                 break;
             case SYNTH_VIRTUAL_SAMPLE_MODE_DONE_WAIT:
             {
-                u32 sampleId = hwGetVirtualSampleID(entry[VIRTUAL_SAMPLE_VOICE_OFFSET]);
-                u32 expected = ((u32) * (u16*)(entry + VIRTUAL_SAMPLE_GENERATION_OFFSET) << 8) |
-                               entry[VIRTUAL_SAMPLE_VOICE_OFFSET];
+                u32 sampleId = hwGetVirtualSampleID(entry->voice);
+                u32 expected = ((u32)entry->callbackData.generation << 8) | entry->voice;
 
                 if (expected == sampleId)
                 {
                     u32 prev;
 
                     synthAdvanceVirtualSampleEntry(entry, elapsed);
-                    prev = *(u32*)(entry + VIRTUAL_SAMPLE_LAST_TICK_OFFSET);
+                    prev = entry->lastTick;
                     if (currentTick >= prev)
                     {
-                        *(u32*)(entry + VIRTUAL_SAMPLE_REMAINING_OFFSET) -= (currentTick - prev);
+                        entry->remaining -= (currentTick - prev);
                     }
                     else
                     {
-                        *(u32*)(entry + VIRTUAL_SAMPLE_REMAINING_OFFSET) -=
-                            *(u32*)(state + SYNTH_VIRTUAL_SAMPLE_LOOP_SIZE_OFFSET) - (prev - currentTick);
+                        entry->remaining -= state->loopSize - (prev - currentTick);
                     }
-                    *(u32*)(entry + VIRTUAL_SAMPLE_LAST_TICK_OFFSET) = currentTick;
+                    entry->lastTick = currentTick;
 
                     if ((s32)(u32)((s32)(*(u16*)((u8*)synthVoice +
-                                                 entry[VIRTUAL_SAMPLE_VOICE_OFFSET] *
-                                                     SYNTH_VIRTUAL_SAMPLE_VOICE_STRIDE +
+                                                 entry->voice * SYNTH_VIRTUAL_SAMPLE_VOICE_STRIDE +
                                                  SYNTH_VIRTUAL_SAMPLE_VOICE_RELEASE_OFFSET) *
                                              SYNTH_VIRTUAL_SAMPLE_RELEASE_SCALE +
                                          SYNTH_VIRTUAL_SAMPLE_RELEASE_ROUND) /
                                    SYNTH_VIRTUAL_SAMPLE_RELEASE_SHIFT) >
-                        (s32) * (u32*)(entry + VIRTUAL_SAMPLE_REMAINING_OFFSET))
+                        (s32)entry->remaining)
                     {
-                        if (hwVoiceInStartup(entry[VIRTUAL_SAMPLE_VOICE_OFFSET]) == 0)
+                        if (hwVoiceInStartup(entry->voice) == 0)
                         {
-                            hwBreak(entry[VIRTUAL_SAMPLE_VOICE_OFFSET]);
+                            hwBreak(entry->voice);
                         }
-                        entry[VIRTUAL_SAMPLE_MODE_OFFSET] = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
-                        *(u8*)(state + SYNTH_VIRTUAL_SAMPLE_VOICE_MAP_OFFSET + entry[VIRTUAL_SAMPLE_VOICE_OFFSET]) =
-                            SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
+                        entry->mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+                        state->voiceMap[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
                     }
                 }
                 else
                 {
-                    entry[VIRTUAL_SAMPLE_MODE_OFFSET] = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
-                    *(u8*)(state + SYNTH_VIRTUAL_SAMPLE_VOICE_MAP_OFFSET + entry[VIRTUAL_SAMPLE_VOICE_OFFSET]) =
-                        SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
+                    entry->mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+                    state->voiceMap[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
                 }
             }
             break;
