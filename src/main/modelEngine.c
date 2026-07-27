@@ -184,6 +184,7 @@
 #include "dlls/objects/387_MMP_gyserve.h"
 #include "dlls/objects/388.h"
 #include "dlls/objects/389_CCgasvent.h"
+#include "dlls/objects/390_CCgasventCo.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -203,7 +204,6 @@
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/ARW/dll_02A1_arwlevelcon.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
-#include "main/dll/CC/dll_0186_ccgasventcontrol.h"
 #include "main/dll/DR/dll_0281_drearthcal.h"
 #include "main/dll/dll_0299.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
@@ -1422,7 +1422,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMMPGeyserVentObjDescriptor,
     (ResourceDescriptor*)&gDll184ObjDescriptor,
     (ResourceDescriptor*)&gCCGasVentObjDescriptor,
-    (ResourceDescriptor*)&gCCgasventControlObjDescriptor,
+    (ResourceDescriptor*)&gCCGasVentControlObjDescriptor,
     &gCCqueenObjDescriptor,
     &gCClightfootObjDescriptor,
     &gCCSharpclawPadObjDescriptor,

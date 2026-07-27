@@ -7,6 +7,8 @@
  * anims. The large extra block (0x654 bytes) is the shared character state
  * driven by the dll_2E_func* helpers.
  */
+#include "dlls/objects/390_CCgasventCo.h"
+
 #include "game/objects/object.h"
 #include "main/objhits.h"
 #include "main/objprint_character_api.h"
@@ -23,7 +25,6 @@
 
 #define GAMEBIT_QUEEN_LATCHED   0x1c2 /* player got close once the gas puzzle was done */
 #define GAMEBIT_QUEEN_RETIRED   0x1c3 /* queen leaves: hidden + hits disabled */
-#define GAMEBIT_GAS_PUZZLE_DONE 0xa3
 
 static const Vec3s ccqueenEyeSetupA = {0x1e, 0, 0};
 static const Vec3s ccqueenEyeSetupB = {0x19, 0x19, 0x19};
@@ -46,7 +47,8 @@ void ccqueen_update(GameObject* obj)
     GameObject* player;
 
     charState = obj->extra;
-    if (mainGetBit(GAMEBIT_QUEEN_LATCHED) == 0 && mainGetBit(GAMEBIT_GAS_PUZZLE_DONE) != 0)
+    if (mainGetBit(GAMEBIT_QUEEN_LATCHED) == 0 &&
+        mainGetBit(CC_GAS_VENT_CONTROL_PUZZLE_COMPLETE_GAMEBIT) != 0)
     {
         player = Obj_GetPlayerObject();
         if (vec3f_distanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) <
