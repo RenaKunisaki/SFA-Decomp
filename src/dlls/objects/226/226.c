@@ -197,20 +197,6 @@ typedef struct SwipeVertex
     s16 alpha;
     s16 pad12;
 } SwipeVertex;
-#define GX_BM_BLEND    1
-#define GX_BL_ONE      1
-#define GX_BL_SRCALPHA 4
-#define GX_LO_NOOP     5
-#define GX_LEQUAL      3
-#define GX_ALWAYS      7
-#define GX_AOP_AND     0
-#define GX_CULL_NONE   0
-#define GX_VA_POS      9
-#define GX_VA_CLR0     11
-#define GX_VA_TEX0     13
-#define GX_DIRECT      1
-#define GX_QUADS       128
-#define GX_VTXFMT2     2
 typedef struct QuakeFxParams
 {
     u16 id;
