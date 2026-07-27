@@ -649,6 +649,7 @@ int Minimap_update(void)
                     t = (f32)(xl = xc - 4);
                     e = (f32)(xr = xc + 4);
                     a = (f32)(sv = xc);
+                    a = a;
                     hudDrawTriangle(gMinimapF28, t, gMinimapF28, e, gMinimapF22, a, compassColor.channels);
                     hudDrawTriangle(gMinimapF68, xl, gMinimapF68, xr, gMinimapF74, xc, compassColor.channels);
                 }
