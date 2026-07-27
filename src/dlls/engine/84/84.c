@@ -1,17 +1,5 @@
 /*
- * DLL 0x54 - CameraModeNpcSpeak
- *
- * Camera mode used while the player talks to an NPC. dll_54_init allocates the
- * mode-54 state (mmAlloc), snaps the camera onto the optional source camera and
- * records the starting pose for the transition. dll_54_update locates the
- * look-at object (seqId 0x2AB) and origin object (seqId 0x4DC), frames the
- * player between them, derives FOV/height/yaw/pitch from the configured curve
- * constants, eases the camera from its start pose over transitionTimer, then
- * transforms the result into the camera's local space. The exit flag switches
- * back to camera mode 0x42.
- *
- * Also hosts the shared force-behind / cloud-runner camera no-op and free
- * callbacks referenced from the sibling camera-mode DLLs.
+ * DLL 84 / 0x54 - NPC conversation camera mode.
  */
 #include "main/mm.h"
 #include "main/resource.h"
@@ -30,10 +18,8 @@
 
 CameraMode54State* gCameraMode54State;
 
-/* Release camera back to the default gameplay mode on exit (cameramode DLL 0x42). */
 #define DLL54_CAMMODE_DEFAULT 0x42
 
-/* Scene objects the NPC-speak camera frames the player between (docblock). */
 #define DLL54_LOOKAT_SEQID 0x2ab
 #define DLL54_ORIGIN_SEQID 0x4dc
 

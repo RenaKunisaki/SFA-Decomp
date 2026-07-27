@@ -1229,7 +1229,7 @@ main/dll/dll_0053_cameramodecloudrunner.c:
 	.sbss       start:0x803DD5B8 end:0x803DD5C0
 	.sdata2     start:0x803E1B20 end:0x803E1B40
 
-main/dll/dll_0054_dll54.c:
+dlls/engine/84/84.c:
 	.text       start:0x801106B4 end:0x80110C80
 	.data       start:0x80319F28 end:0x80319F58
 	.sbss       start:0x803DD5C0 end:0x803DD5C8
