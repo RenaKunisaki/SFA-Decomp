@@ -136,13 +136,11 @@ extern f32 hudScale;
 extern f32 gSynthDelayedActionWord0, gSynthFadeMask;
 extern f32 lbl_803DEF08, lbl_803DEF20;
 extern double lbl_803DEF10, lbl_803DEF18;
-extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
 extern f32 lbl_803DEED8, lbl_803DEEE8, lbl_803DEEEC, lbl_803DEEF4;
 extern f32 lbl_803DEF24, lbl_803DEF28, lbl_803DEF30, lbl_803DEF34, lbl_803DEF38;
 extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
 extern f32 lbl_803DEF60, lbl_803DEF64, lbl_803DEF68, lbl_803DEF6C, lbl_803DEF70, lbl_803DEF74;
 extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80, lbl_803DEF84, lbl_803DEF88;
-extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 extern GXColor lbl_803DEEB4, lbl_803E8454;
 
 extern f32 lbl_8030EA10[3][2][3];

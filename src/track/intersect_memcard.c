@@ -69,16 +69,8 @@ typedef struct
 
 
 extern f32 lbl_803DEF08, lbl_803DEF20;
-extern double lbl_803DEF10, lbl_803DEF18;
-extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
-extern f32 lbl_803DEE5C, lbl_803DEE64;
-extern f32 lbl_803DEED8, lbl_803DEEE8, lbl_803DEEEC, lbl_803DEEF4;
-extern f32 lbl_803DEF24, lbl_803DEF28, lbl_803DEF30, lbl_803DEF34, lbl_803DEF38;
 extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
-extern f32 lbl_803DEF60, lbl_803DEF64, lbl_803DEF68, lbl_803DEF6C, lbl_803DEF70, lbl_803DEF74;
-extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80, lbl_803DEF84, lbl_803DEF88;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
-extern GXColor lbl_803DEEB4, lbl_803E8454;
 
 
 int cardDeleteFn_8007d99c(void);
@@ -90,9 +82,6 @@ typedef struct StageCountTable
     u8 count[7];
 } StageCountTable;
 
-extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
-extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
-extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
 extern volatile s32 gSaveCardState;
 extern u8 lbl_803DD059;
 extern u32 gSaveCardSerialHi;
