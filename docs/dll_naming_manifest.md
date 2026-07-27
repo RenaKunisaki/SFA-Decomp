@@ -74,7 +74,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x01C | — | NO-RETAIL-NAME | main/dll/dll_001C_effect3.c | = (canonical) | — |
 | 0x01D | — | NO-RETAIL-NAME | main/dll/dll_001D_effect4.c | = (canonical) | — |
 | 0x01E | — | NO-RETAIL-NAME | main/dll/dll_001E_effect5.c | = (canonical) | — |
-| 0x01F | — | NO-RETAIL-NAME | main/dll/dll_001F_effect6.c | = (canonical) | — |
+| 0x01F | — | NO-RETAIL-NAME | dlls/engine/31/31.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x020 | — | NO-RETAIL-NAME | dlls/engine/32/32.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored |
 | 0x021 | — | NO-RETAIL-NAME | dlls/engine/33/33.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored |
 | 0x022 | — | NO-RETAIL-NAME | dlls/engine/34/34.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored |

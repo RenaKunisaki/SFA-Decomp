@@ -1,21 +1,3 @@
-/*
- * effect6 (DLL 0x1F) - a particle-effect object DLL.
- *
- * The two functions this TU actually owns are Effect6_func04 and
- * Effect6_func05. Effect6_func04 is the preset spawner: given an
- * effectId in 0x422..0x42d it fills a PartFxSpawn request (texture,
- * lifetime, randomised start position / velocity / scale, colour and
- * behaviour flags) and dispatches it through
- * gExpgfxInterface->spawnEffect; effects with the world-space-attach
- * behaviour bit have their start position offset by the source object's
- * world position. Effect6_func05 advances this DLL's per-frame animation
- * globals (two texcoord-scroll phases that wrap at 1.0, and two sine
- * oscillators driven from frame-stepped angle accumulators).
- *
- * The remaining modgfx and projgfx code is shared engine reference that
- * lives canonically in modgfx.c; only the two Effect6 symbols above
- * are compared against the target object.
- */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/partfxspawn_struct.h"
@@ -50,14 +32,6 @@ ObjectDescriptor6 lbl_80310A20 = {
     (ObjectDescriptorCallback)Effect6_func05,
 };
 
-
-/*
- * Field names inherited from ExpgfxSpawnConfig (include/main/expgfx_internal.h),
- * the consumer-side definition of this 0x64-byte spawn request consumed by
- * gExpgfxInterface->spawnEffect (expgfx_addremove). Widths kept as written here
- * (colorWord0..2 are the u16 spelling of the consumer's ExpgfxSpawnColorPair;
- * effectIdByte/modelIdByte land in bytes the consumer currently ignores).
- */
 int Effect6_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    u16* extraArgs)
 {
@@ -304,4 +278,3 @@ void Effect6_release(void)
 void Effect6_initialise(void)
 {
 }
-
