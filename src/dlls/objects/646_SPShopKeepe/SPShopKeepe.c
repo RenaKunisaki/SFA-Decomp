@@ -990,7 +990,7 @@ void ShopKeeper_update(GameObject* obj)
         ((ShopkeeperState*)state)->textTimer = ((ShopkeeperState*)state)->textTimer - timeDelta;
         if (((ShopkeeperState*)state)->textTimer < lbl_803E59DC)
         {
-            ((ShopkeeperState*)state)->textTimer = *(f32*)&lbl_803E59DC;
+            ((ShopkeeperState*)state)->textTimer = lbl_803E59DC;
         }
     }
     if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_FACING) != 0)
