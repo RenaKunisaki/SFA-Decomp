@@ -142,6 +142,7 @@
 #include "dlls/objects/344.h"
 #include "dlls/objects/345.h"
 #include "dlls/objects/346.h"
+#include "dlls/objects/347_CFForceFiel.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -236,8 +237,8 @@ extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPl
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
-extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
-    gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor;
+extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFLevelControlObjDescriptor,
+    gCFMagicWallObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1347,7 +1348,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gGunpowderBarrelObjDescriptor,
     (ResourceDescriptor*)&gBlastedObjDescriptor,
     (ResourceDescriptor*)&gExplodableObjDescriptor,
-    &gCFForceFieldObjDescriptor,
+    (ResourceDescriptor*)&gCFForceFieldObjDescriptor,
     &lbl_803DBEA0,
     &gSlidingDoorObjDescriptor,
     &lbl_803DBEA8,

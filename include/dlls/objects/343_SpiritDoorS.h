@@ -18,11 +18,14 @@ typedef struct SpiritDoorSpiritPlacement {
     ObjPlacement base;
     u8 pad18[0x06];
     s16 gateGameBit;
+    u8 pad20[0x04];
 } SpiritDoorSpiritPlacement;
 
 STATIC_ASSERT(offsetof(SpiritDoorSpiritPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(SpiritDoorSpiritPlacement, pad18) == 0x18);
 STATIC_ASSERT(offsetof(SpiritDoorSpiritPlacement, gateGameBit) == 0x1E);
+STATIC_ASSERT(offsetof(SpiritDoorSpiritPlacement, pad20) == 0x20);
+STATIC_ASSERT(sizeof(SpiritDoorSpiritPlacement) == 0x24);
 
 int spiritDoorSpirit_getExtraSize(void);
 int spiritDoorSpirit_getObjectTypeId(void);

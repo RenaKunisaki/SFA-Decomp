@@ -16,6 +16,7 @@ typedef struct GunpowderBarrelPlacement {
     s16 generatorLinkId;
     s16 returnHome;
     s16 unknown1E;
+    u8 pad20[0x04];
 } GunpowderBarrelPlacement;
 
 typedef struct GunpowderBarrelHeldFlags {
@@ -78,6 +79,8 @@ STATIC_ASSERT(offsetof(GunpowderBarrelPlacement, disableRespawn) == 0x19);
 STATIC_ASSERT(offsetof(GunpowderBarrelPlacement, generatorLinkId) == 0x1A);
 STATIC_ASSERT(offsetof(GunpowderBarrelPlacement, returnHome) == 0x1C);
 STATIC_ASSERT(offsetof(GunpowderBarrelPlacement, unknown1E) == 0x1E);
+STATIC_ASSERT(offsetof(GunpowderBarrelPlacement, pad20) == 0x20);
+STATIC_ASSERT(sizeof(GunpowderBarrelPlacement) == 0x24);
 
 STATIC_ASSERT(sizeof(GunpowderBarrelHeldFlags) == 0x01);
 STATIC_ASSERT(sizeof(GunpowderBarrelConfigFlags) == 0x01);

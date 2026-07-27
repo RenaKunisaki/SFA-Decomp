@@ -7,7 +7,7 @@
 #include "dolphin/mtx/mtx_legacy.h"
 #include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/audio/sfx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/carryable_interface.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
