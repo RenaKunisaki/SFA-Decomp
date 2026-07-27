@@ -1,7 +1,7 @@
 /*
- * dummya4 (DLL 0xA4) - empty placeholder DLL.
+ * dummya4 (DLL 164 / 0xA4) - empty placeholder DLL.
  *
- * Provides only the three required object-DLL entry points: a no-op
+ * Provides only the three required DLL entry points: a no-op
  * release and initialise, plus a func03 stub that returns 0. No game
  * objects, state, or behaviour live here.
  */
