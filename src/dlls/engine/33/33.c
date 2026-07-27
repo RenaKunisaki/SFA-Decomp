@@ -21,7 +21,7 @@ f32 lbl_803DB814 = 0.3f;
 f32 lbl_803DB818 = 0.1f;
 f32 lbl_803DB81C = 0.3f;
 
-extern PartFxSpawnParams lbl_8039C380;
+PartFxSpawnParams lbl_8039C380;
 
 ObjectDescriptor6 lbl_80310B50 = {
     0,

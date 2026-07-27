@@ -20,7 +20,7 @@ f32 gEffect9PhaseB = 0.3f;
 f32 gEffect9PhaseC = 0.1f;
 f32 gEffect9PhaseD = 0.3f;
 
-extern PartFxSpawnParams lbl_8039C398;
+PartFxSpawnParams lbl_8039C398;
 
 ObjectDescriptor6 lbl_80310BD8 = {
     0,

@@ -456,6 +456,7 @@ main/dll/dll_001F_effect6.c:
 dlls/engine/32/32.c:
 	.text       start:0x800BE034 end:0x800BF978
 	.data       start:0x80310A78 end:0x80310B50
+	.bss        start:0x8039C368 end:0x8039C380
 	.sdata      start:0x803DB800 end:0x803DB810
 	.sbss       start:0x803DD380 end:0x803DD390
 	.sdata2     start:0x803DFCD8 end:0x803DFD98
@@ -463,6 +464,7 @@ dlls/engine/32/32.c:
 dlls/engine/33/33.c:
 	.text       start:0x800BF978 end:0x800C11CC
 	.data       start:0x80310B50 end:0x80310BD8
+	.bss        start:0x8039C380 end:0x8039C398
 	.sdata      start:0x803DB810 end:0x803DB820
 	.sbss       start:0x803DD390 end:0x803DD3A0
 	.sdata2     start:0x803DFD98 end:0x803DFE28
@@ -470,6 +472,7 @@ dlls/engine/33/33.c:
 dlls/engine/34/34.c:
 	.text       start:0x800C11CC end:0x800C291C
 	.data       start:0x80310BD8 end:0x80310C60
+	.bss        start:0x8039C398 end:0x8039C3B0
 	.sdata      start:0x803DB820 end:0x803DB830
 	.sbss       start:0x803DD3A0 end:0x803DD3B0
 	.sdata2     start:0x803DFE28 end:0x803DFEB8

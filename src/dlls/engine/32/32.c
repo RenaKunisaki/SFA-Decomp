@@ -22,7 +22,7 @@ f32 gEffect7ScrollPhaseB = 0.3f;
 f32 gEffect7TexScrollPhaseA = 0.1f;
 f32 gEffect7TexScrollPhaseB = 0.3f;
 
-extern PartFxSpawnParams lbl_8039C368;
+PartFxSpawnParams lbl_8039C368;
 
 ObjectDescriptor6 lbl_80310A78 = {
     0,
