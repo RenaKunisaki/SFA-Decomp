@@ -146,6 +146,7 @@
 #include "dlls/objects/348_CFForceFiel.h"
 #include "dlls/objects/349.h"
 #include "dlls/objects/350.h"
+#include "dlls/objects/351.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -235,7 +236,6 @@ extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAttractorObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor,
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
@@ -1355,7 +1355,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFForceField15CNullResourceDescriptor,
     (ResourceDescriptor*)&gSlidingDoorObjDescriptor,
     (ResourceDescriptor*)&gDll350NullResourceDescriptor,
-    &gAttractorObjDescriptor,
+    (ResourceDescriptor*)&gAttractorObjDescriptor,
     &lbl_803DBEB8,
     &lbl_803DBEB0,
     &gCFMagicWallObjDescriptor,
