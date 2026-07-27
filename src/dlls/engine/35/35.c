@@ -1,25 +1,3 @@
-/*
- * effect10 (DLL 0x23) - particle-effect spawn dispatcher.
- *
- * Effect10_func04 is the request entry point: given a model, an effect
- * request id and source params, it fills an EffectSpawnParams from
- * per-effect templates (keyed on id, cases 0x32A..0x34E) and hands it to
- * the expgfx interface to spawn. Each case sets count/scale/velocity,
- * texture kind, behaviour/render flag words and packed colours, drawing
- * jitter from randomGetRange. Cases 0x331/0x333-0x335/0x339 are accepted
- * no-ops; unknown ids return -1. The caller's flags are OR'd into flagsA;
- * bit0 ("position relative") offsets the start position by either the
- * source vector or the model transform (model+0x18..0x20). As a side
- * effect of every call, func04 also unconditionally advances two separate
- * scroll-phase globals (gEffect10ScrollPhaseA/834), distinct from func05's
- * gEffect10TickScrollPhaseA/83C pair.
- *
- * Effect10_func05 is the per-frame tick: it advances two scroll phases
- * (gEffect10TickScrollPhaseA/3C) and two sine oscillators (gEffect10SineAnglePhaseA/B4 ->
- * gEffect10SineValueB/BC) used as animated effect parameters.
- *
- * Effect10_func03_nop / Effect10_release / Effect10_initialise are no-ops.
- */
 #include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll/effectsrcparams_struct.h"
@@ -40,11 +18,9 @@ f32 gEffect10ScrollPhaseB = 0.3f;
 f32 gEffect10TickScrollPhaseA = 0.1f;
 f32 gEffect10TickScrollPhaseB = 0.3f;
 
-/* flags arg bits */
-#define EFFECT10_FLAG_USE_SRC 0x200000 /* copy caller's EffectSrcParams into the spawn */
-/* flagsA template bits */
-#define EFFECT10_FLAGA_POS_RELATIVE 0x1 /* offset start pos by source vector / model xform */
-#define EFFECT10_FLAGA_UNK2         0x2 /* cleared when set alongside POS_RELATIVE; meaning unknown */
+#define EFFECT10_FLAG_USE_SRC       0x200000
+#define EFFECT10_FLAGA_POS_RELATIVE 0x1
+#define EFFECT10_FLAGA_UNK2         0x2
 
 EffectSrcParams gEffect10DefaultSrcParams;
 
