@@ -60,6 +60,9 @@
 #include "main/vecmath.h"
 
 void* gDRCloudRunnerStateHandlers[8];
+void* gDRCloudRunnerDefaultStateHandler;
+s16 gDRCloudRunnerSmoothedRotX;
+int gDRCloudRunnerAirMeterBaseline;
 
 const Vec3x gDRCloudRunnerVecTable[5] = {
     {0.0f, 0.0f, 15.0f},

@@ -49,6 +49,8 @@
 #define DLL_CE_COORDINATION_HIDDEN    0x2
 
 u8 gDllCEHitReactionScratch[0x18];
+ChukChukStateHandler gChukChukCheckHandlers[6];
+ChukChukStateHandler gChukChukMoveHandlers[8];
 
 int gDllCEHitReactionMoves[30] = {
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,

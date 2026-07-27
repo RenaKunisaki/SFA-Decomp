@@ -61,8 +61,27 @@ typedef struct LightfootSub
 #define LIGHTFOOT_OBJFLAG_RENDERED           0x800
 #define LIGHTFOOT_OBJGROUP                   3
 
-int lbl_803DB0DC[5];
 int lbl_803DB0D0[3];
+int lbl_803DB0DC[5];
+
+u32 lbl_803DC6F0 = 0x0033FFFF;
+u32 lbl_803DC6F4[2] = {0x3A6BEDFA, 0xBF800000};
+u32 lbl_803DC6FC = 0x0033FFFF;
+u32 lbl_803DC700[2] = {0x3A83126F, 0xBF800000};
+u32 lbl_803DC708 = 0x0036FFFF;
+u32 lbl_803DC70C[2] = {0x3B449BA6, 0xBF800000};
+u32 lbl_803DC714 = 0x0128FFFF;
+u32 lbl_803DC718[2] = {0x3C23D70A, 0xBF800000};
+u32 lbl_803DC720 = 0x0001FFFF;
+u32 lbl_803DC724[3] = {0x3C23D70A, 0xBF800000, 0};
+
+const f32 lbl_803E8214 = 25.0f;
+const f32 lbl_803E8218 = 10.0f;
+const f32 lbl_803E821C = 24.0f;
+const f32 lbl_803E8220 = 0.75f;
+const f32 lbl_803E8224 = 48.0f;
+const f32 lbl_803E8228 = 20.0f;
+const f32 lbl_803E822C = 0.0f;
 
 int lightfoot_getExtraSize(void)
 {

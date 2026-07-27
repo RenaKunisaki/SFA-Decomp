@@ -84,8 +84,8 @@ void grimble_release(void);
 void grimble_initialise(void);
 void grimble_initialiseStateHandlerTables(void);
 
-extern void* gGrimbleStateHandlersA[10];
 extern void* gGrimbleStateHandlersB[6];
+extern void* gGrimbleStateHandlersA[10];
 extern int gGrimbleHitReactionMoves[30];
 extern u8 gGrimbleHitReactionDamage[32];
 extern ObjectDescriptor gGrimbleObjDescriptor;

@@ -104,6 +104,8 @@ f32 gKaldachomMouthSpawnScratch;
 f32 gKaldachomDustSpawnScratch;
 void* gKaldachomEffectResource;
 u8 gKaldachomHitLightWork[0x18];
+KaldachomStateHandler gKaldachomStateHandlersB[6];
+KaldachomStateHandler gKaldachomStateHandlersA[8];
 
 ObjectDescriptor12 gKaldachomObjDescriptor = {
     0,

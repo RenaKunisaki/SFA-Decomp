@@ -62,8 +62,383 @@
 #include "main/audio/sfx.h"
 #include "main/sky.h"
 #include "main/dll/dll_80198a00.h"
+#include "main/dll/dll_0126_trigger_api.h"
+#include "main/dll/MMP/mmp_moonrock_state.h"
+#include "main/dll/rom_curve_interface.h"
+#include "main/vecmath.h"
+#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/gameloop_api.h"
 #include "track/intersect_api.h"
+
+const char sMoonrockTriggerIdentFormat[] = "!!!!!!!!!!! TRIGGER %d  ident %d\n";
+char lbl_8032253C[] =
+    "initialise\n\0"
+    "Trigger [%d], Environment Effect, Action Num [%d], Range [%d]\0\0\0"
+    "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0"
+    "^^^^^^^^\n^^^^^^^^\nFREE %d\n\0"
+    "^^^^^^^^\n^^^^^^^^\nLEVELLOCKED level %d  bucket %d\n\0"
+    "^^^^^^^^\n^^^^^^^^\nLEVELUNLOCKED level %d  bucket %d\n\0\0\0";
+
+const f32 lbl_803E40C8 = 3.1415927f;
+const f32 lbl_803E40CC = 32768.0f;
+const double lbl_803E40D0 = 4503601774854144.0;
+const f32 lbl_803E40D8 = 0.0f;
+const f32 lbl_803E40DC = 0.0625f;
+const f32 lbl_803E40E0 = 1.0f;
+const f32 lbl_803E40E4 = 100.0f;
+const f32 lbl_803E40E8 = 145.0f;
+const f32 lbl_803E40EC = 0.0f;
+const double lbl_803E40F0 = 4503599627370496.0;
+const f32 lbl_803E40F8 = 55.4256f;
+const f32 lbl_803E40FC = 14.0f;
+const f32 lbl_803E4100 = 0.1f;
+const f32 lbl_803E4104 = 200.0f;
+const f32 lbl_803E4108 = 1.0f;
+const f32 lbl_803E410C = 0.0f;
+
+typedef struct MmpTriggerPlaneState
+{
+    u8 header[0xC];     /* 0x00 */
+    f32 normalX;        /* 0x0C plane normal */
+    f32 normalY;        /* 0x10 */
+    f32 normalZ;        /* 0x14 */
+    f32 planeD;         /* 0x18 plane constant */
+    f32 ptA[3];         /* 0x1C near segment endpoint */
+    f32 ptB[3];         /* 0x28 far segment endpoint */
+    f32 clipHalfExtent; /* 0x34 trigger-local half size */
+    f32 mtx[3][4];      /* 0x38 world->trigger-local transform */
+} MmpTriggerPlaneState;
+
+STATIC_ASSERT(offsetof(MmpTriggerPlaneState, normalX) == 0x0C);
+STATIC_ASSERT(offsetof(MmpTriggerPlaneState, planeD) == 0x18);
+STATIC_ASSERT(offsetof(MmpTriggerPlaneState, ptA) == 0x1C);
+STATIC_ASSERT(offsetof(MmpTriggerPlaneState, ptB) == 0x28);
+STATIC_ASSERT(offsetof(MmpTriggerPlaneState, clipHalfExtent) == 0x34);
+STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
+
+#define MOONROCK_ANGLE_TO_RADIANS(angle) ((lbl_803E40C8 * (f32)(s32)(-(angle))) / lbl_803E40CC)
+
+void fn_80198A00(u8* obj, GameObject* seqObj)
+{
+    MmpTriggerPlaneState* state;
+    f32 hitDistance;
+    int queryType;
+    int curveHit;
+    int frontBlocked;
+    int rearBlocked;
+
+    queryType = 0x17;
+    state = (MmpTriggerPlaneState*)((GameObject*)obj)->extra;
+    curveHit = (*gRomCurveInterface)->find(
+        state->ptB[0], state->ptB[1], state->ptB[2], &queryType, 1,
+        *(s16*)(*(u8**)&((GameObject*)obj)->anim.placementData + 0x38));
+    frontBlocked = (*gRomCurveInterface)->isPointInsideLoop(
+        curveHit, state->ptB[0], state->ptB[1], state->ptB[2], &hitDistance);
+    rearBlocked = (*gRomCurveInterface)->isPointInsideLoop(
+        curveHit, state->ptA[0], state->ptA[1], state->ptA[2], &hitDistance);
+
+    if (frontBlocked != 0)
+    {
+        if (rearBlocked == 0)
+        {
+            objInterpretSeq((GameObject*)obj, seqObj, 1, (int)hitDistance);
+        }
+        else
+        {
+            objInterpretSeq((GameObject*)obj, seqObj, 2, (int)hitDistance);
+        }
+    }
+    else if (rearBlocked != 0)
+    {
+        objInterpretSeq((GameObject*)obj, seqObj, -1, (int)hitDistance);
+    }
+    else
+    {
+        objInterpretSeq((GameObject*)obj, seqObj, -2, (int)hitDistance);
+    }
+}
+
+int fn_80198B68(u8* obj, f32* point)
+{
+    u8* data;
+    f32 pointX;
+    f32 pointY;
+    f32 pointZ;
+    f32 yawCos;
+    f32 yawSin;
+    f32 pitchCos;
+    f32 pitchSin;
+    f32 relZ;
+    f32 relY;
+    f32 relX;
+    f32 localX;
+    f32 localY;
+    f32 localZ;
+    f32 forward;
+    GameObject* o = (GameObject*)obj;
+
+    data = *(u8**)&o->anim.placementData;
+    pointX = point[0];
+    pointY = point[1];
+    pointZ = point[2];
+
+    yawCos = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
+    yawSin = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
+    pitchCos = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
+    pitchSin = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
+
+    relX = pointX - o->anim.worldPosX;
+    relY = pointY - o->anim.worldPosY;
+    relZ = pointZ - o->anim.worldPosZ;
+    localX = relX * yawSin - relZ * yawCos;
+    forward = relX * yawCos + relZ * yawSin;
+    localY = relY * pitchSin - forward * pitchCos;
+    localZ = relY * pitchCos + forward * pitchSin;
+
+    if (localX < 0.0f)
+    {
+        localX = -localX;
+    }
+    if (localY < 0.0f)
+    {
+        localY = -localY;
+    }
+    if (localZ < 0.0f)
+    {
+        localZ = -localZ;
+    }
+
+    if ((localX <= (f32)(s32)(data[0x3a] << 1)) && (localY <= (f32)(s32)(data[0x3b] << 1)) &&
+        (localZ <= (f32)(s32)(data[0x3c] << 1)))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void fn_80198DE8(u8* obj, GameObject* seqObj)
+{
+    f32 ny;
+    MmpTriggerPlaneState* state;
+    s8 triggerState;
+    u8* data;
+    f32 planeBase;
+    f32 normalY;
+    f32 normalX;
+    f32 normalZ;
+    f32 nearX;
+    f32 farX;
+    f32 nearY;
+    f32 farY;
+    f32 nearZ;
+    f32 farZ;
+    f32 prodY;
+    f32 prodZ;
+    f32 nearDist;
+    f32 farDist;
+    f32 deltaX;
+    f32 deltaY;
+    f32 deltaZ;
+    f32 t;
+    f32 localPos[3];
+
+    data = *(u8**)&((GameObject*)obj)->anim.placementData;
+    state = (MmpTriggerPlaneState*)((GameObject*)obj)->extra;
+
+    planeBase = state->planeD;
+    normalZ = state->normalZ;
+    nearZ = state->ptA[2];
+    prodZ = normalZ * nearZ;
+    normalX = state->normalX;
+    nearX = state->ptA[0];
+    normalY = state->normalY;
+    nearY = state->ptA[1];
+    prodY = normalY * nearY;
+    nearDist = planeBase + (prodZ + (normalX * nearX + prodY));
+    farZ = state->ptB[2];
+    farX = state->ptB[0];
+    farY = state->ptB[1];
+    farDist = planeBase + (normalZ * farZ + (normalX * farX + normalY * farY));
+
+    if (farDist < lbl_803E40D8)
+    {
+        triggerState = (nearDist < lbl_803E40D8) ? 2 : 1;
+    }
+    else
+    {
+        triggerState = (nearDist < lbl_803E40D8) ? -1 : -2;
+    }
+
+    if ((triggerState == 1) || (triggerState == -1))
+    {
+        deltaX = farX - nearX;
+        deltaY = farY - nearY;
+        deltaZ = farZ - nearZ;
+        ny = normalY * deltaY;
+        t = (((-normalX * nearX - prodY) - prodZ) - planeBase) / ((ny + (normalX * deltaX)) + (normalZ * deltaZ));
+
+        localPos[0] = t * deltaX + nearX;
+        localPos[1] = t * deltaY + state->ptA[1];
+        localPos[2] = t * deltaZ + state->ptA[2];
+        PSMTXMultVec(&state->mtx[0][0], localPos, localPos);
+
+        if ((localPos[0] >= -state->clipHalfExtent) && (localPos[0] <= state->clipHalfExtent) &&
+            (localPos[1] >= -state->clipHalfExtent) && (localPos[1] <= state->clipHalfExtent))
+        {
+            OSReport(sMoonrockTriggerIdentFormat, triggerState, *(u32*)(data + 0x14));
+            objInterpretSeq((GameObject*)obj, seqObj, triggerState, (int)farDist);
+        }
+    }
+}
+
+/* placement instance id (+0x14) of the one vent that emits a debug OSReport */
+#define MMP_GYSERVENT_DEBUG_INSTANCE_ID 0x46a31
+
+/* placement (WmSpiritPlaceMapData) byte offsets read at setup / per-frame */
+#define MMP_GYSERVENT_PLACE_REACH    0x3a /* eruption reach scale byte */
+#define MMP_GYSERVENT_PLACE_SPEED    0x3b /* per-frame speed byte */
+#define MMP_GYSERVENT_PLACE_ROTX     0x3d /* rotX (low 6 bits) */
+#define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
+#define MMP_GYSERVENT_PLACE_INSTANCE 0x14 /* instance id */
+
+void objFn_80198fa4(GameObject* obj, MmpGyserventPlacement* placement)
+{
+    MmpGyserventState* state;
+    MatrixTransform xf;
+    union
+    {
+        f32 m[16];
+        f64 a8;
+    } rotU;
+    f32 outY;
+    f32 outZ;
+    f32 outX;
+    f32 posMtx[16];
+#define rotMtx rotU.m
+
+    state = obj->extra;
+    obj->anim.rotX = (s16)((placement->rotX & 0x3f) << 10);
+    obj->anim.rotY = (s16)(placement->rotY << 8);
+    obj->anim.rootMotionScale =
+        obj->anim.modelInstance->rootMotionScaleBase * ((float)(u32)placement->reachScale * lbl_803E40DC);
+
+    xf.rotX = obj->anim.rotX;
+    xf.rotY = obj->anim.rotY;
+    xf.rotZ = obj->anim.rotZ;
+    xf.scale = lbl_803E40E0;
+    xf.x = lbl_803E40D8;
+    xf.y = lbl_803E40D8;
+    xf.z = lbl_803E40D8;
+    setMatrixFromObjectPos(posMtx, &xf);
+    Matrix_TransformPoint(posMtx, lbl_803E40D8, *(f32*)&lbl_803E40D8, lbl_803E40E0, &outY, &outZ, &outX);
+    state->planeNormalX = outY;
+    state->planeNormalY = outZ;
+    state->planeNormalZ = outX;
+    state->planeOffset =
+        -(obj->anim.worldPosZ * outX + (obj->anim.worldPosX * outY + obj->anim.worldPosY * outZ));
+
+    xf.rotX = (s16)-obj->anim.rotX;
+    xf.rotY = (s16)-obj->anim.rotY;
+    xf.rotZ = 0;
+    xf.scale = lbl_803E40E0;
+    xf.x = -obj->anim.worldPosX;
+    xf.y = -obj->anim.worldPosY;
+    xf.z = -obj->anim.worldPosZ;
+    mtxRotateByVec3s(rotMtx, &xf);
+    mtx44Transpose(rotMtx, (f32*)((char*)state + 0x38));
+
+    state->reach = lbl_803E40E4 * obj->anim.rootMotionScale;
+    state->nearRadiusSq = (lbl_803E40E8 * obj->anim.rootMotionScale) * (lbl_803E40E8 * obj->anim.rootMotionScale);
+    if (placement->base.mapId == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
+    {
+        OSReport(lbl_8032253C);
+    }
+#undef rotMtx
+}
+
+void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)
+{
+    f32 distSqA;
+    f32 dyB;
+    f32 dyA;
+    f32 speed;
+    f32 t;
+    f32 distSqB;
+    bool nearEnd;
+    s8 leg;
+    MmpGyserventState* state;
+
+    state = (obj)->extra;
+    speed = (float)(s32)(((MmpGyserventPlacement*)obj->anim.placementData)->speed * 2);
+    t = state->reachAX - (obj)->anim.worldPosX;
+    dyA = state->reachAY - (obj)->anim.worldPosY;
+    distSqA = state->reachAZ - (obj)->anim.worldPosZ;
+    distSqA = t * t + distSqA * distSqA;
+    t = state->reachBX - (obj)->anim.worldPosX;
+    dyB = state->reachBY - (obj)->anim.worldPosY;
+    distSqB = state->reachBZ - (obj)->anim.worldPosZ;
+    distSqB = t * t + distSqB * distSqB;
+    t = state->nearRadiusSq;
+    if ((distSqB < t) && (((dyB < 0.0f) ? -dyB : dyB) < speed))
+    {
+        nearEnd = false;
+        if (distSqA < t)
+        {
+            dyA = (dyA < 0.0f) ? -dyA : dyA;
+            if (dyA < speed)
+            {
+                nearEnd = true;
+            }
+        }
+        leg = nearEnd ? 2 : 1;
+    }
+    else
+    {
+        nearEnd = false;
+        if (distSqA < t)
+        {
+            dyA = (dyA < 0.0f) ? -dyA : dyA;
+            if (dyA < speed)
+            {
+                nearEnd = true;
+            }
+        }
+        leg = nearEnd ? -1 : -2;
+    }
+    objInterpretSeq(obj, seqObj, leg, distSqB);
+}
+
+void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
+{
+    MmpGyserventState* state;
+    f32 dx0, dy0, dz0, d0;
+    f32 dx1, dy1, dz1, d1;
+    s8 cat;
+
+    state = (MmpGyserventState*)(obj)->extra;
+
+    dx0 = state->reachAX - (obj)->anim.worldPosX;
+    dy0 = state->reachAY - (obj)->anim.worldPosY;
+    dz0 = state->reachAZ - (obj)->anim.worldPosZ;
+    d0 = dx0 * dx0 + dy0 * dy0 + dz0 * dz0;
+
+    dx1 = state->reachBX - (obj)->anim.worldPosX;
+    dy1 = state->reachBY - (obj)->anim.worldPosY;
+    dz1 = state->reachBZ - (obj)->anim.worldPosZ;
+    d1 = dx1 * dx1 + dy1 * dy1 + dz1 * dz1;
+
+    if (d1 < state->nearRadiusSq)
+    {
+        cat = (d0 < state->nearRadiusSq) ? 2 : 1;
+    }
+    else
+    {
+        cat = (d0 < state->nearRadiusSq) ? -1 : -2;
+    }
+    objInterpretSeq(obj, seqObj, cat, d1);
+}
+
 
 #define TIMER_OBJGROUP                  0x4c /* DLL 0x2B5 timer */
 #define TARGET_OBJGROUP                 0xf  /* player-target group; nearest object gets the trigger's sequence */
@@ -84,8 +459,6 @@
 #define TRIGGER_CMD_ONCE_EXIT         0x08 /* exit leg runs only once (latched vs SFLAG_EXITED) */
 #define TRIGGER_CMD_UNCONDITIONAL     0x10 /* ignore enter/exit gating */
 #define TRIGGER_CMD_OVERRIDE_DISABLED 0x20 /* run even when SFLAG_DISABLED is set */
-extern f32 lbl_803E40D8;
-
 #define TRIGGER_SFLAG_SEED_TARGET 0x40 /* first hit: seed target position from current, not previous */
 
 void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distSq)

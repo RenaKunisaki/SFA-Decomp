@@ -61,8 +61,8 @@ void iceBaddie_init(GameObject* obj, IceBaddiePlacement* placement, int flags);
 void iceBaddie_release(void);
 void iceBaddie_initialise(void);
 
-extern IceBaddieStateHandler gIceBaddieStateHandlersA[];
 extern IceBaddieStateHandler gIceBaddieStateHandlersB[];
+extern IceBaddieStateHandler gIceBaddieStateHandlersA[];
 extern u8 gIceBaddieA06MoveVariant;
 extern u8 gIceBaddieA05MoveVariant;
 extern s16 gIceBaddieAttackMoves[8];

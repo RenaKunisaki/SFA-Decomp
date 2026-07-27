@@ -64,8 +64,8 @@ void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags);
 void dll_CE_release(void);
 void dll_CE_initialise(void);
 
-extern ChukChukStateHandler gChukChukCheckHandlers[6];
 extern ChukChukStateHandler gChukChukMoveHandlers[8];
+extern ChukChukStateHandler gChukChukCheckHandlers[6];
 extern int gDllCEHitReactionMoves[30];
 extern u8 gDllCEHitReactionDamage[32];
 extern u8 gDllCEHitReactionScratch[0x18];

@@ -249,6 +249,8 @@ typedef struct
     s32 count;
 } EWModelChainEntry;
 
+extern EWModelChainEntry* gEarthWarriorTailChainDesc;
+
 #define PAD_BUTTON_A 0x100
 
 #define DREARTHWARRIOR_OBJGROUP           0xa
@@ -262,33 +264,59 @@ typedef struct
 #define DREARTHWARRIOR_ATTACKER_SEQID_SWORD 0x23 /* "sword" (DLL 0xE2) */
 #define DREARTHWARRIOR_EFFECT_RESOURCE_ID 0x5a /* shared effect resource -> gEarthWarriorResource */
 
-extern f32 lbl_803E8314;
-extern f32 lbl_803E8318;
-extern f32 lbl_803E831C;
-extern f32 lbl_803E8320;
-extern f32 lbl_803E8324;
-extern f32 lbl_803E8330;
-extern f32 lbl_803E833C;
-extern f32 lbl_803E8340;
-extern f32 lbl_803E8344;
-extern f32 gEarthWarriorDegToAngle;
-extern f32 lbl_803E834C;
-extern f32 lbl_803E8350;
-extern f32 lbl_803E8358;
-extern const f32 lbl_803E835C;
-extern f32 lbl_803E8368;
-extern f32 lbl_803E836C;
-extern f32 lbl_803E8370;
-extern f32 lbl_803E8374;
-extern f32 lbl_803E8378;
-extern f32 lbl_803E837C;
-extern f32 lbl_803E8380;
-extern f32 lbl_803E8384;
-extern f32 lbl_803E8388;
-extern f32 lbl_803E838C;
-extern f32 lbl_803E8394;
-extern f32 GXIndTexMtxScale1024;
-extern int lbl_803E82D8;
+f32 gEarthWarriorMatrix[16];
+void* gDREarthWarriorStateHandlers[4];
+void* gDREarthWarriorDefaultStateHandler;
+void* gEarthWarriorResource;
+
+const int lbl_803E82D8 = 0x01010101;
+const f32 lbl_803E82DC = 0.0f;
+const double lbl_803E82E0 = 4503601774854144.0;
+const f32 lbl_803E82E8 = 4.32f;
+const f32 lbl_803E82EC = 0.035f;
+const f32 GXInit_ClearColor = 0.1f;
+const f32 GXInit_BlackColor = 0.25f;
+const f32 GXInit_WhiteColor = 0.1f;
+const f32 lbl_803E82FC = 0.8f;
+const f32 lbl_803E8300 = 0.0165f;
+const f32 lbl_803E8304 = 0.0f;
+const f32 lbl_803E8308 = 0.2f;
+const f32 lbl_803E830C = 60.0f;
+const f32 GX_F32_256 = 0.02f;
+const f32 lbl_803E8314 = 2.0f;
+const f32 lbl_803E8318 = 0.5f;
+const f32 lbl_803E831C = 0.75f;
+const f32 lbl_803E8320 = 32768.0f;
+const f32 lbl_803E8324 = 0.15f;
+const f32 lbl_803E8328 = 8192.0f;
+const f32 lbl_803E832C = 182.0f;
+const f32 lbl_803E8330 = 10.0f;
+const f32 lbl_803E8334 = -1.0f;
+const f32 lbl_803E8338 = 1.0f;
+const f32 lbl_803E833C = 0.05f;
+const f32 lbl_803E8340 = 0.3f;
+const f32 lbl_803E8344 = -0.3f;
+const f32 gEarthWarriorDegToAngle = 182.044f;
+const f32 lbl_803E834C = -0.1f;
+const f32 lbl_803E8350 = 0.85f;
+const f32 lbl_803E8354 = 0.005f;
+const f32 lbl_803E8358 = 0.22f;
+const f32 lbl_803E835C = 8.0f;
+const f32 lbl_803E8360 = 0.001f;
+const f32 lbl_803E8364 = 0.01f;
+const f32 lbl_803E8368 = 5.0f;
+const f32 lbl_803E836C = 3.408f;
+const f32 lbl_803E8370 = 30.0f;
+const f32 lbl_803E8374 = 3.1415927f;
+const f32 lbl_803E8378 = 1.2960001f;
+const f32 lbl_803E837C = 2.5f;
+const f32 lbl_803E8380 = 2.75f;
+const f32 lbl_803E8384 = 0.17f;
+const f32 lbl_803E8388 = 150.0f;
+const f32 lbl_803E838C = 0.06f;
+const f32 GXIndTexMtxScale1024 = 5.555f;
+const f32 lbl_803E8394 = -0.05f;
+
 extern u8 gDREarthWarriorInitData[];
 
 typedef struct DREarthWarriorInitData
@@ -310,8 +338,6 @@ const EWPathRange lbl_802C2CB4 = {{20, 20, 0, 0, 0}};
 const EWColorTbl gDREarthWarriorColors = {
     {{8, 255, 190, 120}, {8, 255, 255, 120}, {8, 180, 240, 255}, {8, 170, 255, 170}}
 };
-extern EWModelChainEntry* gEarthWarriorTailChainDesc;
-
 void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state);
 
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
