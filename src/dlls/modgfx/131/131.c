@@ -1,5 +1,5 @@
 /*
- * dll83func0 (DLL 0x83) - a foodbag-family modgfx effect builder.
+ * DLL 131 / 0x83 - a foodbag-family modgfx effect builder.
  * dll_83_func03 fills a 20-entry FbCmd draw list (textures sourced from
  * gFoodbagEffectTexData, layers 0..4) plus the FbBuf header, then spawns the effect
  * through gModgfxInterface. When flags bit 0 is set the effect position is
