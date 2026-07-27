@@ -86,12 +86,6 @@ enum
 #define WMOBJCREATOR_PARTFX_DEBRIS 0x1a6 /* debris-particle burst under the falling WM_rock (case 6) */
 
 int lbl_803DDC68;       /* live WM_WallCraw population counter */
-extern const f32 lbl_803E5CC8; /* 1.0 */
-extern f32 lbl_803E5CCC;       /* 10.0: eastward drift base velocity */
-extern f32 lbl_803E5CD0;       /* -30.0: westward drift base velocity */
-extern f32 lbl_803E5CD4;       /* 0.1: burst velocity scale */
-extern const f32 lbl_803E5CD8; /* 0.0 */
-extern const f32 lbl_803E5CDC; /* 200.0 */
 int WM_ObjCreator_getExtraSize(void);
 int WM_ObjCreator_getObjectTypeId(void);
 void WM_ObjCreator_free(void);
@@ -136,7 +130,7 @@ void WM_ObjCreator_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E5CC8);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
 }
 
 void WM_ObjCreator_hitDetect(void)
@@ -237,7 +231,7 @@ void WM_ObjCreator_update(GameObject* obj)
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 if ((u32)spawned != 0)
                 {
-                    spawned->anim.velocityX = lbl_803E5CCC + (f32)(int)randomGetRange(0, 10);
+                    spawned->anim.velocityX = 10.0f + (f32)(int)randomGetRange(0, 10);
                 }
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
@@ -299,7 +293,7 @@ void WM_ObjCreator_update(GameObject* obj)
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 if ((u32)spawned != 0)
                 {
-                    spawned->anim.velocityX = lbl_803E5CD0 - (f32)(int)randomGetRange(0, 10);
+                    spawned->anim.velocityX = -30.0f - (f32)(int)randomGetRange(0, 10);
                 }
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
@@ -331,16 +325,16 @@ void WM_ObjCreator_update(GameObject* obj)
                     if ((u32)spawned != 0)
                     {
                         *(u8*)(*(int*)&spawned->extra + 0x120) |= 2;
-                        spawned->anim.velocityX = lbl_803E5CD4 * (f32)(int)randomGetRange(-0x23, 0x23);
-                        spawned->anim.velocityZ = lbl_803E5CD4 * (f32)(int)randomGetRange(-0x23, 0x23);
-                        spawned->anim.velocityY = lbl_803E5CD8;
-                        vec.pos[0] = lbl_803E5CC8;
+                        spawned->anim.velocityX = 0.1f * (f32)(int)randomGetRange(-0x23, 0x23);
+                        spawned->anim.velocityZ = 0.1f * (f32)(int)randomGetRange(-0x23, 0x23);
+                        spawned->anim.velocityY = 0.0f;
+                        vec.pos[0] = 1.0f;
                         vec.dir[0] = 0;
                         vec.dir[1] = 0;
                         vec.dir[2] = 0;
                         vec.pos[1] = spawned->anim.velocityX;
                         vec.pos[3] = spawned->anim.velocityZ;
-                        vec.pos[2] = lbl_803E5CD8;
+                        vec.pos[2] = 0.0f;
                         (*gPartfxInterface)->spawnObject((void*)spawned, 0x1a7, &vec, 0x10000, -1, NULL);
                     }
                 } while (n != 0);
@@ -372,7 +366,7 @@ void WM_ObjCreator_update(GameObject* obj)
             {
                 setup = Obj_AllocObjectSetup(0x24, WMOBJCREATOR_SPAWN_WM_ROCK);
                 setup->posX = obj->anim.localPosX + (f32)(int)randomGetRange(-0x104, 0x104);
-                setup->posY = lbl_803E5CDC + obj->anim.localPosY;
+                setup->posY = 200.0f + obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ + (f32)(int)randomGetRange(-0x50, 0x50);
                 setup->color[0] = 0x20;
                 setup->color[1] = 2;
@@ -382,13 +376,13 @@ void WM_ObjCreator_update(GameObject* obj)
                 Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 for (n = randomGetRange(2, 5); n != 0; n -= 1)
                 {
-                    vec.pos[0] = lbl_803E5CC8;
+                    vec.pos[0] = 1.0f;
                     vec.dir[0] = 0;
                     vec.dir[1] = 0;
                     vec.dir[2] = 0;
                     vec.pos[1] = (f32)(int)randomGetRange(-200, 200);
                     vec.pos[3] = (f32)(int)randomGetRange(-0x14, 0x14);
-                    vec.pos[2] = lbl_803E5CDC;
+                    vec.pos[2] = 200.0f;
                     (*gPartfxInterface)->spawnObject((void*)obj, WMOBJCREATOR_PARTFX_DEBRIS, &vec, 0x10002, -1, NULL);
                 }
                 mainSetBits(state->gameBit, 0);
