@@ -11,8 +11,6 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 
-#define KALDACHOMPME_OBJECT_FLAG_HIT_DETECT_DISABLED 0x2000
-
 ObjectDescriptor gKaldaChompMeObjDescriptor = {
     0,
     0,
@@ -153,7 +151,7 @@ void KaldaChompMe_init(GameObject* obj, KaldaChompMePlacement* placement) {
     obj->anim.rotZ = (s16)(placement->rotZByte << 8);
     obj->anim.rotY = (s16)(placement->rotYByte << 8);
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
-    obj->objectFlags |= KALDACHOMPME_OBJECT_FLAG_HIT_DETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
 }
 

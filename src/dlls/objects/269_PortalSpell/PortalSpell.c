@@ -1,144 +1,115 @@
 /*
  * PortalSpell (DLL 0x10D, descriptor gPortalSpellDoorObjDescriptor).
  */
-#include "main/dll/dll_010D_portalspell.h"
-#include "main/object_render.h"
-#include "main/dll/player_api.h"
-#include "sys/objects/lifecycle.h"
+#include "dlls/objects/269_PortalSpell.h"
+
+#include "game/objects/object.h"
 #include "main/dll/dll_80136a40.h"
-#include "sys/objects.h"
-#include "main/dll/portalspelldoorstate_struct.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
-#include "game/objects/object_setup.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
+#include "main/objseq.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-typedef struct PortalspelldoorPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1E - 0x18];
-    s16 openedGameBit;
-} PortalspelldoorPlacement;
+extern f32 gPortalSpellDoorModelScale;
+extern f32 gPortalSpellDoorRootMotionScale;
+extern f32 gPortalSpellDoorOpenAmountScale;
 
-STATIC_ASSERT(sizeof(PortalSpellDoorState) == 0x10);
+#define PORTAL_SPELL_INDEX_OPEN_PORTAL      3
+#define PORTAL_SPELL_DOOR_OPEN_SEQUENCE     0
+#define PORTAL_SPELL_DOOR_TIMER_INACTIVE    -1
+#define PORTAL_SPELL_DOOR_ROTATION_SHIFT    8
+#define PORTAL_SPELL_DOOR_CANCEL_ANY_SPELL  -1
+#define PORTAL_SPELL_DOOR_SEQUENCE_ARG_NONE -1
 
-#define PORTALSPELLDOOR_OBJFLAG_UPDATE_DISABLED    0x8000
-#define PORTALSPELLDOOR_OBJFLAG_HIDDEN             0x4000
-#define PORTALSPELLDOOR_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-extern f32 lbl_803E3A8C;
-extern f32 lbl_803E3A90;
-extern f32 lbl_803E3A88;
-
-int PortalSpellDoor_getExtraSize(void)
-{
-    return 0x10;
-}
-int PortalSpellDoor_getObjectTypeId(void)
-{
-    return 0x0;
+int PortalSpellDoor_getExtraSize(void) {
+    return sizeof(PortalSpellDoorState);
 }
 
-void PortalSpellDoor_free(void)
-{
+int PortalSpellDoor_getObjectTypeId(void) {
+    return 0;
 }
 
-void PortalSpellDoor_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E3A88);
+void PortalSpellDoor_free(GameObject* obj) {
+    (void)obj;
 }
 
-void PortalSpellDoor_hitDetect(void)
-{
+void PortalSpellDoor_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+    s32 visible = renderState;
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, gPortalSpellDoorModelScale);
+    }
 }
 
-void PortalSpellDoor_update(GameObject* obj)
-{
-    typedef struct
-    {
-        u8 open : 1;
-    } PortalFlags;
+void PortalSpellDoor_hitDetect(void) {
+}
+
+void PortalSpellDoor_update(GameObject* obj) {
     PortalSpellDoorState* state;
-    int player;
-    int p4c;
-    int timer;
+    GameObject* player;
+    PortalSpellDoorPlacement* placement;
+    int nextTimer;
 
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     state = obj->extra;
-    p4c = *(int*)&obj->anim.placementData;
-    if (playerHasSpell((GameObject*)(player), 3) != 0)
-    {
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+    placement = (PortalSpellDoorPlacement*)obj->anim.placementData;
+    if (playerHasSpell(player, PORTAL_SPELL_INDEX_OPEN_PORTAL) != 0) {
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+    } else {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
-    else
-    {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
-    }
-    if (((PortalFlags*)&state->flags0C)->open)
-    {
+    if (state->flags.open) {
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
-        if (objGetAnimState80A((GameObject*)(player)) == 0x5bd)
-        {
-            playerCancelSpell((GameObject*)player, -1);
+        if (objGetAnimState80A(player) == GAMEBIT_STAFF_ABILITY_OPEN_PORTAL) {
+            playerCancelSpell(player, PORTAL_SPELL_DOOR_CANCEL_ANY_SPELL);
         }
-        mainSetBits(((PortalspelldoorPlacement*)p4c)->openedGameBit, 1);
+        mainSetBits(placement->openedGameBit, TRUE);
+    } else if (objGetAnimState80A(player) == GAMEBIT_STAFF_ABILITY_OPEN_PORTAL &&
+               state->openTimer == PORTAL_SPELL_DOOR_TIMER_INACTIVE) {
+        state->openTimer = 0;
     }
-    else
-    {
-        if (objGetAnimState80A((GameObject*)(player)) == 0x5bd && state->openTimer == -1)
-        {
-            state->openTimer = 0;
-        }
-    }
-    if (state->openTimer != -1)
-    {
-        timer = state->openTimer - framesThisStep;
-        state->openTimer = timer;
-        if (timer < 0)
-        {
-            int tricky;
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-            (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-            tricky = (int)getTrickyObject();
-            if ((void*)tricky != NULL)
-            {
-                trickyImpress((GameObject*)tricky);
+    if (state->openTimer != PORTAL_SPELL_DOOR_TIMER_INACTIVE) {
+        nextTimer = state->openTimer - framesThisStep;
+        state->openTimer = nextTimer;
+        if (nextTimer < 0) {
+            GameObject* tricky;
+
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            (*gObjectTriggerInterface)
+                ->runSequence(PORTAL_SPELL_DOOR_OPEN_SEQUENCE, (void*)obj, PORTAL_SPELL_DOOR_SEQUENCE_ARG_NONE);
+            tricky = getTrickyObject();
+            if (tricky != NULL) {
+                trickyImpress(tricky);
             }
-            ((PortalFlags*)&state->flags0C)->open = 1;
-            state->openTimer = -1;
+            state->flags.open = TRUE;
+            state->openTimer = PORTAL_SPELL_DOOR_TIMER_INACTIVE;
         }
     }
 }
 
-void PortalSpellDoor_init(GameObject* obj, u8* data)
-{
+void PortalSpellDoor_init(GameObject* obj, PortalSpellDoorPlacement* placement) {
     PortalSpellDoorState* state = obj->extra;
-    obj->anim.rotX = (s16)((s32)(s8)data[0x18] << 8);
-    obj->anim.rotY = (s16)((s32) * (s16*)(data + 0x1c) << 8);
-    obj->anim.rootMotionScale = lbl_803E3A8C;
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << PORTAL_SPELL_DOOR_ROTATION_SHIFT);
+    obj->anim.rotY = (s16)((s32)placement->rotY << PORTAL_SPELL_DOOR_ROTATION_SHIFT);
+    obj->anim.rootMotionScale = gPortalSpellDoorRootMotionScale;
     {
-        f32 _ab = obj->anim.hitboxScale * obj->anim.rootMotionScale;
-        state->openAmount = _ab * lbl_803E3A90;
+        f32 scaledHitbox = obj->anim.hitboxScale * obj->anim.rootMotionScale;
+        state->openAmount = scaledHitbox * gPortalSpellDoorOpenAmountScale;
     }
-    if (mainGetBit(*(s16*)(data + 0x1e)) != 0)
-    {
-        obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-        obj->objectFlags =
-            (u16)(obj->objectFlags |
-                  (PORTALSPELLDOOR_OBJFLAG_UPDATE_DISABLED | PORTALSPELLDOOR_OBJFLAG_HIDDEN |
-                   PORTALSPELLDOOR_OBJFLAG_HITDETECT_DISABLED));
+    if (mainGetBit(placement->openedGameBit) != 0) {
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED | OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED;
     }
-    state->openTimer = -1;
+    state->openTimer = PORTAL_SPELL_DOOR_TIMER_INACTIVE;
 }
 
-void PortalSpellDoor_release(void)
-{
+void PortalSpellDoor_release(void) {
 }
 
-void PortalSpellDoor_initialise(void)
-{
+void PortalSpellDoor_initialise(void) {
 }
 
 ObjectDescriptor gPortalSpellDoorObjDescriptor = {

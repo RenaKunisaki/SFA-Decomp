@@ -22,9 +22,6 @@
 
 #define PINPONSPIKE_PARTFX_IMPACT 0x715
 
-#define PINPONSPIKE_OBJECT_FLAG_HIDDEN              0x4000
-#define PINPONSPIKE_OBJECT_FLAG_HIT_DETECT_DISABLED 0x2000
-
 #define PINPONSPIKE_IMPACT_DESPAWN_DELAY  120
 #define PINPONSPIKE_IMPACT_PARTICLE_COUNT 25
 #define PINPONSPIKE_VERTICAL_ACCELERATION -0.2f
@@ -168,7 +165,7 @@ void pinponspike_init(GameObject* obj) {
     ObjHits_DisableObject(obj);
     obj->anim.alpha = 0xff;
     Sfx_PlayFromObject((int)obj, SFXTRIG_whiz3_c);
-    obj->objectFlags |= (PINPONSPIKE_OBJECT_FLAG_HIDDEN | PINPONSPIKE_OBJECT_FLAG_HIT_DETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void pinponspike_release(void) {

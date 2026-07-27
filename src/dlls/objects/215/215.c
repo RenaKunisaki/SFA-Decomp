@@ -25,8 +25,6 @@
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 31
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT   10
 
-#define KALDACHOMPSPIT_OBJECT_FLAG_HIT_DETECT_DISABLED 0x2000
-
 #define KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE 0x869
 
 #define KALDACHOMPSPIT_PARTFX_POISON_TRAIL 0x714
@@ -210,7 +208,7 @@ void KaldaChompSpit_init(GameObject* obj) {
     ObjHits_DisableObject(obj);
     obj->anim.alpha = 0xff;
     Sfx_PlayFromObject((int)obj, SFXTRIG_whiz3_c);
-    obj->objectFlags |= KALDACHOMPSPIT_OBJECT_FLAG_HIT_DETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     if (state->light == NULL) {
         state->light = objCreateLight(obj, 1);
         if (state->light != NULL) {

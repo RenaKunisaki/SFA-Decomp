@@ -64,7 +64,6 @@ STATIC_ASSERT(sizeof(KaldachomCombatStack) == 0x1C);
 #define KALDACHOM_EVENT_LOWER_PROJECTILE 0x40
 
 #define KALDACHOM_OBJECT_GROUP                    3
-#define KALDACHOM_OBJECT_FLAG_HIT_DETECT_DISABLED 0x2000
 #define KALDACHOM_OBJECT_TYPE_ID                  0x49
 
 #define KALDACHOM_CHILD_OBJ_DUST             0x55e
@@ -759,7 +758,7 @@ void kaldachom_init(GameObject* obj, KaldachomPlacement* placement, int flags) {
     control->idleAnimTimer = (f32)(int)randomGetRange(0, 499);
     control->unk3C = 0.0f;
     control->spawnedDustObj = NULL;
-    obj->objectFlags |= KALDACHOM_OBJECT_FLAG_HIT_DETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     obj->anim.rootMotionScale = 0.5f + (f32)(s32)placement->scale / 15.0f;
     ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (int)(16.0f * obj->anim.rootMotionScale));
     if (flags == 0) {
