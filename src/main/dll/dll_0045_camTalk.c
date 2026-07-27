@@ -12,16 +12,13 @@
 #include "main/dll/player_api.h"
 
 CameraModeBikeState* gCamTalkBikeState;
-extern const f32 gCamTalkDefaultFov;
-extern const f32 gCamTalkPi;
-extern const f32 gCamTalkAngleUnitScale;
-extern const f32 gCamTalkDefaultFollowDist;
-extern const f32 lbl_803E17B4;
-extern const f32 lbl_803E17A8;
-
-#define CAM_TALK_FOLLOW_SMOOTHING lbl_803E17A8
-#define CAM_TALK_ROLL_SCALE lbl_803E17A8
-#define CAM_TALK_ROLL_SMOOTHING lbl_803E17B4
+#define CAM_TALK_DEFAULT_FOV 85.0f
+#define CAM_TALK_PI 3.14159274f
+#define CAM_TALK_ANGLE_UNIT_SCALE 32768.0f
+#define CAM_TALK_DEFAULT_FOLLOW_DIST 50.0f
+#define CAM_TALK_FOLLOW_SMOOTHING 0.2f
+#define CAM_TALK_ROLL_SCALE 0.2f
+#define CAM_TALK_ROLL_SMOOTHING 0.0625f
 
 void CameraModeBike_copyToCurrent(f32* inputs)
 {
@@ -39,6 +36,7 @@ void CameraModeBike_free(void)
 
 void CameraModeBike_update(CameraObject* camera)
 {
+    float rollSmoothing;
     float rollStep;
     int targetAngle;
     float followDist;
@@ -65,7 +63,7 @@ void CameraModeBike_update(CameraObject* camera)
     target = camera->anim.targetObj;
     if (target != NULL)
     {
-        camera->fov = gCamTalkDefaultFov;
+        camera->fov = CAM_TALK_DEFAULT_FOV;
         targetTransform.x = target->anim.worldPosX;
         targetTransform.y = target->anim.worldPosY;
         targetTransform.z = target->anim.worldPosZ;
@@ -94,17 +92,17 @@ void CameraModeBike_update(CameraObject* camera)
             angleDelta = angleDelta + 0xFFFF;
         }
         camera->anim.rotY += (angleDelta >> 3);
-        sinYaw = mathSinf(gCamTalkPi * (camera->anim.rotX - 0x4000) / gCamTalkAngleUnitScale);
-        cosYaw = mathCosf(gCamTalkPi * (camera->anim.rotX - 0x4000) / gCamTalkAngleUnitScale);
-        cosPitch = mathCosf(gCamTalkPi * camera->anim.rotY / gCamTalkAngleUnitScale);
-        sinPitch = mathSinf(gCamTalkPi * camera->anim.rotY / gCamTalkAngleUnitScale);
+        sinYaw = mathSinf(CAM_TALK_PI * (camera->anim.rotX - 0x4000) / CAM_TALK_ANGLE_UNIT_SCALE);
+        cosYaw = mathCosf(CAM_TALK_PI * (camera->anim.rotX - 0x4000) / CAM_TALK_ANGLE_UNIT_SCALE);
+        cosPitch = mathCosf(CAM_TALK_PI * camera->anim.rotY / CAM_TALK_ANGLE_UNIT_SCALE);
+        sinPitch = mathSinf(CAM_TALK_PI * camera->anim.rotY / CAM_TALK_ANGLE_UNIT_SCALE);
         st = gCamTalkBikeState;
         heightT = -st->heightInput / (6.0f);
         followTermA = CAM_TALK_FOLLOW_SMOOTHING;
         followTermB = (25.0f);
         heightT =
             (heightT < (0.0f)) ? (0.0f) : ((heightT > (1.0f)) ? (1.0f) : heightT);
-        st->followDistance += followTermA * ((followTermB * heightT + gCamTalkDefaultFollowDist) - st->followDistance);
+        st->followDistance += followTermA * ((followTermB * heightT + CAM_TALK_DEFAULT_FOLLOW_DIST) - st->followDistance);
         followDist = gCamTalkBikeState->followDistance;
         followTermA = followDist * sinPitch;
         followTermB = followDist * cosPitch;
@@ -125,7 +123,8 @@ void CameraModeBike_update(CameraObject* camera)
             angleDelta = angleDelta + 0xFFFF;
         }
         rollStep = angleDelta * timeDelta;
-        camera->anim.rotZ += rollStep * CAM_TALK_ROLL_SMOOTHING;
+        rollSmoothing = CAM_TALK_ROLL_SMOOTHING;
+        camera->anim.rotZ += rollStep * rollSmoothing;
         Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
                                        camera->anim.parentAddress);
@@ -142,9 +141,9 @@ void CameraModeBike_init(CameraObject* camera)
     }
     memset(gCamTalkBikeState, 0, sizeof(CameraModeBikeState));
     gCamTalkBikeState->entryFov = camera->fov;
-    gCamTalkBikeState->defaultFov = (85.0f);
+    gCamTalkBikeState->defaultFov = CAM_TALK_DEFAULT_FOV;
     gCamTalkBikeState->defaultScale = (1.0f);
-    gCamTalkBikeState->followDistance = (5e+01f);
+    gCamTalkBikeState->followDistance = CAM_TALK_DEFAULT_FOLLOW_DIST;
 }
 
 void CameraModeBike_release(void)
