@@ -223,7 +223,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0B1 | — | NO-RETAIL-NAME | main/dll/dll_00B1_projlightning3.c | = (canonical) | — |
 | 0x0B2 | — | NO-RETAIL-NAME | main/dll/dll_00B2_projrobotfire.c | = (canonical) | — |
 | 0x0B3 | — | NO-RETAIL-NAME | main/dll/dll_00B3_projlightning4.c | = (canonical) | — |
-| 0x0B4 | — | NO-RETAIL-NAME | main/dll/dll_00B4_projenergise1.c | = (canonical) | — |
+| 0x0B4 | — | NO-RETAIL-NAME | dlls/projgfx/180/180.c | = (canonical) | — |
 | 0x0B5 | — | NO-RETAIL-NAME | dlls/projgfx/181/181.c | = (canonical) | — |
 | 0x0B6 | — | NO-RETAIL-NAME | dlls/projgfx/182/182.c | = (canonical) | — |
 | 0x0B7 | — | NO-RETAIL-NAME | dlls/projgfx/183/183.c | = (canonical) | — |

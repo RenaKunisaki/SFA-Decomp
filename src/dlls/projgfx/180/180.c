@@ -1,5 +1,5 @@
 /*
- * projenergise1 (DLL 0xB4) - retired "energise projectile" object DLL.
+ * projenergise1 (DLL 180 / 0xB4) - retired "energise projectile" object DLL.
  *
  * The object itself is gone: its only real entry point logs a
  * "no longer supported" message and returns -1, while the standard DLL
