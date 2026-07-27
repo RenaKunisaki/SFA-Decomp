@@ -150,7 +150,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x068 | — | NO-RETAIL-NAME | main/dll/dll_0068_dll68func0.c | = (canonical) | — |
 | 0x069 | — | NO-RETAIL-NAME | main/dll/dll_0069_dll69func0.c | = (canonical) | — |
 | 0x06A | — | NO-RETAIL-NAME | main/dll/dll_006A_dll6afunc0.c | = (canonical) | — |
-| 0x06B | — | NO-RETAIL-NAME | main/dll/dll_006B_dll6bfunc0.c | = (canonical) | — |
+| 0x06B | — | NO-RETAIL-NAME | dlls/modgfx/107/107.c | = (canonical) | — |
 | 0x06C | — | NO-RETAIL-NAME | dlls/modgfx/108/108.c | = (canonical) | — |
 | 0x06D | — | NO-RETAIL-NAME | dlls/modgfx/109/109.c | = (canonical) | — |
 | 0x06E | — | NO-RETAIL-NAME | dlls/modgfx/110/110.c | = (canonical) | — |
