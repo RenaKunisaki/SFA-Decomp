@@ -37,8 +37,13 @@
 #define WCPUSHBLOCK_GAMEBIT_B_FADE   0x809
 #define WCPUSHBLOCK_GAMEBIT_B_COUNT  0x811
 
-u8 gWcTileGridA[9][8];
 u8 gWcTileGridB[8][8];
+u8 gWcTileGridA[9][8];
+
+static void wclevelcont_resetTileGridB(void)
+{
+    memcpy(gWcTileGridB, gWcTileGridBInitial.g, 0x40);
+}
 
 void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
 {
