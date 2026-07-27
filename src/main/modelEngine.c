@@ -76,6 +76,7 @@
 #include "dlls/objects/277.h"
 #include "dlls/objects/278_WM_Column.h"
 #include "dlls/objects/279_AppleOnTree.h"
+#include "dlls/objects/280_Duster.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -207,8 +208,8 @@ extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gD
 extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor, gDrLaserCannonObjDescriptor,
     gDrLightBeaObjDescriptor, gDrMusicContObjDescriptor, gDrShackleObjDescriptor, gDrakorDThornBushObjDescriptor,
     gDrakorEnergyObjDescriptor;
-extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor,
-    gDusterObjDescriptor, gECSH_CreatorObjDescriptor, gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
+extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor, gECSH_CreatorObjDescriptor,
+    gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
     gExplodableObjDescriptor, gExplodeAnimatorObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
@@ -1232,7 +1233,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll115ObjDescriptor,
     (ResourceDescriptor*)&gWM_ColumnObjDescriptor,
     (ResourceDescriptor*)&gAppleOnTreeObjDescriptor,
-    &gDusterObjDescriptor,
+    (ResourceDescriptor*)&gDusterObjDescriptor,
     &gColdWaterControlObjDescriptor,
     &gDecoration11AObjDescriptor,
     &gLanded_ArwingObjDescriptor,

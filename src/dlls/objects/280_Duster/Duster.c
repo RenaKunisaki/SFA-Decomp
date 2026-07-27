@@ -1,57 +1,45 @@
-/*
- * Duster (DLL 0x118) - a drifting collectible "dust" object the player
- * gathers and deposits.
- *
- * Each duster activates from its placement game bit; once active it settles
- * to the nearest floor hit, drifts (driftDir / random heading), advances its
- * canned move, and reacts to priority hits. When the player is close and
- * facing it (Obj_IsParentSlackClear), it is either picked up (ObjMsg
- * DUSTER_MSG_REQUEST_PICKUP, gated by game bit 0xcc0) or deposited directly if the current
- * character's duster collection isn't full. Depositing (DUSTER_MSG_DEPOSIT)
- * sets the object's completeGameBit, bumps the collected count, spawns the
- * place fx and marks the duster complete. Game bits >= 0x6fe are treated as
- * already-complete markers (completeGameBit == activeGameBit); below that the
- * complete bit lives at activeGameBit + 0x64.
- */
-#include "dlls/object_descriptor.h"
+#include "dlls/objects/280_Duster.h"
+
+#include "game/objects/object.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object_setup.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
-#include "main/vecmath_distance_api.h"
+#include "main/gamebits.h"
+#include "main/mapEventTypes.h"
 #include "main/object_render.h"
+#include "main/obj_message.h"
+#include "main/objHitReact_types.h"
+#include "main/objhits.h"
+#include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
-#include "main/dll/dusterstate_types.h"
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
-#include "main/track_bbox_api.h"
-#include "main/obj_message.h"
-#include "main/audio/sfx.h"
+#include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/mapEventTypes.h"
-#include "main/gamebits.h"
-#include "main/objhits.h"
 
-#define DUSTER_OBJ_MOVE_STEP_SCALE 0.02f
+#define DUSTER_MOVE_STEP_SCALE             0.02f
+#define DUSTER_MESSAGE_IN_RANGE            0x7000A
+#define DUSTER_MESSAGE_DEPOSIT             0x7000B
+#define DUSTER_PARTICLE_DEPOSIT            0x51A
+#define DUSTER_PARTICLE_BOUNCE             0x51F
+#define DUSTER_GAME_BIT_COMPLETE_THRESHOLD 0x6FE
+#define DUSTER_COMPLETE_GAME_BIT_OFFSET    0x64
+#define DUSTER_DRIFT_DIRECTION_SPIN        4
+#define DUSTER_DRIFT_DIRECTION_MAX         4
+#define DUSTER_HELD_OBJECT_NONE            -1
+#define DUSTER_HIT_REACTION_PRIORITY       0xE
+#define DUSTER_HIT_REACTION_TIMER          0xFA
+#define DUSTER_SETTLE_TIMER_MAX            0x32
+#define DUSTER_MESSAGE_QUEUE_SIZE          1
 
-typedef struct DusterSetup
-{
-    ObjPlacement base;
-    u8 pad18[0x24 - 0x18];
-    s16 activeGameBit;
-} DusterSetup;
-
-typedef struct DusterMapEventState
-{
+typedef struct DusterCharacterState {
     u8 pad00[9];
     u8 collectedCount;
     u8 maxCollectedCount;
-} DusterMapEventState;
+} DusterCharacterState;
 
-typedef struct DusterLaunchRotation
-{
+typedef struct DusterLaunchRotation {
     s16 yaw;
     s16 pitch;
     s16 roll;
@@ -61,34 +49,16 @@ typedef struct DusterLaunchRotation
     f32 z;
 } DusterLaunchRotation;
 
-STATIC_ASSERT(sizeof(DusterStateFlags) == 1);
-STATIC_ASSERT(sizeof(DusterState) == 0x20);
-STATIC_ASSERT(offsetof(DusterState, moveStepScale) == 0x00);
-STATIC_ASSERT(offsetof(DusterState, floorY) == 0x04);
-STATIC_ASSERT(offsetof(DusterState, settleTimer) == 0x08);
-STATIC_ASSERT(offsetof(DusterState, hitReactTimer) == 0x0a);
-STATIC_ASSERT(offsetof(DusterState, completeGameBit) == 0x0c);
-STATIC_ASSERT(offsetof(DusterState, activeGameBit) == 0x0e);
-STATIC_ASSERT(offsetof(DusterState, heldObjectId) == 0x10);
-STATIC_ASSERT(offsetof(DusterState, driftDir) == 0x18);
-STATIC_ASSERT(offsetof(DusterState, hitReactActive) == 0x19);
-STATIC_ASSERT(offsetof(DusterState, priorityHit) == 0x1a);
-STATIC_ASSERT(offsetof(DusterState, active) == 0x1b);
-STATIC_ASSERT(offsetof(DusterState, complete) == 0x1c);
-STATIC_ASSERT(offsetof(DusterState, useLaunchVelocity) == 0x1d);
-STATIC_ASSERT(offsetof(DusterState, flags) == 0x1e);
-
-/* ObjMsg ids shared with the other collectible objects (magicgem/fuelcell) */
-#define DUSTER_MSG_REQUEST_PICKUP 0x7000a
-#define DUSTER_MSG_DEPOSIT        0x7000b
-
-/* game bit guarding a single carried duster at a time */
-#define GAMEBIT_DUSTER_CARRIED 0xcc0
-
-/* partfx spawned 3x on deposit/place completion (with place-object sfx) */
-#define DUSTER_PARTFX_DEPOSIT 0x51a
-/* partfx spawned 2x on bounce/collision during a move step (with river-loop sfx) */
-#define DUSTER_PARTFX_BOUNCE 0x51f
+STATIC_ASSERT(offsetof(DusterCharacterState, collectedCount) == 0x9);
+STATIC_ASSERT(offsetof(DusterCharacterState, maxCollectedCount) == 0xA);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, yaw) == 0x0);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, pitch) == 0x2);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, roll) == 0x4);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, scale) == 0x8);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, x) == 0xC);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, y) == 0x10);
+STATIC_ASSERT(offsetof(DusterLaunchRotation, z) == 0x14);
+STATIC_ASSERT(sizeof(DusterLaunchRotation) == 0x18);
 
 extern f32 lbl_803E38B0;
 extern f32 gDusterObjHitDetectRadius;
@@ -101,38 +71,32 @@ extern f32 gDusterObjDriftSpinRate;
 extern f32 gDusterObjPickupRangeY;
 extern f32 gDusterObjPickupRangeXZ;
 
-int duster_SeqFn(GameObject* obj)
-{
-    DusterState* state = obj->extra;
+int duster_SeqFn(GameObject* obj) {
+    DusterObjectState* state = obj->extra;
     state->flags.floorCached = 0;
     return 0;
 }
 
-int duster_getExtraSize(void)
-{
-    return 0x20;
+int duster_getExtraSize(void) {
+    return DUSTER_OBJECT_STATE_SIZE;
 }
 
-void duster_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    DusterState* state = obj->extra;
-    if (visible == 0 || state->active == 0 || state->complete != 0)
-    {
+void duster_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+    DusterObjectState* state = obj->extra;
+    if (renderState == 0 || state->active == 0 || state->complete != 0) {
         return;
     }
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E38B0);
+    objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, lbl_803E38B0);
 }
 
-void duster_hitDetect(GameObject* obj)
-{
-    DusterState* state;
+void duster_hitDetect(GameObject* obj) {
+    DusterObjectState* state;
     TrackBBoxHit hit;
     int hitResult;
     state = obj->extra;
     hitResult = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, gDusterObjHitDetectRadius, 2,
                                    &hit, obj, 8, -1, 255, 0);
-    if (hitResult != 0)
-    {
+    if (hitResult != 0) {
         state->priorityHit = 1;
     }
     obj->anim.previousLocalPosX = obj->anim.localPosX;
@@ -140,113 +104,95 @@ void duster_hitDetect(GameObject* obj)
     obj->anim.previousLocalPosZ = obj->anim.localPosZ;
 }
 
-void duster_update(GameObject* obj)
-{
-    DusterState* state;
-    DusterSetup* setup;
+void duster_update(GameObject* obj) {
+    DusterObjectState* state;
+    DusterPlacement* placement;
     GameObject* player;
-    GameObject* playerObj;
     TrackGroundHit** floorHits;
-    int msg;
-    int next;
+    int message;
+    int nextCollectedCount;
     int floorHitCount;
-    int i;
+    int floorIndex;
     int bestFloorIndex;
     f32 bestFloorDelta;
-    f32 floorDelta;
+    f32 verticalDelta;
     DusterLaunchRotation launch;
-    DusterMapEventState* mapState;
+    DusterCharacterState* characterState;
 
     state = obj->extra;
-    setup = *(DusterSetup**)&obj->anim.placementData;
+    placement = (DusterPlacement*)obj->anim.placementData;
     player = Obj_GetPlayerObject();
-    playerObj = player;
 
-    while (ObjMsg_Pop(obj, (u32*)&msg, 0, 0) != 0)
-    {
-        switch (msg)
-        {
-        case DUSTER_MSG_DEPOSIT:
+    while (ObjMsg_Pop(obj, (u32*)&message, 0, 0) != 0) {
+        switch (message) {
+        case DUSTER_MESSAGE_DEPOSIT:
             ((void (*)(void*, u16))Sfx_PlayFromObject)(obj, SFXTRIG_sc_cam90_c);
-            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_DEPOSIT, NULL, 1, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_DEPOSIT, NULL, 1, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_DEPOSIT, NULL, 1, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
             mainSetBits(state->completeGameBit, 1);
-            mapState = (DusterMapEventState*)(*gMapEventInterface)->getCurCharacterState();
-            mapState->collectedCount = (mapState->maxCollectedCount < (next = mapState->collectedCount + 1))
-                                           ? mapState->maxCollectedCount
-                                           : next;
+            characterState = (DusterCharacterState*)(*gMapEventInterface)->getCurCharacterState();
+            characterState->collectedCount =
+                (characterState->maxCollectedCount < (nextCollectedCount = characterState->collectedCount + 1))
+                    ? characterState->maxCollectedCount
+                    : nextCollectedCount;
             state->complete = 1;
             break;
         }
     }
 
-    if (state->active == 0 || state->complete == 1)
-    {
-        if (state->active == 0)
-        {
+    if (state->active == 0 || state->complete == 1) {
+        if (state->active == 0) {
             state->active = mainGetBit(state->activeGameBit);
             state->settleTimer = 0;
         }
         return;
     }
 
-    if (obj->anim.velocityY > gDusterObjGravityVelYThreshold)
-    {
+    if (obj->anim.velocityY > gDusterObjGravityVelYThreshold) {
         obj->anim.velocityY = gDusterObjGravityAccel * timeDelta + obj->anim.velocityY;
     }
 
     state->priorityHit = 0;
-    if (state->flags.floorCached == 0)
-    {
-        floorHitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
-                                             &floorHits, 0, 0);
+    if (state->flags.floorCached == 0) {
+        floorHitCount =
+            hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorHits, 0, 0);
         bestFloorDelta = gDusterObjFloorSearchMaxDelta;
         bestFloorIndex = -1;
-        for (i = 0; i < floorHitCount; i++)
-        {
-            floorDelta = floorHits[i]->height - obj->anim.localPosY;
-            if (floorDelta < *(f32*)&lbl_803E38C4)
-            {
-                floorDelta = -floorDelta;
+        for (floorIndex = 0; floorIndex < floorHitCount; floorIndex++) {
+            verticalDelta = floorHits[floorIndex]->height - obj->anim.localPosY;
+            if (verticalDelta < *(f32*)&lbl_803E38C4) {
+                verticalDelta = -verticalDelta;
             }
-            if (floorDelta < bestFloorDelta)
-            {
-                bestFloorIndex = i;
-                bestFloorDelta = floorDelta;
+            if (verticalDelta < bestFloorDelta) {
+                bestFloorIndex = floorIndex;
+                bestFloorDelta = verticalDelta;
             }
         }
-        if (bestFloorIndex != -1)
-        {
+        if (bestFloorIndex != -1) {
             state->flags.floorCached = 1;
             state->floorY = floorHits[bestFloorIndex]->height;
             obj->anim.velocityY = lbl_803E38C4;
         }
-        if (state->flags.floorCached == 0)
-        {
-            state->floorY = ((ObjPlacement*)setup)->posY;
+        if (state->flags.floorCached == 0) {
+            state->floorY = placement->base.posY;
             state->flags.floorCached = 1;
         }
     }
 
-    if (obj->anim.localPosY < state->floorY)
-    {
+    if (obj->anim.localPosY < state->floorY) {
         obj->anim.localPosY = state->floorY;
         obj->anim.velocityY = lbl_803E38C4;
     }
 
-    if (state->settleTimer == 0 && state->hitReactTimer == 0)
-    {
-        if (ObjAnim_AdvanceCurrentMove((int)obj, state->moveStepScale, timeDelta,
-                                                                        NULL) != 0 ||
-            state->priorityHit != 0)
-        {
+    if (state->settleTimer == 0 && state->hitReactTimer == 0) {
+        if (ObjAnim_AdvanceCurrentMove((int)obj, state->moveStepScale, timeDelta, NULL) != 0 ||
+            state->priorityHit != 0) {
             ((void (*)(void*, u16))Sfx_PlayFromObject)(obj, SFXTRIG_en_lflsh3_c);
-            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_BOUNCE, NULL, 2, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_BOUNCE, NULL, 2, -1, NULL);
-            state->driftDir = randomGetRange(0, 4);
-            if (state->useLaunchVelocity != 0)
-            {
+            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_BOUNCE, NULL, 2, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_BOUNCE, NULL, 2, -1, NULL);
+            state->driftDirection = randomGetRange(0, DUSTER_DRIFT_DIRECTION_MAX);
+            if (state->useLaunchVelocity != 0) {
                 obj->anim.velocityX = gDusterObjLaunchVelocityX;
                 launch.z = launch.y = launch.x = obj->anim.velocityZ = lbl_803E38C4;
                 launch.scale = lbl_803E38B0;
@@ -254,95 +200,75 @@ void duster_update(GameObject* obj)
                 launch.pitch = 0;
                 launch.yaw = obj->anim.rotX;
                 vecRotateZXY(&launch.yaw, &obj->anim.velocityX);
-            }
-            else
-            {
+            } else {
                 obj->anim.velocityZ = obj->anim.velocityX = lbl_803E38C4;
             }
-            if (state->hitReactActive != 0)
-            {
-                state->hitReactTimer = 0xfa;
+            if (state->hitReactionActive != 0) {
+                state->hitReactTimer = DUSTER_HIT_REACTION_TIMER;
             }
-        }
-        else
-        {
+        } else {
             obj->anim.localPosX += obj->anim.velocityX * timeDelta;
             obj->anim.localPosZ += obj->anim.velocityZ * timeDelta;
         }
 
-        if (ObjHits_GetPriorityHit(obj, 0, 0, 0) == 0xe)
-        {
-            state->hitReactActive = 1;
+        if (ObjHits_GetPriorityHit(obj, 0, 0, 0) == DUSTER_HIT_REACTION_PRIORITY) {
+            state->hitReactionActive = 1;
             ((void (*)(void*, u16))Sfx_PlayFromObject)(obj, SFXTRIG_dn_boar1_c_4d);
         }
-    }
-    else
-    {
-        if (state->settleTimer != 0)
-        {
+    } else {
+        if (state->settleTimer != 0) {
             state->settleTimer -= (s16)timeDelta;
-            if (state->settleTimer <= 0)
-            {
+            if (state->settleTimer <= 0) {
                 state->settleTimer = 0;
             }
         }
-        if (state->hitReactTimer != 0)
-        {
+        if (state->hitReactTimer != 0) {
             state->hitReactTimer -= (s16)timeDelta;
-            if (state->hitReactTimer <= 0)
-            {
+            if (state->hitReactTimer <= 0) {
                 state->hitReactTimer = 0;
-                state->hitReactActive = 0;
+                state->hitReactionActive = 0;
             }
         }
     }
 
-    if (state->driftDir == 4)
-    {
-        if (state->priorityHit != 0)
-        {
+    if (state->driftDirection == DUSTER_DRIFT_DIRECTION_SPIN) {
+        if (state->priorityHit != 0) {
             obj->anim.rotX = (s16)(obj->anim.rotX - 0x7fff);
-            state->driftDir = 0;
+            state->driftDirection = 0;
         }
-        obj->anim.rotX = (s16)((f32) * (s16*)obj + gDusterObjDriftSpinRate * timeDelta);
+        obj->anim.rotX = (s16)((f32)obj->anim.rotX + gDusterObjDriftSpinRate * timeDelta);
     }
 
-    floorDelta = playerObj->anim.localPosY - obj->anim.localPosY;
-    if (floorDelta < lbl_803E38C4)
-    {
-        floorDelta = -floorDelta;
+    verticalDelta = player->anim.localPosY - obj->anim.localPosY;
+    if (verticalDelta < lbl_803E38C4) {
+        verticalDelta = -verticalDelta;
     }
-    if (floorDelta < gDusterObjPickupRangeY &&
-        Vec_xzDistance(&playerObj->anim.worldPosX, &obj->anim.worldPosX) < gDusterObjPickupRangeXZ &&
-        Obj_IsParentSlackClear(player) != 0)
-    {
-        if (mainGetBit(GAMEBIT_DUSTER_CARRIED) == 0)
-        {
-            state->heldObjectId = -1;
+    if (verticalDelta < gDusterObjPickupRangeY &&
+        Vec_xzDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < gDusterObjPickupRangeXZ &&
+        Obj_IsParentSlackClear(player) != 0) {
+        if (mainGetBit(GAMEBIT_SawBafomdad) == 0) {
+            state->heldObjectId = DUSTER_HELD_OBJECT_NONE;
             ObjHits_DisableObject(obj);
-            ObjMsg_SendToObject(player, DUSTER_MSG_REQUEST_PICKUP, obj, (u32)&state->heldObjectId);
-            mainSetBits(GAMEBIT_DUSTER_CARRIED, 1);
-        }
-        else
-        {
-            mapState = (DusterMapEventState*)(*gMapEventInterface)->getCurCharacterState();
-            if (mapState->collectedCount < mapState->maxCollectedCount)
-            {
+            ObjMsg_SendToObject(player, DUSTER_MESSAGE_IN_RANGE, obj, (u32)&state->heldObjectId);
+            mainSetBits(GAMEBIT_SawBafomdad, 1);
+        } else {
+            characterState = (DusterCharacterState*)(*gMapEventInterface)->getCurCharacterState();
+            if (characterState->collectedCount < characterState->maxCollectedCount) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_sc_cam90_c);
-                (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_DEPOSIT, NULL, 1, -1, NULL);
-                (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_DEPOSIT, NULL, 1, -1, NULL);
-                (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTFX_DEPOSIT, NULL, 1, -1, NULL);
+                (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
+                (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
+                (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
                 mainSetBits(state->completeGameBit, 1);
-                mapState = (DusterMapEventState*)(*gMapEventInterface)->getCurCharacterState();
-                mapState->collectedCount = (mapState->maxCollectedCount < (next = mapState->collectedCount + 1))
-                                               ? mapState->maxCollectedCount
-                                               : next;
+                characterState = (DusterCharacterState*)(*gMapEventInterface)->getCurCharacterState();
+                characterState->collectedCount =
+                    (characterState->maxCollectedCount < (nextCollectedCount = characterState->collectedCount + 1))
+                        ? characterState->maxCollectedCount
+                        : nextCollectedCount;
                 state->complete = 1;
                 obj->anim.alpha = 1;
             }
         }
-        if (obj->anim.hitReactState != NULL)
-        {
+        if (obj->anim.hitReactState != NULL) {
             ObjHits_DisableObject(obj);
         }
     }
@@ -350,39 +276,31 @@ void duster_update(GameObject* obj)
     obj->anim.localPosY += obj->anim.velocityY;
 }
 
-void duster_init(GameObject* obj, u8* params)
-{
-    DusterState* state;
-    DusterSetup* setup;
-    void* hitData;
+void duster_init(GameObject* obj, DusterPlacement* placement) {
+    DusterObjectState* state;
+    ObjHitReactState* hitReactState;
 
-    setup = (DusterSetup*)params;
-    state = (obj)->extra;
-    state->settleTimer = randomGetRange(0, 0x32);
-    state->moveStepScale = DUSTER_OBJ_MOVE_STEP_SCALE;
-    state->activeGameBit = setup->activeGameBit;
-    if (state->activeGameBit >= 0x6fe)
-    {
+    state = obj->extra;
+    state->settleTimer = randomGetRange(0, DUSTER_SETTLE_TIMER_MAX);
+    state->moveStepScale = DUSTER_MOVE_STEP_SCALE;
+    state->activeGameBit = placement->activeGameBit;
+    if (state->activeGameBit >= DUSTER_GAME_BIT_COMPLETE_THRESHOLD) {
         state->active = 1;
         state->completeGameBit = state->activeGameBit;
-    }
-    else
-    {
+    } else {
         state->active = mainGetBit(state->activeGameBit);
-        state->completeGameBit = state->activeGameBit + 0x64;
+        state->completeGameBit = state->activeGameBit + DUSTER_COMPLETE_GAME_BIT_OFFSET;
     }
     state->complete = mainGetBit(state->completeGameBit);
-    hitData = (obj)->anim.hitReactState;
-    if (hitData != NULL && state->active == 0)
-    {
-        *(s16*)((int)hitData + 0x60) = (s16)(*(s16*)((int)hitData + 0x60) | 1);
+    hitReactState = obj->anim.hitReactState;
+    if (hitReactState != NULL && state->active == 0) {
+        hitReactState->flags = (s16)(hitReactState->flags | 1);
     }
-    if ((state->complete != 0 || state->active == 0) && (obj)->anim.hitReactState != NULL)
-    {
+    if ((state->complete != 0 || state->active == 0) && obj->anim.hitReactState != NULL) {
         ObjHits_DisableObject(obj);
     }
-    ObjMsg_AllocQueue((void*)obj, 1);
-    (obj)->animEventCallback = duster_SeqFn;
+    ObjMsg_AllocQueue(obj, DUSTER_MESSAGE_QUEUE_SIZE);
+    obj->animEventCallback = duster_SeqFn;
 }
 
 ObjectDescriptor gDusterObjDescriptor = {

@@ -109,6 +109,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
   source; keep private helper types and constants in the TU.
+- Before promoting a local state or placement typedef into a canonical header, search the tree for
+  the same type name. If another subsystem already uses that name for a different layout, choose an
+  explicit object-specific name instead of exporting an ambiguous typedef or creating an include
+  collision; back-apply the rename only to consumers of the recovered layout.
 - Format the object TU and its unit-owned header, but keep shared consumer edits surgical. Adding a
   canonical header to a registry such as `modelEngine.c` does not authorize whole-file formatting
   or unrelated cleanup there; change only the required include, declaration, cast, or use sites
