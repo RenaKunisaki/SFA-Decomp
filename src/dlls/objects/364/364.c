@@ -1,127 +1,113 @@
-/*
- * DLL 0x16C - map-event boulder proxy object (object type id 0x3, extra size 0x24).
- *
- * Drives a "boulder" GameObject that mirrors a separately-spawned map-event
- * sub-object: on update it relinks to a member of object group 10 chosen by
- * seqId (364 normally, 367 for seqId 368), advances its 0x100 move, and fades
- * its render opacity by the player's distance to the linked object. Render is
- * gated by GameBit 0x3A2 / seqId 883 and suppressed when GameBit 110 is set
- * unless GameBit 898 is also set. The sequence callback (dll_16C_SeqFn) spawns
- * /frees a child object from a small id table keyed by
- * desiredChildObjectIndex, and forwards trigger commands (1/2/3) to the linked object's
- * vtable.
- */
-#include "main/frame_timing.h"
-#include "main/vecmath_distance_api.h"
-#include "main/object_render.h"
-#include "main/rcp_dolphin_api.h"
+#include "dlls/objects/364.h"
+
 #include "game/objects/object.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
+#include "main/objanim.h"
+#include "main/object_render.h"
 #include "main/shader_api.h"
-#include "sys/objects/lifecycle.h"
+#include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
-#include "main/dll/dll_016C_dll16c.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "dlls/object_descriptor.h"
+#include "sys/objects/lifecycle.h"
 
-/*
- * Per-object extra state for the dll_16C map-event boulder proxy
- * (dll_16C_getExtraSize == 0x24).
- */
+#define IM_SNOW_CLAW_SEQ_ID             0x16D
+#define IM_SNOW_CLAW_MOUNT_SEQ_ID       0x16C
+#define IM_SNOW_CLAW_2_SEQ_ID           0x170
+#define IM_SNOW_CLAW_2_MOUNT_SEQ_ID     0x16F
+#define IM_SNOW_CLAW_RENDER_GATE_SEQ_ID 0x373
 
-/* seqId variant whose render is gated by GameBit 0x3A2 (docblock: "Render is gated by GameBit 0x3A2 / seqId 883") */
-#define DLL16C_RENDER_GATE_SEQID 883
+#define IM_SNOW_CLAW_MOUNT_OBJECT_GROUP 10
+#define IM_SNOW_CLAW_CHILD_SETUP_SIZE   0x18
+#define IM_SNOW_CLAW_MOVE_ID            0x100
+#define IM_SNOW_CLAW_FULL_ALPHA         0xFF
+#define IM_SNOW_CLAW_MOUNT_ACTIVE_FLAG  0x8
+#define IM_SNOW_CLAW_FADE_START         600.0f
+#define IM_SNOW_CLAW_FADE_RANGE         50.0f
 
-/* snowclaw pair seqIds (retail OBJECTS.bin names): each rider selects its
-   linked base object from group 10 */
-#define DLL16C_SEQID_IM_SNOWCLAW   365 /* 0x16d "IMSnowClaw" (DLL 0x25C) */
-#define DLL16C_SEQID_IM_SNOWCLAW_B 364 /* 0x16c "IMSnowClawB..." (DLL 0x255) */
-#define DLL16C_SEQID_IM_SNOWCLAW2  368 /* 0x170 "IMSnowClaw2" (DLL 0x25C) */
-#define DLL16C_SEQID_IM_SNOWCLAW2_B 367 /* 0x16f "IMSnowClawB..." (DLL 0x255) */
+const IMSnowClawDropObjectTable gIMSnowClawDropObjectTable = {
+    {0x23, 0x69, 0x33, 0x64, 0x1D}};
 
-typedef struct Dll16CChildObjectIdTable
+void imSnowClaw_syncMountTransform(
+    GameObject* obj, GameObject* mount, int renderArg2, int renderArg3, int renderArg4,
+    int renderArg5, int visible, int mountAlpha, int renderMount)
 {
-    s16 ids[5];
-} Dll16CChildObjectIdTable;
-
-STATIC_ASSERT(sizeof(Dll16CChildObjectIdTable) == 0xA);
-
-const Dll16CChildObjectIdTable lbl_802C2308 = {{0x23, 0x69, 0x33, 0x64, 0x1D}};
-
-void dll_16C_syncSubObjectTransform(GameObject* dst, GameObject* src, int p1, int p2, int p3, int p4, int visible,
-                                    int opacity, int reissueMove);
-
-/* dll_16C_syncSubObjectTransform: snapshot the map-event sub-object's transform into the boulder
- * extra block, optionally re-issuing a move on the sub-object first. */
-/* dll_16C_SeqFn: per-frame sequence callback - manage the spawned sub-object
- * from a small id table, then run the map-event sub-object state callbacks. */
-void dll_16C_syncSubObjectTransform(GameObject* dst, GameObject* src, int p1, int p2, int p3, int p4, int visible,
-                                    int opacity, int reissueMove)
-{
-    if (reissueMove != 0 && (s8)visible != 0 && opacity > 0)
+    if (renderMount != 0 && (s8)visible != 0 && mountAlpha > 0)
     {
-        u8 saved = src->anim.renderAlpha;
-        src->anim.renderAlpha = opacity;
-        (*(Dll16CLinkedObjectInterfaceVTable**)src->anim.dll)->render(src, p1, p2, p3, p4, -1);
-        src->anim.renderAlpha = saved;
+        u8 savedAlpha = mount->anim.renderAlpha;
+
+        mount->anim.renderAlpha = mountAlpha;
+        (*(IMSnowClawMountInterface**)mount->anim.dll)
+            ->render(mount, renderArg2, renderArg3, renderArg4, renderArg5, -1);
+        mount->anim.renderAlpha = savedAlpha;
     }
-    dst->anim.previousWorldPosX = dst->anim.worldPosX;
-    dst->anim.previousWorldPosY = dst->anim.worldPosY;
-    dst->anim.previousWorldPosZ = dst->anim.worldPosZ;
-    dst->anim.previousLocalPosX = dst->anim.localPosX;
-    dst->anim.previousLocalPosY = dst->anim.localPosY;
-    dst->anim.previousLocalPosZ = dst->anim.localPosZ;
+
+    obj->anim.previousWorldPosX = obj->anim.worldPosX;
+    obj->anim.previousWorldPosY = obj->anim.worldPosY;
+    obj->anim.previousWorldPosZ = obj->anim.worldPosZ;
+    obj->anim.previousLocalPosX = obj->anim.localPosX;
+    obj->anim.previousLocalPosY = obj->anim.localPosY;
+    obj->anim.previousLocalPosZ = obj->anim.localPosZ;
     {
-        f32 x, y, z;
-        (*(Dll16CLinkedObjectInterfaceVTable**)src->anim.dll)->getPosition(src, &x, &y, &z);
-        dst->anim.localPosX = x;
-        dst->anim.localPosY = y;
-        dst->anim.localPosZ = z;
+        f32 positionX;
+        f32 positionY;
+        f32 positionZ;
+
+        (*(IMSnowClawMountInterface**)mount->anim.dll)
+            ->getPosition(mount, &positionX, &positionY, &positionZ);
+        obj->anim.localPosX = positionX;
+        obj->anim.localPosY = positionY;
+        obj->anim.localPosZ = positionZ;
     }
-    dst->anim.rotX = src->anim.rotX;
-    dst->anim.rotY = src->anim.rotY;
-    dst->anim.rotZ = src->anim.rotZ;
-    dst->anim.worldPosX = dst->anim.localPosX;
-    dst->anim.worldPosY = dst->anim.localPosY;
-    dst->anim.worldPosZ = dst->anim.localPosZ;
-    dst->anim.velocityX = src->anim.velocityX;
-    dst->anim.velocityY = src->anim.velocityY;
-    dst->anim.velocityZ = src->anim.velocityZ;
+
+    obj->anim.rotX = mount->anim.rotX;
+    obj->anim.rotY = mount->anim.rotY;
+    obj->anim.rotZ = mount->anim.rotZ;
+    obj->anim.worldPosX = obj->anim.localPosX;
+    obj->anim.worldPosY = obj->anim.localPosY;
+    obj->anim.worldPosZ = obj->anim.localPosZ;
+    obj->anim.velocityX = mount->anim.velocityX;
+    obj->anim.velocityY = mount->anim.velocityY;
+    obj->anim.velocityZ = mount->anim.velocityZ;
 }
 
-static void dll_16C_advanceLinkedMove(GameObject* obj, GameObject* sub)
+static void dll_16C_advanceLinkedMove(GameObject* obj, GameObject* mount)
 {
-    f32 b;
-    f32 blend;
-    f32 a;
-    if (obj->anim.currentMove != 0x100)
+    f32 blendEnd;
+    f32 blendStep;
+    f32 blendStart;
+
+    if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID)
     {
-        ObjAnim_SetCurrentMove((int)obj, 0x100, 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
     }
-    (*(Dll16CLinkedObjectInterfaceVTable**)sub->anim.dll)->getBlendStep(sub, &blend);
-    blend = 0.01f;
-    (*(Dll16CLinkedObjectInterfaceVTable**)sub->anim.dll)->getBlendRange(sub, &a, &b);
-    ObjAnim_AdvanceCurrentMove((int)obj, blend, (f32)(u32)framesThisStep, NULL);
+    (*(IMSnowClawMountInterface**)mount->anim.dll)->getBlendStep(mount, &blendStep);
+    blendStep = 0.01f;
+    (*(IMSnowClawMountInterface**)mount->anim.dll)
+        ->getBlendRange(mount, &blendStart, &blendEnd);
+    ObjAnim_AdvanceCurrentMove(
+        (int)obj, blendStep, (f32)(u32)framesThisStep, NULL);
 }
 
-int dll_16C_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int imSnowClaw_sequenceCallback(
+    GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate)
 {
-    GameObject* linkedObj;
-    Dll16CState* extra = obj->extra;
-    Dll16CChildObjectIdTable childObjectIds;
+    GameObject* mount;
+    IMSnowClawState* state = obj->extra;
+    IMSnowClawDropObjectTable dropObjectTable;
 
-    extra->opacity = 0xff;
-    linkedObj = extra->linkedObj;
+    state->mountAlpha = IM_SNOW_CLAW_FULL_ALPHA;
+    mount = state->mount;
     if (animUpdate->triggerCommand == 3)
     {
-        extra->desiredChildObjectIndex = -1;
+        state->dropObjectIndex = -1;
         animUpdate->triggerCommand = 0;
     }
-    childObjectIds = lbl_802C2308;
+    dropObjectTable = gIMSnowClawDropObjectTable;
 
-    if (extra->desiredChildObjectIndex != extra->activeChildObjectIndex)
+    if (state->dropObjectIndex != state->appliedDropObjectIndex)
     {
         if (obj->childObjs[0] != NULL)
         {
@@ -131,31 +117,36 @@ int dll_16C_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
         }
         if (Obj_IsLoadingLocked())
         {
-            s8 idx = extra->desiredChildObjectIndex;
-            if (idx > 0)
+            s8 dropObjectIndex = state->dropObjectIndex;
+
+            if (dropObjectIndex > 0)
             {
                 *(int*)&obj->childObjs[0] =
-                    (int)Obj_SetupObject(Obj_AllocObjectSetup(24, childObjectIds.ids[idx - 1]), 4, -1, -1, obj->anim.parent);
+                    (int)Obj_SetupObject(
+                        Obj_AllocObjectSetup(
+                            IM_SNOW_CLAW_CHILD_SETUP_SIZE,
+                            dropObjectTable.objectIds[dropObjectIndex - 1]),
+                        4, -1, -1, obj->anim.parent);
                 obj->childCount = 1;
             }
-            extra->activeChildObjectIndex = extra->desiredChildObjectIndex;
+            state->appliedDropObjectIndex = state->dropObjectIndex;
         }
         else
         {
-            extra->activeChildObjectIndex = 0;
+            state->appliedDropObjectIndex = 0;
         }
     }
 
     animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
 
-    if (linkedObj != NULL && animUpdate->triggerCommand == 2)
+    if (mount != NULL && animUpdate->triggerCommand == 2)
     {
-        extra->unk04 = (1.0f);
-        extra->snapX = extra->pathPointX;
-        extra->snapY = extra->pathPointY;
-        extra->snapZ = extra->pathPointZ;
-        (*(Dll16CLinkedObjectInterfaceVTable**)linkedObj->anim.dll)->setState(linkedObj, 2);
-        ObjAnim_SetCurrentMove((int)obj, 0x100, (0.0f), 1);
+        state->unknown04 = 1.0f;
+        state->mountSnapX = state->pathPointX;
+        state->mountSnapY = state->pathPointY;
+        state->mountSnapZ = state->pathPointZ;
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->setState(mount, 2);
+        ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 1);
         if (obj->anim.modelState != NULL)
         {
             obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
@@ -163,15 +154,15 @@ int dll_16C_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
         animUpdate->hitVolumePair &= ~4;
         animUpdate->triggerCommand = 0;
     }
-    else if (linkedObj != NULL && animUpdate->triggerCommand == 1)
+    else if (mount != NULL && animUpdate->triggerCommand == 1)
     {
-        (*(Dll16CLinkedObjectInterfaceVTable**)linkedObj->anim.dll)->setState(linkedObj, 0);
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->setState(mount, 0);
         animUpdate->triggerCommand = 0;
     }
 
-    if (linkedObj != NULL)
+    if (mount != NULL)
     {
-        if ((*(Dll16CLinkedObjectInterfaceVTable**)linkedObj->anim.dll)->getState(linkedObj) == 2)
+        if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getState(mount) == 2)
         {
             animUpdate->hitVolumePair &= ~3;
         }
@@ -179,96 +170,108 @@ int dll_16C_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
     return 0;
 }
 
-int dll_16C_getExtraSize(void)
+int imSnowClaw_getExtraSize(void)
 {
-    return sizeof(Dll16CState);
+    return sizeof(IMSnowClawState);
 }
 
-int dll_16C_getObjectTypeId(void)
+int imSnowClaw_getObjectTypeId(void)
 {
-    return 0x3;
+    return 3;
 }
 
-void dll_16C_free(GameObject* obj)
+void imSnowClaw_free(GameObject* obj)
 {
     GameObject* child = obj->childObjs[0];
+
     if (child != NULL)
+    {
         Obj_FreeObject(child);
+    }
 }
 
-void dll_16C_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
+void imSnowClaw_render(
+    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
 {
-    Dll16CState* extra;
-    GameObject* linkedObj;
-    int hit;
+    IMSnowClawState* state;
+    GameObject* mount;
+    int mountActive;
 
-    if (obj->anim.seqId != DLL16C_RENDER_GATE_SEQID)
+    if (obj->anim.seqId != IM_SNOW_CLAW_RENDER_GATE_SEQ_ID)
     {
         if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
         {
             if (mainGetBit(GAMEBIT_IM_HutRelated0382) == 0)
-                return;
-        }
-        extra = obj->extra;
-        linkedObj = extra->linkedObj;
-        hit = 0;
-        if (linkedObj != NULL)
-        {
-            if ((*(Dll16CLinkedObjectInterfaceVTable**)linkedObj->anim.dll)->getState(linkedObj) == 2)
             {
-                hit = 1;
+                return;
             }
         }
-        if (hit != 0)
+
+        state = obj->extra;
+        mount = state->mount;
+        mountActive = 0;
+        if (mount != NULL)
         {
-            obj->anim.flags |= 8;
-            visible = objUpdateOpacity(linkedObj);
-            dll_16C_syncSubObjectTransform(obj, linkedObj, p1, p2, p3, p4, visible, extra->opacity, 1);
+            if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getState(mount) == 2)
+            {
+                mountActive = 1;
+            }
+        }
+        if (mountActive != 0)
+        {
+            obj->anim.flags |= IM_SNOW_CLAW_MOUNT_ACTIVE_FLAG;
+            visible = objUpdateOpacity(mount);
+            imSnowClaw_syncMountTransform(
+                obj, mount, renderArg2, renderArg3, renderArg4, renderArg5, visible,
+                state->mountAlpha, 1);
         }
         else
         {
-            obj->anim.flags &= ~8;
+            obj->anim.flags &= ~IM_SNOW_CLAW_MOUNT_ACTIVE_FLAG;
         }
-        if (visible != 0 && extra->opacity != 0)
+        if (visible != 0 && state->mountAlpha != 0)
         {
-            u8 saved = obj->anim.renderAlpha;
-            if (hit != 0)
+            u8 savedAlpha = obj->anim.renderAlpha;
+
+            if (mountActive != 0)
             {
-                obj->anim.renderAlpha = extra->opacity;
+                obj->anim.renderAlpha = state->mountAlpha;
             }
-            objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
-            ObjPath_GetPointWorldPosition(obj, 1, &extra->pathPointX, &extra->pathPointY, &extra->pathPointZ, 0);
-            obj->anim.renderAlpha = saved;
+            objRenderModelAndHitVolumes(
+                obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+            ObjPath_GetPointWorldPosition(
+                obj, 1, &state->pathPointX, &state->pathPointY, &state->pathPointZ, 0);
+            obj->anim.renderAlpha = savedAlpha;
         }
     }
     else
     {
-        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
+        objRenderModelAndHitVolumes(
+            obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void dll_16C_hitDetect(GameObject* obj)
+void imSnowClaw_hitDetect(GameObject* obj)
 {
-    Dll16CState* extra = (obj)->extra;
-    GameObject* p = extra->linkedObj;
-    if (p != NULL)
+    IMSnowClawState* state = obj->extra;
+    GameObject* mount = state->mount;
+
+    if (mount != NULL)
     {
-        if ((*(Dll16CLinkedObjectInterfaceVTable**)p->anim.dll)->getState(p) == 2)
+        if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getState(mount) == 2)
         {
-            dll_16C_syncSubObjectTransform(obj, extra->linkedObj, 0, 0, 0, 0, 0, 0, 0);
+            imSnowClaw_syncMountTransform(obj, state->mount, 0, 0, 0, 0, 0, 0, 0);
         }
     }
 }
 
-/* dll_16C_update: re-link the spawned sub-object, then while active/visible run
- * its move and fade opacity by distance to the player. */
-void dll_16C_update(GameObject* obj)
+void imSnowClaw_update(GameObject* obj)
 {
-    Dll16CState* extra = obj->extra;
-    Dll16CChildObjectIdTable childObjectIds;
+    IMSnowClawState* state = obj->extra;
+    IMSnowClawDropObjectTable dropObjectTable;
 
-    childObjectIds = lbl_802C2308;
-    if (extra->desiredChildObjectIndex != extra->activeChildObjectIndex)
+    dropObjectTable = gIMSnowClawDropObjectTable;
+    if (state->dropObjectIndex != state->appliedDropObjectIndex)
     {
         if (obj->childObjs[0] != NULL)
         {
@@ -278,79 +281,93 @@ void dll_16C_update(GameObject* obj)
         }
         if (Obj_IsLoadingLocked())
         {
-            s8 idx = extra->desiredChildObjectIndex;
-            if (idx > 0)
+            s8 dropObjectIndex = state->dropObjectIndex;
+
+            if (dropObjectIndex > 0)
             {
                 *(int*)&obj->childObjs[0] =
-                    (int)Obj_SetupObject(Obj_AllocObjectSetup(24, childObjectIds.ids[idx - 1]), 4, -1, -1, obj->anim.parent);
+                    (int)Obj_SetupObject(
+                        Obj_AllocObjectSetup(
+                            IM_SNOW_CLAW_CHILD_SETUP_SIZE,
+                            dropObjectTable.objectIds[dropObjectIndex - 1]),
+                        4, -1, -1, obj->anim.parent);
                 obj->childCount = 1;
             }
-            extra->activeChildObjectIndex = extra->desiredChildObjectIndex;
+            state->appliedDropObjectIndex = state->dropObjectIndex;
         }
         else
         {
-            extra->activeChildObjectIndex = 0;
+            state->appliedDropObjectIndex = 0;
         }
     }
 
-    if (extra->linkedObj == NULL)
+    if (state->mount == NULL)
     {
-        GameObject** objs;
-        int count;
-        int i;
-        int sel;
-        objs = (GameObject**)ObjGroup_GetObjects(10, &count);
+        GameObject** objects;
+        int objectCount;
+        int objectIndex;
+        int mountSeqId;
+
+        objects = (GameObject**)ObjGroup_GetObjects(
+            IM_SNOW_CLAW_MOUNT_OBJECT_GROUP, &objectCount);
         switch (obj->anim.seqId)
         {
-        case DLL16C_SEQID_IM_SNOWCLAW:
-        case DLL16C_RENDER_GATE_SEQID:
+        case IM_SNOW_CLAW_SEQ_ID:
+        case IM_SNOW_CLAW_RENDER_GATE_SEQ_ID:
         default:
-            sel = DLL16C_SEQID_IM_SNOWCLAW_B;
+            mountSeqId = IM_SNOW_CLAW_MOUNT_SEQ_ID;
             break;
-        case DLL16C_SEQID_IM_SNOWCLAW2:
-            sel = DLL16C_SEQID_IM_SNOWCLAW2_B;
+        case IM_SNOW_CLAW_2_SEQ_ID:
+            mountSeqId = IM_SNOW_CLAW_2_MOUNT_SEQ_ID;
             break;
         }
-        for (i = 0; i < count; i++)
+        for (objectIndex = 0; objectIndex < objectCount; objectIndex++)
         {
-            if (sel == objs[i]->anim.seqId)
+            if (mountSeqId == objects[objectIndex]->anim.seqId)
             {
-                extra->linkedObj = objs[i];
-                i = count;
+                state->mount = objects[objectIndex];
+                objectIndex = objectCount;
             }
         }
     }
 
-    if (obj->anim.seqId == DLL16C_RENDER_GATE_SEQID || mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0)
+    if (obj->anim.seqId == IM_SNOW_CLAW_RENDER_GATE_SEQ_ID ||
+        mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0)
     {
-        GameObject* sub = extra->linkedObj;
-        f32 b;
-        f32 blend;
-        f32 a;
-        if (obj->anim.currentMove != 0x100)
+        GameObject* mount = state->mount;
+        f32 blendEnd;
+        f32 blendStep;
+        f32 blendStart;
+
+        if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID)
         {
-            ObjAnim_SetCurrentMove((int)obj, 0x100, (0.0f), 0);
+            ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
         }
-        (*(Dll16CLinkedObjectInterfaceVTable**)sub->anim.dll)->getBlendStep(sub, &blend);
-        blend = (0.01f);
-        (*(Dll16CLinkedObjectInterfaceVTable**)sub->anim.dll)->getBlendRange(sub, &a, &b);
-        ObjAnim_AdvanceCurrentMove((int)obj, blend, (f32)(u32)framesThisStep, NULL);
-        if (extra->linkedObj != NULL)
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->getBlendStep(mount, &blendStep);
+        blendStep = 0.01f;
+        (*(IMSnowClawMountInterface**)mount->anim.dll)
+            ->getBlendRange(mount, &blendStart, &blendEnd);
+        ObjAnim_AdvanceCurrentMove(
+            (int)obj, blendStep, (f32)(u32)framesThisStep, NULL);
+        if (state->mount != NULL)
         {
-            f32 fade;
+            f32 distanceFade;
             GameObject* player = Obj_GetPlayerObject();
-            fade = Vec_distance(&extra->linkedObj->anim.worldPosX, &player->anim.worldPosX);
-            fade = (fade - (600.0f)) / (50.0f);
-            if (fade < (0.0f))
+
+            distanceFade =
+                Vec_distance(&state->mount->anim.worldPosX, &player->anim.worldPosX);
+            distanceFade =
+                (distanceFade - IM_SNOW_CLAW_FADE_START) / IM_SNOW_CLAW_FADE_RANGE;
+            if (distanceFade < 0.0f)
             {
-                fade = (0.0f);
+                distanceFade = 0.0f;
             }
-            else if (fade > (1.0f))
+            else if (distanceFade > 1.0f)
             {
-                fade = (1.0f);
+                distanceFade = 1.0f;
             }
-            fade = (1.0f) - fade;
-            extra->opacity = (255.0f) * fade;
+            distanceFade = 1.0f - distanceFade;
+            state->mountAlpha = 255.0f * distanceFade;
             if (obj->anim.modelState != NULL)
             {
                 obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
@@ -358,7 +375,7 @@ void dll_16C_update(GameObject* obj)
         }
         else
         {
-            extra->opacity = 0xff;
+            state->mountAlpha = IM_SNOW_CLAW_FULL_ALPHA;
             if (obj->anim.modelState != NULL)
             {
                 obj->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
@@ -367,44 +384,44 @@ void dll_16C_update(GameObject* obj)
     }
 }
 
-void dll_16C_init(GameObject* obj, Dll16CPlacement* placement)
+void imSnowClaw_init(GameObject* obj, IMSnowClawPlacement* placement)
 {
-    Dll16CState* extra;
-    obj->animEventCallback = dll_16C_SeqFn;
+    IMSnowClawState* state;
+
+    obj->animEventCallback = imSnowClaw_sequenceCallback;
     if (obj->anim.modelState != NULL)
     {
         obj->anim.modelState->flags |= 0x4000;
         obj->anim.modelState->shadowTintA = 100;
         obj->anim.modelState->shadowTintB = 150;
     }
-    extra = obj->extra;
-    extra->linkedObj = NULL;
-    extra->desiredChildObjectIndex = placement->childObjectIndex;
-    extra->opacity = 0xff;
+    state = obj->extra;
+    state->mount = NULL;
+    state->dropObjectIndex = placement->dropObjectIndex;
+    state->mountAlpha = IM_SNOW_CLAW_FULL_ALPHA;
 }
 
-void dll_16C_release(void)
+void imSnowClaw_release(void)
 {
 }
 
-void dll_16C_initialise(void)
+void imSnowClaw_initialise(void)
 {
 }
 
-
-ObjectDescriptor lbl_80323740 = {
+ObjectDescriptor gIMSnowClawObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_16C_initialise,
-    (ObjectDescriptorCallback)dll_16C_release,
+    (ObjectDescriptorCallback)imSnowClaw_initialise,
+    (ObjectDescriptorCallback)imSnowClaw_release,
     0,
-    (ObjectDescriptorCallback)dll_16C_init,
-    (ObjectDescriptorCallback)dll_16C_update,
-    (ObjectDescriptorCallback)dll_16C_hitDetect,
-    (ObjectDescriptorCallback)dll_16C_render,
-    (ObjectDescriptorCallback)dll_16C_free,
-    (ObjectDescriptorCallback)dll_16C_getObjectTypeId,
-    dll_16C_getExtraSize,
+    (ObjectDescriptorCallback)imSnowClaw_init,
+    (ObjectDescriptorCallback)imSnowClaw_update,
+    (ObjectDescriptorCallback)imSnowClaw_hitDetect,
+    (ObjectDescriptorCallback)imSnowClaw_render,
+    (ObjectDescriptorCallback)imSnowClaw_free,
+    (ObjectDescriptorCallback)imSnowClaw_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)imSnowClaw_getExtraSize,
 };
