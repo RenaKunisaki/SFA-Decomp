@@ -1,22 +1,3 @@
-/*
- * moveLib (DLL 0x2E) - shared movement helpers for baddie/object DLLs.
- * Exports (dll_2E_func*) drive scripted curve traversal and homing:
- *   - func05/06/09 prime and refresh a movement-state block laid out at
- *     state+0x1c.. (path-relative start offset, blend factors, anim
- *     channel tables) keyed off the per-object curve point;
- *   - func0A/0B/0C resolve a ROM curve point into a position + packed
- *     facing angle, optionally aiming at the nearest group-8 object;
- *   - func0D homes an object toward a target at a given speed, snapping
- *     when close and easing the yaw, pacing a walk move;
- *   - func0E advances the object along its movement curve, snapping to
- *     ground and easing yaw toward the path direction;
- *   - func03/07 + objAnimFn_80115650 run the object-sequence scripted
- *     move steps (movementState 4 arms, 5 walks the sub-phases at
- *     state+0x600) and the turn/lead-anim arbitration.
- * func0F_ret_0/release_nop/initialise_nop are object-descriptor stubs.
- * The persistent movement-state byte fields live at state+0x600 (phase),
- * +0x601 (needs-reinit), +0x610 (point count), +0x611 (mode bits).
- */
 #include "main/camera_interface.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
@@ -39,22 +20,8 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "track/intersect_api.h"
-#include "main/dll/FRONT/dll_0032_n_rareware.h"
-#include "main/dll/FRONT/dll_39.h"
-
-/* Persistent movement-state block that sits at the start of the per-object
- * extra for the baddie/object DLLs that use moveLib. The anim-channel table
- * region (0x1c..0x5bb) and the two packed turn/event tables (0x5bc/0x5da) are
- * handed to the seq helpers (objFn_8003acfc / objJointTracksSetAngles / objMathFn_8003a380)
- * as raw blocks, so they stay byte arrays here. */
-
-/* MoveLibState.phase (state+0x600): shared scripted-move / turn-arbitration
- * step. func03 (turn/lead-anim) walks 0/1/8; func07 (scripted move) walks the
- * 2/3/6/7 sub-phase chain. */
-/* object group queried to find this object's target */
 #define MOVELIB_TARGET_OBJGROUP 8
 
-/* dll_2E_func0E route flags: curve walk reached its final point (done-guard) */
 #define MOVELIB_CURVE_WALK_DONE 0x10
 
 extern u8 gMoveLibDefaultMoveData[];
@@ -98,9 +65,6 @@ f32 dll_2E_func0B(GameObject* obj, int arg)
     return -1.0f;
 }
 
-/* Copies a curve point's position into the caller's record and aims its
- * angle at the nearest group-8 object (falling back to the point's packed
- * angle). */
 int dll_2E_func0C(int idx, MoveLibTarget* out)
 {
     f32 range;
@@ -129,8 +93,6 @@ int dll_2E_func0C(int idx, MoveLibTarget* out)
     return 0;
 }
 
-/* Copies a curve point's position and packed angle into the caller's
- * record. */
 int dll_2E_func0A(int idx, MoveLibTarget* out)
 {
     int curveId;
@@ -257,8 +219,6 @@ int moveLibAdvanceHermite(GameObject* obj, const MoveLibWaypointDef* def, MoveLi
     return ret;
 }
 
-/* Advances the object along its movement curve, snapping to ground and
- * easing the yaw toward the path direction. */
 int dll_2E_func0E(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHermiteState* state, int curveVariant,
                   f32* rootOut, int* flags)
 {
@@ -321,8 +281,6 @@ int dll_2E_func0E(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHerm
     return hit;
 }
 
-/* Homes the object toward its target at the given speed, snapping when
- * close, easing yaw and pacing the walk anim. */
 int dll_2E_func0D(GameObject* obj, const MoveLibTarget* target, f32 speed, int move, f32* out, u8* flags)
 {
     f32 dz;
@@ -489,8 +447,6 @@ int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16
     return 0;
 }
 
-/* Latches the path-relative start offset on first use and refreshes the
- * current path point position. */
 void dll_2E_func06(GameObject* obj, MoveLibState* s, int point)
 {
     struct
@@ -529,8 +485,6 @@ void dll_2E_func06(GameObject* obj, MoveLibState* s, int point)
     s->targetZ = v.z0;
 }
 
-/* Initializes the movement-state block and primes the animation channel
- * tables. */
 void dll_2E_func05(GameObject* obj, MoveLibState* s, s16 a, s16 b, int count)
 {
     f32 zero;

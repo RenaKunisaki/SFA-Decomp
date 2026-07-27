@@ -89,7 +89,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x02B | — | NO-RETAIL-NAME | main/dll/dll_002B_effect18.c | = (canonical) | — |
 | 0x02C | — | NO-RETAIL-NAME | main/dll/dll_002C_effect19.c | = (canonical) | — |
 | 0x02D | — | NO-RETAIL-NAME | main/dll/dll_002D_effect20.c | = (canonical) | — |
-| 0x02E | — | NO-RETAIL-NAME | main/dll/dll_002E_moveLib.c | = (canonical) | — |
+| 0x02E | — | NO-RETAIL-NAME | dlls/engine/46/46.c | = (canonical) | Complete DOL-confirmed TU; adjacent data tails restored to DLLs 48, 50, and 51 |
 | 0x02F | — | NO-RETAIL-NAME | dlls/engine/47/47.c | = (canonical) | Complete DOL-confirmed text TU; interface table is embedded in the shared Savegame data block |
 | 0x030 | — | NO-RETAIL-NAME | dlls/engine/48/48.c | = (canonical) | Complete DOL-confirmed data-only TU |
 | 0x031 | — | NO-RETAIL-NAME | dlls/engine/49/49.c | = (canonical) | Complete DOL-confirmed TU; map rows restored from DLL 60 |
