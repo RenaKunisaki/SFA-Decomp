@@ -1,5 +1,5 @@
 /*
- * dlla8func0 (DLL 0xA8) - a modgfx pickup/effect spawner.
+ * dlla8func0 (DLL 168 / 0xA8) - a modgfx pickup/effect spawner.
  *
  * dll_A8_func03 builds a stack command buffer of GfxCmd primitives (two
  * variant layouts selected by extraArgs) plus a per-effect header (colour,
