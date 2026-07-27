@@ -1,209 +1,144 @@
 /*
- * HitAnimator (DLL 0x0139) - hit-reaction animation driver for map-block
- * objects (HITANIMATOR_CLASS_ID 0x4B). Each instance watches a game bit
- * (HitAnimatorPlacement.gameBit): when the bit's value flips, it toggles
- * state->activeBit and queues the configured reactions via state->flags -
- * a poly toggle (toggleMode), a sound cue (SETUP_FLAG_SOUND) and/or a
- * map-block update (SETUP_FLAG_BLOCK_UPDATE). hitAnimatorFn_80193dbc walks
- * the block's polys and layers to set/clear the visibility/draw bits that
- * realise the reaction.
- *
- * This TU also carries the layout asserts for the wave/alpha/ground/vis
- * animator states it shares headers with.
+ * Game-bit-driven map-block reaction animator. It toggles matching
+ * polygon groups, shaders, and collision lines.
  */
-#include "dlls/objects/310_WaveAnimato.h"
+#include "dlls/objects/313_HitAnimator.h"
+
 #include "game/objects/object.h"
-#include "dlls/objects/311_AlphaAnimat.h"
-#include "main/dll/visanimatorstate_struct.h"
-#include "main/map_block.h"
-#include "dlls/objects/312_GroundAnima.h"
-#include "main/dll/MMP/mmp_barrel.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
+#include "main/map_block.h"
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
-#include "dlls/object_descriptor.h"
 
-/* Map-block poly-group record (blk+0x50 table, 0x14 stride, returned by
- * mapBlockGetPolygonGroup) - layout matches MapTriGroup in track_dolphin.c.
- * Only the flags word is touched here: bit 1 = poly group hidden,
- * bit 0 = shader disabled; the top byte is the effect id matched by
- * mapBlockGetPolygonGroupType. */
-typedef struct HitAnimatorPolyGroup
-{
-    u8 pad0[0x10 - 0x0];
+typedef struct HitAnimatorPolygonGroup {
+    u8 pad00[0x10];
     u32 flags; /* 0x10 */
-} HitAnimatorPolyGroup;
+} HitAnimatorPolygonGroup;
 
-/* Map-block shader/render-op record (blk+0x64 table, 0x44 stride, returned
- * by mapBlockGetShader) - layout matches ObjModelRenderOp in objprint_dolphin.c;
- * flags @0x3C, bit 1 toggled here to hide the layer. */
-typedef struct HitAnimatorShader
-{
-    u8 pad0[0x3C - 0x0];
-    u32 flags; /* 0x3C */
-    u8 pad40[0x44 - 0x40];
-} HitAnimatorShader;
+#define HIT_ANIMATOR_OBJECT_FLAGS_INIT 0x6000
 
-STATIC_ASSERT(sizeof(WaveAnimatorState) == 0x3C);
-STATIC_ASSERT(sizeof(AlphaAnimatorState) == 0x1C);
-STATIC_ASSERT(sizeof(GroundAnimatorState) == 0x30);
-STATIC_ASSERT(sizeof(VisAnimatorState) == 0x5);
+STATIC_ASSERT(offsetof(HitAnimatorPolygonGroup, flags) == 0x10);
 
-void hitAnimatorFn_80193dbc(MapBlockData* block, HitAnimatorObject* obj, HitAnimatorState* state,
-                            HitAnimatorPlacement* desc);
+void HitAnimator_applyBlockState(MapBlockData* block, GameObject* obj, HitAnimatorState* state,
+                                 HitAnimatorPlacement* placement) {
+    int index;
+    HitAnimatorPolygonGroup* polygonGroup;
 
-void hitAnimatorFn_80193dbc(MapBlockData* block, HitAnimatorObject* obj, HitAnimatorState* state,
-                            HitAnimatorPlacement* desc)
-{
-    int i;
-    HitAnimatorPolyGroup* poly;
-
-    if ((desc->flags & HITANIMATOR_SETUP_FLAG_SKIP_POLYS) == 0)
-    {
-        for (i = 0; i < block->polyGroupCount; i++)
-        {
-            poly = mapBlockGetPolygonGroup(block, i);
-            if (desc->blockEffectId == mapBlockGetPolygonGroupType(poly))
-            {
-                if (state->activeBit != 0)
-                {
-                    poly->flags &= ~2LL;
-                    if ((desc->flags & HITANIMATOR_SETUP_FLAG_AFFECT_SHADERS) != 0)
-                    {
-                        poly->flags &= ~1LL;
+    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_SKIP_POLYGONS) == 0) {
+        for (index = 0; index < block->polyGroupCount; index++) {
+            polygonGroup = mapBlockGetPolygonGroup(block, index);
+            if (placement->blockEffectId == mapBlockGetPolygonGroupType(polygonGroup)) {
+                if (state->active != 0) {
+                    polygonGroup->flags &= ~2LL;
+                    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_AFFECT_SHADERS) != 0) {
+                        polygonGroup->flags &= ~1LL;
                     }
-                }
-                else
-                {
-                    poly->flags |= 2;
-                    if ((desc->flags & HITANIMATOR_SETUP_FLAG_AFFECT_SHADERS) != 0)
-                    {
-                        poly->flags |= 1;
+                } else {
+                    polygonGroup->flags |= 2;
+                    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_AFFECT_SHADERS) != 0) {
+                        polygonGroup->flags |= 1;
                     }
                 }
             }
         }
     }
-    if ((desc->flags & HITANIMATOR_SETUP_FLAG_AFFECT_SHADERS) != 0)
-    {
-        for (i = 0; i < block->shaderCount; i++)
-        {
-            HitAnimatorShader* shader = (HitAnimatorShader*)mapBlockGetShader(block, i);
+    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_AFFECT_SHADERS) != 0) {
+        for (index = 0; index < block->shaderCount; index++) {
+            MapShader* shader = mapBlockGetShader(block, index);
             u8* layer = Shader_getLayer(shader, 0);
-            if (desc->blockEffectId == layer[5])
-            {
-                if (state->activeBit != 0)
-                {
+            if (placement->blockEffectId == layer[5]) {
+                if (state->active != 0) {
                     shader->flags &= ~2LL;
-                }
-                else
-                {
+                } else {
                     shader->flags |= 2;
                 }
             }
         }
     }
 }
-int HitAnimator_getExtraSize(void)
-{
-    return HITANIMATOR_EXTRA_STATE_BYTES;
+
+int HitAnimator_getExtraSize(void) {
+    return sizeof(HitAnimatorState);
 }
 
-void HitAnimator_update(HitAnimatorObject* obj)
-{
-    HitAnimatorPlacement* desc = (HitAnimatorPlacement*)obj->objAnim.placementData;
-    HitAnimatorState* state = obj->state;
+void HitAnimator_update(GameObject* obj) {
+    HitAnimatorPlacement* placement = (HitAnimatorPlacement*)obj->anim.placementData;
+    HitAnimatorState* state = obj->extra;
     MapBlockData* block;
-    block = mapGetBlock(objPosToMapBlockIdx((double)obj->objAnim.localPosX, (double)obj->objAnim.localPosY,
-                                            (double)obj->objAnim.localPosZ));
-    if (block == NULL)
-    {
-        state->flags &= ~HITANIMATOR_STATE_FLAG_TOGGLE_PENDING;
-        state->flags |= HITANIMATOR_STATE_FLAG_BLOCK_UPDATE_PENDING;
+
+    block = mapGetBlock(
+        objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY, (double)obj->anim.localPosZ));
+    if (block == NULL) {
+        state->flags &= ~HIT_ANIMATOR_STATE_TOGGLE_PENDING;
+        state->flags |= HIT_ANIMATOR_STATE_BLOCK_UPDATE_PENDING;
         return;
     }
-    state->gameBitValue = mainGetBit(desc->gameBit);
-    if (state->previousGameBitValue != state->gameBitValue)
-    {
-        state->activeBit = state->activeBit ^ 1;
-        if (desc->toggleMode == 1)
-        {
-            state->flags |= HITANIMATOR_STATE_FLAG_TOGGLE_PENDING;
+    state->gameBitValue = mainGetBit(placement->gameBit);
+    if (state->previousGameBitValue != state->gameBitValue) {
+        state->active = state->active ^ 1;
+        if (placement->toggleMode == 1) {
+            state->flags |= HIT_ANIMATOR_STATE_TOGGLE_PENDING;
         }
-        if ((desc->flags & HITANIMATOR_SETUP_FLAG_SOUND) != 0)
-        {
-            state->flags |= HITANIMATOR_STATE_FLAG_SOUND_PENDING;
+        if ((placement->setupFlags & HIT_ANIMATOR_SETUP_HIT_LINES) != 0) {
+            state->flags |= HIT_ANIMATOR_STATE_HIT_LINES_PENDING;
         }
-        if ((desc->flags & HITANIMATOR_SETUP_FLAG_BLOCK_UPDATE) != 0)
-        {
-            state->flags |= HITANIMATOR_STATE_FLAG_BLOCK_UPDATE_PENDING;
+        if ((placement->setupFlags & HIT_ANIMATOR_SETUP_BLOCK_UPDATE) != 0) {
+            state->flags |= HIT_ANIMATOR_STATE_BLOCK_UPDATE_PENDING;
         }
     }
     state->previousGameBitValue = state->gameBitValue;
-    if ((desc->flags & HITANIMATOR_SETUP_FLAG_SOUND) != 0)
-    {
-        if (trackIntersectRebuildPending() != 0)
-        {
-            state->flags |= HITANIMATOR_STATE_FLAG_SOUND_PENDING;
+    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_HIT_LINES) != 0) {
+        if (trackIntersectRebuildPending() != 0) {
+            state->flags |= HIT_ANIMATOR_STATE_HIT_LINES_PENDING;
         }
-        if ((state->flags & HITANIMATOR_STATE_FLAG_SOUND_PENDING) != 0)
-        {
-            if (trackIntersectRebuildPending() == 0)
-            {
-                trackSetLinesEnabledByParam(desc->soundId, (GameObject*)(obj->objAnim.parent), state->activeBit);
-                state->flags &= ~HITANIMATOR_STATE_FLAG_SOUND_PENDING;
+        if ((state->flags & HIT_ANIMATOR_STATE_HIT_LINES_PENDING) != 0) {
+            if (trackIntersectRebuildPending() == 0) {
+                trackSetLinesEnabledByParam(placement->hitLineParam, (GameObject*)(obj->anim.parent), state->active);
+                state->flags &= ~HIT_ANIMATOR_STATE_HIT_LINES_PENDING;
             }
         }
     }
-    if ((desc->flags & HITANIMATOR_SETUP_FLAG_BLOCK_UPDATE) != 0)
-    {
-        if (desc->blockEffectId != 0)
-        {
-            if ((state->flags & HITANIMATOR_STATE_FLAG_BLOCK_UPDATE_PENDING) != 0)
-            {
-                hitAnimatorFn_80193dbc(block, obj, state, desc);
-                state->flags &= ~HITANIMATOR_STATE_FLAG_BLOCK_UPDATE_PENDING;
+    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_BLOCK_UPDATE) != 0) {
+        if (placement->blockEffectId != 0) {
+            if ((state->flags & HIT_ANIMATOR_STATE_BLOCK_UPDATE_PENDING) != 0) {
+                HitAnimator_applyBlockState(block, obj, state, placement);
+                state->flags &= ~HIT_ANIMATOR_STATE_BLOCK_UPDATE_PENDING;
             }
         }
     }
 }
 
-void HitAnimator_init(HitAnimatorObject* obj, HitAnimatorPlacement* desc)
-{
-    HitAnimatorState* state = obj->state;
+void HitAnimator_init(GameObject* obj, HitAnimatorPlacement* placement) {
+    HitAnimatorState* state = obj->extra;
     MapBlockData* block;
     u8 gameBitValue;
     s8 initialBit;
-    initialBit = (s8)(desc->flags & HITANIMATOR_SETUP_FLAG_INITIAL_INVERT);
-    state->activeBit = initialBit;
+
+    initialBit = (s8)(placement->setupFlags & HIT_ANIMATOR_SETUP_INITIAL_INVERT);
+    state->active = initialBit;
     state->flags = 0;
-    if (mainGetBit(desc->gameBit) != 0)
-    {
-        state->activeBit = state->activeBit ^ 1;
-        if (desc->toggleMode == 1)
-        {
-            state->flags |= HITANIMATOR_STATE_FLAG_TOGGLE_PENDING;
+    if (mainGetBit(placement->gameBit) != 0) {
+        state->active = state->active ^ 1;
+        if (placement->toggleMode == 1) {
+            state->flags |= HIT_ANIMATOR_STATE_TOGGLE_PENDING;
         }
     }
-    block = mapGetBlock(objPosToMapBlockIdx((double)obj->objAnim.localPosX, (double)obj->objAnim.localPosY,
-                                            (double)obj->objAnim.localPosZ));
-    if (block != NULL)
-    {
-        if ((desc->flags & HITANIMATOR_SETUP_FLAG_BLOCK_UPDATE) != 0 && desc->blockEffectId != 0)
-        {
-            hitAnimatorFn_80193dbc(block, obj, state, desc);
+    block = mapGetBlock(
+        objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY, (double)obj->anim.localPosZ));
+    if (block != NULL) {
+        if ((placement->setupFlags & HIT_ANIMATOR_SETUP_BLOCK_UPDATE) != 0 && placement->blockEffectId != 0) {
+            HitAnimator_applyBlockState(block, obj, state, placement);
         }
     }
-    state->flags |= HITANIMATOR_STATE_FLAG_SOUND_PENDING;
-    if ((desc->flags & HITANIMATOR_SETUP_FLAG_BLOCK_UPDATE) != 0)
-    {
-        state->flags |= HITANIMATOR_STATE_FLAG_BLOCK_UPDATE_PENDING;
+    state->flags |= HIT_ANIMATOR_STATE_HIT_LINES_PENDING;
+    if ((placement->setupFlags & HIT_ANIMATOR_SETUP_BLOCK_UPDATE) != 0) {
+        state->flags |= HIT_ANIMATOR_STATE_BLOCK_UPDATE_PENDING;
     }
-    gameBitValue = mainGetBit(desc->gameBit);
+    gameBitValue = mainGetBit(placement->gameBit);
     state->gameBitValue = gameBitValue;
     state->previousGameBitValue = gameBitValue;
-    obj->objectFlags |= HITANIMATOR_OBJECT_FLAGS_ENABLED;
+    obj->objectFlags |= HIT_ANIMATOR_OBJECT_FLAGS_INIT;
 }
 
 ObjectDescriptor gHitAnimatorObjDescriptor = {
