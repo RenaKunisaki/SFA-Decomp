@@ -3625,7 +3625,7 @@ dlls/objects/608/608.c:
 	.text       start:0x802110F8 end:0x80211C24
 	.data       start:0x8032A4A0 end:0x8032A4D8
 	.sdata      start:0x803DC230 end:0x803DC250
-	.sdata2     start:0x803E6790 end:0x803E6798
+	.sdata2     start:0x803E6768 end:0x803E67A0
 
 dlls/objects/591_KT_RexLevel/KT_RexLevel.c:
 	.text       start:0x80211C24 end:0x80211F38
