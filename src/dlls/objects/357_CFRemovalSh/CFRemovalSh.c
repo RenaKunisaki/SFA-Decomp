@@ -1,4 +1,5 @@
-/* DLL 0x165 - CFRemovalSh */
-#include "global.h"
+/* Empty CFRemovalSh resource slot. */
 
-u32 lbl_803DBEC8[2] = {0};
+#include "dlls/objects/357_CFRemovalSh.h"
+
+u32 gCFRemovalShNullResourceDescriptor[CFREMOVALSH_NULL_DESCRIPTOR_WORD_COUNT] = {0};
