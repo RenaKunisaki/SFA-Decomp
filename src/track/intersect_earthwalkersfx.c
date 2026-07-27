@@ -72,11 +72,11 @@ typedef struct
 
 
 
-extern f32 lbl_803DEF08, lbl_803DEF20;
-extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
+extern f32 lbl_803DEF20;
+extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE58;
 extern f32 lbl_803DEE5C, lbl_803DEE64;
 extern f32 lbl_803DEE60;
-extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
+extern f32 lbl_803DEF4C;
 
 
 int cardDeleteFn_8007d99c(void);

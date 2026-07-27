@@ -68,8 +68,8 @@ typedef struct
 
 
 
-extern f32 lbl_803DEF08, lbl_803DEF20;
-extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
+extern f32 lbl_803DEF20;
+extern f32 lbl_803DEF4C;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 
 
