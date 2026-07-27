@@ -463,3 +463,5 @@ void dll_CB_initialise(void) {
     gDllCBStateHandlers[4] = dll_CB_stateHandler4;
     gDllCBStateHandlers[5] = dll_CB_stateHandler5;
 }
+
+const f32 lbl_803E2EAC = 0.0f;
