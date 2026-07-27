@@ -326,7 +326,7 @@ void gpshShrine_update(GameObject* obj) {
                 if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) {
                     state->phase = GPSH_SHRINE_PHASE_BEGIN;
                     mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
-                    mainSetBits(0x5af, 0);
+                    mainSetBits(GPSH_SHRINE_RESET_SYMBOL_CREATORS_GAMEBIT, 0);
                     mainSetBits(GAMEBIT_GPSH_TestKnowledgeRunning, 1);
                     (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
                     Music_Trigger(MUSICTRIG_DIM_Snow, 1);
@@ -340,7 +340,7 @@ void gpshShrine_update(GameObject* obj) {
                 break;
             case GPSH_SHRINE_PHASE_WAIT_FOR_PUZZLE:
                 if (state->puzzleFlags.activated == 1) {
-                    mainSetBits(0x148, 1);
+                    mainSetBits(GPSH_SHRINE_ACTIVATE_SYMBOL_SPAWNS_GAMEBIT, 1);
                     state->phase = GPSH_SHRINE_PHASE_PUZZLE_ACTIVE;
                     gameTimerInit(0x1d, 0x4e);
                     timerSetToCountUp();
@@ -423,8 +423,8 @@ void gpshShrine_update(GameObject* obj) {
                 mainSetBits(0x14a, 0);
                 mainSetBits(0x14b, 0);
                 mainSetBits(0x14b, 0);
-                mainSetBits(0x5af, 1);
-                mainSetBits(0x148, 0);
+                mainSetBits(GPSH_SHRINE_RESET_SYMBOL_CREATORS_GAMEBIT, 1);
+                mainSetBits(GPSH_SHRINE_ACTIVATE_SYMBOL_SPAWNS_GAMEBIT, 0);
                 mainSetBits(0xe37, 0);
                 mainSetBits(0xe3a, 0);
                 state->puzzleFlags.gameBit0149Latched = 0;

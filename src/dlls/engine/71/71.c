@@ -296,7 +296,7 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
             {
                 wp = axisOut;
                 upper = lbl_803E1890;
-                for (step = 0; step < 3; step++)
+                do
                 {
                     v0 = wp[0];
                     v1 = wp[1];
@@ -305,15 +305,15 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
                     {
                         if (v0 < lbl_803E1888)
                         {
-                            wp[0] = wp[0] + lbl_803E1898;
+                            wp[0] += lbl_803E1898;
                         }
                         else if (v1 < lbl_803E1888)
                         {
-                            wp[1] = wp[1] + lbl_803E1898;
+                            wp[1] += lbl_803E1898;
                         }
                     }
                     wp++;
-                }
+                } while (wp < axisOut + 3);
             }
             axis++;
         } while (axis < 3);

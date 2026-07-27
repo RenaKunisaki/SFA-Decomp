@@ -2046,12 +2046,12 @@ enum MikaladonVerticalPhase
 #define MIKALADON_AMBIENT_SFX_MIN_DELAY 60
 #define MIKALADON_AMBIENT_SFX_MAX_DELAY 120
 
-static f32 mikaladon_randomAmbientSfxDelay(void)
+static inline f32 mikaladon_randomAmbientSfxDelay(void)
 {
     return (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
 }
 
-static void mikaladon_spawnDrop(GameObject* obj)
+static inline void mikaladon_spawnDrop(GameObject* obj)
 {
     MikaladonDropSetup* setup;
     GameObject* spawned;
@@ -4649,7 +4649,7 @@ void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, 
     return;
 }
 
-static void hoodedZyck_tickPhaseTimer(DusterState* st)
+static inline void hoodedZyck_tickPhaseTimer(DusterState* st)
 {
     st->phaseTimer = st->phaseTimer - timeDelta;
     if (st->phaseTimer <= 0.0f)
@@ -4658,7 +4658,7 @@ static void hoodedZyck_tickPhaseTimer(DusterState* st)
     }
 }
 
-static int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
+static inline int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
 {
     f32 d = (f32)(int)((u16)getAngle(obj->anim.localPosX - target->anim.localPosX,
                                      obj->anim.localPosZ - target->anim.localPosZ) -
@@ -6270,7 +6270,7 @@ extern int lbl_803DBCF8[2];
 extern void* gCrawlerModelChainIds[];
 
 
-static void crawler_createEngineLight(GameObject* obj, u8* state)
+static inline void crawler_createEngineLight(GameObject* obj, u8* state)
 {
     if (((FireCrawlerState*)state)->engineLight == NULL)
     {
@@ -7034,7 +7034,7 @@ u8 gIceBaddieA05MoveVariant;
 IceBaddieStateHandler gIceBaddieStateHandlersB[8];
 IceBaddieStateHandler gIceBaddieStateHandlersA[14];
 
-static void icebaddie_clearStateHandlersB(void)
+static inline void icebaddie_clearStateHandlersB(void)
 {
     int i;
     for (i = 0; i < 8; i++)

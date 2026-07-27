@@ -573,31 +573,53 @@ CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraS
 
 void camcontrol_updateMoveAverage(CamcontrolCameraState* cameraState, ObjAnimComponent* focus)
 {
+    Vec3f* velocity;
     f32 mag;
+    f32 root;
     f32 minMove;
-    cameraState->focusMoveHistory[0] = cameraState->focusMoveHistory[1];
-    cameraState->focusMoveHistory[1] = cameraState->focusMoveHistory[2];
-    cameraState->focusMoveHistory[2] = cameraState->focusMoveHistory[3];
-    cameraState->focusMoveHistory[3] = cameraState->focusMoveHistory[4];
-    mag = PSVECMag(&focus->velocity);
+    f32 average;
+    f32 move0;
+    f32 move1;
+    f32 move2;
+    f32 move3;
+    f32 move4;
+
+    move1 = cameraState->focusMoveHistory[1];
+    cameraState->focusMoveHistory[0] = move1;
+    move2 = cameraState->focusMoveHistory[2];
+    cameraState->focusMoveHistory[1] = move2;
+    move3 = cameraState->focusMoveHistory[3];
+    cameraState->focusMoveHistory[2] = move3;
+    move4 = cameraState->focusMoveHistory[4];
+    cameraState->focusMoveHistory[3] = move4;
+    velocity = &focus->velocity;
+    mag = PSVECMag(velocity);
     if (mag > gCamcontrolNormalizedMin)
     {
-        mag = sqrtf(mag);
+        root = sqrtf(mag);
+        mag = root;
     }
     cameraState->focusMoveHistory[4] = mag;
     minMove = gCamcontrolNormalizedMin;
     cameraState->focusMoveAverage = minMove;
-    cameraState->focusMoveAverage += cameraState->focusMoveHistory[0];
-    cameraState->focusMoveAverage += cameraState->focusMoveHistory[1];
-    cameraState->focusMoveAverage += cameraState->focusMoveHistory[2];
-    cameraState->focusMoveAverage += cameraState->focusMoveHistory[3];
-    cameraState->focusMoveAverage += cameraState->focusMoveHistory[4];
+    move0 = cameraState->focusMoveHistory[0];
+    cameraState->focusMoveAverage += move0;
+    move1 = cameraState->focusMoveHistory[1];
+    cameraState->focusMoveAverage += move1;
+    move2 = cameraState->focusMoveHistory[2];
+    cameraState->focusMoveAverage += move2;
+    move3 = cameraState->focusMoveHistory[3];
+    cameraState->focusMoveAverage += move3;
+    move4 = cameraState->focusMoveHistory[4];
+    cameraState->focusMoveAverage += move4;
     cameraState->focusMoveAverage *= lbl_803E1658;
-    if (cameraState->focusMoveAverage < minMove)
+    average = cameraState->focusMoveAverage;
+    if (average < minMove)
     {
-        cameraState->focusMoveAverage = -cameraState->focusMoveAverage;
+        cameraState->focusMoveAverage = -average;
     }
 }
+
 
 static inline int camcontrol_findHandlerIndex(u16 actionId)
 {

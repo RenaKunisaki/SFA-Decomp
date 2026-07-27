@@ -1,148 +1,163 @@
-/* GPSH_ObjCre (DLL 0x0193) - GPSH shrine object creator. */
-#include "main/dll/gpshshrineflags_struct.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "game/objects/object_setup.h"
+/*
+ * GPSH_ObjCre (DLL 0x193) - Test of Knowledge symbol creator.
+ *
+ * The shrine activates six indexed child types. Each creator counts down,
+ * emits a hit effect, and spawns its configured child at the creator's
+ * position. The shrine reset bit re-arms the creator for another attempt.
+ */
+#include "dlls/objects/403_GPSH_ObjCre.h"
+
+#include "dlls/objects/402_GPSH_Shrine.h"
 #include "game/objects/object.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
-#include "main/dll/creator1C4.h"
-#include "dlls/object_descriptor.h"
 
-typedef struct GpshObjcreatorState
-{
-    u8 pad0[0x4 - 0x0];
-    u8 objTypeIndex;
-    u8 pad5[0x8 - 0x5];
-} GpshObjcreatorState;
+typedef struct GPSHObjCreatorChildSetup {
+    ObjPlacement base;
+    u8 yawByte;
+    u8 unknown19;
+    s16 unknown1A;
+    u8 unknown1C[0x24 - 0x1C];
+} GPSHObjCreatorChildSetup;
 
-typedef struct GpshObjcreatorObjectDef
-{
-    ObjPlacement head; /* 0x00 */
-    s8 unk18;
-    u8 pad19[0x1A - 0x19];
-    s16 objTypeIndex;
-    u8 pad1C[0x1E - 0x1C];
-    s8 rotX;
-    u8 pad1F[0x20 - 0x1F];
-} GpshObjcreatorObjectDef;
+STATIC_ASSERT(sizeof(GPSHObjCreatorChildSetup) == 0x24);
+STATIC_ASSERT(offsetof(GPSHObjCreatorChildSetup, base) == 0x00);
+STATIC_ASSERT(offsetof(GPSHObjCreatorChildSetup, yawByte) == 0x18);
+STATIC_ASSERT(offsetof(GPSHObjCreatorChildSetup, unknown19) == 0x19);
+STATIC_ASSERT(offsetof(GPSHObjCreatorChildSetup, unknown1A) == 0x1A);
+STATIC_ASSERT(offsetof(GPSHObjCreatorChildSetup, unknown1C) == 0x1C);
 
-/* 0x24-byte spawn descriptor handed to Obj_SetupObject for the created
- * shrine object. ObjPlacement-style head (type id / color / position)
- * plus class-specific tail. */
-typedef struct GpshObjcreatorSpawnSetup
-{
-    ObjPlacement base; /* 0x00..0x17 */
-    u8 rotByte;      /* 0x18 */
-    u8 pad19;        /* 0x19 */
-    s16 unk1A;       /* 0x1a */
-    u8 pad1C[8];     /* 0x1c */
-} GpshObjcreatorSpawnSetup;
+#define GPSH_OBJ_CREATOR_OBJECT_TYPE_ID       0
+#define GPSH_OBJ_CREATOR_CHILD_TYPE_COUNT     6
+#define GPSH_OBJ_CREATOR_CHILD_OBJECT_ID_BASE 0x1F4
+#define GPSH_OBJ_CREATOR_SPAWN_DELAY          100.0f
+#define GPSH_OBJ_CREATOR_HIT_EFFECT_SCALE     0.6f
+#define GPSH_OBJ_CREATOR_HIT_EFFECT_ID        2
+#define GPSH_OBJ_CREATOR_HIT_EFFECT_VARIANT   1
+#define GPSH_OBJ_CREATOR_HIT_EFFECT_COUNT     1
+#define GPSH_OBJ_CREATOR_CHILD_COLOR_RED      0x20
+#define GPSH_OBJ_CREATOR_CHILD_COLOR_GREEN    2
+#define GPSH_OBJ_CREATOR_FULL_ALPHA           0xFF
+#define GPSH_OBJ_CREATOR_YAW_SHIFT            8
+#define GPSH_OBJ_CREATOR_CHILD_SETUP_FLAGS    5
+#define GPSH_OBJ_CREATOR_NO_OBJECT_INDEX      -1
+#define GPSH_OBJ_CREATOR_SFX_SOURCE           0
+#define GPSH_OBJ_CREATOR_SFX_LIMIT            1
 
-STATIC_ASSERT(offsetof(GpshObjcreatorSpawnSetup, base.posX) == 0x8);
-STATIC_ASSERT(offsetof(GpshObjcreatorSpawnSetup, rotByte) == 0x18);
-STATIC_ASSERT(offsetof(GpshObjcreatorSpawnSetup, unk1A) == 0x1a);
-STATIC_ASSERT(sizeof(GpshObjcreatorSpawnSetup) == 0x24);
+s16 gGPSHObjCreatorChildParam1AValues[GPSH_OBJ_CREATOR_CHILD_TYPE_COUNT] = {
+    0x28, 0x28, 0x30, 0x30, 0x2D, 0x2D,
+};
 
-extern s16 lbl_803263B8[];
-
-int gpsh_objcreator_getExtraSize(void) { return 0x8; }
-int gpsh_objcreator_getObjectTypeId(void) { return 0x0; }
-
-void gpsh_objcreator_free(void)
-{
+int gpshObjCreator_getExtraSize(void) {
+    return sizeof(GPSHObjCreatorState);
 }
 
-void gpsh_objcreator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+int gpshObjCreator_getObjectTypeId(void) {
+    return GPSH_OBJ_CREATOR_OBJECT_TYPE_ID;
 }
 
-void gpsh_objcreator_hitDetect(void)
-{
+void gpshObjCreator_free(void) {
 }
 
-void gpsh_objcreator_update(GameObject* obj)
-{
-    u8* sub;
-    GpshObjcreatorSpawnSetup* setup;
-
-    sub = obj->extra;
-    if (mainGetBit(0x5af) != 0)
-    {
-        obj->userData2 = 0;
-        ((GpshShrineFlags*)(sub + 5))->b80 = 0;
-        *(u8*)((char*)obj + 0x37) = 0xff;
-        obj->anim.alpha = 0xff;
+void gpshObjCreator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                           s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
-    if (((GpshShrineFlags*)(sub + 5))->b80) return;
-    if (obj->userData2 == 0)
-    {
-        if (mainGetBit(0x148) != 0)
-        {
-            *(f32*)sub = 100.0f;
+}
+
+void gpshObjCreator_hitDetect(void) {
+}
+
+void gpshObjCreator_update(GameObject* obj) {
+    GPSHObjCreatorState* state;
+    GPSHObjCreatorChildSetup* childSetup;
+
+    state = obj->extra;
+    if (mainGetBit(GPSH_SHRINE_RESET_SYMBOL_CREATORS_GAMEBIT) != 0) {
+        obj->userData2 = 0;
+        state->flags.childSpawned = 0;
+        obj->anim.renderAlpha = GPSH_OBJ_CREATOR_FULL_ALPHA;
+        obj->anim.alpha = GPSH_OBJ_CREATOR_FULL_ALPHA;
+    }
+    if (state->flags.childSpawned != 0) {
+        return;
+    }
+    if (obj->userData2 == 0) {
+        if (mainGetBit(GPSH_SHRINE_ACTIVATE_SYMBOL_SPAWNS_GAMEBIT) != 0) {
+            state->spawnTimer = GPSH_OBJ_CREATOR_SPAWN_DELAY;
             obj->userData2 = 1;
         }
     }
-    if ((u8)Obj_IsLoadingLocked() == 0) return;
-    if (!*(f32*)sub) return;
-    *(f32*)sub = *(f32*)sub - timeDelta;
-    objfx_spawnHitEffectBurst(obj, 0.6f, 2, 1, 1, NULL);
-    if (*(f32*)sub <= 0.0f)
-    {
-        Sfx_PlayFromObjectLimited(0, SFXTRIG_wp_hitpos_6_167, 1);
-        setup = (GpshObjcreatorSpawnSetup*)Obj_AllocObjectSetup(0x24, sub[4] + 0x1f4);
-        ((GpshShrineFlags*)(sub + 5))->b80 = 1;
-        setup->base.color[3] = 0xff;
-        setup->base.color[0] = 0x20;
-        setup->base.color[1] = 2;
-        setup->base.posX = obj->anim.localPosX;
-        setup->base.posY = obj->anim.localPosY;
-        setup->base.posZ = obj->anim.localPosZ;
-        setup->base.objectId = (s16)(sub[4] + 0x1f4);
-        setup->rotByte = (u8)((s32) * (s16*)obj >> 8);
-        setup->unk1A = lbl_803263B8[sub[4]];
-        Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1,
-                        obj->anim.parent);
+    if (Obj_IsLoadingLocked() == 0) {
+        return;
+    }
+    if (!state->spawnTimer) {
+        return;
+    }
+
+    state->spawnTimer -= timeDelta;
+    objfx_spawnHitEffectBurst(obj, GPSH_OBJ_CREATOR_HIT_EFFECT_SCALE, GPSH_OBJ_CREATOR_HIT_EFFECT_ID,
+                              GPSH_OBJ_CREATOR_HIT_EFFECT_VARIANT, GPSH_OBJ_CREATOR_HIT_EFFECT_COUNT, NULL);
+    if (state->spawnTimer <= 0.0f) {
+        Sfx_PlayFromObjectLimited(GPSH_OBJ_CREATOR_SFX_SOURCE, SFXTRIG_wp_hitpos_6_167, GPSH_OBJ_CREATOR_SFX_LIMIT);
+        childSetup = (GPSHObjCreatorChildSetup*)Obj_AllocObjectSetup(
+            sizeof(GPSHObjCreatorChildSetup), state->childTypeIndex + GPSH_OBJ_CREATOR_CHILD_OBJECT_ID_BASE);
+        state->flags.childSpawned = 1;
+        childSetup->base.color[3] = GPSH_OBJ_CREATOR_FULL_ALPHA;
+        childSetup->base.color[0] = GPSH_OBJ_CREATOR_CHILD_COLOR_RED;
+        childSetup->base.color[1] = GPSH_OBJ_CREATOR_CHILD_COLOR_GREEN;
+        childSetup->base.posX = obj->anim.localPosX;
+        childSetup->base.posY = obj->anim.localPosY;
+        childSetup->base.posZ = obj->anim.localPosZ;
+        childSetup->base.objectId = (s16)(state->childTypeIndex + GPSH_OBJ_CREATOR_CHILD_OBJECT_ID_BASE);
+        childSetup->yawByte = (u8)(obj->anim.rotX >> GPSH_OBJ_CREATOR_YAW_SHIFT);
+        childSetup->unknown1A = gGPSHObjCreatorChildParam1AValues[state->childTypeIndex];
+        Obj_SetupObject(&childSetup->base, GPSH_OBJ_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
+                        GPSH_OBJ_CREATOR_NO_OBJECT_INDEX, obj->anim.parent);
     }
 }
 
-void gpsh_objcreator_init(GameObject* obj, int* def)
-{
-    register u32 zero;
-    register int* state;
+void gpshObjCreator_init(GameObject* obj, const GPSHObjCreatorPlacement* placement) {
+    GPSHObjCreatorState* state;
+
     state = obj->extra;
-    obj->anim.rotX = (s16)((s32)((GpshObjcreatorObjectDef*)def)->rotX << 8);
-    zero = 0;
-    obj->userData2 = zero;
-    ((GpshObjcreatorState*)state)->objTypeIndex = (u8)((GpshObjcreatorObjectDef*)def)->objTypeIndex;
-    ((GpshShrineFlags*)((char*)state + 5))->b80 = 0;
-    *(u8*)((char*)obj + 0x37) = 0xff;
-    obj->anim.alpha = 0xff;
+    obj->anim.rotX = (s16)(placement->initialYaw << GPSH_OBJ_CREATOR_YAW_SHIFT);
+    obj->userData2 = 0;
+    state->childTypeIndex = (u8)placement->childTypeIndex;
+    state->flags.childSpawned = 0;
+    obj->anim.renderAlpha = GPSH_OBJ_CREATOR_FULL_ALPHA;
+    obj->anim.alpha = GPSH_OBJ_CREATOR_FULL_ALPHA;
 }
 
-void gpsh_objcreator_release(void)
-{
+void gpshObjCreator_release(void) {
 }
 
-void gpsh_objcreator_initialise(void)
-{
+void gpshObjCreator_initialise(void) {
 }
 
-s16 lbl_803263B8[6] = {0x28, 0x28, 0x30, 0x30, 0x2d, 0x2d};
-
-ObjectDescriptor10WithPadding gGPSH_ObjCreatorObjDescriptor = {
-    {0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-     (ObjectDescriptorCallback)gpsh_objcreator_initialise, (ObjectDescriptorCallback)gpsh_objcreator_release, 0,
-     (ObjectDescriptorCallback)gpsh_objcreator_init, (ObjectDescriptorCallback)gpsh_objcreator_update,
-     (ObjectDescriptorCallback)gpsh_objcreator_hitDetect, (ObjectDescriptorCallback)gpsh_objcreator_render,
-     (ObjectDescriptorCallback)gpsh_objcreator_free, (ObjectDescriptorCallback)gpsh_objcreator_getObjectTypeId,
-     gpsh_objcreator_getExtraSize},
+ObjectDescriptor10WithPadding gGPSHObjCreatorObjDescriptor = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+        (ObjectDescriptorCallback)gpshObjCreator_initialise,
+        (ObjectDescriptorCallback)gpshObjCreator_release,
+        0,
+        (ObjectDescriptorCallback)gpshObjCreator_init,
+        (ObjectDescriptorCallback)gpshObjCreator_update,
+        (ObjectDescriptorCallback)gpshObjCreator_hitDetect,
+        (ObjectDescriptorCallback)gpshObjCreator_render,
+        (ObjectDescriptorCallback)gpshObjCreator_free,
+        (ObjectDescriptorCallback)gpshObjCreator_getObjectTypeId,
+        gpshObjCreator_getExtraSize,
+    },
     0,
 };

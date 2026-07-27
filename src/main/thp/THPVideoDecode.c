@@ -6,6 +6,7 @@
 #include "main/dll/FRONT/picmenu.h"
 #include "main/attract_movie_api.h"
 #include "dolphin/thp/THPDecode.h"
+#include "string.h"
 #include "dolphin/os/OSInterrupt.h"
 #include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
@@ -15,14 +16,24 @@ enum
     THP_COMPONENT_VIDEO = 0
 };
 
-char gPicMenuVideoDecodeThreadArea[0x1368];
+char gPicMenuVideoDecodeThreadArea[0x18];
+OSMessageQueue gPicMenuDecodedTextureSetQueue;
+OSMessageQueue gPicMenuFreeTextureSetQueue;
+OSThread gPicMenuVideoDecodeThread;
+char gPicMenuVideoDecodeThreadStack[0x1000];
+
 s32 gAttractMovieIdleFrameCount;
 s32 gPicMenuVideoDecodePrepareReady;
 s32 gPicMenuVideoDecodeThreadCreated;
 
-#define gPicMenuDecodedTextureSetQueue (*(OSMessageQueue*)(gPicMenuVideoDecodeThreadArea + 0x18))
-#define gPicMenuFreeTextureSetQueue    (*(OSMessageQueue*)(gPicMenuVideoDecodeThreadArea + 0x38))
-#define gPicMenuVideoDecodeThread      (*(OSThread*)(gPicMenuVideoDecodeThreadArea + 0x1058))
+static void THPVideoDecode_ResetWork(void)
+{
+    memset(gPicMenuVideoDecodeThreadArea, 0, sizeof(gPicMenuVideoDecodeThreadArea));
+    memset(&gPicMenuDecodedTextureSetQueue, 0, sizeof(gPicMenuDecodedTextureSetQueue));
+    memset(&gPicMenuFreeTextureSetQueue, 0, sizeof(gPicMenuFreeTextureSetQueue));
+    memset(gPicMenuVideoDecodeThreadStack, 0, sizeof(gPicMenuVideoDecodeThreadStack));
+    memset(&gPicMenuVideoDecodeThread, 0, sizeof(gPicMenuVideoDecodeThread));
+}
 
 OSMessage PopDecodedTextureSet(s32 flags)
 {
