@@ -1,5 +1,5 @@
 /*
- * dll84func0 (DLL 0x84) - a foodbag-family modgfx effect builder.
+ * DLL 132 / 0x84 - a foodbag-family modgfx effect builder.
  *
  * dll_84_func03 fills a stack FbBuf with a fixed 20-entry list of FbCmd
  * draw commands (textures taken from the `gFoodbagFxTextureData` texture data
@@ -261,7 +261,7 @@ u8 gFoodbagFxTextureData[] = {
     0x02, 0x94, 0x00, 0x5A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-/* descriptor/ptr table auto 0x80315f84-0x80315fa8 */
+/* DLL entry table. */
 u32 lbl_80315F84[9] = {
     0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_84_func00_nop, (u32)dll_84_func01_nop,
     0x00000000, (u32)dll_84_func03, 0x00000000};
