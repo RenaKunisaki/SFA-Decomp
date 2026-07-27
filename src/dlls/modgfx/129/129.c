@@ -1,5 +1,5 @@
 /*
- * dll81func0 (DLL 0x81) - a foodbag-family modgfx effect builder.
+ * DLL 129 / 0x81 - a foodbag-family modgfx effect builder.
  *
  * dll_81_func03 fills a stack FbBuf with a list of FbCmd draw entries
  * (textures taken from the lbl_80315548 texture data array) and hands it to
@@ -17,8 +17,7 @@
 #include "main/dll/fb_cmd.h"
 #include "main/dll/foodbag.h"
 
-/* spawnEffect effect ids per variant (docblock: "0x3e9 for variant 0x1e, 0x23d
- * for variants 2/3, 0x2e for variants 10..13 and 0xe, 0xd9 otherwise"). */
+/* spawnEffect effect ids per variant. */
 #define DLL81_EFFECT_ID_VARIANT1E    0x3e9
 #define DLL81_EFFECT_ID_VARIANT23    0x23d
 #define DLL81_EFFECT_ID_VARIANT10_13 0x2e
