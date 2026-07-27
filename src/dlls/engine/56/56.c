@@ -1,24 +1,3 @@
-/*
- * weirdunusedmenu (DLL 0x38) - an on-screen menu screen driven through
- * the title-menu link interface (gTitleMenuLinkInterface). Each tick,
- * WeirdUnusedMenu_run polls the interface for the pressed action
- * (slot 0xC) and the current selection (slot 0x14):
- *   - action 1, selection 0: leave the menu (load UI dll 1, exit the
- *     cutscene, disable buttons) with a confirm sfx.
- *   - action 0: leave the menu the same way, but with the cancel sfx
- *     (SFX_MENU_CANCEL).
- *   - action 1, any other selection: open the save flow - it sets a 0x1000
- *     flag on two menu widgets, plays the save/confirm sfx
- *     (SFXqu_shortsob1) and starts the save countdown (phase
- *     gWeirdMenuPhase == 1, the saving phase).
- * During the save phase it calls saveGame_save once, advances a frame
- * timer (gWeirdMenuSaveTimer) by timeDelta, and once the timer passes the
- * phase-timer limit (gWeirdMenuSaveTimerLimit) clears the widget flags and returns
- * to the idle phase. A scroll/offset value (gWeirdMenuScrollOffset) is advanced
- * each tick and clamped to 0x8C.
- * initialise loads the three menu textures and registers the widget
- * list with the interface; release frees the textures and warps home.
- */
 #include "main/audio/sfx_ids.h"
 #include "main/texture.h"
 #include "main/pad_api.h"
@@ -34,23 +13,19 @@
 #include "main/dll/savegame.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 
-/* set on both menu widgets while the save dialog is up */
 #define WIDGET_FLAG_SAVING 0x1000
 
-/* the three menu texture assets loaded at init (gWeirdMenuTextureA/B/C) */
 #define WEIRDMENU_TEXTURE_A_ID 0x31e
 #define WEIRDMENU_TEXTURE_B_ID 0x310
 #define WEIRDMENU_TEXTURE_C_ID 0x31f
 
-/* sfx played on the selection==0 (cancel/back) path; 0x419 has no named entry in sfx_ids.h */
 #define SFX_MENU_CANCEL 0x419
 
 #define PAD_BUTTON_A 0x100
 #define PAD_BUTTON_B 0x200
-/* accept + cancel buttons, disabled once a menu decision is committed */
 #define PAD_CONFIRM_MASK (PAD_BUTTON_A | PAD_BUTTON_B)
 
-extern f32 gWeirdMenuSaveTimerLimit;       /* save-phase timer limit */
+extern f32 gWeirdMenuSaveTimerLimit;
 
 void* gWeirdMenuTextHandle[2];
 Texture* gWeirdMenuTextureA;
