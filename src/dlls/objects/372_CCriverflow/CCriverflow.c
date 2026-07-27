@@ -9,56 +9,44 @@
 #define CC_RIVER_FLOW_HEIGHT_OFFSET_SCALE 512.0f
 #define CC_RIVER_FLOW_MINIMUM_HEIGHT      0.01f
 
-int ccRiverFlow_getExtraSize(void)
-{
+int ccRiverFlow_getExtraSize(void) {
     return sizeof(CCRiverFlowState);
 }
 
-void ccRiverFlow_free(GameObject* obj)
-{
+void ccRiverFlow_free(GameObject* obj) {
     CCRiverFlowState* state = obj->extra;
 
-    if (state->active != 0)
-    {
+    if (state->active != 0) {
         ObjGroup_RemoveObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
     }
 }
 
-void ccRiverFlow_render(void)
-{
+void ccRiverFlow_render(void) {
 }
 
-void ccRiverFlow_update(GameObject* obj)
-{
+void ccRiverFlow_update(GameObject* obj) {
     u32 isGameBitSet;
     CCRiverFlowPlacement* placement;
     CCRiverFlowState* state;
 
     placement = (CCRiverFlowPlacement*)obj->anim.placementData;
-    if (placement->gameBit != -1)
-    {
+    if (placement->gameBit != -1) {
         state = obj->extra;
         isGameBitSet = mainGetBit((int)placement->gameBit);
-        if (isGameBitSet != 0)
-        {
-            if (state->active != 0)
-            {
+        if (isGameBitSet != 0) {
+            if (state->active != 0) {
                 state->active = 0;
                 ObjGroup_RemoveObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
             }
-        }
-        else if (state->active == 0)
-        {
+        } else if (state->active == 0) {
             state->active = 1;
             ObjGroup_AddObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
         }
     }
 }
 
-void ccRiverFlow_init(GameObject* obj, CCRiverFlowPlacement* placement)
-{
-    if (placement->gameBit == -1)
-    {
+void ccRiverFlow_init(GameObject* obj, CCRiverFlowPlacement* placement) {
+    if (placement->gameBit == -1) {
         ObjGroup_AddObject((int)obj, CC_RIVER_FLOW_OBJECT_GROUP);
         ((CCRiverFlowState*)obj->extra)->active = 1;
     }
@@ -66,14 +54,11 @@ void ccRiverFlow_init(GameObject* obj, CCRiverFlowPlacement* placement)
     obj->anim.rotX = placement->angle << 8;
     obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
     obj->anim.rootMotionScale =
-        (f32)(u32)placement->heightOffset / CC_RIVER_FLOW_HEIGHT_OFFSET_SCALE +
-        obj->anim.rootMotionScale;
-    if (obj->anim.rootMotionScale < CC_RIVER_FLOW_MINIMUM_HEIGHT)
-    {
+        (f32)(u32)placement->heightOffset / CC_RIVER_FLOW_HEIGHT_OFFSET_SCALE + obj->anim.rootMotionScale;
+    if (obj->anim.rootMotionScale < CC_RIVER_FLOW_MINIMUM_HEIGHT) {
         obj->anim.rootMotionScale = CC_RIVER_FLOW_MINIMUM_HEIGHT;
     }
-    if (placement->speed == 0)
-    {
+    if (placement->speed == 0) {
         placement->speed = CC_RIVER_FLOW_DEFAULT_SPEED;
     }
 }
