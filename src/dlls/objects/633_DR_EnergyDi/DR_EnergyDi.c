@@ -142,7 +142,3 @@ ObjectDescriptor gDrEnergyDiscObjDescriptor = {
     (ObjectDescriptorCallback)DR_EnergyDisc_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)DR_EnergyDisc_getExtraSize,
 };
-
-u32 lbl_8032AD00[12] = {
-    0xFFFFFFFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};

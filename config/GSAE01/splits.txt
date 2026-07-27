@@ -3775,7 +3775,7 @@ dlls/objects/632/632.c:
 
 dlls/objects/633_DR_EnergyDi/DR_EnergyDi.c:
 	.text       start:0x80220608 end:0x80220808
-	.data       start:0x8032ACC8 end:0x8032AD30
+	.data       start:0x8032ACC8 end:0x8032AD00
 	.sdata      start:0x803DC380 end:0x803DC388
 	.sdata2     start:0x803E6BB0 end:0x803E6BB4
 
@@ -3785,10 +3785,16 @@ dlls/objects/634_DR_Collapse/DR_Collapse.c:
 dlls/objects/639/639.c:
 	.sdata      start:0x803DC390 end:0x803DC398
 
+dlls/objects/635/635.c:
+	.data       start:0x8032AD00 end:0x8032AD30
+
 dlls/objects/636_DR_LightBea/DR_LightBea.c:
 	.text       start:0x80220808 end:0x80220AD0
-	.data       start:0x8032AD30 end:0x8032AD98
+	.data       start:0x8032AD30 end:0x8032AD68
 	.sdata2     start:0x803E6BB8 end:0x803E6BC4
+
+dlls/objects/637/637.c:
+	.data       start:0x8032AD68 end:0x8032AD98
 
 dlls/objects/638_DRMusicCont/DRMusicCont.c:
 	.text       start:0x80220AD0 end:0x80221178

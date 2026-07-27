@@ -162,7 +162,3 @@ ObjectDescriptor gDrLightBeaObjDescriptor = {
     (ObjectDescriptorCallback)DR_LightBea_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)DR_LightBea_getExtraSize,
 };
-
-u32 lbl_8032AD68[12] = {
-    0xFFFFFFFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
