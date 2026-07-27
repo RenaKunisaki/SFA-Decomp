@@ -1,6 +1,6 @@
 /*
- * dll 0x8D func03 - foodbag-effect builder for one DLL object's modgfx
- * effect (foodbag.h DLL slot 0x8D, the dll_NN_func03 spawn-effect family).
+ * DLL 141 / 0x8D - foodbag-effect builder from the dll_NN_func03
+ * spawn-effect family.
  *
  * dll_8D_func03 fills an FbBuf command list on the stack, three layered
  * passes of FbCmd records selected by `variant` (0/1/2), then hands it to
@@ -23,8 +23,7 @@
 #include "main/dll/foodbag.h"
 #include "main/dll/dll_008D_dll8dfunc0.h"
 
-/* spawnEffect effect ids per variant (docblock: "Each variant emits a distinct
- * effect id (0x156 / 0xc0d / 0x23b)"). */
+/* spawnEffect effect ids per variant. */
 #define DLL8D_EFFECT_ID_VARIANT0 0x156
 #define DLL8D_EFFECT_ID_VARIANT1 0xc0d
 #define DLL8D_EFFECT_ID_VARIANT2 0x23b
@@ -471,7 +470,7 @@ u8 gDll8DEffectParamBlock[] = {
     0x00, 0x1E, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-/* descriptor/ptr table auto 0x80316c20-0x80316c40 */
+/* DLL entry table. */
 u32 lbl_80316C20[8] = {
     0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_8D_func00_nop, (u32)dll_8D_func01_nop,
     0x00000000, (u32)dll_8D_func03};
