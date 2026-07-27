@@ -74,19 +74,8 @@ ObjectDescriptor gShopKeeperObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)ShopKeeper_getExtraSize,
 };
 
-const f32 lbl_803E59C0 = 1.0f;
-const f32 lbl_803E59C4 = 0.0f;
-const f32 lbl_803E59C8 = 1.0f;
-const f32 lbl_803E59CC = 0.0f;
 const u32 lbl_803E59D0 = 0xC;
 const u32 lbl_803E59D4 = 0x1C;
-const f32 lbl_803E59D8 = 1.0f;
-const f32 lbl_803E59DC = 0.0f;
-const f32 lbl_803E59E0 = 6.0f;
-const f32 gDrLaserTurretDefaultAnimStepScale = 0.007f;
-const f32 gDrLaserTurretPi = 3.1415927f;
-const f32 gDrLaserTurretBobPhaseScale = 32768.0f;
-const f32 lbl_803E59F0 = 0.1f;
 
 void* lbl_803AD068[8];
 
@@ -114,7 +103,7 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
     int nextState;
 
     state = (int)obj->extra;
-    spawnParam = lbl_803E59D8;
+    spawnParam = 1.0f;
 
     if (*(s8*)(animState + 0x27a) != 0)
     {
@@ -125,7 +114,7 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
     }
 
     *(u8*)(state + 0x9d6) = 0;
-    *(f32*)(animState + 0x280) = lbl_803E59DC;
+    *(f32*)(animState + 0x280) = 0.0f;
     if (*(u8*)(state + 0x9d6) == 0)
     {
         stk = *(RingBufferQueue**)(state + 0x9b0);
@@ -179,10 +168,10 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
             {
                 node = (int)(*gRomCurveInterface)->getById(found);
                 (obj)->anim.localPosX = ((LazerwallCurveNode*)node)->x;
-                (obj)->anim.localPosY = lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
+                (obj)->anim.localPosY = 6.0f + ((LazerwallCurveNode*)node)->y;
                 (obj)->anim.localPosZ = ((LazerwallCurveNode*)node)->z;
                 *(s16*)(int)obj = (s16)((s32)((LazerwallCurveNode*)node)->rotZ << 8);
-                state->nodeTargetY = lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
+                state->nodeTargetY = 6.0f + ((LazerwallCurveNode*)node)->y;
                 state->unk9CA = 0;
                 state->curveNodeTag = ((LazerwallCurveNode*)node)->type;
             }
@@ -206,7 +195,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
                 }
             }
 
-            *(f32*)(animState + 0x280) = lbl_803E59DC;
+            *(f32*)(animState + 0x280) = 0.0f;
             state->flags = (u8)(state->flags | LAZERWALL_FLAG_ADVANCED);
         }
     }
@@ -289,10 +278,10 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
     playerObj = Obj_GetPlayerObject();
     state = obj->state;
     state->promptState = 0xff;
-    animState->animStepScale = gDrLaserTurretDefaultAnimStepScale;
+    animState->animStepScale = 0.007f;
     if (obj->currentMove != 0)
     {
-        ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, lbl_803E59DC, 0);
+        ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, 0.0f, 0);
     }
     ObjHits_EnableObject((GameObject*)obj);
     obj->hitFlags &= ~DR_LASERTURRET_HITFLAG_CLEAR_PROMPT;
@@ -308,7 +297,7 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
     }
     shopKeeperRotateFn_801e7c4c((s16*)obj, playerObj, 0);
     obj->y = state->bobAmplitude *
-                 mathSinf((double)(gDrLaserTurretPi * (float)(u32)state->bobPhase / gDrLaserTurretBobPhaseScale)) +
+                 mathSinf((double)(3.1415927f * (float)(u32)state->bobPhase / 32768.0f)) +
              state->bobBaseY;
     sum = state->bobPhase + framesThisStep * 0x100;
     if (sum > 0xffff)
@@ -316,7 +305,7 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
         float rngf;
         rng = randomGetRange(0xf, 0x23);
         rngf = (float)rng;
-        rngf = lbl_803E59F0 * rngf;
+        rngf = 0.1f * rngf;
         state->bobAmplitude = rngf;
     }
     state->bobPhase = sum;
@@ -367,15 +356,15 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     {
         if (animState->moveComplete != 0)
         {
-            if (obj->currentMove == DR_LASERTURRET_ANIM_TRACKING && animState->animStepScale > lbl_803E59DC)
+            if (obj->currentMove == DR_LASERTURRET_ANIM_TRACKING && animState->animStepScale > 0.0f)
             {
-                ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_ALERT, lbl_803E59DC, 0);
+                ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_ALERT, 0.0f, 0);
             }
             else if (obj->currentMove != 0)
             {
-                ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, lbl_803E59DC, 0);
+                ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, 0.0f, 0);
             }
-            animState->animStepScale = gDrLaserTurretDefaultAnimStepScale;
+            animState->animStepScale = 0.007f;
             state->flags = state->flags & ~DR_LASERTURRET_FLAG_ACTION_ACTIVE;
             rng = randomGetRange(0x1f4, 0x3e8);
             state->actionTimer = rng;
@@ -385,12 +374,12 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     {
         if (obj->currentMove != DR_LASERTURRET_ANIM_ALERT && obj->currentMove != 0)
         {
-            ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, lbl_803E59DC, 0);
-            animState->animStepScale = gDrLaserTurretDefaultAnimStepScale;
+            ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, 0.0f, 0);
+            animState->animStepScale = 0.007f;
         }
     }
     state->actionTimer = state->actionTimer - timeDelta;
-    if (state->actionTimer <= lbl_803E59DC && (state->flags & DR_LASERTURRET_FLAG_ACTION_ACTIVE) == 0)
+    if (state->actionTimer <= 0.0f && (state->flags & DR_LASERTURRET_FLAG_ACTION_ACTIVE) == 0)
     {
         Sfx_PlayFromObject((int)obj, DR_LASERTURRET_SFX_ACTION);
         if (obj->currentMove == DR_LASERTURRET_ANIM_ALERT)
@@ -401,7 +390,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
         else
         {
             rng = randomGetRange(0, 1);
-            ObjAnim_SetCurrentMove((int)obj, gDrLaserTurretIdleAnimMoves[rng], lbl_803E59DC, 0);
+            ObjAnim_SetCurrentMove((int)obj, gDrLaserTurretIdleAnimMoves[rng], 0.0f, 0);
             animState->animStepScale = gDrLaserTurretIdleAnimStepScales[rng];
         }
         state->flags = state->flags | DR_LASERTURRET_FLAG_ACTION_ACTIVE;
@@ -424,32 +413,32 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     }
     else
     {
-        target = lbl_803E59DC;
+        target = 0.0f;
     }
     d = rate * (target - animState->aimBlend);
     animState->aimBlend += d * timeDelta;
     if (animState->aimBlend > -0.002f)
     {
-        animState->aimBlend = lbl_803E59DC;
+        animState->aimBlend = 0.0f;
     }
-    animState->aimBlend = lbl_803E59DC;
+    animState->aimBlend = 0.0f;
     count = hitDetectFn_80065e50((GameObject*)obj, obj->x, obj->y, obj->z, &arr, 0, 0);
     minDist = 10000.0f;
     for (idx = 0; idx < count; idx++)
     {
         dist = arr[idx]->height - obj->y;
-        if (dist < lbl_803E59DC)
+        if (dist < 0.0f)
         {
             dist = -dist;
         }
         if (dist < minDist)
         {
-            state->bobBaseY = lbl_803E59E0 + arr[idx]->height;
+            state->bobBaseY = 6.0f + arr[idx]->height;
             minDist = dist;
         }
     }
     obj->y = state->bobAmplitude *
-                 mathSinf((double)(gDrLaserTurretPi * (float)(u32)state->bobPhase / gDrLaserTurretBobPhaseScale)) +
+                 mathSinf((double)(3.1415927f * (float)(u32)state->bobPhase / 32768.0f)) +
              state->bobBaseY;
     sum = state->bobPhase + framesThisStep * 0x100;
     if (sum > 0xffff)
@@ -457,7 +446,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
         float rngf;
         rng = randomGetRange(0xf, 0x23);
         rngf = (float)rng;
-        rngf = lbl_803E59F0 * rngf;
+        rngf = 0.1f * rngf;
         state->bobAmplitude = rngf;
     }
     state->bobPhase = sum;
@@ -698,7 +687,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
      * register home (md5-verified: removing it changes codegen) */
     state2 = (int)(long)*(int*)&(obj)->extra;
     player = Obj_GetPlayerObject();
-    range = lbl_803E59D8;
+    range = 1.0f;
     ((ShopkeeperState*)state)->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
     if (((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_LEAVING)
     {
@@ -715,7 +704,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     }
     seq->freeCallback = (ObjAnimSequenceFreeCallback)DRlaserturret_startTimedChallenge;
     seq->flags &= ~0x20;
-    speed = lbl_803E59DC;
+    speed = 0.0f;
     ((ShopkeeperState*)state2)->animSpeed = speed;
     ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_FACING;
     if (advance != 0)
@@ -850,7 +839,7 @@ f32 shopKeeperRotateFn_801e7c4c(s16* obj, void* player, int mode)
     dx = ((GameObject*)player)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
     dz = ((GameObject*)player)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
     dist = sqrtf(dx * dx + dz * dz);
-    if (dist != lbl_803E59DC)
+    if (dist != 0.0f)
     {
         dx /= dist;
         dz /= dist;
@@ -959,10 +948,10 @@ void ShopKeeper_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
 {
     int state = *(int*)&(obj)->extra;
     f32 fxParams[4];
-    fxParams[0] = lbl_803E59D8;
+    fxParams[0] = 1.0f;
     if (((ShopkeeperState*)state)->controlMode != 7 && visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E59D8);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         dll_2E_func06(obj, (MoveLibState*)(state + 0x35c), 0);
     }
     if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_TICK) != 0)
@@ -984,13 +973,13 @@ void ShopKeeper_update(GameObject* obj)
     state = *(int*)&(obj)->extra;
     dist = 10000.0f;
     ((ShopkeeperState*)state)->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
-    if (((ShopkeeperState*)state)->textTimer > lbl_803E59DC)
+    if (((ShopkeeperState*)state)->textTimer > 0.0f)
     {
         gameTextShow(0x433);
         ((ShopkeeperState*)state)->textTimer = ((ShopkeeperState*)state)->textTimer - timeDelta;
-        if (((ShopkeeperState*)state)->textTimer < lbl_803E59DC)
+        if (((ShopkeeperState*)state)->textTimer < 0.0f)
         {
-            ((ShopkeeperState*)state)->textTimer = lbl_803E59DC;
+            ((ShopkeeperState*)state)->textTimer = 0.0f;
         }
     }
     if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_FACING) != 0)
@@ -1016,7 +1005,7 @@ void ShopKeeper_init(GameObject* obj)
     (obj)->objectFlags |= SPSHOPKEEPER_OBJFLAG_HITDETECT_DISABLED;
     (obj)->animEventCallback = ShopKeeper_SeqFn;
     (obj)->anim.modelState->flags |= 0x810;
-    ((ShopkeeperState*)state)->unk9B8 = lbl_803E59F0 * (f32)(s32)randomGetRange(0xF, 0x23);
+    ((ShopkeeperState*)state)->unk9B8 = 0.1f * (f32)(s32)randomGetRange(0xF, 0x23);
     ((ShopkeeperState*)state)->msgStack = allocModelStruct_800139e8(4, 4);
     ((ShopkeeperState*)state)->opacity = 0xFF;
     ((ShopkeeperState*)state)->textTimer = 300.0f;

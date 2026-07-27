@@ -3106,10 +3106,12 @@ dlls/objects/502/502.c:
 dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c:
 	.text       start:0x801E5F74 end:0x801E6050
 	.data       start:0x80327F98 end:0x80327FD0
+	.sdata2     start:0x803E59C0 end:0x803E59C4
 
 dlls/objects/645_SPShop/SPShop.c:
 	.text       start:0x801E6050 end:0x801E66DC
 	.data       start:0x80327FD0 end:0x80328370
+	.sdata2     start:0x803E59C8 end:0x803E59CC
 
 dlls/objects/646_SPShopKeepe/SPShopKeepe.c:
 	.text       start:0x801E66DC end:0x801E832C
@@ -3117,7 +3119,7 @@ dlls/objects/646_SPShopKeepe/SPShopKeepe.c:
 	.bss        start:0x803AD068 end:0x803AD088
 	.sdata      start:0x803DC0A0 end:0x803DC0B0
 	.sbss       start:0x803DDC58 end:0x803DDC5C
-	.sdata2     start:0x803E59C0 end:0x803E5A2C
+	.sdata2     start:0x803E59D0 end:0x803E5A2C
 
 dlls/objects/644/644.c:
 	.text       start:0x801E832C end:0x801E8EA4

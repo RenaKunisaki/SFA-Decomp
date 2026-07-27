@@ -19,8 +19,6 @@
 #include "main/dll/SP/dll_0285_spshop.h"
 #include "dlls/object_descriptor.h"
 
-extern f32 lbl_803E59C8;
-
 #define SPSHOP_OBJGROUP 9
 
 /* number of ShopItemRow entries in lbl_80327FD0
@@ -369,7 +367,7 @@ void shop_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E59C8);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void shop_hitDetect(void)

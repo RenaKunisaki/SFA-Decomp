@@ -16,8 +16,6 @@
 #include "main/dll/SB/dll_01F7_sbshipgunbroke.h"
 #include "dlls/object_descriptor.h"
 
-extern f32 lbl_803E59C0;
-
 int SB_ShipGunBroke_getExtraSize(void)
 {
     return 0x1;
@@ -36,7 +34,7 @@ void SB_ShipGunBroke_render(GameObject* obj, int p2, int p3, int p4, int p5)
     SBShipGunBrokePlacement* placement = (SBShipGunBrokePlacement*)obj->anim.placementData;
     if ((u32)mainGetBit(placement->destroyedGameBit) != 0u)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E59C0);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
