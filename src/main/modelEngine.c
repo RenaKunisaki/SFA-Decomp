@@ -96,6 +96,7 @@
 #include "dlls/objects/298_CFCrate.h"
 #include "dlls/objects/299_FXEmit.h"
 #include "dlls/objects/300_Transporter.h"
+#include "dlls/objects/301_LFXEmitter.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -239,8 +240,7 @@ extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescr
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
-    gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
-    gLINKBLevControlObjDescriptor;
+    gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLINKBLevControlObjDescriptor;
 extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLaserBeamObjDescriptor,
     gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
@@ -1268,7 +1268,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFCrateObjDescriptor,
     (ResourceDescriptor*)&gFXEmitObjDescriptor,
     (ResourceDescriptor*)&gTransporterObjDescriptor,
-    &gLFXEmitterObjDescriptor,
+    (ResourceDescriptor*)&gLFXEmitterObjDescriptor,
     &gCflightwallObjDescriptor,
     &gBarrelPadObjDescriptor,
     &gAreaFXEmitObjDescriptor,

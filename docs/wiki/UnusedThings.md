@@ -48,10 +48,12 @@ between ThornTail Hollow and Moon Mountain Pass.
 
 ## LACTIONS.bin
 
-- Probably "Light Actions".
-- The game reads entries, then immediately discards them without using them.
-- From that we can tell the entries are 0x28 bytes each.
-- Replacing this with an empty file causes no problems.
+- "Light Actions"; the file contains 1024 fixed 0x28-byte records.
+- Earlier testing only observed the no-op `getLActions` wrapper. LFXEmitter
+  actively loads placement-selected rows, keeps them in per-object state, and
+  caches the most recently loaded row.
+- Replacing the file with an empty one may appear harmless when no relevant
+  LFXEmitter is active, but it does not establish that the file is unused.
 
 ## GAMETEXT.bin
 
@@ -194,16 +196,14 @@ repeating it.
   page doesn't mention but that shares the word "chapter") is covered in **[ChapBits](ChapBits)**,
   which also gives a shorter version of the Chapter Select cross-reference below.
 
-### LACTIONS.bin — exact match, byte-for-byte
+### LACTIONS.bin — the no-op wrapper and the active consumer
 
-`getLActions` (`src/main/render.c:6-12`) is the whole story, and it matches the wiki description
-exactly:
+`getLActions` (`src/main/render.c`) does match the earlier no-op observation:
 
 ```c
-int getLActions(int a, int b, u16 idx)
-{
-    void* buf = mmAlloc(0x28, -1, NULL);
-    getTabEntry(buf, 0xc, idx * 0x28, 0x28);
+int getLActions(void* source, void* target, u16 index, int arg3, int arg4, int arg5) {
+    void* buf = mmAlloc(0x28, -1, 0);
+    getTabEntry(buf, MLDF_FILEID_LACTIONS_BIN, index * 0x28, 0x28);
     mm_free(buf);
     return 0;
 }
@@ -211,12 +211,19 @@ int getLActions(int a, int b, u16 idx)
 
 FileId `0xc` is `LACTIONS.bin` (`sResourceFileNameLactionsBin`, see [Files](Files)). It allocates a
 `0x28`-byte buffer, reads exactly one `0x28`-byte record at `idx * 0x28`, frees the buffer without
-ever reading from it, and unconditionally returns 0 — i.e. "reads entries, then immediately
-discards them without using them" and "entries are 0x28 bytes each" are both confirmed directly from
-source, not inferred. `getLActions` is called from ~15 `dll_*.c` files across the codebase
-(`dll_01F8_wmgalleon.c`, `dll_01F0_sbkytecage.c`, `src/dlls/objects/298_CFCrate/CFCrate.c`,
-`src/dlls/objects/294/294.c`, etc.),
+ever reading from it, and unconditionally returns 0. `getLActions` is called from ~15 object files
+(`src/dlls/objects/504_WM_Galleon/WM_Galleon.c`,
+`src/dlls/objects/496_SB_KyteCage/SB_KyteCage.c`,
+`src/dlls/objects/298_CFCrate/CFCrate.c`, `src/dlls/objects/294/294.c`, etc.),
 always with the same no-op result.
+
+That wrapper is not the whole file-access story. Slot 301,
+`src/dlls/objects/301_LFXEmitter/LFXEmitter.c`, allocates a 0x28-byte row,
+loads `placement.actionIndex * 0x28` from fileId `0xc`, retains the row in its
+0x124-byte per-object state, and caches it. The extracted EN file is exactly
+40960 bytes (1024 rows); populated rows use +0x0E as a one-based row index,
+matching the emitter's cache comparison. The active consumer disproves the
+page's former conclusion that every read was immediately discarded.
 
 ### SCREENS.bin / DLL 0x11 — exact match, plus one refinement
 

@@ -9,9 +9,10 @@
  * spawnTimer from spawnPeriod + randomGetRange(0, spawnJitter); most
  * modes gate on the placement game bit (-1 = always).
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/CF/CFchuckobj.h"
+#include "dlls/objects/301_LFXEmitter.h"
+
 #include "game/objects/object.h"
+#include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -215,19 +216,19 @@ void WM_ObjCreator_update(GameObject* obj)
                 (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
             {
                 ObjPlacement* setup =
-                    Obj_AllocObjectSetup(LFXEMITTER_PLACEMENT_BYTES, WMOBJCREATOR_SPAWN_LFX_EMITTER);
+                    Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                 setup->color[0] = 0x20;
                 setup->color[1] = 2;
                 setup->color[3] = 0xff;
                 setup->posX = obj->anim.localPosX;
                 setup->posY = obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ;
-                ((LfxEmitterPlacement*)setup)->lifeTimer = 0x50;
-                ((LfxEmitterPlacement*)setup)->configIndex = 0x10f;
-                ((LfxEmitterPlacement*)setup)->enableBit = 0xffff;
-                ((LfxEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
-                ((LfxEmitterPlacement*)setup)->spinPitch = 0;
-                ((LfxEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
+                ((LFXEmitterPlacement*)setup)->lifeTimer = 0x50;
+                ((LFXEmitterPlacement*)setup)->actionIndex = 0x10f;
+                ((LFXEmitterPlacement*)setup)->enableGameBit = 0xffff;
+                ((LFXEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
+                ((LFXEmitterPlacement*)setup)->spinPitch = 0;
+                ((LFXEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 if ((u32)spawned != 0)
                 {
@@ -279,17 +280,17 @@ void WM_ObjCreator_update(GameObject* obj)
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
                 (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
             {
-                setup = Obj_AllocObjectSetup(LFXEMITTER_PLACEMENT_BYTES, WMOBJCREATOR_SPAWN_LFX_EMITTER);
+                setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                 setup->color[0] = 4;
                 setup->color[1] = 2;
                 setup->posX = placement->base.posX;
                 setup->posY = placement->base.posY + (f32)(int)randomGetRange(-0x28, 0x28);
                 setup->posZ = placement->base.posZ + (f32)(int)randomGetRange(-0x28, 0x28);
-                ((LfxEmitterPlacement*)setup)->lifeTimer = 100;
-                ((LfxEmitterPlacement*)setup)->configIndex = 0x10f;
-                ((LfxEmitterPlacement*)setup)->enableBit = 0xffff;
-                ((LfxEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
-                ((LfxEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
+                ((LFXEmitterPlacement*)setup)->lifeTimer = 100;
+                ((LFXEmitterPlacement*)setup)->actionIndex = 0x10f;
+                ((LFXEmitterPlacement*)setup)->enableGameBit = 0xffff;
+                ((LFXEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
+                ((LFXEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 if ((u32)spawned != 0)
                 {
@@ -307,24 +308,24 @@ void WM_ObjCreator_update(GameObject* obj)
                 {
                     ObjPlacement* setup;
                     n -= 1;
-                    setup = Obj_AllocObjectSetup(LFXEMITTER_PLACEMENT_BYTES, WMOBJCREATOR_SPAWN_LFX_EMITTER);
+                    setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                     setup->color[0] = 0x20;
                     setup->color[1] = 2;
                     setup->color[3] = 0xff;
                     setup->posX = obj->anim.localPosX;
                     setup->posY = obj->anim.localPosY;
                     setup->posZ = obj->anim.localPosZ;
-                    ((LfxEmitterPlacement*)setup)->lifeTimer = 400;
-                    ((LfxEmitterPlacement*)setup)->configIndex = 0xf;
-                    ((LfxEmitterPlacement*)setup)->enableBit = 0x222;
-                    ((LfxEmitterPlacement*)setup)->spinRoll = 0;
-                    ((LfxEmitterPlacement*)setup)->spinPitch = 0;
-                    ((LfxEmitterPlacement*)setup)->spinYaw = 0;
-                    ((LfxEmitterPlacement*)setup)->followCurve = 0;
+                    ((LFXEmitterPlacement*)setup)->lifeTimer = 400;
+                    ((LFXEmitterPlacement*)setup)->actionIndex = 0xf;
+                    ((LFXEmitterPlacement*)setup)->enableGameBit = 0x222;
+                    ((LFXEmitterPlacement*)setup)->spinRoll = 0;
+                    ((LFXEmitterPlacement*)setup)->spinPitch = 0;
+                    ((LFXEmitterPlacement*)setup)->spinYaw = 0;
+                    ((LFXEmitterPlacement*)setup)->followCurve = 0;
                     spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                     if ((u32)spawned != 0)
                     {
-                        *(u8*)(*(int*)&spawned->extra + 0x120) |= 2;
+                        ((LFXEmitterState*)spawned->extra)->flags |= LFXEMITTER_FLAG_DAMP_Y_VELOCITY;
                         spawned->anim.velocityX = 0.1f * (f32)(int)randomGetRange(-0x23, 0x23);
                         spawned->anim.velocityZ = 0.1f * (f32)(int)randomGetRange(-0x23, 0x23);
                         spawned->anim.velocityY = 0.0f;
@@ -345,17 +346,17 @@ void WM_ObjCreator_update(GameObject* obj)
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
                 (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
             {
-                setup = Obj_AllocObjectSetup(LFXEMITTER_PLACEMENT_BYTES, WMOBJCREATOR_SPAWN_LFX_EMITTER);
+                setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                 setup->color[0] = 4;
                 setup->color[1] = 2;
                 setup->posX = placement->base.posX + (f32)(int)randomGetRange(-0x28, 0x28);
                 setup->posY = placement->base.posY + (f32)(int)randomGetRange(0, 0x14);
                 setup->posZ = placement->base.posZ + (f32)(int)randomGetRange(-0x28, 0x28);
-                ((LfxEmitterPlacement*)setup)->lifeTimer = 0x1c2;
-                ((LfxEmitterPlacement*)setup)->configIndex = randomGetRange(0, 2) + 0x1cc;
-                ((LfxEmitterPlacement*)setup)->enableBit = 0xffff;
-                ((LfxEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
-                ((LfxEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
+                ((LFXEmitterPlacement*)setup)->lifeTimer = 0x1c2;
+                ((LFXEmitterPlacement*)setup)->actionIndex = randomGetRange(0, 2) + 0x1cc;
+                ((LFXEmitterPlacement*)setup)->enableGameBit = 0xffff;
+                ((LFXEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
+                ((LFXEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
                 Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
@@ -410,4 +411,3 @@ void WM_ObjCreator_release(void)
 void WM_ObjCreator_initialise(void)
 {
 }
-

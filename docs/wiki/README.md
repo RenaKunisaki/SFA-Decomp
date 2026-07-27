@@ -29,7 +29,7 @@ The GameBits table from this wiki has already been imported as code: 687 named b
 | [Shop](Shop.md) | ThornTail shop item price/discount/gamebit/text table, cross-mapped to DLLs 0x284/0x285/0x286 (shopitem/spshop/spshopkeeper), the ShopItemRow struct in dll_0285_spshop.c, and ~20 a... |
 | [Textures](Textures.md) | Covers TEXn.bin/tab layout, the 0x60-byte Texture header, GXTexFmt/GXTexObj, texture-ID translation (TEXTABLE/TEX0/TEX1/TEXPRE), the model Shader/ShaderLayer/ShaderFlags/AttrFlags ... |
 | [Tricky](Tricky.md) | Covers Tricky's attack-timer mechanic, unused Decoy/Guard/Baddie-Alert/Kyte content, ball-play color progression, and the Mammoth Dismount/Death Crash/Weird Head Movement bugs, cro... |
-| [UnusedThings](UnusedThings.md) | Cross-referenced the wiki's unused-content page against this repo; strongest confirmed matches are getLActions() in src/main/render.c (LACTIONS.bin, byte-for-byte), DLL 0x11 = src/... |
+| [UnusedThings](UnusedThings.md) | Cross-referenced the wiki's unused-content page against this repo; separates the no-op getLActions() wrapper from LFXEmitter's active LACTIONS.bin consumer, and verifies DLL 0x11... |
 | [Warptab](Warptab.md) | Documents WARPTAB.bin's 16-byte warp-destination records; verified byte-exact against src/main/rcp_dolphin.c's warpToMap/WarpDestination (getTabEntry fileId 28 == sResourceFileName... |
 
 ## Code-incorporation roadmap

@@ -1,211 +1,246 @@
-#include "main/asset_load.h"
-#include "sys/objects.h"
+/*
+ * Curve-following light-action emitter with optional lifetime, GameBit gate,
+ * per-axis spin, free movement, and falling-velocity damping.
+ */
+#include "dlls/objects/301_LFXEmitter.h"
+
 #include "game/objects/object.h"
-#include "main/dll/CF/CFchuckobj.h"
+#include "main/asset_load.h"
+#include "main/curve.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/gamebits.h"
-#include "main/obj_group.h"
-#include "main/mm.h"
-#include "main/pi_dolphin.h"
-#include "main/dll/objfsa.h"
 #include "main/frame_timing.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebits_api.h"
+#include "main/mldf_fileid.h"
+#include "main/mm.h"
+#include "main/obj_group.h"
+#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-LfxEmitterConfig gLfxEmitterConfigCache;
 
+#define LFXEMITTER_OBJECT_GROUP        0x1C
+#define LFXEMITTER_LIGHT_ACTION_HEAP   0x12
+#define LFXEMITTER_CACHE_INDEX_INVALID 10000
 
-/* reports whether the emitter's config record has been loaded yet */
-int lfxemitter_isConfigLoaded(LfxEmitterObject* obj)
-{
-    LfxEmitterState* state = obj->state;
-    return state->config != NULL;
+#define LFXEMITTER_FALL_SPEED_LIMIT   -15.0f
+#define LFXEMITTER_FALL_ACCELERATION  -0.01f
+#define LFXEMITTER_ROOT_MOTION_SCALE  2.0f
+#define LFXEMITTER_CURVE_SPEED_SCALE  10.0f
+#define LFXEMITTER_CURVE_SEARCH_RANGE 1000.0f
+
+/*
+ * LACTIONS.bin contains fixed 0x28-byte rows. Populated retail rows carry
+ * their one-based row index at +0x0E; the emitter uses it as its cache key.
+ */
+struct LFXEmitterLightAction {
+    u16 unk00;
+    u16 unk02;
+    s16 unk04;
+    s16 unk06;
+    s16 unk08;
+    s16 unk0A;
+    s16 unk0C;
+    u16 oneBasedIndex;
+    u8 unk10;
+    u8 unk11;
+    u8 unk12;
+    u8 unk13;
+    u8 unk14;
+    u8 unk15;
+    u8 unk16;
+    u8 unk17;
+    u8 unk18;
+    u8 unk19;
+    u8 unk1A;
+    u8 unk1B;
+    u8 unk1C;
+    u8 unk1D;
+    u8 unk1E;
+    u8 unk1F;
+    u8 unk20;
+    u8 unk21;
+    u8 unk22;
+    u8 unk23;
+    u8 unk24;
+    u8 unk25;
+    u8 unk26;
+    u8 unk27;
+};
+
+STATIC_ASSERT(offsetof(LFXEmitterLightAction, oneBasedIndex) == 0x0E);
+STATIC_ASSERT(offsetof(LFXEmitterLightAction, unk10) == 0x10);
+STATIC_ASSERT(offsetof(LFXEmitterLightAction, unk12) == 0x12);
+STATIC_ASSERT(offsetof(LFXEmitterLightAction, unk1B) == 0x1B);
+STATIC_ASSERT(offsetof(LFXEmitterLightAction, unk27) == 0x27);
+STATIC_ASSERT(sizeof(LFXEmitterLightAction) == 0x28);
+
+LFXEmitterLightAction gLFXEmitterLightActionCache;
+
+int LFXEmitter_isLightActionLoaded(GameObject* obj) {
+    LFXEmitterState* state = obj->extra;
+    return state->lightAction != NULL;
 }
 
-int lfxemitter_setScale(void)
-{
+int LFXEmitter_setScale(void) {
     return -1;
 }
 
-void lfxemitter_copyConfig(const LfxEmitterConfig* srcConfig, LfxEmitterConfig* dstConfig)
-{
-    const u16* src = (const u16*)srcConfig;
-    u16* dst = (u16*)dstConfig;
+void LFXEmitter_copyLightAction(const LFXEmitterLightAction* source, LFXEmitterLightAction* destination) {
+    destination->unk00 = source->unk00;
+    destination->unk02 = source->unk02;
+    destination->unk04 = source->unk04;
+    destination->unk06 = source->unk06;
+    destination->unk08 = source->unk08;
+    destination->unk0A = source->unk0A;
+    destination->unk0C = source->unk0C;
+    destination->oneBasedIndex = source->oneBasedIndex;
+    destination->unk12 = source->unk12;
+    destination->unk13 = source->unk13;
+    destination->unk1B = source->unk1B;
+    destination->unk1C = source->unk1C;
+    destination->unk1D = source->unk1D;
+    destination->unk1E = source->unk1E;
+    destination->unk1F = source->unk1F;
+    destination->unk20 = source->unk20;
+    destination->unk21 = source->unk21;
+    destination->unk22 = source->unk22;
+    destination->unk15 = source->unk15;
+    destination->unk23 = source->unk23;
+    destination->unk16 = source->unk16;
+    destination->unk24 = source->unk24;
+    destination->unk17 = source->unk17;
+    destination->unk25 = source->unk25;
+    destination->unk18 = source->unk18;
+    destination->unk26 = source->unk26;
+    destination->unk19 = source->unk19;
+    destination->unk27 = source->unk27;
+    destination->unk1A = source->unk1A;
 
-    *dst = *src;
-    dst[1] = src[1];
-    ((s16*)dst)[2] = ((s16*)src)[2];
-    ((s16*)dst)[3] = ((s16*)src)[3];
-    ((s16*)dst)[4] = ((s16*)src)[4];
-    ((s16*)dst)[5] = ((s16*)src)[5];
-    ((s16*)dst)[6] = ((s16*)src)[6];
-    dst[7] = src[7];
-    *(u8*)(dst + 9) = *(u8*)(src + 9);
-    *(u8*)((int)dst + 0x13) = *(u8*)((int)src + 0x13);
-    *(u8*)((int)dst + 0x1b) = *(u8*)((int)src + 0x1b);
-    *(u8*)(dst + 0xe) = *(u8*)(src + 0xe);
-    *(u8*)((int)dst + 0x1d) = *(u8*)((int)src + 0x1d);
-    *(u8*)(dst + 0xf) = *(u8*)(src + 0xf);
-    *(u8*)((int)dst + 0x1f) = *(u8*)((int)src + 0x1f);
-    *(u8*)(dst + 0x10) = *(u8*)(src + 0x10);
-    *(u8*)((int)dst + 0x21) = *(u8*)((int)src + 0x21);
-    *(u8*)(dst + 0x11) = *(u8*)(src + 0x11);
-    *(u8*)((int)dst + 0x15) = *(u8*)((int)src + 0x15);
-    *(u8*)((int)dst + 0x23) = *(u8*)((int)src + 0x23);
-    *(u8*)(dst + 0xb) = *(u8*)(src + 0xb);
-    *(u8*)(dst + 0x12) = *(u8*)(src + 0x12);
-    *(u8*)((int)dst + 0x17) = *(u8*)((int)src + 0x17);
-    *(u8*)((int)dst + 0x25) = *(u8*)((int)src + 0x25);
-    *(u8*)(dst + 0xc) = *(u8*)(src + 0xc);
-    *(u8*)(dst + 0x13) = *(u8*)(src + 0x13);
-    *(u8*)((int)dst + 0x19) = *(u8*)((int)src + 0x19);
-    *(u8*)((int)dst + 0x27) = *(u8*)((int)src + 0x27);
-    *(u8*)(dst + 0xd) = *(u8*)(src + 0xd);
-    *(u8*)(dst + 0x14) = *(u8*)(src + 0x14);
+    /*
+     * Retail also copies byte +0x28. The cache is exactly 0x28 bytes, so this
+     * intentionally preserves the original one-byte overrun into the next
+     * BSS object instead of disguising it as part of this allocation.
+     */
+    ((u8*)destination)[sizeof(*destination)] = ((const u8*)source)[sizeof(*source)];
 }
 
-int lfxemitter_getExtraSize(void)
-{
-    return 0x124;
-}
-int lfxemitter_getObjectTypeId(void)
-{
-    return 0x0;
+int LFXEmitter_getExtraSize(void) {
+    return sizeof(LFXEmitterState);
 }
 
-void lfxemitter_free(LfxEmitterObject* obj)
-{
-    LfxEmitterState* state = obj->state;
-    LfxEmitterConfig* ptr = state->config;
-    if (ptr != NULL)
-    {
-        mm_free(ptr);
+int LFXEmitter_getObjectTypeId(void) {
+    return 0;
+}
+
+void LFXEmitter_free(GameObject* obj) {
+    LFXEmitterState* state = obj->extra;
+    LFXEmitterLightAction* lightAction = state->lightAction;
+
+    if (lightAction != NULL) {
+        mm_free(lightAction);
     }
-    ObjGroup_RemoveObject((int)obj, LFXEMITTER_OBJ_GROUP);
+    ObjGroup_RemoveObject((int)obj, LFXEMITTER_OBJECT_GROUP);
 }
 
-void lfxemitter_render(void)
-{
+void LFXEmitter_render(void) {
 }
 
-void lfxemitter_hitDetect(void)
-{
+void LFXEmitter_hitDetect(void) {
 }
 
-void lfxemitter_update(LfxEmitterObject* obj)
-{
-    LfxEmitterState* state;
-    ObjAnimComponent* player;
+void LFXEmitter_update(GameObject* obj) {
+    LFXEmitterState* state;
+    GameObject* player;
 
-    state = obj->state;
-    player = (ObjAnimComponent*)Obj_GetPlayerObject();
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
 
-    obj->objAnim.rotX += state->spinYaw;
-    obj->objAnim.rotZ += state->spinRoll;
-    obj->objAnim.rotY += state->spinPitch;
+    obj->anim.rotX += state->spinYaw;
+    obj->anim.rotZ += state->spinRoll;
+    obj->anim.rotY += state->spinPitch;
 
-    if ((state->flags & LFXEMITTER_FLAG_FOLLOW_CURVE) != 0)
-    {
-        if ((Curve_AdvanceAlongPath(&state->curve.curve, state->curveSpeed) != 0) ||
-            (state->curve.atSegmentEnd != 0))
-        {
+    if ((state->flags & LFXEMITTER_FLAG_FOLLOW_CURVE) != 0) {
+        if ((Curve_AdvanceAlongPath(&state->curve.curve, state->curveSpeed) != 0) || (state->curve.atSegmentEnd != 0)) {
             (*gRomCurveInterface)->goNextPoint(&state->curve);
         }
-        obj->objAnim.localPosX = state->curve.posX;
-        obj->objAnim.localPosY = state->curve.posY;
-        obj->objAnim.localPosZ = state->curve.posZ;
-    }
-    else
-    {
-        obj->objAnim.localPosX = obj->objAnim.velocityX * timeDelta + obj->objAnim.localPosX;
-        obj->objAnim.localPosY = obj->objAnim.velocityY * timeDelta + obj->objAnim.localPosY;
-        obj->objAnim.localPosZ = obj->objAnim.velocityZ * timeDelta + obj->objAnim.localPosZ;
-        if (((state->flags & LFXEMITTER_FLAG_DAMP_Y_VELOCITY) != 0) && (obj->objAnim.velocityY > -15.0f))
-        {
-            obj->objAnim.velocityY = -0.01f * timeDelta + obj->objAnim.velocityY;
+        obj->anim.localPosX = state->curve.posX;
+        obj->anim.localPosY = state->curve.posY;
+        obj->anim.localPosZ = state->curve.posZ;
+    } else {
+        obj->anim.localPosX = obj->anim.velocityX * timeDelta + obj->anim.localPosX;
+        obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+        obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
+        if (((state->flags & LFXEMITTER_FLAG_DAMP_Y_VELOCITY) != 0) &&
+            (obj->anim.velocityY > LFXEMITTER_FALL_SPEED_LIMIT)) {
+            obj->anim.velocityY = LFXEMITTER_FALL_ACCELERATION * timeDelta + obj->anim.velocityY;
         }
     }
 
-    if ((player != NULL) && ((state->enableBit == -1) || (mainGetBit(state->enableBit) != 0)))
-    {
-        if (state->hasLifeTimer != 0)
-        {
+    if ((player != NULL) &&
+        ((state->enableGameBit == LFXEMITTER_GAME_BIT_NONE) || (mainGetBit(state->enableGameBit) != 0))) {
+        if (state->lifeTimerActive != 0) {
             state->lifeTimer -= framesThisStep;
-            if (state->lifeTimer <= 0)
-            {
-                Obj_FreeObject((GameObject*)obj);
+            if (state->lifeTimer <= 0) {
+                Obj_FreeObject(obj);
                 return;
             }
         }
-        if (state->configLoaded == 0)
-        {
-            if ((state != NULL) && (state->configIndex == (gLfxEmitterConfigCache.recordCount - 1)))
-            {
-                state->config = mmAlloc(LFXEMITTER_CONFIG_BYTES, 0x12, 0);
-                if (state->config != NULL)
-                {
-                    lfxemitter_copyConfig(&gLfxEmitterConfigCache, state->config);
+        if (state->lightActionLoaded == 0) {
+            if ((state != NULL) && (state->actionIndex == (gLFXEmitterLightActionCache.oneBasedIndex - 1))) {
+                state->lightAction = mmAlloc(sizeof(LFXEmitterLightAction), LFXEMITTER_LIGHT_ACTION_HEAP, 0);
+                if (state->lightAction != NULL) {
+                    LFXEmitter_copyLightAction(&gLFXEmitterLightActionCache, state->lightAction);
+                }
+            } else {
+                state->lightAction = mmAlloc(sizeof(LFXEmitterLightAction), LFXEMITTER_LIGHT_ACTION_HEAP, 0);
+                getTabEntry(state->lightAction, MLDF_FILEID_LACTIONS_BIN,
+                            state->actionIndex * sizeof(LFXEmitterLightAction), sizeof(LFXEmitterLightAction));
+                if (state->lightAction != NULL) {
+                    LFXEmitter_copyLightAction(state->lightAction, &gLFXEmitterLightActionCache);
                 }
             }
-            else
-            {
-                state->config = mmAlloc(LFXEMITTER_CONFIG_BYTES, 0x12, 0);
-                getTabEntry(state->config, MLDF_FILEID_LACTIONS_BIN, state->configIndex * LFXEMITTER_CONFIG_BYTES,
-                            LFXEMITTER_CONFIG_BYTES);
-                if (state->config != NULL)
-                {
-                    lfxemitter_copyConfig(state->config, &gLfxEmitterConfigCache);
-                }
-            }
-            state->configLoaded = 1;
+            state->lightActionLoaded = 1;
         }
     }
 }
 
-void lfxemitter_init(LfxEmitterObject* obj, LfxEmitterPlacement* setup)
-{
-    LfxEmitterState* state;
+void LFXEmitter_init(GameObject* obj, LFXEmitterPlacement* placement) {
+    LFXEmitterState* state;
     int curveFlags;
 
-    state = obj->state;
+    state = obj->extra;
     curveFlags = 0x21;
-    obj->objAnim.rootMotionScale = 2.0f * obj->objAnim.modelInstance->rootMotionScaleBase;
+    obj->anim.rootMotionScale = LFXEMITTER_ROOT_MOTION_SCALE * obj->anim.modelInstance->rootMotionScaleBase;
 
-    state->configIndex = setup->configIndex;
-    state->lifeTimer = setup->lifeTimer;
+    state->actionIndex = placement->actionIndex;
+    state->lifeTimer = placement->lifeTimer;
     state->unk114 = -2;
-    state->enableBit = setup->enableBit;
-    state->spinRoll = setup->spinRoll;
-    state->spinPitch = setup->spinPitch;
-    state->spinYaw = setup->spinYaw;
-    obj->objAnim.localPosX = setup->base.posX;
-    obj->objAnim.localPosY = setup->base.posY;
-    obj->objAnim.localPosZ = setup->base.posZ;
+    state->enableGameBit = placement->enableGameBit;
+    state->spinRoll = placement->spinRoll;
+    state->spinPitch = placement->spinPitch;
+    state->spinYaw = placement->spinYaw;
+    obj->anim.localPosX = placement->base.posX;
+    obj->anim.localPosY = placement->base.posY;
+    obj->anim.localPosZ = placement->base.posZ;
 
-    if (state->lifeTimer != 0)
-    {
-        state->hasLifeTimer = 1;
-    }
-    else
-    {
-        state->hasLifeTimer = 0;
+    if (state->lifeTimer != 0) {
+        state->lifeTimerActive = 1;
+    } else {
+        state->lifeTimerActive = 0;
     }
 
-    if (setup->followCurve != 0)
-    {
-        state->flags = state->flags | LFXEMITTER_FLAG_FOLLOW_CURVE;
-        state->curveSpeed = setup->curveSpeed / 10.0f;
-        (*gRomCurveInterface)->initCurve(&state->curve, obj, 1000.0f, &curveFlags, -1);
+    if (placement->followCurve != 0) {
+        state->flags |= LFXEMITTER_FLAG_FOLLOW_CURVE;
+        state->curveSpeed = placement->curveSpeed / LFXEMITTER_CURVE_SPEED_SCALE;
+        (*gRomCurveInterface)
+            ->initCurve(&state->curve, obj, LFXEMITTER_CURVE_SEARCH_RANGE, &curveFlags, LFXEMITTER_GAME_BIT_NONE);
     }
-    ObjGroup_AddObject((int)obj, LFXEMITTER_OBJ_GROUP);
+    ObjGroup_AddObject((int)obj, LFXEMITTER_OBJECT_GROUP);
 }
 
-void lfxemitter_release(void)
-{
+void LFXEmitter_release(void) {
 }
 
-void lfxemitter_initialise(void)
-{
-    gLfxEmitterConfigCache.recordCount = 10000;
+void LFXEmitter_initialise(void) {
+    gLFXEmitterLightActionCache.oneBasedIndex = LFXEMITTER_CACHE_INDEX_INVALID;
 }
 
 ObjectDescriptor12 gLFXEmitterObjDescriptor = {
@@ -213,16 +248,16 @@ ObjectDescriptor12 gLFXEmitterObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
-    (ObjectDescriptorCallback)lfxemitter_initialise,
-    (ObjectDescriptorCallback)lfxemitter_release,
+    (ObjectDescriptorCallback)LFXEmitter_initialise,
+    (ObjectDescriptorCallback)LFXEmitter_release,
     0,
-    (ObjectDescriptorCallback)lfxemitter_init,
-    (ObjectDescriptorCallback)lfxemitter_update,
-    (ObjectDescriptorCallback)lfxemitter_hitDetect,
-    (ObjectDescriptorCallback)lfxemitter_render,
-    (ObjectDescriptorCallback)lfxemitter_free,
-    (ObjectDescriptorCallback)lfxemitter_getObjectTypeId,
-    lfxemitter_getExtraSize,
-    (ObjectDescriptorCallback)lfxemitter_setScale,
-    (ObjectDescriptorCallback)lfxemitter_isConfigLoaded,
+    (ObjectDescriptorCallback)LFXEmitter_init,
+    (ObjectDescriptorCallback)LFXEmitter_update,
+    (ObjectDescriptorCallback)LFXEmitter_hitDetect,
+    (ObjectDescriptorCallback)LFXEmitter_render,
+    (ObjectDescriptorCallback)LFXEmitter_free,
+    (ObjectDescriptorCallback)LFXEmitter_getObjectTypeId,
+    LFXEmitter_getExtraSize,
+    (ObjectDescriptorCallback)LFXEmitter_setScale,
+    (ObjectDescriptorCallback)LFXEmitter_isLightActionLoaded,
 };

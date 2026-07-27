@@ -3,13 +3,11 @@
 
 #include "ghidra_import.h"
 #include "game/objects/object.h"
-#include "main/dll/curve_walker.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
 extern ObjectDescriptor gAreaFXEmitObjDescriptor;
-extern ObjectDescriptor12 gLFXEmitterObjDescriptor;
 
 #define AREAFXEMIT_DLL_ID                    0x0130
 #define AREAFXEMIT_CLASS_ID                  0x0067
@@ -23,20 +21,8 @@ extern ObjectDescriptor12 gLFXEmitterObjDescriptor;
 #define AREAFXEMIT_SPAWN_OBJECT_RESOURCE_ALT 2
 #define AREAFXEMIT_SPAWN_LOCAL_OBJECT        3
 #define AREAFXEMIT_APPROACH_BURST_COUNT      0x23
-#define LFXEMITTER_DLL_ID                    0x012D
-#define LFXEMITTER_CLASS_ID                  0x0060
-#define LFXEMITTER_DEF_ID                    0x04B0
-#define LFXEMITTER_OBJECT_DEF_BYTES          0xA0
-#define LFXEMITTER_PLACEMENT_BYTES           0x28
-#define LFXEMITTER_EXTRA_STATE_BYTES         0x124
-#define LFXEMITTER_CURVE_RECORD_BYTES        0x108
-#define LFXEMITTER_CONFIG_BYTES              0x28
-#define LFXEMITTER_OBJ_GROUP                 0x1C
-#define LFXEMITTER_FLAG_FOLLOW_CURVE         1
-#define LFXEMITTER_FLAG_DAMP_Y_VELOCITY      2
 
 typedef struct AreaFxEmitObject AreaFxEmitObject;
-typedef struct LfxEmitterObject LfxEmitterObject;
 typedef int (*AreaFxEmitSeqCallback)(AreaFxEmitObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 
 typedef struct AreaFxEmitPlacement
@@ -118,111 +104,8 @@ STATIC_ASSERT(offsetof(AreaFxEmitObject, state) == 0xB8);
 STATIC_ASSERT(offsetof(AreaFxEmitObject, seqCallback) == 0xBC);
 STATIC_ASSERT(offsetof(AreaFxEmitObject, emitCooldown) == 0xF4);
 
-/*
- * 0x28-byte lfxemitter spawn config record (the shared config cache / mmAlloc
- * copy format produced by lfxemitter_copyConfig). spawnType
- * selects between the gPartfxInterface spawn paths and the FUN_80006b14
- * effect-bank paths; the rangeX/Y/Z fields seed randomGetRange jitter and
- * posBlock* feed FUN_80017748.
- */
-typedef struct LfxEmitterConfig
-{
-    u8 pad00[0x08];
-    u8 spawnType;
-    u8 pad09;
-    u16 effectId;
-    s16 spawnCount;
-    u16 recordCount; /* count of loaded config records (lfxemitter_initialise seeds 10000) */
-    u8 pad10[0x14 - 0x10];
-    u16 rangeX;
-    u16 rangeZ;
-    u16 rangeY;
-    u16 posBlock0;
-    u16 posBlock1;
-    s16 posBlock2;
-    u8 pad20[0x28 - 0x20];
-} LfxEmitterConfig;
-
-STATIC_ASSERT(sizeof(LfxEmitterConfig) == LFXEMITTER_CONFIG_BYTES);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, spawnType) == 0x08);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, effectId) == 0x0A);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, spawnCount) == 0x0C);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, recordCount) == 0x0E);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, rangeX) == 0x14);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, rangeZ) == 0x16);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, rangeY) == 0x18);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, posBlock0) == 0x1A);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, posBlock1) == 0x1C);
-STATIC_ASSERT(offsetof(LfxEmitterConfig, posBlock2) == 0x1E);
-
-typedef struct LfxEmitterPlacement
-{
-    ObjPlacement base;
-    s16 spinRoll;
-    s16 spinPitch;
-    s16 spinYaw;
-    s16 configIndex;
-    s16 lifeTimer;
-    s16 enableBit;
-    u8 followCurve;
-    s8 curveSpeed;
-    u8 pad26[2];
-} LfxEmitterPlacement;
-
-/*
- * Per-object extra state for the lfxemitter curve-following emitter
- * (lfxemitter_getExtraSize == 0x124). The leading 0x108 bytes are the
- * rom-curve walker record handed to Curve_AdvanceAlongPath / gRomCurveInterface.
- */
-typedef struct LfxEmitterState
-{
-    RomCurveWalker curve;
-    LfxEmitterConfig* config; /* allocated copy of the shared config format */
-    f32 curveSpeed;  /* placement curveSpeed / lbl_803E3E84 */
-    s16 lifeTimer;   /* frames until Obj_FreeObject when armed */
-    s16 configIndex; /* tab entry index */
-    s16 unk114;      /* -2 at init */
-    s16 enableBit;   /* gamebit gate, -1 = always on */
-    s16 spinRoll;
-    s16 spinPitch;
-    s16 spinYaw;
-    u8 hasLifeTimer;
-    u8 configLoaded;
-    u8 flags; /* LFXEMITTER_FLAG_* */
-    u8 pad121[3];
-} LfxEmitterState;
-
-struct LfxEmitterObject
-{
-    ObjAnimComponent objAnim;
-    u16 objectFlags;
-    u8 padB2[0xB8 - 0xB2];
-    LfxEmitterState* state;
-};
-
-STATIC_ASSERT(sizeof(LfxEmitterPlacement) == LFXEMITTER_PLACEMENT_BYTES);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, base.posX) == 0x08);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, spinRoll) == 0x18);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, spinPitch) == 0x1A);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, spinYaw) == 0x1C);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, configIndex) == 0x1E);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, lifeTimer) == 0x20);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, enableBit) == 0x22);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, followCurve) == 0x24);
-STATIC_ASSERT(offsetof(LfxEmitterPlacement, curveSpeed) == 0x25);
-STATIC_ASSERT(sizeof(LfxEmitterState) == LFXEMITTER_EXTRA_STATE_BYTES);
-STATIC_ASSERT(offsetof(LfxEmitterState, curve) == 0x00);
-STATIC_ASSERT(offsetof(LfxEmitterState, curve.atSegmentEnd) == 0x10);
-STATIC_ASSERT(offsetof(LfxEmitterState, curve.posX) == 0x68);
-STATIC_ASSERT(offsetof(LfxEmitterState, config) == 0x108);
-STATIC_ASSERT(offsetof(LfxEmitterState, curveSpeed) == 0x10C);
-STATIC_ASSERT(offsetof(LfxEmitterState, flags) == 0x120);
-STATIC_ASSERT(offsetof(LfxEmitterObject, objAnim) == 0x00);
-STATIC_ASSERT(offsetof(LfxEmitterObject, state) == 0xB8);
-
 void areafxemit_emitBurst(AreaFxEmitObject* obj, int count);
 void areafxemit_emitEffect(AreaFxEmitObject* obj);
-void lfxemitter_copyConfig(const LfxEmitterConfig* srcConfig, LfxEmitterConfig* dstConfig);
 
 int AreaFxEmit_getExtraSize(void);
 int AreaFxEmit_getObjectTypeId(void);
@@ -233,17 +116,5 @@ void AreaFxEmit_update(AreaFxEmitObject* obj);
 void AreaFxEmit_init(AreaFxEmitObject* obj, AreaFxEmitPlacement* setup);
 void AreaFxEmit_release(void);
 void AreaFxEmit_initialise(void);
-
-int lfxemitter_isConfigLoaded(LfxEmitterObject* obj);
-int lfxemitter_setScale(void);
-int lfxemitter_getExtraSize(void);
-int lfxemitter_getObjectTypeId(void);
-void lfxemitter_free(LfxEmitterObject* obj);
-void lfxemitter_render(void);
-void lfxemitter_hitDetect(void);
-void lfxemitter_update(LfxEmitterObject* obj);
-void lfxemitter_init(LfxEmitterObject* obj, LfxEmitterPlacement* setup);
-void lfxemitter_release(void);
-void lfxemitter_initialise(void);
 
 #endif /* MAIN_DLL_CF_CFCHUCKOBJ_H_ */

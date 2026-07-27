@@ -137,6 +137,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   TU. If a helper is called only with another object's larger state and accesses beyond the owner's
   `getExtraSize`, model the owning state and the cross-object helper overlay as separate types,
   assert both layouts, and keep the cast explicit at the reuse boundary.
+- When retail code provably reads or writes past an allocation or object boundary, preserve and
+  document the exact access without enlarging the owning type to make the bug appear in bounds.
+  Keep the allocation-backed size assertion, use an explicit byte access for the overrun, and audit
+  adjacent data ownership so the source records what is actually clobbered.
 - When two proven consumers interpret the same shared placement byte with different signedness and
   both views are codegen-significant, model explicit union views at the shared offset. Do not force
   one canonical signedness and scatter casts; assert both offsets and rebuild every consumer.

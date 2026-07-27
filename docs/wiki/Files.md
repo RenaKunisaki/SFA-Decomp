@@ -40,6 +40,7 @@ Excludes the map-specific files above.
 | ENVFXACT.bin | 98304 | (none) | - | Defines weather effects |
 | globalma.bin | 768 | (none) | - | Defines the global coordinates of each map |
 | HITS.bin | 392544 | HITS.tab | 6400 | related to map hit detection |
+| LACTIONS.bin | 40960 | (none) | - | 1024 fixed 0x28-byte light-action records used by LFXEmitter |
 | MAPINFO.bin | 3744 | (none) | - | name, type, params for each map - [Map List](MapList) - mostly unused in final version |
 | MAPS.bin | 111648 | MAPS.tab | 3296 | Defines the blocks that make up each map |
 | MODANIM.BIN | 11232 | MODANIM.TAB | 2528 | ? related to [Animation](Animation) |
@@ -93,7 +94,6 @@ Only quick testing, so some of these might be used somewhere.
 | FONTS.bin | 22432 | presumably font graphics; named inside; similar format to Diddy Kong Racing |
 | GAMETEXT.bin | 69376 | Old version of gametext, has unused dialogue |
 | GAMETEXT.tab | 20672 | |
-| LACTIONS.bin | 40960 | Some functions read from this, but do nothing with the data; 0x28-byte entries, related to lights |
 | SAVEGAME.bin | 6144 | vaguely similar to an actual savegame file |
 | SAVEGAME.tab | 32 | |
 | SCREENS.bin | 307232 | contains two unused images - loaded but not used |
@@ -278,7 +278,7 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 | FONTS.bin | 0x10 | table slot only | not found - consistent with wiki's "read but not used" |
 | CACHEFON.bin | 0x11 and 0x12 | table slot only (both slots point at the *same* string, `"CACHEFON.bin"`) | the wiki lists two distinct always-empty files, `CACHEFONTSTAB.bin`/`CACHEFONTSTEX.bin`; our decompiled string is `CACHEFON.bin` (singular, no TAB/TEX suffix) for both slots - possibly a truncation or a genuinely different filename; not resolved here |
 | GAMETEXT.bin/tab | 0x13/0x14 | table slot only | this is the wiki's *old, unused, root-only* copy; the actually-used per-map/per-sequence text lives under the `gametext/` directory and is loaded by `src/main/textrender.c` via `sGameTextMapPathFormat = "gametext/%s/%s.bin"` and `sGameTextSequencePathFormat = "gametext/Sequences/%d_%s.bin"` - two separate mechanisms, consistent with the wiki's root-vs-directory distinction |
-| LACTIONS.bin | 0x0c | table slot only | not found; wiki's "0x28-byte entries, related to lights" not independently re-verified here |
+| LACTIONS.bin | 0x0c | `src/dlls/objects/301_LFXEmitter/LFXEmitter.c` | **actively used**: fixed 0x28-byte light-action rows are loaded by placement-selected index and cached; populated rows carry their one-based row index at +0x0E |
 | SAVEGAME.bin/tab | 0x39/0x3a | table slot only in `pi_dolphin.c` | `src/xref/packets/savegame.json` records a distinct path format string `"/savegame/save%d.bin"` (one function, not yet located/named) - consistent with wiki's "debug chapter select" guess |
 | SCREENS.bin/tab | 0x18/0x19 | table slot only | not found |
 | DLLS.bin/tab, DLLSIMPO.bin | 0x42/0x43/0x44 | table slots only | these are **not** the same file as the wiki's "Never accessed" root `DLLS.tab` (32 bytes / 4 entries, listed as an N64 leftover) - no direct evidence connects the two. Separately, the wiki's leftover entries **0x58 and 0xAB do exist** in this codebase as literal do-nothing DLL stubs: `src/main/dll/dll_0058_dummy58.c` ("a placeholder/no-op object DLL... exists to occupy its DLL id slot") and `src/main/dll/dll_00AB_projdummy.c` ("retired projectile object... no behaviour left"). DLL id `0xC3` was not found as a separate source file here |
