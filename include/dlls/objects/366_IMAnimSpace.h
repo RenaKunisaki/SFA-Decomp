@@ -20,13 +20,11 @@ STATIC_ASSERT(sizeof(IMAnimSpaceState) == 0x04);
 void imAnimSpace_modelMtxCallback(void);
 u32 imAnimSpace_getEventFlag(GameObject* obj);
 int imAnimSpace_setScale(GameObject* obj, int bitIndex);
-int imAnimSpace_sequenceCallback(
-    GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
 int imAnimSpace_getExtraSize(void);
 int imAnimSpace_getObjectTypeId(void);
 void imAnimSpace_free(GameObject* obj);
-void imAnimSpace_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void imAnimSpace_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void imAnimSpace_hitDetect(void);
 void imAnimSpace_update(GameObject* obj);
 void imAnimSpace_init(GameObject* obj);

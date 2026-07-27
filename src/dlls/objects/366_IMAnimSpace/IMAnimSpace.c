@@ -57,8 +57,7 @@ ObjectDescriptor13 gIMAnimSpaceObjDescriptor = {
     (ObjectDescriptorCallback)imAnimSpace_modelMtxCallback,
 };
 
-int imAnimSpace_sequenceCallback(
-    GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
     IMAnimSpaceState* state;
     int eventIndex;
     ObjTextureRuntimeSlot* texture;
@@ -78,15 +77,11 @@ int imAnimSpace_sequenceCallback(
         gIMAnimSpacePartFxParams.posX = 143.0f;
         gIMAnimSpacePartFxParams.posY = 16.0f;
         gIMAnimSpacePartFxParams.posZ = -79.0f;
-        (*gPartfxInterface)
-            ->spawnObject(
-                obj, IM_ANIM_SPACE_PARTFX_ID, &gIMAnimSpacePartFxParams, 4, -1, NULL);
+        (*gPartfxInterface)->spawnObject(obj, IM_ANIM_SPACE_PARTFX_ID, &gIMAnimSpacePartFxParams, 4, -1, NULL);
         gIMAnimSpacePartFxParams.posX = -143.0f;
         gIMAnimSpacePartFxParams.posY = 16.0f;
         gIMAnimSpacePartFxParams.posZ = -79.0f;
-        (*gPartfxInterface)
-            ->spawnObject(
-                obj, IM_ANIM_SPACE_PARTFX_ID, &gIMAnimSpacePartFxParams, 4, -1, NULL);
+        (*gPartfxInterface)->spawnObject(obj, IM_ANIM_SPACE_PARTFX_ID, &gIMAnimSpacePartFxParams, 4, -1, NULL);
     }
     texture = objFindTexture(obj, 0, 0);
     texture->textureId = 0x100;
@@ -132,11 +127,9 @@ void imAnimSpace_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void imAnimSpace_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void imAnimSpace_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     if (visible != 0) {
-        objRenderModelAndHitVolumes(
-            obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
