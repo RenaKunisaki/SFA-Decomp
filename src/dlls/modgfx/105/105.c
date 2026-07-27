@@ -3,8 +3,7 @@
  *
  * dll_69_func03 builds a stack list of GfxCmd records describing a layered
  * 2D/billboard effect and submits it through gModgfxInterface->spawnEffect.
- * The layout is read from the shared resource at lbl_803137F8; the constant
- * vector pool lbl_803E0A00.. supplies the per-entry positions/scales.
+ * The layout is read from the shared resource at lbl_803137F8.
  *   - variant selects the effect group passed to spawnEffect (0xc11 for
  *     variant 2, else 0x5e0) and toggles command-list flag 0x40000.
  *   - overrideParams (a/b/c/d) override the default layer-1/4 colour words.
@@ -24,7 +23,6 @@
 #define DLL69_CMDLIST_FLAG_TOGGLE 0x40000
 
 extern u8 lbl_803137F8[];
-extern f32 lbl_803E0A00, lbl_803E0A04, lbl_803E0A08, lbl_803E0A0C, lbl_803E0A10, lbl_803E0A14, lbl_803E0A18;
 
 s16 dll_69_func03(GameObject* sourceObj, int variant, void* posSource, u32 flags, int unused,
                   Dll69EffectParams* overrideParams)
@@ -49,46 +47,46 @@ s16 dll_69_func03(GameObject* sourceObj, int variant, void* posSource, u32 flags
     entries[0].flags = 8;
     entries[0].tex = &base[0x68];
     entries[0].mode = 4;
-    entries[0].x = lbl_803E0A00;
-    entries[0].y = lbl_803E0A00;
-    entries[0].z = lbl_803E0A00;
+    entries[0].x = 0.0f;
+    entries[0].y = 0.0f;
+    entries[0].z = 0.0f;
     entries[1].layer = 0;
     entries[1].flags = 8;
     entries[1].tex = &base[0x68];
     entries[1].mode = 2;
     if (sourceObj != NULL)
     {
-        entries[1].x = lbl_803E0A04 * sourceObj->anim.rootMotionScale;
-        entries[1].y = lbl_803E0A08 * sourceObj->anim.rootMotionScale;
-        entries[1].z = lbl_803E0A04 * sourceObj->anim.rootMotionScale;
+        entries[1].x = 7.0f * sourceObj->anim.rootMotionScale;
+        entries[1].y = 6.0f * sourceObj->anim.rootMotionScale;
+        entries[1].z = 7.0f * sourceObj->anim.rootMotionScale;
     }
     else
     {
-        entries[1].x = lbl_803E0A04;
-        entries[1].y = lbl_803E0A08;
-        entries[1].z = lbl_803E0A04;
+        entries[1].x = 7.0f;
+        entries[1].y = 6.0f;
+        entries[1].z = 7.0f;
     }
     entries[2].layer = 0;
     entries[2].flags = 0;
     entries[2].tex = NULL;
     entries[2].mode = 0x80;
-    entries[2].x = lbl_803E0A00;
-    entries[2].y = lbl_803E0A00;
+    entries[2].x = 0.0f;
+    entries[2].y = 0.0f;
     if (sourceObj != NULL)
     {
         entries[2].z = (f32) * (s16*)sourceObj;
     }
     else
     {
-        entries[2].z = lbl_803E0A00;
+        entries[2].z = 0.0f;
     }
     entries[3].layer = 1;
     entries[3].flags = 8;
     entries[3].tex = &base[0x68];
     entries[3].mode = 4;
-    entries[3].x = lbl_803E0A0C;
-    entries[3].y = lbl_803E0A00;
-    entries[3].z = lbl_803E0A00;
+    entries[3].x = 255.0f;
+    entries[3].y = 0.0f;
+    entries[3].z = 0.0f;
     entries[4].layer = 1;
     entries[4].flags = d;
     entries[4].tex = NULL;
@@ -103,32 +101,32 @@ s16 dll_69_func03(GameObject* sourceObj, int variant, void* posSource, u32 flags
         e->flags = 0x3b;
         e->tex = NULL;
         e->mode = 0x1800000;
-        e->x = lbl_803E0A10;
-        e->y = lbl_803E0A00;
-        e->z = lbl_803E0A14;
+        e->x = 1.0f;
+        e->y = 0.0f;
+        e->z = 10.0f;
         e++;
     }
     e[0].layer = 2;
     e[0].flags = 0;
     e[0].tex = NULL;
     e[0].mode = 0x100;
-    e[0].x = lbl_803E0A00;
-    e[0].y = lbl_803E0A00;
-    e[0].z = lbl_803E0A18;
+    e[0].x = 0.0f;
+    e[0].y = 0.0f;
+    e[0].z = 50.0f;
     e[1].layer = 3;
     e[1].flags = 1;
     e[1].tex = NULL;
     e[1].mode = 0x2000;
-    e[1].x = lbl_803E0A00;
-    e[1].y = lbl_803E0A00;
-    e[1].z = lbl_803E0A00;
+    e[1].x = 0.0f;
+    e[1].y = 0.0f;
+    e[1].z = 0.0f;
     e[2].layer = 4;
     e[2].flags = 8;
     e[2].tex = &base[0x68];
     e[2].mode = 4;
-    e[2].x = lbl_803E0A00;
-    e[2].y = lbl_803E0A00;
-    e[2].z = lbl_803E0A00;
+    e[2].x = 0.0f;
+    e[2].y = 0.0f;
+    e[2].z = 0.0f;
     e[3].layer = 4;
     e[3].flags = 0;
     e[3].tex = NULL;
@@ -139,20 +137,20 @@ s16 dll_69_func03(GameObject* sourceObj, int variant, void* posSource, u32 flags
     buf.v58 = variant;
     buf.ctx = (u8*)sourceObj;
     buf.v44 = variant;
-    buf.pos[0] = lbl_803E0A00;
+    buf.pos[0] = 0.0f;
     if (posSource != NULL)
     {
         buf.pos[1] = ((PartFxSpawnParams*)posSource)->posY;
     }
     else
     {
-        buf.pos[1] = lbl_803E0A00;
+        buf.pos[1] = 0.0f;
     }
-    buf.pos[2] = *(f32*)&lbl_803E0A00;
-    buf.col[0] = *(f32*)&lbl_803E0A00;
-    buf.col[1] = *(f32*)&lbl_803E0A00;
-    buf.col[2] = *(f32*)&lbl_803E0A00;
-    buf.scale = lbl_803E0A10;
+    buf.pos[2] = 0.0f;
+    buf.col[0] = 0.0f;
+    buf.col[1] = 0.0f;
+    buf.col[2] = 0.0f;
+    buf.scale = 1.0f;
     buf.v40 = 1;
     buf.v3c = 0;
     buf.v59 = 8;

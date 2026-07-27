@@ -624,10 +624,12 @@ dlls/modgfx/91/91.c:
 dlls/modgfx/92/92.c:
 	.text       start:0x800EC7BC end:0x800ECAE0
 	.data       start:0x80311F20 end:0x80312130
+	.sdata2     start:0x803E0760 end:0x803E0790
 
 dlls/modgfx/93/93.c:
 	.text       start:0x800ECAE0 end:0x800ECE04
 	.data       start:0x80312130 end:0x80312340
+	.sdata2     start:0x803E0790 end:0x803E07C0
 
 dlls/modgfx/94/94.c:
 	.text       start:0x800ECE04 end:0x800ED294
@@ -649,7 +651,7 @@ dlls/modgfx/97/97.c:
 
 dlls/modgfx/98/98.c:
 	.text       start:0x800EDE74 end:0x800EE25C
-	.sdata2     start:0x803E08C0 end:0x803E08C8
+	.sdata2     start:0x803E0898 end:0x803E08C8
 
 dlls/modgfx/99/99.c:
 	.text       start:0x800EE25C end:0x800EE8FC
@@ -669,23 +671,26 @@ dlls/modgfx/163/163.c:
 
 dlls/modgfx/102/102.c:
 	.text       start:0x800EF3A0 end:0x800EF7B4
+	.sdata2     start:0x803E0990 end:0x803E09C4
 
 dlls/modgfx/103/103.c:
 	.text       start:0x800EF7B4 end:0x800EFA30
+	.sdata2     start:0x803E09C8 end:0x803E09E0
 
 dlls/modgfx/104/104.c:
 	.text       start:0x800EFA30 end:0x800EFD34
+	.sdata2     start:0x803E09E0 end:0x803E09FC
 
 main/dll/dll_0058_dummy58.c:
 	.text       start:0x800EFD34 end:0x800EFD44
 
 dlls/modgfx/105/105.c:
 	.text       start:0x800EFD44 end:0x800F022C
-	.sdata2     start:0x803E0A20 end:0x803E0A28
+	.sdata2     start:0x803E0A00 end:0x803E0A28
 
 dlls/modgfx/106/106.c:
 	.text       start:0x800F022C end:0x800F058C
-	.sdata2     start:0x803E0A50 end:0x803E0A58
+	.sdata2     start:0x803E0A28 end:0x803E0A58
 
 dlls/modgfx/107/107.c:
 	.text       start:0x800F058C end:0x800F07DC

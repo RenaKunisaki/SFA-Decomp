@@ -4,8 +4,7 @@
  * Real exports (per the DLL's .text):
  *   dll_68_func00_nop / dll_68_func01_nop - empty entry-point stubs.
  *   dll_68_func03 - builds an 11-command Modgfx effect command list on the
- *     stack (textures/half-words sourced from lbl_803135C8, colours/positions
- *     from the lbl_803E09xx float pool) and submits it via
+ *     stack (textures/half-words sourced from lbl_803135C8) and submits it via
  *     gModgfxInterface->spawnEffect. When the caller's flags bit 0 is set the
  *     effect is positioned from the source object (offset 0x18..0x20) or, if
  *     none, from the PartFxSpawnParams pos fields.
@@ -13,9 +12,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
-#include "main/mapEventTypes.h"
-#include "main/dll/modgfx.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0068_dll68func0.h"
 
@@ -23,13 +19,6 @@
 #define DLL68_EFFECT_ID 0x41
 
 extern u8 lbl_803135C8[];
-extern f32 lbl_803E09E0;
-extern f32 lbl_803E09E4;
-extern f32 lbl_803E09E8;
-extern f32 lbl_803E09EC;
-extern f32 lbl_803E09F0;
-extern f32 lbl_803E09F4;
-extern f32 lbl_803E09F8;
 
 void dll_68_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
@@ -40,90 +29,90 @@ void dll_68_func03(int sourceObj, int variant, int posSource, u32 flags)
     buf.entries[0].flags = 0x15;
     buf.entries[0].tex = &base[432];
     buf.entries[0].mode = 4;
-    buf.entries[0].x = lbl_803E09E0;
-    buf.entries[0].y = lbl_803E09E0;
-    buf.entries[0].z = lbl_803E09E0;
+    buf.entries[0].x = 0.0f;
+    buf.entries[0].y = 0.0f;
+    buf.entries[0].z = 0.0f;
     buf.entries[1].layer = 0;
     buf.entries[1].flags = 0x15;
     buf.entries[1].tex = &base[432];
     buf.entries[1].mode = 2;
-    buf.entries[1].x = lbl_803E09E4;
-    buf.entries[1].y = (*(f32*)&lbl_803E09E8);
-    buf.entries[1].z = lbl_803E09E4;
+    buf.entries[1].x = 2.1f;
+    buf.entries[1].y = 2.0f;
+    buf.entries[1].z = 2.1f;
     buf.entries[2].layer = 1;
     buf.entries[2].flags = 7;
     buf.entries[2].tex = &base[356];
     buf.entries[2].mode = 2;
-    buf.entries[2].x = (*(f32*)&lbl_803E09E8);
-    buf.entries[2].y = (*(f32*)&lbl_803E09EC);
-    buf.entries[2].z = (*(f32*)&lbl_803E09E8);
+    buf.entries[2].x = 2.0f;
+    buf.entries[2].y = 1.0f;
+    buf.entries[2].z = 2.0f;
     buf.entries[3].layer = 1;
     buf.entries[3].flags = 7;
     buf.entries[3].tex = &base[372];
     buf.entries[3].mode = 4;
-    buf.entries[3].x = lbl_803E09F0;
-    buf.entries[3].y = lbl_803E09E0;
-    buf.entries[3].z = lbl_803E09E0;
+    buf.entries[3].x = 255.0f;
+    buf.entries[3].y = 0.0f;
+    buf.entries[3].z = 0.0f;
     buf.entries[4].layer = 1;
     buf.entries[4].flags = 0x15;
     buf.entries[4].tex = &base[432];
     buf.entries[4].mode = 0x4000;
-    buf.entries[4].x = lbl_803E09E0;
-    buf.entries[4].y = (*(f32*)&lbl_803E09F4);
-    buf.entries[4].z = lbl_803E09E0;
+    buf.entries[4].x = 0.0f;
+    buf.entries[4].y = -2.0f;
+    buf.entries[4].z = 0.0f;
     buf.entries[5].layer = 1;
     buf.entries[5].flags = 0;
     buf.entries[5].tex = 0;
     buf.entries[5].mode = 0x100;
-    buf.entries[5].x = lbl_803E09E0;
-    buf.entries[5].y = lbl_803E09E0;
-    buf.entries[5].z = (*(f32*)&lbl_803E09F8);
+    buf.entries[5].x = 0.0f;
+    buf.entries[5].y = 0.0f;
+    buf.entries[5].z = 150.0f;
     buf.entries[6].layer = 2;
     buf.entries[6].flags = 0x15;
     buf.entries[6].tex = &base[432];
     buf.entries[6].mode = 0x4000;
-    buf.entries[6].x = lbl_803E09E0;
-    buf.entries[6].y = (*(f32*)&lbl_803E09F4);
-    buf.entries[6].z = lbl_803E09E0;
+    buf.entries[6].x = 0.0f;
+    buf.entries[6].y = -2.0f;
+    buf.entries[6].z = 0.0f;
     buf.entries[7].layer = 2;
     buf.entries[7].flags = 0;
     buf.entries[7].tex = 0;
     buf.entries[7].mode = 0x100;
-    buf.entries[7].x = lbl_803E09E0;
-    buf.entries[7].y = lbl_803E09E0;
-    buf.entries[7].z = (*(f32*)&lbl_803E09F8);
+    buf.entries[7].x = 0.0f;
+    buf.entries[7].y = 0.0f;
+    buf.entries[7].z = 150.0f;
     buf.entries[8].layer = 3;
     buf.entries[8].flags = 7;
     buf.entries[8].tex = &base[372];
     buf.entries[8].mode = 4;
-    buf.entries[8].x = lbl_803E09E0;
-    buf.entries[8].y = lbl_803E09E0;
-    buf.entries[8].z = lbl_803E09E0;
+    buf.entries[8].x = 0.0f;
+    buf.entries[8].y = 0.0f;
+    buf.entries[8].z = 0.0f;
     buf.entries[9].layer = 3;
     buf.entries[9].flags = 0x15;
     buf.entries[9].tex = &base[432];
     buf.entries[9].mode = 0x4000;
-    buf.entries[9].x = lbl_803E09E0;
-    buf.entries[9].y = (*(f32*)&lbl_803E09F4);
-    buf.entries[9].z = lbl_803E09E0;
+    buf.entries[9].x = 0.0f;
+    buf.entries[9].y = -2.0f;
+    buf.entries[9].z = 0.0f;
     buf.entries[10].layer = 3;
     buf.entries[10].flags = 0;
     buf.entries[10].tex = 0;
     buf.entries[10].mode = 0x100;
-    buf.entries[10].x = lbl_803E09E0;
-    buf.entries[10].y = lbl_803E09E0;
-    buf.entries[10].z = (*(f32*)&lbl_803E09F8);
+    buf.entries[10].x = 0.0f;
+    buf.entries[10].y = 0.0f;
+    buf.entries[10].z = 150.0f;
     buf.v58 = 0;
     ctx = sourceObj;
     buf.ctx = ctx;
     buf.v44 = variant;
-    buf.pos[0] = lbl_803E09E0;
-    buf.pos[1] = lbl_803E09E0;
-    buf.pos[2] = lbl_803E09E0;
-    buf.col[0] = lbl_803E09E0;
-    buf.col[1] = lbl_803E09E0;
-    buf.col[2] = lbl_803E09E0;
-    buf.scale = (*(f32*)&lbl_803E09EC);
+    buf.pos[0] = 0.0f;
+    buf.pos[1] = 0.0f;
+    buf.pos[2] = 0.0f;
+    buf.col[0] = 0.0f;
+    buf.col[1] = 0.0f;
+    buf.col[2] = 0.0f;
+    buf.scale = 1.0f;
     buf.v40 = 2;
     buf.v3c = 7;
     buf.v59 = 0xe;
@@ -144,15 +133,15 @@ void dll_68_func03(int sourceObj, int variant, int posSource, u32 flags)
     {
         if (*(void**)&buf.ctx != 0)
         {
-            buf.pos[0] = lbl_803E09E0 + ((GameObject*)(buf.ctx))->anim.worldPosX;
-            buf.pos[1] = lbl_803E09E0 + ((GameObject*)(buf.ctx))->anim.worldPosY;
-            buf.pos[2] = lbl_803E09E0 + ((GameObject*)(buf.ctx))->anim.worldPosZ;
+            buf.pos[0] = ((GameObject*)(buf.ctx))->anim.worldPosX;
+            buf.pos[1] = ((GameObject*)(buf.ctx))->anim.worldPosY;
+            buf.pos[2] = ((GameObject*)(buf.ctx))->anim.worldPosZ;
         }
         else
         {
-            buf.pos[0] = lbl_803E09E0 + ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] = lbl_803E09E0 + ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] = lbl_803E09E0 + ((PartFxSpawnParams*)posSource)->posZ;
+            buf.pos[0] = ((PartFxSpawnParams*)posSource)->posX;
+            buf.pos[1] = ((PartFxSpawnParams*)posSource)->posY;
+            buf.pos[2] = ((PartFxSpawnParams*)posSource)->posZ;
         }
     }
     (*gModgfxInterface)->spawnEffect(&buf, 0, 0x15, (u8*)(int)lbl_803135C8, 0x18, &base[212], DLL68_EFFECT_ID, 0);
