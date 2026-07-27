@@ -33,9 +33,9 @@ void textureSelectAnimationFramePair(void* context, Texture* texture, Texture* f
                                      int unused0, int unused1);
 void Rcp_ResetRenderState(void);
 void textureUpdateAnimationFrame(const Texture* texture, u32* flags, s32* frame);
-void fn_80051868(Texture* texture, f32 (*texMtx)[4], int mode);
-void fn_80051B00(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
-void fn_80051D5C(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
+void addTexLayerStage(Texture* texture, f32 (*texMtx)[4], int mode);
+void addTexLayerStageKColor(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
+void addTexLayerStageKAlpha(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
 void gxFn_80051fb8(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color, u8 swapSelector,
                    u8 useKColor);
 void textureFn_800524ec(struct _GXColor* color);

@@ -1666,7 +1666,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                         colp[3] = color[3];
                         if (shader[0x40] & 0x10)
                         {
-                            fn_80051B00(tex, mtxp, (u8)fl, &gObjCurChanColor);
+                            addTexLayerStageKColor(tex, mtxp, (u8)fl, &gObjCurChanColor);
                         }
                         else
                         {
@@ -1677,7 +1677,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     {
                         if (shader[0x40] & 0x10)
                         {
-                            fn_80051868(tex, mtxp, (u8)fl);
+                            addTexLayerStage(tex, mtxp, (u8)fl);
                             if (color[3] < 0xff)
                             {
                                 gxColorFn_80052764((GXColor*)color);
@@ -1685,7 +1685,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                         }
                         else
                         {
-                            fn_80051D5C(tex, mtxp, (u8)fl, (GXColor*)color);
+                            addTexLayerStageKAlpha(tex, mtxp, (u8)fl, (GXColor*)color);
                         }
                     }
                 }
@@ -1835,7 +1835,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     nlay = lbl_803DCC5C;
     if (gObjShadowNear != 0)
     {
-        fn_8004D230();
+        addShadowFalloffTevStages();
         shad = 1;
         nlay = 0;
     }
@@ -1847,12 +1847,12 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         b4 = b5f & 4;
         if (b4 && (mx = (f32*)((GameObject*)obj)->anim.modelState->shadowCastSlot) != NULL)
         {
-            fn_8005011C((u8*)mx);
+            addCastShadowTevStages((u8*)mx);
             nlay = 0;
         }
         else if (b5f & 0x10)
         {
-            fn_8004D6D8();
+            addWavyCausticTevStage();
             nlay = 0;
         }
         else if (b4 == 0)
@@ -1872,7 +1872,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                     }
                     {
                         f32* mtx = modelLightStruct_getProjectionTexMtx(*lp);
-                        fn_80050558(t, mtx, a, b, *sp);
+                        addProjectedLightTevStage(t, mtx, a, b, *sp);
                     }
                 }
                 lp++;
@@ -1882,7 +1882,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (envtex != 0)
     {
-        fn_80050A28(envtex);
+        addEnvMapTexCoord(envtex);
     }
     {
         u32 t18;
@@ -1933,7 +1933,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)t1);
         PSMTXConcat((MtxPtr)(f32*)lbl_803967F0, (MtxPtr)t1, (MtxPtr)t2);
         GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, 0);
-        fn_8004D928();
+        addSmallReflectionTevStage();
     }
     if (OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER)
     {

@@ -68,7 +68,7 @@ int aButtonIconTexCb(GameObject* obj, void** objPtr, u32 renderOpIdx)
     {
         color.a = 0;
     }
-    fn_80051D5C(textureIdxToPtr(renderOp->textureId), NULL, 0, &color);
+    addTexLayerStageKAlpha(textureIdxToPtr(renderOp->textureId), NULL, 0, &color);
     Rcp_ApplyTextureStageCounts();
     if (color.a < 0xff)
     {

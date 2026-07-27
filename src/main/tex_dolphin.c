@@ -338,7 +338,7 @@ void mapBlockRender_drawDimmedAabbLights(MapBlockBoundsRec* bounds, MapBlockData
                                                    gTexDimmedLightList, 2, &lightCount);
     }
     Rcp_ResetTextureStageState();
-    fn_8004CE0C(viewMtx);
+    setupCausticBaseTevStages(viewMtx);
     {
         u8* pColorA;
         u8* pColorB;
@@ -361,7 +361,7 @@ void mapBlockRender_drawDimmedAabbLights(MapBlockBoundsRec* bounds, MapBlockData
             colorG = ((int)colorG >> 1) + ((int)colorG >> 2);
             colorB = ((int)colorB >> 1) + ((int)colorB >> 2);
             modelLightStruct_getPosition(*lightPtr, &posX, pPosY, pPosZ);
-            fn_8004FA30(modelLightStruct_getRadius(*lightPtr), (int*)&colorR, &posX);
+            addPointLightDirectStages(modelLightStruct_getRadius(*lightPtr), (int*)&colorR, &posX);
         }
     }
     Rcp_ApplyTextureStageCounts();
@@ -592,11 +592,11 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                         {
                             if ((shader != NULL) && ((SHADER_FLAGS(shader) & 0x800) != 0))
                             {
-                                fn_8004EF9C((int*)&chanColor);
+                                addLightColorModulateStage((int*)&chanColor);
                             }
                             else
                             {
-                                fn_8004EECC((u8*)&chanColor);
+                                addVertexAlphaDimStage((u8*)&chanColor);
                             }
                         }
                         else
@@ -605,7 +605,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                                                              &lightColor[2], &lightColor[3]);
                             modelLightStruct_getPosition(gTexBlockLightList[0], (f32*)&lightPos[0],
                                                          (f32*)&lightPos[1], (f32*)&lightPos[2]);
-                            fn_8004F6D8(modelLightStruct_getRadius(gTexBlockLightList[0]),
+                            addFirstPointLightStages(modelLightStruct_getRadius(gTexBlockLightList[0]),
                                         (int*)lightColor, (f32*)&lightPos[0], (u8*)&chanColor);
                             for (i = 1; i < count; i = i + 1)
                             {
@@ -613,16 +613,16 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                                                                  &lightColor[1], &lightColor[2], &lightColor[3]);
                                 modelLightStruct_getPosition(gTexBlockLightList[i], (f32*)&lightPos[0],
                                                              (f32*)&lightPos[1], (f32*)&lightPos[2]);
-                                fn_8004F380(modelLightStruct_getRadius(gTexBlockLightList[i]),
+                                addPointLightAccumStages(modelLightStruct_getRadius(gTexBlockLightList[i]),
                                             (int*)lightColor, (f32*)&lightPos[0]);
                             }
                             if ((shader != NULL) && ((SHADER_FLAGS(shader) & 0x800) != 0))
                             {
-                                fn_8004F2B0();
+                                addAccumulatedLightModulateStage();
                             }
                             else
                             {
-                                fn_8004F080();
+                                addAccumulatedLightBlendStages();
                             }
                         }
                     }
@@ -634,7 +634,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                                                              &lightColor[1], &lightColor[2], &lightColor[3]);
                             modelLightStruct_getPosition(gTexBlockLightList[i], (f32*)&lightPos[0],
                                                          (f32*)&lightPos[1], (f32*)&lightPos[2]);
-                            fn_8004FA30(modelLightStruct_getRadius(gTexBlockLightList[i]),
+                            addPointLightDirectStages(modelLightStruct_getRadius(gTexBlockLightList[i]),
                                         (int*)lightColor, (f32*)&lightPos[0]);
                         }
                     }
@@ -669,7 +669,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                         {
                             return;
                         }
-                        fn_8004D230();
+                        addShadowFalloffTevStages();
                     }
                     Rcp_ApplyTextureStageCounts();
                 }
@@ -752,10 +752,10 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         {
             texMtx = NULL;
         }
-        fn_80051B00((Texture*)texture, texMtx, 0, (GXColor*)&kColor);
+        addTexLayerStageKColor((Texture*)texture, texMtx, 0, (GXColor*)&kColor);
         if ((SHADER_FLAGS(shader) & 0x100) != 0)
         {
-            fn_8004D928();
+            addSmallReflectionTevStage();
         }
         layer = Shader_getLayer(shader, 1);
         {
@@ -799,7 +799,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         {
             texMtx = NULL;
         }
-        fn_80051868((Texture*)texture, texMtx, 9);
+        addTexLayerStage((Texture*)texture, texMtx, 9);
         textureFn_800524ec((GXColor*)&kColor);
     }
     else
@@ -857,7 +857,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                     }
                     else
                     {
-                        fn_80051868((Texture*)texture, texMtx, layerByte);
+                        addTexLayerStage((Texture*)texture, texMtx, layerByte);
                     }
                 }
             }
@@ -868,7 +868,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         }
         if ((SHADER_FLAGS(shader) & 0x100) != 0)
         {
-            fn_8004D928();
+            addSmallReflectionTevStage();
         }
     }
     return;
@@ -930,7 +930,7 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRe
     Rcp_ResetTextureStageState();
     if ((SHADER_FLAGS(shader) & 0x80) != 0)
     {
-        fn_8004DA54((char*)shader);
+        setupHeatShimmerTevStages((char*)shader);
     }
     else
     {
@@ -939,11 +939,11 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRe
     flags = SHADER_FLAGS(shader);
     if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0)
     {
-        fn_8004FDA0((u8*)lightList, &lbl_80382008, lbl_803DB638);
+        addSignedOverlayTexStage((u8*)lightList, &lbl_80382008, lbl_803DB638);
     }
     else if ((flags & 0x40) != 0)
     {
-        fn_8004E0FC();
+        addWarpedRingTevStages();
     }
     else if (isHeavyFogEnabled())
     {

@@ -471,7 +471,7 @@ void textureFn_8004c330(void* p1, void* mtx)
     lbl_803DCD69 += 1;
     lbl_803DCD68 += 1;
 }
-void fn_8004C7AC(void* tex0, void* tex1, void* tex2, s16 w, s16 h)
+void addYUVVideoTevStages(void* tex0, void* tex1, void* tex2, s16 w, s16 h)
 {
     u8 buf5c[0x20];
     u8 buf3c[0x20];
@@ -552,7 +552,7 @@ void fn_8004C7AC(void* tex0, void* tex1, void* tex2, s16 w, s16 h)
         lbl_803DCD69 += 2;
     }
 }
-void fn_8004CE0C(void* viewMtx)
+void setupCausticBaseTevStages(void* viewMtx)
 {
     f32 mtx40[3][4];
     f32 mtx70[3][4];
@@ -649,7 +649,7 @@ void fn_8004CE0C(void* viewMtx)
     lbl_803DCD69 = 4;
     lbl_803DCD68 = 1;
 }
-void fn_8004D230(void)
+void addShadowFalloffTevStages(void)
 {
     f32 mtx1[4][4];
     f32 mtx2[3][4];
@@ -783,7 +783,7 @@ void gxTextureFn_8004d5b4(void* p1)
 
 
 
-void fn_8004D6D8(void)
+void addWavyCausticTevStage(void)
 {
     struct piIndMtx indmtx;
     void* tex;
@@ -841,7 +841,7 @@ void fn_8004D6D8(void)
 
 
 
-void fn_8004D928(void)
+void addSmallReflectionTevStage(void)
 {
     loadNewShadowSmallReflectionTexture(lbl_803DCD8C);
     GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
@@ -862,7 +862,7 @@ void fn_8004D928(void)
     lbl_803DCD69++;
 }
 
-void fn_8004DA54(char* p1)
+void setupHeatShimmerTevStages(char* p1)
 {
     f32 mtxf4[3][4];
     f32 mtxc4[3][4];
@@ -1028,7 +1028,7 @@ extern f32 lbl_803DEB24;
 extern f32 lbl_803DEB28;
 extern f32 SaveStart_803DEAD0;
 
-void fn_8004E0FC(void)
+void addWarpedRingTevStages(void)
 {
     f32 m1e8[3][4];
     f32 m1b8[3][4];
@@ -1361,7 +1361,7 @@ void renderHeavyFog(void* fogColor)
     lbl_803DCD70 = lbl_803DCD70 + 1;
     lbl_803DCD6C = lbl_803DCD6C + 1;
 }
-void fn_8004EECC(u8* color)
+void addVertexAlphaDimStage(u8* color)
 {
     GXSetTevDirect(lbl_803DCD90);
     GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -1376,7 +1376,7 @@ void fn_8004EECC(u8* color)
 }
 
 
-void fn_8004EF9C(int* param)
+void addLightColorModulateStage(int* param)
 {
     GXSetTevColor(GX_TEVREG1, *(GXColor*)param);
     GXSetTevDirect(lbl_803DCD90);
@@ -1391,7 +1391,7 @@ void fn_8004EF9C(int* param)
     lbl_803DCD6A++;
 }
 
-void fn_8004F080(void)
+void addAccumulatedLightBlendStages(void)
 {
     GXSetTevDirect(lbl_803DCD90);
     GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
@@ -1419,7 +1419,7 @@ void fn_8004F080(void)
     lbl_803DCD6A += 3;
 }
 
-void fn_8004F2B0(void)
+void addAccumulatedLightModulateStage(void)
 {
     GXSetTevDirect(lbl_803DCD90);
     GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
@@ -1440,7 +1440,7 @@ extern f32 lbl_803DEB38;
 
 extern f32 lbl_803DEB3C;
 
-void fn_8004F380(f32 scale, int* colorIn, f32* pos)
+void addPointLightAccumStages(f32 scale, int* colorIn, f32* pos)
 {
     f32 matA[3][4];
     f32 matB[3][4];
@@ -1523,7 +1523,7 @@ void fn_8004F380(f32 scale, int* colorIn, f32* pos)
     }
 }
 
-void fn_8004F6D8(f32 scale, int* colorIn, f32* pos, u8* chanColor)
+void addFirstPointLightStages(f32 scale, int* colorIn, f32* pos, u8* chanColor)
 {
     f32 matA[3][4];
     f32 matB[3][4];
@@ -1607,7 +1607,7 @@ void fn_8004F6D8(f32 scale, int* colorIn, f32* pos, u8* chanColor)
 }
 
 
-void fn_8004FA30(f32 scale, int* colorIn, f32* pos)
+void addPointLightDirectStages(f32 scale, int* colorIn, f32* pos)
 {
     f32 matA[3][4];
     f32 matB[3][4];
@@ -1695,7 +1695,7 @@ void fn_8004FA30(f32 scale, int* colorIn, f32* pos)
     }
 }
 
-void fn_8004FDA0(u8* texSrc, void* texMtx, u8* color)
+void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
 {
     GXSetTevDirect(lbl_803DCD90);
     GXLoadTexMtxImm(texMtx, lbl_803DCD80, 0);
@@ -1776,7 +1776,7 @@ void textureFn_8004ff20(void* p1, f32* wpad0, void* wpad1, int wpad2)
     }
 }
 
-void fn_8005011C(u8* objInst)
+void addCastShadowTevStages(u8* objInst)
 {
     u8* src;
     f32 mtx[3][4];
@@ -1854,7 +1854,7 @@ void fn_8005011C(u8* objInst)
 }
 
 
-void fn_80050558(u8* texSrc, void* texMtx, int stageMode, int compMode, int variant)
+void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int compMode, int variant)
 {
     int inputSel;
     int texmap;
@@ -1991,7 +1991,7 @@ void fn_80050558(u8* texSrc, void* texMtx, int stageMode, int compMode, int vari
 
 
 
-void fn_80050A28(int scale)
+void addEnvMapTexCoord(int scale)
 {
     f32 m[3][4];
     PSMTXScale(m, scale, scale, 0.0f);
@@ -2325,7 +2325,7 @@ void fn_80051528(void* p1, void* mtx)
 
 GXTexObj lbl_803779A0;
 
-void fn_80051868(Texture* tex, MtxPtr mtx, int mode)
+void addTexLayerStage(Texture* tex, MtxPtr mtx, int mode)
 {
     int map;
     GXSetTevDirect(lbl_803DCD90);
@@ -2398,7 +2398,7 @@ void fn_80051868(Texture* tex, MtxPtr mtx, int mode)
     lbl_803DCD69++;
 }
 
-void fn_80051B00(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
+void addTexLayerStageKColor(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
 {
     int sel;
     int v1;
@@ -2463,7 +2463,7 @@ void fn_80051B00(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
     lbl_803DCD69++;
 }
 
-void fn_80051D5C(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
+void addTexLayerStageKAlpha(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
 {
     int sel;
     int v1;
