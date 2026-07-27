@@ -1,17 +1,5 @@
 /*
- * DLL 0x004D (cameramodenpcspeak) - the dialogue/"NPC speak" camera mode.
- *
- * Lazily allocates a single CameraModeNpcSpeakState on first init and frees it
- * on free. init() seeds the anchor point from the init
- * params or, when none are given, from the focused NPC's position, then
- * picks a tuning preset from the mode id (0-8; mode 4 randomizes to 0-3)
- * that drives distance/height offsets, look-at scales and the starting
- * orbit angle. It chooses the shorter orbit direction toward the target and
- * flips it away from the NPC's facing where needed. update() places the
- * camera on that orbit each frame (mode 6 advances the orbit by a clamped
- * angular velocity), aims rotX/rotY at the look-at point, drives the blur
- * filter and converts the result back to local space. The orbit-position
- * solver is shared by init and update.
+ * DLL 77 / 0x4D - NPC conversation camera mode.
  */
 #include "main/dll/CAM/camnpcspeak_state.h"
 #include "main/resource.h"
