@@ -5,6 +5,7 @@
 #include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
 #include "main/audio_decode_thread.h"
+#include "string.h"
 
 /*
  * dll_3b (FRONT 0x3B) - attract-movie audio decode thread support.
@@ -38,6 +39,14 @@ OSMessageQueue gAttractMovieDecodedAudioQueue;
 AttractMovieFreeQueueAndStack gAttractMovieFreeAudioQueueAndStack;
 AttractMovieDecodeThread gAttractMovieAudioDecodeThread;
 s32 gAttractMovieAudioThreadActive;
+
+static void AttractMovieAudio_ResetWork(void)
+{
+    memset(&gAttractMovieAudioDecodeContext, 0, sizeof(gAttractMovieAudioDecodeContext));
+    memset(&gAttractMovieDecodedAudioQueue, 0, sizeof(gAttractMovieDecodedAudioQueue));
+    memset(&gAttractMovieFreeAudioQueueAndStack, 0, sizeof(gAttractMovieFreeAudioQueueAndStack));
+    memset(&gAttractMovieAudioDecodeThread, 0, sizeof(gAttractMovieAudioDecodeThread));
+}
 
 void* PopDecodedAudioBuffer(int flags)
 {

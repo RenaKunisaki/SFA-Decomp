@@ -1864,7 +1864,7 @@ config.libs = [
             Object(Matching, "n_attractmode.c"),
 
             # main/thp
-            Object(NonMatching, "main/thp/dll_3b.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "main/thp/dll_3b.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/thp/n_options.c"),
             Object(MatchingFor("GSAE01"), "main/thp/dll_3e.c", section_alignments={".sbss": 4}),
             Object(MatchingFor("GSAE01"), "main/thp/attractmovie.c"),
