@@ -1222,7 +1222,7 @@ main/dll/dll_0052_cameramodeforcebehind.c:
 	.sbss       start:0x803DD5A8 end:0x803DD5B8
 	.sdata2     start:0x803E1B00 end:0x803E1B20
 
-main/dll/dll_0053_cameramodecloudrunner.c:
+dlls/engine/83/83.c:
 	.text       start:0x801101E4 end:0x801106B4
 	.data       start:0x80319EF8 end:0x80319F28
 	.sdata      start:0x803DB9D0 end:0x803DB9D8

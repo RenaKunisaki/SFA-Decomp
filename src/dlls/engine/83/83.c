@@ -1,17 +1,5 @@
 /*
- * cameramodecloudrunner (DLL 0x0053) - the CloudRunner-flight camera mode
- * handlers (text [0x801101E4-0x801106B4)).
- *
- * The mode keeps a single shared CameraModeCloudRunnerState (lbl_803DD5B8)
- * holding the orbit focus point and radius; init allocates it, free
- * releases it. update() orbits the camera around the target object: it
- * reads the player's aim angles, eases the camera yaw/pitch toward the
- * target's facing, then places the camera at radius*(cos/sin) about a base
- * point derived either from a curve node (when the target's curve tag is
- * 1049) or from the target's world position, and finally transforms the
- * world position back into the target's local frame.
- *
- * Most of the mode's vtable slots are empty no-op stubs.
+ * DLL 83 / 0x53 - CloudRunner camera mode.
  */
 #include "main/mm.h"
 #include "main/resource.h"
@@ -30,7 +18,6 @@ CameraModeCloudRunnerState* lbl_803DD5B8;
 f32 lbl_803DB9D0 = 15.0f;
 int lbl_803DB9D4 = -4;
 
-/* curve-node tag selecting the matrix-based base point in update() */
 #define CLOUDRUNNER_CURVE_TAG 1049
 
 
