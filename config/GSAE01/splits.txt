@@ -1384,7 +1384,7 @@ main/dll/dll_003D_titlemenuitem.c:
 	.bss        start:0x803A9DB8 end:0x803A9DD0
 	.sdata2     start:0x803E21E8 end:0x803E21FC
 
-main/dll/dll_003E_dummy3e.c:
+dlls/engine/62/62.c:
 	.text       start:0x80132008 end:0x80132024
 
 main/dll/dll_0031_minimap.c:
