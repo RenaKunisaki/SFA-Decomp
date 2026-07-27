@@ -1,5 +1,5 @@
 /*
- * projmagicemmit1 (DLL 0xAD) - retired projectile object.
+ * projmagicemmit1 (DLL 173 / 0xAD) - retired projectile object.
  *
  * One of the stubbed-out projectile DLLs. The object has
  * no behaviour left: release/initialise are empty and doUnsupported just
