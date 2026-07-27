@@ -1130,7 +1130,7 @@ main/dll/pathcamgroup.c:
 	.sbss       start:0x803DD538 end:0x803DD540
 	.sdata2     start:0x803E1740 end:0x803E177C
 
-main/dll/dll_0045_camTalk.c:
+dlls/engine/69/69.c:
 	.text       start:0x80107AEC end:0x80108010
 	.sbss       start:0x803DD540 end:0x803DD548
 	.sdata2     start:0x803E1780 end:0x803E17C0

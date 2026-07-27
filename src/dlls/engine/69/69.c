@@ -1,4 +1,6 @@
-/* DLL 0x0045 - camera talk / NPC-speak mode [80107AEC-8010847C) */
+/*
+ * DLL 69 / 0x45.
+ */
 #include "main/dll/CAM/cambike_state.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/mm.h"
