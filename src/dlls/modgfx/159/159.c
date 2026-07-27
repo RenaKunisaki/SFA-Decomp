@@ -1,5 +1,5 @@
 /*
- * dll9ffunc0 (DLL 0x9F) - builds a layered ModGfx effect command list and
+ * dll9ffunc0 (DLL 159 / 0x9F) - builds a layered ModGfx effect command list and
  * submits it via gModgfxInterface->spawnEffect (effect id 0x46c).
  *
  * dll_9F_func03 fills a stack command buffer with up to 17 GfxCmd entries
@@ -11,8 +11,7 @@
  * otherwise from posSource+0xC. The float constants (lbl_803E14xx) are the
  * per-entry coordinates. dll_9F_func00/01_nop are empty DLL slots.
  *
- * Sibling DLL 0xA0 (dll_00A0_dlla0func0.c) is the same builder with a
- * different table/effect id.
+ * Sibling DLL 0xA0 uses the same builder with a different table/effect id.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
@@ -246,8 +245,6 @@ u8 gDll9fEffectDataTable[520] = {
     10,  0,   11, 0,   12,  0,   13,  0,   14,  0,   15,  0,   16, 0,   17,  0,   18,  0,   19,  0,   20,  0,   0,
     0,   50,  0,  250, 0,   250, 0,   50,  0,   0,   0,   0,   0,  0,
 };
-
-/* .sdata2 float-pool constants referenced via extern by sibling stubs */
 
 /* .data table (attributed from auto object; pointer tables regenerate ADDR32 relocs) */
 void* lbl_80318690[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
