@@ -59,6 +59,11 @@ static inline int* Modgfx_GetActiveModel(void* obj)
     return (int*)objAnim->banks[objAnim->bankIndex];
 }
 
+static void boneParticleEffect_resetDrift(void)
+{
+    gBoneParticleDrift = 0.0f;
+}
+
 void boneParticleEffect_func08_nop(void)
 {
 }
