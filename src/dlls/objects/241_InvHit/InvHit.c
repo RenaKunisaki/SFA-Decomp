@@ -6,7 +6,7 @@
  *      hit-priority counters once they fall inside userData2 range.
  *   1  attach to an owner object's hit list (ObjList_ContainsObject).
  *   2  passive shape/radius hit volume.
- *   3  publish the object's world position to lbl_803AC780 while the
+ *   3  publish the object's world position to gInvHitPublishedPos while the
  *      player exists.
  *   4  homing/tethered projectile: ease toward the owner's target,
  *      clamp to a growing reach around an anchor, spawn fx, and snap to
@@ -50,7 +50,7 @@
 #define INVHIT_HOMING_SECONDARY_EFFECT_ID 0x56
 
 /* Published world position for modes 3 and 5. */
-f32 lbl_803AC780[4];
+f32 gInvHitPublishedPos[4];
 
 int InvHit_getExtraSize(void) {
     return sizeof(InvHitState);
@@ -126,18 +126,18 @@ void InvHit_update(GameObject* obj) {
     }
     case INVHIT_MODE_PUBLISH_POS:
         if (Obj_GetPlayerObject() != NULL) {
-            lbl_803AC780[0] = obj->anim.worldPosX;
-            lbl_803AC780[1] = obj->anim.worldPosY;
-            lbl_803AC780[2] = obj->anim.worldPosZ;
+            gInvHitPublishedPos[0] = obj->anim.worldPosX;
+            gInvHitPublishedPos[1] = obj->anim.worldPosY;
+            gInvHitPublishedPos[2] = obj->anim.worldPosZ;
         }
         break;
     case INVHIT_MODE_LOCKON_GATE: {
         void* player = Obj_GetPlayerObject();
         u32 targetAddress = Player_GetTargetObject((int)player);
         if (player != NULL && targetAddress != 0) {
-            lbl_803AC780[0] = obj->anim.worldPosX;
-            lbl_803AC780[1] = obj->anim.worldPosY;
-            lbl_803AC780[2] = obj->anim.worldPosZ;
+            gInvHitPublishedPos[0] = obj->anim.worldPosX;
+            gInvHitPublishedPos[1] = obj->anim.worldPosY;
+            gInvHitPublishedPos[2] = obj->anim.worldPosZ;
         }
         break;
     }

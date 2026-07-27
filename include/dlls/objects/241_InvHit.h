@@ -56,7 +56,7 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup);
 void InvHit_release(void);
 void InvHit_initialise(void);
 
-extern f32 lbl_803AC780[4];
+extern f32 gInvHitPublishedPos[4];
 extern ObjectDescriptor gInvHitObjDescriptor;
 
 #endif /* DLLS_OBJECTS_241_INVHIT_H_ */
