@@ -5,6 +5,7 @@
  * respawning, and a disguise-gated chain-hit variant.
  */
 #include "dlls/objects/260_SmallBasket.h"
+#include "dlls/objects/237.h"
 #include "dlls/objects/262.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/pad.h"
@@ -79,28 +80,13 @@ const f32 gSmallBasketThrowVelocityY[1] = {2.2f};
 #define SMALLBASKET_HIT_SFX_DEFAULT        0x4A
 
 /* Remaining retail OBJECTS.bin child names; Scarab IDs live in their canonical header. */
-#define SMALLBASKET_CHILD_OBJECT_ENERGY_EGG 0xB
-#define SMALLBASKET_CHILD_OBJECT_APPLE      0x3CD
+#define SMALLBASKET_CHILD_OBJECT_ENERGY_EGG COLLECTIBLE_ITEM_ENERGY_EGG
+#define SMALLBASKET_CHILD_OBJECT_APPLE      COLLECTIBLE_ITEM_APPLE
 
 typedef void (*SmallBasketChildThrowFn)(void* obj, f32 velocityX, f32 velocityY, f32 velocityZ);
 typedef void (*SmallBasketBreakEffectFn)(GameObject* obj, int arg1, int arg2, int arg3, int arg4, int arg5);
 
 /* Known fields shared by the 0x24- and 0x30-byte child placement records. */
-typedef struct SmallBasketChildPlacement {
-    ObjPlacement base; /* 0x00 */
-    s8 yawByte;        /* 0x18 */
-    u8 pad19;          /* 0x19 */
-    union {
-        s16 unk1A;    /* 0x1A */
-        u8 unk1AByte; /* 0x1A */
-    };
-    s16 unk1C;   /* 0x1C */
-    u8 pad1E[6]; /* 0x1E */
-    s16 unk24;   /* 0x24 */
-    u8 pad26[6]; /* 0x26 */
-    s16 unk2C;   /* 0x2C */
-} SmallBasketChildPlacement;
-
 typedef struct SmallBasketCollisionResults {
     f32 hitInfo[4][4]; /* 0x00 */
     f32 radii[4];      /* 0x40 */
@@ -113,17 +99,6 @@ typedef struct SmallBasketResource {
     SmallBasketBreakEffectFn spawnBreakEffect; /* 0x04 */
 } SmallBasketResource;
 
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, pad19) == 0x19);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, unk1A) == 0x1A);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, unk1AByte) == 0x1A);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, unk1C) == 0x1C);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, pad1E) == 0x1E);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, unk24) == 0x24);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, pad26) == 0x26);
-STATIC_ASSERT(offsetof(SmallBasketChildPlacement, unk2C) == 0x2C);
-STATIC_ASSERT(sizeof(SmallBasketChildPlacement) == 0x30);
 
 STATIC_ASSERT(offsetof(SmallBasketCollisionResults, hitInfo) == 0x0);
 STATIC_ASSERT(offsetof(SmallBasketCollisionResults, radii) == 0x40);
@@ -423,9 +398,9 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         } else {
             childPlacement = (u8*)Obj_AllocObjectSetup(0x30, SMALLBASKET_CHILD_OBJECT_APPLE);
         }
-        childPlacement[0x1A] = 0x14;
-        ((SmallBasketChildPlacement*)childPlacement)->unk2C = -1;
-        ((SmallBasketChildPlacement*)childPlacement)->unk1C = -1;
+        ((CollectibleSetup*)childPlacement)->unk1A = 0x14;
+        ((CollectibleSetup*)childPlacement)->counterGameBit = -1;
+        ((CollectibleSetup*)childPlacement)->hideGameBit = -1;
         if (state->throwState != SMALLBASKET_THROW_NONE) {
             ((ObjPlacement*)childPlacement)->posX = obj->anim.localPosX + (f32)(int)randomGetRange(-0xF, 0xF);
             ((ObjPlacement*)childPlacement)->posY = (15.0f) + obj->anim.localPosY;
@@ -435,7 +410,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
             ((ObjPlacement*)childPlacement)->posY = (5.0f) + obj->anim.localPosY;
             ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         }
-        ((SmallBasketChildPlacement*)childPlacement)->unk24 = -1;
+        ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = gSmallBasketBurstVelocityXZ[0];

@@ -5,6 +5,7 @@
  * impact effects, and conveyor-platform movement.
  */
 #include "dlls/objects/261_LargeCrate.h"
+#include "dlls/objects/237.h"
 #include "dlls/objects/262.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
@@ -50,9 +51,10 @@
 #define LARGECRATE_UNK_0C_INITIAL            0x190
 #define LARGECRATE_RANDOM_SLIDE_PHASE_MAX    200
 
-#define LARGECRATE_CHILD_OBJECT_ENERGY_EGG 0xB
-#define LARGECRATE_CHILD_OBJECT_APPLE      0x3CD
+#define LARGECRATE_CHILD_OBJECT_ENERGY_EGG COLLECTIBLE_ITEM_ENERGY_EGG
+#define LARGECRATE_CHILD_OBJECT_APPLE      COLLECTIBLE_ITEM_APPLE
 #define LARGECRATE_CHILD_OBJECT_PICKUP     0x259
+#define LARGECRATE_PICKUP_PLACEMENT_SIZE   0x24
 
 #define LARGECRATE_SEQUENCE_VARIANT_A  0x3DE
 #define LARGECRATE_SEQUENCE_VARIANT_B  0x49F
@@ -119,49 +121,32 @@ ObjectDescriptor gLargeCrateObjDescriptor = {
 };
 
 /* Superset of the 0x24- and 0x30-byte placement records used by crate drops. */
-typedef struct LargeCrateChildPlacement {
+typedef struct LargeCratePickupPlacement {
     ObjPlacement base; /* 0x00 */
-    s8 yawByte;        /* 0x18 */
-    u8 pad19;          /* 0x19 */
-    union {
-        s16 unk1A;    /* 0x1A */
-        u8 unk1AByte; /* 0x1A */
-    };
-    s16 unk1C;   /* 0x1C */
-    u8 pad1E[2]; /* 0x1E */
-    s16 unk20;   /* 0x20 */
-    u8 pad22[2]; /* 0x22 */
-    s16 unk24;   /* 0x24 */
-    u8 pad26[6]; /* 0x26 */
-    s16 unk2C;   /* 0x2C */
-} LargeCrateChildPlacement;
+    u8 pad18[2];       /* 0x18 */
+    s16 unk1A;         /* 0x1A */
+    u8 pad1C[4];       /* 0x1C */
+    s16 unk20;         /* 0x20 */
+    u8 pad22[2];       /* 0x22 */
+} LargeCratePickupPlacement;
 
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, pad19) == 0x19);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, unk1A) == 0x1A);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, unk1AByte) == 0x1A);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, unk1C) == 0x1C);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, pad1E) == 0x1E);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, unk20) == 0x20);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, pad22) == 0x22);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, unk24) == 0x24);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, pad26) == 0x26);
-STATIC_ASSERT(offsetof(LargeCrateChildPlacement, unk2C) == 0x2C);
-STATIC_ASSERT(sizeof(LargeCrateChildPlacement) == 0x30);
+STATIC_ASSERT(offsetof(LargeCratePickupPlacement, base) == 0x0);
+STATIC_ASSERT(offsetof(LargeCratePickupPlacement, unk1A) == 0x1A);
+STATIC_ASSERT(offsetof(LargeCratePickupPlacement, unk20) == 0x20);
+STATIC_ASSERT(sizeof(LargeCratePickupPlacement) == LARGECRATE_PICKUP_PLACEMENT_SIZE);
 
 static void LargeCrate_spawnPickup(GameObject* obj) {
     char* childPlacement;
 
     if (Obj_IsLoadingLocked() != 0) {
-        childPlacement = (char*)Obj_AllocObjectSetup(0x24, LARGECRATE_CHILD_OBJECT_PICKUP);
-        ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posY = 2.0f + obj->anim.localPosY;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCrateChildPlacement*)childPlacement)->base.color[0] = 4;
-        ((LargeCrateChildPlacement*)childPlacement)->base.color[2] = 200;
-        ((LargeCrateChildPlacement*)childPlacement)->unk20 = -1;
-        ((LargeCrateChildPlacement*)childPlacement)->unk1A = 0x7F;
+        childPlacement = (char*)Obj_AllocObjectSetup(LARGECRATE_PICKUP_PLACEMENT_SIZE, LARGECRATE_CHILD_OBJECT_PICKUP);
+        ((LargeCratePickupPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
+        ((LargeCratePickupPlacement*)childPlacement)->base.posY = 2.0f + obj->anim.localPosY;
+        ((LargeCratePickupPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
+        ((LargeCratePickupPlacement*)childPlacement)->base.color[0] = 4;
+        ((LargeCratePickupPlacement*)childPlacement)->base.color[2] = 200;
+        ((LargeCratePickupPlacement*)childPlacement)->unk20 = -1;
+        ((LargeCratePickupPlacement*)childPlacement)->unk1A = 0x7F;
         Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, (void*)*(int*)&obj->anim.parent);
     }
 }
@@ -241,9 +226,9 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
     switch (state->dropType) {
     case LARGECRATE_DROPTYPE_GREEN_SCARAB:
         childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GREEN);
-        ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
+        ((ScarabPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
+        ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
+        ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 400;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
@@ -285,9 +270,9 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
     case LARGECRATE_DROPTYPE_RED_SCARAB:
         childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_RED);
         ((ScarabPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
-        ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
+        ((ScarabPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
+        ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
+        ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 400;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
@@ -329,9 +314,9 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
     case LARGECRATE_DROPTYPE_GOLD_SCARAB:
         childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GOLD);
         ((ScarabPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
-        ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
+        ((ScarabPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
+        ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
+        ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 2000;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
@@ -377,13 +362,13 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         } else {
             childPlacement = (char*)Obj_AllocObjectSetup(0x30, LARGECRATE_CHILD_OBJECT_APPLE);
         }
-        ((LargeCrateChildPlacement*)childPlacement)->unk1AByte = 0x14;
-        ((LargeCrateChildPlacement*)childPlacement)->unk2C = -1;
-        ((LargeCrateChildPlacement*)childPlacement)->unk1C = -1;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posY = 5.0f + obj->anim.localPosY;
-        ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCrateChildPlacement*)childPlacement)->unk24 = -1;
+        ((CollectibleSetup*)childPlacement)->unk1A = 0x14;
+        ((CollectibleSetup*)childPlacement)->counterGameBit = -1;
+        ((CollectibleSetup*)childPlacement)->hideGameBit = -1;
+        ((CollectibleSetup*)childPlacement)->base.posX = obj->anim.localPosX;
+        ((CollectibleSetup*)childPlacement)->base.posY = 5.0f + obj->anim.localPosY;
+        ((CollectibleSetup*)childPlacement)->base.posZ = obj->anim.localPosZ;
+        ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
         (*(LargeCrateChildThrowFn*)(*(int*)*(int*)&((GameObject*)child)->anim.dll + 0x2C))((GameObject*)child, 0.0f,
