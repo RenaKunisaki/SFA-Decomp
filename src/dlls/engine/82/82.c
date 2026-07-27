@@ -1,11 +1,5 @@
 /*
- * DLL 0x0052 (cameramodeforcebehind) - "force behind" camera mode handlers
- * 0x8010FC74..0x801101E4. Init seeds the camera's orbit radius from the
- * target's facing, then update keeps the camera locked behind the target:
- * it eases yaw/pitch toward the target's aim angles, re-derives the orbit
- * position, traces against geometry (camcontrol_traceFromTarget) and converts
- * the result back to the target's local space. The empty release/free/copy
- * stubs are the mode's vtable no-ops.
+ * DLL 82 / 0x52 - force-behind camera mode.
  */
 #include "main/camera_object.h"
 #include "main/resource.h"
@@ -25,10 +19,7 @@ f32 gCamForceBehindActiveHeightOffset;
 f32 gCamForceBehindPlacementRadius;
 
 f32 gCamForceBehindOrbitRadius = 40.0f;
-extern f32 gCamForceBehindOrbitRadius;        /* orbit radius */
-extern f32 gCamForceBehindActiveHeightOffset; /* active height offset */
-extern f32 gCamForceBehindTraceDistance;      /* derived horizontal trace distance */
-extern f32 gCamForceBehindPlacementRadius;    /* derived orbit radius used to place the camera */
+
 void CameraModeForceBehind_copyToCurrent(void)
 {
 }
