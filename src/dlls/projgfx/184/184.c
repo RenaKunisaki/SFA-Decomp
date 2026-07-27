@@ -1,5 +1,5 @@
 /*
- * projlightning5 (DLL 0x00B8) - retired "lightning 5" projectile object.
+ * projlightning5 (DLL 184 / 0x00B8) - retired "lightning 5" projectile object.
  *
  * The object's behaviour was cut from the shipping game: its "do" entry
  * point now only logs a "no longer supported" message and returns the
