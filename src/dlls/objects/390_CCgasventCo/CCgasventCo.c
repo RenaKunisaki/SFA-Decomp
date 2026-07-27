@@ -1,7 +1,7 @@
 /*
  * CCgasventCo - Crystal Caves gas-vent controller (DLL 0x0186). One
  * controller per gas room; the individual vents (ccgasvent, DLL 0x0185)
- * register in CCGASVENT_GROUP and this object supervises the whole group.
+ * register in the shared vent object group and this object supervises the whole group.
  *
  * Once all four vents exist and the room trigger (gameBit 0x3EC) fires it
  * runs the intro sequence, then enters the active state: it counts how many
@@ -12,6 +12,8 @@
  *
  * The extra-state byte at +0 is the state-machine index (0..7).
  */
+#include "dlls/objects/389_CCgasvent.h"
+
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "main/camera_interface.h"
@@ -34,9 +36,6 @@
 
 #define CCGASVENTCONTROL_AIRMETER_BGTEXTURE 0x603 /* air-meter background texture id */
 
-#define CCGASVENT_GROUP                  0x3f
-#define CCGASVENTCONTROL_TARGET_OBJGROUP 5
-#define GAMEBIT_GAS_ACTIVE               0x1c0 /* gas filling the room */
 #define GAMEBIT_GAS_PUZZLE_DONE          0xa3
 #define GAMEBIT_GAS_INTRO_TRIGGER        0x3ec /* fires the intro sequence once the vents exist */
 #define GAMEBIT_GAS_PUZZLE_STATE         0x620
@@ -73,17 +72,17 @@ u8 CCGasVentControl_countClearVents(GameObject* obj, CCGasVentControlState* stat
 {
     u8 i;
     u8 count = 0;
-    if (mainGetBit(GAMEBIT_GAS_ACTIVE) != 0)
+    if (mainGetBit(CC_GAS_VENT_ACTIVE_GAMEBIT) != 0)
     {
         int cnt;
-        GameObject** vents = (GameObject**)ObjGroup_GetObjects(CCGASVENT_GROUP, &cnt);
+        GameObject** vents = (GameObject**)ObjGroup_GetObjects(CC_GAS_VENT_OBJECT_GROUP, &cnt);
         f32 thr;
         i = 0;
         thr = CCGASVENTCONTROL_CLEAR_DISTANCE;
         for (; i < 4; i++)
         {
             GameObject* nearest = (GameObject*)ObjGroup_FindNearestObject(
-                CCGASVENTCONTROL_TARGET_OBJGROUP, vents[i], 0);
+                CC_GAS_VENT_BLOCKER_OBJECT_GROUP, vents[i], 0);
             if (getXZDistance(&vents[i]->anim.worldPosX, &nearest->anim.worldPosX) > thr)
             {
                 count = count + 1u;
@@ -160,7 +159,7 @@ void ccgasventcontrol_update(GameObject* obj)
     case CCGASVENT_STATE_WAIT_VENTS:
     {
         int cnt;
-        ObjGroup_GetObjects(CCGASVENT_GROUP, &cnt);
+        ObjGroup_GetObjects(CC_GAS_VENT_OBJECT_GROUP, &cnt);
         if (cnt == 4)
         {
             state->phase = CCGASVENT_STATE_WAIT_INTRO;
@@ -245,7 +244,7 @@ void ccgasventcontrol_update(GameObject* obj)
         break;
     }
     case CCGASVENT_STATE_WAIT_CLEAR:
-        if (mainGetBit(GAMEBIT_GAS_ACTIVE) == 0)
+        if (mainGetBit(CC_GAS_VENT_ACTIVE_GAMEBIT) == 0)
         {
             disableHeavyFog();
             state->phase = CCGASVENT_STATE_DONE;
