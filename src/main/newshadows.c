@@ -794,7 +794,8 @@ void renderShadows(int unused0, int unused1, int unused2)
             memcpy(&obj->anim.localPos, &modelState->overrideWorldPosX, sizeof(Vec3f));
             memcpy(&obj->anim.worldPos, &modelState->overrideWorldPosX, sizeof(Vec3f));
         }
-        castSlot = &shadowData->castSlots[(u8)slotIdx];
+        castSlot = (NewShadowCastSlot*)(((u8)slotIdx * sizeof(NewShadowCastSlot) + offsetof(NewShadowData, castSlots)) +
+                                         (int)shadowData);
         castSlot->alpha = alpha;
         if ((u8)texIdx < NEW_SHADOW_MAX_CAST_TEXTURES && (kind = casterPtr->flags) != 0)
         {
