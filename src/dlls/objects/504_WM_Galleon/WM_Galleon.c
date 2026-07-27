@@ -18,7 +18,6 @@
 
 u32 lbl_803DC0F0 = 3;
 
-STATIC_ASSERT(sizeof(WmGalleonState) == 0x10);
 STATIC_ASSERT(sizeof(WMGalleonState) == 0x10);
 STATIC_ASSERT(offsetof(WMGalleonState, savedX) == 0x00);
 STATIC_ASSERT(offsetof(WMGalleonState, savedY) == 0x04);
@@ -145,10 +144,10 @@ void WM_Galleon_free(GameObject* obj, int leavingMap)
 {
     if (obj->anim.seqId != 0x188)
     {
-        WmGalleonState* state = obj->extra;
-        if (state->active != 0 && leavingMap == 0)
+        WMGalleonState* state = obj->extra;
+        if (state->mapEventsLatched != 0 && leavingMap == 0)
         {
-            state->active = 0;
+            state->mapEventsLatched = 0;
         }
         if (lbl_803DDC74 != NULL)
         {
