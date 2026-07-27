@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(MatchingFor("GSAE01"), "dlls/engine/72/72.c", cflags=cflags_dll_noopt_noinline),
             Object(NonMatching, "dlls/engine/73/73.c", cflags=cflags_dll_noopt_nocse),
             Object(NonMatching, "dlls/engine/74/74.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "dlls/engine/75/75.c", cflags=cflags_dll_noopt),
@@ -1449,7 +1450,6 @@ config.libs = [
             ),
             Object(NonMatching, "main/dll/dll_0044_cameramodeviewfinder.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0046_cameramodedebug.c", cflags=cflags_dll_noopt_nocse_noprop),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0048_cameramodestatic.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_002E_moveLib.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_b8.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/n_attractmode.c", cflags=cflags_dll_noopt),

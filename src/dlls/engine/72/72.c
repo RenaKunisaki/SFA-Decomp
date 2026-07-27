@@ -1,3 +1,6 @@
+/*
+ * DLL 72 / 0x48 - static camera mode.
+ */
 #include "main/camera_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
@@ -11,7 +14,6 @@
 
 CameraModeStaticState* lbl_803DD558;
 
-/* Release camera back to the default gameplay mode on exit (cameramode DLL 0x42). */
 #define CAMSTATIC_CAMMODE_DEFAULT 0x42
 
 
