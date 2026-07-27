@@ -2045,7 +2045,11 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/audio/hw_volume.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/hw_stream.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/aram_queue.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
-            Object(MatchingFor("GSAE01"), "main/audio/aram_init.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
+            Object(
+                MatchingFor("GSAE01"), "main/audio/aram_init.c", mw_version="GC/1.2.5n",
+                extra_cflags=["-Cpp_exceptions", "on"],
+                section_alignments={".bss": 4},
+            ),
             Object(MatchingFor("GSAE01"), "main/audio/aram_data.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/sal_ai.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),
             Object(MatchingFor("GSAE01"), "main/audio/sal_dsp.c", mw_version="GC/1.2.5n", extra_cflags=["-Cpp_exceptions", "on"]),

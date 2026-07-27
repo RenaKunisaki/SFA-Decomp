@@ -67,3 +67,5 @@ u32 aramGetBaseAddress(void)
 {
     return ARGetBaseAddress();
 }
+
+AramTransferQueue lbl_803D41E4;

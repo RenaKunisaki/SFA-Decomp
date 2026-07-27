@@ -212,6 +212,7 @@ main/pi_videoinit.c:
 
 main/pi_pathsearch.c:
 	.text       start:0x8004AA24 end:0x8004B658
+	.sdata2     start:0x803DEAA8 end:0x803DEAB0
 
 main/zlb.c:
 	.text       start:0x8004B658 end:0x8004BF88
@@ -241,6 +242,7 @@ main/texture.c:
 	.bss        start:0x8037E0A8 end:0x8037E0C0
 	.sdata      start:0x803DB608 end:0x803DB610
 	.sbss       start:0x803DCDA8 end:0x803DCDC8
+	.sdata2     start:0x803DEB98 end:0x803DEBB0
 
 main/shader.c:
 	.text       start:0x80054F64 end:0x8005AB70
@@ -4740,6 +4742,7 @@ main/audio/aram_init.c:
 	extab       start:0x80005C00 end:0x80005C10
 	extabindex  start:0x80006590 end:0x800065A8
 	.text       start:0x80284224 end:0x80284468
+	.bss        start:0x803D41E4 end:0x803D4468
 
 main/audio/aram_data.c:
 	extab       start:0x80005C10 end:0x80005C18
