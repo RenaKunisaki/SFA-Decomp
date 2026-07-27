@@ -1,8 +1,9 @@
 /*
  * SPShopKeepe (DLL 646) - the SnowHorn shopkeeper vendor character.
  *
- * The TU begins with the DR laser-turret callbacks used by the shopkeeper's
- * shared state table, followed by the shopkeeper object implementation.
+ * The TU contains the shopkeeper's auxiliary state handlers, the T-Rex
+ * lazerwall challenge handlers, the DR laser-turret callbacks, and the
+ * shopkeeper object implementation.
  */
 #include "main/dll_000A_expgfx.h"
 #include "main/track_dolphin_api.h"
@@ -11,6 +12,7 @@
 #include "main/dll/dll_801e66dc.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/player_api.h"
+#include "main/dll/rom_curve_interface.h"
 #include "main/dll/tricky_api.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/shopkeeperstate_struct.h"
@@ -44,15 +46,6 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
-extern const f32 lbl_803E59DC;
-extern const f32 lbl_803E59E0;
-extern f32 gDrLaserTurretDefaultAnimStepScale;
-extern f32 gDrLaserTurretPi;
-extern f32 gDrLaserTurretBobPhaseScale;
-extern f32 lbl_803E59F0;
-extern f32 lbl_803E59D8;
-extern void* lbl_803AD068[8];
-
 void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count);
 int ShopKeeper_getExtraSize(void);
 int ShopKeeper_getObjectTypeId(void);
@@ -64,8 +57,208 @@ void ShopKeeper_init(GameObject* obj);
 void ShopKeeper_release(void);
 void ShopKeeper_initialise(void);
 
+const f32 lbl_803E59C0 = 1.0f;
+const f32 lbl_803E59C4 = 0.0f;
+const f32 lbl_803E59C8 = 1.0f;
+const f32 lbl_803E59CC = 0.0f;
+const u32 lbl_803E59D0 = 0xC;
+const u32 lbl_803E59D4 = 0x1C;
+const f32 lbl_803E59D8 = 1.0f;
+const f32 lbl_803E59DC = 0.0f;
+const f32 lbl_803E59E0 = 6.0f;
+const f32 gDrLaserTurretDefaultAnimStepScale = 0.007f;
+const f32 gDrLaserTurretPi = 3.1415927f;
+const f32 gDrLaserTurretBobPhaseScale = 32768.0f;
+const f32 lbl_803E59F0 = 0.1f;
+
+void* lbl_803AD068[8];
+
 s16 gDrLaserTurretIdleAnimMoves[2] = {0x13, 0x11};
 f32 gDrLaserTurretIdleAnimStepScales[2] = {0.01f, 0.0125f};
+
+#define DLL801E66DC_OBJFLAG_RENDERED 0x800
+
+int return0_801E66DC(void)
+{
+    return 0;
+}
+
+int return0_801E66E4(void)
+{
+    return 0;
+}
+
+int ShopKeeper_popQueuedState(int objHandle, int animState)
+{
+    GameObject* obj = (GameObject*)objHandle;
+    int state;
+    f32 spawnParam;
+    RingBufferQueue* stk;
+    int nextState;
+
+    state = (int)obj->extra;
+    spawnParam = lbl_803E59D8;
+
+    if (*(s8*)(animState + 0x27a) != 0)
+    {
+        if ((obj->objectFlags & DLL801E66DC_OBJFLAG_RENDERED) != 0)
+        {
+            (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 2031, &spawnParam, 80, NULL);
+        }
+    }
+
+    *(u8*)(state + 0x9d6) = 0;
+    *(f32*)(animState + 0x280) = lbl_803E59DC;
+    if (*(u8*)(state + 0x9d6) == 0)
+    {
+        stk = *(RingBufferQueue**)(state + 0x9b0);
+        nextState = 0;
+        if (Stack_IsEmpty(stk) == 0)
+        {
+            Stack_Pop(stk, &nextState);
+        }
+        return nextState + 1;
+    }
+    return 0;
+}
+
+#define GAMEBIT_LAZERWALL_START   0x617
+#define GAMEBIT_LAZERWALL_WIN     0x624
+#define GAMEBIT_LAZERWALL_LOSE    0x625
+#define GAMEBIT_LAZERWALL_RUNNING 0x626
+
+#define WAITFORSTART_RESULT 6
+
+#define LAZERWALL_NODE_TAG_A  0xc
+#define LAZERWALL_NODE_KIND_A 1
+#define LAZERWALL_NODE_KIND_B 2
+
+#define LAZERWALL_FLAG_ADVANCED 0x20
+
+int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
+{
+    TREXLazerwallUpdateTimedChallengeState* state;
+    GameObject* playerObj;
+    RingBufferQueue* stackHandle;
+    int node;
+    u32 head[2];
+    int pushKindA;
+    int pushKindB;
+    int popOut;
+
+    *(RomCurveSearchPair*)head = *(RomCurveSearchPair*)&lbl_803E59D0;
+    playerObj = Obj_GetPlayerObject();
+    state = (obj)->extra;
+
+    if (*(s8*)(animState + 0x27a) != 0)
+    {
+        if (Stack_IsEmpty(state->stack) != 0)
+        {
+            RomCurveFindFn findFn = (*gRomCurveInterface)->find;
+            int found = findFn(playerObj->anim.localPosX, playerObj->anim.localPosY,
+                               playerObj->anim.localPosZ, (int*)head, 2, -1);
+
+            if (found != -1)
+            {
+                node = (int)(*gRomCurveInterface)->getById(found);
+                (obj)->anim.localPosX = ((LazerwallCurveNode*)node)->x;
+                (obj)->anim.localPosY = lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
+                (obj)->anim.localPosZ = ((LazerwallCurveNode*)node)->z;
+                *(s16*)(int)obj = (s16)((s32)((LazerwallCurveNode*)node)->rotZ << 8);
+                state->nodeTargetY = lbl_803E59E0 + ((LazerwallCurveNode*)node)->y;
+                state->unk9CA = 0;
+                state->curveNodeTag = ((LazerwallCurveNode*)node)->type;
+            }
+
+            if ((s8)((LazerwallCurveNode*)node)->type == LAZERWALL_NODE_TAG_A)
+            {
+                pushKindA = LAZERWALL_NODE_KIND_A;
+                stackHandle = state->stack;
+                if (Stack_IsFull(stackHandle) == 0)
+                {
+                    Stack_Push(stackHandle, &pushKindA);
+                }
+            }
+            else
+            {
+                pushKindB = LAZERWALL_NODE_KIND_B;
+                stackHandle = state->stack;
+                if (Stack_IsFull(stackHandle) == 0)
+                {
+                    Stack_Push(stackHandle, &pushKindB);
+                }
+            }
+
+            *(f32*)(animState + 0x280) = lbl_803E59DC;
+            state->flags = (u8)(state->flags | LAZERWALL_FLAG_ADVANCED);
+        }
+    }
+
+    state->popStateEnabled = 0xff;
+    if (state->popStateEnabled == 0xff)
+    {
+        stackHandle = state->stack;
+        popOut = 0;
+        if (Stack_IsEmpty(stackHandle) == 0)
+        {
+            Stack_Pop(stackHandle, &popOut);
+        }
+        return popOut + 1;
+    }
+    return 0;
+}
+
+int TREX_Lazerwall_waitForStartBit(void)
+{
+    if (mainGetBit(GAMEBIT_LAZERWALL_START) != 0)
+    {
+        return WAITFORSTART_RESULT;
+    }
+    return 0;
+}
+
+int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
+{
+    TREXLazerwallUpdateTimedChallengeState* state;
+    int elapsed;
+    int now;
+    int limit;
+
+    state = (obj)->extra;
+    *(u8*)&(obj)->anim.resetHitboxMode =
+        (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    state->popStateEnabled = 0;
+    ObjHits_DisableObject(obj);
+
+    (*(TimerQueryFn*)(*(int*)*(int*)(state->timerObj + 0x68) + 0x54))(
+        state->timerObj, &elapsed, &now, &limit);
+
+    now = now - elapsed;
+
+    if (isGameTimerDisabled() != 0 || now >= limit || elapsed != 0)
+    {
+        gameTimerStop();
+        hudFn_8011f6f0(0);
+        mainSetBits(GAMEBIT_LAZERWALL_RUNNING, 0);
+
+        if (now >= limit)
+        {
+            mainSetBits(GAMEBIT_LAZERWALL_WIN, 1);
+        }
+        else
+        {
+            mainSetBits(GAMEBIT_LAZERWALL_LOSE, 1);
+        }
+
+        hudFn_8011f38c(2);
+
+        (*gMapEventInterface)->setObjGroupStatus((s32)(obj)->anim.mapEventSlot, 6, 0);
+
+        gTitleMenuControlInterfaceCopy->vtable->func04(NULL, 0xf3, 0, 0, 0);
+    }
+
+    return 0;
+}
 
 int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* animState)
 {
@@ -468,23 +661,6 @@ enum
 
 void* lbl_803DDC58;
 
-ObjectDescriptor gShopKeeperObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)ShopKeeper_initialise,
-    (ObjectDescriptorCallback)ShopKeeper_release,
-    0,
-    (ObjectDescriptorCallback)ShopKeeper_init,
-    (ObjectDescriptorCallback)ShopKeeper_update,
-    (ObjectDescriptorCallback)ShopKeeper_hitDetect,
-    (ObjectDescriptorCallback)ShopKeeper_render,
-    (ObjectDescriptorCallback)ShopKeeper_free,
-    (ObjectDescriptorCallback)ShopKeeper_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)ShopKeeper_getExtraSize,
-};
-
 int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
 {
     int state;
@@ -847,3 +1023,20 @@ void ShopKeeper_initialise(void)
     lbl_803AD068[7] = return0_801E66E4;
     lbl_803DDC58 = return0_801E66DC;
 }
+
+ObjectDescriptor gShopKeeperObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)ShopKeeper_initialise,
+    (ObjectDescriptorCallback)ShopKeeper_release,
+    0,
+    (ObjectDescriptorCallback)ShopKeeper_init,
+    (ObjectDescriptorCallback)ShopKeeper_update,
+    (ObjectDescriptorCallback)ShopKeeper_hitDetect,
+    (ObjectDescriptorCallback)ShopKeeper_render,
+    (ObjectDescriptorCallback)ShopKeeper_free,
+    (ObjectDescriptorCallback)ShopKeeper_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)ShopKeeper_getExtraSize,
+};

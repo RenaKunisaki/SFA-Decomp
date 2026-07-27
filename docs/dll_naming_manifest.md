@@ -689,7 +689,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x283 | DR_BarrelGr | RAW | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x284 | — | NO-RETAIL-NAME | dlls/objects/644/644.c | = (canonical) | Exact complete ShopItem-family TU with descriptor at the physical end; object-definition aliases are not DLL basenames |
 | 0x285 | SPShop | RAW | dlls/objects/645_SPShop/SPShop.c | = (canonical) | Exact complete TU; descriptor placement before the function bodies is required for matching data relocation order |
-| 0x286 | SPShopKeepe | RAW | dlls/objects/646_SPShopKeepe/SPShopKeepe.c | = (canonical) | Exact DOL-confirmed TU containing the five preceding DR laser-turret callbacks and the complete ShopKeeper implementation |
+| 0x286 | SPShopKeepe | RAW | dlls/objects/646_SPShopKeepe/SPShopKeepe.c | = (canonical) | Exact DOL-confirmed TU containing the auxiliary shopkeeper, T-Rex lazerwall, DR laser-turret, and complete ShopKeeper implementations |
 | 0x287 | SPScarab | RAW | dlls/objects/647_SPScarab/SPScarab.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x288 | SPDrape | RAW | dlls/objects/648_SPDrape/SPDrape.c | = (canonical) | Exact complete TU; descriptor placement preserves the following jump table, and the non-emitted helper contributes to `.sdata2` literal order |
 | 0x289 | SPitembeam | RAW | dlls/objects/649_SPitembeam/SPitembeam.c | = (canonical) | Exact complete TU; descriptor is followed by a DOL-proven 76-byte SnowBike table |
