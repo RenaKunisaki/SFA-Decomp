@@ -1,9 +1,9 @@
 /*
- * projenergise2 (DLL 0x00B5) - retired "energise" projectile object.
+ * projenergise2 (DLL 181 / 0x00B5) - retired "energise" projectile object.
  *
- * No descriptor survives in this TU: only the entry point (logs that this
- * projectile is no longer supported and returns the unsupported sentinel)
- * plus empty release/initialise stubs.
+ * Its entry point reports that the projectile is no longer supported and
+ * returns the unsupported sentinel; release/initialise are empty stubs. The
+ * TU ends with the descriptor for projrobotfire, the next link-order unit.
  */
 #include "dolphin/os.h"
 #include "main/dll/dll_descriptor_table.h"
