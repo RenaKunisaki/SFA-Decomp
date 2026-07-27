@@ -6,6 +6,9 @@
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 
+#define GPSH_SHRINE_RESET_SYMBOL_CREATORS_GAMEBIT  0x5AF
+#define GPSH_SHRINE_ACTIVATE_SYMBOL_SPAWNS_GAMEBIT 0x148
+
 typedef struct GPSHShrinePuzzleFlags {
     u8 activated : 1;
     u8 gameBit0149Latched : 1;
