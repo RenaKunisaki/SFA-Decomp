@@ -134,7 +134,6 @@ extern const f32 lbl_803DEC70;
 extern const f32 lbl_803DEC74;
 extern f32 lbl_803DEC98;
 extern f32 lbl_803DEC9C;
-extern const f32 lbl_803DEC58;
 extern const f32 lbl_803DEC68;
 extern f32 lbl_803DEC90[2];
 extern f32 lbl_803DEC94;
@@ -274,12 +273,12 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
     {
         PSVECNormalize(a, a);
         b[0] = lbl_803DEC68;
-        b[1] = lbl_803DEC58;
-        b[2] = lbl_803DEC58;
+        b[1] = 0.0f;
+        b[2] = 0.0f;
         d = __fabs(PSVECDotProduct(a, b));
         if (d >= lbl_803DEC6C)
         {
-            b[0] = lbl_803DEC58;
+            b[0] = 0.0f;
             b[2] = lbl_803DEC68;
         }
         PSVECCrossProduct(a, b, c);
@@ -291,7 +290,7 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
         PSVECScale(c, c, scale);
         nd = -dist;
         s = lbl_803DEC74;
-        z = lbl_803DEC58;
+        z = 0.0f;
         out[0] = (s * ((z - b[0]) - c[0]));
         out[1] = (s * ((nd - b[1]) - c[1]));
         out[2] = (s * ((z - b[2]) - c[2]));
@@ -335,13 +334,13 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
             viewMtx = Camera_GetViewMatrix();
             Obj_BuildWorldTransformMatrix(obj, mtx, 0);
             mtx[0] = lbl_803DEC68;
-            mtx[1] = lbl_803DEC58;
-            mtx[2] = lbl_803DEC58;
-            mtx[4] = lbl_803DEC58;
+            mtx[1] = 0.0f;
+            mtx[2] = 0.0f;
+            mtx[4] = 0.0f;
             mtx[5] = lbl_803DEC68;
-            mtx[6] = lbl_803DEC58;
-            mtx[8] = lbl_803DEC58;
-            mtx[9] = lbl_803DEC58;
+            mtx[6] = 0.0f;
+            mtx[8] = 0.0f;
+            mtx[9] = 0.0f;
             mtx[10] = lbl_803DEC68;
             PSMTXConcat(viewMtx, mtx, outMtx);
             GXLoadPosMtxImm((const f32 (*)[4])outMtx, GX_PNMTX9);
@@ -524,7 +523,7 @@ int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, V
         int vis = 1;
         f32 dot = modelState->shadowOffsetX * triangles->normal.x + modelState->shadowOffsetY * triangles->normal.y +
                   modelState->shadowOffsetZ * triangles->normal.z;
-        if (dot < lbl_803DEC58)
+        if (dot < 0.0f)
         {
             vis = -1;
         }
@@ -765,7 +764,7 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
             }
             else
             {
-                yOff = lbl_803DEC58;
+                yOff = 0.0f;
             }
         }
 
@@ -975,19 +974,19 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     previousMagnitudeSquared = gPrevSunDir[0] * gPrevSunDir[0] + gPrevSunDir[1] * gPrevSunDir[1] +
                                gPrevSunDir[2] * gPrevSunDir[2];
     combinedMagnitudeSquared = directionMagnitudeSquared * previousMagnitudeSquared;
-    if (combinedMagnitudeSquared != lbl_803DEC58)
+    if (combinedMagnitudeSquared)
     {
         previousMagnitudeSquared = sqrtf(combinedMagnitudeSquared);
     }
-    if (previousMagnitudeSquared != lbl_803DEC58)
+    if (previousMagnitudeSquared)
     {
         gSunDotCos = directionSimilarity / previousMagnitudeSquared;
     }
     else
     {
-        gSunDotCos = lbl_803DEC58;
+        gSunDotCos = 0.0f;
     }
-    if (gSunDotCos < *(f32*)&lbl_803DEC58)
+    if (gSunDotCos < 0.0f)
     {
         gSunDotCos = gSunDotCos * lbl_803DEC98;
     }
@@ -1020,14 +1019,14 @@ void initTextures(void)
     b[2] = -1.0f;
     a[3] = -1.0f;
     b[3] = -1.0f;
-    a[4] = lbl_803DEC58;
-    b[4] = lbl_803DEC58;
+    a[4] = 0.0f;
+    b[4] = 0.0f;
     a[5] = -1.0f;
     b[5] = -1.0f;
     a[6] = 1.0f;
     b[6] = 1.0f;
-    a[7] = lbl_803DEC58;
-    b[7] = lbl_803DEC58;
+    a[7] = 0.0f;
+    b[7] = 0.0f;
     a[8] = -1.0f;
     b[8] = -1.0f;
     a[9] = 1.0f;
@@ -1040,16 +1039,16 @@ void initTextures(void)
     b[13] = -1.0f;
     b[14] = 1.0f;
     b[15] = -1.0f;
-    b[16] = lbl_803DEC58;
+    b[16] = 0.0f;
     b[17] = 1.0f;
     b[18] = 1.0f;
-    b[19] = lbl_803DEC58;
+    b[19] = 0.0f;
     b[20] = 1.0f;
     b[21] = 1.0f;
     b[22] = -1.0f;
     b[23] = 1.0f;
     a[12] = -6.0f;
-    a[13] = lbl_803DEC58;
+    a[13] = 0.0f;
     a[14] = 55.0f;
     a[15] = -6.0f;
     a[16] = 16.0f;
@@ -1058,7 +1057,7 @@ void initTextures(void)
     a[19] = 16.0f;
     a[20] = 55.0f;
     a[21] = 6.0f;
-    a[22] = lbl_803DEC58;
+    a[22] = 0.0f;
     a[23] = 55.0f;
     allocLotsOfTextures();
 }
