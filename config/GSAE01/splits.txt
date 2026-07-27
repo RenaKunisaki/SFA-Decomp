@@ -607,7 +607,7 @@ main/dll/dll_0011_screens.c:
 	.text       start:0x800EA174 end:0x800EA774
 	.sbss       start:0x803DD4A0 end:0x803DD4B0
 
-main/dll/dll_002F_carryable.c:
+dlls/engine/47/47.c:
 	.text       start:0x800EA774 end:0x800EADCC
 
 dlls/modgfx/89/89.c:

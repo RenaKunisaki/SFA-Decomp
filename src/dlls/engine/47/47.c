@@ -1,22 +1,3 @@
-/*
- * carryable (DLL 0x2F) - generic pick-up-and-carry prop object.
- *
- * The object joins object group 0x10 at init and leaves it on free. Its
- * extra state (CarryableUpdateHeldState) tracks a carry phase in carryState
- * (0 = resting, 1 = grabbed/carried, 2 = being put down) plus a small
- * flag byte at offset 7. Carryable_updateHeld drives the per-frame
- * behaviour: while resting it watches for a grab (surface code 6 under the
- * player + the A-button slot free), then runs vertical hit-detection
- * (hitDetectFn_80065e50) to settle the prop onto the surface beneath it and
- * record the highest surface type it overlaps; while carried it watches the
- * drop button, replays the put-down, and forwards a carry message to the
- * player object. Drop/save persists the prop's resting position through
- * saveGame_saveObjectPos. Carryable_updateRenderState toggles the model's
- * shadow-fade based on whether a sequence is playing.
- *
- * flag byte (state[7]) bits: 0x01 just-grabbed, 0x02 (inverted accessor),
- * 0x04 drop-disabled, 0x08 suppress position save.
- */
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/dll/player_api.h"
@@ -33,17 +14,14 @@
 #include "main/obj_message.h"
 
 #define PAD_BUTTON_A              0x100
-#define CARRYABLE_MSG_PLAYER_GRAB 0x100008 /* tells player to grab/hold the prop */
+#define CARRYABLE_MSG_PLAYER_GRAB 0x100008
 
-/* object group this prop joins at init / leaves on free */
 #define CARRYABLE_OBJGROUP 0x10
 
-/* carryState phases (state->carryState) */
 #define CARRY_STATE_RESTING 0
 #define CARRY_STATE_GRABBED 1
 #define CARRY_STATE_PUTDOWN 2
 
-/* flag byte (state->flags) bits */
 #define CARRYABLE_FLAG_JUST_GRABBED      0x01
 #define CARRYABLE_FLAG_GRAVITY_DISABLED  0x02
 #define CARRYABLE_FLAG_DROP_DISABLED     0x04
