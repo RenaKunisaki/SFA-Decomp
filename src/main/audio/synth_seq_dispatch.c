@@ -222,7 +222,7 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
         else
         {
             SynthVoice* sv = gSynthCurrentVoice;
-            if (((u32*)&sv->immediateMixValue0)[event->trackId / 32] & (1 << (event->trackId & 0x1f)))
+            if (sv->trackMute[event->trackId / 32] & (1 << (event->trackId & 0x1f)))
             {
                 if ((macId = sv->prgState[midi].macId) != 0xFFFF)
                 {
@@ -258,8 +258,7 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
                             }
                             else
                             {
-                                SynthVoice* sv3 = gSynthCurrentVoice;
-                                sv3->callbackLists[note->listIndex] = note->next;
+                                gSynthCurrentVoice->callbackLists[note->listIndex] = note->next;
                             }
                             if ((note->next = gSynthFreeCallbacks) != 0)
                             {

@@ -15,8 +15,8 @@ void synthSetHandleMixData(u32 handle, u32 mixValue0, u32 mixValue1)
 
     if ((slot & SYNTH_HANDLE_QUEUED_FLAG) == 0)
     {
-        runtime->voices[slot].immediateMixValue0 = mixValue0;
-        runtime->voices[slot].immediateMixValue1 = mixValue1;
+        runtime->voices[slot].trackMute[0] = mixValue0;
+        runtime->voices[slot].trackMute[1] = mixValue1;
     }
     else
     {

@@ -276,8 +276,7 @@ typedef struct SynthVoice
     SynthPage* drumtab;
     u8 drumTrans[0x80];
     u8* arrbase;
-    u32 immediateMixValue0;
-    u32 immediateMixValue1;
+    u32 trackMute[2];
     u8 unk124[0x200];
     u8 trackVolumeGroup[0x40];
     u8 unk364[0xB00];

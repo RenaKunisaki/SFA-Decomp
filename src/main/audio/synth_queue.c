@@ -94,8 +94,8 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     seq->defStudio = studio;
     if (para == 0)
     {
-        seq->immediateMixValue0 = -1;
-        seq->immediateMixValue1 = -1;
+        seq->trackMute[0] = -1;
+        seq->trackMute[1] = -1;
         for (i = 0; i < 16; i++)
         {
             seq->section[i].speed = 0x100;
@@ -106,13 +106,13 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     {
         if (para->flags & 1)
         {
-            seq->immediateMixValue0 = para->trackMute[0];
-            seq->immediateMixValue1 = para->trackMute[1];
+            seq->trackMute[0] = para->trackMute[0];
+            seq->trackMute[1] = para->trackMute[1];
         }
         else
         {
-            seq->immediateMixValue0 = -1;
-            seq->immediateMixValue1 = -1;
+            seq->trackMute[0] = -1;
+            seq->trackMute[1] = -1;
         }
 
         if (para->flags & 2)

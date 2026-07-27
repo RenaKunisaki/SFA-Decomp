@@ -202,8 +202,8 @@ void synthStartHandleFromRequest(SynthStartRequest* request, u32* outHandle, u8 
                     {
                         if ((newHandle & SYNTH_HANDLE_QUEUED_FLAG) == 0)
                         {
-                            runtime->voices[newHandle].immediateMixValue0 = mixValue0;
-                            runtime->voices[newHandle].immediateMixValue1 = mixValue1;
+                            runtime->voices[newHandle].trackMute[0] = mixValue0;
+                            runtime->voices[newHandle].trackMute[1] = mixValue1;
                         }
                         else
                         {
@@ -298,8 +298,8 @@ void synthStartHandleFromRequest(SynthStartRequest* request, u32* outHandle, u8 
             {
                 if ((newHandle & SYNTH_HANDLE_QUEUED_FLAG) == 0)
                 {
-                    runtime->voices[newHandle].immediateMixValue0 = 0;
-                    runtime->voices[newHandle].immediateMixValue1 = 0;
+                    runtime->voices[newHandle].trackMute[0] = 0;
+                    runtime->voices[newHandle].trackMute[1] = 0;
                 }
                 else
                 {
