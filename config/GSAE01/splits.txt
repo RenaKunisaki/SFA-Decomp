@@ -611,7 +611,7 @@ main/dll/dll_002F_carryable.c:
 main/dll/dll_0059_dll59func0.c:
 	.text       start:0x800EADCC end:0x800EB098
 
-main/dll/dll_005A_staffcollisionfunc03.c:
+dlls/modgfx/90/90.c:
 	.text       start:0x800EB098 end:0x800EB618
 	.sdata      start:0x803DB898 end:0x803DB8B0
 

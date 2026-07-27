@@ -1,16 +1,5 @@
 /*
- * staffcollisionfunc03 (DLL 0x5A) - the staff-collision spark/burst
- * particle spawner.
- *
- * StaffCollision_func03 emits one or more short-lived gfx particle
- * effects at a staff-strike point. `variant` selects the effect family
- * (0 = the default coloured spark using lbl_803DB8A0 textures, non-zero
- * = the alternate burst using lbl_803DB8A8). `colorArgs`, when present,
- * carries the spawn count plus an RGB tint; for variant 0 each spawned
- * particle jitters the tint by +/-0x1B (clamped to 0..255). The effect
- * is positioned by walking the model-relative offsets in lbl_80311DA8
- * and optionally biased by the source object's world position and the
- * caller's spawn-parameter packet, then handed to the modgfx interface.
+ * DLL 90 / 0x5A - a staff-collision particle spawner.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
