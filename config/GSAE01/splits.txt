@@ -1393,14 +1393,15 @@ dlls/engine/62/62.c:
 	.text       start:0x80132008 end:0x80132024
 	.data       start:0x8031C300 end:0x8031C328
 
-main/dll/dll_0031_minimap.c:
+dlls/engine/49/49.c:
 	.text       start:0x80132024 end:0x80133F70
-	.data       start:0x8031C328 end:0x8031C620
+	.data       start:0x8031C328 end:0x8031C5F8
 	.sdata      start:0x803DBBB0 end:0x803DBBF0
 	.sbss       start:0x803DD928 end:0x803DD960
 
 dlls/engine/63/63.c:
 	.text       start:0x80133F70 end:0x80134098
+	.data       start:0x8031C5F8 end:0x8031C620
 	.sdata      start:0x803DBBF0 end:0x803DBBF8
 
 dlls/engine/64/64.c:

@@ -1,21 +1,3 @@
-/*
- * minimap (DLL 0x31) - the in-world minimap / compass HUD.
- *
- * Minimap_update() resolves the player's current map cell against
- * gMinimapCellTable, picks the texture asset to display, animates the
- * box open/close and fade, and renders one of three view modes (the
- * view-mode selector: 0 = scrollable map texture, 1 = radar/blip
- * view, 2 = area-name text). The per-frame input handler toggles the
- * map (event 0xC8D), cycles the view mode with D-pad left/right, drives
- * zoom (modes via powfCoreFast) and the compass blip, and plays the
- * associated UI sfx.
- *
- * The HUD is suppressed (and faded out) when the camera is in mode
- * 0x44, the viewport is letterboxed, the player model is hidden, or the
- * pause menu is up. Minimap_initialise()/Minimap_release() own the
- * texture buffers (minimapTexture, the compass at gMinimapCompassTexture) and the
- * 2-slot live-objects table at gMinimapBlipObjects.
- */
 #include "main/texture.h"
 #include "track/intersect_hud_api.h"
 #include "main/gametext_box_api.h"
@@ -46,7 +28,6 @@
 #include "main/minimap_api.h"
 #include "main/textrender_api.h"
 #include "main/pause_menu_api.h"
-#include "main/dll/dll_003F_dll3f.h"
 #include "main/gametext_color_api.h"
 #include "dlls/objects/291_fuelCell.h"
 
@@ -68,18 +49,14 @@ f32 gMinimapZoomStep = 1.0f;
 int gMinimapPrevAreaNameId = -1;
 f32 gMinimapWorldToTexScale = 0.08f;
 
-#define CAMMODE_VIEWFINDER 0x44 /* dll_0044_cameramodeviewfinder */
+#define CAMMODE_VIEWFINDER 0x44
 
 #define MINIMAP_OBJFLAG_PARENT_SLACK 0x1000
 
-/* compass texture asset (loaded into gMinimapCompassTexture; see file header). */
 #define MINIMAP_TEXTURE_COMPASS 0xBE5
 
-/* base of the 2-object run spawned into gMinimapBlipObjects; both 0x7DA and 0x7DB are
-   "CommandMenu" in the retail OBJECTS.bin, so only the run base is named here. */
 #define MINIMAP_COMMAND_MENU_OBJ_BASE 2010
 
-/* gMinimapViewMode selector (see file header): the three HUD view modes. */
 #define MINIMAP_VIEW_MODE_MAP       0
 #define MINIMAP_VIEW_MODE_RADAR     1
 #define MINIMAP_VIEW_MODE_AREA_NAME 2
@@ -1044,13 +1021,3 @@ u32 lbl_8031C5D0[10] = {0x00000000,
                         (u32)Minimap_frameStart,
                         (u32)Minimap_update,
                         0x00000000};
-u32 lbl_8031C5F8[10] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00050000,
-                        (u32)dll_3F_initialise,
-                        (u32)dll_3F_release,
-                        0x00000000,
-                        (u32)dll_3F_frameStart_ret_0,
-                        (u32)dll_3F_frameEnd_nop,
-                        (u32)dll_3F_updateTimerReadout};

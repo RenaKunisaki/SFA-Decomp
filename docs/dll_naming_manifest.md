@@ -92,7 +92,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x02E | — | NO-RETAIL-NAME | main/dll/dll_002E_moveLib.c | = (canonical) | — |
 | 0x02F | — | NO-RETAIL-NAME | main/dll/dll_002F_carryable.c | = (canonical) | — |
 | 0x030 | — | NO-RETAIL-NAME | dlls/engine/48/48.c | = (canonical) | Complete DOL-confirmed data-only TU |
-| 0x031 | — | NO-RETAIL-NAME | main/dll/dll_0031_minimap.c | = (canonical) | — |
+| 0x031 | — | NO-RETAIL-NAME | dlls/engine/49/49.c | = (canonical) | Complete DOL-confirmed TU; map rows restored from DLL 60 |
 | 0x032 | — | NO-RETAIL-NAME | dlls/engine/50/50.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
 | 0x033 | — | NO-RETAIL-NAME | dlls/engine/51/51.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
 | 0x034 | — | NO-RETAIL-NAME | dlls/engine/52/52.c | = (canonical) | Complete DOL-confirmed TU |
@@ -106,7 +106,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x03C | — | NO-RETAIL-NAME | dlls/engine/60/60.c | = (canonical) | Complete DOL-confirmed TU; adjacent DLL and minimap data tails restored to their owning units |
 | 0x03D | — | NO-RETAIL-NAME | dlls/engine/61/61.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x03E | — | NO-RETAIL-NAME | dlls/engine/62/62.c | = (canonical) | Complete DOL-confirmed TU |
-| 0x03F | — | NO-RETAIL-NAME | dlls/engine/63/63.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x03F | — | NO-RETAIL-NAME | dlls/engine/63/63.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 49 |
 | 0x040 | — | NO-RETAIL-NAME | dlls/engine/64/64.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x041 | — | NO-RETAIL-NAME | dlls/engine/65/65.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x042 | — | NO-RETAIL-NAME | dlls/engine/66/66.c | = (canonical) | Complete DOL-confirmed TU consolidated from the former cutcam and DLL 0x42 fragments |

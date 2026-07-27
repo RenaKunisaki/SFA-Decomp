@@ -1054,6 +1054,7 @@ config.libs = [
         "objects": [
             # dlls/engine
             Object(MatchingFor("GSAE01"), "dlls/engine/48/48.c"),
+            Object(NonMatching, "dlls/engine/49/49.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/engine/50/50.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "dlls/engine/51/51.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/52/52.c", cflags=cflags_dll_noopt),
@@ -1545,7 +1546,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_4d.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/prof.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_0000_gameui.c", cflags=cflags_dll_noopt, extra_cflags=["-inline", "noauto"]),
-            Object(NonMatching, "main/dll/dll_0031_minimap.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/objects/704/704.c", cflags=cflags_dll_noopt_noloopinv),
             Object(NonMatching, "main/dll/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
             Object(MatchingFor("GSAE01"), "dlls/objects/223_Hagabon/Hagabon.c", cflags=cflags_dll_noopt),
