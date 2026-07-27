@@ -15,21 +15,13 @@
 #include "main/gamebits.h"
 #include "main/object_render.h"
 
-const f32 lbl_803E5DC8 = 1.0f;   /* render scale */
-const f32 lbl_803E5DCC = 3.0f;   /* rider height to trigger the rise */
-const f32 lbl_803E5DD0 = 20.0f;
-const f32 lbl_803E5DD4 = 100.0f; /* raised height above placement */
-const f32 lbl_803E5DD8 = 0.5f;   /* settle speed when overshot */
-const f32 lbl_803E5DDC = 0.25f;  /* rise speed */
-const f32 lbl_803E5DE0 = 0.125f; /* sink speed */
-
-#define WM_COLRISE_RENDER_SCALE          lbl_803E5DC8
-#define WM_COLRISE_RIDER_HEIGHT          lbl_803E5DCC
-#define WM_COLRISE_RAISED_OFFSET_LOW     lbl_803E5DD0
-#define WM_COLRISE_RAISED_OFFSET_HIGH    lbl_803E5DD4
-#define WM_COLRISE_SETTLE_SPEED          lbl_803E5DD8
-#define WM_COLRISE_RISE_SPEED            lbl_803E5DDC
-#define WM_COLRISE_SINK_SPEED            lbl_803E5DE0
+#define WM_COLRISE_RENDER_SCALE          1.0f
+#define WM_COLRISE_RIDER_HEIGHT          3.0f
+#define WM_COLRISE_RAISED_OFFSET_LOW     20.0f
+#define WM_COLRISE_RAISED_OFFSET_HIGH    100.0f
+#define WM_COLRISE_SETTLE_SPEED          0.5f
+#define WM_COLRISE_RISE_SPEED            0.25f
+#define WM_COLRISE_SINK_SPEED            0.125f
 
 int WM_colrise_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
