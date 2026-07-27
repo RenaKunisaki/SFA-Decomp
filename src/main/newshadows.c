@@ -1848,8 +1848,8 @@ static inline void fillInverseRampTexture(void)
 
 void allocLotsOfTextures(void)
 {
-    int j;
     int i;
+    int j;
     f32 rc2;
     Texture* frameTexture;
     f32 rc;
