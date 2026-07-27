@@ -2085,9 +2085,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         prod = targetWg * state->activeWalkGroup & 0xffff;
         if (prod != 0)
         {
-            for (i = 0, link = prod; i < 4; i++)
+            u16* ids = wgi.patchGroupIds;
+
+            for (i = 0, link = prod; i < 4; ids++, i++)
             {
-                if ((prod == wgi.patchGroupIds[i]) && (((1 << i) & wgi.patchMask) != 0))
+                if ((prod == *ids) && (((1 << i) & wgi.patchMask) != 0))
                 {
                     state->linkedWalkGroup = link;
                     state->linkedPatchPos.x = ((TrickyPoint3*)target)->x;
