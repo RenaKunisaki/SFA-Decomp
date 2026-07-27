@@ -1,240 +1,210 @@
-/* DLL 0x19D */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/dll_019D_dll19d.h"
-#include "main/render_lactions_api.h"
-#include "main/dll_000A_expgfx.h"
+/* DLL 0x19D (slot 413) - moving particle-effect object. */
+#include "dlls/objects/413.h"
+
 #include "game/objects/object.h"
-#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/objhits.h"
-#include "sys/objects/lifecycle.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/audio/sfx.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
-#define DLL19D_HIT_VOLUME_SLOT 0xe
+#include "main/objhits.h"
+#include "main/render_lactions_api.h"
+#include "sys/objects/lifecycle.h"
 
-typedef struct Dll19DPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x19 - 0x18];
-    u8 variant;
-    u8 pad1A[0x20 - 0x1A];
-} Dll19DPlacement;
+#define DLL413_HIT_VOLUME_SLOT              0xE
+#define DLL413_DEFAULT_HIT_TYPE             1
+#define DLL413_VARIANT_HIT_TYPE             3
+#define DLL413_PARTFX_IMPACT                0x2A0
+#define DLL413_PARTFX_TRAIL                 0x29D
+#define DLL413_PARTFX_PULSE_A               0x29E
+#define DLL413_PARTFX_PULSE_B               0x29F
+#define DLL413_PARTFX_PULSE_C               0x2A1
+#define DLL413_IMPACT_PARTFX_MODE           1
+#define DLL413_FLIGHT_PARTFX_MODE           4
+#define DLL413_IGNORED_HIT_SEQUENCE_ID      0x248
+#define DLL413_STOP_ACTION_ID               1
+#define DLL413_DEFAULT_ACTION_ID            0x201
+#define DLL413_VARIANT_ONE_ACTION_ID        0x203
+#define DLL413_VARIANT_TWO_ACTION_ID        0x204
+#define DLL413_EFFECT_TIMER_RESET           0x32
+#define DLL413_DESPAWN_TIMER_RESET          0x32
+#define DLL413_SPIN_PHASE_STEP              0x5DC
+#define DLL413_FLAG_POSITION_INITIALIZED    0x1
+#define DLL413_FLAG_STOP_ACTION_INITIALIZED 0x2
 
-typedef struct Dll19DState
-{
-    u8 pad0[0x8 - 0x0];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x2C - 0x14];
-    s16 rotVelZ; /* 0x2c: per-frame rotZ spin rate */
-    s16 rotVelX; /* 0x2e: per-frame rotX spin rate */
-    s16 effectTimer;
-    s16 despawnTimer;
-    u16 spinPhase; /* 0x34: free-running u16 phase accumulated each step (+framesThisStep*0x5dc) */
-    u8 flags;
-    u8 pad37[0x38 - 0x37];
-} Dll19DState;
+int dll413_getExtraSize(void) {
+    return sizeof(Dll413State);
+}
 
+int dll413_getObjectTypeId(void) {
+    return 0;
+}
 
+void dll413_free(GameObject* obj) {
+    Dll413State* state = obj->extra;
 
-/* partfx ids: 0x2a0 = impact burst (spawned 3x on hit in dll_19D_hitDetect
- * and the update hit-link branch); 0x29d = per-frame flight trail. */
-#define DLL19D_PARTFX_IMPACT 0x2a0
-#define DLL19D_PARTFX_TRAIL 0x29d
-
-int dll_19D_getExtraSize(void) { return 0x38; }
-int dll_19D_getObjectTypeId(void) { return 0x0; }
-
-void dll_19D_free(GameObject *obj)
-{
-    register int self = (int)obj;
-    register int state = *(int*)&((GameObject*)self)->extra;
-    if ((((Dll19DState*)state)->flags & 2) == 0)
-    {
-        getLActions((void*)self, (void*)self, 1, 0, 0, 0);
-        ((Dll19DState*)state)->flags = (u8)((u32)((Dll19DState*)state)->flags | 0x2);
+    if ((state->flags & DLL413_FLAG_STOP_ACTION_INITIALIZED) == 0) {
+        getLActions(obj, obj, DLL413_STOP_ACTION_ID, 0, 0, 0);
+        state->flags |= DLL413_FLAG_STOP_ACTION_INITIALIZED;
     }
-    (*gExpgfxInterface)->freeSource2((u32)self);
+    (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void dll_19D_render(void)
-{
+void dll413_render(void) {
 }
 
-void dll_19D_hitDetect(GameObject* obj)
-{
-    register int state;
-    register int self = (int)obj;
-    int state2;
+void dll413_hitDetect(GameObject* obj) {
+    Dll413State* state;
+    const Dll413Placement* placement;
+    ObjHitsPriorityState* hitState;
     PartFxSpawnParams spawnParams;
-    int linkObj;
-    void* linkSubObj;
+    GameObject* lastHitObject;
 
-    state = *(int*)&((GameObject*)self)->extra;
-    state2 = *(int*)&((GameObject*)self)->anim.placementData;
+    state = obj->extra;
+    placement = (const Dll413Placement*)obj->anim.placementData;
     spawnParams.posX = 0.0f;
     spawnParams.posY = 0.0f;
     spawnParams.posZ = 0.0f;
-    spawnParams.scale = (float)(int)(s8)((Dll19DPlacement*)state2)->variant;
+    spawnParams.scale = (f32)(int)placement->variant;
 
-    linkObj = *(int*)&((GameObject*)self)->anim.hitReactState;
-    linkSubObj = *(void**)&((ObjHitsPriorityState*)linkObj)->lastHitObject;
-    if (linkSubObj == 0) return;
-    if (*(short*)((u8*)linkSubObj + 0x46) == 0x248) return;
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+    lastHitObject = (GameObject*)hitState->lastHitObject;
+    if (lastHitObject == NULL) {
+        return;
+    }
+    if (lastHitObject->anim.seqId == DLL413_IGNORED_HIT_SEQUENCE_ID) {
+        return;
+    }
 
-    (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_IMPACT, &spawnParams, 1, -1, NULL);
-    (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_IMPACT, &spawnParams, 1, -1, NULL);
-    (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_IMPACT, &spawnParams, 1, -1, NULL);
-    ((Dll19DState*)state)->despawnTimer = 0x32;
+    (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_IMPACT, &spawnParams, DLL413_IMPACT_PARTFX_MODE, -1, NULL);
+    (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_IMPACT, &spawnParams, DLL413_IMPACT_PARTFX_MODE, -1, NULL);
+    (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_IMPACT, &spawnParams, DLL413_IMPACT_PARTFX_MODE, -1, NULL);
+    state->despawnTimer = DLL413_DESPAWN_TIMER_RESET;
 }
 
-void dll_19D_update(GameObject* obj)
-{
-    register int state;
-    register int self = (int)obj;
-    int def;
-    int linkObj;
+void dll413_update(GameObject* obj) {
+    Dll413State* state;
+    const Dll413Placement* placement;
+    ObjHitsPriorityState* hitState;
     PartFxSpawnParams spawnParams;
     int lifetime;
-    s16 timer;
     u32 frames;
     f32 zero;
 
-    state = *(int*)&((GameObject*)self)->extra;
-    def = *(int*)&((GameObject*)self)->anim.placementData;
+    state = obj->extra;
+    placement = (const Dll413Placement*)obj->anim.placementData;
     spawnParams.posX = 0.0f;
     spawnParams.posY = 0.0f;
     spawnParams.posZ = 0.0f;
-    spawnParams.scale = (float)(int)(s8)((Dll19DPlacement*)def)->variant;
+    spawnParams.scale = (f32)(int)placement->variant;
 
-    if ((((Dll19DState*)state)->flags & 1) == 0)
-    {
-        ((Dll19DState*)state)->posX = ((GameObject*)self)->anim.localPosX;
-        ((Dll19DState*)state)->posY = ((GameObject*)self)->anim.localPosY;
-        ((Dll19DState*)state)->posZ = ((GameObject*)self)->anim.localPosZ;
-        ((Dll19DState*)state)->flags = (u8)((u32)((Dll19DState*)state)->flags | 1);
+    if ((state->flags & DLL413_FLAG_POSITION_INITIALIZED) == 0) {
+        state->positionX = obj->anim.localPosX;
+        state->positionY = obj->anim.localPosY;
+        state->positionZ = obj->anim.localPosZ;
+        state->flags |= DLL413_FLAG_POSITION_INITIALIZED;
     }
 
-    linkObj = *(int*)&((GameObject*)self)->anim.hitReactState;
-    if (((ObjHitsPriorityState*)linkObj)->contactFlags != 0)
-    {
-        Sfx_PlayFromObject(self, SFXTRIG_npu_216);
-        (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_IMPACT, &spawnParams, 1, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_IMPACT, &spawnParams, 1, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_IMPACT, &spawnParams, 1, -1, NULL);
-        ((Dll19DState*)state)->despawnTimer = 0x32;
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+    if (hitState->contactFlags != 0) {
+        Sfx_PlayFromObject((u32)obj, SFXTRIG_npu_216);
+        (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_IMPACT, &spawnParams, DLL413_IMPACT_PARTFX_MODE, -1, NULL);
+        (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_IMPACT, &spawnParams, DLL413_IMPACT_PARTFX_MODE, -1, NULL);
+        (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_IMPACT, &spawnParams, DLL413_IMPACT_PARTFX_MODE, -1, NULL);
+        state->despawnTimer = DLL413_DESPAWN_TIMER_RESET;
     }
 
-    if (((Dll19DState*)state)->despawnTimer != 0)
-    {
-        if ((((Dll19DState*)state)->flags & 2) == 0)
-        {
-            getLActions((void*)self, (void*)self, 1, 0, 0, 0);
-            ((Dll19DState*)state)->flags = (u8)((u32)((Dll19DState*)state)->flags | 2);
+    if (state->despawnTimer != 0) {
+        if ((state->flags & DLL413_FLAG_STOP_ACTION_INITIALIZED) == 0) {
+            getLActions(obj, obj, DLL413_STOP_ACTION_ID, 0, 0, 0);
+            state->flags |= DLL413_FLAG_STOP_ACTION_INITIALIZED;
         }
         zero = 0.0f;
-        ((GameObject*)self)->anim.velocityX = zero;
-        ((GameObject*)self)->anim.velocityY = zero;
-        ((GameObject*)self)->anim.velocityZ = zero;
-        ObjHits_ClearHitVolumes((ObjAnimComponent*)self);
-        ((Dll19DState*)state)->despawnTimer -= 1;
-        if (((Dll19DState*)state)->despawnTimer <= 0)
-        {
-            Obj_FreeObject((GameObject*)self);
+        obj->anim.velocityX = zero;
+        obj->anim.velocityY = zero;
+        obj->anim.velocityZ = zero;
+        ObjHits_ClearHitVolumes(&obj->anim);
+        state->despawnTimer -= 1;
+        if (state->despawnTimer <= 0) {
+            Obj_FreeObject(obj);
         }
-    }
-    else
-    {
-        ((GameObject*)self)->anim.previousLocalPosX = ((GameObject*)self)->anim.localPosX;
-        ((GameObject*)self)->anim.previousLocalPosY = ((GameObject*)self)->anim.localPosY;
-        ((GameObject*)self)->anim.previousLocalPosZ = ((GameObject*)self)->anim.localPosZ;
+    } else {
+        obj->anim.previousLocalPosX = obj->anim.localPosX;
+        obj->anim.previousLocalPosY = obj->anim.localPosY;
+        obj->anim.previousLocalPosZ = obj->anim.localPosZ;
 
-        ((GameObject*)self)->anim.rotX = (s16)(((GameObject*)self)->anim.rotX + ((Dll19DState*)state)->rotVelX * framesThisStep);
-        ((GameObject*)self)->anim.rotZ = (s16)(((GameObject*)self)->anim.rotZ + ((Dll19DState*)state)->rotVelZ * framesThisStep);
-        (*gPartfxInterface)->spawnObject((void*)self, DLL19D_PARTFX_TRAIL, &spawnParams, 4, -1, NULL);
+        obj->anim.rotX = (s16)(obj->anim.rotX + state->angularVelocityX * framesThisStep);
+        obj->anim.rotZ = (s16)(obj->anim.rotZ + state->angularVelocityZ * framesThisStep);
+        (*gPartfxInterface)->spawnObject(obj, DLL413_PARTFX_TRAIL, &spawnParams, DLL413_FLIGHT_PARTFX_MODE, -1, NULL);
 
-        if ((((Dll19DState*)state)->effectTimer -= framesThisStep) <= 0)
-        {
-            (*gPartfxInterface)->spawnObject((void*)self, 0x29e, &spawnParams, 4, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)self, 0x29f, &spawnParams, 4, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)self, 0x2a1, &spawnParams, 4, -1, NULL);
-            ((Dll19DState*)state)->effectTimer = 0x32;
+        if ((state->effectTimer -= framesThisStep) <= 0) {
+            (*gPartfxInterface)
+                ->spawnObject(obj, DLL413_PARTFX_PULSE_A, &spawnParams, DLL413_FLIGHT_PARTFX_MODE, -1, NULL);
+            (*gPartfxInterface)
+                ->spawnObject(obj, DLL413_PARTFX_PULSE_B, &spawnParams, DLL413_FLIGHT_PARTFX_MODE, -1, NULL);
+            (*gPartfxInterface)
+                ->spawnObject(obj, DLL413_PARTFX_PULSE_C, &spawnParams, DLL413_FLIGHT_PARTFX_MODE, -1, NULL);
+            state->effectTimer = DLL413_EFFECT_TIMER_RESET;
         }
 
-        ((Dll19DState*)state)->posX = ((GameObject*)self)->anim.velocityX * timeDelta + ((Dll19DState*)state)->posX;
-        ((Dll19DState*)state)->posY = ((GameObject*)self)->anim.velocityY * timeDelta + ((Dll19DState*)state)->posY;
-        ((Dll19DState*)state)->posZ = ((GameObject*)self)->anim.velocityZ * timeDelta + ((Dll19DState*)state)->posZ;
-        ((Dll19DState*)state)->spinPhase = ((Dll19DState*)state)->spinPhase + framesThisStep * 0x5dc;
-        ((GameObject*)self)->anim.localPosX = ((Dll19DState*)state)->posX;
-        ((GameObject*)self)->anim.localPosY = ((Dll19DState*)state)->posY;
-        ((GameObject*)self)->anim.localPosZ = ((Dll19DState*)state)->posZ;
+        state->positionX = obj->anim.velocityX * timeDelta + state->positionX;
+        state->positionY = obj->anim.velocityY * timeDelta + state->positionY;
+        state->positionZ = obj->anim.velocityZ * timeDelta + state->positionZ;
+        state->spinPhase = state->spinPhase + framesThisStep * DLL413_SPIN_PHASE_STEP;
+        obj->anim.localPosX = state->positionX;
+        obj->anim.localPosY = state->positionY;
+        obj->anim.localPosZ = state->positionZ;
 
         frames = framesThisStep;
-        lifetime = *(int*)(self + 0xf4);
-        ((GameObject*)self)->userData1 = lifetime - frames;
-        if ((int)(lifetime - frames) < 0)
-        {
-            Obj_FreeObject((GameObject*)self);
+        lifetime = obj->userData1;
+        obj->userData1 = lifetime - frames;
+        if ((int)(lifetime - frames) < 0) {
+            Obj_FreeObject(obj);
         }
     }
 }
 
-void dll_19D_init(GameObject* obj)
-{
-    register int state2;
-    register int self = (int)obj;
-    int slot;
+void dll413_init(GameObject* obj) {
+    const Dll413Placement* placement;
+    int hitType;
 
-    state2 = *(int*)&((GameObject*)self)->anim.placementData;
+    placement = (const Dll413Placement*)obj->anim.placementData;
 
-    if ((int)(signed char)*(u8*)(state2 + 0x19) != 0)
-    {
-        slot = 3;
+    if (placement->variant != 0) {
+        hitType = DLL413_VARIANT_HIT_TYPE;
+    } else {
+        hitType = DLL413_DEFAULT_HIT_TYPE;
     }
-    else
-    {
-        slot = 1;
-    }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)self, DLL19D_HIT_VOLUME_SLOT, slot, 0);
+    ObjHits_SetHitVolumeSlot(&obj->anim, DLL413_HIT_VOLUME_SLOT, hitType, 0);
 
-    if ((int)(signed char)((Dll19DPlacement*)state2)->variant == 1)
-    {
-        getLActions((void*)self, (void*)self, 0x203, 0, 0, 0);
-    }
-    else if ((int)(signed char)((Dll19DPlacement*)state2)->variant == 2)
-    {
-        getLActions((void*)self, (void*)self, 0x204, 0, 0, 0);
-    }
-    else
-    {
-        getLActions((void*)self, (void*)self, 0x201, 0, 0, 0);
+    if (placement->variant == 1) {
+        getLActions(obj, obj, DLL413_VARIANT_ONE_ACTION_ID, 0, 0, 0);
+    } else if (placement->variant == 2) {
+        getLActions(obj, obj, DLL413_VARIANT_TWO_ACTION_ID, 0, 0, 0);
+    } else {
+        getLActions(obj, obj, DLL413_DEFAULT_ACTION_ID, 0, 0, 0);
     }
 }
 
-void dll_19D_release(void)
-{
+void dll413_release(void) {
 }
 
-void dll_19D_initialise(void)
-{
+void dll413_initialise(void) {
 }
 
-ObjectDescriptor dll_19D = {
+ObjectDescriptor gDll413ObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_19D_initialise,
-    (ObjectDescriptorCallback)dll_19D_release,
+    (ObjectDescriptorCallback)dll413_initialise,
+    (ObjectDescriptorCallback)dll413_release,
     0,
-    (ObjectDescriptorCallback)dll_19D_init,
-    (ObjectDescriptorCallback)dll_19D_update,
-    (ObjectDescriptorCallback)dll_19D_hitDetect,
-    (ObjectDescriptorCallback)dll_19D_render,
-    (ObjectDescriptorCallback)dll_19D_free,
-    (ObjectDescriptorCallback)dll_19D_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll_19D_getExtraSize,
+    (ObjectDescriptorCallback)dll413_init,
+    (ObjectDescriptorCallback)dll413_update,
+    (ObjectDescriptorCallback)dll413_hitDetect,
+    (ObjectDescriptorCallback)dll413_render,
+    (ObjectDescriptorCallback)dll413_free,
+    (ObjectDescriptorCallback)dll413_getObjectTypeId,
+    dll413_getExtraSize,
 };
