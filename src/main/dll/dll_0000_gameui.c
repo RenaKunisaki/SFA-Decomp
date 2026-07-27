@@ -4946,13 +4946,13 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 textHeight = boundsRight - boundsLeft;
                 lbl_803DD824[0].trailX = textHeight;
                 lbl_803DD824[0].x =
-                    lbl_803DBA8C * (f32)(s32)(textBox->f14 + textBox->f08 - (textHeight >> 1) - 0x140) + lbl_803E1F34;
+                    lbl_803DBA8C * (f32)(s32)(textBox->x + textBox->width - (textHeight >> 1) - 0x140) + lbl_803E1F34;
 
                 textBox = gameTextGetBox(0x80);
                 gameTextMeasureById(0x3cc, 0, 0, &boundsLeft, &boundsRight, &boundsTop, &boundsBottom);
                 textHeight = boundsRight - boundsLeft;
                 lbl_803DD824[1].trailX = textHeight;
-                x = textBox->f14 + (textHeight >> 1) - 0x140;
+                x = textBox->x + (textHeight >> 1) - 0x140;
                 lbl_803DD824[1].x = lbl_803DBA8C * (f32)(s32)x + lbl_803E1F34;
 
                 if (lbl_803DD7D8 != 0)
@@ -5719,10 +5719,10 @@ void highScoreScreenDraw(int p1, int p2, int p3)
 
     gHighScorePulseAngle += gHighScorePulseAngleStep;
     pulse = (int)(gHighScorePulseAmplitude * fsin16Precise((u16)gHighScorePulseAngle) + gHighScorePulseBias);
-    h = (s16)box->f0a;
-    w = (s16)box->f08;
-    y = box->f16;
-    x = box->f14;
+    h = (s16)box->height;
+    w = (s16)box->width;
+    y = box->y;
+    x = box->x;
 
     drawTexture(((HudTextures*)hudTextures)->tex28, (f32)(left = x - 5), (f32)(top = y - 5), 0xff, 0x100);
     drawScaledTexture(((HudTextures*)hudTextures)->tex34, x, (f32)top, 0xff, 0x100, w, 5, 0);
@@ -5762,8 +5762,8 @@ void highScoreScreenDraw(int p1, int p2, int p3)
             if (starred != 0)
             {
                 TextSlot* box2 = gameTextGetBox(0x87);
-                int boxY = box2->f16;
-                drawTexture(((HudTextures*)hudTextures)->texF8, (f32)(box2->f14 + 0x64),
+                int boxY = box2->y;
+                drawTexture(((HudTextures*)hudTextures)->texF8, (f32)(box2->x + 0x64),
                             (f32)(starY += boxY + 0x57), 0xff, 0x100);
                 gameTextShowStr(sHighScoreStarMark, 0x87, 0x82, rowY);
             }

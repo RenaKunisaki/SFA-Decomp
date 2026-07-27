@@ -215,8 +215,8 @@ void gameTextShowStr(char* text, int box, int arg2, int arg3)
     if (gameTextDrawFunc != NULL)
     {
         TextSlot* slot = (TextSlot*)gTextBoxes + box;
-        slot->f18 = arg2;
-        slot->f1a = arg3;
+        slot->cursorX = arg2;
+        slot->cursorY = arg3;
         gameTextRenderStrs(text, box);
     }
     else
@@ -244,16 +244,16 @@ void gameTextRenderStrs(char* str, int boxIdx)
 
     if (lbl_803DC9C0 != 1)
     {
-        slot->f12 = slot->f10;
+        slot->alignment = slot->alignH;
         if (lbl_803DC9BC == 0)
         {
             gameTextDrawBox(NULL, (int)str, slot);
         }
     }
-    lines = textMeasureFn_80016c9c(str, (f32)(u32)slot->f08, slot->f0c, &count, &lineH);
+    lines = textMeasureFn_80016c9c(str, (f32)(u32)slot->width, slot->scale, &count, &lineH);
     if (lines == NULL)
     {
-        slot->f1a = (s16)(lineH * count + slot->f1a);
+        slot->cursorY = (s16)(lineH * count + slot->cursorY);
         return;
     }
     if (gameTextDrawFunc != NULL)
@@ -262,14 +262,14 @@ void gameTextRenderStrs(char* str, int boxIdx)
     }
     else if (lbl_803DC9BC == 0)
     {
-        gxSetScissorRect(0, 0, slot->f14, slot->f16, slot->f14 + slot->f08, slot->f16 + slot->f0a);
+        gxSetScissorRect(0, 0, slot->x, slot->y, slot->x + slot->width, slot->y + slot->height);
     }
-    lbl_803DC9A0 = slot->f0c;
+    lbl_803DC9A0 = slot->scale;
     for (i = 0; i < count; i++)
     {
-        if (i == count - 1 && slot->f12 == 3)
+        if (i == count - 1 && slot->alignment == 3)
         {
-            slot->f12 = 0;
+            slot->alignment = 0;
             closeAtEnd = 1;
         }
         if (lbl_803DC984 == 1 && lbl_803DC9BC == 0)
@@ -281,17 +281,17 @@ void gameTextRenderStrs(char* str, int boxIdx)
             lbl_803DC9A7 = lbl_803DC992;
             lbl_803DC9A6 = lbl_803DC991;
             lbl_803DC9A5 = lbl_803DC990;
-            textRenderStr(lines[i], slot, slot->f18, slot->f1a, lineH, 1);
+            textRenderStr(lines[i], slot, slot->cursorX, slot->cursorY, lineH, 1);
             lbl_803DC9A7 = save7;
             lbl_803DC9A6 = save6;
             lbl_803DC9A5 = save5;
             lbl_803DC9A0 = saveColor;
         }
-        textRenderStr(lines[i], slot, slot->f18, slot->f1a, lineH, 0);
-        slot->f1a = (s16)((f32)slot->f1a + lineH);
+        textRenderStr(lines[i], slot, slot->cursorX, slot->cursorY, lineH, 0);
+        slot->cursorY = (s16)((f32)slot->cursorY + lineH);
         if (closeAtEnd)
         {
-            slot->f12 = 3;
+            slot->alignment = 3;
         }
     }
     if (lbl_803DC9BC == 0)

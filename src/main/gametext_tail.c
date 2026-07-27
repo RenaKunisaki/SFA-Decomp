@@ -32,15 +32,15 @@ void gameTextMeasureFn_800163c4(char* str, int boxIdx, int x, int y, int* outMax
                                 int* outMinY)
 {
     TextSlot* box = (TextSlot*)gTextBoxes + boxIdx;
-    s16 savedX = box->f18;
-    s16 savedY = box->f1a;
+    s16 savedX = box->cursorX;
+    s16 savedY = box->cursorY;
     lbl_803DC9BC = 1;
     lbl_803DC9B0 = 0x7FFFFFFF;
     lbl_803DC9AC = 0;
     lbl_803DC9B8 = 0x7FFFFFFF;
     lbl_803DC9B4 = 0;
-    box->f18 = x;
-    box->f1a = y;
+    box->cursorX = x;
+    box->cursorY = y;
     gameTextRenderStrs(str, boxIdx);
     lbl_803DC9BC = 0;
     if (outMinX != NULL)
@@ -59,15 +59,15 @@ void gameTextMeasureFn_800163c4(char* str, int boxIdx, int x, int y, int* outMax
     {
         *outMaxY = lbl_803DC9AC >> 2;
     }
-    box->f18 = savedX;
-    box->f1a = savedY;
+    box->cursorX = savedX;
+    box->cursorY = savedY;
 }
 
 void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMaxX, int* outMaxY, int* outMinX, int* outMinY)
 {
     TextSlot* box = (TextSlot*)gTextBoxes + boxIdx;
-    s16 savedX = box->f18;
-    s16 savedY = box->f1a;
+    s16 savedX = box->cursorX;
+    s16 savedY = box->cursorY;
     lbl_803DC9BC = 1;
     lbl_803DC9B0 = 0x7FFFFFFF;
     lbl_803DC9AC = 0;
@@ -91,8 +91,8 @@ void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMaxX, int* outMa
     {
         *outMaxY = lbl_803DC9AC >> 2;
     }
-    box->f18 = savedX;
-    box->f1a = savedY;
+    box->cursorX = savedX;
+    box->cursorY = savedY;
 }
 
 void gameTextFn_8001658c(int a, int b, int c)
@@ -129,17 +129,17 @@ void gameTextFn_8001658c(int a, int b, int c)
 
     if (def->alignH == 0)
     {
-        slot->f12 = slot->f10;
+        slot->alignment = slot->alignH;
     }
-    slot->f18 = b;
-    slot->f1a = c;
+    slot->cursorX = b;
+    slot->cursorY = c;
 
     if (lbl_803DC9BC == 0)
     {
         int mode;
         if (def->alignV == 0)
         {
-            mode = slot->f11;
+            mode = slot->alignV;
         }
         else
         {
@@ -150,14 +150,14 @@ void gameTextFn_8001658c(int a, int b, int c)
             int maxX, maxY, minX, minY;
             int v;
             gameTextMeasureById(a, b, c, &maxX, &maxY, &minX, &minY);
-            v = slot->f0a - (minY - minX);
+            v = slot->height - (minY - minX);
             if (mode == 2)
             {
-                slot->f1a = (s16)(v / 2);
+                slot->cursorY = (s16)(v / 2);
             }
             else
             {
-                slot->f1a = v;
+                slot->cursorY = v;
             }
         }
     }
@@ -172,17 +172,17 @@ void gameTextFn_8001658c(int a, int b, int c)
     }
     else
     {
-        if (slot->f14 < 0)
+        if (slot->x < 0)
         {
-            slot->f14 = 0;
+            slot->x = 0;
         }
-        if (slot->f16 < 0)
+        if (slot->y < 0)
         {
-            slot->f16 = 0;
+            slot->y = 0;
         }
         if (lbl_803DC9BC == 0)
         {
-            gxSetScissorRect(0, 0, slot->f14, slot->f16, slot->f14 + slot->f08, slot->f16 + slot->f0a);
+            gxSetScissorRect(0, 0, slot->x, slot->y, slot->x + slot->width, slot->y + slot->height);
         }
     }
 

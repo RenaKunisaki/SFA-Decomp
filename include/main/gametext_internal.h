@@ -2,6 +2,7 @@
 #define MAIN_GAMETEXT_INTERNAL_H_
 
 #include "global.h"
+#include "main/gametext_box_api.h"
 
 typedef struct TaskTextEntry {
     u16 textSeqId;
@@ -34,22 +35,6 @@ typedef struct GameTextDef {
     u8 language;
     char** strings;
 } GameTextDef;
-
-typedef struct GameTextBox {
-    u8 pad0[8];
-    u16 f08;
-    u16 f0a;
-    f32 f0c;
-    u8 f10;
-    u8 f11;
-    u8 f12;
-    u8 pad13;
-    s16 f14;
-    s16 f16;
-    s16 f18;
-    s16 f1a;
-    u8 pad1c[4];
-} TextSlot;
 
 typedef struct LanguageName {
     char* name;

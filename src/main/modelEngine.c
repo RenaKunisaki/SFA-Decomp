@@ -723,7 +723,7 @@ void gameTimerRun(void* context)
 
         boxY = getMinimapY() - 0x28;
         drawHudBox(0x32, (s16)(boxY - 4), 0x78, 0x28, 0xFF, 1);
-        box->f16 = boxY;
+        box->y = boxY;
 
         if (colorFlag && hundredths < 0x32)
         {

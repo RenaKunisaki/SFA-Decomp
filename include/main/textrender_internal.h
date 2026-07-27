@@ -2,6 +2,7 @@
 #define MAIN_TEXTRENDER_INTERNAL_H_
 
 #include "main/texture.h"
+#include "main/gametext_box_api.h"
 
 typedef struct GlyphResource802CA100 {
     u16 rows0[320];
@@ -23,23 +24,6 @@ extern Texture* gGameTextBoxEdgeTexture;
 #define TEXTRENDER_TEXTURE_SUBTITLE_BOX_LEFT  0x43b
 #define TEXTRENDER_TEXTURE_SUBTITLE_BOX_MID   0x43e
 #define TEXTRENDER_TEXTURE_SUBTITLE_BOX_RIGHT 0x43d
-
-typedef struct GameTextBox
-{
-    u8 unk00[8];
-    u16 width;
-    u16 height;
-    u8 unk0C[6];
-    u8 alignment;
-    u8 style;
-    s16 x;
-    s16 y;
-    s16 cursorX;
-    s16 cursorY;
-    u16 flags;
-    u8 alpha;
-    u8 unk1F;
-} GameTextBox;
 
 typedef struct SubtitleLineTable
 {
