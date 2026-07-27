@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/86/86.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "dlls/engine/87/87.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/88/88.c", cflags=cflags_dll_noopt),
 
@@ -1505,7 +1506,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0053_cameramodecloudrunner.c", cflags=cflags_dll_noopt_noprop),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0054_dll54.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0055_cameramodeperv.c", cflags=cflags_dll_noopt),
-            Object(NonMatching, "main/dll/dll_0056_cameramodearwing.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(NonMatching, "main/dll/dll_0019_dll19func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0032_titlescreeninit.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0033_nrareware.c", cflags=cflags_dll_noopt),

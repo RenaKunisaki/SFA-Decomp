@@ -1,18 +1,5 @@
 /*
- * DLL 0x56 - camera mode "arwing" [80110E30-801115E4)
- *
- * Camera mode that follows the Arwing flight vehicle. Shared work state lives
- * in the global gCamArwingWork (CameraArwingWork): _init seeds the camera offset
- * and the per-axis input scales from the lbl_803E1Bxx constant table; _update
- * positions the camera from the scaled control input each frame, easing yaw,
- * pitch and roll toward their targets by timeDelta, with special handling when
- * the followed object is dead (aim at the nearest target) or exploding/warping
- * (spin the roll out). _copyToCurrent patches the live work state from an
- * external setter, dispatched on a value kind (position / input angles / one
- * float / two floats).
- *
- * The remaining bodies are the empty camera-mode vtable slots (release / free /
- * initialise / per-mode nops) this DLL leaves unimplemented.
+ * DLL 86 / 0x56 - Arwing camera mode.
  */
 #include "main/camera_interface.h"
 #include "main/resource.h"
@@ -22,7 +9,6 @@
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/object_transform.h"
 #include "dolphin/mtx/mtx_legacy.h"
-#include "main/vecmath.h"
 #include "main/vecmath.h"
 
 typedef struct CameraArwingWork
