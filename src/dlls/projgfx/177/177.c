@@ -1,5 +1,5 @@
 /*
- * projlightning3 (DLL 0x00B1) - a retired projectile object.
+ * projlightning3 (DLL 177 / 0x00B1) - a retired projectile object.
  *
  * The lightning-3 projectile was cut from the shipped game: its object
  * entry point (projlightning3_doUnsupported) only logs that it is "no longer supported"

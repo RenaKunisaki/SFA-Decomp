@@ -1058,6 +1058,7 @@ config.libs = [
             # dlls/modgfx
 
             # dlls/projgfx
+            Object(MatchingFor("GSAE01"), "dlls/projgfx/177/177.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/178/178.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/179/179.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/180/180.c", cflags=cflags_dll_noopt),
@@ -1442,7 +1443,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_00AE_projroombeam.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00AF_projlightning1.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00B0_projlightning2.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00B1_projlightning3.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_8b.c"),
             Object(Matching, "main/dll/dll_8c.c"),
             Object(Matching, "main/dll/dll_8d.c"),
