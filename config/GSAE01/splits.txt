@@ -3382,6 +3382,7 @@ dlls/objects/541/541.c:
 dlls/objects/542_VFP_Block1/VFP_Block1.c:
 	.text       start:0x801FB9AC end:0x801FBAC8
 	.data       start:0x80329050 end:0x80329088
+	.sdata2     start:0x803E6100 end:0x803E6104
 
 dlls/objects/543/543.c:
 	.text       start:0x801FBAC8 end:0x801FC378

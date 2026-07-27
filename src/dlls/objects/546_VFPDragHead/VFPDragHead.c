@@ -20,7 +20,6 @@
 #define VFPDRAGHEAD_PARTFX_BREATH   0x390
 #define VFPDRAGHEAD_PARTFX_IDLE     0x391
 
-static const f32 lbl_803E6138 = 0.5f;
 
 u8 gVfpDragHeadActiveIndex;
 s16 gVfpDragHeadSpawnTimer;
@@ -151,7 +150,7 @@ void VFPDragHead_init(GameObject* obj, int data)
     if ((obj)->anim.seqId == 0x3c5)
     {
         state->despawnTimer = 0x78;
-        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase * lbl_803E6138;
+        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase / 2.0f;
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, VFPDRAGHEAD_HIT_VOLUME_SLOT, 1, 0);
     }
     else
@@ -164,7 +163,7 @@ void VFPDragHead_init(GameObject* obj, int data)
     state->headIndex = def->headIndex;
     if (def->variant == 1)
     {
-        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase * lbl_803E6138;
+        (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase / 2.0f;
     }
     (obj)->objectFlags |= (VFPDRAGHEAD_OBJFLAG_HIDDEN | VFPDRAGHEAD_OBJFLAG_HITDETECT_DISABLED);
     gVfpDragHeadResource = Resource_Acquire(VFPDRAGHEAD_RESOURCE_ID, 1);
