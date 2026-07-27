@@ -1056,6 +1056,7 @@ config.libs = [
             # dlls/engine
 
             # dlls/modgfx
+            Object(MatchingFor("GSAE01"), "dlls/modgfx/139/139.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/modgfx/140/140.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/modgfx/141/141.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/modgfx/142/142.c", cflags=cflags_dll_noopt_noprop),
@@ -1426,7 +1427,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0088_dll88func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0089_dll89func0.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_008A_dll8afunc0.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_008B_dll8bfunc0.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/cutcam.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/pathcamgroup.c", cflags=cflags_dll_noopt),
             Object(

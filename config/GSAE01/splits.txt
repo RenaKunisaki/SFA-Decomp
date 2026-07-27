@@ -835,7 +835,7 @@ main/dll/dll_008A_dll8afunc0.c:
 	.text       start:0x800F8094 end:0x800F8250
 	.sdata2     start:0x803E1050 end:0x803E105C
 
-main/dll/dll_008B_dll8bfunc0.c:
+dlls/modgfx/139/139.c:
 	.text       start:0x800F8250 end:0x800F87E8
 	.sdata2     start:0x803E1060 end:0x803E10B0
 

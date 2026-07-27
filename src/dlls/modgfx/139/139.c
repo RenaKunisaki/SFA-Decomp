@@ -1,6 +1,6 @@
 /*
- * dll8bfunc0 (DLL 0x8B) - one member of the foodbag/FbBuf cmd-list effect
- * family (siblings dll_007C..dll_0090). dll_8B_func03 builds a stack
+ * DLL 139 / 0x8B - one member of the foodbag/FbBuf command-list effect
+ * family covering DLLs 124-144 / 0x7C-0x90. dll_8B_func03 builds a stack
  * FbBuf describing a multi-layer billboard effect and hands it to the
  * modgfx interface to spawn.
  *
@@ -16,7 +16,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/fb_cmd.h"
 #include "game/objects/object.h"
-#include "main/dll/foodbag.h" /* family cross-sibling header (7C..90 convention); also supplies undefined4 + this DLL's own func03 decl */
+#include "main/dll/foodbag.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL8B_EFFECT_ID 0xd9
@@ -248,5 +248,3 @@ void dll_8B_func01_nop(void)
 void dll_8B_func00_nop(void)
 {
 }
-
-/* .sdata2 float-pool constants referenced via extern by sibling dll_008C */
