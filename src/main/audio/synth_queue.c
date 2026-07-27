@@ -228,9 +228,9 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
                 program = seq->normTrans[program];
                 if (program != 0xFF)
                 {
-                    seq->prgState[(u8)i].macId = *(u16*)((u8*)seq->normtab + program * 6);
-                    seq->prgState[(u8)i].priority = ((u8*)seq->normtab)[program * 6 + 2];
-                    seq->prgState[(u8)i].maxVoices = ((u8*)seq->normtab)[program * 6 + 3];
+                    seq->prgState[(u8)i].macId = seq->normtab[program].macro;
+                    seq->prgState[(u8)i].priority = seq->normtab[program].priority;
+                    seq->prgState[(u8)i].maxVoices = seq->normtab[program].maxVoices;
                 }
             }
             else
@@ -238,9 +238,9 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
                 program = seq->drumTrans[program];
                 if (program != 0xFF)
                 {
-                    seq->prgState[(u8)i].macId = *(u16*)((u8*)seq->drumtab + program * 6);
-                    seq->prgState[(u8)i].priority = ((u8*)seq->drumtab)[program * 6 + 2];
-                    seq->prgState[(u8)i].maxVoices = ((u8*)seq->drumtab)[program * 6 + 3];
+                    seq->prgState[(u8)i].macId = seq->drumtab[program].macro;
+                    seq->prgState[(u8)i].priority = seq->drumtab[program].priority;
+                    seq->prgState[(u8)i].maxVoices = seq->drumtab[program].maxVoices;
                 }
             }
             inpSetMidiCtrl(MCMD_CTRL_VOLUME, i, seqId, midiData[5]);
