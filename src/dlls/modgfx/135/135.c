@@ -1,5 +1,5 @@
 /*
- * dll87func0 (DLL 0x87) - one of the foodbag/modgfx particle-effect DLLs
+ * DLL 135 / 0x87 - one of the foodbag/modgfx particle-effect DLLs
  * (the dll_NN_func03 family in foodbag.h). dll_87_func03 builds a ten-layer
  * FbBuf command list, points the FbCmd textures at the shared resource at
  * lbl_80316050 (+0x1ac / +0x198 / lbl_803DB900), copies the seven shared hw
