@@ -32,6 +32,7 @@ main/audio_sfx.c:
 	.bss        start:0x80336000 end:0x80336C40
 	.sdata      start:0x803DB248 end:0x803DB250
 	.sbss       start:0x803DC830 end:0x803DC848
+	.sdata2     start:0x803DE570 end:0x803DE5D0
 
 main/audio_stream.c:
 	.text       start:0x8000CE54 end:0x8000DD74

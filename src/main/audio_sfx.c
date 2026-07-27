@@ -43,8 +43,6 @@
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
 
-extern f32 lbl_803DE594;
-
 u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
 
 u64 gSfxObjectChannelAge;
@@ -276,15 +274,15 @@ void Sfx_SetObjectChannelVolume(u32 obj, u32 channel, u8 volume, f32 volumeScale
             }
         }
 
-        if (volumeScale < lbl_803DE570)
+        if (volumeScale < 0.0f)
         {
-            volumeScale = lbl_803DE570;
+            volumeScale = 0.0f;
         }
-        if (volumeScale > lbl_803DE574)
+        if (volumeScale > 1.0f)
         {
-            volumeScale = lbl_803DE574;
+            volumeScale = 1.0f;
         }
-        sndFXCtrl14(objectChannel->handle, 0x80, lbl_803DE578 * volumeScale);
+        sndFXCtrl14(objectChannel->handle, 0x80, 16383.0f * volumeScale);
     }
 }
 
@@ -332,15 +330,15 @@ void Sfx_SetObjectSfxVolume(int obj, u16 sfxId, u8 volume, f32 volumeScale)
             }
         }
 
-        if (volumeScale < lbl_803DE570)
+        if (volumeScale < 0.0f)
         {
-            volumeScale = lbl_803DE570;
+            volumeScale = 0.0f;
         }
-        if (volumeScale > lbl_803DE574)
+        if (volumeScale > 1.0f)
         {
-            volumeScale = lbl_803DE574;
+            volumeScale = 1.0f;
         }
-        sndFXCtrl14(objectChannel->handle, 0x80, lbl_803DE578 * volumeScale);
+        sndFXCtrl14(objectChannel->handle, 0x80, 16383.0f * volumeScale);
     }
 }
 
@@ -791,15 +789,15 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
         ch->tracksObjectPosition = 0;
         ch->handle = handle;
         {
-            f32 fz = lbl_803DE570;
+            f32 fz = 0.0f;
             ch->x = fz;
             ch->y = fz;
             ch->z = fz;
         }
         ch->fxId = fxId;
         ch->volume = 0x64;
-        ch->nearDistance = lbl_803DE590;
-        ch->farDistance = lbl_803DE594;
+        ch->nearDistance = 100.0f;
+        ch->farDistance = 640.0f;
         ch->globalCtrlDisabled = globalCtrlDisabled;
 
         ch->age = gSfxObjectChannelAge++;
@@ -833,7 +831,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     near = objectChannel->nearDistance;
     far = objectChannel->farDistance;
     dist = Sfx_GetListenerRelativeDistance(&objectChannel->x, delta);
-    if (dist > lbl_803DE598 * far)
+    if (dist > 1.1f * far)
     {
         sndFXKeyOff(objectChannel->handle);
         objectChannel->handle = (u32)-1;
@@ -842,7 +840,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     Sfx_RotateVectorByAngles(0, 0, -*(s16*)((u8*)slot + 0x54), delta);
     Sfx_RotateVectorByAngles(*(s16*)slot, 0, 0, delta);
     Sfx_RotateVectorByAngles(0, -*(s16*)((u8*)slot + 0x52), 0, delta);
-    if (dist > lbl_803DE59C)
+    if (dist > 0.01f)
     {
         f32 scale;
         int pan;
@@ -858,7 +856,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
         }
         else
         {
-            level = (int)(volf * (lbl_803DE574 - (dist - near) / (far - near)));
+            level = (int)(volf * (1.0f - (dist - near) / (far - near)));
             if (level < 1)
             {
                 level = 1;
@@ -868,11 +866,11 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
                 level = (int)(f64)volf;
             }
         }
-        scale = lbl_803DE5A0 / dist;
+        scale = 1.2f / dist;
         delta[0] = delta[0] * scale;
         delta[1] = delta[1] * scale;
         delta[2] = delta[2] * scale;
-        pan = (int)(gSfxPanScale * delta[0] + gSfxPanCenter);
+        pan = (int)(64.0f + 63.0f * delta[0]);
         if (pan > 0x7f)
         {
             pan = 0x7f;
@@ -881,7 +879,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
         {
             pan = 0;
         }
-        fx = (int)(*(f32*)&gSfxPanScale * delta[2] + *(f32*)&gSfxPanCenter);
+        fx = (int)(64.0f + 63.0f * delta[2]);
         if (fx > 0x7f)
         {
             fx = 0x7f;
@@ -925,11 +923,11 @@ void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
     f32 sc;
     f32 t0, t1, A, B, p;
 
-    ra = gAudioPi * angX / gAudioAngleToRadDivisor;
+    ra = 3.1415927f * angX / 32768.0f;
     ca = mathSinf(ra);
-    rb = gAudioPi * angY / gAudioAngleToRadDivisor;
+    rb = 3.1415927f * angY / 32768.0f;
     cb = mathSinf(rb);
-    rc = gAudioPi * angZ / gAudioAngleToRadDivisor;
+    rc = 3.1415927f * angZ / 32768.0f;
     cc = mathSinf(rc);
     sa = mathCosf(ra);
     sb = mathCosf(rb);
@@ -998,7 +996,7 @@ f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
     }
     else
     {
-        return lbl_803DE570;
+        return 0.0f;
     }
     PSVECSubtract(listener, soundPos, outDelta);
     return PSVECMag(outDelta);
