@@ -1,5 +1,5 @@
 /*
- * dll5ffunc0 (DLL 0x5F) - a thin gameplay-effect DLL.
+ * DLL 95 / 0x5F - a thin gameplay-effect DLL.
  *
  * Real exports (per the DLL's .text):
  *   dll_5F_func00_nop / dll_5F_func01_nop - empty entry-point stubs.
@@ -22,14 +22,7 @@
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL5F_EFFECT_ID 0x48
 
-
 extern u8 lbl_80312650[];
-
-static inline u8* Gameplay_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (u8*)objAnim->banks[objAnim->bankIndex];
-}
 
 void dll_5F_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
