@@ -1,5 +1,5 @@
 /*
- * dll_009D (dll9dfunc0) - pickup/effect glow spawner.
+ * DLL 157 / 0x9D - pickup/effect glow spawner.
  *
  * dll_9D_func03 builds a 13-entry gfx command list on the stack (a
  * ModgfxSpawnPacket), seeds each layer's blend mode / texture-table offset / scale
@@ -21,8 +21,7 @@
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL9D_EFFECT_ID 0x46c
 
-/* lbl_80318038: shared texture + halfword table; lbl_803E13F8..1414:
-   gfx-constant pool. Home TU unknown. */
+/* Shared texture and halfword table. */
 extern u8 lbl_80318038[];
 
 void dll_9D_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
