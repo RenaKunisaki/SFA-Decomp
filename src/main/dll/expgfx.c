@@ -3710,7 +3710,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     viewMatrix = (MtxPtr)Camera_GetViewMatrix();
     GXLoadPosMtxImm(viewMatrix, GX_PNMTX0);
     PSMTXCopy(viewMatrix, lbl_803967C0);
-    fn_8007D670();
+    loadReflectionTexMtxs();
     _gxSetFogParams();
     if ((short)renderModeSetOrGet(-1) == 1)
     {
@@ -3912,7 +3912,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
                         if (alphaMode != 0)
                         {
                             textureSetupFn_800799c0();
-                            fn_80079180();
+                            gxTevPassRasStage();
                             textRenderSetupFn_80079804();
                             alphaMode = 0;
                         }

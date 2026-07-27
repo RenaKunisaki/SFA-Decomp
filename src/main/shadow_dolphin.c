@@ -611,12 +611,12 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
         else if (modelState->shadowCastSlot->mode == 0xff)
         {
             u32 c = *(u32*)col;
-            fn_80077AD8(modelState->shadowCastSlot, &c, mtx, f30);
+            objectShadow_setupProjectedTextureDepthFade(modelState->shadowCastSlot, &c, mtx, f30);
         }
         else
         {
             u32 c = *(u32*)col;
-            fn_80077EF8(modelState->shadowCastSlot, &c, mtx, f30);
+            objectShadow_setupProjectedTextureChannel(modelState->shadowCastSlot, &c, mtx, f30);
         }
     }
     GXSetCullMode(GX_CULL_FRONT);

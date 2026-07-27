@@ -12975,7 +12975,7 @@ void playerDrawTeleportAnim(GameObject* obj)
     textureSetupFn_800799c0();
     textRenderSetupFn_800795e8();
     textRenderSetupFn_80079804();
-    fn_80078740();
+    gxSetOpaqueZWriteMode();
     GXSetColorUpdate(0);
 
     i = 0;

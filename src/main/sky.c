@@ -1783,7 +1783,7 @@ void skyFn_8008aee8(void)
         (*gSky2Interface)->applyTextColor(0);
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogColor);
         selectTexture((Texture*)texC, 0);
-        fn_8007880C();
+        gxSetOpaqueNoZWriteMode();
         GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
         GXSetTevDirect(GX_TEVSTAGE0);
         GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_TEXC, GX_CC_C1, GX_CC_A1, GX_CC_ZERO);

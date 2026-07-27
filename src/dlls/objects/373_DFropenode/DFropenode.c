@@ -893,7 +893,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3)
 
             if (objAnim->alpha > 0x46)
             {
-                fn_80078740();
+                gxSetOpaqueZWriteMode();
                 alpha = 0xff;
             }
             else

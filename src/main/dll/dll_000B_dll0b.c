@@ -1000,7 +1000,7 @@ int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
                                               ((PartfxEffectState*)p[slot])->textureFrameFadeStep));
                 textureSetupFn_800799c0();
                 gxTevAddTextureFrameBlendStages();
-                fn_80078DFC();
+                gxTevModulateRasStage();
                 textRenderSetupFn_80079804();
                 selectTexture((Texture*)tex, 1);
             }
@@ -1008,7 +1008,7 @@ int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
         else if ((int)((PartfxEffectState*)p[slot])->flags & 0x2000000)
         {
             textureSetupFn_800799c0();
-            fn_80078ED0();
+            gxTevRasTimesColor1Stage();
             textRenderSetupFn_80079804();
         }
         else if ((int)((PartfxEffectState*)p[slot])->flags & 0x4000000)

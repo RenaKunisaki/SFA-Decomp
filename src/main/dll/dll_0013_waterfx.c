@@ -535,7 +535,7 @@ void waterfx_render(int obj, int renderParam)
         GXSetCullMode(GX_CULL_NONE);
         if (gWaterfxRippleCount != 0)
         {
-            fn_8007CAF4(gWaterfxRippleTexture);
+            setupReflectionBumpDistortTev(gWaterfxRippleTexture);
         }
         for (i = 0, poolOffset = 0, descriptorOffset = 0; i < WATERFX_POOL_SIZE;
              poolOffset += 0x1c, descriptorOffset += 0x20, i++)
@@ -553,7 +553,7 @@ void waterfx_render(int obj, int renderParam)
                 dp.rotY = 0;
                 Camera_LoadModelViewMatrix(obj, renderParam, &dp, lbl_803DF2EC, lbl_803DF300,
                                            NULL);
-                fn_8007D670();
+                loadReflectionTexMtxs();
                 drawFn_8005cf8c(gWaterfxRippleVtx + i * 0x40,
                                   gWaterfxRippleVtxDesc + descriptorOffset, 2);
             }
@@ -561,7 +561,7 @@ void waterfx_render(int obj, int renderParam)
         j = 0;
         if (gWaterfxSplashCount != 0)
         {
-            fn_8007BD8C((int)gWaterfxSplashTexture0, (int)gWaterfxSplashTexture1);
+            setupWaterReflectionTev((int)gWaterfxSplashTexture0, (int)gWaterfxSplashTexture1);
             GXSetArray(GX_VA_POS, gWaterfxSplashPosArray, 0xc);
             GXSetArray(GX_VA_TEX0, gWaterfxSplashTexCoordArray, 8);
             GXClearVtxDesc();
@@ -600,7 +600,7 @@ void waterfx_render(int obj, int renderParam)
         }
         if (gWaterfxWakeCount != 0)
         {
-            fn_8007C664((int)gWaterfxWakeTexture);
+            setupReflectionDistortTev((int)gWaterfxWakeTexture);
         }
         for (i = 0, poolOffset = 0, vertexOffset = 0; i < WATERFX_POOL_SIZE;
              poolOffset += 0x1c, vertexOffset += 0x40, i++)
@@ -618,7 +618,7 @@ void waterfx_render(int obj, int renderParam)
                 dp.rotY = 0;
                 Camera_LoadModelViewMatrix(obj, renderParam, &dp, lbl_803DF2EC, lbl_803DF300,
                                            NULL);
-                fn_8007D670();
+                loadReflectionTexMtxs();
                 drawFn_8005cf8c(gWaterfxWakeVtx + vertexOffset,
                                   gWaterfxWakeVtxDesc + i * 0x20, 2);
             }
