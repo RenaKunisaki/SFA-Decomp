@@ -1,5 +1,5 @@
 /*
- * dll9afunc0 (DLL 0x9A) - one of the screen-fx descriptor builders
+ * DLL 154 / 0x9A - one of the screen-fx descriptor builders
  * (the dll_9X_func03 family). dll_9A_func03 fills a ScreenFxHdr plus a
  * table of ScreenFxPart entries describing an animated multi-part
  * screen effect, then hands it to the modgfx interface to spawn.
