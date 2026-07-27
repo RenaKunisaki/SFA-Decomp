@@ -1,4 +1,3 @@
-/* DLL 0x152 - CF_ObjCreat */
-#include "global.h"
+#include "dlls/objects/338_CF_ObjCreat.h"
 
-u32 lbl_803DBE68[2] = {0};
+u32 gCFObjCreatNullResourceDescriptor[CFOBJCREAT_NULL_DESCRIPTOR_WORD_COUNT] = {0};
