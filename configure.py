@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(MatchingFor("GSAE01"), "dlls/engine/88/88.c", cflags=cflags_dll_noopt),
 
             # dlls/modgfx
             Object(MatchingFor("GSAE01"), "dlls/modgfx/89/89.c", cflags=cflags_dll_noopt),
@@ -1425,7 +1426,6 @@ config.libs = [
             Object(NonMatching, "main/dll/dll_0017_savegame.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_0011_screens.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_002F_carryable.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_0058_dummy58.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/cutcam.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/dll/pathcamgroup.c", cflags=cflags_dll_noopt),
             Object(

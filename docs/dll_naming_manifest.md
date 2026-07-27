@@ -131,7 +131,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x055 | — | NO-RETAIL-NAME | main/dll/dll_0055_cameramodeperv.c | = (canonical) | — |
 | 0x056 | — | NO-RETAIL-NAME | main/dll/dll_0056_cameramodearwing.c | = (canonical) | — |
 | 0x057 | — | NO-RETAIL-NAME | main/dll/dll_0057_cameramodetitle.c | = (canonical) | — |
-| 0x058 | — | NO-RETAIL-NAME | main/dll/dll_0058_dummy58.c | = (canonical) | — |
+| 0x058 | — | NO-RETAIL-NAME | dlls/engine/88/88.c | = (canonical) | — |
 | 0x059 | — | NO-RETAIL-NAME | dlls/modgfx/89/89.c | = (canonical) | — |
 | 0x05A | — | NO-RETAIL-NAME | dlls/modgfx/90/90.c | = (canonical) | — |
 | 0x05B | — | NO-RETAIL-NAME | dlls/modgfx/91/91.c | = (canonical) | — |

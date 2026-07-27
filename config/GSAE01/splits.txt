@@ -683,7 +683,7 @@ dlls/modgfx/104/104.c:
 	.text       start:0x800EFA30 end:0x800EFD34
 	.sdata2     start:0x803E09E0 end:0x803E09FC
 
-main/dll/dll_0058_dummy58.c:
+dlls/engine/88/88.c:
 	.text       start:0x800EFD34 end:0x800EFD44
 
 dlls/modgfx/105/105.c:
