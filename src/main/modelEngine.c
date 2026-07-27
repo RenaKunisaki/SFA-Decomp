@@ -112,6 +112,7 @@
 #include "dlls/objects/314_VisAnimator.h"
 #include "dlls/objects/315_WallAnimato.h"
 #include "dlls/objects/316_XYZAnimator.h"
+#include "dlls/objects/317_ExplodeAnim.h"
 #include "dlls/objects/318.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -241,7 +242,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor, gECSH_CreatorObjDescriptor,
     gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
-    gExplodableObjDescriptor, gExplodeAnimatorObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
+    gExplodableObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
     gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor;
@@ -1294,7 +1295,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gVisAnimatorObjDescriptor,
     (ResourceDescriptor*)&gWallAnimatorObjDescriptor,
     (ResourceDescriptor*)&gXYZAnimatorObjDescriptor,
-    &gExplodeAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gExplodeAnimatorObjDescriptor,
     (ResourceDescriptor*)&gDIMBossIceSmashObjDescriptor,
     &gTexFrameAnimatorObjDescriptor,
     &gFogControlObjDescriptor,
