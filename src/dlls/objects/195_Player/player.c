@@ -23,6 +23,7 @@
 #include "dlls/objects/229_Shield.h"
 #include "dlls/objects/284.h"
 #include "dlls/objects/315_WallAnimato.h"
+#include "dlls/objects/328_CFGuardian.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"
 #include "main/dll/DB/DBprotection.h"
@@ -470,7 +471,6 @@ static inline ObjHitsPriorityState* Player_GetObjHitsState(GameObject* obj)
 /* the player object's own group (joined at init, left on free) */
 #define PLAYER_OBJGROUP 0x25
 /* groups owned by other DLLs the player queries */
-#define CFGUARDIAN_OBJGROUP      0x16 /* DLL 0x148 cfguardian */
 #define BABYCLOUDRUNNER_OBJGROUP 0x20 /* DLL 0x14C babycloudrunner (secondary) */
 #define MAGICPLANT_OBJGROUP_B    0x3e /* DLL 0xFE magicplant (group B) */
 
@@ -16384,7 +16384,7 @@ void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt)
             break;
         case SURFACE_CONVEYOR:
             queryParams[0] = lbl_803E8150;
-            found = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_OBJGROUP, obj, queryParams);
+            found = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_OBJECT_GROUP, obj, queryParams);
             if (found != 0)
             {
                 (*(void (*)(int, int, f32, f32*, f32*))(*(int*)(*(int*)(*(int*)((char*)found + 0x68)) + 0x20)))(

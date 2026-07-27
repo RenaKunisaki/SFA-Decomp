@@ -10,6 +10,8 @@
  * CloudRunner sends you off to do.
  */
 
+#include "dlls/objects/328_CFGuardian.h"
+
 #include "game/objects/object.h"
 #include "main/audio/music_api.h"
 #include "main/obj_group.h"
@@ -28,8 +30,6 @@
 #include "main/dll/CF/dll_014B_cfmaincrystal.h"
 
 #define CFWINDLIFT_OBJGROUP 0x49
-#define CFGUARDIAN_OBJGROUP 0x16 /* DLL 0x148 cfguardian */
-
 #define CFWINDLIFT_OBJFLAG_PARENT_SLACK 0x1000
 
 #define WINDLIFT_SLOTS 14 /* max tracked lift slots */
@@ -403,7 +403,7 @@ void WindLift_update(GameObject* obj)
                 sub->slots[0].phaseFlags &= ~0xf1;
             }
         }
-        objs = (int**)ObjGroup_GetObjects(CFGUARDIAN_OBJGROUP, &count);
+        objs = (int**)ObjGroup_GetObjects(CFGUARDIAN_OBJECT_GROUP, &count);
         count = count + 1;
         if (count > 0xe)
         {

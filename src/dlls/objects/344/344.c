@@ -12,6 +12,8 @@
  * cannon-range variant. gunpowderbarrel_updatePhysics applies gravity, velocity
  * clamps, the ground probe and landing/impact sfx.
  */
+#include "dlls/objects/328_CFGuardian.h"
+
 #include "main/dll/tricky_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
@@ -64,7 +66,6 @@ f32 lbl_803DBE88 = 170.0f;
  * dispensed barrel to this group on release */
 #define GUNPOWDERBARREL_UPDATE_OBJGROUP 0x19
 /* groups owned by other DLLs the barrel queries/registers into */
-#define CFGUARDIAN_OBJGROUP 0x16     /* DLL 0x148 cfguardian */
 #define TIMER_OBJGROUP 0x4c          /* DLL 0x2B5 timer */
 #define DBHOLECONTROL1_OBJGROUP 0x1e /* DLL 0x243 dbholecontrol1 */
 
@@ -658,7 +659,7 @@ void gunpowderbarrel_free(GameObject *obj, int mode)
         }
     }
     ObjGroup_RemoveObject((int)obj, GUNPOWDERBARREL_UPDATE_OBJGROUP);
-    ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
     if (((GunpowderBarrelState*)extra)->fuseFrames != 0)
     {
         (*gExpgfxInterface)->freeSource2((u32)obj);
@@ -779,7 +780,7 @@ void gunpowderbarrel_hitDetect(int obj)
             (s8) * ((u8*)&collision_buf[0] + 0x51) == 3)
         {
             gunpowderbarrel_setPlayerHeldState((GameObject*)obj, 0);
-            ObjGroup_RemoveObject(obj, CFGUARDIAN_OBJGROUP);
+            ObjGroup_RemoveObject(obj, CFGUARDIAN_OBJECT_GROUP);
         }
         else
         {
@@ -906,7 +907,7 @@ void gunpowderbarrel_update(GameObject *obj)
                 gunpowderbarrel_setPlayerHeldState(obj, 0);
                 if (arg != 0)
                 {
-                    ObjGroup_AddObject((u32)obj, CFGUARDIAN_OBJGROUP);
+                    ObjGroup_AddObject((u32)obj, CFGUARDIAN_OBJECT_GROUP);
                 }
                 break;
             }
@@ -1060,11 +1061,11 @@ void gunpowderbarrel_update(GameObject *obj)
                 (obj)->anim.localPosZ =
                     lbl_803DBE80 * -mathCosf(3.1415927f * (f32) player->anim.rotX / 32768.0f) +
                     (obj)->anim.localPosZ;
-                ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJGROUP);
+                ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
             }
             /* faithful double-add: retail emits two adjacent ObjGroup_AddObject
              * (target 0x19b8/0x19c4) when the inner branch is taken. */
-            ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJGROUP);
+            ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
         }
         gunpowderbarrel_updatePhysics(obj);
     }
@@ -1077,7 +1078,7 @@ void gunpowderbarrel_update(GameObject *obj)
             {
                 timer_forceStart(state->linkedTimerObject);
             }
-            ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJGROUP);
+            ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
         }
         state->heldByCarryInterface = 1;
         ((GpbHeldFlags*)&state->heldFlags)->pendingThrowVelCapture = 1;
@@ -1122,7 +1123,7 @@ void gunpowderbarrel_init(GameObject* obj, u8* def)
     ((GunpowderBarrelState*)obj->extra)->unk07 |= 2;
     (*gCarryableInterface)->init(obj, state, 5);
     ObjGroup_AddObject((int)obj, GUNPOWDERBARREL_UPDATE_OBJGROUP);
-    ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJGROUP);
+    ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
     ObjMsg_AllocQueue(obj, 8);
     obj->userData2 = 0;
     state->homingHeadingA = 0;
