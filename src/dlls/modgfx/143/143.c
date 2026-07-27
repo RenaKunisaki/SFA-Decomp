@@ -1,5 +1,5 @@
 /*
- * dll8ffunc0 (DLL 0x8F) - one of the foodbag modgfx effect spawners
+ * DLL 143 / 0x8F - one of the foodbag modgfx effect spawners
  * (dll_NN_func03 family, see foodbag.h). func03 builds a fixed
  * ten-command FbBuf (four layers, each a mode-4/2/256 textured triple,
  * all sharing the lbl_80316C90+0x128 texture) and hands it to the modgfx
