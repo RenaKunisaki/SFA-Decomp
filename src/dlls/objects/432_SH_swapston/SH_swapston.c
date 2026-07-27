@@ -52,7 +52,7 @@
 #include "main/dll/player_spirit_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
 
-extern ObjAnimEventList gSClanternObjAnimEvents;
+ObjAnimEventList gSClanternObjAnimEvents;
 extern int lbl_803DC050;
 
 /*
@@ -827,4 +827,3 @@ void warpstone_release(void)
 void warpstone_initialise(void)
 {
 }
-

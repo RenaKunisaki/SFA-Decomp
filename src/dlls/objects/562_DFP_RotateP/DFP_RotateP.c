@@ -78,6 +78,8 @@ STATIC_ASSERT(sizeof(SfxplayerRingVisualSetup) == 0x2C);
 #define SFXPLAYER_SFX_TIMEOUT_RESET       0x1CE
 #define SFXPLAYER_SFX_RING_HIT            0x409
 #define SFXPLAYER_HIT_TYPE_RING_TARGET    0x13
+
+int gSfxplayerEffectHandles[8];
 #define SFXPLAYER_OBJECT_FLAGS            0x6000
 
 static const RingIdPair lbl_803E6450 = {0x00040005, 0x0006000B};

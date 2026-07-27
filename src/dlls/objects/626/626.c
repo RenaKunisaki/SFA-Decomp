@@ -56,6 +56,8 @@
 #include "dlls/object_descriptor.h"
 
 void* gHighTopDefaultStateHandler;
+f32 gHighTopGroundMarkerMtx[16];
+void* gHighTopStateHandlers[12];
 
 u8 lbl_803DC308[8] = {0x04, 0x5D, 0x10, 0x00, 0x03, 0x00, 0x00, 0x00};
 s16 gHighTopMovementSfxIds[2] = {0x1A2, 0x1A3};

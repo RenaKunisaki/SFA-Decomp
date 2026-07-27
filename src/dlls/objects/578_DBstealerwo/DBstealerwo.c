@@ -352,10 +352,13 @@ typedef struct DbWormEffectSpawnWork
 
 STATIC_ASSERT(sizeof(DbWormEffectSpawnWork) == 0x18);
 
+DbWormEffectSpawnWork gDbWormEffectSpawnWork;
+int gDBStealerWormStateHandlersB[7];
+int gDBStealerWormStateHandlersA[17];
+
 extern int lbl_80329634[];
 extern int lbl_80329640[];
 extern int gDbStealerwormSfxIds[];
-extern u8 gDbWormEffectSpawnWork[];
 extern u32 lbl_803293B8[];
 
 int dbstealerworm_stateHandlerB04(GameObject* obj, BaddieState* baddie)
@@ -2307,7 +2310,7 @@ void dbstealerworm_update(u8* objp)
     } stk;
 
     obj = (GameObject*)objp;
-    st = (char*)(int)gDbWormEffectSpawnWork;
+    st = (char*)&gDbWormEffectSpawnWork;
     tbl = (char*)lbl_803293B8;
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
@@ -2385,12 +2388,12 @@ void dbstealerworm_update(u8* objp)
                 if ((*gBaddieControlInterface)
                         ->updateHitReaction(obj, (void*)blob, (char*)blob + 0x35c,
                                             ((GroundBaddieState*)blob)->gameBitB, (int*)(tbl + 0x2ac),
-                                            (u8*)(tbl + 0x324), 1, (void*)(int)gDbWormEffectSpawnWork) != 0)
+                                            (u8*)(tbl + 0x324), 1, &gDbWormEffectSpawnWork) != 0)
                 {
                     ((DbWormEffectSpawnWork*)st)->posX = obj->anim.localPosX;
                     ((DbWormEffectSpawnWork*)st)->posY = obj->anim.localPosY;
                     ((DbWormEffectSpawnWork*)st)->posZ = obj->anim.localPosZ;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, (char*)(int)gDbWormEffectSpawnWork, 1, 0);
+                    objLightFn_8009a1dc((void*)obj, 0.014f, (char*)&gDbWormEffectSpawnWork, 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
