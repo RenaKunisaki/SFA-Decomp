@@ -144,6 +144,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   `while (...) {`, and `switch (...) {`. Keep the controlled block on its own indented lines even
   when it contains one statement. Do not introduce Allman-style control-flow braces into a cleaned
   TU or preserve them merely because the surrounding imported decomp is inconsistent.
+- Run `clang-format -i` on the active cleaned TU and its unit-owned canonical header, then review the
+  formatting diff and require `clang-format --dry-run --Werror` to pass for both. Do not format a
+  shared consumer merely because the active TU adds one include or declaration there; keep those
+  shared edits surgical unless that consumer is itself the cleanup target.
 - For the object-DLL housekeeping pass, assign each TU cleanup to a sub-agent and keep no more than
   three sub-agents active at once. The primary agent must personally review every resulting diff,
   stale-symbol search, match report, shared-consumer edit, and generated-path audit before
