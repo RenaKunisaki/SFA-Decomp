@@ -127,6 +127,7 @@
 #include "dlls/objects/329.h"
 #include "dlls/objects/330_CFPowerBase.h"
 #include "dlls/objects/331_CFMainCryst.h"
+#include "dlls/objects/332.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -216,7 +217,7 @@ extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
+extern ResourceDescriptor gAttractorObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBlastedObjDescriptor, gBombPlantObjDescriptor,
     gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
@@ -1320,7 +1321,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWindLiftObjDescriptor,
     (ResourceDescriptor*)&gCFPowerBaseObjDescriptor,
     (ResourceDescriptor*)&gCFMainCrystalObjDescriptor,
-    &gBabyCloudRunnerObjDescriptor,
+    (ResourceDescriptor*)&gBabyCloudRunnerObjDescriptor,
     &lbl_803DBE50,
     &gCFPrisonGuardObjDescriptor,
     &gCFPrisonUncleObjDescriptor,
