@@ -113,7 +113,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x043 | — | NO-RETAIL-NAME | main/dll/dll_0043_unk.c | = (canonical) | — |
 | 0x044 | — | NO-RETAIL-NAME | main/dll/dll_0044_cameramodeviewfinder.c | = (canonical) | — |
 | 0x045 | — | NO-RETAIL-NAME | main/dll/dll_0045_camTalk.c | = (canonical) | — |
-| 0x046 | — | NO-RETAIL-NAME | main/dll/dll_0046_cameramodedebug.c | = (canonical) | — |
+| 0x046 | — | NO-RETAIL-NAME | dlls/engine/70/70.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
 | 0x047 | — | NO-RETAIL-NAME | dlls/engine/71/71.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
 | 0x048 | — | NO-RETAIL-NAME | dlls/engine/72/72.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
 | 0x049 | — | NO-RETAIL-NAME | dlls/engine/73/73.c | = (canonical) | Complete DOL-confirmed TU restored from the former match-only helper split |

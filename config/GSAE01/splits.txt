@@ -1140,7 +1140,7 @@ main/dll/dll_0044_cameramodeviewfinder.c:
 	.sdata      start:0x803DB9A0 end:0x803DB9A8
 	.sbss       start:0x803DD548 end:0x803DD550
 
-main/dll/dll_0046_cameramodedebug.c:
+dlls/engine/70/70.c:
 	.text       start:0x80109748 end:0x80109B04
 	.sbss       start:0x803DD550 end:0x803DD554
 	.sdata2     start:0x803E1868 end:0x803E1874

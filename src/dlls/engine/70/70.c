@@ -1,8 +1,5 @@
 /*
- * cameramodedebug (DLL 0x46) - free-orbit debug camera.
- * The player holds Z (bit 3) to zoom in and R (bit 2) to zoom out;
- * the C-stick pans yaw/pitch; pressing B (bit 1) exits back to the
- * default camcontrol action (0x42).  Orbit radius is spring-damped.
+ * DLL 70 / 0x46 - debug camera mode.
  */
 #include "main/camera_interface.h"
 #include "main/camera_object.h"
@@ -17,7 +14,6 @@
 
 CameraModeDebugState* gCamDebugState;
 
-/* camera mode id to restore on B-press exit */
 #define CAMCONTROL_ACTION_DEFAULT 0x42
 
 #define PAD_BUTTON_RIGHT 0x002
