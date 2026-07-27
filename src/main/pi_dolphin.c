@@ -2284,19 +2284,19 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     u32 tab0 = 0; /* TAB ptr of the primary slot of the pair, 0 = not ready */
     u32 tab1 = 0; /* TAB ptr of the alternate slot of the pair */
     u8 frame = 0; /* run a full frame per wait iteration once dvd error UI is up */
-    u32 hiSel;
+    u32 hiSel;    /* caller's slot-select bit; cases 0x51/0x4f reuse it as the TAB ptr */
     int entryOff;
     int flags;
     int intr;
     int i;
     int prev;
-    u32 slotPtrAddr;
+    u32 slotPtrAddr; /* &tbl->ptrs[fileId], biased +0x6A28 for MLDF_QPTR */
     u32 fileBuf;
     u32 alignedSize;
     int tmp;
     u32 decompSize;
     int entryByteOff;
-    u32 qptr;
+    u32 qptr;       /* MLDF_QPTR from the guard, reused for the first use of each branch */
     DVDFileInfo buf;
 
     switch (fileId)
