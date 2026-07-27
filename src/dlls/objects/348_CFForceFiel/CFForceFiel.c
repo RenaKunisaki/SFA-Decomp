@@ -1,4 +1,5 @@
-/* DLL 0x15C - CFForceFiel */
-#include "global.h"
+/* Empty secondary CFForceField resource slot. */
 
-u32 lbl_803DBEA0[2] = {0};
+#include "dlls/objects/348_CFForceFiel.h"
+
+u32 gCFForceField15CNullResourceDescriptor[CFFORCEFIELD15C_NULL_DESCRIPTOR_WORD_COUNT] = {0};
