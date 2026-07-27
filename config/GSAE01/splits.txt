@@ -281,6 +281,7 @@ main/track_dolphin.c:
 	.bss        start:0x8038D840 end:0x8038DF48
 	.sdata      start:0x803DB660 end:0x803DB668
 	.sbss       start:0x803DCF30 end:0x803DCF78
+	.sdata2     start:0x803DECB0 end:0x803DED08
 
 main/newshadows.c:
 	.text       start:0x80069B1C end:0x8006EF38

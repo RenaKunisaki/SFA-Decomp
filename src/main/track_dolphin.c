@@ -206,20 +206,6 @@ struct IntersectModLineObject
 
 #define MAP_DYNAMIC_SLOT_COUNT 64
 
-extern f32 lbl_803DECB4;
-extern f32 lbl_803DECB0;
-extern f32 lbl_803DECC4;
-extern const f32 lbl_803DECBC;
-extern const f32 lbl_803DECC0;
-extern const f32 lbl_803DECC8;
-extern const f32 lbl_803DECE8;
-extern const f32 gTrackGridCellSize;
-extern const f32 lbl_803DECEC;
-extern const f32 lbl_803DECF0;
-extern const f32 lbl_803DECF4;
-extern const f32 lbl_803DECCC;
-extern const f32 lbl_803DECD0;
-extern const f32 lbl_803DECD4;
 
 int mapLoadBlocksFn_800685cc(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
 int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
@@ -271,7 +257,7 @@ int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outS
         {
             *outSurfaceObj = arr[i]->object;
             *outSurfaceY = arr[i]->height;
-            return (arr[i]->normalY < lbl_803DECB0) + 1;
+            return (arr[i]->normalY < 0.707f) + 1;
         }
     }
     return 0;
@@ -312,7 +298,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
         Obj_TransformLocalPointToWorld(obj->anim.previousLocalPosX, obj->anim.previousLocalPosY,
                                        obj->anim.previousLocalPosZ, &obj->anim.previousWorldPosX,
                                        &obj->anim.previousWorldPosY, &obj->anim.previousWorldPosZ, (u32)oldParent);
-        Obj_TransformLocalVectorToWorld(obj->anim.velocityX, lbl_803DECB4,
+        Obj_TransformLocalVectorToWorld(obj->anim.velocityX, 0.0f,
                                         obj->anim.velocityZ, &dirX, (f32*)dirBuf, &dirZ, (u32)oldParent);
         yawSum = oldParent->anim.rotX + obj->anim.rotX;
     }
@@ -335,7 +321,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
                                            obj->anim.previousWorldPosZ, &obj->anim.previousLocalPosX,
                                            &obj->anim.previousLocalPosY, &obj->anim.previousLocalPosZ,
                                            (u32)obj->anim.parent);
-            Obj_TransformWorldVectorToLocal(dirX, lbl_803DECB4, dirZ, &obj->anim.velocityX, (f32*)dirBuf,
+            Obj_TransformWorldVectorToLocal(dirX, 0.0f, dirZ, &obj->anim.velocityX, (f32*)dirBuf,
                                             &obj->anim.velocityZ, (u32)obj->anim.parent);
             yawSum = yawSum - ((GameObject*)obj->anim.parent)->anim.rotX;
             if (yawSum > 0x8000)
@@ -405,7 +391,7 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     if (motionLengthSq > 0.0f)
     {
         quadraticB = 2.0f * (moveX * startDeltaX + moveZ * startDeltaZ);
-        fourMotionLengthSq = lbl_803DECBC * motionLengthSq;
+        fourMotionLengthSq = 4.0f * motionLengthSq;
         discriminant = quadraticB * quadraticB - fourMotionLengthSq * quadraticC;
         if (discriminant >= 0.0f)
         {
@@ -416,9 +402,9 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
             timeA = timeA / denominator;
             timeB = (negB - sqrtDiscriminant) / denominator;
             if (timeA < 0.0f)
-                timeA = lbl_803DECC0;
+                timeA = 10.0f;
             if (timeB < 0.0f)
-                timeB = lbl_803DECC0;
+                timeB = 10.0f;
             if (timeB < timeA)
                 timeA = timeB;
             hitTime = timeA;
@@ -435,7 +421,7 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
                     penetration = planeOffset + (normalX * x[1] + normalZ * z[1]);
                     x[1] = x[1] - penetration * normalX;
                     z[1] = z[1] - penetration * normalZ;
-                    separation = lbl_803DECC8;
+                    separation = 0.1f;
                     separationX = separation * normalX;
                     separationZ = separation * normalZ;
                     while (planeOffset + (x[1] * normalX + z[1] * normalZ) < separation)
@@ -472,6 +458,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                                  GameObject* target, s8 lineMask, s8 segment, s8 yTolerance,
                                  GameObject* sourceObj)
 {
+    f32 margin = 200.0f;
     f32 fracs[5];
     f32 dists[5];
     f32 lb[4], la[4], ld[4];
@@ -570,10 +557,10 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
     maxX = maxX + radius;
     minZ = minZ - radius;
     maxZ = maxZ + radius;
-    minX = minX - lbl_803DECCC;
-    maxX = maxX + lbl_803DECCC;
-    minZ = minZ - lbl_803DECCC;
-    maxZ = maxZ + lbl_803DECCC;
+    minX = minX - margin;
+    maxX = maxX + margin;
+    minZ = minZ - margin;
+    maxZ = maxZ + margin;
 
     count = 0;
     found = 1;
@@ -589,7 +576,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
             f32 *va, *vb;
             f32 ha, ylo, hb, yhi;
 
-            dist = lbl_803DECD0;
+            dist = -1.0f;
             if (lineIdx != 0)
             {
                 rec = (u8*)(vt + ((s16*)lineIdx)[i] * 0x10);
@@ -667,7 +654,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
             dz = bz2 - az2;
             {
                 f32 dd = dx * dx + dz * dz;
-                if (lbl_803DECB4 == dd)
+                if (0.0f == dd)
                     continue;
                 len = sqrtf(dd);
             }
@@ -693,8 +680,8 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                 f32 q1 = la[3] * (radius * la[3] + az2);
                 ld[3] = -(q0 + q1);
             }
-            lbl_803DCF54 = lbl_803DECD4 * (lb[3] * radius);
-            lbl_803DCF50 = lbl_803DECD4 * (la[3] * radius);
+            lbl_803DCF54 = 0.5f * (lb[3] * radius);
+            lbl_803DCF50 = 0.5f * (la[3] * radius);
 
             {
                 f32 *ap, *bp, *dp;
@@ -707,7 +694,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                 mp = m;
                 zp = posZ;
                 xp = posX;
-                dist = lbl_803DECB4;
+                dist = 0.0f;
                 do
                 {
                     s16 mb = 1;
@@ -739,18 +726,18 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
             {
                 s16 mx = m[0] ^ m[1];
                 s16 ma = m[0] & m[1];
-                dist = lbl_803DECC4;
+                dist = 1.0f;
                 if ((m[0] & 0xc) == 0xc)
                 {
                     if (m[0] & 1)
                     {
                         found = trackSweepCircleAgainstPoint(posX, posZ, ax2, az2, radius, lineType);
-                        dist = lbl_803DECB4;
+                        dist = 0.0f;
                     }
                     else if (m[0] & 2)
                     {
                         found = trackSweepCircleAgainstPoint(posX, posZ, bx2, bz2, radius, lineType);
-                        dist = lbl_803DECC4;
+                        dist = 1.0f;
                     }
                     else if (lineType != 0)
                     {
@@ -763,12 +750,12 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                     if (ma & 1)
                     {
                         found = trackSweepCircleAgainstPoint(posX, posZ, ax2, az2, radius, lineType);
-                        dist = lbl_803DECB4;
+                        dist = 0.0f;
                     }
                     else if (ma & 2)
                     {
                         found = trackSweepCircleAgainstPoint(posX, posZ, bx2, bz2, radius, lineType);
-                        dist = lbl_803DECC4;
+                        dist = 1.0f;
                     }
                     else if (m[0] & 4)
                     {
@@ -784,23 +771,23 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                         }
                         else
                         {
-                            fr = lbl_803DECB4;
+                            fr = 0.0f;
                         }
                         cx = sx * fr + posX[0];
                         cz = sz * fr + posZ[0];
                         lbl_803DCF58 = fr;
                         ok = 1;
-                        if (ld[0] + (cx * lb[0] + cz * la[0]) < lbl_803DECB4)
+                        if (ld[0] + (cx * lb[0] + cz * la[0]) < 0.0f)
                         {
                             found = trackSweepCircleAgainstPoint(posX, posZ, ax2, az2, radius, lineType);
                             ok = 0;
-                            dist = lbl_803DECB4;
+                            dist = 0.0f;
                         }
-                        if (ld[1] + (cx * lb[1] + cz * la[1]) < lbl_803DECB4)
+                        if (ld[1] + (cx * lb[1] + cz * la[1]) < 0.0f)
                         {
                             found = trackSweepCircleAgainstPoint(posX, posZ, bx2, bz2, radius, lineType);
                             ok = 0;
-                            dist = lbl_803DECC4;
+                            dist = 1.0f;
                         }
                         if (ok != 0)
                         {
@@ -1134,12 +1121,12 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
         f32 upperDeltaEnd = out->upperY1 - out->lineEndY;
         f32 len;
         out->sourceNormalX = out->lineEndZ - out->lineStartZ;
-        out->sourceNormalY = lbl_803DECB4;
+        out->sourceNormalY = 0.0f;
         out->sourceNormalZ = out->lineStartX - out->lineEndX;
         {
             f32 sqA = out->sourceNormalX * out->sourceNormalX;
             f32 sqB = out->sourceNormalZ * out->sourceNormalZ;
-            len = lbl_803DECC4 / sqrtf(sqA + sqB);
+            len = 1.0f / sqrtf(sqA + sqB);
         }
         out->sourceNormalX = out->sourceNormalX * len;
         out->sourceNormalZ = out->sourceNormalZ * len;
@@ -1159,12 +1146,12 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
                                            &out->lineEndY, &out->lineEndZ, mtx);
         }
         out->normalX = out->lineEndZ - out->lineStartZ;
-        out->normalY = lbl_803DECB4;
+        out->normalY = 0.0f;
         out->normalZ = out->lineStartX - out->lineEndX;
         {
             f32 sqA = out->normalX * out->normalX;
             f32 sqB = out->normalZ * out->normalZ;
-            len = lbl_803DECC4 / sqrtf(sqA + sqB);
+            len = 1.0f / sqrtf(sqA + sqB);
         }
         out->normalX = out->normalX * len;
         out->normalZ = out->normalZ * len;
@@ -1394,7 +1381,7 @@ void trackIntersect(void)
             f32 blockZ;
             gridX = 0;
             blockIndex = rowOffset;
-            blockZ = gTrackGridCellSize * gridZ;
+            blockZ = 640.0f * gridZ;
             for (; gridX < 0x10; blockIndex++, gridX++)
             {
                 if (idx[blockIndex] >= 0)
@@ -1403,7 +1390,7 @@ void trackIntersect(void)
                     f32 blockX;
                     sourceIndex = 0;
                     sourceOffset = 0;
-                    blockX = gTrackGridCellSize * gridX;
+                    blockX = 640.0f * gridX;
                     for (; sourceIndex < blk->hitCount; sourceOffset += sizeof(MapHitLine), sourceIndex++)
                     {
                         if (gIntersectLineCount < 0x5dc)
@@ -1704,14 +1691,14 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     {
         firstDistance = hits[0]->height;
         firstDistance = y - firstDistance;
-        firstDistance = firstDistance >= lbl_803DECB4 ? firstDistance : -firstDistance;
+        firstDistance = firstDistance >= 0.0f ? firstDistance : -firstDistance;
         bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
             f32 distance = hits[hitIndex]->height;
             distance = y - distance;
-            distance = distance >= lbl_803DECB4 ? distance : -distance;
+            distance = distance >= 0.0f ? distance : -distance;
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -1724,7 +1711,7 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
         outNormal[2] = hits[nearestIndex]->normalZ;
         return 0;
     }
-    *outGroundOffset = lbl_803DECB4;
+    *outGroundOffset = 0.0f;
     return 1;
 }
 
@@ -1742,14 +1729,14 @@ int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, 
     {
         cur = arr[0]->height;
         cur = y - cur;
-        cur = cur >= lbl_803DECB4 ? cur : -cur;
+        cur = cur >= 0.0f ? cur : -cur;
         best = cur;
         bestIdx = 0;
         for (i = 1; i < n; i++)
         {
             cur = arr[i]->height;
             cur = y - cur;
-            cur = cur >= lbl_803DECB4 ? cur : -cur;
+            cur = cur >= 0.0f ? cur : -cur;
             if (cur < best)
             {
                 best = cur;
@@ -1759,7 +1746,7 @@ int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, 
         *outGroundY = y - arr[bestIdx]->height;
         return 0;
     }
-    *outGroundY = lbl_803DECB4;
+    *outGroundY = 0.0f;
     return 1;
 }
 
@@ -1885,8 +1872,8 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
     {
         conv[0] = x;
         conv[3] = x;
-        conv[1] = (int)(y - lbl_803DECE8);
-        conv[4] = (int)(lbl_803DECE8 + y);
+        conv[1] = (int)(y - 10000.0f);
+        conv[4] = (int)(10000.0f + y);
         conv[2] = z;
         conv[5] = z;
         hitDetectFn_800691c0(obj, (TrackQueryBounds*)conv, submode, 1);
@@ -1909,7 +1896,7 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
             break;
         if (desc->object != NULL)
         {
-            Matrix_TransformPoint(desc->currentMatrix, x, lbl_803DECB4, z, &tx, &ty, &tz);
+            Matrix_TransformPoint(desc->currentMatrix, x, 0.0f, z, &tx, &ty, &tz);
             trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
                         gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
         }
@@ -1984,7 +1971,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
     }
     {
         f32 p1 = *(f32*)(p + 1);
-        if (p1 < lbl_803DECB0 && p1 > lbl_803DECEC)
+        if (p1 < 0.707f && p1 > -0.707f)
         {
             switch ((u8)type)
             {
@@ -2074,7 +2061,7 @@ int hitDetectFn_800664fc(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* ou
 
     Vec3_Cross(rayDir, T + 6, nrm);
     len = Vec3_Normalize(nrm);
-    if (lbl_803DECB4 == len)
+    if (0.0f == len)
         return 0;
     e[0] = rayOrig[0] - T[0];
     e[1] = rayOrig[1] - T[1];
@@ -2102,7 +2089,7 @@ int hitDetectFn_800664fc(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* ou
                 r = -r;
             len = len - r;
         }
-        zero = lbl_803DECB4;
+        zero = 0.0f;
         if (len >= zero)
         {
             if (len <= maxd)
@@ -2243,7 +2230,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     edge2p = edge2;
     vbp = vb;
     evecp = evec;
-    eps = lbl_803DECB4;
+    eps = 0.0f;
     do
     {
         cur[0] = ep1[0];
@@ -2631,7 +2618,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
         } while (found != 0);
         if (bounces != 0)
         {
-            if (norm4[1] >= lbl_803DECB0 || norm4[1] <= lbl_803DECEC)
+            if (norm4[1] >= 0.707f || norm4[1] <= -0.707f)
             {
                 retHi |= curBit;
             }
@@ -2675,8 +2662,8 @@ int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int
             f32 b, a;
             fp = results;
             pp = results;
-            a = lbl_803DECB4;
-            b = lbl_803DECC4;
+            a = 0.0f;
+            b = 1.0f;
             while (i < lim)
             {
                 fp[0] = a;
@@ -2728,8 +2715,8 @@ int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int
             f32 b, a;
             fp = (f32*)results + i * 4;
             pp = (void**)results + i;
-            a = lbl_803DECB4;
-            b = lbl_803DECC4;
+            a = 0.0f;
+            b = 1.0f;
             while (i < count)
             {
                 fp[0] = a;
@@ -2867,8 +2854,8 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
             f32 fnx, fny, fnz;
             f32 len, inv;
 
-            tMinX = lbl_803DECF0;
-            tMaxX = lbl_803DECF4;
+            tMinX = 1e30f;
+            tMaxX = -1e30f;
             tMinY = tMinX;
             tMaxY = tMaxX;
             tMinZ = tMinX;
@@ -2937,23 +2924,23 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
             nzi = xs[2] * (ys[0] - ys[1]) + (xs[0] * (ys[1] - ys[2]) + xs[1] * (ys[2] - ys[0]));
             fnz = nzi;
             len = sqrtf(fnz * fnz + (fnx * fnx + fny * fny));
-            if (!(len > lbl_803DECB4))
+            if (!(len > 0.0f))
                 continue;
-            inv = lbl_803DECC4 / len;
+            inv = 1.0f / len;
             *(f32*)(cur + 4) = fnx * inv;
             *(f32*)(cur + 8) = fny * inv;
             *(f32*)(cur + 0xc) = fnz * inv;
 
             if (flag8)
             {
-                if (*(f32*)(cur + 8) >= lbl_803DECB0)
+                if (*(f32*)(cur + 8) >= 0.707f)
                     continue;
-                if (*(f32*)(cur + 8) <= lbl_803DECEC)
+                if (*(f32*)(cur + 8) <= -0.707f)
                     continue;
             }
             if (flag4)
             {
-                if (*(f32*)(cur + 8) < lbl_803DECB0 && *(f32*)(cur + 8) > lbl_803DECEC)
+                if (*(f32*)(cur + 8) < 0.707f && *(f32*)(cur + 8) > -0.707f)
                     continue;
             }
 
@@ -2969,7 +2956,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
                 xw = xs;
                 yw = ys;
                 zw = zs;
-                eps = lbl_803DECB4;
+                eps = 0.0f;
                 for (; j2 < 3; j2++)
                 {
                     int k = j2 + 1;
@@ -2985,7 +2972,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
                     len = sqrtf(ez * ez + (ex * ex + ey * ey));
                     if (len > eps)
                     {
-                        f32 inv2 = lbl_803DECC4 / len;
+                        f32 inv2 = 1.0f / len;
                         ex *= inv2;
                         ey *= inv2;
                         ez *= inv2;
@@ -3082,10 +3069,10 @@ u8 doEdges;
         z1 ^= z0;
         z0 ^= z1;
     }
-    gx0 = fastFloorf((f32)x0 / gTrackGridCellSize);
-    gz0 = fastFloorf((f32)z0 / gTrackGridCellSize);
-    gx1 = fastFloorf((f32)x1 / gTrackGridCellSize);
-    gz1 = fastFloorf((f32)z1 / gTrackGridCellSize);
+    gx0 = fastFloorf((f32)x0 / 640.0f);
+    gz0 = fastFloorf((f32)z0 / 640.0f);
+    gx1 = fastFloorf((f32)x1 / 640.0f);
+    gz1 = fastFloorf((f32)z1 / 640.0f);
 
     count = 0;
     layer = 0;
@@ -3342,13 +3329,13 @@ u8 doEdges;
                 PSVECSubtract(vertp, verts2, e1);
                 PSVECCrossProduct(e0, e1, (f32*)(cur + 4));
                 mag = PSVECMag((f32*)(cur + 4));
-                if (!(mag > lbl_803DECB4))
+                if (!(mag > 0.0f))
                     continue;
-                mag = lbl_803DECC4 / mag;
+                mag = 1.0f / mag;
                 PSVECScale((f32*)(cur + 4), (f32*)(cur + 4), mag);
                 if (f8)
                 {
-                    if (*(f32*)(cur + 8) >= lbl_803DECB0 || *(f32*)(cur + 8) <= lbl_803DECEC)
+                    if (*(f32*)(cur + 8) >= 0.707f || *(f32*)(cur + 8) <= -0.707f)
                     {
                         if (type != 4)
                             continue;
@@ -3358,7 +3345,7 @@ u8 doEdges;
                 }
                 if (f4)
                 {
-                    if (*(f32*)(cur + 8) < lbl_803DECB0 && *(f32*)(cur + 8) > lbl_803DECEC)
+                    if (*(f32*)(cur + 8) < 0.707f && *(f32*)(cur + 8) > -0.707f)
                         continue;
                 }
                 ((TrackTriangle*)cur)->planeD = -PSVECDotProduct((f32*)(cur + 4), v0);
@@ -3372,8 +3359,8 @@ u8 doEdges;
                     deg = 0;
                     j2 = 0;
                     ep = e0;
-                    eps = lbl_803DECB4;
-                    one = lbl_803DECC4;
+                    eps = 0.0f;
+                    one = 1.0f;
                     do
                     {
                         f32 m;
@@ -3526,7 +3513,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;
-                cur = trackBuildModelTriangles(cur, desc, (int)model, lbl_803DECC4, f31, f29, f27, f30, f28, f26, a);
+                cur = trackBuildModelTriangles(cur, desc, (int)model, 1.0f, f31, f29, f27, f30, f28, f26, a);
                 desc++;
                 if ((u32)cur >= gTrackTriangleBufferEnd)
                     break;
