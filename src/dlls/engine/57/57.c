@@ -1,12 +1,3 @@
-/*
- * dummy39 (DLL 0x39) - a transient UI/transition stub.
- *
- * On init it primes a 0x28-frame (40) countdown in lbl_803DD728; each
- * run() tick decrements it by the elapsed step count (clamped to 3
- * frames). When the countdown reaches zero it loads UI DLL 1 and warps
- * the player to map 0x60, spawn 1. render/frameEnd are no-ops; release
- * frees the cached texture handle (lbl_803DD72C).
- */
 #include "types.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/model_engine.h"

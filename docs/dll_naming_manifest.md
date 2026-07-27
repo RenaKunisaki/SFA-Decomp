@@ -100,7 +100,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x036 | — | NO-RETAIL-NAME | main/dll/dll_0036_entersavenamescreen.c | = (canonical) | — |
 | 0x037 | — | NO-RETAIL-NAME | main/dll/dll_0037_optionsscreen.c | = (canonical) | — |
 | 0x038 | — | NO-RETAIL-NAME | main/dll/dll_0038_weirdunusedmenu.c | = (canonical) | — |
-| 0x039 | — | NO-RETAIL-NAME | main/dll/dll_0039_dummy39.c | = (canonical) | — |
+| 0x039 | — | NO-RETAIL-NAME | dlls/engine/57/57.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x03A | — | NO-RETAIL-NAME | dlls/engine/58/58.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x03B | — | NO-RETAIL-NAME | dlls/engine/59/59.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x03C | — | NO-RETAIL-NAME | dlls/engine/60/60.c | = (canonical) | Complete DOL-confirmed TU; adjacent DLL and minimap data tails restored to their owning units |

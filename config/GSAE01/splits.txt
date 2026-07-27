@@ -1351,7 +1351,7 @@ main/dll/dll_0038_weirdunusedmenu.c:
 	.sbss       start:0x803DD710 end:0x803DD728
 	.sdata2     start:0x803E1DF8 end:0x803E1E00
 
-main/dll/dll_0039_dummy39.c:
+dlls/engine/57/57.c:
 	.text       start:0x8011D854 end:0x8011D900
 	.data       start:0x8031ADD0 end:0x8031ADF8
 
