@@ -89,7 +89,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         dt = timeDelta;
     }
 
-    if (state->flags.active == 0 && state->alpha == VORTEX_ZERO)
+    if (state->flags.active == 0 && !state->alpha)
     {
         return;
     }
@@ -354,7 +354,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
     else
         state->alpha = VORTEX_ZERO;
     state->particleTimer = randomGetRange(0, 0x14);
-    o->anim.cullDistance2 = o->anim.cullDistance2 * VORTEX_CULL_DISTANCE_SCALE;
+    o->anim.cullDistance2 *= VORTEX_CULL_DISTANCE_SCALE;
 }
 
 void Vortex_release(void)

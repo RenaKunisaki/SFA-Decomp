@@ -123,6 +123,11 @@ int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* stat
     return 0;
 }
 
+static int DIMbosstonsil_isWithinLightRange(f32 dist)
+{
+    return dist > 30.0f && dist < 50.0f;
+}
+
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state)
 {
     int hitObj;
@@ -214,7 +219,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* an
     if (0.0f != lbl_803DDBA4)
     {
         lbl_803DDBA4 = lbl_803DDBA4 - timeDelta;
-        timer = lbl_803DDBA4 * 0.125f;
+        timer = lbl_803DDBA4 / 8.0f;
         if (lbl_803DDBA4 <= 1.0f)
         {
             lbl_803DDBA4 = 0.0f;
@@ -235,7 +240,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* an
     }
     else
     {
-        timer = timer + 100.0f;
+        timer += 100.0f;
     }
 
     if (lbl_803DDBA0 >= lbl_803DDB9C)

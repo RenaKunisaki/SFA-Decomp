@@ -143,8 +143,8 @@ void waterflowwe_calcCurrentVector(GameObject* obj, f32* vx, f32* vz)
             current->currentX = current->currentX - filterCoeff * currentX;
             current->currentZ = current->currentZ - filterCoeff * currentZ;
         }
-        current->currentX = current->currentX * WATERFLOWWE_DECAY_COEFF;
-        current->currentZ = current->currentZ * WATERFLOWWE_DECAY_COEFF;
+        current->currentX *= WATERFLOWWE_DECAY_COEFF;
+        current->currentZ *= WATERFLOWWE_DECAY_COEFF;
         distance = sqrtf(current->currentX * current->currentX + current->currentZ * current->currentZ);
         if (distance > WATERFLOWWE_MAX_MAGNITUDE)
         {
@@ -245,7 +245,7 @@ void waterflowwe_init(GameObject* obj, WaterFlowWeSetup* setup)
     if (setupData->scale != 0)
     {
         object->anim.rootMotionScale = (f32)(u32)setupData->scale / WATERFLOWWE_SCALE_DIVISOR;
-        if (object->anim.rootMotionScale == WATERFLOWWE_ZERO)
+        if (!object->anim.rootMotionScale)
         {
             object->anim.rootMotionScale = WATERFLOWWE_ONE;
         }
