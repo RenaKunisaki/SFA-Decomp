@@ -972,7 +972,7 @@ main/dll/dll_00A9_dlla9func0.c:
 	.text       start:0x800FFF04 end:0x801002C0
 	.sdata2     start:0x803E15D0 end:0x803E1600
 
-main/dll/dll_00AA_dllaafunc0.c:
+dlls/modgfx/170/170.c:
 	.text       start:0x801002C0 end:0x80100550
 	.sdata2     start:0x803E1600 end:0x803E1628
 

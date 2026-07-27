@@ -1,5 +1,5 @@
 /*
- * dllaafunc0 (DLL 0xAA) - a modgfx sequence-effect spawner.
+ * dllaafunc0 (DLL 170 / 0xAA) - a modgfx sequence-effect spawner.
  *
  * dll_AA_func03 drives gModgfxInterface to build and emit a multi-spawn
  * particle "sequence" (sequence id 0x15): it begins the sequence on the
