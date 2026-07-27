@@ -432,7 +432,7 @@ main/dll/dll_001C_effect3.c:
 	.bss        start:0x8039C350 end:0x8039C368
 	.sdata2     start:0x803DF9D0 end:0x803DFA88
 
-main/dll/dll_001D_effect4.c:
+dlls/engine/29/29.c:
 	.text       start:0x800B8D7C end:0x800BC244
 	.data       start:0x803108A0 end:0x803109B4
 	.sdata      start:0x803DB7D0 end:0x803DB7E0

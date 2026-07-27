@@ -35,81 +35,6 @@ ObjectDescriptor6 lbl_803108A0 = {
     (ObjectDescriptorCallback)Effect4_func05,
 };
 
-#define FILL9()                                                                                                        \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C398.posX = 0.0f;                                                                                      \
-        lbl_8039C398.posY = 0.0f;                                                                                      \
-        lbl_8039C398.posZ = 0.0f;                                                                                      \
-        lbl_8039C398.scale = 1.0f;                                                                                     \
-        lbl_8039C398.unk0 = 0;                                                                                         \
-        lbl_8039C398.unk2 = 0;                                                                                         \
-        lbl_8039C398.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C398;                                                               \
-    } while (0)
-
-#undef FILL9
-
-#define FILL8()                                                                                                        \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C380.posX = 0.0f;                                                                                      \
-        lbl_8039C380.posY = 0.0f;                                                                                      \
-        lbl_8039C380.posZ = 0.0f;                                                                                      \
-        lbl_8039C380.scale = 1.0f;                                                                                     \
-        lbl_8039C380.unk0 = 0;                                                                                         \
-        lbl_8039C380.unk2 = 0;                                                                                         \
-        lbl_8039C380.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C380;                                                               \
-    } while (0)
-
-#undef FILL8
-
-#define FILL338()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C338.posX = lbl_803DF884;                                                                              \
-        lbl_8039C338.posY = lbl_803DF884;                                                                              \
-        lbl_8039C338.posZ = lbl_803DF884;                                                                              \
-        lbl_8039C338.scale = lbl_803DF878;                                                                             \
-        lbl_8039C338.unk0 = 0;                                                                                         \
-        lbl_8039C338.unk2 = 0;                                                                                         \
-        lbl_8039C338.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C338;                                                               \
-    } while (0)
-
-#undef FILL338
-
-#define FILL368()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C368.posX = lbl_803DFCEC;                                                                              \
-        lbl_8039C368.posY = lbl_803DFCEC;                                                                              \
-        lbl_8039C368.posZ = lbl_803DFCEC;                                                                              \
-        lbl_8039C368.scale = lbl_803DFCE0;                                                                             \
-        lbl_8039C368.unk0 = 0;                                                                                         \
-        lbl_8039C368.unk2 = 0;                                                                                         \
-        lbl_8039C368.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C368;                                                               \
-    } while (0)
-
-#undef FILL368
-
-#define FILL350()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C350.posX = lbl_803DF9D0;                                                                              \
-        lbl_8039C350.posY = lbl_803DF9D0;                                                                              \
-        lbl_8039C350.posZ = lbl_803DF9D0;                                                                              \
-        lbl_8039C350.scale = lbl_803DF9D4;                                                                             \
-        lbl_8039C350.unk0 = 0;                                                                                         \
-        lbl_8039C350.unk2 = 0;                                                                                         \
-        lbl_8039C350.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C350;                                                               \
-    } while (0)
-
-#undef FILL350
-
 int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
 {
@@ -1050,18 +975,3 @@ void Effect4_release(void)
 void Effect4_initialise(void)
 {
 }
-
-#define FILL320()                                                                                                      \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        lbl_8039C320.posX = 0.0f;                                                                                      \
-        lbl_8039C320.posY = 0.0f;                                                                                      \
-        lbl_8039C320.posZ = 0.0f;                                                                                      \
-        lbl_8039C320.scale = 1.0f;                                                                                     \
-        lbl_8039C320.unk0 = 0;                                                                                         \
-        lbl_8039C320.unk2 = 0;                                                                                         \
-        lbl_8039C320.unk4 = 0;                                                                                         \
-        spawnParams = (PartFxSpawnParams*)&lbl_8039C320;                                                               \
-    } while (0)
-
-#undef FILL320
