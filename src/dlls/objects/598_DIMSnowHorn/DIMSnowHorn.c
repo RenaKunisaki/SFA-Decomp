@@ -47,6 +47,14 @@
 
 f32 gDIMSnowHorn1ModelMtx[16];
 int gDIMSnowHorn1StateHandlers[12];
+void* gDIMSnowHorn1DefaultStateHandler;
+void* gDIMSnowHorn1Texture;
+
+s16 gDIMSnowHorn1TextureId = 0x1C8;
+f32 gDIMSnowHorn1PathCollisionData[2] = {25.0f, 25.0f};
+s16 lbl_803DC73C[2] = {0x103, 0xB};
+f32 lbl_803DC740[2] = {0.0031f, 0.005f};
+s16 lbl_803DC748[4] = {0, 3, 0, 0};
 
 #define OBJGROUP_SNOWHORN_PUZZLE        0x13  /* puzzle-target object group for nearest-object search */
 #define DIMSNOWHORN1_OBJGROUP           0xa   /* snowhorn own add/remove group */
@@ -1575,7 +1583,7 @@ void DIMSnowHorn1_initialise(void)
     ((void**)gDIMSnowHorn1StateHandlers)[9] = (void*)DIMSnowHorn1_stateHandler09;
     ((void**)gDIMSnowHorn1StateHandlers)[10] = (void*)DIMSnowHorn1_stateHandler0A;
     ((void**)gDIMSnowHorn1StateHandlers)[11] = (void*)DIMSnowHorn1_stateHandler0B;
-    *(void**)&gDIMSnowHorn1DefaultStateHandler = (void*)DIMSnowHorn1_defaultStateHandler;
+    gDIMSnowHorn1DefaultStateHandler = (void*)DIMSnowHorn1_defaultStateHandler;
     src = &gDIMSnowHorn1TextureId;
     dst = &gDIMSnowHorn1Texture;
     for (i = 0; i < 1; i++)

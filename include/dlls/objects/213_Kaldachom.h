@@ -139,8 +139,8 @@ void kaldachom_initialise(void);
 
 extern s16 gKaldachomMoves[6];
 extern f32 gKaldachomMoveSpeeds[5];
-extern KaldachomStateHandler gKaldachomStateHandlersB[6];
 extern KaldachomStateHandler gKaldachomStateHandlersA[8];
+extern KaldachomStateHandler gKaldachomStateHandlersB[6];
 extern ObjectDescriptor12 gKaldachomObjDescriptor;
 
 #endif /* DLLS_OBJECTS_213_KALDACHOM_H_ */

@@ -61,8 +61,8 @@ int dll_CB_getExtraSize(void);
 s16 dll_CB_setScale(GameObject* obj);
 void dll_CB_handleMessage(GameObject* obj, int message);
 
-extern DllCBStateHandler gDllCBStateHandlers[6];
 extern DllCBMoveHandler gDllCBMoveHandlers[4];
+extern DllCBStateHandler gDllCBStateHandlers[6];
 extern const f32 gDllCBDefaultAnimSpeed;
 extern int gDllCBHitReactionMoves[30];
 extern u8 gDllCBHitReactionDamage[32];

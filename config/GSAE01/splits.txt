@@ -1547,13 +1547,14 @@ main/dll/baddiewhirlpool.c:
 dlls/objects/202/202.c:
 	.text       start:0x8015AF10 end:0x8015DAE8
 	.data       start:0x8031FD80 end:0x8031FEA8
+	.bss        start:0x803AC528 end:0x803AC580
 	.sbss       start:0x803DDA78 end:0x803DDA80
 	.sdata2     start:0x803E2D00 end:0x803E2DC0
 
 dlls/objects/206/206.c:
 	.text       start:0x8015DAE8 end:0x8015F5B0
 	.data       start:0x8031FEA8 end:0x8031FF80
-	.bss        start:0x803AC580 end:0x803AC598
+	.bss        start:0x803AC580 end:0x803AC5D0
 	.sdata2     start:0x803E2DC0 end:0x803E2E1C
 
 dlls/objects/204_ChukChuk/ChukChuk.c:
@@ -1568,12 +1569,13 @@ dlls/objects/205_IceBall/IceBall.c:
 
 dlls/objects/203/203.c:
 	.text       start:0x801601C4 end:0x80161130
-	.bss        start:0x803AC5D0 end:0x803AC5E8
+	.bss        start:0x803AC5D0 end:0x803AC5F8
 	.sdata2     start:0x803E2E68 end:0x803E2EB0
 
 dlls/objects/208_Grimble/Grimble.c:
 	.text       start:0x80161130 end:0x80163094
 	.data       start:0x80320178 end:0x803201B0
+	.bss        start:0x803AC5F8 end:0x803AC638
 	.sdata2     start:0x803E2EB0 end:0x803E2F2C
 
 dlls/objects/207_CannonClaw/CannonClaw.c:
@@ -1609,7 +1611,7 @@ dlls/objects/213_Kaldachom/Kaldachom.c:
 	.text       start:0x80167764 end:0x80169360
 	.rodata     start:0x802C2210 end:0x802C2220
 	.data       start:0x80320418 end:0x80320458
-	.bss        start:0x803AC668 end:0x803AC680
+	.bss        start:0x803AC668 end:0x803AC6B8
 	.sbss       start:0x803DDA90 end:0x803DDAA0
 	.sdata2     start:0x803E3060 end:0x803E30D0
 
@@ -2176,15 +2178,10 @@ dlls/objects/307_sfxPlayer/sfxPlayer.c:
 	.data       start:0x803224A8 end:0x803224E0
 	.sdata2     start:0x803E40B8 end:0x803E40C8
 
-main/dll/dll_80198a00.c:
-	.text       start:0x80198A00 end:0x80198FA4
-
-main/dll/mmp_gyservent.c:
-	.text       start:0x80198FA4 end:0x801993B0
-
 dlls/objects/294/294.c:
-	.text       start:0x801993B0 end:0x8019AA7C
-	.data       start:0x803224E0 end:0x80322518
+	.text       start:0x80198A00 end:0x8019AA7C
+	.data       start:0x803224E0 end:0x80322720
+	.sdata2     start:0x803E40C8 end:0x803E4110
 
 dlls/objects/325_CloudPrison/CloudPrison.c:
 	.text       start:0x8019AA7C end:0x8019AE3C
@@ -5094,32 +5091,38 @@ dlls/objects/437/437.c:
 	.text       start:0x802B8A58 end:0x802B9780
 	.data       start:0x80334FF8 end:0x80335030
 	.bss        start:0x803DB0D0 end:0x803DB0F0
+	.sdata      start:0x803DC6F0 end:0x803DC730
+	.sdata2     start:0x803E8214 end:0x803E8230
 
 dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:
 	.text       start:0x802B9780 end:0x802BC0D0
 	.data       start:0x80335030 end:0x803351A8
 	.bss        start:0x803DB0F0 end:0x803DB160
+	.sdata      start:0x803DC730 end:0x803DC750
+	.sbss       start:0x803DE4C0 end:0x803DE4C8
 	.sdata2     start:0x803E8230 end:0x803E82C0
 
 dlls/objects/473_DIM2PrisonM/DIM2PrisonM.c:
 	.text       start:0x802BC0D0 end:0x802BC7C0
 	.data       start:0x803351A8 end:0x803351F8
 	.bss        start:0x803DB160 end:0x803DB170
+	.sdata      start:0x803DC750 end:0x803DC760
 	.sbss       start:0x803DE4C8 end:0x803DE4D0
 	.sdata2     start:0x803E82C0 end:0x803E82D4
-
-main/audio/synth_constants.c:
-	.sdata2     start:0x803E8368 end:0x803E8390
 
 dlls/objects/599_DR_EarthWar/DR_EarthWar.c:
 	.text       start:0x802BC7C0 end:0x802BF0C8
 	.rodata     start:0x802C2CA8 end:0x802C2D00
 	.data       start:0x803351F8 end:0x803356F0
+	.bss        start:0x803DB170 end:0x803DB1C0
 	.sdata      start:0x803DC760 end:0x803DC76C
+	.sbss       start:0x803DE4D0 end:0x803DE4D8
+	.sdata2     start:0x803E82D4 end:0x803E8398
 
 dlls/objects/600_DR_CloudRun/DR_CloudRun.c:
 	.text       start:0x802BF0C8 end:0x802C187C
 	.rodata     start:0x802C2D00 end:0x802C2D4C
 	.data       start:0x803356F0 end:0x8033583D
 	.bss        start:0x803DB1C0 end:0x803DB1E0
+	.sbss       start:0x803DE4D8 end:0x803DE4E4
 	.sdata2     start:0x803E8398 end:0x803E8428

@@ -69,12 +69,12 @@ extern f32 lbl_803DC740[2];
 extern s16 lbl_803DC748[4];
 
 extern f32 gDIMSnowHorn1ModelMtx[16];
-extern f32 gDIMSnowHorn1DefaultStateHandler;
+extern void* gDIMSnowHorn1DefaultStateHandler;
 extern int gDIMSnowHorn1StateHandlers[];
 extern u8 gDIMSnowHorn1ConfigTable[];
 extern void* gDIMSnowHorn1Texture;
 extern s16 gDIMSnowHorn1TextureId;
-extern int gDIMSnowHorn1PathCollisionData;
+extern f32 gDIMSnowHorn1PathCollisionData[2];
 
 void DIMSnowHorn1_func23(void);
 int DIMSnowHorn1_defaultStateHandler(void);

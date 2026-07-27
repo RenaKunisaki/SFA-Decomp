@@ -41,6 +41,9 @@
 #define GRIMBLE_PATH_FIND_NEAREST_CALLBACK_OFFSET 0x30
 #define GRIMBLE_PATH_GET_ROTATION_CALLBACK_OFFSET 0x34
 
+void* gGrimbleStateHandlersB[6];
+void* gGrimbleStateHandlersA[10];
+
 int grimble_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
 

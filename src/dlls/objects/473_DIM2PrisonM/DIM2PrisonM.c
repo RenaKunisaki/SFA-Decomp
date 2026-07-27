@@ -25,9 +25,10 @@
 
 int gDim2PrisonMammothStateHandlers[4];
 void* gDim2PrisonMammothDefaultStateHandler[2];
-extern f32 gPrisonMammothMoveSpeedTable[2];
-extern s16 gPrisonMammothMoveIdTable[2];
-extern u8 gPrisonMammothStateFlagsTable[4];
+u8 gPrisonMammothStateFlagsTable[4] = {8, 0, 0, 0};
+s16 gPrisonMammothMoveIdTable[2] = {0x103, 0xB};
+f32 gPrisonMammothMoveSpeedTable[2] = {0.0031f, 0.005f};
+
 extern ObjHitReactEntry gPrisonMammothHitReactEntry[];
 
 int dim2prisonmammoth_defaultStateHandler(void)
