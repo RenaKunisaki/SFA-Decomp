@@ -1,5 +1,5 @@
 /*
- * dll_00A1 func0 - pickup/collectible visual effect spawner (DLL 0xA1).
+ * dll_00A1 func0 - pickup/collectible visual effect spawner (DLL 161 / 0xA1).
  *
  * dll_A1_func03 is the per-pickup effect builder: it fills a stack-resident
  * ModgfxInterface spawn request with 14 layered GfxCmd draw entries (the
