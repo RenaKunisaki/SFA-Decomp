@@ -2013,7 +2013,7 @@ void sidekickToy_updateCurveTargetLatch(GameObject* obj)
     }
 }
 
-int fn_8014C11C(GameObject* obj, f32 radius, u8 flags, int max, EnemyTargetSearchResult* out)
+int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, EnemyTargetSearchResult* out)
 {
     EnemyTargetSearchResult* cur[1];
     int state;
@@ -2149,7 +2149,7 @@ int fn_8014C11C(GameObject* obj, f32 radius, u8 flags, int max, EnemyTargetSearc
     return resultCount;
 }
 
-u8 fn_8014C4D8(GameObject* obj)
+u8 enemy_getFreezeRecoverSeconds(GameObject* obj)
 {
     int* state;
     f32 freezeRecoverTimer;
@@ -2176,7 +2176,7 @@ u8 fn_8014C4D8(GameObject* obj)
     return 0;
 }
 
-void fn_8014C540(GameObject* obj, int* outIdx, f32* outA, f32* outB)
+void enemy_getCurveParams(GameObject* obj, int* outIdx, f32* outA, f32* outB)
 {
     int* state;
     f32 fz;
@@ -2233,7 +2233,7 @@ void enemy_setTrackedObj(GameObject* obj, GameObject* target)
     ((EnemyState*)obj->extra)->trackedObj = target;
 }
 
-void fn_8014C678(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f32 speedBand, f32 maxTurnRad, u8 clampToGround)
+void enemy_steerVelocityToward(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f32 speedBand, f32 maxTurnRad, u8 clampToGround)
 {
     f32 curMag, targetMag, axisMag, speed;
     f32 curDir[3];
@@ -2431,7 +2431,7 @@ f32 sidekickToy_accelerateTowardTargetXZ(GameObject* obj, f32 tx, f32 ty, f32 tz
     return dy;
 }
 
-void fn_8014CD1C(GameObject* node, void* sub, int divisor, f32 fa, f32 fb, u8 useScaledRoll)
+void baddieTurnTowardLookDir(GameObject* node, void* sub, int divisor, f32 fa, f32 fb, u8 useScaledRoll)
 {
     f32 dt;
     int angle;
@@ -2512,7 +2512,7 @@ void baddieTurnTowardPoint(GameObject* node, int state, f32 targetX, f32 targetZ
     node->anim.rotX = newVal;
 }
 
-void fn_8014D08C(GameObject* obj, int state, u8 moveId, f32 rateScale, int moveControlFlags, u8 stateByte)
+void baddieSetMove(GameObject* obj, int state, u8 moveId, f32 rateScale, int moveControlFlags, u8 stateByte)
 {
     ObjHitsPriorityState* hitState;
 

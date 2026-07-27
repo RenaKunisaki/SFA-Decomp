@@ -51,7 +51,7 @@ void gcRobotPatrol_updateWhileFrozen(GameObject* obj, int state, int unused, int
     Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lrope_powerdown);
     ((BaddieState*)state)->reactionFlags |= 0x8;
     *(f32*)(state + 0x32c) = (f32)(u32)(u16) * (s16*)(sub + 0x2c);
-    fn_8014D08C((GameObject*)(obj), state, 1, 2.5f, 0, 0);
+    baddieSetMove((GameObject*)(obj), state, 1, 2.5f, 0, 0);
     *(u32*)&((BaddieState*)state)->unk2E4 &= ~0x20LL;
     fz = 0.0f;
     obj->anim.velocityZ = 0.0f;
@@ -97,7 +97,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             *(f32*)(state + 0x32c) = 0.0f;
             *(u32*)&((BaddieState*)state)->unk2E4 |= 0x20;
             Sfx_StopObjectChannel((u32)obj, 4);
-            ((SeqObj11ESetMovePointerStateFn)fn_8014D08C)(obj, state, 0, 1.0f, 0, 0);
+            ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(obj, state, 0, 1.0f, 0, 0);
         }
         else if (!(*(u32*)&((BaddieState*)state)->unk2E4 & 0x20))
         {

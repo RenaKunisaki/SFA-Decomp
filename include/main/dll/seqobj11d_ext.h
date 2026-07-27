@@ -4,7 +4,7 @@
 #include "types.h"
 #include "game/objects/object.h"
 
-void fn_80151C68(int obj, u8* state);
+void groundBaddieHandlePaidTrigger(int obj, u8* state);
 
-void fn_801513AC(GameObject* obj, u8* state);
+void groundBaddiePickNextMove(GameObject* obj, u8* state);
 #endif /* MAIN_DLL_SEQOBJ11D_EXT_H_ */

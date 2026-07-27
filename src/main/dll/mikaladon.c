@@ -165,7 +165,7 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     obj->anim.velocityX = oneOverTimeDelta * (sinOut - obj->anim.localPosX);
     obj->anim.velocityY = oneOverTimeDelta * (y - obj->anim.localPosY);
     obj->anim.velocityZ = oneOverTimeDelta * (cosOut - obj->anim.localPosZ);
-    fn_8014CD1C(obj, state, 0xf, 7.5f, 1.0f, 0);
+    baddieTurnTowardLookDir(obj, state, 0xf, 7.5f, 1.0f, 0);
     state->actor.ambientSfxTimer -= timeDelta;
     if (state->actor.ambientSfxTimer <= gMikaladonZero)
     {

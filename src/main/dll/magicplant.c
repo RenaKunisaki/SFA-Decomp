@@ -123,7 +123,7 @@ void vambat_updateIdle(GameObject* obj, int state)
         vec[0] = curve->posX - (obj)->anim.localPosX;
         vec[1] = curve->posY - (obj)->anim.localPosY;
         vec[2] = curve->posZ - (obj)->anim.localPosZ;
-        fn_8014C678(obj, (void*)state, vec, 1.5f, 0.75f, 0.15f, 1);
+        enemy_steerVelocityToward(obj, (void*)state, vec, 1.5f, 0.75f, 0.15f, 1);
 
         *(f32*)(state + 0x324) = *(f32*)(state + 0x324) + timeDelta;
         if (*(f32*)(state + 0x324) > 3.6e+02f)
@@ -133,7 +133,7 @@ void vambat_updateIdle(GameObject* obj, int state)
         }
     }
 
-    fn_8014CD1C(obj, (void*)state, 0xf, 1e+01f, 1.0f, 0);
+    baddieTurnTowardLookDir(obj, (void*)state, 0xf, 1e+01f, 1.0f, 0);
 
     *(f32*)(state + 0x328) = *(f32*)(state + 0x328) - timeDelta;
     if (*(f32*)(state + 0x328) <= 0.0f)
@@ -215,8 +215,8 @@ void vambat_updateEngaged(GameObject* obj, int state)
             }
         }
     }
-    fn_8014C678(obj, (void*)state, vec, 1.5f, 0.75f, 0.15f, 1);
-    fn_8014CD1C(obj, (void*)state, 0xf, 1e+01f, 1.0f, 0);
+    enemy_steerVelocityToward(obj, (void*)state, vec, 1.5f, 0.75f, 0.15f, 1);
+    baddieTurnTowardLookDir(obj, (void*)state, 0xf, 1e+01f, 1.0f, 0);
 }
 
 void vambat_init(GameObject* obj, int state)

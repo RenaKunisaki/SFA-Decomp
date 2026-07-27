@@ -1,8 +1,8 @@
 /*
  * wispbaddieseq - the wisp/hagabon anim-sequence driver shared with the
  * sidekick-toy and ground-baddie seq objects: fn_8014FFB4 walks the per-family
- * event rows and starts the next move, fn_8015039C fires the per-frame
- * move-progress sfx (with rumble + radial camera shake), and fn_801504BC
+ * event rows and starts the next move, wispBaddiePlayMoveEventSfx fires the per-frame
+ * move-progress sfx (with rumble + radial camera shake), and wispBaddieQueueNextEvent
  * primes the next chain entry. The per-family tables live in the wisp baddie
  * DLL and are reached here by extern.
  */
@@ -38,7 +38,7 @@ STATIC_ASSERT(offsetof(WispEventRow, moveId) == 0x8);
  * HagabonAnimState - file-local overlay naming the PER-FAMILY anim-control
  * scratch that baddie_state.h leaves raw for the hagabon/swarmbaddie fighter
  * driven by fn_8014FFB4. moveEventFlags(0x2F8) is the u16 per-frame
- * move-progress event bitmask read by fn_8015039C to fire SFX.
+ * move-progress event bitmask read by wispBaddiePlayMoveEventSfx to fire SFX.
  */
 typedef struct HagabonAnimState
 {
@@ -182,7 +182,7 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
         }
         if ((sf2 & 0x40000000) != 0)
         {
-            fn_801513AC(obj, (u8*)state);
+            groundBaddiePickNextMove(obj, (u8*)state);
         }
         return 0;
     }
@@ -222,7 +222,7 @@ u32 fn_8014FFB4(GameObject* obj, u8* state, u32 allowNewEvent)
     return 0;
 }
 
-void fn_8015039C(GameObject* obj, void* animState)
+void wispBaddiePlayMoveEventSfx(GameObject* obj, void* animState)
 {
     GameObject* player;
     f32 distance;
@@ -263,7 +263,7 @@ void fn_8015039C(GameObject* obj, void* animState)
     }
 }
 
-void fn_801504BC(int obj, int delta)
+void wispBaddieQueueNextEvent(int obj, int delta)
 {
     u8* inner = ((GameObject*)obj)->extra;
     u8* ptr = lbl_8031F16C[inner[0x33b]].tbl4;

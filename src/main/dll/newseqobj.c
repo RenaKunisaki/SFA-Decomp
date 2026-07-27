@@ -268,7 +268,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     {
         mainSetBits(GAMEBIT_BaddieRelated1C8, 1);
     }
-    fn_8015039C(obj, state);
+    wispBaddiePlayMoveEventSfx(obj, state);
     {
         f32 t = ((SeqObj11EState*)state)->seqTimer;
         f32 z = 0.0f;
@@ -463,7 +463,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         requestKrazoaShrineMusic();
     }
 
-    fn_8015039C(obj, state);
+    wispBaddiePlayMoveEventSfx(obj, state);
 
     {
         if (((SeqObj11EState*)state)->seqTimer && ((SeqObj11EState*)state)->seqNode != 0)

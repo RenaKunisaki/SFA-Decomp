@@ -75,7 +75,7 @@ void guardClaw_update(GameObject* obj, u8* state)
             (u8)(*(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
         if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
         {
-            fn_80151C68((int)obj, state);
+            groundBaddieHandlePaidTrigger((int)obj, state);
         }
     }
     else
@@ -141,7 +141,7 @@ void guardClaw_update(GameObject* obj, u8* state)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_eggsnatch_carry3);
             }
-            ((SeqObj11ESetMovePointerStateFn)fn_8014D08C)(
+            ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(
                 obj, state, animTbl[((BaddieState*)state)->userData1 * 12],
                 *(f32*)((u8*)gSeq11EStateTable + ((BaddieState*)state)->userData1 * 12), 0, 0xf);
         }

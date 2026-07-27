@@ -118,7 +118,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         ObjHits_DisableObject(obj);
         if ((obj)->anim.currentMove != 5)
         {
-            fn_8014D08C(obj, state, 5, lbl_803DBCEC, 0, 0);
+            baddieSetMove(obj, state, 5, lbl_803DBCEC, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -152,12 +152,12 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
             if (noHit && (obj)->anim.currentMove != 0)
             {
                 ((DusterState*)state)->turnDelta = 0;
-                fn_8014D08C(obj, state, 0, 1.0f, 0, 1);
+                baddieSetMove(obj, state, 0, 1.0f, 0, 1);
             }
             else
             {
                 float fz;
-                fn_8014D08C(obj, state, 1, 0.75f, 0, 0);
+                baddieSetMove(obj, state, 1, 0.75f, 0, 0);
                 fz = 0.0f;
                 (obj)->anim.velocityX = fz;
                 (obj)->anim.velocityY = fz;
@@ -208,7 +208,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
         {
-            fn_8014D08C(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
+            baddieSetMove(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -294,7 +294,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
                     {
                         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
                         {
-                            fn_8014D08C(obj, (int)state, 7, 1.0f / (2.0f * scale), 0, 1);
+                            baddieSetMove(obj, (int)state, 7, 1.0f / (2.0f * scale), 0, 1);
                         }
                         obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
                         obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
@@ -315,11 +315,11 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
             if (noHit != 0 && mag < 3000)
             {
                 ((FCVars*)state)->turnDelta = 0;
-                fn_8014D08C(obj, (int)state, 0, 1.0f / scale, 0, 1);
+                baddieSetMove(obj, (int)state, 0, 1.0f / scale, 0, 1);
             }
             else
             {
-                fn_8014D08C(obj, (int)state, 1, 0.75f / scale, 0, 0);
+                baddieSetMove(obj, (int)state, 1, 0.75f / scale, 0, 0);
                 {
                     f32 z = 0.0f;
                     obj->anim.velocityX = z;
@@ -359,7 +359,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
         {
-            fn_8014D08C(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
+            baddieSetMove(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -392,7 +392,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
         grabbed = ((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN;
         if (grabbed != 0 && obj->anim.currentMove == 6)
         {
-            fn_8014D08C(obj, (int)state, 4, lbl_803DBCE0, 0, 1);
+            baddieSetMove(obj, (int)state, 4, lbl_803DBCE0, 0, 1);
         }
         else
         {
@@ -404,17 +404,17 @@ void hoodedZyck_update(GameObject* obj, u8* state)
                 {
                     if (((BaddieState*)state)->speedScale < 40.0f)
                     {
-                        fn_8014D08C(obj, (int)state, 2, 0.75f, 0, 0);
+                        baddieSetMove(obj, (int)state, 2, 0.75f, 0, 0);
                     }
                     else
                     {
-                        fn_8014D08C(obj, (int)state, 6, lbl_803DBCE4, 0, 0);
+                        baddieSetMove(obj, (int)state, 6, lbl_803DBCE4, 0, 0);
                     }
                     ((FCVars*)state)->turnDelta = 0;
                 }
                 else
                 {
-                    fn_8014D08C(obj, (int)state, 1, 0.75f, 0, 0);
+                    baddieSetMove(obj, (int)state, 1, 0.75f, 0, 0);
                     if ((s16)turnRaw < 0)
                     {
                         ((FCVars*)state)->turnDelta = 0xfed4;

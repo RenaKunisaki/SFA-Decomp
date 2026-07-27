@@ -115,7 +115,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
         vec[0] = curve->posX - (obj)->anim.localPosX;
         vec[1] = 0.0f;
         vec[2] = curve->posZ - (obj)->anim.localPosZ;
-        fn_8014C678(obj, (void*)state, vec, 2.0f, 0.1f, 0.1f, 1);
+        enemy_steerVelocityToward(obj, (void*)state, vec, 2.0f, 0.1f, 0.1f, 1);
         *(f32*)(state + 0x324) += timeDelta;
         if (*(f32*)(state + 0x324) > 360.0f)
         {
@@ -125,7 +125,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
     }
     (obj)->anim.rotY =
         -(1024.0f * fn_80293DA4(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) - (f32)(obj)->anim.rotY);
-    fn_8014CD1C(obj, (void*)state, 0xf, 7.5f, 1.0f, 0);
+    baddieTurnTowardLookDir(obj, (void*)state, 0xf, 7.5f, 1.0f, 0);
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         if ((obj)->anim.currentMoveProgress < 0.5)

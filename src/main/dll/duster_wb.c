@@ -179,7 +179,7 @@ void wbUpdateEngaged(u32 obj, int state)
             ((BaddieState*)state)->unk308 = -(lbl_803E2AE0 * timeDelta - ((BaddieState*)state)->unk308);
         }
     }
-    fn_8014CD1C((GameObject*)obj, (void*)state, 0x2d, lbl_803E2A98, *(f32*)&lbl_803E2A98, 0);
+    baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, lbl_803E2A98, *(f32*)&lbl_803E2A98, 0);
 }
 
 void wbUpdateIdle(u32 obj, int state)
@@ -291,7 +291,7 @@ void wbUpdateIdle(u32 obj, int state)
             ((BaddieState*)state)->unk308 = -(lbl_803E2AE0 * timeDelta - ((BaddieState*)state)->unk308);
         }
     }
-    fn_8014CD1C((GameObject*)obj, (void*)state, 0x2d, lbl_803E2A98, *(f32*)&lbl_803E2A98, 0);
+    baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, lbl_803E2A98, *(f32*)&lbl_803E2A98, 0);
 }
 
 void wbInit(u32 unused, int state)
@@ -388,7 +388,7 @@ void mutatedEbaUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, 
             }
             else
             {
-                fn_8014D08C((GameObject*)obj, (int)state, 4, lbl_803E2B04, 0, 0);
+                baddieSetMove((GameObject*)obj, (int)state, 4, lbl_803E2B04, 0, 0);
                 ((BaddieState*)state)->userData1 = 0;
                 Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_call);
                 ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
@@ -420,13 +420,13 @@ void mutatedEbaUpdateEngaged(u32 obj, int state)
         if (*(u16*)(state + 0x2a0) < 4)
         {
             tblOff = (u32)((BaddieState*)state)->userData1 * 0xc;
-            fn_8014D08C((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
+            baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
                         *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
         }
         else
         {
             tblOff = (u32)((BaddieState*)state)->userData1 * 0xc;
-            fn_8014D08C((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 9],
+            baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 9],
                         *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
         }
     }
@@ -451,7 +451,7 @@ void mutatedEbaUpdateIdle(u32 obj, int state)
             ((BaddieState*)state)->userData1 = 0;
         }
         tblOff = (u32)((BaddieState*)state)->userData1 * 0xc;
-        fn_8014D08C((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
+        baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
                     *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
     }
     mutatedEbaPlayMoveSfx(obj, state);

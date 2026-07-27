@@ -219,11 +219,11 @@ void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int su
     }
     if (((FCVars*)st)->moveTableIndex > 3)
     {
-        fn_8014D08C((GameObject*)obj, (int)st, 6, 0.5f, 0, 0);
+        baddieSetMove((GameObject*)obj, (int)st, 6, 0.5f, 0, 0);
     }
     else
     {
-        fn_8014D08C((GameObject*)obj, (int)st, 5, 0.5f, 0, 0);
+        baddieSetMove((GameObject*)obj, (int)st, 5, 0.5f, 0, 0);
     }
     r = randomGetRange(0, 3);
     ((BaddieState*)st)->userData1 = base[r];
@@ -359,12 +359,12 @@ void snowworm_update(GameObject* obj, u8* state)
         if (((FCVars*)state)->moveTableIndex < 4)
         {
             i = ((BaddieState*)state)->userData1 * 0xc;
-            fn_8014D08C(obj, (int)state, (tbl + i)[8], *(f32*)((int)tbl + i), 0, 0);
+            baddieSetMove(obj, (int)state, (tbl + i)[8], *(f32*)((int)tbl + i), 0, 0);
         }
         else
         {
             i = ((BaddieState*)state)->userData1 * 0xc;
-            fn_8014D08C(obj, (int)state, (tbl + i)[9], *(f32*)((int)tbl + i), 0, 0);
+            baddieSetMove(obj, (int)state, (tbl + i)[9], *(f32*)((int)tbl + i), 0, 0);
         }
         if (obj->anim.currentMove == 9)
         {
@@ -410,7 +410,7 @@ void snowworm_applyReactionState(GameObject* obj, int* st)
             f32* fbase = (f32*)t1;
             u32 idx2 = ((BaddieState*)st)->userData1;
             u32 off = idx2 * 0xc;
-            fn_8014D08C(obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
+            baddieSetMove(obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
         }
     }
     crawler_playReactionEffects(obj, st);

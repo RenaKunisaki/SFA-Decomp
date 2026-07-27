@@ -117,7 +117,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                     case 0x5b8:
                                     case 0x5b9:
                                     case 0x5e1:
-                                        fn_801504BC((int)target, kind);
+                                        wispBaddieQueueNextEvent((int)target, kind);
                                         break;
                                     }
                                     break;
@@ -139,7 +139,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                         case 0x5b8:
                                         case 0x5b9:
                                         case 0x5e1:
-                                            fn_801504BC((int)target, kind);
+                                            wispBaddieQueueNextEvent((int)target, kind);
                                             break;
                                         }
                                     }
@@ -161,7 +161,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                         case 0x5b8:
                                         case 0x5b9:
                                         case 0x5e1:
-                                            fn_801504BC((int)target, kind);
+                                            wispBaddieQueueNextEvent((int)target, kind);
                                             break;
                                         }
                                     }

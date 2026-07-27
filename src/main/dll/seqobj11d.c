@@ -8,13 +8,13 @@
  * The per-frame update walks those tables to pick the next animation,
  * stepping the per-family index (state+0x33a) until it finds an entry whose
  * reaction mask matches the baddie's control flags, then drives the model
- * (fn_8014D08C / ObjAnim_SetMoveProgress) and the hit-volume priority
- * (ObjHitsPriorityState). fn_801511E8 picks the next move when far from the
- * target; fn_801513AC steers toward a tracked object using getAngle.
- * fn_80151C68 is a pay-to-trigger interaction (spends 25 money, sets a
+ * (baddieSetMove / ObjAnim_SetMoveProgress) and the hit-volume priority
+ * (ObjHitsPriorityState). groundBaddiePickIdleMove picks the next move when far from the
+ * target; groundBaddiePickNextMove steers toward a tracked object using getAngle.
+ * groundBaddieHandlePaidTrigger is a pay-to-trigger interaction (spends 25 money, sets a
  * placement game bit, runs object trigger sequences). groundBaddiePushPlayerOut pushes
  * the player out of a cylinder around the object. guardClawUpdateWhileFrozen plays a dirt
- * step sfx and sets a reaction flag. fn_801513AC is also referenced
+ * step sfx and sets a reaction flag. groundBaddiePickNextMove is also referenced
  * directly by the wisp baddie DLL.
  */
 #include "main/audio/sfx_ids.h"
@@ -83,9 +83,9 @@ typedef struct
 EnemyTargetSearchResult gGroundBaddieTargetSearchResult[16];
 
 
-void fn_801511E8(GameObject* obj, u8* state);
+void groundBaddiePickIdleMove(GameObject* obj, u8* state);
 
-void fn_801511E8(GameObject* obj, u8* state)
+void groundBaddiePickIdleMove(GameObject* obj, u8* state)
 {
     SeqEntry* entry;
     u32 idx;
@@ -119,7 +119,7 @@ void fn_801511E8(GameObject* obj, u8* state)
     *(u8*)(state + 0x2f2) = entry[state[0x33a]].r;
     *(u8*)(state + 0x2f3) = entry[state[0x33a]].g;
     *(u8*)(state + 0x2f4) = entry[state[0x33a]].b;
-    fn_8014D08C(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
+    baddieSetMove(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
                             *(f32*)(lbl_8031DD30 + entry[state[0x33a]].anim * 4));
     (((GroundBaddieState*)state)->baddie.userData1)++;
@@ -129,7 +129,7 @@ void fn_801511E8(GameObject* obj, u8* state)
     }
 }
 
-void fn_801513AC(GameObject* obj, u8* state)
+void groundBaddiePickNextMove(GameObject* obj, u8* state)
 {
     SeqEntry* entry;
     u32 idx;
@@ -139,7 +139,7 @@ void fn_801513AC(GameObject* obj, u8* state)
     base = (char*)lbl_8031F16C;
     base += ((GroundBaddieState*)state)->baddie.userData2 * 40;
     entry = *(SeqEntry**)(base + 12);
-    if (fn_8014C11C(obj, 100.0f, 1, 16, gGroundBaddieTargetSearchResult) >= 1)
+    if (enemy_findNearbyEnemies(obj, 100.0f, 1, 16, gGroundBaddieTargetSearchResult) >= 1)
     {
         if (gGroundBaddieTargetSearchResult[0].dist <= 40 && *(u16*)(state + 0x2a0) != 3 &&
             *(u16*)(state + 0x2a0) != 4)
@@ -186,7 +186,7 @@ void fn_801513AC(GameObject* obj, u8* state)
     *(u8*)(state + 0x2f2) = entry[state[0x33a]].r;
     *(u8*)(state + 0x2f3) = entry[state[0x33a]].g;
     *(u8*)(state + 0x2f4) = entry[state[0x33a]].b;
-    fn_8014D08C(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
+    baddieSetMove(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
                             *(f32*)(lbl_8031DD30 + entry[state[0x33a]].anim * 4));
     (((GroundBaddieState*)state)->baddie.userData1)++;
@@ -219,7 +219,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
     {
         requestKrazoaShrineMusic();
     }
-    fn_8015039C(obj, state);
+    wispBaddiePlayMoveEventSfx(obj, state);
     tv = *(f32*)(state + 0x328);
     fz = 0.0f;
     if (tv != fz && *(u16*)(state + 0x338) != 0)
@@ -237,14 +237,14 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
         if ((((GroundBaddieState*)state)->baddie.controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             player = Obj_GetPlayerObject();
-            fn_8014C11C(obj, 100.0f, 3, 16, gGroundBaddieTargetSearchResult);
+            enemy_findNearbyEnemies(obj, 100.0f, 3, 16, gGroundBaddieTargetSearchResult);
             if (*(u16*)(state + 0x338) != 0)
             {
                 {
                     u8* p28c = p28 + 12;
                     *(u8*)(state + 0x2f2) = (u8) * (u32*)(p28c + *(u16*)(state + 0x338) * 16);
                 }
-                fn_8014D08C(obj, (int)state, (p28 + *(u16*)(state + 0x338) * 16)[8],
+                baddieSetMove(obj, (int)state, (p28 + *(u16*)(state + 0x338) * 16)[8],
                             ((SeqEntry*)(p28 + *(u16*)(state + 0x338) * 16))->speed, 0,
                             (u8) * (u32*)(&p28[*(u16*)(state + 0x338) * 16 + 4]));
                 ObjAnim_SetMoveProgress(
@@ -257,11 +257,11 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
                 if (player != NULL && ((((GroundBaddieState*)state)->baddie.controlFlags & 0x800080) != 0 ||
                                        (void*)Player_GetTargetObject((int)player) == NULL))
                 {
-                    fn_801511E8(obj, state);
+                    groundBaddiePickIdleMove(obj, state);
                 }
                 else
                 {
-                    fn_801513AC(obj, state);
+                    groundBaddiePickNextMove(obj, state);
                 }
             }
         }
@@ -399,7 +399,7 @@ void sharpClawInit(int obj, u8* state)
     }
 }
 
-void fn_80151C68(int obj, u8* state)
+void groundBaddieHandlePaidTrigger(int obj, u8* state)
 {
     GameObject* player;
     u8* setup;

@@ -90,8 +90,8 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
     }
     else
     {
-        fn_8014C678(obj, state, dvec, 2.0f, 0.1f, 0.1f, 1);
-        fn_8014CD1C(obj, state, 0xf, 7.5f, 1.0f, 0);
+        enemy_steerVelocityToward(obj, state, dvec, 2.0f, 0.1f, 0.1f, 1);
+        baddieTurnTowardLookDir(obj, state, 0xf, 7.5f, 1.0f, 0);
     }
     if (state[0xb7] & 0x40000000U)
     {

@@ -77,15 +77,15 @@ void FUN_8014c690(u64 param_1, double param_2, double param_3, u64 param_4, u64 
 void FUN_8014c694(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8, int param_9);
 int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate);
-int fn_8014C11C(GameObject* obj, f32 radius, u8 flags, int maxCount, EnemyTargetSearchResult* results);
+int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int maxCount, EnemyTargetSearchResult* results);
 void enemy_setTrackedObj(GameObject* obj, GameObject* target);
-void fn_8014C678(GameObject* obj, void* state, f32* direction, f32 maxSpeed, f32 speedRange, f32 maxAngle,
+void enemy_steerVelocityToward(GameObject* obj, void* state, f32* direction, f32 maxSpeed, f32 speedRange, f32 maxAngle,
                  u8 adjustGroundVelocity);
-void fn_8014CD1C(GameObject* obj, void* state, int divisor, f32 rollScale, f32 pitchScale, u8 useScaledRoll);
+void baddieTurnTowardLookDir(GameObject* obj, void* state, int divisor, f32 rollScale, f32 pitchScale, u8 useScaledRoll);
 void enemy_setHealthZero(GameObject* obj);
 void enemy_trackPlayer(GameObject* obj);
-u8 fn_8014C4D8(GameObject* obj);
-void fn_8014C540(GameObject* obj, int* outIdx, f32* outA, f32* outB);
+u8 enemy_getFreezeRecoverSeconds(GameObject* obj);
+void enemy_getCurveParams(GameObject* obj, int* outIdx, f32* outA, f32* outB);
 void baddieTurnTowardPoint(GameObject* obj, int state, f32 targetX, f32 targetZ, int divisor, int angleBias);
 f32 enemy_getHealthFraction(GameObject* obj);
 f32 sidekickToy_accelerateTowardTarget3D(GameObject* obj, f32 tx, f32 ty, f32 tz, f32 accel, f32 speedScale,

@@ -4343,7 +4343,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 }
                 if ((*(u8*)((char*)state + 0x34a) & 4) != 0 && (*(u8*)((char*)state + 0x34a) & 2) != 0)
                 {
-                    f32 v = (f32)(u8)fn_8014C4D8((GameObject*)((PlayerState*)state)->baddie.targetObj);
+                    f32 v = (f32)(u8)enemy_getFreezeRecoverSeconds((GameObject*)((PlayerState*)state)->baddie.targetObj);
                     int slot2 = inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0;
                     if (v >= *(f32*)(slot2 + 0x8c))
                     {
@@ -17738,7 +17738,7 @@ void fn_802B4A9C(GameObject* obj, int inner, int inner2)
         }
         if (*(int**)&((PlayerState*)inner2)->baddie.targetObj != NULL)
         {
-            fn_8014C540((GameObject*)((PlayerState*)inner2)->baddie.targetObj, (int*)&((PlayerState*)inner)->flags884,
+            enemy_getCurveParams((GameObject*)((PlayerState*)inner2)->baddie.targetObj, (int*)&((PlayerState*)inner)->flags884,
                         &((PlayerState*)inner)->animSpeedDecay, &((PlayerState*)inner)->animSpeedStart);
         }
         else
