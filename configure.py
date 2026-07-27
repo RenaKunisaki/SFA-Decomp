@@ -1058,6 +1058,7 @@ config.libs = [
             # dlls/modgfx
 
             # dlls/projgfx
+            Object(MatchingFor("GSAE01"), "dlls/projgfx/187/187.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/188/188.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/189/189.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/projgfx/190/190.c", cflags=cflags_dll_noopt),
@@ -1442,7 +1443,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_00B2_projrobotfire.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00B6_projsquirt1.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_00B7_projship1.c", cflags=cflags_dll_noopt),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_00BB_projwallpower.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_8b.c"),
             Object(Matching, "main/dll/dll_8c.c"),
             Object(Matching, "main/dll/dll_8d.c"),

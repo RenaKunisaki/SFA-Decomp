@@ -1,5 +1,5 @@
 /*
- * projwallpower (DLL 0x00BB) - retired projectile "wall power" object.
+ * projwallpower (DLL 187 / 0x00BB) - retired projectile "wall power" object.
  *
  * The object's behavior has been removed: the only live entry point,
  * projwallpower_doUnsupported, just reports that the feature is no longer
