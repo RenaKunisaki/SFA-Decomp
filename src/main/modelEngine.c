@@ -166,6 +166,7 @@
 #include "dlls/objects/368_IMSpaceRing.h"
 #include "dlls/objects/369_IMSpaceRing.h"
 #include "dlls/objects/370_LINKB_levco.h"
+#include "dlls/objects/371_LINK_levcon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -299,8 +300,8 @@ extern ResourceDescriptor gHighTopObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
-extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLaserBeamObjDescriptor,
-    gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
+extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
+    gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
@@ -1389,7 +1390,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gIMSpaceRingObjDescriptor,
     (ResourceDescriptor*)&gIMSpaceRingGeneratorObjDescriptor,
     (ResourceDescriptor*)&gLINKBLevelControlObjDescriptor,
-    &gLINKLevControlObjDescriptor,
+    (ResourceDescriptor*)&gLINKLevelControlObjDescriptor,
     &gCCriverflowObjDescriptor,
     &gDFropenodeObjDescriptor,
     &lbl_80325F20,

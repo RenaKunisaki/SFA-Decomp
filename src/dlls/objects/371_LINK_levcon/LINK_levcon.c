@@ -1,144 +1,139 @@
-/*
- * LINK_levcon (DLL 0x173) - per-area level-control object for the
- * LinkLevel maps. One instance lives in each map-event area cell; the
- * object's anim.mapEventSlot identifies which cell (0x45..0x49).
- *
- * link_levcontrol_update tracks the player's current map cell (via
- * coordsToMapCell on the player world XZ): on first entry to this
- * object's cell it runs the one-shot enter effects (sky / env-fx /
- * music cues), and while the player stays in the cell it drives the
- * looping area music. The cell's music selection branches on sky sun
- * position and a couple of story game bits, edge-latched through the
- * object's musicTrack field and a SCGameBitLatch record.
- */
-#include "main/dll/linklevcontrolstate_struct.h"
-#include "sys/objects.h"
-#include "main/audio/music_api.h"
-#include "main/render_envfx_api.h"
+#include "dlls/objects/371_LINK_levcon.h"
+
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "dlls/object_descriptor.h"
-#include "main/sky_interface.h"
-#include "main/gamebits.h"
-#include "main/lightmap_api.h"
-#include "main/dll/savegame_load_api.h"
-#include "main/sky_api.h"
-#include "main/sky.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/dll/dll_0173_linklevcontrol.h"
+#include "main/dll/savegame_load_api.h"
+#include "main/gamebits_api.h"
+#include "main/lightmap_api.h"
+#include "main/render_envfx_api.h"
+#include "main/sky.h"
+#include "main/sky_api.h"
+#include "main/sky_interface.h"
+#include "sys/objects.h"
 
-#define LINKLEVCONTROL_OBJFLAG_HIDDEN 0x4000
+#define LINK_LEVEL_CONTROL_ENVFX_A 0x13E
+#define LINK_LEVEL_CONTROL_ENVFX_B 0x140
+#define LINK_LEVEL_CONTROL_ENVFX_C 0x13F
 
-/* Area cells handled by this controller (GameObject::anim.mapEventSlot). */
-enum
-{
-    AREA_CELL_45 = 0x45,
-    AREA_CELL_46 = 0x46,
-    AREA_CELL_47 = 0x47,
-    AREA_CELL_48 = 0x48,
-    AREA_CELL_49 = 0x49
+#define LINK_LEVEL_CONTROL_ENVFX_LOADED_VALUE  0x3F
+#define LINK_LEVEL_CONTROL_ENVFX_LOADING_VALUE 0x1F
+
+enum {
+    LINK_LEVEL_CONTROL_AREA_CELL_45 = 0x45,
+    LINK_LEVEL_CONTROL_AREA_CELL_46 = 0x46,
+    LINK_LEVEL_CONTROL_AREA_CELL_47 = 0x47,
+    LINK_LEVEL_CONTROL_AREA_CELL_48 = 0x48,
+    LINK_LEVEL_CONTROL_AREA_CELL_49 = 0x49,
 };
 
-/* userData1 records how the object was spawned: fresh start vs loaded save. */
-enum
-{
-    LEVCON_SAVE_STATUS_FRESH = 1,
-    LEVCON_SAVE_STATUS_LOADED = 2
+enum {
+    LINK_LEVEL_CONTROL_SAVE_STATUS_FRESH = 1,
+    LINK_LEVEL_CONTROL_SAVE_STATUS_LOADED = 2,
 };
 
-/* env-effect ids activated on entering AREA_CELL_45 (index-style; roles opaque) */
-#define LINKLEVCONTROL_ENVFX_A 0x13e
-#define LINKLEVCONTROL_ENVFX_B 0x140
-#define LINKLEVCONTROL_ENVFX_C 0x13f
-
-u8 lbl_803239F0[224] = {
-    0x01, 0xB3, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x01, 0xB3, 0x01, 0xB6, 0x01, 0xB9, 0x01, 0xB9,
-    0x01, 0xB3, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x01, 0xB6, 0x01, 0xB9,
-    0x01, 0xB9, 0x01, 0xB9, 0x01, 0xB3, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61,
-    0x01, 0xB3, 0x00, 0x61, 0x00, 0x61, 0x00, 0x61, 0x01, 0xB2, 0x00, 0x5F, 0x00, 0x5F, 0x00, 0x5F,
-    0x01, 0xB2, 0x01, 0xB5, 0x01, 0xB8, 0x01, 0xB8, 0x01, 0xB2, 0x00, 0x5F, 0x00, 0x5F, 0x00, 0x5F,
-    0x00, 0x5F, 0x00, 0x5F, 0x01, 0xB5, 0x01, 0xB8, 0x01, 0xB8, 0x01, 0xB8, 0x01, 0xB2, 0x00, 0x5F,
-    0x00, 0x5F, 0x00, 0x5F, 0x00, 0x5F, 0x00, 0x5F, 0x01, 0xB2, 0x00, 0x5F, 0x00, 0x5F, 0x00, 0x5F,
-    0x01, 0xB4, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0x01, 0xB4, 0x01, 0xB7, 0x01, 0xBA, 0x01, 0xBA,
-    0x01, 0xB4, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0x01, 0xB7, 0x01, 0xBA,
-    0x01, 0xBA, 0x01, 0xBA, 0x01, 0xB4, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60,
-    0x01, 0xB4, 0x00, 0x60, 0x00, 0x60, 0x00, 0x60, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0xA8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0xA8, 0xFF, 0xFF, 0x01, 0xA8, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+enum {
+    LINK_GAMEBIT_AREA_48_DISABLED = 0xE1E,
+    LINK_GAMEBIT_AREA_48_ALIEN_MUSIC = 0xB72,
 };
 
+LINKLevelControlEnvFxRampTables gLINKLevelControlEnvFxRampTables = {
+    {
+        0x01B3, 0x0061, 0x0061, 0x0061, 0x01B3, 0x01B6, 0x01B9,
+        0x01B9, 0x01B3, 0x0061, 0x0061, 0x0061, 0x0061, 0x0061,
+        0x01B6, 0x01B9, 0x01B9, 0x01B9, 0x01B3, 0x0061, 0x0061,
+        0x0061, 0x0061, 0x0061, 0x01B3, 0x0061, 0x0061, 0x0061,
+    },
+    {
+        0x01B2, 0x005F, 0x005F, 0x005F, 0x01B2, 0x01B5, 0x01B8,
+        0x01B8, 0x01B2, 0x005F, 0x005F, 0x005F, 0x005F, 0x005F,
+        0x01B5, 0x01B8, 0x01B8, 0x01B8, 0x01B2, 0x005F, 0x005F,
+        0x005F, 0x005F, 0x005F, 0x01B2, 0x005F, 0x005F, 0x005F,
+    },
+    {
+        0x01B4, 0x0060, 0x0060, 0x0060, 0x01B4, 0x01B7, 0x01BA,
+        0x01BA, 0x01B4, 0x0060, 0x0060, 0x0060, 0x0060, 0x0060,
+        0x01B7, 0x01BA, 0x01BA, 0x01BA, 0x01B4, 0x0060, 0x0060,
+        0x0060, 0x0060, 0x0060, 0x01B4, 0x0060, 0x0060, 0x0060,
+    },
+    {
+        -1, -1, -1, -1, -1, -1, 0x01A8,
+        -1, -1, -1, -1, -1, -1, -1,
+        -1, 0x01A8, -1, 0x01A8, -1, -1, -1,
+        -1, -1, -1, -1, -1, -1, -1,
+    },
+};
 
-void link_levcontrol_updateAreaMusic(GameObject* obj)
+void linkLevelControl_updateAreaMusic(GameObject* obj)
 {
-    LinkLevControlState* state = obj->extra;
+    LINKLevelControlState* state = obj->extra;
+
     switch (obj->anim.mapEventSlot)
     {
-    case AREA_CELL_47:
-        if ((*gSkyInterface)->getSunPosition(0) != 0)
+    case LINK_LEVEL_CONTROL_AREA_CELL_47:
+        if ((*gSkyInterface)->getSunPosition(NULL) != 0)
         {
-            if (state->musicTrack != 0x2d)
+            if (state->musicTriggerId != MUSICTRIG_PU1_Mysterious)
             {
-                state->musicTrack = 0x2d;
+                state->musicTriggerId = MUSICTRIG_PU1_Mysterious;
                 Music_Trigger(MUSICTRIG_PU1_Mysterious, 1);
             }
         }
-        else
+        else if (state->musicTriggerId != MUSICTRIG_KP_Text)
         {
-            if (state->musicTrack != 0x33)
-            {
-                state->musicTrack = 0x33;
-                Music_Trigger(MUSICTRIG_KP_Text, 1);
-            }
+            state->musicTriggerId = MUSICTRIG_KP_Text;
+            Music_Trigger(MUSICTRIG_KP_Text, 1);
         }
         break;
-    case AREA_CELL_48:
-        if (mainGetBit(0xe1e) == 0)
+    case LINK_LEVEL_CONTROL_AREA_CELL_48:
+        if (mainGetBit(LINK_GAMEBIT_AREA_48_DISABLED) == 0)
         {
-            if (mainGetBit(0xb72) != 0)
+            if (mainGetBit(LINK_GAMEBIT_AREA_48_ALIEN_MUSIC) != 0)
             {
-                if (state->musicTrack != 0x95)
+                if (state->musicTriggerId != MUSICTRIG_mmpassalien)
                 {
-                    state->musicTrack = 0x95;
+                    state->musicTriggerId = MUSICTRIG_mmpassalien;
                     Music_Trigger(MUSICTRIG_mmpassalien, 1);
                 }
             }
-            else if ((*gSkyInterface)->getSunPosition(0) != 0)
+            else if ((*gSkyInterface)->getSunPosition(NULL) != 0)
             {
-                if (state->musicTrack != 0x2d)
+                if (state->musicTriggerId != MUSICTRIG_PU1_Mysterious)
                 {
-                    state->musicTrack = 0x2d;
+                    state->musicTriggerId = MUSICTRIG_PU1_Mysterious;
                     Music_Trigger(MUSICTRIG_PU1_Mysterious, 1);
                 }
             }
-            else
+            else if (state->musicTriggerId != MUSICTRIG_KP_Text)
             {
-                if (state->musicTrack != 0x33)
-                {
-                    state->musicTrack = 0x33;
-                    Music_Trigger(MUSICTRIG_KP_Text, 1);
-                }
+                state->musicTriggerId = MUSICTRIG_KP_Text;
+                Music_Trigger(MUSICTRIG_KP_Text, 1);
             }
         }
-        SCGameBitLatch_Update((SCGameBitLatchState*)&state->latch, 1, -1, -1, 0xe1e, 0x36);
+        SCGameBitLatch_Update(
+            &state->musicLatch, 1, -1, -1, LINK_GAMEBIT_AREA_48_DISABLED,
+            MUSICTRIG_Teleport);
         break;
     }
 }
 
-void link_levcontrol_applyEnterAreaEffects(GameObject* obj)
+void linkLevelControl_applyEnterAreaEffects(GameObject* obj)
 {
-    u8* tbl = lbl_803239F0;
+    u8* envFxRampBase = (u8*)&gLINKLevelControlEnvFxRampTables;
+
     switch (obj->anim.mapEventSlot)
     {
-    case AREA_CELL_47:
-        skySetEnvFxRampTables(tbl + 0x38, tbl, tbl + 0x70, tbl + 0xa8);
-        if (obj->userData1 == LEVCON_SAVE_STATUS_LOADED)
+    case LINK_LEVEL_CONTROL_AREA_CELL_47:
+        skySetEnvFxRampTables(
+            envFxRampBase + 0x38, envFxRampBase, envFxRampBase + 0x70,
+            envFxRampBase + 0xA8);
+        if (obj->userData1 == LINK_LEVEL_CONTROL_SAVE_STATUS_LOADED)
         {
-            envFxActFn_800887f8(0x3f);
+            envFxActFn_800887f8(LINK_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
         }
         else
         {
-            envFxActFn_800887f8(0x1f);
+            envFxActFn_800887f8(LINK_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
         }
         Music_Trigger(MUSICTRIG_cldrnr_walkabout, 0);
         Music_Trigger(MUSICTRIG_CRF_Swim, 0);
@@ -146,59 +141,62 @@ void link_levcontrol_applyEnterAreaEffects(GameObject* obj)
         Music_Trigger(MUSICTRIG_mammoth_walk_db, 0);
         Music_Trigger(MUSICTRIG_LVF_Tracking_f2, 0);
         break;
-    case AREA_CELL_45:
+    case LINK_LEVEL_CONTROL_AREA_CELL_45:
         skyFn_80088c94(7, 0);
         envFxActFn_800887f8(0);
-        getEnvfxAct(0, 0, LINKLEVCONTROL_ENVFX_A, 0);
-        getEnvfxAct(0, 0, LINKLEVCONTROL_ENVFX_B, 0);
-        getEnvfxAct(0, 0, LINKLEVCONTROL_ENVFX_C, 0);
+        getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_A, 0);
+        getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_B, 0);
+        getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_C, 0);
         Music_Trigger(MUSICTRIG_underwater, 1);
         break;
-    case AREA_CELL_49:
+    case LINK_LEVEL_CONTROL_AREA_CELL_49:
         Music_Trigger(MUSICTRIG_Teleport, 1);
         break;
-    case AREA_CELL_48:
+    case LINK_LEVEL_CONTROL_AREA_CELL_48:
         Music_Trigger(MUSICTRIG_Arwing_Crash, 0);
         break;
-    case AREA_CELL_46:
+    case LINK_LEVEL_CONTROL_AREA_CELL_46:
         Music_Trigger(MUSICTRIG_ice_race, 0);
         Music_Trigger(MUSICTRIG_citytombs, 1);
         break;
     }
 }
 
-int link_levcontrol_getExtraSize(void)
+int linkLevelControl_getExtraSize(void)
 {
-    return sizeof(LinkLevControlState);
+    return sizeof(LINKLevelControlState);
 }
 
-void link_levcontrol_free(GameObject* obj)
+void linkLevelControl_free(GameObject* obj)
 {
     switch ((s32)obj->anim.mapEventSlot)
     {
-    case AREA_CELL_45:
+    case LINK_LEVEL_CONTROL_AREA_CELL_45:
         Music_Trigger(MUSICTRIG_underwater, 0);
         break;
-    case AREA_CELL_48:
-    case AREA_CELL_49:
+    case LINK_LEVEL_CONTROL_AREA_CELL_48:
+    case LINK_LEVEL_CONTROL_AREA_CELL_49:
         Music_Trigger(MUSICTRIG_Teleport, 0);
         break;
     }
 }
 
-void link_levcontrol_update(GameObject* obj)
+void linkLevelControl_update(GameObject* obj)
 {
-    LinkLevControlState* state = obj->extra;
+    LINKLevelControlState* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
-    if (player == NULL)
-        return;
 
-    if ((s32)state->areaCell != (s32)obj->anim.mapEventSlot)
+    if (player == NULL)
+    {
+        return;
+    }
+
+    if ((s32)state->previousPlayerAreaCell != (s32)obj->anim.mapEventSlot)
     {
         if ((s32)obj->anim.mapEventSlot ==
             coordsToMapCell(player->anim.localPosX, player->anim.localPosZ))
         {
-            link_levcontrol_applyEnterAreaEffects(obj);
+            linkLevelControl_applyEnterAreaEffects(obj);
         }
         else
         {
@@ -208,29 +206,31 @@ void link_levcontrol_update(GameObject* obj)
     if ((s32)obj->anim.mapEventSlot ==
         coordsToMapCell(player->anim.localPosX, player->anim.localPosZ))
     {
-        link_levcontrol_updateAreaMusic(obj);
+        linkLevelControl_updateAreaMusic(obj);
     }
-    state->areaCell = coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
+    state->previousPlayerAreaCell =
+        coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
 }
 
-void link_levcontrol_init(GameObject* obj)
+void linkLevelControl_init(GameObject* obj)
 {
-    LinkLevControlState* state = obj->extra;
-    state->areaCell = -1;
-    state->unk04 = -1;
-    state->musicTrack = -1;
-    obj->objectFlags |= LINKLEVCONTROL_OBJFLAG_HIDDEN;
+    LINKLevelControlState* state = obj->extra;
+
+    state->previousPlayerAreaCell = -1;
+    state->unknown04 = -1;
+    state->musicTriggerId = -1;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     if (getSaveGameLoadStatus() != 0)
     {
-        obj->userData1 = LEVCON_SAVE_STATUS_LOADED;
+        obj->userData1 = LINK_LEVEL_CONTROL_SAVE_STATUS_LOADED;
     }
     else
     {
-        obj->userData1 = LEVCON_SAVE_STATUS_FRESH;
+        obj->userData1 = LINK_LEVEL_CONTROL_SAVE_STATUS_FRESH;
     }
 }
 
-ObjectDescriptor gLINKLevControlObjDescriptor = {
+ObjectDescriptor gLINKLevelControlObjDescriptor = {
     0,
     0,
     0,
@@ -238,11 +238,11 @@ ObjectDescriptor gLINKLevControlObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)link_levcontrol_init,
-    (ObjectDescriptorCallback)link_levcontrol_update,
+    (ObjectDescriptorCallback)linkLevelControl_init,
+    (ObjectDescriptorCallback)linkLevelControl_update,
     0,
     0,
-    (ObjectDescriptorCallback)link_levcontrol_free,
+    (ObjectDescriptorCallback)linkLevelControl_free,
     0,
-    link_levcontrol_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)linkLevelControl_getExtraSize,
 };
