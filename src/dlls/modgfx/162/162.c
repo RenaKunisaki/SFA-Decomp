@@ -1,5 +1,5 @@
 /*
- * dlla2func0 (DLL 0xA2) - particle/gfx spawn helper for a DLL object.
+ * dlla2func0 (DLL 162 / 0xA2) - particle/gfx spawn helper for a modgfx DLL.
  *
  * The unit owns three entry points:
  *   dll_A2_func00_nop - empty stub.
