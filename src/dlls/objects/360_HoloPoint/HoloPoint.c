@@ -1,4 +1,5 @@
-/* DLL 0x168 - HoloPoint */
-#include "global.h"
+/* Empty HoloPoint resource slot. */
 
-u32 lbl_803DBEE0[2] = {0};
+#include "dlls/objects/360_HoloPoint.h"
+
+u32 gHoloPointNullResourceDescriptor[HOLOPOINT_NULL_DESCRIPTOR_WORD_COUNT] = {0};

@@ -155,6 +155,7 @@
 #include "dlls/objects/357_CFRemovalSh.h"
 #include "dlls/objects/358.h"
 #include "dlls/objects/359_SpiritDoorL.h"
+#include "dlls/objects/360_HoloPoint.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -395,8 +396,7 @@ extern ResourceDescriptorCallbacks8 lbl_80320700;
 extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
 extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0;
-extern ResourceDescriptor lbl_803DBEE0, lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138, lbl_803DC140,
-    lbl_803DC150;
+extern ResourceDescriptor lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138, lbl_803DC140, lbl_803DC150;
 extern ResourceDescriptor lbl_803DC158, lbl_803DC2C0, lbl_803DC2D8, lbl_803DC2E0, lbl_803DC2E8, lbl_803DC338,
     lbl_803DC358, lbl_803DC360;
 extern ResourceDescriptor lbl_803DC368, lbl_803DC370, lbl_803DC378, lbl_803DC388, lbl_803DC390, lbl_803DC6E8,
@@ -1370,7 +1370,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFRemovalShNullResourceDescriptor,
     (ResourceDescriptor*)&gExplodedObjDescriptor,
     (ResourceDescriptor*)&gSpiritDoorLockObjDescriptor,
-    &lbl_803DBEE0,
+    (ResourceDescriptor*)&gHoloPointNullResourceDescriptor,
     &gIMIceMountainObjDescriptor,
     &gCRrockfallObjDescriptor,
     &gMagicLightObjDescriptor,
