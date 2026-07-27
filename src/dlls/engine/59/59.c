@@ -1,20 +1,3 @@
-/*
- * menu (DLL 0x3B) - a small horizontal item-selector menu built by the
- * game text/HUD layer.
- *
- * Callers register items one at a time (Menu_addItem / Menu_addItemEx): each
- * appends to the running item count (gMenuItemCount) and accumulated width
- * (gMenuTotalWidth), and the entry whose index matches the requested default
- * becomes the selected result id (gMenuSelectedId). Menu_reset / Menu_open
- * reset the list before a build pass.
- *
- * Menu_poll polls the menu each frame: it advances a wrap-around scroll
- * timer (gMenuScrollTimer against the lbl_803E21D8 window), reads the analog
- * stick to step the caller's selection index (wrapping at 0 / item count),
- * and once armed (gMenuArmed) returns the selected id on A/Start (subject
- * to GameBit 0x44F) or the cancel id (gMenuCancelId) on B. It bails while the
- * HUD is hidden.
- */
 #include "main/dll/dll_003B_menu.h"
 #include "main/dll/dll_0000_gameui.h"
 #include "main/gamebits.h"
@@ -29,13 +12,13 @@
 #define PAD_BUTTON_START 0x1000
 #define PAD_ACCEPT_MASK  (PAD_BUTTON_A | PAD_BUTTON_START)
 
-s8 gMenuSelectedId;  /* selected result id */
-s8 gMenuCancelId;    /* cancel result id */
-s16 gMenuTotalWidth; /* accumulated item width */
-s8 gMenuItemCount;   /* item count */
-f32 gMenuScrollTimer; /* scroll timer */
-s8 gMenuArmed;       /* armed flag (ignore input for one frame after build) */
-extern f32 lbl_803E21D8; /* scroll timer wrap period */
+s8 gMenuSelectedId;
+s8 gMenuCancelId;
+s16 gMenuTotalWidth;
+s8 gMenuItemCount;
+f32 gMenuScrollTimer;
+s8 gMenuArmed;
+extern f32 lbl_803E21D8;
 
 s32 Menu_getItemCount(void)
 {

@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             # dlls/engine
+            Object(MatchingFor("GSAE01"), "dlls/engine/59/59.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "dlls/engine/60/60.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "dlls/engine/61/61.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/engine/62/62.c", cflags=cflags_dll_noopt),
@@ -1543,7 +1544,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/dll/dll_0039_dummy39.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "main/dll/dll_003A_dummy3a.c"),
             Object(NonMatching, "main/dll/dll_0000_gameui.c", cflags=cflags_dll_noopt, extra_cflags=["-inline", "noauto"]),
-            Object(MatchingFor("GSAE01"), "main/dll/dll_003B_menu.c", cflags=cflags_dll_noopt),
             Object(NonMatching, "main/dll/dll_0031_minimap.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/objects/704/704.c", cflags=cflags_dll_noopt_noloopinv),
             Object(NonMatching, "main/dll/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
