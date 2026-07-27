@@ -175,6 +175,7 @@
 #include "dlls/objects/378_SpiritPrize.h"
 #include "dlls/objects/379_DFSH_LaserB.h"
 #include "dlls/objects/380_GCRobotPatr.h"
+#include "dlls/objects/381.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -320,8 +321,8 @@ extern ResourceDescriptor gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDe
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
-extern ResourceDescriptor gRingObjDescriptor, gRollingBarrelObjDescriptor, gSB_CageKyteObjDescriptor,
-    gSB_CannonBallObjDescriptor, gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
+extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor,
+    gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, gSB_KyteCageObjDescriptor,
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
@@ -1407,7 +1408,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSpiritPrizeObjDescriptor,
     (ResourceDescriptor*)&gDFSHLaserBeamObjDescriptor,
     (ResourceDescriptor*)&gGCRobotPatrNullResourceDescriptor,
-    &gRollingBarrelObjDescriptor,
+    (ResourceDescriptor*)&gRollingBarrelObjDescriptor,
     &gMMP_levelcontrolObjDescriptor,
     &gMoonSeedBushObjDescriptor,
     &gMMP_asteroid_reObjDescriptor,
