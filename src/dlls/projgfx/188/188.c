@@ -1,5 +1,5 @@
 /*
- * projquakeshock (DLL 0xBC) - retired "quake shock" projectile object.
+ * projquakeshock (DLL 188 / 0xBC) - retired "quake shock" projectile object.
  *
  * The DLL's lifecycle hooks (release/initialise) are empty and its single
  * entry point logs a "no longer supported" message and returns a failure
