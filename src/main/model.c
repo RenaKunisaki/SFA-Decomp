@@ -1024,7 +1024,7 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     o2 = 0;
     for (; k < (int)((ModelFileHeader*)p)->renderOpCount; k++)
     {
-        ((ModelRenderOpTextureRefs*)((u8*)((ObjModel*)out2)->textureRefs + o2))->unk08 = 0;
+        ((ModelRenderOpTextureRefs*)((u8*)((ObjModel*)out2)->textureRefs + o2))->swapSelector = 0;
         o2 += 0xc;
     }
     if (b & 0x8000)

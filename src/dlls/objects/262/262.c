@@ -274,12 +274,12 @@ void Scarab_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 r
         colorIndex = 0;
         shellColors = gScarabRainColorCycle;
         for (; colorIndex < SCARAB_RAIN_COLOR_COUNT; colorIndex++) {
-            if (*shellColors == model->textureRefs->unk08) {
+            if (*shellColors == model->textureRefs->swapSelector) {
                 colorIndex++;
                 if (colorIndex == SCARAB_RAIN_COLOR_COUNT) {
                     colorIndex = 0;
                 }
-                model->textureRefs->unk08 = gScarabRainColorCycle[colorIndex];
+                model->textureRefs->swapSelector = gScarabRainColorCycle[colorIndex];
                 break;
             }
             shellColors++;
@@ -681,21 +681,21 @@ void Scarab_init(GameObject* obj, const ScarabPlacement* placement) {
     model = Obj_GetActiveModel(obj);
     switch (obj->anim.seqId) {
     case SCARAB_OBJECT_GREEN:
-        model->textureRefs->unk08 = gScarabGreenColors[randomGetRange(0, 2)];
+        model->textureRefs->swapSelector = gScarabGreenColors[randomGetRange(0, 2)];
         state->pickupSfxId = 0x41;
         state->particleId = 4;
         state->burstModel = 2;
         state->moneyKind = SCARAB_MONEY_GREEN;
         break;
     case SCARAB_OBJECT_RED:
-        model->textureRefs->unk08 = gScarabRedColors[randomGetRange(0, 1)];
+        model->textureRefs->swapSelector = gScarabRedColors[randomGetRange(0, 1)];
         state->pickupSfxId = 0x42;
         state->particleId = 1;
         state->burstModel = 5;
         state->moneyKind = SCARAB_MONEY_RED;
         break;
     case SCARAB_OBJECT_GOLD:
-        model->textureRefs->unk08 = gScarabGoldColors[randomGetRange(0, 3)];
+        model->textureRefs->swapSelector = gScarabGoldColors[randomGetRange(0, 3)];
         state->pickupSfxId = 0x43;
         state->particleId = 2;
         state->burstModel = 4;
@@ -703,7 +703,7 @@ void Scarab_init(GameObject* obj, const ScarabPlacement* placement) {
         break;
     case SCARAB_OBJECT_RAIN:
     default:
-        model->textureRefs->unk08 = 5;
+        model->textureRefs->swapSelector = 5;
         state->pickupSfxId = 0x44;
         state->particleId = 6;
         state->burstModel = 1;

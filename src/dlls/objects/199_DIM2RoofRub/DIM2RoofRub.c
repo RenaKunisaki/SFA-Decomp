@@ -117,7 +117,7 @@ void dim2roofrub_spawnEffects(GameObject* obj) {
     } else if (obj->anim.seqId == DIM2ROOFRUB_SEQID_TREAD) {
         ObjModel* model = Obj_GetActiveModel(obj);
 
-        model->textureRefs->unk08 = 2;
+        model->textureRefs->swapSelector = 2;
         if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
             objfx_spawnDirectionalBurst(obj, 5, 1.0f, 2, 1, 20, 2.5f, NULL, 0);
         }

@@ -503,7 +503,7 @@ void tricky_updateModelVariantFade(int obj, int state)
                 }
                 else
                 {
-                    Obj_GetActiveModel((GameObject*)obj)->textureRefs->unk08 = ratio;
+                    Obj_GetActiveModel((GameObject*)obj)->textureRefs->swapSelector = ratio;
                     alpha = *(f32*)(state + 0x828) / lbl_803E23E0;
                 }
                 Obj_SetModelColorOverrideRecursive((GameObject*)obj, 255, 255, 255, lbl_803E240C * alpha, 1);

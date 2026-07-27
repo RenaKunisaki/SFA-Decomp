@@ -201,7 +201,7 @@ void Fireball_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int
     }
     ((ObjAnimComponent*)obj)->bankIndex = 1;
     model = Obj_GetActiveModel(obj);
-    model->textureRefs->unk08 = gFireballColorIndexTable[state->colorIndex];
+    model->textureRefs->swapSelector = gFireballColorIndexTable[state->colorIndex];
     savedRotZ = (u16)obj->anim.rotZ;
     savedRotY = (u16)obj->anim.rotY;
     savedF8 = obj->anim.rootMotionScale;
@@ -220,7 +220,7 @@ void Fireball_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int
     obj->anim.rootMotionScale = savedF8;
     ((ObjAnimComponent*)obj)->bankIndex = 0;
     model = Obj_GetActiveModel(obj);
-    model->textureRefs->unk08 = gFireballColorIndexTable[state->colorIndex];
+    model->textureRefs->swapSelector = gFireballColorIndexTable[state->colorIndex];
     objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     if (state->light != NULL) {
         if (state->light->glowType != 0 && state->light->enabled != 0) {

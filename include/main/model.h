@@ -36,13 +36,13 @@ typedef struct ModelRenderOpTextureRefs
 {
     void* texture0;
     void* texture1;
-    u8 unk08;
+    u8 swapSelector;
     u8 pad09[3];
 } ModelRenderOpTextureRefs;
 
 STATIC_ASSERT(sizeof(ModelRenderOpTextureRefs) == 0x0C);
 STATIC_ASSERT(offsetof(ModelRenderOpTextureRefs, texture1) == 0x04);
-STATIC_ASSERT(offsetof(ModelRenderOpTextureRefs, unk08) == 0x08);
+STATIC_ASSERT(offsetof(ModelRenderOpTextureRefs, swapSelector) == 0x08);
 
 /*
  * ModelFileHeader - in-place header of a loaded .MOD model file. Offset

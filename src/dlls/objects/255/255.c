@@ -384,7 +384,7 @@ void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
     switch (mode) {
     case MAGICGEM_DEF_GREEN:
         randomValue = randomGetRange(0, 1);
-        model->textureRefs->unk08 = *((u8*)texturePickA + randomValue);
+        model->textureRefs->swapSelector = *((u8*)texturePickA + randomValue);
         state->ambientEffectId = MAGICGEM_GREEN_AMBIENT_EFFECT_ID;
         state->burstEffectId = MAGICGEM_GREEN_BURST_EFFECT_ID;
         state->sfxId = MAGICGEM_GREEN_SFX_ID;
@@ -393,7 +393,7 @@ void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
         break;
     case MAGICGEM_DEF_RED:
         randomValue = randomGetRange(0, 1);
-        model->textureRefs->unk08 = *((u8*)texturePickB + randomValue);
+        model->textureRefs->swapSelector = *((u8*)texturePickB + randomValue);
         state->ambientEffectId = MAGICGEM_RED_AMBIENT_EFFECT_ID;
         state->burstEffectId = MAGICGEM_RED_BURST_EFFECT_ID;
         state->sfxId = MAGICGEM_RED_SFX_ID;
@@ -401,7 +401,7 @@ void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
         state->mode = MAGICGEM_RED_PARTICLE_MODE;
         break;
     case MAGICGEM_DEF_YELLOW:
-        model->textureRefs->unk08 = MAGICGEM_YELLOW_TEXTURE_INDEX;
+        model->textureRefs->swapSelector = MAGICGEM_YELLOW_TEXTURE_INDEX;
         state->ambientEffectId = MAGICGEM_YELLOW_AMBIENT_EFFECT_ID;
         state->burstEffectId = MAGICGEM_YELLOW_BURST_EFFECT_ID;
         state->sfxId = MAGICGEM_YELLOW_SFX_ID;
@@ -410,7 +410,7 @@ void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
         break;
     case MAGICGEM_DEF_BLUE:
     default:
-        model->textureRefs->unk08 = MAGICGEM_BLUE_TEXTURE_INDEX;
+        model->textureRefs->swapSelector = MAGICGEM_BLUE_TEXTURE_INDEX;
         state->ambientEffectId = MAGICGEM_BLUE_AMBIENT_EFFECT_ID;
         state->burstEffectId = MAGICGEM_BLUE_BURST_EFFECT_ID;
         state->sfxId = MAGICGEM_BLUE_SFX_ID;
