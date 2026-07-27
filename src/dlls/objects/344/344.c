@@ -1002,13 +1002,13 @@ void gunpowderbarrel_update(GameObject *obj)
     }
     if (state->heldByCarryInterface != 0)
     {
-        if ((playerGetStateFlag310(player) & 0x4000) != 0)
+        if ((playerGetStateFlag310(player) & PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE) != 0)
         {
-            setAButtonIcon(5);
+            setAButtonIcon(A_BUTTON_ICON_PLACE_CARRYABLE);
         }
         else
         {
-            setAButtonIcon(4);
+            setAButtonIcon(A_BUTTON_ICON_THROW_CARRYABLE);
         }
     }
     else

@@ -5,6 +5,8 @@
 #include "main/objanim_update.h"
 #include "main/dll/player_staff_api.h"
 
+#define PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE 0x4000
+
 int fn_80296240(GameObject* player);
 int objFn_802962b4(GameObject* obj);
 void fn_80295918(GameObject* player, int selector, f32 value);

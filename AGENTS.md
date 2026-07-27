@@ -129,6 +129,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   to the next known field. If the code caps a six-element child list and the next field is eight
   words later, model six elements plus an unknown trailing word; do not invent a seventh child to
   consume the offset.
+- When two proven consumers interpret the same shared placement byte with different signedness and
+  both views are codegen-significant, model explicit union views at the shared offset. Do not force
+  one canonical signedness and scatter casts; assert both offsets and rebuild every consumer.
 - Include an object's canonical header at direct consumers instead of repeating hand-written
   declarations. Where a generic registry intentionally stores differently shaped descriptor
   types, use an explicit cast at that boundary rather than lying about the descriptor's type in an

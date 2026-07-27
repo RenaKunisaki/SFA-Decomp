@@ -3,6 +3,9 @@
 
 #include "global.h"
 
+#define A_BUTTON_ICON_THROW_CARRYABLE 4
+#define A_BUTTON_ICON_PLACE_CARRYABLE 5
+
 void setAButtonIcon(int icon);
 void setBButtonIcon(int icon);
 void cutSceneFn_8011dd30(void);

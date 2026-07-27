@@ -745,10 +745,10 @@ void SmallBasket_update(GameObject* obj) {
             } else {
                 ObjHits_DisableObject(obj);
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-                if ((playerGetStateFlag310(player) & 0x4000) != 0) {
-                    setAButtonIcon(5);
+                if ((playerGetStateFlag310(player) & PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE) != 0) {
+                    setAButtonIcon(A_BUTTON_ICON_PLACE_CARRYABLE);
                 } else {
-                    setAButtonIcon(4);
+                    setAButtonIcon(A_BUTTON_ICON_THROW_CARRYABLE);
                 }
                 if ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0) {
                     if (isTrickyNear(player) != 0) {

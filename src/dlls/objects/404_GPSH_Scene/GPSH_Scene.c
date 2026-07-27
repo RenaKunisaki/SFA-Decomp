@@ -1,16 +1,11 @@
 /* GPSH_Scene (DLL 0x194) */
+#include "dlls/objects/278_WM_Column.h"
+
 #include "main/screen_transition.h"
 #include "main/dll/dll_0194_gpshscene.h"
 #include "game/objects/object.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
-
-typedef struct GpshScenePlacement
-{
-    ObjPlacement base;
-    s8 rotXByte;
-} GpshScenePlacement;
 
 int gpsh_scene_getExtraSize(void) { return 0x0; }
 int gpsh_scene_getObjectTypeId(void) { return 0x0; }
@@ -35,8 +30,8 @@ void gpsh_scene_update(void)
 
 void gpsh_scene_init(int* obj, int* def)
 {
-    GpshScenePlacement* place = (GpshScenePlacement*)def;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)place->rotXByte << 8);
+    WMColumnPlacement* place = (WMColumnPlacement*)def;
+    ((GameObject*)obj)->anim.rotX = (s16)((s32)place->signedInitialYaw << 8);
     ((GameObject*)obj)->anim.worldPosX = ((GameObject*)obj)->anim.localPosX;
     ((GameObject*)obj)->anim.worldPosY = ((GameObject*)obj)->anim.localPosY;
     ((GameObject*)obj)->anim.worldPosZ = ((GameObject*)obj)->anim.localPosZ;

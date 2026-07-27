@@ -1,52 +1,152 @@
-/*
- * WM_Column (DLL 0x116) - the carryable puzzle column at Krazoa Palace
- * (retail type 500 'GPSHpickobj'; its drop spots are type 499
- * 'GPSH_Scene' objects). The DOL-confirmed TU owns text at
- * 0x8017D37C-0x8017D818 and its descriptor at 0x80321460-0x80321498.
- *
- * The column is a groundAnimator carryable. While held it clears the
- * game bit of any scene spot it is taken from; while down it snaps to
- * the nearest scene spot in range and sets/clears that spot's bit by
- * whether the column variant (seqId 500 + modelIndex) belongs there.
- * The userData1 bits carry the held/down handshake between frames, and the
- * carryable is hidden + the pickup icon raised while the player stands
- * close holding nothing.
- */
-#include "main/carryable_interface.h"
-#include "main/object_render.h"
+#include "dlls/objects/278_WM_Column.h"
+
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
+#include "main/carryable_interface.h"
 #include "main/dll/player_api.h"
-#include "sys/objects.h"
 #include "main/dll/tricky_api.h"
-#include "main/vecmath.h"
-#include "main/gamebits.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
 #include "main/obj_group.h"
 #include "main/obj_list.h"
-#include "main/dll/groundAnimator.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
-/* object group this column joins */
-#define WMCOLUMN_OBJGROUP        4
-#define WMCOLUMN_TARGET_OBJGROUP 0x10
+#define WM_COLUMN_GROUP                        4
+#define WM_COLUMN_TARGET_GROUP                 0x10
+#define WM_COLUMN_TYPE_ID                      0
+#define WM_COLUMN_SCENE_MARKER_OBJECT_ID       499
+#define WM_COLUMN_OBJECT_ID_BASE               500
+#define WM_COLUMN_GAME_BIT_NONE                -1
+#define WM_COLUMN_GAME_BIT_CLEAR               0
+#define WM_COLUMN_GAME_BIT_SET                 1
+#define WM_COLUMN_USER_FLAG_SNAP_ON_DROP       0x01
+#define WM_COLUMN_USER_FLAG_CLEAR_SPOT_ON_GRAB 0x02
+#define WM_COLUMN_INITIAL_SEARCH_DISTANCE      10000.0f
+#define WM_COLUMN_SCENE_MARKER_DISTANCE        35.0f
+#define WM_COLUMN_DROP_TARGET_MIN_DISTANCE     60.0f
+#define WM_COLUMN_DROP_ENABLED                 0
+#define WM_COLUMN_DROP_DISABLED                1
+#define WM_COLUMN_ROTATION_SHIFT               8
+#define WM_COLUMN_DEFAULT_MODEL_BANK           0
+#define WM_COLUMN_CARRYABLE_INIT_ARG           0x32
+#define WM_COLUMN_MODEL_SCALE                  1.0f
 
-#define WMCOLUMN_OBJFLAG_HITDETECT_DISABLED 0x2000
+int WM_Column_getExtraSize(void) {
+    return WM_COLUMN_STATE_SIZE;
+}
 
-/* nearby scene-marker object whose placement gameBit is cleared (retail OBJECTS.bin). */
-#define WMCOLUMN_SCENE_MARKER_OBJ 499 /* "GPSH_Scene" (DLL 0x194) */
+int WM_Column_getObjectTypeId(void) {
+    return WM_COLUMN_TYPE_ID;
+}
 
-typedef struct WmColumnPlacement
-{
-    ObjPlacement head; /* 0x00 */
-    u8 rotXByte;   /* 0x18: rotX in 1/256 turns */
-    u8 modelIndex; /* 0x19: bank index; the column variant's seqId is
-                       500 + modelIndex (500 = retail type 'GPSHpickobj',
-                       this DLL; 499 = its 'GPSH_Scene' spot object) */
-    u8 pad1A[0x1E - 0x1A];
-    s16 gameBit; /* 0x1E: set while this column sits on its scene
-                       spot, -1 = none */
-} WmColumnPlacement;
+void WM_Column_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, WM_COLUMN_GROUP);
+    (*gCarryableInterface)->free(obj);
+}
 
-STATIC_ASSERT(offsetof(WmColumnPlacement, gameBit) == 0x1E);
+void WM_Column_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+    if ((*gCarryableInterface)->updateRenderState(obj, renderState) != 0) {
+        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, WM_COLUMN_MODEL_SCALE);
+    }
+}
+
+void WM_Column_hitDetect(void) {
+}
+
+void WM_Column_update(GameObject* obj) {
+    GameObject** objects;
+    u32 playerStateFlags;
+    f32 nearestDistance;
+    int objectIndex;
+    int objectCount;
+    GameObject* candidate;
+    WMColumnState* state;
+    GameObject* player;
+
+    state = obj->extra;
+    nearestDistance = WM_COLUMN_INITIAL_SEARCH_DISTANCE;
+    if ((*gCarryableInterface)->updateHeld(obj, obj->extra) != 0) {
+        if ((obj->userData1 & WM_COLUMN_USER_FLAG_CLEAR_SPOT_ON_GRAB) != 0) {
+            objects = ObjList_GetObjects(&objectIndex, &objectCount);
+            for (; objectIndex < objectCount; objectIndex++) {
+                candidate = objects[objectIndex];
+                if (candidate != obj && candidate->anim.seqId == WM_COLUMN_SCENE_MARKER_OBJECT_ID &&
+                    Vec_distance(&obj->anim.worldPosX, &candidate->anim.worldPosX) < WM_COLUMN_SCENE_MARKER_DISTANCE) {
+                    WMColumnPlacement* placement = (WMColumnPlacement*)objects[objectIndex]->anim.placementData;
+
+                    if (placement->occupiedGameBit != WM_COLUMN_GAME_BIT_NONE) {
+                        mainSetBits(placement->occupiedGameBit, WM_COLUMN_GAME_BIT_CLEAR);
+                    }
+                }
+            }
+        }
+
+        player = Obj_GetPlayerObject();
+        ObjGroup_FindNearestObject(WM_COLUMN_TARGET_GROUP, obj, &nearestDistance);
+        playerStateFlags = playerGetStateFlag310(player);
+        if ((playerStateFlags & PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE) != 0 &&
+            nearestDistance > WM_COLUMN_DROP_TARGET_MIN_DISTANCE) {
+            (*gCarryableInterface)->setDropDisabled(state, WM_COLUMN_DROP_ENABLED);
+            setAButtonIcon(A_BUTTON_ICON_PLACE_CARRYABLE);
+            obj->userData1 |= WM_COLUMN_USER_FLAG_SNAP_ON_DROP;
+        } else {
+            (*gCarryableInterface)->setDropDisabled(state, WM_COLUMN_DROP_DISABLED);
+        }
+        obj->userData1 &= ~WM_COLUMN_USER_FLAG_CLEAR_SPOT_ON_GRAB;
+    } else {
+        if ((obj->userData1 & WM_COLUMN_USER_FLAG_SNAP_ON_DROP) != 0) {
+            objects = ObjList_GetObjects(&objectIndex, &objectCount);
+            for (; objectIndex < objectCount; objectIndex++) {
+                candidate = objects[objectIndex];
+                if (candidate != obj && candidate->anim.seqId == WM_COLUMN_SCENE_MARKER_OBJECT_ID &&
+                    Vec_distance(&obj->anim.worldPosX, &candidate->anim.worldPosX) < WM_COLUMN_SCENE_MARKER_DISTANCE) {
+                    WMColumnPlacement* placement = (WMColumnPlacement*)objects[objectIndex]->anim.placementData;
+
+                    if (obj->anim.seqId == (s8)placement->modelBankIndex + WM_COLUMN_OBJECT_ID_BASE) {
+                        if (placement->occupiedGameBit != WM_COLUMN_GAME_BIT_NONE) {
+                            mainSetBits(placement->occupiedGameBit, WM_COLUMN_GAME_BIT_SET);
+                        }
+                    } else if (placement->occupiedGameBit != WM_COLUMN_GAME_BIT_NONE) {
+                        mainSetBits(placement->occupiedGameBit, WM_COLUMN_GAME_BIT_CLEAR);
+                    }
+                    obj->anim.localPosX = objects[objectIndex]->anim.localPosX;
+                    obj->anim.localPosY = objects[objectIndex]->anim.localPosY;
+                    obj->anim.localPosZ = objects[objectIndex]->anim.localPosZ;
+                }
+            }
+        }
+
+        playerStateFlags = playerGetStateFlag310(Obj_GetPlayerObject());
+        if ((playerStateFlags & PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE) != 0) {
+            (*gCarryableInterface)->setDropDisabled(state, WM_COLUMN_DROP_ENABLED);
+            obj->userData1 |= WM_COLUMN_USER_FLAG_CLEAR_SPOT_ON_GRAB;
+        } else {
+            (*gCarryableInterface)->setDropDisabled(state, WM_COLUMN_DROP_DISABLED);
+            obj->userData1 &= ~WM_COLUMN_USER_FLAG_CLEAR_SPOT_ON_GRAB;
+        }
+        obj->userData1 &= ~WM_COLUMN_USER_FLAG_SNAP_ON_DROP;
+    }
+}
+
+void WM_Column_init(GameObject* obj, WMColumnPlacement* placement) {
+    WMColumnState* state = obj->extra;
+
+    obj->anim.rotX = (s16)(placement->initialYaw << WM_COLUMN_ROTATION_SHIFT);
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    obj->userData1 = 0;
+    obj->anim.bankIndex = placement->modelBankIndex;
+    if (obj->anim.bankIndex >= obj->anim.modelInstance->modelCount) {
+        obj->anim.bankIndex = WM_COLUMN_DEFAULT_MODEL_BANK;
+    }
+    (*gCarryableInterface)->init(obj, state, WM_COLUMN_CARRYABLE_INIT_ARG);
+    ObjGroup_AddObject((int)obj, WM_COLUMN_GROUP);
+}
+
+void WM_Column_release(void) {
+}
+
+void WM_Column_initialise(void) {
+}
 
 ObjectDescriptor gWM_ColumnObjDescriptor = {
     0,
@@ -64,147 +164,3 @@ ObjectDescriptor gWM_ColumnObjDescriptor = {
     (ObjectDescriptorCallback)WM_Column_getObjectTypeId,
     WM_Column_getExtraSize,
 };
-
-int WM_Column_getExtraSize(void)
-{
-    return 0xa;
-}
-
-int WM_Column_getObjectTypeId(void)
-{
-    return 0;
-}
-
-void WM_Column_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, WMCOLUMN_OBJGROUP);
-    (*gCarryableInterface)->free(obj);
-}
-
-void WM_Column_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if ((*gCarryableInterface)->updateRenderState(obj, visible) != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-    }
-}
-
-void WM_Column_hitDetect(void)
-{
-}
-
-void WM_Column_update(GameObject* obj)
-{
-    int* objects;
-    u32 playerFlags;
-    f32 nearest;
-    int i;
-    int count;
-    int other;
-    int state;
-
-    state = *(int*)&obj->extra;
-    nearest = 10000.0f;
-    if ((*gCarryableInterface)->updateHeld(obj, obj->extra) != 0)
-    {
-        if ((obj->userData1 & 2) != 0)
-        {
-            objects = ObjList_GetObjects(&i, &count);
-            for (; i < count; i++)
-            {
-                other = objects[i];
-                if (((u32)other != (u32)obj) && (((GameObject*)other)->anim.seqId == WMCOLUMN_SCENE_MARKER_OBJ) &&
-                    (Vec_distance(&obj->anim.worldPosX, (float*)(other + 0x18)) < 35.0f))
-                {
-                    other = ((WmColumnPlacement*)((GameObject*)objects[i])->anim.placement)->gameBit;
-                    if (other != -1)
-                    {
-                        mainSetBits(other, 0);
-                    }
-                }
-            }
-        }
-        playerFlags = (int)Obj_GetPlayerObject();
-        ObjGroup_FindNearestObject(WMCOLUMN_TARGET_OBJGROUP, obj, &nearest);
-        playerFlags = playerGetStateFlag310((GameObject*)playerFlags);
-        if (((playerFlags & 0x4000) != 0) && (nearest > 60.0f))
-        {
-            (*gCarryableInterface)->setDropDisabled((void*)state, 0);
-            setAButtonIcon(5);
-            *(u32*)&obj->userData1 |= 1;
-        }
-        else
-        {
-            (*gCarryableInterface)->setDropDisabled((void*)state, 1);
-        }
-        *(u32*)&obj->userData1 &= ~2;
-    }
-    else
-    {
-        /* just put down: snap to the nearest scene spot and set/clear
-           its bit by whether this column variant belongs there */
-        if ((obj->userData1 & 1) != 0)
-        {
-            objects = ObjList_GetObjects(&i, &count);
-            for (; i < count; i++)
-            {
-                other = objects[i];
-                if (((u32)other != (u32)obj) && (((GameObject*)other)->anim.seqId == WMCOLUMN_SCENE_MARKER_OBJ) &&
-                    (Vec_distance(&obj->anim.worldPosX, (float*)(other + 0x18)) < 35.0f))
-                {
-                    WmColumnPlacement* mapData =
-                        (WmColumnPlacement*)*(int*)&((GameObject*)objects[i])->anim.placementData;
-                    if (obj->anim.seqId == (s8)mapData->modelIndex + 500)
-                    {
-                        if (mapData->gameBit != -1)
-                        {
-                            mainSetBits(mapData->gameBit, 1);
-                        }
-                    }
-                    else if (mapData->gameBit != -1)
-                    {
-                        mainSetBits(mapData->gameBit, 0);
-                    }
-                    obj->anim.localPosX = ((GameObject*)objects[i])->anim.localPosX;
-                    obj->anim.localPosY = ((GameObject*)objects[i])->anim.localPosY;
-                    obj->anim.localPosZ = ((GameObject*)objects[i])->anim.localPosZ;
-                }
-            }
-        }
-        playerFlags = playerGetStateFlag310(Obj_GetPlayerObject());
-        if ((playerFlags & 0x4000) != 0)
-        {
-            (*gCarryableInterface)->setDropDisabled((void*)state, 0);
-            *(u32*)&obj->userData1 |= 2;
-        }
-        else
-        {
-            (*gCarryableInterface)->setDropDisabled((void*)state, 1);
-            *(u32*)&obj->userData1 &= ~2;
-        }
-        *(u32*)&obj->userData1 &= ~1;
-    }
-}
-
-void WM_Column_init(GameObject* obj, WmColumnPlacement* mapData)
-{
-    int state = *(int*)&obj->extra;
-    obj->anim.rotX = (s16)(mapData->rotXByte << 8);
-    obj->objectFlags |= WMCOLUMN_OBJFLAG_HITDETECT_DISABLED;
-    obj->userData1 = 0;
-    obj->anim.bankIndex = mapData->modelIndex;
-    if (obj->anim.bankIndex >= obj->anim.modelInstance->modelCount)
-    {
-        obj->anim.bankIndex = 0;
-    }
-    (*gCarryableInterface)->init(obj, (void*)state, 0x32);
-    ObjGroup_AddObject((int)obj, WMCOLUMN_OBJGROUP);
-}
-
-void WM_Column_release(void)
-{
-}
-
-void WM_Column_initialise(void)
-{
-}

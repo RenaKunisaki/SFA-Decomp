@@ -74,6 +74,7 @@
 #include "dlls/objects/275.h"
 #include "dlls/objects/276_IMMultiSeq.h"
 #include "dlls/objects/277.h"
+#include "dlls/objects/278_WM_Column.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -271,9 +272,8 @@ extern ResourceDescriptor gVFP_lavapoolObjDescriptor, gVFP_lavastarObjDescriptor
 extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
-extern ResourceDescriptor gWM_ColumnObjDescriptor, gWM_GalleonObjDescriptor,
-    gWM_GeneralScalesObjDescriptor, gWM_LaserTargetObjDescriptor, gWM_LevelControlObjDescriptor,
-    gWM_ObjCreatorObjDescriptor, gWM_PlanetsObjDescriptor;
+extern ResourceDescriptor gWM_GalleonObjDescriptor, gWM_GeneralScalesObjDescriptor, gWM_LaserTargetObjDescriptor,
+    gWM_LevelControlObjDescriptor, gWM_ObjCreatorObjDescriptor, gWM_PlanetsObjDescriptor;
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
@@ -1230,7 +1230,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSeqObj2ObjDescriptor,
     (ResourceDescriptor*)&gIMMultiSeqObjDescriptor,
     (ResourceDescriptor*)&gDll115ObjDescriptor,
-    &gWM_ColumnObjDescriptor,
+    (ResourceDescriptor*)&gWM_ColumnObjDescriptor,
     &gAppleOnTreeObjDescriptor,
     &gDusterObjDescriptor,
     &gColdWaterControlObjDescriptor,

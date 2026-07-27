@@ -507,15 +507,15 @@ void mmp_moonrock_update(GameObject* obj)
     if (grabbed != 0)
     {
         u8 found;
-        if ((playerGetStateFlag310(Obj_GetPlayerObject()) & 0x4000) != 0)
+        if ((playerGetStateFlag310(Obj_GetPlayerObject()) & PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE) != 0)
         {
-            setAButtonIcon(5);
+            setAButtonIcon(A_BUTTON_ICON_PLACE_CARRYABLE);
             state->flags |= MOONROCK_FLAG_GRAB_FRAME | MOONROCK_FLAG_ICON_PLACE;
             state->flags &= ~MOONROCK_FLAG_ICON_THROW;
         }
         else
         {
-            setAButtonIcon(4);
+            setAButtonIcon(A_BUTTON_ICON_THROW_CARRYABLE);
             state->flags |= MOONROCK_FLAG_GRAB_FRAME | MOONROCK_FLAG_ICON_THROW;
             state->flags &= ~MOONROCK_FLAG_ICON_PLACE;
         }
