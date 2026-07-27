@@ -385,10 +385,11 @@ main/dll/expgfx.c:
 	.sbss       start:0x803DD250 end:0x803DD280
 	.sdata2     start:0x803DF340 end:0x803DF42C
 
-main/dll/dll_000B_dll0b.c:
+dlls/engine/11/11.c:
 	.text       start:0x8009FFF0 end:0x800A3A40
 	.bss        start:0x8039BE98 end:0x8039C2C0
 	.sbss       start:0x803DD280 end:0x803DD298
+	.sdata2     start:0x803DF42C end:0x803DF468
 
 dlls/engine/12/12.c:
 	.text       start:0x800A3A40 end:0x800A3AF0
