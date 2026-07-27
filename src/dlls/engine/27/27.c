@@ -1,20 +1,3 @@
-/*
- * effect2 (DLL 0x1B) - one of the "effect" particle DLLs (effect2..effect9
- * share the same modgfx/projgfx engine source; this object exports only its
- * own five Effect2_* entry points).
- *
- * Effect2_func04 is the spawn dispatcher: given an effectId it fills a
- * PartFxSpawn request (velocity / start position / scale / lifetime / texture /
- * behavior+render flags / colors, mostly randomised per spawn) and hands it to
- * gExpgfxInterface->spawnEffect. Effect2_func05 advances this DLL's animated
- * scroll/oscillation globals once per step. Effect2_func03_nop / _release /
- * _initialise are the descriptor stubs.
- *
- * The remaining modgfx_* / projgfx_* bodies are the shared effect-engine source
- * (vertex texcoord scroll, rgb/alpha/scale/rotation blend channels, active-effect
- * registry teardown, expgfx pool alloc); they are matched in their sibling effect
- * DLLs, not in this object's symbol set.
- */
 #include "main/dll/partfx_interface.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -40,7 +23,7 @@ f32 gEffect2SpawnPhaseB = 0.3f;
 f32 gEffect2ScrollPhaseA = 0.1f;
 f32 gEffect2ScrollPhaseB = 0.3f;
 
-extern PartFxSpawnParams lbl_8039C338;
+PartFxSpawnParams lbl_8039C338;
 extern int lbl_803DD2C4;
 
 EmitterCfg gEffect2VelocityRangeTable = {
@@ -63,7 +46,6 @@ EmitterCfg gEffect2VelocityRangeTable = {
     {0x00, 0x00},
 };
 
-/* --- effect2 .data reconstruction (absorbed 0x80310604-0x80310670) --- */
 ObjectDescriptor6 lbl_80310604 = {
     0,
     0,
@@ -102,15 +84,6 @@ ObjectDescriptor6 lbl_80310670 = {
     (ObjectDescriptorCallback)Effect2_func04,
     (ObjectDescriptorCallback)Effect2_func05,
 };
-
-
-/*
- * Field names inherited from ExpgfxSpawnConfig (include/main/expgfx_internal.h),
- * the consumer-side definition of this 0x64-byte spawn request consumed by
- * gExpgfxInterface->spawnEffect (expgfx_addremove). Widths kept as written here
- * (colorWord0..2 are the u16 spelling of the consumer's ExpgfxSpawnColorPair;
- * effectIdByte/modelIdByte land in bytes the consumer currently ignores).
- */
 
 #define FILL338()                                                                                                      \
     do                                                                                                                 \
