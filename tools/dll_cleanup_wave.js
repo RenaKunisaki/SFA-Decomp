@@ -345,8 +345,6 @@ const BATCH = [
   { name: 'dll_b8.c', baseline: '8ca8719a3e5ccf0b649f5efea5f7605c', pct: 100.0 },
   { name: 'dll_bb.c', baseline: '40a5fc21d48237606a3b4fdd8912dfe3', pct: 99.327 },
   { name: 'dll_bc.c', baseline: 'a3573bd15d9953d998bd80aa5993b700', pct: 100.0 },
-  { name: 'drcloudcage.c', baseline: '88b79a164828cd0b1b1c28d5e6a125cb', pct: 97.863 },
-  { name: 'drpickup.c', baseline: 'c107f558f2cd18817b82a2768375e22f', pct: 100.0 },
   { name: 'duster.c', baseline: 'd3d644edc5a0fa662728d3b7eda98ca5', pct: 99.058 },
   { name: 'fall_ladders.c', baseline: '41e9986df405a2c7a8038ad60163ac02', pct: 98.94 },
   { name: 'fireflylantern.c', baseline: '644ec21c101cc06f00880ba9166c6e91', pct: 99.26 },

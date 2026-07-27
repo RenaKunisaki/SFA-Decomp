@@ -76,7 +76,7 @@
 #include "dolphin/gx/GXFrameBuffer.h"
 extern Texture* gNewShadowHeavyFogTexture;
 extern u8 lbl_803DCF80;
-extern f32 lbl_803DED08;
+extern const f32 lbl_803DED08;
 
 #define READ_TEXTURE_U16(address) (*(u16*)(address))
 #define WRITE_TEXTURE_U16(address, value) (*(u16*)(address) = (value))
@@ -1723,17 +1723,17 @@ static inline void fillFalloffTexture(void)
         lowoff = i & 7;
         cy = i - lbl_803DED1C;
         lowoff += rowoff;
-        cy = cy * lbl_803DEDE0;
         for (; j < 0x80; j++)
         {
             int off;
             u8 val;
-            f32 cx, d2;
+            f32 cx, dy, d2;
             base = (u8*)gNewShadowFalloffTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
+            dy = cy * lbl_803DEDE0;
             cx = ((f32)j - lbl_803DED1C) * lbl_803DEDE0;
-            d2 = sqrtf(cx * cx + cy * cy);
+            d2 = sqrtf(dy * dy + cx * cx);
             if (d2 < lbl_803DED38)
             {
                 val = 0xa0;
@@ -2047,10 +2047,11 @@ void allocLotsOfTextures(void)
     gNewShadowReflectionGradientTexture = (int)textureAlloc(4, 4, 3, 0, 0, 0, 0, 1, 1);
     for (i = 0; i < 4; i++)
     {
-        f32 x = i / lbl_803DEE10 - lbl_803DED38;
+        f32 x = i / lbl_803DEE10;
         int hi;
         int t;
         u16 v;
+        x -= lbl_803DED38;
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
         hi = ((int)(lbl_803DED08 * x + lbl_803DEDBC) & 0xff) << 8;

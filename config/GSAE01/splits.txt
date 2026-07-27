@@ -1592,16 +1592,11 @@ dlls/objects/207_CannonClaw/CannonClaw.c:
 	.sdata2     start:0x803E2F30 end:0x803E2F3C
 
 dlls/objects/209_TumbleWeedB/TumbleWeedB.c:
-	.text       start:0x801631C8 end:0x80163BBC
-	.data       start:0x803201E8 end:0x80320288
-	.sbss       start:0x803DDA80 end:0x803DDA88
-	.sdata2     start:0x803E2F40 end:0x803E2F78
-
-dlls/objects/210/210.c:
-	.text       start:0x80163BBC end:0x801650D0
-	.data       start:0x80320288 end:0x80320380
+	.text       start:0x801631C8 end:0x801650D0
+	.data       start:0x803201E8 end:0x80320380
 	.sdata      start:0x803DBD40 end:0x803DBD48
-	.sdata2     start:0x803E2F78 end:0x803E2FD4
+	.sbss       start:0x803DDA80 end:0x803DDA84
+	.sdata2     start:0x803E2F40 end:0x803E2FD4
 
 dlls/objects/211/211.c:
 	.text       start:0x801650D0 end:0x801675E0
@@ -3114,18 +3109,13 @@ dlls/objects/645_SPShop/SPShop.c:
 	.text       start:0x801E6050 end:0x801E66DC
 	.data       start:0x80327FD0 end:0x80328370
 
-main/dll/dll_801e66dc.c:
-	.text       start:0x801E66DC end:0x801E67BC
-
-main/dll/trex_lazerwall.c:
-	.text       start:0x801E67BC end:0x801E6B10
-
 dlls/objects/646_SPShopKeepe/SPShopKeepe.c:
-	.text       start:0x801E6B10 end:0x801E832C
+	.text       start:0x801E66DC end:0x801E832C
 	.data       start:0x80328370 end:0x803283E0
+	.bss        start:0x803AD068 end:0x803AD088
 	.sdata      start:0x803DC0A0 end:0x803DC0B0
 	.sbss       start:0x803DDC58 end:0x803DDC5C
-	.sdata2     start:0x803E59F8 end:0x803E5A2C
+	.sdata2     start:0x803E59C0 end:0x803E5A2C
 
 dlls/objects/644/644.c:
 	.text       start:0x801E832C end:0x801E8EA4
@@ -3145,37 +3135,17 @@ dlls/objects/648_SPDrape/SPDrape.c:
 
 dlls/objects/649_SPitembeam/SPitembeam.c:
 	.text       start:0x801E97DC end:0x801E991C
-	.data       start:0x803284A8 end:0x8032852C
-
-main/dll/dll_801e991c.c:
-	.text       start:0x801E991C end:0x801E9C00
-	.sbss       start:0x803DDC60 end:0x803DDC64
-
-main/dll/drcloudcage.c:
-	.text       start:0x801E9C00 end:0x801EA240
-	.rodata     start:0x802C2428 end:0x802C2470
-
-main/dll/drcloudcage_engine.c:
-	.text       start:0x801EA240 end:0x801EA678
-	.sbss       start:0x803DDC64 end:0x803DDC68
-
-main/dll/drcloudcage_pitch.c:
-	.text       start:0x801EA678 end:0x801EA854
-
-main/dll/DR/drshackle.c:
-	.text       start:0x801EA854 end:0x801EAE4C
-
-main/dll/drhightop.c:
-	.text       start:0x801EAE4C end:0x801EC1AC
-	.data       start:0x8032852C end:0x8032855C
-
-main/dll/drpickup.c:
-	.text       start:0x801EC1AC end:0x801EC7A0
+	.data       start:0x803284A8 end:0x803284E0
+	.sdata2     start:0x803E5AD8 end:0x803E5AE0
 
 dlls/objects/597/597.c:
-	.text       start:0x801EC7A0 end:0x801EE088
-	.data       start:0x8032855C end:0x80328618
+	.text       start:0x801E991C end:0x801EE088
+	.rodata     start:0x802C2428 end:0x802C2470
+	.data       start:0x803284E0 end:0x80328618
+	.bss        start:0x803AD088 end:0x803AD0C0
 	.sdata      start:0x803DC0B8 end:0x803DC0F0
+	.sbss       start:0x803DDC60 end:0x803DDC68
+	.sdata2     start:0x803E5AE0 end:0x803E5CA0
 
 main/dll/bwalphaanim.c:
 	.text       start:0x801EE088 end:0x801EE0C0
@@ -3614,6 +3584,7 @@ dlls/objects/467/467.c:
 	.data       start:0x8032A200 end:0x8032A310
 	.sdata      start:0x803DC210 end:0x803DC218
 	.sbss       start:0x803DDD30 end:0x803DDD38
+	.sdata2     start:0x803E6640 end:0x803E66DC
 
 dlls/objects/604/604.c:
 	.text       start:0x8020F214 end:0x802106C0

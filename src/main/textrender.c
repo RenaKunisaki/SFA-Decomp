@@ -275,7 +275,6 @@ extern const f32 lbl_803DE70C;
 extern const f32 lbl_803DE710;
 extern const f32 lbl_803DE714;
 extern const f32 lbl_803DE718;
-extern f32 gSubtitleNoTimeSentinel;
 extern int gGameTextShadowOffsetX;
 extern int gGameTextShadowOffsetY;
 extern int gameTextCharset;

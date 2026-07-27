@@ -640,7 +640,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x252 | KT_Lazerwall | CONFIRMED | dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c | = (canonical) | Callback TU only; descriptor remains in DLL 592, and the leading floor-switch helper is DOL-owned here |
 | 0x253 | KT_Lazerlight | CONFIRMED | dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c | = (canonical) | Callback TU only; descriptor remains in DOL-confirmed DLL 592 data |
 | 0x254 | KT_Fallingrocks | CONFIRMED | dlls/objects/596_KT_Fallingr/KT_Fallingr.c | = (canonical) | Callback TU only; descriptor remains in DOL-confirmed DLL 592 data |
-| 0x255 | — | NO-RETAIL-NAME | dlls/objects/597/597.c | = (canonical) | Complete 28-function SnowBike-family TU; retail section order confirms its four-byte .data alignment |
+| 0x255 | — | NO-RETAIL-NAME | dlls/objects/597/597.c | = (canonical) | Complete SnowBike-family TU across the retail-backed 801E991C-801EE088 text span |
 | 0x256 | DIMSnowHorn1 | CONFIRMED | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | = (canonical) | Descriptor is followed by the retail-ordered `gDIMSnowHorn1ZeroOffset` constant |
 | 0x257 | DR_EarthWarrior | CONFIRMED | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | = (canonical) | — |
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | Descriptor is followed by the retail-ordered `sOnCloudFormat` diagnostic string |
@@ -689,7 +689,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x283 | DR_BarrelGr | RAW | dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x284 | — | NO-RETAIL-NAME | dlls/objects/644/644.c | = (canonical) | Exact complete ShopItem-family TU with descriptor at the physical end; object-definition aliases are not DLL basenames |
 | 0x285 | SPShop | RAW | dlls/objects/645_SPShop/SPShop.c | = (canonical) | Exact complete TU; descriptor placement before the function bodies is required for matching data relocation order |
-| 0x286 | SPShopKeepe | RAW | dlls/objects/646_SPShopKeepe/SPShopKeepe.c | = (canonical) | Exact DOL-confirmed TU containing the five preceding DR laser-turret callbacks and the complete ShopKeeper implementation |
+| 0x286 | SPShopKeepe | RAW | dlls/objects/646_SPShopKeepe/SPShopKeepe.c | = (canonical) | Exact DOL-confirmed TU containing the auxiliary shopkeeper, T-Rex lazerwall, DR laser-turret, and complete ShopKeeper implementations |
 | 0x287 | SPScarab | RAW | dlls/objects/647_SPScarab/SPScarab.c | = (canonical) | Exact complete TU with descriptor at the physical end |
 | 0x288 | SPDrape | RAW | dlls/objects/648_SPDrape/SPDrape.c | = (canonical) | Exact complete TU; descriptor placement preserves the following jump table, and the non-emitted helper contributes to `.sdata2` literal order |
 | 0x289 | SPitembeam | RAW | dlls/objects/649_SPitembeam/SPitembeam.c | = (canonical) | Exact complete TU; descriptor is followed by a DOL-proven 76-byte SnowBike table |

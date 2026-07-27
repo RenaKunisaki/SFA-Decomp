@@ -5,6 +5,7 @@
  * impact effects, and conveyor-platform movement.
  */
 #include "dlls/objects/261_LargeCrate.h"
+#include "dlls/objects/262.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_object_query_api.h"
@@ -49,12 +50,9 @@
 #define LARGECRATE_UNK_0C_INITIAL            0x190
 #define LARGECRATE_RANDOM_SLIDE_PHASE_MAX    200
 
-#define LARGECRATE_CHILD_OBJECT_SCARAB_GREEN 0x3D3
-#define LARGECRATE_CHILD_OBJECT_SCARAB_RED   0x3D4
-#define LARGECRATE_CHILD_OBJECT_SCARAB_GOLD  0x3D5
-#define LARGECRATE_CHILD_OBJECT_ENERGY_EGG   0xB
-#define LARGECRATE_CHILD_OBJECT_APPLE        0x3CD
-#define LARGECRATE_CHILD_OBJECT_PICKUP       0x259
+#define LARGECRATE_CHILD_OBJECT_ENERGY_EGG 0xB
+#define LARGECRATE_CHILD_OBJECT_APPLE      0x3CD
+#define LARGECRATE_CHILD_OBJECT_PICKUP     0x259
 
 #define LARGECRATE_SEQUENCE_VARIANT_A  0x3DE
 #define LARGECRATE_SEQUENCE_VARIANT_B  0x49F
@@ -242,11 +240,11 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
     mainSetBits(state->brokenGameBit, 1);
     switch (state->dropType) {
     case LARGECRATE_DROPTYPE_GREEN_SCARAB:
-        childPlacement = (char*)Obj_AllocObjectSetup(0x24, LARGECRATE_CHILD_OBJECT_SCARAB_GREEN);
+        childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GREEN);
         ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
         ((LargeCrateChildPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCrateChildPlacement*)childPlacement)->unk1A = 400;
+        ((ScarabPlacement*)childPlacement)->activeTimer = 400;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
         ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
@@ -285,12 +283,12 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         *(s16*)child = angleDelta;
         break;
     case LARGECRATE_DROPTYPE_RED_SCARAB:
-        childPlacement = (char*)Obj_AllocObjectSetup(0x24, LARGECRATE_CHILD_OBJECT_SCARAB_RED);
-        ((LargeCrateChildPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
+        childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_RED);
+        ((ScarabPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
         ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
         ((LargeCrateChildPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCrateChildPlacement*)childPlacement)->unk1A = 400;
+        ((ScarabPlacement*)childPlacement)->activeTimer = 400;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
         ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
@@ -329,12 +327,12 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         *(s16*)child = angleDelta;
         break;
     case LARGECRATE_DROPTYPE_GOLD_SCARAB:
-        childPlacement = (char*)Obj_AllocObjectSetup(0x24, LARGECRATE_CHILD_OBJECT_SCARAB_GOLD);
-        ((LargeCrateChildPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
+        childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GOLD);
+        ((ScarabPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
         ((LargeCrateChildPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
         ((LargeCrateChildPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((LargeCrateChildPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCrateChildPlacement*)childPlacement)->unk1A = 2000;
+        ((ScarabPlacement*)childPlacement)->activeTimer = 2000;
         child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)*(int*)&obj->anim.parent);
         ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;

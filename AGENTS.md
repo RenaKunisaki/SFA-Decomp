@@ -109,6 +109,12 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
   source; keep private helper types and constants in the TU.
+- Claim a cleaned TU's complete evidenced constant pool only when the source can emit it without
+  duplicate named constants, invented section placement, or codegen changes. MWCC may copy a
+  same-TU named `const` scalar into a second anonymous literal while leaving the named definition
+  unreferenced, so source-only ownership and matching values are not enough. Keep the automatic
+  gap until the original ownership model is recoverable; after any claim, verify generated section
+  size, symbols, bytes, relocations, and the final DOL.
 - Size placement/setup structs from active-target evidence such as a direct `Obj_AllocObjectSetup`
   allocation or retail romlist width, not from the last field accessed by the TU or donor-project
   padding. Assert the proven total size as well as every recovered field offset.
