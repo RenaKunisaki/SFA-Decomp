@@ -1393,7 +1393,7 @@ main/dll/dll_0031_minimap.c:
 	.sdata      start:0x803DBBB0 end:0x803DBBF0
 	.sbss       start:0x803DD928 end:0x803DD960
 
-main/dll/dll_003F_dll3f.c:
+dlls/engine/63/63.c:
 	.text       start:0x80133F70 end:0x80134098
 	.sdata      start:0x803DBBF0 end:0x803DBBF8
 

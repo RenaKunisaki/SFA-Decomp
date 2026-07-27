@@ -1,17 +1,3 @@
-/*
- * dll3f (DLL 0x3F) - title-screen DLL boilerplate.
- *
- * (gTitleScreenObjDescriptor lives in DLL 704, not here.)
- * dll_3F_initialise loads texture asset 0x47A into lbl_803DD960 and
- * dll_3F_release frees it. dll_3F_frameStart_ret_0 / dll_3F_frameEnd_nop
- * are the per-frame hook leaves.
- *
- * dll_3F_updateTimerReadout formats a countdown into a stack buffer: it runs the game
- * timer (if active), finds the nearest object of group 9 within
- * lbl_803E22A0, queries it through vtable slot 21 for three counters,
- * derives a clamped remaining value, and sprintf's it via the
- * lbl_803DBBF0 format string.
- */
 #include "main/texture.h"
 #include "sys/objects.h"
 #include "main/dll/ppcwgpipe_struct.h"
@@ -25,7 +11,6 @@
 
 char lbl_803DBBF0[] = "%2d";
 
-/* texture asset loaded into lbl_803DD960 (this DLL's only texture) */
 #define DLL3F_TEXTURE_ID 0x47A
 
 extern f32 lbl_803E22A0;
