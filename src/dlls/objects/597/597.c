@@ -638,13 +638,13 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
             {
                 gDrCloudCageWindVolume = -gDrCloudCageWindVolume;
             }
-            if (gDrCloudCageWindVolume < *(f32*)&lbl_803E5B10)
+            if (gDrCloudCageWindVolume < lbl_803E5B10)
             {
-                gDrCloudCageWindVolume = *(f32*)&lbl_803E5B10;
+                gDrCloudCageWindVolume = lbl_803E5B10;
             }
-            if (gDrCloudCageWindVolume > *(f32*)&lbl_803E5B14)
+            if (gDrCloudCageWindVolume > lbl_803E5B14)
             {
-                gDrCloudCageWindVolume = *(f32*)&lbl_803E5B14;
+                gDrCloudCageWindVolume = lbl_803E5B14;
             }
             if (((DRCloudCageState*)state)->distanceGate < lbl_803E5B18)
             {
@@ -1210,7 +1210,7 @@ void fn_801EB0D4(u32 obj, int stateRaw)
                 {
                     if (st->velLimitX < lbl_803E5B20)
                     {
-                        st->velLimitX = *(f32*)&lbl_803E5B20;
+                        st->velLimitX = lbl_803E5B20;
                     }
                 }
             }

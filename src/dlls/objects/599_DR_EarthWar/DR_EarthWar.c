@@ -1239,7 +1239,7 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
         inner->sub.footstepCooldown -= timeDelta;
         if (inner->sub.footstepCooldown < lbl_803E8304)
         {
-            inner->sub.footstepCooldown = *(f32*)&lbl_803E8304;
+            inner->sub.footstepCooldown = lbl_803E8304;
         }
         if ((void*)inner != NULL)
         {
