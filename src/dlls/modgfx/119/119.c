@@ -1,5 +1,5 @@
 /*
- * dll77func0 (DLL 0x77) - particle-effect spawner.
+ * DLL 119 / 0x77 - particle-effect spawner.
  *
  * dll_77_func03 builds a 6-command GfxCmd list and hands it to
  * gModgfxInterface->spawnEffect; the two nop leaves are the DLL's
