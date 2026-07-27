@@ -100,23 +100,6 @@ typedef enum DbEggMode
     DBEGG_MODE_HOMING = 0xD,        /* homing back to its target reposition point */
 } DbEggMode;
 
-typedef struct DbeggPlacement
-{
-    ObjPlacement base;
-    s16 unk18;
-    s16 unk1A;
-    s16 triggerGameBit;
-    s16 unk1E;
-    s16 unk20;
-    u8 pad22[0x24 - 0x22];
-    s16 activateGameBit;
-    u8 pad26[0x2B - 0x26];
-    u8 unk2B;
-    s16 unk2C;
-    s8 unk2E;
-    u8 pad2F[0x30 - 0x2F];
-} DbeggPlacement;
-
 typedef struct DbEggIntPair
 {
     s32 a;
@@ -147,13 +130,13 @@ int dbegg_setScale(GameObject* obj)
 void dbegg_processMessages(GameObject* obj)
 {
     int eggState;
-    AnimBehaviorConfig* config;
+    DbeggPlacement* config;
     u32 msgType = 0;
     int msgFlag = 0;
     int msgArg;
 
     eggState = *(int*)&(obj)->extra;
-    config = (AnimBehaviorConfig*)(obj)->anim.placementData;
+    config = (DbeggPlacement*)(obj)->anim.placementData;
 
     while ((int)ObjMsg_Pop((void*)obj, &msgType, (u32*)&msgArg, (u32*)&msgFlag) != 0)
     {
@@ -201,10 +184,10 @@ void dbegg_processMessages(GameObject* obj)
                 ObjHits_EnableObject(obj);
                 break;
             case 19:
-                mainSetBits(config->secondaryConditionId, 1);
-                if ((int)config->activationEventId > 0)
+                mainSetBits(config->secondaryGameBit, 1);
+                if ((int)config->counterGameBit > 0)
                 {
-                    gameBitIncrement((int)config->activationEventId);
+                    gameBitIncrement((int)config->counterGameBit);
                 }
                     Obj_RemoveFromUpdateList(obj);
                 (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
@@ -217,17 +200,17 @@ void dbegg_processMessages(GameObject* obj)
 
 void dbegg_setupFromDef(GameObject* obj, u8* state)
 {
-    AnimBehaviorConfig* config;
+    DbeggPlacement* config;
     f32 surfaceProbeOut;
 
-    config = (AnimBehaviorConfig*)(obj)->anim.placementData;
+    config = (DbeggPlacement*)(obj)->anim.placementData;
     state[0x119] = 0;
     (obj)->anim.rotX = (s16)(config->facingAngleByte << 8);
     (obj)->anim.rotY = 0;
     (obj)->anim.rotZ = 0;
     (obj)->anim.rootMotionScale = (f32)(u32)config->speedScaleByte / 64.0f;
     (obj)->anim.rootMotionScale = (obj)->anim.rootMotionScale * (obj)->anim.modelInstance->rootMotionScaleBase;
-    state[0x118] = (u8)(mainGetBit(config->primaryConditionId) != 0 ? 3 : 1);
+    state[0x118] = (u8)(mainGetBit(config->triggerGameBit) != 0 ? 3 : 1);
     if (state[0x118] == 1)
     {
         if (dbegg_probeSurface(obj, &surfaceProbeOut, 0.0f, 0.0f, 1) == 0)
@@ -261,7 +244,7 @@ void dbegg_setupFromDef(GameObject* obj, u8* state)
         if (config->behaviorMode == 7)
             state[0x119] |= 32;
     }
-    state[0x118] = (u8)(mainGetBit(config->readyConditionId) != 0 ? 5 : 12);
+    state[0x118] = (u8)(mainGetBit(config->activateGameBit) != 0 ? 5 : 12);
     if (state[0x118] == 5)
     {
         ObjGroup_AddObject((int)obj, DBEGG_OBJGROUP);

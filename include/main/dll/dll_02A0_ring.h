@@ -39,7 +39,7 @@ typedef struct RingPlacement
     u8 route;
     s16 linkId;
     s16 pullHeight;
-    u8 pad1E[2];
+    s16 counterGameBit; /* 0x1E: score bit incremented when the ring is collected */
     s16 activateBit;
 } RingPlacement;
 
@@ -69,6 +69,7 @@ STATIC_ASSERT(offsetof(RingPlacement, modeFlag) == 0x18);
 STATIC_ASSERT(offsetof(RingPlacement, route) == 0x19);
 STATIC_ASSERT(offsetof(RingPlacement, linkId) == 0x1A);
 STATIC_ASSERT(offsetof(RingPlacement, pullHeight) == 0x1C);
+STATIC_ASSERT(offsetof(RingPlacement, counterGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(RingPlacement, activateBit) == 0x20);
 
 extern RingTable gRingModeParams[];

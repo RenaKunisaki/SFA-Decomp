@@ -8,7 +8,7 @@ typedef struct WMGalleonState
     f32 savedX;
     f32 savedY;
     f32 savedZ;
-    u8 mapEventsLatched;
+    u8 mapEventsLatched; /* 0x0C: cleared on a non-map-change free */
     u8 pad0D;
     s16 savedYaw;
 } WMGalleonState;

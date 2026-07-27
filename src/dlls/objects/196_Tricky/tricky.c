@@ -65,7 +65,7 @@
 #include "main/trig.h"
 #include "main/frustum.h"
 #include "dlls/objects/245_SidekickBal.h"
-#include "main/dll/NW/dll_01A1_nwmammoth.h"
+#include "dlls/objects/417_NW_mammoth.h"
 #include "main/dll/tricky_substates.h"
 #include "dlls/objects/209_TumbleWeedB.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"

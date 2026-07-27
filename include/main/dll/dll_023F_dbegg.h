@@ -6,33 +6,38 @@
 
 extern ObjectDescriptor12 gDB_eggObjDescriptor;
 
-typedef struct AnimBehaviorConfig
+typedef struct DbeggPlacement
 {
-    u8 pad00[0x08];
-    f32 targetPosX;
-    f32 targetPosY;
-    f32 targetPosZ;
-    u8 pad14[0x19 - 0x14];
-    u8 forceRadiusByte;
-    u8 speedScaleByte;
-    u8 facingAngleByte;
-    s16 primaryConditionId;
-    s16 secondaryConditionId;
-    u8 pad20[0x24 - 0x20];
-    s16 readyConditionId;
-    u8 behaviorMode;
-    u8 pad27[0x2C - 0x27];
-    s16 activationEventId;
-} AnimBehaviorConfig;
+    ObjPlacement base;    /* 0x00 */
+    u8 pad18;             /* 0x18 */
+    u8 forceRadiusByte;   /* 0x19 */
+    u8 speedScaleByte;    /* 0x1A: root-motion scale in 1/64 units */
+    u8 facingAngleByte;   /* 0x1B: initial anim.rotX (<<8) */
+    s16 triggerGameBit;   /* 0x1C: set once the egg is delivered; also selects the start mode */
+    s16 secondaryGameBit; /* 0x1E: set when the egg reaches its target */
+    s16 unk20;            /* 0x20 */
+    u8 pad22[0x24 - 0x22];
+    s16 activateGameBit;  /* 0x24: gates the launch mode */
+    u8 behaviorMode;      /* 0x26 */
+    u8 pad27[0x2B - 0x27];
+    u8 unk2B;             /* 0x2B */
+    s16 counterGameBit;   /* 0x2C: bit incremented on delivery (>0 = active) */
+    s8 unk2E;             /* 0x2E */
+} DbeggPlacement;
 
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, forceRadiusByte) == 0x19);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, speedScaleByte) == 0x1A);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, facingAngleByte) == 0x1B);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, primaryConditionId) == 0x1C);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, secondaryConditionId) == 0x1E);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, readyConditionId) == 0x24);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, behaviorMode) == 0x26);
-STATIC_ASSERT(offsetof(AnimBehaviorConfig, activationEventId) == 0x2C);
+STATIC_ASSERT(offsetof(DbeggPlacement, base) == 0x00);
+STATIC_ASSERT(offsetof(DbeggPlacement, forceRadiusByte) == 0x19);
+STATIC_ASSERT(offsetof(DbeggPlacement, speedScaleByte) == 0x1A);
+STATIC_ASSERT(offsetof(DbeggPlacement, facingAngleByte) == 0x1B);
+STATIC_ASSERT(offsetof(DbeggPlacement, triggerGameBit) == 0x1C);
+STATIC_ASSERT(offsetof(DbeggPlacement, secondaryGameBit) == 0x1E);
+STATIC_ASSERT(offsetof(DbeggPlacement, unk20) == 0x20);
+STATIC_ASSERT(offsetof(DbeggPlacement, activateGameBit) == 0x24);
+STATIC_ASSERT(offsetof(DbeggPlacement, behaviorMode) == 0x26);
+STATIC_ASSERT(offsetof(DbeggPlacement, unk2B) == 0x2B);
+STATIC_ASSERT(offsetof(DbeggPlacement, counterGameBit) == 0x2C);
+STATIC_ASSERT(offsetof(DbeggPlacement, unk2E) == 0x2E);
+STATIC_ASSERT(sizeof(DbeggPlacement) == 0x30);
 
 int dbegg_setLaunchVelocity(GameObject* obj, f32* velocity);
 int dbegg_setScale(GameObject* obj);

@@ -66,100 +66,11 @@
 #include "track/intersect_render_setup_api.h"
 #include "main/dll/DR/DRcradle.h"
 
+#define SNOWBIKE_OBJGROUP           0xa
+#define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd
+
 const u32 lbl_803E5AE0 = 0x05050505;
 const GXColor lbl_803E5AE4 = {0x20, 0x20, 0x20, 0x80};
-const f32 lbl_803E5AE8 = 0.0f;
-const f32 lbl_803E5AEC = 1.0f;
-const f32 lbl_803E5AF0 = 8.0f;
-const f32 lbl_803E5AF4 = 20.0f;
-const f32 lbl_803E5AF8 = 0.5f;
-const f32 lbl_803E5AFC = -20.0f;
-const f32 lbl_803E5B08 = 70.0f;
-const f32 lbl_803E5B0C = 11.6f;
-const f32 lbl_803E5B10 = 40.0f;
-const f32 lbl_803E5B14 = 200.0f;
-const f32 lbl_803E5B18 = 18.0f;
-const f32 lbl_803E5B1C = 30.0f;
-const f32 lbl_803E5B20 = 0.1f;
-const f32 lbl_803E5B24 = 30000.0f;
-const f32 lbl_803E5B28 = 127.0f;
-const f32 lbl_803E5B2C = 1.5f;
-const f32 lbl_803E5B30 = 45.0f;
-const f32 lbl_803E5B34 = 0.3f;
-const f32 lbl_803E5B38 = 0.00390625f;
-const f32 lbl_803E5B3C = 60.0f;
-const f32 lbl_803E5B40 = 80.0f;
-const f32 lbl_803E5B44 = 65.0f;
-const f32 lbl_803E5B48 = 100.0f;
-const f32 lbl_803E5B4C = -5.3f;
-const f32 lbl_803E5B50 = 4.4f;
-const f32 lbl_803E5B54 = 24.0f;
-const f32 lbl_803E5B58 = 250.0f;
-const f32 lbl_803E5B5C = 5.3f;
-const f32 lbl_803E5B60 = 7.0f;
-const f32 lbl_803E5B64 = 6.5f;
-const f32 lbl_803E5B68 = 180.0f;
-const f32 lbl_803E5B6C = 56.0f;
-const f32 lbl_803E5B70 = -1.0f;
-const f32 lbl_803E5B74 = -0.05f;
-const f32 lbl_803E5B78 = 2.0f;
-const f32 lbl_803E5B7C = 90.0f;
-const f32 lbl_803E5B80 = 100000.0f;
-const f32 lbl_803E5B84 = 10000.0f;
-const f32 lbl_803E5B88 = 0.95f;
-const f32 lbl_803E5B8C = 0.01f;
-const f32 lbl_803E5B90 = 70000.0f;
-const f32 lbl_803E5B94 = 69999.0f;
-const f32 lbl_803E5B98 = 4.0f;
-const f32 lbl_803E5B9C = -2.0f;
-const f32 lbl_803E5BA0 = 850.0f;
-const f32 lbl_803E5BA4 = -0.01f;
-const f32 lbl_803E5BA8 = 0.2f;
-const f32 lbl_803E5BAC = 0.7f;
-const f32 lbl_803E5BB0 = 300.0f;
-const f32 lbl_803E5BB4 = 120.0f;
-const f32 lbl_803E5BB8 = 5.0f;
-const f32 lbl_803E5BBC = 0.25f;
-const f32 lbl_803E5BC0 = 12.0f;
-const f32 lbl_803E5BC4 = 3.0f;
-const f32 lbl_803E5BC8 = 16384.0f;
-const f32 lbl_803E5BCC = 0.8f;
-const f32 gDrHighTopPi = 3.1415927f;
-const f32 lbl_803E5BD4 = 32768.0f;
-const f32 lbl_803E5BD8 = 0.005f;
-const f32 lbl_803E5BDC = 1500.0f;
-const f32 lbl_803E5BE0 = 0.98f;
-const f32 lbl_803E5BE4 = 0.99f;
-const f32 lbl_803E5BE8 = 0.15f;
-const f32 lbl_803E5BEC = 0.4f;
-const f32 lbl_803E5BF0 = 0.18f;
-const f32 lbl_803E5BF4 = 700.0f;
-const f32 lbl_803E5BF8 = 0.87f;
-const f32 lbl_803E5BFC = 0.97f;
-const f32 lbl_803E5C00 = 0.75f;
-const f32 lbl_803E5C04 = 0.965f;
-const f32 lbl_803E5C08 = 0.985f;
-const f32 lbl_803E5C0C = 0.45f;
-const f32 lbl_803E5C10 = 15.0f;
-const f32 lbl_803E5C14 = 0.04f;
-const f32 gSnowBikeBamToDeg = 182.04f;
-const f32 lbl_803E5C28 = 0.05f;
-const f32 lbl_803E5C2C = -0.002f;
-const f32 lbl_803E5C30 = -100.0f;
-const f32 lbl_803E5C34 = 50.0f;
-const f32 lbl_803E5C38 = 0.85f;
-const f32 lbl_803E5C3C = -0.12f;
-const f32 lbl_803E5C40 = 0.995f;
-const f32 lbl_803E5C44 = 0.08f;
-const f32 lbl_803E5C48 = 400.0f;
-const f32 lbl_803E5C4C = 25.0f;
-const f32 lbl_803E5C50 = 6.0f;
-const f32 lbl_803E5C54 = 600.0f;
-const f32 lbl_803E5C58 = 1.2f;
-const f32 lbl_803E5C5C = 500.0f;
-const f32 lbl_803E5C60 = 1.1f;
-const f32 lbl_803E5C64 = -0.1f;
-const f32 lbl_803E5C68 = 10.0f;
 
 typedef union SnowBikeCheckpointRank
 {
@@ -281,8 +192,8 @@ void SnowBike_DrawTrails(int p1, char* table)
         {
             j = 0;
             verts = *(f32**)(p + 0x4c8);
-            texS = lbl_803E5AE8;
-            texT = lbl_803E5AEC;
+            texS = 0.0f;
+            texT = 1.0f;
             while (j < *(s16*)(p + 0x4cc) - 2)
             {
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
@@ -428,7 +339,7 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
             pairIndex = trail->count - 2;
             points = (u8*)trail->points;
             pair = (DRCloudCagePointPair*)((u8*)trail->points + pairIndex * DRCLOUDCAGE_PAIR_SIZE);
-            fade = lbl_803E5AF0;
+            fade = 8.0f;
             for (; pairIndex >= 0; pair--, pairIndex -= 2)
             {
                 pair->startAlpha = -(fade * timeDelta - pair->startAlpha);
@@ -497,10 +408,10 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     pEndZ = &endZ;
     pEndY = &endY;
     pEndX = &endX;
-    zero = lbl_803E5AE8;
-    maxDelta = lbl_803E5AF4;
-    minDelta = lbl_803E5AFC;
-    scaleV = lbl_803E5AEC;
+    zero = 0.0f;
+    maxDelta = 20.0f;
+    minDelta = -20.0f;
+    scaleV = 1.0f;
     for (; activeIndex < 3; baseOffset += 0x18, baseOffset2 += 0x18, slot += 4, activeIndex++)
     {
         activeOffset = baseOffset + 4;
@@ -535,14 +446,14 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
                     if ((deltaY > zero) && (deltaY < maxDelta))
                     {
                         hitDetected = 1;
-                        endpoint[1] = lbl_803E5AF8 + hits[hitIndex]->height;
+                        endpoint[1] = 0.5f + hits[hitIndex]->height;
                         break;
                     }
                 }
                 else if ((deltaY >= minDelta) && (deltaY < maxDelta))
                 {
                     hitDetected = 1;
-                    endpoint[1] = lbl_803E5AF8 + hits[hitIndex]->height;
+                    endpoint[1] = 0.5f + hits[hitIndex]->height;
                     break;
                 }
             }
@@ -607,7 +518,6 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
 
 f32 gDrCloudCageWindVolume;
 
-
 typedef struct DRCloudCagePulseParams
 {
     u8 pad[8];
@@ -629,27 +539,27 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
     DRCloudCagePulseParams pulse;
 
     clamped =
-        (distanceScale < lbl_803E5AE8) ? lbl_803E5AE8 : ((distanceScale > lbl_803E5B08) ? lbl_803E5B08 : distanceScale);
+        (distanceScale < 0.0f) ? 0.0f : ((distanceScale > 70.0f) ? 70.0f : distanceScale);
     if (channelFlags & 1)
     {
         if (Sfx_IsPlayingFromObjectChannel((int)obj, 8))
         {
-            gDrCloudCageWindVolume = lbl_803E5B0C * clamped;
-            if (gDrCloudCageWindVolume < lbl_803E5AE8)
+            gDrCloudCageWindVolume = 11.6f * clamped;
+            if (gDrCloudCageWindVolume < 0.0f)
             {
                 gDrCloudCageWindVolume = -gDrCloudCageWindVolume;
             }
-            if (gDrCloudCageWindVolume < lbl_803E5B10)
+            if (gDrCloudCageWindVolume < 40.0f)
             {
-                gDrCloudCageWindVolume = lbl_803E5B10;
+                gDrCloudCageWindVolume = 40.0f;
             }
-            if (gDrCloudCageWindVolume > lbl_803E5B14)
+            if (gDrCloudCageWindVolume > 200.0f)
             {
-                gDrCloudCageWindVolume = lbl_803E5B14;
+                gDrCloudCageWindVolume = 200.0f;
             }
-            if (((DRCloudCageState*)state)->distanceGate < lbl_803E5B18)
+            if (((DRCloudCageState*)state)->distanceGate < 18.0f)
             {
-                vol = (int)(lbl_803E5B1C * clamped);
+                vol = (int)(30.0f * clamped);
                 if (vol < 0)
                 {
                     vol = -vol;
@@ -664,19 +574,19 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
                 vol = 0;
             }
             Sfx_SetObjectChannelVolume((u32)obj, 8, vol & 0xff,
-                                       lbl_803E5B20 + gDrCloudCageWindVolume / lbl_803E5B08);
+                                       0.1f + gDrCloudCageWindVolume / 70.0f);
         }
     }
     if (channelFlags & 2)
     {
         if (Sfx_IsPlayingFromObjectChannel((int)obj, 1))
         {
-            if (((DRCloudCageState*)state)->distanceGate < lbl_803E5B18)
+            if (((DRCloudCageState*)state)->distanceGate < 18.0f)
             {
                 windVol = 0.0f;
                 if (windVol != clamped)
                 {
-                    windVol = clamped * (f32)obj->anim.rotZ / lbl_803E5B24;
+                    windVol = clamped * (f32)obj->anim.rotZ / 30000.0f;
                 }
                 gDrCloudCageWindVolume = windVol;
                 fv = (f32)(f64)windVol;
@@ -684,12 +594,12 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
                 {
                     gDrCloudCageWindVolume = -fv;
                 }
-                else if (fv > lbl_803E5AEC)
+                else if (fv > 1.0f)
                 {
-                    gDrCloudCageWindVolume = lbl_803E5AEC;
+                    gDrCloudCageWindVolume = 1.0f;
                 }
-                vol = (int)(lbl_803E5B28 * gDrCloudCageWindVolume);
-                if ((f32)vol > lbl_803E5B28)
+                vol = (int)(127.0f * gDrCloudCageWindVolume);
+                if ((f32)vol > 127.0f)
                 {
                     vol = 0x7f;
                 }
@@ -697,7 +607,7 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
                 {
                     vol = 0;
                 }
-                Sfx_SetObjectChannelVolume((u32)obj, 1, vol & 0xff, lbl_803E5B20 + gDrCloudCageWindVolume);
+                Sfx_SetObjectChannelVolume((u32)obj, 1, vol & 0xff, 0.1f + gDrCloudCageWindVolume);
             }
         }
     }
@@ -711,52 +621,52 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
         }
         else
         {
-            if (((DRCloudCageState*)state)->channel2Vol > lbl_803E5B10)
+            if (((DRCloudCageState*)state)->channel2Vol > 40.0f)
             {
                 ((DRCloudCageState*)state)->channel2Vol =
-                    -(lbl_803E5B2C * timeDelta - ((DRCloudCageState*)state)->channel2Vol);
+                    -(1.5f * timeDelta - ((DRCloudCageState*)state)->channel2Vol);
             }
         }
-        if (((DRCloudCageState*)state)->channel2Vol > lbl_803E5B08)
+        if (((DRCloudCageState*)state)->channel2Vol > 70.0f)
         {
-            ((DRCloudCageState*)state)->channel2Vol = lbl_803E5B08;
+            ((DRCloudCageState*)state)->channel2Vol = 70.0f;
         }
-        if (((DRCloudCageState*)state)->channel2Vol < lbl_803E5B30)
+        if (((DRCloudCageState*)state)->channel2Vol < 45.0f)
         {
-            ((DRCloudCageState*)state)->channel2Vol = lbl_803E5B30;
+            ((DRCloudCageState*)state)->channel2Vol = 45.0f;
         }
         channelVol = ((DRCloudCageState*)state)->channel2Vol;
-        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol * lbl_803E5B38 + lbl_803E5B34);
+        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol * 0.00390625f + 0.3f);
         if (intensity > 5)
         {
-            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B3C + intensity;
+            ((DRCloudCageState*)state)->channel4Vol = 60.0f + intensity;
         }
         else
         {
-            if (((DRCloudCageState*)state)->channel4Vol > lbl_803E5B3C)
+            if (((DRCloudCageState*)state)->channel4Vol > 60.0f)
             {
                 ((DRCloudCageState*)state)->channel4Vol =
-                    -(lbl_803E5AF8 * timeDelta - ((DRCloudCageState*)state)->channel4Vol);
+                    -(0.5f * timeDelta - ((DRCloudCageState*)state)->channel4Vol);
             }
         }
-        if (((DRCloudCageState*)state)->channel4Vol > lbl_803E5B40)
+        if (((DRCloudCageState*)state)->channel4Vol > 80.0f)
         {
-            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B40;
+            ((DRCloudCageState*)state)->channel4Vol = 80.0f;
         }
-        if (((DRCloudCageState*)state)->channel4Vol < lbl_803E5B44)
+        if (((DRCloudCageState*)state)->channel4Vol < 65.0f)
         {
-            ((DRCloudCageState*)state)->channel4Vol = lbl_803E5B44;
+            ((DRCloudCageState*)state)->channel4Vol = 65.0f;
         }
         channelVol4 = ((DRCloudCageState*)state)->channel4Vol;
-        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol4, channelVol4 / lbl_803E5B48);
-        pulse.unkC = lbl_803E5B4C;
-        pulse.unk10 = lbl_803E5B50;
-        pulse.unk14 = lbl_803E5B54;
-        pulse.unk8 = lbl_803E5AE8;
-        objfx_spawnLightPulse(obj, lbl_803E5AF8, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / lbl_803E5B58,
+        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol4, channelVol4 / 100.0f);
+        pulse.unkC = -5.3f;
+        pulse.unk10 = 4.4f;
+        pulse.unk14 = 24.0f;
+        pulse.unk8 = 0.0f;
+        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / 250.0f,
                               &pulse);
-        pulse.unkC = lbl_803E5B5C;
-        objfx_spawnLightPulse(obj, lbl_803E5AF8, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / lbl_803E5B58,
+        pulse.unkC = 5.3f;
+        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / 250.0f,
                               &pulse);
     }
     drcloudcage_updateTrails(obj, (int)state);
@@ -777,7 +687,7 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
         {
             rank = (int)Obj_GetPlayerObject();
             d = Vec_distance(&obj->anim.worldPosX, (f32*)(rank + 0x18));
-            d = d * lbl_803E5AF8;
+            d = d * 0.5f;
         }
         else
         {
@@ -785,11 +695,11 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
              * its linkDepth (+0x1C = 0x44) and routeProgress (+0xC = 0x34) are
              * read here. These stay raw: spelling them as nested-struct members
              * (rankItem.linkDepth / rankItem.routeProgress) shifts codegen. */
-            templateMetric = lbl_803E5B48 * (f32) * (s32*)(lbl_803AD088.bytes + 0x1c) +
-                             lbl_803E5B48 * *(f32*)(lbl_803AD088.bytes + 0xc);
-            stateMetric = lbl_803E5B48 * (f32) * (s32*)(state + 0x44) + lbl_803E5B48 * *(f32*)(state + 0x34);
+            templateMetric = 100.0f * (f32) * (s32*)(lbl_803AD088.bytes + 0x1c) +
+                             100.0f * *(f32*)(lbl_803AD088.bytes + 0xc);
+            stateMetric = 100.0f * (f32) * (s32*)(state + 0x44) + 100.0f * *(f32*)(state + 0x34);
             d = templateMetric - stateMetric;
-            d = (d >= lbl_803E5AE8) ? d : -d;
+            d = (d >= 0.0f) ? d : -d;
         }
         if (d <= ((DRCloudCageState*)state)->distNear)
         {
@@ -809,10 +719,10 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
         if (((DRCloudCageState*)state)->routeGateActive == 0)
         {
             d = stateMetric - templateMetric;
-            d = (d >= lbl_803E5AE8) ? d : -d;
+            d = (d >= 0.0f) ? d : -d;
             if (d > gDrCloudCageRouteDistGate)
             {
-                result = lbl_803E5AE8;
+                result = 0.0f;
             }
         }
     }
@@ -821,11 +731,11 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
         rank = (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)(state + 0x28));
         if (rank == 2)
         {
-            result = lbl_803E5B60;
+            result = 7.0f;
         }
         else
         {
-            result = lbl_803E5B64;
+            result = 6.5f;
         }
     }
     return result;
@@ -880,18 +790,18 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
         f32 dz = o->anim.localPosZ;
         dx = dx - s->anchorX;
         dz = dz - s->anchorZ;
-        fade = lbl_803E5B68 - sqrtf(dx * dx + dz * dz);
+        fade = 180.0f - sqrtf(dx * dx + dz * dz);
     }
 
-    if (s->distanceFade != lbl_803E5AE8)
+    if (s->distanceFade != 0.0f)
     {
-        fade = fade + (((fade - lbl_803E5B10) < lbl_803E5AE8)
-                           ? lbl_803E5AE8
-                           : (((fade - lbl_803E5B10) > lbl_803E5B08) ? lbl_803E5B08 : (fade - lbl_803E5B10)));
+        fade = fade + (((fade - 40.0f) < 0.0f)
+                           ? 0.0f
+                           : (((fade - 40.0f) > 70.0f) ? 70.0f : (fade - 40.0f)));
     }
-    if (fade < lbl_803E5AE8)
+    if (fade < 0.0f)
     {
-        fade = lbl_803E5AE8;
+        fade = 0.0f;
     }
 
     hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->collider, fade, s->colliderMode, 1, 0);
@@ -902,7 +812,7 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
 
     if (hitResult != 0)
     {
-        s->swingBlend = lbl_803E5AE8;
+        s->swingBlend = 0.0f;
         return 0;
     }
 
@@ -928,11 +838,11 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
         s->swingBlend = (f32)(-blendStep);
     }
     s->swingCommand = 0;
-    s->swingBlend = s->swingBlend / lbl_803E5B6C;
+    s->swingBlend = s->swingBlend / 56.0f;
 
     {
         f32 blend = s->swingBlend;
-        s->swingBlend = (blend < lbl_803E5B70) ? lbl_803E5B70 : ((blend > lbl_803E5AEC) ? lbl_803E5AEC : blend);
+        s->swingBlend = (blend < -1.0f) ? -1.0f : ((blend > 1.0f) ? 1.0f : blend);
     }
 
     {
@@ -970,7 +880,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
         if (flags->positionAnchored == 0)
         {
             {
-                f32 zero = lbl_803E5AE8;
+                f32 zero = 0.0f;
                 s->unk494 = zero;
                 s->unk498 = zero;
             }
@@ -989,7 +899,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
             obj->anim.rotX = angle;
             s->targetYaw = angle;
             s->yaw = angle;
-            s->swingAccel = lbl_803E5B74;
+            s->swingAccel = -0.05f;
             obj->anim.localPosX = s->anchorX;
             obj->anim.localPosY = s->anchorY;
             obj->anim.localPosZ = s->anchorZ;
@@ -1006,7 +916,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
                 hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorOffset,
                                      0);
                 obj->anim.localPosY = obj->anim.localPosY - floorOffset;
-                obj->anim.localPosY = obj->anim.localPosY + lbl_803E5B78;
+                obj->anim.localPosY = obj->anim.localPosY + 2.0f;
             }
             flags->positionAnchored = 1;
             return 0;
@@ -1072,7 +982,6 @@ typedef struct HightopFlags
 #define DRHIGHTOP_PARTFX_COLLISION_SPRAY 0x553
 #define DRHIGHTOP_HIT_VOLUME_SLOT        0x15
 
-
 void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
 {
     f32 pathStep;
@@ -1136,8 +1045,8 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
             st->pathProgress = st->pathProgress + pathStep;
             pathStep = st->pathProgress;
             st->pathProgress =
-                (pathStep < lbl_803E5AE8) ? lbl_803E5AE8 : ((pathStep > lbl_803E5B68) ? lbl_803E5B68 : pathStep);
-            if (st->pathProgress > lbl_803E5B7C)
+                (pathStep < 0.0f) ? 0.0f : ((pathStep > 180.0f) ? 180.0f : pathStep);
+            if (st->pathProgress > 90.0f)
             {
                 gameTextShow(0x475);
             }
@@ -1172,11 +1081,11 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
 
     if ((u32)(st->flags428 >> 5 & 1) != 0)
     {
-        if (st->airMeterCurrent >= lbl_803E5AE8)
+        if (st->airMeterCurrent >= 0.0f)
         {
             td = timeDelta;
             st->airMeterCurrent -= td * lbl_803DC0D8 + (f32)(s32)(st->airDrainRate * (td * PSVECMag(&st->localVelX)));
-            lim = lbl_803E5AE8;
+            lim = 0.0f;
             if (lim != st->airMeterRefillTimer)
             {
                 rate = 200.0f;
@@ -1185,13 +1094,13 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
                 st->airMeterRefillTimer =
                     (st->airMeterRefillTimer < lim)
                         ? lim
-                        : ((st->airMeterRefillTimer > lbl_803E5B80) ? lbl_803E5B80 : st->airMeterRefillTimer);
+                        : ((st->airMeterRefillTimer > 100000.0f) ? 100000.0f : st->airMeterRefillTimer);
                 st->airMeterCurrent =
-                    (st->airMeterCurrent < lbl_803E5AE8)
-                        ? lbl_803E5AE8
+                    (st->airMeterCurrent < 0.0f)
+                        ? 0.0f
                         : ((st->airMeterCurrent > st->airMeterMax) ? st->airMeterMax : st->airMeterCurrent);
             }
-            if (st->airMeterCurrent < lbl_803E5B84)
+            if (st->airMeterCurrent < 10000.0f)
             {
                 Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_ar_bomb_pickup);
             }
@@ -1200,18 +1109,18 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
         else
         {
             Sfx_StopObjectChannel((u32)obj, 0x7f);
-            if (st->velLimitX > lbl_803E5B20)
+            if (st->velLimitX > 0.1f)
             {
                 if (randomGetRange(0, 10) == 0)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_dn_boar1_c_117);
                 }
-                PSVECScale(&st->velLimitX, &st->velLimitX, lbl_803E5B88);
+                PSVECScale(&st->velLimitX, &st->velLimitX, 0.95f);
                 if ((u32)(st->flags428 >> 7 & 1) != 0)
                 {
-                    if (st->velLimitX < lbl_803E5B20)
+                    if (st->velLimitX < 0.1f)
                     {
-                        st->velLimitX = lbl_803E5B20;
+                        st->velLimitX = 0.1f;
                     }
                 }
             }
@@ -1219,8 +1128,8 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
             {
                 (*gGameUIInterface)->airMeterSetShutdown();
                 (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-                lim = lbl_803E5B8C;
-                st->velLimitX = lbl_803E5B8C;
+                lim = 0.01f;
+                st->velLimitX = 0.01f;
                 st->velLimitY = lim;
                 st->velLimitZ = lim;
             }
@@ -1234,16 +1143,16 @@ void SnowBike_onSeqFree(GameObject* obj)
     if ((u32)((state->flags428 >> 1) & 1) == 0)
     {
         s16 sv;
-        f32 fz = lbl_803E5AE8;
+        f32 fz = 0.0f;
         state->localVelX = fz;
         state->localVelY = fz;
-        state->distanceScale = lbl_803E5B9C;
+        state->distanceScale = -2.0f;
         ((HightopFlags*)&state->flags428)->resetLatch = 0;
         state->impactShakeTimer = fz;
         sv = obj->anim.rotX;
         state->yaw = sv;
         state->yawCurrent = sv;
-        state->engineFxLevel = lbl_803E5B74;
+        state->engineFxLevel = -0.05f;
     }
     ObjHits_EnableObject(obj);
     (*gPathControlInterface)->attachObject(obj, (char*)state + 0x178);
@@ -1307,10 +1216,10 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
         ySpeed = (double)(float)(oneOverTimeDelta * (obj->anim.localPosY - st->refPosY));
         zSpeed = (double)(float)(oneOverTimeDelta * (obj->anim.localPosZ - st->refPosZ));
 
-        transform.x = lbl_803E5AE8;
-        transform.y = lbl_803E5AE8;
-        transform.z = lbl_803E5AE8;
-        transform.unused = lbl_803E5AEC;
+        transform.x = 0.0f;
+        transform.y = 0.0f;
+        transform.z = 0.0f;
+        transform.unused = 1.0f;
         transform.rotX = -obj->anim.rotX;
         transform.rotY = 0;
         transform.rotZ = 0;
@@ -1325,7 +1234,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
         }
 
         drcloudcage_updateEngineFx((GameObject*)obj, (void*)state, st->distanceScale,
-                                   (int)(lbl_803E5BA0 * -st->engineFxLevel), (u8*)(state + 0x461), 4);
+                                   (int)(850.0f * -st->engineFxLevel), (u8*)(state + 0x461), 4);
     }
 
     ((HightopFlags3*)&st->flags428)->active = 0;
@@ -1364,24 +1273,24 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
                 st->linkedObj = hitObj;
-                st->collisionFxDamping = lbl_803E5AEC;
+                st->collisionFxDamping = 1.0f;
             }
             break;
         case 0x15:
-            if (st->collisionFxTimer == lbl_803E5AE8)
+            if (st->collisionFxTimer == 0.0f)
             {
                 PSVECNormalize((float*)&obj->anim.velocityX, velNrm);
                 dot = PSVECDotProduct(velNrm, (float*)(hitObj + 0x24));
-                PSVECScale(&st->localVelX, &st->localVelX, dot * st->collisionBounceScale + lbl_803E5AEC);
-                st->localVelY = st->localVelY * lbl_803E5BA8;
-                st->collisionFxTimer = lbl_803E5AF4;
-                st->collisionFxDamping = lbl_803E5AEC;
+                PSVECScale(&st->localVelX, &st->localVelX, dot * st->collisionBounceScale + 1.0f);
+                st->localVelY = st->localVelY * 0.2f;
+                st->collisionFxTimer = 20.0f;
+                st->collisionFxDamping = 1.0f;
             }
             break;
         case 0x1d:
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
-                setMotionBlur(1, lbl_803E5BAC);
+                setMotionBlur(1, 0.7f);
                 st->collisionFxTimer = (f32)(s32)lbl_803DC0D0;
                 st->collisionFxDamping = lbl_803DC0C8;
                 st->airMeterRefillTimer = (f32)(s32)lbl_803DC0CC;
@@ -1389,10 +1298,10 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             break;
         }
         hit = *(u32*)(hitReact + 0x50);
-        if (((hit != 0) && (hitObj = hit, *(u32*)& st->linkedObj = hit, st->collisionFxTimer == lbl_803E5AE8)) &&
+        if (((hit != 0) && (hitObj = hit, *(u32*)& st->linkedObj = hit, st->collisionFxTimer == 0.0f)) &&
             (hitKind = arrayIndexOf(gDrHighTopHitObjectKinds, 0xc, (int)*(short*)(hitObj + 0x46)), hitKind != -1))
         {
-            objfx_shakeCameraByDistance((GameObject*)obj, lbl_803E5BB0);
+            objfx_shakeCameraByDistance((GameObject*)obj, 300.0f);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x551, NULL, 4, -1, NULL);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x552, NULL, 4, -1, NULL);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x554, NULL, 4, -1, NULL);
@@ -1401,8 +1310,8 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             {
                 (*gPartfxInterface)->spawnObject((void*)obj, DRHIGHTOP_PARTFX_COLLISION_SPRAY, NULL, 2, -1, NULL);
             }
-            st->collisionFxTimer = lbl_803E5AF4;
-            st->collisionFxDamping = lbl_803E5AEC;
+            st->collisionFxTimer = 20.0f;
+            st->collisionFxDamping = 1.0f;
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
                 st->collisionFxTimer = (f32)(s32)lbl_803DC0D4;
@@ -1429,12 +1338,12 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
     {
         st->impactShakeTimer = st->impactShakeTimer + timeDelta;
         fa = st->impactShakeTimer;
-        st->impactShakeTimer = (fa < lbl_803E5AE8) ? lbl_803E5AE8 : ((fa > lbl_803E5BB4) ? lbl_803E5BB4 : fa);
-        if (st->impactShakeTimer >= lbl_803E5BB8)
+        st->impactShakeTimer = (fa < 0.0f) ? 0.0f : ((fa > 120.0f) ? 120.0f : fa);
+        if (st->impactShakeTimer >= 5.0f)
         {
             if ((u32)(st->flags428 >> 7 & 1) == 0)
             {
-                st->unk584 = lbl_803E5AE8;
+                st->unk584 = 0.0f;
             }
             ((HightopFlags*)&st->flags428)->resetLatch = 1;
         }
@@ -1444,7 +1353,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
         if ((u32)(st->flags428 >> 7 & 1) != 0)
         {
             ival = 0;
-            fa = lbl_803E5BBC;
+            fa = 0.25f;
             st->haloYawDrift = fa * (f32)(s32)obj[1];
             st->haloDriftAmpB = fa * (f32)(s32)obj[2];
             st->haloDriftPhaseA = ival;
@@ -1453,26 +1362,26 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
             {
                 doRumble(st->impactShakeTimer * fa);
                 Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(st->impactShakeTimer / lbl_803E5BC0);
+                CameraShake_SetAllMagnitudes(st->impactShakeTimer / 12.0f);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_tr_jbike_bombbeep);
-                fb = (lbl_803E5B40 < lbl_803E5BC4 * st->impactShakeTimer) ? lbl_803E5B40
-                                                                          : lbl_803E5BC4 * st->impactShakeTimer;
+                fb = (80.0f < 3.0f * st->impactShakeTimer) ? 80.0f
+                                                                          : 3.0f * st->impactShakeTimer;
                 {
-                    Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_tr_jbike_bombbeep, fb, lbl_803E5B20);
+                    Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_tr_jbike_bombbeep, fb, 0.1f);
                 }
             }
         }
         ((HightopFlags*)&st->flags428)->resetLatch = 0;
-        st->impactShakeTimer = lbl_803E5AE8;
+        st->impactShakeTimer = 0.0f;
         st->dampPresetMode = st->dampPresetModeRaw;
     }
-    fa = lbl_803E5BC8;
+    fa = 16384.0f;
     st->haloDriftPhaseA = fa * timeDelta + (f32)(s32)st->haloDriftPhaseA;
     st->haloDriftPhaseB = fa * timeDelta + (f32)(s32)st->haloDriftPhaseB;
-    st->haloYawDrift = st->haloYawDrift * powfBitEstimate(lbl_803E5BCC, timeDelta);
-    st->haloDriftAmpB = st->haloDriftAmpB * powfBitEstimate(lbl_803E5BCC, timeDelta);
-    st->haloPitchDrift = st->haloYawDrift * mathSinf((gDrHighTopPi * (f32)(s32)st->haloDriftPhaseA) / lbl_803E5BD4);
-    st->haloDriftB = st->haloDriftAmpB * mathSinf((gDrHighTopPi * (f32)(s32)st->haloDriftPhaseB) / lbl_803E5BD4);
+    st->haloYawDrift = st->haloYawDrift * powfBitEstimate(0.8f, timeDelta);
+    st->haloDriftAmpB = st->haloDriftAmpB * powfBitEstimate(0.8f, timeDelta);
+    st->haloPitchDrift = st->haloYawDrift * mathSinf((3.1415927f * (f32)(s32)st->haloDriftPhaseA) / 32768.0f);
+    st->haloDriftB = st->haloDriftAmpB * mathSinf((3.1415927f * (f32)(s32)st->haloDriftPhaseB) / 32768.0f);
     yawDelta = (int)*obj - ((int)st->yaw & 0xffffU);
     if (0x8000 < yawDelta)
     {
@@ -1542,7 +1451,7 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
         sqrtf(st->distanceScale * st->distanceScale + (st->localVelX * st->localVelX + st->localVelY * st->localVelY));
     st->timer -= timeDelta;
     fa = st->timer;
-    st->timer = (fa < lbl_803E5AE8) ? lbl_803E5AE8 : ((fa > lbl_803E5B1C) ? lbl_803E5B1C : fa);
+    st->timer = (fa < 0.0f) ? 0.0f : ((fa > 30.0f) ? 30.0f : fa);
 
     flags = st->flags428;
     if ((u32)(flags >> 7 & 1) == 0)
@@ -1550,52 +1459,52 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
         switch (st->dampPresetMode)
         {
         case 0xd:
-            target558 = lbl_803E5BD8;
-            target534 = lbl_803E5BDC;
-            target530 = lbl_803E5B88;
-            target548 = lbl_803E5BE0;
-            target54c = lbl_803E5BE4;
-            target540 = lbl_803E5BE8;
-            target544 = lbl_803E5AF8;
-            if (((u32)(flags >> 1 & 1) == 0) && (st->timer <= lbl_803E5AE8))
+            target558 = 0.005f;
+            target534 = 1500.0f;
+            target530 = 0.95f;
+            target548 = 0.98f;
+            target54c = 0.99f;
+            target540 = 0.15f;
+            target544 = 0.5f;
+            if (((u32)(flags >> 1 & 1) == 0) && (st->timer <= 0.0f))
             {
                 st->timer = (f32)(s32)randomGetRange(5, 10);
-                if (PSVECMag((void*)&obj->anim.velocityX) > lbl_803E5BC4)
+                if (PSVECMag((void*)&obj->anim.velocityX) > 3.0f)
                 {
                     doRumble((f32)(s32)randomGetRange(1, 3));
                 }
             }
-            if (speed > lbl_803E5BEC)
+            if (speed > 0.4f)
             {
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x80b, NULL, 2, -1, NULL);
             }
             break;
         case 3:
         default:
-            target558 = lbl_803E5BF0;
-            target534 = lbl_803E5BF4;
-            target530 = lbl_803E5BF8;
-            target548 = lbl_803E5BFC;
-            target54c = lbl_803E5BE4;
-            target540 = lbl_803E5BE8;
-            target544 = lbl_803E5AF8;
+            target558 = 0.18f;
+            target534 = 700.0f;
+            target530 = 0.87f;
+            target548 = 0.97f;
+            target54c = 0.99f;
+            target540 = 0.15f;
+            target544 = 0.5f;
             break;
         case 9:
-            target558 = lbl_803E5BEC;
-            target534 = lbl_803E5BF4;
-            target530 = lbl_803E5C00;
-            target548 = lbl_803E5C04;
-            target54c = lbl_803E5C08;
-            target540 = lbl_803E5B20;
-            target544 = lbl_803E5C0C;
-            if (speed > lbl_803E5B34)
+            target558 = 0.4f;
+            target534 = 700.0f;
+            target530 = 0.75f;
+            target548 = 0.965f;
+            target54c = 0.985f;
+            target540 = 0.1f;
+            target544 = 0.45f;
+            if (speed > 0.3f)
             {
-                effect.scale = lbl_803E5AEC;
+                effect.scale = 1.0f;
                 effect.rotZ = 0;
                 effect.rotY = 0;
                 effect.rotX = 0;
                 effect.x = obj->anim.localPosX;
-                effect.y = lbl_803E5C10 + obj->anim.localPosY;
+                effect.y = 15.0f + obj->anim.localPosY;
                 effect.z = obj->anim.localPosZ;
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x80a, &effect, 1, -1, NULL);
             }
@@ -1605,16 +1514,16 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
         motionFrame = st->steerAngleDeg;
         if (((motionFrame >= 0x1e) && (motionFrame <= 0x3c)) || ((motionFrame >= 0x12c) && (motionFrame <= 0x14a)))
         {
-            target558 *= lbl_803E5B20;
-            target534 *= lbl_803E5B2C;
-            target530 += lbl_803E5B20;
-            if (target530 < lbl_803E5AE8)
+            target558 *= 0.1f;
+            target534 *= 1.5f;
+            target530 += 0.1f;
+            if (target530 < 0.0f)
             {
-                target530 = lbl_803E5AE8;
+                target530 = 0.0f;
             }
-            else if (target530 > lbl_803E5B88)
+            else if (target530 > 0.95f)
             {
-                target530 = lbl_803E5B88;
+                target530 = 0.95f;
             }
         }
     }
@@ -1625,23 +1534,23 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
         target530 = st->unk56C;
         target548 = st->localVelXDampTarget;
         target54c = st->distanceScaleDampTarget;
-        target540 = lbl_803E5B20;
-        target544 = lbl_803E5AF8;
+        target540 = 0.1f;
+        target544 = 0.5f;
     }
 
     if ((u32)((st->flags428 >> 1) & 1) != 0)
     {
-        target558 = lbl_803E5AF8;
+        target558 = 0.5f;
     }
     fb = timeDelta;
-    speed = lbl_803E5C14;
+    speed = 0.04f;
     st->unk558 +=
         fb * (speed *
-              (((target558 < lbl_803E5BD8) ? lbl_803E5BD8 : ((target558 > lbl_803E5AEC) ? lbl_803E5AEC : target558)) -
+              (((target558 < 0.005f) ? 0.005f : ((target558 > 1.0f) ? 1.0f : target558)) -
                st->unk558));
-    st->unk534 += timeDelta * (lbl_803E5BBC * (target534 - st->unk534));
-    st->unk530 += timeDelta * (lbl_803E5C14 * (target530 - st->unk530));
-    st->localVelXDamp += timeDelta * ((k = lbl_803E5B20) * (target548 - st->localVelXDamp));
+    st->unk534 += timeDelta * (0.25f * (target534 - st->unk534));
+    st->unk530 += timeDelta * (0.04f * (target530 - st->unk530));
+    st->localVelXDamp += timeDelta * ((k = 0.1f) * (target548 - st->localVelXDamp));
     st->distanceScaleDamp += timeDelta * (k * (target54c - st->distanceScaleDamp));
     st->turnVelScale += timeDelta * (k * (target540 - st->turnVelScale));
     st->turnForceGain += timeDelta * (k * (target544 - st->turnForceGain));
@@ -1683,16 +1592,16 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         Sfx_PlayFromObject(obj, SFXTRIG_bblast16);
     }
 
-    target = lbl_803E5AE8;
+    target = 0.0f;
     if (flags->b6 != 0)
     {
         target = ((DRPickupState*)state)->liftZVelTarget;
     }
-    rate = (target - ((DRPickupState*)state)->liftZVel) * lbl_803E5C28;
-    clampedRate = (rate < lbl_803E5C2C) ? lbl_803E5C2C : ((rate > lbl_803E5B8C) ? lbl_803E5B8C : rate);
+    rate = (target - ((DRPickupState*)state)->liftZVel) * 0.05f;
+    clampedRate = (rate < -0.002f) ? -0.002f : ((rate > 0.01f) ? 0.01f : rate);
     *(f32*)(state + 0x430) = clampedRate * timeDelta + *(f32*)((int)state + 0x430);
 
-    target = lbl_803E5AE8;
+    target = 0.0f;
     if (flags->b4 != 0)
     {
         f32 vy53c = ((DRPickupState*)state)->settleVelMax;
@@ -1709,7 +1618,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         }
     }
     {
-        f32 fz = lbl_803E5AE8;
+        f32 fz = 0.0f;
         ((DRPickupState*)state)->localOffsetX = fz;
         ((DRPickupState*)state)->localOffsetY = fz;
     }
@@ -1773,7 +1682,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         {
             f32 v = ((DRPickupState*)state)->spinVel;
             ((DRPickupState*)state)->spinVel =
-                (v < lbl_803E5C30) ? lbl_803E5C30 : ((v > lbl_803E5B48) ? lbl_803E5B48 : v);
+                (v < -100.0f) ? -100.0f : ((v > 100.0f) ? 100.0f : v);
         }
         *(s16*)(obj + 0x2) = (f32)(s32) * (s16*)(obj + 0x2) + ((DRPickupState*)state)->spinVel * timeDelta;
     }
@@ -1794,11 +1703,11 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         lim = ((DRPickupState*)state)->clampLimitX;
         ((DRPickupState*)state)->accumX = (v < -lim) ? -lim : ((v > lim) ? lim : v);
         v = ((DRPickupState*)state)->accumX;
-        if (v < lbl_803E5B8C)
+        if (v < 0.01f)
         {
-            if (v > lbl_803E5BA4)
+            if (v > -0.01f)
             {
-                ((DRPickupState*)state)->accumX = lbl_803E5AE8;
+                ((DRPickupState*)state)->accumX = 0.0f;
             }
         }
     }
@@ -1806,13 +1715,13 @@ void SnowBike_UpdateLiftSway(int obj, int state)
     {
         f32 v = ((DRPickupState*)state)->accumY;
         f32 lim = -((DRPickupState*)state)->clampLimitY;
-        ((DRPickupState*)state)->accumY = (v < lim) ? lim : ((v > lbl_803E5AEC) ? lbl_803E5AEC : v);
+        ((DRPickupState*)state)->accumY = (v < lim) ? lim : ((v > 1.0f) ? 1.0f : v);
         v = ((DRPickupState*)state)->accumY;
-        if (v < lbl_803E5B8C)
+        if (v < 0.01f)
         {
-            if (v > lbl_803E5BA4)
+            if (v > -0.01f)
             {
-                ((DRPickupState*)state)->accumY = lbl_803E5AE8;
+                ((DRPickupState*)state)->accumY = 0.0f;
             }
         }
     }
@@ -1824,19 +1733,15 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         lim = ((DRPickupState*)state)->clampLimitZ;
         ((DRPickupState*)state)->accumZ = (v < -lim) ? -lim : ((v > lim) ? lim : v);
         v = ((DRPickupState*)state)->accumZ;
-        if (v < lbl_803E5B8C)
+        if (v < 0.01f)
         {
-            if (v > lbl_803E5BA4)
+            if (v > -0.01f)
             {
-                ((DRPickupState*)state)->accumZ = lbl_803E5AE8;
+                ((DRPickupState*)state)->accumZ = 0.0f;
             }
         }
     }
 }
-
-
-#define SNOWBIKE_OBJGROUP           0xa
-#define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd
 
 /* SnowBike defNos (anim.seqId), names from retail OBJECTS.bin at def+0x91; all gate
    to this DLL. The three CRSnowClawB / two IMSnowClawB entries share
@@ -1849,7 +1754,6 @@ void SnowBike_UpdateLiftSway(int obj, int state)
 #define SNOWBIKE_CR_CLAWBIKE_V0_OBJ    0x38d
 #define SNOWBIKE_CR_CLAWBIKE_V1_OBJ    0x38e
 #define SNOWBIKE_CR_CLAWBIKE_V2_OBJ    0x4d4
-
 
 typedef struct SnowBikeSetTypeState
 {
@@ -1908,7 +1812,7 @@ void SnowBike_buildOrientationMatrices(GameObject* obj, int state)
     v.x = 0.0f;
     v.y = 0.0f;
     v.z = 0.0f;
-    v.scale = lbl_803E5AEC;
+    v.scale = 1.0f;
 
     v.rotX = s->yaw;
     v.rotY = 0;
@@ -1936,18 +1840,18 @@ void SnowBike_ResetDynamics(int obj, register int state)
     f32 fz, fa, fb, fc;
     DRcradleSnowBikeFlags* flags;
     SnowBikeState* s = (SnowBikeState*)state;
-    s->unk52C = lbl_803E5C34;
-    s->unk530 = lbl_803E5C38;
-    s->unk534 = lbl_803E5BF4;
+    s->unk52C = 50.0f;
+    s->unk530 = 0.85f;
+    s->unk534 = 700.0f;
     fz = 0.0f;
     ((SnowBikeSetTypeState*)state)->unk414 = fz;
     s->unk584 = fz;
-    s->localVelXDamp = lbl_803E5BFC;
-    s->distanceScaleDamp = lbl_803E5BE4;
-    s->turnVelScale = lbl_803E5B20;
-    s->turnForceGain = lbl_803E5AF8;
-    s->unk558 = lbl_803E5BA8;
-    s->unk56C = lbl_803E5C00;
+    s->localVelXDamp = 0.97f;
+    s->distanceScaleDamp = 0.99f;
+    s->turnVelScale = 0.1f;
+    s->turnForceGain = 0.5f;
+    s->unk558 = 0.2f;
+    s->unk56C = 0.75f;
     flags = (DRcradleSnowBikeFlags*)(state + 0x428);
     flags->resetLatch = 0;
     s->engineFxLevel = fz;
@@ -1964,33 +1868,33 @@ void SnowBike_ResetDynamics(int obj, register int state)
     flags->impulseLatch = 0;
     *(u32*)(state + 0x42c) = 0;
     s->collisionFxTimer = fz;
-    s->collisionFxDamping = lbl_803E5AEC;
+    s->collisionFxDamping = 1.0f;
 }
 
 void SnowBike_InitTuning(GameObject* obj, int state)
 {
     f32 fa, fz;
     SnowBikeState* s = (SnowBikeState*)state;
-    s->liftAccel = lbl_803E5C3C;
-    s->unk530 = lbl_803E5C38;
-    s->unk534 = lbl_803E5BF4;
-    s->unk538 = lbl_803E5B74;
-    s->unk53C = lbl_803E5C14;
-    s->localVelXDamp = lbl_803E5BFC;
-    s->distanceScaleDamp = lbl_803E5BE4;
-    s->turnVelScale = lbl_803E5B20;
-    s->turnForceGain = lbl_803E5AF8;
-    fa = lbl_803E5C40;
+    s->liftAccel = -0.12f;
+    s->unk530 = 0.85f;
+    s->unk534 = 700.0f;
+    s->unk538 = -0.05f;
+    s->unk53C = 0.04f;
+    s->localVelXDamp = 0.97f;
+    s->distanceScaleDamp = 0.99f;
+    s->turnVelScale = 0.1f;
+    s->turnForceGain = 0.5f;
+    fa = 0.995f;
     s->localVelXDampTarget = fa;
     s->distanceScaleDampTarget = fa;
-    s->unk554 = lbl_803E5C44;
-    s->unk550 = lbl_803E5C10;
-    s->unk570 = lbl_803E5BB8;
-    fz = lbl_803E5BA8;
+    s->unk554 = 0.08f;
+    s->unk550 = 15.0f;
+    s->unk570 = 5.0f;
+    fz = 0.2f;
     s->unk558 = fz;
-    s->unk578 = lbl_803E5B8C;
-    s->unk574 = lbl_803E5BB0;
-    s->unk56C = lbl_803E5C00;
+    s->unk578 = 0.01f;
+    s->unk574 = 300.0f;
+    s->unk56C = 0.75f;
     s->collisionBounceScale = fz;
 }
 typedef struct SnowBikeMountState
@@ -2024,7 +1928,6 @@ typedef struct SnowBikeMountState
     f32 velocityY;
     f32 velocityZ;
 } SnowBikeMountState;
-
 
 /* texture asset loaded into lbl_803DDC60 (this DLL's only texture) */
 #define SNOWBIKE_TEXTURE_ID 0x186
@@ -2143,14 +2046,14 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
 {
     int state = *(int*)&obj->extra;
     f32 speed;
-    *out = lbl_803E5BB8;
+    *out = 5.0f;
     speed = sqrtf(((SnowBikeMountState*)state)->velocityZ * ((SnowBikeMountState*)state)->velocityZ +
                   (((SnowBikeMountState*)state)->velocityX * ((SnowBikeMountState*)state)->velocityX +
                    ((SnowBikeMountState*)state)->velocityY * ((SnowBikeMountState*)state)->velocityY));
-    speed = speed * lbl_803E5BA8;
-    if (speed > lbl_803E5AEC)
+    speed = speed * 0.2f;
+    if (speed > 1.0f)
     {
-        speed = lbl_803E5AEC;
+        speed = 1.0f;
     }
     return speed;
 }
@@ -2159,9 +2062,9 @@ void SnowBike_func12(GameObject* obj, f32* outFloat, s32* outBool)
 {
     int state = *(int*)&obj->extra;
     f32 value, r;
-    *outFloat = ((SnowBikeMountState*)state)->unk414 / lbl_803E5C48;
+    *outFloat = ((SnowBikeMountState*)state)->unk414 / 400.0f;
     value = *outFloat;
-    *outFloat = (value < lbl_803E5B70) ? lbl_803E5B70 : ((value > lbl_803E5AEC) ? lbl_803E5AEC : value);
+    *outFloat = (value < -1.0f) ? -1.0f : ((value > 1.0f) ? 1.0f : value);
     *outBool = ((SnowBikeMountState*)state)->unk414 < 0.0f;
 }
 
@@ -2177,14 +2080,14 @@ void SnowBike_setRiderMode(GameObject* obj, int type)
         bit = (((SnowBikeSetTypeState*)state)->flags >> 5) & 1;
         if (bit != 0)
         {
-            ((SnowBikeSetTypeState*)state)->airMeterMax = lbl_803E5B90;
-            ((SnowBikeSetTypeState*)state)->airDrainRate = lbl_803E5AEC;
-            ((SnowBikeSetTypeState*)state)->airMeterCurrent = lbl_803E5B94;
+            ((SnowBikeSetTypeState*)state)->airMeterMax = 70000.0f;
+            ((SnowBikeSetTypeState*)state)->airDrainRate = 1.0f;
+            ((SnowBikeSetTypeState*)state)->airMeterCurrent = 69999.0f;
             if (((SnowBikeSetTypeState*)state)->bikeType == 2)
             {
                 (*gGameUIInterface)
                     ->initAirMeter((int)((SnowBikeSetTypeState*)state)->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-                (*gGameUIInterface)->airMeterSetRatio(lbl_803E5B98);
+                (*gGameUIInterface)->airMeterSetRatio(4.0f);
             }
         }
         if (obj->anim.seqId == SNOWBIKE_IM_BIKE_OBJ)
@@ -2286,13 +2189,13 @@ void SnowBike_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visib
     SnowBike_DrawTrails((int)obj, (char*)path);
     if (visible == -1)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E5AEC);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)1.0f);
         ObjPath_GetPointWorldPosition(obj, 0, (f32*)((char*)path + 0x3e8),
                                       (f32*)((char*)path + 0x3ec), (f32*)((char*)path + 0x3f0), 0);
     }
     else
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E5AEC);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)1.0f);
         ObjPath_GetPointWorldPosition(obj, 0, (f32*)((char*)path + 0x3e8),
                                       (f32*)((char*)path + 0x3ec), (f32*)((char*)path + 0x3f0), 0);
     }
@@ -2334,19 +2237,19 @@ void SnowBike_hitDetect(GameObject* obj)
     if (state->unk3D6 != 0 ||
         ((((ObjHitsPriorityState*)obj->anim.hitReactState)->flags & 8) != 0 &&
          arrayIndexOf((int*)gSnowBikeHitObjectIdTable, 10, ((GameObject*)other)->anim.seqId) == -1) ||
-        (*(void**)&state->linkedObj != NULL && state->collisionFxDamping <= lbl_803E5AEC))
+        (*(void**)&state->linkedObj != NULL && state->collisionFxDamping <= 1.0f))
     {
     mag = PSVECMag((f32*)((int)obj + 0x24));
-    if (mag > lbl_803E5AEC)
+    if (mag > 1.0f)
     {
         if (!((HaloSnowBikeFlags*)&state->flags428)->b02)
         {
-            doRumble(lbl_803E5BC4 * mag);
+            doRumble(3.0f * mag);
         }
-        state->engineFxLevel = state->engineFxLevel * lbl_803E5BBC;
+        state->engineFxLevel = state->engineFxLevel * 0.25f;
         if (obj->anim.seqId == SNOWBIKE_IM_BIKE_OBJ || obj->anim.seqId == SNOWBIKE_CR_BIKE_OBJ)
         {
-            vol = (int)(lbl_803E5C4C * mag);
+            vol = (int)(25.0f * mag);
             if (vol > 80)
             {
                 vol = 80;
@@ -2358,23 +2261,23 @@ void SnowBike_hitDetect(GameObject* obj)
             if (Sfx_IsPlayingFromObjectChannel((int)obj, 32) == 0)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_tr_jbike_bombbeep);
-                Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_tr_jbike_bombbeep, vol, lbl_803E5B28);
+                Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_tr_jbike_bombbeep, vol, 127.0f);
             }
         }
     }
-    if (!((HaloSnowBikeFlags*)&state->flags428)->b02 && mag > lbl_803E5BC4)
+    if (!((HaloSnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
     {
         Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(mag * lbl_803E5AF8);
+        CameraShake_SetAllMagnitudes(mag * 0.5f);
     }
     if (*(void**)&state->linkedObj != NULL)
     {
-        velScale = lbl_803E5C00;
+        velScale = 0.75f;
         OSReport(sSnowBikeVelDebugFmt, mag);
         if (((GameObject*)state->linkedObj)->anim.seqId == SNOWBIKE_CR_CLAWBIKE_V0_OBJ || ((GameObject*)state->linkedObj)->anim.seqId == SNOWBIKE_CR_CLAWBIKE_V1_OBJ ||
             ((GameObject*)state->linkedObj)->anim.seqId == SNOWBIKE_CR_CLAWBIKE_V2_OBJ)
         {
-            velScale = lbl_803E5B88;
+            velScale = 0.95f;
         }
         obj->anim.velocityX =
             velScale *
@@ -2385,7 +2288,7 @@ void SnowBike_hitDetect(GameObject* obj)
     }
     else
     {
-        velScaleDefault = lbl_803E5B88;
+        velScaleDefault = 0.95f;
         obj->anim.velocityX =
             velScaleDefault *
             (oneOverTimeDelta * (obj->anim.localPosX - obj->anim.previousLocalPosX));
@@ -2415,7 +2318,7 @@ void SnowBike_hitDetect(GameObject* obj)
     }
     state->localVelX = clamped;
 }
-    if (state->localVelX < lbl_803E5B8C && state->localVelX > lbl_803E5BA4)
+    if (state->localVelX < 0.01f && state->localVelX > -0.01f)
     {
         state->localVelX = 0.0f;
     }
@@ -2425,16 +2328,16 @@ void SnowBike_hitDetect(GameObject* obj)
     {
         clamped = -limit;
     }
-    else if (value > lbl_803E5AEC)
+    else if (value > 1.0f)
     {
-        clamped = lbl_803E5AEC;
+        clamped = 1.0f;
     }
     else
     {
         clamped = value;
     }
     state->localVelY = clamped;
-    if (state->localVelY < lbl_803E5B8C && state->localVelY > lbl_803E5BA4)
+    if (state->localVelY < 0.01f && state->localVelY > -0.01f)
     {
         state->localVelY = 0.0f;
     }
@@ -2457,7 +2360,7 @@ void SnowBike_hitDetect(GameObject* obj)
         }
         state->distanceScale = clamped;
     }
-    if (state->distanceScale < lbl_803E5B8C && state->distanceScale > lbl_803E5BA4)
+    if (state->distanceScale < 0.01f && state->distanceScale > -0.01f)
     {
         state->distanceScale = 0.0f;
     }
@@ -2561,7 +2464,7 @@ void SnowBike_update(GameObject* obj)
                 rq1.quad[1] = fz;
                 rq1.quad[2] = fz;
                 rq1.quad[3] = fz;
-                rq1.quad[0] = lbl_803E5AEC;
+                rq1.quad[0] = 1.0f;
                 rq1.rot[0] = -s->yaw;
                 rq1.rot[1] = -obj->anim.rotY;
                 rq1.rot[2] = -obj->anim.rotZ;
@@ -2598,16 +2501,16 @@ void SnowBike_update(GameObject* obj)
             s->buttonsJustPressedIfNotBusy = getButtonsJustPressedIfNotBusy(0);
             s->steerAngleDeg =
                 (f32)(u16)getAngle(s->stickX, (f32) - (int)s->stickY) /
-                gSnowBikeBamToDeg;
-            s->stickX = s->stickX / lbl_803E5B6C;
+                182.04f;
+            s->stickX = s->stickX / 56.0f;
             value = s->stickX;
-            if (value < lbl_803E5B70)
+            if (value < -1.0f)
             {
-                clamped = lbl_803E5B70;
+                clamped = -1.0f;
             }
-            else if (value > lbl_803E5AEC)
+            else if (value > 1.0f)
             {
-                clamped = lbl_803E5AEC;
+                clamped = 1.0f;
             }
             else
             {
@@ -2640,7 +2543,7 @@ void SnowBike_update(GameObject* obj)
             rq2.quad[1] = fz;
             rq2.quad[2] = fz;
             rq2.quad[3] = fz;
-            rq2.quad[0] = lbl_803E5AEC;
+            rq2.quad[0] = 1.0f;
             rq2.rot[0] = -s->yaw;
             rq2.rot[1] = -obj->anim.rotY;
             rq2.rot[2] = -obj->anim.rotZ;
@@ -2667,7 +2570,7 @@ void SnowBike_update(GameObject* obj)
         }
         SnowBike_UpdateAirMeter((int)obj, (int)state);
         drcloudcage_updateEngineFx(obj, state, s->distanceScale,
-                                   (int)(lbl_803E5BA0 * -s->engineFxLevel), state + 0x461, 7);
+                                   (int)(850.0f * -s->engineFxLevel), state + 0x461, 7);
         SnowBike_UpdateCollisionResponse(obj, (int)state);
         obj->anim.rotX = s->yaw;
     }
@@ -2712,14 +2615,14 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     {
         if (((SnowBikeFlags*)(state + 0x428))->b20)
         {
-            s->airMeterMax = lbl_803E5B90;
-            s->airDrainRate = lbl_803E5AEC;
-            s->airMeterCurrent = lbl_803E5B94;
+            s->airMeterMax = 70000.0f;
+            s->airDrainRate = 1.0f;
+            s->airMeterCurrent = 69999.0f;
             if (s->riderMode == 2)
             {
                 (*gGameUIInterface)
                     ->initAirMeter((int)s->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-                (*gGameUIInterface)->airMeterSetRatio(lbl_803E5B98);
+                (*gGameUIInterface)->airMeterSetRatio(4.0f);
             }
         }
     }
@@ -2756,16 +2659,16 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     {
         ((SnowBikeFlags*)(state + 0x428))->b04 = 1;
     }
-    s->unk438 = lbl_803E5B1C;
+    s->unk438 = 30.0f;
     fz = 0.0f;
     s->unk3F4 = fz;
     s->unk3F8 = fz;
-    s->unk018 = lbl_803E5C48;
+    s->unk018 = 400.0f;
     s->unk01C = fz;
-    s->unk020 = lbl_803E5BC4;
-    s->unk024 = lbl_803E5C50;
+    s->unk020 = 3.0f;
+    s->unk024 = 6.0f;
     s->collisionHitType = -1;
-    fv = lbl_803E5B98;
+    fv = 4.0f;
     s->velLimitX = fv;
     s->velLimitY = fv;
     s->modelId = 0x436;
@@ -2774,23 +2677,23 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     case SNOWBIKE_IM_BIKE_OBJ:
     default:
         s->bikeType = 1;
-        s->velLimitZ = lbl_803E5C50;
+        s->velLimitZ = 6.0f;
         s->modelId = 282;
         break;
     case SNOWBIKE_IM_CLAWBIKE_V0_OBJ:
         s->bikeType = 1;
         s->bikeVariant = 0;
-        s->unk01C = lbl_803E5B14;
-        s->unk018 = lbl_803E5C54;
+        s->unk01C = 200.0f;
+        s->unk018 = 600.0f;
         s->collisionHitType = 1;
-        s->velLimitZ = lbl_803E5AF0;
+        s->velLimitZ = 8.0f;
         break;
     case SNOWBIKE_IM_CLAWBIKE_V1_OBJ:
         s->bikeType = 1;
         s->unk058 = 1;
         s->bikeVariant = 1;
         s->collisionHitType = 2;
-        s->velLimitZ = lbl_803E5AF0;
+        s->velLimitZ = 8.0f;
         break;
     case SNOWBIKE_CR_BIKE_OBJ:
         s->bikeType = 0;
@@ -2800,22 +2703,22 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     case SNOWBIKE_CR_CLAWBIKE_V0_OBJ:
         s->bikeType = 0;
         s->bikeVariant = 0;
-        s->unk01C = lbl_803E5B14;
-        s->unk018 = lbl_803E5C54;
-        s->velLimitZ = lbl_803E5C58 * lbl_803DC0C0;
+        s->unk01C = 200.0f;
+        s->unk018 = 600.0f;
+        s->velLimitZ = 1.2f * lbl_803DC0C0;
         break;
     case SNOWBIKE_CR_CLAWBIKE_V1_OBJ:
         s->bikeType = 0;
         s->bikeVariant = 1;
-        s->unk01C = lbl_803E5B48;
-        s->unk018 = lbl_803E5C5C;
-        s->velLimitZ = lbl_803E5C60 * lbl_803DC0C0;
+        s->unk01C = 100.0f;
+        s->unk018 = 500.0f;
+        s->velLimitZ = 1.1f * lbl_803DC0C0;
         break;
     case SNOWBIKE_CR_CLAWBIKE_V2_OBJ:
         s->bikeType = 0;
         s->bikeVariant = 2;
-        s->unk01C = lbl_803E5B48;
-        s->unk018 = lbl_803E5C5C;
+        s->unk01C = 100.0f;
+        s->unk018 = 500.0f;
         s->velLimitZ = lbl_803DC0C0;
         break;
     }
@@ -2836,11 +2739,11 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
             ((SnowBikeFlags*)(state + 0x428))->b20 = 1;
             s->airMeterRefillTimer = 0.0f;
         }
-        s->unk538 = lbl_803E5C64;
+        s->unk538 = -0.1f;
     }
     else
     {
-        s->unk538 = lbl_803E5B74;
+        s->unk538 = -0.05f;
     }
     path = state + 0x178;
     path[0x25b] = 1;
@@ -2855,7 +2758,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     {
         (*gPathControlInterface)->setLocalPointCollision(path, 1, base[0] + 0x40, &lbl_803DC0B8, 8);
     }
-    path[0x264] = lbl_803E5C68 + lbl_803DC0B8;
+    path[0x264] = 10.0f + lbl_803DC0B8;
     (*gPathControlInterface)->attachObject((void*)obj, path);
 }
 

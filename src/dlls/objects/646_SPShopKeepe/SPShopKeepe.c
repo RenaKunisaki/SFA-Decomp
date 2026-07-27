@@ -74,8 +74,7 @@ ObjectDescriptor gShopKeeperObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)ShopKeeper_getExtraSize,
 };
 
-const u32 lbl_803E59D0 = 0xC;
-const u32 lbl_803E59D4 = 0x1C;
+const RomCurveSearchPair gShopKeeperCurveSearchKinds = {0xC, 0x1C};
 
 void* lbl_803AD068[8];
 
@@ -152,7 +151,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
     int pushKindB;
     int popOut;
 
-    *(RomCurveSearchPair*)head = *(RomCurveSearchPair*)&lbl_803E59D0;
+    *(RomCurveSearchPair*)head = gShopKeeperCurveSearchKinds;
     playerObj = Obj_GetPlayerObject();
     state = (obj)->extra;
 

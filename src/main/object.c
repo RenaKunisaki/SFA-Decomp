@@ -951,10 +951,6 @@ char sObjSetupObjectLoadingLockedWarning[] = "<objSetupObject>  loading is locke
 extern u8** gObjFileBufferTable;
 extern char sObjFreeObjdefError[];
 
-/* ObjGroup ids (registered/unregistered in Obj_SetupObject / Obj_FreeObject) */
-#define OBJECT_OBJGROUP_HITBOX 6 /* joined when modelInstance flags & 0x40 (SKIP_RESET_UPDATE) */
-#define OBJECT_OBJGROUP_GROUP8 8 /* joined when modelInstance->group8RegistrationCount > 0 */
-
 ObjPlacement* Obj_AllocObjectSetup(int size, int type)
 {
     ObjPlacement* p = mmAlloc(size, 0xe, 0);
@@ -1179,34 +1175,6 @@ extern int gObjDefCaptureMode;
 
 
 
-
-#define OBJECT_CAMMODE_TITLE   0x57 /* cameramode DLL dll_0057_cameramodetitle */
-#define OBJECT_CAMMODE_DEFAULT 0x42 /* default gameplay cameramode DLL */
-
-/* special-cased seqIds (retail OBJECTS.bin names) */
-#define OBJECT_SEQID_SABRE       0x0   /* "Sabre" - the player object */
-#define OBJECT_SEQID_KRYSTAL     0x1f  /* "Krystal" - the player object */
-#define OBJECT_SEQID_STAFF       0x69  /* "staff" (DLL 0xE2) */
-#define OBJECT_SEQID_DIE_DUSTER  0x4f3 /* "DieDuster" (DLL 0x10E) */
-#define OBJECT_SEQID_DIE_FOX     0x882 /* "DieFox" (DLL 0x10E) */
-#define OBJECT_SEQID_DIE_KRYSTAL 0x887 /* "DieKrystal" (DLL 0x10E) */
-
-/* GameObject::objectFlags lifecycle bits */
-#define OBJECT_FLAG_IN_UPDATE_LIST 0x10 /* registered in gObjList / gObjUpdateList */
-#define OBJECT_FLAG_FREED          0x40 /* Obj_FreeObject ran (double-free guard) */
-
-/* ObjGroup ids (registered/unregistered in Obj_SetupObject / Obj_FreeObject) */
-#define OBJECT_OBJGROUP_HITBOX 6 /* joined when modelInstance flags & 0x40 (SKIP_RESET_UPDATE) */
-#define OBJECT_OBJGROUP_GROUP8 8 /* joined when modelInstance->group8RegistrationCount > 0 */
-
-
-/* loadCharacter model-load config word (flags29), passed to ObjModel_Load etc. */
-#define OBJLOAD_FLAG_HAS_SHADOW    0x0002 /* modelDef->shadowType != 0 */
-#define OBJLOAD_FLAG_ANIM_EVENTS   0x0040 /* allocate anim move-event table */
-#define OBJLOAD_FLAG_WEAPON_DA     0x0100 /* allocate weapon-DA table */
-#define OBJLOAD_FLAG_SINGLE_MODEL  0x0200 /* skip multi-model loop (modelDef->flags & 1) */
-#define OBJLOAD_FLAG_INDEXED_MODEL 0x0400 /* load one model at index (flags29>>11 & 0xf) */
-#define OBJLOAD_FLAG_SHADOW_TYPE3  0x8000 /* modelDef->shadowType == 3 */
 
 extern GameObject* gEffectBoxObjects[20];
 

@@ -2,10 +2,6 @@
 
 extern const float __one_over_F[];
 
-extern const float lbl_803E7E50;
-extern const float lbl_803E7E54;
-extern const float lbl_803E7E58;
-extern const double lbl_803E7E60;
 extern float lbl_803DC648;
 extern float lbl_803DC64C;
 __declspec(section ".sdata") extern float lbl_803DC650[];
@@ -111,14 +107,14 @@ static inline float log2_kernel(float value, const float* table)
 
         delta = normalizedMantissa.f - roundedMantissa.f;
         delta *= __one_over_F[tableIndex];
-        return ((float)exponent + lbl_803E7E54)
+        return ((float)exponent + 1.375f)
              + (table[tableIndex]
                 + (delta
                    + (lbl_803DC650[0] * delta
                       + (lbl_803DC650[1] * delta + (delta * delta) * (delta * coef1.f + coef0.f)))));
     }
 
-    return ((float)exponent + lbl_803E7E54) + table[tableIndex];
+    return ((float)exponent + 1.375f) + table[tableIndex];
 }
 
 static inline float exp2_kernel(float value, const float* table)
@@ -159,7 +155,7 @@ static inline float exp2_kernel(float value, const float* table)
          + table[129];
     polynomial = fraction * polynomial;
 
-    return scaleFactor * (polynomial + lbl_803E7E58);
+    return scaleFactor * (polynomial + 1.0f);
 }
 
 #define float_bits(value) (*(u32*)&(value))
@@ -174,15 +170,15 @@ float powf(float base, float power)
 
     table = (const float*)lbl_80332C78;
 
-    if (base > lbl_803E7E50) {
+    if (base > 0.0f) {
         power *= log2_kernel(base, table);
         return exp2_kernel(power, table);
     }
 
-    if (base < lbl_803E7E50) {
+    if (base < 0.0f) {
         integerPower = power;
         fractionalPower = power - (float)integerPower;
-        if (fractionalPower != lbl_803E7E50) {
+        if (fractionalPower != 0.0f) {
             return lbl_803DC648;
         }
 
@@ -217,7 +213,3 @@ float powf(float base, float power)
 }
 #pragma opt_propagation reset
 
-const float lbl_803E7E50 = 0.0f;
-const float lbl_803E7E54 = 1.375f;
-const float lbl_803E7E58 = 1.0f;
-const double lbl_803E7E60 = 4503601774854144.0;

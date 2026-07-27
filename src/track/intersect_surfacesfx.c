@@ -25,21 +25,6 @@ extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
 extern f32 lbl_803DEE28;
 
-void* jumptable_8030E9B4[11] = {
-    (void*)((u8*)objAudioFn_8006ef38 + 0x9C), (void*)((u8*)objAudioFn_8006ef38 + 0x54),
-    (void*)((u8*)objAudioFn_8006ef38 + 0x9C), (void*)((u8*)objAudioFn_8006ef38 + 0x5C),
-    (void*)((u8*)objAudioFn_8006ef38 + 0x64), (void*)((u8*)objAudioFn_8006ef38 + 0x6C),
-    (void*)((u8*)objAudioFn_8006ef38 + 0x74), (void*)((u8*)objAudioFn_8006ef38 + 0x94),
-    (void*)((u8*)objAudioFn_8006ef38 + 0x7C), (void*)((u8*)objAudioFn_8006ef38 + 0x8C),
-    (void*)((u8*)objAudioFn_8006ef38 + 0x84)};
-void* jumptable_8030E9E0[11] = {
-    (void*)((u8*)surfaceSfxGetRecord + 0x70), (void*)((u8*)surfaceSfxGetRecord + 0x28),
-    (void*)((u8*)surfaceSfxGetRecord + 0x70), (void*)((u8*)surfaceSfxGetRecord + 0x30),
-    (void*)((u8*)surfaceSfxGetRecord + 0x38), (void*)((u8*)surfaceSfxGetRecord + 0x40),
-    (void*)((u8*)surfaceSfxGetRecord + 0x48), (void*)((u8*)surfaceSfxGetRecord + 0x68),
-    (void*)((u8*)surfaceSfxGetRecord + 0x50), (void*)((u8*)surfaceSfxGetRecord + 0x60),
-    (void*)((u8*)surfaceSfxGetRecord + 0x58)};
-
 void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state, f32 unused,
                          f32 scale)
 {

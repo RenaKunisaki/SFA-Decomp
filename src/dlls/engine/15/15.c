@@ -68,7 +68,7 @@ void player_moveTowardPoint(GameObject* a, int* ctx, f32 px, f32 pz, f32 lo, f32
     }
     else
     {
-        ((BaddieState*)ctx)->animSpeedC = ((BaddieState*)ctx)->animSpeedC * PLAYER_MOVE_DAMPING;
+        ((BaddieState*)ctx)->animSpeedC *= PLAYER_MOVE_DAMPING;
         ((BaddieState*)ctx)->moveInputZ = ((BaddieState*)ctx)->moveInputX = PLAYER_MOVE_ZERO;
     }
     if (((BaddieState*)ctx)->moveInputX > PLAYER_MOVE_INPUT_MAX)
@@ -102,7 +102,7 @@ void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int 
     if (*(f32*)((char*)state + 0x2bc) < PLAYER_MOVE_NEAR_DISTANCE)
     {
         max = PLAYER_MOVE_DISTANCE_SCALE * *(f32*)((char*)state + 0x2bc);
-        ((BaddieState*)state)->animSpeedC = ((BaddieState*)state)->animSpeedC * PLAYER_MOVE_DAMPING;
+        ((BaddieState*)state)->animSpeedC *= PLAYER_MOVE_DAMPING;
     }
     if (dist > max)
     {
@@ -782,9 +782,11 @@ void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSt
         f32 t;
 
         t = (f32)(int)obj->anim.rotY * dt;
-        obj->anim.rotY -= (s16)(t * PLAYER_MOVE_ROTATION_SCALE);
+        t *= PLAYER_MOVE_ROTATION_SCALE;
+        obj->anim.rotY -= (s16)t;
         t = (f32)(int)obj->anim.rotZ * dt;
-        obj->anim.rotZ -= (s16)(t * PLAYER_MOVE_ROTATION_SCALE);
+        t *= PLAYER_MOVE_ROTATION_SCALE;
+        obj->anim.rotZ -= (s16)t;
     }
 }
 

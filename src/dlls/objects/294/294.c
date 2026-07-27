@@ -96,21 +96,6 @@ char lbl_8032253C[] =
     "^^^^^^^^\n^^^^^^^^\nLEVELLOCKED level %d  bucket %d\n\0\0"
     "^^^^^^^^\n^^^^^^^^\nLEVELUNLOCKED level %d  bucket %d\n\0\0\0";
 
-const f32 lbl_803E40C8 = 3.1415927f;
-const f32 lbl_803E40CC = 32768.0f;
-const double lbl_803E40D0 = 4503601774854144.0;
-const f32 lbl_803E40D8 = 0.0f;
-const f32 lbl_803E40DC = 0.0625f;
-const f32 lbl_803E40E0 = 1.0f;
-const f32 lbl_803E40E4 = 100.0f;
-const f32 lbl_803E40E8 = 145.0f;
-const f32 lbl_803E40EC = 0.0f;
-const double lbl_803E40F0 = 4503599627370496.0;
-const f32 lbl_803E40F8 = 55.4256f;
-const f32 lbl_803E40FC = 14.0f;
-const f32 lbl_803E4100 = 0.1f;
-const f32 lbl_803E4104 = 200.0f;
-
 typedef struct MmpTriggerPlaneState
 {
     u8 header[0xC];     /* 0x00 */
@@ -131,7 +116,7 @@ STATIC_ASSERT(offsetof(MmpTriggerPlaneState, ptB) == 0x28);
 STATIC_ASSERT(offsetof(MmpTriggerPlaneState, clipHalfExtent) == 0x34);
 STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
 
-#define MOONROCK_ANGLE_TO_RADIANS(angle) ((lbl_803E40C8 * (f32)(s32)(-(angle))) / lbl_803E40CC)
+#define MOONROCK_ANGLE_TO_RADIANS(angle) ((3.1415927f * (f32)(s32)(-(angle))) / 32768.0f)
 
 void triggerEvalCurveLoop(u8* obj, GameObject* seqObj)
 {
@@ -275,13 +260,13 @@ void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
     farY = state->ptB[1];
     farDist = planeBase + (normalZ * farZ + (normalX * farX + normalY * farY));
 
-    if (farDist < lbl_803E40D8)
+    if (farDist < 0.0f)
     {
-        triggerState = (nearDist < lbl_803E40D8) ? 2 : 1;
+        triggerState = (nearDist < 0.0f) ? 2 : 1;
     }
     else
     {
-        triggerState = (nearDist < lbl_803E40D8) ? -1 : -2;
+        triggerState = (nearDist < 0.0f) ? -1 : -2;
     }
 
     if ((triggerState == 1) || (triggerState == -1))
@@ -335,17 +320,17 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     obj->anim.rotX = (s16)((placement->rotX & 0x3f) << 10);
     obj->anim.rotY = (s16)(placement->rotY << 8);
     obj->anim.rootMotionScale =
-        obj->anim.modelInstance->rootMotionScaleBase * ((float)(u32)placement->reachScale * lbl_803E40DC);
+        obj->anim.modelInstance->rootMotionScaleBase * ((float)(u32)placement->reachScale * 0.0625f);
 
     xf.rotX = obj->anim.rotX;
     xf.rotY = obj->anim.rotY;
     xf.rotZ = obj->anim.rotZ;
-    xf.scale = lbl_803E40E0;
-    xf.x = lbl_803E40D8;
-    xf.y = lbl_803E40D8;
-    xf.z = lbl_803E40D8;
+    xf.scale = 1.0f;
+    xf.x = 0.0f;
+    xf.y = 0.0f;
+    xf.z = 0.0f;
     setMatrixFromObjectPos(posMtx, &xf);
-    Matrix_TransformPoint(posMtx, lbl_803E40D8, lbl_803E40D8, lbl_803E40E0, &outY, &outZ, &outX);
+    Matrix_TransformPoint(posMtx, 0.0f, 0.0f, 1.0f, &outY, &outZ, &outX);
     state->planeNormalX = outY;
     state->planeNormalY = outZ;
     state->planeNormalZ = outX;
@@ -355,15 +340,15 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     xf.rotX = (s16)-obj->anim.rotX;
     xf.rotY = (s16)-obj->anim.rotY;
     xf.rotZ = 0;
-    xf.scale = lbl_803E40E0;
+    xf.scale = 1.0f;
     xf.x = -obj->anim.worldPosX;
     xf.y = -obj->anim.worldPosY;
     xf.z = -obj->anim.worldPosZ;
     mtxRotateByVec3s(rotMtx, &xf);
     mtx44Transpose(rotMtx, (f32*)((char*)state + 0x38));
 
-    state->reach = lbl_803E40E4 * obj->anim.rootMotionScale;
-    state->nearRadiusSq = (lbl_803E40E8 * obj->anim.rootMotionScale) * (lbl_803E40E8 * obj->anim.rootMotionScale);
+    state->reach = 100.0f * obj->anim.rootMotionScale;
+    state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
     if (placement->base.mapId == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
     {
         OSReport(lbl_8032253C);
@@ -452,7 +437,6 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
     }
     objInterpretSeq(obj, seqObj, cat, d1);
 }
-
 
 #define TARGET_OBJGROUP                 0xf  /* player-target group; nearest object gets the trigger's sequence */
 #define TRICKY_TARGET_OBJGROUP          0x32 /* nearest object searched from the tricky object */
@@ -567,21 +551,21 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 1, lbl_803E40D8);
+                            fn_80295918((GameObject*)t, 1, 0.0f);
                         }
                         break;
                     case 9:
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 10, lbl_803E40D8);
+                            fn_80295918((GameObject*)t, 10, 0.0f);
                         }
                         break;
                     case 10:
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 0xb, lbl_803E40D8);
+                            fn_80295918((GameObject*)t, 0xb, 0.0f);
                         }
                         break;
                     case 0xb:
@@ -685,7 +669,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     }
                     break;
                 case 5:
-                    if (((TriggerState*)state)->rangeSq == lbl_803E40D8)
+                    if (((TriggerState*)state)->rangeSq == 0.0f)
                     {
                         break;
                     }

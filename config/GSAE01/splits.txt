@@ -297,7 +297,7 @@ main/newshadows.c:
 
 track/intersect_surfacesfx.c:
 	.text       start:0x8006EF38 end:0x8006F400
-	.data       start:0x8030E9B4 end:0x8030EA10
+	.data       start:0x8030E9B4 end:0x8030EA0C
 
 track/intersect.c:
 	.text       start:0x8006F400 end:0x8006F950
@@ -2522,7 +2522,7 @@ dlls/objects/454_DIMCannon/DIMCannon.c:
 	.data       start:0x80325440 end:0x80325478
 	.sdata      start:0x803DBEF0 end:0x803DBF18
 	.sbss       start:0x803DDB50 end:0x803DDB58
-	.sdata2     start:0x803E48A0 end:0x803E48F8
+	.sdata2     start:0x803E48A0 end:0x803E48F4
 
 dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c:
 	.text       start:0x801B3344 end:0x801B3768
@@ -3095,7 +3095,7 @@ dlls/objects/646_SPShopKeepe/SPShopKeepe.c:
 	.text       start:0x801E66DC end:0x801E832C
 	.data       start:0x80328370 end:0x803283DC
 	.bss        start:0x803AD068 end:0x803AD088
-	.sdata      start:0x803DC0A0 end:0x803DC0B0
+	.sdata      start:0x803DC0A0 end:0x803DC0AC
 	.sbss       start:0x803DDC58 end:0x803DDC5C
 	.sdata2     start:0x803E59D0 end:0x803E5A2C
 
@@ -5072,7 +5072,7 @@ dlls/objects/437/437.c:
 	.text       start:0x802B8A58 end:0x802B9780
 	.data       start:0x80334FF8 end:0x80335030
 	.bss        start:0x803DB0D0 end:0x803DB0F0
-	.sdata      start:0x803DC6F0 end:0x803DC730
+	.sdata      start:0x803DC6F0 end:0x803DC72C
 	.sdata2     start:0x803E8214 end:0x803E822C
 
 dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:
