@@ -1,415 +1,343 @@
 /*
- * FXEmit (DLL 0x12B, class 0x6B) - the CF "FxEmit" particle-emitter
- * object. Each instance reads an FxEmitPlacement and drifts/spins by a
- * per-axis step (FXEMIT_ROTATION_STEP_AUTO = framesThisStep auto-spin,
- * otherwise step*framesThisStep*100), optionally moving along its
- * velocity, and emits a particle effect when the player comes within
- * triggerRadius (or always, at the sentinel radius).
- *
- * Emission (fxemit_emitEffect) dispatches on the placement spawnMode:
- *   OBJECT/OBJECT_ALT/WORLD pick partfx spawn flags from effectMode,
- *   then either spawn a partfx object (effectMode 0), or acquire a
- *   resource (effectId+0x58 / effectId+0xAB) and call its slot-1 fn.
- *   The WORLD/mode-0 path (flag 1) instead spawns with explicit
- *   yaw/pitch/roll/scale/position args. emitCount>0 spawns that many;
- *   <=0 spawns the alt effect once and seeds a re-emit cooldown.
- *
- * Gated by enableBit/stopBit game bits; sfxPeriod drives a periodic
- * Sfx_PlayFromObject. SeqFn responds to anim events 1 (emit now) and 2
- * (toggle continuous emit). init lives here too; the placement is
- * defined by FXEMIT_DEF_ID 0x5A7.
+ * Placed particle emitter with effect-bank, flag-preset, animation-event,
+ * GameBit, proximity, interval, and per-axis rotation controls.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/CF/dll_012B_fxemit.h"
-#include "sys/objects.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "main/debug.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/dll/modgfx_interface.h"
-#include "main/resource.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
-#include "main/frame_timing.h"
+#include "dlls/objects/299_FXEmit.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
+#include "main/audio/sfx.h"
+#include "main/debug.h"
+#include "main/dll/modgfx_interface.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/resource.h"
 #include "main/vecmath.h"
+#include "sys/objects.h"
 
-typedef struct FxEmitWorldSpawnArgs
-{
-    s16 yaw;
-    s16 pitch;
-    s16 roll;
-    f32 scale;
-    f32 x;
-    f32 y;
-    f32 z;
-} FxEmitWorldSpawnArgs;
+#define FXEMIT_DEBUG_EFFECT_ID              0x11
+#define FXEMIT_EVENT_EMIT                   1
+#define FXEMIT_EVENT_TOGGLE_SEQUENCE        2
+#define FXEMIT_GAME_BIT_NONE                -1
+#define FXEMIT_PRESET_0_SPAWN_FLAGS         2
+#define FXEMIT_PRESET_1_SPAWN_FLAGS         4
+#define FXEMIT_PRESET_2_PARTICLE_FLAGS      0x200001
+#define FXEMIT_PRESET_2_RESOURCE_FLAGS      1
+#define FXEMIT_MODEL_RESOURCE_ID_BASE       0x58
+#define FXEMIT_PROJECTILE_RESOURCE_ID_BASE  0xAB
+#define FXEMIT_PROJECTILE_EFFECT_ID_MASK    0xFF
+#define FXEMIT_ROTATION_SPEED_DEFAULT       10
+#define FXEMIT_ROTATION_SPEED_SCALE         100
+#define FXEMIT_INTERVAL_FRAME_SCALE         100
+#define FXEMIT_ACTIVATION_RANGE_SCALE_SHIFT 2
+#define FXEMIT_INITIAL_ROTATION_SHIFT       8
+#define FXEMIT_INITIAL_SCALE                0.1f
+#define FXEMIT_RANDOM_DELAY_MAX             10
 
-extern char sCFTreasSharpyDebugFormat[];
+typedef void (*FXEmitModelResourceSpawnFn)(GameObject* obj, int unused1, int unused2, int spawnFlags, int modelId,
+                                           int unused3);
+typedef void (*FXEmitProjectileResourceSpawnFn)(GameObject* obj, int unused1, int unused2, int spawnFlags, int modelId,
+                                                int effectId, int unused3);
 
-void fxemit_emitEffect(FxEmitObject* obj)
-{
-    FxEmitState* state;
-    FxEmitPlacement* def;
+typedef struct FXEmitModelResourceVTable {
+    u8 pad00[4];
+    FXEmitModelResourceSpawnFn spawnEffect;
+} FXEmitModelResourceVTable;
+
+typedef struct FXEmitProjectileResourceVTable {
+    u8 pad00[4];
+    FXEmitProjectileResourceSpawnFn spawnEffect;
+} FXEmitProjectileResourceVTable;
+
+typedef struct FXEmitModelResource {
+    FXEmitModelResourceVTable* vtable;
+} FXEmitModelResource;
+
+typedef struct FXEmitProjectileResource {
+    FXEmitProjectileResourceVTable* vtable;
+} FXEmitProjectileResource;
+
+STATIC_ASSERT(offsetof(FXEmitModelResourceVTable, spawnEffect) == 0x04);
+STATIC_ASSERT(offsetof(FXEmitProjectileResourceVTable, spawnEffect) == 0x04);
+
+extern char sFXEmitDebugFormat[];
+
+void FXEmit_emitEffect(GameObject* obj) {
+    FXEmitState* state;
+    FXEmitPlacement* placement;
     int spawnFlags;
     s16 i;
 
-    state = obj->state;
-    def = (FxEmitPlacement*)obj->objAnim.placementData;
+    state = obj->extra;
+    placement = (FXEmitPlacement*)obj->anim.placementData;
     spawnFlags = 0;
-    if (state->effectId == 0x11)
-    {
-        logPrintf(sCFTreasSharpyDebugFormat, obj, obj->objAnim.localPosX, obj->objAnim.localPosZ);
+    if (state->effectId == FXEMIT_DEBUG_EFFECT_ID) {
+        logPrintf(sFXEmitDebugFormat, obj, obj->anim.localPosX, obj->anim.localPosZ);
     }
 
-    switch (def->spawnMode)
-    {
-    case FXEMIT_SPAWN_MODE_OBJECT:
-    {
-        s16 mode = state->effectMode;
-        if (mode == 0)
-        {
-            spawnFlags = 2;
+    switch (placement->flagPreset) {
+    case FXEMIT_FLAG_PRESET_0: {
+        s16 effectBank = state->effectBank;
+        if (effectBank == FXEMIT_EFFECT_BANK_PARTICLE) {
+            spawnFlags = FXEMIT_PRESET_0_SPAWN_FLAGS;
         }
-        if (mode == 1)
-        {
-            spawnFlags = 2;
+        if (effectBank == FXEMIT_EFFECT_BANK_MODEL) {
+            spawnFlags = FXEMIT_PRESET_0_SPAWN_FLAGS;
         }
-        if (mode == 2)
-        {
-            spawnFlags = 2;
+        if (effectBank == FXEMIT_EFFECT_BANK_PROJECTILE) {
+            spawnFlags = FXEMIT_PRESET_0_SPAWN_FLAGS;
         }
         break;
     }
-    case FXEMIT_SPAWN_MODE_OBJECT_ALT:
-    {
-        s16 mode = state->effectMode;
-        if (mode == 0)
-        {
-            spawnFlags = 4;
+    case FXEMIT_FLAG_PRESET_1: {
+        s16 effectBank = state->effectBank;
+        if (effectBank == FXEMIT_EFFECT_BANK_PARTICLE) {
+            spawnFlags = FXEMIT_PRESET_1_SPAWN_FLAGS;
         }
-        if (mode == 1)
-        {
-            spawnFlags = 4;
+        if (effectBank == FXEMIT_EFFECT_BANK_MODEL) {
+            spawnFlags = FXEMIT_PRESET_1_SPAWN_FLAGS;
         }
-        if (mode == 2)
-        {
-            spawnFlags = 4;
+        if (effectBank == FXEMIT_EFFECT_BANK_PROJECTILE) {
+            spawnFlags = FXEMIT_PRESET_1_SPAWN_FLAGS;
         }
         break;
     }
-    case FXEMIT_SPAWN_MODE_WORLD:
-    {
-        s16 mode = state->effectMode;
-        if (mode == 0)
-        {
-            spawnFlags = 0x200001;
+    case FXEMIT_FLAG_PRESET_2: {
+        s16 effectBank = state->effectBank;
+        if (effectBank == FXEMIT_EFFECT_BANK_PARTICLE) {
+            spawnFlags = FXEMIT_PRESET_2_PARTICLE_FLAGS;
         }
-        if (mode == 1)
-        {
-            spawnFlags = 1;
+        if (effectBank == FXEMIT_EFFECT_BANK_MODEL) {
+            spawnFlags = FXEMIT_PRESET_2_RESOURCE_FLAGS;
         }
-        if (mode == 2)
-        {
-            spawnFlags = 1;
+        if (effectBank == FXEMIT_EFFECT_BANK_PROJECTILE) {
+            spawnFlags = FXEMIT_PRESET_2_RESOURCE_FLAGS;
         }
         break;
     }
-    case FXEMIT_SPAWN_MODE_NONE:
+    case FXEMIT_FLAG_PRESET_NONE:
         spawnFlags = 0;
         break;
     default:
-        spawnFlags = 2;
+        spawnFlags = FXEMIT_PRESET_0_SPAWN_FLAGS;
         break;
     }
 
-    if ((spawnFlags & 1) != 0)
-    {
-        FxEmitWorldSpawnArgs args;
+    if ((spawnFlags & 1) != 0) {
+        PartFxSpawnParams args;
 
-        args.x = obj->objAnim.localPosX;
-        args.y = obj->objAnim.localPosY;
-        args.z = obj->objAnim.localPosZ;
-        args.yaw = obj->objAnim.rotX;
-        args.roll = obj->objAnim.rotZ;
-        args.pitch = obj->objAnim.rotY;
+        args.posX = obj->anim.localPosX;
+        args.posY = obj->anim.localPosY;
+        args.posZ = obj->anim.localPosZ;
+        args.rotX = obj->anim.rotX;
+        args.rotZ = obj->anim.rotZ;
+        args.rotY = obj->anim.rotY;
         args.scale = 1.0f;
-        if (state->emitCount > 0)
-        {
-            for (i = 0; i < state->emitCount; i++)
-            {
+        if (state->emitRate > 0) {
+            for (i = 0; i < state->emitRate; i++) {
                 (*gPartfxInterface)->spawnObject(obj, state->effectId, &args, spawnFlags, -1, NULL);
             }
+        } else {
+            (*gPartfxInterface)->spawnObject(obj, state->alternateEffectId, &args, spawnFlags, -1, NULL);
         }
-        else
-        {
-            (*gPartfxInterface)->spawnObject(obj, state->altEffectId, &args, spawnFlags, -1, NULL);
-        }
-    }
-    else
-    {
+    } else {
         void* resource;
-        s16 mode = state->effectMode;
+        s16 effectBank = state->effectBank;
 
-        if (mode == 0)
-        {
-            if (state->emitCount > 0)
-            {
-                for (i = 0; i < state->emitCount; i++)
-                {
+        if (effectBank == FXEMIT_EFFECT_BANK_PARTICLE) {
+            if (state->emitRate > 0) {
+                for (i = 0; i < state->emitRate; i++) {
                     (*gPartfxInterface)->spawnObject(obj, state->effectId, NULL, spawnFlags, -1, NULL);
                 }
-            }
-            else
-            {
+            } else {
                 (*gPartfxInterface)->spawnObject(obj, state->effectId, NULL, spawnFlags, -1, NULL);
             }
-        }
-        else if (mode == 1)
-        {
-            resource = Resource_Acquire((u16)(state->effectId + 0x58), 1);
-            if (state->emitCount > 0)
-            {
-                for (i = 0; i < state->emitCount; i++)
-                {
-                    ((void (*)(int, int, int, int, int, int))((void**)*(int*)resource)[1])((int)obj, 0, 0, spawnFlags,
-                                                                                           -1, 0);
+        } else if (effectBank == FXEMIT_EFFECT_BANK_MODEL) {
+            resource = Resource_Acquire((u16)(state->effectId + FXEMIT_MODEL_RESOURCE_ID_BASE), 1);
+            if (state->emitRate > 0) {
+                for (i = 0; i < state->emitRate; i++) {
+                    ((FXEmitModelResource*)resource)->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
                 }
-            }
-            else
-            {
-                ((void (*)(int, int, int, int, int, int))((void**)*(int*)resource)[1])((int)obj, 0, 0, spawnFlags, -1,
-                                                                                       0);
+            } else {
+                ((FXEmitModelResource*)resource)->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
             }
             Resource_Release(resource);
-        }
-        else if (mode == 2)
-        {
-            resource = Resource_Acquire((u16)(state->effectId + 0xab), 1);
-            if (state->emitCount > 0)
-            {
-                for (i = 0; i < state->emitCount; i++)
-                {
-                    ((void (*)(int, int, int, int, int, int, int))((void**)*(int*)resource)[1])(
-                        (int)obj, 0, 0, spawnFlags, -1, state->effectId & 0xff, 0);
+        } else if (effectBank == FXEMIT_EFFECT_BANK_PROJECTILE) {
+            resource = Resource_Acquire((u16)(state->effectId + FXEMIT_PROJECTILE_RESOURCE_ID_BASE), 1);
+            if (state->emitRate > 0) {
+                for (i = 0; i < state->emitRate; i++) {
+                    ((FXEmitProjectileResource*)resource)
+                        ->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1,
+                                              state->effectId & FXEMIT_PROJECTILE_EFFECT_ID_MASK, 0);
                 }
-            }
-            else
-            {
-                ((void (*)(int, int, int, int, int, int, int))((void**)*(int*)resource)[1])(
-                    (int)obj, 0, 0, spawnFlags, -1, state->effectId & 0xff, 0);
+            } else {
+                ((FXEmitProjectileResource*)resource)
+                    ->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, state->effectId & FXEMIT_PROJECTILE_EFFECT_ID_MASK,
+                                          0);
             }
             Resource_Release(resource);
         }
     }
 }
 
-int FxEmit_SeqFn(FxEmitObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    FxEmitState* state;
-    FxEmitPlacement* def;
-    u8 event;
+int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    FXEmitState* state;
+    FXEmitPlacement* placement;
     int i;
-    s8 rotStep;
+    s8 rotationSpeed;
 
-    state = obj->state;
-    def = (FxEmitPlacement*)obj->objAnim.placementData;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        event = animUpdate->eventIds[i];
-        if (event == 1)
-        {
-            fxemit_emitEffect(obj);
+    state = obj->extra;
+    placement = (FXEmitPlacement*)obj->anim.placementData;
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        if (animUpdate->eventIds[i] == FXEMIT_EVENT_EMIT) {
+            FXEmit_emitEffect(obj);
         }
-        if (animUpdate->eventIds[i] == 2)
-        {
-            state->seqToggle = (u8)(1 - state->seqToggle);
+        if (animUpdate->eventIds[i] == FXEMIT_EVENT_TOGGLE_SEQUENCE) {
+            state->sequenceRotate = (u8)(1 - state->sequenceRotate);
         }
         animUpdate->eventIds[i] = 0;
     }
 
-    if (state->seqToggle != 0)
-    {
-        rotStep = def->yawStep;
-        if (rotStep == FXEMIT_ROTATION_STEP_AUTO)
-        {
-            obj->objAnim.rotX = obj->objAnim.rotX + framesThisStep * 10;
-        }
-        else
-        {
-            obj->objAnim.rotX = obj->objAnim.rotX + rotStep * framesThisStep * 100;
+    if (state->sequenceRotate != 0) {
+        rotationSpeed = placement->yawSpeed;
+        if (rotationSpeed == FXEMIT_ROTATION_SPEED_AUTO) {
+            obj->anim.rotX = obj->anim.rotX + framesThisStep * FXEMIT_ROTATION_SPEED_DEFAULT;
+        } else {
+            obj->anim.rotX = obj->anim.rotX + rotationSpeed * framesThisStep * FXEMIT_ROTATION_SPEED_SCALE;
         }
 
-        rotStep = def->pitchStep;
-        if (rotStep == FXEMIT_ROTATION_STEP_AUTO)
-        {
-            obj->objAnim.rotY = obj->objAnim.rotY + framesThisStep * 10;
-        }
-        else
-        {
-            obj->objAnim.rotY = obj->objAnim.rotY + rotStep * framesThisStep * 100;
+        rotationSpeed = placement->pitchSpeed;
+        if (rotationSpeed == FXEMIT_ROTATION_SPEED_AUTO) {
+            obj->anim.rotY = obj->anim.rotY + framesThisStep * FXEMIT_ROTATION_SPEED_DEFAULT;
+        } else {
+            obj->anim.rotY = obj->anim.rotY + rotationSpeed * framesThisStep * FXEMIT_ROTATION_SPEED_SCALE;
         }
 
-        rotStep = def->rollStep;
-        if (rotStep == FXEMIT_ROTATION_STEP_AUTO)
-        {
-            obj->objAnim.rotZ = obj->objAnim.rotZ + framesThisStep * 10;
+        rotationSpeed = placement->rollSpeed;
+        if (rotationSpeed == FXEMIT_ROTATION_SPEED_AUTO) {
+            obj->anim.rotZ = obj->anim.rotZ + framesThisStep * FXEMIT_ROTATION_SPEED_DEFAULT;
+        } else {
+            obj->anim.rotZ = obj->anim.rotZ + rotationSpeed * framesThisStep * FXEMIT_ROTATION_SPEED_SCALE;
         }
-        else
-        {
-            obj->objAnim.rotZ = obj->objAnim.rotZ + rotStep * framesThisStep * 100;
-        }
-        fxemit_emitEffect(obj);
+        FXEmit_emitEffect(obj);
     }
 
     return 0;
 }
 
-int FxEmit_getExtraSize(void)
-{
-    return sizeof(FxEmitState);
+int FXEmit_getExtraSize(void) {
+    return sizeof(FXEmitState);
 }
 
-int FxEmit_getObjectTypeId(void)
-{
+int FXEmit_getObjectTypeId(void) {
     return 0;
 }
 
-void FxEmit_free(FxEmitObject* obj)
-{
+void FXEmit_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource2((u32)obj);
     (*gModgfxInterface)->freeSourceEffects(obj);
 }
 
-void FxEmit_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void FXEmit_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     if (visible == 0)
         return;
 }
 
-void FxEmit_hitDetect(void)
-{
+void FXEmit_hitDetect(void) {
 }
 
-void FxEmit_update(FxEmitObject* obj)
-{
-    FxEmitState* state;
-    FxEmitPlacement* def;
+void FXEmit_update(GameObject* obj) {
+    FXEmitState* state;
+    FXEmitPlacement* placement;
     GameObject* player;
-    s16 emitCount;
-    s8 rotStep;
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 dist;
+    s16 emitRate;
+    s8 rotationSpeed;
+    f32 deltaX;
+    f32 deltaY;
+    f32 deltaZ;
+    f32 distance;
 
-    state = obj->state;
-    def = (FxEmitPlacement*)obj->objAnim.placementData;
-    if (state->startDelay != 0)
-    {
-        state->startDelay -= (s16)timeDelta;
-        if (state->startDelay < 0)
-        {
-            state->startDelay = 0;
+    state = obj->extra;
+    placement = (FXEmitPlacement*)obj->anim.placementData;
+    if (state->randomDelay != 0) {
+        state->randomDelay -= (s16)timeDelta;
+        if (state->randomDelay < 0) {
+            state->randomDelay = 0;
         }
-    }
-    else
-    {
-        obj->objAnim.localPosX = obj->objAnim.velocityX * timeDelta + obj->objAnim.localPosX;
-        obj->objAnim.localPosY = obj->objAnim.velocityY * timeDelta + obj->objAnim.localPosY;
-        obj->objAnim.localPosZ = obj->objAnim.velocityZ * timeDelta + obj->objAnim.localPosZ;
-        obj->objAnim.worldPosX = obj->objAnim.localPosX;
-        obj->objAnim.worldPosY = obj->objAnim.localPosY;
-        obj->objAnim.worldPosZ = obj->objAnim.localPosZ;
+    } else {
+        obj->anim.localPosX = obj->anim.velocityX * timeDelta + obj->anim.localPosX;
+        obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+        obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
+        obj->anim.worldPosX = obj->anim.localPosX;
+        obj->anim.worldPosY = obj->anim.localPosY;
+        obj->anim.worldPosZ = obj->anim.localPosZ;
         player = Obj_GetPlayerObject();
-        if (player == NULL || def == NULL)
-        {
+        if (player == NULL || placement == NULL) {
             return;
         }
-        if (def->sfxPeriod != 0 && def->sfxPeriod != FXEMIT_SFX_SUPPRESS)
-        {
-            if (state->sfxTimer <= 0)
-            {
-                int sfx;
-                state->suppressed = 0;
-                state->sfxTimer = def->sfxPeriod * 100;
-                sfx = def->sfxId;
-                if (sfx != 0)
-                {
-                    Sfx_PlayFromObject((int)obj, (u16)sfx);
+        if (placement->interval != 0 && placement->interval != FXEMIT_INTERVAL_DISABLED) {
+            if (state->intervalTimer <= 0) {
+                int sfxId;
+
+                state->disabled = 0;
+                state->intervalTimer = placement->interval * FXEMIT_INTERVAL_FRAME_SCALE;
+                sfxId = placement->intervalSfxId;
+                if (sfxId != 0) {
+                    Sfx_PlayFromObject((int)obj, (u16)sfxId);
                 }
+            } else {
+                state->disabled = 1;
             }
-            else
-            {
-                state->suppressed = 1;
-            }
-            state->sfxTimer -= framesThisStep;
+            state->intervalTimer -= framesThisStep;
         }
 
-        rotStep = def->yawStep;
-        if (rotStep == FXEMIT_ROTATION_STEP_AUTO)
-        {
-            obj->objAnim.rotX = obj->objAnim.rotX + framesThisStep * 10;
-        }
-        else
-        {
-            obj->objAnim.rotX = obj->objAnim.rotX + rotStep * framesThisStep * 100;
+        rotationSpeed = placement->yawSpeed;
+        if (rotationSpeed == FXEMIT_ROTATION_SPEED_AUTO) {
+            obj->anim.rotX = obj->anim.rotX + framesThisStep * FXEMIT_ROTATION_SPEED_DEFAULT;
+        } else {
+            obj->anim.rotX = obj->anim.rotX + rotationSpeed * framesThisStep * FXEMIT_ROTATION_SPEED_SCALE;
         }
 
-        rotStep = def->pitchStep;
-        if (rotStep == FXEMIT_ROTATION_STEP_AUTO)
-        {
-            obj->objAnim.rotY = obj->objAnim.rotY + framesThisStep * 10;
-        }
-        else
-        {
-            obj->objAnim.rotY = obj->objAnim.rotY + rotStep * framesThisStep * 100;
+        rotationSpeed = placement->pitchSpeed;
+        if (rotationSpeed == FXEMIT_ROTATION_SPEED_AUTO) {
+            obj->anim.rotY = obj->anim.rotY + framesThisStep * FXEMIT_ROTATION_SPEED_DEFAULT;
+        } else {
+            obj->anim.rotY = obj->anim.rotY + rotationSpeed * framesThisStep * FXEMIT_ROTATION_SPEED_SCALE;
         }
 
-        rotStep = def->rollStep;
-        if (rotStep == FXEMIT_ROTATION_STEP_AUTO)
-        {
-            obj->objAnim.rotZ = obj->objAnim.rotZ + framesThisStep * 10;
-        }
-        else
-        {
-            obj->objAnim.rotZ = obj->objAnim.rotZ + rotStep * framesThisStep * 100;
+        rotationSpeed = placement->rollSpeed;
+        if (rotationSpeed == FXEMIT_ROTATION_SPEED_AUTO) {
+            obj->anim.rotZ = obj->anim.rotZ + framesThisStep * FXEMIT_ROTATION_SPEED_DEFAULT;
+        } else {
+            obj->anim.rotZ = obj->anim.rotZ + rotationSpeed * framesThisStep * FXEMIT_ROTATION_SPEED_SCALE;
         }
 
-        if (state->enableBit == -1 || mainGetBit(state->enableBit) != 0)
-        {
-            switch (state->suppressed)
-            {
-            case 0:
-            {
-                if (state->stopBit != -1 && mainGetBit(state->stopBit) != 0)
-                {
-                    state->suppressed = 1;
+        if (state->toggleGameBit == FXEMIT_GAME_BIT_NONE || mainGetBit(state->toggleGameBit) != 0) {
+            switch (state->disabled) {
+            case 0: {
+                if (state->disableGameBit != FXEMIT_GAME_BIT_NONE && mainGetBit(state->disableGameBit) != 0) {
+                    state->disabled = 1;
                 }
-                if (def->sfxPeriod == FXEMIT_SFX_SUPPRESS)
-                {
-                    state->suppressed = 1;
+                if (placement->interval == FXEMIT_INTERVAL_DISABLED) {
+                    state->disabled = 1;
                 }
-                emitCount = state->emitCount;
-                if (emitCount >= 0 || (emitCount < 0 && obj->emitCooldown <= 0))
-                {
-                    dx = obj->objAnim.worldPosX - player->anim.worldPosX;
-                    dy = obj->objAnim.worldPosY - player->anim.worldPosY;
-                    dz = obj->objAnim.worldPosZ - player->anim.worldPosZ;
-                    if (emitCount == 0)
-                    {
-                        state->suppressed = 1;
+                emitRate = state->emitRate;
+                if (emitRate >= 0 || (emitRate < 0 && obj->userData1 <= 0)) {
+                    deltaX = obj->anim.worldPosX - player->anim.worldPosX;
+                    deltaY = obj->anim.worldPosY - player->anim.worldPosY;
+                    deltaZ = obj->anim.worldPosZ - player->anim.worldPosZ;
+                    if (emitRate == 0) {
+                        state->disabled = 1;
                     }
-                    dist = sqrtf(dx * dx + dy * dy + dz * dz);
-                    if (dist <= state->triggerRadius || 0.0f == state->triggerRadius)
-                    {
-                        fxemit_emitEffect(obj);
+                    distance = sqrtf(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+                    if (distance <= state->activationRange || 0.0f == state->activationRange) {
+                        FXEmit_emitEffect(obj);
                     }
-                    obj->emitCooldown = -state->emitCount;
-                }
-                else if (emitCount < 0 && obj->emitCooldown > 0)
-                {
-                    obj->emitCooldown -= framesThisStep;
+                    obj->userData1 = -state->emitRate;
+                } else if (emitRate < 0 && obj->userData1 > 0) {
+                    obj->userData1 -= framesThisStep;
                 }
                 break;
             }
@@ -418,52 +346,45 @@ void FxEmit_update(FxEmitObject* obj)
     }
 }
 
-void FxEmit_init(FxEmitObject* obj, FxEmitPlacement* setup)
-{
-    FxEmitState* state;
+void FXEmit_init(GameObject* obj, FXEmitPlacement* placement) {
+    FXEmitState* state;
 
-    obj->objAnim.rotX = 0;
-    obj->seqCallback = FxEmit_SeqFn;
-    state = obj->state;
+    obj->anim.rotX = 0;
+    obj->animEventCallback = FXEmit_sequenceCallback;
+    state = obj->extra;
 
-    state->triggerRadius = (f32)((s32)setup->triggerRadius << 2);
-    state->effectMode = setup->effectMode;
-    state->effectId = setup->effectId;
-    state->emitCount = setup->emitCount;
-    obj->objAnim.rootMotionScale = 0.1f;
-    state->enableBit = setup->enableBit;
-    state->stopBit = setup->stopBit;
-    state->suppressed = 0;
+    state->activationRange = (f32)((s32)placement->activationRange << FXEMIT_ACTIVATION_RANGE_SCALE_SHIFT);
+    state->effectBank = placement->effectBank;
+    state->effectId = placement->effectId;
+    state->emitRate = placement->emitRate;
+    obj->anim.rootMotionScale = FXEMIT_INITIAL_SCALE;
+    state->toggleGameBit = placement->toggleGameBit;
+    state->disableGameBit = placement->disableGameBit;
+    state->disabled = 0;
 
-    if (state->emitCount < 1)
-    {
-        obj->emitCooldown = state->emitCount;
-    }
-    else
-    {
-        obj->emitCooldown = 0;
+    if (state->emitRate < 1) {
+        obj->userData1 = state->emitRate;
+    } else {
+        obj->userData1 = 0;
     }
 
-    if (state->stopBit != -1 && mainGetBit(state->stopBit) != 0)
-    {
-        state->suppressed = 1;
+    if (state->disableGameBit != FXEMIT_GAME_BIT_NONE && mainGetBit(state->disableGameBit) != 0) {
+        state->disabled = 1;
     }
 
-    obj->objAnim.rotX = (s16)(setup->initialYaw << 8);
-    obj->objAnim.rotY = (s16)(setup->initialPitch << 8);
-    obj->objAnim.rotZ = (s16)(setup->initialRoll << 8);
-    state->sfxTimer = (s16)(setup->sfxPeriod * 100);
-    state->initialX = obj->objAnim.localPosX;
-    state->startDelay = randomGetRange(0, 10);
-    state->altEffectId = 0;
+    obj->anim.rotX = (s16)(placement->initialYaw << FXEMIT_INITIAL_ROTATION_SHIFT);
+    obj->anim.rotY = (s16)(placement->initialPitch << FXEMIT_INITIAL_ROTATION_SHIFT);
+    obj->anim.rotZ = (s16)(placement->initialRoll << FXEMIT_INITIAL_ROTATION_SHIFT);
+    state->intervalTimer = (s16)(placement->interval * FXEMIT_INTERVAL_FRAME_SCALE);
+    state->initialX = obj->anim.localPosX;
+    state->randomDelay = randomGetRange(0, FXEMIT_RANDOM_DELAY_MAX);
+    state->alternateEffectId = 0;
 }
 
-void FxEmit_release(void)
-{
+void FXEmit_release(void) {
 }
 
-void FxEmit_initialise(void)
-{
+void FXEmit_initialise(void) {
 }
 
 ObjectDescriptor gFXEmitObjDescriptor = {
@@ -471,16 +392,16 @@ ObjectDescriptor gFXEmitObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)FxEmit_initialise,
-    (ObjectDescriptorCallback)FxEmit_release,
+    (ObjectDescriptorCallback)FXEmit_initialise,
+    (ObjectDescriptorCallback)FXEmit_release,
     0,
-    (ObjectDescriptorCallback)FxEmit_init,
-    (ObjectDescriptorCallback)FxEmit_update,
-    (ObjectDescriptorCallback)FxEmit_hitDetect,
-    (ObjectDescriptorCallback)FxEmit_render,
-    (ObjectDescriptorCallback)FxEmit_free,
-    (ObjectDescriptorCallback)FxEmit_getObjectTypeId,
-    FxEmit_getExtraSize,
+    (ObjectDescriptorCallback)FXEmit_init,
+    (ObjectDescriptorCallback)FXEmit_update,
+    (ObjectDescriptorCallback)FXEmit_hitDetect,
+    (ObjectDescriptorCallback)FXEmit_render,
+    (ObjectDescriptorCallback)FXEmit_free,
+    (ObjectDescriptorCallback)FXEmit_getObjectTypeId,
+    FXEmit_getExtraSize,
 };
 
-char sCFTreasSharpyDebugFormat[12] = "%x   %f %f\n\000";
+char sFXEmitDebugFormat[12] = "%x   %f %f\n";
