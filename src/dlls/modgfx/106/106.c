@@ -127,15 +127,15 @@ s16 dll_6A_func03(void* sourceObj, int variant, PartFxSpawnParams* spawnParams, 
     {
         if (sourceObj != 0)
         {
-            buf.pos[0] = ((GameObject*)sourceObj)->anim.worldPosX;
-            buf.pos[1] = ((GameObject*)sourceObj)->anim.worldPosY;
-            buf.pos[2] = ((GameObject*)sourceObj)->anim.worldPosZ;
+            buf.pos[0] += ((GameObject*)sourceObj)->anim.worldPosX;
+            buf.pos[1] += ((GameObject*)sourceObj)->anim.worldPosY;
+            buf.pos[2] += ((GameObject*)sourceObj)->anim.worldPosZ;
         }
         else
         {
-            buf.pos[0] = spawnParams->posX;
-            buf.pos[1] = spawnParams->posY;
-            buf.pos[2] = spawnParams->posZ;
+            buf.pos[0] += spawnParams->posX;
+            buf.pos[1] += spawnParams->posY;
+            buf.pos[2] += spawnParams->posZ;
         }
     }
     return (*gModgfxInterface)

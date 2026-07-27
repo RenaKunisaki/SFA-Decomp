@@ -148,15 +148,15 @@ void dll_5C_func03(int sourceObj, int variant, int posSource, u32 flags)
     {
         if ((void*)sourceCtx != NULL)
         {
-            buf.pos[0] = ((GameObject*)sourceCtx)->anim.worldPosX;
+            buf.pos[0] += ((GameObject*)sourceCtx)->anim.worldPosX;
             buf.pos[1] = -10.0f + ((GameObject*)sourceCtx)->anim.worldPosY;
-            buf.pos[2] = ((GameObject*)sourceCtx)->anim.worldPosZ;
+            buf.pos[2] += ((GameObject*)sourceCtx)->anim.worldPosZ;
         }
         else
         {
-            buf.pos[0] = ((PartFxSpawnParams*)posSource)->posX;
+            buf.pos[0] += ((PartFxSpawnParams*)posSource)->posX;
             buf.pos[1] = -10.0f + ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] = ((PartFxSpawnParams*)posSource)->posZ;
+            buf.pos[2] += ((PartFxSpawnParams*)posSource)->posZ;
         }
     }
     (*gModgfxInterface)->spawnEffect(&buf, 0, 0x15, (u8*)(int)lbl_80311F20, 0x18, &base[212], DLL5C_EFFECT_ID, 0);
