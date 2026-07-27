@@ -86,6 +86,7 @@
 #include "dlls/objects/287_MagicCaveTo.h"
 #include "dlls/objects/288_TrickyGuard.h"
 #include "dlls/objects/289.h"
+#include "dlls/objects/290_CCTestInfot.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -180,8 +181,8 @@ extern ResourceDescriptor gAreaFXEmitObjDescriptor, gAttractorObjDescriptor, gBa
 extern ResourceDescriptor gBaddieObjDescriptor, gBarrelPadObjDescriptor,
     gBlastedObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor,
     gBossDrakorObjDescriptor;
-extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCTestInfotObjDescriptor, gCCgasventObjDescriptor,
-    gCClevcontrolObjDescriptor, gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
+extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
+    gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFCrateObjDescriptor,
     gCFForceFieldObjDescriptor, gCFGuardianObjDescriptor, gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor,
     gCFMainCrystalObjDescriptor;
@@ -1250,7 +1251,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gMagicCaveTopObjDescriptor,
     (ResourceDescriptor*)&gTrickyGuardSpotObjDescriptor,
     (ResourceDescriptor*)&gInfoTextObjDescriptor,
-    &gCCTestInfotObjDescriptor,
+    (ResourceDescriptor*)&gCCTestInfotObjDescriptor,
     &gFuelCellObjDescriptor,
     &gDeathGasObjDescriptor,
     &gCurveObjDescriptor,

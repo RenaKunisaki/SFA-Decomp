@@ -1,74 +1,58 @@
 /*
- * CCTestInfot - Cape Claw (mapId 47) "test info" help-prompt object (DLL 0x122).
- * The object only reacts while the player is disguised: it caches the disguise
- * state, drives the model's hint-text index / active model from it, and -
- * once its ObjTrigger fires - shows help text from the model's helpTextIds
- * table for a fixed hold time.
+ * Cape Claw disguise-sensitive information prompt (DLL slot 290 / 0x122).
+ *
+ * Tracks the player's disguise state, selects the corresponding model and
+ * help-text entry, and displays that text after its trigger fires while the
+ * player remains inside the interaction range.
  */
+#include "dlls/objects/290_CCTestInfot.h"
 #include "game/objects/object.h"
-#include "main/dll/player_api.h"
-#include "sys/objects.h"
-#include "main/obj_trigger.h"
-#include "dlls/object_descriptor.h"
-#include "main/frame_timing.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/player_api.h"
+#include "main/frame_timing.h"
 #include "main/minimap_api.h"
-#include "main/dll/CC/dll_0122_cctestinfot.h"
+#include "main/obj_trigger.h"
+#include "sys/objects.h"
 
-#define CCTESTINFOT_HOLD_TIME_RESET             600.0f
-#define CCTESTINFOT_HOLD_TIME_FLOOR             0.0f
+#define CC_TEST_INFO_TEXT_DISPLAY_DURATION 600.0f
 
-int CCTestInfot_getExtraSize(void)
-{
+int CCTestInfot_getExtraSize(void) {
     return sizeof(CCTestInfotState);
 }
 
-void CCTestInfot_update(GameObject* obj)
-{
+void CCTestInfot_update(GameObject* obj) {
     CCTestInfotState* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
-    if (state->isDisguised != 0)
-    {
-        if (playerIsDisguised(player) == 0)
-        {
+
+    if (state->isDisguised != 0) {
+        if (playerIsDisguised(player) == 0) {
             state->isDisguised = 0;
         }
-    }
-    else
-    {
-        if (playerIsDisguised(player) != 0)
-        {
+    } else {
+        if (playerIsDisguised(player) != 0) {
             state->isDisguised = 1;
         }
     }
     objSetHintTextIdx(obj, state->isDisguised);
     Obj_SetActiveModelIndex(obj, state->isDisguised);
-    if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0)
-    {
-        state->holdTimer = CCTESTINFOT_HOLD_TIME_RESET;
+    if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0) {
+        state->displayTimer = CC_TEST_INFO_TEXT_DISPLAY_DURATION;
     }
-    if (state->holdTimer > CCTESTINFOT_HOLD_TIME_FLOOR)
-    {
-        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
-        {
-            state->holdTimer = CCTESTINFOT_HOLD_TIME_FLOOR;
-        }
-        else
-        {
-            state->holdTimer = state->holdTimer - timeDelta;
+    if (state->displayTimer > 0.0f) {
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0) {
+            state->displayTimer = 0.0f;
+        } else {
+            state->displayTimer = state->displayTimer - timeDelta;
             showHelpText(obj->anim.modelInstance->helpTextIds[state->isDisguised]);
         }
     }
 }
 
-void CCTestInfot_init(GameObject* obj, CCTestInfotSetup* setup)
-{
-    u32 flags;
-    flags = (u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    obj->objectFlags = flags;
-    obj->anim.rotX = (s16)((s32)(u8)setup->rotationX << 8);
-    obj->anim.rotY = (s16)((s32)(u8)setup->rotationY << 8);
-    obj->anim.rotZ = (s16)((s32)(u8)setup->rotationZ << 8);
+void CCTestInfot_init(GameObject* obj, CCTestInfotPlacement* placement) {
+    obj->objectFlags = (u16)((u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
+    obj->anim.rotX = (s16)((s32)(u8)placement->rotationX << 8);
+    obj->anim.rotY = (s16)((s32)(u8)placement->rotationY << 8);
+    obj->anim.rotZ = (s16)((s32)(u8)placement->rotationZ << 8);
 }
 
 ObjectDescriptor gCCTestInfotObjDescriptor = {
