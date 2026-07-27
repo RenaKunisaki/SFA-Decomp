@@ -1,22 +1,3 @@
-/*
- * effect9 (DLL 0x22) - particle / model-graphics effects support DLL.
- *
- * Three subsystems share this object:
- *  - modgfx: per-vertex animation of an active model effect. Double-buffered
- *    vertex tables (active/inactive) drive texcoord scrolling, RGB/alpha/scale
- *    blends and rotation/position stepping over a frame countdown
- *    (modgfx_* functions). modgfx_alloc/releaseExpgfxPools own the expgfx slot
- *    pools (EXPGFX_POOL_COUNT) and the active-effect registry
- *    (MODGFX_ACTIVE_EFFECT_COUNT entries).
- *  - projgfx: an ObjectDescriptor11 (projgfx_funcs) whose callbacks are mostly
- *    no-ops; the spawner-side lives in projgfx_spawnPresetEffect, a switch over
- *    preset effect ids 0x422-0x42d (decimal 1058-1069) that fills an
- *    ExpgfxSpawnConfig (random
- *    velocity/scale/lifetime/color per preset) and hands it to
- *    gExpgfxInterface->spawnEffect.
- *  - Effect9: preset-effect spawner (Effect9_func04, switch over effectId-949)
- *    plus a per-frame animation tick (Effect9_func05).
- */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/partfxspawn_struct.h"
@@ -54,12 +35,6 @@ ObjectDescriptor6 lbl_80310BD8 = {
     (ObjectDescriptorCallback)Effect9_func05,
 };
 
-/*
- * FILL9 installs a zeroed default PartFxSpawnParams (lbl_8039C398) and points
- * spawnParams at it. It is only reached when spawnParams == 0, so the
- * immediately-following `if (spawnParams != 0)` is the non-null path (default
- * just installed) - not a contradiction.
- */
 #define FILL9()                                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
