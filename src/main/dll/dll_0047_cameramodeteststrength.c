@@ -20,19 +20,9 @@ CamCannonState* lbl_803DD560;
 /* Release camera back to the default gameplay mode on exit (cameramode DLL 0x42). */
 #define CAMTESTSTRENGTH_CAMMODE_DEFAULT 0x42
 
-extern f32 lbl_803E1888;
-extern f32 lbl_803E188C;
-extern f32 lbl_803E1890;
-extern f32 lbl_803E1894;
-extern f32 lbl_803E1898;
-extern f32 lbl_803E18AC;
-extern f32 lbl_803E18B0;
-extern f32 lbl_803E18B4;
-extern f32 lbl_803E18B8;
 void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* posEnd, s32 rotXEnd, s32 rotYEnd,
                                        s32 rotZEnd);
 
-extern f32 lbl_803E18BC;
 
 u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn)
 {
@@ -48,73 +38,73 @@ u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn)
     lbl_803DD560->rotZEnd = camera->anim.rotZ;
     lbl_803DD560->fovEnd = camera->fov;
 
-    if (lbl_803E1888 != lbl_803DD560->duration)
+    if (0.0f != lbl_803DD560->duration)
     {
         speed = lbl_803DD560->elapsed / lbl_803DD560->duration;
     }
     else
     {
-        speed = lbl_803E1888;
+        speed = 0.0f;
     }
-    if (speed > lbl_803E188C)
+    if (speed > 1.0f)
     {
-        speed = lbl_803E188C;
+        speed = 1.0f;
     }
     speed = Curve_EvalHermite(lbl_803DD560->speedCurve, speed, 0x0);
-    if (speed < lbl_803E18AC)
+    if (speed < 0.2f)
     {
-        speed = lbl_803E18AC;
+        speed = 0.2f;
     }
     lbl_803DD560->elapsed += speed * timeDelta;
 
-    t = *(f32*)&lbl_803E1888;
+    t = 0.0f;
     if (t != lbl_803DD560->duration)
     {
         t = lbl_803DD560->elapsed / lbl_803DD560->duration;
     }
-    if (t > lbl_803E188C)
+    if (t > 1.0f)
     {
-        t = lbl_803E188C;
+        t = 1.0f;
     }
     camera->anim.localPosX = Curve_EvalLinear(&lbl_803DD560->posXStart, t, NULL);
     camera->anim.localPosY = Curve_EvalLinear(&lbl_803DD560->posYStart, t, NULL);
     camera->anim.localPosZ = Curve_EvalLinear(&lbl_803DD560->posZStart, t, NULL);
     camera->fov = Curve_EvalLinear(&lbl_803DD560->fovStart, t, NULL);
 
-    if (((lbl_803DD560->rotXStart - lbl_803DD560->rotXEnd) > lbl_803E1890) ||
-        ((lbl_803DD560->rotXStart - lbl_803DD560->rotXEnd) < lbl_803E1894))
+    if (((lbl_803DD560->rotXStart - lbl_803DD560->rotXEnd) > 32768.0f) ||
+        ((lbl_803DD560->rotXStart - lbl_803DD560->rotXEnd) < -32768.0f))
     {
-        if (lbl_803DD560->rotXStart < lbl_803E1888)
+        if (lbl_803DD560->rotXStart < 0.0f)
         {
-            lbl_803DD560->rotXStart = *(f32*)&lbl_803DD560->rotXStart + lbl_803E1898;
+            lbl_803DD560->rotXStart += 65535.0f;
         }
-        else if (lbl_803DD560->rotXEnd < lbl_803E1888)
+        else if (lbl_803DD560->rotXEnd < 0.0f)
         {
-            lbl_803DD560->rotXEnd = *(f32*)&lbl_803DD560->rotXEnd + lbl_803E1898;
+            lbl_803DD560->rotXEnd += 65535.0f;
         }
     }
-    if (((lbl_803DD560->rotYStart - lbl_803DD560->rotYEnd) > lbl_803E1890) ||
-        ((lbl_803DD560->rotYStart - lbl_803DD560->rotYEnd) < lbl_803E1894))
+    if (((lbl_803DD560->rotYStart - lbl_803DD560->rotYEnd) > 32768.0f) ||
+        ((lbl_803DD560->rotYStart - lbl_803DD560->rotYEnd) < -32768.0f))
     {
-        if (lbl_803DD560->rotYStart < lbl_803E1888)
+        if (lbl_803DD560->rotYStart < 0.0f)
         {
-            lbl_803DD560->rotYStart = *(f32*)&lbl_803DD560->rotYStart + lbl_803E1898;
+            lbl_803DD560->rotYStart += 65535.0f;
         }
-        else if (lbl_803DD560->rotYEnd < lbl_803E1888)
+        else if (lbl_803DD560->rotYEnd < 0.0f)
         {
-            lbl_803DD560->rotYEnd = *(f32*)&lbl_803DD560->rotYEnd + lbl_803E1898;
+            lbl_803DD560->rotYEnd += 65535.0f;
         }
     }
-    if (((lbl_803DD560->rotZStart - lbl_803DD560->rotZEnd) > lbl_803E1890) ||
-        ((lbl_803DD560->rotZStart - lbl_803DD560->rotZEnd) < lbl_803E1894))
+    if (((lbl_803DD560->rotZStart - lbl_803DD560->rotZEnd) > 32768.0f) ||
+        ((lbl_803DD560->rotZStart - lbl_803DD560->rotZEnd) < -32768.0f))
     {
-        if (lbl_803DD560->rotZStart < lbl_803E1888)
+        if (lbl_803DD560->rotZStart < 0.0f)
         {
-            lbl_803DD560->rotZStart = *(f32*)&lbl_803DD560->rotZStart + lbl_803E1898;
+            lbl_803DD560->rotZStart += 65535.0f;
         }
-        else if (lbl_803DD560->rotZEnd < lbl_803E1888)
+        else if (lbl_803DD560->rotZEnd < 0.0f)
         {
-            lbl_803DD560->rotZEnd = *(f32*)&lbl_803DD560->rotZEnd + lbl_803E1898;
+            lbl_803DD560->rotZEnd += 65535.0f;
         }
     }
 
@@ -131,7 +121,7 @@ u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn)
     {
         camera->anim.rotZ = Curve_EvalLinear(&lbl_803DD560->rotZStart, t, NULL);
     }
-    return t >= lbl_803E188C;
+    return t >= 1.0f;
 }
 
 void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* posEnd, s32 rotXEnd, s32 rotYEnd,
@@ -156,14 +146,13 @@ void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* po
     lbl_803DD560->rotYEnd = rotYEnd;
     lbl_803DD560->rotZEnd = rotZEnd;
     lbl_803DD560->fovEnd = fovEnd;
-    lbl_803DD560->elapsed = lbl_803E1888;
+    lbl_803DD560->elapsed = 0.0f;
     dx = lbl_803DD560->posXEnd - lbl_803DD560->posXStart;
     dy = lbl_803DD560->posYEnd - lbl_803DD560->posYStart;
     dz = lbl_803DD560->posZEnd - lbl_803DD560->posZStart;
     lbl_803DD560->duration = sqrtf(dx * dx + dy * dy + dz * dz);
     (*gCameraInterface)
-        ->initialise(lbl_803DD560->duration, lbl_803DD560->speedCurve, lbl_803E18B0, (f64)lbl_803E18B4,
-                     (f64) * (f32*)&lbl_803E18B4, lbl_803E18B8);
+        ->initialise(lbl_803DD560->duration, lbl_803DD560->speedCurve, 100.0f, 0.1f, 0.1f, -5.0f);
 }
 
 void CameraModeTestStrength_copyToCurrent(void)
@@ -216,7 +205,7 @@ void CameraModeTestStrength_update(short* cam)
         pathcam_buildWindowSamples(prevWindow, x, y, z, pitchS, yawS, rollS, fov);
         param = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                             obj->anim.worldPosZ, nextWindow);
-        if (param < lbl_803E1888)
+        if (param < 0.0f)
         {
             if (nextWindow[0] > -1)
             {
@@ -231,19 +220,19 @@ void CameraModeTestStrength_update(short* cam)
                     pathcam_buildWindowSamples(prevWindow, x, y, z, pitchS, yawS, rollS, fov);
                     param = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                                         obj->anim.worldPosZ, nextWindow);
-                    lbl_803DD560->pathProgress += lbl_803E188C;
+                    lbl_803DD560->pathProgress += 1.0f;
                 }
                 else
                 {
-                    param = lbl_803E1888;
+                    param = 0.0f;
                 }
             }
             else
             {
-                param = lbl_803E1888;
+                param = 0.0f;
             }
         }
-        else if (param > *(f32*)&lbl_803E188C)
+        else if (param > 1.0f)
         {
             if (nextWindow[2] > -1 && nextWindow[3] > -1)
             {
@@ -258,19 +247,19 @@ void CameraModeTestStrength_update(short* cam)
                     pathcam_buildWindowSamples(prevWindow, x, y, z, pitchS, yawS, rollS, fov);
                     param = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                                         obj->anim.worldPosZ, nextWindow);
-                    lbl_803DD560->pathProgress -= lbl_803E188C;
+                    lbl_803DD560->pathProgress -= 1.0f;
                 }
                 else
                 {
-                    param = lbl_803E188C;
+                    param = 1.0f;
                 }
             }
             else
             {
-                param = lbl_803E188C;
+                param = 1.0f;
             }
         }
-        t = lbl_803E18BC * (param - lbl_803DD560->pathProgress) + lbl_803DD560->pathProgress;
+        t = 0.3f * (param - lbl_803DD560->pathProgress) + lbl_803DD560->pathProgress;
         lbl_803DD560->pathProgress = t;
         ((CameraObject*)cam)->anim.worldPosX = Curve_EvalBSpline(x, t, 0);
         ((CameraObject*)cam)->anim.worldPosY = Curve_EvalBSpline(y, t, 0);
@@ -407,13 +396,13 @@ void CameraModeTestStrength_init(short* cam, int param2, int* param3)
     pathcam_buildWindowSamples(prevW, xS, yS, zS, pitchS, yawS, rollS, fovS);
     t = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                     obj->anim.worldPosZ, nextW);
-    if (t < lbl_803E1888)
+    if (t < 0.0f)
     {
-        t = lbl_803E1888;
+        t = 0.0f;
     }
-    else if (t > lbl_803E188C)
+    else if (t > 1.0f)
     {
-        t = lbl_803E188C;
+        t = 1.0f;
     }
     px = Curve_EvalBSpline(xS, t, 0);
     py = Curve_EvalBSpline(yS, t, 0);
