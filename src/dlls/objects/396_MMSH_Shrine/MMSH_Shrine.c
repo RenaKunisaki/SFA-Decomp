@@ -1,640 +1,513 @@
 /*
- * MMSH_Shrine (DLL 0x18C) - the Krazoa shrine object in the MMSH map
- * (the shrine whose sway/test sequence rewards a Krazoa spirit).
+ * MMSH_Shrine (DLL 0x18C) - Moon Mountain Pass Test of Fear shrine.
  *
- * The shrine drives a small phase machine (runtime->phase 0..5): idle
- * SFX while waiting, then on activation runs object-trigger sequence 0,
- * lights the shrine model (flags06 & MMSH_SHRINE_FLAG_LIT), and on
- * completion runs the result sequences and grants the Krazoa game bit
- * (0x12a). A load-trigger countdown enables the sky and env fx once the
- * map has settled, and three SCGameBitLatch updates gate the open /
- * music-lock / completion ambient state from world game bits. The
- * sequence callback (MMSH_Shrine_SeqFn) interprets per-frame command
- * opcodes that toggle the light and drive the model sway parameters.
+ * The shrine bobs and turns toward the player, interprets animation commands, and
+ * drives the fear-test sway meter and its object-trigger sequences.
  */
-#include "main/dll/dll_018C_mmshshrine.h"
+#include "dlls/objects/396_MMSH_Shrine.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/vecmath_distance_api.h"
-#include "main/pad.h"
-#include "main/dll/objfx_api.h"
-#include "main/frame_timing.h"
-#include "main/audio/music_api.h"
-#include "main/vecmath.h"
-#include "main/render_envfx_api.h"
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/object_render.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/mapEventTypes.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
 #include "main/audio/audio_control_api.h"
-#include "main/map_load.h"
-#include "main/model_light.h"
-#include "main/pi_dolphin_api.h"
-#include "main/sky_api.h"
-#include "dlls/object_descriptor.h"
+#include "main/audio/music_api.h"
+#include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_0000_gameui.h"
+#include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
-#include "main/dll/dll_0000_gameui.h"
-#include "game/objects/object_setup.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/map_load.h"
+#include "main/mapEventTypes.h"
+#include "main/object_render.h"
+#include "main/objanim.h"
+#include "main/objseq.h"
+#include "main/pad.h"
+#include "main/pi_dolphin_api.h"
+#include "main/render_envfx_api.h"
+#include "main/sky_api.h"
+#include "main/vecmath.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
-/* env-effect ids fired when the shrine load-trigger timer expires (index-style; roles opaque) */
-/* camera mode DLL 0x4c = dll_004C_camDebug */
-#define MMSH_SHRINE_CAMMODE_CAMDEBUG 0x4c
-#define MMSH_SHRINE_ENVFX_A          0x20d
-#define MMSH_SHRINE_ENVFX_B          0x20e
-#define MMSH_SHRINE_ENVFX_C          0x222
+#define MMSH_SHRINE_CAMERA_MODE_ID 0x4C
 
-#define MMSH_SHRINE_FLAG_LIT                  0x4000
-#define MMSH_SHRINE_LOAD_MAP_DIR              0x20
-#define MMSH_SHRINE_LOAD_TRIGGER_TIMER        0xf4
-#define MMSH_SHRINE_LATCH_FLAG_OPEN_READY     0x1
-#define MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE    0x2
-#define MMSH_SHRINE_LATCH_FLAG_CHECK_COMPLETE 0x4
-#define MMSH_SHRINE_LATCH_FLAG_AMBIENT_LOCK   0x8
-#define MMSH_SHRINE_LATCH_FLAG_MUSIC_LOCK     0x10
-#define MMSH_SHRINE_LATCH_FLAG_SWAY_RESET     0x20
-#define MMSH_SHRINE_SEQ_RESULT_COMPLETE       4
-#define MMSH_SHRINE_SEQ_MAP_DIR               0xb
-#define MMSH_SHRINE_SEQ_MAP_EVENT             3
-#define MMSH_SHRINE_SEQ_GB_KRYSTAL            0x12a
-#define MMSH_SHRINE_SEQ_GB_UNKNOWN_FF         0xff
-#define MMSH_SHRINE_SEQ_GB_RESET0             0xe82
-#define MMSH_SHRINE_SEQ_GB_RESET1             0xe83
-#define MMSH_SHRINE_SEQ_GB_RESET2             0xe84
-#define MMSH_SHRINE_SEQ_GB_RESET3             0xe85
-#define MMSH_SHRINE_GB_OPEN                   0xae6
-#define MMSH_SHRINE_GB_COMPLETE               0xae4
-#define MMSH_SHRINE_GB_RESET_A                0x12b
-#define MMSH_SHRINE_GB_RESET_B                0xae5
-#define MMSH_SHRINE_GB_MUSIC_LOCK             0xcbb
-#define MMSH_SHRINE_SFX_IDLE                  0x343
-#define MMSH_SHRINE_MUSIC_RUMBLE              0xd8
-#define MMSH_SHRINE_MUSIC_RUMBLE_STOP         0xd9
-#define MMSH_SHRINE_MUSIC_STOP_8              0x8
-#define MMSH_SHRINE_MUSIC_STOP_A              0xa
-#define MMSH_SHRINE_GB_EFA                    0xefa
-#define MMSH_SHRINE_GB_12D                    0x12d
-#define MMSH_SHRINE_GB_F07                    0xf07
+#define MMSH_SHRINE_ENVFX_A 0x20D
+#define MMSH_SHRINE_ENVFX_B 0x20E
+#define MMSH_SHRINE_ENVFX_C 0x222
 
-enum MMSHShrinePhase
-{
-    MMSH_SHRINE_PHASE_IDLE = 0,       /* idle SFX, wait for activation flag  */
-    MMSH_SHRINE_PHASE_ACTIVATING = 1, /* wait for open-ready latch, then lit */
-    MMSH_SHRINE_PHASE_LIT = 2,        /* shrine lit, await player test anim  */
-    MMSH_SHRINE_PHASE_RESULT = 3,     /* end sway seq, run result sequence   */
-    MMSH_SHRINE_PHASE_COMPLETE = 4,   /* grant completion game bit           */
-    MMSH_SHRINE_PHASE_RESET = 5       /* clear flags, return to idle         */
-};
+#define MMSH_SHRINE_MAP_DIRECTORY 0x20
 
+#define MMSH_SHRINE_STATE_FLAG_SEQUENCE_READY    0x01
+#define MMSH_SHRINE_STATE_FLAG_SWAY_ACTIVE       0x02
+#define MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_04    0x04
+#define MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_08    0x08
+#define MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10    0x10
+#define MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE 0x20
 
-typedef struct DFSHLaserBeamConfig
-{
-    u8 pad00[0x0C];
-    f32 baseHeight;
-    u8 pad10[0x18 - 0x10];
-    s8 yawByte;
-    u8 proximityMode;
-    s16 rangeAngle;
-    u8 pad1C[0x1E - 0x1C];
-    s16 disableGameBit;
-} DFSHLaserBeamConfig;
-STATIC_ASSERT(offsetof(DFSHLaserBeamConfig, baseHeight) == 0x0C);
-STATIC_ASSERT(offsetof(DFSHLaserBeamConfig, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(DFSHLaserBeamConfig, disableGameBit) == 0x1E);
+#define MMSH_SHRINE_ANIM_RESULT_COMPLETE 4
+#define MMSH_SHRINE_MAP_ID               0xB
+#define MMSH_SHRINE_MAP_ACT              3
 
-typedef struct DFSHLaserBeamRuntime
-{
-    void* beamTexture;
-    f32 swayPhase;
-    f32 swayVelocity;
-    f32 swayAccel;
-    f32 swayTarget;
-    u8 pad14[0x18 - 0x14];
-    s32 flags;
-    f32 beamVolumeScale;
-    s16 orbitAngleA;
-    s16 orbitAngleB;
-    s16 orbitAngleC;
-    u8 beamActive;
-    u8 beamLocked;
-    s8 proximityHalfWidth;
-    s8 hitCooldown;
-    s16 hitStrength;
-    s16 lockTimer;
-    s16 cycleTimer;
-    s16 warmupThreshold;
-    f32 hitPos[3];
-    f32 hitX;
-    u8 pad40[0x44 - 0x40];
-    f32 hitZ;
-    u8 modgfxAttached;
-    u8 blastPhase;
-    u8 proximityMode;
-    u8 pad4B[0x4C - 0x4B];
-} DFSHLaserBeamRuntime;
+#define MMSH_SHRINE_GAMEBIT_012A 0x12A
+#define MMSH_SHRINE_GAMEBIT_012B 0x12B
+#define MMSH_SHRINE_GAMEBIT_012D 0x12D
+#define MMSH_SHRINE_GAMEBIT_0AE4 0xAE4
+#define MMSH_SHRINE_GAMEBIT_0AE5 0xAE5
+#define MMSH_SHRINE_GAMEBIT_0AE6 0xAE6
+#define MMSH_SHRINE_GAMEBIT_0E82 0xE82
+#define MMSH_SHRINE_GAMEBIT_0E83 0xE83
+#define MMSH_SHRINE_GAMEBIT_0E84 0xE84
+#define MMSH_SHRINE_GAMEBIT_0E85 0xE85
 
-typedef struct DFSHLaserBeamObject
-{
-    s16 yaw;
-    s16 pitch;
-    s16 roll;
-    s16 flags06;
-    u8 pad08[0x0C - 0x08];
-    f32 localPosX;
-    f32 localPosY;
-    f32 localPosZ;
-    f32 worldPosX;
-    f32 worldPosY;
-    f32 worldPosZ;
-    u8 pad24[0x36 - 0x24];
-    u8 alpha;
-    u8 pad37[0x4C - 0x37];
-    DFSHLaserBeamConfig* config;
-    u8 pad50[0xB8 - 0x50];
-    DFSHLaserBeamRuntime* runtime;
-} DFSHLaserBeamObject;
+#define MMSH_SHRINE_MUSIC_TRIGGER_0A 0xA
 
-#define DFSH_LASER_ORBIT_A(runtime)          (*(s16*)((u8*)(runtime) + 0x1E))
-#define DFSH_LASER_ORBIT_B(runtime)          (*(s16*)((u8*)(runtime) + 0x20))
-#define DFSH_LASER_ORBIT_C(runtime)          (*(s16*)((u8*)(runtime) + 0x22))
-#define DFSH_LASER_FLAGS(runtime)            (*(s32*)((u8*)(runtime) + 0x18))
-typedef struct MMSHShrineRuntime
-{
-    ModelLightStruct* light;
-    f32 swayBase;
-    f32 swayAccel;
-    f32 swayVelocity;
-    f32 swayTarget;
-    f32 idleSfxTimer;
-    SCGameBitLatchState latch;
-    s16 initCount;
-    u8 pad1E[0x24 - 0x1E];
-    u8 phase;
-    u8 pad25[3];
-} MMSHShrineRuntime;
+#define MMSH_SHRINE_SEQUENCE_ACTIVATE        0
+#define MMSH_SHRINE_SEQUENCE_PLAYER_INACTIVE 1
+#define MMSH_SHRINE_SEQUENCE_READY           2
+#define MMSH_SHRINE_SEQUENCE_SWAY_LIMIT      3
 
-typedef struct MMSHShrinePlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1a - 0x18];
-    s16 initCountParam; /* 0x1a: >>8 seeds runtime initCount */
-} MMSHShrinePlacement;
+#define MMSH_SHRINE_PLAYER_ANIM_STATE_FLAG 4
+#define MMSH_SHRINE_AUDIO_STOP_MASK        3
 
-typedef struct MMSHShrineObject
-{
-    s16 yaw;
-    u8 pad02[0x06 - 0x02];
-    s16 flags06;
-    u8 pad08[0x0C - 0x08];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    f32 prevPosX;
-    f32 prevPosY;
-    f32 prevPosZ;
-    u8 pad24[0xAF - 0x24];
-    u8 objectFlags;
-    u8 padB0[0xB4 - 0xB0];
-    s16 triggerHandle;
-    u8 padB6[0xB8 - 0xB6];
-    MMSHShrineRuntime* runtime;
-    u8 padBC[MMSH_SHRINE_LOAD_TRIGGER_TIMER - 0xBC];
-    s32 loadTriggerTimer;
-} MMSHShrineObject;
+#define MMSH_SHRINE_SEQUENCE_FLAGS -1
+#define MMSH_SHRINE_NO_GAMEBIT     -1
 
-void MMSH_Shrine_free(GameObject* obj);
-void MMSH_Shrine_render(GameObject* obj, u32 a2, u32 a3, u32 a4, u32 a5, char visible);
-void MMSH_Shrine_update(int objArg);
+#define MMSH_SHRINE_SKY_FLAGS            7
+#define MMSH_SHRINE_PARTICLE_TYPE        7
+#define MMSH_SHRINE_LIGHT_DISABLED       0
+#define MMSH_SHRINE_LIGHT_ENABLED        1
+#define MMSH_SHRINE_LIGHT_FADE_DURATION  1.0f
+#define MMSH_SHRINE_RENDER_SCALE         1.0f
+#define MMSH_SHRINE_PARTICLE_SCALE       1.0f
+#define MMSH_SHRINE_PARTICLE_EXTRA_SCALE 1.0f
+#define MMSH_SHRINE_ENVFX_FLAGS          0
+#define MMSH_SHRINE_LOAD_TIMER_START     1
 
-ObjectDescriptor gMMSH_ShrineObjDescriptor = {
+#define MMSH_SHRINE_ORBIT_RATE_A         512.0f
+#define MMSH_SHRINE_ORBIT_RATE_B         128.0f
+#define MMSH_SHRINE_ORBIT_RATE_C         192.0f
+#define MMSH_SHRINE_ORBIT_HEIGHT         20.0f
+#define MMSH_SHRINE_ORBIT_ROTATION_SCALE 600.0f
+#define MMSH_SHRINE_ANIMATION_STEP       0.005f
+#define MMSH_SHRINE_TURN_RATE_DIVISOR    12.0f
+#define MMSH_SHRINE_FADE_DISTANCE        30.0f
+#define MMSH_SHRINE_FULL_ALPHA           255.0f
+#define MMSH_SHRINE_ANGLE_HALF_TURN      0x8000
+#define MMSH_SHRINE_ANGLE_WRAP           0xFFFF
+#define MMSH_SHRINE_ORBIT_PI             3.1415927f
+#define MMSH_SHRINE_ORBIT_ANGLE_SCALE    32768.0f
+
+#define MMSH_SHRINE_FEAR_STICK_RANGE       72.0f
+#define MMSH_SHRINE_FEAR_ACCELERATION_STEP 0.0010416667209938169f
+#define MMSH_SHRINE_FEAR_METER_START       0x60
+#define MMSH_SHRINE_FEAR_METER_END         0x39
+#define MMSH_SHRINE_FEAR_METER_SCALE       96.0f
+
+#define MMSH_SHRINE_SWAY_TARGET_STEP 0.0026041667442768812f
+
+#define MMSH_SHRINE_IDLE_SFX_DELAY_MIN 500
+#define MMSH_SHRINE_IDLE_SFX_DELAY_MAX 1000
+
+#define MMSH_SHRINE_DEFAULT_INITIAL_VALUE 10
+#define MMSH_SHRINE_INITIAL_VALUE_SHIFT   8
+
+#define MMSH_SHRINE_LOAD_TIMER(obj) ((obj)->userData1)
+
+typedef enum MMSHShrinePhase {
+    MMSH_SHRINE_PHASE_IDLE = 0,
+    MMSH_SHRINE_PHASE_WAIT_FOR_SEQUENCE = 1,
+    MMSH_SHRINE_PHASE_WAIT_FOR_PLAYER = 2,
+    MMSH_SHRINE_PHASE_SWAY_LIMIT = 3,
+    MMSH_SHRINE_PHASE_SET_COMPLETE = 4,
+    MMSH_SHRINE_PHASE_RESET = 5
+} MMSHShrinePhase;
+
+typedef enum MMSHShrineAnimCommand {
+    MMSH_SHRINE_ANIM_COMMAND_ENABLE_SWAY = 1,
+    MMSH_SHRINE_ANIM_COMMAND_DISABLE_SWAY = 2,
+    MMSH_SHRINE_ANIM_COMMAND_TARGET_LEFT = 3,
+    MMSH_SHRINE_ANIM_COMMAND_TARGET_RIGHT = 4,
+    MMSH_SHRINE_ANIM_COMMAND_REVERSE_TARGET = 5,
+    MMSH_SHRINE_ANIM_COMMAND_DOUBLE_TARGET = 6,
+    MMSH_SHRINE_ANIM_COMMAND_GRANT_SPIRIT = 7,
+    MMSH_SHRINE_ANIM_COMMAND_HALVE_TARGET = 8,
+    MMSH_SHRINE_ANIM_COMMAND_HIDE_MODEL = 0xE,
+    MMSH_SHRINE_ANIM_COMMAND_SHOW_MODEL = 0xF
+} MMSHShrineAnimCommand;
+
+ObjectDescriptor gMMSHShrineObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)MMSH_Shrine_initialise,
-    (ObjectDescriptorCallback)MMSH_Shrine_release,
+    (ObjectDescriptorCallback)mmshShrine_initialise,
+    (ObjectDescriptorCallback)mmshShrine_release,
     0,
-    (ObjectDescriptorCallback)MMSH_Shrine_init,
-    (ObjectDescriptorCallback)MMSH_Shrine_update,
-    (ObjectDescriptorCallback)MMSH_Shrine_hitDetect,
-    (ObjectDescriptorCallback)MMSH_Shrine_render,
-    (ObjectDescriptorCallback)MMSH_Shrine_free,
-    (ObjectDescriptorCallback)MMSH_Shrine_getObjectTypeId,
-    MMSH_Shrine_getExtraSize,
+    (ObjectDescriptorCallback)mmshShrine_init,
+    (ObjectDescriptorCallback)mmshShrine_update,
+    (ObjectDescriptorCallback)mmshShrine_hitDetect,
+    (ObjectDescriptorCallback)mmshShrine_render,
+    (ObjectDescriptorCallback)mmshShrine_free,
+    (ObjectDescriptorCallback)mmshShrine_getObjectTypeId,
+    mmshShrine_getExtraSize,
 };
 
-#define LASER_BEAM_ORBIT_PI 3.1415927f
-#define LASER_BEAM_ORBIT_ANGLE_SCALE 32768.0f
-
-/*
- * Advances the ambient laser-beam bob, aim, and player proximity alpha.
- */
-void dfshLaserBeam_updateOrbit(void* objArg)
-{
-    DFSHLaserBeamConfig* config;
-    DFSHLaserBeamRuntime* runtime;
-    GameObject* playerObj;
-    DFSHLaserBeamObject* obj;
+void mmshShrine_updateHoverMotion(GameObject* obj) {
+    const MMSHShrinePlacement* placement;
+    MMSHShrineState* state;
+    GameObject* player;
     f32 trigA;
     f32 trigB;
     s32 angleDelta;
     f32 distance;
     ObjAnimEventList animEvents;
 
-    obj = (DFSHLaserBeamObject*)objArg;
-    config = obj->config;
-    runtime = obj->runtime;
-    playerObj = Obj_GetPlayerObject();
+    placement = (const MMSHShrinePlacement*)obj->anim.placementData;
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
 
-    if ((obj->flags06 & OBJANIM_FLAG_HIDDEN) != 0)
-    {
-        obj->yaw = 0;
-        obj->localPosY = config->baseHeight;
+    if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
+        obj->anim.rotX = 0;
+        obj->anim.localPosY = placement->base.posY;
         return;
     }
 
-    DFSH_LASER_ORBIT_A(runtime) = (s16)(DFSH_LASER_ORBIT_A(runtime) + (int)(512.0f * timeDelta));
-    DFSH_LASER_ORBIT_B(runtime) = (s16)(DFSH_LASER_ORBIT_B(runtime) + (int)(128.0f * timeDelta));
-    DFSH_LASER_ORBIT_C(runtime) = (s16)(DFSH_LASER_ORBIT_C(runtime) + (int)(192.0f * timeDelta));
+    state->orbitPhaseA = (s16)(state->orbitPhaseA + (int)(MMSH_SHRINE_ORBIT_RATE_A * timeDelta));
+    state->orbitPhaseB = (s16)(state->orbitPhaseB + (int)(MMSH_SHRINE_ORBIT_RATE_B * timeDelta));
+    state->orbitPhaseC = (s16)(state->orbitPhaseC + (int)(MMSH_SHRINE_ORBIT_RATE_C * timeDelta));
 
-    obj->localPosY =
-        20.0f + (config->baseHeight +
-                        mathSinf((LASER_BEAM_ORBIT_PI * DFSH_LASER_ORBIT_A(runtime)) / LASER_BEAM_ORBIT_ANGLE_SCALE));
+    obj->anim.localPosY =
+        MMSH_SHRINE_ORBIT_HEIGHT +
+        (placement->base.posY + mathSinf((MMSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / MMSH_SHRINE_ORBIT_ANGLE_SCALE));
 
-    trigA = mathSinf((LASER_BEAM_ORBIT_PI * DFSH_LASER_ORBIT_B(runtime)) / LASER_BEAM_ORBIT_ANGLE_SCALE);
-    trigB = mathSinf((LASER_BEAM_ORBIT_PI * DFSH_LASER_ORBIT_A(runtime)) / LASER_BEAM_ORBIT_ANGLE_SCALE);
+    trigA = mathSinf((MMSH_SHRINE_ORBIT_PI * state->orbitPhaseB) / MMSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB = mathSinf((MMSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / MMSH_SHRINE_ORBIT_ANGLE_SCALE);
     trigB = trigB + trigA;
-    obj->roll = (s16)(600.0f * trigB);
+    obj->anim.rotZ = (s16)(MMSH_SHRINE_ORBIT_ROTATION_SCALE * trigB);
 
-    trigA = mathSinf((LASER_BEAM_ORBIT_PI * DFSH_LASER_ORBIT_C(runtime)) / LASER_BEAM_ORBIT_ANGLE_SCALE);
-    trigB = mathSinf((LASER_BEAM_ORBIT_PI * DFSH_LASER_ORBIT_A(runtime)) / LASER_BEAM_ORBIT_ANGLE_SCALE);
+    trigA = mathSinf((MMSH_SHRINE_ORBIT_PI * state->orbitPhaseC) / MMSH_SHRINE_ORBIT_ANGLE_SCALE);
+    trigB = mathSinf((MMSH_SHRINE_ORBIT_PI * state->orbitPhaseA) / MMSH_SHRINE_ORBIT_ANGLE_SCALE);
     trigB = trigB + trigA;
-    obj->pitch = (s16)(600.0f * trigB);
+    obj->anim.rotY = (s16)(MMSH_SHRINE_ORBIT_ROTATION_SCALE * trigB);
 
-    ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, &animEvents);
-    if (playerObj == NULL)
-    {
+    ObjAnim_AdvanceCurrentMove((int)obj, MMSH_SHRINE_ANIMATION_STEP, timeDelta, &animEvents);
+    if (player == NULL) {
         return;
     }
 
     {
-        f32 dx = obj->worldPosX - playerObj->anim.worldPosX;
-        f32 dz = obj->worldPosZ - playerObj->anim.worldPosZ;
-        int ang = (u16)getAngle(dx, dz);
-        angleDelta = ang - (int)(u16)obj->yaw;
-        if (angleDelta > 0x8000)
-        {
-            angleDelta -= 0xFFFF;
+        f32 dx = obj->anim.worldPosX - player->anim.worldPosX;
+        f32 dz = obj->anim.worldPosZ - player->anim.worldPosZ;
+        int targetAngle = (u16)getAngle(dx, dz);
+
+        angleDelta = targetAngle - (int)(u16)obj->anim.rotX;
+        if (angleDelta > MMSH_SHRINE_ANGLE_HALF_TURN) {
+            angleDelta -= MMSH_SHRINE_ANGLE_WRAP;
         }
-        if (angleDelta < -0x8000)
-        {
-            angleDelta += 0xFFFF;
+        if (angleDelta < -MMSH_SHRINE_ANGLE_HALF_TURN) {
+            angleDelta += MMSH_SHRINE_ANGLE_WRAP;
         }
-        obj->yaw = (s16)((int)*(s16*)obj + (int)(((f32)angleDelta * timeDelta) / 12.0f));
+        obj->anim.rotX =
+            (s16)((int)*(s16*)&obj->anim.rotX + (int)(((f32)angleDelta * timeDelta) / MMSH_SHRINE_TURN_RATE_DIVISOR));
     }
-    distance = Vec_xzDistance(&obj->worldPosX, &playerObj->anim.worldPosX);
-    if (distance <= 30.0f)
-    {
-        obj->alpha = (u8)(int)(255.0f * (distance / 30.0f));
-    }
-    else
-    {
-        obj->alpha = 0xFF;
+    distance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+    if (distance <= MMSH_SHRINE_FADE_DISTANCE) {
+        obj->anim.alpha = (u8)(int)(MMSH_SHRINE_FULL_ALPHA * (distance / MMSH_SHRINE_FADE_DISTANCE));
+    } else {
+        obj->anim.alpha = 0xFF;
     }
 }
 
-/*
- * Drives the DragonRock Shrine laser-beam sway controller.
- */
-int dfshLaserBeam_updateFearSway(void* objArg);
-
-int dfshLaserBeam_updateFearSway(void* objArg)
-{
-    DFSHLaserBeamObject* obj;
-    DFSHLaserBeamRuntime* runtime;
+int mmshShrine_updateFearSway(GameObject* obj) {
+    MMSHShrineState* state;
     f32 stickAccel;
     f32 target;
     f32 zero;
     int swayValue;
 
-    obj = (DFSHLaserBeamObject*)objArg;
-    runtime = obj->runtime;
-    if ((DFSH_LASER_FLAGS(runtime) & 0x20) == 0)
-    {
+    state = obj->extra;
+    if ((state->latch.activeMask & MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE) == 0) {
         fearTestMeterSetFadeIn(1);
-        DFSH_LASER_FLAGS(runtime) |= 0x20;
+        state->latch.activeMask |= MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE;
         zero = 0.0f;
-        runtime->swayPhase = zero;
-        runtime->swayVelocity = zero;
-        runtime->swayAccel = zero;
+        state->swayPhase = zero;
+        state->stickVelocity = zero;
+        state->targetVelocity = zero;
     }
 
-    stickAccel = (f32)padGetStickX(0) / 72.0f;
-    stickAccel *= 0.0010416667209938169f;
-    runtime->swayVelocity += stickAccel * timeDelta;
+    stickAccel = (f32)padGetStickX(0) / MMSH_SHRINE_FEAR_STICK_RANGE;
+    stickAccel *= MMSH_SHRINE_FEAR_ACCELERATION_STEP;
+    state->stickVelocity += stickAccel * timeDelta;
 
-    target = runtime->swayTarget;
-    if (target < 0.0f && runtime->swayAccel > target)
-    {
-        runtime->swayAccel -= 0.0010416667209938169f * timeDelta;
-    }
-    else if (target > 0.0f)
-    {
-        if (runtime->swayAccel < target)
-        {
-            runtime->swayAccel += 0.0010416667209938169f * timeDelta;
+    target = state->swayTarget;
+    if (target < 0.0f && state->targetVelocity > target) {
+        state->targetVelocity -= MMSH_SHRINE_FEAR_ACCELERATION_STEP * timeDelta;
+    } else if (target > 0.0f) {
+        if (state->targetVelocity < target) {
+            state->targetVelocity += MMSH_SHRINE_FEAR_ACCELERATION_STEP * timeDelta;
         }
     }
 
-    runtime->swayPhase += timeDelta * (runtime->swayVelocity + runtime->swayAccel);
-    swayValue = (int)(96.0f * runtime->swayPhase);
-    fearTestMeterSetRange(0x60, 0x39, (s16)swayValue);
-    if ((swayValue > 0x39) || (swayValue < -0x39))
-    {
+    state->swayPhase += timeDelta * (state->stickVelocity + state->targetVelocity);
+    swayValue = (int)(MMSH_SHRINE_FEAR_METER_SCALE * state->swayPhase);
+    fearTestMeterSetRange(MMSH_SHRINE_FEAR_METER_START, MMSH_SHRINE_FEAR_METER_END, (s16)swayValue);
+    if ((swayValue > MMSH_SHRINE_FEAR_METER_END) || (swayValue < -MMSH_SHRINE_FEAR_METER_END)) {
         return 1;
     }
     return 0;
 }
 
-int MMSH_Shrine_SeqFn(int objArg, u32 unused, MMSHShrineSequenceState* seq)
-{
-    MMSHShrineRuntime* runtime;
+int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+    MMSHShrineState* state;
     u8 command;
-    GameObject* playerObj;
+    GameObject* player;
     int i;
 
-    runtime = ((MMSHShrineObject*)objArg)->runtime;
-    playerObj = Obj_GetPlayerObject();
-    seq->targetObject = -1;
-    seq->activeCommand = 0;
+    state = obj->extra;
+    player = Obj_GetPlayerObject();
+    animUpdate->savedFlags = -1;
+    animUpdate->sequenceEventActive = 0;
 
-    for (i = 0; i < (int)(u32)seq->commandCount; i++)
-    {
-        command = seq->commands[i];
-        if (command != 0)
-        {
-            switch (command)
-            {
-            case 7:
-                objSetAnimStateFlags(playerObj, 4, 1);
-                mainSetBits(MMSH_SHRINE_SEQ_GB_KRYSTAL, 1);
-                mainSetBits(MMSH_SHRINE_SEQ_GB_UNKNOWN_FF, 1);
-                (*gMapEventInterface)->setMapAct(MMSH_SHRINE_SEQ_MAP_DIR, MMSH_SHRINE_SEQ_MAP_EVENT);
+    for (i = 0; i < (int)(u32)animUpdate->eventCount; i++) {
+        command = animUpdate->eventIds[i];
+        if (command != 0) {
+            switch (command) {
+            case MMSH_SHRINE_ANIM_COMMAND_GRANT_SPIRIT:
+                objSetAnimStateFlags(player, MMSH_SHRINE_PLAYER_ANIM_STATE_FLAG, 1);
+                mainSetBits(MMSH_SHRINE_GAMEBIT_012A, 1);
+                mainSetBits(GAMEBIT_ITEM_SpiritTestFear_Got, 1);
+                (*gMapEventInterface)->setMapAct(MMSH_SHRINE_MAP_ID, MMSH_SHRINE_MAP_ACT);
                 break;
-            case 0xe:
-                ((MMSHShrineObject*)objArg)->flags06 |= MMSH_SHRINE_FLAG_LIT;
-                if (runtime->light != NULL)
-                {
-                    modelLightStruct_setEnabled(runtime->light, 0, 1.0f);
+            case MMSH_SHRINE_ANIM_COMMAND_HIDE_MODEL:
+                obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                if (state->light != NULL) {
+                    modelLightStruct_setEnabled(state->light, MMSH_SHRINE_LIGHT_DISABLED,
+                                                MMSH_SHRINE_LIGHT_FADE_DURATION);
                 }
                 break;
-            case 0xf:
-                ((MMSHShrineObject*)objArg)->flags06 &= ~MMSH_SHRINE_FLAG_LIT;
-                if (runtime->light != NULL)
-                {
-                    modelLightStruct_setEnabled(runtime->light, 0, 1.0f);
+            case MMSH_SHRINE_ANIM_COMMAND_SHOW_MODEL:
+                obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+                if (state->light != NULL) {
+                    modelLightStruct_setEnabled(state->light, MMSH_SHRINE_LIGHT_DISABLED,
+                                                MMSH_SHRINE_LIGHT_FADE_DURATION);
                 }
                 break;
-            case 1:
-                runtime->latch.activeMask |= MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE;
+            case MMSH_SHRINE_ANIM_COMMAND_ENABLE_SWAY:
+                state->latch.activeMask |= MMSH_SHRINE_STATE_FLAG_SWAY_ACTIVE;
                 break;
-            case 2:
-                runtime->latch.activeMask &= ~MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE;
-                if ((runtime->latch.activeMask & MMSH_SHRINE_LATCH_FLAG_SWAY_RESET) != 0)
-                {
+            case MMSH_SHRINE_ANIM_COMMAND_DISABLE_SWAY:
+                state->latch.activeMask &= ~MMSH_SHRINE_STATE_FLAG_SWAY_ACTIVE;
+                if ((state->latch.activeMask & MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE) != 0) {
                     fearTestMeterSetFadeIn(0);
-                    runtime->latch.activeMask &= ~MMSH_SHRINE_LATCH_FLAG_SWAY_RESET;
+                    state->latch.activeMask &= ~MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE;
                 }
                 break;
-            case 3:
-                runtime->swayTarget = -0.0026041667442768812f;
+            case MMSH_SHRINE_ANIM_COMMAND_TARGET_LEFT:
+                state->swayTarget = -MMSH_SHRINE_SWAY_TARGET_STEP;
                 break;
-            case 4:
-                runtime->swayTarget = 0.0026041667442768812f;
+            case MMSH_SHRINE_ANIM_COMMAND_TARGET_RIGHT:
+                state->swayTarget = MMSH_SHRINE_SWAY_TARGET_STEP;
                 break;
-            case 5:
-                runtime->swayTarget = -runtime->swayTarget;
-                runtime->swayVelocity = -runtime->swayTarget;
+            case MMSH_SHRINE_ANIM_COMMAND_REVERSE_TARGET:
+                state->swayTarget = -state->swayTarget;
+                state->targetVelocity = -state->swayTarget;
                 break;
-            case 6:
-                runtime->swayTarget *= 2.0f;
+            case MMSH_SHRINE_ANIM_COMMAND_DOUBLE_TARGET:
+                state->swayTarget *= 2.0f;
                 break;
-            case 8:
-                runtime->swayTarget *= 0.5f;
+            case MMSH_SHRINE_ANIM_COMMAND_HALVE_TARGET:
+                state->swayTarget *= 0.5f;
                 break;
             }
         }
-        seq->commands[i] = 0;
+        animUpdate->eventIds[i] = 0;
     }
 
-    if (((runtime->latch.activeMask & MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE) != 0) && ((u8)dfshLaserBeam_updateFearSway((void*)objArg) != 0))
-    {
+    if (((state->latch.activeMask & MMSH_SHRINE_STATE_FLAG_SWAY_ACTIVE) != 0) &&
+        ((u8)mmshShrine_updateFearSway(obj) != 0)) {
         fearTestMeterSetFadeIn(0);
-        runtime->latch.activeMask &= ~(MMSH_SHRINE_LATCH_FLAG_SWAY_ACTIVE | MMSH_SHRINE_LATCH_FLAG_SWAY_RESET);
-        runtime->phase = MMSH_SHRINE_PHASE_RESULT;
-        mainSetBits(MMSH_SHRINE_SEQ_GB_RESET0, 0);
-        mainSetBits(MMSH_SHRINE_SEQ_GB_RESET1, 0);
-        mainSetBits(MMSH_SHRINE_SEQ_GB_RESET2, 0);
-        mainSetBits(MMSH_SHRINE_SEQ_GB_RESET3, 0);
-        return MMSH_SHRINE_SEQ_RESULT_COMPLETE;
+        state->latch.activeMask &= ~(MMSH_SHRINE_STATE_FLAG_SWAY_ACTIVE | MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE);
+        state->phase = MMSH_SHRINE_PHASE_SWAY_LIMIT;
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0E82, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0E83, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0E84, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0E85, 0);
+        return MMSH_SHRINE_ANIM_RESULT_COMPLETE;
     }
-    runtime->latch.activeMask |= MMSH_SHRINE_LATCH_FLAG_OPEN_READY;
+    state->latch.activeMask |= MMSH_SHRINE_STATE_FLAG_SEQUENCE_READY;
     return 0;
 }
 
-int MMSH_Shrine_getExtraSize(void)
-{
-    return 0x28;
+int mmshShrine_getExtraSize(void) {
+    return sizeof(MMSHShrineState);
 }
 
-int MMSH_Shrine_getObjectTypeId(void)
-{
+int mmshShrine_getObjectTypeId(void) {
     return 0;
 }
 
-void MMSH_Shrine_free(GameObject* obj)
-{
-    int state = *(int*)&obj->extra;
-    if ((((MMSHShrineRuntime*)state)->latch.activeMask & MMSH_SHRINE_LATCH_FLAG_SWAY_RESET) != 0)
-    {
+void mmshShrine_free(GameObject* obj) {
+    MMSHShrineState* state = obj->extra;
+
+    if ((state->latch.activeMask & MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE) != 0) {
         fearTestMeterSetFadeIn(0);
-        ((MMSHShrineRuntime*)state)->latch.activeMask =
-            ((MMSHShrineRuntime*)state)->latch.activeMask & ~MMSH_SHRINE_LATCH_FLAG_SWAY_RESET;
+        state->latch.activeMask &= ~MMSH_SHRINE_STATE_FLAG_FEAR_METER_ACTIVE;
     }
-    if (*(void**)state != NULL)
-    {
-        ModelLightStruct_free(*(void**)state);
-        *(int*)state = 0;
+    if (state->light != NULL) {
+        ModelLightStruct_free(state->light);
+        state->light = NULL;
     }
-    Music_Trigger(MMSH_SHRINE_MUSIC_RUMBLE, 0);
-    Music_Trigger(MMSH_SHRINE_MUSIC_RUMBLE_STOP, 0);
-    Music_Trigger(MMSH_SHRINE_MUSIC_STOP_8, 0);
-    Music_Trigger(MMSH_SHRINE_MUSIC_STOP_A, 0);
-    mainSetBits(MMSH_SHRINE_GB_EFA, 0);
-    mainSetBits(MMSH_SHRINE_GB_MUSIC_LOCK, 1);
-    mainSetBits(MMSH_SHRINE_SEQ_GB_RESET0, 0);
-    mainSetBits(MMSH_SHRINE_SEQ_GB_RESET1, 0);
-    mainSetBits(MMSH_SHRINE_SEQ_GB_RESET2, 0);
-    mainSetBits(MMSH_SHRINE_SEQ_GB_RESET3, 0);
+    Music_Trigger(MUSICTRIG_DIM_Snow, 0);
+    Music_Trigger(MUSICTRIG_CC_Visit1, 0);
+    Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
+    Music_Trigger(MMSH_SHRINE_MUSIC_TRIGGER_0A, 0);
+    mainSetBits(GAMEBIT_ECSH_InShrine, 0);
+    mainSetBits(GAMEBIT_SHRINE_MUSIC_LOCK, 1);
+    mainSetBits(MMSH_SHRINE_GAMEBIT_0E82, 0);
+    mainSetBits(MMSH_SHRINE_GAMEBIT_0E83, 0);
+    mainSetBits(MMSH_SHRINE_GAMEBIT_0E84, 0);
+    mainSetBits(MMSH_SHRINE_GAMEBIT_0E85, 0);
 }
 
-void MMSH_Shrine_render(GameObject* obj, u32 a2, u32 a3, u32 a4, u32 a5, char visible)
-{
-    MMSHShrineObject* shrine = (MMSHShrineObject*)obj;
-    MMSHShrineRuntime* runtime = shrine->runtime;
+void mmshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    MMSHShrineState* state = obj->extra;
 
-    if (visible == 0)
-    {
-        if (runtime->light != NULL)
-        {
-            modelLightStruct_setEnabled(runtime->light, 0, 1.0f);
+    if (visible == 0) {
+        if (state->light != NULL) {
+            modelLightStruct_setEnabled(state->light, MMSH_SHRINE_LIGHT_DISABLED, MMSH_SHRINE_LIGHT_FADE_DURATION);
         }
-    }
-    else
-    {
-        if (runtime->light != NULL)
-        {
-            modelLightStruct_setEnabled(runtime->light, 1, 1.0f);
+    } else {
+        if (state->light != NULL) {
+            modelLightStruct_setEnabled(state->light, MMSH_SHRINE_LIGHT_ENABLED, MMSH_SHRINE_LIGHT_FADE_DURATION);
         }
-        objRenderModelAndHitVolumes(obj, a2, a3, a4, a5, 1.0f);
-        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, runtime->light);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, MMSH_SHRINE_RENDER_SCALE);
+        objParticleFn_80099d84(obj, MMSH_SHRINE_PARTICLE_SCALE, MMSH_SHRINE_PARTICLE_TYPE,
+                               MMSH_SHRINE_PARTICLE_EXTRA_SCALE, state->light);
     }
 }
 
-void MMSH_Shrine_hitDetect(void)
-{
+void mmshShrine_hitDetect(void) {
 }
 
-void MMSH_Shrine_update(int objArg)
-{
-    MMSHShrineRuntime* runtime;
-    MMSHShrineObject* obj;
-    GameObject* playerObj;
-
-    obj = (MMSHShrineObject*)objArg;
-    runtime = obj->runtime;
-    playerObj = Obj_GetPlayerObject();
-
-    if (obj->loadTriggerTimer != 0)
-    {
-        obj->loadTriggerTimer--;
-        if (obj->loadTriggerTimer == 0)
-        {
-            skyFn_80088c94(7, 1);
-            getEnvfxAct(obj, playerObj, MMSH_SHRINE_ENVFX_A, 0);
-            getEnvfxAct(obj, playerObj, MMSH_SHRINE_ENVFX_B, 0);
-            getEnvfxAct(obj, playerObj, MMSH_SHRINE_ENVFX_C, 0);
-            obj->prevPosX = obj->posX;
-            obj->prevPosY = obj->posY;
-            obj->prevPosZ = obj->posZ;
-        }
-    }
-    unlockLevel(mapGetDirIdx(MMSH_SHRINE_LOAD_MAP_DIR), 1, 0);
-    dfshLaserBeam_updateOrbit((void*)obj);
-    SCGameBitLatch_Update(&runtime->latch, MMSH_SHRINE_LATCH_FLAG_AMBIENT_LOCK, -1, -1, MMSH_SHRINE_GB_OPEN, 0xa);
-    SCGameBitLatch_UpdateInverted(&runtime->latch, MMSH_SHRINE_LATCH_FLAG_CHECK_COMPLETE, -1, -1,
-                                  MMSH_SHRINE_GB_MUSIC_LOCK, 8);
-    SCGameBitLatch_Update(&runtime->latch, MMSH_SHRINE_LATCH_FLAG_MUSIC_LOCK, -1, -1, MMSH_SHRINE_GB_MUSIC_LOCK, 0xc4);
-
-    switch (runtime->phase)
-    {
-    case MMSH_SHRINE_PHASE_IDLE:
-    {
-        f32 idleSfxTimer = runtime->idleSfxTimer - timeDelta;
-        runtime->idleSfxTimer = idleSfxTimer;
-        if (idleSfxTimer <= 0.0f)
-        {
-            Sfx_PlayFromObject((int)obj, MMSH_SHRINE_SFX_IDLE);
-            runtime->idleSfxTimer = (f32)(s32)randomGetRange(500, 1000);
-        }
-    }
-        if ((obj->objectFlags & 1) == 0)
-        {
-            break;
-        }
-        runtime->phase = MMSH_SHRINE_PHASE_ACTIVATING;
-        (*gObjectTriggerInterface)->setCamVars(MMSH_SHRINE_CAMMODE_CAMDEBUG, 0, 0, 0);
-        (*gObjectTriggerInterface)->runSequence(0, obj, -1);
-        Music_Trigger(MMSH_SHRINE_MUSIC_RUMBLE, 1);
-        break;
-    case MMSH_SHRINE_PHASE_ACTIVATING:
-        if ((runtime->latch.activeMask & MMSH_SHRINE_LATCH_FLAG_OPEN_READY) == 0)
-        {
-            break;
-        }
-        obj->flags06 |= MMSH_SHRINE_FLAG_LIT;
-        obj->yaw = 0;
-        runtime->phase = MMSH_SHRINE_PHASE_LIT;
-        runtime->latch.activeMask &= ~MMSH_SHRINE_LATCH_FLAG_OPEN_READY;
-        mainSetBits(MMSH_SHRINE_GB_OPEN, 1);
-        (*gObjectTriggerInterface)->runSequence(2, obj, -1);
-        break;
-    case MMSH_SHRINE_PHASE_RESULT:
-        (*gObjectTriggerInterface)->endSequence(obj->triggerHandle);
-        (*gObjectTriggerInterface)->runSequence(3, obj, -1);
-        runtime->phase = MMSH_SHRINE_PHASE_COMPLETE;
-        mainSetBits(MMSH_SHRINE_GB_OPEN, 0);
-        break;
-    case MMSH_SHRINE_PHASE_COMPLETE:
-        runtime->phase = MMSH_SHRINE_PHASE_RESET;
-        mainSetBits(MMSH_SHRINE_GB_OPEN, 0);
-        mainSetBits(MMSH_SHRINE_GB_COMPLETE, 1);
-        break;
-    case MMSH_SHRINE_PHASE_LIT:
-        if (objGetAnimStateFlags(playerObj, 4) == 0)
-        {
-            audioStopByMask(3);
-            (*gObjectTriggerInterface)->runSequence(1, obj, -1);
-        }
-        runtime->phase = MMSH_SHRINE_PHASE_RESET;
-        mainSetBits(MMSH_SHRINE_GB_OPEN, 0);
-        break;
-    case MMSH_SHRINE_PHASE_RESET:
-        runtime->phase = MMSH_SHRINE_PHASE_IDLE;
-        runtime->latch.activeMask &= ~MMSH_SHRINE_LATCH_FLAG_OPEN_READY;
-        obj->flags06 &= ~MMSH_SHRINE_FLAG_LIT;
-        mainSetBits(MMSH_SHRINE_GB_RESET_A, 0);
-        mainSetBits(MMSH_SHRINE_GB_COMPLETE, 0);
-        mainSetBits(MMSH_SHRINE_GB_RESET_B, 0);
-        mainSetBits(MMSH_SHRINE_GB_OPEN, 0);
-        break;
-    }
-}
-
-void MMSH_Shrine_init(GameObject* obj, int def)
-{
-    ModelLightStruct* light;
-    MMSHShrineRuntime* state;
-    MMSHShrinePlacement* p = (MMSHShrinePlacement*)def;
+void mmshShrine_update(GameObject* obj) {
+    MMSHShrineState* state;
+    GameObject* player;
 
     state = obj->extra;
-    ((MMSHShrineObject*)obj)->yaw = 0;
-    obj->animEventCallback = MMSH_Shrine_SeqFn;
-    state->initCount = 10;
-    state->phase = MMSH_SHRINE_PHASE_IDLE;
-    if (0 < p->initCountParam)
-    {
-        state->initCount = p->initCountParam >> 8;
+    player = Obj_GetPlayerObject();
+
+    if (MMSH_SHRINE_LOAD_TIMER(obj) != 0) {
+        MMSH_SHRINE_LOAD_TIMER(obj)--;
+        if (MMSH_SHRINE_LOAD_TIMER(obj) == 0) {
+            skyFn_80088c94(MMSH_SHRINE_SKY_FLAGS, 1);
+            getEnvfxAct(obj, player, MMSH_SHRINE_ENVFX_A, MMSH_SHRINE_ENVFX_FLAGS);
+            getEnvfxAct(obj, player, MMSH_SHRINE_ENVFX_B, MMSH_SHRINE_ENVFX_FLAGS);
+            getEnvfxAct(obj, player, MMSH_SHRINE_ENVFX_C, MMSH_SHRINE_ENVFX_FLAGS);
+            obj->anim.worldPosX = obj->anim.localPosX;
+            obj->anim.worldPosY = obj->anim.localPosY;
+            obj->anim.worldPosZ = obj->anim.localPosZ;
+        }
     }
-    mainSetBits(MMSH_SHRINE_GB_RESET_A, 0);
-    mainSetBits(MMSH_SHRINE_GB_12D, 0);
-    ((MMSHShrineObject*)obj)->loadTriggerTimer = 1;
-    if (state->light == NULL)
-    {
-        light = objCreateLight(0, 1);
+    unlockLevel(mapGetDirIdx(MMSH_SHRINE_MAP_DIRECTORY), 1, 0);
+    mmshShrine_updateHoverMotion(obj);
+    SCGameBitLatch_Update(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_08, MMSH_SHRINE_NO_GAMEBIT,
+                          MMSH_SHRINE_NO_GAMEBIT, MMSH_SHRINE_GAMEBIT_0AE6, MMSH_SHRINE_MUSIC_TRIGGER_0A);
+    SCGameBitLatch_UpdateInverted(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_04, MMSH_SHRINE_NO_GAMEBIT,
+                                  MMSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_vfp_walkabout);
+    SCGameBitLatch_Update(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10, MMSH_SHRINE_NO_GAMEBIT,
+                          MMSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
+
+    switch (state->phase) {
+    case MMSH_SHRINE_PHASE_IDLE: {
+        f32 idleSfxTimer = state->idleSfxTimer - timeDelta;
+
+        state->idleSfxTimer = idleSfxTimer;
+        if (idleSfxTimer <= 0.0f) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
+            state->idleSfxTimer =
+                (f32)(s32)randomGetRange(MMSH_SHRINE_IDLE_SFX_DELAY_MIN, MMSH_SHRINE_IDLE_SFX_DELAY_MAX);
+        }
+    }
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) == 0) {
+            break;
+        }
+        state->phase = MMSH_SHRINE_PHASE_WAIT_FOR_SEQUENCE;
+        (*gObjectTriggerInterface)->setCamVars(MMSH_SHRINE_CAMERA_MODE_ID, 0, 0, 0);
+        (*gObjectTriggerInterface)->runSequence(MMSH_SHRINE_SEQUENCE_ACTIVATE, obj, MMSH_SHRINE_SEQUENCE_FLAGS);
+        Music_Trigger(MUSICTRIG_DIM_Snow, 1);
+        break;
+    case MMSH_SHRINE_PHASE_WAIT_FOR_SEQUENCE:
+        if ((state->latch.activeMask & MMSH_SHRINE_STATE_FLAG_SEQUENCE_READY) == 0) {
+            break;
+        }
+        obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
+        obj->anim.rotX = 0;
+        state->phase = MMSH_SHRINE_PHASE_WAIT_FOR_PLAYER;
+        state->latch.activeMask &= ~MMSH_SHRINE_STATE_FLAG_SEQUENCE_READY;
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE6, 1);
+        (*gObjectTriggerInterface)->runSequence(MMSH_SHRINE_SEQUENCE_READY, obj, MMSH_SHRINE_SEQUENCE_FLAGS);
+        break;
+    case MMSH_SHRINE_PHASE_SWAY_LIMIT:
+        (*gObjectTriggerInterface)->endSequence(obj->seqIndex);
+        (*gObjectTriggerInterface)->runSequence(MMSH_SHRINE_SEQUENCE_SWAY_LIMIT, obj, MMSH_SHRINE_SEQUENCE_FLAGS);
+        state->phase = MMSH_SHRINE_PHASE_SET_COMPLETE;
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE6, 0);
+        break;
+    case MMSH_SHRINE_PHASE_SET_COMPLETE:
+        state->phase = MMSH_SHRINE_PHASE_RESET;
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE6, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE4, 1);
+        break;
+    case MMSH_SHRINE_PHASE_WAIT_FOR_PLAYER:
+        if (objGetAnimStateFlags(player, MMSH_SHRINE_PLAYER_ANIM_STATE_FLAG) == 0) {
+            audioStopByMask(MMSH_SHRINE_AUDIO_STOP_MASK);
+            (*gObjectTriggerInterface)
+                ->runSequence(MMSH_SHRINE_SEQUENCE_PLAYER_INACTIVE, obj, MMSH_SHRINE_SEQUENCE_FLAGS);
+        }
+        state->phase = MMSH_SHRINE_PHASE_RESET;
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE6, 0);
+        break;
+    case MMSH_SHRINE_PHASE_RESET:
+        state->phase = MMSH_SHRINE_PHASE_IDLE;
+        state->latch.activeMask &= ~MMSH_SHRINE_STATE_FLAG_SEQUENCE_READY;
+        obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+        mainSetBits(MMSH_SHRINE_GAMEBIT_012B, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE4, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE5, 0);
+        mainSetBits(MMSH_SHRINE_GAMEBIT_0AE6, 0);
+        break;
+    }
+}
+
+void mmshShrine_init(GameObject* obj, const MMSHShrinePlacement* placement) {
+    ModelLightStruct* light;
+    MMSHShrineState* state;
+
+    state = obj->extra;
+    obj->anim.rotX = 0;
+    obj->animEventCallback = mmshShrine_processAnimEvents;
+    state->unknown1C = MMSH_SHRINE_DEFAULT_INITIAL_VALUE;
+    state->phase = MMSH_SHRINE_PHASE_IDLE;
+    if (0 < placement->initialValue) {
+        state->unknown1C = placement->initialValue >> MMSH_SHRINE_INITIAL_VALUE_SHIFT;
+    }
+    mainSetBits(MMSH_SHRINE_GAMEBIT_012B, 0);
+    mainSetBits(MMSH_SHRINE_GAMEBIT_012D, 0);
+    MMSH_SHRINE_LOAD_TIMER(obj) = MMSH_SHRINE_LOAD_TIMER_START;
+    if (state->light == NULL) {
+        light = objCreateLight(NULL, 1);
         state->light = light;
     }
-    mainSetBits(MMSH_SHRINE_GB_F07, 1);
-    mainSetBits(MMSH_SHRINE_GB_EFA, 1);
+    mainSetBits(GAMEBIT_LV_LocatedKrazoaShrine, 1);
+    mainSetBits(GAMEBIT_ECSH_InShrine, 1);
 }
 
-void MMSH_Shrine_release(void)
-{
+void mmshShrine_release(void) {
 }
 
-void MMSH_Shrine_initialise(void)
-{
+void mmshShrine_initialise(void) {
 }

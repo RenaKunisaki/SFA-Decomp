@@ -190,6 +190,7 @@
 #include "dlls/objects/393_CCSharpclaw.h"
 #include "dlls/objects/394_CCpedstal.h"
 #include "dlls/objects/395_CClevcontro.h"
+#include "dlls/objects/396_MMSH_Shrine.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -322,7 +323,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
     gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor, gMMSH_WaterSpikeObjDescriptor;
+extern ResourceDescriptor gMMSH_ScalesObjDescriptor, gMMSH_WaterSpikeObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor,
     gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
@@ -1430,7 +1431,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCCSharpClawPadObjDescriptor,
     (ResourceDescriptor*)&gCCPedestalObjDescriptor,
     (ResourceDescriptor*)&gCCLevelControlObjDescriptor,
-    &gMMSH_ShrineObjDescriptor,
+    (ResourceDescriptor*)&gMMSHShrineObjDescriptor,
     &gMMSH_ScalesObjDescriptor,
     &gMMSH_WaterSpikeObjDescriptor,
     &gECSH_ShrineObjDescriptor,
