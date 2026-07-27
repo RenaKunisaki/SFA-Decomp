@@ -109,6 +109,7 @@
 #include "dlls/objects/311_AlphaAnimat.h"
 #include "dlls/objects/312_GroundAnima.h"
 #include "dlls/objects/313_HitAnimator.h"
+#include "dlls/objects/314_VisAnimator.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -290,8 +291,7 @@ extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescripto
     gVFP_MiniFireObjDescriptor, gVFP_ObjCreatorObjDescriptor, gVFP_PlatformObjDescriptor,
     gVFP_SpellPlaceObjDescriptor, gVFP_coreplatObjDescriptor, gVFP_flamepointObjDescriptor;
 extern ResourceDescriptor gVFP_lavapoolObjDescriptor, gVFP_lavastarObjDescriptor, gVFP_statueballObjDescriptor,
-    gVisAnimatorObjDescriptor, gVortexObjDescriptor,
-    gWCBouncyCraObjDescriptor;
+    gVortexObjDescriptor, gWCBouncyCraObjDescriptor;
 extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
@@ -1289,7 +1289,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gAlphaAnimatorObjDescriptor,
     (ResourceDescriptor*)&gGroundAnimatorObjDescriptor,
     (ResourceDescriptor*)&gHitAnimatorObjDescriptor,
-    &gVisAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gVisAnimatorObjDescriptor,
     &gWallAnimatorObjDescriptor,
     &gXYZAnimatorObjDescriptor,
     &gExplodeAnimatorObjDescriptor,

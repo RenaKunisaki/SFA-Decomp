@@ -9,17 +9,12 @@
  * distance to a target object.
  *
  * The object joins ObjGroup WALLANIMATOR_GROUP_PRIMARY/SECONDARY at init
- * and leaves them at free. The shared animator headers account for the
- * related wave/alpha/ground/vis state layout checks below.
+ * and leaves them at free.
  */
 #include "main/dll/partfx_interface.h"
-#include "dlls/objects/312_GroundAnima.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
-#include "dlls/objects/310_WaveAnimato.h"
-#include "dlls/objects/311_AlphaAnimat.h"
-#include "main/dll/visanimatorstate_struct.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/MMP/dll_013B_wallanimator.h"
@@ -50,10 +45,6 @@ typedef struct WallanimatorState
     u8 pad5[0x8 - 0x5];
 } WallanimatorState;
 
-STATIC_ASSERT(sizeof(WaveAnimatorState) == 0x3C);
-STATIC_ASSERT(sizeof(AlphaAnimatorState) == 0x1C);
-STATIC_ASSERT(sizeof(GroundAnimatorState) == 0x30);
-STATIC_ASSERT(sizeof(VisAnimatorState) == 0x5);
 STATIC_ASSERT(sizeof(WallanimatorState) == 8);
 
 #define TRICKY_IFACE_OFFSET      0x68 /* tricky object -> interface vtable pointer */
