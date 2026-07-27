@@ -2047,10 +2047,11 @@ void allocLotsOfTextures(void)
     gNewShadowReflectionGradientTexture = (int)textureAlloc(4, 4, 3, 0, 0, 0, 0, 1, 1);
     for (i = 0; i < 4; i++)
     {
-        f32 x = i / lbl_803DEE10 - lbl_803DED38;
+        f32 x = i / lbl_803DEE10;
         int hi;
         int t;
         u16 v;
+        x -= lbl_803DED38;
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
         hi = ((int)(lbl_803DED08 * x + lbl_803DEDBC) & 0xff) << 8;
