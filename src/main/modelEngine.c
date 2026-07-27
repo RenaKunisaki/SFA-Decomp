@@ -134,6 +134,7 @@
 #include "dlls/objects/336_GCRobotLigh.h"
 #include "dlls/objects/337_CFScalesGal.h"
 #include "dlls/objects/338_CF_ObjCreat.h"
+#include "dlls/objects/339_CFPerch.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -230,7 +231,7 @@ extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor,
     gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
 extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
     gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor;
-extern ResourceDescriptor gCFPerchObjDescriptor, gCFPrisonCageObjDescriptor;
+extern ResourceDescriptor gCFPrisonCageObjDescriptor;
 extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1332,7 +1333,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gGCRobotLightBeamObjDescriptor,
     (ResourceDescriptor*)&gCFScalesGalNullResourceDescriptor,
     (ResourceDescriptor*)&gCFObjCreatNullResourceDescriptor,
-    &gCFPerchObjDescriptor,
+    (ResourceDescriptor*)&gCFPerchObjDescriptor,
     &gCFPrisonCageObjDescriptor,
     &lbl_803DBE00,
     &lbl_803DBE70,
