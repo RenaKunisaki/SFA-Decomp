@@ -76,7 +76,7 @@
 #include "dolphin/gx/GXFrameBuffer.h"
 extern Texture* gNewShadowHeavyFogTexture;
 extern u8 lbl_803DCF80;
-extern f32 lbl_803DED08;
+extern const f32 lbl_803DED08;
 
 #define READ_TEXTURE_U16(address) (*(u16*)(address))
 #define WRITE_TEXTURE_U16(address, value) (*(u16*)(address) = (value))
