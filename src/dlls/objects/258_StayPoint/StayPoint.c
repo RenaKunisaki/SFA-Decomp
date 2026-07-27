@@ -24,7 +24,7 @@ typedef struct StayPointTrickyVTable {
 STATIC_ASSERT(offsetof(StayPointTrickyVTable, pad00) == 0x0);
 STATIC_ASSERT(offsetof(StayPointTrickyVTable, sideCommandEnable) == 0x28);
 
-#define STAYPOINT_ENGAGE_RADIUS_SQ lbl_803E38A8
+#define STAYPOINT_ENGAGE_RADIUS_SQ 1e+02f
 
 #define STAYPOINT_GAMEBIT_NONE   -1
 #define STAYPOINT_MENU_ITEM_NONE -1
@@ -36,8 +36,6 @@ STATIC_ASSERT(offsetof(StayPointTrickyVTable, sideCommandEnable) == 0x28);
 
 #define STAYPOINT_COMMAND_KIND 1
 #define STAYPOINT_COMMAND_TYPE 3
-
-extern f32 lbl_803E38A8;
 
 void StayPoint_update(GameObject* obj) {
     StayPointPlacement* placement;

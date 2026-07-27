@@ -53,7 +53,6 @@ void blasted_release(void);
 void blasted_initialise(void);
 
 extern int gBlastedDamageTimer;
-extern const f32 gBlastedRenderScale;
 extern ObjectDescriptor gBlastedObjDescriptor;
 
 #endif /* DLLS_OBJECTS_345_H_ */

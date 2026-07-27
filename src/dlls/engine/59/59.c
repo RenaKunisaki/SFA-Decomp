@@ -18,8 +18,6 @@ s16 gMenuTotalWidth;
 s8 gMenuItemCount;
 f32 gMenuScrollTimer;
 s8 gMenuArmed;
-extern f32 lbl_803E21D8;
-
 s32 Menu_getItemCount(void)
 {
     return gMenuItemCount;
@@ -44,9 +42,9 @@ int Menu_poll(int* sel)
     }
     timer = gMenuScrollTimer + timeDelta;
     gMenuScrollTimer = timer;
-    if (timer > lbl_803E21D8)
+    if (timer > 2e+02f)
     {
-        gMenuScrollTimer = timer - lbl_803E21D8;
+        gMenuScrollTimer = timer - 2e+02f;
     }
     padGetAnalogInput(0, &yInput, &xInput);
     if (xInput < 0)

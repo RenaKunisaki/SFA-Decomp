@@ -76,7 +76,7 @@ void blasted_free(void) {
 void blasted_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     BlastedTargetState* state = obj->extra;
     if (visible != 0 && state->mapLayerActivated == 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gBlastedRenderScale);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

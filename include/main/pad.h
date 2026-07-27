@@ -5,7 +5,6 @@
 #include "main/pad_api.h"
 
 extern f32 gRumbleTimer;
-extern f32 gRumbleTimerZero;
 extern u8 joypadDisabled;
 extern u8 rumbleEnabled;
 extern u32 gPadResetMask;

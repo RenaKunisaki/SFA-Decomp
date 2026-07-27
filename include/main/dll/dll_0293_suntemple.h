@@ -42,8 +42,6 @@ STATIC_ASSERT(sizeof(SunTempleState) == 2);
 
 extern ObjectDescriptor gSunTempleObjDescriptor;
 extern const Vec3f lbl_802C25D8;
-extern f32 lbl_803E6E18;
-
 int suntemple_getExtraSize(void);
 int suntemple_getObjectTypeId(void);
 void suntemple_free(void);

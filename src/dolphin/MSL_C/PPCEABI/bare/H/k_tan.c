@@ -3,38 +3,34 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
-extern float lbl_803E7C70;
-extern float lbl_803E7C74;
-extern float lbl_803E7C78;
-
 float sqrtf_8029312c(float value) {
     float reciprocalSqrt;
     float halfValue;
 
-    if (lbl_803E7C70 != value) {
+    if (0.0f != value) {
         reciprocalSqrt = (float)__frsqrte(value);
-        halfValue = lbl_803E7C74 * value;
-        reciprocalSqrt = reciprocalSqrt * (lbl_803E7C78 - reciprocalSqrt * (halfValue * reciprocalSqrt));
-        reciprocalSqrt = reciprocalSqrt * (lbl_803E7C78 - reciprocalSqrt * (halfValue * reciprocalSqrt));
-        reciprocalSqrt = reciprocalSqrt * (lbl_803E7C78 - reciprocalSqrt * (halfValue * reciprocalSqrt));
+        halfValue = 0.5f * value;
+        reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));
+        reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));
+        reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));
         return reciprocalSqrt * value;
     }
 
-    return lbl_803E7C70;
+    return 0.0f;
 }
 
 float sqrtf(float value) {
     float reciprocalSqrt;
     float halfValue;
 
-    if (lbl_803E7C70 != value) {
+    if (0.0f != value) {
         reciprocalSqrt = (float)__frsqrte(value);
-        halfValue = lbl_803E7C74 * value;
-        reciprocalSqrt = reciprocalSqrt * (lbl_803E7C78 - reciprocalSqrt * (halfValue * reciprocalSqrt));
+        halfValue = 0.5f * value;
+        reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));
         return reciprocalSqrt * value;
     }
 
-    return lbl_803E7C70;
+    return 0.0f;
 }
 
 float invSqrt(float value) {
@@ -42,7 +38,7 @@ float invSqrt(float value) {
     float halfValue;
 
     reciprocalSqrt = (float)__frsqrte(value);
-    halfValue = lbl_803E7C74 * value;
-    reciprocalSqrt = reciprocalSqrt * (lbl_803E7C78 - reciprocalSqrt * (halfValue * reciprocalSqrt));
+    halfValue = 0.5f * value;
+    reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));
     return reciprocalSqrt;
 }

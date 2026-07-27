@@ -21,9 +21,6 @@ STATIC_ASSERT(offsetof(GCRobotBlastState, mode) == 0x0);
 STATIC_ASSERT(offsetof(GCRobotBlastState, flags04) == 0x4);
 STATIC_ASSERT(offsetof(GCRobotBlastPlacement, mode) == 0x19);
 
-extern f32 lbl_803E6270;
-extern f32 lbl_803E6274;
-
 int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     GCRobotBlastState* state = obj->extra;
@@ -39,8 +36,8 @@ int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
         {
         case 0:
         case 1:
-            objfx_spawnDirectionalBurst(obj, 7, lbl_803E6270, 5, 6, 0x64, lbl_803E6274, NULL, 0x200000);
-            objfx_spawnDirectionalBurst(obj, 6, lbl_803E6270, 1, 6, 0x64, lbl_803E6274, NULL, 0x200000);
+            objfx_spawnDirectionalBurst(obj, 7, 1.0f, 5, 6, 0x64, 8.0f, NULL, 0x200000);
+            objfx_spawnDirectionalBurst(obj, 6, 1.0f, 1, 6, 0x64, 8.0f, NULL, 0x200000);
             break;
         }
     }

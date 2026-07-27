@@ -12,13 +12,6 @@ typedef struct ObjHitReactMoveEntry ObjHitReactMoveEntry;
 typedef struct ProjectedShadowTexture ProjectedShadowTexture;
 typedef struct Texture Texture;
 
-extern const f32 gObjAnimProgressOne;
-extern const f32 gObjAnimProgressZero;
-extern const f32 gObjAnimEventStepScale;
-extern const f32 gObjAnimEventFrameScale;
-extern const f32 gObjAnimSetMoveProgressMax;
-extern const f32 gObjAnimMoveStepScaleMin;
-
 typedef struct ObjAnimHitReactRow {
   u8 pad00[0x16];
   s8 entryIndex;

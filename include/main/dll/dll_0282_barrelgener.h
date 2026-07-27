@@ -18,13 +18,6 @@ extern f32 lbl_803DC3A0;
 extern f32 lbl_803DC3A4;
 extern f32 lbl_803DC3A8;
 extern u16 lbl_803DC3AC;
-extern f32 lbl_803E6C20;
-extern f32 lbl_803E6C24;
-extern f32 lbl_803E6C28;
-extern f32 lbl_803E6C2C;
-extern f32 lbl_803E6C30;
-extern f32 lbl_803E6C34;
-
 int barrelgener_getLinkId(GameObject* obj);
 void barrelgener_queueObjectRelease(GameObject* obj, GameObject* queuedObj, int releaseFrame);
 int barrelgener_getExtraSize(void);

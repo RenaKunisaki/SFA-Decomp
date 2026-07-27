@@ -34,11 +34,6 @@ STATIC_ASSERT(offsetof(WCTileSetup, base.posY) == 0xc);
 STATIC_ASSERT(offsetof(WCTileSetup, modelIndex) == 0x19);
 STATIC_ASSERT(offsetof(WCTileSetup, initialTile) == 0x1a);
 
-extern f32 lbl_803E6DF0;
-extern f32 lbl_803E6DF4;
-extern f32 lbl_803E6DF8;
-extern f32 lbl_803E6DFC;
-
 int wctile_getExtraSize(void);
 int wctile_getObjectTypeId(GameObject* obj);
 void wctile_free(void);

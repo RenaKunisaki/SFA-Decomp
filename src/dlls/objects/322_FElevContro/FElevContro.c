@@ -5,8 +5,6 @@
 #include "main/object_render.h"
 
 /* 1.0f model render scale from the shared scalar pool. */
-extern f32 lbl_803E56B8;
-
 enum {
     FELEV_CONTROL_MESSAGE_QUEUE_CAPACITY = 2,
 };
@@ -24,7 +22,7 @@ void FElevControl_free(void) {
 
 void FElevControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     if (visible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E56B8);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

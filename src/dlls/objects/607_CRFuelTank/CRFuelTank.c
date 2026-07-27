@@ -19,10 +19,6 @@
    "CRSnowBike" (DLL 0x255) */
 #define CRFUELTANK_TRIGGER_OBJ 0x38c
 
-extern f32 lbl_803E6760;
-
-
-
 static inline int crfueltank_animFrame(CrFuelTankDef* def)
 {
     return def->idleFrameCount / 10;
@@ -70,7 +66,7 @@ void crfueltank_hitDetect(CrFuelTankObject* obj)
                 mainSetBits(def->hitEvent, 1);
             }
             obj->velocityX = hitObj->anim.velocityX;
-            obj->velocityY = lbl_803E6760 + hitObj->anim.velocityY;
+            obj->velocityY = 0.07f + hitObj->anim.velocityY;
             obj->velocityZ = hitObj->anim.velocityZ;
         }
     }

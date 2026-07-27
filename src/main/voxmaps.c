@@ -129,7 +129,7 @@ void voxmapsFn_80010ff4(struct RouteState* state, VoxBoxArg* srcBox, int parentN
             routeNode->parentNodeIndex = (u8)(u16)parentNodeIndex;
             dxh = routeNode->x - state->tgtX;
             dyh = routeNode->y - state->tgtY;
-            routeNode->hCost = (u16)(gVoxMapsHCostScale * sqrtf((f32)(dxh * dxh + dyh * dyh)));
+            routeNode->hCost = (u16)(2.0f * sqrtf((f32)(dxh * dxh + dyh * dyh)));
         }
         q = state->queue;
         q[++state->queueCount].value = idx;
@@ -347,7 +347,7 @@ void voxmapsFn_80010ff4(struct RouteState* state, VoxBoxArg* srcBox, int parentN
         routeNode->parentNodeIndex = (u8)(u16)parentNodeIndex;
         dxh = routeNode->x - state->tgtX;
         dyh = routeNode->y - state->tgtY;
-        routeNode->hCost = (u16)(gVoxMapsHCostScale * sqrtf((f32)(dxh * dxh + dyh * dyh)));
+        routeNode->hCost = (u16)(2.0f * sqrtf((f32)(dxh * dxh + dyh * dyh)));
     }
 
     if (routeNode == NULL)
@@ -768,7 +768,7 @@ int voxmaps_updateRoutePath(RouteNav* nav, RouteState* state)
                 dx = node->x - state->tgtX;
                 dz = node->y - state->tgtY;
                 d2 = dx * dx + dz * dz;
-                node->hCost = (u16)(gVoxMapsHCostScale * sqrtf((f32)d2));
+                node->hCost = (u16)(2.0f * sqrtf((f32)d2));
             }
             {
                 u16 cost = node->hCost + node->gCost;
@@ -1228,8 +1228,8 @@ int* voxmaps_updateActiveMap(VoxPos* obj)
 
     zWorldOffset = obj->z * 10 + 5 - gMapBlockOriginWorldZ;
 
-    gridX = fastFloorf((f32)(obj->x * 10 + 5 - gMapBlockOriginWorldX) / gVoxMapsBlockWorldSize);
-    gridZ = fastFloorf((f32)zWorldOffset / gVoxMapsBlockWorldSize);
+    gridX = fastFloorf((f32)(obj->x * 10 + 5 - gMapBlockOriginWorldX) / 6.4e+02f);
+    gridZ = fastFloorf((f32)zWorldOffset / 6.4e+02f);
 
     vm->blockOriginWorld[0] = gMapBlockOriginWorldX + gridX * 640;
     vm->blockOriginWorld[1] = gMapBlockOriginWorldZ + gridZ * 640;

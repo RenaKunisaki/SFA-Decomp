@@ -55,13 +55,6 @@ u8 gQueenEarthWalkerEventTableComplete[8] = {5, 7, 8, 9, 0x0A, 0x0B, 0, 0};
 #define QEW_FLAG_ACTIVE    0x10 /* feed sequence completed; suppress idle attacks */
 #define QEW_FLAG_INIT_DONE 0x20 /* per-frame anim-event handshake (cleared each update) */
 
-extern f32 lbl_803E53F8;
-extern f32 gQueenEarthWalkerPortalSpellDistance;
-extern f32 gQueenEarthWalkerTrickyFeedDistance;
-extern f32 gQueenEarthWalkerAttackTimerMin;
-extern f32 gQueenEarthWalkerAttackTimerMax;
-
-
 s16 gQueenEarthWalkerMoveTable[6] = {34, 34, 34, 5, 28, 0};
 f32 gQueenEarthWalkerMoveSpeedTable[5] = {0.005f, 0.005f, 0.005f, 0.01f, 0.005f};
 
@@ -139,7 +132,7 @@ int sh_queenearthwalker_processAnimEvents(GameObject* obj, void* unused, ObjAnim
             state->targetX = player->anim.localPosX;
             state->targetY = player->anim.localPosY;
             state->targetZ = player->anim.localPosZ;
-            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), 0.0f);
         }
         animUpdate->hitVolumePair &= ~0x40;
         if ((state->flags & QEW_FLAG_EYE_ANIMS) != 0)
@@ -173,7 +166,7 @@ void openPortalFn_801d4364(GameObject* obj, void* state)
         (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (playerHasSpell(player, 3) != 0 &&
             getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) <
-                gQueenEarthWalkerPortalSpellDistance)
+                1e+04f)
         {
             mainSetBits(0x23b, 1);
         }
@@ -192,7 +185,7 @@ void openPortalFn_801d4364(GameObject* obj, void* state)
     ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
     ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
     ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-    characterHeadLookCalm(obj, (s16*)((int)state + 0x8), lbl_803E53F8);
+    characterHeadLookCalm(obj, (s16*)((int)state + 0x8), 0.0f);
 }
 
 void queenFeedFn_801d44a4(GameObject* obj, void* state)
@@ -219,7 +212,7 @@ void queenFeedFn_801d44a4(GameObject* obj, void* state)
             {
                 tricky = getTrickyObject();
                 if (tricky != NULL && getXZDistance((f32*)((u8*)tricky + 0x18), &(obj)->anim.worldPosX) <
-                                          gQueenEarthWalkerTrickyFeedDistance)
+                                          2.25e+04f)
                 {
                     Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
                 }
@@ -272,7 +265,7 @@ void queenFeedFn_801d44a4(GameObject* obj, void* state)
         ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
         ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
         ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-        characterHeadLookCalm(obj, (s16*)((int)state + 0x8), lbl_803E53F8);
+        characterHeadLookCalm(obj, (s16*)((int)state + 0x8), 0.0f);
         break;
     default:
         break;
@@ -323,7 +316,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), 0.0f);
             break;
         case 5:
             openPortalFn_801d4364(obj, state);
@@ -342,7 +335,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), 0.0f);
             break;
         case 7:
             if (mainGetBit(0x199) != 0)
@@ -358,7 +351,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), 0.0f);
             break;
         case 8:
             player = Obj_GetPlayerObject();
@@ -366,7 +359,7 @@ void sh_queenearthwalker_update(GameObject* obj)
             ((QueenEarthWalkerState*)state)->targetX = player->anim.localPosX;
             ((QueenEarthWalkerState*)state)->targetY = player->anim.localPosY;
             ((QueenEarthWalkerState*)state)->targetZ = player->anim.localPosZ;
-            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), lbl_803E53F8);
+            characterHeadLookCalm(obj, (s16*)((u8*)state + 0x8), 0.0f);
             break;
         case 0:
         case 1:
@@ -438,7 +431,7 @@ void sh_queenearthwalker_update(GameObject* obj)
     targetMove = gQueenEarthWalkerMoveTable[((QueenEarthWalkerState*)state)->stateIndex];
     if (currentMove != targetMove)
     {
-        ObjAnim_SetCurrentMove((int)obj, targetMove, lbl_803E53F8, 0);
+        ObjAnim_SetCurrentMove((int)obj, targetMove, 0.0f, 0);
     }
     ObjAnim_AdvanceCurrentMove(
         (int)obj, gQueenEarthWalkerMoveSpeedTable[((QueenEarthWalkerState*)state)->stateIndex], timeDelta, NULL);
@@ -456,8 +449,8 @@ void sh_queenearthwalker_update(GameObject* obj)
         }
     }
 
-    if (RandomTimer_UpdateRangeTrigger(&((QueenEarthWalkerState*)state)->attackTimer, gQueenEarthWalkerAttackTimerMin,
-                                       gQueenEarthWalkerAttackTimerMax) != 0)
+    if (RandomTimer_UpdateRangeTrigger(&((QueenEarthWalkerState*)state)->attackTimer, 2.0f,
+                                       5.0f) != 0)
     {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_thorntail);
     }

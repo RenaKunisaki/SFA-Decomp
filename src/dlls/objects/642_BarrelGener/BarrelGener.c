@@ -78,7 +78,7 @@ void barrelgener_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6C20);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -93,7 +93,7 @@ void barrelgener_update(GameObject* obj)
 
     if ((u32)mainGetBit(GAMEBIT_BARRELGENER_TRIGGERED) == 0)
     {
-        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6C24)
+        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < 5e+01f)
         {
             (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
             mainSetBits(GAMEBIT_BARRELGENER_TRIGGERED, 1);
@@ -101,10 +101,10 @@ void barrelgener_update(GameObject* obj)
     }
     if (timerIsActive(&state->releaseTimer) != 0)
     {
-        if (state->releaseTimer <= lbl_803E6C28 && state->releaseAnimPlaying == 0)
+        if (state->releaseTimer <= 5.0f && state->releaseAnimPlaying == 0)
         {
             state->releaseAnimPlaying = 1;
-            ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E6C2C, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
             Sfx_PlayFromObject((int)obj, SFXTRIG_barrelgen_slide);
             state->releaseBeepPlayed = 0;
         }
@@ -123,7 +123,7 @@ void barrelgener_update(GameObject* obj)
                 releasedBarrel->anim.worldPosX = releasedBarrel->anim.localPosX;
                 releasedBarrel->anim.worldPosY = releasedBarrel->anim.localPosY;
                 releasedBarrel->anim.worldPosZ = releasedBarrel->anim.localPosZ;
-                releaseVelocity = lbl_803E6C2C;
+                releaseVelocity = 0.0f;
                 releasedBarrel->anim.velocityZ = releaseVelocity;
                 releasedBarrel->anim.velocityY = releaseVelocity;
                 releasedBarrel->anim.velocityX = releaseVelocity;
@@ -134,7 +134,7 @@ void barrelgener_update(GameObject* obj)
     }
     if (state->releaseAnimPlaying != 0)
     {
-        if ((obj)->anim.currentMoveProgress > lbl_803E6C30)
+        if ((obj)->anim.currentMoveProgress > 0.5f)
         {
             if (state->releaseBeepPlayed == 0)
             {
@@ -143,7 +143,7 @@ void barrelgener_update(GameObject* obj)
             }
         }
         state->releaseAnimPlaying =
-            !ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E6C34, timeDelta, 0);
+            !ObjAnim_AdvanceCurrentMove((int)obj, 0.01f, timeDelta, 0);
     }
 }
 

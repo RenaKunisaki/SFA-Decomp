@@ -39,7 +39,6 @@ STATIC_ASSERT(offsetof(ECSHCreatorState, triggerGameBit) == 0x04);
 STATIC_ASSERT(offsetof(ECSHCreatorState, unknown06) == 0x06);
 STATIC_ASSERT(offsetof(ECSHCreatorState, sharpClawHitPoints) == 0x08);
 
-extern const f32 gECSHCreatorRenderScale;
 extern ObjectDescriptor gECSHCreatorObjDescriptor;
 
 int ecshCreator_getExtraSize(void);

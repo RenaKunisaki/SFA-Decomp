@@ -11919,12 +11919,12 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
                     x1 = *(f32*)(verts + j);
                     y1 = 0.0f;
                     j8 = j + 8;
-                    z1 = *(f32*)(verts + j8);
+                    z1 = *(f32*)(j8 + verts);
                     j = *(s16*)(tri + 6) * 0xc;
                     x2 = *(f32*)(verts + j);
                     y2 = 0.0f;
                     j8 = j + 8;
-                    z2 = *(f32*)(verts + j8);
+                    z2 = *(f32*)(j8 + verts);
                     if (parent != NULL)
                     {
                         Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, (int)parent);
@@ -12134,12 +12134,12 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
                 ax = *(f32*)(tbl2 + j);
                 ay = lbl_803E7EA4;
                 k = j + 8;
-                az = *(f32*)(tbl2 + k);
+                az = *(f32*)(k + tbl2);
                 j = *(s16*)((char*)face + 0x6) * 0xc;
                 bx = *(f32*)(tbl2 + j);
                 by = lbl_803E7EA4;
                 k = j + 8;
-                bz = *(f32*)(tbl2 + k);
+                bz = *(f32*)(k + tbl2);
                 if (hit != NULL)
                 {
                     Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (int)hit);

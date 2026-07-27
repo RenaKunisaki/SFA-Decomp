@@ -71,7 +71,7 @@ void wctile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6DF0);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -82,7 +82,7 @@ void wctile_hitDetect(void)
 void wctile_update(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &obj->anim;
-    f32 nearest = lbl_803E6DF4;
+    f32 nearest = 1e+05f;
     WCTileState* state = obj->extra;
 
     if ((void*)state->controller == NULL)
@@ -91,7 +91,7 @@ void wctile_update(GameObject* obj)
         objAnim->alpha = 0;
         return;
     }
-    obj->anim.rotX += (s16)(lbl_803E6DF8 * timeDelta);
+    obj->anim.rotX += (s16)(1.8e+02f * timeDelta);
     if (state->mode != WCTILE_MODE_HIDDEN)
     {
         if (objAnim->bankIndex == WCTILE_VARIANT_A)
@@ -201,7 +201,7 @@ void wctile_init(GameObject* obj, WCTileSetup* setup)
     ObjAnimComponent* objAnim = &obj->anim;
     WCTileState* state = obj->extra;
 
-    obj->anim.localPosY = lbl_803E6DFC + setup->base.posY;
+    obj->anim.localPosY = 25.0f + setup->base.posY;
     objAnim->bankIndex = setup->modelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
     {

@@ -123,7 +123,7 @@ void wcpressures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6E00);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -204,7 +204,7 @@ void wcpressures_update(GameObject* obj)
         }
         break;
     case WCPRESSURES_MODE_LOWERING:
-        obj->anim.localPosY = obj->anim.localPosY - lbl_803E6E04 * timeDelta;
+        obj->anim.localPosY = obj->anim.localPosY - 0.05f * timeDelta;
         if (obj->anim.localPosY < thr)
         {
             mainSetBits(setup->solvedBit, 1);
@@ -220,7 +220,7 @@ void wcpressures_update(GameObject* obj)
         }
         break;
     case WCPRESSURES_MODE_RISING:
-        obj->anim.localPosY = lbl_803E6E04 * timeDelta + obj->anim.localPosY;
+        obj->anim.localPosY = 0.05f * timeDelta + obj->anim.localPosY;
         if (obj->anim.localPosY > setup->y)
         {
             obj->anim.localPosY = setup->y;

@@ -5,9 +5,6 @@
 #include "global.h"
 #include "ghidra_import.h"
 
-extern f32 lbl_803E67A0;
-extern f32 lbl_803E67A4;
-extern f32 lbl_803E67A8;
 extern int lbl_803DDD40;
 
 int KT_RexLevel_getExtraSize(void);

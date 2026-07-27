@@ -26,10 +26,6 @@ s16 lbl_803DC228[2] = {0x49A, 0x49A};
    rendered/updated; set when the stone's map event completes. */
 #define SPELLSTONE_OBJFLAG_HIDDEN 0x4000
 
-extern f32 lbl_803E6750;
-extern f32 lbl_803E6754;
-extern f32 lbl_803E6758;
-
 int spellstone_getState(SpellStoneObject* obj)
 {
     return obj->state->state != SPELLSTONE_STATE_ACTIVE;
@@ -45,7 +41,7 @@ int spellstone_setState(SpellStoneObject* obj, int state)
     extra->state = state;
     if (state == SPELLSTONE_STATE_ACTIVE)
     {
-        obj->anim.localPosY += lbl_803E6750;
+        obj->anim.localPosY += 4.0f;
     }
     return oldState != SPELLSTONE_STATE_IDLE;
 }
@@ -73,7 +69,7 @@ void spellstone_render(SpellStoneObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, ch
     state = obj->state;
     if ((visible != 0) && (state->state != SPELLSTONE_STATE_HIDDEN))
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, (double)lbl_803E6754);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, (double)1.0f);
     }
     return;
 }
@@ -117,7 +113,7 @@ void spellstone_update(SpellStoneObject* obj)
         if (state->state == SPELLSTONE_STATE_ACTIVE)
         {
             playerObj = Obj_GetPlayerObject();
-            if (Vec_distance(&obj->anim.worldPosX, &playerObj->anim.worldPosX) < lbl_803E6758)
+            if (Vec_distance(&obj->anim.worldPosX, &playerObj->anim.worldPosX) < 105.0f)
             {
                 mainSetBits(def->completeEvent, 1);
             }

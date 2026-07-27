@@ -44,13 +44,9 @@ STATIC_ASSERT(offsetof(WCBeaconSetup, armBit) == 0x20);
 STATIC_ASSERT(offsetof(WCBeaconTrickyInterfaceVTable, acceptInteraction) == 0x28);
 
 extern ObjectDescriptor gWCBeaconObjDescriptor;
-extern f32 lbl_803E6DE0;
-extern f32 lbl_803E6DE4;
-extern f32 lbl_803E6DE8;
-
-#define WCBEACON_RENDER_SCALE        lbl_803E6DE0
-#define WCBEACON_TIMER_INITIAL       lbl_803E6DE4
-#define WCBEACON_ACTIVATION_DURATION lbl_803E6DE8
+#define WCBEACON_RENDER_SCALE        1.0f
+#define WCBEACON_TIMER_INITIAL       0.0f
+#define WCBEACON_ACTIVATION_DURATION 9e+01f
 
 int wcbeacon_aButtonCallback(GameObject* obj);
 int wcbeacon_getExtraSize(void);

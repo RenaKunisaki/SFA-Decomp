@@ -13,11 +13,8 @@
 #include "main/objprint_render_api.h"
 #include "main/objseq.h"
 
-extern f32 lbl_803E3850;
-extern f32 lbl_803E3854;
-
-#define DLL_FD_RENDER_SCALE         lbl_803E3850
-#define DLL_FD_TARGET_SEARCH_RADIUS lbl_803E3854
+#define DLL_FD_RENDER_SCALE         1.0f
+#define DLL_FD_TARGET_SEARCH_RADIUS 1e+02f
 
 #define DLL_FD_TARGET_INTERACT_FLAG  0x20
 #define DLL_FD_MODEL_HIT_DETECT_FLAG 0x1

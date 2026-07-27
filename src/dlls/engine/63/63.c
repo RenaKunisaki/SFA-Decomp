@@ -13,7 +13,6 @@ char lbl_803DBBF0[] = "%2d";
 
 #define DLL3F_TEXTURE_ID 0x47A
 
-extern f32 lbl_803E22A0;
 extern void* lbl_803DD960;
 
 void dll_3F_updateTimerReadout(void* obj)
@@ -26,7 +25,7 @@ void dll_3F_updateTimerReadout(void* obj)
     void* player;
     void* nearest;
 
-    maxDist = lbl_803E22A0;
+    maxDist = 1e+04f;
     start = 0;
     elapsed = 0;
     total = 0;

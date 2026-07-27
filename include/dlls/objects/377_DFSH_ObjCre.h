@@ -26,7 +26,6 @@ STATIC_ASSERT(sizeof(DFSHObjCreatorState) == 0x04);
 STATIC_ASSERT(offsetof(DFSHObjCreatorState, spawnTimer) == 0x00);
 STATIC_ASSERT(offsetof(DFSHObjCreatorState, spawnTimerRate) == 0x02);
 
-extern const f32 gDFSHObjCreatorRenderScale;
 extern ObjectDescriptor gDFSHObjCreatorObjDescriptor;
 
 int dfshObjCreator_getExtraSize(void);

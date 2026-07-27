@@ -5,8 +5,6 @@
 #include "main/object_render.h"
 
 /* 1.0f model render scale from the shared scalar pool. */
-extern f32 lbl_803E56C0;
-
 int dll_144_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     animUpdate->sequenceEventActive = 0;
     return 0;
@@ -27,7 +25,7 @@ void dll_144_render(GameObject* obj, int renderArg2, int renderArg3, int renderA
     s32 isVisible = visible;
 
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E56C0);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

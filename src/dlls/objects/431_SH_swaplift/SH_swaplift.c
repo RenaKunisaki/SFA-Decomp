@@ -29,8 +29,6 @@ s32 lbl_803DC058[2] = {0xC7C, 0xC7D};
 /* WarpStone item / game bit offered by this lift */
 #define WARPSTONELIFT_ITEM_BIT 0xC7C
 
-extern f32 lbl_803E54C8;
-
 ObjectDescriptor gWarpStoneLiftObjDescriptor = {
     0,
     0,
@@ -65,7 +63,7 @@ void warpstonelift_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E54C8);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
 }
 
 void warpstonelift_hitDetect(void)

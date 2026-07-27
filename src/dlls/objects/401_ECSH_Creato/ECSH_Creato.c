@@ -107,7 +107,7 @@ void ecshCreator_render(GameObject* obj, int renderArg2, int renderArg3, int ren
 
     isVisible = visible;
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gECSHCreatorRenderScale);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

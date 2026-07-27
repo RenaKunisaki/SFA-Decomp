@@ -13,22 +13,6 @@
 
 CameraModeShipBattleState* gCamShipBattleState;
 
-extern f32 lbl_803E1948;
-extern f32 lbl_803E194C;
-extern f32 lbl_803E1950;
-extern f32 lbl_803E1954;
-extern f32 lbl_803E1958;
-extern f32 lbl_803E195C;
-extern f32 gCamShipBattleBlendRate;
-extern f32 lbl_803E1964;
-extern f32 lbl_803E1968;
-extern f32 lbl_803E196C;
-extern f32 lbl_803E1970;
-extern f32 gCamShipBattleFov;
-extern f32 lbl_803E1978;
-extern f32 lbl_803E197C;
-extern f32 lbl_803E1980;
-
 void CameraModeShipBattle_copyToCurrent(void)
 {
 }
@@ -57,20 +41,20 @@ void CameraModeShipBattle_update(short* cam)
     {
         if (mode == 2)
         {
-            fa = lbl_803E1948;
+            fa = 2.2e+02f;
         }
         else
         {
-            fa = lbl_803E194C;
+            fa = 1.2e+02f;
         }
         if (mode != 2 && mode != 5)
         {
-            fb = lbl_803E1950;
-            fc = lbl_803E1954;
+            fb = 75.0f;
+            fc = 0.0f;
         }
         else
         {
-            fb = lbl_803E1958;
+            fb = 105.0f;
             fc = state->smoothedYOffset;
         }
         state->mode = mode;
@@ -78,13 +62,13 @@ void CameraModeShipBattle_update(short* cam)
         gCamShipBattleState->startLateralOffset = gCamShipBattleState->targetLateralOffset;
         gCamShipBattleState->verticalDelta = fb - (gCamShipBattleState->verticalOffset + fc);
         gCamShipBattleState->startVerticalOffset = gCamShipBattleState->verticalOffset;
-        gCamShipBattleState->blendTimer = lbl_803E1954;
+        gCamShipBattleState->blendTimer = 0.0f;
     }
     fb = gCamShipBattleState->blendTimer;
-    fa = lbl_803E195C;
+    fa = 1.0f;
     if (fb < fa)
     {
-        gCamShipBattleState->blendTimer = gCamShipBattleBlendRate * timeDelta + fb;
+        gCamShipBattleState->blendTimer = 0.005f * timeDelta + fb;
         if (gCamShipBattleState->blendTimer > fa)
         {
             gCamShipBattleState->blendTimer = fa;
@@ -96,12 +80,12 @@ void CameraModeShipBattle_update(short* cam)
     }
     if (mode != 2 && mode != 5)
     {
-        fa = (f32)focus->anim.rotZ / lbl_803E1964;
+        fa = (f32)focus->anim.rotZ / 3367.0f;
         gCamShipBattleState->smoothedZOffset = -(fa * timeDelta - gCamShipBattleState->smoothedZOffset);
-        fa = (f32)focus->anim.rotY / lbl_803E1968;
+        fa = (f32)focus->anim.rotY / 1365.0f;
         gCamShipBattleState->smoothedYOffset = -(fa * timeDelta - gCamShipBattleState->smoothedYOffset);
         state = gCamShipBattleState;
-        fc = lbl_803E196C;
+        fc = 0.02f;
         fb = state->smoothedZOffset;
         fa = fc * fb;
         state->smoothedZOffset = -(fa * timeDelta - fb);
@@ -113,12 +97,12 @@ void CameraModeShipBattle_update(short* cam)
     }
     else
     {
-        fa = (f32)focus->anim.rotZ / lbl_803E1964;
+        fa = (f32)focus->anim.rotZ / 3367.0f;
         gCamShipBattleState->smoothedZOffset = -(fa * timeDelta - gCamShipBattleState->smoothedZOffset);
-        fa = (f32)focus->anim.rotY / lbl_803E1968;
+        fa = (f32)focus->anim.rotY / 1365.0f;
         gCamShipBattleState->smoothedYOffset = -(fa * timeDelta - gCamShipBattleState->smoothedYOffset);
         state = gCamShipBattleState;
-        fc = lbl_803E196C;
+        fc = 0.02f;
         fb = state->smoothedZOffset;
         fa = fc * fb;
         state->smoothedZOffset = -(fa * timeDelta - fb);
@@ -128,22 +112,22 @@ void CameraModeShipBattle_update(short* cam)
         ((CameraObject*)cam)->anim.worldPosY =
             gCamShipBattleState->smoothedYOffset + (focus->anim.worldPosY + gCamShipBattleState->verticalOffset);
     }
-    fa = lbl_803E1970 + focus->anim.worldPosX;
+    fa = 98.0f + focus->anim.worldPosX;
     ((CameraObject*)cam)->anim.worldPosX = fa + gCamShipBattleState->lateralOffset;
     ((CameraObject*)cam)->anim.worldPosZ = focus->anim.worldPosZ + gCamShipBattleState->smoothedZOffset;
     cam[1] = 0x708;
     cam[0] = 0x4000;
     cam[2] = (s16)(-focus->anim.rotZ >> 3);
-    ((CameraObject*)cam)->fov = gCamShipBattleFov;
+    ((CameraObject*)cam)->fov = 4e+01f;
     state = gCamShipBattleState;
-    lateralStep = (state->targetLateralOffset - state->lateralOffset) / lbl_803E1978;
-    if (lateralStep > lbl_803E197C)
+    lateralStep = (state->targetLateralOffset - state->lateralOffset) / 1e+02f;
+    if (lateralStep > 3.0f)
     {
-        lateralStep = lbl_803E197C;
+        lateralStep = 3.0f;
     }
-    else if (lateralStep < lbl_803E1980)
+    else if (lateralStep < -3.0f)
     {
-        lateralStep = lbl_803E1980;
+        lateralStep = -3.0f;
     }
     lateralStep = lateralStep * timeDelta;
     state->lateralOffset = state->lateralOffset + lateralStep;
@@ -162,18 +146,18 @@ void CameraModeShipBattle_init(void)
     {
         gCamShipBattleState = (CameraModeShipBattleState*)mmAlloc(sizeof(CameraModeShipBattleState), 0xf, 0);
     }
-    fval = lbl_803E1954;
-    gCamShipBattleState->smoothedZOffset = lbl_803E1954;
+    fval = 0.0f;
+    gCamShipBattleState->smoothedZOffset = 0.0f;
     gCamShipBattleState->smoothedYOffset = fval;
-    gCamShipBattleState->lateralOffset = lbl_803E1978;
-    fval = lbl_803E194C;
-    gCamShipBattleState->startLateralOffset = lbl_803E194C;
+    gCamShipBattleState->lateralOffset = 1e+02f;
+    fval = 1.2e+02f;
+    gCamShipBattleState->startLateralOffset = 1.2e+02f;
     gCamShipBattleState->targetLateralOffset = fval;
-    gCamShipBattleState->blendTimer = lbl_803E195C;
+    gCamShipBattleState->blendTimer = 1.0f;
     zero = 0;
     gCamShipBattleState->mode = zero;
-    fval = lbl_803E1950;
-    gCamShipBattleState->startVerticalOffset = lbl_803E1950;
+    fval = 75.0f;
+    gCamShipBattleState->startVerticalOffset = 75.0f;
     gCamShipBattleState->verticalOffset = fval;
     return;
 }

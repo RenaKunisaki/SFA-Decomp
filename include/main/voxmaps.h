@@ -120,10 +120,8 @@ extern Texture* gVoxMapsLargeTextures[2];
 extern Texture* gVoxMapsSmallTextures[2];
 extern int gMapBlockOriginWorldX;
 extern int gMapBlockOriginWorldZ;
-extern f32 gVoxMapsBlockWorldSize;
 extern VoxState gVoxMapsRouteState;
 extern char sVoxmapsRouteNodesListOverflow[];
-extern f32 gVoxMapsHCostScale;
 extern char sVoxMapsDebugStrings[];
 
 u8* voxmaps_getRouteNode(u8* header, int* nodeBase, u8* bitmap, int tileX, int ySlot, int tileZ);

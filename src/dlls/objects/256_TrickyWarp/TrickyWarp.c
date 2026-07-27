@@ -15,8 +15,6 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-extern f32 lbl_803E38A0;
-
 typedef struct TrickyWarpCurveEntry {
     u8 pad00[3];           /* 0x00 */
     u8 entryPatchGroup;    /* 0x03 */
@@ -55,7 +53,7 @@ STATIC_ASSERT(offsetof(TrickyWarpCurveNode, forbiddenGameBit) == 0x32);
 #define TRICKYWARP_GAMEBIT_NONE       -1
 #define TRICKYWARP_CURVE_LINK_COUNT   4
 #define ROMCURVE_TYPE_TRICKYWARP      '$'
-#define TRICKYWARP_VISIBILITY_RADIUS  lbl_803E38A0
+#define TRICKYWARP_VISIBILITY_RADIUS  19.0f
 
 void TrickyWarp_free(GameObject* obj) {
     TrickyWarpState* state = obj->extra;

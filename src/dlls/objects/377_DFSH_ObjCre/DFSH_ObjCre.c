@@ -96,7 +96,7 @@ void dfshObjCreator_render(GameObject* obj, int renderArg2, int renderArg3, int 
 
     isVisible = visible;
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gDFSHObjCreatorRenderScale);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

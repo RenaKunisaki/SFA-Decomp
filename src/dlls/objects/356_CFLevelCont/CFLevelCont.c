@@ -42,13 +42,10 @@ s16 gCfLevelControlResetGameBits[CFLEVELCONTROL_RESET_GAME_BIT_TABLE_COUNT] = {
     GAMEBIT_CFRelated0B39, GAMEBIT_CFRelated0B3A, GAMEBIT_CFRelated0B3B, GAMEBIT_CFRelated0B3C,
     GAMEBIT_CFRelated0B3D, GAMEBIT_CFRelated0B3E, GAMEBIT_CFRelated0B3F, 0,
 };
-extern f32 lbl_803E43E8;
 const CfLevelControlRestartPoint gCfLevelControlRestartPoint = {
     {746.81787109375f, 1309.0f, -16378.33984375f},
     0.0f,
 };
-extern f32 lbl_803E43EC;
-
 int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     int eventIndex;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
@@ -81,7 +78,7 @@ void cflevelcontrol_render(GameObject* obj, int renderArg2, int renderArg3, int 
                            s8 visible) {
     s32 v = visible;
     if (v != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E43E8);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -137,7 +134,7 @@ void cflevelcontrol_update(GameObject* obj) {
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_SHARED, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_DAY_A, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_DAY_B, 0);
-            skyFn_80088e54(0, lbl_803E43EC);
+            skyFn_80088e54(0, 0.0f);
             mainSetBits(GAMEBIT_CFRelated0D73, 1);
         }
 
@@ -145,7 +142,7 @@ void cflevelcontrol_update(GameObject* obj) {
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_SHARED, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_NIGHT_A, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_NIGHT_B, 0);
-            skyFn_80088e54(1, lbl_803E43EC);
+            skyFn_80088e54(1, 0.0f);
             mainSetBits(GAMEBIT_CFRelated0DCA, 0);
             unlockLevel(0, 0, 1);
         }
@@ -169,7 +166,7 @@ void cflevelcontrol_update(GameObject* obj) {
         mainSetBits(GAMEBIT_CFRestartPointRelated0D3D, 0);
         getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_SHARED, 0);
         getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_DAY_A, 0);
-        skyFn_80088e54(1, lbl_803E43E8);
+        skyFn_80088e54(1, 1.0f);
     }
 
     cameraMode = (*gCameraInterface)->getMode();

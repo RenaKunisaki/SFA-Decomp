@@ -163,12 +163,8 @@ typedef struct MapBitTransient
     s8 timer;
 } MapBitTransient;
 
-extern f32 lbl_803E06C8;
-extern f32 lbl_803E06CC;
 extern u16 gSaveGameMapActBits[];
 extern u16 gSaveGameMapObjGroupBits[];
-extern f32 lbl_803E06D0;
-extern f32 lbl_803E06D4;
 const SaveGameDefaultPosition gSaveGameDefaultPosition = {
     570.6483764648438f, -82.0f, 15790.8203125f};
 
@@ -542,7 +538,7 @@ s8 slot;
     *(s8*)(save + 0x6a2) = -1;
     save[0x19] = 0x14;
     ((SaveGameData*)save)->camActionNo = -1;
-    *(f32*)(save + 0x6a8) = lbl_803E06C8;
+    *(f32*)(save + 0x6a8) = 4.3e+04f;
     *(s16*)(save + 0x6ac) = -1;
     *(s16*)(save + 0x6ae) = -1;
     *(s16*)(save + 0x6b2) = -1;
@@ -691,7 +687,7 @@ int saveSelect_getInfo(void* outPtr)
                     info->rankB = 0;
                 }
 
-                info->playTime = (u32)(((SaveGameData*)save)->playTime / lbl_803E06CC);
+                info->playTime = (u32)(((SaveGameData*)save)->playTime / 6e+01f);
                 info->taskTexts[0] = NULL;
                 info->taskTexts[1] = NULL;
                 info->taskTexts[2] = NULL;
@@ -965,7 +961,7 @@ f32 SaveGame_gplayGetTime(int id)
     u8* p;
     int i;
     if (id == -1)
-        return lbl_803E06D0;
+        return 0.0f;
     i = 0;
     p = gSaveGameData;
     count = ((SaveGameData*)p)->timeEntryCount;
@@ -978,7 +974,7 @@ f32 SaveGame_gplayGetTime(int id)
         }
         p += 8;
     }
-    return lbl_803E06D0;
+    return 0.0f;
 }
 
 int SaveGame_gplayShouldNotSaveTime(int id)
@@ -1012,7 +1008,7 @@ void SaveGame_gplayAddTime(int id, f32 time)
     count = ((SaveGameData*)base)->timeEntryCount;
     if (count == 0x100)
         return;
-    total = lbl_803E06D4 * time;
+    total = 2e+01f * time;
     total += ((SaveGameData*)base)->playTime;
     i = 0;
     p = base;

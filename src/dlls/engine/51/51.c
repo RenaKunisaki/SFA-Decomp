@@ -8,8 +8,6 @@ extern int gNrarewareFrameCounter;
 extern f32 gNrarewareStage3Timer;
 extern f32 gNrarewareStage1Timer;
 extern u8 gNrarewareTransitionStarted;
-extern f32 lbl_803E1D08;
-extern f32 lbl_803E1D0C;
 extern u8 gNrarewareTimeoutFlag;
 extern s8 gNrarewareExitDelay;
 extern s8 gNrarewareStage;
@@ -27,7 +25,7 @@ void n_rareware_render(void)
     if ((frame > 40) && ((s8)gNrarewareStage == 0))
     {
         gNrarewareStage = 1;
-        gNrarewareStage1Timer = lbl_803E1D08;
+        gNrarewareStage1Timer = 5e+02f;
     }
     if ((frame > 50) && ((s8)gNrarewareStage == 1))
     {
@@ -36,7 +34,7 @@ void n_rareware_render(void)
     if ((frame > 285) && ((s8)gNrarewareStage == 2))
     {
         gNrarewareStage = 3;
-        gNrarewareStage3Timer = lbl_803E1D0C;
+        gNrarewareStage3Timer = 145.0f;
     }
 }
 

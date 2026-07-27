@@ -53,7 +53,7 @@ void KT_RexLevel_render(void* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, (double)lbl_803E67A0);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, (double)1.0f);
     }
 }
 
@@ -95,7 +95,7 @@ void KT_RexLevel_update(GameObject* obj)
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_A, 0);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_B, 0);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_C, 0);
-        skyFn_80088e54(1, lbl_803E67A4);
+        skyFn_80088e54(1, 0.0f);
         mainSetBits(0x55e, 1);
         (obj)->userData1 = 1;
     }
@@ -110,7 +110,7 @@ void KT_RexLevel_init(GameObject* obj)
     mainSetBits(0x56e, 1);
     mainSetBits(0x566, 1);
     mainSetBits(0x569, 1);
-    *(f32*)extra = lbl_803E67A8;
+    *(f32*)extra = 6e+02f;
     mainSetBits(GAMEBIT_DR_KTrexPathA, 1);
     mainSetBits(0x54a, 2);
     mainSetBits(0x54e, 2);

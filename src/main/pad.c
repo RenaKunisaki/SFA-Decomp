@@ -45,7 +45,7 @@ void stopRumble2(void)
     if (rumbleEnabled != 0)
     {
         PADControlMotor(0, PAD_MOTOR_STOP_HARD);
-        gRumbleTimer = gRumbleTimerZero;
+        gRumbleTimer = 0.0f;
     }
 }
 
@@ -54,7 +54,7 @@ void stopRumble(void)
     if (rumbleEnabled != 0)
     {
         PADControlMotor(0, PAD_MOTOR_STOP);
-        gRumbleTimer = gRumbleTimerZero;
+        gRumbleTimer = 0.0f;
     }
 }
 
@@ -318,15 +318,15 @@ void padUpdate(void)
     PADClamp(readPad);
     if (rumbleEnabled != 0)
     {
-        if (gRumbleTimer > gRumbleTimerZero)
+        if (gRumbleTimer > 0.0f)
         {
             gRumbleTimer = gRumbleTimer - timeDelta;
-            if (gRumbleTimer <= gRumbleTimerZero)
+            if (gRumbleTimer <= 0.0f)
             {
                 if (rumbleEnabled != 0)
                 {
                     PADControlMotor(0, PAD_MOTOR_STOP);
-                    gRumbleTimer = gRumbleTimerZero;
+                    gRumbleTimer = 0.0f;
                 }
             }
         }
@@ -607,7 +607,7 @@ int initControllers(void)
     gPadStatusToggle = 0;
     rumbleEnabled = 1;
     PADControlMotor(0, PAD_MOTOR_STOP_HARD);
-    gRumbleTimer = gRumbleTimerZero;
+    gRumbleTimer = 0.0f;
     return 0;
 }
 

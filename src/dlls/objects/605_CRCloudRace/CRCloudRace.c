@@ -17,10 +17,6 @@
 #include "main/obj_group.h"
 #include "main/dll/SC/sc_shared.h"
 
-extern f32 lbl_803E6748;
-extern f32 lbl_803E6740;
-extern f32 lbl_803E6744;
-
 typedef struct SCTotemPoleVtable
 {
     u8 pad00[SC_VT_HANDLE_EVENT];
@@ -50,14 +46,14 @@ void crcloudrace_updateCompletionState(CrCloudRaceObject* obj, CrCloudRaceState*
     GameObject* player;
     GameObject* near;
 
-    dist = lbl_803E6740;
+    dist = 5e+07f;
     player = Obj_GetPlayerObject();
     if (mainGetBit(CRCLOUDRACE_GAMEBIT_IN_FINISH_VOLUME) == 0)
     {
         if (mainGetBit(CRCLOUDRACE_GAMEBIT_ABORT_TRIGGER) != 0)
         {
             state->phase = CRCLOUDRACE_PHASE_ABORT;
-            setMotionBlur(0, lbl_803E6744);
+            setMotionBlur(0, 0.0f);
             mainSetBits(CRCLOUDRACE_GAMEBIT_RACE_ACTIVE, 0);
             mainSetBits(CRCLOUDRACE_GAMEBIT_RACE_STARTED, 0);
         }
@@ -65,7 +61,7 @@ void crcloudrace_updateCompletionState(CrCloudRaceObject* obj, CrCloudRaceState*
     else
     {
         mainSetBits(CRCLOUDRACE_GAMEBIT_IN_FINISH_VOLUME, 1);
-        setMotionBlur(0, lbl_803E6744);
+        setMotionBlur(0, 0.0f);
         if (mainGetBit(CRCLOUDRACE_GAMEBIT_RACE_CAN_FINISH) != 0 &&
             playerGetFocusObject(player) == NULL)
         {
@@ -186,7 +182,7 @@ void crcloudrace_render(u32 obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
     draw = visible;
     if (draw != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E6748);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
     }
     return;
 }
