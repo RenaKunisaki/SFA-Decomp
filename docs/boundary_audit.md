@@ -453,7 +453,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x158 | gGunPowderBarrelObjDescriptor | 801A0EF8-801A25E8 | 801A0B14-801A27B8 | 801A1230 (main/dll/DR/sandwormBoss.c \| main/dll/DR/gasvent.c); 801A1A60 (main/dll/DR/gasvent.c \| main/dll/DR/cannontargetControl.c) | Y | GunPowderBa,MetalBarrel |
 | 0x159 | gBlastedObjDescriptor | 801A28D0-801A2BD8 | 801A27B8-801A2BDC | 801A2AF8 (main/dll/DR/cannontargetControl.c \| main/dll/DR/gasventControl.c) | Y | CFBlastedRo,CFBlastedWa,CFBlastedTu,DRBlastedWa |
 | 0x15B | gCFForceFieldObjDescriptor | 801A39B4-801A3E98 | 801A39B4-801A3E9C | 801A39D0 (main/dll/DR/gasventControl.c \| main/dll/IM/IMicicle.c) | Y | CFForceFiel |
-| 0x17E | gMMP_levelcontrolObjDescriptor | 801A66FC-801A6C24 | 801A6638-801A6C28 | 801A6778 (main/dll/IM/IMspacecraft.c \| main/dll/DIM/DIMlavaball.c) | Y | MMP_levelco |
+| 0x17E | gMMPLevelControlObjDescriptor | 801A66FC-801A6C24 | 801A6638-801A6C28 | 801A6778 (main/dll/IM/IMspacecraft.c \| main/dll/DIM/DIMlavaball.c) | Y | MMP_levelco |
 | 0x187 | gCCqueenObjDescriptor | 801AA558-801AA694 | 801AA558-801AA734 | 801AA560 (main/dll/DIM/DIMlogfire.c \| main/dll/DIM/DIMsnowball.c) | Y | CCqueen |
 | 0x16D | gIMIcePillarObjDescriptor | 801AE0EC-801AE140 | 801AE0EC-801AE144 | 801AE100 (main/dll/DIM/DIMboulder.c \| main/dll/DIM/DIMcannon.c) | Y | IMIcePillar |
 | 0x1C0 | gDIMLogFireObjDescriptor | 801B07B0-801B0BE8 | 801B0670-801B0DD4 | 801B0924 (main/dll/DIM/DIMcannon.c \| main/dll/DIM/DIMlavasmash.c) | Y | DIMLogFire,DIMLogFireR |

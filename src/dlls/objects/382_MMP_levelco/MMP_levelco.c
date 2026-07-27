@@ -1,251 +1,218 @@
 /*
  * MMP_levelco (DLL 0x17E) - Moon Mountain Pass level controller.
  *
- * A singleton manager object that drives the area's environment. init
- * unlocks the map, primes the fog/heat-haze countdown (lbl_803DDB28) and
- * fires the area music cues. update selects the sky/weather environment
- * fx set from gamebits (0xD47 / 0xF33) and the player's current map cell,
- * runs the heat-haze text + countdown, and latches two scripted gamebit
- * events via SCGameBitLatch_Update. The sequence callback
- * (MMP_LevelControl_SeqFn) layers extra env fx on top in response to anim
- * events.
+ * This singleton drives the area's environment, scripted music latches,
+ * and the timed game-text display.
  */
+#include "dlls/objects/382_MMP_levelco.h"
 
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/audio/music_api.h"
-#include "main/object_render.h"
-#include "sys/objects.h"
-#include "main/render_envfx_api.h"
-#include "main/objanim_update.h"
-#include "main/gamebits.h"
-#include "main/lightmap_api.h"
-#include "main/dll/savegame_load_api.h"
-#include "main/gametext_show_api.h"
-#include "main/map_load.h"
-#include "main/pi_dolphin_api.h"
-#include "main/sky_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
-#include "main/dll/MMP/dll_017E_mmplevelcontrol.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/gametext_show_api.h"
+#include "main/lightmap_api.h"
+#include "main/map_load.h"
+#include "main/object_render.h"
+#include "main/pi_dolphin_api.h"
+#include "main/render_envfx_api.h"
+#include "main/sky_api.h"
+#include "sys/objects.h"
 
-#define MMPLEVELCONTROL_OBJFLAG_HIDDEN             0x4000
-#define MMPLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define MMP_LEVEL_CONTROL_ENVFX_ANIM_EVENT_1 0x13B
+#define MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER  0x138
+#define MMP_LEVEL_CONTROL_ENVFX_COMMON       0x13A
+#define MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_1  0x234
+#define MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_2  0x235
+#define MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_1  0x10C
+#define MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_2  0x10D
+#define MMP_LEVEL_CONTROL_ENVFX_MAP_CELL     0x139
 
-/* env-effect ids for the area weather/sky sets (index-style; roles opaque).
-   A/B layered by anim seq event; C is shared across all three update state
-   gates; D/E in the 0xd47 gate; F/G in the 0xf33 gate; B/H in the map-cell gate. */
-#define MMPLEVELCONTROL_ENVFX_A 0x13b
-#define MMPLEVELCONTROL_ENVFX_B 0x138
-#define MMPLEVELCONTROL_ENVFX_C 0x13a
-#define MMPLEVELCONTROL_ENVFX_D 0x234
-#define MMPLEVELCONTROL_ENVFX_E 0x235
-#define MMPLEVELCONTROL_ENVFX_F 0x10c
-#define MMPLEVELCONTROL_ENVFX_G 0x10d
-#define MMPLEVELCONTROL_ENVFX_H 0x139
+#define MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_A 0xD47
+#define MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B 0xF33
+#define MMP_LEVEL_CONTROL_GAMEBIT_INIT_CLEAR    0xDCF
+#define MMP_LEVEL_CONTROL_GAMEBIT_MUSIC_LATCH_A 0x389
 
-int lbl_803DDB2C;
-f32 lbl_803DDB28;
+#define MMP_LEVEL_CONTROL_MAP_ID        0x12
+#define MMP_LEVEL_CONTROL_SKY_GROUP     7
+#define MMP_LEVEL_CONTROL_TEXT_ID       0x34F
+#define MMP_LEVEL_CONTROL_TEXT_DURATION 300.0f
 
+SCGameBitLatchState gMMPLevelControlMusicLatch;
+f32 gMMPLevelControlTextCountdown;
 
-int MMP_LevelControl_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
     GameObject* player;
     int i;
 
     player = Obj_GetPlayerObject();
     animUpdate->sequenceEventActive = 0;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        u8 v = animUpdate->eventIds[i];
-        switch (v)
-        {
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        u8 eventId = animUpdate->eventIds[i];
+
+        switch (eventId) {
         case 1:
-            getEnvfxAct(obj, player, MMPLEVELCONTROL_ENVFX_A, 0);
+            getEnvfxAct(obj, player, MMP_LEVEL_CONTROL_ENVFX_ANIM_EVENT_1, 0);
             break;
         case 2:
-            getEnvfxAct(obj, player, MMPLEVELCONTROL_ENVFX_B, 0);
+            getEnvfxAct(obj, player, MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER, 0);
             break;
         }
     }
-    MMP_levelcontrol_update(obj);
+    mmpLevelControl_update(obj);
     return 0;
 }
 
-int MMP_levelcontrol_getExtraSize(void)
-{
-    return 0x0;
-}
-int MMP_levelcontrol_getObjectTypeId(void)
-{
-    return 0x0;
+int mmpLevelControl_getExtraSize(void) {
+    return 0;
 }
 
-void MMP_levelcontrol_free(int obj)
-{
-    lbl_803DDB28 = 0.0f;
-    lbl_803DDB2C = 0;
+int mmpLevelControl_getObjectTypeId(void) {
+    return 0;
+}
+
+void mmpLevelControl_free(GameObject* obj) {
+    gMMPLevelControlTextCountdown = 0.0f;
+    gMMPLevelControlMusicLatch.activeMask = 0;
     Music_Trigger(MUSICTRIG_WLC_Puzzle, 0);
 }
 
-void MMP_levelcontrol_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+void mmpLevelControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void MMP_levelcontrol_hitDetect(void)
-{
+void mmpLevelControl_hitDetect(void) {
 }
 
-void MMP_levelcontrol_update(GameObject* obj)
-{
+void mmpLevelControl_update(GameObject* obj) {
     GameObject* playerForMap;
     GameObject* playerForFx;
 
     playerForMap = Obj_GetPlayerObject();
     playerForFx = Obj_GetPlayerObject();
 
-    if (lbl_803DDB28 > 0.0f)
-    {
-        gameTextShow(0x34f);
+    if (gMMPLevelControlTextCountdown > 0.0f) {
+        gameTextShow(MMP_LEVEL_CONTROL_TEXT_ID);
         {
-            f32 t = lbl_803DDB28 - timeDelta;
-            lbl_803DDB28 = t;
-            if (t < 0.0f)
-            {
-                lbl_803DDB28 = 0.0f;
+            f32 countdown = gMMPLevelControlTextCountdown - timeDelta;
+            gMMPLevelControlTextCountdown = countdown;
+            if (countdown < 0.0f) {
+                gMMPLevelControlTextCountdown = 0.0f;
             }
         }
     }
 
-    if ((obj)->userData1 != 0)
-    {
+    if (obj->userData1 != 0) {
         envFxActFn_800887f8(0);
-        if (mainGetBit(0xd47) != 0)
-        {
-            skyFn_80088c94(7, 1);
-            if ((obj)->userData1 == 2)
-            {
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_D, 0);
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_E, 0);
+        if (mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_A) != 0) {
+            skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
+            if (obj->userData1 == 2) {
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_1, 0);
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_2, 0);
+            } else {
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_1, 0);
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_2, 0);
             }
-            else
-            {
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_D, 0);
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_E, 0);
+            obj->userData2 = 0;
+        } else if (mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B) != 0) {
+            skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
+            if (obj->userData1 == 2) {
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_1, 0);
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_2, 0);
+            } else {
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_1, 0);
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_2, 0);
             }
-            (obj)->userData2 = 0;
-        }
-        else if (mainGetBit(0xf33) != 0)
-        {
-            skyFn_80088c94(7, 1);
-            if ((obj)->userData1 == 2)
-            {
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_F, 0);
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_G, 0);
+            obj->userData2 = 1;
+        } else if (coordsToMapCell(playerForMap->anim.localPosX, playerForMap->anim.localPosZ) ==
+                   MMP_LEVEL_CONTROL_MAP_ID) {
+            skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 0);
+            if (obj->userData1 == 2) {
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER, 0);
+                getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_MAP_CELL, 0);
+            } else {
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER, 0);
+                getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_MAP_CELL, 0);
             }
-            else
-            {
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_F, 0);
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_G, 0);
-            }
-            (obj)->userData2 = 1;
-        }
-        else if (coordsToMapCell(playerForMap->anim.localPosX, playerForMap->anim.localPosZ) == 0x12)
-        {
-            skyFn_80088c94(7, 0);
-            if ((obj)->userData1 == 2)
-            {
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_B, 0);
-                getEnvfxActImmediately(obj, playerForFx, MMPLEVELCONTROL_ENVFX_H, 0);
-            }
-            else
-            {
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_B, 0);
-                getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_H, 0);
-            }
-            (obj)->userData2 = 0;
+            obj->userData2 = 0;
         }
         Music_Trigger(MUSICTRIG_Barrels, 1);
-        (obj)->userData1 = 0;
+        obj->userData1 = 0;
     }
 
-    if ((obj)->userData2 != 0 && mainGetBit(0xf33) == 0)
-    {
-        skyFn_80088c94(7, 0);
-        getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-        getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_B, 0);
-        getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_H, 0);
-        (obj)->userData2 = 0;
-    }
-    else if ((obj)->userData2 == 0 && mainGetBit(0xf33) != 0)
-    {
-        skyFn_80088c94(7, 1);
-        getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_C, 0);
-        getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_F, 0);
-        getEnvfxAct(obj, playerForFx, MMPLEVELCONTROL_ENVFX_G, 0);
-        (obj)->userData2 = 1;
+    if (obj->userData2 != 0 && mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B) == 0) {
+        skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 0);
+        getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+        getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER, 0);
+        getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_MAP_CELL, 0);
+        obj->userData2 = 0;
+    } else if (obj->userData2 == 0 && mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B) != 0) {
+        skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
+        getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
+        getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_1, 0);
+        getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_2, 0);
+        obj->userData2 = 1;
     }
 
-    SCGameBitLatch_Update((SCGameBitLatchState*)&lbl_803DDB2C, 1, -1, -1, 0x389, 0xd5);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&lbl_803DDB2C, 2, -1, -1, 0xcbb, 0xc4);
+    SCGameBitLatch_Update(&gMMPLevelControlMusicLatch, 1, -1, -1, MMP_LEVEL_CONTROL_GAMEBIT_MUSIC_LATCH_A,
+                          MUSICTRIG_WLC_Puzzle);
+    SCGameBitLatch_Update(&gMMPLevelControlMusicLatch, 2, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK,
+                          MUSICTRIG_PU3_Adventure_c4);
 }
 
-void MMP_levelcontrol_init(GameObject* obj)
-{
-
-    obj->objectFlags |= (MMPLEVELCONTROL_OBJFLAG_HIDDEN | MMPLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED);
-    if (getSaveGameLoadStatus() != 0)
-    {
+void mmpLevelControl_init(GameObject* obj) {
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
+    if (getSaveGameLoadStatus() != 0) {
         obj->userData1 = 2;
-    }
-    else
-    {
+    } else {
         obj->userData1 = 1;
     }
-    *(u32*)&obj->userData2 = mainGetBit(0xF33);
-    obj->animEventCallback = MMP_LevelControl_SeqFn;
-    unlockLevel(mapGetDirIdx(0x12), 0, 0);
-    lbl_803DDB28 = 300.0f;
-    lbl_803DDB2C = 0;
+    obj->userData2 = mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B);
+    obj->animEventCallback = mmpLevelControl_processAnimEvents;
+    unlockLevel(mapGetDirIdx(MMP_LEVEL_CONTROL_MAP_ID), 0, 0);
+    gMMPLevelControlTextCountdown = MMP_LEVEL_CONTROL_TEXT_DURATION;
+    gMMPLevelControlMusicLatch.activeMask = 0;
     Music_Trigger(MUSICTRIG_wind_ambi, 0);
     Music_Trigger(MUSICTRIG_mammoth_walk_db, 0);
     Music_Trigger(MUSICTRIG_LVF_Tracking_f2, 0);
     Music_Trigger(MUSICTRIG_CRF_Swim, 0);
     Music_Trigger(MUSICTRIG_cldrnr_walkabout, 0);
-    mainSetBits(0xDCF, 0);
+    mainSetBits(MMP_LEVEL_CONTROL_GAMEBIT_INIT_CLEAR, 0);
 }
 
-void MMP_levelcontrol_release(void)
-{
+void mmpLevelControl_release(void) {
 }
 
-void MMP_levelcontrol_initialise(void)
-{
+void mmpLevelControl_initialise(void) {
 }
 
-ObjectDescriptor gMMP_levelcontrolObjDescriptor = {
+ObjectDescriptor gMMPLevelControlObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)MMP_levelcontrol_initialise,
-    (ObjectDescriptorCallback)MMP_levelcontrol_release,
+    (ObjectDescriptorCallback)mmpLevelControl_initialise,
+    (ObjectDescriptorCallback)mmpLevelControl_release,
     0,
-    (ObjectDescriptorCallback)MMP_levelcontrol_init,
-    (ObjectDescriptorCallback)MMP_levelcontrol_update,
-    (ObjectDescriptorCallback)MMP_levelcontrol_hitDetect,
-    (ObjectDescriptorCallback)MMP_levelcontrol_render,
-    (ObjectDescriptorCallback)MMP_levelcontrol_free,
-    (ObjectDescriptorCallback)MMP_levelcontrol_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)MMP_levelcontrol_getExtraSize,
+    (ObjectDescriptorCallback)mmpLevelControl_init,
+    (ObjectDescriptorCallback)mmpLevelControl_update,
+    (ObjectDescriptorCallback)mmpLevelControl_hitDetect,
+    (ObjectDescriptorCallback)mmpLevelControl_render,
+    (ObjectDescriptorCallback)mmpLevelControl_free,
+    (ObjectDescriptorCallback)mmpLevelControl_getObjectTypeId,
+    mmpLevelControl_getExtraSize,
 };
