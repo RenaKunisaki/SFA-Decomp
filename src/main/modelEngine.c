@@ -198,6 +198,7 @@
 #include "dlls/objects/401_ECSH_Creato.h"
 #include "dlls/objects/402_GPSH_Shrine.h"
 #include "dlls/objects/403_GPSH_ObjCre.h"
+#include "dlls/objects/404_GPSH_Scene.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -319,7 +320,7 @@ extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescripto
     gExplodePlanObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
-extern ResourceDescriptor gGPSH_SceneObjDescriptor, gGmMazeWellObjDescriptor;
+extern ResourceDescriptor gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gHighTopObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
@@ -1443,7 +1444,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gECSHCreatorObjDescriptor,
     (ResourceDescriptor*)&gGPSHShrineObjDescriptor,
     (ResourceDescriptor*)&gGPSHObjCreatorObjDescriptor,
-    &gGPSH_SceneObjDescriptor,
+    (ResourceDescriptor*)&gGPSHSceneObjDescriptor,
     &gDBSH_ShrineObjDescriptor,
     &gDBSH_SymbolObjDescriptor,
     &dll_197,
