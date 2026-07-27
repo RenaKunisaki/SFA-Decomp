@@ -25,7 +25,6 @@
 #define DRGENERATOR_OBJGROUP 0x3
 #define DRGENERATOR_OBJ      0x716
 #define DRGENERATOR_WALL_OBJ 0x72e
-#define TIMER_OBJGROUP       0x4c
 #define DRGENERATOR_PARTFX   0x690
 
 int drgenerator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
@@ -104,7 +103,7 @@ void drgenerator_hitDetect(GameObject* obj)
     state->flags.b0 = 1;
     mainSetBits(placement->completionGameBit, 1);
     if ((obj)->anim.seqId == DRGENERATOR_OBJ &&
-        (found = (void*)ObjGroup_FindNearestObject(TIMER_OBJGROUP, obj, NULL)) != NULL)
+        (found = (void*)ObjGroup_FindNearestObject(TIMER_OBJECT_GROUP, obj, NULL)) != NULL)
     {
         timer_addDuration((GameObject*)found, state->timerDuration);
     }

@@ -438,7 +438,6 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
 }
 
 
-#define TIMER_OBJGROUP                  0x4c /* DLL 0x2B5 timer */
 #define TARGET_OBJGROUP                 0xf  /* player-target group; nearest object gets the trigger's sequence */
 #define TRICKY_TARGET_OBJGROUP          0x32 /* nearest object searched from the tricky object */
 #define TRICKY_TARGET_OBJGROUP_FALLBACK 0x31 /* fallback group when TRICKY_TARGET_OBJGROUP has none */
@@ -784,7 +783,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     OSReport(desc + 0x114, p[2], p[3]);
                     break;
                 case 0x2f:
-                    t = ObjGroup_FindNearestObject(TIMER_OBJGROUP, obj, 0);
+                    t = ObjGroup_FindNearestObject(TIMER_OBJECT_GROUP, obj, 0);
                     if ((void*)t != NULL)
                     {
                         timer_addDuration((GameObject*)(t), p[3] * 0x3c);

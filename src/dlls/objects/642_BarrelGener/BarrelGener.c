@@ -10,6 +10,8 @@
  * timer end the queued barrel is teleported to this object's position,
  * zeroed in velocity, and added to its own update group (25).
  */
+#include "dlls/objects/344.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
 #include "main/audio/sfx.h"
@@ -39,10 +41,7 @@
 
 int lbl_803DC398 = 0x14;
 
-#define BARRELGENER_OBJGROUP          0x3a
 #define GAMEBIT_BARRELGENER_TRIGGERED 0xadb
-/* update group a dispensed barrel is added to (GunpowderBarrel DLL 0x158) */
-#define BARREL_UPDATE_OBJGROUP 25
 
 int barrelgener_getLinkId(GameObject* obj)
 {
@@ -72,7 +71,7 @@ int barrelgener_getObjectTypeId(void)
 
 void barrelgener_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, BARRELGENER_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, BARREL_GENERATOR_OBJECT_GROUP);
 }
 
 void barrelgener_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -128,7 +127,7 @@ void barrelgener_update(GameObject* obj)
                 releasedBarrel->anim.velocityZ = releaseVelocity;
                 releasedBarrel->anim.velocityY = releaseVelocity;
                 releasedBarrel->anim.velocityX = releaseVelocity;
-                ObjGroup_AddObject((int)state->queuedObject, BARREL_UPDATE_OBJGROUP);
+                ObjGroup_AddObject((int)state->queuedObject, GUNPOWDER_BARREL_OBJECT_GROUP);
                 state->queuedObject = NULL;
             }
         }
@@ -152,7 +151,7 @@ void barrelgener_init(GameObject* obj)
 {
     BarrelGeneratorState* state = (obj)->extra;
 
-    ObjGroup_AddObject((int)obj, BARRELGENER_OBJGROUP);
+    ObjGroup_AddObject((int)obj, BARREL_GENERATOR_OBJECT_GROUP);
     state->releaseAnimPlaying = 0;
     state->queuedObject = NULL;
     storeZeroToFloatParam(&state->releaseTimer);

@@ -15,7 +15,6 @@
 
 STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
-#define DBHOLECONTROL1_OBJGROUP  0x1e
 #define DBEGG_OBJGROUP           0x24
 #define DBHOLECONTROL1_CHILD_OBJ 1337
 
@@ -78,7 +77,7 @@ int dbholecontrol1_getObjectTypeId(void)
 
 void dbholecontrol1_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, DBHOLECONTROL1_OBJGROUP);
+    ObjGroup_RemoveObject(obj, DBHOLE_CONTROL1_OBJECT_GROUP);
 }
 
 void dbholecontrol1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -111,7 +110,7 @@ void dbholecontrol1_update(GameObject* obj)
 void dbholecontrol1_init(GameObject* obj, u8* params)
 {
     DbHoleControl1State* state = obj->extra;
-    ObjGroup_AddObject((int)obj, DBHOLECONTROL1_OBJGROUP);
+    ObjGroup_AddObject((int)obj, DBHOLE_CONTROL1_OBJECT_GROUP);
     *(s16*)obj = (s16)((s8)params[0x18] << 8);
     obj->animEventCallback = dbholecontrol1_SeqFn;
     state->gameBitA = ((Dbholecontrol1Placement*)params)->gameBitA;

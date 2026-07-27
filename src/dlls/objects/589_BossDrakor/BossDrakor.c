@@ -48,6 +48,7 @@
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/dll_0262_drakormissile.h"
 #include "main/dll/dll_0271_drakorhoverpad.h"
+#include "main/dll/dll_0243_dbholecontrol1.h"
 #include "main/render_envfx_api.h"
 #include "sys/objects/lifecycle.h"
 #include "main/object_update_list.h"
@@ -81,7 +82,6 @@ s16 lbl_803DC19A = 0x2D8;
 #define BOSSDRAKOR_HIT_VOLUME_SLOT    5
 #define BOSSDRAKOR_AIRMETER_BGTEXTURE 0x63e /* HUD air-meter background texture id */
 #define DRAKORHOVERPAD_OBJGROUP 0x46 /* DLL 0x271 drakorhoverpad */
-#define DBHOLECONTROL1_OBJGROUP 0x1e /* DLL 0x243 dbholecontrol1 */
 #define BOSSDRAKOR_CHILD_OBJ_MISSILE 0x70f /* drakormissile (drakormissile_startActiveLaunch) */
 #define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* spawnAttackObjects: BossdrakorPlacement (airMeterMax/curveStartIndex) */
 #define BOSSDRAKOR_OBJFLAG_RENDERED 0x800
@@ -113,7 +113,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
         switch (eventId)
         {
         case 6:
-            target = ObjGroup_FindNearestObject(DBHOLECONTROL1_OBJGROUP, obj, 0);
+            target = ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
             if ((void*)target != NULL && (obj)->childCount != 0)
             {
                 (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)&((GameObject*)target)->anim.dll) + 0x20)))(target, 2);
@@ -121,7 +121,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             }
             break;
         case 7:
-            target = ObjGroup_FindNearestObject(DBHOLECONTROL1_OBJGROUP, obj, 0);
+            target = ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
             if ((void*)target != NULL)
             {
                 (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)&((GameObject*)target)->anim.dll) + 0x20)))(target, 0);

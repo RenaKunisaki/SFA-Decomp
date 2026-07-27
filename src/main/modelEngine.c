@@ -139,6 +139,7 @@
 #include "dlls/objects/341.h"
 #include "dlls/objects/342.h"
 #include "dlls/objects/343_SpiritDoorS.h"
+#include "dlls/objects/344.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -270,8 +271,8 @@ extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireO
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor,
     gGmMazeWellObjDescriptor;
-extern ResourceDescriptor gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor, gIMAnimSpaceCraftObjDescriptor,
-    gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
+extern ResourceDescriptor gHighTopObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor,
+    gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
@@ -1341,7 +1342,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll155NullResourceDescriptor,
     (ResourceDescriptor*)&gDll156NullResourceDescriptor,
     (ResourceDescriptor*)&gSpiritDoorSpiritObjDescriptor,
-    &gGunPowderBarrelObjDescriptor,
+    (ResourceDescriptor*)&gGunpowderBarrelObjDescriptor,
     &gBlastedObjDescriptor,
     &gExplodableObjDescriptor,
     &gCFForceFieldObjDescriptor,

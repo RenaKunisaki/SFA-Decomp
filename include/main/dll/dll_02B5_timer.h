@@ -7,6 +7,8 @@
 
 struct ModelLightStruct;
 
+#define TIMER_OBJECT_GROUP 0x4C
+
 typedef struct TimerFlags
 {
     u8 expired : 1;
