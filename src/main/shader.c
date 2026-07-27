@@ -789,7 +789,7 @@ void mapLoadUnloadObjects(int flag)
                 int j2;
                 for (j2 = 0; j2 < count; j2++)
                 {
-                    if (*w == *idPtr)
+                    if (*w == *(s16*)(void*)idPtr)
                     {
                         dup = 1;
                         break;
@@ -855,11 +855,12 @@ void mapLoadUnloadObjects(int flag)
                 }
                 if (obj->anim.seqId == SHADER_SNOWBIKE_OBJ)
                 {
+                    int slotId = obj->anim.mapEventSlot;
                     s16 j3 = 0;
                     s16* w2 = list;
                     for (; j3 < count; j3++)
                     {
-                        if (obj->anim.mapEventSlot == *w2)
+                        if (slotId == *w2)
                             break;
                         w2++;
                     }
