@@ -1,5 +1,5 @@
 /*
- * dll95func0 (DLL 0x95) - func00/func01 are empty no-op slots; func03
+ * DLL 149 / 0x95 - func00/func01 are empty no-op slots; func03
  * spawns a 7-part modgfx effect via gModgfxInterface->spawnEffect.
  *
  * The effect is described by a ModgfxSpawnPacket with an inline array of
@@ -8,8 +8,6 @@
  * built-in float values. When the effect flags bit 0
  * is set the world-space position is offset by the source object's
  * position (sourceObj+0x18) and/or the posSource transform (posSource+0xc).
- *
- * Similar layout to the dll_009B screenfx types (ScreenFxHdr/ScreenFxPart).
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
@@ -25,8 +23,6 @@ u8 lbl_803DB940[8] = {0, 4, 0, 5, 0, 6, 0, 7};
 
 
 extern u8 lbl_80317528[];
-/* contiguous .sdata2 float constant table, 0x803E1298..0x803E12B8 (0x24 bytes);
-   declared as individual scalars because the array form changes the access reloc */
 
 void dll_95_func03(int sourceObj, int variant, int posSource)
 {

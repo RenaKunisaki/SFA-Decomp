@@ -884,7 +884,7 @@ main/dll/dll_0094_dll94func0.c:
 	.sdata      start:0x803DB938 end:0x803DB940
 	.sdata2     start:0x803E1268 end:0x803E1294
 
-main/dll/dll_0095_dll95func0.c:
+dlls/modgfx/149/149.c:
 	.text       start:0x800FB428 end:0x800FB720
 	.sdata      start:0x803DB940 end:0x803DB948
 	.sdata2     start:0x803E1298 end:0x803E12BC
