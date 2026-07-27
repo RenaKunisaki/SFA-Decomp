@@ -1,15 +1,3 @@
-/*
- * effect15 (DLL 0x28) - a particle/effect spawn table.
- *
- * Effect15_func04 is the sole worker: given an effectId in 0x3e8..0x3fc it
- * fills an EffectSpawnConfig (PartFxSpawn) - randomised position/velocity/
- * scale/lifetime, texture id, behaviour + render flags - and submits it via
- * gExpgfxInterface->spawnEffect. spawnFlags bit 0x200000 selects the
- * caller-supplied PartFxSpawnParams source transform; behaviourFlags bit 0
- * then offsets the start position by the attached source's world position
- * (object fields +0x18/+0x1c/+0x20). The remaining entry points are empty
- * DLL lifecycle stubs.
- */
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"

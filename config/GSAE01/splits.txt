@@ -508,7 +508,7 @@ dlls/engine/41/41.c:
 	.sbss       start:0x803DD3C0 end:0x803DD3D0
 	.sdata2     start:0x803E00A8 end:0x803E0110
 
-main/dll/dll_0028_effect15.c:
+dlls/engine/40/40.c:
 	.text       start:0x800C9140 end:0x800CA3CC
 	.data       start:0x80310F38 end:0x80310FB4
 	.bss        start:0x8039C428 end:0x8039C440
