@@ -1,68 +1,61 @@
 /*
- * texscroll (DLL 0x135) - minimal per-placement texture-scroll object.
- * A pared-down sibling of texscroll2 (DLL 0x134): texscroll_init copies
- * the placement's scroll step rates and game bit into its extra state
- * (TexScrollState, 0x1C bytes) and zeroes the running UV offsets on a
- * cold load (loadFlags == 0). update/hitDetect are stubs here; render
- * just forwards a fixed scale to objRenderModelAndHitVolumes when visible.
- * init guards on state == NULL before writing (absent in texscroll2).
+ * Minimal per-placement texture scroller. It copies the placement rates
+ * into object state and resets the running offsets on a cold load.
  */
-#include "main/dll/dll_0135_texscroll.h"
+#include "dlls/objects/309_texscroll.h"
+
+#include "game/objects/object.h"
 #include "main/object_render.h"
 
-int texscroll_getExtraSize(void)
-{
-    return TEXSCROLL_EXTRA_STATE_BYTES;
-}
-int texscroll_getObjectTypeId(void)
-{
-    return 0x0;
+#define TEXSCROLL_RENDER_SCALE 1.0f
+
+int TexScroll_getExtraSize(void) {
+    return sizeof(TexScrollState);
 }
 
-void texscroll_free(void)
-{
+int TexScroll_getObjectTypeId(void) {
+    return 0;
 }
 
-void texscroll_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void TexScroll_free(void) {
 }
 
-void texscroll_hitDetect(void)
-{
+void TexScroll_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibility = visible;
+    if (visibility != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, TEXSCROLL_RENDER_SCALE);
+    }
 }
 
-void texscroll_update(void)
-{
+void TexScroll_hitDetect(void) {
 }
 
-void texscroll_init(TexScrollObject* obj, TexScrollPlacement* placement, int loadFlags)
-{
-    TexScrollState* state = obj->state;
-    if (state == NULL)
+void TexScroll_update(void) {
+}
+
+void TexScroll_init(GameObject* obj, TexScrollPlacement* placement, int loadFlags) {
+    TexScrollState* state = obj->extra;
+
+    if (state == NULL) {
         return;
+    }
     state->initLock = 1;
     state->stepX = (s16)(s32)placement->stepX;
     state->stepY = (s16)(s32)placement->stepY;
     state->scrollSlot = 0;
     state->flags = 0;
     state->gameBit = placement->gameBit;
-    if (loadFlags == 0)
-    {
+    if (loadFlags == 0) {
         state->offsetX = 0;
         state->offsetY = 0;
     }
     state->initLock = 0;
 }
 
-void texscroll_release(void)
-{
+void TexScroll_release(void) {
 }
 
-void texscroll_initialise(void)
-{
+void TexScroll_initialise(void) {
 }
 
 ObjectDescriptor gTexscrollObjDescriptor = {
@@ -70,14 +63,14 @@ ObjectDescriptor gTexscrollObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)texscroll_initialise,
-    (ObjectDescriptorCallback)texscroll_release,
+    (ObjectDescriptorCallback)TexScroll_initialise,
+    (ObjectDescriptorCallback)TexScroll_release,
     0,
-    (ObjectDescriptorCallback)texscroll_init,
-    (ObjectDescriptorCallback)texscroll_update,
-    (ObjectDescriptorCallback)texscroll_hitDetect,
-    (ObjectDescriptorCallback)texscroll_render,
-    (ObjectDescriptorCallback)texscroll_free,
-    (ObjectDescriptorCallback)texscroll_getObjectTypeId,
-    texscroll_getExtraSize,
+    (ObjectDescriptorCallback)TexScroll_init,
+    (ObjectDescriptorCallback)TexScroll_update,
+    (ObjectDescriptorCallback)TexScroll_hitDetect,
+    (ObjectDescriptorCallback)TexScroll_render,
+    (ObjectDescriptorCallback)TexScroll_free,
+    (ObjectDescriptorCallback)TexScroll_getObjectTypeId,
+    TexScroll_getExtraSize,
 };
