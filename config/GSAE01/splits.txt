@@ -992,7 +992,7 @@ main/dll/dll_00AE_projroombeam.c:
 	.text       start:0x801005F8 end:0x80100630
 	.data       start:0x80319480 end:0x803194C8
 
-main/dll/dll_00AF_projlightning1.c:
+dlls/projgfx/175/175.c:
 	.text       start:0x80100630 end:0x80100668
 	.data       start:0x803194C8 end:0x80319518
 

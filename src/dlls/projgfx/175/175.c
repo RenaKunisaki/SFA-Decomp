@@ -1,5 +1,5 @@
 /*
- * projlightning1 (DLL 0x00AF) - retired "lightning 1" projectile object.
+ * projlightning1 (DLL 175 / 0x00AF) - retired "lightning 1" projectile object.
  *
  * The object's behaviour was cut from the shipping game: its "do" entry
  * point now only logs a "no longer supported" message and returns the
