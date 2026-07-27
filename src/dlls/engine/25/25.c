@@ -27,6 +27,7 @@
 
 #include "main/camera_interface.h"
 #include "main/dll/CAM/camcloudrunner_state.h"
+#include "dlls/objects/237.h"
 #include "game/objects/object_setup.h"
 #include "main/mapEvent.h"
 #include "main/dll/path_control_interface.h"
@@ -528,7 +529,7 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
 {
     GameObject* source = obj;
     u8* state = (u8*)obj->anim.placementData;
-    ObjPlacement* setup;
+    CollectibleSetup* setup;
     u16 ids1[4];
     u16 ids2[4];
     int idx;
@@ -554,7 +555,7 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
         {
             idx = 3;
         }
-        setup = Obj_AllocObjectSetup(48, ids1[idx]);
+        setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids1[idx]);
         scale = 30.0f;
     }
     if ((((Dll19Placement*)state)->stateFlags & 0xf000) != 0)
@@ -564,7 +565,7 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
         {
             idx = 3;
         }
-        setup = Obj_AllocObjectSetup(48, ids2[idx]);
+        setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids2[idx]);
         scale = 30.0f;
     }
     if ((int)(u8)((Dll19Placement*)state)->stateFlags != 0)
@@ -572,19 +573,19 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
         switch (spawnType)
         {
         case 1:
-            setup = Obj_AllocObjectSetup(48, DLL19_CHILD_OBJ_MAGIC_DUST);
+            setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), DLL19_CHILD_OBJ_MAGIC_DUST);
             scale = 30.0f;
             break;
         case 2:
-            setup = Obj_AllocObjectSetup(48, DLL19_CHILD_OBJ_ENERGY_GEM1);
+            setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), DLL19_CHILD_OBJ_ENERGY_GEM1);
             scale = 30.0f;
             break;
         case 3:
-            setup = Obj_AllocObjectSetup(48, DLL19_CHILD_OBJ_ENERGY_EGG);
+            setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), DLL19_CHILD_OBJ_ENERGY_EGG);
             scale = 30.0f;
             break;
         case 4:
-            setup = Obj_AllocObjectSetup(48, DLL19_CHILD_OBJ_MAGIC_DUST);
+            setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), DLL19_CHILD_OBJ_MAGIC_DUST);
             scale = 30.0f;
             break;
         case 5:
@@ -621,36 +622,36 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
             }
             return gDll19NearestObj;
         case 6:
-            setup = Obj_AllocObjectSetup(48, DLL19_CHILD_OBJ_MOON_SEED);
-            *(u8*)((u8*)setup + 27) = 0;
-            *(u8*)((u8*)setup + 34) = 0;
-            *(u8*)((u8*)setup + 35) = 64;
+            setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), DLL19_CHILD_OBJ_MOON_SEED);
+            setup->rotXByte = 0;
+            setup->rotYByte = 0;
+            setup->rotZByte = 64;
             scale = 25.0f;
             break;
         default:
             return 0;
         }
     }
-    *(u8*)((u8*)setup + 26) = 20;
-    *(s16*)((u8*)setup + 44) = -1;
-    *(s16*)((u8*)setup + 28) = -1;
-    *(s16*)((u8*)setup + 36) = -1;
-    setup->posX = source->anim.localPosX;
-    setup->posY = source->anim.localPosY + scale;
-    setup->posZ = source->anim.localPosZ;
+    setup->unk1A = 20;
+    setup->counterGameBit = -1;
+    setup->hideGameBit = -1;
+    setup->visibilityGameBit = -1;
+    setup->base.posX = source->anim.localPosX;
+    setup->base.posY = source->anim.localPosY + scale;
+    setup->base.posZ = source->anim.localPosZ;
     if ((u8)alt != 0)
     {
-        *(s16*)((u8*)setup + 46) = 2;
+        setup->spawnMode = 2;
     }
     else
     {
-        *(s16*)((u8*)setup + 46) = 1;
+        setup->spawnMode = 1;
     }
-    setup->color[0] = state[4];
-    setup->color[2] = state[6];
-    setup->color[1] = state[5];
-    setup->color[3] = state[7];
-    gDll19NearestObj = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
+    setup->base.color[0] = state[4];
+    setup->base.color[2] = state[6];
+    setup->base.color[1] = state[5];
+    setup->base.color[3] = state[7];
+    gDll19NearestObj = Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
     return gDll19NearestObj;
 }
 
