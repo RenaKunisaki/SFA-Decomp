@@ -1,293 +1,213 @@
-/*
- * SpiritPrize (DLL 0x17A) - the collectible Krazoa-spirit prize object.
- *
- * Spawns and animates a coloured point light around the prize, runs its
- * trigger/animation sequence each update tick, and periodically plays an
- * ambient sfx near the player. On init it loads the placement's anim data
- * (skipping placements tagged with the SPIRITPRIZE_PLACEMENT_DISABLED
- * sentinel) and creates the light - detached or object-bound depending on
- * the spawn seqId. On update, once its sequence ends (seqIndex == -2) it
- * scans the object list to hand its sequence off to a matching live object
- * and frees itself.
- */
+#include "dlls/objects/378_SpiritPrize.h"
+
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "main/dll/objfx_api.h"
-#include "main/frame_timing.h"
-#include "main/model_light.h"
-#include "sys/objects.h"
-#include "main/objseq.h"
-#include "main/obj_list.h"
-#include "main/lightmap_api.h"
-#include "main/vecmath.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/objfx_api.h"
+#include "main/frame_timing.h"
+#include "main/lightmap_api.h"
+#include "main/obj_list.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/dll_19C.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 extern u8 lbl_803DB411;
 
-/* placements carrying this id in their mapId are inert and never spawn */
-#define SPIRITPRIZE_PLACEMENT_DISABLED 0x4ca62
+#define SPIRIT_PRIZE_DISABLED_MAP_ID       0x4CA62
+#define SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID    0x1D9
+#define SPIRIT_PRIZE_SEQUENCE_CLASS_ID     0x10
+#define SPIRIT_PRIZE_OBJECT_TYPE_ID        0x8
+#define SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE   7
+#define SPIRIT_PRIZE_EVENT_BIND_LIGHT      1
+#define SPIRIT_PRIZE_EVENT_DETACH_LIGHT    2
+#define SPIRIT_PRIZE_AMBIENT_SFX_MIN_DELAY 0xB4
+#define SPIRIT_PRIZE_AMBIENT_SFX_MAX_DELAY 0xF0
+#define SPIRIT_PRIZE_AMBIENT_SFX_MAP_CELL  0xB
 
-/* the one spawn seqId that gets an object-bound point light; all other
-   seqIds use a detached light (see docblock). */
-#define SPIRITPRIZE_SEQID_OBJECTBOUND_LIGHT 0x1d9
-
-/* anim.classId of a spirit-prize object */
-#define SPIRITPRIZE_CLASS_ID 0x10
-
-typedef struct SpiritPrizePlacement
-{
-    u8 pad0[0x14 - 0x0];
-    s32 mapId;        /* 0x14: placement map id; == DISABLED sentinel means inert */
-    s16 triggerOrder; /* 0x18: trigger sequence index; -1 = none, stored as obj->userData1 = +1 */
-    s16 mapParam1A;   /* 0x1a: copied to state->mapParam1A */
-    u8 pad1C[0x24 - 0x1C];
-    u8 scaleParam; /* 0x24: feeds spawnScale = base / (base + scaleParam) */
-    u8 pad25[0x40 - 0x25];
-} SpiritPrizePlacement;
-
-typedef struct SpiritPrizeState
-{
-    u8 pad00[0x24];
-    f32 spawnScale;
-    s32 triggerHandle;
-    u8 pad2C[0x57 - 0x2C];
-    u8 prizeId;
-    u8 pad58[0x6A - 0x58];
-    s16 mapParam1A;
-    u8 pad6C[0x6E - 0x6C];
-    s16 targetObjectId;
-    u8 pad70[0x81 - 0x70];
-    u8 queuedActions[0x8B - 0x81];
-    u8 queuedActionCount;
-    u8 pad8C[0x140 - 0x8C];
-    ModelLightStruct* light;
-    u8 useDetachedLight;
-    u8 pad145[0x148 - 0x145];
-    f32 sfxTimer;
-} SpiritPrizeState;
-
-
-int SpiritPrize_getExtraSize(void)
-{
+int spiritPrize_getExtraSize(void) {
     return sizeof(SpiritPrizeState);
 }
 
-int SpiritPrize_getObjectTypeId(void)
-{
-    return 0x8;
+int spiritPrize_getObjectTypeId(void) {
+    return SPIRIT_PRIZE_OBJECT_TYPE_ID;
 }
 
-void SpiritPrize_free(GameObject* obj)
-{
+void spiritPrize_free(GameObject* obj) {
     SpiritPrizeState* state;
     ModelLightStruct* light;
 
     state = obj->extra;
     light = state->light;
-    if (light != NULL)
-    {
+    if (light != NULL) {
         ModelLightStruct_free(light);
         state->light = NULL;
         state->useDetachedLight = 0;
     }
-    (*gObjectTriggerInterface)->freeState((u8*)state);
+    (*gObjectTriggerInterface)->freeState((u8*)&state->sequence);
 }
 
-void SpiritPrize_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void spiritPrize_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     SpiritPrizeState* state;
     s32 isVisible;
 
     state = obj->extra;
     isVisible = visible;
-    if (isVisible != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        if (state->useDetachedLight != 0)
-        {
-            objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, state->light);
-        }
-        else
-        {
-            objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, NULL);
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        if (state->useDetachedLight != 0) {
+            objParticleFn_80099d84(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, state->light);
+        } else {
+            objParticleFn_80099d84(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, NULL);
         }
     }
 }
 
-void SpiritPrize_hitDetect(void)
-{
+void spiritPrize_hitDetect(void) {
 }
 
-void SpiritPrize_update(GameObject* obj)
-{
-    u8* params;
+void spiritPrize_update(GameObject* obj) {
+    const SpiritPrizePlacement* placement;
     SpiritPrizeState* state;
-    int childObj;
+    GameObject* candidateObj;
     int objectCount;
     int objectIndex;
-    int* objects;
-    int i;
+    GameObject** objects;
+    int eventIndex;
 
-    params = *(u8**)&(obj)->anim.placementData;
-    state = (obj)->extra;
-    if (params == NULL)
-    {
+    placement = (const SpiritPrizePlacement*)obj->anim.placementData;
+    state = obj->extra;
+    if (placement == NULL) {
         return;
     }
-    if (((SpiritPrizePlacement*)params)->triggerOrder == -1)
-    {
+    if (placement->animDataIndex == -1) {
         return;
     }
-    if (((SpiritPrizePlacement*)params)->mapId == SPIRITPRIZE_PLACEMENT_DISABLED)
-    {
+    if (placement->base.mapId == SPIRIT_PRIZE_DISABLED_MAP_ID) {
         return;
     }
 
-    for (i = 0; i < state->queuedActionCount; i++)
-    {
-        switch (state->queuedActions[i])
-        {
-        case 1:
+    for (eventIndex = 0; eventIndex < state->sequence.eventCount; eventIndex++) {
+        switch (state->sequence.eventIds[eventIndex]) {
+        case SPIRIT_PRIZE_EVENT_BIND_LIGHT:
             state->useDetachedLight = 0;
             break;
-        case 2:
+        case SPIRIT_PRIZE_EVENT_DETACH_LIGHT:
             state->useDetachedLight = 1;
             break;
         }
     }
 
     objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
-    if (objectIndex != 0 && (obj)->seqIndex == -2)
-    {
-        int matchingObj;
-        int prizeId;
-        int cnt[1];
-        int pid[1];
+    if (objectIndex != 0 && obj->seqIndex == -2) {
+        GameObject* matchingObj;
+        int sequenceSlot;
+        int scanLimit[1];
+        int slotArg[1];
         int duplicateCount[1];
 
-        prizeId = *(s8*)&state->prizeId;
-        matchingObj = 0;
+        sequenceSlot = state->sequence.slot;
+        matchingObj = NULL;
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
-        cnt[0] = 0;
-        pid[0] = 0;
+        scanLimit[0] = 0;
+        slotArg[0] = 0;
         duplicateCount[0] = 0;
         objectIndex = duplicateCount[0];
-        pid[0] = (u32)prizeId;
-        cnt[0] = objectCount;
-        while (objectIndex < cnt[0])
-        {
-            childObj = objects[objectIndex];
-            if (((GameObject*)childObj)->seqIndex == prizeId)
-            {
-                matchingObj = childObj;
+        slotArg[0] = (u32)sequenceSlot;
+        scanLimit[0] = objectCount;
+        while (objectIndex < scanLimit[0]) {
+            candidateObj = objects[objectIndex];
+            if (candidateObj->seqIndex == sequenceSlot) {
+                matchingObj = candidateObj;
             }
-            if (((GameObject*)childObj)->seqIndex == -2 &&
-                ((GameObject*)childObj)->anim.classId == SPIRITPRIZE_CLASS_ID &&
-                pid[0] == (s8)((SpiritPrizeState*)*(int*)&((GameObject*)childObj)->extra)->prizeId)
-            {
+            if (candidateObj->seqIndex == -2 && candidateObj->anim.classId == SPIRIT_PRIZE_SEQUENCE_CLASS_ID &&
+                slotArg[0] == ((SpiritPrizeState*)candidateObj->extra)->sequence.slot) {
                 duplicateCount[0]++;
             }
             objectIndex++;
         }
-        if (duplicateCount[0] <= 1 && (void*)matchingObj != NULL && ((GameObject*)matchingObj)->seqIndex != -1)
-        {
-            ((GameObject*)matchingObj)->seqIndex = -1;
-            (*gObjectTriggerInterface)->endSequence(pid[0]);
+        if (duplicateCount[0] <= 1 && matchingObj != NULL && matchingObj->seqIndex != -1) {
+            matchingObj->seqIndex = -1;
+            (*gObjectTriggerInterface)->endSequence(slotArg[0]);
         }
-        (obj)->seqIndex = -1;
+        obj->seqIndex = -1;
         Obj_FreeObject(obj);
     }
 
-    state->sfxTimer -= timeDelta;
-    if (state->sfxTimer < 0.0f)
-    {
+    state->ambientSfxTimer -= timeDelta;
+    if (state->ambientSfxTimer < 0.0f) {
         GameObject* player;
 
         player = Obj_GetPlayerObject();
-        state->sfxTimer = (f32)(s32)randomGetRange(0xb4, 0xf0);
-        if ((obj)->anim.mapEventSlot == -1 &&
-            ((void*)player == NULL ||
-             coordsToMapCell(player->anim.localPosX, player->anim.localPosZ) == 0xb))
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_pda);
+        state->ambientSfxTimer =
+            (f32)(s32)randomGetRange(SPIRIT_PRIZE_AMBIENT_SFX_MIN_DELAY, SPIRIT_PRIZE_AMBIENT_SFX_MAX_DELAY);
+        if (obj->anim.mapEventSlot == -1 &&
+            (player == NULL ||
+             coordsToMapCell(player->anim.localPosX, player->anim.localPosZ) == SPIRIT_PRIZE_AMBIENT_SFX_MAP_CELL)) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_pda);
         }
     }
 }
 
-void SpiritPrize_init(GameObject* obj, u8* init)
-{
-    SpiritPrizePlacement* placement;
+void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
     SpiritPrizeState* state;
-    int triggerId;
+    int loadedAnimDataIndexPlusOne;
 
-    placement = (SpiritPrizePlacement*)init;
     state = obj->extra;
-    if (placement->mapId == SPIRITPRIZE_PLACEMENT_DISABLED)
+    if (placement->base.mapId == SPIRIT_PRIZE_DISABLED_MAP_ID) {
         return;
-    state->mapParam1A = placement->mapParam1A;
-    state->targetObjectId = -1;
-    state->spawnScale = 1.0f / (1.0f + (f32)(u32)placement->scaleParam);
-    state->triggerHandle = -1;
-    triggerId = obj->userData1;
-    if (triggerId == 0 && placement->triggerOrder != 1)
-    {
-        (*gObjectTriggerInterface)->loadAnimData((u8*)state, init);
-        obj->userData1 = placement->triggerOrder + 1;
     }
-    else if (triggerId != 0 && placement->triggerOrder != triggerId - 1)
-    {
-        (*gObjectTriggerInterface)->freeState((u8*)state);
-        if (placement->triggerOrder != -1)
-        {
-            (*gObjectTriggerInterface)->loadAnimData((u8*)state, init);
+    state->sequence.gameBit = placement->sequenceGameBit;
+    state->sequence.flags = -1;
+    state->sequence.posOffsetDecay = 1.0f / (1.0f + (f32)(u32)placement->positionDamping);
+    state->sequence.curveId = -1;
+    loadedAnimDataIndexPlusOne = obj->userData1;
+    if (loadedAnimDataIndexPlusOne == 0 && placement->animDataIndex != 1) {
+        (*gObjectTriggerInterface)->loadAnimData((u8*)&state->sequence, (u8*)placement);
+        obj->userData1 = placement->animDataIndex + 1;
+    } else if (loadedAnimDataIndexPlusOne != 0 && placement->animDataIndex != loadedAnimDataIndexPlusOne - 1) {
+        (*gObjectTriggerInterface)->freeState((u8*)&state->sequence);
+        if (placement->animDataIndex != -1) {
+            (*gObjectTriggerInterface)->loadAnimData((u8*)&state->sequence, (u8*)placement);
         }
-        obj->userData1 = placement->triggerOrder + 1;
+        obj->userData1 = placement->animDataIndex + 1;
     }
-    if (obj->anim.seqId != SPIRITPRIZE_SEQID_OBJECTBOUND_LIGHT)
-    {
+    if (obj->anim.seqId != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
         state->useDetachedLight = 1;
     }
-    if (state->light == NULL)
-    {
+    if (state->light == NULL) {
         state->light = objCreateLight(state->useDetachedLight != 0 ? NULL : obj, 1);
-        if (state->light != NULL)
-        {
+        if (state->light != NULL) {
             modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-            modelLightStruct_setDiffuseColor(state->light, 0x96, 0x32, 0xff, 0xff);
+            modelLightStruct_setDiffuseColor(state->light, 0x96, 0x32, 0xFF, 0xFF);
             modelLightStruct_setDistanceAttenuation(state->light, 80.0f, 100.0f);
         }
     }
     obj->anim.alpha = 0;
     obj->anim.pad37[0] = 0;
-    state->sfxTimer = (f32)(s32)randomGetRange(0xb4, 0xf0);
+    state->ambientSfxTimer =
+        (f32)(s32)randomGetRange(SPIRIT_PRIZE_AMBIENT_SFX_MIN_DELAY, SPIRIT_PRIZE_AMBIENT_SFX_MAX_DELAY);
 }
 
-void SpiritPrize_release(void)
-{
+void spiritPrize_release(void) {
 }
 
-void SpiritPrize_initialise(void)
-{
+void spiritPrize_initialise(void) {
 }
-
 
 ObjectDescriptor gSpiritPrizeObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)SpiritPrize_initialise,
-    (ObjectDescriptorCallback)SpiritPrize_release,
+    (ObjectDescriptorCallback)spiritPrize_initialise,
+    (ObjectDescriptorCallback)spiritPrize_release,
     0,
-    (ObjectDescriptorCallback)SpiritPrize_init,
-    (ObjectDescriptorCallback)SpiritPrize_update,
-    (ObjectDescriptorCallback)SpiritPrize_hitDetect,
-    (ObjectDescriptorCallback)SpiritPrize_render,
-    (ObjectDescriptorCallback)SpiritPrize_free,
-    (ObjectDescriptorCallback)SpiritPrize_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)SpiritPrize_getExtraSize,
+    (ObjectDescriptorCallback)spiritPrize_init,
+    (ObjectDescriptorCallback)spiritPrize_update,
+    (ObjectDescriptorCallback)spiritPrize_hitDetect,
+    (ObjectDescriptorCallback)spiritPrize_render,
+    (ObjectDescriptorCallback)spiritPrize_free,
+    (ObjectDescriptorCallback)spiritPrize_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)spiritPrize_getExtraSize,
 };

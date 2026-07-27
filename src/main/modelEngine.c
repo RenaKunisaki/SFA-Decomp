@@ -172,6 +172,7 @@
 #include "dlls/objects/375.h"
 #include "dlls/objects/376_DFSH_Shrine.h"
 #include "dlls/objects/377_DFSH_ObjCre.h"
+#include "dlls/objects/378_SpiritPrize.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -334,8 +335,8 @@ extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPSca
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
     gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
-extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritPrizeObjDescriptor,
-    gStaffObjDescriptor, gStaticCameraObjDescriptor;
+extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gStaffObjDescriptor,
+    gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
@@ -1402,7 +1403,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll177ObjDescriptor,
     (ResourceDescriptor*)&gDFSHShrineObjDescriptor,
     (ResourceDescriptor*)&gDFSHObjCreatorObjDescriptor,
-    &gSpiritPrizeObjDescriptor,
+    (ResourceDescriptor*)&gSpiritPrizeObjDescriptor,
     &gDFSH_LaserBeamObjDescriptor,
     &lbl_803230F8,
     &gRollingBarrelObjDescriptor,
