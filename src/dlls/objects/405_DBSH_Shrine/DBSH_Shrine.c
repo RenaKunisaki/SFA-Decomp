@@ -56,9 +56,6 @@
 #define DBSH_SHRINE_TRANSITION_ROTATION    0x7FFF
 
 #define DBSH_SHRINE_GAMEBIT_015F     0x15F
-#define DBSH_SHRINE_GAMEBIT_016A     0x16A
-#define DBSH_SHRINE_GAMEBIT_016B     0x16B
-#define DBSH_SHRINE_GAMEBIT_016C     0x16C
 #define DBSH_SHRINE_GAMEBIT_0C72     0xC72
 #define DBSH_SHRINE_GAMEBIT_0C73     0xC73
 #define DBSH_SHRINE_GAMEBIT_APPROACH 0xDD3
@@ -291,14 +288,14 @@ void dbshShrine_update(GameObject* obj) {
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         if (state->flags.riseSequenceReady != 0) {
             state->phase = DBSH_SHRINE_PHASE_ACTIVE;
-            mainSetBits(DBSH_SHRINE_GAMEBIT_016A, 1);
+            mainSetBits(DBSH_GAMEBIT_SYMBOL_RISE_COMPLETE, 1);
         }
         break;
     case DBSH_SHRINE_PHASE_ACTIVE:
-        if (mainGetBit(DBSH_SHRINE_GAMEBIT_016B) != 0) {
+        if (mainGetBit(DBSH_GAMEBIT_SYMBOL_SPIN_SUCCEEDED) != 0) {
             state->phase = DBSH_SHRINE_PHASE_CLOSING;
             state->unknown0C = 0;
-        } else if (mainGetBit(DBSH_SHRINE_GAMEBIT_016C) != 0) {
+        } else if (mainGetBit(DBSH_GAMEBIT_SYMBOL_SPIN_FAILED) != 0) {
             state->phase = DBSH_SHRINE_PHASE_RESET;
             mainSetBits(DBSH_SHRINE_GAMEBIT_0C72, 1);
             state->unknown0C = 10;
@@ -316,9 +313,9 @@ void dbshShrine_update(GameObject* obj) {
         state->unknown0C = 0;
         mainSetBits(DBSH_SHRINE_GAMEBIT_APPROACH, 0);
         mainSetBits(DBSH_SHRINE_GAMEBIT_015F, 0);
-        mainSetBits(DBSH_SHRINE_GAMEBIT_016A, 0);
-        mainSetBits(DBSH_SHRINE_GAMEBIT_016B, 0);
-        mainSetBits(DBSH_SHRINE_GAMEBIT_016C, 0);
+        mainSetBits(DBSH_GAMEBIT_SYMBOL_RISE_COMPLETE, 0);
+        mainSetBits(DBSH_GAMEBIT_SYMBOL_SPIN_SUCCEEDED, 0);
+        mainSetBits(DBSH_GAMEBIT_SYMBOL_SPIN_FAILED, 0);
         mainSetBits(DBSH_SHRINE_GAMEBIT_0C72, 0);
         mainSetBits(DBSH_SHRINE_GAMEBIT_0C73, 0);
         break;

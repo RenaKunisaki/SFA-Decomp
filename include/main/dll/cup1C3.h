@@ -5,12 +5,6 @@
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
 
-int DBSH_Symbol_SeqFn(int obj, int anim, ObjAnimUpdateState* animUpdate);
-void DBSH_Symbol_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-int DBSH_Symbol_getExtraSize(void);
-void DBSH_Symbol_free(void);
-void DBSH_Symbol_update(GameObject* obj);
-void DBSH_Symbol_init(GameObject* obj);
 int dll_197_getExtraSize(void);
 int dll_197_getObjectTypeId(void);
 void dll_197_free(int obj);
