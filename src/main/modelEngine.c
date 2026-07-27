@@ -144,6 +144,7 @@
 #include "dlls/objects/346.h"
 #include "dlls/objects/347_CFForceFiel.h"
 #include "dlls/objects/348_CFForceFiel.h"
+#include "dlls/objects/349.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -309,7 +310,7 @@ extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPSca
     gSPitembeamObjDescriptor, gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
     gShopKeeperObjDescriptor, gShopObjDescriptor;
-extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
+extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
     gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
@@ -1351,7 +1352,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gExplodableObjDescriptor,
     (ResourceDescriptor*)&gCFForceFieldObjDescriptor,
     (ResourceDescriptor*)&gCFForceField15CNullResourceDescriptor,
-    &gSlidingDoorObjDescriptor,
+    (ResourceDescriptor*)&gSlidingDoorObjDescriptor,
     &lbl_803DBEA8,
     &gAttractorObjDescriptor,
     &lbl_803DBEB8,
