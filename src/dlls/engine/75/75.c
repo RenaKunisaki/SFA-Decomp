@@ -1,21 +1,5 @@
 /*
- * cameramodeclimb (DLL 0x4B) - camera mode used while the player is
- * climbing. Owns a single heap-allocated CameraModeClimbState
- * (gCamClimbState).
- *
- * _init(mode) seeds that state: mode 2 reads a 6-byte arg block
- * (duration, distance, min/max height, relative-position angle) and
- * sets up a transition FROM the live values TO those targets; mode 1
- * (and any other) zeroes the state and primes a 60-step default
- * transition by sampling the active camera handler's defaults.
- *
- * _update(camObj) ticks the transition timer (lerping distance, min/max
- * height and relative position toward their targets), drives the camera
- * height toward the view target's clamped height band, smooths the
- * follow distance, orbits the camera around the view target by the
- * relative-position angle, traces the move against geometry, then yaws
- * camObj toward the target and converts the world point into the
- * camera's local frame.
+ * DLL 75 / 0x4B - climbing camera mode.
  */
 #include "main/dll/CAM/camclimb_state.h"
 #include "main/resource.h"

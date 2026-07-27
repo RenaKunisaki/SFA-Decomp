@@ -1175,7 +1175,7 @@ main/dll/dll_004A_cameramodeshipbattle.c:
 	.data       start:0x80319D18 end:0x80319D48
 	.sbss       start:0x803DD570 end:0x803DD578
 
-main/dll/dll_004B_cameramodeclimb.c:
+dlls/engine/75/75.c:
 	.text       start:0x8010D33C end:0x8010DAD4
 	.data       start:0x80319D48 end:0x80319D78
 	.sbss       start:0x803DD578 end:0x803DD580
