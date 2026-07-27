@@ -1,106 +1,98 @@
 /*
- * MMP_Bridge (DLL 0x10F) - Moon Mountain Pass scrolling-texture bridge.
+ * MMP_Bridge (DLL slot 271).
  *
- * The bridge spawns with its hit collision disabled. Once the placement
- * gamebit (MmpBridgePlacement::enableBit) is set, collision is enabled and
- * the surface texture scrolls (offsetS advances by timeDelta each frame)
- * up to a fully-extended offset, animating the bridge into place.
+ * Deploys the Moon Mountain Pass bridge and scrolls its surface texture.
  */
+#include "dlls/objects/271_MMP_Bridge.h"
 
 #include "game/objects/object.h"
 #include "main/debug.h"
-#include "main/objtexture.h"
-#include "main/gamebits.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
 #include "main/objhits.h"
-#include "main/dll/MMP/dll_010F_mmpbridge.h"
-#include "dlls/object_descriptor.h"
+#include "main/objtexture.h"
 
-char lbl_803DBD90[] = "S %d\n";
+char sMMPBridgeTextureOffsetDebugFormat[] = "S %d\n";
 
-#define BRIDGE_TEX_OFFSET_START 0x800
-#define BRIDGE_TEX_OFFSET_MAX   0x131f
+#define MMP_BRIDGE_TEXTURE_SLOT         0
+#define MMP_BRIDGE_TEXTURE_INDEX        0
+#define MMP_BRIDGE_TEXTURE_OFFSET_START 0x800
+#define MMP_BRIDGE_TEXTURE_OFFSET_MAX   0x131F
+#define MMP_BRIDGE_TEXTURE_SCROLL_SHIFT 3
+#define MMP_BRIDGE_ROTATION_SHIFT       8
 
-int mmp_bridge_getExtraSize(void)
-{
-    return 0x0;
-}
-int mmp_bridge_getObjectTypeId(void)
-{
-    return 0x0;
+int MMP_Bridge_getExtraSize(void) {
+    return 0;
 }
 
-void mmp_bridge_free(void)
-{
+int MMP_Bridge_getObjectTypeId(void) {
+    return 0;
 }
 
-void mmp_bridge_render(void)
-{
+void MMP_Bridge_free(GameObject* obj) {
+    (void)obj;
 }
 
-void mmp_bridge_hitDetect(void)
-{
+void MMP_Bridge_render(void) {
 }
 
-void mmp_bridge_update(GameObject* obj)
-{
-    MmpBridgePlacement* placement = (MmpBridgePlacement*)obj->anim.placementData;
-    ObjTextureRuntimeSlot* tex;
+void MMP_Bridge_hitDetect(void) {
+}
+
+void MMP_Bridge_update(GameObject* obj) {
+    MMPBridgePlacement* placement = (MMPBridgePlacement*)obj->anim.placementData;
+    ObjTextureRuntimeSlot* texture;
     int nextOffset;
 
-    if (mainGetBit(placement->enableBit) != 0)
-    {
-        tex = objFindTexture(obj, 0, 0);
-        if (tex != NULL)
-        {
-            nextOffset = tex->offsetS + ((int)timeDelta << 3);
-            tex->offsetS = nextOffset;
-            nextOffset = tex->offsetS + ((int)timeDelta << 3);
-            if (nextOffset >= BRIDGE_TEX_OFFSET_MAX)
-            {
-                tex->offsetS = BRIDGE_TEX_OFFSET_MAX;
+    if (mainGetBit(placement->enableGameBit) != 0) {
+        texture = objFindTexture(obj, MMP_BRIDGE_TEXTURE_SLOT, MMP_BRIDGE_TEXTURE_INDEX);
+        if (texture != NULL) {
+            nextOffset = texture->offsetS + ((int)timeDelta << MMP_BRIDGE_TEXTURE_SCROLL_SHIFT);
+            texture->offsetS = nextOffset;
+            nextOffset = texture->offsetS + ((int)timeDelta << MMP_BRIDGE_TEXTURE_SCROLL_SHIFT);
+            if (nextOffset >= MMP_BRIDGE_TEXTURE_OFFSET_MAX) {
+                texture->offsetS = MMP_BRIDGE_TEXTURE_OFFSET_MAX;
             }
-            logPrintf(lbl_803DBD90, tex->offsetS);
+            logPrintf(sMMPBridgeTextureOffsetDebugFormat, texture->offsetS);
         }
         ObjHits_EnableObject(obj);
     }
 }
 
-void mmp_bridge_init(GameObject* obj)
-{
-    MmpBridgePlacement* placement = (MmpBridgePlacement*)obj->anim.placementData;
-    ObjTextureRuntimeSlot* tex = objFindTexture(obj, 0, 0);
-    if (tex != NULL)
-    {
-        tex->offsetS = BRIDGE_TEX_OFFSET_START;
+void MMP_Bridge_init(GameObject* obj) {
+    MMPBridgePlacement* placement = (MMPBridgePlacement*)obj->anim.placementData;
+    ObjTextureRuntimeSlot* texture = objFindTexture(obj, MMP_BRIDGE_TEXTURE_SLOT, MMP_BRIDGE_TEXTURE_INDEX);
+
+    if (texture != NULL) {
+        texture->offsetS = MMP_BRIDGE_TEXTURE_OFFSET_START;
     }
-    obj->anim.rotX = (s16)(placement->rotXByte << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << MMP_BRIDGE_ROTATION_SHIFT);
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     ObjHits_DisableObject(obj);
-    if (mainGetBit(placement->enableBit) != 0)
-    {
+    if (mainGetBit(placement->enableGameBit) != 0) {
         ObjHits_EnableObject(obj);
     }
 }
 
-void mmp_bridge_release(void)
-{
+void MMP_Bridge_release(void) {
 }
 
-void mmp_bridge_initialise(void)
-{
+void MMP_Bridge_initialise(void) {
 }
 
 ObjectDescriptor gMMP_BridgeObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    mmp_bridge_initialise,
-    mmp_bridge_release,
     0,
-    (ObjectDescriptorCallback)mmp_bridge_init,
-    (ObjectDescriptorCallback)mmp_bridge_update,
-    (ObjectDescriptorCallback)mmp_bridge_hitDetect,
-    (ObjectDescriptorCallback)mmp_bridge_render,
-    (ObjectDescriptorCallback)mmp_bridge_free,
-    (ObjectDescriptorCallback)mmp_bridge_getObjectTypeId,
-    mmp_bridge_getExtraSize,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)MMP_Bridge_initialise,
+    (ObjectDescriptorCallback)MMP_Bridge_release,
+    0,
+    (ObjectDescriptorCallback)MMP_Bridge_init,
+    (ObjectDescriptorCallback)MMP_Bridge_update,
+    (ObjectDescriptorCallback)MMP_Bridge_hitDetect,
+    (ObjectDescriptorCallback)MMP_Bridge_render,
+    (ObjectDescriptorCallback)MMP_Bridge_free,
+    (ObjectDescriptorCallback)MMP_Bridge_getObjectTypeId,
+    MMP_Bridge_getExtraSize,
 };
