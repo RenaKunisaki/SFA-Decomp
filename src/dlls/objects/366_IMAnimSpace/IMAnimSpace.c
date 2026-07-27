@@ -17,23 +17,19 @@
 
 PartFxSpawnParams gIMAnimSpacePartFxParams;
 
-void imAnimSpace_modelMtxCallback(void)
-{
+void imAnimSpace_modelMtxCallback(void) {
 }
 
-u32 imAnimSpace_getEventFlag(GameObject* obj)
-{
+u32 imAnimSpace_getEventFlag(GameObject* obj) {
     IMAnimSpaceState* state = obj->extra;
 
     return state->eventFlags & IM_ANIM_SPACE_FLAG_TOGGLE_4;
 }
 
-int imAnimSpace_setScale(GameObject* obj, int bitIndex)
-{
+int imAnimSpace_setScale(GameObject* obj, int bitIndex) {
     IMAnimSpaceState* state = obj->extra;
 
-    switch (state->submodelMask & (1 << bitIndex))
-    {
+    switch (state->submodelMask & (1 << bitIndex)) {
     default:
         return TRUE;
     case 0:
@@ -62,8 +58,7 @@ ObjectDescriptor13 gIMAnimSpaceObjDescriptor = {
 };
 
 int imAnimSpace_sequenceCallback(
-    GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate)
-{
+    GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
     IMAnimSpaceState* state;
     int eventIndex;
     ObjTextureRuntimeSlot* texture;
@@ -71,20 +66,15 @@ int imAnimSpace_sequenceCallback(
     state = obj->extra;
     texture = objFindTexture(obj, 1, 0);
     texture->textureId = ((state->eventFlags >> 1 & 1) ^ 1) << 8;
-    if (!(state->eventFlags & IM_ANIM_SPACE_FLAG_BLINK_ON))
-    {
-        if ((state->blinkTimer -= framesThisStep) < 0)
-        {
+    if (!(state->eventFlags & IM_ANIM_SPACE_FLAG_BLINK_ON)) {
+        if ((state->blinkTimer -= framesThisStep) < 0) {
             state->eventFlags |= IM_ANIM_SPACE_FLAG_BLINK_ON;
             state->blinkTimer = 0x78;
         }
-    }
-    else
-    {
+    } else {
         state->eventFlags &= ~IM_ANIM_SPACE_FLAG_BLINK_ON;
     }
-    if (state->eventFlags & IM_ANIM_SPACE_FLAG_BLINK_ON)
-    {
+    if (state->eventFlags & IM_ANIM_SPACE_FLAG_BLINK_ON) {
         gIMAnimSpacePartFxParams.posX = 143.0f;
         gIMAnimSpacePartFxParams.posY = 16.0f;
         gIMAnimSpacePartFxParams.posZ = -79.0f;
@@ -100,12 +90,10 @@ int imAnimSpace_sequenceCallback(
     }
     texture = objFindTexture(obj, 0, 0);
     texture->textureId = 0x100;
-    for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++)
-    {
+    for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         u32 eventId = animUpdate->eventIds[eventIndex];
 
-        switch (eventId)
-        {
+        switch (eventId) {
         case 1:
             state->submodelMask = (u8)(state->submodelMask ^ (1 << (eventId - 1)));
             break;
@@ -132,47 +120,38 @@ int imAnimSpace_sequenceCallback(
     return 0;
 }
 
-int imAnimSpace_getExtraSize(void)
-{
+int imAnimSpace_getExtraSize(void) {
     return sizeof(IMAnimSpaceState);
 }
 
-int imAnimSpace_getObjectTypeId(void)
-{
+int imAnimSpace_getObjectTypeId(void) {
     return 0;
 }
 
-void imAnimSpace_free(GameObject* obj)
-{
+void imAnimSpace_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
 void imAnimSpace_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
-{
-    if (visible != 0)
-    {
+    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
         objRenderModelAndHitVolumes(
             obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void imAnimSpace_hitDetect(void)
-{
+void imAnimSpace_hitDetect(void) {
 }
 
-void imAnimSpace_update(GameObject* obj)
-{
-    if (obj->userData1 != 0)
-    {
+void imAnimSpace_update(GameObject* obj) {
+    if (obj->userData1 != 0) {
         return;
     }
 
     obj->userData1 = 1;
 }
 
-void imAnimSpace_init(GameObject* obj)
-{
+void imAnimSpace_init(GameObject* obj) {
     f32 position;
 
     obj->animEventCallback = imAnimSpace_sequenceCallback;
@@ -187,10 +166,8 @@ void imAnimSpace_init(GameObject* obj)
     mainSetBits(GAMEBIT_IM_Unk0BEF, 1);
 }
 
-void imAnimSpace_release(void)
-{
+void imAnimSpace_release(void) {
 }
 
-void imAnimSpace_initialise(void)
-{
+void imAnimSpace_initialise(void) {
 }
