@@ -6,7 +6,7 @@
  * game bit (placement->resultGameBit) and marks itself done (state->flags |= 1)
  * so it never fires again.
  *
- * Lives in OBJ_GROUP 0x1A alongside the sister xyzanimator (0x51) that drives
+ * Lives in object group 0x1A alongside the sister XYZAnimator that drives
  * continuous map-geometry deformation.
  */
 #include "main/dll/partfx_interface.h"

@@ -111,6 +111,8 @@
 #include "dlls/objects/313_HitAnimator.h"
 #include "dlls/objects/314_VisAnimator.h"
 #include "dlls/objects/315_WallAnimato.h"
+#include "dlls/objects/316_XYZAnimator.h"
+#include "dlls/objects/318.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -218,8 +220,7 @@ extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFSH_Door2SpeciObjDescrip
     gDFSH_ObjCreatorObjDescriptor, gDFSH_ShrineObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
-    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor,
-    gDIMBossIceSmashObjDescriptor;
+    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor;
 extern ResourceDescriptor gDIMBridgeCogMaiObjDescriptor, gDIMCannonObjDescriptor, gDIMDismountPointObjDescriptor,
     gDIMGateObjDescriptor, gDIMIceWallObjDescriptor, gDIMLavaSmashObjDescriptor, gDIMLogFireObjDescriptor,
     gDIMMagicBridgeObjDescriptor;
@@ -304,7 +305,7 @@ extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gW
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWarpStoneLiftObjDescriptor,
     gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor,
-    gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor, lbl_8030EE34;
+    gWorldPlanetObjDescriptor, lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
     lbl_8030FCA8, lbl_80310604;
 extern ResourceDescriptor lbl_80310638, lbl_80310670, lbl_80310808, lbl_803108A0, lbl_803109B8, lbl_80310A20,
@@ -1292,9 +1293,9 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gHitAnimatorObjDescriptor,
     (ResourceDescriptor*)&gVisAnimatorObjDescriptor,
     (ResourceDescriptor*)&gWallAnimatorObjDescriptor,
-    &gXYZAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gXYZAnimatorObjDescriptor,
     &gExplodeAnimatorObjDescriptor,
-    &gDIMBossIceSmashObjDescriptor,
+    (ResourceDescriptor*)&gDIMBossIceSmashObjDescriptor,
     &gTexFrameAnimatorObjDescriptor,
     &gFogControlObjDescriptor,
     &gLightningObjDescriptor,

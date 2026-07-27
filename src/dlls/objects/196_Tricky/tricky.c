@@ -106,7 +106,7 @@
 #include "main/dll/SH/dll_01B3_shbeacon.h"
 #include "main/main_internal.h"
 #include "main/dll/baddie_frozen.h"
-#include "main/dll/xyzanimator_api.h"
+#include "dlls/objects/316_XYZAnimator.h"
 #include "main/dll/dll_0014_unk.h"
 #include "main/pi_dolphin_texture_api.h"
 #include "main/pi_dolphin_path_api.h"
@@ -7823,9 +7823,7 @@ typedef void (*TrickyHandlerFn)(int obj, int state);
 /* GameObject.objectFlags bit (distinct field from stateFlags above). */
 #define TRICKY_OBJFLAG_PARENT_SLACK            0x1000
 #define TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID 0x46406
-#define TRICKY_HEIGHT_TRACK_GROUP              0x51
 #define TRICKY_OBJGROUP                        1
-#define TRICKY_HEIGHT_TRACK_MODEL_SLOT         3
 #define TRICKY_BBOX_HIT_SCRATCH_SIZE           84
 int lbl_803DDA4C;
 u32 gTrickyHelperObject;
@@ -8740,13 +8738,13 @@ void Tricky_hitDetect(GameObject* obj)
     if ((((TrickyState*)state)->statusFlags >> 5 & 1) != 0u)
     {
         {
-            GameObject** t = (GameObject**)ObjGroup_GetObjects(TRICKY_HEIGHT_TRACK_GROUP, count);
+            GameObject** t = (GameObject**)ObjGroup_GetObjects(XYZ_ANIMATOR_OBJECT_GROUP, count);
             i = 0;
             objects = t;
         }
         for (; i < count[0]; i++)
         {
-            height = objFn_801948c0(*objects, TRICKY_HEIGHT_TRACK_MODEL_SLOT);
+            height = XyzAnimator_getCoordinate(*objects, XYZ_ANIMATOR_COORD_WORLD_Y);
             if (*(s32*)&((TrickyState*)state)->heightTrackObjId == -1)
             {
                 dy = (height - obj->anim.localPosY >= lbl_803E23DC) ? height - obj->anim.localPosY

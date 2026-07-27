@@ -144,6 +144,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   TU. If a helper is called only with another object's larger state and accesses beyond the owner's
   `getExtraSize`, model the owning state and the cross-object helper overlay as separate types,
   assert both layouts, and keep the cast explicit at the reuse boundary.
+- Do not cast one object's state to an unrelated object's type merely because useful fields happen
+  to share offsets. Recover those fields in the owning state; share a state type only when allocation
+  and behavioral evidence establish a real common contract.
 - When retail code provably reads or writes past an allocation or object boundary, preserve and
   document the exact access without enlarging the owning type to make the bug appear in bounds.
   Keep the allocation-backed size assertion, use an explicit byte access for the overrun, and audit

@@ -11,7 +11,7 @@
 #include "main/track_dolphin_api.h"
 #include "game/objects/object.h"
 #include "main/obj_list.h"
-#include "main/dll/xyzanimator_api.h"
+#include "dlls/objects/316_XYZAnimator.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_018E_mmshwaterspike.h"
 #include "dlls/object_descriptor.h"
@@ -68,7 +68,7 @@ void mmsh_waterspike_update(GameObject* obj)
     animObj = ObjList_FindObjectById(MMSHWATERSPIKE_XYZ_ANIM_ID(obj));
     if (animObj != NULL)
     {
-        riseDelta = objFn_801948c0(animObj, 3) - obj->anim.localPosY;
+        riseDelta = XyzAnimator_getCoordinate(animObj, XYZ_ANIMATOR_COORD_WORLD_Y) - obj->anim.localPosY;
     }
     else
     {

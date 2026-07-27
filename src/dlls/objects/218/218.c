@@ -11,7 +11,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_limited_object_api.h"
-#include "main/dll/MMP/MMP_asteroid.h"
 #include "dolphin/mtx/vec.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
@@ -88,7 +87,7 @@ typedef struct PollenFragmentExtra
         };
         Vec velocity;
     };
-    u8 unk18[4];
+    ModelLightStruct* modelLight; /* 0x18 */
     PollenFragmentDef* def; /* 0x1C */
     f32 deathTimer;         /* 0x20 */
     f32 lifetimeTimer;      /* 0x24 */
@@ -108,11 +107,11 @@ int pollenfragment_getObjectTypeId(void)
 
 void pollenfragment_free(GameObject* obj)
 {
-    int* inner = obj->extra;
-    if ((void*)inner[6] != NULL)
+    PollenFragmentExtra* state = obj->extra;
+    if (state->modelLight != NULL)
     {
-        ModelLightStruct_free((void*)inner[6]);
-        inner[6] = 0;
+        ModelLightStruct_free(state->modelLight);
+        state->modelLight = NULL;
     }
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
@@ -325,12 +324,12 @@ void pollenfragment_init(GameObject* obj, int config)
     state = *(u32**)&(obj)->extra;
     if (*(char*)(config + 0x19) == '\x01')
     {
-        *(float*)&((XyzAnimatorState*)state)->edgeCount = 155.0f;
+        ((PollenFragmentExtra*)state)->timer = 155.0f;
     }
     else
     {
         randomValue = randomGetRange(0xb4, 300);
-        *(float*)&((XyzAnimatorState*)state)->edgeCount = (float)(int)randomValue;
+        ((PollenFragmentExtra*)state)->timer = (f32)(int)randomValue;
     }
     pollenType = *(s8*)(config + 0x19);
     pollenType = (pollenType < 0) ? 0 : ((pollenType > 5u) ? 5 : pollenType);
@@ -347,12 +346,12 @@ void pollenfragment_init(GameObject* obj, int config)
     } while (spawnCount-- != 0);
     if (!((PollenFragmentDef*)state[7])->timed)
     {
-        *(float*)&((XyzAnimatorState*)state)->edgeCount = 60.0f;
+        ((PollenFragmentExtra*)state)->timer = 60.0f;
     }
     ObjHits_SetTargetMask(obj, 4);
-    ((XyzAnimatorState*)state)->unk18 = 0;
-    *(f32*)&((XyzAnimatorState*)state)->vertexCount = *(f32*)(state[7] + 0xc);
-    ((XyzAnimatorState*)state)->rowCount = 0;
+    ((PollenFragmentExtra*)state)->modelLight = NULL;
+    ((PollenFragmentExtra*)state)->speed = *(f32*)(state[7] + 0xc);
+    ((PollenFragmentExtra*)state)->ownerObj = 0;
     s16toFloat((f32*)(state + 9), 0xe10);
     storeZeroToFloatParam(&((PollenFragmentExtra*)state)->deathTimer);
 }

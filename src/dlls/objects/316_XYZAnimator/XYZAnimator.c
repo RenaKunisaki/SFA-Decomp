@@ -1,749 +1,571 @@
-/*
- * XYZAnimator (DLL 0x13C) - drives a smooth offset animation of a map
- * block's vertices/edges along the X/Y/Z axes.
- *
- * On first update the object copies the source map block's vertex and
- * edge positions into a freshly mmAlloc'd buffer (XyzAnimator_captureGeometry), then on
- * each tick walks an offset vec toward the placement's per-axis targets
- * and writes the displaced positions back into the live block
- * (XyzAnimator_applyToMapBlock). The placement animation mode selects the drive style:
- *   0/4 = one-shot toward target (sets the completion game bit),
- *   1   = looping (per-axis wrap), 2 = game-bit gated forward/reverse.
- * A game bit gates whether the animation runs.
- */
-#include "main/audio/sfx.h"
-#include "main/lightmap_api.h"
-#include "main/pi_dolphin_api.h"
-#include "game/objects/object.h"
-#include "main/dll/MMP/MMP_asteroid.h"
-#include "main/gamebits.h"
-#include "main/obj_group.h"
-#include "main/mm.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
-#include "main/map_block.h"
+/* Applies a game-bit-controlled XYZ offset to map-block polygons and edges. */
+#include "dlls/objects/316_XYZAnimator.h"
+
 #include "dolphin/os/OSCache.h"
-#include "dlls/object_descriptor.h"
+#include "game/objects/object.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/lightmap_api.h"
+#include "main/map_block.h"
+#include "main/mm.h"
+#include "main/obj_group.h"
+#include "main/object_render.h"
+#include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/track_dolphin_sky_api.h"
-#include "main/dll/xyzanimator_api.h"
 
-typedef struct MapBlockHdr
-{
-    u16 start;
-    u16 pad1[2];
+typedef struct XyzAnimatorPolygonGroup {
+    u16 firstTriangle;
+    u16 pad02[2];
     s16 posA;
     s16 posB;
-} MapBlockHdr;
+} XyzAnimatorPolygonGroup;
 
-typedef struct VertexS16
-{
+typedef struct XyzAnimatorVertex {
     s16 x;
     s16 y;
     s16 z;
-} VertexS16;
+} XyzAnimatorVertex;
 
-typedef struct EdgeVerts
-{
-    u8 pad[6];
+typedef struct XyzAnimatorEdge {
+    u8 pad00[6];
     s16 v0x;
     s16 v0y;
     s16 v0z;
     s16 v1x;
     s16 v1y;
     s16 v1z;
-} EdgeVerts;
+} XyzAnimatorEdge;
 
-#define XYZANIMATOR_OBJGROUP 0x51
+STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, firstTriangle) == 0x00);
+STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, posA) == 0x06);
+STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, posB) == 0x08);
+STATIC_ASSERT(sizeof(XyzAnimatorVertex) == 0x06);
+STATIC_ASSERT(offsetof(XyzAnimatorEdge, v0x) == 0x06);
+STATIC_ASSERT(offsetof(XyzAnimatorEdge, v0y) == 0x08);
+STATIC_ASSERT(offsetof(XyzAnimatorEdge, v0z) == 0x0A);
+STATIC_ASSERT(offsetof(XyzAnimatorEdge, v1x) == 0x0C);
+STATIC_ASSERT(offsetof(XyzAnimatorEdge, v1y) == 0x0E);
+STATIC_ASSERT(offsetof(XyzAnimatorEdge, v1z) == 0x10);
 
-
-f32 objFn_801948c0(GameObject* obj, u8 coord)
-{
+f32 XyzAnimator_getCoordinate(GameObject* obj, u8 coordinate) {
     XyzAnimatorState* state;
 
-    if (obj == NULL || (state = (XyzAnimatorState*)obj->extra, state == NULL))
-    {
+    if (obj == NULL || (state = (XyzAnimatorState*)obj->extra, state == NULL)) {
         return 0.0f;
     }
-    switch (coord)
-    {
-    case 1:
+    switch (coordinate) {
+    case XYZ_ANIMATOR_COORD_WORLD_X:
         return obj->anim.localPosX + state->offsetX;
-    case 2:
+    case XYZ_ANIMATOR_COORD_OFFSET_X:
         return state->offsetX;
-    case 3:
+    case XYZ_ANIMATOR_COORD_WORLD_Y:
         return obj->anim.localPosY + state->offsetY;
-    case 4:
+    case XYZ_ANIMATOR_COORD_OFFSET_Y:
         return state->offsetY;
-    case 5:
+    case XYZ_ANIMATOR_COORD_WORLD_Z:
         return obj->anim.localPosZ + state->offsetZ;
-    case 6:
+    case XYZ_ANIMATOR_COORD_OFFSET_Z:
         return state->offsetZ;
     }
     return 0.0f;
 }
 
-void XyzAnimator_captureGeometry(XyzAnimatorPlacement* setup, XyzAnimatorState* state, int block)
-{
-    int edgeOffset[1];
-    int coordOffset[1];
-    int triangleOffset[1];
+void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorState* state, int blockAddress) {
+    int vertexDataOffset[1];
+    int groupDataOffset[1];
+    int triangleDataOffset[1];
     int blockIndex;
     int triangle;
-    int blockEnd;
-    u16* mapBlock;
-    int blockLayer;
-    int edge[1];
-    int edgeIdx[1];
-    VertexS16* vtx;
-    MapBlockData* mb = (MapBlockData*)block;
+    int triangleEnd;
+    u16* mapEntry;
+    int polygonGroupType;
+    int edgeBufferOffset[1];
+    int edgeIndex[1];
+    XyzAnimatorVertex* vertex;
+    MapBlockData* blockData = (MapBlockData*)blockAddress;
 
-    edgeOffset[0] = 0;
-    edge[0] = 0;
+    vertexDataOffset[0] = 0;
+    edgeBufferOffset[0] = 0;
     blockIndex = 0;
-    coordOffset[0] = 0;
-    triangleOffset[0] = coordOffset[0];
-    for (; blockIndex < (int)(u32)mb->polyGroupCount; blockIndex++)
-    {
-        mapBlock = mapBlockGetPolygonGroup((void*)block, blockIndex);
-        blockLayer = mapBlockGetPolygonGroupType(mapBlock);
-        if ((int)setup->blockLayer == blockLayer)
-        {
-            *(s16*)(state->posABuffer + coordOffset[0]) = ((MapBlockHdr*)mapBlock)->posA;
-            *(s16*)(state->posBBuffer + coordOffset[0]) = ((MapBlockHdr*)mapBlock)->posB;
-            coordOffset[0] += 2;
-            blockEnd = mapBlock[10];
-            triangle = *mapBlock;
-            edgeOffset[0] = triangleOffset[0];
-            for (; triangle < blockEnd; triangle++)
-            {
-                int o6;
-                int o12;
-                mapBlock = mapBlockGetPolygon((int*)block, triangle);
-                vtx = (VertexS16*)(mb->vertices + (u32)*mapBlock * 6);
-                *(s16*)(state->dataBuffer + edgeOffset[0]) = vtx->x;
-                *(s16*)(state->dataBuffer + edgeOffset[0] + 2) = vtx->y;
-                *(s16*)(state->dataBuffer + edgeOffset[0] + 4) = vtx->z;
-                o6 = edgeOffset[0] + 6;
-                vtx = (VertexS16*)(mb->vertices + mapBlock[1] * 6);
-                *(s16*)(state->dataBuffer + o6) = vtx->x;
-                *(s16*)(state->dataBuffer + o6 + 2) = vtx->y;
-                *(s16*)(state->dataBuffer + o6 + 4) = vtx->z;
-                o12 = o6 + 6;
-                vtx = (VertexS16*)(mb->vertices + mapBlock[2] * 6);
-                *(s16*)(state->dataBuffer + o12) = vtx->x;
-                *(s16*)(state->dataBuffer + o12 + 2) = vtx->y;
-                *(s16*)(state->dataBuffer + o12 + 4) = vtx->z;
-                edgeOffset[0] += 0x12;
-                triangleOffset[0] += 0x12;
+    groupDataOffset[0] = 0;
+    triangleDataOffset[0] = groupDataOffset[0];
+    for (; blockIndex < (int)(u32)blockData->polyGroupCount; blockIndex++) {
+        mapEntry = mapBlockGetPolygonGroup((void*)blockAddress, blockIndex);
+        polygonGroupType = mapBlockGetPolygonGroupType(mapEntry);
+        if ((int)placement->blockLayer == polygonGroupType) {
+            *(s16*)(state->posABuffer + groupDataOffset[0]) = ((XyzAnimatorPolygonGroup*)mapEntry)->posA;
+            *(s16*)(state->posBBuffer + groupDataOffset[0]) = ((XyzAnimatorPolygonGroup*)mapEntry)->posB;
+            groupDataOffset[0] += 2;
+            triangleEnd = mapEntry[10];
+            triangle = *mapEntry;
+            vertexDataOffset[0] = triangleDataOffset[0];
+            for (; triangle < triangleEnd; triangle++) {
+                int vertex1Offset;
+                int vertex2Offset;
+                mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
+                vertex = (XyzAnimatorVertex*)(blockData->vertices + (u32)*mapEntry * 6);
+                *(s16*)(state->geometryBuffer + vertexDataOffset[0]) = vertex->x;
+                *(s16*)(state->geometryBuffer + vertexDataOffset[0] + 2) = vertex->y;
+                *(s16*)(state->geometryBuffer + vertexDataOffset[0] + 4) = vertex->z;
+                vertex1Offset = vertexDataOffset[0] + 6;
+                vertex = (XyzAnimatorVertex*)(blockData->vertices + mapEntry[1] * 6);
+                *(s16*)(state->geometryBuffer + vertex1Offset) = vertex->x;
+                *(s16*)(state->geometryBuffer + vertex1Offset + 2) = vertex->y;
+                *(s16*)(state->geometryBuffer + vertex1Offset + 4) = vertex->z;
+                vertex2Offset = vertex1Offset + 6;
+                vertex = (XyzAnimatorVertex*)(blockData->vertices + mapEntry[2] * 6);
+                *(s16*)(state->geometryBuffer + vertex2Offset) = vertex->x;
+                *(s16*)(state->geometryBuffer + vertex2Offset + 2) = vertex->y;
+                *(s16*)(state->geometryBuffer + vertex2Offset + 4) = vertex->z;
+                vertexDataOffset[0] += 0x12;
+                triangleDataOffset[0] += 0x12;
             }
         }
     }
-    edgeIdx[0] = 0;
-    edge[0] = edgeIdx[0];
-    for (; edgeIdx[0] < (int)(u32)mb->edgeCount; edgeIdx[0]++)
-    {
-        blockIndex = (int)mapBlockGetEdge((int*)block, edgeIdx[0]);
-        *(s16*)(state->edgeV0xBuffer + edge[0]) = ((EdgeVerts*)blockIndex)->v0x;
-        *(s16*)(state->edgeV1xBuffer + edge[0]) = ((EdgeVerts*)blockIndex)->v1x;
-        *(s16*)(state->edgeV0yBuffer + edge[0]) = ((EdgeVerts*)blockIndex)->v0y;
-        *(s16*)(state->edgeV1yBuffer + edge[0]) = ((EdgeVerts*)blockIndex)->v1y;
-        *(s16*)(state->edgeV0zBuffer + edge[0]) = ((EdgeVerts*)blockIndex)->v0z;
-        *(s16*)(state->edgeV1zBuffer + edge[0]) = ((EdgeVerts*)blockIndex)->v1z;
-        edge[0] += 2;
+    edgeIndex[0] = 0;
+    edgeBufferOffset[0] = edgeIndex[0];
+    for (; edgeIndex[0] < (int)(u32)blockData->edgeCount; edgeIndex[0]++) {
+        blockIndex = (int)mapBlockGetEdge((int*)blockAddress, edgeIndex[0]);
+        *(s16*)(state->edgeV0xBuffer + edgeBufferOffset[0]) = ((XyzAnimatorEdge*)blockIndex)->v0x;
+        *(s16*)(state->edgeV1xBuffer + edgeBufferOffset[0]) = ((XyzAnimatorEdge*)blockIndex)->v1x;
+        *(s16*)(state->edgeV0yBuffer + edgeBufferOffset[0]) = ((XyzAnimatorEdge*)blockIndex)->v0y;
+        *(s16*)(state->edgeV1yBuffer + edgeBufferOffset[0]) = ((XyzAnimatorEdge*)blockIndex)->v1y;
+        *(s16*)(state->edgeV0zBuffer + edgeBufferOffset[0]) = ((XyzAnimatorEdge*)blockIndex)->v0z;
+        *(s16*)(state->edgeV1zBuffer + edgeBufferOffset[0]) = ((XyzAnimatorEdge*)blockIndex)->v1z;
+        edgeBufferOffset[0] += 2;
     }
 }
 
-int XyzAnimator_getExtraSize(void)
-{
-    return 0x50;
+int XyzAnimator_getExtraSize(void) {
+    return sizeof(XyzAnimatorState);
 }
 
-void XyzAnimator_free(GameObject* obj, int flag)
-{
-    int block;
+void XyzAnimator_free(GameObject* obj, int flags) {
+    int blockAddress;
     XyzAnimatorState* state;
-    XyzAnimatorPlacement* setup;
-    f32 zero;
+    XyzAnimatorPlacement* placement;
+    f32 zeroOffset;
 
     state = (XyzAnimatorState*)(obj)->extra;
-    setup = (XyzAnimatorPlacement*)obj->anim.placementData;
-    zero = 0.0f;
-    state->offsetX = zero;
-    state->offsetY = zero;
-    state->offsetZ = zero;
-    if (flag == 0)
-    {
-        block = objPosToMapBlockIdx((double)(obj)->anim.localPosX, (double)(obj)->anim.localPosY,
-                                    (double)(obj)->anim.localPosZ);
-        block = (int)mapGetBlock(block);
-        if (((void*)block != NULL) && (state->vertexCount != 0))
-        {
-            XyzAnimator_applyToMapBlock(setup, state, block);
+    placement = (XyzAnimatorPlacement*)obj->anim.placementData;
+    zeroOffset = 0.0f;
+    state->offsetX = zeroOffset;
+    state->offsetY = zeroOffset;
+    state->offsetZ = zeroOffset;
+    if (flags == 0) {
+        blockAddress = objPosToMapBlockIdx((double)(obj)->anim.localPosX, (double)(obj)->anim.localPosY,
+                                           (double)(obj)->anim.localPosZ);
+        blockAddress = (int)mapGetBlock(blockAddress);
+        if (((void*)blockAddress != NULL) && (state->vertexCount != 0)) {
+            XyzAnimator_applyToMapBlock(placement, state, blockAddress);
         }
     }
-    if ((void*)state->dataBuffer != NULL)
-    {
-        mm_free((void*)state->dataBuffer);
+    if ((void*)state->geometryBuffer != NULL) {
+        mm_free((void*)state->geometryBuffer);
     }
-    ObjGroup_RemoveObject((int)obj, XYZANIMATOR_OBJGROUP);
+    ObjGroup_RemoveObject((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
 }
 
-void XyzAnimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void XyzAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* def, XyzAnimatorState* state, int block)
-{
-    VertexS16* vtx;
-    MapBlockData* mb = (MapBlockData*)block;
+void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorState* state, int blockAddress) {
+    XyzAnimatorVertex* vertex;
+    MapBlockData* blockData = (MapBlockData*)blockAddress;
     int vertexOffset[1];
     int vertexIndex;
-    int blockIndex;
-    int blockLayer;
-    int edgeOffset;
-    u16* mapBlock;
+    int polygonGroupIndex;
+    int polygonGroupType;
+    int dataOffset;
+    u16* mapEntry;
     f32 scale;
     int triangle;
-    int blockEnd;
+    int triangleEnd;
     int edgeIndex;
-    int coordOffset[1];
-    void* shader;
+    int groupDataOffset[1];
+    void* shaderLayer;
 
-    blockIndex = 0;
-    coordOffset[0] = 0;
-    vertexOffset[0] = coordOffset[0];
-    for (; blockIndex < (int)(u32)mb->polyGroupCount; blockIndex++)
-    {
-        mapBlock = mapBlockGetPolygonGroup((void*)block, blockIndex);
-        blockLayer = mapBlockGetPolygonGroupType(mapBlock);
-        if ((int)def->blockLayer == blockLayer)
-        {
-            ((MapBlockHdr*)mapBlock)->posA = (s16)(state->offsetY + (f32) * (s16*)(state->posABuffer + coordOffset[0]));
-            ((MapBlockHdr*)mapBlock)->posB = (s16)(state->offsetY + (f32) * (s16*)(state->posBBuffer + coordOffset[0]));
-            coordOffset[0] += 2;
-            blockEnd = mapBlock[10];
-            triangle = *mapBlock;
+    polygonGroupIndex = 0;
+    groupDataOffset[0] = 0;
+    vertexOffset[0] = groupDataOffset[0];
+    for (; polygonGroupIndex < (int)(u32)blockData->polyGroupCount; polygonGroupIndex++) {
+        mapEntry = mapBlockGetPolygonGroup((void*)blockAddress, polygonGroupIndex);
+        polygonGroupType = mapBlockGetPolygonGroupType(mapEntry);
+        if ((int)placement->blockLayer == polygonGroupType) {
+            ((XyzAnimatorPolygonGroup*)mapEntry)->posA =
+                (s16)(state->offsetY + (f32) * (s16*)(state->posABuffer + groupDataOffset[0]));
+            ((XyzAnimatorPolygonGroup*)mapEntry)->posB =
+                (s16)(state->offsetY + (f32) * (s16*)(state->posBBuffer + groupDataOffset[0]));
+            groupDataOffset[0] += 2;
+            triangleEnd = mapEntry[10];
+            triangle = *mapEntry;
             vertexIndex = vertexOffset[0];
             scale = 8.0f;
-            for (; triangle < blockEnd; triangle++)
-            {
-                mapBlock = mapBlockGetPolygon((int*)block, triangle);
-                edgeOffset = vertexIndex;
-                for (edgeIndex = 3; edgeIndex != 0; edgeIndex--)
-                {
-                    vtx = (VertexS16*)(mb->vertices + (u32)*mapBlock * 6);
-                    vtx->x = (s16)(scale * state->offsetX + (f32) * (s16*)(state->dataBuffer + edgeOffset));
-                    vtx->y = (s16)(scale * state->offsetY + (f32) * (s16*)(state->dataBuffer + edgeOffset + 2));
-                    vtx->z = (s16)(scale * state->offsetZ + (f32) * (s16*)(state->dataBuffer + edgeOffset + 4));
-                    edgeOffset += 6;
+            for (; triangle < triangleEnd; triangle++) {
+                mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
+                dataOffset = vertexIndex;
+                for (edgeIndex = 3; edgeIndex != 0; edgeIndex--) {
+                    vertex = (XyzAnimatorVertex*)(blockData->vertices + (u32)*mapEntry * 6);
+                    vertex->x = (s16)(scale * state->offsetX + (f32) * (s16*)(state->geometryBuffer + dataOffset));
+                    vertex->y = (s16)(scale * state->offsetY + (f32) * (s16*)(state->geometryBuffer + dataOffset + 2));
+                    vertex->z = (s16)(scale * state->offsetZ + (f32) * (s16*)(state->geometryBuffer + dataOffset + 4));
+                    dataOffset += 6;
                     vertexIndex += 6;
                     vertexOffset[0] += 6;
-                    mapBlock++;
+                    mapEntry++;
                 }
             }
         }
     }
-    DCStoreRange((void*)mb->vertices, (u32)mb->vertexCount * 6);
+    DCStoreRange((void*)blockData->vertices, (u32)blockData->vertexCount * 6);
     edgeIndex = 0;
-    edgeOffset = edgeIndex;
-    for (; edgeIndex < (int)(u32)mb->edgeCount; edgeIndex++)
-    {
-        vertexOffset[0] = (int)mapBlockGetEdge((int*)block, edgeIndex);
-        shader = mapBlockGetShader((MapBlockData*)block, *(u8*)(vertexOffset[0] + 0x13));
-        shader = Shader_getLayer(shader, 0);
-        if ((int)*(u8*)((int)shader + 5) == def->blockLayer)
-        {
+    dataOffset = edgeIndex;
+    for (; edgeIndex < (int)(u32)blockData->edgeCount; edgeIndex++) {
+        vertexOffset[0] = (int)mapBlockGetEdge((int*)blockAddress, edgeIndex);
+        shaderLayer = mapBlockGetShader((MapBlockData*)blockAddress, *(u8*)(vertexOffset[0] + 0x13));
+        shaderLayer = Shader_getLayer(shaderLayer, 0);
+        if ((int)*(u8*)((int)shaderLayer + 5) == placement->blockLayer) {
             scale = 8.0f;
-            ((EdgeVerts*)vertexOffset[0])->v0x =
-                (s16)(scale * state->offsetX + (f32) * (s16*)(state->edgeV0xBuffer + edgeOffset));
-            ((EdgeVerts*)vertexOffset[0])->v1x =
-                (s16)(scale * state->offsetX + (f32) * (s16*)(state->edgeV1xBuffer + edgeOffset));
-            ((EdgeVerts*)vertexOffset[0])->v0y =
-                (s16)(scale * state->offsetY + (f32) * (s16*)(state->edgeV0yBuffer + edgeOffset));
-            ((EdgeVerts*)vertexOffset[0])->v1y =
-                (s16)(scale * state->offsetY + (f32) * (s16*)(state->edgeV1yBuffer + edgeOffset));
-            ((EdgeVerts*)vertexOffset[0])->v0z =
-                (s16)(scale * state->offsetZ + (f32) * (s16*)(state->edgeV0zBuffer + edgeOffset));
-            ((EdgeVerts*)vertexOffset[0])->v1z =
-                (s16)(scale * state->offsetZ + (f32) * (s16*)(state->edgeV1zBuffer + edgeOffset));
+            ((XyzAnimatorEdge*)vertexOffset[0])->v0x =
+                (s16)(scale * state->offsetX + (f32) * (s16*)(state->edgeV0xBuffer + dataOffset));
+            ((XyzAnimatorEdge*)vertexOffset[0])->v1x =
+                (s16)(scale * state->offsetX + (f32) * (s16*)(state->edgeV1xBuffer + dataOffset));
+            ((XyzAnimatorEdge*)vertexOffset[0])->v0y =
+                (s16)(scale * state->offsetY + (f32) * (s16*)(state->edgeV0yBuffer + dataOffset));
+            ((XyzAnimatorEdge*)vertexOffset[0])->v1y =
+                (s16)(scale * state->offsetY + (f32) * (s16*)(state->edgeV1yBuffer + dataOffset));
+            ((XyzAnimatorEdge*)vertexOffset[0])->v0z =
+                (s16)(scale * state->offsetZ + (f32) * (s16*)(state->edgeV0zBuffer + dataOffset));
+            ((XyzAnimatorEdge*)vertexOffset[0])->v1z =
+                (s16)(scale * state->offsetZ + (f32) * (s16*)(state->edgeV1zBuffer + dataOffset));
         }
-        edgeOffset += 2;
+        dataOffset += 2;
     }
-    *(int*)block = return0_80060B90((void*)block);
+    *(int*)blockAddress = return0_80060B90((void*)blockAddress);
 }
 
-void XyzAnimator_update(GameObject* obj)
-{
-    XyzAnimatorPlacement* setup = (XyzAnimatorPlacement*)obj->anim.placementData;
+void XyzAnimator_update(GameObject* obj) {
+    XyzAnimatorPlacement* placement = (XyzAnimatorPlacement*)obj->anim.placementData;
     XyzAnimatorState* state = (XyzAnimatorState*)obj->extra;
-    int block;
-    u8* row;
-    int i;
-    int done;
-    int alloc, stride;
-    int t;
+    int blockAddress;
+    u8* polygonGroup;
+    int polygonGroupIndex;
+    int completedAxes;
+    u8* bufferAddress;
+    int streamSize;
+    int value;
 
-    block = (int)mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
-    if ((u32)block == 0)
-    {
-        state->loopCount = 0;
+    blockAddress = (int)mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
+    if ((u32)blockAddress == 0) {
+        state->passCount = 0;
         return;
     }
-    if ((((MapBlockData*)block)->flags4 & 8) == 0)
-    {
+    if ((((MapBlockData*)blockAddress)->flags4 & 8) == 0) {
         return;
     }
-    if (state->vertexCount == 0)
-    {
-        for (i = 0; i < ((MapBlockData*)block)->polyGroupCount; i++)
-        {
-            row = mapBlockGetPolygonGroup((void*)block, i);
-            t = mapBlockGetPolygonGroupType(row);
-            if (setup->blockLayer == t)
-            {
-                state->rowCount++;
-                state->vertexCount += (*(u16*)(row + 0x14) - *(u16*)(row + 0));
+    if (state->vertexCount == 0) {
+        for (polygonGroupIndex = 0; polygonGroupIndex < ((MapBlockData*)blockAddress)->polyGroupCount;
+             polygonGroupIndex++) {
+            polygonGroup = mapBlockGetPolygonGroup((void*)blockAddress, polygonGroupIndex);
+            value = mapBlockGetPolygonGroupType(polygonGroup);
+            if (placement->blockLayer == value) {
+                state->polygonGroupCount++;
+                state->vertexCount += (*(u16*)(polygonGroup + 0x14) - *(u16*)(polygonGroup + 0));
             }
         }
-        if (state->vertexCount == 0)
-        {
+        if (state->vertexCount == 0) {
             return;
         }
         state->vertexCount *= 3;
-        if (setup->triggerGameBit == -1)
-        {
-            state->gameBitValue = 1;
+        if (placement->triggerGameBit == -1) {
+            state->triggerBitValue = 1;
+        } else {
+            state->triggerBitValue = mainGetBit(placement->triggerGameBit);
         }
-        else
-        {
-            state->gameBitValue = mainGetBit(setup->triggerGameBit);
+        state->edgeCount = ((MapBlockData*)blockAddress)->edgeCount;
+        state->offsetX = (f32)placement->startX;
+        state->offsetY = (f32)placement->startY;
+        state->offsetZ = (f32)placement->startZ;
+        if (placement->completionGameBit != -1 && mainGetBit(placement->completionGameBit) != 0) {
+            state->offsetX = (f32)placement->targetX;
+            state->offsetY = (f32)placement->targetY;
+            state->offsetZ = (f32)placement->targetZ;
+            state->triggerBitValue = 1;
         }
-        state->edgeCount = ((MapBlockData*)block)->edgeCount;
-        state->offsetX = (f32)setup->startX;
-        state->offsetY = (f32)setup->startY;
-        state->offsetZ = (f32)setup->startZ;
-        if (setup->doneGameBit != -1 &&
-            mainGetBit(setup->doneGameBit) != 0)
-        {
-            state->offsetX = (f32)setup->targetX;
-            state->offsetY = (f32)setup->targetY;
-            state->offsetZ = (f32)setup->targetZ;
-            state->gameBitValue = 1;
-        }
-        t = state->vertexCount * 6 + state->rowCount * 0xc;
-        t = t + state->edgeCount * 0xc;
-        alloc = (int)mmAlloc(t, 5, 0);
-        state->dataBuffer = alloc;
-        stride = state->rowCount * 2;
-        alloc = alloc + state->vertexCount * 6;
-        state->unk18 = alloc;
-        alloc = alloc + stride;
-        state->unk1C = alloc;
-        alloc = alloc + stride;
-        state->posABuffer = alloc;
-        alloc = alloc + stride;
-        state->posBBuffer = alloc;
-        alloc = alloc + stride;
-        state->unk20 = alloc;
-        alloc = alloc + stride;
-        state->unk24 = alloc;
-        alloc = alloc + stride;
-        stride = state->edgeCount * 2;
-        state->edgeV0xBuffer = alloc;
-        alloc = alloc + stride;
-        state->edgeV1xBuffer = alloc;
-        alloc = alloc + stride;
-        state->edgeV0yBuffer = alloc;
-        alloc = alloc + stride;
-        state->edgeV1yBuffer = alloc;
-        alloc = alloc + stride;
-        state->edgeV0zBuffer = alloc;
-        alloc = alloc + stride;
-        state->edgeV1zBuffer = alloc;
-        XyzAnimator_captureGeometry(setup, state, block);
-        if (setup->mode != 4)
-        {
-            XyzAnimator_applyToMapBlock(setup, state, block);
-            ((MapBlockData*)block)->flags4 = ((MapBlockData*)block)->flags4 ^ 1;
-            XyzAnimator_applyToMapBlock(setup, state, block);
-            ((MapBlockData*)block)->flags4 = ((MapBlockData*)block)->flags4 ^ 1;
+        value = state->vertexCount * 6 + state->polygonGroupCount * 0xc;
+        value = value + state->edgeCount * 0xc;
+        bufferAddress = mmAlloc(value, 5, 0);
+        state->geometryBuffer = bufferAddress;
+        streamSize = state->polygonGroupCount * 2;
+        bufferAddress = bufferAddress + state->vertexCount * 6;
+        state->polygonBuffer0 = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->polygonBuffer1 = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->posABuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->posBBuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->polygonBuffer4 = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->polygonBuffer5 = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        streamSize = state->edgeCount * 2;
+        state->edgeV0xBuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->edgeV1xBuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->edgeV0yBuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->edgeV1yBuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->edgeV0zBuffer = bufferAddress;
+        bufferAddress = bufferAddress + streamSize;
+        state->edgeV1zBuffer = bufferAddress;
+        XyzAnimator_captureGeometry(placement, state, blockAddress);
+        if (placement->mode != XYZ_ANIMATOR_MODE_DEFERRED_ONESHOT) {
+            XyzAnimator_applyToMapBlock(placement, state, blockAddress);
+            ((MapBlockData*)blockAddress)->flags4 = ((MapBlockData*)blockAddress)->flags4 ^ 1;
+            XyzAnimator_applyToMapBlock(placement, state, blockAddress);
+            ((MapBlockData*)blockAddress)->flags4 = ((MapBlockData*)blockAddress)->flags4 ^ 1;
         }
     }
-    if (setup->mode == 2)
-    {
-        t = mainGetBit(setup->triggerGameBit);
-        if (state->gameBitValue != t)
-        {
-            state->gameBitValue = t;
-            if (t == 0)
-            {
-                if (setup->doneGameBit > -1)
-                {
-                    mainSetBits(setup->doneGameBit, 0);
+    if (placement->mode == XYZ_ANIMATOR_MODE_GATED) {
+        value = mainGetBit(placement->triggerGameBit);
+        if (state->triggerBitValue != value) {
+            state->triggerBitValue = value;
+            if (value == 0) {
+                if (placement->completionGameBit > -1) {
+                    mainSetBits(placement->completionGameBit, 0);
                 }
             }
-            if (state->loopCount > 2)
-            {
-                state->loopCount = 0;
+            if (state->passCount > 2) {
+                state->passCount = 0;
             }
         }
-        if (state->loopCount > 2)
-        {
+        if (state->passCount > 2) {
             return;
         }
-        if (state->loopSfxId != 0)
-        {
+        if (state->loopSfxId != 0) {
             Sfx_KeepAliveLoopedObjectSound((u32)obj, state->loopSfxId);
         }
-    }
-    else
-    {
-        if (state->loopCount > 2)
-        {
+    } else {
+        if (state->passCount > 2) {
             return;
         }
-        if (state->gameBitValue == 0)
-        {
-            state->gameBitValue = mainGetBit(setup->triggerGameBit);
-            if (state->gameBitValue == 0)
-            {
+        if (state->triggerBitValue == 0) {
+            state->triggerBitValue = mainGetBit(placement->triggerGameBit);
+            if (state->triggerBitValue == 0) {
                 return;
             }
         }
     }
-    switch (setup->mode)
-    {
-    case 0:
-    case 4:
-        done = 0;
-        if (setup->startX > setup->targetX)
-        {
-            state->offsetX =
-                -(0.1f * ((f32)(int)setup->speedX * timeDelta) -
-                  state->offsetX);
-            if (state->offsetX <= (f32)setup->targetX)
-            {
-                state->offsetX = (f32)setup->targetX;
-                done = 1;
+    switch (placement->mode) {
+    case XYZ_ANIMATOR_MODE_ONESHOT:
+    case XYZ_ANIMATOR_MODE_DEFERRED_ONESHOT:
+        completedAxes = 0;
+        if (placement->startX > placement->targetX) {
+            state->offsetX = -(0.1f * ((f32)(int)placement->speedX * timeDelta) - state->offsetX);
+            if (state->offsetX <= (f32)placement->targetX) {
+                state->offsetX = (f32)placement->targetX;
+                completedAxes = 1;
+            }
+        } else {
+            state->offsetX = 0.1f * ((f32)(int)placement->speedX * timeDelta) + state->offsetX;
+            if (state->offsetX >= (f32)placement->targetX) {
+                state->offsetX = (f32)placement->targetX;
+                completedAxes = 1;
             }
         }
-        else
-        {
-            state->offsetX =
-                0.1f * ((f32)(int)setup->speedX * timeDelta) +
-                state->offsetX;
-            if (state->offsetX >= (f32)setup->targetX)
-            {
-                state->offsetX = (f32)setup->targetX;
-                done = 1;
+        if (placement->startY > placement->targetY) {
+            state->offsetY = -(0.1f * ((f32)(int)placement->speedY * timeDelta) - state->offsetY);
+            if (state->offsetY <= (f32)placement->targetY) {
+                state->offsetY = (f32)placement->targetY;
+                completedAxes += 1;
+            }
+        } else {
+            state->offsetY = 0.1f * ((f32)(int)placement->speedY * timeDelta) + state->offsetY;
+            if (state->offsetY >= (f32)placement->targetY) {
+                state->offsetY = (f32)placement->targetY;
+                completedAxes += 1;
             }
         }
-        if (setup->startY > setup->targetY)
-        {
-            state->offsetY =
-                -(0.1f * ((f32)(int)setup->speedY * timeDelta) -
-                  state->offsetY);
-            if (state->offsetY <= (f32)setup->targetY)
-            {
-                state->offsetY = (f32)setup->targetY;
-                done += 1;
+        if (placement->startZ > placement->targetZ) {
+            state->offsetZ = -(0.1f * ((f32)(int)placement->speedZ * timeDelta) - state->offsetZ);
+            if (state->offsetZ <= (f32)placement->targetZ) {
+                state->offsetZ = (f32)placement->targetZ;
+                completedAxes += 1;
+            }
+        } else {
+            state->offsetZ = 0.1f * ((f32)(int)placement->speedZ * timeDelta) + state->offsetZ;
+            if (state->offsetZ >= (f32)placement->targetZ) {
+                state->offsetZ = (f32)placement->targetZ;
+                completedAxes += 1;
             }
         }
-        else
-        {
-            state->offsetY =
-                0.1f * ((f32)(int)setup->speedY * timeDelta) +
-                state->offsetY;
-            if (state->offsetY >= (f32)setup->targetY)
-            {
-                state->offsetY = (f32)setup->targetY;
-                done += 1;
+        if (completedAxes == 3) {
+            if (placement->completionGameBit != -1) {
+                mainSetBits(placement->completionGameBit, 1);
             }
-        }
-        if (setup->startZ > setup->targetZ)
-        {
-            state->offsetZ =
-                -(0.1f * ((f32)(int)setup->speedZ * timeDelta) -
-                  state->offsetZ);
-            if (state->offsetZ <= (f32)setup->targetZ)
-            {
-                state->offsetZ = (f32)setup->targetZ;
-                done += 1;
-            }
-        }
-        else
-        {
-            state->offsetZ =
-                0.1f * ((f32)(int)setup->speedZ * timeDelta) +
-                state->offsetZ;
-            if (state->offsetZ >= (f32)setup->targetZ)
-            {
-                state->offsetZ = (f32)setup->targetZ;
-                done += 1;
-            }
-        }
-        if (done == 3)
-        {
-            if (setup->doneGameBit != -1)
-            {
-                mainSetBits(setup->doneGameBit, 1);
-            }
-            state->loopCount += 1;
+            state->passCount += 1;
         }
         break;
-    case 1:
-        if (setup->startX > setup->targetX)
-        {
-            state->offsetX =
-                -(0.1f * ((f32)(int)setup->speedX * timeDelta) -
-                  state->offsetX);
-            if (state->offsetX < (f32)setup->targetX)
-            {
-                state->offsetX =
-                    (f32)(setup->startX -
-                          (int)((f32)setup->targetX - state->offsetX));
+    case XYZ_ANIMATOR_MODE_LOOP:
+        if (placement->startX > placement->targetX) {
+            state->offsetX = -(0.1f * ((f32)(int)placement->speedX * timeDelta) - state->offsetX);
+            if (state->offsetX < (f32)placement->targetX) {
+                state->offsetX = (f32)(placement->startX - (int)((f32)placement->targetX - state->offsetX));
+            }
+        } else {
+            state->offsetX = 0.1f * ((f32)(int)placement->speedX * timeDelta) + state->offsetX;
+            if (state->offsetX > (f32)placement->startX) {
+                state->offsetX = (f32)(placement->targetX + (int)(state->offsetX - (f32)placement->targetX));
             }
         }
-        else
-        {
-            state->offsetX =
-                0.1f * ((f32)(int)setup->speedX * timeDelta) +
-                state->offsetX;
-            if (state->offsetX > (f32)setup->startX)
-            {
-                state->offsetX =
-                    (f32)(setup->targetX +
-                          (int)(state->offsetX - (f32)setup->targetX));
-            }
-        }
-        if (setup->startY > setup->targetY)
-        {
-            state->offsetY =
-                -(0.1f * ((f32)(int)setup->speedY * timeDelta) -
-                  state->offsetY);
-            if (state->offsetY < (f32)setup->targetY)
-            {
+        if (placement->startY > placement->targetY) {
+            state->offsetY = -(0.1f * ((f32)(int)placement->speedY * timeDelta) - state->offsetY);
+            if (state->offsetY < (f32)placement->targetY) {
                 state->offsetY =
-                    -(0.1f * (f32)(int)((f32)setup->targetY -
-                                                state->offsetY) -
-                      (f32)setup->startY);
+                    -(0.1f * (f32)(int)((f32)placement->targetY - state->offsetY) - (f32)placement->startY);
+            }
+        } else {
+            state->offsetY = 0.1f * ((f32)(int)placement->speedY * timeDelta) + state->offsetY;
+            if (state->offsetY > (f32)placement->startY) {
+                state->offsetY = (f32)(placement->targetY + (int)(state->offsetY - (f32)placement->targetY));
             }
         }
-        else
-        {
-            state->offsetY =
-                0.1f * ((f32)(int)setup->speedY * timeDelta) +
-                state->offsetY;
-            if (state->offsetY > (f32)setup->startY)
-            {
-                state->offsetY =
-                    (f32)(setup->targetY +
-                          (int)(state->offsetY - (f32)setup->targetY));
+        if (placement->startZ > placement->targetZ) {
+            state->offsetZ = -(0.1f * ((f32)(int)placement->speedZ * timeDelta) - state->offsetZ);
+            if (state->offsetZ < (f32)placement->targetZ) {
+                state->offsetZ = (f32)(placement->startZ - (int)((f32)placement->targetZ - state->offsetZ));
             }
-        }
-        if (setup->startZ > setup->targetZ)
-        {
-            state->offsetZ =
-                -(0.1f * ((f32)(int)setup->speedZ * timeDelta) -
-                  state->offsetZ);
-            if (state->offsetZ < (f32)setup->targetZ)
-            {
-                state->offsetZ =
-                    (f32)(setup->startZ -
-                          (int)((f32)setup->targetZ - state->offsetZ));
-            }
-        }
-        else
-        {
-            state->offsetZ =
-                0.1f * ((f32)(int)setup->speedZ * timeDelta) +
-                state->offsetZ;
-            if (state->offsetZ > (f32)setup->startZ)
-            {
-                state->offsetZ =
-                    (f32)(setup->targetZ +
-                          (int)(state->offsetZ - (f32)setup->targetZ));
+        } else {
+            state->offsetZ = 0.1f * ((f32)(int)placement->speedZ * timeDelta) + state->offsetZ;
+            if (state->offsetZ > (f32)placement->startZ) {
+                state->offsetZ = (f32)(placement->targetZ + (int)(state->offsetZ - (f32)placement->targetZ));
             }
         }
         break;
-    case 2:
-        done = 0;
-        if (state->gameBitValue != 0)
-        {
-            if (setup->startX > setup->targetX)
-            {
-                state->offsetX =
-                    -(0.1f * ((f32)(int)setup->speedX * timeDelta) -
-                      state->offsetX);
-                if (state->offsetX <= (f32)setup->targetX)
-                {
-                    state->offsetX = (f32)setup->targetX;
-                    done = 1;
+    case XYZ_ANIMATOR_MODE_GATED:
+        completedAxes = 0;
+        if (state->triggerBitValue != 0) {
+            if (placement->startX > placement->targetX) {
+                state->offsetX = -(0.1f * ((f32)(int)placement->speedX * timeDelta) - state->offsetX);
+                if (state->offsetX <= (f32)placement->targetX) {
+                    state->offsetX = (f32)placement->targetX;
+                    completedAxes = 1;
+                }
+            } else {
+                state->offsetX = 0.1f * ((f32)(int)placement->speedX * timeDelta) + state->offsetX;
+                if (state->offsetX >= (f32)placement->targetX) {
+                    state->offsetX = (f32)placement->targetX;
+                    completedAxes = 1;
                 }
             }
-            else
-            {
-                state->offsetX =
-                    0.1f * ((f32)(int)setup->speedX * timeDelta) +
-                    state->offsetX;
-                if (state->offsetX >= (f32)setup->targetX)
-                {
-                    state->offsetX = (f32)setup->targetX;
-                    done = 1;
+            if (placement->startY > placement->targetY) {
+                state->offsetY = -(0.1f * ((f32)(int)placement->speedY * timeDelta) - state->offsetY);
+                if (state->offsetY <= (f32)placement->targetY) {
+                    state->offsetY = (f32)placement->targetY;
+                    completedAxes += 1;
+                }
+            } else {
+                state->offsetY = 0.1f * ((f32)(int)placement->speedY * timeDelta) + state->offsetY;
+                if (state->offsetY >= (f32)placement->targetY) {
+                    state->offsetY = (f32)placement->targetY;
+                    completedAxes += 1;
                 }
             }
-            if (setup->startY > setup->targetY)
-            {
-                state->offsetY =
-                    -(0.1f * ((f32)(int)setup->speedY * timeDelta) -
-                      state->offsetY);
-                if (state->offsetY <= (f32)setup->targetY)
-                {
-                    state->offsetY = (f32)setup->targetY;
-                    done += 1;
+            if (placement->startZ > placement->targetZ) {
+                state->offsetZ = -(0.1f * ((f32)(int)placement->speedZ * timeDelta) - state->offsetZ);
+                if (state->offsetZ <= (f32)placement->targetZ) {
+                    state->offsetZ = (f32)placement->targetZ;
+                    completedAxes += 1;
+                }
+            } else {
+                state->offsetZ = 0.1f * ((f32)(int)placement->speedZ * timeDelta) + state->offsetZ;
+                if (state->offsetZ >= (f32)placement->targetZ) {
+                    state->offsetZ = (f32)placement->targetZ;
+                    completedAxes += 1;
                 }
             }
-            else
-            {
-                state->offsetY =
-                    0.1f * ((f32)(int)setup->speedY * timeDelta) +
-                    state->offsetY;
-                if (state->offsetY >= (f32)setup->targetY)
-                {
-                    state->offsetY = (f32)setup->targetY;
-                    done += 1;
+            if (completedAxes == 3) {
+                if (placement->completionGameBit != -1) {
+                    mainSetBits(placement->completionGameBit, 1);
+                }
+                state->passCount += 1;
+            }
+        } else {
+            if (placement->startX > placement->targetX) {
+                state->offsetX = 0.1f * ((f32)(int)placement->speedX * timeDelta) + state->offsetX;
+                if (state->offsetX >= (f32)placement->startX) {
+                    state->offsetX = (f32)placement->startX;
+                    completedAxes = 1;
+                }
+            } else {
+                state->offsetX = -(0.1f * ((f32)(int)placement->speedX * timeDelta) - state->offsetX);
+                if (state->offsetX <= (f32)placement->startX) {
+                    state->offsetX = (f32)placement->startX;
+                    completedAxes = 1;
                 }
             }
-            if (setup->startZ > setup->targetZ)
-            {
-                state->offsetZ =
-                    -(0.1f * ((f32)(int)setup->speedZ * timeDelta) -
-                      state->offsetZ);
-                if (state->offsetZ <= (f32)setup->targetZ)
-                {
-                    state->offsetZ = (f32)setup->targetZ;
-                    done += 1;
+            if (placement->startY > placement->targetY) {
+                state->offsetY = 0.1f * ((f32)(int)placement->speedY * timeDelta) + state->offsetY;
+                if (state->offsetY >= (f32)placement->startY) {
+                    state->offsetY = (f32)placement->startY;
+                    completedAxes += 1;
+                }
+            } else {
+                state->offsetY = -(0.1f * ((f32)(int)placement->speedY * timeDelta) - state->offsetY);
+                if (state->offsetY <= (f32)placement->startY) {
+                    state->offsetY = (f32)placement->startY;
+                    completedAxes += 1;
                 }
             }
-            else
-            {
-                state->offsetZ =
-                    0.1f * ((f32)(int)setup->speedZ * timeDelta) +
-                    state->offsetZ;
-                if (state->offsetZ >= (f32)setup->targetZ)
-                {
-                    state->offsetZ = (f32)setup->targetZ;
-                    done += 1;
+            if (placement->startZ > placement->targetZ) {
+                state->offsetZ = 0.1f * ((f32)(int)placement->speedZ * timeDelta) + state->offsetZ;
+                if (state->offsetZ >= (f32)placement->startZ) {
+                    state->offsetZ = (f32)placement->startZ;
+                    completedAxes += 1;
+                }
+            } else {
+                state->offsetZ = -(0.1f * ((f32)(int)placement->speedZ * timeDelta) - state->offsetZ);
+                if (state->offsetZ <= (f32)placement->startZ) {
+                    state->offsetZ = (f32)placement->startZ;
+                    completedAxes += 1;
                 }
             }
-            if (done == 3)
-            {
-                if (setup->doneGameBit != -1)
-                {
-                    mainSetBits(setup->doneGameBit, 1);
-                }
-                state->loopCount += 1;
-            }
-        }
-        else
-        {
-            if (setup->startX > setup->targetX)
-            {
-                state->offsetX =
-                    0.1f * ((f32)(int)setup->speedX * timeDelta) +
-                    state->offsetX;
-                if (state->offsetX >= (f32)setup->startX)
-                {
-                    state->offsetX = (f32)setup->startX;
-                    done = 1;
-                }
-            }
-            else
-            {
-                state->offsetX =
-                    -(0.1f * ((f32)(int)setup->speedX * timeDelta) -
-                      state->offsetX);
-                if (state->offsetX <= (f32)setup->startX)
-                {
-                    state->offsetX = (f32)setup->startX;
-                    done = 1;
-                }
-            }
-            if (setup->startY > setup->targetY)
-            {
-                state->offsetY =
-                    0.1f * ((f32)(int)setup->speedY * timeDelta) +
-                    state->offsetY;
-                if (state->offsetY >= (f32)setup->startY)
-                {
-                    state->offsetY = (f32)setup->startY;
-                    done += 1;
-                }
-            }
-            else
-            {
-                state->offsetY =
-                    -(0.1f * ((f32)(int)setup->speedY * timeDelta) -
-                      state->offsetY);
-                if (state->offsetY <= (f32)setup->startY)
-                {
-                    state->offsetY = (f32)setup->startY;
-                    done += 1;
-                }
-            }
-            if (setup->startZ > setup->targetZ)
-            {
-                state->offsetZ =
-                    0.1f * ((f32)(int)setup->speedZ * timeDelta) +
-                    state->offsetZ;
-                if (state->offsetZ >= (f32)setup->startZ)
-                {
-                    state->offsetZ = (f32)setup->startZ;
-                    done += 1;
-                }
-            }
-            else
-            {
-                state->offsetZ =
-                    -(0.1f * ((f32)(int)setup->speedZ * timeDelta) -
-                      state->offsetZ);
-                if (state->offsetZ <= (f32)setup->startZ)
-                {
-                    state->offsetZ = (f32)setup->startZ;
-                    done += 1;
-                }
-            }
-            if (done == 3)
-            {
-                state->loopCount += 1;
+            if (completedAxes == 3) {
+                state->passCount += 1;
             }
         }
         break;
     }
-    XyzAnimator_applyToMapBlock(setup, state, block);
+    XyzAnimator_applyToMapBlock(placement, state, blockAddress);
     return;
 }
 
-void XyzAnimator_init(GameObject* obj)
-{
-    XyzAnimatorState* inner = (XyzAnimatorState*)obj->extra;
-    int id;
-    ObjGroup_AddObject((int)obj, XYZANIMATOR_OBJGROUP);
-    id = *(int*)(*(int*)&(obj)->anim.placementData + 0x14);
-    switch (id)
-    {
+void XyzAnimator_init(GameObject* obj) {
+    XyzAnimatorState* state = (XyzAnimatorState*)obj->extra;
+    int mapId;
+
+    ObjGroup_AddObject((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
+    mapId = *(int*)(*(int*)&obj->anim.placementData + 0x14);
+    switch (mapId) {
     case 0x46406:
     case 0x4BAB1:
-        inner->loopSfxId = 0x7d;
+        state->loopSfxId = 0x7D;
         break;
     case 0x49275:
     case 0x49CB7:
     case 0x4C797:
-        inner->loopSfxId = 0x4b7;
+        state->loopSfxId = 0x4B7;
         break;
     }
 }
