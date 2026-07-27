@@ -168,20 +168,11 @@ main/objanim.c:
 	.data       start:0x802CAD50 end:0x802CADA0
 
 main/objhits.c:
-	.text       start:0x80030688 end:0x800353A4
-	.data       start:0x802CADA0 end:0x802CADE8
-	.bss        start:0x803408F8 end:0x803428F8
-
-main/objHitReact.c:
-	.text       start:0x800353A4 end:0x800358D4
+	.text       start:0x80030688 end:0x80038F38
 	.rodata     start:0x802C1B00 end:0x802C1B10
-	.data       start:0x802CADE8 end:0x802CAE20
+	.data       start:0x802CADA0 end:0x802CAE84
+	.bss        start:0x803408F8 end:0x80342E10
 	.sdata      start:0x803DB450 end:0x803DB460
-
-main/objlib.c:
-	.text       start:0x800358D4 end:0x80038F38
-	.data       start:0x802CAE20 end:0x802CAE84
-	.bss        start:0x803428F8 end:0x80342E10
 
 main/objprint.c:
 	.text       start:0x80038F38 end:0x8003BB84
