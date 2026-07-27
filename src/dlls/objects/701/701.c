@@ -62,20 +62,20 @@ void androsshand_spawnShot(GameObject* obj, AndrossHandState* state, int p3)
         dz = pt[2] - state->arwingObj->anim.localPosZ;
         dist = sqrtf(dx * dx + dz * dz);
         yaw = (u16)getAngle(dx, dz) + 0x8000;
-        gAndrossHandShotPitch = (u16)getAngle(pt[1] - state->arwingObj->anim.localPosY, dist) >> 8;
+        gAndrossHandShotPitch[0] = (u16)getAngle(pt[1] - state->arwingObj->anim.localPosY, dist) >> 8;
         setup = (AndrossHandShotSetup*)Obj_AllocObjectSetup(0x20, ANDROSSHAND_CHILD_OBJ_RING);
         setup->head.posX = pt[0];
         setup->head.posY = pt[1];
         setup->head.posZ = pt[2];
         setup->yaw = (obj->anim.rotX + yaw) >> 8;
-        setup->pitch = gAndrossHandShotPitch;
+        setup->pitch = gAndrossHandShotPitch[0];
         setup->flag18 = 0;
         setup->head.color[0] = 1;
         setup->head.color[1] = 1;
         obj = loadObjectAtObject(obj, &setup->head);
         if (obj != NULL)
         {
-            arwprojectile_setLifetime(obj, gAndrossHandProjectileLifetime);
+            arwprojectile_setLifetime(obj, gAndrossHandProjectileLifetime[0]);
             arwprojectile_placeForward(obj, gAndrossHandProjectileForwardStep);
         }
     }
@@ -484,7 +484,7 @@ void AndrossHand_init(int obj, AndrossHandSetup* setup)
     ObjHits_SetTargetMask((GameObject*)obj, 4);
 }
 
-int gAndrossHandShotPitch;
+int gAndrossHandShotPitch[2];
 
 f32 lbl_803DC4F0 = 400.0f;
 f32 lbl_803DC4F4 = -100.0f;
@@ -494,4 +494,4 @@ int gAndrossHandSpringDivisor = 10;
 int gAndrossHandShotInterval = 2;
 int gAndrossHandHitImpulse = 20;
 int gAndrossHandProjectileForwardStep = 10;
-int gAndrossHandProjectileLifetime = 150;
+int gAndrossHandProjectileLifetime[2] = { 150 };
