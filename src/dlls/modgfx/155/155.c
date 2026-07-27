@@ -1,5 +1,5 @@
 /*
- * dll9bfunc0 (DLL 0x9B) - one of the screenfx scene builders (sibling of
+ * DLL 155 / 0x9B - one of the screenfx scene builders (sibling of
  * DLL 0x9A/0x9C). dll_9B_func03 fills a fixed 14-entry GfxCmd list plus the
  * surrounding ModgfxSpawnPacket describing a multi-state screen effect (texture/
  * model ids, per-part placement offsets and a 7-entry anim table read out of
@@ -19,7 +19,6 @@
 
 
 extern u8 lbl_80317BD8[];
-
 
 void dll_9B_func03(int target, int variant, int parent, u32 flags)
 {
