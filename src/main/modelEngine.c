@@ -99,6 +99,7 @@
 #include "dlls/objects/301_LFXEmitter.h"
 #include "dlls/objects/302.h"
 #include "dlls/objects/303_BarrelPad.h"
+#include "dlls/objects/304_AreaFXEmit.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -189,7 +190,7 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
     gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAreaFXEmitObjDescriptor, gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
+extern ResourceDescriptor gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBlastedObjDescriptor, gBombPlantObjDescriptor,
     gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
@@ -1271,7 +1272,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLFXEmitterObjDescriptor,
     (ResourceDescriptor*)&gCFLightWallObjDescriptor,
     (ResourceDescriptor*)&gBarrelPadObjDescriptor,
-    &gAreaFXEmitObjDescriptor,
+    (ResourceDescriptor*)&gAreaFXEmitObjDescriptor,
     &gCF_DoorLightObjDescriptor,
     &gWaterFallSprayObjDescriptor,
     &gSfxPlayerObjDescriptor,
