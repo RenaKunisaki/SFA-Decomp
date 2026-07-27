@@ -1035,7 +1035,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "musyx/runtime/synth_control.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/snd_synth_api.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/synth_job_init.c"),
-            Object(NonMatching, "musyx/runtime/synth_jobs.c"),
+            Object(MatchingFor("GSAE01"), "musyx/runtime/synth_jobs.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/data_tables.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_wait.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_loop.c"),

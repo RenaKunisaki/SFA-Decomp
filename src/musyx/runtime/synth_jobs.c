@@ -14,9 +14,13 @@
 #include "musyx/synth_jobs.h"
 
 extern u32 synthFlags;
-extern f32 lbl_803E77D8;
 extern u8 streamCallCnt;
 extern u8 streamCallDelay;
+
+static f32 streamGainFromVolume(u8 volume)
+{
+    return volume * (1 / 127.0f);
+}
 
 void streamHandle(void)
 {
@@ -282,7 +286,7 @@ void streamOutputModeChanged(void)
     f32 volumeScale;
 
     sndBegin();
-    volumeScale = lbl_803E77D8;
+    volumeScale = 1 / 127.0f;
     for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; i++)
     {
         if (streamInfo[i].state != SYNTH_JOB_STATE_FREE)
