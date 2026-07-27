@@ -1137,6 +1137,18 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
     }
 }
 
+static void SnowBike_ResetAirMeter(SnowBikeState* st)
+{
+    st->airMeterMax = 70000.0f;
+    st->airDrainRate = 1.0f;
+    st->airMeterCurrent = 69999.0f;
+    if (st->riderMode == 2)
+    {
+        (*gGameUIInterface)->initAirMeter((int)st->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
+        (*gGameUIInterface)->airMeterSetRatio(4.0f);
+    }
+}
+
 void SnowBike_onSeqFree(GameObject* obj)
 {
     SnowBikeState* state = obj->extra;
@@ -1239,6 +1251,20 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 
     ((HightopFlags3*)&st->flags428)->active = 0;
     return 0;
+}
+
+static void SnowBike_ClampSwayAxis(f32* accum, f32 lo, f32 hi)
+{
+    f32 v = *accum;
+    *accum = (v < lo) ? lo : ((v > hi) ? hi : v);
+    v = *accum;
+    if (v < 0.01f)
+    {
+        if (v > -0.01f)
+        {
+            *accum = 0.0f;
+        }
+    }
 }
 
 void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
@@ -1554,6 +1580,11 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
     st->distanceScaleDamp += timeDelta * (k * (target54c - st->distanceScaleDamp));
     st->turnVelScale += timeDelta * (k * (target540 - st->turnVelScale));
     st->turnForceGain += timeDelta * (k * (target544 - st->turnForceGain));
+}
+
+static s16 SnowBike_StickToSteerAngle(f32 stickX, f32 stickY)
+{
+    return (f32)(u16)getAngle(stickX, stickY) / 182.04f;
 }
 
 void SnowBike_UpdateLiftSway(int obj, int state)
