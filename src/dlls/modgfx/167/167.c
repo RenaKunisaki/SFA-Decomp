@@ -1,5 +1,5 @@
 /*
- * dlla7func0 (DLL 0xA7) - a modgfx effect spawner (sibling of DLL 0xA6/0xA8).
+ * dlla7func0 (DLL 167 / 0xA7) - a modgfx effect spawner (sibling of DLL 0xA6/0xA8).
  *
  * dll_A7_func03 builds a fixed command buffer of GfxCmd primitives on the
  * stack: a pair of texture/scale commands keyed off the source object's

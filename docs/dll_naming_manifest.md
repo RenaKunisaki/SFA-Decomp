@@ -210,7 +210,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x0A4 | — | NO-RETAIL-NAME | main/dll/dll_00A4_dummya4.c | = (canonical) | — |
 | 0x0A5 | — | NO-RETAIL-NAME | main/dll/dll_00A5_dlla5func0.c | = (canonical) | — |
 | 0x0A6 | — | NO-RETAIL-NAME | main/dll/dll_00A6_dlla6func0.c | = (canonical) | — |
-| 0x0A7 | — | NO-RETAIL-NAME | main/dll/dll_00A7_dlla7func0.c | = (canonical) | — |
+| 0x0A7 | — | NO-RETAIL-NAME | dlls/modgfx/167/167.c | = (canonical) | — |
 | 0x0A8 | — | NO-RETAIL-NAME | dlls/modgfx/168/168.c | = (canonical) | — |
 | 0x0A9 | — | NO-RETAIL-NAME | dlls/modgfx/169/169.c | = (canonical) | — |
 | 0x0AA | — | NO-RETAIL-NAME | dlls/modgfx/170/170.c | = (canonical) | — |

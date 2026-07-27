@@ -960,7 +960,7 @@ main/dll/dll_00A6_dlla6func0.c:
 	.sdata      start:0x803DB980 end:0x803DB990
 	.sdata2     start:0x803E1530 end:0x803E1570
 
-main/dll/dll_00A7_dlla7func0.c:
+dlls/modgfx/167/167.c:
 	.text       start:0x800FF6A0 end:0x800FFB44
 	.sdata2     start:0x803E1570 end:0x803E1598
 
