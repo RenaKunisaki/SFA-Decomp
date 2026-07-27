@@ -18,7 +18,7 @@
 #define DLL74_EFFECT_ID_VARIANT0 0x2e
 #define DLL74_EFFECT_ID_DEFAULT  0xd9
 
-extern u8 lbl_803146D8[];
+extern u32 lbl_803146D8[];
 
 void dll_74_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
 {

@@ -274,7 +274,7 @@ void WispBaddie_initialise(void) {
 }
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
-typedef struct WispBaddieFamilyTable
+typedef struct FamilyTable
 {
     u8* tbl0;
     u8* tbl4;
@@ -286,7 +286,7 @@ typedef struct WispBaddieFamilyTable
     u8* tbl1c;
     u8* tbl20;
     u8* tbl24;
-} WispBaddieFamilyTable;
+} FamilyTable;
 
 u8 lbl_8031DD30[288] = {
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,
@@ -499,7 +499,7 @@ u8 lbl_8031F064[240] = {
     63, 128, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 0, 8, 0, 0, 5, 0, 0,  0,   0, 0, 0, 0,
     63, 128, 0, 0, 0, 2, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0};
 u8 lbl_8031F154[24] = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
-WispBaddieFamilyTable lbl_8031F16C[6] = {
+FamilyTable lbl_8031F16C[6] = {
     {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E49C, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
      lbl_8031E64C, lbl_8031E0F0},
     {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E49C, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,

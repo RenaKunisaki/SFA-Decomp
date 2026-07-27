@@ -21,7 +21,7 @@
 #define DLL9C_EFFECT_ID 0x154
 
 
-extern u8 lbl_80317E00[];
+extern u32 lbl_80317E00[];
 
 void dll_9C_func03(int target, int variant, int parent, u32 flags)
 {

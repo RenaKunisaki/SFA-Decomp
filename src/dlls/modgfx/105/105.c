@@ -22,7 +22,7 @@
 #define DLL69_EFFECT_ID_DEFAULT  0x5e0
 #define DLL69_CMDLIST_FLAG_TOGGLE 0x40000
 
-extern u8 lbl_803137F8[];
+extern u32 lbl_803137F8[];
 
 s16 dll_69_func03(GameObject* sourceObj, int variant, void* posSource, u32 flags, int unused,
                   Dll69EffectParams* overrideParams)

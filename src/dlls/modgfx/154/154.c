@@ -31,7 +31,7 @@ typedef struct
 #define DLL9A_EFFECT_ID 0x31
 
 const s16 gScreenFx9AAnimTemplate[8] = {0, 10, 40, 60, 40, 0, 0, 0};
-extern u8 lbl_80317B98[];
+extern u32 lbl_80317B98[];
 
 void dll_9A_func03(int target, int variant, int parent, u32 flags)
 {
@@ -227,7 +227,7 @@ void dll_9A_func03(int target, int variant, int parent, u32 flags)
             hdr.bz = hdr.bz + ((PartFxSpawnParams*)parent)->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&hdr, 0, 3, lbl_80317B98, 1, lbl_803DB958, DLL9A_EFFECT_ID, 0);
+    (*gModgfxInterface)->spawnEffect(&hdr, 0, 3, (u8*)(int)lbl_80317B98, 1, lbl_803DB958, DLL9A_EFFECT_ID, 0);
 }
 
 void dll_9A_func01_nop(void)

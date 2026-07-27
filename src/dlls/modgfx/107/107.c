@@ -16,7 +16,7 @@
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL6B_EFFECT_ID 0x5e
 
-extern u8 lbl_80313A40[];
+extern u32 lbl_80313A40[];
 
 void dll_6B_func03(int sourceObj, int variant, int posSource, u32 flags)
 {

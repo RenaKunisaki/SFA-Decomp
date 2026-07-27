@@ -6,8 +6,8 @@
 #include "main/hud_visibility_api.h"
 
 extern u8 lbl_803DB424;
-struct LinkInterface;
-extern struct LinkInterface* gTitleMenuLinkInterface;
+typedef struct LinkInterface LinkInterface;
+extern LinkInterface* gTitleMenuLinkInterface;
 
 int main(int argc, char** argv);
 int getGameState(void);

@@ -19,7 +19,7 @@
 #define DLL9B_EFFECT_ID 0x156
 
 
-extern u8 lbl_80317BD8[];
+extern u32 lbl_80317BD8[];
 
 void dll_9B_func03(int target, int variant, int parent, u32 flags)
 {

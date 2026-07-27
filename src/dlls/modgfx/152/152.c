@@ -36,7 +36,7 @@ typedef struct Dll98EffectTable
 
 STATIC_ASSERT(sizeof(Dll98EffectTable) == 0x224);
 
-extern u8 lbl_803178B0[];
+extern u32 lbl_803178B0[];
 
 void dll_98_func03(int sourceObj, int variant, int posSource, u32 flags, int arg5, int extraArgs)
 {

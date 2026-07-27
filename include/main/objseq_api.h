@@ -3,11 +3,12 @@
 
 #include "types.h"
 #include "dolphin/gx/GXStruct.h"
+#include "game/objects/object_fwd.h"
 
 int getCurSeqNo(void);
 void ObjSeq_copyDefaultColor(GXColor* colorOut);
 
-extern struct GameObject* focusedNpc;
+extern GameObject* focusedNpc;
 extern u8 curSeqNo;
 extern s16 seqGlobal1;
 extern s16 seqGlobal2;

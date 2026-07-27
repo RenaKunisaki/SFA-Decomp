@@ -19,7 +19,7 @@ u8 lbl_803DB8C0[8] = {0, 8, 0, 0, 0, 0, 0, 0};
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL61_EFFECT_ID 0x90
 
-extern u8 lbl_803128E8[];
+extern u32 lbl_803128E8[];
 
 void dll_61_func03(int sourceObj, int variant, int posSource, u32 flags)
 {

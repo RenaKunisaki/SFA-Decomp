@@ -19,7 +19,7 @@
 #define DLL7A_EFFECT_ID_VARIANT0 0x156
 #define DLL7A_EFFECT_ID_VARIANT1 0xc0d
 
-extern u8 lbl_80314BD0[];
+extern u32 lbl_80314BD0[];
 
 s16 dll_7A_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
 {

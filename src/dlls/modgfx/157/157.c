@@ -23,7 +23,7 @@
 #define DLL9D_EFFECT_ID 0x46c
 
 /* Shared texture and halfword table. */
-extern u8 lbl_80318038[];
+extern u32 lbl_80318038[];
 
 void dll_9D_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
 {

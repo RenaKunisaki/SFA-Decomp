@@ -227,7 +227,6 @@ extern f32 lbl_803E2598;
 extern f32 lbl_803E25A0;
 extern f32 lbl_803E25A8;
 extern f32 lbl_803E25AC;
-extern f32 enemySightRange;
 extern f32 lbl_803E25B4;
 extern f32 lbl_803E25B8;
 extern f32 lbl_803E25BC;

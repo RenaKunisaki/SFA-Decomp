@@ -25,7 +25,7 @@
 
 
 /* Shared texture and halfword table. */
-extern u8 lbl_80318260[];
+extern u32 lbl_80318260[];
 
 void dll_9E_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
 {

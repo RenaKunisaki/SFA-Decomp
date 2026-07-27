@@ -22,7 +22,7 @@ u8 lbl_803DB940[8] = {0, 4, 0, 5, 0, 6, 0, 7};
 #define DLL95_EFFECT_ID 0x46
 
 
-extern u8 lbl_80317528[];
+extern u32 lbl_80317528[];
 
 void dll_95_func03(int sourceObj, int variant, int posSource)
 {
