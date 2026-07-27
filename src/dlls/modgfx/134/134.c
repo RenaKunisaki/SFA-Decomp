@@ -1,5 +1,5 @@
 /*
- * dll86func0 (DLL 0x86) - one of the foodbag/modgfx particle-effect DLLs
+ * DLL 134 / 0x86 - one of the foodbag/modgfx particle-effect DLLs
  * (the dll_NN_func03 family in foodbag.h). dll_86_func03 builds an FbBuf
  * command list of five FbCmd layers, seeds positions with randomGetRange
  * jitter, copies the seven shared hw words from lbl_80316020, and submits
