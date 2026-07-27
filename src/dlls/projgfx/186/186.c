@@ -1,5 +1,5 @@
 /*
- * projlightning6 (DLL 0xBA) - retired lightning-projectile object.
+ * projlightning6 (DLL 186 / 0xBA) - retired lightning-projectile object.
  *
  * Only a deprecation stub survives: the object's main entry point logs
  * "no longer supported" and returns the unsupported sentinel; release and
