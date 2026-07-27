@@ -102,15 +102,7 @@ typedef enum DbEggMode
 
 typedef struct DbeggPlacement
 {
-    u8 pad0[0x4 - 0x0];
-    u8 unk4;
-    u8 unk5;
-    u8 unk6;
-    u8 unk7;
-    f32 targetPosX;
-    f32 targetPosY;
-    f32 targetPosZ;
-    u32 unk14;
+    ObjPlacement base;
     s16 unk18;
     s16 unk1A;
     s16 triggerGameBit;
@@ -634,11 +626,11 @@ void dbegg_update(GameObject* obj)
                 *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
                 (obj)->anim.velocityX =
                     (obj)->anim.velocityX +
-                    (((DbeggPlacement*)data)->targetPosX - (obj)->anim.localPosX) / (fz = 1000.0f);
+                    (((DbeggPlacement*)data)->base.posX - (obj)->anim.localPosX) / (fz = 1000.0f);
                 (obj)->anim.velocityY =
-                    (obj)->anim.velocityY + (((DbeggPlacement*)data)->targetPosY - (obj)->anim.localPosY) / fz;
+                    (obj)->anim.velocityY + (((DbeggPlacement*)data)->base.posY - (obj)->anim.localPosY) / fz;
                 (obj)->anim.velocityZ =
-                    (obj)->anim.velocityZ + (((DbeggPlacement*)data)->targetPosZ - (obj)->anim.localPosZ) / fz;
+                    (obj)->anim.velocityZ + (((DbeggPlacement*)data)->base.posZ - (obj)->anim.localPosZ) / fz;
                 if (mainGetBit(0x44d) != 0)
                 {
                     egg->mode = DBEGG_MODE_CURVE_INIT;
@@ -830,14 +822,14 @@ void dbegg_update(GameObject* obj)
         case DBEGG_MODE_HOMING:
             ObjHits_DisableObject(obj);
             (obj)->anim.velocityX = (obj)->anim.velocityX +
-                                    (((DbeggPlacement*)data)->targetPosX - (obj)->anim.localPosX) / (fz = 2500.0f);
+                                    (((DbeggPlacement*)data)->base.posX - (obj)->anim.localPosX) / (fz = 2500.0f);
             (obj)->anim.velocityY =
-                (obj)->anim.velocityY + (((DbeggPlacement*)data)->targetPosY - (obj)->anim.localPosY) / fz;
+                (obj)->anim.velocityY + (((DbeggPlacement*)data)->base.posY - (obj)->anim.localPosY) / fz;
             (obj)->anim.velocityZ =
-                (obj)->anim.velocityZ + (((DbeggPlacement*)data)->targetPosZ - (obj)->anim.localPosZ) / fz;
-            d[0] = (obj)->anim.localPosX - ((DbeggPlacement*)data)->targetPosX;
-            d[1] = (obj)->anim.localPosY - ((DbeggPlacement*)data)->targetPosY;
-            d[2] = (obj)->anim.localPosZ - ((DbeggPlacement*)data)->targetPosZ;
+                (obj)->anim.velocityZ + (((DbeggPlacement*)data)->base.posZ - (obj)->anim.localPosZ) / fz;
+            d[0] = (obj)->anim.localPosX - ((DbeggPlacement*)data)->base.posX;
+            d[1] = (obj)->anim.localPosY - ((DbeggPlacement*)data)->base.posY;
+            d[2] = (obj)->anim.localPosZ - ((DbeggPlacement*)data)->base.posZ;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_baddie_eba_smallswipe1);
             fz = *(f32*)((int)d + 8);
             fz = fz >= 0.0f ? fz : -fz;
@@ -847,9 +839,9 @@ void dbegg_update(GameObject* obj)
             {
                 ObjHits_EnableObject(obj);
                 egg->mode = DBEGG_MODE_SETTLED;
-                (obj)->anim.localPosX = ((DbeggPlacement*)data)->targetPosX;
-                (obj)->anim.localPosY = ((DbeggPlacement*)data)->targetPosY;
-                (obj)->anim.localPosZ = ((DbeggPlacement*)data)->targetPosZ;
+                (obj)->anim.localPosX = ((DbeggPlacement*)data)->base.posX;
+                (obj)->anim.localPosY = ((DbeggPlacement*)data)->base.posY;
+                (obj)->anim.localPosZ = ((DbeggPlacement*)data)->base.posZ;
             }
             else
             {
