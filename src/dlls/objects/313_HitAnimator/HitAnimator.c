@@ -13,7 +13,7 @@
  */
 #include "dlls/objects/310_WaveAnimato.h"
 #include "game/objects/object.h"
-#include "main/dll/alphaanimatorstate_struct.h"
+#include "dlls/objects/311_AlphaAnimat.h"
 #include "main/dll/visanimatorstate_struct.h"
 #include "main/map_block.h"
 #include "main/dll/groundanimator_state.h"

@@ -6,7 +6,6 @@
 #include "game/objects/object_setup.h"
 #include "main/objanim_internal.h"
 
-extern ObjectDescriptor gAlphaAnimatorObjDescriptor;
 extern ObjectDescriptor14 gGroundAnimatorObjDescriptor;
 extern ObjectDescriptor gHitAnimatorObjDescriptor;
 
@@ -72,16 +71,6 @@ STATIC_ASSERT(offsetof(HitAnimatorObject, objectFlags) == 0xB0);
 STATIC_ASSERT(offsetof(HitAnimatorObject, state) == 0xB8);
 
 #define WALLANIMATOR_DONE_TIMER 3000
-
-int AlphaAnimator_getExtraSize(void);
-int AlphaAnimator_getObjectTypeId(void);
-void AlphaAnimator_free(GameObject* obj);
-void AlphaAnimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void AlphaAnimator_hitDetect(void);
-void AlphaAnimator_update(GameObject* obj);
-void AlphaAnimator_init(GameObject* obj);
-void AlphaAnimator_release(void);
-void AlphaAnimator_initialise(void);
 
 u8 groundanimator_modelMtxFn(int* obj);
 u8 groundanimator_isFullySunk(int* obj);

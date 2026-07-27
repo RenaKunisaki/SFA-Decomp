@@ -18,7 +18,7 @@
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
 #include "dlls/objects/310_WaveAnimato.h"
-#include "main/dll/alphaanimatorstate_struct.h"
+#include "dlls/objects/311_AlphaAnimat.h"
 #include "main/dll/visanimatorstate_struct.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"

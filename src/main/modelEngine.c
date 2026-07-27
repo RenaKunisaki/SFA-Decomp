@@ -106,6 +106,7 @@
 #include "dlls/objects/308_texscroll2.h"
 #include "dlls/objects/309_texscroll.h"
 #include "dlls/objects/310_WaveAnimato.h"
+#include "dlls/objects/311_AlphaAnimat.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -194,8 +195,7 @@ extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, 
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
-extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
-    gAnimSharpclawObjDescriptor;
+extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAnimSharpclawObjDescriptor;
 extern ResourceDescriptor gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBlastedObjDescriptor, gBombPlantObjDescriptor,
     gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
@@ -1284,7 +1284,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gTexscroll2ObjDescriptor,
     (ResourceDescriptor*)&gTexscrollObjDescriptor,
     (ResourceDescriptor*)&gWaveAnimatorObjDescriptor,
-    &gAlphaAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gAlphaAnimatorObjDescriptor,
     &gGroundAnimatorObjDescriptor,
     &gHitAnimatorObjDescriptor,
     &gVisAnimatorObjDescriptor,
