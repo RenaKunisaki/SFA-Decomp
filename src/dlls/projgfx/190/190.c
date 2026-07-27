@@ -1,5 +1,5 @@
 /*
- * projtesla (DLL 0xBE) - defunct "tesla" projectile (behaviour cut).
+ * projtesla (DLL 190 / 0xBE) - defunct "tesla" projectile (behaviour cut).
  *
  * Its only non-trivial entry point reports the "no longer supported" string
  * via OSReport and returns 0. The release and initialise descriptor hooks are
