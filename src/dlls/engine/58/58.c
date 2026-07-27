@@ -1,9 +1,3 @@
-/*
- * dummy3a (DLL 0x3A) - a stub game object. Exports, in source/symbol order:
- * render, frameEnd (empty voids), frameStart (the sole non-void stub, which
- * simply returns 0), then release and initialise (empty voids). The object
- * does nothing per frame.
- */
 #include "types.h"
 #include "main/dll/dll_003A_dummy3a.h"
 
