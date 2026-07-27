@@ -1,5 +1,5 @@
 /*
- * projdfp1r (DLL 0xC2) - retired "dfp1r" projectile object.
+ * projdfp1r (DLL 194 / 0xC2) - retired "dfp1r" projectile object.
  *
  * The object is no longer supported: its single behavior entry point just
  * prints the "projdfp1r ... No Longer supported" banner and returns -1, and
