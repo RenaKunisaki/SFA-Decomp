@@ -52,7 +52,10 @@
 #include "main/dll/player_spirit_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
 
-ObjAnimEventList gSClanternObjAnimEvents;
+union SClanternAnimEvents {
+    ObjAnimEventList list;
+    u8 pad[0x20];
+} gSClanternObjAnimEvents;
 extern int lbl_803DC050;
 
 /*
@@ -204,17 +207,17 @@ u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale)
 
     pointIndex = 0;
     lantern = (GameObject*)obj;
-    gSClanternObjAnimEvents.triggerCount = 0;
-    gSClanternObjAnimEvents.rootCurveValid = 0;
-    advanceResult = ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, timeDelta, &gSClanternObjAnimEvents);
-    if (gSClanternObjAnimEvents.rootCurveValid != 0)
+    gSClanternObjAnimEvents.list.triggerCount = 0;
+    gSClanternObjAnimEvents.list.rootCurveValid = 0;
+    advanceResult = ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, timeDelta, &gSClanternObjAnimEvents.list);
+    if (gSClanternObjAnimEvents.list.rootCurveValid != 0)
     {
-        lantern->anim.rotX += gSClanternObjAnimEvents.rootPitch;
+        lantern->anim.rotX += gSClanternObjAnimEvents.list.rootPitch;
     }
     i = 0;
-    while (i < gSClanternObjAnimEvents.triggerCount)
+    while (i < gSClanternObjAnimEvents.list.triggerCount)
     {
-        switch (gSClanternObjAnimEvents.triggeredIds[i])
+        switch (gSClanternObjAnimEvents.list.triggeredIds[i])
         {
         case SCLANTERN_EVENT_LEFT_SPARK_A:
             pointIndex = 1;
