@@ -136,7 +136,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x05A | — | NO-RETAIL-NAME | main/dll/dll_005A_staffcollisionfunc03.c | = (canonical) | — |
 | 0x05B | — | NO-RETAIL-NAME | main/dll/dll_005B_modgfxfunc03.c | = (canonical) | — |
 | 0x05C | — | NO-RETAIL-NAME | main/dll/dll_005C_dll5cfunc0.c | = (canonical) | — |
-| 0x05D | — | NO-RETAIL-NAME | main/dll/dll_005D_dll5dfunc0.c | = (canonical) | — |
+| 0x05D | — | NO-RETAIL-NAME | dlls/modgfx/93/93.c | = (canonical) | — |
 | 0x05E | — | NO-RETAIL-NAME | dlls/modgfx/94/94.c | = (canonical) | — |
 | 0x05F | — | NO-RETAIL-NAME | dlls/modgfx/95/95.c | = (canonical) | — |
 | 0x060 | — | NO-RETAIL-NAME | dlls/modgfx/96/96.c | = (canonical) | — |

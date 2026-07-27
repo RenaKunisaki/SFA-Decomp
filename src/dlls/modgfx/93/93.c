@@ -1,11 +1,5 @@
 /*
- * DLL 0x5D (dll5dfunc0) - one of the per-map gameplay overlay DLLs.
- *
- * The only real entry points are dll_5D_func03 (builds a stacked modgfx
- * command list and spawns effect 0x20b through gModgfxInterface) plus two
- * empty no-op callback slots. The remaining symbols Ghidra pulled in here
- * (the save/preview gameplay code at 0x800e....) are drift duplicates that
- * belong to the main DOL, not to this DLL, and have been dropped.
+ * DLL 93 / 0x5D - a modgfx particle-sequence spawn DLL.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
