@@ -974,9 +974,9 @@ enum GameBitId {
     GAMEBIT_ITEM_SnowHornArtifactEE5 = 0xEE5,            /* table 2; set when using artifact */
     GAMEBIT_ITEM_SnowHornArtifactEE6 = 0xEE6,            /* table 2; set when using artifact */
     GAMEBIT_ECSH_InShrine = 0xEFA,                       /* table 0; set when entering Krazoa test 1, cleared when leaving */
-    GAMEBIT_WarpRelated0EFB = 0xEFB,                     /* table 0; related to warp pads/magic cave; maybe override destination with MagicCaveExitWarp? */
+    GAMEBIT_MC_IsActive = 0xEFB,                         /* table 0; set while the Magic Cave interior is active; selects SFX global control 0xD */
     GAMEBIT_MAZEWELL_ACTIVE = 0xEFC,                     /* table 0; Music_Trigger(0x36) + Well active/hitbox state */
-    GAMEBIT_SETPIECE_ACTIVE = 0xEFD,                     /* table 0; set 1 for the duration of a major scripted encounter/arena (DIMboss boss fight, KT_RexLevel arena, nwsh_levcon chase) and cleared on exit; read by audio.c's Sfx_UpdateObjectSounds alongside ECSH_InShrine/WarpRelated0EFB/MAZEWELL_ACTIVE/PlayerInShop to select the SFX global-control ducking level */
+    GAMEBIT_SETPIECE_ACTIVE = 0xEFD,                     /* table 0; set 1 for the duration of a major scripted encounter/arena (DIMboss boss fight, KT_RexLevel arena, nwsh_levcon chase) and cleared on exit; read by audio.c's Sfx_UpdateObjectSounds alongside ECSH_InShrine/MC_IsActive/MAZEWELL_ACTIVE/PlayerInShop to select the SFX global-control ducking level */
     GAMEBIT_PlayerInShop = 0xEFE,                        /* table 0 */
     GAMEBIT_LV_LocatedKrazoaShrine = 0xF07,              /* table 0; hint 351 */
     GAMEBIT_NW_DidPadHornTest = 0xF08,                   /* table 0; hint 379 */

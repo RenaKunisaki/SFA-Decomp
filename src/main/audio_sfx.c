@@ -395,7 +395,7 @@ void Sfx_UpdateObjectSounds(void)
     {
         globalCtrl = 0xC;
     }
-    else if (mainGetBit(GAMEBIT_WarpRelated0EFB) != 0)
+    else if (mainGetBit(GAMEBIT_MC_IsActive) != 0)
     {
         globalCtrl = 0xD;
     }

@@ -24,12 +24,6 @@
 /* Release camera back to the default gameplay mode (cameramode DLL 0x42). */
 #define MAGICCAVETOP_CAMMODE_DEFAULT 0x42
 
-#define MAGICCAVETOP_OBJFLAG_HIDDEN 0x4000
-#define MAGICCAVETOP_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define MAGICCAVE_GAMEBIT_WARP_READY 0x91e   /* handoff from bottom: perform warp sequence */
-#define MAGICCAVE_GAMEBIT_WARP_DEST 0x1b8    /* warp destination map index */
-#define MAGICCAVETOP_GAMEBIT_SLOT_D_CLEAR 0xe05 /* cleared when arriving via map slot 0xd */
-
 #define MAGICCAVETOP_SUBSTATE_IDLE 0     /* waiting for player to approach; load map on entry */
 #define MAGICCAVETOP_SUBSTATE_LOADED 1   /* map loaded/active; unload on exit or start warp sequence */
 #define MAGICCAVETOP_SUBSTATE_WARPING 2  /* running warp sequence: set dest, lock levels, warpToMap */
@@ -96,9 +90,9 @@ void MagicCaveTop_update(GameObject* obj)
     gb = 0;
     if (player != NULL)
     {
-        if (mainGetBit(MAGICCAVE_GAMEBIT_WARP_READY) != 0)
+        if (mainGetBit(GAMEBIT_MC_IsExiting) != 0)
         {
-            mainSetBits(MAGICCAVE_GAMEBIT_WARP_READY, 0);
+            mainSetBits(GAMEBIT_MC_IsExiting, 0);
             (*gMapEventInterface)->setObjGroupStatus(setup->mapId, setup->objectGroup, 0);
             (*gObjectTriggerInterface)->runSequence(1, obj, -1);
             unlockLevel(0, 0, 1);
@@ -141,7 +135,7 @@ void MagicCaveTop_update(GameObject* obj)
             }
             break;
         case MAGICCAVETOP_SUBSTATE_WARPING:
-            mainSetBits(MAGICCAVE_GAMEBIT_WARP_DEST, setup->warpGameBitValue);
+            mainSetBits(GAMEBIT_MagicCaveExitWarp, setup->warpGameBitValue);
             if (setup->skipMapLoad != 0)
             {
                 unlockLevel(0, 0, 1);
@@ -156,7 +150,7 @@ void MagicCaveTop_update(GameObject* obj)
             }
             if (obj->anim.mapEventSlot == 0xd)
             {
-                mainSetBits(MAGICCAVETOP_GAMEBIT_SLOT_D_CLEAR, 0);
+                mainSetBits(GAMEBIT_WC_MagicCaveRelated0E05, 0);
             }
             warpToMap(setup->warpMapId, 0);
             break;
@@ -303,7 +297,8 @@ void MagicCaveTop_init(GameObject* obj, MagicCaveTopSetup* setup)
 {
     MagicCaveTopState* state = obj->extra;
     ModelRenderOpTextureRefs* refs;
-    obj->objectFlags = (u16)((u32)obj->objectFlags | (MAGICCAVETOP_OBJFLAG_HIDDEN | MAGICCAVETOP_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags =
+        (u16)((u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
     if (mainGetBit(setup->visibleGameBit) != 0)
     {
         state->fadeTimer = 100.0f;
