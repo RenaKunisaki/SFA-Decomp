@@ -5,6 +5,7 @@
  * respawning, and a disguise-gated chain-hit variant.
  */
 #include "dlls/objects/260_SmallBasket.h"
+#include "dlls/objects/262.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/pad.h"
 #include "game/objects/object.h"
@@ -77,12 +78,9 @@ const f32 gSmallBasketThrowVelocityY[1] = {2.2f};
 #define SMALLBASKET_HIT_SFX_DISGUISE_GATED 0x37D
 #define SMALLBASKET_HIT_SFX_DEFAULT        0x4A
 
-/* Retail OBJECTS.bin names: GreenScarab, RedScarab, GoldScarab, EnergyEgg, Apple. */
-#define SMALLBASKET_CHILD_OBJECT_SCARAB_GREEN 0x3D3
-#define SMALLBASKET_CHILD_OBJECT_SCARAB_RED   0x3D4
-#define SMALLBASKET_CHILD_OBJECT_SCARAB_GOLD  0x3D5
-#define SMALLBASKET_CHILD_OBJECT_ENERGY_EGG   0xB
-#define SMALLBASKET_CHILD_OBJECT_APPLE        0x3CD
+/* Remaining retail OBJECTS.bin child names; Scarab IDs live in their canonical header. */
+#define SMALLBASKET_CHILD_OBJECT_ENERGY_EGG 0xB
+#define SMALLBASKET_CHILD_OBJECT_APPLE      0x3CD
 
 typedef void (*SmallBasketChildThrowFn)(void* obj, f32 velocityX, f32 velocityY, f32 velocityZ);
 typedef void (*SmallBasketBreakEffectFn)(GameObject* obj, int arg1, int arg2, int arg3, int arg4, int arg5);
@@ -273,11 +271,11 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
     collisionVelocity = gSmallBasketHitVelocity;
     switch (selectedSubtype) {
     case SMALLBASKET_SUBTYPE_GREEN_SCARAB:
-        childPlacement = (u8*)Obj_AllocObjectSetup(0x24, SMALLBASKET_CHILD_OBJECT_SCARAB_GREEN);
+        childPlacement = (u8*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GREEN);
         ((ObjPlacement*)childPlacement)->posX = obj->anim.localPosX;
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
-        ((SmallBasketChildPlacement*)childPlacement)->unk1A = 0x190;
+        ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = gSmallBasketBurstVelocityXZ[0];
@@ -321,12 +319,12 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((GameObject*)child)->anim.rotX = angleDelta;
         break;
     case SMALLBASKET_SUBTYPE_RED_SCARAB:
-        childPlacement = (u8*)Obj_AllocObjectSetup(0x24, SMALLBASKET_CHILD_OBJECT_SCARAB_RED);
-        ((SmallBasketChildPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
+        childPlacement = (u8*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_RED);
+        ((ScarabPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
         ((ObjPlacement*)childPlacement)->posX = obj->anim.localPosX;
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
-        ((SmallBasketChildPlacement*)childPlacement)->unk1A = 0x190;
+        ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = gSmallBasketBurstVelocityXZ[0];
@@ -370,12 +368,12 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((GameObject*)child)->anim.rotX = angleDelta;
         break;
     case SMALLBASKET_SUBTYPE_GOLD_SCARAB:
-        childPlacement = (u8*)Obj_AllocObjectSetup(0x24, SMALLBASKET_CHILD_OBJECT_SCARAB_GOLD);
-        ((SmallBasketChildPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
+        childPlacement = (u8*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GOLD);
+        ((ScarabPlacement*)childPlacement)->yawByte = randomGetRange(-0x7F, 0x7E);
         ((ObjPlacement*)childPlacement)->posX = obj->anim.localPosX;
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
-        ((SmallBasketChildPlacement*)childPlacement)->unk1A = 0x7D0;
+        ((ScarabPlacement*)childPlacement)->activeTimer = 0x7D0;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = gSmallBasketBurstVelocityXZ[0];
