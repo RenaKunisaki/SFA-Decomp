@@ -3802,6 +3802,7 @@ dlls/objects/640_DR_CloudPer/DR_CloudPer.c:
 dlls/objects/641_DR_EarthCal/DR_EarthCal.c:
 	.text       start:0x80221430 end:0x80221670
 	.data       start:0x8032AE10 end:0x8032AE50
+	.sdata2     start:0x803E6C08 end:0x803E6C20
 
 dlls/objects/642_BarrelGener/BarrelGener.c:
 	.text       start:0x80221670 end:0x80221978
@@ -3879,6 +3880,7 @@ dlls/objects/659/659.c:
 dlls/objects/660/660.c:
 	.text       start:0x80228B38 end:0x80228C68
 	.data       start:0x8032B2A0 end:0x8032B2D8
+	.sdata2     start:0x803E6E20 end:0x803E6E28
 
 dlls/objects/665/665.c:
 	.text       start:0x80228C68 end:0x80228EDC

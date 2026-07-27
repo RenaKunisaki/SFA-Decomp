@@ -29,7 +29,7 @@ void wctemple_render(GameObject *obj, int p2, int p3, int p4, int p5, s8 visible
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6E20);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -42,9 +42,9 @@ void wctemple_update(GameObject *obj)
     WCTempleState* state = (obj)->extra;
 
     state->timer -= timeDelta;
-    if (state->timer < lbl_803E6E24)
+    if (state->timer < 0.0f)
     {
-        state->timer = *(f32*)&lbl_803E6E24;
+        state->timer = 0.0f;
     }
 
     if (state->triggerSlot == WCTEMPLE_SEQUENCE_SLOT_CLOSED)

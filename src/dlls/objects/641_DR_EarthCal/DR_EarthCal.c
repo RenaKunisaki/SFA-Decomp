@@ -56,7 +56,7 @@ void drearthcal_update(GameObject* obj)
     f32 searchDist;
 
     player = Obj_GetPlayerObject();
-    searchDist = lbl_803E6C08;
+    searchDist = 200.0f;
     if (playerGetFocusObject(player) != NULL)
     {
         obj->anim.resetHitboxFlags &= ~(INTERACT_FLAG_PROMPT_SUPPRESSED | INTERACT_FLAG_DISABLED);
@@ -102,10 +102,10 @@ void drearthcal_update(GameObject* obj)
     }
     if ((obj->objectFlags & DREARTHCAL_OBJFLAG_RENDERED) != 0)
     {
-        part.vec[0] = lbl_803E6C0C;
-        part.vec[1] = lbl_803E6C10;
-        part.vec[2] = lbl_803E6C0C;
-        objfx_spawnArcedBurst(obj, 5, lbl_803E6C14, 2, 2, 0xf, lbl_803E6C18, *(f32*)&lbl_803E6C18, lbl_803E6C1C,
+        part.vec[0] = 0.0f;
+        part.vec[1] = 30.0f;
+        part.vec[2] = 0.0f;
+        objfx_spawnArcedBurst(obj, 5, 0.75f, 2, 2, 0xf, 18.0f, 18.0f, 2.0f,
                              &part, 0);
     }
 }
