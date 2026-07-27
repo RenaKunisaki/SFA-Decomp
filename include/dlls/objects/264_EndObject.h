@@ -1,5 +1,5 @@
-#ifndef MAIN_DLL_DLL_0108_ENDOBJECT_H_
-#define MAIN_DLL_DLL_0108_ENDOBJECT_H_
+#ifndef DLLS_OBJECTS_264_ENDOBJECT_H_
+#define DLLS_OBJECTS_264_ENDOBJECT_H_
 
 #include "dlls/object_descriptor.h"
 
@@ -15,4 +15,4 @@ void EndObject_initialise(void);
 
 extern ObjectDescriptor gEndObjectObjDescriptor;
 
-#endif /* MAIN_DLL_DLL_0108_ENDOBJECT_H_ */
+#endif /* DLLS_OBJECTS_264_ENDOBJECT_H_ */
