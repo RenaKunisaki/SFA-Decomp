@@ -44,6 +44,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/shader_api.h"
 
+int nRomCurves;
 RomCurveDef* gRomCurveLastFindStart;
 RomCurveDef* gRomCurveLastFindEnd;
 

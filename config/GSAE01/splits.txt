@@ -587,7 +587,7 @@ main/dll/Hcurves_romcurve.c:
 	.text       start:0x800DD648 end:0x800E5434
 	.data       start:0x803115F8 end:0x803116E0
 	.bss        start:0x803A17E8 end:0x803A2C38
-	.sbss       start:0x803DD470 end:0x803DD478
+	.sbss       start:0x803DD470 end:0x803DD47C
 
 main/dll/dll_0015_curves.c:
 	.text       start:0x800E5434 end:0x800E8100
