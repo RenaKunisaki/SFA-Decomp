@@ -319,13 +319,12 @@ void initMapBlocks(void)
 
 void gameFlagFn_8005cd24(int v);
 
-int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
-
+int getDrawDistanceFlag_8005cd48(void);
 
 int setWidescreen(u8 v);
-int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
-u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
-int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
+int isWidescreen(void);
+u32 shouldDrawShadows(void);
+int shouldDrawClouds(void);
 
 void titleScreenFn_8005cdd4(int v);
 
