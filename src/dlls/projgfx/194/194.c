@@ -30,4 +30,4 @@ DllDescriptorTable lbl_80319A40 = {{(void*)0x00000000, (void*)0x00000000, (void*
                                     projdfp1r_doUnsupported}};
 
 /* Explicit length preserves the four-byte retail tail padding. */
-char sProjdfp1rDoNoLongerSupported[40] = "<projdfp1r Do>No Longer supported \n";
+char sProjdfp1rDoNoLongerSupported[] = "<projdfp1r Do>No Longer supported \n";
