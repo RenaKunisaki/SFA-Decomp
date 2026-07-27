@@ -101,6 +101,7 @@
 #include "dlls/objects/303_BarrelPad.h"
 #include "dlls/objects/304_AreaFXEmit.h"
 #include "dlls/objects/305.h"
+#include "dlls/objects/306_WaterFallSp.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -295,7 +296,7 @@ extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gW
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWallAnimatorObjDescriptor,
-    gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFallSprayObjDescriptor, gWaterFlowWeObjDescriptor;
+    gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor gWaveAnimatorObjDescriptor, gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor,
     gWorldObjObjDescriptor, gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor, lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
@@ -1275,7 +1276,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gBarrelPadObjDescriptor,
     (ResourceDescriptor*)&gAreaFXEmitObjDescriptor,
     (ResourceDescriptor*)&gCF_DoorLightObjDescriptor,
-    &gWaterFallSprayObjDescriptor,
+    (ResourceDescriptor*)&gWaterFallSprayObjDescriptor,
     &gSfxPlayerObjDescriptor,
     &gTexscroll2ObjDescriptor,
     &gTexscrollObjDescriptor,
