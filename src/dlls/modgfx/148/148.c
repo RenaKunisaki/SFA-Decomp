@@ -1,13 +1,13 @@
 /*
- * dll94func0 (DLL 0x94) - a one-shot modgfx effect spawner.
+ * DLL 148 / 0x94 - a one-shot modgfx effect spawner.
  *
  * dll_94_func03 builds a fixed nine-command ModgfxSpawnPacket on the stack (a small
  * layered effect that varies between two presets selected by `variant`),
  * derives its world position from the source/position objects when the
  * positioning flag is set, then hands the whole buffer to the modgfx
- * interface's spawnEffect. The four *_nop entry points align this object's
- * function set with the v1.0 asm. Sibling of dll_0093 (same GfxCmd/ModgfxSpawnPacket
- * layout and func03 shape).
+ * interface's spawnEffect. The two *_nop entry points align this DLL's
+ * function set with the v1.0 assembly. Sibling DLL 147 / 0x93 uses the same
+ * GfxCmd/ModgfxSpawnPacket layout and func03 shape.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
@@ -22,7 +22,6 @@ u8 lbl_803DB938[8] = {0, 1, 0, 0, 0, 0, 0, 0};
 #define DLL94_EFFECT_ID 0x3c
 
 
-extern u8 lbl_803DB938[8]; /* texture/resource handle */
 extern ModgfxEffectResource lbl_80317488;
 
 void dll_94_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSource, u32 flags,
@@ -163,7 +162,6 @@ void dll_94_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     }
     (*gModgfxInterface)->spawnEffect(&buf, 0, 6, resource[0], 4, resource[0]->spawnData, DLL94_EFFECT_ID, 0);
 }
-
 
 void dll_94_func01_nop(void)
 {
