@@ -1068,7 +1068,7 @@ main/dll/dll_00C1_projcore3.c:
 	.text       start:0x80100A20 end:0x80100A58
 	.data       start:0x80319A18 end:0x80319A60
 
-main/dll/dll_00C2_projdfp1r.c:
+dlls/projgfx/194/194.c:
 	.text       start:0x80100A58 end:0x80100A90
 	.data       start:0x80319A60 end:0x80319B14
 
