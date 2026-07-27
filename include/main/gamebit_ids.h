@@ -43,10 +43,9 @@ enum GameBitId {
      * holds a gate shut until enough of the area's enemies are defeated, and
      * appears in normal levels too (not just shrines). Live-verified: walking
      * up to the door flips this 0 -> 1 (region 2, bit start 36) and runs the
-     * intro sequence; set by SpiritDoorLock_update. (Was the per-DLL define
-     * SPIRITDOORLOCK_GAMEBIT_PLAYER_APPROACHED in IMspacecraft.h.) This bit is
-     * actually GENERIC: SpiritDoorLock_update (dll_0167) uses this one
-     * hard-coded id for ANY SpiritDoorLock, so it is a global "first
+     * intro sequence; set by SpiritDoorLock_update. This bit is actually
+     * GENERIC: SpiritDoorLock_update (dll_0167) uses this one hard-coded id
+     * for ANY SpiritDoorLock, so it is a global "first
      * spirit-door-lock approached -> play intro once" latch. In practice it
      * only ever flips at this K1 instance because that is the FIRST
      * spirit-door-lock in the game and the linear critical path forces the

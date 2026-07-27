@@ -2,17 +2,10 @@
 #define MAIN_DLL_IM_IMSPACECRAFT_H_
 
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
-#include "main/modellight_api.h"
 #include "main/dll/curve_walker.h"
 
-#define SPIRITDOORLOCK_EXTRA_SIZE 0x14
 #define ROLLINGBARREL_EXTRA_SIZE  0x118
-
-/* SPIRITDOORLOCK_GAMEBIT_PLAYER_APPROACHED moved to GameBitId in gamebits.h
- * as GAMEBIT_K1_SPIRITDOORLOCK_PLAYER_APPROACHED (0xab9). */
-#define SPIRITDOORLOCK_LOOP_SFX           0x423
 
 #define ROLLINGBARREL_GROUP_ID                0x2f
 #define ROLLINGBARREL_SPECIAL_DESCRIPTOR_TYPE 0x72a
@@ -21,27 +14,6 @@
 #define ROLLINGBARREL_STATE_EXPLODED_WAIT 1
 #define ROLLINGBARREL_STATE_RESPAWN_WAIT  2
 #define ROLLINGBARREL_STATE_CLEANUP       3
-
-typedef struct SpiritDoorLockState
-{
-    ModelLightStruct* light;
-    int spinAngle;
-    int active;
-    int orbitCount;
-    u8 flags;
-    u8 pad11[SPIRITDOORLOCK_EXTRA_SIZE - 0x11];
-} SpiritDoorLockState;
-
-typedef struct SpiritDoorLockMapData
-{
-    ObjPlacement base;
-    s8 yaw;
-    s8 scale;
-    s16 orbitCount;
-    u8 pad1C[0x1E - 0x1C];
-    s16 doneGameBit;
-    s16 activeGameBit;
-} SpiritDoorLockMapData;
 
 typedef struct RollingBarrelState
 {
@@ -68,19 +40,6 @@ typedef struct RollingBarrelMapData
     s16 curveSpeed;
 } RollingBarrelMapData;
 
-STATIC_ASSERT(sizeof(SpiritDoorLockState) == SPIRITDOORLOCK_EXTRA_SIZE);
-STATIC_ASSERT(offsetof(SpiritDoorLockState, light) == 0x00);
-STATIC_ASSERT(offsetof(SpiritDoorLockState, spinAngle) == 0x04);
-STATIC_ASSERT(offsetof(SpiritDoorLockState, active) == 0x08);
-STATIC_ASSERT(offsetof(SpiritDoorLockState, orbitCount) == 0x0C);
-STATIC_ASSERT(offsetof(SpiritDoorLockState, flags) == 0x10);
-
-STATIC_ASSERT(offsetof(SpiritDoorLockMapData, yaw) == 0x18);
-STATIC_ASSERT(offsetof(SpiritDoorLockMapData, scale) == 0x19);
-STATIC_ASSERT(offsetof(SpiritDoorLockMapData, orbitCount) == 0x1A);
-STATIC_ASSERT(offsetof(SpiritDoorLockMapData, doneGameBit) == 0x1E);
-STATIC_ASSERT(offsetof(SpiritDoorLockMapData, activeGameBit) == 0x20);
-
 STATIC_ASSERT(sizeof(RollingBarrelState) == ROLLINGBARREL_EXTRA_SIZE);
 STATIC_ASSERT(offsetof(RollingBarrelState, curveSpeed) == 0x108);
 STATIC_ASSERT(offsetof(RollingBarrelState, verticalSpeed) == 0x10C);
@@ -97,15 +56,6 @@ STATIC_ASSERT(offsetof(RollingBarrelMapData, verticalSpeed) == 0x1A);
 STATIC_ASSERT(offsetof(RollingBarrelMapData, curveSpeed) == 0x1C);
 STATIC_ASSERT(sizeof(RollingBarrelMapData) == 0x20);
 
-int SpiritDoorLock_getExtraSize(void);
-int SpiritDoorLock_getObjectTypeId(void);
-void SpiritDoorLock_free(GameObject* obj);
-void SpiritDoorLock_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void SpiritDoorLock_hitDetect(void);
-void SpiritDoorLock_update(GameObject* obj);
-void SpiritDoorLock_init(GameObject* obj, SpiritDoorLockMapData* params, int mode);
-void SpiritDoorLock_release(void);
-void SpiritDoorLock_initialise(void);
 void RollingBarrel_explode(GameObject* obj, int unusedExplosionVariant);
 int RollingBarrel_getExtraSize(void);
 int RollingBarrel_getObjectTypeId(void);

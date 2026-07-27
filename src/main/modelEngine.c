@@ -154,6 +154,7 @@
 #include "dlls/objects/356_CFLevelCont.h"
 #include "dlls/objects/357_CFRemovalSh.h"
 #include "dlls/objects/358.h"
+#include "dlls/objects/359_SpiritDoorL.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -318,8 +319,8 @@ extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPSca
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
     gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
-extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
-    gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
+extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritPrizeObjDescriptor,
+    gStaffObjDescriptor, gStaticCameraObjDescriptor;
 extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
@@ -1368,7 +1369,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCFLevelControlObjDescriptor,
     (ResourceDescriptor*)&gCFRemovalShNullResourceDescriptor,
     (ResourceDescriptor*)&gExplodedObjDescriptor,
-    &gSpiritDoorLockObjDescriptor,
+    (ResourceDescriptor*)&gSpiritDoorLockObjDescriptor,
     &lbl_803DBEE0,
     &gIMIceMountainObjDescriptor,
     &gCRrockfallObjDescriptor,
