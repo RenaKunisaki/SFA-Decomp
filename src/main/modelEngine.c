@@ -57,6 +57,7 @@
 #include "dlls/objects/258_StayPoint.h"
 #include "dlls/objects/259_CurveFish.h"
 #include "dlls/objects/260_SmallBasket.h"
+#include "dlls/objects/261_LargeCrate.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -216,8 +217,7 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLFXEmitterObjDescriptor,
     gLINKBLevControlObjDescriptor;
 extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLanded_ArwingObjDescriptor,
-    gLanternFireFlyObjDescriptor, gLargeCrateObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
-    gLaserUnsupportedObjDescriptor;
+    gLanternFireFlyObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMMP_BridgeObjDescriptor, gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
@@ -1207,7 +1207,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gStayPointObjDescriptor,
     (ResourceDescriptor*)&gCurveFishObjDescriptor,
     (ResourceDescriptor*)&gSmallBasketObjDescriptor,
-    &gLargeCrateObjDescriptor,
+    (ResourceDescriptor*)&gLargeCrateObjDescriptor,
     &gScarabObjDescriptor,
     &gWindLift107ObjDescriptor,
     (ResourceDescriptor*)&gEndObjectObjDescriptor,

@@ -47,7 +47,7 @@
 #include "main/pad.h"
 #include "main/voxmaps.h"
 #include "string.h"
-#include "main/dll/dll_0105_largecrate.h"
+#include "dlls/objects/261_LargeCrate.h"
 #include "main/dll/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
@@ -273,7 +273,7 @@ void camcontrol_updateTargetFeedback(void)
                 break;
             case 0x3de:
             case 0x49f:
-                targetDistance = largecrate_getReticleDistance((GameObject*)target);
+                targetDistance = LargeCrate_getReticleDistance((GameObject*)target);
                 break;
             case 0x31:
                 targetDistance = gCamcontrolNormalizedMax;

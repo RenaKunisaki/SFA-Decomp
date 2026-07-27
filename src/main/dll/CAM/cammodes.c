@@ -22,7 +22,6 @@
 #include "main/pad.h"
 #include "main/voxmaps.h"
 #include "string.h"
-#include "main/dll/dll_0105_largecrate.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/resource.h"
