@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(MatchingFor("GSAE01"), "dlls/engine/8/8.c"),
             Object(NonMatching, "dlls/engine/9/9.c", cflags=cflags_dll_noopt, mw_version="GC/1.3"),
             Object(NonMatching, "dlls/engine/10_expgfx/expgfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(

@@ -355,11 +355,14 @@ main/newclouds.c:
 
 main/skystars.c:
 	.text       start:0x80093AE0 end:0x8009436C
-	.data       start:0x8030F770 end:0x8030F7B0
+	.data       start:0x8030F770 end:0x8030F788
 	.bss        start:0x8039A900 end:0x8039AB28
 	.sdata      start:0x803DB770 end:0x803DB780
 	.sbss       start:0x803DD1D0 end:0x803DD1E0
 	.sdata2     start:0x803DF280 end:0x803DF2B0
+
+dlls/engine/8/8.c:
+	.data       start:0x8030F788 end:0x8030F7B0
 
 dlls/engine/9/9.c:
 	.text       start:0x8009436C end:0x80094F7C
