@@ -1,5 +1,5 @@
 /*
- * projlightning2 (DLL 0x00B0) - retired "lightning 2" projectile object.
+ * projlightning2 (DLL 176 / 0x00B0) - retired "lightning 2" projectile object.
  *
  * The object's behaviour was cut from the shipping game: its "do" entry
  * point now only logs a "no longer supported" message and returns the
