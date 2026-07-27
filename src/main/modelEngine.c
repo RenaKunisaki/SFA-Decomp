@@ -131,6 +131,7 @@
 #include "dlls/objects/333_LaserBeam.h"
 #include "dlls/objects/334_CFPrisonGua.h"
 #include "dlls/objects/335_CFPrisonUnc.h"
+#include "dlls/objects/336_GCRobotLigh.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -261,8 +262,8 @@ extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescripto
     gExplodableObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
-extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
-    gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
+extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGPSH_ShrineObjDescriptor,
+    gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor, gIMAnimSpaceCraftObjDescriptor,
     gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
 extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
@@ -1327,7 +1328,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLaserBeamNullResourceDescriptor,
     (ResourceDescriptor*)&gCFPrisonGuardObjDescriptor,
     (ResourceDescriptor*)&gCFPrisonUncleObjDescriptor,
-    &gGCRobotLightBeaObjDescriptor,
+    (ResourceDescriptor*)&gGCRobotLightBeamObjDescriptor,
     &lbl_803DBE60,
     &lbl_803DBE68,
     &gCFPerchObjDescriptor,

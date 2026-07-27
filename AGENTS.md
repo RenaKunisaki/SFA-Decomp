@@ -123,6 +123,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   the same type name. If another subsystem already uses that name for a different layout, choose an
   explicit object-specific name instead of exporting an ambiguous typedef or creating an include
   collision; back-apply the rename only to consumers of the recovered layout.
+- Before renaming a public DLL function, descriptor, or data symbol, search both the source tree and
+  the active-target symbol config for the proposed name. If another TU already owns it, keep the
+  roles distinct with the evidenced source/object namespace; do not let an internal cleanup create
+  a duplicate declaration, duplicate config key, or ambiguous cross-TU API.
 - Prefer the canonical `GameObject` and `ObjAnimComponent` fields when they already express a
   cleaned DLL's accesses. Do not publish a unit-local object overlay that duplicates the common
   object prefix, `extra`, animation callback, or `userData` slots; retain a custom overlay only for

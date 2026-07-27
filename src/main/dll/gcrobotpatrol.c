@@ -26,7 +26,7 @@
 #include "main/dll/seqobj11d_ext.h"
 #include "main/dll/groundbaddiepush_ext.h"
 #include "main/dll/dll_00C9_enemy_ext.h"
-#include "main/dll/dll_0150_gcrobotlightbea.h"
+#include "dlls/objects/336_GCRobotLigh.h"
 
 #define SEQOBJ11E_GCROBOT_DROP_OBJ 0x6b5
 
@@ -215,7 +215,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         GameObject* child2;
 
         if (*(s8*)((char*)def + 0x2e) != -1 && (child2 = obj->childObjs[0]) != 0 &&
-            gcrobotlightbea_isPlayerCaught(child2) != 0)
+            gcRobotLightBeam_isPlayerCaught(child2) != 0)
         {
             ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
             gcRobotLight_init(obj, 0x3b2);

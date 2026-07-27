@@ -136,6 +136,8 @@ void voxmaps_resetLoadedMaps(void);
 void voxmaps_initialise(void);
 int* voxmaps_updateActiveMap(VoxPos* obj);
 int voxmaps_traceLine(VoxPos* start, VoxPos* end, VoxPos* coordOut, u8* occOut, u8 skipFirst);
+int voxmaps_traceWorldLine(void* startPos, void* endPos);
+void voxmaps_traceScaledVectorEnd(f32* out, void* origin, f32* dir, f32 scale);
 void voxmaps_expandRouteNeighbors(RouteState* state, VoxBoxArg* box, int parentNodeIndex);
 void voxmapsFn_80010ff4(RouteState* state, VoxBoxArg* srcBox, int parentNodeIndex, u16 count, s16* box);
 int voxmaps_processRouteQueue(RouteState* state, int count);

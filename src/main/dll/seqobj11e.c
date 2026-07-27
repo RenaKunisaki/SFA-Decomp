@@ -36,7 +36,6 @@
 #include "main/dll/seqobj11d_ext.h"
 #include "main/dll/groundbaddiepush_ext.h"
 #include "main/dll/dll_00C9_enemy_ext.h"
-#include "main/dll/dll_0150_gcrobotlightbea.h"
 
 int lbl_803DBCA8[2] = {2, 3};
 f32 lbl_803DBCB0 = 0.018f;
