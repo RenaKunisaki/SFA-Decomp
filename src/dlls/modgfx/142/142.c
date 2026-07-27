@@ -1,5 +1,5 @@
 /*
- * dll8efunc0 (DLL 0x8E) - one of the foodbag modgfx effect spawners
+ * DLL 142 / 0x8E - one of the foodbag modgfx effect spawners
  * (dll_NN_func03 family, see foodbag.h). func03 builds a multi-command
  * FbBuf and hands it to the modgfx interface to spawn a randomized
  * particle burst (a flame/spark fan: textured layer-0/1/2 commands plus
@@ -19,13 +19,13 @@
 #include "main/dll/fb_cmd.h"
 #include "main/dll/foodbag.h"
 #include "main/dll/dll_008E_dll8efunc0.h"
+#include "main/dll/dll_008F_dll8ffunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL8E_EFFECT_ID 0x26a
 
 extern s16 gDll8EEffectHwParams[];
 extern u8 gDll8EEffectVtxColorTable[];
-#include "main/dll/dll_008F_dll8ffunc0.h"
 
 u8 gDll8EEffectSpawnResource[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gDll8EEffectTexture[8] = {0, 0, 0, 1, 0, 2, 0, 0};
@@ -226,5 +226,3 @@ u32 lbl_80316C90[95] = {0x03e80000, 0x00000000, 0x000002c3, 0x0000fd3d, 0x000f00
 u32 lbl_80316E0C[9] = {
     0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_8F_func00_nop, (u32)dll_8F_func01_nop,
     0x00000000, (u32)dll_8F_func03, 0x00000000};
-
-/* descriptor/ptr table auto 0x803e1178-0x803e1398 */
