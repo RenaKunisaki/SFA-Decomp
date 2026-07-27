@@ -18,6 +18,17 @@ Declaration order permutes saved-register assignment among locals
 with disjoint live ranges.  This sweeps orderings of a contiguous decl block
 and scores every one against the retail object.
 
+The --lines range is caller-supplied, so this tool has no opinion about WHICH
+block you point it at -- and a function's declarations do NOT all live at the
+top of the body.  Locals declared inside a loop body / if-block / case block
+are a separate, independently order-sensitive block (the saved-GPR band is
+filled in two phases; webs that never reach a loop header are allocated first,
+in reverse first-definition order, and only the rest follow declaration order).
+Enumerate every block first with
+    python3 tools/brute_match.py <unit> <symbol> --list-blocks
+and sweep each one; a sweep of the top-level block alone establishes nothing
+about the nested ones.
+
 Gating is on EXTRACTED FUNCTION BYTES via fnbytes.compare().  A build failure
 or an absent symbol is recorded as ERROR and never as a match -- several
 tools in this repo print nothing both when a function matches and when the

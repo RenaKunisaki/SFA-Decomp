@@ -95,7 +95,16 @@ def objdump_paths(unit: dict, version: str):
 
 
 def objdump_norm(objdump: Path, obj: Path, symbol: str):
-    return normalize(strip_preamble(objdump_symbol(objdump, obj, symbol)))
+    """Normalized instruction list, or [] when the symbol cannot be read.
+
+    A unit that is not part of the build (no src .o) used to surface as a bare
+    CalledProcessError traceback out of a batch run, which reads exactly like
+    "swept and inert". match_score() maps [] to a sentinel -1.0 instead.
+    """
+    try:
+        return normalize(strip_preamble(objdump_symbol(objdump, obj, symbol)))
+    except Exception:
+        return []
 
 
 def match_score(t: list[str], c: list[str]):
@@ -778,6 +787,10 @@ def main():
         return fuzzy_measure(unit, args.symbol, args.version)
 
     base_proxy, base_reg = proxy()
+    if base_proxy < 0:
+        raise SystemExit(
+            f"cannot disassemble {args.symbol} from {tgt_o.name}/{cur_o.name} "
+            "-- is this unit part of the build?")
     base_fz = fuzzy()
     if base_fz < 0:
         raise SystemExit(
