@@ -1,5 +1,5 @@
 /*
- * projroombeam (DLL 0xAE) - retired projectile object.
+ * projroombeam (DLL 174 / 0xAE) - retired projectile object.
  *
  * One of the stubbed-out projectile DLLs. The object has
  * no behaviour left: release/initialise are empty and doUnsupported just
