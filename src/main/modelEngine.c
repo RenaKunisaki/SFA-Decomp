@@ -189,6 +189,7 @@
 #include "dlls/objects/392_CClightfoot.h"
 #include "dlls/objects/393_CCSharpclaw.h"
 #include "dlls/objects/394_CCpedstal.h"
+#include "dlls/objects/395_CClevcontro.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -279,7 +280,6 @@ extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, g
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
 extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor,
     gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
-extern ResourceDescriptor gCClevcontrolObjDescriptor;
 extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
@@ -1429,7 +1429,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCCLightfootObjDescriptor,
     (ResourceDescriptor*)&gCCSharpClawPadObjDescriptor,
     (ResourceDescriptor*)&gCCPedestalObjDescriptor,
-    &gCClevcontrolObjDescriptor,
+    (ResourceDescriptor*)&gCCLevelControlObjDescriptor,
     &gMMSH_ShrineObjDescriptor,
     &gMMSH_ScalesObjDescriptor,
     &gMMSH_WaterSpikeObjDescriptor,
