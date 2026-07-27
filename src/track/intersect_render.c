@@ -1674,7 +1674,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_TRUE, GX_PTTEXMTX6);
 
     alpha_byte = (((ModelRenderOp*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
-    ((u8*)&temp)[3] = alpha_byte;
+    temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
     GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP0, GX_COLOR0A0);
@@ -1960,7 +1960,7 @@ u32 objCallback_80074d04(int handle, void* model)
     GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
-    ((u8*)&temp)[3] = ((u8*)(int)handle)[0x37];
+    temp.a = ((u8*)(int)handle)[0x37];
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE2, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE2);
@@ -3041,15 +3041,15 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     if (stage_idx < 0)
         stage_idx = 0;
 
-    ((u8*)&color2)[0] = 0x7F;
-    ((u8*)&color2)[1] = 0x7F;
-    ((u8*)&color2)[2] = 0x7F;
+    color2.r = 0x7F;
+    color2.g = 0x7F;
+    color2.b = 0x7F;
     GXSetTevColor(GX_TEVREG0, color2);
 
     ((u8*)colorPtr)[3] = (u8)((((u8*)colorPtr)[3] >> 1) + (((u8*)colorPtr)[3] >> 2));
-    ((u8*)&temp)[0] = ((u8*)colorPtr)[3];
-    ((u8*)&temp)[1] = ((u8*)colorPtr)[3];
-    ((u8*)&temp)[2] = ((u8*)colorPtr)[3];
+    temp.r = ((u8*)colorPtr)[3];
+    temp.g = ((u8*)colorPtr)[3];
+    temp.b = ((u8*)colorPtr)[3];
     GXSetTevKColor(GX_KCOLOR0, temp);
 
     stage_base = 0;
@@ -4402,16 +4402,16 @@ void setupWaterReflectionTev(int handle1, int handle2)
 
     if (isHeavyFogEnabled() != 0)
     {
-        ((u8*)&temp)[0] = ((u8*)&gFogColor)[0];
-        ((u8*)&temp)[1] = ((u8*)&gFogColor)[1];
-        ((u8*)&temp)[2] = ((u8*)&gFogColor)[2];
+        temp.r = gFogColor.r;
+        temp.g = gFogColor.g;
+        temp.b = gFogColor.b;
     }
     else
     {
         u8 ignoredLightColor;
         (*gSkyInterface)
-            ->getCurrentAmbientAndLightColors(&((u8*)&temp)[0], &((u8*)&temp)[1], &((u8*)&temp)[2], &ignoredLightColor,
-                                              &ignoredLightColor, &ignoredLightColor);
+            ->getCurrentAmbientAndLightColors(&temp.r, &temp.g, &temp.b, &ignoredLightColor, &ignoredLightColor,
+                                              &ignoredLightColor);
     }
 
     k0 = *(GXColor*)&lbl_803DB690;
@@ -4424,15 +4424,15 @@ void setupWaterReflectionTev(int handle1, int handle2)
     ((void (*)(int, GXColor*))GXSetTevKColor)(2, &k2);
     GXSetTevKColorSel(GX_TEVSTAGE2, GX_TEV_KCSEL_K2);
 
-    ((u8*)&temp)[0] = (u8)((int)((u8*)&temp)[0] >> 2);
-    ((u8*)&temp)[1] = (u8)((int)((u8*)&temp)[1] >> 2);
-    ((u8*)&temp)[2] = (u8)((int)((u8*)&temp)[2] >> 2);
+    temp.r = (u8)((int)temp.r >> 2);
+    temp.g = (u8)((int)temp.g >> 2);
+    temp.b = (u8)((int)temp.b >> 2);
     tev1 = temp;
     ((void (*)(int, GXColor*))GXSetTevColor)(1, &tev1);
 
-    ((u8*)&temp2)[0] = (u8)(((u8*)&temp)[0] + 0xC0);
-    ((u8*)&temp2)[1] = (u8)(((u8*)&temp)[1] + 0xC0);
-    ((u8*)&temp2)[2] = (u8)(((u8*)&temp)[2] + 0xC0);
+    temp2.r = (u8)(temp.r + 0xC0);
+    temp2.g = (u8)(temp.g + 0xC0);
+    temp2.b = (u8)(temp.b + 0xC0);
     tev2 = temp2;
     ((void (*)(int, GXColor*))GXSetTevColor)(2, &tev2);
 
