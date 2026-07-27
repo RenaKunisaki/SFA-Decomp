@@ -1,5 +1,5 @@
 /*
- * dll_6A (dll6afunc0) - particle/gfx spawn helper for a DLL object.
+ * DLL 106 / 0x6A - particle/gfx spawn helper.
  *
  * The unit owns three entry points:
  *   dll_6A_func00_nop / dll_6A_func01_nop - empty stubs.
@@ -18,7 +18,6 @@
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL6A_EFFECT_ID 0x3e
-
 
 extern u8 lbl_803138A0[];
 extern f32 lbl_803E0A28;
