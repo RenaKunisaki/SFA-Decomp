@@ -347,9 +347,6 @@ extern f32 gNewShadowReflectionScrollY, gNewShadowReflectionScrollX;
 extern u8 lbl_803DCF80;
 extern u16 lbl_803DCFA0;
 extern int gNewShadowLightAngleX, gNewShadowLightAngleY;
-extern const double lbl_803DED58;
-
-extern const double lbl_803DED60;
 
 extern inline float sqrtf(float x)
 {
@@ -368,8 +365,6 @@ extern inline float sqrtf(float x)
 
 extern const f32 lbl_803DED80;
 extern const f32 lbl_803DED90;
-extern const double lbl_803DED58;
-extern const double lbl_803DED60;
 extern const f32 lbl_803DED38;
 extern const f32 lbl_803DED3C;
 extern const f32 lbl_803DED40;
