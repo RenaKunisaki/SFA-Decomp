@@ -3606,9 +3606,9 @@ int mapUnload(int mapId, int flags)
                                 }
                                 if (j <= 0x50 && j != 0x49 && j != 0x43 && j != 5)
                                 {
-                                    int* slot = (int*)((j << 2) + ((u32)tbl + 0x20000));
-                                    mm_free((void*)slot[-0x6C08 / 4]);
-                                    slot[-0x6C08 / 4] = 0;
+                                    u32* slot = (u32*)((j << 2) + ((u32)&tbl->romList[0]));
+                                    mm_free((void*)*slot);
+                                    *slot = 0;
                                 }
                                 break;
                             }
