@@ -5,7 +5,7 @@
  * travelling sine wave (dimmagicbridge_updateVertexWave) while two material
  * channels scroll (dimmagicbridge_scrollTextureChannels). When ignited
  * (gamebit 0x1E9, or once the player's emission controller lingers over
- * gamebit 0x1EF) it fires the death VFX (fn_80065574) and latches gamebit
+ * gamebit 0x1EF) it fires the death VFX (trackSetLinesEnabledByParam) and latches gamebit
  * 0x1E8; the flame sequence (dimmagicbridge_SeqFn) lights successive
  * segments and ramps their glow toward full.
  *
@@ -192,7 +192,7 @@ void dimmagicbridge_update(GameObject* obj)
     }
     else
     {
-        fn_80065574(0x11, (GameObject*)(0), 0);
+        trackSetLinesEnabledByParam(0x11, (GameObject*)(0), 0);
     }
 }
 
@@ -263,7 +263,7 @@ void dimmagicbridge_init(GameObject* obj, u8* params)
         {
             state->segmentGlow[i] = 0xff;
             state->segmentLit[i] = 1;
-            fn_80065574(0x11, (GameObject*)(0), 0);
+            trackSetLinesEnabledByParam(0x11, (GameObject*)(0), 0);
         }
     }
 }

@@ -1204,7 +1204,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     tex = (void*)getNewShadowReflectionGradientTexture();
     selectReflectionTexture(0);
     selectTexture((Texture*)tex, 1);
-    fn_8006C6A4(2);
+    selectWhirlpoolTexture(2);
 
     GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);

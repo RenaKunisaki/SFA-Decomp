@@ -88,7 +88,7 @@ void MikaBombShadow_init(GameObject* obj) {
     MikaBombShadowState* state = obj->extra;
     f32 groundDistance;
 
-    (void)fn_80065684(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance, 0);
+    (void)trackGetHeightAboveGround(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance, 0);
     ObjHits_DisableObject(obj);
     obj->anim.alpha = 0xff;
     obj->anim.rotY = 0x4000;

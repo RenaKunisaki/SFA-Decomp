@@ -1096,7 +1096,7 @@ void getNewShadowSnowFlashTexture(u32* p)
 {
     *p = gNewShadowSnowFlashTexture;
 }
-void fn_8006C504(Texture** p)
+void getNewShadowHeatHazeTexture(Texture** p)
 {
     *p = lbl_803DCFC8;
 }
@@ -1173,7 +1173,7 @@ void loadNewShadowBumpTexture(int texMapId)
     GXLoadTexObj(textureGetGXTexObj((Texture*)gNewShadowBumpTexture), texMapId);
 }
 
-void fn_8006C6A4(int id)
+void selectWhirlpoolTexture(int id)
 {
     register int idCopy = id;
     Texture* p = (Texture*)lbl_803DCFCC;
@@ -1323,7 +1323,7 @@ f32 gNewShadowPlacements[0x112];
 
 /* Builds the animated water-noise assets: scatters up to 50 non-overlapping random
    placements ([0]=lifetime 8..16 frames, [1..2]=pos, [3]=outer size, [4]=inner size),
-   renders 16 noise animation frames through fn_8006CD20, then the caustic texture. */
+   renders 16 noise animation frames through evalNoisePlacements, then the caustic texture. */
 
 void findSomething(void* needle)
 {
@@ -1396,7 +1396,7 @@ void createNewShadowDistortionTexture(void)
 /* Sample the animated noise field built from gNewShadowPlacements: sums the
    contribution of every active placement at texel (px,pz) for animation frame
    `frame`. out2 = sparkle intensity (0..1), out1 = accumulated shift term. */
-void fn_8006CD20(f32 px, f32 pz, f32 frame, f32* placements, int count, f32* out1, f32* out2)
+void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, f32* out1, f32* out2)
 {
     f32* place;
     int i;
@@ -1554,7 +1554,7 @@ void initFn_8006d020(void)
                     int texelAddress = (int)gNewShadowNoiseTexFrames[frame] + tileRowOffset + rowPixelOffset;
                     texelAddress += (column & 3) * 8;
                     texelAddress += (column >> 2) * 0x200;
-                    fn_8006CD20(row * lbl_803DEDE0, column * lbl_803DEDE0, frame,
+                    evalNoisePlacements(row * lbl_803DEDE0, column * lbl_803DEDE0, frame,
                                 gNewShadowPlacements, noisePlacementCount, &shift, &intensity);
                     highByte = 255.0f * intensity;
                     lowByte = 255.0f * shift;

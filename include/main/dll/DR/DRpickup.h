@@ -18,7 +18,7 @@ typedef struct PickupFlags {
 
 /*
  * DRpickup per-object state (the obj+0xB8 extra block) as seen from
- * fn_801EC1AC. Only the pure-constant-offset scalar fields touched there
+ * SnowBike_UpdateLiftSway. Only the pure-constant-offset scalar fields touched there
  * are named; the matrix bases at 0x6C/0x12C and the address-taken sites
  * are kept raw, so the head region is padded. Extent past 0x588 unknown.
  */
@@ -69,6 +69,6 @@ STATIC_ASSERT(offsetof(DRPickupState, flags458) == 0x458);
 STATIC_ASSERT(offsetof(DRPickupState, accumX) == 0x494);
 STATIC_ASSERT(offsetof(DRPickupState, spinVel) == 0x584);
 
-void fn_801EC1AC(int param_1,int param_2);
+void SnowBike_UpdateLiftSway(int param_1,int param_2);
 
 #endif /* MAIN_DLL_DR_DRPICKUP_H_ */

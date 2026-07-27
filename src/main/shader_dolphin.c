@@ -921,7 +921,7 @@ void setupHeatShimmerTevStages(char* p1)
     m2.v[0][1] = sv;
     m2.v[1][0] = -sv;
     m2.v[1][1] = cv;
-    fn_8006C504(&tex2c);
+    getNewShadowHeatHazeTexture(&tex2c);
     if (tex2c != 0)
     {
         GXTexObj* obj = textureGetGXTexObj(tex2c);

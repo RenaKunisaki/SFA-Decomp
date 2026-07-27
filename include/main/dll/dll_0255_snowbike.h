@@ -179,7 +179,7 @@ extern f32 gDrCloudCageRouteDistGate;
 
 void SnowBike_update(GameObject* obj);
 void SnowBike_resetToRomListPosition(GameObject* obj);
-void fn_801EC870(int obj, int state);
+void SnowBike_ResetDynamics(int obj, int state);
 s32 SnowBike_getRouteRank(GameObject* obj);
 s32 SnowBike_isAtRankGate(GameObject* obj);
 int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq);

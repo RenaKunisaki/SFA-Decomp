@@ -222,7 +222,7 @@ extern const f32 lbl_803DECD0;
 extern const f32 lbl_803DECD4;
 
 int mapLoadBlocksFn_800685cc(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
-int fn_80067B84(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
+int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
                 f32 y1, f32 z1, u8 flags);
 int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
                       int flagsArg);
@@ -1579,7 +1579,7 @@ void trackIntersect(void)
     lbl_803DCF44 = 1;
 }
 
-void fn_80065574(int matchVal, GameObject* obj, int flag)
+void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
 {
     int count;
     int i;
@@ -1638,7 +1638,7 @@ void objFn_80065604(void)
     } while (i < MAP_DYNAMIC_SLOT_COUNT);
 }
 
-int fn_80065640(void)
+int trackIntersectRebuildPending(void)
 {
     int r = 0;
     if ((s8)mapBlockFlag != 0 || (s8)lbl_803DCF4F != 0 || lbl_803DCF4D != 0)
@@ -1651,7 +1651,7 @@ void setMapBlockFlag(void)
     mapBlockFlag = 0x1;
 }
 
-int fn_80065684(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int kinds)
+int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int kinds)
 {
     TrackGroundHit** arr;
     int n;
@@ -1763,7 +1763,7 @@ int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, 
     return 1;
 }
 
-void fn_800659A8(TrackTriangle* triStart, TrackTriangle* triEnd, TrackBlockDescriptor* desc, f32 qx, f32 qz,
+void trackCollectGroundHits(TrackTriangle* triStart, TrackTriangle* triEnd, TrackBlockDescriptor* desc, f32 qx, f32 qz,
                  int allowDown)
 {
     f32* vxp;
@@ -1910,12 +1910,12 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
         if (desc->object != NULL)
         {
             Matrix_TransformPoint(desc->currentMatrix, x, lbl_803DECB4, z, &tx, &ty, &tz);
-            fn_800659A8(gTrackTriangleBuffer + desc->firstTriangle,
+            trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
                         gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
         }
         else
         {
-            fn_800659A8(gTrackTriangleBuffer + desc->firstTriangle,
+            trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
                         gTrackTriangleBuffer + desc[1].firstTriangle, desc, x, z, mode);
         }
     }
@@ -2766,7 +2766,7 @@ int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int
     return hitCount;
 }
 
-int fn_80067B84(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1, f32 y1,
+int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1, f32 y1,
                 f32 z1, u8 flags)
 {
     f32 xd, xc, xb, xa;
@@ -3526,7 +3526,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;
-                cur = fn_80067B84(cur, desc, (int)model, lbl_803DECC4, f31, f29, f27, f30, f28, f26, a);
+                cur = trackBuildModelTriangles(cur, desc, (int)model, lbl_803DECC4, f31, f29, f27, f30, f28, f26, a);
                 desc++;
                 if ((u32)cur >= gTrackTriangleBufferEnd)
                     break;

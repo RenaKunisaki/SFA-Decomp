@@ -36,7 +36,7 @@ struct MapBlockData;
 typedef struct ObjModel ObjModel;
 
 int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameCount);
-int fn_80065640(void);
+int trackIntersectRebuildPending(void);
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
                                          f32* outNormal, int kinds);
 int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, int flag);
@@ -46,7 +46,7 @@ int hitDetectFn_80067958(GameObject* contactSource, f32* startPoints, f32* endPo
 void hitDetect_calcSweptSphereBounds(TrackQueryBounds* boundsOut, f32* startPoints, f32* endPoints, f32* radii,
                                      int pointCount);
 void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* bounds, u32 mask, int flags);
-void fn_80065574(int matchValue, GameObject* obj, int flag);
+void trackSetLinesEnabledByParam(int matchValue, GameObject* obj, int flag);
 void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z);
 void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode);
 void playerShadowClearPositionOverride(GameObject* obj);
@@ -80,7 +80,7 @@ void MapBlock_init(struct MapBlockData* block);
 void MapBlock_initHits(struct MapBlockData* block, int index);
 int mapBlockCountTrianglesByType(struct MapBlockData* block, int type);
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale);
-int fn_80065684(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int kinds);
+int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int kinds);
 extern int lbl_803DCF34;
 extern f32* lbl_803DCF38;
 

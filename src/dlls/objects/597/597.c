@@ -241,7 +241,7 @@ static inline void shTexCoord2f32(const f32 s, const f32 t)
     GXWGFifo.f32 = t;
 }
 
-void fn_801E991C(int p1, char* table)
+void SnowBike_DrawTrails(int p1, char* table)
 {
     u8 r;
     u8 g;
@@ -983,7 +983,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
                 return 0;
             }
 
-            fn_801EC870((int)obj, (int)state);
+            SnowBike_ResetDynamics((int)obj, (int)state);
             angle = (s16)getAngle(obj->anim.localPosX - s->anchorX, obj->anim.localPosZ - s->anchorZ);
             obj->anim.rotX = angle;
             s->targetYaw = angle;
@@ -1044,13 +1044,13 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
  *
  * Implements the per-frame logic of the snowbike vehicle: route following
  * along a checkpoint path (fn_801EAE4C / gCheckpointInterface), the air /
- * fuel meter and its UI + shutdown sequence (fn_801EB0D4), spawn / reset
+ * fuel meter and its UI + shutdown sequence (SnowBike_UpdateAirMeter), spawn / reset
  * latching (SnowBike_onSeqFree), the animation-event/sequence callback that seeds
  * the launch impulse from per-step velocity (SnowBike_SeqFn),
  * collision response and impact particle bursts (fn_801EB634), steering /
- * pitch-roll integration with rumble + camera shake (fn_801EB940), and the
+ * pitch-roll integration with rumble + camera shake (SnowBike_UpdateSteering), and the
  * exhaust/contrail particle drivers blended toward per-state targets
- * (fn_801EBD60). State lives in SnowBikeState (dll_0255_snowbike.h); flags428 is
+ * (SnowBike_UpdateExhaustFx). State lives in SnowBikeState (dll_0255_snowbike.h); flags428 is
  * a bitfield overlay byte read via the Hightop* flag structs below.
  */
 
@@ -1162,7 +1162,7 @@ void fn_801EAE4C(GameObject* obj, SnowBikeState* st)
     }
 }
 
-void fn_801EB0D4(u32 obj, int stateRaw)
+void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
 {
     SnowBikeState* st = (SnowBikeState*)stateRaw;
     f32 rate;
@@ -1410,7 +1410,7 @@ void fn_801EB634(GameObject* obj, int stateRaw)
     }
 }
 
-void fn_801EB940(short* obj, int stateRaw)
+void SnowBike_UpdateSteering(short* obj, int stateRaw)
 {
     SnowBikeState* st = (SnowBikeState*)stateRaw;
     void* pathState = (void*)(stateRaw + 0x178);
@@ -1507,7 +1507,7 @@ void fn_801EB940(short* obj, int stateRaw)
     obj[2] = rotClamped;
 }
 
-void fn_801EBD60(GameObject* obj, int stateRaw)
+void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
 {
     typedef struct HightopPartfxTransform
     {
@@ -1646,7 +1646,7 @@ void fn_801EBD60(GameObject* obj, int stateRaw)
     st->turnForceGain += timeDelta * (k * (target544 - st->turnForceGain));
 }
 
-void fn_801EC1AC(int obj, int state)
+void SnowBike_UpdateLiftSway(int obj, int state)
 {
     PickupFlags* flags;
     int origBit4;
@@ -1930,7 +1930,7 @@ void SnowBike_buildOrientationMatrices(GameObject* obj, int state)
     mtxRotateByVec3s((f32*)(state + 0x12c), &v);
 }
 
-void fn_801EC870(int obj, register int state)
+void SnowBike_ResetDynamics(int obj, register int state)
 {
     f32 fz, fa, fb, fc;
     DRcradleSnowBikeFlags* flags;
@@ -1966,7 +1966,7 @@ void fn_801EC870(int obj, register int state)
     s->collisionFxDamping = lbl_803E5AEC;
 }
 
-void fn_801EC928(GameObject* obj, int state)
+void SnowBike_InitTuning(GameObject* obj, int state)
 {
     f32 fa, fz;
     SnowBikeState* s = (SnowBikeState*)state;
@@ -2172,7 +2172,7 @@ void SnowBike_setRiderMode(GameObject* obj, int type)
     if (type == 2)
     {
         mainSetBits(((SnowBikeSetTypeState*)state)->completionGameBit, 1);
-        fn_801EC870((int)obj, state);
+        SnowBike_ResetDynamics((int)obj, state);
         bit = (((SnowBikeSetTypeState*)state)->flags >> 5) & 1;
         if (bit != 0)
         {
@@ -2282,7 +2282,7 @@ void SnowBike_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visib
     void* path;
 
     path = (obj)->extra;
-    fn_801E991C((int)obj, (char*)path);
+    SnowBike_DrawTrails((int)obj, (char*)path);
     if (visible == -1)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)lbl_803E5AEC);
@@ -2318,7 +2318,7 @@ void SnowBike_hitDetect(GameObject* obj)
     }
     if (state->riderMode == 2)
     {
-        fn_801EB940((short*)obj, (int)state);
+        SnowBike_UpdateSteering((short*)obj, (int)state);
         state->savedRotY = obj->anim.rotY;
         state->savedRotZ = obj->anim.rotZ;
         obj->anim.rotY = (f32)obj->anim.rotY + state->haloPitchDrift;
@@ -2532,7 +2532,7 @@ void SnowBike_update(GameObject* obj)
         {
             if (drshackle_updateAttachedPosition(obj, (ShackleSwingState*)state) != 0)
             {
-                fn_801EBD60(obj, (int)state);
+                SnowBike_UpdateExhaustFx(obj, (int)state);
                 SnowBike_buildOrientationMatrices(obj, (int)state);
                 if (s->collisionFxTimer)
                 {
@@ -2578,7 +2578,7 @@ void SnowBike_update(GameObject* obj)
                 s->localVelX *= damp;
                 damp = powfBitEstimate(s->distanceScaleDamp, timeDelta);
                 s->distanceScale *= damp;
-                fn_801EC1AC((int)obj, (int)state);
+                SnowBike_UpdateLiftSway((int)obj, (int)state);
                 Matrix_TransformPoint((f32*)(state + 0xec), s->localVelX,
                                       s->localVelY, s->distanceScale,
                                       &obj->anim.velocityX, &obj->anim.velocityY,
@@ -2613,7 +2613,7 @@ void SnowBike_update(GameObject* obj)
                 clamped = value;
             }
             s->stickX = clamped;
-            fn_801EBD60(obj, (int)state);
+            SnowBike_UpdateExhaustFx(obj, (int)state);
             SnowBike_buildOrientationMatrices(obj, (int)state);
             if (s->collisionFxTimer)
             {
@@ -2657,14 +2657,14 @@ void SnowBike_update(GameObject* obj)
             s->localVelX *= damp;
             damp = powfBitEstimate(s->distanceScaleDamp, timeDelta);
             s->distanceScale *= damp;
-            fn_801EC1AC((int)obj, (int)state);
+            SnowBike_UpdateLiftSway((int)obj, (int)state);
             Matrix_TransformPoint((f32*)(state + 0xec), s->localVelX,
                                   s->localVelY, s->distanceScale,
                                   &obj->anim.velocityX, &obj->anim.velocityY,
                                   &obj->anim.velocityZ);
             objApplyVelocity(obj);
         }
-        fn_801EB0D4((int)obj, (int)state);
+        SnowBike_UpdateAirMeter((int)obj, (int)state);
         drcloudcage_updateEngineFx(obj, state, s->distanceScale,
                                    (int)(lbl_803E5BA0 * -s->engineFxLevel), state + 0x461, 7);
         fn_801EB634(obj, (int)state);
@@ -2674,7 +2674,7 @@ void SnowBike_update(GameObject* obj)
     }
 }
 
-void fn_801EC928(GameObject* obj, int state);
+void SnowBike_InitTuning(GameObject* obj, int state);
 
 void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
 {
@@ -2706,7 +2706,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->yawCurrent = rot;
     s->yaw = rot;
     obj->anim.rotX = rot;
-    fn_801EC928(obj, (int)state);
+    SnowBike_InitTuning(obj, (int)state);
     if (flag == 0)
     {
         if (((SnowBikeFlags*)(state + 0x428))->b20)

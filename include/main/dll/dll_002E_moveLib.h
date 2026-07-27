@@ -112,9 +112,9 @@ int dll_2E_func0F_ret_0(void);
 void dll_2E_setLookAtMaxDistance(MoveLibState* state, f32 value);
 void dll_2E_release_nop(void);
 void dll_2E_initialise_nop(void);
-f32 fn_80114224(const Vec* start, const Vec* end, const Vec* startTangent, const Vec* endTangent, int steps);
-int fn_80114408(GameObject* obj, const MoveLibWaypointDef* def, MoveLibHermiteState* state, f32* phaseOut,
+f32 moveLibHermiteArcLength(const Vec* start, const Vec* end, const Vec* startTangent, const Vec* endTangent, int steps);
+int moveLibAdvanceHermite(GameObject* obj, const MoveLibWaypointDef* def, MoveLibHermiteState* state, f32* phaseOut,
                 f32 speed);
-void fn_80114B1C(GameObject* obj);
+void moveLibSeqFreeCallback(GameObject* obj);
 
 #endif /* MAIN_DLL_DLL_002E_MOVELIB_H_ */

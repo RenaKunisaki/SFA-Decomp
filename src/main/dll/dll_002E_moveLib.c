@@ -152,7 +152,7 @@ int dll_2E_func0A(int idx, MoveLibTarget* out)
     return 0;
 }
 
-f32 fn_80114224(const Vec* start, const Vec* end, const Vec* startTangent, const Vec* endTangent, int steps)
+f32 moveLibHermiteArcLength(const Vec* start, const Vec* end, const Vec* startTangent, const Vec* endTangent, int steps)
 {
     f32 prev_x, prev_y, prev_z;
     f32 total;
@@ -201,7 +201,7 @@ f32 fn_80114224(const Vec* start, const Vec* end, const Vec* startTangent, const
     return total;
 }
 
-int fn_80114408(GameObject* obj, const MoveLibWaypointDef* def, MoveLibHermiteState* state, f32* phaseOut, f32 speed)
+int moveLibAdvanceHermite(GameObject* obj, const MoveLibWaypointDef* def, MoveLibHermiteState* state, f32* phaseOut, f32 speed)
 {
     int ret = 0;
 
@@ -224,7 +224,7 @@ int fn_80114408(GameObject* obj, const MoveLibWaypointDef* def, MoveLibHermiteSt
         angles[0] = (s16)def->angleX;
         vecRotateYXZ(angles, &state->endTangent.x);
         *phaseOut = 0.0f;
-        state->length = fn_80114224(&state->start, &state->end, &state->startTangent, &state->endTangent, 10);
+        state->length = moveLibHermiteArcLength(&state->start, &state->end, &state->startTangent, &state->endTangent, 10);
     }
     else
     {
@@ -278,7 +278,7 @@ int dll_2E_func0E(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHerm
     }
     if (fl & 0x4)
     {
-        if (fn_80114408(obj, NULL, state, &state->phase, phase) != 0)
+        if (moveLibAdvanceHermite(obj, NULL, state, &state->phase, phase) != 0)
         {
             args[0] = 0x19;
             args[1] = 0x15;
@@ -401,7 +401,7 @@ int dll_2E_func0D(GameObject* obj, const MoveLibTarget* target, f32 speed, int m
     return 0;
 }
 
-void fn_80114B1C(GameObject* obj)
+void moveLibSeqFreeCallback(GameObject* obj)
 {
     MoveLibState* state;
     int* types;
@@ -439,7 +439,7 @@ int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16
         {
             seq->flags = seq->flags & ~4;
         }
-        seq->freeCallback = (ObjAnimSequenceFreeCallback)fn_80114B1C;
+        seq->freeCallback = (ObjAnimSequenceFreeCallback)moveLibSeqFreeCallback;
         return 0;
     }
     else if (mode == 5)

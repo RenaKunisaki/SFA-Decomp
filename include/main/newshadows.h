@@ -25,7 +25,7 @@ void getNewShadowDiskTexture(u32* out);
 void newshadows_getReflectionScrollOffsets(f32* outScrollX, f32* outScrollY);
 u32 getNewShadowReflectionGradientTexture(void);
 void getNewShadowSnowFlashTexture(u32* out);
-void fn_8006C504(Texture** out);
+void getNewShadowHeatHazeTexture(Texture** out);
 void getNewShadowRingTexture(Texture** out);
 void getNewShadowLightningTexture(Texture** out);
 void getNewShadowHeavyFogTexture(Texture** out);
@@ -33,7 +33,7 @@ void getNewShadowDistortionTexture(Texture** out);
 void getNewShadowRadialTexture(Texture** out);
 void getNewShadowRampTexture(u32* out);
 void loadNewShadowBumpTexture(int texMapId);
-void fn_8006C6A4(int id);
+void selectWhirlpoolTexture(int id);
 void getNewShadowNoiseTextureFrames(Texture*** tableOut, int* frameCountOut);
 void loadNewShadowSmallReflectionTexture(int id);
 

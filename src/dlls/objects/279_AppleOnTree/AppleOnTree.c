@@ -160,7 +160,7 @@ void appleontree_knockLoose(GameObject* obj, int message) {
     state->rotY = randomGetRange(-0x8000, 0x7fff);
     state->rotZ = 0x2000;
 
-    if (fn_80065684(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &state->dropHeight, 0) == 0) {
+    if (trackGetHeightAboveGround(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &state->dropHeight, 0) == 0) {
         appleontree_markFallen(obj);
     } else {
         f32 m = state->gravity;

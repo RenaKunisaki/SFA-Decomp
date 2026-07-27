@@ -192,7 +192,7 @@ void renderClouds(int a, int b, int c, int d)
 
     if (gCloudOverrideObject != NULL)
     {
-        fn_8008DAE8((int)gCloudOverrideObject);
+        sky2ApplyModelTint((int)gCloudOverrideObject);
         model = Obj_GetActiveModel((GameObject*)gCloudOverrideObject);
         model->bufferFlags &= ~8;
         ((u8*)gCloudOverrideObject)[0x37] = 0xff;
@@ -228,7 +228,7 @@ void renderClouds(int a, int b, int c, int d)
         }
         else
         {
-            fn_8008DAE8((int)lbl_8039AB28.upperCloudObj);
+            sky2ApplyModelTint((int)lbl_8039AB28.upperCloudObj);
             lbl_8039AB28.upperCloudObj->anim.localPosX = view->x;
             lbl_8039AB28.upperCloudObj->anim.localPosY = view->y;
             lbl_8039AB28.upperCloudObj->anim.localPosZ = view->z;
@@ -241,7 +241,7 @@ void renderClouds(int a, int b, int c, int d)
     {
         if (isOvercast())
         {
-            fn_8008DAE8((int)lbl_8039AB28.mainCloudObj);
+            sky2ApplyModelTint((int)lbl_8039AB28.mainCloudObj);
         }
         model = Obj_GetActiveModel((GameObject*)lbl_8039AB28.mainCloudObj);
         model->bufferFlags &= ~8;
@@ -336,7 +336,7 @@ void renderClouds(int a, int b, int c, int d)
         }
         else
         {
-            fn_8008DAE8((int)lbl_8039AB28.lowerCloudObj);
+            sky2ApplyModelTint((int)lbl_8039AB28.lowerCloudObj);
             lbl_8039AB28.lowerCloudObj->anim.localPosX = view->x;
             lbl_8039AB28.lowerCloudObj->anim.localPosY = view->y;
             lbl_8039AB28.lowerCloudObj->anim.localPosZ = view->z;

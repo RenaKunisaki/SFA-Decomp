@@ -102,7 +102,7 @@ void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedObjectState* state, 
         u16 off = *(u16*)&data->floorOffset;
         if (off == 0)
         {
-            fn_80065684((GameObject*)obj, obj->x, obj->y - 10.0f, obj->z, floorY, 0);
+            trackGetHeightAboveGround((GameObject*)obj, obj->x, obj->y - 10.0f, obj->z, floorY, 0);
             state->floorHeight = obj->y - floorY[0];
         }
         else

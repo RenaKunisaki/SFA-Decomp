@@ -143,15 +143,15 @@ void HitAnimator_update(HitAnimatorObject* obj)
     state->previousGameBitValue = state->gameBitValue;
     if ((desc->flags & HITANIMATOR_SETUP_FLAG_SOUND) != 0)
     {
-        if (fn_80065640() != 0)
+        if (trackIntersectRebuildPending() != 0)
         {
             state->flags |= HITANIMATOR_STATE_FLAG_SOUND_PENDING;
         }
         if ((state->flags & HITANIMATOR_STATE_FLAG_SOUND_PENDING) != 0)
         {
-            if (fn_80065640() == 0)
+            if (trackIntersectRebuildPending() == 0)
             {
-                fn_80065574(desc->soundId, (GameObject*)(obj->objAnim.parent), state->activeBit);
+                trackSetLinesEnabledByParam(desc->soundId, (GameObject*)(obj->objAnim.parent), state->activeBit);
                 state->flags &= ~HITANIMATOR_STATE_FLAG_SOUND_PENDING;
             }
         }

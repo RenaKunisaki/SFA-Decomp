@@ -361,7 +361,7 @@ void tumbleweedbush_updateDetachedPiece(GameObject* piece, TumbleweedState* stat
     f32 groundDistance;
 
     piece->anim.velocityX /= TUMBLEWEED_PIECE_HORIZONTAL_DAMPING;
-    if (fn_80065684(piece, piece->anim.localPosX, piece->anim.localPosY, piece->anim.localPosZ, &groundDistance, 0) !=
+    if (trackGetHeightAboveGround(piece, piece->anim.localPosX, piece->anim.localPosY, piece->anim.localPosZ, &groundDistance, 0) !=
         0) {
         if (groundDistance > TUMBLEWEED_PIECE_GROUND_CLEARANCE) {
             piece->anim.velocityY += TUMBLEWEED_PIECE_GRAVITY * timeDelta;

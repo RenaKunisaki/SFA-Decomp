@@ -168,7 +168,7 @@ void MikaBomb_init(GameObject* obj) {
     obj->anim.rotY = -0x4000;
     obj->anim.rotX = 0;
     obj->anim.rotZ = 0;
-    fn_80065684(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance, 0);
+    trackGetHeightAboveGround(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance, 0);
     state->groundY = obj->anim.localPosY - groundDistance;
     if ((u8)Obj_IsLoadingLocked() != 0) {
         shadowSetup = Obj_AllocObjectSetup(MIKABOMB_SHADOW_SETUP_SIZE, MIKABOMB_CHILD_OBJ_SHADOW);

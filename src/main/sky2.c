@@ -339,7 +339,7 @@ void dll_06_func0A(int* a, int* b, int* c, f32* scale)
     *scale = ((Dll06InterpState*)gSky2State)->blend;
 }
 
-void fn_8008C9F4(u8* cfg, u8 flags)
+void sky2ResetStateFromConfig(u8* cfg, u8 flags)
 {
     int i;
     u8* p2;
@@ -422,7 +422,7 @@ void fn_8008C9F4(u8* cfg, u8 flags)
     *(int*)((&gSky2State)[idx] + 0x44) = 0;
 }
 
-void fn_8008D088(int slot)
+void sky2StepSlotAnim(int slot)
 {
     SkySlotAnim* anim;
     f32 dur;
@@ -615,7 +615,7 @@ void dll_06_func0D(void)
     }
 }
 
-void fn_8008DAE8(int obj)
+void sky2ApplyModelTint(int obj)
 {
     u8* s;
     f32 v;
@@ -850,7 +850,7 @@ void sky2_run(void)
             }
             if ((*(u16*)(*pp + 4) & 0x100) != 0)
             {
-                fn_8008D088(i);
+                sky2StepSlotAnim(i);
             }
             p = *pp;
             if ((*(u16*)&((GameObject*)p)->anim.rotZ & 0x10) != 0)
@@ -1181,7 +1181,7 @@ void sky2_update(int a, int b, u8* cfg)
             {
                 flags |= 0x40;
             }
-            fn_8008C9F4(cfg, flags);
+            sky2ResetStateFromConfig(cfg, flags);
             if ((((Sky2Config*)cfg)->flags & 0x40) != 0)
             {
                 (&gSky2State)[b1][0x316] = 1;

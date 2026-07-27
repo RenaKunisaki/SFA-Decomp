@@ -288,7 +288,7 @@ void WM_Galleon_init(GameObject* obj, WMGalleonSetup* setup)
     state->savedY = obj->anim.localPosY;
     state->savedZ = obj->anim.localPosZ;
     state->savedYaw = obj->anim.rotX;
-    fn_80065574(0, obj, 0);
+    trackSetLinesEnabledByParam(0, obj, 0);
     for (i = 0; i < 5; i++)
     {
         (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, i, 0);

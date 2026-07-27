@@ -165,15 +165,15 @@ void wcfloortile_update(GameObject* obj)
     }
     {
         setup = (WcFloorTileSetup*)obj->anim.placementData;
-        if (fn_80065640() != 0)
+        if (trackIntersectRebuildPending() != 0)
         {
             state->flags |= 2;
         }
         if (state->flags & 2)
         {
-            if (fn_80065640() == 0)
+            if (trackIntersectRebuildPending() == 0)
             {
-                fn_80065574(setup->eventId, (GameObject*)(*(int*)&obj->anim.parent), state->flags & 1);
+                trackSetLinesEnabledByParam(setup->eventId, (GameObject*)(*(int*)&obj->anim.parent), state->flags & 1);
                 state->flags &= ~2;
             }
         }
