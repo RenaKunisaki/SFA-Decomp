@@ -2156,7 +2156,6 @@ char sTrackHitOverflowError[] = "HIT OVERFLOW\n";
 int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
                       int flagsArg)
 {
-    TrackBlockDescriptor* descBase;
     f32 *ep1, *ep2;
     f32 *sp1, *sp2;
     u8* slotp;
@@ -2223,7 +2222,6 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
 
     slotBase = (u8*)slots;
     descEnd = gTrackBlockDescriptors + gActiveTrackBlockCount;
-    descBase = gTrackBlockDescriptors;
     gridOrigin = (s32*)gTrackGridOrigin;
     offX = (f32)gridOrigin[0];
     offZ = (f32)gridOrigin[2];
@@ -2269,7 +2267,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
             we[2] = cur[2];
             found = 0;
             hit = 0;
-            for (desc = descBase; desc < descEnd; desc++)
+            for (desc = gTrackBlockDescriptors; desc < descEnd; desc++)
             {
                 if (desc->object != NULL)
                 {
@@ -2358,7 +2356,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         }
                         tri->edgeOutBits = b;
                     }
-                    else if (dE >= negStep && radius > 0.0f)
+                    else if (dS >= negStep && radius > 0.0f)
                     {
                         edge0[0] = tri->edgeN0[0];
                         edge0[1] = tri->edgeN0[1];
