@@ -68,8 +68,8 @@ typedef struct
 
 
 
-extern f32 lbl_803DEF08, lbl_803DEF20;
-extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
+extern f32 lbl_803DEF20;
+extern f32 lbl_803DEF4C;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 
 
@@ -108,7 +108,6 @@ typedef struct SplashQuad
 STATIC_ASSERT(sizeof(RippleEntry) == 0x10);
 STATIC_ASSERT(sizeof(SplashQuad) == 0x38);
 
-extern f32 gWaterFxState[4];
 
 typedef struct
 {
@@ -1062,5 +1061,4 @@ int saveCb_8007e748(int saveId, int size, void* dst)
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-extern f32 gWaterFxState[4];
 

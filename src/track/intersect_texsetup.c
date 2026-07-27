@@ -81,10 +81,10 @@ typedef struct
 
 
 extern f32 gSynthDelayedActionWord0;
-extern f32 lbl_803DEF08, lbl_803DEF20;
-extern f32 lbl_803DEED8, lbl_803DEEE8, lbl_803DEEEC, lbl_803DEEF4;
-extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
-extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80, lbl_803DEF84, lbl_803DEF88;
+extern f32 lbl_803DEF20;
+extern f32 lbl_803DEEF4;
+extern f32 lbl_803DEF4C;
+extern f32 lbl_803DEF84, lbl_803DEF88;
 
 
 int cardDeleteFn_8007d99c(void);

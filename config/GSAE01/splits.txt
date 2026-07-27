@@ -3150,7 +3150,7 @@ dlls/objects/597/597.c:
 	.bss        start:0x803AD088 end:0x803AD0C0
 	.sdata      start:0x803DC0B8 end:0x803DC0F0
 	.sbss       start:0x803DDC60 end:0x803DDC68
-	.sdata2     start:0x803E5AE0 end:0x803E5CA0
+	.sdata2     start:0x803E5AE0 end:0x803E5C70
 
 main/dll/bwalphaanim.c:
 	.text       start:0x801EE088 end:0x801EE0C0
@@ -3158,13 +3158,13 @@ main/dll/bwalphaanim.c:
 dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c:
 	.text       start:0x801EE0C0 end:0x801EF360
 	.data       start:0x80328618 end:0x80328688
-	.sdata2     start:0x803E5CA0 end:0x803E5CA8
+	.sdata2     start:0x803E5C70 end:0x803E5CC8
 
 dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c:
 	.text       start:0x801EF360 end:0x801EFF7C
 	.data       start:0x80328688 end:0x803286E4
 	.sbss       start:0x803DDC68 end:0x803DDC70
-	.sdata2     start:0x803E5CE0 end:0x803E5CE8
+	.sdata2     start:0x803E5CC8 end:0x803E5CE8
 
 dlls/objects/504_WM_Galleon/WM_Galleon.c:
 	.text       start:0x801EFF7C end:0x801F06D8
@@ -4323,7 +4323,7 @@ dolphin/gx/GXInit.c:
 	.bss        start:0x803AE4C0 end:0x803AEA38
 	.sdata      start:0x803DC5A8 end:0x803DC5AC
 	.sbss       start:0x803DE0A8 end:0x803DE0B8
-	.sdata2     start:0x803E7658 end:0x803E7680
+	.sdata2     start:0x803E7658 end:0x803E7678
 
 dolphin/gx/GXFifo.c:
 	.text       start:0x80255DBC end:0x80256820
@@ -4344,6 +4344,7 @@ dolphin/gx/GXGeometry.c:
 dolphin/gx/GXFrameBuf.c:
 	.text       start:0x80258BDC end:0x80259670
 	.data       start:0x8032E620 end:0x8032E750
+	.sdata2     start:0x803E7678 end:0x803E7680
 
 dolphin/gx/GXLight.c:
 	.text       start:0x80259670 end:0x8025A088

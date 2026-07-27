@@ -135,10 +135,10 @@ typedef struct
 
 
 extern f32 hudMatrix[4][4];
-extern f32 lbl_803DEF08, lbl_803DEF20;
+extern f32 lbl_803DEF20;
 extern f32 lbl_803DEE40;
-extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48, lbl_803DEE58;
-extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
+extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48;
+extern f32 lbl_803DEF4C;
 
 f32 lbl_8030EA10[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},

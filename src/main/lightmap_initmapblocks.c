@@ -53,8 +53,6 @@
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/asset_load.h"
 
-extern u8 colorFilterColor[4];
-extern f32 widescreenAspect_803DEC1C;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
@@ -323,7 +321,6 @@ void gameFlagFn_8005cd24(int v);
 
 int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
-extern f32 widescreenAspect_803DEC1C;
 
 int setWidescreen(u8 v);
 int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }

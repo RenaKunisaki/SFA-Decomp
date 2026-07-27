@@ -117,15 +117,16 @@ typedef union Dll0BDescriptorTable
 
 #define GXWGFifo (*(volatile ExpgfxWGPipe*)0xCC008000)
 
-extern f32 gExpgfxYVelocityPositiveLimit;
-extern f32 gExpgfxYVelocityFastStep;
-extern f32 gExpgfxYVelocitySlowStep;
-extern f32 gExpgfxYVelocityNegativeLimit;
-extern const f32 gExpgfxSlotMotionStep;
+#define EXPGFX_Y_VELOCITY_POSITIVE_LIMIT 15.0f
+#define EXPGFX_Y_VELOCITY_FAST_STEP -0.03f
+#define EXPGFX_Y_VELOCITY_SLOW_STEP -0.003f
+#define EXPGFX_Y_VELOCITY_NEGATIVE_LIMIT -15.0f
+#define EXPGFX_SLOT_MOTION_STEP 3.0f
 
-extern const f32 gExpgfxBoundsInitMin;
-extern const f32 gExpgfxBoundsInitMax;
-extern const f32 gExpgfxU16ToUnitScale;
+#define EXPGFX_BOUNDS_INIT_MIN 3.4028235e38f
+#define EXPGFX_BOUNDS_INIT_MAX -3.4028235e38f
+#define EXPGFX_U16_TO_UNIT_SCALE (1.0f / 65535.0f)
+
 extern int gExpgfxSlotType1Count;
 extern int gExpgfxSlotType1Average;
 
@@ -170,17 +171,16 @@ static inline ExpgfxBounds* Expgfx_GetBoundsTemplate(int templateIndex)
  * dll_0044_cameramodeviewfinder.c).
  */
 
+static const ObjFxU16Table3 objFxHitEffectIdTbl = {{0x0000, 0x07DD, 0x07DE}};
+
 void viewFinderSetZoom(f32 zoom)
 {
     gExpgfxNearFadeDepth = -3000.0f / zoom;
 }
 
-const f32 lbl_803DF34C = 50.0f;
-
 void viewFinderSetZoomTo50(void)
 {
-    const f32* zoom = &lbl_803DF34C;
-    gExpgfxNearFadeDepth = *zoom;
+    gExpgfxNearFadeDepth = 50.0f;
 }
 
 /*
@@ -455,10 +455,8 @@ void objfx_spawnHitEffectBurst(void* obj, f32 scale, u8 idSel, u8 paramSel, u8 c
 {
     ObjFxParticleParams params;
     ObjFxU16Table11 table = gObjFxHitEffectParamTbl2;
-    u16 effectIds[3];
+    ObjFxU16Table3 effectIds = objFxHitEffectIdTbl;
     int i;
-    *(int*)effectIds = lbl_803DF340;
-    effectIds[2] = lbl_803DF344;
     if (idSel == 0 || paramSel == 0)
     {
         return;
@@ -479,7 +477,7 @@ void objfx_spawnHitEffectBurst(void* obj, f32 scale, u8 idSel, u8 paramSel, u8 c
     }
     for (i = 0; i < count; i++)
     {
-        (*gPartfxInterface)->spawnObject(obj, effectIds[idSel], &params, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject(obj, effectIds.values[idSel], &params, 2, -1, NULL);
     }
 }
 
@@ -1610,7 +1608,7 @@ void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale
         bPtr = (u8*)&colorTbl + 2;
         modelLightStruct_setDiffuseColor(light, rPtr[(u8)type * 3], gPtr[(u8)type * 3], bPtr[(u8)type * 3], 0xff);
         modelLightStruct_setSpecularColor(light, rPtr[(u8)type * 3], gPtr[(u8)type * 3], bPtr[(u8)type * 3], 0xff);
-        modelLightStruct_setDistanceAttenuation(light, lbl_803DF34C, 75.0f);
+        modelLightStruct_setDistanceAttenuation(light, 50.0f, 75.0f);
         lightSetField4D(light, 0);
         modelLightStruct_setEnabled(light, 1, 0.0f);
         modelLightStruct_setEnabled(light, 0, 1.0f);
@@ -2348,28 +2346,28 @@ void expgfx_initSlotQuad(void* slotPtr)
         quadTemplate = staticData->quadTemplateB;
     }
 
-    if ((behaviorFlags & EXPGFX_BEHAVIOR_BOUNCE_LOW_Y_VELOCITY) != 0 && slot->velocityY < gExpgfxYVelocityPositiveLimit)
+    if ((behaviorFlags & EXPGFX_BEHAVIOR_BOUNCE_LOW_Y_VELOCITY) != 0 && slot->velocityY < EXPGFX_Y_VELOCITY_POSITIVE_LIMIT)
     {
-        if ((behaviorFlags & EXPGFX_BEHAVIOR_FAST_Y_RESPONSE) != 0 && slot->velocityY < gExpgfxYVelocityPositiveLimit)
+        if ((behaviorFlags & EXPGFX_BEHAVIOR_FAST_Y_RESPONSE) != 0 && slot->velocityY < EXPGFX_Y_VELOCITY_POSITIVE_LIMIT)
         {
-            slot->velocityY -= gExpgfxYVelocityFastStep * timeDelta;
+            slot->velocityY -= EXPGFX_Y_VELOCITY_FAST_STEP * timeDelta;
         }
         else
         {
-            slot->velocityY -= gExpgfxYVelocitySlowStep * timeDelta;
+            slot->velocityY -= EXPGFX_Y_VELOCITY_SLOW_STEP * timeDelta;
         }
     }
-    else if ((behaviorFlags & EXPGFX_BEHAVIOR_FAST_Y_RESPONSE) != 0 && slot->velocityY > gExpgfxYVelocityNegativeLimit)
+    else if ((behaviorFlags & EXPGFX_BEHAVIOR_FAST_Y_RESPONSE) != 0 && slot->velocityY > EXPGFX_Y_VELOCITY_NEGATIVE_LIMIT)
     {
-        slot->velocityY += gExpgfxYVelocityFastStep * timeDelta;
+        slot->velocityY += EXPGFX_Y_VELOCITY_FAST_STEP * timeDelta;
     }
     else if ((behaviorFlags & EXPGFX_BEHAVIOR_ADD_HIGH_Y_VELOCITY) != 0 &&
-             slot->velocityY > gExpgfxYVelocityNegativeLimit)
+             slot->velocityY > EXPGFX_Y_VELOCITY_NEGATIVE_LIMIT)
     {
-        slot->velocityY += gExpgfxYVelocitySlowStep * timeDelta;
+        slot->velocityY += EXPGFX_Y_VELOCITY_SLOW_STEP * timeDelta;
     }
 
-    slot->posX.value += slot->velocityX * (step = gExpgfxSlotMotionStep);
+    slot->posX.value += slot->velocityX * (step = EXPGFX_SLOT_MOTION_STEP);
     slot->posY.value += slot->velocityY * step;
     slot->posZ.value += slot->velocityZ * step;
 
@@ -2540,8 +2538,8 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
         ambRPlus1 = ambientScaled[2] + 1;
         ambGPlus1 = ambientScaled[1] + 1;
         ambBPlus1 = ambientScaled[0] + 1;
-        boundsMin = gExpgfxBoundsInitMin;
-        boundsMax = gExpgfxBoundsInitMax;
+        boundsMin = EXPGFX_BOUNDS_INIT_MIN;
+        boundsMax = EXPGFX_BOUNDS_INIT_MAX;
         while (pool > -1)
         {
             curPoolBuf = (u8*)runtime + pool * sizeof(ExpgfxBounds);
@@ -2721,27 +2719,27 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         slot->velocityZ = 0.99f * slot->velocityZ;
                     }
                     if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_BOUNCE_LOW_Y_VELOCITY) != 0 &&
-                        slot->velocityY < gExpgfxYVelocityPositiveLimit)
+                        slot->velocityY < EXPGFX_Y_VELOCITY_POSITIVE_LIMIT)
                     {
                         if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_FAST_Y_RESPONSE) != 0 &&
-                            slot->velocityY < gExpgfxYVelocityPositiveLimit)
+                            slot->velocityY < EXPGFX_Y_VELOCITY_POSITIVE_LIMIT)
                         {
-                            slot->velocityY -= gExpgfxYVelocityFastStep * timeDelta;
+                            slot->velocityY -= EXPGFX_Y_VELOCITY_FAST_STEP * timeDelta;
                         }
                         else
                         {
-                            slot->velocityY -= gExpgfxYVelocitySlowStep * timeDelta;
+                            slot->velocityY -= EXPGFX_Y_VELOCITY_SLOW_STEP * timeDelta;
                         }
                     }
                     else if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_FAST_Y_RESPONSE) != 0 &&
-                             slot->velocityY > gExpgfxYVelocityNegativeLimit)
+                             slot->velocityY > EXPGFX_Y_VELOCITY_NEGATIVE_LIMIT)
                     {
-                        slot->velocityY += gExpgfxYVelocityFastStep * timeDelta;
+                        slot->velocityY += EXPGFX_Y_VELOCITY_FAST_STEP * timeDelta;
                     }
                     else if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_ADD_HIGH_Y_VELOCITY) != 0 &&
-                             slot->velocityY > gExpgfxYVelocityNegativeLimit)
+                             slot->velocityY > EXPGFX_Y_VELOCITY_NEGATIVE_LIMIT)
                     {
-                        slot->velocityY += gExpgfxYVelocitySlowStep * timeDelta;
+                        slot->velocityY += EXPGFX_Y_VELOCITY_SLOW_STEP * timeDelta;
                     }
                     if ((slot->renderFlags & EXPGFX_RENDER_IMPACT_POSITION_LOCKED) != 0)
                     {
@@ -2810,8 +2808,8 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_GROUND_PARTFX_ON_IMPACT) != 0 &&
                             (slot->renderFlags & EXPGFX_RENDER_IMPACT_POSITION_LOCKED) == 0)
                         {
-                            slot->velocityX *= gExpgfxSlotMotionStep;
-                            slot->velocityZ *= gExpgfxSlotMotionStep;
+                            slot->velocityX *= EXPGFX_SLOT_MOTION_STEP;
+                            slot->velocityZ *= EXPGFX_SLOT_MOTION_STEP;
                             slot->behaviorFlags ^= EXPGFX_BEHAVIOR_GROUND_PARTFX_ON_IMPACT | 0LL;
                             if (slot->impactEffectId != -1)
                             {
@@ -2853,7 +2851,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                                 f32 v;
                                 f32 st;
                                 v = slot->velocityX;
-                                st = gExpgfxSlotMotionStep;
+                                st = EXPGFX_SLOT_MOTION_STEP;
                                 slot->velocityX = v * (st - v);
                                 v = slot->velocityZ;
                                 slot->velocityZ = v * (st - v);
@@ -2898,7 +2896,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                             gExpgfxFrameParityBit = 1;
                             (*gWaterfxInterface)->spawnRipple(
                                 rotParams.x, rotParams.y, rotParams.z, 0, 0.0f, 4);
-                            (*gWaterfxInterface)->spawnSplashBurst(NULL, rotParams.x, rotParams.y, rotParams.z, gExpgfxSlotMotionStep);
+                            (*gWaterfxInterface)->spawnSplashBurst(NULL, rotParams.x, rotParams.y, rotParams.z, EXPGFX_SLOT_MOTION_STEP);
                             if (srcObj != NULL && coordsToMapCell(srcObj->localPosX, srcObj->localPosZ) == 0x10)
                             {
                                 Sfx_PlayFromObject((u32)srcObj, SFXTRIG_blkscrp6);
@@ -3107,7 +3105,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         axisX = 250.0f * (workA / norm);
                         axisY = 250.0f * (workB / norm);
                         axisZ = 250.0f * (attractRatio / norm);
-                        attractRatio = 2.0f / (gExpgfxU16ToUnitScale * (f32)(u16)slot->scaleTarget);
+                        attractRatio = 2.0f / (EXPGFX_U16_TO_UNIT_SCALE * (f32)(u16)slot->scaleTarget);
                         quad[0].x = (s16)axisX;
                         quad[0].y = (s16)axisY;
                         quad[0].z = (s16)axisZ;
@@ -3833,7 +3831,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
                 centerX = slot->renderX;
                 centerY = slot->renderY;
                 centerZ = slot->renderZ;
-                scaleSize = gExpgfxU16ToUnitScale * (f32)(u32)slot->scaleCurrent;
+                scaleSize = EXPGFX_U16_TO_UNIT_SCALE * (f32)(u32)slot->scaleCurrent;
                 if ((behaviorFlags & EXPGFX_BEHAVIOR_RANDOMIZE_SCALE) != 0 && hudHiddenFrameCount == 0)
                 {
                     f32 base = 0.5f * scaleSize;

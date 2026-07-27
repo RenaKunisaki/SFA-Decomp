@@ -94,7 +94,6 @@ u16 gSkySunAlpha;
 #define SKY_CHILD_OBJ_SUN            0x62b /* spawned into gSkySunObject */
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
-extern u8 gSkyConfigFieldIndices[];
 extern u8 gSkyEnvFxFlags;
 extern u8* gSkyState;
 extern GameObject* gSkySunObject;

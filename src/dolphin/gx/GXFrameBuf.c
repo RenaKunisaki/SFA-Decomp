@@ -3,7 +3,6 @@
 
 #define __GXData gx
 
-extern const f32 lbl_803E7678;
 
 GXRenderModeObj GXNtsc480IntDf = { 0, 640, 480, 480, 40, 0, 640, 480, 1, 0, 0,
     { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 }, { 8, 8, 10, 12, 10, 8, 8 } };
@@ -161,7 +160,7 @@ u32 GXSetDispCopyYScale(f32 vscale) {
 
     ASSERTMSGLINE(1559, vscale >= 1.0f, "GXSetDispCopyYScale: Vertical scale must be >= 1.0");
 
-    iScale = (u32)(lbl_803E7678 / vscale) & 0x1FF;
+    iScale = (u32)(256.0f / vscale) & 0x1FF;
     reg = 0;
     SET_REG_FIELD(1566, reg, 9, 0, iScale);
     SET_REG_FIELD(1566, reg, 8, 24, 0x4E);

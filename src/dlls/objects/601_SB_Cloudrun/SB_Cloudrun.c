@@ -37,6 +37,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/obj_group.h"
 #include "main/objprint_render_api.h"
+#include "main/object_render_legacy.h"
 #include "main/dll/WC/dll_0259_sbcloudrunner.h"
 #include "main/dll/bwalphaanim.h"
 #include "main/objhits.h"
@@ -139,20 +140,6 @@ struct WCPushBlockState
 #define WCPUSHBLOCK_MAX_ROLL          0x32c8
 #define WCPUSHBLOCK_RIDE_MOVE_ID      0xf
 
-extern f32 lbl_803E5C70;
-extern f32 lbl_803E5C74;
-extern f32 lbl_803E5C78;
-extern f32 lbl_803E5C7C;
-extern f32 lbl_803E5C80;
-extern f32 lbl_803E5C84;
-extern f32 lbl_803E5C88;
-extern f32 lbl_803E5C8C;
-extern f32 lbl_803E5C90;
-extern f32 lbl_803E5C94;
-extern f32 lbl_803E5C98;
-extern f32 lbl_803E5CA8;
-extern f32 lbl_803E5CAC;
-
 void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
 {
     WCPushBlockObjectSetup* setup;
@@ -167,16 +154,16 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
 
     Sfx_PlayFromObject(0, WCPUSHBLOCK_SPAWN_SFX);
 
-    rotation.zeroX = lbl_803E5C70;
-    rotation.zeroY = lbl_803E5C70;
-    rotation.zeroZ = lbl_803E5C70;
-    rotation.scale = lbl_803E5C74;
+    rotation.zeroX = 0.0f;
+    rotation.zeroY = 0.0f;
+    rotation.zeroZ = 0.0f;
+    rotation.scale = 1.0f;
     rotation.yaw = path->anim.rotX;
     rotation.pitch = path->anim.rotY;
     rotation.roll = path->anim.rotZ;
-    outVec[0] = lbl_803E5C70;
-    outVec[1] = lbl_803E5C78;
-    outVec[2] = lbl_803E5C7C;
+    outVec[0] = 0.0f;
+    outVec[1] = 38.0f;
+    outVec[2] = -80.0f;
     vecRotateZXY(&rotation, outVec);
 
     setup = (WCPushBlockObjectSetup*)Obj_AllocObjectSetup(WCPUSHBLOCK_SPAWN_SETUP_SIZE,
@@ -193,16 +180,16 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
         return;
     }
 
-    rotation.zeroX = lbl_803E5C70;
-    rotation.zeroY = lbl_803E5C70;
-    rotation.zeroZ = lbl_803E5C70;
-    rotation.scale = lbl_803E5C74;
+    rotation.zeroX = 0.0f;
+    rotation.zeroY = 0.0f;
+    rotation.zeroZ = 0.0f;
+    rotation.scale = 1.0f;
     rotation.yaw = path->anim.rotX;
     rotation.pitch = path->anim.rotY;
     rotation.roll = 0;
-    outVec[0] = lbl_803E5C70;
-    outVec[1] = lbl_803E5C70;
-    outVec[2] = lbl_803E5C80;
+    outVec[0] = 0.0f;
+    outVec[1] = 0.0f;
+    outVec[2] = -16.0f;
     vecRotateZXY(&rotation, outVec);
 
     block->velocityX = outVec[0];
@@ -225,28 +212,30 @@ void WCPushBlock_UpdateCloudAction(int obj, WCPushBlockState* state)
     f32 moveX;
     f32 moveZ;
     f32 liftStep;
+    f32 liftSmoothing;
 
     (void)obj;
 
     (*gCloudActionInterface)->func10Nop(state->rotorAngle);
 
-    angle = (lbl_803E5C84 * state->rotorAngle) / lbl_803E5C88;
+    angle = (3.1415927f * state->rotorAngle) / 32768.0f;
     rotorCos = mathCosf(angle);
-    angle = (lbl_803E5C84 * state->rotorAngle) / lbl_803E5C88;
+    angle = (3.1415927f * state->rotorAngle) / 32768.0f;
     rotorSin = mathSinf(angle);
 
     if (state->linkedPushBlock != NULL)
     {
-        targetLift = state->pushRoll / lbl_803E5C8C;
+        targetLift = state->pushRoll / 1000.0f;
     }
     else
     {
-        targetLift = lbl_803E5C70;
+        targetLift = 0.0f;
     }
     liftStep = (targetLift - state->liftAmount) * timeDelta;
-    state->liftAmount += liftStep * lbl_803E5C90;
+    liftSmoothing = 0.0625f;
+    state->liftAmount += liftStep * liftSmoothing;
 
-    baseLift = lbl_803E5C94;
+    baseLift = 12.0f;
     moveX = baseLift * rotorSin;
     moveZ = baseLift * -rotorCos;
     moveX += rotorCos * -state->liftAmount;
@@ -257,8 +246,8 @@ void WCPushBlock_UpdateCloudAction(int obj, WCPushBlockState* state)
 
     moveZ = moveZ * timeDelta;
     moveX = moveX * timeDelta;
-    moveZ = moveZ / lbl_803E5C98;
-    moveX = moveX / lbl_803E5C98;
+    moveZ = moveZ / 3.0f;
+    moveX = moveX / 3.0f;
     (*gCloudActionInterface)->func12Nop(moveZ, moveX);
 }
 
@@ -275,7 +264,7 @@ void WCPushBlock_UpdateRideTilt(WCPushBlockObject* obj, WCPushBlockState* state)
     targetRoll = (-state->stickX * WCPUSHBLOCK_ROLL_INPUT_SCALE) / WCPUSHBLOCK_INPUT_SCALE;
 
     {
-        f32 t = (f32)(state->stickX << 3) / lbl_803E5C98;
+        f32 t = (f32)(state->stickX << 3) / 3.0f;
         state->cloudYawDrift = (s16)(-(t * timeDelta - state->cloudYawDrift));
     }
     state->cloudYawDrift =
@@ -291,7 +280,7 @@ void WCPushBlock_UpdateRideTilt(WCPushBlockObject* obj, WCPushBlockState* state)
         pitchDelta = (pitchDelta + 0x10000) - 1;
     }
 
-    obj->pitch = (s16)(lbl_803E5CA8 * ((f32)pitchDelta * timeDelta) + (f32) * (s16*)(int)&obj->pitch);
+    obj->pitch = (s16)(0.05f * ((f32)pitchDelta * timeDelta) + (f32) * (s16*)(int)&obj->pitch);
 
     rollDelta = targetRoll - (u16)state->pushRoll;
     if (rollDelta > 0x8000)
@@ -303,7 +292,7 @@ void WCPushBlock_UpdateRideTilt(WCPushBlockObject* obj, WCPushBlockState* state)
         rollDelta = (rollDelta + 0x10000) - 1;
     }
 
-    state->pushRoll = (s16)(lbl_803E5CA8 * ((f32)rollDelta * timeDelta) + (f32) * (s16*)(int)&state->pushRoll);
+    state->pushRoll = (s16)(0.05f * ((f32)rollDelta * timeDelta) + (f32) * (s16*)(int)&state->pushRoll);
 
     pitch = obj->pitch;
     if (pitch < -WCPUSHBLOCK_MAX_PITCH)
@@ -332,10 +321,10 @@ void WCPushBlock_UpdateRideTilt(WCPushBlockObject* obj, WCPushBlockState* state)
 
     if (obj->currentMove != WCPUSHBLOCK_RIDE_MOVE_ID)
     {
-        ObjAnim_SetCurrentMove((int)obj, WCPUSHBLOCK_RIDE_MOVE_ID, lbl_803E5C70, 0);
+        ObjAnim_SetCurrentMove((int)obj, WCPUSHBLOCK_RIDE_MOVE_ID, 0.0f, 0);
     }
 
-    if (ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E5CAC, timeDelta, NULL) != 0)
+    if (ObjAnim_AdvanceCurrentMove((int)obj, 0.015f, timeDelta, NULL) != 0)
     {
         state->rideState = 0;
     }
@@ -450,16 +439,6 @@ enum
 
 #define COLORFADE_RUMBLE_PRESET 4000 /* anim.rotY written on a fade hit */
 
-extern f32 lbl_803E5C70;
-extern f32 lbl_803E5C98;
-extern f32 lbl_803E5CA8;
-extern f32 lbl_803E5CAC;
-extern f32 lbl_803E5CB0;
-extern f32 lbl_803E5CB4;
-extern const f32 lbl_803E5CB8;
-extern f32 lbl_803E5C74;
-extern const f32 lbl_803E5CBC;
-extern const f32 lbl_803E5CC0;
 
 /* Analog-stick steering update for the cloudrunner ride (target 0x801EE668;
  * Ghidra split this body as FUN_801eeafc). Integrates stick X/Y into the
@@ -480,7 +459,7 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     pitchTarget = (-((SBCloudRunnerState*)state)->stickX * 12000) / 70;
 
     {
-        f32 t = (f32)(((SBCloudRunnerState*)state)->stickX << 3) / lbl_803E5C98;
+        f32 t = (f32)(((SBCloudRunnerState*)state)->stickX << 3) / 3.0f;
         ((SBCloudRunnerState*)state)->rotXAccum = -(t * timeDelta - (f32)((SBCloudRunnerState*)state)->rotXAccum);
     }
     ((SBCloudRunnerState*)state)->rotXAccum -= (((SBCloudRunnerState*)state)->rotXAccum * framesThisStep) >> 5;
@@ -494,7 +473,7 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     {
         angleDelta = (angleDelta + 0x10000) - 1;
     }
-    ((GameObject*)obj)->anim.rotY = lbl_803E5CA8 * ((f32)angleDelta * timeDelta) + (f32) * (s16*)(int)(obj + 1);
+    ((GameObject*)obj)->anim.rotY = 0.05f * ((f32)angleDelta * timeDelta) + (f32) * (s16*)(int)(obj + 1);
 
     angleDelta = pitchTarget - (u16) * (s16*)(state + 0x2e);
     if (angleDelta > 0x8000)
@@ -506,7 +485,7 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
         angleDelta = (angleDelta + 0x10000) - 1;
     }
     ((SBCloudRunnerState*)state)->rotZ =
-        lbl_803E5CA8 * ((f32)angleDelta * timeDelta) + (f32) * (s16*)(int)(state + 0x2e);
+        0.05f * ((f32)angleDelta * timeDelta) + (f32) * (s16*)(int)(state + 0x2e);
 
     clampedRot = ((GameObject*)obj)->anim.rotY;
     clampedRot = (clampedRot < -8000) ? -8000 : ((clampedRot > 8000) ? 8000 : clampedRot);
@@ -520,20 +499,20 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     ((GameObject*)obj)->anim.rotZ = ((SBCloudRunnerState*)state)->rotZ;
 
     events.sfxFlag = 0;
-    spd = lbl_803E5CB0 * (f32)((GameObject*)obj)->anim.rotY + lbl_803E5CAC;
-    if (spd > lbl_803E5CB4)
+    spd = 3.0517578e-6f * (f32)((GameObject*)obj)->anim.rotY + 0.015f;
+    if (spd > 0.013f)
     {
         if (((GameObject*)obj)->anim.currentMove != CLOUDRUNNER_MOVE_FLAP)
         {
-            ObjAnim_SetCurrentMove((int)obj, CLOUDRUNNER_MOVE_FLAP, lbl_803E5C70, 0);
+            ObjAnim_SetCurrentMove((int)obj, CLOUDRUNNER_MOVE_FLAP, 0.0f, 0);
         }
     }
     else
     {
-        spd = lbl_803E5CAC;
+        spd = 0.015f;
         if (((GameObject*)obj)->anim.currentMove != CLOUDRUNNER_MOVE_GLIDE)
         {
-            ObjAnim_SetCurrentMove((int)obj, CLOUDRUNNER_MOVE_GLIDE, lbl_803E5C70, 0);
+            ObjAnim_SetCurrentMove((int)obj, CLOUDRUNNER_MOVE_GLIDE, 0.0f, 0);
         }
     }
     ObjAnim_AdvanceCurrentMove((int)obj, spd, timeDelta, (ObjAnimEventList*)&events);
@@ -595,7 +574,7 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
         if (animUpdate->eventIds[i] == 1)
         {
             objHitDetectFn_80062e84(player, state->targetObj, 0);
-            fn_80295918(player, 5, lbl_803E5C70);
+            fn_80295918(player, 5, 0.0f);
             state->done = 1;
         }
     }
@@ -625,7 +604,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
             if (hitObj->anim.seqId != HIT_TYPE_INVULNERABLE)
             {
                 Obj_SetModelColorFadeRecursive(obj, 175, 200, 0, 0, 1);
-                doRumble(lbl_803E5CB8);
+                doRumble(10.0f);
                 Sfx_PlayFromObject(0, SFXTRIG_dn_gscsc1_c);
                 if (mainGetBit(GAMEBIT_CLOUDRUNNER_HIT_SFX) != 0)
                 {
@@ -633,7 +612,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
                 }
                 (obj)->anim.rotY = COLORFADE_RUMBLE_PRESET;
                 state->rideSubState = RIDE_SUBSTATE_TILT;
-                args.scale = lbl_803E5C74;
+                args.scale = 1.0f;
                 args.v[0] = 0;
                 args.v[1] = 0;
                 args.v[2] = 0;
@@ -696,7 +675,7 @@ int SB_CloudRunner_func20(void)
 
 f32 SB_CloudRunner_func19(int unused, f32* p)
 {
-    f32 v = lbl_803E5C70;
+    f32 v = 0.0f;
     *p = v;
     return v;
 }
@@ -704,7 +683,7 @@ f32 SB_CloudRunner_func19(int unused, f32* p)
 
 void SB_CloudRunner_func18(int obj, f32* out, int* outInt)
 {
-    *out = lbl_803E5C70;
+    *out = 0.0f;
     *outInt = 0;
 }
 
@@ -792,7 +771,7 @@ void SB_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
     f32 mtx[16];
     if (visible == -1)
     {
-        objRenderModelAndHitVolumes((int)obj, p2, p3, p4, p5, lbl_803E5C74);
+        objRenderModelAndHitVolumes((int)obj, p2, p3, p4, p5, 1.0f);
         ObjPath_GetPointWorldPosition(obj, 3, state, state + 1, state + 2, 0);
         if (obj->anim.parent != NULL)
         {
@@ -804,7 +783,7 @@ void SB_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
     }
     else if (visible != 0)
     {
-        objRenderModelAndHitVolumes((int)obj, p2, p3, p4, p5, lbl_803E5C74);
+        objRenderModelAndHitVolumes((int)obj, p2, p3, p4, p5, 1.0f);
         ObjPath_GetPointWorldPosition(obj, 3, state, state + 1, state + 2, 0);
         if (obj->anim.parent != NULL)
         {
@@ -832,6 +811,7 @@ void SB_CloudRunner_update(GameObject* obj)
 {
     SBCloudRunnerState* state = obj->extra;
     int prevSubState;
+    f32 tiltDamping;
 
     if (state->done != 0 || obj->anim.mapEventSlot == 0xb)
     {
@@ -877,13 +857,14 @@ void SB_CloudRunner_update(GameObject* obj)
         obj->userData1 = 1;
         break;
     }
-    state->tiltZ = state->tiltZ + (f32)(int)obj->anim.rotZ * timeDelta / lbl_803E5CBC;
-    state->tiltY = state->tiltY + (f32)(int)obj->anim.rotY * timeDelta / lbl_803E5CBC;
-    state->tiltZ -= timeDelta * (state->tiltZ * lbl_803E5CC0);
-    state->tiltY -= timeDelta * (state->tiltY * lbl_803E5CC0);
-    obj->anim.rotY -= (s16)(lbl_803E5CB8 * state->tiltY);
-    obj->anim.localPosY = lbl_803E5CB8 * state->tiltY + state->spawnPosY;
-    obj->anim.localPosZ = lbl_803E5CB8 * state->tiltZ + state->spawnPosZ;
+    state->tiltZ = state->tiltZ + (f32)(int)obj->anim.rotZ * timeDelta / 6370.0f;
+    state->tiltY = state->tiltY + (f32)(int)obj->anim.rotY * timeDelta / 6370.0f;
+    tiltDamping = 0.1f;
+    state->tiltZ -= timeDelta * (state->tiltZ * tiltDamping);
+    state->tiltY -= timeDelta * (state->tiltY * tiltDamping);
+    obj->anim.rotY -= (s16)(10.0f * state->tiltY);
+    obj->anim.localPosY = 10.0f * state->tiltY + state->spawnPosY;
+    obj->anim.localPosZ = 10.0f * state->tiltZ + state->spawnPosZ;
     state->rideFrames += framesThisStep;
     if (state->rideSubState != prevSubState)
     {
