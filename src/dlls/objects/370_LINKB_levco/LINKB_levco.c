@@ -67,13 +67,11 @@ LINKBLevelControlEnvFxRampTables gLINKBLevelControlEnvFxRampTables = {
     },
 };
 
-int linkbLevelControl_getExtraSize(void)
-{
+int linkbLevelControl_getExtraSize(void) {
     return sizeof(LINKBLevelControlState);
 }
 
-void linkbLevelControl_update(GameObject* obj)
-{
+void linkbLevelControl_update(GameObject* obj) {
     LINKBLevelControlState* state;
     GameObject* tricky;
     GameObject* player;
@@ -83,22 +81,16 @@ void linkbLevelControl_update(GameObject* obj)
     player = Obj_GetPlayerObject();
     tricky = getTrickyObject();
     trickyEnergy = (*gMapEventInterface)->getTrickyEnergy();
-    if ((*gSkyInterface)->getSunPosition(NULL) != 0)
-    {
-        if (state->musicTriggerId != -1)
-        {
+    if ((*gSkyInterface)->getSunPosition(NULL) != 0) {
+        if (state->musicTriggerId != -1) {
             state->musicTriggerId = -1;
-            if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_MUSIC) != 0)
-            {
+            if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_MUSIC) != 0) {
                 Music_Trigger(MUSICTRIG_galleon_docks, 0);
             }
         }
-    }
-    else if (state->musicTriggerId != MUSICTRIG_galleon_docks)
-    {
+    } else if (state->musicTriggerId != MUSICTRIG_galleon_docks) {
         state->musicTriggerId = MUSICTRIG_galleon_docks;
-        if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_MUSIC) != 0)
-        {
+        if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_MUSIC) != 0) {
             Music_Trigger(MUSICTRIG_galleon_docks, 1);
         }
     }
@@ -113,30 +105,23 @@ void linkbLevelControl_update(GameObject* obj)
         &state->gameBitLatch, LINKB_LEVEL_CONTROL_FLAG_MUSIC, -1, -1, GAMEBIT_IM_Done,
         state->musicTriggerId);
 
-    if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE) != 0)
-    {
+    if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE) != 0) {
         if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) == 0 &&
-            mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_B) == 0)
-        {
+            mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_B) == 0) {
             mainSetBits(LINKB_GAMEBIT_TRICKY_STATE_LATCH, 0);
             state->gameBitLatch.activeMask &= ~LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE;
         }
-    }
-    else if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_B) != 0 ||
-             mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) != 0)
-    {
+    } else if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_B) != 0 ||
+               mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) != 0) {
         mainSetBits(LINKB_GAMEBIT_TRICKY_STATE_LATCH, 1);
         state->gameBitLatch.activeMask |= LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE;
     }
 
-    if (tricky != NULL)
-    {
+    if (tricky != NULL) {
         trickySetSoundSuppressed(tricky, 0);
-        switch (state->stage)
-        {
+        switch (state->stage) {
         case LINKB_LEVEL_CONTROL_STAGE_START:
-            if (mainGetBit(LINKB_GAMEBIT_STAGE_1) != 0)
-            {
+            if (mainGetBit(LINKB_GAMEBIT_STAGE_1) != 0) {
                 trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
@@ -145,10 +130,8 @@ void linkbLevelControl_update(GameObject* obj)
             }
             break;
         case LINKB_LEVEL_CONTROL_STAGE_1:
-            if (mainGetBit(GAMEBIT_ITEM_TrickyFood_Count) != 0)
-            {
-                if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
-                {
+            if (mainGetBit(GAMEBIT_ITEM_TrickyFood_Count) != 0) {
+                if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
                     mainSetBits(LINKB_GAMEBIT_STAGE_2, 1);
                     trickySetSoundSuppressed(tricky, 1);
                     (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
@@ -159,12 +142,10 @@ void linkbLevelControl_update(GameObject* obj)
             }
             break;
         case LINKB_LEVEL_CONTROL_STAGE_2:
-            if (trickyEnergy[0] != 0)
-            {
+            if (trickyEnergy[0] != 0) {
                 trickySetSoundSuppressed(tricky, 1);
                 if (state->trickyHitCount-- == -1 &&
-                    (tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
-                {
+                    (tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
                     mainSetBits(LINKB_GAMEBIT_STAGE_3, 1);
                     (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                     state->stage++;
@@ -174,19 +155,16 @@ void linkbLevelControl_update(GameObject* obj)
             }
             break;
         case LINKB_LEVEL_CONTROL_STAGE_3:
-            if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) != 0)
-            {
+            if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) != 0) {
                 mainSetBits(LINKB_GAMEBIT_STAGE_4, 1);
                 state->stage++;
                 break;
             }
-            if (mainGetBit(LINKB_GAMEBIT_ALTERNATE_PATH) != 0)
-            {
+            if (mainGetBit(LINKB_GAMEBIT_ALTERNATE_PATH) != 0) {
                 state->alternatePath = 1;
                 break;
             }
-            if (state->alternatePath != 0)
-            {
+            if (state->alternatePath != 0) {
                 mainSetBits(LINKB_GAMEBIT_STAGE_4, 1);
                 trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
@@ -196,8 +174,7 @@ void linkbLevelControl_update(GameObject* obj)
             }
             break;
         case LINKB_LEVEL_CONTROL_STAGE_4:
-            if (mainGetBit(LINKB_GAMEBIT_STAGE_5) != 0)
-            {
+            if (mainGetBit(LINKB_GAMEBIT_STAGE_5) != 0) {
                 trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
@@ -207,76 +184,55 @@ void linkbLevelControl_update(GameObject* obj)
             break;
         }
     }
-    if (tricky != NULL)
-    {
-        if ((tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
-        {
+    if (tricky != NULL) {
+        if ((tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
             state->trickyTalkTimer += timeDelta;
         }
-        if (mainGetBit(GAMEBIT_TrickyTalk) == 1 && trickyEnergy[0] >= 4)
-        {
+        if (mainGetBit(GAMEBIT_TrickyTalk) == 1 && trickyEnergy[0] >= 4) {
             mainSetBits(GAMEBIT_TrickyTalk, 0xFF);
         }
-        if (state->trickyTalkTimer >= LINKB_LEVEL_CONTROL_TRICKY_TALK_INTERVAL)
-        {
+        if (state->trickyTalkTimer >= LINKB_LEVEL_CONTROL_TRICKY_TALK_INTERVAL) {
             state->trickyTalkTimer -= LINKB_LEVEL_CONTROL_TRICKY_TALK_INTERVAL;
-            if (mainGetBit(GAMEBIT_TrickyTalk) == 0xFF && trickyEnergy[0] < 4)
-            {
+            if (mainGetBit(GAMEBIT_TrickyTalk) == 0xFF && trickyEnergy[0] < 4) {
                 mainSetBits(GAMEBIT_TrickyTalk, 1);
             }
         }
     }
 }
 
-void linkbLevelControl_init(GameObject* obj)
-{
+void linkbLevelControl_init(GameObject* obj) {
     u8* envFxRampBase = (u8*)(int)&gLINKBLevelControlEnvFxRampTables;
     LINKBLevelControlState* state = obj->extra;
 
     obj->objectFlags =
         (u16)(obj->objectFlags |
               (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
-    if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_LATCH) != 0)
-    {
+    if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_LATCH) != 0) {
         state->gameBitLatch.activeMask &= LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE;
     }
 
-    if (mainGetBit(LINKB_GAMEBIT_STAGE_5) != 0)
-    {
+    if (mainGetBit(LINKB_GAMEBIT_STAGE_5) != 0) {
         state->stage = LINKB_LEVEL_CONTROL_STAGE_5;
-    }
-    else if (mainGetBit(LINKB_GAMEBIT_STAGE_4) != 0)
-    {
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_4) != 0) {
         state->stage = LINKB_LEVEL_CONTROL_STAGE_4;
-    }
-    else if (mainGetBit(LINKB_GAMEBIT_STAGE_3) != 0)
-    {
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_3) != 0) {
         state->stage = LINKB_LEVEL_CONTROL_STAGE_3;
-    }
-    else if (mainGetBit(LINKB_GAMEBIT_STAGE_2) != 0)
-    {
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_2) != 0) {
         state->stage = LINKB_LEVEL_CONTROL_STAGE_2;
-    }
-    else if (mainGetBit(LINKB_GAMEBIT_STAGE_1) != 0)
-    {
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_1) != 0) {
         state->stage = LINKB_LEVEL_CONTROL_STAGE_1;
     }
 
     skySetEnvFxRampTables(
         envFxRampBase + 0x38, (u8*)(int)&gLINKBLevelControlEnvFxRampTables,
         envFxRampBase + 0x70, envFxRampBase + 0xA8);
-    if (getSaveGameLoadStatus() != 0)
-    {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0)
-        {
+    if (getSaveGameLoadStatus() != 0) {
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) {
             envFxActFn_800887f8(LINKB_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
         }
         getEnvfxActImmediately(NULL, NULL, LINKB_LEVEL_CONTROL_ENVFX_ID, 0);
-    }
-    else
-    {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0)
-        {
+    } else {
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) {
             envFxActFn_800887f8(LINKB_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
         }
         getEnvfxAct(NULL, NULL, LINKB_LEVEL_CONTROL_ENVFX_ID, 0);
