@@ -22,18 +22,18 @@ extern u16 gEnterSaveNameCharTextIds[];
 
 s32 gEnterSaveNameCharWidths[40];
 s32 gEnterSaveNameCharOffsets[40];
-f32 lbl_803DD6D0;
-f32 gEnterSaveNameTargetScrollVel;
-u16 gEnterSaveNameColorAnimTime;
-u8 gEnterSaveNameAutoScrolling;
-u32 lbl_803DD6DC;
-f32 gEnterSaveNameScrollPos;
-s32 gEnterSaveNameSelectedIndex;
-u32 gEnterSaveNameTotalWidth;
-u8 lbl_803DD6EC;
-u8 lbl_803DD6ED;
-char gEnterSaveNameBuffer[4];
 u8 gEnterSaveNameLength;
+char gEnterSaveNameBuffer[4];
+u8 lbl_803DD6ED;
+u8 lbl_803DD6EC;
+u32 gEnterSaveNameTotalWidth;
+s32 gEnterSaveNameSelectedIndex;
+f32 gEnterSaveNameScrollPos;
+u32 lbl_803DD6DC;
+u8 gEnterSaveNameAutoScrolling;
+u16 gEnterSaveNameColorAnimTime;
+f32 gEnterSaveNameTargetScrollVel;
+f32 lbl_803DD6D0;
 
 #define gEnterSaveNameScrollVelocity lbl_803DD6D0
 #define gEnterSaveNameScrollWrapOffset lbl_803DD6DC

@@ -36,6 +36,11 @@
 DllCBStateHandler gDllCBStateHandlers[6];
 DllCBMoveHandler gDllCBMoveHandlers[4];
 
+static DllCBStateHandler dll_CB_getStateHandler(int state)
+{
+    return gDllCBStateHandlers[state];
+}
+
 int dll_CB_stateHandler5(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
     RouteNav* routePath;

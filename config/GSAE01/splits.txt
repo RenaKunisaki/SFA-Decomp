@@ -3110,7 +3110,7 @@ dlls/objects/597/597.c:
 dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c:
 	.text       start:0x801EE088 end:0x801EF360
 	.data       start:0x80328618 end:0x80328688
-	.sdata2     start:0x803E5C70 end:0x803E5CC8
+	.sdata2     start:0x803E5C70 end:0x803E5CC4
 
 dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c:
 	.text       start:0x801EF360 end:0x801EFF7C
@@ -3581,7 +3581,7 @@ dlls/objects/592_KT_Rex/KT_Rex.c:
 	.data       start:0x8032A510 end:0x8032A5D0
 	.bss        start:0x803AD158 end:0x803AD1C8
 	.sdata      start:0x803DC250 end:0x803DC2A0
-	.sbss       start:0x803DDD48 end:0x803DDD60
+	.sbss       start:0x803DDD48 end:0x803DDD5C
 	.sdata2     start:0x803E67B0 end:0x803E6854
 
 dlls/objects/593_KT_RexFloor/KT_RexFloor.c:
