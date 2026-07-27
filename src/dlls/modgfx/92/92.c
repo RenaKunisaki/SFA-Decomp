@@ -1,19 +1,9 @@
 /*
- * dll_005C (dll5cfunc0) - a small gameplay DLL whose only real export is
- * dll_5C_func03, a Modgfx bone-particle effect spawner, plus two empty
- * "nop" entry-point stubs (dll_5C_func00/01).
- *
- * dll_5C_func03 builds an 11-entry GfxCmd command list on the stack from
- * the texture/half-word table at lbl_80311F20 and the float constants at
- * lbl_803E07xx, then hands it to (*gModgfxInterface)->spawnEffect. When
- * the caller sets bit 0 of flags the effect is positioned: from the source
- * object's transform (offsets 0x18/0x1c/0x20) when one is supplied,
- * otherwise from the PartFxSpawnParams packet.
+ * DLL 92 / 0x5C - a modgfx particle-sequence spawn DLL.
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_005C_dll5cfunc0.h"
 

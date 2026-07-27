@@ -621,7 +621,7 @@ main/dll/dll_005B_modgfxfunc03.c:
 	.sdata      start:0x803DB8B0 end:0x803DB8C0
 	.sdata2     start:0x803E0730 end:0x803E0760
 
-main/dll/dll_005C_dll5cfunc0.c:
+dlls/modgfx/92/92.c:
 	.text       start:0x800EC7BC end:0x800ECAE0
 	.data       start:0x80311F20 end:0x80312130
 
