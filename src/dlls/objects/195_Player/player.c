@@ -6413,7 +6413,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     {
         int in2 = *(int*)&obj->extra;
-        *(int*)((char*)in2 + 0x360) &= ~2LL;
+        *(u32*)((char*)in2 + 0x360) &= -3;
         *(u32*)((char*)in2 + 0x360) |= 0x2000LL;
     }
     *(int*)((char*)state + 0x4) |= 0x100000;
@@ -6758,7 +6758,7 @@ int playerState19(GameObject* obj, int state)
     }
     {
         int inner2 = *(int*)&obj->extra;
-        *(int*)((char*)inner2 + 0x360) &= ~0x2LL;
+        *(u32*)((char*)inner2 + 0x360) &= -3;
         *(int*)((char*)inner2 + 0x360) |= 0x2000;
     }
     *(int*)((char*)state + 0x4) |= 0x100000;
@@ -7010,7 +7010,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    *(int*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
+    *(u32*)&inner->flags360 &= -3;
     inner->flags360 |= 0x2000;
     *(int*)((char*)state + 0x4) |= 0x100000;
     {
@@ -11179,7 +11179,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     sc0p[0] = lbl_803E808C * vec[0];
     sc0p[1] = lbl_803E808C * vec[1];
     sc0p[2] = lbl_803E808C * vec[2];
-    ((PlayerState*)state)->flags360 &= ~PLAYER_FLAG_LEDGE_DETECTED;
+    *(u32*)&((PlayerState*)state)->flags360 &= -257;
     for (i = 0; i < PLAYER_SWEEP_DIR_COUNT; i++)
     {
         if ((mask & dirMasks[i]) == 0)
