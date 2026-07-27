@@ -147,10 +147,6 @@ STATIC_ASSERT(sizeof(IMIceMountainState) == 0x14);
 #define IMICEMOUNTAIN_ENVFX_C 0x119
 #define IMICEMOUNTAIN_ENVFX_D 0x104
 
-extern f32 lbl_803E46E0;
-extern f32 lbl_803E46D8;
-extern f32 lbl_803E46DC;
-
 void IMIceMountain_init(GameObject* obj);
 int IMIceMountain_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int IMIceMountain_getExtraSize(void);
@@ -313,7 +309,7 @@ void IMIceMountain_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, lbl_803E46D8);
+        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
 }
 
 void IMIceMountain_hitDetect(void)
@@ -349,14 +345,14 @@ void IMIceMountain_update(GameObject* obj)
         break;
     }
     extra->latchFlags &= ~1;
-    if (extra->warningTextTimer > lbl_803E46DC)
+    if (extra->warningTextTimer > 0.0f)
     {
     gameTextSetColor(255, 255, 255, 255);
         gameTextShow(0x351);
         extra->warningTextTimer = extra->warningTextTimer - timeDelta;
-        if (extra->warningTextTimer < *(f32*)&lbl_803E46DC)
+        if (extra->warningTextTimer < 0.0f)
         {
-            extra->warningTextTimer = lbl_803E46DC;
+            extra->warningTextTimer = 0.0f;
         }
     }
     if ((*gSkyInterface)->getSunPosition(0) != 0)
@@ -399,7 +395,7 @@ void IMIceMountain_init(GameObject* obj)
     {
         gameBitFn_800ea2e0(i);
     }
-    sub->warningTextTimer = lbl_803E46E0;
+    sub->warningTextTimer = 300.0f;
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 5, 1);
     unlockLevel(0, 0, 1);
