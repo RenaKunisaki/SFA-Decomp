@@ -1390,12 +1390,17 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
         }
         if (did != 0)
         {
-            int vtx;
-            vtx = ((ObjModel*)am)->vtxBufDirty != 0
-                ? ((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]
-                : *(int*)&((ModelFileHeader*)m)->vertices;
+            u8* vtx;
+            if (((ObjModel*)am)->vtxBufDirty != 0)
+            {
+                vtx = (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1];
+            }
+            else
+            {
+                vtx = *(u8**)&((ModelFileHeader*)m)->vertices;
+            }
             ObjModel_BlendVertexStream(
-                (u8*)gObjBoneMtxBuffer, m + 0x88, (u8*)vtx,
+                (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
                 (int*)*(int*)&((ModelFileHeader*)am)->jointBlendData,
                 (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]);
             ObjModel_BlendNormalStream((u8*)gObjBoneMtxBuffer, m + 0xac,
