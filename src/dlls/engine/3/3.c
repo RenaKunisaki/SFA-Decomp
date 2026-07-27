@@ -1,31 +1,6 @@
-/*
- * Checkpoint route DLL (DLL 0x0003).
- *
- * Central TU globals:
- *   gCheckpointRouteTable - route table (sorted CheckpointSlot array)
- *   gCheckpointRouteCount - route count (entries in the table)
- *   lbl_803DD418 - front particle-list pointer (read side this frame)
- *   lbl_803DD41C - back particle-list pointer (write side this frame)
- *   lbl_803DD414 - front particle count (this frame's entries)
- *   lbl_803DD416 - back particle count (next frame's entries, capped at 10)
- *
- * Maintains the global sorted table of CheckpointRouteEntry nodes
- * (gCheckpointRouteTable, count gCheckpointRouteCount) used for path/route following, plus a
- * double-buffered particle-ranking list (lbl_803DD418/lbl_803DD41C, swapped
- * each game loop) holding up to 10 entries (lbl_803DD414/lbl_803DD416).
- *
- * Checkpoint_Add / Checkpoint_Remove keep the table key-sorted;
- * Checkpoint_find does a binary search by key. Checkpoint_buildControlPoints builds the per-
- * segment Hermite control points (curve mode 0 = endpoints, 1 = full 4-point
- * spline sampled along the heading-rotated cross section, >=2 = single point);
- * Checkpoint_func08 walks the route advancing by arc length and clamps the
- * Hermite parameter t to [0,1]; Checkpoint_func07 / Checkpoint_func06 project
- * an object onto the route and select the active checkpoint segment.
- */
 #include "main/checkpoint_route.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/curve.h"
-#include "main/vecmath.h"
 #include "main/vecmath.h"
 
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];

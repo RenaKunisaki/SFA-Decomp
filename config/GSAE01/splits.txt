@@ -560,7 +560,7 @@ dlls/engine/45/45.c:
 	.sbss       start:0x803DD400 end:0x803DD410
 	.sdata2     start:0x803E0310 end:0x803E04D8
 
-main/dll/dll_0003_checkpoint.c:
+dlls/engine/3/3.c:
 	.text       start:0x800D5530 end:0x800D7568
 	.data       start:0x803112E8 end:0x80311340
 	.bss        start:0x8039C458 end:0x8039CAE8

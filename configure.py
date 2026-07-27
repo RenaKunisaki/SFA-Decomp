@@ -1053,6 +1053,7 @@ config.libs = [
         "progress_category": "game",
             "objects": [
             # dlls/engine
+            Object(NonMatching, "dlls/engine/3/3.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/engine/4/4.c"),
             Object(NonMatching, "dlls/engine/5/5.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/engine/6/6.c", cflags=cflags_dll_noopt_noautoinline),
@@ -1477,7 +1478,6 @@ config.libs = [
             Object(NonMatching, "track/intersect_texsetup.c", cflags=cflags_dll_noopt_nocse_noautoinline),
             Object(NonMatching, "track/intersect_memcard.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/maketex.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
-            Object(NonMatching, "main/dll/dll_0003_checkpoint.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "main/dll/dll_b8.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/n_attractmode.c", cflags=cflags_dll_noopt),
             Object(Matching, "main/dll/modanimeflash1.c"),
