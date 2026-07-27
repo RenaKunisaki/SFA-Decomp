@@ -1,4 +1,3 @@
-/* DLL 0x146 - CloudShipCo */
-#include "global.h"
+#include "dlls/objects/326_CloudShipCo.h"
 
-u32 lbl_803DBE10[2] = {0};
+u32 gCloudShipControlNullResourceDescriptor[CLOUD_SHIP_CONTROL_NULL_DESCRIPTOR_WORD_COUNT] = {0};

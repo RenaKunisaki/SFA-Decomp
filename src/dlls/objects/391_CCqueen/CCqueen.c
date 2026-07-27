@@ -1,90 +1,97 @@
 /*
- * CCqueen - CloudRunner Queen object (DLL 0x0187). The Queen in the
- * Crystal Caves throne room. Once the gas puzzle is done (gameBit 0xA3) and
- * the player gets close she latches gameBit 0x1C2; gameBit 0x1C3 retires
- * her (hidden + hits disabled). Otherwise she advances her current move,
- * runs the shared character think routine (dll_2E_func03) and plays eye
- * anims. The large extra block (0x654 bytes) is the shared character state
- * driven by the dll_2E_func* helpers.
+ * CCqueen (DLL 0x187) - Crystal Caves Queen.
+ *
+ * Completing the gas puzzle and approaching the Queen sets her proximity
+ * latch. Another progression bit hides and disables her; otherwise she
+ * advances her movement and eye animation.
  */
+#include "dlls/objects/391_CCqueen.h"
+
+#include "dlls/objects/390_CCgasventCo.h"
 #include "game/objects/object.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/objanim.h"
 #include "main/objhits.h"
 #include "main/objprint_character_api.h"
-#include "main/dll/dll_002E_moveLib.h"
-#include "main/gamebits.h"
-#include "sys/objects.h"
-#include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/dll/CC/dll_0187_ccqueen.h"
 #include "main/vecmath_distance_api.h"
-#include "dlls/object_descriptor.h"
+#include "sys/objects.h"
 
-#define CCQUEEN_OBJFLAG_UPDATE_DISABLED 0x8000
+#define CC_QUEEN_PROXIMITY_LATCH_GAMEBIT     0x1C2
+#define CC_QUEEN_PROXIMITY_DISTANCE_SQUARED  18225.0f
+#define CC_QUEEN_RENDER_SCALE                1.0f
+#define CC_QUEEN_MOVE_STEP_SCALE             0.005f
+#define CC_QUEEN_MOVE_YAW_LIMIT_A            0x71C7
+#define CC_QUEEN_MOVE_YAW_LIMIT_B            0x3555
+#define CC_QUEEN_MOVE_POINT_COUNT            3
+#define CC_QUEEN_MOVE_REATTACK_DELAY_BASE    0x258
+#define CC_QUEEN_MOVE_REATTACK_DELAY_MINIMUM 0xF0
+#define CC_QUEEN_MOVE_LIB_MODE_BITS          0x0A
+#define CC_QUEEN_ROT_X_SHIFT                 8
 
-#define GAMEBIT_QUEEN_LATCHED   0x1c2 /* player got close once the gas puzzle was done */
-#define GAMEBIT_QUEEN_RETIRED   0x1c3 /* queen leaves: hidden + hits disabled */
-#define GAMEBIT_GAS_PUZZLE_DONE 0xa3
+typedef struct CCQueenMoveTable {
+    s16 entries[CC_QUEEN_MOVE_POINT_COUNT];
+} CCQueenMoveTable;
 
-static const Vec3s ccqueenEyeSetupA = {0x1e, 0, 0};
-static const Vec3s ccqueenEyeSetupB = {0x19, 0x19, 0x19};
+STATIC_ASSERT(sizeof(CCQueenMoveTable) == 0x06);
 
-int ccqueen_getExtraSize(void)
-{
-    return 0x654;
+static const CCQueenMoveTable sCCQueenMoveEventTable = {{0x1E, 0, 0}};
+static const CCQueenMoveTable sCCQueenMoveTurnTable = {{0x19, 0x19, 0x19}};
+
+int ccQueen_getExtraSize(void) {
+    return sizeof(CCQueenState);
 }
 
-void ccqueen_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    void* state = obj->extra;
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-    dll_2E_func06(obj, (MoveLibState*)state, 0);
+void ccQueen_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 unusedVisible) {
+    CCQueenState* state = obj->extra;
+
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, CC_QUEEN_RENDER_SCALE);
+    dll_2E_func06(obj, &state->moveLib, 0);
 }
 
-void ccqueen_update(GameObject* obj)
-{
-    u8* charState;
+void ccQueen_update(GameObject* obj) {
+    CCQueenState* state;
     GameObject* player;
 
-    charState = obj->extra;
-    if (mainGetBit(GAMEBIT_QUEEN_LATCHED) == 0 && mainGetBit(GAMEBIT_GAS_PUZZLE_DONE) != 0)
-    {
+    state = obj->extra;
+    if (mainGetBit(CC_QUEEN_PROXIMITY_LATCH_GAMEBIT) == 0 &&
+        mainGetBit(CC_GAS_VENT_CONTROL_PUZZLE_COMPLETE_GAMEBIT) != 0) {
         player = Obj_GetPlayerObject();
         if (vec3f_distanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) <
-            18225.0f)
-        {
-            mainSetBits(GAMEBIT_QUEEN_LATCHED, 1);
+            CC_QUEEN_PROXIMITY_DISTANCE_SQUARED) {
+            mainSetBits(CC_QUEEN_PROXIMITY_LATCH_GAMEBIT, 1);
         }
     }
-    if (mainGetBit(GAMEBIT_QUEEN_RETIRED) != 0)
-    {
+    if (mainGetBit(GAMEBIT_ITEM_NWKey_Got2) != 0) {
         obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-        obj->objectFlags = (u16)(obj->objectFlags | CCQUEEN_OBJFLAG_UPDATE_DISABLED);
+        obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
         ObjHits_DisableObject(obj);
-    }
-    else
-    {
-        ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
-        dll_2E_func03(obj, (MoveLibState*)charState);
-        characterDoEyeAnims(obj, charState + 0x624);
+    } else {
+        ObjAnim_AdvanceCurrentMove((int)obj, CC_QUEEN_MOVE_STEP_SCALE, timeDelta, NULL);
+        dll_2E_func03(obj, &state->moveLib);
+        characterDoEyeAnims(obj, state->eyeAnimState);
     }
 }
 
-void ccqueen_init(GameObject* obj, u8* placement)
-{
-    u8* charState;
-    Vec3s buf2;
-    Vec3s buf1;
-    charState = obj->extra;
-    buf2 = ccqueenEyeSetupA;
-    buf1 = ccqueenEyeSetupB;
-    obj->anim.rotX = (s16)(placement[0x1a] << 8);
-    dll_2E_func05(obj, (MoveLibState*)charState, 0x71c7, 0x3555, 3);
-    dll_2E_func08((MoveLibState*)charState, 0x258, 0xf0);
-    dll_2E_func09((MoveLibState*)charState, &buf1, &buf2, 3);
-    charState[0x611] = (u8)(charState[0x611] | 0xa);
+void ccQueen_init(GameObject* obj, const CCQueenPlacement* placement) {
+    CCQueenState* state;
+    CCQueenMoveTable eventTable;
+    CCQueenMoveTable turnTable;
+
+    state = obj->extra;
+    eventTable = sCCQueenMoveEventTable;
+    turnTable = sCCQueenMoveTurnTable;
+    obj->anim.rotX = (s16)(placement->rotXByte << CC_QUEEN_ROT_X_SHIFT);
+    dll_2E_func05(obj, &state->moveLib, CC_QUEEN_MOVE_YAW_LIMIT_A, CC_QUEEN_MOVE_YAW_LIMIT_B,
+                  CC_QUEEN_MOVE_POINT_COUNT);
+    dll_2E_func08(&state->moveLib, CC_QUEEN_MOVE_REATTACK_DELAY_BASE, CC_QUEEN_MOVE_REATTACK_DELAY_MINIMUM);
+    dll_2E_func09(&state->moveLib, &turnTable, &eventTable, CC_QUEEN_MOVE_POINT_COUNT);
+    state->moveLib.modeBits = (u8)(state->moveLib.modeBits | CC_QUEEN_MOVE_LIB_MODE_BITS);
 }
 
-ObjectDescriptor gCCqueenObjDescriptor = {
+ObjectDescriptor gCCQueenObjDescriptor = {
     0,
     0,
     0,
@@ -92,11 +99,11 @@ ObjectDescriptor gCCqueenObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)ccqueen_init,
-    (ObjectDescriptorCallback)ccqueen_update,
+    (ObjectDescriptorCallback)ccQueen_init,
+    (ObjectDescriptorCallback)ccQueen_update,
     0,
-    (ObjectDescriptorCallback)ccqueen_render,
+    (ObjectDescriptorCallback)ccQueen_render,
     0,
     0,
-    (ObjectDescriptorExtraSizeCallback)ccqueen_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)ccQueen_getExtraSize,
 };

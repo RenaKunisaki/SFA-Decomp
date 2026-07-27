@@ -12,7 +12,7 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0077_dll77func0.h"
 
-extern s16 lbl_80314980[];
+s16 lbl_80314980[8] = {0, 155, 200, 1, 155, 0, 0, 0};
 
 /* referenced via *(f32*)& so the 0.0 base keeps its additive fadds (a literal
    0.0f + pos folds away) and the pool stays in address order */
@@ -122,3 +122,6 @@ void dll_77_func01_nop(void)
 void dll_77_func00_nop(void)
 {
 }
+
+void* lbl_80314990[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                         dll_77_func00_nop, dll_77_func01_nop, (void*)0x00000000, dll_77_func03};

@@ -17,7 +17,7 @@
 #include "main/dll/foodbag.h"
 #include "main/vecmath.h"
 
-extern s16 lbl_80316020[];
+s16 lbl_80316020[8] = {0, 255, 0, 0, 0, 0, 0, 0};
 
 void dll_86_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
@@ -146,3 +146,6 @@ void dll_86_func01_nop(void)
 void dll_86_func00_nop(void)
 {
 }
+
+void* lbl_80316030[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                         dll_86_func00_nop, dll_86_func01_nop, (void*)0x00000000, dll_86_func03};

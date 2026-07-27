@@ -442,3 +442,24 @@ void drakormissile_release(void)
 void drakormissile_initialise(void)
 {
 }
+
+ObjectDescriptor14 gDrakorMissileObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_14_SLOTS,
+    (ObjectDescriptorCallback)drakormissile_initialise,
+    (ObjectDescriptorCallback)drakormissile_release,
+    0,
+    (ObjectDescriptorCallback)drakormissile_init,
+    (ObjectDescriptorCallback)drakormissile_update,
+    (ObjectDescriptorCallback)drakormissile_hitDetect,
+    (ObjectDescriptorCallback)drakormissile_render,
+    (ObjectDescriptorCallback)drakormissile_free,
+    (ObjectDescriptorCallback)drakormissile_getObjectTypeId,
+    (ObjectDescriptorCallback)drakormissile_getExtraSize,
+    (ObjectDescriptorCallback)drakormissile_setScale,
+    (ObjectDescriptorCallback)drakormissile_startStraightLaunch,
+    (ObjectDescriptorCallback)drakormissile_modelMtxFn,
+    (ObjectDescriptorCallback)drakormissile_abortStraightFlight,
+};

@@ -18,6 +18,8 @@
 #include "main/dll/dll_009A_dll9afunc0.h"
 #include "main/vecmath.h"
 
+extern u32 lbl_80317B98[];
+
 u8 lbl_803DB958[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gScreenFx9APartTexB[4] = {0, 2, 0, 0};
 u8 gScreenFx9APartTexA[8] = {0, 0, 0, 1, 0, 2, 0, 0};
@@ -31,8 +33,6 @@ typedef struct
 #define DLL9A_EFFECT_ID 0x31
 
 const s16 gScreenFx9AAnimTemplate[8] = {0, 10, 40, 60, 40, 0, 0, 0};
-extern u32 lbl_80317B98[];
-
 void dll_9A_func03(int target, int variant, int parent, u32 flags)
 {
     ScreenSeq seq;
@@ -237,3 +237,8 @@ void dll_9A_func01_nop(void)
 void dll_9A_func00_nop(void)
 {
 }
+
+u32 lbl_80317B98[8] = {0x000000e6, 0x07080000, 0x001f0000, 0xff1a0708, 0x001f001f, 0x00000000, 0x0000000f, 0x00100000};
+u32 lbl_80317BB8[8] = {
+    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_9A_func00_nop, (u32)dll_9A_func01_nop,
+    0x00000000, (u32)dll_9A_func03};

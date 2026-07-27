@@ -105,22 +105,53 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   unit `NonMatching` when the reconstructed declaration order exposes a data mismatch. Conversely,
   retain a descriptor's proven earlier position when an already-exact TU and retail symbol order
   show that other TU-owned data follows it; do not reduce a 100% unit for cosmetic uniformity.
+- When a descriptor symbol provably includes data beyond its advertised callback count, model the
+  complete symbol as an object-descriptor-plus-tail layout. Keep unexplained tail words opaque and
+  size-asserted until real consumers establish their fields; do not inflate the callback type or
+  assign meanings from value patterns alone.
+- Keep a functionless DLL's proven eight-byte null resource record as two raw words. Do not widen
+  it into `ResourceDescriptor` or `ObjectDescriptor` merely because the generic registry stores its
+  address; give the record a unit-owned name and cast only at that registry boundary.
 - Give each cleaned object DLL one canonical unit-owned header under `include/dlls/<bank>/`. Keep
   that header self-contained, put the unit's state/setup types and public API there, and do not use
   one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
   source; keep private helper types and constants in the TU.
+- Keep layout assertions beside the canonical definition owned by that unit. Do not include
+  neighboring object headers in a consumer solely to repeat unrelated state-size assertions; remove
+  those imports and duplicate assertions when canonicalizing the owning types.
 - Before promoting a local state or placement typedef into a canonical header, search the tree for
   the same type name. If another subsystem already uses that name for a different layout, choose an
   explicit object-specific name instead of exporting an ambiguous typedef or creating an include
   collision; back-apply the rename only to consumers of the recovered layout.
+- Before renaming a public DLL function, descriptor, or data symbol, search both the source tree and
+  the active-target symbol config for the proposed name. If another TU already owns it, keep the
+  roles distinct with the evidenced source/object namespace; do not let an internal cleanup create
+  a duplicate declaration, duplicate config key, or ambiguous cross-TU API.
 - Prefer the canonical `GameObject` and `ObjAnimComponent` fields when they already express a
   cleaned DLL's accesses. Do not publish a unit-local object overlay that duplicates the common
   object prefix, `extra`, animation callback, or `userData` slots; retain a custom overlay only for
   evidenced class-specific storage that the canonical object record cannot represent.
+- Keep an engine-owned object table or deliberately reused scratch pointer in its codegen-proven
+  storage shape when a fully typed local changes MWCC register allocation. Use a narrow cast and
+  canonical `offsetof` expression at each semantic dereference instead of hard-coded offsets or a
+  fake object overlay; do not extend a typed pointer's lifetime across phases merely for cosmetic
+  uniformity.
 - Format the object TU and its unit-owned header, but keep shared consumer edits surgical. Adding a
   canonical header to a registry such as `modelEngine.c` does not authorize whole-file formatting
   or unrelated cleanup there; change only the required include, declaration, cast, or use sites
   unless that consumer TU is itself the active cleanup target.
+- Use attached braces for control flow in cleaned code: `if (...) {`, `} else {`, `for (...) {`,
+  `while (...) {`, and `switch (...) {`. Keep the controlled block on its own indented lines even
+  when it contains one statement. Do not introduce Allman-style control-flow braces into a cleaned
+  TU or preserve them merely because the surrounding imported decomp is inconsistent.
+- Run `clang-format -i` on the active cleaned TU and its unit-owned canonical header, then review the
+  formatting diff and require `clang-format --dry-run --Werror` to pass for both. Do not format a
+  shared consumer merely because the active TU adds one include or declaration there; keep those
+  shared edits surgical unless that consumer is itself the cleanup target.
+- For the object-DLL housekeeping pass, assign each TU cleanup to a sub-agent and keep no more than
+  three sub-agents active at once. The primary agent must personally review every resulting diff,
+  stale-symbol search, match report, shared-consumer edit, and generated-path audit before
+  committing. Commit and push reviewed TUs one coherent slot at a time.
 - Claim a cleaned TU's complete evidenced constant pool only when the source can emit it without
   duplicate named constants, invented section placement, or codegen changes. MWCC may copy a
   same-TU named `const` scalar into a second anonymous literal while leaving the named definition
@@ -141,6 +172,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   TU. If a helper is called only with another object's larger state and accesses beyond the owner's
   `getExtraSize`, model the owning state and the cross-object helper overlay as separate types,
   assert both layouts, and keep the cast explicit at the reuse boundary.
+- Do not cast one object's state to an unrelated object's type merely because useful fields happen
+  to share offsets. Recover those fields in the owning state; share a state type only when allocation
+  and behavioral evidence establish a real common contract.
 - When retail code provably reads or writes past an allocation or object boundary, preserve and
   document the exact access without enlarging the owning type to make the bug appear in bounds.
   Keep the allocation-backed size assertion, use an explicit byte access for the overrun, and audit
@@ -148,6 +182,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 - When two proven consumers interpret the same shared placement byte with different signedness and
   both views are codegen-significant, model explicit union views at the shared offset. Do not force
   one canonical signedness and scatter casts; assert both offsets and rebuild every consumer.
+- Recover a placement field at the width actually loaded. If a supposed `s16` is only accessed as
+  `*(u8*)&field` at the field's address, model the evidenced `u8` plus the following unknown byte;
+  on the big-endian target that cast selects the first/high-order byte, not a generic "low byte."
 - When a shared placement record has proven mode-specific roles at the same offsets, expose
   explicit semantic union views in the owning canonical header and use the relevant view in each
   mode or consumer. Do not preserve one misleading generic name or duplicate the record as
@@ -160,10 +197,21 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   launders before normalizing them. If the simpler spelling changes codegen, retain the proven
   spelling and improve the surrounding names instead; cosmetic uniformity does not justify a match
   regression.
+- Do not split a multi-role local in an already-exact function solely to give each lifetime a more
+  specific name without testing codegen. MWCC can assign different nonvolatile registers even when
+  the lifetimes do not overlap; if the split changes codegen, retain one neutrally named local and
+  let each use site supply the meaning.
+- Preserve TU-global declaration order while renaming or retyping symbols, especially mixed-width
+  `.sbss` and `.sdata` objects. Objdiff can report zero-filled sections and symbol-normalized
+  relocations as exact while MWCC has changed the symbols' packed offsets; inspect object symbol
+  offsets and require the final DOL checksum before accepting the cleanup.
 - Preserve a literal's C type when lifting it into a named macro or enum. Suffixes are semantic:
   replacing `1u` with a macro whose replacement is `1` can change the usual arithmetic conversions
   and turn a target `cmplwi` into `cmpwi`, even when the runtime values are identical. Rebuild the
   affected function after every such lift.
+- Do not infer unsigned storage merely because a byte is used as a boolean. Preserve signedness
+  evidenced by the exact load/compare sequence; an `s8` zero-test can require the target's sign
+  extension even when negative values have no separately recovered meaning.
 - Before retaining a unit-prefixed alias for an engine-wide flag, enum value, or ID, search the
   canonical engine headers. Use the shared definition when it already exists; local duplicates such
   as per-object names for `OBJECT_OBJFLAG_HITDETECT_DISABLED` obscure that multiple DLLs implement
@@ -180,6 +228,10 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   adjacent named slot, or behavioral resemblance. Keep a numbered namespace until retail object
   mappings, strings, symbols, or similarly direct evidence establishes the identity; recover
   semantic field, state, and helper names in the meantime.
+- Once an unnamed numbered slot provably owns an address-labeled descriptor, give that descriptor a
+  stable numbered symbol such as `gDll144ObjDescriptor` and update the active symbol config. Keep
+  the functions in the same numbered namespace and do not treat this internal rename as evidence
+  for renaming the generated source folder or filename.
 - Prefer real definitions and linkage over `extern` placeholders.
 - Do not hardcode addresses or invent junk `lbl_` / `fn_` names just to force progress.
 - Do not commit literal recovered source/header artifacts from `orig/` into `src/`; keep them in manifests/docs or export them to a local non-source folder when needed.

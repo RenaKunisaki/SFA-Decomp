@@ -1,211 +1,184 @@
-/*
- * Blasted (DLL 0x159) - CFBlastedRock/Wall/Tunnel + DRBlastedWall targets.
- */
+/* Blasted-rock, -wall, and -tunnel targets. */
+
+#include "dlls/objects/345.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/lightmap_api.h"
 #include "main/gamebits.h"
+#include "main/lightmap_api.h"
 #include "main/map_block.h"
-#include "main/track_dolphin_map_api.h"
-#include "main/dll/dll_0159_blasted.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
+#include "main/track_dolphin_map_api.h"
+#include "sys/objects.h"
 
-#define BLASTED_GAMEBIT_DAMAGE_BASE 0x2de /* base of per-damage-step progress GameBit array */
+#define BLASTED_GAMEBIT_DAMAGE_BASE         0x2DE
+#define BLASTED_DAMAGE_HIT_PRIORITY         5
+#define BLASTED_DAMAGE_TIMER_FRAMES         300
+#define BLASTED_MODEL_SLOT                  0x51
+#define BLASTED_DESTROYED_MODEL_INDEX       2
+#define BLASTED_POLYGON_GROUP_DISABLE_FLAGS 0x03
+#define BLASTED_SHADER_DISABLE_FLAG         0x02
 
-extern f32 lbl_803E4348;
-int lbl_803DDB18;
+typedef struct BlastedPolygonGroup {
+    u8 pad00[0x10];
+    u32 flags;
+} BlastedPolygonGroup;
 
+STATIC_ASSERT(offsetof(BlastedPolygonGroup, flags) == 0x10);
+STATIC_ASSERT(sizeof(BlastedPolygonGroup) == 0x14);
 
-int blasted_activateMapLayer(GameObject* obj, int id)
-{
+int gBlastedDamageTimer;
+
+int blasted_activateMapLayer(GameObject* obj, int mapLayerId) {
     MapBlockData* block;
 
     block = mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
-    if (block == NULL || (block->flags4 & 0x8) == 0)
-    {
+    if (block == NULL || (block->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return 0;
     }
     {
-        int j;
-        int i;
-        for (i = 0; i < block->polyGroupCount; i++)
-        {
-            u8* e = mapBlockGetPolygonGroup(block, i);
-            if (id == mapBlockGetPolygonGroupType(e))
-            {
-                *(int*)(e + 0x10) |= 3;
+        int shaderIndex;
+        int polygonGroupIndex;
+        for (polygonGroupIndex = 0; polygonGroupIndex < block->polyGroupCount; polygonGroupIndex++) {
+            BlastedPolygonGroup* polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
+            if (mapLayerId == mapBlockGetPolygonGroupType(polygonGroup)) {
+                polygonGroup->flags |= BLASTED_POLYGON_GROUP_DISABLE_FLAGS;
             }
         }
-        for (j = 0; j < block->shaderCount; j++)
-        {
-            u8* g = (u8*)mapBlockGetShader(block, j);
-            u8* p;
-            int k;
-            k = 0;
-            p = g;
-            for (; k < *(u8*)(g + 0x41); k++)
-            {
-                if (*(u8*)(p + 0x29) == id)
-                {
-                    *(int*)(g + 0x3c) |= 2;
+        for (shaderIndex = 0; shaderIndex < block->shaderCount; shaderIndex++) {
+            MapShader* shader = mapBlockGetShader(block, shaderIndex);
+            u8* layerCursor;
+            int layerIndex;
+            layerIndex = 0;
+            layerCursor = (u8*)shader;
+            for (; layerIndex < shader->layerCount; layerIndex++) {
+                if (*(u8*)(layerCursor + offsetof(MapShader, layers) + offsetof(MapShaderLayer, mapLayerId)) ==
+                    mapLayerId) {
+                    shader->flags |= BLASTED_SHADER_DISABLE_FLAG;
                 }
-                p += 8;
+                layerCursor += sizeof(MapShaderLayer);
             }
         }
     }
     return 1;
 }
 
-int blasted_getExtraSize(void)
-{
+int blasted_getExtraSize(void) {
     return sizeof(BlastedTargetState);
 }
 
-int blasted_getObjectTypeId(void)
-{
+int blasted_getObjectTypeId(void) {
     return 0;
 }
 
-void blasted_free(void)
-{
+void blasted_free(void) {
 }
 
-void blasted_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void blasted_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     BlastedTargetState* state = obj->extra;
-    if (visible != 0 && state->triggerFired == 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4348);
+    if (visible != 0 && state->mapLayerActivated == 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gBlastedRenderScale);
     }
 }
 
-void blasted_hitDetect(void)
-{
+void blasted_hitDetect(void) {
 }
 
-/* Blasted-target update: once the target's GameBit is latched, fires the
- * map trigger; otherwise scans the model's hit nodes for newly-destroyed
- * priority-5 pieces, records each unique piece, advances the damage model
- * index, and on the final piece latches the GameBit, fires the trigger,
- * and swaps to the destroyed model. */
-void blasted_update(GameObject* obj)
-{
-    int i;
-    BlastedTargetSetup* setup = (BlastedTargetSetup*)obj->anim.placementData;
+/* Track unique destroyed hit volumes and advance the staged damage model. */
+void blasted_update(GameObject* obj) {
+    int hitIndex;
+    BlastedTargetPlacement* placement = (BlastedTargetPlacement*)obj->anim.placement;
     BlastedTargetState* state = obj->extra;
-    s16 total = setup->pieceCount;
+    s16 pieceCount = placement->pieceCount;
 
-    if (state->triggerFired != 0)
-    {
+    if (state->mapLayerActivated != 0) {
         return;
     }
-    if ((u32)mainGetBit(setup->completedGameBit) != 0)
-    {
-        state->triggerFired = blasted_activateMapLayer(obj, setup->triggerId);
+    if ((u32)mainGetBit(placement->completedGameBit) != 0) {
+        state->mapLayerActivated = blasted_activateMapLayer(obj, placement->mapLayerId);
         return;
     }
     {
-        for (i = 0; i < ((ObjHitsPriorityState*)obj->anim.hitReactState)->priorityHitCount; i++)
-        {
-            int cnt;
+        for (hitIndex = 0; hitIndex < ((ObjHitsPriorityState*)obj->anim.hitReactState)->priorityHitCount; hitIndex++) {
+            int destroyedCount;
             u32 hitObject;
             int hitPriority;
-            int found;
-            hitPriority = *(s8*)((u8*)obj->anim.hitReactState + i +
-                                 offsetof(ObjHitsPriorityState, priorities));
-            hitObject = ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitObjects[i];
-            found = 0;
-            if (hitPriority != 5)
-            {
+            int alreadyRecorded;
+            hitPriority = *(s8*)((u8*)obj->anim.hitReactState + hitIndex + offsetof(ObjHitsPriorityState, priorities));
+            hitObject = ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitObjects[hitIndex];
+            alreadyRecorded = 0;
+            if (hitPriority != BLASTED_DAMAGE_HIT_PRIORITY) {
                 continue;
             }
-            if (total == 0)
-            {
-                mainSetBits(setup->completedGameBit, 1);
+            if (pieceCount == 0) {
+                mainSetBits(placement->completedGameBit, TRUE);
                 return;
             }
-            if (hitPriority == 5)
-            {
-                int k = 0;
-                cnt = state->damageStep;
-                while (k != cnt)
-                {
-                    if (hitObject == state->destroyedHitObjects[k++])
-                    {
-                        k = cnt;
-                        found = 1;
+            if (hitPriority == BLASTED_DAMAGE_HIT_PRIORITY) {
+                int destroyedIndex = 0;
+                destroyedCount = state->damageStage;
+                while (destroyedIndex != destroyedCount) {
+                    if (hitObject == state->destroyedHitObjects[destroyedIndex++]) {
+                        destroyedIndex = destroyedCount;
+                        alreadyRecorded = 1;
                     }
                 }
             }
-            if (found == 0)
-            {
-                state->destroyedHitObjects[state->damageStep] = hitObject;
-                mainSetBits(state->damageStep + BLASTED_GAMEBIT_DAMAGE_BASE, 0);
-                mainSetBits(state->damageStep + (BLASTED_GAMEBIT_DAMAGE_BASE + 1), 1);
-                if (setup->progressGameBit != -1)
-                {
-                    mainSetBits(setup->progressGameBit, state->damageStep + 1);
+            if (alreadyRecorded == 0) {
+                state->destroyedHitObjects[state->damageStage] = hitObject;
+                mainSetBits(state->damageStage + BLASTED_GAMEBIT_DAMAGE_BASE, FALSE);
+                mainSetBits(state->damageStage + (BLASTED_GAMEBIT_DAMAGE_BASE + 1), TRUE);
+                if (placement->progressGameBit != -1) {
+                    mainSetBits(placement->progressGameBit, state->damageStage + 1);
                 }
-                lbl_803DDB18 = 0x12c;
-                if (state->damageStep + 1 > total)
-                {
-                    int gbIndex;
-                    for (gbIndex = 0; gbIndex < total + 1; gbIndex++)
-                    {
-                        mainSetBits(gbIndex + BLASTED_GAMEBIT_DAMAGE_BASE, 0);
+                gBlastedDamageTimer = BLASTED_DAMAGE_TIMER_FRAMES;
+                if (state->damageStage + 1 > pieceCount) {
+                    int damageBitIndex;
+                    for (damageBitIndex = 0; damageBitIndex < pieceCount + 1; damageBitIndex++) {
+                        mainSetBits(damageBitIndex + BLASTED_GAMEBIT_DAMAGE_BASE, FALSE);
                     }
-                    mainSetBits(setup->completedGameBit, 1);
-                    blasted_activateMapLayer(obj, setup->triggerId);
-                    Obj_SetActiveModelIndex(obj, 2);
-                    state->triggerFired = 1;
-                }
-                else
-                {
-                    state->damageStep++;
-                    Obj_SetActiveModelIndex(obj, state->damageStep);
+                    mainSetBits(placement->completedGameBit, TRUE);
+                    blasted_activateMapLayer(obj, placement->mapLayerId);
+                    Obj_SetActiveModelIndex(obj, BLASTED_DESTROYED_MODEL_INDEX);
+                    state->mapLayerActivated = 1;
+                } else {
+                    state->damageStage++;
+                    Obj_SetActiveModelIndex(obj, state->damageStage);
                 }
             }
         }
     }
 }
 
-void blasted_init(GameObject* obj, BlastedTargetSetup* setup)
-{
+void blasted_init(GameObject* obj, BlastedTargetPlacement* placement) {
     BlastedTargetState* state = obj->extra;
     ObjHitsPriorityState* hitState;
-    s16 gbid;
+    s16 progressGameBit;
     u8 progress;
 
-    state->triggerFired = 0;
-    objSetSlot(obj, 0x51);
+    state->mapLayerActivated = 0;
+    objSetSlot(obj, BLASTED_MODEL_SLOT);
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-    hitState->flags = (s16)(hitState->flags | 1);
-    state->pieceCount = (u8)setup->pieceCount;
-    gbid = setup->progressGameBit;
-    if (gbid != -1)
-    {
-        progress = mainGetBit(gbid);
-        state->damageStep = progress;
-        if (progress != 0)
-        {
-            Obj_SetActiveModelIndex(obj, state->damageStep);
+    hitState->flags = (s16)(hitState->flags | OBJHITS_PRIORITY_STATE_ENABLED);
+    state->pieceCount = (u8)placement->pieceCount;
+    progressGameBit = placement->progressGameBit;
+    if (progressGameBit != -1) {
+        progress = mainGetBit(progressGameBit);
+        state->damageStage = progress;
+        if (progress != 0) {
+            Obj_SetActiveModelIndex(obj, state->damageStage);
         }
     }
-    mainSetBits(BLASTED_GAMEBIT_DAMAGE_BASE, 1);
-    obj->anim.rotX = (s16)((s32)setup->rotX << 8);
-    if ((u32)mainGetBit(setup->completedGameBit) != 0)
-    {
-        state->triggerFired = blasted_activateMapLayer(obj, setup->triggerId);
+    mainSetBits(BLASTED_GAMEBIT_DAMAGE_BASE, TRUE);
+    obj->anim.rotX = (s16)((s32)placement->rotX << 8);
+    if ((u32)mainGetBit(placement->completedGameBit) != 0) {
+        state->mapLayerActivated = blasted_activateMapLayer(obj, placement->mapLayerId);
     }
 }
 
-void blasted_release(void)
-{
+void blasted_release(void) {
 }
 
-void blasted_initialise(void)
-{
+void blasted_initialise(void) {
 }
 
 ObjectDescriptor gBlastedObjDescriptor = {

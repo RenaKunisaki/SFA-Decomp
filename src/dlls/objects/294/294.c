@@ -63,7 +63,6 @@
 #include "main/sky.h"
 #include "main/dll/dll_80198a00.h"
 #include "main/dll/dll_0126_trigger_api.h"
-#include "main/dll/MMP/mmp_moonrock_state.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/vecmath.h"
 #include "dolphin/mtx/mtx_legacy.h"
@@ -300,7 +299,7 @@ void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
 #define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
 #define MMP_GYSERVENT_PLACE_INSTANCE 0x14 /* instance id */
 
-void objFn_80198fa4(GameObject* obj, MmpGyserventPlacement* placement)
+void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 {
     MmpGyserventState* state;
     MatrixTransform xf;
@@ -368,7 +367,7 @@ void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)
     MmpGyserventState* state;
 
     state = (obj)->extra;
-    speed = (float)(s32)(((MmpGyserventPlacement*)obj->anim.placementData)->speed * 2);
+    speed = (float)(s32)(((MMPTriggerGeyserPlacement*)obj->anim.placementData)->speed * 2);
     t = state->reachAX - (obj)->anim.worldPosX;
     dyA = state->reachAY - (obj)->anim.worldPosY;
     distSqA = state->reachAZ - (obj)->anim.worldPosZ;
@@ -438,7 +437,6 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
 }
 
 
-#define TIMER_OBJGROUP                  0x4c /* DLL 0x2B5 timer */
 #define TARGET_OBJGROUP                 0xf  /* player-target group; nearest object gets the trigger's sequence */
 #define TRICKY_TARGET_OBJGROUP          0x32 /* nearest object searched from the tricky object */
 #define TRICKY_TARGET_OBJGROUP_FALLBACK 0x31 /* fallback group when TRICKY_TARGET_OBJGROUP has none */
@@ -784,7 +782,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     OSReport(desc + 0x114, p[2], p[3]);
                     break;
                 case 0x2f:
-                    t = ObjGroup_FindNearestObject(TIMER_OBJGROUP, obj, 0);
+                    t = ObjGroup_FindNearestObject(TIMER_OBJECT_GROUP, obj, 0);
                     if ((void*)t != NULL)
                     {
                         timer_addDuration((GameObject*)(t), p[3] * 0x3c);
@@ -1307,7 +1305,7 @@ void Trigger_init(GameObject* obj, u8* params)
         break;
     case 0x4c:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];
-        objFn_80198fa4(obj, (MmpGyserventPlacement*)params);
+        objFn_80198fa4(obj, (MMPTriggerGeyserPlacement*)params);
         break;
     case 0x230:
         ((TriggerState*)state)->rangeSq = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);

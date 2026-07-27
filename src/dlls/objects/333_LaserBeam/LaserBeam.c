@@ -1,4 +1,3 @@
-/* DLL 0x14D - LaserBeam */
-#include "global.h"
+#include "dlls/objects/333_LaserBeam.h"
 
-u32 lbl_803DBE50[2] = {0};
+u32 gLaserBeamNullResourceDescriptor[LASERBEAM_NULL_DESCRIPTOR_WORD_COUNT] = {0};

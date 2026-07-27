@@ -1,4 +1,5 @@
-/* DLL 0x161 - CFTreasRobo */
-#include "global.h"
+/* Empty CFTreasRobo resource slot. */
 
-u32 lbl_803DBEB0[2] = {0};
+#include "dlls/objects/353_CFTreasRobo.h"
+
+u32 gCFTreasRoboNullResourceDescriptor[CFTREASROBO_NULL_DESCRIPTOR_WORD_COUNT] = {0};

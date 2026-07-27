@@ -1,100 +1,78 @@
-/*
- * SpiritDoorS (DLL 0x157) - a fade-in/fade-out apparition gated on a game
- * bit (placement->gateGameBit). While the bit is clear the spirit is "active":
- * it joins object group 0x4E, runs its idle effect (objfx_spawnPulseBurst), and
- * fades alpha up to 0xFF; once the bit is set it leaves the group and
- * fades alpha back to 0. It only renders while active.
- */
+/* Spirit-door orbit marker gated by its placement game bit. */
+
+#include "dlls/objects/343_SpiritDoorS.h"
+
 #include "game/objects/object.h"
+#include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
-#include "main/gamebits.h"
-#include "main/dll/dll_0157_spiritdoorspirit.h"
-#include "dlls/object_descriptor.h"
 
-f32 lbl_803DBE78 = 0.7f;
+#define SPIRIT_DOOR_SPIRIT_PULSE_TYPE 5
+#define SPIRIT_DOOR_SPIRIT_MAX_ALPHA  0xFF
 
-#define SPIRITDOORSPIRIT_OBJGROUP 0x4e
+f32 gSpiritDoorSpiritPulseScale = 0.7f;
 
-
-int spiritdoorspirit_getExtraSize(void)
-{
-    return 0x1;
-}
-int spiritdoorspirit_getObjectTypeId(void)
-{
-    return 0x0;
+int spiritDoorSpirit_getExtraSize(void) {
+    return sizeof(SpiritDoorSpiritState);
 }
 
-void spiritdoorspirit_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, SPIRITDOORSPIRIT_OBJGROUP);
+int spiritDoorSpirit_getObjectTypeId(void) {
+    return 0;
 }
 
+void spiritDoorSpirit_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, SPIRIT_DOOR_SPIRIT_OBJECT_GROUP);
+}
 
-void spiritdoorspirit_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void spiritDoorSpirit_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                             s8 visible) {
     SpiritDoorSpiritState* state = obj->extra;
-    if (visible == 0 || state->active == 0)
-    {
+    if (visible == 0 || state->active == 0) {
         return;
     }
 
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 }
 
-void spiritdoorspirit_hitDetect(void)
-{
+void spiritDoorSpirit_hitDetect(void) {
 }
 
-void spiritdoorspirit_update(GameObject* obj)
-{
+void spiritDoorSpirit_update(GameObject* obj) {
     SpiritDoorSpiritState* state = obj->extra;
-    SpiritdoorspiritPlacement* def = *(SpiritdoorspiritPlacement**)&obj->anim.placementData;
+    SpiritDoorSpiritPlacement* placement = (SpiritDoorSpiritPlacement*)obj->anim.placement;
     u8 active;
 
-    if (state->active == 0)
-    {
-        state->active = active = (u8)(mainGetBit(def->gateGameBit) == 0);
-        if (active != 0)
-        {
-            ObjGroup_AddObject((int)obj, SPIRITDOORSPIRIT_OBJGROUP);
+    if (state->active == 0) {
+        state->active = active = (u8)(mainGetBit(placement->gateGameBit) == 0);
+        if (active != 0) {
+            ObjGroup_AddObject((int)obj, SPIRIT_DOOR_SPIRIT_OBJECT_GROUP);
         }
-        if (obj->anim.alpha != 0)
-        {
+        if (obj->anim.alpha != 0) {
             obj->anim.alpha--;
         }
-    }
-    else
-    {
-        objfx_spawnPulseBurst(obj, lbl_803DBE78, 5, 0, 0, NULL);
-        state->active = active = (u8)(mainGetBit(def->gateGameBit) == 0);
-        if (active == 0)
-        {
-            ObjGroup_RemoveObject((int)obj, SPIRITDOORSPIRIT_OBJGROUP);
+    } else {
+        objfx_spawnPulseBurst(obj, gSpiritDoorSpiritPulseScale, SPIRIT_DOOR_SPIRIT_PULSE_TYPE, 0, 0, NULL);
+        state->active = active = (u8)(mainGetBit(placement->gateGameBit) == 0);
+        if (active == 0) {
+            ObjGroup_RemoveObject((int)obj, SPIRIT_DOOR_SPIRIT_OBJECT_GROUP);
         }
-        if (obj->anim.alpha < 0xff)
-        {
+        if (obj->anim.alpha < SPIRIT_DOOR_SPIRIT_MAX_ALPHA) {
             obj->anim.alpha++;
         }
     }
 }
 
-void spiritdoorspirit_init(GameObject* obj)
-{
+void spiritDoorSpirit_init(GameObject* obj) {
     SpiritDoorSpiritState* state = obj->extra;
     state->active = 0;
     obj->anim.alpha = 0;
 }
 
-
-void spiritdoorspirit_release(void)
-{
+void spiritDoorSpirit_release(void) {
 }
 
-void spiritdoorspirit_initialise(void)
-{
+void spiritDoorSpirit_initialise(void) {
 }
 
 ObjectDescriptor gSpiritDoorSpiritObjDescriptor = {
@@ -102,14 +80,14 @@ ObjectDescriptor gSpiritDoorSpiritObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)spiritdoorspirit_initialise,
-    (ObjectDescriptorCallback)spiritdoorspirit_release,
+    (ObjectDescriptorCallback)spiritDoorSpirit_initialise,
+    (ObjectDescriptorCallback)spiritDoorSpirit_release,
     0,
-    (ObjectDescriptorCallback)spiritdoorspirit_init,
-    (ObjectDescriptorCallback)spiritdoorspirit_update,
-    (ObjectDescriptorCallback)spiritdoorspirit_hitDetect,
-    (ObjectDescriptorCallback)spiritdoorspirit_render,
-    (ObjectDescriptorCallback)spiritdoorspirit_free,
-    (ObjectDescriptorCallback)spiritdoorspirit_getObjectTypeId,
-    spiritdoorspirit_getExtraSize,
+    (ObjectDescriptorCallback)spiritDoorSpirit_init,
+    (ObjectDescriptorCallback)spiritDoorSpirit_update,
+    (ObjectDescriptorCallback)spiritDoorSpirit_hitDetect,
+    (ObjectDescriptorCallback)spiritDoorSpirit_render,
+    (ObjectDescriptorCallback)spiritDoorSpirit_free,
+    (ObjectDescriptorCallback)spiritDoorSpirit_getObjectTypeId,
+    spiritDoorSpirit_getExtraSize,
 };

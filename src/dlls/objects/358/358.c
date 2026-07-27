@@ -1,334 +1,284 @@
-/* DLL 0x166 */
-#include "main/dll/drexplodable_types.h"
-#include "main/object_render.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/dll_0166_exploded.h"
-#include "dlls/object_descriptor.h"
+/* Physics-driven debris spawned by Explodable objects. */
+
+#include "dlls/objects/358.h"
+
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/track_dolphin_api.h"
 #include "main/model.h"
+#include "main/object_render.h"
 #include "main/object_transform.h"
-#include "main/objseq.h"
+#include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 
-STATIC_ASSERT(sizeof(DrExplodableChunk) == 0x70);
+#define EXPLODED_PHYSICS_FLAG_WAS_BELOW_FLOOR 0x04
+#define EXPLODED_OBJECT_TYPE_BANK_SHIFT       11
+#define EXPLODED_OBJECT_TYPE_BASE             0x400
+#define EXPLODED_FULL_ALPHA                   0xFF
 
-STATIC_ASSERT(offsetof(DrExplodableState, children) == 0x690);
-STATIC_ASSERT(sizeof(DrExplodableState) == 0x6e8);
+void exploded_initDebrisState(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter,
+                              ExplodedState* state) {
+    obj->anim.localPosX = placement->base.posX;
+    obj->anim.localPosY = placement->base.posY;
+    obj->anim.localPosZ = placement->base.posZ;
 
-/* ExplodedObjectState.explodePhase */
-#define EXPLODED_PHASE_IDLE    0 /* settled; no physics */
-#define EXPLODED_PHASE_ACTIVE  1 /* debris physics stepping until settled */
-#define EXPLODED_PHASE_EXPIRED 2 /* lifetime elapsed; faded out */
+    if (usePresetCenter == 0) {
+        register int vertexIndex;
+        register ModelFileHeader* model;
+        struct {
+            f32 vertex[3];
+            f32 sum[3];
+        } center;
+        f32 zero;
+        f32 one;
 
+        zero = 0.0f;
+        state->localCenter.x = zero;
+        state->localCenter.y = zero;
+        state->localCenter.z = zero;
+        center.sum[0] = zero;
+        center.sum[1] = zero;
+        center.sum[2] = zero;
 
-void exploded_initDebrisState(ExplodedObject* obj, ExplodedObjectMapData* data, int computeModelCenter,
-                              ExplodedObjectState* state)
-{
-    obj->x = data->positionX;
-    obj->y = data->positionY;
-    obj->z = data->positionZ;
-
-    if (computeModelCenter == 0)
-    {
-        register int i;
-        register ModelFileHeader* mesh;
-        f32 v[6];
-        f32 z;
-        f32 k;
-
-        z = 0.0f;
-        state->localCenterX = z;
-        state->localCenterY = z;
-        state->localCenterZ = z;
-        v[3] = z;
-        v[4] = z;
-        v[5] = z;
-
-        mesh = (ModelFileHeader*)*(int*)(*(int*)(*(int*)&((GameObject*)obj)->anim.banks + data->objectTypeTag * 4));
-        for (i = 0; i < mesh->vertexCount; i++)
-        {
-            Model_GetVertexPosition(mesh, i, v);
-            v[3] = v[0] + v[3];
-            v[4] = v[1] + v[4];
-            v[5] = v[2] + v[5];
+        model = (ModelFileHeader*)*(int*)(*(int*)(*(int*)&obj->anim.banks + placement->modelBankIndex * 4));
+        for (vertexIndex = 0; vertexIndex < model->vertexCount; vertexIndex++) {
+            Model_GetVertexPosition(model, vertexIndex, center.vertex);
+            center.sum[0] = center.vertex[0] + center.sum[0];
+            center.sum[1] = center.vertex[1] + center.sum[1];
+            center.sum[2] = center.vertex[2] + center.sum[2];
         }
 
-        state->localCenterX = v[3] * ((k = 1.0f) / (f32)(u32)mesh->vertexCount);
-        state->localCenterY = v[4] * (k / (f32)(u32)mesh->vertexCount);
-        state->localCenterZ = v[5] * (k / (f32)(u32)mesh->vertexCount);
+        state->localCenter.x = center.sum[0] * ((one = 1.0f) / (f32)(u32)model->vertexCount);
+        state->localCenter.y = center.sum[1] * (one / (f32)(u32)model->vertexCount);
+        state->localCenter.z = center.sum[2] * (one / (f32)(u32)model->vertexCount);
     }
 
-    state->initialLocalCenterX = state->localCenterX;
-    state->initialLocalCenterY = state->localCenterY;
-    state->initialLocalCenterZ = state->localCenterZ;
-    exploded_seedDebrisMotion(obj, state, data);
+    state->initialLocalCenter.x = state->localCenter.x;
+    state->initialLocalCenter.y = state->localCenter.y;
+    state->initialLocalCenter.z = state->localCenter.z;
+    exploded_seedDebrisMotion(obj, state, placement);
 
     {
-        f32 tv[3];
-        tv[0] = state->localCenterX;
-        tv[1] = state->localCenterY;
-        tv[2] = state->localCenterZ;
-        vecRotateYXZ((s16*)obj, tv);
-        tv[0] = tv[0] * obj->modelScale;
-        tv[1] = tv[1] * obj->modelScale;
-        tv[2] = tv[2] * obj->modelScale;
+        f32 rotatedCenter[3];
+        rotatedCenter[0] = state->localCenter.x;
+        rotatedCenter[1] = state->localCenter.y;
+        rotatedCenter[2] = state->localCenter.z;
+        vecRotateYXZ(&obj->anim.rotX, rotatedCenter);
+        rotatedCenter[0] = rotatedCenter[0] * obj->anim.rootMotionScale;
+        rotatedCenter[1] = rotatedCenter[1] * obj->anim.rootMotionScale;
+        rotatedCenter[2] = rotatedCenter[2] * obj->anim.rootMotionScale;
     }
 
-    *((u8*)state + 0x67) = 255;
+    state->unknown67 = EXPLODED_FULL_ALPHA;
     state->physicsFlags = 0;
 }
 
-/* Exploded debris setup: seed object angles, linear velocity, angular velocity,
- * ground clearance, and the randomized lifetime countdown. */
-void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedObjectState* state, ExplodedObjectMapData* data)
-{
-    f32 floorY[2];
+void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, ExplodedPlacement* placement) {
+    f32 groundHeight[2];
 
-    floorY[0] = 0.0f;
-    obj->angleX = data->initialAngleX;
-    obj->angleY = data->initialAngleY;
-    obj->angleZ = data->initialAngleZ;
+    groundHeight[0] = 0.0f;
+    obj->anim.rotX = placement->initialRotation.x;
+    obj->anim.rotY = placement->initialRotation.y;
+    obj->anim.rotZ = placement->initialRotation.z;
 
-    obj->velocityX = (f32)(s32)data->initialVelocityX / 100.0f;
-    obj->velocityY = (f32)(s32)data->initialVelocityY / 100.0f;
-    obj->velocityZ = (f32)(s32)data->initialVelocityZ / 100.0f;
-    state->spinX = (f32)(s32)data->spinX;
-    state->spinY = (f32)(s32)data->spinY;
-    state->spinZ = (f32)(s32)data->spinZ;
+    obj->anim.velocityX = (f32)(s32)placement->initialVelocity.x / 100.0f;
+    obj->anim.velocityY = (f32)(s32)placement->initialVelocity.y / 100.0f;
+    obj->anim.velocityZ = (f32)(s32)placement->initialVelocity.z / 100.0f;
+    state->spin.x = (f32)(s32)placement->spin.x;
+    state->spin.y = (f32)(s32)placement->spin.y;
+    state->spin.z = (f32)(s32)placement->spin.z;
 
     {
-        u16 off = *(u16*)&data->floorOffset;
-        if (off == 0)
-        {
-            trackGetHeightAboveGround((GameObject*)obj, obj->x, obj->y - 10.0f, obj->z, floorY, 0);
-            state->floorHeight = obj->y - floorY[0];
-        }
-        else
-        {
-            state->floorHeight = obj->y + (f32)(s16)off;
+        u16 floorOffsetRaw = placement->floorOffsetRaw;
+        if (floorOffsetRaw == 0) {
+            trackGetHeightAboveGround((GameObject*)obj, obj->anim.localPosX, obj->anim.localPosY - 10.0f,
+                                      obj->anim.localPosZ, groundHeight, 0);
+            state->floorHeight = obj->anim.localPosY - groundHeight[0];
+        } else {
+            state->floorHeight = obj->anim.localPosY + (f32)(s16)floorOffsetRaw;
         }
     }
 
-    state->spinVelocityX = (f32)(s32)data->spinVelocityX / 10.0f;
-    state->spinVelocityY = (f32)(s32)data->spinVelocityY / 10.0f;
-    state->spinVelocityZ = (f32)(s32)data->spinVelocityZ / 10.0f;
-    state->accelerationX = (f32)(s32)data->accelerationX / 1000.0f;
-    state->accelerationY = (f32)(s32)data->accelerationY / 1000.0f;
-    state->accelerationZ = (f32)(s32)data->accelerationZ / 1000.0f;
+    state->spinVelocity.x = (f32)(s32)placement->spinVelocity.x / 10.0f;
+    state->spinVelocity.y = (f32)(s32)placement->spinVelocity.y / 10.0f;
+    state->spinVelocity.z = (f32)(s32)placement->spinVelocity.z / 10.0f;
+    state->acceleration.x = (f32)(s32)placement->acceleration.x / 1000.0f;
+    state->acceleration.y = (f32)(s32)placement->acceleration.y / 1000.0f;
+    state->acceleration.z = (f32)(s32)placement->acceleration.z / 1000.0f;
 
     state->elapsedFrames = 0;
-    if (*(u16*)&data->lifetimeFrames != 0)
-    {
-        state->durationFrames = *(u16*)&data->lifetimeFrames * ((int)randomGetRange(0, 100) + 100) / 200;
-    }
-    else
-    {
+    if (placement->lifetimeFrames != 0) {
+        state->durationFrames = placement->lifetimeFrames * ((int)randomGetRange(0, 100) + 100) / 200;
+    } else {
         state->durationFrames = -1;
     }
 }
 
-u8 exploded_setScale(int* obj)
-{
-    return ((ExplodedObjectState*)(int*)((GameObject*)obj)->extra)->explodePhase;
+u8 exploded_setScale(ExplodedObject* obj) {
+    return obj->state->phase;
 }
 
-int exploded_getExtraSize(void)
-{
-    return 0x6c;
+int exploded_getExtraSize(void) {
+    return sizeof(ExplodedState);
 }
 
-u32 exploded_getObjectTypeId(ExplodedObject* obj)
-{
-    return (obj->mapData->objectTypeTag << 11) | 0x400;
+u32 exploded_getObjectTypeId(ExplodedObject* obj) {
+    ExplodedPlacement* placement = (ExplodedPlacement*)obj->anim.placementData;
+    return (placement->modelBankIndex << EXPLODED_OBJECT_TYPE_BANK_SHIFT) | EXPLODED_OBJECT_TYPE_BASE;
 }
 
-void exploded_free(void)
-{
+void exploded_free(void) {
 }
 
-void exploded_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void exploded_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    if (v != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void exploded_hitDetect(void)
-{
+void exploded_hitDetect(void) {
 }
 
-/* Exploded debris physics step: integrate local velocity and spin, bounce from
- * the stored floor height, and return nonzero once the shard comes to rest. */
-int exploded_stepDebrisPhysics(ExplodedObject* obj, ExplodedObjectState* state)
-{
+int exploded_stepDebrisPhysics(ExplodedObject* obj, ExplodedState* state) {
     f32 stopped;
     f32 speed;
     f32 worldAfter[3];
     f32 worldBefore[3];
 
     stopped = 0.0f;
-    Obj_TransformLocalPointByWorldMatrix((u8*)obj, &state->localCenterX, worldBefore, 0);
-    obj->velocityX = timeDelta * state->accelerationX + obj->velocityX;
-    obj->velocityY = timeDelta * state->accelerationY + obj->velocityY;
-    obj->velocityZ = timeDelta * state->accelerationZ + obj->velocityZ;
-    state->spinX = timeDelta * state->spinVelocityX + state->spinX;
-    state->spinY = timeDelta * state->spinVelocityY + state->spinY;
-    state->spinZ = timeDelta * state->spinVelocityZ + state->spinZ;
+    Obj_TransformLocalPointByWorldMatrix((u8*)obj, &state->localCenter.x, worldBefore, 0);
+    obj->anim.velocityX = timeDelta * state->acceleration.x + obj->anim.velocityX;
+    obj->anim.velocityY = timeDelta * state->acceleration.y + obj->anim.velocityY;
+    obj->anim.velocityZ = timeDelta * state->acceleration.z + obj->anim.velocityZ;
+    state->spin.x = timeDelta * state->spinVelocity.x + state->spin.x;
+    state->spin.y = timeDelta * state->spinVelocity.y + state->spin.y;
+    state->spin.z = timeDelta * state->spinVelocity.z + state->spin.z;
 
-    if (worldBefore[1] < state->floorHeight)
-    {
-        if (((obj->velocityY < 0.0f) && ((state->physicsFlags & 4) != 0)) ||
-            (0.0f == obj->velocityY))
-        {
+    if (worldBefore[1] < state->floorHeight) {
+        if (((obj->anim.velocityY < 0.0f) && ((state->physicsFlags & EXPLODED_PHYSICS_FLAG_WAS_BELOW_FLOOR) != 0)) ||
+            (0.0f == obj->anim.velocityY)) {
             f32 t;
             f32 k;
             t = 0.0f;
-            state->accelerationY = t;
-            state->spinVelocityZ = t;
-            state->spinZ = t;
-            state->spinVelocityY = t;
-            state->spinY = t;
-            state->spinVelocityX = t;
-            state->spinX = t;
-            obj->velocityY = t;
-            state->accelerationX = state->accelerationX * (k = 0.3f);
-            obj->velocityX = obj->velocityX * k;
-            state->accelerationZ = state->accelerationZ * k;
-            obj->velocityZ = obj->velocityZ * k;
-            speed = (obj->velocityX >= t) ? obj->velocityX : -obj->velocityX;
-            if (speed < 0.15f)
-            {
-                speed = (obj->velocityZ >= 0.0f) ? obj->velocityZ : -obj->velocityZ;
-                if (speed < 0.15f)
-                {
+            state->acceleration.y = t;
+            state->spinVelocity.z = t;
+            state->spin.z = t;
+            state->spinVelocity.y = t;
+            state->spin.y = t;
+            state->spinVelocity.x = t;
+            state->spin.x = t;
+            obj->anim.velocityY = t;
+            state->acceleration.x = state->acceleration.x * (k = 0.3f);
+            obj->anim.velocityX = obj->anim.velocityX * k;
+            state->acceleration.z = state->acceleration.z * k;
+            obj->anim.velocityZ = obj->anim.velocityZ * k;
+            speed = (obj->anim.velocityX >= t) ? obj->anim.velocityX : -obj->anim.velocityX;
+            if (speed < 0.15f) {
+                speed = (obj->anim.velocityZ >= 0.0f) ? obj->anim.velocityZ : -obj->anim.velocityZ;
+                if (speed < 0.15f) {
                     stopped = 1.0f;
                 }
             }
         }
-        if (obj->velocityY < 0.0f)
-        {
+        if (obj->anim.velocityY < 0.0f) {
             f32 k2;
-            obj->velocityY = 0.5f * -obj->velocityY;
-            obj->velocityX = obj->velocityX * (k2 = 0.3f);
-            obj->velocityZ = obj->velocityZ * k2;
-            state->accelerationY = -0.07f;
-            state->spinVelocityZ = -state->spinVelocityZ;
+            obj->anim.velocityY = 0.5f * -obj->anim.velocityY;
+            obj->anim.velocityX = obj->anim.velocityX * (k2 = 0.3f);
+            obj->anim.velocityZ = obj->anim.velocityZ * k2;
+            state->acceleration.y = -0.07f;
+            state->spinVelocity.z = -state->spinVelocity.z;
         }
-        state->physicsFlags |= 4;
-    }
-    else
-    {
-        state->physicsFlags &= ~4;
+        state->physicsFlags |= EXPLODED_PHYSICS_FLAG_WAS_BELOW_FLOOR;
+    } else {
+        state->physicsFlags &= ~EXPLODED_PHYSICS_FLAG_WAS_BELOW_FLOOR;
     }
 
-    obj->angleX = (s16)(state->spinX * timeDelta + (f32)(s32)obj->angleX);
-    obj->angleY = (s16)(state->spinY * timeDelta + (f32)(s32)obj->angleY);
-    obj->angleZ = (s16)(state->spinZ * timeDelta + (f32)(s32)obj->angleZ);
-    Obj_TransformLocalPointByWorldMatrix((u8*)obj, &state->localCenterX, worldAfter, 0);
+    obj->anim.rotX = (s16)(state->spin.x * timeDelta + (f32)(s32)obj->anim.rotX);
+    obj->anim.rotY = (s16)(state->spin.y * timeDelta + (f32)(s32)obj->anim.rotY);
+    obj->anim.rotZ = (s16)(state->spin.z * timeDelta + (f32)(s32)obj->anim.rotZ);
+    Obj_TransformLocalPointByWorldMatrix((u8*)obj, &state->localCenter.x, worldAfter, 0);
     worldAfter[0] = worldBefore[0] - worldAfter[0];
     worldAfter[1] = worldBefore[1] - worldAfter[1];
     worldAfter[2] = worldBefore[2] - worldAfter[2];
-    obj->x = obj->x + worldAfter[0];
-    obj->y = obj->y + worldAfter[1];
-    obj->z = obj->z + worldAfter[2];
-    obj->x = obj->velocityX * timeDelta + obj->x;
-    obj->y = obj->velocityY * timeDelta + obj->y;
-    obj->z = obj->velocityZ * timeDelta + obj->z;
+    obj->anim.localPosX = obj->anim.localPosX + worldAfter[0];
+    obj->anim.localPosY = obj->anim.localPosY + worldAfter[1];
+    obj->anim.localPosZ = obj->anim.localPosZ + worldAfter[2];
+    obj->anim.localPosX = obj->anim.velocityX * timeDelta + obj->anim.localPosX;
+    obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+    obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
     return stopped;
 }
 
-void exploded_update(int* obj)
-{
-    ExplodedObject* o = (ExplodedObject*)obj;
-    ExplodedObjectState* state = o->state;
-    u8 stateVal = state->explodePhase;
-    int flag;
+void exploded_update(ExplodedObject* obj) {
+    ExplodedState* state = obj->state;
+    u8 phase = state->phase;
+    int expired;
 
-    switch (stateVal)
-    {
+    switch (phase) {
     case EXPLODED_PHASE_IDLE:
         break;
     case EXPLODED_PHASE_ACTIVE:
-        if (exploded_stepDebrisPhysics(o, state) != 0)
-        {
-            state->explodePhase = EXPLODED_PHASE_IDLE;
+        if (exploded_stepDebrisPhysics(obj, state) != 0) {
+            state->phase = EXPLODED_PHASE_IDLE;
         }
         break;
     case EXPLODED_PHASE_EXPIRED:
         break;
     }
-    do
-    {
-        if (state->durationFrames != -1)
-        {
+    do {
+        if (state->durationFrames != -1) {
             s32 elapsedFrames = state->elapsedFrames + framesThisStep;
             s32 durationFrames;
             state->elapsedFrames = elapsedFrames;
             durationFrames = state->durationFrames;
-            if (elapsedFrames >= durationFrames)
-            {
+            if (elapsedFrames >= durationFrames) {
                 state->durationFrames = -1;
-                o->alpha = 0;
-                o->flags06 = (s16)(o->flags06 | 0x4000);
-                flag = 1;
+                obj->anim.alpha = 0;
+                obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
+                expired = 1;
                 break;
-            }
-            else
-            {
+            } else {
                 s32 remainingFrames = durationFrames - state->elapsedFrames;
-                if (remainingFrames < 0xff)
-                {
-                    o->alpha = remainingFrames;
+                if (remainingFrames < EXPLODED_FULL_ALPHA) {
+                    obj->anim.alpha = remainingFrames;
                 }
             }
         }
-        flag = 0;
+        expired = 0;
     } while (0);
 
-    if (flag != 0)
-    {
-        state->explodePhase = EXPLODED_PHASE_EXPIRED;
+    if (expired != 0) {
+        state->phase = EXPLODED_PHASE_EXPIRED;
     }
 }
 
-/* exploded_init: store the map object tag, scale the model using the map
- * byte, then enable physics if any initial velocity/acceleration is present. */
-void exploded_init(ExplodedObject* obj, ExplodedObjectMapData* data, int extra)
-{
-    ExplodedObjectState* state;
-    obj->objectTypeTag = data->objectTypeTag;
+void exploded_init(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter) {
+    ExplodedState* state;
+    obj->anim.bankIndex = placement->modelBankIndex;
     state = obj->state;
-    obj->modelScale = (*(f32*)((char*)obj->modelData + 4) * (f32)(s32)data->scaleByte) / 20.0f;
-    exploded_initDebrisState(obj, data, extra, state);
-    if (data->initialVelocityX != 0 || data->initialVelocityY != 0 || data->initialVelocityZ != 0 ||
-        data->accelerationX != 0 || data->accelerationY != 0 || data->accelerationZ != 0)
-    {
-        state->explodePhase = EXPLODED_PHASE_ACTIVE;
-    }
-    else
-    {
-        state->explodePhase = EXPLODED_PHASE_IDLE;
+    obj->anim.rootMotionScale = (obj->anim.modelInstance->rootMotionScaleBase * (f32)(s32)placement->scaleByte) / 20.0f;
+    exploded_initDebrisState(obj, placement, usePresetCenter, state);
+    if (placement->initialVelocity.x != 0 || placement->initialVelocity.y != 0 || placement->initialVelocity.z != 0 ||
+        placement->acceleration.x != 0 || placement->acceleration.y != 0 || placement->acceleration.z != 0) {
+        state->phase = EXPLODED_PHASE_ACTIVE;
+    } else {
+        state->phase = EXPLODED_PHASE_IDLE;
     }
 }
 
-void exploded_release(void)
-{
+void exploded_release(void) {
 }
 
-void exploded_initialise(void)
-{
+void exploded_initialise(void) {
 }
 
 ObjectDescriptor16 gExplodedObjDescriptor = {
-    0x00000000,
-    0x00000000,
-    0x00000000,
-    0x000a0000,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,
     (ObjectDescriptorCallback)exploded_initialise,
     (ObjectDescriptorCallback)exploded_release,
-    NULL,
+    0,
     (ObjectDescriptorCallback)exploded_init,
     (ObjectDescriptorCallback)exploded_update,
     (ObjectDescriptorCallback)exploded_hitDetect,
@@ -337,9 +287,9 @@ ObjectDescriptor16 gExplodedObjDescriptor = {
     (ObjectDescriptorCallback)exploded_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)exploded_getExtraSize,
     (ObjectDescriptorCallback)exploded_setScale,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
+    0,
+    0,
+    0,
+    0,
+    0,
 };

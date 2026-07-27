@@ -9,9 +9,11 @@
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AB_projdummy.h"
-#include "main/dll/dll_00AC_projmagicstream.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
+
+void* lbl_80319378[8] = {(void*)0x00000000,    (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                         projdummy_initialise, projdummy_release, (void*)0x00000000, projdummy_doUnsupported};
 
 char sProjdummyDoNoLongerSupported[] = "<projdummy Do>No Longer supported \n";
 
@@ -28,7 +30,3 @@ void projdummy_release(void)
 void projdummy_initialise(void)
 {
 }
-
-DllDescriptorTable lbl_803193C0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projmagicstream_initialise, projmagicstream_release, (void*)0x00000000,
-                                    projmagicstream_doUnsupported}};

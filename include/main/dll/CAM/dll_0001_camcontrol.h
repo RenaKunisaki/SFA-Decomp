@@ -250,15 +250,15 @@ extern u16 gCamcontrolTargetClassMask;
 extern u16 gCamcontrolReticleSpin;
 extern const f32 gCamcontrolNormalizedMax;
 extern const f32 gCamcontrolNormalizedMin;
-extern f32 gCamcontrolTargetDistanceTier1;
-extern f32 gCamcontrolTargetDistanceTier2;
-extern f32 gCamcontrolTargetDistanceTier3;
-extern f32 gCamcontrolReticleFadeOutStep;
-extern f32 gCamcontrolReticleFadeInStep;
-extern f32 gCamcontrolReticleAlphaScale;
-extern f32 gCamcontrolReticleSpinStepPerFrame;
-extern f32 gCamcontrolMinTargetDistance;
-extern f32 gCamcontrolDefaultFovY;
+extern const f32 gCamcontrolTargetDistanceTier1;
+extern const f32 gCamcontrolTargetDistanceTier2;
+extern const f32 gCamcontrolTargetDistanceTier3;
+extern const f32 gCamcontrolReticleFadeOutStep;
+extern const f32 gCamcontrolReticleFadeInStep;
+extern const f32 gCamcontrolReticleAlphaScale;
+extern const f32 gCamcontrolReticleSpinStepPerFrame;
+extern const f32 gCamcontrolMinTargetDistance;
+extern const f32 gCamcontrolDefaultFovY;
 
 void camcontrol_updateTargetFeedback(void);
 void camcontrol_updateTargetReticle(CamcontrolTargetObject *fallbackTarget, int unused2,

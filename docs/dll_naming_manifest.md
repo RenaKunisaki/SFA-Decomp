@@ -43,98 +43,98 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 
 | dll | retail name(s) | expansion | current file | proposed file | blocker |
 |---|---|---|---|---|---|
-| 0x000 | — | NO-RETAIL-NAME | main/dll/dll_0000_baby_snowworm.c | = (canonical) | — |
-| 0x001 | — | NO-RETAIL-NAME | main/dll/dll_0001_camcontrol.c | = (canonical) | — |
-| 0x002 | — | NO-RETAIL-NAME | main/objseq.c | main/dll/dll_0002_objseq.c | engine/SDK host: main/objseq.c |
-| 0x003 | — | NO-RETAIL-NAME | main/dll/dll_0003_checkpoint.c | = (canonical) | — |
-| 0x004 | — | NO-RETAIL-NAME | main/dll/dll_0004_dummy04.c | = (canonical) | — |
-| 0x005 | — | NO-RETAIL-NAME | main/sky.c | main/dll/dll_0005_rendersky.c | engine/SDK host: main/sky.c; stem from fn prefix `renderSky_*` |
-| 0x006 | — | NO-RETAIL-NAME | main/sky.c | main/dll/dll_0006_sky2.c | engine/SDK host: main/sky.c; stem from fn prefix `sky2_*` |
-| 0x007 | — | NO-RETAIL-NAME | main/newclouds.c | main/dll/dll_0007_newclouds.c | engine/SDK host: main/newclouds.c |
-| 0x008 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x009 | — | NO-RETAIL-NAME | main/dll/cloudaction.c \| dolphin/MSL_C/PPCEABI/bare/H/gamecube.c | main/dll/dll_0009_cloudaction.c | cut across: main/dll/cloudaction.c \| dolphin/MSL_C/PPCEABI/bare/H/gamecube.c; stem from fn prefix `cloudaction_*` |
-| 0x00A | — | NO-RETAIL-NAME | main/dll/dll_000A_expgfx.c | = (canonical) | — |
-| 0x00B | — | NO-RETAIL-NAME | main/dll/dll_000B_dll0b.c | = (canonical) | — |
-| 0x00C | — | NO-RETAIL-NAME | main/dll/dll_000C_projgfx.c | = (canonical) | — |
-| 0x00D | — | NO-RETAIL-NAME | main/dll/dll_000D_playershadow.c | = (canonical) | — |
-| 0x00E | — | NO-RETAIL-NAME | main/dll/dll_000E_partfx.c | = (canonical) | — |
-| 0x00F | — | NO-RETAIL-NAME | main/dll/dll_000F_unk.c | = (canonical) | — |
-| 0x010 | — | NO-RETAIL-NAME | main/dll/dll_0010_uicontroller.c | = (canonical) | — |
-| 0x011 | — | NO-RETAIL-NAME | main/dll/dll_0011_screens.c | = (canonical) | — |
-| 0x012 | — | NO-RETAIL-NAME | main/dll/dll_0012_unk.c | = (canonical) | — |
-| 0x013 | — | NO-RETAIL-NAME | main/dll/dll_0013_waterfx.c | = (canonical) | — |
-| 0x014 | — | NO-RETAIL-NAME | main/dll/dll_0014_unk.c | = (canonical) | — |
-| 0x015 | — | NO-RETAIL-NAME | main/dll/dll_0015_curves.c | = (canonical) | — |
-| 0x016 | — | NO-RETAIL-NAME | main/dll/dll_0016_screentransition.c | = (canonical) | — |
-| 0x017 | — | NO-RETAIL-NAME | main/dll/dll_0017_savegame.c | = (canonical) | — |
-| 0x018 | — | NO-RETAIL-NAME | main/dll/dll_0018_boneparticleeffect.c | = (canonical) | — |
-| 0x019 | — | NO-RETAIL-NAME | main/dll/dll_0019_dll19func0.c | = (canonical) | — |
-| 0x01A | — | NO-RETAIL-NAME | main/dll/dll_001A_effect1.c | = (canonical) | — |
-| 0x01B | — | NO-RETAIL-NAME | main/dll/dll_001B_effect2.c | = (canonical) | — |
-| 0x01C | — | NO-RETAIL-NAME | main/dll/dll_001C_effect3.c | = (canonical) | — |
-| 0x01D | — | NO-RETAIL-NAME | main/dll/dll_001D_effect4.c | = (canonical) | — |
-| 0x01E | — | NO-RETAIL-NAME | main/dll/dll_001E_effect5.c | = (canonical) | — |
-| 0x01F | — | NO-RETAIL-NAME | main/dll/dll_001F_effect6.c | = (canonical) | — |
-| 0x020 | — | NO-RETAIL-NAME | main/dll/dll_0020_effect7.c | = (canonical) | — |
-| 0x021 | — | NO-RETAIL-NAME | main/dll/dll_0021_effect8.c | = (canonical) | — |
-| 0x022 | — | NO-RETAIL-NAME | main/dll/dll_0022_effect9.c | = (canonical) | — |
-| 0x023 | — | NO-RETAIL-NAME | main/dll/dll_0023_effect10.c | = (canonical) | — |
-| 0x024 | — | NO-RETAIL-NAME | main/dll/dll_0024_effect11.c | = (canonical) | — |
-| 0x025 | — | NO-RETAIL-NAME | main/dll/dll_0025_effect12.c | = (canonical) | — |
-| 0x026 | — | NO-RETAIL-NAME | main/dll/dll_0026_effect13.c | = (canonical) | — |
-| 0x027 | — | NO-RETAIL-NAME | main/dll/dll_0027_effect14.c | = (canonical) | — |
-| 0x028 | — | NO-RETAIL-NAME | main/dll/dll_0028_effect15.c | = (canonical) | — |
-| 0x029 | — | NO-RETAIL-NAME | main/dll/dll_0029_effect16.c | = (canonical) | — |
-| 0x02A | — | NO-RETAIL-NAME | main/dll/dll_002A_effect17.c | = (canonical) | — |
-| 0x02B | — | NO-RETAIL-NAME | main/dll/dll_002B_effect18.c | = (canonical) | — |
-| 0x02C | — | NO-RETAIL-NAME | main/dll/dll_002C_effect19.c | = (canonical) | — |
-| 0x02D | — | NO-RETAIL-NAME | main/dll/dll_002D_effect20.c | = (canonical) | — |
-| 0x02E | — | NO-RETAIL-NAME | main/dll/dll_002E_moveLib.c | = (canonical) | — |
-| 0x02F | — | NO-RETAIL-NAME | main/dll/dll_002F_carryable.c | = (canonical) | — |
-| 0x030 | — | NO-RETAIL-NAME | *(none)* | — | no .text fns (descriptor data only) |
-| 0x031 | — | NO-RETAIL-NAME | main/dll/dll_0031_minimap.c | = (canonical) | — |
-| 0x032 | — | NO-RETAIL-NAME | main/dll/dll_0032_titlescreeninit.c | = (canonical) | — |
-| 0x033 | — | NO-RETAIL-NAME | main/dll/dll_0033_nrareware.c | = (canonical) | — |
-| 0x034 | — | NO-RETAIL-NAME | main/dll/dll_0034_titlemenu.c | = (canonical) | — |
-| 0x035 | — | NO-RETAIL-NAME | main/dll/dll_0035_saveselectscreen.c | = (canonical) | — |
-| 0x036 | — | NO-RETAIL-NAME | main/dll/dll_0036_entersavenamescreen.c | = (canonical) | — |
-| 0x037 | — | NO-RETAIL-NAME | main/dll/dll_0037_optionsscreen.c | = (canonical) | — |
-| 0x038 | — | NO-RETAIL-NAME | main/dll/dll_0038_weirdunusedmenu.c | = (canonical) | — |
-| 0x039 | — | NO-RETAIL-NAME | main/dll/dll_0039_dummy39.c | = (canonical) | — |
-| 0x03A | — | NO-RETAIL-NAME | main/dll/dll_003A_dummy3a.c | = (canonical) | — |
-| 0x03B | — | NO-RETAIL-NAME | main/dll/dll_003B_menu.c | = (canonical) | — |
-| 0x03C | — | NO-RETAIL-NAME | main/dll/dll_003C_tumbleweedbush.c | = (canonical) | — |
-| 0x03D | — | NO-RETAIL-NAME | main/dll/dll_003D_titlemenuitem.c | = (canonical) | — |
-| 0x03E | — | NO-RETAIL-NAME | main/dll/dll_003E_dummy3e.c | = (canonical) | — |
-| 0x03F | — | NO-RETAIL-NAME | main/dll/dll_003F_dll3f.c | = (canonical) | — |
-| 0x040 | — | NO-RETAIL-NAME | main/dll/dll_0040_credits.c | = (canonical) | — |
-| 0x041 | — | NO-RETAIL-NAME | main/dll/dll_0041_warpstoneui.c | = (canonical) | — |
-| 0x042 | — | NO-RETAIL-NAME | main/dll/dll_0042_unk.c | = (canonical) | — |
-| 0x043 | — | NO-RETAIL-NAME | main/dll/dll_0043_unk.c | = (canonical) | — |
-| 0x044 | — | NO-RETAIL-NAME | main/dll/dll_0044_cameramodeviewfinder.c | = (canonical) | — |
-| 0x045 | — | NO-RETAIL-NAME | main/dll/dll_0045_camTalk.c | = (canonical) | — |
-| 0x046 | — | NO-RETAIL-NAME | main/dll/dll_0046_cameramodedebug.c | = (canonical) | — |
-| 0x047 | — | NO-RETAIL-NAME | main/dll/dll_0047_cameramodeteststrength.c | = (canonical) | — |
-| 0x048 | — | NO-RETAIL-NAME | main/dll/dll_0048_cameramodestatic.c | = (canonical) | — |
-| 0x049 | — | NO-RETAIL-NAME | main/dll/dll_0049_cameramodecombat.c | = (canonical) | — |
-| 0x04A | — | NO-RETAIL-NAME | main/dll/dll_004A_cameramodeshipbattle.c | = (canonical) | — |
-| 0x04B | — | NO-RETAIL-NAME | main/dll/dll_004B_cameramodeclimb.c | = (canonical) | — |
-| 0x04C | — | NO-RETAIL-NAME | main/dll/dll_004C_camDebug.c | = (canonical) | — |
-| 0x04D | — | NO-RETAIL-NAME | main/dll/dll_004D_cameramodenpcspeak.c | = (canonical) | — |
-| 0x04E | — | NO-RETAIL-NAME | main/dll/dll_004E_cameramodeworldmap.c | = (canonical) | — |
-| 0x04F | — | NO-RETAIL-NAME | main/dll/dll_004F_dll4f.c | = (canonical) | — |
-| 0x050 | — | NO-RETAIL-NAME | main/dll/dll_0050_cameramodecrawl.c | = (canonical) | — |
-| 0x051 | — | NO-RETAIL-NAME | main/dll/dll_0051_cameramodecannon.c | = (canonical) | — |
-| 0x052 | — | NO-RETAIL-NAME | main/dll/dll_0052_cameramodeforcebehind.c | = (canonical) | — |
-| 0x053 | — | NO-RETAIL-NAME | main/dll/dll_0053_cameramodecloudrunner.c | = (canonical) | — |
-| 0x054 | — | NO-RETAIL-NAME | main/dll/dll_0054_dll54.c | = (canonical) | — |
-| 0x055 | — | NO-RETAIL-NAME | main/dll/dll_0055_cameramodeperv.c | = (canonical) | — |
-| 0x056 | — | NO-RETAIL-NAME | main/dll/dll_0056_cameramodearwing.c | = (canonical) | — |
-| 0x057 | — | NO-RETAIL-NAME | main/dll/dll_0057_cameramodetitle.c | = (canonical) | — |
-| 0x058 | — | NO-RETAIL-NAME | main/dll/dll_0058_dummy58.c | = (canonical) | — |
-| 0x059 | — | NO-RETAIL-NAME | dlls/modgfx/89/89.c | = (canonical) | — |
-| 0x05A | — | NO-RETAIL-NAME | dlls/modgfx/90/90.c | = (canonical) | — |
-| 0x05B | — | NO-RETAIL-NAME | dlls/modgfx/91/91.c | = (canonical) | — |
+| 0x000 | — | NO-RETAIL-NAME | dlls/engine/0/0.c | main/dll/dll_0000_gameui.c | Complete DOL-confirmed TU |
+| 0x001 | camcontrol | DOL-RECOVERED | dlls/engine/1_camcontrol/camcontrol.c | main/dll/CAM/camcontrol.c | Complete DOL-confirmed TU |
+| 0x002 | — | NO-RETAIL-NAME | dlls/engine/2/2.c | main/maketex.c | Complete DOL-confirmed TU; maketex, ObjSeq, and ObjSeq init share one compiler object |
+| 0x003 | — | NO-RETAIL-NAME | dlls/engine/3/3.c | main/dll/dll_0003_checkpoint.c | Complete DOL-confirmed TU |
+| 0x004 | — | NO-RETAIL-NAME | dlls/engine/4/4.c | main/dll/dll_0004_dummy04.c | Complete DOL-confirmed TU |
+| 0x005 | — | NO-RETAIL-NAME | dlls/engine/5/5.c | main/sky.c | Complete DOL-confirmed TU |
+| 0x006 | — | NO-RETAIL-NAME | dlls/engine/6/6.c | main/sky2.c | Complete DOL-confirmed TU |
+| 0x007 | — | NO-RETAIL-NAME | dlls/engine/7/7.c | main/newclouds.c | Complete DOL-confirmed TU |
+| 0x008 | — | NO-RETAIL-NAME | dlls/engine/8/8.c | main/skystars.c | Complete DOL-confirmed data-only TU; descriptor separated from skystars |
+| 0x009 | — | NO-RETAIL-NAME | dlls/engine/9/9.c | main/dll/cloudaction.c | Complete DOL-confirmed TU; critical-region stubs and waterfx registration record remain embedded |
+| 0x00A | expgfx | DOL-RECOVERED | dlls/engine/10_expgfx/expgfx.c | main/dll/expgfx.c | Complete DOL-confirmed TU |
+| 0x00B | — | NO-RETAIL-NAME | dlls/engine/11/11.c | main/dll/dll_000B_dll0b.c | Complete DOL-confirmed TU; missing sdata2 owner restored |
+| 0x00C | — | NO-RETAIL-NAME | dlls/engine/12/12.c | main/dll/dll_000C_projgfx.c | Complete DOL-confirmed TU; trailing six bytes are linker alignment |
+| 0x00D | — | NO-RETAIL-NAME | dlls/engine/13/13.c | main/dll/dll_000D_playershadow.c | Complete DOL-confirmed TU |
+| 0x00E | — | NO-RETAIL-NAME | dlls/engine/14/14.c | main/dll/dll_000E_partfx.c | Complete DOL-confirmed TU |
+| 0x00F | — | NO-RETAIL-NAME | dlls/engine/15/15.c | main/dll/dll_000F_unk.c | Complete DOL-confirmed TU; full sdata2 owner restored |
+| 0x010 | — | NO-RETAIL-NAME | dlls/engine/16/16.c | main/dll/dll_0010_uicontroller.c | Complete DOL-confirmed TU |
+| 0x011 | — | NO-RETAIL-NAME | dlls/engine/17/17.c | main/dll/dll_0011_screens.c | Complete DOL-confirmed TU; data table and descriptor restored from DLL 23 tail |
+| 0x012 | — | NO-RETAIL-NAME | dlls/engine/18/18.c | main/dll/dll_0012_unk.c | Complete DOL-confirmed TU |
+| 0x013 | — | NO-RETAIL-NAME | dlls/engine/19/19.c | main/dll/dll_0013_waterfx.c | Complete DOL-confirmed TU; missing sdata2 owner restored |
+| 0x014 | Hcurves | DOL-RECOVERED | dlls/engine/20_Hcurves/Hcurves.c \| dlls/engine/20_Hcurves/Hcurves_romcurve.c | main/dll/Hcurves.c \| main/dll/Hcurves_romcurve.c | DOL-confirmed DLL with two literal-pool-proven TUs; both rehomed intact |
+| 0x015 | — | NO-RETAIL-NAME | dlls/engine/21/21.c | = (canonical) | Complete DOL-confirmed TU; missing sdata2 owner restored |
+| 0x016 | — | NO-RETAIL-NAME | dlls/engine/22/22.c | = (canonical) | Complete DOL-confirmed TU; missing sdata2 owner restored |
+| 0x017 | — | NO-RETAIL-NAME | dlls/engine/23/23.c | = (canonical) | Complete DOL-confirmed TU; foreign data tails restored to DLLs 17, 47, 89, 90, and 91 |
+| 0x018 | — | NO-RETAIL-NAME | dlls/engine/24/24.c | = (canonical) | Complete DOL-confirmed TU; missing BSS and sdata owners restored |
+| 0x019 | — | NO-RETAIL-NAME | dlls/engine/25/25.c | = (canonical) | Complete DOL-confirmed TU; data vectors and descriptor restored from DLL 87 tail |
+| 0x01A | — | NO-RETAIL-NAME | dlls/engine/26/26.c | = (canonical) | Complete DOL-confirmed text TU; missing BSS owner restored; registration record remains embedded in DLL 27 data |
+| 0x01B | — | NO-RETAIL-NAME | dlls/engine/27/27.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored; PartFX and Effect1 registration records remain embedded in Effect2 data |
+| 0x01C | — | NO-RETAIL-NAME | dlls/engine/28/28.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x01D | — | NO-RETAIL-NAME | dlls/engine/29/29.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x01E | — | NO-RETAIL-NAME | dlls/engine/30/30.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x01F | — | NO-RETAIL-NAME | dlls/engine/31/31.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x020 | — | NO-RETAIL-NAME | dlls/engine/32/32.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored |
+| 0x021 | — | NO-RETAIL-NAME | dlls/engine/33/33.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored |
+| 0x022 | — | NO-RETAIL-NAME | dlls/engine/34/34.c | = (canonical) | Complete DOL-confirmed TU; missing BSS owner restored |
+| 0x023 | — | NO-RETAIL-NAME | dlls/engine/35/35.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x024 | — | NO-RETAIL-NAME | dlls/engine/36/36.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x025 | — | NO-RETAIL-NAME | dlls/engine/37/37.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x026 | — | NO-RETAIL-NAME | dlls/engine/38/38.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x027 | — | NO-RETAIL-NAME | dlls/engine/39/39.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x028 | — | NO-RETAIL-NAME | dlls/engine/40/40.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x029 | — | NO-RETAIL-NAME | dlls/engine/41/41.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x02A | — | NO-RETAIL-NAME | dlls/engine/42/42.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x02B | — | NO-RETAIL-NAME | dlls/engine/43/43.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x02C | — | NO-RETAIL-NAME | dlls/engine/44/44.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x02D | — | NO-RETAIL-NAME | dlls/engine/45/45.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x02E | — | NO-RETAIL-NAME | dlls/engine/46/46.c | = (canonical) | Complete DOL-confirmed TU; adjacent data tails restored to DLLs 48, 50, and 51 |
+| 0x02F | — | NO-RETAIL-NAME | dlls/engine/47/47.c | = (canonical) | Complete DOL-confirmed TU; descriptor restored from DLL 23 tail |
+| 0x030 | — | NO-RETAIL-NAME | dlls/engine/48/48.c | = (canonical) | Complete DOL-confirmed data-only TU |
+| 0x031 | — | NO-RETAIL-NAME | dlls/engine/49/49.c | = (canonical) | Complete DOL-confirmed TU; map rows restored from DLL 60 |
+| 0x032 | — | NO-RETAIL-NAME | dlls/engine/50/50.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
+| 0x033 | — | NO-RETAIL-NAME | dlls/engine/51/51.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
+| 0x034 | — | NO-RETAIL-NAME | dlls/engine/52/52.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x035 | — | NO-RETAIL-NAME | dlls/engine/53/53.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x036 | — | NO-RETAIL-NAME | dlls/engine/54/54.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x037 | — | NO-RETAIL-NAME | dlls/engine/55/55.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x038 | — | NO-RETAIL-NAME | dlls/engine/56/56.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x039 | — | NO-RETAIL-NAME | dlls/engine/57/57.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x03A | — | NO-RETAIL-NAME | dlls/engine/58/58.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x03B | — | NO-RETAIL-NAME | dlls/engine/59/59.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x03C | — | NO-RETAIL-NAME | dlls/engine/60/60.c | = (canonical) | Complete DOL-confirmed TU; adjacent DLL and minimap data tails restored to their owning units |
+| 0x03D | — | NO-RETAIL-NAME | dlls/engine/61/61.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x03E | — | NO-RETAIL-NAME | dlls/engine/62/62.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x03F | — | NO-RETAIL-NAME | dlls/engine/63/63.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 49 |
+| 0x040 | — | NO-RETAIL-NAME | dlls/engine/64/64.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x041 | — | NO-RETAIL-NAME | dlls/engine/65/65.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x042 | — | NO-RETAIL-NAME | dlls/engine/66/66.c | = (canonical) | Complete DOL-confirmed TU consolidated from the former cutcam and DLL 0x42 fragments |
+| 0x043 | — | NO-RETAIL-NAME | dlls/engine/67/67.c | = (canonical) | Complete DOL-confirmed TU consolidated from pathcam, camlockon, and the former DLL 0x43 fragment |
+| 0x044 | — | NO-RETAIL-NAME | dlls/engine/68/68.c | = (canonical) | DOL-confirmed callback TU including the leading first-person helper pair; descriptor data is pooled elsewhere |
+| 0x045 | — | NO-RETAIL-NAME | dlls/engine/69/69.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
+| 0x046 | — | NO-RETAIL-NAME | dlls/engine/70/70.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
+| 0x047 | — | NO-RETAIL-NAME | dlls/engine/71/71.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
+| 0x048 | — | NO-RETAIL-NAME | dlls/engine/72/72.c | = (canonical) | DOL-confirmed callback TU; descriptor data is pooled elsewhere |
+| 0x049 | — | NO-RETAIL-NAME | dlls/engine/73/73.c | = (canonical) | Complete DOL-confirmed TU restored from the former match-only helper split |
+| 0x04A | — | NO-RETAIL-NAME | dlls/engine/74/74.c | = (canonical) | — |
+| 0x04B | — | NO-RETAIL-NAME | dlls/engine/75/75.c | = (canonical) | — |
+| 0x04C | — | NO-RETAIL-NAME | dlls/engine/76/76.c | = (canonical) | — |
+| 0x04D | — | NO-RETAIL-NAME | dlls/engine/77/77.c | = (canonical) | — |
+| 0x04E | — | NO-RETAIL-NAME | dlls/engine/78/78.c | = (canonical) | — |
+| 0x04F | — | NO-RETAIL-NAME | dlls/engine/79/79.c | = (canonical) | — |
+| 0x050 | — | NO-RETAIL-NAME | dlls/engine/80/80.c | = (canonical) | — |
+| 0x051 | — | NO-RETAIL-NAME | dlls/engine/81/81.c | = (canonical) | — |
+| 0x052 | — | NO-RETAIL-NAME | dlls/engine/82/82.c | = (canonical) | — |
+| 0x053 | — | NO-RETAIL-NAME | dlls/engine/83/83.c | = (canonical) | — |
+| 0x054 | — | NO-RETAIL-NAME | dlls/engine/84/84.c | = (canonical) | — |
+| 0x055 | — | NO-RETAIL-NAME | dlls/engine/85/85.c | = (canonical) | — |
+| 0x056 | — | NO-RETAIL-NAME | dlls/engine/86/86.c | = (canonical) | — |
+| 0x057 | — | NO-RETAIL-NAME | dlls/engine/87/87.c | = (canonical) | Complete DOL-confirmed TU; DLL 25 data tail detached |
+| 0x058 | — | NO-RETAIL-NAME | dlls/engine/88/88.c | = (canonical) | — |
+| 0x059 | — | NO-RETAIL-NAME | dlls/modgfx/89/89.c | = (canonical) | Complete DOL-confirmed TU; data and descriptor restored from DLL 23 tail |
+| 0x05A | — | NO-RETAIL-NAME | dlls/modgfx/90/90.c | = (canonical) | Complete DOL-confirmed TU; data and descriptor restored from DLL 23 tail |
+| 0x05B | — | NO-RETAIL-NAME | dlls/modgfx/91/91.c | = (canonical) | Complete DOL-confirmed TU; leading data and descriptor restored from DLL 23 tail |
 | 0x05C | — | NO-RETAIL-NAME | dlls/modgfx/92/92.c | = (canonical) | — |
 | 0x05D | — | NO-RETAIL-NAME | dlls/modgfx/93/93.c | = (canonical) | — |
 | 0x05E | — | NO-RETAIL-NAME | dlls/modgfx/94/94.c | = (canonical) | — |
@@ -984,7 +984,7 @@ blocked units will surface more when carved.
 
 | dll | current unit | header |
 |---|---|---|
-| 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/main/dll/dll_017B_dfshlaserbeam.h |
+| 0x17B | dlls/objects/379_DFSH_LaserB/DFSH_LaserB.c | include/dlls/objects/379_DFSH_LaserB.h |
 | 0x18C | dlls/objects/396_MMSH_Shrine/MMSH_Shrine.c | include/main/dll/dll_018C_mmshshrine.h |
 | 0x198 | dlls/objects/408_NWSH_levcon/NWSH_levcon.c | include/main/dll/dll_0198_nwshlevcon.h |
 | 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/main/dll/dll_019F_nwtreebrid.h |

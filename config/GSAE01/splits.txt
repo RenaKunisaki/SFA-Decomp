@@ -323,21 +323,21 @@ track/intersect_texsetup.c:
 track/intersect_memcard.c:
 	.text       start:0x8007D670 end:0x8007E77C
 
-main/maketex.c:
+dlls/engine/2/2.c:
 	.text       start:0x8007E77C end:0x80088758
 	.data       start:0x8030EB58 end:0x8030F2C8
 	.bss        start:0x80396918 end:0x8039A7A8
 	.sdata      start:0x803DB700 end:0x803DB750
 	.sbss       start:0x803DD060 end:0x803DD128
 
-main/sky.c:
+dlls/engine/5/5.c:
 	.text       start:0x80088758 end:0x8008C974
 	.rodata     start:0x802C1F80 end:0x802C1F98
 	.data       start:0x8030F2C8 end:0x8030F4A0
 	.bss        start:0x8039A7A8 end:0x8039A7B8
 	.sbss       start:0x803DD128 end:0x803DD180
 
-main/sky2.c:
+dlls/engine/6/6.c:
 	.text       start:0x8008C974 end:0x8008ED88
 	.rodata     start:0x802C1F98 end:0x802C1FA4
 	.data       start:0x8030F4A0 end:0x8030F5A0
@@ -345,7 +345,7 @@ main/sky2.c:
 	.sdata      start:0x803DB750 end:0x803DB760
 	.sbss       start:0x803DD180 end:0x803DD190
 
-main/newclouds.c:
+dlls/engine/7/7.c:
 	.text       start:0x8008ED88 end:0x80093AE0
 	.rodata     start:0x802C1FA8 end:0x802C1FD8
 	.data       start:0x8030F5A0 end:0x8030F770
@@ -355,126 +355,141 @@ main/newclouds.c:
 
 main/skystars.c:
 	.text       start:0x80093AE0 end:0x8009436C
-	.data       start:0x8030F770 end:0x8030F7B0
+	.data       start:0x8030F770 end:0x8030F788
 	.bss        start:0x8039A900 end:0x8039AB28
 	.sdata      start:0x803DB770 end:0x803DB780
 	.sbss       start:0x803DD1D0 end:0x803DD1E0
 	.sdata2     start:0x803DF280 end:0x803DF2B0
 
-main/dll/cloudaction.c:
+dlls/engine/8/8.c:
+	.data       start:0x8030F788 end:0x8030F7B0
+
+dlls/engine/9/9.c:
 	.text       start:0x8009436C end:0x80094F7C
-	.data       start:0x8030F7B0 end:0x8030F86C
+	.data       start:0x8030F7B0 end:0x8030F830
 	.bss        start:0x8039AB28 end:0x8039AB48
 	.sdata      start:0x803DB780 end:0x803DB788
 	.sbss       start:0x803DD1E0 end:0x803DD1F8
 	.sdata2     start:0x803DF2B0 end:0x803DF2E0
 
-main/dll/dll_0013_waterfx.c:
+dlls/engine/19/19.c:
 	.text       start:0x80094F7C end:0x80096994
-	.data       start:0x8030F86C end:0x8030F898
+	.data       start:0x8030F830 end:0x8030F898
 	.bss        start:0x8039AB48 end:0x8039AB58
 	.sbss       start:0x803DD1F8 end:0x803DD250
+	.sdata2     start:0x803DF2E0 end:0x803DF340
 
-main/dll/expgfx.c:
+dlls/engine/10_expgfx/expgfx.c:
 	.text       start:0x80096994 end:0x8009FFF0
 	.rodata     start:0x802C1FD8 end:0x802C2160
-	.data       start:0x8030F898 end:0x8030FD20
+	.data       start:0x8030F898 end:0x8030FCA8
 	.bss        start:0x8039AB58 end:0x8039BE98
 	.sdata      start:0x803DB788 end:0x803DB798
 	.sbss       start:0x803DD250 end:0x803DD280
 	.sdata2     start:0x803DF340 end:0x803DF42C
 
-main/dll/dll_000B_dll0b.c:
+dlls/engine/11/11.c:
 	.text       start:0x8009FFF0 end:0x800A3A40
+	.data       start:0x8030FCA8 end:0x8030FD20
 	.bss        start:0x8039BE98 end:0x8039C2C0
 	.sbss       start:0x803DD280 end:0x803DD298
+	.sdata2     start:0x803DF42C end:0x803DF468
 
-main/dll/dll_000C_projgfx.c:
+dlls/engine/12/12.c:
 	.text       start:0x800A3A40 end:0x800A3AF0
 	.data       start:0x8030FD20 end:0x8030FDE2
 
-main/dll/dll_000D_playershadow.c:
+dlls/engine/13/13.c:
 	.text       start:0x800A3AF0 end:0x800A4338
 	.rodata     start:0x802C2160 end:0x802C2170
 	.data       start:0x8030FDE8 end:0x8030FE38
 	.sbss       start:0x803DD298 end:0x803DD2A0
 	.sdata2     start:0x803DF468 end:0x803DF4A8
 
-main/dll/dll_0018_boneparticleeffect.c:
+dlls/engine/24/24.c:
 	.text       start:0x800A4338 end:0x800A4DF4
 	.data       start:0x8030FE38 end:0x80310560
+	.bss        start:0x8039C2C0 end:0x8039C2E0
+	.sdata      start:0x803DB798 end:0x803DB7A0
 	.sbss       start:0x803DD2A0 end:0x803DD2C0
 	.sdata2     start:0x803DF4A8 end:0x803DF4C8
 
-main/dll/dll_000E_partfx.c:
+dlls/engine/14/14.c:
 	.text       start:0x800A4DF4 end:0x800AF688
+	.data       start:0x80310560 end:0x8031062C
 	.bss        start:0x8039C2E0 end:0x8039C320
 	.sdata      start:0x803DB7A0 end:0x803DB7B0
 	.sbss       start:0x803DD2C0 end:0x803DD328
 	.sdata2     start:0x803DF4C8 end:0x803DF720
 
-main/dll/dll_001A_effect1.c:
+dlls/engine/26/26.c:
 	.text       start:0x800AF688 end:0x800B319C
+	.data       start:0x8031062C end:0x80310660
+	.bss        start:0x8039C320 end:0x8039C338
 	.sdata      start:0x803DB7B0 end:0x803DB7C0
 	.sbss       start:0x803DD328 end:0x803DD338
 	.sdata2     start:0x803DF720 end:0x803DF870
 
-main/dll/dll_001B_effect2.c:
+dlls/engine/27/27.c:
 	.text       start:0x800B319C end:0x800B6EF8
-	.data       start:0x80310560 end:0x80310804
+	.data       start:0x80310660 end:0x80310804
+	.bss        start:0x8039C338 end:0x8039C350
 	.sdata      start:0x803DB7C0 end:0x803DB7D0
 	.sbss       start:0x803DD338 end:0x803DD350
 	.sdata2     start:0x803DF870 end:0x803DF9D0
 
-main/dll/dll_001C_effect3.c:
+dlls/engine/28/28.c:
 	.text       start:0x800B6EF8 end:0x800B8D7C
 	.data       start:0x80310808 end:0x8031089C
 	.bss        start:0x8039C350 end:0x8039C368
 	.sdata2     start:0x803DF9D0 end:0x803DFA88
 
-main/dll/dll_001D_effect4.c:
+dlls/engine/29/29.c:
 	.text       start:0x800B8D7C end:0x800BC244
 	.data       start:0x803108A0 end:0x803109B4
 	.sdata      start:0x803DB7D0 end:0x803DB7E0
 	.sbss       start:0x803DD350 end:0x803DD360
 	.sdata2     start:0x803DFA88 end:0x803DFBE0
 
-main/dll/dll_001E_effect5.c:
+dlls/engine/30/30.c:
 	.text       start:0x800BC244 end:0x800BD43C
 	.data       start:0x803109B8 end:0x80310A20
 	.sdata      start:0x803DB7E0 end:0x803DB7F0
 	.sbss       start:0x803DD360 end:0x803DD370
 	.sdata2     start:0x803DFBE0 end:0x803DFC80
 
-main/dll/dll_001F_effect6.c:
+dlls/engine/31/31.c:
 	.text       start:0x800BD43C end:0x800BE034
 	.data       start:0x80310A20 end:0x80310A78
 	.sdata      start:0x803DB7F0 end:0x803DB800
 	.sbss       start:0x803DD370 end:0x803DD380
 	.sdata2     start:0x803DFC80 end:0x803DFCD8
 
-main/dll/dll_0020_effect7.c:
+dlls/engine/32/32.c:
 	.text       start:0x800BE034 end:0x800BF978
 	.data       start:0x80310A78 end:0x80310B50
+	.bss        start:0x8039C368 end:0x8039C380
 	.sdata      start:0x803DB800 end:0x803DB810
 	.sbss       start:0x803DD380 end:0x803DD390
 	.sdata2     start:0x803DFCD8 end:0x803DFD98
 
-main/dll/dll_0021_effect8.c:
+dlls/engine/33/33.c:
 	.text       start:0x800BF978 end:0x800C11CC
 	.data       start:0x80310B50 end:0x80310BD8
+	.bss        start:0x8039C380 end:0x8039C398
 	.sdata      start:0x803DB810 end:0x803DB820
 	.sbss       start:0x803DD390 end:0x803DD3A0
 	.sdata2     start:0x803DFD98 end:0x803DFE28
 
-main/dll/dll_0022_effect9.c:
+dlls/engine/34/34.c:
 	.text       start:0x800C11CC end:0x800C291C
 	.data       start:0x80310BD8 end:0x80310C60
+	.bss        start:0x8039C398 end:0x8039C3B0
 	.sdata      start:0x803DB820 end:0x803DB830
 	.sbss       start:0x803DD3A0 end:0x803DD3B0
 	.sdata2     start:0x803DFE28 end:0x803DFEB8
 
-main/dll/dll_0023_effect10.c:
+dlls/engine/35/35.c:
 	.text       start:0x800C291C end:0x800C4864
 	.data       start:0x80310C60 end:0x80310D1C
 	.bss        start:0x8039C3B0 end:0x8039C3C8
@@ -482,25 +497,25 @@ main/dll/dll_0023_effect10.c:
 	.sbss       start:0x803DD3B0 end:0x803DD3C0
 	.sdata2     start:0x803DFEB8 end:0x803DFF38
 
-main/dll/dll_0024_effect11.c:
+dlls/engine/36/36.c:
 	.text       start:0x800C4864 end:0x800C56E0
 	.data       start:0x80310D20 end:0x80310D7C
 	.bss        start:0x8039C3C8 end:0x8039C3E0
 	.sdata2     start:0x803DFF38 end:0x803DFFA8
 
-main/dll/dll_0025_effect12.c:
+dlls/engine/37/37.c:
 	.text       start:0x800C56E0 end:0x800C65B4
 	.data       start:0x80310D80 end:0x80310DE4
 	.bss        start:0x8039C3E0 end:0x8039C3F8
 	.sdata2     start:0x803DFFA8 end:0x803E0000
 
-main/dll/dll_0027_effect14.c:
+dlls/engine/39/39.c:
 	.text       start:0x800C65B4 end:0x800C8008
 	.data       start:0x80310DE8 end:0x80310E88
 	.bss        start:0x8039C3F8 end:0x8039C410
 	.sdata2     start:0x803E0000 end:0x803E00A8
 
-main/dll/dll_0029_effect16.c:
+dlls/engine/41/41.c:
 	.text       start:0x800C8008 end:0x800C9140
 	.data       start:0x80310E88 end:0x80310F38
 	.bss        start:0x8039C410 end:0x8039C428
@@ -508,118 +523,127 @@ main/dll/dll_0029_effect16.c:
 	.sbss       start:0x803DD3C0 end:0x803DD3D0
 	.sdata2     start:0x803E00A8 end:0x803E0110
 
-main/dll/dll_0028_effect15.c:
+dlls/engine/40/40.c:
 	.text       start:0x800C9140 end:0x800CA3CC
 	.data       start:0x80310F38 end:0x80310FB4
 	.bss        start:0x8039C428 end:0x8039C440
 	.sdata2     start:0x803E0110 end:0x803E0180
 
-main/dll/dll_0026_effect13.c:
+dlls/engine/38/38.c:
 	.text       start:0x800CA3CC end:0x800CA930
 	.data       start:0x80310FB8 end:0x80310FE0
 	.bss        start:0x8039C440 end:0x8039C458
 	.sdata2     start:0x803E0180 end:0x803E01B8
 
-main/dll/dll_002A_effect17.c:
+dlls/engine/42/42.c:
 	.text       start:0x800CA930 end:0x800CB690
 	.data       start:0x80310FE0 end:0x80311034
 	.sdata      start:0x803DB850 end:0x803DB860
 	.sbss       start:0x803DD3D0 end:0x803DD3E0
 	.sdata2     start:0x803E01B8 end:0x803E0220
 
-main/dll/dll_002B_effect18.c:
+dlls/engine/43/43.c:
 	.text       start:0x800CB690 end:0x800CCF5C
 	.data       start:0x80311038 end:0x803110D4
 	.sdata      start:0x803DB860 end:0x803DB870
 	.sbss       start:0x803DD3E0 end:0x803DD3F0
 	.sdata2     start:0x803E0220 end:0x803E02D8
 
-main/dll/dll_002C_effect19.c:
+dlls/engine/44/44.c:
 	.text       start:0x800CCF5C end:0x800CD430
 	.data       start:0x803110D8 end:0x80311100
 	.sdata      start:0x803DB870 end:0x803DB880
 	.sbss       start:0x803DD3F0 end:0x803DD400
 	.sdata2     start:0x803E02D8 end:0x803E0310
 
-main/dll/dll_002D_effect20.c:
+dlls/engine/45/45.c:
 	.text       start:0x800CD430 end:0x800D5530
 	.data       start:0x80311100 end:0x803112E4
 	.sdata      start:0x803DB880 end:0x803DB890
 	.sbss       start:0x803DD400 end:0x803DD410
 	.sdata2     start:0x803E0310 end:0x803E04D8
 
-main/dll/dll_0003_checkpoint.c:
+dlls/engine/3/3.c:
 	.text       start:0x800D5530 end:0x800D7568
 	.data       start:0x803112E8 end:0x80311340
 	.bss        start:0x8039C458 end:0x8039CAE8
 
-main/dll/dll_0016_screentransition.c:
+dlls/engine/22/22.c:
 	.text       start:0x800D7568 end:0x800D7F5C
 	.data       start:0x80311340 end:0x80311378
 	.sbss       start:0x803DD420 end:0x803DD430
+	.sdata2     start:0x803E0540 end:0x803E0570
 
-main/dll/dll_0004_dummy04.c:
+dlls/engine/4/4.c:
 	.text       start:0x800D7F5C end:0x800D8020
 	.data       start:0x80311378 end:0x80311438
 
-main/dll/dll_000F_unk.c:
+dlls/engine/15/15.c:
 	.text       start:0x800D8020 end:0x800D9DCC
 	.data       start:0x80311438 end:0x803114B0
 	.sbss       start:0x803DD430 end:0x803DD458
-	.sdata2     start:0x803E0598 end:0x803E05A0
+	.sdata2     start:0x803E0570 end:0x803E05C8
 
-main/dll/dll_0010_uicontroller.c:
+dlls/engine/16/16.c:
 	.text       start:0x800D9DCC end:0x800D9EB4
 	.data       start:0x803114B0 end:0x803114D8
 
-main/dll/dll_0012_unk.c:
+dlls/engine/18/18.c:
 	.text       start:0x800D9EB4 end:0x800D9EE8
 	.data       start:0x803114D8 end:0x80311518
 	.sbss       start:0x803DD458 end:0x803DD460
 
-main/dll/Hcurves.c:
+dlls/engine/20_Hcurves/Hcurves.c:
 	.text       start:0x800D9EE8 end:0x800DD648
 	.data       start:0x80311518 end:0x803115F8
 	.bss        start:0x8039CAE8 end:0x803A17E8
 	.sbss       start:0x803DD460 end:0x803DD470
+	.sdata2     start:0x803E05C8 end:0x803E0610
 
-main/dll/Hcurves_romcurve.c:
+dlls/engine/20_Hcurves/Hcurves_romcurve.c:
 	.text       start:0x800DD648 end:0x800E5434
 	.data       start:0x803115F8 end:0x803116E0
 	.bss        start:0x803A17E8 end:0x803A2C38
 	.sbss       start:0x803DD470 end:0x803DD47C
+	.sdata2     start:0x803E0610 end:0x803E0668
 
-main/dll/dll_0015_curves.c:
+dlls/engine/21/21.c:
 	.text       start:0x800E5434 end:0x800E8100
 	.data       start:0x803116E0 end:0x80311720
 	.bss        start:0x803A2C38 end:0x803A2F80
 	.sbss       start:0x803DD480 end:0x803DD488
+	.sdata2     start:0x803E0668 end:0x803E06C8
 
-main/dll/dll_0017_savegame.c:
+dlls/engine/23/23.c:
 	.text       start:0x800E8100 end:0x800EA174
 	.rodata     start:0x802C2170 end:0x802C217C
-	.data       start:0x80311720 end:0x80311EC8
+	.data       start:0x80311720 end:0x803119E0
 	.bss        start:0x803A2F80 end:0x803A4218
 	.sdata      start:0x803DB890 end:0x803DB898
 	.sbss       start:0x803DD488 end:0x803DD4A0
 
-main/dll/dll_0011_screens.c:
+dlls/engine/17/17.c:
 	.text       start:0x800EA174 end:0x800EA774
+	.data       start:0x803119E0 end:0x80311C08
 	.sbss       start:0x803DD4A0 end:0x803DD4B0
 
-main/dll/dll_002F_carryable.c:
+dlls/engine/47/47.c:
 	.text       start:0x800EA774 end:0x800EADCC
+	.data       start:0x80311C08 end:0x80311C58
 
 dlls/modgfx/89/89.c:
 	.text       start:0x800EADCC end:0x800EB098
+	.data       start:0x80311C58 end:0x80311DA8
 
 dlls/modgfx/90/90.c:
 	.text       start:0x800EB098 end:0x800EB618
+	.data       start:0x80311DA8 end:0x80311E30
 	.sdata      start:0x803DB898 end:0x803DB8B0
+	.sdata2     start:0x803E0728 end:0x803E0730
 
 dlls/modgfx/91/91.c:
 	.text       start:0x800EB618 end:0x800EC7BC
-	.data       start:0x80311EC8 end:0x80311F20
+	.data       start:0x80311E30 end:0x80311F20
 	.sdata      start:0x803DB8B0 end:0x803DB8C0
 	.sdata2     start:0x803E0730 end:0x803E0760
 
@@ -635,67 +659,82 @@ dlls/modgfx/93/93.c:
 
 dlls/modgfx/94/94.c:
 	.text       start:0x800ECE04 end:0x800ED294
-	.data       start:0x80312340 end:0x80313AD0
+	.data       start:0x80312340 end:0x80312650
 	.sdata2     start:0x803E07C0 end:0x803E07FC
 
 dlls/modgfx/95/95.c:
 	.text       start:0x800ED294 end:0x800ED5E4
+	.data       start:0x80312650 end:0x80312790
 	.sdata2     start:0x803E0800 end:0x803E082C
 
 dlls/modgfx/96/96.c:
 	.text       start:0x800ED5E4 end:0x800EDA28
+	.data       start:0x80312790 end:0x803128E8
 	.sdata2     start:0x803E0830 end:0x803E0858
 
 dlls/modgfx/97/97.c:
 	.text       start:0x800EDA28 end:0x800EDE74
+	.data       start:0x803128E8 end:0x803129C8
 	.sdata      start:0x803DB8C0 end:0x803DB8C8
 	.sdata2     start:0x803E0858 end:0x803E0898
 
 dlls/modgfx/98/98.c:
 	.text       start:0x800EDE74 end:0x800EE25C
+	.data       start:0x803129C8 end:0x80312BD8
 	.sdata2     start:0x803E0898 end:0x803E08C8
 
 dlls/modgfx/99/99.c:
 	.text       start:0x800EE25C end:0x800EE8FC
+	.data       start:0x80312BD8 end:0x80312D18
 	.sdata2     start:0x803E08C8 end:0x803E0908
 
 dlls/modgfx/100/100.c:
 	.text       start:0x800EE8FC end:0x800EEC34
+	.data       start:0x80312D18 end:0x80312E58
 	.sdata2     start:0x803E0908 end:0x803E0930
 
 dlls/modgfx/101/101.c:
 	.text       start:0x800EEC34 end:0x800EEFEC
+	.data       start:0x80312E58 end:0x80312F98
 	.sdata2     start:0x803E0930 end:0x803E0968
 
 dlls/modgfx/163/163.c:
 	.text       start:0x800EEFEC end:0x800EF3A0
+	.data       start:0x80312F98 end:0x803131A8
 	.sdata2     start:0x803E0968 end:0x803E0990
 
 dlls/modgfx/102/102.c:
 	.text       start:0x800EF3A0 end:0x800EF7B4
+	.data       start:0x803131A8 end:0x803133B8
 	.sdata2     start:0x803E0990 end:0x803E09C4
 
 dlls/modgfx/103/103.c:
 	.text       start:0x800EF7B4 end:0x800EFA30
+	.data       start:0x803133B8 end:0x803135C8
 	.sdata2     start:0x803E09C8 end:0x803E09E0
 
 dlls/modgfx/104/104.c:
 	.text       start:0x800EFA30 end:0x800EFD34
+	.data       start:0x803135C8 end:0x803137D8
 	.sdata2     start:0x803E09E0 end:0x803E09FC
 
-main/dll/dll_0058_dummy58.c:
+dlls/engine/88/88.c:
 	.text       start:0x800EFD34 end:0x800EFD44
+	.data       start:0x803137D8 end:0x803137F8
 
 dlls/modgfx/105/105.c:
 	.text       start:0x800EFD44 end:0x800F022C
+	.data       start:0x803137F8 end:0x803138A0
 	.sdata2     start:0x803E0A00 end:0x803E0A28
 
 dlls/modgfx/106/106.c:
 	.text       start:0x800F022C end:0x800F058C
+	.data       start:0x803138A0 end:0x80313A40
 	.sdata2     start:0x803E0A28 end:0x803E0A58
 
 dlls/modgfx/107/107.c:
 	.text       start:0x800F058C end:0x800F07DC
+	.data       start:0x80313A40 end:0x80313AD0
 	.sdata2     start:0x803E0A58 end:0x803E0A74
 
 dlls/modgfx/108/108.c:
@@ -720,51 +759,59 @@ dlls/modgfx/111/111.c:
 
 dlls/modgfx/112/112.c:
 	.text       start:0x800F11E4 end:0x800F16E4
-	.data       start:0x80313E98 end:0x80314920
+	.data       start:0x80313E98 end:0x80314060
 	.sdata      start:0x803DB8D0 end:0x803DB8D8
 	.sdata2     start:0x803E0AF8 end:0x803E0B34
 
 dlls/modgfx/113/113.c:
 	.text       start:0x800F16E4 end:0x800F1A58
+	.data       start:0x80314060 end:0x80314288
 	.sdata2     start:0x803E0B38 end:0x803E0B5C
 
 dlls/modgfx/114/114.c:
 	.text       start:0x800F1A58 end:0x800F1D64
+	.data       start:0x80314288 end:0x803144B0
 	.sdata2     start:0x803E0B60 end:0x803E0B80
 
 dlls/modgfx/115/115.c:
 	.text       start:0x800F1D64 end:0x800F220C
+	.data       start:0x803144B0 end:0x803146D8
 	.sdata2     start:0x803E0B80 end:0x803E0BB8
 
 dlls/modgfx/116/116.c:
 	.text       start:0x800F220C end:0x800F2694
+	.data       start:0x803146D8 end:0x80314920
 	.sdata2     start:0x803E0BB8 end:0x803E0BE8
 
 dlls/modgfx/117/117.c:
 	.text       start:0x800F2694 end:0x800F2A8C
-	.data       start:0x80314920 end:0x80314AF0
+	.data       start:0x80314920 end:0x80314950
 	.sdata2     start:0x803E0BE8 end:0x803E0C40
 
 dlls/modgfx/118/118.c:
 	.text       start:0x800F2A8C end:0x800F2CEC
+	.data       start:0x80314950 end:0x80314980
 	.sdata2     start:0x803E0C40 end:0x803E0C58
 
 dlls/modgfx/119/119.c:
 	.text       start:0x800F2CEC end:0x800F2F4C
+	.data       start:0x80314980 end:0x803149B0
 	.sdata2     start:0x803E0C58 end:0x803E0C70
 
 dlls/modgfx/120/120.c:
 	.text       start:0x800F2F4C end:0x800F3400
+	.data       start:0x803149B0 end:0x80314AF0
 	.sdata2     start:0x803E0C70 end:0x803E0CB0
 
 dlls/modgfx/121/121.c:
 	.text       start:0x800F3400 end:0x800F3CD0
-	.data       start:0x80314AF0 end:0x80314CB0
+	.data       start:0x80314AF0 end:0x80314BD0
 	.sdata      start:0x803DB8D8 end:0x803DB8E0
 	.sdata2     start:0x803E0CB0 end:0x803E0D08
 
 dlls/modgfx/122/122.c:
 	.text       start:0x800F3CD0 end:0x800F4174
+	.data       start:0x80314BD0 end:0x80314CB0
 	.sdata2     start:0x803E0D08 end:0x803E0D38
 
 dlls/modgfx/123/123.c:
@@ -774,34 +821,40 @@ dlls/modgfx/123/123.c:
 
 dlls/modgfx/124/124.c:
 	.text       start:0x800F472C end:0x800F4C70
-	.data       start:0x80314E08 end:0x80315998
+	.data       start:0x80314E08 end:0x80315030
 	.sdata2     start:0x803E0D88 end:0x803E0DD4
 
 dlls/modgfx/125/125.c:
 	.text       start:0x800F4C70 end:0x800F4FA4
+	.data       start:0x80315030 end:0x80315258
 	.sbss       start:0x803DD4B0 end:0x803DD4B8
 	.sdata2     start:0x803E0DD8 end:0x803E0DFC
 
 dlls/modgfx/126/126.c:
 	.text       start:0x800F4FA4 end:0x800F52E0
+	.data       start:0x80315258 end:0x80315328
 	.sdata      start:0x803DB8E0 end:0x803DB8E8
 	.sdata2     start:0x803E0E00 end:0x803E0E20
 
 dlls/modgfx/127/127.c:
 	.text       start:0x800F52E0 end:0x800F57D8
+	.data       start:0x80315328 end:0x80315468
 	.sdata      start:0x803DB8E8 end:0x803DB8F0
 	.sdata2     start:0x803E0E20 end:0x803E0E58
 
 dlls/modgfx/128/128.c:
 	.text       start:0x800F57D8 end:0x800F5A8C
+	.data       start:0x80315468 end:0x80315548
 	.sdata2     start:0x803E0E58 end:0x803E0E78
 
 dlls/modgfx/129/129.c:
 	.text       start:0x800F5A8C end:0x800F6150
+	.data       start:0x80315548 end:0x80315770
 	.sdata2     start:0x803E0E78 end:0x803E0EAC
 
 dlls/modgfx/130/130.c:
 	.text       start:0x800F6150 end:0x800F6534
+	.data       start:0x80315770 end:0x80315998
 	.sdata2     start:0x803E0EB0 end:0x803E0ED4
 
 dlls/modgfx/131/131.c:
@@ -816,38 +869,45 @@ dlls/modgfx/132/132.c:
 
 dlls/modgfx/133/133.c:
 	.text       start:0x800F6DDC end:0x800F7434
-	.data       start:0x80315FA8 end:0x80316B60
+	.data       start:0x80315FA8 end:0x80316020
 	.sdata      start:0x803DB8F0 end:0x803DB900
 	.sdata2     start:0x803E0F70 end:0x803E0FB0
 
 dlls/modgfx/134/134.c:
 	.text       start:0x800F7434 end:0x800F77BC
+	.data       start:0x80316020 end:0x80316050
 	.sdata2     start:0x803E0FB0 end:0x803E0FE8
 
 dlls/modgfx/135/135.c:
 	.text       start:0x800F77BC end:0x800F7AC0
+	.data       start:0x80316050 end:0x80316240
 	.sdata      start:0x803DB900 end:0x803DB908
 	.sdata2     start:0x803E0FE8 end:0x803E100C
 
 dlls/modgfx/136/136.c:
 	.text       start:0x800F7AC0 end:0x800F7D90
+	.data       start:0x80316240 end:0x80316460
 	.sdata2     start:0x803E1010 end:0x803E1028
 
 dlls/modgfx/137/137.c:
 	.text       start:0x800F7D90 end:0x800F8094
+	.data       start:0x80316460 end:0x80316650
 	.sdata      start:0x803DB908 end:0x803DB910
 	.sdata2     start:0x803E1028 end:0x803E104C
 
 dlls/modgfx/138/138.c:
 	.text       start:0x800F8094 end:0x800F8250
+	.data       start:0x80316650 end:0x80316728
 	.sdata2     start:0x803E1050 end:0x803E105C
 
 dlls/modgfx/139/139.c:
 	.text       start:0x800F8250 end:0x800F87E8
+	.data       start:0x80316728 end:0x80316950
 	.sdata2     start:0x803E1060 end:0x803E10B0
 
 dlls/modgfx/140/140.c:
 	.text       start:0x800F87E8 end:0x800F8D68
+	.data       start:0x80316950 end:0x80316B60
 	.sdata2     start:0x803E10B0 end:0x803E10E0
 
 dlls/modgfx/141/141.c:
@@ -857,12 +917,13 @@ dlls/modgfx/141/141.c:
 
 dlls/modgfx/142/142.c:
 	.text       start:0x800F977C end:0x800F9E78
-	.data       start:0x80316C40 end:0x80316E30
+	.data       start:0x80316C40 end:0x80316C90
 	.sdata      start:0x803DB910 end:0x803DB920
 	.sdata2     start:0x803E1138 end:0x803E1178
 
 dlls/modgfx/143/143.c:
 	.text       start:0x800F9E78 end:0x800FA16C
+	.data       start:0x80316C90 end:0x80316E30
 	.sdata2     start:0x803E1178 end:0x803E11A0
 
 dlls/modgfx/144/144.c:
@@ -873,496 +934,485 @@ dlls/modgfx/144/144.c:
 
 dlls/modgfx/145/145.c:
 	.text       start:0x800FA5D8 end:0x800FA9F8
-	.data       start:0x80316FF8 end:0x80318488
+	.data       start:0x80316FF8 end:0x803171C0
 	.sdata      start:0x803DB928 end:0x803DB930
 	.sdata2     start:0x803E11D8 end:0x803E120C
 
 dlls/modgfx/146/146.c:
 	.text       start:0x800FA9F8 end:0x800FADA8
+	.data       start:0x803171C0 end:0x80317260
 	.sdata      start:0x803DB930 end:0x803DB938
 	.sdata2     start:0x803E1210 end:0x803E123C
 
 dlls/modgfx/147/147.c:
 	.text       start:0x800FADA8 end:0x800FB078
+	.data       start:0x80317260 end:0x80317488
 	.sdata2     start:0x803E1240 end:0x803E1268
 
 dlls/modgfx/148/148.c:
 	.text       start:0x800FB078 end:0x800FB428
+	.data       start:0x80317488 end:0x80317528
 	.sdata      start:0x803DB938 end:0x803DB940
 	.sdata2     start:0x803E1268 end:0x803E1294
 
 dlls/modgfx/149/149.c:
 	.text       start:0x800FB428 end:0x800FB720
+	.data       start:0x80317528 end:0x803175E8
 	.sdata      start:0x803DB940 end:0x803DB948
 	.sdata2     start:0x803E1298 end:0x803E12BC
 
 dlls/modgfx/150/150.c:
 	.text       start:0x800FB720 end:0x800FBA40
+	.data       start:0x803175E8 end:0x80317810
 	.sdata2     start:0x803E12C0 end:0x803E12E8
 
 dlls/modgfx/151/151.c:
 	.text       start:0x800FBA40 end:0x800FBDF0
+	.data       start:0x80317810 end:0x803178B0
 	.sdata      start:0x803DB948 end:0x803DB950
 	.sdata2     start:0x803E12E8 end:0x803E1314
 
 dlls/modgfx/152/152.c:
 	.text       start:0x800FBDF0 end:0x800FC208
+	.data       start:0x803178B0 end:0x80317AF8
 	.sdata2     start:0x803E1318 end:0x803E1340
 
 dlls/modgfx/153/153.c:
 	.text       start:0x800FC208 end:0x800FC5B8
+	.data       start:0x80317AF8 end:0x80317B98
 	.sdata      start:0x803DB950 end:0x803DB958
 	.sdata2     start:0x803E1340 end:0x803E136C
 
 dlls/modgfx/154/154.c:
 	.text       start:0x800FC5B8 end:0x800FCF3C
 	.rodata     start:0x802C2180 end:0x802C2190
+	.data       start:0x80317B98 end:0x80317BD8
 	.sdata      start:0x803DB958 end:0x803DB970
 	.sdata2     start:0x803E1370 end:0x803E13A0
 
 dlls/modgfx/155/155.c:
 	.text       start:0x800FCF3C end:0x800FD2B4
+	.data       start:0x80317BD8 end:0x80317E00
 	.sdata2     start:0x803E13A0 end:0x803E13C8
 
 dlls/modgfx/156/156.c:
 	.text       start:0x800FD2B4 end:0x800FD744
+	.data       start:0x80317E00 end:0x80318038
 	.sdata2     start:0x803E13C8 end:0x803E13F8
 
 dlls/modgfx/157/157.c:
 	.text       start:0x800FD744 end:0x800FDA98
+	.data       start:0x80318038 end:0x80318260
 	.sdata2     start:0x803E13F8 end:0x803E1418
 
 dlls/modgfx/158/158.c:
 	.text       start:0x800FDA98 end:0x800FDE18
+	.data       start:0x80318260 end:0x80318488
 	.sdata2     start:0x803E1418 end:0x803E1444
 
 dlls/modgfx/159/159.c:
 	.text       start:0x800FDE18 end:0x800FE240
-	.data       start:0x80318488 end:0x80318E10
+	.data       start:0x80318488 end:0x803186B0
 	.sdata2     start:0x803E1448 end:0x803E1488
 
 dlls/modgfx/160/160.c:
 	.text       start:0x800FE240 end:0x800FE5A8
+	.data       start:0x803186B0 end:0x803188D8
 	.sdata2     start:0x803E1488 end:0x803E14B4
 
 dlls/modgfx/161/161.c:
 	.text       start:0x800FE5A8 end:0x800FE928
+	.data       start:0x803188D8 end:0x80318B00
 	.sdata2     start:0x803E14B8 end:0x803E14E0
 
 dlls/modgfx/162/162.c:
 	.text       start:0x800FE928 end:0x800FEC74
+	.data       start:0x80318B00 end:0x80318D28
 	.sdata2     start:0x803E14E0 end:0x803E1504
 
 dlls/modgfx/164/164.c:
 	.text       start:0x800FEC74 end:0x800FEC84
+	.data       start:0x80318D28 end:0x80318D48
 
 dlls/modgfx/165/165.c:
 	.text       start:0x800FEC84 end:0x800FF004
+	.data       start:0x80318D48 end:0x80318DF0
 	.sdata      start:0x803DB970 end:0x803DB980
 	.sdata2     start:0x803E1508 end:0x803E1530
 
 dlls/modgfx/166/166.c:
 	.text       start:0x800FF004 end:0x800FF6A0
-	.data       start:0x80318E10 end:0x80319398
+	.data       start:0x80318DF0 end:0x80318E40
 	.sdata      start:0x803DB980 end:0x803DB990
 	.sdata2     start:0x803E1530 end:0x803E1570
 
 dlls/modgfx/167/167.c:
 	.text       start:0x800FF6A0 end:0x800FFB44
+	.data       start:0x80318E40 end:0x80318EE8
 	.sdata2     start:0x803E1570 end:0x803E1598
 
 dlls/modgfx/168/168.c:
 	.text       start:0x800FFB44 end:0x800FFF04
+	.data       start:0x80318EE8 end:0x80319028
 	.sdata2     start:0x803E1598 end:0x803E15CC
 
 dlls/modgfx/169/169.c:
 	.text       start:0x800FFF04 end:0x801002C0
+	.data       start:0x80319028 end:0x80319168
 	.sdata2     start:0x803E15D0 end:0x803E1600
 
 dlls/modgfx/170/170.c:
 	.text       start:0x801002C0 end:0x80100550
+	.data       start:0x80319168 end:0x80319378
 	.sdata2     start:0x803E1600 end:0x803E1628
 
 dlls/projgfx/171/171.c:
 	.text       start:0x80100550 end:0x80100588
-	.data       start:0x80319398 end:0x803193E0
+	.data       start:0x80319378 end:0x803193C0
 
 dlls/projgfx/172/172.c:
 	.text       start:0x80100588 end:0x801005C0
-	.data       start:0x803193E0 end:0x80319430
+	.data       start:0x803193C0 end:0x80319410
 
 dlls/projgfx/173/173.c:
 	.text       start:0x801005C0 end:0x801005F8
-	.data       start:0x80319430 end:0x80319480
+	.data       start:0x80319410 end:0x80319460
 
 dlls/projgfx/174/174.c:
 	.text       start:0x801005F8 end:0x80100630
-	.data       start:0x80319480 end:0x803194C8
+	.data       start:0x80319460 end:0x803194A8
 
 dlls/projgfx/175/175.c:
 	.text       start:0x80100630 end:0x80100668
-	.data       start:0x803194C8 end:0x80319518
+	.data       start:0x803194A8 end:0x803194F8
 
 dlls/projgfx/176/176.c:
 	.text       start:0x80100668 end:0x801006A0
-	.data       start:0x80319518 end:0x80319568
+	.data       start:0x803194F8 end:0x80319548
 
 dlls/projgfx/177/177.c:
 	.text       start:0x801006A0 end:0x801006D8
-	.data       start:0x80319568 end:0x803195B8
+	.data       start:0x80319548 end:0x80319598
 
 dlls/projgfx/179/179.c:
 	.text       start:0x801006D8 end:0x80100710
-	.data       start:0x803195B8 end:0x80319608
+	.data       start:0x80319598 end:0x803195E8
 
 dlls/projgfx/184/184.c:
 	.text       start:0x80100710 end:0x80100748
-	.data       start:0x80319608 end:0x80319658
+	.data       start:0x803195E8 end:0x80319638
 
 dlls/projgfx/185/185.c:
 	.text       start:0x80100748 end:0x80100780
-	.data       start:0x80319658 end:0x803196A8
+	.data       start:0x80319638 end:0x80319688
 
 dlls/projgfx/186/186.c:
 	.text       start:0x80100780 end:0x801007B8
-	.data       start:0x803196A8 end:0x803196F8
+	.data       start:0x80319688 end:0x803196D8
 
 dlls/projgfx/180/180.c:
 	.text       start:0x801007B8 end:0x801007F0
-	.data       start:0x803196F8 end:0x80319740
+	.data       start:0x803196D8 end:0x80319720
 
 dlls/projgfx/181/181.c:
 	.text       start:0x801007F0 end:0x80100828
-	.data       start:0x80319740 end:0x80319788
+	.data       start:0x80319720 end:0x80319768
 
 dlls/projgfx/178/178.c:
 	.text       start:0x80100828 end:0x80100860
-	.data       start:0x80319788 end:0x803197D0
+	.data       start:0x80319768 end:0x803197B0
 
 dlls/projgfx/182/182.c:
 	.text       start:0x80100860 end:0x80100898
-	.data       start:0x803197D0 end:0x80319818
+	.data       start:0x803197B0 end:0x803197F8
 
 dlls/projgfx/183/183.c:
 	.text       start:0x80100898 end:0x801008D0
-	.data       start:0x80319818 end:0x80319860
+	.data       start:0x803197F8 end:0x80319840
 
 dlls/projgfx/187/187.c:
 	.text       start:0x801008D0 end:0x80100908
-	.data       start:0x80319860 end:0x803198A8
+	.data       start:0x80319840 end:0x80319888
 
 dlls/projgfx/188/188.c:
 	.text       start:0x80100908 end:0x80100940
-	.data       start:0x803198A8 end:0x803198F8
+	.data       start:0x80319888 end:0x803198D8
 
 dlls/projgfx/189/189.c:
 	.text       start:0x80100940 end:0x80100978
-	.data       start:0x803198F8 end:0x80319940
+	.data       start:0x803198D8 end:0x80319920
 
 dlls/projgfx/190/190.c:
 	.text       start:0x80100978 end:0x801009B0
-	.data       start:0x80319940 end:0x80319988
+	.data       start:0x80319920 end:0x80319968
 
 dlls/projgfx/191/191.c:
 	.text       start:0x801009B0 end:0x801009E8
-	.data       start:0x80319988 end:0x803199D0
+	.data       start:0x80319968 end:0x803199B0
 
 dlls/projgfx/192/192.c:
 	.text       start:0x801009E8 end:0x80100A20
-	.data       start:0x803199D0 end:0x80319A18
+	.data       start:0x803199B0 end:0x803199F8
 
 dlls/projgfx/193/193.c:
 	.text       start:0x80100A20 end:0x80100A58
-	.data       start:0x80319A18 end:0x80319A60
+	.data       start:0x803199F8 end:0x80319A40
 
 dlls/projgfx/194/194.c:
 	.text       start:0x80100A58 end:0x80100A90
-	.data       start:0x80319A60 end:0x80319B14
+	.data       start:0x80319A40 end:0x80319A88
 
-main/dll/dll_8b.c:
-	.text       start:0x80100A90 end:0x80100AA4
-
-main/dll/dll_a6.c:
-	.text       start:0x80100AA4 end:0x80100C90
-
-main/dll/dll_b2.c:
-	.text       start:0x80100C90 end:0x80100DCC
-
-main/dll/dll_b3.c:
-	.text       start:0x80100DCC end:0x80100FA0
-
-main/dll/dll_b4.c:
-	.text       start:0x80100FA0 end:0x801010B4
-
-main/dll/dll_b6.c:
-	.text       start:0x801010B4 end:0x80101690
-
-main/dll/dll_b7.c:
-	.text       start:0x80101690 end:0x801018A8
-
-main/dll/dll_b8.c:
-	.text       start:0x801018A8 end:0x80101980
-	.sdata2     start:0x803E1660 end:0x803E1668
-
-main/dll/dll_bb.c:
-	.text       start:0x80101980 end:0x8010210C
-	.sdata      start:0x803DB990 end:0x803DB9A0
-
-main/dll/dll_bc.c:
-	.text       start:0x8010210C end:0x8010224C
-
-main/dll/CAM/camcontrol.c:
-	.text       start:0x8010224C end:0x80103524
-	.data       start:0x80319B14 end:0x80319B54
+dlls/engine/1_camcontrol/camcontrol.c:
+	.text       start:0x80100A90 end:0x80103524
+	.data       start:0x80319A88 end:0x80319B54
 	.bss        start:0x803A4228 end:0x803A43C0
+	.sdata      start:0x803DB990 end:0x803DB9A0
 	.sbss       start:0x803DD4B8 end:0x803DD528
+	.sdata2     start:0x803E1628 end:0x803E1688
 
-main/dll/CAM/cammodes.c:
-	.data       start:0x80319B58 end:0x80319CB4
-
-main/dll/cutcam.c:
+dlls/engine/66/66.c:
 	.text       start:0x80103524 end:0x80106654
+	.data       start:0x80319B58 end:0x80319B98
 	.sbss       start:0x803DD528 end:0x803DD538
-	.sdata2     start:0x803E16D0 end:0x803E16D8
+	.sdata2     start:0x803E1688 end:0x803E1740
 
-main/dll/pathcamgroup.c:
+dlls/engine/67/67.c:
 	.text       start:0x80106654 end:0x80107AEC
+	.data       start:0x80319B98 end:0x80319BC8
 	.sbss       start:0x803DD538 end:0x803DD540
 	.sdata2     start:0x803E1740 end:0x803E177C
 
-main/dll/dll_0045_camTalk.c:
+dlls/engine/69/69.c:
 	.text       start:0x80107AEC end:0x80108010
+	.data       start:0x80319BC8 end:0x80319BF8
 	.sbss       start:0x803DD540 end:0x803DD548
 	.sdata2     start:0x803E1780 end:0x803E17C0
 
-main/dll/dll_0044_cameramodeviewfinder.c:
+dlls/engine/68/68.c:
 	.text       start:0x80108010 end:0x80109748
+	.data       start:0x80319BF8 end:0x80319C28
 	.sdata      start:0x803DB9A0 end:0x803DB9A8
 	.sbss       start:0x803DD548 end:0x803DD550
 
-main/dll/dll_0046_cameramodedebug.c:
+dlls/engine/70/70.c:
 	.text       start:0x80109748 end:0x80109B04
+	.data       start:0x80319C28 end:0x80319C58
 	.sbss       start:0x803DD550 end:0x803DD554
 	.sdata2     start:0x803E1868 end:0x803E1874
 
-main/dll/dll_0048_cameramodestatic.c:
+dlls/engine/72/72.c:
 	.text       start:0x80109B04 end:0x8010A104
+	.data       start:0x80319C58 end:0x80319C88
 	.sbss       start:0x803DD558 end:0x803DD55C
 	.sdata2     start:0x803E1878 end:0x803E1888
 
-main/dll/camshipbattle5c.c:
-	.text       start:0x8010A104 end:0x8010AEA8
-	.data       start:0x80319CB4 end:0x80319CE8
-
-main/dll/dll_0047_cameramodeteststrength.c:
-	.text       start:0x8010AEA8 end:0x8010BF08
+dlls/engine/71/71.c:
+	.text       start:0x8010A104 end:0x8010BF08
+	.data       start:0x80319C88 end:0x80319CE8
 	.sbss       start:0x803DD560 end:0x803DD568
+	.sdata2     start:0x803E1888 end:0x803E1938
 
-main/dll/dll_60.c:
-	.text       start:0x8010BF08 end:0x8010BF08
-
-main/dll/dll_0049_cameramodecombat_intro.c:
-	.text       start:0x8010BF08 end:0x8010C064
-
-main/dll/dll_0049_cameramodecombat.c:
-	.text       start:0x8010C064 end:0x8010CEC0
+dlls/engine/73/73.c:
+	.text       start:0x8010BF08 end:0x8010CEC0
 	.data       start:0x80319CE8 end:0x80319D18
 	.sbss       start:0x803DD568 end:0x803DD570
 	.sdata2     start:0x803E1938 end:0x803E1940
 
-main/dll/dll_004A_cameramodeshipbattle.c:
+dlls/engine/74/74.c:
 	.text       start:0x8010CEC0 end:0x8010D33C
 	.data       start:0x80319D18 end:0x80319D48
 	.sbss       start:0x803DD570 end:0x803DD578
 
-main/dll/dll_004B_cameramodeclimb.c:
+dlls/engine/75/75.c:
 	.text       start:0x8010D33C end:0x8010DAD4
 	.data       start:0x80319D48 end:0x80319D78
 	.sbss       start:0x803DD578 end:0x803DD580
 	.sdata2     start:0x803E1990 end:0x803E19A0
 
-main/dll/dll_004C_camDebug.c:
+dlls/engine/76/76.c:
 	.text       start:0x8010DAD4 end:0x8010DB7C
 	.data       start:0x80319D78 end:0x80319DA8
 
-main/dll/dll_004D_cameramodenpcspeak.c:
+dlls/engine/77/77.c:
 	.text       start:0x8010DB7C end:0x8010E51C
 	.data       start:0x80319DA8 end:0x80319E08
 	.sdata      start:0x803DB9A8 end:0x803DB9C8
 	.sbss       start:0x803DD580 end:0x803DD588
 	.sdata2     start:0x803E19D0 end:0x803E1A24
 
-main/dll/dll_004E_cameramodeworldmap.c:
+dlls/engine/78/78.c:
 	.text       start:0x8010E51C end:0x8010F2F8
 	.data       start:0x80319E08 end:0x80319E38
 	.sbss       start:0x803DD588 end:0x803DD590
 
-main/dll/dll_004F_dll4f.c:
+dlls/engine/79/79.c:
 	.text       start:0x8010F2F8 end:0x8010F540
 	.data       start:0x80319E38 end:0x80319E68
 	.sbss       start:0x803DD590 end:0x803DD598
 	.sdata2     start:0x803E1A88 end:0x803E1AC0
 
-main/dll/dll_0050_cameramodecrawl.c:
+dlls/engine/80/80.c:
 	.text       start:0x8010F540 end:0x8010FA54
 	.data       start:0x80319E68 end:0x80319E98
 	.sbss       start:0x803DD598 end:0x803DD5A0
 	.sdata2     start:0x803E1AC0 end:0x803E1AE0
 
-main/dll/dll_0051_cameramodecannon.c:
+dlls/engine/81/81.c:
 	.text       start:0x8010FA54 end:0x8010FC74
 	.data       start:0x80319E98 end:0x80319EC8
 	.sbss       start:0x803DD5A0 end:0x803DD5A8
 	.sdata2     start:0x803E1AE0 end:0x803E1B00
 
-main/dll/dll_0052_cameramodeforcebehind.c:
+dlls/engine/82/82.c:
 	.text       start:0x8010FC74 end:0x801101E4
 	.data       start:0x80319EC8 end:0x80319EF8
 	.sdata      start:0x803DB9C8 end:0x803DB9D0
 	.sbss       start:0x803DD5A8 end:0x803DD5B8
 	.sdata2     start:0x803E1B00 end:0x803E1B20
 
-main/dll/dll_0053_cameramodecloudrunner.c:
+dlls/engine/83/83.c:
 	.text       start:0x801101E4 end:0x801106B4
 	.data       start:0x80319EF8 end:0x80319F28
 	.sdata      start:0x803DB9D0 end:0x803DB9D8
 	.sbss       start:0x803DD5B8 end:0x803DD5C0
 	.sdata2     start:0x803E1B20 end:0x803E1B40
 
-main/dll/dll_0054_dll54.c:
+dlls/engine/84/84.c:
 	.text       start:0x801106B4 end:0x80110C80
 	.data       start:0x80319F28 end:0x80319F58
 	.sbss       start:0x803DD5C0 end:0x803DD5C8
 	.sdata2     start:0x803E1B40 end:0x803E1B78
 
-main/dll/dll_0055_cameramodeperv.c:
+dlls/engine/85/85.c:
 	.text       start:0x80110C80 end:0x80110E30
 	.data       start:0x80319F58 end:0x80319F88
 	.sbss       start:0x803DD5C8 end:0x803DD5D0
 	.sdata2     start:0x803E1B78 end:0x803E1B98
 
-main/dll/dll_0056_cameramodearwing.c:
+dlls/engine/86/86.c:
 	.text       start:0x80110E30 end:0x801115E4
 	.data       start:0x80319F88 end:0x80319FB8
 	.bss        start:0x803A43C0 end:0x803A4420
 	.sdata2     start:0x803E1BB8 end:0x803E1BC0
 
-main/dll/dll_0057_cameramodetitle.c:
+dlls/engine/87/87.c:
 	.text       start:0x801115E4 end:0x80111D14
-	.data       start:0x80319FB8 end:0x8031A0E0
+	.data       start:0x80319FB8 end:0x8031A048
 	.bss        start:0x803A4420 end:0x803A4438
 	.sdata      start:0x803DB9D8 end:0x803DB9E0
 	.sbss       start:0x803DD5D0 end:0x803DD5D8
 	.sdata2     start:0x803E1BE0 end:0x803E1C18
 
-main/dll/dll_0019_dll19func0.c:
+dlls/engine/25/25.c:
 	.text       start:0x80111D14 end:0x80113F8C
 	.rodata     start:0x802C2190 end:0x802C21A0
+	.data       start:0x8031A048 end:0x8031A0E0
 	.sdata      start:0x803DB9E0 end:0x803DB9E8
 	.sbss       start:0x803DD5D8 end:0x803DD5E8
 	.sdata2     start:0x803E1C18 end:0x803E1C88
 
-main/dll/dll_002E_moveLib.c:
+dlls/engine/46/46.c:
 	.text       start:0x80113F8C end:0x801159E4
-	.data       start:0x8031A0E0 end:0x8031A1C8
+	.data       start:0x8031A0E0 end:0x8031A148
 	.sdata2     start:0x803E1C88 end:0x803E1CE4
 
-main/dll/dll_0032_titlescreeninit.c:
+dlls/engine/48/48.c:
+	.data       start:0x8031A148 end:0x8031A178
+
+dlls/engine/50/50.c:
 	.text       start:0x801159E4 end:0x80115F20
+	.data       start:0x8031A178 end:0x8031A1A0
 	.bss        start:0x803A4438 end:0x803A4448
 	.sbss       start:0x803DD5E8 end:0x803DD5F8
 	.sdata2     start:0x803E1CE8 end:0x803E1CF0
 
-main/dll/dll_0033_nrareware.c:
+dlls/engine/51/51.c:
 	.text       start:0x80115F20 end:0x8011611C
-	.data       start:0x8031A1C8 end:0x8031A1D4
+	.data       start:0x8031A1A0 end:0x8031A1D4
 
-main/dll/n_attractmode.c:
+n_attractmode.c:
 	.text       start:0x8011611C end:0x801165BC
 
-main/dll/dll_0034_titlemenu.c:
+dlls/engine/52/52.c:
 	.text       start:0x801165BC end:0x8011730C
 	.data       start:0x8031A1D8 end:0x8031A3B0
 	.sbss       start:0x803DD610 end:0x803DD658
 	.sdata2     start:0x803E1D10 end:0x803E1D2C
 
-main/dll/dll_3b.c:
-	.text       start:0x8011730C end:0x801175A4
-	.bss        start:0x803A4460 end:0x803A57C0
-
-main/audio_decode_thread.c:
-	.text       start:0x801175A4 end:0x80117668
+main/thp/dll_3b.c:
+	.text       start:0x8011730C end:0x80117668
+	.bss        start:0x803A4448 end:0x803A57C0
+	.sbss       start:0x803DD658 end:0x803DD660
 
 dolphin/ax/AX.c:
 	.text       start:0x80117668 end:0x80117668
 
-main/dll/n_options.c:
+main/thp/n_options.c:
 	.text       start:0x80117668 end:0x8011846C
 	.data       start:0x8031A3B0 end:0x8031A7BC
 	.bss        start:0x803A57C0 end:0x803A5F08
-	.sdata2     start:0x803E1D30 end:0x803E1D50
+	.sbss       start:0x803DD660 end:0x803DD664
+	.sdata2     start:0x803E1D30 end:0x803E1D54
 
-main/dll/dll_3e.c:
+main/thp/dll_3e.c:
 	.text       start:0x8011846C end:0x80118C88
-	.sbss       start:0x803DD664 end:0x803DD668
+	.sbss       start:0x803DD664 end:0x803DD688
 
-main/dll/attractmovie.c:
+main/thp/attractmovie.c:
 	.text       start:0x80118C88 end:0x80119000
 
-main/dll/picmenu.c:
-	.text       start:0x80119000 end:0x80119C20
-	.bss        start:0x803A5F08 end:0x803A8658
+main/thp/picmenu.c:
+	.text       start:0x80119000 end:0x80119458
 	.sdata      start:0x803DB9E8 end:0x803DB9F0
+	.sdata2     start:0x803E1D54 end:0x803E1D58
 
-main/dll/frontend_control.c:
-	.text       start:0x80119C20 end:0x80119FAC
+main/thp/THPRead.c:
+	.text       start:0x80119458 end:0x80119724
+	.bss        start:0x803A5F08 end:0x803A72F0
+	.sbss       start:0x803DD688 end:0x803DD690
 
-main/dll/dll_43.c:
-	.text       start:0x80119FAC end:0x8011A0DC
+main/thp/THPVideoDecode.c:
+	.text       start:0x80119724 end:0x80119C20
+	.bss        start:0x803A72F0 end:0x803A8658
+	.sbss       start:0x803DD690 end:0x803DD6A0
 
-main/dll/dll_0035_saveselectscreen.c:
-	.text       start:0x8011A0DC end:0x8011B5D4
+dlls/engine/53/53.c:
+	.text       start:0x80119C20 end:0x8011B5D4
 	.data       start:0x8031A7BC end:0x8031A880
 	.bss        start:0x803A8658 end:0x803A8690
 	.sdata      start:0x803DB9F0 end:0x803DBA28
 	.sbss       start:0x803DD6A0 end:0x803DD6D0
+	.sdata2     start:0x803E1D58 end:0x803E1D80
 
-main/dll/dll_0036_entersavenamescreen.c:
+dlls/engine/54/54.c:
 	.text       start:0x8011B5D4 end:0x8011BFC8
 	.data       start:0x8031A880 end:0x8031A8F8
 	.bss        start:0x803A8690 end:0x803A87D0
-	.sdata2     start:0x803E1DA0 end:0x803E1DD0
+	.sbss       start:0x803DD6D0 end:0x803DD6F8
+	.sdata2     start:0x803E1D80 end:0x803E1DD0
 
-main/dll/dll_4e.c:
-	.text       start:0x8011BFC8 end:0x8011C5CC
-
-main/dll/dll_4d.c:
-	.text       start:0x8011C5CC end:0x8011C7B4
-
-main/dll/prof.c:
-	.text       start:0x8011C7B4 end:0x8011CD54
-
-main/dll/dll_0037_optionsscreen.c:
-	.text       start:0x8011CD54 end:0x8011D51C
+dlls/engine/55/55.c:
+	.text       start:0x8011BFC8 end:0x8011D51C
 	.data       start:0x8031A8F8 end:0x8031AD20
 	.sdata      start:0x803DBA28 end:0x803DBA30
-	.sdata2     start:0x803E1DE8 end:0x803E1DF0
+	.sbss       start:0x803DD6F8 end:0x803DD710
+	.sdata2     start:0x803E1DD0 end:0x803E1DF0
 
-main/dll/dll_0038_weirdunusedmenu.c:
+dlls/engine/56/56.c:
 	.text       start:0x8011D51C end:0x8011D854
 	.data       start:0x8031AD20 end:0x8031ADD0
 	.sbss       start:0x803DD710 end:0x803DD728
 	.sdata2     start:0x803E1DF8 end:0x803E1E00
 
-main/dll/dll_0039_dummy39.c:
+dlls/engine/57/57.c:
 	.text       start:0x8011D854 end:0x8011D900
 	.data       start:0x8031ADD0 end:0x8031ADF8
 
-main/dll/dll_003A_dummy3a.c:
+dlls/engine/58/58.c:
 	.text       start:0x8011D900 end:0x8011D918
 	.data       start:0x8031ADF8 end:0x8031AE20
 
-main/dll/dll_0000_gameui.c:
+dlls/engine/0/0.c:
 	.text       start:0x8011D918 end:0x8012FECC
 	.rodata     start:0x802C21A0 end:0x802C21C4
 	.data       start:0x8031AE20 end:0x8031C168
@@ -1370,42 +1420,45 @@ main/dll/dll_0000_gameui.c:
 	.sdata      start:0x803DBA30 end:0x803DBBB0
 	.sbss       start:0x803DD728 end:0x803DD8E0
 
-main/dll/dll_003B_menu.c:
+dlls/engine/59/59.c:
 	.text       start:0x8012FECC end:0x80130124
 	.data       start:0x8031C168 end:0x8031C1A8
 	.sbss       start:0x803DD8E8 end:0x803DD8F8
 
-main/dll/dll_003C_tumbleweedbush.c:
+dlls/engine/60/60.c:
 	.text       start:0x80130124 end:0x80131540
-	.data       start:0x8031C1A8 end:0x8031C508
+	.data       start:0x8031C1A8 end:0x8031C2A8
 	.bss        start:0x803A9458 end:0x803A9DB8
 	.sbss       start:0x803DD8F8 end:0x803DD918
 	.sdata2     start:0x803E21E0 end:0x803E21E8
 
-main/dll/dll_003D_titlemenuitem.c:
+dlls/engine/61/61.c:
 	.text       start:0x80131540 end:0x80132008
+	.data       start:0x8031C2A8 end:0x8031C300
 	.bss        start:0x803A9DB8 end:0x803A9DD0
 	.sdata2     start:0x803E21E8 end:0x803E21FC
 
-main/dll/dll_003E_dummy3e.c:
+dlls/engine/62/62.c:
 	.text       start:0x80132008 end:0x80132024
+	.data       start:0x8031C300 end:0x8031C328
 
-main/dll/dll_0031_minimap.c:
+dlls/engine/49/49.c:
 	.text       start:0x80132024 end:0x80133F70
-	.data       start:0x8031C508 end:0x8031C620
+	.data       start:0x8031C328 end:0x8031C5F8
 	.sdata      start:0x803DBBB0 end:0x803DBBF0
 	.sbss       start:0x803DD928 end:0x803DD960
 
-main/dll/dll_003F_dll3f.c:
+dlls/engine/63/63.c:
 	.text       start:0x80133F70 end:0x80134098
+	.data       start:0x8031C5F8 end:0x8031C620
 	.sdata      start:0x803DBBF0 end:0x803DBBF8
 
-main/dll/dll_0040_credits.c:
+dlls/engine/64/64.c:
 	.text       start:0x80134098 end:0x801343CC
 	.data       start:0x8031C620 end:0x8031CC38
 	.sdata2     start:0x803E22C0 end:0x803E22D0
 
-main/dll/dll_0041_warpstoneui.c:
+dlls/engine/65/65.c:
 	.text       start:0x801343CC end:0x80134870
 	.data       start:0x8031CC38 end:0x8031CDE8
 	.bss        start:0x803A9DD0 end:0x803A9F50
@@ -1420,7 +1473,7 @@ dlls/objects/704/704.c:
 	.sdata      start:0x803DBC08 end:0x803DBC10
 	.sbss       start:0x803DD990 end:0x803DD9D8
 
-main/dll/dll_80136a40.c:
+main/dll_80136a40.c:
 	.text       start:0x80136A40 end:0x80138908
 	.data       start:0x8031CFA0 end:0x8031D2E4
 	.bss        start:0x803AA018 end:0x803AC428
@@ -1459,111 +1512,18 @@ dlls/objects/224_SwarmBaddie/SwarmBaddie.c:
 
 dlls/objects/225_WispBaddie/WispBaddie.c:
 	.text       start:0x8014F620 end:0x8014FEF8
-	.data       start:0x8031DCF8 end:0x8031F290
+	.data       start:0x8031DCF8 end:0x8031DD30
 	.sdata      start:0x803DBC80 end:0x803DBC88
 	.sbss       start:0x803DDA68 end:0x803DDA70
 	.sdata2     start:0x803E26D0 end:0x803E2724
 
-main/dll/battledroid.c:
-	.text       start:0x8014FEF8 end:0x8014FFB4
-	.sdata2     start:0x803E2728 end:0x803E2740
-
-main/dll/newseqobjgroup.c:
-	.text       start:0x8014FFB4 end:0x80151DB8
-	.bss        start:0x803AC428 end:0x803AC4A8
-	.sdata      start:0x803DBC88 end:0x803DBCA8
-	.sdata2     start:0x803E2740 end:0x803E27D4
-
-main/dll/groundbaddiepush.c:
-	.text       start:0x80151DB8 end:0x80152040
-	.sdata2     start:0x803E27D8 end:0x803E27F8
-
-main/dll/seqobj11e.c:
-	.text       start:0x80152040 end:0x80152440
-	.data       start:0x8031F290 end:0x8031F2D8
-	.sdata      start:0x803DBCA8 end:0x803DBCB8
-	.sdata2     start:0x803E27F8 end:0x803E2810
-
-main/dll/gcrobotpatrol.c:
-	.text       start:0x80152440 end:0x80152B90
-	.sdata2     start:0x803E2810 end:0x803E2870
-
-main/dll/mikaladon.c:
-	.text       start:0x80152B90 end:0x80152FA8
-	.sdata2     start:0x803E2870 end:0x803E28AC
-
-main/dll/magicplant.c:
-	.text       start:0x80152FA8 end:0x80153640
-	.data       start:0x8031F2D8 end:0x8031F2F8
-	.sdata      start:0x803DBCB8 end:0x803DBCD0
-	.sdata2     start:0x803E28B0 end:0x803E28F0
-
-main/dll/kooshy.c:
-	.text       start:0x80153640 end:0x80153CF8
-	.sdata2     start:0x803E28F0 end:0x803E2900
-
-main/dll/weevil.c:
-	.text       start:0x80153CF8 end:0x80154328
-	.sdata2     start:0x803E2960 end:0x803E2990
-
-main/dll/fallladdersgroup.c:
-	.text       start:0x80154328 end:0x80154FB4
-	.sdata      start:0x803DBCD0 end:0x803DBCD8
-	.sdata2     start:0x803E2990 end:0x803E29F8
-
-main/dll/fireflylantern_steer.c:
-	.text       start:0x80154FB4 end:0x8015536C
-	.sdata2     start:0x803E2A10 end:0x803E2A20
-
-main/dll/duster.c:
-	.text       start:0x8015536C end:0x80155770
-	.data       start:0x8031F2F8 end:0x8031FAE8
-	.sdata      start:0x803DBCD8 end:0x803DBCE0
-	.sdata2     start:0x803E2A20 end:0x803E2A30
-
-main/dll/duster_80155770.c:
-	.text       start:0x80155770 end:0x80155B10
-	.sdata2     start:0x803E2A30 end:0x803E2A44
-
-main/dll/spittingeba.c:
-	.text       start:0x80155B10 end:0x801561EC
-	.sdata2     start:0x803E2A48 end:0x803E2A70
-
-main/dll/duster_wb.c:
-	.text       start:0x801561EC end:0x80156D44
-	.sdata2     start:0x803E2A98 end:0x803E2AA8
-
-main/dll/hoodedzyck.c:
-	.text       start:0x80156D44 end:0x80157988
-	.sdata2     start:0x803E2B18 end:0x803E2B7C
-
-main/dll/firecrawler.c:
-	.text       start:0x80157988 end:0x8015983C
-	.data       start:0x8031FAE8 end:0x8031FD58
-	.bss        start:0x803AC4A8 end:0x803AC528
-	.sdata      start:0x803DBCE0 end:0x803DBD40
-	.sbss       start:0x803DDA70 end:0x803DDA78
-	.sdata2     start:0x803E2B80 end:0x803E2C10
-
-main/dll/hagabon_mk2.c:
-	.text       start:0x8015983C end:0x8015A52C
-	.sdata2     start:0x803E2C10 end:0x803E2C98
-
-main/dll/snowworm.c:
-	.text       start:0x8015A52C end:0x8015AD60
-	.data       start:0x8031FD58 end:0x8031FD80
-	.sdata2     start:0x803E2CB0 end:0x803E2CD8
-
-main/dll/baddiewhirlpool.c:
-	.text       start:0x8015AD60 end:0x8015AF10
-	.sdata2     start:0x803E2CD8 end:0x803E2D00
-
 dlls/objects/202/202.c:
-	.text       start:0x8015AF10 end:0x8015DAE8
-	.data       start:0x8031FD80 end:0x8031FEA8
-	.bss        start:0x803AC528 end:0x803AC580
-	.sbss       start:0x803DDA78 end:0x803DDA7A
-	.sdata2     start:0x803E2D00 end:0x803E2DBC
+	.text       start:0x8014FEF8 end:0x8015DAE8
+	.data       start:0x8031DD30 end:0x8031FEA8
+	.bss        start:0x803AC428 end:0x803AC580
+	.sdata      start:0x803DBC88 end:0x803DBD40
+	.sbss       start:0x803DDA70 end:0x803DDA7A
+	.sdata2     start:0x803E2728 end:0x803E2DBC
 
 dlls/objects/206/206.c:
 	.text       start:0x8015DAE8 end:0x8015F5B0
@@ -1578,17 +1538,18 @@ dlls/objects/204_ChukChuk/ChukChuk.c:
 
 dlls/objects/205_IceBall/IceBall.c:
 	.text       start:0x8015FBEC end:0x801601C4
-	.data       start:0x8031FFD0 end:0x80320178
+	.data       start:0x8031FFD0 end:0x80320008
 	.sdata2     start:0x803E2E50 end:0x803E2E68
 
 dlls/objects/203/203.c:
 	.text       start:0x801601C4 end:0x80161130
+	.data       start:0x80320008 end:0x803200E0
 	.bss        start:0x803AC5D0 end:0x803AC5F8
 	.sdata2     start:0x803E2E68 end:0x803E2EB0
 
 dlls/objects/208_Grimble/Grimble.c:
 	.text       start:0x80161130 end:0x80163094
-	.data       start:0x80320178 end:0x803201B0
+	.data       start:0x803200E0 end:0x803201B0
 	.bss        start:0x803AC5F8 end:0x803AC638
 	.sdata2     start:0x803E2EB0 end:0x803E2F2C
 
@@ -2081,13 +2042,10 @@ dlls/objects/301_LFXEmitter/LFXEmitter.c:
 	.bss        start:0x803AC7B0 end:0x803AC7D8
 	.sdata2     start:0x803E3E78 end:0x803E3E98
 
-main/dll/warppad.c:
-	.text       start:0x8019042C end:0x80190BD4
-	.sdata2     start:0x803E3E98 end:0x803E3EE8
-
 dlls/objects/300_Transporter/Transporter.c:
-	.text       start:0x80190BD4 end:0x80191A70
+	.text       start:0x8019042C end:0x80191A70
 	.data       start:0x80321FF8 end:0x80322058
+	.sdata2     start:0x803E3E98 end:0x803E3EE8
 
 dlls/objects/302/302.c:
 	.text       start:0x80191A70 end:0x80191B60
@@ -2543,15 +2501,12 @@ dlls/objects/453_DIMBarrier/DIMBarrier.c:
 	.data       start:0x80325408 end:0x80325440
 	.sdata2     start:0x803E4898 end:0x803E489C
 
-main/dll/DIM/dimwooddoor.c:
-	.text       start:0x801B1D84 end:0x801B2550
-	.sdata2     start:0x803E48A0 end:0x803E48F8
-
 dlls/objects/454_DIMCannon/DIMCannon.c:
-	.text       start:0x801B2550 end:0x801B3344
+	.text       start:0x801B1D84 end:0x801B3344
 	.data       start:0x80325440 end:0x80325478
 	.sdata      start:0x803DBEF0 end:0x803DBF18
 	.sbss       start:0x803DDB50 end:0x803DDB58
+	.sdata2     start:0x803E48A0 end:0x803E48F8
 
 dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c:
 	.text       start:0x801B3344 end:0x801B3768
@@ -3152,11 +3107,8 @@ dlls/objects/597/597.c:
 	.sbss       start:0x803DDC60 end:0x803DDC68
 	.sdata2     start:0x803E5AE0 end:0x803E5C70
 
-main/dll/bwalphaanim.c:
-	.text       start:0x801EE088 end:0x801EE0C0
-
 dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c:
-	.text       start:0x801EE0C0 end:0x801EF360
+	.text       start:0x801EE088 end:0x801EF360
 	.data       start:0x80328618 end:0x80328688
 	.sdata2     start:0x803E5C70 end:0x803E5CC8
 
@@ -3626,7 +3578,7 @@ dlls/objects/591_KT_RexLevel/KT_RexLevel.c:
 dlls/objects/592_KT_Rex/KT_Rex.c:
 	.text       start:0x80211F38 end:0x80215A3C
 	.rodata     start:0x802C2550 end:0x802C2560
-	.data       start:0x8032A510 end:0x8032A7C0
+	.data       start:0x8032A510 end:0x8032A5D0
 	.bss        start:0x803AD158 end:0x803AD1C8
 	.sdata      start:0x803DC250 end:0x803DC2A0
 	.sbss       start:0x803DDD48 end:0x803DDD60
@@ -3635,29 +3587,35 @@ dlls/objects/592_KT_Rex/KT_Rex.c:
 dlls/objects/593_KT_RexFloor/KT_RexFloor.c:
 	.text       start:0x80215A3C end:0x802164D0
 	.rodata     start:0x802C2560 end:0x802C2578
+	.data       start:0x8032A5D0 end:0x8032A608
 	.sdata      start:0x803DC2A0 end:0x803DC2A8
 	.sbss       start:0x803DDD60 end:0x803DDD68
 	.sdata2     start:0x803E6858 end:0x803E6898
 
 dlls/objects/594_KT_Lazerwal/KT_Lazerwal.c:
 	.text       start:0x802164D0 end:0x80216B48
+	.data       start:0x8032A608 end:0x8032A640
 	.sdata2     start:0x803E6898 end:0x803E68C0
 
 dlls/objects/595_KT_Lazerlig/KT_Lazerlig.c:
 	.text       start:0x80216B48 end:0x80216D18
+	.data       start:0x8032A640 end:0x8032A678
 	.sdata2     start:0x803E68C0 end:0x803E68D0
 
 dlls/objects/596_KT_Fallingr/KT_Fallingr.c:
 	.text       start:0x80216D18 end:0x80216EAC
+	.data       start:0x8032A678 end:0x8032A6B0
 	.sdata2     start:0x803E68D0 end:0x803E68D8
 
 dlls/objects/609_DR_LaserCan/DR_LaserCan.c:
 	.text       start:0x80216EAC end:0x80217F24
+	.data       start:0x8032A6B0 end:0x8032A6E8
 	.sdata      start:0x803DC2A8 end:0x803DC2B0
 	.sbss       start:0x803DDD68 end:0x803DDD70
 
 dlls/objects/610/610.c:
 	.text       start:0x80217F24 end:0x80218B24
+	.data       start:0x8032A6E8 end:0x8032A730
 	.sdata      start:0x803DC2B0 end:0x803DC2C0
 	.sdata2     start:0x803E6940 end:0x803E6978
 
@@ -3666,11 +3624,12 @@ dlls/objects/612/612.c:
 
 dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
 	.text       start:0x80218B24 end:0x80218EE8
+	.data       start:0x8032A730 end:0x8032A7C0
 
 dlls/objects/614_KytesMum/KytesMum.c:
 	.text       start:0x80218EE8 end:0x80219A88
 	.rodata     start:0x802C2578 end:0x802C2590
-	.data       start:0x8032A7C0 end:0x8032A8B0
+	.data       start:0x8032A7C0 end:0x8032A878
 	.sdata      start:0x803DC2C8 end:0x803DC2D8
 	.sdata2     start:0x803E6980 end:0x803E69A4
 
@@ -3685,7 +3644,7 @@ dlls/objects/621_DR_Vines/DR_Vines.c:
 
 dlls/objects/613_DR_Creator/DR_Creator.c:
 	.text       start:0x80219A88 end:0x8021A008
-	.data       start:0x8032A8B0 end:0x8032A8C0
+	.data       start:0x8032A878 end:0x8032A8C0
 	.sdata2     start:0x803E69B0 end:0x803E69CC
 
 dlls/objects/617_ExplodePlan/ExplodePlan.c:
@@ -3803,7 +3762,7 @@ dlls/objects/642_BarrelGener/BarrelGener.c:
 	.data       start:0x8032AE50 end:0x8032AE88
 	.sdata      start:0x803DC398 end:0x803DC39C
 
-main/dll/obj_movelib.c:
+main/obj_movelib.c:
 	.text       start:0x80221978 end:0x802227EC
 	.sdata      start:0x803DC3A0 end:0x803DC3B0
 	.sdata2     start:0x803E6C38 end:0x803E6CA0
@@ -4465,104 +4424,104 @@ dolphin/amcstubs/AmcExi2Stubs.c:
 dolphin/odenotstub/odenotstub.c:
 	.text       start:0x8026BF4C end:0x8026BF54
 
-main/audio/synth_callback.c:
+musyx/runtime/synth_callback.c:
 	extab       start:0x80005620 end:0x80005630
 	extabindex  start:0x80005CC0 end:0x80005CD8
 	.text       start:0x8026BF54 end:0x8026C488
 	.bss        start:0x803AF550 end:0x803B0950
 
-main/audio/synth_queue.c:
+musyx/runtime/synth_queue.c:
 	extab       start:0x80005630 end:0x80005650
 	extabindex  start:0x80005CD8 end:0x80005D08
 	.text       start:0x8026C488 end:0x8026D630
 	.bss        start:0x803B0950 end:0x803BCD90
 
-main/audio/synth_channel.c:
+musyx/runtime/synth_channel.c:
 	.text       start:0x8026D630 end:0x8026D6E4
 
-main/audio/synth_handle.c:
+musyx/runtime/synth_handle.c:
 	extab       start:0x80005650 end:0x80005660
 	extabindex  start:0x80005D08 end:0x80005D20
 	.text       start:0x8026D6E4 end:0x8026DE58
 
-main/audio/synth_seq_events.c:
+musyx/runtime/synth_seq_events.c:
 	.text       start:0x8026DE58 end:0x8026E0E4
 
-main/audio/synth_sequence.c:
+musyx/runtime/synth_sequence.c:
 	.text       start:0x8026E0E4 end:0x8026E0E4
 
-main/audio/synth_seq_dispatch.c:
+musyx/runtime/synth_seq_dispatch.c:
 	extab       start:0x80005660 end:0x80005680
 	extabindex  start:0x80005D20 end:0x80005D50
 	.text       start:0x8026E0E4 end:0x8026EC44
 	.data       start:0x8032ED80 end:0x8032EDD0
 
-main/audio/mcmd_data.c:
+musyx/runtime/mcmd_data.c:
 	.data       start:0x8032EDD0 end:0x8032F050
 
-main/audio/synth_seq_queue.c:
+musyx/runtime/synth_seq_queue.c:
 	.text       start:0x8026EC44 end:0x8026EC44
 
-main/audio/synth_channel_scale.c:
+musyx/runtime/synth_channel_scale.c:
 	extab       start:0x80005680 end:0x80005688
 	extabindex  start:0x80005D50 end:0x80005D5C
 	.text       start:0x8026EC44 end:0x8026F53C
 
-main/audio/synth.c:
+musyx/runtime/synth.c:
 	extab       start:0x80005688 end:0x80005738
 	extabindex  start:0x80005D5C end:0x80005E64
 	.text       start:0x8026F53C end:0x80272610
 	.bss        start:0x803BCD90 end:0x803BE378
 	.sdata2     start:0x803E7798 end:0x803E77D8
 
-main/audio/synth_control.c:
+musyx/runtime/synth_control.c:
 	extab       start:0x80005738 end:0x80005758
 	extabindex  start:0x80005E64 end:0x80005E94
 	.text       start:0x80272610 end:0x80272720
 
-main/audio/snd_synth_api.c:
+musyx/runtime/snd_synth_api.c:
 	extab       start:0x80005758 end:0x800057C8
 	extabindex  start:0x80005E94 end:0x80005F3C
 	.text       start:0x80272720 end:0x80272EA4
 
-main/audio/synth_job_init.c:
+musyx/runtime/synth_job_init.c:
 	.text       start:0x80272EA4 end:0x80272F70
 	.bss        start:0x803BE378 end:0x803BFC78
 
-main/audio/synth_jobs.c:
+musyx/runtime/synth_jobs.c:
 	extab       start:0x800057C8 end:0x800057E0
 	extabindex  start:0x80005F3C end:0x80005F60
 	.text       start:0x80272F70 end:0x802739B8
 
-main/audio/data_tables.c:
+musyx/runtime/data_tables.c:
 	extab       start:0x800057E0 end:0x80005880
 	extabindex  start:0x80005F60 end:0x80006050
 	.text       start:0x802739B8 end:0x80275364
 	.bss        start:0x803BFC78 end:0x803CA2B0
 
-main/audio/mcmd_wait.c:
+musyx/runtime/mcmd_wait.c:
 	extab       start:0x80005880 end:0x80005888
 	extabindex  start:0x80006050 end:0x8000605C
 	.text       start:0x80275364 end:0x8027566C
 
-main/audio/mcmd_loop.c:
+musyx/runtime/mcmd_loop.c:
 	extab       start:0x80005888 end:0x80005890
 	extabindex  start:0x8000605C end:0x80006068
 	.text       start:0x8027566C end:0x802757C4
 
-main/audio/mcmd_setup.c:
+musyx/runtime/mcmd_setup.c:
 	extab       start:0x80005890 end:0x800058C0
 	extabindex  start:0x80006068 end:0x800060B0
 	.text       start:0x802757C4 end:0x802763C0
 	.bss        start:0x803CA2B0 end:0x803CA2D0
 	.sdata2     start:0x803E77F0 end:0x803E7810
 
-main/audio/mcmd_volume.c:
+musyx/runtime/mcmd_volume.c:
 	extab       start:0x800058C0 end:0x800058D0
 	extabindex  start:0x800060B0 end:0x800060C8
 	.text       start:0x802763C0 end:0x8027656C
 
-main/audio/mcmd_exec.c:
+musyx/runtime/mcmd_exec.c:
 	extab       start:0x800058D0 end:0x80005958
 	extabindex  start:0x800060C8 end:0x80006194
 	.text       start:0x8027656C end:0x80278F0C
@@ -4572,178 +4531,178 @@ main/audio/mcmd_exec.c:
 dolphin/gx/GXTextureTables.c:
 	.data       start:0x8032F218 end:0x8032F618
 
-main/audio/adsr_data.c:
+musyx/runtime/adsr_data.c:
 	.data       start:0x8032F618 end:0x8032FDA0
 
-main/audio/vid_init.c:
+musyx/runtime/vid_init.c:
 	.text       start:0x80278F0C end:0x80279004
 
-main/audio/vid_get.c:
+musyx/runtime/vid_get.c:
 	.text       start:0x80279004 end:0x80279038
 
-main/audio/voice_id.c:
+musyx/runtime/voice_id.c:
 	extab       start:0x80005958 end:0x80005960
 	extabindex  start:0x80006194 end:0x800061A0
 	.text       start:0x80279038 end:0x802795CC
 
-main/audio/voice.c:
+musyx/runtime/voice.c:
 	extab       start:0x80005960 end:0x80005988
 	extabindex  start:0x800061A0 end:0x800061DC
 	.text       start:0x802795CC end:0x8027A330
 	.bss        start:0x803CA2D0 end:0x803CB290
 
-main/audio/voice_conv.c:
+musyx/runtime/voice_conv.c:
 	.text       start:0x8027A330 end:0x8027A4E0
 
-main/audio/synth_ac.c:
+musyx/runtime/synth_ac.c:
 	extab       start:0x80005988 end:0x80005990
 	extabindex  start:0x800061DC end:0x800061E8
 	.text       start:0x8027A4E0 end:0x8027A60C
 	.sdata2     start:0x803E7818 end:0x803E782C
 
-main/audio/synth_adsr.c:
+musyx/runtime/synth_adsr.c:
 	extab       start:0x80005990 end:0x800059C0
 	extabindex  start:0x800061E8 end:0x80006230
 	.text       start:0x8027A60C end:0x8027ACB8
 	.sdata2     start:0x803E7830 end:0x803E7858
 
-main/audio/synth_vsamples.c:
+musyx/runtime/synth_vsamples.c:
 	extab       start:0x800059C0 end:0x800059E0
 	extabindex  start:0x80006230 end:0x80006260
 	.text       start:0x8027ACB8 end:0x8027B42C
 	.bss        start:0x803CB290 end:0x803CBBE0
 
-main/audio/snd_groups.c:
+musyx/runtime/snd_groups.c:
 	extab       start:0x800059E0 end:0x80005A08
 	extabindex  start:0x80006260 end:0x8000629C
 	.text       start:0x8027B42C end:0x8027BA04
 	.bss        start:0x803CBBE0 end:0x803CC1E0
 
-main/audio/sal_studio.c:
+musyx/runtime/sal_studio.c:
 	extab       start:0x80005A08 end:0x80005A30
 	extabindex  start:0x8000629C end:0x800062D8
 	.text       start:0x8027BA04 end:0x8027C48C
 
-main/audio/hw_dspctrl.c:
+musyx/runtime/hw_dspctrl.c:
 	extab       start:0x80005A30 end:0x80005A50
 	extabindex  start:0x800062D8 end:0x80006308
 	.text       start:0x8027C48C end:0x8027F2AC
 	.data       start:0x8032FDA0 end:0x8032FDB8
 	.bss        start:0x803CC1E0 end:0x803CC8C0
 
-main/audio/sal_volume.c:
+musyx/runtime/sal_volume.c:
 	extab       start:0x80005A50 end:0x80005A58
 	extabindex  start:0x80006308 end:0x80006314
 	.text       start:0x8027F2AC end:0x8027FA44
 	.data       start:0x8032FDB8 end:0x8032FFE0
 	.sdata2     start:0x803E7858 end:0x803E7880
 
-main/audio/snd3dgroup.c:
+musyx/runtime/snd3dgroup.c:
 	extab       start:0x80005A58 end:0x80005A90
 	extabindex  start:0x80006314 end:0x80006368
 	.text       start:0x8027FA44 end:0x80281160
 	.bss        start:0x803CC8C0 end:0x803CD760
 	.sdata2     start:0x803E7880 end:0x803E78C8
 
-main/audio/snd_core.c:
+musyx/runtime/snd_core.c:
 	extab       start:0x80005A90 end:0x80005A98
 	extabindex  start:0x80006368 end:0x80006374
 	.text       start:0x80281160 end:0x80281310
 	.sdata2     start:0x803E78C8 end:0x803E78E0
 
-main/audio/snd_midictrl.c:
+musyx/runtime/snd_midictrl.c:
 	extab       start:0x80005A98 end:0x80005B40
 	extabindex  start:0x80006374 end:0x80006470
 	.text       start:0x80281310 end:0x80282E5C
 	.data       start:0x8032FFE0 end:0x80330028
 	.bss        start:0x803CD760 end:0x803D3F60
 
-main/audio/snd_service.c:
+musyx/runtime/snd_service.c:
 	extab       start:0x80005B40 end:0x80005B50
 	extabindex  start:0x80006470 end:0x80006488
 	.text       start:0x80282E5C end:0x80282FE0
 	.data       start:0x80330028 end:0x80330840
 	.sdata      start:0x803DC610 end:0x803DC618
 
-main/audio/hw_init.c:
+musyx/runtime/hw_init.c:
 	extab       start:0x80005B50 end:0x80005B70
 	extabindex  start:0x80006488 end:0x800064B8
 	.text       start:0x80282FE0 end:0x8028343C
 
-main/audio/hw_break.c:
+musyx/runtime/hw_break.c:
 	.text       start:0x8028343C end:0x8028348C
 
-main/audio/hw_adsr.c:
+musyx/runtime/hw_adsr.c:
 	extab       start:0x80005B70 end:0x80005B78
 	extabindex  start:0x800064B8 end:0x800064C4
 	.text       start:0x8028348C end:0x8028363C
 
-main/audio/hw_sample.c:
+musyx/runtime/hw_sample.c:
 	.text       start:0x8028363C end:0x802836AC
 
-main/audio/hw_voice_start.c:
+musyx/runtime/hw_voice_start.c:
 	extab       start:0x80005B78 end:0x80005B80
 	extabindex  start:0x800064C4 end:0x800064D0
 	.text       start:0x802836AC end:0x802836E8
 
-main/audio/hw_keyoff.c:
+musyx/runtime/hw_keyoff.c:
 	.text       start:0x802836E8 end:0x80283710
 
-main/audio/hw_voice_params.c:
+musyx/runtime/hw_voice_params.c:
 	.text       start:0x80283710 end:0x8028383C
 	.sdata      start:0x803DC618 end:0x803DC628
 
-main/audio/hw_volume.c:
+musyx/runtime/hw_volume.c:
 	extab       start:0x80005B80 end:0x80005BA0
 	extabindex  start:0x800064D0 end:0x80006500
 	.text       start:0x8028383C end:0x80283BA0
 	.sdata2     start:0x803E78E0 end:0x803E78E4
 
-main/audio/hw_input.c:
+musyx/runtime/hw_input.c:
 	extab       start:0x80005BA0 end:0x80005BA8
 	extabindex  start:0x80006500 end:0x8000650C
 	.text       start:0x80283BA0 end:0x80283BD4
 
-main/audio/hw_stream.c:
+musyx/runtime/hw_stream.c:
 	extab       start:0x80005BA8 end:0x80005BC0
 	extabindex  start:0x8000650C end:0x80006530
 	.text       start:0x80283BD4 end:0x80283D5C
 
-main/audio/hw_aram.c:
+musyx/runtime/hw_aram.c:
 	extab       start:0x80005BC0 end:0x80005BD8
 	extabindex  start:0x80006530 end:0x80006554
 	.text       start:0x80283D5C end:0x80283DFC
 	.sdata2     start:0x803E78F0 end:0x803E78F8
 
-main/audio/hw_samplemem.c:
+musyx/runtime/hw_samplemem.c:
 	extab       start:0x80005BD8 end:0x80005BF0
 	extabindex  start:0x80006554 end:0x80006578
 	.text       start:0x80283DFC end:0x80283FA0
 
-main/audio/aram_queue.c:
+musyx/runtime/aram_queue.c:
 	extab       start:0x80005BF0 end:0x80005C00
 	extabindex  start:0x80006578 end:0x80006590
 	.text       start:0x80283FA0 end:0x80284224
 	.bss        start:0x803D3F60 end:0x803D41E4
 
-main/audio/aram_init.c:
+musyx/runtime/aram_init.c:
 	extab       start:0x80005C00 end:0x80005C10
 	extabindex  start:0x80006590 end:0x800065A8
 	.text       start:0x80284224 end:0x80284468
 	.bss        start:0x803D41E4 end:0x803D4468
 
-main/audio/aram_data.c:
+musyx/runtime/aram_data.c:
 	extab       start:0x80005C10 end:0x80005C18
 	extabindex  start:0x800065A8 end:0x800065B4
 	.text       start:0x80284468 end:0x80284670
 	.bss        start:0x803D4468 end:0x803D4880
 
-main/audio/sal_ai.c:
+musyx/runtime/sal_ai.c:
 	extab       start:0x80005C18 end:0x80005C40
 	extabindex  start:0x800065B4 end:0x800065F0
 	.text       start:0x80284670 end:0x802848D8
 
-main/audio/sal_dsp.c:
+musyx/runtime/sal_dsp.c:
 	extab       start:0x80005C40 end:0x80005C60
 	extabindex  start:0x800065F0 end:0x80006620
 	.text       start:0x802848D8 end:0x80284A8C
@@ -4751,17 +4710,17 @@ main/audio/sal_dsp.c:
 	.bss        start:0x803D4880 end:0x803D68E0
 	.sdata      start:0x803DC628 end:0x803DC630
 
-main/audio/sal_dsp_irqinit.c:
+musyx/runtime/sal_dsp_irqinit.c:
 	extab       start:0x80005C60 end:0x80005C68
 	extabindex  start:0x80006620 end:0x8000662C
 	.text       start:0x80284A8C end:0x80284AB8
 
-main/audio/sal_dsp_irq.c:
+musyx/runtime/sal_dsp_irq.c:
 	extab       start:0x80005C68 end:0x80005C90
 	extabindex  start:0x8000662C end:0x80006668
 	.text       start:0x80284AB8 end:0x80284B94
 
-main/audio/snd_reverb.c:
+musyx/runtime/snd_reverb.c:
 	extab       start:0x80005C90 end:0x80005CA8
 	extabindex  start:0x80006668 end:0x8000668C
 	.text       start:0x80284B94 end:0x80284C58

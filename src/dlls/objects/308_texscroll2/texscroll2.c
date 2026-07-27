@@ -1,195 +1,171 @@
 /*
- * texscroll2 (DLL 0x134) - per-placement animated UV scroll for a map
- * texture. The placed object resolves the map block under its world
- * position, finds every material layer whose texture matches the one
- * named by its placement (texture table TEXSCROLL_TABLE_ID), and either
- * acquires a hardware scroll slot for it or feeds the current
- * step/secondary-step rates into the existing slot via
- * mapTextureScroll*.
- *
- * On the two gated maps (TEXSCROLL_GAMEBIT_GATED_MAP_A/B) the scroll is
- * conditioned on a placement game bit (state->gameBit): the rates are
- * (re)applied whenever the bit's value changes. Off those maps the
- * scroll is applied unconditionally whenever a re-apply is pending
- * (needsApply), e.g. after the block streams back in.
+ * Map-texture UV scroller. It finds matching shader materials in the
+ * current map block and acquires or updates their hardware scroll slots.
  */
+#include "dlls/objects/308_texscroll2.h"
+
+#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/map_block.h"
-#include "sys/objects/lifecycle.h"
-#include "main/rcp_dolphin.h"
-#include "main/dll/dll_0134_texscroll2.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 #include "main/map_texscroll.h"
+#include "main/object_render.h"
+#include "main/rcp_dolphin.h"
+#include "sys/objects/lifecycle.h"
 
+#define TEXSCROLL2_TEXTURE_TABLE_ID 0x0E
 
-void texscroll2_setScale(TexScroll2Object* obj, s8 stepY)
-{
-    TexScroll2State* state = obj->state;
+#define TEXSCROLL2_GAME_BIT_GATED_MAP_A 0x49B2F
+#define TEXSCROLL2_GAME_BIT_GATED_MAP_B 0x49B67
 
-    if (state->stepY == stepY)
-    {
+#define TEXSCROLL2_TEXTURE_FIXED_SHIFT 6
+#define TEXSCROLL2_RENDER_SCALE        1.0f
+
+void TexScroll2_setStepY(GameObject* obj, s8 stepY) {
+    TexScroll2State* state = obj->extra;
+
+    if (state->stepY == stepY) {
         return;
     }
     state->stepY = stepY;
     state->needsApply = 1;
 }
 
-void texscroll2_applyMapTextureScroll(TexScroll2Object* obj, TexScroll2State* state)
-{
+void TexScroll2_applyMapTextureScroll(GameObject* obj, TexScroll2State* state) {
     void* material;
-    void* layer;
-    int* tables;
-    void* tex;
-    int matIdx;
+    MapShader* shader;
+    int* textureTable;
+    Texture* texture;
+    int materialIndex;
     int texWidthFixed, texHeightFixed;
     MapBlockData* block;
-    int layerIdx;
-    s16* placement;
+    int shaderIndex;
+    TexScrollPlacement* placement;
 
-    placement = obj->objAnim.placementData;
-    block = mapGetBlock(objPosToMapBlockIdx(obj->objAnim.localPosX, obj->objAnim.localPosY, obj->objAnim.localPosZ));
-    if (block == NULL)
-    {
+    placement = (TexScrollPlacement*)obj->anim.placementData;
+    block = mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
+    if (block == NULL) {
         state->needsApply = 1;
         return;
     }
-    tables = getTablesBinEntry(TEXSCROLL_TABLE_ID);
-    if (tables == NULL)
+    textureTable = getTablesBinEntry(TEXSCROLL2_TEXTURE_TABLE_ID);
+    if (textureTable == NULL) {
         return;
-    tex = getLoadedTexture(-tables[(s32) ((TexScrollPlacement*)placement)->textureTableIndex]);
-    if (tex == NULL)
+    }
+    texture = getLoadedTexture(-textureTable[(s32)placement->textureTableIndex]);
+    if (texture == NULL) {
         return;
+    }
 
-    /* layer/material/texture inner types are opaque (no struct defined for
-       them, as in tex_dolphin.c's shader walk): layer+0x41 = material count,
-       material+0x24 = texture ptr, material+0x2a = scroll slot (0xFF=free),
-       tex+0xA/+0xC = u16 width/height. */
-    for (layerIdx = 0; layerIdx < (s32)((MapBlockData*)block)->shaderCount; layerIdx++)
-    {
-        layer = mapBlockGetShader(block, layerIdx);
-        for (matIdx = 0, material = layer; matIdx < (s32) * (u8*)((char*)layer + 0x41); matIdx++)
-        {
-            if (*(void**)((char*)material + 0x24) == tex)
-            {
-                texWidthFixed = (s32)(u32) ((Texture*)tex)->width << 6;
-                texHeightFixed = (s32)(u32) ((Texture*)tex)->height << 6;
-                if (*(u8*)((char*)material + 0x2a) != TEXSCROLL_SLOT_UNALLOCATED)
-                {
-                    int mapId = ((TexScrollPlacement*)obj->objAnim.placementData)->mapId;
-                    if (mapId == TEXSCROLL_GAMEBIT_GATED_MAP_A || mapId == TEXSCROLL_GAMEBIT_GATED_MAP_B)
-                    {
-                        if (mainGetBit(state->gameBit) != 0)
-                        {
-                            mapTextureScrollSetStep((s32) * (u8*)((char*)material + 0x2a), state->stepX, state->stepY,
-                                                    texWidthFixed, texHeightFixed, state->secondaryStepX,
-                                                    state->secondaryStepY, texWidthFixed, texHeightFixed);
+    /*
+     * The material cursor advances one MapShaderLayer at a time while its
+     * field offsets remain relative to MapShader.layers.
+     */
+    for (shaderIndex = 0; shaderIndex < (s32)block->shaderCount; shaderIndex++) {
+        shader = mapBlockGetShader(block, shaderIndex);
+        for (materialIndex = 0, material = shader; materialIndex < (s32)shader->layerCount; materialIndex++) {
+            if (*(Texture**)((char*)material + offsetof(MapShader, layers)) == texture) {
+                texWidthFixed = (s32)(u32)texture->width << TEXSCROLL2_TEXTURE_FIXED_SHIFT;
+                texHeightFixed = (s32)(u32)texture->height << TEXSCROLL2_TEXTURE_FIXED_SHIFT;
+                if (*(u8*)((char*)material + offsetof(MapShader, layers) + offsetof(MapShaderLayer, scrollMtx)) !=
+                    MAP_TEXTURE_SCROLL_SLOT_UNALLOCATED) {
+                    int mapId = ((TexScrollPlacement*)obj->anim.placementData)->base.mapId;
+                    if (mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_A || mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_B) {
+                        if (mainGetBit(state->gameBit) != 0) {
+                            mapTextureScrollSetStep((s32) * (u8*)((char*)material + offsetof(MapShader, layers) +
+                                                                  offsetof(MapShaderLayer, scrollMtx)),
+                                                    state->stepX, state->stepY, texWidthFixed, texHeightFixed,
+                                                    state->secondaryStepX, state->secondaryStepY, texWidthFixed,
+                                                    texHeightFixed);
                         }
+                    } else {
+                        mapTextureScrollSetStep((s32) * (u8*)((char*)material + offsetof(MapShader, layers) +
+                                                              offsetof(MapShaderLayer, scrollMtx)),
+                                                state->stepX, state->stepY, texWidthFixed, texHeightFixed,
+                                                state->secondaryStepX, state->secondaryStepY, texWidthFixed,
+                                                texHeightFixed);
                     }
-                    else
-                    {
-                        mapTextureScrollSetStep((s32) * (u8*)((char*)material + 0x2a), state->stepX, state->stepY,
-                                                texWidthFixed, texHeightFixed, state->secondaryStepX,
-                                                state->secondaryStepY, texWidthFixed, texHeightFixed);
-                    }
-                }
-                else
-                {
-                    *(u8*)((char*)material + 0x2a) = mapTextureScrollAcquire(
-                        state->stepX, state->stepY, texWidthFixed, texHeightFixed, state->secondaryStepX,
-                        state->secondaryStepY, texWidthFixed, texHeightFixed);
+                } else {
+                    *(u8*)((char*)material + offsetof(MapShader, layers) + offsetof(MapShaderLayer, scrollMtx)) =
+                        mapTextureScrollAcquire(state->stepX, state->stepY, texWidthFixed, texHeightFixed,
+                                                state->secondaryStepX, state->secondaryStepY, texWidthFixed,
+                                                texHeightFixed);
                 }
             }
-            material = (void*)((char*)material + 8);
+            material = (void*)((char*)material + sizeof(MapShaderLayer));
         }
     }
 }
 
-int texscroll2_getExtraSize(void)
-{
-    return TEXSCROLL2_EXTRA_STATE_BYTES;
-}
-int texscroll2_getObjectTypeId(void)
-{
-    return 0x0;
+int TexScroll2_getExtraSize(void) {
+    return sizeof(TexScroll2State);
 }
 
-void texscroll2_free(void)
-{
+int TexScroll2_getObjectTypeId(void) {
+    return 0;
 }
 
-void texscroll2_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void TexScroll2_free(void) {
 }
 
-void texscroll2_hitDetect(void)
-{
+void TexScroll2_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibility = visible;
+    if (visibility != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, TEXSCROLL2_RENDER_SCALE);
+    }
 }
 
-void texscroll2_update(TexScroll2Object* obj)
-{
+void TexScroll2_hitDetect(void) {
+}
+
+void TexScroll2_update(GameObject* obj) {
     TexScroll2State* state;
     MapBlockData* block;
     TexScrollPlacement* placement;
     int mapId;
 
-    state = obj->state;
-    block = mapGetBlock(objPosToMapBlockIdx(obj->objAnim.localPosX, obj->objAnim.localPosY, obj->objAnim.localPosZ));
-    placement = (TexScrollPlacement*)obj->objAnim.placementData;
-    mapId = placement->mapId;
-    if (mapId == TEXSCROLL_GAMEBIT_GATED_MAP_A || mapId == TEXSCROLL_GAMEBIT_GATED_MAP_B)
-    {
-        if (block != NULL)
-        {
-            if (mainGetBit(state->gameBit) != *(u32*)&state->previousGameBitValue && state->needsApply == 0)
-            {
-                texscroll2_applyMapTextureScroll(obj, state);
+    state = obj->extra;
+    block = mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
+    placement = (TexScrollPlacement*)obj->anim.placementData;
+    mapId = placement->base.mapId;
+    if (mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_A || mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_B) {
+        if (block != NULL) {
+            if (mainGetBit(state->gameBit) != *(u32*)&state->previousGameBitValue && state->needsApply == 0) {
+                TexScroll2_applyMapTextureScroll(obj, state);
                 state->needsApply = 0;
             }
         }
     }
     state->previousGameBitValue = mainGetBit(state->gameBit);
-    if (block == NULL)
-    {
+    if (block == NULL) {
         state->needsApply = 1;
-    }
-    else
-    {
-        if (state->needsApply != 0)
-        {
-            texscroll2_applyMapTextureScroll(obj, state);
+    } else {
+        if (state->needsApply != 0) {
+            TexScroll2_applyMapTextureScroll(obj, state);
             state->needsApply = 0;
         }
     }
 }
 
-void texscroll2_init(TexScroll2Object* obj, TexScrollPlacement* placement, int loadFlags)
-{
-    TexScroll2State* state = obj->state;
+void TexScroll2_init(GameObject* obj, TexScrollPlacement* placement, int loadFlags) {
+    TexScroll2State* state = obj->extra;
+
     state->stepX = placement->stepX;
     state->stepY = placement->stepY;
     state->secondaryStepX = placement->secondaryStepX;
     state->secondaryStepY = placement->secondaryStepY;
-    if (loadFlags == 0)
-    {
-        texscroll2_applyMapTextureScroll(obj, state);
+    if (loadFlags == 0) {
+        TexScroll2_applyMapTextureScroll(obj, state);
     }
     state->gameBit = placement->gameBit;
     state->previousGameBitValue = -1;
 }
 
-void texscroll2_release(void)
-{
+void TexScroll2_release(void) {
 }
 
-void texscroll2_initialise(void)
-{
+void TexScroll2_initialise(void) {
 }
-
 
 ObjectDescriptor11WithPadding gTexscroll2ObjDescriptor = {
     {
@@ -197,17 +173,17 @@ ObjectDescriptor11WithPadding gTexscroll2ObjDescriptor = {
         0,
         0,
         OBJECT_DESCRIPTOR_FLAGS_11_SLOTS,
-        (ObjectDescriptorCallback)texscroll2_initialise,
-        (ObjectDescriptorCallback)texscroll2_release,
+        (ObjectDescriptorCallback)TexScroll2_initialise,
+        (ObjectDescriptorCallback)TexScroll2_release,
         0,
-        (ObjectDescriptorCallback)texscroll2_init,
-        (ObjectDescriptorCallback)texscroll2_update,
-        (ObjectDescriptorCallback)texscroll2_hitDetect,
-        (ObjectDescriptorCallback)texscroll2_render,
-        (ObjectDescriptorCallback)texscroll2_free,
-        (ObjectDescriptorCallback)texscroll2_getObjectTypeId,
-        texscroll2_getExtraSize,
-        (ObjectDescriptorCallback)texscroll2_setScale,
+        (ObjectDescriptorCallback)TexScroll2_init,
+        (ObjectDescriptorCallback)TexScroll2_update,
+        (ObjectDescriptorCallback)TexScroll2_hitDetect,
+        (ObjectDescriptorCallback)TexScroll2_render,
+        (ObjectDescriptorCallback)TexScroll2_free,
+        (ObjectDescriptorCallback)TexScroll2_getObjectTypeId,
+        TexScroll2_getExtraSize,
+        (ObjectDescriptorCallback)TexScroll2_setStepY,
     },
     0,
 };

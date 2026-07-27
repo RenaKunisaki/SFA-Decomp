@@ -83,7 +83,7 @@ HIGH_INTEREST_NOTES = {
 SOURCE_CHECKS = [
     (
         "Camera-driven map streaming",
-        "src/main/dll/dll_bb.c; src/main/shader.c",
+        "src/dlls/engine/1_camcontrol/camcontrol.c; src/main/shader.c",
         "camcontrol_applyState / loadMapForCameraPos",
         "Every camera commit recenters the 16x16 streamed map-block window from camera XYZ, then object residency runs. A displaced camera can retain remote geometry while Fox's geometry/collision is absent.",
         "critical",

@@ -5,17 +5,6 @@
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
 
-void gpsh_shrine_update(GameObject* obj);
-void gpsh_shrine_init(GameObject* obj, int* def);
-int GPSH_Shrine_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-int gpsh_shrine_getExtraSize(void);
-int gpsh_shrine_getObjectTypeId(void);
-void gpsh_shrine_free(GameObject* obj);
-void gpsh_shrine_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void gpsh_shrine_hitDetect(void);
-void gpsh_shrine_release(void);
-void gpsh_shrine_initialise(void);
-
 int gpsh_objcreator_getExtraSize(void);
 int gpsh_objcreator_getObjectTypeId(void);
 void gpsh_objcreator_free(void);

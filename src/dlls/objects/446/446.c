@@ -12,7 +12,7 @@
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
-#include "main/dll/IM/dll_016D_imicepillar.h"
+#include "dlls/objects/365_IMIcePillar.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"

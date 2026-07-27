@@ -14,6 +14,7 @@
  * is suppressed (INTERACT_FLAG_PROMPT_SUPPRESSED) whenever no watched
  * event is currently ready.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/dll_0015_save_settings.h"
 #include "main/dll/DR/dll_0250_ktrex.h"
 #include "main/audio/music_api.h"
@@ -212,3 +213,24 @@ void GM_MazeWell_init(GameObject* obj)
     Music_Trigger(MUSIC_MAZEWELL, 1);
     obj->animEventCallback = GM_MazeWell_SeqFn;
 }
+
+s16 lbl_8032A730[44] = {0x0ddc, 0x0de2, 0x0dde, 0x0ddd, 0x0de0, 0x0de3, 0x0ddf, 0x0de1, 0x0de4, 0x0000, 0x0de5,
+                        0x0deb, 0x0de7, 0x0de6, 0x0de9, 0x0dec, 0x0de8, 0x0dea, 0x0ded, 0x0000, 0x0f34, 0x0f3a,
+                        0x0f36, 0x0f35, 0x0f38, 0x0f3b, 0x0f37, 0x0f39, 0x0000, 0x0524, 0x0000, 0x0524, 0x0000,
+                        0x0524, 0x0000, 0x0571, 0x0000, 0x056e, 0x0000, 0x056f, 0x0000, 0x0570, 0x0000, 0x0572};
+ObjectDescriptor gGmMazeWellObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)GM_MazeWell_init,
+    (ObjectDescriptorCallback)GM_MazeWell_update,
+    0,
+    (ObjectDescriptorCallback)GM_MazeWell_render,
+    (ObjectDescriptorCallback)GM_MazeWell_free,
+    0,
+    GM_MazeWell_getExtraSize,
+};

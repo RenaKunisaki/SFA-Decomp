@@ -1,221 +1,158 @@
-/*
- * WallAnimato (DLL 0x13B) - a crumbling/animating wall object that
- * "completes" once its internal timer reaches WALLANIMATOR_DONE_TIMER.
- * On completion it sets the runtime active bit, grants its placement
- * game bit (placement+0x18) and plays the completion sfx. While running
- * it tracks the nearest Tricky object (group WALLANIMATOR_NEARBY_GROUP)
- * and toggles its own hitbox-mode bits accordingly. setScale spawns the
- * wall's debris/dust particle bursts and derives a render scale from the
- * distance to a target object.
- *
- * The object joins ObjGroup WALLANIMATOR_GROUP_PRIMARY/SECONDARY at init
- * and leaves them at free. The shared animator headers account for the
- * related wave/alpha/ground/vis state layout checks below.
- */
-#include "main/dll/partfx_interface.h"
-#include "main/dll/groundanimator_state.h"
-#include "main/object_render.h"
-#include "main/objprint_render_api.h"
-#include "sys/objects/lifecycle.h"
-#include "main/dll/waveanimatorstate_struct.h"
-#include "main/dll/alphaanimatorstate_struct.h"
-#include "main/dll/visanimatorstate_struct.h"
+/* Tricky-activated wall that emits debris while its completion timer advances. */
+#include "dlls/objects/315_WallAnimato.h"
+
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/MMP/dll_013B_wallanimator.h"
+#include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
-#include "main/audio/sfx.h"
-#include "dlls/object_descriptor.h"
+#include "main/object_render.h"
+#include "main/objprint_render_api.h"
 #include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
-/* placement record: only the +0x1C short (debris spawn roll) is read here */
-typedef struct WallanimatorPlacement
-{
-    ObjPlacement head; /* 0x00 */
-    s16 gameBit;
-    u8 pad1A[0x1C - 0x1A];
-    s16 spawnRotZ; /* 0x1C: debris spawn rotation (rot[2]) / modelMtx selector */
-    u8 pad1E[0x24 - 0x1E];
-    s16 initialRotX; /* 0x24: initial rotX seed */
-    u8 pad26[0x28 - 0x26];
-} WallanimatorPlacement;
+#define WALL_ANIMATOR_DONE_TIMER               3000
+#define WALL_ANIMATOR_GROUP_SECONDARY          0x31
+#define WALL_ANIMATOR_NEARBY_GROUP             5
+#define WALL_ANIMATOR_PARTFX_DEBRIS            0xCA
+#define WALL_ANIMATOR_PARTFX_DUST              0xCB
+#define WALL_ANIMATOR_PARTFX_FLAGS             0x200001
+#define WALL_ANIMATOR_TRICKY_NOTIFY_SLOT_INDEX 0x0A
 
-/* per-object extra state: 0x00 s32 timer; 0x04 bit 0x80 (activeFlag) = completed */
-typedef struct WallanimatorState
-{
-    s32 timer;
-    u8 activeFlag : 1;
-    u8 unk4Rest : 7;
-    u8 pad5[0x8 - 0x5];
-} WallanimatorState;
+typedef void (*WallAnimatorTrickyNotifyFn)(GameObject* tricky, GameObject* obj, int arg2, int arg3);
 
-STATIC_ASSERT(sizeof(WaveAnimatorState) == 0x3C);
-STATIC_ASSERT(sizeof(AlphaAnimatorState) == 0x1C);
-STATIC_ASSERT(sizeof(GroundAnimatorState) == 0x30);
-STATIC_ASSERT(sizeof(VisAnimatorState) == 0x5);
-STATIC_ASSERT(sizeof(WallanimatorState) == 8);
+u8 WallAnimator_modelMtxFn(GameObject* obj) {
+    WallAnimatorPlacement* placement = (WallAnimatorPlacement*)obj->anim.placementData;
 
-#define TRICKY_IFACE_OFFSET      0x68 /* tricky object -> interface vtable pointer */
-#define TRICKY_IFACE_NOTIFY_SLOT 0x28 /* vtable slot invoked when in range */
-
-/* setScale's paired debris/dust particle bursts */
-#define WALLANIMATOR_PARTFX_DEBRIS 0xca
-#define WALLANIMATOR_PARTFX_DUST   0xcb
-
-
-u8 wallanimator_modelMtxFn(GameObject* obj)
-{
-    return (u8)((WallanimatorPlacement*)(obj->anim.placementData))->spawnRotZ;
+    return (u8)placement->spawnRotZ;
 }
 
-u8 wallanimator_func0B(GameObject* obj)
-{
-    WallanimatorState* state = obj->extra;
-    return state->timer >= WALLANIMATOR_DONE_TIMER;
+u8 WallAnimator_isComplete(GameObject* obj) {
+    WallAnimatorState* state = obj->extra;
+
+    return state->timer >= WALL_ANIMATOR_DONE_TIMER;
 }
 
-f32 wallanimator_setScale(GameObject* obj, int target)
-{
-    struct
-    {
-        s16 rot[3];
-        char pad[6];
-        f32 pos[3];
-    } spawn;
+f32 WallAnimator_setScale(GameObject* obj, GameObject* target) {
+    PartFxSpawnParams spawn;
     f32 deltaX;
     f32 deltaY;
     f32 deltaZ;
     f32 offset[3];
-    int placementDesc;
-    int count;
-    WallanimatorState* state;
+    WallAnimatorPlacement* placement;
+    int burstCount;
+    WallAnimatorState* state;
     f32 scale;
 
-    placementDesc = *(int*)&obj->anim.placementData;
-    count = 6;
-    do
-    {
+    placement = (WallAnimatorPlacement*)obj->anim.placementData;
+    burstCount = 6;
+    do {
         offset[0] = 0.13f * (f32)(int)randomGetRange(-0x64, 0x64);
         offset[1] = 0.0f;
         offset[2] = 0.0f;
-        spawn.rot[2] = randomGetRange(-0x7fff, 0x8000);
-        spawn.rot[1] = 0;
-        spawn.rot[0] = 0;
-        vecRotateZXY(spawn.rot, offset);
+        spawn.rotZ = randomGetRange(-0x7FFF, 0x8000);
+        spawn.rotY = 0;
+        spawn.rotX = 0;
+        vecRotateZXY(&spawn.rotX, offset);
         offset[2] -= 25.0f;
         vecRotateZXY((void*)obj, offset);
-        spawn.rot[2] = ((WallanimatorPlacement*)placementDesc)->spawnRotZ;
-        spawn.rot[0] = obj->anim.rotX;
-        spawn.pos[0] = obj->anim.worldPosX + offset[0];
-        spawn.pos[1] = 15.0f + (obj->anim.worldPosY + offset[1]);
-        spawn.pos[2] = obj->anim.worldPosZ + offset[2];
-        (*gPartfxInterface)->spawnObject((void*)obj, WALLANIMATOR_PARTFX_DEBRIS, spawn.rot, 0x200001, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)obj, WALLANIMATOR_PARTFX_DUST, spawn.rot, 0x200001, -1, NULL);
-        count--;
-    } while (count != 0);
+        spawn.rotZ = placement->spawnRotZ;
+        spawn.rotX = obj->anim.rotX;
+        spawn.posX = obj->anim.worldPosX + offset[0];
+        spawn.posY = 15.0f + (obj->anim.worldPosY + offset[1]);
+        spawn.posZ = obj->anim.worldPosZ + offset[2];
+        (*gPartfxInterface)
+            ->spawnObject((void*)obj, WALL_ANIMATOR_PARTFX_DEBRIS, &spawn, WALL_ANIMATOR_PARTFX_FLAGS, -1, NULL);
+        (*gPartfxInterface)
+            ->spawnObject((void*)obj, WALL_ANIMATOR_PARTFX_DUST, &spawn, WALL_ANIMATOR_PARTFX_FLAGS, -1, NULL);
+        burstCount--;
+    } while (burstCount != 0);
 
     state = obj->extra;
-    deltaY = ((GameObject*)target)->anim.localPosY - obj->anim.localPosY;
-    if ((deltaY < -20.0f) || (deltaY > 20.0f))
-    {
+    deltaY = target->anim.localPosY - obj->anim.localPosY;
+    if ((deltaY < -20.0f) || (deltaY > 20.0f)) {
         scale = 0.0f;
-    }
-    else
-    {
-        deltaX = ((GameObject*)target)->anim.localPosX - obj->anim.localPosX;
-        deltaZ = ((GameObject*)target)->anim.localPosZ - obj->anim.localPosZ;
-        if (deltaX * deltaX + deltaZ * deltaZ > 2500.0f)
-        {
+    } else {
+        deltaX = target->anim.localPosX - obj->anim.localPosX;
+        deltaZ = target->anim.localPosZ - obj->anim.localPosZ;
+        if (deltaX * deltaX + deltaZ * deltaZ > 2500.0f) {
             scale = 0.0f;
-        }
-        else
-        {
-            state->timer += 0x3c;
+        } else {
+            state->timer += 0x3C;
             scale = state->timer / 3000.0f;
         }
     }
     return scale;
 }
 
-int wallanimator_getExtraSize(void)
-{
-    return sizeof(WallanimatorState);
+int WallAnimator_getExtraSize(void) {
+    return sizeof(WallAnimatorState);
 }
 
-void wallanimator_free(int obj)
-{
-    ObjGroup_RemoveObject(obj, WALLANIMATOR_GROUP_PRIMARY);
-    ObjGroup_RemoveObject(obj, WALLANIMATOR_GROUP_SECONDARY);
+void WallAnimator_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, WALL_ANIMATOR_GROUP_CLIMBABLE);
+    ObjGroup_RemoveObject((int)obj, WALL_ANIMATOR_GROUP_SECONDARY);
 }
 
-void wallanimator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void WallAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void wallanimator_update(GameObject* obj)
-{
-    int nearby;
-    WallanimatorState* state;
-    int desc;
-    int tricky;
-    float nearestDistance[4];
+void WallAnimator_update(GameObject* obj) {
+    int nearbyObject;
+    WallAnimatorState* state;
+    WallAnimatorPlacement* placement;
+    GameObject* tricky;
+    f32 nearestDistance[4];
 
-    state = (obj)->extra;
-    desc = *(int*)&(obj)->anim.placementData;
-    *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+    state = obj->extra;
+    placement = (WallAnimatorPlacement*)obj->anim.placementData;
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
 
-    if (state->activeFlag != 0)
-    {
+    if (state->complete != 0) {
         return;
     }
 
-    if (state->timer >= WALLANIMATOR_DONE_TIMER)
-    {
-        state->activeFlag = 1;
-        mainSetBits((int)((WallanimatorPlacement*)desc)->gameBit, 1);
-        Sfx_PlayFromObject((int)obj, WALLANIMATOR_COMPLETE_SFX);
+    if (state->timer >= WALL_ANIMATOR_DONE_TIMER) {
+        state->complete = 1;
+        mainSetBits((int)placement->completionBit, 1);
+        Sfx_PlayFromObject((u32)obj, SFXTRIG_menuups16k);
         return;
     }
 
-    tricky = (int)getTrickyObject();
-    if ((void*)tricky != NULL)
-    {
+    tricky = getTrickyObject();
+    if (tricky != NULL) {
         nearestDistance[0] = 35.0f;
-        nearby = ObjGroup_FindNearestObject(WALLANIMATOR_NEARBY_GROUP, obj, nearestDistance);
-        if ((void*)nearby == NULL)
-        {
-            *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-            *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
-            if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
-            {
-                (*(void (**)(int, int, int, int))(**(int**)(tricky + TRICKY_IFACE_OFFSET) + TRICKY_IFACE_NOTIFY_SLOT))(
-                    tricky, (int)obj, 1, 1);
+        nearbyObject = ObjGroup_FindNearestObject(WALL_ANIMATOR_NEARBY_GROUP, obj, nearestDistance);
+        if ((void*)nearbyObject == NULL) {
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
+                ((WallAnimatorTrickyNotifyFn)(*tricky->anim.dll)[WALL_ANIMATOR_TRICKY_NOTIFY_SLOT_INDEX])(tricky, obj,
+                                                                                                          1, 1);
             }
             objRenderFn_80041018(obj);
         }
-    }
-    else
-    {
-        *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+    } else {
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
 }
 
-void wallanimator_init(int obj, WallanimatorPlacement* placement)
-{
-    WallanimatorState* state;
+void WallAnimator_init(int objAddress, WallAnimatorPlacement* placement) {
+    WallAnimatorState* state;
 
-    state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = placement->initialRotX;
-    ObjGroup_AddObject(obj, WALLANIMATOR_GROUP_PRIMARY);
-    ObjGroup_AddObject(obj, WALLANIMATOR_GROUP_SECONDARY);
-    if (mainGetBit((int)placement->gameBit) != 0)
-    {
-        state->activeFlag = 1;
-        state->timer = WALLANIMATOR_DONE_TIMER;
+    state = ((GameObject*)objAddress)->extra;
+    ((GameObject*)objAddress)->anim.rotX = placement->initialRotX;
+    ObjGroup_AddObject(objAddress, WALL_ANIMATOR_GROUP_CLIMBABLE);
+    ObjGroup_AddObject(objAddress, WALL_ANIMATOR_GROUP_SECONDARY);
+    if (mainGetBit((int)placement->completionBit) != 0) {
+        state->complete = 1;
+        state->timer = WALL_ANIMATOR_DONE_TIMER;
     }
 }
 
@@ -227,15 +164,15 @@ ObjectDescriptor14 gWallAnimatorObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)wallanimator_init,
-    (ObjectDescriptorCallback)wallanimator_update,
+    (ObjectDescriptorCallback)WallAnimator_init,
+    (ObjectDescriptorCallback)WallAnimator_update,
     0,
-    (ObjectDescriptorCallback)wallanimator_render,
-    (ObjectDescriptorCallback)wallanimator_free,
+    (ObjectDescriptorCallback)WallAnimator_render,
+    (ObjectDescriptorCallback)WallAnimator_free,
     0,
-    (ObjectDescriptorCallback)wallanimator_getExtraSize,
-    (ObjectDescriptorCallback)wallanimator_setScale,
-    (ObjectDescriptorCallback)wallanimator_func0B,
-    (ObjectDescriptorCallback)wallanimator_modelMtxFn,
+    (ObjectDescriptorCallback)WallAnimator_getExtraSize,
+    (ObjectDescriptorCallback)WallAnimator_setScale,
+    (ObjectDescriptorCallback)WallAnimator_isComplete,
+    (ObjectDescriptorCallback)WallAnimator_modelMtxFn,
     0,
 };

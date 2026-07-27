@@ -21,6 +21,16 @@ extern u8 lbl_80311E30[];
 const ModgfxSpawnCountRange gModgfxFunc03DefaultSpawnCount = {(MODGFX_FUNC03_SPAWN_MIN << 16) |
                                                               MODGFX_FUNC03_SPAWN_MAX};
 
+u8 lbl_80311E30[80] = {0,   0,   2, 88, 0, 0,  0, 15, 0, 31, 2,   88,  0, 0, 0,   0,   0, 0,  0, 0,
+                       253, 168, 0, 0,  2, 88, 0, 15, 0, 0,  253, 168, 0, 0, 253, 168, 0, 31, 0, 0,
+                       0,   0,   0, 1,  0, 2,  0, 0,  0, 2,  0,   3,   0, 0, 0,   3,   0, 1,  0, 1,
+                       0,   3,   0, 2,  0, 0,  0, 70, 0, 0,  0,   0,   0, 0, 0,   0,   0, 0,  0, 0};
+
+void* lbl_80311E80[18] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, (void*)0x00000000,
+                          (void*)0x00000000, (void*)0x00000000, modgfx_func03,     (void*)0x21212121, (void*)0x20546869,
+                          (void*)0x73206D6F, (void*)0x64676678, (void*)0x206E6565, (void*)0x64732061, (void*)0x6E206F77,
+                          (void*)0x6E657220, (void*)0x6F626A65, (void*)0x63740A00};
+
 static inline u8* Gameplay_GetActiveModel(void* obj)
 {
     ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;

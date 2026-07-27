@@ -8,9 +8,12 @@
 #include "dolphin/os.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B6_projsquirt1.h"
-#include "main/dll/dll_00B7_projship1.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
+
+DllDescriptorTable lbl_803197B0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projsquirt1_initialise, projsquirt1_release, (void*)0x00000000,
+                                    projsquirt1_doUnsupported}};
 
 char sProjsquirt1DoNoLongerSupported[] = "<projsquirt1 Do>No Longer supported \n";
 
@@ -27,7 +30,3 @@ void projsquirt1_release(void)
 void projsquirt1_initialise(void)
 {
 }
-
-DllDescriptorTable lbl_803197F8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projship1_initialise, projship1_release, (void*)0x00000000,
-                                    projship1_doUnsupported}};

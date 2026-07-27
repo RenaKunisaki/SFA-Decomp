@@ -24,7 +24,7 @@
 #include "main/vecmath.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_0282_barrelgener.h"
-#include "main/dll/dll_0158_gunpowderbarrel.h"
+#include "dlls/objects/344.h"
 #include "main/dll/DR/dll_0283_drbarrelgr.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objfx.h"
@@ -36,8 +36,6 @@ f32 lbl_803DC3B0 = 2.0f;
 f32 gDrBarrelGenGrabYOffset = -50.0f;
 
 #define DRBARRELGR_OBJFLAG_RENDERED     0x800
-#define GUNPOWDERBARREL_UPDATE_OBJGROUP 0x19 /* DLL 0x158 gunpowderbarrel (update group) */
-
 enum DrbarrelgrMode
 {
     DRBARRELGR_MODE_SCAN = 0,       /* look for a grabbable barrel in range */
@@ -65,7 +63,7 @@ void DR_BarrelGr_free(GameObject* obj)
 
     if (heldObj != NULL)
     {
-        gunpowderbarrel_clearHeldState(heldObj);
+        gunpowderBarrel_clearHeldState(heldObj);
         state->flags.bit80 = 0;
     }
 }
@@ -104,7 +102,7 @@ void DR_BarrelGr_render(GameObject* obj, int p2, int p3, int p4, int p5)
     objRef = state->heldBarrel;
     if ((u32)objRef != 0)
     {
-        nearest = ObjGroup_FindNearestObject(GUNPOWDERBARREL_UPDATE_OBJGROUP, obj, NULL);
+        nearest = ObjGroup_FindNearestObject(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
         match = 0;
         if ((u32)nearest != 0 && objRef == (GameObject*)nearest)
         {
@@ -140,13 +138,13 @@ void DR_BarrelGr_update(GameObject* obj)
         GameObject* held = state->heldBarrel;
         if (held != NULL)
         {
-            nearest = ObjGroup_FindNearestObject(GUNPOWDERBARREL_UPDATE_OBJGROUP, obj, NULL);
+            nearest = ObjGroup_FindNearestObject(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
             match = 0;
             if ((u32)nearest != 0 && held == (GameObject*)nearest)
             {
                 match = 1;
             }
-            if (match == 0 || (flags->bit80 != 0 && gunpowderbarrel_isHeld(state->heldBarrel) == 0))
+            if (match == 0 || (flags->bit80 != 0 && gunpowderBarrel_isHeld(state->heldBarrel) == 0))
             {
                 state->heldBarrel = 0;
                 flags->bit80 = 0;
@@ -168,7 +166,7 @@ void DR_BarrelGr_update(GameObject* obj)
     case DRBARRELGR_MODE_SCAN:
         if (state->heldBarrel == NULL)
         {
-            nearest = ObjGroup_FindNearestObject(GUNPOWDERBARREL_UPDATE_OBJGROUP, obj, NULL);
+            nearest = ObjGroup_FindNearestObject(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
             if ((u32)nearest != 0 &&
                 Vec_xzDistance(&obj->anim.worldPosX, &((GameObject*)nearest)->anim.worldPosX) <
                     gDrBarrelGenGrabRange &&
@@ -178,7 +176,7 @@ void DR_BarrelGr_update(GameObject* obj)
                 traceTarget[1] = lbl_803E6CB4 + ((GameObject*)nearest)->anim.localPosY;
                 traceTarget[2] = ((GameObject*)nearest)->anim.localPosZ;
                 if (voxmaps_traceWorldLine((void*)&obj->anim.localPosX, traceTarget) != 0 &&
-                    gunpowderbarrel_canBeGrabbed((GameObject*)nearest) != 0)
+                    gunpowderBarrel_canBeGrabbed((GameObject*)nearest) != 0)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_snowspray);
                     newMode = DRBARRELGR_MODE_GRAB;
@@ -193,7 +191,7 @@ void DR_BarrelGr_update(GameObject* obj)
         }
         break;
     case DRBARRELGR_MODE_GRAB:
-        if (state->heldBarrel == NULL || gunpowderbarrel_canBeGrabbed(state->heldBarrel) == 0)
+        if (state->heldBarrel == NULL || gunpowderBarrel_canBeGrabbed(state->heldBarrel) == 0)
         {
             state->mode = DRBARRELGR_MODE_SCAN;
             state->heldBarrel = NULL;
@@ -214,12 +212,12 @@ void DR_BarrelGr_update(GameObject* obj)
             PSVECNormalize((const Vec*)throwDir, (Vec*)throwDir);
         }
         PSVECScale((const Vec*)throwDir, (Vec*)throwDir, lbl_803DC3B0);
-        gunpowderbarrel_addThrowVelocity(state->heldBarrel, throwDir);
+        gunpowderBarrel_addThrowVelocity(state->heldBarrel, throwDir);
         if (PSVECDistance((const Vec*)&state->grabX, (const Vec*)&state->heldBarrel->anim.localPosX) < lbl_803E6CA0 ||
             state->heldBarrel->anim.localPosY > state->grabY)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_boost);
-            gunpowderbarrel_setHeldState(state->heldBarrel);
+            gunpowderBarrel_setHeldState(state->heldBarrel);
             newMode = state->prevMode;
             flags->bit80 = 1;
             ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E6CA4, 0);
@@ -270,7 +268,7 @@ void DR_BarrelGr_update(GameObject* obj)
     case DRBARRELGR_MODE_RELEASE:
         if (state->heldBarrel != NULL)
         {
-            gunpowderbarrel_clearHeldState(state->heldBarrel);
+            gunpowderBarrel_clearHeldState(state->heldBarrel);
             flags->bit80 = 0;
             ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E6CA4, 0);
         }

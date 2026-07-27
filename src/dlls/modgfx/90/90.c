@@ -12,7 +12,7 @@ u8 lbl_803DB898[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 lbl_803DB8A0[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 lbl_803DB8A8[8] = {0, 0, 0, 1, 0, 2, 0, 3};
 
-extern StaffFxDesc lbl_80311DA8;
+extern u8 lbl_80311DA8[];
 extern const f32 lbl_803E0710, lbl_803E0714, lbl_803E0718, lbl_803E071C, lbl_803E0720;
 
 void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int modelId,
@@ -44,7 +44,7 @@ void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnP
     GfxCmd ents[32];
     GfxCmd* e = ents;
     int cnt;
-    StaffFxDesc* base = &lbl_80311DA8;
+    StaffFxDesc* base = (StaffFxDesc*)lbl_80311DA8;
     s16 r, g, b;
     int i;
     r = 0xff;
@@ -181,3 +181,12 @@ void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnP
                           variant != 0 ? 2 : 1, variant != 0 ? (void*)base->col : (void*)lbl_803DB898, 0, 0);
     }
 }
+
+u8 lbl_80311DA8[100] = {0, 30, 0, 0, 0, 0,   0, 0,  0, 31, 255, 226, 0, 0, 0, 0,   0,   15,  0, 31, 0, 0, 0, 0,  3, 232,
+                        0, 8,  0, 0, 0, 0,   0, 15, 0, 0,  0,   0,   0, 0, 0, 31,  255, 241, 0, 0,  0, 0, 0, 15, 0, 31,
+                        0, 15, 0, 0, 7, 208, 0, 8,  0, 0,  255, 241, 0, 0, 7, 208, 0,   8,   0, 0,  0, 0, 0, 1,  0, 2,
+                        0, 1,  0, 3, 0, 2,   0, 0,  0, 80, 0,   0,   0, 0, 0, 0,   0,   0,   0, 0,  0, 0};
+
+void* lbl_80311E0C[9] = {(void*)0x00000000, (void*)0x00000000,     (void*)0x00000000,
+                         (void*)0x00030000, (void*)0x00000000,     (void*)0x00000000,
+                         (void*)0x00000000, StaffCollision_func03, (void*)0x00000000};

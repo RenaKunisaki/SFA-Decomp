@@ -1,0 +1,82 @@
+#include "main/texture.h"
+#include "sys/objects.h"
+#include "main/dll/ppcwgpipe_struct.h"
+#include "game/objects/object.h"
+#include "main/obj_group.h"
+#include "dlls/object_descriptor.h"
+#include "main/model_engine.h"
+#include "main/dll/dll_02C0_front.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
+#include "main/dll/dll_003F_dll3f.h"
+
+char lbl_803DBBF0[] = "%2d";
+
+#define DLL3F_TEXTURE_ID 0x47A
+
+extern f32 lbl_803E22A0;
+extern void* lbl_803DD960;
+
+void dll_3F_updateTimerReadout(void* obj)
+{
+    char buf[12];
+    f32 maxDist;
+    int start;
+    int elapsed;
+    int total;
+    void* player;
+    void* nearest;
+
+    maxDist = lbl_803E22A0;
+    start = 0;
+    elapsed = 0;
+    total = 0;
+    if (gameTimerIsRunning())
+    {
+        gameTimerRun(obj);
+    }
+    player = Obj_GetPlayerObject();
+    nearest = (void*)ObjGroup_FindNearestObject(9, player, &maxDist);
+    if (nearest != NULL)
+    {
+        ((void (*)(void*, int*, int*, int*))(*(void***)((GameObject*)nearest)->anim.dll)[21])(nearest, &start, &elapsed,
+                                                                                              &total);
+    }
+    elapsed = total - (elapsed - start);
+    if (elapsed < 0)
+    {
+        elapsed = 0;
+    }
+    sprintf(buf, lbl_803DBBF0, elapsed);
+}
+
+void dll_3F_frameEnd_nop(void)
+{
+}
+
+int dll_3F_frameStart_ret_0(void)
+{
+    return 0;
+}
+
+void dll_3F_release(void)
+{
+    textureFree((Texture*)(lbl_803DD960));
+}
+
+void dll_3F_initialise(void)
+{
+    lbl_803DD960 = textureLoadAsset(DLL3F_TEXTURE_ID);
+}
+
+PPCWGPipe GXWGFifo : (0xCC008000);
+
+u32 lbl_8031C5F8[10] = {0x00000000,
+                        0x00000000,
+                        0x00000000,
+                        0x00050000,
+                        (u32)dll_3F_initialise,
+                        (u32)dll_3F_release,
+                        0x00000000,
+                        (u32)dll_3F_frameStart_ret_0,
+                        (u32)dll_3F_frameEnd_nop,
+                        (u32)dll_3F_updateTimerReadout};

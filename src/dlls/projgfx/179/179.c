@@ -9,9 +9,12 @@
 #include "dolphin/os.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B3_projlightning4.h"
-#include "main/dll/dll_00B8_projlightning5.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
+
+DllDescriptorTable lbl_80319598 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projlightning4_initialise, projlightning4_release, (void*)0x00000000,
+                                    projlightning4_doUnsupported}};
 
 char sProjlightning4DoNoLongerSupported[] = "<projlightning4 Do>No Longer supported \n";
 
@@ -28,7 +31,3 @@ void projlightning4_release(void)
 void projlightning4_initialise(void)
 {
 }
-
-DllDescriptorTable lbl_803195E8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projlightning5_initialise, projlightning5_release, (void*)0x00000000,
-                                    projlightning5_doUnsupported}};

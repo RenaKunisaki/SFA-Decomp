@@ -8,7 +8,6 @@
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BE_projtesla.h"
-#include "main/dll/dll_00BF_projcore1.h"
 
 int projtesla_doUnsupported(void)
 {
@@ -24,8 +23,7 @@ void projtesla_initialise(void)
 {
 }
 
-char sProjteslaDoNoLongerSupported[] = "<projtesla Do>No Longer supported \n";
+void* lbl_80319920[8] = {(void*)0x00000000,    (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                         projtesla_initialise, projtesla_release, (void*)0x00000000, projtesla_doUnsupported};
 
-DllDescriptorTable lbl_80319968 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projcore1_initialise, projcore1_release, (void*)0x00000000,
-                                    projcore1_doUnsupported}};
+char sProjteslaDoNoLongerSupported[] = "<projtesla Do>No Longer supported \n";

@@ -1,98 +1,128 @@
-/* DLL 0x0188 (CClightfoot) - CloudRunner Lightfoot object.
- * The LightFoot enemies in the CloudRunner capture/escape encounter (they
- * chase the player; target actors CCLIGHTFOOT_TARGET_ACTOR_A/B).
- * GAMEBIT_LIGHTFOOT_TRIGGERED is the per-encounter latch: the first creature
- * to reach state 0xC sets it (when its ObjTrigger fires), and on (re)spawn any
- * creature that sees it already set despawns immediately (state 0 -> 0xE).
- * GAMEBIT_CC_COMPLETE marks full completion. Nothing else in the game writes
- * the trigger latch. */
-#include "main/dll/DIM/dimlogfire.h"
-#include "main/vecmath.h"
-#include "main/frame_timing.h"
-#include "main/dll/dll_00C9_enemy.h"
-#include "dlls/object_descriptor.h"
+/*
+ * CClightfoot (DLL 0x188) - Lightfoot combatant from the CloudRunner
+ * encounter. Each instance selects between the player and two encounter
+ * actors, attaches a Lightfoot weapon, and runs a reaction-oriented combat
+ * state machine.
+ */
+#include "dlls/objects/392_CClightfoot.h"
 
-#define GAMEBIT_LIGHTFOOT_TRIGGERED         9
-#define GAMEBIT_CC_COMPLETE                 0x24
-#define CCLIGHTFOOT_TARGET_ACTOR_A          0x45d7d
-#define CCLIGHTFOOT_TARGET_ACTOR_B          0x45d7f
-#define CCLIGHTFOOT_CHILD_OBJ_MARKER        0x6f1 /* attached child marker (state->childObj, ObjLink_AttachChild) */
-#define CCLIGHTFOOT_OBJFLAG_UPDATE_DISABLED 0x8000
-
-/* CcLightfootState.state - LightFoot combat/lifecycle machine */
-#define CCLIGHTFOOT_STATE_INIT         0   /* spawn: set up child marker, cache targets */
-#define CCLIGHTFOOT_STATE_INTRO        1   /* intro: turn to face target during move window */
-#define CCLIGHTFOOT_STATE_APPROACH     2   /* pick approach: close -> ENGAGE else CLOSE */
-#define CCLIGHTFOOT_STATE_CLOSE        3   /* closing distance to target */
-#define CCLIGHTFOOT_STATE_ENGAGE       4   /* in range: run reaction picker */
-#define CCLIGHTFOOT_STATE_GUARD        5   /* guard: watch target windup (move 0x19) */
-#define CCLIGHTFOOT_STATE_GUARD_HELD   6   /* guard committed until target move changes */
-#define CCLIGHTFOOT_STATE_STRIKE_WATCH 7   /* watch target strike (0x18 progress -> PARRY) */
-#define CCLIGHTFOOT_STATE_PARRY        8   /* parry target mid-strike */
-#define CCLIGHTFOOT_STATE_PARRY_HELD   9   /* parry held until strike ends */
-#define CCLIGHTFOOT_STATE_RECOVER      0xa /* recover: re-watch strike/windup */
-#define CCLIGHTFOOT_STATE_REACT        0xb /* one-shot reaction dispatch */
-#define CCLIGHTFOOT_STATE_DORMANT      0xc /* dormant: poll trigger / completion gamebit */
-#define CCLIGHTFOOT_STATE_DORMANT_TURN 0xd /* dormant, turning to face; back to DORMANT */
-#define CCLIGHTFOOT_STATE_DESPAWN      0xe /* free child, hide, disable update, return */
-
-/* Per-object Lightfoot state block (obj->extra, cclightfoot_getExtraSize = 0x18). */
-typedef struct CcLightfootState
-{
-    GameObject* childObj;  /* 0x00: spawned child marker object */
-    int playerObj; /* 0x04: cached player object */
-    int targetA;   /* 0x08: target actor A object */
-    int targetB;   /* 0x0C: target actor B object */
-    u8 state;      /* 0x10: state-machine state */
-    u8 flags;      /* 0x11: bit0 = hit/advance landed, bit1 = facing target off-axis */
-    u8 pad[2];     /* 0x12 */
-    f32 sfxTimer;  /* 0x14: countdown to next idle sfx */
-} CcLightfootState;
-
-STATIC_ASSERT(sizeof(CcLightfootState) == 0x18);
-#include "main/dll/waterfx_interface.h"
 #include "game/objects/object.h"
-#include "main/dll/player_api.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
-#include "main/objfx.h"
-#include "main/objfx_hit_emitter_api.h"
-#include "main/obj_link.h"
-#include "main/obj_list.h"
-#include "main/obj_trigger.h"
-
-#define CC_LIGHTFOOT_DIST_SENTINEL 3.40282347e+38f
-#define CC_LIGHTFOOT_TURN_RATE 1024.0f
-#include "main/dll/CC/dll_0188_cclightfoot.h"
-#include "main/dll/player_target.h"
-#include "main/gamebits.h"
-#include "main/objhits.h"
-#include "main/audio/sfx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#define CCLIGHTFOOT_OBJFLAG_HIDDEN 0x4000
+#include "main/dll/dll_00C9_enemy.h"
+#include "main/dll/player_api.h"
+#include "main/dll/player_target.h"
+#include "main/dll/waterfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/obj_link.h"
+#include "main/obj_trigger.h"
+#include "main/objanim.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
+#define CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT 9
+#define CC_LIGHTFOOT_ENCOUNTER_DESPAWN_GAMEBIT   0x24
 
-int CClightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    CcLightfootState* state = (obj)->extra;
-    if (animUpdate->eventCount != 0)
-    {
-        int i;
-        for (i = 0; (u8)i < animUpdate->eventCount; i++)
-        {
-            int cmd = animUpdate->eventIds[(u8)i];
-            switch (cmd)
-            {
-            case 1:
-                if ((obj)->childObjs[0] != NULL)
-                {
-                    ObjLink_DetachChild(obj, state->childObj);
+#define CC_LIGHTFOOT_TARGET_ACTOR_A_ID 0x45D7D
+#define CC_LIGHTFOOT_TARGET_ACTOR_B_ID 0x45D7F
+
+#define CC_LIGHTFOOT_WEAPON_OBJECT_DEF 0x6F1
+#define CC_LIGHTFOOT_WEAPON_SETUP_SIZE 0x20
+
+#define CC_LIGHTFOOT_PHASE_INIT         0
+#define CC_LIGHTFOOT_PHASE_INTRO        1
+#define CC_LIGHTFOOT_PHASE_APPROACH     2
+#define CC_LIGHTFOOT_PHASE_CLOSE        3
+#define CC_LIGHTFOOT_PHASE_ENGAGE       4
+#define CC_LIGHTFOOT_PHASE_GUARD        5
+#define CC_LIGHTFOOT_PHASE_GUARD_HELD   6
+#define CC_LIGHTFOOT_PHASE_STRIKE_WATCH 7
+#define CC_LIGHTFOOT_PHASE_PARRY        8
+#define CC_LIGHTFOOT_PHASE_PARRY_HELD   9
+#define CC_LIGHTFOOT_PHASE_RECOVER      0xA
+#define CC_LIGHTFOOT_PHASE_REACT        0xB
+#define CC_LIGHTFOOT_PHASE_DORMANT      0xC
+#define CC_LIGHTFOOT_PHASE_DORMANT_TURN 0xD
+#define CC_LIGHTFOOT_PHASE_DESPAWN      0xE
+
+#define CC_LIGHTFOOT_FLAG_MOVE_COMPLETE 0x01
+#define CC_LIGHTFOOT_FLAG_TURN_REQUIRED 0x02
+
+#define CC_LIGHTFOOT_ANIM_FLAG_INTERACTION_DISABLED 0x01
+#define CC_LIGHTFOOT_ANIM_FLAG_START_AT_END         0x02
+
+#define CC_LIGHTFOOT_DISTANCE_SENTINEL           3.40282347e+38f
+#define CC_LIGHTFOOT_COMBAT_DISTANCE_SQUARED     3025.0f
+#define CC_LIGHTFOOT_ALERT_DISTANCE_SQUARED      32400.0f
+#define CC_LIGHTFOOT_HIT_EFFECT_DISTANCE_SQUARED 20000.0f
+#define CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD   0.2f
+#define CC_LIGHTFOOT_TURN_PROGRESS_START         0.2f
+#define CC_LIGHTFOOT_TURN_PROGRESS_END           0.8f
+#define CC_LIGHTFOOT_TURN_RATE                   1024.0f
+#define CC_LIGHTFOOT_TURN_REQUIRED_ANGLE         0x1000
+#define CC_LIGHTFOOT_TURN_SNAP_ANGLE             0x400
+#define CC_LIGHTFOOT_HALF_TURN                   0x8000
+#define CC_LIGHTFOOT_ANGLE_WRAP                  0xFFFF
+#define CC_LIGHTFOOT_IDLE_SFX_DELAY_MIN          0xB4
+#define CC_LIGHTFOOT_IDLE_SFX_DELAY_MAX          0x12C
+#define CC_LIGHTFOOT_HIT_LIGHT_SCALE             0.014f
+#define CC_LIGHTFOOT_ANIMATION_PROGRESS_START    0.0f
+#define CC_LIGHTFOOT_ANIMATION_PROGRESS_END      1.0f
+#define CC_LIGHTFOOT_WATER_SPLASH_SCALE          15.0f
+#define CC_LIGHTFOOT_ROT_X_SHIFT                 8
+
+#define CC_LIGHTFOOT_TARGET_GUARD_MOVE  0x19
+#define CC_LIGHTFOOT_TARGET_STRIKE_MOVE 0x18
+
+#define CC_LIGHTFOOT_ANIM_EVENT_DETACH_WEAPON 1
+#define CC_LIGHTFOOT_ANIM_EVENT_WATER_SPLASH  2
+
+#define CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A 0x11
+#define CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B 0x33
+
+typedef struct CCLightfootHitCooldown {
+    f32 cooldown;
+    u8 unknown04[4];
+} CCLightfootHitCooldown;
+
+STATIC_ASSERT(sizeof(CCLightfootHitCooldown) == 0x08);
+STATIC_ASSERT(offsetof(CCLightfootHitCooldown, cooldown) == 0x00);
+STATIC_ASSERT(offsetof(CCLightfootHitCooldown, unknown04) == 0x04);
+
+typedef struct CCLightfootAnimTable {
+    u8 phaseFlags[0x10];
+    u8 moveIds[0x10];
+    f32 moveSpeeds[15];
+} CCLightfootAnimTable;
+
+STATIC_ASSERT(sizeof(CCLightfootAnimTable) == 0x5C);
+STATIC_ASSERT(offsetof(CCLightfootAnimTable, phaseFlags) == 0x00);
+STATIC_ASSERT(offsetof(CCLightfootAnimTable, moveIds) == 0x10);
+STATIC_ASSERT(offsetof(CCLightfootAnimTable, moveSpeeds) == 0x20);
+
+int ccLightfoot_animationEventCallback(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+    CCLightfootState* state = obj->extra;
+
+    if (animUpdate->eventCount != 0) {
+        int eventIndex;
+
+        for (eventIndex = 0; (u8)eventIndex < animUpdate->eventCount; eventIndex++) {
+            int eventId = animUpdate->eventIds[(u8)eventIndex];
+
+            switch (eventId) {
+            case CC_LIGHTFOOT_ANIM_EVENT_DETACH_WEAPON:
+                if (obj->childObjs[0] != NULL) {
+                    ObjLink_DetachChild(obj, state->attachedWeapon);
                 }
                 break;
-            case 2:
+            case CC_LIGHTFOOT_ANIM_EVENT_WATER_SPLASH:
                 (*gWaterfxInterface)
-                    ->spawnSplashBurst((void*)obj, (obj)->anim.worldPosX, (obj)->anim.worldPosY, (obj)->anim.worldPosZ,
-                                       15.0f);
+                    ->spawnSplashBurst((void*)obj, obj->anim.worldPosX, obj->anim.worldPosY, obj->anim.worldPosZ,
+                                       CC_LIGHTFOOT_WATER_SPLASH_SCALE);
                 break;
             }
         }
@@ -100,50 +130,33 @@ int CClightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
     return 0;
 }
 
-int cclightfoot_getExtraSize(void)
-{
-    return 0x18;
+int ccLightfoot_getExtraSize(void) {
+    return sizeof(CCLightfootState);
 }
 
-void cclightfoot_free(GameObject* obj, int flag)
-{
-    CcLightfootState* state = obj->extra;
-    GameObject* sub = state->childObj;
-    if (sub != NULL)
-    {
-        if (obj->childObjs[0] != NULL)
-        {
-            ObjLink_DetachChild(obj, sub);
+void ccLightfoot_free(GameObject* obj, int keepWeapon) {
+    CCLightfootState* state = obj->extra;
+    GameObject* weapon = state->attachedWeapon;
+
+    if (weapon != NULL) {
+        if (obj->childObjs[0] != NULL) {
+            ObjLink_DetachChild(obj, weapon);
         }
-        if (flag == 0)
-        {
-            Obj_FreeObject(state->childObj);
+        if (keepWeapon == 0) {
+            Obj_FreeObject(state->attachedWeapon);
         }
     }
 }
 
+CCLightfootHitCooldown gCCLightfootHitCooldown;
 
-
-u8 gCcLightfootHitCooldown[8];
-
-typedef struct LightfootAnimTable
-{
-    u8 stateFlags[0x10]; /* 0x00: per-state flag bits (bit 0 = active hitbox, bit 1 = blend in) */
-    u8 animIds[0x10];    /* 0x10: per-state anim/move id */
-    f32 animSpeeds[15];  /* 0x20: per-state advance speed */
-} LightfootAnimTable;
-
-STATIC_ASSERT(sizeof(LightfootAnimTable) == 0x5C);
-
-u8 gCcLightfootAnimTable[92] = {
-    1,   1,   1,  1,   1,   1,   1,  3,   1,   1,   3,  1,   0,   1,   1,   0,   0,   3,   1,   5,   4,   6,   8,
-    6,   7,   9,  7,   2,   0,   3,  0,   0,   60,  35, 215, 10,  60,  117, 194, 143, 60,  163, 215, 10,  60,  163,
-    215, 10,  60, 163, 215, 10,  60, 163, 215, 10,  60, 35,  215, 10,  188, 163, 215, 10,  61,  76,  204, 205, 60,
-    35,  215, 10, 188, 163, 215, 10, 60,  35,  215, 10, 60,  35,  215, 10,  60,  117, 194, 143, 60,  163, 215, 10,
+CCLightfootAnimTable gCCLightfootAnimTable = {
+    {1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 0, 1, 1, 0},
+    {0, 3, 1, 5, 4, 6, 8, 6, 7, 9, 7, 2, 0, 3, 0, 0},
+    {0.01f, 0.015f, 0.02f, 0.02f, 0.02f, 0.02f, 0.01f, -0.02f, 0.05f, 0.01f, -0.02f, 0.01f, 0.01f, 0.015f, 0.02f},
 };
 
-
-ObjectDescriptor gCClightfootObjDescriptor = {
+ObjectDescriptor gCCLightfootObjDescriptor = {
     0,
     0,
     0,
@@ -151,488 +164,391 @@ ObjectDescriptor gCClightfootObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)cclightfoot_init,
-    (ObjectDescriptorCallback)cclightfoot_update,
+    (ObjectDescriptorCallback)ccLightfoot_init,
+    (ObjectDescriptorCallback)ccLightfoot_update,
     0,
     0,
-    (ObjectDescriptorCallback)cclightfoot_free,
+    (ObjectDescriptorCallback)ccLightfoot_free,
     0,
-    cclightfoot_getExtraSize,
+    ccLightfoot_getExtraSize,
 };
 
-void cclightfoot_selectCombatState(CcLightfootState* state, int* targetObj, f32 dist)
-{
+void ccLightfoot_selectCombatPhase(CCLightfootState* state, GameObject* targetObject, f32 distanceSquared) {
     s16 move;
-    if (CC_LIGHTFOOT_DIST_SENTINEL == dist)
-    {
-        state->state = CCLIGHTFOOT_STATE_DORMANT;
+
+    if (CC_LIGHTFOOT_DISTANCE_SENTINEL == distanceSquared) {
+        state->phase = CC_LIGHTFOOT_PHASE_DORMANT;
         return;
     }
-    if ((state->flags & 2) != 0)
-    {
-        state->state = CCLIGHTFOOT_STATE_INTRO;
+    if ((state->flags & CC_LIGHTFOOT_FLAG_TURN_REQUIRED) != 0) {
+        state->phase = CC_LIGHTFOOT_PHASE_INTRO;
         return;
     }
-    if (dist < 3025.0f)
-    {
-        move = ((GameObject*)targetObj)->anim.currentMove;
-        if (move == 24 && ((GameObject*)targetObj)->anim.currentMoveProgress > 0.2f)
-        {
-            state->state = CCLIGHTFOOT_STATE_PARRY;
+    if (distanceSquared < CC_LIGHTFOOT_COMBAT_DISTANCE_SQUARED) {
+        move = targetObject->anim.currentMove;
+        if (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
+            targetObject->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
+            state->phase = CC_LIGHTFOOT_PHASE_PARRY;
             return;
         }
-        if (move == 25)
-        {
-            state->state = CCLIGHTFOOT_STATE_GUARD;
+        if (move == CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+            state->phase = CC_LIGHTFOOT_PHASE_GUARD;
             return;
         }
-        state->state = CCLIGHTFOOT_STATE_REACT;
+        state->phase = CC_LIGHTFOOT_PHASE_REACT;
         return;
     }
-    state->state = CCLIGHTFOOT_STATE_APPROACH;
+    state->phase = CC_LIGHTFOOT_PHASE_APPROACH;
 }
 
-void cclightfoot_update(GameObject* obj)
-{
-    LightfootAnimTable* tbl = (LightfootAnimTable*)gCcLightfootAnimTable;
-    u32 fallback;
-    CcLightfootState* state = obj->extra;
-    u32 targetObj;
-    s16 angle;
-    u32 o2;
-    u32 o1;
-    u32 oFar;
-    u32 oNear;
-    s16 diff;
-    int valid;
-    u32 off;
-    u8 i;
-    f32 dist;
-    int hitObj;
-    f32 dists[2];
+void ccLightfoot_update(GameObject* obj) {
+    CCLightfootAnimTable* animTable = &gCCLightfootAnimTable;
+    u32 singleTarget;
+    CCLightfootState* state = obj->extra;
+    u32 targetObject;
+    s16 targetAngle;
+    u32 candidateTarget;
+    u32 targetActorAHandle;
+    u32 farTarget;
+    u32 nearTarget;
+    s16 angleDifference;
+    int targetValid;
+    u32 targetByteOffset;
+    u8 targetIndex;
+    f32 distanceSquared;
+    int hitObjectHandle;
+    f32 targetDistanceSquares[2];
     f32 hitPos[3];
-    int animId;
+    int moveId;
     s16 move;
-    u8 stateId;
+    u8 phase;
 
-    fallback = 0;
-    if (tbl->stateFlags[state->state] & 1)
-    {
+    singleTarget = 0;
+    if ((animTable->phaseFlags[state->phase] & CC_LIGHTFOOT_ANIM_FLAG_INTERACTION_DISABLED) != 0) {
         *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-    }
-    else
-    {
+    } else {
         *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
     }
-    o1 = state->targetA;
-    if (o1 != 0)
-    {
-        do
-        {
-            if (!(enemy_getHealthFraction((GameObject*)o1) > 0.0f))
-            {
-                valid = 0;
+    targetActorAHandle = (u32)state->targetActorA;
+    if (targetActorAHandle != 0) {
+        do {
+            if (!(enemy_getHealthFraction((GameObject*)targetActorAHandle) > 0.0f)) {
+                targetValid = 0;
+            } else {
+                targetValid = mainGetBit(((GameObject*)targetActorAHandle)->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
-            else
-            {
-                valid = mainGetBit(((GameObject*)o1)->anim.placementData[0xC]) != 0 ? 0 : 1;
-            }
-            if (valid != 0)
-            {
-                o2 = state->targetB;
-                if (!(enemy_getHealthFraction((GameObject*)o2) > 0.0f))
-                {
-                    valid = 0;
+            if (targetValid != 0) {
+                candidateTarget = (u32)state->targetActorB;
+                if (!(enemy_getHealthFraction((GameObject*)candidateTarget) > 0.0f)) {
+                    targetValid = 0;
+                } else {
+                    targetValid = mainGetBit(((GameObject*)candidateTarget)->anim.placementData[0xC]) != 0 ? 0 : 1;
                 }
-                else
-                {
-                    valid = mainGetBit(((GameObject*)o2)->anim.placementData[0xC]) != 0 ? 0 : 1;
-                }
-                if (valid != 0)
-                {
-                    dist = getXZDistance((f32*)(state->playerObj + 0x18), (f32*)(state->targetB + 0x18));
-                    if (getXZDistance((f32*)(state->playerObj + 0x18), (f32*)(state->targetA + 0x18)) < dist)
-                    {
-                        oNear = state->targetA;
-                        oFar = state->targetB;
+                if (targetValid != 0) {
+                    distanceSquared =
+                        getXZDistance((f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX)),
+                                      (f32*)((u32)state->targetActorB + offsetof(GameObject, anim.worldPosX)));
+                    if (getXZDistance((f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX)),
+                                      (f32*)((u32)state->targetActorA + offsetof(GameObject, anim.worldPosX))) <
+                        distanceSquared) {
+                        nearTarget = (u32)state->targetActorA;
+                        farTarget = (u32)state->targetActorB;
+                    } else {
+                        nearTarget = (u32)state->targetActorB;
+                        farTarget = (u32)state->targetActorA;
                     }
-                    else
-                    {
-                        oNear = state->targetB;
-                        oFar = state->targetA;
-                    }
-                    if ((getXZDistance(&obj->anim.worldPosX, (f32*)(state->playerObj + 0x18)) < 32400.0f ||
-                         (void*)fn_80296118((GameObject*)state->playerObj) == (void*)state->targetA ||
-                         (void*)fn_80296118((GameObject*)state->playerObj) == (void*)state->targetB) &&
-                        playerIsDisguised((GameObject*)state->playerObj) == 0)
-                    {
-                        if ((void*)fn_80296118((GameObject*)state->playerObj) == (void*)oFar)
-                        {
-                            u32 tmp = oFar ^ oNear;
-                            oNear = oNear ^ tmp;
-                            oFar = tmp ^ oNear;
+                    if ((getXZDistance(&obj->anim.worldPosX,
+                                       (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
+                             CC_LIGHTFOOT_ALERT_DISTANCE_SQUARED ||
+                         (void*)fn_80296118((GameObject*)state->playerObject) == (void*)state->targetActorA ||
+                         (void*)fn_80296118((GameObject*)state->playerObject) == (void*)state->targetActorB) &&
+                        playerIsDisguised((GameObject*)state->playerObject) == 0) {
+                        if ((void*)fn_80296118((GameObject*)state->playerObject) == (void*)farTarget) {
+                            u32 tmp = farTarget ^ nearTarget;
+                            nearTarget = nearTarget ^ tmp;
+                            farTarget = tmp ^ nearTarget;
                         }
-                        enemy_setTrackedObj((GameObject*)oNear, (GameObject*)state->playerObj);
-                        enemy_setTrackedObj((GameObject*)oFar, obj);
-                        targetObj = oFar;
-                        dist = getXZDistance(&obj->anim.worldPosX, (f32*)(oFar + 0x18));
-                    }
-                    else
-                    {
-                        for (i = 0; i < 2; i++)
-                        {
-                            off = i * 4;
-                            *(f32*)((u8*)dists + off) =
-                                getXZDistance(&obj->anim.worldPosX, (f32*)(*(int*)((u8*)state + off + 8) + 0x18));
-                            enemy_setTrackedObj((GameObject*)*(int*)((u8*)state + off + 8), obj);
+                        enemy_setTrackedObj((GameObject*)nearTarget, (GameObject*)state->playerObject);
+                        enemy_setTrackedObj((GameObject*)farTarget, obj);
+                        targetObject = farTarget;
+                        distanceSquared = getXZDistance(&obj->anim.worldPosX,
+                                                        (f32*)(farTarget + offsetof(GameObject, anim.worldPosX)));
+                    } else {
+                        for (targetIndex = 0; targetIndex < 2; targetIndex++) {
+                            targetByteOffset = targetIndex * 4;
+                            *(f32*)((u8*)targetDistanceSquares + targetByteOffset) = getXZDistance(
+                                &obj->anim.worldPosX, (f32*)(*(int*)((u8*)state + targetByteOffset +
+                                                                     offsetof(CCLightfootState, targetActors)) +
+                                                             offsetof(GameObject, anim.worldPosX)));
+                            enemy_setTrackedObj((GameObject*)*(int*)((u8*)state + targetByteOffset +
+                                                                     offsetof(CCLightfootState, targetActors)),
+                                                obj);
                         }
-                        if (dists[0] < dists[1])
-                        {
-                            targetObj = state->targetA;
-                            dist = dists[0];
-                        }
-                        else
-                        {
-                            targetObj = state->targetB;
-                            dist = dists[1];
+                        if (targetDistanceSquares[0] < targetDistanceSquares[1]) {
+                            targetObject = (u32)state->targetActorA;
+                            distanceSquared = targetDistanceSquares[0];
+                        } else {
+                            targetObject = (u32)state->targetActorB;
+                            distanceSquared = targetDistanceSquares[1];
                         }
                     }
                     break;
                 }
             }
-            o2 = state->targetA;
-            if (!(enemy_getHealthFraction((GameObject*)o2) > 0.0f))
-            {
-                valid = 0;
+            candidateTarget = (u32)state->targetActorA;
+            if (!(enemy_getHealthFraction((GameObject*)candidateTarget) > 0.0f)) {
+                targetValid = 0;
+            } else {
+                targetValid = mainGetBit(((GameObject*)candidateTarget)->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
-            else
-            {
-                valid = mainGetBit(((GameObject*)o2)->anim.placementData[0xC]) != 0 ? 0 : 1;
+            if (targetValid != 0) {
+                singleTarget = (u32)state->targetActorA;
             }
-            if (valid != 0)
-            {
-                fallback = state->targetA;
+            candidateTarget = (u32)state->targetActorB;
+            if (!(enemy_getHealthFraction((GameObject*)candidateTarget) > 0.0f)) {
+                targetValid = 0;
+            } else {
+                targetValid = mainGetBit(((GameObject*)candidateTarget)->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
-            o2 = state->targetB;
-            if (!(enemy_getHealthFraction((GameObject*)o2) > 0.0f))
-            {
-                valid = 0;
+            if (targetValid != 0) {
+                singleTarget = (u32)state->targetActorB;
             }
-            else
-            {
-                valid = mainGetBit(((GameObject*)o2)->anim.placementData[0xC]) != 0 ? 0 : 1;
-            }
-            if (valid != 0)
-            {
-                fallback = state->targetB;
-            }
-            if (fallback != 0)
-            {
-                dist = getXZDistance((f32*)(state->playerObj + 0x18), (f32*)(fallback + 0x18));
-                if ((getXZDistance(&obj->anim.worldPosX, (f32*)(fallback + 0x18)) < dist &&
-                     (void*)fn_80296118((GameObject*)state->playerObj) != (void*)fallback) ||
-                    playerIsDisguised((GameObject*)state->playerObj) != 0)
-                {
-                    enemy_setTrackedObj((GameObject*)fallback, obj);
+            if (singleTarget != 0) {
+                distanceSquared = getXZDistance((f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX)),
+                                                (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX)));
+                if ((getXZDistance(&obj->anim.worldPosX, (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX))) <
+                         distanceSquared &&
+                     (void*)fn_80296118((GameObject*)state->playerObject) != (void*)singleTarget) ||
+                    playerIsDisguised((GameObject*)state->playerObject) != 0) {
+                    enemy_setTrackedObj((GameObject*)singleTarget, obj);
+                } else {
+                    enemy_setTrackedObj((GameObject*)singleTarget, (GameObject*)state->playerObject);
                 }
-                else
-                {
-                    enemy_setTrackedObj((GameObject*)fallback, (GameObject*)state->playerObj);
-                }
-                targetObj = fallback;
-                dist = getXZDistance(&obj->anim.worldPosX, (f32*)(fallback + 0x18));
-            }
-            else
-            {
-                targetObj = state->playerObj;
-                dist = CC_LIGHTFOOT_DIST_SENTINEL;
+                targetObject = singleTarget;
+                distanceSquared =
+                    getXZDistance(&obj->anim.worldPosX, (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX)));
+            } else {
+                targetObject = (u32)state->playerObject;
+                distanceSquared = CC_LIGHTFOOT_DISTANCE_SENTINEL;
             }
         } while (0);
-        angle = getAngle(-(((GameObject*)targetObj)->anim.localPosX - obj->anim.localPosX),
-                         -(((GameObject*)targetObj)->anim.localPosZ - obj->anim.localPosZ));
-        diff = (s16)(obj->anim.rotX - (u16)angle);
-        if (diff > 0x8000)
-        {
-            diff = (s16)(diff - 0xffff);
+        targetAngle = getAngle(-(((GameObject*)targetObject)->anim.localPosX - obj->anim.localPosX),
+                               -(((GameObject*)targetObject)->anim.localPosZ - obj->anim.localPosZ));
+        angleDifference = (s16)(obj->anim.rotX - (u16)targetAngle);
+        if (angleDifference > CC_LIGHTFOOT_HALF_TURN) {
+            angleDifference = (s16)(angleDifference - CC_LIGHTFOOT_ANGLE_WRAP);
         }
-        if (diff < -0x8000)
-        {
-            diff = (s16)(diff + 0xffff);
+        if (angleDifference < -CC_LIGHTFOOT_HALF_TURN) {
+            angleDifference = (s16)(angleDifference + CC_LIGHTFOOT_ANGLE_WRAP);
         }
-        if (diff > 0x1000)
-        {
-            state->flags |= 2;
-        }
-        else if (diff < -0x1000)
-        {
-            state->flags |= 2;
-        }
-        else
-        {
-            state->flags &= ~2;
+        if (angleDifference > CC_LIGHTFOOT_TURN_REQUIRED_ANGLE) {
+            state->flags |= CC_LIGHTFOOT_FLAG_TURN_REQUIRED;
+        } else if (angleDifference < -CC_LIGHTFOOT_TURN_REQUIRED_ANGLE) {
+            state->flags |= CC_LIGHTFOOT_FLAG_TURN_REQUIRED;
+        } else {
+            state->flags &= ~CC_LIGHTFOOT_FLAG_TURN_REQUIRED;
         }
     }
-    if (state->state <= CCLIGHTFOOT_STATE_REACT)
-    {
-        state->sfxTimer -= timeDelta;
-        if (state->sfxTimer < 0.0f)
-        {
-            state->sfxTimer = (f32)(int)randomGetRange(0xb4, 0x12c);
+    if (state->phase <= CC_LIGHTFOOT_PHASE_REACT) {
+        state->idleSfxTimer -= timeDelta;
+        if (state->idleSfxTimer < 0.0f) {
+            state->idleSfxTimer =
+                (f32)(int)randomGetRange(CC_LIGHTFOOT_IDLE_SFX_DELAY_MIN, CC_LIGHTFOOT_IDLE_SFX_DELAY_MAX);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_trwhin4);
         }
     }
-    switch (state->state)
-    {
-    case CCLIGHTFOOT_STATE_INIT:
-        if (mainGetBit(GAMEBIT_LIGHTFOOT_TRIGGERED) != 0)
-        {
-            state->state = CCLIGHTFOOT_STATE_DESPAWN;
-        }
-        else
-        {
-            if (Obj_IsLoadingLocked() != 0)
-            {
-                state->childObj = Obj_SetupObject(Obj_AllocObjectSetup(0x20, CCLIGHTFOOT_CHILD_OBJ_MARKER), 5, -1, -1,
-                                                  obj->anim.parent);
-                ObjLink_AttachChild(obj, state->childObj, 0);
+    switch (state->phase) {
+    case CC_LIGHTFOOT_PHASE_INIT:
+        if (mainGetBit(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT) != 0) {
+            state->phase = CC_LIGHTFOOT_PHASE_DESPAWN;
+        } else {
+            if (Obj_IsLoadingLocked() != 0) {
+                state->attachedWeapon = Obj_SetupObject(
+                    Obj_AllocObjectSetup(CC_LIGHTFOOT_WEAPON_SETUP_SIZE, CC_LIGHTFOOT_WEAPON_OBJECT_DEF), 5, -1, -1,
+                    obj->anim.parent);
+                ObjLink_AttachChild(obj, state->attachedWeapon, 0);
             }
-            state->playerObj = (int)Obj_GetPlayerObject();
-            state->targetA = (int)ObjList_FindObjectById(CCLIGHTFOOT_TARGET_ACTOR_A);
-            state->targetB = (int)ObjList_FindObjectById(CCLIGHTFOOT_TARGET_ACTOR_B);
-            state->state = CCLIGHTFOOT_STATE_INTRO;
-            state->sfxTimer = (f32)(int)randomGetRange(0xb4, 0x12c);
+            state->playerObject = Obj_GetPlayerObject();
+            state->targetActorA = ObjList_FindObjectById(CC_LIGHTFOOT_TARGET_ACTOR_A_ID);
+            state->targetActorB = ObjList_FindObjectById(CC_LIGHTFOOT_TARGET_ACTOR_B_ID);
+            state->phase = CC_LIGHTFOOT_PHASE_INTRO;
+            state->idleSfxTimer =
+                (f32)(int)randomGetRange(CC_LIGHTFOOT_IDLE_SFX_DELAY_MIN, CC_LIGHTFOOT_IDLE_SFX_DELAY_MAX);
         }
         break;
-    case CCLIGHTFOOT_STATE_INTRO:
-        if (obj->anim.currentMoveProgress > 0.2f &&
-            obj->anim.currentMoveProgress < 0.8f)
-        {
-            if (diff > 0x400)
-            {
-                obj->anim.rotX =
-                    (s16)(obj->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
-            }
-            else if (diff < -0x400)
-            {
-                obj->anim.rotX =
-                    (s16)(obj->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
-            }
-            else
-            {
-                obj->anim.rotX = angle;
+    case CC_LIGHTFOOT_PHASE_INTRO:
+        if (obj->anim.currentMoveProgress > CC_LIGHTFOOT_TURN_PROGRESS_START &&
+            obj->anim.currentMoveProgress < CC_LIGHTFOOT_TURN_PROGRESS_END) {
+            if (angleDifference > CC_LIGHTFOOT_TURN_SNAP_ANGLE) {
+                obj->anim.rotX = (s16)(obj->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+            } else if (angleDifference < -CC_LIGHTFOOT_TURN_SNAP_ANGLE) {
+                obj->anim.rotX = (s16)(obj->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+            } else {
+                obj->anim.rotX = targetAngle;
             }
         }
-        if (state->flags & 1)
-        {
-            cclightfoot_selectCombatState(state, (int*)targetObj, dist);
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
         }
         break;
-    case CCLIGHTFOOT_STATE_APPROACH:
-        if (state->flags & 1)
-        {
-            if (dist < 3025.0f)
-            {
-                state->state = CCLIGHTFOOT_STATE_ENGAGE;
-            }
-            else
-            {
-                state->state = CCLIGHTFOOT_STATE_CLOSE;
+    case CC_LIGHTFOOT_PHASE_APPROACH:
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            if (distanceSquared < CC_LIGHTFOOT_COMBAT_DISTANCE_SQUARED) {
+                state->phase = CC_LIGHTFOOT_PHASE_ENGAGE;
+            } else {
+                state->phase = CC_LIGHTFOOT_PHASE_CLOSE;
             }
         }
         break;
-    case CCLIGHTFOOT_STATE_CLOSE:
-        if (state->flags & 1)
-        {
-            state->state = CCLIGHTFOOT_STATE_ENGAGE;
+    case CC_LIGHTFOOT_PHASE_CLOSE:
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            state->phase = CC_LIGHTFOOT_PHASE_ENGAGE;
         }
         break;
-    case CCLIGHTFOOT_STATE_ENGAGE:
-        if (state->flags & 1)
-        {
-            cclightfoot_selectCombatState(state, (int*)targetObj, dist);
+    case CC_LIGHTFOOT_PHASE_ENGAGE:
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
         }
         break;
-    case CCLIGHTFOOT_STATE_GUARD:
-        if (((GameObject*)targetObj)->anim.currentMove != 0x19)
-        {
-            state->state = CCLIGHTFOOT_STATE_STRIKE_WATCH;
+    case CC_LIGHTFOOT_PHASE_GUARD:
+        if (((GameObject*)targetObject)->anim.currentMove != CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+            state->phase = CC_LIGHTFOOT_PHASE_STRIKE_WATCH;
         }
-        if (state->flags & 1)
-        {
-            state->state = CCLIGHTFOOT_STATE_GUARD_HELD;
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            state->phase = CC_LIGHTFOOT_PHASE_GUARD_HELD;
         }
         break;
-    case CCLIGHTFOOT_STATE_GUARD_HELD:
-        if (((GameObject*)targetObj)->anim.currentMove != 0x19)
-        {
-            state->state = CCLIGHTFOOT_STATE_STRIKE_WATCH;
+    case CC_LIGHTFOOT_PHASE_GUARD_HELD:
+        if (((GameObject*)targetObject)->anim.currentMove != CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+            state->phase = CC_LIGHTFOOT_PHASE_STRIKE_WATCH;
         }
         break;
-    case CCLIGHTFOOT_STATE_STRIKE_WATCH:
-        move = ((GameObject*)targetObj)->anim.currentMove;
-        if (move == 0x18 && ((GameObject*)targetObj)->anim.currentMoveProgress > 0.2f)
-        {
-            state->state = CCLIGHTFOOT_STATE_PARRY;
-        }
-        else if (move == 0x19)
-        {
-            state->state = CCLIGHTFOOT_STATE_GUARD;
-        }
-        else if (state->flags & 1)
-        {
-            cclightfoot_selectCombatState(state, (int*)targetObj, dist);
+    case CC_LIGHTFOOT_PHASE_STRIKE_WATCH:
+        move = ((GameObject*)targetObject)->anim.currentMove;
+        if (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
+            ((GameObject*)targetObject)->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
+            state->phase = CC_LIGHTFOOT_PHASE_PARRY;
+        } else if (move == CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+            state->phase = CC_LIGHTFOOT_PHASE_GUARD;
+        } else if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
         }
         break;
-    case CCLIGHTFOOT_STATE_PARRY:
-        move = ((GameObject*)targetObj)->anim.currentMove;
-        if (move != 0x18 || (move == 0x18 && ((GameObject*)targetObj)->anim.currentMoveProgress < 0.2f))
-        {
-            state->state = CCLIGHTFOOT_STATE_RECOVER;
+    case CC_LIGHTFOOT_PHASE_PARRY:
+        move = ((GameObject*)targetObject)->anim.currentMove;
+        if (move != CC_LIGHTFOOT_TARGET_STRIKE_MOVE ||
+            (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
+             ((GameObject*)targetObject)->anim.currentMoveProgress < CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD)) {
+            state->phase = CC_LIGHTFOOT_PHASE_RECOVER;
         }
-        if (state->flags & 1)
-        {
-            state->state = CCLIGHTFOOT_STATE_PARRY_HELD;
-        }
-        break;
-    case CCLIGHTFOOT_STATE_PARRY_HELD:
-        move = ((GameObject*)targetObj)->anim.currentMove;
-        if (move != 0x18 || (move == 0x18 && ((GameObject*)targetObj)->anim.currentMoveProgress < 0.2f))
-        {
-            state->state = CCLIGHTFOOT_STATE_RECOVER;
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            state->phase = CC_LIGHTFOOT_PHASE_PARRY_HELD;
         }
         break;
-    case CCLIGHTFOOT_STATE_RECOVER:
-        move = ((GameObject*)targetObj)->anim.currentMove;
-        if (move == 0x18 && ((GameObject*)targetObj)->anim.currentMoveProgress > 0.2f)
-        {
-            state->state = CCLIGHTFOOT_STATE_PARRY;
-        }
-        else if (move == 0x19)
-        {
-            state->state = CCLIGHTFOOT_STATE_GUARD;
-        }
-        else if (state->flags & 1)
-        {
-            cclightfoot_selectCombatState(state, (int*)targetObj, dist);
+    case CC_LIGHTFOOT_PHASE_PARRY_HELD:
+        move = ((GameObject*)targetObject)->anim.currentMove;
+        if (move != CC_LIGHTFOOT_TARGET_STRIKE_MOVE ||
+            (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
+             ((GameObject*)targetObject)->anim.currentMoveProgress < CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD)) {
+            state->phase = CC_LIGHTFOOT_PHASE_RECOVER;
         }
         break;
-    case CCLIGHTFOOT_STATE_REACT:
-        cclightfoot_selectCombatState(state, (int*)targetObj, dist);
+    case CC_LIGHTFOOT_PHASE_RECOVER:
+        move = ((GameObject*)targetObject)->anim.currentMove;
+        if (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
+            ((GameObject*)targetObject)->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
+            state->phase = CC_LIGHTFOOT_PHASE_PARRY;
+        } else if (move == CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+            state->phase = CC_LIGHTFOOT_PHASE_GUARD;
+        } else if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+        }
         break;
-    case CCLIGHTFOOT_STATE_DORMANT:
-        if (mainGetBit(GAMEBIT_LIGHTFOOT_TRIGGERED) != 0)
-        {
-            if (mainGetBit(GAMEBIT_CC_COMPLETE) != 0)
-            {
-                state->state = CCLIGHTFOOT_STATE_DESPAWN;
+    case CC_LIGHTFOOT_PHASE_REACT:
+        ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+        break;
+    case CC_LIGHTFOOT_PHASE_DORMANT:
+        if (mainGetBit(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT) != 0) {
+            if (mainGetBit(CC_LIGHTFOOT_ENCOUNTER_DESPAWN_GAMEBIT) != 0) {
+                state->phase = CC_LIGHTFOOT_PHASE_DESPAWN;
             }
-        }
-        else
-        {
-            if (ObjTrigger_IsSet((int)obj) != 0)
-            {
-                mainSetBits(GAMEBIT_LIGHTFOOT_TRIGGERED, 1);
-            }
-            else if (state->flags & 2)
-            {
-                state->state = CCLIGHTFOOT_STATE_DORMANT_TURN;
+        } else {
+            if (ObjTrigger_IsSet((int)obj) != 0) {
+                mainSetBits(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT, 1);
+            } else if ((state->flags & CC_LIGHTFOOT_FLAG_TURN_REQUIRED) != 0) {
+                state->phase = CC_LIGHTFOOT_PHASE_DORMANT_TURN;
             }
         }
         break;
-    case CCLIGHTFOOT_STATE_DORMANT_TURN:
-        if (obj->anim.currentMoveProgress > 0.2f &&
-            obj->anim.currentMoveProgress < 0.8f)
-        {
-            if (diff > 0x400)
-            {
-                obj->anim.rotX =
-                    (s16)(obj->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
-            }
-            else if (diff < -0x400)
-            {
-                obj->anim.rotX =
-                    (s16)(obj->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
-            }
-            else
-            {
-                obj->anim.rotX = angle;
+    case CC_LIGHTFOOT_PHASE_DORMANT_TURN:
+        if (obj->anim.currentMoveProgress > CC_LIGHTFOOT_TURN_PROGRESS_START &&
+            obj->anim.currentMoveProgress < CC_LIGHTFOOT_TURN_PROGRESS_END) {
+            if (angleDifference > CC_LIGHTFOOT_TURN_SNAP_ANGLE) {
+                obj->anim.rotX = (s16)(obj->anim.rotX - (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+            } else if (angleDifference < -CC_LIGHTFOOT_TURN_SNAP_ANGLE) {
+                obj->anim.rotX = (s16)(obj->anim.rotX + (int)(CC_LIGHTFOOT_TURN_RATE * timeDelta));
+            } else {
+                obj->anim.rotX = targetAngle;
             }
         }
-        if (state->flags & 1)
-        {
-            state->state = CCLIGHTFOOT_STATE_DORMANT;
+        if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
+            state->phase = CC_LIGHTFOOT_PHASE_DORMANT;
         }
         break;
-    case CCLIGHTFOOT_STATE_DESPAWN:
-        if (state->childObj != NULL)
-        {
-            if (obj->childObjs[0] != NULL)
-            {
-                ObjLink_DetachChild(obj, state->childObj);
+    case CC_LIGHTFOOT_PHASE_DESPAWN:
+        if (state->attachedWeapon != NULL) {
+            if (obj->childObjs[0] != NULL) {
+                ObjLink_DetachChild(obj, state->attachedWeapon);
             }
-            Obj_FreeObject(state->childObj);
-            state->childObj = 0;
+            Obj_FreeObject(state->attachedWeapon);
+            state->attachedWeapon = 0;
         }
         obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-        obj->objectFlags = (u16)(obj->objectFlags | CCLIGHTFOOT_OBJFLAG_UPDATE_DISABLED);
+        obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
         ObjHits_DisableObject(obj);
         return;
     }
-    stateId = state->state;
-    if (stateId >= CCLIGHTFOOT_STATE_GUARD && stateId <= CCLIGHTFOOT_STATE_RECOVER)
-    {
-        if (ObjHits_PollPriorityHitWithCooldown(obj, (f32*)gCcLightfootHitCooldown, 0, hitPos) != 0)
-        {
-            if (getXZDistance(&obj->anim.worldPosX, (f32*)(state->playerObj + 0x18)) < 20000.0f)
-            {
+    phase = state->phase;
+    if (phase >= CC_LIGHTFOOT_PHASE_GUARD && phase <= CC_LIGHTFOOT_PHASE_RECOVER) {
+        if (ObjHits_PollPriorityHitWithCooldown(obj, &gCCLightfootHitCooldown.cooldown, 0, hitPos) != 0) {
+            if (getXZDistance(&obj->anim.worldPosX,
+                              (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
+                CC_LIGHTFOOT_HIT_EFFECT_DISTANCE_SQUARED) {
                 objfx_spawnHitEmitterAtPos(hitPos, 8, 0xff, 0xff, 0x78);
-                objLightFn_8009a1dc((void*)obj, 0.014f, hitPos, 4, 0);
+                objLightFn_8009a1dc((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);
             }
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
         }
-    }
-    else
-    {
-        if (ObjHits_GetPriorityHit(obj, &hitObj, 0, 0) != 0)
-        {
-            move = ((GameObject*)hitObj)->anim.seqId;
-            if (move == 0x11 || move == 0x33)
-            {
+    } else {
+        if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
+            move = ((GameObject*)hitObjectHandle)->anim.seqId;
+            if (move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A || move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B) {
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
             }
         }
     }
-    stateId = state->state;
+    phase = state->phase;
     {
-        u8* pa = &tbl->stateFlags[stateId];
-        animId = pa[0x10];
-        if (animId != obj->anim.currentMove)
-        {
-            if (pa[0] & 2)
-            {
-                ObjAnim_SetCurrentMove((int)obj, animId, 1.0f, 0);
-            }
-            else
-            {
-                ObjAnim_SetCurrentMove((int)obj, animId, 0.0f, 0);
+        u8* phaseAnim = &animTable->phaseFlags[phase];
+
+        moveId = phaseAnim[offsetof(CCLightfootAnimTable, moveIds)];
+        if (moveId != obj->anim.currentMove) {
+            if ((phaseAnim[0] & CC_LIGHTFOOT_ANIM_FLAG_START_AT_END) != 0) {
+                ObjAnim_SetCurrentMove((int)obj, moveId, CC_LIGHTFOOT_ANIMATION_PROGRESS_END, 0);
+            } else {
+                ObjAnim_SetCurrentMove((int)obj, moveId, CC_LIGHTFOOT_ANIMATION_PROGRESS_START, 0);
             }
         }
     }
-    if (ObjAnim_AdvanceCurrentMove((int)obj, tbl->animSpeeds[state->state], timeDelta,
-                                                                    NULL) != 0)
-    {
-        state->flags |= 1;
-    }
-    else
-    {
-        state->flags &= ~1;
+    if (ObjAnim_AdvanceCurrentMove((int)obj, animTable->moveSpeeds[state->phase], timeDelta, NULL) != 0) {
+        state->flags |= CC_LIGHTFOOT_FLAG_MOVE_COMPLETE;
+    } else {
+        state->flags &= ~CC_LIGHTFOOT_FLAG_MOVE_COMPLETE;
     }
 }
 
-
-void cclightfoot_init(GameObject* obj, int* def)
-{
-    obj->anim.rotX = (s16)((u32) * (u8*)((char*)def + 26) << 8);
-    obj->objectFlags = (u16)(obj->objectFlags | CCLIGHTFOOT_OBJFLAG_HIDDEN);
-    obj->animEventCallback = CClightfoot_SeqFn;
+void ccLightfoot_init(GameObject* obj, const CCLightfootPlacement* placement) {
+    obj->anim.rotX = (s16)((u32)placement->rotXByte << CC_LIGHTFOOT_ROT_X_SHIFT);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
+    obj->animEventCallback = ccLightfoot_animationEventCallback;
 }

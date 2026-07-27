@@ -1,303 +1,228 @@
-/*
- * LINKB_levco (DLL 0x172) - level controller for Link's boss arena (the
- * Tricky/SharpClaw encounter). It drives a 5-stage progression machine
- * (state->stage) gated on game bits, runs the per-stage trigger sequence,
- * pokes the Tricky object (trickySetSoundSuppressed) at each transition, edge-latches the
- * arena music (track 0x1A) on the sun-position sky flag, maintains gamebit
- * latches via SCGameBitLatch_Update, and re-arms gamebit 0x4e3 from the
- * tricky-energy meter on a timer.
- *
- * init seeds stage from the highest set progress bit (0x543/0x387/0x386/
- * 0x385/0x384) and primes the ambient env fx by save-load status.
- */
+#include "dlls/objects/370_LINKB_levco.h"
+
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "sys/objects.h"
-#include "main/dll/savegame_load_api.h"
 #include "main/audio/music_api.h"
-#include "main/sky_api.h"
-#include "main/sky.h"
-#include "sys/objects/lifecycle.h"
+#include "main/audio/music_trigger_ids.h"
 #include "main/dll/dll_80136a40.h"
-#include "main/render_envfx_api.h"
-#include "main/mapEvent.h"
-#include "dlls/object_descriptor.h"
-#include "main/objseq.h"
-#include "main/sky_interface.h"
-#include "main/gamebits.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/mapEvent.h"
+#include "main/objseq.h"
+#include "main/render_envfx_api.h"
+#include "main/sky.h"
+#include "main/sky_api.h"
+#include "main/sky_interface.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-typedef struct LinkbLevState
-{
-    int flags;
-    s8 trickyHitCount : 2;
-    u8 stage : 3;
-    u8 unk_02_low : 3; /* cleared on every stage advance, never read */
-    u8 altPath : 1;    /* stage-3 gamebit 0x380 latch */
-    u8 unusedFlags : 7;
-    u8 pad6[2];
-    f32 timer;
-    s16 music;
-} LinkbLevState;
+#define LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE 0x04
+#define LINKB_LEVEL_CONTROL_FLAG_MUSIC        0x08
 
-#define LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK       0x1000
-#define LINKBLEVCONTROL_OBJFLAG_HIDDEN             0x4000
-#define LINKBLEVCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define LINKB_LEVEL_CONTROL_ENVFX_ID            0x23C
+#define LINKB_LEVEL_CONTROL_ENVFX_LOADED_VALUE  0x3F
+#define LINKB_LEVEL_CONTROL_ENVFX_LOADING_VALUE 0x1F
 
-/* env-effect id activated on level init (immediate when save already loaded,
- * else deferred; index-style, role opaque) */
-#define LINKBLEVCONTROL_ENVFX_A 0x23c
+#define LINKB_LEVEL_CONTROL_TRICKY_TALK_INTERVAL 2000.0f
+#define LINKB_MUSIC_TRIGGER_WATER_EXIT           0x35
 
-/* arena music track (also stored in state->music as the active-track marker) */
-#define LINKB_MUSIC_TRACK 0x1a
-
-/* progression game bits; each set bit advances stage N-1 -> N */
-enum
-{
-    GAMEBIT_LINKB_STAGE_1 = 0x384,
-    GAMEBIT_LINKB_STAGE_2 = 0x385,
-    GAMEBIT_LINKB_STAGE_3 = 0x386,
-    GAMEBIT_LINKB_STAGE_4 = 0x387,
-    GAMEBIT_LINKB_STAGE_5 = 0x543
+enum {
+    LINKB_GAMEBIT_TRICKY_STATE_A = 0x1FD,
+    LINKB_GAMEBIT_TRICKY_STATE_B = 0x256,
+    LINKB_GAMEBIT_TRICKY_STATE_LATCH = 0x36E,
+    LINKB_GAMEBIT_ALTERNATE_PATH = 0x380,
+    LINKB_GAMEBIT_STAGE_1 = 0x384,
+    LINKB_GAMEBIT_STAGE_2 = 0x385,
+    LINKB_GAMEBIT_STAGE_3 = 0x386,
+    LINKB_GAMEBIT_STAGE_4 = 0x387,
+    LINKB_GAMEBIT_STAGE_5 = 0x543,
+    LINKB_GAMEBIT_CITYTOMBS_MUSIC = 0xB36,
 };
 
-enum LinkbLevStage
-{
-    LINKBLEVCONTROL_STAGE_START = 0, /* awaiting stage-1 gate bit (0x384)     */
-    LINKBLEVCONTROL_STAGE_1 = 1,     /* stage 1 reached (gate 0x384)          */
-    LINKBLEVCONTROL_STAGE_2 = 2,     /* stage 2 reached (gate 0x385)          */
-    LINKBLEVCONTROL_STAGE_3 = 3,     /* stage 3 reached (gate 0x386)          */
-    LINKBLEVCONTROL_STAGE_4 = 4,     /* stage 4 reached (gate 0x387)          */
-    LINKBLEVCONTROL_STAGE_5 = 5      /* final stage reached (gate 0x543)      */
+LINKBLevelControlEnvFxRampTables gLINKBLevelControlEnvFxRampTables = {
+    {
+        0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4,
+        0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4,
+    },
+    {
+        0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6,
+        0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6, 0xB6,
+    },
+    {
+        0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5,
+        0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5, 0xB5,
+    },
+    {
+        0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7,
+        0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7,
+    },
 };
 
-u8 lbl_803238D8[224] = {
-    0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4,
-    0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4,
-    0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4,
-    0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB4, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6,
-    0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6,
-    0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6,
-    0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6, 0x00, 0xB6,
-    0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5,
-    0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5,
-    0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5,
-    0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB5, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7,
-    0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7,
-    0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7,
-    0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7, 0x00, 0xB7,
-};
-
-int linkb_levcontrol_getExtraSize(void)
-{
-    return 0x10;
+int linkbLevelControl_getExtraSize(void) {
+    return sizeof(LINKBLevelControlState);
 }
 
-void linkb_levcontrol_update(GameObject* obj)
-{
-    LinkbLevState* state;
+void linkbLevelControl_update(GameObject* obj) {
+    LINKBLevelControlState* state;
     GameObject* tricky;
     GameObject* player;
-    u8* cur;
+    u8* trickyEnergy;
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
     tricky = getTrickyObject();
-    cur = (*gMapEventInterface)->getTrickyEnergy();
-    if ((*gSkyInterface)->getSunPosition(0) != 0)
-    {
-        if (state->music != -1)
-        {
-            state->music = -1;
-            if (state->flags & 8)
-            {
-                Music_Trigger(LINKB_MUSIC_TRACK, 0);
+    trickyEnergy = (*gMapEventInterface)->getTrickyEnergy();
+    if ((*gSkyInterface)->getSunPosition(NULL) != 0) {
+        if (state->musicTriggerId != -1) {
+            state->musicTriggerId = -1;
+            if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_MUSIC) != 0) {
+                Music_Trigger(MUSICTRIG_galleon_docks, 0);
             }
         }
-    }
-    else
-    {
-        if (state->music != LINKB_MUSIC_TRACK)
-        {
-            state->music = LINKB_MUSIC_TRACK;
-            if (state->flags & 8)
-            {
-                Music_Trigger(LINKB_MUSIC_TRACK, 1);
-            }
+    } else if (state->musicTriggerId != MUSICTRIG_galleon_docks) {
+        state->musicTriggerId = MUSICTRIG_galleon_docks;
+        if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_MUSIC) != 0) {
+            Music_Trigger(MUSICTRIG_galleon_docks, 1);
         }
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)state, 1, -1, -1, 0x3a0, 0x35);
-    SCGameBitLatch_Update((SCGameBitLatchState*)state, 2, -1, -1, 0xb36, 0x96);
-    SCGameBitLatch_Update((SCGameBitLatchState*)state, 8, -1, -1, 0x3a1, state->music);
-    if (state->flags & 4)
-    {
-        if (mainGetBit(0x1fd) == 0 && mainGetBit(0x256) == 0)
-        {
-            mainSetBits(0x36e, 0);
-            state->flags &= ~4;
+
+    SCGameBitLatch_Update(&state->gameBitLatch, 1, -1, -1, GAMEBIT_IM_WaterRelated03A0, LINKB_MUSIC_TRIGGER_WATER_EXIT);
+    SCGameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, LINKB_GAMEBIT_CITYTOMBS_MUSIC, MUSICTRIG_citytombs);
+    SCGameBitLatch_Update(&state->gameBitLatch, LINKB_LEVEL_CONTROL_FLAG_MUSIC, -1, -1, GAMEBIT_IM_Done,
+                          state->musicTriggerId);
+
+    if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE) != 0) {
+        if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) == 0 && mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_B) == 0) {
+            mainSetBits(LINKB_GAMEBIT_TRICKY_STATE_LATCH, 0);
+            state->gameBitLatch.activeMask &= ~LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE;
         }
+    } else if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_B) != 0 || mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) != 0) {
+        mainSetBits(LINKB_GAMEBIT_TRICKY_STATE_LATCH, 1);
+        state->gameBitLatch.activeMask |= LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE;
     }
-    else
-    {
-        if (mainGetBit(0x256) != 0 || mainGetBit(0x1fd) != 0)
-        {
-            mainSetBits(0x36e, 1);
-            state->flags |= 4;
-        }
-    }
-    if (tricky != NULL)
-    {
+
+    if (tricky != NULL) {
         trickySetSoundSuppressed(tricky, 0);
-        switch (state->stage)
-        {
-        case LINKBLEVCONTROL_STAGE_START:
-            if (mainGetBit(GAMEBIT_LINKB_STAGE_1) != 0)
-            {
+        switch (state->stage) {
+        case LINKB_LEVEL_CONTROL_STAGE_START:
+            if (mainGetBit(LINKB_GAMEBIT_STAGE_1) != 0) {
                 trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
-                state->unk_02_low = 0;
+                state->unusedStageBits = 0;
                 return;
             }
             break;
-        case LINKBLEVCONTROL_STAGE_1:
-            if (mainGetBit(GAMEBIT_ITEM_TrickyFood_Count) != 0)
-            {
-                if (!(player->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
-                {
-                    mainSetBits(GAMEBIT_LINKB_STAGE_2, 1);
+        case LINKB_LEVEL_CONTROL_STAGE_1:
+            if (mainGetBit(GAMEBIT_ITEM_TrickyFood_Count) != 0) {
+                if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
+                    mainSetBits(LINKB_GAMEBIT_STAGE_2, 1);
                     trickySetSoundSuppressed(tricky, 1);
                     (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                     state->stage++;
-                    state->unk_02_low = 0;
+                    state->unusedStageBits = 0;
                     return;
                 }
             }
             break;
-        case LINKBLEVCONTROL_STAGE_2:
-            if (cur[0] != 0)
-            {
+        case LINKB_LEVEL_CONTROL_STAGE_2:
+            if (trickyEnergy[0] != 0) {
                 trickySetSoundSuppressed(tricky, 1);
-                if (state->trickyHitCount-- == -1 &&
-                    !(tricky->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
-                {
-                    mainSetBits(GAMEBIT_LINKB_STAGE_3, 1);
+                if (state->trickyHitCount-- == -1 && (tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
+                    mainSetBits(LINKB_GAMEBIT_STAGE_3, 1);
                     (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                     state->stage++;
-                    state->unk_02_low = 0;
+                    state->unusedStageBits = 0;
                     return;
                 }
             }
             break;
-        case LINKBLEVCONTROL_STAGE_3:
-            if (mainGetBit(0x1fd) != 0)
-            {
-                mainSetBits(GAMEBIT_LINKB_STAGE_4, 1);
+        case LINKB_LEVEL_CONTROL_STAGE_3:
+            if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_A) != 0) {
+                mainSetBits(LINKB_GAMEBIT_STAGE_4, 1);
                 state->stage++;
                 break;
             }
-            if (mainGetBit(0x380) != 0)
-            {
-                state->altPath = 1;
+            if (mainGetBit(LINKB_GAMEBIT_ALTERNATE_PATH) != 0) {
+                state->alternatePath = 1;
                 break;
             }
-            if (state->altPath != 0)
-            {
-                mainSetBits(GAMEBIT_LINKB_STAGE_4, 1);
+            if (state->alternatePath != 0) {
+                mainSetBits(LINKB_GAMEBIT_STAGE_4, 1);
                 trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
-                state->unk_02_low = 0;
+                state->unusedStageBits = 0;
                 return;
             }
             break;
-        case LINKBLEVCONTROL_STAGE_4:
-            if (mainGetBit(GAMEBIT_LINKB_STAGE_5) != 0)
-            {
+        case LINKB_LEVEL_CONTROL_STAGE_4:
+            if (mainGetBit(LINKB_GAMEBIT_STAGE_5) != 0) {
                 trickySetSoundSuppressed(tricky, 1);
                 (*gObjectTriggerInterface)->runSequence(state->stage, obj, -1);
                 state->stage++;
-                state->unk_02_low = 0;
+                state->unusedStageBits = 0;
                 return;
             }
             break;
         }
     }
-    if (tricky != NULL)
-    {
-        if (!(tricky->objectFlags & LINKBLEVCONTROL_OBJFLAG_PARENT_SLACK))
-        {
-            state->timer = state->timer + timeDelta;
+    if (tricky != NULL) {
+        if ((tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
+            state->trickyTalkTimer += timeDelta;
         }
-        if (mainGetBit(GAMEBIT_TrickyTalk) == 1 && cur[0] >= 4)
-        {
-            mainSetBits(GAMEBIT_TrickyTalk, 0xff);
+        if (mainGetBit(GAMEBIT_TrickyTalk) == 1 && trickyEnergy[0] >= 4) {
+            mainSetBits(GAMEBIT_TrickyTalk, 0xFF);
         }
-        if (state->timer >= 2000.0f)
-        {
-            state->timer = state->timer - 2000.0f;
-            if (mainGetBit(GAMEBIT_TrickyTalk) == 0xff && cur[0] < 4)
-            {
+        if (state->trickyTalkTimer >= LINKB_LEVEL_CONTROL_TRICKY_TALK_INTERVAL) {
+            state->trickyTalkTimer -= LINKB_LEVEL_CONTROL_TRICKY_TALK_INTERVAL;
+            if (mainGetBit(GAMEBIT_TrickyTalk) == 0xFF && trickyEnergy[0] < 4) {
                 mainSetBits(GAMEBIT_TrickyTalk, 1);
             }
         }
     }
 }
 
-void linkb_levcontrol_init(GameObject* obj)
-{
-    /* the (u8*)(int) launder is load-bearing: it makes the skySetEnvFxRampTables arg
-     * reuse envBase's register instead of re-materializing the address */
-    u8* envBase = (u8*)(int)lbl_803238D8;
-    LinkbLevState* state = obj->extra;
-    obj->objectFlags =
-        (u16)(obj->objectFlags |
-              (LINKBLEVCONTROL_OBJFLAG_HIDDEN | LINKBLEVCONTROL_OBJFLAG_HITDETECT_DISABLED));
-    if (mainGetBit(0x36e) != 0)
-    {
-        state->flags &= 4;
+void linkbLevelControl_init(GameObject* obj) {
+    u8* envFxRampBase = (u8*)(int)&gLINKBLevelControlEnvFxRampTables;
+    LINKBLevelControlState* state = obj->extra;
+
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
+    if (mainGetBit(LINKB_GAMEBIT_TRICKY_STATE_LATCH) != 0) {
+        state->gameBitLatch.activeMask &= LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE;
     }
-    if (mainGetBit(GAMEBIT_LINKB_STAGE_5) != 0)
-    {
-        state->stage = LINKBLEVCONTROL_STAGE_5;
+
+    if (mainGetBit(LINKB_GAMEBIT_STAGE_5) != 0) {
+        state->stage = LINKB_LEVEL_CONTROL_STAGE_5;
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_4) != 0) {
+        state->stage = LINKB_LEVEL_CONTROL_STAGE_4;
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_3) != 0) {
+        state->stage = LINKB_LEVEL_CONTROL_STAGE_3;
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_2) != 0) {
+        state->stage = LINKB_LEVEL_CONTROL_STAGE_2;
+    } else if (mainGetBit(LINKB_GAMEBIT_STAGE_1) != 0) {
+        state->stage = LINKB_LEVEL_CONTROL_STAGE_1;
     }
-    else if (mainGetBit(GAMEBIT_LINKB_STAGE_4) != 0)
-    {
-        state->stage = LINKBLEVCONTROL_STAGE_4;
-    }
-    else if (mainGetBit(GAMEBIT_LINKB_STAGE_3) != 0)
-    {
-        state->stage = LINKBLEVCONTROL_STAGE_3;
-    }
-    else if (mainGetBit(GAMEBIT_LINKB_STAGE_2) != 0)
-    {
-        state->stage = LINKBLEVCONTROL_STAGE_2;
-    }
-    else if (mainGetBit(GAMEBIT_LINKB_STAGE_1) != 0)
-    {
-        state->stage = LINKBLEVCONTROL_STAGE_1;
-    }
-    skySetEnvFxRampTables(envBase + 0x38, (u8*)(int)lbl_803238D8, envBase + 0x70, envBase + 0xa8);
-    if (getSaveGameLoadStatus() != 0)
-    {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0)
-        {
-            envFxActFn_800887f8(0x3f);
+
+    skySetEnvFxRampTables(envFxRampBase + 0x38, (u8*)(int)&gLINKBLevelControlEnvFxRampTables, envFxRampBase + 0x70,
+                          envFxRampBase + 0xA8);
+    if (getSaveGameLoadStatus() != 0) {
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) {
+            envFxActFn_800887f8(LINKB_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
         }
-        getEnvfxActImmediately(0, 0, LINKBLEVCONTROL_ENVFX_A, 0);
-    }
-    else
-    {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0)
-        {
-            envFxActFn_800887f8(0x1f);
+        getEnvfxActImmediately(NULL, NULL, LINKB_LEVEL_CONTROL_ENVFX_ID, 0);
+    } else {
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) {
+            envFxActFn_800887f8(LINKB_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
         }
-        getEnvfxAct(0, 0, LINKBLEVCONTROL_ENVFX_A, 0);
+        getEnvfxAct(NULL, NULL, LINKB_LEVEL_CONTROL_ENVFX_ID, 0);
     }
-    state->music = 0;
+
+    state->musicTriggerId = 0;
 }
 
-ObjectDescriptor gLINKBLevControlObjDescriptor = {
+ObjectDescriptor gLINKBLevelControlObjDescriptor = {
     0,
     0,
     0,
@@ -305,11 +230,11 @@ ObjectDescriptor gLINKBLevControlObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)linkb_levcontrol_init,
-    (ObjectDescriptorCallback)linkb_levcontrol_update,
+    (ObjectDescriptorCallback)linkbLevelControl_init,
+    (ObjectDescriptorCallback)linkbLevelControl_update,
     0,
     0,
     0,
     0,
-    linkb_levcontrol_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)linkbLevelControl_getExtraSize,
 };

@@ -289,14 +289,14 @@ void disableHeavyFog(void)
     lbl_803DCD28 = 0x0;
 }
 
-void enableHeavyFog(f32 a, f32 b, f32 c, f32 d, f32 e, u8 mode)
+void enableHeavyFog(f32 top, f32 bottom, f32 depthScale, f32 depthOffset, f32 worldScale, u8 mode)
 {
     lbl_803DCD28 = 1;
-    lbl_803DCD44 = a;
-    lbl_803DCD40 = b;
-    lbl_803DCD3C = c;
-    lbl_803DCD38 = d;
-    lbl_803DCD34 = e;
+    lbl_803DCD44 = top;
+    lbl_803DCD40 = bottom;
+    lbl_803DCD3C = depthScale;
+    lbl_803DCD38 = depthOffset;
+    lbl_803DCD34 = worldScale;
     lbl_803DCD31 = mode;
 }
 

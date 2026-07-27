@@ -16,13 +16,13 @@
 #include "main/dll/savegame.h"
 #include "main/dll/dll_0095_dll95func0.h"
 
+extern u32 lbl_80317528[];
+
 u8 lbl_803DB940[8] = {0, 4, 0, 5, 0, 6, 0, 7};
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL95_EFFECT_ID 0x46
 
-
-extern u32 lbl_80317528[];
 
 void dll_95_func03(int sourceObj, int variant, int posSource)
 {
@@ -137,3 +137,12 @@ void dll_95_func01_nop(void)
 void dll_95_func00_nop(void)
 {
 }
+
+u32 lbl_80317528[40] = {0xfce001f4, 0xfce00008, 0x001f0320, 0x01f4fce0, 0x0078001f, 0x032001f4, 0x03200008, 0x001ffce0,
+                        0x01f40320, 0x0078001f, 0xfc180000, 0xfc180008, 0x000003e8, 0x0000fc18, 0x00780000, 0x03e80000,
+                        0x03e80008, 0x0000fc18, 0x000003e8, 0x00780000, 0x00000001, 0x00050000, 0x00050004, 0x00010002,
+                        0x00060001, 0x00060005, 0x00020003, 0x00070002, 0x00070006, 0x00030000, 0x00040003, 0x00040007,
+                        0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00000316, 0x000a0000, 0x00000000, 0x00000000};
+u32 lbl_803175C8[8] = {
+    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_95_func00_nop, (u32)dll_95_func01_nop,
+    0x00000000, (u32)dll_95_func03};

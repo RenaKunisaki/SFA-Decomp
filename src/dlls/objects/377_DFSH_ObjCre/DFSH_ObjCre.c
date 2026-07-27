@@ -1,154 +1,193 @@
 /*
- * DFSH_ObjCre (DLL 0x179) - a Dragon Rock shrine spawner that, once its
- * gamebit arms, builds a SpiritPrize object setup
- * (object id 0x11) from its placement template and periodically spawns it
- * while loading is locked, playing the gem-run sfx.
+ * DFSH_ObjCre (DLL 0x179) - shrine SharpClaw encounter spawner.
+ *
+ * An indexed game bit triggers the activation effects and starts a
+ * countdown. Once the countdown expires, this object creates object ID
+ * 0x11, which retail OBJINDEX.bin maps to "sharpclawGr" (DLL 0xC9).
  */
-#include "game/objects/object_setup.h"
-#include "main/dll/DF/dll_0179_dfshobjcreator.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
+
+#include "dlls/objects/377_DFSH_ObjCre.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/resource.h"
-#include "sys/objects/lifecycle.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
-#include "main/gamebits.h"
 #include "main/audio/sfx.h"
-#include "dlls/object_descriptor.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/foodbag.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
+#include "main/resource.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-/* Object id of the SpiritPrize object this creator spawns (docblock:
- * "builds a SpiritPrize object setup (object id 0x11)"). */
-#define DFSHOBJCREATOR_SPIRITPRIZE_OBJ_ID 0x11
-#define DFSHOBJCREATOR_DISABLE_GAMEBIT     0x589
-#define DFSHOBJCREATOR_TRIGGER_GAMEBIT_BASE 0xF6
-#define DFSHOBJCREATOR_REWARD_GAMEBIT      0xFC
+typedef struct DFSHObjCreatorSharpClawSetup {
+    ObjPlacement base;
+    s16 gameBit;
+    s16 unknown1A;
+    s16 unknown1C;
+    u8 unknown1E[0x22 - 0x1E];
+    s16 droppedItemId;
+    u8 unknown24[0x27 - 0x24];
+    s8 initialWeaponId;
+    u8 unknown28;
+    u8 aggroRangeByte;
+    s8 initialYaw;
+    u8 flags;
+    u8 unknown2C[0x2E - 0x2C];
+    s8 triggerSequenceId;
+    u8 unknown2F;
+    s16 unknown30;
+    u8 unknown32[0x34 - 0x32];
+    u16 unknown34;
+    u8 unknown36[0x38 - 0x36];
+} DFSHObjCreatorSharpClawSetup;
 
-int DFSH_ObjCreator_getExtraSize(void)
-{
-    return sizeof(DfshObjCreatorState);
+STATIC_ASSERT(sizeof(DFSHObjCreatorSharpClawSetup) == 0x38);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, base) == 0x00);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, gameBit) == 0x18);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown1A) == 0x1A);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown1C) == 0x1C);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown1E) == 0x1E);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, droppedItemId) == 0x22);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown24) == 0x24);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, initialWeaponId) == 0x27);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown28) == 0x28);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, aggroRangeByte) == 0x29);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, initialYaw) == 0x2A);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, flags) == 0x2B);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown2C) == 0x2C);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, triggerSequenceId) == 0x2E);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown2F) == 0x2F);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown30) == 0x30);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown32) == 0x32);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown34) == 0x34);
+STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown36) == 0x36);
+
+#define DFSH_OBJ_CREATOR_SHARPCLAW_OBJECT_ID       0x11
+#define DFSH_OBJ_CREATOR_EFFECT_RESOURCE_ID        0x82
+#define DFSH_OBJ_CREATOR_DISABLE_GAME_BIT          0x589
+#define DFSH_OBJ_CREATOR_TRIGGER_GAME_BIT_BASE     0xF6
+#define DFSH_OBJ_CREATOR_DROPPED_ITEM_GAME_BIT     0xFC
+#define DFSH_OBJ_CREATOR_SHARPCLAW_GAME_BIT        0x1E7
+#define DFSH_OBJ_CREATOR_SHARPCLAW_DROPPED_ITEM_ID 0x49
+#define DFSH_OBJ_CREATOR_SHARPCLAW_INITIAL_WEAPON  3
+#define DFSH_OBJ_CREATOR_SHARPCLAW_FLAGS           2
+#define DFSH_OBJ_CREATOR_SPAWN_TIMER               100
+
+int dfshObjCreator_getExtraSize(void) {
+    return sizeof(DFSHObjCreatorState);
 }
-int DFSH_ObjCreator_getObjectTypeId(void)
-{
-    return 0x0;
+
+int dfshObjCreator_getObjectTypeId(void) {
+    return 0;
 }
 
-void DFSH_ObjCreator_free(void)
-{
+void dfshObjCreator_free(void) {
 }
 
-void DFSH_ObjCreator_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, gDfshObjCreatorRenderScale);
+void dfshObjCreator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                           s8 visible) {
+    s32 isVisible;
+
+    isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gDFSHObjCreatorRenderScale);
+    }
 }
 
-void DFSH_ObjCreator_hitDetect(void)
-{
+void dfshObjCreator_hitDetect(void) {
 }
 
-void DFSH_ObjCreator_update(GameObject* obj)
-{
+void dfshObjCreator_update(GameObject* obj) {
+    const DFSHObjCreatorPlacement* placement;
+    DFSHObjCreatorState* state;
+    Dll82Interface** effectResource;
+    DFSHObjCreatorSharpClawSetup* sharpClawSetup;
 
-    DfshObjCreatorPlacement* placement = (DfshObjCreatorPlacement*)obj->anim.placement;
-    DfshObjCreatorState* state = obj->extra;
-    Dll82Interface** resource;
-    DfshObjCreatorSpawnSetup* spawnSetup;
-
-    if (mainGetBit(DFSHOBJCREATOR_DISABLE_GAMEBIT) != 0)
-    {
+    placement = (const DFSHObjCreatorPlacement*)obj->anim.placementData;
+    state = obj->extra;
+    if (mainGetBit(DFSH_OBJ_CREATOR_DISABLE_GAME_BIT) != 0) {
         obj->userData2 = 0;
         return;
     }
 
     if (obj->userData2 == 0 &&
-        mainGetBit(placement->triggerGameBitOffset + DFSHOBJCREATOR_TRIGGER_GAMEBIT_BASE) != 0)
-    {
-        resource = Resource_Acquire(0x82, 1);
-        (*resource)->spawn(obj, 0, NULL, 1, -1, NULL);
-        (*resource)->spawn(obj, 1, NULL, 1, -1, NULL);
+        mainGetBit(placement->triggerGameBitOffset + DFSH_OBJ_CREATOR_TRIGGER_GAME_BIT_BASE) != 0) {
+        effectResource = Resource_Acquire(DFSH_OBJ_CREATOR_EFFECT_RESOURCE_ID, 1);
+        (*effectResource)->spawn(obj, 0, NULL, 1, -1, NULL);
+        (*effectResource)->spawn(obj, 1, NULL, 1, -1, NULL);
         Sfx_PlayFromObject((int)obj, SFXTRIG_hitpos_6);
-        Resource_Release(resource);
-        state->spawnTimerStep = 1;
+        Resource_Release(effectResource);
+        state->spawnTimerRate = 1;
         obj->userData2 = 1;
     }
 
-    if (state->spawnTimerStep != 0)
-    {
-        state->spawnTimer = (s16)(state->spawnTimer - state->spawnTimerStep * (int)timeDelta);
+    if (state->spawnTimerRate != 0) {
+        state->spawnTimer = (s16)(state->spawnTimer - state->spawnTimerRate * (int)timeDelta);
     }
 
-    if (Obj_IsLoadingLocked() != 0 && state->spawnTimer <= 0)
-    {
-        spawnSetup = (DfshObjCreatorSpawnSetup*)Obj_AllocObjectSetup(sizeof(DfshObjCreatorSpawnSetup),
-                                                                    DFSHOBJCREATOR_SPIRITPRIZE_OBJ_ID);
-        spawnSetup->base.posX = placement->base.posX;
-        spawnSetup->base.posY = placement->base.posY;
-        spawnSetup->base.posZ = placement->base.posZ;
-        spawnSetup->base.mapId = placement->base.mapId;
-        spawnSetup->base.color[0] = placement->base.color[0];
-        spawnSetup->base.color[1] = placement->base.color[1];
-        spawnSetup->base.color[2] = placement->base.color[2];
-        spawnSetup->base.color[3] = placement->base.color[3];
-        spawnSetup->unk27 = 3;
-        spawnSetup->unk18 = 0x1e7;
-        spawnSetup->unk30 = -1;
-        spawnSetup->unk1A = -1;
-        spawnSetup->unk1C = -1;
-        spawnSetup->rotByte = (s8)(obj->anim.rotX >> 8);
-        spawnSetup->unk2B = 2;
-        if (mainGetBit(DFSHOBJCREATOR_REWARD_GAMEBIT) != 0)
-        {
-            spawnSetup->unk22 = 0x49;
+    if (Obj_IsLoadingLocked() != 0 && state->spawnTimer <= 0) {
+        sharpClawSetup = (DFSHObjCreatorSharpClawSetup*)Obj_AllocObjectSetup(sizeof(DFSHObjCreatorSharpClawSetup),
+                                                                             DFSH_OBJ_CREATOR_SHARPCLAW_OBJECT_ID);
+        sharpClawSetup->base.posX = placement->base.posX;
+        sharpClawSetup->base.posY = placement->base.posY;
+        sharpClawSetup->base.posZ = placement->base.posZ;
+        sharpClawSetup->base.mapId = placement->base.mapId;
+        sharpClawSetup->base.color[0] = placement->base.color[0];
+        sharpClawSetup->base.color[1] = placement->base.color[1];
+        sharpClawSetup->base.color[2] = placement->base.color[2];
+        sharpClawSetup->base.color[3] = placement->base.color[3];
+        sharpClawSetup->initialWeaponId = DFSH_OBJ_CREATOR_SHARPCLAW_INITIAL_WEAPON;
+        sharpClawSetup->gameBit = DFSH_OBJ_CREATOR_SHARPCLAW_GAME_BIT;
+        sharpClawSetup->unknown30 = -1;
+        sharpClawSetup->unknown1A = -1;
+        sharpClawSetup->unknown1C = -1;
+        sharpClawSetup->initialYaw = (s8)(obj->anim.rotX >> 8);
+        sharpClawSetup->flags = DFSH_OBJ_CREATOR_SHARPCLAW_FLAGS;
+        if (mainGetBit(DFSH_OBJ_CREATOR_DROPPED_ITEM_GAME_BIT) != 0) {
+            sharpClawSetup->droppedItemId = DFSH_OBJ_CREATOR_SHARPCLAW_DROPPED_ITEM_ID;
+        } else {
+            sharpClawSetup->droppedItemId = -1;
         }
-        else
-        {
-            spawnSetup->unk22 = -1;
-        }
-        spawnSetup->unk29 = 0xff;
-        spawnSetup->unk2E = -1;
-        spawnSetup->unk34 = 0xffff;
-        Obj_SetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-        state->spawnTimer = 100;
-        state->spawnTimerStep = 0;
+        sharpClawSetup->aggroRangeByte = 0xFF;
+        sharpClawSetup->triggerSequenceId = -1;
+        sharpClawSetup->unknown34 = 0xFFFF;
+        Obj_SetupObject(&sharpClawSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        state->spawnTimer = DFSH_OBJ_CREATOR_SPAWN_TIMER;
+        state->spawnTimerRate = 0;
     }
 }
 
-void DFSH_ObjCreator_init(GameObject* obj, DfshObjCreatorPlacement* placement)
-{
-    DfshObjCreatorState* state = obj->extra;
-    obj->anim.rotX = (s16)((s32)placement->rotByte << 8);
+void dfshObjCreator_init(GameObject* obj, const DFSHObjCreatorPlacement* placement) {
+    DFSHObjCreatorState* state;
+
+    state = obj->extra;
+    obj->anim.rotX = (s16)((s32)placement->initialYaw << 8);
     obj->userData2 = 0;
-    state->spawnTimer = 100;
-    state->spawnTimerStep = 0;
+    state->spawnTimer = DFSH_OBJ_CREATOR_SPAWN_TIMER;
+    state->spawnTimerRate = 0;
     obj->anim.renderAlpha = 0xFF;
     obj->anim.alpha = 0xFF;
 }
 
-void DFSH_ObjCreator_release(void)
-{
+void dfshObjCreator_release(void) {
 }
 
-void DFSH_ObjCreator_initialise(void)
-{
+void dfshObjCreator_initialise(void) {
 }
 
-ObjectDescriptor gDFSH_ObjCreatorObjDescriptor = {
+ObjectDescriptor gDFSHObjCreatorObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_initialise,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_release,
+    (ObjectDescriptorCallback)dfshObjCreator_initialise,
+    (ObjectDescriptorCallback)dfshObjCreator_release,
     0,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_init,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_update,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_hitDetect,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_render,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_free,
-    (ObjectDescriptorCallback)DFSH_ObjCreator_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)DFSH_ObjCreator_getExtraSize,
+    (ObjectDescriptorCallback)dfshObjCreator_init,
+    (ObjectDescriptorCallback)dfshObjCreator_update,
+    (ObjectDescriptorCallback)dfshObjCreator_hitDetect,
+    (ObjectDescriptorCallback)dfshObjCreator_render,
+    (ObjectDescriptorCallback)dfshObjCreator_free,
+    (ObjectDescriptorCallback)dfshObjCreator_getObjectTypeId,
+    dfshObjCreator_getExtraSize,
 };

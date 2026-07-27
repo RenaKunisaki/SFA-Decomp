@@ -1,97 +1,87 @@
 /*
  * MMP_trenchF (DLL 0x181) - Moon Mountain Pass trench particle emitter.
  *
- * A placed effect source that periodically spawns particles within a
- * box-shaped volume. The placement supplies a gamebit gate (-1 = always
- * on), per-axis half-extents, and orientation. Each tick the emit
- * cooldown counts down; when it lapses a fresh random offset inside the
- * extents is rotated by the emit angles, added to the object position,
- * and the cooldown/timer are re-rolled. Effect 0x71F fires while the emit
- * timer is positive; effect 0x720 fires every tick from a second random
- * position.
+ * This object emits particles at randomized offsets while its placement
+ * gate is enabled.
  */
+#include "dlls/objects/385_MMP_trenchF.h"
 
-#include "main/dll/partfx_interface.h"
-#include "main/dll/mmptrenchfxstate_struct.h"
-#include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
-#include "main/gamebits.h"
+#include "main/dll/expgfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
 #include "main/vecmath.h"
-#include "main/dll/MMP/dll_0181_mmptrenchfx.h"
-#include "dlls/object_descriptor.h"
 
-/* Partfx effect ids (see docblock): the emit-timer burst vs the per-tick puff. */
-#define MMPTRENCHFX_PARTFX_EMIT 0x71F
-#define MMPTRENCHFX_PARTFX_TICK 0x720
+#define MMP_TRENCH_FX_PARTICLE_BURST      0x71F
+#define MMP_TRENCH_FX_PARTICLE_AMBIENT    0x720
+#define MMP_TRENCH_FX_PARTICLE_SPAWN_MODE 0x200001
+#define MMP_TRENCH_FX_MODEL_NONE          -1
 
-PartFxSpawnParams lbl_803AC930;
+PartFxSpawnParams gMMPTrenchFxAmbientSpawnParams;
 
-int mmp_trenchfx_getExtraSize(void)
-{
-    return sizeof(MmpTrenchFxState);
-}
-int mmp_trenchfx_getObjectTypeId(void)
-{
-    return 0x0;
+int mmpTrenchFx_getExtraSize(void) {
+    return sizeof(MMPTrenchFxState);
 }
 
-void mmp_trenchfx_free(GameObject* obj)
-{
+int mmpTrenchFx_getObjectTypeId(void) {
+    return 0;
+}
+
+void mmpTrenchFx_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void mmp_trenchfx_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible == 0)
+void mmpTrenchFx_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible == 0) {
         return;
-}
-
-void mmp_trenchfx_hitDetect(void)
-{
-}
-
-void mmp_trenchfx_update(GameObject* obj)
-{
-    MmpTrenchFxState* state = obj->extra;
-    if (state->enableBit == -1 || mainGetBit(state->enableBit) != 0)
-    {
-        state->emitCooldown -= timeDelta;
-        if (state->emitCooldown < 0.0f)
-        {
-            state->effect.scale = 1.0f;
-            state->effect.posX = (f32)(int)randomGetRange(-state->extentX, state->extentX);
-            state->effect.posY = (f32)(int)randomGetRange(-state->extentY, state->extentY);
-            state->effect.posZ = (f32)(int)randomGetRange(-state->extentZ, state->extentZ);
-            vecRotateZXY(state->emitAngles, &state->effect.posX);
-            state->effect.posX += obj->anim.localPosX;
-            state->effect.posY += obj->anim.localPosY;
-            state->effect.posZ += obj->anim.localPosZ;
-            state->emitCooldown = (f32)(int)randomGetRange(0x64, 0xC8);
-            state->emitTimer = (f32)(int)randomGetRange(0x32, 0x64);
-        }
-        state->emitTimer -= timeDelta;
-        if (state->emitTimer > 0.0f)
-        {
-            (*gPartfxInterface)->spawnObject((void*)obj, MMPTRENCHFX_PARTFX_EMIT, &state->effect, 0x200001, -1, NULL);
-        }
-        lbl_803AC930.scale = 1.0f;
-        lbl_803AC930.posX = (f32)(int)randomGetRange(-state->extentX, state->extentX);
-        lbl_803AC930.posY = (f32)(int)randomGetRange(-state->extentY, state->extentY);
-        lbl_803AC930.posZ = (f32)(int)randomGetRange(-state->extentZ, state->extentZ);
-        vecRotateZXY(state->emitAngles, &lbl_803AC930.posX);
-        lbl_803AC930.posX += obj->anim.localPosX;
-        lbl_803AC930.posY += obj->anim.localPosY;
-        lbl_803AC930.posZ += obj->anim.localPosZ;
-        (*gPartfxInterface)->spawnObject((void*)obj, MMPTRENCHFX_PARTFX_TICK, &lbl_803AC930, 0x200001, -1, NULL);
     }
 }
 
-void mmp_trenchfx_init(GameObject* obj, MmpTrenchFxPlacement* placement)
-{
-    MmpTrenchFxState* state = obj->extra;
+void mmpTrenchFx_hitDetect(void) {
+}
+
+void mmpTrenchFx_update(GameObject* obj) {
+    MMPTrenchFxState* state = obj->extra;
+
+    if (state->enableGameBit == -1 || mainGetBit(state->enableGameBit) != 0) {
+        state->burstCooldown -= timeDelta;
+        if (state->burstCooldown < 0.0f) {
+            state->burstSpawnParams.scale = 1.0f;
+            state->burstSpawnParams.posX = (f32)(int)randomGetRange(-state->extentX, state->extentX);
+            state->burstSpawnParams.posY = (f32)(int)randomGetRange(-state->extentY, state->extentY);
+            state->burstSpawnParams.posZ = (f32)(int)randomGetRange(-state->extentZ, state->extentZ);
+            vecRotateZXY(state->emitAngles, &state->burstSpawnParams.posX);
+            state->burstSpawnParams.posX += obj->anim.localPosX;
+            state->burstSpawnParams.posY += obj->anim.localPosY;
+            state->burstSpawnParams.posZ += obj->anim.localPosZ;
+            state->burstCooldown = (f32)(int)randomGetRange(0x64, 0xC8);
+            state->burstTimer = (f32)(int)randomGetRange(0x32, 0x64);
+        }
+        state->burstTimer -= timeDelta;
+        if (state->burstTimer > 0.0f) {
+            (*gPartfxInterface)
+                ->spawnObject((void*)obj, MMP_TRENCH_FX_PARTICLE_BURST, &state->burstSpawnParams,
+                              MMP_TRENCH_FX_PARTICLE_SPAWN_MODE, MMP_TRENCH_FX_MODEL_NONE, NULL);
+        }
+        gMMPTrenchFxAmbientSpawnParams.scale = 1.0f;
+        gMMPTrenchFxAmbientSpawnParams.posX = (f32)(int)randomGetRange(-state->extentX, state->extentX);
+        gMMPTrenchFxAmbientSpawnParams.posY = (f32)(int)randomGetRange(-state->extentY, state->extentY);
+        gMMPTrenchFxAmbientSpawnParams.posZ = (f32)(int)randomGetRange(-state->extentZ, state->extentZ);
+        vecRotateZXY(state->emitAngles, &gMMPTrenchFxAmbientSpawnParams.posX);
+        gMMPTrenchFxAmbientSpawnParams.posX += obj->anim.localPosX;
+        gMMPTrenchFxAmbientSpawnParams.posY += obj->anim.localPosY;
+        gMMPTrenchFxAmbientSpawnParams.posZ += obj->anim.localPosZ;
+        (*gPartfxInterface)
+            ->spawnObject((void*)obj, MMP_TRENCH_FX_PARTICLE_AMBIENT, &gMMPTrenchFxAmbientSpawnParams,
+                          MMP_TRENCH_FX_PARTICLE_SPAWN_MODE, MMP_TRENCH_FX_MODEL_NONE, NULL);
+    }
+}
+
+void mmpTrenchFx_init(GameObject* obj, const MMPTrenchFxPlacement* placement) {
+    MMPTrenchFxState* state = obj->extra;
     s16 angle;
-    state->enableBit = placement->enableBit;
+
+    state->enableGameBit = placement->enableGameBit;
     state->extentX = (u16)(placement->extentX << 2);
     state->extentZ = (u16)(placement->extentZ << 2);
     state->extentY = (u16)(placement->extentY << 2);
@@ -107,27 +97,25 @@ void mmp_trenchfx_init(GameObject* obj, MmpTrenchFxPlacement* placement)
     obj->anim.rootMotionScale = 0.1f;
 }
 
-void mmp_trenchfx_release(void)
-{
+void mmpTrenchFx_release(void) {
 }
 
-void mmp_trenchfx_initialise(void)
-{
+void mmpTrenchFx_initialise(void) {
 }
 
-ObjectDescriptor gMMP_trenchFXObjDescriptor = {
+ObjectDescriptor gMMPTrenchFxObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)mmp_trenchfx_initialise,
-    (ObjectDescriptorCallback)mmp_trenchfx_release,
+    (ObjectDescriptorCallback)mmpTrenchFx_initialise,
+    (ObjectDescriptorCallback)mmpTrenchFx_release,
     0,
-    (ObjectDescriptorCallback)mmp_trenchfx_init,
-    (ObjectDescriptorCallback)mmp_trenchfx_update,
-    (ObjectDescriptorCallback)mmp_trenchfx_hitDetect,
-    (ObjectDescriptorCallback)mmp_trenchfx_render,
-    (ObjectDescriptorCallback)mmp_trenchfx_free,
-    (ObjectDescriptorCallback)mmp_trenchfx_getObjectTypeId,
-    mmp_trenchfx_getExtraSize,
+    (ObjectDescriptorCallback)mmpTrenchFx_init,
+    (ObjectDescriptorCallback)mmpTrenchFx_update,
+    (ObjectDescriptorCallback)mmpTrenchFx_hitDetect,
+    (ObjectDescriptorCallback)mmpTrenchFx_render,
+    (ObjectDescriptorCallback)mmpTrenchFx_free,
+    (ObjectDescriptorCallback)mmpTrenchFx_getObjectTypeId,
+    mmpTrenchFx_getExtraSize,
 };

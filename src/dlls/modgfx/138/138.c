@@ -16,7 +16,15 @@
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL8A_EFFECT_ID 0x1fd
 
-extern u8 lbl_80316650[]; /* effect resource table: tex blob + halfword params */
+u8 lbl_80316650[184] = {254, 12,  254, 12, 254, 12, 0, 0,   0,  0,   1,   244, 254, 12, 254, 12, 0,  32, 0,  32,  1,
+                        244, 254, 12,  1,  244, 0,  0, 0,   0,  254, 12,  254, 12,  1,  244, 0,  32, 0,  32, 254, 12,
+                        1,   244, 254, 12, 0,   0,  0, 0,   1,  244, 1,   244, 254, 12, 0,   32, 0,  32, 1,  244, 1,
+                        244, 1,   244, 0,  0,   0,  0, 254, 12, 1,   244, 1,   244, 0,  32,  0,  32, 0,  0,  0,   4,
+                        0,   5,   0,   0,  0,   5,  0, 1,   0,  1,   0,   5,   0,   6,  0,   1,  0,  6,  0,  2,   0,
+                        2,   0,   6,   0,  7,   0,  2, 0,   7,  0,   3,   0,   3,   0,  7,   0,  4,  0,  3,  0,   4,
+                        0,   0,   0,   0,  0,   1,  0, 2,   0,  0,   0,   2,   0,   3,  0,   4,  0,  7,  0,  6,   0,
+                        4,   0,   6,   0,  5,   0,  0, 0,   1,  0,   2,   0,   3,   0,  4,   0,  5,  0,  6,  0,   7,
+                        0,   0,   0,   10, 0,   0,  0, 0,   0,  0,   0,   0,   0,   0,  0,   0};
 
 void dll_8A_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
@@ -84,3 +92,6 @@ void dll_8A_func01_nop(void)
 void dll_8A_func00_nop(void)
 {
 }
+
+void* lbl_80316708[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                         dll_8A_func00_nop, dll_8A_func01_nop, (void*)0x00000000, dll_8A_func03};

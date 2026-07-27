@@ -1,4 +1,5 @@
-/* DLL 0x15E */
-#include "global.h"
+/* Empty DLL 350 resource slot. */
 
-u32 lbl_803DBEA8[2] = {0};
+#include "dlls/objects/350.h"
+
+u32 gDll350NullResourceDescriptor[DLL350_NULL_DESCRIPTOR_WORD_COUNT] = {0};

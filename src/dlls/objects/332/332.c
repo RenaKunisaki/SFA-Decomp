@@ -1,54 +1,78 @@
-/*
- * DLL 0x14C - Baby CloudRunner behavior shared by the CFCloudBaby,
- * CFAmbientCl, and SHCloudBaby object definitions.
- */
-#include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
-#include "main/dll/dll_0282_barrelgener.h"
-#include "main/vecmath.h"
-#include "main/dll/wormspitbyte_struct.h"
-#include "main/dll/babycloudrunnerflags_struct.h"
-#include "main/game_ui_interface.h"
+/* Baby CloudRunner behavior shared by the CloudRunner object variants. */
+
+#include "dlls/objects/332.h"
+
 #include "game/objects/object.h"
-#include "main/objhits.h"
-#include "main/object_update_list.h"
+#include "main/audio/sfx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C9_enemy.h"
+#include "main/dll/dll_002E_moveLib.h"
+#include "main/dll/dll_0282_barrelgener.h"
+#include "main/dll/rom_curve_interface.h"
+#include "main/frame_timing.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebits.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/maketex_random_api.h"
+#include "main/maketex_timer_api.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
 #include "main/obj_query.h"
-#include "sys/objects.h"
-#include "main/frame_timing.h"
-#include "game/objects/object_setup.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_014C_babycloudrunner.h"
-#include "main/dll/dll_002E_moveLib.h"
-#include "main/dll/rom_curve_interface.h"
-#include "main/objseq.h"
-#include "main/audio/sfx.h"
-#include "main/gameloop_api.h"
-#include "main/gamebits_api.h"
-#include "main/maketex_random_api.h"
-#include "main/maketex_timer_api.h"
+#include "main/object_render.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
 #include "main/objprint_anim_api.h"
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
-#include "main/dll/dll_00C9_enemy.h"
-#include "dlls/object_descriptor.h"
+#include "main/objseq.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-u8 gBabyCloudRunnerMutterSfxTable[8] = {0, 0xD4, 0, 0xD4, 3, 0x1C, 3, 0x1C};
-u8 gBabyCloudRunnerMutterSfxTableSpecial[8] = {2, 0x92, 2, 0x92, 2, 0x92, 2, 0x92};
+#define BABYCLOUDRUNNER_MUTTER_SFX_COUNT 4
+#define BABYCLOUDRUNNER_AIR_METER_COUNT  4
+
+#define BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP   3
+#define BABYCLOUDRUNNER_SECONDARY_OBJECT_GROUP 0x20
+#define BABYCLOUDRUNNER_AMBIENT_OBJECT_ID      0x788
+
+#define BABYCLOUDRUNNER_AIR_METER_TEXTURE_ID   0x5D1
+#define BABYCLOUDRUNNER_MESSAGE_QUEUE_CAPACITY 4
+#define BABYCLOUDRUNNER_OBJECT_TYPE_ID         0
+#define BABYCLOUDRUNNER_CURVE_MODE             0x19
+#define BABYCLOUDRUNNER_MUTTER_SFX_PERIOD      500
+#define BABYCLOUDRUNNER_TURN_FRAMES            0x1E
+
+#define BABYCLOUDRUNNER_MOVE_IDLE_A  0
+#define BABYCLOUDRUNNER_MOVE_IDLE_B  2
+#define BABYCLOUDRUNNER_MOVE_BURROW  5
+#define BABYCLOUDRUNNER_MOVE_TURN    9
+#define BABYCLOUDRUNNER_MOVE_SURFACE 0xD
+
+#define BABYCLOUDRUNNER_SEQUENCE_AT_ROOST    1
+#define BABYCLOUDRUNNER_SEQUENCE_CAPTURED    4
+#define BABYCLOUDRUNNER_SEQUENCE_METER_EMPTY 6
+
+#define BABYCLOUDRUNNER_CAPTURE_DURATION       0x3C
+#define BABYCLOUDRUNNER_CAPTURE_BEHAVIOUR      0xC
+#define BABYCLOUDRUNNER_CAPTURE_SFX_ID         0x296
+#define BABYCLOUDRUNNER_CAPTURE_SFX_PITCH      0x1000
+#define BABYCLOUDRUNNER_CAPTURE_COUNT_GAME_BIT 0x901
+#define BABYCLOUDRUNNER_AIR_METER_GAME_BIT     0x66
+#define BABYCLOUDRUNNER_MAX_RUNNER_INDEX       4
+
+#define BABYCLOUDRUNNER_SEQUENCE_EVENT_SFX       1
+#define BABYCLOUDRUNNER_HEAD_AIM_LIMIT           0x28
+#define BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG 0x02
+
+s16 gBabyCloudRunnerMutterSfxTable[BABYCLOUDRUNNER_MUTTER_SFX_COUNT] = {0xD4, 0xD4, 0x31C, 0x31C};
+s16 gBabyCloudRunnerMutterSfxTableSpecial[BABYCLOUDRUNNER_MUTTER_SFX_COUNT] = {0x292, 0x292, 0x292, 0x292};
 f32 gBabyCloudRunnerTargetNearDist = 160.0f;
 f32 gBabyCloudRunnerPlayerFarDist = 70.0f;
-f32 lbl_803DBE40 = 2.0f;
-f32 lbl_803DBE44 = 0.05f;
-u8 lbl_803DBE48 = 2;
-f32 lbl_803DBE4C = 0.01f;
-
-/* Per-object extra state for the baby CloudRunner
- * (babycloudrunner_getExtraSize == 0x248). */
-
-STATIC_ASSERT(sizeof(BabyCloudRunnerState) == 0x248);
-
+f32 gBabyCloudRunnerHomeMoveSpeed = 2.0f;
+f32 gBabyCloudRunnerHomeAnimSpeed = 0.05f;
+u8 gBabyCloudRunnerHomeMoveState = 2;
+f32 gBabyCloudRunnerVerticalSpeedScale = 0.01f;
 
 extern f32 lbl_803E4240;
 extern f32 lbl_803E423C;
@@ -56,121 +80,71 @@ extern f32 lbl_803E4234;
 extern f32 lbl_803E4230;
 extern f32 lbl_803E4218;
 extern f32 lbl_803E422C;
-/* Pick the burrow/surface move from the vertical speed, clamp the playback
- * rate, latch the spit SFX while surfacing fast, and advance the current
- * move. */
-int babycloudrunner_updateBurrowAnim(GameObject* obj)
-{
+
+int babyCloudRunner_updateBurrowAnimation(GameObject* obj) {
     f32 speed;
-    BabyCloudRunnerState* sub = obj->extra;
-    if (obj->anim.currentMove != 5 && obj->anim.currentMove != 0xd)
-    {
-        ObjAnim_SetCurrentMove((int)obj, 0xd, obj->anim.currentMoveProgress, 0);
+    BabyCloudRunnerState* state = obj->extra;
+    if (obj->anim.currentMove != BABYCLOUDRUNNER_MOVE_BURROW && obj->anim.currentMove != BABYCLOUDRUNNER_MOVE_SURFACE) {
+        ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_SURFACE, obj->anim.currentMoveProgress, 0);
     }
-    if (obj->anim.currentMove == 5 && obj->anim.velocityY > lbl_803E422C)
-    {
-        ObjAnim_SetCurrentMove((int)obj, 0xd, obj->anim.currentMoveProgress, 0);
+    if (obj->anim.currentMove == BABYCLOUDRUNNER_MOVE_BURROW && obj->anim.velocityY > lbl_803E422C) {
+        ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_SURFACE, obj->anim.currentMoveProgress, 0);
     }
-    if (obj->anim.currentMove == 0xd && obj->anim.velocityY < lbl_803E4218)
-    {
-        ObjAnim_SetCurrentMove((int)obj, 5, obj->anim.currentMoveProgress, 0);
+    if (obj->anim.currentMove == BABYCLOUDRUNNER_MOVE_SURFACE && obj->anim.velocityY < lbl_803E4218) {
+        ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_BURROW, obj->anim.currentMoveProgress, 0);
     }
-    speed = obj->anim.velocityY * lbl_803DBE4C + lbl_803E4230;
+    speed = obj->anim.velocityY * gBabyCloudRunnerVerticalSpeedScale + lbl_803E4230;
     speed *= lbl_803E4234;
-    if (speed < lbl_803E4218)
-    {
+    if (speed < lbl_803E4218) {
         speed = lbl_803E4218;
     }
-    if (speed > lbl_803E4234)
-    {
+    if (speed > lbl_803E4234) {
         speed = lbl_803E4234;
     }
-    if (obj->anim.currentMove == 0xd)
-    {
-        if (obj->anim.currentMoveProgress > lbl_803E4234)
-        {
-            if (!((WormSpitByte*)&sub->spitFlags)->spitLatch)
-            {
+    if (obj->anim.currentMove == BABYCLOUDRUNNER_MOVE_SURFACE) {
+        if (obj->anim.currentMoveProgress > lbl_803E4234) {
+            if (!state->stateFlags.burrowSfxLatched) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_mn_heart1_c_334);
-                ((WormSpitByte*)&sub->spitFlags)->spitLatch = 1;
+                state->stateFlags.burrowSfxLatched = 1;
             }
-        }
-        else
-        {
-            ((WormSpitByte*)&sub->spitFlags)->spitLatch = 0;
+        } else {
+            state->stateFlags.burrowSfxLatched = 0;
         }
     }
     ObjAnim_AdvanceCurrentMove((int)obj, speed, timeDelta, 0);
     return 1;
 }
 
-void sandworm_turnTowardTargetAnim(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove)
-{
+void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove) {
     int yawStep;
-    characterAimHeadAtTarget(obj, target, state->lookBlock, 0x28, 0, 3);
+    characterAimHeadAtTarget(obj, target, state->lookBlock, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
     yawStep = Obj_GetYawDeltaToObject(obj, target, 0);
     obj->anim.rotX += (yawStep >>= 3);
-    if (playMove == 0)
+    if (playMove == 0) {
         return;
-    if ((s16)yawStep > -200 && (s16)yawStep < 200)
-    {
-        if (state->turnLatch != 0)
-        {
+    }
+    if ((s16)yawStep > -200 && (s16)yawStep < 200) {
+        if (state->turnLatch != 0) {
             state->turnLatch = 0;
-            ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E4218, 0);
-        }
-        else
-        {
+            ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_IDLE_A, lbl_803E4218, 0);
+        } else {
             ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E423C, timeDelta, 0);
         }
-    }
-    else
-    {
-        if (state->turnLatch == 0)
-        {
+    } else {
+        if (state->turnLatch == 0) {
             state->turnLatch = 1;
-            ObjAnim_SetCurrentMove((int)obj, 9, lbl_803E4218, 0);
-        }
-        else
-        {
+            ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_TURN, lbl_803E4218, 0);
+        } else {
             int turnAnimStep;
-            if ((int)(s16)yawStep > 0)
-            {
+            if ((int)(s16)yawStep > 0) {
                 turnAnimStep = (s16)yawStep >> 2;
-            }
-            else
-            {
+            } else {
                 turnAnimStep = -(s16)yawStep >> 2;
             }
             ObjAnim_AdvanceCurrentMove((int)obj, (f32)(s16)turnAnimStep / lbl_803E4240, timeDelta, 0);
         }
     }
 }
-/* Placement record for the baby cloud runner (ObjPlacement head + tuning). */
-typedef struct BabyCloudRunnerPlacement
-{
-    ObjPlacement base; /* 0x00: posX/posY/posZ at 0x08/0x0c/0x10 = roost point */
-    s16 outerRadius;   /* 0x18: outer trigger radius */
-    s16 innerRadius;   /* 0x1a: inner trigger radius (halved for proximity tests) */
-    u8 behaviourState; /* 0x1c: initial BabyCloudRunnerState.behaviourState */
-    u8 initialYaw;     /* 0x1d: << 8 -> rotX */
-    s16 enableBit;     /* 0x1e: gamebit set on capture */
-    u8 pad20[2];
-    s16 runnerGameBit; /* 0x22: despawn gamebit; -0x2fc -> runnerIndex */
-} BabyCloudRunnerPlacement;
-
-STATIC_ASSERT(offsetof(BabyCloudRunnerPlacement, outerRadius) == 0x18);
-STATIC_ASSERT(offsetof(BabyCloudRunnerPlacement, innerRadius) == 0x1a);
-STATIC_ASSERT(offsetof(BabyCloudRunnerPlacement, behaviourState) == 0x1c);
-STATIC_ASSERT(offsetof(BabyCloudRunnerPlacement, initialYaw) == 0x1d);
-STATIC_ASSERT(offsetof(BabyCloudRunnerPlacement, enableBit) == 0x1e);
-STATIC_ASSERT(offsetof(BabyCloudRunnerPlacement, runnerGameBit) == 0x22);
-
-#define BABYCLOUDRUNNER_OBJFLAG_PARENT_SLACK 0x1000
-#define BABYCLOUDRUNNER_OBJGROUP             3
-#define BABYCLOUDRUNNER_AMBIENT_OBJ          0x788
-#define BABYCLOUDRUNNER_OBJGROUP_SECONDARY   0x20
-#define BABYCLOUDRUNNER_AIRMETER_BGTEXTURE   0x5d1 /* HUD air-meter background texture id */
 
 extern f32 lbl_803E4228;
 extern f32 lbl_803E4244;
@@ -181,463 +155,357 @@ extern f32 lbl_803E424C;
 extern f32 lbl_803E4250;
 extern f32 lbl_803E4254;
 
-
-void babycloudrunner_release(void);
-void babycloudrunner_initialise(void);
-
-int babycloudrunner_updateBurrowAnim(GameObject* obj);
-void sandworm_turnTowardTargetAnim(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove);
-/* When the player gets within the trigger radius and the runner is in state 3,
- * fire its burst (notify, bump the counter, set the gamebit); otherwise just
- * play the idle audio cue. */
-int babycloudrunner_tryCapture(void* p)
-{
+int babyCloudRunner_tryCapture(void* object) {
     GameObject* obj;
-    int flag;
-    BabyCloudRunnerPlacement* r;
-    BabyCloudRunnerState* sub;
-    BabyCloudRunnerPlacement* q;
+    int shouldCapture;
+    BabyCloudRunnerPlacement* rangePlacement;
+    BabyCloudRunnerState* state;
+    BabyCloudRunnerPlacement* gameBitPlacement;
     GameObject* player;
-    obj = p;
-    sub = obj->extra;
-    q = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
+    obj = object;
+    state = obj->extra;
+    gameBitPlacement = (BabyCloudRunnerPlacement*)obj->anim.placement;
     player = Obj_GetPlayerObject();
-    r = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
-    flag = 0;
-    if (Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX) <
-        (f32)(s16)r->innerRadius)
-    {
-        if (sub->runnerState == 3)
-        {
-            if ((obj->objectFlags & BABYCLOUDRUNNER_OBJFLAG_PARENT_SLACK) == 0)
-            {
-                flag = 1;
+    rangePlacement = (BabyCloudRunnerPlacement*)obj->anim.placement;
+    shouldCapture = 0;
+    if (Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX) < (f32)(s16)rangePlacement->innerRadius) {
+        if (state->runnerState == BABYCLOUDRUNNER_STATE_FREED) {
+            if ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
+                shouldCapture = 1;
             }
         }
     }
-    if (flag != 0)
-    {
-        s16toFloat(&sub->triggeredLatch, 0x3c);
+    if (shouldCapture != 0) {
+        s16toFloat(&state->captureTimer, BABYCLOUDRUNNER_CAPTURE_DURATION);
         obj->userData1 = 1;
-        obj->anim.rotX = sub->roostYaw;
-        (*gObjectTriggerInterface)->runSequence(4, obj, -1);
-        sub->triggeredLatch = lbl_803E4244;
-        gameBitIncrement(0x901);
-        sub->behaviourState = 0xc;
-        mainSetBits(q->enableBit, 1);
+        obj->anim.rotX = state->roostYaw;
+        (*gObjectTriggerInterface)->runSequence(BABYCLOUDRUNNER_SEQUENCE_CAPTURED, obj, -1);
+        state->captureTimer = lbl_803E4244;
+        gameBitIncrement(BABYCLOUDRUNNER_CAPTURE_COUNT_GAME_BIT);
+        state->behaviourState = BABYCLOUDRUNNER_CAPTURE_BEHAVIOUR;
+        mainSetBits(gameBitPlacement->enableGameBit, 1);
         obj->userData1 = 0;
         return 1;
     }
-    objAudioFn_800393f8(obj, &sub->soundState, 0x296, 0x1000, -1, 1);
+    objAudioFn_800393f8(obj, &state->soundState, BABYCLOUDRUNNER_CAPTURE_SFX_ID, BABYCLOUDRUNNER_CAPTURE_SFX_PITCH, -1,
+                        1);
     Sfx_PlayFromObject((int)obj, SFXTRIG_wp_ice_freeze);
     return 0;
 }
 
-int babycloudrunner_setScale(GameObject* obj)
-{
+int babyCloudRunner_setScale(GameObject* obj) {
     BabyCloudRunnerState* state = obj->extra;
-    return !(state->flags22C & 1);
+    return !(state->captureFlags & BABYCLOUDRUNNER_CAPTURE_ACTIVE);
 }
 
-
-/* Range-check the runner against the player and its trigger radii, chirp for
- * queued cues, then steer toward the player (or Tricky) per the current
- * behaviour state. */
-int babycloudrunner_getExtraSize(void);
-int babycloudrunner_getObjectTypeId(void);
-void babycloudrunner_free(GameObject* obj);
-void babycloudrunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void babycloudrunner_hitDetect(void);
-void babycloudrunner_update(GameObject* obj);
-void babycloudrunner_init(GameObject* obj, u8* defBytes);
-void babycloudrunner_release(void);
-void babycloudrunner_initialise(void);
-
-int gBabyCloudRunnerAirMeterValues[4] = {0x1770, 0x2EE0, 0x2EE0, 0x3E80};
-
-void babycloudrunner_update(GameObject* obj);
+int gBabyCloudRunnerAirMeterValues[BABYCLOUDRUNNER_AIR_METER_COUNT] = {0x1770, 0x2EE0, 0x2EE0, 0x3E80};
 
 ObjectDescriptor12 gBabyCloudRunnerObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_12_SLOTS,
-    (ObjectDescriptorCallback)babycloudrunner_initialise,
-    (ObjectDescriptorCallback)babycloudrunner_release,
+    (ObjectDescriptorCallback)babyCloudRunner_initialise,
+    (ObjectDescriptorCallback)babyCloudRunner_release,
     0,
-    (ObjectDescriptorCallback)babycloudrunner_init,
-    (ObjectDescriptorCallback)babycloudrunner_update,
-    (ObjectDescriptorCallback)babycloudrunner_hitDetect,
-    (ObjectDescriptorCallback)babycloudrunner_render,
-    (ObjectDescriptorCallback)babycloudrunner_free,
-    (ObjectDescriptorCallback)babycloudrunner_getObjectTypeId,
-    babycloudrunner_getExtraSize,
-    (ObjectDescriptorCallback)babycloudrunner_setScale,
-    (ObjectDescriptorCallback)babycloudrunner_tryCapture,
+    (ObjectDescriptorCallback)babyCloudRunner_init,
+    (ObjectDescriptorCallback)babyCloudRunner_update,
+    (ObjectDescriptorCallback)babyCloudRunner_hitDetect,
+    (ObjectDescriptorCallback)babyCloudRunner_render,
+    (ObjectDescriptorCallback)babyCloudRunner_free,
+    (ObjectDescriptorCallback)babyCloudRunner_getObjectTypeId,
+    babyCloudRunner_getExtraSize,
+    (ObjectDescriptorCallback)babyCloudRunner_setScale,
+    (ObjectDescriptorCallback)babyCloudRunner_tryCapture,
 };
 
-int babycloudrunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     GameObject* player;
-    BabyCloudRunnerPlacement* def = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
+    BabyCloudRunnerPlacement* placement = (BabyCloudRunnerPlacement*)obj->anim.placement;
     s8 inRange;
     int yaw;
     int halfInner;
-    u8* animUpdateBytes = (u8*)animUpdate;
     f32 dx;
     f32 dz;
-    f32 distSq;
-    BabyCloudRunnerState* sub = obj->extra;
-    s8 i;
-    if (obj->seqIndex == 4)
-    {
+    f32 distanceSquared;
+    BabyCloudRunnerState* state = obj->extra;
+    s8 eventIndex;
+    if (obj->seqIndex == BABYCLOUDRUNNER_SEQUENCE_CAPTURED) {
         return 0;
     }
     animUpdate->sequenceEventActive = 0;
     player = Obj_GetPlayerObject();
-    dx = player->anim.localPosX - def->base.posX;
-    dz = player->anim.localPosZ - def->base.posZ;
-    distSq = dx * dx + dz * dz;
-    if (distSq < (f32)((halfInner = def->innerRadius / 2) * halfInner))
-    {
+    dx = player->anim.localPosX - placement->base.posX;
+    dz = player->anim.localPosZ - placement->base.posZ;
+    distanceSquared = dx * dx + dz * dz;
+    if (distanceSquared < (f32)((halfInner = placement->innerRadius / 2) * halfInner)) {
         inRange = 1;
-    }
-    else
-    {
+    } else {
         inRange = 0;
     }
-    *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     {
         int found;
-        BabyCloudRunnerPlacement* def2;
-        BabyCloudRunnerState* sub2 = obj->extra;
-        char* pp = (char*)Obj_GetPlayerObject();
-        def2 = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
+        BabyCloudRunnerPlacement* interactionPlacement;
+        BabyCloudRunnerState* interactionState = obj->extra;
+        GameObject* interactionPlayer = Obj_GetPlayerObject();
+        interactionPlacement = (BabyCloudRunnerPlacement*)obj->anim.placement;
         found = 0;
-        if (Vec_distance((f32*)(pp + 0x18), (f32*)((char*)((int)obj + 0x18))) < (f32)def2->innerRadius &&
-            sub2->runnerState == 3 &&
-            (obj->objectFlags & BABYCLOUDRUNNER_OBJFLAG_PARENT_SLACK) == 0)
-        {
+        if (Vec_distance(&interactionPlayer->anim.worldPosX, &obj->anim.worldPosX) <
+                (f32)interactionPlacement->innerRadius &&
+            interactionState->runnerState == BABYCLOUDRUNNER_STATE_FREED &&
+            (obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
             found = 1;
         }
-        if (found != 0)
-        {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-        }
-        else
-        {
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+        if (found != 0) {
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+        } else {
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
     }
-    if (inRange == 0 && sub->runnerState == 2)
-    {
-        f32 radius = (f32)def->outerRadius;
-        if ((void*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_OBJGROUP, obj, &radius) != NULL)
-        {
+    if (inRange == 0 && state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
+        f32 radius = (f32)placement->outerRadius;
+        if ((void*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
             inRange = 1;
         }
     }
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        if (animUpdate->eventIds[i] == 1)
-        {
+    for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
+        if (animUpdate->eventIds[eventIndex] == BABYCLOUDRUNNER_SEQUENCE_EVENT_SFX) {
             Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
         }
     }
-    sub->behaviourState = 0;
-    switch (sub->behaviourState)
-    {
+    state->behaviourState = 0;
+    switch (state->behaviourState) {
     case 10:
     case 11:
-        if (sub->linkedObj != NULL)
-        {
-            sub->scale *= lbl_803E4248;
-            *(f32*)((char*)sub->linkedObj + 8) = sub->scale;
+        if (state->linkedObject != NULL) {
+            state->scale *= lbl_803E4248;
+            state->linkedObject->anim.rootMotionScale = state->scale;
         }
-        sub->behaviourState = 0xb;
-        if (Vec_distance((f32*)((char*)obj + 0x18), &player->anim.worldPosX) < (f32)def->innerRadius &&
-            (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
-        {
-            sub->behaviourState = 7;
-            return 4;
+        state->behaviourState = 0xb;
+        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < (f32)placement->innerRadius &&
+            (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+            state->behaviourState = 7;
+            return BABYCLOUDRUNNER_SEQUENCE_CAPTURED;
         }
         break;
     case 0:
     case 8:
-        animUpdate->hitVolumePair &= ~0x2;
+        animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, player, 0);
-        characterAimHeadAtTarget(obj, player, sub->lookBlock, 0x28, 0, 3);
+        characterAimHeadAtTarget(obj, player, state->lookBlock, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
-        if (inRange != 0)
-        {
-            animUpdateBytes[0x90] |= 4;
-        }
-        else
-        {
-            animUpdateBytes[0x90] = 8;
+        if (inRange != 0) {
+            animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
+        } else {
+            animUpdate->sequenceControlFlags = OBJSEQ_CONTROL_CLEAR_LATCH_A;
         }
         break;
     case 5:
-        animUpdate->hitVolumePair &= ~0x2;
+        animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, (GameObject*)getTrickyObject(), 0);
-        characterAimHeadAtTarget(obj, getTrickyObject(), sub->lookBlock, 0x28, 0, 3);
+        characterAimHeadAtTarget(obj, getTrickyObject(), state->lookBlock, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
         break;
     }
     return 0;
 }
 
-int babycloudrunner_getExtraSize(void)
-{
-    return 0x248;
+int babyCloudRunner_getExtraSize(void) {
+    return sizeof(BabyCloudRunnerState);
 }
 
-int babycloudrunner_getObjectTypeId(void)
-{
-    return 0;
+int babyCloudRunner_getObjectTypeId(void) {
+    return BABYCLOUDRUNNER_OBJECT_TYPE_ID;
 }
 
-void babycloudrunner_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP_SECONDARY);
-    ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP);
+void babyCloudRunner_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_SECONDARY_OBJECT_GROUP);
+    ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
 }
-void babycloudrunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 isVisible;
 
-    isVisible = visible;
-    if (isVisible != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4228);
+void babyCloudRunner_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible) {
+    s32 isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E4228);
     }
-    return;
 }
 
-void babycloudrunner_hitDetect(void)
-{
+void babyCloudRunner_hitDetect(void) {
 }
-void babycloudrunner_update(GameObject* obj)
-{
+
+void babyCloudRunner_update(GameObject* obj) {
     GameObject* player;
-    BabyCloudRunnerState* sub;
-    BabyCloudRunnerPlacement* def;
+    BabyCloudRunnerState* state;
+    BabyCloudRunnerPlacement* placement;
     int found;
-    BabyCloudRunnerPlacement* def2;
-    BabyCloudRunnerState* sub2;
-    int* near;
+    BabyCloudRunnerPlacement* interactionPlacement;
+    BabyCloudRunnerState* interactionState;
+    GameObject* nearbyObject;
     int inRange;
-    MoveLibTarget tgt;
-    int mode;
+    MoveLibTarget target;
+    int curveMode;
     f32 radius;
-    def = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
-    sub = obj->extra;
+    placement = (BabyCloudRunnerPlacement*)obj->anim.placement;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
     getTrickyObject();
-    if (mainGetBit(def->runnerGameBit) != 0)
-    {
+    if (mainGetBit(placement->runnerGameBit) != 0) {
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
-        sub->flags22C &= ~1;
+        state->captureFlags &= ~BABYCLOUDRUNNER_CAPTURE_ACTIVE;
         Obj_RemoveFromUpdateList(obj);
-        ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP_SECONDARY);
-        ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP);
+        ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_SECONDARY_OBJECT_GROUP);
+        ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
     }
-    if (sub->runnerState == 2 && mainGetBit(0x66) != 0)
-    {
-        (*gObjectTriggerInterface)->runSequence(6, obj, -1);
+    if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED && mainGetBit(BABYCLOUDRUNNER_AIR_METER_GAME_BIT) != 0) {
+        (*gObjectTriggerInterface)->runSequence(BABYCLOUDRUNNER_SEQUENCE_METER_EMPTY, obj, -1);
         (*gGameUIInterface)->airMeterSetShutdown();
-    }
-    else if (timerIsActive(&sub->triggeredLatch) != 0)
-    {
-        sub->flags22C |= 1;
-        sub->behaviourState = 0;
-        if (obj->userData1 < 0)
-        {
-            if (def->runnerGameBit != -1)
-            {
-                mainSetBits(def->runnerGameBit, 1);
+    } else if (timerIsActive(&state->captureTimer) != 0) {
+        state->captureFlags |= BABYCLOUDRUNNER_CAPTURE_ACTIVE;
+        state->behaviourState = 0;
+        if (obj->userData1 < 0) {
+            if (placement->runnerGameBit != -1) {
+                mainSetBits(placement->runnerGameBit, 1);
             }
             ObjHits_DisableObject(obj);
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            sub->flags22C &= ~1;
+            state->captureFlags &= ~BABYCLOUDRUNNER_CAPTURE_ACTIVE;
             Obj_RemoveFromUpdateList(obj);
-            ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP_SECONDARY);
-            ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP);
+            ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_SECONDARY_OBJECT_GROUP);
+            ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
-        }
-        else
-        {
+        } else {
             obj->userData1 = obj->userData1 - 1;
         }
-    }
-    else
-    {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-        if (sub->runnerState == 0)
-        {
-            mode = 0x19;
-            if ((*gRomCurveInterface)->initCurve(sub->curveWalker, obj, lbl_803E424C, &mode, 0) == 0)
-            {
-                sub->runnerState = 1;
-                storeZeroToFloatParam(&sub->countdownTimer);
+    } else {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+        if (state->runnerState == BABYCLOUDRUNNER_STATE_FIND_CURVE) {
+            curveMode = BABYCLOUDRUNNER_CURVE_MODE;
+            if ((*gRomCurveInterface)->initCurve(&state->curveWalker, obj, lbl_803E424C, &curveMode, 0) == 0) {
+                state->runnerState = BABYCLOUDRUNNER_STATE_FOLLOW_CURVE;
+                storeZeroToFloatParam(&state->countdownTimer);
             }
-        }
-        else
-        {
-            if (randomChanceOneIn(500) != 0)
-            {
-                u16 sfxId = ((s16*)sub->mutterSfxTable)[randomGetRange(0, 3)];
-                objAudioFn_80039270((int)obj, &sub->soundState, sfxId);
+        } else {
+            if (randomChanceOneIn(BABYCLOUDRUNNER_MUTTER_SFX_PERIOD) != 0) {
+                u16 sfxId = state->mutterSfxTable[randomGetRange(0, BABYCLOUDRUNNER_MUTTER_SFX_COUNT - 1)];
+                objAudioFn_80039270((int)obj, &state->soundState, sfxId);
             }
-            objAnimFn_80038f38(obj, (char*)&sub->soundState);
-            if (sub->runnerState == 1 || sub->runnerState == 2)
-            {
-                f32 speed = sub->curveSpeed;
-                Obj_UpdateRomCurveFollowVelocity(obj, (RomCurveWalker*)sub->curveWalker, speed,
-                                                 lbl_803E4238 * speed, lbl_803E4250 * speed, 1);
-                Obj_SmoothTurnAnglesTowardVelocity(obj, (const Vec3f*)&obj->anim.velocityX,
-                                                   0x1e, lbl_803E4238, lbl_803E4254);
-                objMove(obj, obj->anim.velocityX, obj->anim.velocityY,
-                        obj->anim.velocityZ);
-                if (sub->runnerState == 1)
-                {
-                    if (sub->runnerIndex != -1 && mainGetBit(sub->runnerIndex + 0xb2a) != 0)
-                    {
-                        sub->runnerState = 2;
-                        mainSetBits(0x66, 0);
+            objAnimFn_80038f38(obj, (char*)&state->soundState);
+            if (state->runnerState == BABYCLOUDRUNNER_STATE_FOLLOW_CURVE ||
+                state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
+                f32 speed = state->curveSpeed;
+                Obj_UpdateRomCurveFollowVelocity(obj, &state->curveWalker, speed, lbl_803E4238 * speed,
+                                                 lbl_803E4250 * speed, 1);
+                Obj_SmoothTurnAnglesTowardVelocity(obj, &obj->anim.velocity, BABYCLOUDRUNNER_TURN_FRAMES, lbl_803E4238,
+                                                   lbl_803E4254);
+                objMove(obj, obj->anim.velocityX, obj->anim.velocityY, obj->anim.velocityZ);
+                if (state->runnerState == BABYCLOUDRUNNER_STATE_FOLLOW_CURVE) {
+                    if (state->runnerIndex != -1 && mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2A) != 0) {
+                        state->runnerState = BABYCLOUDRUNNER_STATE_CHASED;
+                        mainSetBits(BABYCLOUDRUNNER_AIR_METER_GAME_BIT, 0);
                         (*gGameUIInterface)
-                            ->initAirMeter(gBabyCloudRunnerAirMeterValues[sub->runnerIndex],
-                                           BABYCLOUDRUNNER_AIRMETER_BGTEXTURE);
-                        s16toFloat(&sub->countdownTimer,
-                                   (s16)gBabyCloudRunnerAirMeterValues[sub->runnerIndex]);
+                            ->initAirMeter(gBabyCloudRunnerAirMeterValues[state->runnerIndex],
+                                           BABYCLOUDRUNNER_AIR_METER_TEXTURE_ID);
+                        s16toFloat(&state->countdownTimer, (s16)gBabyCloudRunnerAirMeterValues[state->runnerIndex]);
                     }
-                    babycloudrunner_updateBurrowAnim(obj);
+                    babyCloudRunner_updateBurrowAnimation(obj);
                     return;
                 }
-                if (sub->runnerState == 2)
-                {
-                    near = (int*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_OBJGROUP, obj, 0);
-                    if (near != NULL &&
-                        Vec_distance(&((GameObject*)near)->anim.worldPosX, (f32*)((char*)sub + 0x18)) < gBabyCloudRunnerTargetNearDist)
-                    {
-                        sandworm_turnTowardTargetAnim(obj, (GameObject*)near, sub, 0);
-                        if (Vec_distance(&((GameObject*)Obj_GetPlayerObject())->anim.worldPosX,
-                                         &((GameObject*)near)->anim.worldPosX) >
-                            gBabyCloudRunnerPlayerFarDist)
-                        {
-                            enemy_setTrackedObj((GameObject*)near, obj);
-                            if (obj->anim.currentMove != 0xd)
-                            {
-                                ObjAnim_SetCurrentMove((int)obj, 0xd, obj->anim.currentMoveProgress, 0);
+                if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
+                    nearbyObject =
+                        (GameObject*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
+                    if (nearbyObject != NULL && Vec_distance(&nearbyObject->anim.worldPosX, &state->handoffPosition.x) <
+                                                    gBabyCloudRunnerTargetNearDist) {
+                        babyCloudRunner_turnTowardTarget(obj, nearbyObject, state, 0);
+                        if (Vec_distance(&Obj_GetPlayerObject()->anim.worldPosX, &nearbyObject->anim.worldPosX) >
+                            gBabyCloudRunnerPlayerFarDist) {
+                            enemy_setTrackedObj(nearbyObject, obj);
+                            if (obj->anim.currentMove != BABYCLOUDRUNNER_MOVE_SURFACE) {
+                                ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_SURFACE,
+                                                       obj->anim.currentMoveProgress, 0);
                             }
-                            ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E422C, timeDelta,
-                                                                                      0);
+                            ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E422C, timeDelta, 0);
+                        } else {
+                            enemy_setTrackedObj(nearbyObject, Obj_GetPlayerObject());
                         }
-                        else
-                        {
-                            enemy_setTrackedObj((GameObject*)near, Obj_GetPlayerObject());
-                        }
-                    }
-                    else
-                    {
-                        if (near != NULL)
-                        {
-                            enemy_setTrackedObj((GameObject*)near, Obj_GetPlayerObject());
+                    } else {
+                        if (nearbyObject != NULL) {
+                            enemy_setTrackedObj(nearbyObject, Obj_GetPlayerObject());
                         }
                     }
-                    babycloudrunner_updateBurrowAnim(obj);
+                    babyCloudRunner_updateBurrowAnimation(obj);
                 }
             }
-            inRange = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) <
-                      (f32)(def->innerRadius / 2);
-            if (sub->runnerState == 2)
-            {
-                radius = (f32)def->outerRadius;
-                if (timerIsActive(&sub->countdownTimer) != 0)
-                {
-                    if ((*(u16*)((char*)Obj_GetPlayerObject() + 0xb0) & BABYCLOUDRUNNER_OBJFLAG_PARENT_SLACK) == 0 &&
-                        timerCountDown(&sub->countdownTimer) != 0)
-                    {
-                        (*gObjectTriggerInterface)->runSequence(6, obj, -1);
+            inRange = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < (f32)(placement->innerRadius / 2);
+            if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
+                radius = (f32)placement->outerRadius;
+                if (timerIsActive(&state->countdownTimer) != 0) {
+                    if ((Obj_GetPlayerObject()->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0 &&
+                        timerCountDown(&state->countdownTimer) != 0) {
+                        (*gObjectTriggerInterface)->runSequence(BABYCLOUDRUNNER_SEQUENCE_METER_EMPTY, obj, -1);
                         (*gGameUIInterface)->airMeterSetShutdown();
                         return;
                     }
-                    (*gGameUIInterface)->runAirMeter((int)sub->countdownTimer);
+                    (*gGameUIInterface)->runAirMeter((int)state->countdownTimer);
                 }
                 if (inRange == 0 &&
-                    (void*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_OBJGROUP, obj, &radius) != NULL)
-                {
+                    (void*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
                     inRange = 1;
                 }
-                if (mainGetBit(sub->runnerIndex + 0xb2e) != 0)
-                {
-                    sub->runnerState = 3;
+                if (mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2E) != 0) {
+                    state->runnerState = BABYCLOUDRUNNER_STATE_FREED;
                     (*gGameUIInterface)->airMeterSetShutdown();
                     Sfx_PlayFromObject((int)obj, SFXTRIG_menuups16k);
-                    storeZeroToFloatParam(&sub->countdownTimer);
+                    storeZeroToFloatParam(&state->countdownTimer);
                 }
-            }
-            else
-            {
-                *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-                sub2 = obj->extra;
+            } else {
+                obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+                interactionState = obj->extra;
                 {
-                    char* pp = (char*)Obj_GetPlayerObject();
-                    def2 = *(BabyCloudRunnerPlacement**)&obj->anim.placementData;
+                    GameObject* interactionPlayer = Obj_GetPlayerObject();
+                    interactionPlacement = (BabyCloudRunnerPlacement*)obj->anim.placement;
                     found = 0;
-                    if (Vec_distance((f32*)(pp + 0x18), &obj->anim.worldPosX) < (f32)def2->innerRadius && sub2->runnerState == 3 &&
-                        (obj->objectFlags & BABYCLOUDRUNNER_OBJFLAG_PARENT_SLACK) == 0)
-                    {
+                    if (Vec_distance(&interactionPlayer->anim.worldPosX, &obj->anim.worldPosX) <
+                            (f32)interactionPlacement->innerRadius &&
+                        interactionState->runnerState == BABYCLOUDRUNNER_STATE_FREED &&
+                        (obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
                         found = 1;
                     }
                 }
-                if (found != 0)
-                {
-                    *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-                }
-                else
-                {
-                    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+                if (found != 0) {
+                    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+                } else {
+                    obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
                 }
             }
-            if (sub->runnerState == 3)
-            {
-                if (!((WormSpitByte*)&sub->spitFlags)->_p0)
-                {
-                    tgt.x = def->base.posX;
-                    tgt.y = def->base.posY;
-                    tgt.z = def->base.posZ;
-                    tgt.angle = sub->roostYaw;
-                    tgt.angleY = 0;
-                    tgt.angleZ = 0;
+            if (state->runnerState == BABYCLOUDRUNNER_STATE_FREED) {
+                if (!state->stateFlags.atRoost) {
+                    target.x = placement->base.posX;
+                    target.y = placement->base.posY;
+                    target.z = placement->base.posZ;
+                    target.angle = state->roostYaw;
+                    target.angleY = 0;
+                    target.angleZ = 0;
                     obj->anim.rotY = 0;
                     obj->anim.rotZ = 0;
-                    if (dll_2E_func0D(obj, &tgt, lbl_803DBE40, -1, &lbl_803DBE44,
-                                     &lbl_803DBE48) != 0)
-                    {
-                        ((WormSpitByte*)&sub->spitFlags)->_p0 = 1;
-                        mainSetBits(0x66, 0);
+                    if (dll_2E_func0D(obj, &target, gBabyCloudRunnerHomeMoveSpeed, -1, &gBabyCloudRunnerHomeAnimSpeed,
+                                      &gBabyCloudRunnerHomeMoveState) != 0) {
+                        state->stateFlags.atRoost = 1;
+                        mainSetBits(BABYCLOUDRUNNER_AIR_METER_GAME_BIT, 0);
                     }
-                    ObjAnim_AdvanceCurrentMove((int)obj, lbl_803DBE44, timeDelta, 0);
-                }
-                else
-                {
-                    if (inRange != 0)
-                    {
-                        (*gObjectTriggerInterface)->runSequence(1, obj, -1);
-                        sub->unkB0 = 1;
+                    ObjAnim_AdvanceCurrentMove((int)obj, gBabyCloudRunnerHomeAnimSpeed, timeDelta, 0);
+                } else {
+                    if (inRange != 0) {
+                        (*gObjectTriggerInterface)->runSequence(BABYCLOUDRUNNER_SEQUENCE_AT_ROOST, obj, -1);
+                        state->unknown0B0 = 1;
                     }
-                    sandworm_turnTowardTargetAnim(obj, Obj_GetPlayerObject(), sub, 1);
-                    if (ObjAnim_AdvanceCurrentMove((int)obj, sub->animSpeed, timeDelta,
-                                                                                  0) != 0)
-                    {
-                        if (randomChanceOneIn(2) != 0)
-                        {
-                            ObjAnim_SetCurrentMove((int)obj, 2, lbl_803E4218, 0);
-                        }
-                        else
-                        {
-                            ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E4218, 0);
+                    babyCloudRunner_turnTowardTarget(obj, Obj_GetPlayerObject(), state, 1);
+                    if (ObjAnim_AdvanceCurrentMove((int)obj, state->animSpeed, timeDelta, 0) != 0) {
+                        if (randomChanceOneIn(2) != 0) {
+                            ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_IDLE_B, lbl_803E4218, 0);
+                        } else {
+                            ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_IDLE_A, lbl_803E4218, 0);
                         }
                     }
                 }
@@ -646,73 +514,54 @@ void babycloudrunner_update(GameObject* obj)
     }
 }
 
-/* Turn toward the target by a fraction of the yaw delta; when roughly aligned
- * play/advance the idle move, otherwise start or speed-scale the turn move by
- * the delta. */
-void babycloudrunner_init(GameObject* obj, u8* defBytes)
-{
-    BabyCloudRunnerState* sub;
-    BabyCloudRunnerPlacement* def = (BabyCloudRunnerPlacement*)defBytes;
+void babyCloudRunner_init(GameObject* obj, BabyCloudRunnerPlacement* placement) {
+    BabyCloudRunnerState* state;
 
     ObjHits_EnableObject(obj);
-    ObjMsg_AllocQueue(obj, 4);
-    obj->animEventCallback = babycloudrunner_SeqFn;
-    obj->anim.rotX = (s16)(def->initialYaw << 8);
-    ObjGroup_AddObject((int)obj, BABYCLOUDRUNNER_OBJGROUP);
-    sub = obj->extra;
-    sub->unkB0 = 0;
-    sub->unkB4 = 0;
-    sub->unkB8 = 0;
-    sub->unkBC = 0;
-    sub->turnLatch = 0;
-    sub->behaviourState = def->behaviourState;
-    sub->unkCC = 0;
-    storeZeroToFloatParam(&sub->triggeredLatch);
-    sub->linkedObj = 0;
-    sub->roostYaw = obj->anim.rotX;
-    sub->flags22C = 0;
-    sub->animSpeed = lbl_803E422C;
-    sub->runnerState = 0;
-    if (mainGetBit(def->runnerGameBit) != 0)
-    {
+    ObjMsg_AllocQueue(obj, BABYCLOUDRUNNER_MESSAGE_QUEUE_CAPACITY);
+    obj->animEventCallback = babyCloudRunner_sequenceCallback;
+    obj->anim.rotX = (s16)(placement->initialYaw << 8);
+    ObjGroup_AddObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
+    state = obj->extra;
+    state->unknown0B0 = 0;
+    state->unknown0B4 = 0;
+    state->unknown0B8 = 0;
+    state->unknown0BC = 0;
+    state->turnLatch = 0;
+    state->behaviourState = placement->initialBehaviourState;
+    state->unknown0CC = 0;
+    storeZeroToFloatParam(&state->captureTimer);
+    state->linkedObject = NULL;
+    state->roostYaw = obj->anim.rotX;
+    state->captureFlags = 0;
+    state->animSpeed = lbl_803E422C;
+    state->runnerState = BABYCLOUDRUNNER_STATE_FIND_CURVE;
+    if (mainGetBit(placement->runnerGameBit) != 0) {
         ObjHits_DisableObject(obj);
         obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-        sub->flags22C = (u8)(sub->flags22C & ~1);
+        state->captureFlags = (u8)(state->captureFlags & ~BABYCLOUDRUNNER_CAPTURE_ACTIVE);
         Obj_RemoveFromUpdateList(obj);
-        ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_OBJGROUP);
-    }
-    else
-    {
-        sub->runnerIndex = def->runnerGameBit - 0x2fc;
-        if (obj->anim.seqId == BABYCLOUDRUNNER_AMBIENT_OBJ)
-        {
-            sub->runnerIndex = -1;
-            sub->curveSpeed = lbl_803E4244;
-            sub->mutterSfxTable = gBabyCloudRunnerMutterSfxTableSpecial;
-        }
-        else
-        {
-            if (sub->runnerIndex < 0 || sub->runnerIndex > 4)
-            {
-                sub->runnerState = 3;
+        ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
+    } else {
+        state->runnerIndex = placement->runnerGameBit - GAMEBIT_CFRelated02FC;
+        if (obj->anim.seqId == BABYCLOUDRUNNER_AMBIENT_OBJECT_ID) {
+            state->runnerIndex = -1;
+            state->curveSpeed = lbl_803E4244;
+            state->mutterSfxTable = gBabyCloudRunnerMutterSfxTableSpecial;
+        } else {
+            if (state->runnerIndex < 0 || state->runnerIndex > BABYCLOUDRUNNER_MAX_RUNNER_INDEX) {
+                state->runnerState = BABYCLOUDRUNNER_STATE_FREED;
             }
-            sub->curveSpeed = lbl_803E4258;
-            sub->mutterSfxTable = gBabyCloudRunnerMutterSfxTable;
-            ObjGroup_AddObject((int)obj, BABYCLOUDRUNNER_OBJGROUP_SECONDARY);
+            state->curveSpeed = lbl_803E4258;
+            state->mutterSfxTable = gBabyCloudRunnerMutterSfxTable;
+            ObjGroup_AddObject((int)obj, BABYCLOUDRUNNER_SECONDARY_OBJECT_GROUP);
         }
-        ((BabyCloudrunnerFlags*)&sub->spitFlags)->resetLatch = 0;
+        state->stateFlags.atRoost = 0;
     }
 }
 
-
-void babycloudrunner_release(void)
-{
+void babyCloudRunner_release(void) {
 }
 
-/* Full runner brain - despawn on its gamebit, run the captured/timer flow,
- * follow its rom curve while fleeing, hand off to the nearest sandworm, and
- * once freed steer home to the roost point. */
-
-void babycloudrunner_initialise(void)
-{
+void babyCloudRunner_initialise(void) {
 }

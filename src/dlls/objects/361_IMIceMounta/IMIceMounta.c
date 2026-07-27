@@ -1,92 +1,88 @@
-/*
- * IMIceMounta (DLL 0x169) - the master event controller for the Ice
- * Mountain map. A single instance drives the level's scripted progress:
- * it arms the map-event group triggers at init, then runs one of three
- * top-level branches selected by the map-event "act" queried at startup
- * (1 = full event sequence, 2 = boulder-chase replay, 5 = already
- * complete).
- *
- * The act-1 branch steps an internal event-state machine
- * (imicemountain_updateEventState, states 1..7) that gates avalanche
- * effects, the boulder spawn, level locks and the final warp out. Every
- * frame the controller also shows the "turn back" warning text while a
- * timer is positive, latches the day/night music, and refreshes a block
- * of SCGameBitLatch records that mirror world state into game bits.
- */
-#include "main/dll_000A_expgfx.h"
+/* Ice Mountain event and world-map controller. */
+#include "dlls/objects/361_IMIceMounta.h"
+
+#include "game/objects/object.h"
+#include "main/audio/music_api.h"
+#include "main/audio/music_trigger_ids.h"
 #include "main/dll/cloudaction_interface.h"
+#include "main/dll/dll_0011_screens.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
-#include "main/audio/music_api.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_api.h"
+#include "main/mapEventTypes.h"
+#include "main/map_load.h"
+#include "main/objanim_update.h"
 #include "main/object_render.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/render_lactions_api.h"
-#include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/mapEvent.h"
-#include "main/objanim_update.h"
 #include "main/sky_interface.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "main/game_ui_interface.h"
-#include "main/gametext_show_api.h"
-#include "main/textrender_api.h"
-#include "main/map_load.h"
-#include "main/mapEventTypes.h"
-#include "main/pi_dolphin_api.h"
-#include "main/rcp_dolphin.h"
-#include "main/audio/music_trigger_ids.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/im_world_map_api.h"
-#include "main/dll/dll_0011_screens.h"
 #include "sys/objects.h"
 
-#define PLAYER_VTABLE_GET_MODE 0x48
+#define IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE 0x48
 
-#define HUD_STATE_WORLDMAP 5
-#define HUD_STATE_HIDDEN 6
+#define IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP 1
+#define IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP   5
+#define IM_ICE_MOUNTAIN_HUD_STATE_HIDDEN     6
+#define IM_ICE_MOUNTAIN_MAP_DIRECTORY        0x17
+#define IM_ICE_MOUNTAIN_EXIT_MAP             0x1A
+#define IM_ICE_MOUNTAIN_SEQUENCE_EVENT_ID    2
+#define IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK  1
+#define IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK     8
+#define IM_ICE_MOUNTAIN_WARNING_TEXT_ID      0x351
+#define IM_ICE_MOUNTAIN_WARNING_DURATION     300.0f
+#define IM_ICE_MOUNTAIN_GAME_BIT_RESET_COUNT 13
 
-/*
- * Enter and leave the Ice Mountain world-map HUD state. The handlers
- * select the HUD state from the player's current mode and synchronize
- * the associated race and map-event game bits.
- */
-void imWorldMapEnter(GameObject* obj)
+#define IM_ICE_MOUNTAIN_ENVFX_A 0xA3
+#define IM_ICE_MOUNTAIN_ENVFX_B 0x9E
+#define IM_ICE_MOUNTAIN_ENVFX_C 0x119
+#define IM_ICE_MOUNTAIN_ENVFX_D 0x104
+
+typedef int (*IMIceMountainGetPlayerModeFn)(GameObject* player);
+
+void IMIceMountain_enterWorldMap(GameObject* obj)
 {
-    int state = *(int*)&(obj)->extra;
-    int mode;
+    IMIceMountainState* state = obj->extra;
+    s32 playerMode;
     GameObject* player;
 
     mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
     mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
     player = playerGetFocusObject(Obj_GetPlayerObject());
-    if (player != 0)
+    if (player != NULL)
     {
-        mode = (*(int (**)(int))(*(int*)(*(int*)&player->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
+        playerMode =
+            (*(IMIceMountainGetPlayerModeFn*)((u8*)*player->anim.dll +
+                                              IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE))(player);
     }
     else
     {
-        mode = 0;
+        playerMode = 0;
     }
-    lockLevel(mapGetDirIdx(0x17), 1);
-    if (mode == 1)
+    lockLevel(mapGetDirIdx(IM_ICE_MOUNTAIN_MAP_DIRECTORY), 1);
+    if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP)
     {
         (*gGameUIInterface)->setShowWorldMapHud(1);
-        *(u8*)state = HUD_STATE_WORLDMAP;
+        state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP;
         mainSetBits(GAMEBIT_IMRelated037B, 1);
     }
     else
     {
-        *(u8*)state = HUD_STATE_HIDDEN;
+        state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_HIDDEN;
         mainSetBits(GAMEBIT_IMRelated00CE, 1);
     }
     mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
     mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
 }
 
-void imWorldMapExit(GameObject* obj, void* extra)
+void IMIceMountain_exitWorldMap(GameObject* obj, IMIceMountainState* state)
 {
-    int mode;
+    s32 playerMode;
     GameObject* player;
 
     (*gGameUIInterface)->setShowWorldMapHud(0);
@@ -97,65 +93,31 @@ void imWorldMapExit(GameObject* obj, void* extra)
         mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
         mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
         player = playerGetFocusObject(Obj_GetPlayerObject());
-        if (player != 0)
+        if (player != NULL)
         {
-            mode = (*(int (**)(int))(*(int*)(*(int*)&player->anim.dll) + PLAYER_VTABLE_GET_MODE))((int)player);
+            playerMode =
+                (*(IMIceMountainGetPlayerModeFn*)((u8*)*player->anim.dll +
+                                                  IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE))(player);
         }
         else
         {
-            mode = 0;
+            playerMode = 0;
         }
         mainSetBits(GAMEBIT_TrickyWarpEnabled, 1);
-        (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 1, 1);
-        if (mode == 1)
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 1);
+        if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP)
         {
             (*gGameUIInterface)->setShowWorldMapHud(1);
-            *(u8*)extra = HUD_STATE_WORLDMAP;
+            state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP;
             mainSetBits(GAMEBIT_IM_BikeRelated0379, 1);
         }
         else
         {
-            *(u8*)extra = HUD_STATE_HIDDEN;
+            state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_HIDDEN;
             mainSetBits(0xcb, 1);
         }
     }
 }
-
-/*
- * Per-object extra state for the IM ice-mountain event controller
- * (IMIceMountain_getExtraSize == 0x14).
- */
-typedef struct IMIceMountainState
-{
-    u8 eventState; /* 0..7 event machine (imicemountain_updateEventState) */
-    u8 pad01[3];
-    s32 latchFlags;   /* SCGameBitLatch record; bit 1 = latch fired this frame */
-    s8 warpCountdown; /* state 6: frames until warpToMap(0x1A) */
-    u8 pad09;
-    s16 musicTrack;   /* -1 or 26; Music_Trigger edge latch */
-    u8 mapEventState; /* getMapAct result at init (1/2/5) */
-    u8 pad0D[3];
-    f32 warningTextTimer; /* shows text 0x351 while above the floor value */
-} IMIceMountainState;
-
-STATIC_ASSERT(sizeof(IMIceMountainState) == 0x14);
-
-/* Ambient env-fx ids lazy-spawned once per object (getEnvfxAct 3rd arg).
- * A/B are shared by both spawn sites; C/D differ per site. */
-#define IMICEMOUNTAIN_ENVFX_A 0xa3
-#define IMICEMOUNTAIN_ENVFX_B 0x9e
-#define IMICEMOUNTAIN_ENVFX_C 0x119
-#define IMICEMOUNTAIN_ENVFX_D 0x104
-
-void IMIceMountain_init(GameObject* obj);
-int IMIceMountain_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-int IMIceMountain_getExtraSize(void);
-int IMIceMountain_getObjectTypeId(void);
-void IMIceMountain_free(void);
-void IMIceMountain_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
-void IMIceMountain_hitDetect(void);
-void IMIceMountain_update(GameObject* obj);
-void imicemountain_updateEventState(GameObject* obj);
 
 ObjectDescriptor gIMIceMountainObjDescriptor = {
     0,
@@ -171,21 +133,19 @@ ObjectDescriptor gIMIceMountainObjDescriptor = {
     (ObjectDescriptorCallback)IMIceMountain_render,
     (ObjectDescriptorCallback)IMIceMountain_free,
     (ObjectDescriptorCallback)IMIceMountain_getObjectTypeId,
-    IMIceMountain_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)IMIceMountain_getExtraSize,
 };
 
-/* imicemountain_updateEventState: the act-1 event machine (states 1..7;
- * state 0 idles), advancing avalanche fx, the boulder spawn, level
- * locks and the final warp as the relevant game bits are set. */
-void imicemountain_updateEventState(GameObject* obj)
+void IMIceMountain_updateEventState(GameObject* obj)
 {
-    IMIceMountainState* extra = obj->extra;
-    switch (extra->eventState)
+    IMIceMountainState* state = obj->extra;
+
+    switch (state->eventState)
     {
     case 7:
         if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
         {
-            extra->eventState = 1;
+            state->eventState = 1;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 0);
         }
         break;
@@ -193,19 +153,19 @@ void imicemountain_updateEventState(GameObject* obj)
         if (mainGetBit(GAMEBIT_IM_CannonGuy1Dead) != 0 && mainGetBit(GAMEBIT_IM_CannonGuy2Dead) != 0)
         {
             mainSetBits(GAMEBIT_IM_SwitchVisible, 1);
-            extra->eventState = 2;
+            state->eventState = 2;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
         }
         else if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0)
         {
-            extra->eventState = 2;
+            state->eventState = 2;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
         }
         break;
     case 2:
         if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0)
         {
-            extra->eventState = 3;
+            state->eventState = 3;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 1);
         }
         break;
@@ -216,7 +176,7 @@ void imicemountain_updateEventState(GameObject* obj)
         }
         if (mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0)
         {
-            extra->eventState = 4;
+            state->eventState = 4;
             mainSetBits(GAMEBIT_IM_DestroyedBox1, 1);
             mainSetBits(GAMEBIT_IM_DestroyedBox2, 1);
             mainSetBits(GAMEBIT_IM_DestroyedBox3, 1);
@@ -235,9 +195,9 @@ void imicemountain_updateEventState(GameObject* obj)
         }
         if (obj->userData1 == 0)
         {
-            getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_A, 0);
-            getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_B, 0);
-            getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_C, 0);
+            getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_A, 0);
+            getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_B, 0);
+            getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_C, 0);
             getLActions(obj, obj, 0x15b, 0, 0, 0);
             getLActions(obj, obj, 0x15c, 0, 0, 0);
             getLActions(obj, obj, 0x17c, 0, 0, 0);
@@ -247,43 +207,45 @@ void imicemountain_updateEventState(GameObject* obj)
         }
         break;
     case 4:
-        imWorldMapExit(obj, extra);
+        IMIceMountain_exitWorldMap(obj, state);
         break;
     case 5:
-        if ((extra->latchFlags & 1) != 0)
+        if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK) != 0)
         {
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 3, 0);
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 4, 0);
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 0);
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 7, 0);
-            extra->eventState = 0;
+            state->eventState = 0;
             (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 2);
         }
         break;
     case 6:
-        if ((extra->latchFlags & 1) != 0)
+        if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK) != 0)
         {
-            extra->warpCountdown = 2;
+            state->warpCountdown = 2;
         }
-        if (extra->warpCountdown > 0)
+        if (state->warpCountdown > 0)
         {
-            if (--extra->warpCountdown == 0)
+            if (--state->warpCountdown == 0)
             {
                 mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
-                warpToMap(0x1a, 0);
+                warpToMap(IM_ICE_MOUNTAIN_EXIT_MAP, 0);
             }
         }
         break;
     }
 }
 
-int IMIceMountain_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const ObjAnimUpdateState* animUpdate)
 {
+    IMIceMountainState* state = obj->extra;
     int i;
-    ((IMIceMountainState*)obj->extra)->latchFlags |= 1;
+
+    state->gameBitLatch.activeMask |= IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
-        if (animUpdate->eventIds[i] == 2)
+        if (animUpdate->eventIds[i] == IM_ICE_MOUNTAIN_SEQUENCE_EVENT_ID)
         {
             mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
             mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
@@ -294,73 +256,77 @@ int IMIceMountain_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
 
 int IMIceMountain_getExtraSize(void)
 {
-    return 0x14;
+    return sizeof(IMIceMountainState);
 }
+
 int IMIceMountain_getObjectTypeId(void)
 {
-    return 0x0;
+    return 0;
 }
 
 void IMIceMountain_free(void)
 {
 }
 
-void IMIceMountain_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void IMIceMountain_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                          s8 visible)
 {
     s32 v = visible;
+
     if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
 void IMIceMountain_hitDetect(void)
 {
 }
 
-/* IMIceMountain_update: lazy-spawn the ambient effects, run the active state,
- * fade the warning timer, drive the music latch, then refresh the gamebit latches. */
 void IMIceMountain_update(GameObject* obj)
 {
-    IMIceMountainState* extra = obj->extra;
+    IMIceMountainState* state = obj->extra;
+
     if (obj->userData1 == 0)
     {
-        getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_A, 0);
-        getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_B, 0);
-        getEnvfxAct(obj, obj, IMICEMOUNTAIN_ENVFX_D, 0);
+        getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_A, 0);
+        getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_B, 0);
+        getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_D, 0);
         (*gCloudActionInterface)->func09Nop(1);
         obj->userData1 = 1;
     }
-    switch (extra->mapEventState)
+    switch (state->mapAct)
     {
     case 1:
-        imicemountain_updateEventState(obj);
+        IMIceMountain_updateEventState(obj);
         break;
     case 2:
         if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
         {
-            imWorldMapEnter(obj);
+            IMIceMountain_enterWorldMap(obj);
         }
         break;
     case 3:
     case 4:
         break;
     }
-    extra->latchFlags &= ~1;
-    if (extra->warningTextTimer > 0.0f)
+    state->gameBitLatch.activeMask &= ~IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK;
+    if (state->warningTextTimer > 0.0f)
     {
-    gameTextSetColor(255, 255, 255, 255);
-        gameTextShow(0x351);
-        extra->warningTextTimer = extra->warningTextTimer - timeDelta;
-        if (extra->warningTextTimer < 0.0f)
+        gameTextSetColor(0xFF, 0xFF, 0xFF, 0xFF);
+        gameTextShow(IM_ICE_MOUNTAIN_WARNING_TEXT_ID);
+        state->warningTextTimer -= timeDelta;
+        if (state->warningTextTimer < 0.0f)
         {
-            extra->warningTextTimer = 0.0f;
+            state->warningTextTimer = 0.0f;
         }
     }
-    if ((*gSkyInterface)->getSunPosition(0) != 0)
+    if ((*gSkyInterface)->getSunPosition(NULL) != 0)
     {
-        if (extra->musicTrack != -1)
+        if (state->musicTrack != -1)
         {
-            extra->musicTrack = -1;
-            if ((extra->latchFlags & 8) != 0)
+            state->musicTrack = -1;
+            if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK) != 0)
             {
                 Music_Trigger(MUSICTRIG_galleon_docks, 0);
             }
@@ -368,34 +334,35 @@ void IMIceMountain_update(GameObject* obj)
     }
     else
     {
-        if (extra->musicTrack != 26)
+        if (state->musicTrack != MUSICTRIG_galleon_docks)
         {
-            extra->musicTrack = 26;
-            if ((extra->latchFlags & 8) != 0)
+            state->musicTrack = MUSICTRIG_galleon_docks;
+            if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK) != 0)
             {
                 Music_Trigger(MUSICTRIG_galleon_docks, 1);
             }
         }
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)&extra->latchFlags, 2, 705, 568, 493, 178);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&extra->latchFlags, 16, 442, 441, 470, 180);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&extra->latchFlags, 4, -1, -1, 928, 233);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&extra->latchFlags, 8, -1, -1, 929, extra->musicTrack);
+    SCGameBitLatch_Update(&state->gameBitLatch, 2, GAMEBIT_IM_TrickyRelated02C1, 568,
+                          GAMEBIT_IM_TrickyRelated01ED, 178);
+    SCGameBitLatch_Update(&state->gameBitLatch, 16, 442, GAMEBIT_IM_TrickyRelated01B9,
+                          GAMEBIT_IM_TrickyRelated01D6, 180);
+    SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_IM_WaterRelated03A0, 233);
+    SCGameBitLatch_Update(&state->gameBitLatch, IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK, -1, -1,
+                          GAMEBIT_IM_Done, state->musicTrack);
 }
 
-/* IMIceMountain_init: clear the ice-mountain gamebit block, arm the
- * map-event triggers, then branch on the queried level state to set the
- * boulder's start state and fire the appropriate triggers. */
 void IMIceMountain_init(GameObject* obj)
 {
-    IMIceMountainState* sub = obj->extra;
+    IMIceMountainState* state = obj->extra;
     u8 i;
-    obj->animEventCallback = IMIceMountain_SeqFn;
-    for (i = 1; i <= 0xd; i++)
+
+    obj->animEventCallback = IMIceMountain_sequenceCallback;
+    for (i = 1; i <= IM_ICE_MOUNTAIN_GAME_BIT_RESET_COUNT; i++)
     {
         gameBitFn_800ea2e0(i);
     }
-    sub->warningTextTimer = 300.0f;
+    state->warningTextTimer = IM_ICE_MOUNTAIN_WARNING_DURATION;
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 5, 1);
     unlockLevel(0, 0, 1);
@@ -403,15 +370,15 @@ void IMIceMountain_init(GameObject* obj)
     {
         (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 2);
     }
-    sub->mapEventState = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
-    switch (sub->mapEventState)
+    state->mapAct = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
+    switch (state->mapAct)
     {
     case 1:
         if (mainGetBit(GAMEBIT_IM_RaceStarted) != 0)
         {
             if (mainGetBit(GAMEBIT_IM_BikeRelated0379) != 0)
             {
-                sub->eventState = 5;
+                state->eventState = 5;
             }
             else
             {
@@ -419,7 +386,7 @@ void IMIceMountain_init(GameObject* obj)
                 mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
                 mainSetBits(0xcb, 0);
                 mainSetBits(GAMEBIT_IM_BikeRelated0379, 0);
-                sub->eventState = 3;
+                state->eventState = 3;
             }
         }
         else
@@ -431,12 +398,12 @@ void IMIceMountain_init(GameObject* obj)
             }
             if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
             {
-                sub->eventState = 1;
+                state->eventState = 1;
             }
             else
             {
                 (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 1);
-                sub->eventState = 7;
+                state->eventState = 7;
             }
         }
         (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 3, 1);

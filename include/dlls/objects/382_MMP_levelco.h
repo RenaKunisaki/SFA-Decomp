@@ -1,0 +1,25 @@
+#ifndef DLLS_OBJECTS_382_MMP_LEVELCO_H_
+#define DLLS_OBJECTS_382_MMP_LEVELCO_H_
+
+#include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
+#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "main/objanim_update.h"
+
+extern SCGameBitLatchState gMMPLevelControlMusicLatch;
+extern f32 gMMPLevelControlTextCountdown;
+extern ObjectDescriptor gMMPLevelControlObjDescriptor;
+
+int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int mmpLevelControl_getExtraSize(void);
+int mmpLevelControl_getObjectTypeId(void);
+void mmpLevelControl_free(GameObject* obj);
+void mmpLevelControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible);
+void mmpLevelControl_hitDetect(void);
+void mmpLevelControl_update(GameObject* obj);
+void mmpLevelControl_init(GameObject* obj);
+void mmpLevelControl_release(void);
+void mmpLevelControl_initialise(void);
+
+#endif /* DLLS_OBJECTS_382_MMP_LEVELCO_H_ */

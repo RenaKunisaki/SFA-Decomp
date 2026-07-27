@@ -8,17 +8,12 @@
  */
 #include "dolphin/os/OSReport.h"
 #include "types.h"
+#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AC_projmagicstream.h"
-#include "main/dll/dll_00AD_projmagicemmit1.h"
 
-/* descriptor/ptr table auto 0x80319410-0x80319430.
- * Union u64 member forces the retail 8-byte alignment (table follows an odd-length
- * string; retail pads to an 8-aligned table start). Same idiom as dll_000A_expgfx. */
-typedef union DllDescriptorTable
-{
-    u32 words[8];
-    u64 align8;
-} DllDescriptorTable;
+DllDescriptorTable lbl_803193C0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projmagicstream_initialise, projmagicstream_release, (void*)0x00000000,
+                                    projmagicstream_doUnsupported}};
 
 char sProjmagicstreamDoNoLongerSupported[] = "<projmagicstream Do>No Longer supported \n";
 
@@ -35,6 +30,3 @@ void projmagicstream_release(void)
 void projmagicstream_initialise(void)
 {
 }
-
-DllDescriptorTable lbl_80319410 = {{0x00000000, 0x00000000, 0x00000000, 0x00030000, (u32)projmagicemmit1_initialise,
-                                    (u32)projmagicemmit1_release, 0x00000000, (u32)projmagicemmit1_doUnsupported}};

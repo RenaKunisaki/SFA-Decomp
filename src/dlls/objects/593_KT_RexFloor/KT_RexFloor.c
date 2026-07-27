@@ -9,6 +9,7 @@
  * mesh rises/lowers between configured heights via curve-lookups (the rom
  * curve interface) and animates its texture scroll + particle/sfx cues.
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DR/dll_0251_ktrexfloorswitch.h"
 
@@ -422,3 +423,20 @@ void KT_RexFloorSwitch_release(void)
 void KT_RexFloorSwitch_initialise(void)
 {
 }
+
+ObjectDescriptor gKtRexFloorSwitchObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_initialise,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_release,
+    0,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_init,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_update,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_hitDetect,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_render,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_free,
+    (ObjectDescriptorCallback)KT_RexFloorSwitch_getObjectTypeId,
+    KT_RexFloorSwitch_getExtraSize,
+};

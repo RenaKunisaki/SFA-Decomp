@@ -1,66 +1,65 @@
-/*
- * IMIcePillar (DLL 0x16D) - a decorative ice pillar prop on the Ice
- * Mountain map. It has no behaviour of its own: every callback is a
- * stub apart from render, which draws the model through the shared
- * object render helper. A 4-byte extra block is reserved but unused.
- */
+#include "dlls/objects/365_IMIcePillar.h"
+
 #include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/dll/IM/dll_016D_imicepillar.h"
-#include "dlls/object_descriptor.h"
 
-int imicepillar_getExtraSize(void)
+int imIcePillar_getExtraSize(void)
 {
-    return 0x4;
-}
-int imicepillar_getObjectTypeId(void)
-{
-    return 0x0;
+    return 4;
 }
 
-void imicepillar_free(void)
+int imIcePillar_getObjectTypeId(void)
 {
+    return 0;
 }
 
-void imicepillar_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
-}
-
-void imicepillar_hitDetect(void)
+void imIcePillar_free(void)
 {
 }
 
-void imicepillar_update(void)
+void imIcePillar_render(
+    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
+{
+    if (visible != 0)
+    {
+        objRenderModelAndHitVolumes(
+            obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
+}
+
+void imIcePillar_hitDetect(void)
 {
 }
 
-void imicepillar_init(void)
+void imIcePillar_update(void)
 {
 }
 
-void imicepillar_release(void)
+void imIcePillar_init(void)
 {
 }
 
-void imicepillar_initialise(void)
+void imIcePillar_release(void)
 {
 }
+
+void imIcePillar_initialise(void)
+{
+}
+
 ObjectDescriptor gIMIcePillarObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)imicepillar_initialise,
-    (ObjectDescriptorCallback)imicepillar_release,
+    (ObjectDescriptorCallback)imIcePillar_initialise,
+    (ObjectDescriptorCallback)imIcePillar_release,
     0,
-    (ObjectDescriptorCallback)imicepillar_init,
-    (ObjectDescriptorCallback)imicepillar_update,
-    (ObjectDescriptorCallback)imicepillar_hitDetect,
-    (ObjectDescriptorCallback)imicepillar_render,
-    (ObjectDescriptorCallback)imicepillar_free,
-    (ObjectDescriptorCallback)imicepillar_getObjectTypeId,
-    imicepillar_getExtraSize,
+    (ObjectDescriptorCallback)imIcePillar_init,
+    (ObjectDescriptorCallback)imIcePillar_update,
+    (ObjectDescriptorCallback)imIcePillar_hitDetect,
+    (ObjectDescriptorCallback)imIcePillar_render,
+    (ObjectDescriptorCallback)imIcePillar_free,
+    (ObjectDescriptorCallback)imIcePillar_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)imIcePillar_getExtraSize,
 };

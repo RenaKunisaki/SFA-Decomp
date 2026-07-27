@@ -18,13 +18,13 @@
 #include "main/dll/savegame.h"
 #include "main/dll/dll_0099_dll99func0.h"
 
+extern u32 lbl_80317AF8[];
+
 u8 lbl_803DB950[8] = {0, 1, 0, 0, 0, 0, 0, 0};
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL99_EFFECT_ID 0x3c
 
-
-extern ModgfxEffectResource lbl_80317AF8;
 
 void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSource, u32 flags,
                    int unused, f32* extraArgs)
@@ -33,7 +33,7 @@ void dll_99_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSou
     ModgfxPointerSpawnPacket buf;
     GfxCmd* entry;
     f32 scale;
-    resource[0] = &lbl_80317AF8;
+    resource[0] = (ModgfxEffectResource*)lbl_80317AF8;
     scale = 1.0f;
     if (extraArgs != NULL)
     {
@@ -172,3 +172,11 @@ void dll_99_func01_nop(void)
 void dll_99_func00_nop(void)
 {
 }
+
+u32 lbl_80317AF8[31] = {0xff1a0000, 0x00000000, 0x000f0000, 0x00000000, 0x007f000f, 0x00e60000, 0x000000ff, 0x000fff1a,
+                        0x000003e8, 0x00000000, 0x00000000, 0x03e8007f, 0x000000e6, 0x000003e8, 0x00ff0000, 0x00000004,
+                        0x00030000, 0x00010004, 0x00010002, 0x00040002, 0x00050004, 0x00000001, 0x00020003, 0x00040005,
+                        0x00000002, 0x00030004, 0x00050000, 0x00000006, 0x0014001a, 0x00000000, 0x00000000};
+u32 lbl_80317B74[9] = {
+    0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_99_func00_nop, (u32)dll_99_func01_nop,
+    0x00000000, (u32)dll_99_func03, 0x00000000};

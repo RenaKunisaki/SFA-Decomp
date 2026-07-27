@@ -7,6 +7,8 @@
 #include "main/objanim_update.h"
 #include "game/objects/object_setup.h"
 
+#define DBHOLE_CONTROL1_OBJECT_GROUP 0x1E
+
 extern ObjectDescriptor gDBHoleControl1ObjDescriptor;
 
 typedef struct Dbholecontrol1Placement

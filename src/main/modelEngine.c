@@ -102,6 +102,101 @@
 #include "dlls/objects/304_AreaFXEmit.h"
 #include "dlls/objects/305.h"
 #include "dlls/objects/306_WaterFallSp.h"
+#include "dlls/objects/307_sfxPlayer.h"
+#include "dlls/objects/308_texscroll2.h"
+#include "dlls/objects/309_texscroll.h"
+#include "dlls/objects/310_WaveAnimato.h"
+#include "dlls/objects/311_AlphaAnimat.h"
+#include "dlls/objects/312_GroundAnima.h"
+#include "dlls/objects/313_HitAnimator.h"
+#include "dlls/objects/314_VisAnimator.h"
+#include "dlls/objects/315_WallAnimato.h"
+#include "dlls/objects/316_XYZAnimator.h"
+#include "dlls/objects/317_ExplodeAnim.h"
+#include "dlls/objects/318.h"
+#include "dlls/objects/319_TexFrameAni.h"
+#include "dlls/objects/320_fogControl.h"
+#include "dlls/objects/321_Lightning.h"
+#include "dlls/objects/322_FElevContro.h"
+#include "dlls/objects/323_FEseqobject.h"
+#include "dlls/objects/324.h"
+#include "dlls/objects/325_CloudPrison.h"
+#include "dlls/objects/326_CloudShipCo.h"
+#include "dlls/objects/327.h"
+#include "dlls/objects/328_CFGuardian.h"
+#include "dlls/objects/329.h"
+#include "dlls/objects/330_CFPowerBase.h"
+#include "dlls/objects/331_CFMainCryst.h"
+#include "dlls/objects/332.h"
+#include "dlls/objects/333_LaserBeam.h"
+#include "dlls/objects/334_CFPrisonGua.h"
+#include "dlls/objects/335_CFPrisonUnc.h"
+#include "dlls/objects/336_GCRobotLigh.h"
+#include "dlls/objects/337_CFScalesGal.h"
+#include "dlls/objects/338_CF_ObjCreat.h"
+#include "dlls/objects/339_CFPerch.h"
+#include "dlls/objects/340.h"
+#include "dlls/objects/341.h"
+#include "dlls/objects/342.h"
+#include "dlls/objects/343_SpiritDoorS.h"
+#include "dlls/objects/344.h"
+#include "dlls/objects/345.h"
+#include "dlls/objects/346.h"
+#include "dlls/objects/347_CFForceFiel.h"
+#include "dlls/objects/348_CFForceFiel.h"
+#include "dlls/objects/349.h"
+#include "dlls/objects/350.h"
+#include "dlls/objects/351.h"
+#include "dlls/objects/352.h"
+#include "dlls/objects/353_CFTreasRobo.h"
+#include "dlls/objects/354_CFMagicWall.h"
+#include "dlls/objects/355.h"
+#include "dlls/objects/356_CFLevelCont.h"
+#include "dlls/objects/357_CFRemovalSh.h"
+#include "dlls/objects/358.h"
+#include "dlls/objects/359_SpiritDoorL.h"
+#include "dlls/objects/360_HoloPoint.h"
+#include "dlls/objects/361_IMIceMounta.h"
+#include "dlls/objects/362_CRrockfall.h"
+#include "dlls/objects/363.h"
+#include "dlls/objects/364.h"
+#include "dlls/objects/365_IMIcePillar.h"
+#include "dlls/objects/366_IMAnimSpace.h"
+#include "dlls/objects/367_IMSpaceThru.h"
+#include "dlls/objects/368_IMSpaceRing.h"
+#include "dlls/objects/369_IMSpaceRing.h"
+#include "dlls/objects/370_LINKB_levco.h"
+#include "dlls/objects/371_LINK_levcon.h"
+#include "dlls/objects/372_CCriverflow.h"
+#include "dlls/objects/374_DFSH_Door1S.h"
+#include "dlls/objects/375.h"
+#include "dlls/objects/376_DFSH_Shrine.h"
+#include "dlls/objects/377_DFSH_ObjCre.h"
+#include "dlls/objects/378_SpiritPrize.h"
+#include "dlls/objects/379_DFSH_LaserB.h"
+#include "dlls/objects/380_GCRobotPatr.h"
+#include "dlls/objects/381.h"
+#include "dlls/objects/382_MMP_levelco.h"
+#include "dlls/objects/383.h"
+#include "dlls/objects/384_MMP_asteroi.h"
+#include "dlls/objects/385_MMP_trenchF.h"
+#include "dlls/objects/386_MMP_moonroc.h"
+#include "dlls/objects/387_MMP_gyserve.h"
+#include "dlls/objects/388.h"
+#include "dlls/objects/389_CCgasvent.h"
+#include "dlls/objects/390_CCgasventCo.h"
+#include "dlls/objects/391_CCqueen.h"
+#include "dlls/objects/392_CClightfoot.h"
+#include "dlls/objects/393_CCSharpclaw.h"
+#include "dlls/objects/394_CCpedstal.h"
+#include "dlls/objects/395_CClevcontro.h"
+#include "dlls/objects/396_MMSH_Shrine.h"
+#include "dlls/objects/397_MMSH_Scales.h"
+#include "dlls/objects/398_MMSH_WaterS.h"
+#include "dlls/objects/399_ECSH_Shrine.h"
+#include "dlls/objects/400_ECSH_Cup.h"
+#include "dlls/objects/401_ECSH_Creato.h"
+#include "dlls/objects/402_GPSH_Shrine.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -121,7 +216,6 @@
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/ARW/dll_02A1_arwlevelcon.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
-#include "main/dll/CC/dll_0186_ccgasventcontrol.h"
 #include "main/dll/DR/dll_0281_drearthcal.h"
 #include "main/dll/dll_0299.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
@@ -190,28 +284,18 @@ extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, 
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
-extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor, gAlphaAnimatorObjDescriptor,
-    gAnimSharpclawObjDescriptor;
-extern ResourceDescriptor gAttractorObjDescriptor, gBabyCloudRunnerObjDescriptor;
-extern ResourceDescriptor gBaddieObjDescriptor, gBlastedObjDescriptor, gBombPlantObjDescriptor,
-    gBombPlantSporeObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
-extern ResourceDescriptor gCCSharpclawPadObjDescriptor, gCCgasventObjDescriptor, gCClevcontrolObjDescriptor,
-    gCClightfootObjDescriptor, gCCpedstalObjDescriptor;
-extern ResourceDescriptor gCCqueenObjDescriptor, gCCriverflowObjDescriptor, gCFForceFieldObjDescriptor,
-    gCFGuardianObjDescriptor, gCFLevelControlObjDescriptor, gCFMagicWallObjDescriptor, gCFMainCrystalObjDescriptor;
-extern ResourceDescriptor gCFPerchObjDescriptor, gCFPowerBaseObjDescriptor, gCFPrisonCageObjDescriptor,
-    gCFPrisonGuardObjDescriptor, gCFPrisonUncleObjDescriptor;
-extern ResourceDescriptor gCRrockfallObjDescriptor, gChukaObjDescriptor, gCloudPrisonControlObjDescriptor;
+extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
+extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor,
+    gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
+extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDBSH_ShrineObjDescriptor, gDBSH_SymbolObjDescriptor,
     gDB_eggObjDescriptor, gDBstealerwormObjDescriptor, gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor,
     gDFP_TorchObjDescriptor;
-extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFSH_Door2SpeciObjDescriptor, gDFSH_LaserBeamObjDescriptor,
-    gDFSH_ObjCreatorObjDescriptor, gDFSH_ShrineObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
+extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
-    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor,
-    gDIMBossIceSmashObjDescriptor;
+    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor;
 extern ResourceDescriptor gDIMBridgeCogMaiObjDescriptor, gDIMCannonObjDescriptor, gDIMDismountPointObjDescriptor,
     gDIMGateObjDescriptor, gDIMIceWallObjDescriptor, gDIMLavaSmashObjDescriptor, gDIMLogFireObjDescriptor,
     gDIMMagicBridgeObjDescriptor;
@@ -229,36 +313,27 @@ extern ResourceDescriptor gDoorswitchObjDescriptor, gDrBarrelGrObjDescriptor, gD
 extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor, gDrLaserCannonObjDescriptor,
     gDrLightBeaObjDescriptor, gDrMusicContObjDescriptor, gDrShackleObjDescriptor, gDrakorDThornBushObjDescriptor,
     gDrakorEnergyObjDescriptor;
-extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor, gECSH_CreatorObjDescriptor,
-    gECSH_CupObjDescriptor, gECSH_ShrineObjDescriptor;
+extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
-    gExplodableObjDescriptor, gExplodeAnimatorObjDescriptor, gExplodePlanObjDescriptor, gExplodedObjDescriptor;
-extern ResourceDescriptor gExplosionObjDescriptor, gFElevControlObjDescriptor, gFEseqobjectObjDescriptor,
-    gFireFlyObjDescriptor, gFireObjDescriptor;
-extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor, gFogControlObjDescriptor;
-extern ResourceDescriptor gGCRobotLightBeaObjDescriptor, gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor,
-    gGPSH_ShrineObjDescriptor, gGmMazeWellObjDescriptor;
-extern ResourceDescriptor gGroundAnimatorObjDescriptor, gGunPowderBarrelObjDescriptor, gHighTopObjDescriptor,
-    gHitAnimatorObjDescriptor, gIMAnimSpaceCraftObjDescriptor, gIMIceMountainObjDescriptor, gIMIcePillarObjDescriptor;
-extern ResourceDescriptor gIMSpaceRingGenObjDescriptor, gIMSpaceRingObjDescriptor, gIMSpaceThrusterObjDescriptor;
+    gExplodePlanObjDescriptor;
+extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
+extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
+extern ResourceDescriptor gGPSH_ObjCreatorObjDescriptor, gGPSH_SceneObjDescriptor, gGmMazeWellObjDescriptor;
+extern ResourceDescriptor gHighTopObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
-    gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor, gLINKBLevControlObjDescriptor;
-extern ResourceDescriptor gLINKLevControlObjDescriptor, gLampObjDescriptor, gLaserBeamObjDescriptor,
-    gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
+    gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
+extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
+    gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
-    gLightSourceObjDescriptor, gLightningObjDescriptor, gMAGICMakerObjDescriptor;
-extern ResourceDescriptor gMMP_asteroid_reObjDescriptor, gMMP_gyserventObjDescriptor,
-    gMMP_levelcontrolObjDescriptor, gMMP_moonrockObjDescriptor;
-extern ResourceDescriptor gMMP_trenchFXObjDescriptor, gMMSH_ScalesObjDescriptor, gMMSH_ShrineObjDescriptor,
-    gMMSH_WaterSpikeObjDescriptor, gMagicLightObjDescriptor;
-extern ResourceDescriptor gMoonSeedBushObjDescriptor, gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor,
-    gNW_animiceObjDescriptor, gNW_geyserObjDescriptor;
+    gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor, gNWSH_levconObjDescriptor, gNW_animiceObjDescriptor,
+    gNW_geyserObjDescriptor;
 extern ResourceDescriptor gNW_iceObjDescriptor, gNW_levcontrolObjDescriptor, gNW_mammothObjDescriptor,
     gNW_trickyObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
-extern ResourceDescriptor gRingObjDescriptor, gRollingBarrelObjDescriptor, gSB_CageKyteObjDescriptor,
-    gSB_CannonBallObjDescriptor, gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
+extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor,
+    gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, gSB_KyteCageObjDescriptor,
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
@@ -270,13 +345,12 @@ extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescripto
     gSH_staffObjDescriptor, gSH_thorntailObjDescriptor;
 extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPScarabObjDescriptor,
     gSPitembeamObjDescriptor, gSeqPointObjDescriptor;
-extern ResourceDescriptor gSfxPlayerObjDescriptor, gSfxplayerObjDescriptor, gShipBattleObjDescriptor,
-    gShopItemObjDescriptor, gShopKeeperObjDescriptor, gShopObjDescriptor;
-extern ResourceDescriptor gSlidingDoorObjDescriptor, gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
-extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gSpiritDoorLockObjDescriptor,
-    gSpiritDoorSpiritObjDescriptor, gSpiritPrizeObjDescriptor, gStaffObjDescriptor, gStaticCameraObjDescriptor;
-extern ResourceDescriptor gTexFrameAnimatorObjDescriptor, gTexscroll2ObjDescriptor, gTexscrollObjDescriptor,
-    gTextBlockObjDescriptor, gTimerObjDescriptor;
+extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
+    gShopKeeperObjDescriptor, gShopObjDescriptor;
+extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
+extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gStaffObjDescriptor,
+    gStaticCameraObjDescriptor;
+extern ResourceDescriptor gTextBlockObjDescriptor, gTimerObjDescriptor;
 extern ResourceDescriptor gTitleScreenObjDescriptor, gTreeBirdObjDescriptor,
     gTrickyCurveObjDescriptor;
 extern ResourceDescriptor gTrickyObjDescriptor, gTriggerObjDescriptor, gVFPDragHeadObjDescriptor, gVFPLiftObjDescriptor,
@@ -285,8 +359,7 @@ extern ResourceDescriptor gVFP_DoorSwitchObjDescriptor, gVFP_LaddersObjDescripto
     gVFP_MiniFireObjDescriptor, gVFP_ObjCreatorObjDescriptor, gVFP_PlatformObjDescriptor,
     gVFP_SpellPlaceObjDescriptor, gVFP_coreplatObjDescriptor, gVFP_flamepointObjDescriptor;
 extern ResourceDescriptor gVFP_lavapoolObjDescriptor, gVFP_lavastarObjDescriptor, gVFP_statueballObjDescriptor,
-    gVisAnimatorObjDescriptor, gVortexObjDescriptor,
-    gWCBouncyCraObjDescriptor;
+    gVortexObjDescriptor, gWCBouncyCraObjDescriptor;
 extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
@@ -295,10 +368,10 @@ extern ResourceDescriptor gWM_GalleonObjDescriptor, gWM_GeneralScalesObjDescript
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
-extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWallAnimatorObjDescriptor,
-    gWarpStoneLiftObjDescriptor, gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
-extern ResourceDescriptor gWaveAnimatorObjDescriptor, gWindLiftObjDescriptor, gWorldAsteroidsObjDescriptor,
-    gWorldObjObjDescriptor, gWorldPlanetObjDescriptor, gXYZAnimatorObjDescriptor, lbl_8030EE34;
+extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWarpStoneLiftObjDescriptor,
+    gWarpStoneObjDescriptor, gWaterFlowWeObjDescriptor;
+extern ResourceDescriptor gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor, gWorldPlanetObjDescriptor,
+    lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
     lbl_8030FCA8, lbl_80310604;
 extern ResourceDescriptor lbl_80310638, lbl_80310670, lbl_80310808, lbl_803108A0, lbl_803109B8, lbl_80310A20,
@@ -346,17 +419,12 @@ extern ResourceDescriptor lbl_8031A178, lbl_8031A1A0, lbl_8031A304, lbl_8031A82C
     lbl_8031ADA4, lbl_8031ADD0;
 extern ResourceDescriptor lbl_8031ADF8, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, lbl_8031C300,
     lbl_8031C5D0, lbl_8031C5F8;
-extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8, lbl_803230F8;
+extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
-extern ResourceDescriptor lbl_80323740, lbl_80325928, lbl_80325F20, lbl_80327BA8, lbl_80328AD8, lbl_80328E28,
-    lbl_80329340;
+extern ResourceDescriptor lbl_80325928, lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
-extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0, lbl_803DBE00, lbl_803DBE10,
-    lbl_803DBE18, lbl_803DBE50;
-extern ResourceDescriptor lbl_803DBE60, lbl_803DBE68, lbl_803DBE70, lbl_803DBEA0, lbl_803DBEA8, lbl_803DBEB0,
-    lbl_803DBEB8, lbl_803DBEC0;
-extern ResourceDescriptor lbl_803DBEC8, lbl_803DBEE0, lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138,
-    lbl_803DC140, lbl_803DC150;
+extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0;
+extern ResourceDescriptor lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138, lbl_803DC140, lbl_803DC150;
 extern ResourceDescriptor lbl_803DC158, lbl_803DC2C0, lbl_803DC2D8, lbl_803DC2E0, lbl_803DC2E8, lbl_803DC338,
     lbl_803DC358, lbl_803DC360;
 extern ResourceDescriptor lbl_803DC368, lbl_803DC370, lbl_803DC378, lbl_803DC388, lbl_803DC390, lbl_803DC6E8,
@@ -1277,102 +1345,102 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gAreaFXEmitObjDescriptor,
     (ResourceDescriptor*)&gCF_DoorLightObjDescriptor,
     (ResourceDescriptor*)&gWaterFallSprayObjDescriptor,
-    &gSfxPlayerObjDescriptor,
-    &gTexscroll2ObjDescriptor,
-    &gTexscrollObjDescriptor,
-    &gWaveAnimatorObjDescriptor,
-    &gAlphaAnimatorObjDescriptor,
-    &gGroundAnimatorObjDescriptor,
-    &gHitAnimatorObjDescriptor,
-    &gVisAnimatorObjDescriptor,
-    &gWallAnimatorObjDescriptor,
-    &gXYZAnimatorObjDescriptor,
-    &gExplodeAnimatorObjDescriptor,
-    &gDIMBossIceSmashObjDescriptor,
-    &gTexFrameAnimatorObjDescriptor,
-    &gFogControlObjDescriptor,
-    &gLightningObjDescriptor,
-    &gFElevControlObjDescriptor,
-    &gFEseqobjectObjDescriptor,
-    &lbl_80327BA8,
-    &gCloudPrisonControlObjDescriptor,
-    &lbl_803DBE10,
-    &lbl_803DBE18,
-    &gCFGuardianObjDescriptor,
-    &gWindLiftObjDescriptor,
-    &gCFPowerBaseObjDescriptor,
-    &gCFMainCrystalObjDescriptor,
-    &gBabyCloudRunnerObjDescriptor,
-    &lbl_803DBE50,
-    &gCFPrisonGuardObjDescriptor,
-    &gCFPrisonUncleObjDescriptor,
-    &gGCRobotLightBeaObjDescriptor,
-    &lbl_803DBE60,
-    &lbl_803DBE68,
-    &gCFPerchObjDescriptor,
-    &gCFPrisonCageObjDescriptor,
-    &lbl_803DBE00,
-    &lbl_803DBE70,
-    &gSpiritDoorSpiritObjDescriptor,
-    &gGunPowderBarrelObjDescriptor,
-    &gBlastedObjDescriptor,
-    &gExplodableObjDescriptor,
-    &gCFForceFieldObjDescriptor,
-    &lbl_803DBEA0,
-    &gSlidingDoorObjDescriptor,
-    &lbl_803DBEA8,
-    &gAttractorObjDescriptor,
-    &lbl_803DBEB8,
-    &lbl_803DBEB0,
-    &gCFMagicWallObjDescriptor,
-    &lbl_803DBEC0,
-    &gCFLevelControlObjDescriptor,
-    &lbl_803DBEC8,
-    &gExplodedObjDescriptor,
-    &gSpiritDoorLockObjDescriptor,
-    &lbl_803DBEE0,
-    &gIMIceMountainObjDescriptor,
-    &gCRrockfallObjDescriptor,
-    &gMagicLightObjDescriptor,
-    &lbl_80323740,
-    &gIMIcePillarObjDescriptor,
-    &gIMAnimSpaceCraftObjDescriptor,
-    &gIMSpaceThrusterObjDescriptor,
-    &gIMSpaceRingObjDescriptor,
-    &gIMSpaceRingGenObjDescriptor,
-    &gLINKBLevControlObjDescriptor,
-    &gLINKLevControlObjDescriptor,
-    &gCCriverflowObjDescriptor,
+    (ResourceDescriptor*)&gSfxPlayerObjDescriptor,
+    (ResourceDescriptor*)&gTexscroll2ObjDescriptor,
+    (ResourceDescriptor*)&gTexscrollObjDescriptor,
+    (ResourceDescriptor*)&gWaveAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gAlphaAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gGroundAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gHitAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gVisAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gWallAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gXYZAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gExplodeAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gDIMBossIceSmashObjDescriptor,
+    (ResourceDescriptor*)&gTexFrameAnimatorObjDescriptor,
+    (ResourceDescriptor*)&gFogControlObjDescriptor,
+    (ResourceDescriptor*)&gLightningObjDescriptor,
+    (ResourceDescriptor*)&gFElevControlObjDescriptor,
+    (ResourceDescriptor*)&gFEseqobjectObjDescriptor,
+    (ResourceDescriptor*)&gDll144ObjDescriptor,
+    (ResourceDescriptor*)&gCloudPrisonControlObjDescriptor,
+    (ResourceDescriptor*)&gCloudShipControlNullResourceDescriptor,
+    (ResourceDescriptor*)&gDll147NullResourceDescriptor,
+    (ResourceDescriptor*)&gCFGuardianObjDescriptor,
+    (ResourceDescriptor*)&gWindLiftObjDescriptor,
+    (ResourceDescriptor*)&gCFPowerBaseObjDescriptor,
+    (ResourceDescriptor*)&gCFMainCrystalObjDescriptor,
+    (ResourceDescriptor*)&gBabyCloudRunnerObjDescriptor,
+    (ResourceDescriptor*)&gLaserBeamNullResourceDescriptor,
+    (ResourceDescriptor*)&gCFPrisonGuardObjDescriptor,
+    (ResourceDescriptor*)&gCFPrisonUncleObjDescriptor,
+    (ResourceDescriptor*)&gGCRobotLightBeamObjDescriptor,
+    (ResourceDescriptor*)&gCFScalesGalNullResourceDescriptor,
+    (ResourceDescriptor*)&gCFObjCreatNullResourceDescriptor,
+    (ResourceDescriptor*)&gCFPerchObjDescriptor,
+    (ResourceDescriptor*)&gCFPrisonCageObjDescriptor,
+    (ResourceDescriptor*)&gDll155NullResourceDescriptor,
+    (ResourceDescriptor*)&gDll156NullResourceDescriptor,
+    (ResourceDescriptor*)&gSpiritDoorSpiritObjDescriptor,
+    (ResourceDescriptor*)&gGunpowderBarrelObjDescriptor,
+    (ResourceDescriptor*)&gBlastedObjDescriptor,
+    (ResourceDescriptor*)&gExplodableObjDescriptor,
+    (ResourceDescriptor*)&gCFForceFieldObjDescriptor,
+    (ResourceDescriptor*)&gCFForceField15CNullResourceDescriptor,
+    (ResourceDescriptor*)&gSlidingDoorObjDescriptor,
+    (ResourceDescriptor*)&gDll350NullResourceDescriptor,
+    (ResourceDescriptor*)&gAttractorObjDescriptor,
+    (ResourceDescriptor*)&gDll352NullResourceDescriptor,
+    (ResourceDescriptor*)&gCFTreasRoboNullResourceDescriptor,
+    (ResourceDescriptor*)&gCFMagicWallObjDescriptor,
+    (ResourceDescriptor*)&gDll355NullResourceDescriptor,
+    (ResourceDescriptor*)&gCFLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gCFRemovalShNullResourceDescriptor,
+    (ResourceDescriptor*)&gExplodedObjDescriptor,
+    (ResourceDescriptor*)&gSpiritDoorLockObjDescriptor,
+    (ResourceDescriptor*)&gHoloPointNullResourceDescriptor,
+    (ResourceDescriptor*)&gIMIceMountainObjDescriptor,
+    (ResourceDescriptor*)&gCRrockfallObjDescriptor,
+    (ResourceDescriptor*)&gMagicLightObjDescriptor,
+    (ResourceDescriptor*)&gIMSnowClawObjDescriptor,
+    (ResourceDescriptor*)&gIMIcePillarObjDescriptor,
+    (ResourceDescriptor*)&gIMAnimSpaceObjDescriptor,
+    (ResourceDescriptor*)&gIMSpaceThrusterObjDescriptor,
+    (ResourceDescriptor*)&gIMSpaceRingObjDescriptor,
+    (ResourceDescriptor*)&gIMSpaceRingGeneratorObjDescriptor,
+    (ResourceDescriptor*)&gLINKBLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gLINKLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gCCRiverFlowObjDescriptor,
     &gDFropenodeObjDescriptor,
-    &lbl_80325F20,
-    &gDFSH_Door2SpeciObjDescriptor,
-    &gDFSH_ShrineObjDescriptor,
-    &gDFSH_ObjCreatorObjDescriptor,
-    &gSpiritPrizeObjDescriptor,
-    &gDFSH_LaserBeamObjDescriptor,
-    &lbl_803230F8,
-    &gRollingBarrelObjDescriptor,
-    &gMMP_levelcontrolObjDescriptor,
-    &gMoonSeedBushObjDescriptor,
-    &gMMP_asteroid_reObjDescriptor,
-    &gMMP_trenchFXObjDescriptor,
-    &gMMP_moonrockObjDescriptor,
-    &gMMP_gyserventObjDescriptor,
-    &gAnimSharpclawObjDescriptor,
-    &gCCgasventObjDescriptor,
-    (ResourceDescriptor*)&gCCgasventControlObjDescriptor,
-    &gCCqueenObjDescriptor,
-    &gCClightfootObjDescriptor,
-    &gCCSharpclawPadObjDescriptor,
-    &gCCpedstalObjDescriptor,
-    &gCClevcontrolObjDescriptor,
-    &gMMSH_ShrineObjDescriptor,
-    &gMMSH_ScalesObjDescriptor,
-    &gMMSH_WaterSpikeObjDescriptor,
-    &gECSH_ShrineObjDescriptor,
-    &gECSH_CupObjDescriptor,
-    &gECSH_CreatorObjDescriptor,
-    &gGPSH_ShrineObjDescriptor,
+    (ResourceDescriptor*)&gDFSH_Door1SNullResourceDescriptor,
+    (ResourceDescriptor*)&gDll177ObjDescriptor,
+    (ResourceDescriptor*)&gDFSHShrineObjDescriptor,
+    (ResourceDescriptor*)&gDFSHObjCreatorObjDescriptor,
+    (ResourceDescriptor*)&gSpiritPrizeObjDescriptor,
+    (ResourceDescriptor*)&gDFSHLaserBeamObjDescriptor,
+    (ResourceDescriptor*)&gGCRobotPatrNullResourceDescriptor,
+    (ResourceDescriptor*)&gRollingBarrelObjDescriptor,
+    (ResourceDescriptor*)&gMMPLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gMoonSeedBushObjDescriptor,
+    (ResourceDescriptor*)&gMMPAsteroidReObjDescriptor,
+    (ResourceDescriptor*)&gMMPTrenchFxObjDescriptor,
+    (ResourceDescriptor*)&gMMPMoonRockObjDescriptor,
+    (ResourceDescriptor*)&gMMPGeyserVentObjDescriptor,
+    (ResourceDescriptor*)&gDll184ObjDescriptor,
+    (ResourceDescriptor*)&gCCGasVentObjDescriptor,
+    (ResourceDescriptor*)&gCCGasVentControlObjDescriptor,
+    (ResourceDescriptor*)&gCCQueenObjDescriptor,
+    (ResourceDescriptor*)&gCCLightfootObjDescriptor,
+    (ResourceDescriptor*)&gCCSharpClawPadObjDescriptor,
+    (ResourceDescriptor*)&gCCPedestalObjDescriptor,
+    (ResourceDescriptor*)&gCCLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gMMSHShrineObjDescriptor,
+    (ResourceDescriptor*)&gMMSHScalesObjDescriptor,
+    (ResourceDescriptor*)&gMMSHWaterSpikeObjDescriptor,
+    (ResourceDescriptor*)&gECSHShrineObjDescriptor,
+    (ResourceDescriptor*)&gECSHCupObjDescriptor,
+    (ResourceDescriptor*)&gECSHCreatorObjDescriptor,
+    (ResourceDescriptor*)&gGPSHShrineObjDescriptor,
     &gGPSH_ObjCreatorObjDescriptor,
     &gGPSH_SceneObjDescriptor,
     &gDBSH_ShrineObjDescriptor,

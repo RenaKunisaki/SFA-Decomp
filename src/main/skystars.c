@@ -352,6 +352,3 @@ void initSkyStars(void)
     mm_free(constellation);
     GXSetMisc(1, 8);
 }
-
-/* descriptor/ptr table auto 0x8030f788-0x8030f7b0 */
-u32 lbl_8030F788[10] = { 0x00000000, 0x00000000, 0x00000000, 0x00050000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 };

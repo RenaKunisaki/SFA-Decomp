@@ -428,7 +428,7 @@ def selftest():
     # (symbol, param text to delete, register that should then be missing)
     cases = [
         ("walkGroupFn_800db3e4", "u32 currentWalkGroupIndex", ["r5"]),
-        ("MoonSeedBush_init", "int data", ["r4"]),
+        ("moonSeedBush_init", "const MoonSeedBushPlacement* placement", ["r4"]),
         ("dll_CB_moveHandler0", "u8* obj", ["r4"]),
         # variadic tail: dropping `...` must resurrect the whole ABI tail
         ("debugPrintfxy", "...",

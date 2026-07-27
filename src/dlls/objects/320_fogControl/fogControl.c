@@ -1,160 +1,112 @@
-/*
- * fogControl (DLL 0x140) - a placed object that drives the engine's
- * heavy-fog volume.
- *
- * The fog is gated by a placement game bit (enableGameBit, -1 = always
- * on). While the gate transitions, FogControl_update ramps a 0..1 blend
- * value toward the gated target (ramp speeds 0.005/0.02 scaled by
- * timeDelta, selected by the FOG_FLAG_FAST_* bits) and feeds the
- * resulting fog band/density to enableHeavyFog each frame; at blend
- * <= floor (0.0) the fog is turned off (disableHeavyFog).
- * FogControl_init primes the blend from the gate state and FogControl_free
- * tears the fog down if it was left active.
- *
- * The fog band is derived from the object's localPosY plus the placement
- * height fields (fogTop/fogBottom/fogBase), with fog colors at
- * fogGreen/fogRed and the enableHeavyFog mode taken from FOG_FLAG_MODE.
- */
+/* Drives a game-bit-controlled heavy-fog volume. */
+#include "dlls/objects/320_fogControl.h"
+
 #include "game/objects/object.h"
-#include "main/gamebits.h"
 #include "main/frame_timing.h"
+#include "main/gamebits.h"
 #include "main/pi_dolphin_api.h"
-#include "main/dll/dll_0140_fogcontrol.h"
 
-#define FOGCONTROL_OBJFLAG_HIDDEN 0x4000
+#define FOG_CONTROL_BLEND_STEP_FAST   0.02f
+#define FOG_CONTROL_BLEND_STEP_SLOW   0.005f
+#define FOG_CONTROL_DEPTH_DENOMINATOR 65535.0f
+#define FOG_CONTROL_WORLD_SCALE       0.0001f
 
-/* FogcontrolPlacement::flags (low byte, offset 0x1A) */
-#define FOG_FLAG_MODE     0x01 /* enableHeavyFog mode arg */
-#define FOG_FLAG_FAST_IN  0x02 /* ramp-in uses fast speed 0.005 (else 0.02) */
-#define FOG_FLAG_FAST_OUT 0x04 /* ramp-out uses fast speed 0.005 (else 0.02) */
-#define FOG_FLAG_ENABLE   0x08 /* fog volume is placed/active */
-
-int FogControl_getExtraSize(void)
-{
+int FogControl_getExtraSize(void) {
     return sizeof(FogControlState);
 }
-int FogControl_getObjectTypeId(void)
-{
-    return 0x0;
+
+int FogControl_getObjectTypeId(void) {
+    return 0;
 }
 
-void FogControl_free(GameObject* obj)
-{
-    FogControlState* st = obj->extra;
-    if (st->on)
-    {
+void FogControl_free(GameObject* obj) {
+    FogControlState* state = obj->extra;
+
+    if (state->enabled) {
         disableHeavyFog();
     }
 }
 
-void FogControl_hitDetect(void)
-{
+void FogControl_hitDetect(void) {
 }
 
-/* FogControl_update: ramp the fog blend toward the gamebit-selected
- * target and feed the heavy fog params. */
-void FogControl_update(GameObject* obj)
-{
-    FogcontrolPlacement* setup = (FogcontrolPlacement*)obj->anim.placement;
-    FogControlState* st = obj->extra;
-    u8 cv;
-    u8 run;
-    f32 fogY;
+void FogControl_update(GameObject* obj) {
+    FogControlPlacement* placement = (FogControlPlacement*)obj->anim.placementData;
+    FogControlState* state = obj->extra;
+    u8 gateValue;
+    u8 isTransitioning;
+    f32 fogTopY;
 
-    if (setup->enableGameBit == -1)
-    {
-        cv = 1;
+    if (placement->enableGameBit == -1) {
+        gateValue = 1;
+    } else {
+        gateValue = mainGetBit(placement->enableGameBit);
     }
-    else
-    {
-        cv = mainGetBit(setup->enableGameBit);
+    if ((gateValue != 0 && state->fullyBlended == 0) || (gateValue == 0 && state->enabled != 0)) {
+        isTransitioning = 1;
+    } else {
+        isTransitioning = 0;
     }
-    if ((cv != 0 && st->full == 0) || (cv == 0 && st->on != 0))
-    {
-        run = 1;
-    }
-    else
-    {
-        run = 0;
-    }
-    if (run != 0)
-    {
-        if (cv != 0)
-        {
-            if ((*(u8*)&setup->flags & FOG_FLAG_FAST_IN) != 0)
-            {
-                st->blend = 0.005f * timeDelta + st->blend;
+    if (isTransitioning != 0) {
+        if (gateValue != 0) {
+            if ((placement->flags & FOG_CONTROL_PLACEMENT_SLOW_FADE_IN) != 0) {
+                state->blend = FOG_CONTROL_BLEND_STEP_SLOW * timeDelta + state->blend;
+            } else {
+                state->blend = FOG_CONTROL_BLEND_STEP_FAST * timeDelta + state->blend;
             }
-            else
-            {
-                st->blend = 0.02f * timeDelta + st->blend;
+            state->enabled = 1;
+        } else {
+            if ((placement->flags & FOG_CONTROL_PLACEMENT_SLOW_FADE_OUT) != 0) {
+                state->blend = -(FOG_CONTROL_BLEND_STEP_SLOW * timeDelta - state->blend);
+            } else {
+                state->blend = -(FOG_CONTROL_BLEND_STEP_FAST * timeDelta - state->blend);
             }
-            st->on = 1;
+            state->fullyBlended = 0;
         }
-        else
-        {
-            if ((*(u8*)&setup->flags & FOG_FLAG_FAST_OUT) != 0)
-            {
-                st->blend = -(0.005f * timeDelta - st->blend);
-            }
-            else
-            {
-                st->blend = -(0.02f * timeDelta - st->blend);
-            }
-            st->full = 0;
-        }
-        if (st->blend <= 0.0f)
-        {
-            st->blend = 0.0f;
-            st->on = 0;
+        if (state->blend <= 0.0f) {
+            state->blend = 0.0f;
+            state->enabled = 0;
             disableHeavyFog();
-        }
-        else
-        {
-            st->on = 1;
-            if (st->blend > 1.0f)
-            {
-                st->blend = 1.0f;
-                st->full = 1;
+        } else {
+            state->enabled = 1;
+            if (state->blend > 1.0f) {
+                state->blend = 1.0f;
+                state->fullyBlended = 1;
             }
-            fogY = st->blend * ((f32)setup->fogTop - (f32)setup->fogBase) + (f32)setup->fogBase;
-            fogY = obj->anim.localPosY + fogY;
-            enableHeavyFog(fogY, ((f32)setup->fogBottom + fogY) - (f32)setup->fogTop, (f32)setup->fogRed,
-                           (f32)setup->fogGreen / 65535.0f, 0.0001f, *(u8*)&setup->flags & FOG_FLAG_MODE);
+            fogTopY = state->blend * ((f32)placement->fogTop - (f32)placement->fogBase) + (f32)placement->fogBase;
+            fogTopY = obj->anim.localPosY + fogTopY;
+            enableHeavyFog(fogTopY, ((f32)placement->fogBottom + fogTopY) - (f32)placement->fogTop,
+                           (f32)placement->depthScale, (f32)placement->depthOffset / FOG_CONTROL_DEPTH_DENOMINATOR,
+                           FOG_CONTROL_WORLD_SCALE, placement->flags & FOG_CONTROL_PLACEMENT_MODE);
         }
     }
 }
 
-void FogControl_init(GameObject* obj, FogcontrolPlacement* placement)
-{
-    FogControlState* st;
-    u8 cv;
-    f32 fogY;
+void FogControl_init(GameObject* obj, FogControlPlacement* placement) {
+    FogControlState* state;
+    u8 gateValue;
+    f32 fogTopY;
 
-    st = obj->extra;
-    obj->objectFlags = (u16)(obj->objectFlags | FOGCONTROL_OBJFLAG_HIDDEN);
-    st->on = 0;
-    st->full = 0;
-    st->blend = 0.0f;
-    if ((*(u8*)&placement->flags & FOG_FLAG_ENABLE) != 0)
-    {
-        if (placement->enableGameBit == -1)
-        {
-            cv = 1;
+    state = obj->extra;
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
+    state->enabled = 0;
+    state->fullyBlended = 0;
+    state->blend = 0.0f;
+    if ((placement->flags & FOG_CONTROL_PLACEMENT_ENABLED) != 0) {
+        if (placement->enableGameBit == -1) {
+            gateValue = 1;
+        } else {
+            gateValue = mainGetBit(placement->enableGameBit);
         }
-        else
-        {
-            cv = mainGetBit(placement->enableGameBit);
-        }
-        if (cv != 0)
-        {
-            st->full = 1;
-            st->on = 1;
-            st->blend = 1.0f;
-            fogY = st->blend * ((f32)placement->fogTop - placement->fogBase) + placement->fogBase;
-            fogY = obj->anim.localPosY + fogY;
-            enableHeavyFog(fogY, ((f32)placement->fogBottom + fogY) - placement->fogTop, placement->fogRed,
-                           placement->fogGreen / 65535.0f, 0.0001f, *(u8*)&placement->flags & FOG_FLAG_MODE);
+        if (gateValue != 0) {
+            state->fullyBlended = 1;
+            state->enabled = 1;
+            state->blend = 1.0f;
+            fogTopY = state->blend * ((f32)placement->fogTop - placement->fogBase) + placement->fogBase;
+            fogTopY = obj->anim.localPosY + fogTopY;
+            enableHeavyFog(fogTopY, ((f32)placement->fogBottom + fogTopY) - placement->fogTop, placement->depthScale,
+                           placement->depthOffset / FOG_CONTROL_DEPTH_DENOMINATOR, FOG_CONTROL_WORLD_SCALE,
+                           placement->flags & FOG_CONTROL_PLACEMENT_MODE);
         }
     }
 }

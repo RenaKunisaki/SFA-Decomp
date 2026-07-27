@@ -3,7 +3,7 @@
  *
  * dll_69_func03 builds a stack list of GfxCmd records describing a layered
  * 2D/billboard effect and submits it through gModgfxInterface->spawnEffect.
- * The layout is read from the shared resource at lbl_803137F8.
+ * The layout is read from the resource table at lbl_803137F8.
  *   - variant selects the effect group passed to spawnEffect (0xc11 for
  *     variant 2, else 0x5e0) and toggles command-list flag 0x40000.
  *   - overrideParams (a/b/c/d) override the default layer-1/4 colour words.
@@ -22,7 +22,13 @@
 #define DLL69_EFFECT_ID_DEFAULT  0x5e0
 #define DLL69_CMDLIST_FLAG_TOGGLE 0x40000
 
-extern u32 lbl_803137F8[];
+u32 lbl_803137F8[34] = {
+    0xfc180000, 0x00000000, 0x00000000, 0x0000fc18, 0x00000000, 0x03e80000, 0x00000040,
+    0x00000000, 0x000003e8, 0x00400000, 0xfc180fa0, 0x00000000, 0x00400000, 0x0fa0fc18,
+    0x00000040, 0x03e80fa0, 0x00000040, 0x00400000, 0x0fa003e8, 0x00400040, 0x00000002,
+    0x00060000, 0x00060004, 0x00010003, 0x00070001, 0x00070005, 0x00000001, 0x00020003,
+    0x00040005, 0x00060007, 0x00000104, 0x001e0001, 0x01040000, 0x00000000,
+};
 
 s16 dll_69_func03(GameObject* sourceObj, int variant, void* posSource, u32 flags, int unused,
                   Dll69EffectParams* overrideParams)
@@ -208,3 +214,8 @@ void dll_69_func01_nop(void)
 void dll_69_func00_nop(void)
 {
 }
+
+u32 lbl_80313880[8] = {
+    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_69_func00_nop, (u32)dll_69_func01_nop,
+    0x00000000, (u32)dll_69_func03,
+};

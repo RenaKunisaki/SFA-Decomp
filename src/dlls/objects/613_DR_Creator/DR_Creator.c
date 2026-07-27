@@ -6,6 +6,7 @@
  * facing (DR_Creator_update) or a randomised spread
  * (DR_Creator_SeqFn).
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/DR/dll_0265_drcreator.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/debug.h"
@@ -181,5 +182,22 @@ void DR_Creator_release(void)
 void DR_Creator_initialise(void)
 {
 }
+
+ObjectDescriptor gDrCreatorObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)DR_Creator_initialise,
+    (ObjectDescriptorCallback)DR_Creator_release,
+    0,
+    (ObjectDescriptorCallback)DR_Creator_init,
+    (ObjectDescriptorCallback)DR_Creator_update,
+    (ObjectDescriptorCallback)DR_Creator_hitDetect,
+    (ObjectDescriptorCallback)DR_Creator_render,
+    (ObjectDescriptorCallback)DR_Creator_free,
+    (ObjectDescriptorCallback)DR_Creator_getObjectTypeId,
+    DR_Creator_getExtraSize,
+};
 
 char sDrCreatorTimeFormat[15] = " Time %i : %i \000";

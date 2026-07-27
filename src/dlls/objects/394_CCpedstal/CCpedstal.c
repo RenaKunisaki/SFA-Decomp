@@ -1,172 +1,152 @@
 /*
- * CCpedstal - Crystal Caves pedestal gate (DLL 0x018A). A pedestal whose
- * placement def-id selects one of two think routines, stored as a function
- * pointer in the extra block and dispatched each update. Both routines drive
- * the object's model index and active-hitbox bit from a gameBit and an
- * ObjTrigger, latching a one-shot "mark" that ccpedstal_update commits back
- * to the gameBit on the following frame.
+ * CCpedstal (DLL 0x18A) - Cape Claw Fire Gem pedestals.
+ *
+ * The placement map ID selects the Fire Gem source or one of two consuming
+ * gates. Each variant controls its model and interaction state from a
+ * persistent gamebit, then queues that gamebit update when its trigger fires.
  */
+#include "dlls/objects/394_CCpedstal.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
-#include "main/gameloop_gamebit_api.h"
 #include "main/gamebit_ids.h"
-#include "main/dll/CC/dll_018A_ccpedstal.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebits_api.h"
+#include "main/gameloop_gamebit_api.h"
 #include "main/obj_trigger.h"
+#include "main/objseq.h"
+#include "sys/objects.h"
 
-#define CCPEDSTAL_GAMEBIT_ALT_GATE         0xDC5
-#define CCPEDSTAL_GAMEBIT_ALT_PEDESTAL     0xAA
-#define CCPEDSTAL_GAMEBIT_FIRST_ACTIVATION 0xDF0
-#define CCPEDSTAL_GAMEBIT_GATE_A           0xF1
-#define CCPEDSTAL_GAMEBIT_GATE_B           0xFE
-#define CCPEDSTAL_TRIGGER_FIRE_GEM         0xA9
+#define CC_PEDESTAL_GAMEBIT_0DC5             0xDC5
+#define CC_PEDESTAL_SOURCE_ACTIVATED_GAMEBIT 0xAA
+#define CC_PEDESTAL_GAMEBIT_0DF0             0xDF0
+#define CC_PEDESTAL_GATE_A_ACTIVATED_GAMEBIT 0xF1
+#define CC_PEDESTAL_GATE_B_ACTIVATED_GAMEBIT 0xFE
 
-/* placement def-ids that pick the pedestal's think routine */
-enum
-{
-    PEDSTAL_DEF_ALT = 0x45f1a,
-    PEDSTAL_DEF_GATE_A = 0x45f1b,
-    PEDSTAL_DEF_GATE_B = 0x45f1c
-};
+#define CC_PEDESTAL_FIRE_GEM_TRIGGER_ID 0xA9
 
-int ccpedstal_getExtraSize(void)
-{
-    return sizeof(CcpedstalState);
+#define CC_PEDESTAL_FIRE_GEM_SOURCE_PLACEMENT_ID 0x45F1A
+#define CC_PEDESTAL_FIRE_GEM_GATE_A_PLACEMENT_ID 0x45F1B
+#define CC_PEDESTAL_FIRE_GEM_GATE_B_PLACEMENT_ID 0x45F1C
+
+#define CC_PEDESTAL_PENDING_GAMEBIT_SET 0x01
+
+#define CC_PEDESTAL_GATE_SEQUENCE           0
+#define CC_PEDESTAL_SOURCE_SEQUENCE         1
+#define CC_PEDESTAL_GATE_INACTIVE_MODEL     0
+#define CC_PEDESTAL_GATE_ACTIVE_MODEL       1
+#define CC_PEDESTAL_SOURCE_ACTIVE_MODEL     0
+#define CC_PEDESTAL_SOURCE_IDLE_MODEL       1
+#define CC_PEDESTAL_ROT_X_SHIFT             8
+#define CC_PEDESTAL_SOURCE_HIT_VOLUME_FLAGS 3
+
+int ccPedestal_getExtraSize(void) {
+    return sizeof(CCPedestalState);
 }
 
-/* If the pedestal's gameBit is set, lights the model (index 1, hitbox bit 8).
- * Otherwise shows model 0 and, while gameBit 0xA9 is set and the object's
- * 0xA9 trigger fires, runs sequence 0, decrements 0xA9 and marks the one-shot;
- * with 0xA9 clear it instead raises the obj's 0x10 hitbox bit. */
-void ccpedstal_updateGameBitGate(GameObject* obj, CcpedstalState* state)
-{
-    if (mainGetBit(state->gameBit) != 0)
-    {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
-        Obj_SetActiveModelIndex(obj, 1);
-    }
-    else
-    {
-        int doMark;
-        Obj_SetActiveModelIndex(obj, 0);
-        do
-        {
-            if (mainGetBit(GAMEBIT_ITEM_FireGem_Count) != 0)
-            {
-                obj->anim.resetHitboxFlags =
-                    (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED);
-                if (ObjTrigger_IsSetById((int)obj, CCPEDSTAL_TRIGGER_FIRE_GEM) != 0)
-                {
-                    (*gObjectTriggerInterface)->runSequence(0, obj, -1);
+/*
+ * A gate consumes one Fire Gem when triggered. Its activation gamebit selects
+ * the active model and disables further interaction; without a Fire Gem the
+ * interaction prompt is suppressed.
+ */
+void ccPedestal_updateFireGemGate(GameObject* obj, CCPedestalState* state) {
+    if (mainGetBit(state->activationGameBit) != 0) {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+        Obj_SetActiveModelIndex(obj, CC_PEDESTAL_GATE_ACTIVE_MODEL);
+    } else {
+        int activationTriggered;
+
+        Obj_SetActiveModelIndex(obj, CC_PEDESTAL_GATE_INACTIVE_MODEL);
+        do {
+            if (mainGetBit(GAMEBIT_ITEM_FireGem_Count) != 0) {
+                obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+                if (ObjTrigger_IsSetById((int)obj, CC_PEDESTAL_FIRE_GEM_TRIGGER_ID) != 0) {
+                    (*gObjectTriggerInterface)->runSequence(CC_PEDESTAL_GATE_SEQUENCE, obj, -1);
                     gameBitDecrement(GAMEBIT_ITEM_FireGem_Count);
-                    doMark = 1;
+                    activationTriggered = 1;
                     break;
                 }
+            } else {
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
             }
-            else
-            {
-                obj->anim.resetHitboxFlags =
-                    (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED);
-            }
-            doMark = 0;
+            activationTriggered = 0;
         } while (0);
 
-        if (doMark != 0)
-        {
-            state->markFlags = (u8)(state->markFlags | 1);
+        if (activationTriggered != 0) {
+            state->pendingGameBitFlags |= CC_PEDESTAL_PENDING_GAMEBIT_SET;
         }
     }
 }
 
-/* Alt-variant think routine. Mirrors the gate bit (8) from gameBit 0xDC5,
- * then on the pedestal's own gameBit: set -> model 0; clear -> model 1 and,
- * when the pending trigger asserts, runs sequence 1, increments 0xA9 and
- * marks the one-shot. */
-void ccpedstal_updateAltVariant(GameObject* obj, CcpedstalState* state)
-{
-    if (mainGetBit(CCPEDSTAL_GAMEBIT_ALT_GATE) != 0)
-    {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+/*
+ * The source pedestal grants one Fire Gem when triggered. A separate gamebit
+ * gates interaction, while the pedestal's activation gamebit selects its
+ * active model and prevents repeat collection.
+ */
+void ccPedestal_updateFireGemSource(GameObject* obj, CCPedestalState* state) {
+    if (mainGetBit(CC_PEDESTAL_GAMEBIT_0DC5) != 0) {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+    } else {
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     }
-    else
-    {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
-    }
-    if (mainGetBit(state->gameBit) != 0)
-    {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
-        Obj_SetActiveModelIndex(obj, 0);
-    }
-    else
-    {
-        int doMark;
-        Obj_SetActiveModelIndex(obj, 1);
-        if (ObjTrigger_IsSet((int)obj) != 0)
-        {
-            (*gObjectTriggerInterface)->runSequence(1, obj, -1);
+    if (mainGetBit(state->activationGameBit) != 0) {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+        Obj_SetActiveModelIndex(obj, CC_PEDESTAL_SOURCE_ACTIVE_MODEL);
+    } else {
+        int activationTriggered;
+
+        Obj_SetActiveModelIndex(obj, CC_PEDESTAL_SOURCE_IDLE_MODEL);
+        if (ObjTrigger_IsSet((int)obj) != 0) {
+            (*gObjectTriggerInterface)->runSequence(CC_PEDESTAL_SOURCE_SEQUENCE, obj, -1);
             gameBitIncrement(GAMEBIT_ITEM_FireGem_Count);
-            doMark = 1;
+            activationTriggered = 1;
+        } else {
+            activationTriggered = 0;
         }
-        else
-        {
-            doMark = 0;
-        }
-        if (doMark != 0)
-        {
-            state->markFlags = (u8)(state->markFlags | 1);
+        if (activationTriggered != 0) {
+            state->pendingGameBitFlags |= CC_PEDESTAL_PENDING_GAMEBIT_SET;
         }
     }
 }
 
-void ccpedstal_update(GameObject* obj)
-{
-    CcpedstalState* state = obj->extra;
-    if (state->markFlags != 0)
-    {
-        if (state->markFlags & 1)
-        {
-            mainSetBits(state->gameBit, 1);
+void ccPedestal_update(GameObject* obj) {
+    CCPedestalState* state = obj->extra;
+
+    if (state->pendingGameBitFlags != 0) {
+        if ((state->pendingGameBitFlags & CC_PEDESTAL_PENDING_GAMEBIT_SET) != 0) {
+            mainSetBits(state->activationGameBit, 1);
+        } else {
+            mainSetBits(state->activationGameBit, 0);
         }
-        else
-        {
-            mainSetBits(state->gameBit, 0);
-        }
-        state->markFlags = 0;
-        if (mainGetBit(CCPEDSTAL_GAMEBIT_FIRST_ACTIVATION) == 0 &&
-            mainGetBit(CCPEDSTAL_GAMEBIT_ALT_PEDESTAL) != 0)
-        {
-            mainSetBits(CCPEDSTAL_GAMEBIT_FIRST_ACTIVATION, 1);
+        state->pendingGameBitFlags = 0;
+        if (mainGetBit(CC_PEDESTAL_GAMEBIT_0DF0) == 0 && mainGetBit(CC_PEDESTAL_SOURCE_ACTIVATED_GAMEBIT) != 0) {
+            mainSetBits(CC_PEDESTAL_GAMEBIT_0DF0, 1);
         }
     }
-    state->think(obj, state);
+    state->variantUpdate(obj, state);
 }
 
-void ccpedstal_init(GameObject* obj, CcpedstalPlacement* placement)
-{
-    CcpedstalState* state = obj->extra;
-    obj->anim.rotX = (s16)((u32)placement->yaw << 8);
+void ccPedestal_init(GameObject* obj, const CCPedestalPlacement* placement) {
+    CCPedestalState* state = obj->extra;
+
+    obj->anim.rotX = (s16)((u32)placement->rotXByte << CC_PEDESTAL_ROT_X_SHIFT);
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
-    switch (placement->variantId)
-    {
-    case PEDSTAL_DEF_ALT:
-        state->think = ccpedstal_updateAltVariant;
-        state->gameBit = CCPEDSTAL_GAMEBIT_ALT_PEDESTAL;
-        Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);
+    switch (placement->base.mapId) {
+    case CC_PEDESTAL_FIRE_GEM_SOURCE_PLACEMENT_ID:
+        state->variantUpdate = ccPedestal_updateFireGemSource;
+        state->activationGameBit = CC_PEDESTAL_SOURCE_ACTIVATED_GAMEBIT;
+        Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, CC_PEDESTAL_SOURCE_HIT_VOLUME_FLAGS);
         break;
-    case PEDSTAL_DEF_GATE_A:
-        state->think = ccpedstal_updateGameBitGate;
-        state->gameBit = CCPEDSTAL_GAMEBIT_GATE_A;
+    case CC_PEDESTAL_FIRE_GEM_GATE_A_PLACEMENT_ID:
+        state->variantUpdate = ccPedestal_updateFireGemGate;
+        state->activationGameBit = CC_PEDESTAL_GATE_A_ACTIVATED_GAMEBIT;
         break;
-    case PEDSTAL_DEF_GATE_B:
-        state->think = ccpedstal_updateGameBitGate;
-        state->gameBit = CCPEDSTAL_GAMEBIT_GATE_B;
+    case CC_PEDESTAL_FIRE_GEM_GATE_B_PLACEMENT_ID:
+        state->variantUpdate = ccPedestal_updateFireGemGate;
+        state->activationGameBit = CC_PEDESTAL_GATE_B_ACTIVATED_GAMEBIT;
         break;
     }
 }
 
-ObjectDescriptor gCCpedstalObjDescriptor = {
+ObjectDescriptor gCCPedestalObjDescriptor = {
     0,
     0,
     0,
@@ -174,11 +154,11 @@ ObjectDescriptor gCCpedstalObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)ccpedstal_init,
-    (ObjectDescriptorCallback)ccpedstal_update,
+    (ObjectDescriptorCallback)ccPedestal_init,
+    (ObjectDescriptorCallback)ccPedestal_update,
     0,
     0,
     0,
     0,
-    ccpedstal_getExtraSize,
+    ccPedestal_getExtraSize,
 };

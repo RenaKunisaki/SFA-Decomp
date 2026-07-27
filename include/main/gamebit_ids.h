@@ -26,9 +26,9 @@ enum GameBitId {
     /*
      * Entrance-intro signal for the K1 (ECSH) Krazoa Shrine. The shrine-entrance
      * trigger volume sets this (via objInterpretSeq, dll_0126) when the player
-     * crosses it; ecsh_shrine_update polls it once and, the first frame it sees
+     * crosses it; ecshShrine_update polls it once and, the first frame it sees
      * it set, plays the "You have found your way into a KRAZOA SHRINE..."
-     * NPC dialogue (0x285), latching EcshShrineState.introTextLatch so it never
+     * NPC dialogue (0x285), latching ECSHShrineState.introTextLatch so it never
      * repeats. NOT a "seen" gate - live-verified in Dolphin: setting this bit
      * makes the shrine play the intro on the spot (it is the trigger, and the
      * one-shot behaviour lives in the shrine's latch, not in this bit).
@@ -43,10 +43,9 @@ enum GameBitId {
      * holds a gate shut until enough of the area's enemies are defeated, and
      * appears in normal levels too (not just shrines). Live-verified: walking
      * up to the door flips this 0 -> 1 (region 2, bit start 36) and runs the
-     * intro sequence; set by SpiritDoorLock_update. (Was the per-DLL define
-     * SPIRITDOORLOCK_GAMEBIT_PLAYER_APPROACHED in IMspacecraft.h.) This bit is
-     * actually GENERIC: SpiritDoorLock_update (dll_0167) uses this one
-     * hard-coded id for ANY SpiritDoorLock, so it is a global "first
+     * intro sequence; set by SpiritDoorLock_update. This bit is actually
+     * GENERIC: SpiritDoorLock_update (dll_0167) uses this one hard-coded id
+     * for ANY SpiritDoorLock, so it is a global "first
      * spirit-door-lock approached -> play intro once" latch. In practice it
      * only ever flips at this K1 instance because that is the FIRST
      * spirit-door-lock in the game and the linear critical path forces the
@@ -313,7 +312,8 @@ enum GameBitId {
     GAMEBIT_CF_EnteredFort = 0x41,                       /* table 1; hint 326 */
     GAMEBIT_CF_SavedQueen = 0x43,                        /* table 2; hint 329; ref fortress/CFExplodeFl onExplode */
     GAMEBIT_ITEM_PrisonKey_Got = 0x44,                   /* table 1 */
-    GAMEBIT_CFPerchRelated004D = 0x4D,                   /* table 2; ref clouddungeon/HitAnimator target */
+    GAMEBIT_CF_GuardianFreed = 0x48,                     /* table 1; the caged CloudRunner guardian has broken out */
+    GAMEBIT_CF_PrisonCageOpened = 0x4D,                  /* table 2; old CloudRunner's cage is open */
     GAMEBIT_CF_UncleFlewOff = 0x50,                      /* Set once the old CloudRunner prisoner (cfprisonuncle) has flown off after his cage is opened; gates his own render/update, silences cfperch's squawk sequence, and flips cfprisonguard's alarm behavior */
     GAMEBIT_ITEM_CFRedCrystal_Got = 0x51,                /* table 2; power gems in CloudRunner Fortress */
     GAMEBIT_ITEM_CFGreenCrystal_Got = 0x52,              /* table 2 */
@@ -577,7 +577,7 @@ enum GameBitId {
     GAMEBIT_ITEM_MMPKey_Used = 0x453,                    /* table 2; hint 299; ref moonpass/HitAnimator target */
     GAMEBIT_CF_ObjGroups = 0x458,                        /* table 3; size 32 */
     GAMEBIT_CT_ObjGroups = 0x45A,                        /* table 3; size 32 */
-    GAMEBIT_TRICKYCURVE_PLAYER_HIT = 0x468,              /* Hard-coded, area-agnostic "TrickyCurve" hazard-trigger hit-while-sliding signal: set by DFP_ForceAw/DFSH_LaserBeam/the generic laserbeam when the player enters the trigger box in the sliding anim state (0x1d7) instead of taking a normal hit; polled and cleared by the generic bone-particle-effect module, which arms a particle timer and plays an SFXsc_mumble01 reaction */
+    GAMEBIT_TRICKYCURVE_PLAYER_HIT = 0x468,              /* Hard-coded, area-agnostic "TrickyCurve" hazard-trigger hit-while-sliding signal: set by DFP_ForceAw/DFSH_LaserB/the generic laserbeam when the player enters the trigger box in the sliding anim state (0x1d7) instead of taking a normal hit; polled and cleared by the generic bone-particle-effect module, which arms a particle timer and plays an SFXsc_mumble01 reaction */
     GAMEBIT_DBSH_ObjGroups = 0x473,                      /* table 3; size 32 */
     GAMEBIT_GM_ObjGroups = 0x47B,                        /* table 3; size 32 */
     GAMEBIT_CD_ObjGroups = 0x47C,                        /* table 3; size 32 */

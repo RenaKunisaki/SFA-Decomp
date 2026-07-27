@@ -453,7 +453,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x158 | gGunPowderBarrelObjDescriptor | 801A0EF8-801A25E8 | 801A0B14-801A27B8 | 801A1230 (main/dll/DR/sandwormBoss.c \| main/dll/DR/gasvent.c); 801A1A60 (main/dll/DR/gasvent.c \| main/dll/DR/cannontargetControl.c) | Y | GunPowderBa,MetalBarrel |
 | 0x159 | gBlastedObjDescriptor | 801A28D0-801A2BD8 | 801A27B8-801A2BDC | 801A2AF8 (main/dll/DR/cannontargetControl.c \| main/dll/DR/gasventControl.c) | Y | CFBlastedRo,CFBlastedWa,CFBlastedTu,DRBlastedWa |
 | 0x15B | gCFForceFieldObjDescriptor | 801A39B4-801A3E98 | 801A39B4-801A3E9C | 801A39D0 (main/dll/DR/gasventControl.c \| main/dll/IM/IMicicle.c) | Y | CFForceFiel |
-| 0x17E | gMMP_levelcontrolObjDescriptor | 801A66FC-801A6C24 | 801A6638-801A6C28 | 801A6778 (main/dll/IM/IMspacecraft.c \| main/dll/DIM/DIMlavaball.c) | Y | MMP_levelco |
+| 0x17E | gMMPLevelControlObjDescriptor | 801A66FC-801A6C24 | 801A6638-801A6C28 | 801A6778 (main/dll/IM/IMspacecraft.c \| main/dll/DIM/DIMlavaball.c) | Y | MMP_levelco |
 | 0x187 | gCCqueenObjDescriptor | 801AA558-801AA694 | 801AA558-801AA734 | 801AA560 (main/dll/DIM/DIMlogfire.c \| main/dll/DIM/DIMsnowball.c) | Y | CCqueen |
 | 0x16D | gIMIcePillarObjDescriptor | 801AE0EC-801AE140 | 801AE0EC-801AE144 | 801AE100 (main/dll/DIM/DIMboulder.c \| main/dll/DIM/DIMcannon.c) | Y | IMIcePillar |
 | 0x1C0 | gDIMLogFireObjDescriptor | 801B07B0-801B0BE8 | 801B0670-801B0DD4 | 801B0924 (main/dll/DIM/DIMcannon.c \| main/dll/DIM/DIMlavasmash.c) | Y | DIMLogFire,DIMLogFireR |
@@ -465,10 +465,10 @@ No-descriptor / vestigial-unit dispositions:
 | 0x1E2 | gDIM_BossTonsilObjDescriptor | 801BE86C-801BEE64 | 801BDCF8-801BEEA0 | 801BE8F8 (main/dll/vfp_lavapool.c \| main/dll/vfp_lavastar.c); 801BEC70 (main/dll/vfp_lavastar.c \| main/dll/riverFlowRelated018D.c) | Y | DIM_BossTon |
 | 0x1E7 | gDIMbossfireObjDescriptor | 801C04B8-801C0A5C | 801C04B8-801C0A60 | 801C053C (main/dll/DF/rope.c \| main/dll/DF/DFcradle.c) | Y | DIMbossfire,MMP_CraterF,CraterFlame |
 | 0x175 | gDFropenodeObjDescriptor | 801C1970-801C2680 | 801C0BF8-801C26E0 | 801C1BC8 (main/dll/DF/dll_194.c \| main/dll/DF/dll_195.c); 801C1BF0 (main/dll/DF/dll_195.c \| main/dll/DF/dll_196.c); 801C1EAC (main/dll/DF/dll_196.c \| main/dll/DF/DFmole.c); 801C1F5C (main/dll/DF/DFmole.c \| main/dll/DF/DFwhirlpool.c); 801C2278 (main/dll/DF/DFwhirlpool.c \| main/dll/DF/dll_198.c) | Y | DFropenode |
-| 0x177 | gDFSH_Door2SpeciObjDescriptor | 801C281C-801C2910 | 801C26E0-801C2914 | 801C2824 (main/dll/DF/dll_198.c \| main/dll/DF/dll_199.c); 801C282C (main/dll/DF/dll_199.c \| main/dll/DF/DFlantern.c) | Y | DFSH_Door2S,DFSH_Door3S,DFSH_Door4S |
-| 0x178 | gDFSH_ShrineObjDescriptor | 801C2DC4-801C3614 | 801C2914-801C3618 | 801C2E68 (main/dll/DF/DFlantern.c \| main/dll/dll_19C.c) | Y | DFSH_Shrine |
-| 0x179 | gDFSH_ObjCreatorObjDescriptor | 801C3B68-801C3E38 | 801C3B68-801C3E3C | 801C3BB0 (main/dll/dll_19C.c \| main/dll/dll_19E.c) | Y | DFSH_ObjCre |
-| 0x17B | gDFSH_LaserBeamObjDescriptor | 801C3E3C-801C4660 | 801C3E3C-801C4664 | 801C3EB8 (main/dll/dll_19E.c \| main/dll/creator19D.c) | Y | DFSH_LaserB |
+| 0x177 | gDll177ObjDescriptor | 801C281C-801C2910 | 801C26E0-801C2914 | 801C2824 (main/dll/DF/dll_198.c \| main/dll/DF/dll_199.c); 801C282C (main/dll/DF/dll_199.c \| main/dll/DF/DFlantern.c) | Y | DFSH_Door2S,DFSH_Door3S,DFSH_Door4S |
+| 0x178 | gDFSHShrineObjDescriptor | 801C2DC4-801C3614 | 801C2914-801C3618 | 801C2E68 (main/dll/DF/DFlantern.c \| main/dll/dll_19C.c) | Y | DFSH_Shrine |
+| 0x179 | gDFSHObjCreatorObjDescriptor | 801C3B68-801C3E38 | 801C3B68-801C3E3C | 801C3BB0 (main/dll/dll_19C.c \| main/dll/dll_19E.c) | Y | DFSH_ObjCre |
+| 0x17B | gDFSHLaserBeamObjDescriptor | 801C3E3C-801C4660 | 801C3E3C-801C4664 | 801C3EB8 (main/dll/dll_19E.c \| main/dll/creator19D.c) | Y | DFSH_LaserB |
 | 0x18C | gMMSH_ShrineObjDescriptor | 801C4D78-801C539C | 801C4664-801C53A0 | 801C52D8 (main/dll/laser19F.c \| main/dll/mmshrine/shrine.c) | Y | MMSH_Shrine |
 | 0x18F | gECSH_ShrineObjDescriptor | 801C5E78-801C6E08 | 801C5990-801C6E0C | 801C5ED8 (main/dll/mmshrine/animobj1C0.c \| main/dll/mmshrine/torch1C1.c); 801C60B8 (main/dll/mmshrine/torch1C1.c \| main/dll/mmshrine/shrine1C2.c) | Y | ECSH_Shrine |
 | 0x192 | gGPSH_ShrineObjDescriptor | 801C75A8-801C8080 | 801C70F0-801C8084 | 801C7724 (main/dll/mmshrine/shrine1C2.c \| main/dll/creator1C4.c) | Y | GPSH_Shrine |

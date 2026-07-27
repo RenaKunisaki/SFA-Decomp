@@ -8,8 +8,8 @@
  */
 #include "dolphin/os/OSReport.h"
 #include "types.h"
+#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AE_projroombeam.h"
-#include "main/dll/dll_00AF_projlightning1.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
@@ -27,14 +27,8 @@ void projroombeam_initialise(void)
 {
 }
 
-char sProjroombeamDoNoLongerSupported[] = "<projroombeam Do>No Longer supported \n";
+DllDescriptorTable lbl_80319460 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
+                                    projroombeam_initialise, projroombeam_release, (void*)0x00000000,
+                                    projroombeam_doUnsupported}};
 
-/* descriptor/ptr table auto 0x803194a8-0x803194c8 */
-u32 lbl_803194A8[8] = {0x00000000,
-                       0x00000000,
-                       0x00000000,
-                       0x00030000,
-                       (u32)projlightning1_initialise,
-                       (u32)projlightning1_release,
-                       0x00000000,
-                       (u32)projlightning1_doUnsupported};
+char sProjroombeamDoNoLongerSupported[] = "<projroombeam Do>No Longer supported \n";

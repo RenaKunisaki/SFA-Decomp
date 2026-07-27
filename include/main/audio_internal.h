@@ -4,8 +4,8 @@
 #include "global.h"
 #include "dolphin/ar.h"
 #include "dolphin/dvd.h"
-#include "main/audio/snd_reverb.h"
-#include "main/audio/synth_queue.h"
+#include "musyx/snd_reverb.h"
+#include "musyx/synth_queue.h"
 
 #define SFX_OBJECT_CHANNEL_COUNT 56
 #define SFX_LOOPED_OBJECT_SOUND_FLAG_ALIVE 1

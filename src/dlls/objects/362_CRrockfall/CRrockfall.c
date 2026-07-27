@@ -1,52 +1,30 @@
-/*
- * CRrockfall (DLL 0x16A) - a scripted falling-rock / boulder object.
- *
- * On init the per-rock scale is derived from the placement params, the
- * capsule hitbox is sized from the sub-object bounds, and a config-table
- * variant is chosen by seqId (entry 1 of gRockfallCfgTable for seqId 0x600,
- * else entry 0). update() runs the fall state machine:
- *   mode 0 armed   - count down fallDelay while the player is in xz range
- *   mode 1 falling - gravity integrate Y, scrape sfx, until floorY+restOffsetY
- *   mode 2 resting - hitbox stays live
- *   mode 3 shattered - on a hit: stop scrape sfx, play impact sfx and
- *                      (for non-seqId-103 rocks) spawn an explosion
- * The fall is gated by the placement game bit (unk1C); render fades the
- * rock by height fraction and player distance and hides it once shattered.
- */
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_stop_channel_api.h"
-#include "main/vecmath_distance_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/object_render.h"
-#include "main/dll/crrockfallplacement_struct.h"
-#include "main/dll/crrockfall_types.h"
+/* Falling-rock and icicle controller. */
+#include "dlls/objects/362_CRrockfall.h"
+
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/track_dolphin_api.h"
-#include "main/objfx.h"
-#include "main/resource.h"
-#include "main/gamebits.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/objfx.h"
 #include "main/objhits.h"
-#include "dlls/object_descriptor.h"
+#include "main/object_render.h"
+#include "main/resource.h"
+#include "main/track_dolphin_api.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
-STATIC_ASSERT(sizeof(CrRockfallState) == 0x14);
+/* anim.seqId variants shared by CRrockfall and IMIcicle. */
+#define CR_ROCKFALL_SEQ_BIG        0x600
+#define CR_ROCKFALL_SEQ_QUARRY     0x67
+#define CR_ROCKFALL_RESOURCE_ID    91
+#define CR_ROCKFALL_HIT_MASK       0x10
+#define CR_ROCKFALL_HIT_VOLUME     1
+#define CR_ROCKFALL_HIT_PRIORITY   13
+#define CR_ROCKFALL_SCRAPE_CHANNEL 8
 
-/* anim.seqId rock variants: BIG selects gRockfallCfgTable entry 1;
- * QUARRY has its own scrape/impact sfx and skips the explosion. */
-#define CRROCKFALL_SEQ_BIG    0x600
-#define CRROCKFALL_SEQ_QUARRY 103
-
-/* CrRockfallState.mode */
-#define zcEn3_ROCKFALL_MODE_ARMED     0 /* count down fallDelay while player is in range */
-#define zcEn3_ROCKFALL_MODE_FALLING   1 /* gravity integrate Y until floorY+restOffsetY */
-#define zcEn3_ROCKFALL_MODE_RESTING   2 /* landed; hitbox stays live */
-#define zcEn3_ROCKFALL_MODE_SHATTERED 3 /* hit: stop scrape sfx, play impact, maybe explode */
-#define zcEn3_ROCKFALL_MODE_4         4
-
-void* gRockfallResource;
-extern u8 gRockfallCfgTable[];
+void* gCrRockfallResource;
 
 static int crrockfall_isTriggerNear(f32 xz, f32 dy, u32 range)
 {
@@ -55,21 +33,22 @@ static int crrockfall_isTriggerNear(f32 xz, f32 dy, u32 range)
 
 f32 crrockfall_findFloorY(GameObject* obj)
 {
-    CrRockfallState* state = (obj)->extra;
+    CrRockfallState* state = obj->extra;
     TrackGroundHit** list;
     TrackGroundHit** p;
     int count;
     int i;
     int bestIdx;
     f32 bestDist;
-    count = hitDetectFn_80065e50(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &list,
-                                 0, 0);
+
+    count = hitDetectFn_80065e50(
+        obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &list, 0, 0);
     bestDist = 100000.0f;
     bestIdx = -1;
     for (i = 0, p = list; i < count; i++)
     {
         f32 dy;
-        if ((dy = (obj)->anim.localPosY - (*p)->height) > 20.0f && dy < bestDist)
+        if ((dy = obj->anim.localPosY - (*p)->height) > 20.0f && dy < bestDist)
         {
             bestDist = dy;
             bestIdx = i;
@@ -81,28 +60,30 @@ f32 crrockfall_findFloorY(GameObject* obj)
         state->floorFound = 1;
         return list[bestIdx]->height;
     }
-    return (obj)->anim.localPosY;
+    return obj->anim.localPosY;
 }
 
 int crrockfall_getExtraSize(void)
 {
-    return 0x14;
+    return sizeof(CrRockfallState);
 }
+
 int crrockfall_getObjectTypeId(void)
 {
-    return 0x0;
+    return 0;
 }
 
 void crrockfall_free(void)
 {
 }
 
-void crrockfall_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
+void crrockfall_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
 {
     CrRockfallState* state = obj->extra;
-    if (state->mode != zcEn3_ROCKFALL_MODE_SHATTERED && visible != 0)
+
+    if (state->mode != CR_ROCKFALL_MODE_SHATTERED && visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -113,13 +94,13 @@ void crrockfall_hitDetect(void)
 void crrockfall_update(GameObject* obj)
 {
     CrRockfallState* state = obj->extra;
-    ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
+    ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     ObjModelState* modelState = obj->anim.modelState;
-    CrrockfallPlacement* placement = *(CrrockfallPlacement**)&obj->anim.placementData;
+    const CrRockfallPlacement* placement = (const CrRockfallPlacement*)obj->anim.placementData;
 
-    if (gRockfallResource == NULL)
+    if (gCrRockfallResource == NULL)
     {
-        gRockfallResource = Resource_Acquire(91, 1);
+        gCrRockfallResource = Resource_Acquire(CR_ROCKFALL_RESOURCE_ID, 1);
     }
 
     if (state->floorFound == 0)
@@ -136,75 +117,76 @@ void crrockfall_update(GameObject* obj)
     {
         if (modelState != NULL)
         {
-            f32 frac;
+            f32 heightFraction;
             f32 height;
-            f32 dist;
+            f32 playerDistance;
             int alphaScale;
             GameObject* player;
-            frac = (obj->anim.localPosY - state->floorY) / (state->startY - state->floorY);
-            if (frac > 1.0f)
+
+            heightFraction = (obj->anim.localPosY - state->floorY) / (state->startY - state->floorY);
+            if (heightFraction > 1.0f)
             {
-                frac = 1.0f;
+                heightFraction = 1.0f;
             }
-            else if (frac < 0.0f)
+            else if (heightFraction < 0.0f)
             {
-                frac = 0.0f;
+                heightFraction = 0.0f;
             }
-            height = (1.0f) - frac;
+            height = 1.0f - heightFraction;
             player = Obj_GetPlayerObject();
             if (player != NULL)
             {
-                dist = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
-                if (dist > 350.0f)
+                playerDistance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
+                if (playerDistance > 350.0f)
                 {
-                    dist = 350.0f;
+                    playerDistance = 350.0f;
                 }
-                else if (dist < 250.0f)
+                else if (playerDistance < 250.0f)
                 {
-                    dist = 250.0f;
+                    playerDistance = 250.0f;
                 }
             }
             else
             {
-                dist = 350.0f;
+                playerDistance = 350.0f;
             }
-            dist = (dist - 250.0f) / 100.0f;
-            dist = 1.0f - dist;
+            playerDistance = (playerDistance - 250.0f) / 100.0f;
+            playerDistance = 1.0f - playerDistance;
             alphaScale = (int)(120.0f * height) + 0x40;
             modelState->shadowAlpha =
-                (int)(((f32)(u32) * (u8*)((char*)obj + 0x37) / 255.0f) * ((f32)alphaScale * dist));
+                (int)(((f32)(u32)obj->anim.renderAlpha / 255.0f) * ((f32)alphaScale * playerDistance));
         }
 
-        if (placement->gameBitId != -1 &&
-            mainGetBit(placement->gameBitId) == 0)
+        if (placement->gameBitId != -1 && mainGetBit(placement->gameBitId) == 0)
         {
             return;
         }
 
         switch (state->mode)
         {
-        case zcEn3_ROCKFALL_MODE_ARMED:
+        case CR_ROCKFALL_MODE_ARMED:
         {
-            CrrockfallPlacement* desc;
-            f32 xz;
-            f32 dy;
+            const CrRockfallPlacement* armedPlacement;
+            f32 xzDistance;
+            f32 verticalDistance;
             int inRange;
             GameObject* player = Obj_GetPlayerObject();
+
             if (player == NULL)
             {
                 inRange = 0;
             }
             else
             {
-                desc = *(CrrockfallPlacement**)&obj->anim.placementData;
-                xz = Vec_xzDistance(&obj->anim.worldPosX,
-                                    &player->anim.worldPosX);
-                dy = obj->anim.localPosY - player->anim.localPosY;
-                if (dy < 0.0f)
+                armedPlacement = (const CrRockfallPlacement*)obj->anim.placementData;
+                xzDistance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+                verticalDistance = obj->anim.localPosY - player->anim.localPosY;
+                if (verticalDistance < 0.0f)
                 {
-                    dy = 0.0f;
+                    verticalDistance = 0.0f;
                 }
-                if (xz < 4.0f * (f32)(u32)desc->triggerRange && dy < 300.0f)
+                if (xzDistance < 4.0f * (f32)(u32)armedPlacement->triggerRange &&
+                    verticalDistance < 300.0f)
                 {
                     inRange = 1;
                 }
@@ -217,65 +199,64 @@ void crrockfall_update(GameObject* obj)
             {
                 if ((state->fallDelay -= framesThisStep) <= 0)
                 {
-                    state->mode = zcEn3_ROCKFALL_MODE_FALLING;
+                    state->mode = CR_ROCKFALL_MODE_FALLING;
                 }
             }
             break;
         }
-        case zcEn3_ROCKFALL_MODE_FALLING:
+        case CR_ROCKFALL_MODE_FALLING:
             if (state->fallStarted == 0)
             {
                 state->fallStarted = 1;
                 obj->anim.velocityY = 0.0f;
-                if (obj->anim.seqId == CRROCKFALL_SEQ_QUARRY)
+                if (obj->anim.seqId == CR_ROCKFALL_SEQ_QUARRY)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_155);
                 }
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_swdwood16);
-                hitState->flags |= 1;
+                hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             }
-            *(int*)&hitState->objectHitMask = 16;
-            *(int*)&hitState->skeletonHitMask = 16;
-            hitState->hitVolumeId = 1;
-            hitState->hitVolumePriority = 13;
+            hitState->objectHitMask = CR_ROCKFALL_HIT_MASK;
+            hitState->skeletonHitMask = CR_ROCKFALL_HIT_MASK;
+            hitState->hitVolumeId = CR_ROCKFALL_HIT_VOLUME;
+            hitState->hitVolumePriority = CR_ROCKFALL_HIT_PRIORITY;
             obj->anim.velocityY = -0.15f * timeDelta + obj->anim.velocityY;
             obj->anim.localPosY =
                 obj->anim.velocityY * timeDelta + obj->anim.localPosY;
-            if (obj->anim.localPosY < state->floorY + state->cfg->restOffsetY)
+            if (obj->anim.localPosY < state->floorY + state->config->restOffsetY)
             {
                 obj->anim.localPosY =
-                    state->cfg->restOffsetY * obj->anim.rootMotionScale + state->floorY;
-                state->mode = zcEn3_ROCKFALL_MODE_RESTING;
-                if (state->cfg->landSfx != 0)
+                    state->config->restOffsetY * obj->anim.rootMotionScale + state->floorY;
+                state->mode = CR_ROCKFALL_MODE_RESTING;
+                if (state->config->landSfx != 0)
                 {
-                    Sfx_PlayFromObject((u32)obj, (u16)state->cfg->landSfx);
+                    Sfx_PlayFromObject((u32)obj, (u16)state->config->landSfx);
                 }
             }
             break;
-        case zcEn3_ROCKFALL_MODE_RESTING:
-            *(int*)&hitState->objectHitMask = 16;
-            *(int*)&hitState->skeletonHitMask = 16;
-            hitState->hitVolumeId = 1;
-            hitState->hitVolumePriority = 13;
+        case CR_ROCKFALL_MODE_RESTING:
+            hitState->objectHitMask = CR_ROCKFALL_HIT_MASK;
+            hitState->skeletonHitMask = CR_ROCKFALL_HIT_MASK;
+            hitState->hitVolumeId = CR_ROCKFALL_HIT_VOLUME;
+            hitState->hitVolumePriority = CR_ROCKFALL_HIT_PRIORITY;
             break;
-        case zcEn3_ROCKFALL_MODE_SHATTERED:
+        case CR_ROCKFALL_MODE_SHATTERED:
             break;
         }
 
-        if (*(void**)&hitState->lastHitObject != NULL)
+        if (hitState->lastHitObject != 0)
         {
-            hitState->flags &= ~1;
-            state->mode = zcEn3_ROCKFALL_MODE_SHATTERED;
-            Sfx_StopObjectChannel((int)obj, 8);
-            if (obj->anim.seqId == CRROCKFALL_SEQ_QUARRY)
+            hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
+            state->mode = CR_ROCKFALL_MODE_SHATTERED;
+            Sfx_StopObjectChannel((int)obj, CR_ROCKFALL_SCRAPE_CHANNEL);
+            if (obj->anim.seqId == CR_ROCKFALL_SEQ_QUARRY)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_dinostomp1);
             }
             else
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_bombbeep);
-                spawnExplosion(obj, (f32)(u32)placement->scaleByte, 1, 1, 0, 1,
-                                     1, 1, 1);
+                spawnExplosion(obj, (f32)(u32)placement->scaleByte, 1, 1, 0, 1, 1, 1, 1);
             }
         }
     }
@@ -287,18 +268,18 @@ void crrockfall_update(GameObject* obj)
     }
 }
 
-void crrockfall_init(GameObject* obj, CrrockfallPlacement* params)
+void crrockfall_init(GameObject* obj, const CrRockfallPlacement* placement)
 {
     CrRockfallState* state = obj->extra;
     ObjHitsPriorityState* hitState;
     ObjModelState* modelState;
 
-    state->mode = zcEn3_ROCKFALL_MODE_ARMED;
+    state->mode = CR_ROCKFALL_MODE_ARMED;
     state->startY = obj->anim.localPosY;
-    state->fallDelay = params->fallDelay;
-    obj->anim.rootMotionScale = (f32)(u32)params->scaleByte / 127.0f;
+    state->fallDelay = placement->fallDelay;
+    obj->anim.rootMotionScale = (f32)(u32)placement->scaleByte / 127.0f;
 
-    hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (hitState != NULL)
     {
         f32 scale = obj->anim.rootMotionScale;
@@ -315,37 +296,36 @@ void crrockfall_init(GameObject* obj, CrrockfallPlacement* params)
         modelState->flags |= 0xc00;
         modelState->overrideWorldPosX = obj->anim.localPosX;
         modelState->overrideWorldPosZ = obj->anim.localPosZ;
-        modelState->shadowScale = modelState->shadowScale * obj->anim.rootMotionScale;
+        modelState->shadowScale *= obj->anim.rootMotionScale;
     }
 
-    if (obj->anim.seqId == CRROCKFALL_SEQ_BIG)
+    if (obj->anim.seqId == CR_ROCKFALL_SEQ_BIG)
     {
-        state->cfg = (CrRockfallCfgEntry*)&gRockfallCfgTable[0xc];
+        state->config = &gCrRockfallConfigTable[1];
     }
     else
     {
-        state->cfg = (CrRockfallCfgEntry*)gRockfallCfgTable;
+        state->config = &gCrRockfallConfigTable[0];
     }
 }
 
 void crrockfall_release(void)
 {
-    if (gRockfallResource != NULL)
+    if (gCrRockfallResource != NULL)
     {
-        Resource_Release(gRockfallResource);
+        Resource_Release(gCrRockfallResource);
     }
-    gRockfallResource = NULL;
+    gCrRockfallResource = NULL;
 }
 
 void crrockfall_initialise(void)
 {
-    gRockfallResource = NULL;
+    gCrRockfallResource = NULL;
 }
 
-
-u8 gRockfallCfgTable[] = {
-    0x00, 0x00, 0x00, 0x67, 0x00, 0x00, 0x00, 0x00, 0x41, 0xA0, 0x00, 0x00,
-    0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x03, 0xE3, 0x41, 0xF0, 0x00, 0x00,
+CrRockfallConfig gCrRockfallConfigTable[CR_ROCKFALL_CONFIG_COUNT] = {
+    {CR_ROCKFALL_SEQ_QUARRY, 0, 20.0f},
+    {CR_ROCKFALL_SEQ_BIG, 0x3E3, 30.0f},
 };
 
 ObjectDescriptor gCRrockfallObjDescriptor = {
@@ -362,5 +342,5 @@ ObjectDescriptor gCRrockfallObjDescriptor = {
     (ObjectDescriptorCallback)crrockfall_render,
     (ObjectDescriptorCallback)crrockfall_free,
     (ObjectDescriptorCallback)crrockfall_getObjectTypeId,
-    crrockfall_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)crrockfall_getExtraSize,
 };

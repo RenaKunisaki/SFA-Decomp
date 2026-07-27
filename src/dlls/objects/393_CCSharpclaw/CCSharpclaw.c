@@ -1,100 +1,128 @@
 /*
- * CCSharpclaw - Crystal Caves SharpClaw "pressure pad" object (DLL
- * 0x0189). A disguise-gated switch pad. Its placement activationGameBit
- * records whether it has been activated: once set it
- * stays lit (active hitbox bit 8 on) and emits the lit particle burst.
- * While unset it shows help text (gated by an ObjTrigger and a hold timer)
- * and watches for a disguised player to step close - that plays a stomp sfx,
- * sets the gameBit and lights the pad.
+ * CCSharpclaw (DLL 0x189) - Crystal Caves SharpClaw pressure pad.
+ *
+ * The placement gamebit records whether a disguised player has activated the
+ * pad. Activation disables further interaction and changes its particle bursts
+ * from unlit kind 5 to lit kind 2.
  */
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
-#include "sys/objects.h"
-#include "main/objfx.h"
-#include "main/obj_trigger.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/frame_timing.h"
-#include "main/dll/CC/dll_0189_ccsharpclawpad.h"
-#include "main/dll/dll_0000_gameui_api.h"
-#include "main/minimap_api.h"
-#include "main/vecmath_distance_api.h"
-#include "dlls/object_descriptor.h"
+#include "dlls/objects/393_CCSharpclaw.h"
 
-int CCSharpclawPad_getExtraSize(void)
-{
-    return sizeof(SharpClawPadState);
+#include "game/objects/object.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/player_api.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/minimap_api.h"
+#include "main/obj_trigger.h"
+#include "main/objfx.h"
+#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
+
+#define CC_SHARPCLAW_PAD_HELP_DURATION               600.0f
+#define CC_SHARPCLAW_PAD_ACTIVATION_DISTANCE_SQUARED 100.0f
+#define CC_SHARPCLAW_PAD_ROT_X_SHIFT                 8
+
+#define CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X   5.0f
+#define CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y   5.0f
+#define CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z   0.0f
+#define CC_SHARPCLAW_PAD_PARTICLE_INDEX      5
+#define CC_SHARPCLAW_PAD_PARTICLE_SCALE      0.75f
+#define CC_SHARPCLAW_PAD_PARTICLE_KIND_LIT   2
+#define CC_SHARPCLAW_PAD_PARTICLE_KIND_UNLIT 5
+#define CC_SHARPCLAW_PAD_PARTICLE_MODE       2
+#define CC_SHARPCLAW_PAD_PARTICLE_CHANCE     0x19
+#define CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE 2.0f
+#define CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW  2.0f
+#define CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH 10.0f
+#define CC_SHARPCLAW_PAD_PARTICLE_FLAGS      0
+
+typedef struct CCSharpClawPadParticleOrigin {
+    u8 unknown00[0x0C];
+    f32 localPosition[3];
+} CCSharpClawPadParticleOrigin;
+
+STATIC_ASSERT(sizeof(CCSharpClawPadParticleOrigin) == 0x18);
+STATIC_ASSERT(offsetof(CCSharpClawPadParticleOrigin, unknown00) == 0x00);
+STATIC_ASSERT(offsetof(CCSharpClawPadParticleOrigin, localPosition) == 0x0C);
+
+int ccSharpClawPad_getExtraSize(void) {
+    return sizeof(CCSharpClawPadState);
 }
 
-void CCSharpclawPad_update(GameObject* obj)
-{
-    SharpClawPadParticleArgs particleArgs;
-    SharpClawPadState* state;
+void ccSharpClawPad_update(GameObject* obj) {
+    CCSharpClawPadParticleOrigin particleOrigin;
+    CCSharpClawPadState* state;
     GameObject* player;
 
-    if (mainGetBit(((SharpClawPadSetup*)obj->anim.placement)->activationGameBit) != 0)
-    {
+    if (mainGetBit(((const CCSharpClawPadPlacement*)obj->anim.placement)->activationGameBit) != 0) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        particleArgs.offset[0] = -5.0f;
-        particleArgs.offset[1] = 5.0f;
-        particleArgs.offset[2] = 0.0f;
-        objfx_spawnArcedBurst(obj, 5, 0.75f, 2, 2, 0x19, 2.0f, 2.0f, 10.0f, &particleArgs, 0);
-        particleArgs.offset[0] = 5.0f;
-        objfx_spawnArcedBurst(obj, 5, 0.75f, 2, 2, 0x19, 2.0f, 2.0f, 10.0f, &particleArgs, 0);
-    }
-    else
-    {
+        particleOrigin.localPosition[0] = -CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        particleOrigin.localPosition[1] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y;
+        particleOrigin.localPosition[2] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z;
+        objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
+                              CC_SHARPCLAW_PAD_PARTICLE_KIND_LIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
+                              CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
+                              CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH,
+                              &particleOrigin, CC_SHARPCLAW_PAD_PARTICLE_FLAGS);
+        particleOrigin.localPosition[0] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
+                              CC_SHARPCLAW_PAD_PARTICLE_KIND_LIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
+                              CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
+                              CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH,
+                              &particleOrigin, CC_SHARPCLAW_PAD_PARTICLE_FLAGS);
+    } else {
         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-        if (mainGetBit(GAMEBIT_STAFF_ABILITY_SHARPCLAW_DISGUISE) == 0)
-        {
+        if (mainGetBit(GAMEBIT_STAFF_ABILITY_SHARPCLAW_DISGUISE) == 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
-        }
-        else
-        {
+        } else {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
         state = obj->extra;
-        if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0)
-        {
-            state->helpTimer = 600.0f;
+        if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0) {
+            state->helpTimer = CC_SHARPCLAW_PAD_HELP_DURATION;
         }
-        if (state->helpTimer > 0.0f)
-        {
-            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
-            {
+        if (state->helpTimer > 0.0f) {
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0) {
                 state->helpTimer = 0.0f;
-            }
-            else
-            {
+            } else {
                 state->helpTimer -= timeDelta;
                 showHelpText(obj->anim.modelInstance->helpTextIds[0]);
             }
         }
         player = Obj_GetPlayerObject();
-        if (vec3f_distanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) < 100.0f &&
-            playerIsDisguised(player) != 0)
-        {
+        if (vec3f_distanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) <
+                CC_SHARPCLAW_PAD_ACTIVATION_DISTANCE_SQUARED &&
+            playerIsDisguised(player) != 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_menuups16k);
-            mainSetBits(((SharpClawPadSetup*)obj->anim.placement)->activationGameBit, 1);
+            mainSetBits(((const CCSharpClawPadPlacement*)obj->anim.placement)->activationGameBit, 1);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
-        particleArgs.offset[0] = -5.0f;
-        particleArgs.offset[1] = 5.0f;
-        particleArgs.offset[2] = 0.0f;
-        objfx_spawnArcedBurst(obj, 5, 0.75f, 5, 2, 0x19, 2.0f, 2.0f, 10.0f, &particleArgs, 0);
-        particleArgs.offset[0] = 5.0f;
-        objfx_spawnArcedBurst(obj, 5, 0.75f, 5, 2, 0x19, 2.0f, 2.0f, 10.0f, &particleArgs, 0);
+        particleOrigin.localPosition[0] = -CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        particleOrigin.localPosition[1] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y;
+        particleOrigin.localPosition[2] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z;
+        objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
+                              CC_SHARPCLAW_PAD_PARTICLE_KIND_UNLIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
+                              CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
+                              CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH,
+                              &particleOrigin, CC_SHARPCLAW_PAD_PARTICLE_FLAGS);
+        particleOrigin.localPosition[0] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
+                              CC_SHARPCLAW_PAD_PARTICLE_KIND_UNLIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
+                              CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
+                              CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH,
+                              &particleOrigin, CC_SHARPCLAW_PAD_PARTICLE_FLAGS);
     }
 }
 
-void CCSharpclawPad_init(GameObject* obj, SharpClawPadSetup* setup)
-{
-    obj->anim.rotX = (s16)((u32)setup->rotX << 8);
+void ccSharpClawPad_init(GameObject* obj, const CCSharpClawPadPlacement* placement) {
+    obj->anim.rotX = (s16)((u32)placement->rotXByte << CC_SHARPCLAW_PAD_ROT_X_SHIFT);
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
 }
 
-ObjectDescriptor gCCSharpclawPadObjDescriptor = {
+ObjectDescriptor gCCSharpClawPadObjDescriptor = {
     0,
     0,
     0,
@@ -102,11 +130,11 @@ ObjectDescriptor gCCSharpclawPadObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)CCSharpclawPad_init,
-    (ObjectDescriptorCallback)CCSharpclawPad_update,
+    (ObjectDescriptorCallback)ccSharpClawPad_init,
+    (ObjectDescriptorCallback)ccSharpClawPad_update,
     0,
     0,
     0,
     0,
-    CCSharpclawPad_getExtraSize,
+    ccSharpClawPad_getExtraSize,
 };

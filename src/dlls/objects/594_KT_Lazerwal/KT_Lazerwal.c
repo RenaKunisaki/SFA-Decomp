@@ -15,6 +15,7 @@
  * 'runtime' overlays KtlazerwallState, where 0x10 is the bolt pointer -
  * distinct from ktrexfloorswitch's flags byte at the same offset).
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DR/dll_0251_ktrexfloorswitch.h"
 #include "main/frame_timing.h"
@@ -213,3 +214,20 @@ void KT_Lazerwall_release(void)
 void KT_Lazerwall_initialise(void)
 {
 }
+
+ObjectDescriptor gKtLazerwallObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    (ObjectDescriptorCallback)KT_Lazerwall_initialise,
+    (ObjectDescriptorCallback)KT_Lazerwall_release,
+    0,
+    (ObjectDescriptorCallback)KT_Lazerwall_init,
+    (ObjectDescriptorCallback)KT_Lazerwall_update,
+    (ObjectDescriptorCallback)KT_Lazerwall_hitDetect,
+    (ObjectDescriptorCallback)KT_Lazerwall_render,
+    (ObjectDescriptorCallback)KT_Lazerwall_free,
+    (ObjectDescriptorCallback)KT_Lazerwall_getObjectTypeId,
+    KT_Lazerwall_getExtraSize,
+};

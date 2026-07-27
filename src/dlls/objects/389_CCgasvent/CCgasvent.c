@@ -1,75 +1,68 @@
 /*
- * CCgasvent - Crystal Caves gas-vent emitter (DLL 0x0185). One vent of the
- * gas-vent group (CCGASVENT_GROUP); the controller object (ccgasventcontrol,
- * DLL 0x0186) tracks the whole group. While the room's gas gameBit (0x1C0)
- * is set the vent watches the nearest group-5 object: once it is far enough
- * away (>= 10.0) it starts spawning the gas particle effect each tick.
+ * CCgasvent (DLL 0x185) - Crystal Caves gas vent.
+ *
+ * The vent emits gas while the room gas is active and no group-5 blocker is
+ * within its distance threshold. The neighboring controller supervises the
+ * complete vent group.
  */
-#include "main/dll/partfx_interface.h"
+#include "dlls/objects/389_CCgasvent.h"
+
 #include "game/objects/object.h"
-#include "main/gamebits.h"
+#include "main/dll/partfx_interface.h"
+#include "main/gamebits_api.h"
 #include "main/obj_group.h"
-#include "main/dll/CC/dll_0185_ccgasvent.h"
-#include "dlls/object_descriptor.h"
 
-#define CCGASVENT_GROUP           0x3f
-#define CCGASVENT_TARGET_OBJGROUP 5
-#define CCGASVENT_GAS_GAMEBIT     0x1c0
-#define CCGASVENT_PARTFX_GAS      0x3df
+#define CC_GAS_VENT_PARTICLE_GAS        0x3DF
+#define CC_GAS_VENT_PARTICLE_SPAWN_MODE 0
+#define CC_GAS_VENT_PARTICLE_MODEL_NONE -1
 
-/* ccgasvent_update state machine */
-#define CCGASVENT_STATE_IDLE     0 /* player near: dormant, watching distance */
-#define CCGASVENT_STATE_SPAWNING 1 /* player far enough: emitting gas each tick */
+#define CC_GAS_VENT_DISTANCE_UNSET 3.4028235e38f
+#define CC_GAS_VENT_BLOCK_DISTANCE 10.0f
 
-int ccgasvent_getExtraSize(void)
-{
-    return 0x1;
+#define CC_GAS_VENT_PHASE_BLOCKED 0
+#define CC_GAS_VENT_PHASE_CLEAR   1
+
+int ccGasVent_getExtraSize(void) {
+    return sizeof(CCGasVentState);
 }
 
-void ccgasvent_free(int obj)
-{
-    ObjGroup_RemoveObject(obj, CCGASVENT_GROUP);
+void ccGasVent_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, CC_GAS_VENT_OBJECT_GROUP);
 }
 
-void ccgasvent_render(void)
-{
+void ccGasVent_render(void) {
 }
 
-void ccgasvent_update(GameObject* obj)
-{
-    f32 dist = 3.4028235e38f;
-    u8* state = obj->extra;
-    if (mainGetBit(CCGASVENT_GAS_GAMEBIT) != 0)
-    {
-        ObjGroup_FindNearestObject(CCGASVENT_TARGET_OBJGROUP, obj, &dist);
-        switch (state[0])
-        {
-        case CCGASVENT_STATE_IDLE:
-            if (dist >= 10.0f)
-            {
-                state[0] = CCGASVENT_STATE_SPAWNING;
+void ccGasVent_update(GameObject* obj) {
+    f32 blockerDistance = CC_GAS_VENT_DISTANCE_UNSET;
+    CCGasVentState* state = obj->extra;
+
+    if (mainGetBit(CC_GAS_VENT_ACTIVE_GAMEBIT) != 0) {
+        ObjGroup_FindNearestObject(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, obj, &blockerDistance);
+        switch (state->phase) {
+        case CC_GAS_VENT_PHASE_BLOCKED:
+            if (blockerDistance >= CC_GAS_VENT_BLOCK_DISTANCE) {
+                state->phase = CC_GAS_VENT_PHASE_CLEAR;
             }
             break;
-        case CCGASVENT_STATE_SPAWNING:
-            if (dist < 10.0f)
-            {
-                state[0] = CCGASVENT_STATE_IDLE;
-            }
-            else
-            {
-                (*gPartfxInterface)->spawnObject(obj, CCGASVENT_PARTFX_GAS, NULL, 0, -1, NULL);
+        case CC_GAS_VENT_PHASE_CLEAR:
+            if (blockerDistance < CC_GAS_VENT_BLOCK_DISTANCE) {
+                state->phase = CC_GAS_VENT_PHASE_BLOCKED;
+            } else {
+                (*gPartfxInterface)
+                    ->spawnObject(obj, CC_GAS_VENT_PARTICLE_GAS, NULL, CC_GAS_VENT_PARTICLE_SPAWN_MODE,
+                                  CC_GAS_VENT_PARTICLE_MODEL_NONE, NULL);
             }
             break;
         }
     }
 }
 
-void ccgasvent_init(int obj)
-{
-    ObjGroup_AddObject(obj, CCGASVENT_GROUP);
+void ccGasVent_init(GameObject* obj) {
+    ObjGroup_AddObject((int)obj, CC_GAS_VENT_OBJECT_GROUP);
 }
 
-ObjectDescriptor gCCgasventObjDescriptor = {
+ObjectDescriptor gCCGasVentObjDescriptor = {
     0,
     0,
     0,
@@ -77,11 +70,11 @@ ObjectDescriptor gCCgasventObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)ccgasvent_init,
-    (ObjectDescriptorCallback)ccgasvent_update,
+    (ObjectDescriptorCallback)ccGasVent_init,
+    (ObjectDescriptorCallback)ccGasVent_update,
     0,
-    (ObjectDescriptorCallback)ccgasvent_render,
-    (ObjectDescriptorCallback)ccgasvent_free,
+    (ObjectDescriptorCallback)ccGasVent_render,
+    (ObjectDescriptorCallback)ccGasVent_free,
     0,
-    ccgasvent_getExtraSize,
+    ccGasVent_getExtraSize,
 };
