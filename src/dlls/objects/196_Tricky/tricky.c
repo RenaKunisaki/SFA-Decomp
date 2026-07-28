@@ -1700,7 +1700,8 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
     f32 bestDistances[TRICKY_ROUTE_CANDIDATE_COUNT];
     int i;
     void** curves;
-    void* curve;
+    int linkCurveId;
+    int count;
     u8 j;
     void* linkedCurve;
     u8 routeFlags;
@@ -1708,13 +1709,13 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
     f32* p;
     f32 score;
     f32 init;
-    int count;
+    void* curve;
     u8 k;
-    int linkCurveId;
-    TrickyState* state;
+    void** cp;
+    int curveIdx;
     f32* bd;
     void** rp;
-    void** cp;
+    TrickyState* state;
 
     state = obj->extra;
     curves = (void**)(*gRomCurveInterface)->getCurves(&count);
@@ -1733,7 +1734,7 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
         return;
     }
 
-    for (i = 0, cp = curves; i < count; i++, cp++)
+    for (curveIdx = 0, cp = curves; curveIdx < count; cp++, curveIdx++)
     {
         curve = *cp;
         if ((((ObjfsaRomCurveDef*)curve)->type != 0x24) || (*(u8*)((u8*)curve + 3) != 0))
