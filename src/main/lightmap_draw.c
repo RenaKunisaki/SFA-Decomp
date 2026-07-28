@@ -468,6 +468,8 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     f32 maxZs;
     f32 maxD;
     f32 minZs;
+    f32 minW;
+    f32 minD;
 
     if (lbl_803DCE30 == 1000)
     {
@@ -484,8 +486,10 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     minZs = __OSs16tof32(&bounds->minZ);
     stk[0] = lbl_803DEBFC * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
                              (maxXs * lbl_803DEC20 + block->transform[0][3]));
-    stk[1] = lbl_803DEBFC * ((minYs * lbl_803DEC20 + block->transform[1][3]) + maxW);
-    stk[2] = lbl_803DEBFC * ((minZs * lbl_803DEC20 + block->transform[2][3]) + maxD);
+    minW = minYs * lbl_803DEC20 + block->transform[1][3];
+    stk[1] = lbl_803DEBFC * (minW + maxW);
+    minD = minZs * lbl_803DEC20 + block->transform[2][3];
+    stk[2] = lbl_803DEBFC * (minD + maxD);
     PSMTXMultVec((f32*)Camera_GetViewMatrix(), stk, stk);
     t = (s32) - stk[2];
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);

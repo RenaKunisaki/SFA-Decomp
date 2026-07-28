@@ -131,17 +131,7 @@ typedef union
     f32 f32;
 } GolfWGPipe;
 
-extern const f32 lbl_803DEC6C;
-extern const f32 lbl_803DEC70;
-extern const f32 lbl_803DEC74;
-extern f32 lbl_803DEC98;
-extern f32 lbl_803DEC9C;
-extern const f32 lbl_803DEC68;
-extern f32 lbl_803DEC90[2];
-extern f32 lbl_803DEC94;
 extern volatile GolfWGPipe GXWGFifo : (0xCC008000);
-extern const f32 lbl_803DEC78;
-extern const f32 lbl_803DEC80;
 extern int renderFlags;
 
 void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8);
@@ -180,6 +170,17 @@ static inline void GXPosition3f32(const f32 x, const f32 y, const f32 z)
     GXWGFifo.f32 = x;
     GXWGFifo.f32 = y;
     GXWGFifo.f32 = z;
+}
+
+static f32 shadowGetSunMagnitude(void)
+{
+    f32 magnitude = 0.0f;
+
+    if (gSunMagnitude > 0)
+    {
+        magnitude = (f32)gSunMagnitude;
+    }
+    return magnitude;
 }
 
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale)
@@ -264,7 +265,7 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
     f32 b[3];
     f32 c[3];
     f32 a[3];
-    f64 d;
+    f32 d;
     f32 scale;
     f32 z;
     f32 s;
@@ -274,24 +275,24 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
                                              obj->anim.localPosZ, &dist, a, 0) == 0)
     {
         PSVECNormalize(a, a);
-        b[0] = lbl_803DEC68;
+        b[0] = 1.0f;
         b[1] = 0.0f;
         b[2] = 0.0f;
-        d = __fabs(PSVECDotProduct(a, b));
-        if (d >= lbl_803DEC6C)
+        d = __fabsf(PSVECDotProduct(a, b));
+        if (d >= 0.9f)
         {
             b[0] = 0.0f;
-            b[2] = lbl_803DEC68;
+            b[2] = 1.0f;
         }
         PSVECCrossProduct(a, b, c);
         PSVECCrossProduct(c, a, b);
         PSVECNormalize(b, b);
         PSVECNormalize(c, c);
-        scale = lbl_803DEC70 * ((ObjAnimComponent*)obj)->modelState->shadowScale;
+        scale = 0.5f * ((ObjAnimComponent*)obj)->modelState->shadowScale;
         PSVECScale(b, b, scale);
         PSVECScale(c, c, scale);
         nd = -dist;
-        s = lbl_803DEC74;
+        s = 256.0f;
         z = 0.0f;
         out[0] = (s * ((z - b[0]) - c[0]));
         out[1] = (s * ((nd - b[1]) - c[1]));
@@ -335,15 +336,15 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
         {
             viewMtx = Camera_GetViewMatrix();
             Obj_BuildWorldTransformMatrix(obj, mtx, 0);
-            mtx[0] = lbl_803DEC68;
+            mtx[0] = 1.0f;
             mtx[1] = 0.0f;
             mtx[2] = 0.0f;
             mtx[4] = 0.0f;
-            mtx[5] = lbl_803DEC68;
+            mtx[5] = 1.0f;
             mtx[6] = 0.0f;
             mtx[8] = 0.0f;
             mtx[9] = 0.0f;
-            mtx[10] = lbl_803DEC68;
+            mtx[10] = 1.0f;
             PSMTXConcat(viewMtx, mtx, outMtx);
             GXLoadPosMtxImm((const f32 (*)[4])outMtx, GX_PNMTX9);
             GXClearVtxDesc();
@@ -574,9 +575,9 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
     s29 = obj->anim.rotY;
     if (modelState->shadowRenderResource == NULL ||
         modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
-        obj->anim.rootMotionScale = lbl_803DEC78;
+        obj->anim.rootMotionScale = 0.05f;
     else
-        obj->anim.rootMotionScale = lbl_803DEC68;
+        obj->anim.rootMotionScale = 1.0f;
     obj->anim.rotX = 0;
     obj->anim.rotY = 0;
     if ((modelState->flags & 0x2000) == 0)
@@ -636,7 +637,7 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
             (Vec3s*)((u8*)modelState->shadowRenderResource + sizeof(ObjectShadowMesh));
         modelState->shadowRenderResource->vertexCount = triangleCount * 3;
         i = 0;
-        kf = lbl_803DEC80;
+        kf = 20.0f;
         for (; i < modelState->shadowRenderResource->vertexCount; i++)
         {
             modelState->shadowRenderResource->vertices[i].x = kf * vertices[i].x;
@@ -668,8 +669,7 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
         for (i = 0; i < triangleCount; i++)
         {
             int k;
-            GXPosition3f32(vertices[w0].x, vertices[w0].y, vertices[w0].z);
-            for (k = 1; k < 3; k++)
+            for (k = 0; k < 3; k++)
             {
                 Vec3f* v1 = &vertices[w0 + k];
                 f32 b2 = v1->z;
@@ -823,7 +823,7 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
             *alphaStep = 0x4000;
         }
     }
-    f31 = lbl_803DEC90[0] * (f32)*alphaStep;
+    f31 = (1.0f / 16384.0f) * (f32)*alphaStep;
     f31 = lbl_803DB654 * f31;
     {
         f32 tint = objShadowFn_80062378(obj, modelState->shadowTintA);
@@ -962,10 +962,10 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     gSunMagnitude = magnitude;
     gShadowOffsetX = directionX * magnitude;
     gShadowOffsetY = directionY * magnitude;
-    lbl_803DB654 = lbl_803DEC68;
-    if (gShadowOffsetY < lbl_803DEC94)
+    lbl_803DB654 = 1.0f;
+    if (gShadowOffsetY < 80.0f)
     {
-        gShadowOffsetY = lbl_803DEC94;
+        gShadowOffsetY = 80.0f;
     }
     gShadowOffsetZ = directionZ * magnitude;
     directionSimilarity = normalizedDirection[0] * gPrevSunDir[0] + normalizedDirection[1] * gPrevSunDir[1] +
@@ -990,9 +990,9 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     }
     if (gSunDotCos < 0.0f)
     {
-        gSunDotCos = gSunDotCos * lbl_803DEC98;
+        gSunDotCos *= -1.0f;
     }
-    if (gSunDotCos <= lbl_803DEC9C)
+    if (gSunDotCos <= 0.99619f)
     {
         gSunDirChanged = 1;
     }

@@ -679,7 +679,11 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     }
                     break;
                 case 5:
-                    if (((TriggerState*)state)->rangeSq == 0.0f)
+                    if (!((TriggerState*)state)->rangeSq)
+                    {
+                        break;
+                    }
+                    if (((TriggerState*)state)->rangeSq)
                     {
                         break;
                     }

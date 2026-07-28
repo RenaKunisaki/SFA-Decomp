@@ -243,6 +243,9 @@ typedef struct
     u32 m[4][4];
 } EWColorTbl;
 
+const EWPathRange gDREarthWarriorLookInitData1 = {{10, 10, 0, 0, 0}};
+const EWPathRange gDREarthWarriorLookInitData2 = {{20, 20, 0, 0, 0}};
+
 typedef struct
 {
     int* modelIds;
@@ -1361,8 +1364,8 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
     DREarthWarriorInitData* base = (DREarthWarriorInitData*)gDREarthWarriorInitData;
     int inner = *(int*)&(obj)->extra;
     u8 stk[4] = {1, 1, 1, 1};
-    EWPathRange r2 = {{10, 10, 0, 0, 0}};
-    EWPathRange r1 = {{20, 20, 0, 0, 0}};
+    EWPathRange r2 = gDREarthWarriorLookInitData1;
+    EWPathRange r1 = gDREarthWarriorLookInitData2;
     u8* pathState;
     (obj)->anim.rotX = (s16)(((DREarthWarriorPlacement*)def)->spawnYaw << 8);
     (obj)->animEventCallback = DR_EarthWarrior_SeqFn;
