@@ -104,7 +104,7 @@
 #include "main/dll/DIM/dll_01C4_dimicewall.h"
 #include "main/dll/DIM/dimlogfire.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
-#include "dlls/objects/435_SH_Beacon.h"
+#include "main/dll/SH/dll_01B3_shbeacon.h"
 #include "main/main_internal.h"
 #include "main/dll/baddie_frozen.h"
 #include "dlls/objects/316_XYZAnimator.h"
@@ -120,26 +120,22 @@ typedef struct
     u16 b;
 } TrickySfxPair;
 
+static const u16 lbl_803E23C0[1] = {0x0A08};
+static const TrickySfxPair lbl_803E23C4 = {0x0356, 0x035C};
+static const u16 lbl_803E23C8[2] = {0x035A, 0x0351};
+static const u16 gTrickySubstateSfxIdPairA[2] = {0x035C, 0x0361};
+static const u16 gTrickySubstateSfxIdPairB[2] = {0x035C, 0x0361};
+static const u16 gSkeetlaFootstepSfxIds01[2] = {0x0361, 0x0365};
+static const u16 gSkeetlaFootstepSfxId2[1] = {0x0355};
+
 extern char lbl_8031D2E8[];
-extern u32 gSkeetlaFootstepSfxIds01;
-extern f32 gTrickyFollowMaxSpeed;
-extern f32 gTrickyFollowAnim17Speed;
-extern f32 gTrickyFollowAnim18Speed;
-extern f32 gTrickyFollowVerticalDeltaDivisorA;
-extern f32 gTrickyFollowVerticalDeltaDivisorB;
-extern f32 gTrickyFollowArcCoefficient;
 extern char sInWaterMessage[];
 extern char lbl_8031D478[];
 extern const char sTrickyShouldNeverStopCirclingError[];
-extern u32 gTrickySubstateSfxIdPairB;
-extern u32 gTrickySubstateSfxIdPairA;
-extern f64 lbl_803E2528;
 extern char gTrickyPathPointCollision[];
-extern u32 lbl_803E23C8;
 extern char sSidekickCommandDebugTextBlock[];
 extern f32 lbl_803DBC40[2];
 extern f32 lbl_803DBC48;
-extern u16 lbl_803E23C0;
 extern u32 lbl_803E2558;
 extern u32 lbl_803E2560;
 extern u32 lbl_803E2564;
@@ -165,7 +161,6 @@ extern f32 lbl_803E258C;
 extern f32 lbl_803E2590;
 extern f32 lbl_803E2594;
 extern f32 lbl_803E259C;
-extern TrickySfxPair lbl_803E23C4;
 
 /* The one partfx effect emitted along Tricky's queued impress path. */
 #define TRICKY_PATH_PARTFX 0x533
@@ -1152,8 +1147,8 @@ int trickyMove(GameObject* obj, f32* targetPos)
                             }
                             else
                             {
-                                *(u32*)sfxIds = gSkeetlaFootstepSfxIds01;
-                                sfxIds[2] = gSkeetlaFootstepSfxId2;
+                                *(u32*)sfxIds = *(u32*)gSkeetlaFootstepSfxIds01;
+                                sfxIds[2] = gSkeetlaFootstepSfxId2[0];
                                 if (mainGetBit(GAMEBIT_ITEM_TrickyBall_Bought) != 0)
                                 {
                                     randomGetRange(0, 2);
@@ -2392,7 +2387,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                             state->dirX = state->dirX / len;
                             state->dirZ = state->dirZ / len;
                         }
-                        state->speed = gTrickyFollowMaxSpeed;
+                        state->speed = 3.0f;
                         objAnimFn_8013a3f0((int)obj, 0x15, 0.0001f, 0x4000000);
                         state->followPhase = 9;
                         state->voiceCooldown = 600.0f;
@@ -2411,15 +2406,15 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         }
                         if ((int)randomGetRange(0, 1) != 0)
                         {
-                            objAnimFn_8013a3f0((int)obj, 0x17, gTrickyFollowAnim17Speed, 0x40000c0);
+                            objAnimFn_8013a3f0((int)obj, 0x17, 0.0135f, 0x40000c0);
                         }
                         else
                         {
-                            objAnimFn_8013a3f0((int)obj, 0x18, gTrickyFollowAnim18Speed, 0x40000c0);
+                            objAnimFn_8013a3f0((int)obj, 0x18, 0.00975f, 0x40000c0);
                         }
                         state->verticalDelta =
                             (((ObjfsaRomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
-                            gTrickyFollowVerticalDeltaDivisorA;
+                            32.865f;
                         state->followPhase = 0xc;
                         if (state->route.reverse != 0)
                         {
@@ -2452,7 +2447,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         objAnimFn_8013a3f0((int)obj, 0x19, 0.0125f, 0x40000c0);
                         state->verticalDelta =
                             (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
-                            gTrickyFollowVerticalDeltaDivisorB;
+                            33.114f;
                         state->followPhase = 0xe;
                         if (state->route.reverse != 0)
                         {
@@ -2681,7 +2676,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     case 8:
         trickyDebugPrint(strs + 0x49c);
         v = 0.05f * timeDelta + velBefore;
-        state->speed = (v > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : v;
+        state->speed = (v > 3.0f) ? 3.0f : v;
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
             v = -0.15f * timeDelta + velBefore;
@@ -2738,7 +2733,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     state->dirX = state->dirX / len;
                     state->dirZ = state->dirZ / len;
                 }
-                state->speed = gTrickyFollowMaxSpeed;
+                state->speed = 3.0f;
                 objAnimFn_8013a3f0((int)obj, 0x15, 0.0001f, 0x4000000);
                 state->followPhase = 9;
                 state->voiceCooldown = 600.0f;
@@ -2820,7 +2815,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             arc->landX = node->x;
             arc->landZ = node->z;
             k = arc->duration;
-            arcCoefficient = gTrickyFollowArcCoefficient * k;
+            arcCoefficient = -0.017f * k;
             arc->riseCoeff = -(arcCoefficient * k -
                                (node->y - obj->anim.worldPosY)) /
                               k;
@@ -2863,7 +2858,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             k = arc->time;
             {
                 f32 ck;
-                ck = gTrickyFollowArcCoefficient * k;
+                ck = -0.017f * k;
                 obj->anim.localPosY = ck * k + (arc->riseCoeff * k + arc->baseY);
             }
             baseZ = arc->baseZ;
@@ -2900,7 +2895,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     case 0xb:
         trickyDebugPrint(strs + 0x4c4);
         v = 0.05f * timeDelta + velBefore;
-        state->speed = (v > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : v;
+        state->speed = (v > 3.0f) ? 3.0f : v;
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
             v = -0.15f * timeDelta + velBefore;
@@ -2959,15 +2954,15 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 }
                 if ((int)randomGetRange(0, 1) != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 0x17, gTrickyFollowAnim17Speed, 0x40000c0);
+                    objAnimFn_8013a3f0((int)obj, 0x17, 0.0135f, 0x40000c0);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 0x18, gTrickyFollowAnim18Speed, 0x40000c0);
+                    objAnimFn_8013a3f0((int)obj, 0x18, 0.00975f, 0x40000c0);
                 }
                 state->verticalDelta =
                     (((ObjfsaRomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
-                    gTrickyFollowVerticalDeltaDivisorA;
+                    32.865f;
                 state->followPhase = 0xc;
                 if (state->route.reverse != 0)
                 {
@@ -3016,7 +3011,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     case 0xd:
         trickyDebugPrint(strs + 0x4e8);
         v = 0.05f * timeDelta + velBefore;
-        state->speed = (v > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : v;
+        state->speed = (v > 3.0f) ? 3.0f : v;
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
             v = -0.15f * timeDelta + velBefore;
@@ -3076,7 +3071,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 objAnimFn_8013a3f0((int)obj, 0x19, 0.0125f, 0x40000c0);
                 state->verticalDelta =
                     (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
-                    gTrickyFollowVerticalDeltaDivisorB;
+                    33.114f;
                 state->followPhase = 0xe;
                 if (state->route.reverse != 0)
                 {
@@ -3238,10 +3233,10 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
                 else
                 {
                     f32 step;
-                    if (candidate > gTrickyFollowMaxSpeed)
+                    if (candidate > 3.0f)
                     {
                         step = 0.05f * timeDelta + state->speed;
-                        state->speed = (step > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : step;
+                        state->speed = (step > 3.0f) ? 3.0f : step;
                         return;
                     }
                     step = 0.05f * timeDelta + state->speed;
@@ -3254,16 +3249,16 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     if ((state->stateFlags & 0x00100000) != 0)
     {
         state->speed = 0.02f * timeDelta + state->speed;
-        if (state->speed > gTrickyFollowMaxSpeed)
+        if (state->speed > 3.0f)
         {
-            state->speed = gTrickyFollowMaxSpeed;
+            state->speed = 3.0f;
         }
         return;
     }
     {
         f32 step = state->speed;
         step = 0.05f * timeDelta + step;
-        state->speed = (step > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : step;
+        state->speed = (step > 3.0f) ? 3.0f : step;
     }
 }
 
@@ -5904,7 +5899,7 @@ void trickyDigTunnel(u8* obj, u8* state)
     f32 vz, vx, spd, z, vxx;
 
     base = (u8*)lbl_8031D2E8;
-    sfxTable = gTrickySubstateSfxIdPairB;
+    sfxTable = *(u32*)gTrickySubstateSfxIdPairB;
     switch (state[0xa])
     {
     case 0:
@@ -6101,7 +6096,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
     f32 dist;
     f32 z;
 
-    sfxTable = gTrickySubstateSfxIdPairA;
+    sfxTable = *(u32*)gTrickySubstateSfxIdPairA;
     pc = (u8*)((TrickyState*)state)->followObj;
     switch (state[0xa])
     {
@@ -7327,7 +7322,7 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
         sv = (s16)((((GameObject*)obj)->anim.rotX + sv) * 0x100);
         ang = 3.1415927f * (f32)sv / 32768.0f;
         ((TrickyState*)state)->wanderTargetX =
-            (f32)(lbl_803E2528 * -mathSinf(ang) + ((GameObject*)obj)->anim.localPosX);
+            (f32)(0.1 * -mathSinf(ang) + ((GameObject*)obj)->anim.localPosX);
         ((TrickyState*)state)->wanderTargetY = ((GameObject*)obj)->anim.localPosY;
         ((TrickyState*)state)->wanderTargetZ =
             (f32)(0.1f * -mathCosf(ang) + ((GameObject*)obj)->anim.localPosZ);
@@ -7767,7 +7762,6 @@ typedef void (*TrickyHandlerFn)(int obj, int state);
 int lbl_803DDA4C;
 u32 gTrickyHelperObject;
 
-u16 gSkeetlaFootstepSfxId2 = 0x355;
 
 u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
 {
@@ -8247,7 +8241,7 @@ int Tricky_updateSideCommandPrompts(int obj)
     promptA = false;
     promptB = false;
     promptC = false;
-    promptTable[0] = lbl_803E23C8;
+    promptTable[0] = *(u32*)lbl_803E23C8;
     bitVal = mainGetBit(GAMEBIT_Tricky_Usable);
     if (bitVal != 0)
     {
@@ -9140,7 +9134,7 @@ void Tricky_update(int obj)
                             *(void**)&trickyState->unk724 = 0;
                             break;
                         case 0x3c:
-                            *(void**)&trickyState->unk724 = sh_beacon_resetFadeTimerCallback;
+                            *(void**)&trickyState->unk724 = shbeacon_resetFadeTimerCallback;
                             break;
                         case 0x50f:
                             *(void**)&trickyState->unk724 = wcbeacon_aButtonCallback;
@@ -9591,7 +9585,7 @@ void Tricky_init(GameObject* obj)
     u16 startPath[4];
 
     state = *(int*)&(obj)->extra;
-    startPath[0] = lbl_803E23C0;
+    startPath[0] = lbl_803E23C0[0];
     mainSetBits(GAMEBIT_TrickyTalk, 0xff);
     if (mainGetBit(GAMEBIT_ITEM_TrickyBall_Bought) != 0)
     {
