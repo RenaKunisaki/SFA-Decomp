@@ -1325,7 +1325,7 @@ void objfx_spawnPulseBurst(void* obj, f32 scale, int type, int count, int mode, 
         }
     }
 }
-void projectileParticleFxFn_80099660(void* obj, f32 scaleArg, int mode)
+void projectileDoParticleFx(void* obj, f32 scaleArg, int mode)
 {
     ObjFxParticleParams params;
     f32 tailScale;
@@ -1510,7 +1510,7 @@ void itemPickupDoParticleFx(void* obj, f32 scale, int mode, u8 count)
     }
 }
 
-void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale, ModelLightStruct* light)
+void objDoParticleFx(GameObject* obj, f32 scale, int type, f32 extraScale, ModelLightStruct* light)
 {
     ObjFxParticleParams params;
     f32 lightYOffset = 40.0f;
@@ -1588,7 +1588,7 @@ void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale
     }
 }
 
-void objLightFn_8009a1dc(void* obj, f32 scale, void* origin, u8 type, void* light)
+void objDoHitParticleFx(void* obj, f32 scale, void* origin, u8 type, void* light)
 {
     u8 spawnArgs[16];
     u8 remaining;

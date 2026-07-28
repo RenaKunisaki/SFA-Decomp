@@ -191,11 +191,11 @@ void Hagabon_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int 
         case 0:
             objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
             if ((state->flags & HAGABON_FLAG_FADE_OUT) != 0) {
-                objParticleFn_80099d84(obj, 1.0f, HAGABON_PARTICLE_FADE_OUT,
+                objDoParticleFx(obj, 1.0f, HAGABON_PARTICLE_FADE_OUT,
                                        (f32)(u32)obj->anim.alpha / HAGABON_ALPHA_MAX, 0);
             }
             if ((state->flags & HAGABON_FLAG_FADE_IN) != 0) {
-                objParticleFn_80099d84(obj, 1.0f, HAGABON_PARTICLE_FADE_IN,
+                objDoParticleFx(obj, 1.0f, HAGABON_PARTICLE_FADE_IN,
                                        (f32)(u32)obj->anim.alpha / HAGABON_ALPHA_MAX, 0);
             }
             break;
@@ -281,7 +281,7 @@ void Hagabon_update(GameObject* obj) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
             lightPos[0] += playerMapOffsetX;
             lightPos[2] += playerMapOffsetZ;
-            objLightFn_8009a1dc((void*)obj, 0.014f, effectPos, 3, 0);
+            objDoHitParticleFx((void*)obj, 0.014f, effectPos, 3, 0);
             (*gMapEventInterface)
                 ->addTime(placement->base.mapId, (f32)(s32)(placement->timeReward * HAGABON_MAP_SECONDS_PER_MINUTE));
             if (placement->armGameBit != HAGABON_GAME_BIT_NONE) {

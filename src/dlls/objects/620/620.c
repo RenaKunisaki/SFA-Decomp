@@ -122,7 +122,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
 
     if (bf31->b1 != 0)
     {
-        objParticleFn_80099d84(obj, 1.5f, 6, 1.0f, NULL);
+        objDoParticleFx(obj, 1.5f, 6, 1.0f, NULL);
     }
 
     if ((obj)->anim.seqId == DRCAGEWITH_CAGE_NOROPE_OBJ || (obj)->anim.seqId == DRCAGEWITH_CAGE_ROPE_OBJ)

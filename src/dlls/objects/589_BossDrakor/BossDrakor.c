@@ -156,7 +156,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     }
     if (((BossDrakorState*)inner)->flags198.b02)
     {
-        objParticleFn_80099d84(obj, lbl_803E6518, 6, lbl_803E651C, NULL);
+        objDoParticleFx(obj, lbl_803E6518, 6, lbl_803E651C, NULL);
     }
     return 0;
 }

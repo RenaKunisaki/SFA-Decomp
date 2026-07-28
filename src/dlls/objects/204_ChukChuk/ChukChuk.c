@@ -118,7 +118,7 @@ void ChukChuk_update(GameObject* obj) {
     state = obj->extra;
     if (state->steamTimer) {
         state->steamTimer -= timeDelta;
-        objParticleFn_80099d84(obj, 1.0f, 1, state->steamTimer / CHUKCHUK_STEAM_DURATION, NULL);
+        objDoParticleFx(obj, 1.0f, 1, state->steamTimer / CHUKCHUK_STEAM_DURATION, NULL);
         if (state->steamTimer <= 0.0f) {
             state->steamTimer = 0.0f;
         }

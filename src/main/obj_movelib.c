@@ -194,7 +194,7 @@ void Obj_SpawnHitLightAndFade(GameObject* obj, const Vec3f* pos, f32 scale)
     s.vec[0] = pos->x + playerMapOffsetX;
     s.vec[1] = pos->y;
     s.vec[2] = pos->z + playerMapOffsetZ;
-    objLightFn_8009a1dc(obj, 0.014f, &s, 1, 0);
+    objDoHitParticleFx(obj, 0.014f, &s, 1, 0);
     Obj_SetModelColorFadeRecursive(obj, 0x5a, 0xc8, 0, 0, 1);
 }
 

@@ -577,7 +577,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
             {
                 ((SnowclawAaFlags*)&s->flags)->flag6 = 0;
             }
-            objParticleFn_80099d84(obj, 1.0f, 3, s->particleAlpha, 0);
+            objDoParticleFx(obj, 1.0f, 3, s->particleAlpha, 0);
         }
     }
 }

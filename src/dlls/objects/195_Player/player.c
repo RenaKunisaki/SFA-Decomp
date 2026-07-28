@@ -15356,14 +15356,14 @@ void fn_802AFB0C(int obj, int inner, int state)
                 }
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
-                    objLightFn_8009a1dc((void*)obj, 0.014f, buf, 6, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, buf, 6, 0);
                 }
                 break;
             case 0x1c:
                 Sfx_PlayFromObject(obj, SFXTRIG_fox_var);
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
-                    objLightFn_8009a1dc((void*)obj, 0.014f, buf, 8, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
                 }
                 break;
             default:
@@ -15377,19 +15377,19 @@ void fn_802AFB0C(int obj, int inner, int state)
                         Sfx_PlayFromObject(obj, SFXTRIG_snort);
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objLightFn_8009a1dc((void*)obj, 0.014f, buf, 5, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
                         }
                         break;
                     case 0x7c8:
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objLightFn_8009a1dc((void*)obj, 0.014f, buf, 8, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
                         }
                         break;
                     default:
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objLightFn_8009a1dc((void*)obj, 0.014f, buf, 5, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
                         }
                         break;
                     }
@@ -15398,7 +15398,7 @@ void fn_802AFB0C(int obj, int inner, int state)
                 {
                     if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                     {
-                        objLightFn_8009a1dc((void*)obj, 0.014f, buf, 5, 0);
+                        objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
                     }
                 }
                 break;
@@ -17812,13 +17812,13 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         {
             PlayerIntPair tbl = sPlayerKnockFxIds;
 
-            objParticleFn_80099d84((GameObject*)obj, 0.4f,
+            objDoParticleFx((GameObject*)obj, 0.4f,
                                    tbl.v[((((PlayerState*)inner)->knockKindBits >> 5) & 7) - 1] & 0xff,
                                    1.0f, NULL);
         }
         if ((((PlayerState*)inner)->pendingFxFlags & 1) != 0)
         {
-            objParticleFn_80099d84((GameObject*)obj, 0.4f, 8, 1.0f, NULL);
+            objDoParticleFx((GameObject*)obj, 0.4f, 8, 1.0f, NULL);
         }
         if (((PlayerState*)inner)->waterDepth > 0.0f)
         {

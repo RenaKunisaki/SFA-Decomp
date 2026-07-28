@@ -193,7 +193,7 @@ void cfPrisonGuard_render(GameObject* obj, int renderArg2, int renderArg3, int r
         if (alarmRamp > 0.0f) {
             state->alarmRamp = 0.01f * (f32)(u32)framesThisStep + alarmRamp;
             if (state->alarmRamp < CFPRISONGUARD_ALARM_PARTICLE_LIMIT) {
-                objParticleFn_80099d84(obj, 1.0f, CFPRISONGUARD_ALARM_PARTICLE_EFFECT, state->alarmRamp, NULL);
+                objDoParticleFx(obj, 1.0f, CFPRISONGUARD_ALARM_PARTICLE_EFFECT, state->alarmRamp, NULL);
             }
         }
     }

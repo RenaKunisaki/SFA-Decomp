@@ -610,19 +610,19 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
             }
             if ((((TrickyState*)state)->flags2E8 & 0x200) != 0)
             {
-                objLightFn_8009a1dc((void*)obj, 0.014f, &params, 1, (void*)((TrickyState*)state)->light);
+                objDoHitParticleFx((void*)obj, 0.014f, &params, 1, (void*)((TrickyState*)state)->light);
             }
             else if ((((TrickyState*)state)->flags2F1 & 0x10) != 0)
             {
-                objLightFn_8009a1dc((void*)obj, 0.014f, &params, 3, (void*)((TrickyState*)state)->light);
+                objDoHitParticleFx((void*)obj, 0.014f, &params, 3, (void*)((TrickyState*)state)->light);
             }
             else if ((((TrickyState*)state)->flags2F1 & 8) != 0)
             {
-                objLightFn_8009a1dc((void*)obj, 0.014f, &params, 2, (void*)((TrickyState*)state)->light);
+                objDoHitParticleFx((void*)obj, 0.014f, &params, 2, (void*)((TrickyState*)state)->light);
             }
             else
             {
-                objLightFn_8009a1dc((void*)obj, 0.014f, &params, 1, (void*)((TrickyState*)state)->light);
+                objDoHitParticleFx((void*)obj, 0.014f, &params, 1, (void*)((TrickyState*)state)->light);
             }
             Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
         }
@@ -651,7 +651,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                 {
                     ((TrickyState*)state)->light = (int)objCreateLight(NULL, 1);
                 }
-                objLightFn_8009a1dc((void*)obj, 0.014f, &params, 4, (void*)((TrickyState*)state)->light);
+                objDoHitParticleFx((void*)obj, 0.014f, &params, 4, (void*)((TrickyState*)state)->light);
             }
             proj = ((TrickyState*)state)->actionTargetObj;
             if (proj != NULL && proj->anim.classId == 1)
@@ -2570,7 +2570,7 @@ void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                     {
                         state->modelLight = objCreateLight(0, 1);
                     }
-                    objParticleFn_80099d84(obj, 1.0f, 3, state->particleScale,
+                    objDoParticleFx(obj, 1.0f, 3, state->particleScale,
                                            state->modelLight);
                 }
             }
@@ -2580,22 +2580,22 @@ void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                 {
                     state->modelLight = objCreateLight(0, 1);
                 }
-                objParticleFn_80099d84(obj, 1.0f, 4, state->particleScale,
+                objDoParticleFx(obj, 1.0f, 4, state->particleScale,
                                        state->modelLight);
             }
             if ((*(u32*)&state->flags2E8 & 0x40) != 0)
             {
                 Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_forcecryslp11);
-                objParticleFn_80099d84(obj, 1.0f, 5, state->particleScale, 0);
+                objDoParticleFx(obj, 1.0f, 5, state->particleScale, 0);
             }
             if ((*(u32*)&state->flags2E8 & 0x80) != 0)
             {
                 Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_forcecryslp11);
-                objParticleFn_80099d84(obj, 1.5f, 6, state->particleScale, 0);
+                objDoParticleFx(obj, 1.5f, 6, state->particleScale, 0);
             }
             if ((*(u32*)&state->flags2E8 & 0x100) != 0)
             {
-                objParticleFn_80099d84(obj, 0.75f, 7, state->particleScale, 0);
+                objDoParticleFx(obj, 0.75f, 7, state->particleScale, 0);
             }
             break;
         }

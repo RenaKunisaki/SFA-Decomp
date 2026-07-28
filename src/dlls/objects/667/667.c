@@ -208,7 +208,7 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
         }
         state->despawnTimer = 40.0f;
         objAnim->alpha = 0;
-        projectileParticleFxFn_80099660(obj, 1.0f, state->param0.particleKind);
+        projectileDoParticleFx(obj, 1.0f, state->param0.particleKind);
         if (state->light != NULL)
         {
             ModelLightStruct_free(state->light);
@@ -268,7 +268,7 @@ void arwingandrossstuff_update(GameObject* obj)
             }
             state->despawnTimer = 40.0f;
             object->anim.alpha = 0;
-            projectileParticleFxFn_80099660(object, 1.0f, state->param0.particleKind);
+            projectileDoParticleFx(object, 1.0f, state->param0.particleKind);
             if (state->light != NULL)
             {
                 ModelLightStruct_free(state->light);

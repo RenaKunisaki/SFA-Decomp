@@ -231,7 +231,7 @@ void gpshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int rend
             modelLightStruct_setEnabled(state->light, 1, 1.0f);
         }
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, state->light);
+        objDoParticleFx(obj, 1.0f, 7, 1.0f, state->light);
     }
 }
 

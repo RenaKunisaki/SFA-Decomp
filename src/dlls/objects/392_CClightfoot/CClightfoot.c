@@ -508,7 +508,7 @@ void ccLightfoot_update(GameObject* obj) {
                               (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
                 CC_LIGHTFOOT_HIT_EFFECT_DISTANCE_SQUARED) {
                 objfx_spawnHitEmitterAtPos(hitPos, 8, 0xff, 0xff, 0x78);
-                objLightFn_8009a1dc((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);
+                objDoHitParticleFx((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);
             }
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
         }

@@ -184,7 +184,7 @@ void sc_totempuzzle_update(GameObject* obj) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
             lightArgs[3] += playerMapOffsetX;
             lightArgs[5] += playerMapOffsetZ;
-            objLightFn_8009a1dc((void*)obj, 0.014f, lightArgs, 1, 0);
+            objDoHitParticleFx((void*)obj, 0.014f, lightArgs, 1, 0);
         }
         return;
     }
@@ -193,7 +193,7 @@ void sc_totempuzzle_update(GameObject* obj) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
         lightArgs[3] += playerMapOffsetX;
         lightArgs[5] += playerMapOffsetZ;
-        objLightFn_8009a1dc((void*)obj, 0.014f, lightArgs, 1, 0);
+        objDoHitParticleFx((void*)obj, 0.014f, lightArgs, 1, 0);
         state->flags ^= SC_TOTEM_PUZZLE_FLAG_READY;
         if ((state->flags & SC_TOTEM_PUZZLE_FLAG_READY) != 0) {
             f32 zero = 0.0f;

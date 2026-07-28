@@ -916,7 +916,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     case 0xf:
     case 0x11:
     case 0x13:
-        objLightFn_8009a1dc(obj, 0.014f, lightArgs, 1, 0);
+        objDoHitParticleFx(obj, 0.014f, lightArgs, 1, 0);
         break;
     case 7:
     case 8:
@@ -925,7 +925,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     case 0xb:
     case 0xc:
         objfx_spawnHitEmitterAtPos(hitPosPtr, 8, 0xff, 0x20, 0x20);
-        objLightFn_8009a1dc(obj, 0.014f, lightArgs, 4, 0);
+        objDoHitParticleFx(obj, 0.014f, lightArgs, 4, 0);
         if (((GameObject*)lastContactObj)->anim.seqId == SKEETLA_ATTACKER_SEQID_STAFF)
         {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_stftest_var);
@@ -8832,7 +8832,7 @@ void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRende
         ((TrickyState*)state)->particleTimer = ((TrickyState*)state)->particleTimer - timeDelta;
         if (((TrickyState*)state)->particleTimer > 0.0f)
         {
-            objParticleFn_80099d84((GameObject*)obj, 0.4f, 6, 1.0f, 0);
+            objDoParticleFx((GameObject*)obj, 0.4f, 6, 1.0f, 0);
         }
     }
     return;

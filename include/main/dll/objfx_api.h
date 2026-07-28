@@ -5,7 +5,7 @@
 
 typedef struct ModelLightStruct ModelLightStruct;
 
-void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale,
+void objDoParticleFx(GameObject* obj, f32 scale, int type, f32 extraScale,
                             ModelLightStruct* light);
 void objfx_spawnFrameTimedHitPulse(GameObject* obj, f32 scale, u8 type, u8 frame, f32 intensity);
 void objfx_shakeCameraByDistance(GameObject* obj, f32 threshold);

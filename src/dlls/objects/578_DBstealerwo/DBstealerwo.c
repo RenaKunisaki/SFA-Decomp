@@ -338,7 +338,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
 #define DBSTEALERWORM_HIT_VOLUME_SLOT 10
 
 /* fx-spawn work record: a fake ObjAnimComponent head handed to
- * objLightFn_8009a1dc / the partfx interface (same family as ktrex's
+ * objDoHitParticleFx / the partfx interface (same family as ktrex's
  * gKTRexEffectSpawnWork). */
 typedef struct DbWormEffectSpawnWork
 {
@@ -2271,7 +2271,7 @@ void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             if ((state->flags400 & 0x60) != 0)
             {
-                objParticleFn_80099d84(obj, 1.0f, 3, state->glowAlpha, 0);
+                objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
             }
             path = *(char**)&sub->linkedObj;
             if (path != NULL && *(void**)(path + 0x50) != NULL)
@@ -2400,7 +2400,7 @@ void dbstealerworm_update(GameObject* objp)
                     st->posX = obj->anim.localPosX;
                     st->posY = obj->anim.localPosY;
                     st->posZ = obj->anim.localPosZ;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, st, 1, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, st, 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {

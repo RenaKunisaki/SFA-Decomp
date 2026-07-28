@@ -195,7 +195,7 @@ void tree_update(GameObject* obj)
                 {
                     colorVec[0] += playerMapOffsetX;
                     colorVec[2] += playerMapOffsetZ;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, burstVec, 1, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, burstVec, 1, 0);
                     Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
                 }
                 if (state->flags & TREE_FLAG_BURST_MODE_MASK)

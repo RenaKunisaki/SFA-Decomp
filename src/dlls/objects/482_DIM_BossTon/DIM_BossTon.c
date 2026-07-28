@@ -144,7 +144,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
             ->spawnObject(obj, DIMBOSSTONSIL_HIT_EFFECT_ID, spawnArgs, DIMBOSSTONSIL_HIT_FX_FLAGS, -1, NULL);
         (*gPartfxInterface)
             ->spawnObject(obj, DIMBOSSTONSIL_HIT_EFFECT_ALT_ID, spawnArgs, DIMBOSSTONSIL_HIT_FX_FLAGS, -1, NULL);
-        objLightFn_8009a1dc(obj, 0.028f, spawnArgs, 3, 0);
+        objDoHitParticleFx(obj, 0.028f, spawnArgs, 3, 0);
         Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_PRIMARY_HIT_SFX);
         doRumble(16.0f);
         if (state->hitPoints != 0) {

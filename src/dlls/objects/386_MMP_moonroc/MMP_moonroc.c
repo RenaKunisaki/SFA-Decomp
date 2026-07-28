@@ -370,8 +370,8 @@ void mmpMoonRock_update(GameObject* obj) {
                 mmpMoonRock_reconcilePlacement(obj, 1, 1);
             } else {
                 obj->anim.alpha = (u8)(int)(255.0f * (1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION));
-                objParticleFn_80099d84(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
-                objParticleFn_80099d84(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
+                objDoParticleFx(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
+                objDoParticleFx(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
             }
         }
         return;

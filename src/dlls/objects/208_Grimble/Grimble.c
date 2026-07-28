@@ -715,10 +715,10 @@ void grimble_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int 
         (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, GRIMBLE_BONE_EFFECT_ID, NULL, 100, NULL);
     }
     if ((state->flags400 & GRIMBLE_PARTICLE_TRAIL_FLAGS) != 0) {
-        objParticleFn_80099d84(obj, 1.0f, 3, state->glowAlpha, 0);
+        objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
     }
     if ((state->flags400 & GRIMBLE_PARTICLE_BURST_FLAG) != 0) {
-        objParticleFn_80099d84(obj, 1.0f, 4, state->glowAlpha, 0);
+        objDoParticleFx(obj, 1.0f, 4, state->glowAlpha, 0);
         state->flags400 &= ~GRIMBLE_PARTICLE_BURST_FLAG;
     }
 }

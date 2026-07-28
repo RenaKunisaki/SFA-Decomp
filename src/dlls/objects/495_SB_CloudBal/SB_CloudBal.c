@@ -106,7 +106,7 @@ void SB_CloudBall_hitDetect(GameObject* obj) {
     }
     state->fadeTimer = SB_CLOUD_BALL_FADE_TIME;
     obj->anim.alpha = 0;
-    projectileParticleFxFn_80099660(obj, 1.0f, 2);
+    projectileDoParticleFx(obj, 1.0f, 2);
 }
 
 void SB_CloudBall_update(GameObject* obj) {
@@ -162,7 +162,7 @@ void SB_CloudBall_update(GameObject* obj) {
         ObjAnim_GetPriorityHitState(&obj->anim)->skeletonHitMask = SB_CLOUD_BALL_HIT_MASK;
         ObjAnim_GetPriorityHitState(&obj->anim)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
         if (ObjAnim_GetPriorityHitState(&obj->anim)->contactFlags != 0 && state->fadeTimer == zero) {
-            projectileParticleFxFn_80099660(obj, 1.0f, 2);
+            projectileDoParticleFx(obj, 1.0f, 2);
             state->fadeTimer = SB_CLOUD_BALL_FADE_TIME;
             obj->anim.alpha = 0;
         }

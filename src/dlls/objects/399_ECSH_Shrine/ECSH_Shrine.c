@@ -415,7 +415,7 @@ void ecshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int rend
         modelLightStruct_setEnabled(state->light, ECSH_SHRINE_LIGHT_ENABLED, ECSH_SHRINE_LIGHT_FADE_DURATION);
     }
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, ECSH_SHRINE_RENDER_SCALE);
-    objParticleFn_80099d84(obj, ECSH_SHRINE_PARTICLE_SCALE, ECSH_SHRINE_PARTICLE_TYPE, ECSH_SHRINE_PARTICLE_EXTRA_SCALE,
+    objDoParticleFx(obj, ECSH_SHRINE_PARTICLE_SCALE, ECSH_SHRINE_PARTICLE_TYPE, ECSH_SHRINE_PARTICLE_EXTRA_SCALE,
                            state->light);
 }
 

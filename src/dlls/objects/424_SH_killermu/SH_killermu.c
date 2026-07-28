@@ -167,7 +167,7 @@ void EnemyMushroom_update(GameObject* obj) {
         if (hitType != 0 && hitType != OBJHITS_SHAPE_MODEL_HIT_VOLUMES) {
             hitInfo.x += playerMapOffsetX;
             hitInfo.z += playerMapOffsetZ;
-            objLightFn_8009a1dc(obj, ENEMY_MUSHROOM_HIT_EFFECT_SCALE, &hitInfo, 1, 0);
+            objDoHitParticleFx(obj, ENEMY_MUSHROOM_HIT_EFFECT_SCALE, &hitInfo, 1, 0);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_bounce1);
             Obj_Shatter(obj);
         }
@@ -368,7 +368,7 @@ void EnemyMushroom_update(GameObject* obj) {
                 obj->anim.currentMoveProgress =
                     (f32)(int)randomGetRange(0, 0x28) / ENEMY_MUSHROOM_STUN_ANIM_PROGRESS_DIVISOR;
             }
-            objLightFn_8009a1dc(obj, ENEMY_MUSHROOM_HIT_EFFECT_SCALE, &hitInfo, 1, 0);
+            objDoHitParticleFx(obj, ENEMY_MUSHROOM_HIT_EFFECT_SCALE, &hitInfo, 1, 0);
         }
     }
 

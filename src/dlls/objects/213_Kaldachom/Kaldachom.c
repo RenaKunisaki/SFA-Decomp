@@ -527,7 +527,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                                             gKaldachomHitLightWork);
         if (hitResult != 0) {
             if ((hitResult != 0x10) && (hitResult != 0x11)) {
-                objLightFn_8009a1dc((void*)obj, 0.014f, gKaldachomHitLightWork, 3, 0);
+                objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 3, 0);
                 (*gPlayerInterface)->setState(obj, (void*)stateAddress, 4);
                 ((GroundBaddieState*)stateAddress)->baddie.hitPoints -= 1;
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
@@ -554,7 +554,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                         0, 1, gKaldachomHitLightWork, 0x401, -1, (KaldachomCombatParams*)((u8*)&stack + 0xc));
                     fn_802961FC(playerObj, 2);
                     (*gPlayerInterface)->setState(obj, (void*)stateAddress, 5);
-                    objLightFn_8009a1dc((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_swdout1);
                 }
             } else {
@@ -563,7 +563,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedB = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedA = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.substate = 1;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, gKaldachomHitLightWork, 1, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 1, 0);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_rach_call3);
                 }
@@ -626,7 +626,7 @@ void kaldachom_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, in
             }
             objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
             if ((state->flags400 & 0x60) != 0) {
-                objParticleFn_80099d84(obj, 1.0f, 3, state->glowAlpha, 0);
+                objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
             }
             control = state->control;
             ObjPath_GetPointWorldPosition(obj, 2, &control->upperMouthPosX, &control->upperMouthPosY,
