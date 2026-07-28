@@ -67,11 +67,9 @@ ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];
 ObjHitsSweepEntry gObjHitsSweepEntries[OBJHITS_SWEEP_ENTRY_CAPACITY];
 ObjHitsContactScratchEntry gObjHitsContactScratch[OBJHITS_CONTACT_SCRATCH_COUNT];
 extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
-extern f64 lbl_803DE928;
 extern f32 gObjHitsSweepSortSentinel;
 extern f32 gObjHitsResponseClampMin;
 extern f32 gObjHitsResponseClampMax;
-extern f32 lbl_803DE930;
 extern f32 gObjHitsPi;
 extern f32 gObjHitsAngleHalfPeriod;
 extern f32 lbl_803DB450;
@@ -470,8 +468,10 @@ int ObjHits_CalcSkeletonResponseXZ(f32* pos, f32 radius, GameObject* obj, ObjHit
     Vec3_Normalize(&move.x);
     if (moveLen > axial)
     {
+        f32 responseSpan = 0.25f;
+
         tdiff = gObjHitsScalarOne - t;
-        t = lbl_803DE928 + tdiff * lbl_803DE930;
+        t = 0.75 + tdiff * responseSpan;
         move.x = move.x * (t * (moveLen - axial));
         move.y = move.y * (t * (moveLen - axial));
         move.z = move.z * (t * (moveLen - axial));
