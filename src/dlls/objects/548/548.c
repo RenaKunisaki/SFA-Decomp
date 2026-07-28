@@ -42,7 +42,7 @@ void spellStoneUseFn_801fd270(GameObject* obj)
     if (cond == 0)
         return;
     *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-    if ((*gGameUIInterface)->isEventReady(gSpellStoneEventId) != 0)
+    if ((*gGameUIInterface)->isItemBeingUsed(gSpellStoneEventId) != 0)
     {
         if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150)
         {

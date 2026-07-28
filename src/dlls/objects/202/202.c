@@ -1477,7 +1477,7 @@ void groundBaddieHandlePaidTrigger(int obj, u8* state)
 
     player = Obj_GetPlayerObject();
     setup = (u8*)((GameObject*)obj)->anim.placementData;
-    if ((*gGameUIInterface)->isEventReady(446) != 0)
+    if ((*gGameUIInterface)->isItemBeingUsed(446) != 0)
     {
         if (player != NULL && playerGetMoney(player) >= 25)
         {

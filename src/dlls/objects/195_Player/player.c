@@ -9319,9 +9319,9 @@ int playerState08(GameObject* obj, int state, f32 fv)
     }
     ObjGroup_GetObjects(BABYCLOUDRUNNER_OBJGROUP, &cnt20);
     mainSetBits(GAMEBIT_ITEM_Flute_Disabled, !cnt20);
-    if ((*gGameUIInterface)->isCurrentTriggerClear() != 0)
+    if ((*gGameUIInterface)->isAnyItemBeingUsed() != 0)
     {
-        if ((*gGameUIInterface)->isEventReady(0x1ee) != 0)
+        if ((*gGameUIInterface)->isItemBeingUsed(0x1ee) != 0)
         {
             char* found;
             s16* def = NULL;
@@ -9339,7 +9339,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             }
             return 0;
         }
-        if ((*gGameUIInterface)->isEventReady(0x953) != 0 && gPlayerChildObject == NULL)
+        if ((*gGameUIInterface)->isItemBeingUsed(0x953) != 0 && gPlayerChildObject == NULL)
         {
             GameObject* player;
             void* att;
@@ -9372,8 +9372,8 @@ int playerState08(GameObject* obj, int state, f32 fv)
             (*gObjectTriggerInterface)->runSequence(0xd, (void*)obj, -1);
         }
     }
-    if (inner->curAnimId != 0x44 && (*gGameUIInterface)->isCurrentTriggerClear() != 0 &&
-        (*gGameUIInterface)->isEventReady(0x13e) != 0 &&
+    if (inner->curAnimId != 0x44 && (*gGameUIInterface)->isAnyItemBeingUsed() != 0 &&
+        (*gGameUIInterface)->isItemBeingUsed(0x13e) != 0 &&
         (ObjGroup_GetObjects(LANTERNFIREFLY_OBJGROUP, &cnt30), cnt30 == 0))
     {
         gameBitDecrement(0x13d);

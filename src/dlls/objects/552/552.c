@@ -48,7 +48,7 @@ void VFP_SpellPlace_update(int obj)
         {
         case LASEROBJ_MODE_SEQUENCE_A:
             state = spellPlace->extra;
-            if ((*gGameUIInterface)->isEventReady(LASEROBJ_MAIN_SEQUENCE_A_EVENT) != 0)
+            if ((*gGameUIInterface)->isItemBeingUsed(LASEROBJ_MAIN_SEQUENCE_A_EVENT) != 0)
             {
                 mainSetBits(state->completionGameBit, 1);
                 mainSetBits(state->activationGameBit, 0);
@@ -58,7 +58,7 @@ void VFP_SpellPlace_update(int obj)
             break;
         case LASEROBJ_MODE_SEQUENCE_B:
             state = spellPlace->extra;
-            if ((*gGameUIInterface)->isEventReady(LASEROBJ_MAIN_SEQUENCE_B_EVENT) != 0)
+            if ((*gGameUIInterface)->isItemBeingUsed(LASEROBJ_MAIN_SEQUENCE_B_EVENT) != 0)
             {
                 mainSetBits(state->completionGameBit, 1);
                 mainSetBits(state->activationGameBit, 0);

@@ -143,7 +143,7 @@ void GM_MazeWell_update(GameObject* obj)
         int found;
         for (i = 0, questBitPtr = questBits;;)
         {
-            if ((*gGameUIInterface)->isEventReady(*questBitPtr) != 0)
+            if ((*gGameUIInterface)->isItemBeingUsed(*questBitPtr) != 0)
             {
                 if (lbl_803DC968 != 0)
                 {

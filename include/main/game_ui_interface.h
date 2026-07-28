@@ -9,8 +9,8 @@ typedef struct GameUIInterface {
     void (*frameEnd)(void);
     void (*render)(void *context, int arg1, int arg2);
     u8 pad10[0x1C - 0x10];
-    int (*isCurrentTriggerClear)(void);
-    int (*isEventReady)(int eventId);
+    int (*isAnyItemBeingUsed)(void);
+    int (*isItemBeingUsed)(int itemId);
     int (*isOneOfItemsBeingUsed)(s32 *items, int count);
     u8 pad28[0x38 - 0x28];
     void (*showNpcDialogue)(s32 id, s32 unusedA, s32 unusedB, s32 disableInput);
@@ -30,8 +30,8 @@ typedef struct GameUIInterface {
 STATIC_ASSERT(offsetof(GameUIInterface, frameStart) == 0x04);
 STATIC_ASSERT(offsetof(GameUIInterface, frameEnd) == 0x08);
 STATIC_ASSERT(offsetof(GameUIInterface, render) == 0x0C);
-STATIC_ASSERT(offsetof(GameUIInterface, isCurrentTriggerClear) == 0x1C);
-STATIC_ASSERT(offsetof(GameUIInterface, isEventReady) == 0x20);
+STATIC_ASSERT(offsetof(GameUIInterface, isAnyItemBeingUsed) == 0x1C);
+STATIC_ASSERT(offsetof(GameUIInterface, isItemBeingUsed) == 0x20);
 STATIC_ASSERT(offsetof(GameUIInterface, isOneOfItemsBeingUsed) == 0x24);
 STATIC_ASSERT(offsetof(GameUIInterface, showNpcDialogue) == 0x38);
 STATIC_ASSERT(offsetof(GameUIInterface, setShowWorldMapHud) == 0x40);

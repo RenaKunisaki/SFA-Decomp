@@ -213,7 +213,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
     }
     if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
     {
-        if ((*gGameUIInterface)->isCurrentTriggerClear() == 0)
+        if ((*gGameUIInterface)->isAnyItemBeingUsed() == 0)
         {
             buttonDisable(0, PAD_BUTTON_A);
             ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->hitVolumePriority = 0xb;
@@ -251,7 +251,7 @@ int kytesmum_spawnInteractionCallback(GameObject* obj)
     if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
     {
         buttonDisable(0, PAD_BUTTON_A);
-        if ((*gGameUIInterface)->isCurrentTriggerClear() == 0)
+        if ((*gGameUIInterface)->isAnyItemBeingUsed() == 0)
         {
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
         }

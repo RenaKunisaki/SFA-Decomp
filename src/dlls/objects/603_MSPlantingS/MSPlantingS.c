@@ -224,7 +224,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
         break;
     case MSPLANTING_PHASE_EMPTY:
         if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) &&
-            (*gGameUIInterface)->isEventReady(GAMEBIT_MOONSEED_COUNT) != 0)
+            (*gGameUIInterface)->isItemBeingUsed(GAMEBIT_MOONSEED_COUNT) != 0)
         {
             int cnt = mainGetBit(GAMEBIT_MOONSEED_COUNT);
             if (cnt != 0)

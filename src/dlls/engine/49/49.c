@@ -861,7 +861,7 @@ void Minimap_frameStart(void)
         {
             gMinimapAreaNameDelay = gMinimapAreaNameDelay - 1;
         }
-        if ((*gGameUIInterface)->isEventReady(0xc8d) != 0)
+        if ((*gGameUIInterface)->isItemBeingUsed(0xc8d) != 0)
         {
             gMinimapEnabled = 1 - gMinimapEnabled;
             switch (gMinimapEnabled)

@@ -174,7 +174,7 @@ void suntemple_update(GameObject* obj)
 
         if ((gameObj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
-            if (cfg->readyEventId == -1 || (*gGameUIInterface)->isEventReady(cfg->readyEventId) != 0)
+            if (cfg->readyEventId == -1 || (*gGameUIInterface)->isItemBeingUsed(cfg->readyEventId) != 0)
             {
                 if (cfg->triggerSlot != -1)
                 {

@@ -729,7 +729,7 @@ int cfguardian_updateMain(GameObject* obj) {
     dll_2E_updateLookAt(obj, &state->moveLib);
     if (ObjTrigger_IsSet((int)obj) != 0) {
         buttonDisable(0, PAD_BUTTON_A);
-        if ((*gGameUIInterface)->isEventReady(CFGUARDIAN_WATER_SPELL_STONE_EVENT) != 0) {
+        if ((*gGameUIInterface)->isItemBeingUsed(CFGUARDIAN_WATER_SPELL_STONE_EVENT) != 0) {
             mainSetBits(GAMEBIT_WaterSpellStone1_4AB, 1);
         } else if (state->chatterState == CFGUARDIAN_CHATTER_READY) {
             int* sequenceChoices = (int*)seqPairTableLookup(gCfGuardianSeqStreamTable,

@@ -54,7 +54,7 @@ int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateStat
         obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED);
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
-        if ((*gGameUIInterface)->isEventReady(GAMEBIT_ITEM_PrisonKey_Got) != 0) {
+        if ((*gGameUIInterface)->isItemBeingUsed(GAMEBIT_ITEM_PrisonKey_Got) != 0) {
             obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             (*gObjectTriggerInterface)->runSequence(CFPRISONCAGE_SWITCH_OPEN_SEQUENCE_ID, obj, -1);
         }

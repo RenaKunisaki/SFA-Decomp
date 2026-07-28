@@ -4462,7 +4462,7 @@ int ObjTrigger_IsSetById(int obj, int eventId)
     {
         flagBlocked = triggerFlags & OBJTRIGGER_ID_BLOCK_FLAG;
         if ((flagBlocked == 0) &&
-            (playerState = (*gGameUIInterface)->isEventReady((int)(short)eventId), playerState != 0))
+            (playerState = (*gGameUIInterface)->isItemBeingUsed((int)(short)eventId), playerState != 0))
         {
             playerState = objGetAnimState80A((GameObject*)(Obj_GetPlayerObject()));
             if (playerState == OBJTRIGGER_PLAYER_STATE_NONE)
@@ -4496,7 +4496,7 @@ int ObjTrigger_IsSet(int objPtr)
         if (flagEnabled != 0)
         {
             flagBlocked = triggerFlags & OBJTRIGGER_CURRENT_BLOCK_FLAG;
-            if ((flagBlocked == 0) && (playerState = (*gGameUIInterface)->isCurrentTriggerClear(), playerState == 0))
+            if ((flagBlocked == 0) && (playerState = (*gGameUIInterface)->isAnyItemBeingUsed(), playerState == 0))
             {
                 playerState = objGetAnimState80A((GameObject*)(Obj_GetPlayerObject()));
                 if ((playerState == OBJTRIGGER_PLAYER_STATE_NONE) || (playerState == OBJTRIGGER_PLAYER_STATE_CLEAR))

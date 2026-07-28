@@ -100,7 +100,7 @@ void dll_FD_update(GameObject* obj) {
             state->mode = DLL_FD_MODE_WAIT_ENABLE;
         } else if (((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
                    ((placement->eventId == DLL_FD_NO_EVENT) ||
-                    (eventReady = (*gGameUIInterface)->isEventReady(placement->eventId), eventReady != 0))) {
+                    (eventReady = (*gGameUIInterface)->isItemBeingUsed(placement->eventId), eventReady != 0))) {
             if ((placement->flags & DLL_FD_FLAG_CLEAR_ENABLE_BIT) != 0) {
                 mainSetBits(placement->enableGameBit, 0);
             }

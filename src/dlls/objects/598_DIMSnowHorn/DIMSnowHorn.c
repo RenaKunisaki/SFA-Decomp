@@ -481,7 +481,7 @@ int DIMSnowHorn1_stateHandler06(GameObject* obj, int state)
     }
     if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE)
     {
-        if ((*gGameUIInterface)->isEventReady(GAMEBIT_SNOWHORN_PUZZLE) != 0)
+        if ((*gGameUIInterface)->isItemBeingUsed(GAMEBIT_SNOWHORN_PUZZLE) != 0)
         {
             u8 bit170 = mainGetBit(GAMEBIT_SNOWHORN_PUZZLE);
             if (mainGetBit(GAMEBIT_ITEM_AlpineRoot_028) == 0)

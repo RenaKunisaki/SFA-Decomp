@@ -81,7 +81,7 @@ void sh_beacon_update(GameObject* obj) {
     switch (state->mode) {
     case SH_BEACON_MODE_UNLIT:
         if (((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
-            ((*gGameUIInterface)->isEventReady(GAMEBIT_ITEM_FireWeed_Count) != 0)) {
+            ((*gGameUIInterface)->isItemBeingUsed(GAMEBIT_ITEM_FireWeed_Count) != 0)) {
             gameBitDecrement(GAMEBIT_ITEM_FireWeed_Count);
             mainSetBits(((ShBeaconPlacement*)placementAddress)->igniteGameBit, 1);
             if (Obj_IsLoadingLocked() != 0) {

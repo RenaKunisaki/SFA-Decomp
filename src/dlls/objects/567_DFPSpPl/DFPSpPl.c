@@ -51,7 +51,7 @@ void DFPSpPl_update(GameObject* obj)
         {
         case LASEROBJ_MODE_SEQUENCE_A:
             state = obj->extra;
-            eventReady = (*gGameUIInterface)->isEventReady(LASEROBJ_SEQUENCE_A_EVENT);
+            eventReady = (*gGameUIInterface)->isItemBeingUsed(LASEROBJ_SEQUENCE_A_EVENT);
             if (eventReady != 0)
             {
                 mainSetBits((int)state->completionGameBit, 1);
@@ -62,7 +62,7 @@ void DFPSpPl_update(GameObject* obj)
             break;
         case LASEROBJ_MODE_SEQUENCE_B:
             state = obj->extra;
-            eventReady = (*gGameUIInterface)->isEventReady(LASEROBJ_SEQUENCE_B_EVENT);
+            eventReady = (*gGameUIInterface)->isItemBeingUsed(LASEROBJ_SEQUENCE_B_EVENT);
             if (eventReady != 0)
             {
                 mainSetBits((int)state->completionGameBit, 1);

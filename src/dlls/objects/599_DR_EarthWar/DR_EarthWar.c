@@ -1315,7 +1315,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
     {
         ((ByteFlags*)&inner->sub.flags994)->b10 = 1;
-        if ((*gGameUIInterface)->isEventReady(0xc1) != 0)
+        if ((*gGameUIInterface)->isItemBeingUsed(0xc1) != 0)
         {
             (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
             buttonDisable(0, PAD_BUTTON_A);
@@ -1324,7 +1324,7 @@ void DR_EarthWarrior_update(GameObject* obj)
         }
         else if (inner->sub.interactSequenceId != -1)
         {
-            if ((*gGameUIInterface)->isCurrentTriggerClear() == 0)
+            if ((*gGameUIInterface)->isAnyItemBeingUsed() == 0)
             {
                 if (((ByteFlags*)&inner->sub.flags994)->b08 == 0)
                 {

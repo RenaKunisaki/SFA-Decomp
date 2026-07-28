@@ -106,7 +106,7 @@ void cfPowerBase_update(GameObject* obj) {
         obj->userData1 = 0;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
-        if ((*gGameUIInterface)->isEventReady(state->heldCrystalGameBit) != 0) {
+        if ((*gGameUIInterface)->isItemBeingUsed(state->heldCrystalGameBit) != 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             mainSetBits(state->heldCrystalGameBit, 0);
             mainSetBits(GAMEBIT_CFPowerBaseRelated0973, 0);

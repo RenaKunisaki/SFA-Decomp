@@ -7666,7 +7666,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
     {
         if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
         {
-            if ((*gGameUIInterface)->isEventReady(0xc1) != 0)
+            if ((*gGameUIInterface)->isItemBeingUsed(0xc1) != 0)
             {
                 a = **(u8**)state;
                 c = *(*(u8**)state + 1);
@@ -9149,7 +9149,7 @@ void Tricky_update(int obj)
     {
         int cmd;
 
-        if ((trickyState->stateFlags & 0x10) != 0 && (*gGameUIInterface)->isEventReady(0xc1) != 0)
+        if ((trickyState->stateFlags & 0x10) != 0 && (*gGameUIInterface)->isItemBeingUsed(0xc1) != 0)
         {
             cmd = 0;
         }
