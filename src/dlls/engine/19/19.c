@@ -161,6 +161,29 @@ void waterfx_setupSplashDropPointRender(void)
  * The completed geometry is drawn twice (front then back cull) via the shared
  * display list.
  */
+static f32 waterfxBandEnvelope(f32 frac, f32 life, f32* phaseOut, f32* alphaOut)
+{
+    f32 ph;
+    f32 dd;
+    f32 fade;
+    f32 lim;
+
+    ph = (WATERFX_PHASE_START + WATERFX_BAND_OFFSET_SCALE * frac) * life;
+    dd = ph - WATERFX_RIPPLE_FADE_RATE;
+    fade = WATERFX_ONE - WATERFX_FADE_CURVE_SCALE * (dd * dd);
+    lim = WATERFX_BAND_LIMIT_BASE + WATERFX_BAND_OFFSET_SCALE * frac;
+    if (life < lim)
+    {
+        *alphaOut = WATERFX_ONE;
+    }
+    else
+    {
+        *alphaOut = (WATERFX_ONE - life) / (WATERFX_ONE - lim);
+    }
+    *phaseOut = ph;
+    return fade;
+}
+
 void waterfx_drawSplashBurst(WaterParticle* s)
 {
     f32 mtxD[12];
@@ -178,17 +201,19 @@ void waterfx_drawSplashBurst(WaterParticle* s)
     for (; i < 8; i++)
     {
         f32 life = s->life;
-        f32 ph;
+        f32 ph = WATERFX_PHASE_START;
+        f32 bandOfs = WATERFX_BAND_OFFSET_SCALE * ((f32)i / WATERFX_BAND_COUNT);
         f32 dd;
         f32 lim;
         f32 sc;
         f32 fade;
         f32 alpha;
-        ph = WATERFX_PHASE_START + WATERFX_BAND_OFFSET_SCALE * ((f32)i / WATERFX_BAND_COUNT);
-        ph = ph * life;
+        f32 phb;
+        phb = ph + bandOfs;
+        ph = phb * life;
         dd = ph - 0.5f;
         fade = -(WATERFX_FADE_CURVE_SCALE * (dd * dd) - 1.0f);
-        lim = WATERFX_BAND_LIMIT_BASE + WATERFX_BAND_OFFSET_SCALE * ((f32)i / WATERFX_BAND_COUNT);
+        lim = WATERFX_BAND_LIMIT_BASE + bandOfs;
         if (life < lim)
         {
             alpha = 1.0f;
