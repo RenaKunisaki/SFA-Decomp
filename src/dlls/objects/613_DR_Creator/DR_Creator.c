@@ -59,11 +59,11 @@ int DR_Creator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
                     projectile->anim.rotY = 0;
                     projectile->anim.rotX = randomGetRange(0, 65535);
                     projectile->anim.velocityX =
-                        lbl_803E69A8 *
+                        0.2f *
                         (f32)(int)randomGetRange(-state->velocitySpread, state->velocitySpread);
-                    projectile->anim.velocityY = lbl_803E69A8 * (f32)state->speedScale;
+                    projectile->anim.velocityY = 0.2f * (f32)state->speedScale;
                     projectile->anim.velocityZ =
-                        lbl_803E69A8 *
+                        0.2f *
                         (f32)(int)randomGetRange(-state->velocitySpread, state->velocitySpread);
                     projectile->ownerObj = obj;
                 }

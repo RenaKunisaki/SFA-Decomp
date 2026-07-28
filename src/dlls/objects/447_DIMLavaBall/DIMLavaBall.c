@@ -50,10 +50,6 @@ STATIC_ASSERT(offsetof(Lavaball18dSetup, unk1C) == 0x1C);
 STATIC_ASSERT(sizeof(Lavaball18dSetup) == 0x24);
 
 STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
-
-extern f32 lbl_803E4810;
-extern f32 lbl_803E4814;
-
 void lavaball1bf_clearPending(GameObject* obj)
 {
     Lavaball1bfState* p = (Lavaball1bfState*)(int*)obj->extra;
@@ -101,7 +97,7 @@ void lavaball1bf_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     s32 v = visible;
     if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E4810);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void lavaball1bf_hitDetect(void)
@@ -124,7 +120,7 @@ void lavaball1bf_update(GameObject* obj)
         {
             state->gbState = 1;
             state->soloLatch = 0;
-            state->fireTimer = lbl_803E4814;
+            state->fireTimer = 0.0f;
         }
         else
         {
@@ -153,7 +149,7 @@ void lavaball1bf_update(GameObject* obj)
     spawned = state->spawnedObj;
     timer = state->fireTimer - timeDelta;
     state->fireTimer = timer;
-    if (timer <= lbl_803E4814 &&
+    if (timer <= 0.0f &&
         ((int (*)(int*))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)[9])(spawned) != 0)
     {
         if (state->gbState != 0)
@@ -181,7 +177,7 @@ void lavaball1bf_init(GameObject* obj, u8* p)
     obj->anim.rotX = (s16)((s32)p[0x1c] << 8);
     inner = obj->extra;
     inner->firePeriod = (f32) * (s16*)(p + 0x18);
-    inner->fireTimer = lbl_803E4814;
+    inner->fireTimer = 0.0f;
     inner->gateA = p[0x1d];
     inner->gateB = mainGetBit((int)*(s16*)(p + 0x22));
     if (*(s16*)(p + 0x24) == -1 && inner->gateB == 0)

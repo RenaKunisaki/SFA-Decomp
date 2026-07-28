@@ -9,12 +9,6 @@ void* lbl_803DD974;
 u8 lbl_803DD970;
 void* lbl_803DD96C;
 f32 lbl_803DD968;
-extern f32 lbl_803E22A8;
-extern f32 lbl_803E22AC;
-extern f32 lbl_803E22B0;
-extern f32 lbl_803E22B4;
-extern f32 lbl_803E22B8;
-
 CreditsPage gCreditsPages[] = {
     {
         {
@@ -173,15 +167,15 @@ int Credits_frameStart(void)
                 else if (cur < line->t1)
                 {
                     frac = (cur - line->t0) / (f32)(line->t1 - line->t0);
-                    if (frac < lbl_803E22A8)
+                    if (frac < 0.0f)
                     {
-                        frac = lbl_803E22A8;
+                        frac = 0.0f;
                     }
-                    else if (frac > lbl_803E22AC)
+                    else if (frac > 1.0f)
                     {
-                        frac = lbl_803E22AC;
+                        frac = 1.0f;
                     }
-                    alpha = lbl_803E22B0 * frac;
+                    alpha = 255.0f * frac;
                 }
                 else if (cur < line->t2)
                 {
@@ -190,15 +184,15 @@ int Credits_frameStart(void)
                 else if (cur < line->t3)
                 {
                     frac = (cur - line->t2) / (f32)(line->t3 - line->t2);
-                    if (frac < lbl_803E22A8)
+                    if (frac < 0.0f)
                     {
-                        frac = lbl_803E22A8;
+                        frac = 0.0f;
                     }
-                    else if (frac > lbl_803E22AC)
+                    else if (frac > 1.0f)
                     {
-                        frac = lbl_803E22AC;
+                        frac = 1.0f;
                     }
-                    alpha = 0xff - (int)(lbl_803E22B0 * frac);
+                    alpha = 0xff - (int)(255.0f * frac);
                 }
                 else
                 {
@@ -207,7 +201,7 @@ int Credits_frameStart(void)
                 line->alpha = alpha;
                 if (cur >= line->t0 && cur <= line->t3 && cur >= gCreditsPages[lbl_803DD970].scrollStartTime)
                 {
-                    line->y = lbl_803E22B4 * (timeDelta / lbl_803E22B8) + line->y;
+                    line->y = 8.0f * (timeDelta / 60.0f) + line->y;
                 }
             }
         }
@@ -225,7 +219,7 @@ void Credits_initialise(void)
     lbl_803DD974 = textureLoadAsset(CREDITS_TEXTURE_ID);
     lbl_803DD96C = gameTextGet(0x1FD);
     lbl_803DD970 = 0;
-    lbl_803DD968 = lbl_803E22A8;
+    lbl_803DD968 = 0.0f;
 }
 
 void* lbl_8031CC10[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
