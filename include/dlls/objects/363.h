@@ -49,8 +49,7 @@ int MagicLight_sequenceCallback(GameObject* obj);
 int MagicLight_getExtraSize(GameObject* obj);
 int MagicLight_getObjectTypeId(void);
 void MagicLight_free(GameObject* obj);
-void MagicLight_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void MagicLight_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void MagicLight_hitDetect(void);
 void MagicLight_update(GameObject* obj);
 void MagicLight_init(GameObject* obj, const MagicLightPlacement* placement);
