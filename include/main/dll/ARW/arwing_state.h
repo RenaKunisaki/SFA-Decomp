@@ -114,7 +114,7 @@ typedef struct ArwingState {
     u16 inputFlags2;     /* 0x3f8: 0x100 fire held */
     u8 unk3FA;
     u8 pad3FB[9];
-    u8 laserLevel;       /* 0x404: 0 single, 1 twin, 2 hyper */
+    s8 laserLevel;       /* 0x404: 0 single, 1 twin, 2 hyper */
     u8 laserSide;        /* 0x405: alternating muzzle */
     u8 pad406[2];
     f32 fireCooldown;    /* 0x408 */

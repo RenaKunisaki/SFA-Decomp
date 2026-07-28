@@ -367,21 +367,21 @@ void arwsquadron_updateVolley(GameObject* obj, ArwSquadronState* state, ArwSquad
             flags->volleyInProgress = 1;
             storeZeroToFloatParam(&state->shotIntervalTimer);
             s16toFloat(&state->shotIntervalTimer, setup->shotInterval);
-            *(s8*)&state->volleyShotsRemaining = setup->shotsPerVolley;
+            state->volleyShotsRemaining = setup->shotsPerVolley;
             state->volleyAngle = -setup->volleyAngleSpread;
         }
     }
     else if (timerCountDown(&state->shotIntervalTimer) != 0)
     {
         arwsquadron_spawnProjectile(obj, 0, state->volleyAngle,
-                                    (s8)state->volleyShotsRemaining == setup->shotsPerVolley ? 1 : 0);
+                                    state->volleyShotsRemaining == setup->shotsPerVolley ? 1 : 0);
         if (state->projectilePathCount > 1)
             arwsquadron_spawnProjectile(obj, 1, state->volleyAngle, 0);
         state->volleyShotsRemaining--;
         storeZeroToFloatParam(&state->shotIntervalTimer);
         s16toFloat(&state->shotIntervalTimer, setup->shotInterval);
         state->volleyAngle += setup->volleyAngleSpread * 2 / setup->shotsPerVolley;
-        if ((s8)state->volleyShotsRemaining <= 0)
+        if (state->volleyShotsRemaining <= 0)
         {
             flags->volleyInProgress = 0;
             storeZeroToFloatParam(&state->volleyCooldownTimer);

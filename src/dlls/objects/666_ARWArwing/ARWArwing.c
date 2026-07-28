@@ -695,12 +695,12 @@ void arwarwing_updateWeaponFire(GameObject* obj, ArwingState* state)
     if ((state->inputFlags & 0x100) == 0 && fire == 0)
         return;
     state->fireTimer = 20.0f;
-    if ((s8)state->laserLevel == 2)
+    if (state->laserLevel == 2)
     {
         arwarwing_spawnLaserShot(obj, state, 0, 2, 1);
         arwarwing_spawnLaserShot(obj, state, 1, 2, 0);
     }
-    else if ((s8)state->laserLevel == 1)
+    else if (state->laserLevel == 1)
     {
         arwarwing_spawnLaserShot(obj, state, 0, 1, 1);
         arwarwing_spawnLaserShot(obj, state, 1, 1, 0);
@@ -1590,7 +1590,7 @@ void arwarwing_addBomb(GameObject* arwing)
 void arwarwing_upgradeLaserLevel(GameObject* arwing)
 {
     ArwingState* state = arwing->extra;
-    if ((s8)state->laserLevel < 2)
+    if (state->laserLevel < 2)
     {
         (state->laserLevel)++;
     }

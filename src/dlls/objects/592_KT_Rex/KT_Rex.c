@@ -1046,7 +1046,7 @@ void ktrex_updateContactEffects(GameObject* obj, KTRexRuntime* runtime)
         return;
     }
     contactPoints = *(f32**)((u8*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex] + 0x50);
-    if ((s8)runtime->hitCountdown != 0 && (hitType == 3 || hitType == 2) &&
+    if (runtime->hitCountdown != 0 && (hitType == 3 || hitType == 2) &&
         (gKTRexState->timerFA & 0x10) != 0 && hit == 5)
     {
         gKTRexEffectSpawnWork.posX = playerMapOffsetX + (pt = contactPoints + hitType * 4)[1];
@@ -1064,7 +1064,7 @@ void ktrex_updateContactEffects(GameObject* obj, KTRexRuntime* runtime)
         {
             runtime->hitCountdown = 0;
         }
-        if ((s8)runtime->hitCountdown <= 0)
+        if (runtime->hitCountdown <= 0)
         {
             runtime->hitCountdown = 0;
             gKTRexState->timerFA &= ~0x10;
@@ -1094,7 +1094,7 @@ void ktrex_updateContactEffects(GameObject* obj, KTRexRuntime* runtime)
                     (StaffCollisionColorArgs*)msg.w);
         gKTRexContactEffectCooldown = 0x3c;
     }
-    if ((s8)runtime->hitCountdown < 1)
+    if (runtime->hitCountdown < 1)
     {
         runtime->hitCountdown = 0;
     }

@@ -105,7 +105,7 @@ typedef struct ArwSquadronState
     s16 hitFadeRed;
     s16 hitFadeGreen;
     u8 hitFlashActive;
-    u8 volleyShotsRemaining;
+    s8 volleyShotsRemaining;
     u8 hitVolumeMode;
     u8 deathScore;
     u8 hitScore;

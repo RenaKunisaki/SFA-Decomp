@@ -135,7 +135,7 @@ typedef struct KTRexRuntime
     u8 pad34D[2];
     s8 unk34F;
     u8 pad350[4];
-    u8 hitCountdown;
+    s8 hitCountdown;
     u8 pad355[0x93];
     f32 bobPhase;
     f32 bobRate;
