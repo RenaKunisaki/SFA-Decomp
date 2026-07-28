@@ -84,6 +84,12 @@ f32 lbl_803DBC60 = 20.0f;
 f32 lbl_803DBC64 = 20.0f;
 f32 lbl_803DBC68 = 2.3509887e-38f;
 
+typedef struct BaddieTrickyInterfaceVTable
+{
+    void* callbacks[10];                                                                                 /* 0x00 */
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType); /* 0x28 */
+} BaddieTrickyInterfaceVTable;
+
 typedef struct BaddieAfterUpdateBonesCbState
 {
     u8 pad0[0x2B0 - 0x0];
@@ -2644,14 +2650,14 @@ void enemy_update(GameObject* obj)
     u8* player;
     u8* state;
     u8* setup;
-    u8* tricky;
+    GameObject* tricky;
     u32 flags;
     u8* s2;
     f32 fz;
 
     state = obj->extra;
     setup = *(u8**)&obj->anim.placementData;
-    tricky = (u8*)getTrickyObject();
+    tricky = getTrickyObject();
     if (getCurUiDll() == 4)
     {
         return;
@@ -2854,7 +2860,7 @@ void enemy_update(GameObject* obj)
         }
         if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
         {
-            (**(void (**)(u8*, int, int, int))(*(int*)(*(int*)(tricky + 0x68)) + 0x28))(tricky, (int)obj, 1, 2);
+            (*(BaddieTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 2);
         }
     }
     baddie_updateWhileFrozen(obj, state, 0);
