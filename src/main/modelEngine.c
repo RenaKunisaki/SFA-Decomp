@@ -226,6 +226,7 @@
 #include "dlls/objects/429_SH_thorntai.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "dlls/objects/431_SH_swaplift.h"
+#include "dlls/objects/432_SH_swapston.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -389,8 +390,7 @@ extern ResourceDescriptor gWM_GalleonObjDescriptor, gWM_GeneralScalesObjDescript
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
-extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWarpStoneObjDescriptor,
-    gWaterFlowWeObjDescriptor;
+extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor, gWorldPlanetObjDescriptor,
     lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, lbl_8030F4AC, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
@@ -1491,7 +1491,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSH_thorntailObjDescriptor,
     (ResourceDescriptor*)&gSH_LevelControlObjDescriptor,
     (ResourceDescriptor*)&gWarpStoneLiftObjDescriptor,
-    &gWarpStoneObjDescriptor,
+    (ResourceDescriptor*)&gWarpStoneObjDescriptor,
     &gSH_staffObjDescriptor,
     &gSH_staffHazeObjDescriptor,
     &gSH_BeaconObjDescriptor,
