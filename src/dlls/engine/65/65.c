@@ -63,14 +63,13 @@ int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuIt
     {
         if (mainGetBit(entries[entry].bit) != 0)
         {
-            memcpy(items, &templates[entry], sizeof(WarpstoneMenuItem));
-            lastDst = items;
-            items->y = yStart + slot * 0x2a;
-            items->previousItem = slot - 1;
-            items->nextItem = slot + 1;
+            memcpy(&items[slot], &templates[entry], sizeof(WarpstoneMenuItem));
+            lastDst = &items[slot];
+            items[slot].y = yStart + slot * 0x2a;
+            items[slot].previousItem = slot - 1;
+            items[slot].nextItem = slot + 1;
             selectedIndices[0] = entry;
             selectedIndices++;
-            items++;
             slot++;
         }
     }
