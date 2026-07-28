@@ -69,12 +69,6 @@ typedef struct
     u8 _r299 : 7;
 } WcHitBits;
 
-typedef struct
-{
-    s16 r0, r1, r2;
-    f32 m8, mc, m10, m14;
-} WcXf;
-
 int wmwallcrawler_animEventCallback(GameObject* obj)
 {
     ((WmwallcrawlerState*)obj->extra)->mode = WMWALLCRAWLER_MODE_DESCEND;
@@ -83,20 +77,20 @@ int wmwallcrawler_animEventCallback(GameObject* obj)
 
 void wmwallcrawler_alignToFloorNormal(GameObject* obj, TrackGroundHit* floorHit)
 {
-    WcXf mtx;
+    MatrixTransform mtx;
     f32 in[3];
     u16 ang, ang2;
     in[0] = floorHit->normalX;
     in[1] = floorHit->normalY;
     in[2] = floorHit->normalZ;
-    mtx.mc = 0.0f;
-    mtx.m10 = 0.0f;
-    mtx.m14 = 0.0f;
-    mtx.m8 = 1.0f;
-    mtx.r2 = 0;
-    mtx.r1 = 0;
-    mtx.r0 = obj->anim.rotX;
-    vecRotateZXY(&mtx.r0, in);
+    mtx.x = 0.0f;
+    mtx.y = 0.0f;
+    mtx.z = 0.0f;
+    mtx.scale = 1.0f;
+    mtx.rotZ = 0;
+    mtx.rotY = 0;
+    mtx.rotX = obj->anim.rotX;
+    vecRotateZXY(&mtx.rotX, in);
     ang = getAngle(in[0], in[1]);
     ang2 = getAngle(in[2], in[1]);
     obj->anim.rotY = ang2;

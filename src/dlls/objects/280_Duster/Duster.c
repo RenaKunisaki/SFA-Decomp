@@ -35,26 +35,8 @@ typedef struct DusterCharacterState {
     u8 maxCollectedCount;
 } DusterCharacterState;
 
-typedef struct DusterLaunchRotation {
-    s16 yaw;
-    s16 pitch;
-    s16 roll;
-    f32 scale;
-    f32 x;
-    f32 y;
-    f32 z;
-} DusterLaunchRotation;
-
 STATIC_ASSERT(offsetof(DusterCharacterState, collectedCount) == 0x9);
 STATIC_ASSERT(offsetof(DusterCharacterState, maxCollectedCount) == 0xA);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, yaw) == 0x0);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, pitch) == 0x2);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, roll) == 0x4);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, scale) == 0x8);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, x) == 0xC);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, y) == 0x10);
-STATIC_ASSERT(offsetof(DusterLaunchRotation, z) == 0x14);
-STATIC_ASSERT(sizeof(DusterLaunchRotation) == 0x18);
 
 int duster_SeqFn(GameObject* obj) {
     DusterObjectState* state = obj->extra;
@@ -101,7 +83,7 @@ void duster_update(GameObject* obj) {
     int bestFloorIndex;
     f32 bestFloorDelta;
     f32 verticalDelta;
-    DusterLaunchRotation launch;
+    MatrixTransform launch;
     DusterCharacterState* characterState;
 
     state = obj->extra;
@@ -181,10 +163,10 @@ void duster_update(GameObject* obj) {
                 obj->anim.velocityX = 0.2f;
                 launch.z = launch.y = launch.x = obj->anim.velocityZ = 0.0f;
                 launch.scale = 1.0f;
-                launch.roll = 0;
-                launch.pitch = 0;
-                launch.yaw = obj->anim.rotX;
-                vecRotateZXY(&launch.yaw, &obj->anim.velocityX);
+                launch.rotZ = 0;
+                launch.rotY = 0;
+                launch.rotX = obj->anim.rotX;
+                vecRotateZXY(&launch.rotX, &obj->anim.velocityX);
             } else {
                 obj->anim.velocityZ = obj->anim.velocityX = 0.0f;
             }
