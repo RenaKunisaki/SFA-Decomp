@@ -101,14 +101,6 @@ typedef struct CmbSrcState {
   CmbSrcHitFlags hitFlags;
 } CmbSrcState;
 
-typedef struct CmbSrcObject {
-  ObjAnimComponent objAnim;
-  u16 objectFlags;
-  u8 padB2[0xB8 - 0xB2];
-  CmbSrcState *state;
-  int (*updateCallback)(struct CmbSrcObject* obj);
-} CmbSrcObject;
-
 STATIC_ASSERT(sizeof(CmbSrcMapData) == CMBSRC_PLACEMENT_BYTES);
 STATIC_ASSERT(offsetof(CmbSrcMapData, rotZ) == 0x18);
 STATIC_ASSERT(offsetof(CmbSrcMapData, colorIndex) == 0x1B);
@@ -133,11 +125,6 @@ STATIC_ASSERT(offsetof(CmbSrcState, active) == 0x25);
 STATIC_ASSERT(offsetof(CmbSrcState, hitCharge) == 0x26);
 STATIC_ASSERT(offsetof(CmbSrcState, hitFlags) == 0x27);
 
-STATIC_ASSERT(offsetof(CmbSrcObject, objAnim) == 0x00);
-STATIC_ASSERT(offsetof(CmbSrcObject, objectFlags) == 0xB0);
-STATIC_ASSERT(offsetof(CmbSrcObject, state) == 0xB8);
-STATIC_ASSERT(offsetof(CmbSrcObject, updateCallback) == 0xBC);
-
 extern ObjectDescriptor gCmbSrcObjDescriptor;
 extern u8 gCmbsrcColorCycleIndexTable[8];
 extern u8 gCmbsrcColorSoundIdTable[];
@@ -148,17 +135,17 @@ int cmbsrc_getExtraSize(void);
 int cmbsrc_getObjectTypeId(void);
 void cmbsrc_initialise(void);
 void cmbsrc_release(void);
-int cmbsrc_updateAndReturnZero(CmbSrcObject* obj);
-int cmbsrc_getColorIndex(CmbSrcObject* obj);
-void cmbsrc_setExternalActive(CmbSrcObject* obj, u8 active);
+int cmbsrc_updateAndReturnZero(GameObject* obj);
+int cmbsrc_getColorIndex(GameObject* obj);
+void cmbsrc_setExternalActive(GameObject* obj, u8 active);
 void cmbsrc_free(int obj);
-void cmbsrc_render(CmbSrcObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-u8 cmbsrc_shouldActivate(CmbSrcObject* obj, CmbSrcState* state, CmbSrcMapData* setup);
-u8 cmbsrc_shouldDeactivate(CmbSrcObject* obj, CmbSrcState* state, CmbSrcMapData* setup);
-void cmbsrc_hitDetect(CmbSrcObject* obj);
-u8 cmbsrc_cycleColor(CmbSrcObject* obj, CmbSrcState* state);
-void cmbsrc_updateVisuals(CmbSrcObject* obj, CmbSrcState* state);
-void cmbsrc_update(CmbSrcObject* obj);
-void cmbsrc_init(CmbSrcObject* obj, CmbSrcMapData* setup);
+void cmbsrc_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
+u8 cmbsrc_shouldActivate(GameObject* obj, CmbSrcState* state, CmbSrcMapData* setup);
+u8 cmbsrc_shouldDeactivate(GameObject* obj, CmbSrcState* state, CmbSrcMapData* setup);
+void cmbsrc_hitDetect(GameObject* obj);
+u8 cmbsrc_cycleColor(GameObject* obj, CmbSrcState* state);
+void cmbsrc_updateVisuals(GameObject* obj, CmbSrcState* state);
+void cmbsrc_update(GameObject* obj);
+void cmbsrc_init(GameObject* obj, CmbSrcMapData* setup);
 
 #endif /* MAIN_DLL_CMBSRC_H_ */

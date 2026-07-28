@@ -154,7 +154,7 @@ void sc_cloudrunnera_update(int obj) {
         }
         case SC_CLOUDRUNNER_A_EVENT_DEACTIVATE_CHILD: {
             if (((GameObject*)obj)->childObjs[0] != NULL) {
-                cmbsrc_setExternalActive((CmbSrcObject*)((GameObject*)obj)->childObjs[0], 0);
+                cmbsrc_setExternalActive((GameObject*)((GameObject*)obj)->childObjs[0], 0);
             }
             break;
         }

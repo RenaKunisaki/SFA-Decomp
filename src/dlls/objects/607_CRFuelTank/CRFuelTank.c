@@ -10,9 +10,6 @@
 #include "main/objhits.h"
 #include "sys/objects.h"
 
-/* GameObject anim.flags bit (== OBJANIM_FLAG_HIDDEN): hides the tank from
-   render/update; toggled with the hit-volume enable/disable. */
-#define CRFUELTANK_OBJFLAG_HIDDEN  0x4000
 #define CRFUELTANK_HIT_VOLUME_SLOT 0x1d
 
 /* only the CloudRunner snowbike detonates a fuel tank; retail OBJECTS.bin name
@@ -44,80 +41,80 @@ void crfueltank_render(void)
     return;
 }
 
-void crfueltank_hitDetect(CrFuelTankObject* obj)
+void crfueltank_hitDetect(GameObject* obj)
 {
     CrFuelTankDef* def;
-    CrFuelTankCollider* collider;
+    ObjHitsPriorityState* hitState;
     GameObject* hitObj;
 
-    collider = obj->collider;
-    def = obj->def;
-    if ((collider != NULL) && (collider->hitObj != NULL))
+    hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+    def = (CrFuelTankDef*)obj->anim.placementData;
+    if ((hitState != NULL) && (hitState->lastHitObject != 0))
     {
-        hitObj = collider->hitObj;
+        hitObj = (GameObject*)hitState->lastHitObject;
         if (hitObj->anim.seqId == CRFUELTANK_TRIGGER_OBJ)
         {
-            ObjHits_DisableObject((GameObject*)obj);
+            ObjHits_DisableObject(obj);
             Sfx_PlayFromObject((u32)Obj_GetPlayerObject(), SFXTRIG_ar_barrel16);
-            obj->alpha = 0xfa;
-            obj->triggered = 1;
+            obj->anim.alpha = 0xfa;
+            obj->userData2 = 1;
             if (def->hitEvent != -1)
             {
                 mainSetBits(def->hitEvent, 1);
             }
-            obj->velocityX = hitObj->anim.velocityX;
-            obj->velocityY = 0.07f + hitObj->anim.velocityY;
-            obj->velocityZ = hitObj->anim.velocityZ;
+            obj->anim.velocityX = hitObj->anim.velocityX;
+            obj->anim.velocityY = 0.07f + hitObj->anim.velocityY;
+            obj->anim.velocityZ = hitObj->anim.velocityZ;
         }
     }
     return;
 }
 
-void crfueltank_update(CrFuelTankObject* obj)
+void crfueltank_update(GameObject* obj)
 {
     CrFuelTankDef* def;
     CrFuelTankState* state;
 
-    def = obj->def;
-    state = obj->state;
+    def = (CrFuelTankDef*)obj->anim.placementData;
+    state = obj->extra;
     if (timerIsActive(&state->timer) != 0)
     {
         if (timerCountDown(&state->timer) != 0)
         {
-            ObjHits_EnableObject((GameObject*)obj);
-            obj->animFlags = (s16)(obj->animFlags & ~CRFUELTANK_OBJFLAG_HIDDEN);
-            obj->alpha = 0xff;
+            ObjHits_EnableObject(obj);
+            obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
+            obj->anim.alpha = 0xff;
         }
     }
     else
     {
-        if (obj->alpha < 0xff)
+        if (obj->anim.alpha < 0xff)
         {
-            obj->animFlags = (s16)(obj->animFlags | CRFUELTANK_OBJFLAG_HIDDEN);
+            obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
             s16toFloat(&state->timer, 0x708);
         }
         else
         {
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, CRFUELTANK_HIT_VOLUME_SLOT, crfueltank_animFrame(def), 0);
+            ObjHits_SetHitVolumeSlot(&obj->anim, CRFUELTANK_HIT_VOLUME_SLOT, crfueltank_animFrame(def), 0);
         }
     }
     return;
 }
 
-void crfueltank_init(CrFuelTankObject* obj, CrFuelTankDef* def)
+void crfueltank_init(GameObject* obj, CrFuelTankDef* def)
 {
     CrFuelTankState* state;
 
-    state = obj->state;
-    ObjHits_EnableObject((GameObject*)obj);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, CRFUELTANK_HIT_VOLUME_SLOT, crfueltank_animFrame(def), 0);
+    state = obj->extra;
+    ObjHits_EnableObject(obj);
+    ObjHits_SetHitVolumeSlot(&obj->anim, CRFUELTANK_HIT_VOLUME_SLOT, crfueltank_animFrame(def), 0);
     storeZeroToFloatParam(&state->timer);
     if ((def->hitEvent != -1) && (mainGetBit(def->hitEvent) != 0))
     {
         s16toFloat(&state->timer, 0x708);
-        ObjHits_DisableObject((GameObject*)obj);
-        obj->animFlags = (s16)(obj->animFlags | CRFUELTANK_OBJFLAG_HIDDEN);
-        obj->alpha = 0;
+        ObjHits_DisableObject(obj);
+        obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
+        obj->anim.alpha = 0;
     }
     return;
 }

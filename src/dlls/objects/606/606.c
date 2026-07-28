@@ -22,21 +22,17 @@ s16 lbl_803DC228[2] = {0x49A, 0x49A};
 /* object group this object joins while active */
 #define SPELLSTONE_OBJGROUP 0x1e
 
-/* GameObject anim.flags bit (== OBJANIM_FLAG_HIDDEN): stops the object being
-   rendered/updated; set when the stone's map event completes. */
-#define SPELLSTONE_OBJFLAG_HIDDEN 0x4000
-
-int spellstone_getState(SpellStoneObject* obj)
+int spellstone_getState(GameObject* obj)
 {
-    return obj->state->state != SPELLSTONE_STATE_ACTIVE;
+    return ((SpellStoneState*)obj->extra)->state != SPELLSTONE_STATE_ACTIVE;
 }
 
-int spellstone_setState(SpellStoneObject* obj, int state)
+int spellstone_setState(GameObject* obj, int state)
 {
     SpellStoneState* extra;
     u8 oldState;
 
-    extra = obj->state;
+    extra = obj->extra;
     oldState = extra->state;
     extra->state = state;
     if (state == SPELLSTONE_STATE_ACTIVE)
@@ -56,20 +52,20 @@ int spellstone_getObjectTypeId(void)
     return 0;
 }
 
-void spellstone_free(SpellStoneObject* obj)
+void spellstone_free(GameObject* obj)
 {
     ObjGroup_RemoveObject((u32)obj, SPELLSTONE_OBJGROUP);
     return;
 }
 
-void spellstone_render(SpellStoneObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
+void spellstone_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
 {
     SpellStoneState* state;
 
-    state = obj->state;
+    state = obj->extra;
     if ((visible != 0) && (state->state != SPELLSTONE_STATE_HIDDEN))
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, (double)1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, (double)1.0f);
     }
     return;
 }
@@ -79,14 +75,14 @@ void spellstone_hitDetect(void)
     return;
 }
 
-void spellstone_update(SpellStoneObject* obj)
+void spellstone_update(GameObject* obj)
 {
     u32 eventActive;
     GameObject* playerObj;
     SpellStoneState* state;
     SpellStoneDef* def;
 
-    state = obj->state;
+    state = obj->extra;
     def = (SpellStoneDef*)obj->anim.placementData;
     if (state->state == SPELLSTONE_STATE_ACTIVE)
     {
@@ -98,8 +94,8 @@ void spellstone_update(SpellStoneObject* obj)
     if (eventActive != 0)
     {
         mainSetBits(*(lbl_803DC228 + def->eventIndex), 1);
-        obj->anim.flags = (s16)(obj->anim.flags | SPELLSTONE_OBJFLAG_HIDDEN);
-        Obj_RemoveFromUpdateList((GameObject*)obj);
+        obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
+        Obj_RemoveFromUpdateList(obj);
         (*gMapEventInterface)->setMapAct(0x1d, 2);
     }
     else
@@ -107,8 +103,8 @@ void spellstone_update(SpellStoneObject* obj)
         eventActive = mainGetBit(def->activeEvent);
         if (eventActive != 0)
         {
-            obj->anim.flags = (s16)(obj->anim.flags | SPELLSTONE_OBJFLAG_HIDDEN);
-            Obj_RemoveFromUpdateList((GameObject*)obj);
+            obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
+            Obj_RemoveFromUpdateList(obj);
         }
         if (state->state == SPELLSTONE_STATE_ACTIVE)
         {
@@ -120,30 +116,30 @@ void spellstone_update(SpellStoneObject* obj)
         }
         if (state->state == SPELLSTONE_STATE_HIDDEN)
         {
-            ObjHits_DisableObject((GameObject*)obj);
-            if (obj->followTarget != NULL)
+            ObjHits_DisableObject(obj);
+            if (obj->ownerObj != NULL)
             {
-                obj->anim.localPosX = obj->followTarget->anim.localPosX;
-                obj->anim.localPosY = obj->followTarget->anim.localPosY;
-                obj->anim.localPosZ = obj->followTarget->anim.localPosZ;
+                obj->anim.localPosX = ((GameObject*)obj->ownerObj)->anim.localPosX;
+                obj->anim.localPosY = ((GameObject*)obj->ownerObj)->anim.localPosY;
+                obj->anim.localPosZ = ((GameObject*)obj->ownerObj)->anim.localPosZ;
             }
         }
         else
         {
-            ObjHits_EnableObject((GameObject*)obj);
+            ObjHits_EnableObject(obj);
         }
     }
     return;
 }
 
-void spellstone_init(SpellStoneObject* obj)
+void spellstone_init(GameObject* obj)
 {
     SpellStoneState* state;
 
-    state = obj->state;
+    state = obj->extra;
     ObjGroup_AddObject((u32)obj, SPELLSTONE_OBJGROUP);
     state->state = SPELLSTONE_STATE_IDLE;
-    obj->callback = spellstone_idleCallback;
+    obj->animEventCallback = spellstone_idleCallback;
     return;
 }
 

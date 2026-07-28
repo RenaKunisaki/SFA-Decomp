@@ -52,12 +52,6 @@ typedef struct DfpLightniState {
   s32 eventId;
 } DfpLightniState;
 
-typedef struct DfpLightniObject {
-  ObjAnimComponent anim;
-  u8 padB0[8];
-  DfpLightniState *state;
-} DfpLightniObject;
-
 STATIC_ASSERT(offsetof(DfpLightniMapData, angleIndex) == 0x18);
 STATIC_ASSERT(offsetof(DfpLightniMapData, delayTicks) == 0x19);
 STATIC_ASSERT(offsetof(DfpLightniMapData, radiusX) == 0x1A);
@@ -74,14 +68,11 @@ STATIC_ASSERT(offsetof(DfpLightniState, angleIndex) == 0x14);
 STATIC_ASSERT(offsetof(DfpLightniState, delayFrames) == 0x16);
 STATIC_ASSERT(offsetof(DfpLightniState, eventId) == 0x18);
 
-STATIC_ASSERT(offsetof(DfpLightniObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(DfpLightniObject, state) == 0xB8);
-
 extern ObjectDescriptor gDfplightniObjDescriptor;
 
 int DFP_Lightni_getExtraSize(void);
-void DFP_Lightni_free(DfpLightniObject *obj);
-void DFP_Lightni_render(DfpLightniObject *obj);
-void DFP_Lightni_update(DfpLightniObject *obj);
-void DFP_Lightni_init(DfpLightniObject *obj,DfpLightniMapData *mapData);
+void DFP_Lightni_free(GameObject *obj);
+void DFP_Lightni_render(GameObject *obj);
+void DFP_Lightni_update(GameObject *obj);
+void DFP_Lightni_init(GameObject *obj,DfpLightniMapData *mapData);
 #endif /* MAIN_DFPLIGHTNI_H_ */

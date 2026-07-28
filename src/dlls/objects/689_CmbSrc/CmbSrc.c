@@ -34,7 +34,7 @@ u8 gCmbsrcColorCycleIndexTable[8] = {5, 6, 4, 0, 0, 0, 0, 0};
 
 #define CMBSRC_OBJFLAG_RENDERED 0x800
 
-u8 cmbsrc_shouldDeactivate(CmbSrcObject* obj, CmbSrcState* sourceState, CmbSrcMapData* mapData)
+u8 cmbsrc_shouldDeactivate(GameObject* obj, CmbSrcState* sourceState, CmbSrcMapData* mapData)
 {
     u8 result = 0;
     f32 sunTime;
@@ -59,7 +59,7 @@ u8 cmbsrc_shouldDeactivate(CmbSrcObject* obj, CmbSrcState* sourceState, CmbSrcMa
     return result;
 }
 
-u8 cmbsrc_shouldActivate(CmbSrcObject* obj, CmbSrcState* sourceState, CmbSrcMapData* mapData)
+u8 cmbsrc_shouldActivate(GameObject* obj, CmbSrcState* sourceState, CmbSrcMapData* mapData)
 {
     u8 result = 0;
     f32 sunTime;
@@ -92,9 +92,9 @@ u8 cmbsrc_shouldActivate(CmbSrcObject* obj, CmbSrcState* sourceState, CmbSrcMapD
     return result;
 }
 
-u8 cmbsrc_cycleColor(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
+u8 cmbsrc_cycleColor(GameObject* cmbsrc, CmbSrcState* sourceState)
 {
-    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
+    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->anim.placementData;
     u8 idx;
 
     sourceState->colorCycleTimer -= timeDelta;
@@ -125,13 +125,13 @@ u8 cmbsrc_cycleColor(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
                 {
                     modelLightStruct_setupGlow(sourceState->light, 0, gCmbsrcColorRgbTable[idx * 3],
                                                gCmbsrcColorRgbTable[idx * 3 + 1], gCmbsrcColorRgbTable[idx * 3 + 2],
-                                               0x87, 660.0f * cmbsrc->objAnim.rootMotionScale);
+                                               0x87, 660.0f * cmbsrc->anim.rootMotionScale);
                 }
                 else
                 {
                     modelLightStruct_setupGlow(sourceState->light, 0, gCmbsrcColorRgbTable[idx * 3],
                                                gCmbsrcColorRgbTable[idx * 3 + 1], gCmbsrcColorRgbTable[idx * 3 + 2],
-                                               0x87, 220.0f * cmbsrc->objAnim.rootMotionScale);
+                                               0x87, 220.0f * cmbsrc->anim.rootMotionScale);
                 }
             }
         }
@@ -144,9 +144,9 @@ u8 cmbsrc_cycleColor(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
 }
 
 
-void cmbsrc_updateVisuals(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
+void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
 {
-    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
+    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->anim.placementData;
     int colorIdx = 0;
     int effectMode = 0;
     int subMode = 0;
@@ -171,7 +171,7 @@ void cmbsrc_updateVisuals(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
         sourceState->radius += interpolate(t * (fullRadius - radiusScaled) + radiusScaled - sourceState->radius,
                                            0.1f, timeDelta);
     }
-        dist = Vec_distance(&viewSlot->worldX, &cmbsrc->objAnim.worldPosX);
+        dist = Vec_distance(&viewSlot->worldX, &cmbsrc->anim.worldPosX);
     if (sourceState->active == 1)
     {
         if (dist <= (f32)(u32)(setup->colorDistance << 3))
@@ -224,7 +224,7 @@ void cmbsrc_updateVisuals(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
     }
     if ((cmbsrc->objectFlags & CMBSRC_OBJFLAG_RENDERED) || (sourceState->flags & CMBSRC_STATE_EXTERNAL_ACTIVE))
     {
-        switch (cmbsrc->objAnim.seqId)
+        switch (cmbsrc->anim.seqId)
         {
         case CMBSRC_SEQ_THUSTER_SOURCE:
             if (sourceState->active == 1)
@@ -254,7 +254,7 @@ void cmbsrc_updateVisuals(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
                 }
             }
             vec[0] = 0.0f;
-            if (cmbsrc->objAnim.seqId == CMBSRC_SEQ_TWALL)
+            if (cmbsrc->anim.seqId == CMBSRC_SEQ_TWALL)
             {
                 if (sourceState->active == 0)
                 {
@@ -296,16 +296,16 @@ void cmbsrc_updateVisuals(CmbSrcObject* cmbsrc, CmbSrcState* sourceState)
     }
 }
 
-int cmbsrc_updateAndReturnZero(CmbSrcObject* obj)
+int cmbsrc_updateAndReturnZero(GameObject* obj)
 {
     cmbsrc_update(obj);
     return 0;
 }
 
-int cmbsrc_getColorIndex(CmbSrcObject* cmbsrc)
+int cmbsrc_getColorIndex(GameObject* cmbsrc)
 {
-    CmbSrcState* state = cmbsrc->state;
-    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
+    CmbSrcState* state = cmbsrc->extra;
+    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->anim.placementData;
 
     if (setup->colorIndex == CMBSRC_MODE_COLOR_CYCLE)
     {
@@ -315,9 +315,9 @@ int cmbsrc_getColorIndex(CmbSrcObject* cmbsrc)
     return -1;
 }
 
-void cmbsrc_setExternalActive(CmbSrcObject* obj, u8 active)
+void cmbsrc_setExternalActive(GameObject* obj, u8 active)
 {
-    CmbSrcState* state = obj->state;
+    CmbSrcState* state = obj->extra;
 
     if (active != 0)
     {
@@ -342,8 +342,8 @@ int cmbsrc_getObjectTypeId(void)
 void cmbsrc_free(int obj)
 {
     CmbSrcState* state;
-    CmbSrcObject* cmbsrc = (CmbSrcObject*)obj;
-    state = cmbsrc->state;
+    GameObject* cmbsrc = (GameObject*)obj;
+    state = cmbsrc->extra;
 
     (*gExpgfxInterface)->freeSource(obj);
     if (state->light != NULL)
@@ -353,10 +353,10 @@ void cmbsrc_free(int obj)
     Sfx_StopObjectChannel((int)cmbsrc, CMBSRC_LOOP_SOUND_CHANNEL);
 }
 
-void cmbsrc_render(CmbSrcObject* cmbsrc, int p2, int p3, int p4, int p5, s8 visible)
+void cmbsrc_render(GameObject* cmbsrc, int p2, int p3, int p4, int p5, s8 visible)
 {
-    CmbSrcState* state = cmbsrc->state;
-    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
+    CmbSrcState* state = cmbsrc->extra;
+    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->anim.placementData;
 
     if (visible != 0)
     {
@@ -372,10 +372,10 @@ void cmbsrc_render(CmbSrcObject* cmbsrc, int p2, int p3, int p4, int p5, s8 visi
     }
 }
 
-void cmbsrc_hitDetect(CmbSrcObject* cmbsrc)
+void cmbsrc_hitDetect(GameObject* cmbsrc)
 {
-    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
-    CmbSrcState* state = cmbsrc->state;
+    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->anim.placementData;
+    CmbSrcState* state = cmbsrc->extra;
     int charge;
 
     state->priorityHitType = 0;
@@ -413,10 +413,10 @@ void cmbsrc_hitDetect(CmbSrcObject* cmbsrc)
     }
 }
 
-void cmbsrc_update(CmbSrcObject* cmbsrc)
+void cmbsrc_update(GameObject* cmbsrc)
 {
-    CmbSrcState* state = cmbsrc->state;
-    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
+    CmbSrcState* state = cmbsrc->extra;
+    CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->anim.placementData;
 
     switch (state->active)
     {
@@ -444,7 +444,7 @@ void cmbsrc_update(CmbSrcObject* cmbsrc)
             {
                 Sfx_KeepAliveLoopedObjectSound(
                     (u32)cmbsrc,
-                    gCmbsrcColorSoundIdTable[((CmbSrcMapData*)cmbsrc->objAnim.placementData)->colorIndex]);
+                    gCmbsrcColorSoundIdTable[((CmbSrcMapData*)cmbsrc->anim.placementData)->colorIndex]);
             }
             if (state->light != NULL && state->light->glowType != 0 && state->light->enabled != 0)
             {
@@ -492,15 +492,15 @@ void cmbsrc_update(CmbSrcObject* cmbsrc)
     cmbsrc_updateVisuals(cmbsrc, state);
 }
 
-void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
+void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
 {
     u8* c2;
     u8* c1;
     u8* c0;
-    CmbSrcState* state = cmbsrc->state;
+    CmbSrcState* state = cmbsrc->extra;
     int lightVariant;
 
-    switch (cmbsrc->objAnim.seqId)
+    switch (cmbsrc->anim.seqId)
     {
     case CMBSRC_SEQ_THUSTER_SOURCE:
         lightVariant = 1;
@@ -510,9 +510,9 @@ void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
         lightVariant = 0;
         break;
     }
-    cmbsrc->objAnim.rotZ = (s16)((u8)mapData->rotZ << 8);
-    cmbsrc->objAnim.rotY = (s16)((u8)mapData->rotY << 8);
-    cmbsrc->objAnim.rotX = (s16)((u8)mapData->rotX << 8);
+    cmbsrc->anim.rotZ = (s16)((u8)mapData->rotZ << 8);
+    cmbsrc->anim.rotY = (s16)((u8)mapData->rotY << 8);
+    cmbsrc->anim.rotX = (s16)((u8)mapData->rotX << 8);
     state->active = 1;
     state->hitCharge = CMBSRC_MAX_HIT_CHARGE;
     if (mapData->inactiveSeconds == 0)
@@ -546,7 +546,7 @@ void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
         if (state->light != NULL)
         {
             modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-            if (cmbsrc->objAnim.seqId == CMBSRC_SEQ_THUSTER_SOURCE)
+            if (cmbsrc->anim.seqId == CMBSRC_SEQ_THUSTER_SOURCE)
             {
                 modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 0.0f);
             }
@@ -562,7 +562,7 @@ void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
                                               c2[mapData->colorIndex * 3], 0xff);
             {
                 f32 attn = mapData->behaviorFlags & CMBSRC_BEHAVIOR_WIDE_ATTENUATION ? 520.0f : 130.0f;
-                int n = (int)(attn * cmbsrc->objAnim.rootMotionScale);
+                int n = (int)(attn * cmbsrc->anim.rootMotionScale);
                 modelLightStruct_setDistanceAttenuation(state->light, n, 40.0f + n);
             }
             if (state->flags & CMBSRC_STATE_THORNTAIL_GATE)
@@ -592,13 +592,13 @@ void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
                 {
                     modelLightStruct_setupGlow(state->light, 0, c0[mapData->colorIndex * 3],
                                                c1[mapData->colorIndex * 3], c2[mapData->colorIndex * 3], 0x87,
-                                               300.0f * cmbsrc->objAnim.rootMotionScale);
+                                               300.0f * cmbsrc->anim.rootMotionScale);
                 }
                 else
                 {
                     modelLightStruct_setupGlow(state->light, 0, c0[mapData->colorIndex * 3],
                                                c1[mapData->colorIndex * 3], c2[mapData->colorIndex * 3], 0x87,
-                                               220.0f * cmbsrc->objAnim.rootMotionScale);
+                                               220.0f * cmbsrc->anim.rootMotionScale);
                 }
                 {
                     int m = mapData->glowProjectionMode & 0x3;
@@ -630,12 +630,12 @@ void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
             }
         }
     }
-    if (cmbsrc->objAnim.hitReactState != NULL)
+    if (cmbsrc->anim.hitReactState != NULL)
     {
         state->hitFlags.disabled = 1;
         ObjHitbox_SetSphereRadius(
             (ObjAnimComponent*)cmbsrc, (int)(2.0f * (mapData->radius *
-                               (cmbsrc->objAnim.rootMotionScale * gCmbsrcColorRadiusScaleTable[mapData->colorIndex]))));
+                               (cmbsrc->anim.rootMotionScale * gCmbsrcColorRadiusScaleTable[mapData->colorIndex]))));
         if (mapData->flags & CMBSRC_MAP_ENABLE_HIT_VOLUME)
         {
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)cmbsrc, CMBSRC_HIT_VOLUME_SLOT, 1, 0);
@@ -665,7 +665,7 @@ void cmbsrc_init(CmbSrcObject* cmbsrc, CmbSrcMapData* mapData)
     }
     state->colorCycleTimer = randomGetRange(0, 0x64);
     state->radius = 2.0f * mapData->radius;
-    cmbsrc->updateCallback = cmbsrc_updateAndReturnZero;
+    cmbsrc->animEventCallback = cmbsrc_updateAndReturnZero;
 }
 
 void cmbsrc_release(void)

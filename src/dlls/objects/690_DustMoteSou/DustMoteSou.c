@@ -34,12 +34,12 @@ int dustmotesou_getObjectTypeId(void)
     return 0;
 }
 
-void dustmotesou_free(DustMoteSouObject* obj)
+void dustmotesou_free(GameObject* obj)
 {
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void dustmotesou_render(DustMoteSouObject* obj, int p2, int p3, int p4, int p5, s8 visible)
+void dustmotesou_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     if (visible == 0)
     {
@@ -51,15 +51,15 @@ void dustmotesou_hitDetect(void)
 {
 }
 
-void dustmotesou_update(DustMoteSouObject* source)
+void dustmotesou_update(GameObject* source)
 {
-    DustMoteSouMapData* mapData = (DustMoteSouMapData*)source->objAnim.placementData;
+    DustMoteSouMapData* mapData = (DustMoteSouMapData*)source->anim.placementData;
 
     if (mapData->gameBit != -1 && mainGetBit(mapData->gameBit) == 0)
     {
         return;
     }
-    if (source->objAnim.seqId == DUSTMOTESOU_SEQ_TAIL_LIGHT)
+    if (source->anim.seqId == DUSTMOTESOU_SEQ_TAIL_LIGHT)
     {
         if (mapData->effectId == 0 || mapData->effectParamA == 0)
         {
@@ -69,7 +69,7 @@ void dustmotesou_update(DustMoteSouObject* source)
                                    mapData->effectParamB, 0);
         return;
     }
-    if (source->objAnim.seqId == DUSTMOTESOU_SEQ_FIREWORK)
+    if (source->anim.seqId == DUSTMOTESOU_SEQ_FIREWORK)
     {
         if (mapData->effectId == 0 || mapData->effectParamA == 0)
         {
@@ -104,12 +104,12 @@ void dustmotesou_update(DustMoteSouObject* source)
     }
 }
 
-void dustmotesou_init(DustMoteSouObject* source, DustMoteSouMapData* mapData)
+void dustmotesou_init(GameObject* source, DustMoteSouMapData* mapData)
 {
-    source->objAnim.rotZ = (s16)(mapData->rotZ << 8);
-    source->objAnim.rotY = (s16)(mapData->rotY << 8);
-    source->objAnim.rotX = (s16)(mapData->rotX << 8);
-    source->objectFlags |= DUSTMOTESOU_OBJECT_FLAG_SPAWN_EFFECTS;
+    source->anim.rotZ = (s16)(mapData->rotZ << 8);
+    source->anim.rotY = (s16)(mapData->rotY << 8);
+    source->anim.rotX = (s16)(mapData->rotX << 8);
+    source->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void dustmotesou_release(void)

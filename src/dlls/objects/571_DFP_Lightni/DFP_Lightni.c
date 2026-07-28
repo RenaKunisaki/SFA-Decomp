@@ -18,9 +18,9 @@ extern const f32 gDfpLightningRadiusMax;
 extern f32 gDfpLightningTriggerTimeBase;
 extern const f32 gDfpLightningRadiusNormDivisor;
 
-static inline DfpLightniState* dfplightni_getState(DfpLightniObject* obj)
+static inline DfpLightniState* dfplightni_getState(GameObject* obj)
 {
-    return obj->state;
+    return obj->extra;
 }
 
 static inline f64 dfplightni_u32AsDouble(u32 value)
@@ -34,7 +34,7 @@ int DFP_Lightni_getExtraSize(void)
     return sizeof(DfpLightniState);
 }
 
-void DFP_Lightni_free(DfpLightniObject* obj)
+void DFP_Lightni_free(GameObject* obj)
 {
     DfpLightniState* state;
 
@@ -50,7 +50,7 @@ void DFP_Lightni_free(DfpLightniObject* obj)
     return;
 }
 
-void DFP_Lightni_render(DfpLightniObject* obj)
+void DFP_Lightni_render(GameObject* obj)
 {
     DfpLightniState* state;
     int eventActive;
@@ -81,7 +81,7 @@ void DFP_Lightni_render(DfpLightniObject* obj)
     return;
 }
 
-void DFP_Lightni_update(DfpLightniObject* obj)
+void DFP_Lightni_update(GameObject* obj)
 {
     GameObject* playerObj;
     int eventActive;
@@ -186,7 +186,7 @@ void DFP_Lightni_update(DfpLightniObject* obj)
     return;
 }
 
-void DFP_Lightni_init(DfpLightniObject* obj, DfpLightniMapData* mapData)
+void DFP_Lightni_init(GameObject* obj, DfpLightniMapData* mapData)
 {
     DfpLightniState* state;
     int randomValue;

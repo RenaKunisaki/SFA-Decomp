@@ -22,42 +22,14 @@ typedef struct CrFuelTankDef {
 STATIC_ASSERT(offsetof(CrFuelTankDef, idleFrameCount) == 0x1A);
 STATIC_ASSERT(sizeof(CrFuelTankDef) == 0x20);
 
-typedef struct CrFuelTankCollider {
-  u8 unk0[0x50];
-  GameObject *hitObj;
-} CrFuelTankCollider;
-
-typedef struct CrFuelTankObject {
-  u8 unk0[6];
-  s16 animFlags;
-  u8 unk8[0x1c];
-  f32 velocityX;
-  f32 velocityY;
-  f32 velocityZ;
-  u8 unk30[6];
-  u8 alpha;
-  u8 unk37[0x15];
-  CrFuelTankDef *def;
-  u8 unk50[4];
-  CrFuelTankCollider *collider;
-  u8 unk58[0x60];
-  CrFuelTankState *state;
-  u8 unkBC[0x3c];
-  int triggered;
-} CrFuelTankObject;
-
-STATIC_ASSERT(offsetof(CrFuelTankObject, animFlags) == 0x06);
-STATIC_ASSERT(offsetof(CrFuelTankObject, velocityX) == 0x24);
-STATIC_ASSERT(offsetof(CrFuelTankObject, alpha) == 0x36);
-
 extern ObjectDescriptor gCrFuelTankObjDescriptor;
 
 int crfueltank_getExtraSize(void);
 void crfueltank_free(void);
 void crfueltank_render(void);
-void crfueltank_hitDetect(CrFuelTankObject *obj);
-void crfueltank_update(CrFuelTankObject *obj);
-void crfueltank_init(CrFuelTankObject *obj,CrFuelTankDef *def);
+void crfueltank_hitDetect(GameObject *obj);
+void crfueltank_update(GameObject *obj);
+void crfueltank_init(GameObject *obj,CrFuelTankDef *def);
 void crfueltank_release(void);
 void crfueltank_initialise(void);
 
