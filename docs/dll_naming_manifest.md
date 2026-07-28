@@ -990,6 +990,7 @@ blocked units will surface more when carved.
 | 0x19F | dlls/objects/415_NW_treebrid/NW_treebrid.c | include/dlls/objects/415_NW_treebrid.h |
 | 0x1A0 | dlls/objects/416_NW_geyser/NW_geyser.c | include/dlls/objects/416_NW_geyser.h |
 | 0x1A1 | dlls/objects/417/417.c | include/dlls/objects/417_NW_mammoth.h |
+| 0x1A2 | dlls/objects/418_NW_tricky/NW_tricky.c | include/dlls/objects/418_NW_tricky.h |
 | 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/main/dll/dll_01A8_shkillermushroom.h |
 | 0x1AC | dlls/objects/428_SH_queenear/SH_queenear.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |

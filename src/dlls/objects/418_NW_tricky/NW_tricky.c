@@ -1,169 +1,175 @@
 /*
- * NW_tricky (DLL 0x1A2) - the SnowHorn Wastes controller for Tricky (the
- * player's companion) during the SnowHorn herding objective (map
- * 'nwastes', 0x0A).
+ * NW_tricky (DLL 0x1A2) - SnowHorn Wastes controller for Tricky.
  *
- * State 0: while the herd-start bit (0xd11) is clear, drive Tricky to
- * bark at / herd the SnowHorn herd objects (seqId 0x13a) toward whichever
- * of the player or Tricky is nearer, periodically issuing the bark
- * command; once 0xd11 is set the herding stops. State 1: meter Tricky's
- * energy via game bit 0x4e3 against the map-event Tricky-energy gauge.
+ * The herding phase directs the matching group-3 objects toward whichever of
+ * the player or Tricky is nearer and offers live configured targets to
+ * Tricky's play-ball command. The energy phase synchronizes Tricky's talk
+ * state with the map-event energy gauge.
  */
-#include "sys/objects/lifecycle.h"
-#include "main/dll/dll_80136a40.h"
-#include "sys/objects.h"
+#include "dlls/objects/418_NW_tricky.h"
+
 #include "game/objects/object.h"
-#include "main/obj_group.h"
-#include "main/mapEventTypes.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "main/frame_timing.h"
-#include "main/dll/NW/dll_01A2_nwtricky.h"
+#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/dll/dll_00C9_enemy.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/mapEventTypes.h"
+#include "main/obj_group.h"
 #include "main/vecmath_distance_api.h"
-#include "dlls/object_descriptor.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define NWTRICKY_OBJFLAG_PARENT_SLACK       0x1000
-#define NWTRICKY_OBJFLAG_HIDDEN             0x4000
-#define NWTRICKY_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define NW_TRICKY_HERDING_COMPLETE_GAMEBIT 0xD11
+#define NW_TRICKY_HERD_OBJECT_GROUP        3
+#define NW_TRICKY_HERD_OBJECT_SEQUENCE_ID  0x13A
 
-/* anim.seqId of the SnowHorn herd objects Tricky herds (docblock: "the
- * SnowHorn herd objects (seqId 0x13a)"). */
-#define NWTRICKY_SNOWHORN_HERD_SEQID 0x13a
+#define NW_TRICKY_SOUND_CHANNEL       16
+#define NW_TRICKY_SOUND_VOLUME        0x1000
+#define NW_TRICKY_HERD_SOUND_INTERVAL 600.0f
 
-const int lbl_802C23E8[4] = {0xF5B, 0x43EC9, 0x43ED6, 0};
+#define NW_TRICKY_PLAY_BALL_COMMAND_ENABLED 1
+#define NW_TRICKY_MINIMUM_TARGET_HEALTH     0.0f
 
-int NW_tricky_SeqFn(void)
-{
-    Sfx_StopObjectChannel((u32)getTrickyObject(), 16);
+#define NW_TRICKY_MINIMUM_ENERGY             4
+#define NW_TRICKY_ENERGY_LOW_GAMEBIT_VALUE   1
+#define NW_TRICKY_ENERGY_READY_GAMEBIT_VALUE 0xFF
+#define NW_TRICKY_ENERGY_UPDATE_INTERVAL     2000.0f
+
+typedef struct NwTrickyPlayBallTargetIdList {
+    int ids[NW_TRICKY_PLAY_BALL_TARGET_ID_COUNT];
+} NwTrickyPlayBallTargetIdList;
+
+typedef struct NwTrickyCompanionInterface {
+    void* unknown00[13];
+    void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
+    void* unknown38[2];
+    u8 (*isPlayingBall)(GameObject* tricky);
+} NwTrickyCompanionInterface;
+
+STATIC_ASSERT(sizeof(NwTrickyPlayBallTargetIdList) == 0x0C);
+STATIC_ASSERT(offsetof(NwTrickyCompanionInterface, commandPlayBall) == 0x34);
+STATIC_ASSERT(offsetof(NwTrickyCompanionInterface, isPlayingBall) == 0x40);
+
+#define NW_TRICKY_COMPANION_INTERFACE(tricky) ((NwTrickyCompanionInterface*)*(tricky)->anim.dll)
+
+const int gNwTrickyPlayBallTargetIds[NW_TRICKY_PLAY_BALL_TARGET_POOL_SIZE] = {0xF5B, 0x43EC9, 0x43ED6, 0};
+
+int nwTricky_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate) {
+    (void)unusedObj;
+    (void)unusedArg;
+    (void)unusedAnimUpdate;
+
+    Sfx_StopObjectChannel((u32)getTrickyObject(), NW_TRICKY_SOUND_CHANNEL);
     return 0;
 }
 
-int NW_tricky_getExtraSize(void)
-{
-    return 8;
+int nwTricky_getExtraSize(void) {
+    return sizeof(NwTrickyState);
 }
 
-void NW_tricky_free(int obj)
-{
-    (void)obj;
+void nwTricky_free(GameObject* unusedObj) {
+    (void)unusedObj;
+
     mainSetBits(GAMEBIT_Tricky_Usable, 1);
 }
 
-void NW_tricky_update(GameObject* obj)
-{
-
-    int count;
-    NwTrickyIds ids;
+void nwTricky_update(GameObject* obj) {
+    int herdObjectCount;
+    NwTrickyPlayBallTargetIdList targetIds;
     NwTrickyState* state;
-    int* tricky;
-    int* player;
-    int** objects;
-    int** scan;
-    int** scan2;
-    int* ip;
-    int i2;
-    int* found;
-    f32 dPlayer;
-    f32 timer;
-    f32 healthMin;
-    int i;
+    GameObject* tricky;
+    GameObject* player;
+    GameObject** herdObjects;
+    GameObject** completedHerdScan;
+    GameObject** activeHerdScan;
+    int* targetId;
+    int targetIndex;
+    GameObject* target;
+    f32 playerDistanceSquared;
+    f32 phaseTimer;
+    f32 minimumHealth;
+    int herdObjectIndex;
 
     state = obj->extra;
-    tricky = (int*)getTrickyObject();
-    player = (int*)Obj_GetPlayerObject();
-    ids = *(NwTrickyIds*)lbl_802C23E8;
+    tricky = getTrickyObject();
+    player = Obj_GetPlayerObject();
+    targetIds = *(NwTrickyPlayBallTargetIdList*)gNwTrickyPlayBallTargetIds;
 
-    if (tricky == NULL)
-    {
+    if (tricky == NULL) {
         return;
     }
 
-    switch (*(u8*)state)
-    {
-    case 0:
-        if (mainGetBit(0xd11))
-        {
-            objects = (int**)ObjGroup_GetObjects(3, &count);
-            for (i = 0, scan = objects; i < count; scan++, i++)
-            {
-                if (((GameObject*)*scan)->anim.seqId == NWTRICKY_SNOWHORN_HERD_SEQID)
-                {
-                    enemy_setTrackedObj((GameObject*)*scan, (GameObject*)player);
+    switch (state->phase) {
+    case NW_TRICKY_PHASE_HERDING:
+        if (mainGetBit(NW_TRICKY_HERDING_COMPLETE_GAMEBIT)) {
+            herdObjects = (GameObject**)ObjGroup_GetObjects(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
+            for (herdObjectIndex = 0, completedHerdScan = herdObjects; herdObjectIndex < herdObjectCount;
+                 completedHerdScan++, herdObjectIndex++) {
+                if ((*completedHerdScan)->anim.seqId == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
+                    enemy_setTrackedObj(*completedHerdScan, player);
                 }
             }
             mainSetBits(GAMEBIT_Tricky_Usable, 1);
-            *(u8*)state = 1;
-        }
-        else
-        {
-            if (mainGetBit(GAMEBIT_ITEM_TrickyStayFind_Got))
-            {
-                if (!(*(u8(**)(int*))(*(char**)*(char**)((char*)tricky + 0x68) + 0x40))(tricky))
-                {
+            state->phase = NW_TRICKY_PHASE_ENERGY;
+        } else {
+            if (mainGetBit(GAMEBIT_ITEM_TrickyStayFind_Got)) {
+                if (NW_TRICKY_COMPANION_INTERFACE(tricky)->isPlayingBall(tricky) == 0) {
                     mainSetBits(GAMEBIT_Tricky_Usable, 0);
-                    state->timer = 0.0f;
+                    state->phaseTimer = 0.0f;
                 }
 
-                for (i2 = 0, ip = ids.ids, healthMin = 0.0f; i2 < 3; ip++, i2++)
-                {
-                    found = (int*)ObjList_FindObjectById(*ip);
-                    if (found != NULL && enemy_getHealthFraction((GameObject*)found) > healthMin)
-                    {
-                        (*(void (**)(int*, int, int*))(*(char**)*(char**)((char*)tricky + 0x68) + 0x34))(tricky, 1,
-                                                                                                         found);
+                for (targetIndex = 0, targetId = targetIds.ids, minimumHealth = NW_TRICKY_MINIMUM_TARGET_HEALTH;
+                     targetIndex < NW_TRICKY_PLAY_BALL_TARGET_ID_COUNT; targetId++, targetIndex++) {
+                    target = ObjList_FindObjectById(*targetId);
+                    if (target != NULL && enemy_getHealthFraction(target) > minimumHealth) {
+                        NW_TRICKY_COMPANION_INTERFACE(tricky)->commandPlayBall(
+                            tricky, NW_TRICKY_PLAY_BALL_COMMAND_ENABLED, target);
                         break;
                     }
                 }
 
-                state->timer += timeDelta;
-                timer = state->timer;
-                if (timer >= 600.0f)
-                {
-                    state->timer = timer - 600.0f;
-                    trickyTryPlaySound((GameObject*)tricky, 0x152, 0x1000);
+                state->phaseTimer += timeDelta;
+                phaseTimer = state->phaseTimer;
+                if (phaseTimer >= NW_TRICKY_HERD_SOUND_INTERVAL) {
+                    state->phaseTimer = phaseTimer - NW_TRICKY_HERD_SOUND_INTERVAL;
+                    trickyTryPlaySound(tricky, SFXwp_rolovr_6, NW_TRICKY_SOUND_VOLUME);
                 }
             }
 
-            objects = (int**)ObjGroup_GetObjects(3, &count);
-            for (i = 0, scan2 = objects; i < count; scan2++, i++)
-            {
-                if (((GameObject*)*scan2)->anim.seqId == NWTRICKY_SNOWHORN_HERD_SEQID)
-                {
-                    dPlayer = vec3f_distanceSquared(((NwObjPos*)*scan2)->worldPos, ((NwObjPos*)player)->worldPos);
-                    if (vec3f_distanceSquared(((NwObjPos*)*scan2)->worldPos, ((NwObjPos*)tricky)->worldPos) < dPlayer)
-                    {
-                        enemy_setTrackedObj((GameObject*)*scan2, (GameObject*)tricky);
-                    }
-                    else
-                    {
-                        enemy_setTrackedObj((GameObject*)*scan2, (GameObject*)player);
+            herdObjects = (GameObject**)ObjGroup_GetObjects(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
+            for (herdObjectIndex = 0, activeHerdScan = herdObjects; herdObjectIndex < herdObjectCount;
+                 activeHerdScan++, herdObjectIndex++) {
+                if ((*activeHerdScan)->anim.seqId == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
+                    playerDistanceSquared =
+                        vec3f_distanceSquared(&(*activeHerdScan)->anim.worldPosX, &player->anim.worldPosX);
+                    if (vec3f_distanceSquared(&(*activeHerdScan)->anim.worldPosX, &tricky->anim.worldPosX) <
+                        playerDistanceSquared) {
+                        enemy_setTrackedObj(*activeHerdScan, tricky);
+                    } else {
+                        enemy_setTrackedObj(*activeHerdScan, player);
                     }
                 }
             }
         }
         break;
-    case 1:
-        if (!(((GameObject*)tricky)->objectFlags & NWTRICKY_OBJFLAG_PARENT_SLACK))
-        {
-            state->timer += timeDelta;
+    case NW_TRICKY_PHASE_ENERGY:
+        if (!(tricky->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK)) {
+            state->phaseTimer += timeDelta;
         }
-        if (mainGetBit(GAMEBIT_TrickyTalk) == 1)
-        {
-            if ((*gMapEventInterface)->getTrickyEnergy()[0] >= 4)
-            {
-                mainSetBits(GAMEBIT_TrickyTalk, 0xff);
+        if (mainGetBit(GAMEBIT_TrickyTalk) == NW_TRICKY_ENERGY_LOW_GAMEBIT_VALUE) {
+            if ((*gMapEventInterface)->getTrickyEnergy()[0] >= NW_TRICKY_MINIMUM_ENERGY) {
+                mainSetBits(GAMEBIT_TrickyTalk, NW_TRICKY_ENERGY_READY_GAMEBIT_VALUE);
             }
         }
-        timer = state->timer;
-        if (timer >= 2000.0f)
-        {
-            state->timer = timer - 2000.0f;
-            if (mainGetBit(GAMEBIT_TrickyTalk) == 0xff)
-            {
-                if ((*gMapEventInterface)->getTrickyEnergy()[0] < 4)
-                {
-                    mainSetBits(GAMEBIT_TrickyTalk, 1);
+        phaseTimer = state->phaseTimer;
+        if (phaseTimer >= NW_TRICKY_ENERGY_UPDATE_INTERVAL) {
+            state->phaseTimer = phaseTimer - NW_TRICKY_ENERGY_UPDATE_INTERVAL;
+            if (mainGetBit(GAMEBIT_TrickyTalk) == NW_TRICKY_ENERGY_READY_GAMEBIT_VALUE) {
+                if ((*gMapEventInterface)->getTrickyEnergy()[0] < NW_TRICKY_MINIMUM_ENERGY) {
+                    mainSetBits(GAMEBIT_TrickyTalk, NW_TRICKY_ENERGY_LOW_GAMEBIT_VALUE);
                 }
             }
         }
@@ -171,14 +177,12 @@ void NW_tricky_update(GameObject* obj)
     }
 }
 
-void NW_tricky_init(GameObject* obj)
-{
-    obj->animEventCallback = NW_tricky_SeqFn;
-    obj->objectFlags =
-        (u16)(obj->objectFlags | (NWTRICKY_OBJFLAG_HIDDEN | NWTRICKY_OBJFLAG_HITDETECT_DISABLED));
+void nwTricky_init(GameObject* obj) {
+    obj->animEventCallback = nwTricky_processAnimEvents;
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
-ObjectDescriptor gNW_trickyObjDescriptor = {
+ObjectDescriptor gNWTrickyObjDescriptor = {
     0,
     0,
     0,
@@ -186,11 +190,11 @@ ObjectDescriptor gNW_trickyObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)NW_tricky_init,
-    (ObjectDescriptorCallback)NW_tricky_update,
+    (ObjectDescriptorCallback)nwTricky_init,
+    (ObjectDescriptorCallback)nwTricky_update,
     0,
     0,
-    (ObjectDescriptorCallback)NW_tricky_free,
+    (ObjectDescriptorCallback)nwTricky_free,
     0,
-    (ObjectDescriptorExtraSizeCallback)NW_tricky_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)nwTricky_getExtraSize,
 };
