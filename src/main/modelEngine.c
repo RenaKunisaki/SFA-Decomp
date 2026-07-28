@@ -294,6 +294,7 @@
 #include "dlls/objects/498_SB_CageKyte.h"
 #include "dlls/objects/499_SB_MiniFire.h"
 #include "dlls/objects/500.h"
+#include "dlls/objects/501.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -415,8 +416,8 @@ extern ResourceDescriptor gRingObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_ShipGunBrokeObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
-extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
-    gShopKeeperObjDescriptor, gShopObjDescriptor;
+extern ResourceDescriptor gSfxplayerObjDescriptor, gShopItemObjDescriptor, gShopKeeperObjDescriptor,
+    gShopObjDescriptor;
 extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gStaffObjDescriptor,
     gStaticCameraObjDescriptor;
@@ -1606,7 +1607,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSB_CageKyteObjDescriptor,
     (ResourceDescriptor*)&gSB_MiniFireObjDescriptor,
     (ResourceDescriptor*)&gDll500ObjDescriptor,
-    &gShipBattleObjDescriptor,
+    (ResourceDescriptor*)&gDll501ObjDescriptor,
     &gFlagObjDescriptor,
     &gSB_ShipGunBrokeObjDescriptor,
     &gWM_GalleonObjDescriptor,
