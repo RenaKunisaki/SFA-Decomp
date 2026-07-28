@@ -473,7 +473,7 @@ static void staffQuakeSpellAdvance(StaffQuakeSpellState* q)
     ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
 }
 
-void superQuakeFn_8016d9fc(f32* pos)
+void staffStartQuakeSpell(f32* pos)
 {
     GameObject* player;
 
@@ -531,7 +531,7 @@ const f32 gStaffHalfPi = 1.5707964f;
 const f32 gStaffPi = 3.1415927f;
 const f32 gStaffAngleUnitScale = 32768.0f;
 
-void quakeSpellTextureFn_8016dbf4(void)
+void staffDrawQuakeSpellRing(void)
 {
     Mtx mResult;
     Mtx mScale;

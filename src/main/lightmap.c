@@ -871,7 +871,7 @@ void sceneDraw(void)
             cursor += 4;
         }
     }
-    quakeSpellTextureFn_8016dbf4();
+    staffDrawQuakeSpellRing();
     (*gNewCloudsInterface)->renderSnowClouds(0);
     if (bEnableDistortionFilter != 0)
     {
