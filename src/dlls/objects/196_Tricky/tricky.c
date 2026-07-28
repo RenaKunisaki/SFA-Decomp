@@ -104,7 +104,7 @@
 #include "main/dll/DIM/dll_01C4_dimicewall.h"
 #include "main/dll/DIM/dimlogfire.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
-#include "main/dll/SH/dll_01B3_shbeacon.h"
+#include "dlls/objects/435_SH_Beacon.h"
 #include "main/main_internal.h"
 #include "main/dll/baddie_frozen.h"
 #include "dlls/objects/316_XYZAnimator.h"
@@ -9190,7 +9190,7 @@ void Tricky_update(int obj)
                             *(void**)&trickyState->unk724 = 0;
                             break;
                         case 0x3c:
-                            *(void**)&trickyState->unk724 = shbeacon_resetFadeTimerCallback;
+                            *(void**)&trickyState->unk724 = sh_beacon_resetFadeTimerCallback;
                             break;
                         case 0x50f:
                             *(void**)&trickyState->unk724 = wcbeacon_aButtonCallback;
