@@ -378,7 +378,7 @@ void worldplanet_update(GameObject* obj) {
                 (obj)->userData1 = 1;
             }
         }
-        gWorldPlanetPathProgress = gWorldPlanetPathProgress + 0.2f;
+        gWorldPlanetPathProgress += 0.2f;
         if (gWorldPlanetPathProgress >= 21.0f) {
             gWorldPlanetPathProgress = 0.0f;
         }
