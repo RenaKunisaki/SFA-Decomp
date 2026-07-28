@@ -133,7 +133,7 @@ void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* 
                                f32* outRadiusY, f32* outRadiusZ);
 void Camera_ApplyCurrentViewport(void* viewportArg);
 void Camera_UpdateProjection(void* viewportArg, int unused);
-void Camera_GetCurrentViewport(s32* outX, s32* outY, u32* outHeight, s32* outWidth);
+void Camera_GetCurrentViewport(s32* outX, s32* outY, u32* outRight, s32* outBottom);
 void Camera_SetCurrentViewIndex(int index);
 f32 Camera_DistanceToCurrentViewPosition(f32 x, f32 y, f32 z);
 void Camera_SetCurrentViewRotation(int yaw, int pitch, int roll);
