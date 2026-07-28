@@ -129,7 +129,6 @@ void playerUpdateTail(int unused1, int* unused2, f32* vec, int unused3, int mode
 void playerDoTailAnims(int obj, void* statep);
 void playerUpdatePathEffectCountdown(GameObject* obj, int inner);
 int playerStopRidingObject(GameObject* obj);
-void playerSetHaveSpell(GameObject* obj, int spell, int set);
 int fn_80297498(void);
 int playerState41(GameObject* obj, int state, f32 fv);
 int playerState40(int p1, int obj);

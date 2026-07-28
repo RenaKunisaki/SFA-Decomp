@@ -305,6 +305,7 @@
 #include "dlls/objects/509_WM_LaserTar.h"
 #include "dlls/objects/510.h"
 #include "dlls/objects/511.h"
+#include "dlls/objects/512.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -386,7 +387,7 @@ char sModelEngineTimerDotText[] = ".";
 #define MODELENGINE_TIMER_RUNNING   4
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
-extern ResourceDescriptor dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
+extern ResourceDescriptor dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
@@ -1624,7 +1625,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_LaserTargetObjDescriptor,
     (ResourceDescriptor*)&gPressureSwitchObjDescriptor,
     (ResourceDescriptor*)&gDll1FFObjDescriptor,
-    &dll_200,
+    (ResourceDescriptor*)&gDll200ObjDescriptor,
     &gWM_colriseObjDescriptor,
     &lbl_803DC0F8,
     &lbl_803DC100,

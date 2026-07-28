@@ -35,7 +35,7 @@ which now carries prose evidence notes, so they have been dropped.
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
 | naming contradictions (appendix) | 19 |
-| unit-owned headers recorded (appendix) | 101 |
+| unit-owned headers recorded (appendix) | 102 |
 
 Expansion status over the 705 rows: NO-RETAIL-NAME 288, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
 
@@ -561,7 +561,7 @@ any of them is acted on.
 | 0x1FD | WM_LaserTar | COMPLETE | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted four-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, and exact emitted sections, relocations, and symbols; the retail basename is truncated, and the generated source path remains unchanged |
 | 0x1FE | — | COMPLETE | dlls/objects/510/510.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x08-byte state, asserted callback-visible placement prefix, canonical unit header and typed hit-contact, map-event, audio, gamebit, and lifecycle interfaces, and exact emitted section bytes and semantic relocations; active-target DOL source-corridor evidence supports the PressureSwitch symbol namespace but does not establish a retail object basename or complete placement width, and the generated numeric source path remains unchanged |
 | 0x1FF | — | COMPLETE | dlls/objects/511/511.c | = (canonical) | Exact complete nine-function numeric TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x08-byte state, callback-visible partial placement view, canonical unit header, and canonical hitbox-contact registration; active EN has no recovered basename or complete placement width, and the generated numeric source path remains unchanged |
-| 0x200 | — | COMPLETE | dlls/objects/512/512.c | = (canonical) | No recovered retail basename |
+| 0x200 | — | COMPLETE | dlls/objects/512/512.c | = (canonical) | Exact complete 14-function numeric TU with its proven early 0x38-byte descriptor followed by TU-owned diagnostic and compiler switch data, allocation-backed and fully asserted 0x28-byte state, callback-visible partial placement view, canonical unit header, and exact 0x18-byte rodata, 0x1D0-byte data, and 0x2C-byte small-constant images; active EN has no recovered basename or complete placement width, and the generated numeric source path remains unchanged |
 | 0x201 | WM_colrise | COMPLETE | dlls/objects/513_WM_colrise/WM_colrise.c | = (canonical) | — |
 | 0x202 | — | COMPLETE | dlls/objects/514/514.c | = (canonical) | No recovered retail basename; data-only DLL |
 | 0x203 | — | COMPLETE | dlls/objects/515/515.c | = (canonical) | No recovered retail basename; data-only DLL |
@@ -915,6 +915,7 @@ more as they are recovered.
 | 0x1FD | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | include/dlls/objects/509_WM_LaserTar.h |
 | 0x1FE | dlls/objects/510/510.c | include/dlls/objects/510.h |
 | 0x1FF | dlls/objects/511/511.c | include/dlls/objects/511.h |
+| 0x200 | dlls/objects/512/512.c | include/dlls/objects/512.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |

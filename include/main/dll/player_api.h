@@ -44,6 +44,7 @@ void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32*
 GameObject* playerGetFocusObject(GameObject* player);
 int playerGetMoney(GameObject* player);
 int playerHasSpell(GameObject* obj, int spell);
+void playerSetHaveSpell(GameObject* obj, int spell, int set);
 int playerIsDisguised(GameObject* obj);
 void playerSetDisguised(GameObject* obj, int mode);
 void playerAddMoney(GameObject* obj, int amount);
