@@ -46,7 +46,7 @@ STATIC_ASSERT(offsetof(WallAnimatorState, status) == 0x04);
 STATIC_ASSERT(offsetof(WallAnimatorState, pad05) == 0x05);
 STATIC_ASSERT(sizeof(WallAnimatorState) == 0x08);
 
-u8 WallAnimator_modelMtxFn(GameObject* obj);
+u8 WallAnimator_getEnergyCost(GameObject* obj);
 u8 WallAnimator_isComplete(GameObject* obj);
 f32 WallAnimator_applyImpact(GameObject* obj, GameObject* target);
 int WallAnimator_getExtraSize(void);

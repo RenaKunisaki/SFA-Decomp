@@ -34,9 +34,9 @@ STATIC_ASSERT(offsetof(GroundAnimatorTrickyInterface, sideCommandEnable) == 0x28
 
 u16 gGroundAnimatorSfxIds[4] = {0x109, 0x7E, 0, 0};
 
-u8 GroundAnimator_modelMtxFn(GameObject* obj) {
+u8 GroundAnimator_getMagicCaveIndex(GameObject* obj) {
     GroundAnimatorState* state = obj->extra;
-    return state->modelVariant;
+    return state->magicCaveId;
 }
 
 u8 GroundAnimator_isFullySunk(GameObject* obj) {
@@ -410,7 +410,7 @@ void GroundAnimator_update(GameObject* obj) {
 
 void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {
     GroundAnimatorState* state = obj->extra;
-    state->modelVariant = (u8)placement->modelVariant;
+    state->magicCaveId = (u8)placement->magicCaveId;
     state->yOffset = placement->yOffset;
     state->previousSinkDepth = (-1.0f);
     state->radius = placement->radius;
@@ -443,6 +443,6 @@ ObjectDescriptor14 gGroundAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)GroundAnimator_getExtraSize,
     (ObjectDescriptorCallback)GroundAnimator_applyPress,
     (ObjectDescriptorCallback)GroundAnimator_isFullySunk,
-    (ObjectDescriptorCallback)GroundAnimator_modelMtxFn,
+    (ObjectDescriptorCallback)GroundAnimator_getMagicCaveIndex,
     0,
 };

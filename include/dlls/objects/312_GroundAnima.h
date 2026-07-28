@@ -16,7 +16,7 @@ typedef struct GroundAnimatorPlacement {
     s16 sunkGameBit;    /* 0x18 */
     s16 enableGameBit;  /* 0x1A */
     u8 pad1C[2];        /* 0x1C */
-    s16 modelVariant;   /* 0x1E */
+    s16 magicCaveId;   /* 0x1E */
     u8 maxSinkDepth;    /* 0x20: multiplied by 100 */
     u8 sfxIndex;        /* 0x21 */
     u8 disableAutoLink; /* 0x22 */
@@ -38,7 +38,7 @@ typedef struct GroundAnimatorState {
     s16 blockEntries[6];      /* 0x1C: matching polygon-group indices */
     s16 vertexCount;          /* 0x28 */
     u8 entryCount;            /* 0x2A */
-    u8 modelVariant;          /* 0x2B */
+    u8 magicCaveId;          /* 0x2B */
     u8 dirtyFrames;           /* 0x2C */
     u8 flags;                 /* 0x2D: GroundAnimatorStateFlag */
     u8 pad2E[2];              /* 0x2E */
@@ -48,7 +48,7 @@ STATIC_ASSERT(offsetof(GroundAnimatorPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(GroundAnimatorPlacement, sunkGameBit) == 0x18);
 STATIC_ASSERT(offsetof(GroundAnimatorPlacement, enableGameBit) == 0x1A);
 STATIC_ASSERT(offsetof(GroundAnimatorPlacement, pad1C) == 0x1C);
-STATIC_ASSERT(offsetof(GroundAnimatorPlacement, modelVariant) == 0x1E);
+STATIC_ASSERT(offsetof(GroundAnimatorPlacement, magicCaveId) == 0x1E);
 STATIC_ASSERT(offsetof(GroundAnimatorPlacement, maxSinkDepth) == 0x20);
 STATIC_ASSERT(offsetof(GroundAnimatorPlacement, sfxIndex) == 0x21);
 STATIC_ASSERT(offsetof(GroundAnimatorPlacement, disableAutoLink) == 0x22);
@@ -68,13 +68,13 @@ STATIC_ASSERT(offsetof(GroundAnimatorState, yOffset) == 0x18);
 STATIC_ASSERT(offsetof(GroundAnimatorState, blockEntries) == 0x1C);
 STATIC_ASSERT(offsetof(GroundAnimatorState, vertexCount) == 0x28);
 STATIC_ASSERT(offsetof(GroundAnimatorState, entryCount) == 0x2A);
-STATIC_ASSERT(offsetof(GroundAnimatorState, modelVariant) == 0x2B);
+STATIC_ASSERT(offsetof(GroundAnimatorState, magicCaveId) == 0x2B);
 STATIC_ASSERT(offsetof(GroundAnimatorState, dirtyFrames) == 0x2C);
 STATIC_ASSERT(offsetof(GroundAnimatorState, flags) == 0x2D);
 STATIC_ASSERT(offsetof(GroundAnimatorState, pad2E) == 0x2E);
 STATIC_ASSERT(sizeof(GroundAnimatorState) == 0x30);
 
-u8 GroundAnimator_modelMtxFn(GameObject* obj);
+u8 GroundAnimator_getMagicCaveIndex(GameObject* obj);
 u8 GroundAnimator_isFullySunk(GameObject* obj);
 f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target);
 void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, GroundAnimatorPlacement* placement);

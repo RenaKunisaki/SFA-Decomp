@@ -18,7 +18,7 @@
 typedef void (*WallAnimatorTrickySideCommandEnableFn)(GameObject* tricky, GameObject* target,
                                                      int commandKind, int commandType);
 
-u8 WallAnimator_modelMtxFn(GameObject* obj) {
+u8 WallAnimator_getEnergyCost(GameObject* obj) {
     WallAnimatorPlacement* placement = (WallAnimatorPlacement*)obj->anim.placementData;
 
     return (u8)placement->spawnRotZ;
@@ -169,6 +169,6 @@ ObjectDescriptor14 gWallAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)WallAnimator_getExtraSize,
     (ObjectDescriptorCallback)WallAnimator_applyImpact,
     (ObjectDescriptorCallback)WallAnimator_isComplete,
-    (ObjectDescriptorCallback)WallAnimator_modelMtxFn,
+    (ObjectDescriptorCallback)WallAnimator_getEnergyCost,
     0,
 };
