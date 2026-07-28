@@ -207,9 +207,10 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     pixelB = READ_TEXTURE_U16(bd + 0x80);
                     bHi = (pixelB & 0xff00) >> 8;
                     bHi = (u8)bHi;
-                    ct = (u8*)dst + pixelColumnOffset + 0x60;
-                    cd = ct + tileColumnOffset;
-                    cd += tileRowOffset;
+                    ct = (u8*)dst + pixelColumnOffset;
+                    ct += tileColumnOffset;
+                    ct += tileRowOffset;
+                    cd = ct + 0x60;
                     WRITE_TEXTURE_U16(cd + rowDataOffset,
                                       (u8)(((int)(aLo * wA) >> 8) + ((int)(bLo * wB) >> 8)));
                     WRITE_TEXTURE_U16(cd + src1->width * tileRowGroupOffset * 2 + 0x20,
