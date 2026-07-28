@@ -36,7 +36,7 @@ void dll_2A4_setVelocity(GameObject* obj, Dll2A3Velocity* velocity)
 
 int dll_2A4_getExtraSize_ret_12(void)
 {
-    return sizeof(Dll2A4State);
+    return sizeof(Dll2A3State);
 }
 
 int dll_2A4_getObjectTypeId(void)
@@ -59,7 +59,7 @@ void dll_2A4_hitDetect_nop(void)
 
 void dll_2A4_update(GameObject* obj)
 {
-    Dll2A4State* state = obj->extra;
+    Dll2A3State* state = obj->extra;
 
     if (state->lifetime > 0.0f)
     {
@@ -82,7 +82,7 @@ void dll_2A4_update(GameObject* obj)
 
 void dll_2A4_init(GameObject* obj)
 {
-    Dll2A4State* state = obj->extra;
+    Dll2A3State* state = obj->extra;
 
     obj->anim.rotX = randomGetRange(0, ROT_RANGE_MAX);
     obj->anim.rotY = randomGetRange(0, ROT_RANGE_MAX);

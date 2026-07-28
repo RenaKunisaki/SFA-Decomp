@@ -1,5 +1,6 @@
 /* DLL 0x0221 */
 #include "dlls/object_descriptor.h"
+#include "main/dll/WM/dll_020D_wmseqpoint.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render_legacy.h"
@@ -32,17 +33,6 @@ typedef struct SeqPointState
     u8 triggerMode;
     u8 pad0F;
 } SeqPointState;
-
-typedef struct SeqPointPlacement
-{
-    ObjPlacement base;
-    s8 rotXByte;
-    u8 triggerMode;
-    s16 triggerRadius;
-    s16 sequenceId;
-    s16 conditionGameBit;
-    s16 disableGameBit;
-} SeqPointPlacement;
 
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
 
@@ -207,7 +197,7 @@ void SeqPoint_update(GameObject* obj)
 
 void SeqPoint_init(GameObject* obj, int data)
 {
-    SeqPointPlacement* def = (SeqPointPlacement*)data;
+    WmSeqPointMapData* def = (WmSeqPointMapData*)data;
     SeqPointState* state = obj->extra;
     obj->animEventCallback = SeqPoint_SeqFn;
     obj->anim.rotX = (((s32)def->rotXByte) << 8);

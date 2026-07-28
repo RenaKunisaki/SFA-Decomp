@@ -3,20 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-
-typedef struct Dll2A4State
-{
-    f32 lifetime;
-    s16 spinRateX;
-    s16 spinRateY;
-    s16 spinRateZ;
-    u8 pad0A[2];
-} Dll2A4State;
-
-STATIC_ASSERT(sizeof(Dll2A4State) == 0x0c);
-STATIC_ASSERT(offsetof(Dll2A4State, spinRateX) == 0x04);
-STATIC_ASSERT(offsetof(Dll2A4State, spinRateY) == 0x06);
-STATIC_ASSERT(offsetof(Dll2A4State, spinRateZ) == 0x08);
+#include "main/dll/ARW/dll_02A3.h"
 
 int dll_2A4_getExtraSize_ret_12(void);
 int dll_2A4_getObjectTypeId(void);

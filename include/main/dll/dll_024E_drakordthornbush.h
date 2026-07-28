@@ -4,21 +4,10 @@
 #include "types.h"
 #include "game/objects/object.h"
 #include "global.h"
+#include "main/byte_flags.h"
 #include "main/lightningeffect.h"
 #include "main/model_light.h"
 #include "game/objects/object_setup.h"
-
-typedef struct
-{
-    u8 b80 : 1;
-    u8 b40 : 1;
-    u8 b20 : 1;
-    u8 b10 : 1;
-    u8 b08 : 1;
-    u8 b04 : 1;
-    u8 b02 : 1;
-    u8 b01 : 1;
-} ThornBushFlags;
 
 typedef struct DrakordThornbushPlacement
 {
@@ -44,7 +33,7 @@ typedef struct DrakordThornbushState
     void* hitTable;                   /* 0x6C: hit-reaction table pointer */
     f32 baseScale;                    /* 0x70: per-variant init scale constant */
     s32 radius;                       /* 0x74 */
-    u8 tail78[0x7c - 0x78];           /* 0x78: holds ThornBushFlags byte at 0x79 */
+    u8 tail78[0x7c - 0x78];           /* 0x78: holds ByteFlags byte at 0x79 */
 } DrakordThornbushState;
 
 STATIC_ASSERT(offsetof(DrakordThornbushPlacement, spawnHealth) == 0x19);

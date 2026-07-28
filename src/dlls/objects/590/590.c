@@ -171,7 +171,7 @@ void drakord_thornbush_update(GameObject* obj)
         if (timerCountDown(&inner->growth) != 0)
         {
             (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            ((ThornBushFlags*)((char*)inner + 0x79))->b80 = 1;
+            ((ByteFlags*)((char*)inner + 0x79))->b80 = 1;
             if (*(u32*)&((ObjPlacement*)setup)->mapId == 0xffffffff)
             {
                 Obj_FreeObject(obj);
@@ -181,9 +181,9 @@ void drakord_thornbush_update(GameObject* obj)
     else
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_drak_pain2);
-        if (((ThornBushFlags*)((char*)inner + 0x79))->b80)
+        if (((ByteFlags*)((char*)inner + 0x79))->b80)
         {
-            ((ThornBushFlags*)((char*)inner + 0x79))->b80 = 0;
+            ((ByteFlags*)((char*)inner + 0x79))->b80 = 0;
         }
         switch ((obj)->anim.seqId)
         {
@@ -236,7 +236,7 @@ void drakord_thornbush_init(GameObject* obj, u8* init)
     (obj)->anim.rotY = (s16)((s8)init[0x18] << 8);
     if (*(u32*)&((ObjPlacement*)init)->mapId == 0xffffffff)
     {
-        ((ThornBushFlags*)((char*)inner + 0x79))->b80 = 1;
+        ((ByteFlags*)((char*)inner + 0x79))->b80 = 1;
     }
     storeZeroToFloatParam(&inner->growth);
     storeZeroToFloatParam(&inner->regrowTimer);

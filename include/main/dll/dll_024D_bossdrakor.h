@@ -3,22 +3,11 @@
 
 #include "types.h"
 #include "game/objects/object.h"
+#include "main/byte_flags.h"
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 #include "global.h"
 #include "game/objects/object_setup.h"
-
-typedef struct
-{
-    u8 b80 : 1;
-    u8 b40 : 1;
-    u8 b20 : 1;
-    u8 b10 : 1;
-    u8 b08 : 1;
-    u8 b04 : 1;
-    u8 b02 : 1;
-    u8 b01 : 1;
-} DrakorFlags;
 
 typedef struct BossdrakorPlacement
 {
