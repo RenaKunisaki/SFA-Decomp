@@ -193,7 +193,7 @@ void shopitem_onSeqFree(GameObject* obj)
 int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 {
     int sub = *(int*)&(obj)->extra;
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     ShopItemState* s = (ShopItemState*)sub;
 
     seq->freeCallback = (ObjAnimSequenceFreeCallback)shopitem_onSeqFree;
@@ -417,7 +417,7 @@ void shopitem_init(GameObject* obj, ShopItemDef* data)
     int state = *(int*)&(obj)->extra;
     ShopItemState* s = (ShopItemState*)state;
 
-    objAnim = (ObjAnimComponent*)obj;
+    objAnim = &obj->anim;
     (obj)->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     (obj)->animEventCallback = shopitem_SeqFn;
     objAnim->bankIndex = (s8)data->bankIndex;

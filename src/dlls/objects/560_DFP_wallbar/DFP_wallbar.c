@@ -60,7 +60,7 @@ void chuka_update(GameObject* obj)
     int height;
     int firstIdx;
     int count;
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
 
     linkedObj = state->linkedObject;
     if ((u32)linkedObj != 0)

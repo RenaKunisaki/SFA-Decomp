@@ -163,7 +163,7 @@ void updateVisibleGeometry(void)
     st.rotY = -cam->worldPitch;
     st.rotZ = cam->worldRoll;
     setMatrixFromObjectPos(m, &st);
-    Matrix_TransformPoint(m, lbl_803DEBCC, *(f32*)&lbl_803DEBCC, lbl_803DEC00, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, 0.0f, 0.0f, lbl_803DEC00, &ox, &oy, &oz);
     gViewFrustumPlanes[0].normalX = ox;
     gViewFrustumPlanes[n = 0].normalY = oy;
     gViewFrustumPlanes[n = 0].normalZ = oz;
@@ -657,7 +657,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
         worldSize = gMapBlockWorldSize;
         table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
-        mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
+        mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
         mp = map;
         for (k = 0; k != ARRAY_COUNT(map); k += 4)

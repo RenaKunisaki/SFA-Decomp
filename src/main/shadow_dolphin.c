@@ -266,7 +266,7 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
         PSVECCrossProduct(&c, &a, &b);
         PSVECNormalize(&b, &b);
         PSVECNormalize(&c, &c);
-        scale = 0.5f * ((ObjAnimComponent*)obj)->modelState->shadowScale;
+        scale = 0.5f * (&obj->anim)->modelState->shadowScale;
         PSVECScale(&b, &b, scale);
         PSVECScale(&c, &c, scale);
         nd = -dist;
@@ -347,7 +347,7 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
             GXSetCullMode(GX_CULL_NONE);
             GXSetCurrentMtx(GX_PNMTX9);
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-            selectTexture((Texture*)((int)((ObjAnimComponent*)obj)->modelState->shadowTexture), 0);
+            selectTexture((Texture*)((int)(&obj->anim)->modelState->shadowTexture), 0);
             GXBegin(GX_QUADS, GX_VTXFMT6, 4);
             GXPosition3s16(shadowVerts[0], shadowVerts[1], shadowVerts[2]);
             GXTexCoord2s16(0, 0);

@@ -326,7 +326,7 @@ void tree_init(GameObject* obj, TreeSetup* setup)
         break;
     case TREE_SEQID_SNOW_TREE_3:
         state->effectProfileIndex = 0x7;
-        ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (int)(6.0f * obj->anim.rootMotionScale), -0x5,
+        ObjHitbox_SetCapsuleBounds(&obj->anim, (int)(6.0f * obj->anim.rootMotionScale), -0x5,
                                    0x64);
         break;
     case TREE_SEQID_SNOW_FRUIT_TREE:

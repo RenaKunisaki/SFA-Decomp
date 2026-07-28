@@ -676,7 +676,7 @@ void gameUpdate(void)
     timeFn_8006f400(timeDelta);
     uiDll_runFrameEndAndLoadNext();
     trackIntersect();
-    playerUpdateFn_8005649c();
+    mapUpdateCameraPosByTransformSpace();
     doPendingMapLoads();
     Obj_ApplyPendingParentLinks();
     (*gCheckpointInterface)->onGameLoop();

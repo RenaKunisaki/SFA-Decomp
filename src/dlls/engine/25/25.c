@@ -850,7 +850,7 @@ void dll_19_updateGravity(GameObject* obj, void* state, f32 gravity, s8 field25f
     ((BaddieState*)state)->cameraYaw = 0;
     if (obj->anim.hitReactState != NULL)
     {
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, 0, 0, -1);
+        ObjHits_SetHitVolumeSlot(&obj->anim, 0, 0, -1);
     }
     if (field25f != -1)
     {

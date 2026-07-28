@@ -357,7 +357,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);
-    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, 1.0f);
+    PSMTXTrans(mtx2, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtx2, mtx3, mtx3);
     GXLoadTexMtxImm(mtx3, GX_PTTEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX1);
@@ -372,7 +372,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     getNewShadowCausticTexture((u32*)&t164);
     selectTexture((Texture*)((void*)t164), 4);
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, 0.0f);
+    PSMTXTrans(mtxR, 0.5f * sx, 0.5f * sy, 0.0f);
     mtxR[0][0] = 1.0f;
     mtxR[1][1] = 1.0f;
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
@@ -574,7 +574,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     }
     GXSetTevColorS10(GX_TEVREG2, s10);
     PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);
-    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, 1.0f);
+    PSMTXTrans(mtx2, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtx2, mtx3, mtx3);
     GXLoadTexMtxImm(mtx3, GX_PTTEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX1);
@@ -651,7 +651,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     getNewShadowCausticTexture((u32*)&texRef4);
     selectTexture((Texture*)((void*)texRef4), 4);
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, 0.0f);
+    PSMTXTrans(mtxR, 0.5f * sx, 0.5f * sy, 0.0f);
     mtxR[0][0] = 1.0f;
     mtxR[1][1] = 1.0f;
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);

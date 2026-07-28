@@ -1090,7 +1090,7 @@ void mapLoadUnloadObjects(int flag)
     }
 }
 
-void playerUpdateFn_8005649c(void)
+void mapUpdateCameraPosByTransformSpace(void)
 {
     int count;
     int slot;
@@ -1418,7 +1418,7 @@ void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
 
 MapRomListIndex gMapRomListIndexes[120];
 
-void mapBlockFn_80059354(int p1, int p2, MapCellEntry* entry, int layer);
+void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* entry, int layer);
 
 
 int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
@@ -1437,7 +1437,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
     slotIdx = cellX + (cellZ << 4);
     entry += slotIdx;
 
-    mapBlockFn_80059354(worldX, worldZ, entry, layer);
+    mapFillCellEntry(worldX, worldZ, entry, layer);
 
     blockId = entry->blockId;
     if (mapCheckCurBlocks(entry->romListIndex) == -1)
@@ -1585,7 +1585,7 @@ s32 getCurMapLayer(void)
 extern int gShaderGameTextLoadedMapId;
 extern s8 gShaderMapTextDirTable[];
 
-void gameTextLoadForMap_800571f0(u8 force)
+void mapLoadGameTextDir(u8 force)
 {
     int curVal = gShaderCurMapEventId;
     if (curVal == -1)
@@ -1909,7 +1909,7 @@ void beginLoadingMap(void)
     Pause_ResetMenuFrameCounter();
 }
 
-void mapFn_80057d24(int a, int b, int* o0, int* o1, int* o2, int* o3, int f1, int f2, int idx)
+void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rectC, int* rectD, int layer, int useVisGrid, int slot)
 {
     int base;
     s16* e2;
@@ -1921,56 +1921,56 @@ void mapFn_80057d24(int a, int b, int* o0, int* o1, int* o2, int* o3, int f1, in
     u32 v, v2;
     int cellVal;
 
-    if (idx == -1)
+    if (slot == -1)
     {
-        o0[0] = -1;
-        o0[1] = 1;
-        o0[2] = -1;
-        o0[3] = 1;
-        o1[0] = 0;
-        o1[1] = 0;
-        o1[2] = 0;
-        o1[3] = -1;
-        o2[0] = 0;
-        o2[1] = 0;
-        o2[2] = 0;
-        o2[3] = -1;
-        o3[0] = 0;
-        o3[1] = 0;
-        o3[2] = 0;
-        o3[3] = -1;
-        if (f1 != 0)
-            o0[3] = -2;
+        rectA[0] = -1;
+        rectA[1] = 1;
+        rectA[2] = -1;
+        rectA[3] = 1;
+        rectB[0] = 0;
+        rectB[1] = 0;
+        rectB[2] = 0;
+        rectB[3] = -1;
+        rectC[0] = 0;
+        rectC[1] = 0;
+        rectC[2] = 0;
+        rectC[3] = -1;
+        rectD[0] = 0;
+        rectD[1] = 0;
+        rectD[2] = 0;
+        rectD[3] = -1;
+        if (layer != 0)
+            rectA[3] = -2;
         return;
     }
     base = gShaderMapRomBuffers[1];
-    e2 = (s16*)(base + gShaderRomListSlots[idx].mapId * 10);
-    aa = a - e2[0];
-    bb = b - e2[2];
-    ptr0 = gShaderRomListSlots[idx].romList;
-    if (idx == -1)
+    e2 = (s16*)(base + gShaderRomListSlots[slot].mapId * 10);
+    aa = gridX - e2[0];
+    bb = gridZ - e2[2];
+    ptr0 = gShaderRomListSlots[slot].romList;
+    if (slot == -1)
     {
-        o0[0] = -1;
-        o0[1] = 1;
-        o0[2] = -1;
-        o0[3] = 1;
-        o1[0] = 0;
-        o1[1] = 0;
-        o1[2] = 0;
-        o1[3] = -1;
-        o2[0] = 0;
-        o2[1] = 0;
-        o2[2] = 0;
-        o2[3] = -1;
-        o3[0] = 0;
-        o3[1] = 0;
-        o3[2] = 0;
-        o3[3] = -1;
-        if (f1 != 0)
-            o0[3] = -2;
+        rectA[0] = -1;
+        rectA[1] = 1;
+        rectA[2] = -1;
+        rectA[3] = 1;
+        rectB[0] = 0;
+        rectB[1] = 0;
+        rectB[2] = 0;
+        rectB[3] = -1;
+        rectC[0] = 0;
+        rectC[1] = 0;
+        rectC[2] = 0;
+        rectC[3] = -1;
+        rectD[0] = 0;
+        rectD[1] = 0;
+        rectD[2] = 0;
+        rectD[3] = -1;
+        if (layer != 0)
+            rectA[3] = -2;
         return;
     }
-    if (f2 != 0)
+    if (useVisGrid != 0)
     {
         tbl = *(int*)(ptr0 + 0x30);
         tbl2 = *(int*)(ptr0 + 0x34);
@@ -1982,57 +1982,57 @@ void mapFn_80057d24(int a, int b, int* o0, int* o1, int* o2, int* o3, int f1, in
     }
     index = aa + bb * *(s16*)ptr0;
     idx2 = index * 2;
-    if (f1 == 0)
+    if (layer == 0)
     {
         v = *(int*)(tbl + idx2 * 4);
-        o0[0] = ((v >> 12) & 0xf) - 7;
-        o0[2] = ((v >> 8) & 0xf) - 7;
-        o0[1] = ((v >> 4) & 0xf) - 7;
-        o0[3] = (v & 0xf) - 7;
-        o1[0] = (v >> 28) - 7;
-        o1[2] = ((v >> 24) & 0xf) - 7;
-        o1[1] = ((v >> 20) & 0xf) - 7;
-        o1[3] = ((v >> 16) & 0xf) - 7;
+        rectA[0] = ((v >> 12) & 0xf) - 7;
+        rectA[2] = ((v >> 8) & 0xf) - 7;
+        rectA[1] = ((v >> 4) & 0xf) - 7;
+        rectA[3] = (v & 0xf) - 7;
+        rectB[0] = (v >> 28) - 7;
+        rectB[2] = ((v >> 24) & 0xf) - 7;
+        rectB[1] = ((v >> 20) & 0xf) - 7;
+        rectB[3] = ((v >> 16) & 0xf) - 7;
         v2 = *(int*)((tbl + 4) + idx2 * 4);
-        o2[0] = ((v2 >> 12) & 0xf) - 7;
-        o2[2] = ((v2 >> 8) & 0xf) - 7;
-        o2[1] = ((v2 >> 4) & 0xf) - 7;
-        o2[3] = (v2 & 0xf) - 7;
-        o3[0] = (v2 >> 28) - 7;
-        o3[2] = ((v2 >> 24) & 0xf) - 7;
-        o3[1] = ((v2 >> 20) & 0xf) - 7;
-        o3[3] = ((v2 >> 16) & 0xf) - 7;
+        rectC[0] = ((v2 >> 12) & 0xf) - 7;
+        rectC[2] = ((v2 >> 8) & 0xf) - 7;
+        rectC[1] = ((v2 >> 4) & 0xf) - 7;
+        rectC[3] = (v2 & 0xf) - 7;
+        rectD[0] = (v2 >> 28) - 7;
+        rectD[2] = ((v2 >> 24) & 0xf) - 7;
+        rectD[1] = ((v2 >> 20) & 0xf) - 7;
+        rectD[3] = ((v2 >> 16) & 0xf) - 7;
     }
     else
     {
-        o0[0] = 0;
-        o0[1] = -1;
-        o0[2] = 0;
-        o0[3] = -1;
-        o1[0] = 0;
-        o1[1] = -1;
-        o1[2] = 0;
-        o1[3] = -1;
-        o2[0] = 0;
-        o2[1] = -1;
-        o2[2] = 0;
-        o2[3] = -1;
-        o3[0] = 0;
-        o3[1] = -1;
-        o3[2] = 0;
-        o3[3] = -1;
+        rectA[0] = 0;
+        rectA[1] = -1;
+        rectA[2] = 0;
+        rectA[3] = -1;
+        rectB[0] = 0;
+        rectB[1] = -1;
+        rectB[2] = 0;
+        rectB[3] = -1;
+        rectC[0] = 0;
+        rectC[1] = -1;
+        rectC[2] = 0;
+        rectC[3] = -1;
+        rectD[0] = 0;
+        rectD[1] = -1;
+        rectD[2] = 0;
+        rectD[3] = -1;
         cellVal = *(int*)(*(int*)(ptr0 + 0xc) + (idx2 >> 1) * 4) & 0x7f;
         if (cellVal != 127)
         {
-            v2 = ((int*)tbl2)[f1 - 1 + cellVal * 4];
-            o0[0] = ((v2 >> 12) & 0xf) - 7;
-            o0[2] = ((v2 >> 8) & 0xf) - 7;
-            o0[1] = ((v2 >> 4) & 0xf) - 7;
-            o0[3] = (v2 & 0xf) - 7;
-            o1[0] = (v2 >> 28) - 7;
-            o1[2] = ((v2 >> 24) & 0xf) - 7;
-            o1[1] = ((v2 >> 20) & 0xf) - 7;
-            o1[3] = ((v2 >> 16) & 0xf) - 7;
+            v2 = ((int*)tbl2)[layer - 1 + cellVal * 4];
+            rectA[0] = ((v2 >> 12) & 0xf) - 7;
+            rectA[2] = ((v2 >> 8) & 0xf) - 7;
+            rectA[1] = ((v2 >> 4) & 0xf) - 7;
+            rectA[3] = (v2 & 0xf) - 7;
+            rectB[0] = (v2 >> 28) - 7;
+            rectB[2] = ((v2 >> 24) & 0xf) - 7;
+            rectB[1] = ((v2 >> 20) & 0xf) - 7;
+            rectB[3] = ((v2 >> 16) & 0xf) - 7;
         }
     }
 }
@@ -2370,7 +2370,7 @@ void doPendingMapLoads(void)
                             for (layer = 0; layer < 5; layer++)
                             {
                                 char* g3;
-                                mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, rectA, rectB, rectC, rectD,
+                                mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, rectA, rectB, rectC, rectD,
                                                layer, 0, slot);
                                 g3 = *aBase;
                                 gMapLayerCellStates = *cBase;
@@ -2630,7 +2630,7 @@ MapCellEntry* mapGetCellEntry(int x, int z)
 }
 
 
-void mapBlockFn_80059354(int x, int z, MapCellEntry* out, int layer)
+void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
 {
     int id;
     MapRomListGrid* grid;
@@ -2643,7 +2643,7 @@ void mapBlockFn_80059354(int x, int z, MapCellEntry* out, int layer)
     s16* mapBounds;
     u32 cell;
 
-    id = mapCoordsToId(x, z, layer);
+    id = mapCoordsToId(gridX, gridZ, layer);
     if (id != -1)
     {
         slots = (char*)gShaderRomListSlots;
@@ -2674,9 +2674,9 @@ void mapBlockFn_80059354(int x, int z, MapCellEntry* out, int layer)
             *(s8*)(activeFlags + slot * 8) = 1;
         }
         mapBounds = (s16*)(gShaderMapRomBuffers[1] + id * 10);
-        x = x - mapBounds[0];
-        z = z - mapBounds[2];
-        cell = grid->cells[x + z * grid->width];
+        gridX = gridX - mapBounds[0];
+        gridZ = gridZ - mapBounds[2];
+        cell = grid->cells[gridX + gridZ * grid->width];
         out->cellIndex = (cell >> 0x11) & 0x3f;
         out->romListIndex = (cell >> 0x17) & 0xff;
         if (out->romListIndex == 0xFF)
@@ -3122,7 +3122,7 @@ int ViewFrustum_IsSphereVisible(float* center, float radius)
         plane = &gViewFrustumPlanes[i];
         dot = plane->distance + (plane->normalZ * (center[2] - offZ) +
                                  (center[1] * plane->normalY + plane->normalX * (center[0] - offX)));
-        if (radius + dot < *(f32*)&lbl_803DEBCC)
+        if (radius + dot < 0.0f)
             return 0;
     }
     return 1;
@@ -3226,7 +3226,7 @@ int objUpdateOpacity(GameObject* obj)
             if (prod + (plane->distance + (plane->normalZ * (obj->anim.worldPosZ - offZ) +
                                            (obj->anim.worldPosY * plane->normalY +
                                             plane->normalX * (obj->anim.worldPosX - offX)))) <
-                *(f32*)&lbl_803DEBCC)
+                0.0f)
                 return 0;
         }
     }

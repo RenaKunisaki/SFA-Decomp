@@ -1,7 +1,7 @@
 #include "dolphin/mtx.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/math.h"
 
-static f32 lbl_803DC550[] = { 0.0f, 1.0f };
+static f32 Unit01[] = { 0.0f, 1.0f };
 
 __declspec(section ".sdata2") const f32 lbl_803E7618 = 1.0f;
 #pragma explicit_zero_data on
@@ -54,10 +54,10 @@ asm void PSMTXConcat(const register Mtx mA, const register Mtx mB, register Mtx 
     psq_l   fp0, 0(mA), 0, 0
     stfd    fp14, 8(r1)
     psq_l   fp6, 0(mB), 0, 0
-    addis   r6, 0, lbl_803DC550@ha
+    addis   r6, 0, Unit01@ha
     psq_l   fp7, 8(mB), 0, 0
     stfd    fp15, 16(r1)
-    addi    r6, r6, lbl_803DC550@l
+    addi    r6, r6, Unit01@l
     stfd    fp31, 40(r1)
     psq_l   fp8, 16(mB), 0, 0
     ps_muls0 fp12, fp6, fp0

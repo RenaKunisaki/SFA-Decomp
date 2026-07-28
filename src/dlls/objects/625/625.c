@@ -848,7 +848,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
         {
             ((DrakorHoverpadState*)p)->speed += (absV > ((DrakorHoverpadState*)p)->commandSpeed) ? -limit : limit;
         }
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DRAKORHOVERPAD_HIT_VOLUME_SLOT, 1, 0);
+        ObjHits_SetHitVolumeSlot(&obj->anim, DRAKORHOVERPAD_HIT_VOLUME_SLOT, 1, 0);
     }
     else
     {

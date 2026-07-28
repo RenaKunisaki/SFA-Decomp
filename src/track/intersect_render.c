@@ -67,6 +67,7 @@ extern f32 lbl_803DB6C0;
 extern f32 lbl_803DB6C4;
 extern f32 lbl_803DB6C8;
 extern f32 lbl_803DB6CC;
+extern f32 lbl_803DEEE4;
 extern GXColor lbl_803DB6D0;
 extern GXColor lbl_803DB6D4;
 extern GXColor lbl_803DB6D8;
@@ -924,7 +925,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 
     PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, 0.0f);
     {
-        f32 s = *(f32*)&lbl_803DB6C4;
+        f32 s = lbl_803DB6C4;
         PSMTXScale(mtx_70, s / proj2, s / proj1, 0.0f);
     }
     PSMTXConcat(mtx_70, mtx_a0, mtx_d0);
@@ -1612,7 +1613,6 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
 
 int modelCb_80074518(void* obj_a, void** obj_b, int slot)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_90;
     Mtx mtx_60;
     Mtx mtx_30;
@@ -2593,7 +2593,7 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
 void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
 {
     f32 zero = 0.0f;
-    extern const f32 lbl_803DEEE4;
+    f32 one = 1.0f;
 
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
@@ -2674,22 +2674,22 @@ void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
         GXWGFifo.s16 = (s16)((x << 2) + w);
         GXWGFifo.s16 = (s16)(y << 2);
         GXWGFifo.s16 = -8;
-        GXWGFifo.f32 = *(const f32*)&lbl_803DEEE4;
+        GXWGFifo.f32 = one;
         GXWGFifo.f32 = zero;
 
         GXWGFifo.u8 = 0x3C;
         GXWGFifo.s16 = (s16)((x << 2) + w);
         GXWGFifo.s16 = (s16)((y << 2) + h);
         GXWGFifo.s16 = -8;
-        GXWGFifo.f32 = lbl_803DEEE4;
-        GXWGFifo.f32 = lbl_803DEEE4;
+        GXWGFifo.f32 = one;
+        GXWGFifo.f32 = one;
 
         GXWGFifo.u8 = 0x3C;
         GXWGFifo.s16 = (s16)(x << 2);
         GXWGFifo.s16 = (s16)((y << 2) + h);
         GXWGFifo.s16 = -8;
         GXWGFifo.f32 = zero;
-        GXWGFifo.f32 = lbl_803DEEE4;
+        GXWGFifo.f32 = one;
     }
     Camera_RebuildProjectionMatrix();
 }
@@ -2706,7 +2706,7 @@ void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
 void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
 {
     f32 zero = 0.0f;
-    extern const f32 lbl_803DEEE4;
+    f32 one = 1.0f;
     GXColor c;
     s32 w, h;
     s32 alpha;
@@ -2782,22 +2782,22 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     GXWGFifo.s16 = (s16)(sx + (f32)(u32)w);
     GXWGFifo.s16 = sy;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = *(const f32*)&lbl_803DEEE4;
+    GXWGFifo.f32 = one;
     GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = (s16)(sx + (f32)(u32)w);
     GXWGFifo.s16 = (s16)(sy + (f32)(u32)h);
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEE4;
-    GXWGFifo.f32 = lbl_803DEEE4;
+    GXWGFifo.f32 = one;
+    GXWGFifo.f32 = one;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = sx;
     GXWGFifo.s16 = (s16)(sy + (f32)(u32)h);
     GXWGFifo.s16 = -8;
     GXWGFifo.f32 = zero;
-    GXWGFifo.f32 = lbl_803DEEE4;
+    GXWGFifo.f32 = one;
 
     Camera_RebuildProjectionMatrix();
 }

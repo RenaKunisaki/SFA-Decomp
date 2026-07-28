@@ -2973,26 +2973,27 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
     f32 fval;
 
     curve = (RomCurveWalker*)*state;
-    if (state[0xb7] & 0x80000000U)
+    if (((EnemyState*)state)->controlFlags & 0x80000000U)
     {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_windlift_loop);
     }
-    if (((state[0xb7] & 0x2000U) != 0) &&
+    if (((((EnemyState*)state)->controlFlags & 0x2000U) != 0) &&
         ((Curve_AdvanceAlongPath(&curve->curve, 0.0f) != 0 || curve->atSegmentEnd != 0) &&
          ((*gRomCurveInterface)->goNextPoint(curve) != 0)) &&
         ((*gRomCurveInterface)->initCurve((RomCurveWalker*)*state, (void*)obj, 700.0f, (int*)&gPinPonCurveInitData, -1) !=
          0))
     {
-        *(u32*)&state[0xb7] &= ~0x2000LL;
+        ((EnemyState*)state)->controlFlags &= ~0x2000LL;
     }
     ObjHits_SetHitVolumeSlot(&obj->anim, FIREFLYLANTERN_HIT_VOLUME_SLOT, 1, 0);
     flag = playerGetFlags3F0Bit5((GameObject*)(Obj_GetPlayerObject()));
     dvec[0] = ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX - (obj)->anim.localPosX;
     dvec[1] = 0.0f;
     dvec[2] = ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ - (obj)->anim.localPosZ;
-    if (((u32)state[0xd0] != 0) && ((u32)state[0xd0] == (u32)Obj_GetPlayerObject()))
+    if (((u32)((EnemyState*)state)->lastHitObject != 0) &&
+        ((u32)((EnemyState*)state)->lastHitObject == (u32)Obj_GetPlayerObject()))
     {
-        *(u32*)&state[0xb9] |= 0x10000LL;
+        ((EnemyState*)state)->flags2E4 |= 0x10000LL;
         ((EnemyState*)state)->fireflyLantern.trackTimer = 0.0f;
     }
     (obj)->anim.rotY = -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((EnemyState*)state)->userData1) -
@@ -3010,7 +3011,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
         enemy_steerVelocityToward(obj, state, dvec, 2.0f, 0.1f, 0.1f, 1);
         baddieTurnTowardLookDir(obj, state, 0xf, 7.5f, 1.0f, 0);
     }
-    if (state[0xb7] & 0x40000000U)
+    if (((EnemyState*)state)->controlFlags & 0x40000000U)
     {
         fval = 0.0f;
         if (fval == ((EnemyState*)state)->fireflyLantern.breathTimer)

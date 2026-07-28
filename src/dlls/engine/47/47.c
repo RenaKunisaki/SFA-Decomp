@@ -235,7 +235,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
     }
     else
     {
-        ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+        ObjHits_MarkObjectPositionDirty(&obj->anim);
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0)
         {

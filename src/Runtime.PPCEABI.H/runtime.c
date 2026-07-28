@@ -104,15 +104,15 @@ void RESTORE_GPR(29)(void);
 void RESTORE_GPR(30)(void);
 void RESTORE_GPR(31)(void);
 
-extern const u32 lbl_802C2920[6];
+extern const u32 __constants[6];
 
 asm u32 __cvt_fp2unsigned(register f64 d)
 {
 #ifdef __MWERKS__ // clang-format off
 		nofralloc
 		stwu    r1,-16(r1)
-		lis     r4, lbl_802C2920@h
-		ori     r4, r4, lbl_802C2920@l
+		lis     r4, __constants@h
+		ori     r4, r4, __constants@l
 		li      r3,0
 		lfd     fp0,0(r4)
 		lfd     fp3,8(r4)

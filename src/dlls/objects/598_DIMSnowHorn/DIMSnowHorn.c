@@ -155,11 +155,11 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
     if (((DIMSnowHorn1State*)state)->baddie.inputMagnitude < 0.05f)
     {
-        *(s16*)((char*)state + 0x334) = 0;
+        ((DIMSnowHorn1State*)state)->baddie.turnRateAbs = 0;
         ((DIMSnowHorn1State*)state)->baddie.turnRate = 0;
         ((DIMSnowHorn1State*)state)->baddie.inputMagnitude = 0.0f;
     }
-    if (*(s16*)((char*)state + 0x334) < 0x5a)
+    if (((DIMSnowHorn1State*)state)->baddie.turnRateAbs < 0x5a)
     {
         (obj)->anim.rotX =
             182.0f * ((f32)(s16) * &((DIMSnowHorn1State*)state)->baddie.turnRate * t / 36.0f) +
@@ -263,7 +263,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
         }
     }
 
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, ((DIMSnowHorn1State*)state)->baddie.animSpeedA,
+    ObjAnim_SampleRootCurvePhase(&obj->anim, ((DIMSnowHorn1State*)state)->baddie.animSpeedA,
                                  &((DIMSnowHorn1State*)state)->baddie.moveSpeed);
     if ((*(int*)&((DIMSnowHorn1State*)state)->baddie.unk31C & PAD_BUTTON_A) != 0)
     {
@@ -286,7 +286,7 @@ int DIMSnowHorn1_stateHandler09(GameObject* obj, int state, f32 fv)
     inner = (obj)->extra;
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
 
-    if (*(s16*)((char*)state + 0x334) < inner->advanceCountThreshold ||
+    if (((DIMSnowHorn1State*)state)->baddie.turnRateAbs < inner->advanceCountThreshold ||
         0.0f == ((DIMSnowHorn1State*)state)->baddie.inputMagnitude)
     {
         return 8;
@@ -400,7 +400,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, int state)
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
     if (((DIMSnowHorn1State*)state)->baddie.moveJustStartedA != 0)
     {
-        *(s16*)((char*)state + 0x338) = 0;
+        ((DIMSnowHorn1State*)state)->baddie.controlTimer = 0;
         ((DIMSnowHorn1State*)state)->baddie.moveSpeed = 0.005f;
         ((DIMSnowHorn1State*)state)->baddie.velSmoothTime = 8.0f;
         if ((obj)->anim.currentMove != gDIMSnowHorn1LocomotionMoveIds[0])
@@ -421,19 +421,19 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, int state)
     }
     if (((DIMSnowHorn1State*)state)->baddie.inputMagnitude < 0.05f)
     {
-        *(s16*)((char*)state + 0x334) = 0;
+        ((DIMSnowHorn1State*)state)->baddie.turnRateAbs = 0;
         ((DIMSnowHorn1State*)state)->baddie.turnRate = 0;
         ((DIMSnowHorn1State*)state)->baddie.inputMagnitude = 0.0f;
     }
     {
         f32 v = *(f32*)&((DIMSnowHorn1State*)state)->baddie.trackedObj;
         if (v > 0.0f && ((DIMSnowHorn1State*)state)->baddie.inputMagnitude > 0.0f &&
-            *(s16*)((char*)state + 0x334) >= inner->advanceCountThreshold)
+            ((DIMSnowHorn1State*)state)->baddie.turnRateAbs >= inner->advanceCountThreshold)
         {
             return 0xa;
         }
         if (v > 0.1f && ((DIMSnowHorn1State*)state)->baddie.inputMagnitude > 0.1f &&
-            *(s16*)((char*)state + 0x334) < inner->advanceCountThreshold)
+            ((DIMSnowHorn1State*)state)->baddie.turnRateAbs < inner->advanceCountThreshold)
         {
             return 0xb;
         }

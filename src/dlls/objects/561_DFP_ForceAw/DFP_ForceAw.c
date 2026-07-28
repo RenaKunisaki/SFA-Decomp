@@ -44,22 +44,6 @@
 #define TRICKY_CURVE_SFX_BURST         0x1c9
 #define TRICKY_CURVE_SFX_COOLDOWN      0x1ca
 
-typedef struct TrickyCurveTriggerState
-{
-    s16 xExtent;  /* 0x00: half-extent of the trigger box on each axis */
-    s16 zExtent;  /* 0x02 */
-    s16 yExtent;  /* 0x04 */
-    s16 cooldown; /* 0x06: ticks until the cooldown variant can hit again */
-    u8 unk8[8];   /* 0x08: unknown */
-    u8 xSide;     /* 0x10: which side of the midline the player entered on */
-    u8 ySide;     /* 0x11 */
-    u8 zSide;     /* 0x12 */
-} TrickyCurveTriggerState;
-
-STATIC_ASSERT(offsetof(TrickyCurveTriggerState, cooldown) == 0x06);
-STATIC_ASSERT(offsetof(TrickyCurveTriggerState, xSide) == 0x10);
-STATIC_ASSERT(sizeof(TrickyCurveTriggerState) == 0x14);
-
 
 u8
     gTrickyCurveBurstCounter; /* inter-frame burst-fire counter; reset to 0 after TRICKY_CURVE_BURST_LIMIT ticks */
@@ -67,7 +51,7 @@ u8
 void TrickyCurve_updateCooldownHit(GameObject* obj)
 {
     u8 insideAxes;
-    TrickyCurveTriggerState* state;
+    TrickyCurveObjState* state;
     GameObject* player;
     u8 xSide;
     u8 ySide;
@@ -76,7 +60,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     f32 zDelta;
     f32 yDelta;
 
-    state = (TrickyCurveTriggerState*)obj->extra;
+    state = (TrickyCurveObjState*)obj->extra;
     player = (GameObject*)Obj_GetPlayerObject();
     insideAxes = 0;
     xSide = 0;
@@ -89,7 +73,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
 
     if (xDelta <= 0.0f)
     {
-        if (xDelta > -(f32)state->xExtent)
+        if (xDelta > -(f32)state->rangeX)
         {
             insideAxes = 1;
             xSide = 1;
@@ -97,7 +81,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     }
     if (xDelta > 0.0f)
     {
-        if (xDelta < state->xExtent)
+        if (xDelta < state->rangeX)
         {
             insideAxes++;
             xSide--;
@@ -105,7 +89,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     }
     if (zDelta <= 0.0f)
     {
-        if (zDelta > -(f32)state->zExtent)
+        if (zDelta > -(f32)state->rangeZ)
         {
             insideAxes++;
             zSide = 1;
@@ -113,7 +97,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     }
     if (zDelta > 0.0f)
     {
-        if (zDelta < state->zExtent)
+        if (zDelta < state->rangeZ)
         {
             insideAxes++;
             zSide--;
@@ -121,7 +105,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     }
     if (yDelta <= 0.0f)
     {
-        if (yDelta > -(f32)state->yExtent)
+        if (yDelta > -(f32)state->rangeY)
         {
             insideAxes++;
             ySide = 1;
@@ -129,7 +113,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     }
     if (yDelta > 0.0f)
     {
-        if (yDelta < state->yExtent)
+        if (yDelta < state->rangeY)
         {
             insideAxes++;
             ySide--;
@@ -163,7 +147,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
 void TrickyCurve_updateBurstHit(GameObject* obj)
 {
     u8 insideAxes;
-    TrickyCurveTriggerState* state;
+    TrickyCurveObjState* state;
     GameObject* player;
     u8 xSide;
     u8 ySide;
@@ -173,7 +157,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     f32 yDelta;
     PartFxSpawnParams partfxArgs;
 
-    state = (TrickyCurveTriggerState*)obj->extra;
+    state = (TrickyCurveObjState*)obj->extra;
     player = (GameObject*)Obj_GetPlayerObject();
     insideAxes = 0;
     xSide = 0;
@@ -187,7 +171,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
 
     if (xDelta <= 0.0f)
     {
-        if (xDelta > -(f32)state->xExtent)
+        if (xDelta > -(f32)state->rangeX)
         {
             insideAxes = 1;
             xSide = 1;
@@ -195,7 +179,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     }
     if (xDelta > 0.0f)
     {
-        if (xDelta < state->xExtent)
+        if (xDelta < state->rangeX)
         {
             insideAxes++;
             xSide--;
@@ -203,7 +187,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     }
     if (zDelta <= 0.0f)
     {
-        if (zDelta > -(f32)state->zExtent)
+        if (zDelta > -(f32)state->rangeZ)
         {
             insideAxes++;
             zSide = 1;
@@ -211,7 +195,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     }
     if (zDelta > 0.0f)
     {
-        if (zDelta < state->zExtent)
+        if (zDelta < state->rangeZ)
         {
             insideAxes++;
             zSide--;
@@ -219,7 +203,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     }
     if (yDelta <= 0.0f)
     {
-        if (yDelta > -(f32)state->yExtent)
+        if (yDelta > -(f32)state->rangeY)
         {
             insideAxes++;
             ySide = 1;
@@ -227,7 +211,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     }
     if (yDelta > 0.0f)
     {
-        if (yDelta < state->yExtent)
+        if (yDelta < state->rangeY)
         {
             insideAxes++;
             ySide--;
@@ -280,17 +264,10 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
  * the function counts how many of the three axis intervals contain the player
  * (requires all three = axisCount 3) then fires a random horizontal nudge.
  */
-typedef struct TrickyCurveState
-{
-    s16 halfWidthX;
-    s16 halfWidthZ;
-    s16 halfHeightY;
-} TrickyCurveState;
-
 void TrickyCurve_updateCooldownTrigger(int obj)
 {
     GameObject* curve;
-    TrickyCurveState* state;
+    TrickyCurveObjState* state;
     GameObject* player;
     int axisCount;
     f32 deltaX;
@@ -301,7 +278,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     f32 randomZ;
 
     curve = (GameObject*)obj;
-    state = (TrickyCurveState*)curve->extra;
+    state = (TrickyCurveObjState*)curve->extra;
     player = Obj_GetPlayerObject();
     axisCount = 0;
     deltaX = player->anim.localPosX - curve->anim.localPosX;
@@ -310,7 +287,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
 
     if (deltaX <= 0.0f)
     {
-        bound = state->halfWidthX;
+        bound = state->rangeX;
         if (deltaX > -bound)
         {
             axisCount = 1;
@@ -318,7 +295,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     }
     if (deltaX > 0.0f)
     {
-        bound = state->halfWidthX;
+        bound = state->rangeX;
         if (deltaX < bound)
         {
             axisCount = axisCount + 1;
@@ -327,7 +304,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
 
     if (deltaZ <= 0.0f)
     {
-        bound = state->halfWidthZ;
+        bound = state->rangeZ;
         if (deltaZ > -bound)
         {
             axisCount = axisCount + 1;
@@ -335,7 +312,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     }
     if (deltaZ > 0.0f)
     {
-        bound = state->halfWidthZ;
+        bound = state->rangeZ;
         if (deltaZ < bound)
         {
             axisCount = axisCount + 1;
@@ -344,7 +321,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
 
     if (deltaY <= 0.0f)
     {
-        bound = state->halfHeightY;
+        bound = state->rangeY;
         if (deltaY > -bound)
         {
             axisCount = axisCount + 1;
@@ -352,7 +329,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     }
     if (deltaY > 0.0f)
     {
-        bound = state->halfHeightY;
+        bound = state->rangeY;
         if (deltaY < bound)
         {
             axisCount = axisCount + 1;
@@ -377,7 +354,7 @@ typedef struct TrickyCurveObjectDef
 {
     ObjPlacement head; /* 0x00 */
     s8 rangeYRaw; /* 0x18 << 2 -> state.rangeY */
-    u8 pad19[0x1A - 0x19];
+    u8 variant; /* 0x19 -> state.variant and state.mode */
     s16 rangeX;         /* 0x1A -> state.rangeX (X-axis half-extent) */
     s16 rangeZ;         /* 0x1C -> state.rangeZ */
     s16 triggerGameBit; /* 0x1E -> state.triggerGameBit */
@@ -486,7 +463,7 @@ void TrickyCurve_updateBurstTrigger(GameObject* obj)
         fxParams.rotZ = 0;
         fxParams.rotY = 0;
         fxParams.rotX = 0;
-        if (xSide != state[0x10])
+        if (xSide != ((TrickyCurveObjState*)state)->xSide)
         {
             fxParams.rotX = 0x3fff;
         }
@@ -516,9 +493,9 @@ void TrickyCurve_updateBurstTrigger(GameObject* obj)
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_fball2_c_1c9);
     }
 
-    state[0x10] = xSide;
-    state[0x11] = ySide;
-    state[0x12] = zSide;
+    ((TrickyCurveObjState*)state)->xSide = xSide;
+    ((TrickyCurveObjState*)state)->ySide = ySide;
+    ((TrickyCurveObjState*)state)->zSide = zSide;
 }
 
 int TrickyCurve_getExtraSize(void)
@@ -546,7 +523,7 @@ void TrickyCurve_hitDetect(void)
 void TrickyCurve_update(GameObject* obj)
 {
     u8* inner = obj->extra;
-    u32 state = inner[0xe];
+    u32 state = ((TrickyCurveObjState*)inner)->mode;
     if (state == 0)
     {
         TrickyCurve_updateBurstTrigger(obj);
@@ -568,14 +545,14 @@ void TrickyCurve_update(GameObject* obj)
 void TrickyCurve_init(GameObject* obj, u8* def)
 {
     u8* state = obj->extra;
-    state[0xc] = def[0x19];
+    ((TrickyCurveObjState*)state)->variant = ((TrickyCurveObjectDef*)def)->variant;
     ((TrickyCurveObjState*)state)->rangeY = (s16)((s32)((TrickyCurveObjectDef*)def)->rangeYRaw << 2);
     *(s16*)state = ((TrickyCurveObjectDef*)def)->rangeX;
     ((TrickyCurveObjState*)state)->rangeZ = ((TrickyCurveObjectDef*)def)->rangeZ;
-    state[0xe] = def[0x19];
-    state[0x10] = 0;
-    state[0x11] = 0;
-    state[0x12] = 0;
+    ((TrickyCurveObjState*)state)->mode = ((TrickyCurveObjectDef*)def)->variant;
+    ((TrickyCurveObjState*)state)->xSide = 0;
+    ((TrickyCurveObjState*)state)->ySide = 0;
+    ((TrickyCurveObjState*)state)->zSide = 0;
     ((TrickyCurveObjState*)state)->gateGameBit = ((TrickyCurveObjectDef*)def)->gateGameBit;
     ((TrickyCurveObjState*)state)->triggerGameBit = ((TrickyCurveObjectDef*)def)->triggerGameBit;
     ((TrickyCurveObjState*)state)->cooldown = 0;

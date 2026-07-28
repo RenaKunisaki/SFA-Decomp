@@ -108,7 +108,7 @@ void arwproximit_update(GameObject* obj)
                 modelLightStruct_setGlowProjectionRadius(state->light, 50.0f);
             }
             ObjHits_EnableObject(obj);
-            ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+            ObjHits_MarkObjectPositionDirty(&obj->anim);
             (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
             state->phase = ARWPROXIMIT_PHASE_FADEIN;
         }
@@ -163,10 +163,10 @@ void arwproximit_update(GameObject* obj)
             if (state->light != NULL)
                 modelLightStruct_setEnabled(state->light, 0, gArwProximitZero[0]);
             spawnExplosion((GameObject*)(int)obj, gArwProximitBigExplosionRadius[0], 1, 0, 1, 1, 0, 0, 1);
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0x12c);
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWPROXIMIT_HIT_VOLUME_SLOT, 1, 0);
+            ObjHitbox_SetSphereRadius(&obj->anim, 0x12c);
+            ObjHits_SetHitVolumeSlot(&obj->anim, ARWPROXIMIT_HIT_VOLUME_SLOT, 1, 0);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+            ObjHits_MarkObjectPositionDirty(&obj->anim);
             state->phase = ARWPROXIMIT_PHASE_DETONATE;
         }
         break;
@@ -199,7 +199,7 @@ void arwproximit_update(GameObject* obj)
             spawnExplosion((GameObject*)(int)obj, gArwProximitExplosionRadius[0], 1, 0, 0, 0, 0, 0, 1);
             ObjHits_DisableObject(obj);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+            ObjHits_MarkObjectPositionDirty(&obj->anim);
             state->phase = ARWPROXIMIT_PHASE_DONE;
         }
         (obj)->anim.rotZ = timeDelta * state->spinSpeed + (f32)(obj)->anim.rotZ;
@@ -229,7 +229,7 @@ void arwproximit_init(GameObject* obj, ARWProximitSetup* setup, int flag)
     storeZeroToFloatParam((void*)&state->warningTimer);
     storeZeroToFloatParam((void*)&state->despawnTimer);
     ObjHits_DisableObject(obj);
-    ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+    ObjHits_MarkObjectPositionDirty(&obj->anim);
 }
 
 void arwproximit_release(void)

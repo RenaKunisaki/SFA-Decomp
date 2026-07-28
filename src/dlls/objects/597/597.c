@@ -1283,15 +1283,15 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
 
     zero = 0.0f;
     hitReact = *(int*)&obj->anim.hitReactState;
-    if (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj) != 0)
+    if (ObjHits_IsObjectEnabled(&obj->anim) != 0)
     {
         if ((u32)(st->flags428 >> 1 & 1) == 0)
         {
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DRHIGHTOP_HIT_VOLUME_SLOT, 1, 0);
+            ObjHits_SetHitVolumeSlot(&obj->anim, DRHIGHTOP_HIT_VOLUME_SLOT, 1, 0);
         }
         else
         {
-            ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
+            ObjHits_ClearHitVolumes(&obj->anim);
             ObjHits_SyncObjectPositionIfDirty(obj);
         }
         hitKind = ObjHits_GetPriorityHit(obj, &hitObj, &hitOutB, &hitOutC);

@@ -286,7 +286,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
         sub->animSpeed = 0.1f;
     }
 
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, LANDED_ARWING_OBJECT_PAIR_PRIORITY, LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME, -1);
+    ObjHits_SetHitVolumeSlot(&obj->anim, LANDED_ARWING_OBJECT_PAIR_PRIORITY, LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME, -1);
     ((ObjHitsPriorityState *)obj->anim.hitReactState)->objectPairPriority = LANDED_ARWING_OBJECT_PAIR_PRIORITY;
     ((ObjHitsPriorityState *)obj->anim.hitReactState)->objectPairHitVolume = LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME;
     ObjHits_RegisterActiveHitVolumeObject(obj);
@@ -445,7 +445,7 @@ u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         state->animSpeed = 0.0f;
     }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, STAFFACTION_HIT_VOLUME_SLOT, 1, -1);
+    ObjHits_SetHitVolumeSlot(&obj->anim, STAFFACTION_HIT_VOLUME_SLOT, 1, -1);
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 9;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);

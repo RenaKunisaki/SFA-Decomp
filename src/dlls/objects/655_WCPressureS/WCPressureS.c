@@ -84,7 +84,7 @@ int wcpressures_getExtraSize(void)
 
 int wcpressures_getObjectTypeId(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     WCPressuresSetup* setup = (WCPressuresSetup*)obj->anim.placementData;
     int modelIndex = setup->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
@@ -224,7 +224,7 @@ void wcpressures_update(GameObject* obj)
 
 void wcpressures_init(GameObject* obj, WCPressuresSetup* setup)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     WCPressuresState* state = (WCPressuresState*)obj->extra;
     s16 objType;
     u16 objFlags;

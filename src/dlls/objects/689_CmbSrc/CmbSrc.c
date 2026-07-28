@@ -628,16 +628,16 @@ void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
     {
         state->hitFlags.disabled = 1;
         ObjHitbox_SetSphereRadius(
-            (ObjAnimComponent*)cmbsrc, (int)(2.0f * (mapData->radius *
+            &cmbsrc->anim, (int)(2.0f * (mapData->radius *
                                (cmbsrc->anim.rootMotionScale * gCmbsrcColorRadiusScaleTable[mapData->colorIndex]))));
         if (mapData->flags & CMBSRC_MAP_ENABLE_HIT_VOLUME)
         {
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)cmbsrc, CMBSRC_HIT_VOLUME_SLOT, 1, 0);
+            ObjHits_SetHitVolumeSlot(&cmbsrc->anim, CMBSRC_HIT_VOLUME_SLOT, 1, 0);
             state->hitFlags.disabled = 0;
         }
         else
         {
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)cmbsrc, 0, 0, 0);
+            ObjHits_SetHitVolumeSlot(&cmbsrc->anim, 0, 0, 0);
         }
         if (mapData->behaviorFlags & CMBSRC_BEHAVIOR_SYNC_HIT_POSITION)
         {
@@ -646,7 +646,7 @@ void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
         }
         else
         {
-            ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)cmbsrc);
+            ObjHits_MarkObjectPositionDirty(&cmbsrc->anim);
         }
         if (mapData->behaviorFlags & CMBSRC_BEHAVIOR_HIT_MODE_MASK)
         {

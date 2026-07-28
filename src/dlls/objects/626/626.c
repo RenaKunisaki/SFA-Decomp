@@ -99,7 +99,7 @@ int hightop_stateHandler10(GameObject* obj, HighTopRuntime* stateArg)
     if (stateArg->baddie.moveJustStartedA != 0)
     {
         rt->substate = 3;
-        *(int*)((char*)stateArg + 0) |= 0x1000000;
+        stateArg->baddie.flags0 |= 0x1000000;
     }
     if (mainGetBit(GAMEBIT_ITEM_NWKey_Got2) != 0)
     {
@@ -162,7 +162,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         ObjHits_EnableObject(obj);
         if ((obj)->anim.currentMove != 2)
         {
-            ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
+            ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x78);
             ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
             stateArg->baddie.moveSpeed = 0.004f;
         }
@@ -191,13 +191,13 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         {
             if (randomChanceOneIn(2) != 0)
             {
-                ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
+                ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x78);
                 ObjAnim_SetCurrentMove((int)obj, 9, 0.0f, 0);
                 stateArg->baddie.moveSpeed = 0.006f;
             }
             else
             {
-                ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
+                ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x78);
                 ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
                 stateArg->baddie.moveSpeed = 0.004f;
             }
@@ -231,7 +231,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
             state->substate = 9;
         }
         objModelClearVecFn_8003aa40(obj);
-        ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0);
+        ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0);
         ObjAnim_SetCurrentMove((u32)obj, 0, 0.0f, 0);
         ObjHits_DisableObject(obj);
         Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
@@ -242,7 +242,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
     {
         if ((obj)->anim.currentMove != 2)
         {
-            ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
+            ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x78);
             ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
             stateArg->baddie.moveSpeed = 0.004f;
         }
@@ -440,8 +440,8 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
         HighTopRuntime* state2;
         RomCurveInterface* curve;
         mainSetBits(0x62f, 1);
-        ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
-        ObjHits_ClearSourceMask((ObjAnimComponent*)obj, 1);
+        ObjHits_MarkObjectPositionDirty(&obj->anim);
+        ObjHits_ClearSourceMask(&obj->anim, 1);
         obj->anim.modelInstance->runtimeSourceHitMask &= ~1;
         *(s8*)&state->substate = -1;
         state->flagsC40 |= HIGHTOP_FLAG_CURVE_FOLLOW;
@@ -495,7 +495,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     }
     if (move != -1)
     {
-        ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
+        ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x78);
         ObjAnim_SetCurrentMove((int)obj, move, 0.0f, 0);
     }
     player = Obj_GetPlayerObject();
@@ -612,7 +612,7 @@ int hightop_stateHandler03(GameObject* obj, HighTopRuntime* state)
     (obj)->anim.velocityZ = zero;
     if (state->baddie.moveJustStartedA != 0)
     {
-        ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
+        ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x78);
         if (*(u32*)&runtime->savedControlMode == 4)
         {
             ObjAnim_SetCurrentMove((int)obj, 0x13, 0.0f, 0);
@@ -648,7 +648,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
     *(u32*)stateArg = *(u32*)stateArg | 0x200000;
     if (stateArg->baddie.inputMagnitude < 0.05f)
     {
-        *(s16*)((char*)stateArg + 0x334) = 0;
+        stateArg->baddie.turnRateAbs = 0;
         stateArg->baddie.turnRate = 0;
         stateArg->baddie.inputMagnitude = 0.0f;
     }
@@ -662,7 +662,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
     {
         (obj)->anim.rotX = (182.0f * (((f32)d336 * dt) / 36.0f) + (f32) * (s16*)obj);
     }
-    conv = (int)(182.04445f * ((f32) * (s16*)((char*)stateArg + 0x336) * dt));
+    conv = (int)(182.04445f * ((f32) stateArg->baddie.turnRate * dt));
     vec = (s16*)objModelGetVecFn_800395d8(obj, 9);
     if (vec != 0)
     {
@@ -743,9 +743,9 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
     if (changed != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, gHighTopBandMoveIds[band], moveSpeed, 0);
-        ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0xa);
+        ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0xa);
     }
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, stateArg->baddie.animSpeedA,
+    ObjAnim_SampleRootCurvePhase(&obj->anim, stateArg->baddie.animSpeedA,
                                  (f32*)((char*)stateArg + 0x2a0));
     return 0;
 }
@@ -760,10 +760,10 @@ int hightop_stateHandler01(GameObject* obj, HighTopRuntime* stateArg)
     (obj)->anim.velocityX = zero;
     (obj)->anim.velocityY = zero;
     (obj)->anim.velocityZ = zero;
-    *(int*)((char*)stateArg + 0) |= 0x200000;
+    stateArg->baddie.flags0 |= 0x200000;
     if (stateArg->baddie.moveJustStartedA != 0)
     {
-        *(s16*)((char*)stateArg + 0x338) = 0;
+        stateArg->baddie.controlTimer = 0;
         stateArg->baddie.moveSpeed = 0.005f;
         stateArg->baddie.velSmoothTime = 18.0f;
         if ((obj)->anim.currentMove != gHighTopBandMoveIds[0])
@@ -773,7 +773,7 @@ int hightop_stateHandler01(GameObject* obj, HighTopRuntime* stateArg)
     }
     if (stateArg->baddie.inputMagnitude < 0.1f)
     {
-        *(s16*)((char*)stateArg + 0x334) = 0;
+        stateArg->baddie.turnRateAbs = 0;
         stateArg->baddie.turnRate = 0;
         stateArg->baddie.inputMagnitude = 0.0f;
     }

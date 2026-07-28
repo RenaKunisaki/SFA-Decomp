@@ -98,7 +98,7 @@ void AndrossBrain_update(GameObject* obj)
     {
         state->lightning = ObjList_FindObjectById(ANDROSSLIGH_OBJ_ID);
     }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ANDROSSBRAIN_HIT_VOLUME_SLOT, 2, -1);
+    ObjHits_SetHitVolumeSlot(&obj->anim, ANDROSSBRAIN_HIT_VOLUME_SLOT, 2, -1);
     ObjHits_EnableObject(obj);
     if (state->andross != NULL)
     {
