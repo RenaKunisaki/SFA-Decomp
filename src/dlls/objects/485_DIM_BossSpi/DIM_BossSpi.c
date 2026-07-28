@@ -116,8 +116,6 @@ void DIMbossspit_updateBurst(GameObject* obj) {
                       &radius);
 }
 
-const f32 gDimBossSpitGravity[1] = {0.07f};
-const f32 gDimBossSpitVelocityDamping[1] = {0.97f};
 
 int DIMbossspit_getExtraSize(void) {
     return sizeof(DIMbossSpitState);
@@ -175,8 +173,8 @@ void DIMbossspit_update(GameObject* obj) {
         ObjHits_SetHitVolumeSlot(&obj->anim, DIMBOSSSPIT_HIT_VOLUME_SLOT_FLIGHT_AND_BURST, DIMBOSSSPIT_HIT_TYPE_FLIGHT,
                                  0);
         ObjHitbox_SetSphereRadius(&obj->anim, DIMBOSSSPIT_FLIGHT_RADIUS);
-        obj->anim.velocityY = obj->anim.velocityY - gDimBossSpitGravity[0] * timeDelta;
-        obj->anim.velocityY = obj->anim.velocityY * gDimBossSpitVelocityDamping[0];
+        obj->anim.velocityY = obj->anim.velocityY - 0.07f * timeDelta;
+        obj->anim.velocityY *= 0.97f;
         obj->anim.rotX = DIMBOSSSPIT_FLIGHT_ROT_X_SPEED * timeDelta + (f32)obj->anim.rotX;
         obj->anim.rotZ = DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED * timeDelta + (f32)obj->anim.rotZ;
         obj->anim.rotY = DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED * timeDelta + (f32)obj->anim.rotY;
