@@ -266,10 +266,10 @@ void renderClouds(int a, int b, int c, int d)
         GXClearVtxDesc();
         GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
         GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-        textureSetupFn_800799c0();
+        gxTevResetStages();
         gxTextureFn_800794e0();
-        textRenderSetupFn_80079804();
-        gxBlendFn_800789ac();
+        gxTevCommitStages();
+        gxSetAdditiveBlendNoZTest();
         PSMTXMultVec(viewMtx, pos, pos);
         PSMTXTrans(mtx, pos[0], pos[1], pos[2]);
         GXLoadPosMtxImm(mtx, GX_PNMTX0);

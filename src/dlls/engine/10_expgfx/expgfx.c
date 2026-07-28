@@ -3867,9 +3867,9 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
                     {
                         if (alphaMode != 0)
                         {
-                            textureSetupFn_800799c0();
+                            gxTevResetStages();
                             gxTevPassRasStage();
-                            textRenderSetupFn_80079804();
+                            gxTevCommitStages();
                             alphaMode = 0;
                         }
                     }
@@ -3886,9 +3886,9 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
                     }
                     else if (alphaMode != 1)
                     {
-                        textureSetupFn_800799c0();
-                        geomDrawFn_800796f0();
-                        textRenderSetupFn_80079804();
+                        gxTevResetStages();
+                        gxTevTextureTimesRasStage();
+                        gxTevCommitStages();
                         alphaMode = 1;
                     }
                 }

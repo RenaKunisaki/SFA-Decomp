@@ -430,10 +430,10 @@ void lightningRender(LightningEffect* p)
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    textureSetupFn_800799c0();
+    gxTevResetStages();
     gxTextureFn_800794e0();
-    textRenderSetupFn_80079804();
-    gxBlendFn_800788dc();
+    gxTevCommitStages();
+    gxSetAdditiveBlendZTest();
     getNewShadowLightningTexture(&tex);
     selectTexture(tex, 0);
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, color);
@@ -844,9 +844,9 @@ int snowPrintSnowCloud(int arg, int cloudId)
     texIdx = 0;
     selectTexture((Texture*)(((NewCloud*)p)->cloudType == 0 ? gNewCloudLayerTextures[0] : lbl_803DD1C4), 0);
     GXSetCullMode(GX_CULL_NONE);
-    textureSetupFn_800799c0();
-    textRenderSetupFn_800795e8();
-    textRenderSetupFn_80079804();
+    gxTevResetStages();
+    gxTevTextureTimesColor1Stage();
+    gxTevCommitStages();
     if (((NewCloud*)p)->cloudType == 4)
     {
         setTextColor((void*)arg, 0x7d, 0x7d, 0x9b, 0xff);
@@ -856,7 +856,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
         getAmbientColor(0, &attr.cr, &attr.cg, &attr.cb);
         setTextColor((void*)arg, attr.cr, attr.cg, attr.cb, 0xff);
     }
-    gxBlendFn_80078b4c();
+    gxSetAlphaBlendZTest();
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);

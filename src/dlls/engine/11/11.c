@@ -987,25 +987,25 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
                 _textSetColor(a0, 0xff, 0xff, 0xff,
                               (u8)(0xff - ((PartfxEffectState*)p[slot])->textureFrameStep *
                                               ((PartfxEffectState*)p[slot])->textureFrameFadeStep));
-                textureSetupFn_800799c0();
+                gxTevResetStages();
                 gxTevAddTextureFrameBlendStages();
                 gxTevModulateRasStage();
-                textRenderSetupFn_80079804();
+                gxTevCommitStages();
                 selectTexture((Texture*)tex, 1);
             }
         }
         else if ((int)((PartfxEffectState*)p[slot])->flags & 0x2000000)
         {
-            textureSetupFn_800799c0();
+            gxTevResetStages();
             gxTevRasTimesColor1Stage();
-            textRenderSetupFn_80079804();
+            gxTevCommitStages();
         }
         else if ((int)((PartfxEffectState*)p[slot])->flags & 0x4000000)
         {
-            textureSetupFn_800799c0();
-            geomDrawFn_800796f0();
-            gxTexColorFn_80079254();
-            textRenderSetupFn_80079804();
+            gxTevResetStages();
+            gxTevTextureTimesRasStage();
+            gxTevModulateColor1Stage();
+            gxTevCommitStages();
         }
         if (((int)((PartfxEffectState*)p[slot])->flags & 0x05000000) &&
             (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400)))
@@ -1021,24 +1021,24 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
         }
         if ((int)((PartfxEffectState*)p[slot])->flags & 0x100)
         {
-            gxBlendFn_80078b4c();
+            gxSetAlphaBlendZTest();
         }
         else if (((int)((PartfxEffectState*)p[slot])->flags & 0x10) &&
                  ((int)((PartfxEffectState*)p[slot])->flags & 0x80))
         {
-            textBlendSetupFn_80078a7c();
+            gxSetAlphaBlendNoZTest();
         }
         else if ((int)((PartfxEffectState*)p[slot])->flags & 0x80)
         {
-            gxBlendFn_80078b4c();
+            gxSetAlphaBlendZTest();
         }
         else if ((int)((PartfxEffectState*)p[slot])->flags & 0x10)
         {
-            textBlendSetupFn_80078a7c();
+            gxSetAlphaBlendNoZTest();
         }
         else
         {
-            gxBlendFn_80078b4c();
+            gxSetAlphaBlendZTest();
         }
         if ((int)((PartfxEffectState*)p[slot])->flags & 0x40)
         {

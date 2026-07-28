@@ -3206,7 +3206,7 @@ void gxSetOpaqueNoZWriteMode(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxBlendFn_800788dc(void)
+void gxSetAdditiveBlendZTest(void)
 {
     if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
     {
@@ -3226,7 +3226,7 @@ void gxBlendFn_800788dc(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxBlendFn_800789ac(void)
+void gxSetAdditiveBlendNoZTest(void)
 {
     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 7 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
     {
@@ -3246,7 +3246,7 @@ void gxBlendFn_800789ac(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void textBlendSetupFn_80078a7c(void)
+void gxSetAlphaBlendNoZTest(void)
 {
     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 7 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
     {
@@ -3266,7 +3266,7 @@ void textBlendSetupFn_80078a7c(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxBlendFn_80078b4c(void)
+void gxSetAlphaBlendZTest(void)
 {
     if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
     {
@@ -3393,7 +3393,7 @@ void gxTevPassRasStage(void)
     gTevChanCount += 1;
 }
 
-void gxTexColorFn_80079254(void)
+void gxTevModulateColor1Stage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
     GXSetTevDirect(gTevStageCursor);
@@ -3451,7 +3451,7 @@ void gxTextureFn_800794e0(void)
     gTevTexGenCount += 1;
 }
 
-void textRenderSetupFn_800795e8(void)
+void gxTevTextureTimesColor1Stage(void)
 {
     GXSetTevOrder(gTevStageCursor, gTevTexCoordCursor, gTevTexMapCursor, GX_COLOR_NULL);
     GXSetTevDirect(gTevStageCursor);
@@ -3468,7 +3468,7 @@ void textRenderSetupFn_800795e8(void)
     gTevTexGenCount += 1;
 }
 
-void geomDrawFn_800796f0(void)
+void gxTevTextureTimesRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, gTevTexCoordCursor, gTevTexMapCursor, GX_COLOR0A0);
     GXSetTevDirect(gTevStageCursor);
@@ -3494,7 +3494,7 @@ void geomDrawFn_800796f0(void)
  * stage that K-multiplies the tint over the existing color, advancing
  * gTevStageCursor (TEV stage cursor) and gTevStageCount (stage count).
  */
-void textRenderSetupFn_80079804(void)
+void gxTevCommitStages(void)
 {
     GXColor c;
 
@@ -3533,7 +3533,7 @@ void textRenderSetupFn_80079804(void)
     }
 }
 
-void textureSetupFn_800799c0(void)
+void gxTevResetStages(void)
 {
     gTevIndStageCount = 0;
     gTevChanCount = 0;

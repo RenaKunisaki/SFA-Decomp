@@ -122,10 +122,10 @@ void drawSkyStars(void)
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    textureSetupFn_800799c0();
+    gxTevResetStages();
     gxTevAddColor1Stage();
-    textRenderSetupFn_80079804();
-    gxBlendFn_800789ac();
+    gxTevCommitStages();
+    gxSetAdditiveBlendNoZTest();
     color = gNewCloudStarFogColor;
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, color);
     Camera_UpdateViewMatrices();
@@ -150,9 +150,9 @@ void drawSkyStars(void)
         if (i == SKY_STAR_SMALL_DISPLAY_LIST_COUNT)
         {
             selectTexture(gNewCloudStarTextureA, 0);
-            textureSetupFn_800799c0();
-            textRenderSetupFn_800795e8();
-            textRenderSetupFn_80079804();
+            gxTevResetStages();
+            gxTevTextureTimesColor1Stage();
+            gxTevCommitStages();
         }
         else if (i == SKY_STAR_TEXTURE_B_LIST_INDEX)
         {

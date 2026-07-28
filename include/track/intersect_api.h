@@ -12,22 +12,22 @@ typedef struct IntersectModLineObject IntersectModLineObject;
 
 void intersectModLineBuild(IntersectModLineObject* obj);
 void gxSetOpaqueZWriteMode(void);
-void gxBlendFn_800789ac(void);
-void gxBlendFn_80078b4c(void);
-void gxTexColorFn_80079254(void);
+void gxSetAdditiveBlendNoZTest(void);
+void gxSetAlphaBlendZTest(void);
+void gxTevModulateColor1Stage(void);
 void gxTextureFn_800794e0(void);
 void waterFxInit(void);
 void waterFxSetDisabled(int disabled);
 void matrixFn_8006ff0c(f32* matrix, s16* out, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);
 void normalize(f32* x, f32* y, f32* z);
-void textBlendSetupFn_80078a7c(void);
+void gxSetAlphaBlendNoZTest(void);
 void textRenderChar(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
-void textRenderSetupFn_800795e8(void);
+void gxTevTextureTimesColor1Stage(void);
 void setupWaterReflectionTev(int handle1, int handle2);
 void setupReflectionDistortTev(int textureHandle);
 void setupReflectionBumpDistortTev(void* texture);
 void loadReflectionTexMtxs(void);
-void gxBlendFn_800788dc(void);
+void gxSetAdditiveBlendZTest(void);
 void gxTevAddColor1Stage(void);
 /* Per-frame alpha decrement of the two water-effect pools. */
 void timeFn_8006f400(f32 step);

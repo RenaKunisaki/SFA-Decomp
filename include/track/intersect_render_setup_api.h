@@ -25,7 +25,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
  * stage that K-multiplies the tint over the existing color, advancing
  * gTevStageCursor (TEV stage cursor) and gTevStageCount (stage count).
  */
-void textRenderSetupFn_80079804(void);
-void textureSetupFn_800799c0(void);
+void gxTevCommitStages(void);
+void gxTevResetStages(void);
 
 #endif /* TRACK_INTERSECT_RENDER_SETUP_API_H_ */

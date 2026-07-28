@@ -752,9 +752,9 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
         (obj)->anim.rootMotionScale = 0.01f;
         Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, 1.0f, lbl_803E4DFC, NULL);
         (obj)->anim.rootMotionScale = originalScale;
-        textureSetupFn_800799c0();
-        textRenderSetupFn_800795e8();
-        textRenderSetupFn_80079804();
+        gxTevResetStages();
+        gxTevTextureTimesColor1Stage();
+        gxTevCommitStages();
         if (objDef->textureIndex == 1) {
             renderState.red = 0xff;
             renderState.green = 0xff;
@@ -772,7 +772,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
                 gxSetOpaqueZWriteMode();
                 alpha = 0xff;
             } else {
-                gxBlendFn_80078b4c();
+                gxSetAlphaBlendZTest();
                 alpha = (objAnim->alpha + objAnim->alpha) >> 1;
             }
             selectTexture((Texture*)(gRopeNodeTextures[objDef->textureIndex]), 0);
@@ -787,7 +787,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
         }
         if (objDef->textureIndex == 1) {
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_waterblock_wave);
-            gxBlendFn_80078b4c();
+            gxSetAlphaBlendZTest();
             {
                 int alpha;
 

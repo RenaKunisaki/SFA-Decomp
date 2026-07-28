@@ -169,9 +169,9 @@ void SnowBike_DrawTrails(int p1, char* table)
 
     color = sSnowBikeTrailTevColor;
     selectTexture((Texture*)sSnowBikeTrailTexture, 0);
-    textureSetupFn_800799c0();
-    geomDrawFn_800796f0();
-    textRenderSetupFn_80079804();
+    gxTevResetStages();
+    gxTevTextureTimesRasStage();
+    gxTevCommitStages();
     GXSetTevColor(GX_TEVREG1, color);
     gxSetZMode_(1, GX_LEQUAL, 0);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);

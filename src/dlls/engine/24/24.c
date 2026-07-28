@@ -263,11 +263,11 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     Camera_LoadModelViewMatrix((int)ctx, renderParam, &vtx, 1.0f, 0.0f, NULL);
     GXSetCullMode(GX_CULL_NONE);
     _textSetColor(ctx, 0xff, 0xff, 0xff, 0xff);
-    textureSetupFn_800799c0();
-    geomDrawFn_800796f0();
-    gxTexColorFn_80079254();
-    textRenderSetupFn_80079804();
-    gxBlendFn_80078b4c();
+    gxTevResetStages();
+    gxTevTextureTimesRasStage();
+    gxTevModulateColor1Stage();
+    gxTevCommitStages();
+    gxSetAlphaBlendZTest();
     {
         int i;
         i = 0;

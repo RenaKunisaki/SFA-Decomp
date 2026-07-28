@@ -1268,11 +1268,11 @@ void renderGlows(void)
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    textureSetupFn_800799c0();
+    gxTevResetStages();
     gxTextureFn_800794e0();
-    textRenderSetupFn_80079804();
+    gxTevCommitStages();
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogCol);
-    gxBlendFn_800789ac();
+    gxSetAdditiveBlendNoZTest();
     alpha = 0xff;
     gSunFlareScissorWidth = 0;
     gSunFlareScissorHeight = 0;
@@ -1377,7 +1377,7 @@ void renderGlows(void)
         }
         GXSetCurrentMtx(GX_IDENTITY);
         gxTextureFn_800794e0();
-        gxBlendFn_800789ac();
+        gxSetAdditiveBlendNoZTest();
         for (i = 0; i < lbl_803DCE06; i++)
         {
             e = gGlowLightList[i];

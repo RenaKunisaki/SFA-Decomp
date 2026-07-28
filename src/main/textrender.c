@@ -526,10 +526,10 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
     {
         setTextColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
         _textSetColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
-        textureSetupFn_800799c0();
+        gxTevResetStages();
         textRenderSetup();
-        textRenderSetupFn_80079804();
-        textBlendSetupFn_80078a7c();
+        gxTevCommitStages();
+        gxSetAlphaBlendNoZTest();
     }
 
     x = x + win->x;
@@ -590,10 +590,10 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                     {
                         setTextColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
                         _textSetColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
-                        textureSetupFn_800799c0();
+                        gxTevResetStages();
                         textRenderSetup();
-                        textRenderSetupFn_80079804();
-                        textBlendSetupFn_80078a7c();
+                        gxTevCommitStages();
+                        gxSetAlphaBlendNoZTest();
                     }
                 }
                 skipGlyph = 1;
@@ -771,18 +771,18 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                         else
                         {
                             setTextColor(0, 0xff, 0xff, 0xff, gGameTextColorA);
-                            textureSetupFn_800799c0();
-                            textRenderSetupFn_800795e8();
-                            textRenderSetupFn_80079804();
+                            gxTevResetStages();
+                            gxTevTextureTimesColor1Stage();
+                            gxTevCommitStages();
                         }
                     }
                     else
                     {
                         setTextColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
                         _textSetColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
-                        textureSetupFn_800799c0();
+                        gxTevResetStages();
                         textRenderSetup();
-                        textRenderSetupFn_80079804();
+                        gxTevCommitStages();
                     }
                 }
             }

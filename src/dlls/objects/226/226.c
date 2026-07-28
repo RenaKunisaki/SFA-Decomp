@@ -565,9 +565,9 @@ void staffDrawSwipe(GameObject* obj, StaffState* swipe)
     int i;
 
     selectTexture((Texture*)gStaffSwipeTextures[swipe->swipeTextureIndex], 0);
-    textureSetupFn_800799c0();
-    geomDrawFn_800796f0();
-    textRenderSetupFn_80079804();
+    gxTevResetStages();
+    gxTevTextureTimesRasStage();
+    gxTevCommitStages();
     gxSetZMode_(1, GX_LEQUAL, 0);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_NOOP);
     gxSetPeControl_ZCompLoc_(1);

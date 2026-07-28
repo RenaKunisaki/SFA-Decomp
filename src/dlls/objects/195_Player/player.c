@@ -12721,9 +12721,9 @@ void playerDrawTeleportAnim(GameObject* obj)
 
     height = ((PlayerState*)state)->teleportAnimProgress;
     setTextColor(0, 0xff, 0xff, 0xff, 0x80);
-    textureSetupFn_800799c0();
-    textRenderSetupFn_800795e8();
-    textRenderSetupFn_80079804();
+    gxTevResetStages();
+    gxTevTextureTimesColor1Stage();
+    gxTevCommitStages();
     gxSetOpaqueZWriteMode();
     GXSetColorUpdate(0);
 

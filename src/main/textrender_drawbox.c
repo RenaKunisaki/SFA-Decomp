@@ -422,9 +422,9 @@ void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box)
     midY = y + halfH;
     setTextColor(0, gGameTextBoxColorR & 0xff, gGameTextBoxColorG & 0xff, gGameTextBoxColorB & 0xff,
                  gGameTextBoxColorA & 0xff);
-    textureSetupFn_800799c0();
-    textRenderSetupFn_800795e8();
-    textRenderSetupFn_80079804();
+    gxTevResetStages();
+    gxTevTextureTimesColor1Stage();
+    gxTevCommitStages();
     drawScaledTexture(gGameTextBoxEdgeTexture, (f32)(x - gGameTextBoxInset), (f32)(y - gGameTextBoxInset), alpha,
                       0x100, halfW + gGameTextBoxInset, halfH + gGameTextBoxInset, 0);
     drawScaledTexture(gGameTextBoxEdgeTexture, midX, (f32)(y - gGameTextBoxInset), alpha, 0x100,
