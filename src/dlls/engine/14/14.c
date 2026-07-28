@@ -301,10 +301,10 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         {
             return -1;
         }
-        cfg.sourcePosY = spawnParams->posX;
-        cfg.sourcePosZ = spawnParams->posY;
-        cfg.sourcePosW = spawnParams->posZ;
-        cfg.sourcePosX = spawnParams->scale;
+        cfg.sourcePosX = spawnParams->posX;
+        cfg.sourcePosY = spawnParams->posY;
+        cfg.sourcePosZ = spawnParams->posZ;
+        cfg.sourceScale = spawnParams->scale;
         cfg.sourceVecZ = spawnParams->rotZ;
         cfg.sourceVecY = spawnParams->rotY;
         cfg.sourceVecX = spawnParams->rotX;
@@ -975,10 +975,10 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.sourceVecX = 200;
         cfg.sourceVecY = 0;
         cfg.sourceVecX = 0;
-        cfg.sourcePosY = 100.0f;
+        cfg.sourcePosX = 100.0f;
+        cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         cfg.lifetimeFrames = randomGetRange(0, 0x14) + 0x28;
         cfg.linkGroup = 0x10;
         cfg.behaviorFlags |= 0x20000LL;
@@ -1431,9 +1431,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.sourceVecX = randomGetRange(0, 0xffff);
         cfg.sourceVecY = randomGetRange(0, 0xffff);
         cfg.sourceVecX = randomGetRange(0, 0xffff);
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
         cfg.lifetimeFrames = randomGetRange(0, 0x14) + 0x28;
         cfg.linkGroup = 0x10;
         cfg.behaviorFlags = 0x6100214;
@@ -1899,10 +1899,10 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.quadVertex3Pad06 = 0x4e;
         cfg.behaviorFlags = 0x20100;
         cfg.textureId = 0xdf;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         cfg.sourceVecZ = 100 - randomGetRange(0, 200);
         cfg.sourceVecY = 100 - randomGetRange(0, 200);
         cfg.sourceVecX = 100 - randomGetRange(0, 200);
@@ -1925,10 +1925,10 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.quadVertex3Pad06 = 0x4b;
         cfg.behaviorFlags = 0x70000;
         cfg.textureId = randomGetRange(0, 3) + 0xdd;
-        cfg.sourcePosY = 0.0f;
-        cfg.sourcePosZ = 30.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourcePosX = 0.0f;
+        cfg.sourcePosY = 30.0f;
+        cfg.sourcePosZ = 0.0f;
+        cfg.sourceScale = 1.0f;
         cfg.sourceVecZ = 0;
         cfg.sourceVecY = 500 - randomGetRange(0, 1000);
         cfg.sourceVecX = 500 - randomGetRange(0, 1000);
@@ -1959,10 +1959,10 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.lifetimeFrames = 1;
         cfg.behaviorFlags = 0x70800;
         cfg.textureId = randomGetRange(0, 1) + 0xdd;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         cfg.sourceVecZ = 500 - randomGetRange(0, 1000);
         cfg.sourceVecY = 500 - randomGetRange(0, 1000);
         cfg.sourceVecX = 500 - randomGetRange(0, 1000);
@@ -2000,9 +2000,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
                 }
                 else
                 {
-                    cfg.startPosX = cfg.startPosX + cfg.sourcePosY;
-                    cfg.startPosY = cfg.startPosY + cfg.sourcePosZ;
-                    cfg.startPosZ = cfg.startPosZ + cfg.sourcePosW;
+                    cfg.startPosX = cfg.startPosX + cfg.sourcePosX;
+                    cfg.startPosY = cfg.startPosY + cfg.sourcePosY;
+                    cfg.startPosZ = cfg.startPosZ + cfg.sourcePosZ;
                 }
             }
             (*gExpgfxInterface)->spawnEffect(&cfg, 0, state.effectId, 0);
@@ -2072,9 +2072,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
             }
             else
             {
-                *state.startPos = *state.startPos + cfg.sourcePosY;
-                cfg.startPosY = cfg.startPosY + cfg.sourcePosZ;
-                cfg.startPosZ = cfg.startPosZ + cfg.sourcePosW;
+                *state.startPos = *state.startPos + cfg.sourcePosX;
+                cfg.startPosY = cfg.startPosY + cfg.sourcePosY;
+                cfg.startPosZ = cfg.startPosZ + cfg.sourcePosZ;
             }
         }
         if (state.effectId == 0x3e || state.effectId == 0x3f)
@@ -2133,9 +2133,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
                 }
                 else
                 {
-                    *state.startPos += cfg.sourcePosY;
-                    cfg.startPosY += + cfg.sourcePosZ;
-                    cfg.startPosZ += + cfg.sourcePosW;
+                    *state.startPos += cfg.sourcePosX;
+                    cfg.startPosY += + cfg.sourcePosY;
+                    cfg.startPosZ += + cfg.sourcePosZ;
                 }
             }
             (*gExpgfxInterface)->spawnEffect(&cfg, 0, state.effectId, 0);
@@ -2242,9 +2242,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.scale = 0.0125f * (f32)(s32)randomGetRange(1, 8);
         cfg.lifetimeFrames = randomGetRange(0, 0x32) + 0x26;
         cfg.initialAlpha = 0xff;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
         cfg.behaviorFlags = 0x6100110;
         cfg.textureId = 0x159;
         break;
@@ -2793,10 +2793,10 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.linkGroup = 10;
         cfg.behaviorFlags = 0x200;
         cfg.textureId = 0xc13;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         cfg.sourceVecZ = 0;
         cfg.sourceVecY = 0;
         cfg.sourceVecX = spawnParams->rotX;
@@ -3403,12 +3403,12 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.scale = 0.0001f * (f32)(s32)randomGetRange(10, 0x14);
         cfg.lifetimeFrames = 0xaa;
         cfg.behaviorFlags = 0xa0104;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
         cfg.sourceVecY = 0;
         cfg.sourceVecZ = 0;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         break;
     case 0x55a:
     {
@@ -3432,9 +3432,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.sourceVecX = randomGetRange(0, 0xffff);
         cfg.sourceVecY = randomGetRange(0, 0xffff);
         cfg.sourceVecX = randomGetRange(0, 0xffff);
+        cfg.sourcePosX = (f32)(s32)randomGetRange(0xe6, 800);
         cfg.sourcePosY = (f32)(s32)randomGetRange(0xe6, 800);
         cfg.sourcePosZ = (f32)(s32)randomGetRange(0xe6, 800);
-        cfg.sourcePosW = (f32)(s32)randomGetRange(0xe6, 800);
         cfg.renderFlags = 0x1000020;
         cfg.behaviorFlags = 0x86000008;
         cfg.overrideColor0 = randomGetRange(0, 0xfff) + 0xf000;
@@ -3480,9 +3480,9 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
     {
         if ((spawnFlags & 0x200000) != 0)
         {
-            cfg.startPosX = cfg.startPosX + cfg.sourcePosY;
-            cfg.startPosY = cfg.startPosY + cfg.sourcePosZ;
-            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosW;
+            cfg.startPosX = cfg.startPosX + cfg.sourcePosX;
+            cfg.startPosY = cfg.startPosY + cfg.sourcePosY;
+            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosZ;
         }
         else
         {

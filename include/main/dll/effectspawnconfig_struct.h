@@ -30,22 +30,10 @@ typedef struct EffectSpawnConfig {
             s16 pad06;
         };
     };
-    union {
-        f32 sourcePosX;
-        f32 srcW;
-    };
-    union {
-        f32 sourcePosY;
-        f32 srcX;
-    };
-    union {
-        f32 sourcePosZ;
-        f32 srcY;
-    };
-    union {
-        f32 sourcePosW;
-        f32 srcZ;
-    };
+    f32 sourceScale;
+    f32 sourcePosX;
+    f32 sourcePosY;
+    f32 sourcePosZ;
     union {
         struct {
             union {
@@ -149,7 +137,8 @@ STATIC_ASSERT(sizeof(EffectSpawnConfig) == 0x64);
 STATIC_ASSERT(offsetof(EffectSpawnConfig, attachedSource) == 0x00);
 STATIC_ASSERT(offsetof(EffectSpawnConfig, lifetimeFrames) == 0x08);
 STATIC_ASSERT(offsetof(EffectSpawnConfig, sourceVecX) == 0x0C);
-STATIC_ASSERT(offsetof(EffectSpawnConfig, sourcePosX) == 0x14);
+STATIC_ASSERT(offsetof(EffectSpawnConfig, sourceScale) == 0x14);
+STATIC_ASSERT(offsetof(EffectSpawnConfig, sourcePosX) == 0x18);
 STATIC_ASSERT(offsetof(EffectSpawnConfig, velocityX) == 0x24);
 STATIC_ASSERT(offsetof(EffectSpawnConfig, startPosX) == 0x30);
 STATIC_ASSERT(offsetof(EffectSpawnConfig, textureId) == 0x42);

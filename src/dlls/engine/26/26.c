@@ -53,10 +53,10 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
     {
         if (spawnParams == 0)
             return -1;
-        cfg.sourcePosY = spawnParams->posX;
-        cfg.sourcePosZ = spawnParams->posY;
-        cfg.sourcePosW = spawnParams->posZ;
-        cfg.sourcePosX = spawnParams->scale;
+        cfg.sourcePosX = spawnParams->posX;
+        cfg.sourcePosY = spawnParams->posY;
+        cfg.sourcePosZ = spawnParams->posZ;
+        cfg.sourceScale = spawnParams->scale;
         cfg.sourceVecZ = spawnParams->rotZ;
         cfg.sourceVecY = spawnParams->rotY;
         cfg.sourceVecX = spawnParams->rotX;
@@ -351,10 +351,10 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
             FILL320();
         cfg.sourceVecY = 0;
         cfg.sourceVecX = 0;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         if (spawnParams != 0)
         {
             cfg.startPosX = spawnParams->posX;
@@ -512,10 +512,10 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
             FILL320();
         cfg.sourceVecY = 0;
         cfg.sourceVecX = 0;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         if (spawnParams != 0)
         {
             cfg.startPosX = spawnParams->posX;
@@ -535,10 +535,10 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
             FILL320();
         cfg.sourceVecY = 0;
         cfg.sourceVecX = 0;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         if (spawnParams != 0)
         {
             cfg.startPosX = spawnParams->posX;
@@ -748,9 +748,9 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.sourceVecX = (s16)(s32)randomGetRange(0, 0xffff);
         cfg.sourceVecY = (s16)(s32)randomGetRange(0, 0xffff);
         cfg.sourceVecX = (s16)(s32)randomGetRange(0, 0xffff);
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
         cfg.scale = 0.0005f * (f32)(s32)randomGetRange(0x1e, 0x28);
         cfg.lifetimeFrames = randomGetRange(0x1e, 0x2f);
         cfg.initialAlpha = 0xff;
@@ -769,9 +769,9 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.sourceVecX = (s16)(s32)randomGetRange(0, 0xffff);
         cfg.sourceVecY = (s16)(s32)randomGetRange(0, 0xffff);
         cfg.sourceVecX = (s16)(s32)randomGetRange(0, 0xffff);
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
         cfg.scale = 0.005f * (f32)(s32)randomGetRange(0x1e, 0x28);
         cfg.lifetimeFrames = randomGetRange(0x50, 0x64);
         cfg.initialAlpha = 0xff;
@@ -1029,9 +1029,9 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
     {
         if ((spawnFlags & 0x200000) != 0)
         {
-            cfg.startPosX = cfg.startPosX + cfg.sourcePosY;
-            cfg.startPosY = cfg.startPosY + cfg.sourcePosZ;
-            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosW;
+            cfg.startPosX = cfg.startPosX + cfg.sourcePosX;
+            cfg.startPosY = cfg.startPosY + cfg.sourcePosY;
+            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosZ;
         }
         else
         {

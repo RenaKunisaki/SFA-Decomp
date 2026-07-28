@@ -56,10 +56,10 @@ int Effect20_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     {
         if (spawnParams == 0)
             return -1;
-        cfg.sourcePosY = spawnParams->posX;
-        cfg.sourcePosZ = spawnParams->posY;
-        cfg.sourcePosW = spawnParams->posZ;
-        cfg.sourcePosX = spawnParams->scale;
+        cfg.sourcePosX = spawnParams->posX;
+        cfg.sourcePosY = spawnParams->posY;
+        cfg.sourcePosZ = spawnParams->posZ;
+        cfg.sourceScale = spawnParams->scale;
         cfg.sourceVecZ = spawnParams->rotZ;
         cfg.sourceVecY = spawnParams->rotY;
         cfg.sourceVecX = spawnParams->rotX;
@@ -1533,9 +1533,9 @@ int Effect20_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
             cfg.sourceVecX = randomGetRange(0, 0xffff);
             cfg.sourceVecY = randomGetRange(0, 0xffff);
             cfg.sourceVecX = randomGetRange(0, 0xffff);
+            cfg.sourcePosX = (f32)(s32)randomGetRange(0xe6, 800);
             cfg.sourcePosY = (f32)(s32)randomGetRange(0xe6, 800);
             cfg.sourcePosZ = (f32)(s32)randomGetRange(0xe6, 800);
-            cfg.sourcePosW = (f32)(s32)randomGetRange(0xe6, 800);
         }
         break;
     case 0x7e3:
@@ -2352,9 +2352,9 @@ int Effect20_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     {
         if ((spawnFlags & 0x200000) != 0)
         {
-            cfg.startPosX = cfg.startPosX + cfg.sourcePosY;
-            cfg.startPosY = cfg.startPosY + cfg.sourcePosZ;
-            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosW;
+            cfg.startPosX = cfg.startPosX + cfg.sourcePosX;
+            cfg.startPosY = cfg.startPosY + cfg.sourcePosY;
+            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosZ;
         }
         else
         {

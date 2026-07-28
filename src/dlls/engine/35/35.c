@@ -63,10 +63,10 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         {
             return -1;
         }
-        p.srcX = src->x;
-        p.srcY = src->y;
-        p.srcZ = src->z;
-        p.srcW = src->w;
+        p.sourcePosX = src->x;
+        p.sourcePosY = src->y;
+        p.sourcePosZ = src->z;
+        p.sourceScale = src->w;
         p.rot2 = src->rot2;
         p.rot1 = src->rot1;
         p.rot0 = src->rot0;
@@ -113,10 +113,10 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.scale = 0.0008f * (f32)(int)p.count;
         p.flagsA = 0x8100200;
         p.kind = 0x57;
-        p.srcX = src->x;
-        p.srcY = src->y;
-        p.srcZ = src->z;
-        p.srcW = 1.0f;
+        p.sourcePosX = src->x;
+        p.sourcePosY = src->y;
+        p.sourcePosZ = src->z;
+        p.sourceScale = 1.0f;
         p.rot2 = 0;
         p.rot1 = 0;
         p.rot0 = src->rot0;
@@ -127,10 +127,10 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.scale = 0.00014f * (f32)(int)p.count;
         p.flagsA = 0x8100200;
         p.kind = 0x56;
-        p.srcX = src->x;
-        p.srcY = src->y;
-        p.srcZ = src->z;
-        p.srcW = 1.0f;
+        p.sourcePosX = src->x;
+        p.sourcePosY = src->y;
+        p.sourcePosZ = src->z;
+        p.sourceScale = 1.0f;
         p.rot2 = 0;
         p.rot1 = 0;
         p.rot0 = 0;
@@ -141,10 +141,10 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.count = 200;
         p.flagsA = 0x8100200;
         p.kind = 0x56;
-        p.srcX = src->x;
-        p.srcY = src->y;
-        p.srcZ = src->z;
-        p.srcW = 1.0f;
+        p.sourcePosX = src->x;
+        p.sourcePosY = src->y;
+        p.sourcePosZ = src->z;
+        p.sourceScale = 1.0f;
         p.rot2 = 0;
         p.rot1 = 0;
         p.rot0 = 0;
@@ -170,9 +170,9 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.rot0 = randomGetRange(0, 0xffff);
         p.rot1 = randomGetRange(0, 0xffff);
         p.rot0 = randomGetRange(0, 0xffff);
-        p.srcX = (f32)(int)randomGetRange(0xe6, 0x320);
-        p.srcY = (f32)(int)randomGetRange(0xe6, 0x320);
-        p.srcZ = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosX = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosY = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosZ = (f32)(int)randomGetRange(0xe6, 0x320);
         p.flagsB = 0x1000020;
         p.flagsA = 0x86000008;
         color = randomGetRange(0x8000, 0xffff);
@@ -478,9 +478,9 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.rot0 = randomGetRange(0, 0xffff);
         p.rot1 = randomGetRange(0, 0xffff);
         p.rot0 = randomGetRange(0, 0xffff);
-        p.srcX = (f32)(int)randomGetRange(0xe6, 0x320);
-        p.srcY = (f32)(int)randomGetRange(0xe6, 0x320);
-        p.srcZ = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosX = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosY = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosZ = (f32)(int)randomGetRange(0xe6, 0x320);
         p.flagsB = 0x1000020;
         p.flagsA = 0x86000008;
         color = randomGetRange(0, 0x2ee0) + 0x3caf;
@@ -508,9 +508,9 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.rot0 = randomGetRange(0, 0xffff);
         p.rot1 = randomGetRange(0, 0xffff);
         p.rot0 = randomGetRange(0, 0xffff);
-        p.srcX = (f32)(int)randomGetRange(0xe6, 0x320);
-        p.srcY = (f32)(int)randomGetRange(0xe6, 0x320);
-        p.srcZ = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosX = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosY = (f32)(int)randomGetRange(0xe6, 0x320);
+        p.sourcePosZ = (f32)(int)randomGetRange(0xe6, 0x320);
         p.flagsB = 0x1000020;
         p.flagsA = 0x86000008;
         color = randomGetRange(0, 0x2ee0) + 0x3caf;
@@ -542,9 +542,9 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
     {
         if (hasSrc != 0)
         {
-            p.posX = p.posX + p.srcX;
-            p.posY = p.posY + p.srcY;
-            p.posZ = p.posZ + p.srcZ;
+            p.posX = p.posX + p.sourcePosX;
+            p.posY = p.posY + p.sourcePosY;
+            p.posZ = p.posZ + p.sourcePosZ;
         }
         else if (p.model != NULL)
         {

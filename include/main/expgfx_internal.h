@@ -160,7 +160,7 @@ typedef struct ExpgfxSourceObject {
   s16 rotY;
   s16 rotZ;
   u8 pad06[0x08 - 0x06];
-  f32 sourcePosX;
+  f32 rootMotionScale;
   f32 localPosX;
   f32 localPosY;
   f32 localPosZ;
@@ -178,7 +178,7 @@ typedef struct ExpgfxSourceObject {
   s16 objType;
 } ExpgfxSourceObject;
 
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, sourcePosX) == 0x08);
+STATIC_ASSERT(offsetof(ExpgfxSourceObject, rootMotionScale) == 0x08);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, localPosX) == 0x0C);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, worldPosX) == 0x18);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, velocityX) == 0x24);
@@ -233,10 +233,10 @@ typedef struct ExpgfxAttachedSourceState {
   s16 sourceVecY;
   s16 sourceVecZ;
   u8 pad06[0x08 - 0x06];
+  ExpgfxFloatWord sourceScale;
   ExpgfxFloatWord sourcePosX;
   ExpgfxFloatWord sourcePosY;
   ExpgfxFloatWord sourcePosZ;
-  ExpgfxFloatWord sourcePosW;
   float velocityX;
   float velocityY;
   float velocityZ;
@@ -270,10 +270,10 @@ typedef struct ExpgfxSpawnConfig {
       s16 sourceVecY;
       s16 sourceVecZ;
       u8 pad12[0x14 - 0x12];
+      ExpgfxFloatWord sourceScale;
       ExpgfxFloatWord sourcePosX;
       ExpgfxFloatWord sourcePosY;
       ExpgfxFloatWord sourcePosZ;
-      ExpgfxFloatWord sourcePosW;
     };
     struct {
       f32 localOffsetX;
@@ -309,7 +309,8 @@ STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, sourceVecX) == 0x0C);
 STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, actorAimOffset.localOffsetX) == 0x0C);
 STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, actorAimOffset.localOffsetY) == 0x10);
 STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, actorAimOffset.localOffsetZ) == 0x14);
-STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, sourcePosW) == 0x20);
+STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, sourceScale) == 0x14);
+STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, sourcePosZ) == 0x20);
 STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, velocityX) == 0x24);
 STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, startPosX) == 0x30);
 STATIC_ASSERT(offsetof(ExpgfxSpawnConfig, scale) == 0x3C);
@@ -449,10 +450,10 @@ typedef struct ExpgfxSlot {
   s16 sourceVecY;
   s16 sourceVecZ;
   u8 pad46[0x48 - 0x46];
+  ExpgfxFloatWord sourceScale;
   ExpgfxFloatWord sourcePosX;
   ExpgfxFloatWord sourcePosY;
   ExpgfxFloatWord sourcePosZ;
-  ExpgfxFloatWord sourcePosW;
   ExpgfxFloatWord posX;
   ExpgfxFloatWord posY;
   ExpgfxFloatWord posZ;
@@ -486,7 +487,8 @@ STATIC_ASSERT(offsetof(ExpgfxSlot, lifetimeFrameLimit) == 0x16);
 STATIC_ASSERT(offsetof(ExpgfxSlot, sequenceId) == 0x26);
 STATIC_ASSERT(offsetof(ExpgfxSlot, impactEffectId) == 0x36);
 STATIC_ASSERT(offsetof(ExpgfxSlot, sourceVecX) == 0x40);
-STATIC_ASSERT(offsetof(ExpgfxSlot, sourcePosX) == 0x48);
+STATIC_ASSERT(offsetof(ExpgfxSlot, sourceScale) == 0x48);
+STATIC_ASSERT(offsetof(ExpgfxSlot, sourcePosX) == 0x4C);
 STATIC_ASSERT(offsetof(ExpgfxSlot, posX) == 0x58);
 STATIC_ASSERT(offsetof(ExpgfxSlot, startPosX) == 0x64);
 STATIC_ASSERT(offsetof(ExpgfxSlot, velocityX) == 0x70);

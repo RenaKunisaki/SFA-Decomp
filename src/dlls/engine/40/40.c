@@ -34,10 +34,10 @@ int Effect15_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     {
         if (spawnParams == 0)
             return -1;
-        cfg.sourcePosY = spawnParams->posX;
-        cfg.sourcePosZ = spawnParams->posY;
-        cfg.sourcePosW = spawnParams->posZ;
-        cfg.sourcePosX = spawnParams->scale;
+        cfg.sourcePosX = spawnParams->posX;
+        cfg.sourcePosY = spawnParams->posY;
+        cfg.sourcePosZ = spawnParams->posZ;
+        cfg.sourceScale = spawnParams->scale;
         cfg.sourceVecZ = spawnParams->rotZ;
         cfg.sourceVecY = spawnParams->rotY;
         cfg.sourceVecX = spawnParams->rotX;
@@ -411,9 +411,9 @@ int Effect15_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     {
         if ((spawnFlags & 0x200000) != 0)
         {
-            cfg.startPosX = cfg.startPosX + cfg.sourcePosY;
-            cfg.startPosY = cfg.startPosY + cfg.sourcePosZ;
-            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosW;
+            cfg.startPosX = cfg.startPosX + cfg.sourcePosX;
+            cfg.startPosY = cfg.startPosY + cfg.sourcePosY;
+            cfg.startPosZ = cfg.startPosZ + cfg.sourcePosZ;
         }
         else
         {

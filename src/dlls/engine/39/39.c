@@ -41,10 +41,10 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         {
             return -1;
         }
-        p.srcX = src->x;
-        p.srcY = src->y;
-        p.srcZ = src->z;
-        p.srcW = src->w;
+        p.sourcePosX = src->x;
+        p.sourcePosY = src->y;
+        p.sourcePosZ = src->z;
+        p.sourceScale = src->w;
         p.rot2 = src->rot2;
         p.rot1 = src->rot1;
         p.rot0 = src->rot0;
@@ -402,10 +402,10 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.count = 1;
         p.flagsA = 0x6000000;
         p.kind = 0x45b;
-        p.srcX = 0.0f;
-        p.srcY = 0.0f;
-        p.srcZ = 0.0f;
-        p.srcW = 1.0f;
+        p.sourcePosX = 0.0f;
+        p.sourcePosY = 0.0f;
+        p.sourcePosZ = 0.0f;
+        p.sourceScale = 1.0f;
         p.rot2 = obj->anim.rotZ;
         p.rot1 = obj->anim.rotY;
         p.rot0 = obj->anim.rotX;
@@ -416,10 +416,10 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.count = 1;
         p.flagsA = 0x6000000;
         p.kind = 0x45b;
-        p.srcX = 0.0f;
-        p.srcY = 0.0f;
-        p.srcZ = 0.0f;
-        p.srcW = 1.0f;
+        p.sourcePosX = 0.0f;
+        p.sourcePosY = 0.0f;
+        p.sourcePosZ = 0.0f;
+        p.sourceScale = 1.0f;
         p.rot2 = obj->anim.rotZ;
         p.rot1 = obj->anim.rotY;
         p.rot0 = obj->anim.rotX;
@@ -521,9 +521,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
     {
         if (hasOffset != 0)
         {
-            p.posX = p.posX + p.srcX;
-            p.posY = p.posY + p.srcY;
-            p.posZ = p.posZ + p.srcZ;
+            p.posX = p.posX + p.sourcePosX;
+            p.posY = p.posY + p.sourcePosY;
+            p.posZ = p.posZ + p.sourcePosZ;
         }
         else if (p.attachedSource != NULL)
         {

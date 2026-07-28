@@ -49,10 +49,10 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
     {
         if (spawnParams == 0)
             return -1;
-        cfg.sourcePosY = spawnParams->posX;
-        cfg.sourcePosZ = spawnParams->posY;
-        cfg.sourcePosW = spawnParams->posZ;
-        cfg.sourcePosX = spawnParams->scale;
+        cfg.sourcePosX = spawnParams->posX;
+        cfg.sourcePosY = spawnParams->posY;
+        cfg.sourcePosZ = spawnParams->posZ;
+        cfg.sourceScale = spawnParams->scale;
         cfg.sourceVecZ = spawnParams->rotZ;
         cfg.sourceVecY = spawnParams->rotY;
         cfg.sourceVecX = spawnParams->rotX;
@@ -482,13 +482,13 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.lifetimeFrames = 0x64;
         cfg.behaviorFlags = 0x4a0104;
         cfg.renderFlags = 0x40008;
+        cfg.sourcePosX = 0.0f;
         cfg.sourcePosY = 0.0f;
         cfg.sourcePosZ = 0.0f;
-        cfg.sourcePosW = 0.0f;
         cfg.sourceVecX = 0x46;
         cfg.sourceVecY = 0;
         cfg.sourceVecZ = 0;
-        cfg.sourcePosX = 1.0f;
+        cfg.sourceScale = 1.0f;
         cfg.textureId = 0xe0;
         break;
     case 0x20e:
@@ -510,9 +510,9 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
     {
         if (hasAttachedSource != 0)
         {
-            cfg.startPosX += cfg.sourcePosY;
-            cfg.startPosY += cfg.sourcePosZ;
-            cfg.startPosZ += cfg.sourcePosW;
+            cfg.startPosX += cfg.sourcePosX;
+            cfg.startPosY += cfg.sourcePosY;
+            cfg.startPosZ += cfg.sourcePosZ;
         }
         else
         {

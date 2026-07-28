@@ -2774,9 +2774,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         }
                         else
                         {
-                            rotParams.x = slot->posX.value + slot->sourcePosY.value;
-                            rotParams.y = slot->posY.value + slot->sourcePosZ.value;
-                            rotParams.z = slot->posZ.value + slot->sourcePosW.value;
+                            rotParams.x = slot->posX.value + slot->sourcePosX.value;
+                            rotParams.y = slot->posY.value + slot->sourcePosY.value;
+                            rotParams.z = slot->posZ.value + slot->sourcePosZ.value;
                         }
                         gExpgfxFrameParityBit = 1;
                         if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_GROUND_PARTFX_ON_IMPACT) != 0 &&
@@ -3053,9 +3053,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                             }
                             else
                             {
-                                sx = slot->sourcePosY.value;
-                                sy = slot->sourcePosZ.value;
-                                sz = slot->sourcePosW.value;
+                                sx = slot->sourcePosX.value;
+                                sy = slot->sourcePosY.value;
+                                sz = slot->sourcePosZ.value;
                             }
                         }
                         dirX = sx - slot->posX.value;
@@ -3107,9 +3107,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         rotParams.x = 0.0f;
                         rotParams.y = 0.0f;
                         rotParams.z = 0.0f;
-                        slot->sourceVecX = slot->sourceVecX + (int)slot->sourcePosY.value * framesThisStep;
-                        slot->sourceVecY = slot->sourceVecY + (int)slot->sourcePosZ.value * framesThisStep;
-                        slot->sourceVecZ = slot->sourceVecZ + (int)slot->sourcePosW.value * framesThisStep;
+                        slot->sourceVecX = slot->sourceVecX + (int)slot->sourcePosX.value * framesThisStep;
+                        slot->sourceVecY = slot->sourceVecY + (int)slot->sourcePosY.value * framesThisStep;
+                        slot->sourceVecZ = slot->sourceVecZ + (int)slot->sourcePosZ.value * framesThisStep;
                         rotParams.scale = 1.0f;
                         workVec[0] = (f32) quadTemplate[0].x;
                         workVec[1] = (f32) quadTemplate[0].y;
@@ -3355,12 +3355,12 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         }
                         else
                         {
-                            srcWorldPos[0] = slot->sourcePosY.value;
-                            srcWorldPos[1] = slot->sourcePosZ.value;
-                            srcWorldPos[2] = slot->sourcePosW.value;
+                            srcWorldPos[0] = slot->sourcePosX.value;
+                            srcWorldPos[1] = slot->sourcePosY.value;
+                            srcWorldPos[2] = slot->sourcePosZ.value;
                             if (attached != NULL)
                             {
-                                Obj_RotateLocalOffsetByYaw(&slot->sourcePosY.value, srcWorldPos,
+                                Obj_RotateLocalOffsetByYaw(&slot->sourcePosX.value, srcWorldPos,
                                                            attached->anim.transformMatrixIndex);
                             }
                         }
@@ -3381,9 +3381,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         (slot->behaviorFlags & EXPGFX_BEHAVIOR_BILLBOARD_LOCK_B) == 0 &&
                         (slot->renderFlags & EXPGFX_RENDER_ATTRACT_TARGET_MASK) == 0)
                     {
-                        rotParams.x = rotParams.x + slot->sourcePosY.value;
-                        rotParams.y = rotParams.y + slot->sourcePosZ.value;
-                        rotParams.z = rotParams.z + slot->sourcePosW.value;
+                        rotParams.x = rotParams.x + slot->sourcePosX.value;
+                        rotParams.y = rotParams.y + slot->sourcePosY.value;
+                        rotParams.z = rotParams.z + slot->sourcePosZ.value;
                     }
                     slot->renderX = rotParams.x;
                     slot->renderY = rotParams.y;
@@ -4406,20 +4406,20 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         attachedTableKey = 0;
         if (attachedSource == NULL)
         {
+            slot->sourcePosX.value = config->sourcePosX.value;
             slot->sourcePosY.value = config->sourcePosY.value;
             slot->sourcePosZ.value = config->sourcePosZ.value;
-            slot->sourcePosW.value = config->sourcePosW.value;
-            slot->sourcePosX.value = config->sourcePosX.value;
+            slot->sourceScale.value = config->sourceScale.value;
             slot->sourceVecZ = config->sourceVecZ;
             slot->sourceVecY = config->sourceVecY;
             slot->sourceVecX = config->sourceVecX;
         }
         else if ((behaviorFlags & EXPGFX_BEHAVIOR_COPY_ATTACHED_SOURCE) != 0)
         {
-            slot->sourcePosY.value = attachedSource->worldPosX;
-            slot->sourcePosZ.value = attachedSource->worldPosY;
-            slot->sourcePosW.value = attachedSource->worldPosZ;
-            slot->sourcePosX.value = attachedSource->sourcePosX;
+            slot->sourcePosX.value = attachedSource->worldPosX;
+            slot->sourcePosY.value = attachedSource->worldPosY;
+            slot->sourcePosZ.value = attachedSource->worldPosZ;
+            slot->sourceScale.value = attachedSource->rootMotionScale;
             slot->sourceVecZ = attachedSource->rotZ;
             slot->sourceVecY = attachedSource->rotY;
             slot->sourceVecX = attachedSource->rotX;
@@ -4491,10 +4491,10 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_COPY_CONFIG_SOURCE_A) != 0 ||
             (slot->behaviorFlags & EXPGFX_BEHAVIOR_COPY_CONFIG_SOURCE_B) != 0)
         {
+            slot->sourcePosX.value = config->sourcePosX.value;
             slot->sourcePosY.value = config->sourcePosY.value;
             slot->sourcePosZ.value = config->sourcePosZ.value;
-            slot->sourcePosW.value = config->sourcePosW.value;
-            slot->sourcePosX.value = config->sourcePosX.value;
+            slot->sourceScale.value = config->sourceScale.value;
             slot->sourceVecZ = config->sourceVecZ;
             slot->sourceVecY = config->sourceVecY;
             slot->sourceVecX = config->sourceVecX;
