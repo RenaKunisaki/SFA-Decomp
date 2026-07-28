@@ -62,6 +62,17 @@ s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
 
 #define KYTESMUM_OBJFLAG_HITDETECT_DISABLED 0x2000
 
+#define KYTESMUM_TRICKY_COMMAND_KIND 1
+#define KYTESMUM_TRICKY_COMMAND_TYPE 2
+
+typedef struct KytesMumTrickyInterface
+{
+    void* pad00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} KytesMumTrickyInterface;
+
+STATIC_ASSERT(offsetof(KytesMumTrickyInterface, sideCommandEnable) == 0x28);
+
 #define PAD_BUTTON_A 0x100
 
 #define KYTESMUM_OBJECT_TYPE_ID  0x43
@@ -386,8 +397,9 @@ void kytesmum_update(GameObject* obj)
     nearest = ObjGroup_FindNearestObject(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
     if ((void*)nearest != NULL)
     {
-        (*(void (**)(int, int, int, int))(*(int*)(*(int*)&((GameObject*)nearest)->anim.dll) + 0x28))(nearest, (int)obj,
-                                                                                                     1, 2);
+        (*(KytesMumTrickyInterface**)((GameObject*)nearest)->anim.dll)
+            ->sideCommandEnable((GameObject*)nearest, obj, KYTESMUM_TRICKY_COMMAND_KIND,
+                                KYTESMUM_TRICKY_COMMAND_TYPE);
     }
 }
 

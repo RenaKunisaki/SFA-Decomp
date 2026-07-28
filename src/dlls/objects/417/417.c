@@ -84,6 +84,24 @@ u8 gNwMammothArtifactState6TriggerList[4] = {1, 2, 0, 0};
 #define NW_MAMMOTH_CURVE_PARAM            0x19
 #define NW_MAMMOTH_PATH_CONTROL_FLAG      0x10
 
+#define NW_MAMMOTH_TRICKY_COMMAND_KIND 1
+#define NW_MAMMOTH_TRICKY_COMMAND_TYPE 1
+
+typedef struct NwMammothTrickyInterface {
+    void* pad00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} NwMammothTrickyInterface;
+
+typedef struct NwMammothTumbleweedInterface {
+    void* pad00[11];
+    void (*startHoming)(GameObject* tumbleweed, f32* targetPos);
+    int (*isHoming)(GameObject* tumbleweed);
+} NwMammothTumbleweedInterface;
+
+STATIC_ASSERT(offsetof(NwMammothTrickyInterface, sideCommandEnable) == 0x28);
+STATIC_ASSERT(offsetof(NwMammothTumbleweedInterface, startHoming) == 0x2C);
+STATIC_ASSERT(offsetof(NwMammothTumbleweedInterface, isHoming) == 0x30);
+
 enum NwMammothRuntimeFlag {
     NW_MAMMOTH_RUNTIME_PATH_CONTROL = 0x01,
     NW_MAMMOTH_RUNTIME_ANIM_ENDED = 0x02,
@@ -341,9 +359,10 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         {
             tw2 = tumbleweedbush_findNearestActive(&state->spawnPosX);
             if (tw2 != NULL) {
-                int* tk = (int*)getTrickyObject();
-                /* Tricky DLL interface +0x28: bark at the bush */
-                (*(void (**)(int*, int*, int, int))((char*)*((GameObject*)tk)->anim.dll + 0x28))(tk, (int*)obj, 1, 1);
+                GameObject* tk = getTrickyObject();
+                (*(NwMammothTrickyInterface**)tk->anim.dll)
+                    ->sideCommandEnable(tk, obj, NW_MAMMOTH_TRICKY_COMMAND_KIND,
+                                        NW_MAMMOTH_TRICKY_COMMAND_TYPE);
             }
             state->triggerList = gNwMammothGatekeeperCollectionTriggerList;
             if (state->trackedObject == NULL) {
@@ -354,9 +373,9 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
                         if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0) {
                             Sfx_PlayFromObject((int)obj, SFXTRIG_mammoth_snowstep);
                         }
-                        /* Tumbleweed bush DLL interface +0x30: is the bush busy? +0x2C: send it rolling to a target position */
-                        if ((*(int (**)(int*))((char*)*tw2->anim.dll + 0x30))((int*)tw2) == 0) {
-                            (*(void (**)(int*, f32*))((char*)*tw2->anim.dll + 0x2c))((int*)tw2, &state->spawnPosX);
+                        if ((*(NwMammothTumbleweedInterface**)tw2->anim.dll)->isHoming(tw2) == 0) {
+                            (*(NwMammothTumbleweedInterface**)tw2->anim.dll)
+                                ->startHoming(tw2, &state->spawnPosX);
                             state->trackedObject = tw2;
                             state->stateIndex = 0xe;
                         }
