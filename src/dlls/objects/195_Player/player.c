@@ -16125,7 +16125,23 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
     {
         spd = sqrtf(((PlayerState*)state)->baddie.animSpeedA * ((PlayerState*)state)->baddie.animSpeedA +
                     ((PlayerState*)state)->baddie.animSpeedB * ((PlayerState*)state)->baddie.animSpeedB);
-        t = ((t = 0.0f), spd < t) ? t : ((spd > (t = ((PlayerState*)inner)->maxSpeed)) ? t : spd);
+        t = 0.0f;
+        if (spd < t)
+        {
+            t = 0.0f;
+        }
+        else
+        {
+            t = ((PlayerState*)inner)->maxSpeed;
+            if (spd > t)
+            {
+                t = ((PlayerState*)inner)->maxSpeed;
+            }
+            else
+            {
+                t = spd;
+            }
+        }
         if (1.0f == ((PlayerState*)inner)->targetAnimSpeed)
         {
             ((PlayerState*)inner)->velSmoothRate = 0.25f;
