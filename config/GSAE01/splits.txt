@@ -1319,7 +1319,7 @@ dlls/engine/86/86.c:
 	.text       start:0x80110E30 end:0x801115E4
 	.data       start:0x80319F88 end:0x80319FB8
 	.bss        start:0x803A43C0 end:0x803A4420
-	.sdata2     start:0x803E1BA0 end:0x803E1BE0
+	.sdata2     start:0x803E1BB8 end:0x803E1BE0
 
 dlls/engine/87/87.c:
 	.text       start:0x801115E4 end:0x80111D14
@@ -3039,7 +3039,6 @@ dlls/objects/488_SB_Galleon/SB_Galleon.c:
 	.sdata      start:0x803DC078 end:0x803DC090
 	.sbss       start:0x803DDC18 end:0x803DDC40
 	.sdata2     start:0x803E57C0 end:0x803E5810
-	.sdata2     start:0x803E56C8 end:0x803E57C0
 
 dlls/objects/489_SB_Propelle/SB_Propelle.c:
 	.text       start:0x801E2570 end:0x801E2B28

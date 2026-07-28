@@ -12,8 +12,6 @@
 #define OBJPRINT_MODEL_COUNT(model)     (((ObjDef*)(model))->modelCount)
 #define OBJPRINT_JOINT_COUNT(model)     (((ObjDef*)(model))->jointCount)
 
-extern f32 gObjPrintDegToAngle;
-
 /*
  * Per-joint pose scratch written by the head/eye/tail tracking helpers in
  * this file: anim.jointPoseData is an array of these, one per jointData

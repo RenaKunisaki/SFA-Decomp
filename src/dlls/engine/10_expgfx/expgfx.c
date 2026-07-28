@@ -1,3 +1,4 @@
+#include "dlls/objects/458_DIMExplosio.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/mtx.h"
 #include "track/intersect_depth_state_api.h"
@@ -293,36 +294,12 @@ const ObjFxRandomBurstTable gObjFxRandomBurstTbl = {
 
 #define OBJFX_OBJFLAG_PARENT_SLACK 0x1000
 
-/* Shared explosion object spawned by spawnExplosion / DIMexplosionFn_8009a96c
- * (type 0x24, id 0x253; buffer cast to ExplosionSetup). */
-#define OBJFX_CHILD_OBJ_EXPLOSION 0x253
-
 /*
- * Setup buffer the explosion spawners (DIMexplosionFn_8009a96c / spawnExplosion)
- * fill from Obj_AllocObjectSetup (0x24 bytes, def id 0x253). Embeds the common
- * ObjPlacement head (the spawn position goes in the head's posX/posY/posZ);
- * 0x19/0x1a/0x1c carry this class's own slots.
- * The class byte at 0x18 is left unwritten. Field names beyond the head are
- * generic (provenance is the raw store offsets). Only unk19 is accessed through
- * this struct; the 0x1a scaled value (an f32->s16 truncation) and the 0x1c s16
- * flag word (seeded from a flag arg then OR'd with 0x4/0x8/0x10/0x20) stay raw
- * pointer stores because routing them through struct members reorders the DLL's
- * shared float-conversion pool (byte-affecting). The struct still documents the
- * full recovered layout.
+ * Keep the scale and configuration writes raw: routing them through typed
+ * fields reorders this TU's shared float-conversion pool. Canonical offsetof
+ * expressions retain the recovered placement contract without hard-coded
+ * offsets.
  */
-typedef struct ExplosionSetup
-{
-    ObjPlacement head;     /* 0x00: common placement head */
-    u8 pad18;              /* 0x18: class byte (unwritten here) */
-    s8 unk19;              /* 0x19 */
-    u8 pad1A[0x1C - 0x1A]; /* 0x1A: scaled s16 value, written raw (see note) */
-    s16 flags;             /* 0x1C: flag word, written raw (see note) */
-    u8 pad1E[0x24 - 0x1E];
-} ExplosionSetup;
-
-STATIC_ASSERT(offsetof(ExplosionSetup, unk19) == 0x19);
-STATIC_ASSERT(offsetof(ExplosionSetup, flags) == 0x1C);
-STATIC_ASSERT(sizeof(ExplosionSetup) == 0x24);
 
 void objfx_spawnCrystalOrbitEffects(GameObject* obj, s16* work, f32 period, f32 xMul, f32 yMul, f32 xOff,
                                     f32 yOff, u8 flags)
@@ -1765,33 +1742,34 @@ void objfx_shakeCameraByDistance(GameObject* obj, f32 shakeRange)
 void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake,
                              u8 flag20, u8 f1cinit)
 {
-    ExplosionSetup* setup;
+    DimExplosionPlacement* setup;
     if (Obj_IsLoadingLocked() != 0)
     {
-        setup = (ExplosionSetup*)Obj_AllocObjectSetup(0x24, OBJFX_CHILD_OBJ_EXPLOSION);
-        setup->head.color[0] = 2;
-        setup->head.color[1] = 1;
-        setup->head.posX = x;
-        setup->head.posY = y;
-        setup->head.posZ = z;
-        ((ExplosionSetup*)setup)->unk19 = kind;
-        *(s16*)((char*)setup + 0x1a) = (s16)(256.0f * scale);
-        *(s16*)((char*)setup + 0x1c) = f1cinit;
+        setup = (DimExplosionPlacement*)Obj_AllocObjectSetup(sizeof(DimExplosionPlacement), DIM_EXPLOSION_OBJECT_ID);
+        setup->base.color[0] = 2;
+        setup->base.color[1] = 1;
+        setup->base.posX = x;
+        setup->base.posY = y;
+        setup->base.posZ = z;
+        setup->sfxKind = kind;
+        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, scaleParam)) = (s16)(256.0f * scale);
+        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) = f1cinit;
         if (flag4 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 4;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
         }
         if (flag8 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 8;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
         }
         if (flag10 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 0x10;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |=
+                DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS;
         }
         if (flag20 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 0x20;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
         }
         if (doShake != 0)
         {
@@ -1809,40 +1787,41 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
                 }
             }
         }
-        Obj_SetupObject(&setup->head, 5, ((ObjAnimComponent*)src)->mapEventSlot, -1, NULL);
+        Obj_SetupObject(&setup->base, 5, ((ObjAnimComponent*)src)->mapEventSlot, -1, NULL);
     }
 }
 
 void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake, u8 flag20,
                     u8 f1cinit)
 {
-    ExplosionSetup* setup;
+    DimExplosionPlacement* setup;
     if (Obj_IsLoadingLocked() != 0)
     {
-        setup = (ExplosionSetup*)Obj_AllocObjectSetup(0x24, OBJFX_CHILD_OBJ_EXPLOSION);
-        setup->head.color[0] = 2;
-        setup->head.color[1] = 1;
-        setup->head.posX = src->anim.worldPosX;
-        setup->head.posY = src->anim.worldPosY;
-        setup->head.posZ = src->anim.worldPosZ;
-        ((ExplosionSetup*)setup)->unk19 = kind;
-        *(s16*)((char*)setup + 0x1a) = (s16)(256.0f * scale);
-        *(s16*)((char*)setup + 0x1c) = f1cinit;
+        setup = (DimExplosionPlacement*)Obj_AllocObjectSetup(sizeof(DimExplosionPlacement), DIM_EXPLOSION_OBJECT_ID);
+        setup->base.color[0] = 2;
+        setup->base.color[1] = 1;
+        setup->base.posX = src->anim.worldPosX;
+        setup->base.posY = src->anim.worldPosY;
+        setup->base.posZ = src->anim.worldPosZ;
+        setup->sfxKind = kind;
+        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, scaleParam)) = (s16)(256.0f * scale);
+        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) = f1cinit;
         if (flag4 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 4;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
         }
         if (flag8 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 8;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
         }
         if (flag10 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 0x10;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |=
+                DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS;
         }
         if (flag20 != 0)
         {
-            *(s16*)((char*)setup + 0x1c) |= 0x20;
+            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
         }
         if (doShake != 0)
         {
@@ -1859,7 +1838,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
                 }
             }
         }
-        Obj_SetupObject(&setup->head, 5, src->anim.mapEventSlot, -1, NULL);
+        Obj_SetupObject(&setup->base, 5, src->anim.mapEventSlot, -1, NULL);
     }
 }
 

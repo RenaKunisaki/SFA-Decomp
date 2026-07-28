@@ -251,6 +251,11 @@
 #include "dlls/objects/454_DIMCannon.h"
 #include "dlls/objects/455_DIMLavaSmas.h"
 #include "dlls/objects/456_DIMBridgeCo.h"
+#include "dlls/objects/457_DIMDismount.h"
+#include "dlls/objects/458_DIMExplosio.h"
+#include "dlls/objects/459_DIMWoodDoor.h"
+#include "dlls/objects/460_DIMMagicBri.h"
+#include "dlls/objects/461_DIM_LevelCo.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -347,11 +352,10 @@ extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, 
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor;
-extern ResourceDescriptor gDIMDismountPointObjDescriptor, gDIMMagicBridgeObjDescriptor;
-extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIMWoodDoor2ObjDescriptor,
-    gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor, gDIM_BossObjDescriptor;
-extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_LevelControlObjDescriptor,
-    gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
+extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIM_BossGut2ObjDescriptor,
+    gDIM_BossGutObjDescriptor, gDIM_BossObjDescriptor;
+extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_trickyObjDescriptor,
+    gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
 extern ResourceDescriptor gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor,
     gDfppowerslObjDescriptor;
@@ -363,7 +367,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
     gDrakorEnergyObjDescriptor;
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gExplodePlanObjDescriptor;
-extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
+extern ResourceDescriptor gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gHighTopObjDescriptor;
@@ -1532,11 +1536,11 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMCannonObjDescriptor,
     (ResourceDescriptor*)&gDIMLavaSmashObjDescriptor,
     (ResourceDescriptor*)&gDIMBridgeCogMaiObjDescriptor,
-    &gDIMDismountPointObjDescriptor,
-    &gExplosionObjDescriptor,
-    &gDIMWoodDoor2ObjDescriptor,
-    &gDIMMagicBridgeObjDescriptor,
-    &gDIM_LevelControlObjDescriptor,
+    (ResourceDescriptor*)&gDIMDismountPointObjDescriptor,
+    (ResourceDescriptor*)&gExplosionObjDescriptor,
+    (ResourceDescriptor*)&gDIMWoodDoor2ObjDescriptor,
+    (ResourceDescriptor*)&gDIMMagicBridgeObjDescriptor,
+    (ResourceDescriptor*)&gDIM_LevelControlObjDescriptor,
     &dll_1CE,
     &dll_1CF,
     &gDIM_trickyObjDescriptor,

@@ -10,7 +10,7 @@ typedef union SaveCardFileInfo
     u8 raw[0x18];
 } SaveCardFileInfo;
 
-extern SaveCardFileInfo lbl_80396900;
+extern SaveCardFileInfo gSaveCardFileInfo;
 
 int cardLoadFn_8007d72c(void);
 void saveFn_8007d960(u32 enable);

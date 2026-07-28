@@ -215,7 +215,6 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
     f32 dz;
     f32 distanceSquared;
     BabyCloudRunnerState* state = obj->extra;
-    s8 eventIndex;
     if (obj->seqIndex == BABYCLOUDRUNNER_SEQUENCE_CAPTURED) {
         return 0;
     }
@@ -255,9 +254,12 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
             inRange = 1;
         }
     }
-    for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
-        if (animUpdate->eventIds[eventIndex] == BABYCLOUDRUNNER_SEQUENCE_EVENT_SFX) {
-            Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
+    {
+        s8 eventIndex;
+        for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
+            if (animUpdate->eventIds[eventIndex] == BABYCLOUDRUNNER_SEQUENCE_EVENT_SFX) {
+                Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
+            }
         }
     }
     state->behaviourState = 0;

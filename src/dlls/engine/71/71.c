@@ -488,7 +488,7 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
 char sPathCamNeedTwoControlPointsError[] = "PATHCAM error: need at least two control points\n";
 
 
-CamCannonState* lbl_803DD560;
+CamCannonState* gCamCannonState;
 
 #define CAMTESTSTRENGTH_CAMMODE_DEFAULT 0x42
 
@@ -502,17 +502,17 @@ u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn)
     f32 speed;
     f32 t;
 
-    lbl_803DD560->posXEnd = camera->anim.localPosX;
-    lbl_803DD560->posYEnd = camera->anim.localPosY;
-    lbl_803DD560->posZEnd = camera->anim.localPosZ;
-    lbl_803DD560->rotXEnd = camera->anim.rotX;
-    lbl_803DD560->rotYEnd = camera->anim.rotY;
-    lbl_803DD560->rotZEnd = camera->anim.rotZ;
-    lbl_803DD560->fovEnd = camera->fov;
+    gCamCannonState->posXEnd = camera->anim.localPosX;
+    gCamCannonState->posYEnd = camera->anim.localPosY;
+    gCamCannonState->posZEnd = camera->anim.localPosZ;
+    gCamCannonState->rotXEnd = camera->anim.rotX;
+    gCamCannonState->rotYEnd = camera->anim.rotY;
+    gCamCannonState->rotZEnd = camera->anim.rotZ;
+    gCamCannonState->fovEnd = camera->fov;
 
-    if (0.0f != lbl_803DD560->duration)
+    if (0.0f != gCamCannonState->duration)
     {
-        speed = lbl_803DD560->elapsed / lbl_803DD560->duration;
+        speed = gCamCannonState->elapsed / gCamCannonState->duration;
     }
     else
     {
@@ -522,76 +522,76 @@ u32 camTestStrengthUpdateBlend(CameraObject* camera, u32 flagsIn)
     {
         speed = 1.0f;
     }
-    speed = Curve_EvalHermite(lbl_803DD560->speedCurve, speed, 0x0);
+    speed = Curve_EvalHermite(gCamCannonState->speedCurve, speed, 0x0);
     if (speed < 0.2f)
     {
         speed = 0.2f;
     }
-    lbl_803DD560->elapsed += speed * timeDelta;
+    gCamCannonState->elapsed += speed * timeDelta;
 
     t = 0.0f;
-    if (t != lbl_803DD560->duration)
+    if (t != gCamCannonState->duration)
     {
-        t = lbl_803DD560->elapsed / lbl_803DD560->duration;
+        t = gCamCannonState->elapsed / gCamCannonState->duration;
     }
     if (t > 1.0f)
     {
         t = 1.0f;
     }
-    camera->anim.localPosX = Curve_EvalLinear(&lbl_803DD560->posXStart, t, NULL);
-    camera->anim.localPosY = Curve_EvalLinear(&lbl_803DD560->posYStart, t, NULL);
-    camera->anim.localPosZ = Curve_EvalLinear(&lbl_803DD560->posZStart, t, NULL);
-    camera->fov = Curve_EvalLinear(&lbl_803DD560->fovStart, t, NULL);
+    camera->anim.localPosX = Curve_EvalLinear(&gCamCannonState->posXStart, t, NULL);
+    camera->anim.localPosY = Curve_EvalLinear(&gCamCannonState->posYStart, t, NULL);
+    camera->anim.localPosZ = Curve_EvalLinear(&gCamCannonState->posZStart, t, NULL);
+    camera->fov = Curve_EvalLinear(&gCamCannonState->fovStart, t, NULL);
 
-    if (((lbl_803DD560->rotXStart - lbl_803DD560->rotXEnd) > 32768.0f) ||
-        ((lbl_803DD560->rotXStart - lbl_803DD560->rotXEnd) < -32768.0f))
+    if (((gCamCannonState->rotXStart - gCamCannonState->rotXEnd) > 32768.0f) ||
+        ((gCamCannonState->rotXStart - gCamCannonState->rotXEnd) < -32768.0f))
     {
-        if (lbl_803DD560->rotXStart < 0.0f)
+        if (gCamCannonState->rotXStart < 0.0f)
         {
-            lbl_803DD560->rotXStart += 65535.0f;
+            gCamCannonState->rotXStart += 65535.0f;
         }
-        else if (lbl_803DD560->rotXEnd < 0.0f)
+        else if (gCamCannonState->rotXEnd < 0.0f)
         {
-            lbl_803DD560->rotXEnd += 65535.0f;
+            gCamCannonState->rotXEnd += 65535.0f;
         }
     }
-    if (((lbl_803DD560->rotYStart - lbl_803DD560->rotYEnd) > 32768.0f) ||
-        ((lbl_803DD560->rotYStart - lbl_803DD560->rotYEnd) < -32768.0f))
+    if (((gCamCannonState->rotYStart - gCamCannonState->rotYEnd) > 32768.0f) ||
+        ((gCamCannonState->rotYStart - gCamCannonState->rotYEnd) < -32768.0f))
     {
-        if (lbl_803DD560->rotYStart < 0.0f)
+        if (gCamCannonState->rotYStart < 0.0f)
         {
-            lbl_803DD560->rotYStart += 65535.0f;
+            gCamCannonState->rotYStart += 65535.0f;
         }
-        else if (lbl_803DD560->rotYEnd < 0.0f)
+        else if (gCamCannonState->rotYEnd < 0.0f)
         {
-            lbl_803DD560->rotYEnd += 65535.0f;
+            gCamCannonState->rotYEnd += 65535.0f;
         }
     }
-    if (((lbl_803DD560->rotZStart - lbl_803DD560->rotZEnd) > 32768.0f) ||
-        ((lbl_803DD560->rotZStart - lbl_803DD560->rotZEnd) < -32768.0f))
+    if (((gCamCannonState->rotZStart - gCamCannonState->rotZEnd) > 32768.0f) ||
+        ((gCamCannonState->rotZStart - gCamCannonState->rotZEnd) < -32768.0f))
     {
-        if (lbl_803DD560->rotZStart < 0.0f)
+        if (gCamCannonState->rotZStart < 0.0f)
         {
-            lbl_803DD560->rotZStart += 65535.0f;
+            gCamCannonState->rotZStart += 65535.0f;
         }
-        else if (lbl_803DD560->rotZEnd < 0.0f)
+        else if (gCamCannonState->rotZEnd < 0.0f)
         {
-            lbl_803DD560->rotZEnd += 65535.0f;
+            gCamCannonState->rotZEnd += 65535.0f;
         }
     }
 
     flags = flagsIn;
     if ((flags & 1) == 0)
     {
-        camera->anim.rotX = Curve_EvalLinear(&lbl_803DD560->rotXStart, t, NULL);
+        camera->anim.rotX = Curve_EvalLinear(&gCamCannonState->rotXStart, t, NULL);
     }
     if ((flags & 2) == 0)
     {
-        camera->anim.rotY = Curve_EvalLinear(&lbl_803DD560->rotYStart, t, NULL);
+        camera->anim.rotY = Curve_EvalLinear(&gCamCannonState->rotYStart, t, NULL);
     }
     if ((flags & 4) == 0)
     {
-        camera->anim.rotZ = Curve_EvalLinear(&lbl_803DD560->rotZStart, t, NULL);
+        camera->anim.rotZ = Curve_EvalLinear(&gCamCannonState->rotZStart, t, NULL);
     }
     return t >= 1.0f;
 }
@@ -603,28 +603,28 @@ void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* po
     f32 dy;
     f32 dz;
 
-    lbl_803DD560->transitionComplete = 0;
-    lbl_803DD560->posXStart = camera->anim.localPosX;
-    lbl_803DD560->posYStart = camera->anim.localPosY;
-    lbl_803DD560->posZStart = camera->anim.localPosZ;
-    lbl_803DD560->rotXStart = (f32)(s32)camera->anim.rotX;
-    lbl_803DD560->rotYStart = (f32)(s32)camera->anim.rotY;
-    lbl_803DD560->rotZStart = (f32)(s32)camera->anim.rotZ;
-    lbl_803DD560->fovStart = camera->fov;
-    lbl_803DD560->posXEnd = posEnd[0];
-    lbl_803DD560->posYEnd = posEnd[1];
-    lbl_803DD560->posZEnd = posEnd[2];
-    lbl_803DD560->rotXEnd = rotXEnd;
-    lbl_803DD560->rotYEnd = rotYEnd;
-    lbl_803DD560->rotZEnd = rotZEnd;
-    lbl_803DD560->fovEnd = fovEnd;
-    lbl_803DD560->elapsed = 0.0f;
-    dx = lbl_803DD560->posXEnd - lbl_803DD560->posXStart;
-    dy = lbl_803DD560->posYEnd - lbl_803DD560->posYStart;
-    dz = lbl_803DD560->posZEnd - lbl_803DD560->posZStart;
-    lbl_803DD560->duration = sqrtf(dx * dx + dy * dy + dz * dz);
+    gCamCannonState->transitionComplete = 0;
+    gCamCannonState->posXStart = camera->anim.localPosX;
+    gCamCannonState->posYStart = camera->anim.localPosY;
+    gCamCannonState->posZStart = camera->anim.localPosZ;
+    gCamCannonState->rotXStart = (f32)(s32)camera->anim.rotX;
+    gCamCannonState->rotYStart = (f32)(s32)camera->anim.rotY;
+    gCamCannonState->rotZStart = (f32)(s32)camera->anim.rotZ;
+    gCamCannonState->fovStart = camera->fov;
+    gCamCannonState->posXEnd = posEnd[0];
+    gCamCannonState->posYEnd = posEnd[1];
+    gCamCannonState->posZEnd = posEnd[2];
+    gCamCannonState->rotXEnd = rotXEnd;
+    gCamCannonState->rotYEnd = rotYEnd;
+    gCamCannonState->rotZEnd = rotZEnd;
+    gCamCannonState->fovEnd = fovEnd;
+    gCamCannonState->elapsed = 0.0f;
+    dx = gCamCannonState->posXEnd - gCamCannonState->posXStart;
+    dy = gCamCannonState->posYEnd - gCamCannonState->posYStart;
+    dz = gCamCannonState->posZEnd - gCamCannonState->posZStart;
+    gCamCannonState->duration = sqrtf(dx * dx + dy * dy + dz * dz);
     (*gCameraInterface)
-        ->initialise(lbl_803DD560->duration, lbl_803DD560->speedCurve, 100.0f, 0.1f, 0.1f, -5.0f);
+        ->initialise(gCamCannonState->duration, gCamCannonState->speedCurve, 100.0f, 0.1f, 0.1f, -5.0f);
 }
 
 void CameraModeTestStrength_copyToCurrent(void)
@@ -633,8 +633,8 @@ void CameraModeTestStrength_copyToCurrent(void)
 
 void CameraModeTestStrength_free(void)
 {
-    mm_free((void*)lbl_803DD560);
-    lbl_803DD560 = 0;
+    mm_free((void*)gCamCannonState);
+    gCamCannonState = 0;
 }
 
 void CameraModeTestStrength_update(short* cam)
@@ -662,7 +662,7 @@ void CameraModeTestStrength_update(short* cam)
     f32 rollS[4];
     f32 fov[4];
 
-    if (lbl_803DD560->pathFailed != 0)
+    if (gCamCannonState->pathFailed != 0)
     {
         (*gCameraInterface)->setMode(CAMTESTSTRENGTH_CAMMODE_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
     }
@@ -670,10 +670,10 @@ void CameraModeTestStrength_update(short* cam)
     {
         obj = ((CameraObject*)cam)->anim.targetObj;
         getButtonsJustPressed(0);
-        node = (int)(*gRomCurveInterface)->getById(lbl_803DD560->nextNodeId);
-        node2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->prevNodeId);
-        pathcam_findTaggedNodeWindow((u8*)node2, prevWindow, lbl_803DD560->pathTag);
-        pathcam_findTaggedNodeWindow((u8*)node, nextWindow, lbl_803DD560->pathTag);
+        node = (int)(*gRomCurveInterface)->getById(gCamCannonState->nextNodeId);
+        node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
+        pathcam_findTaggedNodeWindow((u8*)node2, prevWindow, gCamCannonState->pathTag);
+        pathcam_findTaggedNodeWindow((u8*)node, nextWindow, gCamCannonState->pathTag);
         pathcam_buildWindowSamples(prevWindow, x, y, z, pitchS, yawS, rollS, fov);
         param = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                             obj->anim.worldPosZ, nextWindow);
@@ -681,18 +681,18 @@ void CameraModeTestStrength_update(short* cam)
         {
             if (nextWindow[0] > -1)
             {
-                lbl_803DD560->nextNodeId = nextWindow[0];
-                node2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->nextNodeId);
-                pathcam_findTaggedNodeWindow((u8*)node2, nextWindow, lbl_803DD560->pathTag);
+                gCamCannonState->nextNodeId = nextWindow[0];
+                node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->nextNodeId);
+                pathcam_findTaggedNodeWindow((u8*)node2, nextWindow, gCamCannonState->pathTag);
                 if (prevWindow[0] > -1)
                 {
-                    lbl_803DD560->prevNodeId = prevWindow[0];
-                    node2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->prevNodeId);
-                    pathcam_findTaggedNodeWindow((u8*)node2, prevWindow, lbl_803DD560->pathTag);
+                    gCamCannonState->prevNodeId = prevWindow[0];
+                    node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
+                    pathcam_findTaggedNodeWindow((u8*)node2, prevWindow, gCamCannonState->pathTag);
                     pathcam_buildWindowSamples(prevWindow, x, y, z, pitchS, yawS, rollS, fov);
                     param = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                                         obj->anim.worldPosZ, nextWindow);
-                    lbl_803DD560->pathProgress += 1.0f;
+                    gCamCannonState->pathProgress += 1.0f;
                 }
                 else
                 {
@@ -708,18 +708,18 @@ void CameraModeTestStrength_update(short* cam)
         {
             if (nextWindow[2] > -1 && nextWindow[3] > -1)
             {
-                lbl_803DD560->nextNodeId = nextWindow[2];
-                node2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->nextNodeId);
-                pathcam_findTaggedNodeWindow((u8*)node2, nextWindow, lbl_803DD560->pathTag);
+                gCamCannonState->nextNodeId = nextWindow[2];
+                node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->nextNodeId);
+                pathcam_findTaggedNodeWindow((u8*)node2, nextWindow, gCamCannonState->pathTag);
                 if (prevWindow[2] > -1 && prevWindow[3] > -1)
                 {
-                    lbl_803DD560->prevNodeId = prevWindow[2];
-                    node2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->prevNodeId);
-                    pathcam_findTaggedNodeWindow((u8*)node2, prevWindow, lbl_803DD560->pathTag);
+                    gCamCannonState->prevNodeId = prevWindow[2];
+                    node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
+                    pathcam_findTaggedNodeWindow((u8*)node2, prevWindow, gCamCannonState->pathTag);
                     pathcam_buildWindowSamples(prevWindow, x, y, z, pitchS, yawS, rollS, fov);
                     param = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                                         obj->anim.worldPosZ, nextWindow);
-                    lbl_803DD560->pathProgress -= 1.0f;
+                    gCamCannonState->pathProgress -= 1.0f;
                 }
                 else
                 {
@@ -731,12 +731,12 @@ void CameraModeTestStrength_update(short* cam)
                 param = 1.0f;
             }
         }
-        t = 0.3f * (param - lbl_803DD560->pathProgress) + lbl_803DD560->pathProgress;
-        lbl_803DD560->pathProgress = t;
+        t = 0.3f * (param - gCamCannonState->pathProgress) + gCamCannonState->pathProgress;
+        gCamCannonState->pathProgress = t;
         ((CameraObject*)cam)->anim.worldPosX = Curve_EvalBSpline(x, t, 0);
         ((CameraObject*)cam)->anim.worldPosY = Curve_EvalBSpline(y, t, 0);
         ((CameraObject*)cam)->anim.worldPosZ = Curve_EvalBSpline(z, t, 0);
-        node2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->prevNodeId);
+        node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
         flags = *(u8*)(node2 + 0x3b);
         lockPitch = flags & 1;
         if (lockPitch == 0)
@@ -754,9 +754,9 @@ void CameraModeTestStrength_update(short* cam)
             cam[2] = Curve_EvalCatmullRom(rollS, t, 0);
         }
         ((CameraObject*)cam)->fov = Curve_EvalBSpline(fov, t, 0);
-        if (lbl_803DD560->transitionComplete == 0 && (s32)camTestStrengthUpdateBlend((CameraObject*)cam, (u32)flags) != 0)
+        if (gCamCannonState->transitionComplete == 0 && (s32)camTestStrengthUpdateBlend((CameraObject*)cam, (u32)flags) != 0)
         {
-            lbl_803DD560->transitionComplete = 1;
+            gCamCannonState->transitionComplete = 1;
         }
         dx = ((CameraObject*)cam)->anim.worldPosX - obj->anim.worldPosX;
         dy = ((CameraObject*)cam)->anim.worldPosY - obj->anim.worldPosY;
@@ -793,18 +793,18 @@ void CameraModeTestStrength_update(short* cam)
             }
             cam[2] += ((int)(delta * framesThisStep) >> 3);
         }
-        if (lbl_803DD560->linkedObject != NULL)
+        if (gCamCannonState->linkedObject != NULL)
         {
             f32 v;
             v = ((CameraObject*)cam)->anim.worldPosX;
-            ((GameObject*)lbl_803DD560->linkedObject)->anim.worldPosX = v;
-            ((GameObject*)lbl_803DD560->linkedObject)->anim.localPosX = v;
+            ((GameObject*)gCamCannonState->linkedObject)->anim.worldPosX = v;
+            ((GameObject*)gCamCannonState->linkedObject)->anim.localPosX = v;
             v = ((CameraObject*)cam)->anim.worldPosY;
-            ((GameObject*)lbl_803DD560->linkedObject)->anim.worldPosY = v;
-            ((GameObject*)lbl_803DD560->linkedObject)->anim.localPosY = v;
+            ((GameObject*)gCamCannonState->linkedObject)->anim.worldPosY = v;
+            ((GameObject*)gCamCannonState->linkedObject)->anim.localPosY = v;
             v = ((CameraObject*)cam)->anim.worldPosZ;
-            ((GameObject*)lbl_803DD560->linkedObject)->anim.worldPosZ = v;
-            ((GameObject*)lbl_803DD560->linkedObject)->anim.localPosZ = v;
+            ((GameObject*)gCamCannonState->linkedObject)->anim.worldPosZ = v;
+            ((GameObject*)gCamCannonState->linkedObject)->anim.localPosZ = v;
         }
         Obj_TransformWorldPointToLocal(((CameraObject*)cam)->anim.worldPosX, ((CameraObject*)cam)->anim.worldPosY,
                                        ((CameraObject*)cam)->anim.worldPosZ, &((CameraObject*)cam)->anim.localPosX,
@@ -842,29 +842,29 @@ void CameraModeTestStrength_init(short* cam, int param2, int* param3)
     int tags[2];
 
     obj = ((CameraObject*)cam)->anim.targetObj;
-    if (lbl_803DD560 == 0)
+    if (gCamCannonState == 0)
     {
-        lbl_803DD560 = (CamCannonState*)mmAlloc(sizeof(CamCannonState), 0xf, 0);
+        gCamCannonState = (CamCannonState*)mmAlloc(sizeof(CamCannonState), 0xf, 0);
     }
-    memset(lbl_803DD560, 0, sizeof(CamCannonState));
-    lbl_803DD560->pathTag = *param3;
-    lbl_803DD560->transitionComplete = 1;
+    memset(gCamCannonState, 0, sizeof(CamCannonState));
+    gCamCannonState->pathTag = *param3;
+    gCamCannonState->transitionComplete = 1;
     tags[0] = 9;
     tags[1] = 0x1b;
-    lbl_803DD560->nextNodeId = (*gRomCurveInterface)->find(
+    gCamCannonState->nextNodeId = (*gRomCurveInterface)->find(
         obj->anim.worldPosX, obj->anim.worldPosY, obj->anim.worldPosZ,
-        tags, 2, lbl_803DD560->pathTag);
+        tags, 2, gCamCannonState->pathTag);
     tags[0] = 8;
     tags[1] = 0x1a;
-    lbl_803DD560->prevNodeId = (*gRomCurveInterface)->find(
+    gCamCannonState->prevNodeId = (*gRomCurveInterface)->find(
         obj->anim.worldPosX, obj->anim.worldPosY, obj->anim.worldPosZ,
-        tags, 2, lbl_803DD560->pathTag);
-    pathcam_advanceNodePair(&lbl_803DD560->nextNodeId, &lbl_803DD560->prevNodeId, obj->anim.worldPosX,
-                obj->anim.worldPosY, obj->anim.worldPosZ, lbl_803DD560->pathTag);
-    romNode = (int)(*gRomCurveInterface)->getById(lbl_803DD560->prevNodeId);
-    curveNode2 = (int)(*gRomCurveInterface)->getById(lbl_803DD560->nextNodeId);
-    pathcam_findTaggedNodeWindow((u8*)romNode, prevW, lbl_803DD560->pathTag);
-    pathcam_findTaggedNodeWindow((u8*)curveNode2, nextW, lbl_803DD560->pathTag);
+        tags, 2, gCamCannonState->pathTag);
+    pathcam_advanceNodePair(&gCamCannonState->nextNodeId, &gCamCannonState->prevNodeId, obj->anim.worldPosX,
+                obj->anim.worldPosY, obj->anim.worldPosZ, gCamCannonState->pathTag);
+    romNode = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
+    curveNode2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->nextNodeId);
+    pathcam_findTaggedNodeWindow((u8*)romNode, prevW, gCamCannonState->pathTag);
+    pathcam_findTaggedNodeWindow((u8*)curveNode2, nextW, gCamCannonState->pathTag);
     pathcam_buildWindowSamples(prevW, xS, yS, zS, pitchS, yawS, rollS, fovS);
     t = pathcam_segmentParam(obj->anim.worldPosX, obj->anim.worldPosY,
                     obj->anim.worldPosZ, nextW);
@@ -929,7 +929,7 @@ void CameraModeTestStrength_init(short* cam, int param2, int* param3)
         cam[2] = roll;
         ((CameraObject*)cam)->fov = fov;
     }
-    lbl_803DD560->pathProgress = t;
+    gCamCannonState->pathProgress = t;
 }
 
 void CameraModeTestStrength_release(void)

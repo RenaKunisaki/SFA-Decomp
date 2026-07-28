@@ -500,11 +500,11 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | dlls/objects/454_DIMCannon/DIMCannon.c | = (canonical) | Complete 13-function multi-role TU at its unchanged 99.96049% fuzzy match with 12 exact functions, an allocation-backed 0xB4-byte cannon state, separate allocation-backed 0x0C-byte cannonball state, active-EN-retail-backed fixed 0x2C-byte cannon placement, allocation-backed 0x24-byte cannonball setup, canonical unit header, terminal descriptor, and exact 188-byte data image; the generated source path remains unchanged |
 | 0x1C7 | DIMLavaSmas | COMPLETE | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | = (canonical) | Complete 11-function TU at its unchanged 99.69811% fuzzy match with ten exact functions, an allocation-backed three-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, terminal descriptor, and exact 60-byte data image; the generated source path remains unchanged |
 | 0x1C8 | DIMBridgeCo | COMPLETE | dlls/objects/456_DIMBridgeCo/DIMBridgeCo.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor, allocation-backed one-byte state, active-EN-retail-backed fixed 0x28-byte placement, canonical unit header, and exact 60-byte data image; the generated source path remains unchanged |
-| 0x1C9 | DIMDismount | COMPLETE | dlls/objects/457_DIMDismount/DIMDismount.c | = (canonical) | — |
-| 0x1CA | DIMExplosio | COMPLETE | dlls/objects/458_DIMExplosio/DIMExplosio.c | = (canonical) | — |
-| 0x1CB | DIMWoodDoor | COMPLETE | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | = (canonical) | — |
-| 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | — |
-| 0x1CD | DIM_LevelCo | COMPLETE | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | = (canonical) | — |
+| 0x1C9 | DIMDismount | COMPLETE | dlls/objects/457_DIMDismount/DIMDismount.c | = (canonical) | Exact complete 11-function TU with its terminal 12-slot descriptor, allocation-backed 0x10-byte plane state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header and shared dismount-point object-group contract, and exact 96-byte data image; the generated source path remains unchanged |
+| 0x1CA | DIMExplosio | COMPLETE | dlls/objects/458_DIMExplosio/DIMExplosio.c | = (canonical) | Exact complete 11-function TU with its terminal descriptor, allocation-backed 0xA60-byte state, allocation-backed 0x24-byte setup, runtime-bounded 50-element flame and six-element gravity-debris pools, canonical unit header and shared object/setup contracts, and exact 336-byte data image; the generated source path remains unchanged |
+| 0x1CB | DIMWoodDoor | COMPLETE | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed 0x0C-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header and shared cannonball sequence contract, and exact 80-byte data image; the generated source path remains unchanged |
+| 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | Exact complete 12-function TU with its terminal descriptor, allocation-backed 0x68-byte state, active-EN-retail-backed fixed 0x24-byte placement, runtime-bounded ten-segment arrays, canonical unit header, and exact 84-byte data image; the generated source path remains unchanged |
+| 0x1CD | DIM_LevelCo | COMPLETE | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | = (canonical) | Exact complete five-function TU with its terminal descriptor, allocation-backed 0x10-byte state, active-EN-retail-backed fixed 0x18-byte placement, canonical unit header, canonical object flags, and recovered gamebit/music-trigger roles; the exact 68-byte data image and generated source path remain unchanged |
 | 0x1CE | — | COMPLETE | dlls/objects/462/462.c | = (canonical) | No recovered retail basename |
 | 0x1CF | — | COMPLETE | dlls/objects/463/463.c | = (canonical) | No recovered retail basename |
 | 0x1D0 | DIM_tricky | COMPLETE | dlls/objects/464_DIM_tricky/DIM_tricky.c | = (canonical) | — |
@@ -1028,6 +1028,11 @@ more as they are recovered.
 | 0x1C6 | dlls/objects/454_DIMCannon/DIMCannon.c | include/dlls/objects/454_DIMCannon.h |
 | 0x1C7 | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | include/dlls/objects/455_DIMLavaSmas.h |
 | 0x1C8 | dlls/objects/456_DIMBridgeCo/DIMBridgeCo.c | include/dlls/objects/456_DIMBridgeCo.h |
+| 0x1C9 | dlls/objects/457_DIMDismount/DIMDismount.c | include/dlls/objects/457_DIMDismount.h |
+| 0x1CA | dlls/objects/458_DIMExplosio/DIMExplosio.c | include/dlls/objects/458_DIMExplosio.h |
+| 0x1CB | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | include/dlls/objects/459_DIMWoodDoor.h |
+| 0x1CC | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | include/dlls/objects/460_DIMMagicBri.h |
+| 0x1CD | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | include/dlls/objects/461_DIM_LevelCo.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

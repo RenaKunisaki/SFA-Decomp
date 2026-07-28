@@ -12,6 +12,7 @@
  */
 #include "dlls/objects/265.h"
 
+#include "dlls/objects/458_DIMExplosio.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_play_api.h"
@@ -31,7 +32,6 @@
 
 #define BREAKABLE_CARRYABLE_RESPAWN_DELAY 300.0f
 
-#define BREAKABLE_CARRYABLE_EXPLOSION_SETUP_SIZE  0x24
 #define BREAKABLE_CARRYABLE_EXPLOSION_SETUP_FLAGS 5
 #define BREAKABLE_CARRYABLE_EFFECT_A_ID           0x355
 #define BREAKABLE_CARRYABLE_EFFECT_B_ID           0x352
@@ -40,10 +40,6 @@
 #define BREAKABLE_CARRYABLE_INIT_ARG          0x21
 #define BREAKABLE_CARRYABLE_ROTATION_SHIFT    8
 #define BREAKABLE_CARRYABLE_SUPPRESS_POS_SAVE 1
-
-/* Replacement object dropped at break; retail OBJECTS.bin name
-   "DIMExplosio..." (DLL 0x1CA). */
-#define BREAKABLE_CARRYABLE_CHILD_DIM_EXPLOSION 0x253
 
 int breakableCarryable_getExtraSize(void) {
     return sizeof(BreakableCarryableState);
@@ -87,8 +83,7 @@ void breakableCarryable_update(GameObject* obj) {
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT,
                                      BREAKABLE_CARRYABLE_HITBOX_TYPE, 0);
             if (Obj_IsLoadingLocked() != 0) {
-                setup = Obj_AllocObjectSetup(BREAKABLE_CARRYABLE_EXPLOSION_SETUP_SIZE,
-                                             BREAKABLE_CARRYABLE_CHILD_DIM_EXPLOSION);
+                setup = Obj_AllocObjectSetup(sizeof(DimExplosionPlacement), DIM_EXPLOSION_OBJECT_ID);
                 setup->posX = obj->anim.localPosX;
                 setup->posY = obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ;

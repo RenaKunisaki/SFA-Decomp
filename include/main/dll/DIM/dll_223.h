@@ -24,8 +24,8 @@ int DIMbosstonsil_chooseHitReaction(GameObject* obj, DIMbosstonsilState* state);
 int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* state);
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state);
 
-extern DIMbosstonsilStateHandlerTable lbl_803DDBB0;
-extern DIMbosstonsilSubstateHandlerTable lbl_803DDBA8;
+extern DIMbosstonsilStateHandlerTable gDIMbosstonsilStateHandlers;
+extern DIMbosstonsilSubstateHandlerTable gDIMbosstonsilSubstateHandlers;
 
 STATIC_ASSERT(sizeof(DIMbosstonsilStateHandlerTable) == 8);
 STATIC_ASSERT(sizeof(DIMbosstonsilSubstateHandlerTable) == 8);

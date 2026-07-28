@@ -147,11 +147,10 @@ typedef struct ErrStackFrame
 
 static inline void errDisplayFillBackdrop(void)
 {
-    int x;
     int xcb;
     int row;
+    int x;
     int n;
-    u16* fbrow;
 
     x = 0;
     xcb = x;
@@ -160,37 +159,14 @@ static inline void errDisplayFillBackdrop(void)
         row = 0;
         for (n = 0; n < 60; n++)
         {
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0x500);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0xA00);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0xF00);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0x1400);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0x1900);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0x1E00);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
-            fbrow = debugDrawFrameBuffer;
-            fbrow = (u16*)((char*)fbrow + row);
-            fbrow = (u16*)((char*)fbrow + 0x2300);
-            *(u16*)(xcb + (int)fbrow) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0x500) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0xA00) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0xF00) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0x1400) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0x1900) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0x1E00) = 0x1080;
+            *(u16*)(xcb + (int)debugDrawFrameBuffer + row + 0x2300) = 0x1080;
             row += 0x2800;
         }
         xcb += 2;

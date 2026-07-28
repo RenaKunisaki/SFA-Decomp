@@ -153,11 +153,13 @@ static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress, u8 slotInd
 void PressureSwitchFB_update(GameObject* obj) {
     int foundTrackedObject;
     u32 nearbyObject;
+    int isMoving;
     PressureSwitchFBPlacement* placement;
     PressureSwitchFBState* state;
     int i;
     int scratch;
     u8 trackedIndex;
+    int effectIndex;
     int isTrackedType;
     int positionAddress;
     ObjTextureRuntimeSlot* texture;
@@ -234,7 +236,7 @@ void PressureSwitchFB_update(GameObject* obj) {
         if (foundTrackedObject & PRESSURESWITCHFB_TRACKED_POSITION_MASK) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }
-        i = 0;
+        isMoving = 0;
         if ((state->contactTimer != 0) && (state->flags.update.latched == 0)) {
             if (state->flags.update.active != 0) {
                 if (fn_80295C5C(Obj_GetPlayerObject()) != 0) {
@@ -270,7 +272,7 @@ void PressureSwitchFB_update(GameObject* obj) {
                             state->flags.update.latched = 1;
                         }
                     } else {
-                        i = 1;
+                        isMoving = 1;
                     }
                 }
             } else {
@@ -278,7 +280,7 @@ void PressureSwitchFB_update(GameObject* obj) {
                 if (obj->anim.localPosY > state->targetPosY) {
                     obj->anim.localPosY = state->targetPosY;
                 } else {
-                    i = 1;
+                    isMoving = 1;
                 }
             }
         } else {
@@ -290,7 +292,7 @@ void PressureSwitchFB_update(GameObject* obj) {
                         obj->anim.localPosY = state->targetPosY;
                         mainSetBits(placement->pressedGameBit, 0);
                     } else {
-                        i = 1;
+                        isMoving = 1;
                     }
                 }
             } else {
@@ -315,16 +317,16 @@ void PressureSwitchFB_update(GameObject* obj) {
                 effectParams.scale = PRESSURESWITCHFB_PARTICLE_SCALE;
                 effectParams.arg3 = PRESSURESWITCHFB_PARTICLE_ARG3;
                 effectParams.arg2 = PRESSURESWITCHFB_PARTICLE_ARG2;
-                scratch = 0;
+                effectIndex = 0;
                 do {
                     (*gPartfxInterface)
                         ->spawnObject((void*)obj, PRESSURESWITCHFB_PARTFX_ID, &effectParams,
                                       PRESSURESWITCHFB_PARTICLE_FLAGS, -1, NULL);
-                    scratch++;
-                } while (scratch < PRESSURESWITCHFB_PARTICLE_COUNT);
+                    effectIndex++;
+                } while (effectIndex < PRESSURESWITCHFB_PARTICLE_COUNT);
             }
         }
-        if ((s8)i != 0) {
+        if ((s8)isMoving != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_en_firlp6);
         } else {
             Sfx_StopObjectChannel((u32)obj, PRESSURESWITCHFB_MOVEMENT_SFX_CHANNEL);

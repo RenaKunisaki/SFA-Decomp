@@ -6,7 +6,7 @@
 
 /*
  * CamCannonState - the heap record behind the .sbss pointer
- * lbl_803DD560, shared by CameraModeTestStrength and the camcannon
+ * gCamCannonState, shared by CameraModeTestStrength and the camcannon
  * transition helper. The first four words are test-strength path state;
  * the transition-lerp record starts at 0x10.
  */
