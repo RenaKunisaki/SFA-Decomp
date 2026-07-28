@@ -5085,23 +5085,23 @@ dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c:
 	.sdata2     start:0x803E7E50 end:0x803E7E68
 
 dlls/objects/195_Player/player.c:
-	.text       start:0x80295334 end:0x802B8A58
+	.text       start:0x80295334 end:0x802B7298
 	.rodata     start:0x802C2B30 end:0x802C2CA8
-	.data       start:0x80332EC0 end:0x80334FF8
+	.data       start:0x80332EC0 end:0x80334EE8
 	.bss        start:0x803DAEF0 end:0x803DB0D0
 	.sdata      start:0x803DC660 end:0x803DC6E8
 	.sbss       start:0x803DE420 end:0x803DE4C0
-	.sdata2     start:0x803E7E68 end:0x803E8214
+	.sdata2     start:0x803E7E68 end:0x803E8178
 
 dlls/objects/585/585.c:
 	.sdata      start:0x803DC6E8 end:0x803DC6F0
 
 dlls/objects/437/437.c:
-	.text       start:0x802B8A58 end:0x802B9780
-	.data       start:0x80334FF8 end:0x80335030
+	.text       start:0x802B7298 end:0x802B9780
+	.data       start:0x80334EE8 end:0x80335030
 	.bss        start:0x803DB0D0 end:0x803DB0F0
 	.sdata      start:0x803DC6F0 end:0x803DC72C
-	.sdata2     start:0x803E8214 end:0x803E822C
+	.sdata2     start:0x803E8178 end:0x803E822C
 
 dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:
 	.text       start:0x802B9780 end:0x802BC0D0

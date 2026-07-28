@@ -88,8 +88,8 @@ STATIC_ASSERT(sizeof(Dll437State) == 0x440);
 STATIC_ASSERT(offsetof(Dll437State, groundBaddie) == 0x000);
 STATIC_ASSERT(offsetof(Dll437State, unknown410) == 0x410);
 
-extern Dll437SubstateHandler gDll437SubstateHandlers[DLL437_SUBSTATE_HANDLER_COUNT];
 extern Dll437StateHandler gDll437StateHandlers[DLL437_STATE_HANDLER_COUNT];
+extern Dll437SubstateHandler gDll437SubstateHandlers[DLL437_SUBSTATE_HANDLER_COUNT];
 
 extern s16 gDll437MoveIds0[2];
 extern f32 gDll437MoveSpeeds0[2];
@@ -102,12 +102,6 @@ extern f32 gDll437MoveSpeeds3[2];
 extern s16 gDll437MoveIds4[2];
 extern f32 gDll437MoveSpeeds4[2];
 
-extern const f32 gDll437TargetRange;
-extern const f32 gDll437DirectionalBurstOffsetY;
-extern const f32 gDll437TargetBurstOffsetY;
-extern const f32 gDll437TargetBurstScale;
-extern const f32 gDll437TargetBurstAngleMax;
-extern const f32 gDll437PathRadius;
 
 int dll437_getExtraSize(void);
 int dll437_getObjectTypeId(void);

@@ -32,7 +32,6 @@ extern s16 gPlayerCurrentMoveId;
 extern s16 gPlayerPrevMoveId;
 extern u16 gPlayerHeldButtonMask;
 extern f32 gPlayerPi;
-extern f32 gPlayerPi2;
 extern int gPlayerEggObject;
 extern int gPlayerModelChain;
 extern int gPlayerSfxTimerA;
