@@ -512,7 +512,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         Sfx_PlayFromObject((int)obj, SFXTRIG_earthhuff);
     }
     *(int*)state |= 0x800000;
-    *(s16*)((char*)state + 0x278) = 0;
+    ((EarthWarriorState*)state)->baddie.stateId = 0;
     q->animSpeedMax = 4.32f;
     if (*(s8*)&((EarthWarriorState*)state)->baddie.moveJustStartedA != 0)
     {
@@ -793,7 +793,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         return 3;
     }
     moveId = *(s16*)q->moveTable;
-    *(s16*)((char*)baddie + 0x278) = 0;
+    ((BaddieState*)baddie)->stateId = 0;
     q->animSpeedMax = 4.32f;
     {
         f32 a;
