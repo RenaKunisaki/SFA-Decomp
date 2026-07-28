@@ -346,7 +346,7 @@ void CameraModeWorldMap_update(GameObject* obj)
 
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   *(int*)&camera->anim.parent);
+                                   camera->anim.parentAddress);
 }
 
 void CameraModeWorldMap_init(GameObject* obj)

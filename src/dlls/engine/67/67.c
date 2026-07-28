@@ -243,7 +243,7 @@ void camclimb_update(CameraObject* cam)
     }
     else
     {
-        if ((u32)gCamcontrolPathState->localFrameObj != *(u32*)&cam->anim.parent)
+        if ((u32)gCamcontrolPathState->localFrameObj != cam->anim.parentAddress)
         {
             for (pointIndex = 0; pointIndex < gCamcontrolPathState->pathCurve.count; pointIndex++)
             {
@@ -259,9 +259,9 @@ void camclimb_update(CameraObject* cam)
                     gCamcontrolPathState->pointsX[pointIndex], gCamcontrolPathState->pointsY[pointIndex],
                     gCamcontrolPathState->pointsZ[pointIndex], &gCamcontrolPathState->pointsX[pointIndex],
                     &gCamcontrolPathState->pointsY[pointIndex], &gCamcontrolPathState->pointsZ[pointIndex],
-                    *(int*)&cam->anim.parent);
+                    cam->anim.parentAddress);
             }
-            gCamcontrolPathState->localFrameObj = *(int*)&cam->anim.parent;
+            gCamcontrolPathState->localFrameObj = cam->anim.parentAddress;
         }
         target = (GameObject*)cam->anim.targetObj;
         *(pYaddr = &localPosY) = cam->anim.localPosY;
@@ -271,7 +271,7 @@ void camclimb_update(CameraObject* cam)
         defaultHandler = (int)(*gCameraInterface)->getDefaultHandlerEntry();
         Obj_TransformLocalPointToWorld(cam->anim.localPosX, cam->anim.localPosY, cam->anim.localPosZ,
                                        &cam->anim.worldPosX, &cam->anim.worldPosY, &cam->anim.worldPosZ,
-                                       *(int*)&cam->anim.parent);
+                                       cam->anim.parentAddress);
         (*(CameraBoundsFn*)(**(int**)(defaultHandler + 4) + 0x1c))(cam, target, -100000.0f, 100000.0f);
         (*(VtableFn*)(**(int**)(defaultHandler + 4) + 0x24))(cam, 1, 3, &gCamcontrolPathState->curveMin,
                                                              &gCamcontrolPathState->curveMax);
@@ -312,7 +312,7 @@ void camclimb_update(CameraObject* cam)
         camcontrol_updatePathTargetAction(cam, target);
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                        &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       *(int*)&cam->anim.parent);
+                                       cam->anim.parentAddress);
     }
     return;
 }
@@ -363,7 +363,7 @@ void CameraModeStaffAnim_init(CameraObject* camera, int unused, u8* settings)
         &gCamcontrolPathState->actionParamY);
 
     gCamcontrolPathState->active = 0;
-    gCamcontrolPathState->localFrameObj = *(int*)&camera->anim.parent;
+    gCamcontrolPathState->localFrameObj = camera->anim.parentAddress;
 
     sinFacing = mathSinf(CameraModeStaffAnim_angleToRadians(target->anim.rotX));
     cosFacing = mathCosf(CameraModeStaffAnim_angleToRadians(target->anim.rotX));
@@ -422,7 +422,7 @@ void CameraModeStaffAnim_init(CameraObject* camera, int unused, u8* settings)
         }
 
         Obj_TransformWorldPointToLocal(localPos[0], localPos[1], localPos[2], &localPos[0], &localPos[1], &localPos[2],
-                                       *(int*)&camera->anim.parent);
+                                       camera->anim.parentAddress);
 
         for (pointCount = 0; pointCount < 3; pointCount++)
         {

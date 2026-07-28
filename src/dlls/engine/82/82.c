@@ -96,7 +96,7 @@ void CameraModeForceBehind_update(CameraObject* camera)
     camcontrol_traceFromTarget(&camera->anim.worldPosX, target, &camera->anim.worldPosX, &camera->anim.rotY);
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   *(int*)&camera->anim.parent);
+                                   camera->anim.parentAddress);
 }
 
 const f32 gCamForceBehindEaseRate[1] = {0.25f};

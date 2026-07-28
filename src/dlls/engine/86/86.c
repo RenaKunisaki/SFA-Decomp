@@ -186,7 +186,7 @@ void CameraModeArwing_update(GameObject* obj)
                                    obj->anim.worldPosZ,
                                    &obj->anim.localPosX, &obj->anim.localPosY,
                                    &obj->anim.localPosZ,
-                                   *(int*)&obj->anim.parent);
+                                   obj->anim.parentAddress);
 }
 void CameraModeArwing_init(GameObject* obj, int mode, int unused)
 {

@@ -808,7 +808,7 @@ void CameraModeTestStrength_update(CameraObject* cam)
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
                                        cam->anim.worldPosZ, &cam->anim.localPosX,
                                        &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       *(int*)&cam->anim.parent);
+                                       cam->anim.parentAddress);
     }
 }
 
@@ -922,7 +922,7 @@ void CameraModeTestStrength_init(CameraObject* cam, int param2, int* param3)
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
                                        cam->anim.worldPosZ, &cam->anim.localPosX,
                                        &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       *(int*)&cam->anim.parent);
+                                       cam->anim.parentAddress);
         cam->anim.rotX = pitch;
         cam->anim.rotY = yaw;
         cam->anim.rotZ = roll;

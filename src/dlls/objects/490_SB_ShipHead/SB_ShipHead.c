@@ -68,7 +68,7 @@ void SB_ShipHead_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     if (visible != 0) {
         state = object->extra;
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        parentObj = *(int*)&object->anim.parent;
+        parentObj = object->anim.parentAddress;
         if ((((void*)parentObj != NULL && (((GameObject*)parentObj)->anim.seqId == SB_GALLEON_FIRING_SEQUENCE_ID)) &&
              (damagePhase = SB_GALLEON_VTBL(parentObj)->getDamagePhase(parentObj), damagePhase != 0)) &&
             (damagePhase != 2)) {

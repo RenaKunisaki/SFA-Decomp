@@ -723,7 +723,7 @@ GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, in
                 delta = getAngle(-dp[0], -dp[2]) & 0xffff;
                 if (self->anim.parent != NULL)
                 {
-                    delta -= (self->anim.rotX + *(s16*)(*(int*)&self->anim.parent)) & 0xffff;
+                    delta -= (self->anim.rotX + *(s16*)(self->anim.parentAddress)) & 0xffff;
                     if (delta > 0x8000)
                     {
                         delta -= 0xffff;

@@ -92,7 +92,7 @@ void CameraModeDebug_update(CameraObject* cam)
         cam->anim.worldPosZ = state->anim.worldPosZ + h;
     }
     Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ, &cam->anim.localPosX,
-                                   &cam->anim.localPosY, &cam->anim.localPosZ, *(int*)&cam->anim.parent);
+                                   &cam->anim.localPosY, &cam->anim.localPosZ, cam->anim.parentAddress);
 }
 
 void CameraModeDebug_init(void)

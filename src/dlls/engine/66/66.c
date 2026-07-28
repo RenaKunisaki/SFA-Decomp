@@ -717,7 +717,7 @@ void camcontrol_updateVerticalBounds(CameraObject* camera, int flags, int collis
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   *(int*)&camera->anim.parent);
+                                   camera->anim.parentAddress);
 }
 
 void CameraModeNormal_func0A(float* minDistanceOut, float* maxDistanceOut, float* lowerHeightOffsetOut,
@@ -1444,7 +1444,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
         camcontrol_getTargetPosition(cam, &target->anim, &cam->anim.worldPosX, &cam->anim.rotY);
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                        &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       *(int*)&cam->anim.parent);
+                                       cam->anim.parentAddress);
         (*gCameraInterface)
             ->getRelativePosition(cam, &vOutA, &vOutB, &vOutC, &vOutD, gCamcontrolModeSettings->targetHeight, 0);
         vOutB = cam->anim.localPosY - (target->anim.localPosY + gCamcontrolModeSettings->targetHeight);
@@ -1530,7 +1530,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
             camcontrol_getTargetPosition(cam, &target->anim, &cam->anim.worldPosX, &cam->anim.rotY);
             Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                            &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                           *(int*)&cam->anim.parent);
+                                           cam->anim.parentAddress);
             gCamcontrolModeSettings->transitionTimer = 0;
         }
         break;
@@ -1541,7 +1541,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
         cam->anim.worldPosZ = gCamcontrolModeSettings->savedWorldZ;
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                        &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       *(int*)&cam->anim.parent);
+                                       cam->anim.parentAddress);
         cam->anim.rotX = gCamcontrolModeSettings->savedRotX;
         cam->anim.rotY = gCamcontrolModeSettings->savedRotY;
         cam->anim.rotZ = gCamcontrolModeSettings->savedRotZ;

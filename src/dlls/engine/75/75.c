@@ -148,7 +148,7 @@ void CameraModeClimb_update(CameraObject* camObj)
     camObj->anim.rotY += (yawDelta * framesThisStep) / 6;
     Obj_TransformWorldPointToLocal(camObj->anim.worldPosX, camObj->anim.worldPosY, camObj->anim.worldPosZ,
                                    &camObj->anim.localPosX, &camObj->anim.localPosY, &camObj->anim.localPosZ,
-                                   *(int*)&camObj->anim.parent);
+                                   camObj->anim.parentAddress);
 }
 
 void CameraModeClimb_init(CameraObject* camera, int mode, s8* args)

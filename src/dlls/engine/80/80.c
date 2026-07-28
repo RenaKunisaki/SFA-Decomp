@@ -58,7 +58,7 @@ void CameraModeCrawl_copyToCurrent(void* param1, int param2)
     Obj_TransformWorldPointToLocal(((CameraObject*)obj)->anim.worldPosX, ((CameraObject*)obj)->anim.worldPosY,
                                    ((CameraObject*)obj)->anim.worldPosZ, &((GameObject*)obj)->anim.localPosX,
                                    &((GameObject*)obj)->anim.localPosY, &((GameObject*)obj)->anim.localPosZ,
-                                   *(int*)&((CameraObject*)obj)->anim.parent);
+                                   ((CameraObject*)obj)->anim.parentAddress);
     lbl_803DD598->flags.useDefaultHandler = 1;
 }
 
@@ -126,7 +126,7 @@ void CameraModeCrawl_update(CameraObject* camera)
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   *(int*)&camera->anim.parent);
+                                   camera->anim.parentAddress);
 }
 
 void CameraModeCrawl_init(void)

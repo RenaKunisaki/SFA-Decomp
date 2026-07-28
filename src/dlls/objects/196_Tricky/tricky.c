@@ -4138,7 +4138,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                             }
                             ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot = free_;
                             *(int*)&t->child =
-                                (int)Obj_SetupObject((ObjPlacement*)o, 4, -1, -1, (void*)*(int*)&gobj->anim.parent);
+                                (int)Obj_SetupObject((ObjPlacement*)o, 4, -1, -1, (void*)gobj->anim.parentAddress);
                             ObjLink_AttachChild(gobj, t->child, ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot);
                             {
                                 f32 z3 = 0.0f;
@@ -4216,7 +4216,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                         ((AnimObjD2DripSetup*)o)->head.color[1] = 1;
                         ((AnimObjD2DripSetup*)o)->index = i;
                         *(int*)(p + 0x700) = (int)Obj_SetupObject((ObjPlacement*)o, 5, gobj->anim.mapEventSlot, -1,
-                                                                  (void*)*(int*)&gobj->anim.parent);
+                                                                  (void*)gobj->anim.parentAddress);
                         p += 4;
                     }
                 }

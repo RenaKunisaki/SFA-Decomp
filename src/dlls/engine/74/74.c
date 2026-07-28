@@ -126,7 +126,7 @@ void CameraModeShipBattle_update(CameraObject* cam)
     Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
                                    cam->anim.worldPosZ, &cam->anim.localPosX,
                                    &cam->anim.localPosY, &cam->anim.localPosZ,
-                                   *(int*)&cam->anim.parent);
+                                   cam->anim.parentAddress);
 }
 
 void CameraModeShipBattle_init(void)

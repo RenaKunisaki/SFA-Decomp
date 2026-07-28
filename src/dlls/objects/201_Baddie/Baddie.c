@@ -939,7 +939,7 @@ u8 baddie_canSeeTarget(GameObject* obj, TrickyState* state, void* from, void* to
         PSVECSubtract((Vec*)from, &probe, &delta);
         if (PSVECMag(&delta) < 1905.0f)
         {
-            if (*(u32*)&(obj)->anim.parent == 0)
+            if ((obj)->anim.parentAddress == 0)
             {
                 visible = voxmaps_traceLine((VoxPos*)toGrid, (VoxPos*)fromGrid, NULL, traceHit, 0);
             }
@@ -980,7 +980,7 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
     probe.y = 20.0f + obj->anim.localPosY;
     probe.z = obj->anim.localPosZ;
     voxmaps_worldToGrid((f32*)&probe, baseGrid);
-    if (*(u32*)&obj->anim.parent != 0)
+    if (obj->anim.parentAddress != 0)
     {
         baseAngle = obj->anim.rotX + **(s16**)&obj->anim.parent;
     }
@@ -1006,7 +1006,7 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
         PSVECSubtract(&obj->anim.worldPos, &probe, &delta);
         if (PSVECMag(&delta) < 1905.0f)
         {
-            if (*(u32*)&obj->anim.parent != 0)
+            if (obj->anim.parentAddress != 0)
             {
                 visible = 1;
             }

@@ -68,8 +68,8 @@ void SB_Propeller_update(GameObject* obj) {
     PartFxSpawnParams spawnParams;
 
     state = obj->extra;
-    galleonStage = SB_GALLEON_VTBL(*(int*)&obj->anim.parent)->getStage(*(int*)&obj->anim.parent);
-    galleonPhase = SB_GALLEON_VTBL(*(int*)&obj->anim.parent)->getPhase(*(int*)&obj->anim.parent);
+    galleonStage = SB_GALLEON_VTBL(obj->anim.parentAddress)->getStage(obj->anim.parentAddress);
+    galleonPhase = SB_GALLEON_VTBL(obj->anim.parentAddress)->getPhase(obj->anim.parentAddress);
     if (state->health != 0 && galleonPhase < 6 && obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SB_PROPELLER_SFX_LOOP);
     }
@@ -125,7 +125,7 @@ void SB_Propeller_update(GameObject* obj) {
             state->health -= 1;
             if (state->health <= 0) {
                 state->health = 0;
-                SB_GALLEON_VTBL(*(int*)&obj->anim.parent)->onPartDestroyed(*(int*)&obj->anim.parent);
+                SB_GALLEON_VTBL(obj->anim.parentAddress)->onPartDestroyed(obj->anim.parentAddress);
                 ObjHits_DisableObject(obj);
                 obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
                 spawnExplosion(obj, 100.0f, 1, 1, 1, 0, 1, 1, 0);

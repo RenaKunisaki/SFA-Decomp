@@ -108,7 +108,7 @@ void CameraModeCloudRunner_update(CameraObject* camera)
     camera->anim.worldPosZ = baseZ + rs;
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   *(int*)&camera->anim.parent);
+                                   camera->anim.parentAddress);
 }
 
 void CameraModeCloudRunner_init(int* camera, int radius, f32* focus)

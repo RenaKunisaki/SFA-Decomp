@@ -421,7 +421,7 @@ void CameraModeCombat_update(CameraObject* cam)
                                                            &cam->anim.localPosX,
                                                            &cam->anim.localPosY,
                                                            &cam->anim.localPosZ,
-                                                           *(int*)&cam->anim.parent);
+                                                           cam->anim.parentAddress);
                         }
                     }
                 }

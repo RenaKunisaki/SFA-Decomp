@@ -726,10 +726,10 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
     {
         if (*(void**)&((GameObject*)obj)->anim.parent != NULL)
         {
-            if ((*(void**)(*(int*)&((GameObject*)obj)->anim.parent + 0x58) != NULL) &&
+            if ((*(void**)(((GameObject*)obj)->anim.parentAddress + 0x58) != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)((GameObject*)obj)->anim.parent) != 0))
             {
-                matrixSource = *(int*)(*(int*)&((GameObject*)obj)->anim.parent + 0x58);
+                matrixSource = *(int*)(((GameObject*)obj)->anim.parentAddress + 0x58);
                 matrixOffset = (*(u8*)(matrixSource + 0x10c) + 2) * 0x10;
                 Matrix_TransformPoint((f32*)matrixSource + matrixOffset, ((GameObject*)obj)->anim.localPosX,
                                       ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ,
@@ -741,7 +741,7 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
                 Obj_TransformLocalPointToWorld(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
                                                ((GameObject*)obj)->anim.localPosZ, &((GameObject*)obj)->anim.worldPosX,
                                                &((GameObject*)obj)->anim.worldPosY, &((GameObject*)obj)->anim.worldPosZ,
-                                               *(u32*)&((GameObject*)obj)->anim.parent);
+                                               ((GameObject*)obj)->anim.parentAddress);
             }
         }
         else
@@ -1441,11 +1441,11 @@ void dll_15_func06(GameObject* obj, CurvesCollisionState* state, f32 step)
     {
         if (*(void**)&obj->anim.parent != NULL)
         {
-            if ((*(void**)(*(int*)&obj->anim.parent + 0x58) != NULL) &&
+            if ((*(void**)(obj->anim.parentAddress + 0x58) != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj->anim.parent) != 0))
             {
-                mtxIdx = (*(u8*)(*(int*)(*(int*)&obj->anim.parent + 0x58) + 0x10c) + 2) * 0x10;
-                Matrix_TransformPoint((f32*)(*(int*)(*(int*)&obj->anim.parent + 0x58)) + mtxIdx, obj->anim.localPosX,
+                mtxIdx = (*(u8*)(*(int*)(obj->anim.parentAddress + 0x58) + 0x10c) + 2) * 0x10;
+                Matrix_TransformPoint((f32*)(*(int*)(obj->anim.parentAddress + 0x58)) + mtxIdx, obj->anim.localPosX,
                                       obj->anim.localPosY, obj->anim.localPosZ, &obj->anim.worldPosX,
                                       &obj->anim.worldPosY, &obj->anim.worldPosZ);
             }
@@ -1453,7 +1453,7 @@ void dll_15_func06(GameObject* obj, CurvesCollisionState* state, f32 step)
             {
                 Obj_TransformLocalPointToWorld(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                &obj->anim.worldPosX, &obj->anim.worldPosY, &obj->anim.worldPosZ,
-                                               *(u32*)&obj->anim.parent);
+                                               obj->anim.parentAddress);
             }
         }
         else
