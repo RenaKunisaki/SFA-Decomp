@@ -33,27 +33,7 @@
 
 typedef f32 Mtx[3][4];
 
-extern int curLanguage;
-extern TextFont* gameTextFonts;
-typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
-extern GameTextDrawFunc gameTextDrawFunc;
-extern LanguageName sLanguageNameTable[];
-extern u8 gGameTextFontMetrics[];
-extern int gGameTextShadowOffsetX;
-extern int gGameTextShadowOffsetY;
-extern int gameTextCharset;
 
-extern u8 gGameTextBase[];
-extern u8* gGameTextLastEntry;
-extern int gCurTextBuffer;
-extern int gGameTextBufferIndex;
-extern const f32 gGameTextFadeLimit;
-extern int curGameTextDir;
-extern u8 lbl_803DC980;
-extern int gGameTextLastDir;
-extern int lbl_803DC9D0;
-extern int lbl_803DC9D4;
-extern int gGameTextLastLanguage;
 extern f32 gSubtitleCurTime;
 
 TextFont* gameTextFonts;
@@ -105,12 +85,10 @@ void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
 int GameText_CountPrintableChars(u8* str);
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out);
 
-extern char gGameTextFontData[];
 extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
 extern GXColor gGameTextClearColor;
 extern int gGameTextFontTexRowPitch;
-extern char sGameTextBlankFormat[5];
 extern GameTextStateElem gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
@@ -238,7 +216,6 @@ f32 gameTextFn_80019c00(void)
     return gameTextFonts->timer;
 }
 
-extern char sGameTextSequencePathFormat[];
 
 int gameTextGetState(int i)
 {
@@ -666,7 +643,6 @@ void gameTextInitFn_8001a234(void)
     gGameTextStringStore = (void*)mmCreateMemoryStore(0x800);
 }
 
-extern GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
 
 void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
 {
@@ -1181,9 +1157,7 @@ void setLanguageFn_8001ad64(GameTextLoadSlot* req)
     req->state = 3;
 }
 
-extern f32 gSubtitleLineTimes[0x100];
 
-extern char* gSubtitleLineStrs[0x100];
 
 void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block)
 {

@@ -1578,7 +1578,6 @@ void unloadMap(void)
 
 extern s8 curMapLayer;
 extern s8 curMapType;
-extern u32 renderFlags;
 s32 getCurMapLayer(void)
 {
     return curMapLayer;

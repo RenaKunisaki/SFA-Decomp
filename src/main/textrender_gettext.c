@@ -31,20 +31,9 @@
 #include "string.h"
 #include "main/lightmap.h"
 
-extern TextFont* gameTextFonts;
-typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
-extern GameTextDrawFunc gameTextDrawFunc;
 
-extern u8 gGameTextBase[];
 extern u8 sGameTextFallbackBufSlots[];
 extern int gGameTextFallbackBuf;
-extern u8* gGameTextLastEntry;
-extern int gCurTextBuffer;
-extern int gGameTextBufferIndex;
-extern const f32 gGameTextFadeLimit;
-extern int curGameTextDir;
-extern char gGameTextFontData[];
-extern char sGameTextBlankFormat[5];
 
 void* gameTextGetPhrase(int textId, int phraseIndex)
 {

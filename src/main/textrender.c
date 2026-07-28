@@ -76,22 +76,12 @@ char lbl_803DB404[4] = {0};
 
 typedef f32 Mtx[3][4];
 
-extern int curLanguage;
-extern TextFont* gameTextFonts;
-typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
-extern GameTextDrawFunc gameTextDrawFunc;
-extern LanguageName sLanguageNameTable[];
-extern u8 gGameTextFontMetrics[];
 extern const f32 lbl_803DE70C;
 extern const f32 lbl_803DE710;
 extern const f32 lbl_803DE714;
 extern const f32 lbl_803DE718;
-extern int gGameTextShadowOffsetX;
-extern int gGameTextShadowOffsetY;
-extern int gameTextCharset;
 extern CtrlCharEntry gGameTextCtrlCodeArgCounts[];
 
-extern u8 gGameTextBase[];
 extern u32 sSubtitleCtrlCmdScratch[];
 
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
@@ -1114,17 +1104,13 @@ int getCurGameText(void);
 
 int gameTextGetState(int i);
 
-extern char sGameTextSequencePathFormat[];
 
 void* gSubtitleLineTable[0x100];
 
-extern GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
 
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
 
-extern f32 gSubtitleLineTimes[0x100];
 
-extern char* gSubtitleLineStrs[0x100];
 
 void* jumptable_802C9E84[16] = {
     (void*)((u8*)gameTextRun + 0x54C), (void*)((u8*)gameTextRun + 0x3B8), (void*)((u8*)gameTextRun + 0x3C8),

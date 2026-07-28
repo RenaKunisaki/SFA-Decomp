@@ -70,17 +70,7 @@ typedef struct EnvironmentUpdateInterface
     void (*update)(void);
 } EnvironmentUpdateInterface;
 
-extern u32 renderFlags;
-/* Global renderFlags bits (decoded by the accessor fns below: shouldDrawShadows,
- * shouldDrawClouds, getDrawDistanceFlag, isOvercast, setPendingMapLoad,
- * setStarsHidden). */
-#define RENDERFLAG_WIDESCREEN      0x8
-#define RENDERFLAG_DRAW_CLOUDS     0x10
-#define RENDERFLAG_DRAW_SHADOWS    0x80
-#define RENDERFLAG_PENDING_MAP_LOAD 0x1000
-#define RENDERFLAG_DRAW_DISTANCE   0x10000
-#define RENDERFLAG_OVERCAST        0x40000
-#define RENDERFLAG_HIDE_STARS      0x80000
+#include "main/render_flags.h"
 
 
 extern u8 lbl_803DCE98; /* count of allocated blocks */

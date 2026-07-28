@@ -132,7 +132,6 @@ typedef union
 } GolfWGPipe;
 
 extern volatile GolfWGPipe GXWGFifo : (0xCC008000);
-extern int renderFlags;
 
 void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8);
 

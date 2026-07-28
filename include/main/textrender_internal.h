@@ -256,6 +256,29 @@ extern Texture* gSubtitleBoxTextures[];
 extern Texture* gGameTextBoxFrameTextures[];
 extern void* gCurTextBox;
 
+typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
+
+extern int curLanguage;
+extern int curGameTextDir;
+extern int gameTextCharset;
+extern TextFont* gameTextFonts;
+extern GameTextDrawFunc gameTextDrawFunc;
+extern LanguageName sLanguageNameTable[];
+extern u8 gGameTextFontMetrics[];
+extern int gGameTextShadowOffsetX;
+extern int gGameTextShadowOffsetY;
+extern u8 gGameTextBase[];
+extern u8* gGameTextLastEntry;
+extern int gCurTextBuffer;
+extern int gGameTextBufferIndex;
+extern const f32 gGameTextFadeLimit;
+extern char gGameTextFontData[];
+extern char sGameTextBlankFormat[5];
+extern char sGameTextSequencePathFormat[];
+extern GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
+extern f32 gSubtitleLineTimes[0x100];
+extern char* gSubtitleLineStrs[0x100];
+
 int GameText_CountPrintableChars(u8* str);
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out);
 void loadGameTextSequence(int sequenceSlotDir, int sequenceId);
