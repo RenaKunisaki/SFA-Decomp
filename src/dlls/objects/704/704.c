@@ -113,8 +113,6 @@ u8 showCredits;
 u8 gTitleScreenSetupDone;
 s8 gTitleScreenMenuActive;
 s8 gTitleScreenMenuSelection;
-extern f32 lbl_803E2318;
-extern f32 lbl_803E22F8;
 #define FRONT_TEXT_COPYRIGHT 0x3d9
 typedef struct TitleAnimMoves
 {
@@ -124,13 +122,6 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
-extern f32 lbl_803E2344;
-extern f32 lbl_803E2348;
-extern f32 lbl_803E234C;
-extern f32 lbl_803E2350;
-extern f32 lbl_803E231C;
-extern f32 lbl_803E2320;
-extern f32 lbl_803E2324;
 #define GX_ORTHOGRAPHIC 1 /* GXProjectionType (GXEnum.h): GX_PERSPECTIVE=0, GX_ORTHOGRAPHIC=1 */
 extern f32 hudMatrix[];
 #define GX_PNMTX0    0 /* GXPosNrmMtx (GXEnum.h): GX_PNMTX0=0 */
@@ -140,34 +131,9 @@ extern f32 hudMatrix[];
 #define GX_CULL_NONE 0
 #define GX_QUADS     0x80
 #define GX_VTXFMT1   1
-extern f32 lbl_803E2354;
-extern f32 lbl_803E2358;
-extern f32 lbl_803E235C;
-extern f32 lbl_803E2360;
-extern f32 lbl_803E2364;
-extern f32 lbl_803E2368;
-extern f32 lbl_803E236C;
-extern f32 lbl_803E2370;
-extern f32 lbl_803E2374;
-extern f32 lbl_803E2378;
-extern f32 lbl_803E237C;
-extern f32 lbl_803E2380;
-extern f32 lbl_803E2384;
-extern f32 lbl_803E2388;
 extern u8 lbl_803DB411;
-extern f32 lbl_803E22F0;
-extern f32 lbl_803E22F4;
-extern f32 lbl_803E22FC;
 extern f32 lbl_803E2300;
-extern f32 lbl_803E2304;
-extern f64 lbl_803E2308;
-extern f32 lbl_803E2328;
-extern f32 lbl_803E232C;
 extern f32 gTitleScreenPi;
-extern f32 lbl_803E2334;
-extern f32 lbl_803E2338;
-extern f32 lbl_803E233C;
-extern f32 lbl_803E2340;
 
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
@@ -321,7 +287,7 @@ void titleScreenShowCopyright(u8 arg)
 
     if (arg != 0)
     {
-        gTitleScreenCopyrightFade = lbl_803E2318;
+        gTitleScreenCopyrightFade = 1.0f;
         gTitleScreenCopyrightLatch = 0;
     }
     else if (gTitleScreenCopyrightLatch != 0)
@@ -330,8 +296,8 @@ void titleScreenShowCopyright(u8 arg)
     }
     else
     {
-        gTitleScreenCopyrightFade = lbl_803E2318;
-        if (gTitleScreenSlideProgressX > lbl_803E231C)
+        gTitleScreenCopyrightFade = 1.0f;
+        if (gTitleScreenSlideProgressX > 0.9999f)
         {
             gTitleScreenCopyrightLatch = 1;
         }
@@ -345,8 +311,8 @@ void titleScreenShowCopyright(u8 arg)
             gTitleScreenCopyrightBaseY = *(s16*)((char*)box + 0x16);
         }
         *(s16*)((char*)box + 0x16) =
-            (s16)(lbl_803E2320 * (lbl_803E2318 - gTitleScreenCopyrightFade) + gTitleScreenCopyrightBaseY);
-        gameTextSetColor(0xff, 0xff, 0xff, (s32)(lbl_803E2324 * gTitleScreenCursorX));
+            (s16)(80.0f * (1.0f - gTitleScreenCopyrightFade) + gTitleScreenCopyrightBaseY);
+        gameTextSetColor(0xff, 0xff, 0xff, (s32)(255.0f * gTitleScreenCursorX));
         gameTextShow(FRONT_TEXT_COPYRIGHT);
     }
 }
@@ -373,13 +339,13 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     int r;
 
     m = (gTitleScreenPulseTimer = gTitleScreenPulseTimer + timeDelta);
-    if (m > *(f32*)&lbl_803E22F0)
+    if (m > 100.0f)
     {
-        gTitleScreenPulseTimer = m - lbl_803E22F0;
+        gTitleScreenPulseTimer = m - 100.0f;
     }
     gTitleScreenPulseAlpha =
-        lbl_803E232C * mathCosf(gTitleScreenPi * (lbl_803E2334 * gTitleScreenPulseTimer) / *(f32*)&lbl_803E22F0) + lbl_803E2328;
-    if (gTitleScreenCursorY > lbl_803E22F8)
+        127.0f * mathCosf(gTitleScreenPi * (2.0f * gTitleScreenPulseTimer) / 100.0f) + 128.0f;
+    if (gTitleScreenCursorY > 0.0f)
     {
         f32 (*m2)[4] = (f32 (*)[4])gTitleScreenMtx;
         int xb;
@@ -406,7 +372,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     {
         int xb = (int)mtx[3];
         int yb = (int)mtx[7];
-        int a = (gTitleScreenCursorY > lbl_803E22F8) ? 0xff : gTitleScreenPulseAlpha;
+        int a = (gTitleScreenCursorY > 0.0f) ? 0xff : gTitleScreenPulseAlpha;
         drawTexture(gTitleScreenTextures[1], (f32)(int)(xb - 0x18),
                     (f32)(int)(yb - ((Texture*)gTitleScreenTextures[1])->height + 3), 0xff, 0xff);
         texs2 = (Texture**)gTitleScreenTextures;
@@ -416,17 +382,17 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
         int xb = (int)mtx[3];
         int yb = (int)mtx[7];
         f32 cy = gTitleScreenCursorY;
-        int a = (cy > lbl_803E22F8) ? 0xff : gTitleScreenPulseAlpha;
-        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), lbl_803E22FC + (lbl_803E2300 * cy + (f32)(int)yb),
+        int a = (cy > 0.0f) ? 0xff : gTitleScreenPulseAlpha;
+        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (lbl_803E2300 * cy + (f32)(int)yb),
                     0xff, 0xff);
-        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), lbl_803E2304 + (lbl_803E2300 * gTitleScreenCursorY + (f32)(int)yb),
+        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (lbl_803E2300 * gTitleScreenCursorY + (f32)(int)yb),
                     a, 0xff);
     }
-    gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (lbl_803E2308 - gTitleScreenCursorY)));
+    gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (1.0 - gTitleScreenCursorY)));
     gameTextShow(0x3da);
     drawTexture(gTitleScreenTextures[3], (f32)(int)((int)mtx[3] - 0x32),
                 (f32)(int)(0xfe - ((u32)((Texture*)gTitleScreenTextures[3])->width >> 1)), 0xff, 0xff);
-    if (gTitleScreenCursorY >= lbl_803E2338 && (hideHighlight & 0xff) == 0u)
+    if (gTitleScreenCursorY >= 0.99f && (hideHighlight & 0xff) == 0u)
     {
         int xb = (int)mtx[3] - 0x32;
         int yb = (int)mtx[7];
@@ -442,7 +408,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
             i++;
         } while (i < 4);
     }
-    if (gTitleScreenCursorY > lbl_803E22F8 && (boxIndex = linkGetSelectedItemId()) != 0xFFFF)
+    if (gTitleScreenCursorY > 0.0f && (boxIndex = linkGetSelectedItemId()) != 0xFFFF)
     {
         int t = *(s16*)((int)gameTextGetBox(boxIndex) + 0x16);
         xb = (int)mtx[3];
@@ -456,27 +422,27 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     texs = (Texture**)gTitleScreenTextures;
     {
         Texture* t = texs[18];
-        drawScaledTexture(t, (f32)(int)((int)(lbl_803E22F0 * gTitleScreenCursorX) - 0x50),
-                          (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
+        drawScaledTexture(t, (f32)(int)((int)(100.0f * gTitleScreenCursorX) - 0x50),
+                          (f32)(int)((int)(-80.0f * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
     }
     texs2 = &((Texture**)(gTitleScreenTextures + 8))[idx];
     {
         Texture* t = *texs2;
-        drawScaledTexture(t, (f32)(int)((int)(lbl_803E22F0 * gTitleScreenCursorX) + ((tex = texs[18])->width - 0x4a)),
-                          (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
+        drawScaledTexture(t, (f32)(int)((int)(100.0f * gTitleScreenCursorX) + ((tex = texs[18])->width - 0x4a)),
+                          (f32)(int)((int)(-80.0f * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
     }
     {
         Texture* t = texs[18];
         drawScaledTexture(t,
-                          (f32)(int)(0x280 - ((int)(lbl_803E22F0 * gTitleScreenCursorX) - 0x50) - texs[18]->width),
-                          (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
+                          (f32)(int)(0x280 - ((int)(100.0f * gTitleScreenCursorX) - 0x50) - texs[18]->width),
+                          (f32)(int)((int)(-80.0f * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
     }
     {
         Texture* t = *texs2;
         drawScaledTexture(
             t,
-            (f32)(int)(0x27a - ((int)(lbl_803E22F0 * gTitleScreenCursorX) - 0x50) - texs[18]->width - t->width),
-            (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
+            (f32)(int)(0x27a - ((int)(100.0f * gTitleScreenCursorX) - 0x50) - texs[18]->width - t->width),
+            (f32)(int)((int)(-80.0f * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
     }
     m = gTitleScreenSlideProgressX;
     if (gTitleScreenSlideProgressX > gTitleScreenCursorX)
@@ -485,7 +451,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     }
     drawTexture(gTitleScreenMainTex,
                 (f32)(int)((0x280 - (((int)((Texture*)gTitleScreenMainTex)->width * 0xbe) / 0x100)) / 2),
-                (f32)(int)(lbl_803E2340 * m + lbl_803E233C), 0xff, 0xbe);
+                (f32)(int)(250.0f * m + -200.0f), 0xff, 0xbe);
     if ((showArrows & 0xff) != 0u)
     {
         int yb;
@@ -507,10 +473,10 @@ void nameEntrySetScroll(u32 a, u32 b)
 }
 void titleScreenPositionElements(f32 a, f32 b)
 {
-    PSMTXTrans((f32*)gTitleScreenMtx, a, b, lbl_803E22F8);
-    gTitleScreenCursorY = (lbl_803E2344 - b) / lbl_803E2348;
-    gTitleScreenSlideProgressX = (a - lbl_803E234C) / lbl_803E2350;
-    gTitleScreenCursorX = lbl_803E2318 - gTitleScreenCursorY;
+    PSMTXTrans((f32*)gTitleScreenMtx, a, b, 0.0f);
+    gTitleScreenCursorY = (254.0f - b) / 134.0f;
+    gTitleScreenSlideProgressX = (a - -380.0f) / 420.0f;
+    gTitleScreenCursorX = 1.0f - gTitleScreenCursorY;
 }
 
 
@@ -624,7 +590,7 @@ void TitleScreen_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
         return;
     if (gTitleScreenActorsEnabled == 0)
         return;
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E2318);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     if (showCredits == 0)
         return;
     if (gTitleScreenCreditsStarted != 0)
@@ -670,14 +636,14 @@ void TitleScreen_update(GameObject* obj)
             if (obj->anim.seqId == FRONT_SEQID_FOX || obj->anim.seqId == FRONT_SEQID_ROB)
             {
                 state->animPhase = 3;
-                ObjAnim_SetCurrentMove(objHandle, 1, lbl_803E2318, 0);
+                ObjAnim_SetCurrentMove(objHandle, 1, 1.0f, 0);
                 state->moveProgress =
                     gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[3];
             }
             else
             {
                 state->animPhase = 0;
-                ObjAnim_SetCurrentMove(objHandle, 0, lbl_803E22F8, 0);
+                ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
                 state->moveProgress =
                     gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
             }
@@ -686,7 +652,7 @@ void TitleScreen_update(GameObject* obj)
             (phase = state->animPhase) != 1 && phase != 2 && phase != 5)
         {
             state->animPhase = 1;
-            ObjAnim_SetCurrentMove(objHandle, 1, lbl_803E22F8, 0);
+            ObjAnim_SetCurrentMove(objHandle, 1, 0.0f, 0);
             state->moveProgress =
                 gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[1];
             if (obj->anim.seqId == FRONT_SEQID_PEPPY)
@@ -699,16 +665,16 @@ void TitleScreen_update(GameObject* obj)
         t = obj->anim.seqId;
         if (t == 0x7a7)
         {
-            obj->anim.rotX = lbl_803E2354 * timeDelta + (f32)obj->anim.rotX;
+            obj->anim.rotX = 10.0f * timeDelta + (f32)obj->anim.rotX;
         }
         else if (t != FRONT_SEQID_PILOTS_ATTRACT)
         {
             buf[0x1b] = 0;
             if (t == FRONT_SEQID_FOX && state->animPhase == 2)
             {
-                if (obj->anim.currentMoveProgress < lbl_803E2358)
+                if (obj->anim.currentMoveProgress < 0.1f)
                 {
-                    gTitleScreenFoxTypeMoveRate = progress = lbl_803E235C * (f32)randomGetRange(0x32, 0x96);
+                    gTitleScreenFoxTypeMoveRate = progress = 0.0001f * (f32)randomGetRange(0x32, 0x96);
                 }
                 else
                 {
@@ -725,14 +691,14 @@ void TitleScreen_update(GameObject* obj)
                 if (state->poseIndex == gTitleScreenMenuSelection && state->animPhase == 1)
                 {
                     state->animPhase = 2;
-                    ObjAnim_SetCurrentMove(objHandle, 2, lbl_803E22F8, 0);
+                    ObjAnim_SetCurrentMove(objHandle, 2, 0.0f, 0);
                     state->moveProgress =
                         gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[2];
                 }
                 else if (state->animPhase == 3)
                 {
                     state->animPhase = 0;
-                    ObjAnim_SetCurrentMove(objHandle, 0, lbl_803E22F8, 0);
+                    ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
                     state->moveProgress =
                         gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
                 }
@@ -743,7 +709,7 @@ void TitleScreen_update(GameObject* obj)
                         if ((phase = state->animPhase) == 0 || phase == 4)
                         {
                             state->animPhase = 4;
-                            ObjAnim_SetCurrentMove(objHandle, randomGetRange(3, 4), lbl_803E22F8, 0);
+                            ObjAnim_SetCurrentMove(objHandle, randomGetRange(3, 4), 0.0f, 0);
                             state->moveProgress =
                                 gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX]
                                     .moves[1 + obj->anim.currentMove];
@@ -751,7 +717,7 @@ void TitleScreen_update(GameObject* obj)
                         else
                         {
                             state->animPhase = 5;
-                            ObjAnim_SetCurrentMove(objHandle, randomGetRange(5, 6), lbl_803E22F8, 0);
+                            ObjAnim_SetCurrentMove(objHandle, randomGetRange(5, 6), 0.0f, 0);
                             state->moveProgress =
                                 gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX]
                                     .moves[1 + obj->anim.currentMove];
@@ -763,14 +729,14 @@ void TitleScreen_update(GameObject* obj)
                         if (phase == 4)
                         {
                             state->animPhase = 0;
-                            ObjAnim_SetCurrentMove(objHandle, 0, lbl_803E22F8, 0);
+                            ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
                             state->moveProgress =
                                 gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
                         }
                         else if (phase == 5)
                         {
                             state->animPhase = 2;
-                            ObjAnim_SetCurrentMove(objHandle, 2, lbl_803E22F8, 0);
+                            ObjAnim_SetCurrentMove(objHandle, 2, 0.0f, 0);
                             state->moveProgress =
                                 gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[2];
                         }
@@ -794,7 +760,7 @@ void TitleScreen_update(GameObject* obj)
         {
             blend = model->blendChannels;
             morphTarget = randomGetRange(0, model->file->morphTargetCount);
-            ObjModel_SetBlendChannelTargets(model, 0, blend->morphTargetB, morphTarget - 1, lbl_803E2360, 0);
+            ObjModel_SetBlendChannelTargets(model, 0, blend->morphTargetB, morphTarget - 1, 0.025f, 0);
         }
         gTitleScreenPrevMenuSelection = -1;
         gTitleScreenPrevMenuActive = -1;
@@ -811,10 +777,10 @@ void TitleScreen_update(GameObject* obj)
                 row = gTitleScreenSfxFlagGrid + (t - FRONT_SEQID_FOX) * 0x12;
                 if (row[phaseSel * 3] != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2364)
+                    if (obj->anim.currentMoveProgress < 0.4f)
                         row[phaseSel * 3] = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2364)
+                else if (obj->anim.currentMoveProgress > 0.4f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fened_pep_yawn);
                     row[phaseSel * 3] = 1;
@@ -832,10 +798,10 @@ void TitleScreen_update(GameObject* obj)
                     row = gTitleScreenSfxFlagGrid + (t - FRONT_SEQID_FOX) * 0x12;
                     if (row[phaseSel * 3] != 0)
                     {
-                        if (obj->anim.currentMoveProgress < lbl_803E2368)
+                        if (obj->anim.currentMoveProgress < 0.3f)
                             row[phaseSel * 3] = 0;
                     }
-                    else if (obj->anim.currentMoveProgress > lbl_803E2368)
+                    else if (obj->anim.currentMoveProgress > 0.3f)
                     {
                         Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_fingersnap);
                         row[phaseSel * 3] = 1;
@@ -843,10 +809,10 @@ void TitleScreen_update(GameObject* obj)
                     p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
                     if (*p != 0)
                     {
-                        if (obj->anim.currentMoveProgress < lbl_803E236C)
+                        if (obj->anim.currentMoveProgress < 0.65f)
                             *p = 0;
                     }
-                    else if (obj->anim.currentMoveProgress > lbl_803E236C)
+                    else if (obj->anim.currentMoveProgress > 0.65f)
                     {
                         Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_fingersnap);
                         *p = 1;
@@ -862,10 +828,10 @@ void TitleScreen_update(GameObject* obj)
                 row = gTitleScreenSfxFlagGrid + (t - FRONT_SEQID_FOX) * 0x12;
                 if (row[phaseSel * 3] != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2370)
+                    if (obj->anim.currentMoveProgress < 0.5f)
                         row[phaseSel * 3] = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2370)
+                else if (obj->anim.currentMoveProgress > 0.5f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_wave);
                     row[phaseSel * 3] = 1;
@@ -875,10 +841,10 @@ void TitleScreen_update(GameObject* obj)
                 row = gTitleScreenSfxFlagGrid + (t - FRONT_SEQID_FOX) * 0x12;
                 if (row[phaseSel * 3] != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2374)
+                    if (obj->anim.currentMoveProgress < 0.25f)
                         row[phaseSel * 3] = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2374)
+                else if (obj->anim.currentMoveProgress > 0.25f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_armout);
                     row[phaseSel * 3] = 1;
@@ -886,10 +852,10 @@ void TitleScreen_update(GameObject* obj)
                 p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
                 if (*p != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2378)
+                    if (obj->anim.currentMoveProgress < 0.7f)
                         *p = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2378)
+                else if (obj->anim.currentMoveProgress > 0.7f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
@@ -897,10 +863,10 @@ void TitleScreen_update(GameObject* obj)
                 p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
                 if (*p != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E237C)
+                    if (obj->anim.currentMoveProgress < 0.8f)
                         *p = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E237C)
+                else if (obj->anim.currentMoveProgress > 0.8f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_armin);
                     *p = 1;
@@ -910,10 +876,10 @@ void TitleScreen_update(GameObject* obj)
                 row = gTitleScreenSfxFlagGrid + (t - FRONT_SEQID_FOX) * 0x12;
                 if (row[phaseSel * 3] != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2368)
+                    if (obj->anim.currentMoveProgress < 0.3f)
                         row[phaseSel * 3] = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2368)
+                else if (obj->anim.currentMoveProgress > 0.3f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     row[phaseSel * 3] = 1;
@@ -921,10 +887,10 @@ void TitleScreen_update(GameObject* obj)
                 p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
                 if (*p != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2380)
+                    if (obj->anim.currentMoveProgress < 0.6f)
                         *p = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2380)
+                else if (obj->anim.currentMoveProgress > 0.6f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
@@ -932,10 +898,10 @@ void TitleScreen_update(GameObject* obj)
                 p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
                 if (*p != 0)
                 {
-                    if (obj->anim.currentMoveProgress < lbl_803E2384)
+                    if (obj->anim.currentMoveProgress < 0.9f)
                         *p = 0;
                 }
-                else if (obj->anim.currentMoveProgress > lbl_803E2384)
+                else if (obj->anim.currentMoveProgress > 0.9f)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
@@ -949,7 +915,7 @@ void TitleScreen_update(GameObject* obj)
             getEnvfxAct(0, 0, FRONT_ENVFX_TITLE, 0);
             skyFn_80089710(7, 1, 0);
             skySetBaseColor(7, 0x4b, 0x64, 0x78, 0, 0);
-            skySetLightDirection(7, lbl_803E2318, lbl_803E2388, *(f32*)&lbl_803E2388);
+            skySetLightDirection(7, 1.0f, -1.0f, -1.0f);
             (*gCameraInterface)->setFocus(obj, 0);
             gTitleScreenSetupDone = 1;
             TitleMenuItem_loadTextures();
@@ -972,11 +938,11 @@ void TitleScreen_init(GameObject* obj, u8* def)
     {
         state->poseIndex = (s8)(seqId - FRONT_SEQID_FOX);
         state->moveProgress = gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
-        ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E22F8, 0);
+        ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
     }
     else
     {
-        f32 blendFloat = lbl_803E22F8;
+        f32 blendFloat = 0.0f;
         state->moveProgress = blendFloat;
         state->poseIndex = -2;
         seqId = obj->anim.seqId;
@@ -986,7 +952,7 @@ void TitleScreen_init(GameObject* obj, u8* def)
         }
         else if (seqId == FRONT_SEQID_PILOTS)
         {
-            ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E2318, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0, 1.0f, 0);
             ObjModel_SetRenderCallback((u8*)obj->anim.banks[0], AttractMovie_DrawTextureCallback);
         }
     }
@@ -1063,18 +1029,18 @@ void TitleScreen_initialise(void)
     {
         gTitleScreenMainTex = textureLoadAsset(FRONT_MAIN_TEXTURE_ID_B);
     }
-    lbl_803DD9D0 = lbl_803E2318;
-    lbl_803DD9CC = lbl_803E2318;
+    lbl_803DD9D0 = 1.0f;
+    lbl_803DD9CC = 1.0f;
     PSMTXIdentity((f32*)gTitleScreenMtx);
     for (i = 0; i < TITLE_SCREEN_TEXTURE_COUNT; i++)
     {
         gTitleScreenTextures[i] = textureLoadAsset(gTitleScreenTextureIds[i]);
     }
-    gTitleScreenPulseTimer = lbl_803E22F8;
+    gTitleScreenPulseTimer = 0.0f;
     gTitleScreenSetupDone = 0;
     gTitleScreenCopyrightBaseY = 0;
-    gTitleScreenSlideProgressX = lbl_803E2318;
-    gTitleScreenCursorX = lbl_803E2318;
+    gTitleScreenSlideProgressX = 1.0f;
+    gTitleScreenCursorX = 1.0f;
     gTitleScreenActorsEnabled = 1;
 }
 

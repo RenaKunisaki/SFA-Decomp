@@ -33,15 +33,7 @@ extern f32 gRopeNodeDamping;
 extern const f32 gRopeNodeBoundsMargin;
 extern f32 gRopeNodeLiftHeight;
 extern f32 gRopeNodeMaxDistance;
-extern f32 lbl_803E4DF8;
 extern const f32 lbl_803E4DFC;
-extern const f32 lbl_803E4E00;
-extern f32 lbl_803E4E04;
-extern const f32 lbl_803E4E08;
-extern const f32 lbl_803E4E0C;
-extern const f32 lbl_803E4E10;
-extern const f32 lbl_803E4E14;
-extern f32 lbl_803E4E18;
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
 void* gRopeNodeTextures[2] = {0};
@@ -207,7 +199,7 @@ void DFRope_UpdateSimulation(DFRope* self) {
     i = 1;
     partIter = partsInit + 1;
     {
-        f32 rate = lbl_803E4DF8;
+        f32 rate = 0.01f;
         for (; i < self->count - 1; i++) {
             partIter->force[0] = partIter->force[0] + rate * (f32)(int)self->sway;
             partIter++;
@@ -320,15 +312,15 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
     rope->end[2] = endZ;
     rope->sway = 0;
     rope->direction = 1;
-    rope->damping = lbl_803E4E00;
+    rope->damping = 0.025f;
     rope->enabled = 1;
-    rope->step = lbl_803E4DF8;
-    if (rope->step * length > lbl_803E4E04) {
-        rope->step = *(f32*)&lbl_803E4E04 / length;
+    rope->step = 0.01f;
+    if (rope->step * length > 5.0f) {
+        rope->step = 5.0f / length;
     }
-    rope->maxSlack = lbl_803E4E08;
+    rope->maxSlack = 5000.0f;
     rope->stepPerTick = rope->step / tickScale;
-    rope->inverseTicks = lbl_803E4E0C / tickScale;
+    rope->inverseTicks = -9.81f / tickScale;
 
     nodes = rope->nodes;
     for (i = 0, node = nodes; i < count; node++, i++) {
@@ -366,11 +358,11 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
     linkCount = count - 1;
     for (; linkIndex < linkCount; linkIndex++) {
         link->restLength = rope->totalLength / linkCount;
-        link->stiffness = lbl_803E4E10;
+        link->stiffness = 10.0f;
         link->force[2] = lbl_803E4DFC;
         link->force[1] = lbl_803E4DFC;
         link->force[0] = lbl_803E4DFC;
-        link->maxLength = lbl_803E4E14 * link->restLength;
+        link->maxLength = 1000.0f * link->restLength;
         nextNode = (DFRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFRopeNode));
         DFRopeLink_AttachNodes(link, linkNode, nextNode);
         link++;
@@ -433,7 +425,7 @@ f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 start
         *x = startX;
         *y = startY;
         *z = startZ;
-    } else if (t >= lbl_803E4E18) {
+    } else if (t >= 1.0f) {
         *x = endX;
         *y = endY;
         *z = endZ;
@@ -492,7 +484,7 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
             node = (DFRopeNode*)((int)extra->rope->nodes + offset);
             phase = DFRope_projectPointOntoSegment(&x, &y, &z, node->pos[0], node->pos[1], node->pos[2], node[1].pos[0],
                                                    node[1].pos[1], node[1].pos[2]);
-            if (phase >= best && phase < lbl_803E4E18) {
+            if (phase >= best && phase < 1.0f) {
                 dx = x - localX;
                 dy = y - localY;
                 dz = z - localZ;
@@ -528,7 +520,7 @@ void dfropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj) {
     fraction = phase - (f32)idx;
     node = &extra->rope->nodes[idx];
     node->force[1] = force * fraction + node->force[1];
-    fraction = lbl_803E4E18 - fraction;
+    fraction = 1.0f - fraction;
     node = &extra->rope->nodes[idx];
     node->force[1] = force * fraction + node->force[1];
 }
@@ -757,8 +749,8 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
 
     if (((objDef->flags18 & 1) != 0) && (extra->linkedObj != NULL) && (extra->rope != NULL)) {
         originalScale = (obj)->anim.rootMotionScale;
-        (obj)->anim.rootMotionScale = lbl_803E4DF8;
-        Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, lbl_803E4E18, lbl_803E4DFC, NULL);
+        (obj)->anim.rootMotionScale = 0.01f;
+        Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, 1.0f, lbl_803E4DFC, NULL);
         (obj)->anim.rootMotionScale = originalScale;
         textureSetupFn_800799c0();
         textRenderSetupFn_800795e8();

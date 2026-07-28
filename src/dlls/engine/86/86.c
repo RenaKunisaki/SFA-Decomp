@@ -38,9 +38,6 @@ typedef struct CameraArwingWork
 } CameraArwingWork;
 
 f32 gCamArwingWork[24];
-extern f32 lbl_803E1BA0;
-extern f32 lbl_803E1BA4;
-extern f32 lbl_803E1BA8;
 extern f32 gCamArwingRotEaseScale;
 extern f32 gCamArwingRollDecay;
 void CameraModeArwing_copyToCurrent(void* p1, u32 kind)
@@ -87,8 +84,8 @@ void CameraModeArwing_update(GameObject* obj)
     if ((s8)targetObj[0xac] != 0x26)
     {
         f32 t = ((CameraArwingWork*)gCamArwingWork)->zEaseNum / ((CameraArwingWork*)gCamArwingWork)->zEaseDenom;
-        t = t - lbl_803E1BA0;
-        if (t < lbl_803E1BA4)
+        t = t - 1.0f;
+        if (t < 0.0f)
         {
             obj->anim.worldPosZ =
                 (f32) - (s32)((CameraArwingWork*)gCamArwingWork)->zScaleNear * t + obj->anim.worldPosZ;
@@ -110,9 +107,9 @@ void CameraModeArwing_update(GameObject* obj)
         f32 relX, relY, relZ, relDist;
         int step;
         CameraArwingWork* work;
-        ((CameraArwingWork*)gCamArwingWork)->rollRate = lbl_803E1BA8;
+        ((CameraArwingWork*)gCamArwingWork)->rollRate = 500.0f;
         work = (CameraArwingWork*)gCamArwingWork;
-        (*gCameraInterface)->getRelativePosition(obj, &relX, &relY, &relZ, &relDist, lbl_803E1BA4, 0);
+        (*gCameraInterface)->getRelativePosition(obj, &relX, &relY, &relZ, &relDist, 0.0f, 0);
         obj->anim.rotZ = work->rollRate * timeDelta +
             (f32)obj->anim.rotZ;
         angleDelta = 0x8000 - (u16)getAngle(relX, relZ);
@@ -204,7 +201,7 @@ void CameraModeArwing_init(GameObject* obj, int mode, int unused)
         ((CameraArwingWork*)gCamArwingWork)->basePosY = a4->anim.worldPosY;
         ((CameraArwingWork*)gCamArwingWork)->basePosZ = a4->anim.worldPosZ;
     }
-    *(p = (f32*)((base = (char*)gCamArwingWork) + 48)) = lbl_803E1BA4;
+    *(p = (f32*)((base = (char*)gCamArwingWork) + 48)) = 0.0f;
     *(f32*)(base + 52) = 20.0f;
     *(f32*)(base + 56) = -165.0f;
     PSVECAdd(&a4->anim.worldPosX, p, &obj->anim.worldPosX);
@@ -214,7 +211,7 @@ void CameraModeArwing_init(GameObject* obj, int mode, int unused)
     ((CameraArwingWork*)gCamArwingWork)->rollScale = 0.3f;
     ((CameraArwingWork*)gCamArwingWork)->xScale = 0.8f;
     ((CameraArwingWork*)gCamArwingWork)->yScale = 0.65f;
-    fc = lbl_803E1BA4;
+    fc = 0.0f;
     ((CameraArwingWork*)gCamArwingWork)->unk2C = fc;
     fc2 = 13.0f;
     ((CameraArwingWork*)gCamArwingWork)->zEaseNum = fc2;

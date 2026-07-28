@@ -105,9 +105,7 @@ u32 lbl_803DB6F8 = 0xA0A0A080;
 
 
 
-extern f32 lbl_803DEE40;
-extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48;
-extern f32 lbl_803DEF4C;
+extern f32 lbl_803DEE38;
 
 f32 lbl_8030EA10[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
@@ -119,7 +117,6 @@ f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 
 extern f32 lbl_803DEE20;
-extern f32 lbl_803DEE24;
 #include "track/intersect_internal.h"
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
@@ -230,17 +227,17 @@ void drawFn_8006f500(void)
                 tTop = lbl_803DEE38;
                 tBot = lbl_803DEE20;
                 PSMTXRotRad(rot, 0x7a,
-                            lbl_803DEE3C * (lbl_803DEE40 * (f32)(int)(0x8000 - quad->angle)) / lbl_803DEE44);
+                            2.0f * (3.142f * (f32)(int)(0x8000 - quad->angle)) / 65536.0f);
             }
             else
             {
                 tTop = lbl_803DEE20;
                 tBot = lbl_803DEE38;
-                PSMTXRotRad(rot, 0x7a, lbl_803DEE3C * (lbl_803DEE40 * (f32)(u32)quad->angle) / lbl_803DEE44);
+                PSMTXRotRad(rot, 0x7a, 2.0f * (3.142f * (f32)(u32)quad->angle) / 65536.0f);
             }
-            PSMTXTrans(trans, lbl_803DEE48, *(f32*)&lbl_803DEE48, lbl_803DEE20);
+            PSMTXTrans(trans, -0.5f, -0.5f, lbl_803DEE20);
             PSMTXConcat(rot, trans, rot);
-            PSMTXTrans(trans, lbl_803DEE24, *(f32*)&lbl_803DEE24, lbl_803DEE20);
+            PSMTXTrans(trans, 0.5f, 0.5f, lbl_803DEE20);
             PSMTXConcat(trans, rot, rot);
             GXLoadTexMtxImm(rot, GX_TEXMTX0, GX_MTX2x4);
             GXBegin(GX_QUADS, GX_VTXFMT2, 4);
@@ -337,7 +334,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
  * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
  * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
  * coord matrix that scales the source texture by 1/sx and 1/sy with a
- * sub-pixel offset baked from lbl_803DEF4C/50.
+ * sub-pixel offset baked from -320.0f/50.
  */
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 

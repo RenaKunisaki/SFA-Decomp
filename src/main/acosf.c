@@ -1,47 +1,10 @@
 #include "dolphin/types.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/k_tan.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
-extern float lbl_803E79C0;
-extern float lbl_803E79C4;
-extern float lbl_803E79C8;
-extern float lbl_803E79CC;
-extern float lbl_803E79D0;
-extern float lbl_803E79D4;
-extern float lbl_803E79D8;
-extern float lbl_803E79E8;
-extern float lbl_803E79EC;
-extern float lbl_803E79F0;
-extern float lbl_803E79F4;
-extern float lbl_803E79F8;
 extern float lbl_803E79FC;
-extern double lbl_803E79E0;
-extern double lbl_803E7A00;
-extern float lbl_803E7A08;
-extern float lbl_803E7A0C;
-extern float lbl_803E7A10;
-extern float lbl_803E7A14;
 extern float lbl_803E7A18;
-extern float lbl_803E7A1C;
-extern float lbl_803E7A20;
-extern float lbl_803E7A24;
 extern float lbl_803E7A28;
-extern double lbl_803E7A30;
-extern double lbl_803E7A38;
-extern double lbl_803E7A40;
-extern double lbl_803E7A48;
-extern double lbl_803E7A50;
-extern double lbl_803E7A58;
-extern double lbl_803E7A60;
-extern double lbl_803E7A68;
-extern double lbl_803E7A70;
-extern double lbl_803E7A78;
-extern double lbl_803E7A80;
-extern double lbl_803E7A88;
-extern double lbl_803E7A90;
-extern double lbl_803E7A98;
-extern double lbl_803E7AA0;
 extern double lbl_803E7AA8;
-extern double lbl_803E7AB0;
 
 
 float asinf(float value) {
@@ -50,18 +13,18 @@ float asinf(float value) {
     float polynomial;
     float root;
 
-    if (absoluteValue <= lbl_803E79C0) {
+    if (absoluteValue <= 0.5f) {
         reduced = value * value;
-        return value * (lbl_803E79D4 * reduced + lbl_803E79D0);
+        return value * (0.19452852f * reduced + 0.9981575f);
     }
 
-    reduced = lbl_803E79C0 - lbl_803E79C0 * absoluteValue;
+    reduced = 0.5f - 0.5f * absoluteValue;
     root = sqrtf_8029312c(reduced);
-    polynomial = root * (lbl_803E79D4 * reduced + lbl_803E79D0);
-    if (value >= lbl_803E79C4) {
-        return lbl_803E79C8 - lbl_803E79CC * polynomial;
+    polynomial = root * (0.19452852f * reduced + 0.9981575f);
+    if (value >= 0.0f) {
+        return 1.5707964f - 2.0f * polynomial;
     }
-    return lbl_803E79CC * polynomial - lbl_803E79C8;
+    return 2.0f * polynomial - 1.5707964f;
 }
 
 float acosf_fast(float value) {
@@ -70,18 +33,18 @@ float acosf_fast(float value) {
     float polynomial;
     float root;
 
-    if (absoluteValue <= lbl_803E79C0) {
+    if (absoluteValue <= 0.5f) {
         reduced = value * value;
-        return lbl_803E79C8 - value * (lbl_803E79D4 * reduced + lbl_803E79D0);
+        return 1.5707964f - value * (0.19452852f * reduced + 0.9981575f);
     }
 
-    reduced = lbl_803E79C0 - lbl_803E79C0 * absoluteValue;
+    reduced = 0.5f - 0.5f * absoluteValue;
     root = sqrtf_8029312c(reduced);
-    polynomial = root * (lbl_803E79D4 * reduced + lbl_803E79D0);
-    if (value >= lbl_803E79C4) {
-        return lbl_803E79CC * polynomial;
+    polynomial = root * (0.19452852f * reduced + 0.9981575f);
+    if (value >= 0.0f) {
+        return 2.0f * polynomial;
     }
-    return lbl_803E79E8 - lbl_803E79CC * polynomial;
+    return 3.1415927f - 2.0f * polynomial;
 }
 
 float acosf(float value) {
@@ -90,21 +53,21 @@ float acosf(float value) {
     float polynomial;
     float root;
 
-    if (absoluteValue <= lbl_803E79C0) {
+    if (absoluteValue <= 0.5f) {
         reduced = value * value;
-        return lbl_803E79C8 - value * (((((lbl_803E79FC * reduced + lbl_803E79F8) * reduced + lbl_803E79F4) * reduced
-                                      + lbl_803E79F0) * reduced + lbl_803E79EC) * reduced + lbl_803E79D8);
+        return 1.5707964f - value * (((((lbl_803E79FC * reduced + 0.022284873f) * reduced + 0.045945134f) * reduced
+                                      + 0.074900925f) * reduced + 0.16666986f) * reduced + 1.0f);
     }
 
-    reduced = lbl_803E79C0 - lbl_803E79C0 * absoluteValue;
+    reduced = 0.5f - 0.5f * absoluteValue;
     root = sqrtf_8029312c(reduced);
     polynomial = root
-        * (((((lbl_803E79FC * reduced + lbl_803E79F8) * reduced + lbl_803E79F4) * reduced + lbl_803E79F0) * reduced
-            + lbl_803E79EC) * reduced + lbl_803E79D8);
-    if (value >= lbl_803E79C4) {
-        return lbl_803E79CC * polynomial;
+        * (((((lbl_803E79FC * reduced + 0.022284873f) * reduced + 0.045945134f) * reduced + 0.074900925f) * reduced
+            + 0.16666986f) * reduced + 1.0f);
+    if (value >= 0.0f) {
+        return 2.0f * polynomial;
     }
-    return lbl_803E79E8 - lbl_803E79CC * polynomial;
+    return 3.1415927f - 2.0f * polynomial;
 }
 
 float atanf_fast(float value) {
@@ -115,17 +78,17 @@ float atanf_fast(float value) {
     float positiveResult;
     float negativeResult;
 
-    if (absoluteValue <= lbl_803E79D8) {
+    if (absoluteValue <= 1.0f) {
         squared = value * value;
-        return value * ((lbl_803E7A18 * squared + lbl_803E7A14) * squared + lbl_803E7A10);
+        return value * ((lbl_803E7A18 * squared + -0.28706065f) * squared + 0.99494934f);
     }
 
     reciprocal = fastReciprocal(absoluteValue);
     squared = reciprocal * reciprocal;
-    polynomial = (lbl_803E7A18 * squared + lbl_803E7A14) * squared + lbl_803E7A10;
-    positiveResult = lbl_803E79C8 - reciprocal * polynomial;
-    negativeResult = reciprocal * polynomial - lbl_803E79C8;
-    if (value >= lbl_803E79C4) {
+    polynomial = (lbl_803E7A18 * squared + -0.28706065f) * squared + 0.99494934f;
+    positiveResult = 1.5707964f - reciprocal * polynomial;
+    negativeResult = reciprocal * polynomial - 1.5707964f;
+    if (value >= 0.0f) {
         return positiveResult;
     }
     return negativeResult;
@@ -137,25 +100,25 @@ float atanf(float value) {
     double squared;
     float result;
 
-    if (absoluteValue <= lbl_803E79D8) {
+    if (absoluteValue <= 1.0f) {
         squared = value * value;
-        return (float)(value * (((((((((((((((lbl_803E7AA8 * squared + lbl_803E7AA0) * squared + lbl_803E7A98) * squared
-                                       + lbl_803E7A90) * squared + lbl_803E7A88) * squared + lbl_803E7A80) * squared
-                                    + lbl_803E7A78) * squared + lbl_803E7A70) * squared + lbl_803E7A68) * squared
-                                 + lbl_803E7A60) * squared + lbl_803E7A58) * squared + lbl_803E7A50) * squared
-                              + lbl_803E7A48) * squared + lbl_803E7A40) * squared + lbl_803E7A38) * squared
-                           + lbl_803E7A30));
+        return (float)(value * (((((((((((((((lbl_803E7AA8 * squared + 0.0008865618705749518) * squared + -0.0038832764327526095) * squared
+                                       + 0.010781633704900742) * squared + -0.021653463803231715) * squared + 0.034329998614266506) * squared
+                                    + -0.04621516760962549) * squared + 0.05642012785770931) * squared + -0.06598304215265671) * squared
+                                 + 0.0767790623192377) * squared + -0.09088734552851294) * squared + 0.11110886338281603) * squared
+                              + -0.14285699432451082) * squared + 0.19999999438016125) * squared + -0.3333333332339238) * squared
+                           + 0.9999999999994954));
     }
 
-    squared = (reduced = lbl_803E7AB0 / absoluteValue) * reduced;
-    result = (float)(lbl_803E79E0
-                     - reduced * (((((((((((((((lbl_803E7AA8 * squared + lbl_803E7AA0) * squared + lbl_803E7A98) * squared
-                                        + lbl_803E7A90) * squared + lbl_803E7A88) * squared + lbl_803E7A80) * squared
-                                     + lbl_803E7A78) * squared + lbl_803E7A70) * squared + lbl_803E7A68) * squared
-                                  + lbl_803E7A60) * squared + lbl_803E7A58) * squared + lbl_803E7A50) * squared
-                               + lbl_803E7A48) * squared + lbl_803E7A40) * squared + lbl_803E7A38) * squared
-                            + lbl_803E7A30));
-    if (value >= lbl_803E79C4) {
+    squared = (reduced = 1.0 / absoluteValue) * reduced;
+    result = (float)(1.5707963267948966
+                     - reduced * (((((((((((((((lbl_803E7AA8 * squared + 0.0008865618705749518) * squared + -0.0038832764327526095) * squared
+                                        + 0.010781633704900742) * squared + -0.021653463803231715) * squared + 0.034329998614266506) * squared
+                                     + -0.04621516760962549) * squared + 0.05642012785770931) * squared + -0.06598304215265671) * squared
+                                  + 0.0767790623192377) * squared + -0.09088734552851294) * squared + 0.11110886338281603) * squared
+                               + -0.14285699432451082) * squared + 0.19999999438016125) * squared + -0.3333333332339238) * squared
+                            + 0.9999999999994954));
+    if (value >= 0.0f) {
         return result;
     }
     return -result;
@@ -185,11 +148,11 @@ float __kernel_cos(float y, float x) {
     if (absoluteX > absoluteY) {
         axisRatio = absoluteY / absoluteX;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = axisRatio * (lbl_803E7A0C * ratioSquared + lbl_803E7A08);
+        firstQuadrantAngle = axisRatio * (-0.18951416f * ratioSquared + 0.97056276f);
     } else {
         axisRatio = absoluteX / absoluteY;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = lbl_803E79C8 - axisRatio * (lbl_803E7A0C * ratioSquared + lbl_803E7A08);
+        firstQuadrantAngle = 1.5707964f - axisRatio * (-0.18951416f * ratioSquared + 0.97056276f);
     }
 
     quadrantSigns = (float_bits(&y) & 0x80000000) | ((float_bits(&x) & 0x80000000) >> 1);
@@ -199,9 +162,9 @@ float __kernel_cos(float y, float x) {
         case ATAN_SIGNS_POS_X_NEG_Y:
             return -firstQuadrantAngle;
         case ATAN_SIGNS_NEG_X_POS_Y:
-            return lbl_803E79E8 - firstQuadrantAngle;
+            return 3.1415927f - firstQuadrantAngle;
         default:
-            return firstQuadrantAngle - lbl_803E79E8;
+            return firstQuadrantAngle - 3.1415927f;
     }
 }
 
@@ -216,11 +179,11 @@ float atan2f(float y, float x) {
     if (absoluteX > absoluteY) {
         axisRatio = absoluteY / absoluteX;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = axisRatio * (((lbl_803E7A28 * ratioSquared + lbl_803E7A24) * ratioSquared + lbl_803E7A20) * ratioSquared + lbl_803E7A1C);
+        firstQuadrantAngle = axisRatio * (((lbl_803E7A28 * ratioSquared + 0.14498249f) * ratioSquared + -0.3205333f) * ratioSquared + 0.99913347f);
     } else {
         axisRatio = absoluteX / absoluteY;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = lbl_803E79C8 - axisRatio * (((lbl_803E7A28 * ratioSquared + lbl_803E7A24) * ratioSquared + lbl_803E7A20) * ratioSquared + lbl_803E7A1C);
+        firstQuadrantAngle = 1.5707964f - axisRatio * (((lbl_803E7A28 * ratioSquared + 0.14498249f) * ratioSquared + -0.3205333f) * ratioSquared + 0.99913347f);
     }
 
     quadrantSigns = (float_bits(&y) & 0x80000000) | ((float_bits(&x) & 0x80000000) >> 1);
@@ -230,9 +193,9 @@ float atan2f(float y, float x) {
         case ATAN_SIGNS_POS_X_NEG_Y:
             return -firstQuadrantAngle;
         case ATAN_SIGNS_NEG_X_POS_Y:
-            return lbl_803E79E8 - firstQuadrantAngle;
+            return 3.1415927f - firstQuadrantAngle;
         default:
-            return firstQuadrantAngle - lbl_803E79E8;
+            return firstQuadrantAngle - 3.1415927f;
     }
 }
 
@@ -247,17 +210,17 @@ float atan2fHighPrecision(float y, float x) {
     if (absoluteX >= absoluteY) {
         axisRatio = absoluteY / absoluteX;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = axisRatio * (((((((((((((((lbl_803E7AA8 * ratioSquared + lbl_803E7AA0) * ratioSquared + lbl_803E7A98) * ratioSquared + lbl_803E7A90) * ratioSquared
-                       + lbl_803E7A88) * ratioSquared + lbl_803E7A80) * ratioSquared + lbl_803E7A78) * ratioSquared + lbl_803E7A70) * ratioSquared
-                    + lbl_803E7A68) * ratioSquared + lbl_803E7A60) * ratioSquared + lbl_803E7A58) * ratioSquared + lbl_803E7A50) * ratioSquared
-                 + lbl_803E7A48) * ratioSquared + lbl_803E7A40) * ratioSquared + lbl_803E7A38) * ratioSquared + lbl_803E7A30);
+        firstQuadrantAngle = axisRatio * (((((((((((((((lbl_803E7AA8 * ratioSquared + 0.0008865618705749518) * ratioSquared + -0.0038832764327526095) * ratioSquared + 0.010781633704900742) * ratioSquared
+                       + -0.021653463803231715) * ratioSquared + 0.034329998614266506) * ratioSquared + -0.04621516760962549) * ratioSquared + 0.05642012785770931) * ratioSquared
+                    + -0.06598304215265671) * ratioSquared + 0.0767790623192377) * ratioSquared + -0.09088734552851294) * ratioSquared + 0.11110886338281603) * ratioSquared
+                 + -0.14285699432451082) * ratioSquared + 0.19999999438016125) * ratioSquared + -0.3333333332339238) * ratioSquared + 0.9999999999994954);
     } else {
         axisRatio = absoluteX / absoluteY;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = lbl_803E79E0 - axisRatio * (((((((((((((((lbl_803E7AA8 * ratioSquared + lbl_803E7AA0) * ratioSquared + lbl_803E7A98) * ratioSquared + lbl_803E7A90) * ratioSquared
-                       + lbl_803E7A88) * ratioSquared + lbl_803E7A80) * ratioSquared + lbl_803E7A78) * ratioSquared + lbl_803E7A70) * ratioSquared
-                    + lbl_803E7A68) * ratioSquared + lbl_803E7A60) * ratioSquared + lbl_803E7A58) * ratioSquared + lbl_803E7A50) * ratioSquared
-                 + lbl_803E7A48) * ratioSquared + lbl_803E7A40) * ratioSquared + lbl_803E7A38) * ratioSquared + lbl_803E7A30);
+        firstQuadrantAngle = 1.5707963267948966 - axisRatio * (((((((((((((((lbl_803E7AA8 * ratioSquared + 0.0008865618705749518) * ratioSquared + -0.0038832764327526095) * ratioSquared + 0.010781633704900742) * ratioSquared
+                       + -0.021653463803231715) * ratioSquared + 0.034329998614266506) * ratioSquared + -0.04621516760962549) * ratioSquared + 0.05642012785770931) * ratioSquared
+                    + -0.06598304215265671) * ratioSquared + 0.0767790623192377) * ratioSquared + -0.09088734552851294) * ratioSquared + 0.11110886338281603) * ratioSquared
+                 + -0.14285699432451082) * ratioSquared + 0.19999999438016125) * ratioSquared + -0.3333333332339238) * ratioSquared + 0.9999999999994954);
     }
 
     quadrantSigns = (float_bits(&y) & 0x80000000) | ((float_bits(&x) & 0x80000000) >> 1);
@@ -267,8 +230,8 @@ float atan2fHighPrecision(float y, float x) {
         case ATAN_SIGNS_POS_X_NEG_Y:
             return (float)-firstQuadrantAngle;
         case ATAN_SIGNS_NEG_X_POS_Y:
-            return (float)(lbl_803E7A00 - firstQuadrantAngle);
+            return (float)(3.141592653589793 - firstQuadrantAngle);
         default:
-            return (float)(firstQuadrantAngle - lbl_803E7A00);
+            return (float)(firstQuadrantAngle - 3.141592653589793);
     }
 }

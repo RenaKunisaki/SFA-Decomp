@@ -37,7 +37,6 @@ extern u32 lbl_803DCFF4;
 extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE58;
 extern f32 lbl_803DEE5C, lbl_803DEE64;
 extern f32 lbl_803DEE60;
-extern f32 lbl_803DEF4C;
 
 
 int cardDeleteFn_8007d99c(void);
@@ -290,7 +289,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
  * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
  * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
  * coord matrix that scales the source texture by 1/sx and 1/sy with a
- * sub-pixel offset baked from lbl_803DEF4C/50.
+ * sub-pixel offset baked from -320.0f/50.
  */
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 

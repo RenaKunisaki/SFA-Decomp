@@ -104,18 +104,9 @@ extern f32 gSkyOverrideLightIntensity;
 extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 lbl_803DF058;
-extern const f32 lbl_803DF060;
 extern const f32 gSkyDayStartTime;
-extern const f32 lbl_803DF064;
-extern const f32 lbl_803DF068;
 extern const f32 gSkySecondsPerDay;
-extern const f32 lbl_803DF0F0;
 extern const f32 gSkyInitialTimeOfDay;
-extern const f32 lbl_803DF0F8;
-extern const f32 lbl_803DF0FC;
-extern const f32 lbl_803DF100;
-extern const f32 lbl_803DF104;
-extern const f32 lbl_803DF088;
 extern u16 gSkySunAlpha;
 extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
@@ -126,13 +117,10 @@ extern const f32 gSkySunArcDuration;
 extern const f32 gSkySunFadeInThreshold;
 extern const f32 gSkyAlphaFadeScale;
 extern const f32 gSkySunFadeOutThreshold;
-extern const f32 lbl_803DF0AC;
 extern const f32 gSkySunRiseDuration;
 extern const f32 lbl_803DF0B4;
-extern const f32 lbl_803DF0B8;
 extern const f32 gSkySunMoonScale;
 extern const f32 lbl_803DF0C0;
-extern const f32 lbl_803DF0C4;
 extern u8 colorScale;
 extern u8 gSkySunPositionPrev;
 extern f32 gSkySunDirection[];
@@ -494,7 +482,7 @@ void skySetLightIndex(int mode, f32 brightness)
         unset = lbl_803DF058;
         if (brightness != unset)
         {
-            ((SkyState*)gSkyState)->lightBlendRate = 1.0f / (lbl_803DF060 * brightness);
+            ((SkyState*)gSkyState)->lightBlendRate = 1.0f / (60.0f * brightness);
             ((SkyState*)gSkyState)->lightBlendFactor = unset;
         }
         else
@@ -718,7 +706,7 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
                         if (*p == found)
                         {
                             if (-((ModelLightStruct*)cur)->selectionScore <
-                                lbl_803DF064 * -((ModelLightStruct*)found)->selectionScore)
+                                1.0013f * -((ModelLightStruct*)found)->selectionScore)
                             {
                                 cur = found;
                             }
@@ -744,9 +732,9 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
             else
             {
                 cur = NULL;
-                dir[0] = lbl_803DF068;
+                dir[0] = 0.5f;
                 dir[1] = (-1.0f);
-                dir[2] = lbl_803DF068;
+                dir[2] = 0.5f;
                 PSVECNormalize(dir, dir);
                 *x = dir[0];
                 *y = dir[1];
@@ -1281,7 +1269,7 @@ void skyFn_8008a04c(void)
                 gSkyCurrentTextureColor.b = blue;
             }
             time2 = ((SkyState*)gSkyState)->timeOfDay;
-            if (time2 >= dayStart && time2 <= lbl_803DF088)
+            if (time2 >= dayStart && time2 <= 75600.0f)
             {
                 skySetLightSlot(i, vec[0], vec[1], vec[2], red, green, blue, ambientIntensity, lightIntensity,
                             blendAlpha);
@@ -1331,7 +1319,7 @@ void skyFn_8008a500(void)
         gSkyMoonDirection[1] = gSkyMoonDirection[1] / len;
         gSkyMoonDirection[2] = gSkyMoonDirection[2] / len;
         time = ((SkyState*)gSkyState)->timeOfDay;
-        if (time >= gSkyDayStartTime && time <= lbl_803DF088)
+        if (time >= gSkyDayStartTime && time <= 75600.0f)
         {
             if (gSkyOverrideLightDirectionEnabled != 0)
             {
@@ -1445,7 +1433,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
                 gSkySunAlpha = 0xff;
             }
         }
-        sunT *= lbl_803DF0AC;
+        sunT *= 32676.0f;
         riseT = (sky->timeOfDay - gSkyDayStartTime) / gSkySunRiseDuration;
         if (riseT < lbl_803DF058)
         {
@@ -1456,9 +1444,9 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             riseT = 1.0f - (riseT - 1.0f);
         }
         scale = -(lbl_803DF0B4 * riseT - 1.0f);
-        vec[0] = lbl_803DF0B8 * sunDir.x;
-        vec[1] = lbl_803DF0B8 * sunDir.y;
-        vec[2] = lbl_803DF0B8 * sunDir.z;
+        vec[0] = 2.0f * sunDir.x;
+        vec[1] = 2.0f * sunDir.y;
+        vec[2] = 2.0f * sunDir.z;
         yaw = sky->sunYaw;
         q1.rx = sunT;
         vecRotateZXY(&q1.rx, vec);
@@ -1479,9 +1467,9 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         ((GameObject*)gSkySunObject)->anim.rotZ = 0;
         gSkySunObject->anim.renderAlpha = *(s16*)&gSkySunAlpha;
         time2 = ((SkyState*)gSkyState)->timeOfDay;
-        if (time2 >= lbl_803DF088)
+        if (time2 >= 75600.0f)
         {
-            moonT = time2 - lbl_803DF088;
+            moonT = time2 - 75600.0f;
         }
         else
         {
@@ -1526,8 +1514,8 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
                 gSkyMoonAlpha = 0xff;
             }
         }
-        moonTC *= lbl_803DF0AC;
-        riseT = moonT / lbl_803DF0C4;
+        moonTC *= 32676.0f;
+        riseT = moonT / 14400.0f;
         if (riseT < lbl_803DF058)
         {
             riseT = lbl_803DF058;
@@ -1537,9 +1525,9 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             riseT = 1.0f - (riseT - 1.0f);
         }
         scale = -(lbl_803DF0B4 * riseT - 1.0f);
-        vec[0] = lbl_803DF0B8 * moonDir.x;
-        vec[1] = lbl_803DF0B8 * moonDir.y;
-        vec[2] = lbl_803DF0B8 * moonDir.z;
+        vec[0] = 2.0f * moonDir.x;
+        vec[1] = 2.0f * moonDir.y;
+        vec[2] = 2.0f * moonDir.z;
         q2.rx = moonTC;
         vecRotateZXY(&q2.rx, vec);
         q2.w = 1.0f;
@@ -1817,7 +1805,7 @@ int getSunPos(f32* outTime)
     }
 
     time = ((SkyState*)gSkyState)->timeOfDay;
-    if (time >= lbl_803DF088 || time < gSkyDayStartTime)
+    if (time >= 75600.0f || time < gSkyDayStartTime)
     {
         if (outTime != NULL)
         {
@@ -1835,7 +1823,7 @@ int getSunPos(f32* outTime)
 
     if (outTime != NULL)
     {
-        *outTime = lbl_803DF088 - time;
+        *outTime = 75600.0f - time;
     }
     return 0;
 }
@@ -1960,7 +1948,7 @@ void skyUpdateTimeOfDay(void)
                 val = *(f32*)(gSkyState + (idx = i + 0xb8));
                 *(f32*)(gSkyState + idx) =
                     (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
-                *(f32*)(gSkyState + (idx = i + 0xbc)) -= lbl_803DF0F0 * timeDelta;
+                *(f32*)(gSkyState + (idx = i + 0xbc)) -= 0.008333334f * timeDelta;
                 val = *(f32*)(gSkyState + idx);
                 *(f32*)(gSkyState + idx) =
                     (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
@@ -2075,8 +2063,8 @@ void skyResetState(void)
     ((SkyState*)gSkyState)->unk253 = 0;
     ((SkyState*)gSkyState)->timeOfDay = gSkyInitialTimeOfDay;
     ((SkyState*)gSkyState)->clockTime = 0xb4;
-    ((SkyState*)gSkyState)->sunYaw = lbl_803DF0F8;
-    ((SkyState*)gSkyState)->timeOfDayRate = (f32)((SkyState*)gSkyState)->clockTime / lbl_803DF060;
+    ((SkyState*)gSkyState)->sunYaw = 10000.0f;
+    ((SkyState*)gSkyState)->timeOfDayRate = (f32)((SkyState*)gSkyState)->clockTime / 60.0f;
     ((SkyState*)gSkyState)->skyTextureIds[0] = 0xc38;
     ((SkyState*)gSkyState)->skyTextureIds[1] = 0xc38;
     ((SkyState*)gSkyState)->skyTextureIds[2] = 0xc38;
@@ -2099,13 +2087,13 @@ void skyResetState(void)
         jofs = 0;
         for (j = 0; j < 3; j++)
         {
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x20) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x24) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x28) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x2c) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x30) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x34) = lbl_803DF0FC;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x38) = lbl_803DF0FC;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x20) = 255.0f;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x24) = 255.0f;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x28) = 255.0f;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x2c) = 255.0f;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x30) = 255.0f;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x34) = 255.0f;
+            *(f32*)(iofs + (int)gSkyState + jofs + 0x38) = 255.0f;
             jofs += 0x1c;
         }
         gSkyState[iofs + 0x74] = 0xff;
@@ -2127,9 +2115,9 @@ void skyResetState(void)
         *(f32*)(gSkyState + iofs + 0xa0) = (-1.0f);
         *(f32*)(gSkyState + iofs + 0xa4) = lbl_803DF058;
         ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->active = 0;
-        *(f32*)(gSkyState + iofs + 0xa8) = lbl_803DF100;
+        *(f32*)(gSkyState + iofs + 0xa8) = 0.2f;
         *(f32*)(gSkyState + iofs + 0xac) = 1.0f;
-        *(f32*)(gSkyState + iofs + 0xb0) = lbl_803DF100;
+        *(f32*)(gSkyState + iofs + 0xb0) = 0.2f;
         gSkyState[iofs + 0x7c] = 0xff;
         gSkyState[iofs + 0x7d] = 0xff;
         gSkyState[iofs + 0x7e] = 0xff;
@@ -2215,7 +2203,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
                 if (((Sky2Config*)cfg)->fadeDurationA != 0)
                 {
                     *(f32*)(gSkyState + iofs + 0xb4) =
-                        1.0f / (lbl_803DF104 * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
+                        1.0f / (10.0f * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
                 }
                 else
                 {
@@ -2282,7 +2270,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
                 if (((Sky2Config*)cfg)->fadeDurationA != 0)
                 {
                     ((SkyState*)gSkyState)->fadeRate =
-                        1.0f / (lbl_803DF104 * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
+                        1.0f / (10.0f * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
                 }
                 else
                 {

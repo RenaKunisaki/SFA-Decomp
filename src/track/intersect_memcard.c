@@ -34,7 +34,6 @@ typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, i
 
 
 
-extern f32 lbl_803DEF4C;
 
 
 char sMemoryCardFileNameString[20] = "Star Fox Adventures";
@@ -121,7 +120,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
  * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
  * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
  * coord matrix that scales the source texture by 1/sx and 1/sy with a
- * sub-pixel offset baked from lbl_803DEF4C/50.
+ * sub-pixel offset baked from -320.0f/50.
  */
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 
