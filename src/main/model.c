@@ -1652,14 +1652,21 @@ extern f32 lbl_803DE868;
 extern f32 lbl_803DE86C;
 extern f32 lbl_803DE870;
 
+typedef struct ModelBlendChannelFlags {
+    int values[3];
+} ModelBlendChannelFlags;
+
+const ModelBlendChannelFlags sModelBlendChannelActiveInit = {{0, 0, 0}};
+const ModelBlendChannelFlags sModelBlendChannelFadeInit = {{0, 0, 0}};
+
 void ObjModel_ApplyBlendChannels(ObjModel* model)
 {
     ModelFileHeader* hdr;
     ObjModelBlendChannel* ch;
     int i;
     s16 defFrame;
-    int chanActive[3] = {0, 0, 0};
-    int chanFade[3] = {0, 0, 0};
+    ModelBlendChannelFlags chanActive = sModelBlendChannelActiveInit;
+    ModelBlendChannelFlags chanFade = sModelBlendChannelFadeInit;
     u8* targetA;
     u8* targetB;
     u8* srcVtx;
@@ -1681,46 +1688,46 @@ void ObjModel_ApplyBlendChannels(ObjModel* model)
             ch->flags0E |= BLENDCHAN_FLAG_FADING;
         }
         fadeBits = ch->flags0E & 0xc;
-        chanFade[i] = fadeBits;
+        chanFade.values[i] = fadeBits;
         if (ch->morphTargetA != -1 || ch->morphTargetB != -1 || fadeBits != 0)
         {
-            chanActive[i] = 1;
+            chanActive.values[i] = 1;
         }
-        if (chanFade[i] & 4)
+        if (chanFade.values[i] & 4)
         {
             ch->flags0E &= ~BLENDCHAN_FLAG_FADING;
             ch->flags0E |= BLENDCHAN_FLAG_FADED;
         }
-        else if (chanFade[i] & 8)
+        else if (chanFade.values[i] & 8)
         {
             ch->flags0E &= ~BLENDCHAN_FLAG_FADED;
         }
     }
-    if (chanActive[0] == 0 && chanActive[1] == 0 && chanActive[2] == 0)
+    if (chanActive.values[0] == 0 && chanActive.values[1] == 0 && chanActive.values[2] == 0)
     {
         return;
     }
-    if (chanActive[1])
+    if (chanActive.values[1])
     {
-        chanActive[0] = 0;
+        chanActive.values[0] = 0;
     }
-    if (chanFade[2])
+    if (chanFade.values[2])
     {
-        chanFade[0] = 1;
-        chanFade[1] = 1;
+        chanFade.values[0] = 1;
+        chanFade.values[1] = 1;
     }
-    if ((chanActive[0] && chanFade[0]) || (chanActive[1] && chanFade[1]))
+    if ((chanActive.values[0] && chanFade.values[0]) || (chanActive.values[1] && chanFade.values[1]))
     {
-        if (chanActive[2])
+        if (chanActive.values[2])
         {
-            chanFade[2] = 1;
+            chanFade.values[2] = 1;
         }
     }
     for (i = 0; i < 3; i++)
     {
-        if (chanActive[i] && hdr->vertexAnimEntries)
+        if (chanActive.values[i] && hdr->vertexAnimEntries)
         {
-            chanFade[i] = 1;
+            chanFade.values[i] = 1;
         }
         ch = &model->blendChannels[i];
         if (ch->flags0E & BLENDCHAN_FLAG_RESET_WEIGHT)
@@ -1728,7 +1735,7 @@ void ObjModel_ApplyBlendChannels(ObjModel* model)
             ch->flags0E &= ~BLENDCHAN_FLAG_RESET_WEIGHT;
             ch->weight = lbl_803DE828;
         }
-        if (chanActive[i] && chanFade[i])
+        if (chanActive.values[i] && chanFade.values[i])
         {
             f32 weight;
             f32 tw;
@@ -1752,7 +1759,7 @@ void ObjModel_ApplyBlendChannels(ObjModel* model)
             }
             if (i == 2)
             {
-                if (chanActive[0] == 0 && chanActive[1] == 0)
+                if (chanActive.values[0] == 0 && chanActive.values[1] == 0)
                 {
                     srcVtx = hdr->vertices;
                 }

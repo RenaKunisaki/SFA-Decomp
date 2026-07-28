@@ -491,11 +491,11 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1BD | SC_paypoint (+SPWell) | COMPLETE | dlls/objects/445/445.c | = (canonical) | Exact complete 11-function multi-object TU with its terminal descriptor, allocation-backed three-byte state, active-EN-retail-backed fixed 0x24-byte placements, canonical numeric-slot header, and exact 72-byte data image; the generated source path remains unchanged |
 | 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | COMPLETE | dlls/objects/446/446.c | = (canonical) | Exact complete 11-function multi-object TU with its terminal 12-slot descriptor, allocation-backed zero-byte debris and 0x14-byte projectile states, active-EN-retail-backed fixed 0x24-byte projectile placement, canonical numeric-slot header, and exact 140-byte data image; the generated source path remains unchanged |
 | 0x1BF | DIMLavaBall | COMPLETE | dlls/objects/447_DIMLavaBall/DIMLavaBall.c | = (canonical) | Exact complete 11-function TU with its terminal 12-slot descriptor, allocation-backed 0x1C-byte state, active-EN-retail-backed fixed 0x28-byte placement, canonical unit header, and exact 80-byte data image; the generated source path remains unchanged |
-| 0x1C0 | DIMLogFire (+DIMLogFireR) | COMPLETE | dlls/objects/448_DIMLogFire/DIMLogFire.c | = (canonical) | — |
-| 0x1C1 | DIMSnowBall | COMPLETE | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | = (canonical) | — |
-| 0x1C2 | DIMSnowBall | COMPLETE | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | = (canonical) | — |
-| 0x1C3 | DIMGate (+DIM2BossDoo) | COMPLETE | dlls/objects/451_DIMGate/DIMGate.c | = (canonical) | — |
-| 0x1C4 | DIMIceWall | COMPLETE | dlls/objects/452_DIMIceWall/DIMIceWall.c | = (canonical) | — |
+| 0x1C0 | DIMLogFire (+DIMLogFireR) | COMPLETE | dlls/objects/448_DIMLogFire/DIMLogFire.c | = (canonical) | Exact complete eight-function TU with its terminal descriptor, allocation-backed 0x24-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, and exact 96-byte data image; the generated source path remains unchanged |
+| 0x1C1 | DIMSnowBall | COMPLETE | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed 0x10-byte state, allocation-backed fixed 0x24-byte placement shared with slot 450, canonical unit header, complete 2,994-entry spline coordinate table, and exact 6,070-byte data image; the generated source path remains unchanged |
+| 0x1C2 | DIMSnowBall | COMPLETE | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | = (canonical) | Exact complete nine-function spawner TU with its terminal descriptor, allocation-backed 0x04-byte state, active-EN-retail-backed fixed 0x20-byte placement, canonical unit header, canonical slot-449 child setup and sequence ID, and exact 80-byte data image; the generated source path remains unchanged |
+| 0x1C3 | DIMGate (+DIM2BossDoo) | COMPLETE | dlls/objects/451_DIMGate/DIMGate.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor, allocation-backed one-byte state, active-EN-retail-backed fixed 0x24-byte DIMGate placement, canonical unit header, and exact 60-byte data image; the generated source path remains unchanged |
+| 0x1C4 | DIMIceWall | COMPLETE | dlls/objects/452_DIMIceWall/DIMIceWall.c | = (canonical) | Exact complete four-function TU with its terminal descriptor, allocation-backed two-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, and exact 80-byte data image; the generated source path remains unchanged |
 | 0x1C5 | DIMBarrier (+DIM2CannonT) | COMPLETE | dlls/objects/453_DIMBarrier/DIMBarrier.c | = (canonical) | — |
 | 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | dlls/objects/454_DIMCannon/DIMCannon.c | = (canonical) | — |
 | 0x1C7 | DIMLavaSmas | COMPLETE | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | = (canonical) | — |
@@ -971,16 +971,17 @@ name was a deliberate choice by a previous carve:
 
 The number embedded in the filename does not match the
 gResourceDescriptors index of any dll the unit hosts (drift-era or
-mislabeled files — the rename campaign must renumber these):
+mislabeled contents that require a DOL-backed slot re-audit; the generated
+source path itself must not be renamed):
 
 (none)
 
-## Appendix: same-stem headers that must move with a rename
+## Appendix: canonical unit-owned headers
 
-`include/` headers named after a unit's current stem; a rename of the
-.c must move/rename the header (and every `#include` of it) in the
-same commit. Counted for rename-ready/canonical-variant dlls only —
-blocked units will surface more when carved.
+Canonical unit-owned headers are listed here for each cleaned TU. This inventory
+does not authorize source-path changes: generated DLL folders and `.c` filenames
+remain immutable. Counted for canonicalized DLLs only; blocked units will surface
+more as they are recovered.
 
 | dll | current unit | header |
 |---|---|---|
@@ -1017,6 +1018,12 @@ blocked units will surface more when carved.
 | 0x1BC | dlls/objects/444_SC_totemstr/SC_totemstr.c | include/dlls/objects/444_SC_totemstr.h |
 | 0x1BD | dlls/objects/445/445.c | include/dlls/objects/445.h |
 | 0x1BE | dlls/objects/446/446.c | include/dlls/objects/446.h |
+| 0x1BF | dlls/objects/447_DIMLavaBall/DIMLavaBall.c | include/dlls/objects/447_DIMLavaBall.h |
+| 0x1C0 | dlls/objects/448_DIMLogFire/DIMLogFire.c | include/dlls/objects/448_DIMLogFire.h |
+| 0x1C1 | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | include/dlls/objects/449_DIMSnowBall.h |
+| 0x1C2 | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | include/dlls/objects/450_DIMSnowBall.h |
+| 0x1C3 | dlls/objects/451_DIMGate/DIMGate.c | include/dlls/objects/451_DIMGate.h |
+| 0x1C4 | dlls/objects/452_DIMIceWall/DIMIceWall.c | include/dlls/objects/452_DIMIceWall.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

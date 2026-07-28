@@ -7,9 +7,6 @@
 #include "main/vecmath.h"
 
 extern f32 gWorldAsteroidsRenderScale;
-extern f32 gWorldAsteroidsZero;
-extern f32 lbl_803E65E4;
-extern f32 lbl_803E65E8;
 extern f32 gWorldAsteroidsOrbitRadiusVariation;
 extern f32 gWorldAsteroidsOrbitRadiusBase;
 
@@ -93,7 +90,7 @@ void worldasteroids_init(GameObject* obj)
     state = (WorldAsteroidsState*)obj->extra;
     baseAngle = randomGetRange(-0x7fff, 0x7fff);
     orbitShape = ((WorldAsteroidsTrigFn)fsin16Approx)(baseAngle);
-    if (orbitShape < gWorldAsteroidsZero)
+    if (orbitShape < 0.0f)
     {
         orbitShape = -((WorldAsteroidsTrigFn)fsin16Approx)(baseAngle);
     }
@@ -101,9 +98,9 @@ void worldasteroids_init(GameObject* obj)
     {
         orbitShape = ((WorldAsteroidsTrigFn)fsin16Approx)(baseAngle);
     }
-    randomGetRange(0, (int)(lbl_803E65E8 * orbitShape + lbl_803E65E4));
+    randomGetRange(0, (int)(33.0f * orbitShape + 7.0f));
     orbitShape = ((WorldAsteroidsTrigFn)fsin16Approx)(baseAngle);
-    if (orbitShape < gWorldAsteroidsZero)
+    if (orbitShape < 0.0f)
     {
         orbitShape = -((WorldAsteroidsTrigFn)fsin16Approx)(baseAngle);
     }

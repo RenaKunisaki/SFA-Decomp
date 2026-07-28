@@ -7,7 +7,6 @@
 
 extern DSPstudioinfo dspStudio[8];
 extern const u16 gItdPanDelayTable[128];
-extern f32 lbl_803E78E4;
 
 /*
  * hwSetVolume - large mix-volume setter; computes 4-channel pan from
@@ -37,9 +36,9 @@ void hwSetVolume(u32 voiceIndex, u8 volumeTable, f32 volume, u32 pan, u32 surrou
                             dspStudio[voice->studio].type == SND_STUDIO_TYPE_DPL2, volume, auxA, auxB);
     }
 
-    il = lbl_803E78E4 * out[0];
-    ir = lbl_803E78E4 * out[1];
-    is = lbl_803E78E4 * out[2];
+    il = 32767.0f * out[0];
+    ir = 32767.0f * out[1];
+    is = 32767.0f * out[2];
     if (voice->lastUpdate.vol == 0xff || voice->volL != il || voice->volR != ir || voice->volS != is)
     {
         voice->volL = il;
@@ -49,9 +48,9 @@ void hwSetVolume(u32 voiceIndex, u8 volumeTable, f32 volume, u32 pan, u32 surrou
         voice->lastUpdate.vol = 0;
     }
 
-    il = lbl_803E78E4 * out[3];
-    ir = lbl_803E78E4 * out[4];
-    is = lbl_803E78E4 * out[5];
+    il = 32767.0f * out[3];
+    ir = 32767.0f * out[4];
+    is = 32767.0f * out[5];
     if (voice->lastUpdate.volA == 0xff || voice->volLa != il || voice->volRa != ir || voice->volSa != is)
     {
         voice->volLa = il;
@@ -61,9 +60,9 @@ void hwSetVolume(u32 voiceIndex, u8 volumeTable, f32 volume, u32 pan, u32 surrou
         voice->lastUpdate.volA = 0;
     }
 
-    il = lbl_803E78E4 * out[6];
-    ir = lbl_803E78E4 * out[7];
-    is = lbl_803E78E4 * out[8];
+    il = 32767.0f * out[6];
+    ir = 32767.0f * out[7];
+    is = 32767.0f * out[8];
     if (voice->lastUpdate.volB == 0xff || voice->volLb != il || voice->volRb != ir || voice->volSb != is)
     {
         voice->volLb = il;

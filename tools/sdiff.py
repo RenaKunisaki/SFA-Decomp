@@ -60,14 +60,25 @@ POOL_FOLDED = []
 
 
 def norm_unit(u):
-    """Accept the report.json name ("main/main/shader") or the source path
-    ("main/shader.c"). function_objdump.py wants the source-path form."""
+    """Accept the report.json name ("main/main/shader", "main/dlls/engine/2/2") or the
+    source path ("main/shader.c"). function_objdump.py wants the source-path form, which
+    drops the leading MODULE component. Only stripping a duplicated first component left
+    every non-"main/main" unit -- 56% of the near-miss frontier, all of dlls/ and track/
+    -- reporting "no paired output" and silently absent from any screen built on this."""
     if u.endswith('.c'):
-        return u
+        return [u]
     parts = u.split('/')
+    cands = ['/'.join(parts) + '.c']
+    if len(parts) > 1:
+        cands.append('/'.join(parts[1:]) + '.c')
     if len(parts) > 1 and parts[0] == parts[1]:
-        parts = parts[1:]
-    return '/'.join(parts) + '.c'
+        cands.insert(0, '/'.join(parts[1:]) + '.c')
+    seen, out = set(), []
+    for c in cands:
+        if c not in seen:
+            seen.add(c)
+            out.append(c)
+    return out
 
 
 def insns(s, blind):
@@ -116,11 +127,16 @@ def main():
     if len(sys.argv) != 3:
         print(__doc__)
         return 2
-    unit, sym = norm_unit(sys.argv[1]), sys.argv[2]
-    r = subprocess.run(['python3', 'tools/function_objdump.py', unit, sym],
-                       capture_output=True, text=True)
+    units, sym = norm_unit(sys.argv[1]), sys.argv[2]
+    r = None
+    for unit in units:
+        r = subprocess.run(['python3', 'tools/function_objdump.py', unit, sym],
+                           capture_output=True, text=True)
+        if '===== current' in r.stdout:
+            break
     if '===== current' not in r.stdout:
-        print("function_objdump gave no paired output for %s :: %s" % (unit, sym))
+        print("function_objdump gave no paired output for %s :: %s"
+              % (', '.join(units), sym))
         if r.stderr.strip():
             print(r.stderr.strip()[:400])
         return 1

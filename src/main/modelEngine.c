@@ -242,6 +242,11 @@
 #include "dlls/objects/445.h"
 #include "dlls/objects/446.h"
 #include "dlls/objects/447_DIMLavaBall.h"
+#include "dlls/objects/448_DIMLogFire.h"
+#include "dlls/objects/449_DIMSnowBall.h"
+#include "dlls/objects/450_DIMSnowBall.h"
+#include "dlls/objects/451_DIMGate.h"
+#include "dlls/objects/452_DIMIceWall.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -339,11 +344,9 @@ extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, 
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor;
 extern ResourceDescriptor gDIMBridgeCogMaiObjDescriptor, gDIMCannonObjDescriptor, gDIMDismountPointObjDescriptor,
-    gDIMGateObjDescriptor, gDIMIceWallObjDescriptor, gDIMLavaSmashObjDescriptor, gDIMLogFireObjDescriptor,
-    gDIMMagicBridgeObjDescriptor;
-extern ResourceDescriptor gDIMSnowBall1C2ObjDescriptor, gDIMSnowBallObjDescriptor, gDIMSnowHorn1ObjDescriptor,
-    gDIMTruthHornIceObjDescriptor, gDIMWoodDoor2ObjDescriptor, gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor,
-    gDIM_BossObjDescriptor;
+    gDIMLavaSmashObjDescriptor, gDIMMagicBridgeObjDescriptor;
+extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIMWoodDoor2ObjDescriptor,
+    gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor, gDIM_BossObjDescriptor;
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_LevelControlObjDescriptor,
     gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
@@ -1517,11 +1520,11 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gPaymentKioskObjDescriptor,
     (ResourceDescriptor*)&gLavaBall1BEObjDescriptor,
     (ResourceDescriptor*)&gLavaBall1BFObjDescriptor,
-    &gDIMLogFireObjDescriptor,
-    &gDIMSnowBallObjDescriptor,
-    &gDIMSnowBall1C2ObjDescriptor,
-    &gDIMGateObjDescriptor,
-    &gDIMIceWallObjDescriptor,
+    (ResourceDescriptor*)&gDIMLogFireObjDescriptor,
+    (ResourceDescriptor*)&gDIMSnowBallObjDescriptor,
+    (ResourceDescriptor*)&gDIMSnowBall1C2ObjDescriptor,
+    (ResourceDescriptor*)&gDIMGateObjDescriptor,
+    (ResourceDescriptor*)&gDIMIceWallObjDescriptor,
     &gDIMBarrierObjDescriptor,
     &gDIMCannonObjDescriptor,
     &gDIMLavaSmashObjDescriptor,

@@ -101,8 +101,8 @@
 #include "main/dll/WC/WCbeacon.h"
 #include "main/voxmaps.h"
 #include "main/dll/DR/dll_026B_drchimmey.h"
-#include "main/dll/DIM/dll_01C4_dimicewall.h"
-#include "main/dll/DIM/dimlogfire.h"
+#include "dlls/objects/452_DIMIceWall.h"
+#include "dlls/objects/448_DIMLogFire.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
 #include "dlls/objects/435_SH_Beacon.h"
 #include "dlls/objects/437.h"
@@ -1469,13 +1469,13 @@ void* trickyFindPathRouteEntry(u8* state, u32 route, int pathId)
 
 int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int pathId)
 {
+    s8* stp;
     s8 status[TRICKY_ROUTE_CANDIDATE_COUNT];
     s8 i;
-    s8 j;
-    s8 failedCount;
     void** wp;
     u8* sp;
-    s8* stp;
+    s8 j;
+    s8 failedCount;
 
     for (i = 0, wp = routes, sp = state; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
     {
@@ -1523,7 +1523,7 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
             {
                 if (*wp != 0)
                 {
-                    status[(int)i] = pathSearchStep((PathSearch*)(state + ((int)i * 0x30 + 0x538)), 0x1f4);
+                    status[(int)i] = pathSearchStep(&((TrickyState*)state)->pathSearches[(int)i], 0x1f4);
                     if (status[(int)i] == 1)
                     {
                         return i;
@@ -1631,9 +1631,9 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
         return;
     }
 
-    for (i = 0, cp = curves; i < count; i++)
+    for (i = 0, cp = curves; i < count; i++, cp++)
     {
-        curve = *cp++;
+        curve = *cp;
         if ((((ObjfsaRomCurveDef*)curve)->type != 0x24) || (*(u8*)((u8*)curve + 3) != 0))
         {
             continue;
@@ -1807,8 +1807,8 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     }
 
     slope = (end[2] - start[2]) / (end[0] - start[0]);
-    dz = start[0] - end[0];
     intercept = start[2] - (slope * start[0]);
+    dz = start[0] - end[0];
     perpSlope = dz / (end[2] - start[2]);
     projection[0] = ((center[2] - (perpSlope * center[0])) - intercept) / (slope - perpSlope);
     projection[2] = (slope * projection[0]) + intercept;

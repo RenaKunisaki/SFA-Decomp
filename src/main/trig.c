@@ -4,7 +4,6 @@
 #include "main/fcos16_approx_api.h"
 #include "main/trig.h"
 
-extern float lbl_803E7C80;
 extern float lbl_803E7C84;
 extern float lbl_803E7C88;
 extern float lbl_803E7C8C;
@@ -58,12 +57,12 @@ float fsin16Approx(int angle) {
             return x * (lbl_803E7C90 * x2 + lbl_803E7C8C);
         case 0x2000:
         case 0x4000:
-            return (lbl_803E7C88 * x2 + lbl_803E7C84) * x2 + lbl_803E7C80;
+            return (lbl_803E7C88 * x2 + lbl_803E7C84) * x2 + 0.99999f;
         case 0x6000:
         case 0x8000:
             return -(x * (lbl_803E7C90 * x2 + lbl_803E7C8C));
         default:
-            return -(x2 * (lbl_803E7C88 * x2 + lbl_803E7C84) + lbl_803E7C80);
+            return -(x2 * (lbl_803E7C88 * x2 + lbl_803E7C84) + 0.99999f);
     }
 }
 
@@ -161,13 +160,13 @@ float fcos16Approx(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (lbl_803E7C88 * y2 + lbl_803E7C84) * y2 + lbl_803E7C80;
+            return (lbl_803E7C88 * y2 + lbl_803E7C84) * y2 + 0.99999f;
         case 0x2000:
         case 0x4000:
             return -(y * (lbl_803E7C90 * y2 + lbl_803E7C8C));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (lbl_803E7C88 * y2 + lbl_803E7C84) + lbl_803E7C80);
+            return -(y2 * (lbl_803E7C88 * y2 + lbl_803E7C84) + 0.99999f);
         default:
             return y * (lbl_803E7C90 * y2 + lbl_803E7C8C);
     }
