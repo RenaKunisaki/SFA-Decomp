@@ -12,7 +12,7 @@ typedef struct WCAperturesSetup
 {
     ObjPlacement base;
     s8 type;
-    u8 modelIndex;
+    s8 modelIndex;
     u8 pad1A[4];
     s16 openBit;
     s16 armBit;

@@ -148,7 +148,7 @@ int wctemplebri_getExtraSize(void)
 int wctemplebri_getObjectTypeId(GameObject* obj)
 {
     ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    int modelIndex = *(s8*)&((WCTempleBriSetup*)obj->anim.placementData)->modelIndex;
+    int modelIndex = ((WCTempleBriSetup*)obj->anim.placementData)->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
 
     if (modelIndex >= modelCount)

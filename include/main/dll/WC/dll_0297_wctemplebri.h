@@ -10,7 +10,7 @@ typedef struct WCTempleBriSetup
 {
     ObjPlacement base;
     s8 type;
-    u8 modelIndex;
+    s8 modelIndex;
     u8 pad1A[4];
     s16 solvedBit;
     u8 pad20[4];

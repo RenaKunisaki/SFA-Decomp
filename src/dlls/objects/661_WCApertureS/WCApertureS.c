@@ -77,7 +77,7 @@ int wcapertures_getExtraSize(void)
 int wcapertures_getObjectTypeId(GameObject* obj)
 {
     ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    int modelIndex = *(s8*)&((WCAperturesSetup*)obj->anim.placementData)->modelIndex;
+    int modelIndex = ((WCAperturesSetup*)obj->anim.placementData)->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
 
     if (modelIndex >= modelCount)

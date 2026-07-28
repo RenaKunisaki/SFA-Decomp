@@ -11,7 +11,7 @@ typedef struct WCTrexStatueSetup
 {
     ObjPlacement base;
     s8 type;
-    u8 modelIndex;
+    s8 modelIndex;
     u8 pad1A[0x1E - 0x1A];
     s16 raisedBit;
     u8 pad20[0x24 - 0x20];
