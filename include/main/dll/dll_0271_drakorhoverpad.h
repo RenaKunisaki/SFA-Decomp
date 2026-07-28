@@ -32,7 +32,7 @@ int drakorhoverpad_update(RomCurveWalker* curve, int maxIndex);
 extern f32 gDrakorHoverpadMtx[];
 extern f32 lbl_803DC300;
 extern f32 lbl_803DC304;
-extern f32 lbl_803DC2F8;
+extern f32 gDrakorHoverpadSteerMaxSpeed;
 extern s16 lbl_803DC2FC;
 
 #endif /* MAIN_DLL_DLL_0271_DRAKORHOVERPAD_H_ */
