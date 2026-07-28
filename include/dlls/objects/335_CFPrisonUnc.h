@@ -3,12 +3,14 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
+#include "main/objprint_character_api.h"
 #include "main/objanim_update.h"
 #include "main/objprint_sound_api.h"
 
 typedef struct CfPrisonUncleState {
     GameObject* companion;
-    u8 headTrackState[0x30];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad2C[0x8];
     ObjSoundState soundState;
     int unknown64;
     int unknown68;
@@ -21,7 +23,7 @@ typedef struct CfPrisonUncleState {
 } CfPrisonUncleState;
 
 STATIC_ASSERT(offsetof(CfPrisonUncleState, companion) == 0x00);
-STATIC_ASSERT(offsetof(CfPrisonUncleState, headTrackState) == 0x04);
+STATIC_ASSERT(offsetof(CfPrisonUncleState, eyeAnimState) == 0x04);
 STATIC_ASSERT(offsetof(CfPrisonUncleState, soundState) == 0x34);
 STATIC_ASSERT(offsetof(CfPrisonUncleState, unknown64) == 0x64);
 STATIC_ASSERT(offsetof(CfPrisonUncleState, unknown68) == 0x68);

@@ -3,6 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object_setup.h"
 
 typedef struct SHthorntailPlacement {
@@ -51,7 +52,8 @@ typedef struct SHthorntailState {
     u8 activeMoveValid;
     u8 unknown8A0[0x8AC - 0x8A0];
     u8 hitReactScratch[0x8B0 - 0x8AC];
-    u8 collisionShapeState[0x8E0 - 0x8B0];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad8D8[0x8];
     Vec renderPathPoints[4];
     f32 proximityAlertState;
 } SHthorntailState;
@@ -91,7 +93,7 @@ STATIC_ASSERT(offsetof(SHthorntailState, moveControlPitch) == 0x7DC);
 STATIC_ASSERT(offsetof(SHthorntailState, moveControlRoll) == 0x7DE);
 STATIC_ASSERT(offsetof(SHthorntailState, activeMoveValid) == 0x89F);
 STATIC_ASSERT(offsetof(SHthorntailState, hitReactScratch) == 0x8AC);
-STATIC_ASSERT(offsetof(SHthorntailState, collisionShapeState) == 0x8B0);
+STATIC_ASSERT(offsetof(SHthorntailState, eyeAnimState) == 0x8B0);
 STATIC_ASSERT(offsetof(SHthorntailState, renderPathPoints) == 0x8E0);
 STATIC_ASSERT(offsetof(SHthorntailState, proximityAlertState) == 0x910);
 STATIC_ASSERT(sizeof(SHthorntailState) == 0x914);

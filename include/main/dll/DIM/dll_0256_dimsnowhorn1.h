@@ -5,6 +5,7 @@
 #include "global.h"
 #include "ghidra_import.h"
 #include "main/dll/baddie_state.h"
+#include "main/dll/dll_002E_moveLib.h"
 #include "main/objanim_update.h"
 
 typedef struct SnowHornEntry
@@ -29,9 +30,7 @@ STATIC_ASSERT(sizeof(SnowHornEntry) == 0x24);
 typedef struct DIMSnowHorn1State
 {
     BaddieState baddie;
-    u8 lookController[0x96D - 0x35C]; /* dll_2E look-controller block at 0x35C (start evidenced; true extent unknown) */
-    u8 unk96D;
-    u8 pad96E[0x980 - 0x96E];
+    MoveLibState lookController; /* 0x35C: dll_2E look-controller block */
     CharacterEyeAnimState eyeAnimState; /* 0x980: head-aim / eye-blink record (characterDoEyeAnims / characterHeadLookCalm / characterHeadLookRelax) */
     u8 pad9A8[0x9B0 - 0x9A8];
     f32 pathPointArray[12]; /* 0x9B0: ObjPath_GetPointWorldPositionArray(2,4) -> 4 XYZ points */

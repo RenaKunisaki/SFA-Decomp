@@ -2,6 +2,7 @@
 #define MAIN_DLL_WC_DLL_028A_WCEARTHWALKER_H
 
 #include "global.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object.h"
 #include "main/objHitReact.h"
 #include "main/objanim_update.h"
@@ -30,7 +31,8 @@ typedef struct EarthWalkerState
     u8 hitTriggerId;
     u8 moveLibFlags611;
     u8 pad612[0x624 - 0x612];
-    u8 eyeAnimState[0x654 - 0x624];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad64C[0x8];
     f32 hitReactStepScale;
     u8 interactionState;
     u8 flags;

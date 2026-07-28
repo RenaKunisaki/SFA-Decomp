@@ -103,7 +103,7 @@ int babyCloudRunner_updateBurrowAnimation(GameObject* obj) {
 
 void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove) {
     int yawStep;
-    characterAimHeadAtTarget(obj, target, state->lookBlock, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
+    characterAimHeadAtTarget(obj, target, &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
     yawStep = Obj_GetYawDeltaToObject(obj, target, 0);
     obj->anim.rotX += (yawStep >>= 3);
     if (playMove == 0) {
@@ -273,7 +273,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
     case 8:
         animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, player, 0);
-        characterAimHeadAtTarget(obj, player, state->lookBlock, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
+        characterAimHeadAtTarget(obj, player, &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
         if (inRange != 0) {
             animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
@@ -284,7 +284,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
     case 5:
         animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, (GameObject*)getTrickyObject(), 0);
-        characterAimHeadAtTarget(obj, getTrickyObject(), state->lookBlock, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
+        characterAimHeadAtTarget(obj, getTrickyObject(), &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
         break;
     }

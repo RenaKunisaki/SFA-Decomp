@@ -99,7 +99,7 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
     player = Obj_GetPlayerObject();
     switch (state->stateId) {
     case CFPRISONGUARD_STATE_IDLE:
-        characterCloseEyes(obj, state->characterState);
+        characterCloseEyes(obj, &state->eyeAnimState);
         distance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
         if (guardianFreed == 0) {
             if (distance < (f32)placement->watchRadius ||
@@ -121,7 +121,7 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
         if ((state->stateTimer -= framesThisStep) <= 0) {
             state->stateId = CFPRISONGUARD_STATE_WATCHING;
         }
-        characterCloseEyes(obj, state->characterState);
+        characterCloseEyes(obj, &state->eyeAnimState);
         break;
     case CFPRISONGUARD_STATE_WATCHING:
         distance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);

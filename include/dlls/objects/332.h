@@ -3,6 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/curve_walker.h"
 #include "main/objanim_update.h"
@@ -42,7 +43,8 @@ typedef struct BabyCloudRunnerState {
     u8 pad004[0x14];
     Vec3f handoffPosition;
     u8 pad024[0x18];
-    u8 lookBlock[0x30];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad64[0x8];
     ObjSoundState soundState;
     u8 pad09C[0x0C];
     f32 animSpeed;
@@ -84,7 +86,7 @@ STATIC_ASSERT(sizeof(BabyCloudRunnerStateFlags) == 0x01);
 
 STATIC_ASSERT(offsetof(BabyCloudRunnerState, captureTimer) == 0x000);
 STATIC_ASSERT(offsetof(BabyCloudRunnerState, handoffPosition) == 0x018);
-STATIC_ASSERT(offsetof(BabyCloudRunnerState, lookBlock) == 0x03C);
+STATIC_ASSERT(offsetof(BabyCloudRunnerState, eyeAnimState) == 0x03C);
 STATIC_ASSERT(offsetof(BabyCloudRunnerState, soundState) == 0x06C);
 STATIC_ASSERT(offsetof(BabyCloudRunnerState, animSpeed) == 0x0A8);
 STATIC_ASSERT(offsetof(BabyCloudRunnerState, scale) == 0x0AC);

@@ -778,7 +778,7 @@ int cfguardian_updateMain(GameObject* obj) {
         objSoundStartTimed(obj, &state->soundState, CFGUARDIAN_SFX_CHATTER, CFGUARDIAN_CHATTER_PITCH, -1, 0);
     }
     objSoundUpdateMouth(obj, &state->soundState);
-    characterDoEyeAnims(obj, state->eyeBlock);
+    characterDoEyeAnims(obj, &state->eyeAnimState);
     if (state->questState != mainGetBit(GAMEBIT_CFGUARDIAN_QUEST_STATE)) {
         mainSetBits(GAMEBIT_CFGUARDIAN_QUEST_STATE, state->questState);
     }

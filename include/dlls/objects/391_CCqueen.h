@@ -2,6 +2,7 @@
 #define DLLS_OBJECTS_391_CCQUEEN_H_
 
 #include "dlls/object_descriptor.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/dll_002E_moveLib.h"
@@ -21,7 +22,8 @@ STATIC_ASSERT(offsetof(CCQueenPlacement, unknown1B) == 0x1B);
 
 typedef struct CCQueenState {
     MoveLibState moveLib;
-    u8 eyeAnimState[0x654 - 0x624];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad64C[0x8];
 } CCQueenState;
 
 STATIC_ASSERT(sizeof(CCQueenState) == 0x654);

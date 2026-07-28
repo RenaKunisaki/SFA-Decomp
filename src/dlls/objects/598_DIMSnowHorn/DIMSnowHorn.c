@@ -1495,8 +1495,8 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
     case 2:
         break;
     }
-    dll_2E_initState(obj, (MoveLibState*)inner->lookController, -0x2000, 0x2aaa, 3);
-    inner->unk96D |= 8;
+    dll_2E_initState(obj, &inner->lookController, -0x2000, 0x2aaa, 3);
+    inner->lookController.modeBits |= 8;
     if (spawnFlag == 0)
     {
         idx = -1;

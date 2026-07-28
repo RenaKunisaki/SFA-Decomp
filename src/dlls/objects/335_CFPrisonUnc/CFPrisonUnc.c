@@ -117,14 +117,14 @@ void cfPrisonUncle_update(GameObject* obj) {
     state->cageOpen = mainGetBit(GAMEBIT_CF_PrisonCageOpened);
     if (state->cageOpen == 0) {
         player = Obj_GetPlayerObject();
-        characterAimHeadAtTarget(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState,
+        characterAimHeadAtTarget(obj, player, &((CfPrisonUncleState*)obj->extra)->eyeAnimState,
                                  CFPRISONUNCLE_HEAD_AIM_LIMIT, 0, 3);
         if (randomGetRange(0, CFPRISONUNCLE_MUTTER_RANDOM_RANGE) == 0) {
             objSoundStart((int)obj, &state->soundState, SFXbaddie_kooshy_call);
         }
         if (ObjTrigger_IsSet((int)obj) != 0) {
             s16* modelVector;
-            characterAimHeadAtTarget(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState,
+            characterAimHeadAtTarget(obj, player, &((CfPrisonUncleState*)obj->extra)->eyeAnimState,
                                      CFPRISONUNCLE_HEAD_AIM_LIMIT, 0, 3);
             modelVector = objModelGetVecFn_800395d8(obj, CFPRISONUNCLE_HEAD_VECTOR_INDEX);
             *modelVector = CFPRISONUNCLE_HEAD_VECTOR_ANGLE;

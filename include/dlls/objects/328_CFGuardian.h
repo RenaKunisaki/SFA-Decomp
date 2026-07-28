@@ -3,6 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/dll_002E_moveLib.h"
@@ -42,7 +43,8 @@ typedef struct CfGuardianState {
         };
     };
     ObjSoundState soundState;
-    u8 eyeBlock[0x38];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad67C[0x10];
     GameObject* linkedObjects[CFGUARDIAN_LINKED_OBJECT_COUNT];
     u8 pad6A4[0x18];
     RomCurveWalker path;
@@ -71,7 +73,7 @@ STATIC_ASSERT(offsetof(CfGuardianState, targetPosY) == 0x07C);
 STATIC_ASSERT(offsetof(CfGuardianState, velocityY) == 0x080);
 STATIC_ASSERT(offsetof(CfGuardianState, flags611) == 0x611);
 STATIC_ASSERT(offsetof(CfGuardianState, soundState) == 0x624);
-STATIC_ASSERT(offsetof(CfGuardianState, eyeBlock) == 0x654);
+STATIC_ASSERT(offsetof(CfGuardianState, eyeAnimState) == 0x654);
 STATIC_ASSERT(offsetof(CfGuardianState, linkedObjects) == 0x68C);
 STATIC_ASSERT(offsetof(CfGuardianState, path) == 0x6BC);
 STATIC_ASSERT(offsetof(CfGuardianState, moveSpeed) == 0x7FC);

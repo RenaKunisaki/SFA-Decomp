@@ -2,6 +2,7 @@
 #define DLLS_OBJECTS_432_SH_SWAPSTON_H_
 
 #include "dlls/object_descriptor.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/objprint_sound_api.h"
@@ -25,7 +26,8 @@ typedef struct WarpStoneState {
     s16 resetGameBit;
     u8 unknown12[0x14 - 0x12];
     ObjSoundState soundState;
-    u8 eyeAnimState[0x74 - 0x44];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad6C[0x8];
     u8 headAimState[0xD4 - 0x74];
     u8 dustEffectFlags;
     u8 behaviorFlags;

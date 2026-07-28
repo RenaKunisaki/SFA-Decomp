@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_0266_KYTESMUM_H_
 
 #include "game/objects/object.h"
+#include "main/objprint_character_api.h"
 #include "global.h"
 #include "main/objanim_internal.h"
 #include "game/objects/object_setup.h"
@@ -34,7 +35,8 @@ typedef struct KytesMumSetup
 typedef struct KytesMumRuntime
 {
     u8 pad000[0x654];
-    u8 eyeAnimState[0x684 - 0x654];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad67C[0x8];
     ObjSoundState modelSoundState;
     u8 animEvents[0x6d0 - 0x6b4];
     ObjSoundDef* idleSfxTable;

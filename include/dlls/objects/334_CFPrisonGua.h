@@ -3,6 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
+#include "main/objprint_character_api.h"
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
@@ -41,7 +42,8 @@ typedef struct CfPrisonGuardStatusFlags {
 } CfPrisonGuardStatusFlags;
 
 typedef struct CfPrisonGuardState {
-    u8 characterState[0x30];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad28[0x8];
     f32 alarmRamp;
     s16 stateTimer;
     s8 uncleFlewOffLatch;
@@ -64,7 +66,7 @@ STATIC_ASSERT(sizeof(CfPrisonGuardPlacement) == 0x28);
 
 STATIC_ASSERT(sizeof(CfPrisonGuardStatusFlags) == 0x01);
 
-STATIC_ASSERT(offsetof(CfPrisonGuardState, characterState) == 0x00);
+STATIC_ASSERT(offsetof(CfPrisonGuardState, eyeAnimState) == 0x00);
 STATIC_ASSERT(offsetof(CfPrisonGuardState, alarmRamp) == 0x30);
 STATIC_ASSERT(offsetof(CfPrisonGuardState, stateTimer) == 0x34);
 STATIC_ASSERT(offsetof(CfPrisonGuardState, uncleFlewOffLatch) == 0x36);

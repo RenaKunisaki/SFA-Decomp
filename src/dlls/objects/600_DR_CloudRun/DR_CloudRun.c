@@ -1096,7 +1096,7 @@ void DR_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
         if (inner->flightState != CLOUDRUNNER_FLIGHT_MOUNTED && vis != 0)
         {
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-            dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)((char*)inner + 0x4c4), 0);
+            dll_2E_setTargetFromPathPoint(obj, &inner->moveLib, 0);
         }
     }
 }
@@ -1229,13 +1229,13 @@ void DR_CloudRunner_update(GameObject* obj)
     if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
         ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
-        inner->moveFlags |= 1;
+        inner->moveLib.modeBits |= 1;
     }
     else
     {
-        inner->moveFlags &= ~1;
+        inner->moveLib.modeBits &= ~1;
     }
-    dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x4c4));
+    dll_2E_updateLookAt(obj, &inner->moveLib);
     objSoundUpdateMouth(obj, &inner->modelSoundState);
     characterHeadLookCalm(obj, (s16*)&inner->eyeAnimState, 0.0f);
     characterDoEyeAnims(obj, &inner->eyeAnimState);
@@ -1257,7 +1257,7 @@ void DR_CloudRunner_update(GameObject* obj)
                 (*gObjectTriggerInterface)->runSequence(4, (void*)obj, -1);
                 inner->unkB04 = 0;
                 inner->flagsBB6 |= 4;
-                inner->moveFlags |= 1;
+                inner->moveLib.modeBits |= 1;
                 (*gPlayerInterface)->setState(obj, inner, 4);
             }
             else
