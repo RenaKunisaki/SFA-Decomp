@@ -7,6 +7,7 @@
 #include "game/objects/object_setup.h"
 
 #define DIM2_LAVA_CONTROL_HEAT_ALPHA_TARGET_COUNT 8
+#define DIM2_GAMEBIT_AREA_MUSIC_ACTIVE            0xDA5
 
 /*
  * The active-target retail placement files are unavailable. This type models

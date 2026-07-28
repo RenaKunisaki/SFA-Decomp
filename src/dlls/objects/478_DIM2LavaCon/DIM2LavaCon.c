@@ -29,7 +29,7 @@
 #define DIM2_LAVA_CONTROL_GAMEBIT_0ACD 0xACD
 #define DIM2_LAVA_CONTROL_GAMEBIT_0CC3 0xCC3
 #define DIM2_LAVA_CONTROL_GAMEBIT_0D99 0xD99
-#define DIM2_LAVA_CONTROL_GAMEBIT_0DA5 0xDA5
+/* DIM2_GAMEBIT_AREA_MUSIC_ACTIVE is shared through the unit header. */
 #define DIM2_LAVA_CONTROL_GAMEBIT_0F04 0xF04
 
 #define DIM2_LAVA_CONTROL_GAMEBIT_PRELOAD_LAST_INDEX 0x2D
@@ -160,7 +160,7 @@ void dim2lavacontrol_update(GameObject* obj) {
     SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_MUSIC_0DE, -1, -1, DIM2_LAVA_CONTROL_GAMEBIT_0D99,
                           DIM2_LAVA_CONTROL_MUSIC_TRIGGER_0DE);
     SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_AREA_MUSIC, -1, -1,
-                          DIM2_LAVA_CONTROL_GAMEBIT_0DA5, state->musicTriggerId);
+                          DIM2_GAMEBIT_AREA_MUSIC_ACTIVE, state->musicTriggerId);
     SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_CITY_TOMBS_MUSIC, -1, -1,
                           DIM2_LAVA_CONTROL_GAMEBIT_0F04, MUSICTRIG_citytombs);
     SCGameBitLatch_UpdateInverted(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_MUSIC_02C_INVERTED, -1, -1,
