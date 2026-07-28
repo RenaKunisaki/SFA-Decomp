@@ -2438,7 +2438,6 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     s8* activeCountScan;
     int curPool;
     u32* maskPtr;
-    void* cache;
     ExpgfxSlot* curCacheBuf;
     u8* curPoolBuf;
     ObjAnimComponent* srcObj;
@@ -2446,6 +2445,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     int ambRPlus1;
     int ambGPlus1;
     int ambBPlus1;
+    void* cache;
     u8 ambientScaled[3]; /* BGR order: [2]=R, [1]=G, [0]=B */
     ExpgfxRotateParams rotParams;
     f32 workVec[3];
