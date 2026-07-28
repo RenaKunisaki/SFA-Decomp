@@ -495,7 +495,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C1 | DIMSnowBall | COMPLETE | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed 0x10-byte state, allocation-backed fixed 0x24-byte placement shared with slot 450, canonical unit header, complete 2,994-entry spline coordinate table, and exact 6,070-byte data image; the generated source path remains unchanged |
 | 0x1C2 | DIMSnowBall | COMPLETE | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | = (canonical) | Exact complete nine-function spawner TU with its terminal descriptor, allocation-backed 0x04-byte state, active-EN-retail-backed fixed 0x20-byte placement, canonical unit header, canonical slot-449 child setup and sequence ID, and exact 80-byte data image; the generated source path remains unchanged |
 | 0x1C3 | DIMGate (+DIM2BossDoo) | COMPLETE | dlls/objects/451_DIMGate/DIMGate.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor, allocation-backed one-byte state, active-EN-retail-backed fixed 0x24-byte DIMGate placement, canonical unit header, and exact 60-byte data image; the generated source path remains unchanged |
-| 0x1C4 | DIMIceWall | COMPLETE | dlls/objects/452_DIMIceWall/DIMIceWall.c | = (canonical) | — |
+| 0x1C4 | DIMIceWall | COMPLETE | dlls/objects/452_DIMIceWall/DIMIceWall.c | = (canonical) | Exact complete four-function TU with its terminal descriptor, allocation-backed two-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, and exact 80-byte data image; the generated source path remains unchanged |
 | 0x1C5 | DIMBarrier (+DIM2CannonT) | COMPLETE | dlls/objects/453_DIMBarrier/DIMBarrier.c | = (canonical) | — |
 | 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | dlls/objects/454_DIMCannon/DIMCannon.c | = (canonical) | — |
 | 0x1C7 | DIMLavaSmas | COMPLETE | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | = (canonical) | — |
@@ -1023,6 +1023,7 @@ more as they are recovered.
 | 0x1C1 | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | include/dlls/objects/449_DIMSnowBall.h |
 | 0x1C2 | dlls/objects/450_DIMSnowBall/DIMSnowBall.c | include/dlls/objects/450_DIMSnowBall.h |
 | 0x1C3 | dlls/objects/451_DIMGate/DIMGate.c | include/dlls/objects/451_DIMGate.h |
+| 0x1C4 | dlls/objects/452_DIMIceWall/DIMIceWall.c | include/dlls/objects/452_DIMIceWall.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

@@ -101,7 +101,7 @@
 #include "main/dll/WC/WCbeacon.h"
 #include "main/voxmaps.h"
 #include "main/dll/DR/dll_026B_drchimmey.h"
-#include "main/dll/DIM/dll_01C4_dimicewall.h"
+#include "dlls/objects/452_DIMIceWall.h"
 #include "dlls/objects/448_DIMLogFire.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
 #include "dlls/objects/435_SH_Beacon.h"
