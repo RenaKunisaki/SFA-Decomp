@@ -736,7 +736,6 @@ void renderShadows(int unused0, int unused1, int unused2)
     f32 sCamZ, savedFovY, vAx, vAz, orthoHalf;
     int slotIdx, texIdx;
     s8 casterIdx;
-    int w;
     GameObject* obj;
     s16 savedRotZ;
     ObjModelState* modelState;
@@ -794,6 +793,7 @@ void renderShadows(int unused0, int unused1, int unused2)
         castSlot->alpha = alpha;
         if ((u8)texIdx < NEW_SHADOW_MAX_CAST_TEXTURES && (kind = casterPtr->flags) != 0)
         {
+            int w;
             if ((u8)texIdx < 3)
             {
                 w = 0x100;
