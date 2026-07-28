@@ -295,7 +295,6 @@ const IndTexMtx23 lbl_802C1B40 = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 const IndTexMtx23 lbl_802C1B58 = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
 
 extern u8 lbl_803DCC3D;
-extern u32 lbl_803DE9FC;
 extern u32 lbl_803DEA00;
 extern u32 lbl_803DB470;
 extern int lbl_803DB498;
@@ -310,7 +309,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     Mtx mtx5;
     IndTexMtx23 mtxA;
     IndTexMtx23 mtxB;
-    GXColor kc;
+    GXColor kc = {0xFF, 0xFF, 0xFF, 0xFF};
     Texture** noiseTextures;
     int noiseFrameCount;
     int t164;
@@ -324,7 +323,6 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     f32 fz;
     u8 v;
 
-    kc = *(GXColor*)&lbl_803DE9FC;
     mtxA = lbl_802C1B40;
     mtxB = lbl_802C1B58;
     rop = (u8*)ObjModel_GetRenderOp((ModelFileHeader*)*model, ropIdx);
@@ -472,7 +470,6 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     return 1;
 }
 
-extern GXColorS10 lbl_803DE9F4;
 extern ObjPrintGXColor lbl_803DB494;
 extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC36;
@@ -497,7 +494,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     Mtx mtxR;
     IndTexMtx23 mtxA;
     IndTexMtx23 mtxB;
-    GXColorS10 s10;
+    GXColorS10 s10 = {0xFF, 0xFF, 0xFF, 0xFF};
     int stage;
     int coord;
     Texture** noiseTextures;
@@ -511,7 +508,6 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     int projBlendMode;
     u8 fancy;
 
-    s10 = lbl_803DE9F4;
     mtxA = lbl_802C1B10;
     mtxB = lbl_802C1B28;
     rop = (u8*)ObjModel_GetRenderOp(model->file, ropIdx);
@@ -799,19 +795,17 @@ const int lbl_802C1B70[56] = {
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
-extern u32 lbl_803DE9F0;
 
 void objRenderFuzzFn_8003d6f8(void* objArg)
 {
     ModelLightStruct* renderHandle;
     int obj = (int)objArg;
-    volatile u32 savedEnvColor;
+    GXColor savedEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
     Texture** shadowTable;
     int shadowStride;
     int shadowParam;
     float mtx[12];
 
-    savedEnvColor = lbl_803DE9F0;
     renderHandle = objCreateLight((void*)obj, '\0');
     if (renderHandle != 0x0)
     {
@@ -826,7 +820,7 @@ void objRenderFuzzFn_8003d6f8(void* objArg)
         modelLightChannels_applyGXControls();
         ModelLightStruct_free(renderHandle);
     }
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)&savedEnvColor);
+    GXSetTevKColor(GX_KCOLOR0, savedEnvColor);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     newshadows_getShadowTextureTable4x8(&shadowTable, &shadowStride, &shadowParam);
