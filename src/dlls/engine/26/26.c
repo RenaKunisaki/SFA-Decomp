@@ -16,19 +16,19 @@ f32 gEffect1AnimRampD = 0.3f;
 f32 gEffect1AnimRampA = 0.1f;
 f32 gEffect1AnimRampB = 0.3f;
 
-PartFxSpawnParams lbl_8039C320;
+PartFxSpawnParams gEffect1DefaultSpawnParams;
 
 #define FILL320()                                                                                                      \
     do                                                                                                                 \
     {                                                                                                                  \
-        lbl_8039C320.posX = 0.0f;                                                                                      \
-        lbl_8039C320.posY = 0.0f;                                                                                      \
-        lbl_8039C320.posZ = 0.0f;                                                                                      \
-        lbl_8039C320.scale = 1.0f;                                                                                     \
-        lbl_8039C320.unk0 = 0;                                                                                         \
-        lbl_8039C320.unk2 = 0;                                                                                         \
-        lbl_8039C320.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C320;                                                               \
+        gEffect1DefaultSpawnParams.posX = 0.0f;                                                                                      \
+        gEffect1DefaultSpawnParams.posY = 0.0f;                                                                                      \
+        gEffect1DefaultSpawnParams.posZ = 0.0f;                                                                                      \
+        gEffect1DefaultSpawnParams.scale = 1.0f;                                                                                     \
+        gEffect1DefaultSpawnParams.unk0 = 0;                                                                                         \
+        gEffect1DefaultSpawnParams.unk2 = 0;                                                                                         \
+        gEffect1DefaultSpawnParams.unk4 = 0;                                                                                         \
+        spawnParams = &gEffect1DefaultSpawnParams;                                                               \
     } while (0)
 
 int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
