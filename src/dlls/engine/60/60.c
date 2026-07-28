@@ -140,7 +140,7 @@ void linkDrawFn_801302c0(void)
     resetTimer = 4;
     gTumbleweedBushItems[linkSelected].timer = resetTimer;
     sel = &gTumbleweedBushItems[linkSelected];
-    if (((sel->flags & LINK_FLAG_DRAW_SLOTS) != 0) && ((s8)sel->slots[0] != -1))
+    if (((sel->flags & LINK_FLAG_DRAW_SLOTS) != 0) && (sel->slots[0] != -1))
     {
         iconTex = *(void**)(linkTextures + sel->slots[0] * 8);
     }
@@ -171,7 +171,7 @@ void linkDrawFn_801302c0(void)
         if (i != linkSelected)
         {
             if (((gTumbleweedBushItems[i].flags & LINK_FLAG_DRAW_SLOTS) != 0) &&
-                ((s8)gTumbleweedBushItems[i].slots[0] != -1))
+                (gTumbleweedBushItems[i].slots[0] != -1))
             {
                 iconTex = *(void**)(linkTextures + gTumbleweedBushItems[i].slots[0] * 8);
             }
@@ -235,7 +235,7 @@ void linkDrawFn_80130484(void)
     for (; i < gTumbleweedBushItemCount; i++)
     {
         item = &gTumbleweedBushItems[i];
-        if (((item->flags & LINK_FLAG_DRAW_SLOTS) != 0) && ((s8)item->slots[0] != -1))
+        if (((item->flags & LINK_FLAG_DRAW_SLOTS) != 0) && (item->slots[0] != -1))
         {
             iconTex = *(void**)(linkTextures + item->slots[0] * 8);
         }
@@ -287,7 +287,7 @@ void Link_copy(u8* srcArg)
     int i;
 
     i = 0;
-    for (; i < (s8)gTumbleweedBushItemCount; i++)
+    for (; i < gTumbleweedBushItemCount; i++)
     {
         dst = &gTumbleweedBushItems[i];
         src = &((LinkMenuItem*)srcArg)[i];
@@ -545,7 +545,7 @@ u32 Link_update(void)
     s8 verticalInput;
 
     item = &gTumbleweedBushItems[linkSelected];
-    if ((s8)gTumbleweedBushItemCount == 0)
+    if (gTumbleweedBushItemCount == 0)
     {
         return -1;
     }
@@ -616,11 +616,11 @@ u32 Link_update(void)
             }
         }
 
-        if ((s8)linkSelected < 0)
+        if (linkSelected < 0)
         {
             linkSelected = (s8)(gTumbleweedBushItemCount - 1);
         }
-        if ((s8)linkSelected >= gTumbleweedBushItemCount)
+        if (linkSelected >= gTumbleweedBushItemCount)
         {
             linkSelected = 0;
         }
