@@ -658,10 +658,10 @@ void dll_CE_free(GameObject* obj) {
 
     ObjGroup_RemoveObject((int)obj, DLL_CE_OBJGROUP);
     {
-        int* child = obj->childObjs[0];
+        GameObject* child = obj->childObjs[0];
 
         if (child != NULL) {
-            Obj_FreeObject((GameObject*)child);
+            Obj_FreeObject(child);
             obj->childObjs[0] = NULL;
         }
     }
