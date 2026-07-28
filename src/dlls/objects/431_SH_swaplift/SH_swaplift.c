@@ -1,33 +1,132 @@
 /*
  * SH_swaplift / warpstonelift (DLL 0x1AF) - the WarpStone lift platform.
  *
- * The platform tracks whether a relevant character is standing in range
- * (scanning the per-object proximity list), then runs a small state
- * machine: while a character is present it offers the WarpStone (item /
- * bit 0xC7C) via the Y-button menu, and once the trigger fires it sets
- * the progress bits and locks into the "swapped" state. Out of range it
- * disables its hit volume.
+ * The platform tracks whether the player is standing in range by scanning its
+ * contact-object list. It offers Rock Candy through the Y-button menu, records
+ * when the candy has been given to the WarpStone, and disables its interaction
+ * hit volume while the player is out of range.
  */
+#include "dlls/objects/431_SH_swaplift.h"
+
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "sys/objects.h"
-#include "main/obj_trigger.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/tricky_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/dll/dll_0000_gameui_api.h"
-#include "main/dll/SH/dll_01AF_shswaplift.h"
-#include "main/dll/tricky_api.h"
+#include "main/obj_trigger.h"
+#include "sys/objects.h"
 
-s32 lbl_803DC058[2] = {0xC7C, 0xC7D};
+#define WARP_STONE_LIFT_PLAYER_CLASS_ID 1
 
-/* state byte (extra+0) progression */
-#define WARPSTONELIFT_STATE_IDLE     0 /* not yet swapped; character out of / entering range */
-#define WARPSTONELIFT_STATE_OFFERING 1 /* character present, WarpStone offered via Y-menu */
-#define WARPSTONELIFT_STATE_SWAPPED  2 /* WarpStone taken; locked */
+s32 gWarpStoneLiftStateGameBits[WARP_STONE_LIFT_STATE_GAMEBIT_COUNT] = {
+    GAMEBIT_ITEM_RockCandy_Got,
+    GAMEBIT_ITEM_RockCandy_Used,
+};
 
-/* WarpStone item / game bit offered by this lift */
-#define WARPSTONELIFT_ITEM_BIT 0xC7C
+int warpstonelift_getExtraSize(void) {
+    return sizeof(WarpStoneLiftState);
+}
+
+int warpstonelift_getObjectTypeId(void) {
+    return 0;
+}
+
+void warpstonelift_free(void) {
+}
+
+void warpstonelift_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleValue = visible;
+
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
+}
+
+void warpstonelift_hitDetect(void) {
+}
+
+void warpstonelift_update(GameObject* obj) {
+    WarpStoneLiftState* state = obj->extra;
+    int objectOffset;
+    u8* contactState;
+    int foundPlayer = 0;
+    int count;
+    int i;
+    s16 item;
+
+    contactState = (u8*)obj->anim.hitboxTransformState;
+    count = *(s8*)(contactState + offsetof(ObjHitboxTransformState, contactObjectCount));
+    if (count > 0) {
+        objectOffset = 0;
+        for (i = 0; i < count; i++) {
+            GameObject* other =
+                *(GameObject**)(contactState + objectOffset + offsetof(ObjHitboxTransformState, contactObjects));
+            if (other->anim.classId == WARP_STONE_LIFT_PLAYER_CLASS_ID) {
+                foundPlayer = 1;
+            }
+            objectOffset += 4;
+        }
+    }
+    if (foundPlayer != 0) {
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+        switch (state->stateId) {
+        case WARP_STONE_LIFT_STATE_WAITING_FOR_ROCK_CANDY:
+        case WARP_STONE_LIFT_STATE_ROCK_CANDY_AVAILABLE:
+            getYButtonItem(&item);
+            if ((mainGetBit(GAMEBIT_ITEM_RockCandy_Got) != 0 && cMenuGetSelectedItem() != -1) ||
+                item == GAMEBIT_ITEM_RockCandy_Got) {
+                Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
+            } else {
+                Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
+            }
+            if (ObjTrigger_IsSetById((int)obj, GAMEBIT_ITEM_RockCandy_Got) != 0) {
+                mainSetBits(GAMEBIT_ITEM_RockCandyRelated0886, 1);
+                mainSetBits(GAMEBIT_ITEM_RockCandy_Used, 1);
+                state->stateId = WARP_STONE_LIFT_STATE_ROCK_CANDY_USED;
+                Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);
+            } else if (ObjTrigger_IsSet((int)obj) != 0) {
+                mainSetBits(GAMEBIT_SH_WarpStoneComplainingAboutGifts, 1);
+            }
+            break;
+        case WARP_STONE_LIFT_STATE_ROCK_CANDY_USED:
+            if (ObjTrigger_IsSet((int)obj) != 0) {
+                mainSetBits(GAMEBIT_ITEM_RockCandyRelated0886, 1);
+            }
+            break;
+        }
+    } else {
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+    }
+}
+
+void warpstonelift_init(GameObject* obj, const WarpStoneLiftPlacement* placement) {
+    int* stateStorage = obj->extra;
+    int i;
+
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
+    obj->userData1 = 0;
+    for (i = 0; i < WARP_STONE_LIFT_STATE_GAMEBIT_COUNT; i++) {
+        if (mainGetBit(gWarpStoneLiftStateGameBits[i]) != 0) {
+            ((WarpStoneLiftState*)stateStorage)->stateId = (u8)(i + 1);
+        }
+    }
+    switch (((WarpStoneLiftState*)stateStorage)->stateId) {
+    case WARP_STONE_LIFT_STATE_WAITING_FOR_ROCK_CANDY:
+    case WARP_STONE_LIFT_STATE_ROCK_CANDY_USED:
+        Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);
+        break;
+    case WARP_STONE_LIFT_STATE_ROCK_CANDY_AVAILABLE:
+        Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
+        break;
+    }
+}
+
+void warpstonelift_release(void) {
+}
+
+void warpstonelift_initialise(void) {
+}
 
 ObjectDescriptor gWarpStoneLiftObjDescriptor = {
     0,
@@ -45,128 +144,3 @@ ObjectDescriptor gWarpStoneLiftObjDescriptor = {
     (ObjectDescriptorCallback)warpstonelift_getObjectTypeId,
     warpstonelift_getExtraSize,
 };
-
-int warpstonelift_getExtraSize(void)
-{
-    return 0x1;
-}
-int warpstonelift_getObjectTypeId(void)
-{
-    return 0x0;
-}
-
-void warpstonelift_free(void)
-{
-}
-
-void warpstonelift_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
-}
-
-void warpstonelift_hitDetect(void)
-{
-}
-
-void warpstonelift_update(GameObject* obj)
-{
-    u8* state = obj->extra;
-    int off;
-    char* list;
-    int found = 0;
-    int count;
-    int i;
-    s16 item;
-
-    list = (char*)obj->anim.hitboxTransformState;
-    count = *(s8*)(list + offsetof(ObjHitboxTransformState, contactObjectCount));
-    if (count > 0)
-    {
-        off = 0;
-        for (i = 0; i < count; i++)
-        {
-            char* other = *(char**)(list + off + offsetof(ObjHitboxTransformState, contactObjects));
-            if (((GameObject*)other)->anim.classId == 1)
-            {
-                found = 1;
-            }
-            off += 4;
-        }
-    }
-    if (found)
-    {
-        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-        switch (*state)
-        {
-        case WARPSTONELIFT_STATE_IDLE:
-        case WARPSTONELIFT_STATE_OFFERING:
-            getYButtonItem(&item);
-            if ((mainGetBit(WARPSTONELIFT_ITEM_BIT) != 0 && cMenuGetSelectedItem() != -1) ||
-                item == WARPSTONELIFT_ITEM_BIT)
-            {
-                Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
-            }
-            else
-            {
-                Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
-            }
-            if (ObjTrigger_IsSetById((int)obj, WARPSTONELIFT_ITEM_BIT) != 0)
-            {
-                mainSetBits(GAMEBIT_ITEM_RockCandyRelated0886, 1);
-                mainSetBits(GAMEBIT_ITEM_RockCandy_Used, 1);
-                *state = WARPSTONELIFT_STATE_SWAPPED;
-                Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);
-            }
-            else if (ObjTrigger_IsSet((int)obj) != 0)
-            {
-                mainSetBits(GAMEBIT_SH_WarpStoneComplainingAboutGifts, 1);
-            }
-            break;
-        case WARPSTONELIFT_STATE_SWAPPED:
-            if (ObjTrigger_IsSet((int)obj) != 0)
-            {
-                mainSetBits(GAMEBIT_ITEM_RockCandyRelated0886, 1);
-            }
-            break;
-        }
-    }
-    else
-    {
-        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    }
-}
-
-void warpstonelift_init(GameObject* obj, s8* def)
-{
-    int* state = obj->extra;
-    int i;
-    obj->anim.rotX = (s16)((s32)def[0x18] << 8);
-    obj->userData1 = 0;
-    for (i = 0; i < 2; i++)
-    {
-        if (mainGetBit(lbl_803DC058[i]) != 0)
-        {
-            *(u8*)state = (u8)(i + 1);
-        }
-    }
-    switch (*(u8*)state)
-    {
-    case WARPSTONELIFT_STATE_IDLE:
-    case WARPSTONELIFT_STATE_SWAPPED:
-        Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);
-        break;
-    case WARPSTONELIFT_STATE_OFFERING:
-        Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
-        break;
-    }
-}
-
-void warpstonelift_release(void)
-{
-}
-
-void warpstonelift_initialise(void)
-{
-}
