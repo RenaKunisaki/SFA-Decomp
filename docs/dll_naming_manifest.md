@@ -529,7 +529,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1E3 | DIM_BossGut | COMPLETE | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | = (canonical) | Exact complete thirteen-function TU with its terminal 0x40-byte descriptor, allocation-backed and fully asserted 0x42C-byte ground-baddie state, engine-established in-allocation 0x1C-byte control record, canonical unit header, and exact emitted sections, relocations, and anonymous literal symbols; no placement layout is claimed, the retail basename is truncated, and the generated source path remains unchanged |
 | 0x1E4 | MAGICMaker | COMPLETE | dlls/objects/484_MAGICMaker/MAGICMaker.c | = (canonical) | Exact complete nine-function TU with its terminal padded 0x3C-byte descriptor, proven zero-byte extra state, canonical unit header, shared collectible setup and magic-gem object IDs, and exact emitted sections, relocations, and symbols; no object-specific placement extension is claimed, and the generated source path remains unchanged |
 | 0x1E5 | DIM_BossSpi | COMPLETE | dlls/objects/485_DIM_BossSpi/DIM_BossSpi.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x8-byte projectile state, explicit phase/burst-timer union, canonical unit header, and exact emitted sections, relocations, and symbols; the retail basename is truncated, and the generated source path remains unchanged |
-| 0x1E6 | DIMbosscrac | COMPLETE | dlls/objects/486_DIMbosscrac/DIMbosscrac.c | = (canonical) | Retail basename is truncated |
+| 0x1E6 | DIMbosscrac | COMPLETE | dlls/objects/486_DIMbosscrac/DIMbosscrac.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, proven zero-byte extra state, fully asserted callback-visible placement prefix, canonical unit header, and exact emitted sections, relocations, and symbols; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, the retail basename is truncated, and the generated source path remains unchanged |
 | 0x1E7 | DIMbossfire | COMPLETE | dlls/objects/487_DIMbossfire/DIMbossfire.c | = (canonical) | — |
 | 0x1E8 | SB_Galleon | COMPLETE | dlls/objects/488_SB_Galleon/SB_Galleon.c | = (canonical) | — |
 | 0x1E9 | SB_Propelle | COMPLETE | dlls/objects/489_SB_Propelle/SB_Propelle.c | = (canonical) | Retail basename is truncated |
@@ -1056,6 +1056,7 @@ more as they are recovered.
 | 0x1E3 | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | include/dlls/objects/483_DIM_BossGut.h |
 | 0x1E4 | dlls/objects/484_MAGICMaker/MAGICMaker.c | include/dlls/objects/484_MAGICMaker.h |
 | 0x1E5 | dlls/objects/485_DIM_BossSpi/DIM_BossSpi.c | include/dlls/objects/485_DIM_BossSpi.h |
+| 0x1E6 | dlls/objects/486_DIMbosscrac/DIMbosscrac.c | include/dlls/objects/486_DIMbosscrac.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
