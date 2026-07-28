@@ -2128,7 +2128,8 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     int intr;
     int i;
     int prev;
-    u32 slotPtrAddr; /* &tbl->ptrs[fileId], biased +0x6A28 for MLDF_QPTR */
+    u32 slotPtrAddr; /* &tbl->ptrs[fileId] biased +0x6A28 for MLDF_QPTR; the size probes reuse it
+                        as the payload address */
     u32 fileBuf;
     u32 alignedSize;
     int tmp;
@@ -2698,11 +2699,11 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         if (((u8)flagBits & 1) != 0)
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
-            fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)fileBuf);
+            slotPtrAddr = qptr + offsetFlags;
+            tmp = return0_8002A5B8((u8*)slotPtrAddr);
             if (tmp != 0)
             {
-                *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)fileBuf, *sizeOut);
+                *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)slotPtrAddr, *sizeOut);
             }
         }
         break;
@@ -2720,11 +2721,11 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         if (((u8)flagBits & 1) != 0)
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
-            fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)fileBuf);
+            slotPtrAddr = qptr + offsetFlags;
+            tmp = return0_8002A5B8((u8*)slotPtrAddr);
             if (tmp != 0)
             {
-                *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)fileBuf, *sizeOut);
+                *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)slotPtrAddr, *sizeOut);
             }
         }
         break;
@@ -3101,21 +3102,24 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         offsetFlags = offsetFlags & 0xfffffff;
         break;
     case 0x4f:
-        hiSel = MLDF_PTR(0x50);
-        if (hiSel != 0)
+    {
+        u32 tabPtr;
+
+        tabPtr = MLDF_PTR(0x50);
+        if (tabPtr != 0)
         {
             fileId = 0x4f;
             if (sizeOut != NULL)
             {
-                offsetFlags = ((int*)hiSel)[entryIndex] & 0xffffff;
+                offsetFlags = ((int*)tabPtr)[entryIndex] & 0xffffff;
                 if (offsetFlags == 0)
                 {
                     do
                     {
                         prev = tab0;
                         tab0 = tab0 + 1;
-                    } while ((((int*)hiSel)[prev] & 0xffffff) <= offsetFlags);
-                    *sizeOut = (((int*)(hiSel - 4))[tab0] & 0xffffff) - offsetFlags;
+                    } while ((((int*)tabPtr)[prev] & 0xffffff) <= offsetFlags);
+                    *sizeOut = (((int*)(tabPtr - 4))[tab0] & 0xffffff) - offsetFlags;
                 }
                 else
                 {
@@ -3124,13 +3128,14 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
                     {
                         prev = i;
                         i = i + 1;
-                    } while ((((int*)hiSel)[prev] & 0xffffff) <= offsetFlags);
-                    *sizeOut = (((int*)(hiSel - 4))[i] & 0xffffff) - offsetFlags;
+                    } while ((((int*)tabPtr)[prev] & 0xffffff) <= offsetFlags);
+                    *sizeOut = (((int*)(tabPtr - 4))[i] & 0xffffff) - offsetFlags;
                 }
             }
         }
         offsetFlags = offsetFlags & 0xfffffff;
         break;
+    }
     }
     if (((u8)flagBits & 1) != 0)
     {
