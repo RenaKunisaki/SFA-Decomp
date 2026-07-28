@@ -569,7 +569,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     weevil_updateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x251:
-                    pinPon_updateWhileFrozen(obj, (BaddieState*)state, attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    pinPon_updateWhileFrozen((int)obj, (BaddieState*)state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x25d:
                     rachnopUpdateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);

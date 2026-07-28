@@ -12,7 +12,7 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int 
 void vambat_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void kooshy_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
-void pinPon_updateWhileFrozen(GameObject* obj, BaddieState* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
+void pinPon_updateWhileFrozen(int obj, BaddieState* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void wbUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void mutatedEbaUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);

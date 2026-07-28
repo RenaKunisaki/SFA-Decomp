@@ -2960,17 +2960,17 @@ void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state)
     }
 }
 
-void pinPon_updateWhileFrozen(GameObject* obj, BaddieState* state, int unused, int cmd, int wpad0, int wpad1,
+void pinPon_updateWhileFrozen(int obj, BaddieState* state, int unused, int cmd, int wpad0, int wpad1,
                               Vec* wpad2, int wpad3)
 {
-    GameObject* objCopy = obj;
+    GameObject* self = (GameObject*)obj;
     if (cmd == 17 || cmd == 16)
         return;
-    if (objCopy->anim.currentMoveProgress > 0.5f)
+    if (self->anim.currentMoveProgress > 0.5f)
     {
         state->reactionFlags |= 8;
-        Sfx_PlayFromObject((int)objCopy, SFXTRIG_en_rfall5_c);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_iceywindlp16_233);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
+        Sfx_PlayFromObject((int)self, SFXTRIG_wp_iceywindlp16_233);
         state->hitCounter = 0;
         state->unk2E4 |= 32;
     }
