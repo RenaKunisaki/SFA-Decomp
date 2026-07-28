@@ -477,18 +477,20 @@ int voxmaps_traceTraversableRoute(s16* dest, s16* start, s16* lastReachableOut)
             for (row = 0, p = &buf[0][0], bitmapCol = (voxZ << 1) + (voxX >> 3); row < 3; row++)
             {
                 int y = row + cur.y;
-                y -= 1;
-                if (y < map->minY)
+                int minY;
+                int maxY;
+
+                if (--y < (minY = map->minY))
                 {
                     slot = 0;
                 }
-                else if (y >= map->maxY)
+                else if (y >= (maxY = map->maxY))
                 {
-                    slot = (map->maxY - 1) - map->minY;
+                    slot = (maxY - 1) - minY;
                 }
                 else
                 {
-                    slot = y - map->minY;
+                    slot = y - minY;
                 }
                 if (((map->bitmap[(slot << 5) | bitmapCol] >> voxXand7) & 1u) != 0u)
                 {
