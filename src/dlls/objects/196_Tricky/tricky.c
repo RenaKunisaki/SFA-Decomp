@@ -653,11 +653,9 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* group owned by another DLL, queried here */
 #define SIDEREPEL_OBJGROUP      0x40 /* DLL 0xEB siderepel */
 #define SKEETLA_TARGET_OBJGROUP 5
-
 /* Per-node fan-out limit: status[]/bestDistances[]/outRoutes[] hold at most
  * this many linked route candidates (status[8] / f32 bestDistances[8]). */
 #define TRICKY_ROUTE_CANDIDATE_COUNT 8
-
 #define SKEETLA_LINKED_SOURCE_ID_OBJ_A 0x1ca
 #define SKEETLA_LINKED_SOURCE_ID_OBJ_B 0x160
 #define SKEETLA_PARTICLE_SPARK_A       0xca
@@ -668,8 +666,6 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
-
-
 static f32 trickyApproachSpeedStep(f32 speed, f32 target)
 {
     if (speed > target)
@@ -678,10 +674,6 @@ static f32 trickyApproachSpeedStep(f32 speed, f32 target)
     }
     return 0.05f;
 }
-
-void tricky_stateFollowPlayer();
-void tricky_stateFindSecretDig();
-void trickyDigTunnel();
 void fn_8014187C();
 void tricky_updateBallRoll();
 void fn_8014128C();
