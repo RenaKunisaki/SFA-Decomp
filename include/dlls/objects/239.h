@@ -27,7 +27,7 @@ typedef struct PushableState {
     PushablePoint probeLocal[4];   /* 0x018 */
     PushablePoint cornerLocal[4];  /* 0x048 */
     PushablePoint cornerWorld[4];  /* 0x078 */
-    u32 modelFlags;                /* 0x0A8: bits set by pushable_modelMtxFn */
+    u32 modelFlags;                /* 0x0A8: bits set by pushable_setModelFlag */
     s16 gameBit;                   /* 0x0AC */
     s16 gameBit2;                  /* 0x0AE */
     s32 unkB0;                     /* 0x0B0 */
@@ -165,9 +165,9 @@ void pushable_initMagicGem(GameObject* obj, PushableState* state);
 void pushable_resolveCollisions(GameObject* obj, PushableState* state);
 u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, struct ObjAnimUpdateState* animUpdate);
 void pushable_handleMsgs(GameObject* obj, int unused);
-int pushable_render2(GameObject* obj);
-void pushable_modelMtxFn(GameObject* obj, int modelNo);
-int pushable_func0B(GameObject* obj, GameObject* other);
+int pushable_isRestored(GameObject* obj);
+void pushable_setModelFlag(GameObject* obj, int modelNo);
+int pushable_isWithinCullDistance(GameObject* obj, GameObject* other);
 int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f32 pushZ);
 int pushable_getExtraSize(void);
 int pushable_getObjectTypeId(void);

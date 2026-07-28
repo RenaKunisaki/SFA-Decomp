@@ -108,7 +108,7 @@ ObjectDescriptor13 gAppleOnTreeObjDescriptor = {
     AppleOnTree_getExtraSize,
     (ObjectDescriptorCallback)AppleOnTree_func0A,
     (ObjectDescriptorCallback)AppleOnTree_setPosition,
-    (ObjectDescriptorCallback)AppleOnTree_modelMtxFn,
+    (ObjectDescriptorCallback)AppleOnTree_getAnimState,
 };
 
 void AppleOnTree_setPosition(GameObject* obj, f32* position) {
@@ -230,7 +230,7 @@ void appleontree_handleCollectableHit(GameObject* obj) {
     }
 }
 
-u8 AppleOnTree_modelMtxFn(GameObject* obj) {
+u8 AppleOnTree_getAnimState(GameObject* obj) {
     return ((AppleOnTreeState*)obj->extra)->animState;
 }
 

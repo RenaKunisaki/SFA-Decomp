@@ -47,7 +47,7 @@ STATIC_ASSERT(offsetof(FlameThrowerspeHitProfile, hitVolumeSlot) == 0x8);
 STATIC_ASSERT(sizeof(FlameThrowerspeHitProfile) == 0xC);
 
 void FlameThrowerspe_modelMtxFn(void);
-void FlameThrowerspe_func0B(GameObject* obj);
+void FlameThrowerspe_launch(GameObject* obj);
 void FlameThrowerspe_setTransform(GameObject* obj, s16 rotY, s16 rotX, f32 x, f32 y, f32 z);
 int FlameThrowerspe_getExtraSize(void);
 int FlameThrowerspe_getObjectTypeId(void);

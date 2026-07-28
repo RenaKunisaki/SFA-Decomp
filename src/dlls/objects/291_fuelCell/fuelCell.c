@@ -36,7 +36,7 @@ int FuelCell_SeqFn(GameObject* obj) {
     return 0;
 }
 
-void FuelCell_modelMtxFn(GameObject* obj) {
+void FuelCell_setupModelRenderState(GameObject* obj) {
     if (obj->anim.renderAlpha == 0xFF) {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
     } else {
@@ -218,7 +218,7 @@ void FuelCell_update(GameObject* obj) {
 
 void FuelCell_init(GameObject* obj) {
     obj->animEventCallback = FuelCell_SeqFn;
-    ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), FuelCell_modelMtxFn);
+    ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), FuelCell_setupModelRenderState);
     ObjMsg_AllocQueue(obj, 2);
 }
 

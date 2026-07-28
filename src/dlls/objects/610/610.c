@@ -63,7 +63,7 @@ void drakormissile_abortStraightFlight(GameObject* obj)
     }
 }
 
-void drakormissile_modelMtxFn(GameObject* obj)
+void drakormissile_requestFree(GameObject* obj)
 {
     DrakorMissileState* state = (obj)->extra;
     state->flags |= 1;
@@ -454,6 +454,6 @@ ObjectDescriptor14 gDrakorMissileObjDescriptor = {
     (ObjectDescriptorCallback)drakormissile_getExtraSize,
     (ObjectDescriptorCallback)drakormissile_isFadingOut,
     (ObjectDescriptorCallback)drakormissile_startStraightLaunch,
-    (ObjectDescriptorCallback)drakormissile_modelMtxFn,
+    (ObjectDescriptorCallback)drakormissile_requestFree,
     (ObjectDescriptorCallback)drakormissile_abortStraightFlight,
 };

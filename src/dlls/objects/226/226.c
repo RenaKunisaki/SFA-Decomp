@@ -212,7 +212,7 @@ s16 staff_getHitReactValue(GameObject* obj);
 s32 staff_getSwipeTextureIndex(GameObject* obj);
 void staff_func10(GameObject* obj, s32 v);
 void staff_setHitReactValue(GameObject* obj, s32 v);
-void staff_modelMtxFn(GameObject* obj, int p4, int p5);
+void staff_updateSwipe(GameObject* obj, int p4, int p5);
 void staff_addHitReactValue(GameObject* obj, s32 delta);
 void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2);
 void staff_free(GameObject* obj);
@@ -880,7 +880,7 @@ ObjectDescriptor23 gStaffObjDescriptor = {
     staff_getExtraSize,
     (ObjectDescriptorCallback)staff_func0A,
     (ObjectDescriptorCallback)staff_func0B,
-    (ObjectDescriptorCallback)staff_modelMtxFn,
+    (ObjectDescriptorCallback)staff_updateSwipe,
     (ObjectDescriptorCallback)staff_hitDetectGeometry,
     (ObjectDescriptorCallback)staff_func0E,
     (ObjectDescriptorCallback)staff_func0F,
@@ -1040,7 +1040,7 @@ void staff_hitDetectGeometry(GameObject* obj)
 }
 
 
-void staff_modelMtxFn(GameObject* obj, int p4, int p5)
+void staff_updateSwipe(GameObject* obj, int p4, int p5)
 {
     StaffState* inner = (StaffState*)*(int*)&obj->extra;
     staff_setupSwipe((int)obj, (u8*)inner, p5, p4);

@@ -27,7 +27,7 @@ void staff_hitDetect(void);
 void staff_hitDetectGeometry(GameObject* obj);
 void staff_init(GameObject* obj);
 void staff_initialise(void);
-void staff_modelMtxFn(GameObject* obj, int p4, int p5);
+void staff_updateSwipe(GameObject* obj, int p4, int p5);
 void staff_release(void);
 void staff_render(void);
 void staffSetGlow(GameObject* obj, u8 attackType, u8 enable);

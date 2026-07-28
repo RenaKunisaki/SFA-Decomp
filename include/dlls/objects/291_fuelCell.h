@@ -56,7 +56,7 @@ STATIC_ASSERT(offsetof(FuelCellState, pad5D) == 0x5D);
 STATIC_ASSERT(sizeof(FuelCellState) == FUEL_CELL_STATE_SIZE);
 
 int FuelCell_SeqFn(GameObject* obj);
-void FuelCell_modelMtxFn(GameObject* obj);
+void FuelCell_setupModelRenderState(GameObject* obj);
 int FuelCell_getExtraSize(void);
 void FuelCell_free(GameObject* obj);
 void FuelCell_render(GameObject* obj, int p2, int p3, int p4, int p5);

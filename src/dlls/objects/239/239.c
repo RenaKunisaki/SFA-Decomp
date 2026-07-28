@@ -192,9 +192,9 @@ ObjectDescriptor14 gPushableObjDescriptor = {
     (ObjectDescriptorCallback)pushable_getObjectTypeId, /* getObjectTypeId */
     (ObjectDescriptorCallback)pushable_getExtraSize,    /* slot09 */
     (ObjectDescriptorCallback)pushable_push,        /* slot0A */
-    (ObjectDescriptorCallback)pushable_func0B,          /* slot0B */
-    (ObjectDescriptorCallback)pushable_modelMtxFn,      /* slot0C */
-    (ObjectDescriptorCallback)pushable_render2,         /* slot0D */
+    (ObjectDescriptorCallback)pushable_isWithinCullDistance,          /* slot0B */
+    (ObjectDescriptorCallback)pushable_setModelFlag,      /* slot0C */
+    (ObjectDescriptorCallback)pushable_isRestored,         /* slot0D */
 };
 
 char sPushPullObjectHitpointOverflow[] = "PUSHPULL OBJECT: hitpoint overflow\n";
@@ -662,18 +662,18 @@ void pushable_handleMsgs(GameObject* obj, int unused) {
     }
 }
 
-int pushable_render2(GameObject* obj) {
+int pushable_isRestored(GameObject* obj) {
     return ((PushableState*)obj->extra)->flags & PUSHABLE_FLAG_RESTORED;
 }
 
-void pushable_modelMtxFn(GameObject* obj, int modelNo) {
+void pushable_setModelFlag(GameObject* obj, int modelNo) {
     PushableState* state = obj->extra;
     u32 flags = state->modelFlags;
 
     state->modelFlags = flags | (1 << modelNo);
 }
 
-int pushable_func0B(GameObject* obj, GameObject* other) {
+int pushable_isWithinCullDistance(GameObject* obj, GameObject* other) {
     PushableState* state;
     f32 deltaToOther[3];
     f32* delta;

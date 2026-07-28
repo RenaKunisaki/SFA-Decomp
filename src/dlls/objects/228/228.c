@@ -46,14 +46,14 @@ ObjectDescriptor13 gFlameThrowerspeObjDescriptor = {
     (ObjectDescriptorCallback)FlameThrowerspe_getObjectTypeId,
     FlameThrowerspe_getExtraSize,
     (ObjectDescriptorCallback)FlameThrowerspe_setTransform,
-    (ObjectDescriptorCallback)FlameThrowerspe_func0B,
+    (ObjectDescriptorCallback)FlameThrowerspe_launch,
     (ObjectDescriptorCallback)FlameThrowerspe_modelMtxFn,
 };
 
 void FlameThrowerspe_modelMtxFn(void) {
 }
 
-void FlameThrowerspe_func0B(GameObject* obj) {
+void FlameThrowerspe_launch(GameObject* obj) {
     s32 phase = FLAMETHROWERSPE_PHASE_LAUNCH;
     FlameThrowerspeState* state = obj->extra;
 

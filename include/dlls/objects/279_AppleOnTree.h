@@ -108,7 +108,7 @@ STATIC_ASSERT(sizeof(AppleOnTreeState) == APPLE_ON_TREE_STATE_SIZE);
 void AppleOnTree_setPosition(GameObject* obj, f32* position);
 void appleontree_knockLoose(GameObject* obj, int message);
 void appleontree_handleCollectableHit(GameObject* obj);
-u8 AppleOnTree_modelMtxFn(GameObject* obj);
+u8 AppleOnTree_getAnimState(GameObject* obj);
 void AppleOnTree_func0A(void);
 int AppleOnTree_getExtraSize(void);
 void AppleOnTree_free(GameObject* obj);

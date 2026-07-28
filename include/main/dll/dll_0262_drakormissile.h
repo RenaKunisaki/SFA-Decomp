@@ -43,7 +43,7 @@ void drakormissile_release(void);
 void drakormissile_update(int obj);
 int drakormissile_isFadingOut(GameObject* obj);
 void drakormissile_abortStraightFlight(GameObject* obj);
-void drakormissile_modelMtxFn(GameObject* obj);
+void drakormissile_requestFree(GameObject* obj);
 void drakormissile_free(GameObject* obj);
 void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void drakormissile_init(GameObject* obj, DrakorMissileSetup* setup);
