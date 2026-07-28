@@ -96,7 +96,7 @@ void DFP_LevelControl_updateMapAct2(GameObject* obj)
     }
     if (mainGetBit(0x7a1) != 0)
     {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus((obj)->anim.mapEventSlot, 6) == 0)
+        if ((*gMapEventInterface)->getObjGroupStatus((obj)->anim.mapEventSlot, 6) == 0)
         {
             (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 6, 1);
         }
