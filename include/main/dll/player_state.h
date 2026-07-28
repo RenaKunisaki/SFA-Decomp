@@ -81,8 +81,7 @@ typedef struct PlayerState {
         int moveAnimTable; /* raw address view retained for incomplete call sites */
         s16* moveAnimIds;  /* anim/move-id table fed to ObjAnim_SetCurrentMove */
     };
-    u8 pad3FC[0x3FE - 0x3FC];
-    u16 proximityRange; /* u16 range/normalization denominator for proximity interaction: the target's distance word (targetObj+0x22) is compared against it and divided by it to scale baddie.moveSpeed (Lightfoot_UpdateProximityInteractionState) */
+    u8 pad3FC[0x400 - 0x3FC];
     int moveParams; /* ptr to a 0x60 locomotion-parameter block (gPlayerDefaultMoveParams); deref'd as f32 speed thresholds/limits at +4/+c/+10/+14/+18/+1c */
     f32 maxSpeed;
     f32 currentSpeed; /* player current movement speed; clamped to [0, maxSpeed], scaled by friction */

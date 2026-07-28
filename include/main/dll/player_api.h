@@ -2,6 +2,7 @@
 #define MAIN_DLL_PLAYER_API_H_
 
 #include "game/objects/object.h"
+#include "main/dll/baddie_state.h"
 #include "main/objanim_update.h"
 #include "main/dll/player_staff_api.h"
 
@@ -83,11 +84,12 @@ int Lightfoot_UpdateRandomTurn(int obj, int state, f32 fv);
 int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv);
-void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, int inner, int animState);
-void Lightfoot_ProcessHitResponseFlags(int obj, int inner);
+void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner,
+                                                 struct Dll437ControlState* animState);
+void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner);
 void Lightfoot_ResetScriptedPosition(GameObject* obj);
-void Lightfoot_UpdateAttachedChild(GameObject* obj, int inner);
-void Lightfoot_UpdatePlayerInteraction(int obj, int inner, int state);
+void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner);
+void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int state);
 int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 
 #endif /* MAIN_DLL_PLAYER_API_H_ */

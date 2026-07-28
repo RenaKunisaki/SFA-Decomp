@@ -36,13 +36,18 @@ typedef struct Dll437ControlState {
     f32 pulseTimer;
     f32 lifeTimer;
     f32 wanderTimer;
-    u8 unknown18[0x24 - 0x18];
+    u8 unknown18[0x1E - 0x18];
+    u16 targetSector;
+    u16 targetYawDelta;
+    u16 targetDistance;
     u16 moveIndex;
     s16 weaponDefNoSentinel;
     s16 weaponDefNo;
     u16 movementSfxId;
     u8 completionCountdown;
-    u8 unknown2D[0x30 - 0x2D];
+    u8 unknown2D;
+    u8 challengeCompletePending;
+    u8 unknown2F;
 } Dll437ControlState;
 
 typedef struct Dll437ButtonTimingControlState {
@@ -74,10 +79,15 @@ STATIC_ASSERT(offsetof(Dll437ControlState, completionTimer) == 0x08);
 STATIC_ASSERT(offsetof(Dll437ControlState, pulseTimer) == 0x0C);
 STATIC_ASSERT(offsetof(Dll437ControlState, lifeTimer) == 0x10);
 STATIC_ASSERT(offsetof(Dll437ControlState, wanderTimer) == 0x14);
+STATIC_ASSERT(offsetof(Dll437ControlState, targetSector) == 0x1E);
+STATIC_ASSERT(offsetof(Dll437ControlState, targetYawDelta) == 0x20);
+STATIC_ASSERT(offsetof(Dll437ControlState, targetDistance) == 0x22);
 STATIC_ASSERT(offsetof(Dll437ControlState, moveIndex) == 0x24);
 STATIC_ASSERT(offsetof(Dll437ControlState, weaponDefNoSentinel) == 0x26);
 STATIC_ASSERT(offsetof(Dll437ControlState, weaponDefNo) == 0x28);
 STATIC_ASSERT(offsetof(Dll437ControlState, movementSfxId) == 0x2A);
+STATIC_ASSERT(offsetof(Dll437ControlState, challengeCompletePending) == 0x2E);
+STATIC_ASSERT(sizeof(Dll437ControlState) == 0x30);
 STATIC_ASSERT(offsetof(Dll437ControlState, completionCountdown) == 0x2C);
 
 STATIC_ASSERT(offsetof(Dll437ButtonTimingControlState, phase) == 0x18);
