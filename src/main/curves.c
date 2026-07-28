@@ -8,6 +8,78 @@ int gCurveCachedSampleCount = -1;
 
 f32 gCurveForwardDiffStep;
 
+static f32 curveSpeedAt(f32* poly, f32 t)
+{
+    return sqrtf(poly[5] + (poly[4] + (poly[3] + (poly[2] + poly[1] * t) * t) * t) * t);
+}
+
+static f32 curveIntegrateSpeed(f32* poly, f32 t0, f32 step)
+{
+    f32 sum;
+    f32 t;
+    int i;
+
+    sum = 0.0f;
+    t = t0 + step;
+    for (i = 2; i < 26; i++)
+    {
+        if ((i & 1) == 0)
+        {
+            sum += 4.0f * curveSpeedAt(poly, t);
+        }
+        else
+        {
+            sum += 2.0f * curveSpeedAt(poly, t);
+        }
+        t += step;
+    }
+    return ((curveSpeedAt(poly, t) + (curveSpeedAt(poly, t0) + sum)) * step) / 3.0f;
+}
+
+static void curveBuildArcSegments(f32* values, int count, f32* out)
+{
+    int i;
+
+    for (i = 0; i < count - 3; i++)
+    {
+        out[0] = values[i + 3] + (-3.0f * values[i + 2] + (-values[i] + 3.0f * values[i + 1]));
+        out[1] = 3.0f * values[i + 2] + (3.0f * values[i] + -6.0f * values[i + 1]);
+        out[2] = -3.0f * values[i] + 3.0f * values[i + 2];
+        out[3] = values[i + 2] + (values[i] + 4.0f * values[i + 1]);
+        out[0] *= 0.16666667f;
+        out[1] *= 0.16666667f;
+        out[2] *= 0.16666667f;
+        out[3] *= 0.16666667f;
+        out[4] = 1.0f;
+        out += 5;
+    }
+}
+
+static f32 curveSolveArcParam(f32* poly, f32 distance, f32 step)
+{
+    f32 lo;
+    f32 hi;
+    f32 mid;
+    int i;
+
+    lo = 0.0f;
+    hi = 1.0f;
+    mid = hi;
+    for (i = 0; i < 16; i++)
+    {
+        mid = (lo + hi) * 0.5f;
+        if (curveIntegrateSpeed(poly, lo, (mid - lo) * step) < distance)
+        {
+            lo = mid;
+        }
+        else
+        {
+            hi = mid;
+        }
+    }
+    return mid;
+}
+
 void Curve_BuildSegmentLengthTable(Curve* curve, int count)
 {
     f32 outX[21];
@@ -37,13 +109,13 @@ void Curve_BuildSegmentLengthTable(Curve* curve, int count)
         Curve_SampleSegmentPoints(px, py, pz, outX, outY, outZ, count, curve->coeffFn);
     }
 
-    zero = lbl_803DE658;
+    zero = 0.0f;
     curve->totalLen = zero;
     for (i = 0; i < count; i++)
     {
-        dx = px != NULL ? outX[i + 1] - outX[i] : lbl_803DE658;
-        dy = py != NULL ? outY[i + 1] - outY[i] : lbl_803DE658;
-        dz = pz != NULL ? outZ[i + 1] - outZ[i] : lbl_803DE658;
+        dx = px != NULL ? outX[i + 1] - outX[i] : 0.0f;
+        dy = py != NULL ? outY[i + 1] - outY[i] : 0.0f;
+        dz = pz != NULL ? outZ[i + 1] - outZ[i] : 0.0f;
         sq = dx * dx + dy * dy + dz * dz;
         if (sq > zero)
         {
@@ -51,7 +123,7 @@ void Curve_BuildSegmentLengthTable(Curve* curve, int count)
         }
         else
         {
-            curve->segLen[i] = lbl_803DE67C;
+            curve->segLen[i] = 0.1f;
         }
         curve->totalLen += curve->segLen[i];
     }
@@ -71,12 +143,12 @@ void Curve_SampleSegmentPoints(f32* px, f32* py, f32* pz, f32* outX, f32* outY, 
 
     if (count != gCurveCachedSampleCount)
     {
-        step = lbl_803DE674 / count;
+        step = 1.0f / count;
         gCurveForwardDiffStep = step;
         gCurveForwardDiffCoeffs[0] = step * step;
-        gCurveForwardDiffCoeffs[1] = lbl_803DE660 * gCurveForwardDiffCoeffs[0];
+        gCurveForwardDiffCoeffs[1] = 2.0f * gCurveForwardDiffCoeffs[0];
         gCurveForwardDiffCoeffs[2] = step * gCurveForwardDiffCoeffs[0];
-        gCurveForwardDiffCoeffs[3] = lbl_803DE680 * gCurveForwardDiffCoeffs[2];
+        gCurveForwardDiffCoeffs[3] = 6.0f * gCurveForwardDiffCoeffs[2];
         gCurveCachedSampleCount = count;
     }
 
@@ -303,7 +375,7 @@ void curvesSetupMoveNetworkCurve(Curve* curve)
         debugPrintf(sCurvesSetupMoveNetworkCurveBadControlPointCount);
     }
 
-    curve->pathLength = lbl_803DE658;
+    curve->pathLength = 0.0f;
     curve->idx = 0;
     while (curve->idx < curve->count - 3)
     {
@@ -349,7 +421,7 @@ void curvesMove(Curve* curve)
         debugPrintf(sCurvesMoveBadControlPointCount);
     }
 
-    curve->pathLength = lbl_803DE658;
+    curve->pathLength = 0.0f;
     curve->idx = 0;
     while (curve->idx < curve->count - 3)
     {
@@ -377,13 +449,13 @@ void curvesMove(Curve* curve)
 
     if (curve->dir != 0)
     {
-        curve->t = lbl_803DE674;
+        curve->t = 1.0f;
         curve->segmentDistance = curve->segLen[19];
         curve->pathDistance = curve->pathLength;
     }
     else
     {
-        f32 z = lbl_803DE658;
+        f32 z = 0.0f;
         curve->t = z;
         curve->segmentDistance = z;
         curve->pathDistance = z;
@@ -437,8 +509,6 @@ f32 Curve_EvalCatmullRom(void* valuesArg, f32 t, f32* outTangent)
 
 f32 Curve_EvalBezier(f32* values, f32 t, f32* outTangent)
 {
-    f32 k668;
-    f32 k664;
     f32 cubic;
     f32 p1;
     f32 p2;
@@ -447,16 +517,14 @@ f32 Curve_EvalBezier(f32* values, f32 t, f32* outTangent)
     f32 quadratic;
     f32 linear;
 
-    cubic = values[3];
-    cubic += (k668 = lbl_803DE668) * (p2 = values[2]) +
-             (-(p0 = values[0]) + (mid = (k664 = lbl_803DE664) * (p1 = values[1])));
-    quadratic = k664 * p2 + (k664 * p0 + lbl_803DE66C * p1);
-    linear = k668 * p0 + mid;
+    cubic = values[3] + (-3.0f * (p2 = values[2]) + (-(p0 = values[0]) + (mid = 3.0f * (p1 = values[1]))));
+    quadratic = 3.0f * p2 + (3.0f * p0 + -6.0f * p1);
+    linear = -3.0f * p0 + mid;
 
     if (outTangent != NULL)
     {
-        f32 cubic3 = k664 * cubic;
-        *outTangent = t * (lbl_803DE660 * quadratic + cubic3 * t) + linear;
+        f32 cubic3 = 3.0f * cubic;
+        *outTangent = t * (2.0f * quadratic + cubic3 * t) + linear;
     }
     return t * (t * (cubic * t + quadratic) + linear) + p0;
 }

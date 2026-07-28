@@ -1806,7 +1806,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/audio_sfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "main/audio_stream.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/camera.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/curves.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(Matching, "main/curves.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/voxmaps.c", cflags=cflags_dll_noopt_noautoinline, mw_version="GC/1.3"),
             Object(Matching, "main/modelEngine.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/pad.c", cflags=cflags_dll_noopt_nocse, mw_version="GC/1.3"),
