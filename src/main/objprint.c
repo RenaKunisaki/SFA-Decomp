@@ -1304,12 +1304,6 @@ void objSetColorFilter(s16 a, s16 b, s16 c)
     gObjColorFilterEnabled = 1;
 }
 
-typedef struct
-{
-    f32 pos[3];
-    s16 rot[3];
-    s8 joints[6];
-} ChildEnt;
 
 #define OBJPRINT_CHILD_TABLE(staff) (*(char**)(*(char**)((staff) + 0x50) + 0x2c))
 

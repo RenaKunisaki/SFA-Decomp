@@ -860,17 +860,9 @@ void objRenderFuzzFn_8003d6f8(void* objArg)
 
 
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} ObjWGPipe;
+#include "main/dll/ppcwgpipe_struct.h"
 
-extern ObjWGPipe GXWGFifo : (0xCC008000);
+extern PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 gObjGxPosMtxIdTable[12];
 

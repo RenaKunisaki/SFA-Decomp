@@ -91,16 +91,6 @@ TrackTriangle* gTrackTriangleBuffer;
 
 f32 lbl_803DB660 = 0.01f;
 
-typedef struct TrackBlockDescriptor
-{
-    void* object;
-    s16 firstTriangle;
-    u8 pad06[2];
-    void* currentMatrix;
-    void* currentCollisionMatrix;
-    void* alternateMatrix;
-    void* alternateCollisionMatrix;
-} TrackBlockDescriptor;
 
 /* TrackTriangle -- the 0x4c-byte collision triangle record packed into
  * gTrackTriangleBuffer.  Plane and edge-plane normals are prebaked f32;

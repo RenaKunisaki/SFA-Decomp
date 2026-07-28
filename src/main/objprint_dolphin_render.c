@@ -171,17 +171,9 @@ extern f32 lbl_803DEA64;
 extern f32 lbl_803DEA68;
 extern f32 lbl_803DEA6C;
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} ObjWGPipe;
+#include "main/dll/ppcwgpipe_struct.h"
 
-extern ObjWGPipe GXWGFifo : (0xCC008000);
+extern PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 gObjGxPosMtxIdTable[12];
 
@@ -2117,12 +2109,6 @@ void objRenderShadow(void* obj)
     }
 }
 
-typedef struct
-{
-    f32 pos[3];
-    s16 rot[3];
-    s8 joints[6];
-} ChildEnt;
 void objRenderChild(int* child, int* parent, u8 isShadow)
 {
     f32 res[3];

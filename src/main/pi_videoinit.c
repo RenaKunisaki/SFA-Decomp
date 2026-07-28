@@ -273,16 +273,8 @@ extern f32 lbl_803DEA74;
 extern f32 lbl_803DEA7C;
 extern u8 lbl_803DB411;
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} PiWGPipe;
-extern volatile PiWGPipe GXWGFifo : (0xCC008000);
+#include "main/dll/ppcwgpipe_struct.h"
+extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
 int GXFlush_(u8 visible, int unused)
 {

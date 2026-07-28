@@ -1014,16 +1014,6 @@ typedef struct TrackP6Entry
     f32 relZ2;
 } TrackP6Entry;
 
-typedef struct TrackBlockDescriptor
-{
-    void* object;
-    s16 firstTriangle;
-    u8 pad06[2];
-    void* currentMatrix;
-    void* currentCollisionMatrix;
-    void* alternateMatrix;
-    void* alternateCollisionMatrix;
-} TrackBlockDescriptor;
 
 /* TrackTriangle -- the 0x4c-byte collision triangle record packed into
  * gTrackTriangleBuffer.  Plane and edge-plane normals are prebaked f32;
@@ -1047,15 +1037,7 @@ typedef struct TrackTriangle
     u8 edgeOutBits; /* 0x4b per-edge outside bits from last query */
 } TrackTriangle;
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} GolfWGPipe;
+#include "main/dll/ppcwgpipe_struct.h"
 
 extern const f32 lbl_803DEC50;
 extern u32 gSunFlareScissorX;
@@ -1068,7 +1050,7 @@ extern u8 lbl_803DCE98;
 extern int lbl_803DCE80;
 extern int gMapBlockIndexCount;
 extern int* gMapBlockIndexList;
-extern volatile GolfWGPipe GXWGFifo : (0xCC008000);
+extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern int sSynthFadeUnit;
 extern int renderFlags;
 extern u8 colorScale;

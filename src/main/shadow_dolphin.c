@@ -121,17 +121,9 @@ typedef struct AngleXf
     f32 tz;
 } AngleXf;
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} GolfWGPipe;
+#include "main/dll/ppcwgpipe_struct.h"
 
-extern volatile GolfWGPipe GXWGFifo : (0xCC008000);
+extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
 void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8);
 

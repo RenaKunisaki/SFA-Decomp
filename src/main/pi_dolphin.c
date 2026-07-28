@@ -3983,17 +3983,9 @@ void tvInit(void)
     VIWaitForRetrace();
 }
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} PiWGPipe;
+#include "main/dll/ppcwgpipe_struct.h"
 
-extern volatile PiWGPipe GXWGFifo : (0xCC008000);
+extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 enableDebugText;
 

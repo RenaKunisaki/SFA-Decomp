@@ -4,7 +4,16 @@
 #include "ghidra_import.h"
 #include "game/objects/object.h"
 
-struct TrackBlockDescriptor;
+typedef struct TrackBlockDescriptor
+{
+    void* object;
+    s16 firstTriangle;
+    u8 pad06[2];
+    void* currentMatrix;
+    void* currentCollisionMatrix;
+    void* alternateMatrix;
+    void* alternateCollisionMatrix;
+} TrackBlockDescriptor;
 struct TrackTriangle;
 
 void FUN_800602d4(u64 param_1,u64 param_2,u64 param_3,u64 param_4,

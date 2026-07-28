@@ -4,6 +4,15 @@
 #include "game/objects/object.h"
 #include "main/objtexture.h"
 
+/* One entry of the parent model's child-attachment table: local offset,
+ * rotation and the joint indices the child is bound to. */
+typedef struct
+{
+    f32 pos[3];
+    s16 rot[3];
+    s8 joints[6];
+} ChildEnt;
+
 #define OBJPRINT_OBJECT(obj)            ((ObjAnimComponent*)(obj))
 #define OBJPRINT_MODEL_INSTANCE(obj)    (OBJPRINT_OBJECT(obj)->modelInstance)
 #define OBJPRINT_BANK_TABLE(obj)        ((int**)OBJPRINT_OBJECT(obj)->banks)
