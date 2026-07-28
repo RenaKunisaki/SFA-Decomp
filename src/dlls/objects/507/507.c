@@ -1,113 +1,107 @@
-/* DLL 0x01FB */
-#include "dlls/object_descriptor.h"
-#include "main/dll/dll1fbsetup_struct.h"
-#include "main/dll/dll1fbstate_struct.h"
+/*
+ * DLL 507 / 0x01FB - an unnamed interaction-controlled animated object. The
+ * generated numeric path remains its source identity because no retail
+ * basename has been recovered.
+ */
+#include "dlls/objects/507.h"
+
+#include "dolphin/pad.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/objanim_update.h"
+#include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
+#include "main/pad_api.h"
 
-#define PAD_BUTTON_A 0x100
+#define DLL507_TRIGGER_MODE_DISABLE_INTERACTION 1
+#define DLL507_TRIGGER_MODE_DIALOGUE_SEQUENCE   2
+#define DLL507_DIALOGUE_SEQUENCE_INDEX          4
+#define DLL507_MESSAGE_QUEUE_CAPACITY           4
+#define DLL507_MOVE_GROUP_OFFSET                0x100
 
-STATIC_ASSERT(sizeof(Dll1FBState) == 0xc);
-STATIC_ASSERT(offsetof(Dll1FBState, baseMove) == 0x04);
-STATIC_ASSERT(offsetof(Dll1FBState, triggerMode) == 0x06);
-STATIC_ASSERT(offsetof(Dll1FBState, hideModel) == 0x09);
-STATIC_ASSERT(offsetof(Dll1FBSetup, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(Dll1FBSetup, baseMove) == 0x19);
-STATIC_ASSERT(offsetof(Dll1FBSetup, triggerMode) == 0x1a);
-STATIC_ASSERT(offsetof(Dll1FBSetup, objectParam) == 0x1c);
+int dll507_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    Dll507State* state = obj->extra;
+    s16 triggerMode = state->triggerMode;
+    u8 interactionFlags;
 
-int dll_1FB_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    Dll1FBState* state = obj->extra;
-    s16 mode = state->triggerMode;
-    u8 flags;
-
-    if ((mode == 1) || (mode == 2))
-    {
-        flags = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-        *(u8*)&obj->anim.resetHitboxMode = flags;
+    (void)unused;
+    if (triggerMode == DLL507_TRIGGER_MODE_DISABLE_INTERACTION ||
+        triggerMode == DLL507_TRIGGER_MODE_DIALOGUE_SEQUENCE) {
+        interactionFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = interactionFlags;
     }
     animUpdate->activeHitVolumePair = -1;
     animUpdate->sequenceEventActive = 0;
     return 0;
 }
 
-int dll_1FB_getExtraSize_ret_12(void) { return 0xc; }
-int dll_1FB_getObjectTypeId(void) { return 0; }
-
-void dll_1FB_free_nop(void)
-{
+int dll507_getExtraSize(void) {
+    return sizeof(Dll507State);
 }
 
-void dll_1FB_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    Dll1FBState* state = obj->extra;
+int dll507_getObjectTypeId(void) {
+    return 0;
+}
 
-    if (visible == 0 || state->hideModel != 0u)
-    {
+void dll507_free(void) {
+}
+
+void dll507_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    Dll507State* state = obj->extra;
+
+    if (visible == 0 || state->hideModel != 0u) {
         return;
     }
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 }
 
-void dll_1FB_hitDetect_nop(void)
-{
+void dll507_hitDetect(void) {
 }
 
-void dll_1FB_update(GameObject* obj)
-{
-    Dll1FBState* state = obj->extra;
+void dll507_update(GameObject* obj) {
+    Dll507State* state = obj->extra;
 
-    if (((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) && (state->triggerMode == 2) &&
-        (mainGetBit(GAMEBIT_K1_SHRINE_DOOR_DIALOGUE_DONE) == 0))
-    {
-        (*gObjectTriggerInterface)->runSequence(4, obj, -1);
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0 &&
+        state->triggerMode == DLL507_TRIGGER_MODE_DIALOGUE_SEQUENCE &&
+        mainGetBit(GAMEBIT_K1_SHRINE_DOOR_DIALOGUE_DONE) == 0) {
+        (*gObjectTriggerInterface)->runSequence(DLL507_DIALOGUE_SEQUENCE_INDEX, obj, -1);
         buttonDisable(0, PAD_BUTTON_A);
         mainSetBits(GAMEBIT_K1_SHRINE_DOOR_DIALOGUE_DONE, 1);
     }
     ObjAnim_AdvanceCurrentMove((int)obj, 0.01f, timeDelta, NULL);
 }
 
-void dll_1FB_init(GameObject* obj, u8* def)
-{
-    Dll1FBState* state;
-    Dll1FBSetup* setup;
-
-    state = obj->extra;
-    setup = (Dll1FBSetup*)def;
-    ObjMsg_AllocQueue(obj, 4);
-    obj->animEventCallback = dll_1FB_SeqFn;
-    obj->anim.rotX = (s16)(setup->yawByte << 8);
-    obj->anim.rotY = setup->objectParam;
-    state->baseMove = setup->baseMove;
-    state->triggerMode = setup->triggerMode;
-    ObjAnim_SetCurrentMove((int)obj, state->baseMove + 0x100, 0.0f, 0);
+void dll507_init(GameObject* obj, const Dll507PlacementView* placement) {
+    Dll507State* state = obj->extra;
+    ObjMsg_AllocQueue(obj, DLL507_MESSAGE_QUEUE_CAPACITY);
+    obj->animEventCallback = dll507_processAnimEvents;
+    obj->anim.rotX = (s16)((s32)placement->rotationXHighByte << 8);
+    obj->anim.rotY = placement->rotationY;
+    state->baseMove = placement->baseMove;
+    state->triggerMode = placement->triggerMode;
+    ObjAnim_SetCurrentMove((int)obj, state->baseMove + DLL507_MOVE_GROUP_OFFSET, 0.0f, 0);
 }
 
-void dll_1FB_release_nop(void)
-{
+void dll507_release(void) {
 }
 
-void dll_1FB_initialise_nop(void)
-{
+void dll507_initialise(void) {
 }
 
-ObjectDescriptor dll_1FB = {
+ObjectDescriptor gDll507ObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_1FB_initialise_nop,
-    (ObjectDescriptorCallback)dll_1FB_release_nop,
+    dll507_initialise,
+    dll507_release,
     0,
-    (ObjectDescriptorCallback)dll_1FB_init,
-    (ObjectDescriptorCallback)dll_1FB_update,
-    (ObjectDescriptorCallback)dll_1FB_hitDetect_nop,
-    (ObjectDescriptorCallback)dll_1FB_render,
-    (ObjectDescriptorCallback)dll_1FB_free_nop,
-    (ObjectDescriptorCallback)dll_1FB_getObjectTypeId,
-    dll_1FB_getExtraSize_ret_12,
+    (ObjectDescriptorCallback)dll507_init,
+    (ObjectDescriptorCallback)dll507_update,
+    dll507_hitDetect,
+    (ObjectDescriptorCallback)dll507_render,
+    dll507_free,
+    (ObjectDescriptorCallback)dll507_getObjectTypeId,
+    dll507_getExtraSize,
 };

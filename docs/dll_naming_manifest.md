@@ -35,9 +35,9 @@ which now carries prose evidence notes, so they have been dropped.
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
 | naming contradictions (appendix) | 19 |
-| unit-owned headers recorded (appendix) | 96 |
+| unit-owned headers recorded (appendix) | 97 |
 
-Expansion status over the 705 rows: NO-RETAIL-NAME 289, COMPLETE 263, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
+Expansion status over the 705 rows: NO-RETAIL-NAME 288, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
 
 The 21 rows whose proposal still differs are all engine slots
 0x000-0x014, and every one of those proposals predates the move to the
@@ -556,7 +556,7 @@ any of them is acted on.
 | 0x1F8 | WM_Galleon | COMPLETE | dlls/objects/504_WM_Galleon/WM_Galleon.c | = (canonical) | Exact complete ten-function TU with its proven pre-function 0x38-byte descriptor, allocation-backed and fully asserted 0x10-byte state, creator-allocation-backed and fully asserted 0x24-byte setup, canonical unit header, shared creator placement and object-ID contracts, and exact emitted sections, relocations, and symbols; the generated source path remains unchanged |
 | 0x1F9 | WM_ObjCreat | COMPLETE | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | = (canonical) | Exact complete nine-function TU with its proven pre-function 0x38-byte descriptor, allocation-backed and fully asserted 0x08-byte state, asserted callback-visible placement prefix, allocation-backed spawned-object setup views, canonical unit header and shared galleon object ID, and exact emitted section bytes and relocations after intended wall-crawler-count symbol normalization; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, the retail basename is truncated, and the generated source path remains unchanged |
 | 0x1FA | WM_seqobjec | COMPLETE | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x01-byte state, asserted callback-visible placement fields at offsets 0x18 and 0x19, canonical unit header and shared galleon object ID, and exact emitted section bytes and relocations after intended toggle-state symbol normalization; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, the retail basename is truncated, and the generated source path remains unchanged |
-| 0x1FB | — | NO-RETAIL-NAME | dlls/objects/507/507.c | = (canonical) | — |
+| 0x1FB | — | COMPLETE | dlls/objects/507/507.c | = (canonical) | Exact complete ten-function TU with its terminal numbered 0x38-byte descriptor, allocation-backed and fully asserted 0x0C-byte state, asserted callback-visible placement prefix, canonical unit header and numbered public namespace, and exact emitted section bytes and relocations after intended symbol normalization; active-target retail evidence does not establish a basename or complete placement width, and the generated numeric source path remains unchanged |
 | 0x1FC | — | COMPLETE | dlls/objects/508/508.c | = (canonical) | No recovered retail basename |
 | 0x1FD | WM_LaserTar | COMPLETE | dlls/objects/509_WM_LaserTar/WM_LaserTar.c | = (canonical) | Retail basename is truncated |
 | 0x1FE | — | COMPLETE | dlls/objects/510/510.c | = (canonical) | No recovered retail basename |
@@ -910,6 +910,7 @@ more as they are recovered.
 | 0x1F8 | dlls/objects/504_WM_Galleon/WM_Galleon.c | include/dlls/objects/504_WM_Galleon.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/dlls/objects/505_WM_ObjCreat.h |
 | 0x1FA | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | include/dlls/objects/506_WM_seqobjec.h |
+| 0x1FB | dlls/objects/507/507.c | include/dlls/objects/507.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |

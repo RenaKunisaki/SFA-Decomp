@@ -300,6 +300,7 @@
 #include "dlls/objects/504_WM_Galleon.h"
 #include "dlls/objects/505_WM_ObjCreat.h"
 #include "dlls/objects/506_WM_seqobjec.h"
+#include "dlls/objects/507.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -381,7 +382,6 @@ char sModelEngineTimerDotText[] = ".";
 #define MODELENGINE_TIMER_RUNNING   4
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
-extern ResourceDescriptor dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
@@ -1616,7 +1616,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_GalleonObjDescriptor,
     (ResourceDescriptor*)&gWM_ObjCreatorObjDescriptor,
     (ResourceDescriptor*)&gWM_seqobjectObjDescriptor,
-    &dll_1FB,
+    (ResourceDescriptor*)&gDll507ObjDescriptor,
     &gLaserBeamObjDescriptor,
     &gWM_LaserTargetObjDescriptor,
     &gPressureSwitchObjDescriptor,
