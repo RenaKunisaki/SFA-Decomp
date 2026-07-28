@@ -70,6 +70,7 @@ STATIC_ASSERT(sizeof(TransporterEffectParams) == 0x18);
 extern u8 lbl_803DCDE0;
 extern s16 lbl_803DCEB8;
 
+const f32 gTransporterZero[1] = {0.0f};
 
 void Transporter_updateEffects(GameObject* obj) {
     TransporterState* state;
@@ -80,9 +81,9 @@ void Transporter_updateEffects(GameObject* obj) {
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    fx.pos[0] = 0.0f;
+    fx.pos[0] = gTransporterZero[0];
     fx.pos[1] = 55.0f;
-    fx.pos[2] = 0.0f;
+    fx.pos[2] = gTransporterZero[0];
     flags = state->flags;
 
     if ((flags & TRANSPORTER_FLAG_WARP_A) != 0) {
@@ -159,7 +160,7 @@ void Transporter_updateEffects(GameObject* obj) {
                 }
             }
         } else if (!(state->pulseTimer < WARP_PAD_PULSE_END_TIME)) {
-            state->pulseTimer = 0.0f;
+            state->pulseTimer = gTransporterZero[0];
             state->flags &= ~TRANSPORTER_FLAG_PULSE_FX;
         }
         state->pulseTimer += timeDelta;
@@ -228,8 +229,8 @@ void Transporter_updateInteraction(GameObject* obj) {
         }
     }
     state->cooldownTimer -= timeDelta;
-    if (state->cooldownTimer <= 0.0f) {
-        state->cooldownTimer = 0.0f;
+    if (state->cooldownTimer <= gTransporterZero[0]) {
+        state->cooldownTimer = gTransporterZero[0];
         state->unk0A = -1;
     }
 }
@@ -268,6 +269,29 @@ typedef enum TransporterSequenceEvent {
 } TransporterSequenceEvent;
 
 extern s16 lbl_803DCEB8;
+
+void Transporter_init(GameObject* obj, TransporterPlacement* placement);
+void Transporter_update(GameObject* obj);
+void Transporter_hitDetect(int obj);
+void Transporter_render(void);
+int Transporter_getExtraSize(void);
+
+ObjectDescriptor gTransporterObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)Transporter_init,
+    (ObjectDescriptorCallback)Transporter_update,
+    (ObjectDescriptorCallback)Transporter_hitDetect,
+    (ObjectDescriptorCallback)Transporter_render,
+    0,
+    0,
+    Transporter_getExtraSize,
+};
 
 int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     int i;
@@ -403,7 +427,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_SKY, 0);
                 setDrawCloudsAndLights(0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, 0.0f);
+                skyFn_80088e54(0, gTransporterZero[0]);
                 break;
             case 0x48506:
             case 0x4A533:
@@ -415,7 +439,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_C, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_D, 0);
                 skyFn_80088c94(1, 0);
-                skyFn_80088e54(0, 0.0f);
+                skyFn_80088e54(0, gTransporterZero[0]);
                 break;
             case 0x4B666:
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_A, 0);
@@ -426,7 +450,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_B, 0);
                 (*gMapEventInterface)->setObjGroupStatus(0x15, 2, 1);
                 getEnvfxActImmediately(0, 0, TRANSPORTER_ENVFX_G2_C, 0);
-                skyFn_80088e54(1, 0.0f);
+                skyFn_80088e54(1, gTransporterZero[0]);
                 break;
             case 0x4670D:
             case 0x4827E:
@@ -440,7 +464,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_A, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_B, 0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, 0.0f);
+                skyFn_80088e54(0, gTransporterZero[0]);
             case 0x4CB84:
                 mainSetBits(GAMEBIT_VFP_EnvironmentRelated0EF6, 0);
                 break;
@@ -589,19 +613,3 @@ void Transporter_init(GameObject* obj, TransporterPlacement* placement) {
     }
 }
 
-ObjectDescriptor gTransporterObjDescriptor = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    0,
-    0,
-    0,
-    (ObjectDescriptorCallback)Transporter_init,
-    (ObjectDescriptorCallback)Transporter_update,
-    (ObjectDescriptorCallback)Transporter_hitDetect,
-    (ObjectDescriptorCallback)Transporter_render,
-    0,
-    0,
-    Transporter_getExtraSize,
-};
