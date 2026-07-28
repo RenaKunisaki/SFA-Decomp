@@ -1631,9 +1631,9 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
         return;
     }
 
-    for (i = 0, cp = curves; i < count; i++)
+    for (i = 0, cp = curves; i < count; i++, cp++)
     {
-        curve = *cp++;
+        curve = *cp;
         if ((((ObjfsaRomCurveDef*)curve)->type != 0x24) || (*(u8*)((u8*)curve + 3) != 0))
         {
             continue;
@@ -1807,8 +1807,8 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     }
 
     slope = (end[2] - start[2]) / (end[0] - start[0]);
-    dz = start[0] - end[0];
     intercept = start[2] - (slope * start[0]);
+    dz = start[0] - end[0];
     perpSlope = dz / (end[2] - start[2]);
     projection[0] = ((center[2] - (perpSlope * center[0])) - intercept) / (slope - perpSlope);
     projection[2] = (slope * projection[0]) + intercept;
