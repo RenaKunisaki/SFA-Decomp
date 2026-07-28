@@ -95,12 +95,7 @@ int objRotateFn_8003bce8(f32* m, s16* outA, s16* outB, s16* outC);
 
 void modelInitMtxs(ModelFileHeader* def, ObjModel* model);
 
-typedef struct IndTexMtx23
-{
-    f32 m[2][3];
-} IndTexMtx23;
-
-STATIC_ASSERT(sizeof(IndTexMtx23) == 0x18);
+#include "main/objprint_dolphin_internal.h"
 
 
 extern u8 lbl_803DCC3D;
@@ -154,36 +149,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4);
 void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode);
 void objRenderChild(int* child, int* parent, u8 isShadow);
 
-/*
- * One render op ("shader") record from the model file's renderOps array,
- * bound by opcode 1 of the render-instruction stream.  Layer records
- * (Shader_getLayer) precede these fields; byte 0x41 holds the layer count
- * and byte 0x40 the layer blend flags (0x10 = additive path).
- * flags (+0x3C) bits seen in this file: 8 = backface cull, 0x100 = extra
- * projected-texture pass, 0x400 = alpha-test opaque, 0x200 = fuzz overlay
- * eligible, 0x20000 = water/caustic hook, 0x100000 = decal second layer,
- * 0x40000000 = force blend.
- */
-typedef struct ObjModelRenderOp
-{
-    u8 pad0[0x18 - 0x0];
-    u32 textureId;
-    u32 unk1C;
-    u8 pad20[0x24 - 0x20];
-    u32 indirectTextureId;
-    u8 pad28[0x34 - 0x28];
-    u32 envTextureId;
-    u8 pad38[0x3C - 0x38];
-    u32 flags;
-} ObjModelRenderOp;
 extern volatile int gAssetLoadInFlightFlags;
-typedef struct
-{
-    u8* data;
-    int pad[3];
-    int pos;
-} MtxBitStream;
-typedef u8 (*ObjModelRenderCb)(int* obj, int* am, int p3);
 extern f32 lbl_803DEA4C;
 extern f32 lbl_803DEA50;
 extern f32 lbl_803DEA54;
@@ -195,13 +161,6 @@ int getLoadedFileFlags(int slot);
 s32 mapCheckCurBlocks(int v);
 
 
-// ObjModelRenderOp.flags (+0x3C) bits
-#define SHADER_FLAG_BACKFACE_CULL      0x8
-#define SHADER_FLAG_PROJECTED_TEX_PASS 0x100
-#define SHADER_FLAG_ALPHA_TEST_OPAQUE  0x400
-#define SHADER_FLAG_WATER_CAUSTIC      0x20000
-#define SHADER_FLAG_DECAL_LAYER        0x100000
-#define SHADER_FLAG_FORCE_BLEND        0x40000000
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 

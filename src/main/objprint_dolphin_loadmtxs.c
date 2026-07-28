@@ -21,12 +21,7 @@
 extern s32 lbl_803DCC48;
 extern f32 lbl_803DEA04;
 
-typedef struct
-{
-    u8* data;
-    int pad[3];
-    int pos;
-} MtxBitStream;
+#include "main/objprint_dolphin_internal.h"
 
 extern u8 gObjGxPosMtxIdTable[12];
 
