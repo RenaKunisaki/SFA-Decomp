@@ -955,7 +955,7 @@ int HighTop_render2(void)
 
 void HighTop_modelMtxFn(int obj, f32* a, f32* b, f32* c)
 {
-    HighTopRuntime* runtime = ((HighTopObject*)obj)->runtime;
+    HighTopRuntime* runtime = ((GameObject*)obj)->extra;
     *a = runtime->pathPoint2X;
     *b = runtime->pathPoint2Y;
     *c = runtime->pathPoint2Z;
@@ -989,7 +989,7 @@ void HighTop_free(int obj)
 
 void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
 {
-    HighTopRuntime* runtime = ((HighTopObject*)obj)->runtime;
+    HighTopRuntime* runtime = ((GameObject*)obj)->extra;
     f32 scale = 1.0f;
     if (visible != 0)
     {

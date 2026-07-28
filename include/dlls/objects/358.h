@@ -49,12 +49,6 @@ typedef struct ExplodedState {
     u8 pad6A[0x02];
 } ExplodedState;
 
-typedef struct ExplodedObject {
-    ObjAnimComponent anim;
-    u8 padB0[0x08];
-    ExplodedState* state;
-} ExplodedObject;
-
 STATIC_ASSERT(offsetof(ExplodedPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(ExplodedPlacement, modelBankIndex) == 0x18);
 STATIC_ASSERT(offsetof(ExplodedPlacement, initialRotation) == 0x1A);
@@ -86,22 +80,19 @@ STATIC_ASSERT(offsetof(ExplodedState, phase) == 0x69);
 STATIC_ASSERT(offsetof(ExplodedState, pad6A) == 0x6A);
 STATIC_ASSERT(sizeof(ExplodedState) == 0x6C);
 
-STATIC_ASSERT(offsetof(ExplodedObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(ExplodedObject, padB0) == 0xB0);
-STATIC_ASSERT(offsetof(ExplodedObject, state) == 0xB8);
 
-void exploded_initDebrisState(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter,
+void exploded_initDebrisState(GameObject* obj, ExplodedPlacement* placement, int usePresetCenter,
                               ExplodedState* state);
-void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, ExplodedPlacement* placement);
-u8 exploded_getPhase(ExplodedObject* obj);
+void exploded_seedDebrisMotion(GameObject* obj, ExplodedState* state, ExplodedPlacement* placement);
+u8 exploded_getPhase(GameObject* obj);
 int exploded_getExtraSize(void);
-u32 exploded_getObjectTypeId(ExplodedObject* obj);
+u32 exploded_getObjectTypeId(GameObject* obj);
 void exploded_free(void);
 void exploded_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void exploded_hitDetect(void);
-int exploded_stepDebrisPhysics(ExplodedObject* obj, ExplodedState* state);
-void exploded_update(ExplodedObject* obj);
-void exploded_init(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter);
+int exploded_stepDebrisPhysics(GameObject* obj, ExplodedState* state);
+void exploded_update(GameObject* obj);
+void exploded_init(GameObject* obj, ExplodedPlacement* placement, int usePresetCenter);
 void exploded_release(void);
 void exploded_initialise(void);
 

@@ -76,24 +76,6 @@ typedef struct HighTopRuntime
     u8 substate;
 } HighTopRuntime;
 
-typedef struct HighTopObject
-{
-    union
-    {
-        ObjAnimComponent anim;
-        struct
-        {
-            s16 yaw;
-            u8 pad02[0xa];
-            f32 x;
-            f32 y;
-            f32 z;
-            u8 pad18[0xa0];
-        };
-    };
-    HighTopRuntime* runtime;
-} HighTopObject;
-
 STATIC_ASSERT(offsetof(HighTopDeathSpawn, effectId) == 0x1A);
 STATIC_ASSERT(offsetof(HighTopDeathSpawn, gameBit) == 0x1E);
 STATIC_ASSERT(sizeof(HighTopDeathSpawn) == 0x2C);
@@ -109,10 +91,6 @@ STATIC_ASSERT(offsetof(HighTopRuntime, modelSoundState) == 0x3BC);
 STATIC_ASSERT(offsetof(HighTopRuntime, keyframeAnimState) == 0xB48);
 STATIC_ASSERT(offsetof(HighTopRuntime, turnRateThreshold) == 0xC16);
 STATIC_ASSERT(offsetof(HighTopRuntime, substate) == 0xC4B);
-STATIC_ASSERT(offsetof(HighTopObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(HighTopObject, yaw) == offsetof(ObjAnimComponent, rotX));
-STATIC_ASSERT(offsetof(HighTopObject, x) == offsetof(ObjAnimComponent, localPosX));
-STATIC_ASSERT(offsetof(HighTopObject, runtime) == 0xB8);
 
 extern void* gHighTopStateHandlers[];
 extern void* gHighTopDefaultStateHandler;

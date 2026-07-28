@@ -260,42 +260,6 @@ typedef struct DIMbossConfig {
   s8 animObjId;
 } DIMbossConfig;
 
-typedef struct DIMbossObject {
-  union {
-    ObjAnimComponent anim;
-    struct {
-      u8 pad00[0x08];
-      f32 baseScale;
-      f32 posX;
-      f32 posY;
-      f32 posZ;
-      u8 pad18[0x30 - 0x18];
-      void *parentObj;
-      u8 pad34[0x4C - 0x34];
-      DIMbossConfig *config;
-      u8 pad50[0xA2 - 0x50];
-      s16 activeModelId;
-      u8 padA4[0xA8 - 0xA4];
-      f32 modelScale;
-      u8 padAC[0xAF - 0xAC];
-      u8 objectFlags;
-    };
-  };
-  u8 padB0[0xB4 - 0xB0];
-  s16 animStateId;
-  u8 padB6[0xB8 - 0xB6];
-  DIMbossRuntime *runtime;
-  int (*updateState)(struct DIMbossObject *obj,u32 param_2,
-                     ObjAnimUpdateState *animUpdate);
-  u8 padC0[0xC8 - 0xC0];
-  GameObject *childObject;
-  u8 padCC[0xE4 - 0xCC];
-  u8 updateMode;
-  u8 padE5[0xF4 - 0xE5];
-  int renderPause;
-  int updateInitialized;
-} DIMbossObject;
-
 STATIC_ASSERT(sizeof(DIMbossEffectMarker) == 0x18);
 STATIC_ASSERT(offsetof(DIMbossEffectMarker, scale) == 0x08);
 STATIC_ASSERT(offsetof(DIMbossEffectMarker, x) == 0x0C);
@@ -351,39 +315,18 @@ STATIC_ASSERT(offsetof(DIMbossConfig, spawnZ) == 0x10);
 STATIC_ASSERT(offsetof(DIMbossConfig, eventId) == 0x2C);
 STATIC_ASSERT(offsetof(DIMbossConfig, animObjId) == 0x2E);
 
-STATIC_ASSERT(offsetof(DIMbossObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(DIMbossObject, baseScale) == 0x08);
-STATIC_ASSERT(offsetof(DIMbossObject, baseScale) == offsetof(ObjAnimComponent, rootMotionScale));
-STATIC_ASSERT(offsetof(DIMbossObject, posX) == 0x0C);
-STATIC_ASSERT(offsetof(DIMbossObject, posX) == offsetof(ObjAnimComponent, localPosX));
-STATIC_ASSERT(offsetof(DIMbossObject, parentObj) == offsetof(ObjAnimComponent, parent));
-STATIC_ASSERT(offsetof(DIMbossObject, config) == 0x4C);
-STATIC_ASSERT(offsetof(DIMbossObject, config) == offsetof(ObjAnimComponent, placementData));
-STATIC_ASSERT(offsetof(DIMbossObject, activeModelId) == 0xA2);
-STATIC_ASSERT(offsetof(DIMbossObject, activeModelId) == offsetof(ObjAnimComponent, activeMove));
-STATIC_ASSERT(offsetof(DIMbossObject, modelScale) == 0xA8);
-STATIC_ASSERT(offsetof(DIMbossObject, modelScale) == offsetof(ObjAnimComponent, hitboxScale));
-STATIC_ASSERT(offsetof(DIMbossObject, objectFlags) == 0xAF);
-STATIC_ASSERT(offsetof(DIMbossObject, objectFlags) == offsetof(ObjAnimComponent, resetHitboxFlags));
-STATIC_ASSERT(offsetof(DIMbossObject, animStateId) == 0xB4);
-STATIC_ASSERT(offsetof(DIMbossObject, runtime) == 0xB8);
-STATIC_ASSERT(offsetof(DIMbossObject, updateState) == 0xBC);
-STATIC_ASSERT(offsetof(DIMbossObject, childObject) == 0xC8);
-STATIC_ASSERT(offsetof(DIMbossObject, updateMode) == 0xE4);
-STATIC_ASSERT(offsetof(DIMbossObject, renderPause) == 0xF4);
-STATIC_ASSERT(offsetof(DIMbossObject, updateInitialized) == 0xF8);
 
-int DIMboss_updateState(DIMbossObject *obj,u32 param_2,ObjAnimUpdateState *animUpdate);
+int DIMboss_updateState(GameObject *obj,u32 param_2,ObjAnimUpdateState *animUpdate);
 void DIMboss_func0B(void);
-int DIMboss_getControlMode(DIMbossObject *obj);
+int DIMboss_getControlMode(GameObject *obj);
 int DIMboss_getExtraSize(void);
 int DIMboss_getObjectTypeId(void);
-void DIMboss_free(DIMbossObject *obj);
-void DIMboss_render(DIMbossObject *obj,u32 param_2,u32 param_3,u32 param_4,
+void DIMboss_free(GameObject *obj);
+void DIMboss_render(GameObject *obj,u32 param_2,u32 param_3,u32 param_4,
                     u32 param_5,char shouldRender);
-void DIMboss_hitDetect(DIMbossObject *obj);
-void DIMboss_update(DIMbossObject *obj);
-void DIMboss_init(DIMbossObject *obj,u32 param_2,int param_3);
+void DIMboss_hitDetect(GameObject *obj);
+void DIMboss_update(GameObject *obj);
+void DIMboss_init(GameObject *obj,u32 param_2,int param_3);
 void DIMboss_release(void);
 void DIMboss_initialise(void);
 void DIMboss_initialiseAnimTables(void);

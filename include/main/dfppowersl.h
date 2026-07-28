@@ -27,10 +27,6 @@ typedef struct DfpPowerSlState {
   s32 eventId;
 } DfpPowerSlState;
 
-typedef struct DfpPowerSlObject DfpPowerSlObject;
-
-typedef int (*DfpPowerSlHitCallback)(DfpPowerSlObject *obj);
-
 typedef struct DfpPowerSlMapData {
   ObjPlacement base;
   s8 mode;
@@ -40,13 +36,6 @@ typedef struct DfpPowerSlMapData {
   u8 pad1E[0x20 - 0x1E];
   s16 eventId;
 } DfpPowerSlMapData;
-
-struct DfpPowerSlObject {
-  ObjAnimComponent anim;
-  u8 padB0[8];
-  DfpPowerSlState *state;
-  DfpPowerSlHitCallback hitCallback;
-};
 
 STATIC_ASSERT(sizeof(DfpPowerSlState) == 0x0C);
 STATIC_ASSERT(offsetof(DfpPowerSlState, activateObjectId) == 0x00);
@@ -59,17 +48,13 @@ STATIC_ASSERT(offsetof(DfpPowerSlMapData, spawnObjectId) == 0x1C);
 STATIC_ASSERT(offsetof(DfpPowerSlMapData, eventId) == 0x20);
 STATIC_ASSERT(sizeof(DfpPowerSlMapData) == 0x24);
 
-STATIC_ASSERT(offsetof(DfpPowerSlObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(DfpPowerSlObject, state) == 0xB8);
-STATIC_ASSERT(offsetof(DfpPowerSlObject, hitCallback) == 0xBC);
-
 extern ObjectDescriptor gDfppowerslObjDescriptor;
 
 int dfppowersl_getExtraSize(void);
-int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject *obj);
-void dfppowersl_free(DfpPowerSlObject *obj);
-void dfppowersl_render(DfpPowerSlObject *obj);
-void dfppowersl_update(DfpPowerSlObject *obj);
-void dfppowersl_init(DfpPowerSlObject *obj,DfpPowerSlMapData *mapData);
+int dfppowersl_spawnSeqObjectsOnHit(GameObject *obj);
+void dfppowersl_free(GameObject *obj);
+void dfppowersl_render(GameObject *obj);
+void dfppowersl_update(GameObject *obj);
+void dfppowersl_init(GameObject *obj,DfpPowerSlMapData *mapData);
 
 #endif /* MAIN_DFPPOWERSL_H_ */

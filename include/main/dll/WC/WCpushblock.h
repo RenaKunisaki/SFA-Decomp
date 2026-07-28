@@ -3,11 +3,10 @@
 
 #include "ghidra_import.h"
 
-typedef struct WCPushBlockObject WCPushBlockObject;
 typedef struct WCPushBlockState WCPushBlockState;
 
 void WCPushBlock_SpawnFromPath(GameObject *path, u8* unusedState);
 void WCPushBlock_UpdateCloudAction(int obj, WCPushBlockState *state);
-void WCPushBlock_UpdateRideTilt(WCPushBlockObject *obj, WCPushBlockState *state);
+void WCPushBlock_UpdateRideTilt(GameObject *obj, WCPushBlockState *state);
 
 #endif /* MAIN_DLL_WC_WCPUSHBLOCK_H_ */

@@ -14,7 +14,7 @@
 #define EXPLODED_OBJECT_TYPE_BASE             0x400
 #define EXPLODED_FULL_ALPHA                   0xFF
 
-void exploded_initDebrisState(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter,
+void exploded_initDebrisState(GameObject* obj, ExplodedPlacement* placement, int usePresetCenter,
                               ExplodedState* state) {
     obj->anim.localPosX = placement->base.posX;
     obj->anim.localPosY = placement->base.posY;
@@ -71,7 +71,7 @@ void exploded_initDebrisState(ExplodedObject* obj, ExplodedPlacement* placement,
     state->physicsFlags = 0;
 }
 
-void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, ExplodedPlacement* placement) {
+void exploded_seedDebrisMotion(GameObject* obj, ExplodedState* state, ExplodedPlacement* placement) {
     f32 groundHeight[2];
 
     groundHeight[0] = 0.0f;
@@ -89,7 +89,7 @@ void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, Explod
     {
         u16 floorOffsetRaw = placement->floorOffsetRaw;
         if (floorOffsetRaw == 0) {
-            trackGetHeightAboveGround((GameObject*)obj, obj->anim.localPosX, obj->anim.localPosY - 10.0f,
+            trackGetHeightAboveGround(obj, obj->anim.localPosX, obj->anim.localPosY - 10.0f,
                                       obj->anim.localPosZ, groundHeight, 0);
             state->floorHeight = obj->anim.localPosY - groundHeight[0];
         } else {
@@ -112,15 +112,15 @@ void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, Explod
     }
 }
 
-u8 exploded_getPhase(ExplodedObject* obj) {
-    return obj->state->phase;
+u8 exploded_getPhase(GameObject* obj) {
+    return ((ExplodedState*)obj->extra)->phase;
 }
 
 int exploded_getExtraSize(void) {
     return sizeof(ExplodedState);
 }
 
-u32 exploded_getObjectTypeId(ExplodedObject* obj) {
+u32 exploded_getObjectTypeId(GameObject* obj) {
     ExplodedPlacement* placement = (ExplodedPlacement*)obj->anim.placementData;
     return (placement->modelBankIndex << EXPLODED_OBJECT_TYPE_BANK_SHIFT) | EXPLODED_OBJECT_TYPE_BASE;
 }
@@ -138,7 +138,7 @@ void exploded_render(GameObject* obj, int renderArg2, int renderArg3, int render
 void exploded_hitDetect(void) {
 }
 
-int exploded_stepDebrisPhysics(ExplodedObject* obj, ExplodedState* state) {
+int exploded_stepDebrisPhysics(GameObject* obj, ExplodedState* state) {
     f32 stopped;
     f32 speed;
     f32 worldAfter[3];
@@ -208,8 +208,8 @@ int exploded_stepDebrisPhysics(ExplodedObject* obj, ExplodedState* state) {
     return stopped;
 }
 
-void exploded_update(ExplodedObject* obj) {
-    ExplodedState* state = obj->state;
+void exploded_update(GameObject* obj) {
+    ExplodedState* state = obj->extra;
     u8 phase = state->phase;
     int expired;
 
@@ -251,10 +251,10 @@ void exploded_update(ExplodedObject* obj) {
     }
 }
 
-void exploded_init(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter) {
+void exploded_init(GameObject* obj, ExplodedPlacement* placement, int usePresetCenter) {
     ExplodedState* state;
     obj->anim.bankIndex = placement->modelBankIndex;
-    state = obj->state;
+    state = obj->extra;
     obj->anim.rootMotionScale = (obj->anim.modelInstance->rootMotionScaleBase * (f32)(s32)placement->scaleByte) / 20.0f;
     exploded_initDebrisState(obj, placement, usePresetCenter, state);
     if (placement->initialVelocity.x != 0 || placement->initialVelocity.y != 0 || placement->initialVelocity.z != 0 ||

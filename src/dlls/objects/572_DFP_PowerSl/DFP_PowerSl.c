@@ -4,12 +4,12 @@
 #include "main/gamebits.h"
 #include "main/objhits.h"
 
-static inline DfpPowerSlState* dfppowersl_getState(DfpPowerSlObject* obj)
+static inline DfpPowerSlState* dfppowersl_getState(GameObject* obj)
 {
-    return obj->state;
+    return obj->extra;
 }
 
-int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject* obj)
+int dfppowersl_spawnSeqObjectsOnHit(GameObject* obj)
 {
     int i;
     int outObj;
@@ -19,7 +19,7 @@ int dfppowersl_spawnSeqObjectsOnHit(DfpPowerSlObject* obj)
     {
         return 0;
     }
-    i = ObjHits_GetPriorityHit((GameObject*)obj, &outObj, 0, 0);
+    i = ObjHits_GetPriorityHit(obj, &outObj, 0, 0);
     if (((u32)outObj != 0) && (i != 0))
     {
         i = 1;
@@ -36,7 +36,7 @@ int dfppowersl_getExtraSize(void)
     return sizeof(DfpPowerSlState);
 }
 
-void dfppowersl_free(DfpPowerSlObject* obj)
+void dfppowersl_free(GameObject* obj)
 {
     if (obj != 0)
     {
@@ -45,9 +45,9 @@ void dfppowersl_free(DfpPowerSlObject* obj)
     return;
 }
 
-void dfppowersl_render(DfpPowerSlObject* obj)
+void dfppowersl_render(GameObject* obj)
 {
-    DfpPowerSlObject* powerSl;
+    GameObject* powerSl;
     DfpPowerSlState* state;
 
     powerSl = obj;
@@ -65,9 +65,9 @@ void dfppowersl_render(DfpPowerSlObject* obj)
     return;
 }
 
-void dfppowersl_update(DfpPowerSlObject* obj)
+void dfppowersl_update(GameObject* obj)
 {
-    DfpPowerSlObject* powerSl;
+    GameObject* powerSl;
     DfpPowerSlState* state;
 
     powerSl = obj;
@@ -80,7 +80,7 @@ void dfppowersl_update(DfpPowerSlObject* obj)
     return;
 }
 
-void dfppowersl_init(DfpPowerSlObject* obj, DfpPowerSlMapData* mapData)
+void dfppowersl_init(GameObject* obj, DfpPowerSlMapData* mapData)
 {
     DfpPowerSlState* state;
 
@@ -95,12 +95,12 @@ void dfppowersl_init(DfpPowerSlObject* obj, DfpPowerSlMapData* mapData)
         {
             mapData->spawnObjectId = DFPPOWERSL_DEFAULT_PARAM_OBJECT_ID;
         }
-        obj->hitCallback = dfppowersl_spawnSeqObjectsOnHit;
+        obj->animEventCallback = dfppowersl_spawnSeqObjectsOnHit;
         state->activateObjectId = mapData->activateObjectId;
         state->spawnObjectId = mapData->spawnObjectId;
         state->eventId = mapData->eventId;
         obj->anim.rotX = mapData->mode << DFPPOWERSL_MODE_WORD_SHIFT;
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DFPPOWERSL_HIT_VOLUME_SLOT, DFPPOWERSL_HIT_VOLUME_ENABLED, 0);
+        ObjHits_SetHitVolumeSlot(&obj->anim, DFPPOWERSL_HIT_VOLUME_SLOT, DFPPOWERSL_HIT_VOLUME_ENABLED, 0);
     }
     return;
 }
