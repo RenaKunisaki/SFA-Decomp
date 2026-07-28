@@ -85,7 +85,7 @@ enum GameBitId {
      * shrine, dll_018F, anim-event 7 - the same event that calls
      * objSetAnimStateFlags(player, 0x08, 1) to set the spirit bit in playerStatus). It is
      * one of the three guard bits (with 0x316 and 0x511) that disable the K1
-     * Krazoa Shrine return transporter pad (slot 300, base.mapId 0x43F83 ->
+     * Krazoa Shrine return transporter pad (slot 300, base.ident 0x43F83 ->
      * map 0x21): once the spirit is taken, the pad locks out. Live-verified
      * that setting this disable path kills the pad's A-prompt.
      */

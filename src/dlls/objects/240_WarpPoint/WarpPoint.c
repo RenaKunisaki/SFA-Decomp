@@ -26,7 +26,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
-/* placement mapIds that arm the one-shot save-point recording at init */
+/* placement idents that arm the one-shot save-point recording at init */
 #define WARPPOINT_MAP_SAVE_A 0x4B675
 #define WARPPOINT_MAP_SAVE_B 0x46882
 
