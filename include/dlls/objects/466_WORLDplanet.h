@@ -20,7 +20,7 @@ typedef struct WorldPlanetState {
     u8 unknown00[0x06];
     s16 foxSpawnTimer;
     u8 flags;
-    s8 selectionLocked;
+    u8 selectionLocked;
     s8 previousStickX;
     s8 previousStickY;
     s8 stickXRepeatTimer;

@@ -73,10 +73,10 @@ typedef struct DimExplosionState {
     DimExplosionGravityDebris debris[DIM_EXPLOSION_GRAVITY_DEBRIS_CAPACITY];
     f32 gravity;
     ModelLightStruct* light;
-    s16 rayYawA;
-    s16 rayPitchA;
-    s16 rayYawB;
-    s16 rayPitchB;
+    u16 rayYawA;
+    u16 rayPitchA;
+    u16 rayYawB;
+    u16 rayPitchB;
     s32 frameCounter;
     s32 lifeFrames;
     f32 scale;

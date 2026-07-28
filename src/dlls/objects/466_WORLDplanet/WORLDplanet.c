@@ -341,7 +341,7 @@ void worldplanet_update(GameObject* obj) {
             }
             state->unlockedPlanetMask = z[1];
         }
-        if (gWorldPlanetSelectConfirmTimer == 0 && (u8)state->selectionLocked == 0) {
+        if (gWorldPlanetSelectConfirmTimer == 0 && state->selectionLocked == 0) {
             while (!done) {
                 state->selectedPlanet = state->selectedPlanet + in.inX[0];
                 if (state->selectedPlanet < 0) {
@@ -392,7 +392,7 @@ void worldplanet_update(GameObject* obj) {
             pstate = planet->extra;
             planet->anim.rotY = (obj)->anim.rotY;
             planet->anim.rotX = (obj)->anim.rotX;
-            if ((u8)state->selectionLocked != 0 || (((int)(u32)state->unlockedPlanetMask >> i) & 1) == 0) {
+            if (state->selectionLocked != 0 || (((int)(u32)state->unlockedPlanetMask >> i) & 1) == 0) {
                 pstate->effectState = 0;
                 if ((int)i == state->selectedPlanet) {
                     arwing->anim.flags |= OBJANIM_FLAG_HIDDEN;
@@ -439,7 +439,7 @@ void worldplanet_update(GameObject* obj) {
         }
         objId = (int)ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[state->selectedPlanet]]);
         if (getLoadedFileFlags(WORLDPLANET_SAVE_FILE_SLOT) == 0 && gWorldPlanetInputLockTimer == 0) {
-            switch ((u8)state->selectionLocked) {
+            switch (state->selectionLocked) {
             case 0:
                 if (gWorldPlanetReselectDelayTimer != 0) {
                     gWorldPlanetReselectDelayTimer -= 1;

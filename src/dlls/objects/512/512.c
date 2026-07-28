@@ -110,7 +110,7 @@ void dll_200_updateAct6Idle(GameObject* obj)
     if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 && mainGetBit(763) == 0)
     {
         mainSetBits(763, 1);
-        *(u8*)&state->counter27 = 0;
+        state->counter27 = 0;
         buttonDisable(0, PAD_BUTTON_A);
     }
     else if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
@@ -118,7 +118,7 @@ void dll_200_updateAct6Idle(GameObject* obj)
         if ((*gGameUIInterface)->isOneOfItemsBeingUsed((s32*)&itemSet, 3) > -1)
         {
             mainSetBits(784, 1);
-            *(u8*)&state->counter27 += 1;
+            state->counter27 += 1;
             buttonDisable(0, PAD_BUTTON_A);
         }
     }
@@ -402,7 +402,7 @@ int dll_200_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate, i
             case 0:
                 break;
             case 1:
-                if (*(u8*)&state->counter27 >= 2)
+                if (state->counter27 >= 2)
                 {
                     mainSetBits(0x314, 1);
                 }

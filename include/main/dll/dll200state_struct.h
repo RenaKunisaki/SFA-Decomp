@@ -20,7 +20,7 @@ typedef struct Dll200State
     u8 latch24; /* 0x24: GameBit 0xd0 latch */
     u8 mode25; /* 0x25: trigger pick */
     u8 defNoLow; /* 0x26 */
-    s8 counter27; /* 0x27: hug/talk counter */
+    u8 counter27; /* 0x27: hug/talk counter */
 } Dll200State;
 
 #endif
