@@ -1469,13 +1469,13 @@ void* trickyFindPathRouteEntry(u8* state, u32 route, int pathId)
 
 int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int pathId)
 {
+    s8* stp;
     s8 status[TRICKY_ROUTE_CANDIDATE_COUNT];
     s8 i;
-    s8 j;
-    s8 failedCount;
     void** wp;
     u8* sp;
-    s8* stp;
+    s8 j;
+    s8 failedCount;
 
     for (i = 0, wp = routes, sp = state; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
     {
@@ -1523,7 +1523,7 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
             {
                 if (*wp != 0)
                 {
-                    status[(int)i] = pathSearchStep((PathSearch*)(state + ((int)i * 0x30 + 0x538)), 0x1f4);
+                    status[(int)i] = pathSearchStep(&((TrickyState*)state)->pathSearches[(int)i], 0x1f4);
                     if (status[(int)i] == 1)
                     {
                         return i;
