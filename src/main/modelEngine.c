@@ -303,6 +303,7 @@
 #include "dlls/objects/507.h"
 #include "dlls/objects/508.h"
 #include "dlls/objects/509_WM_LaserTar.h"
+#include "dlls/objects/510.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -418,7 +419,7 @@ extern ResourceDescriptor gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLightSourceObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
-extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
+extern ResourceDescriptor gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
@@ -1620,7 +1621,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll507ObjDescriptor,
     (ResourceDescriptor*)&gLaserBeamObjDescriptor,
     (ResourceDescriptor*)&gWM_LaserTargetObjDescriptor,
-    &gPressureSwitchObjDescriptor,
+    (ResourceDescriptor*)&gPressureSwitchObjDescriptor,
     &dll_1FF,
     &dll_200,
     &gWM_colriseObjDescriptor,
