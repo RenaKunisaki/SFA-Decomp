@@ -41,8 +41,8 @@ typedef void (*BaddieStateExitFn)(struct GameObject* obj, struct BaddieState* st
  * everything else is padded.
  */
 typedef struct BaddieState {
-    u32 flags0; /* actor-state flags; player climbing sets bit 0x200000 */
-    u32 flags4; /* secondary actor-state flags; player climbing sets bits 0x100000/0x8000000 */
+    int flags0; /* actor-state flags; player climbing sets bit 0x200000 */
+    int flags4; /* secondary actor-state flags; player climbing sets bits 0x100000/0x8000000 */
     u8 unk08[0x14 - 0x8];
     f32 posX; /* copied into spawned contact objects as position */
     f32 posY;
