@@ -92,6 +92,7 @@ def run(src, obj, unit_name, fns, variants):
         sha = build(obj)
         unit, per_fn = score(unit_name, fns)
         print(f"BASE unit={unit} {per_fn} sha={sha}", flush=True)
+        last_written = original
         for label, pairs in variants:
             candidate = text
             missing = False
@@ -110,9 +111,20 @@ def run(src, obj, unit_name, fns, variants):
                 continue
             unit, per_fn = score(unit_name, fns)
             print(f"unit={unit} {per_fn} sha={sha}  <= {label}", flush=True)
+            last_written = candidate.encode("utf-8")
     finally:
-        open(path, "wb").write(original)
-        build(obj)
+        # Restore only if the file still holds what this probe last wrote. In the
+        # shared worktree a sibling lane can commit into the same file mid-probe;
+        # writing back the start-of-probe snapshot silently reverted such a commit
+        # once already. If the bytes are unrecognized, leave them alone and say so.
+        on_disk = open(path, "rb").read()
+        if on_disk in (last_written, original):
+            open(path, "wb").write(original)
+            build(obj)
+        else:
+            print(f"NOT RESTORING {path}: changed by another writer mid-probe.",
+                  flush=True)
+            print("  Your probe edits are NOT in it; reconcile by hand.", flush=True)
 
 
 def main():
