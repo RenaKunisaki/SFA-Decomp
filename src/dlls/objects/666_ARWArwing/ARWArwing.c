@@ -184,7 +184,7 @@ static inline f32 clampNeg(f32 v, f32 lo, f32 hi)
 
 static inline f32 arwarwing_readTriggerL(void)
 {
-    return -(f32)(u32)(u8)padGetLTrigger(0) / 150.0f;
+    return -(f32)(u32)padGetLTrigger(0) / 150.0f;
 }
 
 void arwarwing_readControls(GameObject* obj, ArwingState* state)
@@ -217,10 +217,10 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
             aw->stickY = aw->stickY * stickWeight + knockY * knockBlend;
         }
     }
-    aw->rTriggerTrim = (f32)(u8)padGetRTrigger(0) / 150.0f;
+    aw->rTriggerTrim = (f32)padGetRTrigger(0) / 150.0f;
     trim = aw->rTriggerTrim;
     aw->rTriggerTrim = clampPos(trim, 0.0f, 1.0f);
-    aw->lTriggerTrim = -(f32)(u8)padGetLTrigger(0) / 150.0f;
+    aw->lTriggerTrim = -(f32)padGetLTrigger(0) / 150.0f;
     trim = aw->lTriggerTrim;
     aw->lTriggerTrim = clampNeg(trim, -1.0f, 0.0f);
     aw->inputFlags = getButtonsJustPressed(0);

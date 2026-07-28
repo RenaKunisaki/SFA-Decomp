@@ -629,7 +629,7 @@ int ktrex_stateHandlerA02(GameObject* obj, KTRexRuntime* runtime)
     {
         idx = phase >> 1;
         pb = (u8*)p;
-        if ((int)randomGetRange(0, 0x64) <= pb[idx + 0x56])
+        if (randomGetRange(0, 0x64) <= pb[idx + 0x56])
         {
             int push;
             gKTRexState->pathCountdown = 2;
@@ -641,7 +641,7 @@ int ktrex_stateHandlerA02(GameObject* obj, KTRexRuntime* runtime)
             gKTRexState->moveVariant = 1;
             return 5;
         }
-        if ((int)randomGetRange(0, 0x64) <= pb[idx + 0x52])
+        if (randomGetRange(0, 0x64) <= pb[idx + 0x52])
         {
             u8 cond;
             u8 fe = gKTRexState->currentLaneMask;
@@ -1160,7 +1160,7 @@ void ktrex_updateAttackEffects(GameObject* obj)
     {
         for (i = 0; i < KTREX_LIGHTNING_COUNT; i++)
         {
-            if ((int)randomGetRange(0, 5) == 0 && gKTRexState->lightning[i] == NULL)
+            if (randomGetRange(0, 5) == 0 && gKTRexState->lightning[i] == NULL)
             {
                 ktrex_spawnRandomEnergyArc(obj, randomGetRange(8, 0xc), 100.0f, i);
             }
@@ -1539,9 +1539,9 @@ void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
     ObjPath_GetPointWorldPosition(obj, 0, (f32*)((char*)gKTRexState + 0x118), (f32*)((char*)gKTRexState + 0x11c),
                                   (f32*)((char*)gKTRexState + 0x120), 0);
     memcpy(m, (void*)ObjPath_GetPointModelMtx(obj, 4), 48);
-    gKTRexState->vecX = 0.1f * (f32)(int)randomGetRange(-50, 50);
-    gKTRexState->vecY = 0.1f * (f32)(int)randomGetRange(60, 120);
-    gKTRexState->vecZ = -0.25f * (f32)(int)randomGetRange(100, 150);
+    gKTRexState->vecX = 0.1f * (f32)randomGetRange(-50, 50);
+    gKTRexState->vecY = 0.1f * (f32)randomGetRange(60, 120);
+    gKTRexState->vecZ = -0.25f * (f32)randomGetRange(100, 150);
     PSMTXMultVecSR(m, &gKTRexState->vecX, &gKTRexState->vecX);
     *(u32*)&gKTRexState->phaseFlags |= 0x100000LL;
 }
