@@ -251,20 +251,19 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     f32 t1, t2, u, v;
     f32 cz;
     f32 x, y;
-    f32 c;
     f32 z;
     f32 t;
     f32 sz;
     const MatrixTransform* xf = (const MatrixTransform*)transform;
 
-    c = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotX));
-    cx = c * lbl_803DE7F0;
-    c = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotX));
-    sx = c * lbl_803DE7F0;
-    c = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotY));
-    cy = c * lbl_803DE7F0;
-    c = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotY));
-    sy = c * lbl_803DE7F0;
+    s = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotX));
+    cx = s * lbl_803DE7F0;
+    s = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotX));
+    sx = s * lbl_803DE7F0;
+    s = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotY));
+    cy = s * lbl_803DE7F0;
+    s = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotY));
+    sy = s * lbl_803DE7F0;
     cz = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotZ));
     cz = cz * lbl_803DE7F0;
     sz = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotZ));
