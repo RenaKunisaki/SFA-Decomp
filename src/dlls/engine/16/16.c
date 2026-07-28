@@ -7,7 +7,7 @@ void UIController_render(void* context, int arg1, int arg2)
     {
         gameTimerRun(context);
     }
-    hudNumberFn_80014060(context);
+    hudNumberRender(context);
     (*gGameUIInterface)->render(context, arg1, arg2);
 }
 

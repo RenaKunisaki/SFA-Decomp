@@ -23,7 +23,7 @@ void CntCounter_free(GameObject* obj)
     CntCounterState* state = obj->extra;
     if (state->displayHud != 0)
     {
-        set_hudNumber_803db278(-1);
+        hudNumberSet(-1);
     }
 }
 
@@ -45,7 +45,7 @@ void CntCounter_update(GameObject* obj)
         int bit;
         if (state->displayHud != 0)
         {
-            set_hudNumber_803db278(state->remainingCount);
+            hudNumberSet(state->remainingCount);
         }
         bit = mainGetBit(setup->decrementGameBit);
         if (bit != 0)
@@ -58,7 +58,7 @@ void CntCounter_update(GameObject* obj)
                 mainSetBits(setup->doneGameBit, 1);
                 if (state->displayHud != 0)
                 {
-                    set_hudNumber_803db278(-1);
+                    hudNumberSet(-1);
                 }
                 state->displayHud = 0;
             }
