@@ -23,6 +23,5 @@ void wallPlaneClampMoveTarget(float* outPos, WallPlaneState* plane, float latera
 extern u8 gDusterEbaMoveTable[];
 
 extern f32 lbl_803E2A00;
-extern f32 lbl_803E2A04;
 
 #endif /* MAIN_DLL_DUSTER_API_H_ */
