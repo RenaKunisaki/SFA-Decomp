@@ -388,11 +388,11 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
 }
 
 void dfropenode_setMinY(int obj, float value) {
-    ((DFropenodeObject*)obj)->extra->minY = value;
+    ((DFropenodeExtra*)((GameObject*)obj)->extra)->minY = value;
 }
 
 int dfropenode_isVisible(int obj) {
-    DFropenodeExtra* extra = ((DFropenodeObject*)obj)->extra;
+    DFropenodeExtra* extra = ((DFropenodeExtra*)((GameObject*)obj)->extra);
 
     return (s16)(extra->hidden == 0);
 }
@@ -403,23 +403,23 @@ void dfropenode_setVisible(int obj, int value) {
     DFropenodeExtra* extra;
     void* linkedObj;
 
-    extra = ((DFropenodeObject*)obj)->extra;
+    extra = ((DFropenodeExtra*)((GameObject*)obj)->extra);
     bit = (value == 0);
     bitByte = bit;
     extra->hidden = bitByte;
     linkedObj = extra->linkedObj;
     if (linkedObj != NULL) {
-        extra = ((DFropenodeObject*)linkedObj)->extra;
+        extra = ((DFropenodeExtra*)((GameObject*)linkedObj)->extra);
         extra->hidden = bitByte;
     }
 }
 
 int dfropenode_getAngle(int obj) {
-    return ((DFropenodeObject*)obj)->extra->angle;
+    return ((DFropenodeExtra*)((GameObject*)obj)->extra)->angle;
 }
 
 void dfropenode_clearLinkedObj(int obj) {
-    ((DFropenodeObject*)obj)->extra->linkedObj = 0;
+    ((DFropenodeExtra*)((GameObject*)obj)->extra)->linkedObj = 0;
 }
 
 f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY,
@@ -589,7 +589,7 @@ void dfropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, float* xOut, floa
     *zOut = dz * fraction + ((obj)->anim.localPosZ + extra->rope->nodes[idx].pos[2]);
 }
 
-void dfropenode_getPlaneEquation(DFropenodeObject* obj, f32* out) {
+void dfropenode_getPlaneEquation(GameObject* obj, f32* out) {
     DFropenodeExtra* p = obj->extra;
     out[0] = p->planeNormalX;
     out[1] = p->planeNormalY;
@@ -597,10 +597,10 @@ void dfropenode_getPlaneEquation(DFropenodeObject* obj, f32* out) {
     out[3] = p->planeDistance;
 }
 
-int dfropenode_syncRopeToEndpoints(DFropenodeObject* obj) {
+int dfropenode_syncRopeToEndpoints(GameObject* obj) {
     DFropenodeExtra* extra;
-    DFropenodeObject* endObj;
-    DFropenodeObject* baseObj;
+    GameObject* endObj;
+    GameObject* baseObj;
     int i;
     DFRopeLink* link;
     int flag;
@@ -613,14 +613,14 @@ int dfropenode_syncRopeToEndpoints(DFropenodeObject* obj) {
     f32 temp;
     f32 margin;
 
-    baseObj = (DFropenodeObject*)(int)obj;
-    flag = baseObj->definition[0x18] & 1;
+    baseObj = (GameObject*)(int)obj;
+    flag = ((u8*)baseObj->anim.placementData)[0x18] & 1;
     if (flag != 0) {
         extra = baseObj->extra;
         endObj = extra->linkedObj;
     } else {
         endObj = baseObj;
-        baseObj = baseObj->extra->linkedObj;
+        baseObj = ((DFropenodeExtra*)baseObj->extra)->linkedObj;
         if (baseObj == NULL) {
             return 0;
         }
@@ -631,9 +631,9 @@ int dfropenode_syncRopeToEndpoints(DFropenodeObject* obj) {
         return 0;
     }
 
-    dx = endObj->posX - baseObj->posX;
-    dy = endObj->posY - baseObj->posY;
-    dz = endObj->posZ - baseObj->posZ;
+    dx = endObj->anim.localPosX - baseObj->anim.localPosX;
+    dy = endObj->anim.localPosY - baseObj->anim.localPosY;
+    dz = endObj->anim.localPosZ - baseObj->anim.localPosZ;
 
     angle = getAngle(dx, dz);
     if (angle > 0x8000) {
@@ -657,10 +657,10 @@ int dfropenode_syncRopeToEndpoints(DFropenodeObject* obj) {
     extra->rope->nodes[i].pos[1] = dy;
     extra->rope->nodes[i].pos[2] = dz;
 
-    extra->minX = baseObj->posX;
-    extra->minZ = baseObj->posZ;
-    extra->maxX = endObj->posX;
-    extra->maxZ = endObj->posZ;
+    extra->minX = baseObj->anim.localPosX;
+    extra->minZ = baseObj->anim.localPosZ;
+    extra->maxX = endObj->anim.localPosX;
+    extra->maxZ = endObj->anim.localPosZ;
     if (extra->minX > extra->maxX) {
         temp = extra->minX;
         extra->minX = extra->maxX;
@@ -673,7 +673,7 @@ int dfropenode_syncRopeToEndpoints(DFropenodeObject* obj) {
     }
 
     if (extra->minY != lbl_803E4DFC) {
-        clampY = extra->minY - baseObj->posY;
+        clampY = extra->minY - baseObj->anim.localPosY;
         for (i = 0; i < extra->rope->count - 1; i++) {
             if (extra->rope->nodes[i].pos[1] < clampY) {
                 extra->rope->nodes[i].pos[1] = clampY;
@@ -824,14 +824,14 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
 void dfropenode_hitDetect(void) {
 }
 
-void dfropenode_update(DFropenodeObject* obj) {
+void dfropenode_update(GameObject* obj) {
     DFropenodeExtra* extra;
     u8* objDef;
-    DFropenodeObject* linkedObj;
-    DFropenodeObject** objects;
+    GameObject* linkedObj;
+    GameObject** objects;
     int objectCount;
     int objectIndex;
-    DFropenodeObject* candidateObj;
+    GameObject* candidateObj;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -850,7 +850,7 @@ void dfropenode_update(DFropenodeObject* obj) {
     f32 normalZ;
     f32 normalLength;
 
-    objDef = obj->definition;
+    objDef = (u8*)obj->anim.placementData;
     extra = obj->extra;
     if ((objDef[0x18] & 1) == 0) {
         return;
@@ -858,11 +858,11 @@ void dfropenode_update(DFropenodeObject* obj) {
 
     linkedObj = extra->linkedObj;
     if (linkedObj == NULL) {
-        objects = (DFropenodeObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
         objectIndex = 0;
         while ((objectIndex < objectCount) && (linkedObj == NULL)) {
             candidateObj = *objects;
-            if ((candidateObj->objType == 0x36) && ((s32)objDef[0x18] == candidateObj->definition[0x18] - 1)) {
+            if ((candidateObj->anim.classId == 0x36) && ((s32)objDef[0x18] == ((u8*)candidateObj->anim.placementData)[0x18] - 1)) {
                 linkedObj = candidateObj;
             }
             objects++;
@@ -872,13 +872,13 @@ void dfropenode_update(DFropenodeObject* obj) {
             return;
         }
 
-        linkedObj->extra->linkedObj = obj;
+        ((DFropenodeExtra*)linkedObj->extra)->linkedObj = obj;
         extra = obj->extra;
         extra->linkedObj = linkedObj;
 
-        dx = linkedObj->posX - obj->posX;
-        dy = linkedObj->posY - obj->posY;
-        dz = linkedObj->posZ - obj->posZ;
+        dx = linkedObj->anim.localPosX - obj->anim.localPosX;
+        dy = linkedObj->anim.localPosY - obj->anim.localPosY;
+        dz = linkedObj->anim.localPosZ - obj->anim.localPosZ;
         length = sqrtf(dz * dz + (dx * dx + dy * dy));
         angle = getAngle(dx, dz);
         if (angle > 0x8000) {
@@ -892,10 +892,10 @@ void dfropenode_update(DFropenodeObject* obj) {
         extra->rope = DFRope_Create(lbl_803E4DFC, lbl_803E4DFC, lbl_803E4DFC, dx, dy, dz, length, 0x10,
                                     (lbl_803DBF50)[((DfropenodePlacement*)objDef)->textureIndex]);
 
-        extra->minX = obj->posX;
-        extra->minZ = obj->posZ;
-        extra->maxX = linkedObj->posX;
-        extra->maxZ = linkedObj->posZ;
+        extra->minX = obj->anim.localPosX;
+        extra->minZ = obj->anim.localPosZ;
+        extra->maxX = linkedObj->anim.localPosX;
+        extra->maxZ = linkedObj->anim.localPosZ;
         if (extra->minX > extra->maxX) {
             temp = extra->minX;
             extra->minX = extra->maxX;
@@ -913,12 +913,12 @@ void dfropenode_update(DFropenodeObject* obj) {
             extra->maxZ += gRopeNodeBoundsMargin;
         }
 
-        baseX = obj->posX;
-        baseY = obj->posY;
-        baseZ = obj->posZ;
-        linkedX = linkedObj->posX;
-        linkedY = linkedObj->posY;
-        linkedZ = linkedObj->posZ;
+        baseX = obj->anim.localPosX;
+        baseY = obj->anim.localPosY;
+        baseZ = obj->anim.localPosZ;
+        linkedX = linkedObj->anim.localPosX;
+        linkedY = linkedObj->anim.localPosY;
+        linkedZ = linkedObj->anim.localPosZ;
         liftedY = gRopeNodeLiftHeight + baseY;
 
         normalX = liftedY * (baseZ - linkedZ) + (baseY * (linkedZ - baseZ) + (linkedY * (baseZ - baseZ)));

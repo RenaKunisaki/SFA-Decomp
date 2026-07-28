@@ -9,13 +9,6 @@ typedef struct SCTotemLogPuzzleRuntime {
     u8 eventCountdown;
 } SCTotemLogPuzzleRuntime;
 
-typedef struct SCTotemLogPuzzleObject {
-    u8 pad00[0xAC];
-    s8 animId;
-    u8 padAD[0xB8 - 0xAD];
-    SCTotemLogPuzzleRuntime *runtime;
-} SCTotemLogPuzzleObject;
-
 typedef struct SCTotemLogPuzzleUpdateState {
     u8 pad00[0x81];
     s8 eventHandled[10];
