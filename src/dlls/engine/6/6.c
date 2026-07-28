@@ -106,7 +106,7 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
                  int lightIntensity, u8 blendAlpha);
 
 
-void dll_06_func0B(int* x, int* y)
+void sky2GetFogRange(int* fogNear, int* fogFar)
 {
     u8* state;
     f32 value;
@@ -115,13 +115,13 @@ void dll_06_func0B(int* x, int* y)
     if (state != NULL)
     {
         value = *(f32*)(state + 0x14);
-        *x = value;
+        *fogNear = value;
         value = *(f32*)(gSky2State + 0x18);
-        *y = value;
+        *fogFar = value;
     }
 }
 
-void dll_06_func0A(int* a, int* b, int* c, f32* scale)
+void sky2GetTargetColor(int* red, int* green, int* blue, f32* blend)
 {
     u8* state;
 
@@ -130,10 +130,10 @@ void dll_06_func0A(int* a, int* b, int* c, f32* scale)
     {
         return;
     }
-    *a = ((Dll06InterpState*)state)->targetX;
-    *b = ((Dll06InterpState*)gSky2State)->targetY;
-    *c = ((Dll06InterpState*)gSky2State)->targetZ;
-    *scale = ((Dll06InterpState*)gSky2State)->blend;
+    *red = ((Dll06InterpState*)state)->targetX;
+    *green = ((Dll06InterpState*)gSky2State)->targetY;
+    *blue = ((Dll06InterpState*)gSky2State)->targetZ;
+    *blend = ((Dll06InterpState*)gSky2State)->blend;
 }
 
 void sky2ResetStateFromConfig(u8* cfg, u8 flags)
@@ -320,7 +320,7 @@ void sky2StepSlotAnim(int slot)
     }
 }
 
-int dll_06_func0F(void)
+int sky2GetFogFadeAlpha(void)
 {
     u8* state;
     f32 y;
@@ -346,7 +346,7 @@ void dll_06_func0C_nop(void)
 {
 }
 
-void dll_06_func09(s32* x, s32* y, s32* z)
+void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue)
 {
     Dll06InterpState* state;
     s32 targetX;
@@ -370,9 +370,9 @@ void dll_06_func09(s32* x, s32* y, s32* z)
         return;
     }
 
-    oldX = *x;
-    oldY = *y;
-    oldZ = *z;
+    oldX = *red;
+    oldY = *green;
+    oldZ = *blue;
     if (state != NULL)
     {
         targetX = state->targetX;
@@ -383,12 +383,12 @@ void dll_06_func09(s32* x, s32* y, s32* z)
 
     fy = (f32)(targetY - oldY);
     fz = (f32)(targetZ - oldZ);
-    *x = (s32)((f32)(targetX - oldX) * (blend = lbl_803DF144 * blend) + oldX);
-    *y = (s32)(fy * blend + oldY);
-    *z = (s32)(fz * blend + oldZ);
+    *red = (s32)((f32)(targetX - oldX) * (blend = lbl_803DF144 * blend) + oldX);
+    *green = (s32)(fy * blend + oldY);
+    *blue = (s32)(fz * blend + oldZ);
 }
 
-void dll_06_func0E(void)
+void sky2SetDrawMode1(void)
 {
     if (gSky2State == NULL)
     {
@@ -400,7 +400,7 @@ void dll_06_func0E(void)
     }
 }
 
-void dll_06_func0D(void)
+void sky2SetDrawMode2(void)
 {
     if (gSky2State == NULL)
     {
@@ -446,7 +446,7 @@ void sky2ApplyModelTint(int obj)
     }
 }
 
-void dll_06_func08(int obj)
+void sky2ApplyTextColor(int obj)
 {
     u8* s = gSky2State;
     f32 v;
@@ -484,7 +484,7 @@ int dll_06_func07_ret_0(void)
     return 0x0;
 }
 
-void dll_06_func06(int obj)
+void sky2ApplyFog(int obj)
 {
     u8* s = gSky2State;
 
@@ -1100,16 +1100,16 @@ ObjectDescriptor17 sky2_funcs = {
     (ObjectDescriptorCallback)sky2_update,
     (ObjectDescriptorCallback)sky2_onMapSetup,
     (ObjectDescriptorCallback)sky2_run,
-    (ObjectDescriptorCallback)dll_06_func06,
+    (ObjectDescriptorCallback)sky2ApplyFog,
     (ObjectDescriptorCallback)dll_06_func07_ret_0,
-    (ObjectDescriptorCallback)dll_06_func08,
-    (ObjectDescriptorExtraSizeCallback)dll_06_func09,
-    (ObjectDescriptorCallback)dll_06_func0A,
-    (ObjectDescriptorCallback)dll_06_func0B,
+    (ObjectDescriptorCallback)sky2ApplyTextColor,
+    (ObjectDescriptorExtraSizeCallback)sky2BlendTowardTargetColor,
+    (ObjectDescriptorCallback)sky2GetTargetColor,
+    (ObjectDescriptorCallback)sky2GetFogRange,
     (ObjectDescriptorCallback)dll_06_func0C_nop,
-    (ObjectDescriptorCallback)dll_06_func0D,
-    (ObjectDescriptorCallback)dll_06_func0E,
-    (ObjectDescriptorCallback)dll_06_func0F,
+    (ObjectDescriptorCallback)sky2SetDrawMode2,
+    (ObjectDescriptorCallback)sky2SetDrawMode1,
+    (ObjectDescriptorCallback)sky2GetFogFadeAlpha,
 };
 
 u8 lbl_8030F500[160] = {255, 206, 0,   0,   255, 206, 255, 206, 0, 100, 255, 206, 0, 50,  0, 100, 255, 206, 0, 50,
