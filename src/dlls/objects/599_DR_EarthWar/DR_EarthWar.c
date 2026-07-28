@@ -716,12 +716,11 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         q->soundId = (q->attackStage > 3) ? 0xa : 8;
         {
             f32 v294 = ((EarthWarriorState*)state)->baddie.animSpeedC;
-            int tbl = q->configRow;
-            if (v294 < ((f32*)tbl)[i2])
+            if (v294 < ((f32*)q->configRow)[i2])
             {
                 if (q->attackPhase == 4)
                 {
-                    if (((EarthWarriorState*)state)->baddie.animSpeedA < *(f32*)(tbl + 0x10) &&
+                    if (((EarthWarriorState*)state)->baddie.animSpeedA < *(f32*)(q->configRow + 0x10) &&
                         ((BaddieState*)state)->inputMagnitude < 0.2f)
                     {
                         return 2;
@@ -732,7 +731,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
                     q->attackPhase -= 4;
                 }
             }
-            else if (v294 >= *(f32*)((char*)(tbl + 4) + i2 * 4))
+            else if (v294 >= *(f32*)((char*)(q->configRow + 4) + i2 * 4))
             {
                 if (q->attackPhase < 0x14)
                 {
