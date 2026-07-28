@@ -57,6 +57,45 @@ The safe commit renamed two leaf callbacks with a **one-unit** radius. The
 failing one included a widely-declared API function with a **ten-unit** radius,
 and only the edited unit was checked.
 
+
+## The stale-object race — the step everyone misses
+
+`dtk dol split` re-carves the retail tree, but **the compile of your edited
+source can land on the wrong side of that inside a single `locked_ninja.sh`
+invocation**. The checks below then read a stale `.o` and report a fake
+regression on a file that is already correct.
+
+This is the same hazard as above wearing a different hat: ninja's only declared
+output for the split rule is `config.json`, so the regenerated `.o` files have
+**no dependency edge**. The build graph therefore cannot order the re-carve and
+the recompile against each other — which means the `touch` below is not a
+workaround, it is the required discipline.
+
+`touch config/GSAE01/symbols.txt` plus a full rebuild is **not** sufficient: it
+re-runs the split over ~1054 objects and still leaves our object behind. Only
+touching the *source* and rebuilding that object **by name** refreshes it.
+
+### A retail-only symbol has two causes, and they need opposite fixes
+
+`pairing_check.py` now labels which one it is, so nobody "repairs" a correct file:
+
+- **`[STALE OBJECT]`** — the name *is* present in `src/` or `include/`, so the
+  source is already right and only our object is behind.
+  **Fix: touch the source, rebuild that object by name. Do not edit the source.**
+- **`[partial rename]`** — the name is nowhere in `src/` or `include/`, so
+  `symbols.txt` and the source genuinely disagree. **Fix: rename in the C source.**
+
+The manual cross-check is the complement: grep `src`/`include` for the **old**
+name — zero hits means the source is fully renamed, so it is staleness.
+
+### Measured, live
+
+`main/textrender_drawbox.c` was found in exactly this state while writing this
+section: `subtitleInit` retail-only and scoring **0.000** on 192 B, the unit at
+**93.76387**, and zero references to the old `gameTextInitFn_8001bd14` anywhere
+in `src`/`include`. No source was wrong. `touch src/main/textrender_drawbox.c`
+plus a rebuild of that one object restored it to **99.95742**.
+
 ## The gate
 
 Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
