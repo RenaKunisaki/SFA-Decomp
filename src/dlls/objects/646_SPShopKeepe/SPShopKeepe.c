@@ -85,7 +85,7 @@ ObjectDescriptor gShopKeeperObjDescriptor = {
 
 const RomCurveSearchPair gShopKeeperCurveSearchKinds = {0xC, 0x1C};
 
-void* lbl_803AD068[8];
+void* gShopKeeperStateHandlers[8];
 
 s16 gDrLaserTurretIdleAnimMoves[2] = {0x13, 0x11};
 f32 gDrLaserTurretIdleAnimStepScales[2] = {0.01f, 0.0125f};
@@ -673,7 +673,7 @@ enum
     SHOPKEEPER_FLAG_TICK = 0x20       /* per-frame tick effect this frame */
 };
 
-void* lbl_803DDC58;
+void* gShopKeeperDefaultStateHandler;
 
 int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
 {
@@ -1001,7 +1001,7 @@ void ShopKeeper_update(GameObject* obj)
             ObjGroup_FindNearestObject(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);
     }
     ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
-    (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, lbl_803AD068, &lbl_803DDC58);
+    (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, gShopKeeperStateHandlers, &gShopKeeperDefaultStateHandler);
     dll_2E_updateLookAt(obj, &((ShopkeeperState*)state)->moveLib);
     characterDoEyeAnims(obj, &((ShopkeeperState*)state)->eyeAnimState);
     (obj)->anim.alpha = ((ShopkeeperState*)state)->opacity;
@@ -1027,14 +1027,14 @@ void ShopKeeper_release(void)
 
 void ShopKeeper_initialise(void)
 {
-    lbl_803AD068[0] = DRlaserturret_startLinkedTarget;
-    lbl_803AD068[1] = DRlaserturret_updateTracking;
-    lbl_803AD068[2] = DRlaserturret_updateIdle;
-    lbl_803AD068[3] = TREX_Lazerwall_updateTimedChallenge;
-    lbl_803AD068[4] = TREX_Lazerwall_waitForStartBit;
-    lbl_803AD068[5] = TREX_Lazerwall_popQueuedState;
-    lbl_803AD068[6] = ShopKeeper_popQueuedState;
-    lbl_803AD068[7] = return0_801E66E4;
-    lbl_803DDC58 = return0_801E66DC;
+    gShopKeeperStateHandlers[0] = DRlaserturret_startLinkedTarget;
+    gShopKeeperStateHandlers[1] = DRlaserturret_updateTracking;
+    gShopKeeperStateHandlers[2] = DRlaserturret_updateIdle;
+    gShopKeeperStateHandlers[3] = TREX_Lazerwall_updateTimedChallenge;
+    gShopKeeperStateHandlers[4] = TREX_Lazerwall_waitForStartBit;
+    gShopKeeperStateHandlers[5] = TREX_Lazerwall_popQueuedState;
+    gShopKeeperStateHandlers[6] = ShopKeeper_popQueuedState;
+    gShopKeeperStateHandlers[7] = return0_801E66E4;
+    gShopKeeperDefaultStateHandler = return0_801E66DC;
 }
 

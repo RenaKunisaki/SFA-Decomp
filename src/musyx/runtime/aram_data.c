@@ -23,7 +23,7 @@ u32 aramQueueWrite;
 u32 aramUploadChunkSize;
 AramUploadCallback aramUploadCallback;
 u32 aramStream;
-extern AramStreamBufferEntry lbl_803D4468[ARAM_STREAM_BUFFER_COUNT];
+extern AramStreamBufferEntry aramStreamBuffers[ARAM_STREAM_BUFFER_COUNT];
 
 /*
  * Allocate+DMA: copies `size` bytes from `src` into the audio
@@ -71,7 +71,7 @@ void aramRemoveData(void* unused, u32 size)
 }
 
 /*
- * Initialize the 64-element stream-buffer free list at lbl_803D4468.
+ * Initialize the 64-element stream-buffer free list at aramStreamBuffers.
  * The allocator uses the first word of each 0x10-byte entry as the next
  * pointer, and the setup loop links eight entries per iteration.
  */
@@ -103,10 +103,10 @@ u32 aramGetStreamBufferAddress(u8 idx, u32* outPos)
 {
     if (outPos != NULL)
     {
-        *outPos = lbl_803D4468[idx].position;
+        *outPos = aramStreamBuffers[idx].position;
     }
-    return lbl_803D4468[idx].address;
+    return aramStreamBuffers[idx].address;
 }
 
 u8 lbl_803D4868[0x18];
-AramStreamBufferEntry lbl_803D4468[ARAM_STREAM_BUFFER_COUNT];
+AramStreamBufferEntry aramStreamBuffers[ARAM_STREAM_BUFFER_COUNT];
