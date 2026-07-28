@@ -1,4 +1,5 @@
-/* WM_Vein (DLL 0x0205) */
-#include "global.h"
+/* WM_Vein (DLL 0x205) functionless resource slot. */
 
-u32 lbl_80328AD8[12] = {0};
+#include "dlls/objects/517_WM_Vein.h"
+
+u32 gWMVeinNullResourceDescriptor[WM_VEIN_NULL_DESCRIPTOR_WORD_COUNT] = {0};
