@@ -345,7 +345,6 @@ main/objanim.c
 main/objHitReact.c
 main/objhits.c
 main/objlib.c
-main/objprint.c
 main/objprint_dolphin.c
 main/pi_dolphin.c
 main/rcp_dolphin.c
