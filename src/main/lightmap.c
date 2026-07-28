@@ -59,18 +59,8 @@ u8 colorScale = 0xFF;
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
 
-typedef struct
-{
-    f32 lo;
-    f32 hi;
-} F32Pair;
+#include "main/lightmap_internal.h"
 
-typedef struct EnvironmentUpdateInterface
-{
-    void (*create)(void);
-    void (*destroy)(void);
-    void (*update)(void);
-} EnvironmentUpdateInterface;
 
 extern u32 renderFlags;
 /* Global renderFlags bits (decoded by the accessor fns below: shouldDrawShadows,
@@ -109,26 +99,9 @@ extern s8* gMapLayerCellStates;
 extern s32 gMapCurRomListSlot;
 extern f32 lbl_803DCE58;
 extern f32 lbl_803DCE54;
-typedef struct
-{
-    u32 a;
-    u32 b;
-    u32 key;
-    u32 d;
-} LightSortEntry;
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
 extern s32 gHeatEffectFadeDirection;
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s8 s8;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} PPCWGPipe;
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
@@ -263,24 +236,8 @@ u32 gVisibleObjectSortKeys[0x400];
 extern int gLightmapDeferredObjectCount;
 extern s16 gVisibleObjectSortKeyCount;
 
-typedef struct
-{
-    u32 a, b, c, d;
-} LightmapQEnt;
 
-typedef struct MapLayerBuffers
-{
-    u8 reserved[0x41cc];
-    u8* cellStates[5];
-    u8* blockDescriptors[5];
-    u8* blockIndices[5];
-} MapLayerBuffers;
 
-typedef struct
-{
-    u8 pad[0x4114];
-    u32 deferred[20];
-} LightmapDrawQueue;
 
 extern s16* lbl_803822A0[];
 extern f32 gMapBlockWorldSize;
@@ -1080,16 +1037,6 @@ void renderShadowType3(u8* obj, u32 b, s32 offset);
 void lightmap_sortTransparentDrawQueue(void);
 
 
-typedef union
-{
-    double d;
-
-    struct
-    {
-        u32 hi;
-        u32 lo;
-    } u;
-} F64Cvt;
 
 
 

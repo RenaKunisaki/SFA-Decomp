@@ -30,30 +30,13 @@
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
 
-typedef struct
-{
-    f32 lo;
-    f32 hi;
-} F32Pair;
+#include "main/lightmap_internal.h"
 
-typedef struct EnvironmentUpdateInterface
-{
-    void (*create)(void);
-    void (*destroy)(void);
-    void (*update)(void);
-} EnvironmentUpdateInterface;
 
 #include "main/render_flags.h"
 
 
 extern u8 lbl_803DCE98; /* count of allocated blocks */
-typedef struct
-{
-    u32 a;
-    u32 b;
-    u32 key;
-    u32 d;
-} LightSortEntry;
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
 extern void* lbl_803DCE78;
@@ -64,16 +47,6 @@ extern s16 lbl_803DCE90;
 extern s16 lbl_803DCEBA;
 extern s16 lbl_803DCEB8;
 
-typedef union
-{
-    u8 u8;
-    u16 u16;
-    u32 u32;
-    s8 s8;
-    s16 s16;
-    s32 s32;
-    f32 f32;
-} PPCWGPipe;
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
@@ -102,24 +75,8 @@ static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 extern u32 lbl_8037E0C0[];
 
 
-typedef struct
-{
-    u32 a, b, c, d;
-} LightmapQEnt;
 
-typedef struct MapLayerBuffers
-{
-    u8 reserved[0x41cc];
-    u8* cellStates[5];
-    u8* blockDescriptors[5];
-    u8* blockIndices[5];
-} MapLayerBuffers;
 
-typedef struct
-{
-    u8 pad[0x4114];
-    u32 deferred[20];
-} LightmapDrawQueue;
 
 
 #define MAP_BLOCK_LAYER_COUNT 5
@@ -272,16 +229,6 @@ void renderShadowType3(u8* obj, u32 b, s32 offset);
 void lightmap_sortTransparentDrawQueue(void);
 
 
-typedef union
-{
-    double d;
-
-    struct
-    {
-        u32 hi;
-        u32 lo;
-    } u;
-} F64Cvt;
 
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
