@@ -137,14 +137,14 @@ STATIC_ASSERT(sizeof(DrakorHoverpadState) == 0x17c);
 /* group owned by another DLL, queried here */
 #define BOSSDRAKOR_OBJGROUP 0x45 /* DLL 0x24D bossdrakor */
 
-int drakorhoverpad_canUseDismountPoint(GameObject* obj);
-int drakorhoverpad_render2(GameObject* obj);
-void drakorhoverpad_func12(int obj, f32* outFloat, int* outFlag);
-void drakorhoverpad_modelMtxFn(GameObject* obj, f32* ox, f32* oy, f32* oz);
+int drakorhoverpad_canMount(GameObject* obj);
+int drakorhoverpad_canDismount(GameObject* obj);
+void drakorhoverpad_getPlayerAnim(int obj, f32* outFloat, int* outFlag);
+void drakorhoverpad_getRiderPosition(GameObject* obj, f32* ox, f32* oy, f32* oz);
 f32 drakorhoverpad_func13(int obj, f32* out);
 void drakorhoverpad_free(int obj);
 void drakorhoverpad_func17(GameObject* obj, int sel, int* out);
-void drakorhoverpad_func0F(int obj, f32* ox, f32* oy, f32* oz);
+void drakorhoverpad_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz);
 void drakorhoverpad_renderGroundMarker(GameObject* obj, f32 scale);
 int drakorhoverpad_getExtraSize(void);
 int drakorhoverpad_getObjectTypeId(void);

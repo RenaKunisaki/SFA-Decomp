@@ -641,7 +641,7 @@ void SB_CloudRunner_func21(void)
 }
 
 
-int SB_CloudRunner_func20(void)
+int SB_CloudRunner_getRacePosition(void)
 {
     return 0x0;
 }
@@ -655,42 +655,42 @@ f32 SB_CloudRunner_func19(int unused, f32* p)
 }
 
 
-void SB_CloudRunner_func18(int obj, f32* out, int* outInt)
+void SB_CloudRunner_getPlayerAnim(int obj, f32* out, int* outInt)
 {
     *out = 0.0f;
     *outInt = 0;
 }
 
 
-void SB_CloudRunner_func17(void)
+void SB_CloudRunner_setMountState(void)
 {
 }
 
-int SB_CloudRunner_func16(void)
+int SB_CloudRunner_getMountState(void)
 {
     return 0x2;
 }
 
 
-void SB_CloudRunner_func15(GameObject* src, f32* out_x, f32* out_y, f32* out_z)
+void SB_CloudRunner_getCameraPosition(GameObject* src, f32* out_x, f32* out_y, f32* out_z)
 {
     *out_x = src->anim.localPosX;
     *out_y = src->anim.localPosY;
     *out_z = src->anim.localPosZ;
 }
 
-int SB_CloudRunner_func14(void)
+int SB_CloudRunner_getDismountSide(void)
 {
     return 0x0;
 }
 
-int SB_CloudRunner_render2(void)
+int SB_CloudRunner_canDismount(void)
 {
     return 0x0;
 }
 
 
-void SB_CloudRunner_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
+void SB_CloudRunner_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     f32* p = obj->extra;
     *x = p[0];
@@ -698,12 +698,12 @@ void SB_CloudRunner_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
     *z = p[2];
 }
 
-int SB_CloudRunner_func11(void)
+int SB_CloudRunner_getMountSide(void)
 {
     return 0x0;
 }
 
-int SB_CloudRunner_canUseDismountPoint(void)
+int SB_CloudRunner_canMount(void)
 {
     return 0x0;
 }
@@ -889,17 +889,17 @@ ObjectDescriptor24 gSB_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)SB_CloudRunner_free,
     (ObjectDescriptorCallback)SB_CloudRunner_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)SB_CloudRunner_getExtraSize,
-    (ObjectDescriptorCallback)SB_CloudRunner_canUseDismountPoint,
-    (ObjectDescriptorCallback)SB_CloudRunner_func11,
-    (ObjectDescriptorCallback)SB_CloudRunner_modelMtxFn,
-    (ObjectDescriptorCallback)SB_CloudRunner_render2,
-    (ObjectDescriptorCallback)SB_CloudRunner_func14,
-    (ObjectDescriptorCallback)SB_CloudRunner_func15,
-    (ObjectDescriptorCallback)SB_CloudRunner_func16,
-    (ObjectDescriptorCallback)SB_CloudRunner_func17,
-    (ObjectDescriptorCallback)SB_CloudRunner_func18,
+    (ObjectDescriptorCallback)SB_CloudRunner_canMount,
+    (ObjectDescriptorCallback)SB_CloudRunner_getMountSide,
+    (ObjectDescriptorCallback)SB_CloudRunner_getRiderPosition,
+    (ObjectDescriptorCallback)SB_CloudRunner_canDismount,
+    (ObjectDescriptorCallback)SB_CloudRunner_getDismountSide,
+    (ObjectDescriptorCallback)SB_CloudRunner_getCameraPosition,
+    (ObjectDescriptorCallback)SB_CloudRunner_getMountState,
+    (ObjectDescriptorCallback)SB_CloudRunner_setMountState,
+    (ObjectDescriptorCallback)SB_CloudRunner_getPlayerAnim,
     (ObjectDescriptorCallback)SB_CloudRunner_func19,
-    (ObjectDescriptorCallback)SB_CloudRunner_func20,
+    (ObjectDescriptorCallback)SB_CloudRunner_getRacePosition,
     (ObjectDescriptorCallback)SB_CloudRunner_func21,
     (ObjectDescriptorCallback)SB_CloudRunner_setGroundMarkerMatrix,
     (ObjectDescriptorCallback)SB_CloudRunner_func23,

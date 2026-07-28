@@ -547,17 +547,17 @@ ObjectDescriptor24 gHighTopObjDescriptor = {
     (ObjectDescriptorCallback)HighTop_free,
     (ObjectDescriptorCallback)HighTop_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)HighTop_getExtraSize,
-    (ObjectDescriptorCallback)HighTop_canUseDismountPoint,
-    (ObjectDescriptorCallback)hightop_func0B,
-    (ObjectDescriptorCallback)HighTop_modelMtxFn,
-    (ObjectDescriptorCallback)HighTop_render2,
-    (ObjectDescriptorCallback)hightop_func0E,
-    (ObjectDescriptorCallback)HighTop_func0F,
-    (ObjectDescriptorCallback)hightop_func10,
-    (ObjectDescriptorCallback)hightop_func11,
-    (ObjectDescriptorCallback)hightop_func12,
+    (ObjectDescriptorCallback)HighTop_canMount,
+    (ObjectDescriptorCallback)HighTop_getMountSide,
+    (ObjectDescriptorCallback)HighTop_getRiderPosition,
+    (ObjectDescriptorCallback)HighTop_canDismount,
+    (ObjectDescriptorCallback)HighTop_getDismountSide,
+    (ObjectDescriptorCallback)HighTop_getCameraPosition,
+    (ObjectDescriptorCallback)HighTop_getMountState,
+    (ObjectDescriptorCallback)HighTop_setMountState,
+    (ObjectDescriptorCallback)HighTop_getPlayerAnim,
     (ObjectDescriptorCallback)hightop_func13,
-    (ObjectDescriptorCallback)hightop_func14,
+    (ObjectDescriptorCallback)HighTop_getRacePosition,
     (ObjectDescriptorCallback)hightop_func15,
     (ObjectDescriptorCallback)HighTop_renderGroundMarker,
     (ObjectDescriptorCallback)HighTop_getLookTargetYaw,
@@ -891,7 +891,7 @@ void hightop_func15(void)
 {
 }
 
-int hightop_func14(void)
+int HighTop_getRacePosition(void)
 {
     return 0x0;
 }
@@ -902,25 +902,25 @@ f32 hightop_func13(int obj, f32* out)
     return 0.0f;
 }
 
-void hightop_func12(int obj, f32* a, int* b)
+void HighTop_getPlayerAnim(int obj, f32* a, int* b)
 {
     *a = 0.0f;
     *b = 0;
 }
 
-void hightop_func11(GameObject* obj, int val)
+void HighTop_setMountState(GameObject* obj, int val)
 {
     u8 v = val;
     HighTopRuntime* state = obj->extra;
     state->unkC43 = v;
 }
 
-int hightop_func10(void)
+int HighTop_getMountState(void)
 {
     return 0x0;
 }
 
-void HighTop_func0F(int obj, f32* ox, f32* oy, f32* oz)
+void HighTop_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz)
 {
     GameObject* player;
     MatrixTransform pos;
@@ -937,17 +937,17 @@ void HighTop_func0F(int obj, f32* ox, f32* oy, f32* oz)
     Matrix_TransformPoint(mtx, 0.0f, 16.0f, -16.0f, ox, oy, oz);
 }
 
-int hightop_func0E(void)
+int HighTop_getDismountSide(void)
 {
     return 0x1;
 }
 
-int HighTop_render2(void)
+int HighTop_canDismount(void)
 {
     return 0x0;
 }
 
-void HighTop_modelMtxFn(int obj, f32* a, f32* b, f32* c)
+void HighTop_getRiderPosition(int obj, f32* a, f32* b, f32* c)
 {
     HighTopRuntime* runtime = ((GameObject*)obj)->extra;
     *a = runtime->pathPoint2X;
@@ -955,12 +955,12 @@ void HighTop_modelMtxFn(int obj, f32* a, f32* b, f32* c)
     *c = runtime->pathPoint2Z;
 }
 
-int hightop_func0B(void)
+int HighTop_getMountSide(void)
 {
     return 0x1;
 }
 
-int HighTop_canUseDismountPoint(void)
+int HighTop_canMount(void)
 {
     return 0x0;
 }

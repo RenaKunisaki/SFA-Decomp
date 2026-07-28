@@ -90,7 +90,7 @@ void drakorhoverpad_func15(void)
 {
 }
 
-int drakorhoverpad_func14(void)
+int drakorhoverpad_getRacePosition(void)
 {
     return 0x0;
 }
@@ -101,22 +101,22 @@ f32 drakorhoverpad_func13(int obj, f32* out)
     return 0.0f;
 }
 
-void drakorhoverpad_func12(int obj, f32* outFloat, int* outFlag)
+void drakorhoverpad_getPlayerAnim(int obj, f32* outFloat, int* outFlag)
 {
     *outFloat = 0.0f;
     *outFlag = 0;
 }
 
-void drakorhoverpad_func11(void)
+void drakorhoverpad_setMountState(void)
 {
 }
 
-int drakorhoverpad_func10(void)
+int drakorhoverpad_getMountState(void)
 {
     return 0x0;
 }
 
-void drakorhoverpad_func0F(int obj, f32* ox, f32* oy, f32* oz)
+void drakorhoverpad_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz)
 {
     MatrixTransform pos;
     f32 mtx[16];
@@ -146,30 +146,30 @@ static inline f32 drakorhoverpad_nodeWobbleCos(DrakorCurveNode** slot, int angle
     return (*(f32*)&gDrakorHoverpadSpeedStep) * ((f32)(u32)(*slot)->tangentMag * mathCosf(3.1415927f * (f32)angle / 32768.0f));
 }
 
-int drakorhoverpad_func0E(void)
+int drakorhoverpad_getDismountSide(void)
 {
     return 0x1;
 }
 
-int drakorhoverpad_render2(GameObject* obj)
+int drakorhoverpad_canDismount(GameObject* obj)
 {
     u8* p = obj->extra;
     return ((p[0x179] >> 2) & 1) == 0;
 }
 
-void drakorhoverpad_modelMtxFn(GameObject* obj, f32* ox, f32* oy, f32* oz)
+void drakorhoverpad_getRiderPosition(GameObject* obj, f32* ox, f32* oy, f32* oz)
 {
     *ox = obj->anim.localPosX;
     *oy = 10.0f + obj->anim.localPosY;
     *oz = obj->anim.localPosZ;
 }
 
-int drakorhoverpad_func0B(void)
+int drakorhoverpad_getMountSide(void)
 {
     return 0x1;
 }
 
-int drakorhoverpad_canUseDismountPoint(GameObject* obj)
+int drakorhoverpad_canMount(GameObject* obj)
 {
     u8* p = obj->extra;
     return (p[0x179] >> 2) & 1;
@@ -384,17 +384,17 @@ ObjectDescriptor24 gDrakorHoverPadObjDescriptor = {
     (ObjectDescriptorCallback)drakorhoverpad_free,
     (ObjectDescriptorCallback)drakorhoverpad_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drakorhoverpad_getExtraSize,
-    (ObjectDescriptorCallback)drakorhoverpad_canUseDismountPoint,
-    (ObjectDescriptorCallback)drakorhoverpad_func0B,
-    (ObjectDescriptorCallback)drakorhoverpad_modelMtxFn,
-    (ObjectDescriptorCallback)drakorhoverpad_render2,
-    (ObjectDescriptorCallback)drakorhoverpad_func0E,
-    (ObjectDescriptorCallback)drakorhoverpad_func0F,
-    (ObjectDescriptorCallback)drakorhoverpad_func10,
-    (ObjectDescriptorCallback)drakorhoverpad_func11,
-    (ObjectDescriptorCallback)drakorhoverpad_func12,
+    (ObjectDescriptorCallback)drakorhoverpad_canMount,
+    (ObjectDescriptorCallback)drakorhoverpad_getMountSide,
+    (ObjectDescriptorCallback)drakorhoverpad_getRiderPosition,
+    (ObjectDescriptorCallback)drakorhoverpad_canDismount,
+    (ObjectDescriptorCallback)drakorhoverpad_getDismountSide,
+    (ObjectDescriptorCallback)drakorhoverpad_getCameraPosition,
+    (ObjectDescriptorCallback)drakorhoverpad_getMountState,
+    (ObjectDescriptorCallback)drakorhoverpad_setMountState,
+    (ObjectDescriptorCallback)drakorhoverpad_getPlayerAnim,
     (ObjectDescriptorCallback)drakorhoverpad_func13,
-    (ObjectDescriptorCallback)drakorhoverpad_func14,
+    (ObjectDescriptorCallback)drakorhoverpad_getRacePosition,
     (ObjectDescriptorCallback)drakorhoverpad_func15,
     (ObjectDescriptorCallback)drakorhoverpad_renderGroundMarker,
     (ObjectDescriptorCallback)drakorhoverpad_func17,
