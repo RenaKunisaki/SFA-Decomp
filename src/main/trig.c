@@ -4,47 +4,6 @@
 #include "main/fcos16_approx_api.h"
 #include "main/trig.h"
 
-extern float lbl_803E7C84;
-extern float lbl_803E7C88;
-extern float lbl_803E7C8C;
-extern float lbl_803E7C90;
-extern float lbl_803E7C94;
-extern float lbl_803E7C98;
-extern float lbl_803E7C9C;
-extern float lbl_803E7CA0;
-extern float lbl_803E7CA4;
-extern float lbl_803E7CA8;
-extern float lbl_803E7CAC;
-extern float lbl_803E7CB0;
-extern float lbl_803E7CB4;
-extern float lbl_803E7CB8;
-extern float lbl_803E7CBC;
-extern float lbl_803E7CC0;
-extern float lbl_803E7CC4;
-extern float lbl_803E7CC8;
-extern float lbl_803E7CCC;
-extern double lbl_803E7CD0;
-extern double lbl_803E7CD8;
-extern double lbl_803E7CE0;
-extern double lbl_803E7CE8;
-extern double lbl_803E7CF0;
-extern double lbl_803E7CF8;
-extern double lbl_803E7D00;
-extern double lbl_803E7D08;
-extern double lbl_803E7D10;
-extern double lbl_803E7D18;
-extern double lbl_803E7D20;
-extern double lbl_803E7D28;
-extern double lbl_803E7D30;
-extern double lbl_803E7D38;
-extern float lbl_803E7D40;
-extern float lbl_803E7D44;
-extern float lbl_803E7D48;
-extern float lbl_803E7D4C;
-extern float lbl_803E7D50;
-extern float lbl_803E7D54;
-extern float lbl_803E7D58;
-extern float lbl_803E7D5C;
 
 float fsin16Approx(int angle) {
     s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
@@ -54,15 +13,15 @@ float fsin16Approx(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return x * (lbl_803E7C90 * x2 + lbl_803E7C8C);
+            return x * (-2.2078018e-15f * x2 + 0.000023945184f);
         case 0x2000:
         case 0x4000:
-            return (lbl_803E7C88 * x2 + lbl_803E7C84) * x2 + 0.99999f;
+            return x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f;
         case 0x6000:
         case 0x8000:
-            return -(x * (lbl_803E7C90 * x2 + lbl_803E7C8C));
+            return -(x * (-2.2078018e-15f * x2 + 0.000023945184f));
         default:
-            return -(x2 * (lbl_803E7C88 * x2 + lbl_803E7C84) + 0.99999f);
+            return -(x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f);
     }
 }
 
@@ -74,15 +33,15 @@ float fcos16(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return x * ((lbl_803E7C9C * x2 + lbl_803E7C98) * x2 + lbl_803E7C94);
+            return x * (x2 * (6.424445e-26f * x2 + -2.294029e-15f) + 0.00002396833f);
         case 0x2000:
         case 0x4000:
-            return (((lbl_803E7CAC * x2 + lbl_803E7CA8) * x2 + lbl_803E7CA4) * x2 + lbl_803E7CA0);
+            return (x2 * (x2 * (-2.575884e-31f * x2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f);
         case 0x6000:
         case 0x8000:
-            return -(x * ((lbl_803E7C9C * x2 + lbl_803E7C98) * x2 + lbl_803E7C94));
+            return -(x * (x2 * (6.424445e-26f * x2 + -2.294029e-15f) + 0.00002396833f));
         default:
-            return -(x2 * ((lbl_803E7CAC * x2 + lbl_803E7CA8) * x2 + lbl_803E7CA4) + lbl_803E7CA0);
+            return -(x2 * (x2 * (-2.575884e-31f * x2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f);
     }
 }
 
@@ -94,61 +53,52 @@ float fsin16Precise(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return y * (((lbl_803E7CBC * y2 + lbl_803E7CB8) * y2 + lbl_803E7CB4) * y2 + lbl_803E7CB0);
+            return y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f);
         case 0x2000:
         case 0x4000:
-            return (((lbl_803E7CCC * y2 + lbl_803E7CC8) * y2 + lbl_803E7CC4) * y2 + lbl_803E7CC0) * y2
-                   + lbl_803E7CA0;
+            return y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
+                   + 1.0f;
         case 0x6000:
         case 0x8000:
-            return -(y * (((lbl_803E7CBC * y2 + lbl_803E7CB8) * y2 + lbl_803E7CB4) * y2 + lbl_803E7CB0));
+            return -(y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f));
         default:
-            return -(y2 * (((lbl_803E7CCC * y2 + lbl_803E7CC8) * y2 + lbl_803E7CC4) * y2 + lbl_803E7CC0)
-                     + lbl_803E7CA0);
+            return -(y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
+                     + 1.0f);
     }
 }
 
 float fsin16HighPrecision(int angle) {
     s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
     float reducedFloat = fastCastS16ToFloat(&reduced);
-    double reducedAngle = lbl_803E7CD0 * reducedFloat;
+    double reducedAngle = 0.000023968449810713143 * reducedFloat;
     double reducedSquared = reducedAngle * reducedAngle;
 
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (float)(reducedAngle * (((((lbl_803E7D00 * reducedSquared + lbl_803E7CF8) * reducedSquared + lbl_803E7CF0) * reducedSquared
-                                  + lbl_803E7CE8)
-                                     * reducedSquared
-                                 + lbl_803E7CE0)
-                                    * reducedSquared
-                                + lbl_803E7CD8));
+            return (float)(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
+                                  + 0.008333333318980809)
+                                 + -0.16666666666563978)
+                                + 0.9999999999999805));
         case 0x2000:
         case 0x4000:
-            return (float)(((((((lbl_803E7D38 * reducedSquared + lbl_803E7D30) * reducedSquared + lbl_803E7D28) * reducedSquared + lbl_803E7D20)
-                              * reducedSquared
-                              + lbl_803E7D18)
-                             * reducedSquared
-                             + lbl_803E7D10)
-                            * reducedSquared
-                            + lbl_803E7D08));
+            return (float)((reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723) + -0.001388888881954176)
+                              + 0.041666666665824886)
+                             + -0.4999999999999672)
+                            + 1.0));
         case 0x6000:
         case 0x8000:
-            return (float)(-(reducedAngle * (((((lbl_803E7D00 * reducedSquared + lbl_803E7CF8) * reducedSquared + lbl_803E7CF0) * reducedSquared
-                                    + lbl_803E7CE8)
-                                       * reducedSquared
-                                   + lbl_803E7CE0)
-                                      * reducedSquared
-                                  + lbl_803E7CD8)));
+            return (float)(-(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
+                                    + 0.008333333318980809)
+                                   + -0.16666666666563978)
+                                  + 0.9999999999999805)));
         default:
             return (float)(-(reducedSquared
-                                 * (((((lbl_803E7D38 * reducedSquared + lbl_803E7D30) * reducedSquared + lbl_803E7D28) * reducedSquared
-                                      + lbl_803E7D20)
-                                         * reducedSquared
-                                     + lbl_803E7D18)
-                                        * reducedSquared
-                                    + lbl_803E7D10)
-                             + lbl_803E7D08));
+                                 * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723)
+                                      + -0.001388888881954176)
+                                     + 0.041666666665824886)
+                                    + -0.4999999999999672)
+                             + 1.0));
     }
 }
 
@@ -160,15 +110,15 @@ float fcos16Approx(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (lbl_803E7C88 * y2 + lbl_803E7C84) * y2 + 0.99999f;
+            return y2 * (1.3332733e-20f * y2 + -2.8707542e-10f) + 0.99999f;
         case 0x2000:
         case 0x4000:
-            return -(y * (lbl_803E7C90 * y2 + lbl_803E7C8C));
+            return -(y * (-2.2078018e-15f * y2 + 0.000023945184f));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (lbl_803E7C88 * y2 + lbl_803E7C84) + 0.99999f);
+            return -(y2 * (1.3332733e-20f * y2 + -2.8707542e-10f) + 0.99999f);
         default:
-            return y * (lbl_803E7C90 * y2 + lbl_803E7C8C);
+            return y * (-2.2078018e-15f * y2 + 0.000023945184f);
     }
 }
 
@@ -180,15 +130,15 @@ float fsin16(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return ((lbl_803E7CAC * y2 + lbl_803E7CA8) * y2 + lbl_803E7CA4) * y2 + lbl_803E7CA0;
+            return y2 * (y2 * (-2.575884e-31f * y2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f;
         case 0x2000:
         case 0x4000:
-            return -(y * ((lbl_803E7C9C * y2 + lbl_803E7C98) * y2 + lbl_803E7C94));
+            return -(y * (y2 * (6.424445e-26f * y2 + -2.294029e-15f) + 0.00002396833f));
         case 0x6000:
         case 0x8000:
-            return -(y2 * ((lbl_803E7CAC * y2 + lbl_803E7CA8) * y2 + lbl_803E7CA4) + lbl_803E7CA0);
+            return -(y2 * (y2 * (-2.575884e-31f * y2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f);
         default:
-            return y * ((lbl_803E7C9C * y2 + lbl_803E7C98) * y2 + lbl_803E7C94);
+            return y * (y2 * (6.424445e-26f * y2 + -2.294029e-15f) + 0.00002396833f);
     }
 }
 
@@ -200,61 +150,52 @@ float fcos16Precise(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (((lbl_803E7CCC * y2 + lbl_803E7CC8) * y2 + lbl_803E7CC4) * y2 + lbl_803E7CC0) * y2
-                   + lbl_803E7CA0;
+            return y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
+                   + 1.0f;
         case 0x2000:
         case 0x4000:
-            return -(y * (((lbl_803E7CBC * y2 + lbl_803E7CB8) * y2 + lbl_803E7CB4) * y2 + lbl_803E7CB0));
+            return -(y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (((lbl_803E7CCC * y2 + lbl_803E7CC8) * y2 + lbl_803E7CC4) * y2 + lbl_803E7CC0)
-                     + lbl_803E7CA0);
+            return -(y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
+                     + 1.0f);
         default:
-            return y * (((lbl_803E7CBC * y2 + lbl_803E7CB8) * y2 + lbl_803E7CB4) * y2 + lbl_803E7CB0);
+            return y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f);
     }
 }
 
 float fcos16HighPrecision(int angle) {
     s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
     float reducedFloat = fastCastS16ToFloat(&reduced);
-    double reducedAngle = lbl_803E7CD0 * reducedFloat;
+    double reducedAngle = 0.000023968449810713143 * reducedFloat;
     double reducedSquared = reducedAngle * reducedAngle;
 
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (float)(((((((lbl_803E7D38 * reducedSquared + lbl_803E7D30) * reducedSquared + lbl_803E7D28) * reducedSquared + lbl_803E7D20)
-                              * reducedSquared
-                              + lbl_803E7D18)
-                             * reducedSquared
-                             + lbl_803E7D10)
-                            * reducedSquared
-                            + lbl_803E7D08));
+            return (float)((reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723) + -0.001388888881954176)
+                              + 0.041666666665824886)
+                             + -0.4999999999999672)
+                            + 1.0));
         case 0x2000:
         case 0x4000:
-            return (float)(-(reducedAngle * (((((lbl_803E7D00 * reducedSquared + lbl_803E7CF8) * reducedSquared + lbl_803E7CF0) * reducedSquared
-                                    + lbl_803E7CE8)
-                                       * reducedSquared
-                                   + lbl_803E7CE0)
-                                      * reducedSquared
-                                  + lbl_803E7CD8)));
+            return (float)(-(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
+                                    + 0.008333333318980809)
+                                   + -0.16666666666563978)
+                                  + 0.9999999999999805)));
         case 0x6000:
         case 0x8000:
             return (float)(-(reducedSquared
-                                 * (((((lbl_803E7D38 * reducedSquared + lbl_803E7D30) * reducedSquared + lbl_803E7D28) * reducedSquared
-                                      + lbl_803E7D20)
-                                         * reducedSquared
-                                     + lbl_803E7D18)
-                                        * reducedSquared
-                                    + lbl_803E7D10)
-                             + lbl_803E7D08));
+                                 * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723)
+                                      + -0.001388888881954176)
+                                     + 0.041666666665824886)
+                                    + -0.4999999999999672)
+                             + 1.0));
         default:
-            return (float)(reducedAngle * (((((lbl_803E7D00 * reducedSquared + lbl_803E7CF8) * reducedSquared + lbl_803E7CF0) * reducedSquared
-                                  + lbl_803E7CE8)
-                                     * reducedSquared
-                                 + lbl_803E7CE0)
-                                    * reducedSquared
-                                + lbl_803E7CD8));
+            return (float)(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
+                                  + 0.008333333318980809)
+                                 + -0.16666666666563978)
+                                + 0.9999999999999805));
     }
 }
 
@@ -262,29 +203,29 @@ void mathSinCosf(float x, float* outSin, float* outCos) {
     u16 quadrant;
     float reducedAngle = trigReduceQuadrant(&quadrant, x);
     float reducedSquared = reducedAngle * reducedAngle;
-    float sinApprox = reducedAngle * ((lbl_803E7D4C * reducedSquared + lbl_803E7D48) * reducedSquared + lbl_803E7D44);
-    float cosApprox = ((lbl_803E7D5C * reducedSquared + lbl_803E7D58) * reducedSquared + lbl_803E7D54) * reducedSquared + lbl_803E7D50;
+    float sinApprox = reducedAngle * (reducedSquared * (0.0024270867f * reducedSquared + -0.08071397f) + 0.78539425f);
+    float cosApprox = reducedSquared * (reducedSquared * (-0.000318879f * reducedSquared + 0.015849913f) + -0.30842426f) + 1.0f;
 
     switch (quadrant & 6) {
         case 0:
-            sinApprox = (x >= lbl_803E7D40) ? sinApprox : -sinApprox;
+            sinApprox = (x >= 0.0f) ? sinApprox : -sinApprox;
             *outSin = sinApprox;
             *outCos = cosApprox;
             break;
         case 2:
-            cosApprox = (x >= lbl_803E7D40) ? cosApprox : -cosApprox;
+            cosApprox = (x >= 0.0f) ? cosApprox : -cosApprox;
             *outSin = cosApprox;
             *outCos = -sinApprox;
             break;
         case 4:
-            if (x >= lbl_803E7D40) {
+            if (x >= 0.0f) {
                 sinApprox = -sinApprox;
             }
             *outSin = sinApprox;
             *outCos = -cosApprox;
             break;
         default:
-            if (x >= lbl_803E7D40) {
+            if (x >= 0.0f) {
                 cosApprox = -cosApprox;
             }
             *outSin = cosApprox;

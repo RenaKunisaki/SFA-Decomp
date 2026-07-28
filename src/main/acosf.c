@@ -1,10 +1,6 @@
 #include "dolphin/types.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/k_tan.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
-extern float lbl_803E79FC;
-extern float lbl_803E7A18;
-extern float lbl_803E7A28;
-extern double lbl_803E7AA8;
 
 
 float asinf(float value) {
@@ -55,15 +51,15 @@ float acosf(float value) {
 
     if (absoluteValue <= 0.5f) {
         reduced = value * value;
-        return 1.5707964f - value * (((((lbl_803E79FC * reduced + 0.022284873f) * reduced + 0.045945134f) * reduced
-                                      + 0.074900925f) * reduced + 0.16666986f) * reduced + 1.0f);
+        return 1.5707964f - value * (reduced * (reduced * (reduced * (reduced * (0.044916496f * reduced + 0.022284873f) + 0.045945134f)
+                                      + 0.074900925f) + 0.16666986f) + 1.0f);
     }
 
     reduced = 0.5f - 0.5f * absoluteValue;
     root = sqrtf_8029312c(reduced);
     polynomial = root
-        * (((((lbl_803E79FC * reduced + 0.022284873f) * reduced + 0.045945134f) * reduced + 0.074900925f) * reduced
-            + 0.16666986f) * reduced + 1.0f);
+        * (reduced * (reduced * (reduced * (reduced * (0.044916496f * reduced + 0.022284873f) + 0.045945134f) + 0.074900925f)
+            + 0.16666986f) + 1.0f);
     if (value >= 0.0f) {
         return 2.0f * polynomial;
     }
@@ -80,12 +76,12 @@ float atanf_fast(float value) {
 
     if (absoluteValue <= 1.0f) {
         squared = value * value;
-        return value * ((lbl_803E7A18 * squared + -0.28706065f) * squared + 0.99494934f);
+        return value * (squared * (0.07803718f * squared + -0.28706065f) + 0.99494934f);
     }
 
     reciprocal = fastReciprocal(absoluteValue);
     squared = reciprocal * reciprocal;
-    polynomial = (lbl_803E7A18 * squared + -0.28706065f) * squared + 0.99494934f;
+    polynomial = squared * (0.07803718f * squared + -0.28706065f) + 0.99494934f;
     positiveResult = 1.5707964f - reciprocal * polynomial;
     negativeResult = reciprocal * polynomial - 1.5707964f;
     if (value >= 0.0f) {
@@ -102,21 +98,21 @@ float atanf(float value) {
 
     if (absoluteValue <= 1.0f) {
         squared = value * value;
-        return (float)(value * (((((((((((((((lbl_803E7AA8 * squared + 0.0008865618705749518) * squared + -0.0038832764327526095) * squared
-                                       + 0.010781633704900742) * squared + -0.021653463803231715) * squared + 0.034329998614266506) * squared
-                                    + -0.04621516760962549) * squared + 0.05642012785770931) * squared + -0.06598304215265671) * squared
-                                 + 0.0767790623192377) * squared + -0.09088734552851294) * squared + 0.11110886338281603) * squared
-                              + -0.14285699432451082) * squared + 0.19999999438016125) * squared + -0.3333333332339238) * squared
+        return (float)(value * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (-0.00009545564651489258 * squared + 0.0008865618705749518) + -0.0038832764327526095)
+                                       + 0.010781633704900742) + -0.021653463803231715) + 0.034329998614266506)
+                                    + -0.04621516760962549) + 0.05642012785770931) + -0.06598304215265671)
+                                 + 0.0767790623192377) + -0.09088734552851294) + 0.11110886338281603)
+                              + -0.14285699432451082) + 0.19999999438016125) + -0.3333333332339238)
                            + 0.9999999999994954));
     }
 
-    squared = (reduced = 1.0 / absoluteValue) * reduced;
+    squared = reduced * (reduced = 1.0 / absoluteValue);
     result = (float)(1.5707963267948966
-                     - reduced * (((((((((((((((lbl_803E7AA8 * squared + 0.0008865618705749518) * squared + -0.0038832764327526095) * squared
-                                        + 0.010781633704900742) * squared + -0.021653463803231715) * squared + 0.034329998614266506) * squared
-                                     + -0.04621516760962549) * squared + 0.05642012785770931) * squared + -0.06598304215265671) * squared
-                                  + 0.0767790623192377) * squared + -0.09088734552851294) * squared + 0.11110886338281603) * squared
-                               + -0.14285699432451082) * squared + 0.19999999438016125) * squared + -0.3333333332339238) * squared
+                     - reduced * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (squared * (-0.00009545564651489258 * squared + 0.0008865618705749518) + -0.0038832764327526095)
+                                        + 0.010781633704900742) + -0.021653463803231715) + 0.034329998614266506)
+                                     + -0.04621516760962549) + 0.05642012785770931) + -0.06598304215265671)
+                                  + 0.0767790623192377) + -0.09088734552851294) + 0.11110886338281603)
+                               + -0.14285699432451082) + 0.19999999438016125) + -0.3333333332339238)
                             + 0.9999999999994954));
     if (value >= 0.0f) {
         return result;
@@ -179,11 +175,11 @@ float atan2f(float y, float x) {
     if (absoluteX > absoluteY) {
         axisRatio = absoluteY / absoluteX;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = axisRatio * (((lbl_803E7A28 * ratioSquared + 0.14498249f) * ratioSquared + -0.3205333f) * ratioSquared + 0.99913347f);
+        firstQuadrantAngle = axisRatio * (ratioSquared * (ratioSquared * (-0.038254466f * ratioSquared + 0.14498249f) + -0.3205333f) + 0.99913347f);
     } else {
         axisRatio = absoluteX / absoluteY;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = 1.5707964f - axisRatio * (((lbl_803E7A28 * ratioSquared + 0.14498249f) * ratioSquared + -0.3205333f) * ratioSquared + 0.99913347f);
+        firstQuadrantAngle = 1.5707964f - axisRatio * (ratioSquared * (ratioSquared * (-0.038254466f * ratioSquared + 0.14498249f) + -0.3205333f) + 0.99913347f);
     }
 
     quadrantSigns = (float_bits(&y) & 0x80000000) | ((float_bits(&x) & 0x80000000) >> 1);
@@ -210,17 +206,17 @@ float atan2fHighPrecision(float y, float x) {
     if (absoluteX >= absoluteY) {
         axisRatio = absoluteY / absoluteX;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = axisRatio * (((((((((((((((lbl_803E7AA8 * ratioSquared + 0.0008865618705749518) * ratioSquared + -0.0038832764327526095) * ratioSquared + 0.010781633704900742) * ratioSquared
-                       + -0.021653463803231715) * ratioSquared + 0.034329998614266506) * ratioSquared + -0.04621516760962549) * ratioSquared + 0.05642012785770931) * ratioSquared
-                    + -0.06598304215265671) * ratioSquared + 0.0767790623192377) * ratioSquared + -0.09088734552851294) * ratioSquared + 0.11110886338281603) * ratioSquared
-                 + -0.14285699432451082) * ratioSquared + 0.19999999438016125) * ratioSquared + -0.3333333332339238) * ratioSquared + 0.9999999999994954);
+        firstQuadrantAngle = axisRatio * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (-0.00009545564651489258 * ratioSquared + 0.0008865618705749518) + -0.0038832764327526095) + 0.010781633704900742)
+                       + -0.021653463803231715) + 0.034329998614266506) + -0.04621516760962549) + 0.05642012785770931)
+                    + -0.06598304215265671) + 0.0767790623192377) + -0.09088734552851294) + 0.11110886338281603)
+                 + -0.14285699432451082) + 0.19999999438016125) + -0.3333333332339238) + 0.9999999999994954);
     } else {
         axisRatio = absoluteX / absoluteY;
         ratioSquared = axisRatio * axisRatio;
-        firstQuadrantAngle = 1.5707963267948966 - axisRatio * (((((((((((((((lbl_803E7AA8 * ratioSquared + 0.0008865618705749518) * ratioSquared + -0.0038832764327526095) * ratioSquared + 0.010781633704900742) * ratioSquared
-                       + -0.021653463803231715) * ratioSquared + 0.034329998614266506) * ratioSquared + -0.04621516760962549) * ratioSquared + 0.05642012785770931) * ratioSquared
-                    + -0.06598304215265671) * ratioSquared + 0.0767790623192377) * ratioSquared + -0.09088734552851294) * ratioSquared + 0.11110886338281603) * ratioSquared
-                 + -0.14285699432451082) * ratioSquared + 0.19999999438016125) * ratioSquared + -0.3333333332339238) * ratioSquared + 0.9999999999994954);
+        firstQuadrantAngle = 1.5707963267948966 - axisRatio * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (ratioSquared * (-0.00009545564651489258 * ratioSquared + 0.0008865618705749518) + -0.0038832764327526095) + 0.010781633704900742)
+                       + -0.021653463803231715) + 0.034329998614266506) + -0.04621516760962549) + 0.05642012785770931)
+                    + -0.06598304215265671) + 0.0767790623192377) + -0.09088734552851294) + 0.11110886338281603)
+                 + -0.14285699432451082) + 0.19999999438016125) + -0.3333333332339238) + 0.9999999999994954);
     }
 
     quadrantSigns = (float_bits(&y) & 0x80000000) | ((float_bits(&x) & 0x80000000) >> 1);
