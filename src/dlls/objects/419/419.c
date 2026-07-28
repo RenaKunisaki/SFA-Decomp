@@ -1,80 +1,75 @@
 /*
- * DLL 0x1A3 - the animated ice blocks of SnowHorn Wastes
- * (map 'nwastes', 0x0A).
+ * DLL 0x1A3 (slot 419) - a hidden object-group anchor.
  *
- * These are the moving "source" ice objects: each one registers in the
- * NW_ANIMICE object group so that the static nwice objects (DLL 0x1A4)
- * can find and follow it. The object itself has no per-frame behaviour
- * here - update/render/hitDetect are all stubs; the work lives in nwice.
+ * Instances join object group 0x3D. Slot 420 searches that group for an
+ * object with the same placement pair ID, then follows its transform.
  */
-#include "main/obj_group.h"
+#include "dlls/objects/419.h"
+
 #include "game/objects/object.h"
-#include "main/dll/NW/nw_shared.h"
-#include "main/dll/NW/dll_01A3_nwanimice.h"
-#include "dlls/object_descriptor.h"
+#include "main/obj_group.h"
 
-#define NWANIMICE_OBJFLAG_HIDDEN             0x4000
-#define NWANIMICE_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-int nw_animice_SeqFn(void)
-{
-    return 0x0;
-}
-int nw_animice_getExtraSize(void)
-{
-    return 0x0;
-}
-int nw_animice_getObjectTypeId(void)
-{
-    return 0x0;
+int dll419_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate) {
+    (void)unusedObj;
+    (void)unusedArg;
+    (void)unusedAnimUpdate;
+    return 0;
 }
 
-void nw_animice_free(int obj)
-{
-    ObjGroup_RemoveObject(obj, NW_ANIMICE_GROUP_ID);
+int dll419_getExtraSize(void) {
+    return 0;
 }
 
-void nw_animice_render(void)
-{
+int dll419_getObjectTypeId(void) {
+    return 0;
 }
 
-void nw_animice_hitDetect(void)
-{
+void dll419_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, DLL419_OBJECT_GROUP_ID);
 }
 
-void nw_animice_update(void)
-{
+void dll419_render(GameObject* unusedObj, int unusedArg2, int unusedArg3, int unusedArg4, int unusedArg5,
+                   s8 unusedVisible) {
+    (void)unusedObj;
+    (void)unusedArg2;
+    (void)unusedArg3;
+    (void)unusedArg4;
+    (void)unusedArg5;
+    (void)unusedVisible;
 }
 
-void nw_animice_init(int* obj)
-{
-    ((GameObject*)obj)->animEventCallback = nw_animice_SeqFn;
-    ((GameObject*)obj)->objectFlags =
-        (u16)(((GameObject*)obj)->objectFlags | (NWANIMICE_OBJFLAG_HIDDEN | NWANIMICE_OBJFLAG_HITDETECT_DISABLED));
-    ObjGroup_AddObject((u32)obj, NW_ANIMICE_GROUP_ID);
+void dll419_hitDetect(void) {
 }
 
-void nw_animice_release(void)
-{
+void dll419_update(GameObject* unusedObj) {
+    (void)unusedObj;
 }
 
-void nw_animice_initialise(void)
-{
+void dll419_init(GameObject* obj) {
+    obj->animEventCallback = dll419_processAnimEvents;
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
+    ObjGroup_AddObject((int)obj, DLL419_OBJECT_GROUP_ID);
 }
 
-ObjectDescriptor gNW_animiceObjDescriptor = {
+void dll419_release(void) {
+}
+
+void dll419_initialise(void) {
+}
+
+ObjectDescriptor gDll419ObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)nw_animice_initialise,
-    (ObjectDescriptorCallback)nw_animice_release,
+    (ObjectDescriptorCallback)dll419_initialise,
+    (ObjectDescriptorCallback)dll419_release,
     0,
-    (ObjectDescriptorCallback)nw_animice_init,
-    (ObjectDescriptorCallback)nw_animice_update,
-    (ObjectDescriptorCallback)nw_animice_hitDetect,
-    (ObjectDescriptorCallback)nw_animice_render,
-    (ObjectDescriptorCallback)nw_animice_free,
-    (ObjectDescriptorCallback)nw_animice_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)nw_animice_getExtraSize,
+    (ObjectDescriptorCallback)dll419_init,
+    (ObjectDescriptorCallback)dll419_update,
+    (ObjectDescriptorCallback)dll419_hitDetect,
+    (ObjectDescriptorCallback)dll419_render,
+    (ObjectDescriptorCallback)dll419_free,
+    (ObjectDescriptorCallback)dll419_getObjectTypeId,
+    (ObjectDescriptorExtraSizeCallback)dll419_getExtraSize,
 };
