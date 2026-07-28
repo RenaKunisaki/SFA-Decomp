@@ -553,18 +553,14 @@ void seqHandle(u32 deltaTime)
     u32 callbacksActive;
     SynthVoice* song;
     SynthVoice* nextSong;
-    f32 tickRateScale;
     f64 absoluteTickRange;
     f32 tickRange;
-    f32 speedScale;
 
     if (deltaTime != 0)
     {
         tickRange = 65536.f;
         song = gSynthQueuedVoices;
         absoluteTickRange = __fabs(tickRange);
-        tickRateScale = (1.f / 40960000.f);
-        speedScale = 0.00390625f;
         for (; song != NULL; song = nextSong)
         {
             nextSong = song->next;
@@ -574,7 +570,7 @@ void seqHandle(u32 deltaTime)
             if (gSynthCurrentVoice->keyGroupMap == NULL)
             {
                 synthHandleMasterTrack(0);
-                synthSetTickDelta(gSynthCurrentVoice->section, deltaTime, tickRateScale, speedScale, tickRange,
+                synthSetTickDelta(gSynthCurrentVoice->section, deltaTime, (1.f / 40960000.f), 0.00390625f, tickRange,
                                   absoluteTickRange);
                 eventsActive = synthProcessChannelEventQueue(0, deltaTime);
                 callbacksActive = synthUpdateCallbacks();
@@ -595,8 +591,8 @@ void seqHandle(u32 deltaTime)
                 for (sectionIndex = 0; sectionIndex < 0x10; sectionIndex++)
                 {
                     synthHandleMasterTrack(sectionIndex);
-                    synthSetTickDelta(&gSynthCurrentVoice->section[sectionIndex], deltaTime, tickRateScale,
-                                      speedScale, tickRange, absoluteTickRange);
+                    synthSetTickDelta(&gSynthCurrentVoice->section[sectionIndex], deltaTime, (1.f / 40960000.f),
+                                      0.00390625f, tickRange, absoluteTickRange);
                     eventsActive |= synthProcessChannelEventQueue(sectionIndex, deltaTime);
                 }
                 callbacksActive = synthUpdateCallbacks();
