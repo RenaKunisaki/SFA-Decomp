@@ -37,6 +37,7 @@ ColumnLimit: 120                 # ~p99.5 of the codebase; keeps the long
 
 # --- braces: K&R / attach ---------------------------------------------------
 BreakBeforeBraces: Attach
+InsertBraces: true
 
 # --- no one-liners ---------------------------------------------------------
 AllowShortFunctionsOnASingleLine: None

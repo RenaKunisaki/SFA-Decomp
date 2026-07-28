@@ -215,6 +215,7 @@
 #include "dlls/objects/418_NW_tricky.h"
 #include "dlls/objects/419.h"
 #include "dlls/objects/420.h"
+#include "dlls/objects/421_NW_levcontr.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -344,8 +345,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
-extern ResourceDescriptor gNW_levcontrolObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor,
-    gPointLightObjDescriptor;
+extern ResourceDescriptor gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor,
     gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
@@ -1473,7 +1473,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gNWTrickyObjDescriptor,
     (ResourceDescriptor*)&gDll419ObjDescriptor,
     (ResourceDescriptor*)&gNW_iceObjDescriptor,
-    &gNW_levcontrolObjDescriptor,
+    (ResourceDescriptor*)&gNWLevelControlObjDescriptor,
     &gSH_trickyObjDescriptor,
     &gEdibleMushroomObjDescriptor,
     &gEnemyMushroomObjDescriptor,

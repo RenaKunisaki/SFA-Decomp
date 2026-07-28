@@ -464,7 +464,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A2 | NW_tricky | COMPLETE | dlls/objects/418_NW_tricky/NW_tricky.c | = (canonical) | — |
 | 0x1A3 | — | NO-RETAIL-NAME | dlls/objects/419/419.c | = (canonical) | Exact complete ten-function TU with a numbered symbol namespace, canonical numeric unit header, and terminal descriptor; the generated source path remains unchanged |
 | 0x1A4 | — | NO-RETAIL-NAME | dlls/objects/420/420.c | = (canonical) | Exact complete five-function TU with its terminal descriptor, retail-proven `NW_ice1`/`NW_ice2`/`NW_ice3` object family, retail-backed 0x20-byte placement layout, canonical numeric unit header, and full constant pool; the generated source path remains unchanged |
-| 0x1A5 | NW_levcontr | COMPLETE | dlls/objects/421_NW_levcontr/NW_levcontr.c | = (canonical) | — |
+| 0x1A5 | NW_levcontr | COMPLETE | dlls/objects/421_NW_levcontr/NW_levcontr.c | = (canonical) | Exact complete five-function TU with its retail-proven early descriptor and following compiler switch table, typed 0x14-byte controller state, canonical unit header, and full level-data block; the generated source path remains unchanged |
 | 0x1A6 | SH_tricky | COMPLETE | dlls/objects/422_SH_tricky/SH_tricky.c | = (canonical) | — |
 | 0x1A7 | — | NO-RETAIL-NAME | dlls/objects/423/423.c | = (canonical) | — |
 | 0x1A8 | SH_killermu | COMPLETE | dlls/objects/424_SH_killermu/SH_killermu.c | = (canonical) | — |
@@ -993,6 +993,7 @@ blocked units will surface more when carved.
 | 0x1A2 | dlls/objects/418_NW_tricky/NW_tricky.c | include/dlls/objects/418_NW_tricky.h |
 | 0x1A3 | dlls/objects/419/419.c | include/dlls/objects/419.h |
 | 0x1A4 | dlls/objects/420/420.c | include/dlls/objects/420.h |
+| 0x1A5 | dlls/objects/421_NW_levcontr/NW_levcontr.c | include/dlls/objects/421_NW_levcontr.h |
 | 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/main/dll/dll_01A8_shkillermushroom.h |
 | 0x1AC | dlls/objects/428_SH_queenear/SH_queenear.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |
