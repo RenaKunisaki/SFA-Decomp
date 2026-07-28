@@ -6557,8 +6557,8 @@ void ObjSeq_onMapSetup(void)
     u8* pending;
     f32* frames;
     f32* dists;
-    u8* counts;
     int* handles;
+    u8* counts;
     u8* marks;
     u8* flagsB;
     int i = 0;
@@ -6695,11 +6695,15 @@ void ObjSeq_onMapSetup(void)
     }
 
     {
-        u8* p = base + 0x50;
-        modes = (s16*)(base + offsetof(ObjSeqRuntimeStorage, modes)) + 0x50;
-        handles = (int*)(base + offsetof(ObjSeqRuntimeStorage, handles)) + 0x50;
-        marks = p + offsetof(ObjSeqRuntimeStorage, marks);
-        for (i = 0; i < 85 - 0x50; i++)
+        marks = base + i;
+        modes = (s16*)(base + i * 2);
+        modes += 0x3a98 / 2;
+        handles = (int*)(base + i * 4);
+        handles += 0x33e4 / 4;
+        marks += 0x338c;
+        zero = 0.0f;
+        neg1 = -1.0f;
+        while (i < 85)
         {
             frames = (f32*)(handles + 300);
             dists = (f32*)(handles + 215);
@@ -6710,21 +6714,23 @@ void ObjSeq_onMapSetup(void)
             states = marks + 0x6b4;
             pending = marks + 0x65c;
             counts = marks + 0x204;
-            flagsA[0] = 0;
-            flagsB[0] = 0;
+            *flagsA++ = 0;
+            *flagsB++ = 0;
             modes[0] = 0;
-            actions[0] = 0;
-            results[0] = 0;
-            states[0] = 0;
-            pending[0] = 0;
-            frames[0] = zero;
-            dists[0] = neg1;
-            counts[0] = 0;
+            *actions++ = 0;
+            *results++ = 0;
+            *states++ = 0;
+            *pending++ = 0;
+            *frames++ = zero;
+            *dists++ = neg1;
+            *counts++ = 0;
             handles[0] = 0;
+            marks[0] = 0;
             marks[0] = 0;
             modes++;
             handles++;
             marks++;
+            i++;
         }
     }
 
