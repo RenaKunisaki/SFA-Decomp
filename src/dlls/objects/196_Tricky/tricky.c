@@ -105,6 +105,7 @@
 #include "main/dll/DIM/dimlogfire.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
 #include "dlls/objects/435_SH_Beacon.h"
+#include "dlls/objects/437.h"
 #include "main/main_internal.h"
 #include "main/dll/baddie_frozen.h"
 #include "dlls/objects/316_XYZAnimator.h"
@@ -170,7 +171,6 @@ extern f32 lbl_803E259C;
 #define TRICKY_SEQID_WHIRLPOOL    2129 /* "Whirlpool" (DLL 0xC9) */
 #define TRICKY_SEQID_VAMBAT       1022 /* "Vambat" (DLL 0xC9) */
 #define TRICKY_SEQID_WB           1239 /* "WB" (DLL 0xC9) */
-#define TRICKY_SEQID_SC_BABYLIGHT 636  /* "SC_babyligh" (DLL 0x1B5) */
 #define TRICKY_SEQID_PINPON       593  /* "PinPon" (DLL 0xC9) */
 
 #define TUMBLEWEED_BLEND_FLAGS_OFFSET    0x82e
@@ -549,8 +549,8 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
                     if (allowSpecialTypes == 0)
                     {
                         s16 m = ((GameObject*)*objs)->anim.seqId;
-                        if (m == TRICKY_SEQID_VAMBAT || m == TRICKY_SEQID_WB || m == TRICKY_SEQID_SC_BABYLIGHT ||
-                            m == TRICKY_SEQID_PINPON)
+                        if (m == TRICKY_SEQID_VAMBAT || m == TRICKY_SEQID_WB ||
+                            m == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT || m == TRICKY_SEQID_PINPON)
                             continue;
                     }
                     {

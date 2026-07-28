@@ -480,7 +480,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1B2 | SH_staffHaz | COMPLETE | dlls/objects/434_SH_staffHaz/SH_staffHaz.c | = (canonical) | Exact complete two-function render/update TU with its terminal descriptor, canonical unit header, and complete compiler-generated three-float constant pool; it has no state, setup, or allocation callback, and the generated source path remains unchanged |
 | 0x1B3 | SH_Beacon | COMPLETE | dlls/objects/435_SH_Beacon/SH_Beacon.c | = (canonical) | Exact complete six-function TU with its terminal descriptor, allocation-backed 0x18-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, and unchanged generated source path |
 | 0x1B4 | SH_EmptyTum | COMPLETE | dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c | = (canonical) | Exact complete two-function TU with its terminal descriptor, recovered placement prefix, canonical unit header, and complete compiler-generated three-float constant pool; the generated source path remains unchanged |
-| 0x1B5 | lightfoot (+SC_chieflig, SC_lightfoo, SC_babyligh, SC_blTarget, SC_muscleli) | COMPLETE | dlls/objects/437/437.c | = (canonical) | No single recovered TU basename |
+| 0x1B5 | lightfoot (+SC_chieflig, SC_lightfoo, SC_babyligh, SC_blTarget, SC_muscleli) | COMPLETE | dlls/objects/437/437.c | = (canonical) | Exact nine-function TU with one terminal descriptor, allocation-backed 0x440-byte state, recovered placement fields, typed control prefix and handler tables, canonical numeric unit header, and complete owned data/small-data pools; several retail object mappings share the TU, so no single basename is proven and the generated source path remains unchanged |
 | 0x1B6 | SC_levelcon | COMPLETE | dlls/objects/438_SC_levelcon/SC_levelcon.c | = (canonical) | — |
 | 0x1B7 | SC_MusicTree (+SC_BirchTre) | COMPLETE | dlls/objects/439/439.c | = (canonical) | No single recovered TU basename |
 | 0x1B8 | SC_totempol | COMPLETE | dlls/objects/440_SC_totempol/SC_totempol.c | = (canonical) | — |
@@ -1007,6 +1007,7 @@ blocked units will surface more when carved.
 | 0x1B2 | dlls/objects/434_SH_staffHaz/SH_staffHaz.c | include/dlls/objects/434_SH_staffHaz.h |
 | 0x1B3 | dlls/objects/435_SH_Beacon/SH_Beacon.c | include/dlls/objects/435_SH_Beacon.h |
 | 0x1B4 | dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c | include/dlls/objects/436_SH_EmptyTum.h |
+| 0x1B5 | dlls/objects/437/437.c | include/dlls/objects/437.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

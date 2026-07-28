@@ -231,6 +231,7 @@
 #include "dlls/objects/434_SH_staffHaz.h"
 #include "dlls/objects/435_SH_Beacon.h"
 #include "dlls/objects/436_SH_EmptyTum.h"
+#include "dlls/objects/437.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -355,8 +356,8 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
 extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
     gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
-    gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightSourceObjDescriptor,
+    gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1499,7 +1500,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSH_staffHazeObjDescriptor,
     (ResourceDescriptor*)&gSH_BeaconObjDescriptor,
     (ResourceDescriptor*)&gSH_EmptyTumbleWObjDescriptor,
-    &gLightFootObjDescriptor,
+    (ResourceDescriptor*)&gDll437ObjDescriptor,
     &gSC_levelcontrolObjDescriptor,
     &gSC_MusicTreeObjDescriptor,
     &gSC_totempoleObjDescriptor,
