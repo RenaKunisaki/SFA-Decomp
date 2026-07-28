@@ -546,10 +546,10 @@ void Obj_TransformLocalPointByWorldMatrix(u8* obj, f32* src, f32* dst, u8 flag)
     dst[2] += playerMapOffsetZ;
 }
 
-void objWorldToLocalPos(f32* out, ObjLocalTransform* transform, f32* in)
+void objWorldToLocalPos(f32* out, MatrixTransform* transform, f32* in)
 {
     f32 rotated[3];
-    ObjLocalTransform inverse;
+    MatrixTransform inverse;
     union
     {
         f32 m[16];
