@@ -4,13 +4,13 @@
  * A scripted level-progression controller placed in the LinkA map. It runs
  * trigger sequence 0 every update and reacts to that sequence's anim events
  * (LinkALevControl_seqFn), branching on the current map-event mode (getMapAct of
- * its mapEventMapId):
+ * its map-event slot):
  *   - OPEN_PATH:  defrag memory, enable object groups, unlock Lightfoot and
  *                 load/lock the destination map for the active mode.
  *   - WARP:       warp to the mode's destination map (mode 2 picks one of
  *                 three routes from game bits) and load the UI DLL.
  *   - UNLOAD_NEIGHBOR_MAP: unload the adjacent map for the active mode.
- * init unlocks the starting level, flags the object as a sequence object,
+ * init unlocks the starting level, disables the object's hit detection,
  * sets three progression game bits, kicks an env-fx act and fades the active
  * music channels. A looping object sound is kept alive while sequences run.
  */
@@ -59,14 +59,14 @@
 #define LINKA_LEVCONTROL_EXTRA_SIZE 4
 
 
-int LinkALevControl_seqFn(FireObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int LinkALevControl_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     int stateIndex;
     u8 mode;
     u8 eventId;
     int mapDir;
 
-    mode = (u8)(*gMapEventInterface)->getMapAct((int)obj->mapEventMapId);
+    mode = (u8)(*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
     Sfx_KeepAliveLoopedObjectSound(0, LINKA_LEVCONTROL_LOOP_SFX_ID);
     for (stateIndex = 0; stateIndex < animUpdate->eventCount; stateIndex++)
     {
@@ -182,18 +182,18 @@ void LinkALevControl_hitDetect(void)
 {
 }
 
-void LinkALevControl_update(FireObject* obj)
+void LinkALevControl_update(GameObject* obj)
 {
     (*gObjectTriggerInterface)->runSequence(0, obj, 0xffffffff);
 }
 
-void LinkALevControl_init(FireObject* obj)
+void LinkALevControl_init(GameObject* obj)
 {
     u32 flags;
     obj->animEventCallback = LinkALevControl_seqFn;
     unlockLevel(0, 0, 1);
-    flags = obj->flags | LINKA_LEVCONTROL_SEQUENCE_OBJECT_FLAGS;
-    obj->flags = flags;
+    flags = obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags = flags;
     envFxActFn_800887f8(0);
     mainSetBits(LINKA_LEVCONTROL_INIT_GAMEBIT_0, 1);
     mainSetBits(LINKA_LEVCONTROL_INIT_GAMEBIT_1, 1);
