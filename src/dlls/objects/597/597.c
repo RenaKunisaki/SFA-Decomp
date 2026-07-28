@@ -128,6 +128,7 @@ char sSnowBikeVelDebugFmt[] = "vel %f\n";
 #define GX_QUADS          0x80
 #define GX_VTXFMT2        2
 
+f32 gDrCloudCageWindVolume;
 Texture* sSnowBikeTrailTexture;
 
 #define GXWGFifo (*(volatile ShWGPipe*)0xCC008000)
@@ -515,8 +516,6 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
         }
     }
 }
-
-f32 gDrCloudCageWindVolume;
 
 typedef struct DRCloudCagePulseParams
 {

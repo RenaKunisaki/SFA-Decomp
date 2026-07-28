@@ -3225,6 +3225,6 @@ int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
     return baseSize + resource[8] * resource[7];
 }
 
-char sModelAnimationBufferOverflowWarning[] = "Warning: Model animation buffer overflow!! size=%d\n";
-
 f32 gModelJitterAxis[3] = { 1.0f, 0.0f, 0.0f };
+
+char sModelAnimationBufferOverflowWarning[] = "Warning: Model animation buffer overflow!! size=%d\n";
