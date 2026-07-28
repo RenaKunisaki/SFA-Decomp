@@ -24,6 +24,7 @@ void gameTextInitFn_8001c794(void)
     u16* dst;
     int count;
     int i;
+    int k;
 
     count = 1;
     p = &gGameTextBoxTexAssets + 1;
@@ -111,10 +112,10 @@ void gameTextInitFn_8001c794(void)
     tex = textureAlloc(0x14, 0x14, 5, 0, 0, 0, 0, 1, 1);
     gGameTextBoxEdgeTexture = tex;
     dst = (u16*)(tex + 1);
-    i = 0;
-    for (; i < 5; i++)
+    k = 0;
+    for (; k < 5; k++)
     {
-        y = i * 4;
+        y = k * 4;
         j = 0;
         x0 = 0;
         for (; j < 20;)
