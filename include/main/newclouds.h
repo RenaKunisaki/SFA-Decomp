@@ -12,7 +12,7 @@ typedef void (*NewCloudsOnMapSetupFn)(void);
 typedef void (*NewCloudsKillSnowCloudFn)(int cloudId, int flag);
 typedef void (*NewCloudsRunFn)(void);
 typedef void (*NewCloudsRenderSnowCloudsFn)(int renderPass);
-typedef int (*NewCloudsIsSnowCloudActiveFn)(void);
+typedef int (*NewCloudsIsBlizzardActiveFn)(void);
 typedef void (*NewCloudsFunc09Fn)(void);
 typedef void (*NewCloudsFunc0ANopFn)(int unused);
 
@@ -23,7 +23,7 @@ typedef struct NewCloudsInterface {
     NewCloudsKillSnowCloudFn killSnowCloud;
     NewCloudsRunFn run;
     NewCloudsRenderSnowCloudsFn renderSnowClouds;
-    NewCloudsIsSnowCloudActiveFn isSnowCloudActive;
+    NewCloudsIsBlizzardActiveFn isBlizzardActive;
     NewCloudsFunc09Fn func09;
     NewCloudsFunc0ANopFn func0ANop;
 } NewCloudsInterface;
@@ -33,7 +33,7 @@ STATIC_ASSERT(offsetof(NewCloudsInterface, onMapSetup) == 0x08);
 STATIC_ASSERT(offsetof(NewCloudsInterface, killSnowCloud) == 0x0C);
 STATIC_ASSERT(offsetof(NewCloudsInterface, run) == 0x10);
 STATIC_ASSERT(offsetof(NewCloudsInterface, renderSnowClouds) == 0x14);
-STATIC_ASSERT(offsetof(NewCloudsInterface, isSnowCloudActive) == 0x18);
+STATIC_ASSERT(offsetof(NewCloudsInterface, isBlizzardActive) == 0x18);
 STATIC_ASSERT(offsetof(NewCloudsInterface, func09) == 0x1C);
 STATIC_ASSERT(offsetof(NewCloudsInterface, func0ANop) == 0x20);
 

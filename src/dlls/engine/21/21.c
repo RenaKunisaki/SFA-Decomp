@@ -238,14 +238,14 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
     points = curves_getCurves(obj, collision->points[1][0], collision->points[1][2], (u32*)&hitCount, 0);
     for (pointIndex = 0, point = points, count = hitCount; pointIndex < count;)
     {
-        if (((s8)point->type != ROMCURVE_POINT_TYPE_WATER) && (point->z > CURVES_SURFACE_NORMAL_Z_THRESHOLD) &&
-            (point->x <= collision->points[1][1]) && (point->x > collision->points[0][1]))
+        if (((s8)point->surfaceType != ROMCURVE_POINT_TYPE_WATER) && (point->normalY > CURVES_SURFACE_NORMAL_Z_THRESHOLD) &&
+            (point->height <= collision->points[1][1]) && (point->height > collision->points[0][1]))
         {
             collision->traceStart[0][0] = collision->points[1][0];
             collision->traceStart[0][1] = collision->points[1][1];
             collision->traceStart[0][2] = collision->points[1][2];
             collision->points[0][0] = collision->points[1][0];
-            collision->points[0][1] = points[pointIndex].x;
+            collision->points[0][1] = points[pointIndex].height;
             collision->points[0][2] = collision->points[1][2];
             hitDetectFn_80067958((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
                                  collision->segmentHitPlanes, 0);
@@ -489,14 +489,14 @@ void curves_snapToNearestSurface(GameObject* obj, CurvesCollisionState* collisio
     window = CURVES_DEFAULT_VERTICAL_WINDOW;
     while (hitIndex >= 0)
     {
-        if ((s8)point[hitIndex].type != ROMCURVE_POINT_TYPE_WATER)
+        if ((s8)point[hitIndex].surfaceType != ROMCURVE_POINT_TYPE_WATER)
         {
-            if ((currentY <= point[hitIndex].x) && (currentY >= (point[hitIndex].x - window)))
+            if ((currentY <= point[hitIndex].height) && (currentY >= (point[hitIndex].height - window)))
             {
-                (obj)->anim.worldPosY = point[hitIndex].x;
-                collision->surfaceNormalX = point[hitIndex].y;
-                collision->surfaceNormalY = point[hitIndex].z;
-                collision->surfaceNormalZ = point[hitIndex].w;
+                (obj)->anim.worldPosY = point[hitIndex].height;
+                collision->surfaceNormalX = point[hitIndex].normalX;
+                collision->surfaceNormalY = point[hitIndex].normalY;
+                collision->surfaceNormalZ = point[hitIndex].normalZ;
                 *(s8*)&collision->surfaceFlags |= 0x11;
                 collision->surfaceCounter++;
             }
@@ -541,22 +541,22 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* coll
         foundBelow = 0;
         for (i = 0, point = points; i < hitCount; i++)
         {
-            if ((s8)point->type != ROMCURVE_POINT_TYPE_WATER)
+            if ((s8)point->surfaceType != ROMCURVE_POINT_TYPE_WATER)
             {
-                if ((foundBelow == 0) && (point->x < (CURVES_SURFACE_EPSILON + collision->points[0][1])) &&
-                    (point->z > CURVES_SURFACE_NORMAL_Z_THRESHOLD))
+                if ((foundBelow == 0) && (point->height < (CURVES_SURFACE_EPSILON + collision->points[0][1])) &&
+                    (point->normalY > CURVES_SURFACE_NORMAL_Z_THRESHOLD))
                 {
-                    collision->floorY[0] = point->x;
-                    collision->floorGap[0] = collision->points[0][1] - point->x;
+                    collision->floorY[0] = point->height;
+                    collision->floorGap[0] = collision->points[0][1] - point->height;
                     if (collision->segmentHitTypes[0] == -1)
                     {
-                        *(u8*)&collision->segmentHitTypes[0] = point->type;
+                        *(u8*)&collision->segmentHitTypes[0] = point->surfaceType;
                     }
                     foundBelow = 1;
                 }
-                else if ((point->x >= (CURVES_SURFACE_EPSILON + collision->points[0][1])) && (point->z < 0.0f))
+                else if ((point->height >= (CURVES_SURFACE_EPSILON + collision->points[0][1])) && (point->normalY < 0.0f))
                 {
-                    collision->ceilingY[0] = point->x;
+                    collision->ceilingY[0] = point->height;
                 }
             }
             point++;
@@ -572,13 +572,13 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* coll
         point = points;
         for (i = 0; i < hitCount; i++)
         {
-            if (((s8)point->type == ROMCURVE_POINT_TYPE_WATER) && (point->z > CURVES_WATER_NORMAL_THRESHOLD) &&
-                (point->x < collision->ceilingY[0]) && (point->x > collision->floorY[0]))
+            if (((s8)point->surfaceType == ROMCURVE_POINT_TYPE_WATER) && (point->normalY > CURVES_WATER_NORMAL_THRESHOLD) &&
+                (point->height < collision->ceilingY[0]) && (point->height > collision->floorY[0]))
             {
-                collision->waterY[0] = point->x;
-                collision->waterNormalX[0] = point->y;
-                collision->waterNormalY[0] = point->z;
-                collision->waterNormalZ[0] = point->w;
+                collision->waterY[0] = point->height;
+                collision->waterNormalX[0] = point->normalX;
+                collision->waterNormalY[0] = point->normalY;
+                collision->waterNormalZ[0] = point->normalZ;
             }
             point++;
         }
@@ -937,7 +937,7 @@ void curves_reset(GameObject* obj, CurvesCollisionState* collision)
     }
 }
 
-f32 dll_15_func0B(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
+f32 curves_sampleHeight(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
 {
     int hitCount;
     f32 maxY;
@@ -951,9 +951,9 @@ f32 dll_15_func0B(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
     maxY = baseY + height;
     for (; i < hitCount; i++)
     {
-        if ((point->x < maxY) && (point->z > 0.0f))
+        if ((point->height < maxY) && (point->normalY > 0.0f))
         {
-            return points[i].x;
+            return points[i].height;
         }
         point++;
     }
@@ -980,12 +980,12 @@ RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, in
         outPoint = sCurvesHitPoints;
         for (pairCount = 0; pairCount < sCurvesCachedHitCount; pairCount++)
         {
-            outPoint[pairCount].x = hitPointCursor[0]->height;
-            outPoint[pairCount].y = hitPointCursor[0]->normalX;
-            outPoint[pairCount].z = hitPointCursor[0]->normalY;
-            outPoint[pairCount].w = hitPointCursor[0]->normalZ;
+            outPoint[pairCount].height = hitPointCursor[0]->height;
+            outPoint[pairCount].normalX = hitPointCursor[0]->normalX;
+            outPoint[pairCount].normalY = hitPointCursor[0]->normalY;
+            outPoint[pairCount].normalZ = hitPointCursor[0]->normalZ;
             outPoint[pairCount].object = hitPointCursor[0]->object;
-            outPoint[pairCount].type = hitPointCursor[0]->surfaceType;
+            outPoint[pairCount].surfaceType = hitPointCursor[0]->surfaceType;
             hitPointCursor++;
         }
     }
@@ -993,7 +993,7 @@ RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, in
     return sCurvesHitPoints;
 }
 
-void dll_15_func08(GameObject* curveObj, CurvesCollisionState* state, f32 step)
+void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, f32 step)
 {
     int flags;
     CurvesCollisionState* collision;
@@ -1382,7 +1382,7 @@ void dll_15_func08(GameObject* curveObj, CurvesCollisionState* state, f32 step)
     }
 }
 
-void dll_15_func07(GameObject* obj, CurvesCollisionState* state)
+void curves_gatherTrackTriangles(GameObject* obj, CurvesCollisionState* state)
 {
     u32 flags;
     s8 type;
@@ -1405,7 +1405,7 @@ void dll_15_func07(GameObject* obj, CurvesCollisionState* state)
 }
 
 
-void dll_15_func06(GameObject* obj, CurvesCollisionState* state, f32 step)
+void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 step)
 {
     f32 maxX;
     f32 minX;
@@ -1780,10 +1780,10 @@ ObjectDescriptor12 dll_15_funcs = {
     (ObjectDescriptorCallback)curves_clear,
     (ObjectDescriptorCallback)curves_setLocalPointCollision,
     (ObjectDescriptorCallback)curves_setSegmentCollision,
-    (ObjectDescriptorCallback)dll_15_func06,
-    (ObjectDescriptorCallback)dll_15_func07,
-    (ObjectDescriptorCallback)dll_15_func08,
+    (ObjectDescriptorCallback)curves_updateQueryBounds,
+    (ObjectDescriptorCallback)curves_gatherTrackTriangles,
+    (ObjectDescriptorCallback)curves_advanceCollision,
     (ObjectDescriptorExtraSizeCallback)curves_getCurves,
     (ObjectDescriptorCallback)curves_reset,
-    (ObjectDescriptorCallback)dll_15_func0B,
+    (ObjectDescriptorCallback)curves_sampleHeight,
 };

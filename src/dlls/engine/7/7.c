@@ -1553,12 +1553,12 @@ void dll_07_func09(void)
     randomGetRange(5, 5);
 }
 
-int dll_07_func08(void)
+int newclouds_isBlizzardActive(void)
 {
     return gNewCloudBlizzardActive;
 }
 
-void dll_07_func07(int arg)
+void newclouds_renderSnowClouds(int renderPass)
 {
     int i;
     int total;
@@ -1571,7 +1571,7 @@ void dll_07_func07(int arg)
         snow = gNewClouds[i];
         if (snow != NULL && snow->finished == 0)
         {
-            total += snowPrintSnowCloud(arg, snow->cloudId);
+            total += snowPrintSnowCloud(renderPass, snow->cloudId);
         }
     }
     if (gNewCloudSnowFlashAlpha != 0)
@@ -1580,7 +1580,7 @@ void dll_07_func07(int arg)
                         lbl_803DD199, lbl_803DD19A, lbl_803DB768);
     }
 }
-void dll_07_func06(void)
+void newclouds_run(void)
 {
     CameraViewSlot* cam;
     void** clouds;
@@ -2263,7 +2263,7 @@ void newclouds_initialise(void)
 }
 int gNewCloudMusicIdByType[5] = {43, 0, 0, 0, 0};
 
-u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)dll_07_func06, (u32)dll_07_func07, (u32)dll_07_func08, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
+u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
 
 char sSnowFreeSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowFreeSnowCloud\n";
 char sSnowPrintSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowPrintSnowCloud\n";

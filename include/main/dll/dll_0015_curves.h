@@ -87,12 +87,12 @@ typedef struct RomCurvePlacementDef
 
 typedef struct RomCurvePoint
 {
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
+    f32 height;
+    f32 normalX;
+    f32 normalY;
+    f32 normalZ;
     GameObject* object;
-    u8 type;
+    u8 surfaceType;
 } RomCurvePoint;
 
 extern RomCurveDef* romCurves[ROMCURVE_MAX_CURVES];
@@ -178,7 +178,7 @@ STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotY) == ROMCURVE_PLACEMENT_ROT_Y_O
 STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotX) == ROMCURVE_PLACEMENT_ROT_X_OFFSET);
 STATIC_ASSERT(sizeof(RomCurvePoint) == ROMCURVE_POINT_SIZE);
 STATIC_ASSERT(offsetof(RomCurvePoint, object) == 0x10);
-STATIC_ASSERT(offsetof(RomCurvePoint, type) == 0x14);
+STATIC_ASSERT(offsetof(RomCurvePoint, surfaceType) == 0x14);
 
 STATIC_ASSERT(sizeof(RomCurveSegmentProjection) == 0x24);
 STATIC_ASSERT(offsetof(RomCurveSegmentProjection, endX) == 0x0C);
@@ -254,11 +254,11 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* sta
 void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* state);
 void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* state);
 void curves_reset(GameObject* obj, CurvesCollisionState* state);
-f32 dll_15_func0B(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height);
+f32 curves_sampleHeight(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height);
 RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll);
-void dll_15_func08(GameObject* curveObj, CurvesCollisionState* state, f32 step);
+void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, f32 step);
 void curves_setSegmentCollision(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types);
-void dll_15_func06(GameObject* obj, CurvesCollisionState* state, f32 step);
+void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 step);
 void FUN_800e65c8(CurvesCollisionState* state, u8 pointCount, f32* localPointPositions, f32* localPointRadii,
                   s8 primaryHitType, s8 secondaryHitType);
 void curves_setLocalPointCollisionEx(CurvesCollisionState* state, int pointCount, f32* localPointPositions,
