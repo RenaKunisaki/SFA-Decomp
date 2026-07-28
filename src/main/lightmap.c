@@ -558,6 +558,10 @@ void renderObjects(s8* opacity)
     int* objects;
     LightmapDrawQueue* qbase;
     LightmapQEnt* q;
+    LightmapQEnt* qe;
+    LightmapDrawQueue* dq;
+    int qi;
+    u32 shadowKind;
 
     qbase = (LightmapDrawQueue*)lbl_8037E0C0;
     q = (LightmapQEnt*)lbl_8037E0C0;
@@ -573,7 +577,8 @@ void renderObjects(s8* opacity)
             {
                 slot = gLightmapDeferredObjectCount;
                 gLightmapDeferredObjectCount = slot + 1;
-                qbase->deferred[slot] = (u32)obj;
+                dq = (LightmapDrawQueue*)&((u32*)qbase)[slot];
+                dq->deferred[0] = (u32)obj;
             }
         }
         else
@@ -587,16 +592,22 @@ void renderObjects(s8* opacity)
             if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL)
             {
                 renderShadowType3(obj, 0x13, 0);
-                q[lbl_803DCE30].d = 2;
-                lbl_803DCE30++;
+                shadowKind = 2;
+                qi = lbl_803DCE30;
+                qe = &q[qi];
+                qe->d = shadowKind;
+                lbl_803DCE30 = qi + 1;
             }
             else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH && (((GameObject*)obj)->anim.flags
                 & OBJANIM_FLAG_HIDDEN) == 0 && (((GameObject*)obj)->anim.modelState->flags &
                 OBJ_MODEL_STATE_SHADOW_VISIBLE))
             {
                 renderShadowType3(obj, 0x13, 0);
-                q[lbl_803DCE30].d = 3;
-                lbl_803DCE30++;
+                shadowKind = 3;
+                qi = lbl_803DCE30;
+                qe = &q[qi];
+                qe->d = shadowKind;
+                lbl_803DCE30 = qi + 1;
             }
         }
     }
