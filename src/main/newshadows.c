@@ -128,7 +128,9 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
             int i, j;
             for (i = 0; i < src1->height; i++)
             {
-                u8 *pa, *pb, *pc;
+                u8* pa;
+                u8* pb;
+                u8* pc;
                 u32 wd;
                 int rowDataOffset;
                 int tileColumnOffset;
@@ -175,11 +177,10 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
             int i, j;
             for (i = 0; i < src1->height; i++)
             {
-                int tileRowGroupOffset, tileRowOffset;
                 u32 wd;
                 j = 0;
-                tileRowGroupOffset = (i >> 2) * 8;
-                tileRowOffset = (i & 3) * 8;
+                w = (i >> 2) * 8;
+                h = (i & 3) * 8;
                 for (; j < (int)(wd = src1->width); j++)
                 {
                     int rowDataOffset;
@@ -191,12 +192,12 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     ad = (u8*)src1 + pixelColumnOffset;
                     tileColumnOffset = (j >> 2) * 0x40;
                     ad += tileColumnOffset;
-                    ad += tileRowOffset;
-                    rowDataOffset = (int)wd * tileRowGroupOffset * 2;
+                    ad += h;
+                    rowDataOffset = (int)wd * w * 2;
                     ad += rowDataOffset;
                     bd = (u8*)src2 + pixelColumnOffset;
                     bd += tileColumnOffset;
-                    bd += tileRowOffset;
+                    bd += h;
                     bd += rowDataOffset;
                     aLo = READ_TEXTURE_U16(ad + 0x60);
                     aLo = (u8)aLo;
@@ -210,11 +211,11 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     bHi = (u8)bHi;
                     ct = (u8*)dst + pixelColumnOffset;
                     ct += tileColumnOffset;
-                    ct += tileRowOffset;
+                    ct += h;
                     cd = ct + 0x60;
                     WRITE_TEXTURE_U16(cd + rowDataOffset,
                                       (u8)(((int)(aLo * wA) >> 8) + ((int)(bLo * wB) >> 8)));
-                    WRITE_TEXTURE_U16(cd + src1->width * tileRowGroupOffset * 2 + 0x20,
+                    WRITE_TEXTURE_U16(cd + src1->width * w * 2 + 0x20,
                                       ((u8)(((int)(aHi * wA) >> 8) + ((int)(bHi * wB) >> 8)) << 8) |
                                           (u8)(((int)(wA * (u8)pixelA) >> 8) +
                                                ((int)(wB * (u8)pixelB) >> 8)));
@@ -1537,15 +1538,15 @@ void initFn_8006d020(void)
             gNewShadowNoiseTexFrames[frame] = textureAlloc(0x40, 0x40, 3, 0, 0, 1, 1, 1, 1);
             for (row = 0; row < 0x40; row++)
             {
-                int tileRowOffset, rowPixelOffset;
+                int h, rowPixelOffset;
                 column = 0;
-                tileRowOffset = (row >> 2) * 0x20;
+                h = (row >> 2) * 0x20;
                 rowPixelOffset = (row & 3) * 2;
                 for (; column < 0x40; column++)
                 {
                     f32 shift, intensity;
                     int highByte, lowByte;
-                    int texelAddress = (int)gNewShadowNoiseTexFrames[frame] + tileRowOffset + rowPixelOffset;
+                    int texelAddress = (int)gNewShadowNoiseTexFrames[frame] + h + rowPixelOffset;
                     texelAddress += (column & 3) * 8;
                     texelAddress += (column >> 2) * 0x200;
                     evalNoisePlacements(row * lbl_803DEDE0, column * lbl_803DEDE0, frame,
@@ -1563,10 +1564,10 @@ void initFn_8006d020(void)
     gNewShadowCausticTexture = textureAlloc(0x40, 0x40, 3, 0, 0, 1, 1, 1, 1);
     for (row = 0; row < 0x40; row++)
     {
-        int tileRowOffset, rowPixelOffset;
+        int h, rowPixelOffset;
         f32 rowPhase;
         column = 0;
-        tileRowOffset = (row >> 2) * 0x20;
+        h = (row >> 2) * 0x20;
         rowPixelOffset = (row & 3) * 2;
         rowPhase = lbl_803DEDE4 * row;
         for (; column < 0x40; column++)
@@ -1574,7 +1575,7 @@ void initFn_8006d020(void)
             f32 columnPhase, wave, carrier, productValue, waveValue;
             int highByte, lowByte;
             u8* texel = (u8*)gNewShadowCausticTexture + rowPixelOffset;
-            texel += tileRowOffset;
+            texel += h;
             texel += (column & 3) * 8;
             texel += (column >> 2) * 0x200;
             columnPhase = lbl_803DEDE8 * column;
