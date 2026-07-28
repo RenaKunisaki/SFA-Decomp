@@ -96,7 +96,7 @@ void TitleMenu_frameEnd(void)
     do                                                                                                                 \
     {                                                                                                                  \
         int result;                                                                                                    \
-        result = saveFn_800e8508();                                                                                    \
+        result = loadGameOptions();                                                                                    \
         if ((result == 0) && (lbl_803DB424 != 0))                                                                      \
         {                                                                                                              \
             memCardFn_8007dd04(1);                                                                                     \

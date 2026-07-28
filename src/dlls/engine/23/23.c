@@ -323,7 +323,7 @@ void* saveGameGetEnvState(void)
     return gSaveGameData + 0x6a8;
 }
 
-int saveFn_800e8508(void)
+int loadGameOptions(void)
 {
     int loadResult;
 
@@ -955,7 +955,7 @@ void SaveGame_updateTimes(void)
         *(u8*)0 = 0; /* assert: task count <= 5 */
 }
 
-f32 SaveGame_gplayGetTime(int id)
+f32 SaveGame_gplayGetTimeRemaining(int id)
 {
     s16 count;
     u8* p;
@@ -977,7 +977,7 @@ f32 SaveGame_gplayGetTime(int id)
     return 0.0f;
 }
 
-int SaveGame_gplayShouldNotSaveTime(int id)
+int SaveGame_gplayDidTimeExpire(int id)
 {
     u8* p;
     s16 count;
@@ -1026,7 +1026,7 @@ void SaveGame_gplayAddTime(int id, f32 time)
     *(f32*)((int)gSaveGameData + 0x6f4 + (i << 3)) = total;
 }
 
-void* SaveGame_getTrickyEnergy(void)
+void* SaveGame_getSidekickStats(void)
 {
     return gSaveGameData + 0x18;
 }
@@ -1037,7 +1037,7 @@ void* SaveGame_getCurCharPos(void)
     return gSaveGameData + idx * 16 + 0x684;
 }
 
-void* SaveGame_getCurCharacterState(void)
+void* SaveGame_getPlayerStats(void)
 {
     int idx = ((SaveGameData*)gSaveGameData)->currentCharacter;
     return gSaveGameData + idx * 12;
@@ -1050,7 +1050,7 @@ u8 SaveGame_getCurChar(void)
 {
     return ((SaveGameData*)gSaveGameData)->currentCharacter;
 }
-void* SaveGame_getLast(void)
+void* SaveGame_getState(void)
 {
     return gSaveGameData;
 }
@@ -1294,18 +1294,18 @@ void* lbl_80311900[56] = {(void*)0x00000000,
                           SaveGame_mapGetObjGroups,
                           SaveGame_resetObjGroups,
                           SaveGame_gplayAddTime,
-                          SaveGame_gplayShouldNotSaveTime,
-                          SaveGame_gplayGetTime,
+                          SaveGame_gplayDidTimeExpire,
+                          SaveGame_gplayGetTimeRemaining,
                           SaveGame_updateTimes,
                           SaveGame_getCurChar,
                           SaveGame_setCharacter,
                           (void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,
-                          SaveGame_getLast,
-                          SaveGame_getCurCharacterState,
+                          SaveGame_getState,
+                          SaveGame_getPlayerStats,
                           SaveGame_getCurCharPos,
-                          SaveGame_getTrickyEnergy,
+                          SaveGame_getSidekickStats,
                           (void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,

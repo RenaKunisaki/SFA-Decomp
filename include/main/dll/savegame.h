@@ -10,7 +10,7 @@ void SaveGame_setCamActionNo(s16 actionNo);
 s32 SaveGame_getCamActionNo(void);
 f32 SaveGame_getPlayTime(void);
 char* getSaveFileName(void);
-int saveFn_800e8508(void);
+int loadGameOptions(void);
 void gplaySaveGame(int param);
 void titleDoLoadSave(void);
 void saveGame_save(void);
