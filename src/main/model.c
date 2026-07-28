@@ -2864,13 +2864,31 @@ void* return0_8002969C(int resourceId, int arg, void* buffer) { return NULL; }
 void ObjModel_InitResourceCaches(void)
 {
     void* m;
+    int* p;
     gModelList = allocModelStruct(0x8c, 4);
     gModelAnimCacheList = allocModelStruct(0xc4, 4);
     m = mmAlloc(0x830, 0xa, 0);
     gModelResourceBuffer = m;
     gModelAnimOffsetTable = (int*)((u8*)m + 0x800);
     lbl_803DCB5C = (int*)((u8*)m + 0x810);
-    loadModelAndAnimTabs();
+    p = getCurrentDataFile(MLDF_FILEID_MODELS_TAB_A);
+    if (p == NULL)
+    {
+        return;
+    }
+    gModelTabEntryCount = 0;
+    while (*p != -1)
+    {
+        p++;
+        gModelTabEntryCount++;
+    }
+    gModelTabEntryCount--;
+    gModelAnimDataOffsetTable = getCurrentDataFile(MLDF_FILEID_ANIM_TAB_A);
+    if (gModelAnimDataOffsetTable == NULL)
+    {
+        return;
+    }
+    lbl_803DCB58 = 0;
 }
 
 void ObjModel_InitScratchBuffers(void);
