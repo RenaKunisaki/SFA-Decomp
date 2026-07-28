@@ -3768,10 +3768,10 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     s16* items = (s16*)itemsArg;
     s16* stP;
     s16* src;
-    int count;
     int halfOff[1];
     s16* ids;
     s16* dst;
+    int count;
     int* wordP;
     u8* base;
     u8* flP;
@@ -3788,12 +3788,12 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     s16 saved[CMENU_ITEM_SLOT_COUNT];
 
     base = (u8*)lbl_803A87F0;
-    stP = (s16*)(base + 0x548);
-    w3 = stP;
-    dst = saved;
-    w2 = dst;
     ids = (s16*)(base + 0x948);
     w1 = ids;
+    dst = saved;
+    w2 = dst;
+    stP = (s16*)(base + 0x548);
+    w3 = stP;
     flP = base + 0x448;
     w4 = flP;
     for (i = 0; i < CMENU_ITEM_SLOT_COUNT; i++)
