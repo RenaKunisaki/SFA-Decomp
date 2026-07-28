@@ -16,7 +16,7 @@
  * (offset table indexed by movieIndex), spins up the decode/read threads,
  * primes the message queues (InitAllMessageQueue) and installs the
  * retrace callback. Operates on the AttractMovieControl block at
- * lbl_803A57C0 and the AttractMoviePlayer at gAttractMoviePlayer.
+ * gAttractMovieAudioDmaBuffer and the AttractMoviePlayer at gAttractMoviePlayer.
  */
 #include "global.h"
 #include "dolphin/ai.h"
@@ -76,9 +76,9 @@ enum
     THP_PLAY_ODD_FIELD = 4
 };
 
-extern OSMessageQueue lbl_803A5CCC;
-extern char lbl_803A57C0[];
-extern OSMessageQueue lbl_803A5CEC;
+extern OSMessageQueue gAttractMovieSpentTextureSetQueue;
+extern char gAttractMovieAudioDmaBuffer[];
+extern OSMessageQueue gAttractMoviePrepareReadyQueue;
 void InitAllMessageQueue(void);
 
 u8 gAttractMovieLoopCompleted;
@@ -206,7 +206,7 @@ static void PlayControl(u32 retraceCount)
         gAttractMoviePlayer.curAudioTrack = decodedTexture->frameNumber;
         if ((void*)gAttractMoviePlayer.curAudioNumber != NULL)
         {
-            OSSendMessage(&lbl_803A5CCC, (OSMessage)gAttractMoviePlayer.curAudioNumber, OS_MESSAGE_NOBLOCK);
+            OSSendMessage(&gAttractMovieSpentTextureSetQueue, (OSMessage)gAttractMoviePlayer.curAudioNumber, OS_MESSAGE_NOBLOCK);
         }
         gAttractMoviePlayer.curAudioNumber = (s32)decodedTexture;
     }
@@ -272,7 +272,7 @@ void THPPlayerStop(void)
             AudioDecodeThreadCancel();
         }
 
-        while (((OSReceiveMessage(&lbl_803A5CCC, &msg, OS_MESSAGE_NOBLOCK) == TRUE) ? msg : NULL) != NULL)
+        while (((OSReceiveMessage(&gAttractMovieSpentTextureSetQueue, &msg, OS_MESSAGE_NOBLOCK) == TRUE) ? msg : NULL) != NULL)
         {
         }
 
@@ -303,7 +303,7 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
     s32 readyMsg;
     s32 startOffset;
 
-    base = lbl_803A57C0;
+    base = gAttractMovieAudioDmaBuffer;
     ctrl = (AttractMovieControl*)base;
     gAttractMovieLoopCompleted = 0;
 
@@ -397,7 +397,7 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
 
 void PrepareReady(void* msg)
 {
-    OSSendMessage(&lbl_803A5CEC, msg, OS_MESSAGE_BLOCK);
+    OSSendMessage(&gAttractMoviePrepareReadyQueue, msg, OS_MESSAGE_BLOCK);
 }
 
 void InitAllMessageQueue(void)
@@ -432,5 +432,5 @@ void InitAllMessageQueue(void)
         } while (i < 3);
     }
 
-    OSInitMessageQueue(&lbl_803A5CEC, &lbl_803DD67C, 1);
+    OSInitMessageQueue(&gAttractMoviePrepareReadyQueue, &lbl_803DD67C, 1);
 }
