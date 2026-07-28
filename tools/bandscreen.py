@@ -44,9 +44,23 @@ def dis(path: Path) -> str | None:
 
 
 def parse(text: str) -> dict:
-    out = {}
+    """Symbol -> instruction list.
+
+    Retail objects carry interior `lbl_*` symbols (loop heads inside a
+    function); objdump starts a fresh block at each one, which would otherwise
+    compare a 3-instruction fragment of retail against a whole function of ours
+    and report a spurious 100% structural diff.  Fold them into the preceding
+    real symbol.
+    """
+    out, last = {}, None
     for m in FUNC.finditer(text):
-        out[m.group(2)] = [t.strip() for _, t in INS.findall(m.group(3))]
+        name = m.group(2)
+        ins = [t.strip() for _, t in INS.findall(m.group(3))]
+        if name.startswith("lbl_") and last is not None:
+            out[last].extend(ins)
+        else:
+            out[name] = ins
+            last = name
     return out
 
 
@@ -72,16 +86,17 @@ def differing(t: list[str], c: list[str]) -> tuple[int, str]:
     """
     strip = lambda s: re.sub(r'\b[0-9a-f]{4,8} <[^>]+>', '<T>', s)
     T, C = [strip(x) for x in t], [strip(x) for x in c]
-    mnem = lambda L: [x.split()[0] for x in L]
     if len(T) == len(C):
-        d = sum(1 for a, b in zip(T, C) if a != b)
-        kind = "REG" if mnem(T) == mnem(C) else "STRUCT"
-        return d, kind
+        nm = sum(1 for a, b in zip(T, C) if a.split()[0] != b.split()[0])
+        nr = sum(1 for a, b in zip(T, C)
+                 if a != b and a.split()[0] == b.split()[0])
+        return nm, nr
     import difflib
-    sm = difflib.SequenceMatcher(None, T, C, autojunk=False)
-    d = sum(max(i2 - i1, j2 - j1) for tag, i1, i2, j1, j2
-            in sm.get_opcodes() if tag != 'equal')
-    return d, "STRUCT"
+    sm = difflib.SequenceMatcher(None, [x.split()[0] for x in T],
+                                 [x.split()[0] for x in C], autojunk=False)
+    nm = sum(max(i2 - i1, j2 - j1) for tag, i1, i2, j1, j2
+             in sm.get_opcodes() if tag != 'equal')
+    return nm, abs(len(T) - len(C)) * 0 + max(0, min(len(T), len(C)) - nm) and 0
 
 
 def main() -> int:
@@ -111,27 +126,27 @@ def main() -> int:
             ci = C.get(fn)
             if ci is None or not ti:
                 continue
-            d, kind = differing(ti, ci)
-            if d == 0:
+            nm, nr = differing(ti, ci)
+            if nm + nr == 0:
                 continue
             g, f = band_widths(ti)
-            rows.append((d * 4, len(ti) * 4, g, f, kind, u["name"], fn))
+            rows.append((nm * 4, nr * 4, len(ti) * 4, g, f, u["name"], fn))
 
-    narrow = [r for r in rows if args.all or (r[2] <= args.max_band and r[3] <= args.max_band)]
+    narrow = [r for r in rows if args.all or (r[3] <= args.max_band and r[4] <= args.max_band)]
     if args.struct_only:
-        narrow = [r for r in narrow if r[4] == "STRUCT"]
-    narrow.sort(key=lambda r: -r[0])
+        narrow = [r for r in narrow if r[0] > 0]
+    narrow.sort(key=lambda r: (-r[0], -r[1]) if args.struct_only else -(r[0] + r[1]))
     tag = "all" if args.all else f"<={args.max_band} saved regs in BOTH bands"
     print(f"# frontier ranked by band width -- {tag}")
     print(f"# {len(narrow)} of {len(rows)} differing functions qualify; "
-          f"{sum(r[0] for r in narrow)} of {sum(r[0] for r in rows)} diff-bytes\n")
-    ns = sum(r[0] for r in narrow if r[4] == "STRUCT")
-    print("# of those, %d diff-bytes are STRUCT (mnemonic stream differs -- "
-          "source-addressable); the rest are REG (allocation noise)\n" % ns)
-    print("%-8s %-8s %-4s %-4s %-7s %-34s %s"
-          % ("diffB", "sizeB", "G", "F", "kind", "unit", "function"))
+          f"structB {sum(r[0] for r in narrow)}/{sum(r[0] for r in rows)}, "
+          f"regB {sum(r[1] for r in narrow)}/{sum(r[1] for r in rows)}\n")
+    print("# structB = instructions whose MNEMONIC differs (source-addressable shape);")
+    print("# regB    = same mnemonic, different operands (band/allocation)\n")
+    print("%-8s %-8s %-8s %-4s %-4s  %-34s %s"
+          % ("structB", "regB", "sizeB", "G", "F", "unit", "function"))
     for r in narrow[:args.limit]:
-        print("%-8d %-8d %-4d %-4d %-7s %-34s %s" % r)
+        print("%-8d %-8d %-8d %-4d %-4d  %-34s %s" % r)
     return 0
 
 

@@ -1,9 +1,13 @@
 # Band-width worklist — where a structural fix can actually stick
 
 `tools/bandscreen.py` ranks every function that differs from retail by **saved-register
-band width**, and flags whether the difference is in the *mnemonic stream* (STRUCT —
-a real shape difference a source edit can address) or only in the *operands* (REG —
-allocation noise).
+band width**, and splits the difference into:
+
+- **structB** — instructions whose *mnemonic* differs: a real shape difference a source
+  edit can address.
+- **regB** — same mnemonic, different operands: band/allocation assignment.
+
+**Rank by `structB`.** That is the source-addressable part.
 
 ## Why band width is the right axis
 
@@ -16,72 +20,83 @@ band fills. Measured over 6,288 SFA retail functions, scoring the joint model
 | GPR | **99.8%** | **98.1%** | 86.0% | 48.1% | 27.0% |
 | FP  | 86.5% | 63.8% | 55.9% | 37.5% | 25.6% |
 
-At <=3 saved registers the band is effectively deterministic, so **structure is the only
-free variable** and a probe result transfers into the real function. At >=6 there is no
-total order to steer: four exhaustive declaration sweeps (720 / 225 / 144 / 121
-candidates) returned *zero* movement, and every one was a wide-band function.
+Every frontier function that resisted a whole campaign is wide-band —
+`expgfx_updateActivePools` 18G/10F, `modelRenderInterpolateRootTransform` 17G,
+`mapLoadDataFile` 10G, `collectShadowTrackTriangles` 10G/2F, `allocLotsOfTextures`
+8G/16F, `blendTextures` 8G, `renderObjects` 6G. Both functions flipped to 100% in a
+single session were narrow-band: `drawFn_8006f500` (2G/2F) and `mmFreeDeferred` (2G).
+Four exhaustive declaration sweeps (720 / 225 / 144 / 121 candidates) returned *zero*
+movement, and every one was a wide-band function.
 
-The correlation is what makes this actionable. Every frontier function that resisted a
-whole campaign is wide-band — `expgfx_updateActivePools` 18G/10F,
-`modelRenderInterpolateRootTransform` 17G, `mapLoadDataFile` 10G,
-`collectShadowTrackTriangles` 10G/2F, `allocLotsOfTextures` 8G/16F, `blendTextures` 8G,
-`renderObjects` 6G. Both functions flipped to 100% in one session were narrow-band:
-`drawFn_8006f500` (2G/2F) and `mmFreeDeferred` (2G).
+## The important caveat: narrow band means PREDICTABLE, not STEERABLE
+
+A narrow band means the assignment follows the rule reliably — so if the source has the
+right shape you get the right registers, and a probe result transfers. It does **not**
+mean a declaration edit can move the registers.
+
+Measured: `playerUpdate` is 3G/1F (the 98.1% regime) and its 576 `regB` are a clean
+`r29`<->`r30` swap between an incoming parameter and a value loaded from it. A **full
+120-permutation sweep of its five local declarations was completely flat**, as were four
+argument-order spellings against its 28 `structB`. So `regB` in a narrow band is still
+allocation, and still not reachable by declaration order.
+
+Use the worklist to find **structB**; treat regB as diagnosis, not as a target.
 
 ## Using it
 
     python3 tools/bandscreen.py --struct-only    # the worklist below
-    python3 tools/bandscreen.py                  # narrow band, incl. REG-only
+    python3 tools/bandscreen.py                  # narrow band, incl. regB-only
     python3 tools/bandscreen.py --max-band 2     # only the 99.8% regime
     python3 tools/bandscreen.py --all            # every differing function
 
-`diffB` is differing instructions x4 — a ranking proxy, not `report.json` truth. Always
-gate a real change on `python3 tools/unitfuzzy.py <unit>`.
+`structB`/`regB` are differing instructions x4 — a ranking proxy, not `report.json`
+truth. Always gate a real change on `python3 tools/unitfuzzy.py <unit>`.
 
 ## Caveats
 
-- **REG-classified functions are not necessarily hopeless**, they are just not
-  *structurally* addressable; they need the scratch-band flag analysis instead
-  (`tools/fn_flag_probe.py`).
-- A function can be narrow-band and still capped for an unrelated reason already on
-  record (`mmFreeTick`'s dead strength-reduction IV, `loadTextureFiles`'s orphaned
-  inline-return preheaders, `hitDetectFn_800658a4`'s FP-abs shape). Check the memory
-  notes before re-attacking a listed entry.
-- `sizeB` is the retail function size; where ours differs in length the two will not
-  agree.
+- Interior `lbl_*` symbols in retail objects are folded into the preceding function.
+  Without that, objdump compares a 3-instruction fragment of retail against a whole
+  function of ours; that produced a spurious top entry (`PSMTXMultVecArray`, a unit that
+  is in fact 100%). If you add a new symbol convention, re-check this fold.
+- A function can be narrow-band and still capped for a reason already on record —
+  `mmFreeTick`'s dead strength-reduction IV, `loadTextureFiles`'s orphaned inline-return
+  preheaders, `hitDetectFn_800658a4`'s FP-abs shape, `trig.c` (toolchain wall, CLOSED).
+  Check the memory notes before re-attacking a listed entry.
+- `main/textrender_boxtex.c` has an active owner; coordinate before touching it.
+- `sizeB` is the retail function size; where ours differs in length the two disagree.
 
-## Current worklist (narrow band AND structural)
+## Current worklist (narrow band, ranked by structB)
 
 ```
 # frontier ranked by band width -- <=3 saved regs in BOTH bands
-# 25 of 657 differing functions qualify; 2400 of 67024 diff-bytes
+# 24 of 657 differing functions qualify; structB 196/6844, regB 1636/50988
 
-# of those, 2400 diff-bytes are STRUCT (mnemonic stream differs -- source-addressable); the rest are REG (allocation noise)
+# structB = instructions whose MNEMONIC differs (source-addressable shape);
+# regB    = same mnemonic, different operands (band/allocation)
 
-diffB    sizeB    G    F    kind    unit                               function
-604      2372     3    1    STRUCT  dlls/objects/195_Player/player.c   playerUpdate
-560      936      3    0    STRUCT  main/textrender_boxtex.c           gameTextInitFn_8001c794
-220      560      0    0    STRUCT  musyx/runtime/synth_seq_dispatch.c seqInit
-184      632      2    0    STRUCT  main/pi_pathsearch.c               pathSearchBegin
-144      788      3    0    STRUCT  main/mm.c                          mmFreeTick
-128      12       0    0    STRUCT  dolphin/mtx/mtxvec.c               PSMTXMultVecArray
-116      840      3    1    STRUCT  dlls/objects/655_WCPressureS/WCPressureS.c wcpressures_update
-72       608      2    0    STRUCT  main/lightmap.c                    updateEnvironment
-64       1916     0    0    STRUCT  dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c powf
-56       264      1    2    STRUCT  main/trig.c                        fsin16Approx
-36       280      2    0    STRUCT  main/audio.c                       streamsLoadedCallback
-36       524      3    0    STRUCT  dlls/objects/589_BossDrakor/BossDrakor.c bossdrakor_updateHeadTracking
-28       220      0    0    STRUCT  main/gameloop_buttonobj.c          removeButtonObject
-28       2324     3    0    STRUCT  main/shader.c                      beginLoadingMap
-28       648      2    0    STRUCT  dlls/objects/597/597.c             SnowBike_UpdateRouteFollowing
-24       2132     2    0    STRUCT  main/pi_videoinit.c                videoInit
-12       436      1    0    STRUCT  main/texture.c                     loadTextureFiles
-12       316      2    1    STRUCT  main/track_dolphin.c               trackGetNearestGroundOffsetAndNormal
-12       260      1    1    STRUCT  main/track_dolphin.c               hitDetectFn_800658a4
-12       512      2    3    STRUCT  dlls/objects/195_Player/player.c   fn_802AA2B0
-8        176      2    0    STRUCT  main/model.c                       modelGetAmapSize
-4        8        0    0    STRUCT  main/model.c                       setGQR6
-4        8        0    0    STRUCT  main/model.c                       setGQR7
-4        24       0    0    STRUCT  dolphin/os/OSTime.c                OSGetTime
-4        252      0    0    STRUCT  musyx/runtime/voice_id.c           vidMakeNew
+structB  regB     sizeB    G    F     unit                               function
+28       576      2372     3    1     dlls/objects/195_Player/player.c   playerUpdate
+24       32       264      1    2     main/trig.c                        fsin16Approx
+16       8        2132     2    0     main/pi_videoinit.c                videoInit
+12       0        436      1    0     main/texture.c                     loadTextureFiles
+12       0        512      2    3     dlls/objects/195_Player/player.c   fn_802AA2B0
+8        64       608      2    0     main/lightmap.c                    updateEnvironment
+8        56       1916     0    0     dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c powf
+8        20       648      2    0     dlls/objects/597/597.c             SnowBike_UpdateRouteFollowing
+8        0        280      2    0     main/audio.c                       streamsLoadedCallback
+8        0        220      0    0     main/gameloop_buttonobj.c          removeButtonObject
+8        0        788      3    0     main/mm.c                          mmFreeTick
+8        0        560      0    0     musyx/runtime/synth_seq_dispatch.c seqInit
+4        556      936      3    0     main/textrender_boxtex.c           gameTextInitFn_8001c794
+4        180      632      2    0     main/pi_pathsearch.c               pathSearchBegin
+4        112      840      3    1     dlls/objects/655_WCPressureS/WCPressureS.c wcpressures_update
+4        32       524      3    0     dlls/objects/589_BossDrakor/BossDrakor.c bossdrakor_updateHeadTracking
+4        0        176      2    0     main/model.c                       modelGetAmapSize
+4        0        8        0    0     main/model.c                       setGQR6
+4        0        8        0    0     main/model.c                       setGQR7
+4        0        2324     3    0     main/shader.c                      beginLoadingMap
+4        0        316      2    1     main/track_dolphin.c               trackGetNearestGroundOffsetAndNormal
+4        0        260      1    1     main/track_dolphin.c               hitDetectFn_800658a4
+4        0        24       0    0     dolphin/os/OSTime.c                OSGetTime
+4        0        252      0    0     musyx/runtime/voice_id.c           vidMakeNew
 ```
