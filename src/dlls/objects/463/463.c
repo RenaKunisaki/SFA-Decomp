@@ -47,7 +47,7 @@ void dll_1CF_init(GameObject* obj, Dll1CFPlacement* placement)
     {
         obj->anim.rotY = (s16)(((s32)placement->rotYDegrees << 13) / 45);
     }
-    obj->anim.rotX = (s16)((s32)placement->rotX << 8);
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
     obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN |
                                                 OBJECT_OBJFLAG_UPDATE_DISABLED));
 }

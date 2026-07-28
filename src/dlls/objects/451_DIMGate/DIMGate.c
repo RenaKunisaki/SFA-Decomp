@@ -106,7 +106,7 @@ void dimgate_init(GameObject* obj, DimgateSetup* unusedSetup)
         state->mode = DIMGATE_MODE_CLOSED;
     }
     obj->animEventCallback = dimgate_SeqFn;
-    obj->anim.rotX = (s16)(setup->rotX << 8);
+    obj->anim.rotX = (s16)(setup->rotXByte << 8);
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 

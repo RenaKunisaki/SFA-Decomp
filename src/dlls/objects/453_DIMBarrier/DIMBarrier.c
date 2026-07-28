@@ -23,7 +23,7 @@
 typedef struct DimbarrierPlacement
 {
     ObjPlacement head;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19[0x1E - 0x19];
     s16 barrierGameBit;
 } DimbarrierPlacement;
@@ -41,7 +41,7 @@ typedef struct DimbarrierTriggerState
     u8 active;
 } DimbarrierTriggerState;
 
-STATIC_ASSERT(offsetof(DimbarrierPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(DimbarrierPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(DimbarrierPlacement, barrierGameBit) == 0x1E);
 STATIC_ASSERT(sizeof(DimbarrierState) == 0x4);
 STATIC_ASSERT(offsetof(DimbarrierTriggerState, active) == 0x4);
@@ -139,7 +139,7 @@ void dimbarrier_update(GameObject* obj)
 void dimbarrier_init(GameObject* obj, DimbarrierPlacement* placement)
 {
     DimbarrierState* state;
-    obj->anim.rotX = (s16)((s32)placement->rotX << 8);
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     state = obj->extra;
     state->countdown = 1;

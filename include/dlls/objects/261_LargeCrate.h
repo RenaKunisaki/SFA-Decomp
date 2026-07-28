@@ -22,7 +22,7 @@ typedef enum LargeCrateDropType {
 /* Retail LargeCrate and LargeCrateL placements have a fixed 0x0C-byte parameter tail. */
 typedef struct LargeCratePlacement {
     ObjPlacement base;  /* 0x00 */
-    s8 rotX;            /* 0x18 */
+    s8 rotXByte;        /* 0x18 */
     u8 dropType;        /* 0x19: remap-table index */
     s16 unk1A;          /* 0x1A: copied into state byte 0x12 */
     s16 respawnMinutes; /* 0x1C: 0 disables respawning; 0xFF never expires */
@@ -55,7 +55,7 @@ typedef struct LargeCrateState {
 } LargeCrateState;
 
 STATIC_ASSERT(offsetof(LargeCratePlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(LargeCratePlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(LargeCratePlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(LargeCratePlacement, dropType) == 0x19);
 STATIC_ASSERT(offsetof(LargeCratePlacement, unk1A) == 0x1A);
 STATIC_ASSERT(offsetof(LargeCratePlacement, respawnMinutes) == 0x1C);

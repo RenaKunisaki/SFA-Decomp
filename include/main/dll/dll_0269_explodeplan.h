@@ -16,12 +16,12 @@ typedef struct ExplodePlanState
 typedef struct ExplodePlanPlacement
 {
     ObjPlacement base;
-    s8 rotX; /* 0x18: rotX in 1/256 turns */
+    s8 rotXByte; /* 0x18: X rotation in 1/256 turns */
     u8 pad19[0x1E - 0x19];
     s16 removeGameBit; /* 0x1E: game bit that removes this prop */
 } ExplodePlanPlacement;
 
-STATIC_ASSERT(offsetof(ExplodePlanPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(ExplodePlanPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(ExplodePlanPlacement, removeGameBit) == 0x1E);
 STATIC_ASSERT(sizeof(ExplodePlanPlacement) == 0x20);
 

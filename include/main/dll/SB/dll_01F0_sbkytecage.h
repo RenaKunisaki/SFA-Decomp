@@ -9,10 +9,10 @@
 typedef struct SBKyteCagePlacement
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
 } SBKyteCagePlacement;
 
-STATIC_ASSERT(offsetof(SBKyteCagePlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(SBKyteCagePlacement, rotXByte) == 0x18);
 
 int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int SB_KyteCage_getExtraSize(void);

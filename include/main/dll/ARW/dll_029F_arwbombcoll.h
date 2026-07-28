@@ -9,7 +9,7 @@ typedef struct RingState RingState;
 typedef struct ARWBombCollSetup
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19[0x24 - 0x19];
 } ARWBombCollSetup;
 
@@ -27,7 +27,7 @@ typedef struct ARWBombCollState
 } ARWBombCollState;
 
 STATIC_ASSERT(sizeof(ARWBombCollSetup) == 0x24);
-STATIC_ASSERT(offsetof(ARWBombCollSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(ARWBombCollSetup, rotXByte) == 0x18);
 STATIC_ASSERT(sizeof(ArwBombFlags) == 0x1);
 STATIC_ASSERT(sizeof(ARWBombCollState) == 0x8);
 STATIC_ASSERT(offsetof(ARWBombCollState, flags) == 0x04);

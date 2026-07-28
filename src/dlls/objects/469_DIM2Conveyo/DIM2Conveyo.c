@@ -147,7 +147,7 @@ void dim2conveyor_init(GameObject* obj, Dim2ConveyorPlacement* placement)
 {
     f32 scale = (f32)placement->scrollSpeed / 5.0f;
     Dim2ConveyorState* state;
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     state = obj->extra;
     state->scrollX = scale * mathSinf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
     state->scrollY = scale * mathCosf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);

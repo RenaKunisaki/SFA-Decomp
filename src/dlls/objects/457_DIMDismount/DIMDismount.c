@@ -119,7 +119,7 @@ void DIMDismountPoint_init(GameObject* obj, DIMDismountPointPlacement* placement
     DIMDismountPointState* state;
 
     ObjGroup_AddObject((u32)obj, DIMDISMOUNT_GROUP);
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     state = obj->extra;
     state->planeNX = mathSinf(3.1415927f * (f32)(s32)obj->anim.rotX / 32768.0f);
     state->planeNY = 0.0f;

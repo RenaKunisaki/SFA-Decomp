@@ -39,9 +39,9 @@ typedef struct SquadPfx
 typedef struct ArwSquadronSetup
 {
     ObjPlacement base;
-    u8 rotX;
-    u8 rotY;
-    u8 rotZ;
+    u8 rotXByte;
+    u8 rotYByte;
+    u8 rotZByte;
     u8 rotXSpeed;
     u8 rotYSpeed;
     u8 rotZSpeed;
@@ -62,7 +62,7 @@ typedef struct ArwSquadronSetup
     s16 gameBit;
 } ArwSquadronSetup;
 
-STATIC_ASSERT(offsetof(ArwSquadronSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(ArwSquadronSetup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(ArwSquadronSetup, leaderObjectId) == 0x20);
 STATIC_ASSERT(sizeof(ArwSquadronSetup) == 0x34);
 

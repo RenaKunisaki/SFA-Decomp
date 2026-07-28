@@ -308,8 +308,8 @@ void arwingandrossstuff_init(GameObject* obj, ArwProjectileSetup* setup)
     ArwProjectileState* state = (obj)->extra;
     ObjHitsPriorityState* hitState;
 
-    (obj)->anim.rotX = (s16)(setup->rotX << 8);
-    (obj)->anim.rotY = (s16)(setup->rotY << 8);
+    (obj)->anim.rotX = (s16)(setup->rotXByte << 8);
+    (obj)->anim.rotY = (s16)(setup->rotYByte << 8);
     (obj)->anim.alpha = 1;
     switch ((obj)->anim.seqId)
     {

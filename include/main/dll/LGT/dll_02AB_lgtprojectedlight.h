@@ -11,8 +11,8 @@ extern const f32 lbl_802C2618[4];
 typedef struct ProjectedLightSetup
 {
     ObjPlacement base;
-    u8 rotX;
-    u8 rotY;
+    u8 rotXByte;
+    u8 rotYByte;
     u16 distanceNear;
     u16 distanceFar;
     s16 colorFadeFrames;
@@ -31,7 +31,7 @@ typedef struct ProjectedLightSetup
     u8 targetG;
     u8 targetB;
     u8 colorFadeSpeed;
-    u8 rotZ;
+    u8 rotZByte;
     s8 rotZSpeed;
     u8 tevModeA;
     u8 alpha;
@@ -52,7 +52,7 @@ typedef struct ProjectedLightState
 
 STATIC_ASSERT(sizeof(ProjectedLightState) == 0x8);
 STATIC_ASSERT(offsetof(ProjectedLightState, texture) == 0x04);
-STATIC_ASSERT(offsetof(ProjectedLightSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(ProjectedLightSetup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, distanceNear) == 0x1A);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, colorFadeFrames) == 0x1E);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, rotXSpeed) == 0x20);
@@ -60,7 +60,7 @@ STATIC_ASSERT(offsetof(ProjectedLightSetup, textureAsset) == 0x24);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, projectionMode) == 0x26);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, diffuseR) == 0x2D);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, colorFadeSpeed) == 0x33);
-STATIC_ASSERT(offsetof(ProjectedLightSetup, rotZ) == 0x34);
+STATIC_ASSERT(offsetof(ProjectedLightSetup, rotZByte) == 0x34);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, rotZSpeed) == 0x35);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, tevModeA) == 0x36);
 STATIC_ASSERT(offsetof(ProjectedLightSetup, alpha) == 0x37);

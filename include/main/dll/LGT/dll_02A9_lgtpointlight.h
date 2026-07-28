@@ -16,8 +16,8 @@ typedef struct PointLightState
 typedef struct PointLightSetup
 {
     ObjPlacement base;
-    u8 rotX;
-    u8 rotY;
+    u8 rotXByte;
+    u8 rotYByte;
     u8 diffuseR;
     u8 diffuseG;
     u8 diffuseB;
@@ -52,7 +52,7 @@ typedef struct PointLightSetup
 
 STATIC_ASSERT(sizeof(PointLightState) == 0x8);
 STATIC_ASSERT(offsetof(PointLightState, enabled) == 0x04);
-STATIC_ASSERT(offsetof(PointLightSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(PointLightSetup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(PointLightSetup, diffuseR) == 0x1A);
 STATIC_ASSERT(offsetof(PointLightSetup, eventName) == 0x1D);
 STATIC_ASSERT(offsetof(PointLightSetup, enableBit) == 0x1E);

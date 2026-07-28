@@ -166,7 +166,7 @@ void dll_1DB_update(GameObject* obj)
 void dll_1DB_init(GameObject* obj, Dim2CrusherPlacement* placement)
 {
     Dim2CrusherState* state = obj->extra;
-    s16 t = (s16)((s32)placement->rotX << 8);
+    s16 t = (s16)((s32)placement->rotXByte << 8);
     obj->anim.rotX = t;
     if (mainGetBit(placement->boardedGameBit) != 0)
     {

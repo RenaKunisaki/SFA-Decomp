@@ -640,9 +640,9 @@ void arwarwing_spawnLaserShot(GameObject* obj, ArwingState* state, int side, int
         setup->base.posX = px;
         setup->base.posY = py;
         setup->base.posZ = pz;
-        setup->rotX = (obj)->anim.rotX >> 8;
-        setup->rotY = (obj)->anim.rotY >> 8;
-        setup->rotZ = 0;
+        setup->rotXByte = (obj)->anim.rotX >> 8;
+        setup->rotYByte = (obj)->anim.rotY >> 8;
+        setup->rotZByte = 0;
         setup->base.color[0] = 1;
         setup->base.color[1] = 1;
         proj = (int)loadObjectAtObject(obj, &setup->base);

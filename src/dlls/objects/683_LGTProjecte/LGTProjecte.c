@@ -73,9 +73,9 @@ void ProjectedLight_init(GameObject* obj, ProjectedLightSetup* setup)
 
     vec = *(PointLightVec*)lbl_802C2618;
 
-    (obj)->anim.rotX = (s16)(setupData->rotX << 8);
-    (obj)->anim.rotY = (s16)(setupData->rotY << 8);
-    (obj)->anim.rotZ = (s16)(setupData->rotZ << 8);
+    (obj)->anim.rotX = (s16)(setupData->rotXByte << 8);
+    (obj)->anim.rotY = (s16)(setupData->rotYByte << 8);
+    (obj)->anim.rotZ = (s16)(setupData->rotZByte << 8);
 
     if (state->light == NULL)
     {

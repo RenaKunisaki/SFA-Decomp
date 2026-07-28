@@ -25,14 +25,14 @@
 typedef struct DimicewallPlacement
 {
     ObjPlacement head; /* 0x00..0x17 (mapId at 0x14) */
-    s8 rotX;
+    s8 rotXByte;
     s8 shatterScale;
     s16 hp;
     u8 pad1C[0x1E - 0x1C];
     s16 shatterGameBit;
 } DimicewallPlacement;
 
-STATIC_ASSERT(offsetof(DimicewallPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(DimicewallPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(DimicewallPlacement, shatterScale) == 0x19);
 STATIC_ASSERT(offsetof(DimicewallPlacement, hp) == 0x1A);
 STATIC_ASSERT(offsetof(DimicewallPlacement, shatterGameBit) == 0x1E);
@@ -111,7 +111,7 @@ void dimicewall_init(GameObject* obj, DimicewallPlacement* placement)
     {
         state->shattered = mainGetBit(placement->shatterGameBit);
     }
-    obj->anim.rotX = (s16)((s32)placement->rotX << 8);
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
     obj->objectFlags |= DIMICEWALL_OBJFLAG_HIDDEN;
 }
 

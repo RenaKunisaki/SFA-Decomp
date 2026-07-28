@@ -8,12 +8,12 @@
 typedef struct Dim2ConveyorPlacement
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19;
     s16 scrollSpeed;
 } Dim2ConveyorPlacement;
 
-STATIC_ASSERT(offsetof(Dim2ConveyorPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(Dim2ConveyorPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(Dim2ConveyorPlacement, scrollSpeed) == 0x1A);
 STATIC_ASSERT(sizeof(Dim2ConveyorPlacement) == 0x1C);
 

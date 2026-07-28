@@ -49,9 +49,9 @@ void arwgenerato_spawnSquadronShipA(GameObject* obj, ARWGeneratorState* state, A
         newObj->base.posZ =
             obj->anim.localPosZ +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadZ, *(s8*)&setup->spreadZ);
-        newObj->rotZ = 0;
-        newObj->rotY = 0;
-        newObj->rotX = 0;
+        newObj->rotZByte = 0;
+        newObj->rotYByte = 0;
+        newObj->rotXByte = 0;
         newObj->base.color[0] = 1;
         newObj->base.color[1] = 1;
         newObj = (ArwSquadronSetup*)loadObjectAtObject(obj, &newObj->base);
@@ -80,9 +80,9 @@ void arwgenerato_spawnSquadronShipB(GameObject* obj, ARWGeneratorState* state, A
         newObj->base.posZ =
             obj->anim.localPosZ +
             (f32)(int)randomGetRange(-*(s8*)&setup->spreadZ, *(s8*)&setup->spreadZ);
-        newObj->rotZ = 0;
-        newObj->rotY = 0;
-        newObj->rotX = 0;
+        newObj->rotZByte = 0;
+        newObj->rotYByte = 0;
+        newObj->rotXByte = 0;
         newObj->base.color[0] = 1;
         newObj->base.color[1] = 1;
         newObj = (ArwSquadronSetup*)loadObjectAtObject(obj, &newObj->base);

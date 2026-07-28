@@ -215,7 +215,7 @@ void ARWBombColl_init(GameObject* obj, ARWBombCollSetup* setup)
     ObjAnimComponent* objAnim = &obj->anim;
     ARWBombCollSetup* mapData = setup;
 
-    obj->anim.rotX = (s16)(mapData->rotX << 8);
+    obj->anim.rotX = (s16)(mapData->rotXByte << 8);
     objAnim->alpha = 0;
 }
 

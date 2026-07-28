@@ -17,7 +17,7 @@ typedef struct VfpLaddersState
 typedef struct VfpLaddersSetup
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19[0x1E - 0x19];
     s16 baseGameBit;    /* 0x1E */
     s16 triggerGameBit; /* 0x20 */
@@ -29,7 +29,7 @@ STATIC_ASSERT(offsetof(VfpLaddersState, triggerGameBit) == 0x02);
 STATIC_ASSERT(offsetof(VfpLaddersState, phase) == 0x04);
 STATIC_ASSERT(offsetof(VfpLaddersState, delayTimer) == 0x06);
 STATIC_ASSERT(offsetof(VfpLaddersSetup, base.posY) == 0x0C);
-STATIC_ASSERT(offsetof(VfpLaddersSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(VfpLaddersSetup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(VfpLaddersSetup, baseGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(VfpLaddersSetup, triggerGameBit) == 0x20);
 

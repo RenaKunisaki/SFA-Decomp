@@ -14,7 +14,7 @@
 /* Retail SmallBasket placements have a fixed 0x0C-byte parameter tail. */
 typedef struct SmallBasketPlacement {
     ObjPlacement base;  /* 0x00 */
-    s8 rotX;            /* 0x18 */
+    s8 rotXByte;        /* 0x18 */
     u8 subtype;         /* 0x19: SmallBasketSubtype */
     s16 unk1A;          /* 0x1A */
     s16 respawnMinutes; /* 0x1C */
@@ -68,7 +68,7 @@ typedef struct SmallBasketState {
 } SmallBasketState;
 
 STATIC_ASSERT(offsetof(SmallBasketPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(SmallBasketPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(SmallBasketPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(SmallBasketPlacement, subtype) == 0x19);
 STATIC_ASSERT(offsetof(SmallBasketPlacement, unk1A) == 0x1A);
 STATIC_ASSERT(offsetof(SmallBasketPlacement, respawnMinutes) == 0x1C);

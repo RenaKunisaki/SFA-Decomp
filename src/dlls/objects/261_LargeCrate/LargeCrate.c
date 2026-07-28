@@ -565,7 +565,7 @@ void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement) {
 
     state = obj->extra;
     obj->animEventCallback = LargeCrate_seq;
-    obj->anim.rotX = (s16)((int)placement->rotX << 8);
+    obj->anim.rotX = (s16)((int)placement->rotXByte << 8);
     state->brokenGameBit = placement->brokenGameBit;
 
     value = placement->respawnMinutes;
@@ -589,7 +589,7 @@ void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement) {
     state->unk0C = LARGECRATE_UNK_0C_INITIAL;
     state->unk12 = (u8)placement->unk1A;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    obj->anim.rotX = (s16)((int)placement->rotX << 8);
+    obj->anim.rotX = (s16)((int)placement->rotXByte << 8);
 
     value = obj->anim.seqId;
     if (value == LARGECRATE_SEQUENCE_VARIANT_A) {

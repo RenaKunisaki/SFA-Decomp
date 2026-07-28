@@ -8,7 +8,7 @@
 typedef struct Dim2CrusherPlacement
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19[5];
     s16 boardedGameBit;
     s16 triggerGameBit;
@@ -24,7 +24,7 @@ typedef struct Dim2CrusherState
     u8 pad07;
 } Dim2CrusherState;
 
-STATIC_ASSERT(offsetof(Dim2CrusherPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(Dim2CrusherPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(Dim2CrusherPlacement, boardedGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(Dim2CrusherPlacement, triggerGameBit) == 0x20);
 STATIC_ASSERT(sizeof(Dim2CrusherPlacement) == 0x28);

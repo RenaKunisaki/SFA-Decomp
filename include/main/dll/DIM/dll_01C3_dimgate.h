@@ -18,7 +18,7 @@ typedef enum DimgateMode
 typedef struct DimgateSetup
 {
     ObjPlacement base;
-    s8 rotX; /* byte angle expanded to anim.rotX by << 8 */
+    s8 rotXByte; /* byte angle expanded to anim.rotX by << 8 */
     u8 pad19[0x1e - 0x19];
     s16 gateGameBit;
     u8 pad20[0x24 - 0x20];
@@ -29,7 +29,7 @@ typedef struct DimgateState
     s8 mode;
 } DimgateState;
 
-STATIC_ASSERT(offsetof(DimgateSetup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(DimgateSetup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(DimgateSetup, gateGameBit) == 0x1e);
 STATIC_ASSERT(sizeof(DimgateSetup) == 0x24);
 STATIC_ASSERT(offsetof(DimgateState, mode) == 0x0);

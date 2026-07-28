@@ -48,9 +48,9 @@ typedef struct ArwProjectileState
 typedef struct ArwProjectileSetup
 {
     ObjPlacement base;
-    u8 rotZ;
-    u8 rotY;
-    u8 rotX;
+    u8 rotZByte;
+    u8 rotYByte;
+    u8 rotXByte;
 } ArwProjectileSetup;
 
 STATIC_ASSERT(sizeof(ArwProjectileState) == 0x20);
@@ -61,8 +61,8 @@ STATIC_ASSERT(offsetof(ArwProjectileState, light) == 0x14);
 STATIC_ASSERT(offsetof(ArwProjectileState, hitVolumeMode) == 0x18);
 STATIC_ASSERT(offsetof(ArwProjectileState, rotZSpeed) == 0x1A);
 STATIC_ASSERT(offsetof(ArwProjectileState, rotYSpeed) == 0x1C);
-STATIC_ASSERT(offsetof(ArwProjectileSetup, rotY) == 0x19);
-STATIC_ASSERT(offsetof(ArwProjectileSetup, rotX) == 0x1A);
+STATIC_ASSERT(offsetof(ArwProjectileSetup, rotYByte) == 0x19);
+STATIC_ASSERT(offsetof(ArwProjectileSetup, rotXByte) == 0x1A);
 
 extern ObjectDescriptor gArwingAndrossStuffObjDescriptor;
 extern f32 lbl_803DC3D0;

@@ -13,7 +13,7 @@
 typedef struct KtlazerwallPlacement
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 reserved19;
     s16 intensityBit;  /* 0x1A: game bit; its value is the wall's intensity */
     s16 fireThreshold; /* 0x1C: intensity at/above which the wall fires */
@@ -33,7 +33,7 @@ typedef struct KtlazerwallState
     LightningEffect* bolt; /* 0x10 */
 } KtlazerwallState;
 
-STATIC_ASSERT(offsetof(KtlazerwallPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(KtlazerwallPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(KtlazerwallPlacement, intensityBit) == 0x1a);
 STATIC_ASSERT(offsetof(KtlazerwallPlacement, activeBit) == 0x1e);
 STATIC_ASSERT(sizeof(KtlazerwallPlacement) == 0x20);

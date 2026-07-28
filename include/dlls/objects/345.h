@@ -7,7 +7,7 @@
 
 typedef struct BlastedTargetPlacement {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19;
     s16 pieceCount;
     s16 mapLayerId;
@@ -25,7 +25,7 @@ typedef struct BlastedTargetState {
 } BlastedTargetState;
 
 STATIC_ASSERT(offsetof(BlastedTargetPlacement, base) == 0x00);
-STATIC_ASSERT(offsetof(BlastedTargetPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(BlastedTargetPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(BlastedTargetPlacement, pad19) == 0x19);
 STATIC_ASSERT(offsetof(BlastedTargetPlacement, pieceCount) == 0x1A);
 STATIC_ASSERT(offsetof(BlastedTargetPlacement, mapLayerId) == 0x1C);

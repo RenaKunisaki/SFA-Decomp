@@ -201,7 +201,7 @@ void SB_KyteCage_init(GameObject* obj, SBKyteCagePlacement* placement)
 {
     SBKyteCageState* state = obj->extra;
     obj->animEventCallback = SB_KyteCage_SeqFn;
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     obj->objectFlags =
         (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN));
     state->seqLatch = 0;

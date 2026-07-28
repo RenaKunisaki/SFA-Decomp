@@ -218,7 +218,7 @@ void dll_1D6_init(GameObject* obj, Dll1D6Placement* placement)
     ObjModel* model;
     int i;
 
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     state = obj->extra;
     model = Dll1D6_GetActiveModel(obj);
     ObjModel_SetBlendChannelTargets(model, 0, -1, 0, 0.0f, 0);

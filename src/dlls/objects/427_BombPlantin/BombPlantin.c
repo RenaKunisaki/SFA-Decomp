@@ -16,7 +16,7 @@ void BombPlantingSpot_update(GameObject* obj) {
     const BombPlantingSpotPlacement* placement = (const BombPlantingSpotPlacement*)obj->anim.placementData;
     s32 requiredGameBit;
 
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
 
     requiredGameBit = placement->requiredGameBit;
     if (requiredGameBit != -1 && mainGetBit(requiredGameBit) == 0) {
@@ -50,7 +50,7 @@ void BombPlantingSpot_update(GameObject* obj) {
 
 void BombPlantingSpot_init(GameObject* obj, const BombPlantingSpotPlacement* placement) {
     obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
 }
 
 ObjectDescriptor gBombPlantingSpotObjDescriptor = {

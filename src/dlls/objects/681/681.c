@@ -130,8 +130,8 @@ void PointLight_init(GameObject* obj, PointLightSetup* setup)
 
     vec = *(PointLightVec*)lbl_802C25F8;
 
-    (obj)->anim.rotX = (s16)(setupData->rotX << 8);
-    (obj)->anim.rotY = (s16)(setupData->rotY << 8);
+    (obj)->anim.rotX = (s16)(setupData->rotXByte << 8);
+    (obj)->anim.rotY = (s16)(setupData->rotYByte << 8);
 
     if (state->light == NULL)
     {

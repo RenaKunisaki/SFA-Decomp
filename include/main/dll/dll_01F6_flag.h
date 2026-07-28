@@ -8,10 +8,10 @@
 typedef struct FlagPlacement
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
 } FlagPlacement;
 
-STATIC_ASSERT(offsetof(FlagPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(FlagPlacement, rotXByte) == 0x18);
 
 int Flag_getExtraSize(void);
 int Flag_getObjectTypeId(void);

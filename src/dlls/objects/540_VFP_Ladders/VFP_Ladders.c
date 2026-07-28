@@ -117,7 +117,7 @@ void VFP_Ladders_update(GameObject* obj)
 void VFP_Ladders_init(GameObject* obj, VfpLaddersSetup* setup)
 {
     VfpLaddersState* state = obj->extra;
-    obj->anim.rotX = (s16)(setup->rotX << 8);
+    obj->anim.rotX = (s16)(setup->rotXByte << 8);
     state->triggerGameBit = setup->triggerGameBit;
     state->baseGameBit = setup->baseGameBit;
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);

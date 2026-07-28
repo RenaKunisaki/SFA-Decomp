@@ -8,7 +8,7 @@
 typedef struct DIMDismountPointPlacement
 {
     ObjPlacement head;
-    s8 rotX;
+    s8 rotXByte;
 } DIMDismountPointPlacement;
 
 typedef struct DIMDismountPointState
@@ -25,7 +25,7 @@ typedef struct DIMDismountNeighborInterfaceVTable
     int (*canUseDismountPoint)(GameObject* neighbor, GameObject* dismountPoint);
 } DIMDismountNeighborInterfaceVTable;
 
-STATIC_ASSERT(offsetof(DIMDismountPointPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(DIMDismountPointPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(sizeof(DIMDismountPointState) == 0x10);
 STATIC_ASSERT(offsetof(DIMDismountNeighborInterfaceVTable, canUseDismountPoint) == 0x20);
 

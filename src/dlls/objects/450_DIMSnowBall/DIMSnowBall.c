@@ -42,7 +42,7 @@ typedef struct Dimsnowball1c2Placement
 typedef struct Dimsnowball1c2Setup
 {
     ObjPlacement head; /* 0x00 */
-    s8 rotX;           /* 0x18 <- placement->rotX */
+    s8 rotXByte;           /* 0x18 <- placement->rotX */
     u8 pad19[0x1A - 0x19];
     s16 childRot;      /* 0x1A <- def->childRot */
     s16 childZOffset;  /* 0x1C <- def->childZOffset + random */
@@ -54,7 +54,7 @@ STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, childRot) == 0x1A);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, childZOffset) == 0x1B);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, rotX) == 0x1C);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, unk1E) == 0x1E);
-STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, rotX) == 0x18);
+STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, childRot) == 0x1A);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, childZOffset) == 0x1C);
 
@@ -109,7 +109,7 @@ void dimsnowball1c2_update(GameObject* obj)
                 setup->head.mapId = placement->head.mapId;
                 {
                     int rotX = placement->rotX;
-                    setup->rotX = rotX;
+                    setup->rotXByte = rotX;
                 }
                 setup->childRot = placement->childRot;
                 setup->childZOffset =

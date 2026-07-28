@@ -67,7 +67,7 @@ void explodeplan_init(GameObject* obj, ExplodePlanPlacement* placement)
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         ObjHits_DisableObject(obj);
     }
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
 }
 
 void explodeplan_release(void)

@@ -161,7 +161,7 @@ void dll_1CE_init(GameObject* obj, Dll1CEPlacement* placement)
 {
     Dll1CEState* state;
     ObjHitsPriorityState* hitState;
-    obj->anim.rotX = (s16)(((s16)placement->rotX) << 8);
+    obj->anim.rotX = (s16)(((s16)placement->rotXByte) << 8);
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     state = obj->extra;
     state->unlockCountdown = 1;

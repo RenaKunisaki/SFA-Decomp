@@ -259,8 +259,8 @@ void directionallight_init(GameObject* obj, DirectionalLightSetup* setup)
 
     vec = *(PointLightVec*)lbl_802C2608;
 
-    (obj)->anim.rotX = (s16)(setupData->rotX << 8);
-    (obj)->anim.rotY = (s16)(setupData->rotY << 8);
+    (obj)->anim.rotX = (s16)(setupData->rotXByte << 8);
+    (obj)->anim.rotY = (s16)(setupData->rotYByte << 8);
 
     if (state->light == NULL)
     {

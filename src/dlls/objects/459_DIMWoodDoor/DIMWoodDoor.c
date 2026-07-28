@@ -108,7 +108,7 @@ void dimwooddoor2_init(GameObject* obj, Dimwooddoor2Placement* placement)
     DimWoodDoor2State* state;
     ObjHitsPriorityState* hitState;
     f32 fz;
-    obj->anim.rotX = (s16)(((s16)placement->rotX) << 8);
+    obj->anim.rotX = (s16)(((s16)placement->rotXByte) << 8);
     obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
     state = obj->extra;
     state->burnState = 3;

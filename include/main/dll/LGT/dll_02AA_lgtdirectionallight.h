@@ -8,8 +8,8 @@
 typedef struct DirectionalLightSetup
 {
     ObjPlacement base;
-    u8 rotX;
-    u8 rotY;
+    u8 rotXByte;
+    u8 rotYByte;
     u8 diffuseR;
     u8 diffuseG;
     u8 diffuseB;
@@ -53,8 +53,8 @@ STATIC_ASSERT(offsetof(DirectionalLightState, light) == 0x08);
 STATIC_ASSERT(offsetof(DirectionalLightState, debugEditing) == 0x0C);
 STATIC_ASSERT(offsetof(DirectionalLightState, debugField) == 0x0D);
 STATIC_ASSERT(offsetof(DirectionalLightState, enabled) == 0x0E);
-STATIC_ASSERT(offsetof(DirectionalLightSetup, rotX) == 0x18);
-STATIC_ASSERT(offsetof(DirectionalLightSetup, rotY) == 0x19);
+STATIC_ASSERT(offsetof(DirectionalLightSetup, rotXByte) == 0x18);
+STATIC_ASSERT(offsetof(DirectionalLightSetup, rotYByte) == 0x19);
 STATIC_ASSERT(offsetof(DirectionalLightSetup, diffuseR) == 0x1A);
 STATIC_ASSERT(offsetof(DirectionalLightSetup, eventName) == 0x1D);
 STATIC_ASSERT(offsetof(DirectionalLightSetup, enableBit) == 0x1E);

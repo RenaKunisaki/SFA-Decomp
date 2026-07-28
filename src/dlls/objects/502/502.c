@@ -87,7 +87,7 @@ void Flag_init(GameObject* obj, FlagPlacement* placement)
 {
     if (obj->anim.seqId != FLAG_SEQ_TIED)
     {
-        obj->anim.rotX = (s16)((s32)placement->rotX << 8);
+        obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
     }
 }

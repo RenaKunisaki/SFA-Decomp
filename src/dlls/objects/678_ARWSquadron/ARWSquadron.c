@@ -266,9 +266,9 @@ void arwsquadron_spawnProjectile(GameObject* obj, int pathIdx, int angle, int fl
     setup->base.posX = px;
     setup->base.posY = py;
     setup->base.posZ = pz;
-    setup->rotX = ((obj)->anim.rotX + 0x10000 + angle - 0x8000) >> 8;
-    setup->rotY = -(obj)->anim.rotY >> 8;
-    setup->rotZ = 0;
+    setup->rotXByte = ((obj)->anim.rotX + 0x10000 + angle - 0x8000) >> 8;
+    setup->rotYByte = -(obj)->anim.rotY >> 8;
+    setup->rotZByte = 0;
     setup->base.color[0] = 1;
     setup->base.color[1] = 1;
     proj = loadObjectAtObject(obj, &setup->base);
@@ -562,9 +562,9 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
     setupData = setup;
     flags = &state->flags.init;
 
-    obj->anim.rotX = setupData->rotX << 8;
-    obj->anim.rotY = setupData->rotY << 8;
-    obj->anim.rotZ = setupData->rotZ << 8;
+    obj->anim.rotX = setupData->rotXByte << 8;
+    obj->anim.rotY = setupData->rotYByte << 8;
+    obj->anim.rotZ = setupData->rotZByte << 8;
     flags->acceptsDamage = 1;
     state->health = 1;
     state->pathSpeed = (f32)(u32)setupData->pathSpeed * pathSpeedScale;

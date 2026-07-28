@@ -7,14 +7,14 @@
 typedef struct Dll1D6Placement
 {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 pad19;
     s16 upTimer;
     s16 downTimer;
     u8 pad1E[0x20 - 0x1E];
 } Dll1D6Placement;
 
-STATIC_ASSERT(offsetof(Dll1D6Placement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(Dll1D6Placement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(Dll1D6Placement, upTimer) == 0x1A);
 STATIC_ASSERT(offsetof(Dll1D6Placement, downTimer) == 0x1C);
 

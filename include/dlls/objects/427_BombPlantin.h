@@ -7,14 +7,14 @@
 
 typedef struct BombPlantingSpotPlacement {
     ObjPlacement base;
-    s8 rotX;
+    s8 rotXByte;
     u8 unknown19[5];
     s16 plantedGameBit;
     s16 requiredGameBit;
 } BombPlantingSpotPlacement;
 
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, base) == 0x00);
-STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, unknown19) == 0x19);
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, plantedGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, requiredGameBit) == 0x20);

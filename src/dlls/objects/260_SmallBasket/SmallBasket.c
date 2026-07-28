@@ -887,7 +887,7 @@ void SmallBasket_init(GameObject* obj, SmallBasketPlacement* placement) {
     gSmallBasketResource = Resource_Acquire(SMALLBASKET_RESOURCE_ID, SMALLBASKET_RESOURCE_COUNT);
     state->ambientSfxTimer = (s16)(randomGetRange(0, SMALLBASKET_RANDOM_DELAY_MAX) + SMALLBASKET_RANDOM_DELAY_BASE);
     state->unk1F = (u8)placement->unk1A;
-    obj->anim.rotX = (s16)(placement->rotX << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     state->enableGameBit = placement->enableGameBit;
     state->leashRange = placement->leashRange;
     if (state->leashRange == 0) {
