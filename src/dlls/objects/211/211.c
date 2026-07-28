@@ -408,6 +408,21 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
 #define BOUNCE_WALL_MAXY 0x10 /* boundsMaxY -> surfaceMode 4 */
 #define BOUNCE_WALL_MINY 0x20 /* boundsMinY -> surfaceMode 5 */
 
+typedef struct LandedArwingBoundsInterface
+{
+    void* pad00[8];
+    void (*getWorldBounds)(GameObject* wall, f32* outBounds, u8* outBounceFlags);
+} LandedArwingBoundsInterface;
+
+typedef struct LandedArwingStaffInterface
+{
+    void* pad00[20];
+    void (*getSwipeTextureIndex)(GameObject* staff);
+} LandedArwingStaffInterface;
+
+STATIC_ASSERT(offsetof(LandedArwingBoundsInterface, getWorldBounds) == 0x20);
+STATIC_ASSERT(offsetof(LandedArwingStaffInterface, getSwipeTextureIndex) == 0x50);
+
 typedef struct LandedArwingMovementFlags
 {
     u8 boundsLookupRetries : 4;
@@ -1225,8 +1240,8 @@ void dll_D3_update(GameObject* obj)
         {
             if ((extra->boundsObj = ObjList_FindNearestObjectByDefNo(obj, 0x4ad, &searchRadius)) != NULL)
             {
-                (*(void (**)(int, int, int))(*(int**)*(int**)(*(int*)&extra->boundsObj + 0x68) + 0x20 / 4))(
-                    *(int*)&extra->boundsObj, (int)&extra->boundsMinX, (int)&extra->bounceFlags);
+                (*(LandedArwingBoundsInterface**)((GameObject*)extra->boundsObj)->anim.dll)
+                    ->getWorldBounds((GameObject*)extra->boundsObj, &extra->boundsMinX, &extra->bounceFlags);
                 extra->surfaceMode = 5;
             }
             ((LandedArwingMovementFlags*)&extra->flags92)->boundsLookupRetries -= 1;
@@ -1309,8 +1324,8 @@ void dll_D3_update(GameObject* obj)
                                 gStaffActionHitLightParams);
         if ((int)((TreasureChestState*)state)->hitPoints < hits)
         {
-            (*(void (**)(int))(*(int**)*(int**)(*(int*)&player->childObjs[0] + 0x68) + 0x50 / 4))(
-                *(int*)&player->childObjs[0]);
+            (*(LandedArwingStaffInterface**)((GameObject*)player->childObjs[0])->anim.dll)
+                ->getSwipeTextureIndex((GameObject*)player->childObjs[0]);
             *(f32*)((char*)gStaffActionHitLightParams + 0xc) = obj->anim.localPosX;
             *(f32*)((char*)gStaffActionHitLightParams + 0x10) = obj->anim.localPosY;
             *(f32*)((char*)gStaffActionHitLightParams + 0x14) = obj->anim.localPosZ;

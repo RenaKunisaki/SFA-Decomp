@@ -41,6 +41,24 @@
 #define DLL_CE_QUERY_STATE_CALLBACK_OFFSET 0x20
 #define DLL_CE_MESSAGE_CALLBACK_OFFSET     0x24
 
+typedef struct DllCEStaffInterface {
+    void* pad00[17];
+    int (*getHitReactValue)(GameObject* staff);
+    void* pad48[2];
+    void (*getSwipeTextureIndex)(GameObject* staff);
+} DllCEStaffInterface;
+
+typedef struct DllCESiblingInterface {
+    void* pad00[8];
+    int (*getControlMode)(GameObject* sibling, int unused);
+    void (*handleMessage)(GameObject* sibling, int message, int unused);
+} DllCESiblingInterface;
+
+STATIC_ASSERT(offsetof(DllCEStaffInterface, getHitReactValue) == 0x44);
+STATIC_ASSERT(offsetof(DllCEStaffInterface, getSwipeTextureIndex) == 0x50);
+STATIC_ASSERT(offsetof(DllCESiblingInterface, getControlMode) == DLL_CE_QUERY_STATE_CALLBACK_OFFSET);
+STATIC_ASSERT(offsetof(DllCESiblingInterface, handleMessage) == DLL_CE_MESSAGE_CALLBACK_OFFSET);
+
 #define DLL_CE_EFFECT_PROJECTILE 0x1
 #define DLL_CE_EFFECT_DUST       0x2
 #define DLL_CE_EFFECT_SPRAY      0x4
@@ -131,8 +149,8 @@ int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
             if (sibling != (void*)obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                int siblingState = (*(int (**)(void*, int))(**(int**)&((GameObject*)sibling)->anim.dll +
-                                                            DLL_CE_QUERY_STATE_CALLBACK_OFFSET))(sibling, 0);
+                int siblingState =
+                    (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)->getControlMode(sibling, 0);
                 if (siblingState > maxSiblingState) {
                     maxSiblingState = siblingState;
                 }
@@ -301,13 +319,14 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
             void* sibling = (void*)objects[objectIndex];
 
             if (sibling != obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                (*(void (**)(void*, int, int))(**(int**)&((GameObject*)sibling)->anim.dll +
-                                               DLL_CE_MESSAGE_CALLBACK_OFFSET))(sibling, DLL_CE_MESSAGE_RELEASE, 0);
+                (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
+                    ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
         playerChild = (int*)((GameObject*)Obj_GetPlayerObject())->childObjs[0];
         player = Obj_GetPlayerObject();
-        childState = (**(int (**)(int*))(*(int*)(*(int*)&((GameObject*)playerChild)->anim.dll) + 0x44))(playerChild);
+        childState = (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)
+                         ->getHitReactValue((GameObject*)playerChild);
         if (childState != 0) {
             if (player->anim.seqId != 0) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
@@ -350,8 +369,8 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
 
             if ((void*)siblingAddress != (void*)obj &&
                 ((GameObject*)siblingAddress)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                (*(int (**)(int, int, int))(**(int**)&((GameObject*)siblingAddress)->anim.dll +
-                                            DLL_CE_MESSAGE_CALLBACK_OFFSET))(siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
+                (*(DllCESiblingInterface**)((GameObject*)siblingAddress)->anim.dll)
+                    ->handleMessage((GameObject*)siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
             }
             objectIndex++;
         }
@@ -412,8 +431,8 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
             void* sibling = (void*)objects[objectIndex];
 
             if (sibling != obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
-                (*(void (**)(void*, int, int))(**(int**)&((GameObject*)sibling)->anim.dll +
-                                               DLL_CE_MESSAGE_CALLBACK_OFFSET))(sibling, DLL_CE_MESSAGE_RELEASE, 0);
+                (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
+                    ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
         if (randomGetRange(0, 1) != 0) {
@@ -619,7 +638,7 @@ void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int state
     if (hitReactionUpdated != 0) {
         void* playerChild = player->childObjs[0];
 
-        (*(void (**)(void*))(**(int**)&((GameObject*)playerChild)->anim.dll + 0x50))(playerChild);
+        (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)->getSwipeTextureIndex(playerChild);
     }
 }
 
