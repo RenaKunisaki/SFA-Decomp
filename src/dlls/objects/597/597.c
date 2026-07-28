@@ -69,7 +69,7 @@
 #define SNOWBIKE_OBJGROUP           0xa
 #define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd
 
-const u32 lbl_803E5AE0 = 0x05050505;
+const GXColor lbl_803E5AE0 = {5, 5, 5, 5};
 const GXColor lbl_803E5AE4 = {0x20, 0x20, 0x20, 0x80};
 
 typedef union SnowBikeCheckpointRank
@@ -2619,7 +2619,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     u8* path;
     int i;
     u8* alloc;
-    u32 pathParam;
+    GXColor pathParam;
     char* base[1];
     u8* state;
     SnowBikeState* s;
