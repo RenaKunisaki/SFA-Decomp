@@ -36,10 +36,10 @@ typedef struct IMSnowClawMountInterface {
     void* pad14[5];
     void (*getPosition)(GameObject* obj, f32* x, f32* y, f32* z);
     void* pad2C[3];
-    int (*getState)(GameObject* obj);
-    void (*setState)(GameObject* obj, int state);
-    void (*getBlendRange)(GameObject* obj, f32* start, f32* end);
-    void (*getBlendStep)(GameObject* obj, f32* step);
+    int (*getRiderMode)(GameObject* obj);
+    void (*setRiderMode)(GameObject* obj, int mode);
+    void (*func12)(GameObject* obj, f32* out, int* outNegative);
+    f32 (*getNormalizedSpeed)(GameObject* obj, f32* out);
 } IMSnowClawMountInterface;
 
 typedef struct IMSnowClawDropObjectTable {
@@ -71,10 +71,10 @@ STATIC_ASSERT(offsetof(IMSnowClawMountInterface, render) == 0x10);
 STATIC_ASSERT(offsetof(IMSnowClawMountInterface, pad14) == 0x14);
 STATIC_ASSERT(offsetof(IMSnowClawMountInterface, getPosition) == 0x28);
 STATIC_ASSERT(offsetof(IMSnowClawMountInterface, pad2C) == 0x2C);
-STATIC_ASSERT(offsetof(IMSnowClawMountInterface, getState) == 0x38);
-STATIC_ASSERT(offsetof(IMSnowClawMountInterface, setState) == 0x3C);
-STATIC_ASSERT(offsetof(IMSnowClawMountInterface, getBlendRange) == 0x40);
-STATIC_ASSERT(offsetof(IMSnowClawMountInterface, getBlendStep) == 0x44);
+STATIC_ASSERT(offsetof(IMSnowClawMountInterface, getRiderMode) == 0x38);
+STATIC_ASSERT(offsetof(IMSnowClawMountInterface, setRiderMode) == 0x3C);
+STATIC_ASSERT(offsetof(IMSnowClawMountInterface, func12) == 0x40);
+STATIC_ASSERT(offsetof(IMSnowClawMountInterface, getNormalizedSpeed) == 0x44);
 STATIC_ASSERT(sizeof(IMSnowClawMountInterface) == 0x48);
 
 STATIC_ASSERT(offsetof(IMSnowClawDropObjectTable, objectIds) == 0x00);

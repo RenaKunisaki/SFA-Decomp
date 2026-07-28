@@ -69,17 +69,17 @@ void imSnowClaw_syncMountTransform(GameObject* obj, GameObject* mount, int rende
 }
 
 static void dll_16C_advanceLinkedMove(GameObject* obj, GameObject* mount) {
-    f32 blendEnd;
-    f32 blendStep;
-    f32 blendStart;
+    int moveNegative;
+    f32 moveStep;
+    f32 moveAmount;
 
     if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID) {
         ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
     }
-    (*(IMSnowClawMountInterface**)mount->anim.dll)->getBlendStep(mount, &blendStep);
-    blendStep = 0.01f;
-    (*(IMSnowClawMountInterface**)mount->anim.dll)->getBlendRange(mount, &blendStart, &blendEnd);
-    ObjAnim_AdvanceCurrentMove((int)obj, blendStep, (f32)(u32)framesThisStep, NULL);
+    (*(IMSnowClawMountInterface**)mount->anim.dll)->getNormalizedSpeed(mount, &moveStep);
+    moveStep = 0.01f;
+    (*(IMSnowClawMountInterface**)mount->anim.dll)->func12(mount, &moveAmount, &moveNegative);
+    ObjAnim_AdvanceCurrentMove((int)obj, moveStep, (f32)(u32)framesThisStep, NULL);
 }
 
 int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
@@ -123,7 +123,7 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateSt
         state->mountSnapX = state->pathPointX;
         state->mountSnapY = state->pathPointY;
         state->mountSnapZ = state->pathPointZ;
-        (*(IMSnowClawMountInterface**)mount->anim.dll)->setState(mount, 2);
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->setRiderMode(mount, 2);
         ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 1);
         if (obj->anim.modelState != NULL) {
             obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
@@ -131,12 +131,12 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateSt
         animUpdate->hitVolumePair &= ~4;
         animUpdate->triggerCommand = 0;
     } else if (mount != NULL && animUpdate->triggerCommand == 1) {
-        (*(IMSnowClawMountInterface**)mount->anim.dll)->setState(mount, 0);
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->setRiderMode(mount, 0);
         animUpdate->triggerCommand = 0;
     }
 
     if (mount != NULL) {
-        if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getState(mount) == 2) {
+        if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getRiderMode(mount) == 2) {
             animUpdate->hitVolumePair &= ~3;
         }
     }
@@ -175,7 +175,7 @@ void imSnowClaw_render(GameObject* obj, int renderArg2, int renderArg3, int rend
         mount = state->mount;
         mountActive = 0;
         if (mount != NULL) {
-            if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getState(mount) == 2) {
+            if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getRiderMode(mount) == 2) {
                 mountActive = 1;
             }
         }
@@ -207,7 +207,7 @@ void imSnowClaw_hitDetect(GameObject* obj) {
     GameObject* mount = state->mount;
 
     if (mount != NULL) {
-        if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getState(mount) == 2) {
+        if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getRiderMode(mount) == 2) {
             imSnowClaw_syncMountTransform(obj, state->mount, 0, 0, 0, 0, 0, 0, 0);
         }
     }
@@ -266,17 +266,17 @@ void imSnowClaw_update(GameObject* obj) {
 
     if (obj->anim.seqId == IM_SNOW_CLAW_RENDER_GATE_SEQ_ID || mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0) {
         GameObject* mount = state->mount;
-        f32 blendEnd;
-        f32 blendStep;
-        f32 blendStart;
+        int moveNegative;
+        f32 moveStep;
+        f32 moveAmount;
 
         if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID) {
             ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
         }
-        (*(IMSnowClawMountInterface**)mount->anim.dll)->getBlendStep(mount, &blendStep);
-        blendStep = 0.01f;
-        (*(IMSnowClawMountInterface**)mount->anim.dll)->getBlendRange(mount, &blendStart, &blendEnd);
-        ObjAnim_AdvanceCurrentMove((int)obj, blendStep, (f32)(u32)framesThisStep, NULL);
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->getNormalizedSpeed(mount, &moveStep);
+        moveStep = 0.01f;
+        (*(IMSnowClawMountInterface**)mount->anim.dll)->func12(mount, &moveAmount, &moveNegative);
+        ObjAnim_AdvanceCurrentMove((int)obj, moveStep, (f32)(u32)framesThisStep, NULL);
         if (state->mount != NULL) {
             f32 distanceFade;
             GameObject* player = Obj_GetPlayerObject();
