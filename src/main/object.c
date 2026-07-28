@@ -2028,7 +2028,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     i = 0;
     for (; i < ((ObjModelInstance*)obj->def)->modelCount; i++)
     {
-        modelPtr = *(int*)((u8*)obj->models + i * 4);
+        modelPtr = (int)obj->models[i];
         if (modelPtr != 0)
         {
             if ((f32)modelFileHeaderGetCullDistance(*(ModelFileHeader**)modelPtr) > max)

@@ -573,7 +573,7 @@ void renderObjects(s8* opacity)
             {
                 slot = gLightmapDeferredObjectCount;
                 gLightmapDeferredObjectCount = slot + 1;
-                *(u32*)((u8*)qbase->deferred + slot * 4) = (u32)obj;
+                qbase->deferred[slot] = (u32)obj;
             }
         }
         else
@@ -587,7 +587,7 @@ void renderObjects(s8* opacity)
             if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL)
             {
                 renderShadowType3(obj, 0x13, 0);
-                *(u32*)((u8*)&q->d + lbl_803DCE30 * 16) = 2;
+                q[lbl_803DCE30].d = 2;
                 lbl_803DCE30++;
             }
             else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH && (((GameObject*)obj)->anim.flags
@@ -595,7 +595,7 @@ void renderObjects(s8* opacity)
                 OBJ_MODEL_STATE_SHADOW_VISIBLE))
             {
                 renderShadowType3(obj, 0x13, 0);
-                *(u32*)((u8*)&q->d + lbl_803DCE30 * 16) = 3;
+                q[lbl_803DCE30].d = 3;
                 lbl_803DCE30++;
             }
         }

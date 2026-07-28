@@ -1426,6 +1426,7 @@ void trackIntersect(void)
     {
         int pointIndex;
         s16* pointEdges;
+        s16* pointEdges2;
         s16 adjacentLine;
 
         line = (IntersectLine*)(lbl_803DCF34 + i * 16);
@@ -1449,15 +1450,15 @@ void trackIntersect(void)
             }
         }
         pointIndex = line->pt[1] * 2;
-        pointEdges = &edges[pointIndex];
-        adjacentLine = pointEdges[0];
+        pointEdges2 = &edges[pointIndex];
+        adjacentLine = pointEdges2[0];
         if (adjacentLine > -1 && adjacentLine != i)
         {
             line->adj[1] = adjacentLine;
         }
         else
         {
-            adjacentLine = pointEdges[1];
+            adjacentLine = pointEdges2[1];
             if (adjacentLine > -1 && adjacentLine != i)
             {
                 line->adj[1] = adjacentLine;

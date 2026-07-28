@@ -868,7 +868,7 @@ void Music_PlayTrackByIndex(int index)
 {
     MusicTrigger* trigger = Music_FindTriggerById(MUSICTRIG_dark_ice_boss_1_ec);
     Music_StopChannelsByPriorityGroup(3, MUSIC_CHANNEL_STOP_DEFAULT, 0);
-    trigger->track = *(s16*)((u8*)sMusicTrackTable + (index << 4));
+    trigger->track = sMusicTrackTable[index].id;
     Music_Trigger(MUSICTRIG_dark_ice_boss_1_ec, 1);
 }
 

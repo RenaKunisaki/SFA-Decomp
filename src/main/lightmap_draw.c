@@ -9,6 +9,7 @@
 #include "main/lightmap_render_control_api.h"
 #include "main/lightmap_render_queue_api.h"
 #include "main/lightmap_text_color_api.h"
+#include "main/model.h"
 #include "main/model_render_instrs_api.h"
 #include "main/modellight_api.h"
 #include "main/newclouds.h"
@@ -173,16 +174,16 @@ void titleScreenFn_8005cdd4(int v)
 
 void setDrawLights(int v)
 {
-    void* env = saveGameGetEnvState();
+    u8* env = saveGameGetEnvState();
     if (v != 0)
     {
         renderFlags |= 0x40;
-        *(u8*)((char*)env + 0x40) |= 0x8;
+        env[0x40] |= 0x8;
     }
     else
     {
         renderFlags &= ~0x40LL;
-        *(u8*)((char*)env + 0x40) &= ~0x8;
+        env[0x40] &= ~0x8;
     }
 }
 
@@ -210,16 +211,16 @@ void setStarsHidden(int v)
 
 void setDrawCloudsAndLights(int v)
 {
-    void* env = saveGameGetEnvState();
+    u8* env = saveGameGetEnvState();
     if (v != 0)
     {
         renderFlags |= 0x50;
-        *(u8*)((char*)env + 0x40) |= 0x9;
+        env[0x40] |= 0x9;
     }
     else
     {
         renderFlags &= ~0x50;
-        *(u8*)((char*)env + 0x40) &= ~0x9;
+        env[0x40] &= ~0x9;
     }
 }
 
@@ -520,10 +521,10 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 
 void lightmapDrawQueuedObject(GameObject* obj)
 {
-    int* model = (int*)Obj_GetActiveModel(obj);
-    if (*(void**)((char*)model + 0x58) != NULL)
+    ObjModel* model = Obj_GetActiveModel(obj);
+    if (model->renderAttachment != NULL)
     {
-        objRenderFn_8003d980((u8*)obj, model);
+        objRenderFn_8003d980((u8*)obj, (int*)model);
     }
     else
     {
@@ -539,7 +540,7 @@ void lightmapDrawQueuedObject(GameObject* obj)
         }
         else if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
         {
-            objDrawFn_80061654(obj, (ObjModel*)model);
+            objDrawFn_80061654(obj, model);
         }
         Camera_ApplyFullViewport();
     }

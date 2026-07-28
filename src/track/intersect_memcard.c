@@ -27,6 +27,7 @@
 #include "main/shader_api.h"
 #include "dolphin/gx/GXTransform.h"
 #include "string.h"
+#include "main/gametext_internal.h"
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
@@ -609,7 +610,7 @@ void showMemCardError(u8 err)
     int i;
     int j;
     int yy;
-    char* t;
+    GameTextDef* t;
     int v;
 
     sel = 0;
@@ -646,11 +647,11 @@ void showMemCardError(u8 err)
         gameTextSetColor(0xff, 0xc0, 0x40, 0xff);
         for (i = 0, m = msgs, y = 0x64; i < count + 1; m++, y += 0x14, i++)
         {
-            t = (char*)gameTextGet(*m);
+            t = (GameTextDef*)gameTextGet(*m);
             yy = y + ((i > 0) ? 0x64 : 0);
-            for (j = 0; j < *(u16*)(t + 2); j++)
+            for (j = 0; j < t->count; j++)
             {
-                gameTextShowStr((*(char***)(t + 8))[j], 0, 0, yy);
+                gameTextShowStr(t->strings[j], 0, 0, yy);
                 yy += 0x18;
             }
             if (i == sel)

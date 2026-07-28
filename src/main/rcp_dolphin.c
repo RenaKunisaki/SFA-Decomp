@@ -257,7 +257,7 @@ void Rcp_UpdateDistortionTextures(void)
     GXColor outColor;
     GXColor texColor;
     GXColor matColor;
-    u8* e;
+    RcpDistortSlot* e;
     u8* slots[1];
     int i;
     int clearSlot;
@@ -309,16 +309,16 @@ void Rcp_UpdateDistortionTextures(void)
     GXSetChanMatColor(GX_COLOR0, gRcpDistortMatColor);
     clearSlot = 5;
     k = 5;
-    e = (u8*)gRcpDistortSlots + 0x8c;
+    e = &gRcpDistortSlots[5];
     group = gRcpDistortGroup;
     for (; k >= 0; k--)
     {
-        if (*(u16*)(*(u8**)e + 0xe) != 0 && e[0x1b] == 0 && group == e[0x1a])
+        if (((Texture*)e->texture)->refCount != 0 && e->mode == 0 && group == e->group)
         {
             clearSlot = k;
             break;
         }
-        e -= 0x1c;
+        e--;
     }
     i = 0;
     for (; i < 6; i++)

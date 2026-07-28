@@ -111,7 +111,7 @@ void gameTextRenderById(int a, int b, int c)
         slot = (TextSlot*)gTextBoxes + def->slotHint;
     }
 
-    if ((u8*)slot == gTextBoxes + 0x10a0)
+    if (slot == (TextSlot*)gTextBoxes + 0x85)
     {
         gGameTextColorR = 255;
         gGameTextColorG = 255;

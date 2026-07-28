@@ -20,20 +20,20 @@ CameraModeCombatState* gCamCombatState;
 
 void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY)
 {
-    GameObject* target;
     ObjHitVolumeRuntimeTransform* hitVolumes;
+    GameObject* target;
+    u8 prevIdx;
     GameObject* focus;
-    u8 curIdx;
+    CameraModeCombatState* state;
     float lim;
     float t;
 
     target = (GameObject*)camera->targetObj;
     focus = (GameObject*)camera->anim.targetObj;
     hitVolumes = target->anim.hitVolumeTransforms;
-    curIdx = target->hitVolumeIndex;
-    if ((u32)curIdx != gCamCombatState->pathBlendTargetIndex)
+    if ((u32)target->hitVolumeIndex != (prevIdx = (state = gCamCombatState)->pathBlendTargetIndex))
     {
-        gCamCombatState->pathBlendStartIndex = gCamCombatState->pathBlendTargetIndex;
+        state->pathBlendStartIndex = prevIdx;
         gCamCombatState->pathBlendWeight = 1.0f;
     }
     t = gCamCombatState->pathBlendWeight;
@@ -49,15 +49,18 @@ void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float
         }
         {
             u8 ci = gCamCombatState->pathBlendStartIndex;
-            float dx = hitVolumes[ci].centerX - hitVolumes[target->hitVolumeIndex].centerX;
-            float dy = hitVolumes[ci].centerY - hitVolumes[target->hitVolumeIndex].centerY;
-            float dz = hitVolumes[ci].centerZ - hitVolumes[target->hitVolumeIndex].centerZ;
+            float bx;
+            float by;
+            float bz;
+            float dx = hitVolumes[ci].centerX - (bx = hitVolumes[target->hitVolumeIndex].centerX);
+            float dy = hitVolumes[ci].centerY - (by = hitVolumes[target->hitVolumeIndex].centerY);
+            float dz = hitVolumes[ci].centerZ - (bz = hitVolumes[target->hitVolumeIndex].centerZ);
             dx *= gCamCombatState->pathBlendWeight;
             dy *= gCamCombatState->pathBlendWeight;
             dz *= gCamCombatState->pathBlendWeight;
-            dx += hitVolumes[target->hitVolumeIndex].centerX;
-            dy += hitVolumes[target->hitVolumeIndex].centerY;
-            dz += hitVolumes[target->hitVolumeIndex].centerZ;
+            dx += bx;
+            dy += by;
+            dz += bz;
             *outX = dx - focus->anim.worldPosX;
             *outY = dy - *targetY;
             *outZ = dz - focus->anim.worldPosZ;

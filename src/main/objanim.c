@@ -449,6 +449,9 @@ static inline s16 ObjAnim_ReadRootAxisSample(s16* axis, int sampleIndex)
 
 int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float* phaseOut)
 {
+    s16* at;
+    f32 blendDelta;
+    f32 moveDelta;
     ObjAnimBank* bank;
     ObjAnimRootCurve* curve;
     f32 previousDistance;
@@ -619,9 +622,7 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
                     previousDistance = nextDistance;
                     if (blendSamples != NULL)
                     {
-                        s16* at = &axis[sampleIndex];
-                        f32 blendDelta;
-                        f32 moveDelta;
+                        at = &axis[sampleIndex];
                         moveDelta = rootScale * ((f32)at[2] - at[1]);
                         at = &blendSamples[sampleIndex];
                         blendDelta = blendScale * ((f32)at[1] - at[0]);
@@ -629,8 +630,8 @@ int ObjAnim_SampleRootCurvePhase(ObjAnimComponent* objAnim, f32 distance, float*
                     }
                     else
                     {
-                        s16* axisAt = &axis[sampleIndex];
-                        nextDistance += rootScale * ((f32)axisAt[2] - axisAt[1]);
+                        at = &axis[sampleIndex];
+                        nextDistance += rootScale * ((f32)at[2] - at[1]);
                     }
                     phase += phaseStep;
                 }
@@ -662,35 +663,34 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
     f32 previousAxisNextValue;
     f32 currentAxisValue;
     f32 currentAxisNextValue;
-    f32 previousInterp;
+    f32 previousFraction;
     f32 currentInterp;
     f32 progressDelta;
     f32 previousScaledSample;
     f32 currentScaledSample;
     f32 previousProgress;
-    f32 previousFraction;
     f32 currentFraction;
+    f32 previousInterp;
     f32 rootScale;
     f32 blendWeight;
     f32 moveWeight;
     f32 sampleSpan;
     int countdown;
-    int previousFrame;
-    int currentFrame;
-    ObjAnimState* state;
-    int scanMode;
+    int eventId;
     int eventCount;
-    int wrapped;
+    ObjAnimState* state;
     int eventIndex;
+    int previousFrame;
+    int wrapped;
+    int currentFrame;
     int axisIndex;
     s16* axis;
     s16* blendAxis;
     s16* at;
     int previousSampleIndex;
     int currentSampleIndex;
-    ObjAnimPackedEvent eventEntry;
     int eventFrame;
-    int eventId;
+    int scanMode;
 
     objAnim = (ObjAnimComponent*)objAnimHandle;
     wrapped = 0;
@@ -823,9 +823,8 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
             for (eventIndex = 0; eventIndex < eventCount && events->triggerCount < OBJANIM_EVENT_TRIGGER_CAPACITY;
                  eventIndex++)
             {
-                eventEntry = objAnim->eventTable->entries[eventIndex];
-                eventFrame = ObjAnim_GetPackedEventFrame(eventEntry);
-                eventId = ObjAnim_GetPackedEventId(eventEntry);
+                eventFrame = ObjAnim_GetPackedEventFrame(objAnim->eventTable->entries[eventIndex]);
+                eventId = ObjAnim_GetPackedEventId(objAnim->eventTable->entries[eventIndex]);
                 if (eventId == OBJANIM_EVENT_ID_NONE)
                 {
                     continue;

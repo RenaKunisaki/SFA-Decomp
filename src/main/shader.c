@@ -107,7 +107,7 @@ s16 lbl_803DCEB4;
 int gMapBlockIndexCount;
 s16 gVisibleObjectSortKeyCount;
 u16 lbl_803DCEAC;
-void* lbl_803DCEA8;
+CameraViewSlot* lbl_803DCEA8;
 s8 curMapType;
 void* lbl_803DCEA0;
 MapBlockData** gMapBlocks;
@@ -176,7 +176,7 @@ int gMapBlockOriginWorldX;
 /* the ice-mountain snowbike; its map-block residency is tracked separately so the
    ride streams blocks ahead. retail OBJECTS.bin name "IMSnowBike" (DLL 0x255) */
 #define SHADER_SNOWBIKE_OBJ 0x72
-void defStartFn_8005972c(char* p1, u32* p2, int idx, int flag);
+void defStartFn_8005972c(MapRomListPage* p1, u32* p2, int idx, int flag);
 extern f32 gShaderLoadCenterZ;
 extern f32 gShaderLoadCenterY;
 extern f32 gShaderLoadCenterX;
@@ -2728,12 +2728,12 @@ void mapLoadForObject(int mapId, GameObject* obj)
     }
     obj->anim.hostedMapSlot = slot;
     (*gMapEventInterface)->setMapActLut(mapId, slot);
-    defStartFn_8005972c((char*)romList, (u32*)&lbl_803822C8[slot * 0x8c], slot, 0);
+    defStartFn_8005972c((MapRomListPage*)romList, (u32*)&lbl_803822C8[slot * 0x8c], slot, 0);
     (*gMapEventInterface)->updateObjGroups(slot);
     gShaderCurMapEventId = saved;
 }
 
-void defStartFn_8005972c(char* p, u32* tbl, int idx, int flag)
+void defStartFn_8005972c(MapRomListPage* p, u32* tbl, int idx, int flag)
 {
     char* cur;
     int count;
@@ -2749,8 +2749,8 @@ void defStartFn_8005972c(char* p, u32* tbl, int idx, int flag)
 
     found = 0;
     mask = 0;
-    cur = (char*)((MapRomListPage*)p)->objects;
-    count = *(u16*)(p + 8);
+    cur = (char*)p->objects;
+    count = p->objectDataSize;
     if (count != 0)
     {
         pos = 0;
@@ -2810,7 +2810,7 @@ void defStartFn_8005972c(char* p, u32* tbl, int idx, int flag)
                         (*gCheckpointInterface)->addRouteEntry((CheckpointRouteEntry*)cur);
                     if (found == 0)
                     {
-                        tbl[0x21] = (int)cur - (int)((MapRomListPage*)p)->objects;
+                        tbl[0x21] = (int)cur - (int)p->objects;
                         found = 1;
                     }
                 }
@@ -2818,7 +2818,7 @@ void defStartFn_8005972c(char* p, u32* tbl, int idx, int flag)
                 {
                     if ((mask & (1 << *(u8*)(cur + 6))) == 0)
                     {
-                        tbl[*(u8*)(cur + 6)] = (int)cur - (int)((MapRomListPage*)p)->objects;
+                        tbl[*(u8*)(cur + 6)] = (int)cur - (int)p->objects;
                         mask |= 1 << *(u8*)(cur + 6);
                     }
                 }
@@ -2858,7 +2858,7 @@ void mapUnloadRomListPage(int pageIndex)
     MapRomListPage* p = gLoadedRomListPages[idx];
     if (p != 0)
     {
-        defStartFn_8005972c((char*)p, (u32*)(lbl_803822C8 + idx * 0x8C), idx, 1);
+        defStartFn_8005972c(p, (u32*)(lbl_803822C8 + idx * 0x8C), idx, 1);
         mm_free(gLoadedRomListPages[idx]);
         gLoadedRomListPages[idx] = 0;
     }
@@ -2990,7 +2990,7 @@ int mapProcessRomList(int slot)
     int j;
     char* obj;
     int i;
-    char* cur;
+    MapRomListPage* cur;
     u8 flag;
     ShaderRomListSlot* p;
     int count;
@@ -3038,16 +3038,16 @@ int mapProcessRomList(int slot)
     ((s16*)((char*)base + 0x4190))[i * 4] = slot;
     lbl_803DCEA0 = entry->romlist;
     rects = (s16*)(*(int*)(base + 0x417C) + slot * 10);
-    *(u8*)((char*)lbl_803DCEA0 + 0x19) = *(u8*)(*(int*)(base + 0x4184) + slot);
-    *(f32*)((char*)lbl_803DCEA0 + 0x24) = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)lbl_803DCEA0 + 4));
-    *(f32*)((char*)lbl_803DCEA0 + 0x28) = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)lbl_803DCEA0 + 6));
+    ((MapRomListPage*)lbl_803DCEA0)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
+    ((MapRomListPage*)lbl_803DCEA0)->worldX = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)lbl_803DCEA0 + 4));
+    ((MapRomListPage*)lbl_803DCEA0)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)lbl_803DCEA0 + 6));
     cur = lbl_803DCEA0;
-    dz = *(f32*)(cur + 0x28);
-    dx = *(f32*)(cur + 0x24);
+    dz = cur->worldZ;
+    dx = cur->worldX;
     if (cur != 0)
     {
-        obj = (char*)((MapRomListPage*)cur)->objects;
-        for (j = 0; j < *(u16*)(cur + 8);)
+        obj = (char*)cur->objects;
+        for (j = 0; j < cur->objectDataSize;)
         {
             if (saveGame_restoreObjectPosToRomList(obj) == 0)
             {
@@ -3091,11 +3091,11 @@ int mapGetRomListAndOffsets(int p1, int flag)
     }
     {
         f32 fillVal = lbl_803DEBCC;
-        *(f32*)((char*)lbl_803DCEA0 + 0x24) = fillVal;
-        *(f32*)((char*)lbl_803DCEA0 + 0x28) = fillVal;
+        ((MapRomListPage*)lbl_803DCEA0)->worldX = fillVal;
+        ((MapRomListPage*)lbl_803DCEA0)->worldZ = fillVal;
     }
-    *(u8*)((char*)lbl_803DCEA0 + 0x18) = 0;
-    *(u8*)((char*)lbl_803DCEA0 + 0x19) = 0;
+    ((MapRomListPage*)lbl_803DCEA0)->unk18 = 0;
+    ((MapRomListPage*)lbl_803DCEA0)->mapLayer = 0;
     if (flag == 0)
     {
         defStartFn_8005972c(lbl_803DCEA0, (u32*)&lbl_803822C8[p1 * 0x8c], p1, 0);
@@ -3258,8 +3258,8 @@ void mapDebugRender(int* state)
 
     if (lbl_803DCDED != 0)
     {
-        bx = fastFloorf((*(f32*)((char*)lbl_803DCEA8 + 0xc) - playerMapOffsetX) / gMapBlockWorldSize);
-        bz = fastFloorf((*(f32*)((char*)lbl_803DCEA8 + 0x14) - playerMapOffsetZ) / gMapBlockWorldSize);
+        bx = fastFloorf((lbl_803DCEA8->x - playerMapOffsetX) / gMapBlockWorldSize);
+        bz = fastFloorf((lbl_803DCEA8->z - playerMapOffsetZ) / gMapBlockWorldSize);
         tbl = gMapBlockLayerTables[0];
         if (bx < 0 || bz < 0 || bx >= 16 || bz >= 16)
         {
@@ -3277,17 +3277,17 @@ void mapDebugRender(int* state)
                 blk = gMapBlocks[ci];
             }
         }
-        sx = (int)(gMapBlockWorldSize * fastFloorf(*(f32*)((char*)lbl_803DCEA8 + 0xc) / gMapBlockWorldSize));
-        sz = (int)(gMapBlockWorldSize * fastFloorf(*(f32*)((char*)lbl_803DCEA8 + 0x14) / gMapBlockWorldSize));
-        wx = (int)(*(f32*)((char*)lbl_803DCEA8 + 0xc) - sx);
-        wz = (int)(*(f32*)((char*)lbl_803DCEA8 + 0x14) - sz);
+        sx = (int)(gMapBlockWorldSize * fastFloorf(lbl_803DCEA8->x / gMapBlockWorldSize));
+        sz = (int)(gMapBlockWorldSize * fastFloorf(lbl_803DCEA8->z / gMapBlockWorldSize));
+        wx = (int)(lbl_803DCEA8->x - sx);
+        wz = (int)(lbl_803DCEA8->z - sz);
         if (blk != 0)
         {
             y0 = blk->minY;
             y0a = y0;
             if (y0 & 1)
                 y0a = y0 - 1;
-            cy = *(f32*)((char*)lbl_803DCEA8 + 0x10);
+            cy = lbl_803DCEA8->y;
             y1 = blk->maxY;
             if (cy > y1)
                 cy = (f32)(y1 - 1);

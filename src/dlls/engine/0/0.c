@@ -5954,14 +5954,15 @@ static inline void pauseMenuFreeIconTextures(CMenuHud* hud)
 
     for (textureIndex = 0; textureIndex < ARRAY_COUNT(hud->textures3A8); textureIndex++)
     {
-        void** texture = (void**)((u8*)&hud->textures3A8[0] + textureIndex * sizeof(void*));
+        u32 idv = textureIndex;
+        void** texture = (void**)((u8*)&hud->textures3A8[0] + idv * sizeof(void*));
         if (*texture != NULL)
         {
             s16* textureId;
 
             textureFree((Texture*)*texture);
             *texture = NULL;
-            textureId = (s16*)((u8*)&hud->texIds358[0] + textureIndex * sizeof(s16));
+            textureId = (s16*)((u8*)&hud->texIds358[0] + idv * sizeof(s16));
             *textureId = 0;
         }
     }

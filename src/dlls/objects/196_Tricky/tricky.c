@@ -1021,15 +1021,16 @@ int trickyTurnTowardYaw(u8* obj, s16 targetYaw)
 {
     u8* state;
     int currentYaw;
+    int wrappedYaw;
     int delta;
     int step;
 
     state = ((GameObject*)obj)->extra;
     ((TrickyState*)state)->targetYaw = targetYaw;
 
-    delta = (u16)(s16)targetYaw;
+    wrappedYaw = (u16)(s16)targetYaw;
     currentYaw = ((GameObject*)obj)->anim.rotX;
-    delta = currentYaw - delta;
+    delta = currentYaw - wrappedYaw;
     if (delta > 0x8000)
     {
         delta -= 0xffff;
