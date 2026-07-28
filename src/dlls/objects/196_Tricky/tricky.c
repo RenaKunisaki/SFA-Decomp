@@ -3347,14 +3347,12 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     f32 candidate;
     f32* otherTarget;
     TrickyState* ctx;
-    f32 minSpeed;
 
     sum = 0.05f;
     v = state->speed;
     td = timeDelta;
     dec = -0.15f * td;
-    minSpeed = 0.0f;
-    while (v > minSpeed)
+    while (v > 0.0f)
     {
         sum = v * td + sum;
         v = v + dec;
@@ -3974,7 +3972,6 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     u8 ok;
     int go;
     int* best = NULL;
-    f32 detourRatio;
     f32 bestd = 0.0f;
     int count;
     u8* cfg;
@@ -4292,14 +4289,13 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
             void** list = (void**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
             int i = 0;
             p = list;
-            detourRatio = 2.0f;
             for (; i < count; i++)
             {
                 f32 d1 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &tgt->anim.worldPosX);
                 f32 d2 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX,
                                         &t->playerObj->anim.worldPosX);
                 f32 d3 = Vec_xzDistance(&tgt->anim.worldPosX, &t->playerObj->anim.worldPosX);
-                if (d1 + d2 > detourRatio * d3)
+                if (d1 + d2 > 2.0f * d3)
                 {
                     f32 d4 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &gobj->anim.worldPosX);
                     if (d2 - d4 > bestd)
