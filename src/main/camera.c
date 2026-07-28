@@ -43,7 +43,7 @@ CameraMatrix gCameraInverseViewMatrix;
 CameraMatrix gCameraProjectionMatrix;
 
 void Obj_RotateLocalOffsetByYaw(f32* local, f32* out, s8 yawIndex) {
-    s32 matrixIndex;
+    s32 matrixOffset;
     f32* matrix;
 
     if (yawIndex < 0) {
@@ -51,15 +51,15 @@ void Obj_RotateLocalOffsetByYaw(f32* local, f32* out, s8 yawIndex) {
         out[1] = local[1];
         out[2] = local[2];
     } else {
-        matrixIndex = yawIndex << 4;
-        matrix = (f32*)((u8*)gObjYawTransformMatrices + (matrixIndex << 2));
+        matrixOffset = yawIndex * 16;
+        matrix = (f32*)gObjYawTransformMatrices + matrixOffset;
         Matrix_TransformPoint(matrix, local[0], local[1], local[2], &out[0], &out[1], &out[2]);
     }
 }
 
 void Obj_UpdateWorldTransform(CameraViewSlot* view) {
     GameObject* parent;
-    s32 matrixIndex;
+    s32 matrixOffset;
     f32* matrix;
 
     parent = view->parentObject;
@@ -71,8 +71,8 @@ void Obj_UpdateWorldTransform(CameraViewSlot* view) {
         view->worldPitch = view->pitch;
         view->worldRoll = view->roll;
     } else {
-        matrixIndex = parent->anim.transformMatrixIndex << 4;
-        matrix = (f32*)((u8*)gObjYawTransformMatrices + (matrixIndex << 2));
+        matrixOffset = parent->anim.transformMatrixIndex * 16;
+        matrix = (f32*)gObjYawTransformMatrices + matrixOffset;
         Matrix_TransformPoint(matrix, view->x, view->y, view->z, &view->worldX, &view->worldY, &view->worldZ);
         view->worldYaw = view->yaw - parent->anim.rotX;
         view->worldPitch = view->pitch;
@@ -102,13 +102,13 @@ s32 Angle_SubWrappedS16(s32 angle, s16* delta) {
 
 void Obj_TransformLocalVectorToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, int obj) {
     f32 vec[3];
-    s32 matrixIndex;
+    s32 matrixOffset;
 
     vec[0] = x;
     vec[1] = y;
     vec[2] = z;
-    matrixIndex = ((GameObject*)obj)->anim.transformMatrixIndex << 4;
-    Matrix_TransformVector((f32*)((u8*)gObjYawTransformMatrices + (matrixIndex << 2)), vec, vec);
+    matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+    Matrix_TransformVector((f32*)gObjYawTransformMatrices + matrixOffset, vec, vec);
     *outX = vec[0];
     *outY = vec[1];
     *outZ = vec[2];
@@ -116,25 +116,24 @@ void Obj_TransformLocalVectorToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, 
 
 void Obj_TransformWorldVectorToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, u32 obj) {
     f32 vec[3];
-    s32 matrixIndex;
+    s32 matrixOffset;
 
     vec[0] = x;
     vec[1] = y;
     vec[2] = z;
-    matrixIndex = ((GameObject*)obj)->anim.transformMatrixIndex << 4;
-    Matrix_TransformVector((f32*)((u8*)gObjInverseYawTransformMatrices + (matrixIndex << 2)), vec, vec);
+    matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+    Matrix_TransformVector((f32*)gObjInverseYawTransformMatrices + matrixOffset, vec, vec);
     *outX = vec[0];
     *outY = vec[1];
     *outZ = vec[2];
 }
 
 void Obj_TransformWorldPointToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, int obj) {
-    s32 matrixIndex;
+    s32 matrixOffset;
 
     if ((u32)obj != 0) {
-        matrixIndex = ((GameObject*)obj)->anim.transformMatrixIndex << 4;
-        Matrix_TransformPoint((f32*)((u8*)gObjInverseYawTransformMatrices + (matrixIndex << 2)), x, y, z, outX, outY,
-                              outZ);
+        matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+        Matrix_TransformPoint((f32*)gObjInverseYawTransformMatrices + matrixOffset, x, y, z, outX, outY, outZ);
     } else {
         *outX = x;
         *outY = y;
@@ -143,11 +142,11 @@ void Obj_TransformWorldPointToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f
 }
 
 void Obj_TransformLocalPointToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, int obj) {
-    s32 matrixIndex;
+    s32 matrixOffset;
 
     if ((u32)obj != 0) {
-        matrixIndex = ((GameObject*)obj)->anim.transformMatrixIndex << 4;
-        Matrix_TransformPoint((f32*)((u8*)gObjYawTransformMatrices + (matrixIndex << 2)), x, y, z, outX, outY, outZ);
+        matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+        Matrix_TransformPoint((f32*)gObjYawTransformMatrices + matrixOffset, x, y, z, outX, outY, outZ);
     } else {
         *outX = x;
         *outY = y;
@@ -157,18 +156,17 @@ void Obj_TransformLocalPointToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f
 
 void Obj_GetWorldPosition(u32 obj, f32* outX, f32* outY, f32* outZ) {
     u32 parent;
-    s32 matrixIndex;
+    s32 matrixOffset;
 
-    parent = *(u32*)&((GameObject*)obj)->anim.parent;
+    parent = (u32)((GameObject*)obj)->anim.parent;
     if (parent == 0) {
         *outX = ((GameObject*)obj)->anim.localPosX;
         *outY = ((GameObject*)obj)->anim.localPosY;
         *outZ = ((GameObject*)obj)->anim.localPosZ;
     } else {
-        matrixIndex = ((GameObject*)parent)->anim.transformMatrixIndex << 4;
-        Matrix_TransformPoint((f32*)((u8*)gObjYawTransformMatrices + (matrixIndex << 2)),
-                              ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
-                              ((GameObject*)obj)->anim.localPosZ, outX, outY, outZ);
+        matrixOffset = ((GameObject*)parent)->anim.transformMatrixIndex * 16;
+        Matrix_TransformPoint((f32*)gObjYawTransformMatrices + matrixOffset, ((GameObject*)obj)->anim.localPosX,
+                              ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ, outX, outY, outZ);
     }
 }
 
@@ -178,12 +176,16 @@ typedef struct ObjTransformMatrixPool {
     CameraMatrix scratch;
 } ObjTransformMatrixPool;
 
+STATIC_ASSERT(offsetof(ObjTransformMatrixPool, yaw) == 0x780);
+STATIC_ASSERT(offsetof(ObjTransformMatrixPool, scratch) == 0xF40);
+STATIC_ASSERT(sizeof(ObjTransformMatrixPool) == 0xF80);
+
 void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
     ObjTransformMatrixPool* base;
     GameObject* ancestors[4];
     MatrixTransform inverseTransform;
     f32* inverseYawMatrix;
-    s32 matrixIndex;
+    s32 matrixOffset;
     f32* yawMatrix;
     s8 ancestorCount;
     f32 savedScale;
@@ -191,10 +193,10 @@ void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
     f32* yawMatrices;
 
     base = (ObjTransformMatrixPool*)gObjInverseYawTransformMatrices;
-    matrixIndex = yawIndex << 4;
+    matrixOffset = yawIndex * 16;
     yawMatrices = (f32*)base->yaw;
-    yawMatrix = yawMatrices + matrixIndex;
-    inverseYawMatrix = (f32*)base->inverse + matrixIndex;
+    yawMatrix = yawMatrices + matrixOffset;
+    inverseYawMatrix = (f32*)base->inverse + matrixOffset;
     hasParent = 0;
     ancestorCount = 0;
     while (obj != 0) {
@@ -309,8 +311,7 @@ void Camera_UpdateShakeAndFarPlane(void) {
 }
 
 u8 CameraShake_IsActive(void) {
-    s32 offset = gCameraCurrentViewIndex * sizeof(CameraViewSlot);
-    CameraViewSlot* slot = (CameraViewSlot*)((u8*)gCameraShakeSlots + offset);
+    CameraViewSlot* slot = &gCameraShakeSlots[gCameraCurrentViewIndex];
 
     return slot->shakeActive == 1;
 }
@@ -608,15 +609,15 @@ void Camera_ProjectWorldPoint(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* ou
 void Camera_ApplyCurrentViewport(void* viewportArg) {
     u16 width;
     int viewportY;
-    u32 clipped;
+    u32 screenSize;
 
-    clipped = getScreenResolution();
-    viewportY = SCREEN_RESOLUTION_HEIGHT(clipped);
-    width = clipped;
-    clipped = viewportY;
+    screenSize = getScreenResolution();
+    viewportY = SCREEN_RESOLUTION_HEIGHT(screenSize);
+    width = screenSize;
+    screenSize = viewportY;
     viewportY = gCameraViewportYOffset + 6;
-    clipped = clipped - viewportY;
-    gxSetScissorRect(0, 0, 0, viewportY, width, clipped);
+    screenSize -= viewportY;
+    gxSetScissorRect(0, 0, 0, viewportY, width, screenSize);
 }
 
 void Camera_UpdateProjection(void* viewportArg, int unused) {
@@ -770,16 +771,21 @@ typedef struct CameraMatrixStorage {
     CameraMatrix projectionMatrix;
 } CameraMatrixStorage;
 
+STATIC_ASSERT(offsetof(CameraMatrixStorage, yawTransforms) == 0x780);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, worldMatrix) == 0x1000);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, defaultModelMatrix) == 0x1100);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, viewSlots) == 0x1140);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, projectionMatrix) == 0x16C0);
+STATIC_ASSERT(sizeof(CameraMatrixStorage) == 0x1700);
+
 void Camera_UpdateViewMatrices(void) {
-    void* storageBase;
     CameraMatrixStorage* storage;
     CameraViewSlot* viewSlots;
     CameraViewSlot* slot;
     MatrixTransform transform;
     f32 rotationMatrix[16];
 
-    storageBase = gObjInverseYawTransformMatrices;
-    storage = storageBase;
+    storage = (CameraMatrixStorage*)gObjInverseYawTransformMatrices;
     viewSlots = storage->viewSlots;
     slot = &viewSlots[gCameraCurrentViewIndex];
     transform.x = -(slot->x - playerMapOffsetX);
@@ -961,13 +967,13 @@ void Camera_SetFovY(f32 fovY) {
 }
 
 void Camera_InitState(void) {
-    u8* base = (u8*)gObjInverseYawTransformMatrices;
+    CameraMatrixStorage* storage = (CameraMatrixStorage*)gObjInverseYawTransformMatrices;
     u32 i;
     CameraViewSlot* slot;
 
     for (i = 0; i < 12; i++) {
-        slot = (CameraViewSlot*)(base + (u8)i * 96);
-        slot = (CameraViewSlot*)((u8*)slot + 4416);
+        slot = (CameraViewSlot*)((u8*)storage + (u8)i * sizeof(CameraViewSlot));
+        slot = (CameraViewSlot*)((u8*)slot + offsetof(CameraMatrixStorage, viewSlots));
         slot->roll = 0;
         slot->pitch = 0;
         slot->yaw = 0x7FF8;
@@ -994,19 +1000,20 @@ void Camera_InitState(void) {
     gCameraProjectionMode = 0;
 
     if (gCameraProjectionMode == 1) {
-        C_MTXOrtho((Mtx44Ptr)(base + 5824), gCameraOrthoTop, gCameraOrthoBottom, gCameraOrthoLeft, gCameraOrthoRight,
-                   gCameraNearPlane, gCameraFarPlane);
+        C_MTXOrtho((Mtx44Ptr)storage->projectionMatrix, gCameraOrthoTop, gCameraOrthoBottom, gCameraOrthoLeft,
+                   gCameraOrthoRight, gCameraNearPlane, gCameraFarPlane);
     } else {
-        C_MTXPerspective((Mtx44Ptr)(base + 5824), gCameraFovY, gCameraAspectRatio, gCameraNearPlane, gCameraFarPlane);
+        C_MTXPerspective((Mtx44Ptr)storage->projectionMatrix, gCameraFovY, gCameraAspectRatio, gCameraNearPlane,
+                         gCameraFarPlane);
         C_MTXLightPerspective((MtxPtr)lbl_80396850, gCameraFovY, gCameraAspectRatio, 0.4f, 0.4f, 0.5f, 0.5f);
         C_MTXLightPerspective((MtxPtr)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
         C_MTXLightPerspective((MtxPtr)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, (-0.5f), 0.5f, 0.5f);
     }
-    GXSetProjection((Mtx44Ptr)(base + 5824), gCameraProjectionMode);
+    GXSetProjection((Mtx44Ptr)storage->projectionMatrix, gCameraProjectionMode);
 
-    matrixFn_8006ff0c((f32*)(base + 0x1080), &lbl_803DC88A, gCameraFovY, gCameraAspectRatio, gCameraNearPlane,
+    matrixFn_8006ff0c(storage->worldMatrix + 32, &lbl_803DC88A, gCameraFovY, gCameraAspectRatio, gCameraNearPlane,
                       gCameraFarPlane, lbl_803DE5F0);
-    copyMatrix44((f32*)((int)base + 0x1080), (f32*)(base + 0x0FC0));
+    copyMatrix44(storage->worldMatrix + 32, storage->yawTransforms[33]);
 }
 
 u8 gCameraViewportEntries[208] = {
