@@ -16,7 +16,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/game_ui_interface.h"
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/mapEvent.h"
 #include "main/sky_interface.h"

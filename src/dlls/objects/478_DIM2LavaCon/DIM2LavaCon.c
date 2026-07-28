@@ -7,7 +7,7 @@
 #include "main/gamebits.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/pi_dolphin_api.h"

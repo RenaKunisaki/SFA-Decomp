@@ -10,7 +10,7 @@
 #include "main/map_load.h"
 #include "sys/objects.h"
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/player_api.h"
 #include "main/mapEventTypes.h"
 #include "main/audio/sfx_ids.h"

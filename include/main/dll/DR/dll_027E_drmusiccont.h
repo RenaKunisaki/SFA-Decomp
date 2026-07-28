@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DLL_027E_DRMUSICCONT_H_
 
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "global.h"
 
 

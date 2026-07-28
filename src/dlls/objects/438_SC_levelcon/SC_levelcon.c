@@ -17,7 +17,7 @@
 #include "main/map_load.h"
 #include "main/render_envfx_api.h"
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "sys/objects.h"
 #include "main/dll/SC/dll_01B6_sclevelcontrol.h"
 #include "main/mapEventTypes.h"

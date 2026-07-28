@@ -59,7 +59,7 @@
 #include "main/render_lactions_api.h"
 #include "main/dll/sbpropellerstate_struct.h"
 #include "main/obj_group.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/texture.h"
 #include "main/gametext_color_api.h"
 

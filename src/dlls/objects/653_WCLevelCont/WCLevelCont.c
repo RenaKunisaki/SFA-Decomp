@@ -3,7 +3,7 @@
 #include "main/game_timer.h"
 #include "main/gamebits.h"
 #include "main/obj_group.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/mapEventTypes.h"
 #include "main/sky_interface.h"
 #include "main/dll/WC/dll_0290_wcpushblock.h"

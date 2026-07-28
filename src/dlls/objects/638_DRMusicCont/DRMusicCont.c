@@ -21,7 +21,7 @@
 #include "game/objects/object.h"
 #include "main/newclouds.h"
 #include "main/sky_api.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"

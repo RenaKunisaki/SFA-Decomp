@@ -14,7 +14,7 @@
 #include "game/objects/object.h"
 #include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/WM/dll_020A_wmgeneralscales.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"

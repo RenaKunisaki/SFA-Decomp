@@ -19,7 +19,6 @@
 #include "main/dll/player_api.h"
 #include "main/mapEvent.h"
 #include "main/obj_path.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
 #include "main/audio/sfx_ids.h"
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"

@@ -3,7 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 
 typedef struct LINKLevelControlState {
     s8 previousPlayerAreaCell;

@@ -2,7 +2,7 @@
 #define MAIN_DLL_WC_DLL_028D_WCLEVELCONT_H_
 
 #include "global.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "game/objects/object.h"
 #include "main/objanim_update.h"
 

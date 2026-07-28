@@ -1000,7 +1000,7 @@ blocked units will surface more when carved.
 | 0x1A9 | dlls/objects/425_BombPlant/BombPlant.c | include/dlls/objects/425_BombPlant.h |
 | 0x1AA | dlls/objects/426_BombPlantSp/BombPlantSp.c | include/dlls/objects/426_BombPlantSp.h |
 | 0x1AC | dlls/objects/428_SH_queenear/SH_queenear.c | include/dlls/objects/428_SH_queenear.h |
-| 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |
+| 0x1AE | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | include/dlls/objects/430_SH_LevelCon.h |
 | 0x1B0 | main/dll/dll_01B0_shswapston.c | include/main/dll/SH/dll_01B0_shswapston.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |

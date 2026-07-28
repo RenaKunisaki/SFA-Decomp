@@ -6,7 +6,7 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/map_load.h"
 #include "main/dll/player_api.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/mapEventTypes.h"
 #include "main/gamebits.h"
 #include "main/render_envfx_api.h"

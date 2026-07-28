@@ -13,7 +13,7 @@
 #include "main/audio/music_api.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/game_timer_control_api.h"

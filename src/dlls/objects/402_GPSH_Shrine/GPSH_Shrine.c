@@ -14,7 +14,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
