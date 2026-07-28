@@ -13,36 +13,36 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-#define DLL500_OBJECT_SFX_CHANNEL 0x40
-#define DLL500_OBJECT_SFX_RANGE   100.0f
+#define DLL1F4_OBJECT_SFX_CHANNEL 0x40
+#define DLL1F4_OBJECT_SFX_RANGE   100.0f
 
-#define DLL500_STATIC_SEQUENCE_ID 0x3E4
+#define DLL1F4_STATIC_SEQUENCE_ID 0x3E4
 
-#define DLL500_PARTICLE_SCALE 0.35f
-#define DLL500_PARTICLE_ARG3  0xC0D
+#define DLL1F4_PARTICLE_SCALE 0.35f
+#define DLL1F4_PARTICLE_ARG3  0xC0D
 
-#define DLL500_BODY_PARTICLE_ID   0x7A8
-#define DLL500_BODY_PARTICLE_MODE 6
+#define DLL1F4_BODY_PARTICLE_ID   0x7A8
+#define DLL1F4_BODY_PARTICLE_MODE 6
 
-#define DLL500_PATH_PARTICLE_ID   0x7C7
-#define DLL500_PATH_PARTICLE_MODE 2
+#define DLL1F4_PATH_PARTICLE_ID   0x7C7
+#define DLL1F4_PATH_PARTICLE_MODE 2
 
-#define DLL500_MOVE_PROGRESS_RANDOM_MIN 0
-#define DLL500_MOVE_PROGRESS_RANDOM_MAX 90
-#define DLL500_MOVE_PROGRESS_DIVISOR    100.0f
-#define DLL500_MOVE_SPEED               0.003f
+#define DLL1F4_MOVE_PROGRESS_RANDOM_MIN 0
+#define DLL1F4_MOVE_PROGRESS_RANDOM_MAX 90
+#define DLL1F4_MOVE_PROGRESS_DIVISOR    100.0f
+#define DLL1F4_MOVE_SPEED               0.003f
 
-#define DLL500_PATH_POINT_INDEX 0
-#define DLL500_PATH_POINT_X     0.0f
-#define DLL500_PATH_POINT_Y     -12.0f
-#define DLL500_PATH_POINT_Z     0.0f
+#define DLL1F4_PATH_POINT_INDEX 0
+#define DLL1F4_PATH_POINT_X     0.0f
+#define DLL1F4_PATH_POINT_Y     -12.0f
+#define DLL1F4_PATH_POINT_Z     0.0f
 
 int dll500_getExtraSize(void) {
-    return sizeof(Dll500State);
+    return sizeof(Dll1F4State);
 }
 
 void dll500_free(GameObject* obj) {
-    Sfx_StopObjectChannel((int)obj, DLL500_OBJECT_SFX_CHANNEL);
+    Sfx_StopObjectChannel((int)obj, DLL1F4_OBJECT_SFX_CHANNEL);
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
@@ -70,14 +70,14 @@ int dll500_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* an
         return 0;
     }
     if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
-        spawnParams.scale = DLL500_PARTICLE_SCALE;
-        spawnParams.arg3 = DLL500_PARTICLE_ARG3;
+        spawnParams.scale = DLL1F4_PARTICLE_SCALE;
+        spawnParams.arg3 = DLL1F4_PARTICLE_ARG3;
         spawnParams.posX = spawnParams.posX - obj->anim.worldPosX;
         spawnParams.posY = spawnParams.posY - obj->anim.worldPosY;
         spawnParams.posZ = spawnParams.posZ - obj->anim.worldPosZ;
         for (frameIndex = 0; frameIndex < framesThisStep; frameIndex++) {
             (*gPartfxInterface)
-                ->spawnObject(obj, DLL500_BODY_PARTICLE_ID, &spawnParams, DLL500_BODY_PARTICLE_MODE, -1, NULL);
+                ->spawnObject(obj, DLL1F4_BODY_PARTICLE_ID, &spawnParams, DLL1F4_BODY_PARTICLE_MODE, -1, NULL);
         }
     }
     return 0;
@@ -90,31 +90,31 @@ void dll500_update(int obj) {
 
     playerDistance = Vec_distance((void*)((int)Obj_GetPlayerObject() + offsetof(GameObject, anim.worldPosX)),
                                   (void*)(obj + offsetof(GameObject, anim.worldPosX)));
-    if (Sfx_IsPlayingFromObjectChannel(obj, DLL500_OBJECT_SFX_CHANNEL) == 0) {
-        if (playerDistance < DLL500_OBJECT_SFX_RANGE) {
+    if (Sfx_IsPlayingFromObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL) == 0) {
+        if (playerDistance < DLL1F4_OBJECT_SFX_RANGE) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_mushdizzylp12);
         }
-    } else if (playerDistance >= DLL500_OBJECT_SFX_RANGE) {
-        Sfx_StopObjectChannel(obj, DLL500_OBJECT_SFX_CHANNEL);
+    } else if (playerDistance >= DLL1F4_OBJECT_SFX_RANGE) {
+        Sfx_StopObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL);
     }
 
-    if (((GameObject*)obj)->anim.romDefNo != DLL500_STATIC_SEQUENCE_ID) {
+    if (((GameObject*)obj)->anim.romDefNo != DLL1F4_STATIC_SEQUENCE_ID) {
         if (((GameObject*)obj)->userData2 == 0) {
             ((GameObject*)obj)->userData2 = 1;
-            ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(DLL500_MOVE_PROGRESS_RANDOM_MIN,
-                                                                                     DLL500_MOVE_PROGRESS_RANDOM_MAX) /
-                                                                DLL500_MOVE_PROGRESS_DIVISOR);
+            ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(DLL1F4_MOVE_PROGRESS_RANDOM_MIN,
+                                                                                     DLL1F4_MOVE_PROGRESS_RANDOM_MAX) /
+                                                                DLL1F4_MOVE_PROGRESS_DIVISOR);
         }
-        ObjAnim_AdvanceCurrentMove(obj, DLL500_MOVE_SPEED, timeDelta, NULL);
+        ObjAnim_AdvanceCurrentMove(obj, DLL1F4_MOVE_SPEED, timeDelta, NULL);
     }
 
     if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
-        spawnParams.scale = DLL500_PARTICLE_SCALE;
-        spawnParams.arg3 = DLL500_PARTICLE_ARG3;
-        spawnParams.posX = DLL500_PATH_POINT_X;
-        spawnParams.posY = DLL500_PATH_POINT_Y;
-        spawnParams.posZ = DLL500_PATH_POINT_Z;
-        ObjPath_GetPointWorldPosition((GameObject*)obj, DLL500_PATH_POINT_INDEX, &spawnParams.posX, &spawnParams.posY,
+        spawnParams.scale = DLL1F4_PARTICLE_SCALE;
+        spawnParams.arg3 = DLL1F4_PARTICLE_ARG3;
+        spawnParams.posX = DLL1F4_PATH_POINT_X;
+        spawnParams.posY = DLL1F4_PATH_POINT_Y;
+        spawnParams.posZ = DLL1F4_PATH_POINT_Z;
+        ObjPath_GetPointWorldPosition((GameObject*)obj, DLL1F4_PATH_POINT_INDEX, &spawnParams.posX, &spawnParams.posY,
                                       &spawnParams.posZ, 1);
         if (((GameObject*)obj)->anim.parent != NULL) {
             spawnParams.posX = spawnParams.posX - ((GameObject*)obj)->anim.worldPosX;
@@ -127,15 +127,15 @@ void dll500_update(int obj) {
         }
         for (frameIndex = 0; frameIndex < framesThisStep; frameIndex++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, DLL500_PATH_PARTICLE_ID, &spawnParams, DLL500_PATH_PARTICLE_MODE, -1, NULL);
+                ->spawnObject((void*)obj, DLL1F4_PATH_PARTICLE_ID, &spawnParams, DLL1F4_PATH_PARTICLE_MODE, -1, NULL);
         }
     }
 }
 
-void dll500_init(GameObject* obj, const Dll500PlacementView* placement) {
-    Dll500State* state = obj->extra;
+void dll500_init(GameObject* obj, const Dll1F4PlacementView* placement) {
+    Dll1F4State* state = obj->extra;
 
-    if (obj->anim.romDefNo == DLL500_STATIC_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DLL1F4_STATIC_SEQUENCE_ID) {
         obj->anim.rotX = (s16)((u32)placement->rotXStatic << 8);
     } else {
         obj->anim.rotX = (s16)((s32)placement->rotXSwing << 8);
@@ -147,7 +147,7 @@ void dll500_init(GameObject* obj, const Dll500PlacementView* placement) {
     obj->animEventCallback = dll500_processAnimEvents;
 }
 
-ObjectDescriptor gDll500ObjDescriptor = {
+ObjectDescriptor gDll1F4ObjDescriptor = {
     0,
     0,
     0,

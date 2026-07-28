@@ -6,27 +6,27 @@
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
-typedef enum Dll411Phase {
-    DLL411_PHASE_IDLE = 0,
-    DLL411_PHASE_WAIT_EVENT = 1,
-    DLL411_PHASE_COUNTDOWN = 2,
-    DLL411_PHASE_RESOLVE = 3,
-    DLL411_PHASE_COMPLETE = 4,
-    DLL411_PHASE_DONE = 5,
-    DLL411_PHASE_RESET = 6,
-} Dll411Phase;
+typedef enum Dll19BPhase {
+    DLL19B_PHASE_IDLE = 0,
+    DLL19B_PHASE_WAIT_EVENT = 1,
+    DLL19B_PHASE_COUNTDOWN = 2,
+    DLL19B_PHASE_RESOLVE = 3,
+    DLL19B_PHASE_COMPLETE = 4,
+    DLL19B_PHASE_DONE = 5,
+    DLL19B_PHASE_RESET = 6,
+} Dll19BPhase;
 
 /*
  * Partial setup view. The callback proves the field at 0x1A, but retail has no
  * OBJECTS.bin definition or romlist placement establishing a complete width.
  */
-typedef struct Dll411Placement {
+typedef struct Dll19BPlacement {
     ObjPlacement base;
     u8 unknown18[0x1A - 0x18];
     s16 activationDistancePacked;
-} Dll411Placement;
+} Dll19BPlacement;
 
-typedef struct Dll411State {
+typedef struct Dll19BState {
     s16 activationDistance;
     s16 timer;
     s16 brightnessA;
@@ -42,31 +42,31 @@ typedef struct Dll411State {
     u8 unknown15;
     u8 timerDisplayTriggered;
     u8 unknown17;
-} Dll411State;
+} Dll19BState;
 
-STATIC_ASSERT(offsetof(Dll411Placement, base) == 0x00);
-STATIC_ASSERT(offsetof(Dll411Placement, unknown18) == 0x18);
-STATIC_ASSERT(offsetof(Dll411Placement, activationDistancePacked) == 0x1A);
+STATIC_ASSERT(offsetof(Dll19BPlacement, base) == 0x00);
+STATIC_ASSERT(offsetof(Dll19BPlacement, unknown18) == 0x18);
+STATIC_ASSERT(offsetof(Dll19BPlacement, activationDistancePacked) == 0x1A);
 
-STATIC_ASSERT(sizeof(Dll411State) == 0x18);
-STATIC_ASSERT(offsetof(Dll411State, activationDistance) == 0x00);
-STATIC_ASSERT(offsetof(Dll411State, timer) == 0x02);
-STATIC_ASSERT(offsetof(Dll411State, brightnessA) == 0x04);
-STATIC_ASSERT(offsetof(Dll411State, brightnessAVelocity) == 0x06);
-STATIC_ASSERT(offsetof(Dll411State, brightnessB) == 0x08);
-STATIC_ASSERT(offsetof(Dll411State, brightnessBVelocity) == 0x0A);
-STATIC_ASSERT(offsetof(Dll411State, gfxHandle) == 0x0C);
-STATIC_ASSERT(offsetof(Dll411State, countdown) == 0x0E);
-STATIC_ASSERT(offsetof(Dll411State, unknown10) == 0x10);
-STATIC_ASSERT(offsetof(Dll411State, unlockCount) == 0x12);
-STATIC_ASSERT(offsetof(Dll411State, phase) == 0x13);
-STATIC_ASSERT(offsetof(Dll411State, pendingEvent) == 0x14);
-STATIC_ASSERT(offsetof(Dll411State, unknown15) == 0x15);
-STATIC_ASSERT(offsetof(Dll411State, timerDisplayTriggered) == 0x16);
-STATIC_ASSERT(offsetof(Dll411State, unknown17) == 0x17);
+STATIC_ASSERT(sizeof(Dll19BState) == 0x18);
+STATIC_ASSERT(offsetof(Dll19BState, activationDistance) == 0x00);
+STATIC_ASSERT(offsetof(Dll19BState, timer) == 0x02);
+STATIC_ASSERT(offsetof(Dll19BState, brightnessA) == 0x04);
+STATIC_ASSERT(offsetof(Dll19BState, brightnessAVelocity) == 0x06);
+STATIC_ASSERT(offsetof(Dll19BState, brightnessB) == 0x08);
+STATIC_ASSERT(offsetof(Dll19BState, brightnessBVelocity) == 0x0A);
+STATIC_ASSERT(offsetof(Dll19BState, gfxHandle) == 0x0C);
+STATIC_ASSERT(offsetof(Dll19BState, countdown) == 0x0E);
+STATIC_ASSERT(offsetof(Dll19BState, unknown10) == 0x10);
+STATIC_ASSERT(offsetof(Dll19BState, unlockCount) == 0x12);
+STATIC_ASSERT(offsetof(Dll19BState, phase) == 0x13);
+STATIC_ASSERT(offsetof(Dll19BState, pendingEvent) == 0x14);
+STATIC_ASSERT(offsetof(Dll19BState, unknown15) == 0x15);
+STATIC_ASSERT(offsetof(Dll19BState, timerDisplayTriggered) == 0x16);
+STATIC_ASSERT(offsetof(Dll19BState, unknown17) == 0x17);
 
-extern ObjectDescriptor gDll411ObjDescriptor;
-extern u32 gDll411ShaderResult;
+extern ObjectDescriptor gDll19BObjDescriptor;
+extern u32 gDll19BShaderResult;
 
 int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
 int dll411_getExtraSize(void);
@@ -75,7 +75,7 @@ void dll411_free(GameObject* obj);
 void dll411_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dll411_hitDetect(void);
 void dll411_update(GameObject* obj);
-void dll411_init(GameObject* obj, const Dll411Placement* placement);
+void dll411_init(GameObject* obj, const Dll19BPlacement* placement);
 void dll411_release(void);
 void dll411_initialise(void);
 

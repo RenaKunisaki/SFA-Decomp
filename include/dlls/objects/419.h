@@ -5,9 +5,9 @@
 #include "game/objects/object_fwd.h"
 #include "main/objanim_update.h"
 
-#define DLL419_OBJECT_GROUP_ID 0x3D
+#define DLL1A3_OBJECT_GROUP_ID 0x3D
 
-extern ObjectDescriptor gDll419ObjDescriptor;
+extern ObjectDescriptor gDll1A3ObjDescriptor;
 
 int dll419_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate);
 int dll419_getExtraSize(void);

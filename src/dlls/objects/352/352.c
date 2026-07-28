@@ -1,5 +1,5 @@
-/* Empty DLL 352 resource slot. */
+/* Empty DLL 0x160 resource slot. */
 
 #include "dlls/objects/352.h"
 
-u32 gDll352NullResourceDescriptor[DLL352_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gDll160NullResourceDescriptor[DLL160_NULL_DESCRIPTOR_WORD_COUNT] = {0};

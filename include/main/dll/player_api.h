@@ -84,7 +84,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv);
 void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner,
-                                                 struct Dll437ControlState* animState);
+                                                 struct Dll1B5ControlState* animState);
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner);
 void Lightfoot_ResetScriptedPosition(GameObject* obj);
 void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner);

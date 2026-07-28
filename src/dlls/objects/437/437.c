@@ -1,5 +1,5 @@
 /*
- * DLL 437 controls several LightFoot Village NPC object definitions. The
+ * DLL 0x1B5 (slot 437) controls several LightFoot Village NPC object definitions. The
  * retail mappings include SC_chieflig, SC_lightfoo, SC_babyligh, SC_blTarget,
  * and SC_muscleli, so no single object basename represents the complete TU.
  *
@@ -101,16 +101,16 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define DLL437_WEAPON_DEF_1 0x6F1
-#define DLL437_WEAPON_DEF_2 0x6F2
-#define DLL437_OBJECT_GROUP 3
+#define DLL1B5_WEAPON_DEF_1 0x6F1
+#define DLL1B5_WEAPON_DEF_2 0x6F2
+#define DLL1B5_OBJECT_GROUP 3
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 {
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
     if (((BaddieState*)state)->targetObj != NULL)
     {
-        if (((Dll437ControlState*)inner->control)->targetDistance < inner->aggroRange)
+        if (((Dll1B5ControlState*)inner->control)->targetDistance < inner->aggroRange)
         {
             if (((BaddieState*)state)->moveJustStartedB != 0 ||
                 ((BaddieState*)state)->moveDone != 0 || ((BaddieState*)state)->controlMode == 0)
@@ -129,9 +129,9 @@ int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 
 int Lightfoot_UpdateCompletionInteraction(int obj, int state)
 {
-    Dll437Placement* data = (Dll437Placement*)((GameObject*)obj)->anim.placementData;
+    Dll1B5Placement* data = (Dll1B5Placement*)((GameObject*)obj)->anim.placementData;
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
-    Dll437ControlState* control = inner->control;
+    Dll1B5ControlState* control = inner->control;
     if (((BaddieState*)state)->moveJustStartedB != 0 ||
         ((BaddieState*)state)->moveDone != 0)
     {
@@ -143,20 +143,20 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
         {
             if (((BaddieState*)state)->controlMode != 3)
             {
-                ((Dll437ControlState*)control)->completionCountdown = 4;
+                ((Dll1B5ControlState*)control)->completionCountdown = 4;
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 3);
             }
-            if (((Dll437ControlState*)control)->completionCountdown != 0)
+            if (((Dll1B5ControlState*)control)->completionCountdown != 0)
             {
-                ((Dll437ControlState*)control)->completionCountdown -= 1;
-                if (((Dll437ControlState*)control)->completionCountdown == 0)
+                ((Dll1B5ControlState*)control)->completionCountdown -= 1;
+                if (((Dll1B5ControlState*)control)->completionCountdown == 0)
                 {
                     mainSetBits(data->completionGameBit, 1);
                     mainSetBits(data->activeGameBit, 0);
                     ((GameObject*)obj)->anim.alpha = 0;
                     ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    ((Dll437ControlState*)control)->completionTimer = 120.0f;
-                    ((Dll437ControlState*)control)->lifeTimer = 100.0f;
+                    ((Dll1B5ControlState*)control)->completionTimer = 120.0f;
+                    ((Dll1B5ControlState*)control)->lifeTimer = 100.0f;
                 }
             }
         }
@@ -177,8 +177,8 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
 int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
 {
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
-    Dll437Placement* r4c;
-    Dll437ControlState* sub;
+    Dll1B5Placement* r4c;
+    Dll1B5ControlState* sub;
     int v;
 
     if (((BaddieState*)state)->targetObj != NULL)
@@ -191,7 +191,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
         }
         if ((u16)v < 0x1770)
         {
-            r4c = (Dll437Placement*)((GameObject*)obj)->anim.placementData;
+            r4c = (Dll1B5Placement*)((GameObject*)obj)->anim.placementData;
             ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             switch (r4c->base.ident)
             {
@@ -286,7 +286,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
 int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll437ControlState* sub = inner->control;
+    Dll1B5ControlState* sub = inner->control;
     if (sub->wanderTimer <= 0.0f)
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_htop_hurry1);
@@ -345,7 +345,7 @@ int Lightfoot_UpdateRandomTurn(int obj, int state, f32 fv)
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
     if (((BaddieState*)state)->moveJustStartedA != 0)
     {
-        Sfx_PlayFromObject(obj, ((Dll437ControlState*)inner->control)->movementSfxId);
+        Sfx_PlayFromObject(obj, ((Dll1B5ControlState*)inner->control)->movementSfxId);
         if (randomGetRange(0, 1) != 0)
         {
             ((GameObject*)obj)->anim.rotX += 0x8AA9;
@@ -380,7 +380,7 @@ PlayerLightfootMoveSpeeds gPlayerMoveSpeedTable = {
 int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll437ControlState* a4 = inner->control;
+    Dll1B5ControlState* a4 = inner->control;
     void* p = ((BaddieState*)state)->targetObj;
     if (p != NULL)
     {
@@ -407,10 +407,10 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
-    const Dll437Placement* placement;
+    const Dll1B5Placement* placement;
     EmitCtrlTbl* controls = (EmitCtrlTbl*)&lbl_80334EE8;
     GroundBaddieState* actor = obj->extra;
-    Dll437ButtonTimingControlState* challenge = actor->control;
+    Dll1B5ButtonTimingControlState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;
     GameObject* target = playerState->targetObj;
     if (target != NULL)
@@ -480,7 +480,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             fearTestMeterSetFadeIn(1);
             setAButtonIcon(6);
         }
-        placement = (const Dll437Placement*)obj->anim.placementData;
+        placement = (const Dll1B5Placement*)obj->anim.placementData;
         if (playerState->moveJustStartedA != 0)
         {
             challenge->animationIndex = 0;
@@ -511,7 +511,7 @@ int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
     void* p = ((BaddieState*)state)->targetObj;
-    Dll437ControlState* a4;
+    Dll1B5ControlState* a4;
     const s16* moves;
     const f32* blends;
     if (p != NULL)
@@ -546,7 +546,7 @@ int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
     return 0;
 }
 
-void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner, Dll437ControlState* animState)
+void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner, Dll1B5ControlState* animState)
 {
     ObjPlacement* idx;
 
@@ -667,7 +667,7 @@ void Lightfoot_ResetScriptedPosition(GameObject* obj)
 
 void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
 {
-    Dll437ControlState* animState = inner->control;
+    Dll1B5ControlState* animState = inner->control;
     GameObject* child;
     ObjPlacement* setup;
 
@@ -700,7 +700,7 @@ void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
 
 void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int state)
 {
-    Dll437ControlState* p = inner->control;
+    Dll1B5ControlState* p = inner->control;
     ObjPlacement* sub = (ObjPlacement*)((GameObject*)obj)->anim.placementData;
     int mode;
     int v;
@@ -733,8 +733,8 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
         inner->savedPendingParentObj = ((GameObject*)obj)->pendingParentObj;
         ((GameObject*)obj)->pendingParentObj = 0;
         (*gPlayerInterface)
-            ->update((void*)obj, (void*)state, timeDelta, timeDelta, gDll437StateHandlers,
-                     gDll437SubstateHandlers);
+            ->update((void*)obj, (void*)state, timeDelta, timeDelta, gDll1B5StateHandlers,
+                     gDll1B5SubstateHandlers);
         ((GameObject*)obj)->pendingParentObj = inner->savedPendingParentObj;
         Lightfoot_ProcessHitResponseFlags(obj, &inner->baddie);
     }
@@ -743,8 +743,8 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
 int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll437Placement* placement = (Dll437Placement*)obj->anim.placementData;
-    Dll437ControlState* timerRec;
+    Dll1B5Placement* placement = (Dll1B5Placement*)obj->anim.placementData;
+    Dll1B5ControlState* timerRec;
     int mode;
     u8 i;
     u8 j;
@@ -783,7 +783,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
             break;
         }
     }
-    if (placement->behaviorId == DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND)
+    if (placement->behaviorId == DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND)
     {
         Lightfoot_UpdatePlayerInteraction((int)obj, inner, (int)inner);
         if ((inner->configFlags & 1) != 0 && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
@@ -810,19 +810,19 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
     return 0;
 }
 
-s16 gDll437MoveIds0[2] = {0x33, -1};
-f32 gDll437MoveSpeeds0[2] = {0.0009f, -1.0f};
-s16 gDll437MoveIds1[2] = {0x33, -1};
-f32 gDll437MoveSpeeds1[2] = {0.001f, -1.0f};
-s16 gDll437MoveIds2[2] = {0x36, -1};
-f32 gDll437MoveSpeeds2[2] = {0.003f, -1.0f};
-s16 gDll437MoveIds3[2] = {0x128, -1};
-f32 gDll437MoveSpeeds3[2] = {0.01f, -1.0f};
-s16 gDll437MoveIds4[2] = {1, -1};
-f32 gDll437MoveSpeeds4[2] = {0.01f, -1.0f};
+s16 gDll1B5MoveIds0[2] = {0x33, -1};
+f32 gDll1B5MoveSpeeds0[2] = {0.0009f, -1.0f};
+s16 gDll1B5MoveIds1[2] = {0x33, -1};
+f32 gDll1B5MoveSpeeds1[2] = {0.001f, -1.0f};
+s16 gDll1B5MoveIds2[2] = {0x36, -1};
+f32 gDll1B5MoveSpeeds2[2] = {0.003f, -1.0f};
+s16 gDll1B5MoveIds3[2] = {0x128, -1};
+f32 gDll1B5MoveSpeeds3[2] = {0.01f, -1.0f};
+s16 gDll1B5MoveIds4[2] = {1, -1};
+f32 gDll1B5MoveSpeeds4[2] = {0.01f, -1.0f};
 
 int dll437_getExtraSize(void) {
-    return sizeof(Dll437State);
+    return sizeof(Dll1B5State);
 }
 
 int dll437_getObjectTypeId(void) {
@@ -835,7 +835,7 @@ void dll437_free(GameObject* obj, int preserveChildren) {
     int count;
     int i;
 
-    ObjGroup_RemoveObject((u32)obj, DLL437_OBJECT_GROUP);
+    ObjGroup_RemoveObject((u32)obj, DLL1B5_OBJECT_GROUP);
     count = obj->childCount;
     for (i = 0; i < count; i++) {
         child = obj->childObjs[0];
@@ -867,9 +867,9 @@ void dll437_hitDetect(void) {
 }
 
 void dll437_update(GameObject* obj) {
-    Dll437State* inner = obj->extra;
+    Dll1B5State* inner = obj->extra;
     int workValue = obj->anim.placementDataAddress;
-    Dll437ControlState* control = inner->groundBaddie.control;
+    Dll1B5ControlState* control = inner->groundBaddie.control;
     f32 pulseOffset[3];
     f32 effectParams[6];
     u8 effectCount;
@@ -884,8 +884,8 @@ void dll437_update(GameObject* obj) {
         }
     }
 
-    if (obj->anim.romDefNo == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT && inner->groundBaddie.gameBitA != -1) {
-        switch (((Dll437Placement*)workValue)->base.ident) {
+    if (obj->anim.romDefNo == DLL1B5_SEQUENCE_ID_SC_BABY_LIGHTFOOT && inner->groundBaddie.gameBitA != -1) {
+        switch (((Dll1B5Placement*)workValue)->base.ident) {
         case 0x4993F:
         case 0x49940:
         case 0x49941:
@@ -964,9 +964,9 @@ void dll437_update(GameObject* obj) {
     }
 
     if (obj->userData1 != 0) {
-        if (((((Dll437Placement*)workValue)->base.ident == 0x499B5 && mainGetBit(0xC42) &&
+        if (((((Dll1B5Placement*)workValue)->base.ident == 0x499B5 && mainGetBit(0xC42) &&
               (mainGetBit(0xC3B) == 0 || mainGetBit(0xC3C) == 0 || mainGetBit(0xC3D) == 0)) ||
-             (((Dll437Placement*)workValue)->base.ident == 0x499B6 && mainGetBit(0xC46) &&
+             (((Dll1B5Placement*)workValue)->base.ident == 0x499B6 && mainGetBit(0xC46) &&
               (mainGetBit(0xC3E) == 0 || mainGetBit(0xC3F) == 0 || mainGetBit(0xC40) == 0)))) {
             effectParams[3] = 0.0f;
             effectParams[4] = 24.0f;
@@ -984,7 +984,7 @@ void dll437_update(GameObject* obj) {
         }
         Lightfoot_UpdatePlayerInteraction((int)obj, &inner->groundBaddie, (int)inner);
         if ((inner->groundBaddie.configFlags & 1) && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)) {
-            Dll437ControlState* controlState = inner->groundBaddie.control;
+            Dll1B5ControlState* controlState = inner->groundBaddie.control;
 
             controlState->pulseTimer -= timeDelta;
             if (controlState->pulseTimer <= 0.0f) {
@@ -1003,10 +1003,10 @@ void dll437_update(GameObject* obj) {
     }
 }
 
-void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload) {
+void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload) {
     u8* playerAnimTableBase = (u8*)&lbl_80334EE8;
     int inner = *(int*)&obj->extra;
-    const Dll437Placement* placementData = placement;
+    const Dll1B5Placement* placementData = placement;
     int control;
     u8 initFlags = 0x16;
 
@@ -1019,61 +1019,61 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
     ((GroundBaddieState*)inner)->baddie.controlMode = 0;
     ((GroundBaddieState*)inner)->baddie.substate = 0;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    control = (int)((Dll437State*)inner)->groundBaddie.control;
-    ((Dll437ControlState*)control)->weaponDefNoSentinel = -1;
-    ((Dll437ControlState*)control)->weaponDefNo = ((Dll437ControlState*)control)->weaponDefNoSentinel;
+    control = (int)((Dll1B5State*)inner)->groundBaddie.control;
+    ((Dll1B5ControlState*)control)->weaponDefNoSentinel = -1;
+    ((Dll1B5ControlState*)control)->weaponDefNo = ((Dll1B5ControlState*)control)->weaponDefNoSentinel;
     obj->objectFlags = (u16)(obj->objectFlags | (placement->objectFlags & 0x7));
-    if (placement->completionGameBit == DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND) {
+    if (placement->completionGameBit == DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND) {
         ((GroundBaddieState*)inner)->baddie.controlMode = 2;
         ((GroundBaddieState*)inner)->baddie.substate = 1;
         ObjHits_DisableObject(obj);
-        ((Dll437ControlState*)control)->moveIndex = randomGetRange(0, 3);
-        ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_1;
-        ((Dll437ControlState*)control)->moveIds = gDll437MoveIds0;
-        ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds0;
+        ((Dll1B5ControlState*)control)->moveIndex = randomGetRange(0, 3);
+        ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+        ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds0;
+        ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds0;
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         obj->userData2 = 0;
     } else {
         switch (placementData->base.ident) {
         case 0x34316:
-            ((Dll437ControlState*)control)->moveIds = gDll437MoveIds3;
-            ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds3;
+            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds3;
+            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds3;
             ObjHits_DisableObject(obj);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E3C:
-            ((Dll437ControlState*)control)->moveIds = gDll437MoveIds0;
-            ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds0;
-            ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_1;
+            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds0;
+            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds0;
+            ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E34:
-            ((Dll437ControlState*)control)->moveIds = gDll437MoveIds1;
-            ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds1;
-            ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_1;
+            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds1;
+            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds1;
+            ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x45C47:
-            ((Dll437ControlState*)control)->moveIds = gDll437MoveIds2;
-            ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds2;
+            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds2;
+            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds2;
             ObjHits_DisableObject(obj);
-            ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_2;
+            ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_2;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x460B6:
-            ((Dll437ControlState*)control)->moveIds = gDll437MoveIds4;
-            ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds4;
+            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds4;
+            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds4;
             ObjHits_DisableObject(obj);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x3433F:
-            ((Dll437ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
@@ -1081,22 +1081,22 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
             if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
             break;
         case 0x46A55:
             if (mainGetBit(GAMEBIT_LV_ChallengeGate2Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
             break;
         case 0x49928:
             if (mainGetBit(GAMEBIT_SC_ChallengeGate3Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
             break;
         case 0x499AC:
         case 0x499AE:
@@ -1105,27 +1105,27 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
         case 0x499B1:
         case 0x499B2:
             ((GroundBaddieState*)inner)->baddie.substate = 2;
-            ((Dll437ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
-            ((Dll437ControlState*)control)->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
+            ((Dll1B5ControlState*)control)->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x499B5:
         case 0x499B6:
             obj->userData1 = 1;
-            ((Dll437ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
             break;
         default:
-            ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
+            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
             break;
         }
     }
     Lightfoot_ResetScriptedPosition(obj);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(0, 0x63) / 100.0f);
-    ((Dll437ControlState*)control)->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
-    ((Dll437ControlState*)control)->pulseTimer = 15.0f;
+    ((Dll1B5ControlState*)control)->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
+    ((Dll1B5ControlState*)control)->pulseTimer = 15.0f;
     if (obj->userData1 != 0) {
         ObjHits_DisableObject(obj);
     }
@@ -1135,17 +1135,17 @@ void dll437_release(void) {
 }
 
 void dll437_initialise(void) {
-    gDll437StateHandlers[0] = Lightfoot_UpdateAnimationCycle;
-    gDll437StateHandlers[1] = Lightfoot_UpdateButtonTimingChallenge;
-    gDll437StateHandlers[2] = Lightfoot_UpdateTargetAnimationCycle;
-    gDll437StateHandlers[3] = (Dll437StateHandler)Lightfoot_UpdateRandomTurn;
-    gDll437StateHandlers[4] = Lightfoot_UpdateWanderSteering;
-    gDll437SubstateHandlers[0] = Lightfoot_UpdateChallengeGateInteraction;
-    gDll437SubstateHandlers[1] = Lightfoot_UpdateCompletionInteraction;
-    gDll437SubstateHandlers[2] = Lightfoot_UpdateProximityInteractionState;
+    gDll1B5StateHandlers[0] = Lightfoot_UpdateAnimationCycle;
+    gDll1B5StateHandlers[1] = Lightfoot_UpdateButtonTimingChallenge;
+    gDll1B5StateHandlers[2] = Lightfoot_UpdateTargetAnimationCycle;
+    gDll1B5StateHandlers[3] = (Dll1B5StateHandler)Lightfoot_UpdateRandomTurn;
+    gDll1B5StateHandlers[4] = Lightfoot_UpdateWanderSteering;
+    gDll1B5SubstateHandlers[0] = Lightfoot_UpdateChallengeGateInteraction;
+    gDll1B5SubstateHandlers[1] = Lightfoot_UpdateCompletionInteraction;
+    gDll1B5SubstateHandlers[2] = Lightfoot_UpdateProximityInteractionState;
 }
 
-ObjectDescriptor gDll437ObjDescriptor = {
+ObjectDescriptor gDll1B5ObjDescriptor = {
     0,
     0,
     0,
@@ -1162,5 +1162,5 @@ ObjectDescriptor gDll437ObjDescriptor = {
     dll437_getExtraSize,
 };
 
-Dll437StateHandler gDll437StateHandlers[DLL437_STATE_HANDLER_COUNT];
-Dll437SubstateHandler gDll437SubstateHandlers[DLL437_SUBSTATE_HANDLER_COUNT];
+Dll1B5StateHandler gDll1B5StateHandlers[DLL1B5_STATE_HANDLER_COUNT];
+Dll1B5SubstateHandler gDll1B5SubstateHandlers[DLL1B5_SUBSTATE_HANDLER_COUNT];
