@@ -2,9 +2,9 @@
  * DLL 72 / 0x48 - static camera mode.
  */
 #include "main/camera_interface.h"
+#include "main/camera_object.h"
 #include "main/object_transform.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/dll/CAM/camstatic_state.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
