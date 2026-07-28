@@ -50,6 +50,12 @@ project matches more.
   Only the nightly merger should revert it before integrating the batch.
 - Rebase + `ninja EXIT=0` before each commit; commit only when asked. One owner per `.c`.
 - Edit SJIS-bearing files byte-wise (python rb/wb). Never `git stash` in a worktree — use `git checkout -- <file>`.
+- **A function rename is NOT byte-neutral and can wreck a unit with a green build.** `config/GSAE01/symbols.txt`
+  is build input (`config.split_deps`) — the splitter re-carves the retail objects from it, and objdiff pairs
+  functions *and relocation targets* by name, so a source/symbols mismatch scores the function zero and shows a
+  diff at every call site in every calling unit. Gate every rename with `python3 tools/pairing_check.py`
+  (0 retail-only symbols) plus `unitfuzzy.py` on every unit `pairing_check.py --refs <name>` lists — not just the
+  one you edited. See `docs/rename_safety.md`.
 
 ## Banned constructs (game code: `src/main/`, `src/track/`)
 These are match-hacks, not plausible 2002 source. They were purged repo-wide (see
