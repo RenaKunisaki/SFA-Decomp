@@ -1757,7 +1757,7 @@ void skyRenderTimeOfDayBackdrop(void)
         sinProd *= 2.0f;
         texHeight = ((Texture*)texC)->height;
         v = angle / (32.0f * (f32)texHeight);
-        skyDrawFn_80075d5c(0, 0, (screenRes & 0xffff) << 2, (screenRes >> 16) << 2, 0.0f, v,
+        drawOrthoTexturedQuad(0, 0, (screenRes & 0xffff) << 2, (screenRes >> 16) << 2, 0.0f, v,
                            1.0f, v - sinProd / (f32)texHeight, -0x18f);
     }
 }

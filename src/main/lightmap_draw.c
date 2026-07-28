@@ -454,7 +454,7 @@ void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* 
     GXLoadTexMtxImm(m, GX_TEXMTX0, GX_MTX3x4);
     PSMTXConcat((MtxPtr)lbl_80396820, (MtxPtr)viewMtx, m);
     GXLoadTexMtxImm(m, GX_TEXMTX1, GX_MTX3x4);
-    gxTextureSetupFn_8007cf7c();
+    setupWaterCausticTev();
     countShifted = block->nRenderInstrsWater << 3;
     modelRenderInstrsState_init((ModelRenderInstrsState*)state, block->renderInstrsWater, countShifted, countShifted);
     modelRenderInstrsState_setBit((ModelRenderInstrsState*)state, bounds->renderBitOffset);

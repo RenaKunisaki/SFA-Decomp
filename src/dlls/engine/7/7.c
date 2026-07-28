@@ -1576,7 +1576,7 @@ void newclouds_renderSnowClouds(int renderPass)
     }
     if (gNewCloudSnowFlashAlpha != 0)
     {
-        drawFn_80079e64(lbl_803DD190, gNewCloudSnowFlashAlpha, lbl_8039A8F0, lbl_803DB764,
+        drawSnowFlashOverlay(lbl_803DD190, gNewCloudSnowFlashAlpha, lbl_8039A8F0, lbl_803DB764,
                         lbl_803DD199, lbl_803DD19A, lbl_803DB768);
     }
 }

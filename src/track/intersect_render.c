@@ -2209,7 +2209,7 @@ void hudDrawTriangle(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, GXColor col
     Camera_RebuildProjectionMatrix();
 }
 
-void skyDrawFn_80075d5c(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z)
+void drawOrthoTexturedQuad(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z)
 {
 
     GXClearVtxDesc();
@@ -3676,7 +3676,7 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag)
     GXSetCurrentMtx(GX_PNMTX0);
 }
 
-void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3)
+void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3)
 {
     extern f32 lbl_803DEEE4;
     Mtx mtx_58;
@@ -3706,7 +3706,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
         angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, 0.05f, timeDelta);
         lbl_803DD00C = angle;
     }
-    c_K2.a = mtxIdx;
+    c_K2.a = flashAlpha;
 
     getReflectionTexture2((u32*)&handle1);
     selectTexture((Texture*)handle1, 0);
@@ -4723,7 +4723,7 @@ void setupReflectionBumpDistortTev(void* texture)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxTextureSetupFn_8007cf7c(void);
+void setupWaterCausticTev(void);
 
 
 /*
@@ -4776,7 +4776,7 @@ int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 /* .bss block 0x80391DC0-0x803967C0 */
 
-void gxTextureSetupFn_8007cf7c(void)
+void setupWaterCausticTev(void)
 {
     extern u32 lbl_803DB67C;
 
