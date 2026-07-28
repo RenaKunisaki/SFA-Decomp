@@ -467,9 +467,15 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable)
     ((StaffState*)state)->glowEnable = enable;
 }
 
-const f32 gStaffHalfPi = 1.5707964f;
-const f32 gStaffPi = 3.1415927f;
-const f32 gStaffAngleUnitScale = 32768.0f;
+
+static void staffQuakeSpellAdvance(StaffQuakeSpellState* q)
+{
+    q->scale += 5.5f;
+    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade += -4.0f;
+    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius *= 0.97f;
+    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale *= 1.01f;
+    ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
+}
 
 void superQuakeFn_8016d9fc(f32* pos)
 {
@@ -524,6 +530,10 @@ void superQuakeFn_8016d9fc(f32* pos)
         ((GameObject*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object)->anim.alpha = 0xff;
     }
 }
+
+const f32 gStaffHalfPi = 1.5707964f;
+const f32 gStaffPi = 3.1415927f;
+const f32 gStaffAngleUnitScale = 32768.0f;
 
 void quakeSpellTextureFn_8016dbf4(void)
 {
