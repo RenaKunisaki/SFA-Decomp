@@ -6,6 +6,8 @@
 #include "main/vec_types.h"
 #include "main/vecmath.h"
 
+#define CAMERA_COUNT 12
+
 typedef struct GameObject GameObject;
 
 typedef f32 CameraMatrix[16];
@@ -114,7 +116,7 @@ STATIC_ASSERT(offsetof(CameraViewportTransform, translateY) == 0xA);
 STATIC_ASSERT(offsetof(CameraViewportTransform, translateZ) == 0xC);
 STATIC_ASSERT(sizeof(CameraViewportTransform) == 0x10);
 
-extern Camera gCameras[12];
+extern Camera gCameras[CAMERA_COUNT];
 extern CameraViewport gCameraViewports[4];
 extern CameraViewportTransform gCameraViewportTransforms[20];
 extern CameraMatrix gCameraDefaultModelMatrix;

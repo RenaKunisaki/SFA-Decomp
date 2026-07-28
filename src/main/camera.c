@@ -36,7 +36,7 @@ CameraMatrix gObjInverseYawTransformMatrices[0x1E];
 CameraMatrix gObjYawTransformMatrices[0x22];
 f32 gCameraWorldMatrix[64];
 CameraMatrix gCameraDefaultModelMatrix;
-Camera gCameras[12];
+Camera gCameras[CAMERA_COUNT];
 CameraMatrix gCameraViewRotationMatrix;
 CameraMatrix gCameraInverseViewRotationMatrix;
 CameraMatrix gCameraViewMatrix;
@@ -55,7 +55,7 @@ typedef struct CameraMatrixStorage {
     };
     f32 worldMatrix[64];
     CameraMatrix defaultModelMatrix;
-    Camera cameras[12];
+    Camera cameras[CAMERA_COUNT];
     CameraMatrix viewRotationMatrix;
     CameraMatrix inverseViewRotationMatrix;
     CameraMatrix viewMatrix;
@@ -952,7 +952,7 @@ void Camera_InitState(void) {
     u32 i;
     Camera* camera;
 
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < CAMERA_COUNT; i++) {
         /*
          * Keep the index offset separate from the CameraMatrixStorage member offset. MWCC otherwise rewrites this
          * unrolled loop and no longer emits retail's base-plus-index, then member-offset address sequence.
