@@ -3474,7 +3474,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
                 hitState = (ObjHitsPriorityState*)resetObj->hitReactState;
                 if (hitState == NULL)
                     continue;
-                transformState = ((ObjHitbox*)resetObj)->transformState;
+                transformState = resetObj->hitboxTransformState;
                 if (transformState == NULL)
                     continue;
                 if (transformState->resetFrames != 0)
@@ -3504,15 +3504,15 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
                 if (f27 > c + r)
                     continue;
 
-                desc->currentCollisionMatrix = (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                                               ((((ObjHitbox*)resetObj)->transformState->activeMatrixIndex + 2) << 4);
-                desc->currentMatrix = (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                                      (((ObjHitbox*)resetObj)->transformState->activeMatrixIndex << 4);
+                desc->currentCollisionMatrix = (f32*)resetObj->hitboxTransformState->matrices +
+                                               ((resetObj->hitboxTransformState->activeMatrixIndex + 2) << 4);
+                desc->currentMatrix = (f32*)resetObj->hitboxTransformState->matrices +
+                                      (resetObj->hitboxTransformState->activeMatrixIndex << 4);
                 desc->alternateCollisionMatrix =
-                    (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                    (((((ObjHitbox*)resetObj)->transformState->activeMatrixIndex ^ 1) + 2) << 4);
-                desc->alternateMatrix = (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                                        ((((ObjHitbox*)resetObj)->transformState->activeMatrixIndex ^ 1) << 4);
+                    (f32*)resetObj->hitboxTransformState->matrices +
+                    (((resetObj->hitboxTransformState->activeMatrixIndex ^ 1) + 2) << 4);
+                desc->alternateMatrix = (f32*)resetObj->hitboxTransformState->matrices +
+                                        ((resetObj->hitboxTransformState->activeMatrixIndex ^ 1) << 4);
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;
