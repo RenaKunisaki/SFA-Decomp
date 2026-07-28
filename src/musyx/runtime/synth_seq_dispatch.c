@@ -642,6 +642,7 @@ void seqHandle(u32 deltaTime)
  */
 void seqInit(void)
 {
+    u32 k;
     u16* note;
     SynthVoice* voice;
     SynthVoiceRuntime* runtime;
@@ -681,7 +682,7 @@ void seqInit(void)
     prev = NULL;
     callback = &runtime->callbacks[0];
     gSynthFreeCallbacks = callback;
-    for (i = 0; i < 0x100; i++)
+    for (k = 0; k < 0x100; k++)
     {
         callback->prev = prev;
         if (prev != NULL)
