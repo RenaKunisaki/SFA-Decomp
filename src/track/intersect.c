@@ -134,7 +134,6 @@ typedef struct
 
 
 
-extern f32 hudMatrix[4][4];
 extern f32 lbl_803DEF20;
 extern f32 lbl_803DEE40;
 extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48;
@@ -155,42 +154,7 @@ typedef struct StageCountTable
 
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
-typedef struct RippleEntry
-{
-    f32 x, y, z;
-    u16 id;
-    u8 alpha;
-    u8 flip;
-} RippleEntry;
-typedef struct SplashQuad
-{
-    f32 v[12];
-    u16 angle;
-    u8 type;
-    u8 alpha;
-    u8 flip;
-    u8 pad[3];
-} SplashQuad;
-
-STATIC_ASSERT(sizeof(RippleEntry) == 0x10);
-STATIC_ASSERT(sizeof(SplashQuad) == 0x38);
-
-extern f32 gWaterFxState[4];
-extern Texture* gWaterFxTextures[4];
-extern RippleEntry gWaterRipples[0x100];
-extern SplashQuad gWaterSplashQuads[0x100];
-
-typedef struct
-{
-    f32 scales[4];
-    Texture* textures[4];
-    RippleEntry ripples[0x100];
-    SplashQuad quads[0x100];
-} WaterFxState;
-STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
-STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
-STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
-STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
+#include "track/intersect_internal.h"
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);

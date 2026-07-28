@@ -54,26 +54,9 @@
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-extern f32 gFogNearZ;
-extern f32 gFogFarZ;
-extern u32 gTevStageCursor;
-extern u32 gTevTexCoordCursor;
-extern u32 gTevTexMapCursor;
-extern f32 gFogStartZ;
-extern f32 gFogEndZ;
-extern GXColor gFogColor;
-extern u8 gGxZModeValid;
-extern u8 gGxZCompLocValid;
-extern u8 gGxZModeCompareEnable;
-extern int gGxZModeCompareFunc;
-extern u8 gGxZModeUpdateEnable;
-extern u8 gGxZCompLocCached;
+#include "track/intersect_internal.h"
 extern u8 lbl_803DD010;
 extern f32 lbl_803DD00C;
-extern u8 gTevStageCount;
-extern u8 gTevTexGenCount;
-extern u8 gTevChanCount;
-extern u8 gTevIndStageCount;
 
 extern u8 lbl_803DB678;
 extern u8 gHudTintAlpha;
@@ -131,7 +114,6 @@ static const IndStageInitData lbl_802C1EA8 = {
 static const IndMtxInit lbl_802C1F68 = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
-extern f32 hudMatrix[4][4];
 extern f32 lbl_803DEEE0;
 extern f32 lbl_803DEF28;
 extern GXColor lbl_803E8454;
@@ -166,38 +148,6 @@ static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
 static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
 
 extern u32 lbl_803E8450;
-typedef struct RippleEntry
-{
-    f32 x, y, z;
-    u16 id;
-    u8 alpha;
-    u8 flip;
-} RippleEntry;
-typedef struct SplashQuad
-{
-    f32 v[12];
-    u16 angle;
-    u8 type;
-    u8 alpha;
-    u8 flip;
-    u8 pad[3];
-} SplashQuad;
-
-STATIC_ASSERT(sizeof(RippleEntry) == 0x10);
-STATIC_ASSERT(sizeof(SplashQuad) == 0x38);
-
-
-typedef struct
-{
-    f32 scales[4];
-    Texture* textures[4];
-    RippleEntry ripples[0x100];
-    SplashQuad quads[0x100];
-} WaterFxState;
-STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
-STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
-STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
-STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);

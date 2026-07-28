@@ -49,11 +49,7 @@
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
 
-extern u8 gWaterFxDisabled;
-extern u8 gWaterQuadWriteIdx;
-extern u8 gWaterRippleWriteIdx;
 extern u32 lbl_803DCFF4;
-extern u8 gWaterFxBank;
 
 extern GXColor lbl_803DB6A0;
 
@@ -89,41 +85,7 @@ typedef struct StageCountTable
 } StageCountTable;
 
 extern f32 lbl_803DEE20;
-typedef struct RippleEntry
-{
-    f32 x, y, z;
-    u16 id;
-    u8 alpha;
-    u8 flip;
-} RippleEntry;
-typedef struct SplashQuad
-{
-    f32 v[12];
-    u16 angle;
-    u8 type;
-    u8 alpha;
-    u8 flip;
-    u8 pad[3];
-} SplashQuad;
-
-STATIC_ASSERT(sizeof(RippleEntry) == 0x10);
-STATIC_ASSERT(sizeof(SplashQuad) == 0x38);
-
-extern f32 gWaterFxState[4];
-extern RippleEntry gWaterRipples[0x100];
-extern SplashQuad gWaterSplashQuads[0x100];
-
-typedef struct
-{
-    f32 scales[4];
-    Texture* textures[4];
-    RippleEntry ripples[0x100];
-    SplashQuad quads[0x100];
-} WaterFxState;
-STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
-STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
-STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
-STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
+#include "track/intersect_internal.h"
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);

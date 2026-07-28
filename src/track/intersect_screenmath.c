@@ -7,12 +7,11 @@
 #include "main/trig.h"
 #include "main/vecmath.h"
 
-extern u32 screenWidth;
 
 static const f32 gGxPi = 3.1415927f;
 
-extern f32 gFogNearZ;
-extern f32 gFogFarZ;
+#include "track/intersect_internal.h"
+
 extern int lbl_803DD03C;
 extern int lbl_803968C0[];
 

@@ -95,38 +95,6 @@ u32 gSaveCardSerialLo;
 u32 gSaveCardSerialHi;
 char* lbl_803DD044;
 void* lbl_803DD040;
-typedef struct RippleEntry
-{
-    f32 x, y, z;
-    u16 id;
-    u8 alpha;
-    u8 flip;
-} RippleEntry;
-typedef struct SplashQuad
-{
-    f32 v[12];
-    u16 angle;
-    u8 type;
-    u8 alpha;
-    u8 flip;
-    u8 pad[3];
-} SplashQuad;
-
-STATIC_ASSERT(sizeof(RippleEntry) == 0x10);
-STATIC_ASSERT(sizeof(SplashQuad) == 0x38);
-
-
-typedef struct
-{
-    f32 scales[4];
-    Texture* textures[4];
-    RippleEntry ripples[0x100];
-    SplashQuad quads[0x100];
-} WaterFxState;
-STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
-STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
-STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
-STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
