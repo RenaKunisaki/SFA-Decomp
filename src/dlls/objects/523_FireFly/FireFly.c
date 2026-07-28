@@ -361,7 +361,7 @@ void firefly_update(GameObject* obj)
     if (((FireFlyActiveBits*)&state->activeFlags)->active == 0)
     {
         isActive = 0;
-        if ((def->requiredGameBit == -1) || ((u32)mainGetBit(def->requiredGameBit) != 0))
+        if ((def->requiredGameBit == -1) || (mainGetBit(def->requiredGameBit) != 0))
         {
             isActive = 1;
         }

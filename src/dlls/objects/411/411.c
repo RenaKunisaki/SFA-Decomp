@@ -322,7 +322,7 @@ void dll411_update(GameObject* obj) {
             if (state->unlockCount == 0 && mainGetBit(GAMEBIT_WM_KrazTest1TorchesActive) == 0) {
                 mainSetBits(GAMEBIT_WM_KrazTest1TorchesActive, 1);
             }
-            if ((u32)mainGetBit(0x1d8) != 0) {
+            if (mainGetBit(0x1d8) != 0) {
                 state->unlockCount += 1;
                 mainSetBits(0x1d8, 0);
             }
@@ -343,7 +343,7 @@ void dll411_update(GameObject* obj) {
             }
             break;
         case DLL411_PHASE_RESOLVE:
-            if ((u32)mainGetBit(0x1d1) != 0) {
+            if (mainGetBit(0x1d1) != 0) {
                 state->brightnessB = 1;
                 gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2c, 0x50, state->brightnessB & 0xff, 0);
                 state->brightnessBVelocity = DLL411_BRIGHTNESS_RISE_RATE;
@@ -359,7 +359,7 @@ void dll411_update(GameObject* obj) {
             }
             break;
         case DLL411_PHASE_COMPLETE:
-            if ((u32)mainGetBit(0xfd) == 0) {
+            if (mainGetBit(0xfd) == 0) {
                 mainSetBits(0xfd, 1);
             }
             mainSetBits(0x1d2, 0);

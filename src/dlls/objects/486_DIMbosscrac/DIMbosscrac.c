@@ -31,7 +31,7 @@ const f32 gDIMbosscrackparRootMotionScale[1] = {0.1f};
 int DIMbosscrackpar_SeqFn(GameObject* obj)
 {
     int* side = *(int**)&(obj)->anim.placementData;
-    if ((u32)mainGetBit(((DimbosscrackparPlacement*)side)->triggerGameBit) == 0u)
+    if (mainGetBit(((DimbosscrackparPlacement*)side)->triggerGameBit) == 0u)
     {
         return 0;
     }
@@ -58,7 +58,7 @@ void DIMbosscrackpar_hitDetect(void)
 void DIMbosscrackpar_update(GameObject* obj)
 {
     int* side = *(int**)&(obj)->anim.placementData;
-    if ((u32)mainGetBit(((DimbosscrackparPlacement*)side)->triggerGameBit) != 0u)
+    if (mainGetBit(((DimbosscrackparPlacement*)side)->triggerGameBit) != 0u)
     {
         (*gPartfxInterface)->spawnObject(
             obj, ((DimbosscrackparPlacement*)side)->particleIndex + DIMBOSSCRACKPAR_BASE_PARTICLE_ID, NULL, 2, -1, NULL);

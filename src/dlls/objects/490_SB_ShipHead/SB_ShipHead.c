@@ -184,7 +184,7 @@ void SB_ShipHead_update(GameObject* obj)
             }
         }
     }
-    if ((int)ObjMsg_Pop((void*)obj, (u32*)&msg, (u32*)tmp2, (u32*)&tmp3) != 0)
+    if (ObjMsg_Pop((void*)obj, (u32*)&msg, (u32*)tmp2, (u32*)&tmp3) != 0)
     {
         switch (msg)
         {

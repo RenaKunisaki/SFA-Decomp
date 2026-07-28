@@ -56,7 +56,7 @@ void DR_EnergyDisc_update(GameObject* obj)
     DrEnergyDiscState* state = (obj)->extra;
     DrenergydiscPlacement* setup = (DrenergydiscPlacement*)obj->anim.placementData;
 
-    if ((u32)mainGetBit(setup->activeGameBit) != 0)
+    if (mainGetBit(setup->activeGameBit) != 0)
     {
         if (state->activated == 0)
         {
@@ -81,7 +81,7 @@ void DR_EnergyDisc_update(GameObject* obj)
         }
     }
 
-    if ((u32)mainGetBit(setup->moveGameBit) != 0)
+    if (mainGetBit(setup->moveGameBit) != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 0, 1.0f, 0);
     }
@@ -95,7 +95,7 @@ void DR_EnergyDisc_init(GameObject* obj, DrenergydiscPlacement* setup)
 
     spawnRotX = (s16)(setup->rotXByte << 8);
     obj->anim.rotX = spawnRotX;
-    if ((u32)mainGetBit(setup->activeGameBit) != 0)
+    if (mainGetBit(setup->activeGameBit) != 0)
     {
         state->activated = 1;
         Sfx_PlayFromObject((int)obj, SFXTRIG_id_30c);

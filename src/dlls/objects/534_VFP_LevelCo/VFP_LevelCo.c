@@ -227,7 +227,7 @@ void VFP_LevelControl_init(GameObject* obj, VfpLevelControlSetup* setup)
     Rcp_EnableHeatEffect();
     mainSetBits(GAMEBIT_VFP_LATCH, 1);
     unlockLevel(0, 0, 1);
-    if ((u32)mainGetBit(GAMEBIT_VFP_SEQ_DONE) != 0)
+    if (mainGetBit(GAMEBIT_VFP_SEQ_DONE) != 0)
     {
         state->latch.fields.sequenceStep = 4;
     }

@@ -91,7 +91,7 @@ void barrelgener_update(GameObject* obj)
     BarrelGeneratorState* state = (obj)->extra;
     GameObject* player = Obj_GetPlayerObject();
 
-    if ((u32)mainGetBit(GAMEBIT_BARRELGENER_TRIGGERED) == 0)
+    if (mainGetBit(GAMEBIT_BARRELGENER_TRIGGERED) == 0)
     {
         if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < 5e+01f)
         {

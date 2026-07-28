@@ -128,7 +128,7 @@ void vfplift23_updateState(GameObject* obj)
         }
         else
         {
-            if ((u32)mainGetBit(state->toggleGameBit) == 0)
+            if (mainGetBit(state->toggleGameBit) == 0)
             {
                 state->mode = VFPLIFT_STATE_LOWERED;
                 (obj)->anim.localPosY = setup->base.posY;
@@ -149,7 +149,7 @@ void vfplift23_updateState(GameObject* obj)
         }
         else
         {
-            if ((u32)mainGetBit(state->toggleGameBit) != 0)
+            if (mainGetBit(state->toggleGameBit) != 0)
             {
                 state->mode = VFPLIFT_STATE_RAISED;
                 (obj)->anim.localPosY = setup->base.posY + raisedOffset;
@@ -217,7 +217,7 @@ void vfplift1_updateState(GameObject* obj)
         }
         else
         {
-            if ((u32)mainGetBit(state->toggleGameBit) != 0)
+            if (mainGetBit(state->toggleGameBit) != 0)
             {
                 state->mode = VFPLIFT_STATE_LOWERED;
                 (obj)->anim.localPosY = setup->base.posY;
@@ -238,7 +238,7 @@ void vfplift1_updateState(GameObject* obj)
         }
         else
         {
-            if ((u32)mainGetBit(state->toggleGameBit) == 0)
+            if (mainGetBit(state->toggleGameBit) == 0)
             {
                 state->mode = VFPLIFT_STATE_RAISED;
                 (obj)->anim.localPosY = setup->base.posY + *(f32*)&gVfpLift1RaisedHeight;
@@ -316,7 +316,7 @@ void VFPLift_init(GameObject* obj, VfpLiftPlacement* init)
     state->anim[3] = 0;
     if (obj->anim.seqId == VFPLIFT2_OBJTYPE)
     {
-        if ((u32)mainGetBit(state->toggleGameBit) != 0)
+        if (mainGetBit(state->toggleGameBit) != 0)
         {
             state->mode = VFPLIFT_STATE_RAISED;
             state->applyHeight = 1;
@@ -328,7 +328,7 @@ void VFPLift_init(GameObject* obj, VfpLiftPlacement* init)
     }
     if (obj->anim.seqId == VFPLIFT1_OBJTYPE && mainGetBit(VFPLIFT1_READY_GAMEBIT) != 0)
     {
-        if ((u32)mainGetBit(state->toggleGameBit) != 0)
+        if (mainGetBit(state->toggleGameBit) != 0)
         {
             state->mode = VFPLIFT_STATE_LOWERED;
         }

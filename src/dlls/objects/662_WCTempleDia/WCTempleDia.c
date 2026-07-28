@@ -199,12 +199,12 @@ void wctempledia_init(GameObject* obj, WCTempleDiaSetup* setup)
     }
     for (i = 0; i < WCTEMPLE_DIA_STAGE_COUNT; i++)
     {
-        if ((u32)mainGetBit(state->gamebits[i]) != 0)
+        if (mainGetBit(state->gamebits[i]) != 0)
         {
             state->stageMask |= (1 << i);
         }
     }
-    if ((u32)mainGetBit(setup->solvedBit) != 0)
+    if (mainGetBit(setup->solvedBit) != 0)
     {
         state->stageMask = WCTEMPLE_DIA_ALL_STAGES_MASK;
         state->flags |= WCTEMPLE_DIA_FLAG_SOLVED;

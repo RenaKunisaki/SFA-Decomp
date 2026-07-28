@@ -538,7 +538,7 @@ void gunpowderBarrel_hitDetect(int obj) {
     barrel = (GameObject*)obj;
     state = barrel->extra;
 
-    if ((int)Obj_IsObjectAlive(state->linkedTimerObject) == 0) {
+    if (Obj_IsObjectAlive(state->linkedTimerObject) == 0) {
         if (state->linkedTimerObject != NULL) {
             ObjLink_DetachChild((GameObject*)obj, state->linkedTimerObject);
             state->linkedTimerObject = NULL;
@@ -679,7 +679,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             ObjLink_AttachChild(obj, state->linkedTimerObject, 0);
         }
     } else {
-        if ((int)Obj_IsObjectAlive(state->linkedTimerObject) == 0 && state->linkedTimerObject != NULL) {
+        if (Obj_IsObjectAlive(state->linkedTimerObject) == 0 && state->linkedTimerObject != NULL) {
             ObjLink_DetachChild(obj, state->linkedTimerObject);
             state->linkedTimerObject = NULL;
         }
@@ -689,7 +689,7 @@ void gunpowderBarrel_update(GameObject* obj) {
         u32 message;
         message = 0;
         messageArgument = 0;
-        while ((int)ObjMsg_Pop((void*)obj, &message, 0, &messageArgument) != 0) {
+        while (ObjMsg_Pop((void*)obj, &message, 0, &messageArgument) != 0) {
             switch (message) {
             case GUNPOWDER_BARREL_MESSAGE_PLAYER_HELD:
                 gunpowderBarrel_setPlayerHeldState(obj, 1);

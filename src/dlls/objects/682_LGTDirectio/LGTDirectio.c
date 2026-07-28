@@ -227,7 +227,7 @@ void directionallight_update(GameObject* obj)
 
     if (state->enabled != 0)
     {
-        if ((u32)mainGetBit(setup->enableBit) == 0)
+        if (mainGetBit(setup->enableBit) == 0)
         {
             state->enabled = 0;
             modelLightStruct_setEnabled(state->light, 0, 1.0f);
@@ -240,7 +240,7 @@ void directionallight_update(GameObject* obj)
     }
     else
     {
-        if ((u32)mainGetBit(setup->enableBit) != 0)
+        if (mainGetBit(setup->enableBit) != 0)
         {
             state->enabled = 1;
             modelLightStruct_setEnabled(state->light, 1, 1.0f);

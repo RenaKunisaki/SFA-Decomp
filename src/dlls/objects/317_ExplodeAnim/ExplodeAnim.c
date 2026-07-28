@@ -59,7 +59,7 @@ void ExplodeAnimator_init(GameObject* obj, ExplodeAnimatorPlacement* placement) 
     ExplodeAnimatorState* state = obj->extra;
     int fired;
 
-    if ((u32)mainGetBit(placement->resultGameBit) != 0u) {
+    if (mainGetBit(placement->resultGameBit) != 0u) {
         fired = EXPLODE_ANIMATOR_STATE_FIRED;
     } else {
         fired = 0;

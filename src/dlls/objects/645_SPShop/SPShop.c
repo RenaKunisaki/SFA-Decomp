@@ -395,7 +395,7 @@ void shop_update(GameObject* obj)
         (obj)->userData1 = 1;
     }
 
-    if ((u32)mainGetBit(GAMEBIT_SHOP_Unk0D21) != 0u && (obj)->userData2 == 0)
+    if (mainGetBit(GAMEBIT_SHOP_Unk0D21) != 0u && (obj)->userData2 == 0)
     {
         envFxActFn_800887f8(0);
         getEnvfxAct(obj, obj, SPSHOP_ENVFX_A, 0);
@@ -404,7 +404,7 @@ void shop_update(GameObject* obj)
         return;
     }
 
-    if ((u32)mainGetBit(GAMEBIT_SHOP_Unk0D21) == 0u && (obj)->userData2 != 0)
+    if (mainGetBit(GAMEBIT_SHOP_Unk0D21) == 0u && (obj)->userData2 != 0)
     {
         (obj)->userData2 = 0;
     }

@@ -68,7 +68,7 @@ void CntCounter_update(GameObject* obj)
     }
     else
     {
-        if ((u32)mainGetBit(setup->decrementGameBit) != 0)
+        if (mainGetBit(setup->decrementGameBit) != 0)
         {
             state->displayHud = setup->displayHud;
             state->remainingCount = setup->initialCount;

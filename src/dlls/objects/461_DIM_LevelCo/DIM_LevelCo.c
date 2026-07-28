@@ -117,8 +117,8 @@ void dim_levelcontrol_update(GameObject* obj) {
         state->cannonStatusGameBit = 1;
     }
     if (obj->userData1 != 0) {
-        if ((u32)mainGetBit(GAMEBIT_DIM_FlewTo) == 0 ||
-            ((u32)mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_0017) != 0 && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_0EAD) == 0)) {
+        if (mainGetBit(GAMEBIT_DIM_FlewTo) == 0 ||
+            (mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_0017) != 0 && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_0EAD) == 0)) {
             if (obj->userData1 == 2) {
                 getEnvfxActImmediately(0, 0, DIM_LEVEL_CONTROL_ENVFX_A, 0);
                 getEnvfxActImmediately(0, 0, DIM_LEVEL_CONTROL_ENVFX_B, 0);
@@ -134,13 +134,13 @@ void dim_levelcontrol_update(GameObject* obj) {
         obj->userData1 = 0;
     }
     if (state->dinoHornGroupEnabled != 0) {
-        if ((u32)mainGetBit(GAMEBIT_ITEM_DinoHorn_651) == 0) {
+        if (mainGetBit(GAMEBIT_ITEM_DinoHorn_651) == 0) {
             (*gMapEventInterface)
                 ->setObjGroupStatus(DIM_LEVEL_CONTROL_DINO_HORN_GROUP_MAP_ID, DIM_LEVEL_CONTROL_DINO_HORN_GROUP_ID, 0);
             state->dinoHornGroupEnabled = 0;
         }
     } else {
-        if ((u32)mainGetBit(GAMEBIT_ITEM_DinoHorn_651) != 0) {
+        if (mainGetBit(GAMEBIT_ITEM_DinoHorn_651) != 0) {
             (*gMapEventInterface)
                 ->setObjGroupStatus(DIM_LEVEL_CONTROL_DINO_HORN_GROUP_MAP_ID, DIM_LEVEL_CONTROL_DINO_HORN_GROUP_ID, 1);
             state->dinoHornGroupEnabled = 1;
@@ -233,7 +233,7 @@ void dim_levelcontrol_init(GameObject* obj) {
     }
     state->lostInBlizzardDialogueFired = mainGetBit(DIM_LEVEL_CONTROL_INITIAL_DIALOGUE_GAMEBIT);
     mainSetBits(DIM_LEVEL_CONTROL_GAMEBIT_0F0A, 0);
-    if ((u32)mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_089D) != 0 && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_08A5) == 0) {
+    if (mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_089D) != 0 && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_08A5) == 0) {
         mainSetBits(DIM_LEVEL_CONTROL_GAMEBIT_089D, 0);
     }
     state->statusGameBitD0B = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0B);

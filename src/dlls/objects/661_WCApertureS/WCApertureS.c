@@ -173,7 +173,7 @@ void wcapertures_update(GameObject* obj)
         state->targetAlpha = 0;
         break;
     case WCAPERTURES_MODE_CLOSED:
-        if ((u32)mainGetBit(setup->armBit) != 0)
+        if (mainGetBit(setup->armBit) != 0)
         {
             state->mode = WCAPERTURES_MODE_ARMED;
         }
@@ -235,9 +235,9 @@ void wcapertures_init(GameObject* obj, WCAperturesSetup* setup)
     *(u8*)&objAnim->bankIndex = setup->modelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
         objAnim->bankIndex = 0;
-    if ((u32)mainGetBit(setup->armBit) != 0)
+    if (mainGetBit(setup->armBit) != 0)
     {
-        if ((u32)mainGetBit(setup->openBit) != 0)
+        if (mainGetBit(setup->openBit) != 0)
             state->mode = WCAPERTURES_MODE_OPEN;
         else
             state->mode = WCAPERTURES_MODE_ARMED;

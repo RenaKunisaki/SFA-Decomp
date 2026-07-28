@@ -155,7 +155,7 @@ void suntemple_update(GameObject* obj)
 
         if (cfg->gateGameBit != -1)
         {
-            if ((u32)mainGetBit(cfg->gateGameBit) != 0)
+            if (mainGetBit(cfg->gateGameBit) != 0)
             {
                 gameObj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
             }
@@ -186,13 +186,13 @@ void suntemple_update(GameObject* obj)
                 {
                     if (gameObj->anim.seqId == SUNTEMPLE_SEQ_WC_INV_USE)
                     {
-                        if (state->mapEventMode == 1 && ((u32)mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_A) != 0 ||
+                        if (state->mapEventMode == 1 && (mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_A) != 0 ||
                                                          mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_B) != 0))
                         {
                             (*gObjectTriggerInterface)
                                 ->runSequence(cfg->triggerSlot + 2, (void*)obj, SUNTEMPLE_SEQUENCE_INVALID);
                         }
-                        else if (state->mapEventMode == 2 && ((u32)mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_C) != 0 ||
+                        else if (state->mapEventMode == 2 && (mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_C) != 0 ||
                                                               mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_D) != 0))
                         {
                             (*gObjectTriggerInterface)

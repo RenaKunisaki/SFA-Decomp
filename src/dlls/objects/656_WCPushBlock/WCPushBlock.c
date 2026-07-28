@@ -196,7 +196,7 @@ void wcpushblock_update(GameObject* obj)
     {
         if (objAnim->bankIndex == WCPUSHBLOCK_VARIANT_A)
         {
-            if ((u32)mainGetBit(WCPUSHBLOCK_GAMEBIT_A_SOLVED) != 0)
+            if (mainGetBit(WCPUSHBLOCK_GAMEBIT_A_SOLVED) != 0)
             {
                 WCPUSHBLOCK_FLAGS(state).phase = WCPUSHBLOCK_PHASE_SOLVED;
                 WCPUSHBLOCK_IFACE->getSolvedTileXYA(WCPUSHBLOCK_INITIAL_TILE(state), &state->tileX, &state->tileY,
@@ -205,14 +205,14 @@ void wcpushblock_update(GameObject* obj)
                                                    &obj->anim.localPosX,
                                                    &obj->anim.localPosZ, WCPUSHBLOCK_IFACE);
             }
-            else if ((u32)mainGetBit(WCPUSHBLOCK_GAMEBIT_A_FADE) != 0)
+            else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_A_FADE) != 0)
             {
                 WCPUSHBLOCK_FLAGS(state).phase = WCPUSHBLOCK_PHASE_FADE_OUT;
             }
         }
         else
         {
-            if ((u32)mainGetBit(WCPUSHBLOCK_GAMEBIT_B_SOLVED) != 0)
+            if (mainGetBit(WCPUSHBLOCK_GAMEBIT_B_SOLVED) != 0)
             {
                 WCPUSHBLOCK_FLAGS(state).phase = WCPUSHBLOCK_PHASE_SOLVED;
                 WCPUSHBLOCK_IFACE->getSolvedTileXYB(WCPUSHBLOCK_INITIAL_TILE(state), &state->tileX, &state->tileY,
@@ -221,7 +221,7 @@ void wcpushblock_update(GameObject* obj)
                                                    &obj->anim.localPosX,
                                                    &obj->anim.localPosZ, WCPUSHBLOCK_IFACE);
             }
-            else if ((u32)mainGetBit(WCPUSHBLOCK_GAMEBIT_B_FADE) != 0)
+            else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_B_FADE) != 0)
             {
                 WCPUSHBLOCK_FLAGS(state).phase = WCPUSHBLOCK_PHASE_FADE_OUT;
             }

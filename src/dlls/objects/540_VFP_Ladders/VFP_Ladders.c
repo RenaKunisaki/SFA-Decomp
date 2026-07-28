@@ -68,16 +68,16 @@ void VFP_Ladders_update(GameObject* obj)
 
     if ((obj)->anim.seqId == VFPLADDERS_TRIGGER_SEQID)
     {
-        if ((u32)mainGetBit(state->triggerGameBit) != 0)
+        if (mainGetBit(state->triggerGameBit) != 0)
         {
-            if ((u32)mainGetBit(state->baseGameBit) == 0)
+            if (mainGetBit(state->baseGameBit) == 0)
             {
                 (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
             }
         }
-        if ((u32)mainGetBit(state->triggerGameBit) == 0)
+        if (mainGetBit(state->triggerGameBit) == 0)
         {
-            if ((u32)mainGetBit(state->baseGameBit) != 0)
+            if (mainGetBit(state->baseGameBit) != 0)
             {
                 (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
             }

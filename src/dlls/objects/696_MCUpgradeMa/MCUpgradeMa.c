@@ -32,7 +32,7 @@ void mcupgradema_update(GameObject* obj)
     GameObject* gameObj = obj;
     McUpgradeMaSetup* setup = (McUpgradeMaSetup*)gameObj->anim.placementData;
 
-    if ((u32)mainGetBit(setup->collectedGameBit) != 0)
+    if (mainGetBit(setup->collectedGameBit) != 0)
     {
         *(u8*)&gameObj->anim.resetHitboxMode |= MCUPGRADE_OBJ_FLAG_COLLECTED;
     }

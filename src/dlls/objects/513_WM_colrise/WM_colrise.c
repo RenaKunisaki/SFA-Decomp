@@ -81,7 +81,7 @@ void WM_colrise_update(GameObject* obj)
         }
     }
     reached = 0;
-    if ((state->gameBit == -1 || (u32)mainGetBit(state->gameBit) != 0) && state->raiseTimer != 0)
+    if ((state->gameBit == -1 || mainGetBit(state->gameBit) != 0) && state->raiseTimer != 0)
     {
         target = WM_COLRISE_RAISED_OFFSET_LOW + (WM_COLRISE_RAISED_OFFSET_HIGH + placement->base.posY);
         if (obj->anim.localPosY > target)

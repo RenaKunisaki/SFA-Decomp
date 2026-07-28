@@ -1948,7 +1948,7 @@ void sidekickToy_updateCurveTargetLatch(GameObject* obj)
     u8* data = *(u8**)state;
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
-        if ((u8)baddie_canSeeTarget(obj, (int)state, &(obj)->anim.worldPosX, data + 0x68) != 0)
+        if (baddie_canSeeTarget(obj, (int)state, &(obj)->anim.worldPosX, data + 0x68) != 0)
         {
             return;
         }
@@ -2534,7 +2534,7 @@ void enemy_free(GameObject* obj, int flag)
         hagabonMK2_stopLoopSfx((int)obj, state);
         break;
     case ENEMY_WHIRLPOOL_OBJ:
-        if ((int)ObjGroup_ContainsObject((u32)obj, ENEMY_OBJGROUP_SECONDARY) != 0)
+        if (ObjGroup_ContainsObject((u32)obj, ENEMY_OBJGROUP_SECONDARY) != 0)
         {
             ObjGroup_RemoveObject((int)obj, ENEMY_OBJGROUP_SECONDARY);
         }

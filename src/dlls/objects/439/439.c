@@ -118,17 +118,17 @@ void sc_musictree_handleHitObject(GameObject* obj, ScMusicTreeState* state, int 
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3, 1);
         break;
     case SC_MUSIC_TREE_MAP_GATE_1:
-        if ((u32)mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
+        if (mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
             mainSetBits(SC_MUSIC_TREE_GAMEBIT_GATE_1, 1);
         }
         break;
     case SC_MUSIC_TREE_MAP_GATE_2:
-        if ((u32)mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
+        if (mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
             mainSetBits(SC_MUSIC_TREE_GAMEBIT_GATE_2, 1);
         }
         break;
     case SC_MUSIC_TREE_MAP_GATE_3:
-        if ((u32)mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
+        if (mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
             mainSetBits(SC_MUSIC_TREE_GAMEBIT_GATE_3, 1);
         }
         break;

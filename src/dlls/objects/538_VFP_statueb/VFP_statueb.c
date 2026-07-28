@@ -99,7 +99,7 @@ void VFP_statueball_update(GameObject* obj)
     Vec_distance(&Obj_GetPlayerObject()->anim.worldPosX, &obj->anim.worldPosX);
     state->previousActive = state->active;
 
-    if ((u32)mainGetBit(state->activationGameBit) == 0)
+    if (mainGetBit(state->activationGameBit) == 0)
     {
         hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObj, 0, 0);
         if ((hitObj != NULL) && (hitType != 0) && (hitObj != NULL) &&
@@ -131,7 +131,7 @@ void VFP_statueball_update(GameObject* obj)
         {
             if (state->activationGameBit != -1)
             {
-                if ((u32)mainGetBit(state->activationGameBit) == 0)
+                if (mainGetBit(state->activationGameBit) == 0)
                 {
                     mainSetBits(state->activationGameBit, 1);
                 }
@@ -144,7 +144,7 @@ void VFP_statueball_update(GameObject* obj)
             (*gExpgfxInterface)->freeSource((u32)obj);
             if (state->activationGameBit != -1)
             {
-                if ((u32)mainGetBit(state->activationGameBit) != 0)
+                if (mainGetBit(state->activationGameBit) != 0)
                 {
                     mainSetBits(state->activationGameBit, 0);
                 }

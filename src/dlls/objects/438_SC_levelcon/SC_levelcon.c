@@ -79,7 +79,7 @@ int sc_levelcontrol_processAnimEventsCallback(GameObject* obj, int unused, ObjAn
     if (state->animEventState == 5) {
         mainSetBits(0x60f, 1);
         if (isGameTimerDisabled()) {
-            if ((u32)mainGetBit(0x7a) != 0) {
+            if (mainGetBit(0x7a) != 0) {
                 mainSetBits(0x85, 1);
             }
             state->exitTimer = 120.0f;
@@ -189,7 +189,7 @@ void sc_levelcontrol_update(GameObject* obj) {
         }
         obj->userData1 = 0;
     }
-    if (state->statusFlags.challengeGateGroupEnabled == 0 && (u32)mainGetBit(GAMEBIT_LV_ChallengeGate2Complete) != 0) {
+    if (state->statusFlags.challengeGateGroupEnabled == 0 && mainGetBit(GAMEBIT_LV_ChallengeGate2Complete) != 0) {
         (*gMapEventInterface)->setObjGroupStatus(SC_LEVEL_CONTROL_MAP_SWAPCIRCLE, 0xa, 1);
         state->statusFlags.challengeGateGroupEnabled = 1;
     }
@@ -199,7 +199,7 @@ void sc_levelcontrol_update(GameObject* obj) {
             Obj_GetPlayerObject();
             switch (mapAct) {
             case 1:
-                if ((u32)mainGetBit(GAMEBIT_ITEM_SpellStone2_Used) != 0) {
+                if (mainGetBit(GAMEBIT_ITEM_SpellStone2_Used) != 0) {
                     (*gMapEventInterface)->setMapAct(SC_LEVEL_CONTROL_MAP_SWAPCIRCLE, 2);
                 }
                 break;
@@ -207,7 +207,7 @@ void sc_levelcontrol_update(GameObject* obj) {
             case 3:
             case 4:
             case 5:
-                if ((u32)mainGetBit(GAMEBIT_LV_EscapedFromPole) != 0) {
+                if (mainGetBit(GAMEBIT_LV_EscapedFromPole) != 0) {
                     (*gMapEventInterface)->setMapAct(SC_LEVEL_CONTROL_MAP_SWAPCIRCLE, 6);
                 }
                 break;
@@ -250,7 +250,7 @@ void sc_levelcontrol_update(GameObject* obj) {
         }
     }
     state->playerMapCell = coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
-    if ((u32)mainGetBit(0xcdc) != 0) {
+    if (mainGetBit(0xcdc) != 0) {
         if (state->helpTextTimer > 0.0f) {
             gameTextShow(0x429);
             state->helpTextTimer -= timeDelta;
@@ -290,21 +290,21 @@ void sc_levelcontrol_update(GameObject* obj) {
         }
         enableHeavyFog(50.0f + state->fogNear, state->fogNear, 1000.0f, 0.1f, 0.0005f, 0);
     }
-    if ((u32)mainGetBit(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1) != 0) {
+    if (mainGetBit(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1) != 0) {
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1, 0);
         if (gScLevelControlTotemComboSequence[state->totemComboIndex] == SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1) {
             state->totemComboIndex += 1;
         } else {
             state->totemComboIndex = 0;
         }
-    } else if ((u32)mainGetBit(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2) != 0) {
+    } else if (mainGetBit(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2) != 0) {
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2, 0);
         if (gScLevelControlTotemComboSequence[state->totemComboIndex] == SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2) {
             state->totemComboIndex += 1;
         } else {
             state->totemComboIndex = 0;
         }
-    } else if ((u32)mainGetBit(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3) != 0) {
+    } else if (mainGetBit(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3) != 0) {
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3, 0);
         if (gScLevelControlTotemComboSequence[state->totemComboIndex] == SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3) {
             state->totemComboIndex += 1;
@@ -319,26 +319,26 @@ void sc_levelcontrol_update(GameObject* obj) {
     if ((state->animEventFlags & SC_LEVEL_CONTROL_ANIM_EVENT_FLAG_PROCESSED) != 0) {
         state->animEventFlags &= ~SC_LEVEL_CONTROL_ANIM_EVENT_FLAG_PROCESSED;
         mainSetBits(0x60f, 1);
-        if ((u32)mainGetBit(0x7a) == 0) {
-            if ((u32)mainGetBit(0x627) != 0 && (u32)mainGetBit(0x63e) != 0) {
+        if (mainGetBit(0x7a) == 0) {
+            if (mainGetBit(0x627) != 0 && mainGetBit(0x63e) != 0) {
                 mainSetBits(GAMEBIT_LV_DoneTests, 1);
             }
         } else {
-            if ((u32)mainGetBit(GAMEBIT_LV_DoneTests) != 0) {
+            if (mainGetBit(GAMEBIT_LV_DoneTests) != 0) {
                 mainSetBits(0x85, 1);
             }
         }
     }
     if (state->animEventState == 0) {
-        if ((u32)mainGetBit(0x60e) != 0) {
+        if (mainGetBit(0x60e) != 0) {
             mainSetBits(0x60e, 0);
             timeListFn_8012df14();
         }
     } else if (state->animEventState == 5) {
-        if ((u32)mainGetBit(0x60e) != 0) {
+        if (mainGetBit(0x60e) != 0) {
             mainSetBits(0x60e, 0);
             gameTimerStop();
-            if ((u32)mainGetBit(0x7a) != 0) {
+            if (mainGetBit(0x7a) != 0) {
                 mainSetBits(0x85, 1);
             }
             state->exitTimer = 120.0f;
@@ -347,17 +347,17 @@ void sc_levelcontrol_update(GameObject* obj) {
             Sfx_PlayFromObject(0, SFXTRIG_id_10a);
         }
     }
-    if ((u32)mainGetBit(GAMEBIT_ITEM_LVBlock2_Used) != 0) {
+    if (mainGetBit(GAMEBIT_ITEM_LVBlock2_Used) != 0) {
         mainSetBits(0x612, 1);
         mainSetBits(0x90b, 1);
         mainSetBits(0x87, 1);
     }
-    if ((u32)mainGetBit(GAMEBIT_ITEM_LVBlock3_Used) != 0) {
+    if (mainGetBit(GAMEBIT_ITEM_LVBlock3_Used) != 0) {
         mainSetBits(0x2c6, 1);
         mainSetBits(0x2ce, 1);
         mainSetBits(0xbdc, 1);
     }
-    if ((u32)mainGetBit(GAMEBIT_ITEM_LVBlock1_Used) != 0) {
+    if (mainGetBit(GAMEBIT_ITEM_LVBlock1_Used) != 0) {
         mainSetBits(0xbdf, 1);
         mainSetBits(0xbe1, 1);
         mainSetBits(0xbe3, 1);
@@ -368,7 +368,7 @@ void sc_levelcontrol_update(GameObject* obj) {
         if (eventState->animEventState == 5) {
             mainSetBits(0x60f, 1);
             if (isGameTimerDisabled()) {
-                if ((u32)mainGetBit(0x7a) != 0) {
+                if (mainGetBit(0x7a) != 0) {
                     mainSetBits(0x85, 1);
                 }
                 eventState->exitTimer = 120.0f;
@@ -378,8 +378,8 @@ void sc_levelcontrol_update(GameObject* obj) {
             }
         }
     }
-    if ((u32)mainGetBit(0x4d0) == 0) {
-        if ((u32)mainGetBit(GAMEBIT_LV_CapturedByLightFoot) != 0) {
+    if (mainGetBit(0x4d0) == 0) {
+        if (mainGetBit(GAMEBIT_LV_CapturedByLightFoot) != 0) {
             mainSetBits(0x4d0, 1);
             (*gMapEventInterface)->setObjGroupStatus(SC_LEVEL_CONTROL_MAP_SWAPCIRCLE, 2, 1);
             warpToMap(0x50, 0);
@@ -434,7 +434,7 @@ void sc_levelcontrol_init(GameObject* obj) {
     state->fogNearTarget = fogNear;
     state->fogNearStep = -0.35f;
     enableHeavyFog(50.0f + state->fogNear, state->fogNear, 1000.0f, 0.1f, 0.0005f, 0);
-    if ((u32)mainGetBit(0x7a) != 0) {
+    if (mainGetBit(0x7a) != 0) {
         mainSetBits(0x85, 1);
     }
     unlockLevel(mapGetDirIdx(SC_LEVEL_CONTROL_MAP_SWAPCIRCLE), 0, 0);

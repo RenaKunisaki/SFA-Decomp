@@ -75,7 +75,7 @@ void ecshCreator_update(GameObject* obj) {
 
     placement = (const ECSHCreatorPlacement*)obj->anim.placementData;
     state = obj->extra;
-    if (obj->userData2 == 0 && (u32)mainGetBit(state->triggerGameBit) != 0) {
+    if (obj->userData2 == 0 && mainGetBit(state->triggerGameBit) != 0) {
         effectResource = Resource_Acquire(ECSH_CREATOR_EFFECT_RESOURCE_ID, 1);
         (*effectResource)->spawn(obj, 0, NULL, 1, -1, NULL);
         (*effectResource)->spawn(obj, 1, NULL, 1, -1, NULL);

@@ -304,7 +304,7 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* a
     for (i = 0; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
         if (state->hazeSpawnPending[i] != 0) {
             int loadResult;
-            if ((u8)Obj_IsLoadingLocked() == 0) {
+            if (Obj_IsLoadingLocked() == 0) {
                 loadResult = 0;
             } else {
                 ObjPlacement* newSetup = Obj_AllocObjectSetup(SHSTAFF_HAZE_SETUP_SIZE, SHSTAFF_CHILD_OBJ_HAZE_FLAME);

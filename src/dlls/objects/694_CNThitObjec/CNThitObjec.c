@@ -147,7 +147,7 @@ void cnthitobjec_update(GameObject* obj)
 
     if (state->flags.disabled == 0)
     {
-        if ((u32)mainGetBit(setup->doneGameBit) != 0)
+        if (mainGetBit(setup->doneGameBit) != 0)
         {
             state->flags.disabled = 1;
             ObjHits_DisableObject(obj);
@@ -186,7 +186,7 @@ void cnthitobjec_init(GameObject* obj, CntHitObjectSetup* setup)
     {
         (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
     }
-    if ((u32)mainGetBit(setupData->doneGameBit) != 0)
+    if (mainGetBit(setupData->doneGameBit) != 0)
     {
         state->flags.disabled = 1;
         ObjHits_DisableObject(obj);

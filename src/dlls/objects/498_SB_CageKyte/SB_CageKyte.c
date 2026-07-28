@@ -91,7 +91,7 @@ void SB_CageKyte_update(GameObject* obj)
     if (*timer <= 0)
     {
         randomGetRange(0, 10);
-        if ((u32)mainGetBit(SB_CAGEKYTE_SILENCE_GAMEBIT) == 0u)
+        if (mainGetBit(SB_CAGEKYTE_SILENCE_GAMEBIT) == 0u)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_ice_freeze_316);
         }

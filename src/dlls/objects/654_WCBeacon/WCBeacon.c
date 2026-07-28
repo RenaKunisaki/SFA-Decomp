@@ -95,7 +95,7 @@ void wcbeacon_update(GameObject* obj)
     if (phase == WCBEACON_PHASE_WAITING_FOR_TRICKY)
     {
         GameObject* tricky = getTrickyObject();
-        if ((u32)mainGetBit(setup->armBit) == 0)
+        if (mainGetBit(setup->armBit) == 0)
         {
             GameObject* stayPoint = trickyGetStayPoint(tricky);
             if (stayPoint != obj || trickyFn_80138f14(tricky) != 0)
@@ -124,7 +124,7 @@ void wcbeacon_update(GameObject* obj)
     }
     else if (phase == WCBEACON_PHASE_IDLE)
     {
-        if ((u32)mainGetBit(setup->armBit) != 0)
+        if (mainGetBit(setup->armBit) != 0)
         {
             (*gObjectTriggerInterface)->runSequence(WCBEACON_TRIGGER_ARM_SLOT, obj, WCBEACON_TRIGGER_NO_ARG);
             state->phase = WCBEACON_PHASE_WAITING_FOR_TRICKY;
@@ -169,9 +169,9 @@ void wcbeacon_init(GameObject* obj, WCBeaconSetup* setup)
     {
         obj->anim.bankIndex = 0;
     }
-    if ((u32)mainGetBit(setup->armBit) != 0)
+    if (mainGetBit(setup->armBit) != 0)
     {
-        if ((u32)mainGetBit(setup->solvedBit) != 0)
+        if (mainGetBit(setup->solvedBit) != 0)
         {
             state->phase = WCBEACON_PHASE_ACTIVE;
         }

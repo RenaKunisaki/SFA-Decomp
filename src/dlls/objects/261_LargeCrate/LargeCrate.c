@@ -186,7 +186,7 @@ void LargeCrate_updateConveyorSlide(GameObject* obj, LargeCrateState* state) {
                 (linkedId == LARGECRATE_ROB_WAVE_DIRECT_ID) || (linkedIdOffset == LARGECRATE_ROB_WAVE_ID_65D0) ||
                 (linkedIdOffset == LARGECRATE_ROB_WAVE_ID_65D2)) {
                 if (Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX) < LARGECRATE_WARNING_DISTANCE) {
-                    if ((u32)mainGetBit(LARGECRATE_GAMEBIT_SFX_MUTE) == 0) {
+                    if (mainGetBit(LARGECRATE_GAMEBIT_SFX_MUTE) == 0) {
                         Sfx_PlayFromObject((int)obj, SFXTRIG_tr_jbike_snowhit);
                     }
                 }

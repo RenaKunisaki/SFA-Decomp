@@ -32,7 +32,7 @@ void SB_ShipGunBroke_free(void)
 void SB_ShipGunBroke_render(GameObject* obj, int p2, int p3, int p4, int p5)
 {
     SBShipGunBrokePlacement* placement = (SBShipGunBrokePlacement*)obj->anim.placementData;
-    if ((u32)mainGetBit(placement->destroyedGameBit) != 0u)
+    if (mainGetBit(placement->destroyedGameBit) != 0u)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
@@ -45,7 +45,7 @@ void SB_ShipGunBroke_hitDetect(void)
 void SB_ShipGunBroke_update(GameObject* obj)
 {
     SBShipGunBrokePlacement* placement = (SBShipGunBrokePlacement*)obj->anim.placementData;
-    if ((u32)mainGetBit(placement->destroyedGameBit) != 0u)
+    if (mainGetBit(placement->destroyedGameBit) != 0u)
     {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_en_trpopn_c);
     }

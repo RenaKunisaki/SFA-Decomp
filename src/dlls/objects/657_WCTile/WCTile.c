@@ -96,16 +96,16 @@ void wctile_update(GameObject* obj)
     {
         if (objAnim->bankIndex == WCTILE_VARIANT_A)
         {
-            if ((u32)mainGetBit(WCTILE_GAMEBIT_A_HIDE) != 0)
+            if (mainGetBit(WCTILE_GAMEBIT_A_HIDE) != 0)
                 state->mode = WCTILE_MODE_HIDDEN;
-            else if ((u32)mainGetBit(WCTILE_GAMEBIT_A_FADE) != 0)
+            else if (mainGetBit(WCTILE_GAMEBIT_A_FADE) != 0)
                 state->mode = WCTILE_MODE_FADE_OUT;
         }
         else
         {
-            if ((u32)mainGetBit(WCTILE_GAMEBIT_B_HIDE) != 0)
+            if (mainGetBit(WCTILE_GAMEBIT_B_HIDE) != 0)
                 state->mode = WCTILE_MODE_HIDDEN;
-            else if ((u32)mainGetBit(WCTILE_GAMEBIT_B_FADE) != 0)
+            else if (mainGetBit(WCTILE_GAMEBIT_B_FADE) != 0)
                 state->mode = WCTILE_MODE_FADE_OUT;
         }
     }

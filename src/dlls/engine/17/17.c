@@ -47,7 +47,7 @@ void* saveGameGetCurHint(void)
 
 int hintTextMapFn_800ea264(void)
 {
-    int ret = (int)getCurGameText();
+    int ret = getCurGameText();
     u8* texts = getLastSavedGameTexts();
     gameTextLoadDir(lbl_803A4218[TASK_HINT_MAP[texts[5]]]);
     return ret;

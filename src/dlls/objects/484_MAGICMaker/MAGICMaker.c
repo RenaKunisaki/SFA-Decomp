@@ -88,7 +88,7 @@ void magicmaker_update(GameObject* obj)
     placement = (MagicmakerPlacement*)obj->anim.placementData;
     if (Obj_IsLoadingLocked() != 0)
     {
-        if ((u32)mainGetBit(MAGICMAKER_SPAWN_GAMEBIT) != 0u)
+        if (mainGetBit(MAGICMAKER_SPAWN_GAMEBIT) != 0u)
         {
             mainSetBits(MAGICMAKER_SPAWN_GAMEBIT, 0);
             objList = (GameObject**)ObjGroup_GetObjects(MAGICMAKER_CREATURE_GROUP, &groupCount);

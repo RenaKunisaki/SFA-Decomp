@@ -439,7 +439,7 @@ void dll_200_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
     areaId = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
     if ((u8)areaId == 4)
     {
-        if ((u32)mainGetBit(0x2bd) == 0u)
+        if (mainGetBit(0x2bd) == 0u)
             return;
         objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
         return;

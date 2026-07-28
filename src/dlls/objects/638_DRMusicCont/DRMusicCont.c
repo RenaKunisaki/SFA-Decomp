@@ -90,7 +90,7 @@ void drmusiccont_update(GameObject* obj)
                              DRMUSICCONT_CLOUD_OVERRIDE_POS_Z);
     if ((obj)->userData1 == 0)
     {
-        if ((u32)mainGetBit(GAMEBIT_DRArwingRelated0E7B) == 0)
+        if (mainGetBit(GAMEBIT_DRArwingRelated0E7B) == 0)
         {
             getEnvfxActImmediately(obj, obj, DRMUSICCONT_ENVFX_A, 0);
             getEnvfxActImmediately(obj, obj, DRMUSICCONT_ENVFX_B, 0);
@@ -173,7 +173,7 @@ void drmusiccont_update(GameObject* obj)
 
     if (flags->b_state != 0)
     {
-        if ((u32)mainGetBit(0x9f0) == 0 || mainGetBit(GAMEBIT_DR_RescuedHighTop) != 0)
+        if (mainGetBit(0x9f0) == 0 || mainGetBit(GAMEBIT_DR_RescuedHighTop) != 0)
         {
             (*gMapEventInterface)->clearRestartPoint();
             flags->b_state = 0;
@@ -181,7 +181,7 @@ void drmusiccont_update(GameObject* obj)
     }
     else
     {
-        if ((u32)mainGetBit(0x9f0) != 0 && mainGetBit(GAMEBIT_DR_RescuedHighTop) == 0)
+        if (mainGetBit(0x9f0) != 0 && mainGetBit(GAMEBIT_DR_RescuedHighTop) == 0)
         {
             f32 vec[3];
             vec[0] = DRMUSICCONT_RESTART_POINT_X;

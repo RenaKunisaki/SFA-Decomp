@@ -61,7 +61,7 @@ void SB_SeqDoor_update(GameObject* obj)
     {
         if (obj->userData1 == 0)
         {
-            if ((u32)mainGetBit(SB_SEQDOOR_ARM_GAMEBIT) != 0u)
+            if (mainGetBit(SB_SEQDOOR_ARM_GAMEBIT) != 0u)
             {
                 (*gObjectTriggerInterface)->runSequence(0, obj, -1);
                 obj->userData1 = 1;

@@ -205,7 +205,7 @@ void SB_KyteCage_init(GameObject* obj, SBKyteCagePlacement* placement)
     obj->objectFlags =
         (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN));
     state->seqLatch = 0;
-    if ((u32)mainGetBit(GAMEBIT_KYTE_CAGED) == 0u)
+    if (mainGetBit(GAMEBIT_KYTE_CAGED) == 0u)
     {
         getLActions(obj, obj, SB_KYTECAGE_LACTION_A, 0, 0, 0);
         getLActions(obj, obj, SB_KYTECAGE_LACTION_B, 0, 0, 0);

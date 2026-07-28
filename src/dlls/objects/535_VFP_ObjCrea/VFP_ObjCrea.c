@@ -73,7 +73,7 @@ void VFP_ObjCreator_update(GameObject* obj)
     case 0:
         break;
     case VFP_OBJCREATOR_FALLING_MODE:
-        if ((u32)mainGetBit(state->gameBit) == 0 && state->gameBit != -1)
+        if (mainGetBit(state->gameBit) == 0 && state->gameBit != -1)
         {
             break;
         }

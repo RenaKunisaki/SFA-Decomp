@@ -124,14 +124,14 @@ void explodable_buildFragments(GameObject* obj, int placementAddress, int skipCe
             chunk->offsetZ = chunk->centroidZ;
             explodable_computeFragmentLaunch(obj, (int)chunk, placementAddress);
             chunk->unknown6B = EXPLODABLE_FRAGMENT_FULL_ALPHA;
-            chunk->gameBitMode = (u32)mainGetBit(((ExplodablePlacement*)placementAddress)->doneGameBit) != 0 ? 2 : 0;
+            chunk->gameBitMode = mainGetBit(((ExplodablePlacement*)placementAddress)->doneGameBit) != 0 ? 2 : 0;
             ((ExplodableState*)childSlotAddress)->children[0] =
                 explodable_spawnFragmentObject(obj, fragmentObjectId, (int)chunk, fragmentIndex);
             chunk++;
             modelBankOffset += 4;
             childSlotAddress += 4;
         }
-        state->phase = ((u32)mainGetBit(((ExplodablePlacement*)placementAddress)->doneGameBit) != 0)
+        state->phase = (mainGetBit(((ExplodablePlacement*)placementAddress)->doneGameBit) != 0)
                            ? EXPLODABLE_PHASE_BREAKING
                            : EXPLODABLE_PHASE_WAIT;
     }
@@ -252,7 +252,7 @@ void explodable_update(GameObject* obj) {
     placement = (ExplodablePlacement*)placementAddress;
     if (state->phase != EXPLODABLE_PHASE_BROKEN) {
         if (state->phase == EXPLODABLE_PHASE_WAIT) {
-            if ((u32)mainGetBit(placement->activateGameBit) != 0) {
+            if (mainGetBit(placement->activateGameBit) != 0) {
                 explodable_buildFragments(obj, placementAddress, 0, stateAddress);
                 if (state->breakSfxId != 0) {
                     Sfx_PlayFromObject((u32)obj, state->breakSfxId & 0xffff);
@@ -326,7 +326,7 @@ void explodable_init(GameObject* obj, int placementAddress) {
     obj->anim.rotX = placement->rotX;
     obj->anim.rotY = placement->rotY;
     obj->anim.rotZ = placement->rotZ;
-    if ((u32)mainGetBit(placement->doneGameBit) != 0) {
+    if (mainGetBit(placement->doneGameBit) != 0) {
         state->phase = EXPLODABLE_PHASE_BROKEN;
     }
     for (recipeIndex = 0; recipeIndex < EXPLODABLE_RECIPE_COUNT; recipeIndex++) {

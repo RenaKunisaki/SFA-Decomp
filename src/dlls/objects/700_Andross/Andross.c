@@ -143,7 +143,7 @@ void andross_steerAsteroids(GameObject* obj, AndrossState* state)
                 dx = state->cachedPosX - ((GameObject*)cur)->anim.localPosX;
                 ((GameObject*)cur)->anim.rotX = getAngle(dx, dz);
                 ((GameObject*)cur)->anim.rotY = -(s16)getAngle(dy, dz);
-                arwprojectile_placeForward((GameObject*)(cur), (f32)(int)gAndrossProjectileForwardStep);
+                arwprojectile_placeForward((GameObject*)(cur), (f32)gAndrossProjectileForwardStep);
             }
             objs++;
         }
@@ -241,7 +241,7 @@ void andross_spawnAimedRing(GameObject* obj, AndrossState* state, int p3)
         if (obj != NULL)
         {
             arwprojectile_setLifetime(obj, gAndrossAimedProjectileLifetime);
-            arwprojectile_placeForward(obj, (f32)(int)gAndrossAimedProjectileSpeed);
+            arwprojectile_placeForward(obj, (f32)gAndrossAimedProjectileSpeed);
         }
     }
 }

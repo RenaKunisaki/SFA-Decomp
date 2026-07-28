@@ -69,7 +69,7 @@ void wcfloortile_update(GameObject* obj)
     int i;
     WcFloorTileSetup* setup = (WcFloorTileSetup*)obj->anim.placementData;
 
-    if ((u32)mainGetBit(824) != 0)
+    if (mainGetBit(824) != 0)
     {
         obj->anim.localPosY = setup->base.posY;
         state->phase = WCFLOORTILE_PHASE_RESTORE;
@@ -96,7 +96,7 @@ void wcfloortile_update(GameObject* obj)
                 }
             }
         }
-        else if ((u32)mainGetBit(613) != 0)
+        else if (mainGetBit(613) != 0)
         {
             state->flags |= 4;
         }

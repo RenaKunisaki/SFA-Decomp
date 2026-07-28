@@ -271,7 +271,7 @@ void wctemplebri_init(GameObject* obj, WCTempleBriSetup* setup)
     }
     state->partCount = 0xa;
     state->maxY = maxY;
-    if ((u32)mainGetBit(setup->solvedBit) != 0)
+    if (mainGetBit(setup->solvedBit) != 0)
     {
         state->active = 1;
         state->flags |= WCTEMPLEBRI_FLAG_SOLVED;

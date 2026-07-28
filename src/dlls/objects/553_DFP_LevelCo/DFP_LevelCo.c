@@ -279,7 +279,7 @@ void DFP_LevelControl_init(GameObject* obj, DfpLevelControlPlacement* placement)
     {
         mainSetBits(0xdce, 0);
     }
-    if ((u32)mainGetBit(0xdce) != 0)
+    if (mainGetBit(0xdce) != 0)
     {
         Music_Trigger(MUSICTRIG_blizzard, 0);
         Music_Trigger(MUSICTRIG_trex_hit, 0);

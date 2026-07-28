@@ -129,7 +129,7 @@ void wctrexstatu_init(GameObject* obj, WCTrexStatueSetup* setup, int fromLoad)
         }
     }
 
-    if ((u32)mainGetBit(setup->raisedBit) != 0)
+    if (mainGetBit(setup->raisedBit) != 0)
     {
         ObjTextureRuntimeSlot* texture = objFindTexture((GameObject*)obj, 0, 0);
 

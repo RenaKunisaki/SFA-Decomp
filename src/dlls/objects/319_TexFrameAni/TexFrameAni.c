@@ -63,7 +63,7 @@ void TexFrameAnimator_update(GameObject* obj) {
     state = obj->extra;
     placement = *(TexFrameAnimatorPlacement**)&obj->anim.placementData;
 
-    if ((state->active == 0) && ((u32)mainGetBit(placement->triggerGameBit) != 0) && (state->done == 0)) {
+    if ((state->active == 0) && (mainGetBit(placement->triggerGameBit) != 0) && (state->done == 0)) {
         state->active = 1;
         state->frame = 0;
     }

@@ -26,8 +26,8 @@
 #define DLL_21B_REACHED_BIT    0x4ec
 #define DLL_21B_MOVING_BIT     0x4ed
 #define DLL_21B_RESET_BIT      0x4ea
-#define DLL_21B_BIT_SET(bit)   ((u32)mainGetBit(bit) != 0u)
-#define DLL_21B_BIT_CLEAR(bit) ((u32)mainGetBit(bit) == 0u)
+#define DLL_21B_BIT_SET(bit)   (mainGetBit(bit) != 0u)
+#define DLL_21B_BIT_CLEAR(bit) (mainGetBit(bit) == 0u)
 
 #define DLL_21B_OBJFLAG_HIDDEN             0x4000
 #define DLL_21B_OBJFLAG_HITDETECT_DISABLED 0x2000

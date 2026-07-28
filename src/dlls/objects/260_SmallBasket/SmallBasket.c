@@ -900,7 +900,7 @@ void SmallBasket_init(GameObject* obj, SmallBasketPlacement* placement) {
     obj->anim.previousLocalPosY = obj->anim.localPosY;
     obj->anim.previousLocalPosX = obj->anim.localPosZ;
 
-    if ((u32)mainGetBit(state->enableGameBit) != 0) {
+    if (mainGetBit(state->enableGameBit) != 0) {
         state->hiddenTimer = 1;
         ObjHits_DisableObject(obj);
     }

@@ -188,7 +188,7 @@ void dimmagicbridge_init(GameObject* obj, const DimMagicBridgePlacement* placeme
     s16* vertex;
     s16 vertexY;
 
-    obj->anim.rotX = (s16)(((s16)(s8)placement->rotationXByte) << 8);
+    obj->anim.rotX = (s16)(((s16)placement->rotationXByte) << 8);
     obj->animEventCallback = dimmagicbridge_SeqFn;
     state = obj->extra;
     minVertexY = 0;

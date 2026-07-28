@@ -61,7 +61,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         state->mode = WCLEVELCTL_MODE_TREX_ACTIVE;
         break;
     case WCLEVELCTL_MODE_TREX_ACTIVE:
-        if ((u32)mainGetBit(0x2a5) != 0)
+        if (mainGetBit(0x2a5) != 0)
         {
             GameObject* player;
             mainSetBits(0x274, 1);
@@ -77,7 +77,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         {
             mainSetBits(0x274, 0);
             mainSetBits(0xef1, 0);
-            if ((u32)mainGetBit(0x34d) == 0)
+            if (mainGetBit(0x34d) == 0)
             {
                 mainSetBits(0x2b1, 0);
                 mainSetBits(0x226, 1);
@@ -93,7 +93,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         {
             mainSetBits(0xef1, 1);
             mainSetBits(0xe6d, 0);
-            if ((u32)mainGetBit(0x204) != 0)
+            if (mainGetBit(0x204) != 0)
             {
                 mainSetBits(0x226, 0);
                 mainSetBits(0x2a6, 0);
@@ -114,7 +114,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
             Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
             state->completionFlags |= WCLEVELCTL_FLAG_TILE_A;
         }
-        else if ((u32)mainGetBit(WCPUSHBLOCK_GAMEBIT_A_FADE) != 0)
+        else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_A_FADE) != 0)
         {
             if (state->tileAResetTimer <= lbl_803E6DA8)
             {
@@ -139,7 +139,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
             Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
             state->completionFlags |= WCLEVELCTL_FLAG_TILE_B;
         }
-        else if ((u32)mainGetBit(WCPUSHBLOCK_GAMEBIT_B_FADE) != 0)
+        else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_B_FADE) != 0)
         {
             if (state->tileBResetTimer <= lbl_803E6DA8)
             {
@@ -158,7 +158,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
 
     if (!(state->completionFlags & WCLEVELCTL_FLAG_SWITCHES))
     {
-        if ((u32)mainGetBit(0xc58) != 0 && mainGetBit(0xc59) != 0 && mainGetBit(0xc5a) != 0)
+        if (mainGetBit(0xc58) != 0 && mainGetBit(0xc59) != 0 && mainGetBit(0xc5a) != 0)
         {
             mainSetBits(0x205, 1);
             Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
@@ -183,7 +183,7 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
 
     if (!(state->completionFlags & WCLEVELCTL_FLAG_FINAL))
     {
-        if ((u32)mainGetBit(0xbcf) != 0)
+        if (mainGetBit(0xbcf) != 0)
         {
             GameObject* player;
             mainSetBits(0xbc8, 0);
@@ -198,11 +198,11 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
     }
 
     state->completionFlags &= ~WCLEVELCTL_FLAG_TRIGGERED;
-    if ((u32)mainGetBit(GAMEBIT_Tricky_SaidGoodBye) != 0)
+    if (mainGetBit(GAMEBIT_Tricky_SaidGoodBye) != 0)
     {
         mainSetBits(GAMEBIT_Tricky_Usable, 0);
         mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
-        if ((u32)mainGetBit(GAMEBIT_TrickyTalk) == 0xff)
+        if (mainGetBit(GAMEBIT_TrickyTalk) == 0xff)
             mainSetBits(GAMEBIT_TrickyTalk, randomGetRange(6, 7));
     }
 }
@@ -222,17 +222,17 @@ void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
             mainSetBits(GAMEBIT_WC_PushBlockTimerActive, 1);
             mainSetBits(0xedd, 1);
         }
-        else if ((u32)mainGetBit(0x7f9) != 0)
+        else if (mainGetBit(0x7f9) != 0)
         {
             state->completionFlags |= WCLEVELCTL_FLAG_PUZZLE_A;
             gameTimerStop();
-            if ((u32)mainGetBit(0x7fa) != 0)
+            if (mainGetBit(0x7fa) != 0)
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
             else
                 Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
             mainSetBits(GAMEBIT_WC_PushBlockTimerActive, 0);
             mainSetBits(0xedd, 0);
-            if ((u32)mainGetBit(0x7fa) != 0)
+            if (mainGetBit(0x7fa) != 0)
             {
                 (*gObjectTriggerInterface)->runSequence(0, obj, -1);
                 state->mode = WCLEVELCTL_MODE_SEQUENCE;
@@ -261,17 +261,17 @@ void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
             mainSetBits(GAMEBIT_WC_PushBlockTimerActive, 1);
             mainSetBits(0xedc, 1);
         }
-        else if ((u32)mainGetBit(0x7fa) != 0)
+        else if (mainGetBit(0x7fa) != 0)
         {
             state->completionFlags |= WCLEVELCTL_FLAG_PUZZLE_B;
             gameTimerStop();
-            if ((u32)mainGetBit(0x7f9) != 0)
+            if (mainGetBit(0x7f9) != 0)
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
             else
                 Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
             mainSetBits(GAMEBIT_WC_PushBlockTimerActive, 0);
             mainSetBits(0xedc, 0);
-            if ((u32)mainGetBit(0x7f9) != 0)
+            if (mainGetBit(0x7f9) != 0)
             {
                 (*gObjectTriggerInterface)->runSequence(0, obj, -1);
                 state->mode = WCLEVELCTL_MODE_SEQUENCE;
@@ -293,7 +293,7 @@ void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
         }
         break;
     case WCLEVELCTL_MODE_SEQUENCE:
-        if ((u32)mainGetBit(0xcac) != 0)
+        if (mainGetBit(0xcac) != 0)
         {
             GameObject* player;
             mainSetBits(0xda9, 0);
@@ -822,8 +822,8 @@ void wclevelcont_syncProgressBits(WcLevelControlState* state)
     SCGameBitLatch_Update(&state->gameBitLatch, 0x10, -1, -1, 0xcd0, 0xd4);
     SCGameBitLatch_Update(&state->gameBitLatch, 0x40, -1, -1, 0xcbb, 0xc4);
     flag = 0;
-    if ((u32)mainGetBit(GAMEBIT_WC_PushBlockTimerActive) == 0 &&
-        ((u32)mainGetBit(0xda9) != 0 || gameTimerIsRunning() != 0))
+    if (mainGetBit(GAMEBIT_WC_PushBlockTimerActive) == 0 &&
+        (mainGetBit(0xda9) != 0 || gameTimerIsRunning() != 0))
     {
         flag = 1;
     }
@@ -838,7 +838,7 @@ void wclevelcont_update(GameObject* obj)
 
     if (obj->userData1 == 0)
     {
-        if ((u32)mainGetBit(GAMEBIT_WC_MagicCaveRelated0E05) == 0)
+        if (mainGetBit(GAMEBIT_WC_MagicCaveRelated0E05) == 0)
         {
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_A, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_B, 0);
@@ -882,21 +882,21 @@ void wclevelcont_init(GameObject* obj)
     memcpy(gWcTileGridA, gWcTileGridAInitial.g, 0x40);
     mainSetBits(0x811, 0);
     memcpy(gWcTileGridB, gWcTileGridBInitial.g, 0x40);
-    if ((u32)mainGetBit(0x7fa) != 0)
+    if (mainGetBit(0x7fa) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_PUZZLE_B;
-    if ((u32)mainGetBit(0x7f9) != 0)
+    if (mainGetBit(0x7f9) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_PUZZLE_A;
-    if ((u32)mainGetBit(0x813) != 0)
+    if (mainGetBit(0x813) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_TILE_B;
-    if ((u32)mainGetBit(0x812) != 0)
+    if (mainGetBit(0x812) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_TILE_A;
-    if ((u32)mainGetBit(0x2a5) != 0)
+    if (mainGetBit(0x2a5) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_TREX;
-    if ((u32)mainGetBit(0x205) != 0)
+    if (mainGetBit(0x205) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_SWITCHES;
-    if ((u32)mainGetBit(0xbcf) != 0)
+    if (mainGetBit(0xbcf) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_FINAL;
-    if ((u32)mainGetBit(0xcac) != 0)
+    if (mainGetBit(0xcac) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_EXTRA;
     flags = state->completionFlags;
     if (flags & 0x200)

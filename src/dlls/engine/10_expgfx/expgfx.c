@@ -3079,7 +3079,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         axisX = 250.0f * (workA / norm);
                         axisY = 250.0f * (workB / norm);
                         axisZ = 250.0f * (attractRatio / norm);
-                        attractRatio = 2.0f / (EXPGFX_U16_TO_UNIT_SCALE * (f32)(u16)slot->scaleTarget);
+                        attractRatio = 2.0f / (EXPGFX_U16_TO_UNIT_SCALE * (f32)slot->scaleTarget);
                         quad[0].x = (s16)axisX;
                         quad[0].y = (s16)axisY;
                         quad[0].z = (s16)axisZ;

@@ -172,7 +172,7 @@ void dll_F7_update(GameObject* obj) {
         if ((int)placement->completeGameBit != -1) {
             mainSetBits((int)placement->completeGameBit, 1);
         }
-        if (state->alternateMode == 0 && (u8)Obj_IsLoadingLocked() != 0) {
+        if (state->alternateMode == 0 && Obj_IsLoadingLocked() != 0) {
             CollectibleSetup* setup =
                 (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), COLLECTIBLE_ITEM_ENERGY_EGG);
             setup->hideGameBit = -1;

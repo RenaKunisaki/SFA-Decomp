@@ -93,7 +93,7 @@ void blasted_update(GameObject* obj) {
     if (state->mapLayerActivated != 0) {
         return;
     }
-    if ((u32)mainGetBit(placement->completedGameBit) != 0) {
+    if (mainGetBit(placement->completedGameBit) != 0) {
         state->mapLayerActivated = blasted_activateMapLayer(obj, placement->mapLayerId);
         return;
     }
@@ -170,7 +170,7 @@ void blasted_init(GameObject* obj, BlastedTargetPlacement* placement) {
     }
     mainSetBits(BLASTED_GAMEBIT_DAMAGE_BASE, TRUE);
     obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
-    if ((u32)mainGetBit(placement->completedGameBit) != 0) {
+    if (mainGetBit(placement->completedGameBit) != 0) {
         state->mapLayerActivated = blasted_activateMapLayer(obj, placement->mapLayerId);
     }
 }

@@ -101,11 +101,11 @@ int WeirdUnusedMenu_run(void)
     }
     else if (gWeirdMenuPhase == 1)
     {
-        if ((s8)gWeirdMenuSaveTimer == 0)
+        if (gWeirdMenuSaveTimer == 0)
         {
             saveGame_save();
         }
-        if ((f32)(s8)(gWeirdMenuSaveTimer = ((f32)(s8)gWeirdMenuSaveTimer + timeDelta)) >= 120.0f)
+        if ((f32)(s8)(gWeirdMenuSaveTimer = ((f32)gWeirdMenuSaveTimer + timeDelta)) >= 120.0f)
         {
             gWeirdMenuPhase = 0;
             gWeirdMenuWidgetWork.widgetFlagsA = (u16)(gWeirdMenuWidgetWork.widgetFlagsA & ~WIDGET_FLAG_SAVING);
