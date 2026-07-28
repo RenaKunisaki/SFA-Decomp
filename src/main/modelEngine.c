@@ -484,7 +484,7 @@ extern ResourceDescriptor dll_89_funcs, dll_8A_funcs, dll_8B_funcs, dll_8C_funcs
 extern ResourceDescriptor dll_91_funcs, dll_92_funcs, dll_93_funcs, dll_94_funcs, dll_95_funcs, dll_96_funcs,
     dll_97_funcs, dll_98_funcs;
 extern ResourceDescriptor dll_99_funcs, dll_9A_funcs, dll_9B_funcs, dll_9C_funcs, dll_9D_funcs, dll_9E_funcs,
-    lbl_80318690, dll_A0_funcs;
+    dll_9F_funcs, dll_A0_funcs;
 extern ResourceDescriptor dll_A1_funcs, dll_A2_funcs, DummyA4_funcs, dll_A5_funcs, dll_A6_funcs, dll_A7_funcs,
     dll_A8_funcs, dll_A9_funcs;
 extern ResourceDescriptor dll_AA_funcs, projdummy_funcs, lbl_803193C0, lbl_80319410, lbl_80319460, projlightning1_funcs,
@@ -1286,7 +1286,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &dll_9C_funcs,
     &dll_9D_funcs,
     &dll_9E_funcs,
-    &lbl_80318690,
+    &dll_9F_funcs,
     &dll_A0_funcs,
     &dll_A1_funcs,
     &dll_A2_funcs,

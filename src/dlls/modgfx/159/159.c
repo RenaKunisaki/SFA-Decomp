@@ -15,6 +15,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 /* base draw flags before OR'ing the caller's flags */
 #define DLL9F_EFFECT_BASE_FLAGS 0xc0104c0
@@ -238,5 +239,13 @@ u8 gDll9FEffectDataTable[520] = {
     0,   50,  0,  250, 0,   250, 0,   50,  0,   0,   0,   0,   0,  0,
 };
 
-void* lbl_80318690[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_9F_func00_nop, dll_9F_func01_nop, (void*)0x00000000, dll_9F_func03};
+ObjectDescriptor4 dll_9F_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_9F_func00_nop,
+    (ObjectDescriptorCallback)dll_9F_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_9F_func03,
+};
