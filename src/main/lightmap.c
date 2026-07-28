@@ -94,7 +94,7 @@ extern s32 heatEffectIntensity;
 extern u8 gLightmapScreenImageEnabled;
 extern s8 gMapBlockDrawOrderFrontToBack[];
 extern s8 gMapBlockDrawOrderBackToFront[];
-extern int lbl_8038228C[];
+extern int gMapBlockCellStateTables[];
 extern s8* gMapLayerCellStates;
 extern s32 gMapCurRomListSlot;
 extern f32 lbl_803DCE58;
@@ -209,8 +209,8 @@ MapBlockData* mapGetBlock(int i)
     return gMapBlocks[i];
 }
 
-extern u32 lbl_8037E0C0[];
-extern s32 lbl_803DCE30;
+extern u32 gLightmapDrawQueue[];
+extern s32 gLightmapDrawQueueCount;
 
 s8* mapGetBlockIdx(int layer)
 {
@@ -239,7 +239,7 @@ extern s16 gVisibleObjectSortKeyCount;
 
 
 
-extern s16* lbl_803822A0[];
+extern s16* gMapBlockCellEntryTables[];
 extern f32 gMapBlockWorldSize;
 extern int gMapBlockOriginX;
 extern int gMapBlockOriginZ;
@@ -250,7 +250,7 @@ int coordsToMapCell(f32 x, f32 z)
     int iz = (int)(fastFloorf(z / gMapBlockWorldSize) - (f32)gMapBlockOriginZ);
     if (ix < 0 || ix >= 16) return -1;
     if (iz < 0 || iz >= 16) return -1;
-    return *(s16*)((char*)lbl_803822A0[0] + (ix + iz * 16) * 12);
+    return *(s16*)((char*)gMapBlockCellEntryTables[0] + (ix + iz * 16) * 12);
 }
 
 void mapGetBlockOriginForPos(f32 x, f32 y, f32 z, f32* outX, f32* outZ)
@@ -498,8 +498,8 @@ void getVisibleObjects(s8* opacity)
                             (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 1;
-                            lbl_803DCE30++;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueueCount++;
                         }
                     }
                     else
@@ -514,14 +514,14 @@ void getVisibleObjects(s8* opacity)
                             mode = 7;
                         }
                         renderShadowType3(o, mode, 0);
-                        lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 0;
-                        lbl_803DCE30++;
+                        gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 0;
+                        gLightmapDrawQueueCount++;
                         if ((((ObjAnimComponent*)o)->modelInstance->renderFlags & 0x20) != 0 &&
                             (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 1;
-                            lbl_803DCE30++;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueueCount++;
                         }
                     }
                 }
@@ -561,8 +561,8 @@ void renderObjects(s8* opacity)
     int qi;
     u32 shadowKind;
 
-    qbase = (LightmapDrawQueue*)lbl_8037E0C0;
-    q = (LightmapQEnt*)lbl_8037E0C0;
+    qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
+    q = (LightmapQEnt*)gLightmapDrawQueue;
     objects = ObjList_GetObjects((int*)0, 0);
     for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++)
     {
@@ -591,10 +591,10 @@ void renderObjects(s8* opacity)
             {
                 renderShadowType3(obj, 0x13, 0);
                 shadowKind = 2;
-                qi = lbl_803DCE30;
+                qi = gLightmapDrawQueueCount;
                 qe = &q[qi];
                 qe->d = shadowKind;
-                lbl_803DCE30 = qi + 1;
+                gLightmapDrawQueueCount = qi + 1;
             }
             else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH && (((GameObject*)obj)->anim.flags
                 & OBJANIM_FLAG_HIDDEN) == 0 && (((GameObject*)obj)->anim.modelState->flags &
@@ -602,10 +602,10 @@ void renderObjects(s8* opacity)
             {
                 renderShadowType3(obj, 0x13, 0);
                 shadowKind = 3;
-                qi = lbl_803DCE30;
+                qi = gLightmapDrawQueueCount;
                 qe = &q[qi];
                 qe->d = shadowKind;
-                lbl_803DCE30 = qi + 1;
+                gLightmapDrawQueueCount = qi + 1;
             }
         }
     }
@@ -651,7 +651,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
 
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
-    layerFlagPtr = &lbl_8038228C[4];
+    layerFlagPtr = &gMapBlockCellStateTables[4];
     do
     {
         worldSize = gMapBlockWorldSize;
@@ -743,7 +743,7 @@ void sceneDraw(void)
     f32 skyB;
     s8 buf[616];
 
-    q = (char*)lbl_8037E0C0;
+    q = (char*)gLightmapDrawQueue;
     lbl_803DCE34 = (u32)cloudGetLayerTextureSize(&skyA, &skyB);
     if (lbl_803DCE34 != 0)
     {
@@ -769,7 +769,7 @@ void sceneDraw(void)
     lbl_803DCEAC = 0;
     lbl_803DCE06 = 0;
     drawReflectionTexture();
-    lbl_803DCE30 = 0;
+    gLightmapDrawQueueCount = 0;
     getVisibleObjects(buf);
     Rcp_UpdateDistortionTextures();
     perspectiveFn_80129db4();
@@ -846,22 +846,22 @@ void sceneDraw(void)
     renderParticles();
     renderSceneGeometry(1, gMapBlockDrawOrderBackToFront);
     renderSceneGeometry(2, gMapBlockDrawOrderBackToFront);
-    if (lbl_803DCE30 == 1000)
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
-    *(u32*)(((int)q + 8) + lbl_803DCE30 * 16) = 0x78000000;
-    *(u32*)(((int)q + 12) + lbl_803DCE30 * 16) = 8;
-    lbl_803DCE30 = lbl_803DCE30 + 1;
-    if (lbl_803DCE30 == 1000)
+    *(u32*)(((int)q + 8) + gLightmapDrawQueueCount * 16) = 0x78000000;
+    *(u32*)(((int)q + 12) + gLightmapDrawQueueCount * 16) = 8;
+    gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
-    *(u32*)(((int)q + 8) + lbl_803DCE30 * 16) = 0x50000000;
-    *(u32*)(((int)q + 12) + lbl_803DCE30 * 16) = 9;
-    lbl_803DCE30 = lbl_803DCE30 + 1;
+    *(u32*)(((int)q + 8) + gLightmapDrawQueueCount * 16) = 0x50000000;
+    *(u32*)(((int)q + 12) + gLightmapDrawQueueCount * 16) = 9;
+    gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
     sceneDrawTransparentPolys();
     (*gModgfxInterface)->markSourceFrameUpdated(buf);
     (*gModgfxInterface)->renderEffects(NULL, 0, 0, 0, NULL);

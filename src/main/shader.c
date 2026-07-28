@@ -90,7 +90,7 @@ extern const f32 gMapBlockWorldSize;
 int lbl_803DB620 = -1;
 s8 lbl_803DB624[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 lbl_803DB62C = 0.5f;
-extern int lbl_803822A0[5];
+extern int gMapBlockCellEntryTables[5];
 extern f32 lbl_803DEBCC;
 
 f32 gMapSavedPlayerOffsetX;
@@ -137,7 +137,7 @@ u8 distortionFilterColor[3];
 f32 distortionFilterAngle1;
 s32 bEnableColorFilter;
 int* lbl_803DCE34;
-int lbl_803DCE30;
+int gLightmapDrawQueueCount;
 ModelLightStruct* gTexBlockLightList[2];
 ModelLightStruct* gTexDimmedLightList[2];
 int gMapPendingFileFlags;
@@ -184,7 +184,7 @@ extern int gShaderCurMapEventId;
 int mapCoordsToId(int x, int z, int layer);
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
-extern char lbl_8037E0C0[];
+extern char gLightmapDrawQueue[];
 typedef struct ShaderRomListSlot
 {
     void* romlist;
@@ -840,7 +840,7 @@ void mapLoadUnloadObjects(int flag)
     int vis;
     int idx;
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     count = 0;
     i = 0;
     tp = (int*)(base + 0x41E0);
@@ -1432,7 +1432,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
     s8* statusArr;
     MapCellEntry* entry;
 
-    entry = (MapCellEntry*)lbl_803822A0[layer];
+    entry = (MapCellEntry*)gMapBlockCellEntryTables[layer];
     statusArr = gMapBlockLayerTables[layer];
     slotIdx = cellX + (cellZ << 4);
     entry += slotIdx;
@@ -1718,7 +1718,7 @@ void beginLoadingMap(void)
     int bo;
     char buf[0x110];
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     if (lbl_803DCEB8 == -1)
     {
         lbl_803DCEB8 = -2;
@@ -2105,7 +2105,7 @@ void doPendingMapLoads(void)
     MapLoadRec recs[300];
     int rectA[4], rectB[4], rectC[4], rectD[4];
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     waited = 0;
     if (!(renderFlags & 0x1000))
     {
@@ -2602,7 +2602,7 @@ extern int lbl_803DB648;
 
 MapRomList* mapGetCurrentRomList(void)
 {
-    char* p = (char*)lbl_803822A0[0];
+    char* p = (char*)gMapBlockCellEntryTables[0];
     int v = *(s16*)(p + 0x594);
     if (v < 0)
     {
@@ -2626,7 +2626,7 @@ MapRomList* mapGetCurrentRomList(void)
 
 MapCellEntry* mapGetCellEntry(int x, int z)
 {
-    int* base = (int*)lbl_803822A0[0];
+    int* base = (int*)gMapBlockCellEntryTables[0];
     return (MapCellEntry*)((char*)base + (x + (z << 4)) * 12);
 }
 
@@ -3004,7 +3004,7 @@ int mapProcessRomList(int slot)
     int rl;
     f32 dx, dz;
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     flag = 0;
     while (isRomListLoading())
     {
@@ -3482,15 +3482,15 @@ void buildPlayerRelativeFrustumPlanes(void)
     frustumPlanes_updateAabbCornerIndices(gPlayerRelativeFrustumPlanes, FRUSTUM_PLANE_COUNT);
 }
 
-char lbl_8037E0C0[0x2149];
+char gLightmapDrawQueue[0x2149];
 u8 lbl_80380209[0x1DFF];
 u8 lbl_80382008[0x30];
 u8 gGlowLightList[0x190];
 f32 distortionFilterVector[0x1c];
 int gShaderMapRomBuffers[0x5];
 BlockEntry gShaderRomListSlots[8];
-u8 lbl_8038228C[0x14];
-int lbl_803822A0[5];
+u8 gMapBlockCellStateTables[0x14];
+int gMapBlockCellEntryTables[5];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 
 MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
