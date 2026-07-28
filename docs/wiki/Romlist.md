@@ -136,10 +136,10 @@ agree on every field:
   `position`; `mapId` (offset `0x14`, `s32`) = the wiki's `id`. The header's own comment already flags
   offset 0-3 as "CLASS-DEPENDENT" — i.e. once the loader has consumed `type`/`size`/`acts0`/`loadFlags`
   for its own purposes, individual object classes are free to re-read those same bytes for a
-  completely different, class-specific meaning. `include/main/worldobj.h`'s `WorldObjSetup.objectId`
-  (`s16`, offset 0) is one instance of this: for that class the wiki's own `type` field doubles as a
-  per-instance variant ID (plausible here since each world-map icon is plausibly its own `OBJECTS.bin`
-  type sharing one DLL).
+  completely different, class-specific meaning. `include/dlls/objects/467.h`'s
+  `WorldObjSetup.base.objectId` (`s16`, offset 0) is one instance of this: for that class the wiki's
+  own `type` field doubles as a per-instance variant ID (plausible here since each world-map icon is
+  plausibly its own `OBJECTS.bin` type sharing one DLL).
 - `src/main/dll/dll_0017_savegame.c:151` — `SaveGameRomListPosition` (`pad0[8]`, then `x/y/z` at
   `0x8/0xc/0x10`, then `objectId` `u32` at `0x14`) is the *most literal* transcription of the wiki
   header of anything in the repo — right down to the name. It's used by
