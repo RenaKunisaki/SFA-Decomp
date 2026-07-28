@@ -2093,6 +2093,8 @@ void doPendingMapLoads(void)
     MapLoadRec* rowCursor;
     int layer;
     int colIdx;
+    int colIdx2;
+    int i2;
     int i;
     MapLoadRec* recsCursor;
     int cnt;
@@ -2205,12 +2207,12 @@ void doPendingMapLoads(void)
                                 ent[0].mapId = -1;
                                 ent[0].adjacentMapId1 = -1;
                                 ent[0].adjacentMapId2 = -1;
-                                i = i + 1;
-                                colIdx = colIdx + 1;
+                                i2 = i + 1;
+                                colIdx2 = colIdx + 1;
                                 c = cellGrid[1];
                                 if (c > -1)
                                 {
-                                    cellCursor->x = gMapBlockOriginX + colIdx;
+                                    cellCursor->x = gMapBlockOriginX + colIdx2;
                                     cellCursor->z = gMapBlockOriginZ + row;
                                     cellCursor->layer = layer;
                                     cellCursor->blockId = c;
@@ -2220,15 +2222,15 @@ void doPendingMapLoads(void)
                                     cnt++;
                                 }
                                 cellGrid[1] = -2;
-                                gMapLayerCellStates[i] = -1;
+                                gMapLayerCellStates[i2] = -1;
                                 ent[1].blockId = -3;
                                 ent[1].mapId = -1;
                                 ent[1].adjacentMapId1 = -1;
                                 ent[1].adjacentMapId2 = -1;
                                 ent += 2;
-                                i = i + 1;
+                                i = i2 + 1;
                                 cellGrid += 2;
-                                colIdx = colIdx + 1;
+                                colIdx = colIdx2 + 1;
                             }
                         }
                         cellTables++;
