@@ -1,127 +1,101 @@
-#include "main/dll/partfx_interface.h"
+/*
+ * DLL 0x1DF (slot 479) - unidentified particle-emitting object.
+ * The object applies placement rotation and scale, suppresses its texture
+ * color, and periodically emits an effect while the player is nearby.
+ */
+#include "dlls/objects/479.h"
+
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/objtexture.h"
-#include "sys/objects.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/objtexture.h"
 #include "main/vecmath_distance_api.h"
-#include "dlls/object_descriptor.h"
+#include "sys/objects.h"
 
-#define DLL1DF_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define DLL1DF_PARTFX 525
+#define DLL_1DF_PARTFX_ID            0x20D
+#define DLL_1DF_PLAYER_RANGE_SQUARED 90000.0f
+#define DLL_1DF_PARTFX_INTERVAL      12.0f
+#define DLL_1DF_SCALE_DIVISOR        255.0f
+#define DLL_1DF_INITIAL_STATE_VALUE  0.01f
 
-typedef struct Dll1DFPlaceData
-{
-    ObjPlacement base;
-    u8 rotZByte; /* 0x18 */
-    u8 rotYByte; /* 0x19 */
-    u8 rotXByte; /* 0x1A */
-    u8 scaleByte; /* 0x1B: nonzero scales root motion */
-} Dll1DFPlaceData;
-
-typedef struct Dll1DFState
-{
-    u8 pad0[0x4];
-    u8 unk4;
-    u8 unk5;
-    u8 unk6;
-    u8 pad7[0x10 - 0x7];
-    f32 unk10; /* 0x10: primed to 0.01f at init */
-    u8 pad14[0x24 - 0x14];
-    f32 spawnTimer; /* 0x24: counts down by timeDelta while player is near */
-} Dll1DFState;
-
-STATIC_ASSERT(offsetof(Dll1DFPlaceData, rotZByte) == 0x18);
-STATIC_ASSERT(offsetof(Dll1DFPlaceData, scaleByte) == 0x1B);
-STATIC_ASSERT(offsetof(Dll1DFState, unk10) == 0x10);
-STATIC_ASSERT(offsetof(Dll1DFState, spawnTimer) == 0x24);
-
-int dll_1DF_getExtraSize(void) { return 0x28; }
-int dll_1DF_getObjectTypeId(void) { return 0x0; }
-
-void dll_1DF_free(void)
-{
+int dll_1DF_getExtraSize(void) {
+    return sizeof(Dll1DFState);
 }
 
-void dll_1DF_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+int dll_1DF_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_1DF_hitDetect(void)
-{
+void dll_1DF_free(void) {
 }
 
-void dll_1DF_update(GameObject* obj)
-{
-    Dll1DFState* sub = obj->extra;
-    ObjTextureRuntimeSlot* tex;
+void dll_1DF_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
+}
+
+void dll_1DF_hitDetect(void) {
+}
+
+void dll_1DF_update(GameObject* obj) {
+    Dll1DFState* state = obj->extra;
+    ObjTextureRuntimeSlot* texture;
     GameObject* player;
-    f32 dist;
-    f32 t;
+    f32 distanceSquared;
+    f32 timer;
 
-    tex = objFindTexture((GameObject*)(obj), 0, 0);
-    if (tex != NULL)
-    {
-        if (obj->anim.seqId == 209)
-        {
-            f32 v = 0.0f;
-            tex->colorR = v;
-            tex->colorG = v;
-            tex->colorB = v;
-        }
-        else
-        {
-            f32 v = 0.0f;
-            tex->colorR = v;
-            tex->colorG = v;
-            tex->colorB = v;
+    texture = objFindTexture(obj, 0, 0);
+    if (texture != NULL) {
+        if (obj->anim.seqId == 0xD1) {
+            f32 color = 0.0f;
+
+            texture->colorR = color;
+            texture->colorG = color;
+            texture->colorB = color;
+        } else {
+            f32 color = 0.0f;
+
+            texture->colorR = color;
+            texture->colorG = color;
+            texture->colorB = color;
         }
     }
     player = Obj_GetPlayerObject();
-    dist = vec3f_distanceSquared(&player->anim.worldPosX, &obj->anim.worldPosX);
-    if (dist < 90000.0f)
-    {
-        t = sub->spawnTimer - timeDelta;
-        sub->spawnTimer = t;
-        if (t < 0.0f)
-        {
-            (*gPartfxInterface)->spawnObject(obj, DLL1DF_PARTFX, NULL, 2, -1, NULL);
-            sub->spawnTimer = 12.0f;
+    distanceSquared = vec3f_distanceSquared(&player->anim.worldPosX, &obj->anim.worldPosX);
+    if (distanceSquared < DLL_1DF_PLAYER_RANGE_SQUARED) {
+        timer = state->spawnTimer - timeDelta;
+        state->spawnTimer = timer;
+        if (timer < 0.0f) {
+            (*gPartfxInterface)->spawnObject(obj, DLL_1DF_PARTFX_ID, NULL, 2, -1, NULL);
+            state->spawnTimer = DLL_1DF_PARTFX_INTERVAL;
         }
     }
 }
 
-void dll_1DF_init(GameObject* obj, Dll1DFPlaceData* p)
-{
+void dll_1DF_init(GameObject* obj, const Dll1DFPlacementView* placement) {
     u32 scaleParam;
-    void* objDef;
-    void* modelState;
-    obj->anim.rotZ = (s16)((u32)p->rotZByte << 8);
-    obj->anim.rotY = (s16)((u32)p->rotYByte << 8);
-    obj->anim.rotX = (s16)((u32)p->rotXByte << 8);
-    scaleParam = p->scaleByte;
-    if (scaleParam != 0)
-    {
-        objDef = *(void**)&obj->anim.modelInstance;
-        obj->anim.rootMotionScale = ((ObjDef*)objDef)->rootMotionScaleBase * ((f32)scaleParam / 255.0f);
+
+    obj->anim.rotZ = (s16)((u32)placement->rotationZByte << 8);
+    obj->anim.rotY = (s16)((u32)placement->rotationYByte << 8);
+    obj->anim.rotX = (s16)((u32)placement->rotationXByte << 8);
+    scaleParam = placement->scaleByte;
+    if (scaleParam != 0) {
+        obj->anim.rootMotionScale =
+            obj->anim.modelInstance->rootMotionScaleBase * ((f32)scaleParam / DLL_1DF_SCALE_DIVISOR);
     }
-    ((Dll1DFState*)obj->extra)->unk10 = 0.01f;
-    modelState = *(void**)&obj->anim.modelState;
-    if (modelState != NULL)
-    {
-        ((ObjModelState*)modelState)->flags |= 0x810;
+    ((Dll1DFState*)obj->extra)->unknown10 = DLL_1DF_INITIAL_STATE_VALUE;
+    if (obj->anim.modelState != NULL) {
+        obj->anim.modelState->flags |= 0x810;
     }
-    obj->objectFlags |= DLL1DF_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
-void dll_1DF_release(void)
-{
+void dll_1DF_release(void) {
 }
 
-void dll_1DF_initialise(void)
-{
+void dll_1DF_initialise(void) {
 }
 
 ObjectDescriptor gDll1DFObjDescriptor = {
@@ -129,14 +103,14 @@ ObjectDescriptor gDll1DFObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_1DF_initialise,
-    (ObjectDescriptorCallback)dll_1DF_release,
+    dll_1DF_initialise,
+    dll_1DF_release,
     0,
     (ObjectDescriptorCallback)dll_1DF_init,
     (ObjectDescriptorCallback)dll_1DF_update,
-    (ObjectDescriptorCallback)dll_1DF_hitDetect,
+    dll_1DF_hitDetect,
     (ObjectDescriptorCallback)dll_1DF_render,
-    (ObjectDescriptorCallback)dll_1DF_free,
+    dll_1DF_free,
     (ObjectDescriptorCallback)dll_1DF_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll_1DF_getExtraSize,
+    dll_1DF_getExtraSize,
 };

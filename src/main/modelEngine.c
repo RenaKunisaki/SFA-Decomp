@@ -272,6 +272,7 @@
 #include "dlls/objects/476_DIM2IceFloe.h"
 #include "dlls/objects/477_DIM2Icicle.h"
 #include "dlls/objects/478_DIM2LavaCon.h"
+#include "dlls/objects/479.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -474,7 +475,7 @@ extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E
     Minimap_funcs, dll_3F_funcs;
 extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
-extern ResourceDescriptor gDll1DFObjDescriptor, lbl_80328AD8, lbl_80328E28, lbl_80329340;
+extern ResourceDescriptor lbl_80328AD8, lbl_80328E28, lbl_80329340;
 extern ResourceDescriptor gDll22CObjDescriptor, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
 extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, gDll29EObjDescriptor;
 extern ResourceDescriptor lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138, lbl_803DC140, lbl_803DC150;
@@ -1570,7 +1571,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIM2IceFloeObjDescriptor,
     (ResourceDescriptor*)&gDIM2IcicleObjDescriptor,
     (ResourceDescriptor*)&gDIM2LavaControlObjDescriptor,
-    &gDll1DFObjDescriptor,
+    (ResourceDescriptor*)&gDll1DFObjDescriptor,
     &gDIM_BossObjDescriptor,
     &gDIM_BossGutObjDescriptor,
     &gDIM_BossTonsilObjDescriptor,
