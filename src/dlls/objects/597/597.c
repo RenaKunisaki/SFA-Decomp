@@ -687,7 +687,7 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
         {
             rank = (int)Obj_GetPlayerObject();
             d = Vec_distance(&obj->anim.worldPosX, (f32*)(rank + 0x18));
-            d = d * 0.5f;
+            d *= 0.5f;
         }
         else
         {
@@ -2081,7 +2081,7 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
     speed = sqrtf(((SnowBikeMountState*)state)->velocityZ * ((SnowBikeMountState*)state)->velocityZ +
                   (((SnowBikeMountState*)state)->velocityX * ((SnowBikeMountState*)state)->velocityX +
                    ((SnowBikeMountState*)state)->velocityY * ((SnowBikeMountState*)state)->velocityY));
-    speed = speed * 0.2f;
+    speed *= 0.2f;
     if (speed > 1.0f)
     {
         speed = 1.0f;
