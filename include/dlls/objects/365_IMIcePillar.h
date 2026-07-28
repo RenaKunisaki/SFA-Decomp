@@ -7,8 +7,7 @@
 int imIcePillar_getExtraSize(void);
 int imIcePillar_getObjectTypeId(void);
 void imIcePillar_free(void);
-void imIcePillar_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void imIcePillar_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void imIcePillar_hitDetect(void);
 void imIcePillar_update(void);
 void imIcePillar_init(void);
