@@ -27,6 +27,22 @@ THREE TRAPS THIS TOOL EXISTS TO AVOID (each one silently produced a false PASS):
 3. PATH-DEPENDENT OUTPUT.  MWCC embeds the source path in the object, so
    compiling old.c and new.c always differs even when the code is identical.
    Both versions are compiled to the SAME scratch path, one after the other.
+
+4. FLAKE.  A gate that is sometimes wrong is worse than no gate, so a CHANGED
+   verdict is only reported after recompiling the baseline and confirming the
+   compiler was deterministic; otherwise you get a loud NONDET.
+
+⚠️ THIS TOOL CANNOT GATE A FUNCTION RENAME, BY CONSTRUCTION.
+A non-static function's name lives in the object's symbol table, so renaming it
+MUST change the md5.  `CHANGED ... not byte-neutral` (exit 1) is the EXPECTED
+result of a *correct* rename, not a failure -- do not "fix" it by reverting, and
+do not keep adjusting until the md5 settles, because the only renames that
+satisfy md5 are statics.  Use this tool for the DELETION / RETYPE / COMMENT
+class, where the emitted code genuinely must not move.
+
+    For a rename the gate is instead:
+      * tools/unitfuzzy.py <unit> identical before and after, and
+      * full tools/locked_ninja.sh EXIT=0.
 """
 
 from __future__ import annotations
