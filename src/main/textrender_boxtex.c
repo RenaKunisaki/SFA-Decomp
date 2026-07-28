@@ -25,6 +25,7 @@ void gameTextInitFn_8001c794(void)
     int count;
     int i;
     int k;
+    u16* edgeDst;
 
     count = 1;
     p = &gGameTextBoxTexAssets + 1;
@@ -111,7 +112,7 @@ void gameTextInitFn_8001c794(void)
 
     tex = textureAlloc(0x14, 0x14, 5, 0, 0, 0, 0, 1, 1);
     gGameTextBoxEdgeTexture = tex;
-    dst = (u16*)(tex + 1);
+    edgeDst = (u16*)(tex + 1);
     k = 0;
     for (; k < 5; k++)
     {
@@ -125,29 +126,29 @@ void gameTextInitFn_8001c794(void)
             x3 = (j + 3) * 2;
             off = y * 40;
             rowBase = (u8*)&gGameTextBoxEdgeTexSrc + off;
-            dst[0] = *(u16*)(rowBase + x0);
-            dst[1] = *(u16*)(rowBase + x1);
-            dst[2] = *(u16*)(rowBase + x2);
-            dst[3] = *(u16*)(rowBase + x3);
+            edgeDst[0] = *(u16*)(rowBase + x0);
+            edgeDst[1] = *(u16*)(rowBase + x1);
+            edgeDst[2] = *(u16*)(rowBase + x2);
+            edgeDst[3] = *(u16*)(rowBase + x3);
             off += 40;
             rowBase = (u8*)&gGameTextBoxEdgeTexSrc + off;
-            dst[4] = *(u16*)(rowBase + x0);
-            dst[5] = *(u16*)(rowBase + x1);
-            dst[6] = *(u16*)(rowBase + x2);
-            dst[7] = *(u16*)(rowBase + x3);
+            edgeDst[4] = *(u16*)(rowBase + x0);
+            edgeDst[5] = *(u16*)(rowBase + x1);
+            edgeDst[6] = *(u16*)(rowBase + x2);
+            edgeDst[7] = *(u16*)(rowBase + x3);
             off += 40;
             rowBase = (u8*)&gGameTextBoxEdgeTexSrc + off;
-            dst[8] = *(u16*)(rowBase + x0);
-            dst[9] = *(u16*)(rowBase + x1);
-            dst[10] = *(u16*)(rowBase + x2);
-            dst[11] = *(u16*)(rowBase + x3);
+            edgeDst[8] = *(u16*)(rowBase + x0);
+            edgeDst[9] = *(u16*)(rowBase + x1);
+            edgeDst[10] = *(u16*)(rowBase + x2);
+            edgeDst[11] = *(u16*)(rowBase + x3);
             off += 40;
             rowBase = (u8*)&gGameTextBoxEdgeTexSrc + off;
-            dst[12] = *(u16*)(rowBase + x0);
-            dst[13] = *(u16*)(rowBase + x1);
-            dst[14] = *(u16*)(rowBase + x2);
-            dst[15] = *(u16*)(rowBase + x3);
-            dst += 16;
+            edgeDst[12] = *(u16*)(rowBase + x0);
+            edgeDst[13] = *(u16*)(rowBase + x1);
+            edgeDst[14] = *(u16*)(rowBase + x2);
+            edgeDst[15] = *(u16*)(rowBase + x3);
+            edgeDst += 16;
             j += 4;
             x0 += 8;
         }
