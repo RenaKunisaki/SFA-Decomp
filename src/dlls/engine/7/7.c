@@ -972,7 +972,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
 f32 lbl_8039A8F0[4];
 extern int gNewCloudSnowFogColor;
 
-extern char lbl_8030F670[];
+extern char sSnowCloudErrorMessageBlock[];
 extern const f32 gNewCloudLightningForwardDist;
 extern f32 gNewCloudLightningRadius;
 
@@ -1102,7 +1102,7 @@ void snowReposSnowCloud(int cloudId)
     }
     if (cloudId != ((NewCloud*)p)->cloudId)
     {
-        debugPrintf(lbl_8030F670, cloudId);
+        debugPrintf(sSnowCloudErrorMessageBlock, cloudId);
         return;
     }
     part = ((NewCloud*)p)->flakes;
@@ -2268,7 +2268,7 @@ u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)ne
 char sSnowFreeSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowFreeSnowCloud\n";
 char sSnowPrintSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowPrintSnowCloud\n";
 
-char lbl_8030F670[] =
+char sSnowCloudErrorMessageBlock[] =
 {
     0x21, 0x21, 0x21, 0x20, 0x45, 0x72, 0x72, 0x6F, 0x72, 0x20, 0x6E, 0x6F,
     0x6E, 0x2D, 0x65, 0x78, 0x69, 0x73, 0x74, 0x61, 0x6E, 0x74, 0x20, 0x63,

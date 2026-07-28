@@ -54,7 +54,7 @@ STATIC_ASSERT(sizeof(MmRegion) == 0x14);
 
 typedef struct HeapItem
 {
-    void* key;
+    void* loc;
     int size;
     s16 type;
     s16 prev;
@@ -78,8 +78,8 @@ STATIC_ASSERT(sizeof(DeferredFree) == 0x8);
 
 typedef struct MmStore
 {
-    void* buf;
-    void* bufCur;
+    void* ptrStore;
+    void* ptrCurrent;
     int size;
     int handle;
 } MmStore;
@@ -199,14 +199,14 @@ void* mmAllocateFromFBMemoryStore(int handle, int size)
     }
     if (found != NULL)
     {
-        size = found->size - ((int)found->bufCur - (int)found->buf);
+        size = found->size - ((int)found->ptrCurrent - (int)found->ptrStore);
         if (size < sz)
         {
             OSReport(sMmMemoryStoreMessageBlock);
             return 0;
         }
-        found->bufCur = (char*)found->bufCur + sz;
-        return (void*)((int)found->bufCur - sz);
+        found->ptrCurrent = (char*)found->ptrCurrent + sz;
+        return (void*)((int)found->ptrCurrent - sz);
     }
     return 0;
 }
@@ -234,10 +234,10 @@ int mmCreateMemoryStore(int size)
     }
     store->size = size;
     store->handle = gMmNextStoreHandle++;
-    store->buf = NULL;
-    store->bufCur = NULL;
-    store->buf = mmAlloc(store->size, 0, (int)(msg + 0x2a8));
-    if (store->buf == NULL)
+    store->ptrStore = NULL;
+    store->ptrCurrent = NULL;
+    store->ptrStore = mmAlloc(store->size, 0, (int)(msg + 0x2a8));
+    if (store->ptrStore == NULL)
     {
         OSReport(msg + 0x2bc);
         if (gMmFreeDelay == 0)
@@ -250,7 +250,7 @@ int mmCreateMemoryStore(int size)
         }
         return 0;
     }
-    store->bufCur = store->buf;
+    store->ptrCurrent = store->ptrStore;
     while (i < 0x20)
     {
         if (gMmStoreArray[i] == NULL)
@@ -262,7 +262,7 @@ int mmCreateMemoryStore(int size)
         {
             void* buf;
             OSReport(msg + 0x2f8);
-            buf = store->buf;
+            buf = store->ptrStore;
             if (gMmFreeDelay == 0)
             {
                 mmFree(buf);
@@ -409,10 +409,10 @@ int heapSpawnSlot(int region, int idx, int size, int type, int newType, int item
         }
         base[idx].size = oldSize - size;
         base[ni].type = type;
-        base[ni].key = (char*)base[idx].key + oldSize - size;
-        if ((int)base[ni].key % 32 != 0)
+        base[ni].loc = (char*)base[idx].loc + oldSize - size;
+        if ((int)base[ni].loc % 32 != 0)
         {
-            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].key, base[ni].size);
+            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].loc, base[ni].size);
         }
         base[ni].size = size;
         base[ni].tag = itemTag;
@@ -444,10 +444,10 @@ int changeHeapSlot(int region, int idx, int newSize, int type, int newType, int 
     {
         s16 oldNext;
         ni = base[gMmRegionTable[region].slotCount++].stack;
-        base[ni].key = (char*)base[idx].key + newSize;
-        if ((int)base[ni].key % 32 != 0)
+        base[ni].loc = (char*)base[idx].loc + newSize;
+        if ((int)base[ni].loc % 32 != 0)
         {
-            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].key, base[ni].size);
+            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].loc, base[ni].size);
         }
         base[ni].size = oldSize - newSize;
         base[ni].type = newType;
@@ -573,7 +573,7 @@ void mmFree(void* p)
         i = 0;
         do
         {
-            if (base[i].key == p)
+            if (base[i].loc == p)
             {
                 s16 itemType = base[i].type;
                 if (itemType == 1 || itemType == 4)
@@ -629,7 +629,7 @@ void mmFreeTick(int arg)
         MmStore** sp = (MmStore**)g->stores;
         if (sp[k] != NULL)
         {
-            sp[k]->bufCur = sp[k]->buf;
+            sp[k]->ptrCurrent = sp[k]->ptrStore;
         }
     }
     SaveGame_updateTransientMapBits();
@@ -829,7 +829,7 @@ int mmAllocFromRegion(int region, int size, int type, int tag)
         }
         res->allocId = gMmNextAllocId++;
         gMmOpCount++;
-        return (int)res->key;
+        return (int)res->loc;
     }
 
     if ((region == 2 && size > 0x3000) || region == 3 || region == 1)
@@ -872,7 +872,7 @@ int getHeapItemSize(void* ptr)
     int idx = 0;
     for (;;)
     {
-        if (items[idx].key == ptr)
+        if (items[idx].loc == ptr)
         {
             return items[idx].size;
         }
@@ -982,11 +982,11 @@ void* mmInitRegion(u8* buf, int size, int numSlots)
     freePtr = (int)buf + slotsBytes;
     if (freePtr & 0x1f)
     {
-        *(int*)&slot->key = (freePtr & ~0x1f) + 0x20;
+        *(int*)&slot->loc = (freePtr & ~0x1f) + 0x20;
     }
     else
     {
-        *(int*)&slot->key = freePtr;
+        *(int*)&slot->loc = freePtr;
     }
     slot->size = after;
     slot->type = 0;

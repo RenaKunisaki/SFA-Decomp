@@ -499,7 +499,7 @@ extern ResourceDescriptor lbl_80319C88, lbl_80319CE8, lbl_80319D18, lbl_80319D48
     lbl_80319E08, lbl_80319E38;
 extern ResourceDescriptor lbl_80319E68, lbl_80319E98, lbl_80319EC8, lbl_80319EF8, lbl_80319F58, lbl_80319F88,
     lbl_8031A01C, lbl_8031A148;
-extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, lbl_8031A304, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
+extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
 extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, Dummy3E_funcs,
     Minimap_funcs, dll_3F_funcs;
@@ -1174,7 +1174,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &Minimap_funcs,
     &TitleScreenInit_funcs,
     &n_rareware_funcs,
-    &lbl_8031A304,
+    &n_attractmode_funcs,
     &lbl_8031A82C,
     &EnterSaveNameScreen_funcs,
     &OptionsScreen_funcs,
