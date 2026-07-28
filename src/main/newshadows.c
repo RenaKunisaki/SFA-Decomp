@@ -1508,8 +1508,8 @@ void initFn_8006d020(void)
             gNewShadowNoiseTexFrames[frame] = textureAlloc(0x40, 0x40, 3, 0, 0, 1, 1, 1, 1);
             for (row = 0; row < 0x40; row++)
             {
-                int column;
-                int h, rowPixelOffset;
+                int rowPixelOffset;
+                int column, h;
                 column = 0;
                 h = (row >> 2) * 0x20;
                 rowPixelOffset = (row & 3) * 2;
@@ -1863,8 +1863,9 @@ void allocLotsOfTextures(void)
             for (; j < 0x40; j++)
             {
                 f32 cc = (f32)j - 32.0f;
-                f32 d1, d2, cc2, d3, n1, a, b;
+                f32 d1, d2, cc2, d3, n1, b;
                 f64 n2, n3;
+                f32 a;
                 rc = fi * lbl_803DEDFC;
                 rc2 = fi2 * lbl_803DEDFC;
                 cc = cc * lbl_803DEDFC;
