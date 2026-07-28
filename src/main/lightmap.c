@@ -657,7 +657,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
         worldSize = gMapBlockWorldSize;
         table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
-        mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
+        mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
         mp = map;
         for (k = 0; k != ARRAY_COUNT(map); k += 4)

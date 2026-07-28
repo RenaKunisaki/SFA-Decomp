@@ -6308,7 +6308,7 @@ void pauseMenuFn_80129ee0(void)
                 Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
                 Sfx_PlayFromObject(0, SFXTRIG_menu_fox_weapons_up);
                 pauseMenuFrameCounter = 0x3c;
-                gameTextLoadForMap_800571f0(1);
+                mapLoadGameTextDir(1);
                 cutsceneFadeInOut(0);
                 buttonDisable(0, 0x1200);
                 pauseMenuState = 2;
@@ -6694,7 +6694,7 @@ void pauseMenuFn_80129ee0(void)
             else
             {
                 cutsceneFadeInOut(0);
-                gameTextLoadForMap_800571f0(1);
+                mapLoadGameTextDir(1);
                 pauseMenuState = 2;
                 pauseMenuFrameCounter = 0x3c;
             }

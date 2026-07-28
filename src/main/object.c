@@ -932,7 +932,7 @@ void mapSetupPlayer(void)
         vp->z = *(f32*)(view + 0x20);
         gTitleMenuControlInterface->vtable->func07(obj);
         lbl_803DCB70 = 0;
-        playerUpdateFn_8005649c();
+        mapUpdateCameraPosByTransformSpace();
     }
 }
 
