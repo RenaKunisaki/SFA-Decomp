@@ -1734,7 +1734,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     color[2] = 0xff;
                     if (p3[0] != 0 || (shader[0] == 0xff && shader[1] == 0xff && shader[2] == 0xff))
                     {
-                        gxFn_80051fb8(tex, mtxp, (u8)fl, (GXColor*)color, *((u8*)p3 + 8), 1);
+                        addTexLayerStageSwizzled(tex, mtxp, (u8)fl, (GXColor*)color, *((u8*)p3 + 8), 1);
                     }
                     else if (p5 != 0)
                     {
@@ -1745,7 +1745,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                         }
                         else
                         {
-                            gxFn_80051fb8(tex, mtxp, (u8)fl, &gObjCurChanColor, *((u8*)p3 + 8), 1);
+                            addTexLayerStageSwizzled(tex, mtxp, (u8)fl, &gObjCurChanColor, *((u8*)p3 + 8), 1);
                         }
                     }
                     else
@@ -1755,7 +1755,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                             addTexLayerStage(tex, mtxp, (u8)fl);
                             if (color[3] < 0xff)
                             {
-                                gxColorFn_80052764((GXColor*)color);
+                                addKColorModulateStage((GXColor*)color);
                             }
                         }
                         else
@@ -1772,26 +1772,26 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     color[3] = alpha;
                     if (p3[0] != 0 || (shader[0] == 0xff && shader[1] == 0xff && shader[2] == 0xff))
                     {
-                        gxColorFn_80052764((GXColor*)color);
+                        addKColorModulateStage((GXColor*)color);
                     }
                     else if (p5 != 0)
                     {
                         colp[3] = alpha;
-                        gxColorFn_80052764(&gObjCurChanColor);
+                        addKColorModulateStage(&gObjCurChanColor);
                     }
                     else
                     {
                         if (shader[0x40] & 0x10)
                         {
-                            gxColorFn_800523d0();
+                            addVertexColorStage();
                             if (color[3] < 0xff)
                             {
-                                gxColorFn_80052764((GXColor*)color);
+                                addKColorModulateStage((GXColor*)color);
                             }
                         }
                         else
                         {
-                            textureFn_800524ec((GXColor*)color);
+                            addVertexColorKAlphaStage((GXColor*)color);
                         }
                     }
                 }
@@ -2022,7 +2022,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             color[1] = ((GameObject*)obj)->colorFadeGreen;
             color[2] = ((GameObject*)obj)->colorFadeBlue;
             color[3] = ((GameObject*)obj)->colorFadeAlpha;
-            gxTextureFn_80052638((GXColor*)color);
+            addColorFadeStage((GXColor*)color);
         }
     }
     if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
@@ -2313,7 +2313,7 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         {
             _gxSetFogParams();
             Rcp_ResetTextureStageState();
-            gxFn_80051fb8(textureIdxToPtr(*(int*)(*(int*)&((ModelFileHeader*)m)->renderOps + 0x24)), NULL,
+            addTexLayerStageSwizzled(textureIdxToPtr(*(int*)(*(int*)&((ModelFileHeader*)m)->renderOps + 0x24)), NULL,
                           0, (GXColor*)color, 0, 0);
             if (isHeavyFogEnabled() != 0)
             {

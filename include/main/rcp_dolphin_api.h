@@ -14,7 +14,7 @@ void* textureLoad(int texId, u8 flag);
 void* textureIdxToPtr(int index);
 void Rcp_ResetTextureStageState(void);
 void Rcp_ApplyTextureStageCounts(void);
-void gxColorFn_800523d0(void);
+void addVertexColorStage(void);
 void texRestructRefs(int mode);
 void Rcp_DisableBlurFilter(void);
 void turnOnBlurFilter(f32 x, f32 y, f32 z, u8 useArea, u8 bigger);
@@ -36,11 +36,11 @@ void textureUpdateAnimationFrame(const Texture* texture, u32* flags, s32* frame)
 void addTexLayerStage(Texture* texture, f32 (*texMtx)[4], int mode);
 void addTexLayerStageKColor(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
 void addTexLayerStageKAlpha(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
-void gxFn_80051fb8(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color, u8 swapSelector,
-                   u8 useKColor);
-void textureFn_800524ec(struct _GXColor* color);
-void gxColorFn_80052764(struct _GXColor* color);
-void gxTextureFn_80052638(struct _GXColor* color);
+void addTexLayerStageSwizzled(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color, u8 swapSelector,
+                              u8 useKColor);
+void addVertexColorKAlphaStage(struct _GXColor* color);
+void addKColorModulateStage(struct _GXColor* color);
+void addColorFadeStage(struct _GXColor* color);
 Texture* textureGetAnimationFrame(Texture* texture, int frame);
 
 #endif /* MAIN_RCP_DOLPHIN_API_H_ */

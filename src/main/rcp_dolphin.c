@@ -98,7 +98,7 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
     modelLightChannels_applyGXControls();
 }
 
-void textureFn_800524ec(GXColor* param);
+void addVertexColorKAlphaStage(GXColor* param);
 void Rcp_ApplyTextureStageCounts(void);
 void Rcp_ResetTextureStageState(void);
 int Rcp_SetupDistortionLights(int model, f32* params);
@@ -304,7 +304,7 @@ void Rcp_UpdateDistortionTextures(void)
         }
     }
     Rcp_ResetTextureStageState();
-    textureFn_800524ec(&gRcpDistortMatColor);
+    addVertexColorKAlphaStage(&gRcpDistortMatColor);
     Rcp_ApplyTextureStageCounts();
     GXSetChanMatColor(GX_COLOR0, gRcpDistortMatColor);
     clearSlot = 5;

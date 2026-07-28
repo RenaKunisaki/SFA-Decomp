@@ -17,8 +17,8 @@ void addTexModulateReg2Stage(void);
 void addShadowFalloffTevStages(void);
 void addSmallReflectionTevStage(void);
 void setColor_803db5d0(u8 r, u8 g, u8 b);
-void gxTextureFn_8004bf88(void* params, u8 colorEnabled, u8 alphaEnabled, int* colorSelection,
-                          int* alphaSelection);
+void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int* colorSelection,
+                             int* alphaSelection);
 void addYUVVideoTevStages(void* yTexture, void* uTexture, void* vTexture, s16 width, s16 height);
 void setHeatEffectParams(u8 alpha, f32 scale);
 void* Shader_getLayer(void* shader, int layerIdx);

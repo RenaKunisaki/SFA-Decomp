@@ -799,7 +799,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             texMtx = NULL;
         }
         addTexLayerStage((Texture*)texture, texMtx, 9);
-        textureFn_800524ec((GXColor*)&kColor);
+        addVertexColorKAlphaStage((GXColor*)&kColor);
     }
     else
     {
@@ -862,7 +862,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             }
             else
             {
-                gxColorFn_800523d0();
+                addVertexColorStage();
             }
         }
         if ((SHADER_FLAGS(shader) & 0x100) != 0)

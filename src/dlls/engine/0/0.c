@@ -3918,7 +3918,7 @@ int cMenuRingModelRenderFn(GameObject* obj, int block, int idx)
     renderOp = (ModelRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
     Rcp_ResetTextureStageState();
     cfg.a = obj->anim.renderAlpha;
-    gxFn_80051fb8(textureIdxToPtr(renderOp->textureId), NULL, 0, &cfg, 0, 1);
+    addTexLayerStageSwizzled(textureIdxToPtr(renderOp->textureId), NULL, 0, &cfg, 0, 1);
     Rcp_ApplyTextureStageCounts();
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     gxSetZMode_(0, GX_ALWAYS, 0);
@@ -3945,12 +3945,12 @@ int cMenuRingIconRenderFn(GameObject* obj, int block, int idx)
         {
             cfg.a = lbl_803E2010 * (f32)(u32)obj->anim.renderAlpha;
         }
-        gxFn_80051fb8(tex, NULL, 0, &cfg, 0, 1);
+        addTexLayerStageSwizzled(tex, NULL, 0, &cfg, 0, 1);
     }
     else
     {
         cfg.a = 0;
-        gxColorFn_80052764(&cfg);
+        addKColorModulateStage(&cfg);
     }
     Rcp_ApplyTextureStageCounts();
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
