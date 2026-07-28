@@ -2998,10 +2998,10 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             f32 dx;
             f32 dz;
             TrickyJumpArc* arc = &state->jumpArc;
-            node = state->route.nodeA0;
-            dx = node->x - obj->anim.worldPosX;
+            ObjfsaRomCurveDef* landNode = state->route.nodeA0;
+            dx = landNode->x - obj->anim.worldPosX;
             sqx = dx * dx;
-            dx = node->z - obj->anim.worldPosZ;
+            dx = landNode->z - obj->anim.worldPosZ;
             dx = dx * dx;
             len = sqrtf(sqx + dx);
             arc->duration = len / 2.3f;
@@ -3009,11 +3009,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             arc->baseX = obj->anim.worldPosX;
             arc->baseY = obj->anim.worldPosY;
             arc->baseZ = obj->anim.worldPosZ;
-            arc->landX = node->x;
-            arc->landZ = node->z;
+            arc->landX = landNode->x;
+            arc->landZ = landNode->z;
             k = arc->duration;
             arc->riseCoeff = -(-0.017f * k * k -
-                               (node->y - obj->anim.worldPosY)) /
+                               (landNode->y - obj->anim.worldPosY)) /
                               k;
             objAnimFn_8013a3f0((int)obj, 0x16, v, 0x4000000);
             state->arcMoveProgress = arc->time / arc->duration;
