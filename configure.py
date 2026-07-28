@@ -1826,7 +1826,7 @@ config.libs = [
             Object(NonMatching, "main/gametext_tail.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/textrender.c"),
             Object(MatchingFor("GSAE01"), "main/textrender_gettext.c", cflags=cflags_dll_noopt_noprop),
-            Object(NonMatching, "main/textrender_run.c"),
+            Object(NonMatching, "main/textrender_run.c", cflags=[*cflags_dll_noopt, "-inline", "noauto"]),
             Object(NonMatching, "main/textrender_subtitle.c", cflags=cflags_dll_noopt_level1),
             Object(NonMatching, "main/textrender_drawbox.c"),
             Object(NonMatching, "main/textrender_boxtex.c", cflags=cflags_dll_noopt_nocse_nolifetimes_noloopinv_noprop_nostrength),

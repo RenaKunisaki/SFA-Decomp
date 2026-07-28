@@ -192,6 +192,42 @@ void gameTextSetCharset(int charset, int flags);
 
 int getCurGameText(void);
 
+int gameTextGetCharset(void)
+{
+    return gameTextCharset;
+}
+
+void gameTextSetCharset(int charset, int flags)
+{
+    if (gameTextDrawFunc != NULL || (flags & 1))
+    {
+        gameTextFonts = (TextFont*)&gGameTextCharsets[charset];
+        gameTextCharset = charset;
+        if (charset == 2)
+        {
+            GXColor color = gGameTextClearColor;
+            hudDrawRect(0, 0, 0xa00, 0x780, color);
+            gGameTextRevealActive = 0;
+        }
+    }
+    if (gameTextDrawFunc == NULL || (flags & 2))
+    {
+        int i = gGameTextCommandCount;
+        GameTextSlot* cmd;
+        gGameTextCommandCount = i + 1;
+        cmd = &gGameTextCommandSlots[i];
+        cmd->opcode = 0xf;
+        cmd->arg0 = charset;
+    }
+}
+
+int gameTextGetState(int i);
+
+int getCurGameText(void)
+{
+    return curGameTextDir;
+}
+
 int getCurLanguage(void)
 {
     return curLanguage;
@@ -202,7 +238,12 @@ f32 gameTextFn_80019c00(void)
     return gameTextFonts->timer;
 }
 
-int gameTextGetState(int i);
+extern char sGameTextSequencePathFormat[];
+
+int gameTextGetState(int i)
+{
+    return gGameTextCharsets[i].state;
+}
 
 void gameTextRun(void)
 {
@@ -504,6 +545,21 @@ void gameTextRun(void)
     gCurTextBox = NULL;
 }
 
+static inline u32 lookupSjisGlyph(int c)
+{
+    int i = 0xfe;
+    u16* p = gGameTextSjisGlyphTable;
+    while (i--)
+    {
+        if (p[0] == c)
+        {
+            return p[1];
+        }
+        p++;
+    }
+    return 0;
+}
+
 void gameTextInit(void)
 {
     gameTextInitFn_8001c794();
@@ -610,7 +666,7 @@ void gameTextInitFn_8001a234(void)
     gGameTextStringStore = (void*)mmCreateMemoryStore(0x800);
 }
 
-extern char sGameTextSequencePathFormat[];
+extern GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
 
 void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
 {
@@ -780,21 +836,6 @@ void gameTextLoadForCurMap(int sourceId)
     }
 
     testAndSet_onlyUseHeap3(oldHeap);
-}
-
-static inline u32 lookupSjisGlyph(int c)
-{
-    int i = 0xfe;
-    u16* p = gGameTextSjisGlyphTable;
-    while (i--)
-    {
-        if (p[0] == c)
-        {
-            return p[1];
-        }
-        p++;
-    }
-    return 0;
 }
 
 void gameTextLoadGraphicsFn_8001a918(void)
@@ -1140,7 +1181,9 @@ void setLanguageFn_8001ad64(GameTextLoadSlot* req)
     req->state = 3;
 }
 
-extern GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
+extern f32 gSubtitleLineTimes[0x100];
+
+extern char* gSubtitleLineStrs[0x100];
 
 void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block)
 {
@@ -1203,10 +1246,6 @@ int gameTextFn_8001b44c(int x)
     }
     return 0;
 }
-
-extern f32 gSubtitleLineTimes[0x100];
-
-extern char* gSubtitleLineStrs[0x100];
 
 void subtitleUpdateAndDraw(int a)
 {
@@ -1288,35 +1327,6 @@ void mainLoopDoGameText(void)
     }
 }
 
-int gameTextGetCharset(void)
-{
-    return gameTextCharset;
-}
-
-void gameTextSetCharset(int charset, int flags)
-{
-    if (gameTextDrawFunc != NULL || (flags & 1))
-    {
-        gameTextFonts = (TextFont*)&gGameTextCharsets[charset];
-        gameTextCharset = charset;
-        if (charset == 2)
-        {
-            GXColor color = gGameTextClearColor;
-            hudDrawRect(0, 0, 0xa00, 0x780, color);
-            gGameTextRevealActive = 0;
-        }
-    }
-    if (gameTextDrawFunc == NULL || (flags & 2))
-    {
-        int i = gGameTextCommandCount;
-        GameTextSlot* cmd;
-        gGameTextCommandCount = i + 1;
-        cmd = &gGameTextCommandSlots[i];
-        cmd->opcode = 0xf;
-        cmd->arg0 = charset;
-    }
-}
-
 void subtitleFn_8001b700(void)
 {
     void** slot;
@@ -1346,14 +1356,4 @@ void subtitleFn_8001b700(void)
             gGameTextSavedDir = -1;
         }
     }
-}
-
-int getCurGameText(void)
-{
-    return curGameTextDir;
-}
-
-int gameTextGetState(int i)
-{
-    return gGameTextCharsets[i].state;
 }
