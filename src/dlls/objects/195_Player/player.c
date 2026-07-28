@@ -3053,7 +3053,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
                 trickyImpress((GameObject*)tricky);
             }
             Sfx_PlayFromObject((int)obj, SFXTRIG_staff_boulder_move1);
-            superQuakeFn_8016d9fc(&obj->anim.localPosX);
+            staffStartQuakeSpell(&obj->anim.localPosX);
             ((ByteFlags*)((char*)inner + 0x3f3))->b10 = 1;
             doRumble(30.0f);
         }

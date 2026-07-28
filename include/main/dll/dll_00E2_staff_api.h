@@ -10,7 +10,7 @@ extern u32 lbl_80320978[];
 void objSetAnimField48to0(GameObject* obj);
 void playerRenderQuakeSpell(GameObject* obj);
 void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player);
-void quakeSpellTextureFn_8016dbf4(void);
+void staffDrawQuakeSpellRing(void);
 void staff_addHitReactValue(GameObject* obj, s32 delta);
 void staffDoGrowShrinkAnim(GameObject* obj, u8 grow, u8 alternateRate, int unused);
 void staff_free(GameObject* obj);
@@ -36,6 +36,6 @@ void staff_setHitReactValue(GameObject* obj, s32 value);
 void staff_setupSwipe(int p1, u8* swipe, int p3, int p4);
 void staff_startSwipe(GameObject* obj, s16 index, f32 arg2, f32 arg3);
 void staff_update(GameObject* obj);
-void superQuakeFn_8016d9fc(f32* position);
+void staffStartQuakeSpell(f32* position);
 
 #endif /* MAIN_DLL_DLL_00E2_STAFF_API_H_ */
