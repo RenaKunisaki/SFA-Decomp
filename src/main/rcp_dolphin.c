@@ -40,11 +40,6 @@ u8 gRcpWarpDistortListBuilt;
 
 GXColor gRcpDistortAmbColor = {0, 0, 0, 0};
 GXColor gRcpDistortMatColor = {0xff, 0xff, 0xff, 0xff};
-typedef struct F32Pair
-{
-    f32 lo;
-    f32 hi;
-} F32Pair;
 extern u8 gRcpWarpDistortListBuilt;
 extern u32 gRcpWarpDistortListSize;
 typedef struct RcpDistortSlot

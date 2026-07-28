@@ -313,12 +313,6 @@ typedef struct ExpgfxResourceHandle {
 STATIC_ASSERT(offsetof(ExpgfxResourceHandle, refCount) == 0x0E);
 STATIC_ASSERT(offsetof(ExpgfxResourceHandle, linkGroup) == 0x14);
 
-typedef struct ExpgfxQuadTemplateVertex {
-  s16 x;
-  s16 y;
-  s16 z;
-} ExpgfxQuadTemplateVertex;
-
 /*
  * Recovered shape of the static expgfx data blob. The warning strings and
  * quad templates sit in the same source corridor as the exptab diagnostics,
@@ -331,10 +325,10 @@ typedef struct ExpgfxStaticDataLayout {
   u8 poolFrameFlags[EXPGFX_POOL_COUNT];
   u8 pad120[EXPGFX_STATIC_QUAD_TEMPLATE_A_OFFSET -
             (EXPGFX_STATIC_POOL_FRAME_FLAGS_OFFSET + EXPGFX_POOL_COUNT)];
-  ExpgfxQuadTemplateVertex quadTemplateA[4];
-  ExpgfxQuadTemplateVertex quadTemplateB[4];
+  Vec3s quadTemplateA[4];
+  Vec3s quadTemplateB[4];
   u8 pad180[EXPGFX_STATIC_MISMATCH_ADD_REMOVE_STRING_OFFSET -
-            (EXPGFX_STATIC_QUAD_TEMPLATE_B_OFFSET + sizeof(ExpgfxQuadTemplateVertex) * 4)];
+            (EXPGFX_STATIC_QUAD_TEMPLATE_B_OFFSET + sizeof(Vec3s) * 4)];
   char mismatchInAddRemoveString[EXPGFX_STATIC_NO_TEXTURE_STRING_OFFSET -
                                  EXPGFX_STATIC_MISMATCH_ADD_REMOVE_STRING_OFFSET];
   char noTextureString[1];

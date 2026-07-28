@@ -2300,7 +2300,7 @@ void expgfx_initSlotQuad(void* slotPtr)
     ExpgfxSlot* slot;
     ExpgfxTableEntry* entry;
     ExpgfxQuadVertex* quad;
-    ExpgfxQuadTemplateVertex* quadTemplate;
+    Vec3s* quadTemplate;
     u32 resource;
     u32 behaviorFlags;
     s16 texT1;
@@ -2426,7 +2426,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     ExpgfxStaticDataLayout* staticData;
     s16 slotIdx;
     ExpgfxSlot* slot;
-    ExpgfxQuadTemplateVertex* quadTemplate;
+    Vec3s* quadTemplate;
     s16 texT1;
     s16 texT0;
     s16 texS1;
