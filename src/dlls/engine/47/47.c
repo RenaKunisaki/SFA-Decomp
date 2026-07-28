@@ -40,7 +40,6 @@ typedef struct CarryableUpdateHeldState
     u8 pad9[0x10 - 0x9];
 } CarryableUpdateHeldState;
 
-extern const f32 lbl_803E06D8, lbl_803E06DC, lbl_803E06E0, lbl_803E06E4, lbl_803E06E8;
 
 void objSaveFn_800ea774(GameObject* obj)
 {
@@ -49,9 +48,9 @@ void objSaveFn_800ea774(GameObject* obj)
     sub[6] = 0;
     if ((sub[7] & 8) == 0)
     {
-        obj->anim.localPosY = obj->anim.localPosY + lbl_803E06D8;
+        obj->anim.localPosY += 10.0f;
         saveGame_saveObjectPos(obj);
-        obj->anim.localPosY = obj->anim.localPosY - lbl_803E06D8;
+        obj->anim.localPosY -= 10.0f;
     }
 }
 
@@ -194,7 +193,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
             if ((held->flags & CARRYABLE_FLAG_GRAVITY_DISABLED) == 0)
             {
-                obj->anim.velocityY = -(lbl_803E06DC * timeDelta - obj->anim.velocityY);
+                obj->anim.velocityY = -(0.1f * timeDelta - obj->anim.velocityY);
                 obj->anim.localPosY =
                     obj->anim.velocityY * timeDelta + obj->anim.localPosY;
             }
@@ -207,11 +206,11 @@ int Carryable_updateHeld(GameObject* obj, void* state)
                 if ((s8)list[i]->surfaceType != 0xe)
                 {
                     if (obj->anim.localPosY < list[i]->height &&
-                        obj->anim.localPosY > list[i]->height - lbl_803E06E0)
+                        obj->anim.localPosY > list[i]->height - 40.0f)
                     {
                         hit = list[i]->object;
                         obj->anim.localPosY = list[i]->height;
-                        obj->anim.velocityY = lbl_803E06E4;
+                        obj->anim.velocityY = 0.0f;
                         break;
                     }
                 }
@@ -221,11 +220,11 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             for (; cnt > 0; cnt--)
             {
                 f32 d = obj->anim.localPosY - list[i]->height;
-                if (d < lbl_803E06E4)
+                if (d < 0.0f)
                 {
                     d = -d;
                 }
-                if (d < lbl_803E06E8)
+                if (d < 5.0f)
                 {
                     s8 t2 = *(s8*)&list[i]->surfaceType;
                     if (t2 > held->surfaceType)
@@ -271,9 +270,9 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             h2->isHeld = 0;
             if ((h2->flags & CARRYABLE_FLAG_SUPPRESS_POS_SAVE) == 0)
             {
-                obj->anim.localPosY = obj->anim.localPosY + lbl_803E06D8;
+                obj->anim.localPosY += 10.0f;
                 saveGame_saveObjectPos(obj);
-                obj->anim.localPosY = obj->anim.localPosY - lbl_803E06D8;
+                obj->anim.localPosY -= 10.0f;
             }
         }
         if (*(s8*)&held->isHeld != 0)

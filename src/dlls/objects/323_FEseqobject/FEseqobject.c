@@ -38,10 +38,6 @@ typedef enum FEseqobjectMessage {
 #define FESEQOBJECT_SEQUENCE_INDEX         0
 #define FESEQOBJECT_SEQUENCE_ROTATION      0x2000
 
-/* Shared scalar-pool constants used to initialize the effect packet. */
-extern f32 lbl_803E56B0; /* 0.0f */
-extern f32 lbl_803E56B4; /* 1.0f */
-
 static inline void FEseqobject_spawnEffect(GameObject* obj, PartFxSpawnParams* params) {
     (*gPartfxInterface)
         ->spawnObject(obj, FESEQOBJECT_PARTICLE_EFFECT_ID, params, FESEQOBJECT_PARTICLE_SPAWN_MODE,
@@ -63,8 +59,8 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
 
     receiver = 0;
     i = 0;
-    effectOrigin = lbl_803E56B0;
-    effectScale = lbl_803E56B4;
+    effectOrigin = 0.0f;
+    effectScale = 1.0f;
     for (; i < animUpdate->eventCount; i++) {
         effect.posX = effectOrigin;
         effect.posY = effectOrigin;
@@ -162,7 +158,7 @@ void FEseqobject_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     s32 isVisible = visible;
 
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E56B4);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

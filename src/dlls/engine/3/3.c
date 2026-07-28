@@ -6,11 +6,6 @@
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];
 extern s16 lbl_803DD414;
 extern s16 lbl_803DD416;
-extern f32 lbl_803E0500;
-extern f32 gCheckpointPi;
-extern f32 gCheckpointAngleToRadians;
-extern f32 gCheckpointWidthScale;
-extern f32 lbl_803E04E4;
 
 
 CheckpointRouteEntry* Checkpoint_find(s32 key, s32* idx_out)
@@ -43,8 +38,6 @@ CheckpointRouteEntry* Checkpoint_find(s32 key, s32* idx_out)
     *idx_out = -1;
     return NULL;
 }
-extern f32 lbl_803E0504; /* used by Checkpoint_func08/07/06 */
-extern f32 lbl_803E0508; /* used by Checkpoint_func08 */
 extern void* lbl_803DD418;
 extern void* lbl_803DD41C;
 typedef struct CheckpointCursor
@@ -95,12 +88,12 @@ s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkInde
         return 0;
     }
 
-    cosA = -mathSinf(gCheckpointPi * (checkpoint->heading << 8) / gCheckpointAngleToRadians);
-    sinA = -mathCosf(gCheckpointPi * (checkpoint->heading << 8) / gCheckpointAngleToRadians);
-    cosB = -mathSinf(gCheckpointPi * (nextCheckpoint->heading << 8) / gCheckpointAngleToRadians);
-    sinB = -mathCosf(gCheckpointPi * (nextCheckpoint->heading << 8) / gCheckpointAngleToRadians);
-    sclA = gCheckpointWidthScale * checkpoint->width;
-    sclB = gCheckpointWidthScale * nextCheckpoint->width;
+    cosA = -mathSinf(3.1415927f * (checkpoint->heading << 8) / 32768.0f);
+    sinA = -mathCosf(3.1415927f * (checkpoint->heading << 8) / 32768.0f);
+    cosB = -mathSinf(3.1415927f * (nextCheckpoint->heading << 8) / 32768.0f);
+    sinB = -mathCosf(3.1415927f * (nextCheckpoint->heading << 8) / 32768.0f);
+    sclA = 0.011111111f * checkpoint->width;
+    sclB = 0.011111111f * nextCheckpoint->width;
 
     if (mode == 1)
     {
@@ -144,12 +137,12 @@ s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkInde
     {
         outX[0] = lateralOffset * (sclA * sinA) + checkpoint->posX;
         outX[1] = lateralOffset * (sclB * sinB) + nextCheckpoint->posX;
-        outX[2] = lbl_803E04E4 * (checkpoint->waveAmplitude *
-                                  mathSinf(gCheckpointPi * (checkpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
-        outX[3] = lbl_803E04E4 * (nextCheckpoint->waveAmplitude *
-                                  mathSinf(gCheckpointPi * (nextCheckpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
+        outX[2] = 2.0f * (checkpoint->waveAmplitude *
+                                  mathSinf(3.1415927f * (checkpoint->wavePhase << 8) /
+                                           32768.0f));
+        outX[3] = 2.0f * (nextCheckpoint->waveAmplitude *
+                                  mathSinf(3.1415927f * (nextCheckpoint->wavePhase << 8) /
+                                           32768.0f));
         outY[0] = sclA * verticalOffset + checkpoint->posY;
         outY[1] = sclB * verticalOffset + nextCheckpoint->posY;
         {
@@ -159,24 +152,24 @@ s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkInde
         }
         outZ[0] = lateralOffset * (sclA * -cosA) + checkpoint->posZ;
         outZ[1] = lateralOffset * (sclB * -cosB) + nextCheckpoint->posZ;
-        outZ[2] = lbl_803E04E4 * (checkpoint->waveAmplitude *
-                                  mathCosf(gCheckpointPi * (checkpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
-        outZ[3] = lbl_803E04E4 * (nextCheckpoint->waveAmplitude *
-                                  mathCosf(gCheckpointPi * (nextCheckpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
+        outZ[2] = 2.0f * (checkpoint->waveAmplitude *
+                                  mathCosf(3.1415927f * (checkpoint->wavePhase << 8) /
+                                           32768.0f));
+        outZ[3] = 2.0f * (nextCheckpoint->waveAmplitude *
+                                  mathCosf(3.1415927f * (nextCheckpoint->wavePhase << 8) /
+                                           32768.0f));
     }
     else
     {
         pointIndex = mode - 2;
         outX[0] = checkpoint->sideOffsets[pointIndex] * (sclA * sinA) + checkpoint->posX;
         outX[1] = nextCheckpoint->sideOffsets[pointIndex] * (sclB * sinB) + nextCheckpoint->posX;
-        outX[2] = lbl_803E04E4 * (checkpoint->waveAmplitude *
-                                  mathSinf(gCheckpointPi * (checkpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
-        outX[3] = lbl_803E04E4 * (nextCheckpoint->waveAmplitude *
-                                  mathSinf(gCheckpointPi * (nextCheckpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
+        outX[2] = 2.0f * (checkpoint->waveAmplitude *
+                                  mathSinf(3.1415927f * (checkpoint->wavePhase << 8) /
+                                           32768.0f));
+        outX[3] = 2.0f * (nextCheckpoint->waveAmplitude *
+                                  mathSinf(3.1415927f * (nextCheckpoint->wavePhase << 8) /
+                                           32768.0f));
         outY[0] = sclA * checkpoint->heightOffsets[pointIndex] + checkpoint->posY;
         outY[1] = sclB * nextCheckpoint->heightOffsets[pointIndex] + nextCheckpoint->posY;
         {
@@ -186,12 +179,12 @@ s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkInde
         }
         outZ[0] = checkpoint->sideOffsets[pointIndex] * (sclA * -cosA) + checkpoint->posZ;
         outZ[1] = nextCheckpoint->sideOffsets[pointIndex] * (sclB * -cosB) + nextCheckpoint->posZ;
-        outZ[2] = lbl_803E04E4 * (checkpoint->waveAmplitude *
-                                  mathCosf(gCheckpointPi * (checkpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
-        outZ[3] = lbl_803E04E4 * (nextCheckpoint->waveAmplitude *
-                                  mathCosf(gCheckpointPi * (nextCheckpoint->wavePhase << 8) /
-                                           gCheckpointAngleToRadians));
+        outZ[2] = 2.0f * (checkpoint->waveAmplitude *
+                                  mathCosf(3.1415927f * (checkpoint->wavePhase << 8) /
+                                           32768.0f));
+        outZ[3] = 2.0f * (nextCheckpoint->waveAmplitude *
+                                  mathCosf(3.1415927f * (nextCheckpoint->wavePhase << 8) /
+                                           32768.0f));
     }
     return result;
 }
@@ -206,9 +199,9 @@ void Checkpoint_func0A(s32 key, f32* out_vec, u8* flag_byte)
     n = Checkpoint_find(key, &local_idx);
     if (n == 0)
         return;
-    out_vec[0] = (f32)(s32)randomGetRange(-0x63, 0x63) / lbl_803E0500;
-    out_vec[1] = (f32)(s32)randomGetRange(-0x63, 0x63) / lbl_803E0500;
-    out_vec[2] = (f32)(s32)randomGetRange(0, 0x63) / lbl_803E0500;
+    out_vec[0] = (f32)(s32)randomGetRange(-0x63, 0x63) / 100.0f;
+    out_vec[1] = (f32)(s32)randomGetRange(-0x63, 0x63) / 100.0f;
+    out_vec[2] = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
     alt_found = 0;
     {
         s32 forwardLink = n->forwardLink0;
@@ -296,7 +289,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
     i = 0;
     mode = p3 + 2;
     kMin = 0.0f;
-    kMax = lbl_803E0504;
+    kMax = 1.0f;
     do
     {
         if (o->route.startCheckpointId < 0)
@@ -364,7 +357,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
         if (clamp == -1 && seg < dist)
         {
             o->route.startCheckpointId = n->backLinkIds[alt];
-            o->route.pathT = lbl_803E0508;
+            o->route.pathT = 0.9999f;
             if (alt != 0 && o->route.startCheckpointId < 0)
             {
                 o->route.startCheckpointId = n->backLink0;
@@ -521,9 +514,6 @@ void Checkpoint_func0D(u32 v)
 }
 
 #include "game/objects/object.h"
-extern f32 lbl_803E050C; /* used by Checkpoint_func07 */
-extern f32 lbl_803E0514; /* used by Checkpoint_func07 */
-extern f32 lbl_803E0518; /* used by Checkpoint_func06 */
 
 /* Project the object onto the current checkpoint segment, stepping the route
  * cursor forward or back and returning the segment heading. */
@@ -555,14 +545,14 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
         state->currentCheckpointId = -1;
         return 0;
     }
-    cosv = mathSinf((gCheckpointPi * (f32)(cp->heading << 8)) / gCheckpointAngleToRadians);
-    sinv = mathCosf((gCheckpointPi * (f32)(cp->heading << 8)) / gCheckpointAngleToRadians);
+    cosv = mathSinf((3.1415927f * (f32)(cp->heading << 8)) / 32768.0f);
+    sinv = mathCosf((3.1415927f * (f32)(cp->heading << 8)) / 32768.0f);
     offs = -(cp->posX * cosv + cp->posZ * sinv);
     dist = offs + (cosv * obj->anim.localPosX + sinv * obj->anim.localPosZ);
     if (cp->backLink0 > -1 && dist >= 0.0f)
     {
         state->currentCheckpointId = cp->backLink0;
-        state->routeProgress = lbl_803E050C;
+        state->routeProgress = 0.99f;
         state->linkDepth = state->linkDepth - 1;
         return cp->heading;
     }
@@ -572,8 +562,8 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
     }
     cp2 = Checkpoint_find(cp->forwardLink0, &slotC);
     ang = getAngle(cp2->posX - cp->posX, cp2->posZ - cp->posZ);
-    cos2 = mathSinf((gCheckpointPi * (f32)(cp2->heading << 8)) / gCheckpointAngleToRadians);
-    sin2 = mathCosf((gCheckpointPi * (f32)(cp2->heading << 8)) / gCheckpointAngleToRadians);
+    cos2 = mathSinf((3.1415927f * (f32)(cp2->heading << 8)) / 32768.0f);
+    sin2 = mathCosf((3.1415927f * (f32)(cp2->heading << 8)) / 32768.0f);
     offs2 = -(cp2->posX * cos2 + cp2->posZ * sin2);
     dist2 = offs2 + (cos2 * obj->anim.localPosX + sin2 * obj->anim.localPosZ);
     zero = 0.0f;
@@ -599,18 +589,18 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
         len = sqrtf(dz * dz + (dx * dx + dy * dy));
         if (len > 0.0f)
         {
-            q = lbl_803E0504 / len;
+            q = 1.0f / len;
             nx = dx * q;
             nz = dz * q;
         }
         proj = cosv * nx + sinv * nz;
-        if (proj > -0.01f && proj < lbl_803E0514)
+        if (proj > -0.01f && proj < 0.01f)
         {
             return ang;
         }
         t0 = -dist / proj;
         proj2 = cos2 * nx + sin2 * nz;
-        if (proj2 > -0.01f && proj2 < lbl_803E0514)
+        if (proj2 > -0.01f && proj2 < 0.01f)
         {
             return ang;
         }
@@ -634,13 +624,6 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
     return ang;
 }
 
-extern f64 lbl_803E0520;
-extern f32 lbl_803E051C;
-extern f32 lbl_803E0528;
-extern f32 lbl_803E052C;
-extern f32 lbl_803E0530;
-extern f32 lbl_803E0534;
-extern f32 lbl_803E0538;
 
 /* Flood-search the route graph (filtered by group) for the segment the object
  * lies within, recording the matched checkpoint and local coordinates. */
@@ -680,7 +663,7 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                 nx = e->posX - obj->anim.localPosX;
                 ddy = e->posY - obj->anim.localPosY;
                 nz = e->posZ - obj->anim.localPosZ;
-                if (nz * nz + (nx * nx + ddy * ddy) < lbl_803E051C)
+                if (nz * nz + (nx * nx + ddy * ddy) < 409600.0f)
                 {
                     stack[count++] = i;
                     for (j = i; j < (int)gCheckpointRouteCount; j++)
@@ -720,11 +703,11 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
             n = Checkpoint_find(cp->forwardLinkIds[k], &slot);
             if (n != NULL)
             {
-                cos1 = mathSinf((gCheckpointPi * (f32)(cp->heading << 8)) / gCheckpointAngleToRadians);
-                sin1 = mathCosf((gCheckpointPi * (f32)(cp->heading << 8)) / gCheckpointAngleToRadians);
+                cos1 = mathSinf((3.1415927f * (f32)(cp->heading << 8)) / 32768.0f);
+                sin1 = mathCosf((3.1415927f * (f32)(cp->heading << 8)) / 32768.0f);
                 offs1 = -(cp->posX * cos1 + cp->posZ * sin1);
-                cos2 = mathSinf((gCheckpointPi * (f32)(n->heading << 8)) / gCheckpointAngleToRadians);
-                sin2 = mathCosf((gCheckpointPi * (f32)(n->heading << 8)) / gCheckpointAngleToRadians);
+                cos2 = mathSinf((3.1415927f * (f32)(n->heading << 8)) / 32768.0f);
+                sin2 = mathCosf((3.1415927f * (f32)(n->heading << 8)) / 32768.0f);
                 offs2 = -(n->posX * cos2 + n->posZ * sin2);
                 dist1 = offs1 + (cos1 * obj->anim.localPosX + sin1 * obj->anim.localPosZ);
                 dist2 = offs2 + (cos2 * obj->anim.localPosX + sin2 * obj->anim.localPosZ);
@@ -737,9 +720,9 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                     dy = cp->posY - n->posY;
                     dz = cp->posZ - n->posZ;
                     len = sqrtf(dz * dz + (dx * dx + dy * dy));
-                    if (len > lbl_803E0520)
+                    if (len > 0.0)
                     {
-                        q = lbl_803E0504 / len;
+                        q = 1.0f / len;
                         nx = dx * q;
                         nz = dz * q;
                     }
@@ -747,7 +730,7 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                     cos1 = cos2 * nx + sin2 * nz;
                     t0 = -dist1 / q;
                     sum = t0 + dist2 / cos1;
-                    if (sum > lbl_803E0528 || sum < lbl_803E052C)
+                    if (sum > 0.1f || sum < -0.1f)
                     {
                         frac = t0 / sum;
                     }
@@ -759,9 +742,9 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                     {
                         frac = 0.0f;
                     }
-                    if (frac >= lbl_803E0518)
+                    if (frac >= 0.999f)
                     {
-                        frac = lbl_803E0518;
+                        frac = 0.999f;
                     }
                     b1 = cp->width;
                     width = frac * ((f32)n->width - b1) + b1;
@@ -775,7 +758,7 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                     b1 = -(px * nz - pz * nx);
                     b1 += dx * nz - dz * nx;
                     outX = b1 / width;
-                    if (outX < lbl_803E0530 || outX > lbl_803E0534 || outY < lbl_803E0538 || outY > lbl_803E0534)
+                    if (outX < -8.0f || outX > 8.0f || outY < -4.0f || outY > 8.0f)
                     {
                     }
                     else

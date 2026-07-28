@@ -70,7 +70,6 @@ typedef struct
 
 extern f32 lbl_803DEF20;
 extern f32 lbl_803DEF4C;
-extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 
 
 char sMemoryCardFileNameString[20] = "Star Fox Adventures";
@@ -882,7 +881,7 @@ void showMemCardError(u8 err)
             }
             if (i == sel)
             {
-                v = (int)(lbl_803DEF94 * fcos16HighPrecision(timer) + lbl_803DEF90);
+                v = (int)(47.0f * fcos16HighPrecision(timer) + 208.0f);
                 gameTextSetColor(v, v, v, 0xff);
             }
             else
@@ -1000,11 +999,11 @@ void cardShowLoadingMsg(u8 kind)
         {
             draw = (*gScreenTransitionInterface)->init;
             draw(0, 0, 0);
-            rectAlpha = lbl_803DEF98;
+            rectAlpha = 0.0f;
             drawRect(rectAlpha, rectAlpha, 0x280, 0x1E0);
             for (j = 0; j < count; j++)
             {
-                objRenderModelAndHitVolumes((GameObject*)buttons[j], 0, 0, 0, 0, lbl_803DEF9C);
+                objRenderModelAndHitVolumes((GameObject*)buttons[j], 0, 0, 0, 0, 1.0f);
             }
             curUiDllDraw(0, 0, 0, 0);
         }

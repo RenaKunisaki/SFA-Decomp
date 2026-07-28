@@ -328,6 +328,7 @@ track/intersect_texsetup.c:
 track/intersect_memcard.c:
 	.text       start:0x8007D670 end:0x8007E77C
 	.data       start:0x8030EAB8 end:0x8030EB58
+	.sdata2     start:0x803DEF90 end:0x803DEFA0
 
 dlls/engine/2/2.c:
 	.text       start:0x8007E77C end:0x80088758
@@ -573,6 +574,7 @@ dlls/engine/3/3.c:
 	.text       start:0x800D5530 end:0x800D7568
 	.data       start:0x803112E8 end:0x80311340
 	.bss        start:0x8039C458 end:0x8039CAE8
+	.sdata2     start:0x803E04D8 end:0x803E053C
 
 dlls/engine/22/22.c:
 	.text       start:0x800D7568 end:0x800D7F5C
@@ -637,6 +639,7 @@ dlls/engine/17/17.c:
 dlls/engine/47/47.c:
 	.text       start:0x800EA774 end:0x800EADCC
 	.data       start:0x80311C08 end:0x80311C58
+	.sdata2     start:0x803E06D8 end:0x803E06EC
 
 dlls/modgfx/89/89.c:
 	.text       start:0x800EADCC end:0x800EB098
@@ -2994,6 +2997,7 @@ dlls/objects/445/445.c:
 dlls/objects/323_FEseqobject/FEseqobject.c:
 	.text       start:0x801DF4AC end:0x801DF934
 	.data       start:0x80327B38 end:0x80327B70
+	.sdata2     start:0x803E56B0 end:0x803E56B8
 
 dlls/objects/322_FElevContro/FElevContro.c:
 	.text       start:0x801DF934 end:0x801DF9AC
