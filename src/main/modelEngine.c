@@ -256,6 +256,7 @@
 #include "dlls/objects/459_DIMWoodDoor.h"
 #include "dlls/objects/460_DIMMagicBri.h"
 #include "dlls/objects/461_DIM_LevelCo.h"
+#include "dlls/objects/462.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -337,7 +338,7 @@ char sModelEngineTimerDotText[] = ".";
 #define MODELENGINE_TIMER_RUNNING   4
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
-extern ResourceDescriptor dll_1CE, dll_1CF, dll_1D6, dll_1DA, dll_1DB, dll_1FB;
+extern ResourceDescriptor dll_1CF, dll_1D6, dll_1DA, dll_1DB, dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
@@ -1541,7 +1542,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMWoodDoor2ObjDescriptor,
     (ResourceDescriptor*)&gDIMMagicBridgeObjDescriptor,
     (ResourceDescriptor*)&gDIM_LevelControlObjDescriptor,
-    &dll_1CE,
+    (ResourceDescriptor*)&gDll1CEObjDescriptor,
     &dll_1CF,
     &gDIM_trickyObjDescriptor,
     &gDIMTruthHornIceObjDescriptor,
