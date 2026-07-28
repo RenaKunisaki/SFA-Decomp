@@ -203,7 +203,7 @@ ObjectDescriptor15 gECSHShrineObjDescriptor = {
     (ObjectDescriptorCallback)ecshShrine_free,
     (ObjectDescriptorCallback)ecshShrine_getObjectTypeId,
     ecshShrine_getExtraSize,
-    (ObjectDescriptorCallback)ecshShrine_getScale,
+    (ObjectDescriptorCallback)ecshShrine_func0A,
     (ObjectDescriptorCallback)ecshShrine_getCupPosition,
     (ObjectDescriptorCallback)ecshShrine_getPhaseAndSpiritCup,
     (ObjectDescriptorCallback)ecshShrine_setCupPosition,
@@ -373,7 +373,7 @@ void ecshShrine_getCupPosition(u8 cupIndex, f32* outX, f32* outZ) {
     *outZ = gECSHShrineCupPositions[slot].z;
 }
 
-void ecshShrine_getScale(s16* outScale) {
+void ecshShrine_func0A(s16* out) {
     GameObject* obj = gECSHShrineActiveObject;
     ECSHShrineState* state;
 
@@ -381,7 +381,7 @@ void ecshShrine_getScale(s16* outScale) {
         return;
     }
     state = obj->extra;
-    *outScale = state->scale;
+    *out = state->unknown20;
 }
 
 int ecshShrine_getExtraSize(void) {
@@ -787,7 +787,7 @@ void ecshShrine_update(GameObject* obj) {
         case ECSH_SHRINE_PHASE_RESET:
             state->testPhase = ECSH_SHRINE_PHASE_IDLE;
             state->animTimer = zero;
-            state->scale = 0;
+            state->unknown20 = 0;
             state->shuffleCount = 0;
             state->animState = 0;
             state->matchFlag = -1;
@@ -818,7 +818,7 @@ void ecshShrine_init(GameObject* obj, const s8* placement) {
     state->testPhase = ECSH_SHRINE_PHASE_IDLE;
     state->transitionReady = 0;
     state->animTimer = 0.0f;
-    state->scale = 0;
+    state->unknown20 = 0;
     state->shuffleCount = 0;
     state->animState = 0;
     state->matchFlag = -1;
