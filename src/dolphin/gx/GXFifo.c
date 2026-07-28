@@ -115,7 +115,7 @@ void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr) {
     ASSERTMSGLINE(LINE(592, 592, 596), realFifo != CPUFifo,         "GXInitFifoPtrs: fifo is attached to CPU");
     ASSERTMSGLINE(LINE(594, 594, 598), realFifo != GPFifo,          "GXInitFifoPtrs: fifo is attached to GP");
     ASSERTMSGLINE(LINE(596, 596, 600), ((u32)readPtr & 0x1F) == 0,  "GXInitFifoPtrs: readPtr not 32B aligned");
-    ASSERTMSGLINE(LINE(598, 598, 602), ((u32)writePtr & 0x1F) == 0, "GXInitFifoPtrs: writePtr not 32B aligned");
+    ASSERTMSGLINE(LINE(598, 598, 602), (writePtr & 0x1F) == 0, "GXInitFifoPtrs: writePtr not 32B aligned");
     ASSERTMSGLINE(LINE(601, 601, 605), realFifo->base <= readPtr && readPtr < realFifo->top,   "GXInitFifoPtrs: readPtr not in fifo range");
     ASSERTMSGLINE(LINE(604, 604, 608), realFifo->base <= writePtr && writePtr < realFifo->top, "GXInitFifoPtrs: writePtr not in fifo range");
 

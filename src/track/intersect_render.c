@@ -3783,7 +3783,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
     PSMTXScale(mtx_58, 6.0f * (f32)s2, 6.0f * (f32)s2, 0.0f);
-    PSMTXTrans(mtx_28, ratio1 * (f32)s3, ratio2 * (f32)s3 + (f32)s1, 0.0f);
+    PSMTXTrans(mtx_28, ratio1 * s3, ratio2 * s3 + (f32)s1, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
@@ -3795,7 +3795,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
     PSMTXScale(mtx_58, 12.0f * (f32)s2, 12.0f * (f32)s2, 0.0f);
     fade1 = lbl_803DEEE0 * ratio1;
     fade2 = *(f32*)&lbl_803DEEE0 * ratio2;
-    PSMTXTrans(mtx_28, fade1 * (f32)s3, 0.75f * (f32)s1 + fade2 * (f32)s3, 0.0f);
+    PSMTXTrans(mtx_28, fade1 * s3, 0.75f * (f32)s1 + fade2 * s3, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', 0.5f * angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);

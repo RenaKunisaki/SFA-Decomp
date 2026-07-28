@@ -174,7 +174,7 @@ void GXSetNumIndStages(u8 nIndStages) {
     ASSERTMSGLINE(355, nIndStages <= 4, "GXSetNumIndStages: Exceeds max. number of indirect texture stages");
 
     reg = __GXData->genMode;
-    reg = (reg & 0xFFF8FFFFU) | ((u32)nIndStages << 16);
+    reg = (reg & 0xFFF8FFFFU) | (nIndStages << 16);
     __GXData->genMode = reg;
 
     __GXData->dirtyState |= 6;

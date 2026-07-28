@@ -863,9 +863,9 @@ void LowPrecisionHandler(int voice)
         if (sv->midi != 0xFF)
         {
             portamentoRaw = inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, sv->midi, sv->midiSet);
-            if ((u16)portamentoRaw != sv->portLastCtrlState || (HWVOICE_FLAGS(sv) & 0x21000) == 0x20000)
+            if (portamentoRaw != sv->portLastCtrlState || (HWVOICE_FLAGS(sv) & 0x21000) == 0x20000)
             {
-                if ((u16)portamentoRaw <= 0x1F80)
+                if (portamentoRaw <= 0x1F80)
                 {
                     HWVOICE_FLAGS(sv) &= ~0x400;
                 }

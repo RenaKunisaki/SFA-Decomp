@@ -103,7 +103,7 @@ void mcmdRandomKey(McmdVoiceState* state, McmdCommandArgs* args)
         detune = (args->flags >> 0x10) & 0xff;
     }
 
-    args->flags = (detune << 0x10) | 0x19 | ((keyLo + (sndRand() % (((u8)keyHi - keyLo) + 1))) << 8);
+    args->flags = (detune << 0x10) | 0x19 | ((keyLo + (sndRand() % ((keyHi - keyLo) + 1))) << 8);
     args->value = 0;
     state->key = (args->flags >> 8) & 0x7f;
     state->fineTune = (s8)(args->flags >> 0x10);
@@ -652,7 +652,7 @@ void macHandleActive(McmdVoiceState* sv)
         sv->tremoloScale = 0;
         inpInit((u32)sv);
         lastNote = inpGetMidiLastNote(sv->midiSlot, sv->midiEvent);
-        if ((u8)lastNote != 0xff)
+        if (lastNote != 0xff)
         {
             sv->registeredKey = lastNote;
         }

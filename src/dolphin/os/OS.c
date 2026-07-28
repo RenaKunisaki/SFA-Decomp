@@ -307,7 +307,7 @@ void OSInit(void)
                     OSReport("EPPC Minnow\n");
                     break;
                 default:
-                    OSReport("Development HW%d\n", ((u32)inputConsoleType - 0x10000000) - 3);
+                    OSReport("Development HW%d\n", (inputConsoleType - 0x10000000) - 3);
                     break;
             }
         }
