@@ -29,8 +29,6 @@ typedef enum DimTruthHornIcePhase {
     DIM_TRUTH_HORN_ICE_PHASE_SHATTERED = 2,
 } DimTruthHornIcePhase;
 
-typedef void (*TrickySideCommandEnableFn)(int* tricky, GameObject* targetObj, int commandKind, int commandType);
-
 int dimtruthhornice_countdownCallback(GameObject* obj, int damage) {
     /*
      * Keep the unsigned byte load followed by the signed store/read. A typed
