@@ -40,7 +40,7 @@ void EnterSaveNameScreen_render(void)
     gameTextSetDrawFunc(nameEntryTextDrawFunc);
     titleScreenPositionElements(40.0f, 120.0f);
     nameEntrySetScroll((int)(gEnterSaveNameScrollPos + lbl_803DD6DC - 8.0f), 0);
-    gameTextBoxFn_80134d40(0xff, 1, 1);
+    titleScreenDrawMenuFrame(0xff, 1, 1);
     gameTextSetColor(0xc0, 0xc0, 0xc0, 0xff);
     gameTextShow(0x3ae);
     gameTextSetColor(0xff, 0xff, 0xff, 0xff);

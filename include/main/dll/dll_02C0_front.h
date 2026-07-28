@@ -22,6 +22,6 @@ void TitleScreen_update(GameObject* obj);
 void TitleScreen_init(GameObject* obj, u8* def);
 
 void creditsStart(void);
-void titleScreenFn_801368c4(s8 selection);
+void titleScreenSetMenuSelection(s8 selection);
 
 #endif

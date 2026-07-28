@@ -11,7 +11,7 @@
  *
  * Standalone leaf entry points cover the credits roll (creditsStart /
  * creditsStart_, walking gCreditEntries with fade-in/out), the
- * copyright/title text layout (gameTextBoxFn_80134d40,
+ * copyright/title text layout (titleScreenDrawMenuFrame,
  * titleScreenShowCopyright, titleScreenPositionElements), and the GX
  * quad emitters for the title and name-entry text (titleScreenTextDrawFunc
  * / nameEntryTextDrawFunc, writing through GXWGFifo). showCredits gates
@@ -266,7 +266,7 @@ void creditsStart(void)
 
 /* Predicate. Returns 1 when the value from getCurUiDll is in {2..6} or
  * equals 7, else 0. */
-int gameTextFn_80134be8(void)
+int isFrontEndUiActive(void)
 {
     int x = getCurUiDll();
     if ((u32)(x - 2) <= 4 || x == 7)
@@ -314,10 +314,7 @@ void titleScreenShowCopyright(u8 arg)
 
 void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
 
-/* Free the main buffer at gTitleScreenMainTex and walk the 19-slot table at
- * gTitleScreenTextures releasing each non-null entry, then clear the busy
- * byte at gTitleScreenSetupDone. */
-void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
+void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
 {
     int i;
     Texture* tex;
@@ -955,7 +952,7 @@ void TitleScreen_init(GameObject* obj, u8* def)
 
 /* Two-byte state push: if arg differs from gTitleScreenMenuActive, save old to
  * gTitleScreenPrevMenuActive and set new. */
-void titleScreenFn_801368a4(s8 arg)
+void titleScreenSetMenuActive(s8 arg)
 {
     s8 cur;
     if (arg == (cur = gTitleScreenMenuActive))
@@ -968,18 +965,21 @@ u8 gTitleScreenSfxFlagGrid[0x48];
 
 /* Two-byte state push (no equality check): copy gTitleScreenMenuSelection to
  * gTitleScreenPrevMenuSelection and write new value. */
-void titleScreenFn_801368c4(s8 arg)
+void titleScreenSetMenuSelection(s8 arg)
 {
     gTitleScreenPrevMenuSelection = gTitleScreenMenuSelection;
     gTitleScreenMenuSelection = arg;
 }
 
-void titleScreenFn_801368d4(void)
+void titleScreenDisableActors(void)
 {
     gTitleScreenActorsEnabled = 0;
 }
 
 
+/* Free the main buffer at gTitleScreenMainTex and walk the 19-slot table at
+ * gTitleScreenTextures releasing each non-null entry, then clear the busy
+ * byte at gTitleScreenSetupDone. */
 void TitleScreen_release(void)
 {
     int i;

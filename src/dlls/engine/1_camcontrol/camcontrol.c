@@ -947,7 +947,7 @@ void Camera_setLetterbox(int yOffset, int applyNow)
 
 void Camera_minimapShowHelpTextForTarget(int renderArg2, int renderArg3, int renderArg4, int renderArg5)
 {
-    if (gameTextFn_80134be8() == 0)
+    if (isFrontEndUiActive() == 0)
     {
         gCamcontrolTargetHelpTextId = CAMCONTROL_HELP_TEXT_NONE;
         camcontrol_updateTargetReticle((CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleFocus,
@@ -961,7 +961,7 @@ void camcontrol_setAButtonIconForTarget(void)
     CamcontrolTargetObject* target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->currentTarget;
     int kind;
 
-    if (gameTextFn_80134be8() != 0)
+    if (isFrontEndUiActive() != 0)
         return;
     if (target == NULL)
         return;
@@ -1013,7 +1013,7 @@ void camcontrol_updateTargetFeedback(void)
     {
         return;
     }
-    result = gameTextFn_80134be8();
+    result = isFrontEndUiActive();
     switch (result)
     {
     case 0:
@@ -1590,7 +1590,7 @@ void Camera_update(u8 framesThisStep)
     u8 textActive;
     CamcontrolTargetObject* target;
 
-    if (gameTextFn_80134be8() != 0)
+    if (isFrontEndUiActive() != 0)
     {
         textActive = 1;
     }
