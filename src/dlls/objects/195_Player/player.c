@@ -17393,7 +17393,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     getEnvfxActImmediately((void*)obj, (void*)obj, 0x84, 0);
                     getEnvfxActImmediately((void*)obj, (void*)obj, 0x8a, 0);
                 }
-                skyFn_80088e54(0, 0.0f);
+                skySetLightIndex(0, 0.0f);
                 break;
             case 0x2d:
                 Rcp_SetSpiritVisionEnabled(1);
@@ -18357,9 +18357,9 @@ void playerUpdate(GameObject* obj)
             {
                 v = (int)(4.0f * timeDelta + (f32)(u32) * (u8*)((char*)obj + 0xf1));
             }
-            if (v < (u8)getSkyColorFn_80088e30(2))
+            if (v < (u8)skyGetSlotBlendAlpha(2))
             {
-                v = (u8)getSkyColorFn_80088e30(2);
+                v = (u8)skyGetSlotBlendAlpha(2);
             }
             else if (v > 0xff)
             {

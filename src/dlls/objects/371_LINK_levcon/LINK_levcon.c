@@ -95,9 +95,9 @@ void linkLevelControl_applyEnterAreaEffects(GameObject* obj) {
     case LINK_LEVEL_CONTROL_AREA_CELL_47:
         skySetEnvFxRampTables(envFxRampBase + 0x38, envFxRampBase, envFxRampBase + 0x70, envFxRampBase + 0xA8);
         if (obj->userData1 == LINK_LEVEL_CONTROL_SAVE_STATUS_LOADED) {
-            envFxActFn_800887f8(LINK_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
+            skySetEnvFxFlags(LINK_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
         } else {
-            envFxActFn_800887f8(LINK_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
+            skySetEnvFxFlags(LINK_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
         }
         Music_Trigger(MUSICTRIG_cldrnr_walkabout, 0);
         Music_Trigger(MUSICTRIG_CRF_Swim, 0);
@@ -107,7 +107,7 @@ void linkLevelControl_applyEnterAreaEffects(GameObject* obj) {
         break;
     case LINK_LEVEL_CONTROL_AREA_CELL_45:
         skyFn_80088c94(7, 0);
-        envFxActFn_800887f8(0);
+        skySetEnvFxFlags(0);
         getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_A, 0);
         getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_B, 0);
         getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_C, 0);

@@ -204,12 +204,12 @@ void linkbLevelControl_init(GameObject* obj) {
                           envFxRampBase + 0xA8);
     if (getSaveGameLoadStatus() != 0) {
         if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) {
-            envFxActFn_800887f8(LINKB_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
+            skySetEnvFxFlags(LINKB_LEVEL_CONTROL_ENVFX_LOADED_VALUE);
         }
         getEnvfxActImmediately(NULL, NULL, LINKB_LEVEL_CONTROL_ENVFX_ID, 0);
     } else {
         if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) {
-            envFxActFn_800887f8(LINKB_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
+            skySetEnvFxFlags(LINKB_LEVEL_CONTROL_ENVFX_LOADING_VALUE);
         }
         getEnvfxAct(NULL, NULL, LINKB_LEVEL_CONTROL_ENVFX_ID, 0);
     }

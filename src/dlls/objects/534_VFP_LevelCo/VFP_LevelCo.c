@@ -4,7 +4,7 @@
  *
  * It owns the level-wide bookkeeping that has no single visible object:
  *  - a one-shot environment/sky transition on the first update tick
- *    (envfx 0x10c..0x10e + skyFn_80088e54), gated by a global game bit;
+ *    (envfx 0x10c..0x10e + skySetLightIndex), gated by a global game bit;
  *  - per-map-event-state logic (the map-act value 0..3 returned by the
  *    map-event interface), each state counting down the shared timer
  *    lbl_803DC148 and rolling up groups of progress bits into summary
@@ -134,7 +134,7 @@ void VFP_LevelControl_update(GameObject* obj)
             getEnvfxActImmediately(obj, obj, VFP_ENVFX_INTRO_0, 0);
             getEnvfxActImmediately(obj, obj, VFP_ENVFX_INTRO_1, 0);
             getEnvfxActImmediately(obj, obj, VFP_ENVFX_INTRO_2, 0);
-            skyFn_80088e54(1, 0.0f);
+            skySetLightIndex(1, 0.0f);
             mainSetBits(GAMEBIT_VFP_SKY_PENDING, 0);
         }
         (obj)->userData1 = 1;

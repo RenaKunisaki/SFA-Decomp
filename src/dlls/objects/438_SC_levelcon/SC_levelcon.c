@@ -159,7 +159,7 @@ void sc_levelcontrol_update(GameObject* obj) {
 
     if (obj->userData1 != 0) {
         skyFn_80088c94(7, 0);
-        envFxActFn_800887f8(0);
+        skySetEnvFxFlags(0);
         if (obj->userData1 == 2) {
             getEnvfxActImmediately(0, 0, SC_LEVEL_CONTROL_ENVFX_A, 0);
             getEnvfxActImmediately(0, 0, SC_LEVEL_CONTROL_ENVFX_B, 0);
@@ -258,7 +258,7 @@ void sc_levelcontrol_update(GameObject* obj) {
             state->fogNearTarget = -1200.0f;
             state->fogNearStep = -0.35f;
             if (obj->userData2 != 0) {
-                skyFn_80088e54(1, 1.0f);
+                skySetLightIndex(1, 1.0f);
                 obj->userData2 = 0;
             }
         } else {

@@ -660,13 +660,13 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                         }
                         break;
                     case 9:
-                        skyFn_80088e54(getSkyStructField24C() ^ 1, (f32)(u32)p[3]);
+                        skySetLightIndex(skyGetCurrentLightIndex() ^ 1, (f32)(u32)p[3]);
                         break;
                     case 10:
-                        skyFn_80088e54(0, (f32)(u32)p[3]);
+                        skySetLightIndex(0, (f32)(u32)p[3]);
                         break;
                     case 0xb:
-                        skyFn_80088e54(1, (f32)(u32)p[3]);
+                        skySetLightIndex(1, (f32)(u32)p[3]);
                         break;
                     }
                     break;
@@ -970,7 +970,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                             getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A0, 0);
                             getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A1, 0);
                             getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A2, 0);
-                            envFxFn_800887cc();
+                            skyRefreshPlayerEnvFx();
                             break;
                         case 2:
                             mainSetBits(GAMEBIT_ENV_isOutdoor, 1);

@@ -146,12 +146,12 @@ int return0_80088758(void)
     return 0x0;
 }
 
-int getEnvFxBit2BA(void)
+int skyGetDayNo(void)
 {
     return (u8)mainGetBit(GAMEBIT_ENV_dayNo);
 }
 
-void setGameBit2BA(int value)
+void skySetDayNo(int value)
 {
     if ((u8)value >= 0x1c)
     {
@@ -168,12 +168,12 @@ void doNothing_800887C8(void)
 {
 }
 
-void envFxFn_800887cc(void)
+void skyRefreshPlayerEnvFx(void)
 {
-    playerEnvFxFn_80088ad4((u8)mainGetBit(GAMEBIT_ENV_dayNo));
+    skyApplyPlayerEnvFx((u8)mainGetBit(GAMEBIT_ENV_dayNo));
 }
 
-void envFxActFn_800887f8(u8 value)
+void skySetEnvFxFlags(u8 value)
 {
     void* player;
     int masked;
@@ -198,7 +198,7 @@ void skySetEnvFxRampTables(void* groupB, void* groupA, void* groupC, void* group
     lbl_803DD134 = groupD;
 }
 
-void envFxFn_80088884(void)
+void skyUpdateEnvFx(void)
 {
     u8 a;
     u8 b;
@@ -264,11 +264,11 @@ void envFxFn_80088884(void)
             getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD138)[b], 0);
         }
     }
-    playerEnvFxFn_80088ad4(b);
+    skyApplyPlayerEnvFx(b);
     gSkyEnvFxFlags &= ~SKY_ENVFX_IMMEDIATE;
 }
 
-void playerEnvFxFn_80088ad4(u8 idx)
+void skyApplyPlayerEnvFx(u8 idx)
 {
     void* player;
     int val;
@@ -404,8 +404,8 @@ SkyDllInterface lbl_8030F414 = {
     (ObjectDescriptorCallback)skyGetCurrentAmbientAndLightColors,
     (ObjectDescriptorCallback)doNothing_800887C8,
     (ObjectDescriptorCallback)doNothing_800887C4,
-    (ObjectDescriptorCallback)setGameBit2BA,
-    (ObjectDescriptorCallback)getEnvFxBit2BA,
+    (ObjectDescriptorCallback)skySetDayNo,
+    (ObjectDescriptorCallback)skyGetDayNo,
     (ObjectDescriptorCallback)return0_80088758,
 };
 
@@ -464,7 +464,7 @@ int getSkyColorFn_80088e08(int slot)
     return 0;
 }
 
-int getSkyColorFn_80088e30(int slot)
+int skyGetSlotBlendAlpha(int slot)
 {
     u8* sky;
 
@@ -476,7 +476,7 @@ int getSkyColorFn_80088e30(int slot)
     return 0xff;
 }
 
-void skyFn_80088e54(int mode, f32 brightness)
+void skySetLightIndex(int mode, f32 brightness)
 {
     u8* env;
     u8* env2;
@@ -538,7 +538,7 @@ void skyFn_80088e54(int mode, f32 brightness)
     }
 }
 
-int getSkyStructField24C(void)
+int skyGetCurrentLightIndex(void)
 {
     u8* sky;
 
@@ -2029,7 +2029,7 @@ void skyLoadLights(void)
     }
     skyResetState();
     skyFn_80088c94(7, 0);
-    skyFn_80088e54(0, lbl_803DF058);
+    skySetLightIndex(0, lbl_803DF058);
     skyFn_8008a500();
     skyFn_8008a04c();
     gSkySunDirection[0] = lbl_803DF058;

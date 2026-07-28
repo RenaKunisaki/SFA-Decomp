@@ -666,7 +666,7 @@ void worldplanet_init(GameObject* obj) {
     gWorldPlanetInputLockTimer = WORLDPLANET_COUNTDOWN_FRAMES;
     mainSetBits(gWorldPlanetGameBitTable[WORLDPLANET_SLOT_DINOSAUR_PLANET], 1);
     state->foxSpawnTimer = WORLDPLANET_FOX_SPAWN_INITIAL_FRAMES;
-    envFxActFn_800887f8(0);
+    skySetEnvFxFlags(0);
 }
 
 void worldplanet_release(void) {

@@ -2480,7 +2480,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     cache = getCache();
     gExpgfxPhaseAngleA += (u16)(120.0f * timeDelta);
     gExpgfxPhaseAngleB += (u16)(480.0f * timeDelta);
-    sky = getSkyStructField24C();
+    sky = skyGetCurrentLightIndex();
     skyGetSunLightDirection(sky, &skyLightDir[0], &skyLightDir[1], &skyLightDir[2]);
     PSMTXMultVec((void*)Camera_GetViewRotationMatrix(), (void*)skyLightDir, (void*)skyLightDir);
     ambientScale = -skyLightDir[2];

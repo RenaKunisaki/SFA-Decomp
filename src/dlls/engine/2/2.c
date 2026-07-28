@@ -3408,7 +3408,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         getEnvfxActVoid(Obj_GetPlayerObject(), Obj_GetPlayerObject(), OBJSEQ_ENVFX_A0, 0);
         getEnvfxActVoid(Obj_GetPlayerObject(), Obj_GetPlayerObject(), OBJSEQ_ENVFX_A1, 0);
         getEnvfxActVoid(Obj_GetPlayerObject(), Obj_GetPlayerObject(), OBJSEQ_ENVFX_A2, 0);
-        envFxFn_800887cc();
+        skyRefreshPlayerEnvFx();
         break;
     }
 

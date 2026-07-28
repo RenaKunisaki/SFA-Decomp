@@ -88,14 +88,14 @@ typedef struct SkyTimeBlend
     u8 texSel;        /* 0x251 */
 } SkyTimeBlend;
 
-int getEnvFxBit2BA(void);
-void setGameBit2BA(int value);
-void envFxFn_800887cc(void);
+int skyGetDayNo(void);
+void skySetDayNo(int value);
+void skyRefreshPlayerEnvFx(void);
 void skySetEnvFxRampTables(void* groupB, void* groupA, void* groupC, void* groupD);
-void envFxFn_80088884(void);
+void skyUpdateEnvFx(void);
 void loadSunAndMoon(void);
-int getSkyColorFn_80088e30(int slot);
-int getSkyStructField24C(void);
+int skyGetSlotBlendAlpha(int slot);
+int skyGetCurrentLightIndex(void);
 void skyGetCurrentTextureColor(u8* red, u8* green, u8* blue);
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
                                         u8* lightBlue);
@@ -131,7 +131,7 @@ void skyLoadLights(void);
 void sky2ApplyFog(int obj);
 void sky2ApplyTextColor(int obj);
 void sky2ApplyModelTint(int obj);
-void playerEnvFxFn_80088ad4(u8 idx);
+void skyApplyPlayerEnvFx(u8 idx);
 void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue);
 void sky2_run(void);
 void sky2_onMapSetup(void);

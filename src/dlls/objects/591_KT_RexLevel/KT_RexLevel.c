@@ -91,7 +91,7 @@ void KT_RexLevel_update(GameObject* obj)
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_A, 0);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_B, 0);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_C, 0);
-        skyFn_80088e54(1, 0.0f);
+        skySetLightIndex(1, 0.0f);
         mainSetBits(0x55e, 1);
         (obj)->userData1 = 1;
     }

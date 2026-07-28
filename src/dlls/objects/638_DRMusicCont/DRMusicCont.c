@@ -90,7 +90,7 @@ void drmusiccont_update(GameObject* obj)
             getEnvfxActImmediately(obj, obj, DRMUSICCONT_ENVFX_B, 0);
             getEnvfxActImmediately(obj, obj, DRMUSICCONT_ENVFX_C, 0);
             getEnvfxActImmediately(obj, obj, DRMUSICCONT_ENVFX_D, 0);
-            skyFn_80088e54(0, 0.0f);
+            skySetLightIndex(0, 0.0f);
             mainSetBits(GAMEBIT_DRArwingRelated0E7B, 1);
         }
         (obj)->userData1 = 1;

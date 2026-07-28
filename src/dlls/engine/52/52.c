@@ -451,7 +451,7 @@ void TitleMenu_initialise(void)
     setIsOvercast(0);
     setDrawLights(0);
     gTitleMenuReadyForInput = 0;
-    envFxActFn_800887f8(0);
+    skySetEnvFxFlags(0);
     gameTimerStop();
     audioFn_8000b694(0);
     gAttractMovieIdleFrameCount = 0;

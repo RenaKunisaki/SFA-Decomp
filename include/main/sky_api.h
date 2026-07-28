@@ -6,7 +6,7 @@
 typedef struct ModelLightStruct ModelLightStruct;
 typedef struct GameObject GameObject;
 
-void envFxActFn_800887f8(u8 value);
+void skySetEnvFxFlags(u8 value);
 f32 lightningGetRemainingFraction(void);
 void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z);
 void modelTextureFn_80089970(int slot);
@@ -14,7 +14,7 @@ void textureColorFn_8008991c(int slot, u8* red, u8* green, u8* blue);
 void objGetColor(int slot, u8* red, u8* green, u8* blue);
 int getSkyColorFn_80088e08(int slot);
 void skyFn_80088c94(int flags, u8 mode);
-void skyFn_80088e54(int mode, f32 brightness);
+void skySetLightIndex(int mode, f32 brightness);
 void skySetLightDirection(int flags, f32 x, f32 y, f32 z);
 void skySetLightColor(int flags, u8 red, u8 green, u8 blue);
 void skySetAmbientColor(int flags, u8 red, u8 green, u8 blue);

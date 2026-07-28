@@ -837,7 +837,7 @@ void wclevelcont_update(GameObject* obj)
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_B, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_C, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_D, 0);
-            skyFn_80088e54(0, lbl_803E6DA8);
+            skySetLightIndex(0, lbl_803E6DA8);
             mainSetBits(GAMEBIT_WC_MagicCaveRelated0E05, 1);
         }
         obj->userData1 = 1;

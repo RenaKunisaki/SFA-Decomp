@@ -700,7 +700,7 @@ void bossdrakor_update(GameObject* obj)
         getEnvfxActImmediately(obj, obj, BOSSDRAKOR_ENVFX_A, 0);
         getEnvfxActImmediately(obj, obj, BOSSDRAKOR_ENVFX_B, 0);
         getEnvfxActImmediately(obj, obj, BOSSDRAKOR_ENVFX_C, 0);
-        skyFn_80088e54(1, lbl_803E6510);
+        skySetLightIndex(1, lbl_803E6510);
         Rcp_EnableHeatEffect();
         if ((*gRomCurveInterface)->initCurve((void*)((char*)state + 0x28), (void*)obj, lbl_803E6560, &curveArg, 0xd) !=
             0)

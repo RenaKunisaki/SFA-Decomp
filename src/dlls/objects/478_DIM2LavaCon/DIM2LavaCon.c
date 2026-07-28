@@ -200,7 +200,7 @@ void dim2lavacontrol_init(GameObject* obj, const Dim2LavaControlPlacementView* p
     }
 
     Music_Trigger(MUSICTRIG_WLC_Corridors, 1);
-    envFxActFn_800887f8(0);
+    skySetEnvFxFlags(0);
 }
 
 ObjectDescriptor12 gDIM2LavaControlObjDescriptor = {

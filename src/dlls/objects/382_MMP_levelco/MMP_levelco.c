@@ -104,7 +104,7 @@ void mmpLevelControl_update(GameObject* obj) {
     }
 
     if (obj->userData1 != 0) {
-        envFxActFn_800887f8(0);
+        skySetEnvFxFlags(0);
         if (mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_A) != 0) {
             skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
             if (obj->userData1 == 2) {

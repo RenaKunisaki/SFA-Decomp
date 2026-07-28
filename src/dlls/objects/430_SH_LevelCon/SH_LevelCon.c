@@ -106,7 +106,7 @@ int SH_LevelControl_getExtraSize(void) {
 }
 
 void SH_LevelControl_free(void) {
-    envFxActFn_800887f8(0);
+    skySetEnvFxFlags(0);
     if (mainGetBit(GAMEBIT_ITEM_BigScarabBag_Got) == 0) {
         (*gGameUIInterface)->airMeterShutdown();
     }
@@ -684,7 +684,7 @@ void SH_LevelControl_update(GameObject* obj) {
     if (val != 0) {
         if ((obj)->userData2 != 2) {
             (obj)->userData2 = 2;
-            envFxActFn_800887f8(0);
+            skySetEnvFxFlags(0);
             if ((obj)->userData1 == 2) {
                 getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_A, 0);
                 getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_B, 0);
@@ -703,13 +703,13 @@ void SH_LevelControl_update(GameObject* obj) {
             if ((obj)->userData2 != 1) {
                 (obj)->userData2 = 1;
                 if ((obj)->userData1 == 2) {
-                    envFxActFn_800887f8(0);
+                    skySetEnvFxFlags(0);
                     getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_A, 0);
                     getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_E, 0);
                     getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_F, 0);
                     getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_D, 0);
                 } else {
-                    envFxActFn_800887f8(0);
+                    skySetEnvFxFlags(0);
                     getEnvfxAct(0, 0, SHLEVELCONTROL_ENVFX_A, 0);
                     getEnvfxAct(0, 0, SHLEVELCONTROL_ENVFX_E, 0);
                     getEnvfxAct(0, 0, SHLEVELCONTROL_ENVFX_F, 0);
@@ -720,12 +720,12 @@ void SH_LevelControl_update(GameObject* obj) {
             (obj)->userData2 = 0;
             if ((obj)->userData1 == 2) {
                 skySetEnvFxRampTables(&base[0x5c], &base[0x24], &base[0x94], &base[0xcc]);
-                envFxActFn_800887f8(0x3f);
+                skySetEnvFxFlags(0x3f);
                 getEnvfxActImmediately(0, 0, SHLEVELCONTROL_ENVFX_D, 0);
-                skyFn_80088e54(0, 0.0f);
+                skySetLightIndex(0, 0.0f);
             } else {
                 skySetEnvFxRampTables(&base[0x5c], &base[0x24], &base[0x94], &base[0xcc]);
-                envFxActFn_800887f8(0x1f);
+                skySetEnvFxFlags(0x1f);
                 getEnvfxAct(0, 0, SHLEVELCONTROL_ENVFX_D, 0);
             }
         }

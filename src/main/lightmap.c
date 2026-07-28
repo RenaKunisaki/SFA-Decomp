@@ -940,7 +940,7 @@ void updateEnvironment(int mode)
         f32 deltaX;
         f32 deltaTime;
 
-        envFxFn_80088884();
+        skyUpdateEnvFx();
         (*gCloudActionInterface)->scrollTexture();
         (*gSky2Interface)->run();
         (*gSkyInterface)->updateTimeOfDay();

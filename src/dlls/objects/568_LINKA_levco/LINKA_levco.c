@@ -188,7 +188,7 @@ void LinkALevControl_init(GameObject* obj)
     unlockLevel(0, 0, 1);
     flags = obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED;
     obj->objectFlags = flags;
-    envFxActFn_800887f8(0);
+    skySetEnvFxFlags(0);
     mainSetBits(LINKA_LEVCONTROL_INIT_GAMEBIT_0, 1);
     mainSetBits(LINKA_LEVCONTROL_INIT_GAMEBIT_1, 1);
     mainSetBits(LINKA_LEVCONTROL_INIT_GAMEBIT_2, 1);

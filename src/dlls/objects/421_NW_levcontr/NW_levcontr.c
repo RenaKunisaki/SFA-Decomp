@@ -130,7 +130,7 @@ void nwLevelControl_free(GameObject* obj) {
     s8 slot = obj->anim.mapEventSlot;
     int groupStatus = (*gMapEventInterface)->getObjGroupStatus((s32)slot, 0);
     if ((u8)groupStatus == 0) {
-        envFxActFn_800887f8(0);
+        skySetEnvFxFlags(0);
     }
     gameTimerStop();
 }
@@ -306,10 +306,10 @@ void nwLevelControl_init(GameObject* obj) {
     skySetEnvFxRampTables(data->skyRampB, data->skyRampA, data->skyRampC, data->skyRampD);
 
     if (getSaveGameLoadStatus() != 0) {
-        envFxActFn_800887f8(0x3f);
+        skySetEnvFxFlags(0x3f);
         getEnvfxActImmediately(0, 0, NW_LEVEL_CONTROL_ENVIRONMENT_EFFECT, 0);
     } else {
-        envFxActFn_800887f8(0x1f);
+        skySetEnvFxFlags(0x1f);
         getEnvfxAct(0, 0, NW_LEVEL_CONTROL_ENVIRONMENT_EFFECT, 0);
     }
 

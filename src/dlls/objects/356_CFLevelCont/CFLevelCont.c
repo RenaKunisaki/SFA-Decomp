@@ -126,7 +126,7 @@ void cflevelcontrol_update(GameObject* obj) {
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_SHARED, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_DAY_A, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_DAY_B, 0);
-            skyFn_80088e54(0, 0.0f);
+            skySetLightIndex(0, 0.0f);
             mainSetBits(GAMEBIT_CFRelated0D73, 1);
         }
 
@@ -134,7 +134,7 @@ void cflevelcontrol_update(GameObject* obj) {
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_SHARED, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_NIGHT_A, 0);
             getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_NIGHT_B, 0);
-            skyFn_80088e54(1, 0.0f);
+            skySetLightIndex(1, 0.0f);
             mainSetBits(GAMEBIT_CFRelated0DCA, 0);
             unlockLevel(0, 0, 1);
         }
@@ -158,7 +158,7 @@ void cflevelcontrol_update(GameObject* obj) {
         mainSetBits(GAMEBIT_CFRestartPointRelated0D3D, 0);
         getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_SHARED, 0);
         getEnvfxActImmediately(obj, obj, CFLEVELCONTROL_ENVFX_DAY_A, 0);
-        skyFn_80088e54(1, 1.0f);
+        skySetLightIndex(1, 1.0f);
     }
 
     cameraMode = (*gCameraInterface)->getMode();

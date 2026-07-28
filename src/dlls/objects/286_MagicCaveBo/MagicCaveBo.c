@@ -45,7 +45,7 @@ void MagicCaveBottom_update(GameObject* obj) {
     switch (state->phase) {
     case MAGIC_CAVE_BOTTOM_PHASE_SETUP:
         mainSetBits(GAMEBIT_MC_IsActive, 1);
-        envFxActFn_800887f8(0);
+        skySetEnvFxFlags(0);
         getEnvfxAct(obj, obj, MAGIC_CAVE_BOTTOM_ENVFX_FIRST, 0);
         getEnvfxAct(obj, obj, MAGIC_CAVE_BOTTOM_ENVFX_SECOND, 0);
         state->phase = MAGIC_CAVE_BOTTOM_PHASE_START_MUSIC;

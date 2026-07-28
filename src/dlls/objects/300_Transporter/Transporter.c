@@ -415,7 +415,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_SKY, 0);
                 setDrawCloudsAndLights(0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, 0.0f);
+                skySetLightIndex(0, 0.0f);
                 break;
             case 0x48506:
             case 0x4A533:
@@ -427,7 +427,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_C, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_D, 0);
                 skyFn_80088c94(1, 0);
-                skyFn_80088e54(0, 0.0f);
+                skySetLightIndex(0, 0.0f);
                 break;
             case 0x4B666:
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_A, 0);
@@ -438,7 +438,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_B, 0);
                 (*gMapEventInterface)->setObjGroupStatus(0x15, 2, 1);
                 getEnvfxActImmediately(0, 0, TRANSPORTER_ENVFX_G2_C, 0);
-                skyFn_80088e54(1, 0.0f);
+                skySetLightIndex(1, 0.0f);
                 break;
             case 0x4670D:
             case 0x4827E:
@@ -452,7 +452,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_A, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_B, 0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, 0.0f);
+                skySetLightIndex(0, 0.0f);
             case 0x4CB84:
                 mainSetBits(GAMEBIT_VFP_EnvironmentRelated0EF6, 0);
                 break;

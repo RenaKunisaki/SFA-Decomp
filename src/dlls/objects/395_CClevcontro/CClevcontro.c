@@ -95,7 +95,7 @@ int ccLevelControl_getExtraSize(void) {
 }
 
 void ccLevelControl_free(void) {
-    envFxActFn_800887f8(0);
+    skySetEnvFxFlags(0);
     Music_Trigger(MUSICTRIG_Arwing_Crash, 0);
 }
 
@@ -197,10 +197,10 @@ void ccLevelControl_init(GameObject* obj) {
                           (u8*)envFxRampTables + offsetof(CCLevelControlEnvFxRampTables, groupC),
                           (u8*)envFxRampTables + offsetof(CCLevelControlEnvFxRampTables, groupD));
     if (getSaveGameLoadStatus() != 0) {
-        envFxActFn_800887f8(CC_LEVEL_CONTROL_ENVFX_FLAGS_LOADED);
+        skySetEnvFxFlags(CC_LEVEL_CONTROL_ENVFX_FLAGS_LOADED);
         getEnvfxActImmediately(NULL, NULL, CC_LEVEL_CONTROL_ENVFX_ID, 0);
     } else {
-        envFxActFn_800887f8(CC_LEVEL_CONTROL_ENVFX_FLAGS_LOADING);
+        skySetEnvFxFlags(CC_LEVEL_CONTROL_ENVFX_FLAGS_LOADING);
         getEnvfxAct(NULL, NULL, CC_LEVEL_CONTROL_ENVFX_ID, 0);
     }
     state->textTimer = CC_LEVEL_CONTROL_TEXT_DURATION;
