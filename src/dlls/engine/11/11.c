@@ -1,7 +1,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
-#include "main/dll/mtxbuildarg_struct.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
@@ -1188,7 +1187,7 @@ void dll_0B_updateActiveEffects(void)
     int k;
     void* res;
     PartFxSpawnParams tmpl;
-    MtxBuildArg rot;
+    MatrixTransform rot;
     int objCount;
     int objIdx;
 
@@ -1287,21 +1286,21 @@ void dll_0B_updateActiveEffects(void)
                     tmpl.posX = ((ModgfxEffectSlot*)eff)->posCurX;
                     tmpl.posY = ((ModgfxEffectSlot*)eff)->posCurY;
                     tmpl.posZ = ((ModgfxEffectSlot*)eff)->posCurZ;
-                    rot.a = MODGFX_ZERO;
-                    rot.b = MODGFX_ZERO;
-                    rot.c = MODGFX_ZERO;
-                    rot.w = MODGFX_ONE;
+                    rot.x = MODGFX_ZERO;
+                    rot.y = MODGFX_ZERO;
+                    rot.z = MODGFX_ZERO;
+                    rot.scale = MODGFX_ONE;
                     if (((ModgfxEffectSlot*)eff)->sourceFlags & 1)
                     {
-                        rot.rx = ((ModgfxEffectSlot*)eff)->unkC;
+                        rot.rotX = ((ModgfxEffectSlot*)eff)->unkC;
                     }
                     else
                     {
-                        rot.rx = *(s16*)(*(int**)&((ModgfxEffectSlot*)eff)->sourceObj);
+                        rot.rotX = *(s16*)(*(int**)&((ModgfxEffectSlot*)eff)->sourceObj);
                     }
-                    rot.ry = 0;
-                    rot.rz = 0;
-                    vecRotateZXY(&rot.rotation.x, &tmpl.posX);
+                    rot.rotY = 0;
+                    rot.rotZ = 0;
+                    vecRotateZXY(&rot.rotX, &tmpl.posX);
                     if (*(void**)eff == NULL && Obj_IsLoadingLocked())
                     {
                         int* o;
