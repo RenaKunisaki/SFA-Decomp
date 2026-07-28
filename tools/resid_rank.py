@@ -14,19 +14,35 @@ list, applying only the normalisations that genuine link-equivalence permits:
   3. `.text` reloc offsets round down to the containing instruction word, since
      MWCC records a halfword reloc two bytes into the instruction dtk names by
      its word address;
+  3b. a reloc TARGETING `.text` canonicalises to (containing function, offset
+     within that function) rather than to a raw `.text` section offset.  A
+     function-pointer table entry names a function, not an address: mwld
+     resolves it to wherever that function lands, so the entry is link-identical
+     to retail's whenever it names the same function at the same intra-function
+     offset.  Comparing raw section offsets instead made every such reloc flip
+     the moment ANY earlier function in our `.text` differed in size -- a whole
+     `.data` jumptable reported as residual on the strength of one unrelated
+     `.text` byte, double-counting a defect the `.text` column already carries.
+     Only `.text` targets get this; `.data`/`.rodata`/`.sdata2` targets keep
+     comparing by absolute offset, because for those sections the layout IS the
+     linked image and a shifted target is a real difference;
   4. static functions we define that retail's `.o` lacks are excised (mwld
      dead-strips unreferenced statics, so they can never appear in a
      dtk-reconstructed object), and every reloc offset and `.text`-targeting
      reloc value is remapped through that excision;
-  5. trailing all-zero alignment padding is excluded.
+  5. trailing all-zero alignment padding is excluded;
+  6. relocations compare as SETS, so the order in which a `.rela` section lists
+     them is inert.  mwld consumes a relocation section as an unordered pool, so
+     the order MWCC emits in versus the offset-sorted order dtk reconstructs is
+     not a difference at all.
 
-Everything else -- emission order, `.data` layout, section content and size -- is
-counted, because all of it changes the linked image.
+Everything else -- code emission order, `.data` layout, section content and size
+-- is counted, because all of it changes the linked image.
 
 CALIBRATION.  Every unit `report.json` marks `complete` is provably link-equal,
 because dtk gates the DOL sha1 on it.  The screen must therefore report zero
 residual for all of them, and `rank` prints that count.  It currently reads 8
-out of 879 (99.1% clean), all of them SDK/library units rather than game code:
+out of 998 (99.2% clean), all of them SDK/library units rather than game code:
 OS.c, OSExec.c and synth_seq_queue.c have residual only because their retail
 `.o` carries no `.text` at all, an attribution artifact; OSTime.c, voice_id.c,
 ARWArwing.c, mtx.c and engine/52 leave a handful of bytes each.  Treat that set
@@ -77,7 +93,7 @@ def load(path):
     with open(path, "rb") as f:
         elf = ELFFile(f)
         sname = {i: s.name for i, s in enumerate(elf.iter_sections())}
-        data, statics, names = {}, [], {}
+        data, statics, names, funcs = {}, [], {}, []
         for sec in elf.iter_sections():
             if sec.name in SECS:
                 data[sec.name] = (b"\0" * sec["sh_size"]
@@ -93,9 +109,10 @@ def load(path):
                 if sn not in SECS or not s.name:
                     continue
                 names.setdefault(sn, set()).add(s.name)
-                if (sn == ".text" and s["st_info"]["type"] == "STT_FUNC"
-                        and s["st_size"] and s["st_info"]["bind"] == "STB_LOCAL"):
-                    statics.append((s.name, s["st_value"], s["st_size"]))
+                if sn == ".text" and s["st_info"]["type"] == "STT_FUNC":
+                    funcs.append((s["st_value"], s["st_size"], s.name))
+                    if s["st_size"] and s["st_info"]["bind"] == "STB_LOCAL":
+                        statics.append((s.name, s["st_value"], s["st_size"]))
         rel = {}
         for sec in elf.iter_sections():
             if not isinstance(sec, RelocationSection):
@@ -112,18 +129,37 @@ def load(path):
                 rel.setdefault(tgt, []).append(
                     (r["r_offset"], r["r_info_type"], tsec,
                      sym["st_value"], sym.name, add))
-        return data, statics, names, rel
+        return data, statics, names, rel, funcs
 
 
-def canon(rl, sec, remap):
+def fn_at(funcs):
+    """Map a `.text` offset to (containing function, offset within it)."""
+    tab = sorted(set(funcs))
+    starts = [f[0] for f in tab]
+
+    def lookup(v):
+        import bisect
+        i = bisect.bisect_right(starts, v) - 1
+        while i >= 0:
+            st, sz, nm = tab[i]
+            end = st + sz if sz else (starts[i + 1] if i + 1 < len(tab) else None)
+            if end is None or v < end:
+                return (nm, v - st)
+            i -= 1
+        return None
+    return lookup
+
+
+def canon(rl, sec, remap, fnsym=None):
     out = []
     for off, typ, tsec, val, nm, add in rl:
         if tsec in SECS:
             t = val + add
             if tsec == ".text":
-                t = remap(t)
-                if t is None:
+                if remap(t) is None:
                     continue
+                sym = fnsym(t) if fnsym else None
+                t = sym if sym is not None else ("ABS", remap(t))
             c = ("DEF", tsec, t)
         elif nm in GADDR:
             c = ("ADDR", GADDR[nm] + add)
@@ -162,9 +198,10 @@ def text_excision(bo, statics, keep):
 
 
 def screen(ours, tgt):
-    do, so, no, ro = load(ours)
-    dt, st, nt, rt = load(tgt)
+    do, so, no, ro, fo = load(ours)
+    dt, st, nt, rt, ft = load(tgt)
     bo, remap = text_excision(do.get(".text", b""), so, nt.get(".text", set()))
+    lo, lt = fn_at(fo), fn_at(ft)
     per, tot_b, tot_r = {}, 0, 0
     for sec in SECS:
         a = bo if sec == ".text" else do.get(sec, b"")
@@ -177,8 +214,8 @@ def screen(ours, tgt):
             nb += sum(1 for i in range(n) if a[i] != b[i])
         elif a != b:
             nb = sum(1 for x, y in zip(a, b) if x != y)
-        nr = len(set(canon(ro.get(sec, []), sec, remap))
-                 ^ set(canon(rt.get(sec, []), sec, lambda x: x)))
+        nr = len(set(canon(ro.get(sec, []), sec, remap, lo))
+                 ^ set(canon(rt.get(sec, []), sec, lambda x: x, lt)))
         if nb or nr:
             per[sec] = (nb, nr, len(a), len(b))
             tot_b += nb
