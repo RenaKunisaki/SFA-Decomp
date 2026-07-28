@@ -247,6 +247,7 @@
 #include "dlls/objects/450_DIMSnowBall.h"
 #include "dlls/objects/451_DIMGate.h"
 #include "dlls/objects/452_DIMIceWall.h"
+#include "dlls/objects/453_DIMBarrier.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -342,7 +343,7 @@ extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gD
 extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
-    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor, gDIMBarrierObjDescriptor;
+    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor;
 extern ResourceDescriptor gDIMBridgeCogMaiObjDescriptor, gDIMCannonObjDescriptor, gDIMDismountPointObjDescriptor,
     gDIMLavaSmashObjDescriptor, gDIMMagicBridgeObjDescriptor;
 extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIMWoodDoor2ObjDescriptor,
@@ -1525,7 +1526,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMSnowBall1C2ObjDescriptor,
     (ResourceDescriptor*)&gDIMGateObjDescriptor,
     (ResourceDescriptor*)&gDIMIceWallObjDescriptor,
-    &gDIMBarrierObjDescriptor,
+    (ResourceDescriptor*)&gDIMBarrierObjDescriptor,
     &gDIMCannonObjDescriptor,
     &gDIMLavaSmashObjDescriptor,
     &gDIMBridgeCogMaiObjDescriptor,
