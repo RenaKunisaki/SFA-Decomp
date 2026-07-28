@@ -72,7 +72,7 @@ int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
             hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
             hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) {
-                if (((GameObject*)hit)->anim.seqId == DIM_LAVA_PROJECTILE_SEQUENCE_ID) {
+                if (((GameObject*)hit)->anim.romDefNo == DIM_LAVA_PROJECTILE_SEQUENCE_ID) {
                     ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_SMASHING;
                     Sfx_PlayFromObject((int)obj, SFXTRIG_en_mushsporedisp22);
                     block =

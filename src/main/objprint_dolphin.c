@@ -1999,7 +1999,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         f32* vm = Camera_GetViewMatrix();
         Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)t1);
-        PSMTXConcat((MtxPtr)(f32*)lbl_803967F0, (MtxPtr)t1, (MtxPtr)t2);
+        PSMTXConcat((MtxPtr)(f32*)gCameraLightPerspectiveMatrix, (MtxPtr)t1, (MtxPtr)t2);
         GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, 0);
         addSmallReflectionTevStage();
     }
@@ -3220,17 +3220,17 @@ void objRenderFuzz(int* obj)
     u32 savedMtx;
     u8 strong;
     f32 dx, dy, dz, dist;
-    CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+    Camera* cam = Camera_GetCurrent();
     if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) ||
         ((GameObject*)obj)->anim.mapEventSlot == 0x3f ||
-        ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
-        ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_KRYSTAL)
+        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
     {
         strong = 1;
         if (((GameObject*)obj)->anim.classId == 1 ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_FRONT_FOX ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_KRYSTAL)
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_FRONT_FOX ||
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
         {
             maxN = 0xf;
         }
@@ -3365,7 +3365,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     if (OBJPRINT_MODEL_DEF(child)->renderFlags & 8)
     {
-        CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+        Camera* cam = Camera_GetCurrent();
         blk.scale = ((GameObject*)child)->anim.rootMotionScale;
         dx = ((GameObject*)child)->anim.localPosX - cam->x;
         dz = ((GameObject*)child)->anim.localPosZ - cam->z;
@@ -3395,7 +3395,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     if (isShadow == 0)
     {
-        void* space;
+        GameObject* space;
         ((GameObject*)child)->anim.worldPosX = m2[3] + playerMapOffsetX;
         ((GameObject*)child)->anim.worldPosY = m2[7];
         ((GameObject*)child)->anim.worldPosZ = m2[11] + playerMapOffsetZ;
@@ -3405,7 +3405,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
             Obj_TransformWorldPointToLocal(((GameObject*)child)->anim.worldPosX, ((GameObject*)child)->anim.worldPosY,
                                            ((GameObject*)child)->anim.worldPosZ, &((GameObject*)child)->anim.localPosX,
                                            &((GameObject*)child)->anim.localPosY, &((GameObject*)child)->anim.localPosZ,
-                                           (u32)space);
+                                           space);
         }
         else
         {
@@ -3501,24 +3501,24 @@ void objRenderModel(GameObject* obj)
         return;
     }
     {
-        s16 seqId = obj->anim.seqId;
-        if (seqId == 0x6a8)
+        s16 romDefNo = obj->anim.romDefNo;
+        if (romDefNo == 0x6a8)
             return;
-        if (seqId == 0x6a9)
+        if (romDefNo == 0x6a9)
             return;
-        if (seqId == 0x6aa)
+        if (romDefNo == 0x6aa)
             return;
-        if (seqId == 0x6ab)
+        if (romDefNo == 0x6ab)
             return;
-        if (seqId == 0x6ac)
+        if (romDefNo == 0x6ac)
             return;
-        if (seqId == 0x752)
+        if (romDefNo == 0x752)
             return;
     }
     Camera_ProjectWorldPointWithOffset(
         obj->anim.localPosX - playerMapOffsetX, obj->anim.localPosY, obj->anim.localPosZ - playerMapOffsetZ,
         obj->anim.hitboxScale * obj->anim.rootMotionScale, &px, &py, &pz);
-    Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+    Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
     if (sz <= depthReadRequestPoll(sx, sy, obj))
     {
         obj->anim.modelState->shadowAlphaStep = 0x20;

@@ -96,7 +96,7 @@ int dll409_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* an
                 if (lbl_803DB610 == -1) {
                     getEnvfxAct(obj, obj, DLL409_ENVFX_B, 0);
                 } else {
-                    getEnvfxAct(obj, obj, (u16)lbl_803DB610, 0);
+                    getEnvfxAct(obj, obj, lbl_803DB610, 0);
                 }
                 break;
             case 3:

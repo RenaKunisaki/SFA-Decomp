@@ -372,7 +372,7 @@ void MagicDust_init(GameObject* obj, CollectibleSetup* placement) {
         obj->anim.modelState->shadowTintB = MAGICGEM_SHADOW_TINT_B;
     }
     model = Obj_GetActiveModel(obj);
-    mode = obj->anim.seqId;
+    mode = obj->anim.romDefNo;
     switch (mode) {
     case MAGICGEM_DEF_GREEN:
         randomValue = randomGetRange(0, 1);

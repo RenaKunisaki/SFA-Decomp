@@ -50,8 +50,6 @@ typedef struct
 } SplashFxParams;
 
 extern u8 lbl_8030E8B0[];
-extern f32 lbl_803DEE20;
-extern f32 lbl_803DEE24;
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
@@ -149,7 +147,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     desc = (GameObject*)(((BaddieState*)state)->contactObj);
     if (desc != NULL)
     {
-        switch (desc->anim.seqId)
+        switch (desc->anim.romDefNo)
         {
         case 0x5d:
         case 0x99:
@@ -161,7 +159,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     if (sfxTab != NULL)
     {
         vec = (f32*)points + vecIdx * 3;
-        if (((BaddieState*)state)->waterDepth > lbl_803DEE20)
+        if (((BaddieState*)state)->waterDepth > 0.0f)
         {
             (*gWaterfxInterface)->spawnImpactSurface((u8*)obj, flags, (f32*)points, (u8*)state, unused);
             sfx = 5;
@@ -184,7 +182,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
         return;
     }
     i = 0;
-    scale = lbl_803DEE24 * scale;
+    scale = 0.5f * scale;
     while (flags != 0)
     {
         vec = (f32*)points + i * 3;
@@ -193,7 +191,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
         v.z = vec[2];
         if (flags & 1)
         {
-            if (obj->anim.classId == 1 || obj->anim.seqId == 0x416)
+            if (obj->anim.classId == 1 || obj->anim.romDefNo == 0x416)
             {
                 playerEarthWalkerAudioFn_8006f950((u8*)obj, (f32*)&v, i & 1, sfx);
             }
@@ -327,7 +325,6 @@ u32 lbl_803DB6F8 = 0xA0A0A080;
 
 
 
-extern f32 lbl_803DEE38;
 
 f32 lbl_8030EA10[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
@@ -338,7 +335,6 @@ f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 
-extern f32 lbl_803DEE20;
 #include "track/intersect_internal.h"
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
@@ -365,14 +361,14 @@ void timeFn_8006f400(f32 step)
     {
         if (quads[i].alpha != 0)
         {
-            if (quads[i].alpha - step <= lbl_803DEE20)
+            if (quads[i].alpha - step <= 0.0f)
                 quads[i].alpha = 0;
             else
                 quads[i].alpha -= step;
         }
         if (ripples[i].alpha != 0)
         {
-            if (ripples[i].alpha - step <= lbl_803DEE20)
+            if (ripples[i].alpha - step <= 0.0f)
                 ripples[i].alpha = 0;
             else
                 ripples[i].alpha -= step;
@@ -422,7 +418,7 @@ void drawFn_8006f500(void)
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     selectTexture(gWaterFxTextures[gWaterFxBank], 0);
     view = Camera_GetViewMatrix();
-    PSMTXTrans(camTrans, -playerMapOffsetX, lbl_803DEE20, -playerMapOffsetZ);
+    PSMTXTrans(camTrans, -playerMapOffsetX, 0.0f, -playerMapOffsetZ);
     PSMTXConcat((MtxP)view, camTrans, posMtx);
     GXLoadPosMtxImm(posMtx, GX_PNMTX0);
     gxSetZMode_(1, 3, 0);
@@ -446,20 +442,20 @@ void drawFn_8006f500(void)
             GXSetTevKColor(GX_KCOLOR0, color);
             if (quad->flip != 0)
             {
-                tTop = lbl_803DEE38;
-                tBot = lbl_803DEE20;
+                tTop = 1.0f;
+                tBot = 0.0f;
                 PSMTXRotRad(rot, 0x7a,
                             2.0f * (3.142f * (f32)(int)(0x8000 - quad->angle)) / 65536.0f);
             }
             else
             {
-                tTop = lbl_803DEE20;
-                tBot = lbl_803DEE38;
+                tTop = 0.0f;
+                tBot = 1.0f;
                 PSMTXRotRad(rot, 0x7a, 2.0f * (3.142f * (f32)(u32)quad->angle) / 65536.0f);
             }
-            PSMTXTrans(trans, -0.5f, -0.5f, lbl_803DEE20);
+            PSMTXTrans(trans, -0.5f, -0.5f, 0.0f);
             PSMTXConcat(rot, trans, rot);
-            PSMTXTrans(trans, 0.5f, 0.5f, lbl_803DEE20);
+            PSMTXTrans(trans, 0.5f, 0.5f, 0.0f);
             PSMTXConcat(trans, rot, rot);
             GXLoadTexMtxImm(rot, GX_TEXMTX0, GX_MTX2x4);
             GXBegin(GX_QUADS, GX_VTXFMT2, 4);
@@ -472,7 +468,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = lbl_803DEE20;
+            GXWGFifo.f32 = 0.0f;
             GXWGFifo.f32 = tTop;
             {
                 f32 px, py, pz;
@@ -483,7 +479,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = lbl_803DEE38;
+            GXWGFifo.f32 = 1.0f;
             GXWGFifo.f32 = tTop;
             {
                 f32 px, py, pz;
@@ -494,7 +490,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = lbl_803DEE38;
+            GXWGFifo.f32 = 1.0f;
             GXWGFifo.f32 = tBot;
             {
                 f32 px, py, pz;
@@ -505,7 +501,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = lbl_803DEE20;
+            GXWGFifo.f32 = 0.0f;
             GXWGFifo.f32 = tBot;
         }
     }
@@ -517,9 +513,7 @@ extern u32 lbl_803DCFF4;
 
 
 
-extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE58;
-extern f32 lbl_803DEE5C, lbl_803DEE64;
-extern f32 lbl_803DEE60;
+extern f32 lbl_803DEE58;
 
 
 int cardDeleteSaveFile(void);
@@ -527,7 +521,6 @@ void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
 
 
-extern f32 lbl_803DEE20;
 #include "track/intersect_internal.h"
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
@@ -558,7 +551,7 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
     {
         gWaterFxBank = *(u8*)&((GameObject*)obj)->anim.bankIndex;
     }
-    else if (((GameObject*)obj)->anim.seqId == 0x416)
+    else if (((GameObject*)obj)->anim.romDefNo == 0x416)
     {
         gWaterFxBank = 3;
     }
@@ -569,7 +562,7 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
         if (type == 1)
         {
             base->ripples[gWaterRippleWriteIdx].x = pos[0];
-            base->ripples[gWaterRippleWriteIdx].y = lbl_803DEE3C + pos[1];
+            base->ripples[gWaterRippleWriteIdx].y = 2.0f + pos[1];
             base->ripples[gWaterRippleWriteIdx].z = pos[2];
             base->ripples[gWaterRippleWriteIdx].id = *(s16*)obj;
             base->ripples[gWaterRippleWriteIdx].alpha = 0xff;
@@ -581,13 +574,13 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
             }
         }
         PSVECNormalize(&norm, &norm);
-        axis.x = lbl_803DEE38;
-        axis.y = lbl_803DEE20;
-        axis.z = lbl_803DEE20;
+        axis.x = 1.0f;
+        axis.y = 0.0f;
+        axis.z = 0.0f;
         if (__fabs(PSVECDotProduct(&norm, &axis)) >= lbl_803DEE58)
         {
-            axis.x = lbl_803DEE20;
-            axis.z = lbl_803DEE38;
+            axis.x = 0.0f;
+            axis.z = 1.0f;
         }
         PSVECCrossProduct(&norm, &axis, &perp);
         PSVECCrossProduct(&perp, &norm, &axis);
@@ -719,10 +712,10 @@ void waterFxInit(void)
     waterFx->textures[1] = textureLoadAsset(0x18);
     waterFx->textures[2] = textureLoadAsset(0x1A);
     waterFx->textures[3] = textureLoadAsset(0x646);
-    waterFx->scales[0] = lbl_803DEE5C;
-    waterFx->scales[1] = lbl_803DEE60;
-    waterFx->scales[2] = lbl_803DEE60;
-    waterFx->scales[3] = lbl_803DEE64;
+    waterFx->scales[0] = 4.0f;
+    waterFx->scales[1] = 5.0f;
+    waterFx->scales[2] = 5.0f;
+    waterFx->scales[3] = 8.0f;
     gWaterFxDisabled = 0;
     gWaterQuadWriteIdx = 0;
     gWaterRippleWriteIdx = 0;
@@ -830,10 +823,10 @@ SplashQuad gWaterSplashQuads[0x100];
 DepthReadRequest gDepthReadResults[0x14];
 DepthReadRequest gDepthReadPendingQueue[0x14];
 
-f32 lbl_803967C0[3][4];
-f32 lbl_803967F0[3][4];
-f32 lbl_80396820[3][4];
-f32 lbl_80396850[3][4];
+f32 gCameraModelViewMatrix[3][4];
+f32 gCameraLightPerspectiveMatrix[3][4];
+f32 gCameraLightPerspectiveFlipYMatrix[3][4];
+f32 gCameraLightPerspectiveScaledMatrix[3][4];
 f32 hudMatrix[4][4];
 int lbl_803968C0[0x10];
 SaveCardFileInfo gSaveCardFileInfo;

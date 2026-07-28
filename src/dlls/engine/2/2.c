@@ -59,7 +59,7 @@
 #include "main/pad.h"
 #include "main/gamebit_ids.h"
 #include "main/mldf_fileid.h"
-#include "main/camera_ext.h"
+#include "main/object_transform.h"
 #include "main/maketex_yield_api.h"
 #include "dolphin/os.h"
 #include "main/pi_dolphin_api.h"
@@ -1373,7 +1373,7 @@ void endObjSequence(int seq)
     gObjSeqSlotSeqIdTable[seq] = 0;
 }
 
-u8 lbl_8030EB58[168] = {83,  84,  65,  82,  70,  79,  88,  32,  65,  68,  86,  69,  78,  84,  85,  82,  69,  83,  0,
+u8 gMemoryCardBannerAssetNames[168] = {83,  84,  65,  82,  70,  79,  88,  32,  65,  68,  86,  69,  78,  84,  85,  82,  69,  83,  0,
                         0,   68,  105, 110, 111, 115, 97,  117, 114, 32,  80,  108, 97,  110, 101, 116, 0,   111, 112,
                         101, 110, 105, 110, 103, 46,  98,  110, 114, 0,   99,  97,  114, 100, 47,  109, 101, 109, 99,
                         97,  114, 100, 105, 99,  111, 110, 48,  46,  105, 109, 103, 0,   0,   0,   99,  97,  114, 100,
@@ -1701,7 +1701,7 @@ int gObjSeqInputOverrideActive;
 u8 curSeqNo;
 s16 lbl_803DD08A;
 u8 gObjSeqFovOverrideActive;
-int lbl_803DD084;
+int seqGlobal4;
 s8 seqGlobal3;
 GameObject* lbl_803DD07C;
 u8 lbl_803DD078;
@@ -1972,7 +1972,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     st->cmdFlags[obj->seqIndex] = 0;
     base[obj->seqIndex + 0x3334] = 0;
     gObjSeqSlotValues[obj->seqIndex] = 0;
-    st->handles[obj->seqIndex] = obj->anim.seqId;
+    st->handles[obj->seqIndex] = obj->anim.romDefNo;
 
     walk = buf;
     bit = 1;
@@ -2009,8 +2009,8 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             if (objId == 0xffff)
             {
                 setup->base.objectId = OBJSEQ_OVERRIDE_OBJ;
-                setup->targetType = obj->anim.seqId + 4;
-                if (obj->anim.seqId == OBJSEQ_VARIABLE_OBJ && objSeqObjs != -1)
+                setup->targetType = obj->anim.romDefNo + 4;
+                if (obj->anim.romDefNo == OBJSEQ_VARIABLE_OBJ && objSeqObjs != -1)
                 {
                     setup->targetType = objSeqObjs + 4;
                 }
@@ -2254,14 +2254,14 @@ int ObjSeq_func0E(void)
     return 0;
 }
 
-void ObjSeq_func11(int value)
+void ObjSeq_setGlobal4(int value)
 {
-    lbl_803DD084 = value;
+    seqGlobal4 = value;
 }
 
-int ObjSeq_func10(void)
+int ObjSeq_getGlobal4(void)
 {
-    return lbl_803DD084;
+    return seqGlobal4;
 }
 
 int ObjSeq_func0F(void)
@@ -2364,7 +2364,7 @@ int ObjSeq_resolveTargetObject(GameObject* obj)
                 }
                 if (linked == NULL)
                 {
-                    if (candidate->anim.seqId == objType)
+                    if (candidate->anim.romDefNo == objType)
                     {
                         dx = obj->anim.localPosX - candidate->anim.localPosX;
                         dy = obj->anim.localPosY - candidate->anim.localPosY;
@@ -2436,7 +2436,7 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
         for (i = 0; i < objectCount; i++)
         {
             candidate = objects[i];
-            if (candidate->anim.seqId == objectType)
+            if (candidate->anim.romDefNo == objectType)
             {
                 dx = obj->anim.localPosX - candidate->anim.localPosX;
                 dy = obj->anim.localPosY - candidate->anim.localPosY;
@@ -2590,7 +2590,7 @@ void ObjSeq_runBgCmds(void)
                     seqp->runState = 2;
                     seqp->pendingStartFrame = xrot;
                     ObjSeq_update(candidate, 1.0f);
-                    Obj_GetWorldPosition((u32)candidate, &candidate->anim.worldPosX,
+                    Obj_GetWorldPosition(candidate, &candidate->anim.worldPosX,
                                          &candidate->anim.worldPosY, &candidate->anim.worldPosZ);
                 }
                 else
@@ -2834,8 +2834,8 @@ void* lbl_8030EE34[40] = {(void*)0,
                           (void*)ObjSeq_resolveTargetObject,
                           (void*)ObjSeq_func0E,
                           (void*)ObjSeq_func0F,
-                          (void*)ObjSeq_func10,
-                          (void*)ObjSeq_func11,
+                          (void*)ObjSeq_getGlobal4,
+                          (void*)ObjSeq_setGlobal4,
                           (void*)ObjSeq_func12,
                           (void*)ObjSeq_func13,
                           (void*)ObjSeq_start,
@@ -2929,7 +2929,7 @@ void ObjSeq_updateCamera(void)
             *(f32*)(camObj + 0x20) = z;
             Obj_TransformWorldPointToLocal(*(f32*)(camObj + 0x18), *(f32*)(camObj + 0x1c), *(f32*)(camObj + 0x20),
                                            (f32*)(camObj + 0xc), (f32*)(camObj + 0x10), (f32*)(camObj + 0x14),
-                                           (u32)*(void**)(camObj + 0x30));
+                                           (GameObject*)*(void**)(camObj + 0x30));
             *(s16*)camObj = (s16)(0x8000 - pitch);
             *(s16*)(camObj + 2) = (s16)-yaw;
             *(s16*)(camObj + 4) = roll;
@@ -3422,7 +3422,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         {
             break;
         }
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
         player = Obj_GetPlayerObject();
         if (player == NULL)
         {
@@ -3436,7 +3436,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
             {
                 strength *= 1.0f - (dist - 50.0f) / 150.0f;
             }
-            CameraShake_Start(gObjSeqShakeAmplitude * strength, gObjSeqShakeAmplitude * strength,
+            CameraShake_StartDampened(gObjSeqShakeAmplitude * strength, gObjSeqShakeAmplitude * strength,
                               gObjSeqShakeAmplitude);
         }
         break;
@@ -4384,7 +4384,7 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
     flags = obj->anim.resetHitboxFlags;
     flags &= ~7;
     obj->anim.resetHitboxFlags = flags;
-    Obj_GetWorldPosition((u32)obj, &obj->anim.worldPosX, &obj->anim.worldPosY, &obj->anim.worldPosZ);
+    Obj_GetWorldPosition(obj, &obj->anim.worldPosX, &obj->anim.worldPosY, &obj->anim.worldPosZ);
     if (obj->anim.hitReactState != NULL)
     {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject = 0;
@@ -5909,7 +5909,7 @@ void ObjSeq_ApplyLinkedObjectTransform(GameObject* obj, GameObject* seqObj, u8* 
         lbl_803DD0B8 = obj;
         lbl_803DD0B6 = framesThisStep;
     }
-    Obj_GetWorldPosition((u32)seqObj, &seqObj->anim.worldPosX, &seqObj->anim.worldPosY,
+    Obj_GetWorldPosition(seqObj, &seqObj->anim.worldPosX, &seqObj->anim.worldPosY,
                          &seqObj->anim.worldPosZ);
 }
 static inline int ObjSeq_CheckConditionOpcode(ObjSeqState* state, GameObject* obj, u8 conditionOpcode)

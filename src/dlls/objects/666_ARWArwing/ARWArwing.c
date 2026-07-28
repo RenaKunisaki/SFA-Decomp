@@ -232,11 +232,11 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
 void arwarwing_updateThrusters(GameObject* obj, ArwingState* state)
 {
 
-    CameraViewSlot* slot;
+    Camera* slot;
     f32 mtx[16];
     MatrixTransform src;
 
-    slot = Camera_GetCurrentViewSlot();
+    slot = Camera_GetCurrent();
     src.x = obj->anim.localPosX;
     src.y = obj->anim.localPosY;
     src.z = obj->anim.localPosZ;
@@ -419,7 +419,7 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     rateStep = (int)(f32)((int)((f32)angDelta * arwing->rotXGain) - arwing->rotXRate);
     rateStep = (rateStep < -0x32) ? -0x32 : ((rateStep > 0x32) ? 0x32 : rateStep);
     arwing->rotXRate = (int)((f32)rateStep * timeDelta + (f32)((ArwingState*)arwing)->rotXRate);
-    arwing->rotXCur = (int)((f32)arwing->rotXRate * timeDelta + arwing->rotXCur);
+    arwing->rotXCur = (f32)arwing->rotXRate * timeDelta + arwing->rotXCur;
 
     angDelta = arwing->rotYTarget - (u16)arwing->rotYCur;
     if (angDelta > 0x8000)
@@ -429,7 +429,7 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     rateStep = (int)(f32)((int)((f32)angDelta * arwing->rotYGain) - arwing->rotYRate);
     rateStep = (rateStep < -0x32) ? -0x32 : ((rateStep > 0x32) ? 0x32 : rateStep);
     arwing->rotYRate = (int)((f32)rateStep * timeDelta + (f32)((ArwingState*)arwing)->rotYRate);
-    arwing->rotYCur = (int)((f32)arwing->rotYRate * timeDelta + arwing->rotYCur);
+    arwing->rotYCur = (f32)arwing->rotYRate * timeDelta + arwing->rotYCur;
 
     angDelta = arwing->rotZTarget - (u16)arwing->rotZCur;
     if (angDelta > 0x8000)
@@ -439,7 +439,7 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     rateStep = (int)((f32)(int)((f32)angDelta * arwing->rotZGain) - arwing->rotZRate);
     rateStep = (rateStep < -0x64) ? -0x64 : ((rateStep > 0x64) ? 0x64 : rateStep);
     arwing->rotZRate = rateStep * timeDelta + ((ArwingState*)arwing)->rotZRate;
-    arwing->rotZCur = (int)(arwing->rotZRate * timeDelta + arwing->rotZCur);
+    arwing->rotZCur = arwing->rotZRate * timeDelta + arwing->rotZCur;
 
     if (arwing->mode == 0)
     {
@@ -518,9 +518,9 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     (obj)->anim.localPosY =
         arwing->bobBlend * (arwing->bobYAmp * mathSinf(3.1415927f * (f32)(u32)arwing->bobYPhase / 32768.0f)) +
         (obj)->anim.localPosY;
-    arwing->bobRotZPhase = (arwing->bobRotZRate * timeDelta + (f32)(u32)arwing->bobRotZPhase);
-    arwing->bobXPhase = (arwing->bobXRate * timeDelta + (f32)(u32)arwing->bobXPhase);
-    arwing->bobYPhase = (arwing->bobYRate * timeDelta + (f32)(u32)arwing->bobYPhase);
+    arwing->bobRotZPhase = arwing->bobRotZRate * timeDelta + (f32)(u32)arwing->bobRotZPhase;
+    arwing->bobXPhase = arwing->bobXRate * timeDelta + (f32)(u32)arwing->bobXPhase;
+    arwing->bobYPhase = arwing->bobYRate * timeDelta + (f32)(u32)arwing->bobYPhase;
     arwarwing_clampToFlightBounds(obj, state);
 }
 
@@ -779,8 +779,8 @@ void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state)
         state->shakePitch = 0;
         state->knockVelX = *(f32*)(pathBlock + 0x1a0);
         state->knockVelZ = *(f32*)(pathBlock + 0x1a4);
-        Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(15.0f);
+        CameraShake_Enable();
+        CameraShake_SetOffset(15.0f);
     }
     else
     {
@@ -807,7 +807,7 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
         }
         else
         {
-            if (((GameObject*)hitObj)->anim.seqId == 0x6ae && state->mode == ARWING_MODE_BARRELROLL)
+            if (((GameObject*)hitObj)->anim.romDefNo == 0x6ae && state->mode == ARWING_MODE_BARRELROLL)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_ar_blaunch16);
                 return;
@@ -826,8 +826,8 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
                 state->knockVelX = knock;
                 state->knockVelZ = knock;
             }
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(10.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(10.0f);
         }
     }
     if (state->mode != ARWING_MODE_DEAD && state->mode != ARWING_MODE_EXPLODE &&
@@ -1015,7 +1015,7 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
     int i;
     ArwingState* state = obj->extra;
 
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     animUpdate->freeCallback = (ObjAnimSequenceFreeCallback)arwarwing_clearAimSnapshot;
     if ((state->flags477 & ARWING_FLAG_ACTIVE) == 0)
     {
@@ -1038,7 +1038,7 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
         {
         case 8:
         {
-            CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+            Camera* cam = Camera_GetCurrent();
             state->aimOffsetX = cam->x - obj->anim.localPosX;
             state->aimOffsetY = cam->y - obj->anim.localPosY;
             state->aimOffsetZ = cam->z - obj->anim.localPosZ;
@@ -1717,7 +1717,7 @@ void arwarwing_update(GameObject* obj)
             (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
             spawnExplosion((GameObject*)(int)obj, 100.0f, 1, 0, 1, 1, 0, 1, 0);
         }
-        state->rotZCur = (int)(lbl_803E6F6C * timeDelta + (f32)state->rotZCur);
+        state->rotZCur = lbl_803E6F6C * timeDelta + (f32)state->rotZCur;
         (obj)->anim.rotZ = (s16)state->rotZCur;
         state->velY = state->velY - 0.1f * timeDelta;
         objMove((GameObject*)obj, state->velX * timeDelta, state->velY * timeDelta,

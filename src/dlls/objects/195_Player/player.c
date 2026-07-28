@@ -1816,7 +1816,7 @@ int playerSetHeldObject(GameObject* obj, GameObject* heldObj)
         sub = inner->heldObj;
         if (sub != NULL)
         {
-            s16 id = sub->anim.seqId;
+            s16 id = sub->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw(sub);
@@ -2212,7 +2212,7 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
             inner->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
-                short id = ((GameObject*)inner->heldObj)->anim.seqId;
+                short id = ((GameObject*)inner->heldObj)->anim.romDefNo;
                 if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)(inner->heldObj));
@@ -2231,9 +2231,9 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
     }
 }
 
-void fn_80296EB4(GameObject* obj, int newParent)
+void fn_80296EB4(GameObject* obj, GameObject* newParent)
 {
-    int oldParent = *(int*)&obj->anim.parent;
+    GameObject* oldParent = obj->anim.parent;
     int a0;
     int a1;
     int a2;
@@ -2249,11 +2249,11 @@ void fn_80296EB4(GameObject* obj, int newParent)
         f32 wp[3];
     } s;
 
-    if ((void*)oldParent == (void*)newParent)
+    if (oldParent == newParent)
     {
         return;
     }
-    if ((void*)oldParent != NULL)
+    if (oldParent != NULL)
     {
         Obj_TransformLocalPointToWorld(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                        &s.wp[0], &s.wp[1], &s.wp[2], oldParent);
@@ -2290,7 +2290,7 @@ void fn_80296EB4(GameObject* obj, int newParent)
         s.wp0[1] = *(f32*)((char*)inner + 0x11c);
         s.wp0[2] = *(f32*)((char*)inner + 0x120);
     }
-    if ((void*)newParent != NULL)
+    if (newParent != NULL)
     {
         Obj_TransformWorldPointToLocal(s.wp[0], s.wp[1], s.wp[2], &obj->anim.localPosX,
                                        &obj->anim.localPosY, &obj->anim.localPosZ,
@@ -2341,7 +2341,7 @@ void fn_80296EB4(GameObject* obj, int newParent)
     Player_GetObjHitsState(obj)->worldPosX = obj->anim.worldPosX;
     Player_GetObjHitsState(obj)->worldPosY = obj->anim.worldPosY;
     Player_GetObjHitsState(obj)->worldPosZ = obj->anim.worldPosZ;
-    *(int*)&obj->anim.parent = newParent;
+    obj->anim.parent = newParent;
 }
 
 void playerSetInCutscene(GameObject* obj)
@@ -2459,7 +2459,7 @@ int playerState41(GameObject* obj, int state, f32 fv)
         sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.seqId;
+            s16 id = ((GameObject*)sub)->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -6070,7 +6070,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     if (doXform != 0)
     {
         Obj_TransformLocalPointToWorld(inner->contactPointX, inner->contactPointY, inner->contactPointZ,
-                                       (f32*)(obj + 0xc), &yOut, (f32*)(obj + 0x14), sub);
+                                       (f32*)(obj + 0xc), &yOut, (f32*)(obj + 0x14), (GameObject*)sub);
         {
             f32 k = 12.0f;
             self->anim.localPosX = k * inner->surfaceNormalX + self->anim.localPosX;
@@ -6303,12 +6303,12 @@ int playerState1B(GameObject* obj, int state, f32 fv)
         {
             int pt = (int)(*gRomCurveInterface)->getById(found);
             int pt2;
-            *(f32*)((int)inner + 0x61c) = ((ObjHitVolumeRuntimeTransform*)pt)->jointZ;
-            inner->curveStartY = ((ObjHitVolumeRuntimeTransform*)pt)->centerX;
-            inner->curveStartZ = ((ObjHitVolumeRuntimeTransform*)pt)->centerY;
-            obj->anim.localPosX = ((ObjHitVolumeRuntimeTransform*)pt)->jointZ;
-            obj->anim.localPosY = ((ObjHitVolumeRuntimeTransform*)pt)->centerX;
-            obj->anim.localPosZ = ((ObjHitVolumeRuntimeTransform*)pt)->centerY;
+            inner->curveStartX = ((RomCurveDef*)pt)->x;
+            inner->curveStartY = ((RomCurveDef*)pt)->y;
+            inner->curveStartZ = ((RomCurveDef*)pt)->z;
+            obj->anim.localPosX = ((RomCurveDef*)pt)->x;
+            obj->anim.localPosY = ((RomCurveDef*)pt)->y;
+            obj->anim.localPosZ = ((RomCurveDef*)pt)->z;
             inner->targetYaw = (s16)getAngle(inner->hitNormalX, inner->hitNormalZ);
             inner->yaw = inner->targetYaw;
             sqrtf(inner->hitNormalX * inner->hitNormalX + inner->hitNormalZ * inner->hitNormalZ);
@@ -6319,9 +6319,9 @@ int playerState1B(GameObject* obj, int state, f32 fv)
                 found = (*gRomCurveInterface)->getRandomBlockedLink((RomCurveDef*)pt, -1);
             }
             pt2 = (int)(*gRomCurveInterface)->getById(found);
-            *(f32*)((int)inner + 0x628) = *(f32*)((char*)pt2 + 0x8);
-            inner->curveEndY = *(f32*)((char*)pt2 + 0xc);
-            inner->curveEndZ = *(f32*)((char*)pt2 + 0x10);
+            inner->curveEndX = ((RomCurveDef*)pt2)->x;
+            inner->curveEndY = ((RomCurveDef*)pt2)->y;
+            inner->curveEndZ = ((RomCurveDef*)pt2)->z;
             inner->traveledDistance = 0.0f;
             PSVECSubtract((Vec*)((char*)inner + 0x628), (Vec*)((char*)inner + 0x61c), (Vec*)vec);
             inner->travelTargetDistance = PSVECMag((Vec*)vec);
@@ -6611,7 +6611,7 @@ int playerState19(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX,
                                        &localPt, &obj->anim.localPosZ,
-                                       (int)obj->anim.parent);
+                                       obj->anim.parent);
         if (inner->warpKind == 1)
         {
             inner->targetYaw += 0x4000;
@@ -6981,7 +6981,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
         }
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX, &outY,
-                                       &obj->anim.localPosZ, *(int*)&obj->anim.parent);
+                                       &obj->anim.localPosZ, obj->anim.parent);
         fn_802AB5A4(obj, (int)inner, 5);
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 1);
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -7055,7 +7055,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
         }
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX, &outY,
-                                       &obj->anim.localPosZ, *(int*)&obj->anim.parent);
+                                       &obj->anim.localPosZ, obj->anim.parent);
         fn_802AB5A4(obj, (int)inner, 5);
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 1);
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -7790,7 +7790,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                     sub = ((PlayerState*)inner)->heldObj;
                     if (sub != NULL)
                     {
-                        s16 id = ((GameObject*)sub)->anim.seqId;
+                        s16 id = ((GameObject*)sub)->anim.romDefNo;
                         if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
                             SmallBasket_throw((GameObject*)sub);
@@ -7852,7 +7852,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
             Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                            obj->anim.worldPosZ, &obj->anim.localPosX,
                                            &local, &obj->anim.localPosZ,
-                                           *(int*)&obj->anim.parent);
+                                           obj->anim.parent);
             fn_802AB5A4(obj, (int)inner, 5);
             ObjAnim_SetCurrentMove((int)obj, *(s16*)(inner->moveAnimTable), 0.0f, 1);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -8047,7 +8047,7 @@ int playerStateOnLadder(int obj, int state)
             Obj_TransformWorldPointToLocal(((GameObject*)obj)->anim.worldPosX, 0.0f,
                                            ((GameObject*)obj)->anim.worldPosZ, &((GameObject*)obj)->anim.localPosX,
                                            &outY, &((GameObject*)obj)->anim.localPosZ,
-                                           *(int*)&((GameObject*)obj)->anim.parent);
+                                           ((GameObject*)obj)->anim.parent);
             if (gPlayerCurrentMoveId == 6 || gPlayerCurrentMoveId == 7)
             {
                 fn_802AB5A4((GameObject*)obj, inner, 7);
@@ -8221,9 +8221,9 @@ int playerStateOnLadder(int obj, int state)
                             ((PlayerState*)inner)->isHoldingObject = 0;
                             if (((PlayerState*)inner)->heldObj != NULL)
                             {
-                                if (((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId ==
+                                if (((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo ==
                                         SMALLBASKET_SEQUENCE_VARIANT_A ||
-                                    ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId ==
+                                    ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo ==
                                         SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                                 {
                                     SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -8740,7 +8740,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             ((PlayerState*)inner)->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
-                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                 if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -8791,7 +8791,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         ((GameObject*)obj)->anim.velocityY = 0.0f;
         Obj_TransformWorldPointToLocal(((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
                                        ((GameObject*)obj)->anim.worldPosZ, (f32*)(obj + 0xc), (f32*)(obj + 0x10),
-                                       (f32*)(obj + 0x14), *(int*)&((GameObject*)obj)->anim.parent);
+                                       (f32*)(obj + 0x14), ((GameObject*)obj)->anim.parent);
         objHitDetectFn_80062e84((GameObject*)obj, ((PlayerState*)inner)->groundObject, 1);
         ((PlayerState*)inner)->moveStartX = ((GameObject*)obj)->anim.localPosX;
         ((PlayerState*)inner)->moveStartY = ((GameObject*)obj)->anim.localPosY;
@@ -8803,17 +8803,17 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
                 Obj_TransformWorldPointToLocal(((PlayerState*)inner)->launchAnchorX,
                                                ((PlayerState*)inner)->launchAnchorY,
                                                ((PlayerState*)inner)->launchAnchorZ, (f32*)(inner + 0x5d4),
-                                               (f32*)(inner + 0x5d8), (f32*)(inner + 0x5dc), (int)xf);
+                                               (f32*)(inner + 0x5d8), (f32*)(inner + 0x5dc), (GameObject*)xf);
                 Obj_TransformWorldPointToLocal(((PlayerState*)inner)->moveEndX,
                                                ((PlayerState*)inner)->moveEndY,
                                                ((PlayerState*)inner)->moveEndZ, (f32*)(inner + 0x5ec),
                                                (f32*)(inner + 0x5f0), (f32*)(inner + 0x5f4),
-                                               (int)((PlayerState*)inner)->groundObject);
+                                               ((PlayerState*)inner)->groundObject);
                 Obj_TransformWorldPointToLocal(((PlayerState*)inner)->moveEnd2X,
                                                ((PlayerState*)inner)->moveEnd2Y,
                                                ((PlayerState*)inner)->moveEnd2Z, (f32*)(inner + 0x5f8),
                                                (f32*)(inner + 0x5fc), (f32*)(inner + 0x600),
-                                               (int)((PlayerState*)inner)->groundObject);
+                                               ((PlayerState*)inner)->groundObject);
                 ((PlayerState*)inner)->leapTargetY =
                     ((PlayerState*)inner)->leapTargetY - ((PlayerState*)inner)->groundObject->anim.localPosY;
                 ((PlayerState*)inner)->leapBaseY =
@@ -8919,7 +8919,7 @@ int playerState0B(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                        obj->anim.worldPosZ, (f32*)((char*)obj + 0xc),
                                        (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14),
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         objHitDetectFn_80062e84(obj, inner->groundObject, 1);
         inner->moveStartX = obj->anim.localPosX;
         inner->moveStartY = obj->anim.localPosY;
@@ -8929,15 +8929,15 @@ int playerState0B(GameObject* obj, int state)
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
                                            (f32*)((char*)inner + 0x5d8), (f32*)((char*)inner + 0x5dc),
-                                           (u32)inner->groundObject);
+                                           inner->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5ec), *(f32*)((int)inner + 0x5f0),
                                            *(f32*)((int)inner + 0x5f4), (f32*)((char*)inner + 0x5ec),
                                            (f32*)((char*)inner + 0x5f0), (f32*)((char*)inner + 0x5f4),
-                                           (u32)inner->groundObject);
+                                           inner->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5f8), *(f32*)((int)inner + 0x5fc),
                                            *(f32*)((int)inner + 0x600), (f32*)((char*)inner + 0x5f8),
                                            (f32*)((char*)inner + 0x5fc), (f32*)((char*)inner + 0x600),
-                                           (u32)inner->groundObject);
+                                           inner->groundObject);
             inner->leapTargetY = inner->leapTargetY - inner->groundObject->anim.localPosY;
             inner->leapBaseY = inner->leapBaseY - inner->groundObject->anim.localPosY;
             inner->unk609 = 0;
@@ -8975,7 +8975,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
         sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.seqId;
+            s16 id = ((GameObject*)sub)->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -9053,7 +9053,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                        obj->anim.worldPosZ, (f32*)((char*)obj + 0xc),
                                        (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14),
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         objHitDetectFn_80062e84(obj, ((PlayerState*)inner)->groundObject, 1);
         ((PlayerState*)inner)->moveStartX = obj->anim.localPosX;
         ((PlayerState*)inner)->moveStartY = obj->anim.localPosY;
@@ -9078,15 +9078,15 @@ int playerStateGrabLedge(GameObject* obj, int state)
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
                                            (f32*)((char*)inner + 0x5d8), (f32*)((char*)inner + 0x5dc),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5ec), *(f32*)((int)inner + 0x5f0),
                                            *(f32*)((int)inner + 0x5f4), (f32*)((char*)inner + 0x5ec),
                                            (f32*)((char*)inner + 0x5f0), (f32*)((char*)inner + 0x5f4),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5f8), *(f32*)((int)inner + 0x5fc),
                                            *(f32*)((int)inner + 0x600), (f32*)((char*)inner + 0x5f8),
                                            (f32*)((char*)inner + 0x5fc), (f32*)((char*)inner + 0x600),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             ((PlayerState*)inner)->leapTargetY =
                 ((PlayerState*)inner)->leapTargetY - ((PlayerState*)inner)->groundObject->anim.localPosY;
             ((PlayerState*)inner)->leapBaseY =
@@ -9152,22 +9152,22 @@ int playerState09(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                        obj->anim.worldPosZ, &obj->anim.localPosX,
                                        &obj->anim.localPosY, &obj->anim.localPosZ,
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         objHitDetectFn_80062e84(obj, ((PlayerState*)inner)->groundObject, 1);
         if (*(void**)((char*)inner + 0x4c4) != NULL)
         {
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
                                            (f32*)((char*)inner + 0x5d8), (f32*)((char*)inner + 0x5dc),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5ec), *(f32*)((int)inner + 0x5f0),
                                            *(f32*)((int)inner + 0x5f4), (f32*)((char*)inner + 0x5ec),
                                            (f32*)((char*)inner + 0x5f0), (f32*)((char*)inner + 0x5f4),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5f8), *(f32*)((int)inner + 0x5fc),
                                            *(f32*)((int)inner + 0x600), (f32*)((char*)inner + 0x5f8),
                                            (f32*)((char*)inner + 0x5fc), (f32*)((char*)inner + 0x600),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             ((PlayerState*)inner)->leapTargetY =
                 ((PlayerState*)inner)->leapTargetY - ((PlayerState*)inner)->groundObject->anim.localPosY;
             ((PlayerState*)inner)->leapBaseY =
@@ -9516,7 +9516,7 @@ int playerStateThrowing(GameObject* obj, int state)
         if (((PlayerState*)inner)->heldObj != NULL)
         {
             GameObject* s2 = inner->heldObj;
-            s16 id = s2->anim.seqId;
+            s16 id = s2->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw(s2);
@@ -9557,7 +9557,7 @@ int playerState06(GameObject* obj, int state)
     }
     if ((((PlayerState*)state)->baddie.eventFlags & 1) && (sub = inner->heldObj) != NULL)
     {
-        switch (sub->anim.seqId)
+        switch (sub->anim.romDefNo)
         {
         case 0x6d:
         case 0x754:
@@ -9593,7 +9593,7 @@ int playerState06(GameObject* obj, int state)
         if (((PlayerState*)inner)->heldObj != NULL)
         {
             GameObject* s2 = inner->heldObj;
-            s16 id = s2->anim.seqId;
+            s16 id = s2->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw(s2);
@@ -9659,7 +9659,7 @@ int playerState05(GameObject* obj, int state)
     default:
     {
         void* sub = ((PlayerState*)inner)->heldObj;
-        if (sub != NULL && ((GameObject*)sub)->anim.seqId == 0x112)
+        if (sub != NULL && ((GameObject*)sub)->anim.romDefNo == 0x112)
         {
             inner->moveAnimTable = (int)lbl_80333110;
             *(int*)((char*)inner->heldObj + 0xf8) = 1;
@@ -9754,7 +9754,7 @@ void fn_802A514C(GameObject* obj, int state)
             sub = ((PlayerState*)inner)->heldObj;
             if (sub != NULL)
             {
-                s16 id = ((GameObject*)sub)->anim.seqId;
+                s16 id = ((GameObject*)sub)->anim.romDefNo;
                 if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)sub);
@@ -10149,16 +10149,16 @@ int playerStateMoving(int obj, int state, f32 fv)
             t = mathSinf((3.1415927f * (f32) ((PlayerState*)inner)->targetYaw) / 32768.0f);
             {
                 f32 cs = mathCosf((3.1415927f * (f32) ((PlayerState*)inner)->targetYaw) / 32768.0f);
-                f32 nz = -((PlayerState*)inner)->smoothVelZ;
-                f32 nx = nz * cs - ((PlayerState*)inner)->smoothVelX * t;
-                ya = ((PlayerState*)inner)->smoothVelX * cs + nz * t;
+                f32 vz = -((PlayerState*)inner)->smoothVelZ;
+                f32 nx = vz * cs - ((PlayerState*)inner)->smoothVelX * t;
+                f32 nz = ((PlayerState*)inner)->smoothVelX * cs + vz * t;
                 ((PlayerState*)state)->baddie.animSpeedA =
                     ((PlayerState*)state)->baddie.animSpeedA +
                     interpolate(nx - ((PlayerState*)state)->baddie.animSpeedA, ((PlayerState*)inner)->targetAnimSpeed,
                                 timeDelta);
                 ((PlayerState*)state)->baddie.animSpeedB =
                     ((PlayerState*)state)->baddie.animSpeedB +
-                    interpolate(ya - ((PlayerState*)state)->baddie.animSpeedB, ((PlayerState*)inner)->targetAnimSpeed,
+                    interpolate(nz - ((PlayerState*)state)->baddie.animSpeedB, ((PlayerState*)inner)->targetAnimSpeed,
                                 timeDelta);
             }
             spd = ((PlayerState*)state)->baddie.animSpeedB;
@@ -11200,7 +11200,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 Obj_TransformWorldPointToLocal(end[0], end[1], end[2], &((PlayerState*)state)->contactPointX,
                                                &((PlayerState*)state)->contactPointY,
-                                               &((PlayerState*)state)->contactPointZ, (u32)buf.object);
+                                               &((PlayerState*)state)->contactPointZ, buf.object);
                 ((PlayerState*)state)->contactObject = (int)buf.object;
             }
             else
@@ -11230,7 +11230,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 Obj_TransformWorldPointToLocal(end[0], end[1], end[2], &((PlayerState*)state)->contactPointX,
                                                &((PlayerState*)state)->contactPointY,
-                                               &((PlayerState*)state)->contactPointZ, (u32)buf.object);
+                                               &((PlayerState*)state)->contactPointZ, buf.object);
                 ((PlayerState*)state)->contactObject = (int)buf.object;
             }
             else
@@ -11692,8 +11692,8 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
                     z2 = *(f32*)(j8 + verts);
                     if (parent != NULL)
                     {
-                        Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, (int)parent);
-                        Obj_TransformLocalPointToWorld(x2, y2, z2, px2, py2, pz2, (int)parent);
+                        Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, parent);
+                        Obj_TransformLocalPointToWorld(x2, y2, z2, px2, py2, pz2, parent);
                     }
                     {
                         f32 dz = z2 - z1;
@@ -11745,7 +11745,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         probe.y = out[1];
         probe.z = out[0x16];
         Obj_TransformLocalPointToWorld(probe.x, probe.y, probe.z, &probe.x, &probe.y, &probe.z,
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         {
             int cnt = hitDetectFn_80065e50(obj, probe.x, probe.y, probe.z, &list, 0, 0x201);
             if (cnt != 0)
@@ -11785,7 +11785,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         probe.y = out[1];
         probe.z = out[0x13];
         Obj_TransformLocalPointToWorld(probe.x, probe.y, probe.z, &probe.x, &probe.y, &probe.z,
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         if (hitDetectFn_800658a4(obj, probe.x, probe.y, probe.z, out + 0x12, 0x205) == 0)
         {
             out[0x12] = out[1] - out[0x12];
@@ -11801,11 +11801,11 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         if (obj->anim.parent != NULL)
         {
             Obj_TransformLocalPointToWorld(out[0xb], out[0xc], out[0xd], out + 0xb, out + 0xc, out + 0xd,
-                                           *(int*)&obj->anim.parent);
+                                           obj->anim.parent);
             Obj_TransformLocalPointToWorld(out[0x11], out[0x12], out[0x13], out + 0x11, out + 0x12,
-                                           out + 0x13, *(int*)&obj->anim.parent);
+                                           out + 0x13, obj->anim.parent);
             Obj_TransformLocalPointToWorld(out[0x14], out[0x15], out[0x16], out + 0x14, out + 0x15,
-                                           out + 0x16, *(int*)&obj->anim.parent);
+                                           out + 0x16, obj->anim.parent);
             ((PlayerState*)inner)->leapTargetY =
                 ((PlayerState*)inner)->leapTargetY + *(f32*)(*(int*)&obj->anim.parent + 0x10);
             ((PlayerState*)inner)->leapBaseY =
@@ -11907,8 +11907,8 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
                 bz = *(f32*)(k + tbl2);
                 if (hit != NULL)
                 {
-                    Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (int)hit);
-                    Obj_TransformLocalPointToWorld(bx, by, bz, pbx, pby, pbz, (int)hit);
+                    Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (GameObject*)(int)hit);
+                    Obj_TransformLocalPointToWorld(bx, by, bz, pbx, pby, pbz, (GameObject*)(int)hit);
                 }
                 {
                     f32 dz = bz - az;
@@ -12362,7 +12362,7 @@ void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
     PlayerState* inner;
 
     inner = obj->extra;
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
         setup = Obj_AllocObjectSetup(0x24, 0x14b);
@@ -12422,7 +12422,7 @@ void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff)
     f32 dx, dy, dz, len;
 
     linkEffect = 1;
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     if (Obj_IsLoadingLocked() != 0)
     {
         Sfx_PlayFromObject(0, SFXTRIG_staff_rocket_hitdirt);
@@ -12475,7 +12475,7 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
     MatrixTransform v;
     f32 mtx[16];
 
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_hitpos_6_20a);
@@ -12955,7 +12955,7 @@ void playerCastSpell(int a, int b, int c)
             void* cam = (void*)(*gCameraInterface)->getTarget();
             if (cam != NULL)
             {
-                s16 id = ((GameObject*)cam)->anim.seqId;
+                s16 id = ((GameObject*)cam)->anim.romDefNo;
                 if (id == 0x414 || id == 0x4a9)
                 {
                     c = 0x5bd;
@@ -13502,7 +13502,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                 ((PlayerState*)inner)->isHoldingObject = 0;
                 if (((PlayerState*)inner)->heldObj != NULL)
                 {
-                    s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                    s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                     if (t == SMALLBASKET_SEQUENCE_VARIANT_A || t == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                     {
                         SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -13613,7 +13613,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                     ((PlayerState*)inner)->isHoldingObject = 0;
                     if (((PlayerState*)inner)->heldObj != NULL)
                     {
-                        s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                        s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                         if (t == SMALLBASKET_SEQUENCE_VARIANT_A || t == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
                             SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -13753,8 +13753,8 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
         else if ((((PlayerState*)inner)->fallSeverity >= 2) && (((ByteFlags*)(((char*)inner) + 0x3f2))->b04 == 0))
         {
             s8 hv;
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(10.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(10.0f);
             ObjPath_GetPointWorldPosition((GameObject*)obj, 0xb, &v[3], &v[4], &v[5], 0);
             if (((PlayerState*)inner)->surfaceType == 0x1a)
             {
@@ -13849,8 +13849,8 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
         {
             s8 hv;
             doRumble(20.0f);
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(15.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(15.0f);
             ObjAnim_SetCurrentMove((int)obj, 0xb, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
             Sfx_PlayFromObject((int)obj, SFXTRIG_foot_crawl2);
@@ -14040,7 +14040,7 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
         sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.seqId;
+            s16 id = ((GameObject*)sub)->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -14349,7 +14349,7 @@ void fn_802AE83C(int obj, int inner, int state)
     sub = ((PlayerState*)inner)->heldObj;
     if (sub != NULL)
     {
-        s16 id = sub->anim.seqId;
+        s16 id = sub->anim.romDefNo;
         if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
         {
             SmallBasket_throw(sub);
@@ -14472,7 +14472,7 @@ void fn_802AE9C8(GameObject* obj, int inner, int state)
         void* sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.seqId;
+            s16 id = ((GameObject*)sub)->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -14522,7 +14522,7 @@ void fn_802AED2C(GameObject* obj, int state, int p3)
     ((PlayerState*)state)->isHoldingObject = 0;
     if (((PlayerState*)state)->heldObj != NULL)
     {
-        short id = ((GameObject*)((PlayerState*)state)->heldObj)->anim.seqId;
+        short id = ((GameObject*)((PlayerState*)state)->heldObj)->anim.romDefNo;
         if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
         {
             SmallBasket_throw((GameObject*)(((PlayerState*)state)->heldObj));
@@ -15148,11 +15148,11 @@ void fn_802AFB0C(int obj, int inner, int state)
             damage = **(s8**)&((PlayerState*)inner)->playerStatus;
             break;
         case 0x15:
-            switch (((PlayerState*)inner)->focusObject->anim.seqId)
+            switch (((PlayerState*)inner)->focusObject->anim.romDefNo)
             {
             case 0x714:
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(1.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(1.0f);
                 break;
             }
             break;
@@ -15167,8 +15167,8 @@ void fn_802AFB0C(int obj, int inner, int state)
             }
             break;
         case 0x19:
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(1.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(1.0f);
             break;
         case 0x1b:
             newAnim = *(s16*)((char*)state + 0x278);
@@ -15230,7 +15230,7 @@ void fn_802AFB0C(int obj, int inner, int state)
         {
             damage = 0;
             ((ByteFlags*)((char*)inner + 0x3f6))->b10 = 1;
-            if (hitObj != NULL && ((GameObject*)hitObj)->anim.seqId != 0x2c5)
+            if (hitObj != NULL && ((GameObject*)hitObj)->anim.romDefNo != 0x2c5)
             {
                 if (gPlayerSfxTimerA == 0)
                 {
@@ -15303,7 +15303,7 @@ void fn_802AFB0C(int obj, int inner, int state)
             gPlayerStepSfxTimer = 0;
             if (hitObj != NULL)
             {
-                switch (((GameObject*)hitObj)->anim.seqId)
+                switch (((GameObject*)hitObj)->anim.romDefNo)
                 {
                 case 0x11:
                 case 0x33:
@@ -15335,7 +15335,7 @@ void fn_802AFB0C(int obj, int inner, int state)
             {
             case 0x16:
                 if (hitObj != NULL &&
-                    (((GameObject*)hitObj)->anim.seqId == 0x613 || ((GameObject*)hitObj)->anim.seqId == 0x70f))
+                    (((GameObject*)hitObj)->anim.romDefNo == 0x613 || ((GameObject*)hitObj)->anim.romDefNo == 0x70f))
                 {
                     Sfx_PlayFromObject(
                         obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
@@ -15356,14 +15356,14 @@ void fn_802AFB0C(int obj, int inner, int state)
                 }
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
-                    objLightFn_8009a1dc((void*)obj, 0.014f, buf, 6, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, buf, 6, 0);
                 }
                 break;
             case 0x1c:
                 Sfx_PlayFromObject(obj, SFXTRIG_fox_var);
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
-                    objLightFn_8009a1dc((void*)obj, 0.014f, buf, 8, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
                 }
                 break;
             default:
@@ -15371,25 +15371,25 @@ void fn_802AFB0C(int obj, int inner, int state)
                     obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
                 if (hitObj != NULL)
                 {
-                    switch (((GameObject*)hitObj)->anim.seqId)
+                    switch (((GameObject*)hitObj)->anim.romDefNo)
                     {
                     case 0x33:
                         Sfx_PlayFromObject(obj, SFXTRIG_snort);
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objLightFn_8009a1dc((void*)obj, 0.014f, buf, 5, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
                         }
                         break;
                     case 0x7c8:
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objLightFn_8009a1dc((void*)obj, 0.014f, buf, 8, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
                         }
                         break;
                     default:
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objLightFn_8009a1dc((void*)obj, 0.014f, buf, 5, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
                         }
                         break;
                     }
@@ -15398,7 +15398,7 @@ void fn_802AFB0C(int obj, int inner, int state)
                 {
                     if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                     {
-                        objLightFn_8009a1dc((void*)obj, 0.014f, buf, 5, 0);
+                        objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
                     }
                 }
                 break;
@@ -15416,7 +15416,7 @@ void fn_802AFB0C(int obj, int inner, int state)
             ((PlayerState*)inner)->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
-                s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                s16 t = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                 if (t == SMALLBASKET_SEQUENCE_VARIANT_A || t == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -16313,8 +16313,8 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             f32 dx;
             f32 d;
             f32 zz;
-            dx = *(f32*)(p + 0xc) - ((GameObject*)obj)->anim.localPosX;
-            dz = ((PlayerState*)p)->baddie.posX - ((GameObject*)obj)->anim.localPosZ;
+            dx = ((GameObject*)p)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
+            dz = ((GameObject*)p)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
             zz = dz * dz;
             d = sqrtf(zz + dx * dx);
             if (d > 1.0f)
@@ -16334,7 +16334,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             ((PlayerState*)inner)->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
-                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                 if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -16353,9 +16353,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
         case 0x60004:
         {
             f32 dz;
-            f32 dx = *(f32*)(p + 0xc) - ((GameObject*)obj)->anim.localPosX;
+            f32 dx = ((GameObject*)p)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
             f32 d;
-            dz = ((PlayerState*)p)->baddie.posX - ((GameObject*)obj)->anim.localPosZ;
+            dz = ((GameObject*)p)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
             d = sqrtf(dx * dx + dz * dz);
             if (d > 1.0f)
             {
@@ -16374,7 +16374,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             ((PlayerState*)inner)->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
-                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                 if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -16395,9 +16395,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
         case 0x60005:
         {
             f32 dz;
-            f32 dx = *(f32*)(p + 0xc) - ((GameObject*)obj)->anim.localPosX;
+            f32 dx = ((GameObject*)p)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
             f32 d;
-            dz = ((PlayerState*)p)->baddie.posX - ((GameObject*)obj)->anim.localPosZ;
+            dz = ((GameObject*)p)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
             d = sqrtf(dx * dx + dz * dz);
             if (d > 1.0f)
             {
@@ -16417,7 +16417,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             ((PlayerState*)inner)->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
-                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.seqId;
+                s16 typ = ((GameObject*)((PlayerState*)inner)->heldObj)->anim.romDefNo;
                 if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)(((PlayerState*)inner)->heldObj));
@@ -16621,7 +16621,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 GameObject* p = inner->heldObj;
                 if (p != NULL)
                 {
-                    s16 sp = p->anim.seqId;
+                    s16 sp = p->anim.romDefNo;
                     if (sp == SMALLBASKET_SEQUENCE_VARIANT_A || sp == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                     {
                         SmallBasket_throw(p);
@@ -16644,7 +16644,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 seq->posOffsetScale = 1.0f;
                 seq->posOffsetX = ((GameObject*)obj)->anim.localPosX - ((GameObject*)obj2)->anim.localPosX;
                 seq->posOffsetY = ((GameObject*)obj)->anim.localPosY - ((GameObject*)obj2)->anim.localPosY;
-                seq->posOffsetZ = ((GameObject*)obj)->anim.localPosZ - ((PlayerState*)obj2)->baddie.posX;
+                seq->posOffsetZ = ((GameObject*)obj)->anim.localPosZ - ((GameObject*)obj2)->anim.localPosZ;
                 seq->rotOffsetX = inner->targetYaw - (u16) * (s16*)obj2;
                 if (seq->rotOffsetX > 0x8000)
                 {
@@ -16898,7 +16898,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 dist = sqrtf(ax * ax + az * az);
             }
             dx2 = ((GameObject*)obj2)->anim.localPosX - seq->posOffsetX;
-            dz2 = ((PlayerState*)obj2)->baddie.posX - seq->posOffsetZ;
+            dz2 = ((GameObject*)obj2)->anim.localPosZ - seq->posOffsetZ;
             d2 = sqrtf(dx2 * dx2 + dz2 * dz2);
             if (dist <= lbl_803DE468)
             {
@@ -17018,7 +17018,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 for (endFlag = 0, obj2 = (int)objs; endFlag < objCount; endFlag++)
                 {
                     va = *(int*)obj2;
-                    if ((u32)va != 0 && arrayIndexOf((int*)(tbl + 0x13c), 9, ((GameObject*)va)->anim.seqId) != -1)
+                    if ((u32)va != 0 && arrayIndexOf((int*)(tbl + 0x13c), 9, ((GameObject*)va)->anim.romDefNo) != -1)
                     {
                         f32 dsq = vec3f_distanceSquared((f32*)(va + 0x18), (f32*)(obj + 0x18));
                         if (dsq < best || found == 0)
@@ -17042,7 +17042,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     ((GameObject*)obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
                     ((GameObject*)obj)->anim.modelState->shadowAlphaStep = 0;
                     seq->flags &= ~4;
-                    switch (((GameObject*)va)->anim.seqId)
+                    switch (((GameObject*)va)->anim.romDefNo)
                     {
                     case 0x72:
                     case 0x38c:
@@ -17087,7 +17087,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                         ((PlayerState*)inner)->moveSequenceFlags = 4;
                         ObjAnim_SetCurrentMove(obj, 0xf8, 0.0f, 1);
                     }
-                    if (arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)va)->anim.seqId) != -1)
+                    if (arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)va)->anim.romDefNo) != -1)
                     {
                         (*gPlayerInterface)->setState((void*)obj, inner, 0x1a);
                         *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))fn_8029F67C;
@@ -17111,7 +17111,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 (*gCameraInterface)->setFocus((void*)obj2, 0);
                 (*gObjectTriggerInterface)->setCamVars(0x45, 0, 0, 0);
                 ((PlayerState*)inner)->moveSequence = 0;
-                if ((u32)obj2 != 0 && ((GameObject*)obj2)->anim.seqId == 0x22)
+                if ((u32)obj2 != 0 && ((GameObject*)obj2)->anim.romDefNo == 0x22)
                 {
                     (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x16);
                     *(int*)&((PlayerState*)inner)->baddie.unk304 = 0;
@@ -17125,13 +17125,13 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             case 0xb:
             {
                 int gb = (int)((PlayerState*)inner)->focusObject;
-                if ((u32)gb != 0 && ((GameObject*)gb)->anim.seqId == 0x416)
+                if ((u32)gb != 0 && ((GameObject*)gb)->anim.romDefNo == 0x416)
                 {
                     (*gCameraInterface)->setFocus((void*)gb, 0);
                     (*gCameraInterface)->loadTriggeredCamAction(0, 0x69, 0);
                     (*gObjectTriggerInterface)->setCamVars(0x42, 4, 0, 0);
                 }
-                else if ((u32)gb != 0 && arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)gb)->anim.seqId) != -1)
+                else if ((u32)gb != 0 && arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)gb)->anim.romDefNo) != -1)
                 {
                     (*gObjectTriggerInterface)->setCamVars(0x53, 0, 0, 0);
                 }
@@ -17229,7 +17229,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                         int p17 = *(int*)(va + 0x7f8);
                         if ((u32)p17 != 0)
                         {
-                            s16 sp17 = ((GameObject*)p17)->anim.seqId;
+                            s16 sp17 = ((GameObject*)p17)->anim.romDefNo;
                             if (sp17 == SMALLBASKET_SEQUENCE_VARIANT_A || sp17 == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                             {
                                 SmallBasket_throw((GameObject*)(p17));
@@ -17812,13 +17812,13 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         {
             PlayerIntPair tbl = sPlayerKnockFxIds;
 
-            objParticleFn_80099d84((GameObject*)obj, 0.4f,
+            objDoParticleFx((GameObject*)obj, 0.4f,
                                    tbl.v[((((PlayerState*)inner)->knockKindBits >> 5) & 7) - 1] & 0xff,
                                    1.0f, NULL);
         }
         if ((((PlayerState*)inner)->pendingFxFlags & 1) != 0)
         {
-            objParticleFn_80099d84((GameObject*)obj, 0.4f, 8, 1.0f, NULL);
+            objDoParticleFx((GameObject*)obj, 0.4f, 8, 1.0f, NULL);
         }
         if (((PlayerState*)inner)->waterDepth > 0.0f)
         {
@@ -17938,14 +17938,14 @@ void playerDoHitDetection(int obj)
                     }
                 }
                 {
-                    hd = *(HitDesc**)(sub + 0x50);
-                    if (hd != NULL)
+                    GameObject* hitObj = *(GameObject**)(sub + 0x50);
+                    if (hitObj != NULL)
                     {
-                        if ((((GameObject*)hd)->anim.modelInstance->effectFlags & 4) != 0)
+                        if ((hitObj->anim.modelInstance->effectFlags & 4) != 0)
                         {
                             doRumble(10.0f);
                         }
-                        if ((((GameObject*)hd)->anim.modelInstance->effectFlags & 8) != 0)
+                        if ((hitObj->anim.modelInstance->effectFlags & 8) != 0)
                         {
                             lbl_803DE459 = 1;
                         }
@@ -18153,7 +18153,7 @@ void playerUpdateWhileTimeStopped(int obj)
 void playerUpdate(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
-    int cam = (int)Camera_GetCurrentViewSlot();
+    int cam = (int)Camera_GetCurrent();
     f32 zero;
     f32 six;
     f32 t = ((PlayerState*)inner)->cutsceneTimer;
@@ -18339,7 +18339,7 @@ void playerUpdate(GameObject* obj)
                     GameObject* held = (GameObject*)((PlayerState*)inner)->heldObj;
                     if (held != NULL)
                     {
-                        s16 typ = held->anim.seqId;
+                        s16 typ = held->anim.romDefNo;
                         if (typ == SMALLBASKET_SEQUENCE_VARIANT_A || typ == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
                             SmallBasket_throw((GameObject*)held);
@@ -18517,7 +18517,7 @@ void objLoadPlayerFromSave(int obj)
         int da;
         *(int*)(((PlayerState*)inner)->moveSlots + off + 0x64) = (int)mmAlloc(0x800, 0x1a, 0);
         da = ((PlayerState*)inner)->moveSlots + off;
-        objGetWeaponDa((u8*)obj, ((GameObject*)obj)->anim.seqId, (ObjWeaponDaTable*)(da + 0x60),
+        objGetWeaponDa((u8*)obj, ((GameObject*)obj)->anim.romDefNo, (ObjWeaponDaTable*)(da + 0x60),
                        ((s16*)(base + 0x7fc))[*(s16*)((char*)da + 0x2)], 0);
         off += 0xb0;
     }

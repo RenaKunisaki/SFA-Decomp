@@ -34,7 +34,7 @@ u32 lbl_803DC0F0 = 3;
 
 void* lbl_803DDC74;
 extern u32* lbl_803DCA94;
-s8 lbl_803DDC70;
+s8 gWMGalleonShowScreen;
 
 ObjectDescriptor gWM_GalleonObjDescriptor = {
     0,
@@ -89,10 +89,10 @@ int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             (*(void (**)(int, int, int))((u8*)*lbl_803DCA94 + 0x14))(0, 0x1e, 0x50);
             break;
         case WM_GALLEON_COMMAND_SHOW_MODEL:
-            lbl_803DDC70 = 1;
+            gWMGalleonShowScreen = 1;
             break;
         case WM_GALLEON_COMMAND_HIDE_MODEL:
-            lbl_803DDC70 = 0;
+            gWMGalleonShowScreen = 0;
             break;
         }
     }
@@ -115,7 +115,7 @@ int WM_Galleon_getObjectTypeId(void) {
 }
 
 void WM_Galleon_free(GameObject* obj, int leavingMap) {
-    if (obj->anim.seqId != WM_GALLEON_SEQUENCE_ATTACHED) {
+    if (obj->anim.romDefNo != WM_GALLEON_SEQUENCE_ATTACHED) {
         WMGalleonState* state = obj->extra;
         if (state->mapEventsLatched != 0 && leavingMap == 0) {
             state->mapEventsLatched = 0;
@@ -134,13 +134,13 @@ void WM_Galleon_render(GameObject* obj, int renderArg2, int renderArg3, int rend
     if (visible == 0) {
         return;
     }
-    if (obj->anim.seqId == WM_GALLEON_SEQUENCE_ATTACHED && ((GameObject*)obj->anim.parent)->userData1 >= 7) {
+    if (obj->anim.romDefNo == WM_GALLEON_SEQUENCE_ATTACHED && ((GameObject*)obj->anim.parent)->userData1 >= 7) {
         return;
     }
 
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 
-    if (lbl_803DDC70 != 0) {
+    if (gWMGalleonShowScreen != 0) {
         gScreensInterface->vtable->show(1);
     }
 }
@@ -157,7 +157,7 @@ void WM_Galleon_update(GameObject* obj) {
         return;
     }
 
-    if (obj->anim.seqId == WM_GALLEON_SEQUENCE_ATTACHED) {
+    if (obj->anim.romDefNo == WM_GALLEON_SEQUENCE_ATTACHED) {
         obj->anim.alpha = WM_GALLEON_ATTACHED_ALPHA;
         return;
     }
@@ -219,7 +219,7 @@ void WM_Galleon_init(GameObject* obj, const WMGalleonSetup* setup) {
     if (mainGetBit(GAMEBIT_WM_Galleon_despawn) != 0) {
         return;
     }
-    if (obj->anim.seqId == WM_GALLEON_SEQUENCE_ATTACHED) {
+    if (obj->anim.romDefNo == WM_GALLEON_SEQUENCE_ATTACHED) {
         return;
     }
     objSetSlot(obj, WM_GALLEON_OBJECT_SLOT);

@@ -88,7 +88,7 @@ void dll414_free(GameObject* obj) {
 
 void dll414_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     Dll414State* state;
-    CameraViewSlot* camera;
+    Camera* camera;
     f32 distance;
     f32 inverseDistance;
     f32 objectOffsetZ, objectOffsetY, objectOffsetX;
@@ -112,7 +112,7 @@ void dll414_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
         state->lineOfSightVisible = 0;
     } else if (state->active != 0) {
         state->lineOfSightVisible = 1;
-        camera = Camera_GetCurrentViewSlot();
+        camera = Camera_GetCurrent();
         scratch.cameraDelta[0] = camera->x - obj->anim.localPosX;
         scratch.cameraDelta[1] = camera->y - obj->anim.localPosY;
         scratch.cameraDelta[2] = camera->z - obj->anim.localPosZ;

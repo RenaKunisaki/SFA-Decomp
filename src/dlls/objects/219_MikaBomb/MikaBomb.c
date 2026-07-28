@@ -117,7 +117,7 @@ void MikaBomb_update(GameObject* obj) {
                 ObjHitbox_SetSphereRadius(
                     (ObjAnimComponent*)obj,
                     (s32)(MIKABOMB_EXPLOSION_HITBOX_SCALE * (f32)(u32)obj->anim.modelInstance->primaryHitboxRadius));
-                CameraShake_Start(MIKABOMB_CAMERA_SHAKE_MAGNITUDE, MIKABOMB_CAMERA_SHAKE_DURATION,
+                CameraShake_StartDampened(MIKABOMB_CAMERA_SHAKE_MAGNITUDE, MIKABOMB_CAMERA_SHAKE_DURATION,
                                   MIKABOMB_CAMERA_SHAKE_FALLOFF);
                 obj->anim.alpha = 0xfe;
                 Obj_FreeObject(impactState->shadowObj);
@@ -135,7 +135,7 @@ void MikaBomb_update(GameObject* obj) {
                 ObjHitbox_SetSphereRadius(
                     (ObjAnimComponent*)obj,
                     (s32)(MIKABOMB_EXPLOSION_HITBOX_SCALE * (f32)(u32)obj->anim.modelInstance->primaryHitboxRadius));
-                CameraShake_Start(MIKABOMB_CAMERA_SHAKE_MAGNITUDE, MIKABOMB_CAMERA_SHAKE_DURATION,
+                CameraShake_StartDampened(MIKABOMB_CAMERA_SHAKE_MAGNITUDE, MIKABOMB_CAMERA_SHAKE_DURATION,
                                   MIKABOMB_CAMERA_SHAKE_FALLOFF);
                 obj->anim.alpha = 0xfe;
                 Obj_FreeObject(impactState->shadowObj);

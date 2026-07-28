@@ -78,7 +78,7 @@ void DIMbossspit_updateBurst(GameObject* obj) {
                           DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcexp1_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy311);
-        CameraShake_SetAllMagnitudes(3.0f);
+        CameraShake_SetOffset(3.0f);
         doRumble(12.0f);
         if (((DIMbossSpitState*)stateAddress)->light != NULL) {
             modelLightStruct_setEnabled(((DIMbossSpitState*)stateAddress)->light, 0, 1.0f);
@@ -142,14 +142,15 @@ void DIMbossspit_free(GameObject* objArg) {
 }
 
 void DIMbossspit_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
-    ModelLightStruct* stateOrLight;
+    DIMbossSpitState* state;
+    ModelLightStruct* light;
 
-    stateOrLight = obj->extra;
+    state = obj->extra;
     if (visible != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        stateOrLight = ((DIMbossSpitState*)stateOrLight)->light;
-        if (((stateOrLight != 0) && (stateOrLight->glowType != 0)) && (stateOrLight->enabled != 0)) {
-            queueGlowRender(stateOrLight);
+        light = state->light;
+        if (((light != 0) && (light->glowType != 0)) && (light->enabled != 0)) {
+            queueGlowRender(light);
         }
     }
     return;

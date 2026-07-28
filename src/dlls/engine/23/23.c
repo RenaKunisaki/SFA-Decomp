@@ -109,15 +109,6 @@ typedef struct SaveScoreFile
     SaveScoreEntry entries[SAVE_SCORE_ENTRY_COUNT];
 } SaveScoreFile;
 
-typedef struct SaveGameDefaultPosition
-{
-    f32 x;
-    f32 y;
-    f32 z;
-} SaveGameDefaultPosition;
-
-STATIC_ASSERT(sizeof(SaveGameDefaultPosition) == 0xc);
-
 typedef struct SaveGameCharacterPosition
 {
     f32 x;
@@ -155,7 +146,7 @@ typedef struct MapBitTransient
 
 extern u16 gSaveGameMapActBits[];
 extern u16 gSaveGameMapObjGroupBits[];
-const SaveGameDefaultPosition gSaveGameDefaultPosition = {
+const Vec3f gSaveGameDefaultPosition = {
     570.6483764648438f, -82.0f, 15790.8203125f};
 
 void loadMapForCurrentSaveGame(void);
@@ -498,7 +489,7 @@ int gplayNewGame(name, slot)
 char* name;
 s8 slot;
 {
-    SaveGameDefaultPosition defaultPos;
+    Vec3f defaultPos;
     int i;
     u8* dst;
     u8 ch;

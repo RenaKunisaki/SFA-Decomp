@@ -77,7 +77,7 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
     u32 message;
     u32 unusedMessageArgument = 0;
     Obj_GetPlayerObject();
-    Camera_EnableViewYOffset();
+    CameraShake_Enable();
     while (ObjMsg_Pop(obj, &message, (u32*)&messageSender, &unusedMessageArgument) != 0) {
         switch (message) {
         case CFPOWERBASE_PYLON_MESSAGE_1:

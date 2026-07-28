@@ -96,11 +96,11 @@ void vfplift23_updateState(GameObject* obj)
     setup = (VfpLiftPlacement*)(obj)->anim.placementData;
     state = (VfpLiftState*)(obj)->extra;
     raisedOffset = 0.0f;
-    if ((obj)->anim.seqId == VFPLIFT3_OBJTYPE)
+    if ((obj)->anim.romDefNo == VFPLIFT3_OBJTYPE)
     {
         raisedOffset = 310.0f;
     }
-    else if ((obj)->anim.seqId == VFPLIFT2_OBJTYPE)
+    else if ((obj)->anim.romDefNo == VFPLIFT2_OBJTYPE)
     {
         raisedOffset = 372.5f;
     }
@@ -279,18 +279,18 @@ void VFPLift_hitDetect(GameObject* obj)
 
 void VFPLift_update(GameObject* obj)
 {
-    int seqId;
+    int romDefNo;
     Obj_GetPlayerObject();
-    seqId = (obj)->anim.seqId;
-    if (seqId == VFPLIFT1_OBJTYPE)
+    romDefNo = (obj)->anim.romDefNo;
+    if (romDefNo == VFPLIFT1_OBJTYPE)
     {
         vfplift1_updateState(obj);
     }
-    else if (seqId == VFPLIFT2_OBJTYPE)
+    else if (romDefNo == VFPLIFT2_OBJTYPE)
     {
         vfplift23_updateState(obj);
     }
-    else if (seqId == VFPLIFT3_OBJTYPE)
+    else if (romDefNo == VFPLIFT3_OBJTYPE)
     {
         vfplift23_updateState(obj);
     }
@@ -310,7 +310,7 @@ void VFPLift_init(GameObject* obj, VfpLiftPlacement* init)
     state->anim[1] = 0;
     state->anim[2] = 0;
     state->anim[3] = 0;
-    if (obj->anim.seqId == VFPLIFT2_OBJTYPE)
+    if (obj->anim.romDefNo == VFPLIFT2_OBJTYPE)
     {
         if (mainGetBit(state->toggleGameBit) != 0)
         {
@@ -322,7 +322,7 @@ void VFPLift_init(GameObject* obj, VfpLiftPlacement* init)
             state->mode = VFPLIFT_STATE_LOWERED;
         }
     }
-    if (obj->anim.seqId == VFPLIFT1_OBJTYPE && mainGetBit(VFPLIFT1_READY_GAMEBIT) != 0)
+    if (obj->anim.romDefNo == VFPLIFT1_OBJTYPE && mainGetBit(VFPLIFT1_READY_GAMEBIT) != 0)
     {
         if (mainGetBit(state->toggleGameBit) != 0)
         {

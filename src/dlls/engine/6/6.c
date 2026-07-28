@@ -502,7 +502,7 @@ void sky2_run(void)
     u8 red;
     u8 green;
     u8 blue;
-    CameraViewSlot* cam;
+    Camera* cam;
     u8** pp;
     int i;
     u8* p;
@@ -584,7 +584,7 @@ void sky2_run(void)
         dst[23] = c154;
         lbl_803DB758 = 0;
     }
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     zv = lbl_803DF108;
     vec[0] = zv;
     vec[1] = zv;

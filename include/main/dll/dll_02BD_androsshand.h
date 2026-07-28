@@ -68,10 +68,10 @@ STATIC_ASSERT(offsetof(AndrossHandSetup, sideFlag) == 0x1B);
 
 extern ObjectDescriptor gAndrossHandObjDescriptor;
 extern f32 gAndrossHandMoveAnimSpeeds[7];
-extern f32 lbl_803DC4F0;
-extern f32 lbl_803DC4F4;
-extern f32 lbl_803DC4F8;
-extern int lbl_803DC4FC;
+extern f32 gAndrossHandOrbitRadius;
+extern f32 gAndrossHandYOffset;
+extern f32 gAndrossHandAngleOffset;
+extern int gAndrossHandSpringOffsetDivisor;
 extern int gAndrossHandShotPitch[2];
 extern int gAndrossHandSpringDivisor;
 extern int gAndrossHandShotInterval;

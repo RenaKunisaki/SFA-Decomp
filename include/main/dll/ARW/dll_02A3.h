@@ -19,8 +19,8 @@ STATIC_ASSERT(offsetof(Dll2A3State, spinRateX) == 0x04);
 STATIC_ASSERT(offsetof(Dll2A3State, spinRateY) == 0x06);
 STATIC_ASSERT(offsetof(Dll2A3State, spinRateZ) == 0x08);
 
-extern int lbl_803DDD90;
-extern int lbl_803DDD94;
+extern int gDll2A3InstanceCount;
+extern int gDll2A3UpdatedThisFrame;
 
 int dll_2A3_getExtraSize_ret_12(void);
 int dll_2A3_getObjectTypeId(void);

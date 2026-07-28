@@ -164,7 +164,7 @@ void WM_ObjCreator_update(GameObject* obj) {
                 groupObjects = ObjGroup_GetObjects(3, &objectCount);
                 objectIndex = 0;
                 while (objectIndex < objectCount && (s8)(int)state != 0) {
-                    if (((GameObject*)*groupObjects)->anim.seqId == WM_GALLEON_OBJECT_ID) {
+                    if (((GameObject*)*groupObjects)->anim.romDefNo == WM_GALLEON_OBJECT_ID) {
                         state = NULL;
                     }
                     groupObjects++;

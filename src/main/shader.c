@@ -107,7 +107,7 @@ s16 lbl_803DCEB4;
 int gMapBlockIndexCount;
 s16 gVisibleObjectSortKeyCount;
 u16 lbl_803DCEAC;
-CameraViewSlot* lbl_803DCEA8;
+Camera* lbl_803DCEA8;
 s8 curMapType;
 void* lbl_803DCEA0;
 MapBlockData** gMapBlocks;
@@ -923,7 +923,7 @@ void mapLoadUnloadObjects(int flag)
                         *(s8*)&bb[tbit >> 3] = bb[tbit >> 3] & ~(1 << (tbit & 7));
                     }
                 }
-                if (obj->anim.seqId == SHADER_SNOWBIKE_OBJ)
+                if (obj->anim.romDefNo == SHADER_SNOWBIKE_OBJ)
                 {
                     int slotId = obj->anim.mapEventSlot;
                     s16 j3 = 0;
@@ -1096,15 +1096,15 @@ void playerUpdateFn_8005649c(void)
     int count;
     int slot;
     GameObject** objs;
-    CameraViewSlot* cam;
+    Camera* cam;
     int k;
     GameObject** e;
     int i;
     f32 lx, ly, lz;
 
     objs = (GameObject**)ObjGroup_GetObjects(6, &count);
-    cam = Camera_GetCurrentViewSlot();
-    Obj_UpdateWorldTransform(cam);
+    cam = Camera_GetCurrent();
+    Camera_UpdateForObject(cam);
     for (k = 0; k < 31; k++)
         lbl_80386648[k].valid = 0;
     lbl_80386648[0].x = cam->worldX;
@@ -1123,7 +1123,7 @@ void playerUpdateFn_8005649c(void)
         }
         else
         {
-            Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, (u32)obj);
+            Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, obj);
             lbl_80386648[slot].x = lx;
             lbl_80386648[slot].y = ly;
             lbl_80386648[slot].z = lz;
@@ -1713,7 +1713,7 @@ void beginLoadingMap(void)
     int mapKind;
     f32* p;
     f32 px, py, pz;
-    CameraViewSlot* cam;
+    Camera* cam;
     char* player;
     u8* env;
     int bo;
@@ -1785,7 +1785,7 @@ void beginLoadingMap(void)
     }
     renderFlags &= ~4LL;
     trackIntersect();
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     cam->x = p[0];
     cam->y = p[1];
     cam->z = p[2];
@@ -2086,7 +2086,6 @@ void doPendingMapLoads(void)
     char* base;
     MapLoadRec* savedBlocks;
     int doLoad;
-    MapCellEntry** eBase;
     u8 waited;
     int col;
     int slot;
@@ -2156,6 +2155,8 @@ void doPendingMapLoads(void)
             }
             if (gx != 7 || gz != 7 || doLoad != 0 || (renderFlags & 0x4000))
             {
+                MapCellEntry** eBase;
+
                 shadowVolumesSetDirty(1);
                 doNothing_8001F678(1, 0);
                 cnt = 0;
@@ -3248,9 +3249,9 @@ void mapDebugRender(int* state)
     s8* tbl;
     int h;
     int step;
-    int row;
-    int cx;
-    int cz;
+    int celly;
+    int cellx;
+    int cellz;
     int cell;
     int v;
     int n;
@@ -3298,13 +3299,13 @@ void mapDebugRender(int* state)
                 step = h / 8;
             else
                 step = 80;
-            row = dy / step;
-            cx = wx / 80;
-            cz = wz / 80;
-            cell = row * 0x40;
-            cell += cz * 8;
-            cell += cx;
-            logPrintf(sTrackCellCoordFormat, cx, row, cz);
+            celly = dy / step;
+            cellx = wx / 80;
+            cellz = wz / 80;
+            cell = celly * 0x40;
+            cell += cellz * 8;
+            cell += cellx;
+            logPrintf(sTrackCellCoordFormat, cellx, celly, cellz);
             v = lbl_803DCE70;
             n = v >> 3;
             if (v & 7)
@@ -3442,7 +3443,7 @@ void buildPlayerRelativeFrustumPlanes(void)
     PlayerFrustumPlaneScales scales;
     PlayerFrustumPlaneDirections planes;
     GameObject* player;
-    CameraViewSlot* viewSlot;
+    Camera* viewSlot;
     FrustumPlane* outPtr;
     int i;
     f32* invRotMtx;
@@ -3451,7 +3452,7 @@ void buildPlayerRelativeFrustumPlanes(void)
     planes = sPlayerFrustumPlaneDirs;
     scales = sPlayerFrustumPlaneScales;
     player = Obj_GetPlayerObject();
-    viewSlot = Camera_GetCurrentViewSlot();
+    viewSlot = Camera_GetCurrent();
     camPos.x = viewSlot->worldX - playerMapOffsetX;
     camPos.y = viewSlot->worldY;
     camPos.z = viewSlot->worldZ - playerMapOffsetZ;

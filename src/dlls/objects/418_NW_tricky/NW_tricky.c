@@ -94,7 +94,7 @@ void nwTricky_update(GameObject* obj) {
             herdObjects = (GameObject**)ObjGroup_GetObjects(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
             for (herdObjectIndex = 0, completedHerdScan = herdObjects; herdObjectIndex < herdObjectCount;
                  completedHerdScan++, herdObjectIndex++) {
-                if ((*completedHerdScan)->anim.seqId == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
+                if ((*completedHerdScan)->anim.romDefNo == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
                     enemy_setTrackedObj(*completedHerdScan, player);
                 }
             }
@@ -128,7 +128,7 @@ void nwTricky_update(GameObject* obj) {
             herdObjects = (GameObject**)ObjGroup_GetObjects(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
             for (herdObjectIndex = 0, activeHerdScan = herdObjects; herdObjectIndex < herdObjectCount;
                  activeHerdScan++, herdObjectIndex++) {
-                if ((*activeHerdScan)->anim.seqId == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
+                if ((*activeHerdScan)->anim.romDefNo == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
                     playerDistanceSquared =
                         vec3f_distanceSquared(&(*activeHerdScan)->anim.worldPosX, &player->anim.worldPosX);
                     if (vec3f_distanceSquared(&(*activeHerdScan)->anim.worldPosX, &tricky->anim.worldPosX) <

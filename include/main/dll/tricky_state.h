@@ -19,6 +19,30 @@
 #define TRICKY_STATE_FLAG_MOVE_ADVANCING 0x8000000 /* ObjAnim_AdvanceCurrentMove reported the current move still advancing */
 #define TRICKY_STATE_FLAG_PATH_PATCHES_VALID 0x400 /* patch[] and patchTargets[] describe targetPosPtr */
 
+/* TrickyState.movementState - the walk/jump phase selector switched on in
+ * trickyUpdateMovementState. The names are the ones the retail debug build
+ * printed for each case ("walk wait", "walk free", "walk start patch",
+ * "walk end patch", "walk patch exit", "curve setup", "walk to node",
+ * "walk nodes", "Jump run up", "Jump prep", "Jumping", "Jump up run up",
+ * "JUMPDOWN or JUMPUP", "JUMPDOWN_RUNUP"). The two states sharing the
+ * "JUMPDOWN or JUMPUP" text are told apart by the sign of the verticalDelta
+ * each one seeds: 0x0C climbs to the node, 0x0E descends to it. */
+#define TRICKY_MOVE_WALK_WAIT        0
+#define TRICKY_MOVE_WALK_FREE        1
+#define TRICKY_MOVE_WALK_START_PATCH 2
+#define TRICKY_MOVE_WALK_END_PATCH   3
+#define TRICKY_MOVE_WALK_PATCH_EXIT  4
+#define TRICKY_MOVE_CURVE_SETUP      5
+#define TRICKY_MOVE_WALK_TO_NODE     6
+#define TRICKY_MOVE_WALK_NODES       7
+#define TRICKY_MOVE_JUMP_RUNUP       8
+#define TRICKY_MOVE_JUMP_PREP        9
+#define TRICKY_MOVE_JUMPING          10
+#define TRICKY_MOVE_JUMPUP_RUNUP     11
+#define TRICKY_MOVE_JUMPUP           12
+#define TRICKY_MOVE_JUMPDOWN_RUNUP   13
+#define TRICKY_MOVE_JUMPDOWN         14
+
 typedef union TrickyScratch
 {
     GameObject* obj;
@@ -77,7 +101,7 @@ typedef struct TrickyState {
     u8* progressPtr; /* MapEventInterface getTrickyEnergy() result */
     GameObject* playerObj; /* owning player/sidekick object */
     u8 stateIndex; /* primary Tricky state selector (0..0x11); indexes the handlerBase[] per-state handler dispatch table and gates the state machine */
-    u8 followPhase; /* follow-handler phase selector (discrete 0..5; gates the pathing/seed branches) */
+    u8 movementState; /* follow-handler phase selector (discrete 0..5; gates the pathing/seed branches) */
     u8 substate; /* anim-sequence substate 0..7 */
     u8 commandRequestBits; /* pending-command request bitmask: |= (1 << commandType) on enqueue, OR'd with 9 into the prompt mask, tested != 0, cleared to 0 (tricky) */
     u8 unk0C;
@@ -111,7 +135,7 @@ typedef struct TrickyState {
     f32 prevLocalPosX;
     f32 prevLocalPosY;
     f32 prevLocalPosZ;
-    s16 patch[4]; /* curve-walk patch values (dll_DF trickyFn_8013b368) */
+    s16 patch[4]; /* curve-walk patch values (dll_DF trickyUpdateMovementState) */
     TrickyPoint3 patchTargets[4];
     u16 activeWalkGroup; /* current active walk-group id (getPatchGroup/walkGroupFn arg; tracked vs targetWg) */
     s16 linkedWalkGroup; /* walk-group/patch id linked to activeWalkGroup: set to the intersected walk-group product, compared == targetWg/getPatchGroup results, cleared to 0 (trickyfollow/tricky_substates) */

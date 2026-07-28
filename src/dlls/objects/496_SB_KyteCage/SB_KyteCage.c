@@ -104,7 +104,7 @@ void SB_KyteCage_hitDetect(void) {
 void SB_KyteCage_update(GameObject* obj) {
     SBKyteCageState* state = obj->extra;
 
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
     if (state->kyte == NULL) {
         GameObject** objects;
         int count;
@@ -112,7 +112,7 @@ void SB_KyteCage_update(GameObject* obj) {
         objects = (GameObject**)ObjList_GetObjects(&i, &count);
         for (i = 0; i < count; i++) {
             GameObject* child = objects[i];
-            if (child->anim.seqId == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
+            if (child->anim.romDefNo == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
                 state->kyte = child;
                 ObjLink_AttachChild(obj, state->kyte, 1);
                 i = count;

@@ -34,11 +34,11 @@ int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateStat
     CfPrisonCagePlacement* placement = (CfPrisonCagePlacement*)obj->anim.placement;
 
     if (mainGetBit(placement->openedGameBit) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
         return 0;
     }
-    if (obj->anim.seqId == CFPRISONCAGE_SEQUENCE_ID_CAGE) {
+    if (obj->anim.romDefNo == CFPRISONCAGE_SEQUENCE_ID_CAGE) {
         return 0;
     }
     while (ObjMsg_Pop(obj, &message, &unusedMessageSender, &unusedMessageArgument) != 0) {
@@ -49,13 +49,13 @@ int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateStat
         }
     }
     if (mainGetBit(GAMEBIT_ITEM_PrisonKey_Got) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     } else {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
         if ((*gGameUIInterface)->isItemBeingUsed(GAMEBIT_ITEM_PrisonKey_Got) != 0) {
-            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             (*gObjectTriggerInterface)->runSequence(CFPRISONCAGE_SWITCH_OPEN_SEQUENCE_ID, obj, -1);
         }
     }
@@ -67,7 +67,7 @@ int cfPrisonCage_getExtraSize(void) {
 }
 
 int cfPrisonCage_getObjectTypeId(GameObject* obj) {
-    if (obj->anim.seqId == CFPRISONCAGE_SEQUENCE_ID_SWITCH) {
+    if (obj->anim.romDefNo == CFPRISONCAGE_SEQUENCE_ID_SWITCH) {
         return CFPRISONCAGE_SWITCH_OBJECT_TYPE_ID;
     }
     return 0;
@@ -98,7 +98,7 @@ void cfPrisonCage_update(GameObject* obj) {
     int sequenceId;
 
     if (obj->userData1 != 0) {
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case CFPRISONCAGE_SEQUENCE_ID_CAGE:
             sequenceId = CFPRISONCAGE_CAGE_SEQUENCE_ID;
             break;
@@ -117,7 +117,7 @@ void cfPrisonCage_init(GameObject* obj, CfPrisonCagePlacement* placement) {
     obj->anim.rotX = (s16)((s32)placement->initialRotX << 8);
     obj->userData1 = TRUE;
     obj->animEventCallback = cfPrisonCage_sequenceCallback;
-    if (obj->anim.seqId == CFPRISONCAGE_SEQUENCE_ID_SWITCH) {
+    if (obj->anim.romDefNo == CFPRISONCAGE_SEQUENCE_ID_SWITCH) {
         if (mainGetBit(placement->openedGameBit) != 0) {
             ObjAnim_SetCurrentMove((int)obj, CFPRISONCAGE_SWITCH_OPEN_MOVE, 0.0f, 0);
         } else {

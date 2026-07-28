@@ -615,7 +615,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
         fxScale = 4.0f;
         state->fireFxScale = fxScale;
         flags->attackWindowOpen = 1;
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case ARW_SQUADRON_SEQID_SHIP_TWIN:
             state->muzzleCount = 1;

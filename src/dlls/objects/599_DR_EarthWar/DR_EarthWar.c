@@ -226,7 +226,7 @@ extern ObjModelChainDesc* gEarthWarriorTailChainDesc;
 #define DREARTHWARRIOR_OBJFLAG_PARENT_SLACK 0x1000
 
 #define DREARTHWARRIOR_CHILD_OBJ_HELPER   0x6f5
-/* attacker seqId whose hits are ignored here (retail OBJECTS.bin). */
+/* attacker romDefNo whose hits are ignored here (retail OBJECTS.bin). */
 #define DREARTHWARRIOR_ATTACKER_SEQID_SWORD 0x23 /* "sword" (DLL 0xE2) */
 #define DREARTHWARRIOR_EFFECT_RESOURCE_ID 0x5a /* shared effect resource -> gEarthWarriorResource */
 
@@ -459,8 +459,8 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie)
             if (inner->sub.health <= 0)
             {
                 inner->sub.unk8EC = lbl_803DC76C;
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(1.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(1.0f);
                 playerAddHealth(Obj_GetPlayerObject(), -1);
                 inner->sub.health = 0;
             }
@@ -1099,7 +1099,7 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
                     return;
                 }
                 Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hx, 5.0f);
-                if (hit == 0x1a || hitObj == Obj_GetPlayerObject() || ((GameObject*)hitObj)->anim.seqId == DREARTHWARRIOR_ATTACKER_SEQID_SWORD)
+                if (hit == 0x1a || hitObj == Obj_GetPlayerObject() || ((GameObject*)hitObj)->anim.romDefNo == DREARTHWARRIOR_ATTACKER_SEQID_SWORD)
                 {
                     return;
                 }
@@ -1189,7 +1189,7 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
     int slot;
     Obj_GetPlayerObject();
     sub = inner + 0xb58;
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     ((EarthWarriorState*)inner)->baddie.hitPoints = 0;
     ((EarthWarriorState*)inner)->baddie.flags0 &= ~0x8000;
     if (((EarthWarriorState*)inner)->sub.rideState == 2)

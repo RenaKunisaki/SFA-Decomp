@@ -26,8 +26,8 @@
 
 int gKTrexFloorSwitchPrevMoved;
 
-const f32 lbl_802C2560[3] = {0.0f, 0.0f, 55.0f};
-const f32 lbl_802C256C[3] = {55.0f, 0.0f, 0.0f};
+const f32 gKTrexFloorSwitchLocalEdgeZ[3] = {0.0f, 0.0f, 55.0f};
+const f32 gKTrexFloorSwitchLocalEdgeX[3] = {55.0f, 0.0f, 0.0f};
 int gKTrexFloorSwitchCurveFindResult = 0x19;
 
 /* KtrexfloorswitchState.flags (offset 0x10) bits */
@@ -81,8 +81,8 @@ void KT_RexFloorSwitch_update(GameObject* obj)
     f32 mtx[12];
     f32 height;
     f32 cx, cz, xLo, xHi, zLo, zHi;
-    *(Vec3Blob*)vecA = *(Vec3Blob*)lbl_802C2560;
-    *(Vec3Blob*)vecB = *(Vec3Blob*)lbl_802C256C;
+    *(Vec3Blob*)vecA = *(Vec3Blob*)gKTrexFloorSwitchLocalEdgeZ;
+    *(Vec3Blob*)vecB = *(Vec3Blob*)gKTrexFloorSwitchLocalEdgeX;
     (obj)->userData2 = (obj)->userData1;
     (obj)->userData1 = mainGetBit(placement->activeBit);
     tex = objFindTexture(obj, 0, 0);

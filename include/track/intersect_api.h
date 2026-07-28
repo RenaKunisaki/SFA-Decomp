@@ -18,7 +18,7 @@ void gxTevModulateColor1Stage(void);
 void gxTextureFn_800794e0(void);
 void waterFxInit(void);
 void waterFxSetDisabled(int disabled);
-void matrixFn_8006ff0c(f32* matrix, s16* out, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);
+void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);
 void normalize(f32* x, f32* y, f32* z);
 void gxSetAlphaBlendNoZTest(void);
 void textRenderChar(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
@@ -42,7 +42,7 @@ void doDistortionFilter(f32* position, f32 radius, u8* modulation, f32 angle);
 void doSpiritVisionFilter(void);
 void drawViewFinderAperture(f32 scaleX, f32 scaleY, u8 alpha, u8 flag);
 void doHeatEffect(u8 alpha);
-void skyDrawFn_80075d5c(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z);
+void drawOrthoTexturedQuad(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z);
 /*
  * Generic ortho-projected single-color quad blit. Sets the GX state up
  * fresh (no tex coords, color from constant K0, additive blend, fixed
@@ -51,7 +51,7 @@ void skyDrawFn_80075d5c(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, 
  * "draw fullscreen tint" primitive by the dialog code in cardShowLoadingMsg.
  */
 void drawRect(f32 sx, f32 sy, int x, int y);
-void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3);
+void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3);
 void gxSetOpaqueNoZWriteMode(void);
 void textRenderSetup(void);
 /*
@@ -64,6 +64,6 @@ void textRenderSetup(void);
  */
 void renderMotionBlur(f32 alpha);
 void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5);
-void gxTextureSetupFn_8007cf7c(void);
+void setupWaterCausticTev(void);
 
 #endif /* TRACK_INTERSECT_API_H_ */

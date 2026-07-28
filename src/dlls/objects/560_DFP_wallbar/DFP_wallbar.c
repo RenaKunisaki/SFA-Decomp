@@ -9,7 +9,7 @@
 #include "main/obj_list.h"
 #include "main/dll/DF/dll_0230_dfpwallbar.h"
 
-/* seqId of the DragonRock spell-puzzle controller object this bar links
+/* romDefNo of the DragonRock spell-puzzle controller object this bar links
    to (stored as ChukaState.linkedObject; same controller as the floor bar). */
 #define DFPWALLBAR_SEQID_CONTROLLER 0x431
 
@@ -77,7 +77,7 @@ void chuka_update(GameObject* obj)
         for (i = firstIdx; i < count; i++)
         {
             candidate = objList[i];
-            if (((GameObject*)candidate)->anim.seqId == DFPWALLBAR_SEQID_CONTROLLER)
+            if (((GameObject*)candidate)->anim.romDefNo == DFPWALLBAR_SEQID_CONTROLLER)
             {
                 state->linkedObject = candidate;
                 i = count;

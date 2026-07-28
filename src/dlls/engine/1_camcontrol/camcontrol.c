@@ -237,7 +237,7 @@ void camcontrol_updateTargetReticle(CamcontrolTargetObject* fallbackTarget, int 
         {
             Obj_TransformWorldPointToLocal(reticle->anim.worldPosX, reticle->anim.worldPosY, reticle->anim.worldPosZ,
                                            &reticle->anim.localPosX, &reticle->anim.localPosY, &reticle->anim.localPosZ,
-                                           (u32)reticle->anim.parent);
+                                           reticle->anim.parent);
         }
         else
         {
@@ -687,16 +687,16 @@ void camcontrol_activateHandler(u16 actionId, void* actionData)
 
 void firstPersonZoomOutOnExit(u8 blendFrames, u8 blendFlags)
 {
-    CameraViewSlot* vs;
+    Camera* vs;
     f32 blendProgress;
 
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     blendProgress = CAMCONTROL_NORMALIZED_MAX;
     CAMCONTROL_CAMERA->blendProgress = blendProgress;
     CAMCONTROL_CAMERA->blendStep = blendProgress / (float)blendFrames;
     CAMCONTROL_CAMERA->queuedBlendFlags = blendFlags;
 
-    vs = Camera_GetCurrentViewSlot();
+    vs = Camera_GetCurrent();
     CAMCONTROL_CAMERA->blendStartX = vs->x;
     CAMCONTROL_CAMERA->blendStartY = vs->y;
     CAMCONTROL_CAMERA->blendStartZ = vs->z;
@@ -716,14 +716,14 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
 {
     f32 prog;
     f32 clamped;
-    CameraViewSlot* view;
+    Camera* view;
     int itmp;
     f32 mag;
     f32 blendFactor;
     f32 delta[3];
 
     Camera_SetCurrentViewIndex(0);
-    view = Camera_GetCurrentViewSlot();
+    view = Camera_GetCurrent();
     view->yaw = camera->yaw;
     view->pitch = camera->pitch;
     view->roll = camera->roll;
@@ -829,7 +829,7 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
         }
     }
     Camera_SetFovY(lbl_803DD4D0);
-    Obj_UpdateWorldTransform(view);
+    Camera_UpdateForObject(view);
     loadMapForCameraPos(camera->worldX, camera->worldY, camera->worldZ);
     lbl_803DD4C0 = Camera_GetViewportYOffset();
     if ((int)lbl_803DD4C0 != camera->letterboxTargetOffset)
@@ -858,7 +858,7 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
 
 void camcontrol_applyQueuedAction(void)
 {
-    CameraViewSlot* view;
+    Camera* view;
     f32 blendStep;
 
     if (gCamcontrolQueuedActionPending != '\0')
@@ -879,7 +879,7 @@ void camcontrol_applyQueuedAction(void)
             CAMCONTROL_CAMERA->blendProgress = CAMCONTROL_NORMALIZED_MIN;
             CAMCONTROL_CAMERA->queuedBlendFlags = 0;
         }
-        view = Camera_GetCurrentViewSlot();
+        view = Camera_GetCurrent();
         if (CAMCONTROL_NORMALIZED_MAX == CAMCONTROL_CAMERA->blendProgress)
         {
             CAMCONTROL_CAMERA->blendStartX = view->x;
@@ -947,7 +947,7 @@ void Camera_setLetterbox(int yOffset, int applyNow)
 
 void Camera_minimapShowHelpTextForTarget(int renderArg2, int renderArg3, int renderArg4, int renderArg5)
 {
-    if (gameTextFn_80134be8() == 0)
+    if (isFrontEndUiActive() == 0)
     {
         gCamcontrolTargetHelpTextId = CAMCONTROL_HELP_TEXT_NONE;
         camcontrol_updateTargetReticle((CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleFocus,
@@ -961,7 +961,7 @@ void camcontrol_setAButtonIconForTarget(void)
     CamcontrolTargetObject* target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->currentTarget;
     int kind;
 
-    if (gameTextFn_80134be8() != 0)
+    if (isFrontEndUiActive() != 0)
         return;
     if (target == NULL)
         return;
@@ -1013,7 +1013,7 @@ void camcontrol_updateTargetFeedback(void)
     {
         return;
     }
-    result = gameTextFn_80134be8();
+    result = isFrontEndUiActive();
     switch (result)
     {
     case 0:
@@ -1590,7 +1590,7 @@ void Camera_update(u8 framesThisStep)
     u8 textActive;
     CamcontrolTargetObject* target;
 
-    if (gameTextFn_80134be8() != 0)
+    if (isFrontEndUiActive() != 0)
     {
         textActive = 1;
     }
@@ -1619,21 +1619,21 @@ void Camera_update(u8 framesThisStep)
             focus->worldPosY = camera->overrideWorldY;
             focus->worldPosZ = camera->overrideWorldZ;
             Obj_TransformWorldPointToLocal(focus->worldPosX, focus->worldPosY, focus->worldPosZ, &focus->localPosX,
-                                           &focus->localPosY, &focus->localPosZ, (u32)focus->parent);
+                                           &focus->localPosY, &focus->localPosZ, (GameObject*)focus->parent);
             camera->overrideWorldPosPending = 0;
         }
         if (camera->localFrameObj != focus->parent)
         {
             Obj_TransformLocalPointToWorld(camera->localX, camera->localY, camera->localZ, &camera->worldX,
-                                           &camera->worldY, &camera->worldZ, (u32)camera->localFrameObj);
+                                           &camera->worldY, &camera->worldZ, (GameObject*)camera->localFrameObj);
             Obj_TransformLocalPointToWorld(camera->prevLocalX, camera->prevLocalY, camera->prevLocalZ,
                                            &camera->prevWorldX, &camera->prevWorldY, &camera->prevWorldZ,
-                                           (u32)camera->localFrameObj);
+                                           (GameObject*)camera->localFrameObj);
             Obj_TransformWorldPointToLocal(camera->worldX, camera->worldY, camera->worldZ, &camera->localX,
-                                           &camera->localY, &camera->localZ, (u32)focus->parent);
+                                           &camera->localY, &camera->localZ, (GameObject*)focus->parent);
             Obj_TransformWorldPointToLocal(camera->prevWorldX, camera->prevWorldY, camera->prevWorldZ,
                                            &camera->prevLocalX, &camera->prevLocalY, &camera->prevLocalZ,
-                                           (u32)focus->parent);
+                                           (GameObject*)focus->parent);
             camera->localFrameObj = focus->parent;
         }
         if (focus->parent != NULL)
@@ -1645,7 +1645,7 @@ void Camera_update(u8 framesThisStep)
         {
             gCamcontrolCurrentHandler->handler->vtable->update((void*)pCamera);
             Obj_TransformLocalPointToWorld(camera->localX, camera->localY, camera->localZ, &camera->worldX,
-                                           &camera->worldY, &camera->worldZ, (u32)camera->localFrameObj);
+                                           &camera->worldY, &camera->worldZ, (GameObject*)camera->localFrameObj);
             camcontrol_applyState(camera);
         }
         camcontrol_applyQueuedAction();

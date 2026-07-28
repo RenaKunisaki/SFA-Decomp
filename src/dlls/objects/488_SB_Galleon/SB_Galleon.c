@@ -116,6 +116,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     f32 ambB;
     f32 threshold;
     f32 dx;
+    f32 wander;
     f32 speedTarget;
     f32 zero;
     f32 mtx[17];
@@ -135,7 +136,7 @@ void DBprotection_updateFlight(GameObject* obj) {
         objects = ObjList_GetObjects(&objIndex, &objCount);
         for (t = objIndex; t < objCount; t++) {
             otherObj = objects[t];
-            if (otherObj->anim.seqId == DBPROTECTION_TRICKY_TARGET_SEQID) {
+            if (otherObj->anim.romDefNo == DBPROTECTION_TRICKY_TARGET_SEQID) {
                 state->targetObj = otherObj;
                 t = objCount;
             }
@@ -191,10 +192,10 @@ void DBprotection_updateFlight(GameObject* obj) {
         state->wanderA = -(amp * timeDelta - state->wanderA);
         state->wanderB = -(amp * timeDelta - state->wanderB);
     }
-    dx = state->wanderA;
-    state->wanderA = (dx < 0.0f) ? 0.0f : (dx > 35.0f) ? 35.0f : dx;
-    dx = state->wanderB;
-    state->wanderB = (dx < 0.0f) ? 0.0f : (dx > 35.0f) ? 35.0f : dx;
+    wander = state->wanderA;
+    state->wanderA = (wander < 0.0f) ? 0.0f : (wander > 35.0f) ? 35.0f : wander;
+    wander = state->wanderB;
+    state->wanderB = (wander < 0.0f) ? 0.0f : (wander > 35.0f) ? 35.0f : wander;
     switch (state->phase) {
     case 0:
         camShake = 120.0f;
@@ -991,7 +992,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             int end;
             int* arr = ObjList_GetObjects(&start, &end);
             for (i = start; i < end; i++) {
-                if (((GameObject*)arr[i])->anim.seqId == SBGALLEON_ROMLIST_LINKED) {
+                if (((GameObject*)arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
                     state->linkedActor = arr[i];
                     i = end;
                 }

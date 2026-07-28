@@ -44,7 +44,7 @@ void dll_219_update(GameObject* obj)
 {
     ObjPlacement* setup = (ObjPlacement*)obj->anim.placementData;
     Dll219State* state = obj->extra;
-    s16 objectId = obj->anim.seqId;
+    s16 objectId = obj->anim.romDefNo;
 
     switch (objectId)
     {

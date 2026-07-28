@@ -239,7 +239,7 @@ void Fireball_hitDetect(GameObject* obj) {
     FireballState* state = obj->extra;
     GameObject* target;
 
-    if (obj->anim.seqId == FIREBALL_SEQID_HIDDEN) {
+    if (obj->anim.romDefNo == FIREBALL_SEQID_HIDDEN) {
         return;
     }
     switch (state->stateFlags & FIREBALL_FLAG_DISABLED) {
@@ -252,7 +252,7 @@ void Fireball_hitDetect(GameObject* obj) {
     if (target == NULL) {
         return;
     }
-    if (target->anim.seqId == FIREBALL_SEQID_CMBSRC_RECOLOR) {
+    if (target->anim.romDefNo == FIREBALL_SEQID_CMBSRC_RECOLOR) {
         int idx = cmbsrc_getColorIndex(target);
         if ((s8)idx != -1) {
             state->colorIndex = (u8)idx;
@@ -269,11 +269,11 @@ void Fireball_hitDetect(GameObject* obj) {
         state->fadeoutTimer = 60.0f;
         colorIndex = state->colorIndex;
         if (colorIndex == 0) {
-            projectileParticleFxFn_80099660(obj, 1.0f, 3);
+            projectileDoParticleFx(obj, 1.0f, 3);
         } else if (colorIndex == 1) {
-            projectileParticleFxFn_80099660(obj, 1.0f, 0);
+            projectileDoParticleFx(obj, 1.0f, 0);
         } else {
-            projectileParticleFxFn_80099660(obj, 1.0f, 6);
+            projectileDoParticleFx(obj, 1.0f, 6);
         }
         obj->anim.alpha = 0;
         if (state->light != NULL) {
@@ -297,7 +297,7 @@ void Fireball_update(GameObject* obj) {
     if (state->startupDelay < 0.0f) {
         state->startupDelay = 0.0f;
     }
-    if (obj->anim.seqId == FIREBALL_SEQID_HIDDEN) {
+    if (obj->anim.romDefNo == FIREBALL_SEQID_HIDDEN) {
         if (state->light != NULL) {
             modelLightStruct_setEnabled(state->light, 0, 0.0f);
         }
@@ -332,11 +332,11 @@ void Fireball_update(GameObject* obj) {
             {
                 u8 colorIndex = state->colorIndex;
                 if (colorIndex == 0) {
-                    projectileParticleFxFn_80099660(obj, 1.0f, 3);
+                    projectileDoParticleFx(obj, 1.0f, 3);
                 } else if (colorIndex == 1) {
-                    projectileParticleFxFn_80099660(obj, 1.0f, 0);
+                    projectileDoParticleFx(obj, 1.0f, 0);
                 } else {
-                    projectileParticleFxFn_80099660(obj, 1.0f, 6);
+                    projectileDoParticleFx(obj, 1.0f, 6);
                 }
             }
             state->fadeoutTimer = 60.0f;
@@ -446,7 +446,7 @@ void Fireball_init(GameObject* obj) {
         }
         obj->animEventCallback = Fireball_SeqFn;
         ObjGroup_AddObject((int)obj, FIREBALL_OBJECT_GROUP);
-        if (obj->anim.seqId != FIREBALL_SEQID_HIDDEN && placement->startupDelayEnabled != 0) {
+        if (obj->anim.romDefNo != FIREBALL_SEQID_HIDDEN && placement->startupDelayEnabled != 0) {
             state->startupDelay = 4.0f;
         }
     }

@@ -66,7 +66,7 @@ STATIC_ASSERT(offsetof(FireFlyState, flags) == 0x7C);
 STATIC_ASSERT(offsetof(FireFlyState, messageParam) == 0x80);
 STATIC_ASSERT(sizeof(FireFlyState) == FIREFLY_EXTRA_SIZE);
 
-extern s16 lbl_803DC128;
+extern s16 gFireFlyDespawnThreshold;
 
 void firefly_activeTick(GameObject* obj);
 void firefly_free(GameObject* obj);

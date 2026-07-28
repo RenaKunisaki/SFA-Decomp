@@ -124,7 +124,7 @@ void dimbossfire_update(GameObject* obj) {
                 playerDistance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
                 if (playerDistance <= 200.0f) {
                     playerDistance = 1.0f - playerDistance / 200.0f;
-                    CameraShake_Start(10.0f * playerDistance, 10.0f, 4.0f);
+                    CameraShake_StartDampened(10.0f * playerDistance, 10.0f, 4.0f);
                     doRumble(22.0f * playerDistance);
                 }
             }

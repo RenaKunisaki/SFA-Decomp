@@ -1323,7 +1323,7 @@ void dll_D3_update(GameObject* obj)
             *(f32*)((char*)gStaffActionHitLightParams + 0xc) = obj->anim.localPosX;
             *(f32*)((char*)gStaffActionHitLightParams + 0x10) = obj->anim.localPosY;
             *(f32*)((char*)gStaffActionHitLightParams + 0x14) = obj->anim.localPosZ;
-            objLightFn_8009a1dc(obj, 0.014f, gStaffActionHitLightParams, 1, 0);
+            objDoHitParticleFx(obj, 0.014f, gStaffActionHitLightParams, 1, 0);
         }
     }
 

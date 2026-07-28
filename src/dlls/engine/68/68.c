@@ -83,7 +83,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
     else
     {
         gViewfinderState->camPosX = self->anim.worldPosX;
-        gViewfinderState->camPosY = lbl_803E17C0 + self->anim.worldPosY;
+        gViewfinderState->camPosY = 35.0f + self->anim.worldPosY;
         gViewfinderState->camPosZ = self->anim.worldPosZ;
         gViewfinderState->clampedPosY = gViewfinderState->camPosY;
     }
@@ -94,7 +94,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
         if (galleonState == 2)
         {
             localOffset[0] = self->anim.worldPosX - galleon->anim.worldPosX;
-            localOffset[1] = (lbl_803E17C0 + self->anim.worldPosY) - galleon->anim.worldPosY;
+            localOffset[1] = (35.0f + self->anim.worldPosY) - galleon->anim.worldPosY;
             localOffset[2] = self->anim.worldPosZ - galleon->anim.worldPosZ;
             vecRotateZXY(&galleon->anim.rotX, localOffset);
             gViewfinderState->camPosX = galleon->anim.worldPosX + localOffset[0];
@@ -333,11 +333,11 @@ int firstPersonEnter(CameraObject* cam, s16* p2)
         {
             if (start < 0.0f)
             {
-                gViewfinderState->yawCurve.start += lbl_803E17D0;
+                gViewfinderState->yawCurve.start += 65535.0f;
             }
             else if (end < 0.0f)
             {
-                gViewfinderState->yawCurve.end += lbl_803E17D0;
+                gViewfinderState->yawCurve.end += 65535.0f;
             }
         }
         {
@@ -580,7 +580,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
     logPrintf(sCam5BYDebugFormat, obj->anim.worldPosY);
     Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                    obj->anim.worldPosZ, &obj->anim.localPosX, &obj->anim.localPosY,
-                                   &obj->anim.localPosZ, (int)obj->anim.parent);
+                                   &obj->anim.localPosZ, obj->anim.parent);
 }
 
 void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
@@ -678,11 +678,11 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
     {
         if (gViewfinderState->yawCurve.start < 0.0f)
         {
-            gViewfinderState->yawCurve.start += lbl_803E17D0;
+            gViewfinderState->yawCurve.start += 65535.0f;
         }
         else if (gViewfinderState->yawCurve.end < 0.0f)
         {
-            gViewfinderState->yawCurve.end += lbl_803E17D0;
+            gViewfinderState->yawCurve.end += 65535.0f;
         }
     }
     gViewfinderState->pitchCurve.start = obj->anim.rotY;

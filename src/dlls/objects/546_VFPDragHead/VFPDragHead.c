@@ -90,7 +90,7 @@ void VFPDragHead_update(GameObject* obj)
             return;
         (*gPartfxInterface)->spawnObject(obj, VFPDRAGHEAD_PARTFX_IDLE, NULL, 4, -1, NULL);
     }
-    else if (obj->anim.seqId == 0x3c5)
+    else if (obj->anim.romDefNo == 0x3c5)
     {
         self2 = obj->extra;
         self2->despawnTimer -= (s16)timeDelta;
@@ -141,7 +141,7 @@ void VFPDragHead_init(GameObject* obj, int data)
 {
     VfpDragHeadPlacement* def = (VfpDragHeadPlacement*)data;
     VfpDragHeadState* state = (obj)->extra;
-    if ((obj)->anim.seqId == 0x3c5)
+    if ((obj)->anim.romDefNo == 0x3c5)
     {
         state->despawnTimer = 0x78;
         (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase / 2.0f;

@@ -124,7 +124,6 @@ u8* modelRenderDecodeAdpcm(u8* compressed, int sampleCount, ModelRenderInstrsSta
     int bitWidth = encodedBitWidth;
     int stepIndex;
     int initialOutputBit;
-    int packedShift;
     int headerShift = bitWidth - 4;
     int predictorHeader = (*compressed >> 4) & 0xf;
     int i;
@@ -136,6 +135,7 @@ u8* modelRenderDecodeAdpcm(u8* compressed, int sampleCount, ModelRenderInstrsSta
     int outputBit;
     int outputByte;
     u8* outputBytes;
+    int packedShift;
 
     if (headerShift < 0)
     {
@@ -236,6 +236,7 @@ u8* modelRenderDecodeAdpcm(u8* compressed, int sampleCount, ModelRenderInstrsSta
             }
             {
                 u32 packedSample;
+                int outputBit;
 
                 packedSample = (u16)predictor;
                 outputBit = output->bit;

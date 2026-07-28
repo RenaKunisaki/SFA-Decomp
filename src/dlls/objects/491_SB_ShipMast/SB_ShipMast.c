@@ -49,7 +49,7 @@ void SB_ShipMast_update(GameObject* obj) {
     obj->anim.localPosX = 0.0f;
     obj->anim.localPosY = 0.0f;
     obj->anim.localPosZ = 0.0f;
-    if (((GameObject*)obj->anim.parent)->anim.seqId == WM_GALLEON_OBJECT_ID) {
+    if (((GameObject*)obj->anim.parent)->anim.romDefNo == WM_GALLEON_OBJECT_ID) {
         if (phase >= 0xa && phase < 0xd) {
             if (obj->anim.currentMove != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);

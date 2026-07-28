@@ -12,11 +12,11 @@ extern f32 lbl_803DC304;
 
 /*
  * A ROM curve network node (the record returned by gRomCurveInterface->getById
- * and walked through anim.currentMove / anim.activeMoveProgress / anim.targetObj
- * in drakorhoverpad_update). The leading layout matches ObjfsaRomCurveDef
+ * and held in the walker's node9C / nodeA0 / nodeA4 slots by
+ * drakorhoverpad_update). The leading layout matches ObjfsaRomCurveDef
  * (pos at 0x8/0xc/0x10, blockedLinkMask at 0x1b, linkIds[4] at 0x1c); this view
- * extends it with the per-node tangent record at 0x2c-0x2e that the hover-pad
- * uses to derive its bob / banking velocity.
+ * extends it with the per-node tangent record at 0x2c-0x2e that supplies the
+ * hermite tangents of the segment the pad is about to enter.
  */
 typedef struct DrakorCurveNode
 {
@@ -41,66 +41,6 @@ typedef struct DrakorHoverpadUpdateMainPlacement
     s16 activateGameBit;
     u8 pad22[0x28 - 0x22];
 } DrakorHoverpadUpdateMainPlacement;
-
-typedef struct DrakorHoverpadUpdateMainState
-{
-    u8 pad0[0xD8 - 0x0];
-    f32 unkD8;
-    u8 padDC[0xE0 - 0xDC];
-    f32 unkE0;
-    f32 unkE4;
-    u8 padE8[0x110 - 0xE8];
-    f32 verticalVel;
-    f32 targetSpeed;
-    u8 pad118[0x174 - 0x118];
-    s16 anglePhase;
-    u8 pad176[0x178 - 0x176];
-} DrakorHoverpadUpdateMainState;
-
-typedef struct DrakorHoverpadRenderState
-{
-    u8 pad0[0xD8 - 0x0];
-    f32 unkD8;
-    u8 padDC[0xE0 - 0xDC];
-    f32 unkE0;
-    f32 unkE4;
-    u8 padE8[0x110 - 0xE8];
-    f32 verticalVel;
-    f32 targetSpeed;
-    u8 pad118[0x154 - 0x118];
-    f32 particleEmitAX; /* 0x154: emit point A, X (jittered) */
-    f32 particleEmitAY; /* 0x158 */
-    f32 particleEmitAZ; /* 0x15c: emit point A, Z (jittered) */
-    f32 particleEmitBX; /* 0x160: emit point B, X (jittered) */
-    f32 particleEmitBY; /* 0x164 */
-    f32 particleEmitBZ; /* 0x168: emit point B, Z (jittered) */
-    u8 pad16C[0x174 - 0x16C];
-    s16 anglePhase;
-    s16 frameCounter;
-    u8 pad178[0x17C - 0x178];
-} DrakorHoverpadRenderState;
-
-typedef struct DrakorHoverpadHandlePathPointEventState
-{
-    u8 pad0[0xD8 - 0x0];
-    f32 unkD8;
-    u8 padDC[0xE0 - 0xDC];
-    f32 unkE0;
-    f32 unkE4;
-    u8 padE8[0x110 - 0xE8];
-    f32 verticalVel;
-    f32 targetSpeed;
-    u8 pad118[0x154 - 0x118];
-    f32 particleEmitAX; /* 0x154 */
-    f32 particleEmitAY; /* 0x158 */
-    f32 particleEmitAZ; /* 0x15c */
-    f32 particleEmitBX; /* 0x160 */
-    f32 particleEmitBY; /* 0x164 */
-    f32 particleEmitBZ; /* 0x168 */
-    u8 pad16C[0x174 - 0x16C];
-    s16 anglePhase;   /* 0x174 */
-    s16 frameCounter; /* 0x176 */
-} DrakorHoverpadHandlePathPointEventState;
 
 typedef struct DrakorHoverpadState
 {

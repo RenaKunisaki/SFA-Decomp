@@ -13,6 +13,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/camera.h"
+#include "main/object_transform.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/dll/savegame_env_api.h"
 #include "main/dll/savegame_load_api.h"
@@ -972,7 +973,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
 f32 lbl_8039A8F0[4];
 extern int gNewCloudSnowFogColor;
 
-extern char lbl_8030F670[];
+extern char sSnowCloudErrorMessageBlock[];
 extern const f32 gNewCloudLightningForwardDist;
 extern f32 gNewCloudLightningRadius;
 
@@ -980,7 +981,7 @@ void snowCloudUpdateFlakes(u8* snow);
 
 void snowCloudUpdateFlakes(u8* snow)
 {
-    CameraViewSlot* cam;
+    Camera* cam;
     SnowQuad* e;
     f32* m;
     int i;
@@ -992,7 +993,7 @@ void snowCloudUpdateFlakes(u8* snow)
     f32 c3;
     f32 s3;
 
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     e = (SnowQuad*)(snow + 0x1008);
     if (((NewCloud*)snow)->cloudType == 0)
     {
@@ -1055,7 +1056,7 @@ void snowReposSnowCloud(int cloudId)
 {
     u8* p;
     SnowFlake* part;
-    CameraViewSlot* cam;
+    Camera* cam;
     f32* m;
     u8* q;
     int i;
@@ -1102,11 +1103,11 @@ void snowReposSnowCloud(int cloudId)
     }
     if (cloudId != ((NewCloud*)p)->cloudId)
     {
-        debugPrintf(lbl_8030F670, cloudId);
+        debugPrintf(sSnowCloudErrorMessageBlock, cloudId);
         return;
     }
     part = ((NewCloud*)p)->flakes;
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     dx = cam->worldX - ((NewCloud*)gNewClouds[i])->worldPosX;
     dy = cam->worldY - ((NewCloud*)gNewClouds[i])->worldPosY;
     dz = cam->worldZ - ((NewCloud*)gNewClouds[i])->worldPosZ;
@@ -1539,7 +1540,7 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
         gNewCloudWindSources[5].z = 0x7d0;
         gNewCloudWindSources[5].vx = 0.0f;
         gNewCloudWindSources[5].vy = 0.0f;
-        gNewCloudWindSources[5].vz = lbl_803DF244;
+        gNewCloudWindSources[5].vz = -1.0f;
         normalize(&gNewCloudWindSources[5].vx, &gNewCloudWindSources[5].vy, &gNewCloudWindSources[5].vz);
         gNewCloudWindSources[5].scale = 100.0f;
         gNewCloudWindSources[5].flag = 0;
@@ -1549,16 +1550,16 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
 
 void dll_07_func09(void)
 {
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     randomGetRange(5, 5);
 }
 
-int dll_07_func08(void)
+int newclouds_isBlizzardActive(void)
 {
     return gNewCloudBlizzardActive;
 }
 
-void dll_07_func07(int arg)
+void newclouds_renderSnowClouds(int renderPass)
 {
     int i;
     int total;
@@ -1571,18 +1572,18 @@ void dll_07_func07(int arg)
         snow = gNewClouds[i];
         if (snow != NULL && snow->finished == 0)
         {
-            total += snowPrintSnowCloud(arg, snow->cloudId);
+            total += snowPrintSnowCloud(renderPass, snow->cloudId);
         }
     }
     if (gNewCloudSnowFlashAlpha != 0)
     {
-        drawFn_80079e64(lbl_803DD190, gNewCloudSnowFlashAlpha, lbl_8039A8F0, lbl_803DB764,
+        drawSnowFlashOverlay(lbl_803DD190, gNewCloudSnowFlashAlpha, lbl_8039A8F0, lbl_803DB764,
                         lbl_803DD199, lbl_803DD19A, lbl_803DB768);
     }
 }
-void dll_07_func06(void)
+void newclouds_run(void)
 {
-    CameraViewSlot* cam;
+    Camera* cam;
     void** clouds;
     u8** pp;
     int i;
@@ -1617,7 +1618,7 @@ void dll_07_func06(void)
     clouds = (void**)gNewCloudLayerTextures;
     i = 0;
     off = 0;
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     activeCount = 0;
     nearestCloud = NULL;
     nearest = gNewCloudNearestInit;
@@ -1688,7 +1689,7 @@ void dll_07_func06(void)
             }
             if (*(u8**)D7_CLOUD != NULL)
             {
-                Obj_GetWorldPosition((u32)*(u8 **)D7_CLOUD, &pos[0], &pos[1], &pos[2]);
+                Obj_GetWorldPosition((GameObject*)*(u8 **)D7_CLOUD, &pos[0], &pos[1], &pos[2]);
             }
             if (((NewCloud*)D7_CLOUD)->followCamera != 0 && cam != NULL)
             {
@@ -1867,7 +1868,7 @@ void dll_07_func06(void)
             {
                 f32 zero = 0.0f;
                 ((f32*)clouds)[54] = zero;
-                ((f32*)clouds)[55] = lbl_803DF244;
+                ((f32*)clouds)[55] = -1.0f;
                 ((f32*)clouds)[56] = zero;
             }
             m = Camera_GetViewRotationMatrix();
@@ -2263,12 +2264,12 @@ void newclouds_initialise(void)
 }
 int gNewCloudMusicIdByType[5] = {43, 0, 0, 0, 0};
 
-u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)dll_07_func06, (u32)dll_07_func07, (u32)dll_07_func08, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
+u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
 
 char sSnowFreeSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowFreeSnowCloud\n";
 char sSnowPrintSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowPrintSnowCloud\n";
 
-char lbl_8030F670[] =
+char sSnowCloudErrorMessageBlock[] =
 {
     0x21, 0x21, 0x21, 0x20, 0x45, 0x72, 0x72, 0x6F, 0x72, 0x20, 0x6E, 0x6F,
     0x6E, 0x2D, 0x65, 0x78, 0x69, 0x73, 0x74, 0x61, 0x6E, 0x74, 0x20, 0x63,

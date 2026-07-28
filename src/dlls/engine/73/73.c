@@ -2,6 +2,7 @@
  * DLL 73 / 0x49 - combat camera mode.
  */
 #include "main/camera_interface.h"
+#include "main/object_transform.h"
 #include "main/resource.h"
 #include "dolphin/mtx/vec.h"
 #include "main/camera.h"
@@ -108,7 +109,7 @@ void CameraModeCombat_update(CameraObject* cam)
     f32 dz;
     Vec n;
     u8 trace[116];
-    CameraViewSlot* view = Camera_GetCurrentViewSlot();
+    Camera* view = Camera_GetCurrent();
     GameObject* tgt;
     ObjHitVolumeRuntimeTransform* hitVolumes;
     GameObject* focus;
@@ -214,7 +215,7 @@ void CameraModeCombat_update(CameraObject* cam)
                         classId = tgt->anim.classId;
                         if (classId == 0x1c || classId == 0x6d || classId == 0x2a)
                         {
-                            if (tgt->anim.seqId == CAMCOMBAT_SEQID_DIM_BOSS)
+                            if (tgt->anim.romDefNo == CAMCOMBAT_SEQID_DIM_BOSS)
                             {
                                 ty += 20.0f;
                             }
@@ -424,7 +425,7 @@ void CameraModeCombat_update(CameraObject* cam)
                                                            &cam->anim.localPosX,
                                                            &cam->anim.localPosY,
                                                            &cam->anim.localPosZ,
-                                                           cam->anim.parentAddress);
+                                                           (GameObject*)cam->anim.parentAddress);
                         }
                     }
                 }

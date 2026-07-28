@@ -68,7 +68,7 @@ void kaldachompspit_burst(GameObject* obj) {
     if (state->light != NULL) {
         modelLightStruct_setEnabled(state->light, 0, 1.0f);
     }
-    if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
+    if (obj->anim.romDefNo == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
         randomVariant = randomGetRange(0, 1);
         spawnExplosion(obj,
                        (f32)randomGetRange(KALDACHOMPSPIT_EXPLOSION_SCALE_MIN, KALDACHOMPSPIT_EXPLOSION_SCALE_MAX),
@@ -138,13 +138,13 @@ void KaldaChompSpit_update(GameObject* obj) {
                 Sfx_StopObjectChannel((int)obj, 0x7f);
                 objAnim->alpha = 0;
             }
-            Sfx_SetObjectChannelVolume((u32)obj, 0x40, (u8)(objAnim->alpha >> 1), 0.5f);
+            Sfx_SetObjectChannelVolume((u32)obj, 0x40, (objAnim->alpha >> 1), 0.5f);
         }
         moveX = obj->anim.velocityX * timeDelta;
         moveY = obj->anim.velocityY * timeDelta;
         moveZ = obj->anim.velocityZ * timeDelta;
         objMove(obj, moveX, moveY, moveZ);
-        if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
+        if (obj->anim.romDefNo == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE, 1, 0);
             obj->anim.rotX += 0x100;
             obj->anim.rotY += 0x800;
@@ -168,7 +168,7 @@ void KaldaChompSpit_update(GameObject* obj) {
         if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0) {
             kaldachompspit_burst(obj);
         } else {
-            if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
+            if (obj->anim.romDefNo == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
                 objfx_spawnPulseBurst((void*)obj, 1.0f, 1, 0, 0, NULL);
             } else {
                 (*gPartfxInterface)
@@ -212,7 +212,7 @@ void KaldaChompSpit_init(GameObject* obj) {
     if (state->light != NULL) {
         f32 lightPos = 0.0f;
         modelLightStruct_setPosition(state->light, lightPos, lightPos, lightPos);
-        if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
+        if (obj->anim.romDefNo == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
             modelLightStruct_setDiffuseColor(state->light, 0xff, 0xc0, 0, 0xff);
             modelLightStruct_setSpecularColor(state->light, 0xff, 0xc0, 0, 0xff);
             modelLightStruct_setupGlow(state->light, 0, 0xff, 0xc0, 0, 0x7f,

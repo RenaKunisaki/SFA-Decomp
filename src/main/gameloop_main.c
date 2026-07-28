@@ -84,13 +84,13 @@ extern char sGameBitSetDuringSaveLoadWarning[];
 /* Top-level boot / soft-reset state machine (the global gameState). */
 typedef enum GameLoopState
 {
-    GAMELOOP_STATE_BOOTING = 0,             /* loading; the gameUpdate frame is skipped */
-    GAMELOOP_STATE_RUNNING = 1,             /* normal per-frame game update */
-    GAMELOOP_STATE_RESET_REQUESTED = 2,     /* soft reset: stop audio/rumble, begin transition */
-    GAMELOOP_STATE_RESET_FADE_OUT = 3,      /* fade-out timer countdown */
-    GAMELOOP_STATE_RESET_TEARDOWN = 4,      /* DVD/audio/VI teardown then OSResetSystem */
-    GAMELOOP_STATE_RESET_DONE = 5,          /* terminal, after OSResetSystem */
-    GAMELOOP_STATE_HARD_RESET_REQUESTED = 6 /* like RESET_REQUESTED but flags a hard reset */
+    GAME_STATE_BOOTING = 0,          /* loading; the gameUpdate frame is skipped */
+    GAME_STATE_RUNNING = 1,          /* normal per-frame game update */
+    GAME_STATE_RESETPRESSED = 2,     /* soft reset: stop audio/rumble, begin transition */
+    GAME_STATE_RESETFADEOUT = 3,     /* fade-out timer countdown */
+    GAME_STATE_RESETNOW = 4,         /* DVD/audio/VI teardown then OSResetSystem */
+    GAME_STATE_RESETDONE = 5,        /* terminal, after OSResetSystem */
+    GAME_STATE_HARDRESETPRESSED = 6  /* like GAME_STATE_RESETPRESSED but flags a hard reset */
 } GameLoopState;
 void addButtonObject(void* obj)
 {
@@ -157,9 +157,9 @@ int gameBitIncrement(int bit)
     return val;
 }
 
-u32 mainGetBit(int eventId)
+u32 mainGetBit(int gameBit)
 {
-    s16 id = (s16)eventId & 0xfff;
+    s16 id = (s16)gameBit & 0xfff;
     u8 flags;
     u8* base;
     int* endPtr;
@@ -177,7 +177,7 @@ u32 mainGetBit(int eventId)
     {
         return 0;
     }
-    if (eventId == -1)
+    if (gameBit == -1)
     {
         return 0;
     }
@@ -214,7 +214,7 @@ u32 mainGetBit(int eventId)
         }
         bit <<= 1;
     }
-    if (eventId & 0x8000)
+    if (gameBit & 0x8000)
     {
         result &= 1;
         result ^= 1;
@@ -222,7 +222,7 @@ u32 mainGetBit(int eventId)
     return result;
 }
 
-void mainSetBits(int eventId, int value)
+void mainSetBits(int gameBit, int value)
 {
     s16 id;
     u8* base;
@@ -234,15 +234,15 @@ void mainSetBits(int eventId, int value)
 
     if (isSaveGameLoading())
     {
-        OSReport(sGameBitSetDuringSaveLoadWarning, eventId, value);
+        OSReport(sGameBitSetDuringSaveLoadWarning, gameBit, value);
         return;
     }
-    if (eventId & 0x8000)
+    if (gameBit & 0x8000)
     {
         value = (u32)value & 1LL;
         value = (u32)value ^ 1LL;
     }
-    id = (s16)eventId & 0xfff;
+    id = (s16)gameBit & 0xfff;
     if (id == 0x95)
     {
         return;
@@ -251,7 +251,7 @@ void mainSetBits(int eventId, int value)
     {
         return;
     }
-    if (eventId == -1)
+    if (gameBit == -1)
     {
         return;
     }
@@ -284,8 +284,8 @@ void mainSetBits(int eventId, int value)
     }
     start = *(u16*)(gGameBitTable + id * 4);
     bit = 1;
-    end = (gGameBitTable[id * 4 + 2] & GAMEBIT_FLAG_WIDTH_MASK) + start;
-    for (i = start; i <= end; i++)
+    end = ((gGameBitTable[id * 4 + 2] & GAMEBIT_FLAG_WIDTH_MASK) + 1) + start;
+    for (i = start; i < end; i++)
     {
         int shift = i & 7;
         int byteIdx = i >> 3;
@@ -342,11 +342,11 @@ void checkReset(void)
     gVideoRetracePending = 0;
     switch (gameState)
     {
-    case GAMELOOP_STATE_BOOTING:
-    case GAMELOOP_STATE_RUNNING:
+    case GAME_STATE_BOOTING:
+    case GAME_STATE_RUNNING:
         if (shouldResetNextFrame != 0)
         {
-            gameState = GAMELOOP_STATE_RESET_REQUESTED;
+            gameState = GAME_STATE_RESETPRESSED;
         }
         if ((getNewInputs(0) & PAD_BUTTON_B) != 0 && (getNewInputs(0) & PAD_BUTTON_X) != 0 &&
             (getNewInputs(0) & PAD_BUTTON_START) != 0)
@@ -367,7 +367,7 @@ void checkReset(void)
             gGameLoopResetHoldTimer = t;
             if (t >= 3e+01f)
             {
-                gameState = GAMELOOP_STATE_RESET_REQUESTED;
+                gameState = GAME_STATE_RESETPRESSED;
             }
         }
         else
@@ -375,14 +375,14 @@ void checkReset(void)
             gGameLoopResetHoldTimer = 0.0f;
         }
         break;
-    case GAMELOOP_STATE_RESET_REQUESTED:
-    case GAMELOOP_STATE_HARD_RESET_REQUESTED:
+    case GAME_STATE_RESETPRESSED:
+    case GAME_STATE_HARDRESETPRESSED:
         OSReport(msg + 0xd0);
         if (gGameLoopInitComplete != 0)
         {
             (*gScreenTransitionInterface)->start(0x1e, 1);
         }
-        if (gameState == GAMELOOP_STATE_HARD_RESET_REQUESTED)
+        if (gameState == GAME_STATE_HARDRESETPRESSED)
         {
             gGameLoopHardReset = 1;
         }
@@ -394,18 +394,18 @@ void checkReset(void)
         AISetStreamVolLeft(0);
         AISetStreamVolRight(0);
         audioStopAll();
-        gameState = GAMELOOP_STATE_RESET_FADE_OUT;
+        gameState = GAME_STATE_RESETFADEOUT;
         gGameLoopResetFadeOutTimer = 3e+01f;
         break;
-    case GAMELOOP_STATE_RESET_FADE_OUT:
+    case GAME_STATE_RESETFADEOUT:
         t = gGameLoopResetFadeOutTimer - 1.0f;
         gGameLoopResetFadeOutTimer = t;
         if (t <= 0.0f)
         {
-            gameState = GAMELOOP_STATE_RESET_TEARDOWN;
+            gameState = GAME_STATE_RESETNOW;
         }
         break;
-    case GAMELOOP_STATE_RESET_TEARDOWN:
+    case GAME_STATE_RESETNOW:
         OSReport(msg + 0xec);
         while (gDvdErrorPauseActive == 0 && (gAudioStreamPlaying != 0 || gAudioStreamDvdState != 0))
         {
@@ -445,7 +445,7 @@ void checkReset(void)
         VIFlush();
         VIWaitForRetrace();
         OSReport(msg + 0x12c);
-        gameState = GAMELOOP_STATE_RESET_DONE;
+        gameState = GAME_STATE_RESETDONE;
         if (gGameLoopHardReset != 0)
         {
             OSResetSystem(1, 0x80000000, 1);
@@ -758,7 +758,7 @@ void gameUpdate(void)
 void gameLoop(void)
 {
     waitNextFrame();
-    if (gameState == GAMELOOP_STATE_RUNNING)
+    if (gameState == GAME_STATE_RUNNING)
     {
         padUpdate();
         voxmaps_updateTimers();
@@ -771,7 +771,7 @@ void gameLoop(void)
     }
     debugPrintDraw(0);
     (*gScreenTransitionInterface)->init(0, 0, 0);
-    if (gameState == GAMELOOP_STATE_RUNNING)
+    if (gameState == GAME_STATE_RUNNING)
     {
         if (gGameLoopButtonObjectCount != 0)
         {
@@ -786,8 +786,8 @@ void gameLoop(void)
                 for (; i < gGameLoopButtonObjectCount; i++)
                 {
                     objRenderModelAndHitVolumes((GameObject*)*p, 0, 0, 0, 0, 1.0f);
-                    if (((GameObject*)*p)->anim.seqId == GAMELOOP_SEQID_DIE_FOX ||
-                        ((GameObject*)*p)->anim.seqId == GAMELOOP_SEQID_DIE_KRYSTAL)
+                    if (((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
+                        ((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL)
                     {
                         objRenderFuzz((int*)*p);
                     }
@@ -898,8 +898,8 @@ void init(void)
             *(u8*)lbl_803DCAFC = dtv;
         }
         GXFlush_(1, 0);
-    } while ((filesDone == 0 || (u8)audioDone == 0) && gameState == GAMELOOP_STATE_BOOTING);
-    while (gameState != GAMELOOP_STATE_BOOTING)
+    } while ((filesDone == 0 || (u8)audioDone == 0) && gameState == GAME_STATE_BOOTING);
+    while (gameState != GAME_STATE_BOOTING)
     {
         mmFreeTick(0);
         padUpdate();
@@ -988,11 +988,11 @@ void init(void)
 
 int main(int argc, char** argv)
 {
-    gameState = GAMELOOP_STATE_BOOTING;
+    gameState = GAME_STATE_BOOTING;
     gGameLoopInitComplete = 0;
     init();
     gGameLoopInitComplete = 1;
-    gameState = GAMELOOP_STATE_RUNNING;
+    gameState = GAME_STATE_RUNNING;
     do
     {
         checkReset();

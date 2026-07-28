@@ -97,7 +97,7 @@ u8 ccGasVentControl_countUnblockedVents(GameObject* obj, CCGasVentControlState* 
             state->loopedSoundActive = 1;
         }
         Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_en_diallp_c_223,
-                               (u8)(unblockedVentCount * CC_GAS_VENT_CONTROL_LOOPED_SFX_VOLUME_STEP +
+                               (unblockedVentCount * CC_GAS_VENT_CONTROL_LOOPED_SFX_VOLUME_STEP +
                                     CC_GAS_VENT_CONTROL_LOOPED_SFX_VOLUME_BASE),
                                CC_GAS_VENT_CONTROL_SFX_VOLUME_MAX);
     } else {

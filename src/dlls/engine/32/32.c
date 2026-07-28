@@ -16,7 +16,7 @@ f32 gEffect7ScrollPhaseB = 0.3f;
 f32 gEffect7TexScrollPhaseA = 0.1f;
 f32 gEffect7TexScrollPhaseB = 0.3f;
 
-PartFxSpawnParams lbl_8039C368;
+PartFxSpawnParams gEffect7DefaultSpawnParams;
 
 ObjectDescriptor6 Effect7_funcs = {
     0,
@@ -35,14 +35,14 @@ ObjectDescriptor6 Effect7_funcs = {
 #define FILL368()                                                                                                      \
     do                                                                                                                 \
     {                                                                                                                  \
-        lbl_8039C368.posX = 0.0f;                                                                              \
-        lbl_8039C368.posY = 0.0f;                                                                              \
-        lbl_8039C368.posZ = 0.0f;                                                                              \
-        lbl_8039C368.scale = 1.0f;                                                                             \
-        lbl_8039C368.unk0 = 0;                                                                                         \
-        lbl_8039C368.unk2 = 0;                                                                                         \
-        lbl_8039C368.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C368;                                                               \
+        gEffect7DefaultSpawnParams.posX = 0.0f;                                                                              \
+        gEffect7DefaultSpawnParams.posY = 0.0f;                                                                              \
+        gEffect7DefaultSpawnParams.posZ = 0.0f;                                                                              \
+        gEffect7DefaultSpawnParams.scale = 1.0f;                                                                             \
+        gEffect7DefaultSpawnParams.unk0 = 0;                                                                                         \
+        gEffect7DefaultSpawnParams.unk2 = 0;                                                                                         \
+        gEffect7DefaultSpawnParams.unk4 = 0;                                                                                         \
+        spawnParams = &gEffect7DefaultSpawnParams;                                                               \
     } while (0)
 
 int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

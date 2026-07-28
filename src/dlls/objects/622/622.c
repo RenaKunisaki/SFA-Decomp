@@ -21,7 +21,7 @@
 #include "main/vecmath.h"
 
 int lbl_803DDD70;
-int lbl_803DC2F0 = -32768;
+int gDrShackleRotZOffset = -32768;
 
 #define DRSHACKLE_OBJGROUP  0x37
 #define DFROPENODE_OBJGROUP 0x17 /* DLL 373 dfropenode (path nodes) */
@@ -114,7 +114,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
         f32 mag;
         jointPos[1] = 0.0f;
         mag = PSVECMag((Vec*)jointPos);
-        obj->anim.rotZ = (s16)(lbl_803DC2F0 + getAngle(jointPos[0], jointPos[2]));
+        obj->anim.rotZ = (s16)(gDrShackleRotZOffset + getAngle(jointPos[0], jointPos[2]));
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
         objSetCurrentMatrix(ObjPath_GetPointModelMtx((GameObject*)a, b));
     }

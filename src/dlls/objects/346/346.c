@@ -325,7 +325,7 @@ void explodable_init(GameObject* obj, int placementAddress) {
         state->phase = EXPLODABLE_PHASE_BROKEN;
     }
     for (recipeIndex = 0; recipeIndex < EXPLODABLE_RECIPE_COUNT; recipeIndex++) {
-        if (obj->anim.seqId == gExplodableBreakRecipeTable[recipeIndex].sourceObjectId) {
+        if (obj->anim.romDefNo == gExplodableBreakRecipeTable[recipeIndex].sourceObjectId) {
             state->recipeIndex = recipeIndex;
             break;
         }

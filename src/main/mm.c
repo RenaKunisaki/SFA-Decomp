@@ -44,7 +44,7 @@ typedef f32 Mtx[3][4];
 typedef struct MmRegion
 {
     int numSlots;
-    int slotCount;
+    int slotsUsed;
     u8* start;
     int size;
     int usedBytes;
@@ -54,7 +54,7 @@ STATIC_ASSERT(sizeof(MmRegion) == 0x14);
 
 typedef struct HeapItem
 {
-    void* key;
+    void* loc;
     int size;
     s16 type;
     s16 prev;
@@ -78,8 +78,8 @@ STATIC_ASSERT(sizeof(DeferredFree) == 0x8);
 
 typedef struct MmStore
 {
-    void* buf;
-    void* bufCur;
+    void* ptrStore;
+    void* ptrCurrent;
     int size;
     int handle;
 } MmStore;
@@ -113,7 +113,7 @@ STATIC_ASSERT(sizeof(MmGlobalLayout) == 0x3FA0);
 extern char sMmShowInfoFBMemoryStoreMessageBlock[];
 extern char sMemStatsFormat[];
 extern char sMmAllocateFromFBMemoryStoreMissingHandleError[];
-extern char sMmMemoryStoreMessageBlock[];
+extern char sMmAllocateFromFBMemoryStoreSpaceError[];
 
 void memcpyToCache(void* dst, void* src, u32 count)
 {
@@ -199,14 +199,14 @@ void* mmAllocateFromFBMemoryStore(int handle, int size)
     }
     if (found != NULL)
     {
-        size = found->size - ((int)found->bufCur - (int)found->buf);
+        size = found->size - ((int)found->ptrCurrent - (int)found->ptrStore);
         if (size < sz)
         {
-            OSReport(sMmMemoryStoreMessageBlock);
+            OSReport(sMmAllocateFromFBMemoryStoreSpaceError);
             return 0;
         }
-        found->bufCur = (char*)found->bufCur + sz;
-        return (void*)((int)found->bufCur - sz);
+        found->ptrCurrent = (char*)found->ptrCurrent + sz;
+        return (void*)((int)found->ptrCurrent - sz);
     }
     return 0;
 }
@@ -234,10 +234,10 @@ int mmCreateMemoryStore(int size)
     }
     store->size = size;
     store->handle = gMmNextStoreHandle++;
-    store->buf = NULL;
-    store->bufCur = NULL;
-    store->buf = mmAlloc(store->size, 0, (int)(msg + 0x2a8));
-    if (store->buf == NULL)
+    store->ptrStore = NULL;
+    store->ptrCurrent = NULL;
+    store->ptrStore = mmAlloc(store->size, 0, (int)(msg + 0x2a8));
+    if (store->ptrStore == NULL)
     {
         OSReport(msg + 0x2bc);
         if (gMmFreeDelay == 0)
@@ -250,7 +250,7 @@ int mmCreateMemoryStore(int size)
         }
         return 0;
     }
-    store->bufCur = store->buf;
+    store->ptrCurrent = store->ptrStore;
     while (i < 0x20)
     {
         if (gMmStoreArray[i] == NULL)
@@ -262,7 +262,7 @@ int mmCreateMemoryStore(int size)
         {
             void* buf;
             OSReport(msg + 0x2f8);
-            buf = store->buf;
+            buf = store->ptrStore;
             if (gMmFreeDelay == 0)
             {
                 mmFree(buf);
@@ -310,9 +310,9 @@ int printHeapStats(int wpad0)
 {
     OSReport(sMemStatsFormat, gMmRegion0Used, gMmRegionTable[0].size, gMmRegion1Used, gMmRegionTable[1].size,
              gMmRegion2Used, gMmRegionTable[2].size, gMmRegion3Used, gMmRegionTable[3].size,
-             gMmRegionTable[0].slotCount, gMmRegionTable[0].numSlots, gMmRegionTable[1].slotCount,
-             gMmRegionTable[1].numSlots, gMmRegionTable[2].slotCount, gMmRegionTable[2].numSlots,
-             gMmRegionTable[3].slotCount, gMmRegionTable[3].numSlots);
+             gMmRegionTable[0].slotsUsed, gMmRegionTable[0].numSlots, gMmRegionTable[1].slotsUsed,
+             gMmRegionTable[1].numSlots, gMmRegionTable[2].slotsUsed, gMmRegionTable[2].numSlots,
+             gMmRegionTable[3].slotsUsed, gMmRegionTable[3].numSlots);
     return gMmRegion0Used + (gMmRegion1Used + gMmRegion2Used + gMmRegion3Used);
 }
 
@@ -401,7 +401,7 @@ int heapSpawnSlot(int region, int idx, int size, int type, int newType, int item
     if (oldSize > size)
     {
         s16 oldNext;
-        ni = base[gMmRegionTable[region].slotCount++].stack;
+        ni = base[gMmRegionTable[region].slotsUsed++].stack;
         base[idx].type = newType;
         while ((oldSize - size) % 32 != 0)
         {
@@ -409,10 +409,10 @@ int heapSpawnSlot(int region, int idx, int size, int type, int newType, int item
         }
         base[idx].size = oldSize - size;
         base[ni].type = type;
-        base[ni].key = (char*)base[idx].key + oldSize - size;
-        if ((int)base[ni].key % 32 != 0)
+        base[ni].loc = (char*)base[idx].loc + oldSize - size;
+        if ((int)base[ni].loc % 32 != 0)
         {
-            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].key, base[ni].size);
+            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].loc, base[ni].size);
         }
         base[ni].size = size;
         base[ni].tag = itemTag;
@@ -443,11 +443,11 @@ int changeHeapSlot(int region, int idx, int newSize, int type, int newType, int 
     if (oldSize > newSize)
     {
         s16 oldNext;
-        ni = base[gMmRegionTable[region].slotCount++].stack;
-        base[ni].key = (char*)base[idx].key + newSize;
-        if ((int)base[ni].key % 32 != 0)
+        ni = base[gMmRegionTable[region].slotsUsed++].stack;
+        base[ni].loc = (char*)base[idx].loc + newSize;
+        if ((int)base[ni].loc % 32 != 0)
         {
-            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].key, base[ni].size);
+            OSReport(sMmSpawnedUnalignedSlotWarning, base[ni].stack, base[ni].loc, base[ni].size);
         }
         base[ni].size = oldSize - newSize;
         base[ni].type = newType;
@@ -489,7 +489,7 @@ void heapFree(int region, int idx)
         {
             base[nn].prev = idx;
         }
-        base[--gMmRegionTable[region].slotCount].stack = next;
+        base[--gMmRegionTable[region].slotsUsed].stack = next;
     }
     if (prev != -1 && base[prev].type == 0)
     {
@@ -501,7 +501,7 @@ void heapFree(int region, int idx)
         {
             base[in].prev = prev;
         }
-        base[--gMmRegionTable[region].slotCount].stack = idx;
+        base[--gMmRegionTable[region].slotsUsed].stack = idx;
     }
 }
 
@@ -573,7 +573,7 @@ void mmFree(void* p)
         i = 0;
         do
         {
-            if (base[i].key == p)
+            if (base[i].loc == p)
             {
                 s16 itemType = base[i].type;
                 if (itemType == 1 || itemType == 4)
@@ -629,7 +629,7 @@ void mmFreeTick(int arg)
         MmStore** sp = (MmStore**)g->stores;
         if (sp[k] != NULL)
         {
-            sp[k]->bufCur = sp[k]->buf;
+            sp[k]->ptrCurrent = sp[k]->ptrStore;
         }
     }
     SaveGame_updateTransientMapBits();
@@ -690,9 +690,9 @@ void mmFreeTick(int arg)
     if (gMmStatsPrintCounter++ % 500 == 0)
     {
         OSReport(sMemStatsFormat, 0, g->regions[0].size, gMmRegion1Used, g->regions[1].size, gMmRegion2Used,
-                 g->regions[2].size, gMmRegion3Used, g->regions[3].size, g->regions[0].slotCount,
-                 g->regions[0].numSlots, g->regions[1].slotCount, g->regions[1].numSlots,
-                 g->regions[2].slotCount, g->regions[2].numSlots, g->regions[3].slotCount,
+                 g->regions[2].size, gMmRegion3Used, g->regions[3].size, g->regions[0].slotsUsed,
+                 g->regions[0].numSlots, g->regions[1].slotsUsed, g->regions[1].numSlots,
+                 g->regions[2].slotsUsed, g->regions[2].numSlots, g->regions[3].slotsUsed,
                  g->regions[3].numSlots);
     }
 }
@@ -730,12 +730,13 @@ int mmAllocFromRegion(int region, int size, int type, int tag)
     int largestFree1;
     int largest;
 
+    largest = 0;
     largestFree0 = 0;
     largestFree1 = 0;
 
-    if (gMmRegionTable[region].slotCount + 1 == gMmRegionTable[region].numSlots)
+    if (gMmRegionTable[region].slotsUsed + 1 == gMmRegionTable[region].numSlots)
     {
-        OSReport(msg + 0x4b8, tag, region);
+        OSReport(msg + 0x4b8, tag, region, gMmRegionTable[region].slotsUsed, gMmRegionTable[region].numSlots);
         return 0;
     }
 
@@ -748,7 +749,6 @@ int mmAllocFromRegion(int region, int size, int type, int tag)
     bestSize = 0x7fffffff;
     base = (HeapItem*)gMmRegionTable[region].start;
     idx = 0;
-    largest = 0;
 
     if (region == 0 && size < 0x33450)
     {
@@ -829,14 +829,14 @@ int mmAllocFromRegion(int region, int size, int type, int tag)
         }
         res->allocId = gMmNextAllocId++;
         gMmOpCount++;
-        return (int)res->key;
+        return (int)res->loc;
     }
 
     if ((region == 2 && size > 0x3000) || region == 3 || region == 1)
     {
         HeapItem* b;
         HeapItem* w;
-        OSReport(msg + 0x54c, tag, region, type, size);
+        OSReport(msg + 0x54c, tag, region, type, size, largest);
         b = (HeapItem*)gMmRegionTable[0].start;
         w = b;
         while (w->next != -1)
@@ -872,7 +872,7 @@ int getHeapItemSize(void* ptr)
     int idx = 0;
     for (;;)
     {
-        if (items[idx].key == ptr)
+        if (items[idx].loc == ptr)
         {
             return items[idx].size;
         }
@@ -968,7 +968,7 @@ void* mmInitRegion(u8* buf, int size, int numSlots)
     HeapItem* slot;
     int freePtr;
     gMmRegionTable[regIdx].numSlots = numSlots;
-    gMmRegionTable[regIdx].slotCount = 0;
+    gMmRegionTable[regIdx].slotsUsed = 0;
     gMmRegionTable[regIdx].start = buf;
     gMmRegionTable[regIdx].size = size;
     gMmRegionTable[regIdx].usedBytes = 0;
@@ -982,17 +982,17 @@ void* mmInitRegion(u8* buf, int size, int numSlots)
     freePtr = (int)buf + slotsBytes;
     if (freePtr & 0x1f)
     {
-        *(int*)&slot->key = (freePtr & ~0x1f) + 0x20;
+        *(int*)&slot->loc = (freePtr & ~0x1f) + 0x20;
     }
     else
     {
-        *(int*)&slot->key = freePtr;
+        *(int*)&slot->loc = freePtr;
     }
     slot->size = after;
     slot->type = 0;
     slot->prev = -1;
     slot->next = -1;
-    gMmRegionTable[regIdx].slotCount++;
+    gMmRegionTable[regIdx].slotsUsed++;
     return gMmRegionTable[regIdx].start;
 }
 
@@ -1127,40 +1127,18 @@ char sMmAllocateFromFBMemoryStoreMissingHandleError[] = {
     0x4D, 0x4D, 0x53, 0x54, 0x4F, 0x52, 0x45, 0x5F, 0x41, 0x52, 0x52, 0x41, 0x59, 0x0A, 0x00,
 };
 
-/* dtk-split chunk of MWCC's pooled OSReport format strings (truncated at the symbol boundary), so it is emitted as raw bytes. */
-char sMmMemoryStoreMessageBlock[] = {
-    0x3C, 0x6D, 0x6D, 0x41, 0x6C, 0x6C, 0x6F, 0x63, 0x61, 0x74, 0x65, 0x46, 0x72, 0x6F, 0x6D, 0x46, 0x42, 0x4D, 0x65,
-    0x6D, 0x6F, 0x72, 0x79, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x61, 0x76, 0x61, 0x69, 0x6C, 0x61, 0x62, 0x6C,
-    0x65, 0x20, 0x73, 0x70, 0x61, 0x63, 0x65, 0x20, 0x69, 0x6E, 0x20, 0x74, 0x68, 0x69, 0x73, 0x20, 0x73, 0x74, 0x6F,
-    0x72, 0x65, 0x20, 0x25, 0x64, 0x20, 0x73, 0x69, 0x7A, 0x65, 0x20, 0x77, 0x61, 0x6E, 0x74, 0x65, 0x64, 0x20, 0x25,
-    0x64, 0x0A, 0x00, 0x00, 0x3C, 0x6D, 0x6D, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6F, 0x79, 0x4D, 0x65, 0x6D, 0x6F, 0x72,
-    0x79, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x66, 0x61, 0x69, 0x6C, 0x65, 0x64, 0x20, 0x74, 0x6F, 0x20, 0x66,
-    0x69, 0x6E, 0x64, 0x20, 0x73, 0x74, 0x6F, 0x72, 0x65, 0x20, 0x77, 0x69, 0x74, 0x68, 0x20, 0x72, 0x65, 0x71, 0x75,
-    0x65, 0x73, 0x74, 0x65, 0x64, 0x20, 0x68, 0x61, 0x6E, 0x64, 0x6C, 0x65, 0x20, 0x69, 0x6E, 0x20, 0x4D, 0x4D, 0x53,
-    0x54, 0x4F, 0x52, 0x45, 0x5F, 0x41, 0x52, 0x52, 0x41, 0x59, 0x0A, 0x00, 0x3C, 0x6D, 0x6D, 0x43, 0x72, 0x65, 0x61,
-    0x74, 0x65, 0x4D, 0x65, 0x6D, 0x6F, 0x72, 0x79, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x66, 0x61, 0x69, 0x6C,
-    0x65, 0x64, 0x20, 0x61, 0x73, 0x20, 0x73, 0x69, 0x7A, 0x65, 0x20, 0x77, 0x61, 0x73, 0x20, 0x25, 0x64, 0x0A, 0x00,
-    0x00, 0x00, 0x00, 0x3C, 0x6D, 0x6D, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4D, 0x65, 0x6D, 0x6F, 0x72, 0x79, 0x53,
-    0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x66, 0x61, 0x69, 0x6C, 0x65, 0x64, 0x20, 0x61, 0x73, 0x20, 0x73, 0x69, 0x7A,
-    0x65, 0x20, 0x25, 0x64, 0x20, 0x77, 0x61, 0x73, 0x20, 0x67, 0x72, 0x65, 0x61, 0x74, 0x65, 0x72, 0x20, 0x74, 0x68,
-    0x61, 0x6E, 0x20, 0x4D, 0x4D, 0x5F, 0x4D, 0x41, 0x58, 0x5F, 0x4D, 0x45, 0x4D, 0x5F, 0x53, 0x54, 0x4F, 0x52, 0x45,
-    0x5F, 0x53, 0x49, 0x5A, 0x45, 0x20, 0x25, 0x64, 0x0A, 0x00, 0x00, 0x3C, 0x6D, 0x6D, 0x43, 0x72, 0x65, 0x61, 0x74,
-    0x65, 0x4D, 0x65, 0x6D, 0x6F, 0x72, 0x79, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x66, 0x61, 0x69, 0x6C, 0x65,
-    0x64, 0x20, 0x74, 0x6F, 0x20, 0x61, 0x6C, 0x6C, 0x6F, 0x63, 0x61, 0x74, 0x65, 0x20, 0x6D, 0x6D, 0x53, 0x74, 0x6F,
-    0x72, 0x65, 0x20, 0x4F, 0x62, 0x6A, 0x65, 0x63, 0x74, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x6D, 0x6D, 0x53, 0x74, 0x6F,
-    0x72, 0x65, 0x2D, 0x3E, 0x70, 0x74, 0x72, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x00, 0x00, 0x00, 0x3C, 0x6D, 0x6D, 0x43,
-    0x72, 0x65, 0x61, 0x74, 0x65, 0x4D, 0x65, 0x6D, 0x6F, 0x72, 0x79, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x66,
-    0x61, 0x69, 0x6C, 0x65, 0x64, 0x20, 0x74, 0x6F, 0x20, 0x61, 0x6C, 0x6C, 0x6F, 0x63, 0x61, 0x74, 0x65, 0x20, 0x6D,
-    0x6D, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x2D, 0x3E, 0x70, 0x74, 0x72, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x0A, 0x00, 0x3C,
-    0x6D, 0x6D, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4D, 0x65, 0x6D, 0x6F, 0x72, 0x79, 0x53, 0x74, 0x6F, 0x72, 0x65,
-    0x3E, 0x20, 0x66, 0x61, 0x69, 0x6C, 0x65, 0x64, 0x20, 0x74, 0x6F, 0x20,
-};
+char sMmAllocateFromFBMemoryStoreSpaceError[] = "<mmAllocateFromFBMemoryStore> available space in this store %d size wanted %d\n";
+char sMmDestroyMemoryStoreMissingHandleError[] =
+    "<mmDestroyMemoryStore> failed to find store with requested handle in MMSTORE_ARRAY\n";
+char sMmCreateMemoryStoreZeroSizeError[] = "<mmCreateMemoryStore> failed as size was %d\n";
+char sMmCreateMemoryStoreSizeTooLargeError[] =
+    "<mmCreateMemoryStore> failed as size %d was greater than MM_MAX_MEM_STORE_SIZE %d\n";
+char sMmCreateMemoryStoreObjectAllocError[] = "<mmCreateMemoryStore> failed to allocate mmStore Object\n";
+char sMmStorePtrStoreAllocationTag[] = "mmStore->ptrStore";
+char sMmCreateMemoryStorePtrStoreAllocError[] = "<mmCreateMemoryStore> failed to allocate mmStore->ptrStore\n";
+char sMmCreateMemoryStoreNoFreeSlotError[] = "<mmCreateMemoryStore> failed to find slot in MMSTORE_ARRAY\n";
 
-char lbl_802CA908[] = {
-    0x66, 0x69, 0x6E, 0x64, 0x20, 0x73, 0x6C, 0x6F, 0x74, 0x20, 0x69, 0x6E, 0x20, 0x4D, 0x4D,
-    0x53, 0x54, 0x4F, 0x52, 0x45, 0x5F, 0x41, 0x52, 0x52, 0x41, 0x59, 0x0A, 0x00, 0x6D, 0x6D,
-    0x3A, 0x61, 0x75, 0x64, 0x69, 0x6F, 0x68, 0x65, 0x61, 0x70, 0x00, 0x00, 0x00, 0x00,
-};
+char sMmAudioHeapName[] = "mm:audioheap";
 
 char sMemStatsFormat[] = {
     0x6D, 0x65, 0x6D, 0x20, 0x25, 0x64, 0x6B, 0x2F, 0x25, 0x64, 0x6B, 0x20, 0x25, 0x64, 0x6B, 0x2F, 0x25, 0x64,

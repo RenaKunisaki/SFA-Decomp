@@ -47,7 +47,7 @@ void dll_1DF_update(GameObject* obj) {
 
     texture = objFindTexture(obj, 0, 0);
     if (texture != NULL) {
-        if (obj->anim.seqId == 0xD1) {
+        if (obj->anim.romDefNo == 0xD1) {
             f32 color = 0.0f;
 
             texture->colorR = color;

@@ -15,7 +15,7 @@ f32 gEffect9PhaseB = 0.3f;
 f32 gEffect9PhaseC = 0.1f;
 f32 gEffect9PhaseD = 0.3f;
 
-PartFxSpawnParams lbl_8039C398;
+PartFxSpawnParams gEffect9DefaultSpawnParams;
 
 ObjectDescriptor6 Effect9_funcs = {
     0,
@@ -33,14 +33,14 @@ ObjectDescriptor6 Effect9_funcs = {
 #define FILL9()                                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        lbl_8039C398.posX = 0.0f;                                                                                      \
-        lbl_8039C398.posY = 0.0f;                                                                                      \
-        lbl_8039C398.posZ = 0.0f;                                                                                      \
-        lbl_8039C398.scale = 1.0f;                                                                                     \
-        lbl_8039C398.unk0 = 0;                                                                                         \
-        lbl_8039C398.unk2 = 0;                                                                                         \
-        lbl_8039C398.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C398;                                                               \
+        gEffect9DefaultSpawnParams.posX = 0.0f;                                                                                      \
+        gEffect9DefaultSpawnParams.posY = 0.0f;                                                                                      \
+        gEffect9DefaultSpawnParams.posZ = 0.0f;                                                                                      \
+        gEffect9DefaultSpawnParams.scale = 1.0f;                                                                                     \
+        gEffect9DefaultSpawnParams.unk0 = 0;                                                                                         \
+        gEffect9DefaultSpawnParams.unk2 = 0;                                                                                         \
+        gEffect9DefaultSpawnParams.unk4 = 0;                                                                                         \
+        spawnParams = &gEffect9DefaultSpawnParams;                                                               \
     } while (0)
 
 int Effect9_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

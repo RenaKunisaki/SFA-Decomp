@@ -15,7 +15,7 @@ int MagicLight_sequenceCallback(GameObject* obj) {
     GameObject* player;
     f32 distance;
 
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW) {
+    if (obj->anim.romDefNo == MAGIC_LIGHT_SEQ_GLOW) {
         return 0;
     }
 
@@ -34,7 +34,7 @@ int MagicLight_sequenceCallback(GameObject* obj) {
 }
 
 int MagicLight_getExtraSize(GameObject* obj) {
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW) {
+    if (obj->anim.romDefNo == MAGIC_LIGHT_SEQ_GLOW) {
         return 0;
     }
 
@@ -48,7 +48,7 @@ int MagicLight_getObjectTypeId(void) {
 void MagicLight_free(GameObject* obj) {
     MagicLightState* state = obj->extra;
 
-    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW) {
+    if (obj->anim.romDefNo != MAGIC_LIGHT_SEQ_GLOW) {
         if (state->inRange != 0) {
             getLActions(obj, obj, (u16)state->leaveAction, 0, 0, 0);
         }
@@ -57,7 +57,7 @@ void MagicLight_free(GameObject* obj) {
 }
 
 void MagicLight_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW && visible != 0) {
+    if (obj->anim.romDefNo == MAGIC_LIGHT_SEQ_GLOW && visible != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
@@ -66,7 +66,7 @@ void MagicLight_hitDetect(void) {
 }
 
 void MagicLight_update(GameObject* obj) {
-    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW && MAGIC_LIGHT_SEQUENCE_STARTED(obj) == 0) {
+    if (obj->anim.romDefNo != MAGIC_LIGHT_SEQ_GLOW && MAGIC_LIGHT_SEQUENCE_STARTED(obj) == 0) {
         obj->anim.rotX = 0;
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
@@ -81,14 +81,14 @@ void MagicLight_init(GameObject* obj, const MagicLightPlacement* placement) {
     MAGIC_LIGHT_SEQUENCE_STARTED(obj) = 0;
     obj->anim.rotX = (s16)(placement->initialRotX << 8);
     obj->animEventCallback = MagicLight_sequenceCallback;
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW) {
+    if (obj->anim.romDefNo == MAGIC_LIGHT_SEQ_GLOW) {
         return;
     }
     state = obj->extra;
     state->lifetime = randomGetRange(0xC8, 0x258);
     state->subtype = (s8)placement->subtype;
     state->inRange = 0;
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_PROXIMITY) {
+    if (obj->anim.romDefNo == MAGIC_LIGHT_SEQ_PROXIMITY) {
         switch (state->subtype) {
         case 0:
             state->enterAction = 0x90;

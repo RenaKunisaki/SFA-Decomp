@@ -50,7 +50,7 @@ STATIC_ASSERT(offsetof(DrshackleState, pathPointA) == 0x1B);
 STATIC_ASSERT(offsetof(DrshackleState, pathPointB) == 0x1C);
 STATIC_ASSERT(sizeof(DrshackleState) == 0x20);
 
-extern int lbl_803DC2F0;
+extern int gDrShackleRotZOffset;
 extern int lbl_803DDD70;
 
 int drshackle_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);

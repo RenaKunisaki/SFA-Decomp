@@ -582,7 +582,7 @@ void SaveSelectScreen_render(int param)
         titleScreenPositionElements(40.0f, 120.0f);
         alpha = ((u8)progress & 0x7f) * 2;
     }
-    gameTextBoxFn_80134d40(alpha, (u8)(gSaveSelectPanelIndex == SAVE_SELECT_PANEL_CONFIRM_ERASE), 0);
+    titleScreenDrawMenuFrame(alpha, (u8)(gSaveSelectPanelIndex == SAVE_SELECT_PANEL_CONFIRM_ERASE), 0);
     switch (gSaveSelectPanelIndex)
     {
     case SAVE_SELECT_PANEL_OPEN_FILE:
@@ -727,7 +727,7 @@ int SaveSelectScreen_run(void)
                     gplayNewGame(0, -1);
                 }
                 saveSelectScreenFree(1);
-                titleScreenFn_801368d4();
+                titleScreenDisableActors();
                 prev = mmSetFreeDelay(0);
                 mapUnload(0x3d, 0x20000000);
                 mmSetFreeDelay(prev);

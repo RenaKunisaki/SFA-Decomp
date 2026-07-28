@@ -193,7 +193,7 @@ void VFP_Platform_update(GameObject* obj)
         tyi = params->posZ;
         if (s3 != 99)
         {
-            if ((obj)->anim.seqId == VFP_PLATFORM_LAVABLOCK_OBJ)
+            if ((obj)->anim.romDefNo == VFP_PLATFORM_LAVABLOCK_OBJ)
             {
                 VFP_Platform_updateLavaBlock(obj);
             }

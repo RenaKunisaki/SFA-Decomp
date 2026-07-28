@@ -15,14 +15,6 @@
 #define BLASTED_POLYGON_GROUP_DISABLE_FLAGS 0x03
 #define BLASTED_SHADER_DISABLE_FLAG         0x02
 
-typedef struct BlastedPolygonGroup {
-    u8 pad00[0x10];
-    u32 flags;
-} BlastedPolygonGroup;
-
-STATIC_ASSERT(offsetof(BlastedPolygonGroup, flags) == 0x10);
-STATIC_ASSERT(sizeof(BlastedPolygonGroup) == 0x14);
-
 int gBlastedDamageTimer;
 
 int blasted_activateMapLayer(GameObject* obj, int mapLayerId) {
@@ -36,7 +28,7 @@ int blasted_activateMapLayer(GameObject* obj, int mapLayerId) {
         int shaderIndex;
         int polygonGroupIndex;
         for (polygonGroupIndex = 0; polygonGroupIndex < block->polyGroupCount; polygonGroupIndex++) {
-            BlastedPolygonGroup* polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
+            MapPolygonGroup* polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
             if (mapLayerId == mapBlockGetPolygonGroupType(polygonGroup)) {
                 polygonGroup->flags |= BLASTED_POLYGON_GROUP_DISABLE_FLAGS;
             }

@@ -2,6 +2,7 @@
  * DLL 84 / 0x54 - NPC conversation camera mode.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/CAM/camera_mode_54_state.h"
@@ -53,11 +54,11 @@ void dll_54_update(CameraObject* camera)
             for (; i < count; i++)
             {
                 GameObject* o = (GameObject*)arr[i];
-                if (o->anim.seqId == DLL54_LOOKAT_SEQID)
+                if (o->anim.romDefNo == DLL54_LOOKAT_SEQID)
                 {
                     gCameraMode54State->lookAtObj = o;
                 }
-                else if (o->anim.seqId == DLL54_ORIGIN_SEQID)
+                else if (o->anim.romDefNo == DLL54_ORIGIN_SEQID)
                 {
                     gCameraMode54State->originObj = o;
                 }
@@ -129,7 +130,7 @@ void dll_54_update(CameraObject* camera)
         }
         Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                       camera->anim.parentAddress);
+                                       (GameObject*)camera->anim.parentAddress);
     }
 }
 

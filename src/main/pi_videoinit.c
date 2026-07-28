@@ -142,7 +142,7 @@ void videoInit(void* wpad0, int wpad1)
                   1.0f);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);
     GXSetScissor(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
-    GXSetDispCopyDst(gRenderModeObj->fbWidth, (u16)gDispCopyYScaleLines);
+    GXSetDispCopyDst(gRenderModeObj->fbWidth, gDispCopyYScaleLines);
     if (gRenderModeObj->aa != 0)
     {
         GXSetPixelFmt(GX_PF_RGB565_Z16, GX_ZC_LINEAR);
@@ -292,7 +292,7 @@ int GXFlush_(u8 visible, int unused)
     GXSetDrawSync(gGxDrawSyncToken);
     GXCopyDisp(renderFrameBuffer, 1);
     GXFlush();
-    gGxDrawSyncToken = (u16)(gGxDrawSyncToken + 1);
+    gGxDrawSyncToken = gGxDrawSyncToken + 1;
     if (renderFrameBuffer == (next = externalFrameBuffer0))
     {
         next = externalFrameBuffer1;

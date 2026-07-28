@@ -64,7 +64,7 @@ void dll407_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
     s16 endGrid[4];
     u8 traceOut[8];
     Dll407State* state = obj->extra;
-    CameraViewSlot* camera;
+    Camera* camera;
     f32 dist;
     f32 scale;
     void* dirAlias = dir;
@@ -81,7 +81,7 @@ void dll407_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
     }
 
     state->visibleToCamera = 1;
-    camera = Camera_GetCurrentViewSlot();
+    camera = Camera_GetCurrent();
     dir[0] = camera->x - obj->anim.localPosX;
     dir[1] = camera->y - obj->anim.localPosY;
     dir[2] = camera->z - obj->anim.localPosZ;

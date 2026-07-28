@@ -50,10 +50,10 @@ void imSpaceRingGenerator_update(GameObject* obj) {
         for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             GameObject* candidate = objects[objectIndex];
 
-            if (candidate->anim.seqId == IM_SPACE_RING_GENERATOR_SEQUENCE_ID_A) {
+            if (candidate->anim.romDefNo == IM_SPACE_RING_GENERATOR_SEQUENCE_ID_A) {
                 state->ringA = candidate;
             }
-            if (candidate->anim.seqId == IM_SPACE_RING_GENERATOR_SEQUENCE_ID_B) {
+            if (candidate->anim.romDefNo == IM_SPACE_RING_GENERATOR_SEQUENCE_ID_B) {
                 state->ringB = candidate;
             }
         }

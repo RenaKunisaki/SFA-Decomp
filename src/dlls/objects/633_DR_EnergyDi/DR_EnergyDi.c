@@ -18,7 +18,7 @@
 
 #include "main/dll/DR/dll_0279_drenergydisc.h"
 
-int lbl_803DC380 = -400;
+int gDREnergyDiscScrollSpeedT = -400;
 
 
 int DR_EnergyDisc_getExtraSize(void)
@@ -66,7 +66,7 @@ void DR_EnergyDisc_update(GameObject* obj)
         texture = objFindTexture(obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetT = texture->offsetT + lbl_803DC380 * framesThisStep;
+            texture->offsetT = texture->offsetT + gDREnergyDiscScrollSpeedT * framesThisStep;
             if (texture->offsetT < -0x1000)
             {
                 texture->offsetT = 0;

@@ -59,7 +59,7 @@ void dimbarrier_update(GameObject* obj) {
         for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
             contact = obj->anim.hitboxTransformState->contactObjects[contactIndex];
             triggerState = contact->extra;
-            if (contact->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID && triggerState->variant != 0) {
+            if (contact->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID && triggerState->variant != 0) {
                 triggerFound = 1;
                 break;
             }

@@ -95,6 +95,15 @@ STATIC_ASSERT(offsetof(MapShader, auxTexture) == 0x34);
 STATIC_ASSERT(offsetof(MapShader, flags) == 0x3C);
 STATIC_ASSERT(offsetof(MapShader, layerCount) == 0x41);
 
+typedef struct MapPolygonGroup
+{
+    u8 pad00[0x10];
+    u32 flags;
+} MapPolygonGroup;
+
+STATIC_ASSERT(offsetof(MapPolygonGroup, flags) == 0x10);
+STATIC_ASSERT(sizeof(MapPolygonGroup) == 0x14);
+
 typedef enum MapBlockFlag {
     MAP_BLOCK_FLAG_LOADED = 0x0008,
 } MapBlockFlag;

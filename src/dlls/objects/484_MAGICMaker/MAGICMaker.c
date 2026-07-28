@@ -78,7 +78,7 @@ void magicmaker_update(GameObject* obj) {
             for (i = 0; i < groupObjectCount; i++) {
                 groupObject = *groupObjects;
                 for (spawnObjectIndex = 0; spawnObjectIndex < MAGICMAKER_SPAWN_OBJECT_COUNT; spawnObjectIndex++) {
-                    if (groupObject->anim.seqId == gMagicMakerSpawnObjectIds[spawnObjectIndex]) {
+                    if (groupObject->anim.romDefNo == gMagicMakerSpawnObjectIds[spawnObjectIndex]) {
                         matchingEntryCount++;
                     }
                 }

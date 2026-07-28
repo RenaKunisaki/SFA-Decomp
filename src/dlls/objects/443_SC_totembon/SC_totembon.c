@@ -162,7 +162,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpda
             objects = ObjList_GetObjects(&startForEvent2, &countForEvent2);
             for (; startForEvent2 < countForEvent2; startForEvent2++) {
                 if (objects[startForEvent2] != obj &&
-                    objects[startForEvent2]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    objects[startForEvent2]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                     (*(ScTotemPoleInterfaceVTable**)objects[startForEvent2]->anim.dll)
                         ->handleEvent(objects[startForEvent2], 2);
                     break;
@@ -174,7 +174,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpda
             objects = ObjList_GetObjects(&startForEvent3, &countForEvent3);
             for (; startForEvent3 < countForEvent3; startForEvent3++) {
                 if (objects[startForEvent3] != obj &&
-                    objects[startForEvent3]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    objects[startForEvent3]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                     (*(ScTotemPoleInterfaceVTable**)objects[startForEvent3]->anim.dll)
                         ->handleEvent(objects[startForEvent3], 1);
                     break;

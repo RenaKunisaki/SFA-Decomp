@@ -159,7 +159,7 @@ void imSnowClaw_render(GameObject* obj, int renderArg2, int renderArg3, int rend
     GameObject* mount;
     int mountActive;
 
-    if (obj->anim.seqId != IM_SNOW_CLAW_RENDER_GATE_SEQ_ID) {
+    if (obj->anim.romDefNo != IM_SNOW_CLAW_RENDER_GATE_SEQ_ID) {
         if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0) {
             if (mainGetBit(GAMEBIT_IM_HutRelated0382) == 0) {
                 return;
@@ -241,7 +241,7 @@ void imSnowClaw_update(GameObject* obj) {
         int mountSeqId;
 
         objects = (GameObject**)ObjGroup_GetObjects(IM_SNOW_CLAW_MOUNT_OBJECT_GROUP, &objectCount);
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case IM_SNOW_CLAW_SEQ_ID:
         case IM_SNOW_CLAW_RENDER_GATE_SEQ_ID:
         default:
@@ -252,14 +252,14 @@ void imSnowClaw_update(GameObject* obj) {
             break;
         }
         for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            if (mountSeqId == objects[objectIndex]->anim.seqId) {
+            if (mountSeqId == objects[objectIndex]->anim.romDefNo) {
                 state->mount = objects[objectIndex];
                 objectIndex = objectCount;
             }
         }
     }
 
-    if (obj->anim.seqId == IM_SNOW_CLAW_RENDER_GATE_SEQ_ID || mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0) {
+    if (obj->anim.romDefNo == IM_SNOW_CLAW_RENDER_GATE_SEQ_ID || mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0) {
         GameObject* mount = state->mount;
         int moveNegative;
         f32 moveStep;

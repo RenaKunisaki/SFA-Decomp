@@ -56,7 +56,7 @@ void dimgate_update(GameObject* obj) {
         for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
             GameObject* contactObject = obj->anim.hitboxTransformState->contactObjects[contactIndex];
 
-            if (contactObject->anim.seqId == DIM_GATE_TRIGGER_SEQUENCE_ID) {
+            if (contactObject->anim.romDefNo == DIM_GATE_TRIGGER_SEQUENCE_ID) {
                 triggerFound = 1;
                 break;
             }

@@ -87,19 +87,19 @@ int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateS
 
         switch (eventId) {
         case 1:
-            state->submodelMask = (u8)(state->submodelMask ^ (1 << (eventId - 1)));
+            state->submodelMask = state->submodelMask ^ (1 << (eventId - 1));
             break;
         case 2:
-            state->submodelMask = (u8)(state->submodelMask ^ (1 << (eventId - 1)));
+            state->submodelMask = state->submodelMask ^ (1 << (eventId - 1));
             break;
         case 3:
-            state->submodelMask = (u8)(state->submodelMask ^ (1 << (eventId - 1)));
+            state->submodelMask = state->submodelMask ^ (1 << (eventId - 1));
             break;
         case 4:
-            state->submodelMask = (u8)(state->submodelMask ^ (1 << (eventId - 1)));
+            state->submodelMask = state->submodelMask ^ (1 << (eventId - 1));
             break;
         case 5:
-            state->submodelMask = (u8)(state->submodelMask ^ IM_ANIM_SPACE_MASK_GROUP);
+            state->submodelMask = state->submodelMask ^ IM_ANIM_SPACE_MASK_GROUP;
             break;
         case 6:
             state->eventFlags = (u8)(state->eventFlags ^ IM_ANIM_SPACE_FLAG_TOGGLE_8);

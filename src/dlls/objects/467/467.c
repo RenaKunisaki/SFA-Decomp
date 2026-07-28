@@ -226,7 +226,7 @@ void worldobj_update(GameObject* obj) {
     u8 i;
     GameObject* child;
     ObjTextureRuntimeSlot* tex;
-    CameraViewSlot* view;
+    Camera* view;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -389,7 +389,7 @@ void worldobj_update(GameObject* obj) {
             }
         }
         if (obj->userData1 != 0 && *(void**)&state->lookAtTargetRef != NULL) {
-            view = Camera_GetCurrentViewSlot();
+            view = Camera_GetCurrent();
             dx = view->x - obj->anim.localPosX;
             dy = view->y - obj->anim.localPosY;
             dz = view->z - obj->anim.localPosZ;
@@ -517,7 +517,7 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
         obj->anim.rootMotionScale = obj->anim.rootMotionScale * state->scale;
         state->spinXStep = randomGetRange(0xa, 0x19);
         if (randomGetRange(0, 1) != 0) {
-            state->spinXStep = (s8)(-state->spinXStep);
+            state->spinXStep = -state->spinXStep;
             state->orbitAngle = 0x8000;
         }
         base = (f32)randomGetRange(0xc8, 0x190);

@@ -30,7 +30,7 @@
 #define WARPPOINT_MAP_SAVE_A 0x4B675
 #define WARPPOINT_MAP_SAVE_B 0x46882
 
-/* seqId variant that records a save point (sets GAMEBIT_WarpPointRelatedD53
+/* romDefNo variant that records a save point (sets GAMEBIT_WarpPointRelatedD53
    and calls the map-event savePoint) before running its sequence. */
 #define WARPPOINT_SEQ_ID_SAVEPOINT 0x27E
 
@@ -121,7 +121,7 @@ void WarpPoint_update(GameObject* obj) {
             distance = sqrtf(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
             if (state->sequenceTriggered == 0 && placement->enabled != 0 && distance < state->triggerRadius &&
                 player->anim.parentAddress == obj->anim.parentAddress) {
-                if (obj->anim.seqId == WARPPOINT_SEQ_ID_SAVEPOINT) {
+                if (obj->anim.romDefNo == WARPPOINT_SEQ_ID_SAVEPOINT) {
                     mainSetBits(GAMEBIT_WarpPointRelatedD53, 1);
                     (*gMapEventInterface)
                         ->savePoint((int)&player->anim.localPosX, player->anim.rotX, 0, getCurMapLayer());

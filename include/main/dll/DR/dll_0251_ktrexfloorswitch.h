@@ -68,8 +68,8 @@ void ktrexfloorswitch_spawnEnergyArc(GameObject* obj, f32 scale, int angle);
 void KT_RexFloorSwitch_update(GameObject* obj);
 
 extern int gKTrexFloorSwitchCurveFindResult;
-extern const f32 lbl_802C2560[3];
-extern const f32 lbl_802C256C[3];
+extern const f32 gKTrexFloorSwitchLocalEdgeZ[3];
+extern const f32 gKTrexFloorSwitchLocalEdgeX[3];
 extern int gKTrexFloorSwitchPrevMoved;
 
 #endif /* MAIN_DLL_DR_DLL_0251_KTREXFLOORSWITCH_H_ */

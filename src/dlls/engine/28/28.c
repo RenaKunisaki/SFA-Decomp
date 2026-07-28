@@ -6,7 +6,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_001C_effect3.h"
 
-PartFxSpawnParams lbl_8039C350;
+PartFxSpawnParams gEffect3DefaultSpawnParams;
 ObjectDescriptor6 Effect3_funcs = {
     0,
     0,
@@ -22,14 +22,14 @@ ObjectDescriptor6 Effect3_funcs = {
 
 static inline PartFxSpawnParams* Effect3_getDefaultSpawnParams(void)
 {
-    lbl_8039C350.posX = 0.0f;
-    lbl_8039C350.posY = 0.0f;
-    lbl_8039C350.posZ = 0.0f;
-    lbl_8039C350.scale = 1.0f;
-    lbl_8039C350.rotX = 0;
-    lbl_8039C350.rotY = 0;
-    lbl_8039C350.rotZ = 0;
-    return &lbl_8039C350;
+    gEffect3DefaultSpawnParams.posX = 0.0f;
+    gEffect3DefaultSpawnParams.posY = 0.0f;
+    gEffect3DefaultSpawnParams.posZ = 0.0f;
+    gEffect3DefaultSpawnParams.scale = 1.0f;
+    gEffect3DefaultSpawnParams.rotX = 0;
+    gEffect3DefaultSpawnParams.rotY = 0;
+    gEffect3DefaultSpawnParams.rotZ = 0;
+    return &gEffect3DefaultSpawnParams;
 }
 
 int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnParamsIn, u32 spawnFlags, u8 modelId,

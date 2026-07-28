@@ -2,6 +2,7 @@
  * DLL 83 / 0x53 - CloudRunner camera mode.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "main/dll/player_api.h"
 #include "main/dll/CAM/camcloudrunner_state.h"
 #include "main/dll/player_motion.h"
@@ -43,7 +44,7 @@ void CameraModeCloudRunner_update(CameraObject* camera)
     focus = playerGetFocusObject(target);
     if (focus != NULL)
     {
-        if (focus->anim.seqId == CLOUDRUNNER_CURVE_TAG)
+        if (focus->anim.romDefNo == CLOUDRUNNER_CURVE_TAG)
         {
             mxin.x = focus->anim.worldPosX;
             mxin.y = focus->anim.worldPosY;
@@ -108,7 +109,7 @@ void CameraModeCloudRunner_update(CameraObject* camera)
     camera->anim.worldPosZ = baseZ + rs;
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parentAddress);
 }
 
 void CameraModeCloudRunner_init(int* camera, int radius, f32* focus)

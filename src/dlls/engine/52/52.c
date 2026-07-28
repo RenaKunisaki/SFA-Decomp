@@ -62,7 +62,7 @@ void TitleMenu_render(int obj)
     {
         gameTextSetDrawFunc(titleScreenTextDrawFunc);
         titleScreenPositionElements(-380.0f + (f32)(gTitleMenuSelectionFade * 0x1a4) / 255.0f, 254.0f);
-        gameTextBoxFn_80134d40(0, 0, 0);
+        titleScreenDrawMenuFrame(0, 0, 0);
         (*gScreenTransitionInterface)->getProgress();
         gTitleMenuLinkInterface->vtable->setOpacity(0xff);
         gTitleMenuLinkInterface->vtable->render(obj);
@@ -130,7 +130,7 @@ int TitleMenu_run(void)
         n_attractmode_releaseMovieBuffers();
         loadUiDll(1);
         doNothing_onSaveSelectScreenExit();
-        titleScreenFn_801368d4();
+        titleScreenDisableActors();
         buttons = mmSetFreeDelay(0);
         mapUnload(0x3d, 0x20000000);
         mmSetFreeDelay(buttons);
@@ -319,10 +319,10 @@ int TitleMenu_run(void)
     }
     else
     {
-        titleScreenFn_801368c4(gTitleMenuSelection);
+        titleScreenSetMenuSelection(gTitleMenuSelection);
         if ((menuId == 1) && (gTitleMenuSelectionFade == TITLE_MENU_SELECTION_FADE_MAX))
         {
-            titleScreenFn_801368a4(1);
+            titleScreenSetMenuActive(1);
             gTitleMenuLoadDelay = 1;
             Link_setNavigationEnabled(1);
             Sfx_PlayFromObject(0, SFXTRIG_crf_babyflute);
@@ -346,7 +346,7 @@ int TitleMenu_run(void)
             }
             return 0;
         }
-        titleScreenFn_801368a4(0);
+        titleScreenSetMenuActive(0);
     }
     return 0;
 }
@@ -399,7 +399,7 @@ void TitleMenu_initialise(void)
         gTitleMenuPanelOpen = 1;
     }
     gTitleMenuLinkInterface->vtable->setSelected(gTitleMenuSelection);
-    titleScreenFn_801368a4(0);
+    titleScreenSetMenuActive(0);
 
     mode = getPrevUiDll();
     if ((((mode == 0xd) || (mode = getPrevUiDll(), mode == 7)) || (mode = getPrevUiDll(), mode == 6)) ||
@@ -499,7 +499,7 @@ TitleMenuTextEntry lbl_8031A214[4] = {
      {0x00, 0x00, 0x02, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
 };
-u32 lbl_8031A304[43] = {0x00000000,
+u32 n_attractmode_funcs[43] = {0x00000000,
                         0x00000000,
                         0x00000000,
                         0x00050000,

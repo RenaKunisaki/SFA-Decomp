@@ -5,7 +5,7 @@
 #include "global.h"
 #include "ghidra_import.h"
 
-extern int lbl_803DDD40;
+extern int gKTRexPhaseCounter;
 
 int KT_RexLevel_getExtraSize(void);
 int KT_RexLevel_getObjectTypeId(void);

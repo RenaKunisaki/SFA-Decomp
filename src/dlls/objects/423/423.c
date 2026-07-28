@@ -282,7 +282,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                 if (!(player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK)) {
                     if (Vec_xzDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < 25.0f) {
                         (*gExpgfxInterface)->freeSource((int)obj);
-                        if (obj->anim.seqId == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
+                        if (obj->anim.romDefNo == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
                             state->pickupMsgBitId = 0x18A;
                             itemPickupDoParticleFx(obj, 1.0f, 0xFF, 0x28);
                         } else {
@@ -480,7 +480,7 @@ void EdibleMushroom_update(GameObject* obj) {
             ObjHits_DisableObject(obj);
             gameBitIncrement(state->collectedGameBitId);
             mainSetBits(GAMEBIT_ITEM_TrickyFood_GrabInProgress, 0);
-            if (obj->anim.seqId == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
+            if (obj->anim.romDefNo == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
                 itemPickupDoParticleFx(obj, 1.0f, 0xFF, 0x28);
             } else {
                 itemPickupDoParticleFx(obj, 1.0f, 6, 0x28);
@@ -520,7 +520,7 @@ void EdibleMushroom_update(GameObject* obj) {
             Obj_StartModelFadeIn(obj, 0x12C);
         } else {
             Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
-            if (((GameObject*)hitObj)->anim.seqId != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
+            if (((GameObject*)hitObj)->anim.romDefNo != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
                 if ((state->flags & EDIBLE_MUSHROOM_FLAG_STRUCK) == 0) {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_ladderslide16);
                 }
@@ -603,7 +603,7 @@ void EdibleMushroom_init(GameObject* obj, EdibleMushroomPlacement* placement) {
     ObjGroup_AddObject((int)obj, EDIBLE_MUSHROOM_SECONDARY_GROUP_ID);
     ObjGroup_AddObject((int)obj, EDIBLE_MUSHROOM_GROUP_ID);
 
-    if (obj->anim.seqId == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
+    if (obj->anim.romDefNo == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
         state->collectedGameBitId = GAMEBIT_ITEM_WhiteShroom_Count;
     } else {
         state->collectedGameBitId = GAMEBIT_ITEM_TrickyFood_Count;

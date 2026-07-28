@@ -101,8 +101,6 @@ static const IndStageInitData lbl_802C1EA8 = {
 static const IndMtxInit lbl_802C1F68 = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
-extern f32 lbl_803DEEE0;
-extern f32 lbl_803DEF28;
 extern GXColor lbl_803E8454;
 
 extern f32 lbl_8030EA10[3][2][3];
@@ -200,8 +198,8 @@ void fogSetRange(f32 start, f32 end)
     x = 0.001f * start;
     y = 0.001f * end;
 
-    xc = (x < 0.0f) ? 0.0f : ((x > lbl_803DEEE0) ? lbl_803DEEE0 : x);
-    yc = (y < 0.0f) ? 0.0f : ((y > lbl_803DEEE0) ? lbl_803DEEE0 : y);
+    xc = (x < 0.0f) ? 0.0f : ((x > 2.0f) ? 2.0f : x);
+    yc = (y < 0.0f) ? 0.0f : ((y > 2.0f) ? 2.0f : y);
 
     gFogStartZ = xc * (gFogFarZ - gFogNearZ) + gFogNearZ;
     gFogEndZ = yc * (gFogFarZ - gFogNearZ) + gFogNearZ;
@@ -225,7 +223,6 @@ void setFogColorRgb(u8 red, u8 green, u8 blue)
 
 int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 {
-    extern f32 lbl_803DEEE4;
 
     void* renderOp;
     void* tex2;
@@ -247,9 +244,9 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     GXInitTexObj((void*)((u8*)tex2 + 0x20), (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
                  ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
     selectTexture((Texture*)tex2, 2);
-    GXLoadTexMtxImm(lbl_80396850, GX_PTTEXMTX6, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveScaledMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
     newshadows_getReflectionScrollOffsets(&fA, &fB);
     PSMTXScale(scaleMtx, 1.0f, 1.0f, 1.0f);
@@ -455,7 +452,6 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 
 void screenImageDraw(u8 alpha)
 {
-    extern f32 lbl_803DEEE4;
 
     Mtx mtx_60;
     Mtx mtx_30;
@@ -476,12 +472,12 @@ void screenImageDraw(u8 alpha)
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_60, 0.2f, 0.2f, lbl_803DEEE4);
+    PSMTXScale(mtx_60, 0.2f, 0.2f, 1.0f);
     mtx_60[1][3] = -fA;
     GXLoadTexMtxImm(mtx_60, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_60, 0.25f, 0.25f, lbl_803DEEE4);
+    PSMTXScale(mtx_60, 0.25f, 0.25f, 1.0f);
     PSMTXRotRad(mtx_30, 'z', 0.7853982f);
     PSMTXConcat(mtx_30, mtx_60, mtx_60);
     mtx_60[0][3] = fB;
@@ -875,7 +871,6 @@ static inline f32 distortSqrtf(f32 x)
 
 void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_d0;
     Mtx mtx_a0;
     Mtx mtx_70;
@@ -916,7 +911,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     x = x - playerMapOffsetX;
     z = z - playerMapOffsetZ;
     Camera_ProjectWorldSphere(x, pos[1], z, radius, &proj5, &proj4, &proj3, &proj2, &proj1, &proj0);
-    proj3 = proj3 + lbl_803DEEE4;
+    proj3 += 1.0f;
     c0.a = (u8)(((u32)(16777216.0f * proj3) & 0x00FF0000) >> 16);
 
     selectReflectionTexture(0);
@@ -947,7 +942,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
         f32 r2 = lbl_803DB6C8 / radius;
         f32 sr;
         sr = (r2 > 0.0f) ? distortSqrtf(r2) : r2;
-        if (sr > lbl_803DEEE4)
+        if (sr > 1.0f)
         {
             c1.a = 0xFF;
         }
@@ -955,9 +950,9 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
         {
             c1.a = 255.0f * sr;
         }
-        sr = sr * lbl_803DEEE0;
-        if (sr > *(f32*)&lbl_803DEEE4)
-            sr = *(f32*)&lbl_803DEEE4;
+        sr *= 2.0f;
+        if (sr > 1.0f)
+            sr = 1.0f;
         c3.a = 255.0f * sr;
     }
 
@@ -1110,7 +1105,6 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 
 int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_54;
     Mtx mtx_24;
     void* renderOp;
@@ -1128,13 +1122,13 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     selectTexture((Texture*)tex, 1);
     selectWhirlpoolTexture(2);
 
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
 
     if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
     {
         PSMTXScale(mtx_54, lbl_803DB6B8, lbl_803DB6B8, 0.0f);
-        mtx_54[2][3] = lbl_803DEEE4;
+        mtx_54[2][3] = 1.0f;
         PSMTXTrans(mtx_24, 0.5f, 0.5f, 0.0f);
         PSMTXConcat(mtx_24, mtx_54, mtx_54);
     }
@@ -1143,13 +1137,13 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
         PSMTXScale(mtx_54, 0.0f, 0.0f, 0.0f);
         mtx_54[0][3] = 0.5f;
         mtx_54[1][3] = 0.5f;
-        mtx_54[2][3] = lbl_803DEEE4;
+        mtx_54[2][3] = 1.0f;
     }
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX6);
 
     PSMTXScale(mtx_54, lbl_803DB6C0, lbl_803DB6C0, 0.0f);
-    mtx_54[2][3] = lbl_803DEEE4;
+    mtx_54[2][3] = 1.0f;
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX5, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX5);
 
@@ -1330,7 +1324,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 
 /*
  * Three-tex-coord-gen ind+direct TEV setup. Loads the active env-mtx
- * (lbl_80396820) for tex0, scales tex1 by 4.0f through a 3x4
+ * (gCameraLightPerspectiveFlipYMatrix) for tex0, scales tex1 by 4.0f through a 3x4
  * matrix from PSMTXScale, and stamps an indirect tex matrix from local
  * stack data. Two TEV stages: stage 0 K-modulates the texture by alpha,
  * stage 1 modulates by the second texture. Uses ind tex stage 0 to warp
@@ -1338,7 +1332,6 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
  */
 void quakeSpellTextureFn_8007366c(u8 alpha)
 {
-    extern f32 lbl_803DEEE4;
 
     int handle1;
     int handle2;
@@ -1351,10 +1344,10 @@ void quakeSpellTextureFn_8007366c(u8 alpha)
 
     Camera_GetViewMatrix();
     selectReflectionTexture(0);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX6, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
     newshadows_getReflectionScrollOffsets(&a, &b);
-    a = a * lbl_803DEF28;
+    a *= 8.0f;
     getNewShadowCausticTexture((u32*)&handle1);
     selectTexture((Texture*)handle1, 1);
     PSMTXScale((f32(*)[4])tex_mtx, 4.0f, 4.0f, 4.0f);
@@ -1382,7 +1375,7 @@ void quakeSpellTextureFn_8007366c(u8 alpha)
     mtx[2][0] = 0.0f;
     mtx[2][1] = 0.0f;
     mtx[2][2] = 0.0f;
-    mtx[2][3] = lbl_803DEEE4;
+    mtx[2][3] = 1.0f;
     GXLoadTexMtxImm(mtx, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
     getNewShadowDiskTexture((u32*)&handle2);
@@ -1470,7 +1463,6 @@ void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB)
 
 int modelCb_80073d04(u8* obj, int* objB)
 {
-    extern f32 lbl_803DEEE4;
     int handle;
     GXColor colorK;
     GXColor colorB;
@@ -1492,7 +1484,7 @@ int modelCb_80073d04(u8* obj, int* objB)
     texMtx[2][0] = 0.0f;
     texMtx[2][1] = 0.0f;
     texMtx[2][2] = 0.0f;
-    texMtx[2][3] = lbl_803DEEE4;
+    texMtx[2][3] = 1.0f;
     GXLoadTexMtxImm(texMtx, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
     getNewShadowDiskTexture((u32*)&handle);
@@ -1644,7 +1636,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     tex = textureIdxToPtr(*(int*)Shader_getLayer(renderOp, 0));
 
     PSMTXScale(mtx_60, lbl_803DB6B4, lbl_803DB6B4, 0.0f);
-    mtx_60[2][3] = lbl_803DEEE4;
+    mtx_60[2][3] = 1.0f;
     GXLoadTexMtxImm(mtx_60, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
     GXSetNumTexGens(2);
@@ -1665,8 +1657,8 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD0, GX_TEXMAP2);
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
-    PSMTXScale(mtx_30, lbl_803DB6B0, lbl_803DB6B0, lbl_803DEEE4);
-    PSMTXConcat(mtx_30, lbl_80396820, mtx_90);
+    PSMTXScale(mtx_30, lbl_803DB6B0, lbl_803DB6B0, 1.0f);
+    PSMTXConcat(mtx_30, gCameraLightPerspectiveFlipYMatrix, mtx_90);
     PSMTXTrans(mtx_30, 0.5f * (lbl_803DEEE4 - lbl_803DB6B0),
                0.5f * (lbl_803DEEE4 - lbl_803DB6B0), 0.0f);
     PSMTXConcat(mtx_30, mtx_90, mtx_90);
@@ -1827,7 +1819,6 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
 
 u32 objCallback_80074d04(int handle, void* model)
 {
-    extern f32 lbl_803DEEE4;
 
     Mtx mtx_ec;
     Mtx mtx_bc;
@@ -1862,16 +1853,16 @@ u32 objCallback_80074d04(int handle, void* model)
             dist = root;
         }
         f31_val = 200.0f / dist;
-        if (f31_val > lbl_803DEEE4)
-            f31_val = lbl_803DEEE4;
+        if (f31_val > 1.0f)
+            f31_val = 1.0f;
     }
     else
     {
-        f31_val = lbl_803DEEE4;
+        f31_val = 1.0f;
     }
 
     selectReflectionTexture(0);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX6, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
     newshadows_getReflectionScrollOffsets(&f1, &f2);
     f1 *= 4.0f;
@@ -1932,7 +1923,7 @@ u32 objCallback_80074d04(int handle, void* model)
     ((f32*)mtx_8c)[8] = 0.0f;
     ((f32*)mtx_8c)[9] = 0.0f;
     ((f32*)mtx_8c)[10] = 0.0f;
-    ((f32*)mtx_8c)[11] = lbl_803DEEE4;
+    ((f32*)mtx_8c)[11] = 1.0f;
     GXLoadTexMtxImm((f32(*)[4])mtx_8c, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX7);
 
@@ -2209,7 +2200,7 @@ void hudDrawTriangle(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, GXColor col
     Camera_RebuildProjectionMatrix();
 }
 
-void skyDrawFn_80075d5c(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z)
+void drawOrthoTexturedQuad(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z)
 {
 
     GXClearVtxDesc();
@@ -2904,7 +2895,6 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
 
 void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth)
 {
-    extern f32 lbl_803DEEE4;
     Mtx m58;
     Mtx m28;
     Vec v;
@@ -2945,7 +2935,7 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     m58[0][0] = 0.0f;
     m58[0][1] = 0.0f;
     d = z - depth;
-    m58[0][2] = lbl_803DEEE4 / (q = z - d);
+    m58[0][2] = 1.0f / (q = z - d);
     m58[0][3] = z / q;
     m58[1][0] = 0.0f;
     m58[1][1] = 0.0f;
@@ -2989,7 +2979,6 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
 
 void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale)
 {
-    extern f32 lbl_803DEEE4;
     typedef struct
     {
         u32 w[7];
@@ -3119,7 +3108,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
         f32 d2;
         mtx_110[0][0] = 0.0f;
         mtx_110[0][1] = 0.0f;
-        mtx_110[0][2] = lbl_803DEEE4 / (d2 = f31_val - (f31_val - scale));
+        mtx_110[0][2] = 1.0f / (d2 = f31_val - (f31_val - scale));
         mtx_110[0][3] = f31_val / d2;
         mtx_110[1][0] = 0.0f;
         mtx_110[1][1] = 0.0f;
@@ -3144,7 +3133,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetNumChans(0);
     GXSetNumTexGens(2);
-    GXSetNumTevStages((u8)(stage_count + 2));
+    GXSetNumTevStages((stage_count + 2));
 
     GXSetFog(GX_FOG_PERSP_EXP, gFogStartZ, gFogEndZ, gFogNearZ, gFogFarZ, fog_var);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_ZERO, GX_BL_INVSRCCLR, GX_LO_NOOP);
@@ -3574,7 +3563,6 @@ void _gxSetTevColor1(u8 r, u8 g, u8 b, u8 a)
  */
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag)
 {
-    extern f32 lbl_803DEEE4;
     Texture* handle;
     GXColor c0, c1, c2;
     Mtx mtx;
@@ -3600,7 +3588,7 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag)
         mtx[2][0] = zero;
         mtx[2][1] = zero;
         mtx[2][2] = zero;
-        mtx[2][3] = lbl_803DEEE4;
+        mtx[2][3] = 1.0f;
     }
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXLoadTexMtxImm(mtx, GX_TEXMTX0, GX_MTX2x4);
@@ -3676,9 +3664,8 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag)
     GXSetCurrentMtx(GX_PNMTX0);
 }
 
-void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3)
+void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_58;
     Mtx mtx_28;
     int handle1;
@@ -3706,7 +3693,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
         angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, 0.05f, timeDelta);
         lbl_803DD00C = angle;
     }
-    c_K2.a = mtxIdx;
+    c_K2.a = flashAlpha;
 
     getReflectionTexture2((u32*)&handle1);
     selectTexture((Texture*)handle1, 0);
@@ -3726,8 +3713,8 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
     PSMTXScale(mtx_58, 12.0f * (f32)s2, 12.0f * (f32)s2, 0.0f);
-    fade1 = lbl_803DEEE0 * ratio1;
-    fade2 = *(f32*)&lbl_803DEEE0 * ratio2;
+    fade1 = 2.0f * ratio1;
+    fade2 = 2.0f * ratio2;
     PSMTXTrans(mtx_28, fade1 * s3, 0.75f * (f32)s1 + fade2 * s3, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', 0.5f * angle);
@@ -3853,7 +3840,6 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
 
 void doHeatEffect(u8 alpha)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_44;
     f32 indMtx[6];
     int handle2;
@@ -3900,7 +3886,7 @@ void doHeatEffect(u8 alpha)
     indMtx[3] = -mulX;
     indMtx[4] = mulY;
 
-    PSMTXScale(mtx_44, 7.0f, 7.0f, lbl_803DEEE4);
+    PSMTXScale(mtx_44, 7.0f, 7.0f, 1.0f);
     mtx_44[0][3] = fA;
     mtx_44[1][3] = -fB;
     GXLoadTexMtxImm(mtx_44, GX_PTTEXMTX0, GX_MTX3x4);
@@ -4094,7 +4080,6 @@ void renderMotionBlur(f32 alpha)
 
 void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_27;
     Mtx mtx_24;
     Mtx mtx_2A;
@@ -4109,7 +4094,7 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
     wx = wx - playerMapOffsetX;
     wz = wz - playerMapOffsetZ;
     Camera_ProjectWorldPoint(wx, wy, wz, &px, &py, &pz, &pw);
-    pz = pz + lbl_803DEEE4;
+    pz += 1.0f;
     c0.a = (u8)(((u32)(16777216.0f * pz) & 0x00FF0000) >> 16);
     selectReflectionTexture(0);
     getReflectionTexture2((u32*)&handle);
@@ -4376,7 +4361,6 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
 
 void setupWaterReflectionTev(int handle1, int handle2)
 {
-    extern f32 lbl_803DEEE4;
     Mtx mtx_30;
     GXColor temp;
     GXColor temp2;
@@ -4393,9 +4377,9 @@ void setupWaterReflectionTev(int handle1, int handle2)
     selectTexture((Texture*)handle2, 2);
 
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
-    PSMTXScale(mtx_30, 12.0f, lbl_803DEEE4, 0.0f);
+    PSMTXScale(mtx_30, 12.0f, 1.0f, 0.0f);
     GXLoadTexMtxImm(mtx_30, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
@@ -4543,7 +4527,6 @@ void setupReflectionIndirectTev(u8 flag)
 
 void setupReflectionDistortTev(int texHandle)
 {
-    extern f32 lbl_803DEEE4;
 
     u8 ignoredLightColor;
     f32 sOff;
@@ -4634,7 +4617,6 @@ void setupReflectionDistortTev(int texHandle)
 
 void setupReflectionBumpDistortTev(void* texture)
 {
-    extern f32 lbl_803DEEE4;
 
     u8 ignoredLightColor;
     f32 sOff;
@@ -4723,7 +4705,7 @@ void setupReflectionBumpDistortTev(void* texture)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxTextureSetupFn_8007cf7c(void);
+void setupWaterCausticTev(void);
 
 
 /*
@@ -4776,7 +4758,7 @@ int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 /* .bss block 0x80391DC0-0x803967C0 */
 
-void gxTextureSetupFn_8007cf7c(void)
+void setupWaterCausticTev(void)
 {
     extern u32 lbl_803DB67C;
 

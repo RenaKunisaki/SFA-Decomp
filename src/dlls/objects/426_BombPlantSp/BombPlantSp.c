@@ -271,7 +271,7 @@ void BombPlantSpore_update(GameObject* obj) {
         (*gPathControlInterface)->update(obj, &state->path, timeDelta);
         (*gPathControlInterface)->apply(obj, &state->path);
         (*gPathControlInterface)->advance(obj, &state->path, timeDelta);
-        if (contactObj != NULL && (hitId = contactObj->anim.seqId, hitId != BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID) &&
+        if (contactObj != NULL && (hitId = contactObj->anim.romDefNo, hitId != BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID) &&
             hitId != BOMB_PLANT_SPORE_OBJECT_ID && hitId != BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_eatthefood16);
             BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;

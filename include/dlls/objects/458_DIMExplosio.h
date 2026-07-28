@@ -8,6 +8,7 @@
 
 #define DIM_EXPLOSION_OBJECT_ID               0x253
 #define DIM_EXPLOSION_FLAME_CAPACITY          50
+#define DIM_EXPLOSION_RAY_CAPACITY            2
 #define DIM_EXPLOSION_GRAVITY_DEBRIS_CAPACITY 6
 
 #define DIM_EXPLOSION_MODEL_KIND_MASK      0x03
@@ -67,21 +68,23 @@ typedef struct DimExplosionGravityDebris {
  * The descriptor allocates exactly 0xA60 bytes. Runtime bounds prove a
  * 50-element flame pool and a six-element gravity-debris pool.
  */
+typedef struct DimExplosionRay {
+    u16 yaw;
+    u16 pitch;
+} DimExplosionRay;
+
 typedef struct DimExplosionState {
     DimExplosionFlame flames[DIM_EXPLOSION_FLAME_CAPACITY];
     f32 groundY;
     DimExplosionGravityDebris debris[DIM_EXPLOSION_GRAVITY_DEBRIS_CAPACITY];
     f32 gravity;
     ModelLightStruct* light;
-    u16 rayYawA;
-    u16 rayPitchA;
-    u16 rayYawB;
-    u16 rayPitchB;
+    DimExplosionRay rays[DIM_EXPLOSION_RAY_CAPACITY];
     s32 frameCounter;
     s32 lifeFrames;
     f32 scale;
     u8 flameCount;
-    u8 rayMode;
+    u8 rayCount;
     u8 debrisCount;
     u8 halfLifeFired;
     u8 nearGround;
@@ -132,15 +135,12 @@ STATIC_ASSERT(offsetof(DimExplosionState, groundY) == 0x960);
 STATIC_ASSERT(offsetof(DimExplosionState, debris) == 0x964);
 STATIC_ASSERT(offsetof(DimExplosionState, gravity) == 0xA3C);
 STATIC_ASSERT(offsetof(DimExplosionState, light) == 0xA40);
-STATIC_ASSERT(offsetof(DimExplosionState, rayYawA) == 0xA44);
-STATIC_ASSERT(offsetof(DimExplosionState, rayPitchA) == 0xA46);
-STATIC_ASSERT(offsetof(DimExplosionState, rayYawB) == 0xA48);
-STATIC_ASSERT(offsetof(DimExplosionState, rayPitchB) == 0xA4A);
+STATIC_ASSERT(offsetof(DimExplosionState, rays) == 0xA44);
 STATIC_ASSERT(offsetof(DimExplosionState, frameCounter) == 0xA4C);
 STATIC_ASSERT(offsetof(DimExplosionState, lifeFrames) == 0xA50);
 STATIC_ASSERT(offsetof(DimExplosionState, scale) == 0xA54);
 STATIC_ASSERT(offsetof(DimExplosionState, flameCount) == 0xA58);
-STATIC_ASSERT(offsetof(DimExplosionState, rayMode) == 0xA59);
+STATIC_ASSERT(offsetof(DimExplosionState, rayCount) == 0xA59);
 STATIC_ASSERT(offsetof(DimExplosionState, debrisCount) == 0xA5A);
 STATIC_ASSERT(offsetof(DimExplosionState, halfLifeFired) == 0xA5B);
 STATIC_ASSERT(offsetof(DimExplosionState, nearGround) == 0xA5C);

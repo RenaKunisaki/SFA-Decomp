@@ -89,7 +89,7 @@ void ProjectileSwitch_hitDetect(GameObject* obj) {
     }
 
     rejectFireballHit = 0;
-    if (((GameObject*)hitObject)->anim.seqId == PROJECTILE_SWITCH_FIREBALL_SEQ_ID) {
+    if (((GameObject*)hitObject)->anim.romDefNo == PROJECTILE_SWITCH_FIREBALL_SEQ_ID) {
         ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)((GameObject*)hitObject)->anim.hitReactState;
         if ((hitState->contactFlags & OBJHITS_CONTACT_FLAG_KIND_NONZERO) != 0) {
             rejectFireballHit = 1;

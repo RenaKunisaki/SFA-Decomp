@@ -165,7 +165,7 @@ void cnthitobjec_init(GameObject* obj, CntHitObjectSetup* setup)
     CntHitObjectSetup* setupData = setup;
 
     state->remainingHealth = 0;
-    setupData->hitSourceProfile = (s8)((u32)setupData->hitSourceProfile % CNTHIT_PROFILE_COUNT);
+    setupData->hitSourceProfile = (u32)setupData->hitSourceProfile % CNTHIT_PROFILE_COUNT;
     state->allowedHitSources = sCntHitSourcesByProfile[setupData->hitSourceProfile];
     state->allowedHitSourceCount = sCntHitSourceCounts[setupData->hitSourceProfile];
     if (state->allowedHitSources == &sCntHitSourceProfile1)

@@ -5,16 +5,16 @@
 
 void titleScreenPositionElements(f32 x, f32 y);
 void titleScreenShowCopyright(u8 enabled);
-void titleScreenFn_801368d4(void);
+void titleScreenDisableActors(void);
 void titleScreenTextDrawFunc(int x0, int y0, int x1, int y1,
                              f32 u0, f32 v0, f32 u1, f32 v1);
 void nameEntryTextDrawFunc(int x0, int y0, int x1, int y1,
                            f32 u0, f32 v0, f32 u1, f32 v1);
 void creditsStart_(void);
-int gameTextFn_80134be8(void);
+int isFrontEndUiActive(void);
 u8 shouldShowCredits(void);
 
-void titleScreenFn_801368a4(s8 arg);
+void titleScreenSetMenuActive(s8 arg);
 void nameEntrySetScroll(u32 a, u32 b);
 
 #endif /* MAIN_DLL_DLL_02C0_FRONT_API_H_ */

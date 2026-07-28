@@ -4,7 +4,7 @@
  *
  * The ball slowly spins and emits a directional particle plume whose
  * density depends on whether it is currently "active". When the player
- * strikes it with the staff (hit object seqId 0x14B) the ball toggles
+ * strikes it with the staff (hit object romDefNo 0x14B) the ball toggles
  * active only if the striking object's variant matches this ball's
  * variant; a mismatch plays a rejection sfx. Toggling active drives the
  * ball's bound game bit and plays activate / deactivate sfx + gfx.
@@ -97,7 +97,7 @@ void VFP_statueball_update(GameObject* obj)
     {
         hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObj, 0, 0);
         if ((hitObj != NULL) && (hitType != 0) && (hitObj != NULL) &&
-            (hitObj->anim.seqId == VFPSTATUEBALL_HIT_SEQID))
+            (hitObj->anim.romDefNo == VFPSTATUEBALL_HIT_SEQID))
         {
             if (Fireball_getColorIndex(hitObj) == placement->variant)
             {

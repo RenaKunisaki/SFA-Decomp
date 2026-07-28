@@ -136,7 +136,7 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
             effectParams.posZ += playerMapOffsetZ;
             if (state->disguiseGated != 0) {
                 if (hitType != 5) {
-                    objLightFn_8009a1dc((void*)obj, gSmallBasketEffectScale[0], &effectParams, 4, 0);
+                    objDoHitParticleFx((void*)obj, gSmallBasketEffectScale[0], &effectParams, 4, 0);
                     if (Sfx_IsPlayingFromObject(0, SFXTRIG_staff_rocket_powerup) == 0) {
                         Sfx_PlayFromObject((u32)obj, SFXTRIG_staff_rocket_powerup);
                     }
@@ -160,7 +160,7 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
                     objectCursor++;
                 }
             }
-            objLightFn_8009a1dc((void*)obj, gSmallBasketEffectScale[0], &effectParams, 1, 0);
+            objDoHitParticleFx((void*)obj, gSmallBasketEffectScale[0], &effectParams, 1, 0);
             Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
             if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
                 Sfx_PlayFromObject((u32)obj, (u16)state->hitSfxId);
@@ -807,7 +807,7 @@ void SmallBasket_update(GameObject* obj) {
                 effectParams.posX = obj->anim.localPosX;
                 effectParams.posY = obj->anim.localPosY;
                 effectParams.posZ = obj->anim.localPosZ;
-                objLightFn_8009a1dc((void*)obj, gSmallBasketEffectScale[0], &effectParams, 1, 0);
+                objDoHitParticleFx((void*)obj, gSmallBasketEffectScale[0], &effectParams, 1, 0);
                 (*gSmallBasketResource)->spawnBreakEffect(obj, 1, 0, 2, -1, 0);
                 Sfx_PlayFromObject((int)obj, (u16)state->hitSfxId);
                 state->disableTimer = SMALLBASKET_HIT_DISABLE_FRAMES;
@@ -903,7 +903,7 @@ void SmallBasket_init(GameObject* obj, SmallBasketPlacement* placement) {
         ObjHits_DisableObject(obj);
     }
 
-    sequenceId = obj->anim.seqId;
+    sequenceId = obj->anim.romDefNo;
     if (sequenceId == SMALLBASKET_SEQUENCE_VARIANT_A) {
         state->hitSfxId = SMALLBASKET_HIT_SFX_VARIANT_A;
     } else if (sequenceId == SMALLBASKET_SEQUENCE_DISGUISE_GATED) {

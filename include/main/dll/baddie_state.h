@@ -49,7 +49,7 @@ typedef struct BaddieState {
     u8 padB9[0xBC - 0xB9];
     u8 paletteSlot; /* indexes the palette table (paletteIndex = gIceBaddiePaletteIndexTable[slot]) */
     u8 unkBD[0xC4 - 0xBD];
-    void *contactObj; /* GameObject*; its anim.seqId (0x5d/0x99/0x1db/0x223) switches a sfx override (intersect.c) */
+    void *contactObj; /* GameObject*; its anim.romDefNo (0x5d/0x99/0x1db/0x223) switches a sfx override (intersect.c) */
     u8 unkC8[0x19C - 0xC8];
     s16 spawnRotY; /* pair copied into the spawn-setup shorts; restored into anim.rotY */
     s16 spawnRotZ; /* restored into anim.rotZ */

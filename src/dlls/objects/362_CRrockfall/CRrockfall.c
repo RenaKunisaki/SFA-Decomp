@@ -11,7 +11,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
-/* anim.seqId variants shared by CRrockfall and IMIcicle. */
+/* anim.romDefNo variants shared by CRrockfall and IMIcicle. */
 #define CR_ROCKFALL_SEQ_BIG        0x600
 #define CR_ROCKFALL_SEQ_QUARRY     0x67
 #define CR_ROCKFALL_RESOURCE_ID    91
@@ -163,7 +163,7 @@ void crrockfall_update(GameObject* obj) {
             if (state->fallStarted == 0) {
                 state->fallStarted = 1;
                 obj->anim.velocityY = 0.0f;
-                if (obj->anim.seqId == CR_ROCKFALL_SEQ_QUARRY) {
+                if (obj->anim.romDefNo == CR_ROCKFALL_SEQ_QUARRY) {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_155);
                 }
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_swdwood16);
@@ -197,7 +197,7 @@ void crrockfall_update(GameObject* obj) {
             hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
             state->mode = CR_ROCKFALL_MODE_SHATTERED;
             Sfx_StopObjectChannel((int)obj, CR_ROCKFALL_SCRAPE_CHANNEL);
-            if (obj->anim.seqId == CR_ROCKFALL_SEQ_QUARRY) {
+            if (obj->anim.romDefNo == CR_ROCKFALL_SEQ_QUARRY) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_dinostomp1);
             } else {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_bombbeep);
@@ -241,7 +241,7 @@ void crrockfall_init(GameObject* obj, const CrRockfallPlacement* placement) {
         modelState->shadowScale *= obj->anim.rootMotionScale;
     }
 
-    if (obj->anim.seqId == CR_ROCKFALL_SEQ_BIG) {
+    if (obj->anim.romDefNo == CR_ROCKFALL_SEQ_BIG) {
         state->config = &gCrRockfallConfigTable[1];
     } else {
         state->config = &gCrRockfallConfigTable[0];

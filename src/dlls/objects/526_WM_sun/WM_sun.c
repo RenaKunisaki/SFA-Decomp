@@ -54,7 +54,7 @@ void wmsun_updateGlare(GameObject* obj)
     Vec3f dir;
     Vec3f sun;
     WmSunGlare g;
-    CameraViewSlot* cam;
+    Camera* cam;
     f32 dx, dy, dz, len;
     f32 dot, prod, denom;
     f32 hy, hz, cosang, hlen;
@@ -71,7 +71,7 @@ void wmsun_updateGlare(GameObject* obj)
     g.ang[2] = 0;
     g.ang[1] = 0;
     g.ang[0] = obj->anim.rotX;
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     if (cam != NULL)
     {
         g.ang[0] = 0x8000 - cam->yaw;
@@ -244,7 +244,7 @@ void wmsun_update(GameObject* obj)
     thresh = 0;
     mult = 1;
     spd = 0.0f;
-    if ((obj)->anim.seqId == WMSUN_SEQID_CRYSTAL) /* WM_Crystal */
+    if ((obj)->anim.romDefNo == WMSUN_SEQID_CRYSTAL) /* WM_Crystal */
     {
         if (mainGetBit(0x38f) != 0)
         {
@@ -302,7 +302,7 @@ void wmsun_update(GameObject* obj)
             if (mainGetBit(GAMEBIT_WM_FinaleQuakeActive) == 0 && state->riseStep > 0x960 &&
                 randomGetRange(0, 100) == 0)
             {
-                CameraShake_SetAllMagnitudes(0.8f * ((f32)(state->riseStep - 0x960) / 2400.0f));
+                CameraShake_SetOffset(0.8f * ((f32)(state->riseStep - 0x960) / 2400.0f));
                 mainSetBits(0x370, 1);
             }
             (obj)->anim.rotX += state->riseStep;
@@ -313,7 +313,7 @@ void wmsun_update(GameObject* obj)
         }
         return;
     }
-    if ((obj)->anim.seqId == 0x2c2)
+    if ((obj)->anim.romDefNo == 0x2c2)
     {
         if (mainGetBit(0x38f) != 0)
         {
@@ -400,7 +400,7 @@ void wmsun_update(GameObject* obj)
             {
                 if (gWmSunQuakeTimer > 600 && randomGetRange(0, 10) == 0)
                 {
-                    CameraShake_SetAllMagnitudes(2.8f); /* 2.8f */
+                    CameraShake_SetOffset(2.8f); /* 2.8f */
                 }
                 if (gWmSunQuakeTimer > 0)
                 {
@@ -438,7 +438,7 @@ void wmsun_update(GameObject* obj)
                 }
                 if (randomGetRange(0, 8) == 0)
                 {
-                    CameraShake_SetAllMagnitudes(2.8f);
+                    CameraShake_SetOffset(2.8f);
                 }
             }
         }
@@ -464,7 +464,7 @@ void wmsun_init(GameObject* obj, WmSunMapData* mapData)
     }
     state->glareParams = NULL;
     state->renderEnabled = 1;
-    mode = obj->anim.seqId;
+    mode = obj->anim.romDefNo;
     if (mode == WMSUN_SEQID_CRYSTAL) /* WM_Crystal */
     {
         obj->anim.rotX = (s16)(mapData->rotXByte << 8);

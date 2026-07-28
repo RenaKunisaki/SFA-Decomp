@@ -50,7 +50,7 @@ void wmspiritset_init(GameObject* obj, WmSpiritSetMapData* mapData)
     WmSpiritSetState* state = obj->extra;
 
     obj->anim.rotX = (s16)(mapData->rotXByte << 8);
-    if (obj->anim.seqId == WMSPIRITSET_SEQID_SPIRITSET)
+    if (obj->anim.romDefNo == WMSPIRITSET_SEQID_SPIRITSET)
     {
         obj->anim.rootMotionScale = 0.0085f;
     }

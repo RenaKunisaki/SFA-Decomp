@@ -9,7 +9,7 @@ char lbl_803DBBF0[] = "%2d";
 
 #define DLL3F_TEXTURE_ID 0x47A
 
-void* lbl_803DD960;
+void* gDll3FTexture;
 
 void dll_3F_updateTimerReadout(void* obj)
 {
@@ -55,12 +55,12 @@ int dll_3F_frameStart_ret_0(void)
 
 void dll_3F_release(void)
 {
-    textureFree((Texture*)(lbl_803DD960));
+    textureFree((Texture*)(gDll3FTexture));
 }
 
 void dll_3F_initialise(void)
 {
-    lbl_803DD960 = textureLoadAsset(DLL3F_TEXTURE_ID);
+    gDll3FTexture = textureLoadAsset(DLL3F_TEXTURE_ID);
 }
 
 PPCWGPipe GXWGFifo : (0xCC008000);

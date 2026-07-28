@@ -102,7 +102,7 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjAnimUpdat
         mainSetBits(placement->pressedGameBit, 0);
         animUpdate->triggerCommand = PRESSURESWITCHFB_ANIM_COMMAND_IDLE;
     }
-    sequenceId = obj->anim.seqId;
+    sequenceId = obj->anim.romDefNo;
     if ((((sequenceId != PRESSURESWITCHFB_SEQ_ID_LINK_SNOWPR) && (sequenceId != PRESSURESWITCHFB_SEQ_ID_SH_PRESSURE)) &&
          (sequenceId != PRESSURESWITCHFB_SEQ_ID_LINK_UNDERW)) &&
         (sequenceId != PRESSURESWITCHFB_SEQ_ID_CC_PRESSURE)) {
@@ -187,8 +187,8 @@ void PressureSwitchFB_update(GameObject* obj) {
                 nearbyObject = (u32)obj->anim.hitboxTransformState->contactObjects[i];
                 if ((((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_PLAYER) ||
                     (((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_TRICKY) ||
-                    (((GameObject*)nearbyObject)->anim.seqId == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||
-                    (((GameObject*)nearbyObject)->anim.seqId == PRESSURESWITCHFB_TRACKED_SEQ_ID_B)) {
+                    (((GameObject*)nearbyObject)->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||
+                    (((GameObject*)nearbyObject)->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_B)) {
                     isTrackedType = 1;
                 } else {
                     isTrackedType = 0;
@@ -351,7 +351,7 @@ void PressureSwitchFB_init(GameObject* obj, PressureSwitchFBPlacement* placement
     }
     defaultVelocity = PRESSURESWITCHFB_DEFAULT_VELOCITY;
     state->velocityY = defaultVelocity;
-    if (obj->anim.seqId == PRESSURESWITCHFB_SEQ_ID_GROUNDQUAKE) {
+    if (obj->anim.romDefNo == PRESSURESWITCHFB_SEQ_ID_GROUNDQUAKE) {
         flags->usePressedTexture = 1;
         flags->startPressed = 1;
         flags->canRelease = 1;
@@ -363,7 +363,7 @@ void PressureSwitchFB_init(GameObject* obj, PressureSwitchFBPlacement* placement
         obj->anim.localPosY = state->targetPosY - (f32)(u32)placement->pressDepth;
         state->contactTimer = PRESSURESWITCHFB_INITIAL_CONTACT_TIME;
         flags->canRelease = 0;
-        sequenceId = obj->anim.seqId;
+        sequenceId = obj->anim.romDefNo;
         if (sequenceId != PRESSURESWITCHFB_SEQ_ID_LINK_SNOWPR) {
             if (sequenceId != PRESSURESWITCHFB_SEQ_ID_SH_PRESSURE) {
                 if (sequenceId != PRESSURESWITCHFB_SEQ_ID_LINK_UNDERW) {

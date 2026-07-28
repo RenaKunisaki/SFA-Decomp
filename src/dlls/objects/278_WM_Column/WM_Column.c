@@ -67,7 +67,7 @@ void WM_Column_update(GameObject* obj) {
             objects = ObjList_GetObjects(&objectIndex, &objectCount);
             for (; objectIndex < objectCount; objectIndex++) {
                 candidate = objects[objectIndex];
-                if (candidate != obj && candidate->anim.seqId == WM_COLUMN_SCENE_MARKER_OBJECT_ID &&
+                if (candidate != obj && candidate->anim.romDefNo == WM_COLUMN_SCENE_MARKER_OBJECT_ID &&
                     Vec_distance(&obj->anim.worldPosX, &candidate->anim.worldPosX) < WM_COLUMN_SCENE_MARKER_DISTANCE) {
                     WMColumnPlacement* placement = (WMColumnPlacement*)objects[objectIndex]->anim.placementData;
 
@@ -95,11 +95,11 @@ void WM_Column_update(GameObject* obj) {
             objects = ObjList_GetObjects(&objectIndex, &objectCount);
             for (; objectIndex < objectCount; objectIndex++) {
                 candidate = objects[objectIndex];
-                if (candidate != obj && candidate->anim.seqId == WM_COLUMN_SCENE_MARKER_OBJECT_ID &&
+                if (candidate != obj && candidate->anim.romDefNo == WM_COLUMN_SCENE_MARKER_OBJECT_ID &&
                     Vec_distance(&obj->anim.worldPosX, &candidate->anim.worldPosX) < WM_COLUMN_SCENE_MARKER_DISTANCE) {
                     WMColumnPlacement* placement = (WMColumnPlacement*)objects[objectIndex]->anim.placementData;
 
-                    if (obj->anim.seqId == (s8)placement->modelBankIndex + WM_COLUMN_OBJECT_ID_BASE) {
+                    if (obj->anim.romDefNo == (s8)placement->modelBankIndex + WM_COLUMN_OBJECT_ID_BASE) {
                         if (placement->occupiedGameBit != WM_COLUMN_GAME_BIT_NONE) {
                             mainSetBits(placement->occupiedGameBit, WM_COLUMN_GAME_BIT_SET);
                         }

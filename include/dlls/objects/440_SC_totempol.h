@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-/* Exact anim.seqId value used by peer scans; this is not the retail object-definition ID. */
+/* Exact anim.romDefNo value used by peer scans. */
 #define SC_TOTEM_POLE_SEQUENCE_ID                0x282
 #define SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET 0x20
 

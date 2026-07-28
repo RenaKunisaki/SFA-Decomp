@@ -19,6 +19,7 @@
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
+#include "main/object_transform.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -29,9 +30,9 @@ u8 gSbShipHeadHasFiredFireball = 1;
 #define SB_SHIP_HEAD_PARTICLE_EFFECT  0x7AA
 #define SB_SHIP_HEAD_HISS_SFX_CHANNEL 0x40
 
-/* parent Galleon anim.seqId variants */
+/* parent Galleon anim.romDefNo variants */
 #define SB_GALLEON_FIRING_SEQUENCE_ID 0x8E
-/* object type id (anim.seqId) of the galleon-side target object the head tracks */
+/* object type id (anim.romDefNo) of the galleon-side target object the head tracks */
 #define SB_SHIP_HEAD_TARGET_SEQUENCE_ID 0x8C
 /* object type id of the head's own homing-fireball projectile */
 #define SB_FIREBALL_OBJECT_ID 0x114
@@ -69,7 +70,7 @@ void SB_ShipHead_render(GameObject* obj, int renderArg2, int renderArg3, int ren
         state = object->extra;
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         parentObj = object->anim.parentAddress;
-        if ((((void*)parentObj != NULL && (((GameObject*)parentObj)->anim.seqId == SB_GALLEON_FIRING_SEQUENCE_ID)) &&
+        if ((((void*)parentObj != NULL && (((GameObject*)parentObj)->anim.romDefNo == SB_GALLEON_FIRING_SEQUENCE_ID)) &&
              (damagePhase = SB_GALLEON_VTBL(parentObj)->getDamagePhase(parentObj), damagePhase != 0)) &&
             (damagePhase != 2)) {
             state->swayA = state->swayA - timeDelta;
@@ -139,7 +140,7 @@ void SB_ShipHead_update(GameObject* obj) {
     if (*(void**)&state->target == 0) {
         int* objects = ObjList_GetObjects(&objectStart, &objectEnd);
         for (objectIndex = objectStart; objectIndex < objectEnd; objectIndex++) {
-            if (((GameObject*)objects[objectIndex])->anim.seqId == SB_SHIP_HEAD_TARGET_SEQUENCE_ID) {
+            if (((GameObject*)objects[objectIndex])->anim.romDefNo == SB_SHIP_HEAD_TARGET_SEQUENCE_ID) {
                 state->target = (GameObject*)objects[objectIndex];
                 objectIndex = objectEnd;
             }
@@ -159,7 +160,7 @@ void SB_ShipHead_update(GameObject* obj) {
     }
     if ((SB_GALLEON_VTBL(galleon)->getPhase((int)galleon) >= 2) && (object->userData2 <= 0) &&
         (((u32)(galleonPhase - 3) <= 1 || (galleonPhase == 5))) &&
-        (ObjHits_GetPriorityHit(obj, (int*)&hit, 0, 0) != 0) && (hit->anim.seqId != SB_FIREBALL_OBJECT_ID)) {
+        (ObjHits_GetPriorityHit(obj, (int*)&hit, 0, 0) != 0) && (hit->anim.romDefNo != SB_FIREBALL_OBJECT_ID)) {
         Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcfir1_c_37);
         state->health -= 1;
@@ -190,7 +191,7 @@ void SB_ShipHead_update(GameObject* obj) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_gcexp1_c);
         object->anim.localPosY += 50.0f;
         object->anim.localPosZ = object->anim.localPosZ - 300.0f;
-        Obj_GetWorldPosition((int)obj, &spawnX, &spawnY, &spawnZ);
+        Obj_GetWorldPosition(obj, &spawnX, &spawnY, &spawnZ);
         object->anim.localPosY = object->anim.localPosY - 50.0f;
         object->anim.localPosZ += 300.0f;
         placementBytes = (u8*)Obj_AllocObjectSetup(0x18, SB_FIREBALL_OBJECT_ID);

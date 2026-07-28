@@ -1076,12 +1076,12 @@ int ObjAnim_SetCurrentMove(int objAnimHandle, int moveId, f32 moveProgress, int 
     hitState = objAnim->hitReactState;
     if ((hitState != NULL) && (hitState->entries != NULL))
     {
-        ObjHitReact_LoadMoveEntries((ObjAnimComponent*)objAnimHandle, bank, objAnim->seqId, hitState, requestedMoveId,
+        ObjHitReact_LoadMoveEntries((ObjAnimComponent*)objAnimHandle, bank, objAnim->romDefNo, hitState, requestedMoveId,
                                     0);
     }
     if (objAnim->eventTable != NULL)
     {
-        ObjAnim_LoadMoveEvents((u8*)objAnimHandle, objAnim->seqId, objAnim->eventTable, requestedMoveId, 0);
+        ObjAnim_LoadMoveEvents((u8*)objAnimHandle, objAnim->romDefNo, objAnim->eventTable, requestedMoveId, 0);
     }
     previousMove = objAnim->currentMove;
     moveChanged = previousMove != requestedMoveId;

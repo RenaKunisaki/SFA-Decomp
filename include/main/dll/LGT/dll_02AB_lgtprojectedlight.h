@@ -7,7 +7,7 @@
 #include "game/objects/object_setup.h"
 #include "main/texture.h"
 
-extern const f32 lbl_802C2618[4];
+extern const f32 gProjectedLightInitialDirection[4];
 
 typedef struct ProjectedLightSetup
 {

@@ -80,7 +80,7 @@ ObjectDescriptor gTriggerObjDescriptor = {
 };
 
 char sMoonrockTriggerIdentFormat[] = "!!!!!!!!!!! TRIGGER %d  ident %d\n";
-char lbl_8032253C[] =
+char sTriggerDebugTextBlock[] =
     "initialise\n\0"
     "Trigger [%d], Environment Effect, Action Num [%d], Range [%d]\0\0\0"
     "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0\0"
@@ -348,7 +348,7 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
     if (placement->base.mapId == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
     {
-        OSReport(lbl_8032253C);
+        OSReport(sTriggerDebugTextBlock);
     }
 #undef rotMtx
 }

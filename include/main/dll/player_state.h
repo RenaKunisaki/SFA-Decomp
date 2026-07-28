@@ -231,10 +231,10 @@ typedef struct PlayerState {
     f32 hitNormalY;
     f32 hitNormalZ;
     f32 hitNormalW;
-    f32 curveStartX; /* RomCurve segment start point (pt.jointZ/centerX/centerY -> X/Y/Z); PSVECSubtract(curveEnd,curveStart) gives the travel vector normalized into travelDir* and its length into travelTargetDistance */
+    f32 curveStartX; /* RomCurveDef x/y/z of the segment's start node; PSVECSubtract(curveEnd,curveStart) gives the travel vector normalized into travelDir* and its length into travelTargetDistance */
     f32 curveStartY;
     f32 curveStartZ;
-    f32 curveEndX; /* RomCurve segment end point (pt2+0x8/0xc/0x10); paired with curveStart for the travel vector */
+    f32 curveEndX; /* RomCurveDef x/y/z of the segment's end node; paired with curveStart for the travel vector */
     f32 curveEndY;
     f32 curveEndZ;
     f32 travelDirX; /* travel/move direction unit vector (X,Y,Z); written by PSVECNormalize, PSVECScale(dir,out,traveledDistance); getAngle(-X,-Z) sets targetYaw */

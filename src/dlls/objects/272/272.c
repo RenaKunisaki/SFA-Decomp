@@ -199,7 +199,7 @@ void Door_init(GameObject* obj, DoorPlacement* placement) {
     if (mainGetBit(placement->closeReadyGameBit) != 0) {
         state->closeFlags |= DOOR_CLOSE_FLAG_READY;
     }
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case DOOR_SEQUENCE_1101: {
         s32 subtype = obj->anim.mapEventSlot;
         switch (subtype) {

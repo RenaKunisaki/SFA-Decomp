@@ -1212,7 +1212,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
         switch (triggerType)
         {
         case 2:
-            if (obj->anim.seqId != 0x16c && obj->anim.seqId != 0x16f)
+            if (obj->anim.romDefNo != 0x16c && obj->anim.romDefNo != 0x16f)
             {
                 mainSetBits(0x499, 1);
             }
@@ -1390,8 +1390,8 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
                 doRumble(st->impactShakeTimer * fa);
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(st->impactShakeTimer / 12.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(st->impactShakeTimer / 12.0f);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_tr_jbike_bombbeep);
                 fb = (80.0f < 3.0f * st->impactShakeTimer) ? 80.0f
                                                                           : 3.0f * st->impactShakeTimer;
@@ -1766,7 +1766,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
     }
 }
 
-/* SnowBike defNos (anim.seqId), names from retail OBJECTS.bin at def+0x91; all gate
+/* SnowBike defNos (anim.romDefNo), names from retail OBJECTS.bin at def+0x91; all gate
    to this DLL. The three CRSnowClawB / two IMSnowClawB entries share
    one truncated bin name apiece and are told apart by the bikeVariant ordinal that
    SnowBike_init assigns them below. IM = Ice Mountain, CR = CloudRunner Fortress. */
@@ -1968,15 +1968,6 @@ typedef struct
     u8 b04 : 1;
     u8 b02 : 1;
     u8 b01 : 1;
-} HaloSnowBikeFlags;
-typedef struct
-{
-    u8 pad0 : 2;
-    u8 b20 : 1;
-    u8 pad1 : 2;
-    u8 b04 : 1;
-    u8 b02 : 1;
-    u8 b01 : 1;
 } SnowBikeFlags;
 typedef struct SnowBikePlacement
 {
@@ -2049,7 +2040,7 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
         ((SnowBikeMountState*)state)->velocityX = zero;
         ((SnowBikeMountState*)state)->velocityY = zero;
         ((SnowBikeMountState*)state)->velocityZ = zero;
-        (*gPathControlInterface)->attachObject((void*)obj, (void*)&((ShackleSwingState*)state)->attachment);
+        (*gPathControlInterface)->attachObject((void*)obj, (void*)(state + 0x178));
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosX = obj->anim.localPosX;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosY = obj->anim.localPosY;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosZ = obj->anim.localPosZ;
@@ -2113,7 +2104,7 @@ void SnowBike_setMountState(GameObject* obj, int type)
                 (*gGameUIInterface)->airMeterSetField24(4.0f);
             }
         }
-        if (obj->anim.seqId == SNOWBIKE_IM_BIKE_OBJ)
+        if (obj->anim.romDefNo == SNOWBIKE_IM_BIKE_OBJ)
         {
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->lateralResponseWeight = 0x14;
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->axialResponseWeight = 0x14;
@@ -2260,18 +2251,18 @@ void SnowBike_hitDetect(GameObject* obj)
     }
     if (state->unk3D6 != 0 ||
         ((((ObjHitsPriorityState*)obj->anim.hitReactState)->flags & 8) != 0 &&
-         arrayIndexOf((int*)gSnowBikeHitObjectIdTable, 10, ((GameObject*)other)->anim.seqId) == -1) ||
+         arrayIndexOf((int*)gSnowBikeHitObjectIdTable, 10, ((GameObject*)other)->anim.romDefNo) == -1) ||
         (*(void**)&state->linkedObj != NULL && state->collisionFxDamping <= 1.0f))
     {
     mag = PSVECMag(&obj->anim.velocity);
     if (mag > 1.0f)
     {
-        if (!((HaloSnowBikeFlags*)&state->flags428)->b02)
+        if (!((SnowBikeFlags*)&state->flags428)->b02)
         {
             doRumble(3.0f * mag);
         }
         state->engineFxLevel *= 0.25f;
-        if (obj->anim.seqId == SNOWBIKE_IM_BIKE_OBJ || obj->anim.seqId == SNOWBIKE_CR_BIKE_OBJ)
+        if (obj->anim.romDefNo == SNOWBIKE_IM_BIKE_OBJ || obj->anim.romDefNo == SNOWBIKE_CR_BIKE_OBJ)
         {
             vol = (int)(25.0f * mag);
             if (vol > 80)
@@ -2289,18 +2280,18 @@ void SnowBike_hitDetect(GameObject* obj)
             }
         }
     }
-    if (!((HaloSnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
+    if (!((SnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
     {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
         shakeScale = 0.5f;
-        CameraShake_SetAllMagnitudes(mag * shakeScale);
+        CameraShake_SetOffset(mag * shakeScale);
     }
     if (*(void**)&state->linkedObj != NULL)
     {
         velScale = 0.75f;
         OSReport(sSnowBikeVelDebugFmt, mag);
-        if (((GameObject*)state->linkedObj)->anim.seqId == SNOWBIKE_CR_CLAWBIKE_V0_OBJ || ((GameObject*)state->linkedObj)->anim.seqId == SNOWBIKE_CR_CLAWBIKE_V1_OBJ ||
-            ((GameObject*)state->linkedObj)->anim.seqId == SNOWBIKE_CR_CLAWBIKE_V2_OBJ)
+        if (((GameObject*)state->linkedObj)->anim.romDefNo == SNOWBIKE_CR_CLAWBIKE_V0_OBJ || ((GameObject*)state->linkedObj)->anim.romDefNo == SNOWBIKE_CR_CLAWBIKE_V1_OBJ ||
+            ((GameObject*)state->linkedObj)->anim.romDefNo == SNOWBIKE_CR_CLAWBIKE_V2_OBJ)
         {
             velScale = 0.95f;
         }
@@ -2697,7 +2688,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->velLimitX = fv;
     s->velLimitY = fv;
     s->modelId = 0x436;
-    switch (obj->anim.seqId)
+    switch (obj->anim.romDefNo)
     {
     case SNOWBIKE_IM_BIKE_OBJ:
     default:

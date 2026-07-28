@@ -14,7 +14,7 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/resource.h"
 
-void* lbl_803DDD80;
+void* gDll0299Resource;
 
 #define DLL0299_RESOURCE_ID 0xa6
 
@@ -39,8 +39,8 @@ void dll_299_free(GameObject* obj)
 {
     (*gExpgfxInterface)->freeSource2((u32)obj);
     (*gModgfxInterface)->freeSourceEffects((void*)obj);
-    Resource_Release(lbl_803DDD80);
-    lbl_803DDD80 = NULL;
+    Resource_Release(gDll0299Resource);
+    gDll0299Resource = NULL;
 }
 
 void dll_299_render_nop(void)
@@ -55,7 +55,7 @@ void dll_299_update(GameObject* obj)
 {
     if (randomGetRange(0, 2) == 0)
     {
-        (*(Dll299Vtable**)lbl_803DDD80)->slot1((int)obj, 1, 0, 4, -1, 0);
+        (*(Dll299Vtable**)gDll0299Resource)->slot1((int)obj, 1, 0, 4, -1, 0);
     }
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_AMBIENT, NULL, 4, -1, NULL);
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_AMBIENT, NULL, 4, -1, NULL);
@@ -66,7 +66,7 @@ void dll_299_init(GameObject* obj, Dll299Setup* setup)
 {
     ((Dll299State*)obj->extra)->id = setup->id;
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    lbl_803DDD80 = Resource_Acquire(DLL0299_RESOURCE_ID, 1);
+    gDll0299Resource = Resource_Acquire(DLL0299_RESOURCE_ID, 1);
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_INIT, NULL, 0x802, -1, NULL);
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_INIT, NULL, 0x802, -1, NULL);
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_INIT, NULL, 0x802, -1, NULL);

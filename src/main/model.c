@@ -2038,7 +2038,8 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
             ((GameObject*)prevObj)->anim.localPosX = vec.x + playerMapOffsetX;
             ((GameObject*)prevObj)->anim.localPosY = vec.y;
             ((GameObject*)prevObj)->anim.localPosZ = vec.z + playerMapOffsetZ;
-            Obj_GetWorldPosition((u32)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c), (f32 *)(prevObj + 0x20));
+            Obj_GetWorldPosition((GameObject*)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c),
+                                 (f32 *)(prevObj + 0x20));
         }
         vec.x = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 8);
         vec.y = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0xc);
@@ -2926,11 +2927,13 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
         copyToCache(*(u8**)((int)gModelCacheBuffersA + 4), *(u8**)(chunk + 0x64), weightWords);
         for (i = 0; i < (u32)(((ModelFileHeader*)job)->flags - 1); i++)
         {
+            int nextVtxWords;
+
             chunk = *(u8**)(job + 0xc) + i * 0x74;
-            vtxWords = (u32)((chunk[0xe7] << 5) + 0x1f) >> 5;
+            nextVtxWords = (u32)((chunk[0xe7] << 5) + 0x1f) >> 5;
             nextSlot = (i + 1) & 1;
-            copyToCache(gModelCacheBuffersA[(u8)(nextSlot * 2)], animData + *(int*)(chunk + 0xd4), vtxWords);
-            chunkWords[(i + 1) & 1] = vtxWords;
+            copyToCache(gModelCacheBuffersA[(u8)(nextSlot * 2)], animData + *(int*)(chunk + 0xd4), nextVtxWords);
+            chunkWords[(i + 1) & 1] = nextVtxWords;
             {
                 u8* nextChunk;
                 int nextWeightWords = (u32)(((nextChunk = *(u8**)(job + 0xc) + i * 0x74)[0xe3] << 5) + 0x1f) >> 5;

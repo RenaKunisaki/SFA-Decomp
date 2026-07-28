@@ -105,7 +105,7 @@ void TreasureChest_hitDetect(GameObject* obj) {
     state = obj->extra;
     if (state->hitEffectEnabled != 0) {
         objfx_spawnHitEffectBurst(obj, TREASURE_CHEST_HIT_EFFECT_SCALE, TREASURE_CHEST_HIT_EFFECT_TYPE,
-                                  (u8)(placement->hitboxKind + TREASURE_CHEST_HITBOX_KIND_OFFSET),
+                                  (placement->hitboxKind + TREASURE_CHEST_HITBOX_KIND_OFFSET),
                                   TREASURE_CHEST_HIT_EFFECT_BURST_COUNT, NULL);
     }
 }
@@ -136,7 +136,7 @@ void TreasureChest_update(GameObject* obj) {
             playerPullOutStaff(Obj_GetPlayerObject(), TREASURE_CHEST_STAFF_MODE);
             nearestCollectible = ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
             if (nearestCollectible != 0) {
-                (*gObjectTriggerInterface)->setObjects((int)((GameObject*)nearestCollectible)->anim.seqId, 0, 0);
+                (*gObjectTriggerInterface)->setObjects((int)((GameObject*)nearestCollectible)->anim.romDefNo, 0, 0);
                 (*gObjectTriggerInterface)
                     ->runSequence(TREASURE_CHEST_COLLECTIBLE_SEQUENCE, obj, TREASURE_CHEST_SEQUENCE_ARG_NONE);
             } else {

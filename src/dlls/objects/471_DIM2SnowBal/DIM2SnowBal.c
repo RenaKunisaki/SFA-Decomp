@@ -31,7 +31,7 @@ static inline GameObject* dim2snowball_findSharpClaw(GameObject** objects, int* 
     GameObject** object = &objects[*objectIndex];
 
     for (; *objectIndex < *objectCount; object++, (*objectIndex)++) {
-        if ((*object)->anim.seqId == DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID) {
+        if ((*object)->anim.romDefNo == DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID) {
             return objects[*objectIndex];
         }
     }

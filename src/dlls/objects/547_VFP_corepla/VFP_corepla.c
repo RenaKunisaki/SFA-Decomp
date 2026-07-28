@@ -64,7 +64,7 @@ void VFP_coreplat_init(GameObject* obj, int data)
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;
     obj->animEventCallback = return0_801FD13C;
-    if (obj->anim.seqId == 0x3cb)
+    if (obj->anim.romDefNo == 0x3cb)
     {
         if (mainGetBit(GAMEBIT_ITEM_SpellStone1_Used) != 0)
         {

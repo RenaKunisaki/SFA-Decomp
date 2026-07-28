@@ -33,7 +33,7 @@ void animatedobj_free(GameObject* obj, int clearSequence) {
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
     Sfx_RemoveLoopedObjectSoundForObject((u32)obj);
     Sfx_StopObjectChannel((int)obj, 0x7f);
-    if (obj->anim.seqId == ANIMATEDOBJ_SEQID_ANIM_KRYSTAL && obj->childCount != 0) {
+    if (obj->anim.romDefNo == ANIMATEDOBJ_SEQID_ANIM_KRYSTAL && obj->childCount != 0) {
         Obj_FreeObject(obj->childObjs[0]);
         ObjLink_DetachChild(obj, obj->childObjs[0]);
     }
@@ -138,7 +138,7 @@ void animatedobj_update(GameObject* obj) {
             obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case ANIMATEDOBJ_SEQID_ANIM_KRYSTAL: {
             for (eventIndex = 0; eventIndex < sequence->eventCount; eventIndex++) {
                 switch (sequence->eventIds[eventIndex]) {

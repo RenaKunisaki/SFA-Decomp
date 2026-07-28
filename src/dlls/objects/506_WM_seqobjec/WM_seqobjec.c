@@ -80,7 +80,7 @@ void WM_seqobject_update(GameObject* obj) {
         objects = (GameObject**)ObjGroup_GetObjects(6, &objectCount);
         galleonFound = 0;
         for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            if (objects[objectIndex]->anim.seqId == WM_GALLEON_OBJECT_ID) {
+            if (objects[objectIndex]->anim.romDefNo == WM_GALLEON_OBJECT_ID) {
                 galleonFound = 1;
             }
         }

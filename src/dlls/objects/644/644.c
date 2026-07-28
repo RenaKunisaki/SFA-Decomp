@@ -4,7 +4,7 @@
  * and drives buying through the vendor's vtable: query availability/price
  * (slots 0x28/0x2C/0x38/0x3C) and commit a purchase (slot 0x40) when the
  * player presses A with enough money. The behaviour branches on the
- * object's seqId variant:
+ * object's romDefNo variant:
  *   0x462  spawns an ambient particle fx on init
  *   0x464  static item (no spline advance)
  *   0x467  item that rides a B-spline path (Curve_EvalBSpline) with a
@@ -39,7 +39,7 @@
 
 #define SHOPITEM_TARGET_OBJGROUP 9
 
-/* anim.seqId variants selecting per-item behaviour (see file header) */
+/* anim.romDefNo variants selecting per-item behaviour (see file header) */
 #define SHOPITEM_MSG_IN_RANGE 0x7000a /* sent to player when purchase is offered */
 #define SHOPITEM_SEQ_AMBIENT  0x462   /* spawns an ambient particle fx on init */
 #define SHOPITEM_SEQ_STATIC   0x464   /* static item, no spline advance */
@@ -205,7 +205,7 @@ int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
         ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
     }
 
-    switch ((obj)->anim.seqId)
+    switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_BSPLINE:
     {
@@ -257,7 +257,7 @@ int shopitem_getObjectTypeId(void)
 void shopitem_free(GameObject* obj)
 {
     (*gExpgfxInterface)->freeSource((int)obj);
-    switch ((obj)->anim.seqId)
+    switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_SPARKLE:
         ObjGroup_RemoveObject((int)obj, FUEL_CELL_OBJECT_GROUP);
@@ -269,7 +269,7 @@ void shopitem_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible
 {
     if (visible != 0)
     {
-        if ((obj)->anim.seqId == SHOPITEM_SEQ_SPARKLE)
+        if ((obj)->anim.romDefNo == SHOPITEM_SEQ_SPARKLE)
         {
             shopitem_renderSparkle(obj, 0, 0, 0, 0);
         }
@@ -346,7 +346,7 @@ void shopitem_update(GameObject* obj)
                     s->vendorObj, ((ShopItemDef*)def)->itemSlot);
                 (*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x40))(
                     s->vendorObj, ((ShopItemDef*)def)->itemSlot);
-                switch ((obj)->anim.seqId)
+                switch ((obj)->anim.romDefNo)
                 {
                 case SHOPITEM_SEQ_BSPLINE:
                     (obj)->anim.localPosY =
@@ -364,7 +364,7 @@ void shopitem_update(GameObject* obj)
                 }
                 buttonDisable(0, PAD_BUTTON_A);
             }
-            switch ((obj)->anim.seqId)
+            switch ((obj)->anim.romDefNo)
             {
             case SHOPITEM_SEQ_BSPLINE:
             {
@@ -400,7 +400,7 @@ void shopitem_update(GameObject* obj)
             }
             }
         }
-        if ((obj)->anim.seqId != SHOPITEM_SEQ_STATIC && (obj)->anim.seqId != SHOPITEM_SEQ_BSPLINE)
+        if ((obj)->anim.romDefNo != SHOPITEM_SEQ_STATIC && (obj)->anim.romDefNo != SHOPITEM_SEQ_BSPLINE)
         {
             ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
         }
@@ -427,7 +427,7 @@ void shopitem_init(GameObject* obj, ShopItemDef* data)
     {
         objAnim->bankIndex = 0;
     }
-    switch ((obj)->anim.seqId)
+    switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_BSPLINE:
         firefly_initFlightRec(obj, (LgtFireFlyRec*)state);

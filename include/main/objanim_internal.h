@@ -434,7 +434,7 @@ typedef struct ObjAnimComponent {
   f32 loadDistance; /* 0x3C: wiki ObjInstance.loadDistance (same value as cullDistance2) */
   f32 cullDistance2; /* 0x40: wiki ObjInstance.cullDistance2 - camera-distance opacity term */
   s16 classId;
-  s16 seqId;
+  s16 romDefNo;
   s16 defId;
   u8 pad4A[0x4C - 0x4A];
   union {
@@ -709,7 +709,7 @@ STATIC_ASSERT(offsetof(ObjAnimComponent, next) == 0x38);
 STATIC_ASSERT(offsetof(ObjAnimComponent, loadDistance) == 0x3C);
 STATIC_ASSERT(offsetof(ObjAnimComponent, cullDistance2) == 0x40);
 STATIC_ASSERT(offsetof(ObjAnimComponent, classId) == 0x44);
-STATIC_ASSERT(offsetof(ObjAnimComponent, seqId) == 0x46);
+STATIC_ASSERT(offsetof(ObjAnimComponent, romDefNo) == 0x46);
 STATIC_ASSERT(offsetof(ObjAnimComponent, defId) == 0x48);
 STATIC_ASSERT(offsetof(ObjAnimComponent, placementData) == 0x4C);
 STATIC_ASSERT(offsetof(ObjAnimComponent, placement) == 0x4C);

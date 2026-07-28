@@ -195,7 +195,7 @@ void mmpAsteroidRe_update(GameObject* obj) {
                 count--;
             } while (count != 0);
             spawnExplosion(obj, 100.0f, 1, 1, 0, 1, 0, 1, 0);
-            CameraShake_Start(5.0f, 10.0f, 4.0f);
+            CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
             {
                 f32 rumble = 22.0f;
                 doRumble(rumble);

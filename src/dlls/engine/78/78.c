@@ -2,6 +2,7 @@
  * DLL 78 / 0x4E - world-map camera mode.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/CAM/camworldmap_state.h"
@@ -346,7 +347,7 @@ void CameraModeWorldMap_update(GameObject* obj)
 
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parentAddress);
 }
 
 void CameraModeWorldMap_init(GameObject* obj)

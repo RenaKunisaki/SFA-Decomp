@@ -32,11 +32,11 @@ STATIC_ASSERT(offsetof(Dll501TrackedState, flag) == 0x04);
 STATIC_ASSERT(offsetof(Dll501TrackedState, unknown05) == 0x05);
 STATIC_ASSERT(sizeof(Dll501TrackedState) == 0x08);
 
-Dll501TrackedState lbl_803DDC50;
+Dll501TrackedState gDll501TrackedState;
 
 static void dll501_resetTrackedState(void) {
-    lbl_803DDC50.value = 0.0f;
-    lbl_803DDC50.flag = 0;
+    gDll501TrackedState.value = 0.0f;
+    gDll501TrackedState.flag = 0;
 }
 
 int dll501_getExtraSize(void) {
@@ -61,7 +61,7 @@ void dll501_free(GameObject* obj) {
 
 void dll501_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 unusedVisible) {
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-    if (obj->anim.seqId == DLL501_FIRE_SEQ_ID) {
+    if (obj->anim.romDefNo == DLL501_FIRE_SEQ_ID) {
         objfx_spawnFlaggedTrailBurst(obj, 0.11f, DLL501_TRAIL_MODE, DLL501_TRAIL_EFFECT_ID, DLL501_TRAIL_EFFECT_PARAM,
                                      NULL);
     }
@@ -146,7 +146,7 @@ void dll501_init(GameObject* obj, int placement) {
         obj->userData1 = ((Dll501PlacementView*)placement)->segmentIndex + 1;
     }
 
-    if (obj->anim.seqId == DLL501_FIRE_SEQ_ID) {
+    if (obj->anim.romDefNo == DLL501_FIRE_SEQ_ID) {
         light = (int)objCreateLight(obj, 1);
         if ((u32)light != 0) {
             modelLightStruct_setLightKind((ModelLightStruct*)light, MODEL_LIGHT_KIND_POINT);

@@ -128,7 +128,7 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 
 void loadReflectionTexMtxs(void)
 {
-    f32* base = (f32*)&lbl_803967C0;
+    f32* base = (f32*)&gCameraModelViewMatrix;
     Mtx tmp;
     PSMTXConcat((void*)(base + 36), (void*)(int)base, tmp);
     GXLoadTexMtxImm(tmp, GX_TEXMTX0, GX_MTX3x4);
@@ -838,4 +838,3 @@ int saveGameReadGlobalsCb(int saveId, int size, void* dst)
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-

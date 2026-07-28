@@ -135,7 +135,7 @@ void DFPulley_integrateLinks(DFRope* self) {
 
     part = self->nodes;
     i = 0;
-    zero = lbl_803E4DFC;
+    zero = 0.0f;
     for (; i < self->count; i++, part++) {
         accel.z = zero;
         accel.y = zero;
@@ -207,14 +207,14 @@ void DFRope_UpdateSimulation(DFRope* self) {
     }
 
     k = 0;
-    zero = lbl_803E4DFC;
+    zero = 0.0f;
     for (; k < self->enabled; k++) {
         link = self->links;
         for (j = 0; j < self->count - 1; j++, link++) {
             PSVECSubtract((Vec*)link->a, (Vec*)link->b, &tmp);
             link->length = PSVECMag(&tmp);
             if (link->length > link->maxLength) {
-                link->restLength = lbl_803E4DFC;
+                link->restLength = 0.0f;
             }
             if (zero == link->restLength) {
                 link->force[2] = zero;
@@ -229,7 +229,7 @@ void DFRope_UpdateSimulation(DFRope* self) {
 
     i = 0;
     {
-        f32 cleanZero = lbl_803E4DFC;
+        f32 cleanZero = 0.0f;
         for (; i < self->count; i++, parts++) {
             parts->force[0] = cleanZero;
             parts->force[1] = cleanZero;
@@ -327,12 +327,12 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
         node->pos[0] = i * dx + rope->start[0];
         node->pos[1] = i * dy + rope->start[1];
         node->pos[2] = i * dz + rope->start[2];
-        node->velocity[2] = lbl_803E4DFC;
-        node->velocity[1] = lbl_803E4DFC;
-        node->velocity[0] = lbl_803E4DFC;
-        node->force[2] = lbl_803E4DFC;
-        node->force[1] = lbl_803E4DFC;
-        node->force[0] = lbl_803E4DFC;
+        node->velocity[2] = 0.0f;
+        node->velocity[1] = 0.0f;
+        node->velocity[0] = 0.0f;
+        node->force[2] = 0.0f;
+        node->force[1] = 0.0f;
+        node->force[0] = 0.0f;
         node->locked = 0;
         if ((i == 0) || (i == count - 1)) {
             node->linkCount = 1;
@@ -359,9 +359,9 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
     for (; linkIndex < linkCount; linkIndex++) {
         link->restLength = rope->totalLength / linkCount;
         link->stiffness = 10.0f;
-        link->force[2] = lbl_803E4DFC;
-        link->force[1] = lbl_803E4DFC;
-        link->force[0] = lbl_803E4DFC;
+        link->force[2] = 0.0f;
+        link->force[1] = 0.0f;
+        link->force[0] = 0.0f;
         link->maxLength = 1000.0f * link->restLength;
         nextNode = (DFRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFRopeNode));
         DFRopeLink_AttachNodes(link, linkNode, nextNode);
@@ -416,12 +416,12 @@ f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 start
     dx = endX - startX;
     dy = endY - startY;
     dz = endZ - startZ;
-    if ((lbl_803E4DFC == dx) && (lbl_803E4DFC == dz)) {
-        t = lbl_803E4DFC;
+    if ((0.0f == dx) && (0.0f == dz)) {
+        t = 0.0f;
     } else {
         t = (dx * (*x - startX) + dz * (*z - startZ)) / (dx * dx + dz * dz);
     }
-    if (t < *(f32*)&lbl_803E4DFC) {
+    if (t < 0.0f) {
         *x = startX;
         *y = startY;
         *z = startZ;
@@ -750,7 +750,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
     if (((objDef->flags18 & 1) != 0) && (extra->linkedObj != NULL) && (extra->rope != NULL)) {
         originalScale = (obj)->anim.rootMotionScale;
         (obj)->anim.rootMotionScale = 0.01f;
-        Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, 1.0f, lbl_803E4DFC, NULL);
+        Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, 1.0f, 0.0f, NULL);
         (obj)->anim.rootMotionScale = originalScale;
         gxTevResetStages();
         gxTevTextureTimesColor1Stage();
@@ -873,7 +873,7 @@ void dfropenode_update(GameObject* obj) {
         }
         extra->angle = angle;
 
-        extra->rope = DFRope_Create(lbl_803E4DFC, lbl_803E4DFC, lbl_803E4DFC, dx, dy, dz, length, 0x10,
+        extra->rope = DFRope_Create(0.0f, 0.0f, 0.0f, dx, dy, dz, length, 0x10,
                                     (lbl_803DBF50)[((DfropenodePlacement*)objDef)->textureIndex]);
 
         extra->minX = obj->anim.localPosX;
@@ -909,7 +909,7 @@ void dfropenode_update(GameObject* obj) {
         normalY = baseZ * (baseX - linkedX) + (baseZ * (linkedX - baseX) + (linkedZ * (baseX - baseX)));
         normalZ = baseX * (baseY - linkedY) + (baseX * (linkedY - liftedY) + (linkedX * (liftedY - baseY)));
         normalLength = sqrtf(normalZ * normalZ + (normalX * normalX + normalY * normalY));
-        if (normalLength > lbl_803E4DFC) {
+        if (normalLength > 0.0f) {
             normalX /= normalLength;
             normalY /= normalLength;
             normalZ /= normalLength;

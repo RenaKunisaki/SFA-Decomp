@@ -635,9 +635,9 @@ void modelLightStruct_setLightKind(ModelLightStruct* p, int v)
     p->lightKind = v;
 }
 
-void objSetEventName(ModelLightStruct* light, int name)
+void objSetEventName(ModelLightStruct* light, int mode)
 {
-    ((GameObject*)light)->anim.eventTable = (void*)name;
+    light->transformMode = mode;
 }
 
 void modelLightStruct_setObjectLightMaskIndex(ModelLightStruct* p, int n)

@@ -180,6 +180,7 @@ void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY,
     f32 heightDelta;
     f32 accel;
     f32 accelDenom;
+    f32 launchSpeed;
     register int facingAngle;
     int angleDelta;
     int pitchSign;
@@ -247,10 +248,10 @@ void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY,
 
         accel = (0.01f * -lbl_803DBEF0) * distSq;
         accelDenom = 8.0f * heightDelta - 4.0f * dist;
-        accel = accel / ((accelDenom < -1.0f) ? accelDenom : -1.0f);
-        accel = (0.0f > accel) ? 0.0f : accel;
-        accel = sqrtf(accel);
-        state->launchSpeed += (accel - state->launchSpeed) / 80.0f;
+        launchSpeed = accel / ((accelDenom < -1.0f) ? accelDenom : -1.0f);
+        launchSpeed = (0.0f > launchSpeed) ? 0.0f : launchSpeed;
+        launchSpeed = sqrtf(launchSpeed);
+        state->launchSpeed += (launchSpeed - state->launchSpeed) / 80.0f;
     }
 }
 
@@ -389,7 +390,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
                 state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
                 *(u8*)&state->chargeTimer = 0x3c;
                 animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
-                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+                obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
                 if (Sfx_IsPlayingFromObjectChannel((u32)obj, 8) != 0) {
                     Sfx_IsPlayingFromObjectChannel((u32)obj, 0);
                 }
@@ -410,21 +411,21 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 }
 
 int DIMCannon_getExtraSize(GameObject* obj) {
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         return sizeof(DimCannonBallState);
     }
     return sizeof(DimCannonState);
 }
 
 int DIMCannon_getObjectTypeId(GameObject* obj) {
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         return 0x0;
     }
     return 0x0;
 }
 
 void DIMCannon_free(GameObject* obj) {
-    if (obj->anim.seqId != DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo != DIM_CANNON_BALL_SEQUENCE_ID) {
         ((void (*)(void))((int**)*gGameUIInterface)[0x18])();
         Resource_Release(lbl_803DDB50);
         lbl_803DDB50 = NULL;
@@ -441,7 +442,7 @@ void DIMCannon_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     (void)unusedVisible;
 
     placement = *(DimCannonPlacement**)&obj->anim.placementData;
-    if (obj->anim.seqId != DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo != DIM_CANNON_BALL_SEQUENCE_ID) {
         state = obj->extra;
         savedRotationX = obj->anim.rotX;
         obj->anim.rotX = (s16)(placement->rotationXByte << 8);
@@ -461,13 +462,13 @@ void DIMCannon_update(GameObject* obj) {
     GameObject* player;
     DimCannonPlacement* placement = *(DimCannonPlacement**)&obj->anim.placementData;
 
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DIMwooddoor_updateFallingDebris(obj);
         return;
     }
 
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) && mainGetBit(placement->resetGameBit)) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
     }
 
     state = obj->extra;
@@ -583,7 +584,7 @@ void DIMCannon_update(GameObject* obj) {
 void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
     ObjMsg_AllocQueue(obj, 4);
 
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DimCannonBallState* state;
         int* hitState;
         obj->userData1 = 0;

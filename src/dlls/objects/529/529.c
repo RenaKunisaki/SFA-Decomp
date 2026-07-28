@@ -8,6 +8,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_0211_wmwallcrawler.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
@@ -16,15 +17,6 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-
-typedef struct WallCrawlerTrickyInterface {
-    void* unknown00[17];
-    u8 (*isGuarding)(GameObject* tricky);
-} WallCrawlerTrickyInterface;
-
-STATIC_ASSERT(offsetof(WallCrawlerTrickyInterface, isGuarding) == 0x44);
-
-#define WMWALLCRAWLER_TRICKY_INTERFACE(tricky) ((WallCrawlerTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
 
 f32 gWallCrawlerSpeedCap = 0.1f;
 u8 sWallCrawlerCollisionBone[3] = {0x41, 0x20, 0};
@@ -356,7 +348,7 @@ void wmwallcrawler_update(GameObject* obj)
                         state->mode != WMWALLCRAWLER_MODE_FLEE &&
                         (tricky = (u32)getTrickyObject()) != 0 &&
                         Vec_distance((void*)(ob + 0x18), (void*)(tricky + 0x18)) < 30.0f &&
-                        WMWALLCRAWLER_TRICKY_INTERFACE(tricky)->isGuarding((GameObject*)tricky) != 0)
+                        TRICKY_INTERFACE(tricky)->isGuarding((GameObject*)tricky) != 0)
                     {
                         state->mode = WMWALLCRAWLER_MODE_FLEE;
                         Sfx_PlayFromObject(ob, SFXTRIG_id_74);

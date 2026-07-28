@@ -17,7 +17,7 @@
 #include "main/shader_api.h"
 #include "main/vecmath.h"
 
-/* Exact anim.seqId value used by peer scans; this is not the retail object-definition ID. */
+/* Exact anim.romDefNo value used by peer scans; this is not the retail object-definition ID. */
 #define SC_TOTEM_PUZZLE_SEQUENCE_ID       0x3c1
 #define SC_TOTEM_PUZZLE_FLAG_REVERSED     0x1
 #define SC_TOTEM_PUZZLE_FLAG_READY        0x2
@@ -75,7 +75,7 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
         s16 flags;
 
         peer = (GameObject*)objects[objectIndex];
-        if (peer->anim.seqId == SC_TOTEM_PUZZLE_SEQUENCE_ID) {
+        if (peer->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) {
             peerState = peer->extra;
             flags = peerState->flags;
             if ((flags & SC_TOTEM_PUZZLE_FLAG_READY) != 0) {
@@ -184,7 +184,7 @@ void sc_totempuzzle_update(GameObject* obj) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
             lightArgs[3] += playerMapOffsetX;
             lightArgs[5] += playerMapOffsetZ;
-            objLightFn_8009a1dc((void*)obj, 0.014f, lightArgs, 1, 0);
+            objDoHitParticleFx((void*)obj, 0.014f, lightArgs, 1, 0);
         }
         return;
     }
@@ -193,7 +193,7 @@ void sc_totempuzzle_update(GameObject* obj) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
         lightArgs[3] += playerMapOffsetX;
         lightArgs[5] += playerMapOffsetZ;
-        objLightFn_8009a1dc((void*)obj, 0.014f, lightArgs, 1, 0);
+        objDoHitParticleFx((void*)obj, 0.014f, lightArgs, 1, 0);
         state->flags ^= SC_TOTEM_PUZZLE_FLAG_READY;
         if ((state->flags & SC_TOTEM_PUZZLE_FLAG_READY) != 0) {
             f32 zero = 0.0f;
@@ -204,7 +204,7 @@ void sc_totempuzzle_update(GameObject* obj) {
             objects = ObjList_GetObjects(&startA, &countA);
             while (startA < countA) {
                 other = objects[startA];
-                if ((((GameObject*)other)->anim.seqId == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
+                if ((((GameObject*)other)->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
                     ((ScTotemPuzzleState*)((GameObject*)other)->extra)->peerPhaseOffset += 0.65f;
                 }
                 startA++;
@@ -213,7 +213,7 @@ void sc_totempuzzle_update(GameObject* obj) {
             objects = ObjList_GetObjects(&startB, &countB);
             while (startB < countB) {
                 other = objects[startB];
-                if ((((GameObject*)other)->anim.seqId == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
+                if ((((GameObject*)other)->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
                     ((ScTotemPuzzleState*)((GameObject*)other)->extra)->peerPhaseOffset += -0.65f;
                 }
                 startB++;

@@ -1061,7 +1061,7 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetIndTexOrder(1, 0, 2);
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
-    PSMTXConcat((MtxPtr)lbl_80396820, (MtxPtr)lbl_803A8950, m1);
+    PSMTXConcat((MtxPtr)gCameraLightPerspectiveFlipYMatrix, (MtxPtr)lbl_803A8950, m1);
     sval = 0.5f * (lbl_803DD850 * lbl_803DD850);
     PSMTXScale(m3, sval, sval, lbl_803E1E68);
     PSMTXConcat(m3, m1, m1);
@@ -1100,7 +1100,7 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetTevSwapMode(GX_TEVSTAGE2, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (((GameObject*)this)->anim.seqId == 0x755)
+    if (((GameObject*)this)->anim.romDefNo == 0x755)
     {
         GXSetCullMode(GX_CULL_FRONT);
     }
@@ -1828,11 +1828,11 @@ static inline void drawViewFinderVertical(f32 directionX, f32 directionY, f32 x,
 void drawViewFinderHud(void)
 {
     f32 fovY;
-    CameraViewSlot* view;
+    Camera* view;
     f32 fadeLevel;
 
     fovY = Camera_GetFovY();
-    view = Camera_GetCurrentViewSlot();
+    view = Camera_GetCurrent();
     if (Rcp_GetViewFinderHudEnabled() && pauseMenuState == 0)
     {
         gViewFinderFadeLevel = (f32)(lbl_803E1EA0 * timeDelta + gViewFinderFadeLevel);
@@ -3963,7 +3963,7 @@ void hudDrawCMenu(int p1, int p2, int p3)
     u8 used[4];
     f32 vals[3];
 
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     slot = 0;
     switch (cMenuState)
     {
@@ -3984,8 +3984,8 @@ void hudDrawCMenu(int p1, int p2, int p3)
     lbl_803DBAA4 = Camera_GetFovY();
     Camera_SetFovY(60.0f);
     Camera_SetCurrentViewIndex(1);
-    lbl_803DD7E0 = Camera_IsViewYOffsetEnabled();
-    Camera_DisableViewYOffset();
+    lbl_803DD7E0 = CameraShake_IsEnabled();
+    CameraShake_Disable();
     {
         f32 small = lbl_803E1E3C;
         Camera_SetCurrentViewPosition(small, small, small);
@@ -4050,7 +4050,7 @@ void hudDrawCMenu(int p1, int p2, int p3)
     Camera_SetCurrentViewIndex(0);
     if (lbl_803DD7E0 != 0)
     {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
     }
     Camera_UpdateViewMatrices();
     Camera_SetFovY(lbl_803DBAA4);
@@ -4366,8 +4366,8 @@ void headDisplayDraw(void)
         lbl_803DBAA4 = Camera_GetFovY();
         Camera_SetFovY(43.0f);
         Camera_SetCurrentViewIndex(1);
-        lbl_803DD7E0 = Camera_IsViewYOffsetEnabled();
-        Camera_DisableViewYOffset();
+        lbl_803DD7E0 = CameraShake_IsEnabled();
+        CameraShake_Disable();
         cameraOrigin = lbl_803E1E3C;
         Camera_SetCurrentViewPosition(cameraOrigin, cameraOrigin, cameraOrigin);
         Camera_SetCurrentViewRotation(0x8000, 0, 0);
@@ -4389,7 +4389,7 @@ void headDisplayDraw(void)
         Camera_SetCurrentViewIndex(0);
         if (lbl_803DD7E0 != 0)
         {
-            Camera_EnableViewYOffset();
+            CameraShake_Enable();
         }
         Camera_UpdateViewMatrices();
         Camera_SetFovY(lbl_803DBAA4);
@@ -5812,8 +5812,8 @@ void pauseMenuDoSave(void)
     lbl_803DBAA4 = Camera_GetFovY();
     Camera_SetFovY(43.0f);
     Camera_SetCurrentViewIndex(1);
-    lbl_803DD7E0 = Camera_IsViewYOffsetEnabled();
-    Camera_DisableViewYOffset();
+    lbl_803DD7E0 = CameraShake_IsEnabled();
+    CameraShake_Disable();
     Camera_SetCurrentViewPosition(lbl_803E1E3C, lbl_803E1E3C, lbl_803E1E3C);
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
     Camera_UpdateViewMatrices();
@@ -5855,7 +5855,7 @@ void pauseMenuDoSave(void)
     Camera_SetCurrentViewIndex(0);
     if (lbl_803DD7E0 != 0)
     {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
     }
     Camera_UpdateViewMatrices();
     Camera_SetFovY(lbl_803DBAA4);
@@ -5879,7 +5879,7 @@ void viewFn_80129c74(void)
     Camera_SetCurrentViewIndex(0);
     if (lbl_803DD7E0 != 0)
     {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
     }
     Camera_UpdateViewMatrices();
     Camera_SetFovY(lbl_803DBAA4);
@@ -5898,8 +5898,8 @@ void viewFn_80129cbc(f32 fov, f32 x, f32 y)
     lbl_803DBAA4 = Camera_GetFovY();
     Camera_SetFovY(fov);
     Camera_SetCurrentViewIndex(1);
-    lbl_803DD7E0 = Camera_IsViewYOffsetEnabled();
-    Camera_DisableViewYOffset();
+    lbl_803DD7E0 = CameraShake_IsEnabled();
+    CameraShake_Disable();
     Camera_SetCurrentViewPosition(lbl_803E1E3C, lbl_803E1E3C, lbl_803E1E3C);
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
     Camera_UpdateViewMatrices();

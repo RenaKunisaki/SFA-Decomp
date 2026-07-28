@@ -51,9 +51,9 @@ void spiritPrize_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     if (isVisible != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         if (state->useDetachedLight != 0) {
-            objParticleFn_80099d84(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, state->light);
+            objDoParticleFx(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, state->light);
         } else {
-            objParticleFn_80099d84(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, NULL);
+            objDoParticleFx(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, NULL);
         }
     }
 }
@@ -167,7 +167,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
         }
         obj->userData1 = placement->animDataIndex + 1;
     }
-    if (obj->anim.seqId != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
+    if (obj->anim.romDefNo != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
         state->useDetachedLight = 1;
     }
     if (state->light == NULL) {

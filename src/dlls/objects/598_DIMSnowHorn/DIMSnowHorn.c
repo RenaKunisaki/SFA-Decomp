@@ -1158,7 +1158,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
     {
         matchFrame = 1;
     }
-    viewSlot = (int*)Camera_GetCurrentViewSlot();
+    viewSlot = (int*)Camera_GetCurrent();
     state = (obj)->extra;
 
     state->baddie.hitPoints = 0;

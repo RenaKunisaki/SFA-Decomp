@@ -508,13 +508,13 @@ void ccLightfoot_update(GameObject* obj) {
                               (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
                 CC_LIGHTFOOT_HIT_EFFECT_DISTANCE_SQUARED) {
                 objfx_spawnHitEmitterAtPos(hitPos, 8, 0xff, 0xff, 0x78);
-                objLightFn_8009a1dc((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);
+                objDoHitParticleFx((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);
             }
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
         }
     } else {
         if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
-            move = ((GameObject*)hitObjectHandle)->anim.seqId;
+            move = ((GameObject*)hitObjectHandle)->anim.romDefNo;
             if (move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A || move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B) {
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
             }
