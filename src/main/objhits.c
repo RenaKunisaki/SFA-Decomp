@@ -4512,7 +4512,7 @@ int ObjTrigger_IsSet(int objPtr)
     flags = buttonGetDisabled(0);
     if ((flags & OBJTRIGGER_BUTTON_DISABLE_FLAG) == 0)
     {
-        triggerFlags = *(u8*)((int)obj + OBJTRIGGER_FLAGS_OFFSET);
+        triggerFlags = obj->anim.resetHitboxFlags;
         flagEnabled = triggerFlags & OBJTRIGGER_CURRENT_ENABLE_FLAG;
         if (flagEnabled != 0)
         {
