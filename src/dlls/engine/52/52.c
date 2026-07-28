@@ -99,7 +99,7 @@ void TitleMenu_frameEnd(void)
         result = loadGameOptions();                                                                                    \
         if ((result == 0) && (lbl_803DB424 != 0))                                                                      \
         {                                                                                                              \
-            memCardFn_8007dd04(1);                                                                                     \
+            cardCreateSaveFile(1);                                                                                     \
         }                                                                                                              \
         loadSaveSettings();                                                                                            \
     } while (0)
@@ -355,7 +355,7 @@ void TitleMenu_release(void)
 {
     setLinkNotRotated();
     titleScreenFn_80130464(1);
-    saveFn_8007d960(1);
+    cardSetIdentityCheckEnabled(1);
 }
 
 void TitleMenu_setSelection(int selection)
@@ -381,7 +381,7 @@ void TitleMenu_initialise(void)
     }
     if (lbl_803DB424 >= 0xfe)
     {
-        saveFn_8007d960(0);
+        cardSetIdentityCheckEnabled(0);
     }
     gameTextLoadDir(0x15);
     gTitleMenuNextDllId = 0;

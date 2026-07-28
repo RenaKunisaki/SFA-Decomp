@@ -182,7 +182,7 @@ extern int gObjSeqStreamResumeOffset;
 extern f32 gObjSeqStreamRemainingTime;
 extern int gObjSeqTimedStreamSlot;
 
-int saveCb_8007e77c(u8 idx, int unused, void* dst)
+int saveGameReadSlotCb(u8 idx, int unused, void* dst)
 {
     memcpy(dst, (void*)(lbl_803DD044 + idx * 1772 + 2640), 1772);
     return 0;

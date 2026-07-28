@@ -293,7 +293,7 @@ void cardShowMessage(void)
             Sfx_SetObjectSoundsPaused(0);
             if (st == 0xa)
             {
-                cardDeleteFn_8007d99c();
+                cardDeleteSaveFile();
                 return;
             }
             return;

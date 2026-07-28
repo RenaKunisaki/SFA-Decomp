@@ -20,7 +20,7 @@ void cardSetStatusNoCard2(void);
 int saveGame(int writeImages);
 int saveGame_doWrite(int slot);
 int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void* cbD, SaveGameCallback callback);
-int saveCb_8007e77c(u8 index, int unused, void* dst);
+int saveGameReadSlotCb(u8 index, int unused, void* dst);
 
 int ObjSeq_StartPreparedStream(int slot);
 void ObjSeq_preempt(int key, int value);

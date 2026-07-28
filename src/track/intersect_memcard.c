@@ -38,7 +38,7 @@ typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, i
 
 char sMemoryCardFileNameString[20] = "Star Fox Adventures";
 
-int cardDeleteFn_8007d99c(void);
+int cardDeleteSaveFile(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
 
@@ -63,8 +63,8 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 int cardProbe(u8 retry);
 void showMemCardError(u8 err);
 void cardShowLoadingMsg(u8 kind);
-int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
-int saveCb_8007e748(int saveId, int size, void* dst);
+int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
+int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
@@ -154,7 +154,7 @@ void OSReport(const char* msg, ...)
  * if we still owe one, else success: clear the cache, set state 13,
  * unmount, return 1.
  */
-int cardLoadFn_8007d72c(void)
+int cardFormatMemoryCard(void)
 {
     int need_format;
     int res;
@@ -250,7 +250,7 @@ int cardLoadFn_8007d72c(void)
     return 0;
 }
 
-void saveFn_8007d960(u32 enable)
+void cardSetIdentityCheckEnabled(u32 enable)
 {
     u8 v = enable;
     lbl_803DD059 = v;
@@ -274,7 +274,7 @@ s32 saveGameGetStatus(void)
     return gSaveCardState;
 }
 
-int cardDeleteFn_8007d99c(void)
+int cardDeleteSaveFile(void)
 {
     int res;
     int ok;
@@ -349,7 +349,7 @@ int _saveGame(int slot, void* save, void* data)
     cardShowLoadingMsg(1);
     do
     {
-        ret = saveGame_prepareAndWrite(0, slot, 0, save, data, (SaveGameCallback)cardCb_8007e6d4);
+        ret = saveGame_prepareAndWrite(0, slot, 0, save, data, (SaveGameCallback)saveGameWriteSlotCb);
         showMemCardError(0);
         if (gSaveCardRetry != 0)
         {
@@ -366,7 +366,7 @@ int maybeTryLoadSave(void* data)
     cardShowLoadingMsg(0);
     do
     {
-        ret = saveGame_prepareAndWrite(1, 0, 0, data, NULL, (SaveGameCallback)saveCb_8007e748);
+        ret = saveGame_prepareAndWrite(1, 0, 0, data, NULL, (SaveGameCallback)saveGameReadGlobalsCb);
         showMemCardError(1);
         if (gSaveCardRetry != 0)
         {
@@ -383,7 +383,7 @@ int loadSaveGame(int slot, void* save)
     cardShowLoadingMsg(0);
     do
     {
-        ret = saveGame_prepareAndWrite(1, slot, 0, save, NULL, (SaveGameCallback)saveCb_8007e77c);
+        ret = saveGame_prepareAndWrite(1, slot, 0, save, NULL, (SaveGameCallback)saveGameReadSlotCb);
         showMemCardError(0);
         if (gSaveCardRetry != 0)
         {
@@ -393,7 +393,7 @@ int loadSaveGame(int slot, void* save)
     return ret;
 }
 
-int memCardFn_8007dd04(u8 retry)
+int cardCreateSaveFile(u8 retry)
 {
     int ret;
 
@@ -715,8 +715,8 @@ void showMemCardError(u8 err)
                 gSaveCardState = 0xd;
                 break;
             case 4:
-                cardDeleteFn_8007d99c();
-                memCardFn_8007dd04(0);
+                cardDeleteSaveFile();
+                cardCreateSaveFile(0);
                 if (gSaveCardState == 0xd)
                 {
                     gSaveCardRetry = 1;
@@ -724,9 +724,9 @@ void showMemCardError(u8 err)
                 break;
             case 5:
                 submenu = 0;
-                if (cardLoadFn_8007d72c() != 0)
+                if (cardFormatMemoryCard() != 0)
                 {
-                    memCardFn_8007dd04(0);
+                    cardCreateSaveFile(0);
                 }
                 if (gSaveCardState == 0xd)
                 {
@@ -745,7 +745,8 @@ void showMemCardError(u8 err)
 
 /*
  * Per-frame "blocking" dialog renderer driven by the card-write retry
- * loops in _saveGame/DBC0/DC5C/DD04. Pumps 60 frames of the GX/dialog
+ * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
+ * Pumps 60 frames of the GX/dialog
  * pipeline; on each frame either lets the active controller draw its own
  * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
  * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
@@ -810,7 +811,7 @@ void cardShowLoadingMsg(u8 kind)
  * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
-int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2)
+int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2)
 {
     int ret;
     memcpy(lbl_803DD044 + slot * 0x6EC + 0xA50, src1, 0x6EC);
@@ -828,7 +829,7 @@ int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2)
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
  * lbl_803DD044) into the caller-supplied destination.
  */
-int saveCb_8007e748(int saveId, int size, void* dst)
+int saveGameReadGlobalsCb(int saveId, int size, void* dst)
 {
     memcpy(dst, lbl_803DD044 + 0x1F14, 0xE4);
     return 0;

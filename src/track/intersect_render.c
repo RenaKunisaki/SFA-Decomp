@@ -111,7 +111,7 @@ extern f32 lbl_8030EA70[2][3];
 extern f32 lbl_8030EA88[2][3];
 extern f32 lbl_8030EAA0[2][3];
 
-int cardDeleteFn_8007d99c(void);
+int cardDeleteSaveFile(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
 
@@ -142,8 +142,8 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 int cardProbe(u8 retry);
 void showMemCardError(u8 err);
 void cardShowLoadingMsg(u8 kind);
-int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
-int saveCb_8007e748(int saveId, int size, void* dst);
+int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
+int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
@@ -4733,7 +4733,7 @@ void gxTextureSetupFn_8007cf7c(void);
 void OSReport(const char* msg, ...);
 
 
-int cardDeleteFn_8007d99c(void);
+int cardDeleteSaveFile(void);
 
 int _saveGame(int slot, void* save, void* data);
 
@@ -4749,7 +4749,8 @@ void showMemCardError(u8 err);
 
 /*
  * Per-frame "blocking" dialog renderer driven by the card-write retry
- * loops in _saveGame/DBC0/DC5C/DD04. Pumps 60 frames of the GX/dialog
+ * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
+ * Pumps 60 frames of the GX/dialog
  * pipeline; on each frame either lets the active controller draw its own
  * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
  * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
@@ -4763,14 +4764,14 @@ void cardShowLoadingMsg(u8 kind);
  * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
-int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
+int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
 
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
  * lbl_803DD044) into the caller-supplied destination.
  */
-int saveCb_8007e748(int saveId, int size, void* dst);
+int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
