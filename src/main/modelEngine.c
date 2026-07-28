@@ -217,6 +217,7 @@
 #include "dlls/objects/420.h"
 #include "dlls/objects/421_NW_levcontr.h"
 #include "dlls/objects/422_SH_tricky.h"
+#include "dlls/objects/423.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -332,8 +333,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
     gDrLightBeaObjDescriptor, gDrMusicContObjDescriptor, gDrShackleObjDescriptor, gDrakorDThornBushObjDescriptor,
     gDrakorEnergyObjDescriptor;
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
-extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
-    gExplodePlanObjDescriptor;
+extern ResourceDescriptor gEarthWalkerObjDescriptor, gEnemyMushroomObjDescriptor, gExplodePlanObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGmMazeWellObjDescriptor;
@@ -1476,7 +1476,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gNW_iceObjDescriptor,
     (ResourceDescriptor*)&gNWLevelControlObjDescriptor,
     (ResourceDescriptor*)&gSHTrickyObjDescriptor,
-    &gEdibleMushroomObjDescriptor,
+    (ResourceDescriptor*)&gEdibleMushroomObjDescriptor,
     &gEnemyMushroomObjDescriptor,
     &gBombPlantObjDescriptor,
     &gBombPlantSporeObjDescriptor,
