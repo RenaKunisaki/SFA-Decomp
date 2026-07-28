@@ -192,7 +192,7 @@ int setSubtitlesEnabled(int enabled)
     return old;
 }
 
-void gameTextInitFn_8001bd14(void)
+void subtitleInit(void)
 {
     int i;
     int zero;

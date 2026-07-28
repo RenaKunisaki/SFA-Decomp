@@ -927,7 +927,7 @@ void init(void)
     _initCardAndDsp();
     playerInitFuncPtrsEntry();
     loadTaskTexts();
-    gameTextInitFn_8001bd14();
+    subtitleInit();
     initMaps();
     gGameUIInterface = Resource_Acquire(0, 0xf);
     gCameraInterface = Resource_Acquire(1, 0x17);
