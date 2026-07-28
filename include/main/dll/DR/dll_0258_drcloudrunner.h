@@ -3,6 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
+#include "main/vec_types.h"
 #include "main/objanim_update.h"
 #include "main/dll/DR/cloudrunner_state.h"
 #include "game/objects/object_setup.h"
@@ -44,13 +45,6 @@ STATIC_ASSERT(offsetof(DRCloudRunnerState, spawnVariant) == 0xBB4);
 STATIC_ASSERT(offsetof(DRCloudRunnerState, unkBC4) == 0xBC4);
 STATIC_ASSERT(sizeof(DRCloudRunnerState) == 0xBC8);
 
-typedef struct
-{
-    f32 x;
-    f32 y;
-    f32 z;
-} Vec3x;
-
 extern void* gDRCloudRunnerStateHandlers[];
 extern void* gDRCloudRunnerDefaultStateHandler;
 extern s16 gDRCloudRunnerDefaultRotX;
@@ -60,7 +54,7 @@ extern const s16 gDRCloudRunnerGameBitIds[4];
 extern const int gDRCloudRunnerCurveIds[4];
 extern u8 gDRCloudRunnerMoveParamTable[];
 extern int gDRCloudRunnerAirMeterBaseline;
-extern const Vec3x gDRCloudRunnerVecTable[];
+extern const Vec3f gDRCloudRunnerVecTable[];
 extern s16 gDRCloudRunnerRollAngleLimits;
 
 extern char sOnCloudFormat[];

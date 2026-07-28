@@ -17,12 +17,6 @@ typedef struct XyzAnimatorPolygonGroup {
     s16 posB;
 } XyzAnimatorPolygonGroup;
 
-typedef struct XyzAnimatorVertex {
-    s16 x;
-    s16 y;
-    s16 z;
-} XyzAnimatorVertex;
-
 typedef struct XyzAnimatorEdge {
     u8 pad00[6];
     s16 v0x;
@@ -36,7 +30,6 @@ typedef struct XyzAnimatorEdge {
 STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, firstTriangle) == 0x00);
 STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, posA) == 0x06);
 STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, posB) == 0x08);
-STATIC_ASSERT(sizeof(XyzAnimatorVertex) == 0x06);
 STATIC_ASSERT(offsetof(XyzAnimatorEdge, v0x) == 0x06);
 STATIC_ASSERT(offsetof(XyzAnimatorEdge, v0y) == 0x08);
 STATIC_ASSERT(offsetof(XyzAnimatorEdge, v0z) == 0x0A);
@@ -78,7 +71,7 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
     int t;
     int edgeBufferOffset[1];
     int edgeIndex[1];
-    XyzAnimatorVertex* vertex;
+    Vec3s* vertex;
     MapBlockData* blockData = (MapBlockData*)blockAddress;
 
     vertexDataOffset[0] = 0;
@@ -99,17 +92,17 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
             for (; triangle < triangleEnd; triangle++) {
                 int vertex1Offset;
                 mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
-                vertex = (XyzAnimatorVertex*)(blockData->vertices + (u32)*mapEntry * 6);
+                vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
                 *(s16*)(state->geometryBuffer + vertexDataOffset[0]) = vertex->x;
                 *(s16*)(state->geometryBuffer + vertexDataOffset[0] + 2) = vertex->y;
                 *(s16*)(state->geometryBuffer + vertexDataOffset[0] + 4) = vertex->z;
                 vertex1Offset = vertexDataOffset[0] + 6;
-                vertex = (XyzAnimatorVertex*)(blockData->vertices + mapEntry[1] * 6);
+                vertex = (Vec3s*)(blockData->vertices + mapEntry[1] * 6);
                 *(s16*)(state->geometryBuffer + vertex1Offset) = vertex->x;
                 *(s16*)(state->geometryBuffer + vertex1Offset + 2) = vertex->y;
                 *(s16*)(state->geometryBuffer + vertex1Offset + 4) = vertex->z;
                 t = vertex1Offset + 6;
-                vertex = (XyzAnimatorVertex*)(blockData->vertices + mapEntry[2] * 6);
+                vertex = (Vec3s*)(blockData->vertices + mapEntry[2] * 6);
                 *(s16*)(state->geometryBuffer + t) = vertex->x;
                 *(s16*)(state->geometryBuffer + t + 2) = vertex->y;
                 *(s16*)(state->geometryBuffer + t + 4) = vertex->z;
@@ -171,7 +164,7 @@ void XyzAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int ren
 }
 
 void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorState* state, int blockAddress) {
-    XyzAnimatorVertex* vertex;
+    Vec3s* vertex;
     MapBlockData* blockData = (MapBlockData*)blockAddress;
     int vertexOffset[1];
     int vertexIndex;
@@ -206,7 +199,7 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
                 mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
                 dataOffset = vertexIndex;
                 for (edgeIndex = 3; edgeIndex != 0; edgeIndex--) {
-                    vertex = (XyzAnimatorVertex*)(blockData->vertices + (u32)*mapEntry * 6);
+                    vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
                     vertex->x = (s16)(scale * state->offsetX + (f32) * (s16*)(state->geometryBuffer + dataOffset));
                     vertex->y = (s16)(scale * state->offsetY + (f32) * (s16*)(state->geometryBuffer + dataOffset + 2));
                     vertex->z = (s16)(scale * state->offsetZ + (f32) * (s16*)(state->geometryBuffer + dataOffset + 4));

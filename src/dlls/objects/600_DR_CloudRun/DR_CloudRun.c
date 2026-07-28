@@ -57,7 +57,7 @@ void* gDRCloudRunnerDefaultStateHandler;
 s16 gDRCloudRunnerSmoothedRotX;
 int gDRCloudRunnerAirMeterBaseline;
 
-const Vec3x gDRCloudRunnerVecTable[5] = {
+const Vec3f gDRCloudRunnerVecTable[5] = {
     {0.0f, 0.0f, 15.0f},
     {0.0f, 0.0f, 30.0f},
     {0.0f, 0.35f, 0.0f},
@@ -361,7 +361,7 @@ int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
 
 int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32 f)
 {
-    Vec3x* vt = (Vec3x*)gDRCloudRunnerVecTable;
+    Vec3f* vt = (Vec3f*)gDRCloudRunnerVecTable;
     u8* base = gDRCloudRunnerMoveParamTable;
     u32 idx;
     int needMove = 0;
@@ -372,11 +372,11 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
         s16 angles[4];
         f32 mat[4];
     } s1;
-    Vec3x vecB;
-    Vec3x vecC;
-    Vec3x vecN;
-    Vec3x vecD;
-    Vec3x vecE;
+    Vec3f vecB;
+    Vec3f vecC;
+    Vec3f vecN;
+    Vec3f vecD;
+    Vec3f vecE;
     f32 speed;
     f32 accel;
     f32 grav;

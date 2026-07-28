@@ -359,7 +359,7 @@ void dfptargetblock_init(GameObject* obj, DfpTargetBlockPlacement* placement)
     DfpTargetBlockState* state;
     ModelFileHeader* model;
     f32 fconv;
-    DfpTargetBlockPoint point;
+    Vec3f point;
 
     state = obj->extra;
     model = (ModelFileHeader*)*ZBomb_GetActiveModel(obj);

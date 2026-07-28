@@ -2,14 +2,9 @@
 #define MAIN_DLL_DLL_0235_DFPTARGETBLOCK_H_
 
 #include "main/dll/door.h"
+#include "main/vec_types.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-
-typedef struct DfpTargetBlockPoint {
-  f32 x;
-  f32 y;
-  f32 z;
-} DfpTargetBlockPoint;
 
 /*
  * Placement/def record the map loader hands to dfptargetblock_init. Embeds the
@@ -28,7 +23,7 @@ STATIC_ASSERT(offsetof(DfpTargetBlockPlacement, stateSfxId) == 0x20);
 
 struct DfpTargetBlockState {
   void *pathState;
-  DfpTargetBlockPoint floorPoints[8];
+  Vec3f floorPoints[8];
   s16 stateSfxId;
   s16 completionSfxId;
   s8 floorPointCount;

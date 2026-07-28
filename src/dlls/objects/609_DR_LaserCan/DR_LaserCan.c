@@ -126,13 +126,6 @@ STATIC_ASSERT(offsetof(DrLaserCannonState, flags) == DR_LASERCANNON_STATE_FLAGS)
 STATIC_ASSERT(offsetof(DrLaserCannonState, bobPhase) == DR_LASERCANNON_STATE_BOB_PHASE);
 STATIC_ASSERT(sizeof(DrLaserCannonState) == DR_LASERCANNON_EXTRA_SIZE);
 
-typedef struct DrLaserCannonJointRotation
-{
-    s16 x;
-    s16 y;
-    s16 z;
-} DrLaserCannonJointRotation;
-
 static f32 drlasercannon_aimStepFraction(s16 step, s16 limit)
 {
     return (f32)step / (f32)limit;
@@ -143,7 +136,7 @@ static const f32 gLaserCannonAngleRateScale = 32768.0f / 180.0f;
 int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCannonAim* out, int maxRate, f32* eyePos)
 {
     s16 negClampS;
-    DrLaserCannonJointRotation* vec;
+    Vec3s* vec;
     f32 d[3];
     f32* dp;
     f32 horiz;
@@ -155,7 +148,7 @@ int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCanno
     s16 wrapDelta;
 
     /* Fetch the barrel's secondary rotation vector (pitch channel) from the model. */
-    vec = (DrLaserCannonJointRotation*)objModelGetVecFn_800395d8(self, 0xb);
+    vec = (Vec3s*)objModelGetVecFn_800395d8(self, 0xb);
     if (vec == NULL)
     {
         return 0;

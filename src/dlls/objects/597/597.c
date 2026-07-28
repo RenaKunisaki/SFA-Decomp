@@ -1968,15 +1968,6 @@ typedef struct
     u8 b04 : 1;
     u8 b02 : 1;
     u8 b01 : 1;
-} HaloSnowBikeFlags;
-typedef struct
-{
-    u8 pad0 : 2;
-    u8 b20 : 1;
-    u8 pad1 : 2;
-    u8 b04 : 1;
-    u8 b02 : 1;
-    u8 b01 : 1;
 } SnowBikeFlags;
 typedef struct SnowBikePlacement
 {
@@ -2266,7 +2257,7 @@ void SnowBike_hitDetect(GameObject* obj)
     mag = PSVECMag(&obj->anim.velocity);
     if (mag > 1.0f)
     {
-        if (!((HaloSnowBikeFlags*)&state->flags428)->b02)
+        if (!((SnowBikeFlags*)&state->flags428)->b02)
         {
             doRumble(3.0f * mag);
         }
@@ -2289,7 +2280,7 @@ void SnowBike_hitDetect(GameObject* obj)
             }
         }
     }
-    if (!((HaloSnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
+    if (!((SnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
     {
         Camera_EnableViewYOffset();
         shakeScale = 0.5f;
