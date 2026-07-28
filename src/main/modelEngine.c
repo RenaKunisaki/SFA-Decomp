@@ -258,6 +258,7 @@
 #include "dlls/objects/461_DIM_LevelCo.h"
 #include "dlls/objects/462.h"
 #include "dlls/objects/463.h"
+#include "dlls/objects/465_DIMTruthHor.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -354,8 +355,8 @@ extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, 
     gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor;
-extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIM_BossGut2ObjDescriptor,
-    gDIM_BossGutObjDescriptor, gDIM_BossObjDescriptor;
+extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor,
+    gDIM_BossObjDescriptor;
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_trickyObjDescriptor,
     gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
@@ -1546,7 +1547,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll1CEObjDescriptor,
     (ResourceDescriptor*)&gDll1CFObjDescriptor,
     &gDIM_trickyObjDescriptor,
-    &gDIMTruthHornIceObjDescriptor,
+    (ResourceDescriptor*)&gDIMTruthHornIceObjDescriptor,
     &gWorldPlanetObjDescriptor,
     &gWorldObjObjDescriptor,
     &gWorldAsteroidsObjDescriptor,
