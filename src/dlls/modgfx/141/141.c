@@ -124,7 +124,7 @@ s16 dll_8D_func03(int sourceObj, int variant, int posSource, u32 flags)
         p->flags = 8;
         p->tex = base + 0x8c;
         p->mode = 2;
-        jitter = DLL8D_JITTER_STEP * (f32)(int)randomGetRange(0, 0xc);
+        jitter = DLL8D_JITTER_STEP * (f32)randomGetRange(0, 0xc);
         p->y = p->x = DLL8D_VARIANT1_JITTER_BASE + jitter;
         p->z = DLL8D_VARIANT1_JITTER_DEPTH + jitter;
         p++;
@@ -172,7 +172,7 @@ s16 dll_8D_func03(int sourceObj, int variant, int posSource, u32 flags)
         p->flags = 8;
         p->tex = base + 0x8c;
         p->mode = 2;
-        jitter = DLL8D_JITTER_STEP * (f32)(int)randomGetRange(0, 0xc);
+        jitter = DLL8D_JITTER_STEP * (f32)randomGetRange(0, 0xc);
         p->y = p->x = DLL8D_VARIANT2_JITTER_BASE + jitter;
         p->z = DLL8D_VARIANT2_JITTER_DEPTH + jitter;
         p++;

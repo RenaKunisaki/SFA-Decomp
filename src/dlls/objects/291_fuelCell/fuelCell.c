@@ -120,7 +120,7 @@ void FuelCell_render(GameObject* obj, int p2, int p3, int p4, int p5) {
                 }
             } else if (!spawnedLightning && getHudHiddenFrameCount() == 0) {
                 GameObject* target;
-                if ((int)randomGetRange(0, FUEL_CELL_LINK_ROLL_MAX) == 0 && !state->flags.alternateEffects) {
+                if (randomGetRange(0, FUEL_CELL_LINK_ROLL_MAX) == 0 && !state->flags.alternateEffects) {
                     fuelCells = (GameObject**)ObjGroup_GetObjects(FUEL_CELL_OBJECT_GROUP, &fuelCellCount);
                     for (j = 0; j < fuelCellCount; j++) {
                         GameObject* other = fuelCells[j];
@@ -158,9 +158,9 @@ void FuelCell_render(GameObject* obj, int p2, int p3, int p4, int p5) {
                     } else {
                         jitterScale = 0.003f;
                     }
-                    endPosition.x = jitterScale * (f32)((int)randomGetRange(0, 2000) - 1000) + endPosition.x;
-                    endPosition.y = jitterScale * (f32)((int)randomGetRange(0, 2000) - 1000) + endPosition.y;
-                    endPosition.z = jitterScale * (f32)((int)randomGetRange(0, 2000) - 1000) + endPosition.z;
+                    endPosition.x = jitterScale * (f32)(randomGetRange(0, 2000) - 1000) + endPosition.x;
+                    endPosition.y = jitterScale * (f32)(randomGetRange(0, 2000) - 1000) + endPosition.y;
+                    endPosition.z = jitterScale * (f32)(randomGetRange(0, 2000) - 1000) + endPosition.z;
                 }
                 state->lightningEffects[i] =
                     lightningCreate(&obj->anim.localPos, &endPosition, lightningRadiusX, 0.2f,

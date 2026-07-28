@@ -517,7 +517,7 @@ void ecshShrine_update(GameObject* obj) {
             state->voiceTimer = timerValue;
             if (timerValue <= zero) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
-                state->voiceTimer = (f32)(int)randomGetRange(ECSH_SHRINE_VOICE_DELAY_MIN, ECSH_SHRINE_VOICE_DELAY_MAX);
+                state->voiceTimer = (f32)randomGetRange(ECSH_SHRINE_VOICE_DELAY_MIN, ECSH_SHRINE_VOICE_DELAY_MAX);
             }
             if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
                 state->testPhase = ECSH_SHRINE_PHASE_INTRO_TRANSITION;
@@ -581,7 +581,7 @@ void ecshShrine_update(GameObject* obj) {
             if (state->animTimer > (timerValue = 0.0f)) {
                 if (state->animState == 1 && state->shuffleSfxPlayed == 0 &&
                     state->animTimer < state->shuffleSfxThreshold) {
-                    if ((int)randomGetRange(0, ECSH_SHRINE_SHUFFLE_SFX_ROLL_MAX) >
+                    if (randomGetRange(0, ECSH_SHRINE_SHUFFLE_SFX_ROLL_MAX) >
                         ECSH_SHRINE_SHUFFLE_SFX_ROLL_THRESHOLD) {
                         Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice_var);
                     }
@@ -622,7 +622,7 @@ void ecshShrine_update(GameObject* obj) {
                         }
                     } else {
                         state->shuffleSfxPlayed = 0;
-                        state->shuffleSfxThreshold = (f32)(int)randomGetRange(ECSH_SHRINE_SHUFFLE_SFX_DELAY_MIN,
+                        state->shuffleSfxThreshold = (f32)randomGetRange(ECSH_SHRINE_SHUFFLE_SFX_DELAY_MIN,
                                                                               ECSH_SHRINE_SHUFFLE_SFX_DELAY_MAX);
                         Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_basketspin);
                         state->animState = 0;

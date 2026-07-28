@@ -81,8 +81,8 @@ void VFP_lavapool_updateWave(GameObject* obj)
     state->phase += timeDelta * ((lbl_803E6160 * state->speedFactor) / lbl_803E6160);
     if (state->phase > lbl_803E6164)
     {
-        state->speedFactor = (f32)(int)randomGetRange(0x32, 100);
-        state->amplitude = lbl_803E6168 / ((f32)(int)mapData->amplitudeDivisor / (f32)(int)randomGetRange(0x15e, 800));
+        state->speedFactor = (f32)randomGetRange(0x32, 100);
+        state->amplitude = lbl_803E6168 / ((f32)(int)mapData->amplitudeDivisor / (f32)randomGetRange(0x15e, 800));
         state->phase = lbl_803E616C;
         Sfx_PlayFromObject((u32)obj, SFXTRIG_id_111);
         speed = 255.0f;
@@ -184,9 +184,9 @@ void VFP_lavapool_init(GameObject* obj, VfpLavaPoolMapData* mapData)
     }
     obj->anim.rootMotionScale =
         lbl_803E6168 /
-        ((f32)(int)mapData->amplitudeDivisor / (f32)(int)randomGetRange(600, 1000));
+        ((f32)(int)mapData->amplitudeDivisor / (f32)randomGetRange(600, 1000));
     state->amplitude = obj->anim.rootMotionScale;
-    state->speedFactor = (f32)(int)randomGetRange(0x32, 100);
+    state->speedFactor = (f32)randomGetRange(0x32, 100);
 }
 
 void VFP_lavapool_release_nop(void)

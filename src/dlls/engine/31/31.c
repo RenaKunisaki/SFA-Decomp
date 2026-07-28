@@ -119,7 +119,7 @@ int Effect6_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         break;
     case 0x425:
         cfg.velocityY = 0.05f * (f32)(s32)randomGetRange(8, 0xa);
-        if ((int)randomGetRange(0, 0x28) != 0)
+        if (randomGetRange(0, 0x28) != 0)
         {
             cfg.scale = 0.001f * (f32)(s32)randomGetRange(8, 0x14);
             cfg.lifetimeFrames = randomGetRange(0x5a, 0x78);

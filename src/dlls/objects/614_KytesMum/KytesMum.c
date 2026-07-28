@@ -382,7 +382,7 @@ void kytesmum_update(GameObject* obj)
     if (ObjAnim_AdvanceCurrentMove((int)obj, runtime->animSpeed, timeDelta,
                                                                     (ObjAnimEventList*)runtime->animEvents) != 0)
     {
-        moveIdx = (s16)((int)randomGetRange(0, 7) != 0 ? 0 : ((int)randomGetRange(0, 1) != 0 ? 1 : 4));
+        moveIdx = (s16)(randomGetRange(0, 7) != 0 ? 0 : (randomGetRange(0, 1) != 0 ? 1 : 4));
         ObjAnim_SetCurrentMove((int)obj, runtime->moveSet->moves[moveIdx], 0.0f, 0);
         runtime->animSpeed = (moveIdx == 0) ? 0.01f : 0.005f;
     }

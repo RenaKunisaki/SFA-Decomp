@@ -97,7 +97,7 @@ void BaddieInterestP_update(GameObject* obj) {
                     if (vec3f_distanceSquared(&obj->anim.worldPosX, &candidate->anim.worldPosX) <
                         BADDIE_INTEREST_RANGE_SQUARED) {
                         if (obj->userData1 == 0) {
-                            if ((int)randomGetRange(BADDIE_INTEREST_PROBABILITY_MIN, BADDIE_INTEREST_PROBABILITY_MAX) <=
+                            if (randomGetRange(BADDIE_INTEREST_PROBABILITY_MIN, BADDIE_INTEREST_PROBABILITY_MAX) <=
                                 placement->triggerProbability) {
                                 f32 sunTime;
                                 GameObject* target;

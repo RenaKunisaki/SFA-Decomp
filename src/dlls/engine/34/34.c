@@ -264,7 +264,7 @@ int Effect9_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.behaviorFlags = 0x81000000;
         cfg.renderFlags = 0x200000;
         cfg.textureId = 0x26d;
-        if ((int)randomGetRange(0, 3) == 3)
+        if (randomGetRange(0, 3) == 3)
         {
             cfg.scale = 0.013f * (f32)(s32)randomGetRange(1, 4);
             cfg.behaviorFlags |= 0x100100LL;

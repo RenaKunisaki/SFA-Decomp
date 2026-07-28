@@ -169,9 +169,9 @@ void explodable_computeFragmentLaunch(GameObject* obj, int chunkAddress, int pla
         chunk->velocityY = dy * scale;
         chunk->velocityZ = dz * scale;
         randomMaximum = (int)(200.0f * (0.5f + scale));
-        chunk->spinX = (f32)(int)randomGetRange(0, randomMaximum) / 50.0f;
-        chunk->spinY = (f32)(int)randomGetRange(0, randomMaximum) / 50.0f;
-        chunk->spinZ = (f32)(int)randomGetRange(0, randomMaximum) / 50.0f;
+        chunk->spinX = (f32)randomGetRange(0, randomMaximum) / 50.0f;
+        chunk->spinY = (f32)randomGetRange(0, randomMaximum) / 50.0f;
+        chunk->spinZ = (f32)randomGetRange(0, randomMaximum) / 50.0f;
         scale = (f32)placement->secondaryLaunchScale / 1000.0f;
         if (obj->anim.velocityX > 0.0f) {
             chunk->launchFlags |= EXPLODABLE_LAUNCH_FLAG_VELOCITY_X;
@@ -189,9 +189,9 @@ void explodable_computeFragmentLaunch(GameObject* obj, int chunkAddress, int pla
             chunk->launchFlags |= EXPLODABLE_LAUNCH_FLAG_SPIN_Z;
         }
         secondaryRandomMaximum = (int)(200.0f * (0.5f + scale));
-        chunk->secondarySpinX = (f32)(int)randomGetRange(0, secondaryRandomMaximum) / 200.0f;
-        chunk->secondarySpinY = (f32)(int)randomGetRange(0, secondaryRandomMaximum) / 200.0f;
-        chunk->secondarySpinZ = (f32)(int)randomGetRange(0, secondaryRandomMaximum) / 200.0f;
+        chunk->secondarySpinX = (f32)randomGetRange(0, secondaryRandomMaximum) / 200.0f;
+        chunk->secondarySpinY = (f32)randomGetRange(0, secondaryRandomMaximum) / 200.0f;
+        chunk->secondarySpinZ = (f32)randomGetRange(0, secondaryRandomMaximum) / 200.0f;
         chunk->secondaryVelocityX = dx * scale;
         chunk->secondaryVelocityY = dy * scale - 0.07f;
         chunk->secondaryVelocityZ = dz * scale;

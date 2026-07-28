@@ -1026,7 +1026,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
             cfg.startPosY = cfg.startPosY - ((GameObject*)cfg.attachedSource)->anim.worldPosY;
             cfg.startPosZ = cfg.startPosZ - ((GameObject*)cfg.attachedSource)->anim.worldPosZ;
         }
-        if ((int)randomGetRange(0, 0x28) == 0)
+        if (randomGetRange(0, 0x28) == 0)
         {
             cfg.scale = 0.0003f;
         }
@@ -1447,7 +1447,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.velocityY = 0.001f * (f32)(s32)randomGetRange(100, 200);
         cfg.velocityZ = 0.001f * (f32)(s32)randomGetRange(0xffffff9c, 100);
         cfg.behaviorFlags = 0x1081010;
-        if ((int)randomGetRange(0, 3) == 0)
+        if (randomGetRange(0, 3) == 0)
         {
             cfg.scale = 0.000065f * (f32)(s32)randomGetRange(0x28, 0x50);
             cfg.initialAlpha = 0x8c;
@@ -1458,7 +1458,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
             cfg.initialAlpha = 10;
             cfg.behaviorFlags |= 0x100000LL;
         }
-        if ((int)randomGetRange(0, 10) == 0)
+        if (randomGetRange(0, 10) == 0)
         {
             spawnFlags ^= 4LL;
             spawnFlags |= 1;
@@ -2270,7 +2270,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.textureId = 0x7c;
         break;
     case 0x39:
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             cfg.startPosZ = -400.0f;
         }
@@ -2286,7 +2286,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         break;
     case 0x79:
 
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             *state.startPos = -18.0f;
         }
@@ -3263,7 +3263,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
         cfg.startPosY = 0.1f * (f32)(s32)randomGetRange(0xffffff9c, 100);
         cfg.startPosZ = 0.1f * (f32)(s32)randomGetRange(0xffffff9c, 100);
         cfg.velocityY = 0.05f * (f32)(s32)randomGetRange(8, 10);
-        if ((int)randomGetRange(0, 0x28) != 0)
+        if (randomGetRange(0, 0x28) != 0)
         {
             cfg.scale = 0.001f * (f32)(s32)randomGetRange(8, 0x14);
             cfg.lifetimeFrames = randomGetRange(0x5a, 0x78);

@@ -122,10 +122,10 @@ int kaldachom_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
             return 5;
         }
         placement = (KaldachomPlacement*)obj->anim.placementData;
-        if ((int)randomGetRange(0, KALDACHOM_AGGRO_CHANCE_RANGE) < (int)placement->aggroChance) {
+        if (randomGetRange(0, KALDACHOM_AGGRO_CHANCE_RANGE) < (int)placement->aggroChance) {
             (*gPlayerInterface)->setState(obj, state, 3);
         } else {
-            control->pullupSfxTimer = (f32)(int)randomGetRange(300, 600);
+            control->pullupSfxTimer = (f32)randomGetRange(300, 600);
             (*gPlayerInterface)->setState(obj, state, 2);
         }
     }
@@ -687,7 +687,7 @@ void kaldachom_update(GameObject* obj) {
                 ((KaldachomControl*)texture)->pullupSfxTimer -= timeDelta;
                 if (((KaldachomControl*)texture)->pullupSfxTimer <= 0.0f) {
                     Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy111);
-                    ((KaldachomControl*)texture)->pullupSfxTimer = (f32)(int)randomGetRange(300, 600);
+                    ((KaldachomControl*)texture)->pullupSfxTimer = (f32)randomGetRange(300, 600);
                 }
                 player = Obj_GetPlayerObject();
                 objectState->targetObj = player;
@@ -754,8 +754,8 @@ void kaldachom_init(GameObject* obj, KaldachomPlacement* placement, int flags) {
     state->targetObj = player;
     state->ground.baddie.physicsActive = 0;
     ObjHits_DisableObject(obj);
-    control->pullupSfxTimer = (f32)(int)randomGetRange(300, 600);
-    control->idleAnimTimer = (f32)(int)randomGetRange(0, 499);
+    control->pullupSfxTimer = (f32)randomGetRange(300, 600);
+    control->idleAnimTimer = (f32)randomGetRange(0, 499);
     control->unk3C = 0.0f;
     control->spawnedDustObj = NULL;
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;

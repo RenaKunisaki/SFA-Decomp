@@ -86,7 +86,7 @@ int Effect17_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     {
     case 0x73a:
         cfg.velocityY = 0.05f * (f32)(s32)randomGetRange(8, 0xa);
-        if ((int)randomGetRange(0, 0x28) != 0)
+        if (randomGetRange(0, 0x28) != 0)
         {
             cfg.scale = 0.001f * (f32)(s32)randomGetRange(8, 0x14);
             cfg.lifetimeFrames = randomGetRange(0x5a, 0x78);
@@ -217,7 +217,7 @@ int Effect17_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
         cfg.textureId = 0x500;
         break;
     case 0x744:
-        if ((int)randomGetRange(0, 4) == 4)
+        if (randomGetRange(0, 4) == 4)
         {
             cfg.scale = 0.0147f;
             cfg.initialAlpha = 0x9b;

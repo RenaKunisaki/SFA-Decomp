@@ -1934,7 +1934,7 @@ int expgfx_acquireResourceEntry(int resourceId)
             return EXPGFX_RESOURCE_ACQUIRE_LOAD_FAILED;
         }
     }
-    if ((u8)Obj_IsLoadingLocked() == 0)
+    if (Obj_IsLoadingLocked() == 0)
     {
         return EXPGFX_RESOURCE_ACQUIRE_LOADING_UNLOCKED;
     }
@@ -2913,16 +2913,16 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                     }
                     if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_RANDOM_XZ_JITTER) != 0 && randomGetRange(0, 4) == 1)
                     {
-                        slot->velocityX += 0.045f - (f32)(int)randomGetRange(0, 9) / 100.0f;
-                        slot->velocityZ += 0.045f - (f32)(int)randomGetRange(0, 9) / 100.0f;
+                        slot->velocityX += 0.045f - (f32)randomGetRange(0, 9) / 100.0f;
+                        slot->velocityZ += 0.045f - (f32)randomGetRange(0, 9) / 100.0f;
                     }
                     if ((slot->renderFlags & EXPGFX_RENDER_RANDOM_VELOCITY_BURST) != 0 && randomGetRange(0, 10) == 1)
                     {
                         if (slot->lifetimeFrameLimit > (f32)slot->lifetimeFrame)
                         {
-                            slot->velocityX += 0.0004f * (f32)(int)randomGetRange(-800, 800) + 0.02f;
-                            slot->velocityY += 0.0004f * (f32)(int)randomGetRange(-800, 800) + 0.02f;
-                            slot->velocityZ += 0.0004f * (f32)(int)randomGetRange(-800, 800) + 0.02f;
+                            slot->velocityX += 0.0004f * (f32)randomGetRange(-800, 800) + 0.02f;
+                            slot->velocityY += 0.0004f * (f32)randomGetRange(-800, 800) + 0.02f;
+                            slot->velocityZ += 0.0004f * (f32)randomGetRange(-800, 800) + 0.02f;
                         }
                     }
                     if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_IMPACT_BOOST_LATCH) != 0)

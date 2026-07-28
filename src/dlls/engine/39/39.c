@@ -87,9 +87,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.kind = 0xc7e;
         break;
     case 0x4b1:
-        p.velX = 0.02f * (f32)(int)randomGetRange(-100, 100);
-        p.velY = 0.01f * (f32)(int)randomGetRange(-0x19, 0x96);
-        p.velZ = 0.02f * (f32)(int)randomGetRange(-100, 100);
+        p.velX = 0.02f * (f32)randomGetRange(-100, 100);
+        p.velY = 0.01f * (f32)randomGetRange(-0x19, 0x96);
+        p.velZ = 0.02f * (f32)randomGetRange(-100, 100);
         p.count = 100;
         p.scale = 0.003f;
         p.flagsA = 0x1180200;
@@ -126,13 +126,13 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.kind = 0x73;
         break;
     case 0x4b4:
-        p.posX = (f32)(int)randomGetRange(-1, 1);
-        p.posY = (f32)(int)randomGetRange(-7, 7);
-        p.posZ = (f32)(int)randomGetRange(-1, 1);
-        p.velX = 0.01f * (f32)(int)randomGetRange(-7, 7);
-        p.velY = 0.01f * (f32)(int)randomGetRange(0, 0x1e);
-        p.velZ = 0.01f * (f32)(int)randomGetRange(-7, 7);
-        p.scale = 0.0002f * (f32)(int)randomGetRange(0x32, 100);
+        p.posX = (f32)randomGetRange(-1, 1);
+        p.posY = (f32)randomGetRange(-7, 7);
+        p.posZ = (f32)randomGetRange(-1, 1);
+        p.velX = 0.01f * (f32)randomGetRange(-7, 7);
+        p.velY = 0.01f * (f32)randomGetRange(0, 0x1e);
+        p.velZ = 0.01f * (f32)randomGetRange(-7, 7);
+        p.scale = 0.0002f * (f32)randomGetRange(0x32, 100);
         p.alpha = randomGetRange(0x5c, 0xc0);
         p.count = randomGetRange(0x32, 0x50);
         p.flagsA = 0x1180000;
@@ -179,12 +179,12 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.kind = 0x62;
         break;
     case 0x4b7:
-        p.posX = (f32)(int)randomGetRange(-0x14, 0x14);
+        p.posX = (f32)randomGetRange(-0x14, 0x14);
         p.posY = 5.0f;
-        p.posZ = (f32)(int)randomGetRange(-0x14, 0x14);
-        p.velX = 0.01f * (f32)(int)randomGetRange(-100, 100);
-        p.velY = 0.01f * (f32)(int)randomGetRange(0, 0x32);
-        p.velZ = 0.01f * (f32)(int)randomGetRange(-100, 100);
+        p.posZ = (f32)randomGetRange(-0x14, 0x14);
+        p.velX = 0.01f * (f32)randomGetRange(-100, 100);
+        p.velY = 0.01f * (f32)randomGetRange(0, 0x32);
+        p.velZ = 0.01f * (f32)randomGetRange(-100, 100);
         p.scale = 0.01f;
         p.count = 0x28;
         p.flagsA = 0x80200;
@@ -202,7 +202,7 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.scale = 0.0035f;
         p.flagsA = 0x80200;
         p.flagsB = 0x4000800;
-        if ((int)randomGetRange(0, 2) == 0)
+        if (randomGetRange(0, 2) == 0)
         {
             p.kind = 0xc0e;
         }
@@ -212,12 +212,12 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         }
         break;
     case 0x4ba:
-        p.posX = (f32)(int)randomGetRange(-7, 7);
-        p.posY = (f32)(int)randomGetRange(-7, 7);
-        p.posZ = (f32)(int)randomGetRange(-7, 7);
-        p.velX = 0.025f * (f32)(int)randomGetRange(-0x32, 0x32);
-        p.velY = 0.025f * (f32)(int)randomGetRange(-0x32, 0x32);
-        p.velZ = 0.025f * (f32)(int)randomGetRange(-0x32, 0x32);
+        p.posX = (f32)randomGetRange(-7, 7);
+        p.posY = (f32)randomGetRange(-7, 7);
+        p.posZ = (f32)randomGetRange(-7, 7);
+        p.velX = 0.025f * (f32)randomGetRange(-0x32, 0x32);
+        p.velY = 0.025f * (f32)randomGetRange(-0x32, 0x32);
+        p.velZ = 0.025f * (f32)randomGetRange(-0x32, 0x32);
         p.scale = 0.01f;
         p.count = 0x28;
         p.alpha = 0x96;
@@ -249,9 +249,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         {
             return 0;
         }
-        p.posX = 0.003921f * ((f32)p.alpha * (f32)(int)randomGetRange(-10, 10));
-        p.posY = 0.003921f * ((f32)p.alpha * (f32)(int)randomGetRange(0, 10));
-        p.posZ = 0.003921f * ((f32)p.alpha * (f32)(int)randomGetRange(-10, 10));
+        p.posX = 0.003921f * ((f32)p.alpha * (f32)randomGetRange(-10, 10));
+        p.posY = 0.003921f * ((f32)p.alpha * (f32)randomGetRange(0, 10));
+        p.posZ = 0.003921f * ((f32)p.alpha * (f32)randomGetRange(-10, 10));
         p.alpha = *(u32*)extraArgs;
         p.scale = 0.0001f * p.alpha + 0.0001f;
         p.count = randomGetRange(0xf, 0x1e);
@@ -260,11 +260,11 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.kind = 0xdb;
         break;
     case 0x4bd:
-        p.posX = (f32)(int)randomGetRange(-5, 5);
-        p.posY = (f32)(int)randomGetRange(0, 0xf);
-        p.posZ = (f32)(int)randomGetRange(-5, 5);
+        p.posX = (f32)randomGetRange(-5, 5);
+        p.posY = (f32)randomGetRange(0, 0xf);
+        p.posZ = (f32)randomGetRange(-5, 5);
         p.velY = 0.05f;
-        p.scale = 0.001f * (f32)(int)randomGetRange(5, 10);
+        p.scale = 0.001f * (f32)randomGetRange(5, 10);
         p.count = randomGetRange(0x3c, 0x5a);
         p.alpha = 0x5a;
         p.flagsA = 0xc0180200;
@@ -278,13 +278,13 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.flagsB = 0x4000820;
         break;
     case 0x4be:
-        p.posX = (f32)(int)randomGetRange(-0x1c2, 0x1c2);
+        p.posX = (f32)randomGetRange(-0x1c2, 0x1c2);
         p.posY = 300.0f;
-        p.posZ = (f32)(int)randomGetRange(-0x1c2, 0x1c2);
-        p.velX = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.velY = 0.03f * (f32)(int)randomGetRange(0, 0x14);
-        p.velZ = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.scale = 0.0005f * (f32)(int)randomGetRange(0, 10) + 0.003945f;
+        p.posZ = (f32)randomGetRange(-0x1c2, 0x1c2);
+        p.velX = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.velY = 0.03f * (f32)randomGetRange(0, 0x14);
+        p.velZ = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.scale = 0.0005f * (f32)randomGetRange(0, 10) + 0.003945f;
         p.count = randomGetRange(0xbe, 0xfa);
         p.flagsA = 0x81488000;
         p.kind = randomGetRange(0, 2) + 0x208;
@@ -297,9 +297,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.flagsB = 0x20;
         break;
     case 0x4bf:
-        p.posX = (f32)(int)randomGetRange(-0x6e, 0x6e);
+        p.posX = (f32)randomGetRange(-0x6e, 0x6e);
         p.posY = 100.0f;
-        p.posZ = (f32)(int)randomGetRange(-0x3c, 0x3c);
+        p.posZ = (f32)randomGetRange(-0x3c, 0x3c);
         p.scale = 0.0022f;
         p.count = 100;
         p.flagsA = 0x11000004;
@@ -321,12 +321,12 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.kind = 0x56;
         break;
     case 0x4c1:
-        p.velX = 0.01f * (f32)(int)randomGetRange(-5, 5);
-        p.velY = 0.01f * (f32)(int)randomGetRange(-5, 5);
-        p.velZ = 0.01f * (f32)(int)randomGetRange(-5, 5);
-        p.posX = (f32)(int)randomGetRange(-0x78, 0x78);
+        p.velX = 0.01f * (f32)randomGetRange(-5, 5);
+        p.velY = 0.01f * (f32)randomGetRange(-5, 5);
+        p.velZ = 0.01f * (f32)randomGetRange(-5, 5);
+        p.posX = (f32)randomGetRange(-0x78, 0x78);
         p.posY = (f32)(int)(randomGetRange(-1, 1) * 0xc);
-        p.posZ = (f32)(int)randomGetRange(-0x46, 0x46);
+        p.posZ = (f32)randomGetRange(-0x46, 0x46);
         p.scale = 0.02f;
         p.count = 200;
         p.flagsA = 0xa100100;
@@ -340,8 +340,8 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.flagsB = 0x20;
         break;
     case 0x4c2:
-        p.velX = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.velZ = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
+        p.velX = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.velZ = 0.01f * (f32)randomGetRange(-0x14, 0x14);
         p.scale = 0.006f;
         p.count = 0x46;
         p.flagsA = 0xa100200;
@@ -350,10 +350,10 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.alpha = 0x40;
         break;
     case 0x4c3:
-        p.velX = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.velZ = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.posX = (f32)(int)randomGetRange(-400, 400);
-        p.posZ = (f32)(int)randomGetRange(-400, 400);
+        p.velX = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.velZ = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.posX = (f32)randomGetRange(-400, 400);
+        p.posZ = (f32)randomGetRange(-400, 400);
         p.scale = 0.1f;
         p.count = 600;
         p.alpha = 0x7f;
@@ -378,9 +378,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
             gEffect14SharedSrcParams.rot1 = 0;
             gEffect14SharedSrcParams.rot2 = 0;
         }
-        p.velX = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.velY = 0.01f * (f32)(int)randomGetRange(-0x14, 0x14);
-        p.velZ = -0.5f * (f32)(int)randomGetRange(10, 0x1e);
+        p.velX = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.velY = 0.01f * (f32)randomGetRange(-0x14, 0x14);
+        p.velZ = -0.5f * (f32)randomGetRange(10, 0x1e);
         rotCtx.x = 0.0f;
         rotCtx.y = 0.0f;
         rotCtx.z = 0.0f;
@@ -425,9 +425,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.rot0 = obj->anim.rotX;
         break;
     case 0x4c8:
-        p.posX = 0.9f * (f32)(int)randomGetRange(-10, 10);
-        p.posY = 0.9f * (f32)(int)randomGetRange(-10, 10);
-        p.posZ = 0.9f * (f32)(int)randomGetRange(-10, 10);
+        p.posX = 0.9f * (f32)randomGetRange(-10, 10);
+        p.posY = 0.9f * (f32)randomGetRange(-10, 10);
+        p.posZ = 0.9f * (f32)randomGetRange(-10, 10);
         p.scale = 0.005f;
         p.count = randomGetRange(0x4b, 100);
         p.alpha = 0x7f;
@@ -436,9 +436,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         break;
     case 0x4c9:
         p.count = randomGetRange(0x3c, 100);
-        p.velX = 0.05f * (f32)(int)randomGetRange(-0x32, 0x32);
+        p.velX = 0.05f * (f32)randomGetRange(-0x32, 0x32);
         p.velY = 0.04f * (f32)(int)p.count;
-        p.velZ = 0.05f * (f32)(int)randomGetRange(-0x32, 0x32);
+        p.velZ = 0.05f * (f32)randomGetRange(-0x32, 0x32);
         p.scale = 0.003f;
         p.flagsA = 0x3000000;
         p.flagsB = 0x600020;
@@ -452,10 +452,10 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.colF = 0;
         break;
     case 0x4ca:
-        p.posX = 0.03f * (f32)(int)randomGetRange(-200, 200);
-        p.posZ = 0.03f * (f32)(int)randomGetRange(-200, 200);
-        p.velY = 0.12 * (f32)(int)randomGetRange(0xf, 0x2d);
-        p.scale = 0.00055f * (f32)(int)randomGetRange(6, 0xc);
+        p.posX = 0.03f * (f32)randomGetRange(-200, 200);
+        p.posZ = 0.03f * (f32)randomGetRange(-200, 200);
+        p.velY = 0.12 * (f32)randomGetRange(0xf, 0x2d);
+        p.scale = 0.00055f * (f32)randomGetRange(6, 0xc);
         p.count = randomGetRange(0x46, 0x82);
         p.flagsA = 0x1580000;
         p.flagsB = 0x400000;
@@ -463,8 +463,8 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.alpha = 0xff;
         break;
     case 0x4cb:
-        p.velY = 0.1f * (f32)(int)randomGetRange(8, 10);
-        p.scale = 0.002f * (f32)(int)randomGetRange(6, 10);
+        p.velY = 0.1f * (f32)randomGetRange(8, 10);
+        p.scale = 0.002f * (f32)randomGetRange(6, 10);
         p.count = randomGetRange(0x3c, 0x78);
         p.flagsA = 0x80080000;
         p.flagsB = 0x4440820;
@@ -479,9 +479,9 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         break;
     case 0x4cc:
         p.count = randomGetRange(0x3c, 100);
-        p.velX = 0.05f * (f32)(int)randomGetRange(-0x32, 0x32);
+        p.velX = 0.05f * (f32)randomGetRange(-0x32, 0x32);
         p.velY = 0.04f * (f32)(int)p.count;
-        p.velZ = 0.05f * (f32)(int)randomGetRange(-0x32, 0x32);
+        p.velZ = 0.05f * (f32)randomGetRange(-0x32, 0x32);
         p.scale = 0.003f;
         p.flagsA = 0x3000000;
         p.flagsB = 0x600020;
@@ -495,8 +495,8 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         p.colF = 0;
         break;
     case 0x4cd:
-        p.velY = 0.1f * (f32)(int)randomGetRange(8, 10);
-        p.scale = 0.002f * (f32)(int)randomGetRange(6, 10);
+        p.velY = 0.1f * (f32)randomGetRange(8, 10);
+        p.scale = 0.002f * (f32)randomGetRange(6, 10);
         p.count = randomGetRange(0x3c, 0x78);
         p.flagsA = 0x80080000;
         p.flagsB = 0x4440820;

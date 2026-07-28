@@ -428,7 +428,7 @@ u32 audioLayerFn_8026f8b8(u16 layerID, s16 prio, u8 maxVoices, u16 allocId, u8 k
             {
                 u32 rejected;
                 u32 ok;
-                if ((u16)inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, midi, midiSet) > 8064)
+                if (inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, midi, midiSet) > 8064)
                 {
                     new_id = audioFn_8026f630(note & 0x7f, midi, midiSet, 0, &rejected);
                     ok = !rejected;
@@ -523,7 +523,7 @@ static inline u32 check_portamento(u8 key, u8 midi, u8 midiSet, u32 newVID, u32*
 {
     u32 rejected;
 
-    if ((u16)inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, midi, midiSet) > 0x1F80)
+    if (inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, midi, midiSet) > 0x1F80)
     {
         *vid = audioFn_8026f630(key & 0x7F, midi, midiSet, newVID, &rejected);
         return !rejected;
@@ -1030,7 +1030,7 @@ void ZeroOffsetHandler(int voice)
 
                 if ((synthFlags & 2) != 0)
                 {
-                    if ((sv->lastSPan = sv->panning[1] + (u16)inpGetSurPanning((McmdVoiceState*)sv) * 0x200) > 0x7F0000)
+                    if ((sv->lastSPan = sv->panning[1] + inpGetSurPanning((McmdVoiceState*)sv) * 0x200) > 0x7F0000)
                     {
                         sv->lastSPan = 0x7F0000;
                     }

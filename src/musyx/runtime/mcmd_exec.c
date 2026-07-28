@@ -196,7 +196,7 @@ void mcmdPortamento(McmdVoiceState* state, McmdCommandArgs* args)
             break;
         case 2:
             if (state->midiSlot != 0xff &&
-                (u16)inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent) > 0x1f80)
+                inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent) > 0x1f80)
             {
                 continue;
             }
@@ -213,7 +213,7 @@ s32 varGet32(McmdVoiceState* state, u32 useExCtrl, u8 index)
 {
     if (useExCtrl != 0)
     {
-        return (u16)inpGetExCtrl(state, index);
+        return inpGetExCtrl(state, index);
     }
     index &= 0x1f;
     if (index < 0x10)
@@ -241,7 +241,7 @@ static inline u32 mcmdVarGet32Legacy(McmdVoiceState* state, u32 useExCtrl, u32 i
 {
     if (useExCtrl != 0)
     {
-        return (u16)inpGetExCtrl(state, index);
+        return inpGetExCtrl(state, index);
     }
     index &= 0x1f;
     if (index < 0x10)
@@ -875,16 +875,16 @@ void macHandleActive(McmdVoiceState* sv)
             f32 sScale;
             McmdDlsAdsrInfo adsr;
             s32* row;
-            sScale = voiceAdsrSustainTable[(u16)inpGetMidiCtrl(cmd >> 0x18, sv->midiSlot, sv->midiEvent) >> 7];
+            sScale = voiceAdsrSustainTable[inpGetMidiCtrl(cmd >> 0x18, sv->midiSlot, sv->midiEvent) >> 7];
             row = (s32*)(dataTables +
-                         ((u16)inpGetMidiCtrl((macCurrentCmd.flags >> 8) & 0xff, sv->midiSlot, sv->midiEvent) >> 7) * 4);
+                         (inpGetMidiCtrl((macCurrentCmd.flags >> 8) & 0xff, sv->midiSlot, sv->midiEvent) >> 7) * 4);
             adsr.atime = row[7];
             row = (s32*)(dataTables +
-                         ((u16)inpGetMidiCtrl((macCurrentCmd.flags >> 0x10) & 0xff, sv->midiSlot, sv->midiEvent) >> 7) *
+                         (inpGetMidiCtrl((macCurrentCmd.flags >> 0x10) & 0xff, sv->midiSlot, sv->midiEvent) >> 7) *
                              4);
             adsr.dtime = row[7];
             adsr.slevel = 0xc1 - voiceAdsrDecayTable[(u32)(dlsScaleMax * sScale)];
-            row = (s32*)(dataTables + ((u16)inpGetMidiCtrl((u8)*cmdValuePtr, sv->midiSlot, sv->midiEvent) >> 7) * 4);
+            row = (s32*)(dataTables + (inpGetMidiCtrl((u8)*cmdValuePtr, sv->midiSlot, sv->midiEvent) >> 7) * 4);
             adsr.rtime = row[7];
             adsr.ascale = 0x80000000;
             adsr.dscale = 0x80000000;

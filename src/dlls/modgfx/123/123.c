@@ -57,7 +57,7 @@ void dll_7B_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
         entries[1].tex = &base[0xf4];
         entries[1].mode = 2;
         entries[1].x = 1.0f;
-        entries[1].y = 0.7f * (f32)(int)randomGetRange(3, 5);
+        entries[1].y = 0.7f * (f32)randomGetRange(3, 5);
         entries[1].z = 1.0f;
         e = &entries[2];
     }
@@ -99,9 +99,9 @@ void dll_7B_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
         e[1].flags = 0xe;
         e[1].tex = &base[0xf4];
         e[1].mode = 0x400000;
-        e[1].x = 90.0f + (f32)(int)randomGetRange(0, 0x14);
+        e[1].x = 90.0f + (f32)randomGetRange(0, 0x14);
         e[1].y = 75.0f;
-        e[1].z = (f32)(int)randomGetRange(0, 0x1e);
+        e[1].z = (f32)randomGetRange(0, 0x1e);
         e += 2;
     }
     e[0].layer = 1;
@@ -125,7 +125,7 @@ void dll_7B_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
         e[0].flags = 0xe;
         e[0].tex = &base[0xf4];
         e[0].mode = 0x400000;
-        e[0].x = -0.3f * (f32)(int)randomGetRange(1, 0x28);
+        e[0].x = -0.3f * (f32)randomGetRange(1, 0x28);
         e[0].y = 0.0f;
         e[0].z = 0.0f;
         e += 1;
@@ -134,7 +134,7 @@ void dll_7B_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     e[0].flags = 0xe;
     e[0].tex = &base[0xf4];
     e[0].mode = 0x4000;
-    e[0].x = 0.1f * (f32)(int)randomGetRange(-3, 3);
+    e[0].x = 0.1f * (f32)randomGetRange(-3, 3);
     e[0].y = 0.0f;
     e[0].z = 0.0f;
     e[1].layer = 3;

@@ -1770,7 +1770,7 @@ int dbstealerworm_stateHandlerA02(GameObject* obj, BaddieState* baddie)
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DBSTEALERWORM_HIT_VOLUME_SLOT, 1, -1);
     if (*(s8*)&bs->moveJustStartedA != 0)
     {
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             if (*(s8*)&bs->moveJustStartedA != 0)
             {
@@ -2167,7 +2167,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
         if (sub->countdown > sub->nextSfxTime && dist < 400.0f)
         {
             Sfx_PlayFromObject((int)obj, gDbStealerwormBurrowFootstepSfx[1]);
-            sub->nextSfxTime = sub->nextSfxTime + (f32)(int)randomGetRange(0x32, 0xfa);
+            sub->nextSfxTime = sub->nextSfxTime + (f32)randomGetRange(0x32, 0xfa);
         }
         sub->countdown += timeDelta;
     }

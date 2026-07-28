@@ -160,7 +160,7 @@ void explosion_spawnFlame(GameObject* obj, u8 generation, f32 speed, f32 x, f32 
     }
     flames[flameIndex].spinAngle = randomGetRange(0, 0xffff);
     flames[flameIndex].spinSpeed = randomGetRange(0xc8, 0x12c);
-    if ((int)randomGetRange(0, 1) != 0) {
+    if (randomGetRange(0, 1) != 0) {
         flames[flameIndex].spinSpeed = -flames[flameIndex].spinSpeed;
     }
     flames[flameIndex].textureVariant = randomGetRange(0, 3);
@@ -402,19 +402,19 @@ void explosion_update(GameObject* obj) {
                             parentSpeed = ((DimExplosionFlame*)cursor)->speed;
                             spawnState = *(int*)&(obj)->extra;
                             vpos[0] = ((DimExplosionFlame*)cursor)->scale *
-                                      (sExplosionChildOffsetStep[0] * (f32)(int)randomGetRange(-5, 3) +
+                                      (sExplosionChildOffsetStep[0] * (f32)randomGetRange(-5, 3) +
                                        sExplosionBaseScale[0]);
                             vpos[1] = sExplosionZero[0];
                             vpos[2] = sExplosionZero[0];
                             PSMTXRotRad(m, 0x7a,
                                         (f32)(sExplosionPi[0] *
-                                              (f64)((f32)(int)randomGetRange(0, 0xffff) / sExplosionAngleScale[0])));
+                                              (f64)((f32)randomGetRange(0, 0xffff) / sExplosionAngleScale[0])));
                             PSMTXConcat(Camera_GetInverseViewRotationMatrix(), m, m);
                             PSMTXMultVecSR(m, vpos, vpos);
                             vpos[0] += ((DimExplosionFlame*)cursor)->posX;
                             vpos[1] += ((DimExplosionFlame*)cursor)->posY;
                             vpos[2] += ((DimExplosionFlame*)cursor)->posZ;
-                            childSpeed = parentSpeed * (f32)(int)randomGetRange(0xc0, 0x100);
+                            childSpeed = parentSpeed * (f32)randomGetRange(0xc0, 0x100);
                             childSpeed = childSpeed * sExplosionSpeedScale[0];
                             if (((DimExplosionState*)spawnState)->flameCount < DIM_EXPLOSION_FLAME_CAPACITY) {
                                 explosion_spawnFlame(obj, (u8)(parentGeneration + 1), childSpeed, vpos[0], vpos[1],
@@ -604,19 +604,19 @@ void explosion_init(GameObject* obj, int placementAddress) {
         debrisCount = (int)((f32)(6.0f * scale) / 100.0f);
         for (i = 0, cursor = state; i < debrisCount; i++) {
             if (((DimExplosionState*)state)->nearGround != 0) {
-                f32 mag = 2.0f * ((f32)(int)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
+                f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 vsp[0] = mag;
                 vsp[1] = sExplosionZero[0];
                 vsp[2] = sExplosionZero[0];
                 PSMTXRotRad(mB, 0x7a,
-                            (f32)(sExplosionPi[0] * (f64)((f32)(int)randomGetRange(0x2000, 0x6000) / 65535.0f)));
+                            (f32)(sExplosionPi[0] * (f64)((f32)randomGetRange(0x2000, 0x6000) / 65535.0f)));
                 PSMTXRotRad(
                     mA, 0x79,
-                    (f32)(sExplosionPi[0] * (f64)((f32)(int)randomGetRange(0, 0xffff) / sExplosionAngleScale[0])));
+                    (f32)(sExplosionPi[0] * (f64)((f32)randomGetRange(0, 0xffff) / sExplosionAngleScale[0])));
                 PSMTXConcat(mA, mB, mB);
                 PSMTXMultVecSR(mB, vsp, vsp);
             } else {
-                f32 mag = 2.0f * ((f32)(int)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
+                f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 u8 spreadDirectionIndex;
                 spreadDirectionIndex = i % 4;
                 vsp[0] = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3];
@@ -624,10 +624,10 @@ void explosion_init(GameObject* obj, int placementAddress) {
                 vsp[2] = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 2];
                 PSMTXRotRad(
                     mB, 0x7a,
-                    (f32)(sExplosionPi[0] * (f64)(((f32)(int)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
+                    (f32)(sExplosionPi[0] * (f64)(((f32)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
                 PSMTXRotRad(
                     mA, 0x78,
-                    (f32)(sExplosionPi[0] * (f64)(((f32)(int)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
+                    (f32)(sExplosionPi[0] * (f64)(((f32)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
                 PSMTXConcat(mA, mB, mB);
                 PSMTXMultVecSR(mB, vsp, vsp);
             }

@@ -59,9 +59,9 @@ void dll_60_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     e[2].flags = 0xe;
     e[2].tex = &base[244];
     e[2].mode = 8;
-    e[2].x = 150.0f + (f32)(int)randomGetRange(0, 0x69);
-    e[2].y = 150.0f + (f32)(int)randomGetRange(0, 0x69);
-    e[2].z = 150.0f + (f32)(int)randomGetRange(0, 0x69);
+    e[2].x = 150.0f + (f32)randomGetRange(0, 0x69);
+    e[2].y = 150.0f + (f32)randomGetRange(0, 0x69);
+    e[2].z = 150.0f + (f32)randomGetRange(0, 0x69);
     e[3].layer = 0;
     e[3].flags = 0x7a;
     e[3].tex = 0;
@@ -69,7 +69,7 @@ void dll_60_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     e[3].x = 0.0f;
     e[3].y = 0.0f;
     e[3].z = 0.0f;
-    z4 = (f32)(int)randomGetRange(0, 0xfffe);
+    z4 = (f32)randomGetRange(0, 0xfffe);
     e[4].layer = 0;
     e[4].flags = 0;
     e[4].tex = 0;

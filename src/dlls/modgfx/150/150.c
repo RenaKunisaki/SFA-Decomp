@@ -52,7 +52,7 @@ s16 dll_96_func03(int sourceObj, int variant, int posSource, u32 flags)
     }
     else
     {
-        e[1].x = 0.03f * (f32)(int)randomGetRange(5, 10);
+        e[1].x = 0.03f * (f32)randomGetRange(5, 10);
     }
     e[1].y = 10.5f;
     e[1].z = e[1].x;

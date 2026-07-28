@@ -716,7 +716,7 @@ void TitleScreen_update(GameObject* obj)
             {
                 if (obj->anim.currentMoveProgress < lbl_803E2358)
                 {
-                    gTitleScreenFoxTypeMoveRate = progress = lbl_803E235C * (f32)(int)randomGetRange(0x32, 0x96);
+                    gTitleScreenFoxTypeMoveRate = progress = lbl_803E235C * (f32)randomGetRange(0x32, 0x96);
                 }
                 else
                 {

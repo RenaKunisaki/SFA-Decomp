@@ -249,10 +249,10 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(0.01f * (f32)(int)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
+            -(0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            (1.0f - 0.01f * (f32)(int)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
+            (1.0f - 0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
         ((GameObject*)child)->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
@@ -293,10 +293,10 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(0.01f * (f32)(int)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
+            -(0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            (1.0f - 0.01f * (f32)(int)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
+            (1.0f - 0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
         ((GameObject*)child)->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
@@ -337,10 +337,10 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(0.01f * (f32)(int)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
+            -(0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            (1.0f - 0.01f * (f32)(int)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
+            (1.0f - 0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
         ((GameObject*)child)->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;

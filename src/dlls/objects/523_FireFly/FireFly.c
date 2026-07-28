@@ -207,7 +207,7 @@ void firefly_activeTick(GameObject* obj)
         state->splineX[2] = state->splineX[3];
         state->splineY[2] = state->splineY[3];
         state->splineZ[2] = state->splineZ[3];
-        state->splineSpeed = 0.00015f * (f32)(int)randomGetRange(0xa0, 0xb4);
+        state->splineSpeed = 0.00015f * (f32)randomGetRange(0xa0, 0xb4);
         state->splineX[3] = state->targetX;
         state->splineY[3] = state->targetY;
         state->splineZ[3] = state->targetZ;

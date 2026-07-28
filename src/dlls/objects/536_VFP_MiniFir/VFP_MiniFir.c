@@ -96,7 +96,7 @@ void VFP_MiniFire_update(GameObject* obj)
     args.rz = 0;
     args.ry = 0;
     args.rx = 0;
-    if ((int)randomGetRange(0, 4) == 0)
+    if (randomGetRange(0, 4) == 0)
     {
         (*gPartfxInterface)
             ->spawnObject((void*)obj, VFPMINIFIRE_SMOKE_EFFECT, &args, VFPMINIFIRE_EFFECT_FLAGS, -1, NULL);
@@ -110,7 +110,7 @@ void VFP_MiniFire_update(GameObject* obj)
         args.y = dy / 3.0f;
         args.z = dz / 3.0f;
     }
-    if ((int)randomGetRange(0, 4) == 0)
+    if (randomGetRange(0, 4) == 0)
     {
         (*gPartfxInterface)
             ->spawnObject((void*)obj, VFPMINIFIRE_SMOKE_EFFECT, &args, VFPMINIFIRE_EFFECT_FLAGS, -1, NULL);
@@ -119,12 +119,12 @@ void VFP_MiniFire_update(GameObject* obj)
     args.x *= 2.0f;
     args.y *= 2.0f;
     args.z *= 2.0f;
-    if ((int)randomGetRange(0, 4) == 0)
+    if (randomGetRange(0, 4) == 0)
     {
         (*gPartfxInterface)
             ->spawnObject((void*)obj, VFPMINIFIRE_SMOKE_EFFECT, &args, VFPMINIFIRE_EFFECT_FLAGS, -1, NULL);
     }
-    if ((int)randomGetRange(0, 2) == 0)
+    if (randomGetRange(0, 2) == 0)
     {
         (*gPartfxInterface)->spawnObject((void*)obj, VFPMINIFIRE_SPARK_EFFECT, &args, 1, -1, NULL);
     }

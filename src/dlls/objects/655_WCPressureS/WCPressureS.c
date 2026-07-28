@@ -204,7 +204,7 @@ void wcpressures_update(GameObject* obj)
         }
         break;
     case WCPRESSURES_MODE_PRESSED:
-        if ((u32)mainGetBit(setup->solvedBit) == 0)
+        if (mainGetBit(setup->solvedBit) == 0)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_c7);
             state->mode = WCPRESSURES_MODE_RISING;
@@ -251,7 +251,7 @@ void wcpressures_init(GameObject* obj, WCPressuresSetup* setup)
         objAnim->bankIndex = 0;
     }
 
-    if ((u32)mainGetBit(setup->solvedBit) != 0)
+    if (mainGetBit(setup->solvedBit) != 0)
     {
         obj->anim.localPosY = setup->base.posY - setup->pressDepth;
         state->pressTimer = WCPRESSURES_SOLVED_TIMER;

@@ -267,9 +267,9 @@ void SB_ShipHead_update(GameObject* obj)
         setup = (u8*)Obj_AllocObjectSetup(0x18, SB_PROJECTILE_OBJID);
         ((ObjPlacement*)setup)->posX = 100.0f + player->anim.worldPosX;
         ((ObjPlacement*)setup)->posY =
-            50.0f + (player->anim.worldPosY + (f32)(int)randomGetRange(-6, 6));
+            50.0f + (player->anim.worldPosY + (f32)randomGetRange(-6, 6));
         ((ObjPlacement*)setup)->posZ =
-            45.0f + (player->anim.worldPosZ + (f32)(int)randomGetRange(-6, 6));
+            45.0f + (player->anim.worldPosZ + (f32)randomGetRange(-6, 6));
         setup[4] = 2;
         setup[5] = 1;
         setup[6] = 0xff;

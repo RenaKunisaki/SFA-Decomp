@@ -451,7 +451,7 @@ void wmwallcrawler_update(GameObject* obj)
                             }
                         }
                         else if ((state->flags & WMWALLCRAWLER_FLAG_TRICKY_FLEE) != 0 &&
-                                 (int)randomGetRange(0, 0x14) == 0)
+                                 randomGetRange(0, 0x14) == 0)
                         {
                             state->mode = WMWALLCRAWLER_MODE_CHASE;
                             s16toFloat((f32*)&state->attackTimer,

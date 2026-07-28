@@ -337,8 +337,8 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
     } else if (state->blinkPhase < PUSHABLE_ZERO) {
         state->blinkInterval =
             PUSHABLE_MAGIC_GEM_BLINK_INTERVAL_SCALE *
-            (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN, PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX);
-        state->blinkStep = state->blinkInterval / (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN,
+            (f32)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN, PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX);
+        state->blinkStep = state->blinkInterval / (f32)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN,
                                                                            PUSHABLE_MAGIC_GEM_BLINK_TIME_MAX);
         state->blinkPhase = PUSHABLE_ZERO;
     }
@@ -391,9 +391,9 @@ void pushable_initMagicGem(GameObject* obj, PushableState* state) {
     state->eyeDriftSpeedY = sharedValue;
     state->blinkInterval =
         PUSHABLE_MAGIC_GEM_BLINK_INTERVAL_SCALE *
-        (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN, PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX);
+        (f32)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_WAIT_MIN, PUSHABLE_MAGIC_GEM_BLINK_WAIT_MAX);
     state->blinkStep = state->blinkInterval /
-                       (f32)(int)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN, PUSHABLE_MAGIC_GEM_BLINK_TIME_MAX);
+                       (f32)randomGetRange(PUSHABLE_MAGIC_GEM_BLINK_TIME_MIN, PUSHABLE_MAGIC_GEM_BLINK_TIME_MAX);
     sharedValue = PUSHABLE_ZERO;
     state->blinkPhase = sharedValue;
     state->gameBit = placement->gameBit;

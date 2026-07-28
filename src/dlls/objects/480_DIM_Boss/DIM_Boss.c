@@ -531,7 +531,7 @@ int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int runtime) {
         ((BaddieState*)runtime)->animSpeedA = animSpeed;
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
         ((BaddieState*)runtime)->moveSpeed = 0.005f;
-        if ((int)randomGetRange(0, 1) != 0) {
+        if (randomGetRange(0, 1) != 0) {
             if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xd, 0.0f, 0);
                 ((BaddieState*)runtime)->moveDone = 0;
@@ -659,7 +659,7 @@ int DIMbossHitDetect_randomSwipe(GameObject* obj, int runtime, f32 arg) {
         animSpeed = 0.0f;
         ((BaddieState*)runtime)->animSpeedA = animSpeed;
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
-        if ((int)randomGetRange(0, 1) != 0) {
+        if (randomGetRange(0, 1) != 0) {
             if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xb, 0.0f, 0);
                 ((BaddieState*)runtime)->moveDone = 0;
@@ -1037,9 +1037,9 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
         if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_0040) {
             i = 0;
             do {
-                vec[0] = 0.1f * (f32)(int)randomGetRange(-5, 5);
-                vec[1] = 0.1f * (f32)(int)randomGetRange(-5, 5);
-                vec[2] = -0.25f * (f32)(int)randomGetRange(2, 8);
+                vec[0] = 0.1f * (f32)randomGetRange(-5, 5);
+                vec[1] = 0.1f * (f32)randomGetRange(-5, 5);
+                vec[2] = -0.25f * (f32)randomGetRange(2, 8);
                 PSMTXMultVec(topState->breathBurstMtx, vec, vec);
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x4b5, &topState->breathBurstSource, 0x200001, -1, vec);
                 i = i + 1;
@@ -1051,7 +1051,7 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
         if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_0100) {
             vec[0] = 0.1f;
             vec[1] = -0.2f;
-            vec[2] = -0.1f * (f32)(int)randomGetRange(4, 8);
+            vec[2] = -0.1f * (f32)randomGetRange(4, 8);
             PSMTXMultVec(topState->breathBurstMtx, vec, vec);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x4b6, &topState->blueWhiteEffectSource, 0x200001, -1, vec);
         }

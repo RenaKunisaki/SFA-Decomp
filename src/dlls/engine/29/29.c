@@ -123,7 +123,7 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.lifetimeFrames = 0xc8;
         cfg.initialAlpha = 0xe1;
         cfg.behaviorFlags = 0x400110;
-        if ((int)randomGetRange(0, 2) == 0)
+        if (randomGetRange(0, 2) == 0)
         {
             cfg.renderFlags = cfg.renderFlags | 0x100;
         }
@@ -594,7 +594,7 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.textureId = 0x167;
         break;
     case 0x1a9:
-        if ((int)randomGetRange(0, 0x50) == 0)
+        if (randomGetRange(0, 0x50) == 0)
         {
             cfg.lifetimeFrames = 0xf0;
             cfg.velocityX = (1.35f);
@@ -649,7 +649,7 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
             return -1;
         cfg.velocityX = (0.001f) * (f32)(s32)randomGetRange(0, 0x640) + (0.25f);
         vecRotateZXY(&spawnParams->rotX, &cfg.velocityX);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             cfg.scale = (0.005f);
             cfg.initialAlpha = 0xff;
@@ -858,10 +858,10 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.renderFlags = 0x20;
         cfg.behaviorFlags = 0x80100;
         cfg.colorWord0 = randomGetRange(0, 0x7530) + 0x63bf;
-        cfg.colorWord1 = cfg.colorWord0 / (int)randomGetRange(1, 3);
+        cfg.colorWord1 = cfg.colorWord0 / randomGetRange(1, 3);
         cfg.colorWord2 = 0;
         cfg.overrideColor0 = randomGetRange(0, 0x2710);
-        cfg.overrideColor1 = (int)cfg.overrideColor0 / (int)randomGetRange(1, 3);
+        cfg.overrideColor1 = (int)cfg.overrideColor0 / randomGetRange(1, 3);
         cfg.overrideColor2 = 0;
         cfg.textureId = 0x60;
         break;
@@ -869,12 +869,12 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.startPosZ = (0.1f) * (f32)(s32)randomGetRange(-0xc8, 0xc8);
         cfg.startPosY = (0.1f) * (f32)(s32)randomGetRange(-0xc8, 0xc8);
         cfg.velocityZ = (0.0065f) * (f32)(s32)randomGetRange(0xc8, 0x320);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             cfg.velocityZ *= (-1.0f);
         }
         cfg.velocityY = (0.0065f) * (f32)(s32)randomGetRange(0xc8, 0x320);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             cfg.velocityY *= (-1.0f);
         }

@@ -124,7 +124,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
         mag = PSVECMag(jointPos);
         obj->anim.rotZ = (s16)(lbl_803DC2F0 + getAngle(jointPos[0], jointPos[2]));
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
-        objSetMtxFn_800412d4((u32)ObjPath_GetPointModelMtx((GameObject*)a, b));
+        objSetMtxFn_800412d4(ObjPath_GetPointModelMtx((GameObject*)a, b));
     }
     ObjPath_GetPointWorldPosition((GameObject*)a, b, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
                                   0);
@@ -188,7 +188,7 @@ void drshackle_hitDetect(unsigned long obj)
         int n;
         PSVECSubtract(&((GameObject*)obj)->anim.localPosX, &((DrshackleState*)state)->savedPosX, vec);
         n = 0xc8 - (int)(30.0f * PSVECMag(vec));
-        if ((int)randomGetRange(0, (n < 1) ? 1 : ((n > 0xc8) ? 0xc8 : n)) == 0)
+        if (randomGetRange(0, (n < 1) ? 1 : ((n > 0xc8) ? 0xc8 : n)) == 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_1b3);
         }

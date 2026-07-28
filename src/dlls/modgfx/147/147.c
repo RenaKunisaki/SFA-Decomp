@@ -39,7 +39,7 @@ void dll_93_func03(int sourceObj, int variant, int posSource, u32 flags)
     e[1].flags = 0x15;
     e[1].tex = base + 0x1b0;
     e[1].mode = 2;
-    rval = 0.1f * (f32)(int)randomGetRange(0, 10) + 1.0f;
+    rval = 0.1f * (f32)randomGetRange(0, 10) + 1.0f;
     e[1].x = rval;
     e[1].y = 10.5f;
     e[1].z = rval;

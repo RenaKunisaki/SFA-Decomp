@@ -29,7 +29,7 @@ int DR_CloudPer_activate(int obj)
 {
     DrCloudPerObject* cloud = (DrCloudPerObject*)obj;
     DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->setup;
-    if ((u32)mainGetBit(setup->gameBit) == 0)
+    if (mainGetBit(setup->gameBit) == 0)
     {
         return 0;
     }

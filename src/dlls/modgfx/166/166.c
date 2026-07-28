@@ -58,8 +58,8 @@ void dll_A6_func03(short* sourceObj, int variant, u8* posSource, u32 flags)
         p->z = (f32)(int)(randomGetRange(0, 0x1e) + 0xe1);
         p++;
     }
-    zr = (f32)(int)randomGetRange(0, 0xfffe);
-    yr = (f32)(int)randomGetRange(-3000, -12000);
+    zr = (f32)randomGetRange(0, 0xfffe);
+    yr = (f32)randomGetRange(-3000, -12000);
     p[0].layer = 0;
     p[0].flags = 0;
     p[0].tex = NULL;
@@ -79,19 +79,19 @@ void dll_A6_func03(short* sourceObj, int variant, u8* posSource, u32 flags)
     p[2].tex = gDllA6EffectTex;
     p[2].mode = 2;
     p[2].x = 1.0f;
-    p[2].y = 0.01f * (f32)(int)randomGetRange(0, 0x19) + 0.25f;
-    p[2].z = 0.01f * (f32)(int)randomGetRange(0, 10) + 0.4f;
+    p[2].y = 0.01f * (f32)randomGetRange(0, 0x19) + 0.25f;
+    p[2].z = 0.01f * (f32)randomGetRange(0, 10) + 0.4f;
     p[3].layer = 1;
     p[3].flags = 3;
     p[3].tex = gDllA6EffectTex;
     p[3].mode = 4;
     if (randomGetRange(0, 10) == 0)
     {
-        p[3].x = 145.0f + (f32)(int)randomGetRange(0, 0x1e);
+        p[3].x = 145.0f + (f32)randomGetRange(0, 0x1e);
     }
     else
     {
-        p[3].x = 25.0f + (f32)(int)randomGetRange(0, 10);
+        p[3].x = 25.0f + (f32)randomGetRange(0, 10);
     }
     p[3].y = 0.0f;
     p[3].z = 0.0f;
@@ -101,7 +101,7 @@ void dll_A6_func03(short* sourceObj, int variant, u8* posSource, u32 flags)
     p[4].mode = 0x80;
     p[4].x = 0.0f;
     p[4].y = 0.0f;
-    p[4].z = (f32)(int)randomGetRange(0, 0xfffe);
+    p[4].z = (f32)randomGetRange(0, 0xfffe);
     p[5].layer = 1;
     p[5].flags = 3;
     p[5].tex = gDllA6EffectTex;
@@ -115,7 +115,7 @@ void dll_A6_func03(short* sourceObj, int variant, u8* posSource, u32 flags)
     p[6].mode = 0x80;
     p[6].x = 0.0f;
     p[6].y = 0.0f;
-    p[6].z = (f32)(int)randomGetRange(0, 0xfffe);
+    p[6].z = (f32)randomGetRange(0, 0xfffe);
     p[7].layer = 2;
     p[7].flags = 3;
     p[7].tex = gDllA6EffectTex;

@@ -503,15 +503,15 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val)
         curve[14] -= framesThisStep;
         if (curve[14] < 0)
         {
-            if ((int)randomGetRange(0, 100) > 90)
+            if (randomGetRange(0, 100) > 90)
             {
                 curve[13] = (s16)(flag << 8 | 5);
                 if (*(s8*)curve != 0)
                 {
-                    if ((int)randomGetRange(0, 100) > 0)
+                    if (randomGetRange(0, 100) > 0)
                     {
                         curve[10] = 0x1fff;
-                        if ((int)randomGetRange(0, 1) == 0)
+                        if (randomGetRange(0, 1) == 0)
                         {
                             curve[10] = -curve[10];
                         }
@@ -520,7 +520,7 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val)
                 else
                 {
                     curve[10] = 0x1fff;
-                    if ((int)randomGetRange(0, 1) == 0)
+                    if (randomGetRange(0, 1) == 0)
                     {
                         curve[10] = -curve[10];
                     }
@@ -1244,7 +1244,7 @@ void characterDoEyeAnims(GameObject* obj, void* stateData)
             {
                 state->blinkTimer = blinkTimer - framesThisStep;
             }
-            else if ((int)randomGetRange(0, 1000) > 0x3de)
+            else if (randomGetRange(0, 1000) > 0x3de)
             {
                 state->blinkState = 1;
                 state->blinkTimer = 0;

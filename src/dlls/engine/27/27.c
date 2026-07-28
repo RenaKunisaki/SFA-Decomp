@@ -175,7 +175,7 @@ int Effect2_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.scale = 0.2f;
         cfg.lifetimeFrames = 0x30;
         cfg.linkGroup = 0;
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
             cfg.behaviorFlags = 0x8100210;
         else
             cfg.behaviorFlags = 0x180210;
@@ -354,7 +354,7 @@ int Effect2_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.lifetimeFrames = 6;
         cfg.initialAlpha = 0xe1;
         cfg.behaviorFlags = 0x4a0010;
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
             cfg.renderFlags = 0x202;
         else
             cfg.renderFlags = 0x102;

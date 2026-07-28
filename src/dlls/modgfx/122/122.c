@@ -46,9 +46,9 @@ s16 dll_7A_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     entries[1].flags = 8;
     entries[1].tex = &base[0x8c];
     entries[1].mode = 2;
-    entries[1].x = 0.4f * (f32)(int)randomGetRange(10, 15);
-    entries[1].y = 0.4f * (f32)(int)randomGetRange(10, 15);
-    entries[1].z = 0.8f * (f32)(int)randomGetRange(10, 15);
+    entries[1].x = 0.4f * (f32)randomGetRange(10, 15);
+    entries[1].y = 0.4f * (f32)randomGetRange(10, 15);
+    entries[1].z = 0.8f * (f32)randomGetRange(10, 15);
     entries[2].layer = 0;
     entries[2].flags = 9;
     entries[2].tex = &base[0x8c];
@@ -67,9 +67,9 @@ s16 dll_7A_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     entries[4].flags = 0;
     entries[4].tex = 0;
     entries[4].mode = 0x400000;
-    entries[4].x = (f32)(int)randomGetRange(-2000, 200);
-    entries[4].y = (f32)(int)randomGetRange(-200, 200);
-    entries[4].z = (f32)(int)randomGetRange(-200, 200);
+    entries[4].x = (f32)randomGetRange(-2000, 200);
+    entries[4].y = (f32)randomGetRange(-200, 200);
+    entries[4].z = (f32)randomGetRange(-200, 200);
     entries[5].layer = 1;
     entries[5].flags = 9;
     entries[5].tex = &base[0x8c];

@@ -252,7 +252,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
         (*gPartfxInterface)->spawnObject((u8*)gobj, BONE_PARTICLE_EFFECT_PARTFX, NULL, 1, -1, NULL);
         (*gPartfxInterface)->spawnObject((u8*)gobj, BONE_PARTICLE_EFFECT_PARTFX, NULL, 1, -1, NULL);
         (*gPartfxInterface)->spawnObject((u8*)gobj, BONE_PARTICLE_EFFECT_PARTFX, NULL, 1, -1, NULL);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             textureSelectAnimationFramePair(ctx, gBoneParticleTextureA, 0, 0, 0, 0, 0);
         }
@@ -391,7 +391,7 @@ void boneParticleEffect_spawnAtBones(GameObject* obj, int effectId, void* extraA
     model = Obj_GetActiveModel(obj);
     for (i = 0; i < ((ObjModel*)model)->file->jointCount; i++)
     {
-        if ((int)randomGetRange(1, 0x64) <= prob)
+        if (randomGetRange(1, 0x64) <= prob)
         {
             void* mtx;
             data.posX = (0.0f);

@@ -430,7 +430,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     if ((s8)stateArg->baddie.moveJustStartedA != 0)
     {
         state->flagsC49.b1 = 1;
-        state->stateTimer = (f32)(int)randomGetRange(0x1f4, 0x3e8);
+        state->stateTimer = (f32)randomGetRange(0x1f4, 0x3e8);
         state->substate = 0;
         if (obj->anim.currentMove != 2)
         {
@@ -514,7 +514,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
               : -dy) > 300.0f))
     {
         state->flags |= 1;
-        if ((int)randomGetRange(0, 0x64) == 0 && obj->anim.currentMove != 9)
+        if (randomGetRange(0, 0x64) == 0 && obj->anim.currentMove != 9)
         {
             f32 deltaY = player->anim.localPosY - obj->anim.localPosY;
             f32 ac = deltaY >= 0.0f ? deltaY : -deltaY;
@@ -1156,7 +1156,7 @@ void HighTop_update(GameObject* obj)
             }
         }
     }
-    if ((int)randomGetRange(0, 0x64) == 0)
+    if (randomGetRange(0, 0x64) == 0)
     {
         objSoundFn_800392f0((GameObject*)self, &((HighTopRuntime*)state)->modelSoundState,
                             (ObjSoundDef*)&lbl_8032AAB0[randomGetRange(0, 2) * 6], 0);

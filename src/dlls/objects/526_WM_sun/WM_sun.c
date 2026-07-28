@@ -155,7 +155,7 @@ void wmsun_updateGlare(GameObject* obj)
                 {
                     gWmSunGlareDamping = gWmSunGlareDamping - (gWmSunGlareIntensity - 0.2f) / 20.0f;
                 }
-                g.intensity = 0.0005f * (f32)(int)randomGetRange(0, 0x1e) + g.intensity;
+                g.intensity = 0.0005f * (f32)randomGetRange(0, 0x1e) + g.intensity;
                 if (gWmSunGlareIntensity > 0.05f)
                 {
                     gWmSunGlareIntensity = gWmSunGlareIntensity - 0.0002f;
@@ -306,7 +306,7 @@ void wmsun_update(GameObject* obj)
                 state->renderEnabled = 0;
             }
             if (mainGetBit(GAMEBIT_WM_FinaleQuakeActive) == 0 && state->riseStep > 0x960 &&
-                (int)randomGetRange(0, 100) == 0)
+                randomGetRange(0, 100) == 0)
             {
                 CameraShake_SetAllMagnitudes(0.8f * ((f32)(state->riseStep - 0x960) / 2400.0f));
                 mainSetBits(0x370, 1);
@@ -386,7 +386,7 @@ void wmsun_update(GameObject* obj)
         }
         if (objAnim->bankIndex == 0)
         {
-            if ((int)randomGetRange(0, 0x96) == 0)
+            if (randomGetRange(0, 0x96) == 0)
             {
                 randomGetRange(0, 0xffff);
                 randomGetRange(0, 0xffff);
@@ -404,7 +404,7 @@ void wmsun_update(GameObject* obj)
         {
             if (lbl_803DDCAA == 0)
             {
-                if (gWmSunQuakeTimer > 600 && (int)randomGetRange(0, 10) == 0)
+                if (gWmSunQuakeTimer > 600 && randomGetRange(0, 10) == 0)
                 {
                     CameraShake_SetAllMagnitudes(2.8f); /* 2.8f */
                 }
@@ -442,7 +442,7 @@ void wmsun_update(GameObject* obj)
                         getEnvfxAct(obj, obj, WMSUN_ENVFX_B, 0);
                     }
                 }
-                if ((int)randomGetRange(0, 8) == 0)
+                if (randomGetRange(0, 8) == 0)
                 {
                     CameraShake_SetAllMagnitudes(2.8f);
                 }

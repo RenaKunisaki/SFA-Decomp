@@ -264,18 +264,18 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         state->playerSfxTimer = state->playerSfxTimer - timeDelta;
         if (state->playerSfxTimer < 0.0f) {
             if (diff < 0.0f) {
-                state->playerSfxTimer = (f32)(int)randomGetRange(0x28, 100);
+                state->playerSfxTimer = (f32)randomGetRange(0x28, 100);
             } else {
-                state->playerSfxTimer = (f32)(int)randomGetRange(0x78, 0xf0);
+                state->playerSfxTimer = (f32)randomGetRange(0x78, 0xf0);
             }
             Sfx_PlayFromObject(player, SFXTRIG_literun116_var);
         }
         state->platformSfxTimer = state->platformSfxTimer - timeDelta;
         if (state->platformSfxTimer < 0.0f) {
             if (diff > 0.0f) {
-                state->platformSfxTimer = (f32)(int)randomGetRange(0x28, 100);
+                state->platformSfxTimer = (f32)randomGetRange(0x28, 100);
             } else {
-                state->platformSfxTimer = (f32)(int)randomGetRange(0x78, 0xf0);
+                state->platformSfxTimer = (f32)randomGetRange(0x78, 0xf0);
             }
             Sfx_PlayFromObject((int)obj, SFXTRIG_spotfox03);
         }

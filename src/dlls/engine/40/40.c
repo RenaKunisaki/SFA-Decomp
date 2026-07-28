@@ -265,13 +265,13 @@ int Effect15_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
         cfg.startPosY = (f32)(s32)randomGetRange(-0x32, 0x32) / 100.0f;
         cfg.startPosZ = (f32)(s32)randomGetRange(-0x32, 0x32) / 100.0f;
         cfg.velocityX = 0.005f * (f32)(s32)randomGetRange(0x1e, 0x3c);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
             cfg.velocityX = -cfg.velocityX;
         cfg.velocityY = 0.005f * (f32)(s32)randomGetRange(0x1e, 0x3c);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
             cfg.velocityY = -cfg.velocityY;
         cfg.velocityZ = 0.005f * (f32)(s32)randomGetRange(0x1e, 0x3c);
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
             cfg.velocityZ = -cfg.velocityZ;
         cfg.scale = 0.00012f * (f32)(s32)randomGetRange(0, 0xa) + 0.001f;
         cfg.lifetimeFrames = 0x46;
@@ -292,7 +292,7 @@ int Effect15_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
             cfg.startPosY = cfg.startPosY - ((GameObject*)cfg.attachedSource)->anim.worldPosY;
             cfg.startPosZ = cfg.startPosZ - ((GameObject*)cfg.attachedSource)->anim.worldPosZ;
         }
-        if ((int)randomGetRange(0, 0x28) == 0)
+        if (randomGetRange(0, 0x28) == 0)
             cfg.scale = 0.0003f;
         else
             cfg.scale = 0.0015f;

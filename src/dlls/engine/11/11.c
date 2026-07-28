@@ -880,7 +880,7 @@ int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
         if ((int)((PartfxEffectState*)p[slot])->flags & 0x400000)
         {
             dscale = 0.5f * ((PartfxEffectState*)p[slot])->renderScale;
-            xf.scale = dscale + dscale / (int)randomGetRange(1, 10);
+            xf.scale = dscale + dscale / randomGetRange(1, 10);
         }
         else
         {

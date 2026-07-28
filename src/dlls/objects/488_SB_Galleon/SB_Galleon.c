@@ -267,7 +267,7 @@ void DBprotection_updateFlight(GameObject* obj)
         if (state->wanderTimerA <= lbl_803E56CC)
         {
             state->wanderFlagA ^= 1;
-            state->wanderTimerA = (f32)(int)randomGetRange(0xB4, 300);
+            state->wanderTimerA = (f32)randomGetRange(0xB4, 300);
         }
         if (state->wanderFlagA != 0)
         {
@@ -281,7 +281,7 @@ void DBprotection_updateFlight(GameObject* obj)
         if (state->wanderTimerB <= lbl_803E56CC)
         {
             state->wanderFlagB ^= 1;
-            state->wanderTimerB = (f32)(int)randomGetRange(0xB4, 300);
+            state->wanderTimerB = (f32)randomGetRange(0xB4, 300);
         }
         if (state->wanderFlagB != 0)
         {

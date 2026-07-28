@@ -215,7 +215,7 @@ void dimbossfire_init(GameObject *obj, u32 arg2, int placement)
     ObjHits_DisableObject(obj);
     if (placement == 0)
     {
-        state->cooldownTimer = (f32)(int)randomGetRange(DIMBOSSFIRE_COOLDOWN_MIN, DIMBOSSFIRE_COOLDOWN_MAX);
+        state->cooldownTimer = (f32)randomGetRange(DIMBOSSFIRE_COOLDOWN_MIN, DIMBOSSFIRE_COOLDOWN_MAX);
         randVal = randomGetRange(0, 9);
         state->durationIndex = randVal;
     }

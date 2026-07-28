@@ -191,7 +191,7 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.lifetimeFrames = 0x1e;
         cfg.initialAlpha = 0xc8;
         cfg.behaviorFlags = 0x140101;
-        if ((int)randomGetRange(0, 1) != 0)
+        if (randomGetRange(0, 1) != 0)
         {
             cfg.textureId = 0x33;
         }
@@ -356,10 +356,10 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.renderFlags = 0x20;
         cfg.behaviorFlags = 0x180210;
         cfg.colorWord0 = randomGetRange(0, 0x7530) + 0x63bf;
-        cfg.colorWord1 = cfg.colorWord0 / (int)randomGetRange(1, 3);
+        cfg.colorWord1 = cfg.colorWord0 / randomGetRange(1, 3);
         cfg.colorWord2 = 0;
         cfg.overrideColor0 = randomGetRange(0, 0x2710);
-        cfg.overrideColor1 = (int)cfg.overrideColor0 / (int)randomGetRange(1, 3);
+        cfg.overrideColor1 = (int)cfg.overrideColor0 / randomGetRange(1, 3);
         cfg.overrideColor2 = 0;
         cfg.textureId = 0x60;
         break;

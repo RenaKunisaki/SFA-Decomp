@@ -53,7 +53,7 @@ void dll_85_func03(int sourceObj, int variant, int posSource, u32 flags)
         e[2].flags = 4;
         e[2].tex = lbl_803DB8FC;
         e[2].mode = 0x80;
-        e[2].x = (f32)(int)randomGetRange(-0x7ff8, 0x7ff8);
+        e[2].x = (f32)randomGetRange(-0x7ff8, 0x7ff8);
         e[2].y = 0.0f;
         e[2].z = 16383.0f;
         p = &e[3];
@@ -77,7 +77,7 @@ void dll_85_func03(int sourceObj, int variant, int posSource, u32 flags)
         e[1].y = 6.0f * (src->anim.rootMotionScale /
                          src->anim.modelInstance->rootMotionScaleBase);
         e[1].z = 1.0f;
-        rv = (f32)(int)randomGetRange(0, 0xfffe);
+        rv = (f32)randomGetRange(0, 0xfffe);
         e[2].layer = 0;
         e[2].flags = 0;
         e[2].tex = NULL;
@@ -94,7 +94,7 @@ void dll_85_func03(int sourceObj, int variant, int posSource, u32 flags)
     p[0].x = 0.0f;
     p[0].y = 0.0f;
     p[0].z = 0.0f;
-    rv = (f32)(int)randomGetRange(0, 0xfffe);
+    rv = (f32)randomGetRange(0, 0xfffe);
     p[1].layer = 1;
     p[1].flags = 2;
     p[1].tex = lbl_803DB8F0;
@@ -124,7 +124,7 @@ void dll_85_func03(int sourceObj, int variant, int posSource, u32 flags)
         p[2].z = 0.0f;
         p += 3;
     }
-    rv = (f32)(int)randomGetRange(0, 0xfffe);
+    rv = (f32)randomGetRange(0, 0xfffe);
     if (variant == FX_VARIANT_BURST)
     {
         p->layer = 2;

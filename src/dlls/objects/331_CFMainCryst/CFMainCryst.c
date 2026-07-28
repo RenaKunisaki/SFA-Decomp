@@ -208,7 +208,7 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
         if (state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] + state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] +
                     state->pylonTimers[CFMAINCRYSTAL_PYLON_BLUE] <
                 CFMAINCRYSTAL_PARTIAL_CHARGE_TOTAL &&
-            (int)randomGetRange(0, CFMAINCRYSTAL_PYLON_COUNT) == 0) {
+            randomGetRange(0, CFMAINCRYSTAL_PYLON_COUNT) == 0) {
             (*gPartfxInterface)->spawnObject(obj, CFMAINCRYSTAL_PARTFX_CHARGE_SPARK, NULL, 0, -1, NULL);
         }
         if (state->pylonTimers[CFMAINCRYSTAL_PYLON_RED] != 0 || state->pylonTimers[CFMAINCRYSTAL_PYLON_GREEN] != 0 ||

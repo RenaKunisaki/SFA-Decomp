@@ -138,7 +138,7 @@ void dbegg_processMessages(GameObject* obj)
     eggState = *(int*)&(obj)->extra;
     config = (DbeggPlacement*)(obj)->anim.placementData;
 
-    while ((int)ObjMsg_Pop((void*)obj, &msgType, (u32*)&msgArg, (u32*)&msgFlag) != 0)
+    while (ObjMsg_Pop((void*)obj, &msgType, (u32*)&msgArg, (u32*)&msgFlag) != 0)
     {
         if (msgType == 17)
         {

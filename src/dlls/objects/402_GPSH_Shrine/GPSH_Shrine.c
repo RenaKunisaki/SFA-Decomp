@@ -321,7 +321,7 @@ void gpshShrine_update(GameObject* obj) {
                 state->idleSfxTimer = idleSfxTimer;
                 if (idleSfxTimer <= zero) {
                     Sfx_PlayFromObject((int)obj, SFXTRIG_spirit_voice);
-                    state->idleSfxTimer = (f32)(int)randomGetRange(500, 1000);
+                    state->idleSfxTimer = (f32)randomGetRange(500, 1000);
                 }
                 if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) {
                     state->phase = GPSH_SHRINE_PHASE_BEGIN;

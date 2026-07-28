@@ -74,7 +74,7 @@ s16 dll_79_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
         e[1].flags = 8;
         e[1].tex = &base[0x8c];
         e[1].mode = 2;
-        jitter = 0.05f * (f32)(int)randomGetRange(0, 0xc);
+        jitter = 0.05f * (f32)randomGetRange(0, 0xc);
         e[1].x = 3.5f + jitter;
         e[1].y = 3.5f + jitter;
         e[1].z = 20.0f + jitter;
@@ -110,7 +110,7 @@ s16 dll_79_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
         e[1].flags = 8;
         e[1].tex = &base[0x8c];
         e[1].mode = 2;
-        jitter = 0.05f * (f32)(int)randomGetRange(0, 0xc);
+        jitter = 0.05f * (f32)randomGetRange(0, 0xc);
         e[1].x = 1.2f + jitter;
         e[1].y = 1.2f + jitter;
         e[1].z = 12.0f + jitter;

@@ -440,9 +440,9 @@ void andross_updateBombCollector(GameObject* obj, AndrossState* andross)
             if (andross->spawnCooldown < zero)
                 andross_spawnBombCollector(obj, andross);
         }
-        else if ((u32)mainGetBit(GAMEBIT_AndrossRelated0012) != 0)
+        else if (mainGetBit(GAMEBIT_AndrossRelated0012) != 0)
         {
-            andross->spawnCooldown = (f32)(int)randomGetRange(1, 0x14);
+            andross->spawnCooldown = (f32)randomGetRange(1, 0x14);
             mainSetBits(GAMEBIT_AndrossRelated0012, 0);
         }
     }
@@ -1960,11 +1960,11 @@ void andross_update(int obj)
             {
                 state->actionTimer = randomGetRange(0x14, 0x1e);
                 state->targetPosX =
-                    (f32)(int)randomGetRange((int)-gAndrossSpawnRandX, gAndrossSpawnRandX) + state->homePosX;
+                    (f32)randomGetRange((int)-gAndrossSpawnRandX, gAndrossSpawnRandX) + state->homePosX;
                 state->targetPosY =
-                    (f32)(int)randomGetRange((int)-gAndrossSpawnRandY, gAndrossSpawnRandY) + state->homePosY;
+                    (f32)randomGetRange((int)-gAndrossSpawnRandY, gAndrossSpawnRandY) + state->homePosY;
                 state->targetPosZ =
-                    (f32)(int)randomGetRange((int)-gAndrossSpawnRandZ, gAndrossSpawnRandZ) + state->homePosZ;
+                    (f32)randomGetRange((int)-gAndrossSpawnRandZ, gAndrossSpawnRandZ) + state->homePosZ;
             }
         }
         if ((state->signalFlags & ANDROSS_SIGNAL_BRAIN_DEFEATED) != 0)

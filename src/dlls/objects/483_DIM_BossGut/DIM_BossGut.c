@@ -61,7 +61,7 @@ void dimbossgut2_updateBobAndSway(GameObject* obj, DimBossGut2State* state) {
     heightDelta = control->surfaceY - obj->anim.localPosY;
 
     control->bobPhase += 0x400;
-    heightDelta = heightDelta + (f32)(int)cos16(control->bobPhase) / 65535.0f;
+    heightDelta = heightDelta + (f32)cos16(control->bobPhase) / 65535.0f;
 
     control->verticalVelocity = timeDelta * (heightDelta / 50.0f - control->turnHeightBias) + control->verticalVelocity;
 
@@ -312,7 +312,7 @@ void DIM_BossGut2_init(GameObject* obj, int placementAddress, int isAltVariant) 
         }
     }
     control->surfaceY += obj->anim.localPosY;
-    ObjAnim_SetCurrentMove((int)obj, DIMBOSSGUT2_IDLE_MOVE_ID, (f32)(int)randomGetRange(0, 0x63) / 100.0f, 0);
+    ObjAnim_SetCurrentMove((int)obj, DIMBOSSGUT2_IDLE_MOVE_ID, (f32)randomGetRange(0, 0x63) / 100.0f, 0);
     ObjAnim_AdvanceCurrentMove((int)obj, 0.015f, timeDelta, NULL);
     control->light = objCreateLight(obj, 1);
     if (control->light != NULL) {

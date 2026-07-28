@@ -148,7 +148,7 @@ void DR_CloudRunner_func23(GameObject* obj, int mode, int* out)
             p = bits.a;
             do
             {
-                if ((u32)mainGetBit(*p) != 0)
+                if (mainGetBit(*p) != 0)
                 {
                     break;
                 }
@@ -911,7 +911,7 @@ int DR_CloudRunner_stateHandler01(GameObject* obj, CloudRunnerState* baddie)
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_lfoot_taunt);
     }
-    if ((u32)mainGetBit(((DRCloudRunnerPlacement*)placement)->enableGameBit) != 0)
+    if (mainGetBit(((DRCloudRunnerPlacement*)placement)->enableGameBit) != 0)
     {
         (obj)->userData1 = 0;
         ObjHits_EnableObject(obj);

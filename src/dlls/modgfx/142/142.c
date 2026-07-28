@@ -62,8 +62,8 @@ void dll_8E_func03(int sourceObj, int variant, int posSource, u32 flags)
         p->z = (f32)(int)(randomGetRange(0, 0x41) + 0x78);
         p++;
     }
-    rz = (f32)(int)randomGetRange(0, 0xfffe);
-    ry = (f32)(int)randomGetRange(-0xbb8, -0x2ee0);
+    rz = (f32)randomGetRange(0, 0xfffe);
+    ry = (f32)randomGetRange(-0xbb8, -0x2ee0);
     p[0].layer = 0;
     p[0].flags = 0;
     p[0].tex = NULL;
@@ -83,19 +83,19 @@ void dll_8E_func03(int sourceObj, int variant, int posSource, u32 flags)
     p[2].tex = gDll8EEffectTexture;
     p[2].mode = 2;
     p[2].x = 1.0f;
-    p[2].y = 0.01f * (f32)(int)randomGetRange(0, 0x32) + 0.5f;
-    p[2].z = 0.01f * (f32)(int)randomGetRange(0, 0x14) + 0.8f;
+    p[2].y = 0.01f * (f32)randomGetRange(0, 0x32) + 0.5f;
+    p[2].z = 0.01f * (f32)randomGetRange(0, 0x14) + 0.8f;
     p[3].layer = 1;
     p[3].flags = 3;
     p[3].tex = gDll8EEffectTexture;
     p[3].mode = 4;
-    if ((int)randomGetRange(0, 0xa) == 0)
+    if (randomGetRange(0, 0xa) == 0)
     {
-        p[3].x = 145.0f + (f32)(int)randomGetRange(0, 0x1e);
+        p[3].x = 145.0f + (f32)randomGetRange(0, 0x1e);
     }
     else
     {
-        p[3].x = 25.0f + (f32)(int)randomGetRange(0, 0xa);
+        p[3].x = 25.0f + (f32)randomGetRange(0, 0xa);
     }
     p[3].y = 0.0f;
     p[3].z = 0.0f;
@@ -105,7 +105,7 @@ void dll_8E_func03(int sourceObj, int variant, int posSource, u32 flags)
     p[4].mode = 0x80;
     p[4].x = 0.0f;
     p[4].y = 0.0f;
-    p[4].z = (f32)(int)randomGetRange(0, 0xfffe);
+    p[4].z = (f32)randomGetRange(0, 0xfffe);
     p[5].layer = 1;
     p[5].flags = 3;
     p[5].tex = gDll8EEffectTexture;
@@ -119,7 +119,7 @@ void dll_8E_func03(int sourceObj, int variant, int posSource, u32 flags)
     p[6].mode = 0x80;
     p[6].x = 0.0f;
     p[6].y = 0.0f;
-    p[6].z = (f32)(int)randomGetRange(0, 0xfffe);
+    p[6].z = (f32)randomGetRange(0, 0xfffe);
     p[7].layer = 2;
     p[7].flags = 3;
     p[7].tex = gDll8EEffectTexture;

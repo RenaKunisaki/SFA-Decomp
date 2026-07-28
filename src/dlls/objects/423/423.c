@@ -279,7 +279,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
         ObjHits_ClearSourceMask((ObjAnimComponent*)obj, 1);
         Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_cagelp_c);
         if (state->burrowAttackTimer <= 0.0f) {
-            state->burrowAttackTimer = (f32)(int)randomGetRange(0xF0, 0x12C);
+            state->burrowAttackTimer = (f32)randomGetRange(0xF0, 0x12C);
         }
         timer = state->burrowAttackTimer - timeDelta;
         state->burrowAttackTimer = timer;

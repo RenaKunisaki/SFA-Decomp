@@ -754,14 +754,14 @@ void drakorhoverpad_render(GameObject* obj, int p2, int p3, int p4, int p5, char
         if (((DrakorHoverpadRenderState*)p)->frameCounter == 0 || ((DrakorHoverpadRenderState*)p)->frameCounter > 10)
         {
             ((DrakorHoverpadRenderState*)p)->frameCounter = 0;
-            ((DrakorHoverpadRenderState*)p)->particleEmitAX = (obj)->anim.localPosX + (f32)(int)randomGetRange(-30, 30);
+            ((DrakorHoverpadRenderState*)p)->particleEmitAX = (obj)->anim.localPosX + (f32)randomGetRange(-30, 30);
             ((DrakorHoverpadRenderState*)p)->particleEmitAY = (obj)->anim.localPosY;
-            ((DrakorHoverpadRenderState*)p)->particleEmitAZ = (obj)->anim.localPosZ + (f32)(int)randomGetRange(-30, 30);
+            ((DrakorHoverpadRenderState*)p)->particleEmitAZ = (obj)->anim.localPosZ + (f32)randomGetRange(-30, 30);
             ((DrakorHoverpadRenderState*)p)->particleEmitBX =
-                (obj)->anim.localPosX + (f32)(int)randomGetRange(-120, 120);
+                (obj)->anim.localPosX + (f32)randomGetRange(-120, 120);
             ((DrakorHoverpadRenderState*)p)->particleEmitBY = (obj)->anim.localPosY - 40.0f;
             ((DrakorHoverpadRenderState*)p)->particleEmitBZ =
-                (obj)->anim.localPosZ + (f32)(int)randomGetRange(-120, 120);
+                (obj)->anim.localPosZ + (f32)randomGetRange(-120, 120);
         }
     }
 }

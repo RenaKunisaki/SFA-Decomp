@@ -585,7 +585,7 @@ volatile void* GXRedirectWriteGatherPipe(void* ptr) {
 
     GXFlush();
     while (PPCMfwpar() & 1) {}
-    PPCMtwpar((u32)OSUncachedToPhysical((void*)GXFIFO_ADDR));
+    PPCMtwpar(OSUncachedToPhysical((void*)GXFIFO_ADDR));
     if (CPGPLinked) {
         __GXFifoLink(0);
         __GXWriteFifoIntEnable(0, 0);
@@ -620,7 +620,7 @@ void GXRestoreWriteGatherPipe(void) {
 
     __sync();
     while (PPCMfwpar() & 1) {}
-    PPCMtwpar((u32)OSUncachedToPhysical((void*)GXFIFO_ADDR));
+    PPCMtwpar(OSUncachedToPhysical((void*)GXFIFO_ADDR));
     GX_SET_PI_REG(3, CPUFifo->base & 0x3FFFFFFF);
     GX_SET_PI_REG(4, CPUFifo->top & 0x3FFFFFFF);
     SET_REG_FIELD(1578, reg, 21, 5, ((u32)CPUFifo->wrPtr & 0x3FFFFFFF) >> 5);

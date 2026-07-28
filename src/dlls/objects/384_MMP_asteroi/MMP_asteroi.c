@@ -214,7 +214,7 @@ void mmpAsteroidRe_update(GameObject* obj) {
         if ((state->eventFlags & MMP_ASTEROID_RE_FX_PERIODIC) != 0) {
             state->periodicFxTimer -= timeDelta;
             if (state->periodicFxTimer < 0.0f) {
-                state->periodicFxTimer = (f32)(int)randomGetRange(10, 0x3C);
+                state->periodicFxTimer = (f32)randomGetRange(10, 0x3C);
                 (*gPartfxInterface)->spawnObject((void*)obj, MMP_ASTEROID_RE_PARTICLE_PERIODIC, NULL, 1, -1, NULL);
             }
         }

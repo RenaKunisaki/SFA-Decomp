@@ -108,7 +108,7 @@ void SB_Propeller_update(GameObject* obj)
                 effect.scale = spd;
                 (*gPartfxInterface)->spawnObject((void*)obj, SB_PROPELLER_PARTFX_SMOKE, &effect, 0x200001, -1, NULL);
             }
-            state->smokeTimer = (f32)(int)randomGetRange(0x5a, 0xf0);
+            state->smokeTimer = (f32)randomGetRange(0x5a, 0xf0);
         }
         if ((2 < camA) && (objAnim->bankIndex == 1))
         {

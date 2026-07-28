@@ -77,7 +77,7 @@ void kaldachompspit_burst(GameObject* obj) {
     if (obj->anim.seqId == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
         randomVariant = randomGetRange(0, 1);
         spawnExplosion(obj,
-                       (f32)(int)randomGetRange(KALDACHOMPSPIT_EXPLOSION_SCALE_MIN, KALDACHOMPSPIT_EXPLOSION_SCALE_MAX),
+                       (f32)randomGetRange(KALDACHOMPSPIT_EXPLOSION_SCALE_MIN, KALDACHOMPSPIT_EXPLOSION_SCALE_MAX),
                        1, 1, 0, randomVariant, 0, 1, 0);
     } else {
         for (i = 0; i < KALDACHOMPSPIT_POISON_BURST_COUNT; i++) {

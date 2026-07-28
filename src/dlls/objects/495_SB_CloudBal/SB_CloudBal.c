@@ -115,7 +115,7 @@ void SB_CloudBall_update(GameObject* obj)
         obj->anim.previousLocalPosX = obj->anim.localPosX;
         obj->anim.previousLocalPosY = obj->anim.localPosY;
         obj->anim.previousLocalPosZ = obj->anim.localPosZ;
-        obj->anim.rootMotionScale = 0.005f * (f32)(int)randomGetRange(-0x64, 0x64) + 3.0f;
+        obj->anim.rootMotionScale = 0.005f * (f32)randomGetRange(-0x64, 0x64) + 3.0f;
         if (state->launched == 0)
         {
             state->velX = obj->anim.velocityX;

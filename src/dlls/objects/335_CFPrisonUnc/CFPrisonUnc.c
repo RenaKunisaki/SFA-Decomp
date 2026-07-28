@@ -128,7 +128,7 @@ void cfPrisonUncle_update(GameObject* obj) {
         player = Obj_GetPlayerObject();
         characterAimHeadAtTarget(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState,
                                  CFPRISONUNCLE_HEAD_AIM_LIMIT, 0, 3);
-        if ((int)randomGetRange(0, CFPRISONUNCLE_MUTTER_RANDOM_RANGE) == 0) {
+        if (randomGetRange(0, CFPRISONUNCLE_MUTTER_RANDOM_RANGE) == 0) {
             objAudioFn_80039270((int)obj, &state->soundState, SFXbaddie_kooshy_call);
         }
         if (ObjTrigger_IsSet((int)obj) != 0) {

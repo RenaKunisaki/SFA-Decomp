@@ -232,7 +232,7 @@ int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.velocityX = 0.025f * (f32)(s32)randomGetRange(-0x28, 0x28);
         cfg.velocityY = 0.025f * (f32)(s32)randomGetRange(-0x28, 0x28);
         cfg.velocityZ = 0.025f * (f32)(s32)randomGetRange(-0x28, 0x28);
-        if ((int)randomGetRange(0, 0xc) == 0)
+        if (randomGetRange(0, 0xc) == 0)
         {
             cfg.scale = 0.00155f * (f32)(s32)randomGetRange(0xf, 0x1e);
             cfg.initialAlpha = 0x5f;

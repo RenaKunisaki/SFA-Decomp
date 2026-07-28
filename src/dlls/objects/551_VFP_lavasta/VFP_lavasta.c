@@ -82,7 +82,7 @@ void VFP_lavastar_update(GameObject* obj)
     obj->anim.localPosY += timeDelta * state->verticalVelocity;
     if (obj->anim.localPosY > lbl_803E61B0 + mapData->base.posY)
     {
-        state->verticalVelocity = lbl_803E61B4 * (f32)(int)randomGetRange(5, 0x14);
+        state->verticalVelocity = lbl_803E61B4 * (f32)randomGetRange(5, 0x14);
         obj->anim.localPosY = mapData->base.posY;
     }
     state->effectTimer += (s16)timeDelta;
@@ -109,12 +109,12 @@ void VFP_lavastar_init(GameObject* obj, int def)
     mapData = (VfpLavaStarMapData*)def;
     state = obj->extra;
     state->gameBit = mapData->gameBit;
-    state->verticalVelocity = lbl_803E61B4 * (f32)(int)randomGetRange(10, 0x19);
+    state->verticalVelocity = lbl_803E61B4 * (f32)randomGetRange(10, 0x19);
     state->effectTimer = 0x14;
     obj->anim.localPosY = mapData->base.posY + (f32)(int)mapData->heightOffset;
     obj->objectFlags |= VFP_LAVASTAR_OBJFLAG_HITDETECT_DISABLED;
-    state->delayRangeMin = (f32)(int)randomGetRange(0x1e, 0x3c);
-    state->delayRangeMax = (f32)(int)randomGetRange(100, 200);
+    state->delayRangeMin = (f32)randomGetRange(0x1e, 0x3c);
+    state->delayRangeMax = (f32)randomGetRange(100, 200);
 }
 
 void VFP_lavastar_release(void)
