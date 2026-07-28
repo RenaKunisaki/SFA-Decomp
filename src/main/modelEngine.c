@@ -238,6 +238,7 @@
 #include "dlls/objects/441_SC_Cloudrun.h"
 #include "dlls/objects/442_SC_totempuz.h"
 #include "dlls/objects/443_SC_totembon.h"
+#include "dlls/objects/444_SC_totemstr.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -373,7 +374,6 @@ extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, g
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
 extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor;
-extern ResourceDescriptor gSC_totemstrengthObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
@@ -1511,7 +1511,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSC_CloudrunnerAObjDescriptor,
     (ResourceDescriptor*)&gSC_totempuzzleObjDescriptor,
     (ResourceDescriptor*)&gSC_totembondObjDescriptor,
-    &gSC_totemstrengthObjDescriptor,
+    (ResourceDescriptor*)&gSC_totemstrengthObjDescriptor,
     &gPaymentKioskObjDescriptor,
     &gLavaBall1BEObjDescriptor,
     &gLavaBall1BFObjDescriptor,
