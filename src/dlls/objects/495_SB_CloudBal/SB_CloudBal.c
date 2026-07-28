@@ -7,192 +7,211 @@
  * effect, fades out (fadeTimer) and frees itself. A trailing particle
  * burst is spawned every frame while alive.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/object_render.h"
-#include "main/dll/sbcloudballstate_struct.h"
+#include "dlls/objects/495_SB_CloudBal.h"
+
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "main/model_light.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/frame_timing.h"
-#include "sys/objects.h"
-#include "main/vecmath.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/expgfx_interface.h"
 #include "main/dll/objfx.h"
-
-#define SBCLOUDBALL_OBJFLAG_PARENT_SLACK 0x1000
-#define SBCLOUDBALL_PARTFX               0xa8
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/modellight_api.h"
+#include "main/object_render.h"
+#include "main/objhits_types.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 /*
- * Per-object extra state for the ShipBattle cloud-ball projectile
- * (SB_CloudBall_getExtraSize == 0x24).
+ * The broader model-light header adds another enum source-position anchor.
+ * Keep this exact TU's narrow API view and semantic kind enum so MWCC retains
+ * the original anonymous .sdata2 symbol numbering.
  */
+enum {
+    SB_CLOUD_BALL_LIGHT_KIND = 2
+};
 
-STATIC_ASSERT(sizeof(SBCloudBallState) == 0x24);
+ModelLightStruct* objCreateLight(void* owner, u8 addToList);
+void ModelLightStruct_free(ModelLightStruct* light);
+void modelLightStruct_setLightKind(ModelLightStruct* light, int lightKind);
+void modelLightStruct_setDistanceAttenuation(ModelLightStruct* light, f32 near, f32 far);
+void modelLightStruct_setDiffuseColor(ModelLightStruct* light, int red, int green, int blue, int alpha);
 
-/* romlist type id the cloud ball reacts to on contact (plays the shatter sfx) */
-#define CLOUDBALL_TARGET_TYPE_ID 142
+/* Animation sequence ID that plays the shatter sound on contact. */
+#define SB_CLOUD_BALL_HIT_SFX_TARGET_SEQUENCE_ID 0x8E
 
-#define SB_CLOUD_BALL_FADE_TIME 50.0f
-#define SB_CLOUD_BALL_VELOCITY_SCALE 2.0f
-#define SB_CLOUD_BALL_TRAIL_VEL_SCALE 0.1f
+#define SB_CLOUD_BALL_FADE_TIME            50.0f
+#define SB_CLOUD_BALL_VELOCITY_SCALE       2.0f
+#define SB_CLOUD_BALL_TRAIL_VELOCITY_SCALE 0.1f
 #define SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE 0.22f
 
-int SB_CloudBall_getExtraSize(void)
-{
-    return 0x24;
-}
-int SB_CloudBall_getObjectTypeId(void)
-{
-    return 0x0;
+#define SB_CLOUD_BALL_HIT_VOLUME_PRIORITY 5
+#define SB_CLOUD_BALL_HIT_VOLUME_ID       1
+#define SB_CLOUD_BALL_HIT_MASK            0x10
+#define SB_CLOUD_BALL_CONTACT_MASK        1
+
+#define SB_CLOUD_BALL_TRAIL_BURST_MODE            2
+#define SB_CLOUD_BALL_TRAIL_BURST_EFFECT_PARAM    0x156
+#define SB_CLOUD_BALL_TRAIL_BURST_SECONDARY_PARAM 0xF
+#define SB_CLOUD_BALL_TRAIL_PARTICLE_ID           0xA8
+
+#define SB_CLOUD_BALL_RANDOM_SCALE      0.005f
+#define SB_CLOUD_BALL_RANDOM_SCALE_BASE 3.0f
+#define SB_CLOUD_BALL_RANDOM_RANGE_MIN  -100
+#define SB_CLOUD_BALL_RANDOM_RANGE_MAX  100
+
+#define SB_CLOUD_BALL_LIGHT_ADD_TO_LIST 1
+#define SB_CLOUD_BALL_LIGHT_RED         0
+#define SB_CLOUD_BALL_LIGHT_GREEN       90
+#define SB_CLOUD_BALL_LIGHT_BLUE        150
+#define SB_CLOUD_BALL_LIGHT_ALPHA       0
+#define SB_CLOUD_BALL_LIGHT_FIELD_BC    1
+
+int SB_CloudBall_getExtraSize(void) {
+    return sizeof(SBCloudBallState);
 }
 
-void SB_CloudBall_free(GameObject* obj)
-{
+int SB_CloudBall_getObjectTypeId(void) {
+    return 0;
+}
+
+void SB_CloudBall_free(GameObject* obj) {
     SBCloudBallState* state = obj->extra;
+
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    {
-        int* child = (int*)state->light;
-        if (child != NULL)
-        {
-            ModelLightStruct_free((ModelLightStruct*)child);
-            state->light = 0;
-        }
+    if (state->light != NULL) {
+        ModelLightStruct_free(state->light);
+        state->light = NULL;
     }
 }
 
-void SB_CloudBall_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+void SB_CloudBall_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void SB_CloudBall_hitDetect(GameObject* obj)
-{
+void SB_CloudBall_hitDetect(GameObject* obj) {
     SBCloudBallState* state = obj->extra;
-    int* target = (int*)ObjAnim_GetPriorityHitState(&obj->anim)->lastHitObject;
+    GameObject* target = (GameObject*)ObjAnim_GetPriorityHitState(&obj->anim)->lastHitObject;
     f32 zero = 0.0f;
 
-    if ((void*)target == NULL)
+    if (target == NULL) {
         return;
-    if (state->fadeTimer != zero)
+    }
+    if (state->fadeTimer != zero) {
         return;
-    if (((GameObject*)target)->anim.seqId == CLOUDBALL_TARGET_TYPE_ID)
-    {
+    }
+    if (target->anim.seqId == SB_CLOUD_BALL_HIT_SFX_TARGET_SEQUENCE_ID) {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_gcfir1_c);
     }
     {
-        ObjHitsPriorityState* hits = ObjAnim_GetPriorityHitState(&obj->anim);
-        hits->flags = (s16)(hits->flags & ~1);
+        ObjHitsPriorityState* hitState = ObjAnim_GetPriorityHitState(&obj->anim);
+        hitState->flags = (s16)(hitState->flags & ~OBJHITS_PRIORITY_STATE_ENABLED);
     }
     state->fadeTimer = SB_CLOUD_BALL_FADE_TIME;
     obj->anim.alpha = 0;
     projectileParticleFxFn_80099660(obj, 1.0f, 2);
 }
 
-void SB_CloudBall_update(GameObject* obj)
-{
+void SB_CloudBall_update(GameObject* obj) {
     SBCloudBallState* state = obj->extra;
-    void* player = Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     f32 timer = state->fadeTimer;
     f32 zero = 0.0f;
-    if (timer != zero)
-    {
+
+    if (timer != zero) {
         state->fadeTimer = timer - timeDelta;
-        if (state->fadeTimer <= zero)
-        {
+        if (state->fadeTimer <= zero) {
             state->fadeTimer = zero;
             Obj_FreeObject(obj);
         }
-    }
-    else
-    {
+    } else {
         f32 particleVelocity[3];
         f32 velocityScale;
+
         obj->anim.previousLocalPosX = obj->anim.localPosX;
         obj->anim.previousLocalPosY = obj->anim.localPosY;
         obj->anim.previousLocalPosZ = obj->anim.localPosZ;
-        obj->anim.rootMotionScale = 0.005f * (f32)randomGetRange(-0x64, 0x64) + 3.0f;
-        if (state->launched == 0)
-        {
-            state->velX = obj->anim.velocityX;
-            state->velY = obj->anim.velocityY;
-            state->velZ = obj->anim.velocityZ;
+        obj->anim.rootMotionScale = SB_CLOUD_BALL_RANDOM_SCALE * (f32)randomGetRange(SB_CLOUD_BALL_RANDOM_RANGE_MIN,
+                                                                                     SB_CLOUD_BALL_RANDOM_RANGE_MAX) +
+                                    SB_CLOUD_BALL_RANDOM_SCALE_BASE;
+        if (state->launched == 0) {
+            state->velocityX = obj->anim.velocityX;
+            state->velocityY = obj->anim.velocityY;
+            state->velocityZ = obj->anim.velocityZ;
             state->launched = 1;
-            state->posX = obj->anim.localPosX;
-            state->posY = obj->anim.localPosY;
-            state->posZ = obj->anim.localPosZ;
+            state->positionX = obj->anim.localPosX;
+            state->positionY = obj->anim.localPosY;
+            state->positionZ = obj->anim.localPosZ;
         }
         velocityScale = SB_CLOUD_BALL_VELOCITY_SCALE;
-        state->posX = velocityScale * (state->velX * timeDelta) + state->posX;
-        state->posY = velocityScale * (state->velY * timeDelta) + state->posY;
-        state->posZ = velocityScale * (state->velZ * timeDelta) + state->posZ;
-        obj->anim.localPosX = state->posX;
-        obj->anim.localPosY = state->posY;
-        obj->anim.localPosZ = state->posZ;
+        state->positionX = velocityScale * (state->velocityX * timeDelta) + state->positionX;
+        state->positionY = velocityScale * (state->velocityY * timeDelta) + state->positionY;
+        state->positionZ = velocityScale * (state->velocityZ * timeDelta) + state->positionZ;
+        obj->anim.localPosX = state->positionX;
+        obj->anim.localPosY = state->positionY;
+        obj->anim.localPosZ = state->positionZ;
         obj->userData1 = obj->userData1 - framesThisStep;
-        if (obj->userData1 < 0 ||
-            (player != NULL && (((GameObject*)player)->objectFlags & SBCLOUDBALL_OBJFLAG_PARENT_SLACK) != 0))
-        {
-            if (state->fadeTimer == zero)
-            {
+        if (obj->userData1 < 0 || (player != NULL && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)) {
+            if (state->fadeTimer == zero) {
                 obj->anim.alpha = 0;
                 state->fadeTimer = SB_CLOUD_BALL_FADE_TIME;
             }
         }
         obj->anim.rotX = (s16)getAngle(obj->anim.localPosX - obj->anim.previousLocalPosX,
                                        obj->anim.localPosZ - obj->anim.previousLocalPosZ);
-        ObjAnim_GetPriorityHitState(&obj->anim)->hitVolumePriority = 5;
-        ObjAnim_GetPriorityHitState(&obj->anim)->hitVolumeId = 1;
-        ObjAnim_GetPriorityHitState(&obj->anim)->objectHitMask = 0x10;
-        ObjAnim_GetPriorityHitState(&obj->anim)->skeletonHitMask = 0x10;
-        ObjAnim_GetPriorityHitState(&obj->anim)->flags |= 1;
-        if (ObjAnim_GetPriorityHitState(&obj->anim)->contactFlags != 0 && state->fadeTimer == zero)
-        {
+        ObjAnim_GetPriorityHitState(&obj->anim)->hitVolumePriority = SB_CLOUD_BALL_HIT_VOLUME_PRIORITY;
+        ObjAnim_GetPriorityHitState(&obj->anim)->hitVolumeId = SB_CLOUD_BALL_HIT_VOLUME_ID;
+        ObjAnim_GetPriorityHitState(&obj->anim)->objectHitMask = SB_CLOUD_BALL_HIT_MASK;
+        ObjAnim_GetPriorityHitState(&obj->anim)->skeletonHitMask = SB_CLOUD_BALL_HIT_MASK;
+        ObjAnim_GetPriorityHitState(&obj->anim)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
+        if (ObjAnim_GetPriorityHitState(&obj->anim)->contactFlags != 0 && state->fadeTimer == zero) {
             projectileParticleFxFn_80099660(obj, 1.0f, 2);
             state->fadeTimer = SB_CLOUD_BALL_FADE_TIME;
             obj->anim.alpha = 0;
         }
-        particleVelocity[0] = SB_CLOUD_BALL_TRAIL_VEL_SCALE * -state->velX;
-        particleVelocity[1] = SB_CLOUD_BALL_TRAIL_VEL_SCALE * -state->velY;
-        particleVelocity[2] = SB_CLOUD_BALL_TRAIL_VEL_SCALE * -state->velZ;
-        objfx_spawnFlaggedTrailBurst(obj, SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE, 2, 0x156, 0xf, particleVelocity);
-        objfx_spawnFlaggedTrailBurst(obj, SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE, 2, 0x156, 0xf, particleVelocity);
-        objfx_spawnFlaggedTrailBurst(obj, SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE, 2, 0x156, 0xf, particleVelocity);
-        (*gPartfxInterface)->spawnObject((void*)obj, SBCLOUDBALL_PARTFX, NULL, 2, -1, NULL);
+        particleVelocity[0] = SB_CLOUD_BALL_TRAIL_VELOCITY_SCALE * -state->velocityX;
+        particleVelocity[1] = SB_CLOUD_BALL_TRAIL_VELOCITY_SCALE * -state->velocityY;
+        particleVelocity[2] = SB_CLOUD_BALL_TRAIL_VELOCITY_SCALE * -state->velocityZ;
+        objfx_spawnFlaggedTrailBurst(obj, SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE, SB_CLOUD_BALL_TRAIL_BURST_MODE,
+                                     SB_CLOUD_BALL_TRAIL_BURST_EFFECT_PARAM, SB_CLOUD_BALL_TRAIL_BURST_SECONDARY_PARAM,
+                                     particleVelocity);
+        objfx_spawnFlaggedTrailBurst(obj, SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE, SB_CLOUD_BALL_TRAIL_BURST_MODE,
+                                     SB_CLOUD_BALL_TRAIL_BURST_EFFECT_PARAM, SB_CLOUD_BALL_TRAIL_BURST_SECONDARY_PARAM,
+                                     particleVelocity);
+        objfx_spawnFlaggedTrailBurst(obj, SB_CLOUD_BALL_TRAIL_PARTICLE_SCALE, SB_CLOUD_BALL_TRAIL_BURST_MODE,
+                                     SB_CLOUD_BALL_TRAIL_BURST_EFFECT_PARAM, SB_CLOUD_BALL_TRAIL_BURST_SECONDARY_PARAM,
+                                     particleVelocity);
+        (*gPartfxInterface)
+            ->spawnObject((void*)obj, SB_CLOUD_BALL_TRAIL_PARTICLE_ID, NULL, SB_CLOUD_BALL_TRAIL_BURST_MODE, -1, NULL);
     }
 }
 
-void SB_CloudBall_init(GameObject* obj)
-{
+void SB_CloudBall_init(GameObject* obj) {
     SBCloudBallState* state = obj->extra;
 
-    ObjAnim_GetPriorityHitState(&obj->anim)->flags = (s16)(ObjAnim_GetPriorityHitState(&obj->anim)->flags & ~1);
+    ObjAnim_GetPriorityHitState(&obj->anim)->flags =
+        (s16)(ObjAnim_GetPriorityHitState(&obj->anim)->flags & ~OBJHITS_PRIORITY_STATE_ENABLED);
     ObjAnim_GetPriorityHitState(&obj->anim)->trackContactMask =
-        (u16)(ObjAnim_GetPriorityHitState(&obj->anim)->trackContactMask | 1);
-    if ((void*)state->light == NULL)
-    {
-        state->light = (int)objCreateLight(obj, 1);
-        if ((void*)state->light != NULL)
-        {
-            modelLightStruct_setLightKind((ModelLightStruct*)state->light, MODEL_LIGHT_KIND_POINT);
-            modelLightStruct_setDiffuseColor((ModelLightStruct*)state->light, 0, 90, 150, 0);
-            lightSetFieldBC_8001db14((ModelLightStruct*)state->light, 1);
-            modelLightStruct_setDistanceAttenuation((ModelLightStruct*)state->light, 150.0f,
-                                                    250.0f);
+        (u16)(ObjAnim_GetPriorityHitState(&obj->anim)->trackContactMask | SB_CLOUD_BALL_CONTACT_MASK);
+    if (state->light == NULL) {
+        state->light = objCreateLight(obj, SB_CLOUD_BALL_LIGHT_ADD_TO_LIST);
+        if (state->light != NULL) {
+            modelLightStruct_setLightKind(state->light, SB_CLOUD_BALL_LIGHT_KIND);
+            modelLightStruct_setDiffuseColor(state->light, SB_CLOUD_BALL_LIGHT_RED, SB_CLOUD_BALL_LIGHT_GREEN,
+                                             SB_CLOUD_BALL_LIGHT_BLUE, SB_CLOUD_BALL_LIGHT_ALPHA);
+            lightSetFieldBC_8001db14(state->light, SB_CLOUD_BALL_LIGHT_FIELD_BC);
+            modelLightStruct_setDistanceAttenuation(state->light, 150.0f, 250.0f);
         }
     }
 }
 
-void SB_CloudBall_release(void)
-{
+void SB_CloudBall_release(void) {
 }
 
-void SB_CloudBall_initialise(void)
-{
+void SB_CloudBall_initialise(void) {
 }
 
 ObjectDescriptor gSB_CloudBallObjDescriptor = {
@@ -200,8 +219,8 @@ ObjectDescriptor gSB_CloudBallObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)SB_CloudBall_initialise,
-    (ObjectDescriptorCallback)SB_CloudBall_release,
+    SB_CloudBall_initialise,
+    SB_CloudBall_release,
     0,
     (ObjectDescriptorCallback)SB_CloudBall_init,
     (ObjectDescriptorCallback)SB_CloudBall_update,

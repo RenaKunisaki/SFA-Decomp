@@ -288,6 +288,7 @@
 #include "dlls/objects/492_SB_ShipGun.h"
 #include "dlls/objects/493_SB_FireBall.h"
 #include "dlls/objects/494_SB_CannonBa.h"
+#include "dlls/objects/495_SB_CloudBal.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -406,8 +407,7 @@ extern ResourceDescriptor gLightSourceObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
-extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CloudBallObjDescriptor,
-    gSB_CloudRunnerObjDescriptor;
+extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_KyteCageObjDescriptor, gSB_MiniFireObjDescriptor, gSB_SeqDoorObjDescriptor,
     gSB_ShipGunBrokeObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
@@ -1597,7 +1597,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSB_ShipGunObjDescriptor,
     (ResourceDescriptor*)&gSB_FireBallObjDescriptor,
     (ResourceDescriptor*)&gSB_CannonBallObjDescriptor,
-    &gSB_CloudBallObjDescriptor,
+    (ResourceDescriptor*)&gSB_CloudBallObjDescriptor,
     &gSB_KyteCageObjDescriptor,
     &gSB_SeqDoorObjDescriptor,
     &gSB_CageKyteObjDescriptor,
