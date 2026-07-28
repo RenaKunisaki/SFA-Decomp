@@ -44,9 +44,6 @@
 #define CFPRISONGUARD_ALARM_PARTICLE_EFFECT 3
 #define CFPRISONGUARD_ALARM_PARTICLE_LIMIT  1.5f
 
-extern f32 lbl_803E4260;
-extern f32 lbl_803E4264;
-extern f32 lbl_803E4268;
 
 ObjectDescriptor gCFPrisonGuardObjDescriptor = {
     0,
@@ -79,13 +76,13 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
 
     switch (animUpdate->triggerCommand) {
     case CFPRISONGUARD_TRIGGER_ALARM_RAMP_RESET:
-        state->alarmRamp = lbl_803E4260;
+        state->alarmRamp = 0.0f;
         break;
     case CFPRISONGUARD_TRIGGER_SEQUENCE_DONE:
         state->stateId = CFPRISONGUARD_STATE_SEQUENCE_COMPLETE;
         return 0;
     case CFPRISONGUARD_TRIGGER_ALARM_RAMP:
-        state->alarmRamp = lbl_803E4264 * framesThisStep + state->alarmRamp;
+        state->alarmRamp = 0.01f * framesThisStep + state->alarmRamp;
         break;
     }
     if (obj->seqIndex < 0) {
@@ -114,7 +111,7 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
         distance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
         if (guardianFreed == 0) {
             if (distance < (f32)placement->watchRadius ||
-                waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, lbl_803E4268) != 0) {
+                waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f) != 0) {
                 if (objGetAnimState80A(player) != CFPRISONGUARD_PLAYER_CAUGHT_ANIM) {
                     shouldTransition = 1;
                     state->stateId = CFPRISONGUARD_STATE_ALERT;
@@ -201,8 +198,8 @@ void cfPrisonGuard_render(GameObject* obj, int renderArg2, int renderArg3, int r
     }
     if (visible != 0) {
         f32 alarmRamp = state->alarmRamp;
-        if (alarmRamp > lbl_803E4260) {
-            state->alarmRamp = lbl_803E4264 * (f32)(u32)framesThisStep + alarmRamp;
+        if (alarmRamp > 0.0f) {
+            state->alarmRamp = 0.01f * (f32)(u32)framesThisStep + alarmRamp;
             if (state->alarmRamp < CFPRISONGUARD_ALARM_PARTICLE_LIMIT) {
                 objParticleFn_80099d84(obj, 1.0f, CFPRISONGUARD_ALARM_PARTICLE_EFFECT, state->alarmRamp, NULL);
             }
@@ -240,7 +237,7 @@ void cfPrisonGuard_update(GameObject* obj) {
     hasPrisonKey = mainGetBit(GAMEBIT_ITEM_PrisonKey_Got);
     distance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
     if (state->sequenceFlags == CFPRISONGUARD_SEQUENCE_FLAG_INITIAL_PENDING) {
-        waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, lbl_803E4268);
+        waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f);
         (*gObjectTriggerInterface)->runSequence(CFPRISONGUARD_SEQUENCE_IDLE, obj, -1);
         state->sequenceFlags = CFPRISONGUARD_SEQUENCE_FLAG_WAITING_FOR_PERCH;
     }
@@ -248,7 +245,7 @@ void cfPrisonGuard_update(GameObject* obj) {
         if (state->stateId != CFPRISONGUARD_STATE_ALERT) {
             if (distance < (f32)(s32)placement->watchRadius) {
                 /* Player proximity is sufficient to continue into the alert check. */
-            } else if (waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, lbl_803E4268) == 0) {
+            } else if (waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f) == 0) {
                 return;
             }
         }
