@@ -4548,7 +4548,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         }
         ((ObjSeqState*)seq)->fade = 1.0f;
         ObjAnim_SetCurrentMove((int)activeObj, ((ObjSeqState*)seq)->moveId,
-                               (f32)((ObjSeqState*)seq)->moveBlendParam * 0.00390625f, 0);
+                               (f32)((ObjSeqState*)seq)->moveBlendParam / 256.0f, 0);
         break;
     case SEQACT_MOVEMODE:
         if (flag8 != 0)
