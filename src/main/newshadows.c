@@ -1036,15 +1036,13 @@ extern NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
 
 void queueObjectShadow(GameObject* obj)
 {
-    CameraViewSlot* cam;
     f32 dx, dy, dz, dist2;
     if (gNewShadowCasterCount < NEW_SHADOW_MAX_QUEUED_CASTERS)
     {
         gNewShadowCasterTable[gNewShadowCasterCount].obj = obj;
-        cam = gNewShadowCurrentViewSlot;
-        dx = obj->anim.worldPosX - cam->x;
-        dy = obj->anim.worldPosY - cam->y;
-        dz = obj->anim.worldPosZ - cam->z;
+        dx = obj->anim.worldPosX - gNewShadowCurrentViewSlot->x;
+        dy = obj->anim.worldPosY - gNewShadowCurrentViewSlot->y;
+        dz = obj->anim.worldPosZ - gNewShadowCurrentViewSlot->z;
         dist2 = dx * dx + dy * dy + dz * dz;
         if (dist2 > lbl_803DED28)
         {
