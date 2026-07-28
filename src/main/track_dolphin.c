@@ -3132,8 +3132,8 @@ u8 doEdges;
     last = count - 1;
     for (; i < count; i++)
     {
-        int vb;
         MapBlockData* blk;
+        int vb;
         int dxoff, dzoff;
         s16 mask;
         s16 bit;
@@ -3201,8 +3201,8 @@ u8 doEdges;
         for (; (u32)tri < triEnd; tri += 0x14)
         {
             u32 tf = ((MapTriGroup*)tri)->flags;
-            u8 type;
             int t0;
+            u8 type;
             u8* vq;
 
             if ((tf & 0x10) && f40)
@@ -3246,11 +3246,11 @@ u8 doEdges;
             vertp = (f32*)(u32)verts;
             for (; t0 < vEnd; t0++, vq += 8)
             {
+                u8* vo;
                 s16* vp;
                 int minX, maxX, minY, maxY, minZ, maxZ;
                 u8 maxYi, minYi;
                 u16* tw;
-                u8* vo;
                 f32* vf;
                 int j;
                 f32 mag;
