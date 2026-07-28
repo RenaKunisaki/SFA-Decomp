@@ -1468,10 +1468,9 @@ void initFn_8006d020(void)
     f32* placementRadius;
     int row;
     f32* placementZ;
-    int column;
-    f32* placement;
     f32* otherPlacement;
     int placementAttempts;
+    f32* placement;
     f32* placementX;
     u8 overlaps;
     int otherIndex;
@@ -1538,6 +1537,7 @@ void initFn_8006d020(void)
             gNewShadowNoiseTexFrames[frame] = textureAlloc(0x40, 0x40, 3, 0, 0, 1, 1, 1, 1);
             for (row = 0; row < 0x40; row++)
             {
+                int column;
                 int h, rowPixelOffset;
                 column = 0;
                 h = (row >> 2) * 0x20;
@@ -1564,6 +1564,7 @@ void initFn_8006d020(void)
     gNewShadowCausticTexture = textureAlloc(0x40, 0x40, 3, 0, 0, 1, 1, 1, 1);
     for (row = 0; row < 0x40; row++)
     {
+        int column;
         int h, rowPixelOffset;
         f32 rowPhase;
         column = 0;
