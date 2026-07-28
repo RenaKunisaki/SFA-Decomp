@@ -1,6 +1,7 @@
 #ifndef MAIN_DLL_DLL_0272_HIGHTOP_H_
 #define MAIN_DLL_DLL_0272_HIGHTOP_H_
 
+#include "main/objprint_character_api.h"
 #include "global.h"
 #include "main/dll/DR/dr_types.h"
 #include "main/dll/baddie_state.h"
@@ -38,7 +39,9 @@ typedef struct HighTopPlacement
 typedef struct HighTopRuntime
 {
     BaddieState baddie;
-    u8 pad35C[0x3bc - 0x35c];
+    u8 pad35C[0x38c - 0x35c];
+    CharacterEyeAnimState eyeAnimState; /* 0x38c: head-aim / eye-blink record (characterDoEyeAnims) */
+    u8 pad3B4[0x3bc - 0x3b4];
     ObjSoundState modelSoundState;
     u8 lookController[0x9fd - 0x3ec];
     u8 flags;

@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "global.h"
+#include "main/objprint_character_api.h"
 #include "main/dll/curve_walker.h"
 #include "game/objects/object.h"
 #include "main/objprint_sound_api.h"
@@ -186,12 +187,8 @@ typedef struct TrickyState {
     f32 hitCooldown;
     u8 groundSnapCounter; /* frame countdown that forces the ground-snap path: != 0 -> decrement and do the height snap; primed to 2 on state entry (tricky/skeetla) */
     u8 pad375[0x378 - 0x375];
-    u8 followPosValid; /* 1 when followObj is non-NULL and followPosX/Y/Z hold its captured world pos, else 0; the 0x378 record (flag + xyz) is passed to the eye-look / head-aim helpers characterHeadLookRelax / characterDoEyeAnims (tricky) */
-    u8 pad379[0x37C - 0x379];
-    f32 followPosX; /* captured world position of followObj (copied from followObj->anim.worldPos when followPosValid is set); read as the look/eye-aim target through the 0x378 record pointer (tricky) */
-    f32 followPosY;
-    f32 followPosZ;
-    u8 pad388[0x3A8 - 0x388];
+    CharacterEyeAnimState eyeAnimState; /* 0x378: head-aim / eye-blink record; lookAtPos is followObj's captured world position */
+    u8 pad3A0[0x3A8 - 0x3A0];
     ObjSoundState soundState; /* 0x3A8: object-channel sound playback state */
     f32 sparkPos0X; /* spark particle emit point 0 (skeetla_spawnLinkedSparks args.xyz) */
     f32 sparkPos0Y;

@@ -223,7 +223,11 @@ STATIC_ASSERT(sizeof(EarthWarriorSub) == 0x9a4);
 typedef struct EarthWarriorState
 {
     BaddieState baddie;
-    u8 pad35C[0x9fd - 0x35c];
+    u8 pad35C[0x38c - 0x35c];
+    CharacterEyeAnimState eyeAnimState; /* 0x38c: head-aim / eye-blink record (characterDoEyeAnims) */
+    u8 pad3B4[0x3bc - 0x3b4];
+    ObjSoundState modelSoundState; /* 0x3bc: mouth/voice playback state (objSoundUpdateMouth) */
+    u8 pad3EC[0x9fd - 0x3ec];
     u8 unk9FD;
     u8 pad9FE[0xb54 - 0x9fe];
     GameObject* helperObj;
@@ -1309,8 +1313,8 @@ void DR_EarthWarrior_update(GameObject* obj)
         (obj)->anim.velocityZ = z;
         DR_EarthWarrior_runController(obj, framesThisStep, -1);
     }
-    characterDoEyeAnims(obj, (char*)inner + 0x38c);
-    objSoundUpdateMouth(obj, (char*)inner + 0x3bc);
+    characterDoEyeAnims(obj, &inner->eyeAnimState);
+    objSoundUpdateMouth(obj, (char*)&inner->modelSoundState);
     dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x3ec));
     if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
     {

@@ -1130,8 +1130,8 @@ void HighTop_update(GameObject* obj)
     (*gPlayerInterface)->update((void*)self, state, (f32)(u32)framesThisStep, timeDelta, gHighTopStateHandlers,
                                 &gHighTopDefaultStateHandler);
     hightop_playMovementSfx((GameObject*)self, runtime, runtime);
-    characterDoEyeAnims((GameObject*)self, state + 0x38c);
-    objSoundUpdateMouth((GameObject*)(self), (char*)(state + 0x3bc));
+    characterDoEyeAnims((GameObject*)self, &runtime->eyeAnimState);
+    objSoundUpdateMouth((GameObject*)(self), (char*)&runtime->modelSoundState);
     dll_2E_updateLookAt((GameObject*)self, (MoveLibState*)(state + 0x3ec));
     if (ObjTrigger_IsSet(self) != 0)
     {

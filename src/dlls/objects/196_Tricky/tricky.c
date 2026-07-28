@@ -8274,7 +8274,7 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
     if ((((TrickyState*)state)->stateFlags & 1) != 0)
     {
         animUpdate->hitVolumePair &= ~0x40;
-        characterDoEyeAnims((GameObject*)obj, (void*)(state + 0x378));
+        characterDoEyeAnims((GameObject*)obj, &((TrickyState*)state)->eyeAnimState);
         return (*gObjectTriggerInterface)->func20((GameObject*)obj, animUpdate, 1, 0xf, 0x1e, 0, 0);
     }
     return 0;
@@ -9587,26 +9587,26 @@ void Tricky_update(int obj)
     }
     if (trickyState->followObj != NULL)
     {
-        trickyState->followPosValid = 1;
-        trickyState->followPosX = trickyState->followObj->anim.worldPosX;
-        trickyState->followPosY = trickyState->followObj->anim.worldPosY;
-        trickyState->followPosZ = trickyState->followObj->anim.worldPosZ;
+        trickyState->eyeAnimState.lookAtActive = 1;
+        trickyState->eyeAnimState.lookAtPosX = trickyState->followObj->anim.worldPosX;
+        trickyState->eyeAnimState.lookAtPosY = trickyState->followObj->anim.worldPosY;
+        trickyState->eyeAnimState.lookAtPosZ = trickyState->followObj->anim.worldPosZ;
     }
     else
     {
-        trickyState->followPosValid = 0;
+        trickyState->eyeAnimState.lookAtActive = 0;
     }
     if (((GameObject*)obj)->anim.currentMove == 0x2a)
     {
-        characterHeadLookRelax((GameObject*)(obj), (void*)(state + 0x378));
-        characterCloseEyes((GameObject*)(obj), (void*)(state + 0x378));
+        characterHeadLookRelax((GameObject*)(obj), &trickyState->eyeAnimState);
+        characterCloseEyes((GameObject*)(obj), &trickyState->eyeAnimState);
     }
     else
     {
-        characterUpdateHeadLook((GameObject*)obj, (CharacterEyeAnimState*)(state + 0x378), 0.0f);
-        characterDoEyeAnims((GameObject*)obj, (void*)(state + 0x378));
+        characterUpdateHeadLook((GameObject*)obj, &trickyState->eyeAnimState, 0.0f);
+        characterDoEyeAnims((GameObject*)obj, &trickyState->eyeAnimState);
     }
-    objSoundUpdateMouth((GameObject*)obj, (char*)state + 0x3a8);
+    objSoundUpdateMouth((GameObject*)obj, (char*)&trickyState->soundState);
     {
         f32* pathCursor;
         TrickyState* pathState;

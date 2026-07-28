@@ -982,7 +982,7 @@ void DR_CloudRunner_setFlightState(GameObject* obj, int param)
     if (param == CLOUDRUNNER_FLIGHT_TRANSITION)
     {
         s16 seqIndex;
-        inner->unk464 = 0;
+        inner->eyeAnimState.lookAtActive = 0;
         seqIndex = obj->seqIndex;
         if (seqIndex != -1)
         {
@@ -991,7 +991,7 @@ void DR_CloudRunner_setFlightState(GameObject* obj, int param)
     }
     else
     {
-        inner->unk464 = 1;
+        inner->eyeAnimState.lookAtActive = 1;
     }
     if (param == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
@@ -1236,9 +1236,9 @@ void DR_CloudRunner_update(GameObject* obj)
         inner->moveFlags &= ~1;
     }
     dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x4c4));
-    objSoundUpdateMouth(obj, (char*)((int)inner + 0x494));
-    characterHeadLookCalm(obj, (s16*)((char*)inner + 0x464), 0.0f);
-    characterDoEyeAnims(obj, (void*)((int)inner + 0x464));
+    objSoundUpdateMouth(obj, (char*)&inner->modelSoundState);
+    characterHeadLookCalm(obj, (s16*)&inner->eyeAnimState, 0.0f);
+    characterDoEyeAnims(obj, &inner->eyeAnimState);
     if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
     {
         if (inner->flightState == CLOUDRUNNER_FLIGHT_GROUNDED)

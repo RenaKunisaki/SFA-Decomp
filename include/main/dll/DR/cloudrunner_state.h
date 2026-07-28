@@ -4,12 +4,16 @@
 #include "global.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/curve_walker.h"
+#include "main/objprint_sound_api.h"
+#include "main/objprint_character_api.h"
 
 typedef struct CloudRunnerState {
     BaddieState baddie;
     RomCurveWalker curveWalker; /* 0x35c: rom-curve follower; its posX/posY/posZ are copied into the object's anim.localPos */
-    u8 unk464;
-    u8 pad465[0xad5 - 0x465];
+    CharacterEyeAnimState eyeAnimState; /* 0x464: head-aim / eye-blink record (characterDoEyeAnims) */
+    u8 pad48C[0x494 - 0x48c];
+    ObjSoundState modelSoundState; /* 0x494: mouth/voice playback state (objSoundUpdateMouth) */
+    u8 pad4C4[0xad5 - 0x4c4];
     u8 moveFlags;
     u8 padAD6[0xae8 - 0xad6];
     f32 spawnPosX; /* 0xae8: stored position fed to a spawned object's ObjPlacement.pos */
