@@ -680,7 +680,6 @@ void bossdrakor_update(GameObject* obj)
     f32 shake;
     f32 shakeScaleZ;
     f32 t;
-    f32 spd;
     s16 d;
     int step;
     s16* vec;
@@ -787,7 +786,7 @@ void bossdrakor_update(GameObject* obj)
     }
     adv = ObjAnim_AdvanceCurrentMove(
         (int)obj,
-        (spd = PSVECMag(&obj->anim.velocityX) / drakorState->moveSpeed, spd + lbl_803E6570),
+        (t = PSVECMag(&obj->anim.velocityX) / drakorState->moveSpeed, t + lbl_803E6570),
         timeDelta, (ObjAnimEventList*)buf);
     if (adv != 0)
     {
