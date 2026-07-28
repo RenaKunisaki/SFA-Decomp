@@ -1517,4 +1517,3 @@ char sVoxMapsDebugStrings[380] =
     " Warning voxRomTab is NULL\n\000\000\000VOXMAP: Size overflow on load->Ignoring defined "
     "voxmap\n\000<voxLoadVoxMapActual>  Warning uncompressedSize is 0\n\000\000\000 WARNING: Voxmap has no mem "
     "available \n";
-

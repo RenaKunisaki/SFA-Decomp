@@ -2780,6 +2780,85 @@ void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
 }
 
 
+void ObjSeq_updateCamera(void);
+
+u32 lbl_8030EC00[4] = {0x28E5, 0x28E6, 0x28E7, 0x28E8};
+u32 lbl_8030EC10[3] = {0x501C, 0x501D, 0x501E};
+u32 lbl_8030EC1C[3] = {0x51A1, 0x51A2, -1};
+u32 lbl_8030EC28[7] = {0x51A4, 0x51A5, 0x51A7, 0x51A8, 0x51A9, 0x51AA, 0x51AB};
+u32 lbl_8030EC44[4] = {0x51AC, 0x51AD, 0x51AE, 0x51AF};
+u32 lbl_8030EC54[4] = {0x2A, 0x25, 0x21, 0x2B};
+u32 lbl_8030EC64[3] = {-1, -1, -1};
+u32 lbl_8030EC70[3] = {-1, -1, 0x525};
+u32 lbl_8030EC7C[7] = {0x2E5, 0x2E6, 0x2E8, 0x2EA, 0x2EA, 0x2E8, 0x2E9};
+u32 lbl_8030EC98[4] = {0x2ED, 0x2EE, 0x2EF, 0x2F0};
+
+ObjSeqStreamMapEntry gObjSeqStreamTableA[OBJSEQ_STREAM_MAP_COUNT] = {
+    {0x35F, lbl_8030EC00}, {0x45A, lbl_8030EC10}, {0x117, lbl_8030EC1C},
+    {0xC3, lbl_8030EC28},  {0x122, lbl_8030EC44},
+};
+ObjSeqStreamMapEntry gObjSeqStreamTableB[OBJSEQ_STREAM_MAP_COUNT] = {
+    {0x35F, lbl_8030EC54}, {0x45A, lbl_8030EC64}, {0x117, lbl_8030EC70},
+    {0xC3, lbl_8030EC7C},  {0x122, lbl_8030EC98},
+};
+
+s16 gObjSeqSlotValues[86] = {0};
+
+int lbl_8030EDA4[7] = {0x100, 0x200, 0x40000, 0x80000, 0x20000, 0x10000, -1};
+
+int gObjSeqMsgIds[] = {
+    0x00050001, 0x00050002, 0x00050003, 0x00060001, 0x00060002, 0x000A0001, 0x000A0002, 0x000A0003,
+    8,          9,          0x00030002, 0x00030003, 0x000A0004, 0x000A0005, 0x000A0006, 0x000F000B,
+    0x000F000C, 0x000F000D, 0x000F000E, 0x000F000F, 0x000F0010, 0x00130001, 0x00130002,
+};
+
+s8 gObjSeqMsgSendModes[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
+
+void* lbl_8030EE34[40] = {(void*)0,
+                          (void*)0,
+                          (void*)0,
+                          (void*)0x230000,
+                          (void*)ObjSeq_initialise,
+                          (void*)ObjSeq_release,
+                          (void*)0,
+                          (void*)ObjSeq_onMapSetup,
+                          (void*)ObjSeq_addBgCmd,
+                          (void*)ObjSeq_setBool,
+                          (void*)ObjSeq_getBool,
+                          (void*)ObjSeq_update,
+                          (void*)ObjSeq_updateCamera,
+                          (void*)ObjSeq_objLoadAnimdata,
+                          (void*)ObjSeq_seqState_init,
+                          (void*)ObjSeq_seqState_free,
+                          (void*)ObjSeq_runBgCmds,
+                          (void*)ObjSeq_resolveTargetObject,
+                          (void*)ObjSeq_func0E,
+                          (void*)ObjSeq_func0F,
+                          (void*)ObjSeq_func10,
+                          (void*)ObjSeq_func11,
+                          (void*)ObjSeq_func12,
+                          (void*)ObjSeq_func13,
+                          (void*)ObjSeq_start,
+                          (void*)endObjSequence,
+                          (void*)ObjSeq_setCamVars,
+                          (void*)ObjSeq_preempt,
+                          (void*)ObjSeq_yield,
+                          (void*)ObjSeq_getGlobal3,
+                          (void*)ObjSeq_setGlobal3,
+                          (void*)ObjSeq_getGlobal1,
+                          (void*)ObjSeq_setGlobal1,
+                          (void*)ObjSeq_getGlobal2,
+                          (void*)ObjSeq_setGlobal2,
+                          (void*)ObjSeq_setXrot,
+                          (void*)ObjSeq_TurnToFacePlayer,
+                          (void*)ObjSeq_SetObjs,
+                          (void*)ObjSeq_setOverridePos,
+                          (void*)ObjSeq_SetCoordinateSpace};
+
+char sEndObjSequenceMaxFreesError[41] = "endObjSequence: max number of obj frees\n\000";
+char sObjSequenceMissingObjectFormat[38] = " SEQUENCE: Could not Find Object %i \n\000";
+char sObjLoadAnimdataNullACRomTabWarning[45] = "<objLoadAnimdata>  Warning ACRomTab is NULL\n\000";
+
 void ObjSeq_updateCamera(void)
 {
     CamRequest block;
@@ -6456,326 +6535,6 @@ ObjSeqBgCmd lbl_8039A5BC[0x50 / sizeof(ObjSeqBgCmd)];
 s8 gObjSeqJumpLatch[0x58];
 int gObjSeqPreemptList[40][2];
 
-int gObjSeqMsgIds[] = {
-    0x00050001, 0x00050002, 0x00050003, 0x00060001, 0x00060002, 0x000A0001, 0x000A0002, 0x000A0003,
-    8,          9,          0x00030002, 0x00030003, 0x000A0004, 0x000A0005, 0x000A0006, 0x000F000B,
-    0x000F000C, 0x000F000D, 0x000F000E, 0x000F000F, 0x000F0010, 0x00130001, 0x00130002,
-};
-
-
-u32 lbl_8030EC00[4] = {0x28E5, 0x28E6, 0x28E7, 0x28E8};
-u32 lbl_8030EC10[3] = {0x501C, 0x501D, 0x501E};
-u32 lbl_8030EC1C[3] = {0x51A1, 0x51A2, -1};
-u32 lbl_8030EC28[7] = {0x51A4, 0x51A5, 0x51A7, 0x51A8, 0x51A9, 0x51AA, 0x51AB};
-u32 lbl_8030EC44[4] = {0x51AC, 0x51AD, 0x51AE, 0x51AF};
-u32 lbl_8030EC54[4] = {0x2A, 0x25, 0x21, 0x2B};
-u32 lbl_8030EC64[3] = {-1, -1, -1};
-u32 lbl_8030EC70[3] = {-1, -1, 0x525};
-u32 lbl_8030EC7C[7] = {0x2E5, 0x2E6, 0x2E8, 0x2EA, 0x2EA, 0x2E8, 0x2E9};
-u32 lbl_8030EC98[4] = {0x2ED, 0x2EE, 0x2EF, 0x2F0};
-
-ObjSeqStreamMapEntry gObjSeqStreamTableA[OBJSEQ_STREAM_MAP_COUNT] = {
-    {0x35F, lbl_8030EC00}, {0x45A, lbl_8030EC10}, {0x117, lbl_8030EC1C},
-    {0xC3, lbl_8030EC28},  {0x122, lbl_8030EC44},
-};
-ObjSeqStreamMapEntry gObjSeqStreamTableB[OBJSEQ_STREAM_MAP_COUNT] = {
-    {0x35F, lbl_8030EC54}, {0x45A, lbl_8030EC64}, {0x117, lbl_8030EC70},
-    {0xC3, lbl_8030EC7C},  {0x122, lbl_8030EC98},
-};
-
-s16 gObjSeqSlotValues[86] = {0};
-
-int lbl_8030EDA4[7] = {0x100, 0x200, 0x40000, 0x80000, 0x20000, 0x10000, -1};
-
-s8 gObjSeqMsgSendModes[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
-
-void* lbl_8030EE34[40] = {(void*)0,
-                          (void*)0,
-                          (void*)0,
-                          (void*)0x230000,
-                          (void*)ObjSeq_initialise,
-                          (void*)ObjSeq_release,
-                          (void*)0,
-                          (void*)ObjSeq_onMapSetup,
-                          (void*)ObjSeq_addBgCmd,
-                          (void*)ObjSeq_setBool,
-                          (void*)ObjSeq_getBool,
-                          (void*)ObjSeq_update,
-                          (void*)ObjSeq_updateCamera,
-                          (void*)ObjSeq_objLoadAnimdata,
-                          (void*)ObjSeq_seqState_init,
-                          (void*)ObjSeq_seqState_free,
-                          (void*)ObjSeq_runBgCmds,
-                          (void*)ObjSeq_resolveTargetObject,
-                          (void*)ObjSeq_func0E,
-                          (void*)ObjSeq_func0F,
-                          (void*)ObjSeq_func10,
-                          (void*)ObjSeq_func11,
-                          (void*)ObjSeq_func12,
-                          (void*)ObjSeq_func13,
-                          (void*)ObjSeq_start,
-                          (void*)endObjSequence,
-                          (void*)ObjSeq_setCamVars,
-                          (void*)ObjSeq_preempt,
-                          (void*)ObjSeq_yield,
-                          (void*)ObjSeq_getGlobal3,
-                          (void*)ObjSeq_setGlobal3,
-                          (void*)ObjSeq_getGlobal1,
-                          (void*)ObjSeq_setGlobal1,
-                          (void*)ObjSeq_getGlobal2,
-                          (void*)ObjSeq_setGlobal2,
-                          (void*)ObjSeq_setXrot,
-                          (void*)ObjSeq_TurnToFacePlayer,
-                          (void*)ObjSeq_SetObjs,
-                          (void*)ObjSeq_setOverridePos,
-                          (void*)ObjSeq_SetCoordinateSpace};
-
-char sEndObjSequenceMaxFreesError[41] = "endObjSequence: max number of obj frees\n\000";
-char sObjSequenceMissingObjectFormat[38] = " SEQUENCE: Could not Find Object %i \n\000";
-char sObjLoadAnimdataNullACRomTabWarning[45] = "<objLoadAnimdata>  Warning ACRomTab is NULL\n\000";
-
-void* jumptable_8030EF58[20] = {
-    (void*)((u8*)ObjSeq_updateCamera + 0x3C4),
-    (void*)((u8*)ObjSeq_updateCamera + 0x390),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x250),
-    (void*)((u8*)ObjSeq_updateCamera + 0x298),
-    (void*)((u8*)ObjSeq_updateCamera + 0x468),
-    (void*)((u8*)ObjSeq_updateCamera + 0x2E4),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x318),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x49C),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x560),
-    (void*)((u8*)ObjSeq_updateCamera + 0x4D0),
-    (void*)((u8*)ObjSeq_updateCamera + 0x504),
-};
-void* jumptable_8030EFA8[52] = {
-    (void*)((u8*)objSeqExecCmd06 + 0x530),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x540),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x5D4),
-    (void*)((u8*)objSeqExecCmd06 + 0x5E4),
-    (void*)((u8*)objSeqExecCmd06 + 0x5F4),
-    (void*)((u8*)objSeqExecCmd06 + 0x604),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x614),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x6FC),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x620),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x64C),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x688),
-    (void*)((u8*)objSeqExecCmd06 + 0x6B0),
-    (void*)((u8*)objSeqExecCmd06 + 0x6D8),
-    (void*)((u8*)objSeqExecCmd06 + 0x728),
-    (void*)((u8*)objSeqExecCmd06 + 0x754),
-    (void*)((u8*)objSeqExecCmd06 + 0x76C),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x5FC),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x784),
-    (void*)((u8*)objSeqExecCmd06 + 0x7D4),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x864),
-    (void*)((u8*)objSeqExecCmd06 + 0x644),
-};
-void* jumptable_8030F078[51] = {
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x54),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x108),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x174),
-    (void*)((u8*)objSeqExecCmd06 + 0x1BC),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x128),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x204),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x228),
-    (void*)((u8*)objSeqExecCmd06 + 0x2A0),
-    (void*)((u8*)objSeqExecCmd06 + 0x2BC),
-    (void*)((u8*)objSeqExecCmd06 + 0x2D8),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x2F8),
-    (void*)((u8*)objSeqExecCmd06 + 0x318),
-    (void*)((u8*)objSeqExecCmd06 + 0x33C),
-    (void*)((u8*)objSeqExecCmd06 + 0x350),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x37C),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x510),
-    (void*)((u8*)objSeqExecCmd06 + 0x38C),
-    (void*)((u8*)objSeqExecCmd06 + 0x3BC),
-    (void*)((u8*)objSeqExecCmd06 + 0x3CC),
-    (void*)((u8*)objSeqExecCmd06 + 0x3D8),
-    (void*)((u8*)objSeqExecCmd06 + 0x3E4),
-    (void*)((u8*)objSeqExecCmd06 + 0x448),
-    (void*)((u8*)objSeqExecCmd06 + 0x4AC),
-};
-void* jumptable_8030F144[7] = {
-    (void*)((u8*)seqDoSubCmd0B + 0x3A8),
-    (void*)((u8*)seqDoSubCmd0B + 0x3D0),
-    (void*)((u8*)seqDoSubCmd0B + 0x4B4),
-    (void*)((u8*)seqDoSubCmd0B + 0x3DC),
-    (void*)((u8*)seqDoSubCmd0B + 0x3E8),
-    (void*)((u8*)seqDoSubCmd0B + 0x3F4),
-    (void*)((u8*)seqDoSubCmd0B + 0x410),
-};
-void* jumptable_8030F160[11] = {
-    (void*)((u8*)seqDoSubCmd0B + 0x4B4),
-    (void*)((u8*)seqDoSubCmd0B + 0x2E4),
-    (void*)((u8*)seqDoSubCmd0B + 0x388),
-    (void*)((u8*)seqDoSubCmd0B + 0x428),
-    (void*)((u8*)seqDoSubCmd0B + 0x460),
-    (void*)((u8*)seqDoSubCmd0B + 0x4A0),
-    (void*)((u8*)seqDoSubCmd0B + 0x4B4),
-    (void*)((u8*)seqDoSubCmd0B + 0x4B4),
-    (void*)((u8*)seqDoSubCmd0B + 0x4B4),
-    (void*)((u8*)seqDoSubCmd0B + 0x4B4),
-    (void*)((u8*)seqDoSubCmd0B + 0x330),
-};
-void* jumptable_8030F18C[18] = {
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x1F4),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x34),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x48),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x5C),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x84),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0xAC),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0xD4),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0xFC),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x124),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x14C),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x160),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x174),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x188),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x19C),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x1B0),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x1F4),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x1C4),
-    (void*)((u8*)ObjSeq_EvaluateCondition + 0x1DC),
-};
-void* jumptable_8030F1D4[7] = {
-    (void*)((u8*)objSeqDoBgCmds0D + 0x1BC),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x1E0),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x204),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x228),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x310),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x24C),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x270),
-};
-void* jumptable_8030F1F0[11] = {
-    (void*)((u8*)objSeqDoBgCmds0D + 0xB4),
-    (void*)((u8*)objSeqDoBgCmds0D + 0xF0),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x120),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x310),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x310),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x310),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x188),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x310),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x298),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x2A8),
-    (void*)((u8*)objSeqDoBgCmds0D + 0x2B8),
-};
-void* jumptable_8030F21C[16] = {
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x604),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x644),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x65C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x674),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x678),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x7C0),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x698),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x6B0),
-};
-void* jumptable_8030F25C[15] = {
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x220),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x90),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x288),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x318),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x274),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x2B8),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x49C),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x400),
-    (void*)((u8*)ObjSeq_ExecuteActionCommand + 0x3D0),
-};
-void* jumptable_8030F298[12] = {
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x100),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0xD8),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x10C),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x128),
-    (void*)((u8*)ObjSeq_RebuildCurveStateToFrame + 0x114),
-};
 
 extern u8 gObjSeqCameraActive;
 extern int gObjSeqCamMode;
