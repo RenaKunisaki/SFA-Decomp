@@ -259,9 +259,6 @@ int optionsMenu_openSelectedSubmenu(int action, int option)
 /* the in-game cheat queried for the second menu row */
 #define LANGUAGE_MENU_CHEAT_ID CHEAT_DINO_LANGUAGE
 
-/* TitleMenuTextEntry.flags: row is hidden / non-selectable */
-#define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
-
 /* gOptionsActivePanel active-panel id and gOptionsLayoutRefreshFrames render-stale countdown
    are owned by dll_0037_optionsscreen.c */
 
@@ -330,9 +327,6 @@ typedef struct OptionsMenuPanels
     u8 optionCount;
 } OptionsMenuPanels;
 
-/* per-entry flag word (entry+0x16): set to grey-out / disable an entry */
-#define OPTION_ENTRY_DISABLED 0x4000
-
 void optionsMenu_openAudioPanel(void)
 {
     OptionsMenuPanels* panels;
@@ -348,13 +342,13 @@ void optionsMenu_openAudioPanel(void)
     if (isCheatUnlocked(2) != 0)
     {
         panels->audioEntries[0x10b] = 5;
-        *(u16*)(panels->audioEntries + 0x142) = (u16)(*(u16*)(panels->audioEntries + 0x142) & ~OPTION_ENTRY_DISABLED);
+        *(u16*)(panels->audioEntries + 0x142) = (u16)(*(u16*)(panels->audioEntries + 0x142) & ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
         panels->audioEntries[0x146] = 4;
     }
     else
     {
         panels->audioEntries[0x10b] = -1;
-        *(u16*)(panels->audioEntries + 0x142) = (u16)(*(u16*)(panels->audioEntries + 0x142) | OPTION_ENTRY_DISABLED);
+        *(u16*)(panels->audioEntries + 0x142) = (u16)(*(u16*)(panels->audioEntries + 0x142) | TITLE_MENU_TEXT_ENTRY_HIDDEN);
     }
 
     gTitleMenuLinkInterface->vtable->setup(panels->audioEntries, panels->audioCount, 0, NULL, 0, 0, 0x14, 0xc8, 0xff,
@@ -416,13 +410,13 @@ void optionsMenu_openGeneralPanel(void)
         if (isCheatUnlocked((u8)(cheatId - 2)) != 0)
         {
             panels->optionEntries[entryOffset - 0x21] = cheatId;
-            *(u16*)(panels->optionEntries + entryOffset + 0x16) &= ~OPTION_ENTRY_DISABLED;
+            *(u16*)(panels->optionEntries + entryOffset + 0x16) &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             lastUnlocked = cheatId;
         }
         else
         {
             panels->optionEntries[entryOffset - 0x21] = lastUnlocked;
-            *(u16*)(panels->optionEntries + entryOffset + 0x16) |= OPTION_ENTRY_DISABLED;
+            *(u16*)(panels->optionEntries + entryOffset + 0x16) |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
         entryOffset -= 0x3c;
         cheatId--;
@@ -436,7 +430,7 @@ void optionsMenu_openGeneralPanel(void)
         if (isCheatUnlocked((u8)(cheatId2 - 2)) != 0)
         {
             panels->optionEntries[entryOffset2 + 0x1a] = lastUnlocked2;
-            *(u16*)(panels->optionEntries + entryOffset2 + 0x16) &= ~OPTION_ENTRY_DISABLED;
+            *(u16*)(panels->optionEntries + entryOffset2 + 0x16) &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             lastUnlocked2 = cheatId2;
         }
         entryOffset2 += 0x3c;

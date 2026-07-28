@@ -76,7 +76,6 @@ u8 gNwMammothArtifactState6TriggerList[4] = {1, 2, 0, 0};
 #define NW_MAMMOTH_PATH_SETUP_POINT_COUNT 4
 #define NW_MAMMOTH_TRIGGER_RANDOM_MIN     1
 #define NW_MAMMOTH_CURVE_PARAM            0x19
-#define NW_MAMMOTH_PATH_CONTROL_FLAG      0x10
 
 #define NW_MAMMOTH_TRICKY_COMMAND_KIND 1
 #define NW_MAMMOTH_TRICKY_COMMAND_TYPE 1
@@ -468,7 +467,7 @@ void NW_mammoth_updatePatrol(GameObject* obj, NwMammothState* state, NwMammothPl
         }
         break;
     case 0:
-        if ((obj->anim.resetHitboxFlags & 4) || state->playerDistanceSq < 6400.0f) {
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) || state->playerDistanceSq < 6400.0f) {
             state->pathSpeed -= 0.02f * timeDelta;
             if (state->pathSpeed < 0.05f) {
                 state->pathSpeed = 0.0f;
@@ -712,9 +711,9 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
         break;
     }
     if ((tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_PATH_CONTROL) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | NW_MAMMOTH_PATH_CONTROL_FLAG);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED);
     } else {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~NW_MAMMOTH_PATH_CONTROL_FLAG);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED);
         if (((tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_MENU_ACTION) != 0) &&
             (cMenuGetSelectedItem() != -1)) {
             Obj_SetActiveHitVolumeBounds((GameObject*)obj, 0, 0, 0, 0, 4);

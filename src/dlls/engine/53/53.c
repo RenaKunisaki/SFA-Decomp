@@ -237,8 +237,6 @@ typedef struct SaveSelectPanel
     u8 padA[2];
 } SaveSelectPanel;
 
-#define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
-
 #define SAVE_SELECT_TEXT_BUFFER_COUNT 10
 
 #define SAVESELECTSCREEN_TEXTURE_ID 0x2dd

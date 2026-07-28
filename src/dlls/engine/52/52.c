@@ -40,8 +40,6 @@ u8 gTitleMenuPreviousSelection;
 u8 gTitleMenuSelection;
 s32 gAttractMovieState;
 
-#define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
-
 
 extern TitleMenuTextEntry lbl_8031A214[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
