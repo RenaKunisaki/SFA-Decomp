@@ -54,29 +54,9 @@ typedef struct CameraModeViewfinderInitArgs
 
 
 extern f32 lbl_803E17C0;
-extern f32 lbl_803E17C4;
-extern f32 lbl_803E17C8;
-extern f32 lbl_803E17CC;
 extern f32 lbl_803E17D0;
-extern f32 lbl_803E17E0;
-extern f32 lbl_803E17E4;
-extern f32 lbl_803E17E8;
-extern f32 lbl_803E17EC;
-extern f32 lbl_803E17F0;
-extern f32 lbl_803E17F4;
-extern f32 lbl_803E17F8;
-extern f32 lbl_803E17FC;
-extern f32 lbl_803E1800;
 extern f32 lbl_803E1804;
-extern f32 lbl_803E1808;
-extern f32 lbl_803E180C;
-extern f32 lbl_803E1810;
 extern f32 gCamViewfinderBrightnessScale;
-extern f32 lbl_803E1818;
-extern f32 lbl_803E181C;
-extern f32 lbl_803E1820;
-extern f32 lbl_803E182C;
-extern f32 lbl_803E1830;
 extern f32 gCamViewfinderPi;
 
 void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
@@ -139,8 +119,8 @@ void firstPersonExit(CameraObject* camera)
 
     target = (GameObject*)self->anim.targetObj;
     gViewfinderState->posXCurve.start = self->anim.worldPosX;
-    tangent = lbl_803E17C4;
-    gViewfinderState->posXCurve.startTangent = lbl_803E17C4;
+    tangent = 0.0f;
+    gViewfinderState->posXCurve.startTangent = 0.0f;
     gViewfinderState->posXCurve.endTangent = tangent;
     gViewfinderState->posYCurve.start = self->anim.worldPosY;
     gViewfinderState->posYCurve.startTangent = tangent;
@@ -166,39 +146,39 @@ void firstPersonExit(CameraObject* camera)
     targetYaw = getAngle((double)(gViewfinderState->posXCurve.end - target->anim.worldPosX),
                          (double)(gViewfinderState->posZCurve.end - target->anim.worldPosZ));
     gViewfinderState->yawCurve.end = (float)(int)(short)(0x8000 - targetYaw);
-    tangent = lbl_803E17C4;
-    gViewfinderState->yawCurve.startTangent = lbl_803E17C4;
+    tangent = 0.0f;
+    gViewfinderState->yawCurve.startTangent = 0.0f;
     gViewfinderState->yawCurve.endTangent = tangent;
-    if (((gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end) > lbl_803E17C8) ||
-        ((gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end) < lbl_803E17CC))
+    if (((gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end) > 32768.0f) ||
+        ((gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end) < -32768.0f))
     {
-        if (gViewfinderState->yawCurve.start < lbl_803E17C4)
+        if (gViewfinderState->yawCurve.start < 0.0f)
         {
             gViewfinderState->yawCurve.start = *(f32*)&gViewfinderState->yawCurve.start + lbl_803E17D0;
         }
         else
         {
-            if (gViewfinderState->yawCurve.end < lbl_803E17C4)
+            if (gViewfinderState->yawCurve.end < 0.0f)
             {
                 gViewfinderState->yawCurve.end = *(f32*)&gViewfinderState->yawCurve.end + lbl_803E17D0;
             }
         }
     }
     gViewfinderState->pitchCurve.start = (float)(int)self->anim.rotY;
-    tangent = lbl_803E17C4;
-    gViewfinderState->pitchCurve.end = lbl_803E17C4;
+    tangent = 0.0f;
+    gViewfinderState->pitchCurve.end = 0.0f;
     gViewfinderState->pitchCurve.startTangent = tangent;
     gViewfinderState->pitchCurve.endTangent = tangent;
-    if (((gViewfinderState->pitchCurve.start - gViewfinderState->pitchCurve.end) > lbl_803E17C8) ||
-        ((gViewfinderState->pitchCurve.start - gViewfinderState->pitchCurve.end) < lbl_803E17CC))
+    if (((gViewfinderState->pitchCurve.start - gViewfinderState->pitchCurve.end) > 32768.0f) ||
+        ((gViewfinderState->pitchCurve.start - gViewfinderState->pitchCurve.end) < -32768.0f))
     {
-        if (gViewfinderState->pitchCurve.start < lbl_803E17C4)
+        if (gViewfinderState->pitchCurve.start < 0.0f)
         {
             gViewfinderState->pitchCurve.start = *(f32*)&gViewfinderState->pitchCurve.start + lbl_803E17D0;
         }
         else
         {
-            if (gViewfinderState->pitchCurve.end < lbl_803E17C4)
+            if (gViewfinderState->pitchCurve.end < 0.0f)
             {
                 gViewfinderState->pitchCurve.end = *(f32*)&gViewfinderState->pitchCurve.end + lbl_803E17D0;
             }
@@ -222,16 +202,16 @@ void firstPersonDoControls(CameraObject* obj)
     camObj = (short*)obj->anim.targetObj;
     stickX = padGetStickX(0);
     stickY = padGetStickY(0);
-    t = (lbl_803E17E0 - obj->fov) / lbl_803E17E4;
-    zoom = (t < lbl_803E17C4) ? lbl_803E17C4 : ((t > lbl_803E17E8) ? lbl_803E17E8 : t);
-    spin = stickX * -(lbl_803E17F0 * zoom - lbl_803E17EC);
-    spin = interpolate(spin - gViewfinderState->yawSpeed, lbl_803E17F4, timeDelta);
+    t = (60.0f - obj->fov) / 50.0f;
+    zoom = (t < 0.0f) ? 0.0f : ((t > 1.0f) ? 1.0f : t);
+    spin = stickX * -(4.0f * zoom - 6.0f);
+    spin = interpolate(spin - gViewfinderState->yawSpeed, 0.12f, timeDelta);
     gViewfinderState->yawSpeed = gViewfinderState->yawSpeed + spin;
-    if ((gViewfinderState->yawSpeed > lbl_803E17F8) && (gViewfinderState->yawSpeed < lbl_803E17FC))
+    if ((gViewfinderState->yawSpeed > -5.0f) && (gViewfinderState->yawSpeed < 5.0f))
     {
-        gViewfinderState->yawSpeed = lbl_803E17C4;
+        gViewfinderState->yawSpeed = 0.0f;
     }
-    spinI = (int)(lbl_803E1800 * ((f32)stickY / lbl_803E1804));
+    spinI = (int)(15360.0f * ((f32)stickY / lbl_803E1804));
     obj->anim.rotX = gViewfinderState->yawSpeed * timeDelta + (f32)obj->anim.rotX;
     pitchDelta = spinI - (obj->anim.rotY & 0xffffU);
     if (0x8000 < pitchDelta)
@@ -242,7 +222,7 @@ void firstPersonDoControls(CameraObject* obj)
     {
         pitchDelta = pitchDelta + 0xffff;
     }
-    spin = interpolate((f32)pitchDelta, lbl_803E17E8 / (lbl_803E180C * zoom + lbl_803E1808), timeDelta);
+    spin = interpolate((f32)pitchDelta, 1.0f / (32.0f * zoom + 16.0f), timeDelta);
     obj->anim.rotY = obj->anim.rotY + spin;
     if (0x3c00 < obj->anim.rotY)
     {
@@ -269,10 +249,10 @@ void firstPersonDoControls(CameraObject* obj)
         zoom2 = obj->fov;
         stickX = padGetCY(0);
         t = (f32)-stickX;
-        t = lbl_803E1810 * t;
+        t = 0.01f * t;
         zoom2 = t * timeDelta + zoom2;
         viewFinderSetZoom(Camera_GetFovY());
-        fovTarget = (zoom2 < lbl_803E17FC) ? lbl_803E17FC : ((zoom2 > lbl_803E17E0) ? lbl_803E17E0 : zoom2);
+        fovTarget = (zoom2 < 5.0f) ? 5.0f : ((zoom2 > 60.0f) ? 60.0f : zoom2);
         if (gViewfinderState->flags.sfxEnabled)
         {
             if ((fovTarget == obj->fov) && (gViewfinderState->flags.zoomSfxPlaying))
@@ -305,7 +285,7 @@ int firstPersonEnter(CameraObject* cam, s16* p2)
     cam->anim.worldPosZ = gViewfinderState->camPosZ;
     cam->anim.rotY = 0;
     flag = 0;
-    if (cam->blendProgress <= lbl_803E17C4)
+    if (cam->blendProgress <= 0.0f)
     {
         flag = 1;
     }
@@ -345,23 +325,23 @@ int firstPersonEnter(CameraObject* cam, s16* p2)
         start = gViewfinderState->yawCurve.start;
         end = gViewfinderState->yawCurve.end;
         f2 = start - end;
-        if (f2 < lbl_803E1818 && f2 > lbl_803E181C)
+        if (f2 < 1820.0f && f2 > -1820.0f)
         {
             gViewfinderState->yawCurve.end = gViewfinderState->yawCurve.start;
         }
-        else if (f2 > lbl_803E17C8 || f2 < lbl_803E17CC)
+        else if (f2 > 32768.0f || f2 < -32768.0f)
         {
-            if (start < lbl_803E17C4)
+            if (start < 0.0f)
             {
                 gViewfinderState->yawCurve.start += lbl_803E17D0;
             }
-            else if (end < lbl_803E17C4)
+            else if (end < 0.0f)
             {
                 gViewfinderState->yawCurve.end += lbl_803E17D0;
             }
         }
         {
-            f32 k = lbl_803E17C4;
+            f32 k = 0.0f;
             gViewfinderState->yawCurve.startTangent = k;
             gViewfinderState->yawCurve.endTangent = k;
         }
@@ -421,7 +401,7 @@ void CameraModeViewfinder_free(int camObj)
     Sfx_StopFromObject(0, SFXTRIG_and_swipe1);
     mm_free(gViewfinderState);
     gViewfinderState = NULL;
-    viewFinderSetZoom(lbl_803E17E0);
+    viewFinderSetZoom(60.0f);
 }
 
 void CameraModeViewfinder_update(CameraObject* obj)
@@ -446,7 +426,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
         gViewfinderState->mode = firstPersonEnter(obj, (s16*)obj->anim.targetObj);
         break;
     case VIEWFINDER_MODE_YAW_SETTLE:
-        if (Curve_AdvanceAlongPath(&gViewfinderState->viewCurve, lbl_803E1820) != 0)
+        if (Curve_AdvanceAlongPath(&gViewfinderState->viewCurve, 1000.0f) != 0)
         {
             if (gViewfinderState->flags.zoomHudEnabled)
             {
@@ -473,7 +453,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
         obj->unk13E = 0;
         break;
     case VIEWFINDER_MODE_EXIT_BLEND:
-        angleDiff = Curve_AdvanceAlongPath(&gViewfinderState->viewCurve, lbl_803E1820);
+        angleDiff = Curve_AdvanceAlongPath(&gViewfinderState->viewCurve, 1000.0f);
         obj->anim.rotX = gViewfinderState->viewCurve.sample[0];
         obj->anim.rotY = gViewfinderState->viewCurve.sample[1];
         if (angleDiff != 0)
@@ -544,7 +524,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
             brightness = 1;
         }
         (*gCameraInterface)->getRelativePosition(obj, &outA, &hitY, &outB, &hitDist, 0.0f, 0);
-        if (hitDist < lbl_803E182C)
+        if (hitDist < 10.0f)
         {
             obj->anim.rotY = 0;
         }
@@ -628,7 +608,7 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
     *(f32*)gViewfinderState = a->radius;
     gViewfinderState->height = (f32)(u32)a->height;
     gViewfinderState->yOffset = a->yOffset;
-    gViewfinderState->yawSpeed = lbl_803E17C4;
+    gViewfinderState->yawSpeed = 0.0f;
     diff = 0x8000 - obj->anim.rotX - camObj[0];
     if (diff < 0)
     {
@@ -638,8 +618,8 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
     {
         absDiff = diff;
     }
-    spinRate = diff / lbl_803E17E4;
-    rollRate = absDiff / lbl_803E1830;
+    spinRate = diff / 50.0f;
+    rollRate = absDiff / 90.0f;
     gViewfinderState->viewCurve.px = &gViewfinderState->posXCurve.start;
     gViewfinderState->viewCurve.py = &gViewfinderState->posYCurve.start;
     gViewfinderState->viewCurve.pz = &gViewfinderState->posZCurve.start;
@@ -650,21 +630,21 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
     dx = obj->anim.worldPosX - ((GameObject*)camObj)->anim.worldPosX;
     dz = obj->anim.worldPosZ - ((GameObject*)camObj)->anim.worldPosZ;
     dist = sqrtf(dx * dx + dz * dz);
-    if (lbl_803E17C4 != dist)
+    if (0.0f != dist)
     {
         dx = dx / dist;
         dz = dz / dist;
     }
     firstPersonPlaceCamera((GameObject*)camObj, 1);
-    cosv = -mathSinf((gCamViewfinderPi * camObj[0]) / lbl_803E17C8);
-    sinv = -mathCosf((gCamViewfinderPi * camObj[0]) / lbl_803E17C8);
+    cosv = -mathSinf((gCamViewfinderPi * camObj[0]) / 32768.0f);
+    sinv = -mathCosf((gCamViewfinderPi * camObj[0]) / 32768.0f);
     gViewfinderState->posXCurve.start = obj->anim.worldPosX;
     gViewfinderState->posXCurve.end = gViewfinderState->camPosX;
     gViewfinderState->posXCurve.startTangent = -dz * spinRate;
     gViewfinderState->posXCurve.endTangent = cosv * rollRate;
     gViewfinderState->posYCurve.start = obj->anim.worldPosY;
     gViewfinderState->posYCurve.end = gViewfinderState->camPosY;
-    zero = lbl_803E17C4;
+    zero = 0.0f;
     gViewfinderState->posYCurve.startTangent = zero;
     gViewfinderState->posYCurve.endTangent = zero;
     gViewfinderState->posZCurve.start = obj->anim.worldPosZ;
@@ -689,24 +669,24 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
         a2 = a2 + 0xffff;
     }
     gViewfinderState->yawCurve.start = a2;
-    zero = lbl_803E17C4;
+    zero = 0.0f;
     gViewfinderState->yawCurve.end = zero;
     gViewfinderState->yawCurve.startTangent = zero;
     gViewfinderState->yawCurve.endTangent = zero;
-    if (gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end > lbl_803E17C8 ||
-        gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end < lbl_803E17CC)
+    if (gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end > 32768.0f ||
+        gViewfinderState->yawCurve.start - gViewfinderState->yawCurve.end < -32768.0f)
     {
-        if (gViewfinderState->yawCurve.start < lbl_803E17C4)
+        if (gViewfinderState->yawCurve.start < 0.0f)
         {
             gViewfinderState->yawCurve.start += lbl_803E17D0;
         }
-        else if (gViewfinderState->yawCurve.end < lbl_803E17C4)
+        else if (gViewfinderState->yawCurve.end < 0.0f)
         {
             gViewfinderState->yawCurve.end += lbl_803E17D0;
         }
     }
     gViewfinderState->pitchCurve.start = obj->anim.rotY;
-    zero = lbl_803E17C4;
+    zero = 0.0f;
     gViewfinderState->pitchCurve.end = zero;
     gViewfinderState->pitchCurve.startTangent = zero;
     gViewfinderState->pitchCurve.endTangent = zero;
