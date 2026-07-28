@@ -530,6 +530,12 @@ cflags_dll_noopt_noloopinv_nolifetimes_noprop_zerodata = [
     '-pragma "explicit_zero_data on"',
 ]
 
+cflags_dll_noopt_nocse_noloopinv_nolifetimes_noprop_zerodata = [
+    *cflags_base,
+    "-opt", "nopeephole,noschedule,nocse,noloopinvariants,nolifetimes,nopropagation",
+    '-pragma "explicit_zero_data on"',
+]
+
 cflags_dll_noopt_nolifetimes_noinline = [
     *cflags_base,
     "-opt", "nopeephole,noschedule,nolifetimes",
@@ -1843,7 +1849,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/objprint_dolphin_loadmtxs.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_noprop_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/objprint_dolphin_render.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/pi_dolphin.c", cflags=[*cflags_dll_noopt_noloopinv_zerodata, "-inline", "noauto"]),
-            Object(NonMatching, "main/pi_videoinit.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_noprop_zerodata, "-inline", "noauto"]),
+            Object(NonMatching, "main/pi_videoinit.c", cflags=[*cflags_dll_noopt_nocse_noloopinv_nolifetimes_noprop_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/pi_pathsearch.c", cflags=[*cflags_dll_noopt_noloopinv_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/zlb.c", cflags=cflags_base, **zlb_object_kwargs),
             Object(NonMatching, "main/shader_dolphin.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
