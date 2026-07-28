@@ -1948,7 +1948,6 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
     int count;
     int startIndex;
     int objectCount;
-    int i;
     void** objects;
     u8* obj;
     u8* def;
@@ -1956,6 +1955,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
     u16 minRadius;
     void** op;
     f32 scale;
+    int i;
 
     objects = (void**)ObjGroup_GetObjects(SIDEREPEL_OBJGROUP, &count);
     for (i = 0, op = objects, scale = 0.1f; i < count; i++)
