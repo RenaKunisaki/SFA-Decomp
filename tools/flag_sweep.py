@@ -64,7 +64,12 @@ OBJDIFF = ROOT / "build/tools/objdiff-cli"
 # -opt subflags worth toggling; the pairwise mode takes combinations of these.
 OPT_SUBFLAGS = ["nocse", "nodeadstore", "nolifetimes", "noloopinvariants",
                 "nostrength", "nopropagation", "nodead"]
+# The versions the SFA build plausibly used; swept alongside the flag profiles.
 VERSIONS = ["1.2.5n", "1.3", "1.3.2", "2.0", "2.5", "2.6", "2.7"]
+# The rest of build/compilers/GC, swept only by --versions.
+VERSIONS_EXTRA = ["1.0", "1.1", "1.1p1", "1.2.5", "1.3.2r", "2.0p1",
+                  "3.0a3", "3.0a3.2", "3.0a3.3", "3.0a3.4", "3.0a3p1",
+                  "3.0a5", "3.0a5.2"]
 
 
 def add_opt(*extras):
@@ -131,8 +136,9 @@ def _single_profiles():
     return p
 
 
-def _version_profiles():
-    return [("v" + v, set_version(v)) for v in VERSIONS]
+def _version_profiles(extra=False):
+    vs = VERSIONS + VERSIONS_EXTRA if extra else VERSIONS
+    return [("v" + v, set_version(v)) for v in vs]
 
 
 def _pair_profiles():
@@ -143,7 +149,7 @@ def profiles_for(mode):
     if mode == "pairs":
         return _pair_profiles()
     if mode == "versions":
-        return _version_profiles()
+        return _version_profiles(extra=True)
     return _single_profiles() + _version_profiles()
 
 
