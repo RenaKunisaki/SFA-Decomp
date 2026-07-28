@@ -428,7 +428,6 @@ void CameraModeViewfinder_update(CameraObject* obj)
 {
     int camObj;
     GameObject* targetObj;
-    int brightness;
     GameObject* exitTarget;
     int angleDiff;
     f32 outA;
@@ -499,6 +498,9 @@ void CameraModeViewfinder_update(CameraObject* obj)
         obj->unk13E = 1;
         break;
     case VIEWFINDER_MODE_FADE_BACK:
+    {
+        int brightness;
+
         obj->anim.worldPosX = gViewfinderState->posXCurve.end;
         obj->anim.worldPosY = gViewfinderState->posYCurve.end;
         obj->anim.worldPosZ = gViewfinderState->posZCurve.end;
@@ -583,6 +585,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
         }
         obj->unk13E = 1;
         break;
+    }
     case VIEWFINDER_MODE_IDLE:
         break;
     }
