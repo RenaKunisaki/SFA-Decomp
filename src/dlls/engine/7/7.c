@@ -785,7 +785,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     f32 driftZ;
     f32 stepX;
     f32 stepZ;
-    f32 size;
+    f32 quadOffset;
     f32 yb;
     f32 mtxB[16];
     f32 mtxT[12];
@@ -964,16 +964,24 @@ int snowPrintSnowCloud(int arg, int cloudId)
             }
         }
         yb = part->y - *(f32*)(p + part->angle * 4 + 8);
-        size = part->fallSpeed;
-        vx[0] = ((f32*)p)[part->quadIndex * 11 + 1026] * size + part->x;
-        vy[0] = ((f32*)p)[part->quadIndex * 11 + 1029] * size + yb;
-        vz[0] = ((f32*)p)[part->quadIndex * 11 + 1032] * size + part->z;
-        vx[1] = ((f32*)p)[part->quadIndex * 11 + 1027] * size + part->x;
-        vy[1] = ((f32*)p)[part->quadIndex * 11 + 1030] * size + yb;
-        vz[1] = ((f32*)p)[part->quadIndex * 11 + 1033] * size + part->z;
-        vx[2] = ((f32*)p)[part->quadIndex * 11 + 1028] * size + part->x;
-        vy[2] = ((f32*)p)[part->quadIndex * 11 + 1031] * size + yb;
-        vz[2] = ((f32*)p)[part->quadIndex * 11 + 1034] * size + part->z;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1026];
+        vx[0] = quadOffset * part->fallSpeed + part->x;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1029];
+        vy[0] = quadOffset * part->fallSpeed + yb;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1032];
+        vz[0] = quadOffset * part->fallSpeed + part->z;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1027];
+        vx[1] = quadOffset * part->fallSpeed + part->x;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1030];
+        vy[1] = quadOffset * part->fallSpeed + yb;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1033];
+        vz[1] = quadOffset * part->fallSpeed + part->z;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1028];
+        vx[2] = quadOffset * part->fallSpeed + part->x;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1031];
+        vy[2] = quadOffset * part->fallSpeed + yb;
+        quadOffset = ((f32*)p)[part->quadIndex * 11 + 1034];
+        vz[2] = quadOffset * part->fallSpeed + part->z;
         puv = attr.uvs.uv;
         GXWGFifo.f32 = (f64)qx[0];
         GXWGFifo.f32 = (f64)qy[0];
