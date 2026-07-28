@@ -779,7 +779,7 @@ u8 gameTimerIsRunning(void)
     return gModelEngineTimerState & MODELENGINE_TIMER_RUNNING;
 }
 
-void hudNumberFn_80014060(void* context)
+void hudNumberRender(void* context)
 {
     if (gModelEngineHudNumber != -1)
     {
@@ -788,7 +788,7 @@ void hudNumberFn_80014060(void* context)
     }
 }
 
-void set_hudNumber_803db278(s32 value)
+void hudNumberSet(s32 value)
 {
     gModelEngineHudNumber = value;
 }
