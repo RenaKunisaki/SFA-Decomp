@@ -760,6 +760,7 @@ void* mapLoadDataFile(int mapId, int fileId)
 {
     struct MldfNames* nm = (struct MldfNames*)sResourceFileNameAudioTab;
     struct MldfTables* tbl = (struct MldfTables*)gResourceFileTable;
+    DVDFileInfo* tabFi;
     DVDFileInfo* fi;
     int sync = 0;
     void* result;
@@ -2059,22 +2060,22 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(gDvdFileInfoPool);
-            ok = DVDOpen(buf, fi);
+            tabFi = AtomicSList_Pop(gDvdFileInfoPool);
+            ok = DVDOpen(buf, tabFi);
             if (ok == 0)
             {
                 return 0;
             }
             else
             {
-                MLDF_SP_SIZE_INIT(x) = DVD_FI_LENGTH(fi);
+                MLDF_SP_SIZE_INIT(x) = DVD_FI_LENGTH(tabFi);
                 MLDF_SP_PTR(x) = mmAlloc(MLDF_SP_SIZE(x), 0x7d7d7d7d, 0);
                 DCInvalidateRange(MLDF_SP_PTR(x), MLDF_SP_SIZE(x));
                 if (sync != 0)
                 {
-                    DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
-                    DVDClose(fi);
-                    AtomicSList_Push(gDvdFileInfoPool, fi);
+                    DVDRead(tabFi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
+                    DVDClose(tabFi);
+                    AtomicSList_Push(gDvdFileInfoPool, tabFi);
                     if (((gAssetLoadInFlightFlags & 0x4000) == 0) && ((gAssetLoadInFlightFlags & 0x8000) == 0))
                     {
                         mergeTableFiles(tbl->mergeTex1, 0x21, 0x4c, 0x1000);
@@ -2082,16 +2083,16 @@ void* mapLoadDataFile(int mapId, int fileId)
                 }
                 else
                 {
-                    MLDF_FINFO4(x) = fi;
+                    MLDF_FINFO4(x) = tabFi;
                     if (slot == 0x21)
                     {
                         gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x4000;
-                        DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex1tab1readCb, 2);
+                        DVDReadAsyncPrio(tabFi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex1tab1readCb, 2);
                     }
                     else
                     {
                         gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x8000;
-                        DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex1tab2readCb, 2);
+                        DVDReadAsyncPrio(tabFi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex1tab2readCb, 2);
                     }
                 }
                 MLDF_OWNER_RT(slot) = mapId;
@@ -3260,24 +3261,26 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     }
     else if (fileId == 0x20 || fileId == 0x4b)
     {
+        u32 srcBuf;
+
         DVDOpen(sResourceFileNameTable[fileId], &buf);
         alignedSize = (length + 0x1f) & 0xffffffe0;
-        fileBuf = (u32)mmAlloc(alignedSize, 0x7f7f7fff, 0);
-        DVDRead(&buf, (void*)fileBuf, alignedSize, offsetFlags & 0xffffff);
+        srcBuf = (u32)mmAlloc(alignedSize, 0x7f7f7fff, 0);
+        DVDRead(&buf, (void*)srcBuf, alignedSize, offsetFlags & 0xffffff);
         DVDClose(&buf);
-        DCStoreRange((void*)fileBuf, length);
-        if (strncmp(sDirBlockTag, (char*)fileBuf, 3) == 0)
+        DCStoreRange((void*)srcBuf, length);
+        if (strncmp(sDirBlockTag, (char*)srcBuf, 3) == 0)
         {
             for (;;)
             {
             }
         }
-        if (strncmp((char*)fileBuf, sZlbBlockTag, 3) == 0)
+        if (strncmp((char*)srcBuf, sZlbBlockTag, 3) == 0)
         {
-            decompSize = ZLB_HDR(fileBuf)->decompressedSize;
-            zlbDecompress((u8*)(fileBuf + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf, &decompSize);
+            decompSize = ZLB_HDR(srcBuf)->decompressedSize;
+            zlbDecompress((u8*)(srcBuf + 0x10), ZLB_HDR(srcBuf)->compressedSize, (u8*)destBuf, &decompSize);
         }
-        mm_free((void*)fileBuf);
+        mm_free((void*)srcBuf);
     }
     else
     {
