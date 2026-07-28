@@ -919,7 +919,7 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     updateLights();
     lbl_803DCEA8 = (int)Camera_GetCurrentViewSlot();
     sceneDraw();
-    screenFn_8000e944(NULL);
+    Camera_SetupFullscreenViewport(NULL);
     renderFlags &= ~2LL;
 }
 
@@ -1055,5 +1055,4 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 void lightmapDrawQueuedObject(GameObject* obj);
 
 void sceneDrawTransparentPolys(void);
-
 

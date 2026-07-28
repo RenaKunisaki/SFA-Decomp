@@ -11,6 +11,9 @@ typedef struct GameObject GameObject;
 typedef f32 CameraMatrix[16];
 STATIC_ASSERT(sizeof(CameraMatrix) == 0x40);
 
+typedef f32 CameraProjectionMatrix[4][4];
+STATIC_ASSERT(sizeof(CameraProjectionMatrix) == 0x40);
+
 typedef struct CameraViewSlot {
     s16 yaw;
     s16 pitch;
@@ -78,7 +81,7 @@ extern u8 gCameraCurrentViewIndex;
 extern u8 cameraViewYOffsetEnabled;
 extern s16 cameraViewportYOffset;
 extern s16 gCameraViewportYOffset;
-extern CameraMatrix gCameraProjectionMatrix;
+extern CameraProjectionMatrix gCameraProjectionMatrix;
 extern f32 lbl_803967C0[3][4];
 extern f32 lbl_803967F0[3][4];
 extern f32 lbl_80396820[3][4];
@@ -100,10 +103,8 @@ extern f32 lbl_803DE60C;
 extern f32 gCameraDefaultFarPlane;
 extern f32 gCameraDefaultPosition;
 extern f32 lbl_803DB26C;
-extern s16 gCameraViewportScreenParams[];
 extern u32 gViewportJitterField;
 extern s16 lbl_803DC88A;
-extern u8 gCameraViewportEntries[];
 
 void Obj_RotateLocalOffsetByYaw(f32* local, f32* out, s8 yawIndex);
 
@@ -151,7 +152,7 @@ void Camera_InitState(void);
 f32* Camera_GetWorldMatrix(void);
 s32 Angle_AddWrappedS16(s32 angle, s16* delta);
 s32 Angle_SubWrappedS16(s32 angle, s16* delta);
-void screenFn_8000e944(void* viewportArg);
+void Camera_SetupFullscreenViewport(void* viewportArg);
 void Camera_UpdateShakeAndFarPlane(void);
 void Camera_ApplyEffectDepthViewport(void);
 void Camera_ApplyTransparentViewport(void);
