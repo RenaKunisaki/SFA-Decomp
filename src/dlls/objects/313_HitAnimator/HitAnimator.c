@@ -14,8 +14,6 @@ typedef struct HitAnimatorPolygonGroup {
     u32 flags; /* 0x10 */
 } HitAnimatorPolygonGroup;
 
-#define HIT_ANIMATOR_OBJECT_FLAGS_INIT 0x6000
-
 STATIC_ASSERT(offsetof(HitAnimatorPolygonGroup, flags) == 0x10);
 
 void HitAnimator_applyBlockState(MapBlockData* block, GameObject* obj, HitAnimatorState* state,
@@ -136,7 +134,7 @@ void HitAnimator_init(GameObject* obj, HitAnimatorPlacement* placement) {
     gameBitValue = mainGetBit(placement->gameBit);
     state->gameBitValue = gameBitValue;
     state->previousGameBitValue = gameBitValue;
-    obj->objectFlags |= HIT_ANIMATOR_OBJECT_FLAGS_INIT;
+    obj->objectFlags |= (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN);
 }
 
 ObjectDescriptor gHitAnimatorObjDescriptor = {

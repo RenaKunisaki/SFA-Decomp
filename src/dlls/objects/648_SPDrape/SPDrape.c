@@ -21,9 +21,6 @@
 u8 gSpDrapeSwingLeftMoveTable[4] = {1, 2, 3, 0};
 u8 gSpDrapeSwingRightMoveTable[4] = {4, 5, 6, 0};
 
-#define SPDRAPE_OBJFLAG_HIDDEN             0x4000
-#define SPDRAPE_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 /* indices into a swing-direction move table (gSpDrapeSwingLeftMoveTable / gSpDrapeSwingRightMoveTable) */
 enum
 {
@@ -189,8 +186,8 @@ void spdrape_init(GameObject* obj, SpdrapeObjectDef* def)
     SpdrapeState* state;
     GameObject* player;
     state = obj->extra;
-    obj->objectFlags |= SPDRAPE_OBJFLAG_HITDETECT_DISABLED;
-    obj->objectFlags |= SPDRAPE_OBJFLAG_HIDDEN;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     obj->anim.rotX = (s16)((s32)def->facingByte << 8);
     if (def->motionScaleNum != 0)
     {

@@ -9,8 +9,6 @@
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
 
-#define SEQPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 static const f32 lbl_803E6128 = 1.0f;
 
 typedef enum SeqPointMode
@@ -218,7 +216,7 @@ void SeqPoint_init(GameObject* obj, int data)
     state->triggerMode = def->triggerMode;
     state->conditionGameBit = def->conditionGameBit;
     state->disableGameBit = def->disableGameBit;
-    obj->objectFlags |= SEQPOINT_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void SeqPoint_release(void)

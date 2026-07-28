@@ -44,7 +44,6 @@
 
 #define WCAPERTURES_CAMERA_MODE        68
 #define WCAPERTURES_PLAYER_STATE       33
-#define WCAPERTURES_ACCEPT_OBJECT_FLAG 0x800
 
 #define WCAPERTURES_LIGHT_KIND    2
 #define WCAPERTURES_LIGHT_BLUE_LO 0x4d
@@ -177,7 +176,7 @@ void wcapertures_update(GameObject* obj)
             fn_802969F0(player) == WCAPERTURES_PLAYER_STATE)
         {
             state->targetAlpha = WCAPERTURES_ALPHA_OPAQUE;
-            if (Camera_GetFovY() <= 6.0f && (obj->objectFlags & WCAPERTURES_ACCEPT_OBJECT_FLAG))
+            if (Camera_GetFovY() <= 6.0f && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED))
             {
                 mainSetBits(setup->openBit, 1);
                 state->mode = WCAPERTURES_MODE_OPEN;

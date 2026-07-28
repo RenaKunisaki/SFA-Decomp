@@ -57,8 +57,6 @@ s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
 #define KYTESMUM_OBJGROUP        0x3
 #define KYTESMUM_TARGET_OBJGROUP 0x1
 
-#define KYTESMUM_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 #define KYTESMUM_TRICKY_COMMAND_KIND 1
 #define KYTESMUM_TRICKY_COMMAND_TYPE 2
 
@@ -437,7 +435,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
     startMove = randomGetRange(0, 1) * 2;
     startMove = *(s16*)((char*)runtime->moveSet + startMove);
     ObjAnim_SetCurrentMove((int)obj, startMove, 0.0f, 0);
-    obj->objectFlags |= KYTESMUM_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void kytesmum_release(void)

@@ -59,7 +59,6 @@
 #define RING_PARTFX_FLAGS   0x200001
 #define RING_MODEL_DEFAULT  0
 #define RING_MODEL_ALT      1
-#define RING_OBJFLAG_HIDDEN 0x4000
 
 RingTable gRingModeParams[] = {
     {0x7A4, 0x7A5, 0x2000, 100, -0x1000, 1850.0f},
@@ -293,7 +292,7 @@ void ring_update(GameObject* obj)
         if (alpha < 0)
         {
             alpha = 0;
-            obj->anim.flags = (s16)(obj->anim.flags | RING_OBJFLAG_HIDDEN);
+            obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
         obj->anim.alpha = alpha;
         bit = setup->activateBit;
@@ -301,7 +300,7 @@ void ring_update(GameObject* obj)
         {
             if (mainGetBit(bit) != 0u)
             {
-                obj->anim.flags = (s16)(obj->anim.flags & ~RING_OBJFLAG_HIDDEN);
+                obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
                 state->phase = RING_PHASE_ACTIVE;
             }
         }
@@ -309,7 +308,7 @@ void ring_update(GameObject* obj)
         {
             if (getArwing() != 0u)
             {
-                obj->anim.flags = (s16)(obj->anim.flags & ~RING_OBJFLAG_HIDDEN);
+                obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
                 state->phase = RING_PHASE_ACTIVE;
             }
         }
@@ -460,7 +459,7 @@ void ring_update(GameObject* obj)
                 obj->anim.velocityY = fz;
                 obj->anim.velocityZ = fz;
                 state->phase = RING_PHASE_COLLECTED;
-                obj->anim.flags = (s16)(obj->anim.flags | RING_OBJFLAG_HIDDEN);
+                obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
             }
         }
         else
@@ -538,7 +537,7 @@ void ring_init(GameObject* obj, RingPlacement* setup)
     }
     else
     {
-        (obj)->anim.flags |= RING_OBJFLAG_HIDDEN;
+        (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
         (obj)->anim.alpha = 0;
     }
 }

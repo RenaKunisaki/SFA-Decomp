@@ -25,9 +25,6 @@
 #define DLL_21B_BIT_SET(bit)   (mainGetBit(bit) != 0u)
 #define DLL_21B_BIT_CLEAR(bit) (mainGetBit(bit) == 0u)
 
-#define DLL_21B_OBJFLAG_HIDDEN             0x4000
-#define DLL_21B_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 int dll_21B_getExtraSize_ret_4(void)
 {
     return 0x4;
@@ -147,7 +144,7 @@ void dll_21B_init(GameObject* obj, Dll21BPlacement* init)
     Dll21BState* state = obj->extra;
     obj->anim.rotX = (s16)(init->initRotByte << 8);
     state->driveGameBit = init->driveGameBit;
-    obj->objectFlags |= (DLL_21B_OBJFLAG_HIDDEN | DLL_21B_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void dll_21B_release_nop(void)

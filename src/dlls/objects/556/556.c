@@ -70,8 +70,6 @@ STATIC_ASSERT(sizeof(GCRobotBlastState) == 0x8);
 
 STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
-#define DLL22C_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 /* Dll22CState.mode rise/hold/fall cycle (see file-header comment). */
 #define DLL22C_MODE_ARMED      0 /* wait for gameBit + player proximity, then rise -> HOLD_SETUP */
 #define DLL22C_MODE_HOLD_SETUP 1 /* one-frame: arm the 100-frame pauseTimer -> HOLD */
@@ -285,7 +283,7 @@ void dll_22C_init(GameObject* obj, char* def)
     state->raiseHeight = md->raiseHeight;
     state->raiseMode = md->raiseMode;
     obj->anim.localPosY = obj->anim.localPosY - 1228.0f;
-    obj->objectFlags = obj->objectFlags | DLL22C_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void dll_22C_release_nop(void)

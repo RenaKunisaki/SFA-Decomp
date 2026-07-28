@@ -23,8 +23,6 @@ STATIC_ASSERT(sizeof(DfpLevelControlState) == 0xC);
 
 #define DFPLEVELCONTROL_OBJGROUP 0x9
 
-#define DFPLEVELCONTROL_OBJFLAG_HIDDEN 0x4000
-
 /* repels the player away from this object and applies status damage (arg = status type) */
 #define DFPLEVELCONTROL_MSG_PLAYER_HIT 0x60005
 
@@ -263,7 +261,7 @@ void DFP_LevelControl_init(GameObject* obj, DfpLevelControlPlacement* placement)
     }
     (*gMapEventInterface)->getMapAct((obj)->anim.mapEventSlot);
     unlockLevel(0, 0, 1);
-    (obj)->objectFlags = (obj)->objectFlags | DFPLEVELCONTROL_OBJFLAG_HIDDEN;
+    (obj)->objectFlags = (obj)->objectFlags | OBJECT_OBJFLAG_HIDDEN;
     if ((obj)->anim.mapEventSlot == 0x15)
     {
         mainSetBits(0xdce, 0);

@@ -8,7 +8,6 @@
 #include "main/object_render.h"
 #include "main/objtexture.h"
 
-#define VFP_LAVAPOOL_OBJFLAG_RENDERED 0x800
 #define VFP_LAVAPOOL_PARTFX          0x3a2
 
 static const f32 lbl_803E6160 = 100.0f;
@@ -90,7 +89,7 @@ void VFP_lavapool_updateWave(GameObject* obj)
     if (phase > lbl_803E6184 && phase < lbl_803E6188)
     {
         parm.value = state->amplitude;
-        if (obj->objectFlags & VFP_LAVAPOOL_OBJFLAG_RENDERED)
+        if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)
         {
             (*gPartfxInterface)->spawnObject((void*)obj, VFP_LAVAPOOL_PARTFX, &parm, 2, -1, NULL);
         }

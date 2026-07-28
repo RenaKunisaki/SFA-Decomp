@@ -29,7 +29,6 @@
 #define ARWARWINGBO_PARTFX          0x79e
 #define ARWARWINGBO_HIT_VOLUME_SLOT 5
 
-#define ARWARWINGBO_OBJFLAG_PARENT_SLACK 0x1000
 #define PAD_BUTTON_B                     0x200
 
 ObjectDescriptor gARWArwingBoObjDescriptor = {
@@ -126,7 +125,7 @@ void arwarwingbo_update(GameObject* obj)
     GameObject* arwing = getArwing();
     f32 zero;
 
-    if (arwing->objectFlags & ARWARWINGBO_OBJFLAG_PARENT_SLACK)
+    if (arwing->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK)
     {
         arwarwing_clearActiveBomb(arwing);
         Obj_FreeObject(obj);

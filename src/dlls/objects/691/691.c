@@ -19,8 +19,6 @@ f32 gVortexAlphaScaleInit838[2] = {0.1f, 0.1f};
 s16 gVortexAngleSpeed835[2] = {0x40, 0x80};
 s16 gVortexRotZTable[2] = {-1024, 1024};
 
-#define VORTEX_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 /* partfx ids emitted per vortex visual variant on the particle-timer tick
    (index-style; roles opaque). A for the WndLiftS/WndLiftC form; B for the default form. */
 #define VORTEX_PARTFX_A 0x7f7
@@ -347,7 +345,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
             }
         }
     }
-    o->objectFlags |= VORTEX_OBJFLAG_HITDETECT_DISABLED;
+    o->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     ObjModel_SetPostRenderCallback(Obj_GetActiveModel(o), postRenderSetAlphaBlendState);
     if (state->flags.active != 0)
         state->alpha = VORTEX_FULL_ALPHA;

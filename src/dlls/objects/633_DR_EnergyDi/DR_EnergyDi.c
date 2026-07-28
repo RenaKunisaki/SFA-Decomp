@@ -21,9 +21,6 @@
 int lbl_803DC380 = -400;
 
 
-#define DRENERGYDISC_OBJFLAG_HIDDEN             0x4000
-#define DRENERGYDISC_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 int DR_EnergyDisc_getExtraSize(void)
 {
     return 1;
@@ -111,7 +108,7 @@ void DR_EnergyDisc_init(GameObject* obj, DrenergydiscPlacement* setup)
         }
     }
     obj->objectFlags =
-        (u16)(obj->objectFlags | (DRENERGYDISC_OBJFLAG_HIDDEN | DRENERGYDISC_OBJFLAG_HITDETECT_DISABLED));
+        (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
 void DR_EnergyDisc_release(void)

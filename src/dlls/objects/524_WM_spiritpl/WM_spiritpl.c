@@ -45,9 +45,6 @@ enum
 #define WMSPIRITPLACE_ENVFX_A 0x84
 #define WMSPIRITPLACE_ENVFX_B 0x8a
 
-#define WMSPIRITPLACE_OBJFLAG_HIDDEN             0x4000
-#define WMSPIRITPLACE_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 /* sequence event opcodes consumed by WM_spiritplace_SeqFn */
 enum
 {
@@ -530,7 +527,7 @@ void WM_spiritplace_init(GameObject* obj, WmSpiritPlaceMapData* placement)
     state->setupParam = placement->setupParam;
     state->sequenceStarted = 0;
     obj->objectFlags =
-        (u16)(obj->objectFlags | (WMSPIRITPLACE_OBJFLAG_HIDDEN | WMSPIRITPLACE_OBJFLAG_HITDETECT_DISABLED));
+        (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
     state->mapEventMode = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
 
     if (obj->anim.placement->mapId == WMSPIRITPLACE_MAP_2)

@@ -16,8 +16,6 @@
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
 
-#define DFPTARGETBLOCK_OBJFLAG_HIDDEN 0x4000
-
 #define DFPTARGETBLOCK_POINT_OFFSET_X 0x04
 #define DFPTARGETBLOCK_POINT_OFFSET_Y 0x08
 #define DFPTARGETBLOCK_POINT_OFFSET_Z 0x0C
@@ -365,7 +363,7 @@ void dfptargetblock_init(GameObject* obj, DfpTargetBlockPlacement* placement)
 
     state = obj->extra;
     model = (ModelFileHeader*)*ZBomb_GetActiveModel(obj);
-    obj->objectFlags = obj->objectFlags | DFPTARGETBLOCK_OBJFLAG_HIDDEN;
+    obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_HIDDEN;
     if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
         gTargetBlockHomePos[0] = obj->anim.localPosX;

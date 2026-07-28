@@ -24,10 +24,6 @@ enum
 #define SPITEMBEAM_SCROLL_STEP 8
 #define SPITEMBEAM_SCROLL_WRAP 0x400
 
-#define SPITEMBEAM_OBJFLAG_HIDDEN             0x4000
-#define SPITEMBEAM_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define SPITEMBEAM_OBJFLAG_UPDATE_DISABLED    0x8000
-
 #define SPITEMBEAM_TARGET_OBJGROUP 9
 
 int spitembeam_getExtraSize(void)
@@ -75,7 +71,7 @@ void spitembeam_update(GameObject* obj)
         {
             obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
             obj->objectFlags =
-                (u16)(obj->objectFlags | SPITEMBEAM_OBJFLAG_UPDATE_DISABLED);
+                (u16)(obj->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
         }
         tex = objFindTexture(obj, 0, 0);
         if (tex != NULL)
@@ -91,7 +87,7 @@ void spitembeam_update(GameObject* obj)
 
 void spitembeam_init(GameObject* obj)
 {
-    obj->objectFlags = (u16)(obj->objectFlags | (SPITEMBEAM_OBJFLAG_HIDDEN | SPITEMBEAM_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
 void spitembeam_release(void)

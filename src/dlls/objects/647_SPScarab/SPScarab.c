@@ -56,11 +56,6 @@ typedef struct SpscarabState
 
 STATIC_ASSERT(sizeof(SpscarabState) == 0x14);
 
-#define SPSCARAB_OBJFLAG_RENDERED           0x800
-#define SPSCARAB_OBJFLAG_HIDDEN             0x4000
-#define SPSCARAB_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define SPSCARAB_OBJFLAG_UPDATE_DISABLED    0x8000
-
 int SPScarab_getExtraSize(void)
 {
     return 0x14;
@@ -133,7 +128,7 @@ void SPScarab_update(GameObject* obj)
     {
         Sfx_PlayFromObject((u32)obj, (u16)state->sfxId);
         itemPickupDoParticleFx(obj, 1.0f, state->mode, 0x28);
-        obj->objectFlags = obj->objectFlags | SPSCARAB_OBJFLAG_UPDATE_DISABLED;
+        obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED;
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
 
         {
@@ -144,7 +139,7 @@ void SPScarab_update(GameObject* obj)
         }
     }
 
-    if ((obj->objectFlags & SPSCARAB_OBJFLAG_RENDERED) != 0)
+    if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
         if (state->burstCount != 0)
         {
@@ -170,7 +165,7 @@ void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
         paletteBytes.byteC = *paletteByte;
     }
 
-    (obj)->objectFlags = (obj)->objectFlags | (SPSCARAB_OBJFLAG_HIDDEN | SPSCARAB_OBJFLAG_HITDETECT_DISABLED);
+    (obj)->objectFlags = (obj)->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     (obj)->anim.rotX = (s16)((s32)def->rotXByte << 8);
 
     (obj)->anim.velocityX = -mathSinf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);

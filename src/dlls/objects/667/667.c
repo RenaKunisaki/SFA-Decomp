@@ -38,7 +38,6 @@ f32 lbl_803DC3D8 = 10.0f;
 
 #define ARWINGANDROSSSTUFF_OBJGROUP 0x2
 
-#define ARWINGANDROSSSTUFF_OBJFLAG_PARENT_SLACK 0x1000
 #define ARWINGANDROSSSTUFF_HIT_VOLUME_SLOT      0xf
 
 ObjectDescriptor gArwingAndrossStuffObjDescriptor = {
@@ -224,7 +223,7 @@ void arwingandrossstuff_update(GameObject* obj)
     ArwProjectileState* state = object->extra;
     GameObject* arwing = getArwing();
 
-    if (arwing != NULL && (arwing->objectFlags & ARWINGANDROSSSTUFF_OBJFLAG_PARENT_SLACK) != 0)
+    if (arwing != NULL && (arwing->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
     {
         Obj_FreeObject((GameObject*)object);
         return;

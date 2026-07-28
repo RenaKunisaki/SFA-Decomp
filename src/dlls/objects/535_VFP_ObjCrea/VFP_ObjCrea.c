@@ -21,8 +21,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_0217_vfpobjcreator.h"
 
-#define VFPOBJCREATOR_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 #define VFP_OBJCREATOR_FALLING_MODE    1
 #define VFP_OBJCREATOR_PROJECTILE_MODE 6
 
@@ -170,7 +168,7 @@ void VFP_ObjCreator_init(GameObject* obj, u8* init)
     state->spawnTimer = state->spawnInterval;
     state->spawnParam = placement->spawnParam;
     state->spawnRadius = placement->spawnRadius;
-    obj->objectFlags |= VFPOBJCREATOR_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_ObjCreator_release(void)

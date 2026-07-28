@@ -24,9 +24,6 @@
 #include "main/object_render.h"
 #include "main/objfx.h"
 
-#define LIGHTSOURCE_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define LIGHTSOURCE_OBJFLAG_RENDERED           0x800
-
 /* Arwing-mounted variants use different light positions and effect offsets. */
 #define LIGHTSOURCE_SEQID_ARWING_A  0x705
 #define LIGHTSOURCE_SEQID_ARWING_B  0x712
@@ -129,7 +126,7 @@ void lightsource_update(GameObject* obj)
         }
         break;
     }
-    if (state->lit != 0 && ((obj)->objectFlags & LIGHTSOURCE_OBJFLAG_RENDERED))
+    if (state->lit != 0 && ((obj)->objectFlags & OBJECT_OBJFLAG_RENDERED))
     {
         state->fxTimer = state->fxTimer - timeDelta;
         if (state->fxTimer <= 0.0f)
@@ -339,7 +336,7 @@ void lightsource_init(GameObject* obj, LightSourceSetup* setup)
     {
         state->fxType = 0;
     }
-    obj->objectFlags |= LIGHTSOURCE_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     state->fxTimer = 15.0f;
     state->sparkTimer = 1.0f;
 }

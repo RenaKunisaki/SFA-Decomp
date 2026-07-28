@@ -24,8 +24,6 @@
 #define GAMEBIT_SFXPLAYER_VARIANT_C 0x670
 #define GAMEBIT_SFXPLAYER_VARIANT_D 0x9f5
 
-#define DFPSTATUE1_OBJFLAG_HIDDEN 0x4000
-
 u32 sfxplayer_updateState(int obj, u32 unused, ObjAnimUpdateState* animUpdate)
 {
     int event;
@@ -161,7 +159,7 @@ void DFP_Statue1_init(GameObject* obj, DfpStatue1MapData* mapData)
     }
     state->loopSfxStopTimer = 0;
     state->stateFlags = 0;
-    obj->objectFlags |= DFPSTATUE1_OBJFLAG_HIDDEN;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
 }
 
 void DFP_Statue1_release(void)

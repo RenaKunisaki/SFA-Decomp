@@ -30,7 +30,6 @@
 f32 lbl_803DC3B0 = 2.0f;
 f32 gDrBarrelGenGrabYOffset = -50.0f;
 
-#define DRBARRELGR_OBJFLAG_RENDERED     0x800
 enum DrbarrelgrMode
 {
     DRBARRELGR_MODE_SCAN = 0,       /* look for a grabbable barrel in range */
@@ -282,7 +281,7 @@ void DR_BarrelGr_update(GameObject* obj)
         state->prevMode = state->mode;
         state->mode = newMode;
     }
-    if ((obj->objectFlags & DRBARRELGR_OBJFLAG_RENDERED) == 0 &&
+    if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) == 0 &&
         state->heldBarrel != NULL)
     {
         state->grabX = obj->anim.localPosX;

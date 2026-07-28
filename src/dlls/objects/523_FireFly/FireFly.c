@@ -153,7 +153,6 @@ s16 lbl_803DC128 = 0xAA;
 #define FIREFLY_FLAG_PLAYER_TOUCHED 0x01
 
 #define FIREFLY_ALPHA_OPAQUE        0xff
-#define FIREFLY_OBJFLAG_HIDDEN      0x4000
 #define FIREFLY_MESSAGE_TALK        0x7000a
 #define FIREFLY_MESSAGE_DESPAWN     0x7000b
 #define FIREFLY_FIRST_TOUCH_BIT     0xd28
@@ -287,7 +286,7 @@ void firefly_activeTick(GameObject* obj)
                     else
                     {
                         FireFlyState* st = (obj)->extra;
-                        (obj)->anim.flags = (s16)((obj)->anim.flags | FIREFLY_OBJFLAG_HIDDEN);
+                        (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
                         st->despawnTimer = gFireflyDespawnFrames[0];
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
@@ -341,7 +340,7 @@ void firefly_update(GameObject* obj)
         case FIREFLY_MESSAGE_DESPAWN:
         {
             FireFlyState* st = obj->extra;
-            obj->anim.flags = (s16)(obj->anim.flags | FIREFLY_OBJFLAG_HIDDEN);
+            obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
             st->despawnTimer = gFireflyDespawnFrames[0];
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);

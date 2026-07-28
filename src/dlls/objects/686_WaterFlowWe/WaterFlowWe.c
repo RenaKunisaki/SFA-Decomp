@@ -29,7 +29,6 @@ GameObject* gWaterFlowPhaseDriver;
 
 #define WATERFLOWWE_FOLIAGE_GROUP               0x14
 #define WATERFLOWWE_OBJECT_CURRENT_GROUP        0x50
-#define WATERFLOWWE_OBJECT_FLAGS_INIT           0x2000
 #define WATERFLOWWE_FOLIAGE_CURRENT_ENABLED     0x02
 #define WATERFLOWWE_OBJECT_CURRENT_ANGLE_OFFSET 0x84d0
 #define WATERFLOWWE_ZERO                        0.0f
@@ -247,7 +246,7 @@ void waterflowwe_init(GameObject* obj, WaterFlowWeSetup* setup)
         }
         object->anim.rootMotionScale = object->anim.rootMotionScale * object->anim.modelInstance->rootMotionScaleBase;
     }
-    object->objectFlags = (u16)(object->objectFlags | WATERFLOWWE_OBJECT_FLAGS_INIT);
+    object->objectFlags = (u16)(object->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     ObjAnim_SetCurrentMove((int)obj, 0, WATERFLOWWE_ZERO, 0);
 }
 

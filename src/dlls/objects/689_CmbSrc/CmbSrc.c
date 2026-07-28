@@ -28,8 +28,6 @@
 
 u8 gCmbsrcColorCycleIndexTable[8] = {5, 6, 4, 0, 0, 0, 0, 0};
 
-#define CMBSRC_OBJFLAG_RENDERED 0x800
-
 u8 cmbsrc_shouldDeactivate(GameObject* obj, CmbSrcState* sourceState, CmbSrcMapData* mapData)
 {
     u8 result = 0;
@@ -218,7 +216,7 @@ void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
             sourceState->effectTimer += 15.0f;
         }
     }
-    if ((cmbsrc->objectFlags & CMBSRC_OBJFLAG_RENDERED) || (sourceState->flags & CMBSRC_STATE_EXTERNAL_ACTIVE))
+    if ((cmbsrc->objectFlags & OBJECT_OBJFLAG_RENDERED) || (sourceState->flags & CMBSRC_STATE_EXTERNAL_ACTIVE))
     {
         switch (cmbsrc->anim.seqId)
         {
@@ -282,7 +280,7 @@ void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
         sourceState->particleTimer -= timeDelta;
         if (sourceState->particleTimer <= 0.0f)
         {
-            if (cmbsrc->objectFlags & CMBSRC_OBJFLAG_RENDERED)
+            if (cmbsrc->objectFlags & OBJECT_OBJFLAG_RENDERED)
             {
                 param.scale = sourceState->radius;
                 (*gPartfxInterface)->spawnObject(cmbsrc, CMBSRC_PARTICLE_EFFECT_ID, &param, 2, -1, NULL);

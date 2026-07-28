@@ -8,7 +8,6 @@
 #include "main/frame_timing.h"
 #include "main/resource.h"
 
-#define VFP_LAVASTAR_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define VFP_LAVASTAR_RESOURCE_ID                 0xa6
 #define VFP_LAVASTAR_PARTFX                     0x3a4
 
@@ -111,7 +110,7 @@ void VFP_lavastar_init(GameObject* obj, int def)
     state->verticalVelocity = lbl_803E61B4 * (f32)randomGetRange(10, 0x19);
     state->effectTimer = 0x14;
     obj->anim.localPosY = mapData->base.posY + (f32)(int)mapData->heightOffset;
-    obj->objectFlags |= VFP_LAVASTAR_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     state->delayRangeMin = (f32)randomGetRange(0x1e, 0x3c);
     state->delayRangeMax = (f32)randomGetRange(100, 200);
 }

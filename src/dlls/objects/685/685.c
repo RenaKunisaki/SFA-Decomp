@@ -21,7 +21,6 @@ f32 gSoftBodySlowPhase;
 f32 gSoftBodyFastPhase;
 GameObject* gSoftBodyPhaseDriver;
 
-#define SOFTBODY_OBJECT_FLAGS_INIT 0x2000
 #define SOFTBODY_SLOW_PHASE_RATE   0.001f
 #define SOFTBODY_FAST_PHASE_RATE   0.005f
 #define SOFTBODY_PHASE_WRAP        1.0f
@@ -116,7 +115,7 @@ void SoftBody_init(GameObject* obj, SoftBodySetup* setup)
         }
         object->anim.rootMotionScale = object->anim.rootMotionScale * object->anim.modelInstance->rootMotionScaleBase;
     }
-    object->objectFlags |= SOFTBODY_OBJECT_FLAGS_INIT;
+    object->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
     if (object->anim.hitReactState != NULL)
     {

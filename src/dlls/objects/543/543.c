@@ -8,7 +8,6 @@
 #include "main/object_render_legacy.h"
 #include "main/objseq.h"
 
-#define VFPPLATFORM_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define VFP_PLATFORM_LAVABLOCK_OBJ 960
 
 static const f32 lbl_803E6108 = 120.0f;
@@ -360,7 +359,7 @@ void VFP_Platform_init(GameObject* obj, int data)
     state->gameBitId = def->gameBitId;
     state->state = 0;
     state->axisMode = def->axisMode;
-    obj->objectFlags |= VFPPLATFORM_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_Platform_release(void)

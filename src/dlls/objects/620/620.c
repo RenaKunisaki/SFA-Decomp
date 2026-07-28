@@ -28,8 +28,6 @@
 
 #define DRCAGEWITH_TARGET_OBJGROUP 0xa /* nearest group-10 object (seqId 1049) linked as the cage target */
 
-#define DRCAGEWITH_OBJFLAG_FREED 0x40
-
 int DR_CageWith_func0A(GameObject* obj)
 {
     DrcagewithState* state = obj->extra;
@@ -195,7 +193,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
                 ((GameObject*)nearest)->anim.rotZ = state->spawnedObject->anim.rotZ;
                 state->spawnedObject->userData1 = 1;
             }
-            if (state->linkedObject != NULL && (state->linkedObject->objectFlags & DRCAGEWITH_OBJFLAG_FREED) != 0)
+            if (state->linkedObject != NULL && (state->linkedObject->objectFlags & OBJECT_OBJFLAG_FREED) != 0)
             {
                 state->linkedObject = NULL;
             }

@@ -11,7 +11,6 @@
 #include "main/objfx.h"
 #include "game/objects/object_setup.h"
 
-#define VFPDOORSWITCH_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
 
 static const f32 lbl_803E6118 = 0.025f;
@@ -138,7 +137,7 @@ void VFP_DoorSwitch_init(GameObject* obj, int data)
     {
         *&obj->anim.bankIndex = 1;
     }
-    obj->objectFlags |= VFPDOORSWITCH_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_DoorSwitch_release(void)

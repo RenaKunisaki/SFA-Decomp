@@ -6,9 +6,6 @@
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
 
-#define VFPBLOCK1_OBJFLAG_HIDDEN             0x4000
-#define VFPBLOCK1_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 
 typedef struct VfpBlock1State
 {
@@ -72,7 +69,7 @@ void VFP_Block1_init(GameObject* obj, int data)
     VfpBlock1State* state = obj->extra;
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;
-    obj->objectFlags |= (VFPBLOCK1_OBJFLAG_HIDDEN | VFPBLOCK1_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void VFP_Block1_release(void)

@@ -14,8 +14,6 @@
 #include "main/vecmath.h"
 #include "dlls/object_descriptor.h"
 
-#define DFPSEQPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 /* Placement trigger-mode selector (DfpSeqPointState::triggerMode). */
 #define DFPSEQPOINT_MODE_RADIUS           0 /* player within radius */
 #define DFPSEQPOINT_MODE_GATE             1 /* gate gamebit set */
@@ -235,7 +233,7 @@ void DFP_seqpoint_init(GameObject* obj, u8* init)
     sub->triggerMode = init[0x19];
     sub->conditionGameBit = *(s16*)(init + 0x1e);
     sub->disableGameBit = *(s16*)(init + 0x20);
-    obj->objectFlags = (u16)(obj->objectFlags | DFPSEQPOINT_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     ((DfpFlags7*)&sub->flags0F)->b80 = 0;
 }
 

@@ -38,8 +38,6 @@
 
 #define SHOPITEM_TARGET_OBJGROUP 9
 
-#define SHOPITEM_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define SHOPITEM_OBJFLAG_UPDATE_DISABLED    0x8000
 #define PAD_BUTTON_A                        0x100
 
 /* anim.seqId variants selecting per-item behaviour (see file header) */
@@ -301,7 +299,7 @@ void shopitem_update(GameObject* obj)
     if (b->flag_40)
     {
         (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
-        (obj)->objectFlags = (u16)((obj)->objectFlags | SHOPITEM_OBJFLAG_UPDATE_DISABLED);
+        (obj)->objectFlags = (u16)((obj)->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
         *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     }
     else if (b->flag_80)
@@ -327,7 +325,7 @@ void shopitem_update(GameObject* obj)
                 {
                     b->flag_40 = 1;
                     (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
-                    (obj)->objectFlags = (u16)((obj)->objectFlags | SHOPITEM_OBJFLAG_UPDATE_DISABLED);
+                    (obj)->objectFlags = (u16)((obj)->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
                     *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
                 }
                 s->helpTextId =
@@ -421,7 +419,7 @@ void shopitem_init(GameObject* obj, int data)
     ShopItemState* s = (ShopItemState*)state;
 
     objAnim = (ObjAnimComponent*)obj;
-    (obj)->objectFlags |= SHOPITEM_OBJFLAG_HITDETECT_DISABLED;
+    (obj)->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     (obj)->animEventCallback = shopitem_SeqFn;
     objAnim->bankIndex = (s8)((ShopItemDef*)data)->bankIndex;
     (obj)->anim.rotX = (s16)(((ShopItemDef*)data)->rotXByte << 8);

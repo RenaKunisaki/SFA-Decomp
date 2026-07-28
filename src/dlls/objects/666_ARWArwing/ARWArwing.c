@@ -95,8 +95,6 @@ STATIC_ASSERT(offsetof(ArwArwingVec3, z) == 0x8);
 
 #define ARWARWING_OBJGROUP 0x26
 
-#define ARWARWING_OBJFLAG_PARENT_SLACK 0x1000
-
 #define ARWARWING_CHILD_OBJ_LASERSHOT      0x604
 #define ARWARWING_CHILD_OBJ_BOMB_PROJECTILE 0x605
 #define ARWARWING_CHILD_OBJ_THRUSTER       0x6de
@@ -1661,7 +1659,7 @@ void arwarwing_hitDetect(GameObject* obj)
     Vec pos;
     f32 mtx[16];
 
-    if (((obj)->objectFlags & ARWARWING_OBJFLAG_PARENT_SLACK) != 0 && state->aimSnapshotValid != 0)
+    if (((obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 && state->aimSnapshotValid != 0)
     {
         Obj_BuildWorldTransformMatrix(obj, mtx, 0);
         PSMTXMultVec((MtxP)mtx, (const Vec*)&state->aimOffsetX, &pos);

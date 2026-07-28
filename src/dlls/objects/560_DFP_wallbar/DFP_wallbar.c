@@ -9,8 +9,6 @@
 #include "main/obj_list.h"
 #include "main/dll/DF/dll_0230_dfpwallbar.h"
 
-#define DFPWALLBAR_OBJFLAG_HIDDEN 0x4000
-
 /* seqId of the DragonRock spell-puzzle controller object this bar links
    to (stored as ChukaState.linkedObject; same controller as the floor bar). */
 #define DFPWALLBAR_SEQID_CONTROLLER 0x431
@@ -212,7 +210,7 @@ void chuka_init(GameObject* obj, ChukaPlacement* params)
         obj->anim.rotZ = placement->rotZInit;
     }
 
-    obj->objectFlags |= DFPWALLBAR_OBJFLAG_HIDDEN;
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     state->linkedObject = 0;
 
     modeTable = gChukaModeTable;

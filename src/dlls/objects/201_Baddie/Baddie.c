@@ -155,9 +155,6 @@ const StaffCollisionColorArgs gTrickyFrozenFxColors = {0x08, 0xFF, 0xFF, 0x78};
 int gTrickyNearestObject;
 StaffCollisionInterface** gBaddieStaffCollisionInterface;
 
-#define ENEMY_OBJFLAG_PARENT_SLACK 0x1000
-#define ENEMY_OBJFLAG_FREED        0x40
-
 /* object groups: the enemy's own group / secondary group left on a message */
 #define ENEMY_OBJGROUP           3
 #define ENEMY_OBJGROUP_SECONDARY 0x50
@@ -1664,7 +1661,7 @@ void baddie_updateEngagementState(GameObject* obj, TrickyState* sub)
     tricky = (int*)getTrickyObject();
     target = sub->actionTargetObj;
     if (target != NULL && (sub->controlFlags & 0x10000) == 0 &&
-        (target != player || (player->objectFlags & ENEMY_OBJFLAG_PARENT_SLACK) == 0))
+        (target != player || (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0))
     {
         sub->flags2DC &= ~0x800000LL;
         camTarget = (GameObject*)(*gCameraInterface)->getOverrideTarget();
@@ -1705,7 +1702,7 @@ void baddie_updateEngagementState(GameObject* obj, TrickyState* sub)
         sub->flags2DC &= ~0x800600LL;
         if ((sub->controlFlags & 0x10000) != 0 ||
             (sub->actionTargetObj == player &&
-             (player->objectFlags & ENEMY_OBJFLAG_PARENT_SLACK) != 0))
+             (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0))
         {
             sub->flags2DC &= ~0x20000000LL;
         }
@@ -2693,7 +2690,7 @@ void enemy_update(GameObject* obj)
     {
         ((EnemyState*)state)->trackedObj = Obj_GetPlayerObject();
     }
-    else if ((((GameObject*)((EnemyState*)state)->trackedObj)->objectFlags & ENEMY_OBJFLAG_FREED) != 0)
+    else if ((((GameObject*)((EnemyState*)state)->trackedObj)->objectFlags & OBJECT_OBJFLAG_FREED) != 0)
     {
         ((EnemyState*)state)->trackedObj = Obj_GetPlayerObject();
     }

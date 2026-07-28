@@ -17,9 +17,6 @@
 #define DLL_219_INERT_OBJECT_ID_LO 0x3ad
 #define DLL_219_INERT_OBJECT_ID_HI 0x3ae
 
-#define DLL_219_OBJFLAG_HIDDEN             0x4000
-#define DLL_219_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 int dll_219_getExtraSize_ret_4(void)
 {
     return 0x4;
@@ -89,7 +86,7 @@ void dll_219_init(GameObject* obj, Dll219Setup* placement)
     Dll219State* state = obj->extra;
     obj->anim.rotX = (s16)(placement->rotX << 8);
     state->gameBit = placement->gameBit;
-    obj->objectFlags |= (DLL_219_OBJFLAG_HIDDEN | DLL_219_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void dll_219_release_nop(void)

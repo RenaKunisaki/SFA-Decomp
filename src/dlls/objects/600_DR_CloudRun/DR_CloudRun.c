@@ -70,7 +70,6 @@ const int gDRCloudRunnerCurveIds[4] = {20, 21, 22, 23};
 
 STATIC_ASSERT(sizeof(CloudRunnerState) == 0xbc8);
 #define DRCLOUDRUNNER_PARTFX             0x66
-#define DRCLOUDRUNNER_OBJFLAG_PARENT_SLACK 0x1000
 #define DRCLOUDRUNNER_CHILD_OBJ_PROJECTILE 0x42a
 
 
@@ -122,7 +121,7 @@ void DR_CloudRunner_func23(GameObject* obj, int mode, int* out)
     switch (mode)
     {
     case 2:
-        if ((obj->objectFlags & DRCLOUDRUNNER_OBJFLAG_PARENT_SLACK) || ((ByteFlags*)&inner->flagsBC1)->b80)
+        if ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) || ((ByteFlags*)&inner->flagsBC1)->b80)
         {
             *out = obj->anim.rotX;
             gDRCloudRunnerSmoothedRotX = obj->anim.rotX;
@@ -175,7 +174,7 @@ void DR_CloudRunner_func23(GameObject* obj, int mode, int* out)
         }
         break;
     case 3:
-        if (obj->objectFlags & DRCLOUDRUNNER_OBJFLAG_PARENT_SLACK)
+        if (obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK)
         {
             *out = 0;
         }

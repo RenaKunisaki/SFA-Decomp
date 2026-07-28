@@ -9,9 +9,6 @@
 #include "main/resource.h"
 #include "game/objects/object_setup.h"
 
-#define VFPDRAGHEAD_OBJFLAG_HIDDEN             0x4000
-#define VFPDRAGHEAD_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 #define VFPDRAGHEAD_RESOURCE_ID     0xA5
 #define VFPDRAGHEAD_HIT_VOLUME_SLOT 0xE
 #define VFPDRAGHEAD_PARTFX_BREATH   0x390
@@ -162,7 +159,7 @@ void VFPDragHead_init(GameObject* obj, int data)
     {
         (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase / 2.0f;
     }
-    (obj)->objectFlags |= (VFPDRAGHEAD_OBJFLAG_HIDDEN | VFPDRAGHEAD_OBJFLAG_HITDETECT_DISABLED);
+    (obj)->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     gVfpDragHeadResource = Resource_Acquire(VFPDRAGHEAD_RESOURCE_ID, 1);
 }
 

@@ -47,8 +47,6 @@ f32 gMinimapWorldToTexScale = 0.08f;
 
 #define CAMMODE_VIEWFINDER 0x44
 
-#define MINIMAP_OBJFLAG_PARENT_SLACK 0x1000
-
 #define MINIMAP_TEXTURE_COMPASS 0xBE5
 
 #define MINIMAP_COMMAND_MENU_OBJ_BASE 2010
@@ -353,7 +351,7 @@ int Minimap_update(void)
         }
         if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER || (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
             Camera_GetViewportYOffset() != 0 ||
-            (player->objectFlags & MINIMAP_OBJFLAG_PARENT_SLACK) != 0 ||
+            (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
             objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || lbl_803DD75B != 0)
         {
             mapTextureId = 0;
@@ -848,7 +846,7 @@ void Minimap_frameStart(void)
     sfx = 0;
     player = (int)Obj_GetPlayerObject();
     if ((void*)player == NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
-        Camera_GetViewportYOffset() != 0 || (((GameObject*)player)->objectFlags & MINIMAP_OBJFLAG_PARENT_SLACK) != 0 ||
+        Camera_GetViewportYOffset() != 0 || (((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
         objIsCurModelNotZero((void*)player) == 0 || pauseMenuState != 0)
     {
         if (gMinimapZoomSfxActive != 0)

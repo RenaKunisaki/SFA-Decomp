@@ -5,10 +5,6 @@
 #include "sys/objects.h"
 #include "main/objseq.h"
 
-#define DREARTHCAL_OBJFLAG_RENDERED 0x800
-
-#define DREARTHCAL_INIT_FLAGS 0x6000
-
 /* Mount object group: query nearest mount to gate the interact prompt. */
 #define DREARTHCAL_MOUNT_OBJGROUP 0xa
 
@@ -95,7 +91,7 @@ void drearthcal_update(GameObject* obj)
             (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
         }
     }
-    if ((obj->objectFlags & DREARTHCAL_OBJFLAG_RENDERED) != 0)
+    if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
         part.vec[0] = 0.0f;
         part.vec[1] = 30.0f;
@@ -108,7 +104,7 @@ void drearthcal_update(GameObject* obj)
 void drearthcal_init(GameObject* obj, DREarthCalSetup* setup)
 {
     obj->anim.rotX = (s16)(setup->yaw << 8);
-    obj->objectFlags |= DREARTHCAL_INIT_FLAGS;
+    obj->objectFlags |= (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN);
 }
 
 void drearthcal_release(void)

@@ -42,7 +42,6 @@ typedef struct CmbSrcColorIndexPair
 #define SFXPLAYER_HIT_TYPE_RING_TARGET    0x13
 
 int gSfxplayerEffectHandles[8];
-#define SFXPLAYER_OBJECT_FLAGS            0x6000
 
 static const CmbSrcColorIndexPair lbl_803E6450 = {0x00040005, 0x0006000B};
 
@@ -387,7 +386,7 @@ void sfxplayer_init(GameObject* obj, int config)
     {
         state->flags.bit20 = 1;
     }
-    obj->objectFlags = obj->objectFlags | SFXPLAYER_OBJECT_FLAGS;
+    obj->objectFlags = obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN);
 }
 
 void sfxplayer_release(void)

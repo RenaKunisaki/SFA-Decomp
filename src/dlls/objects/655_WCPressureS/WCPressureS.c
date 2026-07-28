@@ -41,9 +41,6 @@
 #define WCPRESSURES_TEXTURE_PRESSED 1
 #define WCPRESSURES_TEXTURE_SHIFT   8
 
-#define WCPRESSURES_OBJFLAG_HIDDEN             0x4000
-#define WCPRESSURES_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 int wcpressures_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
     WCPressuresState* state = (WCPressuresState*)obj->extra;
@@ -236,7 +233,7 @@ void wcpressures_init(GameObject* obj, WCPressuresSetup* setup)
 
     objType = (s16)(setup->objectTypeHi << 8);
     obj->anim.rotX = objType;
-    objFlags = obj->objectFlags | (WCPRESSURES_OBJFLAG_HIDDEN | WCPRESSURES_OBJFLAG_HITDETECT_DISABLED);
+    objFlags = obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     obj->objectFlags = objFlags;
     modelIndex = setup->modelIndex;
     objAnim->bankIndex = modelIndex;

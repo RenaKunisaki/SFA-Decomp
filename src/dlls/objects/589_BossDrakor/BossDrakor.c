@@ -95,7 +95,6 @@ typedef struct BossDrakorSpellStoneInterface
 
 STATIC_ASSERT(offsetof(BossDrakorSpellStoneInterface, setState) == 0x20);
 #define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* spawnAttackObjects: BossdrakorPlacement (airMeterMax/curveAdvanceStep) */
-#define BOSSDRAKOR_OBJFLAG_RENDERED 0x800
 #define BOSSDRAKOR_ENVFX_A 0x144
 #define BOSSDRAKOR_ENVFX_B 0x10d
 #define BOSSDRAKOR_ENVFX_C 0x10e
@@ -871,7 +870,7 @@ void bossdrakor_update(GameObject* obj)
                        drakorState->attackTimerDuration);
         }
     }
-    if ((obj->objectFlags & BOSSDRAKOR_OBJFLAG_RENDERED) == 0)
+    if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) == 0)
     {
         drakorState->homePosX = obj->anim.localPosX;
         drakorState->homePosY = obj->anim.localPosY - lbl_803E655C;

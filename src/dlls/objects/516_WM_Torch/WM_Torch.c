@@ -16,8 +16,6 @@
 #include "main/resource.h"
 #include "main/vecmath.h"
 
-#define WMTORCH_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 int wmtorch_getExtraSize(void)
 {
     return sizeof(WmTorchState);
@@ -110,7 +108,7 @@ void wmtorch_init(GameObject* obj, WmTorchPlacement* placement)
     }
     obj->anim.rootMotionScale *= 2.0f;
     Resource_Release(res);
-    obj->objectFlags = (u16)(obj->objectFlags | WMTORCH_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
 void wmtorch_release(void)

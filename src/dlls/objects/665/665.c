@@ -16,8 +16,6 @@
 
 void* lbl_803DDD80;
 
-#define DLL0299_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 #define DLL0299_RESOURCE_ID 0xa6
 
 /* main particle burst seeded 3x once at init */
@@ -67,7 +65,7 @@ void dll_299_update(GameObject* obj)
 void dll_299_init(GameObject* obj, Dll299Setup* setup)
 {
     ((Dll299State*)obj->extra)->id = setup->id;
-    obj->objectFlags |= DLL0299_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     lbl_803DDD80 = Resource_Acquire(DLL0299_RESOURCE_ID, 1);
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_INIT, NULL, 0x802, -1, NULL);
     (*gPartfxInterface)->spawnObject((void*)obj, DLL0299_PARTFX_INIT, NULL, 0x802, -1, NULL);

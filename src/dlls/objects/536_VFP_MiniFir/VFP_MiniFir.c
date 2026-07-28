@@ -17,8 +17,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_0218_vfpminifire.h"
 
-#define VFPMINIFIRE_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 #define VFPMINIFIRE_PERSIST_EFFECT 0x38c
 #define VFPMINIFIRE_SMOKE_EFFECT   0x38a
 #define VFPMINIFIRE_SPARK_EFFECT   0x38b
@@ -164,7 +162,7 @@ void VFP_MiniFire_init(GameObject* obj, u8* init)
     obj->anim.rootMotionScale *= 2.0f;
     (*gPartfxInterface)->spawnObject(obj, VFPMINIFIRE_PERSIST_EFFECT, NULL, 2, -1, NULL);
     Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_103);
-    obj->objectFlags |= VFPMINIFIRE_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_MiniFire_release(void)

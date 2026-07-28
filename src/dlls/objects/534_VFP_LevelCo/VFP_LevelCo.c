@@ -50,9 +50,6 @@ enum
 
 #define VFP_TIMER_INIT 0x82
 
-#define VFPLEVELCONTROL_OBJFLAG_HIDDEN             0x4000
-#define VFPLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 
 /* Advance the ordered spell-tablet puzzle. The four step bits must be
    set in array order; the next-expected bit advances the step, any
@@ -215,7 +212,7 @@ void VFP_LevelControl_init(GameObject* obj, VfpLevelControlSetup* setup)
     (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
     state->unk02[4] = 0;
     state->unk02[5] = 0;
-    obj->objectFlags |= (VFPLEVELCONTROL_OBJFLAG_HIDDEN | VFPLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     Rcp_EnableHeatEffect();
     mainSetBits(GAMEBIT_VFP_LATCH, 1);
     unlockLevel(0, 0, 1);

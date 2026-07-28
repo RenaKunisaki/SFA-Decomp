@@ -5,8 +5,6 @@
 #include "main/object_render_legacy.h"
 #include "game/objects/object_setup.h"
 
-#define VFP_COREPLAT_OBJFLAG_HITDETECT_DISABLED 0x2000
-
 static const f32 lbl_803E6140 = 1.0f;
 static const f32 lbl_803E6144 = 0.7f;
 static const f32 lbl_803E6148 = 0.45f;
@@ -82,7 +80,7 @@ void VFP_coreplat_init(GameObject* obj, int data)
                 lbl_803E6148 * obj->anim.modelInstance->rootMotionScaleBase;
         }
     }
-    obj->objectFlags |= VFP_COREPLAT_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void VFP_coreplat_release(void)

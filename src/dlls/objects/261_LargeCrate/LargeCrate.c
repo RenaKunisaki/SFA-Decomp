@@ -26,7 +26,6 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define LARGECRATE_OBJFLAG_PARENT_SLACK 0x1000
 #define LARGECRATE_LINKED_ID_BASE       0x40000
 #define LARGECRATE_ROB_WAVE_DIRECT_ID   0x66
 #define LARGECRATE_ROB_WAVE_ID_65D0     0x65D0
@@ -171,7 +170,7 @@ void LargeCrate_updateConveyorSlide(GameObject* obj, LargeCrateState* state) {
     placement = (ObjPlacement*)obj->anim.placementData;
     player = Obj_GetPlayerObject();
     parent = obj->anim.parent;
-    if ((parent->objectFlags & LARGECRATE_OBJFLAG_PARENT_SLACK) != 0) {
+    if ((parent->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0) {
         obj->anim.localPosX = state->homeX;
         obj->anim.velocityX = 0.0f;
     } else {
