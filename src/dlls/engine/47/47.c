@@ -4,8 +4,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
+#include "dolphin/pad.h"
 
-#define PAD_BUTTON_A              0x100
 #define CARRYABLE_MSG_PLAYER_GRAB 0x100008
 
 #define CARRYABLE_OBJGROUP 0x10

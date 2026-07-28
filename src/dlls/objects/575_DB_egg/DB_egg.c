@@ -52,10 +52,10 @@
 #include "main/track_dolphin_api.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/pad.h"
 
 #define DBEGG_OBJGROUP         0x24
 #define DBEGG_SIBLING_OBJGROUP 0x14
-#define PAD_BUTTON_A           0x100
 #define DBEGG_MSG_IN_RANGE     0x7000a  /* sent to player when grab is offered */
 #define DBEGG_MSG_PLAYER_GRAB  0x100008 /* tells player to grab/hold the egg */
 

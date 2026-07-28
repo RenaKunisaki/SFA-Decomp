@@ -35,10 +35,9 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
+#include "dolphin/pad.h"
 
 #define SHOPITEM_TARGET_OBJGROUP 9
-
-#define PAD_BUTTON_A                        0x100
 
 /* anim.seqId variants selecting per-item behaviour (see file header) */
 #define SHOPITEM_MSG_IN_RANGE 0x7000a /* sent to player when purchase is offered */

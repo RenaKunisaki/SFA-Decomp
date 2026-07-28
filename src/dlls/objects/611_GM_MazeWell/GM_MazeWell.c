@@ -25,8 +25,7 @@
 #include "main/textrender_api.h"
 #include "main/dll/dll_0263_gmmazewell.h"
 #include "main/object_render.h"
-
-#define PAD_BUTTON_A 0x100
+#include "dolphin/pad.h"
 
 /* Quest-bit table layout (gQuestBitTable, 44 s16 entries):
  *   [0..8]   watched quest/event bits

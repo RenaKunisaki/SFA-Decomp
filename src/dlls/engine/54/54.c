@@ -8,6 +8,7 @@
 #include "main/dll/dll_003C_tumbleweedbush.h"
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "main/gametext_color_api.h"
+#include "dolphin/pad.h"
 
 extern u16 gEnterSaveNameCharTextIds[];
 
@@ -79,8 +80,6 @@ void EnterSaveNameScreen_frameEnd(void)
 #define ENTER_SAVE_NAME_SFX_CONFIRM  0x418
 #define ENTER_SAVE_NAME_SFX_DELETE   0x419
 #define ENTER_SAVE_NAME_SFX_TYPE     0x41A
-#define PAD_BUTTON_A                 0x100
-#define PAD_BUTTON_B                 0x200
 
 u32 EnterSaveNameScreen_run(void)
 {

@@ -29,13 +29,11 @@
 #include "main/dll/CAM/cutCam.h"
 #include "main/dll/player_api.h"
 #include "main/resource.h"
+#include "dolphin/pad.h"
 
 ViewfinderState* gViewfinderState;
 
 char sCam5BYDebugFormat[] = "y=%f\n";
-
-#define PAD_BUTTON_B  0x200
-#define PAD_TRIGGER_Z 0x010
 
 typedef struct CameraModeViewfinderInitArgs
 {

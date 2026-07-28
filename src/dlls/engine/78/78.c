@@ -7,15 +7,13 @@
 #include "main/dll/CAM/camworldmap_state.h"
 #include "main/screen_transition.h"
 #include "main/pad.h"
+#include "dolphin/pad.h"
 
 CameraModeWorldMapState* gCamWorldMapState;
 
 
 #define WORLDMAP_CAMERA_FREE_OVERVIEW 0
 #define WORLDMAP_CAMERA_LOCKED_PATH   1
-
-#define PAD_BUTTON_DOWN 0x004
-#define PAD_BUTTON_UP   0x008
 
 extern f32 lbl_80319DF8[];
 void CameraModeWorldMap_copyToCurrent(int* p1, int kind)

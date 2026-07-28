@@ -6,6 +6,7 @@
 #include "main/mm.h"
 #include "main/frame_timing.h"
 #include "main/resource.h"
+#include "dolphin/pad.h"
 
 
 u8 camcontrol_samplePathState(f32* outX, f32* height, f32* outZ, GameObject* target, CameraObject* camera)
@@ -137,8 +138,6 @@ void camcontrol_buildPathPoints(f32 baseX, f32 baseZ, f32 targetX, f32 baseY, f3
 
     *outPointCount = pointCount;
 }
-
-#define PAD_TRIGGER_Z 0x10
 
 typedef struct CameraModeStaffAnimSettings
 {

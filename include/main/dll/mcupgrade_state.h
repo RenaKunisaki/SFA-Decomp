@@ -3,8 +3,6 @@
 
 #include "global.h"
 
-#define MCUPGRADE_OBJ_FLAG_COLLECTED 0x08
-
 typedef enum McUpgradeMaEvent {
     MCUPGRADEMA_EVENT_SHOW_HUD = 0,
     MCUPGRADEMA_EVENT_SHOW_DIALOGUE = 1,

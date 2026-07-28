@@ -27,10 +27,9 @@
 #include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
 #include "game/objects/object_setup.h"
+#include "dolphin/pad.h"
 
 STATIC_ASSERT(sizeof(Dll200State) == 0x28);
-
-#define PAD_BUTTON_A 0x100
 
 /* Dll200State.mode high bit: set while an ObjHitReact reaction is playing,
  * which suspends the normal map-act scripted update for that tick. */

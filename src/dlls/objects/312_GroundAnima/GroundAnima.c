@@ -15,7 +15,6 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define GROUND_ANIMATOR_OBJECT_FLAG_FREED   0x40
 #define GROUND_ANIMATOR_OBJECT_GROUP        0x31
 #define GROUND_ANIMATOR_TARGET_OBJECT_GROUP 0x04
 
@@ -307,7 +306,7 @@ void GroundAnimator_update(GameObject* obj) {
                     break;
                 }
             }
-        } else if ((state->linkedObject->objectFlags & GROUND_ANIMATOR_OBJECT_FLAG_FREED) != 0) {
+        } else if ((state->linkedObject->objectFlags & OBJECT_OBJFLAG_FREED) != 0) {
             state->linkedObject = 0;
         }
     }

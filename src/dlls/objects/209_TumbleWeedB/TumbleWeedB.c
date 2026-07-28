@@ -424,7 +424,6 @@ ObjectDescriptor11WithPadding gTumbleWeedBushObjDescriptor = {
     0,
 };
 
-#define TUMBLEWEED_OBJECT_FLAG_RENDERED   0x800
 #define TRICKY_SEQ_ID                     0x24    /* retail "Tricky" (DLL 0xC4) */
 #define TUMBLEWEED_MESSAGE_IN_RANGE       0x7000a /* sent to player when grab is offered */
 #define TUMBLEWEED_MESSAGE_PICKUP         0x7000b /* player collected: award and burst */
@@ -933,7 +932,7 @@ void tumbleweed_updateEffects(GameObject* obj) {
     }
 
     if ((state->flags & TUMBLEWEED_EFFECT_FLAG_HIT_PULSE) != 0 &&
-        (obj->objectFlags & TUMBLEWEED_OBJECT_FLAG_RENDERED) != 0) {
+        (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, TUMBLEWEED_HIT_PULSE_VOLUME_SLOT, 1, 0);
         if ((int)(u8)(++state->hitPulseCounter) % TUMBLEWEED_HIT_PULSE_PERIOD != 0) {
             objfx_spawnPulseBurst(obj, obj->anim.rootMotionScale, 1, 0, 0, NULL);

@@ -50,6 +50,7 @@
 #include "main/dll/DR/dll_0258_drcloudrunner.h"
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
+#include "dolphin/pad.h"
 
 void* gDRCloudRunnerStateHandlers[8];
 void* gDRCloudRunnerDefaultStateHandler;
@@ -266,8 +267,6 @@ void DR_CloudRunner_fireProjectile(GameObject* obj)
     newObj->anim.rotX = 0;
     (*gPartfxInterface)->spawnObject(newObj, DRCLOUDRUNNER_PARTFX, NULL, 2, -1, NULL);
 }
-
-#define PAD_BUTTON_A 0x100
 
 #define DRCLOUDRUNNER_OBJGROUP           0xa
 #define ARWARWING_OBJGROUP               0x26

@@ -24,12 +24,11 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
+#include "dolphin/pad.h"
 
 #define ARWARWINGBO_OBJGROUP        0x52
 #define ARWARWINGBO_PARTFX          0x79e
 #define ARWARWINGBO_HIT_VOLUME_SLOT 5
-
-#define PAD_BUTTON_B                     0x200
 
 ObjectDescriptor gARWArwingBoObjDescriptor = {
     0,

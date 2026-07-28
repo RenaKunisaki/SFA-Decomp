@@ -50,6 +50,7 @@
 #include "main/camera.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/waterfx_interface.h"
+#include "dolphin/pad.h"
 
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
@@ -83,9 +84,6 @@
 #include "main/sky.h"
 
 #undef BADDIE_MOVE_STATUS_SIGNED
-
-/* GameCube controller button masks (tested against PlayerState.buttons* fields) */
-#define PAD_BUTTON_A 0x100
 
 #include "dlls/objects/437.h"
 

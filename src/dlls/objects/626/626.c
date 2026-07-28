@@ -49,6 +49,7 @@
 #include "main/gamebit_ids.h"
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/pad.h"
 
 void* gHighTopDefaultStateHandler;
 f32 gHighTopGroundMarkerMtx[16];
@@ -73,8 +74,6 @@ typedef struct HighTopPathParams
 } HighTopPathParams;
 
 static const HighTopPathParams sHighTopPathParams = {{1, 1, 1, 1}};
-
-#define PAD_BUTTON_A 0x100
 
 /* Death follow-up spawn (docblock: "Obj_AllocObjectSetup(0x2C, 0xD4)"): object id
    (retail OBJECTS.bin name "FXEmit", DLL 0x12B) and effect id. */

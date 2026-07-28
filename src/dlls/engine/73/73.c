@@ -9,13 +9,13 @@
 #include "main/dll/CAM/cutCam.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
+#include "dolphin/pad.h"
 
 s32 gCamCombatPrevYawDiff;
 CameraModeCombatState* gCamCombatState;
 
 #define CAMCOMBAT_SEQID_DIM_BOSS 0x200 /* retail "DIM_Boss" (DLL 0x1E0) */
 #define CAMERAMODECOMBAT_CAMACTION_DEFAULT 0x42
-#define PAD_BUTTON_B 0x200
 
 typedef struct {
     u8 b0 : 1;

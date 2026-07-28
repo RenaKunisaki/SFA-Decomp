@@ -38,6 +38,7 @@
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/pad.h"
 #include "main/obj_group.h"
+#include "dolphin/pad.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
 int gDIMSnowHorn1StateHandlers[12];
@@ -56,7 +57,6 @@ s16 lbl_803DC748[4] = {0, 3, 0, 0};
 #define GAMEBIT_SNOWHORN_AIR_DRAIN      0x3e2 /* set to drain the air meter each frame */
 #define GAMEBIT_SNOWHORN_AIR_RESET      0x3e9 /* set to reset the air meter to full */
 #define GAMEBIT_SNOWHORN_PUZZLE         0x170 /* puzzle-step trigger, counts pushes */
-#define PAD_BUTTON_A                    0x100 /* A button */
 
 /* DIMSnowHorn1State.flags bits */
 #define SNOWHORN1_FLAG_RIDING        0x2  /* GAMEBIT_SNOWHORN_RIDING active (set cross-DLL) */

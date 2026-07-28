@@ -17,6 +17,7 @@
 #include "string.h"
 #include "main/gametext_color_api.h"
 #include "main/vecmath.h"
+#include "dolphin/pad.h"
 
 #define LINK_ITEM_SLOTS 25
 
@@ -40,9 +41,6 @@ extern char sTumbleweedBushSlotOverflowErr[];
 extern char sTumbleweedBushNavLinkRangeErr[];
 
 extern u8 gGameTextFontMetrics[];
-#define PAD_BUTTON_A     0x100
-#define PAD_BUTTON_B     0x200
-#define PAD_BUTTON_START 0x1000
 #define PAD_ACCEPT_MASK  (PAD_BUTTON_A | PAD_BUTTON_START)
 
 

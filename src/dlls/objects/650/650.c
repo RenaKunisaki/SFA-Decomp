@@ -47,13 +47,12 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
+#include "dolphin/pad.h"
 
 static const f32 gWcEarthWalkerCurveAdvanceStep = 0.5f;
 static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;
 static const f32 gWcEarthWalkerChaseMoveSpeed = 0.012f;
 static const f32 gWcEarthWalkerWalkMoveSpeed = 0.005f;
-
-#define PAD_BUTTON_A 0x100
 
 int earthwalker_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate, int shouldAdvanceMove)
 {

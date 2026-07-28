@@ -1,9 +1,7 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
+#include "dolphin/pad.h"
 
-#define PAD_BUTTON_A     0x100
-#define PAD_BUTTON_B     0x200
-#define PAD_BUTTON_START 0x1000
 #define PAD_ACCEPT_MASK  (PAD_BUTTON_A | PAD_BUTTON_START)
 
 s8 gMenuSelectedId;

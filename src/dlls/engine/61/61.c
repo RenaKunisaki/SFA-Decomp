@@ -5,6 +5,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/textrender_api.h"
+#include "dolphin/pad.h"
 
 #define TITLE_MENU_FLAG_ENABLED          0x01
 #define TITLE_MENU_FLAG_WRAP             0x02
@@ -18,8 +19,6 @@
 #define TITLE_MENU_KIND_SLIDER 0
 #define TITLE_MENU_KIND_TOGGLE 1
 #define TITLE_MENU_KIND_WINDOW 2
-
-#define PAD_BUTTON_A 0x100
 
 #define TITLE_MENU_ITEM_TEXTURE_COUNT 6
 

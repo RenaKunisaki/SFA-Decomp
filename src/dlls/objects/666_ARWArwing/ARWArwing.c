@@ -50,6 +50,7 @@
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/gamebit_ids.h"
+#include "dolphin/pad.h"
 
 #include "main/dll/ARW/arwing_state.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
@@ -99,10 +100,6 @@ STATIC_ASSERT(offsetof(ArwArwingVec3, z) == 0x8);
 #define ARWARWING_CHILD_OBJ_BOMB_PROJECTILE 0x605
 #define ARWARWING_CHILD_OBJ_THRUSTER       0x6de
 #define ARWARWING_CHILD_OBJ_BOMB           0x608
-
-#define PAD_TRIGGER_R 0x20
-#define PAD_TRIGGER_L 0x40
-#define PAD_BUTTON_B  0x200
 
 /* Damage partfx emitted in arwarwing_emitDamageEffects, keyed on health. */
 #define ARWARWING_PARTFX_DAMAGE   0x7d0 /* health <= 4, every other frame */

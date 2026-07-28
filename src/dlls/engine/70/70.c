@@ -8,14 +8,11 @@
 #include "main/dll/dll_0046_cameramodedebug.h"
 #include "main/pad.h"
 #include "main/resource.h"
+#include "dolphin/pad.h"
 
 CameraModeDebugState* gCamDebugState;
 
 #define CAMCONTROL_ACTION_DEFAULT 0x42
-
-#define PAD_BUTTON_RIGHT 0x002
-#define PAD_BUTTON_DOWN  0x004
-#define PAD_BUTTON_UP    0x008
 
 void CameraModeDebug_copyToCurrent_nop(void)
 {

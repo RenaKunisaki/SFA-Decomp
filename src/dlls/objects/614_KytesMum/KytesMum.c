@@ -37,6 +37,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/vecmath.h"
+#include "dolphin/pad.h"
 
 typedef struct KytesMumTrickyInterface
 {
@@ -59,8 +60,6 @@ s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
 
 #define KYTESMUM_TRICKY_COMMAND_KIND 1
 #define KYTESMUM_TRICKY_COMMAND_TYPE 2
-
-#define PAD_BUTTON_A 0x100
 
 #define KYTESMUM_OBJECT_TYPE_ID  0x43
 #define KYTESMUM_EXTRA_SIZE      0x6ec

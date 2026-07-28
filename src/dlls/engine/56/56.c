@@ -6,6 +6,7 @@
 #include "main/textrender_api.h"
 #include "main/dll/dll_0038_weirdunusedmenu.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
+#include "dolphin/pad.h"
 
 #define WIDGET_FLAG_SAVING 0x1000
 
@@ -15,8 +16,6 @@
 
 #define SFX_MENU_CANCEL 0x419
 
-#define PAD_BUTTON_A 0x100
-#define PAD_BUTTON_B 0x200
 #define PAD_CONFIRM_MASK (PAD_BUTTON_A | PAD_BUTTON_B)
 
 
