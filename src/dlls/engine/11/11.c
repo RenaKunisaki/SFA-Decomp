@@ -1757,7 +1757,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     arr[slot]->stageDurations[5] = st->sequenceParams[5];
     arr[slot]->stageDurations[6] = st->sequenceParams[6];
     arr[slot]->emitterCommands =
-        (u8*)(base0 + (int)arr[slot]->inlineData) + 0x100;
+        (u8*)(base0 + (int)arr[slot]->inlineData + 0x100);
     arr[slot]->auxSequenceBuffer = NULL;
     if (total != 0)
     {
@@ -1768,7 +1768,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 
     {
         u8* dst = arr[slot]->auxSequenceBuffer;
-        for (i = 0, off = 0; i < arr[slot]->emitterCount; i++, off += 0x18)
+        for (i = 0, off = 0; i < arr[slot]->emitterCount; off += 0x18, i++)
         {
             ((ModgfxPendingSpawn*)((u8*)arr[slot]->emitterCommands + off))
                 ->sequenceIndex = ((ModgfxPendingSpawn*)((u8*)st->pendingSpawns + off))->sequenceIndex;
@@ -1841,15 +1841,15 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     arr[slot]->scaleVectors[0].x = fz434;
     arr[slot]->scaleVectors[0].y = fz434;
     arr[slot]->scaleVectors[0].z = fz434;
-    arr[slot]->scaleVectors[1].x = fz430;
     arr[slot]->scaleVectors[1].y = fz430;
     arr[slot]->scaleVectors[1].z = fz430;
+    arr[slot]->scaleVectors[1].x = fz430;
+    arr[slot]->scaleVectors[2].z = fz434;
     arr[slot]->scaleVectors[2].x = fz434;
     arr[slot]->scaleVectors[2].y = fz434;
-    arr[slot]->scaleVectors[2].z = fz434;
+    arr[slot]->scaleVectors[3].z = fz430;
     arr[slot]->scaleVectors[3].x = fz430;
     arr[slot]->scaleVectors[3].y = fz430;
-    arr[slot]->scaleVectors[3].z = fz430;
     arr[slot]->rotOffsetZ = 0;
     arr[slot]->rotOffsetY = 0;
     arr[slot]->rotOffsetX = 0;
