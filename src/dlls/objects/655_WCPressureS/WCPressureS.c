@@ -39,18 +39,9 @@
 #define WCPRESSURES_FOUND_TIMER  5
 #define WCPRESSURES_SOLVED_TIMER 0x1e
 
-#define WCPRESSURES_OBJECT_SETUP_OFFSET 0x4c
-#define WCPRESSURES_OBJECT_Y_OFFSET     0x10
-#define WCPRESSURES_OBJECT_Z_OFFSET     0x14
-#define WCPRESSURES_OBJECT_STATE_OFFSET 0xb8
-
 #define WCPRESSURES_CALLBACK_NONE           0
 #define WCPRESSURES_CALLBACK_SNAPSHOT_TILES 1
 #define WCPRESSURES_CALLBACK_RESET          2
-
-#define WCPRESSURES_HITLIST_OFFSET         0x58
-#define WCPRESSURES_HITLIST_OBJECTS_OFFSET 0x100
-#define WCPRESSURES_HITLIST_COUNT_OFFSET   0x10f
 
 #define WCPRESSURES_TEXTURE_DEFAULT 0
 #define WCPRESSURES_TEXTURE_PRESSED 1
@@ -153,8 +144,8 @@ void wcpressures_update(GameObject* obj)
              i < obj->anim.hitboxTransformState->contactObjectCount;
              off += 4, i++)
         {
-            GameObject* ent =
-                *(GameObject**)((u8*)obj->anim.hitboxTransformState + off + WCPRESSURES_HITLIST_OBJECTS_OFFSET);
+            GameObject* ent = *(GameObject**)((u8*)obj->anim.hitboxTransformState + off +
+                                              offsetof(ObjHitboxTransformState, contactObjects));
             if (ent->anim.localPosY - obj->anim.localPosY >
                 (f32)(u32)setup->triggerHeight)
             {

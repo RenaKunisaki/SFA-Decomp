@@ -85,7 +85,8 @@ void wcfloortile_update(GameObject* obj)
                 f32 z = 0.0f;
                 for (i = 0, off = 0; i < obj->anim.hitboxTransformState->contactObjectCount; off += 4, i++)
                 {
-                    GameObject* e = *(GameObject**)((int)obj->anim.hitboxTransformState + off + 0x100);
+                    GameObject* e = *(GameObject**)((int)obj->anim.hitboxTransformState + off +
+                                                   offsetof(ObjHitboxTransformState, contactObjects));
                     if (e->anim.classId == 1)
                     {
                         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_c6);
