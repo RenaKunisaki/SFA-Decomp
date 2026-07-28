@@ -159,7 +159,7 @@ typedef struct ExpgfxSourceObject {
   s16 rotX;
   s16 rotY;
   s16 rotZ;
-  u8 pad06[0x08 - 0x06];
+  s16 flags;
   f32 rootMotionScale;
   f32 localPosX;
   f32 localPosY;
