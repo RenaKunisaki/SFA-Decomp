@@ -365,8 +365,8 @@ void textureFn_8004c330(void* p1, void* mtx)
             ylo = (y & 3) * 2;
             for (; x < 0x20; x++)
             {
-                v1 = (int)lbl_803DCD2C + ylo;
-                v1 = v1 + yhi;
+                v1 = (int)(lbl_803DCD2C + ylo);
+                v1 = (int)((u8*)v1 + yhi);
                 v1 = v1 + (x & 3) * 8;
                 dst = (u8*)v1 + (x >> 2) * 0x100;
                 v1 = randomGetRange(0x80, 0xff);
