@@ -586,7 +586,7 @@ dlls/engine/4/4.c:
 dlls/engine/15/15.c:
 	.text       start:0x800D8020 end:0x800D9DCC
 	.data       start:0x80311438 end:0x803114B0
-	.sbss       start:0x803DD430 end:0x803DD458
+	.sbss       start:0x803DD430 end:0x803DD451
 	.sdata2     start:0x803E0570 end:0x803E05C8
 
 dlls/engine/16/16.c:
