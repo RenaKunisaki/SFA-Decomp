@@ -6369,7 +6369,7 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
             {
                 ChildEnt* row = (ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off);
                 int idx2 = row->joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
-                MtxPtr mtx2 = (MtxPtr)(*(char**)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc) + idx2 * 0x40);
+                MtxPtr mtx2 = (MtxPtr)(idx2 * 0x40 + *(int*)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc));
                 vb.x = row->pos[0];
                 vb.y = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))->pos[1];
                 vb.z = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))->pos[2];
