@@ -57,6 +57,20 @@ The retail `.o` bytes are the ground truth; layout moves must be codegen-neutral
 - **Never change a declaration's type spelling** while moving it. Signedness of extern
   decls is load-bearing: `int` vs `u32` flips `cmpwi`/`cmplwi` at compare sites. If a
   local extern's spelling differs from every header's, it stays local, as spelled.
+- **Never strip an `LL` suffix from a flag-word constant.** On a 32-bit flag word,
+  `x |= 0x1000000LL` emits `lis; or` while `x |= 0x1000000` folds to `oris`; the same
+  split holds for `&= ~MASK` (`lis; addi; and` vs `rlwinm`) and `^= BIT`
+  (`li; xor` vs `xori`). The 64-bit width of the operand is the *only* lever that
+  reaches the register form — measured against seven `-opt` profiles
+  (peephole/nopeephole, nopropagation, nocse, nostrength, level=1/2), a `static const`
+  (gives a memory operand), an `enum` and a `(u32)` cast-back (both fold).
+  Byte-identical spellings: `0x...LL`, `0x...ULL`, `(1LL << n)`, and a `u64`
+  intermediate local. `x &= 0xFFFEFFFFLL` and `x &= ~0x10000LL` are also identical, so
+  prefer the `~BIT` form. `= 0LL` is inert (write `= 0`) and `|= 0LL` emits nothing.
+  A genuine 64-bit *field* is a different thing and is refuted at these sites: it emits
+  two `lwz` and two `stw` where retail has one of each. Moving the `LL` into a shared
+  flag `#define` is also wrong — it widens that macro's compare and test sites too
+  (measured: expgfx 99.5915 -> 96.3278 across four functions).
 - **SJIS-bearing files** (non-ASCII bytes) are edited byte-wise (python `rb`/`wb`),
   never through text tools or formatters.
 - Gate every sweep: `ninja all_source` must exit 0 and every `.o` must be md5-identical
