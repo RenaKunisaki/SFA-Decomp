@@ -5174,6 +5174,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
         MapEventInterface* mapEvents = *gMapEventInterface;
         char buf[0x38];
         s32 hintCount;
+        s32 ty2;
         s32 gbCount;
         s32 spellStoneCount;
         s32 usedSpellStoneCount;
@@ -5184,9 +5185,9 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
         info = mapEvents->getCurCharacterState();
         hintCount = ((u16)getNextTaskHintText() * 0x64 / 0xbb) & 0xff;
         playRatio = SaveGame_getPlayTime() / lbl_803E2020;
-        ty1 = (s32)((f32)(s16)ty1 * lbl_803DD850);
+        ty2 = (s32)((f32)(s16)ty1 * lbl_803DD850);
         {
-            f64 tmp = (double)(s16)ty1 * (lbl_803E2080 - (double)lbl_803DD75C);
+            f64 tmp = (double)(s16)ty2 * (lbl_803E2080 - (double)lbl_803DD75C);
             ty = (s32)(tmp * lbl_803E2088);
         }
         pauseMenuDrawTaskHintPanel(arg1, ty);
@@ -5277,7 +5278,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
                              0x100 - lbl_803DD75C, ty, 0x100, 0);
         hudDrawMagicBar((u8)ty, 0x100 - lbl_803DD75C, 1);
         lbl_803DD824 = lbl_8031BB90;
-        pauseMenuDrawGrid(ty1);
+        pauseMenuDrawGrid(ty2);
     }
 
     model = Obj_GetActiveModel(lbl_803DD860[1]);
