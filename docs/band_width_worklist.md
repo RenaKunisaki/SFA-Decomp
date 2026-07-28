@@ -11,14 +11,19 @@ band width**, and splits the difference into:
 
 ## Why band width is the right axis
 
-The register-band assignment model is near-exact for narrow bands and collapses as the
-band fills. Measured over 6,288 SFA retail functions, scoring the joint model
-(materialized values ascending + computed values descending, simultaneously):
+The register-band assignment model is exact for narrow bands and falls off a cliff as the
+band fills. Measured over 6,288 SFA retail functions, scoring the load-class rule in
+CLAUDE.md (non-copy saved regs = one declaration-keyed population filling `r31`/`f31`
+downward), stratified by total saved regs in the band:
 
 | saved regs in band | 2 | 3 | 4 | 5 | 6+ |
 |---|---|---|---|---|---|
-| GPR | **99.8%** | **98.1%** | 86.0% | 48.1% | 27.0% |
-| FP  | 86.5% | 63.8% | 55.9% | 37.5% | 25.6% |
+| GPR | **97.7%** | **99.3%** | **98.8%** | 1.4% | 0.1% |
+| FP  | 45.5% | 36.8% | 19.3% | 14.9% | 5.1% |
+
+It is a cliff, not a decay. FP is much weaker at every width, consistent with Lane A's
+third (`sqrtf`, assignment-keyed) population being common in FP-heavy code — trust a
+probe over the rule there.
 
 Every frontier function that resisted a whole campaign is wide-band —
 `expgfx_updateActivePools` 18G/10F, `modelRenderInterpolateRootTransform` 17G,
