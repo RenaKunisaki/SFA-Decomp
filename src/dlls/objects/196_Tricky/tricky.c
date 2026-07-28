@@ -2074,13 +2074,9 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     int dir;
     int tref;
     int i;
-    ObjfsaRomCurveDef* node;
     u8 slot;
     f32* patchTarget;
     u16 ulink;
-    s16 yawA;
-    s16 yawB;
-    s16 diff;
     char type;
     u8 step;
     u8 mask;
@@ -2186,14 +2182,16 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     }
     else
     {
-        prod = targetWg * state->activeWalkGroup & 0xffff;
-        if (prod != 0)
+        u32 wgProd;
+
+        wgProd = targetWg * state->activeWalkGroup & 0xffff;
+        if (wgProd != 0)
         {
             u16* ids = wgi.patchGroupIds;
 
-            for (i = 0, link = prod; i < 4; ids++, i++)
+            for (i = 0, link = wgProd; i < 4; ids++, i++)
             {
-                if ((prod == *ids) && (((1 << i) & wgi.patchMask) != 0))
+                if ((wgProd == *ids) && (((1 << i) & wgi.patchMask) != 0))
                 {
                     state->linkedWalkGroup = link;
                     state->linkedPatchPos.x = ((TrickyPoint3*)target)->x;
@@ -2474,6 +2472,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x404, state->movementState);
     switch (state->movementState)
     {
+    ObjfsaRomCurveDef* node;
     case TRICKY_MOVE_WALK_WAIT:
         trickyDebugPrint(strs + 0x41c);
         v = -0.15f * timeDelta + velBefore;
@@ -2533,31 +2532,37 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 {
                         RomCurve_setupHermiteSegment(&state->route, prevNode, node, nextNode);
                     RomCurve_stepClamped(&state->route, 0.1f);
-                    yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
-                                    state->prevLocalPosZ - obj->anim.localPosZ);
-                    yawB = getAngle(state->prevLocalPosX - state->route.posX,
-                                    state->prevLocalPosZ - state->route.posZ);
-                    diff = yawA - (u16)yawB;
-                    if (0x8000 < diff)
                     {
-                        diff = diff - 0xffff;
-                    }
-                    if (diff < -0x8000)
-                    {
-                        diff = diff + 0xffff;
-                    }
-                    if (diff > 0x4000)
-                    {
-                        diff -= 0x8000;
-                    }
-                    else if (diff < -0x4000)
-                    {
-                        diff += 0x8000;
-                    }
-                    if (0x1000 < ((diff >= 0) ? diff : -diff))
-                    {
-                        state->speed = velBefore;
-                        trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+                        s16 yawA;
+                        s16 yawB;
+                        s16 diff;
+
+                        yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
+                                        state->prevLocalPosZ - obj->anim.localPosZ);
+                        yawB = getAngle(state->prevLocalPosX - state->route.posX,
+                                        state->prevLocalPosZ - state->route.posZ);
+                        diff = yawA - (u16)yawB;
+                        if (0x8000 < diff)
+                        {
+                            diff = diff - 0xffff;
+                        }
+                        if (diff < -0x8000)
+                        {
+                            diff = diff + 0xffff;
+                        }
+                        if (diff > 0x4000)
+                        {
+                            diff -= 0x8000;
+                        }
+                        else if (diff < -0x4000)
+                        {
+                            diff += 0x8000;
+                        }
+                        if (0x1000 < ((diff >= 0) ? diff : -diff))
+                        {
+                            state->speed = velBefore;
+                            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+                        }
                     }
                     trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
                     moved = moveTricky(obj, &state->route.posX);
@@ -2879,31 +2884,37 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
-        yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
-                        state->prevLocalPosZ - obj->anim.localPosZ);
-        yawB = getAngle(state->prevLocalPosX - state->route.posX,
-                        state->prevLocalPosZ - state->route.posZ);
-        diff = yawA - (u16)yawB;
-        if (0x8000 < diff)
         {
-            diff = diff - 0xffff;
-        }
-        if (diff < -0x8000)
-        {
-            diff = diff + 0xffff;
-        }
-        if (diff > 0x4000)
-        {
-            diff -= 0x8000;
-        }
-        else if (diff < -0x4000)
-        {
-            diff += 0x8000;
-        }
-        if (0x1000 < ((diff >= 0) ? diff : -diff))
-        {
-            state->speed = velBefore;
-            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+            s16 yawA;
+            s16 yawB;
+            s16 diff;
+
+            yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
+                            state->prevLocalPosZ - obj->anim.localPosZ);
+            yawB = getAngle(state->prevLocalPosX - state->route.posX,
+                            state->prevLocalPosZ - state->route.posZ);
+            diff = yawA - (u16)yawB;
+            if (0x8000 < diff)
+            {
+                diff = diff - 0xffff;
+            }
+            if (diff < -0x8000)
+            {
+                diff = diff + 0xffff;
+            }
+            if (diff > 0x4000)
+            {
+                diff -= 0x8000;
+            }
+            else if (diff < -0x4000)
+            {
+                diff += 0x8000;
+            }
+            if (0x1000 < ((diff >= 0) ? diff : -diff))
+            {
+                state->speed = velBefore;
+                trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+            }
         }
         trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         moveTricky(obj, &state->route.posX);
@@ -3094,31 +3105,37 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
-        yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
-                        state->prevLocalPosZ - obj->anim.localPosZ);
-        yawB = getAngle(state->prevLocalPosX - state->route.posX,
-                        state->prevLocalPosZ - state->route.posZ);
-        diff = yawA - (u16)yawB;
-        if (0x8000 < diff)
         {
-            diff = diff - 0xffff;
-        }
-        if (diff < -0x8000)
-        {
-            diff = diff + 0xffff;
-        }
-        if (diff > 0x4000)
-        {
-            diff -= 0x8000;
-        }
-        else if (diff < -0x4000)
-        {
-            diff += 0x8000;
-        }
-        if (0x1000 < ((diff >= 0) ? diff : -diff))
-        {
-            state->speed = velBefore;
-            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+            s16 yawA;
+            s16 yawB;
+            s16 diff;
+
+            yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
+                            state->prevLocalPosZ - obj->anim.localPosZ);
+            yawB = getAngle(state->prevLocalPosX - state->route.posX,
+                            state->prevLocalPosZ - state->route.posZ);
+            diff = yawA - (u16)yawB;
+            if (0x8000 < diff)
+            {
+                diff = diff - 0xffff;
+            }
+            if (diff < -0x8000)
+            {
+                diff = diff + 0xffff;
+            }
+            if (diff > 0x4000)
+            {
+                diff -= 0x8000;
+            }
+            else if (diff < -0x4000)
+            {
+                diff += 0x8000;
+            }
+            if (0x1000 < ((diff >= 0) ? diff : -diff))
+            {
+                state->speed = velBefore;
+                trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+            }
         }
         trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         moveTricky(obj, &state->route.posX);
@@ -3209,31 +3226,37 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
-        yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
-                        state->prevLocalPosZ - obj->anim.localPosZ);
-        yawB = getAngle(state->prevLocalPosX - state->route.posX,
-                        state->prevLocalPosZ - state->route.posZ);
-        diff = yawA - (u16)yawB;
-        if (0x8000 < diff)
         {
-            diff = diff - 0xffff;
-        }
-        if (diff < -0x8000)
-        {
-            diff = diff + 0xffff;
-        }
-        if (diff > 0x4000)
-        {
-            diff -= 0x8000;
-        }
-        else if (diff < -0x4000)
-        {
-            diff += 0x8000;
-        }
-        if (0x1000 < ((diff >= 0) ? diff : -diff))
-        {
-            state->speed = velBefore;
-            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+            s16 yawA;
+            s16 yawB;
+            s16 diff;
+
+            yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
+                            state->prevLocalPosZ - obj->anim.localPosZ);
+            yawB = getAngle(state->prevLocalPosX - state->route.posX,
+                            state->prevLocalPosZ - state->route.posZ);
+            diff = yawA - (u16)yawB;
+            if (0x8000 < diff)
+            {
+                diff = diff - 0xffff;
+            }
+            if (diff < -0x8000)
+            {
+                diff = diff + 0xffff;
+            }
+            if (diff > 0x4000)
+            {
+                diff -= 0x8000;
+            }
+            else if (diff < -0x4000)
+            {
+                diff += 0x8000;
+            }
+            if (0x1000 < ((diff >= 0) ? diff : -diff))
+            {
+                state->speed = velBefore;
+                trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
+            }
         }
         trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         moveTricky(obj, &state->route.posX);
