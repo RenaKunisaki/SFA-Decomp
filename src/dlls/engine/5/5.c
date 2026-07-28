@@ -39,7 +39,7 @@
 #include "dolphin/gx/GXLighting.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/lightmap.h"
 #include "main/track_dolphin_sky_api.h"
 #include "main/track_dolphin_shadow_api.h"
@@ -597,15 +597,15 @@ Texture* skyGetSkyTexture(void)
     return gSkySkyTexture;
 }
 
-void skyBuildSunModelMatrix(f32 mtx[3][4])
+void skyBuildSunModelMatrix(Mtx mtx)
 {
     f32 scale;
-    f32 scaleMtx[3][4];
+    Mtx scaleMtx;
 
     scale = 1.0f / gSkySunObject->anim.rootMotionScale;
-    PSMTXScale((f32*)scaleMtx, scale, scale, scale);
+    PSMTXScale(scaleMtx, scale, scale, scale);
     Obj_BuildWorldTransformMatrix((GameObject*)gSkySunObject, (f32*)mtx, 0);
-    PSMTXConcat((f32*)mtx, (f32*)scaleMtx, (f32*)mtx);
+    PSMTXConcat(mtx, scaleMtx, mtx);
 }
 
 u8 skyGetSunRenderAlpha(int slot)
@@ -643,7 +643,7 @@ void skySetOverrideLightDirection(f32 x, f32 y, f32 z, f32 intensity)
     gSkyOverrideLightDirection[1] = y;
     gSkyOverrideLightDirection[2] = z;
     gSkyOverrideLightIntensity = intensity;
-    PSVECNormalize(gSkyOverrideLightDirection, gSkyOverrideLightDirection);
+    PSVECNormalize((Vec*)gSkyOverrideLightDirection, (Vec*)gSkyOverrideLightDirection);
 }
 
 void skySetOverrideLightDirectionEnabled(u8 enabled)
@@ -654,7 +654,7 @@ void skySetOverrideLightDirectionEnabled(u8 enabled)
 void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
 {
     u8* lights[4];
-    f32 dir[3];
+    Vec dir;
     int count;
     f32 lx;
     f32 ly;
@@ -716,29 +716,29 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
                     }
                 }
                 modelLightStruct_getWorldPosition((ModelLightStruct*)cur, &lx, &ly, &lz);
-                dir[0] = obj->anim.worldPosX - lx;
-                dir[1] = obj->anim.worldPosY - ly;
-                dir[2] = obj->anim.worldPosZ - lz;
-                mag = PSVECMag(dir);
+                dir.x = obj->anim.worldPosX - lx;
+                dir.y = obj->anim.worldPosY - ly;
+                dir.z = obj->anim.worldPosZ - lz;
+                mag = PSVECMag(&dir);
                 if (mag > lbl_803DF058)
                 {
                     mag = 1.0f / mag;
-                    PSVECScale(dir, dir, mag);
-                    *x = dir[0];
-                    *y = dir[1];
-                    *z = dir[2];
+                    PSVECScale(&dir, &dir, mag);
+                    *x = dir.x;
+                    *y = dir.y;
+                    *z = dir.z;
                 }
             }
             else
             {
                 cur = NULL;
-                dir[0] = 0.5f;
-                dir[1] = (-1.0f);
-                dir[2] = 0.5f;
-                PSVECNormalize(dir, dir);
-                *x = dir[0];
-                *y = dir[1];
-                *z = dir[2];
+                dir.x = 0.5f;
+                dir.y = (-1.0f);
+                dir.z = 0.5f;
+                PSVECNormalize(&dir, &dir);
+                *x = dir.x;
+                *y = dir.y;
+                *z = dir.z;
             }
         }
         else
@@ -1026,7 +1026,7 @@ ModelLightStruct* skyGetSunLight(void)
 void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
                  int lightIntensity, u8 blendAlpha)
 {
-    f32 dir[3];
+    Vec dir;
     int ambientR;
     int ambientG;
     int ambientB;
@@ -1042,18 +1042,18 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     SkyLight* previous;
     SkyLight* current;
 
-    dir[0] = -x;
-    dir[1] = -y;
-    dir[2] = -z;
+    dir.x = -x;
+    dir.y = -y;
+    dir.z = -z;
     if (slot == 2)
     {
         previous = (SkyLight*)(gSkyState + ((SkyState*)gSkyState)->previousLightIndex * 0xa4 + 0x20);
         current = (SkyLight*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0x20);
-        dir[0] = previous->directionX +
+        dir.x = previous->directionX +
                  ((SkyState*)gSkyState)->lightBlendFactor * (current->directionX - previous->directionX);
-        dir[1] = previous->directionY +
+        dir.y = previous->directionY +
                  ((SkyState*)gSkyState)->lightBlendFactor * (current->directionY - previous->directionY);
-        dir[2] = previous->directionZ +
+        dir.z = previous->directionZ +
                  ((SkyState*)gSkyState)->lightBlendFactor * (current->directionZ - previous->directionZ);
         blend = ((SkyState*)gSkyState)->lightBlendFactor;
         previousComponent = previous->ambientR;
@@ -1081,19 +1081,19 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     {
         if (((SkyBlendStateFlags*)(gSkyState + slot * 0xa4 + 0xc1))->unused80 != 0)
         {
-            dir[0] = (-1.0f);
-            dir[1] = (-1.0f);
-            dir[2] = (-1.0f);
-            PSVECNormalize(dir, dir);
-            PSMTXMultVecSR(Camera_GetInverseViewMatrix(), dir, dir);
+            dir.x = (-1.0f);
+            dir.y = (-1.0f);
+            dir.z = (-1.0f);
+            PSVECNormalize(&dir, &dir);
+            PSMTXMultVecSR((MtxPtr)Camera_GetInverseViewMatrix(), &dir, &dir);
         }
         entryOffset = slot * 0xa4;
         if (((SkyBlendStateFlags*)(gSkyState + slot * 0xa4 + 0xc1))->active != 0)
         {
             skyEntry = (SkyLightSlotView*)(gSkyState + entryOffset);
-            dir[0] = skyEntry->overrideDirectionX;
-            dir[1] = skyEntry->overrideDirectionY;
-            dir[2] = skyEntry->overrideDirectionZ;
+            dir.x = skyEntry->overrideDirectionX;
+            dir.y = skyEntry->overrideDirectionY;
+            dir.z = skyEntry->overrideDirectionZ;
             red = skyEntry->overrideAmbientR;
             green = skyEntry->overrideAmbientG;
             blue = skyEntry->overrideAmbientB;
@@ -1117,15 +1117,15 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
             lightB = blue * lightScale >> 8;
         }
     }
-    ((SkyLight*)(gSkyState + 0x20))[slot].directionX = dir[0];
-    ((SkyLight*)(gSkyState + 0x20))[slot].directionY = dir[1];
-    ((SkyLight*)(gSkyState + 0x20))[slot].directionZ = dir[2];
+    ((SkyLight*)(gSkyState + 0x20))[slot].directionX = dir.x;
+    ((SkyLight*)(gSkyState + 0x20))[slot].directionY = dir.y;
+    ((SkyLight*)(gSkyState + 0x20))[slot].directionZ = dir.z;
     gSkyState[slot * 0xa4 + 0x78] = red;
     gSkyState[slot * 0xa4 + 0x79] = green;
     gSkyState[slot * 0xa4 + 0x7a] = blue;
-    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionX = -dir[0];
-    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionY = -dir[1];
-    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionZ = -dir[2];
+    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionX = -dir.x;
+    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionY = -dir.y;
+    ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionZ = -dir.z;
     gSkyState[slot * 0xa4 + 0x80] = (u8)(ambientR * (colorScale + 1) >> 8);
     gSkyState[slot * 0xa4 + 0x81] = (u8)(ambientG * (colorScale + 1) >> 8);
     gSkyState[slot * 0xa4 + 0x82] = (u8)(ambientB * (colorScale + 1) >> 8);

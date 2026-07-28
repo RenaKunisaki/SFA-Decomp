@@ -29,9 +29,14 @@ typedef struct BossDrakorState
     f32 attackTimer;
     f32 attackTimerDuration;
     f32 jawAnimAngle;
-    f32 homePosX;
-    f32 homePosY;
-    f32 homePosZ;
+    union {
+        struct {
+            f32 homePosX;
+            f32 homePosY;
+            f32 homePosZ;
+        };
+        Vec3f homePos;
+    };
     RomCurveWalker curveWalker; /* 0x28: the rom-curve walker this boss follows */
     ObjSoundState soundState; /* 0x130 */
     ModelLightStruct* lightObj; /* 0x160 */

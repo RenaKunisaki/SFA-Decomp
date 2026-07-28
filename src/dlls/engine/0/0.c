@@ -1,5 +1,5 @@
 #include "main/dll/ppcwgpipe_struct.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_depth_read_api.h"
@@ -1021,10 +1021,10 @@ extern f32 lbl_803A8950[0x18];
 
 int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
 {
-    f32 m1[12];
-    f32 m2[12];
-    f32 mtex[12];
-    f32 m3[12];
+    Mtx m1;
+    Mtx m2;
+    Mtx mtex;
+    Mtx m3;
     GameUiIndirectMatrix indmtx;
     int tex2;
     GXColor chanCol;
@@ -1037,16 +1037,16 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     layer = Shader_getLayer(op, 0);
     tex0 = textureIdxToPtr(*(int*)layer);
 
-    PSMTXCopy(lbl_803A8950, m1);
-    m1[3] = lbl_803E1E3C;
-    m1[7] = lbl_803E1E3C;
-    m1[11] = lbl_803E1E3C;
+    PSMTXCopy((MtxPtr)lbl_803A8950, m1);
+    m1[0][3] = lbl_803E1E3C;
+    m1[1][3] = lbl_803E1E3C;
+    m1[2][3] = lbl_803E1E3C;
     PSMTXScale(m2, 2.0f / gTrickyHudIconScale, 2.0f / gTrickyHudIconScale,
                lbl_803E1E68 / gTrickyHudIconScale);
-    m2[2] = lbl_803E1E6C / gTrickyHudIconScale;
-    m2[6] = lbl_803E1E6C / gTrickyHudIconScale;
+    m2[0][2] = lbl_803E1E6C / gTrickyHudIconScale;
+    m2[1][2] = lbl_803E1E6C / gTrickyHudIconScale;
     PSMTXConcat(m2, m1, m1);
-    GXLoadTexMtxImm((const f32(*)[4])m1, 0x1e, 1);
+    GXLoadTexMtxImm(m1, 0x1e, 1);
     GXSetNumTexGens(3);
     GXSetNumTevStages(3);
     GXSetNumIndStages(2);
@@ -1068,13 +1068,13 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetIndTexOrder(1, 0, 2);
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
-    PSMTXConcat((f32*)lbl_80396820, lbl_803A8950, m1);
+    PSMTXConcat((MtxPtr)lbl_80396820, (MtxPtr)lbl_803A8950, m1);
     sval = 0.5f * (lbl_803DD850 * lbl_803DD850);
     PSMTXScale(m3, sval, sval, lbl_803E1E68);
     PSMTXConcat(m3, m1, m1);
     PSMTXTrans(m3, 0.5f * (lbl_803E1E68 - sval), 0.5f * (lbl_803E1E68 - sval), lbl_803E1E3C);
     PSMTXConcat(m3, m1, m1);
-    GXLoadTexMtxImm((const f32(*)[4])m1, 0x21, 0);
+    GXLoadTexMtxImm(m1, 0x21, 0);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
     GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
@@ -1082,18 +1082,18 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    mtex[0] = gTrickyHudTexMtxScale;
-    mtex[1] = 0.0f;
-    mtex[2] = 0.0f;
-    mtex[3] = 0.5f;
-    mtex[4] = 0.0f;
-    mtex[5] = gTrickyHudTexMtxScale;
-    mtex[6] = 0.0f;
-    mtex[7] = 0.5f;
-    mtex[8] = 0.0f;
-    mtex[9] = 0.0f;
-    mtex[10] = 0.0f;
-    mtex[11] = 1.0f;
+    mtex[0][0] = gTrickyHudTexMtxScale;
+    mtex[0][1] = 0.0f;
+    mtex[0][2] = 0.0f;
+    mtex[0][3] = 0.5f;
+    mtex[1][0] = 0.0f;
+    mtex[1][1] = gTrickyHudTexMtxScale;
+    mtex[1][2] = 0.0f;
+    mtex[1][3] = 0.5f;
+    mtex[2][0] = 0.0f;
+    mtex[2][1] = 0.0f;
+    mtex[2][2] = 0.0f;
+    mtex[2][3] = 1.0f;
     GXLoadTexMtxImm((const f32(*)[4])mtex, 0x24, 1);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
     getNewShadowDiskTexture((u32*)&tex2);
@@ -1298,8 +1298,8 @@ void pauseMenuDrawElement(void* element, f32 fx, f32 fy, int depthZ, u8 paletteI
 void pauseMenuSetHoloTransform(f32 f1, f32 f2, f32 f3, f32 f4, u16 a, u16 b, u16 c)
 {
     int i;
-    f32 mA[12];
-    f32 mB[12];
+    Mtx mA;
+    Mtx mB;
     f32 pi;
     GameUiMatrixWorkspace* matrices[1];
     matrices[0] = (GameUiMatrixWorkspace*)lbl_803A87F0;
@@ -1311,20 +1311,20 @@ void pauseMenuSetHoloTransform(f32 f1, f32 f2, f32 f3, f32 f4, u16 a, u16 b, u16
     gTrickyHudIconRotZ = pi * (f32)a / 32768.0f;
     gTrickyHudIconRotX = pi * (f32)b / 32768.0f;
     gTrickyHudIconRotY = pi * (f32)c / 32768.0f;
-    PSMTXRotRad(mA, 0x79, gTrickyHudIconRotY);
-    PSMTXRotRad(mB, 0x78, gTrickyHudIconRotX);
+    PSMTXRotRad(mA, 'y', gTrickyHudIconRotY);
+    PSMTXRotRad(mB, 'x', gTrickyHudIconRotX);
     PSMTXConcat(mB, mA, mA);
-    PSMTXRotRad(mB, 0x7a, gTrickyHudIconRotZ);
+    PSMTXRotRad(mB, 'z', gTrickyHudIconRotZ);
     PSMTXConcat(mB, mA, mA);
     PSMTXScale(mB, gTrickyHudIconScale, gTrickyHudIconScale, gTrickyHudIconScale);
     PSMTXConcat(mB, mA, mA);
     PSMTXTrans(mB, gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ);
-    PSMTXConcat(mB, mA, matrices[0]->object[0]);
+    PSMTXConcat(mB, mA, matrices[0]->object);
     PSMTXScale(mA, gTrickyHudTexScaleX, -gTrickyHudTexScaleY, gTrickyHudTexScaleZ);
     PSMTXTrans(mB, (-1.0f), lbl_803E1E68, lbl_803E1E3C);
     PSMTXConcat(mB, mA, mB);
-    PSMTXConcat(matrices[0]->object[0], mB, matrices[0]->view[0]);
-    C_MTXPerspective(matrices[0]->projection[0], gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane,
+    PSMTXConcat(matrices[0]->object, mB, matrices[0]->view);
+    C_MTXPerspective(matrices[0]->projection, gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane,
                      gTrickyHudIconFarPlane);
     lbl_803DD7FC = Camera_GetFovY();
     Camera_SetFovY(gTrickyHudIconFovY);

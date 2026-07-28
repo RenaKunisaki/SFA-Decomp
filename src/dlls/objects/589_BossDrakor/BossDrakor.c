@@ -37,7 +37,7 @@
 #include "main/objhits.h"
 #include "main/objanim.h"
 #include "main/objanim_update.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/audio/music_api.h"
 #include "main/gametext_show_api.h"
 #include "main/rcp_dolphin.h"
@@ -175,7 +175,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
         u8 pad[6];
         s16 mode;
         f32 val;
-        f32 vec[3];
+        Vec vec;
     } partfxParams;
 
     drakorState = state;
@@ -187,7 +187,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
                    ? -(framesThisStep << 8)
                    : ((neckStep > (framesThisStep << 8)) ? (framesThisStep << 8) : neckStep);
         neck[0] += (s16)neckStep;
-        PSVECSubtract(&drakorState->homePosX, &obj->anim.localPosX, partfxParams.vec);
+        PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.vec);
         partfxParams.val = lbl_803E651C;
         if (timerIsActive(&drakorState->jawAnimAngle) != 0)
         {
@@ -234,27 +234,27 @@ int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut)
     int v;
     s16 d;
     u16 a;
-    f32 dir[3];
+    Vec dir;
 
     drakorState = obj->extra;
-    PSVECNormalize(&obj->anim.velocityX, dir);
+    PSVECNormalize(&obj->anim.velocity, &dir);
     if (drakorState->moveState != 0)
     {
         *speedOut = lbl_803E6534;
         return drakorState->moveState;
     }
     idx = 0;
-    if (dir[1] > lbl_803E6538)
+    if (dir.y > lbl_803E6538)
     {
         idx = 3;
     }
-    else if (dir[1] < lbl_803E653C)
+    else if (dir.y < lbl_803E653C)
     {
         idx = 4;
     }
     else
     {
-        a = (u16)(s16)getAngle(dir[0], dir[2]);
+        a = (u16)(s16)getAngle(dir.x, dir.z);
         d = obj->anim.rotX - a;
         if (d > 0x8000)
         {
@@ -298,10 +298,10 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
     f32 prod;
     f32* mstate;
     ObjPlacement* setup;
-    f32 target[3];
-    f32 vecA[3];
-    f32 vecB[3];
-    f32 vecC[3];
+    Vec target;
+    Vec vecA;
+    Vec vecB;
+    Vec vecC;
     BossDrakorState* s = state;
 
     if (action < 0 || action >= 4)
@@ -334,23 +334,23 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                         {
                             prod = lbl_803DC188 * Vec_distance(&(obj)->anim.worldPosX,
                                                                &player->anim.worldPosX);
-                            target[0] = player->anim.localPosX +
+                            target.x = player->anim.localPosX +
                                         (f32)(s32)randomGetRange(lo = (int)-prod, hi = (int)prod);
-                            target[1] = player->anim.localPosY + (f32)(s32)randomGetRange(lo, hi);
-                            target[2] = player->anim.localPosZ + (f32)(s32)randomGetRange(lo, hi);
-                            PSVECSubtract(&player->anim.localPosX, &s->homePosX,
-                                          vecA);
-                            PSVECSubtract(target, &s->homePosX, vecB);
-                            PSVECNormalize(vecA, vecA);
+                            target.y = player->anim.localPosY + (f32)(s32)randomGetRange(lo, hi);
+                            target.z = player->anim.localPosZ + (f32)(s32)randomGetRange(lo, hi);
+                            PSVECSubtract(&player->anim.localPos, &s->homePos,
+                                          &vecA);
+                            PSVECSubtract(&target, &s->homePos, &vecB);
+                            PSVECNormalize(&vecA, &vecA);
                             spd = s->missileLeadFactor *
-                                      PSVECDotProduct(&player->anim.velocityX, vecA) +
+                                      PSVECDotProduct(&player->anim.velocity, &vecA) +
                                   s->missileBaseSpeed;
-                            PSVECScale(vecA, &missile->anim.velocityX, spd);
+                            PSVECScale(&vecA, &missile->anim.velocity, spd);
                             mstate = (f32*)missile->extra;
-                            PSVECScale(vecA, vecC, PSVECDotProduct(vecA, vecB));
-                            PSVECSubtract(vecB, vecC, vecC);
-                            PSVECNormalize(vecC, vecC);
-                            PSVECScale(vecC, &missile->anim.velocityX,
+                            PSVECScale(&vecA, &vecC, PSVECDotProduct(&vecA, &vecB));
+                            PSVECSubtract(&vecB, &vecC, &vecC);
+                            PSVECNormalize(&vecC, &vecC);
+                            PSVECScale(&vecC, &missile->anim.velocity,
                                        s->missileBaseSpeed * lbl_803DC18C);
                             *mstate = spd;
                             drakormissile_startActiveLaunch((GameObject*)(missile));
@@ -784,7 +784,7 @@ void bossdrakor_update(GameObject* obj)
     }
     adv = ObjAnim_AdvanceCurrentMove(
         (int)obj,
-        (t = PSVECMag(&obj->anim.velocityX) / drakorState->moveSpeed, t + lbl_803E6570),
+        (t = PSVECMag(&obj->anim.velocity) / drakorState->moveSpeed, t + lbl_803E6570),
         timeDelta, (ObjAnimEventList*)buf);
     if (adv != 0)
     {
@@ -924,7 +924,7 @@ void bossdrakor_update(GameObject* obj)
             f32 hxsq;
             f32 hzsq;
             ObjPath_GetPointWorldPosition(obj, 4, &hx, &hy, &hz, 0);
-            PSVECSubtract(&player->anim.localPosX, &hx, &hx);
+            PSVECSubtract(&player->anim.localPos, (Vec*)&hx, (Vec*)&hx);
             hxsq = hx * hx;
             hzsq = hz * hz;
             d = (s16)getAngle(hy, sqrtf(hxsq + hzsq)) - (u16)vec[0];

@@ -46,7 +46,7 @@
 #include "main/model_engine.h"
 #include "main/model_light.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/duster_wb.h"
 #include "main/dll/weevil.h"
@@ -936,8 +936,8 @@ u8 baddie_canSeeTarget(GameObject* obj, TrickyState* state, void* from, void* to
         probe.y = 20.0f + *(f32*)((int)to + 4);
         probe.z = *(f32*)((int)to + 8);
         voxmaps_worldToGrid((f32*)&probe, toGrid);
-        PSVECSubtract((f32*)from, (f32*)&probe, (f32*)&delta);
-        if (PSVECMag((f32*)&delta) < 1905.0f)
+        PSVECSubtract((Vec*)from, &probe, &delta);
+        if (PSVECMag(&delta) < 1905.0f)
         {
             if (*(u32*)&(obj)->anim.parent == 0)
             {
@@ -1003,8 +1003,8 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
             probe.y += 20.0f;
         }
         voxmaps_worldToGrid((f32*)&probe, probeGrid);
-        PSVECSubtract(&obj->anim.worldPosX, (f32*)&probe, (f32*)&delta);
-        if (PSVECMag((f32*)&delta) < 1905.0f)
+        PSVECSubtract(&obj->anim.worldPos, &probe, &delta);
+        if (PSVECMag(&delta) < 1905.0f)
         {
             if (*(u32*)&obj->anim.parent != 0)
             {
@@ -2179,59 +2179,59 @@ void enemy_setTrackedObj(GameObject* obj, GameObject* target)
 void enemy_steerVelocityToward(GameObject* obj, void* state, f32* desiredVec, f32 maxSpeed, f32 speedBand, f32 maxTurnRad, u8 clampToGround)
 {
     f32 curMag, targetMag, axisMag, speed, speedScale;
-    f32 curDir[3];
-    f32 targetDir[3];
-    f32 turnAxis[3];
-    f32 rotMtx[12];
+    Vec curDir;
+    Vec targetDir;
+    Vec turnAxis;
+    Mtx rotMtx;
 
-    curMag = PSVECMag((f32*)((int)state + 0x2b8));
+    curMag = PSVECMag((Vec*)((int)state + 0x2b8));
     if (curMag > 0.0f)
     {
         f32 inv = 1.0f / curMag;
-        curDir[0] = ((f32*)state)[174] * inv;
-        curDir[1] = ((f32*)state)[175] * inv;
-        curDir[2] = ((f32*)state)[176] * inv;
-        PSVECNormalize(curDir, curDir);
+        curDir.x = ((f32*)state)[174] * inv;
+        curDir.y = ((f32*)state)[175] * inv;
+        curDir.z = ((f32*)state)[176] * inv;
+        PSVECNormalize(&curDir, &curDir);
     }
     else
     {
-        curDir[0] = 0.0f;
-        curDir[1] = 0.0f;
-        curDir[2] = 0.0f;
+        curDir.x = 0.0f;
+        curDir.y = 0.0f;
+        curDir.z = 0.0f;
     }
 
-    targetMag = PSVECMag(desiredVec);
+    targetMag = PSVECMag((Vec*)desiredVec);
     if (targetMag > 0.0f)
     {
         f32 inv = 1.0f / targetMag;
-        targetDir[0] = desiredVec[0] * inv;
-        targetDir[1] = desiredVec[1] * inv;
-        targetDir[2] = desiredVec[2] * inv;
+        targetDir.x = desiredVec[0] * inv;
+        targetDir.y = desiredVec[1] * inv;
+        targetDir.z = desiredVec[2] * inv;
     }
     else
     {
-        targetDir[0] = 0.0f;
-        targetDir[1] = 0.0f;
-        targetDir[2] = 0.0f;
+        targetDir.x = 0.0f;
+        targetDir.y = 0.0f;
+        targetDir.z = 0.0f;
     }
 
-    PSVECCrossProduct(curDir, targetDir, turnAxis);
-    axisMag = PSVECMag(turnAxis);
+    PSVECCrossProduct(&curDir, &targetDir, &turnAxis);
+    axisMag = PSVECMag(&turnAxis);
     if (axisMag > 0.0f)
     {
         f32 angle;
         int gt;
         f64 gtf;
         f32 zero;
-        angle = acosf_fast(PSVECDotProduct(curDir, targetDir));
+        angle = acosf_fast(PSVECDotProduct(&curDir, &targetDir));
         gt = (angle > maxTurnRad);
         zero = 0.0f;
         gtf = __fabs((f32)gt);
         if (gtf != zero)
         {
             f32 rot = maxTurnRad * ((angle > 0.0f) ? 1.0f : -1.0f);
-            PSMTXRotAxisRad(rotMtx, turnAxis, rot);
-            PSMTXMultVecSR(rotMtx, curDir, targetDir);
+            PSMTXRotAxisRad(rotMtx, &turnAxis, rot);
+            PSMTXMultVecSR(rotMtx, &curDir, &targetDir);
         }
     }
 
@@ -2253,9 +2253,9 @@ void enemy_steerVelocityToward(GameObject* obj, void* state, f32* desiredVec, f3
             speed = maxSpeed;
     }
 
-    obj->anim.velocityX = targetDir[0] * speed;
-    obj->anim.velocityY = targetDir[1] * speed;
-    obj->anim.velocityZ = targetDir[2] * speed;
+    obj->anim.velocityX = targetDir.x * speed;
+    obj->anim.velocityY = targetDir.y * speed;
+    obj->anim.velocityZ = targetDir.z * speed;
 
     if (clampToGround != 0)
     {
