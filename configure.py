@@ -1849,7 +1849,7 @@ config.libs = [
             Object(NonMatching, "main/tex_dolphin.c", cflags=cflags_dll_noopt_noautoinline, section_alignments={".data": 4}),
             Object(NonMatching, "main/shadow_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/track_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_nodead_noautoinline),
             Object(Matching, "track/intersect_surfacesfx.c", cflags=cflags_dll_noopt_nocse_noautoinline, section_alignments={".data": 4}),
             Object(NonMatching, "track/intersect.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "track/intersect_earthwalkersfx.c", cflags=cflags_dll_noopt_nocse_noautoinline),
