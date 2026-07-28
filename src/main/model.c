@@ -539,6 +539,7 @@ int modelLoadAnimations(void* model, int id, void* animBase)
     u8* hdr = model;
     int sz;
     int hdrOff[1];
+    int animOff;
     int groupSlot;
     int i;
     int animIdx;
@@ -630,10 +631,10 @@ int modelLoadAnimations(void* model, int id, void* animBase)
                 {
                     if (ModelList_getHeader(gModelAnimCacheList, animId, &atlasHdr) == 0)
                     {
-                        dataOff = gModelAnimDataOffsetTable[animId];
-                        loadAndDecompressDataFile(MLDF_FILEID_ANIM_BIN_A, 0, dataOff, 0, &sz2, animId, 1);
+                        animOff = gModelAnimDataOffsetTable[animId];
+                        loadAndDecompressDataFile(MLDF_FILEID_ANIM_BIN_A, 0, animOff, 0, &sz2, animId, 1);
                         atlasHdr = mmAlloc(sz2, 10, 0);
-                        loadAndDecompressDataFile(MLDF_FILEID_ANIM_BIN_A, atlasHdr, dataOff, sz2, &unusedSize, animId,
+                        loadAndDecompressDataFile(MLDF_FILEID_ANIM_BIN_A, atlasHdr, animOff, sz2, &unusedSize, animId,
                                                   0);
                         *atlasHdr = 1;
                         modelInitModelList(gModelAnimCacheList, animId, &atlasHdr);
