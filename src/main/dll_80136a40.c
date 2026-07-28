@@ -2,7 +2,7 @@
  * dll_80136a40 - EN v1.0 retargeted system/debug leaves.
  *
  * A grab-bag of low-level support code linked into this DLL:
- *   - The fatal-error display thread (errDisplayThreadMain) plus its installer
+ *   - The fatal-error display thread (errorThreadFunc) plus its installer
  *     (errDisplayInstallHandlers / errDisplayHandler): OSSetErrorHandler hooks dump the
  *     exception type, DSISR/SRR0, the stack trace and a full GPR/SPR
  *     register window straight into the external framebuffers, flipping
@@ -173,7 +173,7 @@ static inline void errDisplayFillBackdrop(void)
         x++;
     } while (x < 0x280);
 }
-void* errDisplayThreadMain(void* unused);
+void* errorThreadFunc(void* unused);
 
 int debugPrintDrawGlyph(int unused, int c)
 {
@@ -734,7 +734,7 @@ void errDisplayInstallHandlers(void)
     OSSetErrorHandler(OS_ERROR_PROTECTION, (OSErrorHandler)errDisplayHandler);
     OSSetErrorHandler(OS_ERROR_ISI, (OSErrorHandler)errDisplayHandler);
     OSSetErrorHandler(OS_ERROR_ALIGNMENT, (OSErrorHandler)errDisplayHandler);
-    OSCreateThread(&gErrDisplayThread, errDisplayThreadMain, 0, gErrDisplayThreadStack + 4096, 4096, 0,
+    OSCreateThread(&gErrDisplayThread, errorThreadFunc, 0, gErrDisplayThreadStack + 4096, 4096, 0,
                    OS_THREAD_ATTR_DETACH);
 }
 
@@ -743,7 +743,7 @@ void reportAllocFail(int region0SizeKb, int region0FreeKb, int region1SizeKb, in
                      int largestFree1)
 {
 }
-void* errDisplayThreadMain(void* unused)
+void* errorThreadFunc(void* unused)
 {
     char* strs = (char*)gDebugFontGlyphs;
     void* (*self[1])(void*);
@@ -775,7 +775,7 @@ void* errDisplayThreadMain(void* unused)
         GXSetBreakPtCallback(NULL);
         __GXAbortWaitPECopyDone();
         OSRestoreInterrupts(lvl);
-        self[0] = errDisplayThreadMain;
+        self[0] = errorThreadFunc;
         while (1)
         {
             if (enableDebugText != 0)
