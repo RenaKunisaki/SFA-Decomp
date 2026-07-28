@@ -283,7 +283,7 @@ extern TitleMenuTextEntry gSaveSelectOpenFileEntries[];
 extern TitleMenuTextEntry gSaveSelectSlotActionEntries[];
 extern TitleMenuTextEntry gSaveSelectConfirmEraseEntries[];
 extern TitleMenuTextEntry gSaveSelectChapterSelectEntries[];
-char sSaveGameBinPathFormat[] = "/savegame/save%d.bin";
+extern char sSaveGameBinPathFormat[];
 
 void saveSelectOpenFile(int sel, int slot)
 {
@@ -951,3 +951,4 @@ void* lbl_8031A82C[10] = {(void*)0x00000000,      (void*)0x00000000,           (
                           (void*)0x00000000,      SaveSelectScreen_run,        SaveSelectScreen_frameEnd_nop,
                           SaveSelectScreen_render};
 char sFrontendTimeFormat[14] = "%3d:%02d:%02d";
+char sSaveGameBinPathFormat[] = "/savegame/save%d.bin";
