@@ -73,7 +73,7 @@
 #define CC_LEVEL_CONTROL_GOLD_BAR_TARGET                 4
 #define CC_LEVEL_CONTROL_GOLD_BAR_COMPLETION_SFX_GAMEBIT 0xF26
 
-CCLevelControlEnvFxRampTables gCCLevelControlEnvFxRampTables = {
+SkyEnvFxRampTables gCCLevelControlEnvFxRampTables = {
     {0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241,
      0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241, 0x0241},
     {0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F, 0x023F,
@@ -193,9 +193,9 @@ void ccLevelControl_init(GameObject* obj) {
     envFxRampTables = &gCCLevelControlEnvFxRampTables;
     state = obj->extra;
     obj->animEventCallback = ccLevelControl_animationEventCallback;
-    skySetEnvFxRampTables((u8*)envFxRampTables + offsetof(CCLevelControlEnvFxRampTables, groupB), envFxRampTables,
-                          (u8*)envFxRampTables + offsetof(CCLevelControlEnvFxRampTables, groupC),
-                          (u8*)envFxRampTables + offsetof(CCLevelControlEnvFxRampTables, groupD));
+    skySetEnvFxRampTables((u8*)envFxRampTables + offsetof(SkyEnvFxRampTables, groupB), envFxRampTables,
+                          (u8*)envFxRampTables + offsetof(SkyEnvFxRampTables, groupC),
+                          (u8*)envFxRampTables + offsetof(SkyEnvFxRampTables, groupD));
     if (getSaveGameLoadStatus() != 0) {
         skySetEnvFxFlags(CC_LEVEL_CONTROL_ENVFX_FLAGS_LOADED);
         getEnvfxActImmediately(NULL, NULL, CC_LEVEL_CONTROL_ENVFX_ID, 0);

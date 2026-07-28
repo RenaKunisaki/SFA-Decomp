@@ -29,20 +29,8 @@ STATIC_ASSERT(offsetof(CCLevelControlState, gameBitLatch) == 0x04);
 STATIC_ASSERT(offsetof(CCLevelControlState, musicTriggerId) == 0x08);
 STATIC_ASSERT(offsetof(CCLevelControlState, mapAct) == 0x0C);
 
-typedef struct CCLevelControlEnvFxRampTables {
-    s16 groupA[28];
-    s16 groupB[28];
-    s16 groupC[28];
-    s16 groupD[28];
-} CCLevelControlEnvFxRampTables;
 
-STATIC_ASSERT(sizeof(CCLevelControlEnvFxRampTables) == 0xE0);
-STATIC_ASSERT(offsetof(CCLevelControlEnvFxRampTables, groupA) == 0x00);
-STATIC_ASSERT(offsetof(CCLevelControlEnvFxRampTables, groupB) == 0x38);
-STATIC_ASSERT(offsetof(CCLevelControlEnvFxRampTables, groupC) == 0x70);
-STATIC_ASSERT(offsetof(CCLevelControlEnvFxRampTables, groupD) == 0xA8);
-
-extern CCLevelControlEnvFxRampTables gCCLevelControlEnvFxRampTables;
+extern SkyEnvFxRampTables gCCLevelControlEnvFxRampTables;
 extern ObjectDescriptor gCCLevelControlObjDescriptor;
 
 int ccLevelControl_animationEventCallback(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);

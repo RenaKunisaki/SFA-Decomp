@@ -56,6 +56,19 @@ STATIC_ASSERT(offsetof(ShLevelControlState, thornTailState) == 0x06);
 STATIC_ASSERT(offsetof(ShLevelControlState, unknown08) == 0x08);
 STATIC_ASSERT(offsetof(ShLevelControlState, mapOverride) == 0x12);
 
+typedef struct SkyEnvFxRampTables {
+    s16 groupA[28];
+    s16 groupB[28];
+    s16 groupC[28];
+    s16 groupD[28];
+} SkyEnvFxRampTables;
+
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupA) == 0x00);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupB) == 0x38);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupC) == 0x70);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupD) == 0xA8);
+STATIC_ASSERT(sizeof(SkyEnvFxRampTables) == 0xE0);
+
 struct SCTotemLogPuzzleUpdateState;
 
 int SH_LevelControl_getExtraSize(void);
