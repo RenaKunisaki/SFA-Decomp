@@ -1628,10 +1628,10 @@ void hudDrawAirMeter(void)
             break;
         }
         drawY = 0x1a4 - ((u32)meter->textures.bar.background->height >> 1);
-        drawY += lbl_803DBAEC;
+        barX = drawY + lbl_803DBAEC;
         drawX = lbl_803DD7F9 + 0xb5;
         drawTexture(meter->textures.bar.background, (f32)drawX,
-                    (f32)(int)(lbl_803DD7F8 + (drawY + off)), meter->alpha, 0x100);
+                    (f32)(int)(lbl_803DD7F8 + (barX + off)), meter->alpha, 0x100);
         barX = meter->textures.bar.background->width + 0xb4;
         barY = 0x1a4 - ((u32)meter->textures.bar.end->height >> 1);
         if (meter->fillWidth < 0x9e)
