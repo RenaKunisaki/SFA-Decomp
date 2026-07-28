@@ -528,6 +528,8 @@ void camcontrol_updateWallAvoidance(CameraObject* camera, GameObject* target)
         spin = (s16)(int)gCamcontrolModeSettings->avoidanceYawOffset;
         if ((spin < -0x1e) || (0x1e < spin))
         {
+            f32 rad;
+
             rad = (3.1415927f * spin) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
