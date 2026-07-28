@@ -12,19 +12,7 @@
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
 #include "main/dll/foodbag.h"
-
-typedef struct FoodbagFxBuilder
-{
-    u32 reserved0;
-    u32 reserved1;
-    u32 reserved2;
-    u32 flags;
-    void (*nop0)(void);
-    void (*nop1)(void);
-    void (*slot2)(void);
-    Dll83SpawnFn build;
-    void (*slot4)(void);
-} FoodbagFxBuilder;
+#include "dlls/object_descriptor.h"
 
 extern u8 gFoodbagEffectTexData[];
 
@@ -271,6 +259,16 @@ u8 gFoodbagEffectTexData[748] = {
     0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x03,
 };
 
-FoodbagFxBuilder lbl_80315C84 = {
-    0, 0, 0, 0x00030000, dll_83_func00_nop, dll_83_func01_nop, NULL, dll_83_func03, NULL,
+ObjectDescriptor4WithPadding dll_83_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_83_func00_nop,
+        (ObjectDescriptorCallback)dll_83_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_83_func03,
+    },
+    0,
 };

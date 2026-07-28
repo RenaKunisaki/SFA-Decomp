@@ -6,6 +6,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 /* spawnEffect effect ids per variant (textureAssetId arg). */
 #define DLL82_EFFECT_ID_VARIANT3_4 0xd9
@@ -211,5 +212,13 @@ void dll_82_func00_nop(void)
 {
 }
 
-void* lbl_80315978[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_82_func00_nop, dll_82_func01_nop, (void*)0x00000000, dll_82_func03};
+ObjectDescriptor4 dll_82_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_82_func00_nop,
+    (ObjectDescriptorCallback)dll_82_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_82_func03,
+};

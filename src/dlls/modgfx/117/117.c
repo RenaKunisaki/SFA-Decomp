@@ -7,6 +7,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0075_dll75func0.h"
+#include "dlls/object_descriptor.h"
 
 s16 gModgfxFxHwTuning[8] = {0, 155, 200, 155, 0, 0, 0, 0};
 
@@ -195,5 +196,13 @@ void dll_75_func00_nop(void)
 {
 }
 
-void* lbl_80314930[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_75_func00_nop, dll_75_func01_nop, (void*)0x00000000, dll_75_func03};
+ObjectDescriptor4 dll_75_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_75_func00_nop,
+    (ObjectDescriptorCallback)dll_75_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_75_func03,
+};

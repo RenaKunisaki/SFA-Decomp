@@ -13,6 +13,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0097_dll97func0.h"
+#include "dlls/object_descriptor.h"
 
 extern u32 lbl_80317810[];
 
@@ -173,6 +174,16 @@ u32 lbl_80317810[31] = {0xff1a0000, 0x00000000, 0x000f0000, 0x00000000, 0x007f00
                         0x000003e8, 0x00000000, 0x00000000, 0x03e8007f, 0x000000e6, 0x000003e8, 0x00ff0000, 0x00000004,
                         0x00030000, 0x00010004, 0x00010002, 0x00040002, 0x00050004, 0x00000001, 0x00020003, 0x00040005,
                         0x00000002, 0x00030004, 0x00050000, 0x00000006, 0x0014001a, 0x00000000, 0x00000000};
-u32 lbl_8031788C[9] = {
-    0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_97_func00_nop, (u32)dll_97_func01_nop,
-    0x00000000, (u32)dll_97_func03, 0x00000000};
+ObjectDescriptor4WithPadding dll_97_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_97_func00_nop,
+        (ObjectDescriptorCallback)dll_97_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_97_func03,
+    },
+    0,
+};

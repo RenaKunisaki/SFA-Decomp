@@ -9,6 +9,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL73_EFFECT_ID 0xd9
@@ -211,6 +212,13 @@ void dll_73_func00_nop(void)
 {
 }
 
-u32 lbl_803146B8[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_73_func00_nop, (u32)dll_73_func01_nop,
-    0x00000000, (u32)dll_73_func03};
+ObjectDescriptor4 dll_73_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_73_func00_nop,
+    (ObjectDescriptorCallback)dll_73_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_73_func03,
+};

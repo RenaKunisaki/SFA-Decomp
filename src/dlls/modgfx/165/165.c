@@ -13,6 +13,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB970[8] = {0, 0, 0, 1, 0, 2, 0, 3};
 u8 lbl_803DB978[8] = {0, 4, 0, 5, 0, 6, 0, 7};
@@ -181,5 +182,13 @@ u8 lbl_80318D48[136] = {252, 24,  5, 120, 0,  0,   0, 0,  0, 0,  0, 0, 1, 144, 0
                         0,   0,   0, 2,   0,  6,   0, 0,  0, 6,  0, 4, 0, 1,   0,  3,   0, 7,  0, 1,
                         0,   7,   0, 5,   0,  0,   0, 1,  0, 2,  0, 3, 0, 4,   0,  5,   0, 6,  0, 7,
                         0,   0,   0, 130, 0,  26,  0, 0,  0, 0,  0, 0, 0, 0,   0,  0};
-void* lbl_80318DD0[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_A5_func00_nop, dll_A5_func01_nop, (void*)0x00000000, dll_A5_func03};
+ObjectDescriptor4 dll_A5_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_A5_func00_nop,
+    (ObjectDescriptorCallback)dll_A5_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_A5_func03,
+};

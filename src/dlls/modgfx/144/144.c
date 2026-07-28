@@ -15,6 +15,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB920[8] = {0, 0x0A, 0, 0x0C, 0, 0x0E, 0, 0x10};
 
@@ -252,6 +253,16 @@ u8 gDll90EffectResourceBlock[420] = {
     0,   0,   0,   18,  0,   18,  0,   0,   0,   30,  0,   0,
 };
 
-/* DLL entry table. */
-void* lbl_80316FD4[9] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, dll_90_func00_nop,
-                         dll_90_func01_nop, (void*)0x00000000, dll_90_func03,     (void*)0x00000000};
+ObjectDescriptor4WithPadding dll_90_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_90_func00_nop,
+        (ObjectDescriptorCallback)dll_90_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_90_func03,
+    },
+    0,
+};

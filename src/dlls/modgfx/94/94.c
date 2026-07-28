@@ -7,6 +7,7 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/mapEventTypes.h"
+#include "dlls/object_descriptor.h"
 
 extern u8 gDll5EFunc03SequenceData[];
 
@@ -89,6 +90,16 @@ u8 gDll5EFunc03SequenceData[748] = {
     0,   0,   1,   253, 0,   0,   2,   1,   0,   0,   2,   3,
 };
 
-u32 lbl_8031262C[9] = {
-    0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_5E_func00_nop, (u32)dll_5E_func01_nop,
-    0x00000000, (u32)dll_5E_func03, 0x00000000};
+ObjectDescriptor4WithPadding dll_5E_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_5E_func00_nop,
+        (ObjectDescriptorCallback)dll_5E_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_5E_func03,
+    },
+    0,
+};

@@ -8,6 +8,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL7B_EFFECT_ID 0x8e
@@ -228,5 +229,16 @@ u8 gDll7BEffectResourceData[308] = {
     0,   11,  0, 12,  0,   0,   0, 50,  0,   200, 0,   50,  0,   0,   0, 0,   0, 0,   0,   0,
 };
 
-void* lbl_80314DE4[9] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, dll_7B_func00_nop,
-                         dll_7B_func01_nop, (void*)0x00000000, dll_7B_func03,     (void*)0x00000000};
+ObjectDescriptor4WithPadding dll_7B_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_7B_func00_nop,
+        (ObjectDescriptorCallback)dll_7B_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_7B_func03,
+    },
+    0,
+};

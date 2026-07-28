@@ -17,6 +17,11 @@ typedef struct ObjectDescriptor4 {
     ObjectDescriptorCallback slot03;
 } ObjectDescriptor4;
 
+typedef struct ObjectDescriptor4WithPadding {
+    ObjectDescriptor4 descriptor;
+    u32 padding;
+} ObjectDescriptor4WithPadding;
+
 typedef struct ObjectDescriptor6 {
     u32 reserved0;
     u32 reserved1;

@@ -15,6 +15,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 /* base spawn flags; low bit positions the effect at the source object */
 #define SPAWN_FLAGS_BASE        0xc0104c0
@@ -206,5 +207,13 @@ u8 lbl_803188D8[520] = {
     0,   14,  0,   15,  0,   16,  0,   17,  0,   18,  0,   19,  0,  20,  0,   0,   0,   7,   0,   8,   0,   9,   0,
     10,  0,   11,  0,   12,  0,   13,  0,   14,  0,   15,  0,   16, 0,   17,  0,   18,  0,   19,  0,   20,  0,   0,
     0,   60,  0,   10,  0,   1,   0,   60,  0,   10,  0,   1,   0,  0};
-void* lbl_80318AE0[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_A1_func00_nop, dll_A1_func01_nop, (void*)0x00000000, dll_A1_func03};
+ObjectDescriptor4 dll_A1_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_A1_func00_nop,
+    (ObjectDescriptorCallback)dll_A1_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_A1_func03,
+};

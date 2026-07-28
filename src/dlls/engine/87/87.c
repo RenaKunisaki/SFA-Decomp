@@ -209,7 +209,7 @@ CameraModeTitlePose gCamTitlePoseTable[5] = {
     {-18876.25f, 33.25548f, 28366.39f, 9419, 3496, 170},
 };
 
-ResourceDescriptorCallbacks7 lbl_8031A01C = {{0x00000000,
+ResourceDescriptorCallbacks7 gCameraModeTitleDescriptor = {{0x00000000,
                         0x00000000,
                         0x00000000,
                         0x00060000},

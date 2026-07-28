@@ -16,6 +16,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLLA7_EFFECT_ID 0x5e0
@@ -205,5 +206,13 @@ u8 lbl_80318E40[136] = {
     0,   0,  0, 31, 3, 232, 15, 160, 0, 0,  0, 15, 0,   31, 0,   0,   15, 160, 3, 232, 0, 15,  0, 31, 0,  0,   0,   2,
     0,   6,  0, 0,  0, 6,   0,  4,   0, 1,  0, 3,  0,   7,  0,   1,   0,  7,   0, 5,   0, 0,   0, 1,  0,  2,   0,   3,
     0,   4,  0, 5,  0, 6,   0,  7,   0, 0,  1, 4,  0,   30, 0,   1,   1,  4,   0, 0,   0, 0,   0, 0};
-void* lbl_80318EC8[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_A7_func00_nop, dll_A7_func01_nop, (void*)0x00000000, dll_A7_func03};
+ObjectDescriptor4 dll_A7_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_A7_func00_nop,
+    (ObjectDescriptorCallback)dll_A7_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_A7_func03,
+};
