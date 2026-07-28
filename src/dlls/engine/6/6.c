@@ -22,7 +22,6 @@
 #include "dolphin/gx/GXLighting.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
-#include "dolphin/mtx/mtx_legacy.h"
 #include "main/lightmap.h"
 #include "main/track_dolphin_shadow_api.h"
 #include "string.h"

@@ -23,7 +23,6 @@
 #include "main/acosf_api.h"
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTransform.h"
-#include "dolphin/mtx/mtx_legacy.h"
 #include "main/asset_load.h"
 
 

@@ -64,7 +64,6 @@
 #include "main/dll/path_control_interface.h"
 #include "main/frame_timing.h"
 #include "main/pad.h"
-#include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTransform.h"
 #include "dlls/objects/260_SmallBasket.h"

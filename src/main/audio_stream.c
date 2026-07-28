@@ -19,7 +19,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 #include "dolphin/ai.h"
 #include "dolphin/dvd.h"
-#include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
 

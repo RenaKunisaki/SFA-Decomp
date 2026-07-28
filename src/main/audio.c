@@ -25,7 +25,6 @@
 #include "dolphin/ai.h"
 #include "dolphin/ar.h"
 #include "dolphin/dvd.h"
-#include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
