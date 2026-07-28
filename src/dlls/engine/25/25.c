@@ -116,7 +116,7 @@ int dll_19_func1B(GameObject* obj)
     return 0;
 }
 
-f32 dll_19_func1A(GameObject* obj)
+f32 dll_19_getHealthFraction(GameObject* obj)
 {
     int p_b8 = *(int*)&(obj)->extra;
     int p_4c = *(int*)&(obj)->anim.placementData;
@@ -132,7 +132,7 @@ f32 dll_19_func1A(GameObject* obj)
     return 0.0f;
 }
 
-void dll_19_func19(u8* cam, u8* ctx)
+void dll_19_changeWeapon(u8* cam, u8* ctx)
 {
     Dll19ChildObjectIdTable childObjectIds = lbl_802C2190;
 
@@ -166,7 +166,7 @@ void dll_19_func19(u8* cam, u8* ctx)
     }
 }
 
-void dll_19_func12(GameObject* obj, void* state, u8 flag)
+void dll_19_releaseState(GameObject* obj, void* state, u8 flag)
 {
     Sfx_StopObjectChannel((int)obj, 127);
     if ((((GroundBaddieState*)state)->configFlags & flag) == 0)
@@ -191,7 +191,7 @@ void dll_19_func12(GameObject* obj, void* state, u8 flag)
     }
 }
 
-void dll_19_func18(GameObject* obj, u8* config, u8* state, int moveArg0, int moveArg1, int pathFlags,
+void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg0, int moveArg1, int pathFlags,
                    u8 initFlags, f32 pathRadius)
 {
     u8 flags;
@@ -335,12 +335,12 @@ void dll_19_func18(GameObject* obj, u8* config, u8* state, int moveArg0, int mov
     }
 }
 
-void dll_19_func11(GameObject* obj, void* state, u16* flags, int modeA, int modeB, s16 soundIdA, s16 soundIdB)
+void dll_19_pollCameraTarget(GameObject* obj, void* state, u16* flags, int modeA, int modeB, s16 soundIdA, s16 soundIdB)
 {
     (void)(*gCameraInterface)->getOverrideTarget();
 }
 
-int dll_19_func17(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substateIdle,
+int dll_19_processMessages(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substateIdle,
                   s16 substateActive, s16 moveMode)
 {
     u32 msgData;
@@ -370,7 +370,7 @@ int dll_19_func17(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* f
         case 0xA0001:
             if (((BaddieState*)state)->substate != substateActive)
             {
-                dll_19_func0C(obj, state, hitbox, gameBit, flagOut, substateIdle, moveMode, 0, 1);
+                dll_19_startHitReaction(obj, state, hitbox, gameBit, flagOut, substateIdle, moveMode, 0, 1);
                 ((BaddieState*)state)->substate = substateActive;
                 ((BaddieState*)state)->hasTarget = 0;
                 ((BaddieState*)state)->targetObj = (void*)msgData;
@@ -391,7 +391,7 @@ int dll_19_func17(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* f
     return 0;
 }
 
-int dll_19_func16(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit, int* tableA, u8* tableB,
+int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit, int* tableA, u8* tableB,
                   s16 substate, void* hitPosOut)
 {
     u8* state = obj->extra;
@@ -513,7 +513,7 @@ int dll_19_func16(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit,
 }
 
 
-GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
+GameObject* dll_19_spawnChild(GameObject* obj, int spawnType, int unused, int alt)
 {
     GameObject* source = obj;
     u8* state = (u8*)obj->anim.placementData;
@@ -644,7 +644,7 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
 }
 
 /* dont_inline: keeps func0C out-of-line so func17's call site matches retail */
-void dll_19_func0C(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substate, s16 moveMode,
+void dll_19_startHitReaction(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substate, s16 moveMode,
                    int animMove, s8 field25f)
 {
     if (hitbox != NULL)
@@ -684,7 +684,7 @@ void dll_19_func0C(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* 
 
 /* opt_loop_invariants off: retail recomputes the loop-invariant self-position
  * reads inside the scan loop; hoisting them changes the schedule */
-GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAngle)
+GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, int halfAngle)
 {
     f32 bboxOut[20];
     GameObject* objs[3];
@@ -788,7 +788,7 @@ GameObject* dll_19_func14(GameObject* self, void* state, f32 frange, int halfAng
     return obj;
 }
 
-int dll_19_func13(GameObject* obj, void* state, f32 distThreshold, int requireFar)
+int dll_19_shouldDropTarget(GameObject* obj, void* state, f32 distThreshold, int requireFar)
 {
     GameObject* player = Obj_GetPlayerObject();
     int result = 0;
@@ -831,7 +831,7 @@ int dll_19_func13(GameObject* obj, void* state, f32 distThreshold, int requireFa
     return result;
 }
 
-int dll_19_func0E(GameObject* obj, void* state, u8 checkDead)
+int dll_19_isObjectValid(GameObject* obj, void* state, u8 checkDead)
 {
     if (checkDead != 0 && (s8)((BaddieState*)state)->hitPoints <= 0 && (obj)->anim.alpha == 0)
     {
@@ -848,7 +848,7 @@ int dll_19_func0E(GameObject* obj, void* state, u8 checkDead)
     return 1;
 }
 
-void dll_19_func0D(GameObject* obj, void* state, f32 gravity, s8 field25f)
+void dll_19_updateGravity(GameObject* obj, void* state, f32 gravity, s8 field25f)
 {
     f32 fz;
     *(u32*)state |= 0x8000;
@@ -914,7 +914,7 @@ int dll_19_func10(GameObject* obj, u8* state, int moveArg0, int moveArg1, s16 co
     return 0;
 }
 
-int dll_19_func0F(GameObject* obj, ObjSeqState* seq, char* st, void* moveHandlers, void* stateHandlers,
+int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, void* moveHandlers, void* stateHandlers,
                   s16 controlMode)
 {
     f32 dist;
@@ -1046,7 +1046,7 @@ u16 dll_19_func0A(GameObject* obj)
 
 /* Steps the movement blend factors toward the current target and turns the
  * yaw by the buffered turn rate. */
-void dll_19_func06(GameObject* obj, void* state, void* unusedState, f32 cap, f32 speed)
+void dll_19_updateMovementBlend(GameObject* obj, void* state, void* unusedState, f32 cap, f32 speed)
 {
     BaddieState* st = state;
 
@@ -1127,7 +1127,7 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
 
 /* Computes the yaw step, wrapped yaw delta and distance from an object to its
  * target, updating the wide-turn flag. */
-void dll_19_func07(GameObject* obj, GameObject* target, int div, u16* outYaw, u16* outDelta, u16* outDist)
+void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16* outYaw, u16* outDelta, u16* outDist)
 {
     char* st = (obj)->extra;
     f32 d[3];
@@ -1188,7 +1188,7 @@ int dll_19_func09_ret_0(void)
 
 /* Probes the four compass directions around the object for walkable space,
  * returning a bitmask of clear directions. */
-u8 dll_19_func08(GameObject* obj, void* state, f32 dist)
+u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
 {
     u16 i;
     u8 mask;
@@ -1267,26 +1267,26 @@ u32 dll_19[32] = {
     (u32)dll_19_func03_nop,
     (u32)dll_19_func04_nop,
     (u32)dll_19_func05,
-    (u32)dll_19_func06,
-    (u32)dll_19_func07,
-    (u32)dll_19_func08,
+    (u32)dll_19_updateMovementBlend,
+    (u32)dll_19_getTargetGeometry,
+    (u32)dll_19_getClearDirectionMask,
     (u32)dll_19_func09_ret_0,
     (u32)dll_19_func0A,
     (u32)dll_19_func0B,
-    (u32)dll_19_func0C,
-    (u32)dll_19_func0D,
-    (u32)dll_19_func0E,
-    (u32)dll_19_func0F,
+    (u32)dll_19_startHitReaction,
+    (u32)dll_19_updateGravity,
+    (u32)dll_19_isObjectValid,
+    (u32)dll_19_updateSequenceMovement,
     (u32)dll_19_func10,
-    (u32)dll_19_func11,
-    (u32)dll_19_func12,
-    (u32)dll_19_func13,
-    (u32)dll_19_func14,
-    (u32)dll_19_func15,
-    (u32)dll_19_func16,
-    (u32)dll_19_func17,
-    (u32)dll_19_func18,
-    (u32)dll_19_func19,
-    (u32)dll_19_func1A,
+    (u32)dll_19_pollCameraTarget,
+    (u32)dll_19_releaseState,
+    (u32)dll_19_shouldDropTarget,
+    (u32)dll_19_findAggroTarget,
+    (u32)dll_19_spawnChild,
+    (u32)dll_19_updateHitReaction,
+    (u32)dll_19_processMessages,
+    (u32)dll_19_initGroundBaddie,
+    (u32)dll_19_changeWeapon,
+    (u32)dll_19_getHealthFraction,
     0,
 };

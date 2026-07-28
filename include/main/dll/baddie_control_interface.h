@@ -7,14 +7,9 @@
 typedef struct ObjSeqState ObjSeqState;
 
 /* Function-pointer table exported by the baddie-control DLL (0x19); word slot N
- * here is the DLL's exported func(N + 2) (updateMovementBlend = dll_19_func06,
- * getTargetGeometry = dll_19_func07, getClearDirectionMask = dll_19_func08,
- * pollCameraTarget = dll_19_func11, releaseState = dll_19_func12,
- * shouldDropTarget = dll_19_func13, findAggroTarget = dll_19_func14,
- * updateHitReaction = dll_19_func16, processMessages = dll_19_func17,
- * initGroundBaddie = dll_19_func18, getHealthFraction = dll_19_func1A).
- * Named slots are those with recovered call sites; the pads are unrecovered
- * slots. */
+ * here is the DLL's exported slot N + 2, defined as dll_19_<name> in
+ * dlls/engine/25/25.c. Named slots are those with recovered call sites; the
+ * pads are unrecovered slots. */
 typedef struct BaddieControlInterface
 {
     u8 pad00[0x10];
