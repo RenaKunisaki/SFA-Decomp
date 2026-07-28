@@ -1701,7 +1701,7 @@ int gObjSeqInputOverrideActive;
 u8 curSeqNo;
 s16 lbl_803DD08A;
 u8 gObjSeqFovOverrideActive;
-int lbl_803DD084;
+int seqGlobal4;
 s8 seqGlobal3;
 GameObject* lbl_803DD07C;
 u8 lbl_803DD078;
@@ -2254,14 +2254,14 @@ int ObjSeq_func0E(void)
     return 0;
 }
 
-void ObjSeq_func11(int value)
+void ObjSeq_setGlobal4(int value)
 {
-    lbl_803DD084 = value;
+    seqGlobal4 = value;
 }
 
-int ObjSeq_func10(void)
+int ObjSeq_getGlobal4(void)
 {
-    return lbl_803DD084;
+    return seqGlobal4;
 }
 
 int ObjSeq_func0F(void)
@@ -2834,8 +2834,8 @@ void* lbl_8030EE34[40] = {(void*)0,
                           (void*)ObjSeq_resolveTargetObject,
                           (void*)ObjSeq_func0E,
                           (void*)ObjSeq_func0F,
-                          (void*)ObjSeq_func10,
-                          (void*)ObjSeq_func11,
+                          (void*)ObjSeq_getGlobal4,
+                          (void*)ObjSeq_setGlobal4,
                           (void*)ObjSeq_func12,
                           (void*)ObjSeq_func13,
                           (void*)ObjSeq_start,
