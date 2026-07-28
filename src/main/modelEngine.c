@@ -442,9 +442,9 @@ extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E
     Minimap_funcs, dll_3F_funcs;
 extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8;
 extern ResourceDescriptorCallbacks8 lbl_80320700;
-extern ResourceDescriptor lbl_80325928, lbl_80328AD8, lbl_80328E28, lbl_80329340;
-extern ResourceDescriptor lbl_803298D0, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
-extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, lbl_8032B6B0;
+extern ResourceDescriptor gDll1DFObjDescriptor, lbl_80328AD8, lbl_80328E28, lbl_80329340;
+extern ResourceDescriptor gDll22CObjDescriptor, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
+extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, gDll29EObjDescriptor;
 extern ResourceDescriptor lbl_803DC0F8, lbl_803DC100, lbl_803DC108, lbl_803DC138, lbl_803DC140, lbl_803DC150;
 extern ResourceDescriptor lbl_803DC158, lbl_803DC2C0, lbl_803DC2D8, lbl_803DC2E0, lbl_803DC2E8, lbl_803DC338,
     lbl_803DC358, lbl_803DC360;
@@ -1538,7 +1538,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gDIM2IceFloeObjDescriptor,
     &gDIM2IcicleObjDescriptor,
     &gDIM2LavaControlObjDescriptor,
-    &lbl_80325928,
+    &gDll1DFObjDescriptor,
     &gDIM_BossObjDescriptor,
     &gDIM_BossGutObjDescriptor,
     &gDIM_BossTonsilObjDescriptor,
@@ -1615,7 +1615,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gDFP_LevelControlObjDescriptor,
     &gDFP_ObjCreatorObjDescriptor,
     &gDFP_TorchObjDescriptor,
-    &lbl_803298D0,
+    &gDll22CObjDescriptor,
     &gDFP_seqpointObjDescriptor,
     &gDoorswitchObjDescriptor,
     &gDfpfloorbarObjDescriptor,
@@ -1729,7 +1729,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gArwingAndrossStuffObjDescriptor,
     (ResourceDescriptor*)&gARWArwingBoObjDescriptor,
     (ResourceDescriptor*)&gARWArwingGuObjDescriptor,
-    &lbl_8032B6B0,
+    &gDll29EObjDescriptor,
     &gARWBombCollObjDescriptor,
     &gRingObjDescriptor,
     (ResourceDescriptor*)&gARWLevelConObjDescriptor,

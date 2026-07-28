@@ -78,8 +78,6 @@ extern f32 gCamViewfinderBrightnessScale;
 extern f32 lbl_803E1818;
 extern f32 lbl_803E181C;
 extern f32 lbl_803E1820;
-extern f32 lbl_803E1824;
-extern f32 lbl_803E1828;
 extern f32 lbl_803E182C;
 extern f32 lbl_803E1830;
 extern f32 gCamViewfinderPi;

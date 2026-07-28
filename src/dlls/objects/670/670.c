@@ -8,7 +8,7 @@
 #include "main/dll/dll_029E_dummy.h"
 #include "dlls/object_descriptor.h"
 
-ObjectDescriptor lbl_8032B6B0 = {
+ObjectDescriptor gDll29EObjDescriptor = {
     0,
     0,
     0,

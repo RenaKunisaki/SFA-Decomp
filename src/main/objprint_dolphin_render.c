@@ -71,12 +71,8 @@
 #include "dolphin/os.h"
 #include "string.h"
 
-extern f32 lbl_803DE9D8;
-extern f32 lbl_803DE9DC;
-extern f32 lbl_803DE9E0;
 extern s32 lbl_803DCC48;
 extern f32 lbl_803DEA04;
-extern f32 lbl_803DE9E4;
 extern s32 lbl_803DCC44;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
@@ -85,10 +81,6 @@ extern f32 lbl_803DEA2C;
 extern f32 lbl_803DEA30;
 extern f32 lbl_803DEA04;
 extern f32 lbl_803DEA1C;
-extern f32 lbl_803DE9A4;
-extern f32 lbl_803DE9C8;
-extern f32 lbl_803DE99C;
-extern f32 lbl_803DE9E8;
 
 
 extern f32 gObjPrintHalfPi;
@@ -116,8 +108,6 @@ STATIC_ASSERT(sizeof(IndTexMtx23) == 0x18);
 extern s32 lbl_803DCC44;
 extern u8 lbl_803DCC3E;
 extern u8 lbl_803DCC3D;
-extern u32 lbl_803DE9FC;
-extern u32 lbl_803DEA00;
 extern u32 lbl_803DB470;
 extern u32 lbl_803DB468;
 extern int lbl_803DB498;
@@ -131,7 +121,6 @@ extern f32 lbl_803DEA1C;
 
 int modelRenderCb_8003c268(int obj, int* model, int ropIdx);
 
-extern GXColorS10 lbl_803DE9F4;
 extern ObjPrintGXColor lbl_803DB494;
 extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC36;
@@ -247,7 +236,6 @@ s32 mapCheckCurBlocks(int v);
 
 extern u8 lbl_803DCC3D;
 extern s32 lbl_803DCC44;
-extern u32 lbl_803DE9F0;
 extern f32 lbl_803DEA34;
 
 void objRenderFuzzFn_8003d6f8(void* objArg);

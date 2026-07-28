@@ -405,7 +405,6 @@ extern const f32 lbl_803DEDBC;
 extern const f32 gNewShadowFovY;
 extern const f32 lbl_803DED70, lbl_803DED74, gNewShadowAspectWide, gNewShadowAspectNarrow;
 extern const f32 lbl_803DED44;
-extern const f32 lbl_803DED50;
 extern const f32 lbl_803DED4C;
 extern const f32 lbl_803DED68;
 extern const f32 lbl_803DED6C;

@@ -72,12 +72,8 @@
 #include "dolphin/os.h"
 #include "string.h"
 
-extern f32 lbl_803DE9D8;
-extern f32 lbl_803DE9DC;
-extern f32 lbl_803DE9E0;
 extern s32 lbl_803DCC48;
 extern f32 lbl_803DEA04;
-extern f32 lbl_803DE9E4;
 extern s32 lbl_803DCC44;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
@@ -86,10 +82,6 @@ extern f32 lbl_803DEA2C;
 extern f32 lbl_803DEA30;
 extern f32 lbl_803DEA04;
 extern f32 lbl_803DEA1C;
-extern f32 lbl_803DE9A4;
-extern f32 lbl_803DE9C8;
-extern f32 lbl_803DE99C;
-extern f32 lbl_803DE9E8;
 
 int objNormalizeRotationMatrix(f32* matrix, f32* out)
 {
@@ -845,7 +837,6 @@ typedef struct ObjModelRenderOp
     u8 pad38[0x3C - 0x38];
     u32 flags;
 } ObjModelRenderOp;
-extern volatile int lbl_803DCC80;
 extern f32 lbl_803DEA04;
 extern f32 lbl_803DEA1C;
 typedef struct
@@ -856,12 +847,6 @@ typedef struct
 } MtxBitStream;
 typedef u8 (*ObjModelRenderCb)(int* obj, int* am, int p3);
 extern f32 lbl_803DEA38;
-extern f32 lbl_803DEA4C;
-extern f32 lbl_803DEA50;
-extern f32 lbl_803DEA54;
-extern f32 lbl_803DEA48;
-extern s16 lbl_803DCC78;
-extern u32 lbl_803DCC84;
 
 int getLoadedFileFlags(int slot);
 s32 mapCheckCurBlocks(int v);
@@ -932,11 +917,6 @@ void objRenderFuzzFn_8003d6f8(void* objArg)
     GXSetBlendMode(1, 4, 5, 5);
     return;
 }
-extern f32 lbl_803DEA60;
-extern f32 lbl_803DEA5C;
-extern f32 lbl_803DEA64;
-extern f32 lbl_803DEA68;
-extern f32 lbl_803DEA6C;
 
 
 

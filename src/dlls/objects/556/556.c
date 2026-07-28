@@ -300,7 +300,7 @@ void dll_22C_initialise_nop(void)
 {
 }
 
-ObjectDescriptor lbl_803298D0 = {
+ObjectDescriptor gDll22CObjDescriptor = {
     0,
     0,
     0,

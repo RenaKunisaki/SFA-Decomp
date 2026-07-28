@@ -124,7 +124,7 @@ void dll_1DF_initialise(void)
 {
 }
 
-ObjectDescriptor lbl_80325928 = {
+ObjectDescriptor gDll1DFObjDescriptor = {
     0,
     0,
     0,
