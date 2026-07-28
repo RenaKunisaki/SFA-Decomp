@@ -2261,6 +2261,8 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         }
         else if (state->followPhase < 5)
         {
+            int i;
+
             if ((u32)tp != 0)
             {
                 if (targetWg == 0)
@@ -2820,6 +2822,10 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         }
         if ((state->savedWalkGroup == 0) || (wg != state->savedWalkGroup))
         {
+            s16 yawA;
+            s16 yawB;
+            s16 diff;
+
             yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
                             state->prevLocalPosZ - obj->anim.localPosZ);
             yawB = getAngle(state->prevLocalPosX - state->route.posX,
@@ -2953,6 +2959,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         {
             f32 dz;
             f32 dx;
+            f32 sqz;
+            f32 sqx;
+
             dx = ((TrickyState*)obj->extra)->dirX;
             sqx = dx;
             sqx = sqx * sqx;
