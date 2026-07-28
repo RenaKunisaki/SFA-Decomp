@@ -26,7 +26,7 @@
 #include "main/obj_group.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/gx/GXGeometry.h"
@@ -253,9 +253,9 @@ void vecGetRanges(f32* pts, f32* base, f32 scale, int* out)
 void buildGroundShadowQuad(s16* out, GameObject* obj)
 {
     f32 dist;
-    f32 b[3];
-    f32 c[3];
-    f32 a[3];
+    Vec b;
+    Vec c;
+    Vec a;
     f32 d;
     f32 scale;
     f32 z;
@@ -263,40 +263,40 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
     f32 nd;
 
     if (trackGetNearestGroundOffsetAndNormal(obj, obj->anim.localPosX, obj->anim.localPosY,
-                                             obj->anim.localPosZ, &dist, a, 0) == 0)
+                                             obj->anim.localPosZ, &dist, (f32*)&a, 0) == 0)
     {
-        PSVECNormalize(a, a);
-        b[0] = 1.0f;
-        b[1] = 0.0f;
-        b[2] = 0.0f;
-        d = __fabsf(PSVECDotProduct(a, b));
+        PSVECNormalize(&a, &a);
+        b.x = 1.0f;
+        b.y = 0.0f;
+        b.z = 0.0f;
+        d = __fabsf(PSVECDotProduct(&a, &b));
         if (d >= 0.9f)
         {
-            b[0] = 0.0f;
-            b[2] = 1.0f;
+            b.x = 0.0f;
+            b.z = 1.0f;
         }
-        PSVECCrossProduct(a, b, c);
-        PSVECCrossProduct(c, a, b);
-        PSVECNormalize(b, b);
-        PSVECNormalize(c, c);
+        PSVECCrossProduct(&a, &b, &c);
+        PSVECCrossProduct(&c, &a, &b);
+        PSVECNormalize(&b, &b);
+        PSVECNormalize(&c, &c);
         scale = 0.5f * ((ObjAnimComponent*)obj)->modelState->shadowScale;
-        PSVECScale(b, b, scale);
-        PSVECScale(c, c, scale);
+        PSVECScale(&b, &b, scale);
+        PSVECScale(&c, &c, scale);
         nd = -dist;
         s = 256.0f;
         z = 0.0f;
-        out[0] = (s * ((z - b[0]) - c[0]));
-        out[1] = (s * ((nd - b[1]) - c[1]));
-        out[2] = (s * ((z - b[2]) - c[2]));
-        out[3] = (s * ((z + b[0]) - c[0]));
-        out[4] = (s * ((nd + b[1]) - c[1]));
-        out[5] = (s * ((z + b[2]) - c[2]));
-        out[6] = (s * (c[0] + (z + b[0])));
-        out[7] = (s * (c[1] + (nd + b[1])));
-        out[8] = (s * (c[2] + (z + b[2])));
-        out[9] = (s * (c[0] + (z - b[0])));
-        out[10] = (s * (c[1] + (nd - b[1])));
-        out[11] = (s * (c[2] + (z - b[2])));
+        out[0] = (s * ((z - b.x) - c.x));
+        out[1] = (s * ((nd - b.y) - c.y));
+        out[2] = (s * ((z - b.z) - c.z));
+        out[3] = (s * ((z + b.x) - c.x));
+        out[4] = (s * ((nd + b.y) - c.y));
+        out[5] = (s * ((z + b.z) - c.z));
+        out[6] = (s * (c.x + (z + b.x)));
+        out[7] = (s * (c.y + (nd + b.y)));
+        out[8] = (s * (c.z + (z + b.z)));
+        out[9] = (s * (c.x + (z - b.x)));
+        out[10] = (s * (c.y + (nd - b.y)));
+        out[11] = (s * (c.z + (z - b.z)));
         *(u8*)((char*)out + 0x18) = 1;
     }
     else
@@ -309,7 +309,7 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
 {
     s16* shadowVerts;
     u8 alpha;
-    void* viewMtx;
+    MtxPtr viewMtx;
     GXColor kColor;
     f32 mtx[16];
     f32 outMtx[16];
@@ -325,7 +325,7 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
         kColor.a = alpha;
         if (alpha != 0)
         {
-            viewMtx = Camera_GetViewMatrix();
+            viewMtx = (MtxPtr)Camera_GetViewMatrix();
             Obj_BuildWorldTransformMatrix(obj, mtx, 0);
             mtx[0] = 1.0f;
             mtx[1] = 0.0f;
@@ -336,7 +336,7 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
             mtx[8] = 0.0f;
             mtx[9] = 0.0f;
             mtx[10] = 1.0f;
-            PSMTXConcat(viewMtx, mtx, outMtx);
+            PSMTXConcat(viewMtx, (MtxPtr)mtx, (MtxPtr)outMtx);
             GXLoadPosMtxImm((const f32 (*)[4])outMtx, GX_PNMTX9);
             GXClearVtxDesc();
             GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
@@ -379,7 +379,7 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
 {
     f32* verts = buf48;
     f32* planes = bufA8;
-    f32 nrm[3];
+    Vec nrm;
 
     {
     Vec3f edge1;
@@ -391,13 +391,13 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
     edge2.x = verts[0x15] - verts[9];
     edge2.y = verts[0x16] - verts[10];
     edge2.z = verts[0x17] - verts[0xb];
-    nrm[0] = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm[1] = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm[2] = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(nrm, nrm);
-    planes[0] = -nrm[0];
-    planes[1] = -nrm[1];
-    planes[2] = -nrm[2];
+    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+    PSVECNormalize(&nrm, &nrm);
+    planes[0] = -nrm.x;
+    planes[1] = -nrm.y;
+    planes[2] = -nrm.z;
     planes[3] = -(planes[0] * verts[9] + planes[1] * verts[10] + planes[2] * verts[0xb]);
     }
 
@@ -411,13 +411,13 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
     edge2.x = verts[3] - verts[0xf];
     edge2.y = verts[4] - verts[0x10];
     edge2.z = verts[5] - verts[0x11];
-    nrm[0] = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm[1] = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm[2] = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(nrm, nrm);
-    planes[5] = -nrm[0];
-    planes[6] = -nrm[1];
-    planes[7] = -nrm[2];
+    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+    PSVECNormalize(&nrm, &nrm);
+    planes[5] = -nrm.x;
+    planes[6] = -nrm.y;
+    planes[7] = -nrm.z;
     planes[8] = -(planes[5] * verts[0xf] + planes[6] * verts[0x10] + planes[7] * verts[0x11]);
     }
 
@@ -431,13 +431,13 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
     edge2.x = verts[0] - verts[0xc];
     edge2.y = verts[1] - verts[0xd];
     edge2.z = verts[2] - verts[0xe];
-    nrm[0] = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm[1] = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm[2] = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(nrm, nrm);
-    planes[10] = -nrm[0];
-    planes[0xb] = -nrm[1];
-    planes[0xc] = -nrm[2];
+    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+    PSVECNormalize(&nrm, &nrm);
+    planes[10] = -nrm.x;
+    planes[0xb] = -nrm.y;
+    planes[0xc] = -nrm.z;
     planes[0xd] = -(planes[10] * verts[0xc] + planes[0xb] * verts[0xd] + planes[0xc] * verts[0xe]);
     }
 
@@ -451,13 +451,13 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
     edge2.x = verts[0xc] - verts[0];
     edge2.y = verts[0xd] - verts[1];
     edge2.z = verts[0xe] - verts[2];
-    nrm[0] = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm[1] = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm[2] = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(nrm, nrm);
-    planes[0xf] = -nrm[0];
-    planes[0x10] = -nrm[1];
-    planes[0x11] = -nrm[2];
+    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+    PSVECNormalize(&nrm, &nrm);
+    planes[0xf] = -nrm.x;
+    planes[0x10] = -nrm.y;
+    planes[0x11] = -nrm.z;
     planes[0x12] = -(planes[0xf] * verts[0] + planes[0x10] * verts[1] + planes[0x11] * verts[2]);
     }
 
@@ -471,13 +471,13 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
     edge2.x = verts[0xc] - verts[0x15];
     edge2.y = verts[0xd] - verts[0x16];
     edge2.z = verts[0xe] - verts[0x17];
-    nrm[0] = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm[1] = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm[2] = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(nrm, nrm);
-    planes[0x14] = -nrm[0];
-    planes[0x15] = -nrm[1];
-    planes[0x16] = -nrm[2];
+    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+    PSVECNormalize(&nrm, &nrm);
+    planes[0x14] = -nrm.x;
+    planes[0x15] = -nrm.y;
+    planes[0x16] = -nrm.z;
     planes[0x17] = -(planes[0x14] * verts[0x15] + planes[0x15] * verts[0x16] + planes[0x16] * verts[0x17]);
     }
 
@@ -491,13 +491,13 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
     edge2.x = verts[9] - verts[0];
     edge2.y = verts[10] - verts[1];
     edge2.z = verts[0xb] - verts[2];
-    nrm[0] = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm[1] = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm[2] = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(nrm, nrm);
-    planes[0x19] = -nrm[0];
-    planes[0x1a] = -nrm[1];
-    planes[0x1b] = -nrm[2];
+    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+    PSVECNormalize(&nrm, &nrm);
+    planes[0x19] = -nrm.x;
+    planes[0x1a] = -nrm.y;
+    planes[0x1b] = -nrm.z;
     planes[0x1c] = -(planes[0x19] * verts[0] + planes[0x1a] * verts[1] + planes[0x1b] * verts[2]);
     }
 }
@@ -552,7 +552,7 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
     f32 kf;
     s16 s31, s30, s29;
     u32 h2;
-    void* viewMtx;
+    MtxPtr viewMtx;
 
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
@@ -581,8 +581,8 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
         memcpy(&obj->anim.localPos, &modelState->overrideWorldPos, sizeof(Vec3f));
     }
     Obj_BuildWorldTransformMatrix(obj, (f32*)mtx, 0);
-    viewMtx = Camera_GetViewMatrix();
-    PSMTXConcat(viewMtx, (f32*)mtx, (f32*)outMtx);
+    viewMtx = (MtxPtr)Camera_GetViewMatrix();
+    PSMTXConcat(viewMtx, (MtxPtr)mtx, (MtxPtr)outMtx);
     GXLoadPosMtxImm((const f32 (*)[4])outMtx, GX_PNMTX0);
     if (obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
@@ -940,16 +940,16 @@ void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z)
 
 void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int magnitude)
 {
-    f32 normalizedDirection[3];
+    Vec normalizedDirection;
     f32 directionSimilarity;
     f32 directionMagnitudeSquared;
     f32 previousMagnitudeSquared;
     f32 combinedMagnitudeSquared;
 
-    normalizedDirection[0] = directionX;
-    normalizedDirection[1] = directionY;
-    normalizedDirection[2] = directionZ;
-    PSVECNormalize(normalizedDirection, normalizedDirection);
+    normalizedDirection.x = directionX;
+    normalizedDirection.y = directionY;
+    normalizedDirection.z = directionZ;
+    PSVECNormalize(&normalizedDirection, &normalizedDirection);
     gSunMagnitude = magnitude;
     gShadowOffsetX = directionX * magnitude;
     gShadowOffsetY = directionY * magnitude;
@@ -959,11 +959,11 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
         gShadowOffsetY = 80.0f;
     }
     gShadowOffsetZ = directionZ * magnitude;
-    directionSimilarity = normalizedDirection[0] * gPrevSunDir[0] + normalizedDirection[1] * gPrevSunDir[1] +
-                          normalizedDirection[2] * gPrevSunDir[2];
-    directionMagnitudeSquared = normalizedDirection[0] * normalizedDirection[0] +
-                                normalizedDirection[1] * normalizedDirection[1];
-    directionMagnitudeSquared += normalizedDirection[2] * normalizedDirection[2];
+    directionSimilarity = normalizedDirection.x * gPrevSunDir[0] + normalizedDirection.y * gPrevSunDir[1] +
+                          normalizedDirection.z * gPrevSunDir[2];
+    directionMagnitudeSquared = normalizedDirection.x * normalizedDirection.x +
+                                normalizedDirection.y * normalizedDirection.y;
+    directionMagnitudeSquared += normalizedDirection.z * normalizedDirection.z;
     previousMagnitudeSquared = gPrevSunDir[0] * gPrevSunDir[0] + gPrevSunDir[1] * gPrevSunDir[1] +
                                gPrevSunDir[2] * gPrevSunDir[2];
     combinedMagnitudeSquared = directionMagnitudeSquared * previousMagnitudeSquared;
@@ -989,9 +989,9 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     }
     if (gSunDirChanged != 0)
     {
-        gPrevSunDir[0] = normalizedDirection[0];
-        gPrevSunDir[1] = normalizedDirection[1];
-        gPrevSunDir[2] = normalizedDirection[2];
+        gPrevSunDir[0] = normalizedDirection.x;
+        gPrevSunDir[1] = normalizedDirection.y;
+        gPrevSunDir[2] = normalizedDirection.z;
         gSunDirChanged = 0;
         gShadowVolumesDirty = 1;
     }

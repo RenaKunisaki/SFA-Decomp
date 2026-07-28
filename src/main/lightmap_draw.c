@@ -34,7 +34,7 @@
 #include "main/acosf_api.h"
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTransform.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
 
 extern f32 widescreenAspect_803DEC1C;
@@ -297,7 +297,7 @@ void doNothing_8005D14C(int arg0, int arg1)
 }
 void renderShadowType3(u8* obj, u32 b, s32 offset)
 {
-    f32 stk[3];
+    Vec stk;
     s32 t;
     if (lbl_803DCE30 == 1000)
     {
@@ -306,18 +306,18 @@ void renderShadowType3(u8* obj, u32 b, s32 offset)
     }
     if (((GameObject*)obj)->anim.parent != NULL)
     {
-        stk[0] = ((GameObject*)obj)->anim.worldPosX;
-        stk[1] = ((GameObject*)obj)->anim.worldPosY;
-        stk[2] = ((GameObject*)obj)->anim.worldPosZ;
+        stk.x = ((GameObject*)obj)->anim.worldPosX;
+        stk.y = ((GameObject*)obj)->anim.worldPosY;
+        stk.z = ((GameObject*)obj)->anim.worldPosZ;
     }
     else
     {
-        stk[0] = ((GameObject*)obj)->anim.worldPosX - playerMapOffsetX;
-        stk[1] = ((GameObject*)obj)->anim.worldPosY;
-        stk[2] = ((GameObject*)obj)->anim.worldPosZ - playerMapOffsetZ;
+        stk.x = ((GameObject*)obj)->anim.worldPosX - playerMapOffsetX;
+        stk.y = ((GameObject*)obj)->anim.worldPosY;
+        stk.z = ((GameObject*)obj)->anim.worldPosZ - playerMapOffsetZ;
     }
-    PSMTXMultVec((f32*)Camera_GetViewMatrix(), stk, stk);
-    t = (s32) - stk[2] + offset;
+    PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
+    t = (s32) - stk.z + offset;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
     lbl_8037E0C0[lbl_803DCE30 * 4] = (u32)obj;
     lbl_8037E0C0[lbl_803DCE30 * 4 + 2] = t | ((b & 0xff) << 27);
@@ -354,7 +354,7 @@ extern f32 lbl_803DEC20;
 
 void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector)
 {
-    f32 stk[3];
+    Vec stk;
     s32 t;
     f32 maxXs;
     f32 minXs;
@@ -380,14 +380,14 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     maxZs = __OSs16tof32(&bounds->maxZ);
     maxD = maxZs * lbl_803DEC20 + block->transform[2][3];
     minZs = __OSs16tof32(&bounds->minZ);
-    stk[0] = lbl_803DEBFC * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
+    stk.x = lbl_803DEBFC * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
                              (maxXs * lbl_803DEC20 + block->transform[0][3]));
     minW = minYs * lbl_803DEC20 + block->transform[1][3];
-    stk[1] = lbl_803DEBFC * (minW + maxW);
+    stk.y = lbl_803DEBFC * (minW + maxW);
     minD = minZs * lbl_803DEC20 + block->transform[2][3];
-    stk[2] = lbl_803DEBFC * (minD + maxD);
-    PSMTXMultVec((f32*)Camera_GetViewMatrix(), stk, stk);
-    t = (s32) - stk[2];
+    stk.z = lbl_803DEBFC * (minD + maxD);
+    PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
+    t = (s32) - stk.z;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
     lbl_8037E0C0[lbl_803DCE30 * 4] = (u32)bounds;
     lbl_8037E0C0[lbl_803DCE30 * 4 + 1] = (u32)block;
@@ -439,7 +439,7 @@ void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* v
 void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
     int state[5];
-    f32 m[12];
+    Mtx m;
     int countShifted;
     struct MapShader* newR;
     int cursor;
@@ -449,10 +449,10 @@ void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* 
     int i;
     u8* s0;
 
-    PSMTXConcat((f32*)lbl_80396850, viewMtx, m);
-    GXLoadTexMtxImm((const f32 (*)[4])m, GX_TEXMTX0, GX_MTX3x4);
-    PSMTXConcat((f32*)lbl_80396820, viewMtx, m);
-    GXLoadTexMtxImm((const f32 (*)[4])m, GX_TEXMTX1, GX_MTX3x4);
+    PSMTXConcat((MtxPtr)lbl_80396850, (MtxPtr)viewMtx, m);
+    GXLoadTexMtxImm(m, GX_TEXMTX0, GX_MTX3x4);
+    PSMTXConcat((MtxPtr)lbl_80396820, (MtxPtr)viewMtx, m);
+    GXLoadTexMtxImm(m, GX_TEXMTX1, GX_MTX3x4);
     gxTextureSetupFn_8007cf7c();
     countShifted = block->nRenderInstrsWater << 3;
     modelRenderInstrsState_init((ModelRenderInstrsState*)state, block->renderInstrsWater, countShifted, countShifted);
@@ -605,7 +605,7 @@ void sceneDrawTransparentPolys(void)
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
+            PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
             mapBlockRenderTransparent(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
@@ -614,7 +614,7 @@ void sceneDrawTransparentPolys(void)
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
+            PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
             mapBlockRenderWater(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
@@ -623,7 +623,7 @@ void sceneDrawTransparentPolys(void)
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
-            PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
+            PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
             mapBlockRenderMain(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;

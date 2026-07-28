@@ -50,7 +50,7 @@
 #include "main/acosf_api.h"
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTransform.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/lightmap.h"
 
 u8 colorFilterColor[4] = {0xFF, 0x70, 0x40, 0};
@@ -691,7 +691,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
                     lbl_803DCE58 = rowF;
                     colF = gMapBlockWorldSize * (f32)col;
                     lbl_803DCE54 = colF;
-                    PSMTXTrans((f32*)block->transform, rowF, (f32)block->collisionYOffset, colF);
+                    PSMTXTrans(block->transform, rowF, (f32)block->collisionYOffset, colF);
                     renderMapBlock(block, renderType);
                 }
             }
@@ -750,8 +750,8 @@ void sceneDraw(void)
         *(f32*)(q + 0x3f6c) = lbl_803DEBCC;
         *(f32*)(q + 0x3f70) = lbl_803DEBCC;
         *(f32*)(q + 0x3f74) = lbl_803DEBDC;
-        PSMTXConcat((f32*)(q + 0x3f48), (f32*)Camera_GetInverseViewMatrix(),
-                    (f32*)(q + 0x3f48));
+        PSMTXConcat((MtxPtr)(q + 0x3f48), (MtxPtr)Camera_GetInverseViewMatrix(),
+                    (MtxPtr)(q + 0x3f48));
     }
     mapDebugRender((int*)(q + 0x4164));
     shadowBeginFrame();

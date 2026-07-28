@@ -8,7 +8,7 @@
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
 #include "main/asset_load.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/audio/sfx.h"
 #include "main/audio/stream_api.h"
 #include "main/camera_interface.h"
@@ -274,13 +274,13 @@ void Obj_UpdateRollingRotation(GameObject* obj)
         vecB[0] = lbl_803DE88C;
         vecB[1] = lbl_803DE890;
         vecB[2] = lbl_803DE88C;
-        PSVECCrossProduct(vecA, vecB, cross);
-        PSMTXRotAxisRad(rot, cross, lbl_803DE894 * (lbl_803DE898 * -len));
+        PSVECCrossProduct((Vec*)vecA, (Vec*)vecB, (Vec*)cross);
+        PSMTXRotAxisRad((MtxPtr)rot, (Vec*)cross, lbl_803DE894 * (lbl_803DE898 * -len));
         setMatrixFromObjectTransposed(obj, m2);
         m2[3] = lbl_803DE88C;
         m2[7] = lbl_803DE88C;
         m2[11] = lbl_803DE88C;
-        PSMTXConcat(rot, m2, rot);
+        PSMTXConcat((MtxPtr)rot, (MtxPtr)m2, (MtxPtr)rot);
         vecA[0] = rot[8];
         vecA[1] = rot[9];
         vecA[2] = rot[10];
@@ -519,7 +519,7 @@ void Obj_TransformLocalVectorByWorldMatrix(void* obj, f32* src, f32* dst)
 {
     f32 mtx[16];
     Obj_BuildWorldTransformMatrix((GameObject*)obj, mtx, 0);
-    PSMTXMultVecSR(mtx, src, dst);
+    PSMTXMultVecSR((MtxPtr)mtx, (Vec*)src, (Vec*)dst);
 }
 
 void Obj_TransformLocalPointByWorldMatrix(u8* obj, f32* src, f32* dst, u8 flag)
@@ -532,7 +532,7 @@ void Obj_TransformLocalPointByWorldMatrix(u8* obj, f32* src, f32* dst, u8 flag)
         ((GameObject*)obj)->anim.rootMotionScale = lbl_803DE890;
     }
     Obj_BuildWorldTransformMatrix((GameObject*)obj, mtx, 0);
-    PSMTXMultVec(mtx, src, dst);
+    PSMTXMultVec((MtxPtr)mtx, (Vec*)src, (Vec*)dst);
     if (flag)
     {
         ((GameObject*)obj)->anim.rootMotionScale = savedZ;
@@ -562,7 +562,7 @@ void objWorldToLocalPos(f32* out, MatrixTransform* transform, f32* in)
     inverse.scale = lbl_803DE890;
     mtxRotateByVec3s(rotMtx, &inverse);
     mtx44Transpose(rotMtx, transposed);
-    PSMTXMultVec(transposed, in, rotated);
+    PSMTXMultVec((MtxPtr)transposed, (Vec*)in, (Vec*)rotated);
     {
         struct WLPVec3
         {
@@ -649,7 +649,7 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
     else
     {
         Obj_BuildWorldTransformMatrix(parent, parentMtx, 1);
-        PSMTXConcat((f32*)parentMtx, mtx, mtx);
+        PSMTXConcat((MtxPtr)parentMtx, (MtxPtr)mtx, (MtxPtr)mtx);
     }
 }
 
