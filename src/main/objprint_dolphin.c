@@ -1119,7 +1119,6 @@ void objFn_8003dc50(u8* obj, u8* model)
 }
 
 extern s32 lbl_803DCC48;
-extern f32 lbl_803DEA04;
 
 #include "main/objprint_dolphin_internal.h"
 
@@ -1282,9 +1281,9 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                 GXLoadPosMtxImm((const f32 (*)[4])tmp, *tbl[0]);
                 if (skip == 0 && (nrm != 0 || tex != 0))
                 {
-                    tmp[3] = lbl_803DEA04;
-                    tmp[7] = lbl_803DEA04;
-                    tmp[11] = lbl_803DEA04;
+                    tmp[3] = 0.0f;
+                    tmp[7] = 0.0f;
+                    tmp[11] = 0.0f;
                     PSMTXConcat((MtxPtr)tmp, (MtxPtr)m1, (MtxPtr)tmp);
                     if (tex != 0)
                     {
@@ -1303,12 +1302,10 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
 }
 
 extern s32 lbl_803DCC48;
-extern f32 lbl_803DEA04;
 extern s32 gObjFuzzLayerIndex;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
 extern f32 lbl_803DEA28;
-extern f32 lbl_803DEA1C;
 
 
 extern f32 gObjPrintHalfPi;
@@ -1381,7 +1378,6 @@ extern volatile int gAssetLoadInFlightFlags;
 extern f32 lbl_803DEA4C;
 extern f32 lbl_803DEA50;
 extern f32 lbl_803DEA54;
-extern f32 lbl_803DEA48;
 extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
 
@@ -1393,10 +1389,7 @@ s32 mapCheckCurBlocks(int v);
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
 void objRenderFuzzFn_8003d6f8(void* objArg);
-extern f32 lbl_803DEA60;
-extern f32 lbl_803DEA5C;
 extern f32 lbl_803DEA64;
-extern f32 lbl_803DEA68;
 extern f32 lbl_803DEA6C;
 
 #include "main/dll/ppcwgpipe_struct.h"
@@ -1614,13 +1607,13 @@ static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
     {
         if ((int)jid == q->materialIndex)
         {
-            *txp = lbl_803DEA48 * slots[k].offsetS;
-            *typ = lbl_803DEA48 * slots[k].offsetT;
+            *txp = 0.0001f * slots[k].offsetS;
+            *typ = 0.0001f * slots[k].offsetT;
             return;
         }
         q++;
     }
-    *typ = *txp = lbl_803DEA04;
+    *typ = *txp = 0.0f;
 }
 u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
 {
@@ -1703,7 +1696,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                                 f32 tx;
                                 f32 ty;
                                 texSlotGetScroll(obj, layer[5], &tx, &ty);
-                                PSMTXTrans((MtxPtr)m, tx, ty, lbl_803DEA04);
+                                PSMTXTrans((MtxPtr)m, tx, ty, 0.0f);
                                 mtxp = (f32 (*)[4])m;
                             }
                         }
@@ -1990,7 +1983,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                 f32 tx;
                 f32 ty;
                 texSlotGetScroll(obj, l1[5], &tx, &ty);
-                PSMTXTrans((MtxPtr)m2, tx, ty, lbl_803DEA04);
+                PSMTXTrans((MtxPtr)m2, tx, ty, 0.0f);
             }
             textureFn_8004c330(textureIdxToPtr(*(u32*)l1), m2);
         }
@@ -2828,7 +2821,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         f32 one;
         j = 0;
         joff = 0;
-        one = lbl_803DEA1C;
+        one = 1.0f;
         for (; j < ((ModelFileHeader*)m)->jointCount; j++)
         {
             f32 sc =
@@ -2861,14 +2854,14 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
                                 ((ModelFileHeader*)m)->instrsBitLenWords << 3,
                                 ((ModelFileHeader*)m)->instrsBitLenWords << 3);
     {
-        f32 inv = lbl_803DEA1C / ((GameObject*)obj)->anim.rootMotionScale;
+        f32 inv = 1.0f / ((GameObject*)obj)->anim.rootMotionScale;
         PSMTXScale((MtxPtr)sm, inv, inv, inv);
     }
     if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
         if (m4 || m2 || (mode8 & 8))
         {
-            f32 sc2 = lbl_803DEA1C + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
+            f32 sc2 = 1.0f + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
             PSMTXScale((MtxPtr)sm, sc2, sc2, sc2);
             PSMTXConcat((MtxPtr)sm, (MtxPtr)tm, (MtxPtr)sm);
@@ -2884,7 +2877,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         {
             f32 z;
             GXLoadPosMtxImm((const f32 (*)[4])fm, gObjGxPosMtxIdTable[9]);
-            z = lbl_803DEA04;
+            z = 0.0f;
             fm[3] = z;
             fm[7] = z;
             fm[11] = z;
@@ -3146,7 +3139,7 @@ void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
             blk.rotY = ((GameObject*)obj)->anim.rotY;
             blk.rotZ = ((GameObject*)obj)->anim.rotZ;
         }
-        blk.scale = lbl_803DEA1C;
+        blk.scale = 1.0f;
         setMatrixFromObjectPos(m, &blk);
         Matrix_TransformPoint(m, v[0], v[1], v[2], &out[0], &out[1], &out[2]);
     }
@@ -3185,9 +3178,9 @@ void objRenderFuzzShells(int* obj)
     curObjMtx = 0;
     ObjModel_SetRenderCallback((u8*)model, NULL);
     gObjFuzzPhase += timeDelta;
-    if (gObjFuzzPhase > lbl_803DEA60)
+    if (gObjFuzzPhase > 7.0f)
     {
-        gObjFuzzPhase -= lbl_803DEA5C;
+        gObjFuzzPhase -= 8.0f;
     }
 }
 
@@ -3206,9 +3199,9 @@ void objRenderFn_800413d4(int* obj)
     }
     curObjMtx = 0;
     gObjFuzzPhase += timeDelta;
-    if (gObjFuzzPhase > lbl_803DEA60)
+    if (gObjFuzzPhase > 7.0f)
     {
-        gObjFuzzPhase -= lbl_803DEA5C;
+        gObjFuzzPhase -= 8.0f;
     }
 }
 
@@ -3269,13 +3262,13 @@ void objRenderFuzz(int* obj)
     dist = sqrtf(dx * dx + dy * dy + dz * dz);
     if (strong == 0)
     {
-        cnt = (s32)((lbl_803DEA64 * (lbl_803DEA68 * dist)) /
+        cnt = (s32)((lbl_803DEA64 * (2.0f * dist)) /
                     (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale));
         gObjFuzzStep = 2;
     }
     else
     {
-        cnt = (s32)((lbl_803DEA68 * dist) /
+        cnt = (s32)((2.0f * dist) /
                     (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale));
         gObjFuzzStep = 1;
     }
@@ -3301,7 +3294,7 @@ void objRenderFuzz(int* obj)
 
 void objRenderShadow(void* obj)
 {
-    if (lbl_803DEA04 == ((GameObject*)obj)->anim.rootMotionScale)
+    if (0.0f == ((GameObject*)obj)->anim.rootMotionScale)
     {
         curObjMtx = 0;
         return;
@@ -3343,7 +3336,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     f32 dx, dz;
     int off;
     f32* mtx;
-    if (lbl_803DEA04 == ((GameObject*)child)->anim.rootMotionScale)
+    if (0.0f == ((GameObject*)child)->anim.rootMotionScale)
     {
         curObjMtx = 0;
         return;
@@ -3392,7 +3385,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     else
     {
         ChildEnt* pr;
-        blk.scale = lbl_803DEA1C;
+        blk.scale = 1.0f;
         pr = (ChildEnt*)(*(u8**)(*(int*)&((GameObject*)parent)->anim.modelInstance + 0x2c) + off);
         blk.rotX = pr->rot[0];
         blk.rotY = pr->rot[1];
@@ -3469,7 +3462,7 @@ void objRenderModel(GameObject* obj)
     s32 sz;
     u32 col;
     int* model = (int*)Obj_GetActiveModel(obj);
-    if (lbl_803DEA04 == obj->anim.rootMotionScale)
+    if (0.0f == obj->anim.rootMotionScale)
     {
         curObjMtx = 0;
         return;

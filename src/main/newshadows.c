@@ -377,7 +377,7 @@ extern const f32 lbl_803DEE1C;
 extern const f32 lbl_803DED48;
 extern const f32 lbl_803DEDBC;
 extern const f32 gNewShadowFovY;
-extern const f32 lbl_803DED70, lbl_803DED74, gNewShadowAspectWide, gNewShadowAspectNarrow;
+extern f32 gNewShadowAspectWide, gNewShadowAspectNarrow;
 extern const f32 lbl_803DED4C;
 extern f32 gMapSavedPlayerOffsetX, gMapSavedPlayerOffsetZ;
 
@@ -812,7 +812,7 @@ void renderShadows(int unused0, int unused1, int unused2)
             }
             if (vA.y > (-0.707f))
             {
-                vA.y = (-0.707f);
+                vA.y = -0.707f;
                 PSVECNormalize(&vA, &vA);
             }
             vAx = vA.x;
@@ -884,8 +884,8 @@ void renderShadows(int unused0, int unused1, int unused2)
                     {
                         gxSetZMode_(1, GX_LEQUAL, 1);
                         PSMTXScale((MtxPtr)castSlot->depthMtx, 0.0f, 0.0f, 0.0f);
-                        castSlot->depthMtx[0][2] = lbl_803DED70;
-                        castSlot->depthMtx[0][3] = lbl_803DED74;
+                        castSlot->depthMtx[0][2] = -0.0009765625f;
+                        castSlot->depthMtx[0][3] = -0.004875183f;
                         castSlot->depthMtx[2][3] = 1.0f;
                         PSMTXConcat((MtxPtr)castSlot->depthMtx, viewMtx, (MtxPtr)castSlot->depthMtx);
                         GXSetTexCopySrc(0, 0, screenW, screenW);
