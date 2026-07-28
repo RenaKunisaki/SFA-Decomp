@@ -168,8 +168,8 @@ void pushable_hitDetect(GameObject* obj);
 void pushable_update(GameObject* obj);
 void pushable_init(GameObject* obj, PushableObjectDef* setup);
 
-extern int gPushableSavedMapIdCount;
-extern int gPushableSavedMapIds[0x28];
+extern int gPushableSavedIdentCount;
+extern int gPushableSavedIdents[0x28];
 extern char sPushPullObjectHitpointOverflow[];
 extern const PushableRadii gPushableDefaultBox;
 extern ObjectDescriptor14 gPushableObjDescriptor;

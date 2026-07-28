@@ -58,7 +58,7 @@ void* gHighTopStateHandlers[12];
 u8 lbl_803DC308[8] = {0x04, 0x5D, 0x10, 0x00, 0x03, 0x00, 0x00, 0x00};
 s16 gHighTopMovementSfxIds[2] = {0x1A2, 0x1A3};
 s16 lbl_803DC314[2] = {0x62F, 0};
-f32 lbl_803DC318[2] = {25.0f, 25.0f};
+f32 gHighTopPathPointRadii[2] = {25.0f, 25.0f};
 int gHighTopAirMeterInitValue = 100;
 f32 lbl_803DC324 = 0.9f;
 s16 gHighTopLookYawOffset = -0x8000;
@@ -1196,7 +1196,7 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     pathState = (u8*)&runtime->baddie + 4;
     pathState[0x25b] = 1;
     (*gPathControlInterface)->init(pathState, 3, 1024, 0);
-    (*gPathControlInterface)->setLocalPointCollision(pathState, 2, &base[0xe8], lbl_803DC318, 8);
+    (*gPathControlInterface)->setLocalPointCollision(pathState, 2, &base[0xe8], gHighTopPathPointRadii, 8);
     (*gPathControlInterface)->setup(pathState, 4, &base[0xa8], &base[0xd8], pathParam.values);
     (*gPathControlInterface)->attachObject(obj, pathState);
     dll_2E_initState(obj, &runtime->lookController, -4551, 23665, 6);

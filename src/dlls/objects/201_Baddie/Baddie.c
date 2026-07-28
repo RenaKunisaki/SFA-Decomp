@@ -540,7 +540,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     weevil_updateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x251:
-                    pinPon_updateWhileFrozen((int)obj, (BaddieState*)state, attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    pinPon_updateWhileFrozen((int)obj, (EnemyState*)state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x25d:
                     rachnopUpdateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
@@ -1262,7 +1262,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 mutatedEbaUpdateEngaged((u32)obj, state);
                 break;
             case ENEMY_WHIRLPOOL_OBJ:
-                iceBaddie_enterWhirlpoolGroup((GameObject*)obj, (GroundBaddieState*)state);
+                iceBaddie_enterWhirlpoolGroup((GameObject*)obj, (EnemyState*)state);
                 break;
             case ENEMY_SNOWWORM_OBJ:
             case ENEMY_SNOWWORM_BABY_OBJ:
@@ -1339,7 +1339,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 mutatedEbaUpdateEngaged((u32)obj, state);
                 break;
             case ENEMY_WHIRLPOOL_OBJ:
-                iceBaddie_enterWhirlpoolGroup((GameObject*)obj, (GroundBaddieState*)state);
+                iceBaddie_enterWhirlpoolGroup((GameObject*)obj, (EnemyState*)state);
                 break;
             case ENEMY_SNOWWORM_OBJ:
             case ENEMY_SNOWWORM_BABY_OBJ:
@@ -1450,7 +1450,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             mutatedEbaUpdateIdle((u32)obj, state);
             break;
         case ENEMY_WHIRLPOOL_OBJ:
-            iceBaddie_leaveWhirlpoolGroup((GameObject*)obj, (GroundBaddieState*)state);
+            iceBaddie_leaveWhirlpoolGroup((GameObject*)obj, (EnemyState*)state);
             break;
         case ENEMY_SNOWWORM_OBJ:
         case ENEMY_SNOWWORM_BABY_OBJ:
@@ -2900,7 +2900,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
         (obj)->anim.alpha = 255;
     }
-    ((EnemyState*)state)->health = ((EnemyPlacement*)setup)->healthByte / 255.0f;
+    ((EnemyState*)state)->pathStep = ((EnemyPlacement*)setup)->pathStepByte / 255.0f;
     ((EnemyState*)state)->aggroRange = (f32)(u32)(((EnemyPlacement*)setup)->aggroRangeByte << 3);
     ((EnemyState*)state)->controlFlags = 0;
     ((EnemyState*)state)->prevControlFlags = ((EnemyState*)state)->controlFlags;
@@ -2987,14 +2987,14 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             mutatedEbaInit((u32)obj, (int)state);
             break;
         case ENEMY_WHIRLPOOL_OBJ:
-            baddie_initWhirlpoolState((int*)obj, (GroundBaddieState*)state);
+            baddie_initWhirlpoolState((int*)obj, (EnemyState*)state);
             break;
         case ENEMY_SNOWWORM_OBJ:
         case ENEMY_SNOWWORM_BABY_OBJ:
             snowworm_init(obj, (int*)state);
             break;
         case ENEMY_HOODEDZYCK_OBJ:
-            hoodedZyck_init(obj, (struct BaddieState*)state);
+            hoodedZyck_init(obj, (struct EnemyState*)state);
             break;
         case ENEMY_BATTLEDROID_OBJ:
             battleDroidInit((int)obj, (char*)state);
@@ -3006,7 +3006,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             crawler_initModelVariant(obj, state);
             break;
         case ENEMY_HAGABONMK2_OBJ:
-            hagabonMK2_init(obj, (struct BaddieState*)state);
+            hagabonMK2_init(obj, (struct EnemyState*)state);
             break;
         default:
             battleDroidInit((int)obj, (char*)state);

@@ -18,7 +18,10 @@ struct ObjModelChain;
 typedef struct EnemyState {
     u8 unk0[0x4 - 0x0];
     u32 flags; /* head word of the embedded gPathControlInterface record at +4 */
-    u8 unk8[0x1B8 - 0x8];
+    u8 unk8[0x19C - 0x8];
+    s16 spawnRotY; /* engine-maintained pitch pair; the family handlers restore anim.rotY/rotZ from it after a move change */
+    s16 spawnRotZ;
+    u8 unk1A0[0x1B8 - 0x1A0];
     f32 nearestSpecialDeltaY; /* signed dy to the nearest type-0xe special-surface floor hit */
     u8 unk1BC[0x25F - 0x1BC];
     s8 physicsActive; /* floor-response pass enables the per-frame ground snap / footstep audio */
@@ -45,6 +48,18 @@ typedef struct EnemyState {
     f32 freezeEffectTimer; /* counts down by timeDelta; on reaching 0 the ice shatter fx re-fires and it re-primes to 20 */
     f32 repeatHitCooldown; /* counts down by timeDelta; while >= 0 a repeat hit of kind 0x1a is ignored */
     f32 freezeRecoverTimer;
+/* controlFlags bit: the baddie is currently driven by the sequence-object /
+ * script move system (set by newseqobj.c when a seq timer expires; gates the
+ * scripted anim-chain moves, and makes the defeat handler skip the death
+ * gamebits so scripted/cutscene deaths don't count). */
+#define BADDIE_CONTROL_SEQUENCE_DRIVEN 0x40000000
+/* controlFlags bit: the baddie follows its ROM curve path (RomCurveWalker).
+ * Gates the path-tracking branches; cleared on hit/redirect. Also tested
+ * against flags2E4 by the near/mid/far engagement ladder. */
+#define BADDIE_CONTROL_PATH_FOLLOW 0x2000
+/* controlFlags bit: a scripted move was just triggered this frame (the
+ * newseqobj move system latches it before it promotes to SEQUENCE_DRIVEN). */
+#define BADDIE_CONTROL_JUST_TRIGGERED 0x80000000
     u32 controlFlags;
     u32 prevControlFlags; /* controlFlags snapshot taken at the top of enemy_update; (cur & bit) && !(prev & bit) = bit raised this frame */
     u32 flags2E4;
@@ -63,7 +78,7 @@ typedef struct EnemyState {
     u8 unk2F7[0x2F8 - 0x2F7];
     u16 animEventMask; /* per-frame bitmask OR'd from (1 << anim event index); fed to objAudioFn */
     u8 unk2FA[0x2FC - 0x2FA];
-    f32 health;
+    f32 pathStep; /* configured rom-curve advance step, seeded from EnemyPlacement.pathStepByte / 255 and then scaled by each family's init; pathSpeed is the per-frame value derived from it */
     f32 gravity; /* fall acceleration: velocityY -= gravity*dt, posY -= 0.5*gravity*dt^2 */
     f32 drag; /* per-second velocity damping base: velocity *= powfBitEstimate(drag, dt) */
     f32 animPlaySpeed; /* play speed handed to ObjAnim_AdvanceCurrentMove */
@@ -82,7 +97,22 @@ typedef struct EnemyState {
     f32 unk330;
     f32 intervalTimer;
     s16 phaseAngle;
-    u8 unk33A[0x340 - 0x33A];
+    /* 0x33A/0x33B: two per-family scratch bytes. The generic DLL only zeroes
+     * them; the family handlers in 202.c disagree completely on what they hold.
+     * 0x33A is a 16B-SeqEntry index (seqObj11D), a 12B-move-table index
+     * (duster_wb/snowworm/hagabon/seqObj11E), a chain-node index (fireCrawler),
+     * a day/night tri-state (duster), a countdown (kooshy) and a free-running
+     * angle phase seeded randomGetRange(0, 0xff) and read (f32)(u32)
+     * (fireflyLantern, which also steps it signed via *(char*)&). 0x33B is the
+     * gBaddieFamilyTables/gBaddieFamilySpeedScales row index for the sharpClaw
+     * cluster, an ObjGroup-80 latch (baddieWhirlpool), a variant/anim index
+     * (fireCrawler/newSeqObj/snowworm/wispBaddieSeq), a counter
+     * (fireflyLantern), a 60-frame countdown (weevil), an f32-accumulating
+     * timer (seqObj11E) and packed flag bits plus a 2-bit index
+     * (kooshy/magicPlant). */
+    u8 userData1;
+    u8 userData2;
+    u8 unk33C[0x340 - 0x33C];
     int lastHitObject;
     u8 unk344[0x368 - 0x344];
     struct ModelLightStruct* modelLight;
@@ -90,7 +120,10 @@ typedef struct EnemyState {
 } EnemyState;
 
 STATIC_ASSERT(sizeof(EnemyState) == 0x370);
+STATIC_ASSERT(offsetof(EnemyState, spawnRotY) == 0x19C);
 STATIC_ASSERT(offsetof(EnemyState, nearestSpecialDeltaY) == 0x1B8);
+STATIC_ASSERT(offsetof(EnemyState, pathStep) == 0x2FC);
+STATIC_ASSERT(offsetof(EnemyState, userData1) == 0x33A);
 STATIC_ASSERT(offsetof(EnemyState, physicsActive) == 0x25F);
 STATIC_ASSERT(offsetof(EnemyState, surfaceFlags) == 0x264);
 STATIC_ASSERT(offsetof(EnemyState, trackedObj) == 0x29C);

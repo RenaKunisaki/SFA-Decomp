@@ -158,7 +158,7 @@ STATIC_ASSERT(sizeof(HighTopTuning) == 0x68);
 STATIC_ASSERT(offsetof(HighTopTuning, unk10) == 0x10);
 
 extern HighTopTuning lbl_8032AB48;
-extern f32 lbl_803DC318[2];
+extern f32 gHighTopPathPointRadii[2];
 extern s16 gHighTopLookYawOffset;
 extern u8 lbl_803DC308[8];
 extern f32 lbl_803DC324;

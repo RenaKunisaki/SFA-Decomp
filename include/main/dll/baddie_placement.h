@@ -10,7 +10,7 @@
  * field widths; the SharpClaw encounter spawners (DFSH_ObjCre 0x179,
  * ECSH_Creato 0x191, slot 410) are the writers - each allocates one of these
  * records, fills it and hands it to Obj_SetupObject, and the spawned child's
- * extra block is a GroundBaddieState.
+ * extra block is an EnemyState (enemy_getExtraSize() = 0x370).
  */
 typedef struct EnemyPlacement {
     ObjPlacement base;
@@ -29,7 +29,7 @@ typedef struct EnemyPlacement {
     u8 flags;          /* 0x2B: bit 3 (0x8) reloads spawn position before the trigger sequence */
     s16 respawnEnabled; /* 0x2C: when 0, the off-screen respawn path is skipped */
     s8 triggerSequenceId;
-    u8 healthByte; /* 0x2F: EnemyState.health numerator over 255 */
+    u8 pathStepByte; /* 0x2F: rom-curve advance step, divided by 255 into EnemyState.pathStep */
     s16 unk30;
     u8 hitPoints; /* 0x32: spawn hit-point count -> EnemyState.current */
     u8 unk33;

@@ -20,18 +20,25 @@ typedef void (*BaddieStateExitFn)(struct GameObject* obj, struct BaddieState* st
  * Shared layout evidence:
  * - scarab.c (dll_CA/CB/CE: extraSizes 0x458/0x41c/0x410 - this struct is
  *   the common 0x410 prefix; nothing past 0x40C is referenced there) and
- *   slot 202's iceBaddie implementation - converted.
+ *   slot 202's iceBaddie implementation.
  * - player.c's "inner" is the SAME record (0x274 mode compares, 0x27A
- *   just-started flag, 0x346 latch, ...) - adoption left to Zac/future.
- * - treasurechest.c / dlls/objects/437/437.c reference the same offsets -
- *   future passes.
+ *   just-started flag, 0x346 latch, ...).
+ * - dll_000F (engine/15) is the shared move/substate controller and is the
+ *   only writer of most of the head.
+ * - treasurechest.c / dlls/objects/437/437.c reference the same offsets.
  * - DR_CloudRunner's 0xBC8 extra block EMBEDS this record as its prefix
- *   (0x25F/0x28C/0x314/0x354 head + private tail from ~0x410) - layout
- *   evidence; not converted this round.
+ *   (0x25F/0x28C/0x314/0x354 head + private tail from ~0x410).
  *
- * Only fields with read/write evidence in scarab.c and iceBaddie are
- * named; everything else is padded. The engine-side writers (the
- * interface implementations) own most of the unobserved head.
+ * NOT evidence for this struct: the generic enemy DLL 0xC9 (slot 201 plus its
+ * family handlers in slot 202). Its obj+0xB8 record is EnemyState
+ * (dll_00C9_enemy.h, enemy_getExtraSize() = 0x370). The two records agree on
+ * the engine-controlled head but diverge from roughly 0x25F up - 0x2B0 is
+ * BaddieState scratch but EnemyState's health numerator, 0x2D0 is a target
+ * pointer here and a countdown timer there, and 0x2F4-0x322 holds an unrelated
+ * field set in each. Never read one through the other's names.
+ *
+ * Only fields with read/write evidence in the DLLs listed above are named;
+ * everything else is padded.
  */
 typedef struct BaddieState {
     u32 flags0; /* actor-state flags; player climbing sets bit 0x200000 */
@@ -76,51 +83,28 @@ typedef struct BaddieState {
     f32 moveInputX;
     f32 animSpeedC; /* third of the animSpeed family - stored in lockstep with animSpeedB (z = K; animSpeedC = z; animSpeedB = z), scaled with animSpeedA and obj+0x28 */
     f32 inputMagnitude;
-    void *trackedObj; /* current target/player object (cross-family census: lwz 668) */
-    /* 0x2A0-0x2A7 is a PER-FAMILY UNION (lead-arbitrated): scarab and
-     * iceBaddie targets store f32 here (stfs f0,672(rN) -- the
-     * published types below), but the smallbasket family's
-     * target reads u16 (lhz r0,672(r30) in snowworm_update,
-     * lhz r0,676(r29) in firecrawler_spawnProjectile: a *0xc move-table
-     * index and a u16->f32 duration). smallbasket keeps RAW spellings at
-     * these offsets -- do NOT launder through these names there (a u16
-     * index read through "moveSpeed" would be semantically false). */
+    void *trackedObj; /* current target/player object */
     f32 moveSpeed; /* per-mode movement speed */
-    f32 gravity;
-    /* per-family tuning scalar (160.0f baddiewhirlpool/snowworm, 240.0f-250.0f
-     * firecrawler); the families disagree on what it measures, so it is left raw.
-     * The generic owner reads it as a DISTANCE threshold ((u16)(int) cast, dist <
-     * mid); firecrawler and newseqobj divide a frame counter by it instead.
-     * baddiewhirlpool and snowworm stash the previous value into userData2 before
-     * overwriting - that save-slot pairing is the only relation to 0x33B. */
-    f32 unk2A8;
-    f32 speedScale;
-    u16 hitCounter; /* hit/impact counter (lhz-only reads in all families; sth stores) */
-    u8 pad2B2[0x2B8 - 0x2B2];
+    f32 gravity; /* fall acceleration: velocityY -= gravity * timeDelta (dll_000F player_applyGravity) */
+    /* 0x2A8/0x2AC are two independent 0..1 ramp progresses for the deferred
+     * "nudge" the shared controller applies over several frames. dll_000F
+     * player_render2 steps 0x2A8 by f1*f2, clamps it at 1.0 and adds
+     * nudgeYaw * (that frame's increment) straight into anim.rotX;
+     * player_modelMtxFn steps 0x2AC the same way and adds
+     * nudgePos{X,Y,Z} * increment into the model matrix translation. */
+    f32 nudgeYawProgress;
+    f32 nudgePosProgress;
+    u8 pad2B0[0x2B8 - 0x2B0];
     f32 velSmoothTime; /* first-order velocity smoothing divisor: vel += t * (target - vel) / velSmoothTime */
     u8 pad2BC[0x2C0 - 0x2BC];
     f32 targetDistance; /* sqrtf dist to targetObj (scarab/campfire/anim/iceBaddie); also (s32)-compared */
     u8 unk2C4[0x2D0 - 0x2C4];
     void *targetObj; /* current attack/aggro target */
-    u8 pad2D4[0x2DC - 0x2D4];
-/* controlFlags bit: baddie is currently driven by the sequence-object / script
- * move system (set by newseqobj.c when a seq timer expires; gates the scripted
- * anim-chain moves, and makes the defeat handler skip the death gamebits so
- * scripted/cutscene deaths don't count). */
-#define BADDIE_CONTROL_SEQUENCE_DRIVEN 0x40000000
-/* controlFlags bit: baddie follows its ROM curve path (RomCurveWalker). Gates
- * the path-tracking branches; cleared on hit/redirect. */
-#define BADDIE_CONTROL_PATH_FOLLOW 0x2000
-/* controlFlags bit: scripted move was just triggered this frame (the newseqobj
- * move system latches it before it promotes to SEQUENCE_DRIVEN). */
-#define BADDIE_CONTROL_JUST_TRIGGERED 0x80000000
-    u32 controlFlags; /* control flag word: 0x2000 path-follow, 0x2000_0000/0x4000_0000/0x8000_0000 move gates */
-    u8 pad2E0[4];
-    u32 unk2E4; /* whirlpool: 0x42001 flag word */
-    u32 reactionFlags; /* event/reaction flag word: bits 8/0x10/0x20/0x28/0x80 */
-    u8 pad2EC[0x2FC - 0x2EC];
-    f32 pathStep; /* path-advance step (lfs/stfs 764; fed to Curve_AdvanceAlongPath) */
-    f32 animDeltaScale;
+    u8 pad2D4[0x2F4 - 0x2D4];
+    f32 nudgePosX; /* translation added to the model matrix as nudgePosProgress ramps */
+    f32 nudgePosY;
+    f32 nudgePosZ;
+    f32 nudgeYaw; /* anim.rotX delta added as nudgeYawProgress ramps */
     union {
         f32 unk304;
         BaddieStateExitFn stateExitFn;
@@ -139,37 +123,16 @@ typedef struct BaddieState {
  * test-then-cleared by the readers to fire the land sound / rumble / waterfx
  * splash. */
 #define BADDIE_EVENT_LANDING 0x200
-    s32 eventFlags; /* bits 1/0x200 observed; whirlpool states store an f32 here (union via launder) */
+    s32 eventFlags; /* bits 1/0x200 observed */
     f32 unk318;
     f32 unk31C;
-    u8 unk320;
-    u8 unk321;
-    u8 unk322;
-    /* 0x323-0x345 is largely PER-FAMILY scratch: magicPlant/duster/seqObj11E
-     * targets use f32 timers at 0x324/0x328/0x32C/0x330/0x334 and a u16 angle
-     * at 0x338 where the published s16 fields below (iceBaddie whirlpool
-     * evidence) overlap them; those families keep RAW spellings here. */
-    u8 unk323[0x32E - 0x323];
+    u8 unk320[0x32E - 0x320];
     s16 stateTimer; /* count-up dt-accumulating timer, gated > 0x78, reset to 0 on state entry */
     s16 cameraYaw;
     u8 unk332[4];
     s16 turnRate; /* s16 angle units/sec: *yaw += k * (turnRate * timeDelta / speed) */
     s16 controlTimer; /* primary control-state timer; reset on mode entry and accumulated each update */
-    /* 0x33A/0x33B: two bytes of PER-FAMILY scratch - the consumers agree on
-     * nothing. 0x33A is a 16B-SeqEntry index (seqObj11D), a 12B-move-table
-     * index (duster_wb/snowworm/hagabon/seqObj11E), a chain-node index
-     * (fireCrawler), a day/night tri-state (duster), a countdown (kooshy) and
-     * a free-running angle phase seeded randomGetRange(0, 0xff) and read
-     * (f32)(u32) (fireflyLantern, which also steps 0x33A signed via
-     * *(char*)&). 0x33B is an ObjGroup-80 latch (baddieWhirlpool), a family
-     * index (seqObj11D), a variant/anim index (fireCrawler/newSeqObj/snowworm/
-     * wispBaddieSeq), a counter (fireflyLantern), a 60-frame countdown
-     * (weevil), an f32-accumulating timer (seqObj11E) and packed flag bits +
-     * a 2-bit index (kooshy/magicPlant). The owning generic enemy DLL only
-     * bulk-zeroes both. */
-    u8 userData1;
-    u8 userData2;
-    u8 unk33C[0x346 - 0x33C]; /* incl. 0x340: ptr in smallbasket, u32-tested in magicPlant - thin/conflicting, left raw */
+    u8 unk33A[0x346 - 0x33A];
     s8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
     u8 unk347[2];
     u8 hasTarget; /* cleared with death/reset */
@@ -191,9 +154,11 @@ STATIC_ASSERT(offsetof(BaddieState, moveJustStartedB) == 0x27B);
 STATIC_ASSERT(offsetof(BaddieState, trackedObj) == 0x29C);
 STATIC_ASSERT(offsetof(BaddieState, moveSpeed) == 0x2A0);
 STATIC_ASSERT(offsetof(BaddieState, targetObj) == 0x2D0);
-STATIC_ASSERT(offsetof(BaddieState, controlFlags) == 0x2DC);
-STATIC_ASSERT(offsetof(BaddieState, pathStep) == 0x2FC);
+STATIC_ASSERT(offsetof(BaddieState, nudgePosX) == 0x2F4);
+STATIC_ASSERT(offsetof(BaddieState, nudgeYaw) == 0x300);
 STATIC_ASSERT(offsetof(BaddieState, eventFlags) == 0x314);
+STATIC_ASSERT(offsetof(BaddieState, stateTimer) == 0x32E);
+STATIC_ASSERT(offsetof(BaddieState, controlTimer) == 0x338);
 STATIC_ASSERT(offsetof(BaddieState, moveDone) == 0x346);
 STATIC_ASSERT(offsetof(BaddieState, hitPoints) == 0x354);
 

@@ -288,15 +288,15 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
     }
 }
 
-/* placement instance id (+0x14) of the one vent that emits a debug OSReport */
-#define MMP_GYSERVENT_DEBUG_INSTANCE_ID 0x46a31
+/* ObjPlacement.ident of the one vent that emits a debug OSReport */
+#define MMP_GYSERVENT_DEBUG_IDENT 0x46a31
 
 /* placement (WmSpiritPlaceMapData) byte offsets read at setup / per-frame */
 #define MMP_GYSERVENT_PLACE_REACH    0x3a /* eruption reach scale byte */
 #define MMP_GYSERVENT_PLACE_SPEED    0x3b /* per-frame speed byte */
 #define MMP_GYSERVENT_PLACE_ROTX     0x3d /* rotX (low 6 bits) */
 #define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
-#define MMP_GYSERVENT_PLACE_INSTANCE 0x14 /* instance id */
+#define MMP_GYSERVENT_PLACE_IDENT    0x14 /* ObjPlacement.ident */
 
 void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 {
@@ -346,7 +346,7 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 
     state->reach = 100.0f * obj->anim.rootMotionScale;
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
-    if (placement->base.ident == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
+    if (placement->base.ident == MMP_GYSERVENT_DEBUG_IDENT)
     {
         OSReport(sTriggerDebugTextBlock);
     }

@@ -3,6 +3,7 @@
 
 #include "game/objects/object.h"
 #include "dolphin/mtx/vec_types.h"
+#include "main/dll/dll_00C9_enemy.h"
 
 u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, int hit, int p5, int p6,
                                 Vec* hitPos, int sector, f32 hDist, f32 vDist);
@@ -12,7 +13,7 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int 
 void vambat_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void kooshy_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
-void pinPon_updateWhileFrozen(int obj, BaddieState* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
+void pinPon_updateWhileFrozen(int obj, EnemyState* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void wbUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void mutatedEbaUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);

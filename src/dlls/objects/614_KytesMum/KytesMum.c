@@ -41,7 +41,7 @@
 #include "dolphin/pad.h"
 
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
-s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
+s16 gKytesMumQuestEventSfxTable[4] = {0x336, 0x337, 0x337, 0};
 
 #define KYTESMUM_OBJGROUP        0x3
 #define KYTESMUM_TARGET_OBJGROUP 0x1
@@ -413,7 +413,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
         mainSetBits(0x933, 0);
         runtime->moveSet = &moveSets[2];
         runtime->updateCallback = (KytesMumUpdateCallback)kytesmum_updateQuestStateCallback;
-        runtime->eventSfxTable = lbl_803DC2D0;
+        runtime->eventSfxTable = gKytesMumQuestEventSfxTable;
         obj->animEventCallback = kytesmum_updateInteractionRangeCallback;
         break;
     }
