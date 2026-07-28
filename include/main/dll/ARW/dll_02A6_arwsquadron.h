@@ -24,18 +24,6 @@ typedef struct SquadCmdFlags
     u8 : 3;
 } SquadCmdFlags;
 
-typedef struct SquadPfx
-{
-    s16 s0;
-    s16 s2;
-    s16 s4;
-    s16 s6;
-    f32 f8;
-    f32 fx;
-    f32 fy;
-    f32 fz;
-} SquadPfx;
-
 typedef struct ArwSquadronSetup
 {
     ObjPlacement base;

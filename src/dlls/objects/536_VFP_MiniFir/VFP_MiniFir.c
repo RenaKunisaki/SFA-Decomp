@@ -59,7 +59,7 @@ void VFP_MiniFire_update(GameObject* obj)
     /* randomGetRange's canonical int return is load-bearing here: the
        sampled offsets are intentionally signed. */
     VfpMinifireState* state = (obj)->extra;
-    VfpMinifirePartfxArgs args;
+    PartFxSpawnParams args;
     ObjHitsPriorityState* linkedGfx;
     int i;
 
@@ -79,13 +79,13 @@ void VFP_MiniFire_update(GameObject* obj)
     (obj)->anim.localPosY += (obj)->anim.velocityY * timeDelta;
     (obj)->anim.localPosZ += (obj)->anim.velocityZ * timeDelta;
 
-    args.x = 0.0f;
-    args.y = 0.0f;
-    args.z = 0.0f;
+    args.posX = 0.0f;
+    args.posY = 0.0f;
+    args.posZ = 0.0f;
     args.scale = 1.0f;
-    args.rz = 0;
-    args.ry = 0;
-    args.rx = 0;
+    args.rotZ = 0;
+    args.rotY = 0;
+    args.rotX = 0;
     if (randomGetRange(0, 4) == 0)
     {
         (*gPartfxInterface)
@@ -96,9 +96,9 @@ void VFP_MiniFire_update(GameObject* obj)
         f32 dx = (obj)->anim.localPosX - (obj)->anim.previousLocalPosX;
         f32 dy = (obj)->anim.localPosY - (obj)->anim.previousLocalPosY;
         f32 dz = (obj)->anim.localPosZ - (obj)->anim.previousLocalPosZ;
-        args.x = dx / 3.0f;
-        args.y = dy / 3.0f;
-        args.z = dz / 3.0f;
+        args.posX = dx / 3.0f;
+        args.posY = dy / 3.0f;
+        args.posZ = dz / 3.0f;
     }
     if (randomGetRange(0, 4) == 0)
     {
@@ -106,9 +106,9 @@ void VFP_MiniFire_update(GameObject* obj)
             ->spawnObject((void*)obj, VFPMINIFIRE_SMOKE_EFFECT, &args, VFPMINIFIRE_EFFECT_FLAGS, -1, NULL);
     }
 
-    args.x *= 2.0f;
-    args.y *= 2.0f;
-    args.z *= 2.0f;
+    args.posX *= 2.0f;
+    args.posY *= 2.0f;
+    args.posZ *= 2.0f;
     if (randomGetRange(0, 4) == 0)
     {
         (*gPartfxInterface)

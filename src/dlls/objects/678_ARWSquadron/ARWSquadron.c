@@ -19,8 +19,8 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
-#define ARW_SQUADRON_PARTFX_SMOKE 0x7d0 /* damage smoke effect (pfx.f8 = damageSmokeScale) */
-#define ARW_SQUADRON_PARTFX_FIRE  0x7d1 /* fire effect (pfx.f8 = fireFxScale) */
+#define ARW_SQUADRON_PARTFX_SMOKE 0x7d0 /* damage smoke effect (pfx.scale = damageSmokeScale) */
+#define ARW_SQUADRON_PARTFX_FIRE  0x7d1 /* fire effect (pfx.scale = fireFxScale) */
 
 #define ARWSQUADRON_HIT_VOLUME_SLOT 0x13
 
@@ -66,40 +66,40 @@ static inline int arwsquadron_isPlayerWithinRangeZ(GameObject* obj, f32 range)
 void arwsquadron_emitEffects(GameObject* obj, ArwSquadronState* state)
 {
     u8 flag = 1;
-    SquadPfx pfx;
+    PartFxSpawnParams pfx;
 
     if ((s8)state->health <= 2)
     {
         if (state->fxFrameCounter++ % 2 != 0)
         {
-            ObjPath_GetPointLocalPosition(obj, 4, &pfx.fx, &pfx.fy, &pfx.fz);
-            pfx.f8 = state->damageSmokeScale;
+            ObjPath_GetPointLocalPosition(obj, 4, &pfx.posX, &pfx.posY, &pfx.posZ);
+            pfx.scale = state->damageSmokeScale;
             if ((s8)state->health <= 1)
-                pfx.s6 = 0x61a8;
+                pfx.arg3 = 0x61a8;
             else
-                pfx.s6 = -0x63c0;
+                pfx.arg3 = -0x63c0;
             (*gPartfxInterface)->spawnObject(obj, ARW_SQUADRON_PARTFX_SMOKE, &pfx, 4, -1, &flag);
         }
     }
     if ((s8)state->health <= 1)
     {
-        pfx.s6 = 0xc0a;
-        ObjPath_GetPointLocalPosition(obj, 5, &pfx.fx, &pfx.fy, &pfx.fz);
-        pfx.f8 = state->fireFxScale;
+        pfx.arg3 = 0xc0a;
+        ObjPath_GetPointLocalPosition(obj, 5, &pfx.posX, &pfx.posY, &pfx.posZ);
+        pfx.scale = state->fireFxScale;
         (*gPartfxInterface)->spawnObject(obj, ARW_SQUADRON_PARTFX_FIRE, &pfx, 4, -1, &flag);
     }
     if (state->muzzleCount != 0 && (s8)state->health > 1)
     {
-        pfx.s0 = 0;
-        pfx.s2 = 0;
-        pfx.s4 = 0;
-        pfx.f8 = 0.0f;
-        ObjPath_GetPointLocalPosition(obj, 2, &pfx.fx, &pfx.fy, &pfx.fz);
+        pfx.arg0 = 0;
+        pfx.arg1 = 0;
+        pfx.arg2 = 0;
+        pfx.scale = 0.0f;
+        ObjPath_GetPointLocalPosition(obj, 2, &pfx.posX, &pfx.posY, &pfx.posZ);
         objfx_spawnLightPulse(obj, state->muzzleLightRadius, 2, 0, 0, state->muzzleLightIntensity, &pfx);
     }
     if (state->muzzleCount > 1 && (s8)state->health > 1)
     {
-        ObjPath_GetPointLocalPosition(obj, 3, &pfx.fx, &pfx.fy, &pfx.fz);
+        ObjPath_GetPointLocalPosition(obj, 3, &pfx.posX, &pfx.posY, &pfx.posZ);
         objfx_spawnLightPulse(obj, state->muzzleLightRadius, 2, 0, 0, state->muzzleLightIntensity, &pfx);
     }
 }

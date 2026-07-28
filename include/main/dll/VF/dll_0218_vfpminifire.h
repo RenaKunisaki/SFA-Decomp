@@ -14,18 +14,6 @@ typedef struct VfpMinifireState
     u8 burstStarted; /* 0x0A: flame burst has fired; fading out */
 } VfpMinifireState;
 
-typedef struct VfpMinifirePartfxArgs
-{
-    s16 rx;
-    s16 ry;
-    s16 rz;
-    s16 pad;
-    f32 scale;
-    f32 x;
-    f32 y;
-    f32 z;
-} VfpMinifirePartfxArgs;
-
 int VFP_MiniFire_getExtraSize(void);
 int VFP_MiniFire_getObjectTypeId(void);
 void VFP_MiniFire_free(int obj);
