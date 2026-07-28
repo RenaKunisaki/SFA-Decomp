@@ -142,16 +142,16 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     pixelColumnOffset = (j & 3) * 2;
                     pa = (u8*)src1 + pixelColumnOffset;
                     tileColumnOffset = (j >> 2) * 0x20;
-                    pa += tileColumnOffset;
                     pa += h;
+                    pa += tileColumnOffset;
                     rowDataOffset = (int)wd * w * 2;
                     pa += rowDataOffset;
                     pixelA = READ_TEXTURE_U16(pa + 0x60);
                     redA = (pixelA & 0xf800) >> 8;
                     redA = (u8)(redA | ((pixelA & 0xe000) >> 13));
                     pb = (u8*)src2 + pixelColumnOffset;
-                    pb += tileColumnOffset;
                     pb += h;
+                    pb += tileColumnOffset;
                     pb += rowDataOffset;
                     pixelB = READ_TEXTURE_U16(pb + 0x60);
                     redB = (pixelB & 0xf800) >> 8;
@@ -689,12 +689,12 @@ void sortShadowEntriesDescending(ShadowSortEntry* arr, int count);
 
 void renderShadows(int unused0, int unused1, int unused2)
 {
-    NewShadowCaster* casterPtr;
     f32 *mc54p;
     f32 dirY, dirZ, vAy, dirX, sCamX, sCamY;
     int savedRotY;
     s16 savedRotX;
     Texture** texture;
+    NewShadowCaster* casterPtr;
     f32 om100[24];
     f32 mTrans[12], mScale[12], mOrtho[16];
     f32 mc54[3], mc48[3];
@@ -735,9 +735,9 @@ void renderShadows(int unused0, int unused1, int unused2)
     v30[2] = 0.0f;
     buildShadowVolumeBox(v30, om100, 2.0f);
     mapGetBlocks(&layerTables, &blocks);
-    texIdx = 0;
     slotIdx = 0;
     casterIdx = 0;
+    texIdx = 0;
     casterPtr = shadowData->casters;
     mc54p = &mc54[0];
     for (; casterIdx < gNewShadowCasterCount && casterIdx < NEW_SHADOW_MAX_CASTERS; casterPtr++, casterIdx++)
