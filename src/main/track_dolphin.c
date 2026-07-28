@@ -1691,8 +1691,15 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     {
         firstDistance = hits[0]->height;
         firstDistance = y - firstDistance;
-        firstDistance = firstDistance >= 0.0f ? firstDistance : -firstDistance;
-        bestDistance = firstDistance;
+        if (firstDistance >= 0.0f)
+        {
+            bestDistance = firstDistance;
+        }
+        else
+        {
+            firstDistance = -firstDistance;
+            bestDistance = firstDistance;
+        }
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
@@ -1729,8 +1736,15 @@ int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, 
     {
         cur = arr[0]->height;
         cur = y - cur;
-        cur = cur >= 0.0f ? cur : -cur;
-        best = cur;
+        if (cur >= 0.0f)
+        {
+            best = cur;
+        }
+        else
+        {
+            cur = -cur;
+            best = cur;
+        }
         bestIdx = 0;
         for (i = 1; i < n; i++)
         {
