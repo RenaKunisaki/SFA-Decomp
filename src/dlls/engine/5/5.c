@@ -1598,7 +1598,7 @@ void skyRenderTimeOfDayBackdrop(void)
     int phase;
     int gradA;
     int gradB;
-    u32 texW;
+    u32 texHeight;
     u32 screenRes;
     int texHandle;
     f32 u;
@@ -1606,7 +1606,7 @@ void skyRenderTimeOfDayBackdrop(void)
     f32 t;
     f32 tc;
     f32 sinProd;
-    f32 widthF;
+    f32 texHeightF;
     f32 angle;
     f32 blend;
     f32 v;
@@ -1730,11 +1730,11 @@ void skyRenderTimeOfDayBackdrop(void)
         cam = Camera_GetCurrentViewSlot();
         frac = Camera_GetFovY();
         frac = frac / 2.0f;
-        widthF = (f32)(u32) * (u16*)(texC + 0xc);
-        sinProd = widthF * frac / 180.0f;
+        texHeightF = (f32)(u32) * (u16*)(texC + 0xc);
+        sinProd = texHeightF * frac / 180.0f;
         sinProd *= 3.0f;
         sinProd *= mathCosf(gSkyPi * (f32)-cam->worldRoll / 32768.0f);
-        ang0 = widthF / 2.0f - 6.0f - 3.0f * (widthF * cam->worldPitch) / 32768.0f;
+        ang0 = texHeightF / 2.0f - 6.0f - 3.0f * (texHeightF * cam->worldPitch) / 32768.0f;
         angle = ang0 + sinProd;
         angle *= 32.0f;
         (*gSky2Interface)->applyTextColor(0);
@@ -1755,10 +1755,10 @@ void skyRenderTimeOfDayBackdrop(void)
         GXSetNumTevStages(1);
         screenRes = getScreenResolution();
         sinProd *= 2.0f;
-        texW = ((Texture*)texC)->height;
-        v = angle / (32.0f * (f32)texW);
+        texHeight = ((Texture*)texC)->height;
+        v = angle / (32.0f * (f32)texHeight);
         skyDrawFn_80075d5c(0, 0, (screenRes & 0xffff) << 2, (screenRes >> 16) << 2, 0.0f, v,
-                           1.0f, v - sinProd / (f32)texW, -0x18f);
+                           1.0f, v - sinProd / (f32)texHeight, -0x18f);
     }
 }
 

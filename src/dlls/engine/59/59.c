@@ -23,8 +23,8 @@ void Menu_func09_nop(void)
 }
 int Menu_poll(int* sel)
 {
-    s8 yInput;
     s8 xInput;
+    s8 yInput;
     int input;
     f32 timer;
 
@@ -38,12 +38,12 @@ int Menu_poll(int* sel)
     {
         gMenuScrollTimer = timer - 2e+02f;
     }
-    padGetAnalogInput(0, &yInput, &xInput);
-    if (xInput < 0)
+    padGetAnalogInput(0, &xInput, &yInput);
+    if (yInput < 0)
     {
         *sel = *sel + 1;
     }
-    else if (xInput > 0)
+    else if (yInput > 0)
     {
         *sel = *sel - 1;
     }
