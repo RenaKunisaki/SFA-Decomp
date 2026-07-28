@@ -735,12 +735,11 @@ void sky2_run(void)
             {
                 ((SkySlotAnim*)p)->prevT = ((SkySlotAnim*)p)->blend / 255.0f;
                 p = *pp;
-                if ((*(u16*)&((GameObject*)p)->anim.rotZ & 1) == 0)
-                {
+                if ((*(u16*)&((GameObject*)p)->anim.rotZ & 1) == 0) {
                     ((SkySlotAnim*)p)->blend = -(timeDelta * *(f32*)(p + 0x58) - ((SkySlotAnim*)p)->blend);
-                    if (((SkySlotAnim*)*pp)->blend < (frzero = lbl_803DF108))
-                    {
-                        ((SkySlotAnim*)*pp)->blend = frzero;
+                    frzero = ((SkySlotAnim*)*pp)->blend;
+                    if (frzero < lbl_803DF108) {
+                        ((SkySlotAnim*)*pp)->blend = lbl_803DF108;
                     }
                 }
             }
@@ -924,10 +923,10 @@ void sky2_run(void)
                     sa = sa + hv;
                     *(f32*)&((GameObject*)p)->anim.jointPoseData = hv - *(f32*)&((GameObject*)p)->anim.modelState;
                     p = *pp;
-                    if (*(f32*)&((GameObject*)p)->anim.jointPoseData < (frzero = lbl_803DF108))
-                    {
+                    frzero = *(f32*)&((GameObject*)p)->anim.jointPoseData;
+                    if (frzero < lbl_803DF108) {
                         ((SkySlotAnim*)p)->b314 = (s8)(1 - ((SkySlotAnim*)p)->b314);
-                        *(f32*)(*pp + 0x6c) = frzero;
+                        *(f32*)(*pp + 0x6c) = lbl_803DF108;
                         amp = (s16)(int)(sb - sa);
                         *(f32*)(*pp + 0x68) = randomGetRange(-amp / 2, amp / 2);
                         *(f32*)(*pp + 0x64) = lbl_803DF17C * randomGetRange(1, 10);

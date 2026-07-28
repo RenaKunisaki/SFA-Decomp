@@ -22,10 +22,6 @@
 #include "main/objseq.h"
 #include "main/render_envfx_api.h"
 #include "sys/objects.h"
-
-extern f32 lbl_803E3680;
-extern f32 lbl_803E3684;
-
 #define DOORF4_OBJECT_TYPE_ID 1
 #define DOORF4_OBJECT_GROUP   14
 
@@ -52,8 +48,8 @@ extern f32 lbl_803E3684;
 #define DOORF4_OPEN_SFX_ID  830
 #define DOORF4_CLOSE_SFX_ID 831
 
-#define DOORF4_RENDER_SCALE          lbl_803E3680
-#define DOORF4_POWER_DOOR_OPEN_RANGE lbl_803E3684
+#define DOORF4_RENDER_SCALE          1.0f
+#define DOORF4_POWER_DOOR_OPEN_RANGE 100.0f
 
 #define DOORF4_MESSAGE_OPEN          0x30002
 #define DOORF4_MESSAGE_CLOSE         0x30003

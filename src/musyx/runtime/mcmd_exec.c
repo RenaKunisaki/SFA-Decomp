@@ -475,12 +475,12 @@ static inline void mcmdAddPriority(McmdVoiceState* svoice, McmdCommandArgs* cste
     voiceSetPriority(svoice, prio);
 }
 
-static inline void mcmdSetAgeCounterByVolume(McmdVoiceState* svoice, McmdCommandArgs* cstep)
-{
+static inline void mcmdSetAgeCounterByVolume(McmdVoiceState* svoice, McmdCommandArgs* cstep) {
     u32 age;
 
-    age = (cstep->flags >> 0x10) +
-          ((s32)(((svoice->volume >> 0x10) & 0xff) * (cstep->value & 0xffff)) >> 7);
+    age = (svoice->volume >> 0x10) & 0xff;
+    age = (cstep->value & 0xffff) * age;
+    age = (cstep->flags >> 0x10) + ((s32)age >> 7);
     svoice->priorityValue = age > 60000 ? 0x75300000 : age << 0xf;
     hwSetPriority(svoice->voiceHandle & 0xff, ((u32)svoice->priorityGroup << 0x18) | (svoice->priorityValue >> 0xf));
 }

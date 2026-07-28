@@ -1760,6 +1760,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     ObjModelInstance* modelDef;
     LoadedObj* obj;
     int base;
+    int allocSize;
     int cursor;
     u8 n;
     u16 modelFlags;
@@ -1905,9 +1906,10 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         }
     }
     base = objGetTotalDataSize(tp, def, data, flags29);
-    obj = mmAlloc(base + total, 0xe, 0);
+    allocSize = base + total;
+    obj = mmAlloc(allocSize, 0xe, 0);
     memcpy(obj, &tmpl, 0x10c);
-    memset((u8*)obj + 0x10c, 0, base + total - 0x10c);
+    memset((u8*)obj + 0x10c, 0, allocSize - 0x10c);
     obj->models = (u8**)(obj + 1);
     ((ObjModelInstance*)obj->def)->flags |= 0x800000LL;
     i = 0;

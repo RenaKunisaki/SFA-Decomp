@@ -13,7 +13,6 @@ u8 lbl_803DB8A0[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 lbl_803DB8A8[8] = {0, 0, 0, 1, 0, 2, 0, 3};
 
 extern u8 lbl_80311DA8[];
-extern const f32 lbl_803E0710, lbl_803E0714, lbl_803E0718, lbl_803E071C, lbl_803E0720;
 
 void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int modelId,
                            StaffCollisionColorArgs* colorArgs)
@@ -104,27 +103,27 @@ void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnP
         e[1].flags = 0;
         e[1].tex = NULL;
         e[1].mode = 0x80;
-        e[1].x = lbl_803E0710;
+        e[1].x = 0.0f;
         e[1].y = rb;
         e[1].z = ra;
         e[2].layer = 0;
         e[2].flags = variant != 0 ? 4 : 3;
         e[2].tex = variant != 0 ? lbl_803DB8A8 : lbl_803DB8A0;
         e[2].mode = 2;
-        e[2].x = lbl_803E0714;
-        e[2].y = lbl_803E0718;
-        e[2].z = lbl_803E071C;
+        e[2].x = 1.0f;
+        e[2].y = 0.5f;
+        e[2].z = 1.5f;
         e[3].layer = 1;
         e[3].flags = 0;
         e[3].tex = NULL;
         e[3].mode = 0x400000;
-        e[3].x = lbl_803E0710;
-        e[3].y = lbl_803E0710;
-        e[3].z = lbl_803E0720;
-        m.y = lbl_803E0710;
-        m.z = lbl_803E0710;
-        m.w = lbl_803E0710;
-        m.x = lbl_803E0714;
+        e[3].x = 0.0f;
+        e[3].y = 0.0f;
+        e[3].z = 400.0f;
+        m.y = 0.0f;
+        m.z = 0.0f;
+        m.w = 0.0f;
+        m.x = 1.0f;
         m.rotY = 0;
         *(s16*)&m.rotX = rb;
         *(s16*)&m.rotZ = ra;
@@ -132,13 +131,13 @@ void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnP
         buf.v58 = 0;
         buf.ctx = sourceObj;
         buf.effectVariant = variant;
-        buf.pos[0] = lbl_803E0710;
-        buf.pos[1] = lbl_803E0710;
-        buf.pos[2] = lbl_803E0710;
-        buf.col[0] = lbl_803E0710;
-        buf.col[1] = lbl_803E0710;
-        buf.col[2] = lbl_803E0710;
-        buf.scale = lbl_803E0714;
+        buf.pos[0] = 0.0f;
+        buf.pos[1] = 0.0f;
+        buf.pos[2] = 0.0f;
+        buf.col[0] = 0.0f;
+        buf.col[1] = 0.0f;
+        buf.col[2] = 0.0f;
+        buf.scale = 1.0f;
         buf.v40 = 1;
         buf.v3c = 0;
         buf.kindFlags = variant != 0 ? 4 : 3;

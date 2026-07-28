@@ -238,6 +238,10 @@
 #include "dlls/objects/441_SC_Cloudrun.h"
 #include "dlls/objects/442_SC_totempuz.h"
 #include "dlls/objects/443_SC_totembon.h"
+#include "dlls/objects/444_SC_totemstr.h"
+#include "dlls/objects/445.h"
+#include "dlls/objects/446.h"
+#include "dlls/objects/447_DIMLavaBall.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -362,10 +366,9 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
 extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
     gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightSourceObjDescriptor,
-    gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
-extern ResourceDescriptor gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
+extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor,
     gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
@@ -373,7 +376,6 @@ extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, g
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
 extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor;
-extern ResourceDescriptor gSC_totemstrengthObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
@@ -1511,10 +1513,10 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSC_CloudrunnerAObjDescriptor,
     (ResourceDescriptor*)&gSC_totempuzzleObjDescriptor,
     (ResourceDescriptor*)&gSC_totembondObjDescriptor,
-    &gSC_totemstrengthObjDescriptor,
-    &gPaymentKioskObjDescriptor,
-    &gLavaBall1BEObjDescriptor,
-    &gLavaBall1BFObjDescriptor,
+    (ResourceDescriptor*)&gSC_totemstrengthObjDescriptor,
+    (ResourceDescriptor*)&gPaymentKioskObjDescriptor,
+    (ResourceDescriptor*)&gLavaBall1BEObjDescriptor,
+    (ResourceDescriptor*)&gLavaBall1BFObjDescriptor,
     &gDIMLogFireObjDescriptor,
     &gDIMSnowBallObjDescriptor,
     &gDIMSnowBall1C2ObjDescriptor,

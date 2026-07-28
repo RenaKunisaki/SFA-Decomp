@@ -14,9 +14,7 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-extern f32 lbl_803E33A0;
-
-#define FLAMETHROWERSPE_SCALE_DIVISOR lbl_803E33A0
+#define FLAMETHROWERSPE_SCALE_DIVISOR 10.0f
 
 #define FLAMETHROWERSPE_PHASE_LAUNCH 1
 #define FLAMETHROWERSPE_PHASE_ACTIVE 2
