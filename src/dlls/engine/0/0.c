@@ -5567,8 +5567,8 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
     cnt = lbl_803DD824[i].count;
     div15 = (s16)scaled / 15;
     quarter = lbl_803E20B8;
-    k2108 = lbl_803E2108;
     k2128 = lbl_803E2128;
+    k2108 = lbl_803E2108;
     for (; cnt >= 0; cnt -= 4)
     {
         spd = quarter * lbl_803DD824[i].f10;
