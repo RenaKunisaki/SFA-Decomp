@@ -322,11 +322,6 @@ void Obj_ClearModelSlotIndex(GameObject* obj)
     obj->anim.mapEventSlot = -1;
 }
 
-ObjModel* Obj_GetActiveModel(GameObject* obj)
-{
-    return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
-}
-
 void Obj_ClearModelColorFadeRecursive(GameObject* obj)
 {
     int i;
@@ -472,7 +467,7 @@ void Obj_Shatter(GameObject* obj)
     obj->colorFadeFrames = 0;
     obj->colorFadeFlags &= ~OBJ_COLOR_FADE_FLAG_FROZEN;
     obj->fadeCounter = 0;
-    ObjModel_ClearRenderAttachment(Obj_GetActiveModel(obj));
+    ObjModel_ClearRenderAttachment((ObjModel*)obj->anim.banks[obj->anim.bankIndex]);
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fb, NULL, 0x50, NULL);
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x32, NULL);
 }
@@ -658,6 +653,11 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
     }
 }
 
+
+ObjModel* Obj_GetActiveModel(GameObject* obj)
+{
+    return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
+}
 
 GameObject* loadObjectAtObject(GameObject* src, ObjPlacement* setup)
 {
