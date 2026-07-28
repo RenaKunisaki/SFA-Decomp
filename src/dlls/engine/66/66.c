@@ -33,6 +33,7 @@ u8 gCutCamBboxBlocked;
 #define CAMMODE_VIEWFINDER 0x44
 #define CAMMODE_COMBAT 0x49
 
+
 int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
                          u8 runBbox, float radius)
 {
@@ -95,7 +96,7 @@ u8 camcontrol_traceFromTarget(float* fromPos, GameObject* target, float* outPos,
         targetPos[1] = target->anim.worldPosY + gCamcontrolModeSettings->targetHeight;
         targetPos[2] = target->anim.worldPosZ;
     }
-    camcontrol_traceMove(targetPos, fromPos, outPos, traceRec, 3, '\x01', '\x01', 4.0f);
+    camcontrol_traceMove(targetPos, fromPos, outPos, traceRec, 3, '\x01', '\x01', (double)4.0f);
     return traceRec[CAMCONTROL_TRACE_BLOCKED_OFFSET];
 }
 
@@ -745,6 +746,7 @@ void CameraModeNormal_func0A(float* minDistanceOut, float* maxDistanceOut, float
 
 void camslide_update(CameraObject* camera, GameObject* target, f32 upperBound, f32 lowerBound)
 {
+
 
     CamSlideObjectState* state;
     f32 minHeight;
