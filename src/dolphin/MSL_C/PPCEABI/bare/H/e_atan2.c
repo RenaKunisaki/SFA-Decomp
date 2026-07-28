@@ -5,8 +5,6 @@
 
 extern float lbl_803E7AB8;
 extern float lbl_803E7BC8;
-extern float lbl_803E7BF4;
-extern float lbl_803E7BF8;
 
 #pragma optimization_level 0
 #pragma optimize_for_size on
@@ -23,7 +21,7 @@ float powfBitEstimate(float base, float exponentValue) {
         exponent = (s16)(((baseBits >> 23) & 0xFF) - 128);
         *(u32 *)&normalizedMantissa = (baseBits & 0x7FFFFF) | 0x3F800000;
         exponentAsFloat = fastCastS16ToFloat(&exponent);
-        normalizedMantissa = (lbl_803E7BF4 * exponentValue) * (normalizedMantissa + exponentAsFloat);
+        normalizedMantissa = (8388608.0f * exponentValue) * (normalizedMantissa + exponentAsFloat);
         *(u32 *)&result = (u32)(int)normalizedMantissa + 0x3F800000;
 
         if (baseBits & 0x80000000) {
@@ -70,7 +68,7 @@ float Vec_lengthSquared(void* input) {
 #pragma optimize_for_size on
 #pragma peephole off
 float trigReduceQuadrant(u16* quadrant, float angle) {
-    float scaledAngle = lbl_803E7BF8 * __fabsf(angle);
+    float scaledAngle = 1.2732395f * __fabsf(angle);
     float roundedQuadrant;
     fastCastFloatToU16(scaledAngle, quadrant);
     *quadrant = (*quadrant + 1) & 0xFFFE;

@@ -301,6 +301,7 @@ main/newshadows.c:
 track/intersect_surfacesfx.c:
 	.text       start:0x8006EF38 end:0x8006F400
 	.data       start:0x8030E9B4 end:0x8030EA0C
+	.sdata2     start:0x803DEE28 end:0x803DEE2C
 
 track/intersect.c:
 	.text       start:0x8006F400 end:0x8006F950
@@ -3826,6 +3827,7 @@ dlls/objects/651/651.c:
 	.rodata     start:0x802C25B8 end:0x802C25D8
 	.data       start:0x8032AF40 end:0x8032AF78
 	.bss        start:0x803AD278 end:0x803AD298
+	.sdata2     start:0x803E6D18 end:0x803E6D20
 
 dlls/objects/652_WCBouncyCra/WCBouncyCra.c:
 	.text       start:0x8022408C end:0x802243F4
@@ -5008,6 +5010,7 @@ dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/e_atan2.c:
 	.text       start:0x80292B44 end:0x80292D3C
+	.sdata2     start:0x803E7BF4 end:0x803E7BFC
 
 dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
 	.text       start:0x80292D3C end:0x80292DC0

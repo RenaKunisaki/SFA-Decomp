@@ -64,7 +64,7 @@ void dll_28B_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     Dll28BState* state = obj->extra;
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6D18);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         dll_2E_func06(obj, &state->moveLib, 0);
     }
 }
@@ -102,12 +102,14 @@ void dll_28B_update(GameObject* obj)
     xform.rotX = obj->anim.rotX;
     xform.rotY = obj->anim.rotY;
     xform.rotZ = obj->anim.rotZ;
-    xform.scale = lbl_803E6D18;
+    xform.scale = 1.0f;
     setMatrixFromObjectPos(mtx, &xform);
     Matrix_TransformPoint(mtx, gWcEarthWalkerIdleTimerThreshold, gWcEarthWalkerIdleTimerThreshold,
                           gWcEarthWalkerIdleTimerThreshold, &ox, &oy, &oz);
     doNothing_80062A50(obj, ox, oy, oz);
 }
+
+static const f32 gDll28BCurveInitParam = 1000.0f;
 
 void dll_28B_init(GameObject* obj)
 {

@@ -36,8 +36,6 @@ extern const Dll28BMoveBlendData gDll28BMoveBlendDataA;
 extern const Dll28BMoveBlendData gDll28BMoveBlendDataB;
 extern void* gDll28BSubstateHandlers[4];
 extern void* gDll28BStateHandlers[4];
-extern f32 lbl_803E6D18;
-extern f32 gDll28BCurveInitParam;
 
 extern f32 gWcEarthWalkerFarPlayerDistance;
 extern f32 gWcEarthWalkerNearPlayerDistance;

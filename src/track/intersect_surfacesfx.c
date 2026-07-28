@@ -23,7 +23,6 @@ typedef struct
 extern u8 lbl_8030E8B0[];
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;
-extern f32 lbl_803DEE28;
 
 void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state, f32 unused,
                          f32 scale)
@@ -174,9 +173,9 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
             ps.id = sfx;
             ps.unk4 = 0;
             ps.unk2 = 0;
-            v.x = lbl_803DEE28 * obj->anim.velocityX;
-            v.y = lbl_803DEE28 * obj->anim.velocityY;
-            v.z = lbl_803DEE28 * obj->anim.velocityZ;
+            v.x = 0.25f * obj->anim.velocityX;
+            v.y = 0.25f * obj->anim.velocityY;
+            v.z = 0.25f * obj->anim.velocityZ;
             if (sfx == 6 || sfx == 3)
             {
                 cnt = randomGetRange(2, 4);
