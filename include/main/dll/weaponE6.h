@@ -7,6 +7,6 @@
 void tricky_fetchBall(GameObject* obj, int state);
 void tricky_idleAndEat(GameObject* obj, int state);
 void tricky_trackTumbleweed(GameObject* obj, int state);
-void tricky_moveToFollowTarget(int obj, int state);
+void tricky_moveToFollowTarget(int obj, TrickyState* state);
 
 #endif /* MAIN_DLL_WEAPONE6_H_ */

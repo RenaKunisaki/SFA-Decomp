@@ -45,7 +45,7 @@ void Tricky_update(int obj);
 void tricky_handleDefeat(GameObject* obj, int state);
 void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit);
 int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAltMode, u32 mode);
-u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to);
+u8 baddie_canSeeTarget(GameObject* obj, TrickyState* state, void* from, void* to);
 void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, float radius);
 void Tricky_render(GameObject* obj, int param_2, int param_3, int param_4, int param_5, char doRender);
 void Tricky_hitDetect(GameObject* obj);

@@ -1376,7 +1376,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     }
 #undef hitState
 }
-void DR_EarthWarrior_init(GameObject* obj, int def)
+void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
 {
     DREarthWarriorInitData* base = (DREarthWarriorInitData*)gDREarthWarriorInitData;
     int inner = *(int*)&(obj)->extra;
@@ -1384,10 +1384,10 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
     EWPathRange r2 = gDREarthWarriorLookInitData1;
     EWPathRange r1 = gDREarthWarriorLookInitData2;
     u8* pathState;
-    (obj)->anim.rotX = (s16)(((DREarthWarriorPlacement*)def)->spawnYaw << 8);
+    (obj)->anim.rotX = (s16)(def->spawnYaw << 8);
     (obj)->animEventCallback = DR_EarthWarrior_SeqFn;
     ObjGroup_AddObject((int)obj, DREARTHWARRIOR_OBJGROUP);
-    ((DREarthWarriorState*)inner)->unk14E8 = ((DREarthWarriorPlacement*)def)->unk19;
+    ((DREarthWarriorState*)inner)->unk14E8 = def->unk19;
     ((DREarthWarriorState*)inner)->unk14DE = 5;
     ((DREarthWarriorState*)inner)->unk14F4 = -1;
     (*gPlayerInterface)->init(obj, (void*)inner, 4, 1);
@@ -1406,7 +1406,7 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
     dll_2E_setLookAtMaxDistance((MoveLibState*)(inner + 0x3ec), 150.0f);
     ((DREarthWarriorState*)inner)->unk9FD |= 2;
     ((DREarthWarriorState*)inner)->unk1444 = 4.32f;
-    ((DREarthWarriorState*)inner)->airMeterCapacity = ((DREarthWarriorPlacement*)def)->airMeterMax;
+    ((DREarthWarriorState*)inner)->airMeterCapacity = def->airMeterMax;
     ((DREarthWarriorState*)inner)->unkF50 = (int)base->unkD8;
     ((DREarthWarriorState*)inner)->unkF58 = (int)base->unk84;
     {

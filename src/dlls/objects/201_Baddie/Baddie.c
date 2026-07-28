@@ -922,7 +922,7 @@ void baddieInstantiateWeapon(GameObject* obj, int state)
 }
 
 
-u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to)
+u8 baddie_canSeeTarget(GameObject* obj, TrickyState* state, void* from, void* to)
 {
     u8 traceHit[4];
     s16 toGrid[4];
@@ -936,7 +936,7 @@ u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to)
 
     traceHit[0] = 0;
     visible = 0;
-    if (((TrickyState*)state)->actionTargetObj != NULL)
+    if (state->actionTargetObj != NULL)
     {
         probe.x = *(f32*)((int)from + 0);
         probe.y = *(f32*)((int)from + 4);
@@ -968,10 +968,10 @@ u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to)
             }
         }
     }
-    if ((visible != 0) && ((((TrickyState*)state)->controlFlags & TRICKY_CONTROL_FLAG_BBOX_BLOCKS_SIGHT) != 0))
+    if ((visible != 0) && ((state->controlFlags & TRICKY_CONTROL_FLAG_BBOX_BLOCKS_SIGHT) != 0))
     {
         if (objBboxFn_800640cc((f32*)from, (f32*)&probe, 1.0f, 0, &bboxHit, obj,
-                               ((TrickyState*)state)->unk261, -1, 0, 0) != 0)
+                               state->unk261, -1, 0, 0) != 0)
         {
             visible = 0;
         }
@@ -1729,7 +1729,7 @@ void baddie_updateEngagementState(GameObject* obj, TrickyState* sub)
     {
         if ((sub->controlFlags & 0x1000) != 0)
         {
-            u8 r = baddie_canSeeTarget(obj, (int)sub, &obj->anim.worldPosX,
+            u8 r = baddie_canSeeTarget(obj, (TrickyState*)sub, &obj->anim.worldPosX,
                                            (u8*)sub->actionTargetObj + 0x18);
             if (r != 0)
                 sub->flags2DC |= 0x1000000LL;
@@ -1958,7 +1958,7 @@ void sidekickToy_updateCurveTargetLatch(GameObject* obj)
     u8* data = *(u8**)state;
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
-        if (baddie_canSeeTarget(obj, (int)state, &(obj)->anim.worldPosX, data + 0x68) != 0)
+        if (baddie_canSeeTarget(obj, (TrickyState*)state, &(obj)->anim.worldPosX, data + 0x68) != 0)
         {
             return;
         }

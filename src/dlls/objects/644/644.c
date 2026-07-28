@@ -411,7 +411,7 @@ void shopitem_update(GameObject* obj)
     }
 }
 
-void shopitem_init(GameObject* obj, int data)
+void shopitem_init(GameObject* obj, ShopItemDef* data)
 {
     ObjAnimComponent* objAnim;
     int state = *(int*)&(obj)->extra;
@@ -420,9 +420,9 @@ void shopitem_init(GameObject* obj, int data)
     objAnim = (ObjAnimComponent*)obj;
     (obj)->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     (obj)->animEventCallback = shopitem_SeqFn;
-    objAnim->bankIndex = (s8)((ShopItemDef*)data)->bankIndex;
-    (obj)->anim.rotX = (s16)(((ShopItemDef*)data)->rotXByte << 8);
-    (obj)->anim.rotY = (s16)(((ShopItemDef*)data)->rotYByte << 8);
+    objAnim->bankIndex = (s8)data->bankIndex;
+    (obj)->anim.rotX = (s16)(data->rotXByte << 8);
+    (obj)->anim.rotY = (s16)(data->rotYByte << 8);
     if ((s32)objAnim->bankIndex >= objAnim->modelInstance->modelCount)
     {
         objAnim->bankIndex = 0;

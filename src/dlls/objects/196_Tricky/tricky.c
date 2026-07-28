@@ -228,7 +228,7 @@ int trickyTryPlaySound(GameObject* obj, u16 sfxId, int vol)
     return 1;
 }
 
-void objAnimFreeChildren(int a, int b, GameObject** c)
+void objAnimFreeChildren(GameObject* a, int b, GameObject** c)
 {
     char buf[4];
     void *v0, *v1, *v2;
@@ -237,7 +237,7 @@ void objAnimFreeChildren(int a, int b, GameObject** c)
     {
         return;
     }
-    ObjLink_DetachChild((GameObject*)a, *c);
+    ObjLink_DetachChild(a, *c);
     Obj_FreeObject(*c);
     *c = NULL;
     buf[0] = -1;
@@ -262,20 +262,20 @@ void objAnimFreeChildren(int a, int b, GameObject** c)
     {
         if (v0 != NULL)
         {
-            ObjLink_DetachChild((GameObject*)a, v0);
-            ObjLink_AttachChild((GameObject*)a, (GameObject*)((TrickyImpressState*)b)->childObj0, 0);
+            ObjLink_DetachChild(a, v0);
+            ObjLink_AttachChild(a, (GameObject*)((TrickyImpressState*)b)->childObj0, 0);
             ((AnimSlots*)(b + 0x7bc))->s0 = 0;
         }
         else if (v1 != NULL)
         {
-            ObjLink_DetachChild((GameObject*)a, v1);
-            ObjLink_AttachChild((GameObject*)a, (GameObject*)((TrickyImpressState*)b)->childObj1, 0);
+            ObjLink_DetachChild(a, v1);
+            ObjLink_AttachChild(a, (GameObject*)((TrickyImpressState*)b)->childObj1, 0);
             ((AnimSlots*)(b + 0x7bc))->s1 = 0;
         }
         else if (v2 != NULL)
         {
-            ObjLink_DetachChild((GameObject*)a, v2);
-            ObjLink_AttachChild((GameObject*)a, (GameObject*)((TrickyImpressState*)b)->childObj2, 0);
+            ObjLink_DetachChild(a, v2);
+            ObjLink_AttachChild(a, (GameObject*)((TrickyImpressState*)b)->childObj2, 0);
             ((AnimSlots*)(b + 0x7bc))->s2 = 0;
         }
     }
@@ -5035,23 +5035,23 @@ void tricky_trackTumbleweed(GameObject* obj, register int state)
     }
 }
 
-void tricky_moveToFollowTarget(int obj, int state)
+void tricky_moveToFollowTarget(int obj, TrickyState* state)
 {
     int inWater;
     int result;
 
-    result = trickyFn_8013b368((GameObject*)obj, 15.0f, (TrickyState*)state);
+    result = trickyFn_8013b368((GameObject*)obj, 15.0f, state);
     if (result == 0)
     {
-        if (0.0f == ((TrickyState*)state)->waterLevel)
+        if (0.0f == state->waterLevel)
         {
             inWater = 0;
         }
-        else if (-100000.0f == ((TrickyState*)state)->eventTime)
+        else if (-100000.0f == state->eventTime)
         {
             inWater = 1;
         }
-        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
+        else if (state->currentTime - state->eventTime > 8.0f)
         {
             inWater = 1;
         }
@@ -5062,8 +5062,8 @@ void tricky_moveToFollowTarget(int obj, int state)
         if (inWater != 0)
         {
             objAnimFn_8013a3f0(obj, 8, 0.02f, 0);
-            ((TrickyState*)state)->cooldownC = 600.0f;
-            ((TrickyState*)state)->particleTimer = 0.0f;
+            state->cooldownC = 600.0f;
+            state->particleTimer = 0.0f;
             trickyDebugPrint(sInWaterMessage);
         }
         else
@@ -5828,9 +5828,9 @@ void fn_8014128C(void)
 
 /* lbl_803E2*: this DLL's f32 route/speed constants. */
 
-void tricky_updateBallRoll(int obj, int ball)
+void tricky_updateBallRoll(int obj, TrickyState* ball)
 {
-    TrickyState* ts = (TrickyState*)ball;
+    TrickyState* ts = ball;
     int toNode;
     u8 nodeCount;
     int node;
@@ -5968,7 +5968,7 @@ void tricky_updateBallRoll(int obj, int ball)
     }
     else
     {
-        trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)ball);
+        trickyFn_8013b368((GameObject*)obj, 5.0f, ball);
         if (Objfsa_GetWalkGroupIndexAtPoint((float*)&((GameObject*)obj)->anim.worldPosX, NULL) ==
             (walkGroup = Objfsa_GetWalkGroupIndexAtPoint((float*)((int)ts->scratch700.ptr + 8), NULL)))
         {
@@ -8263,9 +8263,9 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
             break;
         }
     }
-    objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
-    objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
-    objAnimFreeChildren(obj, state, (GameObject**)&((TrickyState*)state)->child);
+    objAnimFreeChildren((GameObject*)obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
+    objAnimFreeChildren((GameObject*)obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
+    objAnimFreeChildren((GameObject*)obj, state, (GameObject**)&((TrickyState*)state)->child);
     tricky_updateModelVariantFade(obj, state);
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
     objAudioFn_8006ef38((GameObject*)obj, &animUpdate->animEvents, 1, (void*)(state + 0x7d8),
@@ -8605,7 +8605,7 @@ int Tricky_updateSideCommandPrompts(int obj)
             *(float*)(state + 0x7b4) = *(float*)(state + 0x7b4) - timeDelta;
             if (*(float*)(state + 0x7b4) <= 0.0f)
             {
-                objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
+                objAnimFreeChildren((GameObject*)obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
             }
         }
         if ((promptA) && ((((TrickyState*)state)->stateFlags & 0x200) == 0))
@@ -8684,7 +8684,7 @@ int Tricky_updateSideCommandPrompts(int obj)
             *(float*)(state + 0x7ac) = *(float*)(state + 0x7ac) - timeDelta;
             if (*(float*)(state + 0x7ac) <= 0.0f)
             {
-                objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
+                objAnimFreeChildren((GameObject*)obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
             }
         }
         return commandMask;
@@ -8757,9 +8757,9 @@ void Tricky_free(int obj, int shouldKeepFlameChildren)
         }
     }
     doNothing_onTrickyFree();
-    objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
-    objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
-    objAnimFreeChildren(obj, state, (GameObject**)&((TrickyState*)state)->child);
+    objAnimFreeChildren((GameObject*)obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
+    objAnimFreeChildren((GameObject*)obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
+    objAnimFreeChildren((GameObject*)obj, state, (GameObject**)&((TrickyState*)state)->child);
     if (*(void**)&((TrickyState*)state)->spawnedChild != NULL)
     {
         ObjLink_DetachChild((GameObject*)obj, ((TrickyState*)state)->spawnedChild);

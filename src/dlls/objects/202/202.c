@@ -4377,26 +4377,26 @@ void wbInit(u32 unused, int state)
     return;
 }
 
-void mutatedEbaPlayMoveSfx(u32 obj, int state);
+void mutatedEbaPlayMoveSfx(u32 obj, DusterState* state);
 
-void mutatedEbaPlayMoveSfx(u32 obj, int state)
+void mutatedEbaPlayMoveSfx(u32 obj, DusterState* state)
 {
     switch (((GameObject*)obj)->anim.currentMove)
     {
     case 5:
-        if (((DusterState*)state)->moveEventFired != 0)
+        if (state->moveEventFired != 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite);
         }
         break;
     case 6:
-        if (((DusterState*)state)->moveEventFired != 0)
+        if (state->moveEventFired != 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite);
         }
         break;
     case 7:
-        if (((DusterState*)state)->moveEventFired != 0)
+        if (state->moveEventFired != 0)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress < lbl_803E2AF8)
             {
@@ -4409,7 +4409,7 @@ void mutatedEbaPlayMoveSfx(u32 obj, int state)
         }
         break;
     case 8:
-        if (((DusterState*)state)->moveEventFired != 0)
+        if (state->moveEventFired != 0)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress < lbl_803E2AFC)
             {
@@ -4491,7 +4491,7 @@ void mutatedEbaUpdateEngaged(u32 obj, int state)
                         *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
         }
     }
-    mutatedEbaPlayMoveSfx(obj, state);
+    mutatedEbaPlayMoveSfx(obj, (DusterState*)state);
     return;
 }
 
@@ -4515,7 +4515,7 @@ void mutatedEbaUpdateIdle(u32 obj, int state)
         baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
                     *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
     }
-    mutatedEbaPlayMoveSfx(obj, state);
+    mutatedEbaPlayMoveSfx(obj, (DusterState*)state);
     return;
 }
 

@@ -412,7 +412,7 @@ void sky2SetDrawMode2(void)
     }
 }
 
-void sky2ApplyModelTint(int obj)
+void sky2ApplyModelTint(GameObject* obj)
 {
     u8* s;
     f32 v;
@@ -420,7 +420,7 @@ void sky2ApplyModelTint(int obj)
 
     if (gSky2State == NULL)
     {
-        Obj_SetModelColorOverrideRecursive((GameObject*)obj, 0, 0, 0, 0, 0);
+        Obj_SetModelColorOverrideRecursive(obj, 0, 0, 0, 0, 0);
     }
     if (lbl_803DB750 == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
     {
@@ -437,12 +437,12 @@ void sky2ApplyModelTint(int obj)
         {
             alpha = (int)(255.0f - 255.0f * (v / lbl_803DF148));
         }
-        Obj_SetModelColorOverrideRecursive((GameObject*)obj, (u8) * (int*)(s + 0x24), (u8) * (int*)(s + 0x28),
+        Obj_SetModelColorOverrideRecursive(obj, (u8) * (int*)(s + 0x24), (u8) * (int*)(s + 0x28),
                                            (u8) * (int*)(s + 0x2c), (u8)alpha, 1);
     }
     else
     {
-        Obj_SetModelColorOverrideRecursive((GameObject*)obj, 0, 0, 0, 0, 0);
+        Obj_SetModelColorOverrideRecursive(obj, 0, 0, 0, 0, 0);
     }
 }
 

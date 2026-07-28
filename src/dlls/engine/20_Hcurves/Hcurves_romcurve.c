@@ -1164,7 +1164,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
     return -1;
 }
 
-int RomCurve_func1B(int curve, int preferredNeighborId, f32 x, f32 y, f32 z)
+int RomCurve_func1B(ObjfsaRomCurveDef* curve, int preferredNeighborId, f32 x, f32 y, f32 z)
 {
     int bestNeighborIds[2];
     float bestDistances[2];
@@ -1184,13 +1184,13 @@ int RomCurve_func1B(int curve, int preferredNeighborId, f32 x, f32 y, f32 z)
     bestDistances[1] = 5000000.0f;
     bestDistances[0] = 5000000.0f;
 
-    segment.startX = ((ObjfsaRomCurveDef*)curve)->x;
-    segment.startY = ((ObjfsaRomCurveDef*)curve)->y;
-    segment.startZ = ((ObjfsaRomCurveDef*)curve)->z;
+    segment.startX = curve->x;
+    segment.startY = curve->y;
+    segment.startZ = curve->z;
 
     for (i = 0; i < 4; i++)
     {
-        neighborId = ((ObjfsaRomCurveDef*)curve)->linkIds[i];
+        neighborId = curve->linkIds[i];
         if (neighborId > -1)
         {
             neighborCurve = Objfsa_FindRomCurveById(neighborId);
@@ -1210,7 +1210,7 @@ int RomCurve_func1B(int curve, int preferredNeighborId, f32 x, f32 y, f32 z)
                 if (distance < bestDistances[slot])
                 {
                     bestDistances[slot] = distance;
-                    bestNeighborIds[slot] = ((ObjfsaRomCurveDef*)curve)->linkIds[i];
+                    bestNeighborIds[slot] = curve->linkIds[i];
                 }
             }
         }
@@ -1452,14 +1452,14 @@ void curves_getPos(int curve, float* outX, float* outY, float* outZ, f32 phase)
 }
 
 
-static inline int RomCurve_hasNoOpenLink(int curve)
+static inline int RomCurve_hasNoOpenLink(ObjfsaRomCurveDef* curve)
 {
     int k;
 
     for (k = 0; k < 4; k++)
     {
-        if (((ObjfsaRomCurveDef*)curve)->linkIds[k] != -1 &&
-            ((s8)((ObjfsaRomCurveDef*)curve)->blockedLinkMask & (1 << k)) == 0)
+        if (curve->linkIds[k] != -1 &&
+            ((s8)curve->blockedLinkMask & (1 << k)) == 0)
         {
             return 0;
         }
@@ -1481,7 +1481,7 @@ int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* ou
     int n;
     int k;
 
-    while (RomCurve_hasNoOpenLink(curve) == 0)
+    while (RomCurve_hasNoOpenLink((ObjfsaRomCurveDef*)curve) == 0)
     {
         RomCurve_getAdjacentWindow((RomCurveDef*)curve, adjacentWindow);
         projected = RomCurve_projectPointToAdjacentWindow(
