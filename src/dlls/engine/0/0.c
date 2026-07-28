@@ -3338,8 +3338,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
         }
         GXSetScissor(0, 0, 0x280, 0x1E0);
         hudDrawCMenu(cMenuArg0, cMenuArg1, cMenuArg2);
-        rowOffset = 0;
-        for (iconIndex = 0; iconIndex < GCMENU_ITEM_ICON_COUNT; rowOffset += 0x32, iconIndex++)
+        for (rowOffset = iconIndex = 0; iconIndex < GCMENU_ITEM_ICON_COUNT; iconIndex++, rowOffset += 0x32)
         {
             if (gCMenuItemIcons[iconIndex] > 1)
             {

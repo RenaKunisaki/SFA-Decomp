@@ -1523,7 +1523,9 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
             {
                 if (*wp != 0)
                 {
-                    status[(int)i] = pathSearchStep((PathSearch*)(state + ((int)i * 0x30 + 0x538)), 0x1f4);
+                    int searchOffset = (int)i * 0x30 + 0x538;
+
+                    status[(int)i] = pathSearchStep((PathSearch*)(state + searchOffset), 0x1f4);
                     if (status[(int)i] == 1)
                     {
                         return i;
