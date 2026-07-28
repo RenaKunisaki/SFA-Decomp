@@ -588,7 +588,7 @@ void SaveSelectScreen_render(int param)
     if ((u8)progress < 0x80)
     {
         f32 conv = (f32)(int)((u8)progress * 0x86);
-        titleScreenPositionElements(40.0f, 254.0f - conv * 0.0078125f);
+        titleScreenPositionElements(40.0f, 254.0f - conv / 128.0f);
         alpha = 0;
     }
     else
