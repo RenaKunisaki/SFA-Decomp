@@ -2988,7 +2988,6 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         {
             f32 dx;
             f32 dz;
-            f32 arcCoefficient;
             TrickyJumpArc* arc = &state->jumpArc;
             node = state->route.nodeA0;
             dx = node->x - obj->anim.worldPosX;
@@ -3004,8 +3003,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             arc->landX = node->x;
             arc->landZ = node->z;
             k = arc->duration;
-            arcCoefficient = -0.017f * k;
-            arc->riseCoeff = -(arcCoefficient * k -
+            arc->riseCoeff = -(-0.017f * k * k -
                                (node->y - obj->anim.worldPosY)) /
                               k;
             objAnimFn_8013a3f0((int)obj, 0x16, v, 0x4000000);
@@ -3045,11 +3043,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             f32 baseZ;
             obj->anim.localPosX = (arc->landX - baseX) * (arc->time / arc->duration) + baseX;
             k = arc->time;
-            {
-                f32 ck;
-                ck = -0.017f * k;
-                obj->anim.localPosY = ck * k + (arc->riseCoeff * k + arc->baseY);
-            }
+            obj->anim.localPosY = -0.017f * k * k + (arc->riseCoeff * k + arc->baseY);
             baseZ = arc->baseZ;
             obj->anim.localPosZ = (arc->landZ - baseZ) * (arc->time / arc->duration) + baseZ;
             v = arc->duration;
