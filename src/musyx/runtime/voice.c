@@ -144,7 +144,6 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
     {
         do
         {
-        allocationCount = -1;
         do
         {
         if (streamKind)
