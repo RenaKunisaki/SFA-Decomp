@@ -1,12 +1,12 @@
 /* DLL 0x01B7 - SC music-tree objects. */
 #include "dlls/object_descriptor.h"
+#include "dlls/objects/438_SC_levelcon.h"
 #include "game/objects/object_setup.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
 #include "main/dll/SC/dll_01B7_scmusictree.h"
-#include "main/dll/sclevelcontrolstate_types.h"
 #include "game/objects/object.h"
 #include "main/obj_path.h"
 #include "sys/objects/lifecycle.h"
@@ -32,9 +32,6 @@
 #define SC_MUSICTREE_MAP_GATE_2 0x45178
 #define SC_MUSICTREE_MAP_GATE_3 0x4517c
 
-#define GAMEBIT_TOTEM_COMBO_1 0x7d
-#define GAMEBIT_TOTEM_COMBO_2 0x7e
-#define GAMEBIT_TOTEM_COMBO_3 0x7f
 #define GAMEBIT_MUSICTREE_GATE 0xc44
 
 typedef struct ScMusictreePlacement
@@ -172,17 +169,17 @@ void sc_musictree_handleHitObject(GameObject* obj, int extra, int effectType)
     case SC_MUSICTREE_MAP_TOTEM_1:
         Sfx_PlayFromObject((int)obj, SFXTRIG_sdrstp_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
-        mainSetBits(GAMEBIT_TOTEM_COMBO_1, 1);
+        mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1, 1);
         break;
     case SC_MUSICTREE_MAP_TOTEM_2:
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_sdrstp_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
-        mainSetBits(GAMEBIT_TOTEM_COMBO_2, 1);
+        mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2, 1);
         break;
     case SC_MUSICTREE_MAP_TOTEM_3:
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_sdrstp_c_12d);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
-        mainSetBits(GAMEBIT_TOTEM_COMBO_3, 1);
+        mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3, 1);
         break;
     case SC_MUSICTREE_MAP_GATE_1:
         if ((u32)mainGetBit(GAMEBIT_MUSICTREE_GATE) != 0)
@@ -225,7 +222,7 @@ void sc_musictree_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
                                           &state->pathPoint[0][1],
                                           &state->pathPoint[0][2],
                                           0);
-            state = (SCMusicTreeState*)&((ScLevelControlState*)state)->fog0C;
+            state = (SCMusicTreeState*)&state->pathPoint[0][0];
         }
     }
     obj->userData2 = 1;

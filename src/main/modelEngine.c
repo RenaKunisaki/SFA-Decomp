@@ -232,6 +232,7 @@
 #include "dlls/objects/435_SH_Beacon.h"
 #include "dlls/objects/436_SH_EmptyTum.h"
 #include "dlls/objects/437.h"
+#include "dlls/objects/438_SC_levelcon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -367,8 +368,7 @@ extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, g
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
 extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor, gSC_CloudrunnerAObjDescriptor,
-    gSC_MusicTreeObjDescriptor, gSC_levelcontrolObjDescriptor, gSC_totembondObjDescriptor, gSC_totempoleObjDescriptor,
-    gSC_totempuzzleObjDescriptor;
+    gSC_MusicTreeObjDescriptor, gSC_totembondObjDescriptor, gSC_totempoleObjDescriptor, gSC_totempuzzleObjDescriptor;
 extern ResourceDescriptor gSC_totemstrengthObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
@@ -1501,7 +1501,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSH_BeaconObjDescriptor,
     (ResourceDescriptor*)&gSH_EmptyTumbleWObjDescriptor,
     (ResourceDescriptor*)&gDll437ObjDescriptor,
-    &gSC_levelcontrolObjDescriptor,
+    (ResourceDescriptor*)&gSC_levelcontrolObjDescriptor,
     &gSC_MusicTreeObjDescriptor,
     &gSC_totempoleObjDescriptor,
     &gSC_CloudrunnerAObjDescriptor,
