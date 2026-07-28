@@ -144,7 +144,7 @@ int playerState38(GameObject* obj, int state, f32 fv);
 int playerState37(GameObject* obj, int state);
 void playerStagedResetAnimState(GameObject* obj);
 int playerStateSuperQuake(GameObject* obj, int state, f32 fv);
-void fn_80298924(int obj);
+void playerStagedSyncHitPosition(int obj);
 int playerState35(GameObject* obj, int state);
 int playerState34(GameObject* obj, int state);
 int playerStateStaffLiftRock(int obj, int state, f32 fv);
@@ -152,7 +152,7 @@ void fn_802994A4(GameObject* obj);
 int playerStateStaffBoost(GameObject* obj, int state, f32 fv);
 int playerState31(GameObject* obj, int p2);
 int playerState30(GameObject* obj, int state, f32 fv);
-void fn_8029A420(GameObject* obj);
+void playerStagedRestoreCameraAndAnimState(GameObject* obj);
 void fn_8029A4A8(GameObject* obj, int p2);
 int playerStateFireLaser(int obj, int state, f32 fv);
 int playerStateShootFireball(GameObject* obj, int state, f32 fv);
@@ -177,7 +177,7 @@ int playerState1C(GameObject* obj, int state);
 int playerState1B(GameObject* obj, int state, f32 fv);
 int playerStateOnCloudRunner(GameObject* obj, int state);
 int playerState19(GameObject* obj, int state);
-void fn_8029F67C(GameObject* obj);
+void playerStagedClearActiveMove(GameObject* obj);
 int playerStateOnBike(GameObject* obj, int state);
 int playerState17(int p1, int state);
 int playerStateMountBike(GameObject* obj, int state, f32 fv);
@@ -3070,7 +3070,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
     return 0;
 }
 
-void fn_80298924(int obj)
+void playerStagedSyncHitPosition(int obj)
 {
     ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
 }
@@ -3897,7 +3897,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
     return 0;
 }
 
-void fn_8029A420(GameObject* obj)
+void playerStagedRestoreCameraAndAnimState(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     if (inner->curAnimId != 0x42 && getCurSeqNo() == 0)
@@ -3996,7 +3996,7 @@ int playerStateFireLaser(int obj, int state, f32 fv)
     {
         if ((inner->buttonsJustPressed & PAD_BUTTON_B) != 0 || inner->curAnimId != 0x52)
         {
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029A420;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraAndAnimState;
             return 0x2c;
         }
     }
@@ -4167,7 +4167,7 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
     {
         if ((((PlayerState*)inner)->buttonsJustPressed & PAD_BUTTON_B) != 0 || inner->curAnimId != 0x52)
         {
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029A420;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraAndAnimState;
             return 0x2c;
         }
     }
@@ -4575,7 +4575,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
     if ((inner->buttonsJustPressed & PAD_BUTTON_B) != 0 || inner->curAnimId != 0x52)
     {
         *(u32*)&((PlayerState*)inner)->flags360 &= ~0x2000000LL;
-        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029A420;
+        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraAndAnimState;
         return 0x2c;
     }
     return 0;
@@ -4686,7 +4686,7 @@ int playerStateStartAimStaff(GameObject* obj, int state, f32 fv)
     if ((inner->buttonsJustPressed & PAD_BUTTON_B) != 0 || inner->curAnimId != 0x52)
     {
         buttonDisable(0, PAD_BUTTON_B);
-        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029A420;
+        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraAndAnimState;
         return 0x2c;
     }
     return 0;
@@ -6618,7 +6618,7 @@ int playerState19(GameObject* obj, int state)
     return 0;
 }
 
-void fn_8029F67C(GameObject* obj)
+void playerStagedClearActiveMove(GameObject* obj)
 {
     ObjModelState* modelState = obj->anim.modelState;
     s16* v;
@@ -6869,10 +6869,10 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
         (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x3c)))(sub, 2);
         if (arrayIndexOf((int*)(base + 0x160), 4, *(s16*)((char*)sub + 0x46)) != -1)
         {
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029F67C;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedClearActiveMove;
             return 0x1b;
         }
-        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029F67C;
+        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedClearActiveMove;
         return 0x19;
     }
     return 0;
@@ -9268,7 +9268,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                         if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
                         {
                             buttonDisable(0, PAD_BUTTON_A);
-                            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_80298924;
+                            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedSyncHitPosition;
                             return 0x34;
                         }
                         break;
@@ -9278,7 +9278,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                         if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
                         {
                             buttonDisable(0, PAD_BUTTON_A);
-                            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_80298924;
+                            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedSyncHitPosition;
                             return 0x36;
                         }
                         break;
@@ -9287,7 +9287,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                         if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
                         {
                             buttonDisable(0, PAD_BUTTON_A);
-                            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_80298924;
+                            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedSyncHitPosition;
                             return 0x35;
                         }
                         break;
@@ -16795,7 +16795,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 if (((PlayerState*)inner)->focusObject != NULL)
                 {
                     (*gPlayerInterface)->setState((void*)obj, inner, 0x18);
-                    *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))fn_8029F67C;
+                    *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                 }
                 else
                 {
@@ -17073,12 +17073,12 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     if (arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)va)->anim.romDefNo) != -1)
                     {
                         (*gPlayerInterface)->setState((void*)obj, inner, 0x1a);
-                        *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))fn_8029F67C;
+                        *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                     }
                     else
                     {
                         (*gPlayerInterface)->setState((void*)obj, inner, 0x18);
-                        *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))fn_8029F67C;
+                        *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                     }
                 }
                 break;
@@ -17102,7 +17102,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 else
                 {
                     (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x18);
-                    *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))fn_8029F67C;
+                    *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                 }
                 break;
             case 0xb:
@@ -17262,7 +17262,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             case 0x1d:
                 (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x1a);
-                *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))fn_8029F67C;
+                *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                 break;
             case 0x1e:
                 (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 1);
