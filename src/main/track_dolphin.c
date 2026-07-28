@@ -26,7 +26,7 @@
 #include "main/obj_group.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/os/OSFastCast.h"
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/gx/GXGeometry.h"
@@ -2271,11 +2271,11 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                     wyp[0] = cur[1];
                     wzp[0] = cur[2] - offZ;
                 }
-                PSVECSubtract(we, ws, delta);
-                mag = PSVECMag(delta);
+                PSVECSubtract((Vec*)we, (Vec*)ws, (Vec*)delta);
+                mag = PSVECMag((Vec*)delta);
                 if (mag > eps)
                 {
-                    PSVECNormalize(delta, dir);
+                    PSVECNormalize((Vec*)delta, (Vec*)dir);
                 }
                 for (tri = gTrackTriangleBuffer + desc->firstTriangle;
                      tri < gTrackTriangleBuffer + desc[1].firstTriangle; tri++)
@@ -2288,10 +2288,10 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                     plane[1] = tri->planeN[1];
                     plane[2] = tri->planeN[2];
                     plane[3] = tri->planeD;
-                    dE = (plane[3] + PSVECDotProduct(plane, we)) - radius;
+                    dE = (plane[3] + PSVECDotProduct((Vec*)plane, (Vec*)we)) - radius;
                     if (!(dE <= 0.0f))
                         continue;
-                    dS = (plane[3] + PSVECDotProduct(plane, ws)) - radius;
+                    dS = (plane[3] + PSVECDotProduct((Vec*)plane, (Vec*)ws)) - radius;
                     if ((dS <= 0.0f && dE >= 0.0f) ||
                         (dS >= 0.0f && dE <= 0.0f))
                     {
@@ -2303,8 +2303,8 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         {
                             frac = 0.0f;
                         }
-                        PSVECScale(delta, hitpt, frac);
-                        PSVECAdd(hitpt, ws, hitpt);
+                        PSVECScale((Vec*)delta, (Vec*)hitpt, frac);
+                        PSVECAdd((Vec*)hitpt, (Vec*)ws, (Vec*)hitpt);
                         if (hitpt[1] < tri->vy[tri->minMaxY & 0xf] - maxStep)
                             continue;
                         if (hitpt[1] > tri->vy[tri->minMaxY >> 4] + maxStep)
@@ -2314,19 +2314,19 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         edge0[2] = tri->edgeN0[2];
                         edge0[3] = -(tri->vz[0] * edge0[2] +
                                      (tri->vx[0] * edge0[0] + tri->vy[0] * edge0[1])) +
-                                   PSVECDotProduct(edge0, hitpt);
+                                   PSVECDotProduct((Vec*)edge0, (Vec*)hitpt);
                         edge1[0] = tri->edgeN1[0];
                         edge1[1] = tri->edgeN1[1];
                         edge1[2] = tri->edgeN1[2];
                         edge1[3] = -(tri->vz[1] * edge1[2] +
                                      (tri->vx[1] * edge1[0] + tri->vy[1] * edge1[1])) +
-                                   PSVECDotProduct(edge1p, hitpt);
+                                   PSVECDotProduct((Vec*)edge1p, (Vec*)hitpt);
                         edge2[0] = tri->edgeN2[0];
                         edge2[1] = tri->edgeN2[1];
                         edge2[2] = tri->edgeN2[2];
                         edge2[3] = -(tri->vz[2] * edge2[2] +
                                      (tri->vx[2] * edge2[0] + tri->vy[2] * edge2[1])) +
-                                   PSVECDotProduct(edge2p, hitpt);
+                                   PSVECDotProduct((Vec*)edge2p, (Vec*)hitpt);
                         b = 0;
                         if (radius > 0.0f)
                         {
@@ -2351,19 +2351,19 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         edge0[2] = tri->edgeN0[2];
                         edge0[3] = -(tri->vz[0] * edge0[2] +
                                      (tri->vx[0] * edge0[0] + tri->vy[0] * edge0[1])) +
-                                   PSVECDotProduct(edge0, ws);
+                                   PSVECDotProduct((Vec*)edge0, (Vec*)ws);
                         edge1[0] = tri->edgeN1[0];
                         edge1[1] = tri->edgeN1[1];
                         edge1[2] = tri->edgeN1[2];
                         edge1[3] = -(tri->vz[1] * edge1[2] +
                                      (tri->vx[1] * edge1[0] + tri->vy[1] * edge1[1])) +
-                                   PSVECDotProduct(edge1p, ws);
+                                   PSVECDotProduct((Vec*)edge1p, (Vec*)ws);
                         edge2[0] = tri->edgeN2[0];
                         edge2[1] = tri->edgeN2[1];
                         edge2[2] = tri->edgeN2[2];
                         edge2[3] = -(tri->vz[2] * edge2[2] +
                                      (tri->vx[2] * edge2[0] + tri->vy[2] * edge2[1])) +
-                                   PSVECDotProduct(edge2p, ws);
+                                   PSVECDotProduct((Vec*)edge2p, (Vec*)ws);
                         b = 0;
                         if (edge0[3] > 0.0f)
                             b |= 1;
@@ -2398,7 +2398,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             vb[0] = tri->vx[k];
                             vb[1] = tri->vy[k];
                             vb[2] = tri->vz[k];
-                            PSVECSubtract(vbp, va, evecp);
+                            PSVECSubtract((Vec*)vbp, (Vec*)va, (Vec*)evecp);
                             rdatap[2] = Vec3_Normalize(evecp);
                             if (hitDetectFn_800664fc(va, ws, dir, mag, hitpt, plane, maxStep,
                                                      &frac, 0.0f))
@@ -2428,9 +2428,9 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             va[1] = tri->vy[vertexBit];
                             va[2] = tri->vz[vertexBit];
                             rr = rdatap[1];
-                            PSVECSubtract(va, ws, tmp1);
-                            dotv = PSVECDotProduct(tmp1, dir);
-                            sq = PSVECSquareMag(tmp1);
+                            PSVECSubtract((Vec*)va, (Vec*)ws, (Vec*)tmp1);
+                            dotv = PSVECDotProduct((Vec*)tmp1, (Vec*)dir);
+                            sq = PSVECSquareMag((Vec*)tmp1);
                             if (dotv < 0.0f && sq > rr)
                             {
                                 ok = 0;
@@ -2455,12 +2455,12 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                                     }
                                     if (dotv >= 0.0f && dotv <= mag)
                                     {
-                                        PSVECScale(dir, hitpt, dotv);
-                                        PSVECAdd(ws, hitpt, hitpt);
-                                        PSVECSubtract(hitpt, va, plane);
-                                        PSVECNormalize(plane, plane);
+                                        PSVECScale((Vec*)dir, (Vec*)hitpt, dotv);
+                                        PSVECAdd((Vec*)ws, (Vec*)hitpt, (Vec*)hitpt);
+                                        PSVECSubtract((Vec*)hitpt, (Vec*)va, (Vec*)plane);
+                                        PSVECNormalize((Vec*)plane, (Vec*)plane);
                                         root = sqrtf(rr);
-                                        ndot = -PSVECDotProduct(hitpt, plane);
+                                        ndot = -PSVECDotProduct((Vec*)hitpt, (Vec*)plane);
                                         plane[3] = ndot + root;
                                         frac = dotv;
                                         ok = 1;
@@ -2480,9 +2480,9 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             vb[1] = tri->vy[nextBit];
                             vb[2] = tri->vz[nextBit];
                             dE = rdatap[1];
-                            PSVECSubtract(vbp, ws, tmp2);
-                            sq = PSVECDotProduct(tmp2, dir);
-                            dotv = PSVECSquareMag(tmp2);
+                            PSVECSubtract((Vec*)vbp, (Vec*)ws, (Vec*)tmp2);
+                            sq = PSVECDotProduct((Vec*)tmp2, (Vec*)dir);
+                            dotv = PSVECSquareMag((Vec*)tmp2);
                             if (sq < 0.0f && dotv > dE)
                             {
                                 ok = 0;
@@ -2507,12 +2507,12 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                                     }
                                     if (tt >= 0.0f && tt <= mag)
                                     {
-                                        PSVECScale(dir, hitpt, tt);
-                                        PSVECAdd(ws, hitpt, hitpt);
-                                        PSVECSubtract(hitpt, vbp, plane);
-                                        PSVECNormalize(plane, plane);
+                                        PSVECScale((Vec*)dir, (Vec*)hitpt, tt);
+                                        PSVECAdd((Vec*)ws, (Vec*)hitpt, (Vec*)hitpt);
+                                        PSVECSubtract((Vec*)hitpt, (Vec*)vbp, (Vec*)plane);
+                                        PSVECNormalize((Vec*)plane, (Vec*)plane);
                                         root = sqrtf(dE);
-                                        ndot = -PSVECDotProduct(hitpt, plane);
+                                        ndot = -PSVECDotProduct((Vec*)hitpt, (Vec*)plane);
                                         plane[3] = ndot + root;
                                         frac = tt;
                                         ok = 1;
@@ -3326,14 +3326,14 @@ u8 doEdges;
                 if (maxZ < relz0)
                     continue;
 
-                PSVECSubtract(v0, vertp, e0);
-                PSVECSubtract(vertp, verts2, e1);
-                PSVECCrossProduct(e0, e1, (f32*)(cur + 4));
-                mag = PSVECMag((f32*)(cur + 4));
+                PSVECSubtract((Vec*)v0, (Vec*)vertp, (Vec*)e0);
+                PSVECSubtract((Vec*)vertp, (Vec*)verts2, (Vec*)e1);
+                PSVECCrossProduct((Vec*)e0, (Vec*)e1, (Vec*)(cur + 4));
+                mag = PSVECMag((Vec*)(cur + 4));
                 if (!(mag > 0.0f))
                     continue;
                 mag = 1.0f / mag;
-                PSVECScale((f32*)(cur + 4), (f32*)(cur + 4), mag);
+                PSVECScale((Vec*)(cur + 4), (Vec*)(cur + 4), mag);
                 if (f8)
                 {
                     if (*(f32*)(cur + 8) >= 0.707f || *(f32*)(cur + 8) <= -0.707f)
@@ -3349,13 +3349,13 @@ u8 doEdges;
                     if (*(f32*)(cur + 8) < 0.707f && *(f32*)(cur + 8) > -0.707f)
                         continue;
                 }
-                ((TrackTriangle*)cur)->planeD = -PSVECDotProduct((f32*)(cur + 4), v0);
+                ((TrackTriangle*)cur)->planeD = -PSVECDotProduct((Vec*)(cur + 4), (Vec*)v0);
                 if (doEdges)
                 {
                     int k22, deg, j2;
                     f32* ep;
                     f32 one, eps;
-                    PSVECSubtract(verts2, v0, e2);
+                    PSVECSubtract((Vec*)verts2, (Vec*)v0, (Vec*)e2);
                     k22 = 0;
                     deg = 0;
                     j2 = 0;
@@ -3365,12 +3365,12 @@ u8 doEdges;
                     do
                     {
                         f32 m;
-                        PSVECCrossProduct((f32*)(cur + 4), ep, en);
-                        m = PSVECMag(en);
+                        PSVECCrossProduct((Vec*)(cur + 4), (Vec*)ep, (Vec*)en);
+                        m = PSVECMag((Vec*)en);
                         if (m > eps)
                         {
                             m = one / m;
-                            PSVECScale(en, en, m);
+                            PSVECScale((Vec*)en, (Vec*)en, m);
                             *(f32*)(cur + (k22++) * 4 + 0x24) = en[0];
                             *(f32*)(cur + (k22++) * 4 + 0x24) = en[1];
                             *(f32*)(cur + (k22++) * 4 + 0x24) = en[2];

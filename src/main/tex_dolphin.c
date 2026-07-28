@@ -26,7 +26,7 @@
 #include "main/obj_group.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/gx/GXGeometry.h"
@@ -110,7 +110,7 @@ typedef struct TexShadowRow
 
 u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* xform)
 {
-    float v[3];
+    Vec v;
     u32 i;
     f32 fbset;
     f32 timing;
@@ -124,52 +124,52 @@ u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* 
             switch (i)
             {
             case 0:
-                v[0] = (f32)bounds->minX;
-                v[1] = (f32)bounds->minY;
-                v[2] = (f32)bounds->minZ;
+                v.x = (f32)bounds->minX;
+                v.y = (f32)bounds->minY;
+                v.z = (f32)bounds->minZ;
                 break;
             case 1:
-                v[0] = (f32)bounds->maxX;
-                v[1] = (f32)bounds->minY;
-                v[2] = (f32)bounds->minZ;
+                v.x = (f32)bounds->maxX;
+                v.y = (f32)bounds->minY;
+                v.z = (f32)bounds->minZ;
                 break;
             case 2:
-                v[0] = (f32)bounds->minX;
-                v[1] = (f32)bounds->maxY;
-                v[2] = (f32)bounds->minZ;
+                v.x = (f32)bounds->minX;
+                v.y = (f32)bounds->maxY;
+                v.z = (f32)bounds->minZ;
                 break;
             case 3:
-                v[0] = (f32)bounds->maxX;
-                v[1] = (f32)bounds->maxY;
-                v[2] = (f32)bounds->minZ;
+                v.x = (f32)bounds->maxX;
+                v.y = (f32)bounds->maxY;
+                v.z = (f32)bounds->minZ;
                 break;
             case 4:
-                v[0] = (f32)bounds->minX;
-                v[1] = (f32)bounds->minY;
-                v[2] = (f32)bounds->maxZ;
+                v.x = (f32)bounds->minX;
+                v.y = (f32)bounds->minY;
+                v.z = (f32)bounds->maxZ;
                 break;
             case 5:
-                v[0] = (f32)bounds->maxX;
-                v[1] = (f32)bounds->minY;
-                v[2] = (f32)bounds->maxZ;
+                v.x = (f32)bounds->maxX;
+                v.y = (f32)bounds->minY;
+                v.z = (f32)bounds->maxZ;
                 break;
             case 6:
-                v[0] = (f32)bounds->minX;
-                v[1] = (f32)bounds->maxY;
-                v[2] = (f32)bounds->maxZ;
+                v.x = (f32)bounds->minX;
+                v.y = (f32)bounds->maxY;
+                v.z = (f32)bounds->maxZ;
                 break;
             case 7:
-                v[0] = (f32)bounds->maxX;
-                v[1] = (f32)bounds->maxY;
-                v[2] = (f32)bounds->maxZ;
+                v.x = (f32)bounds->maxX;
+                v.y = (f32)bounds->maxY;
+                v.z = (f32)bounds->maxZ;
                 break;
             }
         }
-        v[0] = v[0] * timing;
-        v[1] = v[1] * timing;
-        v[2] = v[2] * timing;
-        PSMTXMultVec(xform, v, v);
-        if (v[2] >= fbset)
+        v.x = v.x * timing;
+        v.y = v.y * timing;
+        v.z = v.z * timing;
+        PSMTXMultVec((MtxPtr)xform, &v, &v);
+        if (v.z >= fbset)
         {
             return 1;
         }
@@ -238,8 +238,8 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
     i = 0;
     for (; i < passCount; i = i + 1)
     {
-        PSMTXTrans((f32*)passMtx, 0.0f, 0.4f * (f32)(i + 1), 0.0f);
-        PSMTXConcat((f32*)viewMtx, (f32*)passMtx, (f32*)passMtx);
+        PSMTXTrans(passMtx, 0.0f, 0.4f * (f32)(i + 1), 0.0f);
+        PSMTXConcat(viewMtx, passMtx, passMtx);
         GXLoadPosMtxImm(passMtx, GX_PNMTX0);
         mtxSrc = (IndMtxCopy*)((u8*)gTexIndMtxTable);
         *(IndMtxCopy*)indMtx = *mtxSrc;
@@ -741,7 +741,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         if (layer->scrollMtx != 0xff)
         {
             tx = *(float*)((int)lbl_803DCE68 + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
-            PSMTXTrans((f32*)texMatrix, tx,
+            PSMTXTrans(texMatrix, tx,
                        *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
                        lbl_803DEBCC);
@@ -788,7 +788,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         if (layer->scrollMtx != 0xff)
         {
             tx = *(float*)((int)lbl_803DCE68 + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
-            PSMTXTrans((f32*)texMatrix, tx,
+            PSMTXTrans(texMatrix, tx,
                        *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
                        lbl_803DEBCC);
@@ -840,7 +840,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                     {
                         int scrollOffset = (u32)layer->scrollMtx * 0x10;
                         tx = *(float*)((u8*)lbl_803DCE68 + scrollOffset) / 1048576.0f;
-                        PSMTXTrans((f32*)texMatrix, tx,
+                        PSMTXTrans(texMatrix, tx,
                                    *(float*)((u8*)lbl_803DCE68 + scrollOffset + 4) / 1048576.0f,
                                    lbl_803DEBCC);
                         texMtx = texMatrix;
@@ -1137,19 +1137,19 @@ void setupToRenderMapBlock(MapBlockData* block, void* posMtx);
 
 void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 {
-    f32 out[12];
-    f32 tmp[12];
+    Mtx out;
+    Mtx tmp;
     f32 fc;
 
     GXLoadPosMtxImm((const f32 (*)[4])posMtx, GX_PNMTX0);
-    PSMTXCopy((f32*)posMtx, tmp);
+    PSMTXCopy((MtxPtr)posMtx, tmp);
     fc = lbl_803DEBCC;
-    tmp[3] = fc;
-    tmp[7] = fc;
-    tmp[11] = fc;
-    GXLoadNrmMtxImm((const f32 (*)[4])tmp, GX_PNMTX0);
-    PSMTXConcat((f32*)lbl_803967F0, (f32*)posMtx, out);
-    GXLoadTexMtxImm((const f32 (*)[4])out, GX_TEXMTX2, GX_MTX3x4);
+    tmp[0][3] = fc;
+    tmp[1][3] = fc;
+    tmp[2][3] = fc;
+    GXLoadNrmMtxImm(tmp, GX_PNMTX0);
+    PSMTXConcat((MtxPtr)lbl_803967F0, (MtxPtr)posMtx, out);
+    GXLoadTexMtxImm(out, GX_TEXMTX2, GX_MTX3x4);
     GXSetArray(GX_VA_POS, block->vertices, 6);
     GXSetArray(GX_VA_CLR0, block->vertexColors, 2);
     GXSetArray(GX_VA_TEX0, block->vertexTexCoords, 4);
@@ -1188,7 +1188,7 @@ void renderMapBlock(MapBlockData* block, u8 type)
     if (instructionCount == 0)
         return;
     viewMtx = Camera_GetViewMatrix();
-    PSMTXConcat(viewMtx, (f32*)block->transform, m);
+    PSMTXConcat((MtxPtr)viewMtx, block->transform, (MtxPtr)m);
     if (doSetup)
         setupToRenderMapBlock(block, m);
     modelRenderInstrsState_init(&state, instructions, instructionCount << 3, instructionCount << 3);
@@ -1251,9 +1251,9 @@ void renderGlows(void)
     s32 sx, sy, sz;
     u8 amb[3];
     GXColor fogCol;
-    f32 sunMtx[12];
-    f32 dir[3];
-    f32 cam[3];
+    Mtx sunMtx;
+    Vec dir;
+    Vec cam;
     void* viewMtx;
     u8 alpha;
     u8 sunAlpha;
@@ -1280,17 +1280,17 @@ void renderGlows(void)
     if (sunAlpha != 0 && (renderFlags & 0x40))
     {
         viewMtx = Camera_GetViewMatrix();
-        skyGetSunLightDirection(0, &dir[0], &dir[1], &dir[2]);
-        cam[0] = *(f32*)((char*)viewMtx + 0x20);
-        cam[1] = *(f32*)((char*)viewMtx + 0x24);
-        cam[2] = *(f32*)((char*)viewMtx + 0x28);
-        sunDot = PSVECDotProduct(dir, cam);
+        skyGetSunLightDirection(0, &dir.x, &dir.y, &dir.z);
+        cam.x = *(f32*)((char*)viewMtx + 0x20);
+        cam.y = *(f32*)((char*)viewMtx + 0x24);
+        cam.z = *(f32*)((char*)viewMtx + 0x28);
+        sunDot = PSVECDotProduct(&dir, &cam);
         if (sunDot > lbl_803DEBCC)
         {
             int occ;
             f32 fade;
-            skyBuildSunModelMatrix((f32(*)[4])sunMtx);
-            Camera_ProjectWorldPointWithOffset(sunMtx[3], sunMtx[7], sunMtx[11], 100.0f, &px, &py, &pz);
+            skyBuildSunModelMatrix(sunMtx);
+            Camera_ProjectWorldPointWithOffset(sunMtx[0][3], sunMtx[1][3], sunMtx[2][3], 100.0f, &px, &py, &pz);
             Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
             gSunFlareScissorX = sx - 0x10;
             gSunFlareScissorWidth = 0x20;
@@ -1325,7 +1325,7 @@ void renderGlows(void)
             sunDot = sunDot * gSunFlareFade;
             if (sunDot > lbl_803DEBCC)
             {
-                PSMTXConcat(viewMtx, sunMtx, sunMtx);
+                PSMTXConcat((MtxPtr)viewMtx, sunMtx, sunMtx);
                 GXLoadPosMtxImm((const f32 (*)[4])sunMtx, GX_PNMTX0);
                 GXSetCurrentMtx(GX_PNMTX0);
                 selectTexture((Texture*)((int)skyGetSkyTexture()), 0);
@@ -1868,7 +1868,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             }
             if (totalStart < total)
             {
-                PSMTXMultVecArray(lm, p6start, p6start, total - totalStart);
+                PSMTXMultVecArray((MtxPtr)lm, (Vec*)p6start, (Vec*)p6start, total - totalStart);
             }
         }
     }
