@@ -17178,7 +17178,6 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             {
                 f32 spd;
                 f32 dy2;
-                f32 sp3;
                 (*gObjectTriggerInterface)
                     ->setObjects(*(s16*)(*(int*)&((GameObject*)obj)->ownerObj + 0x46),
                                  *(int*)&((GameObject*)obj)->ownerObj, 0);
@@ -17196,9 +17195,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     dy2 = (((GameObject*)prt)->anim.hitVolumeTransforms->jointY - ((GameObject*)prt)->anim.localPosY) -
                           29.0f;
                 }
-                sp3 = spd * -mathCosf(3.1415927f * (f32) ((PlayerState*)obj2)->targetYaw / 32768.0f);
                 (*gObjectTriggerInterface)
-                    ->setOverridePos(spd * -mathSinf(3.1415927f * (f32) ((PlayerState*)obj2)->targetYaw / 32768.0f), dy2, sp3);
+                    ->setOverridePos(spd * -mathSinf(3.1415927f * (f32) ((PlayerState*)obj2)->targetYaw / 32768.0f), dy2,
+                                     spd * -mathCosf(3.1415927f * (f32) ((PlayerState*)obj2)->targetYaw / 32768.0f));
                 (*gObjectTriggerInterface)->runSequence(((GameObject*)obj)->userData1, (void*)obj, -1);
                 break;
             }
