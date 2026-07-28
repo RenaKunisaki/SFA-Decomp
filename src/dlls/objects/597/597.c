@@ -2238,6 +2238,7 @@ void SnowBike_hitDetect(GameObject* obj)
     u8* other;
     int vol;
     f32 mag;
+    f32 shakeScale;
     f32 velScale;
     f32 velScaleDefault;
     f32 value;
@@ -2277,7 +2278,7 @@ void SnowBike_hitDetect(GameObject* obj)
         {
             doRumble(3.0f * mag);
         }
-        state->engineFxLevel = state->engineFxLevel * 0.25f;
+        state->engineFxLevel *= 0.25f;
         if (obj->anim.seqId == SNOWBIKE_IM_BIKE_OBJ || obj->anim.seqId == SNOWBIKE_CR_BIKE_OBJ)
         {
             vol = (int)(25.0f * mag);
@@ -2299,7 +2300,8 @@ void SnowBike_hitDetect(GameObject* obj)
     if (!((HaloSnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
     {
         Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(mag * 0.5f);
+        shakeScale = 0.5f;
+        CameraShake_SetAllMagnitudes(mag * shakeScale);
     }
     if (*(void**)&state->linkedObj != NULL)
     {
