@@ -1914,6 +1914,7 @@ dlls/objects/262/262.c:
 	.data       start:0x80321750 end:0x80321788
 	.bss        start:0x803AC7A0 end:0x803AC7B0
 	.sdata      start:0x803DBDB0 end:0x803DBDD8
+	.sdata2     start:0x803E39F0 end:0x803E3A58
 
 dlls/objects/263/263.c:
 	.text       start:0x80185868 end:0x8018646C
