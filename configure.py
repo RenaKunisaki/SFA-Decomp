@@ -1018,8 +1018,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions,peephole", "-inline", "auto", *msl_math_extra]),
             Object(MatchingFor("GSAE01"), "dolphin/MSL_C/PPCEABI/bare/H/k_tan.c", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions", "-inline", "auto", *msl_math_extra]),
             Object(MatchingFor("GSAE01"), "dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions,peephole", "-inline", "auto", *msl_math_extra]),
-            Object(MatchingFor("GSAE01"), "dolphin/MSL_C/PPCEABI/bare/H/s_floor.c", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions,peephole", "-inline", "auto", *msl_math_extra]),
-            Object(MatchingFor("GSAE01"), "dolphin/MSL_C/PPCEABI/bare/H/s_sin.c", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions", "-inline", "auto", *msl_math_extra]),
             Object(NonMatching, "dolphin/MSL_C/PPCEABI/bare/H/math_8029454c.c", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "functions,peephole", "-inline", "auto", *msl_math_extra]),
         ],
     ),
