@@ -23,7 +23,7 @@ typedef struct ShopkeeperState
     s16 playerMoney; /* 0x9c8 */
     u8 pad9CA[2];
     s16 price; /* 0x9cc */
-    s16 unk9CE; /* 0x9ce */
+    s16 minPrice; /* 0x9ce */
     s16 priceShown; /* 0x9d0 */
     u8 unk9D2; /* 0x9d2 */
     u8 pad9D3;

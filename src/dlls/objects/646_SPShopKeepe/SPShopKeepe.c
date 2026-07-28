@@ -46,6 +46,22 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
+typedef struct ShopKeeperShopInterface
+{
+    void* pad00[12];
+    int (*getItemMinPrice)(GameObject* shop, int slot);
+    void* pad34;
+    int (*getItemPrice)(GameObject* shop, int slot);
+    void* pad3C[2];
+    int (*getItemIndex)(GameObject* shop);
+} ShopKeeperShopInterface;
+
+STATIC_ASSERT(offsetof(ShopKeeperShopInterface, getItemMinPrice) == 0x30);
+STATIC_ASSERT(offsetof(ShopKeeperShopInterface, getItemPrice) == 0x38);
+STATIC_ASSERT(offsetof(ShopKeeperShopInterface, getItemIndex) == 0x44);
+
+#define SHOPKEEPER_SHOP_INTERFACE(shop) (*(ShopKeeperShopInterface**)((GameObject*)(shop))->anim.dll)
+
 void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count);
 int ShopKeeper_getExtraSize(void);
 int ShopKeeper_getObjectTypeId(void);
@@ -714,16 +730,16 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     {
         if (seq->movementState != 0)
         {
-            slot = (*(int (**)(int))((char*)*((GameObject*)((ShopkeeperState*)state)->vendorObj)->anim.dll + 0x44))(
-                ((ShopkeeperState*)state)->vendorObj);
+            slot = SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+                       ->getItemIndex((GameObject*)((ShopkeeperState*)state)->vendorObj);
             if (slot != -1)
             {
                 ((ShopkeeperState*)state)->price =
-                    (s16)(*(int (**)(int, int))((char*)*((GameObject*)((ShopkeeperState*)state)->vendorObj)->anim.dll +
-                                                0x38))(((ShopkeeperState*)state)->vendorObj, slot);
-                ((ShopkeeperState*)state)->unk9CE =
-                    (s16)(*(int (**)(int, int))((char*)*((GameObject*)((ShopkeeperState*)state)->vendorObj)->anim.dll +
-                                                0x30))(((ShopkeeperState*)state)->vendorObj, slot);
+                    (s16)SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+                        ->getItemPrice((GameObject*)((ShopkeeperState*)state)->vendorObj, slot);
+                ((ShopkeeperState*)state)->minPrice =
+                    (s16)SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+                        ->getItemMinPrice((GameObject*)((ShopkeeperState*)state)->vendorObj, slot);
                 ((ShopkeeperState*)state)->priceShown = ((ShopkeeperState*)state)->price;
                 ((ShopkeeperState*)state)->unk9D2 = 0;
                 digit = ((ShopkeeperState*)state)->price;
@@ -742,8 +758,8 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             seq->movementState = 0;
             seq->conditionCallback = (ObjAnimSequenceConditionCallback)DRlaserturret_handlePromptChoice;
         }
-        if ((*(int (**)(int))((char*)*((GameObject*)((ShopkeeperState*)state)->vendorObj)->anim.dll + 0x44))(
-                ((ShopkeeperState*)state)->vendorObj) != -1)
+        if (SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+                ->getItemIndex((GameObject*)((ShopkeeperState*)state)->vendorObj) != -1)
         {
             setAButtonIcon(0x12);
             setBButtonIcon(0xA);

@@ -83,6 +83,17 @@ s16 lbl_803DC19A = 0x2D8;
 #define BOSSDRAKOR_AIRMETER_BGTEXTURE 0x63e /* HUD air-meter background texture id */
 #define DRAKORHOVERPAD_OBJGROUP 0x46 /* DLL 0x271 drakorhoverpad */
 #define BOSSDRAKOR_CHILD_OBJ_MISSILE 0x70f /* drakormissile (drakormissile_startActiveLaunch) */
+
+#define BOSSDRAKOR_SPELLSTONE_STATE_HELD 2
+#define BOSSDRAKOR_SPELLSTONE_STATE_IDLE 0
+
+typedef struct BossDrakorSpellStoneInterface
+{
+    void* pad00[8];
+    int (*setState)(GameObject* spellStone, int state);
+} BossDrakorSpellStoneInterface;
+
+STATIC_ASSERT(offsetof(BossDrakorSpellStoneInterface, setState) == 0x20);
 #define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* spawnAttackObjects: BossdrakorPlacement (airMeterMax/curveAdvanceStep) */
 #define BOSSDRAKOR_OBJFLAG_RENDERED 0x800
 #define BOSSDRAKOR_ENVFX_A 0x144
@@ -116,7 +127,8 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             target = ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
             if ((void*)target != NULL && (obj)->childCount != 0)
             {
-                (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)&((GameObject*)target)->anim.dll) + 0x20)))(target, 2);
+                (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
+                    ->setState((GameObject*)target, BOSSDRAKOR_SPELLSTONE_STATE_HELD);
                 ObjLink_DetachChild(obj, (GameObject*)target);
             }
             break;
@@ -124,7 +136,8 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             target = ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
             if ((void*)target != NULL)
             {
-                (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)&((GameObject*)target)->anim.dll) + 0x20)))(target, 0);
+                (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
+                    ->setState((GameObject*)target, BOSSDRAKOR_SPELLSTONE_STATE_IDLE);
                 ObjLink_AttachChild(obj, (GameObject*)target, 1);
                 s->textTimer = lbl_803E6514;
             }

@@ -36,6 +36,18 @@
 #define SC_MUSIC_TREE_AMBIENT_EFFECT_ACCELERATION   -50
 #define SC_MUSIC_TREE_AMBIENT_EFFECT_NO_DESPAWN_BIT -1
 
+typedef struct ScMusicTreeAmbientEffectInterface {
+    void* pad00[9];
+    void (*setPosition)(GameObject* effect, f32* position);
+    int (*getAnimState)(GameObject* effect);
+} ScMusicTreeAmbientEffectInterface;
+
+STATIC_ASSERT(offsetof(ScMusicTreeAmbientEffectInterface, setPosition) == 0x24);
+STATIC_ASSERT(offsetof(ScMusicTreeAmbientEffectInterface, getAnimState) == 0x28);
+
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_INTERFACE(effect)                                                                 \
+    (*(ScMusicTreeAmbientEffectInterface**)((GameObject*)(effect))->anim.dll)
+
 /* Striking the three totem trees sets the combo bits watched by SC_levelcon. */
 #define SC_MUSIC_TREE_MAP_TOTEM_1 0x30D9C
 #define SC_MUSIC_TREE_MAP_TOTEM_2 0x30D9D
@@ -198,14 +210,15 @@ void sc_musictree_update(GameObject* obj) {
             if (*(void**)ambientEffectCursor == NULL) {
                 sc_musictree_spawnAmbientEffect(obj, state, framesThisStep, i);
             } else {
-                int ambientEffectState = (*(int (**)(int))(
-                    *(int*)(*(int*)&((GameObject*)*ambientEffectCursor)->anim.dll) + 0x28))(*ambientEffectCursor);
+                int ambientEffectState = SC_MUSIC_TREE_AMBIENT_EFFECT_INTERFACE(*ambientEffectCursor)
+                                             ->getAnimState((GameObject*)*ambientEffectCursor);
                 if (ambientEffectState > 3) {
                     *ambientEffectCursor = 0;
                 } else {
-                    (*(void (**)(int, int))(*(int*)(*(int*)&((GameObject*)*ambientEffectCursor)->anim.dll) + 0x24))(
-                        *ambientEffectCursor,
-                        (int)pathPointCursor + offsetof(ScMusicTreeState, ambientEffectPositions));
+                    SC_MUSIC_TREE_AMBIENT_EFFECT_INTERFACE(*ambientEffectCursor)
+                        ->setPosition((GameObject*)*ambientEffectCursor,
+                                      (f32*)((char*)pathPointCursor +
+                                             offsetof(ScMusicTreeState, ambientEffectPositions)));
                 }
             }
             ambientEffectCursor = (int*)((char*)ambientEffectCursor + sizeof(*ambientEffectCursor));
@@ -252,7 +265,7 @@ void sc_musictree_update(GameObject* obj) {
                     int handle = *ambientEffect;
                     if ((u32)handle != 0) {
                         int ambientEffectState =
-                            (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)handle)->anim.dll) + 0x28))(handle);
+                            SC_MUSIC_TREE_AMBIENT_EFFECT_INTERFACE(handle)->getAnimState((GameObject*)handle);
                         if (ambientEffectState > 1) {
                             ObjHits_RecordObjectHit((GameObject*)*ambientEffect, obj, 0xE, 1, 0);
                         }
