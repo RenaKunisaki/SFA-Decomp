@@ -2237,14 +2237,14 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     trickyPatch = getPatchGroup(&obj->anim.worldPosX, state->activeWalkGroup) & 0xffff;
     if ((targetWg != 0) && (wg == targetWg))
     {
-        state->movementState = 1;
+        state->movementState = TRICKY_MOVE_WALK_FREE;
     }
     else
     {
         ulink = walkGroupFn_800db3e4(&obj->anim.worldPosX, target, state->activeWalkGroup);
         if (ulink != 0)
         {
-            state->movementState = 1;
+            state->movementState = TRICKY_MOVE_WALK_FREE;
             if (ulink != state->activeWalkGroup)
             {
                 state->activeWalkGroup = ulink;
@@ -2275,7 +2275,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                             if (*(s16*)(pref + 152) == tp)
                             {
                                 slot = i;
-                                state->movementState = 2;
+                                state->movementState = TRICKY_MOVE_WALK_START_PATCH;
                                 break;
                             }
                         }
@@ -2289,7 +2289,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                             {
                                 state->walkGroup = tp & 0xff;
                             }
-                            state->movementState = 5;
+                            state->movementState = TRICKY_MOVE_CURVE_SETUP;
                         }
                     }
                     else
@@ -2303,20 +2303,20 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                                 if (*(s16*)(pref + 152) == trickyPatch)
                                 {
                                     trickyPatch = i & 0xffff;
-                                    state->movementState = 2;
+                                    state->movementState = TRICKY_MOVE_WALK_START_PATCH;
                                     break;
                                 }
                             }
                             if (i == 4)
                             {
                                 Objfsa_GetNearestPatchExit(target, &state->patchExitPos.x, trickyPatch);
-                                state->movementState = 4;
+                                state->movementState = TRICKY_MOVE_WALK_PATCH_EXIT;
                             }
                         }
                         else
                         {
                             trickyReportError(strs + 0x344);
-                            state->movementState = 0;
+                            state->movementState = TRICKY_MOVE_WALK_WAIT;
                         }
                     }
                 }
@@ -2331,13 +2331,13 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                             if (*(s16*)(pref + 152) == tp)
                             {
                                 slot = i;
-                                state->movementState = 2;
+                                state->movementState = TRICKY_MOVE_WALK_START_PATCH;
                                 break;
                             }
                         }
                         if (i == 4)
                         {
-                            state->movementState = 5;
+                            state->movementState = TRICKY_MOVE_CURVE_SETUP;
                         }
                     }
                     else
@@ -2348,12 +2348,12 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             if (state->linkedWalkGroup == tp)
                             {
-                                state->movementState = 3;
+                                state->movementState = TRICKY_MOVE_WALK_END_PATCH;
                             }
                             else
                             {
                                 Objfsa_GetNearestPatchExit(target, &state->patchExitPos.x, (u16)tp);
-                                state->movementState = 4;
+                                state->movementState = TRICKY_MOVE_WALK_PATCH_EXIT;
                             }
                         }
                         else
@@ -2361,7 +2361,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                             pp = tp;
                             i = isPointWithinPatchGroup(&obj->anim.worldPosX, state->activeWalkGroup, pp);
                             trickyReportError(strs + 0x374, pp, targetWg, wg, state->activeWalkGroup, i);
-                            state->movementState = 0;
+                            state->movementState = TRICKY_MOVE_WALK_WAIT;
                         }
                     }
                 }
@@ -2375,17 +2375,17 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         u16 pid = Objfsa_GetPatchGroupIdAtPoint(target);
                         if (pid == 0)
                         {
-                            state->movementState = 0;
+                            state->movementState = TRICKY_MOVE_WALK_WAIT;
                         }
                         else
                         {
                             state->walkGroup = pid & 0xff;
-                            state->movementState = 5;
+                            state->movementState = TRICKY_MOVE_CURVE_SETUP;
                         }
                     }
                     else
                     {
-                        state->movementState = 0;
+                        state->movementState = TRICKY_MOVE_WALK_WAIT;
                     }
                 }
                 else
@@ -2397,11 +2397,11 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             if (state->linkedWalkGroup == targetWg)
                             {
-                                state->movementState = 3;
+                                state->movementState = TRICKY_MOVE_WALK_END_PATCH;
                             }
                             else
                             {
-                                state->movementState = 5;
+                                state->movementState = TRICKY_MOVE_CURVE_SETUP;
                             }
                         }
                         else
@@ -2413,13 +2413,13 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                                 if (*(s16*)(pref + 152) == targetWg)
                                 {
                                     slot = i;
-                                    state->movementState = 2;
+                                    state->movementState = TRICKY_MOVE_WALK_START_PATCH;
                                     break;
                                 }
                             }
                             if ((i == 4) || (targetWg != state->linkedWalkGroup))
                             {
-                                state->movementState = 5;
+                                state->movementState = TRICKY_MOVE_CURVE_SETUP;
                             }
                         }
                     }
@@ -2437,30 +2437,30 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                                     if (*(s16*)(pref + 152) == p)
                                     {
                                         slot = i;
-                                        state->movementState = 2;
+                                        state->movementState = TRICKY_MOVE_WALK_START_PATCH;
                                         break;
                                     }
                                 }
                                 if (i == 4)
                                 {
                                     Objfsa_GetNearestPatchExit(target, &state->patchExitPos.x, (u16)p);
-                                    state->movementState = 4;
+                                    state->movementState = TRICKY_MOVE_WALK_PATCH_EXIT;
                                 }
                             }
                             else if (state->linkedWalkGroup == p)
                             {
-                                state->movementState = 3;
+                                state->movementState = TRICKY_MOVE_WALK_END_PATCH;
                             }
                             else
                             {
                                 Objfsa_GetNearestPatchExit(target, &state->patchExitPos.x, (u16)p);
-                                state->movementState = 4;
+                                state->movementState = TRICKY_MOVE_WALK_PATCH_EXIT;
                             }
                         }
                         else
                         {
                             trickyReportError(strs + 0x3ec);
-                            state->movementState = 0;
+                            state->movementState = TRICKY_MOVE_WALK_WAIT;
                         }
                     }
                 }
@@ -2474,7 +2474,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x404, state->movementState);
     switch (state->movementState)
     {
-    case 0:
+    case TRICKY_MOVE_WALK_WAIT:
         trickyDebugPrint(strs + 0x41c);
         v = -0.15f * timeDelta + velBefore;
         state->speed = (v < 0.0f) ? 0.0f : v;
@@ -2487,29 +2487,29 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             moved = moveTricky(obj, target);
         }
         break;
-    case 1:
+    case TRICKY_MOVE_WALK_FREE:
         trickyDebugPrint(strs + 0x428);
         moved = moveTricky(obj, target);
         break;
-    case 2:
+    case TRICKY_MOVE_WALK_START_PATCH:
         trickyDebugPrint(strs + 0x434);
         state->speed = velBefore;
         trickyUpdateApproachSpeed(obj, 0.0f, state, patchTarget = &state->patchTargets[slot].x, 1);
         moved = moveTricky(obj, patchTarget);
         break;
-    case 4:
+    case TRICKY_MOVE_WALK_PATCH_EXIT:
         trickyDebugPrint(strs + 0x448);
         state->speed = velBefore;
         trickyUpdateApproachSpeed(obj, 5.0f, state, &state->patchExitPos.x, 1);
         moved = moveTricky(obj, &state->patchExitPos.x);
         break;
-    case 3:
+    case TRICKY_MOVE_WALK_END_PATCH:
         trickyDebugPrint(strs + 0x45c);
         state->speed = velBefore;
         trickyUpdateApproachSpeed(obj, 5.0f, state, &state->linkedPatchPos.x, 1);
         moved = moveTricky(obj, &state->linkedPatchPos.x);
         break;
-    case 6:
+    case TRICKY_MOVE_WALK_TO_NODE:
         trickyDebugPrint(strs + 0x46c, 10,
                          (int)getXZDistance(&state->routeSeedNode->x, &obj->anim.worldPosX));
         dist = getXZDistance(&state->routeSeedNode->x, &obj->anim.worldPosX);
@@ -2520,14 +2520,14 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             node = trickySelectRouteEntry((u8*)state, prevNode, state->routeSeedDir);
             if (node == 0)
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
             }
             else
             {
                     u8* nextNode = trickySelectRouteEntry((u8*)state, (u8*)node, state->routeSeedDir);
                     if (nextNode == 0)
                 {
-                    state->movementState = 0;
+                    state->movementState = TRICKY_MOVE_WALK_WAIT;
                 }
                 else
                 {
@@ -2577,7 +2577,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         }
                         state->speed = 3.0f;
                         trickyRequestMove((int)obj, 0x15, 0.0001f, 0x4000000);
-                        state->movementState = 9;
+                        state->movementState = TRICKY_MOVE_JUMP_PREP;
                         state->voiceCooldown = 600.0f;
                         break;
                     case 5:
@@ -2603,7 +2603,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         state->verticalDelta =
                             (((ObjfsaRomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
                             32.865f;
-                        state->movementState = 0xc;
+                        state->movementState = TRICKY_MOVE_JUMPUP;
                         if (state->route.reverse != 0)
                         {
                             while (state->route.atSegmentEnd != 0)
@@ -2636,7 +2636,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         state->verticalDelta =
                             (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
                             33.114f;
-                        state->movementState = 0xe;
+                        state->movementState = TRICKY_MOVE_JUMPDOWN;
                         if (state->route.reverse != 0)
                         {
                             while (state->route.atSegmentEnd != 0)
@@ -2657,7 +2657,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                     case 7:
                         state->stateFlags = state->stateFlags | 0x2000;
                     default:
-                        state->movementState = 7;
+                        state->movementState = TRICKY_MOVE_WALK_NODES;
                     }
                 }
             }
@@ -2689,11 +2689,11 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
             }
         }
         break;
-    case 5:
+    case TRICKY_MOVE_CURVE_SETUP:
         trickyDebugPrint(strs + 0x480);
         trickyRankLinkedRouteCandidates(obj, routeFlags, (s16)wg, routePtrs);
         i = trickyFindReachableRouteIndex((u8*)state, routePtrs, routeFlags, state->walkGroup);
@@ -2707,9 +2707,9 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         state->speed = velBefore;
         trickyUpdateApproachSpeed(obj, 5.0f, state, &state->routeSeedNode->x, 1);
         moved = moveTricky(obj, &state->routeSeedNode->x);
-        state->movementState = 6;
+        state->movementState = TRICKY_MOVE_WALK_TO_NODE;
         break;
-    case 7:
+    case TRICKY_MOVE_WALK_NODES:
         trickyDebugPrint(strs + 0x490);
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
@@ -2804,7 +2804,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
                 break;
             }
         }
@@ -2813,7 +2813,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             node = trickySelectRouteEntry((u8*)state, state->route.nodeA0, dir & 0xff);
             if (node == 0)
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
                 break;
             }
             if (node != state->route.nodeA4)
@@ -2860,17 +2860,17 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         switch (type)
         {
         case 1:
-            state->movementState = 8;
+            state->movementState = TRICKY_MOVE_JUMP_RUNUP;
             break;
         case 5:
-            state->movementState = 0xb;
+            state->movementState = TRICKY_MOVE_JUMPUP_RUNUP;
             break;
         case 6:
-            state->movementState = 0xd;
+            state->movementState = TRICKY_MOVE_JUMPDOWN_RUNUP;
             break;
         }
         break;
-    case 8:
+    case TRICKY_MOVE_JUMP_RUNUP:
         trickyDebugPrint(strs + 0x49c);
         v = 0.05f * timeDelta + velBefore;
         state->speed = (v > 3.0f) ? 3.0f : v;
@@ -2913,7 +2913,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             u8* nextRouteNode = trickySelectRouteEntry((u8*)state, state->route.nodeA4, dir & 0xff);
             if (nextRouteNode == 0)
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
             }
             else
             {
@@ -2931,12 +2931,12 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 }
                 state->speed = 3.0f;
                 trickyRequestMove((int)obj, 0x15, 0.0001f, 0x4000000);
-                state->movementState = 9;
+                state->movementState = TRICKY_MOVE_JUMP_PREP;
                 state->voiceCooldown = 600.0f;
             }
         }
         break;
-    case 9:
+    case TRICKY_MOVE_JUMP_PREP:
         trickyDebugPrint(strs + 0x4ac);
         if ((u8)(state->stateFlags & 0x10000000))
         {
@@ -3019,7 +3019,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             trickyRequestMove((int)obj, 0x16, v, 0x4000000);
             state->arcMoveProgress = arc->time / arc->duration;
             state->speed = 2.3f;
-            state->movementState = 10;
+            state->movementState = TRICKY_MOVE_JUMPING;
             if (state->route.reverse != 0)
             {
                 while (state->route.atSegmentEnd != 0)
@@ -3036,7 +3036,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
         }
         break;
-    case 10:
+    case TRICKY_MOVE_JUMPING:
     {
         TrickyJumpArc* arc = &state->jumpArc;
         trickyDebugPrint(strs + 0x4b8);
@@ -3045,7 +3045,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         {
             obj->anim.localPosY = ((ObjfsaRomCurveDef*)state->route.nodeA0)->y;
             state->arcMoveProgress = 1.0f;
-            state->movementState = 7;
+            state->movementState = TRICKY_MOVE_WALK_NODES;
         }
         else
         {
@@ -3085,7 +3085,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         }
         break;
     }
-    case 0xb:
+    case TRICKY_MOVE_JUMPUP_RUNUP:
         trickyDebugPrint(strs + 0x4c4);
         v = 0.05f * timeDelta + velBefore;
         state->speed = (v > 3.0f) ? 3.0f : v;
@@ -3128,7 +3128,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             u8* nextRouteNode = trickySelectRouteEntry((u8*)state, state->route.nodeA4, dir & 0xff);
             if (nextRouteNode == 0)
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
             }
             else
             {
@@ -3155,7 +3155,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 state->verticalDelta =
                     (((ObjfsaRomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
                     32.865f;
-                state->movementState = 0xc;
+                state->movementState = TRICKY_MOVE_JUMPUP;
                 if (state->route.reverse != 0)
                 {
                     while (state->route.atSegmentEnd != 0)
@@ -3174,8 +3174,8 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
         }
         break;
-    case 0xc:
-    case 0xe:
+    case TRICKY_MOVE_JUMPUP:
+    case TRICKY_MOVE_JUMPDOWN:
         trickyDebugPrint(strs + 0x4d4);
         state->heightUpdateActive = 0;
         trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
@@ -3197,10 +3197,10 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         {
             state->speed = 0.75f;
             moveTricky(obj, &state->route.posX);
-            state->movementState = 7;
+            state->movementState = TRICKY_MOVE_WALK_NODES;
         }
         break;
-    case 0xd:
+    case TRICKY_MOVE_JUMPDOWN_RUNUP:
         trickyDebugPrint(strs + 0x4e8);
         v = 0.05f * timeDelta + velBefore;
         state->speed = (v > 3.0f) ? 3.0f : v;
@@ -3243,7 +3243,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             u8* nextRouteNode = trickySelectRouteEntry((u8*)state, state->route.nodeA4, dir & 0xff);
             if (nextRouteNode == 0)
             {
-                state->movementState = 0;
+                state->movementState = TRICKY_MOVE_WALK_WAIT;
             }
             else
             {
@@ -3263,7 +3263,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 state->verticalDelta =
                     (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
                     33.114f;
-                state->movementState = 0xe;
+                state->movementState = TRICKY_MOVE_JUMPDOWN;
                 if (state->route.reverse != 0)
                 {
                     while (state->route.atSegmentEnd != 0)
@@ -9078,7 +9078,7 @@ void Tricky_update(int obj)
         if ((trickyState->stateFlags & 0x4000) == 0)
         {
             TRICKY_RESET_COMMAND(state);
-            trickyState->movementState = 0;
+            trickyState->movementState = TRICKY_MOVE_WALK_WAIT;
             trickyState->prevSpeed = z;
             trickyState->speed = z;
             trickyState->homePosX = ((GameObject*)obj)->anim.worldPosX;

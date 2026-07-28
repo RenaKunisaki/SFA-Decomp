@@ -19,6 +19,30 @@
 #define TRICKY_STATE_FLAG_MOVE_ADVANCING 0x8000000 /* ObjAnim_AdvanceCurrentMove reported the current move still advancing */
 #define TRICKY_STATE_FLAG_PATH_PATCHES_VALID 0x400 /* patch[] and patchTargets[] describe targetPosPtr */
 
+/* TrickyState.movementState - the walk/jump phase selector switched on in
+ * trickyUpdateMovementState. The names are the ones the retail debug build
+ * printed for each case ("walk wait", "walk free", "walk start patch",
+ * "walk end patch", "walk patch exit", "curve setup", "walk to node",
+ * "walk nodes", "Jump run up", "Jump prep", "Jumping", "Jump up run up",
+ * "JUMPDOWN or JUMPUP", "JUMPDOWN_RUNUP"). The two states sharing the
+ * "JUMPDOWN or JUMPUP" text are told apart by the sign of the verticalDelta
+ * each one seeds: 0x0C climbs to the node, 0x0E descends to it. */
+#define TRICKY_MOVE_WALK_WAIT        0
+#define TRICKY_MOVE_WALK_FREE        1
+#define TRICKY_MOVE_WALK_START_PATCH 2
+#define TRICKY_MOVE_WALK_END_PATCH   3
+#define TRICKY_MOVE_WALK_PATCH_EXIT  4
+#define TRICKY_MOVE_CURVE_SETUP      5
+#define TRICKY_MOVE_WALK_TO_NODE     6
+#define TRICKY_MOVE_WALK_NODES       7
+#define TRICKY_MOVE_JUMP_RUNUP       8
+#define TRICKY_MOVE_JUMP_PREP        9
+#define TRICKY_MOVE_JUMPING          10
+#define TRICKY_MOVE_JUMPUP_RUNUP     11
+#define TRICKY_MOVE_JUMPUP           12
+#define TRICKY_MOVE_JUMPDOWN_RUNUP   13
+#define TRICKY_MOVE_JUMPDOWN         14
+
 typedef union TrickyScratch
 {
     GameObject* obj;
