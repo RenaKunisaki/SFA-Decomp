@@ -243,13 +243,6 @@ typedef struct
     u32 m[4][4];
 } EWColorTbl;
 
-typedef struct
-{
-    u8 values[4];
-} EWPathParams;
-
-static const EWPathParams sDREarthWarriorPathParams = {{1, 1, 1, 1}};
-
 const EWPathRange gDREarthWarriorLookInitData1 = {{10, 10, 0, 0, 0}};
 const EWPathRange gDREarthWarriorLookInitData2 = {{20, 20, 0, 0, 0}};
 
@@ -300,6 +293,15 @@ const EWColorTbl gDREarthWarriorColors = {
     {{8, 255, 190, 120}, {8, 255, 255, 120}, {8, 180, 240, 255}, {8, 170, 255, 170}}
 };
 void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state);
+
+static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
+
+static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData* base, EarthWarriorSub* s)
+{
+    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
+    s->aimAccumY = 0.0f;
+    s->aimHalfY = (f32)(s32)s->yawTurnDir;
+}
 
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
 {
@@ -359,6 +361,15 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
         s->flags8D8 |= 8;
     }
     return 0;
+}
+
+static void DR_EarthWarrior_slowTurn(GameObject* obj, EarthWarriorSub* q, BaddieState* baddie)
+{
+    baddie->moveSpeed = 0.02f;
+    q->yawSmoothDivisor *= 2.0f;
+    q->yawStepScale *= 0.5f;
+    q->targetAnimSpeed *= 0.75f;
+    q->appliedYaw = (s16)(32768.0f * (obj)->anim.currentMoveProgress);
 }
 
 void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state)
@@ -1370,7 +1381,7 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
 {
     DREarthWarriorInitData* base = (DREarthWarriorInitData*)gDREarthWarriorInitData;
     int inner = *(int*)&(obj)->extra;
-    EWPathParams pathParam = sDREarthWarriorPathParams;
+    u32 stk = *(const u32*)gDREarthWarriorPathSetupParam;
     EWPathRange r2 = gDREarthWarriorLookInitData1;
     EWPathRange r1 = gDREarthWarriorLookInitData2;
     u8* pathState;
@@ -1385,7 +1396,7 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
     ((EarthWarriorState*)inner)->baddie.gravity = 0.17f;
     pathState = (u8*)&((EarthWarriorState*)inner)->baddie + 4;
     (*gPathControlInterface)->init(pathState, 0, 0x48683, 1);
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, pathParam.values);
+    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, &stk);
     (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->unk4C, base->unk64, 8);
     pathState[0x264] = 0x28;
     (*gPathControlInterface)->attachObject((void*)obj, pathState);
