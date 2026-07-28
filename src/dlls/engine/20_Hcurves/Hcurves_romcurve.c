@@ -2246,7 +2246,7 @@ int curves_isNotPoint(RomCurveDef* curve)
     int i;
     for (i = 0; i < 4; i++)
     {
-        if ((s32)curve->linkIds[i] != -1 && (curve->blockedLinkMask & (1 << i)) == 0)
+        if (curve->linkIds[i] != -1 && (curve->blockedLinkMask & (1 << i)) == 0)
         {
             return 0;
         }
@@ -2259,7 +2259,7 @@ int curves_isPoint(RomCurveDef* curve)
     int i;
     for (i = 0; i < 4; i++)
     {
-        if ((s32)curve->linkIds[i] != -1 && (curve->blockedLinkMask & (1 << i)) != 0)
+        if (curve->linkIds[i] != -1 && (curve->blockedLinkMask & (1 << i)) != 0)
         {
             return 0;
         }
