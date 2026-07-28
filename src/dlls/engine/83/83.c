@@ -31,10 +31,8 @@ void CameraModeCloudRunner_free(void)
     lbl_803DD5B8 = NULL;
 }
 
-void CameraModeCloudRunner_update(u8* obj)
+void CameraModeCloudRunner_update(CameraObject* camera)
 {
-
-    CameraObject* camera = (CameraObject*)obj;
     GameObject* target = (GameObject*)camera->anim.targetObj;
     GameObject* focus;
     s16 tgtYaw;

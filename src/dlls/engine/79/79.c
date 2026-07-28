@@ -25,9 +25,8 @@ void dll_4F_func05(void)
     gCameraMode4FState = NULL;
 }
 
-void dll_4F_update(int* obj)
+void dll_4F_update(CameraObject* camera)
 {
-    CameraObject* camera;
     GameObject* target;
     f32 pts[4];
     f32 fz;
@@ -35,7 +34,6 @@ void dll_4F_update(int* obj)
     f32 cs;
     s16 angle;
 
-    camera = (CameraObject*)obj;
     pts[0] = 0.0f;
     pts[1] = 1.0f;
     pts[2] = 0.0f;

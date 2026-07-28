@@ -73,9 +73,8 @@ void CameraModeCrawl_free(void)
     lbl_803DD598 = NULL;
 }
 
-void CameraModeCrawl_update(u8* obj)
+void CameraModeCrawl_update(CameraObject* camera)
 {
-    CameraObject* camera = (CameraObject*)obj;
     GameObject* target = (GameObject*)camera->anim.targetObj;
     int delta;
     f32 dx, outY, dz, outW;
@@ -113,7 +112,7 @@ void CameraModeCrawl_update(u8* obj)
     else
     {
         other = (int)(*gCameraInterface)->getDefaultHandlerEntry();
-        (*gCameraInterface)->getRelativePosition(obj, &dx, &outY, &dz, &outW, 35.0f, 0);
+        (*gCameraInterface)->getRelativePosition(camera, &dx, &outY, &dz, &outW, 35.0f, 0);
         {
             int t = 0x8000 - (u16)getAngle(dx, dz);
             delta = t - (u16)camera->anim.rotX;
@@ -127,7 +126,8 @@ void CameraModeCrawl_update(u8* obj)
             delta = delta + 0xffff;
         }
         camera->anim.rotX += delta;
-        (*(void (**)(u8*, f32, f32))(*(int*)(*(int*)(other + 4)) + 24))(obj, target->anim.worldPosY, outW);
+        (*(void (**)(CameraObject*, f32, f32))(*(int*)(*(int*)(other + 4)) + 24))(camera, target->anim.worldPosY,
+                                                                                    outW);
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,

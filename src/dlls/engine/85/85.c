@@ -23,9 +23,8 @@ void CameraModePerv_free(void)
     lbl_803DD5C8 = NULL;
 }
 
-void CameraModePerv_update(u8* obj)
+void CameraModePerv_update(CameraObject* camera)
 {
-    CameraObject* camera = (CameraObject*)obj;
     GameObject* target = (GameObject*)camera->anim.targetObj;
 
     lbl_803DD5C8->timer -= 0.2f * timeDelta;
@@ -43,9 +42,8 @@ void CameraModePerv_update(u8* obj)
     camera->anim.rotZ = 0;
 }
 
-void CameraModePerv_init(int* obj)
+void CameraModePerv_init(CameraObject* camera)
 {
-    CameraObject* camera = (CameraObject*)obj;
 
     if (lbl_803DD5C8 == NULL)
     {

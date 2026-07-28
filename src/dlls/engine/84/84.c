@@ -34,9 +34,8 @@ void dll_54_func05(void)
     gCameraMode54State = NULL;
 }
 
-void dll_54_update(u8* obj)
+void dll_54_update(CameraObject* camera)
 {
-    CameraObject* camera = (CameraObject*)obj;
     int i;
     int count;
     f32 zz, xx;
@@ -142,10 +141,8 @@ void dll_54_update(u8* obj)
     }
 }
 
-void dll_54_init(int* cameraObj, int unused, int* sourceObj)
+void dll_54_init(CameraObject* camera, int unused, CameraObject* source)
 {
-    CameraObject* camera = (CameraObject*)cameraObj;
-    CameraObject* source = (CameraObject*)sourceObj;
 
     if (gCameraMode54State == NULL)
     {
@@ -154,7 +151,7 @@ void dll_54_init(int* cameraObj, int unused, int* sourceObj)
     memset(gCameraMode54State, 0, sizeof(CameraMode54State));
     gCameraMode54State->transitionTimer = 60.0f;
     gCameraMode54State->transitionDone = 0;
-    if (sourceObj != NULL)
+    if (source != NULL)
     {
         camera->anim.localPosX = source->anim.worldPosX;
         camera->anim.localPosY = source->anim.worldPosY;

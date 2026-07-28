@@ -28,10 +28,9 @@ void CameraModeForceBehind_free(void)
 {
 }
 
-void CameraModeForceBehind_update(u8* obj)
+void CameraModeForceBehind_update(CameraObject* camera)
 {
     extern const f32 gCamForceBehindEaseRate[1];
-    CameraObject* camera = (CameraObject*)obj;
     GameObject* target = (GameObject*)camera->anim.targetObj;
     s16 yaw;
     s16 pitch;
@@ -108,9 +107,8 @@ void CameraModeForceBehind_update(u8* obj)
 
 const f32 gCamForceBehindEaseRate[1] = {0.25f};
 
-void CameraModeForceBehind_init(u8* obj, int unused, f32* params)
+void CameraModeForceBehind_init(CameraObject* camera, int unused, f32* params)
 {
-    CameraObject* camera = (CameraObject*)obj;
     GameObject* target = (GameObject*)camera->anim.targetObj;
     f32 angle;
     f32 cosv, sinv;

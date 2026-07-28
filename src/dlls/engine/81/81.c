@@ -22,9 +22,8 @@ void CameraModeCannon_free(void)
     lbl_803DD5A0 = NULL;
 }
 
-void CameraModeCannon_update(u8* obj)
+void CameraModeCannon_update(CameraObject* camera)
 {
-    CameraObject* camera = (CameraObject*)obj;
     s16* vec;
     s16 yaw;
     s16 delta;
@@ -44,9 +43,8 @@ void CameraModeCannon_update(u8* obj)
         lbl_803DD5A0->target->anim.localPosZ - 60.0f * mathCosf(3.1415927f * (f32)(s32)(-camera->anim.rotX) / 32768.0f);
 }
 
-void CameraModeCannon_init(int* p1, int unused, int* p3)
+void CameraModeCannon_init(CameraObject* camera, int unused, int* p3)
 {
-    CameraObject* camera = (CameraObject*)p1;
 
     if (lbl_803DD5A0 == NULL)
     {
