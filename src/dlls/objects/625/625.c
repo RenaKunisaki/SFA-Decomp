@@ -184,6 +184,19 @@ int drakorhoverpad_setScale(GameObject* obj)
     return (p[0x179] >> 2) & 1;
 }
 
+static void drakorhoverpad_setupPathCurve(GameObject* obj, u8* p)
+{
+    int curveArg = 0x2a;
+
+    (*gRomCurveInterface)->initCurve(&((DrakorHoverpadState*)p)->curve, (void*)obj, 300.0f, &curveArg, -1);
+    Curve_AdvanceAlongPath((Curve*)(p + 4), 0.01f);
+}
+
+static f32 drakorhoverpad_nodeWobbleSpeed(DrakorCurveNode** slot, int angle)
+{
+    return (*(f32*)&gDrakorHoverpadSpeedStep) * ((f32)(u32)(*slot)->tangentMag * mathSinf(3.1415927f * (f32)angle / 32768.0f));
+}
+
 int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex);
 
 int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex);
@@ -254,17 +267,6 @@ int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex)
         return collected[maxIndex];
     }
     return -1;
-}
-
-static void drakorhoverpad_restartPathCurve(GameObject* obj)
-{
-    u8* p = obj->extra;
-    DrakorCurveNode** slot = (DrakorCurveNode**)&obj->anim.currentMove;
-    int curveArg = 0x2a;
-
-    (*gRomCurveInterface)->initCurve(&((DrakorHoverpadState*)p)->curve, (void*)obj, 300.0f, &curveArg, -1);
-    Curve_AdvanceAlongPath((Curve*)(p + 4), 0.01f);
-    ((DrakorHoverpadState*)p)->speed = drakorhoverpad_nodeWobbleSin(slot, (*slot)->tangentYaw << 8);
 }
 
 int drakorhoverpad_update(RomCurveWalker* curve, int maxIndex)
