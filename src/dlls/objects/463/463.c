@@ -1,66 +1,55 @@
 /*
- * DLL 0x1CF - a placement-driven static object. On init it reads its
- * placement: a gate game bit arms its degree-based rotY setup, rotX comes
- * from a byte angle, and the object starts hidden with updates and hit
- * detection disabled.
+ * DLL 0x1CF has no active-target object definition. Its init callback reads a
+ * placement prefix, applies two encoded rotations, and disables visibility,
+ * updates, and hit detection.
  */
-#include "main/dll/dll_01CF_dll1cf.h"
+#include "dlls/objects/463.h"
+
 #include "game/objects/object.h"
-#include "main/gamebits.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
 
-int dll_1CF_getExtraSize(void)
-{
-    return 0x0;
+int dll_1CF_getExtraSize(void) {
+    return 0;
 }
 
-int dll_1CF_getObjectTypeId(void)
-{
-    return 0x0;
+int dll_1CF_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_1CF_free(void)
-{
+void dll_1CF_free(void) {
 }
 
-void dll_1CF_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 visibleInt = visible;
-    if (visibleInt != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dll_1CF_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void dll_1CF_hitDetect(void)
-{
+void dll_1CF_hitDetect(void) {
 }
 
-void dll_1CF_update(void)
-{
+void dll_1CF_update(void) {
 }
 
-void dll_1CF_init(GameObject* obj, Dll1CFPlacement* placement)
-{
-    if ((u32)mainGetBit(placement->gateGameBit) != 0u)
-    {
-        obj->anim.rotY = (s16)(((s32)placement->rotYDegrees << 13) / 45);
+void dll_1CF_init(GameObject* obj, const Dll1CFPlacementView* placement) {
+    if ((u32)mainGetBit(placement->gateGameBit) != 0u) {
+        obj->anim.rotY = (s16)(((s32)placement->rotationYDegrees << 13) / 45);
     }
-    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
+    obj->anim.rotX = (s16)((s32)placement->rotationXByte << 8);
     obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN |
-                                                OBJECT_OBJFLAG_UPDATE_DISABLED));
+                                                 OBJECT_OBJFLAG_UPDATE_DISABLED));
 }
 
-void dll_1CF_release(void)
-{
+void dll_1CF_release(void) {
 }
 
-void dll_1CF_initialise(void)
-{
+void dll_1CF_initialise(void) {
 }
 
-ObjectDescriptor dll_1CF = {
+ObjectDescriptor gDll1CFObjDescriptor = {
     0,
     0,
     0,

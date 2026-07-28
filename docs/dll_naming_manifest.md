@@ -506,7 +506,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | Exact complete 12-function TU with its terminal descriptor, allocation-backed 0x68-byte state, active-EN-retail-backed fixed 0x24-byte placement, runtime-bounded ten-segment arrays, canonical unit header, and exact 84-byte data image; the generated source path remains unchanged |
 | 0x1CD | DIM_LevelCo | COMPLETE | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | = (canonical) | Exact complete five-function TU with its terminal descriptor, allocation-backed 0x10-byte state, active-EN-retail-backed fixed 0x18-byte placement, canonical unit header, canonical object flags, and recovered gamebit/music-trigger roles; the exact 68-byte data image and generated source path remain unchanged |
 | 0x1CE | — | COMPLETE | dlls/objects/462/462.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, allocation-backed 0x0C-byte state, fully asserted callback-visible placement prefix, canonical unit header, and exact 88-byte data image; active EN has no object definitions for this DLL, no basename or placement width is claimed, and the generated source path remains unchanged |
-| 0x1CF | — | COMPLETE | dlls/objects/463/463.c | = (canonical) | No recovered retail basename |
+| 0x1CF | — | COMPLETE | dlls/objects/463/463.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, zero-byte extra state, fully asserted callback-visible placement prefix, canonical unit header, and exact 60-byte data image; active EN has no object definitions for this DLL, no basename or placement width is claimed, and the generated source path remains unchanged |
 | 0x1D0 | DIM_tricky | COMPLETE | dlls/objects/464_DIM_tricky/DIM_tricky.c | = (canonical) | — |
 | 0x1D1 | DIMTruthHor | COMPLETE | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | = (canonical) | — |
 | 0x1D2 | WORLDplanet | COMPLETE | dlls/objects/466_WORLDplanet/WORLDplanet.c | = (canonical) | — |
@@ -1034,6 +1034,7 @@ more as they are recovered.
 | 0x1CC | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | include/dlls/objects/460_DIMMagicBri.h |
 | 0x1CD | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | include/dlls/objects/461_DIM_LevelCo.h |
 | 0x1CE | dlls/objects/462/462.c | include/dlls/objects/462.h |
+| 0x1CF | dlls/objects/463/463.c | include/dlls/objects/463.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
