@@ -64,7 +64,7 @@
 #include "main/dll/groundbaddiepush_ext.h"
 #include "main/dll/dll_00C9_enemy_ext.h"
 #include "dlls/objects/336_GCRobotLigh.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/dll/mikaladon.h"
 #include "main/dll/magicPlant.h"
 #include "main/dll/kooshy.h"
@@ -2335,7 +2335,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
     vec[0] = ((GameObject*)trackedObj)->anim.localPosX - (obj)->anim.localPosX;
     vec[1] = (25.0f + ((GameObject*)trackedObj)->anim.localPosY) - (obj)->anim.localPosY;
     vec[2] = ((GameObject*)trackedObj)->anim.localPosZ - (obj)->anim.localPosZ;
-    PSVECMag(vec);
+    PSVECMag((Vec*)vec);
     *(f32*)(state + 0x32c) = *(f32*)(state + 0x32c) + timeDelta;
     if (*(u32*)(state + 0x340) != 0 || *(f32*)(state + 0x32c) > 3.6e+02f)
     {
@@ -2531,7 +2531,7 @@ void kooshy_updateIdle(GameObject* obj, int state)
     vec[0] = (obj)->anim.localPosX - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX;
     vec[1] = (obj)->anim.localPosY - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosY;
     vec[2] = (obj)->anim.localPosZ - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ;
-    if (PSVECMag(vec) < lbl_803E2900 &&
+    if (PSVECMag((Vec*)vec) < lbl_803E2900 &&
         (((GameObject*)((BaddieState*)state)->trackedObj)->objectFlags & MAGICPLANT_OBJFLAG_PARENT_SLACK) == 0)
     {
         worldPos[0] = (obj)->anim.localPosX;
@@ -3209,16 +3209,16 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     vecA[0] = ((FireflyState*)state)->planeAnchorX;
     vecA[1] = ((FireflyState*)state)->planeAnchorY;
     vecA[2] = ((FireflyState*)state)->planeAnchorZ;
-    PSVECSubtract(vecA, &obj->anim.localPosX, tmpA);
-    d = PSVECDotProduct(tmpA, (f32*)(state + 0x344));
+    PSVECSubtract((Vec*)vecA, &obj->anim.localPos, (Vec*)tmpA);
+    d = PSVECDotProduct((Vec*)tmpA, (Vec*)(state + 0x344));
     vecA[0] = *(f32*)(state + 0x344) * d + obj->anim.localPosX;
     vecA[1] = *(f32*)(state + 0x348) * d + (objY = obj->anim.localPosY);
     vecA[2] = *(f32*)(state + 0x34c) * d + obj->anim.localPosZ;
     axisA[0] = lbl_803E2A00;
     axisA[1] = lbl_803E2A04;
     axisA[2] = lbl_803E2A00;
-    PSVECCrossProduct(axisA, (f32*)(state + 0x344), crossA);
-    PSVECNormalize(crossA, crossA);
+    PSVECCrossProduct((Vec*)axisA, (Vec*)(state + 0x344), (Vec*)crossA);
+    PSVECNormalize((Vec*)crossA, (Vec*)crossA);
     if (lbl_803E2A00 != crossA[0])
     {
         dxDiff = (obj->anim.localPosX - ((FireflyState*)state)->planeAnchorX) / crossA[0];
@@ -3234,16 +3234,16 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     vecB[0] = ((FireflyState*)state)->planeAnchorX;
     vecB[1] = ((FireflyState*)state)->planeAnchorY;
     vecB[2] = ((FireflyState*)state)->planeAnchorZ;
-    PSVECSubtract(vecB, targetPos, tmpB);
-    d = PSVECDotProduct(tmpB, (f32*)(state + 0x344));
+    PSVECSubtract((Vec*)vecB, (Vec*)targetPos, (Vec*)tmpB);
+    d = PSVECDotProduct((Vec*)tmpB, (Vec*)(state + 0x344));
     vecB[0] = *(f32*)(state + 0x344) * d + targetPos[0];
     vecB[1] = *(f32*)(state + 0x348) * d + (dy = targetPos[1]);
     vecB[2] = *(f32*)(state + 0x34c) * d + targetPos[2];
     axisB[0] = lbl_803E2A00;
     axisB[1] = lbl_803E2A04;
     axisB[2] = lbl_803E2A00;
-    PSVECCrossProduct(axisB, (f32*)(state + 0x344), crossB);
-    PSVECNormalize(crossB, crossB);
+    PSVECCrossProduct((Vec*)axisB, (Vec*)(state + 0x344), (Vec*)crossB);
+    PSVECNormalize((Vec*)crossB, (Vec*)crossB);
     if (lbl_803E2A00 != crossB[0])
     {
         d = (targetPos[0] - ((FireflyState*)state)->planeAnchorX) / crossB[0];
@@ -3303,16 +3303,16 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     vecA[0] = fs->wallPlane.anchorX;
     vecA[1] = fs->wallPlane.anchorY;
     vecA[2] = fs->wallPlane.anchorZ;
-    PSVECSubtract(vecA, (f32*)(obj + 6), tmpA);
-    d = PSVECDotProduct(tmpA, fs->wallPlane.normal);
+    PSVECSubtract((Vec*)vecA, (Vec*)(obj + 6), (Vec*)tmpA);
+    d = PSVECDotProduct((Vec*)tmpA, (Vec*)fs->wallPlane.normal);
     vecA[0] = fs->wallPlane.normal[0] * d + o->anim.localPosX;
     vecA[1] = fs->wallPlane.normal[1] * d + (objY = o->anim.localPosY);
     vecA[2] = fs->wallPlane.normal[2] * d + o->anim.localPosZ;
     axisA[0] = lbl_803E2A00;
     axisA[1] = lbl_803E2A04;
     axisA[2] = lbl_803E2A00;
-    PSVECCrossProduct(axisA, fs->wallPlane.normal, crossA);
-    PSVECNormalize(crossA, crossA);
+    PSVECCrossProduct((Vec*)axisA, (Vec*)fs->wallPlane.normal, (Vec*)crossA);
+    PSVECNormalize((Vec*)crossA, (Vec*)crossA);
     if (lbl_803E2A00 != crossA[0])
     {
         dxA = (o->anim.localPosX - fs->wallPlane.anchorX) / crossA[0];
@@ -3328,16 +3328,16 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     vecB[0] = fs->wallPlane.anchorX;
     vecB[1] = fs->wallPlane.anchorY;
     vecB[2] = fs->wallPlane.anchorZ;
-    PSVECSubtract(vecB, targetPos, tmpB);
-    d = PSVECDotProduct(tmpB, fs->wallPlane.normal);
+    PSVECSubtract((Vec*)vecB, (Vec*)targetPos, (Vec*)tmpB);
+    d = PSVECDotProduct((Vec*)tmpB, (Vec*)fs->wallPlane.normal);
     vecB[0] = fs->wallPlane.normal[0] * d + targetPos[0];
     vecB[1] = fs->wallPlane.normal[1] * d + (targetY = targetPos[1]);
     vecB[2] = fs->wallPlane.normal[2] * d + targetPos[2];
     axisB[0] = lbl_803E2A00;
     axisB[1] = lbl_803E2A04;
     axisB[2] = lbl_803E2A00;
-    PSVECCrossProduct(axisB, fs->wallPlane.normal, crossB);
-    PSVECNormalize(crossB, crossB);
+    PSVECCrossProduct((Vec*)axisB, (Vec*)fs->wallPlane.normal, (Vec*)crossB);
+    PSVECNormalize((Vec*)crossB, (Vec*)crossB);
     if (lbl_803E2A00 != crossB[0])
     {
         d = (targetPos[0] - fs->wallPlane.anchorX) / crossB[0];
@@ -3379,7 +3379,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     dxA -= dxDiff;
     turnStep = objY - dy;
     wallPlaneClampMoveTarget(moveTarget, &fs->wallPlane, dxA, turnStep);
-    PSVECSubtract(moveTarget, (f32*)(obj + 6), moveDelta);
+    PSVECSubtract((Vec*)moveTarget, (Vec*)(obj + 6), (Vec*)moveDelta);
     objMove((GameObject*)obj, moveDelta[0], moveDelta[1], moveDelta[2]);
     turnStep = lbl_803E2A00;
     o->anim.velocityX = turnStep;
@@ -3449,8 +3449,8 @@ void wallPlaneClampMoveTarget(float* outPos, WallPlaneState* plane, float latera
     up[0] = upConst;
     up[1] = lbl_803E2A04;
     up[2] = upConst;
-    PSVECCrossProduct(up, plane->normal, sideAxis);
-    PSVECNormalize(sideAxis, sideAxis);
+    PSVECCrossProduct((Vec*)up, (Vec*)plane->normal, (Vec*)sideAxis);
+    PSVECNormalize((Vec*)sideAxis, (Vec*)sideAxis);
     *outPos = lateral * sideAxis[0] + plane->anchorX;
     outPos[2] = lateral * sideAxis[2] + plane->anchorZ;
     scale = (2.0f);
@@ -3502,8 +3502,8 @@ void rachnopFindWallPlane(GameObject* obj, int state)
         av[0] = lbl_803E2A00;
         av[1] = lbl_803E2A04;
         av[2] = lbl_803E2A00;
-        PSVECCrossProduct(av, (float*)(state + DUSTER_WALL_PLANE_OFFSET), sideAxis0);
-        PSVECNormalize(sideAxis0, sideAxis0);
+        PSVECCrossProduct((Vec*)av, (Vec*)(state + DUSTER_WALL_PLANE_OFFSET), (Vec*)sideAxis0);
+        PSVECNormalize((Vec*)sideAxis0, (Vec*)sideAxis0);
         ((DusterState*)state)->wallPlane.anchorX = hit[1];
         ((DusterState*)state)->wallPlane.anchorZ = hit[5];
         cv[0] = hit[2];
@@ -3511,16 +3511,16 @@ void rachnopFindWallPlane(GameObject* obj, int state)
         bv[0] = ((DusterState*)state)->wallPlane.anchorX;
         bv[1] = ((DusterState*)state)->wallPlane.anchorY;
         bv[2] = ((DusterState*)state)->wallPlane.anchorZ;
-        PSVECSubtract(bv, cv, toAnchor);
-        dot = PSVECDotProduct(toAnchor, (float*)(state + DUSTER_WALL_PLANE_OFFSET));
+        PSVECSubtract((Vec*)bv, (Vec*)cv, (Vec*)toAnchor);
+        dot = PSVECDotProduct((Vec*)toAnchor, (Vec*)(state + DUSTER_WALL_PLANE_OFFSET));
         bv[0] = *(float*)(state + DUSTER_WALL_NORMAL_X_OFFSET) * dot + cv[0];
         bv[1] = *(float*)(state + DUSTER_WALL_NORMAL_Y_OFFSET) * dot + cv[1];
         bv[2] = *(float*)(state + DUSTER_WALL_NORMAL_Z_OFFSET) * dot + cv[2];
         dv[0] = lbl_803E2A00;
         dv[1] = lbl_803E2A04;
         dv[2] = lbl_803E2A00;
-        PSVECCrossProduct(dv, (float*)(state + DUSTER_WALL_PLANE_OFFSET), sideAxis);
-        PSVECNormalize(sideAxis, sideAxis);
+        PSVECCrossProduct((Vec*)dv, (Vec*)(state + DUSTER_WALL_PLANE_OFFSET), (Vec*)sideAxis);
+        PSVECNormalize((Vec*)sideAxis, (Vec*)sideAxis);
         if (lbl_803E2A00 != sideAxis[0])
         {
             ((DusterState*)state)->wallPlane.axisLimit =
@@ -6241,8 +6241,8 @@ void crawler_rotateVectorYaw(int unused1, int* unused2, f32* vec, int unused3, i
     f32 mtx[12];
     f32 a;
     a = 0.02f * mathCosfHighPrecision(0.08f * phase - 1.1f * (f32)nodeIndex);
-    PSMTXRotRad(mtx, 0x79, a);
-    PSMTXMultVecSR(mtx, vec, vec);
+    PSMTXRotRad((MtxPtr)mtx, 'y', a);
+    PSMTXMultVecSR((MtxPtr)mtx, (Vec*)vec, (Vec*)vec);
 }
 
 void hagabonMK2_stopLoopSfx(int obj, u8* state)

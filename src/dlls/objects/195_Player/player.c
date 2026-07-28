@@ -87,7 +87,7 @@
 #include "main/frame_timing.h"
 #include "main/byte_flags.h"
 #include "main/pad.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTransform.h"
 #include "string.h"
@@ -368,43 +368,43 @@ void playerUpdateTail(int unused1, int* unused2, f32* vec, int unused3, int mode
         gPlayerModelChainOriginX = 0.12f;
         gPlayerModelChainOriginY = 0.675f;
         gPlayerModelChainOriginZ = -0.15f;
-        PSMTXRotRad(mtx1, 0x79, 0.03f * mathCosfHighPrecision(0.04f * angle - 1.1f * (f32)mode));
-        PSMTXMultVecSR(mtx1, vec, vec);
+        PSMTXRotRad((MtxPtr)mtx1, 'y', 0.03f * mathCosfHighPrecision(0.04f * angle - 1.1f * (f32)mode));
+        PSMTXMultVecSR((MtxPtr)mtx1, (Vec*)vec, (Vec*)vec);
         break;
     case 4:
         gPlayerModelChainOriginX = 0.5f;
         gPlayerModelChainOriginY = 0.675f;
         gPlayerModelChainOriginZ = -0.15f;
-        PSMTXRotRad(mtx1, 0x79, 0.03f * mathCosfHighPrecision(0.04f * angle - 1.1f * (f32)mode));
-        PSMTXMultVecSR(mtx1, vec, vec);
+        PSMTXRotRad((MtxPtr)mtx1, 'y', 0.03f * mathCosfHighPrecision(0.04f * angle - 1.1f * (f32)mode));
+        PSMTXMultVecSR((MtxPtr)mtx1, (Vec*)vec, (Vec*)vec);
         break;
     case 5:
         gPlayerModelChainOriginX = 0.4f;
         gPlayerModelChainOriginY = 0.675f;
         gPlayerModelChainOriginZ = -0.15f;
-        PSMTXRotRad(mtx1, 0x79, 0.03f * mathCosfHighPrecision(0.04f * angle - 1.1f * (f32)mode));
-        PSMTXMultVecSR(mtx1, vec, vec);
+        PSMTXRotRad((MtxPtr)mtx1, 'y', 0.03f * mathCosfHighPrecision(0.04f * angle - 1.1f * (f32)mode));
+        PSMTXMultVecSR((MtxPtr)mtx1, (Vec*)vec, (Vec*)vec);
         break;
     case 2:
         gPlayerModelChainOriginX = 0.75f;
         gPlayerModelChainOriginY = 0.0f;
         gPlayerModelChainOriginZ = -0.1f;
-        PSMTXRotRad(mtx1, 0x79, 0.3f * mathCosfHighPrecision(0.5f * angle));
-        PSMTXRotRad(mtx2, 0x78, 0.175f);
-        PSMTXConcat(mtx2, mtx1, mtx1);
-        PSMTXMultVecSR(mtx1, vec, vec);
+        PSMTXRotRad((MtxPtr)mtx1, 'y', 0.3f * mathCosfHighPrecision(0.5f * angle));
+        PSMTXRotRad((MtxPtr)mtx2, 'x', 0.175f);
+        PSMTXConcat((MtxPtr)mtx2, (MtxPtr)mtx1, (MtxPtr)mtx1);
+        PSMTXMultVecSR((MtxPtr)mtx1, (Vec*)vec, (Vec*)vec);
         break;
     case 3:
         gPlayerModelChainOriginX = 0.12f;
         gPlayerModelChainOriginY = 0.675f;
         gPlayerModelChainOriginZ = -0.15f;
-        PSMTXRotRad(mtx1, 0x79, 0.15f * mathCosfHighPrecision(0.15f * angle - 1.3f * (f32)mode));
+        PSMTXRotRad((MtxPtr)mtx1, 'y', 0.15f * mathCosfHighPrecision(0.15f * angle - 1.3f * (f32)mode));
         if (mode == 1)
         {
-            PSMTXRotRad(mtx2, 0x78, 0.125f);
-            PSMTXConcat(mtx2, mtx1, mtx1);
+            PSMTXRotRad((MtxPtr)mtx2, 'x', 0.125f);
+            PSMTXConcat((MtxPtr)mtx2, (MtxPtr)mtx1, (MtxPtr)mtx1);
         }
-        PSMTXMultVecSR(mtx1, vec, vec);
+        PSMTXMultVecSR((MtxPtr)mtx1, (Vec*)vec, (Vec*)vec);
         break;
     }
 }
@@ -604,7 +604,7 @@ void playerUpdatePathEffectCountdown(GameObject* obj, int inner)
             buf.y = 0.0f;
             t = ((PlayerState*)inner)->stepDustCount;
             buf.z = -0.015f * (f32)(int)randomGetRange(t + 4, t + 8);
-            PSMTXMultVec(mtx, &buf.x, outvec);
+            PSMTXMultVec((MtxPtr)mtx, (Vec*)&buf.x, (Vec*)outvec);
             buf.x = 0.0f;
             buf.y = -1.0f;
             buf.z = -2.5f;
@@ -6323,9 +6323,9 @@ int playerState1B(GameObject* obj, int state, f32 fv)
             inner->curveEndY = *(f32*)((char*)pt2 + 0xc);
             inner->curveEndZ = *(f32*)((char*)pt2 + 0x10);
             inner->traveledDistance = 0.0f;
-            PSVECSubtract((f32*)((char*)inner + 0x628), (f32*)((char*)inner + 0x61c), vec);
-            inner->travelTargetDistance = PSVECMag(vec);
-            PSVECNormalize(vec, (f32*)((char*)inner + 0x634));
+            PSVECSubtract((Vec*)((char*)inner + 0x628), (Vec*)((char*)inner + 0x61c), (Vec*)vec);
+            inner->travelTargetDistance = PSVECMag((Vec*)vec);
+            PSVECNormalize((Vec*)vec, (Vec*)((char*)inner + 0x634));
         }
         ObjAnim_SetCurrentMove((int)obj, 0x40e, 0.0f, 0);
         {
@@ -6339,8 +6339,8 @@ int playerState1B(GameObject* obj, int state, f32 fv)
         break;
     }
     }
-    PSVECScale((f32*)((char*)inner + 0x634), vec, inner->traveledDistance);
-    PSVECAdd((f32*)((char*)inner + 0x61c), vec, &obj->anim.localPosX);
+    PSVECScale((Vec*)((char*)inner + 0x634), (Vec*)vec, inner->traveledDistance);
+    PSVECAdd((Vec*)((char*)inner + 0x61c), (Vec*)vec, &obj->anim.localPos);
     fn_802AB5A4(obj, (int)inner, 7);
     return 0;
 }
@@ -11386,11 +11386,11 @@ void fn_802A81B8(GameObject* obj, int state, f32* out)
         out[0] = obj->anim.velocityX;
         out[1] = 0.0f;
         out[2] = obj->anim.velocityZ;
-        mag = PSVECMag(out);
+        mag = PSVECMag((Vec*)out);
         if (mag > 0.0f)
         {
             mag = 1.0f / mag;
-            PSVECScale(out, out, mag);
+            PSVECScale((Vec*)out, (Vec*)out, mag);
         }
         else
         {
@@ -11469,8 +11469,8 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
     if (*(f32*)((char*)dst + 0x18) > -9.0f && *(f32*)((char*)dst + 0x18) < 9.0f)
     {
         *(f32*)((char*)dst + 0x8) = *(f32*)((char*)src + 0xc);
-        PSVECScale((f32*)((char*)src + 0x1c), pos, -lbl_803DC6B8[1]);
-        PSVECAdd((f32*)((int)dst + 0x48), pos, pos);
+        PSVECScale((Vec*)((char*)src + 0x1c), (Vec*)pos, -lbl_803DC6B8[1]);
+        PSVECAdd((Vec*)((int)dst + 0x48), (Vec*)pos, (Vec*)pos);
         y = *(f32*)((char*)src + 0x3c);
         pos[1] = y;
         count = hitDetectFn_80065e50(obj, pos[0], y, pos[2], &hits, 0, HITQUERY_CLIMB_SURFACE);
@@ -11665,7 +11665,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         thresh = 0.5f;
         do
         {
-            f32 dot = PSVECDotProduct(pl, vec);
+            f32 dot = PSVECDotProduct((Vec*)pl, (Vec*)vec);
             *dp = pl[3] + dot;
             if (*dp < thresh + b6b8[1])
             {
@@ -11880,7 +11880,7 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
     threshold = 0.5f;
     do
     {
-        f32 dot = PSVECDotProduct((f32*)pl, (f32*)e);
+        f32 dot = PSVECDotProduct((Vec*)pl, (Vec*)e);
         if (pl->d + dot < threshold + b6b8[1])
         {
             void* face;
@@ -12769,7 +12769,7 @@ void playerDrawTeleportAnim(GameObject* obj)
     xf.rz = 0;
     xf.scale = 0.05f;
     setMatrixFromObjectTransposed(&xf, mtx);
-    PSMTXConcat(Camera_GetViewMatrix(), mtx, mtx);
+    PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtx, (MtxPtr)mtx);
     GXLoadPosMtxImm((const f32(*)[4])mtx, 0);
     lightmapDrawTriangleList(vp, (u8*)lbl_802C2B30, 0xc);
 

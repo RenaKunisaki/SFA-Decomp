@@ -7,7 +7,7 @@
 #include "dolphin/os/OSCache.h"
 #include "main/sky.h"
 #include "dolphin/gx/GXLegacy.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/camera.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/dll/savegame_env_api.h"
@@ -145,9 +145,9 @@ void lightningDrawStrand(f32* from, f32* to, int width, f32 segScale, int* seed)
         savedRand = rand();
         srand(*seed);
     }
-    PSVECSubtract(to, from, dir);
-    len = PSVECMag(dir);
-    PSVECScale(dir, scaled, 1.0f / len);
+    PSVECSubtract((Vec*)to, (Vec*)from, (Vec*)dir);
+    len = PSVECMag((Vec*)dir);
+    PSVECScale((Vec*)dir, (Vec*)scaled, 1.0f / len);
     if (__fabs(scaled[0]) < gNewCloudUpVectorThreshold)
     {
         up[0] = 1.0f;
@@ -160,9 +160,9 @@ void lightningDrawStrand(f32* from, f32* to, int width, f32 segScale, int* seed)
         up[1] = 0.0f;
         up[2] = 1.0f;
     }
-    PSVECCrossProduct(scaled, up, side);
-    PSVECCrossProduct(side, scaled, up);
-    PSVECNormalize(up, up);
+    PSVECCrossProduct((Vec*)scaled, (Vec*)up, (Vec*)side);
+    PSVECCrossProduct((Vec*)side, (Vec*)scaled, (Vec*)up);
+    PSVECNormalize((Vec*)up, (Vec*)up);
     segs = (len * segScale);
     if (segs > 10)
     {
@@ -200,20 +200,20 @@ void lightningDrawStrand(f32* from, f32* to, int width, f32 segScale, int* seed)
         else if (i < segs)
         {
             f32 e0, e1, e2;
-            PSVECScale(up, offset,
+            PSVECScale((Vec*)up, (Vec*)offset,
                        0.01f *
                        (0.075f * (len * randomGetRange(1, 100))
             )
             )
             ;
             PSMTXRotAxisRad(
-                mtx, scaled,
+                (MtxPtr)mtx, (Vec*)scaled,
                 3.142f *
                 (2.0f * (0.001f * randomGetRange(0, 1000))
             )
             )
             ;
-            PSMTXMultVecSR(mtx, offset, offset);
+            PSMTXMultVecSR((MtxPtr)mtx, (Vec*)offset, (Vec*)offset);
             px += scaled[0] * (step = weight * (len * (segs - i)));
             py += scaled[1] * step;
             pz += scaled[2] * step;
@@ -284,9 +284,9 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
     {
         return;
     }
-    PSVECSubtract(end, start, dir);
-    len = PSVECMag(dir);
-    PSVECScale(dir, scaled, 1.0f / len);
+    PSVECSubtract((Vec*)end, (Vec*)start, (Vec*)dir);
+    len = PSVECMag((Vec*)dir);
+    PSVECScale((Vec*)dir, (Vec*)scaled, 1.0f / len);
     if (__fabs(scaled[0]) < gNewCloudUpVectorThreshold)
     {
         up[0] = 1.0f;
@@ -299,9 +299,9 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
         up[1] = 0.0f;
         up[2] = 1.0f;
     }
-    PSVECCrossProduct(scaled, up, side);
-    PSVECCrossProduct(side, scaled, up);
-    PSVECNormalize(up, up);
+    PSVECCrossProduct((Vec*)scaled, (Vec*)up, (Vec*)side);
+    PSVECCrossProduct((Vec*)side, (Vec*)scaled, (Vec*)up);
+    PSVECNormalize((Vec*)up, (Vec*)up);
     segs = (len * segScale);
     if (segs > 10)
     {
@@ -331,20 +331,20 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
     {
         if (i < segs)
         {
-            PSVECScale(up, offset,
+            PSVECScale((Vec*)up, (Vec*)offset,
                        0.01f *
                        (0.075f * (len * randomGetRange(1, 100))
             )
             )
             ;
             PSMTXRotAxisRad(
-                mtx, scaled,
+                (MtxPtr)mtx, (Vec*)scaled,
                 3.142f *
                 (2.0f * (0.001f * randomGetRange(0, 1000))
             )
             )
             ;
-            PSMTXMultVecSR(mtx, offset, offset);
+            PSMTXMultVecSR((MtxPtr)mtx, (Vec*)offset, (Vec*)offset);
             progress += weight * (segs - i);
             nx = px + scaled[0] * (step = weight * (len * (segs - i)));
             ny = py + scaled[1] * step;
@@ -354,26 +354,26 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
             next[2] = nz + offset[2];
             if (randomGetRange(1, 3) == 1 && (u8)width >= 0xc && oddFlag == 0)
             {
-                PSVECScale(up, offset,
+                PSVECScale((Vec*)up, (Vec*)offset,
                            0.01f * (0.3f *
                                (len * randomGetRange(0x32, 0x64))
                 )
                 )
                 ;
-                PSMTXRotAxisRad(mtx, scaled,
+                PSMTXRotAxisRad((MtxPtr)mtx, (Vec*)scaled,
                                 3.142f *
                                 (2.0f *
                                     (0.001f * randomGetRange(0, 1000))
                 )
                 )
                 ;
-                PSMTXMultVecSR(mtx, offset, offset);
+                PSMTXMultVecSR((MtxPtr)mtx, (Vec*)offset, (Vec*)offset);
                 bfrac = 0.001f * ((1.0f - progress) *
                             randomGetRange(0, 1000)) +
                     progress;
-                PSVECScale(scaled, branchEnd, bfrac * len);
-                PSVECAdd(start, branchEnd, branchEnd);
-                PSVECAdd(branchEnd, offset, branchEnd);
+                PSVECScale((Vec*)scaled, (Vec*)branchEnd, bfrac * len);
+                PSVECAdd((Vec*)start, (Vec*)branchEnd, (Vec*)branchEnd);
+                PSVECAdd((Vec*)branchEnd, (Vec*)offset, (Vec*)branchEnd);
                 ((LightningDrawBoltU8WidthFn)lightningDrawBolt)(
                     next, branchEnd, halfWidth, segScale, d, seed, depth + 1, flags);
             }
@@ -446,8 +446,8 @@ void lightningRender(LightningEffect* p)
         p->seed = savedSeed;
     }
     srand(p->seed);
-    PSVECSubtract(end, start, diff);
-    PSVECMag(diff);
+    PSVECSubtract((Vec*)end, (Vec*)start, (Vec*)diff);
+    PSVECMag((Vec*)diff);
     lightningDrawBolt(start, end, p->width, p->radiusX, p->radiusY, &savedSeed, 0,
                       p->flags);
     srand(savedSeed);
@@ -839,7 +839,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     mtxB[14] = ((NewCloud*)p)->worldPosZ - playerMapOffsetZ;
     mtx44_mult(mtxA, mtxB, mtxOut);
     mtx44Transpose(mtxOut, mtxT);
-    PSMTXConcat((void*)Camera_GetViewMatrix(), (void*)mtxT, (void*)mtxT);
+    PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtxT, (MtxPtr)mtxT);
     GXLoadPosMtxImm(mtxT, GX_PNMTX0);
     texIdx = 0;
     selectTexture((Texture*)(((NewCloud*)p)->cloudType == 0 ? gNewCloudLayerTextures[0] : lbl_803DD1C4), 0);
@@ -1142,7 +1142,7 @@ void snowReposSnowCloud(int cloudId)
         fwd[0] = m[8];
         fwd[1] = m[9];
         fwd[2] = m[10];
-        PSVECNormalize(fwd, fwd);
+        PSVECNormalize((Vec*)fwd, (Vec*)fwd);
         from[0] = (cam->worldX + (int)
         randomGetRange(-3000, 3000)
         )
@@ -1791,7 +1791,7 @@ void dll_07_func06(void)
                 d[0] = ((NewCloud*)D7_CLOUD)->worldPosX - cam->x;
                 d[1] = ((NewCloud*)D7_CLOUD)->worldPosY - cam->y;
                 d[2] = ((NewCloud*)D7_CLOUD)->worldPosZ - cam->z;
-                mag = PSVECMag(d);
+                mag = PSVECMag((Vec*)d);
                 if (mag < nearest)
                 {
                     nearest = mag;
@@ -1877,7 +1877,7 @@ void dll_07_func06(void)
                 lbl_803DD199 = 0xf9;
                 lbl_803DD19A = 0xfd;
                 lbl_803DB768 = 5.0f;
-                PSMTXIdentity(mtx);
+                PSMTXIdentity((MtxPtr)mtx);
             }
             else
             {
@@ -1886,12 +1886,12 @@ void dll_07_func06(void)
                 lbl_803DD199 = 0xf8;
                 lbl_803DD19A = 0xfc;
                 lbl_803DB768 = 1.0f;
-                PSMTXRotRad(mtx, 0x7a, rot);
+                PSMTXRotRad((MtxPtr)mtx, 'z', rot);
             }
-            PSMTXConcat((void*)m, (void*)mtx, (void*)mtx);
+            PSMTXConcat((MtxPtr)m, (MtxPtr)mtx, (MtxPtr)mtx);
             {
                 f32* m = (f32*)mtx;
-                PSMTXMultVec(m, (f32*)((u32)clouds + 0xd8), (f32*)((u32)clouds + 0xd8));
+                PSMTXMultVec((MtxPtr)m, (Vec*)((u32)clouds + 0xd8), (Vec*)((u32)clouds + 0xd8));
             }
             if (lbl_803DD190 < -16.0f)
             {

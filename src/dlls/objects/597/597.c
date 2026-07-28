@@ -10,7 +10,7 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/gx/GXTransform.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/os/OSReport.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
@@ -1085,7 +1085,7 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
         if (st->airMeterCurrent >= 0.0f)
         {
             td = timeDelta;
-            st->airMeterCurrent -= td * gSnowBikeAirDrainRate + (f32)(s32)(st->airDrainRate * (td * PSVECMag(&st->localVelX)));
+            st->airMeterCurrent -= td * gSnowBikeAirDrainRate + (f32)(s32)(st->airDrainRate * (td * PSVECMag((Vec*)&st->localVelX)));
             lim = 0.0f;
             if (lim != st->airMeterRefillTimer)
             {
@@ -1116,7 +1116,7 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_dn_boar1_c_117);
                 }
-                PSVECScale(&st->velLimitX, &st->velLimitX, 0.95f);
+                PSVECScale((Vec*)&st->velLimitX, (Vec*)&st->velLimitX, 0.95f);
                 if ((u32)(st->flags428 >> 7 & 1) != 0)
                 {
                     if (st->velLimitX < 0.1f)
@@ -1308,9 +1308,9 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
         case 0x15:
             if (st->collisionFxTimer == zero)
             {
-                PSVECNormalize((float*)&obj->anim.velocityX, velNrm);
-                dot = PSVECDotProduct(velNrm, (float*)(hitObj + 0x24));
-                PSVECScale(&st->localVelX, &st->localVelX, dot * st->collisionBounceScale + 1.0f);
+                PSVECNormalize(&obj->anim.velocity, (Vec*)velNrm);
+                dot = PSVECDotProduct((Vec*)velNrm, (Vec*)(hitObj + 0x24));
+                PSVECScale((Vec*)&st->localVelX, (Vec*)&st->localVelX, dot * st->collisionBounceScale + 1.0f);
                 st->localVelY *= 0.2f;
                 st->collisionFxTimer = 20.0f;
                 st->collisionFxDamping = 1.0f;
@@ -1487,7 +1487,7 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
             if (((u32)(flags >> 1 & 1) == 0) && (st->timer <= 0.0f))
             {
                 st->timer = (f32)(s32)randomGetRange(5, 10);
-                if (PSVECMag((void*)&obj->anim.velocityX) > 3.0f)
+                if (PSVECMag(&obj->anim.velocity) > 3.0f)
                 {
                     doRumble((f32)(s32)randomGetRange(1, 3));
                 }
@@ -1651,7 +1651,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
                           ((DRPickupState*)state)->localOffsetY, ((DRPickupState*)state)->localOffsetZ, &out[0],
                           &out[1], &out[2]);
     Matrix_TransformPoint((f32*)(state + 0x12c), out[0], out[1], out[2], &out[0], &out[1], &out[2]);
-    PSVECAdd(out, (void*)(state + 0x494), (void*)(state + 0x494));
+    PSVECAdd((Vec*)out, (Vec*)(state + 0x494), (Vec*)(state + 0x494));
 
     ((DRPickupState*)state)->angVel414 =
         (-((DRPickupState*)state)->angAccelGain * ((DRPickupState*)state)->angAccelScale) * timeDelta +
@@ -2263,7 +2263,7 @@ void SnowBike_hitDetect(GameObject* obj)
          arrayIndexOf((int*)gSnowBikeHitObjectIdTable, 10, ((GameObject*)other)->anim.seqId) == -1) ||
         (*(void**)&state->linkedObj != NULL && state->collisionFxDamping <= 1.0f))
     {
-    mag = PSVECMag((f32*)((int)obj + 0x24));
+    mag = PSVECMag(&obj->anim.velocity);
     if (mag > 1.0f)
     {
         if (!((HaloSnowBikeFlags*)&state->flags428)->b02)
@@ -2465,9 +2465,9 @@ void SnowBike_update(GameObject* obj)
                 SnowBike_buildOrientationMatrices(obj, (int)state);
                 if (s->collisionFxTimer)
                 {
-                    PSVECScale((f32*)(state + 0x464), (f32*)(state + 0x47c),
+                    PSVECScale((Vec*)(state + 0x464), (Vec*)(state + 0x47c),
                                s->collisionFxDamping);
-                    PSVECScale((f32*)(state + 0x494), (f32*)(state + 0x494),
+                    PSVECScale((Vec*)(state + 0x494), (Vec*)(state + 0x494),
                                s->collisionFxDamping);
                     s->collisionFxTimer -= timeDelta;
                     if (s->collisionFxTimer <= 0.0f)
@@ -2499,8 +2499,8 @@ void SnowBike_update(GameObject* obj)
                                       0.0f, &vec1[0], &dummy1, &vec1[2]);
                 vec1[0] = vec1[0] * s->turnVelScale;
                 vec1[1] = 0.0f;
-                PSVECScale(vec1, vec1, timeDelta);
-                PSVECAdd((f32*)(state + 0x494), vec1, (f32*)(state + 0x494));
+                PSVECScale((Vec*)vec1, (Vec*)vec1, timeDelta);
+                PSVECAdd((Vec*)(state + 0x494), (Vec*)vec1, (Vec*)(state + 0x494));
                 s->localVelY =
                     s->liftAccel * timeDelta + s->localVelY;
                 damp = powfBitEstimate(s->localVelXDamp, timeDelta);
@@ -2546,8 +2546,8 @@ void SnowBike_update(GameObject* obj)
             SnowBike_buildOrientationMatrices(obj, (int)state);
             if (s->collisionFxTimer)
             {
-                PSVECScale((f32*)(state + 0x464), (f32*)(state + 0x47c), s->collisionFxDamping);
-                PSVECScale((f32*)(state + 0x494), (f32*)(state + 0x494), s->collisionFxDamping);
+                PSVECScale((Vec*)(state + 0x464), (Vec*)(state + 0x47c), s->collisionFxDamping);
+                PSVECScale((Vec*)(state + 0x494), (Vec*)(state + 0x494), s->collisionFxDamping);
                 s->collisionFxTimer -= timeDelta;
                 if (s->collisionFxTimer <= 0.0f)
                 {
@@ -2578,8 +2578,8 @@ void SnowBike_update(GameObject* obj)
                                   0.0f, &vec2[0], &dummy2, &vec2[2]);
             vec2[0] = vec2[0] * s->turnVelScale;
             vec2[1] = 0.0f;
-            PSVECScale(vec2, vec2, timeDelta);
-            PSVECAdd((f32*)(state + 0x494), vec2, (f32*)(state + 0x494));
+            PSVECScale((Vec*)vec2, (Vec*)vec2, timeDelta);
+            PSVECAdd((Vec*)(state + 0x494), (Vec*)vec2, (Vec*)(state + 0x494));
             s->localVelY =
                 s->liftAccel * timeDelta + s->localVelY;
             damp = powfBitEstimate(s->localVelXDamp, timeDelta);
