@@ -37,7 +37,7 @@ extern char sPathCamNeedTwoControlPointsError[];
 void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag)
 {
     int node;
-    int linked;
+    RomCurvePathNode* linked;
     int noForwardExit;
     int slot;
     int slot2;
@@ -55,9 +55,9 @@ void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, 
     {
         if (((RomCurvePathNode*)node)->links[slot] > -1 && (((RomCurvePathNode*)node)->directionMask & (1 << slot)) == 0)
         {
-            linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot]);
-            if ((u32)linked != 0 && (((RomCurvePathNode*)linked)->tag0 == tag || ((RomCurvePathNode*)linked)->tag1 == tag ||
-                                     ((RomCurvePathNode*)linked)->tag2 == tag))
+            linked = (RomCurvePathNode*)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot]);
+            if ((u32)linked != 0 && (linked->tag0 == tag || linked->tag1 == tag ||
+                                     linked->tag2 == tag))
             {
                 noForwardExit = 0;
                 slot = ROM_CURVE_PATH_LINK_COUNT;
@@ -70,10 +70,10 @@ void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, 
         {
             if (((RomCurvePathNode*)node)->links[slot] > -1 && (((RomCurvePathNode*)node)->directionMask & (1 << slot)) != 0)
             {
-                linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot]);
+                linked = (RomCurvePathNode*)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot]);
                 if ((u32)linked != 0 &&
-                    (((RomCurvePathNode*)linked)->tag0 == tag || ((RomCurvePathNode*)linked)->tag1 == tag ||
-                     ((RomCurvePathNode*)linked)->tag2 == tag))
+                    (linked->tag0 == tag || linked->tag1 == tag ||
+                     linked->tag2 == tag))
                 {
                     *nodeId = ((RomCurvePathNode*)node)->links[slot];
                     slot = ROM_CURVE_PATH_LINK_COUNT;
@@ -118,10 +118,10 @@ void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, 
             if (((RomCurvePathNode*)node)->links[slot2] > -1 &&
                 (((RomCurvePathNode*)node)->directionMask & (1 << slot2)) == 0)
             {
-                linked = (int)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot2]);
+                linked = (RomCurvePathNode*)(*gRomCurveInterface)->getById(((RomCurvePathNode*)node)->links[slot2]);
                 if ((u32)linked != 0 &&
-                    (((RomCurvePathNode*)linked)->tag0 == tag || ((RomCurvePathNode*)linked)->tag1 == tag ||
-                     ((RomCurvePathNode*)linked)->tag2 == tag))
+                    (linked->tag0 == tag || linked->tag1 == tag ||
+                     linked->tag2 == tag))
                 {
                     *leadNodeId = ((RomCurvePathNode*)node)->links[slot2];
                     slot2 = ROM_CURVE_PATH_LINK_COUNT;

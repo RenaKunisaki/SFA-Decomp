@@ -3977,13 +3977,13 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
 }
 int cMenuRingModelRenderFn(GameObject* obj, int block, int idx)
 {
-    int renderOp;
+    ModelRenderOp* renderOp;
     GXColor cfg;
     *(u32*)&cfg = lbl_803E1E14;
-    renderOp = (int)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
+    renderOp = (ModelRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
     Rcp_ResetTextureStageState();
     cfg.a = obj->anim.renderAlpha;
-    gxFn_80051fb8(textureIdxToPtr(((ModelRenderOp*)renderOp)->textureId), NULL, 0, &cfg, 0, 1);
+    gxFn_80051fb8(textureIdxToPtr(renderOp->textureId), NULL, 0, &cfg, 0, 1);
     Rcp_ApplyTextureStageCounts();
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     gxSetZMode_(0, GX_ALWAYS, 0);
@@ -4030,7 +4030,7 @@ void hudDrawCMenu(int p1, int p2, int p3)
     int zero;
     int j;
     int sel;
-    int model;
+    ObjModel* model;
     int i;
     f32 sx;
     f32 sy;
@@ -4101,11 +4101,11 @@ void hudDrawCMenu(int p1, int p2, int p3)
         {
             break;
         }
-        model = (int)Obj_GetActiveModel(gCMenuRingObjs[sel]);
-        ((ObjModel*)model)->bufferFlags &= ~8;
+        model = (ObjModel*)Obj_GetActiveModel(gCMenuRingObjs[sel]);
+        model->bufferFlags &= ~8;
         gCMenuRingObjs[sel]->anim.renderAlpha = cMenuFadeCounter;
-        model = (int)Obj_GetActiveModel(gCMenuRingFrontObjs[sel]);
-        ((ObjModel*)model)->bufferFlags &= ~8;
+        model = (ObjModel*)Obj_GetActiveModel(gCMenuRingFrontObjs[sel]);
+        model->bufferFlags &= ~8;
         gCMenuRingFrontObjs[sel]->anim.renderAlpha = cMenuFadeCounter * lbl_803DD8D4 / 0xff;
         if (best > lbl_803E1E3C)
         {
@@ -8048,7 +8048,7 @@ void cMenuRun(void)
     gCMenuCloseSfx = 0;
 
     {
-        int handle = (int)gCMenuSections[gCMenuCurSection].items;
+        CMenuItemDef* handle = (CMenuItemDef*)gCMenuSections[gCMenuCurSection].items;
         cursor = &gCMenuSections[gCMenuCurSection].cursor;
         flags = gCMenuSections[gCMenuCurSection].flags;
         if (gCMenuCurSection == 2)
@@ -8056,7 +8056,7 @@ void cMenuRun(void)
             isTricky = 1;
         }
         gCMenuSelIndex = *cursor;
-        gCMenuItemCount = cMenuSetItems((CMenuItemDef*)handle, isTricky);
+        gCMenuItemCount = cMenuSetItems(handle, isTricky);
     }
 
     switch (yButtonState)

@@ -185,33 +185,33 @@ void shop_func15(GameObject* obj, int v)
 void shop_buyItem(GameObject* obj, int price)
 {
 
-    int player;
+    GameObject* player;
     ShopBuyItemState* state;
     int mapEventState;
     u8* items;
     s16 boughtBit;
 
-    player = (int)Obj_GetPlayerObject();
+    player = (GameObject*)Obj_GetPlayerObject();
     state = obj->extra;
     mapEventState = (int)(*gMapEventInterface)->getCurCharacterState();
-    playerAddMoney((GameObject*)player, -price);
+    playerAddMoney(player, -price);
 
     switch (state->itemIndex)
     {
     case SHOP_ITEM_DUMBLEDANG_POD:
-        playerAddHealth((GameObject*)player, 2);
+        playerAddHealth(player, 2);
         break;
     case SHOP_ITEM_BAFOMDAD_HOLDER:
         *(u8*)(mapEventState + 0xa) = 10;
         break;
     case SHOP_ITEM_DUMBLEDANG_POD_4X:
-        playerAddHealth((GameObject*)player, 8);
+        playerAddHealth(player, 8);
         break;
     case SHOP_ITEM_PUKPUK_EGG:
-        playerAddHealth((GameObject*)player, 4);
+        playerAddHealth(player, 4);
         break;
     case SHOP_ITEM_PUKPUK_EGGS_7X:
-        playerAddHealth((GameObject*)player, 0x1c);
+        playerAddHealth(player, 0x1c);
         break;
     case SHOP_ITEM_BOMB_SPORE:
         gameBitIncrement(GAMEBIT_ITEM_BombSpore_Count);
@@ -407,7 +407,7 @@ static inline void shop_initBody(GameObject* obj, int objDef)
     u8* item;
     int i;
 
-    ((ShopBuyItemState*)(obj)->extra)->itemIndex = -1;
+    ((ShopBuyItemState*)obj->extra)->itemIndex = -1;
     ObjGroup_AddObject((int)obj, SPSHOP_OBJGROUP);
     for (i = 0, item = lbl_80327FD0; i < SHOP_ITEM_ROW_COUNT; i++)
     {

@@ -321,9 +321,9 @@ void firepipe_updateState(GameObject* obj)
                                         : ((radius > 70.0f) ? 70.0f : radius);
                         farAtten = 30.0f + radius;
                         { /* separate local to reproduce reg assignment */
-                            int light = (int)extra->glowLight;
+                            ModelLightStruct* light = (ModelLightStruct*)extra->glowLight;
                             modelLightStruct_setDistanceAttenuation(
-                                (ModelLightStruct*)light, nearAtten,
+                                light, nearAtten,
                                 (farAtten < 80.0f)
                                     ? 80.0f
                                     : ((farAtten > 100.0f) ? 100.0f : farAtten));

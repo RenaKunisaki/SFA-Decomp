@@ -124,7 +124,7 @@ void VFP_LevelControl_hitDetect(void)
 void VFP_LevelControl_update(GameObject* obj)
 {
     VfpLevelControlState* state = (obj)->extra;
-    int player = (int)Obj_GetPlayerObject();
+    GameObject* player = (GameObject*)Obj_GetPlayerObject();
     u8 mapEventState;
 
     if ((obj)->userData1 == 0 && mainGetBit(GAMEBIT_VFP_EnvironmentRelated0EF6) == 0u)
@@ -140,7 +140,7 @@ void VFP_LevelControl_update(GameObject* obj)
         (obj)->userData1 = 1;
     }
 
-    coordsToMapCell(((GameObject*)player)->anim.localPosX, ((GameObject*)player)->anim.localPosZ);
+    coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
     mapEventState = (*gMapEventInterface)->getMapAct((obj)->anim.mapEventSlot);
     switch (mapEventState)
     {

@@ -280,7 +280,7 @@ void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
     SquadCmdFlags* flags = &squad->flags.cmd;
     int hitObj;
     u32 hitVol;
-    int arwing;
+    GameObject* arwing;
 
     if ((obj)->anim.hitReactState == NULL)
         return;
@@ -329,15 +329,15 @@ void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
                     ObjHits_DisableObject(obj);
                     squad->phase = ARW_SQUADRON_STATE_DEAD;
                 }
-                arwing = (int)getArwing();
+                arwing = (GameObject*)getArwing();
                 if ((u32)arwing != 0)
-                    arwarwing_addScore((GameObject*)arwing, squad->deathScore);
+                    arwarwing_addScore(arwing, squad->deathScore);
             }
             else
             {
-                arwing = (int)getArwing();
+                arwing = (GameObject*)getArwing();
                 if ((u32)arwing != 0)
-                    arwarwing_addScore((GameObject*)arwing, squad->hitScore);
+                    arwarwing_addScore(arwing, squad->hitScore);
             }
         }
         else

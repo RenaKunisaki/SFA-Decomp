@@ -45,8 +45,8 @@ void VFP_Block1_hitDetect(void)
 
 void VFP_Block1_update(GameObject* obj)
 {
-    int player = (int)Obj_GetPlayerObject();
-    f32 dist = Vec_distance(&((GameObject*)player)->anim.worldPosX, &obj->anim.worldPosX);
+    GameObject* player = (GameObject*)Obj_GetPlayerObject();
+    f32 dist = Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX);
     if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x40) != 0)
     {
         if (dist < 90.0f)

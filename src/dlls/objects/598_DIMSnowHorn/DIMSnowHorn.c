@@ -277,12 +277,12 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
 
 int DIMSnowHorn1_stateHandler09(GameObject* obj, int state, f32 fv)
 {
-    int near;
+    GameObject* near;
     DIMSnowHorn1State* inner;
     f32 sp = 300.0f;
     s16 turnRate;
 
-    near = ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
+    near = (GameObject*)(ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp));
     inner = (obj)->extra;
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
 
@@ -313,8 +313,8 @@ int DIMSnowHorn1_stateHandler09(GameObject* obj, int state, f32 fv)
 
     if (*(int*)&((DIMSnowHorn1State*)state)->baddie.unk31C & PAD_BUTTON_A)
     {
-        if ((GameObject*)near == NULL ||
-            (*(u8*)&((GameObject*)near)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) == 0)
+        if (near == NULL ||
+            (*(u8*)&near->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) == 0)
         {
             return 0xc;
         }
@@ -1262,7 +1262,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     s8 modeIndex = -1;
     s16 angleDelta;
     char* found;
-    int statePtr;
+    DIMSnowHorn1State* statePtr;
     GameObject* playerObj;
     u32 flip;
     int flags;
@@ -1326,20 +1326,20 @@ void DIMSnowHorn1_update(GameObject* obj)
     {
     case 0:
     case 5:
-        statePtr = *(int*)&(obj)->extra;
+        statePtr = (DIMSnowHorn1State*)(*(int*)&(obj)->extra);
         playerObj = Obj_GetPlayerObject();
         if (playerObj != NULL &&
             Vec_distance(&playerObj->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
-            ((DIMSnowHorn1State*)statePtr)->mountMode == 0)
+            statePtr->mountMode == 0)
         {
-            ((DIMSnowHorn1State*)statePtr)->playerNearby = 1;
-            ((DIMSnowHorn1State*)statePtr)->spawnPosX = ((GameObject*)playerObj)->anim.localPosX;
-            ((DIMSnowHorn1State*)statePtr)->spawnPosY = ((GameObject*)playerObj)->anim.localPosY;
-            ((DIMSnowHorn1State*)statePtr)->spawnPosZ = ((GameObject*)playerObj)->anim.localPosZ;
+            statePtr->playerNearby = 1;
+            statePtr->spawnPosX = ((GameObject*)playerObj)->anim.localPosX;
+            statePtr->spawnPosY = ((GameObject*)playerObj)->anim.localPosY;
+            statePtr->spawnPosZ = ((GameObject*)playerObj)->anim.localPosZ;
         }
         else
         {
-            ((DIMSnowHorn1State*)statePtr)->playerNearby = 0;
+            statePtr->playerNearby = 0;
         }
         characterHeadLookCalm(obj, (s16*)(data + 0x980), 0.0f);
         break;

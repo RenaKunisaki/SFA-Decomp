@@ -1709,19 +1709,19 @@ void guardClaw_init(GameObject* obj, u8* state)
 
 GameObject* gcRobotLight_init(GameObject* obj, int childId)
 {
-    int sub;
+    ObjPlacement* sub;
     u8* setup;
 
-    sub = *(int*)&obj->anim.placementData;
+    sub = (ObjPlacement*)(*(int*)&obj->anim.placementData);
     Obj_GetPlayerObject();
     if (Obj_IsLoadingLocked() == 0)
         return NULL;
     setup = (u8*)Obj_AllocObjectSetup(36, childId);
     *(s16*)(setup + 0) = childId;
-    ((ObjPlacement*)setup)->color[0] = ((ObjPlacement*)sub)->color[0];
-    ((ObjPlacement*)setup)->color[2] = ((ObjPlacement*)sub)->color[2];
+    ((ObjPlacement*)setup)->color[0] = sub->color[0];
+    ((ObjPlacement*)setup)->color[2] = sub->color[2];
     ((ObjPlacement*)setup)->color[1] = 1;
-    ((ObjPlacement*)setup)->color[3] = ((ObjPlacement*)sub)->color[3];
+    ((ObjPlacement*)setup)->color[3] = sub->color[3];
     ((ObjPlacement*)setup)->posX = obj->anim.localPosX;
     ((ObjPlacement*)setup)->posY = obj->anim.localPosY;
     ((ObjPlacement*)setup)->posZ = obj->anim.localPosZ;
@@ -3293,7 +3293,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     f32 d;
     f32 turnStep;
     s16 rot;
-    int targetObj;
+    GameObject* targetObj;
     int delta;
     int angleStep;
     u32 angle;
@@ -3321,10 +3321,10 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     {
         dxA = (o->anim.localPosZ - fs->wallPlane.anchorZ) / crossA[2];
     }
-    targetObj = *(int*)&((BaddieState*)state)->trackedObj;
-    targetPos[0] = ((GameObject*)targetObj)->anim.localPosX;
-    targetPos[1] = gFireflyLanternTargetHeightOffset + ((GameObject*)targetObj)->anim.localPosY;
-    targetPos[2] = ((GameObject*)targetObj)->anim.localPosZ;
+    targetObj = (GameObject*)(*(int*)&((BaddieState*)state)->trackedObj);
+    targetPos[0] = targetObj->anim.localPosX;
+    targetPos[1] = gFireflyLanternTargetHeightOffset + targetObj->anim.localPosY;
+    targetPos[2] = targetObj->anim.localPosZ;
     vecB[0] = fs->wallPlane.anchorX;
     vecB[1] = fs->wallPlane.anchorY;
     vecB[2] = fs->wallPlane.anchorZ;
@@ -5249,7 +5249,7 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
     u8 locked = Obj_IsLoadingLocked();
     if (locked != 0)
     {
-        int child;
+        GameObject* child;
         int setup = (int)Obj_AllocObjectSetup(0x24, FIRECRAWLER_PROJECTILE_OBJ);
         ObjPath_GetPointWorldPosition(obj, 0, (f32*)(setup + 8), (f32*)(setup + 0xc), (f32*)(setup + 0x10),
                                       0);
@@ -5257,19 +5257,19 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
         ((ObjPlacement*)setup)->color[1] = 4;
         ((ObjPlacement*)setup)->color[2] = 0xff;
         ((ObjPlacement*)setup)->color[3] = 0xff;
-        child = (int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
+        child = (GameObject*)((int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
         if ((u32)child != 0)
         {
             f32 dur = 60.0f * ((f32)((FCVars*)state)->projectileTimer / ((BaddieState*)state)->unk2A8);
-            ((GameObject*)child)->anim.velocityX = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX -
+            child->anim.velocityX = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX -
                                                     ((ObjPlacement*)setup)->posX) /
                                                    dur;
-            ((GameObject*)child)->anim.velocityY =
+            child->anim.velocityY =
                 ((30.0f + ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosY +
                   (f32)(int)randomGetRange(-10, 10)) -
                  ((ObjPlacement*)setup)->posY) /
                 dur;
-            ((GameObject*)child)->anim.velocityZ = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ -
+            child->anim.velocityZ = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ -
                                                     ((ObjPlacement*)setup)->posZ) /
                                                    dur;
         }

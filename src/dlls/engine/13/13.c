@@ -193,7 +193,7 @@ void playerShadow_renderObject(GameObject* obj)
     int* tileInfo;
     int hitTable;
     int hitCount;
-    int hitTableValue;
+    PlayerShadowTriHit* hitTableValue;
     u32 mode;
     TrackQueryBounds hitData;
     f32 verts[8][3];
@@ -272,9 +272,9 @@ void playerShadow_renderObject(GameObject* obj)
     hitDetect_calcSweptSphereBounds(&hitData, &verts[0][0], &verts[4][0], radii, 4);
     hitDetectFn_800691c0(obj, &hitData, 0x84, 0);
     trackGetTriangleBuffer(&hitCount, &hitTable);
-    hitTableValue = hitTable;
+    hitTableValue = (PlayerShadowTriHit*)hitTable;
     trackGetGridOrigin(&tileInfo);
-    playerShadow_scatterFootfallEffects((PlayerShadowTriHit*)hitTableValue, hitCount, (obj)->anim.localPosX - tileInfo[0],
+    playerShadow_scatterFootfallEffects(hitTableValue, hitCount, (obj)->anim.localPosX - tileInfo[0],
                 (obj)->anim.localPosZ - tileInfo[2], obj);
 }
 

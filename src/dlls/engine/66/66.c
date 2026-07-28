@@ -206,7 +206,7 @@ int cameraFn_80103b40(CameraObject* cam, f32* outA, f32* outB, int angle)
     f32 spinB;
     f32 spinC;
     f32 spinD;
-    int tgt;
+    GameObject* tgt;
     int ang;
     float* pA;
     float* pB;
@@ -266,15 +266,15 @@ int cameraFn_80103b40(CameraObject* cam, f32* outA, f32* outB, int angle)
         {
             dx = spinD;
             dz = spinB;
-            tgt = *(int*)&cam->anim.targetObj;
+            tgt = (GameObject*)(*(int*)&cam->anim.targetObj);
             rad = (3.1415927f * (f32)(s16)ang) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
             t = dz * sinv - dx * cosv;
             v = t * cosv + dx * sinv;
-            t = t + ((GameObject*)tgt)->anim.worldPosX;
+            t = t + tgt->anim.worldPosX;
             probe[0] = t;
-            v = v + ((GameObject*)tgt)->anim.worldPosZ;
+            v = v + tgt->anim.worldPosZ;
             probe[2] = v;
             pA[3] = probe[0];
             pA[4] = probe[1];
@@ -288,15 +288,15 @@ int cameraFn_80103b40(CameraObject* cam, f32* outA, f32* outB, int angle)
         {
             dx = spinD;
             dz = spinB;
-            tgt = *(int*)&cam->anim.targetObj;
+            tgt = (GameObject*)(*(int*)&cam->anim.targetObj);
             rad = (3.1415927f * (f32)(s16)(-s * 0xb6)) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
             t = dz * sinv - dx * cosv;
             v = t * cosv + dx * sinv;
-            t = t + ((GameObject*)tgt)->anim.worldPosX;
+            t = t + tgt->anim.worldPosX;
             probe[0] = t;
-            v = v + ((GameObject*)tgt)->anim.worldPosZ;
+            v = v + tgt->anim.worldPosZ;
             probe[2] = v;
             pB[3] = probe[0];
             pB[4] = probe[1];
@@ -630,14 +630,14 @@ void camcontrol_updateVerticalBounds(CameraObject* camera, int flags, int collis
     int count;
     int i;
     int j;
-    int camObj;
+    GameObject* camObj;
     int cameraAddr;
     TrackQueryBounds bounds;
     f32 pos[3];
     TrackGroundHit** hits;
 
     cameraAddr = (int)camera;
-    camObj = (int)camera->anim.targetObj;
+    camObj = (GameObject*)((int)camera->anim.targetObj);
     if ((flags & 1) != 0)
     {
         float range = 4.0f;
@@ -652,15 +652,15 @@ void camcontrol_updateVerticalBounds(CameraObject* camera, int flags, int collis
         pos[1] = camera->anim.worldPosY;
         pos[2] = camera->anim.worldPosZ;
         hitDetect_calcSweptSphereBounds(&bounds, &camera->probePosX, pos, (float*)(cameraAddr + 0x74), 1);
-        hitDetectFn_800691c0((GameObject*)camObj, &bounds, 0x240, 1);
-        hitDetectFn_80067958((GameObject*)camObj, &camera->probePosX, pos, 1, &camera->anim.hostedMapSlot, 0);
+        hitDetectFn_800691c0(camObj, &bounds, 0x240, 1);
+        hitDetectFn_80067958(camObj, &camera->probePosX, pos, 1, &camera->anim.hostedMapSlot, 0);
         camera->anim.worldPosX = pos[0];
         camera->anim.worldPosY = pos[1];
         camera->anim.worldPosZ = pos[2];
     }
     if ((flags & 2) != 0)
     {
-        count = hitDetectFn_80065e50((GameObject*)camObj, camera->anim.worldPosX, camera->anim.worldPosY,
+        count = hitDetectFn_80065e50(camObj, camera->anim.worldPosX, camera->anim.worldPosY,
                                      camera->anim.worldPosZ, &hits, 1, 0x40);
         *upperBound = -100000.0f;
         *lowerBound = 100000.0f;

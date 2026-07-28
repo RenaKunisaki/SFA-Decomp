@@ -1475,12 +1475,12 @@ int modelCb_80073d04(u8* obj, int* objB)
     GXColor colorK;
     GXColor colorB;
     Mtx texMtx;
-    int tex;
-    int model;
+    Texture* tex;
+    ModelFileHeader* model;
 
     colorB = sMoonFxTint;
-    model = objB[0];
-    tex = (int)textureIdxToPtr(*(int*)Shader_getLayer(ObjModel_GetRenderOp((ModelFileHeader*)model, 0), 0));
+    model = (ModelFileHeader*)(objB[0]);
+    tex = (Texture*)textureIdxToPtr(*(int*)Shader_getLayer(ObjModel_GetRenderOp(model, 0), 0));
     texMtx[0][0] = 0.7f;
     texMtx[0][1] = 0.0f;
     texMtx[0][2] = 0.0f;
@@ -1505,7 +1505,7 @@ int modelCb_80073d04(u8* obj, int* objB)
     GXSetNumTexGens(2);
     GXSetNumTevStages(2);
     GXSetTevDirect(GX_TEVSTAGE0);
-    if (((ModelFileHeader*)model)->flags24 & 2)
+    if (model->flags24 & 2)
     {
         GXSetNumChans(1);
         GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
@@ -1527,7 +1527,7 @@ int modelCb_80073d04(u8* obj, int* objB)
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    selectTexture((Texture*)tex, 1);
+    selectTexture(tex, 1);
     GXSetTevDirect(GX_TEVSTAGE1);
     GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP1, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_C0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
@@ -1560,11 +1560,11 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
     GXColor colorFog;
     Mtx mtx;
     int op;
-    int tex;
+    Texture* tex;
     f32 tx;
 
     op = (int)ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
-    tex = (int)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
+    tex = (Texture*)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     lbl_803DD010 = mainGetBit(0x2ba);
     tx = lbl_803DD010 / 30.0f;
@@ -1574,7 +1574,7 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
     GXSetNumTexGens(2);
     GXSetNumTevStages(3);
     GXSetNumIndStages(0);
-    selectTexture((Texture*)tex, 0);
+    selectTexture(tex, 0);
     colorK.a = (((ModelRenderOp*)op)->alpha * obj[0x37]) >> 8;
     GXSetTevKColor(GX_KCOLOR0, colorK);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);

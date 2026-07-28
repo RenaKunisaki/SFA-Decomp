@@ -121,13 +121,13 @@ int dbegg_isActive(GameObject* obj)
 
 void dbegg_processMessages(GameObject* obj)
 {
-    int eggState;
+    DbEggState* eggState;
     DbeggPlacement* config;
     u32 msgType = 0;
     int msgFlag = 0;
     int msgArg;
 
-    eggState = *(int*)&(obj)->extra;
+    eggState = (DbEggState*)(*(int*)&(obj)->extra);
     config = (DbeggPlacement*)(obj)->anim.placementData;
 
     while (ObjMsg_Pop((void*)obj, &msgType, (u32*)&msgArg, (u32*)&msgFlag) != 0)
@@ -137,12 +137,12 @@ void dbegg_processMessages(GameObject* obj)
             switch (msgFlag)
             {
             case 18:
-                if ((((DbEggState*)eggState)->flags119 & 0x20) == 0)
+                if ((eggState->flags119 & 0x20) == 0)
                 {
                     ObjGroup_RemoveObject((int)obj, DBEGG_OBJGROUP);
                 }
                 ObjHits_DisableObject(obj);
-                ((DbEggState*)eggState)->mode = DBEGG_MODE_HELD;
+                eggState->mode = DBEGG_MODE_HELD;
                 *(u8*)&(obj)->anim.resetHitboxMode = (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
                 break;
             case 17:
@@ -155,9 +155,9 @@ void dbegg_processMessages(GameObject* obj)
                     f32 vector[3];
                 } buf;
                 f32 v;
-                (obj)->anim.velocityX = ((DbEggState*)eggState)->launchVelX;
-                (obj)->anim.velocityY = ((DbEggState*)eggState)->launchVelY;
-                (obj)->anim.velocityZ = -((DbEggState*)eggState)->launchVelZ;
+                (obj)->anim.velocityX = eggState->launchVelX;
+                (obj)->anim.velocityY = eggState->launchVelY;
+                (obj)->anim.velocityZ = -eggState->launchVelZ;
                 v = 0.0f;
                 buf.vector[0] = v;
                 buf.vector[1] = v;
@@ -171,7 +171,7 @@ void dbegg_processMessages(GameObject* obj)
             case 16:
                 ObjGroup_AddObject((int)obj, DBEGG_OBJGROUP);
             case 20:
-                ((DbEggState*)eggState)->mode = DBEGG_MODE_FALLING;
+                eggState->mode = DBEGG_MODE_FALLING;
                 *(u8*)&(obj)->anim.resetHitboxMode = (u8)(*(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
                 ObjHits_EnableObject(obj);
                 break;

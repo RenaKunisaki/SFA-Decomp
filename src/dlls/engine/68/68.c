@@ -406,7 +406,7 @@ void CameraModeViewfinder_free(int camObj)
 
 void CameraModeViewfinder_update(CameraObject* obj)
 {
-    int camObj;
+    GameObject* camObj;
     GameObject* targetObj;
     GameObject* exitTarget;
     int angleDiff;
@@ -417,9 +417,9 @@ void CameraModeViewfinder_update(CameraObject* obj)
     GameObject* shadow2;
     GameObject* shadow;
 
-    camObj = (int)obj->anim.targetObj;
+    camObj = (GameObject*)obj->anim.targetObj;
     getButtonsJustPressed(0);
-    firstPersonPlaceCamera((GameObject*)camObj, 0);
+    firstPersonPlaceCamera(camObj, 0);
     switch (gViewfinderState->mode)
     {
     case VIEWFINDER_MODE_ENTER_BLEND:
@@ -530,7 +530,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
         }
         else
         {
-            hitY = obj->anim.worldPosY - (((GameObject*)camObj)->anim.worldPosY + lbl_803E17C0);
+            hitY = obj->anim.worldPosY - (camObj->anim.worldPosY + lbl_803E17C0);
             angleDiff = (getAngle(hitY, hitDist) & 0xffff) - (obj->anim.rotY & 0xffffU);
             if (angleDiff > 0x8000)
             {

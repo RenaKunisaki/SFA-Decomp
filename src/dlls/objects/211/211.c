@@ -157,7 +157,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord)
 int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
 {
     f32 scale;
-    int player;
+    GameObject* player;
     LandedArwingState* state;
     GameObject* playerObj;
     f32 x;
@@ -165,8 +165,8 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
     f32 z;
 
     state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
-    player = (int)Obj_GetPlayerObject();
-    playerObj = (GameObject*)player;
+    player = (GameObject*)((int)Obj_GetPlayerObject());
+    playerObj = player;
     ((BaddieState*)stateWord)->stateTag = 1;
     if (*(s8*)(stateWord + LANDED_ARWING_JUST_COLLIDED) != 0)
     {
@@ -1207,7 +1207,7 @@ void* gLandedArwingDefaultStateHandler;
 
 void dll_D3_update(GameObject* obj)
 {
-    int trans;
+    DllD3Placement* trans;
     int* state;
     LandedArwingState* extra;
     GameObject* player;
@@ -1221,7 +1221,7 @@ void dll_D3_update(GameObject* obj)
 #define dy           vec[2]
 #define dz           vec[3]
 
-    trans = *(int*)&obj->anim.placementData;
+    trans = (DllD3Placement*)(*(int*)&obj->anim.placementData);
     state = obj->extra;
     extra = (LandedArwingState*)((GroundBaddieState*)state)->control;
     player = Obj_GetPlayerObject();
@@ -1247,10 +1247,10 @@ void dll_D3_update(GameObject* obj)
 
     if (obj->userData2 == 0)
     {
-        obj->anim.localPosX = ((DllD3Placement*)trans)->base.posX;
-        obj->anim.localPosY = ((DllD3Placement*)trans)->base.posY;
-        obj->anim.localPosZ = ((DllD3Placement*)trans)->base.posZ;
-        (*gObjectTriggerInterface)->runSequence(((DllD3Placement*)trans)->seqIndex, obj, -1);
+        obj->anim.localPosX = trans->base.posX;
+        obj->anim.localPosY = trans->base.posY;
+        obj->anim.localPosZ = trans->base.posZ;
+        (*gObjectTriggerInterface)->runSequence(trans->seqIndex, obj, -1);
         obj->userData2 = 1;
         return;
     }

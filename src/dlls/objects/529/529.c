@@ -159,16 +159,16 @@ void wmwallcrawler_hitDetect(GameObject* obj)
     }
     else if (((WcHitBits*)&state->hitBits)->hit != 0)
     {
-        int target;
+        GameObject* target;
         if ((state->flags & WMWALLCRAWLER_FLAG_TARGET_NEAREST) == 0)
         {
-            target = (int)Obj_GetPlayerObject();
+            target = (GameObject*)Obj_GetPlayerObject();
         }
         else
         {
-            target = ObjGroup_FindNearestObject(WMWALLCRAWLER_TARGET_OBJGROUP, obj, &stk);
+            target = (GameObject*)(ObjGroup_FindNearestObject(WMWALLCRAWLER_TARGET_OBJGROUP, obj, &stk));
         }
-        ObjHits_RecordObjectHit((GameObject*)target, obj, 0xb, 1, 0);
+        ObjHits_RecordObjectHit(target, obj, 0xb, 1, 0);
         state->mode = WMWALLCRAWLER_MODE_DIE;
         ((WcHitBits*)&state->hitBits)->hit = 0;
     }
@@ -407,7 +407,7 @@ void wmwallcrawler_update(GameObject* obj)
                             if (list != 0)
                             {
                                 ((GameObject*)ob)->anim.localPosY = list[bestIdx]->height;
-                                wmwallcrawler_alignToFloorNormal((GameObject*)(ob), list[bestIdx]);
+                                wmwallcrawler_alignToFloorNormal((GameObject*)ob, list[bestIdx]);
                             }
                             else
                             {
@@ -506,7 +506,7 @@ void wmwallcrawler_update(GameObject* obj)
                                     if (list != 0)
                                     {
                                         ((GameObject*)ob)->anim.localPosY = list[bestIdx]->height;
-                                        wmwallcrawler_alignToFloorNormal((GameObject*)(ob), list[bestIdx]);
+                                        wmwallcrawler_alignToFloorNormal((GameObject*)ob, list[bestIdx]);
                                     }
                                     else
                                     {

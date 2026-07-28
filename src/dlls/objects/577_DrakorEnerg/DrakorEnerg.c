@@ -81,7 +81,7 @@ void drakorenergy_hitDetect(void)
 void drakorenergy_update(int obj)
 {
     DrakorEnergyState* state = (DrakorEnergyState*)((GameObject*)obj)->extra;
-    int placement;
+    DrakorenergyPlacement* placement;
     GameObject* player;
     f32 zeroF;
     f32 dist;
@@ -93,11 +93,11 @@ void drakorenergy_update(int obj)
     DrakorEnergyState* s = state;
 
     player = Obj_GetPlayerObject();
-    placement = *(int*)&o->anim.placementData;
+    placement = (DrakorenergyPlacement*)o->anim.placementData;
     switch (s->mode)
     {
     case DRAKORENERGY_MODE_IDLE:
-        if (mainGetBit(((DrakorenergyPlacement*)placement)->gameBitId) == 1)
+        if (mainGetBit(placement->gameBitId) == 1)
         {
             s->mode = DRAKORENERGY_MODE_BOBBING;
         }

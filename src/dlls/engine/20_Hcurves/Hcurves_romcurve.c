@@ -797,7 +797,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
     u32 currentCurve;
     int nextId;
     u32 nextCurve;
-    int distanceCurve;
+    RomCurveDef* distanceCurve;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -857,17 +857,17 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
         {
             if (state->reverse != 0)
             {
-                distanceCurve = *(s32*)&state->nodeA4;
-                dx = ((RomCurveDef*)distanceCurve)->x - (obj)->anim.localPosX;
-                dy = ((RomCurveDef*)distanceCurve)->y - (obj)->anim.localPosY;
-                dz = ((RomCurveDef*)distanceCurve)->z - (obj)->anim.localPosZ;
+                distanceCurve = (RomCurveDef*)state->nodeA4;
+                dx = distanceCurve->x - (obj)->anim.localPosX;
+                dy = distanceCurve->y - (obj)->anim.localPosY;
+                dz = distanceCurve->z - (obj)->anim.localPosZ;
             }
             else
             {
-                distanceCurve = *(s32*)&state->nodeA0;
-                dx = ((RomCurveDef*)distanceCurve)->x - (obj)->anim.localPosX;
-                dy = ((RomCurveDef*)distanceCurve)->y - (obj)->anim.localPosY;
-                dz = ((RomCurveDef*)distanceCurve)->z - (obj)->anim.localPosZ;
+                distanceCurve = (RomCurveDef*)state->nodeA0;
+                dx = distanceCurve->x - (obj)->anim.localPosX;
+                dy = distanceCurve->y - (obj)->anim.localPosY;
+                dz = distanceCurve->z - (obj)->anim.localPosZ;
             }
             distance = sqrtf(dx * dx + dy * dy + dz * dz);
             if (distance > maxDistance)
@@ -995,7 +995,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
     int directIndex;
     int directSlot;
     int directLinkId;
-    u32 directCurve;
+    RomCurveDef* directCurve;
     int startIndex;
     int candidateCount;
     int queueCount;
@@ -1041,18 +1041,18 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
         }
         visited[startIndex] = 1;
 
-        directCurve = (u32)RomCurve_findByIdWithIndex(((RomCurveDef*)startCurve)->linkIds[directSlot], &directIndex);
+        directCurve = (RomCurveDef*)RomCurve_findByIdWithIndex(((RomCurveDef*)startCurve)->linkIds[directSlot], &directIndex);
         if (directCurve == 0)
         {
             continue;
         }
 
-        distance = (((RomCurveDef*)directCurve)->z - ((RomCurveDef*)startCurve)->z) *
-                   (((RomCurveDef*)directCurve)->z - ((RomCurveDef*)startCurve)->z);
-        queueDistances[0] = (((RomCurveDef*)directCurve)->x - ((RomCurveDef*)startCurve)->x) *
-                                (((RomCurveDef*)directCurve)->x - ((RomCurveDef*)startCurve)->x) +
-                            (((RomCurveDef*)directCurve)->y - ((RomCurveDef*)startCurve)->y) *
-                                (((RomCurveDef*)directCurve)->y - ((RomCurveDef*)startCurve)->y) +
+        distance = (directCurve->z - ((RomCurveDef*)startCurve)->z) *
+                   (directCurve->z - ((RomCurveDef*)startCurve)->z);
+        queueDistances[0] = (directCurve->x - ((RomCurveDef*)startCurve)->x) *
+                                (directCurve->x - ((RomCurveDef*)startCurve)->x) +
+                            (directCurve->y - ((RomCurveDef*)startCurve)->y) *
+                                (directCurve->y - ((RomCurveDef*)startCurve)->y) +
                             distance;
         queueCount = 0;
         queueIndices[queueCount++] = directIndex;
@@ -1743,7 +1743,7 @@ int curves_findNearestOfType16(f32 x, f32 y, f32 z, int queryAll)
     {
         obj = objects[i];
         if ((((obj)->anim.classId == 0x2c) && ((obj)->anim.mapEventSlot != queryAll)) &&
-            (curve = (RomCurveDef*)(obj)->anim.placementData, curve != NULL) &&
+            (curve = (RomCurveDef*)obj->anim.placementData, curve != NULL) &&
             curve->type == ROMCURVE_TYPE_16)
         {
             dx = (obj)->anim.worldPosX - x;

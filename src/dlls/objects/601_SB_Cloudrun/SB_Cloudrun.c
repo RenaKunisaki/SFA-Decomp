@@ -790,10 +790,10 @@ void SB_CloudRunner_update(GameObject* obj)
         int i;
         for (i = 0; i < count; i++)
         {
-            int o = objs[i];
-            if (((GameObject*)o)->anim.seqId == CLOUDRUNNER_TARGET_TYPE)
+            GameObject* o = (GameObject*)(objs[i]);
+            if (o->anim.seqId == CLOUDRUNNER_TARGET_TYPE)
             {
-                state->targetObj = (GameObject*)o;
+                state->targetObj = o;
                 i = count;
             }
         }
