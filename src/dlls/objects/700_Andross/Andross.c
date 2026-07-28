@@ -388,6 +388,32 @@ int andross_trackArwingVelocity(AndrossState* state, f32 clampRange, f32 scale, 
 #define ANDROSS_ALPHA_255 255.0f
 #define ANDROSS_DISTORT_PHASE_WRAP 6.28318f
 
+static void andross_updateDistortion(GameObject* obj, AndrossState* state, f32 fval)
+{
+    f32 fc;
+
+    obj->anim.alpha = (u8)(ANDROSS_ALPHA_255 * state->fadeAlpha);
+    if (fval < 0.5f)
+    {
+        fc = 1000.0f - 2.0f * (800.0f * fval);
+        if (fval < 0.01f)
+        {
+            gAndrossDistortPhase = gAndrossDistortPhaseReset;
+        }
+    }
+    else
+    {
+        fc = 200.0f;
+    }
+    gAndrossDistortPhase += gAndrossDistortPhaseStep;
+    if (gAndrossDistortPhase > ANDROSS_DISTORT_PHASE_WRAP)
+    {
+        gAndrossDistortPhase -= ANDROSS_DISTORT_PHASE_WRAP;
+    }
+    turnOnDistortionFilter(&state->cachedPosX, fc, &gAndrossDistortFilterParam, gAndrossDistortPhase);
+    state->fadeAlpha = 0.0f;
+}
+
 void andross_updateBombCollector(GameObject* obj, AndrossState* andross)
 {
     GameObject* spawned;
