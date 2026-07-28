@@ -451,10 +451,10 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
     data = texData + 0x60;
     if (window % 8 == 0)
     {
+        u32 y = 0;
         int nfill = window >> 3;
-        u32 y;
 
-        for (y = 0; y < size; y++)
+        for (; y < size; y++)
         {
             u32* tile = (u32*)(data + (y & 3) * 8 + (y >> 2) * 4 * size);
             u32* dst = row.words;
