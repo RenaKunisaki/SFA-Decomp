@@ -109,18 +109,6 @@ typedef struct TrackShadowTriangle
     u8 pad11[3];
 } TrackShadowTriangle;
 
-typedef struct AngleXf
-{
-    s16 rotX;
-    s16 rotY;
-    s16 rotZ;
-    s16 pad6;
-    f32 scale;
-    f32 tx;
-    f32 ty;
-    f32 tz;
-} AngleXf;
-
 #include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -176,15 +164,15 @@ static f32 shadowGetSunMagnitude(void)
 
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale)
 {
-    AngleXf xf;
+    MatrixTransform xf;
     f32 ax;
     f32 az;
     int i;
     int rotY;
 
-    xf.tx = 0.0f;
-    xf.ty = 0.0f;
-    xf.tz = 0.0f;
+    xf.x = 0.0f;
+    xf.y = 0.0f;
+    xf.z = 0.0f;
     xf.scale = 1.0f;
     xf.rotZ = 0;
     ax = __fabsf(direction[0]);
