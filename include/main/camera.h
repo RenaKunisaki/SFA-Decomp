@@ -72,7 +72,48 @@ STATIC_ASSERT(offsetof(Camera, shakeCooldown) == 0x5C);
 STATIC_ASSERT(offsetof(Camera, shakeMode) == 0x5D);
 STATIC_ASSERT(sizeof(Camera) == 0x60);
 
+typedef struct CameraViewport {
+    s32 x1;
+    s32 y1;
+    s32 x2;
+    s32 y2;
+    s32 posX;
+    s32 posY;
+    s32 width;
+    s32 height;
+    s32 ulx;
+    s32 uly;
+    s32 lrx;
+    s32 lry;
+    s32 flags;
+} CameraViewport;
+
+STATIC_ASSERT(offsetof(CameraViewport, ulx) == 0x20);
+STATIC_ASSERT(offsetof(CameraViewport, flags) == 0x30);
+STATIC_ASSERT(sizeof(CameraViewport) == 0x34);
+
+typedef struct CameraViewportTransform {
+    s16 scaleX;
+    s16 scaleY;
+    s16 scaleZ;
+    s16 scaleW;
+    s16 translateX;
+    s16 translateY;
+    s16 translateZ;
+    s16 translateW;
+} CameraViewportTransform;
+
+STATIC_ASSERT(offsetof(CameraViewportTransform, scaleX) == 0x0);
+STATIC_ASSERT(offsetof(CameraViewportTransform, scaleY) == 0x2);
+STATIC_ASSERT(offsetof(CameraViewportTransform, scaleZ) == 0x4);
+STATIC_ASSERT(offsetof(CameraViewportTransform, translateX) == 0x8);
+STATIC_ASSERT(offsetof(CameraViewportTransform, translateY) == 0xA);
+STATIC_ASSERT(offsetof(CameraViewportTransform, translateZ) == 0xC);
+STATIC_ASSERT(sizeof(CameraViewportTransform) == 0x10);
+
 extern Camera gCameras[12];
+extern CameraViewport gCameraViewports[4];
+extern CameraViewportTransform gCameraViewportTransforms[20];
 extern CameraMatrix gCameraDefaultModelMatrix;
 extern f32 gCameraWorldMatrix[64];
 extern f32 lbl_803DE5F0;

@@ -43,6 +43,34 @@ CameraMatrix gCameraViewMatrix;
 CameraMatrix gCameraInverseViewMatrix;
 CameraProjectionMatrix gCameraProjectionMatrix;
 
+typedef struct CameraMatrixStorage {
+    CameraMatrix inverseYawTransforms[0x1E];
+    union {
+        CameraMatrix yawTransforms[0x22];
+        struct {
+            CameraMatrix objectYawTransforms[0x1F];
+            CameraMatrix scratchTransform;
+            CameraMatrix remainingYawTransforms[2];
+        };
+    };
+    f32 worldMatrix[64];
+    CameraMatrix defaultModelMatrix;
+    Camera cameras[12];
+    CameraMatrix viewRotationMatrix;
+    CameraMatrix inverseViewRotationMatrix;
+    CameraMatrix viewMatrix;
+    CameraMatrix inverseViewMatrix;
+    CameraProjectionMatrix projectionMatrix;
+} CameraMatrixStorage;
+
+STATIC_ASSERT(offsetof(CameraMatrixStorage, yawTransforms) == 0x780);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, scratchTransform) == 0xF40);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, worldMatrix) == 0x1000);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, defaultModelMatrix) == 0x1100);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, cameras) == 0x1140);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, projectionMatrix) == 0x16C0);
+STATIC_ASSERT(sizeof(CameraMatrixStorage) == 0x1700);
+
 void Obj_RotateLocalOffsetByYaw(f32* local, f32* out, s8 yawIndex) {
     s32 matrixOffset;
     f32* matrix;
@@ -172,18 +200,8 @@ void Obj_GetWorldPosition(GameObject* obj, f32* outX, f32* outY, f32* outZ) {
     }
 }
 
-typedef struct ObjTransformMatrixPool {
-    CameraMatrix inverse[0x1E];
-    CameraMatrix yaw[0x1F];
-    CameraMatrix scratch;
-} ObjTransformMatrixPool;
-
-STATIC_ASSERT(offsetof(ObjTransformMatrixPool, yaw) == 0x780);
-STATIC_ASSERT(offsetof(ObjTransformMatrixPool, scratch) == 0xF40);
-STATIC_ASSERT(sizeof(ObjTransformMatrixPool) == 0xF80);
-
 void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
-    ObjTransformMatrixPool* base;
+    CameraMatrixStorage* storage;
     GameObject* ancestors[4];
     MatrixTransform inverseTransform;
     f32* inverseYawMatrix;
@@ -191,17 +209,17 @@ void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
     f32* yawMatrix;
     s8 ancestorCount;
     f32 savedScale;
-    s8 hasParent;
+    s8 isAncestor;
     f32* yawMatrices;
 
-    base = (ObjTransformMatrixPool*)gObjInverseYawTransformMatrices;
+    storage = (CameraMatrixStorage*)gObjInverseYawTransformMatrices;
     matrixOffset = yawIndex * 16;
-    yawMatrices = (f32*)base->yaw;
+    yawMatrices = (f32*)storage->yawTransforms;
     yawMatrix = yawMatrices + matrixOffset;
-    inverseYawMatrix = (f32*)base->inverse + matrixOffset;
-    hasParent = 0;
+    inverseYawMatrix = (f32*)storage->inverseYawTransforms + matrixOffset;
+    isAncestor = 0;
     ancestorCount = 0;
-    while (obj != 0) {
+    while (obj != NULL) {
         ancestors[ancestorCount] = obj;
         ancestorCount++;
         savedScale = obj->anim.rootMotionScale;
@@ -209,16 +227,16 @@ void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
             obj->anim.rootMotionScale = lbl_803DE5F0;
         }
 
-        if (hasParent == 0) {
+        if (isAncestor == 0) {
             setMatrixFromObjectPos(yawMatrix, (MatrixTransform*)&obj->anim);
         } else {
-            setMatrixFromObjectPos(base->scratch, (MatrixTransform*)&obj->anim);
-            mtx44_multSafe(yawMatrix, base->scratch, yawMatrix);
+            setMatrixFromObjectPos(storage->scratchTransform, (MatrixTransform*)&obj->anim);
+            mtx44_multSafe(yawMatrix, storage->scratchTransform, yawMatrix);
         }
 
         obj->anim.rootMotionScale = savedScale;
         obj = obj->anim.parent;
-        hasParent = 1;
+        isAncestor = 1;
     }
 
     while (ancestorCount > 0) {
@@ -330,17 +348,17 @@ void CameraShake_StartDampened(f32 amplitude, f32 frequency, f32 damping) {
 }
 
 void CameraShake_SetOffset(f32 offsetY) {
-    Camera* camera = gCameras;
+    Camera* cameraGroup = gCameras;
     int group;
     int i;
 
     for (group = 0; group < 2; group++) {
         for (i = 0; i < 6; i++) {
-            Camera* p = &camera[i];
-            p->shakeOffsetY = offsetY;
-            p->shakeMode = 0;
+            Camera* camera = &cameraGroup[i];
+            camera->shakeOffsetY = offsetY;
+            camera->shakeMode = 0;
         }
-        camera += 6;
+        cameraGroup += 6;
     }
 }
 
@@ -351,10 +369,10 @@ void CameraShake_ApplyRadial(f32 x, f32 y, f32 z, f32 radius, f32 intensity) {
     f32 dy;
     f32 dz;
     f32 distance;
-    s8 inactive;
+    s8 bounceMode;
 
     camera = gCameras;
-    inactive = 0;
+    bounceMode = 0;
     for (i = 0; i <= 7; i++) {
         dx = x - camera[i].x;
         dy = y - camera[i].y;
@@ -362,7 +380,7 @@ void CameraShake_ApplyRadial(f32 x, f32 y, f32 z, f32 radius, f32 intensity) {
         distance = sqrtf(dx * dx + dy * dy + dz * dz);
         if (distance < radius) {
             camera[i].shakeOffsetY = (intensity * (radius - distance)) / radius;
-            camera[i].shakeMode = inactive;
+            camera[i].shakeMode = bounceMode;
         }
     }
 }
@@ -399,48 +417,6 @@ void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* trans
     transform->x += playerMapOffsetX;
     transform->z += playerMapOffsetZ;
 }
-
-typedef struct CameraViewport {
-    s32 x1;
-    s32 y1;
-    s32 x2;
-    s32 y2;
-    s32 posX;
-    s32 posY;
-    s32 width;
-    s32 height;
-    s32 ulx;
-    s32 uly;
-    s32 lrx;
-    s32 lry;
-    s32 flags;
-} CameraViewport;
-
-STATIC_ASSERT(offsetof(CameraViewport, ulx) == 0x20);
-STATIC_ASSERT(offsetof(CameraViewport, flags) == 0x30);
-STATIC_ASSERT(sizeof(CameraViewport) == 0x34);
-
-typedef struct CameraViewportTransform {
-    s16 scaleX;
-    s16 scaleY;
-    s16 scaleZ;
-    s16 scaleW;
-    s16 translateX;
-    s16 translateY;
-    s16 translateZ;
-    s16 translateW;
-} CameraViewportTransform;
-
-STATIC_ASSERT(offsetof(CameraViewportTransform, scaleX) == 0x0);
-STATIC_ASSERT(offsetof(CameraViewportTransform, scaleY) == 0x2);
-STATIC_ASSERT(offsetof(CameraViewportTransform, scaleZ) == 0x4);
-STATIC_ASSERT(offsetof(CameraViewportTransform, translateX) == 0x8);
-STATIC_ASSERT(offsetof(CameraViewportTransform, translateY) == 0xA);
-STATIC_ASSERT(offsetof(CameraViewportTransform, translateZ) == 0xC);
-STATIC_ASSERT(sizeof(CameraViewportTransform) == 0x10);
-
-extern CameraViewport gCameraViewports[];
-extern CameraViewportTransform gCameraViewportTransforms[];
 
 /*
  * The fullscreen post-scene path deliberately selects index 4 even though the viewport table has four entries.
@@ -627,6 +603,10 @@ void Camera_ApplyCurrentViewport(void* viewportArg) {
     int viewportY;
     u32 screenSize;
 
+    /*
+     * getScreenResolution packs height in the upper half and width in the lower half. This reuse keeps the exact
+     * register allocation of retail's scissor setup.
+     */
     screenSize = getScreenResolution();
     viewportY = screenSize >> 16;
     width = screenSize;
@@ -642,20 +622,20 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
     u32 resolution = getScreenResolution();
     u32 screenHeight = resolution >> 16;
     u32 screenWidth = resolution & 0xFFFF;
-    CameraViewport* base = gCameraViewports;
-    CameraViewport* viewport;
+    CameraViewport* viewports = gCameraViewports;
+    CameraViewport* activeViewport;
 
-    if ((base[viewIndex].flags & 1) != 0) {
+    if ((viewports[viewIndex].flags & 1) != 0) {
         u8 savedViewIndex = gCameraCurrentViewIndex;
 
         gCameraCurrentViewIndex = viewIndex;
-        gxSetScissorRect(0, 0, base[viewIndex & 0xff].ulx, base[viewIndex & 0xff].uly, base[viewIndex & 0xff].lrx,
-                         base[viewIndex & 0xff].lry);
+        gxSetScissorRect(0, 0, viewports[viewIndex & 0xff].ulx, viewports[viewIndex & 0xff].uly,
+                         viewports[viewIndex & 0xff].lrx, viewports[viewIndex & 0xff].lry);
 
-        viewport = gCameraViewports;
+        activeViewport = gCameraViewports;
         activeViewIndex = gCameraCurrentViewIndex;
-        viewport += activeViewIndex;
-        if ((viewport->flags & 1) == 0) {
+        activeViewport += activeViewIndex;
+        if ((activeViewport->flags & 1) == 0) {
             gCameraViewportTransforms[activeViewIndex].translateX = 0;
             gCameraViewportTransforms[activeViewIndex].translateY = 0;
             gCameraViewportTransforms[activeViewIndex].scaleX = 0;
@@ -683,9 +663,9 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
         u32 halfScreenWidth = screenWidth / 2;
 
         activeViewIndex = gCameraCurrentViewIndex;
-        viewport = gCameraViewports;
-        viewport += activeViewIndex;
-        if ((viewport->flags & 1) == 0) {
+        activeViewport = gCameraViewports;
+        activeViewport += activeViewIndex;
+        if ((activeViewport->flags & 1) == 0) {
             gCameraViewportTransforms[activeViewIndex].translateX = (s16)(halfScreenWidth * 4);
             gCameraViewportTransforms[activeViewIndex].translateY = (s16)(halfScreenHeight * 4);
             gCameraViewportTransforms[activeViewIndex].scaleX = (s16)(halfScreenWidth * 4);
@@ -775,26 +755,6 @@ f32* Camera_GetViewMatrix(void) {
 f32* Camera_GetInverseViewMatrix(void) {
     return gCameraInverseViewMatrix;
 }
-
-typedef struct CameraMatrixStorage {
-    CameraMatrix inverseYawTransforms[0x1E];
-    CameraMatrix yawTransforms[0x22];
-    f32 worldMatrix[64];
-    CameraMatrix defaultModelMatrix;
-    Camera cameras[12];
-    CameraMatrix viewRotationMatrix;
-    CameraMatrix inverseViewRotationMatrix;
-    CameraMatrix viewMatrix;
-    CameraMatrix inverseViewMatrix;
-    CameraProjectionMatrix projectionMatrix;
-} CameraMatrixStorage;
-
-STATIC_ASSERT(offsetof(CameraMatrixStorage, yawTransforms) == 0x780);
-STATIC_ASSERT(offsetof(CameraMatrixStorage, worldMatrix) == 0x1000);
-STATIC_ASSERT(offsetof(CameraMatrixStorage, defaultModelMatrix) == 0x1100);
-STATIC_ASSERT(offsetof(CameraMatrixStorage, cameras) == 0x1140);
-STATIC_ASSERT(offsetof(CameraMatrixStorage, projectionMatrix) == 0x16C0);
-STATIC_ASSERT(sizeof(CameraMatrixStorage) == 0x1700);
 
 void Camera_UpdateViewMatrices(void) {
     CameraMatrixStorage* storage;
@@ -993,6 +953,10 @@ void Camera_InitState(void) {
     Camera* camera;
 
     for (i = 0; i < 12; i++) {
+        /*
+         * Keep the index offset separate from the CameraMatrixStorage member offset. MWCC otherwise rewrites this
+         * unrolled loop and no longer emits retail's base-plus-index, then member-offset address sequence.
+         */
         camera = (Camera*)((u8*)storage + (u8)i * sizeof(Camera));
         camera = (Camera*)((u8*)camera + offsetof(CameraMatrixStorage, cameras));
         camera->roll = 0;
