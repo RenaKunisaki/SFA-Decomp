@@ -1,166 +1,127 @@
 /*
  * DIMBarrier (DLL 0x1C5) - barrier object for Dinosaur Island Mission.
- * While a live type-470 object is in the trigger list, counts down an arm
- * timer; on expiry fades the barrier out and latches its gamebit.
+ * While an active sequence-0x1D6 object is in the trigger list, counts down
+ * an arm timer; on expiry fades the barrier out and latches its game bit.
  */
+
+#include "dlls/objects/453_DIMBarrier.h"
+
+#include "dlls/objects/454_DIMCannon.h"
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "dlls/object_descriptor.h"
-#include "main/audio/sfx_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/gamebits.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/audio/sfx.h"
 
-#define DIMBARRIER_TRIGGER_SEQ_ID 470
+#define DIM_BARRIER_PHASE_ARMED    0
+#define DIM_BARRIER_PHASE_FADING   1
+#define DIM_BARRIER_PHASE_RESOLVED 2
 
-/* dimbarrier_update state machine */
-#define DIMBARRIER_STATE_ARMED 0    /* watching the trigger list, counting down */
-#define DIMBARRIER_STATE_FADING 1   /* fading alpha out before latching the gamebit */
-#define DIMBARRIER_STATE_RESOLVED 2 /* faded away, gamebit latched */
+#define DIM_BARRIER_INITIAL_TRIGGER_COUNTDOWN 1
+#define DIM_BARRIER_FADE_DURATION             30
+#define DIM_BARRIER_ALPHA_FADE_PER_FRAME      16
 
-typedef struct DimbarrierPlacement
-{
-    ObjPlacement head;
-    s8 rotXByte;
-    u8 pad19[0x1E - 0x19];
-    s16 barrierGameBit;
-} DimbarrierPlacement;
+#define DIM_BARRIER_RENDER_SCALE 1.0f
 
-typedef struct DimbarrierState
-{
-    s16 timer;
-    u8 state;
-    s8 countdown;
-} DimbarrierState;
-
-typedef struct DimbarrierTriggerState
-{
-    u8 pad0[4];
-    u8 active;
-} DimbarrierTriggerState;
-
-STATIC_ASSERT(offsetof(DimbarrierPlacement, rotXByte) == 0x18);
-STATIC_ASSERT(offsetof(DimbarrierPlacement, barrierGameBit) == 0x1E);
-STATIC_ASSERT(sizeof(DimbarrierState) == 0x4);
-STATIC_ASSERT(offsetof(DimbarrierTriggerState, active) == 0x4);
-
-
-int dimbarrier_getExtraSize(void)
-{
-    return sizeof(DimbarrierState);
+int dimbarrier_getExtraSize(void) {
+    return sizeof(DimBarrierState);
 }
 
-int dimbarrier_getObjectTypeId(void)
-{
+int dimbarrier_getObjectTypeId(void) {
     return 0x0;
 }
 
-void dimbarrier_free(void)
-{
+void dimbarrier_free(void) {
 }
 
-void dimbarrier_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dimbarrier_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleValue = visible;
+
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DIM_BARRIER_RENDER_SCALE);
     }
 }
 
-void dimbarrier_hitDetect(void)
-{
+void dimbarrier_hitDetect(void) {
 }
 
-void dimbarrier_update(GameObject* obj)
-{
-    DimbarrierPlacement* placement = (DimbarrierPlacement*)obj->anim.placementData;
-    DimbarrierState* state = obj->extra;
-    switch (state->state)
-    {
-    case DIMBARRIER_STATE_ARMED:
-        {
-            GameObject* entry;
-            DimbarrierTriggerState* triggerState;
-            int found;
-            int i;
-            found = 0;
-            for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
-            {
-                entry = obj->anim.hitboxTransformState->contactObjects[i];
-                triggerState = entry->extra;
-                if (entry->anim.seqId == DIMBARRIER_TRIGGER_SEQ_ID && triggerState->active != 0)
-                {
-                    found = 1;
-                    break;
-                }
+void dimbarrier_update(GameObject* obj) {
+    const DimBarrierPlacement* placement = (const DimBarrierPlacement*)obj->anim.placementData;
+    DimBarrierState* state = obj->extra;
+
+    switch (state->phase) {
+    case DIM_BARRIER_PHASE_ARMED: {
+        GameObject* contact;
+        DimCannonBallState* triggerState;
+        int triggerFound;
+        int contactIndex;
+
+        triggerFound = 0;
+        for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
+            contact = obj->anim.hitboxTransformState->contactObjects[contactIndex];
+            triggerState = contact->extra;
+            if (contact->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID && triggerState->variant != 0) {
+                triggerFound = 1;
+                break;
             }
-            if (found)
-            {
-                if (--state->countdown <= 0)
-                {
-                    state->state = DIMBARRIER_STATE_FADING;
-                    state->timer = 30;
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c_206);
-                }
-                else
-                {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c_207);
-                }
-            }
-            break;
         }
-    case DIMBARRIER_STATE_FADING:
-        {
-            ObjHitsPriorityState* hitState;
-            int v = obj->anim.alpha - framesThisStep * 16;
-            if (v < 0)
-            {
-                v = 0;
+        if (triggerFound) {
+            if (--state->triggerCountdown <= 0) {
+                state->phase = DIM_BARRIER_PHASE_FADING;
+                state->fadeTimer = DIM_BARRIER_FADE_DURATION;
+                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c_206);
+            } else {
+                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c_207);
             }
-            hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-            hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-            obj->anim.alpha = v;
-            state->timer -= framesThisStep;
-            if (state->timer <= 0)
-            {
-                mainSetBits(placement->barrierGameBit, 1);
-                state->state = DIMBARRIER_STATE_RESOLVED;
-            }
-            break;
         }
-    case DIMBARRIER_STATE_RESOLVED:
+        break;
+    }
+    case DIM_BARRIER_PHASE_FADING: {
+        ObjHitsPriorityState* hitState;
+        int alpha = obj->anim.alpha - framesThisStep * DIM_BARRIER_ALPHA_FADE_PER_FRAME;
+
+        if (alpha < 0) {
+            alpha = 0;
+        }
+        hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
+        hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
+        obj->anim.alpha = alpha;
+        state->fadeTimer -= framesThisStep;
+        if (state->fadeTimer <= 0) {
+            mainSetBits(placement->barrierGameBit, 1);
+            state->phase = DIM_BARRIER_PHASE_RESOLVED;
+        }
+        break;
+    }
+    case DIM_BARRIER_PHASE_RESOLVED:
         break;
     }
 }
 
-void dimbarrier_init(GameObject* obj, DimbarrierPlacement* placement)
-{
-    DimbarrierState* state;
-    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
+void dimbarrier_init(GameObject* obj, const DimBarrierPlacement* placement) {
+    DimBarrierState* state;
+
+    obj->anim.rotX = (s16)((s32)placement->rotationXByte << 8);
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     state = obj->extra;
-    state->countdown = 1;
-    state->state = DIMBARRIER_STATE_ARMED;
-    if (mainGetBit(placement->barrierGameBit) != 0)
-    {
+    state->triggerCountdown = DIM_BARRIER_INITIAL_TRIGGER_COUNTDOWN;
+    state->phase = DIM_BARRIER_PHASE_ARMED;
+    if (mainGetBit(placement->barrierGameBit) != 0) {
         ObjHitsPriorityState* hitState;
-        state->countdown = 0;
+
+        state->triggerCountdown = 0;
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         obj->anim.alpha = 0;
-        state->state = DIMBARRIER_STATE_RESOLVED;
+        state->phase = DIM_BARRIER_PHASE_RESOLVED;
     }
 }
 
-void dimbarrier_release(void)
-{
+void dimbarrier_release(void) {
 }
 
-void dimbarrier_initialise(void)
-{
+void dimbarrier_initialise(void) {
 }
 
 ObjectDescriptor gDIMBarrierObjDescriptor = {

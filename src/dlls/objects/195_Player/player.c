@@ -6552,7 +6552,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
             if (anim != 0x48 && anim != 0x47)
             {
                 camArg = inner->traveledDistance < 0.0f ? 0 : 1;
-                (*(void (*)(int*))(*(int*)((char*)*gCameraInterface + 0x60)))(&camArg);
+                (*gCameraInterface)->releaseAction(&camArg, camArg);
             }
         }
         else

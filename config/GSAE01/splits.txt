@@ -174,6 +174,7 @@ main/object.c:
 	.bss        start:0x803408A8 end:0x803408F8
 	.sdata      start:0x803DB448 end:0x803DB450
 	.sbss       start:0x803DCB70 end:0x803DCBC8
+	.sdata2     start:0x803DE8A8 end:0x803DE8B8
 
 main/objanim.c:
 	.text       start:0x8002EB54 end:0x80030688
@@ -345,6 +346,7 @@ dlls/engine/2/2.c:
 	.bss        start:0x80396918 end:0x8039A7A8
 	.sdata      start:0x803DB700 end:0x803DB750
 	.sbss       start:0x803DD060 end:0x803DD128
+	.sdata2     start:0x803DEFB0 end:0x803DF058
 
 dlls/engine/5/5.c:
 	.text       start:0x80088758 end:0x8008C974
@@ -2239,7 +2241,7 @@ dlls/objects/333_LaserBeam/LaserBeam.c:
 dlls/objects/334_CFPrisonGua/CFPrisonGua.c:
 	.text       start:0x8019F540 end:0x8019FC84
 	.data       start:0x80322BA8 end:0x80322C00
-	.sdata2     start:0x803E4270 end:0x803E4288
+	.sdata2     start:0x803E4260 end:0x803E4288
 
 dlls/objects/335_CFPrisonUnc/CFPrisonUnc.c:
 	.text       start:0x8019FC84 end:0x801A0174

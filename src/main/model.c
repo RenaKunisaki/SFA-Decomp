@@ -1008,19 +1008,12 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
     int nextIdx;
     int i;
     int idx;
-    int matrixCount;
     f32* m;
     f32 dot;
 
     idx = ((ModelBone*)file->jointData)[entry->desc->jointIndices[0]].parent;
     PSMTXCopy(modelGetBoneMtx(model, idx), tmp);
-    idx = entry->desc->jointIndices[0];
-    matrixCount = modelGetJointMatrixCount(model);
-    if (idx >= matrixCount)
-    {
-        idx = 0;
-    }
-    m = (f32*)(model->jointMatrices[model->bufferFlags & 1] + idx * sizeof(ObjModelJointMatrix));
+    m = modelGetBoneMtx(model, entry->desc->jointIndices[0]);
     for (i = 1; i < entry->nodeCount + 1; i++)
     {
         nextIdx = entry->desc->jointIndices[i];
@@ -1094,19 +1087,12 @@ void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain
     int nextIdx;
     int i;
     int idx;
-    int matrixCount;
     f32* m;
     f32 dot;
 
     idx = ((ModelBone*)file->jointData)[entry->desc->jointIndices[0]].parent;
     PSMTXCopy(modelGetBoneMtx(model, idx), tmp);
-    idx = entry->desc->jointIndices[0];
-    matrixCount = modelGetJointMatrixCount(model);
-    if (idx >= matrixCount)
-    {
-        idx = 0;
-    }
-    m = (f32*)(model->jointMatrices[model->bufferFlags & 1] + idx * sizeof(ObjModelJointMatrix));
+    m = modelGetBoneMtx(model, entry->desc->jointIndices[0]);
     for (i = 1; i < entry->nodeCount + 1; i++)
     {
         nextIdx = entry->desc->jointIndices[i];

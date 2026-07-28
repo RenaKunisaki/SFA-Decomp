@@ -767,7 +767,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                 case 0x21:
                     op = (u16)((p[2] << 8) | p[3]);
                     bit = op & 0x1fff;
-                    mainSetBits(bit, mainGetBit(bit) ^ (1 << (op >> 13 & 7)));
+                    v = mainGetBit(bit);
+                    v ^= 1 << (op >> 13 & 7);
+                    mainSetBits(bit, v);
                     break;
                 case 0x13:
                     (*gMapEventInterface)
@@ -924,7 +926,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                         switch (p[2])
                         {
                         case 0:
-                            (*(VtableFn*)(**(int**)(t + 0x68) + 0x3c))();
+                            (*(VtableFn*)(**(int**)(t + 0x68) + 0x3c))(t);
                             break;
                         case 1:
                             Obj_FreeObject(getTrickyObject());
