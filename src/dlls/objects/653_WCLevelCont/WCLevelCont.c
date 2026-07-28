@@ -309,7 +309,7 @@ void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
         if (!(state->completionFlags & WCLEVELCTL_FLAG_PUZZLE_A) && mainGetBit(0x7ed) != 0)
         {
             mainSetBits(0x7ef, 1);
-            state->eventTimer = lbl_803E6DB0;
+            state->eventTimer = 70.0f;
             state->mode = WCLEVELCTL_MODE_PUZZLE_A;
             state->completionFlags |= WCLEVELCTL_FLAG_EVENT_ACTIVE;
             break;
@@ -317,7 +317,7 @@ void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
         if (!(state->completionFlags & WCLEVELCTL_FLAG_PUZZLE_B) && mainGetBit(0x7ee) != 0)
         {
             mainSetBits(0x7f0, 1);
-            state->eventTimer = lbl_803E6DB0;
+            state->eventTimer = 70.0f;
             state->mode = WCLEVELCTL_MODE_PUZZLE_B;
             state->completionFlags |= WCLEVELCTL_FLAG_EVENT_ACTIVE;
         }
@@ -373,8 +373,6 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
 {
     int i;
     int limit;
-    f32 k6db4;
-    f32 kc;
 
     if (dx != 0)
     {
@@ -383,8 +381,12 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
         {
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-            *outX = (k6db4 = lbl_803E6DB4) + (lbl_803E6DB8 + px + (kc = lbl_803E6DBC));
-            *outZ = k6db4 + (lbl_803E6DC0 + pz + (f32)(bi * 48));
+            {
+                f32 base = 24.0f;
+                f32 ofs = 336.0f;
+                *outX = base + (224.0f + px + ofs);
+                *outZ = base + (128.0f + pz + (f32)(bi * 48));
+            }
             a += 1;
             limit = 8;
         }
@@ -392,8 +394,11 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
         {
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-            *outX = (k6db4 = lbl_803E6DB4) + (lbl_803E6DB8 + px + (kc = lbl_803E6DA8));
-            *outZ = k6db4 + (lbl_803E6DC0 + pz + (f32)(bi * 48));
+            {
+                f32 base = 24.0f;
+                *outX = base + (224.0f + px + lbl_803E6DA8);
+                *outZ = base + (128.0f + pz + (f32)(bi * 48));
+            }
             a -= 1;
             limit = -1;
         }
@@ -406,13 +411,13 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
                     f32 pz, px;
                     i += dx;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-                    *outX = lbl_803E6DB4 + (lbl_803E6DB8 + px + (f32)((s16)i * 48));
+                    *outX = 24.0f + (224.0f + px + (f32)((s16)i * 48));
                     return 1;
                 }
                 {
                     f32 pz, px;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-                    *outX = lbl_803E6DB4 + (lbl_803E6DB8 + px + (f32)((s16)i * 48));
+                    *outX = 24.0f + (224.0f + px + (f32)((s16)i * 48));
                     return 2;
                 }
             }
@@ -425,8 +430,12 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
         {
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-            *outX = (k6db4 = lbl_803E6DB4) + (lbl_803E6DB8 + px + (f32)(ai * 48));
-            *outZ = k6db4 + (lbl_803E6DC0 + pz + (kc = lbl_803E6DBC));
+            {
+                f32 base = 24.0f;
+                f32 ofs = 336.0f;
+                *outX = base + (224.0f + px + (f32)(ai * 48));
+                *outZ = base + (128.0f + pz + ofs);
+            }
             b += 1;
             limit = 8;
         }
@@ -434,8 +443,11 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
         {
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-            *outX = (k6db4 = lbl_803E6DB4) + (lbl_803E6DB8 + px + (f32)(ai * 48));
-            *outZ = k6db4 + (lbl_803E6DC0 + pz + (kc = lbl_803E6DA8));
+            {
+                f32 base = 24.0f;
+                *outX = base + (224.0f + px + (f32)(ai * 48));
+                *outZ = base + (128.0f + pz + lbl_803E6DA8);
+            }
             b -= 1;
             limit = -1;
         }
@@ -448,13 +460,13 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
                     f32 pz, px;
                     i += dy;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-                    *outZ = lbl_803E6DB4 + (lbl_803E6DC0 + pz + (f32)((s16)i * 48));
+                    *outZ = 24.0f + (128.0f + pz + (f32)((s16)i * 48));
                     return 1;
                 }
                 {
                     f32 pz, px;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
-                    *outZ = lbl_803E6DB4 + (lbl_803E6DC0 + pz + (f32)((s16)i * 48));
+                    *outZ = 24.0f + (128.0f + pz + (f32)((s16)i * 48));
                     return 2;
                 }
             }
@@ -522,8 +534,8 @@ void wclevelcont_worldPosToTileB(GameObject* obj, f32 px, f32 pz, s16* outRow, s
     f32 outX, outZ;
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
-    *outRow = (s16)((s16)(px - outX - lbl_803E6DB8) / 48);
-    *outCol = (s16)((s16)(pz - outZ - lbl_803E6DC0) / 48);
+    *outRow = (s16)((s16)(px - outX - 224.0f) / 48);
+    *outCol = (s16)((s16)(pz - outZ - 128.0f) / 48);
 }
 
 void wclevelcont_tileBToWorldPos(GameObject* obj, s16 col, s16 row, f32* outXp, f32* outZp)
@@ -532,9 +544,9 @@ void wclevelcont_tileBToWorldPos(GameObject* obj, s16 col, s16 row, f32* outXp, 
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
     {
-        f32 base = lbl_803E6DB4;
-        *outXp = base + (lbl_803E6DB8 + outX + (f32)(col * 48));
-        *outZp = base + (lbl_803E6DC0 + outZ + (f32)(row * 48));
+        f32 base = 24.0f;
+        *outXp = base + (224.0f + outX + (f32)(col * 48));
+        *outZp = base + (128.0f + outZ + (f32)(row * 48));
     }
 }
 
@@ -551,9 +563,10 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
             {
-                f32 base = lbl_803E6DB4;
+                f32 base = 24.0f;
                 f32 tx = 32.0f + px;
-                *outX = base + (tx + lbl_803E6DBC);
+                f32 ofs = 336.0f;
+                *outX = base + (tx + ofs);
                 *outZ = (129.0f + pz + (f32)(bi * 48)) + base;
             }
             a += 1;
@@ -564,7 +577,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
             {
-                f32 base = lbl_803E6DB4;
+                f32 base = 24.0f;
                 f32 tx = 32.0f + px;
                 *outX = base + (tx + lbl_803E6DA8);
                 *outZ = (129.0f + pz + (f32)(bi * 48)) + base;
@@ -582,14 +595,14 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
                     i += dx;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px,
                                             &pz);
-                    *outX = (32.0f + px + (f32)((s16)i * 48)) + lbl_803E6DB4;
+                    *outX = (32.0f + px + (f32)((s16)i * 48)) + 24.0f;
                     return 1;
                 }
                 {
                     f32 pz, px;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px,
                                             &pz);
-                    *outX = (32.0f + px + (f32)((s16)i * 48)) + lbl_803E6DB4;
+                    *outX = (32.0f + px + (f32)((s16)i * 48)) + 24.0f;
                     return 2;
                 }
             }
@@ -603,11 +616,12 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
             {
-                f32 base = lbl_803E6DB4;
+                f32 base = 24.0f;
                 f32 tz;
+                f32 ofs = 336.0f;
                 *outX = (32.0f + px + (f32)(ai * 48)) + base;
                 tz = 129.0f + pz;
-                *outZ = base + (tz + lbl_803E6DBC);
+                *outZ = base + (tz + ofs);
             }
             b += 1;
             limit = 8;
@@ -617,7 +631,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             f32 pz, px;
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
             {
-                f32 base = lbl_803E6DB4;
+                f32 base = 24.0f;
                 f32 tz;
                 *outX = (32.0f + px + (f32)(ai * 48)) + base;
                 tz = 129.0f + pz;
@@ -636,14 +650,14 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
                     i += dy;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px,
                                             &pz);
-                    *outZ = (129.0f + pz + (f32)((s16)i * 48)) + lbl_803E6DB4;
+                    *outZ = (129.0f + pz + (f32)((s16)i * 48)) + 24.0f;
                     return 1;
                 }
                 {
                     f32 pz, px;
                     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px,
                                             &pz);
-                    *outZ = (129.0f + pz + (f32)((s16)i * 48)) + lbl_803E6DB4;
+                    *outZ = (129.0f + pz + (f32)((s16)i * 48)) + 24.0f;
                     return 2;
                 }
             }
@@ -721,7 +735,7 @@ void wclevelcont_tileAToWorldPos(GameObject* obj, s16 col, s16 row, f32* outXp, 
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
     {
-        f32 base = lbl_803E6DB4;
+        f32 base = 24.0f;
         *outXp = base + (32.0f + outX + (f32)(col * 48));
         *outZp = base + (129.0f + outZ + (f32)(row * 48));
     }

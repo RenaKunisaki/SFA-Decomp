@@ -3867,7 +3867,7 @@ dlls/objects/653_WCLevelCont/WCLevelCont.c:
 	.text       start:0x802251B4 end:0x802272C8
 	.data       start:0x8032B108 end:0x8032B178
 	.bss        start:0x803AD298 end:0x803AD320
-	.sdata2     start:0x803E6DC8 end:0x803E6DDC
+	.sdata2     start:0x803E6DB0 end:0x803E6DDC
 
 dlls/objects/654_WCBeacon/WCBeacon.c:
 	.text       start:0x802272C8 end:0x802276AC
