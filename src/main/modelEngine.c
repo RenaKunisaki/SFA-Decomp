@@ -293,6 +293,7 @@
 #include "dlls/objects/497_SB_SeqDoor.h"
 #include "dlls/objects/498_SB_CageKyte.h"
 #include "dlls/objects/499_SB_MiniFire.h"
+#include "dlls/objects/500.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -405,8 +406,7 @@ extern ResourceDescriptor gHighTopObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
-extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
-    gLaserUnsupportedObjDescriptor;
+extern ResourceDescriptor gLaserBeamObjDescriptor, gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLightSourceObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
@@ -1605,7 +1605,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSB_SeqDoorObjDescriptor,
     (ResourceDescriptor*)&gSB_CageKyteObjDescriptor,
     (ResourceDescriptor*)&gSB_MiniFireObjDescriptor,
-    &gLampObjDescriptor,
+    (ResourceDescriptor*)&gDll500ObjDescriptor,
     &gShipBattleObjDescriptor,
     &gFlagObjDescriptor,
     &gSB_ShipGunBrokeObjDescriptor,
