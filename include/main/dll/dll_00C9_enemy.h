@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "ghidra_import.h"
 #include "global.h"
+#include "main/dll/duster_api.h"
 #include "main/objanim_update.h"
 
 struct ModelLightStruct;
@@ -91,12 +92,54 @@ typedef struct EnemyState {
     u8 moveId1; /* move id used by the defeat handler */
     u8 moveId2;
     u8 rootMotionFlags; /* which axes the current move drives from root motion: 1 Z, 2 X, 4 Y, 8 yaw */
-    f32 unk324;
-    f32 unk328;
-    f32 unk32C;
-    f32 unk330;
+    /* 0x324-0x333: four per-family f32 scratch slots. enemy_init zeroes all
+     * four and the generic DLL never reads them again; every family handler in
+     * 202.c gives them its own meaning, so the views are spelled out here
+     * rather than re-declared with a private pad in each family's own struct. */
+    union {
+        struct {
+            f32 unk324;
+            f32 unk328;
+            f32 unk32C;
+            f32 unk330;
+        };
+        struct {
+            f32 engineTimer;
+            f32 emergeTimer;
+            f32 distToCurve;
+            f32 warpTimer;
+        } crawler;
+        struct {
+            f32 approachTimer;
+            f32 retreatTimer;
+            f32 recoverTimer;
+            f32 gruntTimer;
+        } weevil;
+        struct {
+            f32 eventDelayTimer;
+            f32 unk328;
+            f32 moveHoldTimer;
+            f32 unk330;
+        } wisp;
+        struct {
+            f32 unk324;
+            f32 seqTimer;
+            f32 unk32C;
+            f32 unk330;
+        } seqObj;
+        struct {
+            f32 phaseTimer;
+            f32 decoyTimer;
+        } duster;
+        struct {
+            f32 trackTimer;
+            f32 breathTimer;
+            f32 anchorY;
+            f32 unk330;
+        } fireflyLantern;
+    };
     f32 intervalTimer;
-    s16 phaseAngle;
+    u16 phaseAngle;
     /* 0x33A/0x33B: two per-family scratch bytes. The generic DLL only zeroes
      * them; the family handlers in 202.c disagree completely on what they hold.
      * 0x33A is a 16B-SeqEntry index (seqObj11D), a 12B-move-table index
@@ -112,9 +155,24 @@ typedef struct EnemyState {
      * (kooshy/magicPlant). */
     u8 userData1;
     u8 userData2;
-    u8 unk33C[0x340 - 0x33C];
+    /* 0x33C-0x33F: four more per-family scratch bytes, zeroed alongside
+     * userData1/userData2. */
+    union {
+        u8 unk33C[4];
+        struct {
+            u8 flagsC;
+            u8 flagsD;
+            u8 moveChainIndex;
+            u8 reactStep;
+        } crawler;
+        struct {
+            u8 activeEventIndex;
+        } wisp;
+    } familyData;
     int lastHitObject;
-    u8 unk344[0x368 - 0x344];
+    /* 0x344: filled exactly by the wall-plane record; the rachnop/duster and
+       firefly-lantern planar-movement helpers are its only users. */
+    WallPlaneState wallPlane;
     struct ModelLightStruct* modelLight;
     struct ObjModelChain* tailSimHandle;
 } EnemyState;
@@ -123,7 +181,10 @@ STATIC_ASSERT(sizeof(EnemyState) == 0x370);
 STATIC_ASSERT(offsetof(EnemyState, spawnRotY) == 0x19C);
 STATIC_ASSERT(offsetof(EnemyState, nearestSpecialDeltaY) == 0x1B8);
 STATIC_ASSERT(offsetof(EnemyState, pathStep) == 0x2FC);
+STATIC_ASSERT(offsetof(EnemyState, unk324) == 0x324);
 STATIC_ASSERT(offsetof(EnemyState, userData1) == 0x33A);
+STATIC_ASSERT(offsetof(EnemyState, familyData) == 0x33C);
+STATIC_ASSERT(offsetof(EnemyState, lastHitObject) == 0x340);
 STATIC_ASSERT(offsetof(EnemyState, physicsActive) == 0x25F);
 STATIC_ASSERT(offsetof(EnemyState, surfaceFlags) == 0x264);
 STATIC_ASSERT(offsetof(EnemyState, trackedObj) == 0x29C);
@@ -137,6 +198,7 @@ STATIC_ASSERT(offsetof(EnemyState, animEventMask) == 0x2F8);
 STATIC_ASSERT(offsetof(EnemyState, gravity) == 0x300);
 STATIC_ASSERT(offsetof(EnemyState, moveSpeedScale0) == 0x314);
 STATIC_ASSERT(offsetof(EnemyState, rootMotionFlags) == 0x323);
+STATIC_ASSERT(offsetof(EnemyState, wallPlane) == 0x344);
 STATIC_ASSERT(offsetof(EnemyState, modelLight) == 0x368);
 
 typedef struct EnemyTargetSearchResult {
