@@ -2430,7 +2430,7 @@ void doPendingMapLoads(void)
                                 s16 sl = romListSlot->slot;
                                 defStartFn_8005972c(romListSlot->romlist, (u32*)(base + sl * 0x8C + 0x4208), sl, 1);
                                 mm_free(romListSlot->romlist);
-                                ((int*)(base + 0x83A8))[sl] = 0;
+                                *(int*)(sl * 4 + 0x83A8 + (char*)base) = 0;
                             }
                             romListSlot->romlist = NULL;
                             romListSlot->slot = -1;
