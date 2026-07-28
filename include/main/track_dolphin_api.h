@@ -50,6 +50,7 @@ void trackSetLinesEnabledByParam(int matchValue, GameObject* obj, int flag);
 void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z);
 void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode);
 void playerShadowClearPositionOverride(GameObject* obj);
+int shadowInit(GameObject* obj, u32 arena, int flags);
 void objShadowInvalidate(GameObject* obj);
 void shadowVolumesSetDirty(s32 dirty);
 void getSunFlareScissorRect(int* outX, int* outY, int* outWidth, int* outHeight);

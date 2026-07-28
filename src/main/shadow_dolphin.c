@@ -885,25 +885,25 @@ void shadowVolumesSetDirty(s32 dirty)
     gShadowVolumesDirty = dirty;
 }
 
-void* shadowInit(int* obj, int size, int wpad0)
+int shadowInit(GameObject* obj, u32 arena, int flags)
 {
     int rounded;
     ObjModelState* modelState;
     s16 texId;
 
-    rounded = roundUpTo4(size);
-    *(int*)&((ObjAnimComponent*)obj)->modelState = rounded;
-    modelState = ((ObjAnimComponent*)obj)->modelState;
-    texId = ((ObjAnimComponent*)obj)->modelInstance->shadowTextureId;
-    if (texId != -1 && ((ObjAnimComponent*)obj)->modelInstance->shadowType != OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
+    rounded = roundUpTo4(arena);
+    obj->anim.modelState = (ObjModelState*)rounded;
+    modelState = obj->anim.modelState;
+    texId = obj->anim.modelInstance->shadowTextureId;
+    if (texId != -1 && obj->anim.modelInstance->shadowType != OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
     {
         modelState->shadowTexture = (void*)textureLoad(-texId, 0);
     }
-    else if (((ObjAnimComponent*)obj)->modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
+    else if (obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
         modelState->shadowTexture = (void*)textureAlloc512();
     }
-    else if (((ObjAnimComponent*)obj)->modelInstance->renderFlags & 0x2)
+    else if (obj->anim.modelInstance->renderFlags & 0x2)
     {
         modelState->shadowTexture = NULL;
         modelState->shadowWorkBuffer = NULL;
@@ -912,7 +912,7 @@ void* shadowInit(int* obj, int size, int wpad0)
     {
         modelState->shadowTexture = (void*)getNewShadowSmallDiskTexture();
     }
-    if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_BIG_BOX)
+    if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_BIG_BOX)
     {
         modelState->shadowRenderResource = NULL;
     }
@@ -920,8 +920,8 @@ void* shadowInit(int* obj, int size, int wpad0)
     {
         modelState->shadowRenderResource = OBJECT_SHADOW_MESH_UNCACHED;
     }
-    modelState->shadowScale = *(f32*)((ObjAnimComponent*)obj)->modelInstance;
-    modelState->shadowModelScale = *(f32*)((char*)((ObjAnimComponent*)obj)->modelInstance + 0x88);
+    modelState->shadowScale = *(f32*)obj->anim.modelInstance;
+    modelState->shadowModelScale = *(f32*)((char*)obj->anim.modelInstance + 0x88);
     modelState->shadowOffsetX = gShadowOffsetX;
     modelState->shadowOffsetY = gShadowOffsetY;
     modelState->shadowOffsetZ = gShadowOffsetZ;
@@ -932,7 +932,7 @@ void* shadowInit(int* obj, int size, int wpad0)
     modelState->shadowTintA = 0x96;
     modelState->shadowTintB = 0x64;
     gShadowVolumesDirty = 1;
-    return (char*)rounded + 0x44;
+    return rounded + 0x44;
 }
 
 void playerShadowClearPositionOverride(GameObject* obj)
