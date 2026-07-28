@@ -492,7 +492,7 @@ int ktrex_stateHandlerA05(GameObject* obj, KTRexRuntime* runtime)
     if (ktrex_updateArenaPathProgress(runtime) != 0)
     {
         gKTRexState->pathCountdown -= 1;
-        if ((s8)gKTRexState->pathCountdown <= 0)
+        if (gKTRexState->pathCountdown <= 0)
         {
             pushLo = 2;
             if (Stack_IsFull(gKTRexState->stack) == 0)

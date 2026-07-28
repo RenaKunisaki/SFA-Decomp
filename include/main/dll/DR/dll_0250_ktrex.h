@@ -83,7 +83,7 @@ typedef struct KTRexArenaState
     u8 laneMode;
     u8 phaseCounter;
     u8 phaseCountdown;
-    u8 pathCountdown;
+    s8 pathCountdown;
     u32 phaseFlags;
     u8 laneAltSelect;
     u8 pad109[0x23];
