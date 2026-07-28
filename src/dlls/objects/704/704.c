@@ -349,16 +349,16 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         tex = texs[4];
         drawScaledTexture(tex, (f32)(int)(xb + 0x5a + (texs2 = (Texture**)gTitleScreenTextures)[6]->width),
                           (f32)(y = yb - 0x10), alpha, 0x100, tex->width,
-                          (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 0);
+                          (u32)(268.0f * gTitleScreenCursorY) + 0x10, 0);
         tex = texs2[6];
         drawScaledTexture(tex, (f32)(int)(xb + 0x5a), (f32)(y = yb - 0x10), 0xff, 0x100, tex->width,
-                          (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 0);
+                          (u32)(268.0f * gTitleScreenCursorY) + 0x10, 0);
         tex = texs2[6];
         drawScaledTexture(tex, (f32)(int)(xb + 0x57 + texs[4]->width + tex->width), (f32)(y = yb - 0x10), 0xff, 0x100,
-                          tex->width, (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 1);
+                          tex->width, (u32)(268.0f * gTitleScreenCursorY) + 0x10, 1);
         tex = (Texture*)gTitleScreenTextures[0];
         drawScaledTexture(tex, (f32)(int)(xb + 0x23), (f32)(y = yb - 0x10), 0xff, 0x100, tex->width,
-                          (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 0);
+                          (u32)(268.0f * gTitleScreenCursorY) + 0x10, 0);
     }
     mtx = (f32*)gTitleScreenMtx;
     {
@@ -375,9 +375,9 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         int yb = (int)mtx[7];
         f32 cy = gTitleScreenCursorY;
         int a = (cy > 0.0f) ? 0xff : gTitleScreenPulseAlpha;
-        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (lbl_803E2300 * cy + (f32)(int)yb),
+        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (268.0f * cy + (f32)(int)yb),
                     0xff, 0xff);
-        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (lbl_803E2300 * gTitleScreenCursorY + (f32)(int)yb),
+        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (268.0f * gTitleScreenCursorY + (f32)(int)yb),
                     a, 0xff);
     }
     gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (1.0 - gTitleScreenCursorY)));

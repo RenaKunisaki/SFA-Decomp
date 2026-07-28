@@ -1539,7 +1539,7 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
         gNewCloudWindSources[5].z = 0x7d0;
         gNewCloudWindSources[5].vx = 0.0f;
         gNewCloudWindSources[5].vy = 0.0f;
-        gNewCloudWindSources[5].vz = lbl_803DF244;
+        gNewCloudWindSources[5].vz = -1.0f;
         normalize(&gNewCloudWindSources[5].vx, &gNewCloudWindSources[5].vy, &gNewCloudWindSources[5].vz);
         gNewCloudWindSources[5].scale = 100.0f;
         gNewCloudWindSources[5].flag = 0;
@@ -1867,7 +1867,7 @@ void newclouds_run(void)
             {
                 f32 zero = 0.0f;
                 ((f32*)clouds)[54] = zero;
-                ((f32*)clouds)[55] = lbl_803DF244;
+                ((f32*)clouds)[55] = -1.0f;
                 ((f32*)clouds)[56] = zero;
             }
             m = Camera_GetViewRotationMatrix();
