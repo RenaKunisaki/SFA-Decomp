@@ -109,29 +109,29 @@ int WM_GeneralScales_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
                 setup->color[1] = 4;
                 setup->color[3] = 0xff;
                 ObjLink_AttachChild((GameObject*)obj, Obj_SetupObject(setup, 5, -1, -1, 0), 0);
-                *(f32*)(*(int*)&((GameObject*)obj)->childObjs[0] + 8) *= 1.1f;
+                ((GameObject*)((GameObject*)obj)->childObjs[0])->anim.rootMotionScale *= 1.1f;
             }
             break;
         case 6: /* sheathe: detach the sword child */
         {
-            int* child = ((GameObject*)obj)->childObjs[0];
+            GameObject* child = ((GameObject*)obj)->childObjs[0];
             if (child != NULL)
             {
-                ObjLink_DetachChild((GameObject*)obj, (GameObject*)child);
+                ObjLink_DetachChild((GameObject*)obj, child);
             }
             break;
         }
         case 7: /* begin fade-in (model flag + alpha ramp from 1) */
         {
-            u8* p = *(u8**)&((GameObject*)obj)->anim.modelInstance;
-            p[0x5f] |= 0x10;
+            ObjDef* def = ((GameObject*)obj)->anim.modelInstance;
+            def->renderFlags |= 0x10;
             state->fadeAlpha = 1;
             break;
         }
         case 8: /* end fade: clear the flag, fully invisible */
         {
-            u8* p = *(u8**)&((GameObject*)obj)->anim.modelInstance;
-            p[0x5f] &= ~0x10;
+            ObjDef* def = ((GameObject*)obj)->anim.modelInstance;
+            def->renderFlags &= ~0x10;
             Obj_SetModelRenderOpAlpha((void*)obj, 0);
             state->fadeAlpha = 0;
             break;
@@ -153,9 +153,9 @@ int WM_GeneralScales_getObjectTypeId(void)
 
 void WM_GeneralScales_free(GameObject* obj)
 {
-    int* p = (int*)obj->childObjs[0];
-    if (p != NULL)
-        ObjLink_DetachChild(obj, (GameObject*)p);
+    GameObject* child = obj->childObjs[0];
+    if (child != NULL)
+        ObjLink_DetachChild(obj, child);
 }
 
 void WM_GeneralScales_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -182,7 +182,7 @@ void WM_GeneralScales_init(GameObject* obj)
     obj->animEventCallback = WM_GeneralScales_SeqFn;
     state->unk00 = 0.0f;
     state->phase = WMGENERALSCALES_PHASE_HIDDEN;
-    *(int*)&obj->childObjs[0] = 0;
+    obj->childObjs[0] = NULL;
 }
 
 void WM_GeneralScales_release(void)
