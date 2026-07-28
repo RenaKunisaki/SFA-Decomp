@@ -2,7 +2,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
 
-extern float lbl_803E7C18;
 extern float lbl_803E7C20;
 extern float lbl_803E7C24;
 extern float lbl_803E7C28;
@@ -28,8 +27,8 @@ float fastReciprocal(float value) {
     float reciprocal;
 
     reciprocal = __fres(value);
-    reciprocal *= lbl_803E7C18 - value * reciprocal;
-    reciprocal *= lbl_803E7C18 - value * reciprocal;
+    reciprocal *= 2.0f - value * reciprocal;
+    reciprocal *= 2.0f - value * reciprocal;
 
     return reciprocal;
 }

@@ -1314,7 +1314,7 @@ dlls/engine/86/86.c:
 	.text       start:0x80110E30 end:0x801115E4
 	.data       start:0x80319F88 end:0x80319FB8
 	.bss        start:0x803A43C0 end:0x803A4420
-	.sdata2     start:0x803E1BB8 end:0x803E1BE0
+	.sdata2     start:0x803E1BA0 end:0x803E1BE0
 
 dlls/engine/87/87.c:
 	.text       start:0x801115E4 end:0x80111D14
@@ -2713,6 +2713,7 @@ dlls/objects/373_DFropenode/DFropenode.c:
 	.rodata     start:0x802C2358 end:0x802C23B8
 	.data       start:0x80325E00 end:0x80325F20
 	.sdata      start:0x803DBF40 end:0x803DBF60
+	.sdata2     start:0x803E4DE0 end:0x803E4DF8
 
 dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c:
 	.data       start:0x80325F20 end:0x80325F50
@@ -5029,7 +5030,7 @@ dolphin/MSL_C/PPCEABI/bare/H/e_atan2.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
 	.text       start:0x80292D3C end:0x80292DC0
-	.sdata2     start:0x803E7C10 end:0x803E7C18
+	.sdata2     start:0x803E7C00 end:0x803E7C18
 
 dolphin/MSL_C/PPCEABI/bare/H/rand.c:
 	.text       start:0x80292DC0 end:0x80292DEC
@@ -5037,6 +5038,7 @@ dolphin/MSL_C/PPCEABI/bare/H/rand.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c:
 	.text       start:0x80292DEC end:0x8029312C
+	.sdata2     start:0x803E7C18 end:0x803E7C1C
 
 dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
 	.text       start:0x8029312C end:0x80293234
@@ -5044,6 +5046,7 @@ dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
 
 main/trig.c:
 	.text       start:0x80293234 end:0x80293DA4
+	.sdata2     start:0x803E7C80 end:0x803E7C84
 
 dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c:
 	.text       start:0x80293DA4 end:0x80294098

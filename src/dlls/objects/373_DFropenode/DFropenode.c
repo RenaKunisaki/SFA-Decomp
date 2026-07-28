@@ -41,9 +41,6 @@ extern f32 gRopeNodeDamping;
 extern const f32 gRopeNodeBoundsMargin;
 extern f32 gRopeNodeLiftHeight;
 extern f32 gRopeNodeMaxDistance;
-extern f32 lbl_803E4DE0;
-extern f32 lbl_803E4DE4;
-extern f32 lbl_803E4DE8;
 extern f32 lbl_803E4DF8;
 extern const f32 lbl_803E4DFC;
 extern const f32 lbl_803E4E00;
@@ -100,17 +97,17 @@ void dfropenode_buildRopeSegmentMesh(void* templateData, int angle, float* start
     float angleRadians;
     f32 vertexX;
 
-    startX = lbl_803E4DE0 * startNode[0];
-    startY = lbl_803E4DE0 * startNode[1];
-    startZ = lbl_803E4DE0 * startNode[2];
-    endX = lbl_803E4DE0 * endNode[0];
-    endY = lbl_803E4DE0 * endNode[1];
-    endZ = lbl_803E4DE0 * endNode[2];
+    startX = 100.0f * startNode[0];
+    startY = 100.0f * startNode[1];
+    startZ = 100.0f * startNode[2];
+    endX = 100.0f * endNode[0];
+    endY = 100.0f * endNode[1];
+    endZ = 100.0f * endNode[2];
     memcpy(out, templateData, 0x60);
 
     i = 0;
     vertex = out;
-    angleRadians = (lbl_803E4DE4 * (float)(short)angle) / lbl_803E4DE8;
+    angleRadians = (3.1415927f * (float)(short)angle) / 32768.0f;
     for (; i < 6; i++) {
         vertexX = (float)(int)vertex->x;
         vertex->x = vertexX * mathCosf(angleRadians);
