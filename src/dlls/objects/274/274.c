@@ -18,7 +18,7 @@
 #define SEQ_OBJECT_SEQUENCE_ARG_NONE               -1
 #define SEQ_OBJECT_SEQUENCE_FLAGS_DEFAULT          1
 #define SEQ_OBJECT_SEQUENCE_WORLD_SPACE_MODE       0
-#define SEQ_OBJECT_ON_LOAD_ARG_DEFAULT             0
+#define SEQ_OBJECT_INIT_FLAGS_DEFAULT              0
 #define SEQ_OBJECT_TYPE_ID                         0
 #define SEQ_OBJECT_DEFAULT_MODEL_BANK              0
 #define SEQ_OBJECT_MODEL_SCALE                     1.0f
@@ -38,15 +38,15 @@
 #define SEQ_OBJECT_CAMERA_MODE                     1
 #define SEQ_OBJECT_CAMERA_ARG_DEFAULT              0
 
-typedef void (*ObjectOnLoadCallback)(GameObject* obj, ObjPlacement* placement, int arg);
+typedef void (*ObjectInitCallback)(GameObject* obj, ObjPlacement* placement, int flags);
 
-/* Only the on-load slot used here is recovered. */
-typedef struct ObjectOnLoadInterface {
+/* Only the init slot used here is recovered. */
+typedef struct ObjectInitInterface {
     void* slot0;
-    ObjectOnLoadCallback onLoad;
-} ObjectOnLoadInterface;
+    ObjectInitCallback init;
+} ObjectInitInterface;
 
-STATIC_ASSERT(offsetof(ObjectOnLoadInterface, onLoad) == 0x4);
+STATIC_ASSERT(offsetof(ObjectInitInterface, init) == 0x4);
 
 typedef enum SeqObjectAnimEvent {
     SEQ_OBJECT_ANIM_EVENT_SET_OPEN_BIT = 1,
@@ -56,7 +56,7 @@ typedef enum SeqObjectAnimEvent {
 
 void objCallOnLoadCallback(GameObject* obj) {
     if (obj != NULL) {
-        ((ObjectOnLoadInterface*)*obj->anim.dll)->onLoad(obj, obj->anim.placement, SEQ_OBJECT_ON_LOAD_ARG_DEFAULT);
+        ((ObjectInitInterface*)*obj->anim.dll)->init(obj, obj->anim.placement, SEQ_OBJECT_INIT_FLAGS_DEFAULT);
     }
 }
 
