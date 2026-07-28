@@ -309,7 +309,7 @@ void lightfoot_update(GameObject* obj)
 
 void lightfoot_init(GameObject* obj, int def, int flag)
 {
-    u8* base = (u8*)lbl_80334EE8;
+    u8* base = (u8*)&lbl_80334EE8;
     int inner = *(int*)&(obj)->extra;
     ObjPlacement* plc = (ObjPlacement*)def;
     int sub;

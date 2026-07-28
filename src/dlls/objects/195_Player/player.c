@@ -19116,6 +19116,22 @@ int Lightfoot_UpdateRandomTurn(int obj, int state, f32 fv)
     return 0;
 }
 
+PlayerLightfootAnimTable lbl_80334EE8 = {
+    {{10, 11, 12, 0, 11, 10, 10, -1}, {0.01f, 0.01f, 0.005f, 0.003f, 0.01f, 0.01f, 0.01f, -1.0f}},
+    {{7, 10, 8, 9, 11, 12, 7, -1}, {0.0115f, 0.0105f, 0.005f, 0.003f, 0.01f, 0.011f, 0.012f, -1.0f}},
+    {43, 45, 45, 45, 45, 46, 47, 47, 47, 47, 47, 47, 53, -1},
+    {0.02f, 0.021f, 0.022f, 0.023f, 0.024f, 0.015f, 0.08f, 0.07f, 0.06f, 0.05f, 0.04f, 0.03f,
+     0.01f, -1.0f},
+};
+
+s16 gPlayerMoveTableC[8] = {51, 50, 52, 50, 52, 51, -1, 0};
+
+PlayerLightfootMoveSpeeds gPlayerMoveSpeedTable = {
+    {0.013f, 0.005f, 0.01f, 0.005f, 0.013f, 0.01f, -1.0f},
+    {0x768, 0x769, 0x76A, 0x76B, 0xA50, 0xA51, 0xA52, 0xA53},
+    {0.708f, 0.629f, 0.551f, 0.472f, 0.393f, 0.314f, 0.236f, 0.157f},
+};
+
 int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     int inner = *(int*)&obj->extra;
@@ -19138,7 +19154,8 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
         }
         ObjAnim_SetCurrentMove((int)obj, gPlayerMoveTableC[*(u16*)((char*)a4 + 0x24)], lbl_803E8180, 0);
     }
-    ((PlayerState*)state)->baddie.moveSpeed = gPlayerMoveSpeedTable[*(u16*)((char*)a4 + 0x24)];
+    ((PlayerState*)state)->baddie.moveSpeed =
+        gPlayerMoveSpeedTable.speeds[*(u16*)((char*)a4 + 0x24)];
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 1);
     return 0;
 }
@@ -19172,7 +19189,7 @@ STATIC_ASSERT(offsetof(LightfootChallengePlacement, activeGameBit) == 0x30);
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
     LightfootChallengePlacement* placement;
-    EmitCtrlTbl* controls = (EmitCtrlTbl*)lbl_80334EE8;
+    EmitCtrlTbl* controls = (EmitCtrlTbl*)&lbl_80334EE8;
     GroundBaddieState* actor = obj->extra;
     LightfootButtonTimingState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;

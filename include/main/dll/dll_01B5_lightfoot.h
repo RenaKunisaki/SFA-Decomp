@@ -3,7 +3,23 @@
 
 #include "game/objects/object.h"
 
-extern int lbl_80334EE8[];
+typedef struct PlayerLightfootScuffPattern
+{
+    s16 anims[8];
+    f32 rates[8];
+} PlayerLightfootScuffPattern;
+STATIC_ASSERT(sizeof(PlayerLightfootScuffPattern) == 0x30);
+
+typedef struct PlayerLightfootAnimTable
+{
+    PlayerLightfootScuffPattern lightScuff;
+    PlayerLightfootScuffPattern heavyScuff;
+    s16 challengeAnims[14];
+    f32 challengeSpeeds[14];
+} PlayerLightfootAnimTable;
+STATIC_ASSERT(sizeof(PlayerLightfootAnimTable) == 0xB4);
+
+extern PlayerLightfootAnimTable lbl_80334EE8;
 extern int lbl_803DB0D0[];
 extern int lbl_803DB0DC[];
 extern u32 lbl_803DC6F0;
