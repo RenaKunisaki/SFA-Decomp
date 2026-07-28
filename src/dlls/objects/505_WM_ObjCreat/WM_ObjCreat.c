@@ -10,6 +10,7 @@
  * modes gate on the placement game bit (-1 = always).
  */
 #include "dlls/objects/301_LFXEmitter.h"
+#include "dlls/objects/504_WM_Galleon.h"
 
 #include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
@@ -32,21 +33,6 @@ STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnPeriod) == 0x1C);
 STATIC_ASSERT(offsetof(WmObjCreatorPlacement, yaw) == 0x1E);
 STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnJitter) == 0x1F);
 STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
-
-/* The creator-written slices of the spawned types' placement records
-   (field meanings belong to the handling DLLs; unknown slots keep
-   honest unkNN names). */
-typedef struct WmGalleonSpawnSetup
-{
-    ObjPlacement base;
-    s8 yawByte; /* 0x18: rotY in 1/256 turns */
-    u8 pad19;
-    s16 unk1A; /* 0x1A: 2 */
-    u8 pad1C[2];
-    s16 unk1E; /* 0x1E: -1 */
-} WmGalleonSpawnSetup;
-
-STATIC_ASSERT(offsetof(WmGalleonSpawnSetup, unk1E) == 0x1E);
 
 typedef struct WmRockSpawnSetup
 {
@@ -194,7 +180,7 @@ void WM_ObjCreator_update(GameObject* obj)
             }
             if ((s8)(int)state)
             {
-                setup = Obj_AllocObjectSetup(0x24, WMOBJCREATOR_SPAWN_WM_GALLEON);
+                setup = Obj_AllocObjectSetup(sizeof(WMGalleonSetup), WMOBJCREATOR_SPAWN_WM_GALLEON);
                 setup->posX = placement->base.posX;
                 setup->posY = placement->base.posY;
                 setup->posZ = placement->base.posZ;
@@ -202,9 +188,9 @@ void WM_ObjCreator_update(GameObject* obj)
                 setup->color[1] = placement->base.color[1];
                 setup->color[2] = placement->base.color[2];
                 setup->color[3] = placement->base.color[3];
-                ((WmGalleonSpawnSetup*)setup)->unk1E = 0xffff;
-                ((WmGalleonSpawnSetup*)setup)->unk1A = 2;
-                ((WmGalleonSpawnSetup*)setup)->yawByte = placement->yaw;
+                ((WMGalleonSetup*)setup)->unknown1E = -1;
+                ((WMGalleonSetup*)setup)->unknown1A = 2;
+                ((WMGalleonSetup*)setup)->rotationXByte = placement->yaw;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 if ((u32)spawned != 0)
                 {
