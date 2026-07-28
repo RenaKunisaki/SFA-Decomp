@@ -6115,12 +6115,12 @@ void pauseMenuFn_80129ee0(void)
                     lbl_803DD8DC = (int)getCurGameText();
                     if (lbl_803DD8E0 == lbl_803DD7D6)
                     {
-                        hintTextMapFn_800ea264();
+                        hintTextLoadTaskMapTexts();
                     }
                     pauseMenuState = 4;
                     if (lbl_803DD8E0 == lbl_803DD7D6)
                     {
-                        hintTextMapFn_800ea264();
+                        hintTextLoadTaskMapTexts();
                     }
                     else
                     {
@@ -6279,7 +6279,7 @@ void pauseMenuFn_80129ee0(void)
                     pauseMenuState = 4;
                     if (lbl_803DD8E0 == lbl_803DD7D6)
                     {
-                        gGameUiCurHintTextMap = hintTextMapFn_800ea264();
+                        gGameUiCurHintTextMap = hintTextLoadTaskMapTexts();
                     }
                     else
                     {
@@ -6364,7 +6364,7 @@ void pauseMenuFn_80129ee0(void)
                 }
                 if (lbl_803DD7C4 == 0)
                 {
-                    hintTextFn_800ea174(hintBuf);
+                    hintTextGetAvailableMaps(hintBuf);
                     if ((u8)r != 0 || (lbl_803E2160 == lbl_803DD760 && lbl_803DD764 > lbl_803E2160))
                     {
                         lbl_803DD7D8 = lbl_803DD8E0;

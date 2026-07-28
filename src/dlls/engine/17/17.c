@@ -14,7 +14,7 @@ extern u8 gTaskHintMapData[];
 
 #define TASK_HINT_MAP ((s16*)gTaskHintMapData)
 
-void hintTextFn_800ea174(u8* out)
+void hintTextGetAvailableMaps(u8* out)
 {
     u8* texts = getLastSavedGameTexts();
     s16 i;
@@ -37,7 +37,7 @@ void* saveGameGetCurHint(void)
     return gameTextGet((s32)texts[5] + 0xf4);
 }
 
-int hintTextMapFn_800ea264(void)
+int hintTextLoadTaskMapTexts(void)
 {
     int ret = getCurGameText();
     u8* texts = getLastSavedGameTexts();
@@ -85,7 +85,7 @@ static inline int setTaskBit(u8 id)
     return 1;
 }
 
-void gameBitFn_800ea2e0(u8 id)
+void taskHintRecordCompletedTask(u8 id)
 {
     u8* texts;
     u8 wasNew;

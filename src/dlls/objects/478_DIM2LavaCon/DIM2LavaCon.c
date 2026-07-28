@@ -174,7 +174,7 @@ void dim2lavacontrol_init(GameObject* obj, const Dim2LavaControlPlacementView* p
     }
 
     for (gameBitIndex = 1; gameBitIndex <= DIM2_LAVA_CONTROL_GAMEBIT_PRELOAD_LAST_INDEX; gameBitIndex++) {
-        gameBitFn_800ea2e0(gameBitIndex);
+        taskHintRecordCompletedTask(gameBitIndex);
     }
 
     state = obj->extra;

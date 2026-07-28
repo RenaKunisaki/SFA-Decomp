@@ -297,7 +297,7 @@ void IMIceMountain_init(GameObject* obj) {
 
     obj->animEventCallback = IMIceMountain_sequenceCallback;
     for (i = 1; i <= IM_ICE_MOUNTAIN_GAME_BIT_RESET_COUNT; i++) {
-        gameBitFn_800ea2e0(i);
+        taskHintRecordCompletedTask(i);
     }
     state->warningTextTimer = IM_ICE_MOUNTAIN_WARNING_DURATION;
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);

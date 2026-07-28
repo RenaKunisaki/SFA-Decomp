@@ -280,7 +280,7 @@ void mainSetBits(int gameBit, int value)
     }
     if (gGameBitTable[id * 4 + 2] & GAMEBIT_FLAG_SYNC)
     {
-        gameBitFn_800ea2e0(gGameBitTable[id * 4 + 3]);
+        taskHintRecordCompletedTask(gGameBitTable[id * 4 + 3]);
     }
     start = *(u16*)(gGameBitTable + id * 4);
     bit = 1;
