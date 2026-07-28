@@ -39,7 +39,7 @@ void dll_19_pollCameraTarget(GameObject* obj, void* state, u16* flags, int modeA
 void dll_19_releaseState(GameObject* obj, void* state, u8 flag);
 int dll_19_shouldDropTarget(GameObject* obj, void* state, f32 distThreshold, int requireFar);
 GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, int halfAngle);
-GameObject* dll_19_spawnChild(GameObject* obj, int spawnType, int unused, int alt);
+GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, int alt);
 int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s16 gameBit, int* tableA, u8* tableB,
                   s16 substate, void* hitPosOut);
 int dll_19_processMessages(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substateIdle,

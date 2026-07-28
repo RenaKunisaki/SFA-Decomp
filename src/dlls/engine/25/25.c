@@ -513,7 +513,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
 }
 
 
-GameObject* dll_19_spawnChild(GameObject* obj, int spawnType, int unused, int alt)
+GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, int alt)
 {
     GameObject* source = obj;
     u8* state = (u8*)obj->anim.placementData;
@@ -1282,7 +1282,7 @@ u32 dll_19[32] = {
     (u32)dll_19_releaseState,
     (u32)dll_19_shouldDropTarget,
     (u32)dll_19_findAggroTarget,
-    (u32)dll_19_spawnChild,
+    (u32)dll_19_dropCollectable,
     (u32)dll_19_updateHitReaction,
     (u32)dll_19_processMessages,
     (u32)dll_19_initGroundBaddie,

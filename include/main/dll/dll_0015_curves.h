@@ -253,11 +253,11 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* stat
 void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* state);
 void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* state);
 void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* state);
-void dll_15_func0A(GameObject* obj, CurvesCollisionState* state);
+void curves_reset(GameObject* obj, CurvesCollisionState* state);
 f32 dll_15_func0B(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height);
 RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll);
 void dll_15_func08(GameObject* curveObj, CurvesCollisionState* state, f32 step);
-void dll_15_func05(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types);
+void curves_setSegmentCollision(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types);
 void dll_15_func06(GameObject* obj, CurvesCollisionState* state, f32 step);
 void FUN_800e65c8(CurvesCollisionState* state, u8 pointCount, f32* localPointPositions, f32* localPointRadii,
                   s8 primaryHitType, s8 secondaryHitType);

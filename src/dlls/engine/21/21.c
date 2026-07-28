@@ -886,7 +886,7 @@ void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* collision)
     }
 }
 
-void dll_15_func0A(GameObject* obj, CurvesCollisionState* collision)
+void curves_reset(GameObject* obj, CurvesCollisionState* collision)
 {
     u32 flags;
     u8* worldBase;
@@ -1592,7 +1592,7 @@ void dll_15_func06(GameObject* obj, CurvesCollisionState* state, f32 step)
         state->hitBounds.maxZ = maxZ;
     }
 }
-void dll_15_func05(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types)
+void curves_setSegmentCollision(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types)
 {
     int i;
 
@@ -1621,8 +1621,8 @@ void curves_setLocalPointCollisionEx(CurvesCollisionState* state, int pointCount
     state->activeTimer = 0xa;
 }
 
-void dll_15_func04(CurvesCollisionState* state, int pointCount, f32* localPointPositions, f32* localPointRadii,
-                   int primaryHitType)
+void curves_setLocalPointCollision(CurvesCollisionState* state, int pointCount, f32* localPointPositions,
+                                   f32* localPointRadii, int primaryHitType)
 {
     state->pointCounts &= CURVES_POINT_COUNT_SEGMENT_MASK;
     state->pointCounts = (u8)(state->pointCounts | (pointCount & CURVES_POINT_COUNT_LOCAL_MASK));
@@ -1789,12 +1789,12 @@ ObjectDescriptor12 dll_15_funcs = {
     (ObjectDescriptorCallback)dll_15_release_nop,
     0,
     (ObjectDescriptorCallback)curves_clear,
-    (ObjectDescriptorCallback)dll_15_func04,
-    (ObjectDescriptorCallback)dll_15_func05,
+    (ObjectDescriptorCallback)curves_setLocalPointCollision,
+    (ObjectDescriptorCallback)curves_setSegmentCollision,
     (ObjectDescriptorCallback)dll_15_func06,
     (ObjectDescriptorCallback)dll_15_func07,
     (ObjectDescriptorCallback)dll_15_func08,
     (ObjectDescriptorExtraSizeCallback)curves_getCurves,
-    (ObjectDescriptorCallback)dll_15_func0A,
+    (ObjectDescriptorCallback)curves_reset,
     (ObjectDescriptorCallback)dll_15_func0B,
 };
