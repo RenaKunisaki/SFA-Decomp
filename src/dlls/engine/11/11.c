@@ -1,7 +1,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
 #include "main/lightmap_text_color_api.h"
@@ -931,7 +931,7 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
         xf.z = xf.z - playerMapOffsetZ;
         setMatrixFromObjectPos(mtxB, &xf);
         mtx44Transpose(mtxB, mtxA);
-        PSMTXConcat((f32*)Camera_GetViewMatrix(), mtxA, mtxA);
+        PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtxA, (MtxPtr)mtxA);
         GXLoadPosMtxImm(mtxA, GX_PNMTX0);
         tex = ((PartfxEffectState*)p[slot])->textureResource;
         if (tex != NULL)

@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PARTFX_INTERFACE_H_
 #define MAIN_DLL_PARTFX_INTERFACE_H_
 
-#include "global.h"
+#include "main/vec_types.h"
 
 struct GameObject;
 
@@ -41,9 +41,14 @@ typedef struct PartFxSpawnParams {
         };
     };
     f32 scale;
-    f32 posX;
-    f32 posY;
-    f32 posZ;
+    union {
+        struct {
+            f32 posX;
+            f32 posY;
+            f32 posZ;
+        };
+        Vec3f pos;
+    };
 } PartFxSpawnParams;
 
 STATIC_ASSERT(sizeof(PartFxSpawnParams) == 0x18);

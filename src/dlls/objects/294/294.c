@@ -57,7 +57,7 @@
 #include "main/dll/dll_0126_trigger_api.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/vecmath.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/gameloop_api.h"
 #include "track/intersect_api.h"
@@ -237,7 +237,7 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
     f32 deltaY;
     f32 deltaZ;
     f32 t;
-    f32 localPos[3];
+    Vec localPos;
 
     data = *(u8**)&obj->anim.placementData;
     state = (MmpTriggerPlaneState*)obj->extra;
@@ -274,13 +274,13 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
         ny = normalY * deltaY;
         t = (((-normalX * nearX - prodY) - prodZ) - planeBase) / ((ny + (normalX * deltaX)) + (normalZ * deltaZ));
 
-        localPos[0] = t * deltaX + nearX;
-        localPos[1] = t * deltaY + state->ptA[1];
-        localPos[2] = t * deltaZ + state->ptA[2];
-        PSMTXMultVec(&state->mtx[0][0], localPos, localPos);
+        localPos.x = t * deltaX + nearX;
+        localPos.y = t * deltaY + state->ptA[1];
+        localPos.z = t * deltaZ + state->ptA[2];
+        PSMTXMultVec(state->mtx, &localPos, &localPos);
 
-        if ((localPos[0] >= -state->clipHalfExtent) && (localPos[0] <= state->clipHalfExtent) &&
-            (localPos[1] >= -state->clipHalfExtent) && (localPos[1] <= state->clipHalfExtent))
+        if ((localPos.x >= -state->clipHalfExtent) && (localPos.x <= state->clipHalfExtent) &&
+            (localPos.y >= -state->clipHalfExtent) && (localPos.y <= state->clipHalfExtent))
         {
             OSReport(sMoonrockTriggerIdentFormat, triggerState, *(u32*)(data + 0x14));
             objInterpretSeq(obj, seqObj, triggerState, (int)farDist);

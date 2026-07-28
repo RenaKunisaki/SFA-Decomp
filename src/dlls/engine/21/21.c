@@ -1,5 +1,5 @@
 #include "dolphin/os.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0015_curves.h"
@@ -221,7 +221,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
     int hitCount;
     int count;
     int pointIndex;
-    f32 delta[3];
+    Vec delta;
     CurvesHitScratch hitScratch;
     f32 startX;
     f32 startZ;
@@ -268,8 +268,8 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
         hitDetectFn_80067958((GameObject*)obj, collision->traceStart[2], collision->points[2], 1, &hitScratch, 0);
     }
 
-    PSVECSubtract(collision->points[0], collision->points[1], delta);
-    if (((s32)(collision->flags & 0x8000000) != 0) || (PSVECMag(delta) > CURVES_MAX_SEGMENT_DISTANCE))
+    PSVECSubtract((Vec*)collision->points[0], (Vec*)collision->points[1], &delta);
+    if (((s32)(collision->flags & 0x8000000) != 0) || (PSVECMag(&delta) > CURVES_MAX_SEGMENT_DISTANCE))
     {
         collision->traceStart[0][0] = collision->points[1][0];
         collision->traceStart[0][1] = collision->points[1][1];

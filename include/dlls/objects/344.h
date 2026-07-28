@@ -2,6 +2,7 @@
 #define DLLS_OBJECTS_344_H_
 
 #include "dlls/object_descriptor.h"
+#include "main/vec_types.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
@@ -48,9 +49,14 @@ typedef struct GunpowderBarrelState {
     u8 fuseFrames;
     f32 respawnTimer;
     f32 releaseTimer;
-    f32 throwVelocityX;
-    f32 throwVelocityY;
-    f32 throwVelocityZ;
+    union {
+        struct {
+            f32 throwVelocityX;
+            f32 throwVelocityY;
+            f32 throwVelocityZ;
+        };
+        Vec3f throwVelocity;
+    };
     f32 hitRadius;
     f32 unknown30;
     f32 radiusGrowthPerFrame;

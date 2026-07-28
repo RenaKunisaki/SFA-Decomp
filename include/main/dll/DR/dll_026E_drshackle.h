@@ -21,9 +21,15 @@ typedef struct DrshacklePlacement
 typedef struct DrshackleState
 {
     s32 pathSlots[2]; /* 0x00: path-object pointer slots (one per slot) */
-    f32 savedPosX;    /* 0x08 */
-    f32 savedPosY;    /* 0x0C */
-    f32 savedPosZ;    /* 0x10 */
+    union {
+        struct
+        {
+            f32 savedPosX; /* 0x08 */
+            f32 savedPosY; /* 0x0C */
+            f32 savedPosZ; /* 0x10 */
+        };
+        Vec3f savedPos;
+    };
     s32 slotCount;    /* 0x14: number of path slots (1 or 2) */
     u8 pad18[0x19 - 0x18];
     s8 unk19;              /* 0x19 */

@@ -49,7 +49,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "dolphin/gx/GXLegacyDecls.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/gametext_color_api.h"
 
 s8 gTitleScreenPrevMenuSelection = -1;
@@ -473,7 +473,7 @@ void nameEntrySetScroll(u32 a, u32 b)
 }
 void titleScreenPositionElements(f32 a, f32 b)
 {
-    PSMTXTrans((f32*)gTitleScreenMtx, a, b, 0.0f);
+    PSMTXTrans((MtxPtr)gTitleScreenMtx, a, b, 0.0f);
     gTitleScreenCursorY = (254.0f - b) / 134.0f;
     gTitleScreenSlideProgressX = (a - -380.0f) / 420.0f;
     gTitleScreenCursorX = 1.0f - gTitleScreenCursorY;
@@ -1031,7 +1031,7 @@ void TitleScreen_initialise(void)
     }
     lbl_803DD9D0 = 1.0f;
     lbl_803DD9CC = 1.0f;
-    PSMTXIdentity((f32*)gTitleScreenMtx);
+    PSMTXIdentity((MtxPtr)gTitleScreenMtx);
     for (i = 0; i < TITLE_SCREEN_TEXTURE_COUNT; i++)
     {
         gTitleScreenTextures[i] = textureLoadAsset(gTitleScreenTextureIds[i]);

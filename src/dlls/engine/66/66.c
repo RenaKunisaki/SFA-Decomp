@@ -6,7 +6,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/track_bbox_api.h"
 #include "main/mm.h"
 #include "string.h"
@@ -1058,7 +1058,7 @@ void CameraModeNormal_follow(CameraObject* camera, ObjAnimComponent* target)
         dx = dx / dist;
         dy = dy / dist;
     }
-    ratio = PSVECMag(&target->velocityX);
+    ratio = PSVECMag(&target->velocity);
     speed = 1.5f * timeDelta;
     speed = ratio * speed;
     if (speed < 1.0f)

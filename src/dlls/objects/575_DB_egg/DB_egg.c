@@ -51,7 +51,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/track_dolphin_api.h"
 #include "dlls/object_descriptor.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/pad.h"
 
 #define DBEGG_OBJGROUP         0x24
@@ -820,7 +820,7 @@ void dbegg_update(GameObject* obj)
             }
             else
             {
-                int n = (int)(PSVECMag((f32*)((int)obj + 0x24)) / 0.5f);
+                int n = (int)(PSVECMag(&obj->anim.velocity) / 0.5f);
                 for (i = 0; i < n; i++)
                 {
                     (*gPartfxInterface)->spawnObject((void*)obj, DBEGG_PARTFX_HOMING_TRAIL, NULL, 1, -1, NULL);

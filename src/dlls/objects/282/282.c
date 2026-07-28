@@ -1,6 +1,6 @@
 #include "dlls/objects/282.h"
 
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/model.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
@@ -169,13 +169,13 @@ void decoration11a_init(GameObject* obj, Decoration11APlacement* placement) {
                 Model_GetVertexPosition(model, vertexIndex, &vertexPosition.x);
                 decoration11a_expandBoundsWithVertex(&vertexPosition, &state->boundsMax, &state->boundsMin);
             }
-            PSVECScale(&state->boundsMax.x, &state->boundsMax.x, obj->anim.rootMotionScale);
-            PSVECScale(&state->boundsMin.x, &state->boundsMin.x, obj->anim.rootMotionScale);
-            minMagnitude = PSVECMag(&state->boundsMin.x);
-            if (PSVECMag(&state->boundsMax.x) > minMagnitude) {
-                boundingRadius = PSVECMag(&state->boundsMax.x);
+            PSVECScale(&state->boundsMax, &state->boundsMax, obj->anim.rootMotionScale);
+            PSVECScale(&state->boundsMin, &state->boundsMin, obj->anim.rootMotionScale);
+            minMagnitude = PSVECMag(&state->boundsMin);
+            if (PSVECMag(&state->boundsMax) > minMagnitude) {
+                boundingRadius = PSVECMag(&state->boundsMax);
             } else {
-                boundingRadius = PSVECMag(&state->boundsMin.x);
+                boundingRadius = PSVECMag(&state->boundsMin);
             }
             state->boundingRadius = boundingRadius;
         }

@@ -4,7 +4,7 @@
 
 #include "dlls/objects/328_CFGuardian.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/carryable_interface.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
@@ -618,7 +618,7 @@ void gunpowderBarrel_hitDetect(int obj) {
             }
 
             if (state->impactSoundCooldown > 60.0f) {
-                if (PSVECMag(&state->throwVelocityX) > gGunpowderBarrelImpactSoundSpeedThreshold) {
+                if (PSVECMag(&state->throwVelocity) > gGunpowderBarrelImpactSoundSpeedThreshold) {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_statue_waterfall);
                 }
                 state->impactSoundCooldown = 0.0f;

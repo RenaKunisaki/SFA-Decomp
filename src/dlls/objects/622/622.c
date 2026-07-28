@@ -8,7 +8,7 @@
  * The 0x1A flag byte is a BitFlags8 whose b0 = "active" (chain visible
  * and rattling).
  */
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/obj_group.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
@@ -100,7 +100,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
     obj->anim.rotY = 0;
     ObjModel_CopyJointTranslation((u8*)model, joint1, jointPos);
     ObjModel_CopyJointTranslation((u8*)model, *(s8*)(*(int*)mdPtr + joint1 * 28), parentPos);
-    PSVECSubtract(parentPos, jointPos, jointPos);
+    PSVECSubtract((Vec*)parentPos, (Vec*)jointPos, (Vec*)jointPos);
 
     if (((DrshacklePlacement*)q)->quarterTurns != 0)
     {
@@ -113,7 +113,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
         f32 savedY = jointPos[1];
         f32 mag;
         jointPos[1] = 0.0f;
-        mag = PSVECMag(jointPos);
+        mag = PSVECMag((Vec*)jointPos);
         obj->anim.rotZ = (s16)(lbl_803DC2F0 + getAngle(jointPos[0], jointPos[2]));
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
         objSetMtxFn_800412d4(ObjPath_GetPointModelMtx((GameObject*)a, b));
@@ -176,10 +176,10 @@ void drshackle_hitDetect(unsigned long obj)
     char* state = ((GameObject*)obj)->extra;
     if (Sfx_IsPlayingFromObjectChannel(obj, 1) == 0 && ((BitFlags8*)(state + 0x1a))->b0 != 0)
     {
-        f32 vec[3];
+        Vec vec;
         int n;
-        PSVECSubtract(&((GameObject*)obj)->anim.localPosX, &((DrshackleState*)state)->savedPosX, vec);
-        n = 0xc8 - (int)(30.0f * PSVECMag(vec));
+        PSVECSubtract(&((GameObject*)obj)->anim.localPos, &((DrshackleState*)state)->savedPos, &vec);
+        n = 0xc8 - (int)(30.0f * PSVECMag(&vec));
         if (randomGetRange(0, (n < 1) ? 1 : ((n > 0xc8) ? 0xc8 : n)) == 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_1b3);

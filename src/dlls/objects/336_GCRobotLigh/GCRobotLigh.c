@@ -2,7 +2,7 @@
 
 #include "dlls/objects/336_GCRobotLigh.h"
 
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/model_light.h"
 #include "main/track_bbox_api.h"
 #include "sys/objects.h"
@@ -109,7 +109,8 @@ void gcRobotLightBeam_update(GameObject* obj) {
     worldDirection[2] = gGcRobotLightBeamLocalDirection[2];
     Obj_TransformLocalVectorByWorldMatrix(obj, gGcRobotLightBeamLocalDirection, worldDirection);
     voxmaps_traceScaledVectorEnd(lightPosition, &obj->anim.localPosX, worldDirection, gGcRobotLightBeamTraceDistance);
-    PSVECScale(gGcRobotLightBeamLocalDirection, lightPosition, PSVECDistance(&obj->anim.localPosX, lightPosition));
+    PSVECScale((Vec*)gGcRobotLightBeamLocalDirection, (Vec*)lightPosition,
+               PSVECDistance(&obj->anim.localPos, (Vec*)lightPosition));
     getAmbientColor(0, &red, &green, &blue);
     if (state->pointLight != NULL) {
         modelLightStruct_setDiffuseColor(state->pointLight, (s32)(GCROBOTLIGHTBEAM_AMBIENT_COLOR_SCALE * (f32)(u32)red),
