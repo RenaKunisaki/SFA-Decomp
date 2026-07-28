@@ -421,10 +421,10 @@ u32 frustumTestAabbWithPlaneOffsets(f32 minX, f32 maxX, f32 minY, f32 maxY, f32 
         }
         if ((nearX * plane[i].normalX + nearY * plane[i].normalY + nearZ * plane[i].normalZ + plane[i].distance +
                  planeOffsets[i] <
-             lbl_803DEBCC) &&
+             0.0f) &&
             (farX * plane[i].normalX + farY * plane[i].normalY + farZ * plane[i].normalZ + plane[i].distance +
                  planeOffsets[i] <
-             lbl_803DEBCC))
+             0.0f))
             return 0;
     }
     return 1;
@@ -482,9 +482,9 @@ u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBloc
             farZ = *maxZ;
         }
         if ((planes->distance + (nearX * planes->normalX + nearY * planes->normalY + nearZ * planes->normalZ) <
-             lbl_803DEBCC) &&
+             0.0f) &&
             (planes->distance + (farX * planes->normalX + farY * planes->normalY + farZ * planes->normalZ) <
-             lbl_803DEBCC))
+             0.0f))
         {
             return 0;
         }
@@ -744,7 +744,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             PSMTXTrans(texMatrix, tx,
                        *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
-                       lbl_803DEBCC);
+                       0.0f);
             texMtx = texMatrix;
         }
         else
@@ -791,7 +791,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             PSMTXTrans(texMatrix, tx,
                        *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
-                       lbl_803DEBCC);
+                       0.0f);
             texMtx = texMatrix;
         }
         else
@@ -842,7 +842,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                         tx = *(float*)((u8*)lbl_803DCE68 + scrollOffset) / 1048576.0f;
                         PSMTXTrans(texMatrix, tx,
                                    *(float*)((u8*)lbl_803DCE68 + scrollOffset + 4) / 1048576.0f,
-                                   lbl_803DEBCC);
+                                   0.0f);
                         texMtx = texMatrix;
                     }
                     else
@@ -1143,7 +1143,7 @@ void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 
     GXLoadPosMtxImm((const f32 (*)[4])posMtx, GX_PNMTX0);
     PSMTXCopy((MtxPtr)posMtx, tmp);
-    fc = lbl_803DEBCC;
+    fc = 0.0f;
     tmp[0][3] = fc;
     tmp[1][3] = fc;
     tmp[2][3] = fc;
@@ -1285,7 +1285,7 @@ void renderGlows(void)
         cam.y = *(f32*)((char*)viewMtx + 0x24);
         cam.z = *(f32*)((char*)viewMtx + 0x28);
         sunDot = PSVECDotProduct(&dir, &cam);
-        if (sunDot > lbl_803DEBCC)
+        if (sunDot > 0.0f)
         {
             int occ;
             f32 fade;
@@ -1323,7 +1323,7 @@ void renderGlows(void)
                 fade = -0.0125f;
             gSunFlareFade = gSunFlareFade + fade;
             sunDot = sunDot * gSunFlareFade;
-            if (sunDot > lbl_803DEBCC)
+            if (sunDot > 0.0f)
             {
                 PSMTXConcat((MtxPtr)viewMtx, sunMtx, sunMtx);
                 GXLoadPosMtxImm((const f32 (*)[4])sunMtx, GX_PNMTX0);
@@ -1331,7 +1331,7 @@ void renderGlows(void)
                 selectTexture((Texture*)((int)skyGetSkyTexture()), 0);
                 getAmbientColor(0, &amb[0], &amb[1], &amb[2]);
                 sunDot = (f32)(u32)sunAlpha * sunDot;
-                _gxSetTevColor2(amb[0], amb[1], amb[2], (int)(lbl_803DEBFC * sunDot));
+                _gxSetTevColor2(amb[0], amb[1], amb[2], (int)(0.5f * sunDot));
                 alpha = 255.0f - 0.9f * sunDot;
                 fade = 20000.0f * sunDot;
                 sunDot = fade * lbl_803DEC40;
