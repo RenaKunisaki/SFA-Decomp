@@ -65,7 +65,7 @@ int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuIt
     {
         if (mainGetBit(entries[entry].bit) != 0)
         {
-            memcpy(items, templates, sizeof(WarpstoneMenuItem));
+            memcpy(items, &templates[entry], sizeof(WarpstoneMenuItem));
             lastDst = items;
             items->y = yoff;
             items->previousItem = slot - 1;
@@ -76,7 +76,6 @@ int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuIt
             yoff += 0x2a;
             slot++;
         }
-        templates++;
     }
     if (lastDst != NULL)
     {
