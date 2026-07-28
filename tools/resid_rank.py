@@ -49,6 +49,15 @@ ARWArwing.c, mtx.c and engine/52 leave a handful of bytes each.  Treat that set
 as the screen's known noise floor.  If the count grows after a toolchain or
 config change, the screen -- not the units -- is what regressed.
 
+The report-to-config key normalisation has to cope with two shapes dtk emits:
+`metadata.module_name` is absent for some units (their `main/` prefix has to be
+stripped by matching against the known module names instead), and the report
+strips every source suffix, not just `.c`.  Getting either wrong silently
+defaults the unit to NonMatching and manufactures phantom flip candidates --
+`__start.c`, `__mem.c`, `mem_TRK.c`, `__init_cpp_exceptions.cpp` and
+`targsupp.s` were all reported as link-clean flip candidates while already
+being `complete`.
+
 WARNING.  Residual and `fuzzy_match_percent` can move in OPPOSITE directions: a
 change may cut residual while regressing fuzzy.  Only a change that drives
 residual to zero flips a unit to `complete`; anything short of that must not
@@ -227,18 +236,23 @@ def units(only=()):
     cfg = json.load(open(ROOT / "build/GSAE01/config.json"))
     rep = json.load(open(ROOT / "build/GSAE01/report.json"))
     meta = {}
+    modules = {m["name"] for m in cfg.get("modules", [])} | {cfg["name"]}
     for u in rep["units"]:
-        mod = u["metadata"].get("module_name", "")
+        mod = u["metadata"].get("module_name") or ""
         n = u["name"]
         if mod and n.startswith(mod + "/"):
             n = n[len(mod) + 1:]
-        meta[n] = (u["metadata"].get("complete", False),
-                   u["measures"].get("fuzzy_match_percent", 0.0),
-                   sum(1 for f in u.get("functions", [])
-                       if f.get("measures", {}).get("fuzzy_match_percent", 0) < 100.0))
+        row = (u["metadata"].get("complete", False),
+               u["measures"].get("fuzzy_match_percent", 0.0),
+               sum(1 for f in u.get("functions", [])
+                   if f.get("measures", {}).get("fuzzy_match_percent", 0) < 100.0))
+        meta[n] = row
+        head = n.split("/", 1)
+        if len(head) == 2 and head[0] in modules:
+            meta.setdefault(head[1], row)
     for u in cfg["units"]:
         name = u["name"]
-        key = name[:-2] if name.endswith(".c") else name
+        key = re.sub(r"\.(c|cpp|cp|cxx|cc|s|S)$", "", name)
         if only and not any(o in name for o in only):
             continue
         tgt = ROOT / u["object"]
