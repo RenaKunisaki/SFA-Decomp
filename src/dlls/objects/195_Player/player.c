@@ -17360,7 +17360,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     {
                         vv = 0x50;
                     }
-                    *(s8*)(*(int*)(h + 0x35c) + 1) = vv;
+                    *(s8*)(*(int*)((char*)h + 0x35c) + 1) = vv;
                     vv = mapVal;
                     h = *(int*)&((GameObject*)obj)->extra;
                     if (mapVal < 0)
