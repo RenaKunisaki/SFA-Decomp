@@ -564,7 +564,7 @@ any of them is acted on.
 | 0x200 | — | COMPLETE | dlls/objects/512/512.c | = (canonical) | Exact complete 14-function numeric TU with its proven early 0x38-byte descriptor followed by TU-owned diagnostic and compiler switch data, allocation-backed and fully asserted 0x28-byte state, callback-visible partial placement view, canonical unit header, and exact 0x18-byte rodata, 0x1D0-byte data, and 0x2C-byte small-constant images; active EN has no recovered basename or complete placement width, and the generated numeric source path remains unchanged |
 | 0x201 | WM_colrise | COMPLETE | dlls/objects/513_WM_colrise/WM_colrise.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x04-byte state, asserted callback-visible placement prefix, canonical unit header and typed hit-contact, audio, and gamebit interfaces, and exact emitted sections, relocations, and symbols; the complete retail placement width is not established, and the generated source path remains unchanged |
 | 0x202 | — | COMPLETE | dlls/objects/514/514.c | = (canonical) | Exact functionless numeric TU containing its proven eight-byte, two-word null resource record in raw storage, with a canonical unit header and numbered public namespace, exact emitted small-data bytes, and an exact registry relocation after intended symbol normalization; active EN has no recovered basename, and the generated numeric source path remains unchanged |
-| 0x203 | — | COMPLETE | dlls/objects/515/515.c | = (canonical) | No recovered retail basename; data-only DLL |
+| 0x203 | — | COMPLETE | dlls/objects/515/515.c | = (canonical) | Exact functionless numeric TU containing its proven eight-byte, two-word null resource record in raw storage, with a canonical unit header and numbered public namespace, exact emitted small-data bytes, and an exact registry relocation after intended symbol normalization; active EN has no recovered basename, and the generated numeric source path remains unchanged |
 | 0x204 | WM_Torch | COMPLETE | dlls/objects/516_WM_Torch/WM_Torch.c | = (canonical) | — |
 | 0x205 | WM_Vein | COMPLETE | dlls/objects/517_WM_Vein/WM_Vein.c | = (canonical) | Data-only DLL |
 | 0x206 | LightSource | COMPLETE | dlls/objects/518_LightSource/LightSource.c | = (canonical) | — |
@@ -918,6 +918,7 @@ more as they are recovered.
 | 0x200 | dlls/objects/512/512.c | include/dlls/objects/512.h |
 | 0x201 | dlls/objects/513_WM_colrise/WM_colrise.c | include/dlls/objects/513_WM_colrise.h |
 | 0x202 | dlls/objects/514/514.c | include/dlls/objects/514.h |
+| 0x203 | dlls/objects/515/515.c | include/dlls/objects/515.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
