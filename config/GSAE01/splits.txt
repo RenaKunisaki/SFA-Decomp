@@ -577,6 +577,7 @@ dlls/engine/3/3.c:
 	.text       start:0x800D5530 end:0x800D7568
 	.data       start:0x803112E8 end:0x80311340
 	.bss        start:0x8039C458 end:0x8039CAE8
+	.sbss       start:0x803DD410 end:0x803DD420
 	.sdata2     start:0x803E04D8 end:0x803E053C
 
 dlls/engine/22/22.c:
@@ -1346,6 +1347,7 @@ dlls/engine/50/50.c:
 dlls/engine/51/51.c:
 	.text       start:0x80115F20 end:0x8011611C
 	.data       start:0x8031A1A0 end:0x8031A1D4
+	.sbss       start:0x803DD5F8 end:0x803DD60B
 	.sdata2     start:0x803E1D08 end:0x803E1D10
 
 n_attractmode.c:
@@ -1456,6 +1458,7 @@ dlls/engine/61/61.c:
 	.text       start:0x80131540 end:0x80132008
 	.data       start:0x8031C2A8 end:0x8031C300
 	.bss        start:0x803A9DB8 end:0x803A9DD0
+	.sbss       start:0x803DD918 end:0x803DD928
 	.sdata2     start:0x803E21E8 end:0x803E21FC
 
 dlls/engine/62/62.c:
@@ -1479,6 +1482,7 @@ dlls/engine/63/63.c:
 dlls/engine/64/64.c:
 	.text       start:0x80134098 end:0x801343CC
 	.data       start:0x8031C620 end:0x8031CC38
+	.sbss       start:0x803DD968 end:0x803DD978
 	.sdata2     start:0x803E22C0 end:0x803E22D0
 
 dlls/engine/65/65.c:
@@ -3269,6 +3273,7 @@ dlls/objects/526_WM_sun/WM_sun.c:
 	.text       start:0x801F6E8C end:0x801F7C50
 	.rodata     start:0x802C24E8 end:0x802C2500
 	.data       start:0x80328D28 end:0x80328D60
+	.sbss       start:0x803DDCA0 end:0x803DDCB8
 	.sdata2     start:0x803E5F20 end:0x803E5F90
 
 dlls/objects/527_WM_SpiritSe/WM_SpiritSe.c:

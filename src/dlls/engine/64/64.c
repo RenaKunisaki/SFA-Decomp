@@ -5,10 +5,10 @@
 
 #define CREDITS_TEXTURE_ID 0xC5
 
-extern f32 lbl_803DD968;
-extern u8 lbl_803DD970;
-extern void* lbl_803DD974;
-extern void* lbl_803DD96C;
+void* lbl_803DD974;
+u8 lbl_803DD970;
+void* lbl_803DD96C;
+f32 lbl_803DD968;
 extern f32 lbl_803E22A8;
 extern f32 lbl_803E22AC;
 extern f32 lbl_803E22B0;

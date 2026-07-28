@@ -5,13 +5,13 @@
 #include "main/model_engine.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "dlls/object_descriptor.h"
-extern int gNrarewareFrameCounter;
-extern f32 gNrarewareStage3Timer;
-extern f32 gNrarewareStage1Timer;
-extern u8 gNrarewareTransitionStarted;
-extern u8 gNrarewareTimeoutFlag;
-extern s8 gNrarewareExitDelay;
-extern s8 gNrarewareStage;
+u8 gNrarewareTimeoutFlag;
+s8 gNrarewareExitDelay;
+u8 gNrarewareTransitionStarted;
+f32 gNrarewareStage1Timer;
+f32 gNrarewareStage3Timer;
+s8 gNrarewareStage;
+int gNrarewareFrameCounter;
 
 void n_rareware_render(void)
 {

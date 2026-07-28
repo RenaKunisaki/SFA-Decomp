@@ -24,6 +24,14 @@
 #include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
+s16 gWmSunEnvfxTimer;
+s16 lbl_803DDCAE;
+s16 lbl_803DDCAC;
+s16 lbl_803DDCAA;
+s16 gWmSunQuakeTimer;
+f32 gWmSunGlareDamping;
+f32 gWmSunGlareIntensity;
+
 /* Object variants handled by this DLL. */
 #define WMSUN_SEQID_CRYSTAL 0x262
 #define WMSUN_SEQID_SUN     0x2bd

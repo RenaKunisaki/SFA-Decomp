@@ -4,8 +4,12 @@
 #include "main/vecmath.h"
 
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];
-extern s16 lbl_803DD414;
-extern s16 lbl_803DD416;
+
+void* lbl_803DD41C;
+void* lbl_803DD418;
+s16 lbl_803DD416;
+s16 lbl_803DD414;
+s32 gCheckpointRouteCount;
 
 
 CheckpointRouteEntry* Checkpoint_find(s32 key, s32* idx_out)
@@ -38,8 +42,6 @@ CheckpointRouteEntry* Checkpoint_find(s32 key, s32* idx_out)
     *idx_out = -1;
     return NULL;
 }
-extern void* lbl_803DD418;
-extern void* lbl_803DD41C;
 typedef struct CheckpointCursor
 {
     s16 headingAngle; /* 0x00 */
