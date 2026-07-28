@@ -187,7 +187,7 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
             v.y = -10.0f * mathCosf(ang);
             v.z = 0.0f;
             w = v;
-            arwarwing_setVelocity(arwing, (int)&w);
+            arwarwing_setVelocity(arwing, &w);
             doRumble(5.0f);
         }
         if (((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject == (u32)arwing)

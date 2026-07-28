@@ -82,7 +82,7 @@ void arwarwing_setFlightHalfWidth(GameObject* arwing, f32 width);
 int arwarwing_getRotY(GameObject* arwing);
 void arwarwing_setRotY(GameObject* arwing, int rotY);
 void arwarwing_getVelocity(Vec3f* out, GameObject* arwing);
-void arwarwing_setVelocity(GameObject* arwing, int velocity);
+void arwarwing_setVelocity(GameObject* arwing, const Vec3f* velocity);
 void arwarwing_addVelocity(GameObject* arwing, const Vec3f* velocity);
 void arwarwing_clearActiveBomb(GameObject* arwing);
 int arwarwing_getRequiredRingCount(GameObject* arwing);

@@ -324,7 +324,7 @@ void AndrossHand_update(int obj)
                 swipeVel.y = gAndrossHandZero[0];
                 swipeVel.z = gAndrossHandZero[0];
                 vel = swipeVel;
-                arwarwing_setVelocity(state->arwingObj, (int)&vel);
+                arwarwing_setVelocity(state->arwingObj, &vel);
                 doRumble(5.0f);
             }
         }
@@ -379,7 +379,7 @@ void AndrossHand_update(int obj)
                 grabVel.y = -10.0f;
                 grabVel.z = gAndrossHandZero[0];
                 vel = grabVel;
-                arwarwing_setVelocity(state->arwingObj, (int)&vel);
+                arwarwing_setVelocity(state->arwingObj, &vel);
                 doRumble(5.0f);
             }
         }

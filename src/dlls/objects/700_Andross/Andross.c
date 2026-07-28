@@ -1615,7 +1615,7 @@ void andross_update(int obj)
         fc = state->cachedPosZ - state->arwingObj->anim.localPosZ;
         velCalc3.z = fc * gAndrossArwingApproachVelocityScale;
         velArg3 = velCalc3;
-        arwarwing_setVelocity(state->arwingObj, (int)&velArg3);
+        arwarwing_setVelocity(state->arwingObj, &velArg3);
         fval = (-300.0f > -(5.0f * timeDelta - state->camOffsetAccum))
                    ? -300.0f
                    : -(5.0f * timeDelta - state->camOffsetAccum);
@@ -2033,7 +2033,7 @@ void andross_update(int obj)
             fc = state->cachedPosZ - state->arwingObj->anim.localPosZ;
             velCalc2.z = fc * gAndrossArwingReturnVelocityScale;
             velArg2 = velCalc2;
-            arwarwing_setVelocity(state->arwingObj, (int)&velArg2);
+            arwarwing_setVelocity(state->arwingObj, &velArg2);
             fval = (-600.0f > -(15.0f * timeDelta - state->camOffsetAccum))
                        ? -600.0f
                        : -(15.0f * timeDelta - state->camOffsetAccum);
@@ -2158,7 +2158,7 @@ void andross_update(int obj)
             fc = state->cachedPosZ - state->arwingObj->anim.localPosZ;
             velCalc1.z = fc * gAndrossArwingPullVelocityScale;
             velArg1 = velCalc1;
-            arwarwing_setVelocity(state->arwingObj, (int)&velArg1);
+            arwarwing_setVelocity(state->arwingObj, &velArg1);
         }
         else
         {
@@ -2175,7 +2175,7 @@ void andross_update(int obj)
             thrustB.y = gAndrossZero;
             thrustB.z = fc * gAndrossArwingThrustScale;
             thrustBArg = thrustB;
-            arwarwing_setVelocity(state->arwingObj, (int)&thrustBArg);
+            arwarwing_setVelocity(state->arwingObj, &thrustBArg);
         }
         if (boss->anim.currentMoveProgress >= 1.0f)
         {
@@ -2201,7 +2201,7 @@ void andross_update(int obj)
             fc = state->cachedPosZ - state->arwingObj->anim.localPosZ;
             velCalc0.z = fc * gAndrossArwingReleaseVelocityScale;
             velArg0 = velCalc0;
-            arwarwing_setVelocity(state->arwingObj, (int)&velArg0);
+            arwarwing_setVelocity(state->arwingObj, &velArg0);
         }
         else
         {
@@ -2218,7 +2218,7 @@ void andross_update(int obj)
             thrustA.y = gAndrossZero;
             thrustA.z = fc * gAndrossArwingReleaseThrustScale;
             thrustAArg = thrustA;
-            arwarwing_setVelocity(state->arwingObj, (int)&thrustAArg);
+            arwarwing_setVelocity(state->arwingObj, &thrustAArg);
             if (state->roarPlayed == 0)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_drak_pain1);

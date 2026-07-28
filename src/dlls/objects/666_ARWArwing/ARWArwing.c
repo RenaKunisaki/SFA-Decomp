@@ -83,17 +83,6 @@ typedef struct ArwInitCfgAB
     int b;
 } ArwInitCfgAB;
 
-typedef struct ArwArwingVec3
-{
-    f32 x;
-    f32 y;
-    f32 z;
-} ArwArwingVec3;
-
-STATIC_ASSERT(offsetof(ArwArwingVec3, x) == 0x0);
-STATIC_ASSERT(offsetof(ArwArwingVec3, y) == 0x4);
-STATIC_ASSERT(offsetof(ArwArwingVec3, z) == 0x8);
-
 #define ARWARWING_OBJGROUP 0x26
 
 #define ARWARWING_CHILD_OBJ_LASERSHOT      0x604
@@ -1431,12 +1420,12 @@ void arwarwing_getVelocity(Vec3f* out, GameObject* arwing)
     *out = *(Vec3f*)&(*(ArwingState**)&arwing->extra)->velX;
 }
 
-void arwarwing_setVelocity(GameObject* arwing, int velocity)
+void arwarwing_setVelocity(GameObject* arwing, const Vec3f* velocity)
 {
     ArwingState* state = arwing->extra;
-    state->velX = ((ArwArwingVec3*)velocity)->x;
-    state->velY = ((ArwArwingVec3*)velocity)->y;
-    state->velZ = ((ArwArwingVec3*)velocity)->z;
+    state->velX = velocity->x;
+    state->velY = velocity->y;
+    state->velZ = velocity->z;
 }
 
 void arwarwing_addVelocity(GameObject* arwing, const Vec3f* velocity)

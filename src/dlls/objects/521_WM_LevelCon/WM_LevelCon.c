@@ -53,12 +53,7 @@ STATIC_ASSERT(sizeof(WmLevelControlState) == 0x1C);
 
 typedef struct
 {
-    f32 x, y, z;
-} LightVec3;
-
-typedef struct
-{
-    LightVec3 vecs[4];
+    Vec3f vecs[4];
 } WmLevelControlSkyVecTable;
 
 STATIC_ASSERT(sizeof(WmLevelControlSkyVecTable) == 0x30);
@@ -139,11 +134,11 @@ static void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to)
 
 void WM_LevelControl_updateSkyLighting(GameObject* obj)
 {
-    LightVec3 auxDir;
-    LightVec3 fromDir;
-    LightVec3 toDir;
+    Vec3f auxDir;
+    Vec3f fromDir;
+    Vec3f toDir;
     f32 newBlend;
-    const LightVec3* dirTable;
+    const Vec3f* dirTable;
     u8 skyColorActive;
 
     dirTable = gWmLevelControlSkyVecTable.vecs;
