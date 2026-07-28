@@ -56,7 +56,6 @@ u8 gTitleMenuSelectionFade;
 u8 gTitleMenuPreviousSelection;
 u8 gTitleMenuSelection;
 s32 gAttractMovieState;
-static char sNRarewareReportTag[] = "n_rareware\n";
 
 #define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
 
