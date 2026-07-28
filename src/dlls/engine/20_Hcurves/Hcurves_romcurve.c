@@ -928,7 +928,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
             return 1;
         }
 
-        if (maxDistance != ROMCURVE_ZERO)
+        if (maxDistance)
         {
             if (state->reverse != 0)
             {
