@@ -1,8 +1,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/ansi_files.h"
 #include "string.h"
 
-extern const unsigned long lbl_803E7938;
-
 int unicode_to_UTF8(char* s, wchar_t wchar);
 
 size_t wcstombs(char* s, const wchar_t* pwcs, size_t n) {
@@ -35,9 +33,7 @@ size_t wcstombs(char* s, const wchar_t* pwcs, size_t n) {
 int unicode_to_UTF8(char* s, wchar_t wchar) {
     int number_of_bytes;
     char* target_ptr;
-    unsigned long first_byte_mark;
-
-    first_byte_mark = lbl_803E7938;
+    unsigned char first_byte_mark[4] = { 0x00, 0x00, 0xC0, 0xE0 };
 
     if (!s) {
         return 0;
@@ -60,7 +56,7 @@ int unicode_to_UTF8(char* s, wchar_t wchar) {
         *--target_ptr = (wchar & 0x003f) | 0x80;
         wchar >>= 6;
     case 1:
-        *--target_ptr = wchar | ((char*)&first_byte_mark)[number_of_bytes];
+        *--target_ptr = wchar | first_byte_mark[number_of_bytes];
     }
 
     return (number_of_bytes);

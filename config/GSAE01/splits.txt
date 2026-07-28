@@ -4956,6 +4956,7 @@ dolphin/MSL_C/PPCEABI/bare/H/FILE_POS.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/mbstring.c:
 	.text       start:0x8028F0E4 end:0x8028F228
+	.sdata2     start:0x803E7938 end:0x803E793C
 
 dolphin/MSL_C/PPCEABI/bare/H/mem.c:
 	.text       start:0x8028F228 end:0x8028F398
