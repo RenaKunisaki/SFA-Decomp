@@ -13003,7 +13003,6 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     PlayerState* inner = ((GameObject*)player)->extra;
     f32 sumC;
     f32 sumS;
-    f32 ratio;
     f32 angle;
     int* objs;
     int n;
@@ -13014,6 +13013,7 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     any = 0;
     for (i = 0; i < n; i++)
     {
+        f32 ratio;
         int o = objs[i];
         if (*(u8*)((char*)*(int*)((char*)o + 0x4c) + 0x1a) & 2)
         {
@@ -13043,6 +13043,7 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     objs = (int*)ObjGroup_GetObjects(0x50, &n);
     for (i = 0; i < n; i++)
     {
+        f32 ratio;
         int o = objs[i];
         f32 strength = (f32)(u32) * (u8*)((char*)*(int*)((char*)o + 0x4c) + 0x32) / 10.0f;
         f32 dy;
