@@ -818,8 +818,6 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
     return ret;
 }
 
-f32 gSidekickToyDistToSpeedScale = 0.015625f;
-
 /* sidekick-toy main update: timer-driven 16-stride anim chain, curve chase
  * with speed/turn shaping, idle anims. */
 
@@ -902,7 +900,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
         }
         {
             f32 diff = 64.0f - dist;
-            f32 spd = diff * gSidekickToyDistToSpeedScale;
+            f32 spd = diff / 64.0f;
             *(f32*)(state + 0x310) = spd * ((BaddieState*)state)->pathStep;
         }
         if (*(f32*)(state + 0x310) < 0.25f)
