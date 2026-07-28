@@ -22,6 +22,7 @@
 
 #include "dlls/objects/488_SB_Galleon.h"
 #include "dlls/objects/494_SB_CannonBa.h"
+#include "dlls/objects/504_WM_Galleon.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
@@ -44,7 +45,6 @@
 
 #define SB_SHIPGUN_CLOUDRUNNER_ALIAS_OBJECT_TYPE 0x008C
 #define SB_SHIPGUN_GALLEON_ALIAS_OBJECT_TYPE     0x008E
-#define SB_SHIPGUN_WM_GALLEON_ALIAS_OBJECT_TYPE  0x0139
 
 #define SB_SHIPGUN_START_HEALTH            2
 #define SB_SHIPGUN_WAKE_DELAY              60
@@ -91,7 +91,7 @@ void SB_ShipGun_render(GameObject* obj, int renderArg2, int renderArg3, int rend
     state = obj->extra;
     parent = obj->anim.parent;
     if (parent != NULL) {
-        if (parent->anim.seqId == SB_SHIPGUN_WM_GALLEON_ALIAS_OBJECT_TYPE) {
+        if (parent->anim.seqId == WM_GALLEON_OBJECT_ID) {
             return;
         }
     }
@@ -142,7 +142,7 @@ void SB_ShipGun_update(GameObject* obj) {
     player = Obj_GetPlayerObject();
     state = obj->extra;
     scratch = (int)obj->anim.placementData;
-    if (((GameObject*)obj->anim.parent)->anim.seqId == SB_SHIPGUN_WM_GALLEON_ALIAS_OBJECT_TYPE) {
+    if (((GameObject*)obj->anim.parent)->anim.seqId == WM_GALLEON_OBJECT_ID) {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         state->active = 0;
     } else {

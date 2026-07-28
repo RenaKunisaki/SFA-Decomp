@@ -78,7 +78,6 @@ enum {
     WMOBJCREATOR_MODE_HOODED_ZYCK = 8,
 
     /* Spawned object IDs from retail OBJECTS.bin. */
-    WMOBJCREATOR_SPAWN_WM_GALLEON = 0x139,
     WMOBJCREATOR_SPAWN_LFX_EMITTER = 0x263,
     WMOBJCREATOR_SPAWN_WM_WALLCRAWLER = 0x275,
     WMOBJCREATOR_SPAWN_HOODED_ZYCK = 0x4AC,
@@ -166,7 +165,7 @@ void WM_ObjCreator_update(GameObject* obj) {
                 groupObjects = ObjGroup_GetObjects(3, &objectCount);
                 objectIndex = 0;
                 while (objectIndex < objectCount && (s8)(int)state != 0) {
-                    if (((GameObject*)*groupObjects)->anim.seqId == WMOBJCREATOR_SPAWN_WM_GALLEON) {
+                    if (((GameObject*)*groupObjects)->anim.seqId == WM_GALLEON_OBJECT_ID) {
                         state = NULL;
                     }
                     groupObjects++;
@@ -174,7 +173,7 @@ void WM_ObjCreator_update(GameObject* obj) {
                 }
             }
             if ((s8)(int)state != 0) {
-                setup = Obj_AllocObjectSetup(sizeof(WMGalleonSetup), WMOBJCREATOR_SPAWN_WM_GALLEON);
+                setup = Obj_AllocObjectSetup(sizeof(WMGalleonSetup), WM_GALLEON_OBJECT_ID);
                 setup->posX = placement->base.posX;
                 setup->posY = placement->base.posY;
                 setup->posZ = placement->base.posZ;

@@ -299,6 +299,7 @@
 #include "dlls/objects/503_SB_ShipGunB.h"
 #include "dlls/objects/504_WM_Galleon.h"
 #include "dlls/objects/505_WM_ObjCreat.h"
+#include "dlls/objects/506_WM_seqobjec.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -439,8 +440,7 @@ extern ResourceDescriptor gWCLevelContObjDescriptor,
 extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_LaserTargetObjDescriptor,
     gWM_LevelControlObjDescriptor, gWM_PlanetsObjDescriptor;
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
-    gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
-    gWM_seqpointObjDescriptor;
+    gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, sky2_funcs, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
@@ -1615,7 +1615,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSB_ShipGunBrokeObjDescriptor,
     (ResourceDescriptor*)&gWM_GalleonObjDescriptor,
     (ResourceDescriptor*)&gWM_ObjCreatorObjDescriptor,
-    &gWM_seqobjectObjDescriptor,
+    (ResourceDescriptor*)&gWM_seqobjectObjDescriptor,
     &dll_1FB,
     &gLaserBeamObjDescriptor,
     &gWM_LaserTargetObjDescriptor,

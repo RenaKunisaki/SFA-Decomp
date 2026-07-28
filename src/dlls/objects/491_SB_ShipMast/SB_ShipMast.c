@@ -2,19 +2,17 @@
  * SB_ShipMast (DLL 0x1EB) - the mast/rigging attachment of the SB Galleon
  * boss ship. It rides its parent galleon object, pinning its local position
  * to the origin every frame, and picks one of three animation play speeds
- * depending on the galleon's animation type (anim.seqId 0x139) and its
+ * depending on the World Map galleon's object ID and its
  * userData1 phase counter. The remaining handlers (free/hitDetect/init/release/
  * initialise) are stubs - the mast is purely cosmetic.
  */
 #include "dlls/objects/491_SB_ShipMast.h"
 
+#include "dlls/objects/504_WM_Galleon.h"
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/objanim.h"
-
-/* Parent Galleon sequence ID selecting the rigging animation. */
-#define SB_SHIP_MAST_PARENT_SEQ_ID 0x139
 
 int SB_ShipMast_getExtraSize(void) {
     return 0;
@@ -51,7 +49,7 @@ void SB_ShipMast_update(GameObject* obj) {
     obj->anim.localPosX = 0.0f;
     obj->anim.localPosY = 0.0f;
     obj->anim.localPosZ = 0.0f;
-    if (((GameObject*)obj->anim.parent)->anim.seqId == SB_SHIP_MAST_PARENT_SEQ_ID) {
+    if (((GameObject*)obj->anim.parent)->anim.seqId == WM_GALLEON_OBJECT_ID) {
         if (phase >= 0xa && phase < 0xd) {
             if (obj->anim.currentMove != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);

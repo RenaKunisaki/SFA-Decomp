@@ -6,6 +6,8 @@
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
+#define WM_GALLEON_OBJECT_ID 0x139
+
 typedef struct WMGalleonSetup {
     ObjPlacement base;
     s8 rotationXByte;
