@@ -3,178 +3,162 @@
  * 0x18D lava-ball sub-object, controls its fire period and game-bit gate,
  * and relaunches it on each fire cycle.
  */
+
+#include "dlls/objects/447_DIMLavaBall.h"
+
 #include "dlls/objects/446.h"
-#include "main/dll/lavaball1bfstate_struct.h"
-#include "main/frame_timing.h"
-#include "main/objseq.h"
-#include "sys/objects/lifecycle.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/gamebits.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
 #include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define DIMLAVABALL_OBJFLAG_HIDDEN             0x4000
+#define DIM_LAVA_BALL_RENDER_SCALE 1.0f
 
-typedef struct Lavaball1bfPlacement
-{
-    ObjPlacement head; /* 0x00 */
-    s8 firePeriod; /* 0x18 read raw as s16 (p+0x18) into state.firePeriod */
-    u8 pad19[0x1E - 0x19];
-    s16 triggerGameBit;
-    u8 pad20[0x24 - 0x20];
-    s16 stateGameBit;
-    u8 pad26[0x28 - 0x26];
-} Lavaball1bfPlacement;
+#define DIM_LAVA_BALL_PROJECTILE_SETUP_WORDS 9
+#define DIM_LAVA_BALL_PROJECTILE_COLOR_RED   2
+#define DIM_LAVA_BALL_PROJECTILE_COLOR_GREEN 4
+#define DIM_LAVA_BALL_PROJECTILE_COLOR_BLUE  0xff
+#define DIM_LAVA_BALL_PROJECTILE_COLOR_ALPHA 0x50
+#define DIM_LAVA_BALL_PROJECTILE_SETUP_FLAGS 5
 
-STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
-void lavaball1bf_clearPending(GameObject* obj)
-{
-    Lavaball1bfState* p = (Lavaball1bfState*)(int*)obj->extra;
-    if (p->gateA == 0)
+#define DIM_LAVA_BALL_FIRE_JITTER_MIN 0
+#define DIM_LAVA_BALL_FIRE_JITTER_MAX 0x3c
+
+void lavaball1bf_clearPending(GameObject* obj) {
+    DimLavaBallState* state = obj->extra;
+
+    if (state->pendingEnabled == 0) {
         return;
-    if (p->pending == 0)
+    }
+    if (state->pending == 0) {
         return;
-    p->pending = 0;
+    }
+    state->pending = 0;
 }
 
-int lavaball1bf_trySetPending(int* obj)
-{
-    Lavaball1bfState* p;
-    obj = (int*)(int*)((GameObject*)obj)->extra;
-    p = (Lavaball1bfState*)obj;
-    if (p->gateA == 0)
+int lavaball1bf_trySetPending(GameObject* obj) {
+    DimLavaBallState* state;
+
+    state = obj->extra;
+    if (state->pendingEnabled == 0) {
         return 0;
-    if (p->pending == 0)
-    {
-        p->pending = 1;
+    }
+    if (state->pending == 0) {
+        state->pending = 1;
         return 1;
     }
     return 0;
 }
 
-int lavaball1bf_getExtraSize(void)
-{
-    return 0x1c;
+int lavaball1bf_getExtraSize(void) {
+    return sizeof(DimLavaBallState);
 }
-int lavaball1bf_getObjectTypeId(void)
-{
+
+int lavaball1bf_getObjectTypeId(void) {
     return 0x0;
 }
 
-void lavaball1bf_free(GameObject* obj, int mode)
-{
-    Lavaball1bfState* inner = obj->extra;
-    if (mode == 0 && inner->spawnedObj != 0)
-    {
-        Obj_FreeObject((GameObject*)inner->spawnedObj);
+void lavaball1bf_free(GameObject* obj, int mode) {
+    DimLavaBallState* state = obj->extra;
+
+    if (mode == 0 && state->projectile != NULL) {
+        Obj_FreeObject(state->projectile);
     }
 }
 
-void lavaball1bf_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void lavaball1bf_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleValue = visible;
+
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DIM_LAVA_BALL_RENDER_SCALE);
+    }
 }
 
-void lavaball1bf_hitDetect(void)
-{
+void lavaball1bf_hitDetect(void) {
 }
 
-void lavaball1bf_update(GameObject* obj)
-{
-    u8* setup;
-    Lavaball1bfState* state;
-    int* spawned;
+void lavaball1bf_update(GameObject* obj) {
+    const DimLavaBallPlacement* placement;
+    DimLavaBallState* state;
+    GameObject* projectile;
     f32 timer;
 
     state = obj->extra;
-    setup = *(u8**)&obj->anim.placementData;
-    state->gbState = mainGetBit(((Lavaball1bfPlacement*)setup)->stateGameBit);
-    if (state->soloLatch != 0)
-    {
-        if (mainGetBit(((Lavaball1bfPlacement*)setup)->triggerGameBit) != 0)
-        {
-            state->gbState = 1;
-            state->soloLatch = 0;
+    placement = (const DimLavaBallPlacement*)obj->anim.placementData;
+    state->fireEnabled = mainGetBit(placement->stateGameBit);
+    if (state->awaitingTrigger != 0) {
+        if (mainGetBit(placement->triggerGameBit) != 0) {
+            state->fireEnabled = 1;
+            state->awaitingTrigger = 0;
             state->fireTimer = 0.0f;
-        }
-        else
-        {
-            state->gbState = 0;
+        } else {
+            state->fireEnabled = 0;
         }
     }
-    if (*(void**)&state->spawnedObj == NULL && Obj_IsLoadingLocked() != 0)
-    {
-        int s = (int)Obj_AllocObjectSetup(sizeof(DimLavaProjectilePlacement), DIM_LAVA_PROJECTILE_SEQUENCE_ID);
-        DimLavaProjectilePlacement* sp = (DimLavaProjectilePlacement*)s;
-        sp->base.size = 9;
-        sp->base.color[0] = 2;
-        sp->base.color[2] = 0xff;
-        sp->base.color[1] = 4;
-        sp->base.color[3] = 0x50;
-        sp->base.posX = obj->anim.localPosX;
-        sp->base.posY = obj->anim.localPosY;
-        sp->base.posZ = obj->anim.localPosZ;
-        sp->launchYaw = setup[0x1c];
-        sp->verticalSpeed = setup[0x1a];
-        sp->horizontalSpeed = setup[0x1b];
-        sp->base.mapId = ((ObjPlacement*)setup)->mapId;
-        *(int*)&state->spawnedObj =
-            (int)Obj_SetupObject((ObjPlacement*)s, 5, obj->anim.mapEventSlot, -1, 0);
+    if (state->projectile == NULL && Obj_IsLoadingLocked() != 0) {
+        int setupHandle =
+            (int)Obj_AllocObjectSetup(sizeof(DimLavaProjectilePlacement), DIM_LAVA_PROJECTILE_SEQUENCE_ID);
+        DimLavaProjectilePlacement* projectilePlacement = (DimLavaProjectilePlacement*)setupHandle;
+
+        projectilePlacement->base.size = DIM_LAVA_BALL_PROJECTILE_SETUP_WORDS;
+        projectilePlacement->base.color[0] = DIM_LAVA_BALL_PROJECTILE_COLOR_RED;
+        projectilePlacement->base.color[2] = DIM_LAVA_BALL_PROJECTILE_COLOR_BLUE;
+        projectilePlacement->base.color[1] = DIM_LAVA_BALL_PROJECTILE_COLOR_GREEN;
+        projectilePlacement->base.color[3] = DIM_LAVA_BALL_PROJECTILE_COLOR_ALPHA;
+        projectilePlacement->base.posX = obj->anim.localPosX;
+        projectilePlacement->base.posY = obj->anim.localPosY;
+        projectilePlacement->base.posZ = obj->anim.localPosZ;
+        projectilePlacement->launchYaw = placement->rotXByte;
+        projectilePlacement->verticalSpeed = placement->verticalSpeed;
+        projectilePlacement->horizontalSpeed = placement->horizontalSpeed;
+        projectilePlacement->targetObjectId = placement->projectileTargetObjectId;
+        state->projectile = Obj_SetupObject((ObjPlacement*)setupHandle, DIM_LAVA_BALL_PROJECTILE_SETUP_FLAGS,
+                                            obj->anim.mapEventSlot, -1, NULL);
     }
-    spawned = state->spawnedObj;
+    projectile = state->projectile;
     timer = state->fireTimer - timeDelta;
     state->fireTimer = timer;
     if (timer <= 0.0f &&
-        ((int (*)(int*))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)
-             [DIM_LAVA_PROJECTILE_IS_INACTIVE_VTABLE_OFFSET / sizeof(void*)])(spawned) != 0)
-    {
-        if (state->gbState != 0)
-        {
-            int rot;
-            if (mainGetBit(((Lavaball1bfPlacement*)setup)->triggerGameBit) != 0 && state->gateB == 0)
-            {
-                rot = setup[0x20];
-                state->gateB = 1;
+        (s32)(*(DimLavaProjectileInterfaceVTable**)projectile->anim.dll)->isInactive(projectile) != 0) {
+        if (state->fireEnabled != 0) {
+            int verticalSpeed;
+
+            if (mainGetBit(placement->triggerGameBit) != 0 && state->triggeredLaunchUsed == 0) {
+                verticalSpeed = placement->triggeredVerticalSpeed;
+                state->triggeredLaunchUsed = 1;
+            } else {
+                verticalSpeed = placement->verticalSpeed;
             }
-            else
-            {
-                rot = setup[0x1a];
-            }
-            ((void (*)(int*, int, int))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)
-                 [DIM_LAVA_PROJECTILE_RELAUNCH_VTABLE_OFFSET / sizeof(void*)])(spawned, rot, setup[0x1b]);
+            (*(DimLavaProjectileInterfaceVTable**)projectile->anim.dll)
+                ->relaunch(projectile, verticalSpeed, placement->horizontalSpeed);
         }
-        state->fireTimer = state->firePeriod + (f32)(int)randomGetRange(0, 0x3c);
+        state->fireTimer =
+            state->firePeriod + (f32)(int)randomGetRange(DIM_LAVA_BALL_FIRE_JITTER_MIN, DIM_LAVA_BALL_FIRE_JITTER_MAX);
     }
 }
 
-void lavaball1bf_init(GameObject* obj, u8* p)
-{
-    Lavaball1bfState* inner;
-    obj->anim.rotX = (s16)((s32)p[0x1c] << 8);
-    inner = obj->extra;
-    inner->firePeriod = (f32) * (s16*)(p + 0x18);
-    inner->fireTimer = 0.0f;
-    inner->gateA = p[0x1d];
-    inner->gateB = mainGetBit((int)*(s16*)(p + 0x22));
-    if (*(s16*)(p + 0x24) == -1 && inner->gateB == 0)
-    {
-        inner->soloLatch = 1;
+void lavaball1bf_init(GameObject* obj, const DimLavaBallPlacement* placement) {
+    DimLavaBallState* state;
+
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
+    state = obj->extra;
+    state->firePeriod = (f32)placement->firePeriod;
+    state->fireTimer = 0.0f;
+    state->pendingEnabled = placement->pendingEnabled;
+    state->triggeredLaunchUsed = mainGetBit(placement->triggeredLaunchGameBit);
+    if (placement->stateGameBit == -1 && state->triggeredLaunchUsed == 0) {
+        state->awaitingTrigger = 1;
     }
-    obj->objectFlags |= (DIMLAVABALL_OBJFLAG_HIDDEN | DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
-void lavaball1bf_release(void)
-{
+void lavaball1bf_release(void) {
 }
 
-void lavaball1bf_initialise(void)
-{
+void lavaball1bf_initialise(void) {
 }
 
 ObjectDescriptor12 gLavaBall1BFObjDescriptor = {

@@ -241,6 +241,7 @@
 #include "dlls/objects/444_SC_totemstr.h"
 #include "dlls/objects/445.h"
 #include "dlls/objects/446.h"
+#include "dlls/objects/447_DIMLavaBall.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -365,7 +366,7 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
 extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
     gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLavaBall1BFObjDescriptor, gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1515,7 +1516,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSC_totemstrengthObjDescriptor,
     (ResourceDescriptor*)&gPaymentKioskObjDescriptor,
     (ResourceDescriptor*)&gLavaBall1BEObjDescriptor,
-    &gLavaBall1BFObjDescriptor,
+    (ResourceDescriptor*)&gLavaBall1BFObjDescriptor,
     &gDIMLogFireObjDescriptor,
     &gDIMSnowBallObjDescriptor,
     &gDIMSnowBall1C2ObjDescriptor,
