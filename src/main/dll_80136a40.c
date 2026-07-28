@@ -244,14 +244,22 @@ int debugPrintDrawGlyph(int unused, int c)
     return c;
 }
 
+static inline void debugPrintFillRect(int x1, int y1, int x2, int y2)
+{
+    GXColor color;
+
+    color.r = gDebugTextColorR;
+    color.g = gDebugTextColorG;
+    color.b = gDebugTextColorB;
+    color.a = gDebugTextColorA;
+    hudDrawRect(x1, y1, x2, y2, color);
+}
+
 int debugPrintDrawRecord(int color, u8* p)
 {
     u8* start = p;
     u8 c;
     GXColor textColorSource;
-    GXColor wrapColor;
-    GXColor newlineColor;
-    GXColor positionColor;
 
     while ((c = *p++) != 0)
     {
@@ -342,11 +350,7 @@ int debugPrintDrawRecord(int color, u8* p)
                     y1 = y1 * sc;
                     x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     x2 = x2 * sc;
-                    positionColor.r = gDebugTextColorR;
-                    positionColor.g = gDebugTextColorG;
-                    positionColor.b = gDebugTextColorB;
-                    positionColor.a = gDebugTextColorA;
-                    hudDrawRect(y0, x0, y1, x2, positionColor);
+                    debugPrintFillRect(y0, x0, y1, x2);
                 }
             }
             debugPrintYpos = *p++;
@@ -388,11 +392,7 @@ int debugPrintDrawRecord(int color, u8* p)
                     y1 = y1 * sc;
                     x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     x2 = x2 * sc;
-                    newlineColor.r = gDebugTextColorR;
-                    newlineColor.g = gDebugTextColorG;
-                    newlineColor.b = gDebugTextColorB;
-                    newlineColor.a = gDebugTextColorA;
-                    hudDrawRect(y0, x0, y1, x2, newlineColor);
+                    debugPrintFillRect(y0, x0, y1, x2);
                 }
             }
             debugPrintYpos = gDebugPrintOriginY;
@@ -445,11 +445,7 @@ int debugPrintDrawRecord(int color, u8* p)
                     y1 = y1 * sc;
                     x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     x2 = x2 * sc;
-                    wrapColor.r = gDebugTextColorR;
-                    wrapColor.g = gDebugTextColorG;
-                    wrapColor.b = gDebugTextColorB;
-                    wrapColor.a = gDebugTextColorA;
-                    hudDrawRect(y0, x0, y1, x2, wrapColor);
+                    debugPrintFillRect(y0, x0, y1, x2);
                 }
             }
             debugPrintYpos = gDebugPrintOriginY;
