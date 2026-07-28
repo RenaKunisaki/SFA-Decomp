@@ -63,20 +63,20 @@
 
 
 static int sRcpUnused0;
-int lbl_803DCD90;
-int lbl_803DCD8C;
-int lbl_803DCD88;
-int lbl_803DCD84;
-int lbl_803DCD80;
-int lbl_803DCD7C;
-int lbl_803DCD78;
-int lbl_803DCD74;
-int lbl_803DCD70;
-int lbl_803DCD6C;
+int gRcpNextTevStage;
+int gRcpNextTexMap;
+int gRcpNextTexCoord;
+int gRcpNextTexMtx;
+int gRcpNextPostTexMtx;
+int gRcpNextIndTexStage;
+int gRcpNextTexCoordSource;
+int gRcpNextKColor;
+int gRcpNextKColorSel;
+int gRcpNextKAlphaSel;
 u8 lbl_803DCD6B;
-u8 lbl_803DCD6A;
-u8 lbl_803DCD69;
-u8 lbl_803DCD68;
+u8 gRcpNumTevStages;
+u8 gRcpNumTexGens;
+u8 gRcpNumIndStages;
 int lbl_803DCD64;
 int lbl_803DCD60;
 int lbl_803DCD5C;
@@ -192,7 +192,7 @@ void gxTextureFn_8004bf88(void* bufp, u8 flag1, u8 flag2, int* out1, int* out2)
         }
         if (found1 == 0)
         {
-            *out1 = lbl_803DCD70;
+            *out1 = gRcpNextKColorSel;
         }
     }
     else
@@ -243,7 +243,7 @@ void gxTextureFn_8004bf88(void* bufp, u8 flag1, u8 flag2, int* out1, int* out2)
         }
         if (found2 == 0)
         {
-            *out2 = lbl_803DCD6C;
+            *out2 = gRcpNextKAlphaSel;
         }
     }
     else
@@ -252,10 +252,10 @@ void gxTextureFn_8004bf88(void* bufp, u8 flag1, u8 flag2, int* out1, int* out2)
     }
     if (found1 == 0 || found2 == 0)
     {
-        GXSetTevKColor(lbl_803DCD74, *(GXColor*)bufp);
-        lbl_803DCD74 = lbl_803DCD74 + 1;
-        lbl_803DCD70 = lbl_803DCD70 + 1;
-        lbl_803DCD6C = lbl_803DCD6C + 1;
+        GXSetTevKColor(gRcpNextKColor, *(GXColor*)bufp);
+        gRcpNextKColor = gRcpNextKColor + 1;
+        gRcpNextKColorSel = gRcpNextKColorSel + 1;
+        gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
     }
 }
 
@@ -380,36 +380,36 @@ void textureFn_8004c330(void* p1, void* mtx)
     newshadows_getReflectionScrollOffsets(&sx, &sy);
     m.v[0][1] = 0.25f * mathSinf(3.142f * sx) + 0.5f;
     m.v[1][2] = 0.25f * mathSinf(3.142f * sy) + 0.5f;
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD0, lbl_803DCD8C + 1, GX_ALPHA_BUMPN);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD0, gRcpNextTexMap + 1, GX_ALPHA_BUMPN);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != 0)
     {
-        GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
+        GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
     }
     else
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
     GXSetIndTexMtx(GX_ITM_0, m.v, (s8)lbl_803DB5F4);
-    GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88, lbl_803DCD8C);
-    GXSetTevIndirect(lbl_803DCD90, lbl_803DCD7C, 0, 7, 1, 0, 0, 0, 0, 3);
+    GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord, gRcpNextTexMap);
+    GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 7, 1, 0, 0, 0, 0, 3);
     gxTextureFn_8004bf88(lbl_803DB5F8, 1, 0, &out_c, &out_8);
-    GXSetTevKColorSel(lbl_803DCD90, out_c);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_KONST, GX_CC_TEXC, GX_CC_RASA, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevOrder(lbl_803DCD90 + 1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevDirect(lbl_803DCD90 + 1);
-    GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_C0, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevKColorSel(gRcpNextTevStage, out_c);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_KONST, GX_CC_TEXC, GX_CC_RASA, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevOrder(gRcpNextTevStage + 1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevDirect(gRcpNextTevStage + 1);
+    GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_C0, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
     {
-        int id = lbl_803DCD8C;
+        int id = gRcpNextTexMap;
         if (p1 != 0)
         {
             void* obj = (char*)p1 + 0x20;
@@ -424,7 +424,7 @@ void textureFn_8004c330(void* p1, void* mtx)
         }
     }
     {
-        int id2 = lbl_803DCD8C + 1;
+        int id2 = gRcpNextTexMap + 1;
         Texture* tex = (Texture*)lbl_803DCD2C;
         if (tex != 0)
         {
@@ -439,13 +439,13 @@ void textureFn_8004c330(void* p1, void* mtx)
             }
         }
     }
-    lbl_803DCD78 = lbl_803DCD78 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 2;
-    lbl_803DCD8C = lbl_803DCD8C + 2;
-    lbl_803DCD6A += 2;
-    lbl_803DCD69 += 1;
-    lbl_803DCD68 += 1;
+    gRcpNextTexCoordSource = gRcpNextTexCoordSource + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 2;
+    gRcpNextTexMap = gRcpNextTexMap + 2;
+    gRcpNumTevStages += 2;
+    gRcpNumTexGens += 1;
+    gRcpNumIndStages += 1;
 }
 void addYUVVideoTevStages(void* tex0, void* tex1, void* tex2, s16 w, s16 h)
 {
@@ -455,77 +455,77 @@ void addYUVVideoTevStages(void* tex0, void* tex1, void* tex2, s16 w, s16 h)
     GXColorS10 cs10;
     int h2;
     int w2;
-    if (lbl_803DCD6A > 0xb || lbl_803DCD69 > 6 || lbl_803DCD8C > 5 || lbl_803DCD74 > 1)
+    if (gRcpNumTevStages > 0xb || gRcpNumTexGens > 6 || gRcpNextTexMap > 5 || gRcpNextKColor > 1)
     {
         return;
     }
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-        GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88 + 1, lbl_803DCD8C + 1, GX_COLOR_NULL);
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVREG1);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_A0);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVREG1);
-        GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
-        GXSetTevKAlphaSel(lbl_803DCD90, lbl_803DCD6C);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, lbl_803DCD8C + 2, GX_COLOR_NULL);
-        GXSetTevDirect(lbl_803DCD90 + 1);
-        GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C1);
-        GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_2, GX_FALSE, GX_TEVREG1);
-        GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_A1);
-        GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVREG1);
-        GXSetTevKColorSel(lbl_803DCD90 + 1, lbl_803DCD70 + 1);
-        GXSetTevKAlphaSel(lbl_803DCD90 + 1, lbl_803DCD6C + 1);
-        GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevOrder(lbl_803DCD90 + 2, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevDirect(lbl_803DCD90 + 2);
-        GXSetTevColorIn(lbl_803DCD90 + 2, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ONE, GX_CC_C1);
-        GXSetTevColorOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-        GXSetTevAlphaIn(lbl_803DCD90 + 2, GX_CA_TEXA, GX_CA_ZERO, GX_CA_ZERO, GX_CA_A1);
-        GXSetTevAlphaOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-        GXSetTevSwapMode(lbl_803DCD90 + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevOrder(lbl_803DCD90 + 3, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-        GXSetTevDirect(lbl_803DCD90 + 3);
-        GXSetTevColorIn(lbl_803DCD90 + 3, GX_CC_A1, GX_CC_C1, GX_CC_KONST, GX_CC_ZERO);
-        GXSetTevColorOp(lbl_803DCD90 + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-        GXSetTevAlphaIn(lbl_803DCD90 + 3, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-        GXSetTevAlphaOp(lbl_803DCD90 + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-        GXSetTevSwapMode(lbl_803DCD90 + 3, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevKColorSel(lbl_803DCD90 + 3, lbl_803DCD70 + 2);
-        GXSetTevOrder(lbl_803DCD90 + 4, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-        GXSetTevDirect(lbl_803DCD90 + 4);
-        GXSetTevColorIn(lbl_803DCD90 + 4, GX_CC_CPREV, GX_CC_C1, GX_CC_KONST, GX_CC_ZERO);
-        GXSetTevColorOp(lbl_803DCD90 + 4, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaIn(lbl_803DCD90 + 4, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevAlphaOp(lbl_803DCD90 + 4, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevSwapMode(lbl_803DCD90 + 4, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevKColorSel(lbl_803DCD90 + 4, GX_TEV_KCSEL_1_4);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord + 1, gRcpNextTexMap + 1, GX_COLOR_NULL);
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVREG1);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_A0);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVREG1);
+        GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
+        GXSetTevKAlphaSel(gRcpNextTevStage, gRcpNextKAlphaSel);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, gRcpNextTexMap + 2, GX_COLOR_NULL);
+        GXSetTevDirect(gRcpNextTevStage + 1);
+        GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C1);
+        GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_2, GX_FALSE, GX_TEVREG1);
+        GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_A1);
+        GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVREG1);
+        GXSetTevKColorSel(gRcpNextTevStage + 1, gRcpNextKColorSel + 1);
+        GXSetTevKAlphaSel(gRcpNextTevStage + 1, gRcpNextKAlphaSel + 1);
+        GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevOrder(gRcpNextTevStage + 2, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevDirect(gRcpNextTevStage + 2);
+        GXSetTevColorIn(gRcpNextTevStage + 2, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ONE, GX_CC_C1);
+        GXSetTevColorOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+        GXSetTevAlphaIn(gRcpNextTevStage + 2, GX_CA_TEXA, GX_CA_ZERO, GX_CA_ZERO, GX_CA_A1);
+        GXSetTevAlphaOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+        GXSetTevSwapMode(gRcpNextTevStage + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevOrder(gRcpNextTevStage + 3, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+        GXSetTevDirect(gRcpNextTevStage + 3);
+        GXSetTevColorIn(gRcpNextTevStage + 3, GX_CC_A1, GX_CC_C1, GX_CC_KONST, GX_CC_ZERO);
+        GXSetTevColorOp(gRcpNextTevStage + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+        GXSetTevAlphaIn(gRcpNextTevStage + 3, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+        GXSetTevAlphaOp(gRcpNextTevStage + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+        GXSetTevSwapMode(gRcpNextTevStage + 3, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevKColorSel(gRcpNextTevStage + 3, gRcpNextKColorSel + 2);
+        GXSetTevOrder(gRcpNextTevStage + 4, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+        GXSetTevDirect(gRcpNextTevStage + 4);
+        GXSetTevColorIn(gRcpNextTevStage + 4, GX_CC_CPREV, GX_CC_C1, GX_CC_KONST, GX_CC_ZERO);
+        GXSetTevColorOp(gRcpNextTevStage + 4, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaIn(gRcpNextTevStage + 4, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevAlphaOp(gRcpNextTevStage + 4, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevSwapMode(gRcpNextTevStage + 4, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevKColorSel(gRcpNextTevStage + 4, GX_TEV_KCSEL_1_4);
         lbl_803DCD30 = 1;
         cs10 = kYuvTevColor0;
         GXSetTevColorS10(GX_TEVREG0, cs10);
-        GXSetTevKColor(lbl_803DCD74, kYuvKColor0);
-        GXSetTevKColor(lbl_803DCD74 + 1, kYuvKColor1);
-        GXSetTevKColor(lbl_803DCD74 + 2, kYuvKColor2);
+        GXSetTevKColor(gRcpNextKColor, kYuvKColor0);
+        GXSetTevKColor(gRcpNextKColor + 1, kYuvKColor1);
+        GXSetTevKColor(gRcpNextKColor + 2, kYuvKColor2);
         GXInitTexObj((GXTexObj*)buf5c, tex0, w, h, GX_TF_I8, GX_CLAMP, GX_CLAMP, 0);
         GXInitTexObjLOD((GXTexObj*)buf5c, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
-        GXLoadTexObj((GXTexObj*)buf5c, lbl_803DCD8C);
+        GXLoadTexObj((GXTexObj*)buf5c, gRcpNextTexMap);
         GXInitTexObj((GXTexObj*)buf3c, tex1, w2 = w >> 1, h2 = h >> 1, GX_TF_I8, GX_CLAMP, GX_CLAMP, 0);
         GXInitTexObjLOD((GXTexObj*)buf3c, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
-        GXLoadTexObj((GXTexObj*)buf3c, lbl_803DCD8C + 1);
+        GXLoadTexObj((GXTexObj*)buf3c, gRcpNextTexMap + 1);
         GXInitTexObj((GXTexObj*)buf1c, tex2, w2, h2, GX_TF_I8, GX_CLAMP, GX_CLAMP, 0);
         GXInitTexObjLOD((GXTexObj*)buf1c, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
-        GXLoadTexObj((GXTexObj*)buf1c, lbl_803DCD8C + 2);
-        lbl_803DCD90 = lbl_803DCD90 + 5;
-        lbl_803DCD88 = lbl_803DCD88 + 2;
-        lbl_803DCD8C = lbl_803DCD8C + 3;
-        lbl_803DCD74 = lbl_803DCD74 + 3;
-        lbl_803DCD70 = lbl_803DCD70 + 3;
-        lbl_803DCD6C = lbl_803DCD6C + 3;
-        lbl_803DCD6A += 5;
-        lbl_803DCD69 += 2;
+        GXLoadTexObj((GXTexObj*)buf1c, gRcpNextTexMap + 2);
+        gRcpNextTevStage = gRcpNextTevStage + 5;
+        gRcpNextTexCoord = gRcpNextTexCoord + 2;
+        gRcpNextTexMap = gRcpNextTexMap + 3;
+        gRcpNextKColor = gRcpNextKColor + 3;
+        gRcpNextKColorSel = gRcpNextKColorSel + 3;
+        gRcpNextKAlphaSel = gRcpNextKAlphaSel + 3;
+        gRcpNumTevStages += 5;
+        gRcpNumTexGens += 2;
     }
 }
 void setupCausticBaseTevStages(void* viewMtx)
@@ -616,14 +616,14 @@ void setupCausticBaseTevStages(void* viewMtx)
     GXSetTevSwapMode(GX_TEVSTAGE2, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    lbl_803DCD90 = 3;
-    lbl_803DCD88 = 4;
-    lbl_803DCD8C = 4;
-    lbl_803DCD7C = 1;
-    lbl_803DCD84 = 0x27;
-    lbl_803DCD6A = 3;
-    lbl_803DCD69 = 4;
-    lbl_803DCD68 = 1;
+    gRcpNextTevStage = 3;
+    gRcpNextTexCoord = 4;
+    gRcpNextTexMap = 4;
+    gRcpNextIndTexStage = 1;
+    gRcpNextTexMtx = 0x27;
+    gRcpNumTevStages = 3;
+    gRcpNumTexGens = 4;
+    gRcpNumIndStages = 1;
 }
 void addShadowFalloffTevStages(void)
 {
@@ -639,25 +639,25 @@ void addShadowFalloffTevStages(void)
 
     obj1 = (u8*)getNewShadowFalloffTexture();
     C_MTXLightOrtho(mtx1, 25.0f, -25.0f, -25.0f, 25.0f, 0.5f, 0.5f, 0.5f, 0.5f);
-    GXLoadTexMtxImm(mtx1, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
+    GXLoadTexMtxImm(mtx1, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
     GXSetTevSwapModeTable(GX_TEV_SWAP1, GX_CH_RED, GX_CH_RED, GX_CH_RED, GX_CH_GREEN);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP1, GX_TEV_SWAP1);
-    if (lbl_803DCD90 == 0)
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP1, GX_TEV_SWAP1);
+    if (gRcpNextTevStage == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
     }
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
     lbl_803DCD30 = 1;
-    id = lbl_803DCD8C;
+    id = gRcpNextTexMap;
     if (obj1 != NULL)
     {
         void* obj = obj1 + 0x20;
@@ -670,10 +670,10 @@ void addShadowFalloffTevStages(void)
             GXLoadTexObj((GXTexObj*)obj, id);
         }
     }
-    lbl_803DCD80 = lbl_803DCD80 + 3;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
     player = Obj_GetPlayerObject();
     if (player != NULL)
     {
@@ -699,19 +699,19 @@ void addShadowFalloffTevStages(void)
     mtx2[2][1] = 0.0f;
     mtx2[2][2] = 0.0f;
     mtx2[2][3] = 0.0f;
-    GXLoadTexMtxImm(mtx2, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP1, GX_TEV_SWAP1);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
-    GXSetTevKAlphaSel(lbl_803DCD90, GX_TEV_KASEL_1);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_A1, GX_CA_TEXA, GX_CA_KONST);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXLoadTexMtxImm(mtx2, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP1, GX_TEV_SWAP1);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
+    GXSetTevKAlphaSel(gRcpNextTevStage, GX_TEV_KASEL_1);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_A1, GX_CA_TEXA, GX_CA_KONST);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
     obj2 = (u8*)getNewShadowInverseRampTexture();
-    id = lbl_803DCD8C;
+    id = gRcpNextTexMap;
     if (obj2 != NULL)
     {
         void* obj = obj2 + 0x20;
@@ -724,13 +724,13 @@ void addShadowFalloffTevStages(void)
             GXLoadTexObj((GXTexObj*)obj, id);
         }
     }
-    lbl_803DCD80 = lbl_803DCD80 + 3;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
     lbl_803DCD6B = 1;
-    lbl_803DCD6A += 2;
-    lbl_803DCD69 += 2;
+    gRcpNumTevStages += 2;
+    gRcpNumTexGens += 2;
 }
 
 void gxTextureFn_8004d5b4(void* p1)
@@ -740,21 +740,21 @@ void gxTextureFn_8004d5b4(void* p1)
     buf[2] = b;
     buf[1] = b;
     buf[0] = b;
-    GXSetTevKColor(lbl_803DCD74, *(GXColor*)buf);
-    GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_CPREV, GX_CC_C0, GX_CC_KONST, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevKColor(gRcpNextKColor, *(GXColor*)buf);
+    GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_CPREV, GX_CC_C0, GX_CC_KONST, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD74 = lbl_803DCD74 + 1;
-    lbl_803DCD70 = lbl_803DCD70 + 1;
-    lbl_803DCD6C = lbl_803DCD6C + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextKColor = gRcpNextKColor + 1;
+    gRcpNextKColorSel = gRcpNextKColorSel + 1;
+    gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 
@@ -769,19 +769,19 @@ void addWavyCausticTevStage(void)
     v = 0.5f * getNewShadowDistortionWaveOffset();
     indmtx.m[0][0] = v;
     indmtx.m[1][2] = v;
-    if (lbl_803DCD88 > 0)
+    if (gRcpNextTexCoord > 0)
     {
-        GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 - 1, lbl_803DCD8C + 1);
+        GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord - 1, gRcpNextTexMap + 1);
     }
     else
     {
-        GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88, lbl_803DCD8C + 1);
+        GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord, gRcpNextTexMap + 1);
     }
-    GXSetIndTexCoordScale(lbl_803DCD7C, 0, 0);
+    GXSetIndTexCoordScale(gRcpNextIndTexStage, 0, 0);
     GXSetIndTexMtx(GX_ITM_1, indmtx.m, -3);
-    GXSetTevIndirect(lbl_803DCD90, lbl_803DCD7C, 0, 3, 2, 0, 0, 0, 0, 0);
+    GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 3, 2, 0, 0, 0, 0, 0);
     getNewShadowCausticTexture((u32*)&tex);
-    id = lbl_803DCD8C + 1;
+    id = gRcpNextTexMap + 1;
     if (tex != NULL)
     {
         void* obj = (char*)tex + 0x20;
@@ -794,23 +794,23 @@ void addWavyCausticTevStage(void)
             GXLoadTexObj((GXTexObj*)obj, id);
         }
     }
-    GXLoadTexMtxImm(lbl_80396820, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    selectReflectionTexture(lbl_803DCD8C);
-    lbl_803DCD7C = lbl_803DCD7C + 1;
-    lbl_803DCD80 = lbl_803DCD80 + 3;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 2;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
-    lbl_803DCD68++;
+    GXLoadTexMtxImm(lbl_80396820, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    selectReflectionTexture(gRcpNextTexMap);
+    gRcpNextIndTexStage = gRcpNextIndTexStage + 1;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 2;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
+    gRcpNumIndStages++;
 }
 
 
@@ -819,23 +819,23 @@ void addWavyCausticTevStage(void)
 
 void addSmallReflectionTevStage(void)
 {
-    loadNewShadowSmallReflectionTexture(lbl_803DCD8C);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevKColorSel(lbl_803DCD90, GX_TEV_KCSEL_1_4);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_CPREV);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    loadNewShadowSmallReflectionTexture(gRcpNextTexMap);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevKColorSel(gRcpNextTevStage, GX_TEV_KCSEL_1_4);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_CPREV);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD88++;
-    lbl_803DCD90++;
-    lbl_803DCD8C++;
-    lbl_803DCD84 = 0x27;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextTexCoord++;
+    gRcpNextTevStage++;
+    gRcpNextTexMap++;
+    gRcpNextTexMtx = 0x27;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 void setupHeatShimmerTevStages(char* p1)
@@ -960,9 +960,9 @@ void setupHeatShimmerTevStages(char* p1)
     gHeatEffectColor.r = 64.0f * f31v;
     gHeatEffectColor.g = 0;
     gHeatEffectColor.b = 0;
-    GXSetTevKColor(lbl_803DCD74, gHeatEffectColor);
-    GXSetTevKAlphaSel(GX_TEVSTAGE0, lbl_803DCD6C);
-    GXSetTevKColorSel(GX_TEVSTAGE1, lbl_803DCD70);
+    GXSetTevKColor(gRcpNextKColor, gHeatEffectColor);
+    GXSetTevKAlphaSel(GX_TEVSTAGE0, gRcpNextKAlphaSel);
+    GXSetTevKColorSel(GX_TEVSTAGE1, gRcpNextKColorSel);
     GXSetTevDirect(GX_TEVSTAGE0);
     GXSetTevSwapModeTable(GX_TEV_SWAP3, GX_CH_RED, GX_CH_GREEN, GX_CH_BLUE, GX_CH_RED);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP2, GX_COLOR0A0);
@@ -984,17 +984,17 @@ void setupHeatShimmerTevStages(char* p1)
     GXSetTevSwapMode(GX_TEVSTAGE2, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    lbl_803DCD88 = 4;
-    lbl_803DCD90 = 3;
-    lbl_803DCD8C = 3;
-    lbl_803DCD80 = 0x49;
-    lbl_803DCD7C = 2;
-    lbl_803DCD6A = 3;
-    lbl_803DCD69 = 4;
-    lbl_803DCD68 = 2;
-    lbl_803DCD74 = 1;
-    lbl_803DCD70 = 0xd;
-    lbl_803DCD6C = 0x1d;
+    gRcpNextTexCoord = 4;
+    gRcpNextTevStage = 3;
+    gRcpNextTexMap = 3;
+    gRcpNextPostTexMtx = 0x49;
+    gRcpNextIndTexStage = 2;
+    gRcpNumTevStages = 3;
+    gRcpNumTexGens = 4;
+    gRcpNumIndStages = 2;
+    gRcpNextKColor = 1;
+    gRcpNextKColorSel = 0xd;
+    gRcpNextKAlphaSel = 0x1d;
 }
 
 
@@ -1066,13 +1066,13 @@ void addWarpedRingTevStages(void)
     m1b8[2][1] = 0.0f;
     m1b8[2][2] = 0.0f;
     m1b8[2][3] = 1.0f;
-    GXLoadTexMtxImm(m1e8, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-    GXLoadTexMtxImm(m1b8, lbl_803DCD80 + 3, 0);
-    GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 3);
+    GXLoadTexMtxImm(m1e8, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXLoadTexMtxImm(m1b8, gRcpNextPostTexMtx + 3, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 3);
     getNewShadowRingTexture(&tex1c);
     {
-        int id = lbl_803DCD8C;
+        int id = gRcpNextTexMap;
         if (tex1c != 0)
         {
             GXTexObj* obj = textureGetGXTexObj(tex1c);
@@ -1088,7 +1088,7 @@ void addWarpedRingTevStages(void)
     }
     newshadows_getReflectionScrollOffsets(&rx, &ry);
     GXSetIndTexMtx(GX_ITM_1, im.v, -1);
-    GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 + 2, lbl_803DCD8C + 1);
+    GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + 2, gRcpNextTexMap + 1);
     m188[0][0] = 0.01f;
     m188[0][1] = 0.0f;
     m188[0][2] = 0.0f;
@@ -1109,11 +1109,11 @@ void addWarpedRingTevStages(void)
     m188[2][1] = 0.0f;
     m188[2][2] = 0.0f;
     m188[2][3] = 1.0f;
-    GXLoadTexMtxImm(m188, lbl_803DCD80 + 6, 0);
-    GXSetTexCoordGen2(lbl_803DCD88 + 2, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 6);
-    GXSetTevIndirect(lbl_803DCD90, lbl_803DCD7C, 0, 2, 2, 0, 0, 0, 0, 0);
-    GXSetIndTexCoordScale(lbl_803DCD7C, 0, 0);
-    GXSetIndTexOrder(lbl_803DCD7C + 1, lbl_803DCD88 + 3, lbl_803DCD8C + 1);
+    GXLoadTexMtxImm(m188, gRcpNextPostTexMtx + 6, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord + 2, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 6);
+    GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 2, 2, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(gRcpNextIndTexStage, 0, 0);
+    GXSetIndTexOrder(gRcpNextIndTexStage + 1, gRcpNextTexCoord + 3, gRcpNextTexMap + 1);
     m158[0][0] = 0.01f;
     m158[0][1] = 0.0f;
     m158[0][2] = 0.0f;
@@ -1132,26 +1132,26 @@ void addWarpedRingTevStages(void)
     m158[2][1] = 0.0f;
     m158[2][2] = 0.0f;
     m158[2][3] = 1.0f;
-    GXLoadTexMtxImm(m158, lbl_803DCD80 + 9, 0);
-    GXSetTexCoordGen2(lbl_803DCD88 + 3, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 9);
-    GXSetTevIndirect(lbl_803DCD90 + 1, lbl_803DCD7C + 1, 0, 2, 2, 0, 0, 1, 0, 0);
-    GXSetIndTexCoordScale(lbl_803DCD7C + 1, 0, 0);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXA, GX_CC_CPREV);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXLoadTexMtxImm(m158, gRcpNextPostTexMtx + 9, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord + 3, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 9);
+    GXSetTevIndirect(gRcpNextTevStage + 1, gRcpNextIndTexStage + 1, 0, 2, 2, 0, 0, 1, 0, 0);
+    GXSetIndTexCoordScale(gRcpNextIndTexStage + 1, 0, 0);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXA, GX_CC_CPREV);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, lbl_803DCD8C, GX_COLOR0A0);
-    GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXA, GX_CC_CPREV);
-    GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, gRcpNextTexMap, GX_COLOR0A0);
+    GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXA, GX_CC_CPREV);
+    GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     getNewShadowCausticTexture((u32*)&tex18);
     {
-        int id2 = lbl_803DCD8C + 1;
+        int id2 = gRcpNextTexMap + 1;
         if (tex18 != 0)
         {
             void* obj = textureGetGXTexObj(tex18);
@@ -1165,14 +1165,14 @@ void addWarpedRingTevStages(void)
             }
         }
     }
-    lbl_803DCD88 = lbl_803DCD88 + 4;
-    lbl_803DCD90 = lbl_803DCD90 + 2;
-    lbl_803DCD8C = lbl_803DCD8C + 2;
-    lbl_803DCD80 = lbl_803DCD80 + 0xc;
-    lbl_803DCD7C = lbl_803DCD7C + 2;
-    lbl_803DCD6A += 2;
-    lbl_803DCD69 += 4;
-    lbl_803DCD68 += 2;
+    gRcpNextTexCoord = gRcpNextTexCoord + 4;
+    gRcpNextTevStage = gRcpNextTevStage + 2;
+    gRcpNextTexMap = gRcpNextTexMap + 2;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 0xc;
+    gRcpNextIndTexStage = gRcpNextIndTexStage + 2;
+    gRcpNumTevStages += 2;
+    gRcpNumTexGens += 4;
+    gRcpNumIndStages += 2;
 }
 
 
@@ -1204,12 +1204,12 @@ void renderHeavyFog(void* fogColor)
     mcc[2][1] = 0.0f;
     mcc[2][2] = 0.0f;
     mcc[2][3] = 1.0f;
-    GXLoadTexMtxImm(mcc, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTevKColor(lbl_803DCD74, *(GXColor*)fogColor);
+    GXLoadTexMtxImm(mcc, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTevKColor(gRcpNextKColor, *(GXColor*)fogColor);
     getNewShadowHeavyFogTexture(&tex20);
     {
-        int id = lbl_803DCD8C;
+        int id = gRcpNextTexMap;
         if (tex20 != 0)
         {
             GXTexObj* obj = textureGetGXTexObj(tex20);
@@ -1229,7 +1229,7 @@ void renderHeavyFog(void* fogColor)
         b *= 0.25f;
         a *= 0.125f;
         GXSetIndTexMtx(GX_ITM_1, im.v, -2);
-        GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 + 1, lbl_803DCD8C + 1);
+        GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + 1, gRcpNextTexMap + 1);
         m9c[0][0] = lbl_803DCD34;
         m9c[0][1] = 0.0f;
         m9c[0][2] = 0.0f;
@@ -1245,11 +1245,11 @@ void renderHeavyFog(void* fogColor)
         PSMTXRotRad(mrot, 0x7a, 1.1693705f);
         PSMTXConcat(mrot, m9c, m9c);
         PSMTXConcat(m9c, iv, m9c);
-        GXLoadTexMtxImm(m9c, lbl_803DCD80 + 3, 0);
-        GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 3);
-        GXSetTevIndirect(lbl_803DCD90, lbl_803DCD7C, 0, 2, 2, 6, 6, 0, 0, 0);
-        GXSetIndTexCoordScale(lbl_803DCD7C, 0, 0);
-        GXSetIndTexOrder(lbl_803DCD7C + 1, lbl_803DCD88 + 2, lbl_803DCD8C + 1);
+        GXLoadTexMtxImm(m9c, gRcpNextPostTexMtx + 3, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 3);
+        GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 2, 2, 6, 6, 0, 0, 0);
+        GXSetIndTexCoordScale(gRcpNextIndTexStage, 0, 0);
+        GXSetIndTexOrder(gRcpNextIndTexStage + 1, gRcpNextTexCoord + 2, gRcpNextTexMap + 1);
         m6c[0][0] = 0.0f;
         m6c[0][1] = 0.0f;
         m6c[0][2] = lbl_803DCD34;
@@ -1265,26 +1265,26 @@ void renderHeavyFog(void* fogColor)
         PSMTXRotRad(mrot, 0x78, 0.38397244f);
         PSMTXConcat(mrot, m6c, m6c);
         PSMTXConcat(m6c, iv, m6c);
-        GXLoadTexMtxImm(m6c, lbl_803DCD80 + 6, 0);
-        GXSetTexCoordGen2(lbl_803DCD88 + 2, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 6);
-        GXSetTevIndirect(lbl_803DCD90 + 1, lbl_803DCD7C + 1, 0, 2, 2, 0, 0, 1, 0, 0);
-        GXSetIndTexCoordScale(lbl_803DCD7C + 1, 0, 0);
-        GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXLoadTexMtxImm(m6c, gRcpNextPostTexMtx + 6, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord + 2, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 6);
+        GXSetTevIndirect(gRcpNextTevStage + 1, gRcpNextIndTexStage + 1, 0, 2, 2, 0, 0, 1, 0, 0);
+        GXSetIndTexCoordScale(gRcpNextIndTexStage + 1, 0, 0);
+        GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         lbl_803DCD30 = 1;
-        GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_CPREV, GX_CC_KONST, GX_CC_TEXA, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_CPREV, GX_CC_KONST, GX_CC_TEXA, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         getNewShadowCausticTexture((u32*)&tex1c);
         {
-            int id2 = lbl_803DCD8C + 1;
+            int id2 = gRcpNextTexMap + 1;
             if (tex1c != 0)
             {
                 void* obj = textureGetGXTexObj(tex1c);
@@ -1298,108 +1298,108 @@ void renderHeavyFog(void* fogColor)
                 }
             }
         }
-        GXSetTevKColorSel(lbl_803DCD90 + 1, lbl_803DCD70);
-        lbl_803DCD88 = lbl_803DCD88 + 3;
-        lbl_803DCD90 = lbl_803DCD90 + 2;
-        lbl_803DCD8C = lbl_803DCD8C + 2;
-        lbl_803DCD80 = lbl_803DCD80 + 9;
-        lbl_803DCD7C = lbl_803DCD7C + 2;
-        lbl_803DCD6A += 2;
-        lbl_803DCD69 += 3;
-        lbl_803DCD68 += 2;
+        GXSetTevKColorSel(gRcpNextTevStage + 1, gRcpNextKColorSel);
+        gRcpNextTexCoord = gRcpNextTexCoord + 3;
+        gRcpNextTevStage = gRcpNextTevStage + 2;
+        gRcpNextTexMap = gRcpNextTexMap + 2;
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 9;
+        gRcpNextIndTexStage = gRcpNextIndTexStage + 2;
+        gRcpNumTevStages += 2;
+        gRcpNumTexGens += 3;
+        gRcpNumIndStages += 2;
     }
     else
     {
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_CPREV, GX_CC_KONST, GX_CC_TEXA, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_CPREV, GX_CC_KONST, GX_CC_TEXA, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         lbl_803DCD30 = 1;
-        GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
-        lbl_803DCD88 = lbl_803DCD88 + 1;
-        lbl_803DCD90 = lbl_803DCD90 + 1;
-        lbl_803DCD8C = lbl_803DCD8C + 1;
-        lbl_803DCD80 = lbl_803DCD80 + 3;
-        lbl_803DCD6A += 1;
-        lbl_803DCD69 += 1;
+        GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
+        gRcpNextTexCoord = gRcpNextTexCoord + 1;
+        gRcpNextTevStage = gRcpNextTevStage + 1;
+        gRcpNextTexMap = gRcpNextTexMap + 1;
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+        gRcpNumTevStages += 1;
+        gRcpNumTexGens += 1;
     }
-    lbl_803DCD74 = lbl_803DCD74 + 1;
-    lbl_803DCD70 = lbl_803DCD70 + 1;
-    lbl_803DCD6C = lbl_803DCD6C + 1;
+    gRcpNextKColor = gRcpNextKColor + 1;
+    gRcpNextKColorSel = gRcpNextKColorSel + 1;
+    gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
 }
 void addVertexAlphaDimStage(u8* color)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_CPREV, GX_CC_ZERO, GX_CC_RASA, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_CPREV, GX_CC_ZERO, GX_CC_RASA, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 
 void addLightColorModulateStage(int* param)
 {
     GXSetTevColor(GX_TEVREG1, *(GXColor*)param);
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 void addAccumulatedLightBlendStages(void)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevDirect(lbl_803DCD90 + 1);
-    GXSetTevOrder(lbl_803DCD90 + 1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_C1, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
-    GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevDirect(lbl_803DCD90 + 2);
-    GXSetTevOrder(lbl_803DCD90 + 2, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevColorIn(lbl_803DCD90 + 2, GX_CC_CPREV, GX_CC_C2, GX_CC_RASA, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90 + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage + 1);
+    GXSetTevOrder(gRcpNextTevStage + 1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_C1, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
+    GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage + 2);
+    GXSetTevOrder(gRcpNextTevStage + 2, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevColorIn(gRcpNextTevStage + 2, GX_CC_CPREV, GX_CC_C2, GX_CC_RASA, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 3;
-    lbl_803DCD6A += 3;
+    gRcpNextTevStage = gRcpNextTevStage + 3;
+    gRcpNumTevStages += 3;
 }
 
 void addAccumulatedLightModulateStage(void)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 int lbl_8030CEE0[9] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8,
@@ -1414,7 +1414,7 @@ void addPointLightAccumStages(f32 scale, int* colorIn, f32* pos)
     Texture* src;
     int id;
     f32 f;
-    if (!(lbl_803DCD74 <= 3) || lbl_803DCD6A >= 0xc || lbl_803DCD69 >= 7)
+    if (!(gRcpNextKColor <= 3) || gRcpNumTevStages >= 0xc || gRcpNumTexGens >= 7)
     {
         return;
     }
@@ -1445,27 +1445,27 @@ void addPointLightAccumStages(f32 scale, int* colorIn, f32* pos)
         matB[2][2] = 0.0f;
         matB[2][3] = 1.0f;
         getNewShadowRadialTexture(&src);
-        GXLoadTexMtxImm(matA, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-        GXLoadTexMtxImm(matB, lbl_803DCD80 + 3, 0);
-        GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 3);
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevKColor(lbl_803DCD74, *(GXColor*)colorIn);
-        GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevDirect(lbl_803DCD90 + 1);
-        GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_C1);
-        GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-        GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        id = lbl_803DCD8C;
+        GXLoadTexMtxImm(matA, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+        GXLoadTexMtxImm(matB, gRcpNextPostTexMtx + 3, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 3);
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevKColor(gRcpNextKColor, *(GXColor*)colorIn);
+        GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevDirect(gRcpNextTevStage + 1);
+        GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_C1);
+        GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+        GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        id = gRcpNextTexMap;
         if (src != NULL)
         {
             GXTexObj* obj = textureGetGXTexObj(src);
@@ -1478,15 +1478,15 @@ void addPointLightAccumStages(f32 scale, int* colorIn, f32* pos)
                 GXLoadTexObj(obj, id);
             }
         }
-        lbl_803DCD90 = lbl_803DCD90 + 2;
-        lbl_803DCD88 = lbl_803DCD88 + 2;
-        lbl_803DCD8C = lbl_803DCD8C + 1;
-        lbl_803DCD74 = lbl_803DCD74 + 1;
-        lbl_803DCD70 = lbl_803DCD70 + 1;
-        lbl_803DCD6C = lbl_803DCD6C + 1;
-        lbl_803DCD80 = lbl_803DCD80 + 6;
-        lbl_803DCD69 += 2;
-        lbl_803DCD6A += 2;
+        gRcpNextTevStage = gRcpNextTevStage + 2;
+        gRcpNextTexCoord = gRcpNextTexCoord + 2;
+        gRcpNextTexMap = gRcpNextTexMap + 1;
+        gRcpNextKColor = gRcpNextKColor + 1;
+        gRcpNextKColorSel = gRcpNextKColorSel + 1;
+        gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 6;
+        gRcpNumTexGens += 2;
+        gRcpNumTevStages += 2;
     }
 }
 
@@ -1497,7 +1497,7 @@ void addFirstPointLightStages(f32 scale, int* colorIn, f32* pos, u8* chanColor)
     Texture* src;
     int id;
     f32 f;
-    if (!(lbl_803DCD74 <= 3) || lbl_803DCD6A >= 0xc || lbl_803DCD69 >= 7)
+    if (!(gRcpNextKColor <= 3) || gRcpNumTevStages >= 0xc || gRcpNumTexGens >= 7)
     {
         return;
     }
@@ -1528,27 +1528,27 @@ void addFirstPointLightStages(f32 scale, int* colorIn, f32* pos, u8* chanColor)
         matB[2][2] = 0.0f;
         matB[2][3] = 1.0f;
         getNewShadowRadialTexture(&src);
-        GXLoadTexMtxImm(matA, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-        GXLoadTexMtxImm(matB, lbl_803DCD80 + 3, 0);
-        GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 3);
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevKColor(lbl_803DCD74, *(GXColor*)colorIn);
-        GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevDirect(lbl_803DCD90 + 1);
-        GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-        GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        id = lbl_803DCD8C;
+        GXLoadTexMtxImm(matA, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+        GXLoadTexMtxImm(matB, gRcpNextPostTexMtx + 3, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 3);
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevKColor(gRcpNextKColor, *(GXColor*)colorIn);
+        GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevDirect(gRcpNextTevStage + 1);
+        GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+        GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        id = gRcpNextTexMap;
         if (src != NULL)
         {
             GXTexObj* obj = textureGetGXTexObj(src);
@@ -1561,15 +1561,15 @@ void addFirstPointLightStages(f32 scale, int* colorIn, f32* pos, u8* chanColor)
                 GXLoadTexObj(obj, id);
             }
         }
-        lbl_803DCD90 = lbl_803DCD90 + 2;
-        lbl_803DCD88 = lbl_803DCD88 + 2;
-        lbl_803DCD8C = lbl_803DCD8C + 1;
-        lbl_803DCD74 = lbl_803DCD74 + 1;
-        lbl_803DCD70 = lbl_803DCD70 + 1;
-        lbl_803DCD6C = lbl_803DCD6C + 1;
-        lbl_803DCD80 = lbl_803DCD80 + 6;
-        lbl_803DCD69 += 2;
-        lbl_803DCD6A += 2;
+        gRcpNextTevStage = gRcpNextTevStage + 2;
+        gRcpNextTexCoord = gRcpNextTexCoord + 2;
+        gRcpNextTexMap = gRcpNextTexMap + 1;
+        gRcpNextKColor = gRcpNextKColor + 1;
+        gRcpNextKColorSel = gRcpNextKColorSel + 1;
+        gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 6;
+        gRcpNumTexGens += 2;
+        gRcpNumTevStages += 2;
     }
 }
 
@@ -1581,7 +1581,7 @@ void addPointLightDirectStages(f32 scale, int* colorIn, f32* pos)
     Texture* src;
     int id;
     f32 f;
-    if (!(lbl_803DCD74 <= 3) || lbl_803DCD6A >= 0x10 || lbl_803DCD69 >= 7)
+    if (!(gRcpNextKColor <= 3) || gRcpNumTevStages >= 0x10 || gRcpNumTexGens >= 7)
     {
         return;
     }
@@ -1616,28 +1616,28 @@ void addPointLightDirectStages(f32 scale, int* colorIn, f32* pos)
         matB[2][2] = 0.0f;
         matB[2][3] = 1.0f;
         getNewShadowRadialTexture(&src);
-        GXLoadTexMtxImm(matA, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-        GXLoadTexMtxImm(matB, lbl_803DCD80 + 3, 0);
-        GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 3);
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevKColor(lbl_803DCD74, *(GXColor*)colorIn);
-        GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevDirect(lbl_803DCD90 + 1);
-        GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_CPREV);
-        GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-        GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXLoadTexMtxImm(matA, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+        GXLoadTexMtxImm(matB, gRcpNextPostTexMtx + 3, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx + 3);
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevKColor(gRcpNextKColor, *(GXColor*)colorIn);
+        GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevDirect(gRcpNextTevStage + 1);
+        GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_ZERO, GX_CC_C0, GX_CC_TEXC, GX_CC_CPREV);
+        GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         lbl_803DCD30 = 1;
-        id = lbl_803DCD8C;
+        id = gRcpNextTexMap;
         if (src != NULL)
         {
             GXTexObj* obj = textureGetGXTexObj(src);
@@ -1650,33 +1650,33 @@ void addPointLightDirectStages(f32 scale, int* colorIn, f32* pos)
                 GXLoadTexObj(obj, id);
             }
         }
-        lbl_803DCD90 = lbl_803DCD90 + 2;
-        lbl_803DCD88 = lbl_803DCD88 + 2;
-        lbl_803DCD8C = lbl_803DCD8C + 1;
-        lbl_803DCD74 = lbl_803DCD74 + 1;
-        lbl_803DCD70 = lbl_803DCD70 + 1;
-        lbl_803DCD6C = lbl_803DCD6C + 1;
-        lbl_803DCD80 = lbl_803DCD80 + 6;
-        lbl_803DCD69 += 2;
-        lbl_803DCD6A += 2;
+        gRcpNextTevStage = gRcpNextTevStage + 2;
+        gRcpNextTexCoord = gRcpNextTexCoord + 2;
+        gRcpNextTexMap = gRcpNextTexMap + 1;
+        gRcpNextKColor = gRcpNextKColor + 1;
+        gRcpNextKColorSel = gRcpNextKColorSel + 1;
+        gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 6;
+        gRcpNumTexGens += 2;
+        gRcpNumTevStages += 2;
     }
 }
 
 void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXLoadTexMtxImm(texMtx, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevKColorSel(lbl_803DCD90, GX_TEV_KCSEL_1_2);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_KONST, GX_CC_TEXA, GX_CC_CPREV, GX_CC_CPREV);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ADDHALF, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXLoadTexMtxImm(texMtx, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevKColorSel(gRcpNextTevStage, GX_TEV_KCSEL_1_2);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_KONST, GX_CC_TEXA, GX_CC_CPREV, GX_CC_CPREV);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ADDHALF, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
     {
-        int id = lbl_803DCD8C;
+        int id = gRcpNextTexMap;
         if (texSrc != NULL)
         {
             void* obj = texSrc + 0x20;
@@ -1690,29 +1690,29 @@ void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
             }
         }
     }
-    lbl_803DCD88++;
-    lbl_803DCD90++;
-    lbl_803DCD8C++;
-    lbl_803DCD80 += 3;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextTexCoord++;
+    gRcpNextTevStage++;
+    gRcpNextTexMap++;
+    gRcpNextPostTexMtx += 3;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 void textureFn_8004ff20(void* p1, f32* wpad0, void* wpad1, int wpad2)
 {
     if (p1 != 0)
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASC, GX_CC_RASA, GX_CC_TEXC);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASC, GX_CC_RASA, GX_CC_TEXC);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         lbl_803DCD30 = 1;
         {
-            int id = lbl_803DCD8C;
+            int id = gRcpNextTexMap;
             if (p1 != 0)
             {
                 char* tex = (char*)p1 + 0x20;
@@ -1726,20 +1726,20 @@ void textureFn_8004ff20(void* p1, f32* wpad0, void* wpad1, int wpad2)
                 }
             }
         }
-        lbl_803DCD88 = lbl_803DCD88 + 1;
-        lbl_803DCD90 = lbl_803DCD90 + 1;
-        lbl_803DCD8C = lbl_803DCD8C + 1;
-        lbl_803DCD69 += 1;
-        lbl_803DCD6A += 1;
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR1A1);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASC, GX_CC_RASA, GX_CC_CPREV);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        lbl_803DCD90 = lbl_803DCD90 + 1;
-        lbl_803DCD6A += 1;
+        gRcpNextTexCoord = gRcpNextTexCoord + 1;
+        gRcpNextTevStage = gRcpNextTevStage + 1;
+        gRcpNextTexMap = gRcpNextTexMap + 1;
+        gRcpNumTexGens += 1;
+        gRcpNumTevStages += 1;
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR1A1);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASC, GX_CC_RASA, GX_CC_CPREV);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        gRcpNextTevStage = gRcpNextTevStage + 1;
+        gRcpNumTevStages += 1;
     }
 }
 
@@ -1749,43 +1749,43 @@ void addCastShadowTevStages(u8* objInst)
     f32 mtx[3][4];
     u8* obj2;
     int id;
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevDirect(lbl_803DCD90 + 1);
-    GXSetTevDirect(lbl_803DCD90 + 2);
-    GXSetTevDirect(lbl_803DCD90 + 3);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevDirect(gRcpNextTevStage + 1);
+    GXSetTevDirect(gRcpNextTevStage + 2);
+    GXSetTevDirect(gRcpNextTevStage + 3);
     PSMTXConcat((f32(*)[4])(objInst + 0x30), (f32(*)[4])Camera_GetInverseViewMatrix(), mtx);
-    GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
+    GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
     PSMTXConcat((f32(*)[4])objInst, (f32(*)[4])Camera_GetInverseViewMatrix(), mtx);
-    GXLoadTexMtxImm(mtx, lbl_803DCD80 + 3, 0);
-    GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX3x4, GX_TG_POS, GX_IDENTITY, GX_FALSE, lbl_803DCD80 + 3);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, lbl_803DCD8C + 1, GX_COLOR_NULL);
-    GXSetTevOrder(lbl_803DCD90 + 2, lbl_803DCD88 + 1, lbl_803DCD8C + 1, GX_COLOR_NULL);
-    GXSetTevOrder(lbl_803DCD90 + 3, lbl_803DCD88 + 1, lbl_803DCD8C + 1, GX_COLOR_NULL);
-    GXSetTevKColorSel(lbl_803DCD90 + 2, GX_TEV_KCSEL_1_4);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_C0, GX_CC_TEXC, GX_CC_ONE, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_COMP_R8_GT, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
-    GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevColorIn(lbl_803DCD90 + 2, GX_CC_C1, GX_CC_KONST, GX_CC_C0, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90 + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-    GXSetTevAlphaOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevColorIn(lbl_803DCD90 + 3, GX_CC_C2, GX_CC_ZERO, GX_CC_C0, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 3, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevSwapMode(lbl_803DCD90 + 3, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorOp(lbl_803DCD90 + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
-    GXSetTevAlphaOp(lbl_803DCD90 + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx + 3, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX3x4, GX_TG_POS, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx + 3);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, gRcpNextTexMap + 1, GX_COLOR_NULL);
+    GXSetTevOrder(gRcpNextTevStage + 2, gRcpNextTexCoord + 1, gRcpNextTexMap + 1, GX_COLOR_NULL);
+    GXSetTevOrder(gRcpNextTevStage + 3, gRcpNextTexCoord + 1, gRcpNextTexMap + 1, GX_COLOR_NULL);
+    GXSetTevKColorSel(gRcpNextTevStage + 2, GX_TEV_KCSEL_1_4);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_C0, GX_CC_TEXC, GX_CC_ONE, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_COMP_R8_GT, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
+    GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorIn(gRcpNextTevStage + 2, GX_CC_C1, GX_CC_KONST, GX_CC_C0, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+    GXSetTevAlphaOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorIn(gRcpNextTevStage + 3, GX_CC_C2, GX_CC_ZERO, GX_CC_C0, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 3, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevSwapMode(gRcpNextTevStage + 3, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorOp(gRcpNextTevStage + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+    GXSetTevAlphaOp(gRcpNextTevStage + 3, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     getNewShadowRampTexture((u32*)&src);
-    id = lbl_803DCD8C;
+    id = gRcpNextTexMap;
     if (src != NULL)
     {
         void* obj = src + 0x20;
@@ -1798,7 +1798,7 @@ void addCastShadowTevStages(u8* objInst)
             GXLoadTexObj((GXTexObj*)obj, id);
         }
     }
-    id = lbl_803DCD8C + 1;
+    id = gRcpNextTexMap + 1;
     obj2 = *(u8**)(objInst + 0x60);
     if (obj2 != NULL)
     {
@@ -1812,12 +1812,12 @@ void addCastShadowTevStages(u8* objInst)
             GXLoadTexObj((GXTexObj*)obj, id);
         }
     }
-    lbl_803DCD80 = lbl_803DCD80 + 6;
-    lbl_803DCD88 = lbl_803DCD88 + 2;
-    lbl_803DCD8C = lbl_803DCD8C + 2;
-    lbl_803DCD69 += 2;
-    lbl_803DCD6A += 4;
-    lbl_803DCD90 = lbl_803DCD90 + 4;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 6;
+    gRcpNextTexCoord = gRcpNextTexCoord + 2;
+    gRcpNextTexMap = gRcpNextTexMap + 2;
+    gRcpNumTexGens += 2;
+    gRcpNumTevStages += 4;
+    gRcpNextTevStage = gRcpNextTevStage + 4;
 }
 
 
@@ -1825,18 +1825,18 @@ void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int comp
 {
     int inputSel;
     int texmap;
-    GXSetTevDirect(lbl_803DCD90);
-    GXLoadTexMtxImm(texMtx, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXLoadTexMtxImm(texMtx, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
     if (variant == 0 || variant == 2)
     {
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
     }
     else
     {
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR1A1);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR1A1);
     }
-    if (*(int*)&lbl_803DCD90 == 0)
+    if (*(int*)&gRcpNextTevStage == 0)
     {
         inputSel = GX_CC_ONE;
     }
@@ -1848,70 +1848,70 @@ void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int comp
     {
         if (compMode == 2)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, inputSel, GX_CC_TEXC, GX_CC_ZERO);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, inputSel, GX_CC_TEXC, GX_CC_ZERO);
         }
         else if (compMode == 3)
         {
-            GXSetTevColorIn(lbl_803DCD90, inputSel, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ZERO);
+            GXSetTevColorIn(gRcpNextTevStage, inputSel, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ZERO);
         }
         else if (compMode == 1)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC, inputSel);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC, inputSel);
         }
         else if (variant == 0 || variant == 1)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASC, GX_CC_TEXC, inputSel);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASC, GX_CC_TEXC, inputSel);
         }
         else
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXC, inputSel);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXC, inputSel);
         }
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
         if (compMode == 1)
         {
-            GXSetTevColorOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-            GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+            GXSetTevColorOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+            GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
         }
         else
         {
-            GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-            GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+            GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+            GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
         }
     }
     else if (stageMode == 1)
     {
         if (compMode == 2)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_C2, GX_CC_TEXC, GX_CC_ZERO);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_C2, GX_CC_TEXC, GX_CC_ZERO);
         }
         else if (compMode == 3)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_C2, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ZERO);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_C2, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ZERO);
         }
         else if (compMode == 1)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C2);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C2);
         }
         else if (variant == 0 || variant == 1)
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASC, GX_CC_TEXC, GX_CC_C2);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASC, GX_CC_TEXC, GX_CC_C2);
         }
         else
         {
-            GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXC, GX_CC_C2);
+            GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_RASA, GX_CC_TEXC, GX_CC_C2);
         }
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
         if (compMode == 1)
         {
-            GXSetTevColorOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
-            GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+            GXSetTevColorOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+            GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
         }
         else
         {
-            GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
-            GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+            GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+            GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
         }
     }
     else
@@ -1919,21 +1919,21 @@ void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int comp
         lbl_803DCD6B = 1;
         lbl_803DCD30 = 1;
         GXSetTevSwapModeTable(GX_TEV_SWAP1, GX_CH_RED, GX_CH_RED, GX_CH_RED, GX_CH_GREEN);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP1, GX_TEV_SWAP1);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ONE);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP1, GX_TEV_SWAP1);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ONE);
         if (compMode == 3)
         {
-            GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_RASA, GX_CA_TEXA, GX_CA_KONST);
-            GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+            GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_RASA, GX_CA_TEXA, GX_CA_KONST);
+            GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         }
         else
         {
-            GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_RASA, GX_CA_TEXA, GX_CA_ZERO);
-            GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+            GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_RASA, GX_CA_TEXA, GX_CA_ZERO);
+            GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         }
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     }
-    texmap = lbl_803DCD8C;
+    texmap = gRcpNextTexMap;
     if (texSrc != NULL)
     {
         u8* tex = texSrc + 0x20;
@@ -1946,12 +1946,12 @@ void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int comp
             GXLoadTexObj((GXTexObj*)tex, texmap);
         }
     }
-    lbl_803DCD80 = lbl_803DCD80 + 3;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 
@@ -1963,11 +1963,11 @@ void addEnvMapTexCoord(int scale)
     f32 m[3][4];
     PSMTXScale(m, scale, scale, 0.0f);
     m[2][3] = 1.0f;
-    GXLoadTexMtxImm(m, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-    lbl_803DCD80 += 3;
-    lbl_803DCD88++;
-    lbl_803DCD69++;
+    GXLoadTexMtxImm(m, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+    gRcpNextPostTexMtx += 3;
+    gRcpNextTexCoord++;
+    gRcpNumTexGens++;
 }
 
 int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
@@ -1986,7 +1986,7 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
         return 0;
     }
     GXSetIndTexMtx(GX_ITM_0, indmtx.m, 0);
-    GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 + p2, lbl_803DCD8C);
+    GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + p2, gRcpNextTexMap);
     if (p4 != 0)
     {
         void* texptr;
@@ -1996,7 +1996,7 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
         div = (u32) ((Texture*)texptr)->width / (u32)(*(u16*)((char*)p1 + 0xa) * p2v);
         if (div != 0)
         {
-            GXSetIndTexCoordScale(lbl_803DCD7C, lbl_8030CEE0[div - 1], lbl_8030CEE0[div - 1]);
+            GXSetIndTexCoordScale(gRcpNextIndTexStage, lbl_8030CEE0[div - 1], lbl_8030CEE0[div - 1]);
         }
         else
         {
@@ -2010,17 +2010,17 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
     v = 0.5f * (3.0f * ((f32)(s32)((p3 & 0xf0) >> 4) / 7.0f - 1.0f));
     PSMTXScale(mtx, v, v, 0.0f);
     mtx[2][3] = 1.0f;
-    GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_BINRM, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX2x4, GX_TG_TANGENT, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
-    GXSetTevIndirect(lbl_803DCD90, lbl_803DCD7C, 0, 3, 5, 6, 6, 0, 0, 0);
-    GXSetTevIndirect(lbl_803DCD90 + 1, lbl_803DCD7C, 0, 3, 9, 6, 6, 1, 0, 0);
-    GXSetTevIndirect(lbl_803DCD90 + 2, lbl_803DCD7C, 0, 0, 0, 0, 0, 1, 0, 0);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, (lbl_803DCD8C + 1) | 0x100, GX_COLOR_NULL);
-    GXSetTevOp(lbl_803DCD90, GX_PASSCLR);
-    GXSetTevOrder(lbl_803DCD90 + 1, lbl_803DCD88 + 1, (lbl_803DCD8C + 1) | 0x100, GX_COLOR_NULL);
-    GXSetTevOp(lbl_803DCD90 + 1, GX_PASSCLR);
-    texmap = lbl_803DCD8C;
+    GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_BINRM, GX_TEXMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTexCoordGen2(gRcpNextTexCoord + 1, GX_TG_MTX2x4, GX_TG_TANGENT, GX_TEXMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 3, 5, 6, 6, 0, 0, 0);
+    GXSetTevIndirect(gRcpNextTevStage + 1, gRcpNextIndTexStage, 0, 3, 9, 6, 6, 1, 0, 0);
+    GXSetTevIndirect(gRcpNextTevStage + 2, gRcpNextIndTexStage, 0, 0, 0, 0, 0, 1, 0, 0);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, (gRcpNextTexMap + 1) | 0x100, GX_COLOR_NULL);
+    GXSetTevOp(gRcpNextTevStage, GX_PASSCLR);
+    GXSetTevOrder(gRcpNextTevStage + 1, gRcpNextTexCoord + 1, (gRcpNextTexMap + 1) | 0x100, GX_COLOR_NULL);
+    GXSetTevOp(gRcpNextTevStage + 1, GX_PASSCLR);
+    texmap = gRcpNextTexMap;
     if (p1 != 0)
     {
         char* tex = (char*)p1 + 0x20;
@@ -2033,14 +2033,14 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
             GXLoadTexObj((GXTexObj*)tex, texmap);
         }
     }
-    lbl_803DCD80 = lbl_803DCD80 + 3;
-    lbl_803DCD7C = lbl_803DCD7C + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 2;
-    lbl_803DCD90 = lbl_803DCD90 + 2;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A += 2;
-    lbl_803DCD68 += 1;
-    lbl_803DCD69 += 2;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+    gRcpNextIndTexStage = gRcpNextIndTexStage + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 2;
+    gRcpNextTevStage = gRcpNextTevStage + 2;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages += 2;
+    gRcpNumIndStages += 1;
+    gRcpNumTexGens += 2;
     return result;
 }
 
@@ -2050,57 +2050,57 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
 
 void gxTextureFn_80050e28(u8 mode)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mode != 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_C2);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_C2);
     }
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 void addTexModulateReg2Stage(void)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_C2, GX_CC_TEXC, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_C2, GX_CC_TEXC, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 
 void addAlphaLitColorReg2Stage(u8 mode)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mode != 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_APREV, GX_CC_C1, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_APREV, GX_CC_C1, GX_CC_C2);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_APREV, GX_CC_RASC, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_APREV, GX_CC_RASC, GX_CC_C2);
     }
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
@@ -2108,38 +2108,38 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
     f32 mtxB[3][4];
     f32 mtxA[3][4];
     int texmap;
-    if (lbl_803DCD68 == 0)
+    if (gRcpNumIndStages == 0)
     {
-        GXSetTevDirect(lbl_803DCD90);
+        GXSetTevDirect(gRcpNextTevStage);
     }
     if (flag2 != 0)
     {
-        GXSetTevIndRepeat(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88 - 1, lbl_803DCD8C, GX_COLOR_NULL);
+        GXSetTevIndRepeat(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord - 1, gRcpNextTexMap, GX_COLOR_NULL);
     }
     else
     {
         PSMTXScale(mtxA, -0.5f, -0.5f, 0.0f);
         PSMTXTrans(mtxB, 0.5f, 0.5f, 1.0f);
         PSMTXConcat(mtxB, mtxA, mtxA);
-        GXLoadTexMtxImm(mtxA, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
-        lbl_803DCD88 = lbl_803DCD88 + 1;
-        lbl_803DCD69 += 1;
+        GXLoadTexMtxImm(mtxA, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, gRcpNextPostTexMtx);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+        gRcpNextTexCoord = gRcpNextTexCoord + 1;
+        gRcpNumTexGens += 1;
     }
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_A2, GX_CA_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_A2, GX_CA_ZERO);
     if (flag2 != 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1, GX_CC_ZERO);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
     }
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG2);
     if ((flag3 & 1) != 0)
     {
         GXSetTevSwapModeTable(GX_TEV_SWAP3, GX_CH_BLUE, GX_CH_BLUE, GX_CH_BLUE, GX_CH_GREEN);
@@ -2148,8 +2148,8 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
     {
         GXSetTevSwapModeTable(GX_TEV_SWAP3, GX_CH_RED, GX_CH_RED, GX_CH_RED, GX_CH_GREEN);
     }
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP3);
-    texmap = lbl_803DCD8C;
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP3);
+    texmap = gRcpNextTexMap;
     if (p1 != 0)
     {
         char* tex = (char*)p1 + 0x20;
@@ -2162,9 +2162,9 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
         GXLoadTexObj((GXTexObj*)tex, texmap);
         }
     }
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A += 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages += 1;
 }
 
 
@@ -2183,24 +2183,24 @@ void textureFn_80051348(void* p1, u8 p2)
     PSMTXScale(mtxA, -0.5f, -0.5f, 0.0f);
     PSMTXTrans(mtxB, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtxB, mtxA, mtxA);
-    GXLoadTexMtxImm(mtxA, lbl_803DCD80, 0);
+    GXLoadTexMtxImm(mtxA, gRcpNextPostTexMtx, 0);
     buf[0] = p2;
     buf[1] = p2;
     buf[2] = p2;
     gxTextureFn_8004bf88(buf, 1, 0, &out_c, &out_8);
-    GXSetTevKColorSel(lbl_803DCD90, out_c);
-    GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
-    if (lbl_803DCD68 == 0)
+    GXSetTevKColorSel(gRcpNextTevStage, out_c);
+    GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, gRcpNextPostTexMtx);
+    if (gRcpNumIndStages == 0)
     {
-        GXSetTevDirect(lbl_803DCD90);
+        GXSetTevDirect(gRcpNextTevStage);
     }
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_RASC);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    texmap = lbl_803DCD8C;
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_RASC);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG1);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    texmap = gRcpNextTexMap;
     if (p1 != 0)
     {
         char* tex = (char*)p1 + 0x20;
@@ -2213,12 +2213,12 @@ void textureFn_80051348(void* p1, u8 p2)
         GXLoadTexObj((GXTexObj*)tex, texmap);
         }
     }
-    lbl_803DCD80 = lbl_803DCD80 + 3;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A += 1;
-    lbl_803DCD69 += 1;
+    gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages += 1;
+    gRcpNumTexGens += 1;
 }
 
 
@@ -2231,40 +2231,40 @@ void addTexLayerStagesLit(void* p1, void* mtx)
     objGetColor(0, &buf[0], &buf[1], &buf[2]);
     if (mtx != 0)
     {
-        GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
+        GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
     }
     else
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
     gxTextureFn_8004bf88(buf, 1, 0, &out_c, &out_8);
-    GXSetTevKColorSel(lbl_803DCD90, out_c);
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_KONST, GX_CC_RASC, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevKColorSel(gRcpNextTevStage, out_c);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_KONST, GX_CC_RASC, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    GXSetTevDirect(lbl_803DCD90 + 1);
-    GXSetTevOrder(lbl_803DCD90 + 1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90 + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorIn(lbl_803DCD90 + 1, GX_CC_CPREV, GX_CC_RASC, GX_CC_RASA, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
-    GXSetTevColorOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90 + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevDirect(lbl_803DCD90 + 2);
-    GXSetTevOrder(lbl_803DCD90 + 2, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevSwapMode(lbl_803DCD90 + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    GXSetTevColorIn(lbl_803DCD90 + 2, GX_CC_ZERO, GX_CC_CPREV, GX_CC_TEXC, GX_CC_ZERO);
-    GXSetTevAlphaIn(lbl_803DCD90 + 2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
-    GXSetTevColorOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90 + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage + 1);
+    GXSetTevOrder(gRcpNextTevStage + 1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage + 1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorIn(gRcpNextTevStage + 1, GX_CC_CPREV, GX_CC_RASC, GX_CC_RASA, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 1, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+    GXSetTevColorOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage + 1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevDirect(gRcpNextTevStage + 2);
+    GXSetTevOrder(gRcpNextTevStage + 2, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevSwapMode(gRcpNextTevStage + 2, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevColorIn(gRcpNextTevStage + 2, GX_CC_ZERO, GX_CC_CPREV, GX_CC_TEXC, GX_CC_ZERO);
+    GXSetTevAlphaIn(gRcpNextTevStage + 2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
+    GXSetTevColorOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage + 2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     {
-        int id = lbl_803DCD8C;
+        int id = gRcpNextTexMap;
         if (p1 != 0)
         {
             void* obj = (char*)p1 + 0x20;
@@ -2278,12 +2278,12 @@ void addTexLayerStagesLit(void* p1, void* mtx)
             }
         }
     }
-    lbl_803DCD78 = lbl_803DCD78 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 3;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A += 3;
-    lbl_803DCD69 += 1;
+    gRcpNextTexCoordSource = gRcpNextTexCoordSource + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 3;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages += 3;
+    gRcpNumTexGens += 1;
 }
 
 
@@ -2292,56 +2292,56 @@ GXTexObj lbl_803779A0;
 void addTexLayerStage(Texture* tex, MtxPtr mtx, int mode)
 {
     int map;
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != NULL)
     {
-        GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
+        GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
     }
     else
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
     if (mode == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
     }
     else if (mode == 8)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_C2);
     }
     else if (mode == 4)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_TEXC, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_TEXC, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
     }
     else if (mode == 6)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_CPREV, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_CPREV, GX_CC_ZERO);
     }
     else if (mode == 9)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
     }
     if (lbl_803DCD6B != 0)
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
     }
     else
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
         lbl_803DCD6B = 1;
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    map = lbl_803DCD8C;
+    map = gRcpNextTexMap;
     if (tex != NULL)
     {
         GXTexObj* to = textureGetGXTexObj(tex);
@@ -2354,12 +2354,12 @@ void addTexLayerStage(Texture* tex, MtxPtr mtx, int mode)
             GXLoadTexObj(to, map);
         }
     }
-    lbl_803DCD78 = lbl_803DCD78 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextTexCoordSource = gRcpNextTexCoordSource + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 void addTexLayerStageKColor(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
@@ -2367,46 +2367,46 @@ void addTexLayerStageKColor(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
     int sel;
     int v1;
     int map;
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != NULL)
     {
-        GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
+        GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
     }
     else
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
     gxTextureFn_8004bf88(kparam, 1, 0, &sel, &v1);
-    GXSetTevKColorSel(lbl_803DCD90, sel);
+    GXSetTevKColorSel(gRcpNextTevStage, sel);
     if (mode == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_ZERO);
     }
     else if (mode == 8)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C2);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
     }
     if (lbl_803DCD6B != 0)
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
     }
     else
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
         lbl_803DCD6B = 1;
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    map = lbl_803DCD8C;
+    map = gRcpNextTexMap;
     if (tex != NULL)
     {
         GXTexObj* to = textureGetGXTexObj(tex);
@@ -2419,12 +2419,12 @@ void addTexLayerStageKColor(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
             GXLoadTexObj(to, map);
         }
     }
-    lbl_803DCD78 = lbl_803DCD78 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextTexCoordSource = gRcpNextTexCoordSource + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 void addTexLayerStageKAlpha(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
@@ -2432,46 +2432,46 @@ void addTexLayerStageKAlpha(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
     int sel;
     int v1;
     int map;
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != NULL)
     {
-        GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
+        GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
     }
     else
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
     gxTextureFn_8004bf88(kparam, 0, 1, &sel, &v1);
-    GXSetTevKAlphaSel(lbl_803DCD90, v1);
+    GXSetTevKAlphaSel(gRcpNextTevStage, v1);
     if (mode == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
     }
     else if (mode == 8)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_C2);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
     }
     if (lbl_803DCD6B != 0)
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
     }
     else
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
         lbl_803DCD6B = 1;
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    map = lbl_803DCD8C;
+    map = gRcpNextTexMap;
     if (tex != NULL)
     {
         GXTexObj* to = textureGetGXTexObj(tex);
@@ -2484,12 +2484,12 @@ void addTexLayerStageKAlpha(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam)
             GXLoadTexObj(to, map);
         }
     }
-    lbl_803DCD78 = lbl_803DCD78 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextTexCoordSource = gRcpNextTexCoordSource + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 typedef struct TevSwapEntry
@@ -2509,74 +2509,74 @@ void gxFn_80051fb8(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam, u8 swaps
     int sel;
     int v1;
     int map;
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP1);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP1);
     GXSetTevSwapModeTable(GX_TEV_SWAP1, gRcpTevSwapTable[swapsel].r, gRcpTevSwapTable[swapsel].g,
                           gRcpTevSwapTable[swapsel].b, GX_CH_ALPHA);
     if (mtx != NULL)
     {
-        GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
-        lbl_803DCD80 = lbl_803DCD80 + 3;
+        GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, gRcpNextPostTexMtx);
+        gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
     }
     else
     {
-        GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, lbl_803DCD78, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+        GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
     if (useK != 0)
     {
         gxTextureFn_8004bf88(kparam, 1, 1, &sel, &v1);
-        GXSetTevKColorSel(lbl_803DCD90, sel);
+        GXSetTevKColorSel(gRcpNextTevStage, sel);
         if (*(void**)&tex->imageOffset != NULL)
         {
-            GXSetTevKAlphaSel(lbl_803DCD90 + 1, v1);
+            GXSetTevKAlphaSel(gRcpNextTevStage + 1, v1);
         }
         else
         {
-            GXSetTevKAlphaSel(lbl_803DCD90, v1);
+            GXSetTevKAlphaSel(gRcpNextTevStage, v1);
         }
     }
     else
     {
-        GXSetTevKColor(lbl_803DCD74, *kparam);
-        GXSetTevKColorSel(lbl_803DCD90, lbl_803DCD70);
+        GXSetTevKColor(gRcpNextKColor, *kparam);
+        GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
         if (*(void**)&tex->imageOffset != NULL)
         {
-            GXSetTevKAlphaSel(lbl_803DCD90 + 1, lbl_803DCD6C);
+            GXSetTevKAlphaSel(gRcpNextTevStage + 1, gRcpNextKAlphaSel);
         }
         else
         {
-            GXSetTevKAlphaSel(lbl_803DCD90, lbl_803DCD6C);
+            GXSetTevKAlphaSel(gRcpNextTevStage, gRcpNextKAlphaSel);
         }
-        lbl_803DCD74 = lbl_803DCD74 + 1;
-        lbl_803DCD70 = lbl_803DCD70 + 1;
-        lbl_803DCD6C = lbl_803DCD6C + 1;
+        gRcpNextKColor = gRcpNextKColor + 1;
+        gRcpNextKColorSel = gRcpNextKColorSel + 1;
+        gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
     }
     if (mode == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_ZERO);
     }
     else if (mode == 8)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1, GX_CC_C2);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1, GX_CC_C2);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_TEXC, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
     }
     if (lbl_803DCD6B != 0)
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
     }
     else
     {
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    map = lbl_803DCD8C;
+    map = gRcpNextTexMap;
     if (tex != NULL)
     {
         GXTexObj* to = textureGetGXTexObj(tex);
@@ -2596,155 +2596,155 @@ void gxFn_80051fb8(Texture* tex, MtxPtr mtx, int mode, GXColor* kparam, u8 swaps
     }
     if (*(void**)&tex->imageOffset != NULL)
     {
-        lbl_803DCD6A++;
-        lbl_803DCD90 = lbl_803DCD90 + 1;
-        lbl_803DCD8C = lbl_803DCD8C + 1;
-        GXSetTevDirect(lbl_803DCD90);
-        GXSetTevOrder(lbl_803DCD90, lbl_803DCD88, lbl_803DCD8C, GX_COLOR_NULL);
-        GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
-        GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-        GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        gRcpNumTevStages++;
+        gRcpNextTevStage = gRcpNextTevStage + 1;
+        gRcpNextTexMap = gRcpNextTexMap + 1;
+        GXSetTevDirect(gRcpNextTevStage);
+        GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
+        GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_CPREV);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
+        GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+        GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     }
     lbl_803DCD6B = 1;
-    lbl_803DCD78 = lbl_803DCD78 + 1;
-    lbl_803DCD88 = lbl_803DCD88 + 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD8C = lbl_803DCD8C + 1;
-    lbl_803DCD6A++;
-    lbl_803DCD69++;
+    gRcpNextTexCoordSource = gRcpNextTexCoordSource + 1;
+    gRcpNextTexCoord = gRcpNextTexCoord + 1;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNextTexMap = gRcpNextTexMap + 1;
+    gRcpNumTevStages++;
+    gRcpNumTexGens++;
 }
 
 
 void gxColorFn_800523d0(void)
 {
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    if (lbl_803DCD6A == 0 || lbl_803DCD30 == 0)
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    if (gRcpNumTevStages == 0 || lbl_803DCD30 == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_APREV, GX_CA_RASA, GX_CA_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_APREV, GX_CA_RASA, GX_CA_ZERO);
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 void textureFn_800524ec(GXColor* param)
 {
     int sel_color;
     int sel_alpha;
-    GXSetTevDirect(lbl_803DCD90);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    GXSetTevDirect(gRcpNextTevStage);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     gxTextureFn_8004bf88(param, 0, 1, &sel_color, &sel_alpha);
-    GXSetTevKAlphaSel(lbl_803DCD90, sel_alpha);
-    if (lbl_803DCD6A == 0 || lbl_803DCD30 == 0)
+    GXSetTevKAlphaSel(gRcpNextTevStage, sel_alpha);
+    if (gRcpNumTevStages == 0 || lbl_803DCD30 == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_APREV, GX_CA_KONST, GX_CA_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_RASC, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_APREV, GX_CA_KONST, GX_CA_ZERO);
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 void gxTextureFn_80052638(GXColor* param)
 {
     int sel;
     int v1;
-    GXSetTevDirect(lbl_803DCD90);
+    GXSetTevDirect(gRcpNextTevStage);
     GXSetTevColor(GX_TEVREG0, *(GXColor*)param);
     gxTextureFn_8004bf88(param, 1, 0, &sel, &v1);
-    GXSetTevKColorSel(lbl_803DCD90, sel);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    if (lbl_803DCD6A != 0 && lbl_803DCD30 != 0)
+    GXSetTevKColorSel(gRcpNextTevStage, sel);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    if (gRcpNumTevStages != 0 && lbl_803DCD30 != 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_CPREV, GX_CC_KONST, GX_CC_A0, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_CPREV, GX_CC_KONST, GX_CC_A0, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 void gxColorFn_80052764(GXColor* param)
 {
     int sel_color;
     int sel_alpha;
-    GXSetTevDirect(lbl_803DCD90);
+    GXSetTevDirect(gRcpNextTevStage);
     gxTextureFn_8004bf88(param, 1, 1, &sel_color, &sel_alpha);
-    GXSetTevKAlphaSel(lbl_803DCD90, sel_alpha);
-    GXSetTevKColorSel(lbl_803DCD90, sel_color);
-    GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
-    if (lbl_803DCD6A == 0 || lbl_803DCD30 == 0)
+    GXSetTevKAlphaSel(gRcpNextTevStage, sel_alpha);
+    GXSetTevKColorSel(gRcpNextTevStage, sel_color);
+    GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    if (gRcpNumTevStages == 0 || lbl_803DCD30 == 0)
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_KONST);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_KONST);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
     }
     else
     {
-        GXSetTevColorIn(lbl_803DCD90, GX_CC_ZERO, GX_CC_CPREV, GX_CC_KONST, GX_CC_ZERO);
-        GXSetTevAlphaIn(lbl_803DCD90, GX_CA_ZERO, GX_CA_APREV, GX_CA_KONST, GX_CA_ZERO);
+        GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_KONST, GX_CC_ZERO);
+        GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_APREV, GX_CA_KONST, GX_CA_ZERO);
     }
-    GXSetTevColorOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetTevAlphaOp(lbl_803DCD90, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+    GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     lbl_803DCD30 = 1;
-    lbl_803DCD90 = lbl_803DCD90 + 1;
-    lbl_803DCD6A++;
+    gRcpNextTevStage = gRcpNextTevStage + 1;
+    gRcpNumTevStages++;
 }
 
 void Rcp_ApplyTextureStageCounts(void)
 {
-    GXSetNumTexGens(lbl_803DCD69);
-    GXSetNumTevStages(lbl_803DCD6A);
-    GXSetNumIndStages(lbl_803DCD68);
+    GXSetNumTexGens(gRcpNumTexGens);
+    GXSetNumTevStages(gRcpNumTevStages);
+    GXSetNumIndStages(gRcpNumIndStages);
 }
 void Rcp_ResetTextureStageState(void)
 {
     lbl_803DCD58 = 30;
-    lbl_803DCD84 = 30;
+    gRcpNextTexMtx = 30;
     lbl_803DCD54 = 64;
-    lbl_803DCD80 = 64;
+    gRcpNextPostTexMtx = 64;
     lbl_803DCD64 = 0;
-    lbl_803DCD90 = 0;
+    gRcpNextTevStage = 0;
     lbl_803DCD5C = 0;
-    lbl_803DCD88 = 0;
+    gRcpNextTexCoord = 0;
     lbl_803DCD60 = 0;
-    lbl_803DCD8C = 0;
+    gRcpNextTexMap = 0;
     lbl_803DCD50 = 0;
-    lbl_803DCD7C = 0;
+    gRcpNextIndTexStage = 0;
     lbl_803DCD4C = 4;
-    lbl_803DCD78 = 4;
-    lbl_803DCD74 = 0;
-    lbl_803DCD70 = 12;
-    lbl_803DCD6C = 28;
+    gRcpNextTexCoordSource = 4;
+    gRcpNextKColor = 0;
+    gRcpNextKColorSel = 12;
+    gRcpNextKAlphaSel = 28;
     lbl_803DCD6B = 0;
     lbl_803DCD4B = 0;
-    lbl_803DCD6A = 0;
+    gRcpNumTevStages = 0;
     lbl_803DCD4A = 0;
-    lbl_803DCD69 = 0;
+    gRcpNumTexGens = 0;
     lbl_803DCD49 = 0;
-    lbl_803DCD68 = 0;
+    gRcpNumIndStages = 0;
     lbl_803DCD48 = 0;
     lbl_803DCD30 = 0;
 }
