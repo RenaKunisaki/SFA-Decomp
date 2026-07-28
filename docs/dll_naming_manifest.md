@@ -489,7 +489,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1BB | SC_totembon | COMPLETE | dlls/objects/443_SC_totembon/SC_totembon.c | = (canonical) | Exact complete 12-function TU with its terminal descriptor, allocation-backed 0x28-byte state, active-EN-retail-backed fixed 0x24-byte placement, explicit allocation-backed 0x38-byte LightFoot setup overlay, canonical unit header, and exact 132-byte data image; the generated source path remains unchanged |
 | 0x1BC | SC_totemstr | COMPLETE | dlls/objects/444_SC_totemstr/SC_totemstr.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor, allocation-backed 0x34-byte state, canonical unit header, and exact 144-byte data image; the generated source path remains unchanged |
 | 0x1BD | SC_paypoint (+SPWell) | COMPLETE | dlls/objects/445/445.c | = (canonical) | Exact complete 11-function multi-object TU with its terminal descriptor, allocation-backed three-byte state, active-EN-retail-backed fixed 0x24-byte placements, canonical numeric-slot header, and exact 72-byte data image; the generated source path remains unchanged |
-| 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | COMPLETE | dlls/objects/446/446.c | = (canonical) | No single recovered TU basename |
+| 0x1BE | DIMLava (+DIMLavaBall, DIMLavaDebr) | COMPLETE | dlls/objects/446/446.c | = (canonical) | Exact complete 11-function multi-object TU with its terminal 12-slot descriptor, allocation-backed zero-byte debris and 0x14-byte projectile states, active-EN-retail-backed fixed 0x24-byte projectile placement, canonical numeric-slot header, and exact 140-byte data image; the generated source path remains unchanged |
 | 0x1BF | DIMLavaBall | COMPLETE | dlls/objects/447_DIMLavaBall/DIMLavaBall.c | = (canonical) | — |
 | 0x1C0 | DIMLogFire (+DIMLogFireR) | COMPLETE | dlls/objects/448_DIMLogFire/DIMLogFire.c | = (canonical) | — |
 | 0x1C1 | DIMSnowBall | COMPLETE | dlls/objects/449_DIMSnowBall/DIMSnowBall.c | = (canonical) | — |
@@ -1016,6 +1016,7 @@ blocked units will surface more when carved.
 | 0x1BB | dlls/objects/443_SC_totembon/SC_totembon.c | include/dlls/objects/443_SC_totembon.h |
 | 0x1BC | dlls/objects/444_SC_totemstr/SC_totemstr.c | include/dlls/objects/444_SC_totemstr.h |
 | 0x1BD | dlls/objects/445/445.c | include/dlls/objects/445.h |
+| 0x1BE | dlls/objects/446/446.c | include/dlls/objects/446.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

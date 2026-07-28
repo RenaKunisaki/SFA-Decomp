@@ -3,6 +3,7 @@
  * 0x18D lava-ball sub-object, controls its fire period and game-bit gate,
  * and relaunches it on each fire cycle.
  */
+#include "dlls/objects/446.h"
 #include "main/dll/lavaball1bfstate_struct.h"
 #include "main/frame_timing.h"
 #include "main/objseq.h"
@@ -18,9 +19,6 @@
 #define DIMLAVABALL_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define DIMLAVABALL_OBJFLAG_HIDDEN             0x4000
 
-/* Lava-ball sub-object spawned by lavaball1bf_update. */
-#define DIMLAVABALL_SUBOBJ_ID 0x18d
-
 typedef struct Lavaball1bfPlacement
 {
     ObjPlacement head; /* 0x00 */
@@ -31,23 +29,6 @@ typedef struct Lavaball1bfPlacement
     s16 stateGameBit;
     u8 pad26[0x28 - 0x26];
 } Lavaball1bfPlacement;
-
-/* 0x24-byte Obj_AllocObjectSetup(0x24, 0x18D) buffer built in
- * lavaball1bf_update to launch the 0x18D lava-ball sub-object. */
-typedef struct Lavaball18dSetup
-{
-    ObjPlacement head; /* 0x00..0x17 */
-    s8 unk18;          /* 0x18: copied from placement[0x1C] */
-    u8 pad19;
-    s16 childRot; /* 0x1A rotation region; copied from placement[0x1A] */
-    s16 unk1C;    /* 0x1C: copied from placement[0x1B] */
-    u8 pad1E[0x24 - 0x1E];
-} Lavaball18dSetup;
-
-STATIC_ASSERT(offsetof(Lavaball18dSetup, unk18) == 0x18);
-STATIC_ASSERT(offsetof(Lavaball18dSetup, childRot) == 0x1A);
-STATIC_ASSERT(offsetof(Lavaball18dSetup, unk1C) == 0x1C);
-STATIC_ASSERT(sizeof(Lavaball18dSetup) == 0x24);
 
 STATIC_ASSERT(sizeof(Lavaball1bfState) == 0x1C);
 void lavaball1bf_clearPending(GameObject* obj)
@@ -129,20 +110,20 @@ void lavaball1bf_update(GameObject* obj)
     }
     if (*(void**)&state->spawnedObj == NULL && Obj_IsLoadingLocked() != 0)
     {
-        int s = (int)Obj_AllocObjectSetup(0x24, DIMLAVABALL_SUBOBJ_ID);
-        Lavaball18dSetup* sp = (Lavaball18dSetup*)s;
-        *(u8*)(s + 2) = 9;
-        sp->head.color[0] = 2;
-        sp->head.color[2] = 0xff;
-        sp->head.color[1] = 4;
-        sp->head.color[3] = 0x50;
-        sp->head.posX = obj->anim.localPosX;
-        sp->head.posY = obj->anim.localPosY;
-        sp->head.posZ = obj->anim.localPosZ;
-        sp->unk18 = setup[0x1c];
-        sp->childRot = setup[0x1a];
-        sp->unk1C = setup[0x1b];
-        sp->head.mapId = ((ObjPlacement*)setup)->mapId;
+        int s = (int)Obj_AllocObjectSetup(sizeof(DimLavaProjectilePlacement), DIM_LAVA_PROJECTILE_SEQUENCE_ID);
+        DimLavaProjectilePlacement* sp = (DimLavaProjectilePlacement*)s;
+        sp->base.size = 9;
+        sp->base.color[0] = 2;
+        sp->base.color[2] = 0xff;
+        sp->base.color[1] = 4;
+        sp->base.color[3] = 0x50;
+        sp->base.posX = obj->anim.localPosX;
+        sp->base.posY = obj->anim.localPosY;
+        sp->base.posZ = obj->anim.localPosZ;
+        sp->launchYaw = setup[0x1c];
+        sp->verticalSpeed = setup[0x1a];
+        sp->horizontalSpeed = setup[0x1b];
+        sp->base.mapId = ((ObjPlacement*)setup)->mapId;
         *(int*)&state->spawnedObj =
             (int)Obj_SetupObject((ObjPlacement*)s, 5, obj->anim.mapEventSlot, -1, 0);
     }
@@ -150,7 +131,8 @@ void lavaball1bf_update(GameObject* obj)
     timer = state->fireTimer - timeDelta;
     state->fireTimer = timer;
     if (timer <= 0.0f &&
-        ((int (*)(int*))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)[9])(spawned) != 0)
+        ((int (*)(int*))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)
+             [DIM_LAVA_PROJECTILE_IS_INACTIVE_VTABLE_OFFSET / sizeof(void*)])(spawned) != 0)
     {
         if (state->gbState != 0)
         {
@@ -164,8 +146,8 @@ void lavaball1bf_update(GameObject* obj)
             {
                 rot = setup[0x1a];
             }
-            ((void (*)(int*, int, int))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)[8])(spawned, rot,
-                                                                                                       setup[0x1b]);
+            ((void (*)(int*, int, int))((void**)*(void**)*(int*)&((GameObject*)spawned)->anim.dll)
+                 [DIM_LAVA_PROJECTILE_RELAUNCH_VTABLE_OFFSET / sizeof(void*)])(spawned, rot, setup[0x1b]);
         }
         state->fireTimer = state->firePeriod + (f32)(int)randomGetRange(0, 0x3c);
     }
