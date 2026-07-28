@@ -4362,7 +4362,7 @@ void headDisplayDraw(void)
     f32 cameraOrigin;
     if (gHeadDisplayActive != 0)
     {
-        if ((s8)lbl_803DD7A8 == 0)
+        if (lbl_803DD7A8 == 0)
         {
             gHeadDisplayPanelWidth = gHeadDisplayPanelWidth + framesThisStep * 5;
             if (gHeadDisplayPanelWidth > HEADPANEL_WIDTH_MAX)
@@ -4617,7 +4617,7 @@ void drawArwingHud(int unused1, int unused2, int unused3)
         if (arwingHudVisible != 0)
         {
             arwingHudAlpha = lbl_803E1FA0 * (f32)(u32)framesThisStep + arwingHudAlpha;
-            if ((s16)arwingHudAlpha > 0xff)
+            if (arwingHudAlpha > 0xff)
             {
                 arwingHudAlpha = 0xff;
             }
@@ -4625,7 +4625,7 @@ void drawArwingHud(int unused1, int unused2, int unused3)
         else
         {
             arwingHudAlpha = -(lbl_803E1FA0 * (f32)(u32)framesThisStep - arwingHudAlpha);
-            if ((s16)arwingHudAlpha < 0)
+            if (arwingHudAlpha < 0)
             {
                 arwingHudAlpha = 0;
             }
@@ -6197,7 +6197,7 @@ void pauseMenuFn_80129ee0(void)
             {
                 canOpen = 0;
             }
-            if ((btn & PAD_BUTTON_MENU) && (s8)pauseMenuFrameCounter == 0 && pauseDisabled == 0 &&
+            if ((btn & PAD_BUTTON_MENU) && pauseMenuFrameCounter == 0 && pauseDisabled == 0 &&
                 (*gScreenTransitionInterface)->getProgress() == lbl_803E1E3C && canOpen != 0 && lbl_803DD75B == 0 &&
                 getHudHiddenFrameCount() == 0)
             {
@@ -6287,7 +6287,7 @@ void pauseMenuFn_80129ee0(void)
             }
             if ((s8)analogX != 0 || lbl_803DD78C == 0 || lbl_803DBA64 < menuMin || lbl_803DBA64 > menuMax)
             {
-                switch ((s8)lbl_803DBA64)
+                switch (lbl_803DBA64)
                 {
                 case 1:
                 case 2:
@@ -6303,20 +6303,20 @@ void pauseMenuFn_80129ee0(void)
                 {
                     u8 prev = lbl_803DBA64;
                     *(u8*)&lbl_803DBA64 += analogX;
-                    if ((s8)lbl_803DBA64 < menuMin)
+                    if (lbl_803DBA64 < menuMin)
                     {
                         lbl_803DBA64 = menuMax;
                     }
-                    if ((s8)lbl_803DBA64 > menuMax)
+                    if (lbl_803DBA64 > menuMax)
                     {
                         lbl_803DBA64 = menuMin;
                     }
-                    if ((s8)lbl_803DBA64 != (u8)prev)
+                    if (lbl_803DBA64 != (u8)prev)
                     {
                         Sfx_PlayFromObject(0, SFXTRIG_menu_fox_select);
                     }
                 }
-                switch ((s8)lbl_803DBA64)
+                switch (lbl_803DBA64)
                 {
                 case 1:
                 case 2:
@@ -6404,7 +6404,7 @@ void pauseMenuFn_80129ee0(void)
                 }
             }
             pauseMenuAnimateCarousel();
-            if ((b2 & 0x1200) && (s8)pauseMenuFrameCounter == 0)
+            if ((b2 & 0x1200) && pauseMenuFrameCounter == 0)
             {
                 Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
                 Sfx_PlayFromObject(0, SFXTRIG_menu_fox_weapons_up);
@@ -7994,7 +7994,7 @@ void cMenuRun(void)
     }
     else
     {
-        if ((s8)shouldCloseCMenu != 0)
+        if (shouldCloseCMenu != 0)
         {
             buttonDisable(0, shouldCloseCMenu);
         }
@@ -8012,7 +8012,7 @@ void cMenuRun(void)
     }
     else
     {
-        if ((s8)gCMenuScriptedInput != 0)
+        if (gCMenuScriptedInput != 0)
         {
             gCMenuButtons = gCMenuScriptedButtons;
             btn16 = gCMenuScriptedButtons;
@@ -8109,7 +8109,7 @@ void cMenuRun(void)
             {
                 bButtonIcon = 0xa;
             }
-            if ((s8)gCMenuScriptedInput != 0)
+            if (gCMenuScriptedInput != 0)
             {
                 cy = gCMenuScriptedStickY;
             }
@@ -8121,7 +8121,7 @@ void cMenuRun(void)
                 (gCMenuScrollTimer < 0 ? -gCMenuScrollTimer : gCMenuScrollTimer) < 8 &&
                 gCMenuScrollLock == 0 && lbl_803DD79A == 0)
             {
-                if ((s8)lbl_803DBA65 == 0)
+                if (lbl_803DBA65 == 0)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_warningloop);
                 }
@@ -8131,7 +8131,7 @@ void cMenuRun(void)
                      (gCMenuScrollTimer < 0 ? -gCMenuScrollTimer : gCMenuScrollTimer) < 8 &&
                      gCMenuScrollLock == 0 && lbl_803DD79A == 0)
             {
-                if ((s8)lbl_803DBA65 == 0)
+                if (lbl_803DBA65 == 0)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_warningloop);
                 }
@@ -8237,7 +8237,7 @@ void cMenuRun(void)
                                     gYButtonIconAnim = lbl_803DBA84;
                                     if ((s8)isTricky == 0)
                                     {
-                                        if ((s8)cMenuState == 4)
+                                        if (cMenuState == 4)
                                         {
                                             yButtonState = 1;
                                         }
@@ -8352,7 +8352,7 @@ void cMenuRun(void)
 void npcTalkFn_8012e880(void)
 {
     Obj_GetPlayerObject();
-    if ((s8)lbl_803DD7A8 != 0)
+    if (lbl_803DD7A8 != 0)
     {
         if (lbl_803DD8C8 != 0)
         {
@@ -8393,7 +8393,7 @@ void npcTalkFn_8012e880(void)
                 lbl_803DD7A9 = 0;
             }
         }
-        if ((s8)lbl_803DD7A8 != 0)
+        if (lbl_803DD7A8 != 0)
         {
             setJoypadDisabled();
         }
@@ -8659,7 +8659,7 @@ void GameUI_update(void)
 
     gCMenuButtons = getButtonsJustPressed(0);
     lbl_803DD898 = getButtonsHeld(0);
-    if ((s8)gCMenuScriptedInput != 0)
+    if (gCMenuScriptedInput != 0)
     {
         cx = lbl_803DD89E;
     }
@@ -8697,11 +8697,11 @@ void GameUI_update(void)
         }
         else
         {
-            if ((s8)shouldCloseCMenu != 0)
+            if (shouldCloseCMenu != 0)
             {
-                buttonDisable(0, (s8)shouldCloseCMenu);
-                gCMenuButtons &= ~(s8)shouldCloseCMenu;
-                lbl_803DD898 &= ~(s8)shouldCloseCMenu;
+                buttonDisable(0, shouldCloseCMenu);
+                gCMenuButtons &= ~shouldCloseCMenu;
+                lbl_803DD898 &= ~shouldCloseCMenu;
             }
         }
 
@@ -8715,7 +8715,7 @@ void GameUI_update(void)
         }
         else
         {
-            if ((s8)gCMenuScriptedInput != 0)
+            if (gCMenuScriptedInput != 0)
             {
                 lbl_803DD898 = gCMenuScriptedButtons;
                 gCMenuButtons = gCMenuScriptedButtons;
@@ -8815,7 +8815,7 @@ void GameUI_update(void)
 
         flags = gCMenuButtons;
         {
-            if ((flags & 0x20000) && tricky != NULL && (s8)cMenuState != 2 &&
+            if ((flags & 0x20000) && tricky != NULL && cMenuState != 2 &&
                 (*(s8*)&cMenuOpen != 0 ? 0 : (gCMenuOpenAnim != 0 ? 0 : 1)))
             {
                 buttonDisable(0, 0x20000);
@@ -8826,7 +8826,7 @@ void GameUI_update(void)
                 gCMenuCurSection = 2;
                 cMenuSelectFirstEnabledItem(2, 1);
             }
-            else if ((flags & 0x80000) && (s8)cMenuState != 3 &&
+            else if ((flags & 0x80000) && cMenuState != 3 &&
                      (*(s8*)&cMenuOpen != 0 ? 0 : (gCMenuOpenAnim != 0 ? 0 : 1)))
             {
                 buttonDisable(0, 0x80000);
@@ -8839,7 +8839,7 @@ void GameUI_update(void)
                 if (trickyProximity != 0)
                     cMenuSelectItemByTarget(0, 0xc1, 0);
             }
-            else if ((flags & 0x40000) && (s8)cMenuState != 4 &&
+            else if ((flags & 0x40000) && cMenuState != 4 &&
                      (*(s8*)&cMenuOpen != 0 ? 0 : (gCMenuOpenAnim != 0 ? 0 : 1)))
             {
                 buttonDisable(0, 0x40000);
@@ -8885,7 +8885,7 @@ void GameUI_update(void)
                         sectionTarget = 2;
                         break;
                     }
-                    if (next != (s8)cMenuState)
+                    if (next != cMenuState)
                     {
                         *(s8*)&shouldOpenCMenu = (s8)next;
                         lbl_803DD8B7 = sectionTarget;
