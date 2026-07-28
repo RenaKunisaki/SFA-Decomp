@@ -60,16 +60,16 @@ typedef struct VoxMapFile {
 
 typedef struct VoxBoxArg {
     s16 x;
-    s16 z;
     s16 y;
+    s16 z;
     s16 pad6;
     u16 cost;
 } VoxBoxArg;
 
 typedef struct RouteNode {
     s16 x;
-    s16 z;
     s16 y;
+    s16 z;
     u16 hCost;
     u16 gCost;
     u8 parentNodeIndex;
@@ -83,11 +83,11 @@ typedef struct RouteState {
     struct CurveHeapNode* queue;
     f32* pathPoints;
     s16 tgtX;
-    s16 tgtZ;
     s16 tgtY;
+    s16 tgtZ;
     s16 startX;
-    s16 startZ;
     s16 startY;
+    s16 startZ;
     int cur;
     s16 nodeCount;
     s16 queueCount;
