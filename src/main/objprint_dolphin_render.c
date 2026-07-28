@@ -77,8 +77,6 @@ extern s32 lbl_803DCC44;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
 extern f32 lbl_803DEA28;
-extern f32 lbl_803DEA2C;
-extern f32 lbl_803DEA30;
 extern f32 lbl_803DEA1C;
 
 
@@ -102,7 +100,6 @@ extern u8 lbl_803DCC3D;
 extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
-extern f32 lbl_803DEA34;
 extern f32 lbl_803DEA38;
 
 int modelRenderCb_8003c268(int obj, int* model, int ropIdx);

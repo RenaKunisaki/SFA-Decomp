@@ -34,10 +34,8 @@ void textRenderChar(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 
 void drawRect(f32 sx, f32 sy, int x, int y);
 void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx);
 void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx);
-void trackIntersect_drawColorBand(void);
 void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth);
 void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale);
-void FUN_80070ec8(void);
 void gxSetOpaqueNoZWriteMode(void);
 void gxBlendFn_800788dc(void);
 void gxBlendFn_800789ac(void);
@@ -58,6 +56,5 @@ void setupReflectionDistortTev(int param_1);
 void setupReflectionBumpDistortTev(void* texture);
 void gxTextureSetupFn_8007cf7c(void);
 void loadReflectionTexMtxs(void);
-void FUN_800723a0(void);
 
 #endif /* TRACK_INTERSECT_H_ */
