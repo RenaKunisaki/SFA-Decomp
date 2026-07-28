@@ -163,13 +163,13 @@ void saveSelect_drawText(int unused, int alpha)
  * pending-action flags (lbl_803DD6CC/CF). Any other slot starts a new
  * game: it flags the choice, plays the confirm sfx, runs transition 0x14,
  * tears down the four title-menu control sub-objects via vtable slot 7,
- * and records the chosen value (lbl_803DD6C4).
+ * and records the chosen value (gSaveSelectChapter).
  *
  * The lbl_803DD6xx / lbl_803DB424 state words are shared with DLL 0x35
  * (its home TU); 0x23 here matches that TU's pending-action value.
  */
 
-extern u8 lbl_803DD6C4;
+extern u8 gSaveSelectChapter;
 extern u8 lbl_803DD6CC;
 extern u8 lbl_803DD6CD;
 extern s8 lbl_803DD6CF;
@@ -201,7 +201,7 @@ void saveSelectSetSlot(int slot, int value)
         gTitleMenuControlInterface->vtable->func0A(2);
         gTitleMenuControlInterface->vtable->func0A(3);
         lbl_803DD6CF = 0x23;
-        lbl_803DD6C4 = value;
+        gSaveSelectChapter = value;
     }
 }
 
@@ -247,7 +247,7 @@ u8 lbl_803DD6CD;
 u8 lbl_803DD6CC;
 void* gSaveSelectTexture;
 u8 gSaveSelectMenuItemActive;
-u8 lbl_803DD6C4;
+u8 gSaveSelectChapter;
 int gSaveSelectLastSlot;
 u8 saveFileSelect_cheatInputTimer;
 u8 saveFileSelect_saveCheatProgress;
@@ -444,7 +444,7 @@ void saveSelectGoToChapterSelect(void)
         gTitleMenuControlInterface->vtable->func0A(2);
         gTitleMenuControlInterface->vtable->func0A(3);
         lbl_803DD6CF = 0x23;
-        lbl_803DD6C4 = 0;
+        gSaveSelectChapter = 0;
     }
 }
 void saveSelectFn_8011a70c(void)
@@ -733,16 +733,16 @@ int SaveSelectScreen_run(void)
                 mmSetFreeDelay(prev);
                 Music_Trigger(MUSICTRIG_cldrnr_tune1_be, 0);
                 Music_Trigger(MUSICTRIG_windydocks, 0);
-                if (lbl_803DD6C4 != 0)
+                if (gSaveSelectChapter != 0)
                 {
                     gplayNewGame(sFrontendFoxName, *(u8*)&saveFileSelect_currentSlotIndex);
                     (*gMapEventInterface)->setCharacter(1);
                     flagPtr = (s8*)(*gMapEventInterface)->getCurCharPos();
                     flagPtr[0xe] = -1;
                 }
-                if (lbl_803DD6C4 > 1)
+                if (gSaveSelectChapter > 1)
                 {
-                    sprintf(buf, sSaveGameBinPathFormat, lbl_803DD6C4);
+                    sprintf(buf, sSaveGameBinPathFormat, gSaveSelectChapter);
                     data = loadFileByPath(buf, 0, 0);
                     if (data != NULL)
                     {

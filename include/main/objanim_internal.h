@@ -323,7 +323,7 @@ typedef struct ObjDef {
   u8 defaultModelVariant;
   u8 fallbackHitSphereRadius;
   u8 secondaryHitboxShapeFlags;
-  u8 pad91[0x94 - 0x91];
+  char name[0x94 - 0x91];
 } ObjDef;
 
 typedef ObjDef ObjModelInstance;

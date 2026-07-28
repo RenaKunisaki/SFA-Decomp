@@ -679,7 +679,7 @@ int audioInit(void)
     SalHooks hooks;
     int reverbWork;
     int delay;
-    int v;
+    int group;
 
     hooks = gAudioMemHooks;
     if (!gAudioInitStarted)
@@ -787,12 +787,12 @@ int audioInit(void)
         (gAudioCompletedLoadFlags & AUDIO_LOAD_S_PROJECT) && (gAudioCompletedLoadFlags & AUDIO_LOAD_S_POOL) &&
         (gAudioCompletedLoadFlags & AUDIO_LOAD_S_SAMPLE_DIR) && (gAudioCompletedLoadFlags & AUDIO_LOAD_S_SAMPLE_BUF))
     {
-        for (v = 1; v <= 0x37; v++)
+        for (group = 1; group <= 0x37; group++)
         {
-            if (sndPushGroup(gAudioStarfoxSProjectDataHandle, v, gAudioStarfoxSSampleBufferHandle,
+            if (sndPushGroup(gAudioStarfoxSProjectDataHandle, group, gAudioStarfoxSSampleBufferHandle,
                              gAudioStarfoxSSampleDirectoryHandle, gAudioStarfoxSPoolDataHandle) == 0)
             {
-                OSReport(base + 0x2c8, v);
+                OSReport(base + 0x2c8, group);
             }
         }
         delay = mmSetFreeDelay(0);
