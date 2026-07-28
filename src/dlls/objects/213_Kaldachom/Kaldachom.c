@@ -410,7 +410,8 @@ void kaldachom_spawnDustEffects(GameObject* obj, KaldachomControl* control) {
 
 void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 useUpperMouthPoint) {
     KaldachomControl* control;
-    ObjPlacement* placement;
+    KaldachomPlacement* placement;
+    ObjPlacement* setup;
     GameObject* projectile;
     f32 yJitter;
     f32 travelTime;
@@ -418,31 +419,31 @@ void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 u
     f32 mouthY;
 
     control = state->control;
-    placement = (ObjPlacement*)obj->anim.placementData;
+    placement = (KaldachomPlacement*)obj->anim.placementData;
     if (Obj_IsLoadingLocked() != 0) {
-        heightOffset = 0.5f + (f32)(s32)((KaldachomPlacement*)placement)->scale / 15.0f;
-        placement = Obj_AllocObjectSetup(0x24, KALDACHOM_CHILD_OBJ_MOUTH_PROJECTILE);
+        heightOffset = 0.5f + (f32)(s32)placement->scale / 15.0f;
+        setup = Obj_AllocObjectSetup(0x24, KALDACHOM_CHILD_OBJ_MOUTH_PROJECTILE);
         if (useUpperMouthPoint != 0) {
-            placement->posX = control->upperMouthPosX;
-            placement->posY = control->upperMouthPosY;
-            placement->posZ = control->upperMouthPosZ;
+            setup->posX = control->upperMouthPosX;
+            setup->posY = control->upperMouthPosY;
+            setup->posZ = control->upperMouthPosZ;
         } else {
-            placement->posX = control->lowerMouthPosX;
-            placement->posY = control->lowerMouthPosY;
-            placement->posZ = control->lowerMouthPosZ;
+            setup->posX = control->lowerMouthPosX;
+            setup->posY = control->lowerMouthPosY;
+            setup->posZ = control->lowerMouthPosZ;
         }
-        placement->color[0] = 1;
-        placement->color[1] = 4;
-        placement->color[2] = 0xff;
-        placement->color[3] = 0xff;
-        projectile = Obj_SetupObject(placement, 5, 0xffffffff, 0xffffffff, 0);
+        setup->color[0] = 1;
+        setup->color[1] = 4;
+        setup->color[2] = 0xff;
+        setup->color[3] = 0xff;
+        projectile = Obj_SetupObject(setup, 5, 0xffffffff, 0xffffffff, 0);
         if (projectile != NULL) {
             travelTime = 60.0f * (state->ground.baddie.targetDistance / (f32)(u32)state->aggroRange);
-            projectile->anim.velocityX = (state->targetObj->anim.localPosX - placement->posX) / travelTime;
+            projectile->anim.velocityX = (state->targetObj->anim.localPosX - setup->posX) / travelTime;
             yJitter = (f32)(s32)randomGetRange(-10, 10);
             mouthY = 10.0f * heightOffset + state->targetObj->anim.localPosY;
-            projectile->anim.velocityY = (mouthY + yJitter - placement->posY) / travelTime;
-            projectile->anim.velocityZ = (state->targetObj->anim.localPosZ - placement->posZ) / travelTime;
+            projectile->anim.velocityY = (mouthY + yJitter - setup->posY) / travelTime;
+            projectile->anim.velocityZ = (state->targetObj->anim.localPosZ - setup->posZ) / travelTime;
         }
     }
 }
@@ -654,15 +655,16 @@ void kaldachom_update(GameObject* obj) {
     GameObject* player;
     int texture;
     int ref;
+    ObjPlacement* placement;
     KaldachomState* objectState;
     f32 scrollPhase;
 
     objectState = obj->extra;
-    ref = obj->anim.placementDataAddress;
+    placement = (ObjPlacement*)obj->anim.placementDataAddress;
     if (obj->userData1 != 0) {
         if ((objectState->substate != 3) &&
-            (cond = (*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)ref)->mapId), cond != 0)) {
-            (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)ref, (u8*)objectState, 8, 6, 0, 0x26, 20.0f);
+            (cond = (*gMapEventInterface)->shouldNotSaveTime(placement->mapId), cond != 0)) {
+            (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)objectState, 8, 6, 0, 0x26, 20.0f);
             objectState->targetState = 0;
             Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy211);
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
