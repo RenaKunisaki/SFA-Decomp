@@ -71,6 +71,22 @@ The retail `.o` bytes are the ground truth; layout moves must be codegen-neutral
   two `lwz` and two `stw` where retail has one of each. Moving the `LL` into a shared
   flag `#define` is also wrong — it widens that macro's compare and test sites too
   (measured: expgfx 99.5915 -> 96.3278 across four functions).
+- **A pointer operand forces pointer-first evaluation; `(int)` restores source order.**
+  When either operand of `+` has pointer type MWCC canonicalises the tree to
+  `pointer + index` and evaluates the *pointer* subexpression first -- however you wrote
+  the `+`, and even when the index already had its own preceding statement (a single-use
+  `int` local is propagated into the expression and sunk to the use point). The tell in
+  `ndiff` is a region whose T and C hold the SAME opcodes in a DIFFERENT order, e.g.
+  `srawi; lwz; add` against `lwz; srawi; add`. Making both operands plain `int` removes
+  the pointer to canonicalise on and restores strict left-to-right order:
+  `u8* p = (u8*)((pos >> 3) + (int)bs.data);` rather than `bs.data + (pos >> 3)`.
+  This is site-specific -- applying it to every sibling site of the same expression in a
+  file regresses them -- so A/B each site alone on `fuzzy_match_percent` and keep only
+  measured winners. `(int)ptr`, `*(int*)&s->member[i]` and `*(int*)(base + K)` are NOT
+  interchangeable; try all three. Inert spellings: `&arr[i]`, `arr + i`, inlining the
+  index expression, and swapping the `+` operands while a pointer type remains.
+  The residual ceiling is the `add`'s own operand order (`add rD,rIDX,rPTR` vs retail's
+  `add rD,rPTR,rIDX`), which this form cannot reach.
 - **SJIS-bearing files** (non-ASCII bytes) are edited byte-wise (python `rb`/`wb`),
   never through text tools or formatters.
 - Gate every sweep: `ninja all_source` must exit 0 and every `.o` must be md5-identical
