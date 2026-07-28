@@ -293,7 +293,10 @@ int GXFlush_(u8 visible, int unused)
     GXCopyDisp(renderFrameBuffer, 1);
     GXFlush();
     gGxDrawSyncToken = (u16)(gGxDrawSyncToken + 1);
-    next = renderFrameBuffer == externalFrameBuffer0 ? externalFrameBuffer1 : externalFrameBuffer0;
+    if (renderFrameBuffer == (next = externalFrameBuffer0))
+    {
+        next = externalFrameBuffer1;
+    }
     renderFrameBuffer = next;
     if (visible != 0 && gVideoBlackScreenFrameCount != 0)
     {
