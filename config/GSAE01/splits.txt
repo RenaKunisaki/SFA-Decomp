@@ -5055,6 +5055,7 @@ main/trig.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c:
 	.text       start:0x80293DA4 end:0x80294098
+	.sdata2     start:0x803E7D60 end:0x803E7D74
 
 dolphin/MSL_C/PPCEABI/bare/H/s_floor.c:
 	.text       start:0x80294098 end:0x80294204
