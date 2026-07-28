@@ -135,7 +135,7 @@ void andross_steerAsteroids(GameObject* obj, AndrossState* state)
         for (i = 0, objs = (int*)objList; i < count; i++)
         {
             cur = *objs;
-            defNo = *(s16*)(*(int*)&((GameObject*)cur)->anim.placementData);
+            defNo = *(s16*)(((GameObject*)cur)->anim.placementDataAddress);
             if (defNo == ANDROSS_CHILD_OBJ_ASTEROID || defNo == ANDROSS_CHILD_OBJ_SUCK_ASTEROID)
             {
                 dy = state->cachedPosY - ((GameObject*)cur)->anim.localPosY;

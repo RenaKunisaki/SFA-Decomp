@@ -725,7 +725,7 @@ int DR_CloudRunner_stateHandler04(GameObject* obj, CloudRunnerState* baddie)
         (obj)->anim.velocityY = fz;
         (obj)->anim.velocityZ = fz;
         inner2 = (obj)->extra;
-        placement = *(int*)&(obj)->anim.placementData;
+        placement = (obj)->anim.placementDataAddress;
         ((ByteFlags*)&inner2->flagsBC0)->b02 = 1;
         (*gGameUIInterface)
             ->initAirMeter(((DRCloudRunnerPlacement*)placement)->airMeterCapacity, DRCLOUDRUNNER_AIRMETER_BGTEXTURE);

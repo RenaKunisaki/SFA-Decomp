@@ -464,7 +464,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
 {
     char* desc = (char*)&gTriggerObjDescriptor;
     u8* state = obj->extra;
-    u8* p = (u8*)(*(int*)&obj->anim.placementData + 0x18);
+    u8* p = (u8*)(obj->anim.placementDataAddress + 0x18);
     u8 i = 0;
     u8 b;
     u8 sflags;

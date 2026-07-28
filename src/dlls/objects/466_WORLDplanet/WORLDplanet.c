@@ -244,7 +244,7 @@ void worldplanet_update(GameObject* obj) {
     if (state->foxSpawnTimer == 1) {
         int def;
         state->foxSpawnTimer = randomGetRange(WORLDPLANET_FOX_SPAWN_MIN_FRAMES, WORLDPLANET_FOX_SPAWN_MAX_FRAMES);
-        def = *(int*)&(obj)->anim.placementData;
+        def = (obj)->anim.placementDataAddress;
         if (Obj_IsLoadingLocked() != 0) {
             WorldPlanetFoxSpawnSetup* setup = (WorldPlanetFoxSpawnSetup*)Obj_AllocObjectSetup(
                 WORLDPLANET_FOX_SPAWN_SETUP_SIZE, WORLDPLANET_FOX_SPAWN_OBJECT_ID);

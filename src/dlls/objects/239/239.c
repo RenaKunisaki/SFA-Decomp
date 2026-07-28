@@ -210,7 +210,7 @@ int pushable_updateCurtain(int obj, PushableState* state) {
     int placement;
     GameObject* player;
 
-    placement = *(int*)&((GameObject*)obj)->anim.placementData;
+    placement = ((GameObject*)obj)->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
     if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (fn_80295A04(player, 10) != 0)) {
         Sfx_StopObjectChannel(obj, 8);

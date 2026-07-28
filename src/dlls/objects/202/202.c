@@ -1712,7 +1712,7 @@ GameObject* gcRobotLight_init(GameObject* obj, int childId)
     ObjPlacement* sub;
     u8* setup;
 
-    sub = (ObjPlacement*)(*(int*)&obj->anim.placementData);
+    sub = (ObjPlacement*)(obj->anim.placementDataAddress);
     Obj_GetPlayerObject();
     if (Obj_IsLoadingLocked() == 0)
         return NULL;
@@ -1747,7 +1747,7 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, in
     int sub;
     f32 fz;
 
-    sub = *(int*)&((GameObject*)obj)->anim.placementData;
+    sub = ((GameObject*)obj)->anim.placementDataAddress;
     if (msg == 16 || msg == 17)
     {
         return;
@@ -4730,7 +4730,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
     f32 sinB;
 
     {
-        u8 n = *(u8*)(*(int*)&obj->anim.placementData + 0x2f);
+        u8 n = *(u8*)(obj->anim.placementDataAddress + 0x2f);
         scale = n;
         if (0.0f == n)
         {
@@ -4975,7 +4975,7 @@ void hoodedZyck_init(GameObject* obj, BaddieState* st)
     f32 base_v;
     u32 flags;
     u32 amt;
-    amt = *((u8*)((int*)*(int*)&obj->anim.placementData) + 0x2f);
+    amt = *((u8*)((int*)obj->anim.placementDataAddress) + 0x2f);
     ratio = amt;
     if (0.0f == amt)
     {
@@ -7807,10 +7807,10 @@ void iceBaddie_updateTargetMotion(GameObject* obj, GroundBaddieState* objectStat
     } else {
         (*gBaddieControlInterface)->updateGravity(obj, state, 0.17f, -1);
     }
-    objectState->savedObjC0 = (int)obj->pendingParentObj;
+    objectState->savedPendingParentObj = obj->pendingParentObj;
     obj->pendingParentObj = NULL;
     (*gPlayerInterface)->update(obj, state, timeDelta, timeDelta, gIceBaddieStateHandlersA, gIceBaddieStateHandlersB);
-    obj->pendingParentObj = (void*)objectState->savedObjC0;
+    obj->pendingParentObj = objectState->savedPendingParentObj;
 }
 
 void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBaddieState* state) {

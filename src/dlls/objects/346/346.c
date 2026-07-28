@@ -242,7 +242,7 @@ void explodable_update(GameObject* obj) {
     ExplodablePlacement* placement;
 
     stateAddress = *(int*)&obj->extra;
-    placementAddress = *(int*)&obj->anim.placementData;
+    placementAddress = obj->anim.placementDataAddress;
     state = (ExplodableState*)stateAddress;
     placement = (ExplodablePlacement*)placementAddress;
     if (state->phase != EXPLODABLE_PHASE_BROKEN) {

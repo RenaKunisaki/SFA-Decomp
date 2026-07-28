@@ -34,7 +34,7 @@ void* camStaticFindNearestAnchor(f32 x, f32 y, f32 z, int filter1, int filter2)
     {
         obj = (GameObject*)*list;
         if (obj->anim.classId == filter2 &&
-            *(u8*)(*(int*)&obj->anim.placementData + 0x18) == filter1)
+            *(u8*)(obj->anim.placementDataAddress + 0x18) == filter1)
         {
             dx = x - obj->anim.worldPosX;
             dy = y - obj->anim.worldPosY;

@@ -550,7 +550,7 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
         Obj_SetActiveModelIndex(obj, idx);
         obj->anim.alpha = gWorldObjVariantAlphaTable[idx];
         for (i = 0; i < 0xb; i++) {
-            sub = *(int*)&obj->anim.placementData;
+            sub = obj->anim.placementDataAddress;
             if (Obj_IsLoadingLocked() != 0) {
                 int o2 = (int)Obj_AllocObjectSetup(0x20, WORLDOBJ_SUNRAY_OBJ);
                 *(u8*)(o2 + 4) = *(u8*)(sub + 4);

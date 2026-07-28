@@ -102,9 +102,9 @@ void KT_RexFloorSwitch_update(GameObject* obj)
                                     (f32)(u32)placement->sinkDepth;
             curveBits = mainGetBit(GAMEBIT_DR_KTrexPhaseCounter) >> 1;
             curveId = (*gRomCurveInterface)->find(
-                ((KtrexfloorswitchPlacement*)*(int*)&(obj)->anim.placementData)->curveX,
-                ((KtrexfloorswitchPlacement*)*(int*)&(obj)->anim.placementData)->baseHeight,
-                ((KtrexfloorswitchPlacement*)*(int*)&(obj)->anim.placementData)->curveZ,
+                ((KtrexfloorswitchPlacement*)(obj)->anim.placementDataAddress)->curveX,
+                ((KtrexfloorswitchPlacement*)(obj)->anim.placementDataAddress)->baseHeight,
+                ((KtrexfloorswitchPlacement*)(obj)->anim.placementDataAddress)->curveZ,
                 &gKTrexFloorSwitchCurveFindResult, 1, curveBits);
             if (curveId != -1)
             {
@@ -137,9 +137,9 @@ void KT_RexFloorSwitch_update(GameObject* obj)
                                     (f32)(u32)placement->sinkDepth;
             curveBits = mainGetBit(GAMEBIT_DR_KTrexPhaseCounter) >> 1;
             curveId = (*gRomCurveInterface)->find(
-                ((KtrexfloorswitchPlacement*)*(int*)&(obj)->anim.placementData)->curveX,
-                ((KtrexfloorswitchPlacement*)*(int*)&(obj)->anim.placementData)->baseHeight,
-                ((KtrexfloorswitchPlacement*)*(int*)&(obj)->anim.placementData)->curveZ,
+                ((KtrexfloorswitchPlacement*)(obj)->anim.placementDataAddress)->curveX,
+                ((KtrexfloorswitchPlacement*)(obj)->anim.placementDataAddress)->baseHeight,
+                ((KtrexfloorswitchPlacement*)(obj)->anim.placementDataAddress)->curveZ,
                 &gKTrexFloorSwitchCurveFindResult, 1, curveBits);
             if (curveId != -1)
             {
@@ -394,7 +394,7 @@ void KT_RexFloorSwitch_init(GameObject* obj, const KtrexfloorswitchPlacement* pl
     obj->userData1 = 1;
     obj->userData2 = 1;
     {
-        KtrexfloorswitchPlacement* pl = (KtrexfloorswitchPlacement*)*(int*)&obj->anim.placementData;
+        KtrexfloorswitchPlacement* pl = (KtrexfloorswitchPlacement*)obj->anim.placementDataAddress;
         curve = (*gRomCurveInterface)->find(
             pl->curveX, pl->baseHeight, pl->curveZ, &gKTrexFloorSwitchCurveFindResult, 1, 0);
     }

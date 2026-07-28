@@ -1221,7 +1221,7 @@ void dll_D3_update(GameObject* obj)
 #define dy           vec[2]
 #define dz           vec[3]
 
-    trans = (DllD3Placement*)(*(int*)&obj->anim.placementData);
+    trans = (DllD3Placement*)(obj->anim.placementDataAddress);
     state = obj->extra;
     extra = (LandedArwingState*)((GroundBaddieState*)state)->control;
     player = Obj_GetPlayerObject();
@@ -1330,13 +1330,13 @@ void dll_D3_update(GameObject* obj)
     (*gBaddieControlInterface)
         ->updateGravity(obj, state, 0.0f, -1);
 
-    ((TreasureChestState*)state)->savedObjC0 = *(int*)&obj->pendingParentObj;
-    *(int*)&obj->pendingParentObj = 0;
+    ((TreasureChestState*)state)->savedPendingParentObj = obj->pendingParentObj;
+    obj->pendingParentObj = 0;
 
     (*gPlayerInterface)->update(obj, state, timeDelta, timeDelta, gLandedArwingStateHandlers,
                                 &gLandedArwingDefaultStateHandler);
 
-    *(int*)&obj->pendingParentObj = ((TreasureChestState*)state)->savedObjC0;
+    obj->pendingParentObj = ((TreasureChestState*)state)->savedPendingParentObj;
 
     if (((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 == 0u && extra->surfaceMode == 6)
     {

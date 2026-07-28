@@ -212,7 +212,7 @@ typedef struct GroundBaddieState {
     CharacterEyeAnimState eyeAnimState; /* 0x3ac: head-aim / eye-blink record (characterDoEyeAnims / characterSetHeadYawToTarget) */
     u8 pad3D4[0x3DC - 0x3D4];
     void *path; /* rom-curve/path record */
-    int savedObjC0; /* obj+0xC0 swap slot around the player-interface update */
+    void *savedPendingParentObj; /* obj+0xC0 swap slot around the player-interface update */
     u8 unk3E4[4];
     f32 glowAlpha; /* 0x3e8: alpha of the red glow tint RGBA(200,0,0,glowAlpha), passed to objSetGlowColor + objParticleFn alpha arg in baddie render */
     f32 glowRate; /* 0x3ec: per-frame delta added to glowAlpha; negated when the alpha ramp reaches its ceiling (ktrex) */

@@ -213,7 +213,7 @@ void dll_CB_seekAndUpdate(GameObject* obj, ObjSeqState* sequenceState, GroundBad
     placement = (DllCBPlacement*)obj->anim.placementData;
     state->baddie.moveDone = 1;
     if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)(u32)objectState->aggroRange, 1) != 0) {
-        state->baddie.targetObj = (GameObject*)objectState->savedObjC0;
+        state->baddie.targetObj = objectState->savedPendingParentObj;
         state->baddie.hasTarget = 0;
         if (placement->trackYieldEnable != -1) {
             if (sequenceState != NULL) {
@@ -225,10 +225,10 @@ void dll_CB_seekAndUpdate(GameObject* obj, ObjSeqState* sequenceState, GroundBad
         }
     }
     (*gBaddieControlInterface)->updateGravity(obj, state, 0.17f, 1);
-    objectState->savedObjC0 = (int)obj->pendingParentObj;
+    objectState->savedPendingParentObj = obj->pendingParentObj;
     obj->pendingParentObj = NULL;
     (*gPlayerInterface)->update(obj, state, timeDelta, timeDelta, gDllCBMoveHandlers, gDllCBStateHandlers);
-    obj->pendingParentObj = (GameObject*)objectState->savedObjC0;
+    obj->pendingParentObj = objectState->savedPendingParentObj;
 }
 
 void dll_CB_advanceAI(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state) {

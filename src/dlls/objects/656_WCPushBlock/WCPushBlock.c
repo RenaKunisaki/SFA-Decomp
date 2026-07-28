@@ -107,7 +107,7 @@ int wcpushblock_getExtraSize(void)
 int wcpushblock_getObjectTypeId(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &obj->anim;
-    int modelIndex = *(s8*)(*(int*)&obj->anim.placementData + WCPUSHBLOCK_MODEL_INDEX_OFFSET);
+    int modelIndex = *(s8*)(obj->anim.placementDataAddress + WCPUSHBLOCK_MODEL_INDEX_OFFSET);
     int modelCount = objAnim->modelInstance->modelCount;
 
     if (modelIndex >= modelCount)

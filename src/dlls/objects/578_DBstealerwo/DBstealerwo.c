@@ -144,7 +144,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
 
     GroundBaddieState* state = (obj)->extra;
     DbStealerwormControl* sub;
-    int data = *(int*)&(obj)->anim.placementData;
+    int data = (obj)->anim.placementDataAddress;
     int count;
     char* entry;
     char* ptr;
@@ -243,7 +243,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = (obj)->extra;
     DbStealerwormControl* sub;
-    int data = *(int*)&(obj)->anim.placementData;
+    int data = (obj)->anim.placementDataAddress;
     int base;
     int routeIndex;
     GameObject* found;
@@ -1584,7 +1584,7 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
 
 
     GroundBaddieState* sub = (obj)->extra;
-    int data = *(int*)&(obj)->anim.placementData;
+    int data = (obj)->anim.placementDataAddress;
     DbStealerwormControl* sub_40c = (DbStealerwormControl*)sub->control;
     BaddieState* bs = baddie;
 
@@ -1803,7 +1803,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
     int placementData;
 
     sub = (obj)->extra;
-    placementData = *(int*)&(obj)->anim.placementData;
+    placementData = (obj)->anim.placementDataAddress;
     sub_40c = (DbStealerwormControl*)sub->control;
     if (bs->moveJustStartedA != '\0')
     {
@@ -2126,7 +2126,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
         f32 d[3];
     } stk;
     stk.range = 100.0f;
-    data = *(int*)&obj->anim.placementData;
+    data = obj->anim.placementDataAddress;
     near = (*gBaddieControlInterface)
                ->findAggroTarget(obj, (void*)baddie, st->aggroRange, 0x8000);
     if (near == 0 && (st->configFlags & 0x10) != 0)
@@ -2416,10 +2416,10 @@ void dbstealerworm_update(GameObject* objp)
                     {
                         (*gPlayerInterface)->rotateTowardTarget((void*)obj, (void*)blob, timeDelta, 4);
                     }
-                    ((GroundBaddieState*)blob)->savedObjC0 = *(int*)&obj->pendingParentObj;
-                    *(int*)&obj->pendingParentObj = 0;
+                    ((GroundBaddieState*)blob)->savedPendingParentObj = obj->pendingParentObj;
+                    obj->pendingParentObj = 0;
                     (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st + 0x34, (char*)st + 0x18);
-                    *(int*)&obj->pendingParentObj = ((GroundBaddieState*)blob)->savedObjC0;
+                    obj->pendingParentObj = ((GroundBaddieState*)blob)->savedPendingParentObj;
                 }
             }
         }

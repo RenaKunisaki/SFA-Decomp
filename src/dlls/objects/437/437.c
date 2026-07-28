@@ -630,7 +630,7 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 
 void Lightfoot_ResetScriptedPosition(GameObject* obj)
 {
-    switch (*(int*)((char*)*(int*)&obj->anim.placementData + 0x14))
+    switch (*(int*)((char*)obj->anim.placementDataAddress + 0x14))
     {
     case 0x34316:
         obj->anim.worldPosX = -2692.46f;
@@ -730,12 +730,12 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
             (*gBaddieControlInterface)
                 ->updateGravity((GameObject*)obj, (void*)state, 0.17f, 1);
         }
-        inner->savedObjC0 = *(int*)&((GameObject*)obj)->pendingParentObj;
-        *(int*)&((GameObject*)obj)->pendingParentObj = 0;
+        inner->savedPendingParentObj = ((GameObject*)obj)->pendingParentObj;
+        ((GameObject*)obj)->pendingParentObj = 0;
         (*gPlayerInterface)
             ->update((void*)obj, (void*)state, timeDelta, timeDelta, gDll437StateHandlers,
                      gDll437SubstateHandlers);
-        *(int*)&((GameObject*)obj)->pendingParentObj = inner->savedObjC0;
+        ((GameObject*)obj)->pendingParentObj = inner->savedPendingParentObj;
         Lightfoot_ProcessHitResponseFlags(obj, &inner->baddie);
     }
 }
@@ -868,7 +868,7 @@ void dll437_hitDetect(void) {
 
 void dll437_update(GameObject* obj) {
     Dll437State* inner = obj->extra;
-    int workValue = *(int*)&obj->anim.placementData;
+    int workValue = obj->anim.placementDataAddress;
     Dll437ControlState* control = inner->groundBaddie.control;
     f32 pulseOffset[3];
     f32 effectParams[6];

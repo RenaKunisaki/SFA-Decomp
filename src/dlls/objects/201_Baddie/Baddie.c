@@ -279,7 +279,7 @@ void tricky_handleDefeat(GameObject* obj, int state)
     int spawnBits;
     u8 moveId;
 
-    setup = *(int*)&(obj)->anim.placementData;
+    setup = (obj)->anim.placementDataAddress;
     ((TrickyState*)state)->actionId = 0;
     if (((((TrickyState*)state)->flags2DC & 0x800) != 0) && ((((TrickyState*)state)->flags2E0 & 0x800) == 0))
     {
@@ -749,7 +749,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
     f32 v;
 
     (void)state;
-    parentSetup = *(int*)&(obj)->anim.placementData;
+    parentSetup = (obj)->anim.placementDataAddress;
     *(struct TrickyCommandSpawnPair*)commandSpawnIds = *(struct TrickyCommandSpawnPair*)lbl_803E2558;
     rewardSpawnIds0 = *(u32*)lbl_803E2560;
     rewardTail.pair = *(u32*)lbl_803E2564;
@@ -798,7 +798,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
             savedX = (obj)->anim.worldPosX;
             savedY = (obj)->anim.worldPosY;
             savedZ = (obj)->anim.worldPosZ;
-            parentSetup = *(int*)&(obj)->anim.placementData;
+            parentSetup = (obj)->anim.placementDataAddress;
             if ((void*)parentSetup != NULL)
             {
                 (obj)->anim.worldPosX = ((ObjPlacement*)parentSetup)->posX;
@@ -875,7 +875,7 @@ void baddieInstantiateWeapon(GameObject* obj, int state)
     void* child;
     int setup;
 
-    parentSetup = *(int*)&(obj)->anim.placementData;
+    parentSetup = (obj)->anim.placementDataAddress;
     if ((*(s16*)&((TrickyState*)state)->currentTime != *(s16*)(state + 0x2b6)) && ((obj)->anim.alpha != 0))
     {
         if ((obj)->childObjs[0] != NULL)

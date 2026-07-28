@@ -514,7 +514,7 @@ char sAnimGreaterMessage[11] = " GREATER \n\000";
 
 void dbegg_update(GameObject* obj)
 {
-    int data = *(int*)&(obj)->anim.placementData;
+    int data = (obj)->anim.placementDataAddress;
 #define hitState ((ObjHitsPriorityState*)(obj)->anim.hitReactState)
     GameObject* player;
     DbEggState* egg;
@@ -682,7 +682,7 @@ void dbegg_update(GameObject* obj)
             {
                 playerObj = Obj_GetPlayerObject();
                 pickupState = *(int*)&(obj)->extra;
-                placement = *(int*)&(obj)->anim.placementData;
+                placement = (obj)->anim.placementDataAddress;
                 ObjGroup_RemoveObject((int)obj, DBEGG_OBJGROUP);
                 ((DbEggState*)pickupState)->mode = DBEGG_MODE_RELEASED;
                 mainSetBits(0x3c4, 1);
@@ -853,7 +853,7 @@ void dbegg_update(GameObject* obj)
                         int pickupState;
                         GameObject* playerObj = Obj_GetPlayerObject();
                         pickupState = *(int*)&(obj)->extra;
-                        placement = *(int*)&(obj)->anim.placementData;
+                        placement = (obj)->anim.placementDataAddress;
                         ObjGroup_RemoveObject((int)obj, DBEGG_OBJGROUP);
                         ((DbEggState*)pickupState)->mode = DBEGG_MODE_RELEASED;
                         mainSetBits(0x3c4, 1);

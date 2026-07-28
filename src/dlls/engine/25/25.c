@@ -422,7 +422,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
         {
             if (((Dll19Placement*)state)->oscValue > 2.0f)
             {
-                int other = *(int*)&obj->anim.placementData;
+                int other = obj->anim.placementDataAddress;
                 ((Dll19Placement*)state)->oscValue = 0.0f;
                 ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
                 ((BaddieState*)baddieState)->hitPoints = 0;

@@ -117,7 +117,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
         }
         if (destroyed != 0)
         {
-            setup = *(int*)&obj->anim.placementData;
+            setup = obj->anim.placementDataAddress;
             inner->health = 0;
             switch (obj->anim.seqId)
             {
@@ -157,7 +157,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
 void drakord_thornbush_update(GameObject* obj)
 {
     DrakordThornbushState* inner = (DrakordThornbushState*)obj->extra;
-    int setup = *(int*)&(obj)->anim.placementData;
+    int setup = (obj)->anim.placementDataAddress;
     DrakordThornbushPlacement* setup2;
     if (timerIsActive(&inner->growth) != 0)
     {
@@ -208,7 +208,7 @@ void drakord_thornbush_update(GameObject* obj)
         }
         if (inner->health == 0)
         {
-            setup2 = (DrakordThornbushPlacement*)(*(int*)&(obj)->anim.placementData);
+            setup2 = (DrakordThornbushPlacement*)((obj)->anim.placementDataAddress);
             ObjHits_EnableObject(obj);
             inner->health = setup2->spawnHealth;
             ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (s16)inner->radius);

@@ -764,11 +764,11 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
                 control->effectFlags = 0;
                 (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, -1);
                 (*gPlayerInterface)->rotateTowardTarget(obj, state, timeDelta, 4);
-                state->savedObjC0 = *(int*)&obj->pendingParentObj;
-                *(int*)&obj->pendingParentObj = 0;
+                state->savedPendingParentObj = obj->pendingParentObj;
+                obj->pendingParentObj = 0;
                 (*gPlayerInterface)
                     ->update(obj, state, timeDelta, timeDelta, gChukChukMoveHandlers, gChukChukCheckHandlers);
-                *(int*)&obj->pendingParentObj = state->savedObjC0;
+                obj->pendingParentObj = state->savedPendingParentObj;
             }
             obj->anim.localPosY = placement->base.posY - 2.0f;
         }

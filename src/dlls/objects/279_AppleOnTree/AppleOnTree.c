@@ -422,7 +422,7 @@ void AppleOnTree_update(GameObject* obj) {
     int message;
 
     state = *(int*)&obj->extra;
-    placement = *(int*)&obj->anim.placementData;
+    placement = obj->anim.placementDataAddress;
     message = 0;
     if ((((AppleOnTreeState*)state)->flags & APPLE_ON_TREE_FLAG_PICKUP_PENDING) != 0) {
         while (val = ObjMsg_Pop(obj, (u32*)&message, 0x0, 0x0), val != 0) {

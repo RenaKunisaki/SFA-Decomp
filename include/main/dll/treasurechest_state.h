@@ -30,7 +30,7 @@ typedef union TreasureChestState {
     u8 unk34A[0x354 - 0x34A];
     s8 hitPoints;
     u8 unk355[0x3E0 - 0x355];
-    int savedObjC0;
+    void *savedPendingParentObj;
     u8 unk3E4[0x3F4 - 0x3E4];
     s16 gameBitB;
     u8 unk3F6[0x3FE - 0x3F6];

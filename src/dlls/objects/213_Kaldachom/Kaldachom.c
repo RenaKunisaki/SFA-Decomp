@@ -658,7 +658,7 @@ void kaldachom_update(GameObject* obj) {
     f32 scrollPhase;
 
     objectState = obj->extra;
-    ref = *(int*)&obj->anim.placementData;
+    ref = obj->anim.placementDataAddress;
     if (obj->userData1 != 0) {
         if ((objectState->substate != 3) &&
             (cond = (*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)ref)->mapId), cond != 0)) {
@@ -712,12 +712,12 @@ void kaldachom_update(GameObject* obj) {
                 if (objectState->controlMode != KALDACHOM_CONTROL_MODE_RETURN) {
                     (*gPlayerInterface)->rotateTowardTarget(obj, objectState, timeDelta, 5);
                 }
-                objectState->ground.savedObjC0 = *(int*)&obj->pendingParentObj;
-                *(u32*)&obj->pendingParentObj = 0;
+                objectState->ground.savedPendingParentObj = obj->pendingParentObj;
+                obj->pendingParentObj = 0;
                 (*gPlayerInterface)
                     ->update(obj, objectState, timeDelta, timeDelta, &gKaldachomStateHandlersA,
                              &gKaldachomStateHandlersB);
-                *(u32*)&obj->pendingParentObj = objectState->ground.savedObjC0;
+                obj->pendingParentObj = objectState->ground.savedPendingParentObj;
             }
         }
     }

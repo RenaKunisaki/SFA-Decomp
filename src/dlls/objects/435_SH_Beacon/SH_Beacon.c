@@ -69,7 +69,7 @@ void sh_beacon_update(GameObject* obj) {
     ShBeaconState* ignitingState;
 
     state = obj->extra;
-    placementAddress = *(int*)&obj->anim.placementData;
+    placementAddress = obj->anim.placementDataAddress;
     switch (state->mode) {
     case SH_BEACON_MODE_UNLIT:
         if (((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
@@ -82,8 +82,8 @@ void sh_beacon_update(GameObject* obj) {
                 twinklePlacement->posY = obj->anim.localPosY;
                 twinklePlacement->posZ = obj->anim.localPosZ;
                 twinklePlacement->color[0] = 2;
-                twinklePlacement->color[1] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[1]));
-                twinklePlacement->color[3] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[3]));
+                twinklePlacement->color[1] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[1]));
+                twinklePlacement->color[3] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[3]));
                 state->twinkleObject = loadObjectAtObject(obj, twinklePlacement);
             }
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
@@ -183,8 +183,8 @@ void sh_beacon_init(GameObject* obj, const ShBeaconPlacement* placement) {
         twinklePlacement->posY = obj->anim.localPosY;
         twinklePlacement->posZ = obj->anim.localPosZ;
         twinklePlacement->color[0] = 2;
-        twinklePlacement->color[1] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[1]));
-        twinklePlacement->color[3] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[3]));
+        twinklePlacement->color[1] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[1]));
+        twinklePlacement->color[3] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[3]));
         state->twinkleObject = loadObjectAtObject(obj, twinklePlacement);
     }
 
