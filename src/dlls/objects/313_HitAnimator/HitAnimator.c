@@ -9,17 +9,10 @@
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
 
-typedef struct HitAnimatorPolygonGroup {
-    u8 pad00[0x10];
-    u32 flags; /* 0x10 */
-} HitAnimatorPolygonGroup;
-
-STATIC_ASSERT(offsetof(HitAnimatorPolygonGroup, flags) == 0x10);
-
 void HitAnimator_applyBlockState(MapBlockData* block, GameObject* obj, HitAnimatorState* state,
                                  HitAnimatorPlacement* placement) {
     int index;
-    HitAnimatorPolygonGroup* polygonGroup;
+    MapPolygonGroup* polygonGroup;
 
     if ((placement->setupFlags & HIT_ANIMATOR_SETUP_SKIP_POLYGONS) == 0) {
         for (index = 0; index < block->polyGroupCount; index++) {
