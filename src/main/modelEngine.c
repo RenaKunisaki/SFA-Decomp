@@ -309,6 +309,7 @@
 #include "dlls/objects/513_WM_colrise.h"
 #include "dlls/objects/514.h"
 #include "dlls/objects/515.h"
+#include "dlls/objects/516_WM_Torch.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -446,7 +447,7 @@ extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
 extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_LevelControlObjDescriptor, gWM_PlanetsObjDescriptor;
-extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
+extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor lbl_8030EE34;
@@ -1632,7 +1633,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_colriseObjDescriptor,
     (ResourceDescriptor*)&gDll202NullResourceDescriptor,
     (ResourceDescriptor*)&gDll203NullResourceDescriptor,
-    &gWM_TorchObjDescriptor,
+    (ResourceDescriptor*)&gWM_TorchObjDescriptor,
     &lbl_80328AD8,
     &gLightSourceObjDescriptor,
     &gWM_WormObjDescriptor,
