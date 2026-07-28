@@ -691,7 +691,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
         if (msgId != 0x11)
         {
             f32 z;
-            if (msgId != 0x1a && attacker->anim.seqId != NEWSEQOBJ_ATTACKER_GUNPOWDERBARREL && attacker->anim.seqId != NEWSEQOBJ_ATTACKER_METALBARREL)
+            if (msgId != 0x1a && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_GUNPOWDERBARREL && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_METALBARREL)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_swdout1);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_gethit02);
@@ -809,7 +809,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_attack);
         }
-        if (msgId != 0x1a && msgId != 0x1f && attacker->anim.seqId != NEWSEQOBJ_ATTACKER_GUNPOWDERBARREL && attacker->anim.seqId != NEWSEQOBJ_ATTACKER_METALBARREL)
+        if (msgId != 0x1a && msgId != 0x1f && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_GUNPOWDERBARREL && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_METALBARREL)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_stftest);
         }
@@ -1386,7 +1386,7 @@ void sharpClawInit(int obj, u8* state)
     state[0x322] = 6;
     ((GroundBaddieState*)state)->baddie.unk31C = fz;
     ((GroundBaddieState*)state)->baddie.pathStep *= 10.0f;
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (((GameObject*)obj)->anim.romDefNo)
     {
     case 314:
         if (*(s8*)(setup + 0x27) != 0)
@@ -2393,7 +2393,7 @@ void vambat_init(GameObject* obj, int state)
     *(f32*)(state + 0x328) = 0.0f;
     *(f32*)(state + 0x32c) = 0.0f;
     bs->pathStep = pathStepInit;
-    switch (obj->anim.seqId)
+    switch (obj->anim.romDefNo)
     {
     case MAGICPLANT_FIREBAT_SEQID:
         bs->userData2 = 1;
@@ -4997,10 +4997,10 @@ u8 gSnowwormBabyHitReactionSeqIndices[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 #define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
 #define FIREHOLE_OBJ_ID                  0x710 /* FireHole child spawned by firecrawler (firepipe DLL 0x273) */
 #define FIRECRAWLER_PROJECTILE_OBJ       0x869 /* retail "FireCrawler..." (DLL 0xD7 kaldachompspit) */
-/* crawler-family enemy anim.seqIds (docblock table: seqId -> enemy name) */
+/* crawler-family enemy anim.romDefNos (docblock table: romDefNo -> enemy name) */
 #define FIRECRAWLER_SEQID_FIRECRAWLER  0x6a2 /* FireCrawler */
 #define FIRECRAWLER_SEQID_REDEYE       0x6a3 /* RedEye */
-/* attacker seqId this creature is immune to (retail OBJECTS.bin). */
+/* attacker romDefNo this creature is immune to (retail OBJECTS.bin). */
 #define FIRECRAWLER_ATTACKER_SEQID_FLAMETHROWER 0x1b5 /* "FlameThrowe" (DLL 0xE4) */
 #define FIRECRAWLER_SEQID_SHADOWHUNTER 0x6a4 /* ShadowHunter */
 
@@ -5150,7 +5150,7 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
         {
             u32 objectIndex = (u8)i;
             GameObject* e = gCrawlerNearbyObjectBuffer[objectIndex].obj;
-            if (e->anim.seqId == FIRECRAWLER_SEQID_REDEYE)
+            if (e->anim.romDefNo == FIRECRAWLER_SEQID_REDEYE)
             {
                 u32 flags = ((BaddieState*)e->extra)->controlFlags;
                 if ((flags & 0x20000000) != 0 && (flags & 0x1800) == 0)
@@ -5333,7 +5333,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         damage = damage << 2;
     }
     if (idx == 1 &&
-        (attacker->anim.seqId == FIRECRAWLER_ATTACKER_SEQID_FLAMETHROWER || attacker->anim.classId == 0x1c || cmd == 0x1f))
+        (attacker->anim.romDefNo == FIRECRAWLER_ATTACKER_SEQID_FLAMETHROWER || attacker->anim.classId == 0x1c || cmd == 0x1f))
     {
         return;
     }
@@ -5343,11 +5343,11 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         {
             return;
         }
-        if ((obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+        if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
             {
-                switch (attacker->anim.seqId)
+                switch (attacker->anim.romDefNo)
                 {
                 case 0x416:
                     Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -5396,11 +5396,11 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         (obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
         ((FCVars*)state)->reactStep = tbl[step].next9;
         ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
-        if ((obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+        if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
             {
-                switch (attacker->anim.seqId)
+                switch (attacker->anim.romDefNo)
                 {
                 case 0x416:
                     Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -5447,11 +5447,11 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         {
             ((FCVars*)state)->emergeTimer = 6.0f * (f32)((FCVars*)state)->hitCountScalar;
             ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
-            if ((obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+            if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
             {
                 if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
                 {
-                    switch (attacker->anim.seqId)
+                    switch (attacker->anim.romDefNo)
                     {
                     case 0x416:
                         Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -5474,11 +5474,11 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         if (v == 1)
         {
             ((FCVars*)state)->emergeTimer = 2.0f * (f32)((FCVars*)state)->hitCountScalar;
-            if ((obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+            if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
             {
                 if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
                 {
-                    switch (attacker->anim.seqId)
+                    switch (attacker->anim.romDefNo)
                     {
                     case 0x416:
                         Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -5503,11 +5503,11 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
 
     if (cmd != 0x11)
     {
-        if ((obj)->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+        if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
             {
-                switch (attacker->anim.seqId)
+                switch (attacker->anim.romDefNo)
                 {
                 case 0x416:
                     Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
@@ -5782,7 +5782,7 @@ void crawler_updateB(GameObject* obj, u8* state)
         }
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 0x10;
         ((BaddieState*)state)->userData1 = 0;
-        if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER)
+        if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch_var);
             if (obj->childObjs[0] != NULL)
@@ -5877,7 +5877,7 @@ void crawler_updateB(GameObject* obj, u8* state)
         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
-            if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER &&
+            if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER &&
                 obj->childObjs[0] != NULL)
             {
                 firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
@@ -6003,7 +6003,7 @@ void crawler_update(GameObject* obj, u8* state)
         {
             (*gCameraInterface)->loadTriggeredCamAction(0, 0x6c, 0);
         }
-        if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
+        if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
         {
             firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
         }
@@ -6027,7 +6027,7 @@ void crawler_update(GameObject* obj, u8* state)
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
-        if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
+        if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
         {
             firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
         }
@@ -6111,7 +6111,7 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
     ((BaddieState*)state)->unk2E4 = 0xb;
     ((BaddieState*)state)->unk2E4 |= 0x400b0LL;
     ((BaddieState*)state)->unk2E4 |= 0x40001040LL;
-    switch (obj->anim.seqId)
+    switch (obj->anim.romDefNo)
     {
     case FIRECRAWLER_SEQID_REDEYE:
         ((BaddieState*)state)->speedScale = 150.0f;
@@ -6387,7 +6387,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
     {
         s16 t;
         if (((FCVars*)state)->linkedObj != NULL &&
-            ((t = ((GameObject*)((FCVars*)state)->linkedObj)->anim.seqId) == 0x1f || t == 0))
+            ((t = ((GameObject*)((FCVars*)state)->linkedObj)->anim.romDefNo) == 0x1f || t == 0))
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_fball2_c);
         }
@@ -6487,8 +6487,8 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     {
         Sfx_StopFromObject((int)obj, SFXTRIG_baddie_rach_death);
     }
-    if (((FCVars*)state)->linkedObj != NULL && (((GameObject*)((FCVars*)state)->linkedObj)->anim.seqId == 0x1f ||
-                                                ((GameObject*)((FCVars*)state)->linkedObj)->anim.seqId == 0))
+    if (((FCVars*)state)->linkedObj != NULL && (((GameObject*)((FCVars*)state)->linkedObj)->anim.romDefNo == 0x1f ||
+                                                ((GameObject*)((FCVars*)state)->linkedObj)->anim.romDefNo == 0))
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_fball2_c);
     }
@@ -6802,7 +6802,7 @@ void snowworm_init(GameObject* obj, int* st)
         ((BaddieState*)st)->unk31C = d;
     }
     ((BaddieState*)st)->userData1 = 1;
-    ((FCVars*)st)->turnDelta = (u16)(obj->anim.seqId == SNOWWORM_SEQID_BABY);
+    ((FCVars*)st)->turnDelta = (u16)(obj->anim.romDefNo == SNOWWORM_SEQID_BABY);
 }
 
 void whirlpool_updateWhileFrozen(int wpad0, u8* wpad1, int wpad2, int wpad3, int wpad4, int wpad5, Vec* wpad6,
@@ -7176,7 +7176,7 @@ int iceBaddie_updateLandingState(GameObject* obj, GroundBaddieState* state) {
     }
     if ((state->baddie.moveEventFlags & 1) == 0) {
         player = Obj_GetPlayerObject();
-        if (player->anim.seqId != 0) {
+        if (player->anim.romDefNo != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
         } else {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
@@ -7264,7 +7264,7 @@ int iceBaddie_updateDropState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != 0) {
         Obj_GetPlayerObject();
         player = Obj_GetPlayerObject();
-        if (player->anim.seqId != 0) {
+        if (player->anim.romDefNo != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
         } else {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
@@ -7600,7 +7600,7 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
     f32 shakeScale;
     f32 contactScale;
 
-    if (obj->anim.seqId == 99) {
+    if (obj->anim.romDefNo == 99) {
         ((IceBaddieControl*)controlAddress)->fxScale = 1.7f;
         shakeScale = 2.0f;
     } else {
@@ -7673,7 +7673,7 @@ void iceBaddie_updateEffectAnchors(GameObject* obj, GroundBaddieState* state) {
     pathMtx[14] = 0.0f;
     pathMtx[13] = 0.0f;
     pathMtx[12] = 0.0f;
-    if (obj->anim.seqId == 99) {
+    if (obj->anim.romDefNo == 99) {
         minScale = 1.0f;
     } else {
         minScale = 0.3f;

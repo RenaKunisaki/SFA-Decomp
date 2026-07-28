@@ -763,7 +763,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     {
         if ((u32)best != (u32)obj)
         {
-            if (((GameObject*)best)->anim.seqId == DBSTEALERWORM_SEQID)
+            if (((GameObject*)best)->anim.romDefNo == DBSTEALERWORM_SEQID)
             {
                 *(int*)&baddie->targetObj = best;
                 if (randomGetRange(0, n) == 0)
@@ -855,7 +855,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     ptr = (int*)ObjGroup_GetObjects(DBSTEALERWORM_OBJGROUP, &cnt2);
     for (i = 0, objs = ptr; i < cnt2; i++)
     {
-        if (((GameObject*)*objs)->anim.seqId == DBSTEALERWORM_SEQID)
+        if (((GameObject*)*objs)->anim.romDefNo == DBSTEALERWORM_SEQID)
         {
             tmpB = (**(int (**)(int, int, int))(*(int*)(*(int*)(*objs + 0x68)) + 0x24))(*objs, 0x83, 0);
             if ((u32)tmpB == q)

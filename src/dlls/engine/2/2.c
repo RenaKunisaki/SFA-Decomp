@@ -1972,7 +1972,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     st->cmdFlags[obj->seqIndex] = 0;
     base[obj->seqIndex + 0x3334] = 0;
     gObjSeqSlotValues[obj->seqIndex] = 0;
-    st->handles[obj->seqIndex] = obj->anim.seqId;
+    st->handles[obj->seqIndex] = obj->anim.romDefNo;
 
     walk = buf;
     bit = 1;
@@ -2009,8 +2009,8 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             if (objId == 0xffff)
             {
                 setup->base.objectId = OBJSEQ_OVERRIDE_OBJ;
-                setup->targetType = obj->anim.seqId + 4;
-                if (obj->anim.seqId == OBJSEQ_VARIABLE_OBJ && objSeqObjs != -1)
+                setup->targetType = obj->anim.romDefNo + 4;
+                if (obj->anim.romDefNo == OBJSEQ_VARIABLE_OBJ && objSeqObjs != -1)
                 {
                     setup->targetType = objSeqObjs + 4;
                 }
@@ -2364,7 +2364,7 @@ int ObjSeq_resolveTargetObject(GameObject* obj)
                 }
                 if (linked == NULL)
                 {
-                    if (candidate->anim.seqId == objType)
+                    if (candidate->anim.romDefNo == objType)
                     {
                         dx = obj->anim.localPosX - candidate->anim.localPosX;
                         dy = obj->anim.localPosY - candidate->anim.localPosY;
@@ -2436,7 +2436,7 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
         for (i = 0; i < objectCount; i++)
         {
             candidate = objects[i];
-            if (candidate->anim.seqId == objectType)
+            if (candidate->anim.romDefNo == objectType)
             {
                 dx = obj->anim.localPosX - candidate->anim.localPosX;
                 dy = obj->anim.localPosY - candidate->anim.localPosY;
