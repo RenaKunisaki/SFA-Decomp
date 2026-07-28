@@ -1499,15 +1499,14 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 void unloadMap(void)
 {
     MapBlockData* block;
-    int shaderIndex;
+    int j;
     MapShaderLayer* shaderLayer;
     int i;
     int layer;
     s8* cur;
     s8 mapType;
     MapShader* shader;
-    int layerIndex;
-    int textureIndex;
+    int k;
     u32 scrollSlot;
 
     audioStopByMask(4);
@@ -1527,12 +1526,12 @@ void unloadMap(void)
                     block = gMapBlocks[mapType];
                     gMapBlockIds[mapType] = -1;
                     gMapBlocks[mapType] = NULL;
-                    for (shaderIndex = 0; shaderIndex < block->shaderCount; shaderIndex++)
+                    for (j = 0; j < block->shaderCount; j++)
                     {
-                        shader = &block->shaders[shaderIndex];
-                        for (layerIndex = 0; layerIndex < shader->layerCount; layerIndex++)
+                        shader = &block->shaders[j];
+                        for (k = 0; k < shader->layerCount; k++)
                         {
-                            shaderLayer = &shader->layers[layerIndex];
+                            shaderLayer = &shader->layers[k];
                             scrollSlot = shaderLayer->scrollMtx;
                             if (scrollSlot != 0xff)
                             {
@@ -1543,8 +1542,8 @@ void unloadMap(void)
                                 mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->overrideType);
                         }
                     }
-                    for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
-                        textureFree(block->textures[textureIndex].texture);
+                    for (j = 0; j < block->textureCount; j++)
+                        textureFree(block->textures[j].texture);
                     if (block->auxData != NULL)
                         mm_free(block->auxData);
                     if (block->hits != NULL)
@@ -2093,7 +2092,6 @@ void doPendingMapLoads(void)
     int slot;
     MapLoadRec* rowCursor;
     int layer;
-    int cellIdx;
     int colIdx;
     int i;
     MapLoadRec* recsCursor;
@@ -2179,7 +2177,7 @@ void doPendingMapLoads(void)
                         MapCellEntry* ent = *cellTables;
                         char* grid = *gridTables;
                         gMapLayerCellStates = *stateTables;
-                        cellIdx = 0;
+                        i = 0;
                         row = 0;
                         rowCursor = recsCursor;
                         cellGrid = grid;
@@ -2202,12 +2200,12 @@ void doPendingMapLoads(void)
                                     cnt++;
                                 }
                                 cellGrid[0] = -2;
-                                gMapLayerCellStates[cellIdx] = -1;
+                                gMapLayerCellStates[i] = -1;
                                 ent[0].blockId = -3;
                                 ent[0].mapId = -1;
                                 ent[0].adjacentMapId1 = -1;
                                 ent[0].adjacentMapId2 = -1;
-                                cellIdx = cellIdx + 1;
+                                i = i + 1;
                                 colIdx = colIdx + 1;
                                 c = cellGrid[1];
                                 if (c > -1)
@@ -2222,13 +2220,13 @@ void doPendingMapLoads(void)
                                     cnt++;
                                 }
                                 cellGrid[1] = -2;
-                                gMapLayerCellStates[cellIdx] = -1;
+                                gMapLayerCellStates[i] = -1;
                                 ent[1].blockId = -3;
                                 ent[1].mapId = -1;
                                 ent[1].adjacentMapId1 = -1;
                                 ent[1].adjacentMapId2 = -1;
                                 ent += 2;
-                                cellIdx = cellIdx + 1;
+                                i = i + 1;
                                 cellGrid += 2;
                                 colIdx = colIdx + 1;
                             }
