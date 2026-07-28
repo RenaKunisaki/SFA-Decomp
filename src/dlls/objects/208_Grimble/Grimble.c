@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define GRIMBLE_OBJECT_GROUP                      3
 #define GRIMBLE_PATH_OBJECT_GROUP                 0x17

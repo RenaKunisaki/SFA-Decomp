@@ -1,6 +1,5 @@
 #include "musyx/sal_dsp.h"
 #include "musyx/sal_ai.h"
-#include "musyx/hw_samplemem.h"
 #include "dolphin/dsp.h"
 #include "dolphin/PPCArch.h"
 #include "dolphin/os.h"

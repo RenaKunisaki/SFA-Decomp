@@ -12,7 +12,6 @@
 #include "main/vecmath.h"
 #include "main/dll/dll_0052_cameramodeforcebehind.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
 f32 gCamForceBehindTraceDistance;
 f32 gCamForceBehindActiveHeightOffset;

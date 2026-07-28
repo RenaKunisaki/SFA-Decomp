@@ -13,7 +13,6 @@
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/gamebits.h"
 #include "main/object_render.h"
 
 int SB_ShipGunBroke_getExtraSize(void) {

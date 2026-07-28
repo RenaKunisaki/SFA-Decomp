@@ -1,4 +1,3 @@
-#include "types.h"
 #include "main/gameloop_api.h"
 
 #include "main/gameloop_internal.h"

@@ -1,5 +1,4 @@
 #include "main/audio/stream_api.h"
-#include "main/audio/sfx.h"
 #include "main/fileio.h"
 #include "main/gameloop_api.h"
 #include "main/gametext_charset_api.h"
@@ -12,7 +11,6 @@
 #include "main/pi_dolphin_api.h"
 #include "main/pi_flush_api.h"
 #include "dolphin/dvd.h"
-#include "dolphin/gx/GXLegacy.h"
 #include "dolphin/os/OSCache.h"
 
 // DVDGetDriveStatus() drive-status codes

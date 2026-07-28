@@ -18,7 +18,6 @@
 #include "main/dll/WM/dll_020A_wmgeneralscales.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
-#include "main/gamebits.h"
 #include "main/gametext_show_api.h"
 #include "main/lightmap_render_control_api.h"
 #include "main/map_load.h"

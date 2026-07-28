@@ -2,7 +2,6 @@
 #include "dlls/objects/314_VisAnimator.h"
 
 #include "game/objects/object.h"
-#include "main/gamebits.h"
 #include "main/lightmap_api.h"
 
 int VisAnimator_getExtraSize(void) {

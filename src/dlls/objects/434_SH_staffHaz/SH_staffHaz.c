@@ -10,7 +10,6 @@
 #include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "sys/objects/lifecycle.h"
 
 void SH_StaffHaze_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5) {
     f32 offset[3];

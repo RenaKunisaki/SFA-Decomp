@@ -16,7 +16,6 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
 #include "main/dll/dll_0092_dll92func0.h"
 
 extern u32 lbl_803171C0[];

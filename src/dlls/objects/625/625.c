@@ -38,7 +38,6 @@
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/rom_curve_interface.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_0271_drakorhoverpad_internal.h"

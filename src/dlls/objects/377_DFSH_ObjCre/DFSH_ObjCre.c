@@ -9,7 +9,6 @@
 #include "dlls/objects/377_DFSH_ObjCre.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/foodbag.h"

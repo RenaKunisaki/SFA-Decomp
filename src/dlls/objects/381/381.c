@@ -19,7 +19,6 @@
 #include "main/pad_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 typedef struct RollingBarrelCurveInitPair {
     s32 unknown00;

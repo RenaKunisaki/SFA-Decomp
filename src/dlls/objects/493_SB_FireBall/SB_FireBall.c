@@ -15,7 +15,6 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/objhits_types.h"
-#include "sys/objects/lifecycle.h"
 
 #define SB_FIREBALL_SPIN_STEP -800
 

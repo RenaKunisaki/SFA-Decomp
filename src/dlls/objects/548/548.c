@@ -1,8 +1,6 @@
 /* DLL 0x0224 */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/game_ui_interface.h"
-#include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/objprint_render_api.h"
 #include "main/vecmath.h"

@@ -33,7 +33,6 @@
 #include "main/sky_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define GPSH_SHRINE_ENVFX_A 0xCC
 #define GPSH_SHRINE_ENVFX_B 0xCD

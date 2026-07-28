@@ -11,23 +11,18 @@
  * compares the Arwing's current and previous Z against the pickup's Z.
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/objhits.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "main/objfx.h"
-#include "main/dll/headdisplay.h"
 #include "main/dll/ARW/dll_029F_arwbombcoll.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/gameloop_api.h"
 #include "main/dll/dll_02A0_ring.h"
 #include "dlls/object_descriptor.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
 
 #define ARW_ARWING_BOMB_OBJ 0x605 /* retail OBJECTS.bin "ARWArwingBo", DLL 0x29C */
 

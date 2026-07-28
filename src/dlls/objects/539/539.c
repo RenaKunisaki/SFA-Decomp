@@ -15,7 +15,6 @@
  * the object's expgfx source.
  */
 #include "dlls/object_descriptor.h"
-#include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
 #include "game/objects/object_setup.h"
 #include "game/objects/object.h"

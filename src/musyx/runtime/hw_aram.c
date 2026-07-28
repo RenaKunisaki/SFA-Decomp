@@ -1,4 +1,3 @@
-#include "PowerPC_EABI_Support/Runtime/runtime.h"
 #include "musyx/hw_aram.h"
 #include "musyx/synth_config.h"
 #include "musyx/aram.h"

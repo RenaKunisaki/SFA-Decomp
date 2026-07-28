@@ -12,9 +12,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIM_SNOWBALL_COORDINATES_PER_POINT 3
 #define DIM_SNOWBALL_COORDINATE_SCALE      16.0f

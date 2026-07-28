@@ -12,7 +12,6 @@
 #include "main/camera_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/objseq_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"

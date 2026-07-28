@@ -3,7 +3,6 @@
  */
 #include "main/camera_interface.h"
 #include "main/resource.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"

@@ -1,4 +1,3 @@
-#include "ghidra_import.h"
 #include "musyx/aram.h"
 #include "musyx/aram_queue.h"
 #include "musyx/sal_dsp.h"

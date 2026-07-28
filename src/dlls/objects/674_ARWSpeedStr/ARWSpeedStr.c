@@ -10,7 +10,6 @@
 #include "dolphin/mtx.h"
 #include "main/camera.h"
 #include "main/frame_timing.h"
-#include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"

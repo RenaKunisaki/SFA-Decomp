@@ -83,7 +83,6 @@
 #include "main/dll/hoodedzyck.h"
 #include "main/camera_interface.h"
 #include "main/model_light.h"
-#include "main/dll/modgfx.h"
 #include "main/dll/firecrawler.h"
 #include "main/dll/dll_0273_firepipe.h"
 #include "main/dll/hagabon_mk2.h"

@@ -3,7 +3,6 @@
  */
 #include "dlls/objects/404_GPSH_Scene.h"
 
-#include "game/objects/object.h"
 #include "main/object_render.h"
 
 #define GPSH_SCENE_RENDER_SCALE 1.0f

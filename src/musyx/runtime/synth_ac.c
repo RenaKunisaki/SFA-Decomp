@@ -1,4 +1,3 @@
-#include "PowerPC_EABI_Support/Runtime/runtime.h"
 #include "musyx/synth_config.h"
 
 extern f32 voicePitchUpTable[];

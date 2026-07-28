@@ -20,7 +20,6 @@
 #include "main/screen_transition.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 static const f32 gDeathSeqCameraYawAngle = -0.7853982f;
 static const f32 gDeathSeqCameraPitchAngle = 0.3926991f;

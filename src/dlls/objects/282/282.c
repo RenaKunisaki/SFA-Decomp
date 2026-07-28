@@ -1,7 +1,6 @@
 #include "dlls/objects/282.h"
 
 #include "dolphin/mtx/mtx_legacy.h"
-#include "game/objects/object.h"
 #include "main/model.h"
 #include "main/obj_group.h"
 #include "main/object_render.h"

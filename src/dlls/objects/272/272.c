@@ -11,7 +11,6 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objanim_update.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
 

@@ -12,7 +12,6 @@
  * particle mode and the trailing dust-burst count.
  */
 #include "main/dll/SP/dll_0287_spscarab.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"

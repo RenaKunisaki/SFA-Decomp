@@ -20,7 +20,6 @@
 #include "main/pad_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIMBOSSSPIT_PHASE_FLIGHT                     0
 #define DIMBOSSSPIT_BURST_START_FRAME                1

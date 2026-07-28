@@ -11,7 +11,6 @@
 #include "main/minimap_api.h"
 #include "main/obj_trigger.h"
 #include "main/objprint_render_api.h"
-#include "sys/objects.h"
 
 #define INFO_TEXT_DISPLAY_DURATION 600.0f
 

@@ -7,7 +7,6 @@
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
 
 #define GCBADDIE_SHIELD_ROTATION_SPEED_X 1800.0f
 #define GCBADDIE_SHIELD_ROTATION_SPEED_Z 200.0f

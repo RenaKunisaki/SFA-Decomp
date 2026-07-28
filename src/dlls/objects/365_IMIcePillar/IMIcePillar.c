@@ -1,6 +1,5 @@
 #include "dlls/objects/365_IMIcePillar.h"
 
-#include "game/objects/object.h"
 #include "main/object_render.h"
 
 int imIcePillar_getExtraSize(void) {

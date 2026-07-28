@@ -11,7 +11,6 @@
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
-#include "main/gamebits.h"
 #include "main/objhits.h"
 #include "main/pi_dolphin_api.h"
 #include "main/vecmath_distance_api.h"

@@ -6,8 +6,6 @@
 #include "main/objhits.h"
 #include "main/dll/player_objects.h"
 #include "main/pad.h"
-#include "main/audio/sfx.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"

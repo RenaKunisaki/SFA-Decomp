@@ -13,7 +13,6 @@
  */
 #include "main/audio/music_api.h"
 #include "main/audio/stream_api.h"
-#include "main/gamebits.h"
 #include "main/objseq.h"
 #include "main/dll/tricky.h"
 #include "main/sky_api.h"

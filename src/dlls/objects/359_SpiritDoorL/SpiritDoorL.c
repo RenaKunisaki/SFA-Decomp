@@ -14,7 +14,6 @@
 #include "main/gamebits_api.h"
 #include "main/model_light.h"
 #include "main/obj_group.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/object_transform.h"
 #include "main/objseq.h"

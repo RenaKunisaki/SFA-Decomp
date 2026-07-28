@@ -3,7 +3,6 @@
  * Matches the public MusyX runtime source (see PrimeDecomp/mariopartyrd
  * synthdata.c); SFA's build uses sndBegin/sndEnd for the IRQ guard.
  */
-#include "ghidra_import.h"
 #include "musyx/data_ref.h"
 #include "musyx/dsp_voice.h"
 #include "musyx/hw_aram.h"

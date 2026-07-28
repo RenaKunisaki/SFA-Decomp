@@ -9,7 +9,6 @@
  * last-seen bit is cached so the sweep only runs on a transition; lastBit
  * starts at CONTROLLIGHT_LAST_BIT_INVALID to force the first update.
  */
-#include "main/gamebits.h"
 #include "game/objects/object.h"
 #include "main/obj_group.h"
 #include "main/vecmath.h"

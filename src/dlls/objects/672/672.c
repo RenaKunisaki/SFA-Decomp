@@ -18,12 +18,10 @@
  */
 #include "main/gameloop_gamebit_api.h"
 #include "main/dll/partfx_interface.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/model_light.h"
 #include "dlls/object_descriptor.h"
 #include "main/objhits.h"

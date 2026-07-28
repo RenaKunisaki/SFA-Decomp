@@ -16,7 +16,6 @@
 #include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
-#include "main/audio/sfx.h"
 #include "main/objhits.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/player_api.h"
@@ -31,7 +30,6 @@
 #include "main/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_024E_drakordthornbush.h"
-#include "sys/objects/lifecycle.h"
 
 int gThornBushLightningHitTable[2] = {15, 14};
 int gThornBushThornHitTable[2] = {5, 5};

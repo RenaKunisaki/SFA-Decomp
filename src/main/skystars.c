@@ -5,7 +5,6 @@
 #include "track/intersect_render_setup_api.h"
 #include "main/shader_api.h"
 #include "main/pi_dolphin_api.h"
-#include "main/objtexture.h"
 #include "main/sky_interface.h"
 #include "main/mm.h"
 #include "main/camera.h"
@@ -18,10 +17,8 @@
 #include "dolphin/gx/GXLegacy.h"
 #include "dolphin/mtx.h"
 #include "main/lightmap_api.h"
-#include "main/render_mode_api.h"
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "stdlib.h"
 #include "dolphin/mtx/vec.h"
 
 u8 gNewCloudStarsInitialized;

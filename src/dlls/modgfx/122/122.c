@@ -9,7 +9,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_007A_dll7afunc0.h"

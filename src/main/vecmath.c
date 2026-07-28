@@ -1,4 +1,3 @@
-#include "ghidra_import.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/acosf.h"

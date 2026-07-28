@@ -22,7 +22,6 @@
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
 #include "main/objhits.h"
@@ -36,11 +35,9 @@
 #include "game/objects/object.h"
 #include "main/modellight_api.h"
 #include "main/objfx.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dolphin/mtx/vec.h"
-#include "sys/objects/lifecycle.h"
 
 f32 lbl_803DC3D0 = 0.1f;
 f32 lbl_803DC3D4 = 500.0f;

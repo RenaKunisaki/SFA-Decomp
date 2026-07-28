@@ -11,11 +11,8 @@
 #include "main/dll/CAM/cutCam.h"
 #include "main/dll/CAM/dll_0043_unk.h"
 #include "main/pad.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/sfx.h"
 #include "main/mm.h"
-#include "main/dll/modgfx.h"
 #include "main/frame_timing.h"
 #include "main/resource.h"
 

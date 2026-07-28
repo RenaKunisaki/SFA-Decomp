@@ -7,7 +7,6 @@
  * The slot is kept so the DLL id stays valid.
  */
 #include "dolphin/os/OSReport.h"
-#include "types.h"
 #include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AC_projmagicstream.h"
 

@@ -1,5 +1,4 @@
 #include "musyx/voice_manage.h"
-#include "musyx/synth_config.h"
 #include "musyx/voice_conv.h"
 
 /*

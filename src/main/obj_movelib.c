@@ -19,7 +19,6 @@
 #include "main/model_light.h"
 #include "main/objanim.h"
 #include "main/obj_group.h"
-#include "main/obj_query.h"
 #include "main/objseq.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
@@ -31,9 +30,7 @@
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
 #include "main/objfx.h"
 

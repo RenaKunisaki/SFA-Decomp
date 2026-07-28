@@ -20,7 +20,6 @@
 #include "main/shader_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DLL409_TARGET_OBJECT_GROUP  0xE
 #define DLL409_SPAWNED_OBJECT_GROUP 0x3

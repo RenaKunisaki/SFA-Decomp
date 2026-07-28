@@ -21,7 +21,6 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
-#include "sys/objects/lifecycle.h"
 
 int gSbMiniFireResourceVariant = 1;
 

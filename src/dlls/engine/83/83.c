@@ -6,7 +6,6 @@
 #include "main/dll/player_api.h"
 #include "main/camera_object.h"
 #include "main/dll/CAM/camcloudrunner_state.h"
-#include "game/objects/object.h"
 #include "main/dll/player_motion.h"
 #include "main/vecmath.h"
 #include "main/object_transform.h"

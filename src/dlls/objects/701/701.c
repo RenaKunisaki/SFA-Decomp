@@ -13,11 +13,9 @@
  * damage texture index is written into the model's texture slot.
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/objanim.h"
 #include "main/objhits.h"
-#include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/objtexture.h"
 #include "main/pad.h"

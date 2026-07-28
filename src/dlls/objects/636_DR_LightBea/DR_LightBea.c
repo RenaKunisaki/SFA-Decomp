@@ -11,8 +11,6 @@
  * offset 4.
  */
 #include "main/dll/dll_002E_moveLib.h"
-#include "main/audio/sfx.h"
-#include "main/gamebits.h"
 #include "game/objects/object.h"
 #include "main/mm.h"
 #include "main/newclouds.h"
@@ -21,7 +19,6 @@
 #include "main/vecmath.h"
 #include "dlls/object_descriptor.h"
 
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/lightningeffect.h"
 

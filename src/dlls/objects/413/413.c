@@ -9,7 +9,6 @@
 #include "main/frame_timing.h"
 #include "main/objhits.h"
 #include "main/render_lactions_api.h"
-#include "sys/objects/lifecycle.h"
 
 #define DLL413_HIT_VOLUME_SLOT              0xE
 #define DLL413_DEFAULT_HIT_TYPE             1

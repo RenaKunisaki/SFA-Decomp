@@ -13,7 +13,6 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIM2_ICE_FLOE_FLAG_CURVE_READY   0x01
 #define DIM2_ICE_FLOE_FADE_IN_RATE       4

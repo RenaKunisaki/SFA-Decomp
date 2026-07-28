@@ -20,7 +20,6 @@
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID 214
 #define DIM2_SNOWBALL_IMPACT_PARTFX_ID      518

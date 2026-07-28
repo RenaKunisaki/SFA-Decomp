@@ -11,7 +11,6 @@
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
 #include "main/dll/player_staff_api.h"
 #include "main/game_ui_interface.h"
-#include "main/gamebits.h"
 #include "main/obj_group.h"
 #include "main/objHitReact_types.h"
 #include "main/objanim_update.h"

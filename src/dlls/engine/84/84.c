@@ -7,7 +7,6 @@
 #include "main/camera_object.h"
 #include "main/camera_interface.h"
 #include "main/dll/CAM/camera_mode_54_state.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
 #include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"

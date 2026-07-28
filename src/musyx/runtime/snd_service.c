@@ -1,5 +1,4 @@
 #include "musyx/snd_service.h"
-#include "musyx/synth_scale.h"
 
 u32 sndRandSeed = 1;
 

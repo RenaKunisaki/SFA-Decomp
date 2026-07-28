@@ -13,7 +13,6 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/objanim.h"
-#include "main/objhits.h"
 #include "main/objprint_character_api.h"
 #include "main/object_render.h"
 #include "main/vecmath_distance_api.h"

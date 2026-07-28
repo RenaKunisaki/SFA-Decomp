@@ -18,7 +18,6 @@
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
 
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 
 #include "main/dll/DR/dll_026E_drshackle.h"

@@ -18,7 +18,6 @@
 #include "main/model_light.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
-#include "sys/objects/lifecycle.h"
 
 #define SB_CLOUDBALL_ALIAS_OBJECT_TYPE 0x0119
 

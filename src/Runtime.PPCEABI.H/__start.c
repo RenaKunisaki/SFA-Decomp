@@ -2,7 +2,6 @@
 #include "dolphin/db.h"
 #include "dolphin/os.h"
 #include "dolphin/os/OSReset.h"
-#include "dolphin/os/OSCache.h"
 #include "dolphin/os/__ppc_eabi_init.h"
 #include "main/gameloop_api.h"
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"

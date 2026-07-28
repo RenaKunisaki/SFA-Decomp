@@ -1,6 +1,5 @@
 #include "global.h"
 #include "dolphin/mtx.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/partfx_interface.h"

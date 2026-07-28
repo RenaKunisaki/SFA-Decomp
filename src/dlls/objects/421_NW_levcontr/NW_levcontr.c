@@ -11,7 +11,6 @@
 
 #include "game/objects/object.h"
 #include "main/audio/music_api.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/savegame_load_api.h"

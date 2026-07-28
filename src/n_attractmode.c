@@ -4,8 +4,6 @@
 #include "main/attract_movie_api.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "main/dll/FRONT/dll_44.h"
-#include "main/dll/baddie/dll_003C_TumbleweedBush.h"
-#include "main/dll/dll_02C0_front_api.h"
 #include "main/mm.h"
 #include "main/dll/dll_3e_api.h"
 #include "main/pi_dolphin.h"

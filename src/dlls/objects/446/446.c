@@ -18,7 +18,6 @@
 #include "main/objhits.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIM_LAVA_DEBRIS_SEQUENCE_ID       0x1FA
 #define DIM_LAVA_DEBRIS_PARTICLE_EFFECT   0x1F5

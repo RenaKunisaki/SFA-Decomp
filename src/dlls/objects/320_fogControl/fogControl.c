@@ -3,7 +3,6 @@
 
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/pi_dolphin_api.h"
 
 #define FOG_CONTROL_BLEND_STEP_FAST   0.02f

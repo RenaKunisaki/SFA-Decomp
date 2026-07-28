@@ -23,7 +23,6 @@
 #include "main/gametext_color_api.h"
 #include "main/gametext_show_api.h"
 #include "main/map_load.h"
-#include "main/mapEvent.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"

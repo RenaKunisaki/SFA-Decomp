@@ -12,7 +12,6 @@
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_80136a40.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"

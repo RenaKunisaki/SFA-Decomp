@@ -1,6 +1,5 @@
 #include "dlls/objects/325_CloudPrison.h"
 
-#include "game/objects/object.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/obj_message.h"
 #include "main/object_render.h"

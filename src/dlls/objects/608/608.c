@@ -6,8 +6,6 @@
 #include "main/vecmath_distance_api.h"
 #include "main/maketex_timer_api.h"
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
 #include "main/shader_api.h"
@@ -19,9 +17,7 @@
 #include "main/objtexture.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/audio/sfx_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
 s32 lbl_803DC230 = 40;
 f32 lbl_803DC234 = 50.0f;

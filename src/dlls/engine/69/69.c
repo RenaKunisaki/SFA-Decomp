@@ -5,13 +5,11 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/mm.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
-#include "main/dll/CAM/cutCam.h"
 #include "main/camera_interface.h"
 #include "main/object_transform.h"
 #include "string.h"
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/player_api.h"
 #include "main/resource.h"
 
 CameraModeBikeState* gCamTalkBikeState;
