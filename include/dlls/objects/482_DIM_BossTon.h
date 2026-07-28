@@ -35,7 +35,7 @@ typedef union DIMbosstonsilState {
         u8 unknown260[0x10];
         s16 hitReactionSubstate;
         u8 unknown272[0x02];
-        s16 scale;
+        s16 controlMode;
         u8 unknown276[0x04];
         s8 active;
         s8 stunReady;
@@ -85,7 +85,7 @@ STATIC_ASSERT(offsetof(DIMbosstonsilPlacementView, animObjectId) == 0x2E);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, groundBaddie) == 0x000);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, physicsActive) == 0x25F);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, hitReactionSubstate) == 0x270);
-STATIC_ASSERT(offsetof(DIMbosstonsilState, scale) == 0x274);
+STATIC_ASSERT(offsetof(DIMbosstonsilState, controlMode) == 0x274);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, active) == 0x27A);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, stunReady) == 0x27B);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, recoveryTimer) == 0x2A0);

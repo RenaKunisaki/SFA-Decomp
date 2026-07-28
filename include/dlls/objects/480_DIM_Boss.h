@@ -104,7 +104,7 @@ typedef struct DIMbossRuntime {
             u8 unknown260[0x270 - 0x260];
             s16 field270;
             u8 unknown272[0x274 - 0x272];
-            s16 scale;
+            s16 controlMode;
             u8 unknown276[0x2D0 - 0x276];
             int targetModel;
             u8 unknown2D4[0x314 - 0x2D4];
@@ -177,7 +177,7 @@ STATIC_ASSERT(sizeof(DIMbossHitDetectAnimHandlerTable) == 0x30);
 STATIC_ASSERT(offsetof(DIMbossRuntime, groundBaddie) == 0x000);
 STATIC_ASSERT(offsetof(DIMbossRuntime, effectActive) == 0x25F);
 STATIC_ASSERT(offsetof(DIMbossRuntime, field270) == 0x270);
-STATIC_ASSERT(offsetof(DIMbossRuntime, scale) == 0x274);
+STATIC_ASSERT(offsetof(DIMbossRuntime, controlMode) == 0x274);
 STATIC_ASSERT(offsetof(DIMbossRuntime, targetModel) == 0x2D0);
 STATIC_ASSERT(offsetof(DIMbossRuntime, sequenceTriggerFlags) == 0x314);
 STATIC_ASSERT(offsetof(DIMbossRuntime, hitResult) == 0x346);

@@ -1239,7 +1239,7 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdat
     (*gBaddieControlInterface)
         ->processMessages((GameObject*)obj, updateRuntime, runtime->moveScratch, runtime->activeMoveId,
                           &runtime->hitReactMode, 0, 0, 0);
-    if (updateRuntime->scale == 6) {
+    if (updateRuntime->controlMode == 6) {
         topState->icicle.meltTimer =
             -(timeDelta * (5.0f * obj->anim.currentMoveProgress + 1.0f) - topState->icicle.meltTimer);
     } else {
@@ -1638,7 +1638,7 @@ void DIMboss_func0B(void) {
 }
 
 int DIMboss_getControlMode(GameObject* obj) {
-    return ((DIMbossRuntime*)obj->extra)->scale;
+    return ((DIMbossRuntime*)obj->extra)->controlMode;
 }
 
 int DIMboss_getExtraSize(void) {

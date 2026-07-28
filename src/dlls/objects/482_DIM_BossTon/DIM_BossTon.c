@@ -401,7 +401,7 @@ void DIMbosstonsil_func0B(void) {
 }
 
 int DIMbosstonsil_getControlMode(GameObject* obj) {
-    return ((DIMbosstonsilState*)obj->extra)->scale;
+    return ((DIMbosstonsilState*)obj->extra)->controlMode;
 }
 
 int DIMbosstonsil_getExtraSize(void) {
