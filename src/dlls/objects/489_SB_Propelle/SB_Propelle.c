@@ -31,10 +31,10 @@
 #define SB_PROPELLER_PARTFX_SMOKE  0x9f  /* smokeTimer-gated smoke burst at the hub */
 #define SB_PROPELLER_PARTFX_DEBRIS 0x7aa /* bankIndex==1 debris trail from path point 0 */
 
-u32 lbl_803DDC40;
+u32 gSbPropellerObject;
 
 u32 sbGetPropeller(void) {
-    return lbl_803DDC40;
+    return gSbPropellerObject;
 }
 
 int SB_Propeller_getExtraSize(void) {
@@ -53,7 +53,7 @@ void SB_Propeller_hitDetect(GameObject* obj) {
     if (obj->anim.romDefNo != SB_PROPELLER_SEQ_ID) {
         return;
     }
-    obj->anim.rotZ = ((GameObject*)lbl_803DDC40)->anim.rotZ;
+    obj->anim.rotZ = ((GameObject*)gSbPropellerObject)->anim.rotZ;
 }
 
 void SB_Propeller_update(GameObject* obj) {
@@ -156,7 +156,7 @@ void SB_Propeller_init(GameObject* obj, SBPropellerPlacementView* placement) {
     state->health = 4;
     obj->anim.bankIndex = (s8)placement->modelBankIndex;
     if (obj->anim.romDefNo != SB_PROPELLER_SEQ_ID) {
-        lbl_803DDC40 = (u32)obj;
+        gSbPropellerObject = (u32)obj;
     }
 }
 
