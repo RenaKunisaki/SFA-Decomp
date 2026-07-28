@@ -790,6 +790,49 @@ def cmd_where(args):
               f"instructions after alignment, {tot} aligned residual bytes")
 
 
+def fn_split(ours, tgt):
+    """Per-function (reg-permutation, structural, insert/delete) instruction
+    counts, over the SAME alignment the residual is charged on.
+
+    `classify` used to run its own `difflib.SequenceMatcher` over the decoded
+    instruction text.  That is a different diff from the one `fn_resid` charges,
+    and it is the wrong one twice over.  LCS minimises insertions plus
+    deletions, so on a pure REORDERING it pays two indels rather than one
+    substitution and books the moved instructions as length defects; and any
+    opcode block whose two sides differ in length at all was counted whole into
+    `ln`.  Between them those two effects swept most register-permutation caps
+    into the LEN bucket: the unit labels read LEN 59 / REGROT 32 / STRUCT 14
+    while the same objects aligned by `align()` are 9010 permuted instructions
+    against 1200 structural and 410 genuine insert/delete.  Sending a lane at a
+    `LEN' unit that is really a coloring cap is the expensive kind of wrong, so
+    the classification now shares `fn_sites`.
+
+    A `sub` site whose two instructions differ only in register names is a
+    coloring/allocator decision (REGROT); anything else -- a different opcode, a
+    different displacement, a different immediate -- is STRUCT, the class source
+    levers can actually move.  Insert/delete sites are LEN.
+    """
+    da, db = _bysym(dis(ours)), _bysym(dis(tgt))
+    out = {}
+    for fn, (rb, sites) in fn_sites(ours, tgt).items():
+        if not rb:
+            continue
+        x, y = da.get(fn, []), db.get(fn, [])
+        ro = st = ln = 0
+        for tag, i1, i2, j1, j2 in sites:
+            if tag == "sub" and i2 - i1 == 1:
+                p = x[i1] if i1 < len(x) else "?"
+                q = y[j1] if j1 < len(y) else "?"
+                if REG.sub("#", p) == REG.sub("#", q):
+                    ro += 1
+                else:
+                    st += 1
+                continue
+            ln += max(i2 - i1, j2 - j1)
+        out[fn] = (rb, ro, st, ln)
+    return out
+
+
 def cmd_classify(args):
     out = []
     for name, ours, tgt, (done, fz, s1) in units(args):
@@ -801,42 +844,32 @@ def cmd_classify(args):
             continue
         if not tb and not tr and not ta:
             continue
-        da, db = _aligned(ours, tgt)
-        ro = st = ln = 0
-        fns = set()
-        import difflib
-        for fn, y in db.items():
-            x = da.get(fn)
-            if x == y:
-                continue
-            fns.add(fn)
-            if x is None:
-                ln += len(y)
-                continue
-            for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(
-                    None, x, y, autojunk=False).get_opcodes():
-                if tag == "equal":
-                    continue
-                if tag != "replace" or i2 - i1 != j2 - j1:
-                    ln += max(i2 - i1, j2 - j1)
-                    continue
-                for k in range(i2 - i1):
-                    p, q = x[i1 + k], y[j1 + k]
-                    if REG.sub("#", p) == REG.sub("#", q):
-                        ro += 1
-                    else:
-                        st += 1
-        kind = ("LEN" if ln else "STRUCT" if st
+        try:
+            per = fn_split(ours, tgt)
+        except Exception:
+            continue
+        ro = sum(v[1] for v in per.values())
+        st = sum(v[2] for v in per.values())
+        ln = sum(v[3] for v in per.values())
+        kind = ("STRUCT" if st else "LEN" if ln
                 else "REGROT" if ro else "DATA")
-        out.append((tb + 4 * tr, tb, tr, kind, ro, st, name, ",".join(sorted(fns)[:3])))
+        worst = sorted(per, key=lambda f: (-(per[f][2] + per[f][3]), f))[:3]
+        out.append((tb + 4 * tr, tb, tr, kind, ro, st, ln, name, ",".join(worst)))
     out.sort()
-    print(f"{'score':>7} {'resid':>7} {'relD':>5} {'kind':>6} {'reg':>4} {'str':>5}  unit")
-    for s, tb, tr, k, ro, st, n, f in out:
-        print(f"{s:>7} {tb:>7} {tr:>5} {k:>6} {ro:>4} {st:>5}  {n}\n            {f}")
+    print(f"{'score':>7} {'resid':>7} {'relD':>5} {'kind':>6} {'reg':>5} "
+          f"{'str':>5} {'len':>5}  unit")
+    for s, tb, tr, k, ro, st, ln, n, f in out:
+        print(f"{s:>7} {tb:>7} {tr:>5} {k:>6} {ro:>5} {st:>5} {ln:>5}  {n}"
+              f"\n            {f}")
     from collections import Counter
     print("\n#", Counter(o[3] for o in out))
+    print(f"# instructions: reg-permutation {sum(o[4] for o in out)}  "
+          f"structural {sum(o[5] for o in out)}  "
+          f"insert/delete {sum(o[6] for o in out)}")
     print("# REGROT = allocator/coloring cap.  STRUCT/LEN = different instruction"
           " sequence, the class source levers can actually move.")
+    print("# A unit is labelled by its most attackable content, so a STRUCT unit"
+          " may still be mostly permutation -- read the reg/str/len columns.")
 
 
 def cmd_order(args):
