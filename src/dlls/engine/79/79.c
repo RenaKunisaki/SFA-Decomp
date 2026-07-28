@@ -27,8 +27,8 @@ void dll_4F_update(CameraObject* camera)
     GameObject* target;
     f32 pts[4];
     f32 fz;
-    f32 sn;
     f32 cs;
+    f32 sn;
     s16 angle;
 
     pts[0] = 0.0f;
@@ -41,11 +41,11 @@ void dll_4F_update(CameraObject* camera)
     target = (GameObject*)camera->anim.targetObj;
     {
         f32 t = (3.1415927f * (f32)(s32)angle) / 32768.0f;
-        sn = mathCosf(t);
-        cs = mathSinf(t);
+        cs = mathCosf(t);
+        sn = mathSinf(t);
     }
-    camera->anim.localPosX = target->anim.worldPosX + (20.0f * sn - -10.0f * cs);
-    camera->anim.localPosZ = target->anim.worldPosZ + (20.0f * cs + -10.0f * sn);
+    camera->anim.localPosX = target->anim.worldPosX + (20.0f * cs - -10.0f * sn);
+    camera->anim.localPosZ = target->anim.worldPosZ + (20.0f * sn + -10.0f * cs);
     camera->anim.localPosY = (35.0f + target->anim.worldPosY) - 15.0f * fz;
     camera->anim.rotY = (s16)(0x11c6 - (s32)(35.0f * (182.0f * fz)));
     camera->anim.rotX = (s16)(angle + 0x1ffe);

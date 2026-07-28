@@ -364,10 +364,10 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
     f32 rad;
     f32 sin0;
     f32 cos0;
-    f32 cosM;
-    f32 cosP;
     f32 sinM;
     f32 sinP;
+    f32 cosM;
+    f32 cosP;
     f32 sinStepP;
     f32 sinStepM;
     f32 cosStepP;
@@ -384,32 +384,32 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
     if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 3, NULL, obj, 8, -1, 0xFF, 0) != 0) {
         anglePlus = angle;
         angleMinus = angle;
-        cosM = sin0;
-        cosP = sin0;
+        sinM = sin0;
+        sinP = sin0;
         sinStepP = mathSinf(0.34898064f);
         sinStepM = mathSinf(-0.34898064f);
-        sinP = cos0;
-        sinM = cos0;
+        cosP = cos0;
+        cosM = cos0;
         cosStepP = mathCosf(0.34898064f);
         cosStepM = mathCosf(-0.34898064f);
         for (i = 0; i < 8; i++) {
-            f32 cosNext;
+            f32 sinNext;
 
             anglePlus += 0xE38;
-            cosNext = cosP * cosStepP + sinP * sinStepP;
-            sinP = sinP * cosStepP - cosP * sinStepP;
-            cosP = cosNext;
-            vec[0] = obj->anim.localPosX - dist * cosNext;
-            vec[2] = obj->anim.localPosZ - dist * sinP;
+            sinNext = sinP * cosStepP + cosP * sinStepP;
+            cosP = cosP * cosStepP - sinP * sinStepP;
+            sinP = sinNext;
+            vec[0] = obj->anim.localPosX - dist * sinNext;
+            vec[2] = obj->anim.localPosZ - dist * cosP;
             if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 1, NULL, obj, 8, -1, 0xFF, 0) == 0) {
                 return anglePlus;
             }
             angleMinus -= 0xE38;
-            cosNext = cosM * cosStepM + sinM * sinStepM;
-            sinM = sinM * cosStepM - cosM * sinStepM;
-            cosM = cosNext;
-            vec[0] = obj->anim.localPosX - dist * cosNext;
-            vec[2] = obj->anim.localPosZ - dist * sinM;
+            sinNext = sinM * cosStepM + cosM * sinStepM;
+            cosM = cosM * cosStepM - sinM * sinStepM;
+            sinM = sinNext;
+            vec[0] = obj->anim.localPosX - dist * sinNext;
+            vec[2] = obj->anim.localPosZ - dist * cosM;
             if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 1, NULL, obj, 8, -1, 0xFF, 0) == 0) {
                 return angleMinus;
             }

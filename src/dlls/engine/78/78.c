@@ -57,7 +57,7 @@ void CameraModeWorldMap_update(GameObject* obj)
     f32 mdx, mdz;
     f32 a;
     f32 b;
-    f32 sn;
+    f32 cs;
     f32 dx, dz;
     f32 spd = 0.0f;
 
@@ -195,17 +195,17 @@ void CameraModeWorldMap_update(GameObject* obj)
                     camera->anim.rotY = -12000;
                 }
                 {
-                    f32 snYaw, csYaw, snPit, csPit;
+                    f32 csYaw, snYaw, csPit, snPit;
                     f32 r, x, y, z;
-                    snYaw = -mathCosf(3.1415927f * camera->anim.rotX / 32768.0f);
-                    csYaw = mathSinf(3.1415927f * camera->anim.rotX / 32768.0f);
-                    snPit = mathCosf(3.1415927f * (f32)(camera->anim.rotY + 0x320) / 32768.0f);
-                    csPit = mathSinf(3.1415927f * (f32)(camera->anim.rotY + 0x320) / 32768.0f);
+                    csYaw = -mathCosf(3.1415927f * camera->anim.rotX / 32768.0f);
+                    snYaw = mathSinf(3.1415927f * camera->anim.rotX / 32768.0f);
+                    csPit = mathCosf(3.1415927f * (f32)(camera->anim.rotY + 0x320) / 32768.0f);
+                    snPit = mathSinf(3.1415927f * (f32)(camera->anim.rotY + 0x320) / 32768.0f);
                     r = gCamWorldMapState->distance;
-                    y = r * csPit;
-                    z = r * snPit;
-                    x = z * csYaw;
-                    z *= snYaw;
+                    y = r * snPit;
+                    z = r * csPit;
+                    x = z * snYaw;
+                    z *= csYaw;
                     x = camera->anim.worldPosX - (focus->anim.worldPosX + x);
                     y = camera->anim.worldPosY - ((-30.0f + focus->anim.worldPosY) + y);
                     z = camera->anim.worldPosZ - (focus->anim.worldPosZ + z);
@@ -269,17 +269,17 @@ void CameraModeWorldMap_update(GameObject* obj)
                 }
                 camera->anim.rotY = camera->anim.rotY + angleDelta / gCamWorldMapState->settleFrames;
                 {
-                    f32 cs, sn54, cs54;
+                    f32 sn, cs54, sn54;
                     f32 x, y, z;
                     a = 3.1415927f * (f32)(u16)(ang - 0x39dc) / 32768.0f;
-                    sn = -mathCosf(a);
-                    cs = mathSinf(a);
-                    sn54 = mathCosf(0.1917476f);
-                    cs54 = mathSinf(0.1917476f);
-                    y = 70.0f * cs54;
-                    z = 70.0f * sn54;
-                    x = z * cs;
-                    z *= sn;
+                    cs = -mathCosf(a);
+                    sn = mathSinf(a);
+                    cs54 = mathCosf(0.1917476f);
+                    sn54 = mathSinf(0.1917476f);
+                    y = 70.0f * sn54;
+                    z = 70.0f * cs54;
+                    x = z * sn;
+                    z *= cs;
                     x = camera->anim.worldPosX - (focus->anim.worldPosX + x);
                     y = camera->anim.worldPosY - (25.0f + (focus->anim.worldPosY + y));
                     z = camera->anim.worldPosZ - (focus->anim.worldPosZ + z);
@@ -293,16 +293,16 @@ void CameraModeWorldMap_update(GameObject* obj)
                     my = (u16)(my + 0x514);
                 }
                 {
-                    f32 sb;
                     f32 cb;
+                    f32 sb;
                     f32 radius;
                     b = 3.1415927f * my / 32768.0f;
-                    sb = mathCosf(b);
-                    cb = -mathSinf(b);
+                    cb = mathCosf(b);
+                    sb = -mathSinf(b);
                     radius = 30.0f;
-                    g->anim.localPosX = radius * cb + camera->anim.worldPosX;
+                    g->anim.localPosX = radius * sb + camera->anim.worldPosX;
                     g->anim.localPosY = camera->anim.worldPosY + lbl_80319DF8[(s8) * &g->anim.bankIndex];
-                    g->anim.localPosZ = radius * sb + camera->anim.worldPosZ;
+                    g->anim.localPosZ = radius * cb + camera->anim.worldPosZ;
                     g->anim.rotX = (s16)(-0xbb8 - my);
                 }
             }
