@@ -19,8 +19,8 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
-f32 lbl_803DC418 = 7.0f;
-f32 lbl_803DC41C = 5.0f;
+f32 gTimerGlowScale = 7.0f;
+f32 gTimerTextureScrollScale = 5.0f;
 
 
 #define TIMER_MODE_GLOBAL 1
@@ -181,7 +181,7 @@ void timer_update(GameObject* obj)
                 state->lightSlot = modelLightStruct_createPointLight(obj, 255, 0, 0, 0);
                 if (state->lightSlot != NULL)
                 {
-                    modelLightStruct_setupGlow(state->lightSlot, 0, 255, 0, 0, 100, lbl_803DC418);
+                    modelLightStruct_setupGlow(state->lightSlot, 0, 255, 0, 0, 100, gTimerGlowScale);
                     modelLightStruct_setPosition(state->lightSlot, 0.0f, 3.0f, 0.0f);
                 }
                 break;
@@ -192,7 +192,7 @@ void timer_update(GameObject* obj)
     {
         ModelLight* light = state->lightSlot;
         f32 progress = (f32)(setup->durationMinutes * 60) / state->countdownTimer;
-        int scroll = (int)(progress * lbl_803DC41C);
+        int scroll = (int)(progress * gTimerTextureScrollScale);
         ObjTextureRuntimeSlot* texPtr = objFindTexture(obj, 0, 0);
         if (texPtr != 0)
         {
