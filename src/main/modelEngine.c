@@ -277,6 +277,7 @@
 #include "dlls/objects/481_DIM_BossGut.h"
 #include "dlls/objects/482_DIM_BossTon.h"
 #include "dlls/objects/483_DIM_BossGut.h"
+#include "dlls/objects/484_MAGICMaker.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -392,7 +393,7 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
 extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
     gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gLightSourceObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1578,7 +1579,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIM_BossGutObjDescriptor,
     (ResourceDescriptor*)&gDIM_BossTonsilObjDescriptor,
     (ResourceDescriptor*)&gDIM_BossGut2ObjDescriptor,
-    &gMAGICMakerObjDescriptor,
+    (ResourceDescriptor*)&gMAGICMakerObjDescriptor,
     &gDIM_BossSpitObjDescriptor,
     &gDIMbosscrackparObjDescriptor,
     &gDIMbossfireObjDescriptor,
