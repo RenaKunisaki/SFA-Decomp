@@ -65,6 +65,22 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
 1. `python3 tools/pairing_check.py --refs <oldname>` — get the blast radius.
 2. Rename in **both** `config/GSAE01/symbols.txt` and every C occurrence.
 3. `tools/locked_ninja.sh` as its **own step**; read EXIT before continuing.
+   ⚠️ Then rebuild every touched **DLL** object **by name** —
+   `tools/locked_ninja.sh build/GSAE01/src/dlls/<...>.o`. The bare invocation
+   does not build DLL objects, so after a rename the splitter has already
+   re-carved the retail side with the new name while your own object still
+   holds the old one. That is a *complete, correct* rename measuring as a total
+   collapse. Measured on `linkDrawFn_801302c0` in `dlls/engine/60`:
+
+   | state | unitfuzzy |
+   |---|---|
+   | clean baseline | 99.88345 |
+   | C source only, `.o` rebuilt by name | 91.72495 |
+   | `symbols.txt` only | 91.72495 |
+   | **both renamed, bare `locked_ninja.sh`** | **91.72495** ← stale `.o`, artifact |
+   | both renamed, every `.o` rebuilt by name | 99.88345 |
+
+   Only the last row is the truth. Do not revert on the fourth row.
 4. `python3 tools/pairing_check.py` — must report **0 retail-only** symbols.
    (Two are expected and permanent: `gap_03_80006C6C_text` in `main/render.c`
    and `gap_03_8028C964_text` in `targimpl.c` — foreign-toolchain blobs.)

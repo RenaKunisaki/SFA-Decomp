@@ -2,10 +2,21 @@
 """Census of decompiler-artifact identifiers still in the source.
 
 Ghidra leaves a signature vocabulary behind: `uVar3`, `iStack_28`, `param_1`,
-`DAT_803dd124`, `FUN_800c1234`. None of it is source a person wrote, and
-renaming is byte-neutral by construction -- identifiers do not reach codegen --
-so this is pure recovery. It is NOT mechanisable, though: a good name needs the
-function read, so this tool ranks the work rather than doing it.
+`DAT_803dd124`, `FUN_800c1234`. None of it is source a person wrote, so this is
+pure recovery. It is NOT mechanisable: a good name needs the function read, so
+this tool ranks the work rather than doing it.
+
+⚠️ CORRECTION -- an earlier version of this docstring claimed renaming is
+"byte-neutral by construction because identifiers do not reach codegen". That is
+true of a C identifier and FALSE of the rename as a whole. A non-static
+function's name is in its object's symbol table, and more importantly
+config/GSAE01/symbols.txt is BUILD INPUT that regenerates the retail target
+objects; objdiff pairs target to source BY NAME, so a rename applied to one side
+only -- or measured against a stale object -- collapses the unit's score while
+`locked_ninja.sh` still reports EXIT=0. Gate every rename with
+tools/pairing_check.py (0 retail-only symbols) plus unitfuzzy equality on every
+unit the name reaches -- see docs/rename_safety.md -- never with
+tools/byteneutral.py.
 
     python3 tools/junk_names.py src                  # ranked census
     python3 tools/junk_names.py src --kind param     # one class
@@ -18,8 +29,11 @@ function read, so this tool ranks the work rather than doing it.
 Both are reported under their own kind so they stay visible, but they are
 flagged `HOLD` rather than offered as work.
 
-Whatever you rename, gate it with tools/byteneutral.py: renaming is neutral in
-theory, but declaration order feeds register banding, so prove it per file.
+Whatever you rename, gate it per docs/rename_safety.md: get the blast radius with
+`pairing_check.py --refs <name>` FIRST, rename both the C source and
+config/GSAE01/symbols.txt, rebuild (DLL objects by name -- the bare gate skips
+them), then require 0 retail-only symbols and unitfuzzy equality on every unit in
+that radius.
 """
 
 from __future__ import annotations
