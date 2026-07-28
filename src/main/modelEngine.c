@@ -252,6 +252,7 @@
 #include "dlls/objects/455_DIMLavaSmas.h"
 #include "dlls/objects/456_DIMBridgeCo.h"
 #include "dlls/objects/457_DIMDismount.h"
+#include "dlls/objects/458_DIMExplosio.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -364,7 +365,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
     gDrakorEnergyObjDescriptor;
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gExplodePlanObjDescriptor;
-extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
+extern ResourceDescriptor gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gHighTopObjDescriptor;
@@ -1534,7 +1535,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMLavaSmashObjDescriptor,
     (ResourceDescriptor*)&gDIMBridgeCogMaiObjDescriptor,
     (ResourceDescriptor*)&gDIMDismountPointObjDescriptor,
-    &gExplosionObjDescriptor,
+    (ResourceDescriptor*)&gExplosionObjDescriptor,
     &gDIMWoodDoor2ObjDescriptor,
     &gDIMMagicBridgeObjDescriptor,
     &gDIM_LevelControlObjDescriptor,
