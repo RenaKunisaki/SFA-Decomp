@@ -25,6 +25,7 @@ main/audio.c:
 	.bss        start:0x80335940 end:0x80336000
 	.sdata      start:0x803DB1E8 end:0x803DB248
 	.sbss       start:0x803DC7B8 end:0x803DC830
+	.sdata2     start:0x803DE548 end:0x803DE56C
 
 main/audio_sfx.c:
 	.text       start:0x8000B4D0 end:0x8000CE54
@@ -115,6 +116,7 @@ main/textrender_subtitle.c:
 
 main/textrender_drawbox.c:
 	.text       start:0x8001BB78 end:0x8001C794
+	.sdata2     start:0x803DE740 end:0x803DE750
 
 main/textrender_boxtex.c:
 	.text       start:0x8001C794 end:0x8001CB3C
@@ -4968,6 +4970,7 @@ dolphin/MSL_C/PPCEABI/bare/H/printf.c:
 	.rodata     start:0x802C2AF8 end:0x802C2B20
 	.data       start:0x803327E8 end:0x80332A18
 	.sdata      start:0x803DC640 end:0x803DC648
+	.sdata2     start:0x803E7940 end:0x803E7948
 
 dolphin/MSL_C/PPCEABI/bare/H/string.c:
 	.text       start:0x802915E4 end:0x802918C0

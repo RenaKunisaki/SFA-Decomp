@@ -5,7 +5,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/stdlib.h"
 #include "string.h"
 
-extern const double printf_double_zero;
 
 #define TARGET_FLOAT_IMPLICIT_J_BIT 1
 
@@ -446,7 +445,7 @@ char* float2str(long double num, char *buff, print_format format) {
             dec.exp = 0;
             break;
         case 'I':
-            if (num < printf_double_zero) {
+            if (num < 0.0) {
                 p = buff - 5;
 
                 if (isupper(format.conversion_char)) {

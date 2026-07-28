@@ -31,7 +31,7 @@
 #include "string.h"
 #include "main/lightmap.h"
 
-extern GXColor gGameTextBoxFillColor;
+const GXColor gGameTextBoxFillColor = {0xFF, 0x40, 0x40, 0xFF};
 
 void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
 

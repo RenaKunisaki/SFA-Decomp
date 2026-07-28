@@ -116,11 +116,7 @@ ReverbState gAudioReverbSettings;
 u32 gAudioAramBlock[0x2C / sizeof(u32)];
 MusicChannel gMusicChannels[0x240 / sizeof(MusicChannel)];
 
-typedef struct AudioMemHookPair
-{
-    s32 alloc;
-    s32 free;
-} AudioMemHookPair;
+static const SalHooks gAudioMemHooks = {_audioAlloc, audioFree};
 
 void AudioAramReadAllocAsync(void* source, u32 size, void** outBuf, AudioArqRequestCallback callback,
                              MusicTrackSlot* callbackArg1, MusicChannel* callbackArg2,
@@ -161,7 +157,7 @@ static inline void Music_FreeChannel(MusicChannel* ch)
     ch->voiceId = 0xff;
     ch->status = 0;
     ch->priority = 0;
-    ch->fadeTimer = lbl_803DE560;
+    ch->fadeTimer = 0.0f;
 }
 
 static inline int Music_IsTriggerExcluded(int id)
@@ -699,7 +695,7 @@ int audioInit(void)
     int delay;
     int v;
 
-    *(AudioMemHookPair*)&hooks = *(AudioMemHookPair*)&gAudioMemAllocHook;
+    hooks = gAudioMemHooks;
     if (!gAudioInitStarted)
     {
         gAudioInitStarted = 1;
@@ -729,11 +725,11 @@ int audioInit(void)
             sndOutputMode(1);
         }
         gAudioReverbSettings.tempDisableFX = 0;
-        gAudioReverbSettings.time = lbl_803DE550;
-        gAudioReverbSettings.preDelay = lbl_803DE554;
-        gAudioReverbSettings.damping = lbl_803DE558;
-        gAudioReverbSettings.coloration = lbl_803DE558;
-        gAudioReverbSettings.mix = lbl_803DE55C;
+        gAudioReverbSettings.time = 3.0f;
+        gAudioReverbSettings.preDelay = 0.033f;
+        gAudioReverbSettings.damping = 0.5f;
+        gAudioReverbSettings.coloration = 0.5f;
+        gAudioReverbSettings.mix = 0.9f;
         sndAuxCallbackUpdateSettingsReverbSTD(&gAudioReverbSettings);
         reverbWork = 0;
         sndSetAuxProcessingCallbacks(0, sndAuxCallbackReverbSTD, &gAudioReverbSettings, 0xff, 0, 0, 0, 0xff,
@@ -1062,8 +1058,8 @@ void Music_Update(void)
             }
             break;
         case 2:
-            ch->fadeTimer += timeDelta / gAudioFramesPerSecond;
-            if (ch->fadeTimer > lbl_803DE568)
+            ch->fadeTimer += timeDelta / 60.0f;
+            if (ch->fadeTimer > 5.0f)
             {
                 if (ch->status == 4 || ch->status == 5)
                 {
@@ -1377,7 +1373,7 @@ void Music_LoadChannelForTrigger(MusicTrigger* trigger)
     }
     channel->order = counter;
     channel->trigger = trigger;
-    channel->fadeTimer = lbl_803DE560;
+    channel->fadeTimer = 0.0f;
     AudioAramReadAllocAsync((void*)slot->offset, slot->size, &channel->bankData,
                             Music_ChannelLoadedCallback, slot, channel, trigger);
 }
@@ -1397,7 +1393,7 @@ void Music_ChannelLoadedCallback(MusicTrackSlot* slot, MusicChannel* channel, Mu
             channel->voiceId = 0xff;
             channel->status = 0;
             channel->priority = 0;
-            channel->fadeTimer = lbl_803DE560;
+            channel->fadeTimer = 0.0f;
         }
         else
         {
