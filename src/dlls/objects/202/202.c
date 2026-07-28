@@ -3136,7 +3136,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
         }
         else
         {
-            ((FireflyLanternState*)state)->breathTimer = ((FireflyLanternState*)state)->breathTimer - timeDelta;
+            ((FireflyLanternState*)state)->breathTimer -= timeDelta;
             if (((FireflyLanternState*)state)->breathTimer <= fval)
             {
                 ((FireflyLanternState*)state)->breathTimer = fval;
