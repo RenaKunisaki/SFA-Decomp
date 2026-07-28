@@ -164,22 +164,22 @@ void appleontree_knockLoose(GameObject* obj, int message) {
         appleontree_markFallen(obj);
     } else {
         f32 m = state->gravity;
-        f32 g = lbl_803E37D8 * m;
-        f32 q = sqrtf(-(g * state->dropHeight - lbl_803E37D4));
-        f32 t = lbl_803E37DC * m;
+        f32 gravityTerm = lbl_803E37D8 * m;
+        f32 q = sqrtf(-(gravityTerm * state->dropHeight - lbl_803E37D4));
         f32 r;
 
-        if (t >= lbl_803E37D4) {
-            r = t;
+        gravityTerm = lbl_803E37DC * m;
+        if (gravityTerm >= lbl_803E37D4) {
+            r = gravityTerm;
         } else {
-            r = -t;
+            r = -gravityTerm;
         }
         if (r <= lbl_803E37E0) {
             r = lbl_803E37C8;
         } else {
             f32 r2;
-            r = (lbl_803E37E4 - q) / t;
-            r2 = (lbl_803E37E4 + q) / t;
+            r = (lbl_803E37E4 - q) / gravityTerm;
+            r2 = (lbl_803E37E4 + q) / gravityTerm;
             r = (r > *(f32*)&lbl_803E37D4) ? r : r2;
         }
         state->totalFlightTime = r;
