@@ -546,7 +546,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F4 | — | COMPLETE | dlls/objects/500/500.c | = (canonical) | Exact complete six-function TU with its terminal numbered 0x38-byte descriptor, allocation-backed and fully asserted 0x01-byte state, asserted callback-visible placement fields, canonical unit header and numbered public namespace, and exact emitted section bytes and relocations after intended symbol normalization; active-target retail evidence does not establish a basename or complete placement width, and the generated numeric source path remains unchanged |
 | 0x1F5 | — | COMPLETE | dlls/objects/501/501.c | = (canonical) | Exact complete nine-function TU with its terminal numbered 0x38-byte descriptor, allocation-backed and fully asserted 0x140-byte state, asserted callback-visible placement fields, canonical unit header and numbered public namespace, and exact emitted section bytes and relocations after intended symbol normalization; active-target retail evidence does not establish a basename or complete placement width, and the generated numeric source path remains unchanged |
 | 0x1F6 | — | COMPLETE | dlls/objects/502/502.c | = (canonical) | Exact complete nine-function TU with its terminal numbered 0x38-byte descriptor, proven zero-byte extra state, asserted callback-visible placement field, canonical unit header and numbered public namespace, and exact emitted section bytes and relocations after intended symbol normalization; active-target retail evidence does not establish a basename or complete placement width, and the generated numeric source path remains unchanged |
-| 0x1F7 | SB_ShipGunB | COMPLETE | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | = (canonical) | Retail basename is truncated |
+| 0x1F7 | SB_ShipGunB | COMPLETE | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x01-byte state, asserted callback-visible placement field, canonical unit header and gamebit/SFX APIs, and exact emitted sections, relocations, and symbols; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, the retail basename is truncated, and the generated source path remains unchanged |
 | 0x1F8 | WM_Galleon | COMPLETE | dlls/objects/504_WM_Galleon/WM_Galleon.c | = (canonical) | — |
 | 0x1F9 | WM_ObjCreat | COMPLETE | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | = (canonical) | Retail basename is truncated |
 | 0x1FA | WM_seqobjec | COMPLETE | dlls/objects/506_WM_seqobjec/WM_seqobjec.c | = (canonical) | Retail basename is truncated |
@@ -1072,6 +1072,7 @@ more as they are recovered.
 | 0x1F4 | dlls/objects/500/500.c | include/dlls/objects/500.h |
 | 0x1F5 | dlls/objects/501/501.c | include/dlls/objects/501.h |
 | 0x1F6 | dlls/objects/502/502.c | include/dlls/objects/502.h |
+| 0x1F7 | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | include/dlls/objects/503_SB_ShipGunB.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |

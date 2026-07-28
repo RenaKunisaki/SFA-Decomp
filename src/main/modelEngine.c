@@ -296,6 +296,7 @@
 #include "dlls/objects/500.h"
 #include "dlls/objects/501.h"
 #include "dlls/objects/502.h"
+#include "dlls/objects/503_SB_ShipGunB.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -414,7 +415,6 @@ extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gSB_CloudRunnerObjDescriptor;
-extern ResourceDescriptor gSB_ShipGunBrokeObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShopItemObjDescriptor, gShopKeeperObjDescriptor,
@@ -1610,7 +1610,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll500ObjDescriptor,
     (ResourceDescriptor*)&gDll501ObjDescriptor,
     (ResourceDescriptor*)&gDll502ObjDescriptor,
-    &gSB_ShipGunBrokeObjDescriptor,
+    (ResourceDescriptor*)&gSB_ShipGunBrokeObjDescriptor,
     &gWM_GalleonObjDescriptor,
     &gWM_ObjCreatorObjDescriptor,
     &gWM_seqobjectObjDescriptor,
