@@ -2164,20 +2164,20 @@ void hudDrawTimedElement(int unused, void* element)
 }
 
 
-void GameUI_func15(s16 a, int b, int c)
+void GameUI_showItemInfoPopupByTexture(s16 textureId, int displayDuration, int itemCount)
 {
-    void* t = textureLoadAsset(a);
+    void* t = textureLoadAsset(textureId);
     lbl_803A9398.texture = t;
     if (t == NULL)
         return;
-    lbl_803A9398.unk4 = b;
-    lbl_803A9398.unkC = c;
+    lbl_803A9398.unk4 = displayDuration;
+    lbl_803A9398.unkC = itemCount;
     lbl_803A9398.unk8 = lbl_803E1E3C;
 }
 
 f32 lbl_803A8950[0x18];
 
-void GameUI_func14(s16 a, int b, int c)
+void GameUI_showItemInfoPopup(s16 itemGamebit, int displayDuration, int itemCount)
 {
     int* entry = (int*)gCMenuSections;
     lbl_803A9398.texture = NULL;
@@ -2186,7 +2186,7 @@ void GameUI_func14(s16 a, int b, int c)
         s16* row = (s16*)*entry;
         while (row[0] != -1)
         {
-            if (row[0] == a)
+            if (row[0] == itemGamebit)
             {
                 lbl_803A9398.texture = textureLoadAsset(row[3]);
                 break;
@@ -2197,8 +2197,8 @@ void GameUI_func14(s16 a, int b, int c)
     }
     if (lbl_803A9398.texture != NULL)
     {
-        lbl_803A9398.unk4 = b;
-        lbl_803A9398.unkC = c;
+        lbl_803A9398.unk4 = displayDuration;
+        lbl_803A9398.unkC = itemCount;
         lbl_803A9398.unk8 = lbl_803E1E3C;
     }
 }
@@ -2886,21 +2886,21 @@ u32 lbl_8031C020[33] = {0x00000000,
                         (u32)GameUI_update,
                         (u32)GameUI_hudDraw,
                         (u32)GameUI_unselectAllItems,
-                        (u32)GameUI_func07,
+                        (u32)GameUI_requestPlayerStatsSnapshot,
                         0x00000000,
                         (u32)GameUI_isAnyItemBeingUsed,
                         (u32)GameUI_isItemBeingUsed,
                         (u32)GameUI_isOneOfItemsBeingUsed,
                         (u32)CMenu_GetState,
-                        (u32)GameUI_func0D,
+                        (u32)GameUI_getSubpageGamebit,
                         (u32)GameUI_func0E,
-                        (u32)GameUI_func0F,
+                        (u32)GameUI_showMinimapInfoText,
                         (u32)GameUI_gameTextShowNpcDialogue,
                         (u32)GameUI_finishNpcDialogue,
                         (u32)CMenu_SetShouldClose,
                         (u32)GameUI_setInputOverride,
-                        (u32)GameUI_func14,
-                        (u32)GameUI_func15,
+                        (u32)GameUI_showItemInfoPopup,
+                        (u32)GameUI_showItemInfoPopupByTexture,
                         (u32)GameUI_setUnusedHudSetting,
                         (u32)GameUI_airMeterInitType0,
                         (u32)GameUI_initAirMeter,
@@ -5355,10 +5355,10 @@ void npcTalkFn_8012e880(void);
 s32 isTalkingToNpc(void);
 void GameUI_finishNpcDialogue(void);
 void GameUI_gameTextShowNpcDialogue(s32 id, s32 unusedA, s32 unusedB, s32 do_input_disable);
-void GameUI_func0F(s32 a, s32 b, s32 c);
-void GameUI_func07(void);
+void GameUI_showMinimapInfoText(s32 textId, s32 posY, s32 posX);
+void GameUI_requestPlayerStatsSnapshot(void);
 void GameUI_unselectAllItems(void);
-s16 GameUI_func0D(void);
+s16 GameUI_getSubpageGamebit(void);
 s32 CMenu_GetState(void);
 
 /* Draws the pause-menu task-hint panel: the framed backing (corners/edges via
@@ -8472,15 +8472,15 @@ void GameUI_gameTextShowNpcDialogue(s32 id, s32 unusedA, s32 unusedB, s32 do_inp
 }
 
 /* Three s16 UI setters. */
-void GameUI_func0F(s32 a, s32 b, s32 c)
+void GameUI_showMinimapInfoText(s32 textId, s32 posY, s32 posX)
 {
-    gMinimapInfoTextId = a;
-    gMinimapInfoTextY = b;
-    gMinimapInfoTextX = c;
+    gMinimapInfoTextId = textId;
+    gMinimapInfoTextY = posY;
+    gMinimapInfoTextX = posX;
 }
 
 /* Latch the u8 flag at lbl_803DD840 to 1. */
-void GameUI_func07(void)
+void GameUI_requestPlayerStatsSnapshot(void)
 {
     lbl_803DD840 = 1;
 }
@@ -8508,7 +8508,7 @@ void GameUI_unselectAllItems(void)
 }
 
 /* Signed-halfword getter for lbl_803DD8BA. */
-s16 GameUI_func0D(void)
+s16 GameUI_getSubpageGamebit(void)
 {
     return lbl_803DD8BA;
 }
