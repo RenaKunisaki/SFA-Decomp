@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "main/texture.h"
+#include "dolphin/mtx.h"
 
 typedef struct GameObject GameObject;
 
@@ -297,10 +298,10 @@ STATIC_ASSERT(offsetof(ObjModel, vtxBufDirty) == 0x60);
  * modelChainUpdateNodesPassive / modelChainUpdateNodes /
  * modelChainInitNodesFromJoints / modelAnimFn_80026790 cluster. */
 typedef struct ObjModelChainNode {
-    f32 pos[3];         /* 0x00: current world position */
-    f32 posDelta[3];    /* 0x0C: per-frame momentum (damped + jittered) */
-    f32 localOffset[3]; /* 0x18: rest offset from the parent node */
-    f32 mtx[3][4];      /* 0x24: node world matrix */
+    Vec pos;         /* 0x00: current world position */
+    Vec posDelta;    /* 0x0C: per-frame momentum (damped + jittered) */
+    Vec localOffset; /* 0x18: rest offset from the parent node */
+    Mtx mtx;         /* 0x24: node world matrix */
 } ObjModelChainNode; /* 0x54 */
 
 typedef struct ObjModelChainDesc {

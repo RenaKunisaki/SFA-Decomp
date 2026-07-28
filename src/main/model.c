@@ -1,5 +1,5 @@
 #include "main/asset_load.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "track/intersect_texture_api.h"
 #include "track/intersect_depth_state_api.h"
 #include "main/hud_visibility_api.h"
@@ -91,7 +91,7 @@ extern s16 gModelJointScratchBuffer[0xa0];
         gModelJointScratchBuffer[outPos++] = poseWeights[K];                  \
     }
 extern char sModelAnimationBufferOverflowWarning[];
-extern f32 gModelJitterAxis[];
+extern Vec gModelJitterAxis;
 typedef struct ObjHitBufs
 {
     u8 pad00[0x48];
@@ -1010,18 +1010,18 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
 void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
                                   ObjModelChainEntry* entry)
 {
-    f32 tmp[12];
-    f32 mt[12];
-    f32 target[3];
-    f32 work[3];
-    f32 out[3];
-    f32 dir2[3];
-    f32 dir1[3];
-    f32 axis[3];
+    Mtx tmp;
+    Mtx mt;
+    Vec target;
+    Vec work;
+    Vec out;
+    Vec dir2;
+    Vec dir1;
+    Vec axis;
     int nextIdx;
     int i;
     int idx;
-    f32* m;
+    MtxPtr m;
     f32 dot;
 
     idx = ((ModelBone*)file->jointData)[entry->desc->jointIndices[0]].parent;
@@ -1030,27 +1030,27 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
     for (i = 1; i < entry->nodeCount + 1; i++)
     {
         nextIdx = entry->desc->jointIndices[i];
-        PSMTXMultVec(tmp, entry->nodes[i - 1].localOffset, out);
-        target[0] = entry->nodes[i].pos[0] + entry->nodes[i].posDelta[0] + gMapSavedPlayerOffsetX -
-                    playerMapOffsetX;
-        target[1] = entry->nodes[i].pos[1] + entry->nodes[i].posDelta[1];
-        target[2] = entry->nodes[i].pos[2] + entry->nodes[i].posDelta[2] + gMapSavedPlayerOffsetZ -
-                    playerMapOffsetZ;
-        work[0] = entry->nodes[i - 1].localOffset[0];
-        work[1] = entry->nodes[i - 1].localOffset[1];
-        work[2] = entry->nodes[i - 1].localOffset[2];
-        PSVECAdd(work, entry->nodes[i].localOffset, work);
-        PSMTXMultVec(tmp, work, work);
-        PSVECSubtract(target, out, dir1);
-        PSVECNormalize(dir1, dir1);
-        PSVECSubtract(work, out, dir2);
-        PSVECNormalize(dir2, dir2);
-        dot = PSVECDotProduct(dir2, dir1);
+        PSMTXMultVec(tmp, &entry->nodes[i - 1].localOffset, &out);
+        target.x = entry->nodes[i].pos.x + entry->nodes[i].posDelta.x + gMapSavedPlayerOffsetX -
+                   playerMapOffsetX;
+        target.y = entry->nodes[i].pos.y + entry->nodes[i].posDelta.y;
+        target.z = entry->nodes[i].pos.z + entry->nodes[i].posDelta.z + gMapSavedPlayerOffsetZ -
+                   playerMapOffsetZ;
+        work.x = entry->nodes[i - 1].localOffset.x;
+        work.y = entry->nodes[i - 1].localOffset.y;
+        work.z = entry->nodes[i - 1].localOffset.z;
+        PSVECAdd(&work, &entry->nodes[i].localOffset, &work);
+        PSMTXMultVec(tmp, &work, &work);
+        PSVECSubtract(&target, &out, &dir1);
+        PSVECNormalize(&dir1, &dir1);
+        PSVECSubtract(&work, &out, &dir2);
+        PSVECNormalize(&dir2, &dir2);
+        dot = PSVECDotProduct(&dir2, &dir1);
         if (dot < gModelDotClampMax && dot > gModelDotClampMin)
         {
             if (dot < 1.0f && dot > -1.0f)
             {
-                PSVECCrossProduct(dir2, dir1, axis);
+                PSVECCrossProduct(&dir2, &dir1, &axis);
                 if (dot < -1.0f)
                 {
                     dot = -1.0f;
@@ -1061,8 +1061,8 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
                     dot = sub * chain->stiffness + dot;
                 }
                 PSMTXTranspose(tmp, mt);
-                PSMTXMultVecSR(mt, axis, axis);
-                PSMTXRotAxisRad(m, axis, acosf(dot));
+                PSMTXMultVecSR(mt, &axis, &axis);
+                PSMTXRotAxisRad(m, &axis, acosf(dot));
             }
             else
             {
@@ -1070,15 +1070,15 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
             }
         }
         PSMTXConcat(tmp, m, m);
-        m[3] = out[0];
-        m[7] = out[1];
-        m[11] = out[2];
+        m[0][3] = out.x;
+        m[1][3] = out.y;
+        m[2][3] = out.z;
         PSMTXCopy(m, tmp);
-        work[0] = entry->nodes[i].localOffset[0];
-        work[1] = entry->nodes[i].localOffset[1];
-        work[2] = entry->nodes[i].localOffset[2];
-        PSMTXMultVec(m, work, work);
-        PSMTXCopy(m, entry->nodes[i - 1].mtx[0]);
+        work.x = entry->nodes[i].localOffset.x;
+        work.y = entry->nodes[i].localOffset.y;
+        work.z = entry->nodes[i].localOffset.z;
+        PSMTXMultVec(m, &work, &work);
+        PSMTXCopy(m, entry->nodes[i - 1].mtx);
         if (i < entry->nodeCount)
         {
             m = modelGetBoneMtx(model, nextIdx);
@@ -1089,18 +1089,18 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
 void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain, ObjModelChainEntry* entry,
                            ObjModelChainUpdateCallback callback, int callbackArg)
 {
-    f32 tmp[12];
-    f32 mt[12];
-    f32 target[3];
-    f32 work[3];
-    f32 out[3];
-    f32 dir2[3];
-    f32 dir1[3];
-    f32 axis[3];
+    Mtx tmp;
+    Mtx mt;
+    Vec target;
+    Vec work;
+    Vec out;
+    Vec dir2;
+    Vec dir1;
+    Vec axis;
     int nextIdx;
     int i;
     int idx;
-    f32* m;
+    MtxPtr m;
     f32 dot;
 
     idx = ((ModelBone*)file->jointData)[entry->desc->jointIndices[0]].parent;
@@ -1109,29 +1109,29 @@ void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain
     for (i = 1; i < entry->nodeCount + 1; i++)
     {
         nextIdx = entry->desc->jointIndices[i];
-        PSMTXMultVec(tmp, entry->nodes[i - 1].localOffset, out);
-        target[0] = entry->nodes[i].pos[0] + entry->nodes[i].posDelta[0] + gMapSavedPlayerOffsetX -
-                    playerMapOffsetX;
-        target[1] = entry->nodes[i].pos[1] + entry->nodes[i].posDelta[1];
-        target[2] = entry->nodes[i].pos[2] + entry->nodes[i].posDelta[2] + gMapSavedPlayerOffsetZ -
-                    playerMapOffsetZ;
-        work[0] = entry->nodes[i - 1].localOffset[0];
-        work[1] = entry->nodes[i - 1].localOffset[1];
-        work[2] = entry->nodes[i - 1].localOffset[2];
+        PSMTXMultVec(tmp, &entry->nodes[i - 1].localOffset, &out);
+        target.x = entry->nodes[i].pos.x + entry->nodes[i].posDelta.x + gMapSavedPlayerOffsetX -
+                   playerMapOffsetX;
+        target.y = entry->nodes[i].pos.y + entry->nodes[i].posDelta.y;
+        target.z = entry->nodes[i].pos.z + entry->nodes[i].posDelta.z + gMapSavedPlayerOffsetZ -
+                   playerMapOffsetZ;
+        work.x = entry->nodes[i - 1].localOffset.x;
+        work.y = entry->nodes[i - 1].localOffset.y;
+        work.z = entry->nodes[i - 1].localOffset.z;
         if (callback != NULL)
         {
-            callback((int)file, (int*)model, work, callbackArg, i, chain->phase);
+            callback((int)file, (int*)model, (f32*)&work, callbackArg, i, chain->phase);
         }
-        PSVECAdd(work, entry->nodes[i].localOffset, work);
-        PSMTXMultVec(tmp, work, work);
-        PSVECSubtract(target, out, dir1);
-        PSVECNormalize(dir1, dir1);
-        PSVECSubtract(work, out, dir2);
-        PSVECNormalize(dir2, dir2);
-        dot = PSVECDotProduct(dir2, dir1);
+        PSVECAdd(&work, &entry->nodes[i].localOffset, &work);
+        PSMTXMultVec(tmp, &work, &work);
+        PSVECSubtract(&target, &out, &dir1);
+        PSVECNormalize(&dir1, &dir1);
+        PSVECSubtract(&work, &out, &dir2);
+        PSVECNormalize(&dir2, &dir2);
+        dot = PSVECDotProduct(&dir2, &dir1);
         if (dot < gModelDotClampMax && dot > gModelDotClampMin)
         {
-            PSVECCrossProduct(dir2, dir1, axis);
+            PSVECCrossProduct(&dir2, &dir1, &axis);
             if (dot < -1.0f)
             {
                 dot = -1.0f;
@@ -1142,40 +1142,40 @@ void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain
                 dot = sub * chain->stiffness + dot;
             }
             PSMTXTranspose(tmp, mt);
-            PSMTXMultVecSR(mt, axis, axis);
-            PSMTXRotAxisRad(m, axis, acosf(dot));
+            PSMTXMultVecSR(mt, &axis, &axis);
+            PSMTXRotAxisRad(m, &axis, acosf(dot));
         }
         else
         {
             PSMTXIdentity(m);
         }
         PSMTXConcat(tmp, m, m);
-        m[3] = out[0];
-        m[7] = out[1];
-        m[11] = out[2];
+        m[0][3] = out.x;
+        m[1][3] = out.y;
+        m[2][3] = out.z;
         PSMTXCopy(m, tmp);
-        work[0] = entry->nodes[i].localOffset[0];
-        work[1] = entry->nodes[i].localOffset[1];
-        work[2] = entry->nodes[i].localOffset[2];
-        PSMTXMultVec(m, work, work);
-        PSMTXCopy(m, entry->nodes[i - 1].mtx[0]);
+        work.x = entry->nodes[i].localOffset.x;
+        work.y = entry->nodes[i].localOffset.y;
+        work.z = entry->nodes[i].localOffset.z;
+        PSMTXMultVec(m, &work, &work);
+        PSMTXCopy(m, entry->nodes[i - 1].mtx);
         if (i < entry->nodeCount)
         {
             m = modelGetBoneMtx(model, nextIdx);
         }
-        entry->nodes[i].posDelta[0] =
-            work[0] - (gMapSavedPlayerOffsetX + entry->nodes[i].pos[0] - playerMapOffsetX);
-        entry->nodes[i].posDelta[1] = work[1] - entry->nodes[i].pos[1];
-        entry->nodes[i].posDelta[2] =
-            work[2] - (gMapSavedPlayerOffsetZ + entry->nodes[i].pos[2] - playerMapOffsetZ);
-        entry->nodes[i].pos[0] = work[0];
-        entry->nodes[i].pos[1] = work[1];
-        entry->nodes[i].pos[2] = work[2];
+        entry->nodes[i].posDelta.x =
+            work.x - (gMapSavedPlayerOffsetX + entry->nodes[i].pos.x - playerMapOffsetX);
+        entry->nodes[i].posDelta.y = work.y - entry->nodes[i].pos.y;
+        entry->nodes[i].posDelta.z =
+            work.z - (gMapSavedPlayerOffsetZ + entry->nodes[i].pos.z - playerMapOffsetZ);
+        entry->nodes[i].pos.x = work.x;
+        entry->nodes[i].pos.y = work.y;
+        entry->nodes[i].pos.z = work.z;
     }
 }
 void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain, ObjModelChainEntry* entry)
 {
-    f32 vec[3];
+    Vec vec;
     int modelIndex;
     ModelFileHeader* hdr;
     u32 count;
@@ -1203,10 +1203,10 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
         modelIndex = 0;
     }
     base = model->jointMatrices[model->bufferFlags & 1] + modelIndex * 0x40;
-    vec[0] = *(f32*)(base + 0x20);
-    vec[1] = *(f32*)(base + 0x24);
-    vec[2] = *(f32*)(base + 0x28);
-    dot = PSVECDotProduct(vec, gModelJitterAxis);
+    vec.x = *(f32*)(base + 0x20);
+    vec.y = *(f32*)(base + 0x24);
+    vec.z = *(f32*)(base + 0x28);
+    dot = PSVECDotProduct(&vec, &gModelJitterAxis);
     if (dot < 0.0f)
     {
         dot = 0.0f;
@@ -1218,9 +1218,9 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
     while (i < entry->nodeCount + 1)
     {
         u8* p = (u8*)entry->nodes + off;
-        *(f32*)&((ModelFileHeader*)p)->dataSize = *(f32*)&((ModelFileHeader*)p)->dataSize * chain->damping + gModelJitterAxis[0] * amp;
-        *(f32*)(p + 0x10) = gModelJitterAxis[1] * amp + (*(f32*)(p + 0x10) * chain->damping + chain->gravityY);
-        *(f32*)(p + 0x14) = *(f32*)(p + 0x14) * chain->damping + gModelJitterAxis[2] * amp;
+        *(f32*)&((ModelFileHeader*)p)->dataSize = *(f32*)&((ModelFileHeader*)p)->dataSize * chain->damping + gModelJitterAxis.x * amp;
+        *(f32*)(p + 0x10) = gModelJitterAxis.y * amp + (*(f32*)(p + 0x10) * chain->damping + chain->gravityY);
+        *(f32*)(p + 0x14) = *(f32*)(p + 0x14) * chain->damping + gModelJitterAxis.z * amp;
         off += 0x54;
         i++;
     }
@@ -1325,7 +1325,8 @@ void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
         {
             lastJointIdx = 0;
         }
-        PSMTXMultVec((f32*)(obj[(*(u16*)((u8*)obj + 0x18) & 1) + 3] + lastJointIdx * 0x40), (f32*)(lastEntry + 0x18), (f32*)lastEntry);
+        PSMTXMultVec((MtxPtr)(obj[(*(u16*)((u8*)obj + 0x18) & 1) + 3] + lastJointIdx * 0x40), (Vec*)(lastEntry + 0x18),
+                     (Vec*)lastEntry);
     }
 }
 
@@ -1551,7 +1552,7 @@ void model_multMtxs(u8* model, f32* out)
         u8* h = (u8*)((ObjModel*)model)->file;
         u32 cnt = h[0xf3];
         int lim;
-        f32* base;
+        MtxPtr base;
         if (cnt != 0)
         {
             lim = cnt + h[0xf4];
@@ -1564,24 +1565,24 @@ void model_multMtxs(u8* model, f32* out)
         {
             j = 0;
         }
-        base = *(f32**)(model + 0xc + (((ObjModel*)model)->bufferFlags & 1) * 4);
-        PSMTXConcat(out, base + j * 0x10, base + j * 0x10);
+        base = *(MtxPtr*)(model + 0xc + (((ObjModel*)model)->bufferFlags & 1) * 4);
+        PSMTXConcat((MtxPtr)out, base + j * 4, base + j * 4);
     }
 }
 void modelInitBoneMtxs(ObjModel* model, f32* outReordered)
 {
     ModelFileHeader* file;
     u32 i;
-    f32* mtx;
+    MtxPtr mtx;
     int boneByteOff;
-    f32* reorderCursor;
+    ROMtxPtr reorderCursor;
     ModelBone* bone;
-    f32 transMtx[12];
+    Mtx transMtx;
 
     file = model->file;
     i = 0;
     boneByteOff = 0;
-    reorderCursor = outReordered;
+    reorderCursor = (ROMtxPtr)outReordered;
     for (; i < file->jointCount; i++)
     {
         mtx = modelGetBoneMtx(model, i);
@@ -1590,19 +1591,19 @@ void modelInitBoneMtxs(ObjModel* model, f32* outReordered)
         PSMTXConcat(mtx, transMtx, transMtx);
         PSMTXReorder(transMtx, reorderCursor);
         boneByteOff += 0x1c;
-        reorderCursor += 12;
+        reorderCursor += 4;
     }
 }
 
 void modelInitBoneMtxs2(ObjModel* model, f32* worldMtx, f32* outReordered)
 {
     int boneByteOff;
-    f32* reorderCursor;
+    ROMtxPtr reorderCursor;
     ModelFileHeader* file;
     u32 i;
-    u8* jointMtx;
+    MtxPtr jointMtx;
     ModelBone* bone;
-    f32 transMtx[12];
+    Mtx transMtx;
 
     file = model->file;
     if (file->jointCount == 0)
@@ -1625,24 +1626,24 @@ void modelInitBoneMtxs2(ObjModel* model, f32* worldMtx, f32* outReordered)
         {
             idx = 0;
         }
-        jointMtx = model->jointMatrices[model->bufferFlags & 1] + idx * 0x40;
-        PSMTXConcat(worldMtx, (f32*)jointMtx, (f32*)jointMtx);
+        jointMtx = (MtxPtr)(model->jointMatrices[model->bufferFlags & 1] + idx * 0x40);
+        PSMTXConcat((MtxPtr)worldMtx, jointMtx, jointMtx);
     }
     else
     {
         i = 0;
         boneByteOff = 0;
-        reorderCursor = outReordered;
+        reorderCursor = (ROMtxPtr)outReordered;
         for (; i < file->jointCount; i++)
         {
             jointMtx = modelGetBoneMtx(model, i);
             bone = (ModelBone*)(file->jointData + boneByteOff);
             PSMTXTrans(transMtx, -bone->tail[0], -bone->tail[1], -bone->tail[2]);
-            PSMTXConcat((f32*)jointMtx, transMtx, transMtx);
+            PSMTXConcat(jointMtx, transMtx, transMtx);
             PSMTXReorder(transMtx, reorderCursor);
-            PSMTXConcat(worldMtx, (f32*)jointMtx, (f32*)jointMtx);
+            PSMTXConcat((MtxPtr)worldMtx, jointMtx, jointMtx);
             boneByteOff += 0x1c;
-            reorderCursor += 12;
+            reorderCursor += 4;
         }
     }
 }
@@ -1953,7 +1954,7 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
     u8* hitReact;
     u8* samples;
     u8* src;
-    f32 vec[3];
+    Vec vec;
     f32 zero;
     f32 motionScale;
     u32 bufSel;
@@ -2032,20 +2033,20 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
         if (i == 0 && obj != prevObj)
         {
             zero = 0.0f;
-            vec[0] = zero;
-            vec[1] = zero;
-            vec[2] = zero;
-            PSMTXMultVec((f32*)mtx, vec, vec);
-            ((GameObject*)prevObj)->anim.localPosX = vec[0] + playerMapOffsetX;
-            ((GameObject*)prevObj)->anim.localPosY = vec[1];
-            ((GameObject*)prevObj)->anim.localPosZ = vec[2] + playerMapOffsetZ;
+            vec.x = zero;
+            vec.y = zero;
+            vec.z = zero;
+            PSMTXMultVec((MtxPtr)mtx, &vec, &vec);
+            ((GameObject*)prevObj)->anim.localPosX = vec.x + playerMapOffsetX;
+            ((GameObject*)prevObj)->anim.localPosY = vec.y;
+            ((GameObject*)prevObj)->anim.localPosZ = vec.z + playerMapOffsetZ;
             Obj_GetWorldPosition((u32)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c), (f32 *)(prevObj + 0x20));
         }
-        vec[0] = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 8);
-        vec[1] = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0xc);
-        vec[2] = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0x10);
+        vec.x = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 8);
+        vec.y = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0xc);
+        vec.z = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0x10);
         *(f32*)(st->cur + off[1]) = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 4) * (motionScale = ((GameObject*)obj)->anim.rootMotionScale);
-        PSMTXMultVec((f32*)mtx, vec, (f32*)((st->cur + 4) + off[1]));
+        PSMTXMultVec((MtxPtr)mtx, &vec, (Vec*)((st->cur + 4) + off[1]));
         *(f32*)(prevSphere + 4) = (gMapSavedPlayerOffsetX + *(f32*)(prevSphere + 4)) - playerMapOffsetX;
         *(f32*)(prevSphere + 0xc) = (gMapSavedPlayerOffsetZ + *(f32*)(prevSphere + 0xc)) - playerMapOffsetZ;
         off[0] += 0x18;
@@ -3225,6 +3226,6 @@ int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
     return baseSize + resource[8] * resource[7];
 }
 
-f32 gModelJitterAxis[3] = { 1.0f, 0.0f, 0.0f };
+Vec gModelJitterAxis = { 1.0f, 0.0f, 0.0f };
 
 char sModelAnimationBufferOverflowWarning[] = "Warning: Model animation buffer overflow!! size=%d\n";
