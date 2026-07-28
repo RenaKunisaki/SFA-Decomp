@@ -7,18 +7,6 @@
 
 typedef u8 BoneFxJRow[16];
 
-typedef struct BoneFxVtx
-{
-    u16 sx;
-    u16 sy;
-    u16 sz;
-    u16 pad;
-    f32 w;
-    f32 vx;
-    f32 vy;
-    f32 vz;
-} BoneFxVtx;
-
 /* One 0x10-byte rendered particle slot in a gBoneParticleEffectBuffers buffer. */
 typedef struct ParticleSlot
 {
