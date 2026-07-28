@@ -426,10 +426,7 @@ typedef struct ObjAnimComponent {
                        released through mapUnloadRomListPage */
   s8 transformMatrixIndex;
   u8 alpha;
-  union {
-    u8 renderAlpha;
-    u8 pad37[0x38 - 0x37];
-  };
+  u8 renderAlpha;
   void *next; /* 0x38: intrusive object-list link (wiki ObjInstance.next); list not ordered */
   f32 loadDistance; /* 0x3C: wiki ObjInstance.loadDistance (same value as cullDistance2) */
   f32 cullDistance2; /* 0x40: wiki ObjInstance.cullDistance2 - camera-distance opacity term */

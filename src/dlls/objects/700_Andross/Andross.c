@@ -1805,7 +1805,7 @@ void andross_update(int obj)
                 if (state->spawnedObj != NULL)
                 {
                     state->spawnedObj->anim.alpha = 0xff;
-                    state->spawnedObj->anim.pad37[0] = 0xff;
+                    state->spawnedObj->anim.renderAlpha = 0xff;
                     state->spawnedObjLifetime = gAndrossSpawnedObjectLifetime;
                 }
             }

@@ -71,7 +71,7 @@ static inline int voxmaps_findRouteNode(RouteState* state, s16* box, int* flagOu
     return -1;
 }
 
-void voxmapsFn_80010ff4(struct RouteState* state, VoxBoxArg* srcBox, int parentNodeIndex, u16 count, s16* box)
+void voxmaps_visitRouteNeighbor(struct RouteState* state, VoxBoxArg* srcBox, int parentNodeIndex, u16 count, s16* box)
 {
     int foundIdx;
     int savedFlag;
@@ -382,17 +382,17 @@ void voxmaps_expandRouteNeighbors(RouteState* state, VoxBoxArg* box, int parentN
     neighbor[1] = box->y;
     neighbor[2] = box->z;
     neighbor[0] += 2;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
     neighbor[0] -= 4;
     neighbor[1] = box->y;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
     neighbor[0] += 2;
     neighbor[2] += 2;
     neighbor[1] = box->y;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
     neighbor[2] -= 4;
     neighbor[1] = box->y;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
 }
 
 int voxmaps_traceTraversableRoute(s16* dest, s16* start, s16* lastReachableOut)

@@ -2239,7 +2239,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     }
     else
     {
-        ulink = walkGroupFn_800db3e4(&obj->anim.worldPosX, target, state->activeWalkGroup);
+        ulink = Objfsa_GetWalkGroupIndexForMove(&obj->anim.worldPosX, target, state->activeWalkGroup);
         if (ulink != 0)
         {
             state->movementState = TRICKY_MOVE_WALK_FREE;

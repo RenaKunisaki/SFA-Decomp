@@ -683,7 +683,7 @@ int Objfsa_GetNearestPatchExit(f32* point, f32* outVec, u16 id)
     return 1;
 }
 
-int walkGroupFn_800db3e4(float* prevPoint, float* nextPoint, u32 currentWalkGroupIndex)
+int Objfsa_GetWalkGroupIndexForMove(float* prevPoint, float* nextPoint, u32 currentWalkGroupIndex)
 {
     ObjfsaPatch* lp;
     ObjfsaWalkGroup* wg;

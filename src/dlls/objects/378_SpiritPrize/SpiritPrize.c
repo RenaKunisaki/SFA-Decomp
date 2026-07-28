@@ -179,7 +179,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
         }
     }
     obj->anim.alpha = 0;
-    obj->anim.pad37[0] = 0;
+    obj->anim.renderAlpha = 0;
     state->ambientSfxTimer =
         (f32)(s32)randomGetRange(SPIRIT_PRIZE_AMBIENT_SFX_MIN_DELAY, SPIRIT_PRIZE_AMBIENT_SFX_MAX_DELAY);
 }
