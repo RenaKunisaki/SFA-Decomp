@@ -74,6 +74,13 @@ truth. Always gate a real change on `python3 tools/unitfuzzy.py <unit>`.
   because retail's version passes results in callee-saved registers (`r20`/`r21`/`r15`)
   without saving them — a fragment sharing register state with its caller. Same for the
   `zlb` foreign-GCC region. Skip both.
+- **`main/pi_videoinit.c videoInit` (16 structB) is asm-bound — do not chase it.** Retail
+  emits `mfmsr/ori/mtmsr` + `mfhid0/ori/mthid0` inline in the epilogue where we emit
+  `bl PPCMfmsr` ... `bl PPCMthid0`. The source is already correct
+  (`PPCMtmsr(PPCMfmsr() | MSR_PM)`). Making those SDK helpers inline is not the answer:
+  `OSCache`, `OSThread` and `PPCArch` all call them and are **100%**, so retail did not
+  inline them globally — it used inline asm in this TU only, which CLAUDE.md bans in
+  `src/main/`. Correctly left NonMatching.
 - `structB`/`regB` are computed by aligning the two streams on their **mnemonic**
   sequence, so a whole-function register rename stays out of the structural bucket.
   Three earlier versions of this classifier each produced a false #1; if you change it,
