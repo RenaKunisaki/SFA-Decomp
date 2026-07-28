@@ -5,10 +5,10 @@
 
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];
 
-void* lbl_803DD41C;
-void* lbl_803DD418;
-s16 lbl_803DD416;
-s16 lbl_803DD414;
+void* gCheckpointRankItemsPending;
+void* gCheckpointRankItems;
+s16 gCheckpointRankItemPendingCount;
+s16 gCheckpointRankItemCount;
 s32 gCheckpointRouteCount;
 
 
@@ -247,7 +247,7 @@ void Checkpoint_getRandomLinkedVector(s32 key, f32* out_vec, u8* flag_byte)
     }
 }
 
-/* Rank object p against array at lbl_803DD418 by (priority, distSq) descending. */
+/* Rank object p against array at gCheckpointRankItems by (priority, distSq) descending. */
 typedef struct PartFxItem
 {
     u8 pad00[0xc];
@@ -399,9 +399,9 @@ s32 Checkpoint_getRouteRank(PartFxItem* p)
 {
     PartFxItem* q;
     s32 rank = 1;
-    PartFxItem** arr = (PartFxItem**)lbl_803DD418;
+    PartFxItem** arr = (PartFxItem**)gCheckpointRankItems;
     s32 i;
-    for (i = 0; i < lbl_803DD414; i++)
+    for (i = 0; i < gCheckpointRankItemCount; i++)
     {
         q = arr[i];
         if (q != p)
@@ -425,17 +425,17 @@ s32 Checkpoint_getRouteRank(PartFxItem* p)
 PartFxItem* Checkpoint_getRouteRankItem(s32 target_rank)
 {
     s32 i;
-    for (i = 0; i < lbl_803DD414; i++)
+    for (i = 0; i < gCheckpointRankItemCount; i++)
     {
         s32 j;
         s32 rank;
         PartFxItem* cur;
         PartFxItem* q;
         PartFxItem** arr;
-        cur = ((PartFxItem**)lbl_803DD418)[i];
+        cur = ((PartFxItem**)gCheckpointRankItems)[i];
         rank = 1;
-        arr = (PartFxItem**)lbl_803DD418;
-        for (j = 0; j < lbl_803DD414; j++)
+        arr = (PartFxItem**)gCheckpointRankItems;
+        for (j = 0; j < gCheckpointRankItemCount; j++)
         {
             q = arr[j];
             if (q != cur)
@@ -463,17 +463,17 @@ PartFxItem* Checkpoint_getRouteRankItem(s32 target_rank)
 
 void Checkpoint_onGameLoop(void)
 {
-    void* tmp = lbl_803DD418;
-    lbl_803DD418 = lbl_803DD41C;
-    lbl_803DD41C = tmp;
-    lbl_803DD414 = lbl_803DD416;
-    lbl_803DD416 = 0;
+    void* tmp = gCheckpointRankItems;
+    gCheckpointRankItems = gCheckpointRankItemsPending;
+    gCheckpointRankItemsPending = tmp;
+    gCheckpointRankItemCount = gCheckpointRankItemPendingCount;
+    gCheckpointRankItemPendingCount = 0;
 }
 
 u32 Checkpoint_getRouteRankItems(s32* p)
 {
-    *p = lbl_803DD414;
-    return (u32)lbl_803DD418;
+    *p = gCheckpointRankItemCount;
+    return (u32)gCheckpointRankItems;
 }
 
 /* Object cursor written back by Checkpoint_advanceRoute: the sampled heading/pitch
@@ -510,9 +510,9 @@ void Checkpoint_rewindRoute(CheckpointRouteState* o)
 
 void Checkpoint_queueRouteRankItem(u32 v)
 {
-    if (lbl_803DD416 >= 10)
+    if (gCheckpointRankItemPendingCount >= 10)
         return;
-    ((u32*)lbl_803DD41C)[lbl_803DD416++] = v;
+    ((u32*)gCheckpointRankItemsPending)[gCheckpointRankItemPendingCount++] = v;
 }
 
 #include "game/objects/object.h"
@@ -857,8 +857,8 @@ void Checkpoint_release(void)
 void Checkpoint_initialise(void)
 {
     gCheckpointRouteCount = 0;
-    lbl_803DD41C = gCheckpointPartFxListBuffer;
-    lbl_803DD418 = (void*)((u8*)gCheckpointPartFxListBuffer + 0x28);
+    gCheckpointRankItemsPending = gCheckpointPartFxListBuffer;
+    gCheckpointRankItems = (void*)((u8*)gCheckpointPartFxListBuffer + 0x28);
 }
 
 u32 lbl_803112E8[22] = {

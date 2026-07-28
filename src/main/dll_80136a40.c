@@ -56,8 +56,8 @@ extern u16* externalFrameBuffer0;
 
 u16 gErrExceptionType;
 OSContext* gErrContext;
-u32 lbl_803DDA38;
-u32 lbl_803DDA34;
+u32 gErrDsisr;
+u32 gErrDar;
 u16* debugDrawFrameBuffer;
 u16* debugFrameBuffer;
 u8 enableDebugText;
@@ -966,7 +966,7 @@ void errDisplayHandler(OSError error, OSContext* context, u32 dsisr, u32 dar)
 {
     gErrExceptionType = error;
     gErrContext = context;
-    lbl_803DDA38 = dsisr;
-    lbl_803DDA34 = dar;
+    gErrDsisr = dsisr;
+    gErrDar = dar;
     OSResumeThread(&gErrDisplayThread);
 }

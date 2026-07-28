@@ -35,7 +35,7 @@
 #include "main/objtexture.h"
 #include "main/object_render.h"
 
-const Vec3f lbl_802C25D8 = {-6318.10009765625f, -1232.0f, -5884.0f};
+const Vec3f gSunTempleRestartPos = {-6318.10009765625f, -1232.0f, -5884.0f};
 
 /* interact-prompt bits live in anim.resetHitboxFlags (INTERACT_FLAG_*). */
 
@@ -62,7 +62,7 @@ int suntemple_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* 
     GameObject* gameObj = obj;
     SunTempleSetup* cfg = (SunTempleSetup*)gameObj->anim.placementData;
     int i;
-    Vec3f restartPos = lbl_802C25D8;
+    Vec3f restartPos = gSunTempleRestartPos;
 
     gameObj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     for (i = 0; i < animUpdate->eventCount; i++)

@@ -141,7 +141,7 @@ void firefly_shiftPathHistory(GameObject* obj, BoulderShakeRec* record)
     record->histZ3 = record->liveZ;
 }
 
-s16 lbl_803DC128 = 0xAA;
+s16 gFireFlyDespawnThreshold = 0xAA;
 
 /* state->kind - trail/near particle-fx colour */
 #define FIREFLY_KIND_BLUE_MAIN       1
@@ -372,7 +372,7 @@ void firefly_update(GameObject* obj)
         if (state->despawnTimer > 0.0f)
         {
             state->despawnTimer -= timeDelta;
-            if (state->despawnTimer > lbl_803DC128) /* 170 */
+            if (state->despawnTimer > gFireFlyDespawnThreshold) /* 170 */
             {
                 itemPickupDoParticleFx(obj, 2.0f, 4, 5);
             }

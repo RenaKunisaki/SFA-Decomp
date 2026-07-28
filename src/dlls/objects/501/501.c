@@ -32,11 +32,11 @@ STATIC_ASSERT(offsetof(Dll501TrackedState, flag) == 0x04);
 STATIC_ASSERT(offsetof(Dll501TrackedState, unknown05) == 0x05);
 STATIC_ASSERT(sizeof(Dll501TrackedState) == 0x08);
 
-Dll501TrackedState lbl_803DDC50;
+Dll501TrackedState gDll501TrackedState;
 
 static void dll501_resetTrackedState(void) {
-    lbl_803DDC50.value = 0.0f;
-    lbl_803DDC50.flag = 0;
+    gDll501TrackedState.value = 0.0f;
+    gDll501TrackedState.flag = 0;
 }
 
 int dll501_getExtraSize(void) {

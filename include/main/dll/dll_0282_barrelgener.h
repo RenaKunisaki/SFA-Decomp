@@ -13,7 +13,7 @@ struct ModelLightStruct;
 #define BARREL_GENERATOR_OBJECT_GROUP 0x3A
 
 extern ObjectDescriptor gBarrelGenerObjDescriptor;
-extern int lbl_803DC398;
+extern int gBarrelGenerReleaseFrameOffset;
 extern f32 lbl_803DC3A0;
 extern f32 lbl_803DC3A4;
 extern f32 lbl_803DC3A8;

@@ -10,7 +10,7 @@ typedef struct DrEnergyDiscState
     u8 activated : 1;
 } DrEnergyDiscState;
 
-extern int lbl_803DC380;
+extern int gDREnergyDiscScrollSpeedT;
 
 typedef struct DrenergydiscPlacement
 {

@@ -22,11 +22,11 @@
 
 #define TITLE_MENU_ITEM_TEXTURE_COUNT 6
 
-s8 lbl_803DD920;
-f32 lbl_803DD91C;
-s16 lbl_803DD918;
-void* lbl_803A9DB8[TITLE_MENU_ITEM_TEXTURE_COUNT];
-s16 lbl_8031C2A8[TITLE_MENU_ITEM_TEXTURE_COUNT] = {1558, 1557, 777, 778, 779, 780};
+s8 gTitleMenuPrevMove;
+f32 gTitleMenuSliderValue;
+s16 gTitleMenuSliderVelocity;
+void* gTitleMenuItemTextures[TITLE_MENU_ITEM_TEXTURE_COUNT];
+s16 gTitleMenuItemTextureIds[TITLE_MENU_ITEM_TEXTURE_COUNT] = {1558, 1557, 777, 778, 779, 780};
 
 void TitleMenuItem_setAButtonToggle(TitleMenuItem* item, int flag)
 {
@@ -62,8 +62,8 @@ void TitleMenuItem_setEnabled(TitleMenuItem* item, int flag)
     {
         if ((item->flags & TITLE_MENU_FLAG_ENABLED) == 0)
         {
-            lbl_803DD918 = 0;
-            lbl_803DD91C = item->value;
+            gTitleMenuSliderVelocity = 0;
+            gTitleMenuSliderValue = item->value;
         }
         item->flags = (u8)(item->flags | TITLE_MENU_FLAG_ENABLED);
     }
@@ -89,9 +89,9 @@ void TitleMenuItem_render(TitleMenuItem* item, int unused, int alpha)
     switch (item->kind)
     {
     case TITLE_MENU_KIND_SLIDER:
-        drawTexture(lbl_803A9DB8[1], item->x, item->y, (u8)(((u8)alpha * 0xb4) >> 8), 0x100);
+        drawTexture(gTitleMenuItemTextures[1], item->x, item->y, (u8)(((u8)alpha * 0xb4) >> 8), 0x100);
 
-        texture = lbl_803A9DB8[0];
+        texture = gTitleMenuItemTextures[0];
         markerX = (f32)(int)((f32)item->extra.textId *
                                  ((f32)(item->value - item->minValue) / (f32)(item->maxValue - item->minValue)) +
                              item->x - (f32)(*(u16*)((u8*)texture + 0xa) >> 1));
@@ -126,7 +126,7 @@ void TitleMenuItem_render(TitleMenuItem* item, int unused, int alpha)
         {
             drawAlpha = (u8)alpha;
         }
-        drawTexture(lbl_803A9DB8[textureIndex], item->x, item->y, (u8)drawAlpha, 0x100);
+        drawTexture(gTitleMenuItemTextures[textureIndex], item->x, item->y, (u8)drawAlpha, 0x100);
         break;
     case TITLE_MENU_KIND_WINDOW:
         phrase = gameTextGetPhrase(item->extra.window.phraseId,
@@ -184,11 +184,11 @@ void TitleMenuItem_update(TitleMenuItem* item)
         }
 
         gatedMove = move;
-        if (lbl_803DD920 != 0)
+        if (gTitleMenuPrevMove != 0)
         {
             gatedMove = 0;
         }
-        lbl_803DD920 = move;
+        gTitleMenuPrevMove = move;
 
         if (gatedMove < 0)
         {
@@ -207,19 +207,19 @@ void TitleMenuItem_update(TitleMenuItem* item)
         stickX = padGetStickX(0);
         sliderDelta = (s16)(stickX / 16) * 0xa0;
 
-        if (((s16)sliderDelta != 0) && (!(lbl_803DD91C < item->minValue) || ((s16)sliderDelta >= 0)) &&
-            (!(lbl_803DD91C > item->maxValue) || ((s16)sliderDelta <= 0)))
+        if (((s16)sliderDelta != 0) && (!(gTitleMenuSliderValue < item->minValue) || ((s16)sliderDelta >= 0)) &&
+            (!(gTitleMenuSliderValue > item->maxValue) || ((s16)sliderDelta <= 0)))
         {
-            lbl_803DD918 = (s16)(0.3f * (f32)(s16)(sliderDelta - lbl_803DD918) + lbl_803DD918);
+            gTitleMenuSliderVelocity = (s16)(0.3f * (f32)(s16)(sliderDelta - gTitleMenuSliderVelocity) + gTitleMenuSliderVelocity);
             Sfx_KeepAliveLoopedObjectSound(0, SFXTRIG_pda_compassbeep);
         }
         else
         {
-            lbl_803DD918 = 0;
+            gTitleMenuSliderVelocity = 0;
         }
 
-        lbl_803DD91C += lbl_803DD918 / 150.0f;
-        item->value = (s16)(0.5f + lbl_803DD91C);
+        gTitleMenuSliderValue += gTitleMenuSliderVelocity / 150.0f;
+        item->value = (s16)(0.5f + gTitleMenuSliderValue);
 
         if ((item->flags & TITLE_MENU_FLAG_VOLUME_PREVIEW) != 0)
         {
@@ -360,9 +360,9 @@ void TitleMenuItem_loadTextures(void)
 
     for (i = 0; i < TITLE_MENU_ITEM_TEXTURE_COUNT; i++)
     {
-        if (lbl_803A9DB8[i] == NULL)
+        if (gTitleMenuItemTextures[i] == NULL)
         {
-            lbl_803A9DB8[i] = textureLoadAsset(lbl_8031C2A8[i]);
+            gTitleMenuItemTextures[i] = textureLoadAsset(gTitleMenuItemTextureIds[i]);
         }
     }
 }
@@ -373,14 +373,14 @@ void TitleMenuItem_release(void)
 
     for (i = 0; i < TITLE_MENU_ITEM_TEXTURE_COUNT; i++)
     {
-        textureFree((Texture*)(lbl_803A9DB8[i]));
-        lbl_803A9DB8[i] = NULL;
+        textureFree((Texture*)(gTitleMenuItemTextures[i]));
+        gTitleMenuItemTextures[i] = NULL;
     }
 }
 
 void TitleMenuItem_initialise(void)
 {
-    void** slots = lbl_803A9DB8;
+    void** slots = gTitleMenuItemTextures;
     slots[0] = NULL;
     slots[1] = NULL;
     slots[2] = NULL;

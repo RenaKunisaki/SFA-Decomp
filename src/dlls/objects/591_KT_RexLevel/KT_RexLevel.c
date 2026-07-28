@@ -18,7 +18,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/sky_api.h"
 
-int lbl_803DDD40;
+int gKTRexPhaseCounter;
 
 #define KTREXLEVEL_ENVFX_A 0x18f
 #define KTREXLEVEL_ENVFX_B 0x18e
@@ -95,7 +95,7 @@ void KT_RexLevel_update(GameObject* obj)
         mainSetBits(0x55e, 1);
         (obj)->userData1 = 1;
     }
-    lbl_803DDD40 = mainGetBit(GAMEBIT_DR_KTrexPhaseCounter);
+    gKTRexPhaseCounter = mainGetBit(GAMEBIT_DR_KTrexPhaseCounter);
 }
 
 void KT_RexLevel_init(GameObject* obj)

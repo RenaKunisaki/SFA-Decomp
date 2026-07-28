@@ -18,7 +18,7 @@ f32 gEffect2SpawnPhaseB = 0.3f;
 f32 gEffect2ScrollPhaseA = 0.1f;
 f32 gEffect2ScrollPhaseB = 0.3f;
 
-PartFxSpawnParams lbl_8039C338;
+PartFxSpawnParams gEffect2DefaultSpawnParams;
 extern int lbl_803DD2C4;
 
 s32 gEffect2TextureIdTable[4] = {0xDF, 0x1FC, 0x200, 0x1FB};
@@ -38,14 +38,14 @@ ObjectDescriptor6 Effect2_funcs = {
 #define FILL338()                                                                                                      \
     do                                                                                                                 \
     {                                                                                                                  \
-        lbl_8039C338.posX = 0.0f;                                                                              \
-        lbl_8039C338.posY = 0.0f;                                                                              \
-        lbl_8039C338.posZ = 0.0f;                                                                              \
-        lbl_8039C338.scale = 1.0f;                                                                             \
-        lbl_8039C338.unk0 = 0;                                                                                         \
-        lbl_8039C338.unk2 = 0;                                                                                         \
-        lbl_8039C338.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C338;                                                               \
+        gEffect2DefaultSpawnParams.posX = 0.0f;                                                                              \
+        gEffect2DefaultSpawnParams.posY = 0.0f;                                                                              \
+        gEffect2DefaultSpawnParams.posZ = 0.0f;                                                                              \
+        gEffect2DefaultSpawnParams.scale = 1.0f;                                                                             \
+        gEffect2DefaultSpawnParams.unk0 = 0;                                                                                         \
+        gEffect2DefaultSpawnParams.unk2 = 0;                                                                                         \
+        gEffect2DefaultSpawnParams.unk4 = 0;                                                                                         \
+        spawnParams = &gEffect2DefaultSpawnParams;                                                               \
     } while (0)
 
 int Effect2_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

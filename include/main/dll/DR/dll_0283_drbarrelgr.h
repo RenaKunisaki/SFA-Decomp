@@ -6,7 +6,7 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
-extern f32 lbl_803DC3B0;
+extern f32 gDRBarrelGrThrowScale;
 extern f32 gDrBarrelGenGrabYOffset;
 
 typedef struct DrBarrelGrRenderParams

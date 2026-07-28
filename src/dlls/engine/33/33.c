@@ -16,7 +16,7 @@ f32 lbl_803DB814 = 0.3f;
 f32 lbl_803DB818 = 0.1f;
 f32 lbl_803DB81C = 0.3f;
 
-PartFxSpawnParams lbl_8039C380;
+PartFxSpawnParams gEffect8DefaultSpawnParams;
 
 ObjectDescriptor6 Effect8_funcs = {
     0,
@@ -35,14 +35,14 @@ ObjectDescriptor6 Effect8_funcs = {
 #define FILL8()                                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
-        lbl_8039C380.posX = 0.0f;                                                                                      \
-        lbl_8039C380.posY = 0.0f;                                                                                      \
-        lbl_8039C380.posZ = 0.0f;                                                                                      \
-        lbl_8039C380.scale = 1.0f;                                                                                     \
-        lbl_8039C380.unk0 = 0;                                                                                         \
-        lbl_8039C380.unk2 = 0;                                                                                         \
-        lbl_8039C380.unk4 = 0;                                                                                         \
-        spawnParams = &lbl_8039C380;                                                               \
+        gEffect8DefaultSpawnParams.posX = 0.0f;                                                                                      \
+        gEffect8DefaultSpawnParams.posY = 0.0f;                                                                                      \
+        gEffect8DefaultSpawnParams.posZ = 0.0f;                                                                                      \
+        gEffect8DefaultSpawnParams.scale = 1.0f;                                                                                     \
+        gEffect8DefaultSpawnParams.unk0 = 0;                                                                                         \
+        gEffect8DefaultSpawnParams.unk2 = 0;                                                                                         \
+        gEffect8DefaultSpawnParams.unk4 = 0;                                                                                         \
+        spawnParams = &gEffect8DefaultSpawnParams;                                                               \
     } while (0)
 
 int Effect8_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,

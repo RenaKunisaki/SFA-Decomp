@@ -34,7 +34,7 @@ u32 lbl_803DC0F0 = 3;
 
 void* lbl_803DDC74;
 extern u32* lbl_803DCA94;
-s8 lbl_803DDC70;
+s8 gWMGalleonShowScreen;
 
 ObjectDescriptor gWM_GalleonObjDescriptor = {
     0,
@@ -89,10 +89,10 @@ int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             (*(void (**)(int, int, int))((u8*)*lbl_803DCA94 + 0x14))(0, 0x1e, 0x50);
             break;
         case WM_GALLEON_COMMAND_SHOW_MODEL:
-            lbl_803DDC70 = 1;
+            gWMGalleonShowScreen = 1;
             break;
         case WM_GALLEON_COMMAND_HIDE_MODEL:
-            lbl_803DDC70 = 0;
+            gWMGalleonShowScreen = 0;
             break;
         }
     }
@@ -140,7 +140,7 @@ void WM_Galleon_render(GameObject* obj, int renderArg2, int renderArg3, int rend
 
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 
-    if (lbl_803DDC70 != 0) {
+    if (gWMGalleonShowScreen != 0) {
         gScreensInterface->vtable->show(1);
     }
 }
