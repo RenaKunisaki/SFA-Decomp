@@ -2346,11 +2346,11 @@ void expgfx_initSlotQuad(void* slotPtr)
 
     if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_SCALE_FROM_ZERO) != 0)
     {
-        *(u16*)&slot->scaleCurrent = ((f32)(u16)slot->scaleStep * step + (f32)(u16)slot->scaleCurrent);
+        slot->scaleCurrent = ((f32)slot->scaleStep * step + (f32)slot->scaleCurrent);
     }
     else if ((slot->renderFlags & EXPGFX_RENDER_SCALE_OVER_LIFETIME) != 0)
     {
-        *(u16*)&slot->scaleCurrent = ((f32)(u16)slot->scaleCurrent - (f32)(u16)slot->scaleStep * step);
+        slot->scaleCurrent = ((f32)slot->scaleCurrent - (f32)slot->scaleStep * step);
     }
 
     if (resource == 0)
@@ -4472,18 +4472,18 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_SCALE_FROM_ZERO) != 0)
         {
             slot->scaleCurrent = 0;
-            *(u16*)&slot->scaleStep = (scaleVal / (f32)(s32)slot->lifetimeFrameLimit);
-            *(u16*)&slot->scaleTarget = scaleVal;
+            slot->scaleStep = (scaleVal / (f32)(s32)slot->lifetimeFrameLimit);
+            slot->scaleTarget = scaleVal;
         }
         else if ((slot->renderFlags & EXPGFX_RENDER_SCALE_OVER_LIFETIME) != 0)
         {
-            *(u16*)&slot->scaleCurrent = scaleVal;
-            *(u16*)&slot->scaleStep = (scaleVal / (f32)(s32)slot->lifetimeFrameLimit);
-            *(u16*)&slot->scaleTarget = scaleVal;
+            slot->scaleCurrent = scaleVal;
+            slot->scaleStep = (scaleVal / (f32)(s32)slot->lifetimeFrameLimit);
+            slot->scaleTarget = scaleVal;
         }
         else
         {
-            *(u16*)&slot->scaleCurrent = scaleVal;
+            slot->scaleCurrent = scaleVal;
             slot->scaleTarget = slot->scaleCurrent;
             slot->scaleStep = 0;
         }
