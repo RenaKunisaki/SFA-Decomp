@@ -1232,9 +1232,10 @@ s32 Music_GetActivePriority(void)
 
 u8 musicInitMidiWad(void)
 {
-    int track, j;
+    int track;
     MusicChannel* ch;
     MusicTrackSlot* table;
+    int j;
     MusicTrackSlot* found;
     u32 size;
     int arenaOffset;
