@@ -433,6 +433,7 @@ void Camera_SetupFullscreenViewport(void* viewportArg) {
     s16 halfHeightQuarterPixels;
 
     gCameraCurrentViewIndex = 4;
+    /* getScreenResolution packs height in the upper 16 bits and width in the lower 16 bits. */
     resolution = getScreenResolution();
     height = resolution >> 16;
     width = resolution & 0xFFFF;
@@ -603,10 +604,7 @@ void Camera_ApplyCurrentViewport(void* viewportArg) {
     int viewportY;
     u32 screenSize;
 
-    /*
-     * getScreenResolution packs height in the upper half and width in the lower half. This reuse keeps the exact
-     * register allocation of retail's scissor setup.
-     */
+    /* Preserve this unpack-and-reuse sequence to retain retail's scissor-setup register allocation. */
     screenSize = getScreenResolution();
     viewportY = screenSize >> 16;
     width = screenSize;
@@ -629,8 +627,8 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
         u8 savedViewIndex = gCameraCurrentViewIndex;
 
         gCameraCurrentViewIndex = viewIndex;
-        gxSetScissorRect(0, 0, viewports[viewIndex & 0xff].scissorX1, viewports[viewIndex & 0xff].scissorY1,
-                         viewports[viewIndex & 0xff].scissorX2, viewports[viewIndex & 0xff].scissorY2);
+        gxSetScissorRect(0, 0, viewports[viewIndex & 0xFF].scissorX1, viewports[viewIndex & 0xFF].scissorY1,
+                         viewports[viewIndex & 0xFF].scissorX2, viewports[viewIndex & 0xFF].scissorY2);
 
         activeViewport = gCameraViewports;
         activeViewIndex = gCameraCurrentViewIndex;
