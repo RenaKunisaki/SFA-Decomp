@@ -16,7 +16,7 @@ enum
 {
     DIMTRICKY_STATE_WAIT_TRIGGER = 0,
     DIMTRICKY_STATE_HAND_CONTROL = 1,
-    DIMTRICKY_STATE_LINK_COMPANION = 2,
+    DIMTRICKY_STATE_MOVE_TO_OBJECT = 2,
     DIMTRICKY_STATE_DONE = 3,
 };
 
@@ -78,9 +78,9 @@ void dim_tricky_update(GameObject* obj)
         }
         break;
     case DIMTRICKY_STATE_HAND_CONTROL:
-        state->phase = DIMTRICKY_STATE_LINK_COMPANION;
+        state->phase = DIMTRICKY_STATE_MOVE_TO_OBJECT;
         break;
-    case DIMTRICKY_STATE_LINK_COMPANION:
+    case DIMTRICKY_STATE_MOVE_TO_OBJECT:
         (*(DimTrickyInterfaceVTable**)trickyObj->anim.dll)->requestMoveToObject(trickyObj, obj);
         state->phase = DIMTRICKY_STATE_DONE;
         break;

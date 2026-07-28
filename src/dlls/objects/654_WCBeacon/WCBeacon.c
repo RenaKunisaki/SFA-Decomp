@@ -45,6 +45,8 @@
 #define WCBEACON_TRIGGER_ACCEPT_ARG   1
 #define WCBEACON_TRIGGER_NO_ARG       -1
 #define WCBEACON_FINAL_TRIGGER_ID     105
+#define WCBEACON_COMMAND_KIND         1
+#define WCBEACON_COMMAND_TYPE         4
 
 int wcbeacon_aButtonCallback(GameObject* obj)
 {
@@ -111,7 +113,7 @@ void wcbeacon_update(GameObject* obj)
             if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {
                 (*(WCBeaconTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
-                    tricky, obj, WCBEACON_TRIGGER_ACCEPT_ARG, INTERACT_FLAG_IN_RANGE);
+                    tricky, obj, WCBEACON_COMMAND_KIND, WCBEACON_COMMAND_TYPE);
             }
         }
         if (state->acceptedInteraction != 0)

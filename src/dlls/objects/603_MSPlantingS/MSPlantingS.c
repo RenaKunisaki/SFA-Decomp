@@ -53,6 +53,9 @@
 /* ObjHits priority-hit result that cuts the plant */
 #define MSPLANTING_HIT_CUT 0x1A
 
+#define MSPLANTING_TRICKY_COMMAND_KIND 1
+#define MSPLANTING_TRICKY_COMMAND_TYPE 4
+
 typedef struct MoonSeedPlantingSpotTrickyInterface
 {
     void* unknown00[10];
@@ -272,7 +275,9 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
                 getXZDistance(&player->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
             {
                 objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 5, 1, 0x28, 7.0f, NULL, 0);
-                MSPLANTING_TRICKY_INTERFACE((GameObject*)tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
+                MSPLANTING_TRICKY_INTERFACE((GameObject*)tricky)
+                    ->sideCommandEnable((GameObject*)tricky, obj, MSPLANTING_TRICKY_COMMAND_KIND,
+                                        MSPLANTING_TRICKY_COMMAND_TYPE);
             }
             else
             {

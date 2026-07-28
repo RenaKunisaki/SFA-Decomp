@@ -28,7 +28,7 @@ typedef struct WCBeaconState
 typedef struct WCBeaconTrickyInterfaceVTable
 {
     void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind,
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* beacon, int commandKind,
                               int commandType);
 } WCBeaconTrickyInterfaceVTable;
 
