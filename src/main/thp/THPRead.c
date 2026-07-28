@@ -8,6 +8,7 @@
 #include "string.h"
 #include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
+#include "dolphin/thp/THPPlayer.h"
 
 char gPicMenuReadThreadArea[0x1000];
 OSThread gPicMenuReadThread;

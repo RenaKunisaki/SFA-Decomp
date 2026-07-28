@@ -6,6 +6,7 @@
  * spawns particle fx on impact (partfx 518), and damages SharpClaw (object type 214)
  * on floor-hit via their hit-callback vtable.
  */
+#include "main/vecmath.h"
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"

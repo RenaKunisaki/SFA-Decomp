@@ -425,7 +425,7 @@ int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
         {
             f = lbl_803E16A4;
         }
-        f = f * lbl_803E16A8;
+        f *= lbl_803E16A8;
         g = lbl_803E16AC;
         g += f;
         g = g + d / lbl_803E16B0;
@@ -575,7 +575,7 @@ void camcontrol_updateWallAvoidance(CameraObject* camera, GameObject* target)
             z = t * cosv + dz * sinv;
             camera->anim.worldPosZ = z + target->anim.worldPosZ;
         }
-        gCamcontrolModeSettings->avoidanceYawOffset = gCamcontrolModeSettings->avoidanceYawOffset * lbl_803E16C4;
+        gCamcontrolModeSettings->avoidanceYawOffset *= lbl_803E16C4;
         if ((gCamcontrolModeSettings->avoidanceYawOffset < lbl_803E16C8) && (gCamcontrolModeSettings->avoidanceYawOffset > lbl_803E16CC))
         {
             gCamcontrolModeSettings->avoidanceYawOffset = lbl_803E16AC;

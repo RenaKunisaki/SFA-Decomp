@@ -8,6 +8,7 @@
  * The 0x1A flag byte is a BitFlags8 whose b0 = "active" (chain visible
  * and rattling).
  */
+#include "main/audio/sfx_play_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "game/objects/object.h"
 #include "main/model.h"

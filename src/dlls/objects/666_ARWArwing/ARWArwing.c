@@ -23,6 +23,7 @@
  * each use - that spelling reproduces the retail register colouring; see the
  * CLAUDE.md matching notes.
  */
+#include "main/audio/music_api.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/pi_dolphin_api.h"

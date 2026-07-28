@@ -4,6 +4,7 @@
  * Each crawler waits at its spawn point, dives toward a nearby target,
  * and then attacks or retreats according to its variant flags.
  */
+#include "main/object_update_list.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
@@ -225,7 +226,7 @@ void wmwallcrawler_update(GameObject* obj)
             }
             if (((GameObject*)ob)->anim.currentMoveProgress > 0.4f)
             {
-                ((GameObject*)ob)->anim.rootMotionScale = ((GameObject*)ob)->anim.rootMotionScale * 0.95f;
+                ((GameObject*)ob)->anim.rootMotionScale *= 0.95f;
             }
             if (ObjAnim_AdvanceCurrentMove(ob, 0.01f, framesThisStep, NULL) !=
                 0)

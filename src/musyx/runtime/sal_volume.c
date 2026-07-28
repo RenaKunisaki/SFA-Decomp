@@ -1,5 +1,4 @@
 #include "musyx/sal_volume.h"
-#include "dolphin/fake_tgmath.h"
 
 typedef struct
 {

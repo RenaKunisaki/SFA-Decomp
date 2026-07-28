@@ -13,6 +13,7 @@
  * spawnEffect). gDll8EEffectSpawnResource is the lone extra resource handed to
  * spawnEffect alongside the gDll8EEffectTexture texture.
  */
+#include "main/vecmath.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"

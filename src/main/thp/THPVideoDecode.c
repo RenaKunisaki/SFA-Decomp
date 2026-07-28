@@ -10,6 +10,7 @@
 #include "dolphin/os/OSInterrupt.h"
 #include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
+#include "dolphin/thp/THPPlayer.h"
 
 enum
 {

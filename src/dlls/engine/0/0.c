@@ -96,6 +96,8 @@
 #include "string.h"
 #include "dolphin/gx/GXPixel.h"
 #include "track/intersect_api.h"
+#include "main/audio/music_api.h"
+#include "main/gx_scissor_api.h"
 
 u16 lbl_803DBA30 = 420;
 f32 lbl_803DBA34 = 0.3f;
@@ -1514,7 +1516,7 @@ void setAButtonIcon(int icon)
 void fearTestMeterDraw(void)
 {
     GXColor col;
-    int sc0, sc1, sc2, sc3;
+    u32 sc0, sc1, sc2, sc3;
     int a;
     void* texB = hudTextures[0x60];
     u16 hgt = ((Texture*)texB)->height;
@@ -1616,7 +1618,7 @@ void GameUI_airMeterShutdown(void)
 
 void hudDrawAirMeter(void)
 {
-    int sc0, sc1, sc2, sc3;
+    u32 sc0, sc1, sc2, sc3;
     GameObject* player = Obj_GetPlayerObject();
     TrickyAirMeter* meter = airMeter;
     s16 alpha;

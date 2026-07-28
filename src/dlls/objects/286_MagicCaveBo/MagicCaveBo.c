@@ -7,6 +7,7 @@
  */
 #include "dlls/objects/286_MagicCaveBo.h"
 #include "game/objects/object.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/tricky_api.h"
 #include "main/gamebits.h"
