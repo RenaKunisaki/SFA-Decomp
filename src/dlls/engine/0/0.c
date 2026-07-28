@@ -1551,9 +1551,9 @@ void fearTestMeterDraw(void)
                       (u8)gFearTestMeterAlpha, 0x100, fearTestMeterInnerHalfWidth << 1, hgt, 0);
     drawScaledTexture(hudTextures[0x61], (f32)(int)(0x140 - fearTestMeterOuterHalfWidth), lbl_803E1E9C,
                       (u8)gFearTestMeterAlpha, 0x100, gap, hgt, 0);
-    drawScaledTexture(hudTextures[0x61], (f32)(int)((u8)fearTestMeterInnerHalfWidth + 0x140), lbl_803E1E9C,
+    drawScaledTexture(hudTextures[0x61], (f32)(int)(fearTestMeterInnerHalfWidth + 0x140), lbl_803E1E9C,
                       (u8)gFearTestMeterAlpha, 0x100, gap, hgt, 0);
-    drawTexture(hudTextures[0x5f], (f32)(int)((u8)fearTestMeterOuterHalfWidth + 0x140), lbl_803E1E9C,
+    drawTexture(hudTextures[0x5f], (f32)(int)(fearTestMeterOuterHalfWidth + 0x140), lbl_803E1E9C,
                 (u8)gFearTestMeterAlpha, 0x100);
     col.r = 0xff;
     col.g = 0;
@@ -7815,7 +7815,7 @@ void drawWorldMapHud(void)
             AudioStream_Play(hint, AudioStream_StartPrepared);
         }
     }
-    if ((u16)gWorldMapVoiceoverTimer > 0xff)
+    if (gWorldMapVoiceoverTimer > 0xff)
     {
         gWorldMapVoiceoverTimer = 0;
     }
@@ -8019,7 +8019,7 @@ void cMenuRun(void)
         }
     }
 
-    switch ((s8)gCMenuCloseSfx)
+    switch (gCMenuCloseSfx)
     {
     case 0:
         break;
@@ -8405,7 +8405,7 @@ void npcTalkFn_8012e880(void)
         lbl_803DD8CC = cur;
         if (cur <= 0.0f)
         {
-            lbl_803DD8CC = (f32)(s32)(s16)lbl_803DD8CA;
+            lbl_803DD8CC = (f32)(s32)lbl_803DD8CA;
             ((s32*)lbl_803A9440)[1]++;
             {
                 u16* end = gameTextGet(curGameText);
@@ -8781,7 +8781,7 @@ void GameUI_update(void)
                     }
                     else
                     {
-                        switch ((s8)gCMenuCurSection)
+                        switch (gCMenuCurSection)
                         {
                         case 2:
                             if (tricky != 0)
@@ -8926,7 +8926,7 @@ void GameUI_update(void)
 
         {
             s16 sv = (*gCameraInterface)->getMinimapInfoText();
-            if ((s16)gMinimapInfoTextId > -1)
+            if (gMinimapInfoTextId > -1)
             {
                 sv = gMinimapInfoTextId;
                 gMinimapInfoTextXCommitted = gMinimapInfoTextX;

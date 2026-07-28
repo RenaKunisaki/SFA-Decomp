@@ -1002,7 +1002,7 @@ int dll_19_func0F(GameObject* obj, ObjSeqState* seq, char* st, void* moveHandler
                 delta = -0x2000;
             }
             (obj)->anim.rotX -= (delta * framesThisStep) >> 3;
-            if ((s8)gDll19SeqStallCount > 10)
+            if (gDll19SeqStallCount > 10)
             {
                 delta = 0;
             }
