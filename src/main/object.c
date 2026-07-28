@@ -658,11 +658,6 @@ ObjModel* Obj_GetActiveModel(GameObject* obj)
     return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
 }
 
-ObjModel* Obj_GetActiveModel(GameObject* obj)
-{
-    return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
-}
-
 GameObject* loadObjectAtObject(GameObject* src, ObjPlacement* setup)
 {
     GameObject* obj;

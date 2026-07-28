@@ -1669,7 +1669,6 @@ typedef struct ModelBlendChannelFlags {
 const ModelBlendChannelFlags sModelBlendChannelActiveInit = {{0, 0, 0}};
 const ModelBlendChannelFlags sModelBlendChannelFadeInit = {{0, 0, 0}};
 
-
 void ObjModel_ApplyBlendChannels(ObjModel* model)
 {
     ModelFileHeader* hdr;
