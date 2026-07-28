@@ -1738,8 +1738,6 @@ Seq11ERow gSeq11EStateTable[6] = {
     {2.0f, 0x0, 7, 0, 4, 1}, {2.0f, 0x0, 3, 5, 5, 0}, {3.5f, 0x1, 4, 5, 5, 0},
 };
 
-#define SEQOBJ11E_GCROBOT_DROP_OBJ 0x6b5
-
 typedef void (*SeqObj11ESetMovePointerStateFn)(GameObject* obj, void* state, int moveId, f32 speed, int p5,
                                                int flags);
 
@@ -2025,10 +2023,6 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wp
 #define MAGICPLANT_PARTFX          0x802
 #define MAGICPLANT_HIT_VOLUME_SLOT 0xe
 
-/* gcRobotPatrol (mikaladon_update): periodically dropped object; parented back to
- * the dropper via +0xC4 and announced with SFX 0x249. */
-#define SEQOBJ11E_GCROBOT_DROP_OBJ 0x6b5
-
 enum MikaladonVerticalPhase
 {
     MIKALADON_PHASE_ORBIT = 0,
@@ -2206,20 +2200,9 @@ int lbl_803DBCB8[2] = {2, 3};
 u8 gMagicPlantSeqEntryTable[8] = {1, 1, 3, 2, 0, 0, 0, 0};
 int lbl_803DBCC8[2] = {2, 3};
 
-#define MAGICPLANT_OBJFLAG_PARENT_SLACK 0x1000
-
-/* Spit projectile spawned by kooshy_spawnProjectile; retail OBJECTS.bin name
-   "KaldachomSp" (DLL 0xD7 kaldachompspit), shared with the snowworm spitter. */
-#define KALDACHOM_SPIT_OBJ 0x51b
-
-/* The magic-plant's one particle-fx effect (spawned per hit-count in the
-   attack handler). */
 /* The Firebat variant of the shared Vambat/Firebat family (retail
    OBJECTS.bin name "Firebat", DLL 0xC9); it alone runs with userData2 set. */
 #define MAGICPLANT_FIREBAT_SEQID 0x7c6
-
-#define MAGICPLANT_PARTFX          0x802
-#define MAGICPLANT_HIT_VOLUME_SLOT 0xe
 
 void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
@@ -2458,12 +2441,6 @@ void magicplantSpawnMovePuffs(GameObject* obj, int state)
         }
     }
 }
-
-#define MAGICPLANT_OBJFLAG_PARENT_SLACK 0x1000
-
-/* Spit projectile spawned by kooshy_spawnProjectile; retail OBJECTS.bin name
-   "KaldachomSp" (DLL 0xD7 kaldachompspit), shared with the snowworm spitter. */
-#define KALDACHOM_SPIT_OBJ 0x51b
 
 extern f32 lbl_803E2900;
 extern f32 lbl_803E2904;
@@ -2954,8 +2931,6 @@ void weevil_init(int unused, u8* state)
 }
 
 int lbl_803DBCD0[2] = {2, 3};
-
-#define FALL_LADDERS_HIT_VOLUME_SLOT 0x18
 
 void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state)
 {
@@ -3757,11 +3732,6 @@ u8 lbl_8031FAA8[0x40] = {
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-/* object-type id of the pollen-spit projectile spawned by spittingEbaSpawnPollen
- * (see file docblock). */
-#define DUSTER_CHILD_OBJ_POLLEN_SPIT 0x47b
-#define DUSTER_HIT_VOLUME_SLOT       10
-
 extern f32 gDusterWallProbeOffsets[];
 
 void rachnopUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
@@ -3899,8 +3869,6 @@ void rachnopInit(u32 unused, int state)
     ((BaddieState*)state)->pathStep = fa;
     return;
 }
-
-#define DUSTER_CHILD_OBJ_POLLEN_SPIT 0x47b
 
 extern const f32 gDusterDayStartSeconds;
 extern const f32 gDusterDayEndSeconds;
@@ -4135,8 +4103,6 @@ void spittingEbaInit(u32 unused, int state)
     ((BaddieState*)state)->pathStep = fa;
     return;
 }
-
-#define DUSTER_HIT_VOLUME_SLOT 10
 
 extern int lbl_803DBCD8[2];
 extern const f32 lbl_803E2AA8;
@@ -4626,6 +4592,7 @@ STATIC_ASSERT(offsetof(FCVars, reactStep) == 0x33f);
 STATIC_ASSERT(offsetof(FCVars, linkedObj) == 0x340);
 
 #define FIRECRAWLER_HIT_VOLUME_SLOT      9
+/* group owned by another DLL, queried here */
 #define LANTERNFIREFLY_OBJGROUP 0x30 /* DLL 0x10C lanternfirefly */
 
 extern f32 lbl_803DBCE0;
@@ -5075,8 +5042,6 @@ u8 lbl_803DBD30[4] = {0x3C, 0xB4, 0, 0};
 u8 lbl_803DBD34[4] = {3, 5, 9, 0xB};
 u8 lbl_803DBD38[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 
-/* group owned by another DLL, queried here */
-#define LANTERNFIREFLY_OBJGROUP          0x30 /* DLL 0x10C lanternfirefly */
 #define FIRECRAWLER_OBJFLAG_RENDERED     0x800
 #define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
 #define FIREHOLE_OBJ_ID                  0x710 /* FireHole child spawned by firecrawler (firepipe DLL 0x273) */
@@ -5092,7 +5057,6 @@ u8 lbl_803DBD38[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 #define FIRECRAWLER_PARTFX_MOVE_TURN 0x802
 /* movement dust spawned on the move-loop event: moving straight (turnDelta == 0) */
 #define FIRECRAWLER_PARTFX_MOVE_STRAIGHT 0x809
-#define FIRECRAWLER_HIT_VOLUME_SLOT      9
 
 extern void* gCrawlerDescriptorTable[];
 
@@ -6251,22 +6215,6 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
 
 extern int lbl_803DBCF8[2];
 
-/* group owned by another DLL, queried here */
-#define LANTERNFIREFLY_OBJGROUP          0x30 /* DLL 0x10C lanternfirefly */
-#define FIRECRAWLER_OBJFLAG_RENDERED     0x800
-#define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
-#define FIREHOLE_OBJ_ID                  0x710 /* FireHole child spawned by firecrawler (firepipe DLL 0x273) */
-/* crawler-family enemy anim.seqIds (docblock table: seqId -> enemy name) */
-#define FIRECRAWLER_SEQID_FIRECRAWLER  0x6a2 /* FireCrawler */
-#define FIRECRAWLER_SEQID_REDEYE       0x6a3 /* RedEye */
-#define FIRECRAWLER_SEQID_SHADOWHUNTER 0x6a4 /* ShadowHunter */
-
-/* movement dust spawned on the move-loop event: turning (turnDelta != 0) */
-#define FIRECRAWLER_PARTFX_MOVE_TURN 0x802
-/* movement dust spawned on the move-loop event: moving straight (turnDelta == 0) */
-#define FIRECRAWLER_PARTFX_MOVE_STRAIGHT 0x809
-#define FIRECRAWLER_HIT_VOLUME_SLOT      9
-
 extern void* gCrawlerModelChainIds[];
 
 
@@ -6628,23 +6576,7 @@ void hagabonMK2_init(GameObject* obj, BaddieState* st)
 
 extern u8 lbl_803DBD30[4];
 
-/* group owned by another DLL, queried here */
-#define LANTERNFIREFLY_OBJGROUP          0x30 /* DLL 0x10C lanternfirefly */
-#define FIRECRAWLER_OBJFLAG_RENDERED     0x800
-#define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
-#define FIREHOLE_OBJ_ID                  0x710 /* FireHole child spawned by firecrawler (firepipe DLL 0x273) */
-#define KALDACHOM_SPIT_OBJ               0x51b /* retail "KaldachomSp" (DLL 0xD7 kaldachompspit), shared with kooshy */
-/* crawler-family enemy anim.seqIds (docblock table: seqId -> enemy name) */
-#define FIRECRAWLER_SEQID_FIRECRAWLER  0x6a2 /* FireCrawler */
-#define FIRECRAWLER_SEQID_REDEYE       0x6a3 /* RedEye */
-#define FIRECRAWLER_SEQID_SHADOWHUNTER 0x6a4 /* ShadowHunter */
 #define SNOWWORM_SEQID_BABY            0x84b /* "snowworm_ba" - the baby variant of 0x842 "snowworm" */
-
-/* movement dust spawned on the move-loop event: turning (turnDelta != 0) */
-#define FIRECRAWLER_PARTFX_MOVE_TURN 0x802
-/* movement dust spawned on the move-loop event: moving straight (turnDelta == 0) */
-#define FIRECRAWLER_PARTFX_MOVE_STRAIGHT 0x809
-#define FIRECRAWLER_HIT_VOLUME_SLOT      9
 
 extern u8* gCrawlerReactionTables[];
 
