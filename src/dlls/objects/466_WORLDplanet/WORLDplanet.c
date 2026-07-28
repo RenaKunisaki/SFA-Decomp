@@ -49,16 +49,19 @@
         (dst).channel = value + (t) * (f32)((to).channel - value);                                                     \
     }
 
-extern f32 gWorldPlanetLightingLerpT;
-extern u8 gWorldPlanetCurIntensity;
-extern int gWorldPlanetSelectConfirmTimer;
-extern u8 gWorldPlanetExitWarpTimer;
-extern s16 gWorldPlanetInputLockTimer;
-extern int gWorldPlanetLoadedMapId;
-extern f32 gWorldPlanetPathProgress;
-extern f32 lbl_803DDD00;
-extern s16 gWorldPlanetReselectDelayTimer;
-extern int lbl_803DDD10;
+f32 gWorldPlanetPathProgress;
+int gWorldPlanetLoadedMapId;
+WorldPlanetColorRGBA8 gWorldPlanetCurSky;
+WorldPlanetColorRGBA8 gWorldPlanetCurLight;
+WorldPlanetColorRGBA8 gWorldPlanetCurAmbient;
+u8 gWorldPlanetCurIntensity;
+f32 gWorldPlanetLightingLerpT;
+int lbl_803DDD10;
+s16 gWorldPlanetReselectDelayTimer;
+s16 gWorldPlanetInputLockTimer;
+u8 gWorldPlanetExitWarpTimer;
+int gWorldPlanetSelectConfirmTimer;
+f32 lbl_803DDD00;
 
 void worldplanet_updateMapLighting(GameObject* obj)
 {
