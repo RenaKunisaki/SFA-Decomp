@@ -4,6 +4,7 @@
 #include "global.h"
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
 #include "game/objects/object.h"
+#include "main/dll/baddie_state.h"
 #include "main/model_engine.h"
 #include "main/model_light.h"
 #include "main/objanim_update.h"
@@ -86,16 +87,14 @@ typedef struct KTRexArenaState
     s8 pathCountdown;
     u32 phaseFlags;
     u8 laneAltSelect;
-    u8 pad109[0x23];
-    f32 unk12C;
-    u8 pad130[0x14];
-    f32 unk144;
-    u8 pad148[0x24];
+    u8 pad109[0x10C - 0x109];
+    KTRexWork spawnWork[4];
     f32 vecX;
     f32 vecY;
     f32 vecZ;
     ModelLightStruct* light;
     void* lightning[KTREX_LIGHTNING_COUNT];
+    f32 breathSfxTimer;
 } KTRexArenaState;
 
 typedef struct KTRexLaneTuning
@@ -104,56 +103,18 @@ typedef struct KTRexLaneTuning
     int curveIds[4][4];
 } KTRexLaneTuning;
 
-typedef struct KTRexRuntime
-{
-    u8 pad000[0x25f];
-    s8 physicsActive; /* 0x25F: BaddieState free-fall physics enable (gBaddieControlInterface) */
-    u8 pad260[0x10];
-    s16 substate; /* 0x270: BaddieState control substate (consumed by gPlayerInterface->setState) */
-    u8 pad272[8];
-    u8 moveJustStartedA;
-    u8 moveJustStartedB;
-    u8 pad27C[4];
-    f32 localOffsetZ;
-    f32 localOffsetX;
-    u8 pad288[0xc];
-    f32 laneSpeed;
-    u8 pad298[8];
-    f32 curvePhase;
-    u8 pad2A4[0x1c];
-    f32 playerDist;
-    u8 pad2C4[0xc];
-    void* playerObj;
-    u8 pad2D4[0x40];
-    int handlerState;
-    u8 pad318[0x2e];
-    u8 moveDone;
-    u8 pad347[2];
-    u8 hasTarget; /* 0x349: BaddieState target-acquired flag (cleared on death/reset) */
-    u8 pad34A[2];
-    s8 unk34C;
-    u8 pad34D[2];
-    s8 unk34F;
-    u8 pad350[4];
-    s8 hitCountdown;
-    u8 pad355[0x93];
-    f32 bobPhase;
-    f32 bobRate;
-    u8 pad3F0[4];
-    s16 unk3F4;
-    u8 pad3F6[0x16];
-    KTRexArenaState* arena;
-} KTRexRuntime;
+
 
 STATIC_ASSERT(sizeof(KTRexWork) == 0x18);
+STATIC_ASSERT(offsetof(KTRexArenaState, spawnWork) == 0x10c);
 STATIC_ASSERT(offsetof(KTRexArenaState, light) == 0x178);
 STATIC_ASSERT(offsetof(KTRexArenaState, lightning) == 0x17c);
-STATIC_ASSERT(offsetof(KTRexRuntime, arena) == 0x40c);
+STATIC_ASSERT(offsetof(KTRexArenaState, breathSfxTimer) == 0x190);
 STATIC_ASSERT(sizeof(KTRexLaneTuning) == 0x4c);
 STATIC_ASSERT(offsetof(KTRexLaneTuning, curveIds) == 0xc);
 
 extern KTRexArenaState* gKTRexState;
-extern KTRexRuntime* gKTRexRuntime;
+extern GroundBaddieState* gKTRexRuntime;
 extern void* gKTRexStateHandlersA[];
 extern void* gKTRexStateHandlersB[];
 extern f32 gKTRexLaneSpeedMin[];
@@ -181,25 +142,25 @@ extern s16 lbl_8032A730[];
 void ktrex_initialiseStateHandlerTables(void);
 int ktrex_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void ktrex_updateAttackEffects(GameObject* obj);
-void ktrex_updateContactEffects(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_updateArenaPathProgress(KTRexRuntime* runtime);
-int ktrex_stateHandlerB01(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB02(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB03(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB04(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB05(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB06(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB07(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerB08(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA01(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA02(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA03(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA04(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA05(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA07(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA08(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA09(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA10(GameObject* obj, KTRexRuntime* runtime);
-int ktrex_stateHandlerA11(GameObject* obj, KTRexRuntime* runtime);
+void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_updateArenaPathProgress(GroundBaddieState* runtime);
+int ktrex_stateHandlerB01(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB02(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB03(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB04(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB05(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB06(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB07(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerB08(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA01(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA02(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA03(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA04(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA05(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA07(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA08(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA09(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA10(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA11(GameObject* obj, GroundBaddieState* runtime);
 
 #endif /* MAIN_DLL_DR_DLL_0250_KTREX_H_ */

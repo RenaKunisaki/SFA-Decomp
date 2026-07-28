@@ -183,7 +183,9 @@ typedef struct BaddieState {
     u8 unk34A[2];
     s8 movementFlags; /* root-motion / velocity handling flags for the shared player controller */
     s8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */
-    u8 unk34E[6];
+    u8 unk34E;
+    s8 unk34F;
+    u8 unk350[4];
     s8 hitPoints; /* remaining hit points; decremented on hit, < 1 = dead */
     u8 unk355;
     u8 moveEventFlags; /* one-shot move-progress event latches (bit1/bit2: SFX fired once past a progress threshold) */
@@ -219,7 +221,7 @@ typedef struct GroundBaddieState {
     int savedObjC0; /* obj+0xC0 swap slot around the player-interface update */
     u8 unk3E4[4];
     f32 glowAlpha; /* 0x3e8: alpha of the red glow tint RGBA(200,0,0,glowAlpha), passed to objSetGlowColor + objParticleFn alpha arg in baddie render */
-    u8 unk3EC[4];
+    f32 glowRate; /* 0x3ec: per-frame delta added to glowAlpha; negated when the alpha ramp reaches its ceiling (ktrex) */
     s16 triggerId; /* config-sourced id (loaded from config+0x22) handed to BaddieControlInterface.spawnChild when a move/landing event fires */
     s16 gameBitA; /* set 1 on trigger */
     s16 gameBitB; /* set 1 / cleared 0; also passed to interface[10] */
