@@ -157,8 +157,8 @@ typedef struct ObjAnimState {
   /* Byte distance between adjacent packed frame streams while sampling. */
   union {
     struct {
-      s16 frameStreamStride;
-      s16 prevFrameStreamStride;
+      u16 frameStreamStride;
+      u16 prevFrameStreamStride;
     };
     s16 frameStreamStrides[2];
   };

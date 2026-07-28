@@ -205,12 +205,11 @@ void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int chan
 {
     int i;
     u8* mtxSlotRow;
-    u8* slotByte;
+    int frameStride;
     u8* frameStream;
-    int frameIdx;
     int boneByteOff;
     int boneIdx;
-    int frameStride;
+    int frameIdx;
     int streamOff;
     f32 frameIdxF;
 
@@ -231,13 +230,11 @@ void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int chan
         frameStride = ((u8*)work->frameData[i])[2];
         boneIdx = 0;
         boneByteOff = 0;
-        slotByte = mtxSlotRow;
         while (boneIdx < file->jointCount)
         {
-            ((ModelBone*)(file->jointData + boneByteOff))->idx[i + 1] = *slotByte;
+            (file->jointData + boneByteOff)[offsetof(ModelBone, idx) + i + 1] = mtxSlotRow[boneIdx];
             boneByteOff += sizeof(ModelBone);
             boneIdx++;
-            slotByte++;
         }
         frameIdx = (int)work->framePhases[i];
         frameIdxF = frameIdx;
@@ -253,8 +250,8 @@ void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int chan
         {
             work->frameStreamStrides[i] = (s16)(-frameStride * frameIdx);
         }
-        streamOff = *(s16*)(frameStream + 2) + frameStride * frameIdx;
-        work->frameStreamCursors[i] = frameStream + streamOff;
+        streamOff = *(s16*)(frameStream + 2);
+        work->frameStreamCursors[i] = frameStream + streamOff + frameStride * frameIdx;
     }
 }
 
