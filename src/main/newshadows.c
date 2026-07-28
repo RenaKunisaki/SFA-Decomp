@@ -1274,9 +1274,8 @@ void maybeHudFn_8006c91c(void)
     f32 hi, lo;
     if (getHudHiddenFrameCount() == 0)
     {
-        f32 d = timeDelta;
-        gNewShadowReflectionScrollX = 0.0084f * d + gNewShadowReflectionScrollX;
-        gNewShadowReflectionScrollY = 0.003f * d + gNewShadowReflectionScrollY;
+        gNewShadowReflectionScrollX = 0.0084f * timeDelta + gNewShadowReflectionScrollX;
+        gNewShadowReflectionScrollY = 0.003f * timeDelta + gNewShadowReflectionScrollY;
         if (gNewShadowReflectionScrollX > 256.0f)
             gNewShadowReflectionScrollX = gNewShadowReflectionScrollX - 256.0f;
         if (gNewShadowReflectionScrollY > 256.0f)
