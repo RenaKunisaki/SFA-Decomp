@@ -5045,8 +5045,11 @@ dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
 	.sdata2     start:0x803E7C70 end:0x803E7C7C
 
 main/trig.c:
-	.text       start:0x80293234 end:0x80293DA4
+	.text       start:0x80293234 end:0x80293C64
 	.sdata2     start:0x803E7C80 end:0x803E7C84
+
+main/sincosf.c:
+	.text       start:0x80293C64 end:0x80293DA4
 
 dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c:
 	.text       start:0x80293DA4 end:0x8029454C
