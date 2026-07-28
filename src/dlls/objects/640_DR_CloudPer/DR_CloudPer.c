@@ -23,26 +23,25 @@
 #define DRCLOUDPER_GROUP_SURFACE        0x39
 #define DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT 0x7a9
 #define DRCLOUDPER_MAP_ANIM_EVENT       0x0c
-#define DRCLOUDPER_OBJECT_FLAGS         0xe000
 
 int DR_CloudPer_activate(int obj)
 {
-    DrCloudPerObject* cloud = (DrCloudPerObject*)obj;
-    DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->setup;
+    GameObject* cloud = (GameObject*)obj;
+    DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->anim.placementData;
     if (mainGetBit(setup->gameBit) == 0)
     {
         return 0;
     }
     mainSetBits(DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT, setup->cloudIndex);
-    (*gMapEventInterface)->setObjGroupStatus(cloud->mapDir, DRCLOUDPER_MAP_ANIM_EVENT, 1);
+    (*gMapEventInterface)->setObjGroupStatus(cloud->anim.mapEventSlot, DRCLOUDPER_MAP_ANIM_EVENT, 1);
     (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
     return 1;
 }
 
 int DR_CloudPer_selectActiveCloud(int obj)
 {
-    DrCloudPerObject* cloud = (DrCloudPerObject*)obj;
-    DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->setup;
+    GameObject* cloud = (GameObject*)obj;
+    DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->anim.placementData;
 
     mainSetBits(DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT, setup->cloudIndex);
     (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
@@ -79,28 +78,29 @@ void DR_CloudPer_update(void)
 
 void DR_CloudPer_init(int obj, int setup)
 {
-    DrCloudPerObject* cloud;
+    GameObject* cloud;
     DrCloudPerSetup* setupData;
     DrCloudPerState* state;
 
     ObjGroup_AddObject(obj, DRCLOUDPER_GROUP_TRIGGER);
     ObjGroup_AddObject(obj, DRCLOUDPER_GROUP_SURFACE);
-    cloud = (DrCloudPerObject*)obj;
+    cloud = (GameObject*)obj;
     setupData = (DrCloudPerSetup*)setup;
     {
         int yawTmp = setupData->yawByte << 8;
-        cloud->yaw = yawTmp;
+        cloud->anim.rotX = yawTmp;
     }
-    state = cloud->state;
-    state->normalX = mathSinf(3.1415927f * cloud->yaw / 32768.0f);
+    state = cloud->extra;
+    state->normalX = mathSinf(3.1415927f * cloud->anim.rotX / 32768.0f);
     state->normalY = 0.0f;
-    state->normalZ = mathCosf(3.1415927f * cloud->yaw / 32768.0f);
+    state->normalZ = mathCosf(3.1415927f * cloud->anim.rotX / 32768.0f);
     state->planeDistance =
-        -(state->normalZ * cloud->posZ + (state->normalX * cloud->posX + state->normalY * cloud->posY));
-    cloud->flagsB0 |= DRCLOUDPER_OBJECT_FLAGS;
+        -(state->normalZ * cloud->anim.localPosZ +
+          (state->normalX * cloud->anim.localPosX + state->normalY * cloud->anim.localPosY));
+    cloud->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_UPDATE_DISABLED;
     if (setupData->cloudIndex == mainGetBit(DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT))
     {
-        (*gMapEventInterface)->setObjGroupStatus(cloud->mapDir, DRCLOUDPER_MAP_ANIM_EVENT, 1);
+        (*gMapEventInterface)->setObjGroupStatus(cloud->anim.mapEventSlot, DRCLOUDPER_MAP_ANIM_EVENT, 1);
     }
 }
 
