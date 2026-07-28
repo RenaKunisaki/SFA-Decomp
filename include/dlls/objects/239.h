@@ -72,19 +72,6 @@ typedef struct PushableState {
     u8 pad147;                     /* 0x147 */
 } PushableState;
 
-typedef struct PushablePlacement {
-    ObjPlacement base; /* 0x00 */
-    s16 gameBit;       /* 0x18 */
-    s16 gameBit2;      /* 0x1A */
-    s8 unk1C;          /* 0x1C */
-    s8 unk1D;          /* 0x1D */
-    s8 unk1E;          /* 0x1E */
-    u8 unk1F;          /* 0x1F */
-    u8 pad20[3];       /* 0x20 */
-    s8 requiredHitId;  /* 0x23: triggering hit-region ID; -1 = none */
-    u8 pad24[4];       /* 0x24 */
-} PushablePlacement;
-
 typedef struct PushableObjectDef {
     ObjPlacement base; /* 0x00 */
     s16 gameBit;       /* 0x18 */
@@ -92,7 +79,7 @@ typedef struct PushableObjectDef {
     void* unk1C;       /* 0x1C */
     u16 scaleRaw;      /* 0x20 */
     u8 rotXByte;       /* 0x22 */
-    u8 requiredHitId;  /* 0x23: triggering hit-region ID; -1 = none */
+    s8 requiredHitId;  /* 0x23: triggering hit-region ID; -1 = none */
     u8 pad24[4];       /* 0x24 */
 } PushableObjectDef;
 
@@ -157,18 +144,6 @@ STATIC_ASSERT(offsetof(PushableState, savePosDelay) == 0x145);
 STATIC_ASSERT(offsetof(PushableState, savePosEnabled) == 0x146);
 STATIC_ASSERT(offsetof(PushableState, pad147) == 0x147);
 STATIC_ASSERT(sizeof(PushableState) == 0x148);
-
-STATIC_ASSERT(offsetof(PushablePlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(PushablePlacement, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(PushablePlacement, gameBit2) == 0x1A);
-STATIC_ASSERT(offsetof(PushablePlacement, unk1C) == 0x1C);
-STATIC_ASSERT(offsetof(PushablePlacement, unk1D) == 0x1D);
-STATIC_ASSERT(offsetof(PushablePlacement, unk1E) == 0x1E);
-STATIC_ASSERT(offsetof(PushablePlacement, unk1F) == 0x1F);
-STATIC_ASSERT(offsetof(PushablePlacement, pad20) == 0x20);
-STATIC_ASSERT(offsetof(PushablePlacement, requiredHitId) == 0x23);
-STATIC_ASSERT(offsetof(PushablePlacement, pad24) == 0x24);
-STATIC_ASSERT(sizeof(PushablePlacement) == 0x28);
 
 STATIC_ASSERT(offsetof(PushableObjectDef, base) == 0x0);
 STATIC_ASSERT(offsetof(PushableObjectDef, gameBit) == 0x18);

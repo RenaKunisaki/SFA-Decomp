@@ -246,7 +246,7 @@ int pushable_updateCurtain(int obj, PushableState* state) {
 }
 
 void pushable_initWcPushBlock(GameObject* obj, PushableState* state) {
-    PushablePlacement* placement = (PushablePlacement*)obj->anim.placementData;
+    PushableObjectDef* placement = (PushableObjectDef*)obj->anim.placementData;
 
     switch (placement->base.mapId) {
     case PUSHABLE_WC_MAP_ID_HIT_10:
@@ -378,13 +378,13 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
 }
 
 void pushable_initMagicGem(GameObject* obj, PushableState* state) {
-    PushablePlacement* placement;
+    PushableObjectDef* placement;
     ObjTextureRuntimeSlot* texture;
     f32 sharedValue;
     f32 eyePosition;
     f32 limit;
 
-    placement = (PushablePlacement*)obj->anim.placementData;
+    placement = (PushableObjectDef*)obj->anim.placementData;
     state->eyeOpenSpeed = PUSHABLE_MAGIC_GEM_EYE_OPEN_SPEED;
     sharedValue = PUSHABLE_MAGIC_GEM_EYE_DRIFT_SPEED;
     state->eyeDriftSpeedX = sharedValue;
@@ -427,7 +427,7 @@ void pushable_initMagicGem(GameObject* obj, PushableState* state) {
 }
 
 void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
-    PushablePlacement* placement;
+    PushableObjectDef* placement;
     int pointIndex;
     s8 unresolvedMask;
     f32* probeCoordinates;
@@ -441,7 +441,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
     f32 worldPoints[21];
     TrackBBoxHit collision;
 
-    placement = (PushablePlacement*)obj->anim.placementData;
+    placement = (PushableObjectDef*)obj->anim.placementData;
     probeCoordinates = (f32*)state->probeLocal;
     Obj_GetPlayerObject();
     savedX = obj->anim.localPosX;
@@ -867,9 +867,9 @@ int pushable_setScale(GameObject* obj, GameObject* target, int active, f32 pushX
         Obj_BuildTransformMatrices(obj);
         if (PUSHABLE_ZERO != state->pushAmountX || PUSHABLE_ZERO != state->pushAmountZ) {
             PushableState* movedState;
-            PushablePlacement* placement;
+            PushableObjectDef* placement;
             u16 flags;
-            placement = (PushablePlacement*)obj->anim.placementData;
+            placement = (PushableObjectDef*)obj->anim.placementData;
             movedState = obj->extra;
             flags = movedState->flags;
             if ((flags & PUSHABLE_FLAG_RESTORED) != 0) {
@@ -942,7 +942,7 @@ int pushable_getObjectTypeId(void) {
 }
 
 void pushable_free(GameObject* obj) {
-    PushablePlacement* placement = (PushablePlacement*)obj->anim.placementData;
+    PushableObjectDef* placement = (PushableObjectDef*)obj->anim.placementData;
     PushableState* state = obj->extra;
     s16 sequenceId = obj->anim.seqId;
     int savedMapIndex;
@@ -1255,7 +1255,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     if (setup->base.mapId == PUSHABLE_FORCE_HIT_ID_MAP) {
         setup->requiredHitId = 1;
     } else {
-        *(s8*)&setup->requiredHitId = PUSHABLE_NO_HIT_ID;
+        setup->requiredHitId = PUSHABLE_NO_HIT_ID;
     }
     obj->anim.rotX = setup->rotXByte << 8;
     obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + setup->base.posY;
